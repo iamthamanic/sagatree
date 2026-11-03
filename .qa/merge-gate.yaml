@@ -45,6 +45,11 @@ requiredChecks:
 # PR-triggered run does not sticky-fail while Kody is still in_progress.
 # Severity badges severity_level-{critical|high|medium|low|info} block until
 # resolved or dismissed (<!-- ecc-finding-dismissed: … -->).
+#
+# Provider credits exhausted (Ollama openai_compatible / HTTP 429 / billing limit):
+# OWNER/MEMBER/COLLABORATOR may waive Kodus completion for that PR with
+# <!-- ecc-kodus-skipped-credits: ollama credits exhausted --> on an issue comment.
+# Free-text alone is never enough. Other Kody failures stay fail-closed.
 
 requireKodusReview: true
 

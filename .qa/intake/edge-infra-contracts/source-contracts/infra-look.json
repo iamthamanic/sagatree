@@ -41,7 +41,7 @@
     },
     {
       "path": "src/infrastructure/look/look-service.ts",
-      "sha256": "0abf24e1268e8d9fa1651550e81d9fc937fc8f9f74667db3fd1bdb857f8a2d44"
+      "sha256": "5487c8b7cafae4996d793c427a87378c211b89292472350d68804205736d8425"
     },
     {
       "path": "src/infrastructure/look/look.persistence.ts",
@@ -126,8 +126,16 @@
       "sha256": "e896927b2a2fa4c4ad74550b0909a681596d41bdc356980a31afd42b493f5d30"
     },
     {
+      "path": "src/infrastructure/host/host-library-http.ts",
+      "sha256": "5f736badfbaa6a0f3888c66eb41580a5d85f7f63ebfd30d2a6318f6de72bde3a"
+    },
+    {
       "path": "src/lib/authenticatedUser.ts",
       "sha256": "c822140996ae4d318c19d2ccb5318d77f2ba4d302bdfbcb50a79420a7ef70d74"
+    },
+    {
+      "path": "src/lib/hostAuthBridge.ts",
+      "sha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b"
     },
     {
       "path": "src/lib/localAdmin.ts",
@@ -681,6 +689,54 @@
     },
     {
       "kind": "TypeAliasDeclaration",
+      "name": "EnvLike",
+      "path": "src/infrastructure/host/host-library-http.ts",
+      "line": 10,
+      "endLine": 13,
+      "text": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "HostLibraryCharacterDto",
+      "path": "src/infrastructure/host/host-library-http.ts",
+      "line": 62,
+      "endLine": 75,
+      "text": "export type HostLibraryCharacterDto = {\n  readonly id: string;\n  readonly publicId?: string;\n  readonly name: string;\n  readonly description?: string;\n  readonly class?: string;\n  readonly race?: string;\n  readonly level?: number;\n  readonly sheetStatus?: string;\n  readonly portraitUrl?: string | null;\n  readonly sheet?: Readonly<Record<string, unknown>>;\n  readonly createdAt?: string;\n  readonly updatedAt?: string;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "HostLibraryProjectDto",
+      "path": "src/infrastructure/host/host-library-http.ts",
+      "line": 90,
+      "endLine": 107,
+      "text": "export type HostLibraryProjectDto = {\n  readonly id: string;\n  readonly publicId?: string;\n  readonly code?: string;\n  readonly name: string;\n  readonly description?: string | null;\n  readonly worldId?: string | null;\n  readonly worldProfileId?: string | null;\n  readonly sagaId?: string | null;\n  readonly sagaVersionId?: string | null;\n  readonly sagaTitle?: string | null;\n  readonly sagaSlug?: string | null;\n  readonly sagaOrigin?: string | null;\n  readonly gmUserId: string;\n  readonly status?: string;\n  readonly memberCount?: number;\n  readonly sessionCount?: number;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "HostLibraryWorldDto",
+      "path": "src/infrastructure/host/host-library-http.ts",
+      "line": 122,
+      "endLine": 126,
+      "text": "export type HostLibraryWorldDto = {\n  readonly id: string;\n  readonly title: string;\n  readonly createdAt: string;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "HostWhoamiDto",
+      "path": "src/lib/hostAuthBridge.ts",
+      "line": 18,
+      "endLine": 23,
+      "text": "export type HostWhoamiDto = {\n  readonly ok: true;\n  readonly actorId: string;\n  readonly kind: 'remote-account';\n  readonly email: string | null;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "EnvLike",
+      "path": "src/lib/hostAuthBridge.ts",
+      "line": 25,
+      "endLine": 25,
+      "text": "type EnvLike = { readonly VITE_SAGATREE_HOST_AUTH_URL?: string };"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
       "name": "TimedOut",
       "path": "src/lib/networkTimeout.ts",
       "line": 12,
@@ -1139,32 +1195,40 @@
     },
     {
       "path": "src/infrastructure/look/look-service.ts",
-      "line": 11,
-      "endLine": 19,
+      "line": 9,
+      "endLine": 17,
       "module": "../../domains/look",
       "resolvedPath": "src/domains/look/index.ts",
       "expression": "import type {\n  AppendLookProfileVersionInput,\n  CreateLookProfileInput,\n  DuplicateLookProfileInput,\n  LookProfileRecord,\n  LookProfileVersion,\n  LookReferenceAnalysisDraft,\n  LookReferenceAnalysisOutcome,\n} from '../../domains/look';"
     },
     {
       "path": "src/infrastructure/look/look-service.ts",
-      "line": 20,
-      "endLine": 20,
+      "line": 18,
+      "endLine": 18,
       "module": "../../domains/look",
       "resolvedPath": "src/domains/look/index.ts",
       "expression": "import { buildLookProfileWriteDraftFromAnalysis } from '../../domains/look';"
     },
     {
       "path": "src/infrastructure/look/look-service.ts",
-      "line": 21,
-      "endLine": 24,
+      "line": 19,
+      "endLine": 25,
+      "module": "../host/host-library-http",
+      "resolvedPath": "src/infrastructure/host/host-library-http.ts",
+      "expression": "import {\n  archiveHostLibraryLook,\n  createHostLibraryLook,\n  duplicateHostLibraryLook,\n  fetchHostLibraryLooks,\n  isHostLibraryEnabled,\n} from '../host/host-library-http';"
+    },
+    {
+      "path": "src/infrastructure/look/look-service.ts",
+      "line": 26,
+      "endLine": 29,
       "module": "./look-reference-analysis-service",
       "resolvedPath": "src/infrastructure/look/look-reference-analysis-service.ts",
       "expression": "import {\n  analyzeLookReferences,\n  type LookReferenceAnalysisRequest,\n} from './look-reference-analysis-service';"
     },
     {
       "path": "src/infrastructure/look/look-service.ts",
-      "line": 25,
-      "endLine": 25,
+      "line": 30,
+      "endLine": 30,
       "module": "./supabase-look.repository",
       "resolvedPath": "src/infrastructure/look/supabase-look.repository.ts",
       "expression": "import { supabaseLookProfileRepository } from './supabase-look.repository';"
@@ -1395,57 +1459,57 @@
     },
     {
       "path": "src/infrastructure/look/look-service.ts",
-      "line": 27,
-      "endLine": 31,
-      "text": "export async function listLookProfiles(options?: {\n  includeArchived?: boolean;\n}): Promise<LookProfileRecord[]> {\n  return supabaseLookProfileRepository.listProfiles(options);\n}"
-    },
-    {
-      "path": "src/infrastructure/look/look-service.ts",
-      "line": 33,
-      "endLine": 37,
-      "text": "export async function getLookProfile(\n  profileId: string,\n): Promise<LookProfileRecord | null> {\n  return supabaseLookProfileRepository.getProfileById(profileId);\n}"
-    },
-    {
-      "path": "src/infrastructure/look/look-service.ts",
       "line": 39,
-      "endLine": 43,
-      "text": "export async function createLookProfile(\n  input: CreateLookProfileInput,\n): Promise<LookProfileRecord> {\n  return supabaseLookProfileRepository.createProfile(input);\n}"
+      "endLine": 50,
+      "text": "export async function listLookProfiles(options?: {\n  includeArchived?: boolean;\n}): Promise<LookProfileRecord[]> {\n  if (isHostLibraryEnabled()) {\n    const rows = await fetchHostLibraryLooks();\n    return rows\n      .map(asLookRecord)\n      .filter((row): row is LookProfileRecord => row !== null)\n      .filter((row) => options?.includeArchived === true || row.status === 'active');\n  }\n  return supabaseLookProfileRepository.listProfiles(options);\n}"
     },
     {
       "path": "src/infrastructure/look/look-service.ts",
-      "line": 45,
-      "endLine": 49,
-      "text": "export async function appendLookProfileVersion(\n  input: AppendLookProfileVersionInput,\n): Promise<LookProfileRecord> {\n  return supabaseLookProfileRepository.appendVersion(input);\n}"
+      "line": 52,
+      "endLine": 60,
+      "text": "export async function getLookProfile(\n  profileId: string,\n): Promise<LookProfileRecord | null> {\n  if (isHostLibraryEnabled()) {\n    const rows = await listLookProfiles({ includeArchived: true });\n    return rows.find((row) => row.profile.id === profileId) ?? null;\n  }\n  return supabaseLookProfileRepository.getProfileById(profileId);\n}"
     },
     {
       "path": "src/infrastructure/look/look-service.ts",
-      "line": 51,
-      "endLine": 55,
-      "text": "export async function archiveLookProfile(\n  profileId: string,\n): Promise<LookProfileRecord> {\n  return supabaseLookProfileRepository.archiveProfile(profileId);\n}"
+      "line": 62,
+      "endLine": 72,
+      "text": "export async function createLookProfile(\n  input: CreateLookProfileInput,\n): Promise<LookProfileRecord> {\n  if (isHostLibraryEnabled()) {\n    const created = await createHostLibraryLook(input.draft);\n    const record = asLookRecord(created);\n    if (!record) throw new Error('Host-Look anlegen: ungültige Antwort');\n    return record;\n  }\n  return supabaseLookProfileRepository.createProfile(input);\n}"
     },
     {
       "path": "src/infrastructure/look/look-service.ts",
-      "line": 57,
-      "endLine": 61,
-      "text": "export async function duplicateLookProfile(\n  input: DuplicateLookProfileInput,\n): Promise<LookProfileRecord> {\n  return supabaseLookProfileRepository.duplicateProfile(input);\n}"
+      "line": 74,
+      "endLine": 82,
+      "text": "export async function appendLookProfileVersion(\n  input: AppendLookProfileVersionInput,\n): Promise<LookProfileRecord> {\n  if (isHostLibraryEnabled()) {\n    // Host append-version HTTP not mounted yet — recreate via create for solo cutover.\n    throw new Error('Look-Version anhängen ist auf dem Host noch nicht verfügbar.');\n  }\n  return supabaseLookProfileRepository.appendVersion(input);\n}"
     },
     {
       "path": "src/infrastructure/look/look-service.ts",
-      "line": 63,
-      "endLine": 67,
-      "text": "export async function listLookProfileVersions(\n  profileId: string,\n): Promise<LookProfileVersion[]> {\n  return supabaseLookProfileRepository.listVersions(profileId);\n}"
+      "line": 84,
+      "endLine": 94,
+      "text": "export async function archiveLookProfile(\n  profileId: string,\n): Promise<LookProfileRecord> {\n  if (isHostLibraryEnabled()) {\n    const archived = await archiveHostLibraryLook(profileId);\n    const record = asLookRecord(archived);\n    if (!record) throw new Error('Host-Look archivieren: ungültige Antwort');\n    return record;\n  }\n  return supabaseLookProfileRepository.archiveProfile(profileId);\n}"
     },
     {
       "path": "src/infrastructure/look/look-service.ts",
-      "line": 70,
-      "endLine": 74,
+      "line": 96,
+      "endLine": 109,
+      "text": "export async function duplicateLookProfile(\n  input: DuplicateLookProfileInput,\n): Promise<LookProfileRecord> {\n  if (isHostLibraryEnabled()) {\n    const duplicated = await duplicateHostLibraryLook(\n      input.sourceProfileId,\n      input.displayName,\n    );\n    const record = asLookRecord(duplicated);\n    if (!record) throw new Error('Host-Look duplizieren: ungültige Antwort');\n    return record;\n  }\n  return supabaseLookProfileRepository.duplicateProfile(input);\n}"
+    },
+    {
+      "path": "src/infrastructure/look/look-service.ts",
+      "line": 111,
+      "endLine": 119,
+      "text": "export async function listLookProfileVersions(\n  profileId: string,\n): Promise<LookProfileVersion[]> {\n  if (isHostLibraryEnabled()) {\n    const profile = await getLookProfile(profileId);\n    return profile ? [profile.current] : [];\n  }\n  return supabaseLookProfileRepository.listVersions(profileId);\n}"
+    },
+    {
+      "path": "src/infrastructure/look/look-service.ts",
+      "line": 122,
+      "endLine": 126,
       "text": "export async function analyzeLookReferencesForDraft(\n  request: LookReferenceAnalysisRequest,\n): Promise<LookReferenceAnalysisOutcome> {\n  return analyzeLookReferences(request);\n}"
     },
     {
       "path": "src/infrastructure/look/look-service.ts",
-      "line": 80,
-      "endLine": 88,
-      "text": "export async function createLookProfileFromReferenceAnalysis(\n  draft: LookReferenceAnalysisDraft,\n): Promise<LookProfileRecord> {\n  const writeDraft = buildLookProfileWriteDraftFromAnalysis(draft);\n  if (writeDraft.source !== 'reference-analysis') {\n    throw new Error('Look analysis draft rejected: invalid source');\n  }\n  return supabaseLookProfileRepository.createProfile({ draft: writeDraft });\n}"
+      "line": 132,
+      "endLine": 140,
+      "text": "export async function createLookProfileFromReferenceAnalysis(\n  draft: LookReferenceAnalysisDraft,\n): Promise<LookProfileRecord> {\n  const writeDraft = buildLookProfileWriteDraftFromAnalysis(draft);\n  if (writeDraft.source !== 'reference-analysis') {\n    throw new Error('Look analysis draft rejected: invalid source');\n  }\n  return createLookProfile({ draft: writeDraft });\n}"
     },
     {
       "path": "src/infrastructure/look/look.persistence.ts",
@@ -1850,66 +1914,94 @@
     },
     {
       "path": "src/infrastructure/look/look-service.ts",
-      "line": 27,
-      "endLine": 31,
-      "name": "listLookProfiles",
-      "text": "export async function listLookProfiles(options?: {\n  includeArchived?: boolean;\n}): Promise<LookProfileRecord[]> {\n  return supabaseLookProfileRepository.listProfiles(options);\n}"
-    },
-    {
-      "path": "src/infrastructure/look/look-service.ts",
-      "line": 33,
+      "line": 32,
       "endLine": 37,
-      "name": "getLookProfile",
-      "text": "export async function getLookProfile(\n  profileId: string,\n): Promise<LookProfileRecord | null> {\n  return supabaseLookProfileRepository.getProfileById(profileId);\n}"
+      "name": "asLookRecord",
+      "text": "function asLookRecord(value: unknown): LookProfileRecord | null {\n  if (!value || typeof value !== 'object') return null;\n  const record = value as LookProfileRecord;\n  if (!record.profile || !record.current || typeof record.status !== 'string') return null;\n  return record;\n}"
     },
     {
       "path": "src/infrastructure/look/look-service.ts",
       "line": 39,
-      "endLine": 43,
-      "name": "createLookProfile",
-      "text": "export async function createLookProfile(\n  input: CreateLookProfileInput,\n): Promise<LookProfileRecord> {\n  return supabaseLookProfileRepository.createProfile(input);\n}"
+      "endLine": 50,
+      "name": "listLookProfiles",
+      "text": "export async function listLookProfiles(options?: {\n  includeArchived?: boolean;\n}): Promise<LookProfileRecord[]> {\n  if (isHostLibraryEnabled()) {\n    const rows = await fetchHostLibraryLooks();\n    return rows\n      .map(asLookRecord)\n      .filter((row): row is LookProfileRecord => row !== null)\n      .filter((row) => options?.includeArchived === true || row.status === 'active');\n  }\n  return supabaseLookProfileRepository.listProfiles(options);\n}"
     },
     {
       "path": "src/infrastructure/look/look-service.ts",
-      "line": 45,
-      "endLine": 49,
-      "name": "appendLookProfileVersion",
-      "text": "export async function appendLookProfileVersion(\n  input: AppendLookProfileVersionInput,\n): Promise<LookProfileRecord> {\n  return supabaseLookProfileRepository.appendVersion(input);\n}"
+      "line": 46,
+      "endLine": 46,
+      "name": "callback",
+      "text": "(row): row is LookProfileRecord => row !== null"
     },
     {
       "path": "src/infrastructure/look/look-service.ts",
-      "line": 51,
-      "endLine": 55,
-      "name": "archiveLookProfile",
-      "text": "export async function archiveLookProfile(\n  profileId: string,\n): Promise<LookProfileRecord> {\n  return supabaseLookProfileRepository.archiveProfile(profileId);\n}"
+      "line": 47,
+      "endLine": 47,
+      "name": "callback",
+      "text": "(row) => options?.includeArchived === true || row.status === 'active'"
+    },
+    {
+      "path": "src/infrastructure/look/look-service.ts",
+      "line": 52,
+      "endLine": 60,
+      "name": "getLookProfile",
+      "text": "export async function getLookProfile(\n  profileId: string,\n): Promise<LookProfileRecord | null> {\n  if (isHostLibraryEnabled()) {\n    const rows = await listLookProfiles({ includeArchived: true });\n    return rows.find((row) => row.profile.id === profileId) ?? null;\n  }\n  return supabaseLookProfileRepository.getProfileById(profileId);\n}"
     },
     {
       "path": "src/infrastructure/look/look-service.ts",
       "line": 57,
-      "endLine": 61,
+      "endLine": 57,
+      "name": "callback",
+      "text": "(row) => row.profile.id === profileId"
+    },
+    {
+      "path": "src/infrastructure/look/look-service.ts",
+      "line": 62,
+      "endLine": 72,
+      "name": "createLookProfile",
+      "text": "export async function createLookProfile(\n  input: CreateLookProfileInput,\n): Promise<LookProfileRecord> {\n  if (isHostLibraryEnabled()) {\n    const created = await createHostLibraryLook(input.draft);\n    const record = asLookRecord(created);\n    if (!record) throw new Error('Host-Look anlegen: ungültige Antwort');\n    return record;\n  }\n  return supabaseLookProfileRepository.createProfile(input);\n}"
+    },
+    {
+      "path": "src/infrastructure/look/look-service.ts",
+      "line": 74,
+      "endLine": 82,
+      "name": "appendLookProfileVersion",
+      "text": "export async function appendLookProfileVersion(\n  input: AppendLookProfileVersionInput,\n): Promise<LookProfileRecord> {\n  if (isHostLibraryEnabled()) {\n    // Host append-version HTTP not mounted yet — recreate via create for solo cutover.\n    throw new Error('Look-Version anhängen ist auf dem Host noch nicht verfügbar.');\n  }\n  return supabaseLookProfileRepository.appendVersion(input);\n}"
+    },
+    {
+      "path": "src/infrastructure/look/look-service.ts",
+      "line": 84,
+      "endLine": 94,
+      "name": "archiveLookProfile",
+      "text": "export async function archiveLookProfile(\n  profileId: string,\n): Promise<LookProfileRecord> {\n  if (isHostLibraryEnabled()) {\n    const archived = await archiveHostLibraryLook(profileId);\n    const record = asLookRecord(archived);\n    if (!record) throw new Error('Host-Look archivieren: ungültige Antwort');\n    return record;\n  }\n  return supabaseLookProfileRepository.archiveProfile(profileId);\n}"
+    },
+    {
+      "path": "src/infrastructure/look/look-service.ts",
+      "line": 96,
+      "endLine": 109,
       "name": "duplicateLookProfile",
-      "text": "export async function duplicateLookProfile(\n  input: DuplicateLookProfileInput,\n): Promise<LookProfileRecord> {\n  return supabaseLookProfileRepository.duplicateProfile(input);\n}"
+      "text": "export async function duplicateLookProfile(\n  input: DuplicateLookProfileInput,\n): Promise<LookProfileRecord> {\n  if (isHostLibraryEnabled()) {\n    const duplicated = await duplicateHostLibraryLook(\n      input.sourceProfileId,\n      input.displayName,\n    );\n    const record = asLookRecord(duplicated);\n    if (!record) throw new Error('Host-Look duplizieren: ungültige Antwort');\n    return record;\n  }\n  return supabaseLookProfileRepository.duplicateProfile(input);\n}"
     },
     {
       "path": "src/infrastructure/look/look-service.ts",
-      "line": 63,
-      "endLine": 67,
+      "line": 111,
+      "endLine": 119,
       "name": "listLookProfileVersions",
-      "text": "export async function listLookProfileVersions(\n  profileId: string,\n): Promise<LookProfileVersion[]> {\n  return supabaseLookProfileRepository.listVersions(profileId);\n}"
+      "text": "export async function listLookProfileVersions(\n  profileId: string,\n): Promise<LookProfileVersion[]> {\n  if (isHostLibraryEnabled()) {\n    const profile = await getLookProfile(profileId);\n    return profile ? [profile.current] : [];\n  }\n  return supabaseLookProfileRepository.listVersions(profileId);\n}"
     },
     {
       "path": "src/infrastructure/look/look-service.ts",
-      "line": 70,
-      "endLine": 74,
+      "line": 122,
+      "endLine": 126,
       "name": "analyzeLookReferencesForDraft",
       "text": "export async function analyzeLookReferencesForDraft(\n  request: LookReferenceAnalysisRequest,\n): Promise<LookReferenceAnalysisOutcome> {\n  return analyzeLookReferences(request);\n}"
     },
     {
       "path": "src/infrastructure/look/look-service.ts",
-      "line": 80,
-      "endLine": 88,
+      "line": 132,
+      "endLine": 140,
       "name": "createLookProfileFromReferenceAnalysis",
-      "text": "export async function createLookProfileFromReferenceAnalysis(\n  draft: LookReferenceAnalysisDraft,\n): Promise<LookProfileRecord> {\n  const writeDraft = buildLookProfileWriteDraftFromAnalysis(draft);\n  if (writeDraft.source !== 'reference-analysis') {\n    throw new Error('Look analysis draft rejected: invalid source');\n  }\n  return supabaseLookProfileRepository.createProfile({ draft: writeDraft });\n}"
+      "text": "export async function createLookProfileFromReferenceAnalysis(\n  draft: LookReferenceAnalysisDraft,\n): Promise<LookProfileRecord> {\n  const writeDraft = buildLookProfileWriteDraftFromAnalysis(draft);\n  if (writeDraft.source !== 'reference-analysis') {\n    throw new Error('Look analysis draft rejected: invalid source');\n  }\n  return createLookProfile({ draft: writeDraft });\n}"
     },
     {
       "path": "src/infrastructure/look/look.persistence.ts",

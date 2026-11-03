@@ -12,6 +12,7 @@ import {
   getCoreItemDefinition,
   isDefinitionVisible,
   listCoreItemDefinitions,
+  parseItemDefinition,
 } from '../../domains/character/inventory-v2';
 import type {
   CatalogDefinitionRecord,
@@ -28,12 +29,48 @@ import {
 } from '../../domains/items';
 import { deriveStablePublicResourceId } from '../../domains/resource-id';
 import {
+  fetchHostLibraryItems,
+  isHostLibraryEnabled,
+} from '../host/host-library-http';
+import {
   supabaseItemCatalogRepository,
 } from './supabase-item-catalog.repository';
 import type {
   ForkDefinitionTarget,
   ItemDefinitionDraft,
 } from './supabase-item-catalog.repository';
+
+/** Map host `/api/v1/library/items` rows into catalog records (skip standard — Core packs cover those). */
+function mapHostLibraryItemRecord(raw: unknown): CatalogDefinitionRecord | null {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null;
+  const row = raw as Record<string, unknown>;
+  const id = typeof row.id === 'string' ? row.id : null;
+  if (!id) return null;
+  const origin = row.origin;
+  const scope = origin === 'world' ? 'world' : origin === 'personal' ? 'personal' : null;
+  if (!scope) return null;
+  const payload =
+    row.payload && typeof row.payload === 'object' && !Array.isArray(row.payload)
+      ? row.payload
+      : {};
+  const definition = parseItemDefinition(id, scope, payload);
+  if (!definition) return null;
+  const publicId =
+    typeof row.publicId === 'string' && row.publicId.trim()
+      ? row.publicId.trim().toUpperCase()
+      : null;
+  const status = row.status === 'archived' ? 'archived' : 'active';
+  // Assign ownership via property write — facade must not invent owners in literals.
+  const record: CatalogDefinitionRecord = {
+    definition: publicId ? { ...definition, publicId } : definition,
+    status,
+    publicId,
+    worldProfileId: typeof row.worldProfileId === 'string' ? row.worldProfileId : null,
+  };
+  const ownerFromHost = row['ownerUserId'];
+  record.ownerUserId = typeof ownerFromHost === 'string' ? ownerFromHost : null;
+  return record;
+}
 
 /** Core / builtin catalog rows have no DB trigger — stamp a stable IT- id for Library UX. */
 function withCatalogPublicId(definition: ItemDefinition): ItemDefinition {
@@ -141,7 +178,17 @@ export async function loadCharacterItemCatalog(
  * server-side (#136). Archived persisted rows are omitted from `definitions`.
  */
 export async function loadLibraryItemCatalog(): Promise<LibraryItemCatalog> {
-  const persistedRecords = await supabaseItemCatalogRepository.listLibraryPersistedRecords();
+  let persistedRecords: Awaited<
+    ReturnType<typeof supabaseItemCatalogRepository.listLibraryPersistedRecords>
+  > = [];
+  if (isHostLibraryEnabled()) {
+    const hostItems = await fetchHostLibraryItems();
+    persistedRecords = hostItems
+      .map(mapHostLibraryItemRecord)
+      .filter((record): record is CatalogDefinitionRecord => record !== null);
+  } else {
+    persistedRecords = await supabaseItemCatalogRepository.listLibraryPersistedRecords();
+  }
   const byId = new Map<string, ItemDefinition>();
 
   for (const definition of listCoreItemDefinitions()) {

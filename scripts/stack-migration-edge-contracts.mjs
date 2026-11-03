@@ -174,7 +174,15 @@ const infrastructure = infraSnapshots.map(({ data: s, path, sha256: snapshotSha 
   }
   const importedInfra = unique(s.imports.map((x) => x.resolvedPath?.match(/^src\/infrastructure\/([^/]+)\//)?.[1])
     .filter((x) => x && x !== s.area));
-  for (const name of importedInfra) dependencies.push(commonDependency('infra', name, infraIssue.get(name)));
+  for (const name of importedInfra) {
+    const issueNumber = infraIssue.get(name);
+    if (!issueNumber) {
+      // Successor-only areas excluded from legacy MIG inventory (see edge-source-contracts).
+      if (name === 'host') continue;
+      throw new Error(`Unmapped imported infrastructure area: ${name}`);
+    }
+    dependencies.push(commonDependency('infra', name, issueNumber));
+  }
   return { area: s.area, implementationIssue: infraIssue.get(s.area), files: s.sourceFiles.map((x) => x.path),
     verification: verification([...s.sourceFiles, ...s.supportingSourceFiles]), sourceContract: path, sourceContractSha256: snapshotSha,
     rpcUsed, tablesTouched, storageBuckets, edgeInvokes, realtime, authCalls,

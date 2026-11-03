@@ -5,13 +5,17 @@
  * #569: Never select projects.adventure_runtime or sessions.world_state/notes —
  * those columns are revoked for authenticated; use projected session RPCs.
  *
- * Dual-path (MIG-308): production remains Supabase RPCs/tables. Host ports are
- * bound via `createHostProjectAdapter` for tests / future cutover (no accidental
- * cutover — VITE host flags alone do not redirect this facade).
+ * Dual-path (MIG-308): Host Library lists when `VITE_SAGATREE_HOST_LIBRARY=1`
+ * (+ host auth URL). Remaining project mutations stay on Supabase until later FE-HOST slices.
  */
 import { supabase } from '../../lib/supabase';
 import { getAuthenticatedUserId } from '../../lib/authenticatedUser';
 import { raceWithTimeoutReject, SUPABASE_QUERY_TIMEOUT_MS } from '../../lib/networkTimeout';
+import {
+  fetchHostLibraryProjects,
+  isHostLibraryEnabled,
+  type HostLibraryProjectDto,
+} from '../host/host-library-http';
 import { projectMemberService } from './project-member-service';
 import type {
   ProjectDto,
@@ -292,10 +296,45 @@ class ProjectService {
     return this.mapToViewModel(data, [], []);
   }
 
+  private mapHostProjectSummary(row: HostLibraryProjectDto): ProjectSummaryVm {
+    const status =
+      row.status === 'paused' || row.status === 'completed' || row.status === 'archived'
+        ? row.status
+        : 'active';
+    const origin =
+      row.sagaOrigin === 'native' ||
+      row.sagaOrigin === 'user' ||
+      row.sagaOrigin === 'private_backfill'
+        ? row.sagaOrigin
+        : null;
+    return {
+      id: row.id,
+      publicId: typeof row.publicId === 'string' ? row.publicId : '',
+      code: typeof row.code === 'string' ? row.code : '',
+      name: row.name,
+      description: row.description ?? null,
+      worldId: row.worldId ?? null,
+      worldProfileId: row.worldProfileId ?? row.worldId ?? null,
+      sagaId: row.sagaId ?? null,
+      sagaVersionId: row.sagaVersionId ?? null,
+      sagaTitle: row.sagaTitle ?? row.name,
+      sagaSlug: row.sagaSlug ?? null,
+      sagaOrigin: origin,
+      gmUserId: row.gmUserId,
+      status,
+      memberCount: typeof row.memberCount === 'number' ? row.memberCount : 1,
+      sessionCount: typeof row.sessionCount === 'number' ? row.sessionCount : 0,
+    };
+  }
+
   /**
    * Get user's projects (as GM or active player).
    */
   async getUserProjectSummaries(): Promise<ProjectSummaryVm[]> {
+    if (isHostLibraryEnabled()) {
+      const rows = await fetchHostLibraryProjects();
+      return rows.map((row) => this.mapHostProjectSummary(row));
+    }
     return raceWithTimeoutReject(
       this.fetchUserProjectSummaries(),
       SUPABASE_QUERY_TIMEOUT_MS,
@@ -304,6 +343,32 @@ class ProjectService {
   }
 
   async getUserProjects(): Promise<ProjectVm[]> {
+    if (isHostLibraryEnabled()) {
+      const rows = await fetchHostLibraryProjects();
+      return rows.map((row) => {
+        const summary = this.mapHostProjectSummary(row);
+        const now = new Date().toISOString();
+        return {
+          id: summary.id,
+          publicId: summary.publicId,
+          code: summary.code,
+          name: summary.name,
+          description: summary.description,
+          worldId: summary.worldId,
+          worldProfileId: summary.worldProfileId,
+          defaultLookProfileId: null,
+          allowPlayerCharacterLookOverride: false,
+          gmUserId: summary.gmUserId,
+          status: summary.status,
+          createdAt: now,
+          updatedAt: now,
+          members: [],
+          sessions: [],
+          totalSessions: 0,
+          lastSessionDate: null,
+        } satisfies ProjectVm;
+      });
+    }
     return raceWithTimeoutReject(
       this.fetchUserProjects(),
       SUPABASE_QUERY_TIMEOUT_MS,
@@ -324,6 +389,11 @@ class ProjectService {
    * Soft-fails so list views still load if the definition/RPC is missing.
    */
   async ensureNativeStarterProject(slug = 'dornhain.whisper'): Promise<void> {
+    if (isHostLibraryEnabled()) {
+      // Solo host boots seed Dornhain into SQLite (ensureDornhainDefaultCatalog).
+      void slug;
+      return;
+    }
     const { error } = await supabase.rpc('ensure_native_starter_project', {
       p_slug: slug,
     });

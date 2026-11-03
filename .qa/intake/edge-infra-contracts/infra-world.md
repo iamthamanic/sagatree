@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-world.json](source-contracts/infra-world.json) (SHA-256 `62f1b661aed0c9caef575ab90f7f66e6abeb63341183e1e736a2d2102e90793a`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-world.json](source-contracts/infra-world.json) (SHA-256 `4c35db6338aae03b9191b51eafcf4a22f0c6d3f324aef13808ad9192ed4625b7`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -401,7 +401,7 @@ supabase.rpc('upsert_world_place_map_link', {
 Enclosing operation: `src/infrastructure/world/world-place-service.ts:213`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: world_profiles
 
-`src/infrastructure/world/world-profile-service.ts:55` — literal-or-constant.
+`src/infrastructure/world/world-profile-service.ts:84` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -412,10 +412,10 @@ supabase
       .order('created_at', { ascending: false })
 ```
 
-Enclosing operation: `src/infrastructure/world/world-profile-service.ts:52`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/world/world-profile-service.ts:77`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: world_profiles
 
-`src/infrastructure/world/world-profile-service.ts:68` — literal-or-constant.
+`src/infrastructure/world/world-profile-service.ts:103` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -427,10 +427,10 @@ supabase
       .single()
 ```
 
-Enclosing operation: `src/infrastructure/world/world-profile-service.ts:65`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/world/world-profile-service.ts:94`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: world_profiles
 
-`src/infrastructure/world/world-profile-service.ts:84` — literal-or-constant.
+`src/infrastructure/world/world-profile-service.ts:119` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -441,10 +441,10 @@ supabase
       .maybeSingle()
 ```
 
-Enclosing operation: `src/infrastructure/world/world-profile-service.ts:80`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/world/world-profile-service.ts:115`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: world_profiles
 
-`src/infrastructure/world/world-profile-service.ts:104` — literal-or-constant.
+`src/infrastructure/world/world-profile-service.ts:151` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -455,10 +455,10 @@ supabase
       .single()
 ```
 
-Enclosing operation: `src/infrastructure/world/world-profile-service.ts:94`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/world/world-profile-service.ts:129`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: world_profiles
 
-`src/infrastructure/world/world-profile-service.ts:138` — literal-or-constant.
+`src/infrastructure/world/world-profile-service.ts:200` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -471,10 +471,10 @@ supabase
       .single()
 ```
 
-Enclosing operation: `src/infrastructure/world/world-profile-service.ts:124`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/world/world-profile-service.ts:171`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: inventory_item_definitions
 
-`src/infrastructure/world/world-profile-service.ts:157` — literal-or-constant.
+`src/infrastructure/world/world-profile-service.ts:223` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -484,10 +484,10 @@ supabase
       .eq('world_profile_id', id)
 ```
 
-Enclosing operation: `src/infrastructure/world/world-profile-service.ts:150`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/world/world-profile-service.ts:212`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: npc_creature_definitions
 
-`src/infrastructure/world/world-profile-service.ts:170` — literal-or-constant.
+`src/infrastructure/world/world-profile-service.ts:236` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -497,10 +497,10 @@ supabase
       .eq('world_profile_id', id)
 ```
 
-Enclosing operation: `src/infrastructure/world/world-profile-service.ts:150`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/world/world-profile-service.ts:212`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: world_profiles
 
-`src/infrastructure/world/world-profile-service.ts:183` — literal-or-constant.
+`src/infrastructure/world/world-profile-service.ts:249` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -511,7 +511,7 @@ supabase
       .eq('owner_user_id', jwtUserId)
 ```
 
-Enclosing operation: `src/infrastructure/world/world-profile-service.ts:150`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/world/world-profile-service.ts:212`; complete request/default/result/error logic is in the declarations below and the snapshot.
 
 ## Complete public declarations and facade operation contracts
 
@@ -1045,7 +1045,7 @@ export type LinkWorldPlaceMapInput = {
 export const worldPlaceService = new WorldPlaceService();
 ```
 
-### src/infrastructure/world/world-profile-service.ts:193
+### src/infrastructure/world/world-profile-service.ts:259
 
 ```ts
 export const worldProfileService = new WorldProfileService();
@@ -1491,11 +1491,15 @@ async linkMap(input: LinkWorldPlaceMapInput): Promise<WorldPlaceMapLinkVm> {
   }
 ```
 
-### src/infrastructure/world/world-profile-service.ts:52
+### src/infrastructure/world/world-profile-service.ts:77
 
 ```ts
 async getUserWorldProfiles(ownerUserId: string): Promise<WorldProfileVm[]> {
     if (!ownerUserId) throw new Error('User not authenticated');
+    if (isHostLibraryEnabled()) {
+      const rows = await fetchHostLibraryWorlds();
+      return rows.map(mapHostWorld);
+    }
     const jwtUserId = await assertSupabaseJwtSession();
     const { data, error } = await supabase
       .from(this.tableName)
@@ -1508,11 +1512,17 @@ async getUserWorldProfiles(ownerUserId: string): Promise<WorldProfileVm[]> {
   }
 ```
 
-### src/infrastructure/world/world-profile-service.ts:65
+### src/infrastructure/world/world-profile-service.ts:94
 
 ```ts
 async getWorldProfile(ownerUserId: string, id: string): Promise<WorldProfileVm> {
     if (!ownerUserId) throw new Error('User not authenticated');
+    if (isHostLibraryEnabled()) {
+      const rows = await fetchHostLibraryWorlds();
+      const match = rows.find((row) => row.id === id);
+      if (!match) throw new Error('Welt konnte nicht geladen werden');
+      return mapHostWorld(match);
+    }
     const jwtUserId = await assertSupabaseJwtSession();
     const { data, error } = await supabase
       .from(this.tableName)
@@ -1526,7 +1536,7 @@ async getWorldProfile(ownerUserId: string, id: string): Promise<WorldProfileVm> 
   }
 ```
 
-### src/infrastructure/world/world-profile-service.ts:80
+### src/infrastructure/world/world-profile-service.ts:115
 
 ```ts
 async getByPublicId(worldPublicId: string): Promise<WorldProfileVm | null> {
@@ -1544,11 +1554,23 @@ async getByPublicId(worldPublicId: string): Promise<WorldProfileVm | null> {
   }
 ```
 
-### src/infrastructure/world/world-profile-service.ts:94
+### src/infrastructure/world/world-profile-service.ts:129
 
 ```ts
 async createWorldProfile(ownerUserId: string, payload: CreateWorldProfileDto): Promise<WorldProfileVm> {
     if (!ownerUserId) throw new Error('User not authenticated');
+    if (isHostLibraryEnabled()) {
+      if (
+        (typeof payload.description === 'string' && payload.description.trim()) ||
+        (payload.modules && Object.keys(payload.modules).length > 0)
+      ) {
+        throw new Error(
+          'Host-Welten speichern derzeit nur den Namen. Beschreibung und Module folgen im nächsten Cutover-Schritt.',
+        );
+      }
+      const created = await createHostLibraryWorld({ name: normalizeName(payload.name) });
+      return mapHostWorld(created);
+    }
     const jwtUserId = await assertSupabaseJwtSession();
     const insertPayload = {
       owner_user_id: jwtUserId,
@@ -1568,7 +1590,7 @@ async createWorldProfile(ownerUserId: string, payload: CreateWorldProfileDto): P
   }
 ```
 
-### src/infrastructure/world/world-profile-service.ts:124
+### src/infrastructure/world/world-profile-service.ts:171
 
 ```ts
 async updateWorldProfile(
@@ -1577,6 +1599,21 @@ async updateWorldProfile(
     payload: UpdateWorldProfileDto,
   ): Promise<WorldProfileVm> {
     if (!ownerUserId) throw new Error('User not authenticated');
+    if (isHostLibraryEnabled()) {
+      if (
+        (typeof payload.description === 'string' && payload.description.trim()) ||
+        (payload.modules && Object.keys(payload.modules).length > 0)
+      ) {
+        throw new Error(
+          'Host-Welten speichern derzeit nur den Namen. Beschreibung und Module folgen im nächsten Cutover-Schritt.',
+        );
+      }
+      if (typeof payload.name !== 'string') {
+        return this.getWorldProfile(ownerUserId, id);
+      }
+      const updated = await updateHostLibraryWorld(id, { name: normalizeName(payload.name) });
+      return mapHostWorld(updated);
+    }
     const jwtUserId = await assertSupabaseJwtSession();
     const updatePayload = {
       ...(typeof payload.name === 'string' ? { name: normalizeName(payload.name) } : {}),
@@ -1598,11 +1635,15 @@ async updateWorldProfile(
   }
 ```
 
-### src/infrastructure/world/world-profile-service.ts:150
+### src/infrastructure/world/world-profile-service.ts:212
 
 ```ts
 async deleteWorldProfile(ownerUserId: string, id: string): Promise<void> {
     if (!ownerUserId) throw new Error('User not authenticated');
+    if (isHostLibraryEnabled()) {
+      await deleteHostLibraryWorld(id);
+      return;
+    }
     const jwtUserId = await assertSupabaseJwtSession();
 
     // World item definitions reference this profile with ON DELETE RESTRICT so
@@ -1721,6 +1762,7 @@ async deleteWorldProfile(ownerUserId: string, id: string): Promise<void> {
 | `src/domains/world/places/settlement-presets.ts` | `b2b5b95f43524fda6c7a76eeb332150202f9750c47db5d7a6518fee98b796199` |
 | `src/domains/world/places/world-place.types.ts` | `32081a2c16516c68393e879ebc4e888441ca4e5009b20404158c6b25d09f4ef0` |
 | `src/domains/world/worldModuleRegistry.ts` | `9683d27ea65c7a22456245c0e2e706168285f61e229f6ea181e0fb6a65064cc0` |
+| `src/infrastructure/host/host-library-http.ts` | `5f736badfbaa6a0f3888c66eb41580a5d85f7f63ebfd30d2a6318f6de72bde3a` |
 | `src/infrastructure/media/optimizer/engines/audio/index.ts` | `7585190a705085692bff0896e08b4d78f791895b47e24d57deeaaa10bb669d4e` |
 | `src/infrastructure/media/optimizer/engines/image/image.worker.ts` | `d34793b4de682556d9306194cfbcd05fdafdf215da25393f955d2669c7499276` |
 | `src/infrastructure/media/optimizer/engines/image/index.ts` | `4944001b7e0f7784d487da2e60d06d845aa564e9ddd7516ff50633af1591a322` |
@@ -1740,8 +1782,9 @@ async deleteWorldProfile(ownerUserId: string, id: string): Promise<void> {
 | `src/infrastructure/world/world-atlas-service.ts` | `252141b947176fbc28c1b353e0473eec2d18cef19ec671e8f89ac8998d107de1` |
 | `src/infrastructure/world/world-map-service.ts` | `952e85442ef9cd7ac198ac33ba6703e58b967ab115efad0183cd240dccddee1e` |
 | `src/infrastructure/world/world-place-service.ts` | `0a18cae0d8ac1503ffcb7f149e12f757aea44a6f346f75eb4f44742724e8d6c0` |
-| `src/infrastructure/world/world-profile-service.ts` | `1197f7e5445289e7a5302990b7f3b21b635813888e8f1e0703808cd693de09fb` |
+| `src/infrastructure/world/world-profile-service.ts` | `a45483722706cf4af91e90e41898f5b9c939dde8c92993868f39dc8269bd5ff0` |
 | `src/lib/authenticatedUser.ts` | `c822140996ae4d318c19d2ccb5318d77f2ba4d302bdfbcb50a79420a7ef70d74` |
+| `src/lib/hostAuthBridge.ts` | `6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b` |
 | `src/lib/localAdmin.ts` | `3a28dec23e85f25ed3e70682bc6e7f8c6b55e81dbbefdd1f6a837f68ac80d6b5` |
 | `src/lib/networkTimeout.ts` | `835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851` |
 | `src/lib/supabase.ts` | `a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f` |

@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-character.json](source-contracts/infra-character.json) (SHA-256 `1e671aec2c9d29023efec97df07e765913160a95edf4451173de1d7e29a01c2f`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-character.json](source-contracts/infra-character.json) (SHA-256 `a4daed068681e8e98431ae6b897ed671498d2b04a922b7160d2d2c7a956c80f9`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -916,14 +916,14 @@ supabase.from(TABLE).delete().eq('id', presetId).eq('owner_user_id', userId)
 Enclosing operation: `src/infrastructure/character/character-preset-service.ts:371`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### auth-helper: session identity
 
-`src/infrastructure/character/character-service.ts:148` — dynamic-expression.
+`src/infrastructure/character/character-service.ts:352` — dynamic-expression.
 
 Exact call/query chain:
 ```ts
 getAuthenticatedUserId()
 ```
 
-Enclosing operation: `src/infrastructure/character/character-service.ts:144`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/character/character-service.ts:340`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### auth-helper: session identity
 
 `src/infrastructure/character/supabase-character.repository.ts:112` — dynamic-expression.
@@ -7177,7 +7177,7 @@ export function assertValidSnapshot(snapshot: CharacterPresetSnapshot): void {
 export const characterPresetService = new CharacterPresetService();
 ```
 
-### src/infrastructure/character/character-service.ts:26
+### src/infrastructure/character/character-service.ts:108
 
 ```ts
 export type UploadPortraitOptions = {
@@ -7190,7 +7190,7 @@ export type UploadPortraitOptions = {
 };
 ```
 
-### src/infrastructure/character/character-service.ts:39
+### src/infrastructure/character/character-service.ts:121
 
 ```ts
 export async function prepareCharacterPortraitFile(
@@ -7239,7 +7239,7 @@ export async function prepareCharacterPortraitFile(
 }
 ```
 
-### src/infrastructure/character/character-service.ts:268
+### src/infrastructure/character/character-service.ts:521
 
 ```ts
 export const characterService = new CharacterService();
@@ -11746,30 +11746,41 @@ async deletePreset(presetId: string): Promise<void> {
   }
 ```
 
-### src/infrastructure/character/character-service.ts:144
+### src/infrastructure/character/character-service.ts:340
 
 ```ts
 private async assertPersonalLookWriteGate(
     characterId: string,
     personalLookProfileId: string | null,
   ): Promise<void> {
-    const actorUserId = await getAuthenticatedUserId();
-    // Owner-scoped fetch — proves the actor can access this character.
-    await supabaseCharacterRepository.getCharacterById(characterId);
+    const hostMode = isHostLibraryEnabled();
+    let actorUserId: string;
+    if (hostMode) {
+      // Owner-scoped host fetch — proves the actor can access this character.
+      await fetchHostLibraryCharacter(characterId);
+      const who = await probeHostActor();
+      actorUserId = who?.actorId ?? 'solo';
+    } else {
+      actorUserId = await getAuthenticatedUserId();
+      // Owner-scoped fetch — proves the actor can access this character.
+      await supabaseCharacterRepository.getCharacterById(characterId);
+    }
 
     let sagaAllows = true;
-    try {
-      const arcs = await characterAdventureArcService.listArcsForCharacter(characterId);
-      const activeArcs = arcs.filter((arc) => arc.status === 'active');
-      for (const arc of activeArcs) {
-        const project = await projectService.getProjectById(arc.projectId);
-        if (!project.allowPlayerCharacterLookOverride) {
-          sagaAllows = false;
-          break;
+    if (!hostMode) {
+      try {
+        const arcs = await characterAdventureArcService.listArcsForCharacter(characterId);
+        const activeArcs = arcs.filter((arc) => arc.status === 'active');
+        for (const arc of activeArcs) {
+          const project = await projectService.getProjectById(arc.projectId);
+          if (!project.allowPlayerCharacterLookOverride) {
+            sagaAllows = false;
+            break;
+          }
         }
+      } catch {
+        sagaAllows = true;
       }
-    } catch {
-      sagaAllows = true;
     }
 
     let lookOwnerUserId: string | null = null;
@@ -11781,7 +11792,7 @@ private async assertPersonalLookWriteGate(
     }
 
     const gate = assertPersonalLookOverrideWrite({
-      // getCharacterById is owner-scoped — successful fetch implies actor owns the character.
+      // Successful owner-scoped fetch implies actor owns the character.
       characterOwnerUserId: actorUserId,
       actorUserId,
       personalLookProfileId,
@@ -12025,7 +12036,7 @@ private async assertPersonalLookWriteGate(
 | `src/infrastructure/character/character-adventure-arc-service.ts` | `15e8bea5f542c4c445e3b8ef5afeaac3e63e09317919c1cb763a6fcace9af15b` |
 | `src/infrastructure/character/character-lore-service.ts` | `864f22acd15e0605a0a8e5e848b09eaf85e0a95838ab3b5c2e62b2828457cba0` |
 | `src/infrastructure/character/character-preset-service.ts` | `6acece04669bde738d04e6295f41d7d7d7a81afedc9f350d6b531c01cd4e9789` |
-| `src/infrastructure/character/character-service.ts` | `e591323439fd26f117035934bda58178488bf1095b722fb99f138abc0755d195` |
+| `src/infrastructure/character/character-service.ts` | `b1d6d33140d1e8ceae4bf3c5d6b5ff3acc63d64fdd71c690e96222308f845fd2` |
 | `src/infrastructure/character/character.persistence.ts` | `5ed5f363555b9c4a3922507e01a227f74aee706764065641eb27ac9510024bd5` |
 | `src/infrastructure/character/host-character-adapter.ts` | `13f20441555da88736aa75337568f69c2e2d516ca2a1193f0fe3d4da83317fa8` |
 | `src/infrastructure/character/host-character-ports.contract.ts` | `a731a0dd97b4e55beee4c08600f69d50112efec738935d93aafab65c4c223dfc` |
@@ -12050,6 +12061,7 @@ private async assertPersonalLookWriteGate(
 | `src/infrastructure/character/liveact/mediapipe-sagatree-face-anchor-map-v1.ts` | `b092e31c50b885b9dbeb396ef2bdbfa39a953df717da7e0042e081849c173d9a` |
 | `src/infrastructure/character/liveact/vrm-liveact-avatar-output.ts` | `f5ef95d582ee0f3a2ec47748e8d958306f3833d45a5e8e1b250d1eecfba5d9a6` |
 | `src/infrastructure/character/supabase-character.repository.ts` | `ae0034e06c55c384124c933bc8093c3926b7ece34a5222213913d1fdc03a9878` |
+| `src/infrastructure/host/host-library-http.ts` | `5f736badfbaa6a0f3888c66eb41580a5d85f7f63ebfd30d2a6318f6de72bde3a` |
 | `src/infrastructure/inventory/inventory-persistence.ts` | `79aaa09053ecd72a0bec8f8f0610b31ab0c9b34779f4a4c87f19f0d2ef7e4ac2` |
 | `src/infrastructure/inventory/item-catalog.persistence.ts` | `a68903ba909af8030e81d28555a65798800c9a32a790a4281e96f52b1550c566` |
 | `src/infrastructure/inventory/supabase-item-catalog.repository.ts` | `1ea1b14afc3d01c117c13e96af516a8cc0a315edfb170a6f1f11c6903ab366eb` |
@@ -12062,7 +12074,7 @@ private async assertPersonalLookWriteGate(
 | `src/infrastructure/look/look-reference-analysis-service.ts` | `a032b123fff9a4fe81429f04cc3113fb776d296f069952f147293f350ebf50a3` |
 | `src/infrastructure/look/look-runtime-types.ts` | `c31d27eaf600ed47e69f16120e584b06a985f29618923118a4c08570f276b2c6` |
 | `src/infrastructure/look/look-runtime.ts` | `64487d02f2831514e86b721d41b0964ac8e99b37faf1a33b8771b4fa7b955d23` |
-| `src/infrastructure/look/look-service.ts` | `0abf24e1268e8d9fa1651550e81d9fc937fc8f9f74667db3fd1bdb857f8a2d44` |
+| `src/infrastructure/look/look-service.ts` | `5487c8b7cafae4996d793c427a87378c211b89292472350d68804205736d8425` |
 | `src/infrastructure/look/look.persistence.ts` | `ed0a97cba6560930610fc032bd7679b5a7e4b49f837e401cd5a872974598f482` |
 | `src/infrastructure/look/supabase-look.repository.ts` | `4dc795897a12bf3319998860b855b0b9b55425e2be7e4c9b0844e7b2ec647121` |
 | `src/infrastructure/media/optimizer/engines/audio/index.ts` | `7585190a705085692bff0896e08b4d78f791895b47e24d57deeaaa10bb669d4e` |
@@ -12079,7 +12091,7 @@ private async assertPersonalLookWriteGate(
 | `src/infrastructure/media/optimizer/index.ts` | `c1b162af47239195707de742a8991bea14d85f2238108968613c3bad3d91cf02` |
 | `src/infrastructure/media/optimizer/media-optimizer.ts` | `7d58424f12b7855ccb3c0153270628850e03afc15c285b1fc2b47218918255d9` |
 | `src/infrastructure/project/project-member-service.ts` | `ee72a706dd82477c61943a4913ecec3de73059dba11ec0c370c81ec7a599a593` |
-| `src/infrastructure/project/project-service.ts` | `b71cf1fc78c24804f4a1ebda9a001807c3dc70379b2d5cf96769081efc9a2257` |
+| `src/infrastructure/project/project-service.ts` | `9d33a2c3be7ec25aa25529e4f922a38f56c3905153929cd8fe2c879b306ff783` |
 | `src/infrastructure/session/media/livekit-media-plane-adapter.ts` | `ba41c95f3816b79818a9c312c056ec896ac75fd4633dba27954cdcdb797b381d` |
 | `src/infrastructure/session/media/media-plane-adapter.ts` | `1dbdf0f7c75c1edc435fb629d5029a1c04806a5a6cbcf9b037ad8a620dcc34cd` |
 | `src/infrastructure/session/media/media-token-client.ts` | `07e4692a4eb42ab86393e808e495383f3c7348d8a2699881dc4590869cc90bd6` |
@@ -12088,6 +12100,7 @@ private async assertPersonalLookWriteGate(
 | `src/infrastructure/session/media/session-media-plane.ts` | `ce8d3ec690f83745646400443d7870cd96383e341628a2d8f017e2d391fbb225` |
 | `src/lib/authenticatedUser.ts` | `c822140996ae4d318c19d2ccb5318d77f2ba4d302bdfbcb50a79420a7ef70d74` |
 | `src/lib/entityCache.ts` | `02b7a3d41ae651c6562d4523a1c94a395608aa13785f0849cfc9acd834aecd61` |
+| `src/lib/hostAuthBridge.ts` | `6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b` |
 | `src/lib/localAdmin.ts` | `3a28dec23e85f25ed3e70682bc6e7f8c6b55e81dbbefdd1f6a837f68ac80d6b5` |
 | `src/lib/networkTimeout.ts` | `835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851` |
 | `src/lib/supabase.ts` | `a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f` |

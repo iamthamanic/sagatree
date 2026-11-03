@@ -237,8 +237,11 @@ function infraEvidence(area) {
 const names = readdirSync(join(root, 'supabase/functions'), { withFileTypes: true })
   .filter((e) => e.isDirectory() && existsSync(join(root, 'supabase/functions', e.name, 'index.ts')))
   .map((e) => e.name).sort();
+// Successor host HTTP adapters are not legacy Supabase infra MIG areas.
+const LEGACY_INFRA_AREA_EXCLUDE = new Set(['host']);
 const areas = readdirSync(join(root, 'src/infrastructure'), { withFileTypes: true })
-  .filter((e) => e.isDirectory()).map((e) => e.name).sort();
+  .filter((e) => e.isDirectory() && !LEGACY_INFRA_AREA_EXCLUDE.has(e.name))
+  .map((e) => e.name).sort();
 const outputs = [
   ...names.map((n) => [`edge-${n}.json`, edgeEvidence(n)]),
   ...areas.map((a) => [`infra-${a}.json`, infraEvidence(a)]),

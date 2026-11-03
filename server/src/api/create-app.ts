@@ -13,10 +13,17 @@ import type { createOllamaSettingsUseCases } from '../application/ollama-setting
 import type { OpsPorts } from '../modules/ops/index.ts';
 import type { PermissionsPorts } from '../modules/permissions/index.ts';
 import type { IdentityPorts } from '../modules/identity/index.ts';
+import type { CharacterPorts } from '../modules/character/index.ts';
+import type { WorldPorts } from '../modules/world/index.ts';
+import type { NpcCreaturePorts } from '../modules/npc-creature/index.ts';
+import type { LookProfilePorts } from '../modules/look/index.ts';
+import type { InventoryPorts } from '../modules/inventory/index.ts';
+import type { ProjectPorts } from '../modules/project/index.ts';
 import type { RealtimeSessionRooms } from '../realtime/index.ts';
 import { actorToWhoamiDto } from '../auth/session.ts';
 import { authDenyStatus, transportStatus } from './errors.ts';
 import { mountAiHttpRoutes } from './ai-routes.ts';
+import { mountLibraryHttpRoutes } from './library-routes.ts';
 
 export type HostApiDeps = {
   readonly health: ReturnType<typeof createHealthUseCase>;
@@ -42,6 +49,13 @@ export type HostApiDeps = {
   /** MIG-301 infrastructure/ai host HTTP adapters (optional until ports wired). */
   readonly aiCredentials?: ReturnType<typeof createAiProviderCredentialsUseCases>;
   readonly aiOllama?: ReturnType<typeof createOllamaSettingsUseCases>;
+  /** Browser Library cutover — optional until composition root wires module ports. */
+  readonly character?: CharacterPorts | null;
+  readonly world?: WorldPorts | null;
+  readonly npcCreature?: NpcCreaturePorts | null;
+  readonly look?: LookProfilePorts | null;
+  readonly inventory?: InventoryPorts | null;
+  readonly project?: ProjectPorts | null;
 };
 
 async function readJsonSafe(c: {
@@ -387,6 +401,17 @@ export function createHostApi(deps: HostApiDeps): Hono {
       );
     }
     return c.json(result, 200);
+  });
+
+  mountLibraryHttpRoutes(app, {
+    identity: deps.identity,
+    hostMode: deps.hostMode,
+    character: deps.character,
+    world: deps.world,
+    npcCreature: deps.npcCreature,
+    look: deps.look,
+    inventory: deps.inventory,
+    project: deps.project,
   });
 
   app.notFound((c) => c.json({ error: 'not-found' }, 404));

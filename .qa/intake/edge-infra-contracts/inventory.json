@@ -30201,7 +30201,7 @@
           },
           {
             "path": "src/infrastructure/character/character-service.ts",
-            "sha256": "e591323439fd26f117035934bda58178488bf1095b722fb99f138abc0755d195"
+            "sha256": "b1d6d33140d1e8ceae4bf3c5d6b5ff3acc63d64fdd71c690e96222308f845fd2"
           },
           {
             "path": "src/infrastructure/character/character.persistence.ts",
@@ -30300,6 +30300,10 @@
             "sha256": "ae0034e06c55c384124c933bc8093c3926b7ece34a5222213913d1fdc03a9878"
           },
           {
+            "path": "src/infrastructure/host/host-library-http.ts",
+            "sha256": "5f736badfbaa6a0f3888c66eb41580a5d85f7f63ebfd30d2a6318f6de72bde3a"
+          },
+          {
             "path": "src/infrastructure/inventory/inventory-persistence.ts",
             "sha256": "79aaa09053ecd72a0bec8f8f0610b31ab0c9b34779f4a4c87f19f0d2ef7e4ac2"
           },
@@ -30349,7 +30353,7 @@
           },
           {
             "path": "src/infrastructure/look/look-service.ts",
-            "sha256": "0abf24e1268e8d9fa1651550e81d9fc937fc8f9f74667db3fd1bdb857f8a2d44"
+            "sha256": "5487c8b7cafae4996d793c427a87378c211b89292472350d68804205736d8425"
           },
           {
             "path": "src/infrastructure/look/look.persistence.ts",
@@ -30417,7 +30421,7 @@
           },
           {
             "path": "src/infrastructure/project/project-service.ts",
-            "sha256": "b71cf1fc78c24804f4a1ebda9a001807c3dc70379b2d5cf96769081efc9a2257"
+            "sha256": "9d33a2c3be7ec25aa25529e4f922a38f56c3905153929cd8fe2c879b306ff783"
           },
           {
             "path": "src/infrastructure/session/media/livekit-media-plane-adapter.ts",
@@ -30452,6 +30456,10 @@
             "sha256": "02b7a3d41ae651c6562d4523a1c94a395608aa13785f0849cfc9acd834aecd61"
           },
           {
+            "path": "src/lib/hostAuthBridge.ts",
+            "sha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b"
+          },
+          {
             "path": "src/lib/localAdmin.ts",
             "sha256": "3a28dec23e85f25ed3e70682bc6e7f8c6b55e81dbbefdd1f6a837f68ac80d6b5"
           },
@@ -30469,7 +30477,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-character.json",
-      "sourceContractSha256": "1e671aec2c9d29023efec97df07e765913160a95edf4451173de1d7e29a01c2f",
+      "sourceContractSha256": "a4daed068681e8e98431ae6b897ed671498d2b04a922b7160d2d2c7a956c80f9",
       "rpcUsed": [],
       "tablesTouched": [
         "character_adventure_arcs",
@@ -30853,17 +30861,17 @@
           "kind": "auth-helper",
           "name": null,
           "path": "src/infrastructure/character/character-service.ts",
-          "line": 148,
-          "endLine": 148,
+          "line": 352,
+          "endLine": 352,
           "resolution": "dynamic-expression",
           "expression": "getAuthenticatedUserId()",
           "chain": "getAuthenticatedUserId()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/character/character-service.ts",
-            "line": 144,
-            "endLine": 187,
-            "text": "private async assertPersonalLookWriteGate(\n    characterId: string,\n    personalLookProfileId: string | null,\n  ): Promise<void> {\n    const actorUserId = await getAuthenticatedUserId();\n    // Owner-scoped fetch — proves the actor can access this character.\n    await supabaseCharacterRepository.getCharacterById(characterId);\n\n    let sagaAllows = true;\n    try {\n      const arcs = await characterAdventureArcService.listArcsForCharacter(characterId);\n      const activeArcs = arcs.filter((arc) => arc.status === 'active');\n      for (const arc of activeArcs) {\n        const project = await projectService.getProjectById(arc.projectId);\n        if (!project.allowPlayerCharacterLookOverride) {\n          sagaAllows = false;\n          break;\n        }\n      }\n    } catch {\n      sagaAllows = true;\n    }\n\n    let lookOwnerUserId: string | null = null;\n    let lookStatus: string | null = null;\n    if (personalLookProfileId) {\n      const record = await getLookProfile(personalLookProfileId);\n      lookOwnerUserId = record?.profile.ownerId ?? null;\n      lookStatus = record?.status ?? null;\n    }\n\n    const gate = assertPersonalLookOverrideWrite({\n      // getCharacterById is owner-scoped — successful fetch implies actor owns the character.\n      characterOwnerUserId: actorUserId,\n      actorUserId,\n      personalLookProfileId,\n      lookOwnerUserId,\n      lookStatus,\n      sagaAllowsPlayerOverrides: sagaAllows,\n    });\n    if (gate.ok === false) {\n      throw new Error(gate.messageDe);\n    }\n  }"
+            "line": 340,
+            "endLine": 394,
+            "text": "private async assertPersonalLookWriteGate(\n    characterId: string,\n    personalLookProfileId: string | null,\n  ): Promise<void> {\n    const hostMode = isHostLibraryEnabled();\n    let actorUserId: string;\n    if (hostMode) {\n      // Owner-scoped host fetch — proves the actor can access this character.\n      await fetchHostLibraryCharacter(characterId);\n      const who = await probeHostActor();\n      actorUserId = who?.actorId ?? 'solo';\n    } else {\n      actorUserId = await getAuthenticatedUserId();\n      // Owner-scoped fetch — proves the actor can access this character.\n      await supabaseCharacterRepository.getCharacterById(characterId);\n    }\n\n    let sagaAllows = true;\n    if (!hostMode) {\n      try {\n        const arcs = await characterAdventureArcService.listArcsForCharacter(characterId);\n        const activeArcs = arcs.filter((arc) => arc.status === 'active');\n        for (const arc of activeArcs) {\n          const project = await projectService.getProjectById(arc.projectId);\n          if (!project.allowPlayerCharacterLookOverride) {\n            sagaAllows = false;\n            break;\n          }\n        }\n      } catch {\n        sagaAllows = true;\n      }\n    }\n\n    let lookOwnerUserId: string | null = null;\n    let lookStatus: string | null = null;\n    if (personalLookProfileId) {\n      const record = await getLookProfile(personalLookProfileId);\n      lookOwnerUserId = record?.profile.ownerId ?? null;\n      lookStatus = record?.status ?? null;\n    }\n\n    const gate = assertPersonalLookOverrideWrite({\n      // Successful owner-scoped fetch implies actor owns the character.\n      characterOwnerUserId: actorUserId,\n      actorUserId,\n      personalLookProfileId,\n      lookOwnerUserId,\n      lookStatus,\n      sagaAllowsPlayerOverrides: sagaAllows,\n    });\n    if (gate.ok === false) {\n      throw new Error(gate.messageDe);\n    }\n  }"
           }
         },
         {
@@ -31098,6 +31106,7 @@
         }
       ],
       "importedInfrastructure": [
+        "host",
         "inventory",
         "look",
         "media",
@@ -32306,17 +32315,17 @@
           "kind": "auth-helper",
           "name": null,
           "path": "src/infrastructure/character/character-service.ts",
-          "line": 148,
-          "endLine": 148,
+          "line": 352,
+          "endLine": 352,
           "resolution": "dynamic-expression",
           "expression": "getAuthenticatedUserId()",
           "chain": "getAuthenticatedUserId()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/character/character-service.ts",
-            "line": 144,
-            "endLine": 187,
-            "text": "private async assertPersonalLookWriteGate(\n    characterId: string,\n    personalLookProfileId: string | null,\n  ): Promise<void> {\n    const actorUserId = await getAuthenticatedUserId();\n    // Owner-scoped fetch — proves the actor can access this character.\n    await supabaseCharacterRepository.getCharacterById(characterId);\n\n    let sagaAllows = true;\n    try {\n      const arcs = await characterAdventureArcService.listArcsForCharacter(characterId);\n      const activeArcs = arcs.filter((arc) => arc.status === 'active');\n      for (const arc of activeArcs) {\n        const project = await projectService.getProjectById(arc.projectId);\n        if (!project.allowPlayerCharacterLookOverride) {\n          sagaAllows = false;\n          break;\n        }\n      }\n    } catch {\n      sagaAllows = true;\n    }\n\n    let lookOwnerUserId: string | null = null;\n    let lookStatus: string | null = null;\n    if (personalLookProfileId) {\n      const record = await getLookProfile(personalLookProfileId);\n      lookOwnerUserId = record?.profile.ownerId ?? null;\n      lookStatus = record?.status ?? null;\n    }\n\n    const gate = assertPersonalLookOverrideWrite({\n      // getCharacterById is owner-scoped — successful fetch implies actor owns the character.\n      characterOwnerUserId: actorUserId,\n      actorUserId,\n      personalLookProfileId,\n      lookOwnerUserId,\n      lookStatus,\n      sagaAllowsPlayerOverrides: sagaAllows,\n    });\n    if (gate.ok === false) {\n      throw new Error(gate.messageDe);\n    }\n  }"
+            "line": 340,
+            "endLine": 394,
+            "text": "private async assertPersonalLookWriteGate(\n    characterId: string,\n    personalLookProfileId: string | null,\n  ): Promise<void> {\n    const hostMode = isHostLibraryEnabled();\n    let actorUserId: string;\n    if (hostMode) {\n      // Owner-scoped host fetch — proves the actor can access this character.\n      await fetchHostLibraryCharacter(characterId);\n      const who = await probeHostActor();\n      actorUserId = who?.actorId ?? 'solo';\n    } else {\n      actorUserId = await getAuthenticatedUserId();\n      // Owner-scoped fetch — proves the actor can access this character.\n      await supabaseCharacterRepository.getCharacterById(characterId);\n    }\n\n    let sagaAllows = true;\n    if (!hostMode) {\n      try {\n        const arcs = await characterAdventureArcService.listArcsForCharacter(characterId);\n        const activeArcs = arcs.filter((arc) => arc.status === 'active');\n        for (const arc of activeArcs) {\n          const project = await projectService.getProjectById(arc.projectId);\n          if (!project.allowPlayerCharacterLookOverride) {\n            sagaAllows = false;\n            break;\n          }\n        }\n      } catch {\n        sagaAllows = true;\n      }\n    }\n\n    let lookOwnerUserId: string | null = null;\n    let lookStatus: string | null = null;\n    if (personalLookProfileId) {\n      const record = await getLookProfile(personalLookProfileId);\n      lookOwnerUserId = record?.profile.ownerId ?? null;\n      lookStatus = record?.status ?? null;\n    }\n\n    const gate = assertPersonalLookOverrideWrite({\n      // Successful owner-scoped fetch implies actor owns the character.\n      characterOwnerUserId: actorUserId,\n      actorUserId,\n      personalLookProfileId,\n      lookOwnerUserId,\n      lookStatus,\n      sagaAllowsPlayerOverrides: sagaAllows,\n    });\n    if (gate.ok === false) {\n      throw new Error(gate.messageDe);\n    }\n  }"
           }
         },
         {
@@ -34404,98 +34413,110 @@
         },
         {
           "path": "src/infrastructure/character/character-service.ts",
-          "line": 22,
-          "endLine": 24,
+          "line": 46,
+          "endLine": 62,
+          "name": "mapHostCharacterSummary"
+        },
+        {
+          "path": "src/infrastructure/character/character-service.ts",
+          "line": 64,
+          "endLine": 102,
+          "name": "mapHostCharacterVm"
+        },
+        {
+          "path": "src/infrastructure/character/character-service.ts",
+          "line": 104,
+          "endLine": 106,
           "name": "invalidateCharacterListCaches"
         },
         {
           "path": "src/infrastructure/character/character-service.ts",
-          "line": 39,
-          "endLine": 82,
+          "line": 121,
+          "endLine": 164,
           "name": "prepareCharacterPortraitFile"
         },
         {
           "path": "src/infrastructure/character/character-service.ts",
-          "line": 85,
-          "endLine": 87,
+          "line": 167,
+          "endLine": 173,
           "name": "getUserCharacterSummaries"
         },
         {
           "path": "src/infrastructure/character/character-service.ts",
-          "line": 89,
-          "endLine": 91,
+          "line": 175,
+          "endLine": 181,
           "name": "getUserCharacters"
         },
         {
           "path": "src/infrastructure/character/character-service.ts",
-          "line": 93,
-          "endLine": 95,
+          "line": 183,
+          "endLine": 189,
           "name": "getCharacterById"
         },
         {
           "path": "src/infrastructure/character/character-service.ts",
-          "line": 98,
-          "endLine": 100,
+          "line": 192,
+          "endLine": 214,
           "name": "getCharacterRosterMetaByIds"
         },
         {
           "path": "src/infrastructure/character/character-service.ts",
-          "line": 102,
-          "endLine": 104,
+          "line": 216,
+          "endLine": 224,
           "name": "getCharacterByPublicId"
         },
         {
           "path": "src/infrastructure/character/character-service.ts",
-          "line": 106,
-          "endLine": 110,
+          "line": 226,
+          "endLine": 261,
           "name": "createCharacter"
         },
         {
           "path": "src/infrastructure/character/character-service.ts",
-          "line": 112,
-          "endLine": 122,
+          "line": 263,
+          "endLine": 306,
           "name": "updateCharacter"
         },
         {
           "path": "src/infrastructure/character/character-service.ts",
-          "line": 128,
-          "endLine": 142,
+          "line": 312,
+          "endLine": 338,
           "name": "updateCharacterPersonalLook"
         },
         {
           "path": "src/infrastructure/character/character-service.ts",
-          "line": 194,
-          "endLine": 203,
+          "line": 401,
+          "endLine": 414,
           "name": "migrateCharacterInventoryToV2"
         },
         {
           "path": "src/infrastructure/character/character-service.ts",
-          "line": 205,
-          "endLine": 208,
+          "line": 416,
+          "endLine": 424,
           "name": "deleteCharacter"
         },
         {
           "path": "src/infrastructure/character/character-service.ts",
-          "line": 211,
-          "endLine": 246,
+          "line": 427,
+          "endLine": 491,
           "name": "duplicateCharacter"
         },
         {
           "path": "src/infrastructure/character/character-service.ts",
-          "line": 248,
-          "endLine": 250,
+          "line": 493,
+          "endLine": 503,
           "name": "searchCharacters"
         },
         {
           "path": "src/infrastructure/character/character-service.ts",
-          "line": 256,
-          "endLine": 261,
+          "line": 509,
+          "endLine": 514,
           "name": "uploadPortrait"
         },
         {
           "path": "src/infrastructure/character/character-service.ts",
-          "line": 263,
-          "endLine": 265,
+          "line": 516,
+          "endLine": 518,
           "name": "preparePortraitFile"
         },
         {
@@ -35563,6 +35584,10 @@
             "sha256": "5ed5f363555b9c4a3922507e01a227f74aee706764065641eb27ac9510024bd5"
           },
           {
+            "path": "src/infrastructure/host/host-library-http.ts",
+            "sha256": "5f736badfbaa6a0f3888c66eb41580a5d85f7f63ebfd30d2a6318f6de72bde3a"
+          },
+          {
             "path": "src/infrastructure/inventory/host-inventory-adapter.ts",
             "sha256": "705ee213e4ffa49ea7b0d89583a01b5ae78bcd6a990464dd5104d88abc83b6b2"
           },
@@ -35576,7 +35601,7 @@
           },
           {
             "path": "src/infrastructure/inventory/item-catalog-service.ts",
-            "sha256": "f016e6e0f08fcf78532a97df16224280f8e052fa6870744e41a7002d9fd0f723"
+            "sha256": "1b38bee27c44686cb827ea4ccfbbab2d26ada8f9bdca8ea51b0d0c2116a9e3d6"
           },
           {
             "path": "src/infrastructure/inventory/item-catalog.persistence.ts",
@@ -35651,6 +35676,10 @@
             "sha256": "c822140996ae4d318c19d2ccb5318d77f2ba4d302bdfbcb50a79420a7ef70d74"
           },
           {
+            "path": "src/lib/hostAuthBridge.ts",
+            "sha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b"
+          },
+          {
             "path": "src/lib/localAdmin.ts",
             "sha256": "3a28dec23e85f25ed3e70682bc6e7f8c6b55e81dbbefdd1f6a837f68ac80d6b5"
           },
@@ -35668,7 +35697,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-inventory.json",
-      "sourceContractSha256": "6957aef74dd23f01ffe1eb08334f60b5e4f88c64545d755522fd13ddbb9c0c07",
+      "sourceContractSha256": "42d53dd94a5e8176adbdb79592053db59aa72b638df740c91b271dba1fa4f568",
       "rpcUsed": [],
       "tablesTouched": [
         "characters",
@@ -35824,6 +35853,7 @@
       "externalFetches": [],
       "importedInfrastructure": [
         "character",
+        "host",
         "media"
       ],
       "providerSdkCalls": [],
@@ -36393,80 +36423,86 @@
         },
         {
           "path": "src/infrastructure/inventory/item-catalog-service.ts",
-          "line": 39,
-          "endLine": 46,
+          "line": 44,
+          "endLine": 73,
+          "name": "mapHostLibraryItemRecord"
+        },
+        {
+          "path": "src/infrastructure/inventory/item-catalog-service.ts",
+          "line": 76,
+          "endLine": 83,
           "name": "withCatalogPublicId"
         },
         {
           "path": "src/infrastructure/inventory/item-catalog-service.ts",
-          "line": 75,
-          "endLine": 136,
+          "line": 112,
+          "endLine": 173,
           "name": "loadCharacterItemCatalog"
         },
         {
           "path": "src/infrastructure/inventory/item-catalog-service.ts",
-          "line": 108,
-          "endLine": 115,
+          "line": 145,
+          "endLine": 152,
           "name": "resolveDefinition"
         },
         {
           "path": "src/infrastructure/inventory/item-catalog-service.ts",
-          "line": 127,
-          "endLine": 128,
+          "line": 164,
+          "endLine": 165,
           "name": "lookup"
         },
         {
           "path": "src/infrastructure/inventory/item-catalog-service.ts",
-          "line": 143,
-          "endLine": 164,
+          "line": 180,
+          "endLine": 211,
           "name": "loadLibraryItemCatalog"
         },
         {
           "path": "src/infrastructure/inventory/item-catalog-service.ts",
-          "line": 170,
-          "endLine": 177,
+          "line": 217,
+          "endLine": 224,
           "name": "loadWorldProfileItemCatalog"
         },
         {
           "path": "src/infrastructure/inventory/item-catalog-service.ts",
-          "line": 183,
-          "endLine": 188,
+          "line": 230,
+          "endLine": 235,
           "name": "getItemDefinitionById"
         },
         {
           "path": "src/infrastructure/inventory/item-catalog-service.ts",
-          "line": 190,
-          "endLine": 192,
+          "line": 237,
+          "endLine": 239,
           "name": "createPersonalDefinition"
         },
         {
           "path": "src/infrastructure/inventory/item-catalog-service.ts",
-          "line": 194,
-          "endLine": 199,
+          "line": 241,
+          "endLine": 246,
           "name": "createWorldDefinition"
         },
         {
           "path": "src/infrastructure/inventory/item-catalog-service.ts",
-          "line": 201,
-          "endLine": 206,
+          "line": 248,
+          "endLine": 253,
           "name": "updateDefinition"
         },
         {
           "path": "src/infrastructure/inventory/item-catalog-service.ts",
-          "line": 209,
-          "endLine": 211,
+          "line": 256,
+          "endLine": 258,
           "name": "archiveDefinition"
         },
         {
           "path": "src/infrastructure/inventory/item-catalog-service.ts",
-          "line": 213,
-          "endLine": 215,
+          "line": 260,
+          "endLine": 262,
           "name": "restoreDefinition"
         },
         {
           "path": "src/infrastructure/inventory/item-catalog-service.ts",
-          "line": 221,
-          "endLine": 226,
+          "line": 268,
+          "endLine": 273,
           "name": "forkDefinition"
         },
         {
@@ -36858,6 +36894,10 @@
             "sha256": "e896927b2a2fa4c4ad74550b0909a681596d41bdc356980a31afd42b493f5d30"
           },
           {
+            "path": "src/infrastructure/host/host-library-http.ts",
+            "sha256": "5f736badfbaa6a0f3888c66eb41580a5d85f7f63ebfd30d2a6318f6de72bde3a"
+          },
+          {
             "path": "src/infrastructure/look/adapters/host-mtoon-look-adapter.ts",
             "sha256": "19b2f7008ffa27b5bd6c951019a55bde20d82f195ff9f798aa91b4d0a729e3a5"
           },
@@ -36895,7 +36935,7 @@
           },
           {
             "path": "src/infrastructure/look/look-service.ts",
-            "sha256": "0abf24e1268e8d9fa1651550e81d9fc937fc8f9f74667db3fd1bdb857f8a2d44"
+            "sha256": "5487c8b7cafae4996d793c427a87378c211b89292472350d68804205736d8425"
           },
           {
             "path": "src/infrastructure/look/look.persistence.ts",
@@ -36908,6 +36948,10 @@
           {
             "path": "src/lib/authenticatedUser.ts",
             "sha256": "c822140996ae4d318c19d2ccb5318d77f2ba4d302bdfbcb50a79420a7ef70d74"
+          },
+          {
+            "path": "src/lib/hostAuthBridge.ts",
+            "sha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b"
           },
           {
             "path": "src/lib/localAdmin.ts",
@@ -36927,7 +36971,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-look.json",
-      "sourceContractSha256": "0c6aaa5032f6671256b75f088180eed4eca756146c8460a3d9f0a2a230bb0163",
+      "sourceContractSha256": "926dfd4a82f1ea38e96d04a1ec2e8cd826068a97c147487d49b96fc291d79129",
       "rpcUsed": [],
       "tablesTouched": [
         "look_profile_versions",
@@ -37061,7 +37105,8 @@
       ],
       "externalFetches": [],
       "importedInfrastructure": [
-        "character"
+        "character",
+        "host"
       ],
       "providerSdkCalls": [],
       "backendCalls": [
@@ -37563,56 +37608,62 @@
         },
         {
           "path": "src/infrastructure/look/look-service.ts",
-          "line": 27,
-          "endLine": 31,
-          "name": "listLookProfiles"
-        },
-        {
-          "path": "src/infrastructure/look/look-service.ts",
-          "line": 33,
+          "line": 32,
           "endLine": 37,
-          "name": "getLookProfile"
+          "name": "asLookRecord"
         },
         {
           "path": "src/infrastructure/look/look-service.ts",
           "line": 39,
-          "endLine": 43,
+          "endLine": 50,
+          "name": "listLookProfiles"
+        },
+        {
+          "path": "src/infrastructure/look/look-service.ts",
+          "line": 52,
+          "endLine": 60,
+          "name": "getLookProfile"
+        },
+        {
+          "path": "src/infrastructure/look/look-service.ts",
+          "line": 62,
+          "endLine": 72,
           "name": "createLookProfile"
         },
         {
           "path": "src/infrastructure/look/look-service.ts",
-          "line": 45,
-          "endLine": 49,
+          "line": 74,
+          "endLine": 82,
           "name": "appendLookProfileVersion"
         },
         {
           "path": "src/infrastructure/look/look-service.ts",
-          "line": 51,
-          "endLine": 55,
+          "line": 84,
+          "endLine": 94,
           "name": "archiveLookProfile"
         },
         {
           "path": "src/infrastructure/look/look-service.ts",
-          "line": 57,
-          "endLine": 61,
+          "line": 96,
+          "endLine": 109,
           "name": "duplicateLookProfile"
         },
         {
           "path": "src/infrastructure/look/look-service.ts",
-          "line": 63,
-          "endLine": 67,
+          "line": 111,
+          "endLine": 119,
           "name": "listLookProfileVersions"
         },
         {
           "path": "src/infrastructure/look/look-service.ts",
-          "line": 70,
-          "endLine": 74,
+          "line": 122,
+          "endLine": 126,
           "name": "analyzeLookReferencesForDraft"
         },
         {
           "path": "src/infrastructure/look/look-service.ts",
-          "line": 80,
-          "endLine": 88,
+          "line": 132,
+          "endLine": 140,
           "name": "createLookProfileFromReferenceAnalysis"
         },
         {
@@ -38607,6 +38658,10 @@
             "sha256": "de25ba46549bab20e0e55a513fb0745e722449d8f1b61bb51887d986653c4eab"
           },
           {
+            "path": "src/infrastructure/host/host-library-http.ts",
+            "sha256": "5f736badfbaa6a0f3888c66eb41580a5d85f7f63ebfd30d2a6318f6de72bde3a"
+          },
+          {
             "path": "src/infrastructure/npc-creature/host-npc-creature-adapter.ts",
             "sha256": "c707763455a2e935f607ce3a43e750f1a3b2de42e90e1a5c96be8fb15f22a2bb"
           },
@@ -38624,7 +38679,7 @@
           },
           {
             "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-            "sha256": "6c282de89059d13638306111956d6019d2d86662d1c1688016020fb6ae787015"
+            "sha256": "631039896367bfade6d30265a745a25e1f29cd0df6879ceeda77abe9732f45d9"
           },
           {
             "path": "src/infrastructure/npc-creature/npc-creature.persistence.ts",
@@ -38637,6 +38692,10 @@
           {
             "path": "src/lib/authenticatedUser.ts",
             "sha256": "c822140996ae4d318c19d2ccb5318d77f2ba4d302bdfbcb50a79420a7ef70d74"
+          },
+          {
+            "path": "src/lib/hostAuthBridge.ts",
+            "sha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b"
           },
           {
             "path": "src/lib/localAdmin.ts",
@@ -38656,7 +38715,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-npc-creature.json",
-      "sourceContractSha256": "59d1477df9dabd87fccedc30a2dab1aee810a72ce5c060f14f2f7eecfbab6ffe",
+      "sourceContractSha256": "fd66598fb60041c76708b3eee87e933bb01328b3927e7b65e3e1b480a1ff9ef8",
       "rpcUsed": [
         "assign_npc_creature_controller",
         "clear_npc_creature_instance_temp_controllers_for_session",
@@ -38678,16 +38737,16 @@
           "kind": "auth-helper",
           "name": null,
           "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-          "line": 236,
-          "endLine": 236,
+          "line": 291,
+          "endLine": 291,
           "resolution": "dynamic-expression",
           "expression": "getAuthenticatedUserId()",
           "chain": "getAuthenticatedUserId()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-            "line": 232,
-            "endLine": 252,
+            "line": 287,
+            "endLine": 307,
             "text": "export async function getNpcCreatureControllerAssignment(\n  projectId: string,\n  definitionId: string,\n): Promise<NpcControllerAssignment | null> {\n  await getAuthenticatedUserId();\n  const { data, error } = await raceWithTimeoutReject(\n    supabase\n      .from(CONTROLLER_TABLE)\n      .select('project_id, definition_id, controller_user_id, assigned_by, updated_at')\n      .eq('project_id', projectId)\n      .eq('definition_id', definitionId)\n      .maybeSingle(),\n    SUPABASE_QUERY_TIMEOUT_MS,\n    'Controller-Zuweisung konnte nicht geladen werden (Zeitüberschreitung).',\n  );\n  if (error) {\n    throw new Error(`Controller-Zuweisung konnte nicht geladen werden: ${error.message}`);\n  }\n  if (!data) return null;\n  return toNpcControllerAssignment(data as NpcControllerAssignmentRow);\n}"
           }
         },
@@ -38695,16 +38754,16 @@
           "kind": "auth-helper",
           "name": null,
           "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-          "line": 264,
-          "endLine": 264,
+          "line": 319,
+          "endLine": 319,
           "resolution": "dynamic-expression",
           "expression": "getAuthenticatedUserId()",
           "chain": "getAuthenticatedUserId()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-            "line": 258,
-            "endLine": 303,
+            "line": 313,
+            "endLine": 358,
             "text": "export async function assignNpcCreatureController(input: {\n  projectId: string;\n  definitionId: string;\n  controllerUserId: string | null;\n  activeMemberUserIds: readonly string[];\n}): Promise<NpcControllerAssignment> {\n  const actorUserId = await getAuthenticatedUserId();\n  const record = await supabaseNpcCreatureRepository.getDefinitionById(input.definitionId);\n  if (!record) {\n    throw new Error('Figur wurde nicht gefunden.');\n  }\n\n  const planned = planNpcControllerAssignment(\n    record.definition,\n    {\n      projectId: input.projectId,\n      definitionId: input.definitionId,\n      controllerUserId: input.controllerUserId,\n    },\n    {\n      actorUserId,\n      actorRole: 'gm',\n      activeMemberUserIds: input.activeMemberUserIds,\n    },\n  );\n  if (planned.ok === false) {\n    throw new Error(planned.message);\n  }\n\n  const { data, error } = await raceWithTimeoutReject(\n    supabase.rpc('assign_npc_creature_controller', {\n      p_project_id: planned.assignment.projectId,\n      p_definition_id: planned.assignment.definitionId,\n      p_controller_user_id: planned.assignment.controllerUserId,\n    }),\n    SUPABASE_QUERY_TIMEOUT_MS,\n    'Controller konnte nicht zugewiesen werden (Zeitüberschreitung).',\n  );\n  if (error) {\n    throw new Error(`Controller konnte nicht zugewiesen werden: ${error.message}`);\n  }\n  if (!data || typeof data !== 'object') {\n    throw new Error('Controller konnte nicht zugewiesen werden.');\n  }\n  return toNpcControllerAssignment(data as NpcControllerAssignmentRow);\n}"
           }
         },
@@ -38712,16 +38771,16 @@
           "kind": "auth-helper",
           "name": null,
           "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-          "line": 325,
-          "endLine": 325,
+          "line": 380,
+          "endLine": 380,
           "resolution": "dynamic-expression",
           "expression": "getAuthenticatedUserId()",
           "chain": "getAuthenticatedUserId()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-            "line": 322,
-            "endLine": 342,
+            "line": 377,
+            "endLine": 397,
             "text": "export async function listNpcCreatureInstances(\n  projectId: string,\n): Promise<NpcCreatureInstance[]> {\n  await getAuthenticatedUserId();\n  const { data, error } = await raceWithTimeoutReject(\n    supabase\n      .from(INSTANCES_TABLE)\n      .select(\n        'id, project_id, session_id, definition_id, display_name, instance_kind, sequence_number, snapshot, runtime, created_by, created_at, updated_at',\n      )\n      .eq('project_id', projectId)\n      .order('updated_at', { ascending: false }),\n    SUPABASE_QUERY_TIMEOUT_MS,\n    'Instanzen konnten nicht geladen werden (Zeitüberschreitung).',\n  );\n  if (error) {\n    throw new Error(`Instanzen konnten nicht geladen werden: ${error.message}`);\n  }\n  const rows = Array.isArray(data) ? data : [];\n  return rows.map((row) => toNpcCreatureInstance(row as NpcCreatureInstanceRow));\n}"
           }
         },
@@ -38729,16 +38788,16 @@
           "kind": "auth-helper",
           "name": null,
           "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-          "line": 356,
-          "endLine": 356,
+          "line": 411,
+          "endLine": 411,
           "resolution": "dynamic-expression",
           "expression": "getAuthenticatedUserId()",
           "chain": "getAuthenticatedUserId()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-            "line": 348,
-            "endLine": 409,
+            "line": 403,
+            "endLine": 464,
             "text": "export async function spawnNpcCreatureInstance(input: {\n  projectId: string;\n  sessionId?: string | null;\n  definitionId: string;\n  instanceKind: NpcCreatureInstanceKind;\n  displayName?: string | null;\n  activeMemberUserIds: readonly string[];\n}): Promise<NpcCreatureInstance> {\n  const actorUserId = await getAuthenticatedUserId();\n  const definition = await resolveDefinitionForInstance(input.definitionId);\n  if (!definition) {\n    throw new Error('Figuren-Vorlage wurde nicht gefunden.');\n  }\n\n  const existing = await listNpcCreatureInstances(input.projectId);\n  const definitionReadable =\n    isBuiltinOrCoreDefinitionId(definition.id)\n    || Boolean(await supabaseNpcCreatureRepository.getDefinitionById(definition.id));\n\n  const planned = planNpcCreatureInstanceSpawn(\n    definition,\n    {\n      projectId: input.projectId,\n      sessionId: input.sessionId ?? null,\n      definitionId: input.definitionId,\n      instanceKind: input.instanceKind,\n      displayName: input.displayName ?? null,\n    },\n    {\n      actorUserId,\n      actorRole: 'gm',\n      activeMemberUserIds: input.activeMemberUserIds,\n      existingInstances: existing,\n      definitionReadable,\n    },\n  );\n  if (planned.ok === false) {\n    throw new Error(planned.message);\n  }\n\n  const { data, error } = await raceWithTimeoutReject(\n    supabase.rpc('spawn_npc_creature_instance', {\n      p_project_id: planned.instance.projectId,\n      p_definition_id: planned.instance.definitionId,\n      p_instance_kind: planned.instance.instanceKind,\n      p_snapshot: toInstanceSnapshotPayload(planned.instance.snapshot),\n      p_runtime: toInstanceRuntimePayload(planned.instance.runtime),\n      p_display_name: planned.instance.displayName,\n      p_sequence_number: planned.instance.sequenceNumber,\n      p_session_id: planned.instance.sessionId,\n    }),\n    SUPABASE_QUERY_TIMEOUT_MS,\n    'Instanz konnte nicht erzeugt werden (Zeitüberschreitung).',\n  );\n  if (error) {\n    throw new Error(`Instanz konnte nicht erzeugt werden: ${error.message}`);\n  }\n  if (!data || typeof data !== 'object') {\n    throw new Error('Instanz konnte nicht erzeugt werden.');\n  }\n  return toNpcCreatureInstance(data as NpcCreatureInstanceRow);\n}"
           }
         },
@@ -38746,42 +38805,8 @@
           "kind": "auth-helper",
           "name": null,
           "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-          "line": 417,
-          "endLine": 417,
-          "resolution": "dynamic-expression",
-          "expression": "getAuthenticatedUserId()",
-          "chain": "getAuthenticatedUserId()",
-          "arguments": [],
-          "enclosingOperation": {
-            "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-            "line": 412,
-            "endLine": 446,
-            "text": "export async function updateNpcCreatureInstanceRuntime(input: {\n  instance: NpcCreatureInstance;\n  patch: NpcCreatureInstanceRuntimeUpdate;\n  activeMemberUserIds: readonly string[];\n}): Promise<NpcCreatureInstance> {\n  const actorUserId = await getAuthenticatedUserId();\n  const planned = planNpcCreatureInstanceRuntimeUpdate(\n    input.instance,\n    input.patch,\n    {\n      actorUserId,\n      actorRole: 'gm',\n      activeMemberUserIds: input.activeMemberUserIds,\n    },\n  );\n  if (planned.ok === false) {\n    throw new Error(planned.message);\n  }\n\n  const { data, error } = await raceWithTimeoutReject(\n    supabase.rpc('update_npc_creature_instance_runtime', {\n      p_instance_id: planned.instance.id,\n      p_runtime: toInstanceRuntimePayload(planned.instance.runtime),\n    }),\n    SUPABASE_QUERY_TIMEOUT_MS,\n    'Instanz-Status konnte nicht gespeichert werden (Zeitüberschreitung).',\n  );\n  if (error) {\n    throw new Error(`Instanz-Status konnte nicht gespeichert werden: ${error.message}`);\n  }\n  if (!data || typeof data !== 'object') {\n    throw new Error('Instanz-Status konnte nicht gespeichert werden.');\n  }\n  return toNpcCreatureInstance(data as NpcCreatureInstanceRow);\n}"
-          }
-        },
-        {
-          "kind": "auth-helper",
-          "name": null,
-          "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-          "line": 450,
-          "endLine": 450,
-          "resolution": "dynamic-expression",
-          "expression": "getAuthenticatedUserId()",
-          "chain": "getAuthenticatedUserId()",
-          "arguments": [],
-          "enclosingOperation": {
-            "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-            "line": 449,
-            "endLine": 461,
-            "text": "export async function removeNpcCreatureInstance(instanceId: string): Promise<void> {\n  await getAuthenticatedUserId();\n  const { error } = await raceWithTimeoutReject(\n    supabase.rpc('remove_npc_creature_instance', {\n      p_instance_id: instanceId,\n    }),\n    SUPABASE_QUERY_TIMEOUT_MS,\n    'Instanz konnte nicht entfernt werden (Zeitüberschreitung).',\n  );\n  if (error) {\n    throw new Error(`Instanz konnte nicht entfernt werden: ${error.message}`);\n  }\n}"
-          }
-        },
-        {
-          "kind": "auth-helper",
-          "name": null,
-          "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-          "line": 470,
-          "endLine": 470,
+          "line": 472,
+          "endLine": 472,
           "resolution": "dynamic-expression",
           "expression": "getAuthenticatedUserId()",
           "chain": "getAuthenticatedUserId()",
@@ -38789,7 +38814,41 @@
           "enclosingOperation": {
             "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
             "line": 467,
-            "endLine": 484,
+            "endLine": 501,
+            "text": "export async function updateNpcCreatureInstanceRuntime(input: {\n  instance: NpcCreatureInstance;\n  patch: NpcCreatureInstanceRuntimeUpdate;\n  activeMemberUserIds: readonly string[];\n}): Promise<NpcCreatureInstance> {\n  const actorUserId = await getAuthenticatedUserId();\n  const planned = planNpcCreatureInstanceRuntimeUpdate(\n    input.instance,\n    input.patch,\n    {\n      actorUserId,\n      actorRole: 'gm',\n      activeMemberUserIds: input.activeMemberUserIds,\n    },\n  );\n  if (planned.ok === false) {\n    throw new Error(planned.message);\n  }\n\n  const { data, error } = await raceWithTimeoutReject(\n    supabase.rpc('update_npc_creature_instance_runtime', {\n      p_instance_id: planned.instance.id,\n      p_runtime: toInstanceRuntimePayload(planned.instance.runtime),\n    }),\n    SUPABASE_QUERY_TIMEOUT_MS,\n    'Instanz-Status konnte nicht gespeichert werden (Zeitüberschreitung).',\n  );\n  if (error) {\n    throw new Error(`Instanz-Status konnte nicht gespeichert werden: ${error.message}`);\n  }\n  if (!data || typeof data !== 'object') {\n    throw new Error('Instanz-Status konnte nicht gespeichert werden.');\n  }\n  return toNpcCreatureInstance(data as NpcCreatureInstanceRow);\n}"
+          }
+        },
+        {
+          "kind": "auth-helper",
+          "name": null,
+          "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
+          "line": 505,
+          "endLine": 505,
+          "resolution": "dynamic-expression",
+          "expression": "getAuthenticatedUserId()",
+          "chain": "getAuthenticatedUserId()",
+          "arguments": [],
+          "enclosingOperation": {
+            "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
+            "line": 504,
+            "endLine": 516,
+            "text": "export async function removeNpcCreatureInstance(instanceId: string): Promise<void> {\n  await getAuthenticatedUserId();\n  const { error } = await raceWithTimeoutReject(\n    supabase.rpc('remove_npc_creature_instance', {\n      p_instance_id: instanceId,\n    }),\n    SUPABASE_QUERY_TIMEOUT_MS,\n    'Instanz konnte nicht entfernt werden (Zeitüberschreitung).',\n  );\n  if (error) {\n    throw new Error(`Instanz konnte nicht entfernt werden: ${error.message}`);\n  }\n}"
+          }
+        },
+        {
+          "kind": "auth-helper",
+          "name": null,
+          "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
+          "line": 525,
+          "endLine": 525,
+          "resolution": "dynamic-expression",
+          "expression": "getAuthenticatedUserId()",
+          "chain": "getAuthenticatedUserId()",
+          "arguments": [],
+          "enclosingOperation": {
+            "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
+            "line": 522,
+            "endLine": 539,
             "text": "export async function clearNpcCreatureInstanceTempControllersForSession(\n  sessionId: string,\n): Promise<number> {\n  await getAuthenticatedUserId();\n  const { data, error } = await raceWithTimeoutReject(\n    supabase.rpc('clear_npc_creature_instance_temp_controllers_for_session', {\n      p_session_id: sessionId,\n    }),\n    SUPABASE_QUERY_TIMEOUT_MS,\n    'Temporäre Controller konnten nicht zurückgesetzt werden (Zeitüberschreitung).',\n  );\n  if (error) {\n    throw new Error(\n      `Temporäre Controller konnten nicht zurückgesetzt werden: ${error.message}`,\n    );\n  }\n  return typeof data === 'number' ? data : 0;\n}"
           }
         },
@@ -38880,23 +38939,25 @@
         }
       ],
       "externalFetches": [],
-      "importedInfrastructure": [],
+      "importedInfrastructure": [
+        "host"
+      ],
       "providerSdkCalls": [],
       "backendCalls": [
         {
           "kind": "auth-helper",
           "name": null,
           "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-          "line": 236,
-          "endLine": 236,
+          "line": 291,
+          "endLine": 291,
           "resolution": "dynamic-expression",
           "expression": "getAuthenticatedUserId()",
           "chain": "getAuthenticatedUserId()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-            "line": 232,
-            "endLine": 252,
+            "line": 287,
+            "endLine": 307,
             "text": "export async function getNpcCreatureControllerAssignment(\n  projectId: string,\n  definitionId: string,\n): Promise<NpcControllerAssignment | null> {\n  await getAuthenticatedUserId();\n  const { data, error } = await raceWithTimeoutReject(\n    supabase\n      .from(CONTROLLER_TABLE)\n      .select('project_id, definition_id, controller_user_id, assigned_by, updated_at')\n      .eq('project_id', projectId)\n      .eq('definition_id', definitionId)\n      .maybeSingle(),\n    SUPABASE_QUERY_TIMEOUT_MS,\n    'Controller-Zuweisung konnte nicht geladen werden (Zeitüberschreitung).',\n  );\n  if (error) {\n    throw new Error(`Controller-Zuweisung konnte nicht geladen werden: ${error.message}`);\n  }\n  if (!data) return null;\n  return toNpcControllerAssignment(data as NpcControllerAssignmentRow);\n}"
           }
         },
@@ -38904,8 +38965,8 @@
           "kind": "table",
           "name": "npc_creature_controller_assignments",
           "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-          "line": 238,
-          "endLine": 239,
+          "line": 293,
+          "endLine": 294,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from(CONTROLLER_TABLE)",
           "chain": "supabase\n      .from(CONTROLLER_TABLE)\n      .select('project_id, definition_id, controller_user_id, assigned_by, updated_at')\n      .eq('project_id', projectId)\n      .eq('definition_id', definitionId)\n      .maybeSingle()",
@@ -38914,8 +38975,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-            "line": 232,
-            "endLine": 252,
+            "line": 287,
+            "endLine": 307,
             "text": "export async function getNpcCreatureControllerAssignment(\n  projectId: string,\n  definitionId: string,\n): Promise<NpcControllerAssignment | null> {\n  await getAuthenticatedUserId();\n  const { data, error } = await raceWithTimeoutReject(\n    supabase\n      .from(CONTROLLER_TABLE)\n      .select('project_id, definition_id, controller_user_id, assigned_by, updated_at')\n      .eq('project_id', projectId)\n      .eq('definition_id', definitionId)\n      .maybeSingle(),\n    SUPABASE_QUERY_TIMEOUT_MS,\n    'Controller-Zuweisung konnte nicht geladen werden (Zeitüberschreitung).',\n  );\n  if (error) {\n    throw new Error(`Controller-Zuweisung konnte nicht geladen werden: ${error.message}`);\n  }\n  if (!data) return null;\n  return toNpcControllerAssignment(data as NpcControllerAssignmentRow);\n}"
           }
         },
@@ -38923,16 +38984,16 @@
           "kind": "auth-helper",
           "name": null,
           "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-          "line": 264,
-          "endLine": 264,
+          "line": 319,
+          "endLine": 319,
           "resolution": "dynamic-expression",
           "expression": "getAuthenticatedUserId()",
           "chain": "getAuthenticatedUserId()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-            "line": 258,
-            "endLine": 303,
+            "line": 313,
+            "endLine": 358,
             "text": "export async function assignNpcCreatureController(input: {\n  projectId: string;\n  definitionId: string;\n  controllerUserId: string | null;\n  activeMemberUserIds: readonly string[];\n}): Promise<NpcControllerAssignment> {\n  const actorUserId = await getAuthenticatedUserId();\n  const record = await supabaseNpcCreatureRepository.getDefinitionById(input.definitionId);\n  if (!record) {\n    throw new Error('Figur wurde nicht gefunden.');\n  }\n\n  const planned = planNpcControllerAssignment(\n    record.definition,\n    {\n      projectId: input.projectId,\n      definitionId: input.definitionId,\n      controllerUserId: input.controllerUserId,\n    },\n    {\n      actorUserId,\n      actorRole: 'gm',\n      activeMemberUserIds: input.activeMemberUserIds,\n    },\n  );\n  if (planned.ok === false) {\n    throw new Error(planned.message);\n  }\n\n  const { data, error } = await raceWithTimeoutReject(\n    supabase.rpc('assign_npc_creature_controller', {\n      p_project_id: planned.assignment.projectId,\n      p_definition_id: planned.assignment.definitionId,\n      p_controller_user_id: planned.assignment.controllerUserId,\n    }),\n    SUPABASE_QUERY_TIMEOUT_MS,\n    'Controller konnte nicht zugewiesen werden (Zeitüberschreitung).',\n  );\n  if (error) {\n    throw new Error(`Controller konnte nicht zugewiesen werden: ${error.message}`);\n  }\n  if (!data || typeof data !== 'object') {\n    throw new Error('Controller konnte nicht zugewiesen werden.');\n  }\n  return toNpcControllerAssignment(data as NpcControllerAssignmentRow);\n}"
           }
         },
@@ -38940,8 +39001,8 @@
           "kind": "rpc",
           "name": "assign_npc_creature_controller",
           "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-          "line": 288,
-          "endLine": 292,
+          "line": 343,
+          "endLine": 347,
           "resolution": "literal-or-constant",
           "expression": "supabase.rpc('assign_npc_creature_controller', {\n      p_project_id: planned.assignment.projectId,\n      p_definition_id: planned.assignment.definitionId,\n      p_controller_user_id: planned.assignment.controllerUserId,\n    })",
           "chain": "supabase.rpc('assign_npc_creature_controller', {\n      p_project_id: planned.assignment.projectId,\n      p_definition_id: planned.assignment.definitionId,\n      p_controller_user_id: planned.assignment.controllerUserId,\n    })",
@@ -38951,8 +39012,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-            "line": 258,
-            "endLine": 303,
+            "line": 313,
+            "endLine": 358,
             "text": "export async function assignNpcCreatureController(input: {\n  projectId: string;\n  definitionId: string;\n  controllerUserId: string | null;\n  activeMemberUserIds: readonly string[];\n}): Promise<NpcControllerAssignment> {\n  const actorUserId = await getAuthenticatedUserId();\n  const record = await supabaseNpcCreatureRepository.getDefinitionById(input.definitionId);\n  if (!record) {\n    throw new Error('Figur wurde nicht gefunden.');\n  }\n\n  const planned = planNpcControllerAssignment(\n    record.definition,\n    {\n      projectId: input.projectId,\n      definitionId: input.definitionId,\n      controllerUserId: input.controllerUserId,\n    },\n    {\n      actorUserId,\n      actorRole: 'gm',\n      activeMemberUserIds: input.activeMemberUserIds,\n    },\n  );\n  if (planned.ok === false) {\n    throw new Error(planned.message);\n  }\n\n  const { data, error } = await raceWithTimeoutReject(\n    supabase.rpc('assign_npc_creature_controller', {\n      p_project_id: planned.assignment.projectId,\n      p_definition_id: planned.assignment.definitionId,\n      p_controller_user_id: planned.assignment.controllerUserId,\n    }),\n    SUPABASE_QUERY_TIMEOUT_MS,\n    'Controller konnte nicht zugewiesen werden (Zeitüberschreitung).',\n  );\n  if (error) {\n    throw new Error(`Controller konnte nicht zugewiesen werden: ${error.message}`);\n  }\n  if (!data || typeof data !== 'object') {\n    throw new Error('Controller konnte nicht zugewiesen werden.');\n  }\n  return toNpcControllerAssignment(data as NpcControllerAssignmentRow);\n}"
           }
         },
@@ -38960,16 +39021,16 @@
           "kind": "auth-helper",
           "name": null,
           "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-          "line": 325,
-          "endLine": 325,
+          "line": 380,
+          "endLine": 380,
           "resolution": "dynamic-expression",
           "expression": "getAuthenticatedUserId()",
           "chain": "getAuthenticatedUserId()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-            "line": 322,
-            "endLine": 342,
+            "line": 377,
+            "endLine": 397,
             "text": "export async function listNpcCreatureInstances(\n  projectId: string,\n): Promise<NpcCreatureInstance[]> {\n  await getAuthenticatedUserId();\n  const { data, error } = await raceWithTimeoutReject(\n    supabase\n      .from(INSTANCES_TABLE)\n      .select(\n        'id, project_id, session_id, definition_id, display_name, instance_kind, sequence_number, snapshot, runtime, created_by, created_at, updated_at',\n      )\n      .eq('project_id', projectId)\n      .order('updated_at', { ascending: false }),\n    SUPABASE_QUERY_TIMEOUT_MS,\n    'Instanzen konnten nicht geladen werden (Zeitüberschreitung).',\n  );\n  if (error) {\n    throw new Error(`Instanzen konnten nicht geladen werden: ${error.message}`);\n  }\n  const rows = Array.isArray(data) ? data : [];\n  return rows.map((row) => toNpcCreatureInstance(row as NpcCreatureInstanceRow));\n}"
           }
         },
@@ -38977,8 +39038,8 @@
           "kind": "table",
           "name": "npc_creature_instances",
           "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-          "line": 327,
-          "endLine": 328,
+          "line": 382,
+          "endLine": 383,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from(INSTANCES_TABLE)",
           "chain": "supabase\n      .from(INSTANCES_TABLE)\n      .select(\n        'id, project_id, session_id, definition_id, display_name, instance_kind, sequence_number, snapshot, runtime, created_by, created_at, updated_at',\n      )\n      .eq('project_id', projectId)\n      .order('updated_at', { ascending: false })",
@@ -38987,8 +39048,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-            "line": 322,
-            "endLine": 342,
+            "line": 377,
+            "endLine": 397,
             "text": "export async function listNpcCreatureInstances(\n  projectId: string,\n): Promise<NpcCreatureInstance[]> {\n  await getAuthenticatedUserId();\n  const { data, error } = await raceWithTimeoutReject(\n    supabase\n      .from(INSTANCES_TABLE)\n      .select(\n        'id, project_id, session_id, definition_id, display_name, instance_kind, sequence_number, snapshot, runtime, created_by, created_at, updated_at',\n      )\n      .eq('project_id', projectId)\n      .order('updated_at', { ascending: false }),\n    SUPABASE_QUERY_TIMEOUT_MS,\n    'Instanzen konnten nicht geladen werden (Zeitüberschreitung).',\n  );\n  if (error) {\n    throw new Error(`Instanzen konnten nicht geladen werden: ${error.message}`);\n  }\n  const rows = Array.isArray(data) ? data : [];\n  return rows.map((row) => toNpcCreatureInstance(row as NpcCreatureInstanceRow));\n}"
           }
         },
@@ -38996,16 +39057,16 @@
           "kind": "auth-helper",
           "name": null,
           "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-          "line": 356,
-          "endLine": 356,
+          "line": 411,
+          "endLine": 411,
           "resolution": "dynamic-expression",
           "expression": "getAuthenticatedUserId()",
           "chain": "getAuthenticatedUserId()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-            "line": 348,
-            "endLine": 409,
+            "line": 403,
+            "endLine": 464,
             "text": "export async function spawnNpcCreatureInstance(input: {\n  projectId: string;\n  sessionId?: string | null;\n  definitionId: string;\n  instanceKind: NpcCreatureInstanceKind;\n  displayName?: string | null;\n  activeMemberUserIds: readonly string[];\n}): Promise<NpcCreatureInstance> {\n  const actorUserId = await getAuthenticatedUserId();\n  const definition = await resolveDefinitionForInstance(input.definitionId);\n  if (!definition) {\n    throw new Error('Figuren-Vorlage wurde nicht gefunden.');\n  }\n\n  const existing = await listNpcCreatureInstances(input.projectId);\n  const definitionReadable =\n    isBuiltinOrCoreDefinitionId(definition.id)\n    || Boolean(await supabaseNpcCreatureRepository.getDefinitionById(definition.id));\n\n  const planned = planNpcCreatureInstanceSpawn(\n    definition,\n    {\n      projectId: input.projectId,\n      sessionId: input.sessionId ?? null,\n      definitionId: input.definitionId,\n      instanceKind: input.instanceKind,\n      displayName: input.displayName ?? null,\n    },\n    {\n      actorUserId,\n      actorRole: 'gm',\n      activeMemberUserIds: input.activeMemberUserIds,\n      existingInstances: existing,\n      definitionReadable,\n    },\n  );\n  if (planned.ok === false) {\n    throw new Error(planned.message);\n  }\n\n  const { data, error } = await raceWithTimeoutReject(\n    supabase.rpc('spawn_npc_creature_instance', {\n      p_project_id: planned.instance.projectId,\n      p_definition_id: planned.instance.definitionId,\n      p_instance_kind: planned.instance.instanceKind,\n      p_snapshot: toInstanceSnapshotPayload(planned.instance.snapshot),\n      p_runtime: toInstanceRuntimePayload(planned.instance.runtime),\n      p_display_name: planned.instance.displayName,\n      p_sequence_number: planned.instance.sequenceNumber,\n      p_session_id: planned.instance.sessionId,\n    }),\n    SUPABASE_QUERY_TIMEOUT_MS,\n    'Instanz konnte nicht erzeugt werden (Zeitüberschreitung).',\n  );\n  if (error) {\n    throw new Error(`Instanz konnte nicht erzeugt werden: ${error.message}`);\n  }\n  if (!data || typeof data !== 'object') {\n    throw new Error('Instanz konnte nicht erzeugt werden.');\n  }\n  return toNpcCreatureInstance(data as NpcCreatureInstanceRow);\n}"
           }
         },
@@ -39013,8 +39074,8 @@
           "kind": "rpc",
           "name": "spawn_npc_creature_instance",
           "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-          "line": 389,
-          "endLine": 398,
+          "line": 444,
+          "endLine": 453,
           "resolution": "literal-or-constant",
           "expression": "supabase.rpc('spawn_npc_creature_instance', {\n      p_project_id: planned.instance.projectId,\n      p_definition_id: planned.instance.definitionId,\n      p_instance_kind: planned.instance.instanceKind,\n      p_snapshot: toInstanceSnapshotPayload(planned.instance.snapshot),\n      p_runtime: toInstanceRuntimePayload(planned.instance.runtime),\n      p_display_name: planned.instance.displayName,\n      p_sequence_number: planned.instance.sequenceNumber,\n      p_session_id: planned.instance.sessionId,\n    })",
           "chain": "supabase.rpc('spawn_npc_creature_instance', {\n      p_project_id: planned.instance.projectId,\n      p_definition_id: planned.instance.definitionId,\n      p_instance_kind: planned.instance.instanceKind,\n      p_snapshot: toInstanceSnapshotPayload(planned.instance.snapshot),\n      p_runtime: toInstanceRuntimePayload(planned.instance.runtime),\n      p_display_name: planned.instance.displayName,\n      p_sequence_number: planned.instance.sequenceNumber,\n      p_session_id: planned.instance.sessionId,\n    })",
@@ -39024,8 +39085,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-            "line": 348,
-            "endLine": 409,
+            "line": 403,
+            "endLine": 464,
             "text": "export async function spawnNpcCreatureInstance(input: {\n  projectId: string;\n  sessionId?: string | null;\n  definitionId: string;\n  instanceKind: NpcCreatureInstanceKind;\n  displayName?: string | null;\n  activeMemberUserIds: readonly string[];\n}): Promise<NpcCreatureInstance> {\n  const actorUserId = await getAuthenticatedUserId();\n  const definition = await resolveDefinitionForInstance(input.definitionId);\n  if (!definition) {\n    throw new Error('Figuren-Vorlage wurde nicht gefunden.');\n  }\n\n  const existing = await listNpcCreatureInstances(input.projectId);\n  const definitionReadable =\n    isBuiltinOrCoreDefinitionId(definition.id)\n    || Boolean(await supabaseNpcCreatureRepository.getDefinitionById(definition.id));\n\n  const planned = planNpcCreatureInstanceSpawn(\n    definition,\n    {\n      projectId: input.projectId,\n      sessionId: input.sessionId ?? null,\n      definitionId: input.definitionId,\n      instanceKind: input.instanceKind,\n      displayName: input.displayName ?? null,\n    },\n    {\n      actorUserId,\n      actorRole: 'gm',\n      activeMemberUserIds: input.activeMemberUserIds,\n      existingInstances: existing,\n      definitionReadable,\n    },\n  );\n  if (planned.ok === false) {\n    throw new Error(planned.message);\n  }\n\n  const { data, error } = await raceWithTimeoutReject(\n    supabase.rpc('spawn_npc_creature_instance', {\n      p_project_id: planned.instance.projectId,\n      p_definition_id: planned.instance.definitionId,\n      p_instance_kind: planned.instance.instanceKind,\n      p_snapshot: toInstanceSnapshotPayload(planned.instance.snapshot),\n      p_runtime: toInstanceRuntimePayload(planned.instance.runtime),\n      p_display_name: planned.instance.displayName,\n      p_sequence_number: planned.instance.sequenceNumber,\n      p_session_id: planned.instance.sessionId,\n    }),\n    SUPABASE_QUERY_TIMEOUT_MS,\n    'Instanz konnte nicht erzeugt werden (Zeitüberschreitung).',\n  );\n  if (error) {\n    throw new Error(`Instanz konnte nicht erzeugt werden: ${error.message}`);\n  }\n  if (!data || typeof data !== 'object') {\n    throw new Error('Instanz konnte nicht erzeugt werden.');\n  }\n  return toNpcCreatureInstance(data as NpcCreatureInstanceRow);\n}"
           }
         },
@@ -39033,16 +39094,16 @@
           "kind": "auth-helper",
           "name": null,
           "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-          "line": 417,
-          "endLine": 417,
+          "line": 472,
+          "endLine": 472,
           "resolution": "dynamic-expression",
           "expression": "getAuthenticatedUserId()",
           "chain": "getAuthenticatedUserId()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-            "line": 412,
-            "endLine": 446,
+            "line": 467,
+            "endLine": 501,
             "text": "export async function updateNpcCreatureInstanceRuntime(input: {\n  instance: NpcCreatureInstance;\n  patch: NpcCreatureInstanceRuntimeUpdate;\n  activeMemberUserIds: readonly string[];\n}): Promise<NpcCreatureInstance> {\n  const actorUserId = await getAuthenticatedUserId();\n  const planned = planNpcCreatureInstanceRuntimeUpdate(\n    input.instance,\n    input.patch,\n    {\n      actorUserId,\n      actorRole: 'gm',\n      activeMemberUserIds: input.activeMemberUserIds,\n    },\n  );\n  if (planned.ok === false) {\n    throw new Error(planned.message);\n  }\n\n  const { data, error } = await raceWithTimeoutReject(\n    supabase.rpc('update_npc_creature_instance_runtime', {\n      p_instance_id: planned.instance.id,\n      p_runtime: toInstanceRuntimePayload(planned.instance.runtime),\n    }),\n    SUPABASE_QUERY_TIMEOUT_MS,\n    'Instanz-Status konnte nicht gespeichert werden (Zeitüberschreitung).',\n  );\n  if (error) {\n    throw new Error(`Instanz-Status konnte nicht gespeichert werden: ${error.message}`);\n  }\n  if (!data || typeof data !== 'object') {\n    throw new Error('Instanz-Status konnte nicht gespeichert werden.');\n  }\n  return toNpcCreatureInstance(data as NpcCreatureInstanceRow);\n}"
           }
         },
@@ -39050,8 +39111,8 @@
           "kind": "rpc",
           "name": "update_npc_creature_instance_runtime",
           "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-          "line": 432,
-          "endLine": 435,
+          "line": 487,
+          "endLine": 490,
           "resolution": "literal-or-constant",
           "expression": "supabase.rpc('update_npc_creature_instance_runtime', {\n      p_instance_id: planned.instance.id,\n      p_runtime: toInstanceRuntimePayload(planned.instance.runtime),\n    })",
           "chain": "supabase.rpc('update_npc_creature_instance_runtime', {\n      p_instance_id: planned.instance.id,\n      p_runtime: toInstanceRuntimePayload(planned.instance.runtime),\n    })",
@@ -39061,8 +39122,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-            "line": 412,
-            "endLine": 446,
+            "line": 467,
+            "endLine": 501,
             "text": "export async function updateNpcCreatureInstanceRuntime(input: {\n  instance: NpcCreatureInstance;\n  patch: NpcCreatureInstanceRuntimeUpdate;\n  activeMemberUserIds: readonly string[];\n}): Promise<NpcCreatureInstance> {\n  const actorUserId = await getAuthenticatedUserId();\n  const planned = planNpcCreatureInstanceRuntimeUpdate(\n    input.instance,\n    input.patch,\n    {\n      actorUserId,\n      actorRole: 'gm',\n      activeMemberUserIds: input.activeMemberUserIds,\n    },\n  );\n  if (planned.ok === false) {\n    throw new Error(planned.message);\n  }\n\n  const { data, error } = await raceWithTimeoutReject(\n    supabase.rpc('update_npc_creature_instance_runtime', {\n      p_instance_id: planned.instance.id,\n      p_runtime: toInstanceRuntimePayload(planned.instance.runtime),\n    }),\n    SUPABASE_QUERY_TIMEOUT_MS,\n    'Instanz-Status konnte nicht gespeichert werden (Zeitüberschreitung).',\n  );\n  if (error) {\n    throw new Error(`Instanz-Status konnte nicht gespeichert werden: ${error.message}`);\n  }\n  if (!data || typeof data !== 'object') {\n    throw new Error('Instanz-Status konnte nicht gespeichert werden.');\n  }\n  return toNpcCreatureInstance(data as NpcCreatureInstanceRow);\n}"
           }
         },
@@ -39070,16 +39131,16 @@
           "kind": "auth-helper",
           "name": null,
           "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-          "line": 450,
-          "endLine": 450,
+          "line": 505,
+          "endLine": 505,
           "resolution": "dynamic-expression",
           "expression": "getAuthenticatedUserId()",
           "chain": "getAuthenticatedUserId()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-            "line": 449,
-            "endLine": 461,
+            "line": 504,
+            "endLine": 516,
             "text": "export async function removeNpcCreatureInstance(instanceId: string): Promise<void> {\n  await getAuthenticatedUserId();\n  const { error } = await raceWithTimeoutReject(\n    supabase.rpc('remove_npc_creature_instance', {\n      p_instance_id: instanceId,\n    }),\n    SUPABASE_QUERY_TIMEOUT_MS,\n    'Instanz konnte nicht entfernt werden (Zeitüberschreitung).',\n  );\n  if (error) {\n    throw new Error(`Instanz konnte nicht entfernt werden: ${error.message}`);\n  }\n}"
           }
         },
@@ -39087,8 +39148,8 @@
           "kind": "rpc",
           "name": "remove_npc_creature_instance",
           "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-          "line": 452,
-          "endLine": 454,
+          "line": 507,
+          "endLine": 509,
           "resolution": "literal-or-constant",
           "expression": "supabase.rpc('remove_npc_creature_instance', {\n      p_instance_id: instanceId,\n    })",
           "chain": "supabase.rpc('remove_npc_creature_instance', {\n      p_instance_id: instanceId,\n    })",
@@ -39098,8 +39159,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-            "line": 449,
-            "endLine": 461,
+            "line": 504,
+            "endLine": 516,
             "text": "export async function removeNpcCreatureInstance(instanceId: string): Promise<void> {\n  await getAuthenticatedUserId();\n  const { error } = await raceWithTimeoutReject(\n    supabase.rpc('remove_npc_creature_instance', {\n      p_instance_id: instanceId,\n    }),\n    SUPABASE_QUERY_TIMEOUT_MS,\n    'Instanz konnte nicht entfernt werden (Zeitüberschreitung).',\n  );\n  if (error) {\n    throw new Error(`Instanz konnte nicht entfernt werden: ${error.message}`);\n  }\n}"
           }
         },
@@ -39107,16 +39168,16 @@
           "kind": "auth-helper",
           "name": null,
           "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-          "line": 470,
-          "endLine": 470,
+          "line": 525,
+          "endLine": 525,
           "resolution": "dynamic-expression",
           "expression": "getAuthenticatedUserId()",
           "chain": "getAuthenticatedUserId()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-            "line": 467,
-            "endLine": 484,
+            "line": 522,
+            "endLine": 539,
             "text": "export async function clearNpcCreatureInstanceTempControllersForSession(\n  sessionId: string,\n): Promise<number> {\n  await getAuthenticatedUserId();\n  const { data, error } = await raceWithTimeoutReject(\n    supabase.rpc('clear_npc_creature_instance_temp_controllers_for_session', {\n      p_session_id: sessionId,\n    }),\n    SUPABASE_QUERY_TIMEOUT_MS,\n    'Temporäre Controller konnten nicht zurückgesetzt werden (Zeitüberschreitung).',\n  );\n  if (error) {\n    throw new Error(\n      `Temporäre Controller konnten nicht zurückgesetzt werden: ${error.message}`,\n    );\n  }\n  return typeof data === 'number' ? data : 0;\n}"
           }
         },
@@ -39124,8 +39185,8 @@
           "kind": "rpc",
           "name": "clear_npc_creature_instance_temp_controllers_for_session",
           "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-          "line": 472,
-          "endLine": 474,
+          "line": 527,
+          "endLine": 529,
           "resolution": "literal-or-constant",
           "expression": "supabase.rpc('clear_npc_creature_instance_temp_controllers_for_session', {\n      p_session_id: sessionId,\n    })",
           "chain": "supabase.rpc('clear_npc_creature_instance_temp_controllers_for_session', {\n      p_session_id: sessionId,\n    })",
@@ -39135,8 +39196,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-            "line": 467,
-            "endLine": 484,
+            "line": 522,
+            "endLine": 539,
             "text": "export async function clearNpcCreatureInstanceTempControllersForSession(\n  sessionId: string,\n): Promise<number> {\n  await getAuthenticatedUserId();\n  const { data, error } = await raceWithTimeoutReject(\n    supabase.rpc('clear_npc_creature_instance_temp_controllers_for_session', {\n      p_session_id: sessionId,\n    }),\n    SUPABASE_QUERY_TIMEOUT_MS,\n    'Temporäre Controller konnten nicht zurückgesetzt werden (Zeitüberschreitung).',\n  );\n  if (error) {\n    throw new Error(\n      `Temporäre Controller konnten nicht zurückgesetzt werden: ${error.message}`,\n    );\n  }\n  return typeof data === 'number' ? data : 0;\n}"
           }
         },
@@ -39459,134 +39520,140 @@
         },
         {
           "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-          "line": 56,
-          "endLine": 62,
+          "line": 57,
+          "endLine": 88,
+          "name": "mapHostLibraryNpcRecord"
+        },
+        {
+          "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
+          "line": 93,
+          "endLine": 117,
           "name": "listNpcCreatureDefinitions"
         },
         {
           "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-          "line": 64,
-          "endLine": 68,
+          "line": 119,
+          "endLine": 123,
           "name": "getNpcCreatureDefinition"
         },
         {
           "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-          "line": 70,
-          "endLine": 74,
+          "line": 125,
+          "endLine": 129,
           "name": "createNpcCreatureDefinition"
         },
         {
           "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-          "line": 76,
-          "endLine": 80,
+          "line": 131,
+          "endLine": 135,
           "name": "updateNpcCreatureDefinition"
         },
         {
           "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-          "line": 82,
-          "endLine": 86,
+          "line": 137,
+          "endLine": 141,
           "name": "archiveNpcCreatureDefinition"
         },
         {
           "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-          "line": 88,
-          "endLine": 92,
+          "line": 143,
+          "endLine": 147,
           "name": "personalCopyName"
         },
         {
           "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-          "line": 98,
-          "endLine": 115,
+          "line": 153,
+          "endLine": 170,
           "name": "duplicateNpcCreatureDefinition"
         },
         {
           "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-          "line": 117,
-          "endLine": 121,
+          "line": 172,
+          "endLine": 176,
           "name": "restoreNpcCreatureDefinition"
         },
         {
           "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-          "line": 124,
-          "endLine": 137,
+          "line": 179,
+          "endLine": 192,
           "name": "toNpcCreatureDefinitionSummaries"
         },
         {
           "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-          "line": 143,
-          "endLine": 151,
+          "line": 198,
+          "endLine": 206,
           "name": "loadWorldProfileNpcCreatureCatalog"
         },
         {
           "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-          "line": 163,
-          "endLine": 201,
+          "line": 218,
+          "endLine": 256,
           "name": "loadWorldNpcCreatureAvailability"
         },
         {
           "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-          "line": 180,
-          "endLine": 190,
+          "line": 235,
+          "endLine": 245,
           "name": "resolveDefinition"
         },
         {
           "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-          "line": 206,
-          "endLine": 229,
+          "line": 261,
+          "endLine": 284,
           "name": "promoteNpcCreatureCompactToFull"
         },
         {
           "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-          "line": 232,
-          "endLine": 252,
+          "line": 287,
+          "endLine": 307,
           "name": "getNpcCreatureControllerAssignment"
         },
         {
           "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-          "line": 258,
-          "endLine": 303,
+          "line": 313,
+          "endLine": 358,
           "name": "assignNpcCreatureController"
         },
         {
           "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-          "line": 305,
-          "endLine": 314,
+          "line": 360,
+          "endLine": 369,
           "name": "resolveDefinitionForInstance"
         },
         {
           "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-          "line": 316,
-          "endLine": 319,
+          "line": 371,
+          "endLine": 374,
           "name": "isBuiltinOrCoreDefinitionId"
         },
         {
           "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-          "line": 322,
-          "endLine": 342,
+          "line": 377,
+          "endLine": 397,
           "name": "listNpcCreatureInstances"
         },
         {
           "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-          "line": 348,
-          "endLine": 409,
+          "line": 403,
+          "endLine": 464,
           "name": "spawnNpcCreatureInstance"
         },
         {
           "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-          "line": 412,
-          "endLine": 446,
+          "line": 467,
+          "endLine": 501,
           "name": "updateNpcCreatureInstanceRuntime"
         },
         {
           "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-          "line": 449,
-          "endLine": 461,
+          "line": 504,
+          "endLine": 516,
           "name": "removeNpcCreatureInstance"
         },
         {
           "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-          "line": 467,
-          "endLine": 484,
+          "line": 522,
+          "endLine": 539,
           "name": "clearNpcCreatureInstanceTempControllersForSession"
         },
         {
@@ -39726,6 +39793,10 @@
             "sha256": "f245a4b02ce971d772808ddcdb70944992ba7f8cb0fbc1d012e5f6c93e11b48b"
           },
           {
+            "path": "src/infrastructure/host/host-library-http.ts",
+            "sha256": "5f736badfbaa6a0f3888c66eb41580a5d85f7f63ebfd30d2a6318f6de72bde3a"
+          },
+          {
             "path": "src/infrastructure/project/host-project-adapter.ts",
             "sha256": "41d162d05407e6f54f118a60a6aaf5f29bb1a61d28758c7d1c0698cdc3c35a70"
           },
@@ -39739,7 +39810,7 @@
           },
           {
             "path": "src/infrastructure/project/project-service.ts",
-            "sha256": "b71cf1fc78c24804f4a1ebda9a001807c3dc70379b2d5cf96769081efc9a2257"
+            "sha256": "9d33a2c3be7ec25aa25529e4f922a38f56c3905153929cd8fe2c879b306ff783"
           },
           {
             "path": "src/infrastructure/project/saga-overview-service.ts",
@@ -39752,6 +39823,10 @@
           {
             "path": "src/lib/authenticatedUser.ts",
             "sha256": "c822140996ae4d318c19d2ccb5318d77f2ba4d302bdfbcb50a79420a7ef70d74"
+          },
+          {
+            "path": "src/lib/hostAuthBridge.ts",
+            "sha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b"
           },
           {
             "path": "src/lib/localAdmin.ts",
@@ -39771,7 +39846,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-project.json",
-      "sourceContractSha256": "49a9c95183c2a00733edbc4531eec8f2a65481350f236d83639e202d55dbcc07",
+      "sourceContractSha256": "9804db6eb3cf3f686a844a7352e2557996608718c79c0bb1477ebb097a1572df",
       "rpcUsed": [
         "create_project_session",
         "ensure_native_starter_project",
@@ -39798,16 +39873,16 @@
           "kind": "auth-helper",
           "name": null,
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 260,
-          "endLine": 260,
+          "line": 264,
+          "endLine": 264,
           "resolution": "dynamic-expression",
           "expression": "getAuthenticatedUserId()",
           "chain": "getAuthenticatedUserId()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/project/project-service.ts",
-            "line": 259,
-            "endLine": 293,
+            "line": 263,
+            "endLine": 297,
             "text": "async createProject(payload: CreateProjectDto): Promise<ProjectVm> {\n    const userId = await getAuthenticatedUserId();\n\n    const code = this.generateProjectCode();\n\n    const projectData: Partial<ProjectDto> = {\n      code,\n      name: payload.name,\n      description: payload.description || null,\n      world_id: payload.world_id || null,\n      world_profile_id: payload.world_profile_id || null,\n      gm_user_id: userId,\n      status: 'active',\n    };\n\n    const { data, error } = await supabase\n      .from(this.tableName)\n      .insert(projectData)\n      .select(PROJECT_SAFE_COLUMNS)\n      .single();\n\n    if (error) {\n      throw new Error(`Failed to create project: ${error.message}`);\n    }\n\n    // The GM-controlled membership policy permits this bootstrap row.\n    await supabase.from(this.membersTableName).insert({\n      project_id: data.id,\n      user_id: userId,\n      role: 'gm',\n      status: 'active',\n    });\n\n    return this.mapToViewModel(data, [], []);\n  }"
           }
         },
@@ -39815,16 +39890,16 @@
           "kind": "auth-helper",
           "name": null,
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 336,
-          "endLine": 336,
+          "line": 406,
+          "endLine": 406,
           "resolution": "dynamic-expression",
           "expression": "getAuthenticatedUserId()",
           "chain": "getAuthenticatedUserId()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/project/project-service.ts",
-            "line": 335,
-            "endLine": 460,
+            "line": 405,
+            "endLine": 530,
             "text": "private async fetchUserProjectSummaries(): Promise<ProjectSummaryVm[]> {\n    const userId = await getAuthenticatedUserId();\n\n    // Bridge native saga_definitions → selectable GM project (SessionJoin / Library).\n    await this.ensureNativeStarterProject();\n\n    const projectSummarySelect =\n      'id, public_id, code, name, description, world_id, world_profile_id, gm_user_id, status, saga_id, saga_version_id, saga_definitions(title, origin, slug)';\n\n    const { data: gmProjects, error: gmError } = await supabase\n      .from(this.tableName)\n      .select(projectSummarySelect)\n      .eq('gm_user_id', userId)\n      .order('created_at', { ascending: false });\n\n    if (gmError) {\n      throw new Error(`Failed to fetch GM projects: ${gmError.message}`);\n    }\n\n    const { data: memberRecords, error: memberError } = await supabase\n      .from(this.membersTableName)\n      .select(`projects!inner(${projectSummarySelect})`)\n      .eq('user_id', userId)\n      .eq('status', 'active');\n\n    if (memberError) {\n      console.error('Failed to fetch player projects:', memberError);\n    }\n\n    type ProjectSummaryRow = Pick<\n      ProjectDto,\n      'id' | 'code' | 'name' | 'description' | 'gm_user_id' | 'status'\n    > & {\n      public_id?: string | null;\n      world_id?: string | null;\n      world_profile_id?: string | null;\n      saga_id?: string | null;\n      saga_version_id?: string | null;\n      saga_definitions?: { title?: string | null; origin?: string | null; slug?: string | null } | null;\n    };\n    const combined = new Map<string, ProjectSummaryRow>();\n\n    const normalizeSummaryRow = (raw: unknown): ProjectSummaryRow | null => {\n      if (!isProjectSummaryRow(raw)) return null;\n      const row = raw as ProjectSummaryRow & { saga_definitions?: unknown };\n      let def: ProjectSummaryRow['saga_definitions'] = null;\n      if (Array.isArray(row.saga_definitions)) {\n        const first = row.saga_definitions[0];\n        if (isRecord(first)) {\n          def = {\n            title: typeof first.title === 'string' ? first.title : null,\n            origin: typeof first.origin === 'string' ? first.origin : null,\n            slug: typeof first.slug === 'string' ? first.slug : null,\n          };\n        }\n      } else if (isRecord(row.saga_definitions)) {\n        def = {\n          title: typeof row.saga_definitions.title === 'string' ? row.saga_definitions.title : null,\n          origin: typeof row.saga_definitions.origin === 'string' ? row.saga_definitions.origin : null,\n          slug: typeof row.saga_definitions.slug === 'string' ? row.saga_definitions.slug : null,\n        };\n      }\n      return { ...row, saga_definitions: def };\n    };\n\n    for (const project of gmProjects ?? []) {\n      const normalized = normalizeSummaryRow(project);\n      if (!normalized) continue;\n      combined.set(normalized.id, normalized);\n    }\n\n    for (const record of memberRecords ?? []) {\n      if (!isRecord(record)) continue;\n      const normalized = normalizeSummaryRow(record.projects);\n      if (!normalized) continue;\n      combined.set(normalized.id, normalized);\n    }\n\n    const projectIds = [...combined.keys()];\n    if (projectIds.length === 0) return [];\n\n    const [{ data: memberRows, error: membersBatchError }, { data: sessionRows, error: sessionsBatchError }] =\n      await Promise.all([\n        supabase.from(this.membersTableName).select('project_id').in('project_id', projectIds),\n        supabase.from(this.sessionsTableName).select('project_id').in('project_id', projectIds),\n      ]);\n\n    if (membersBatchError) {\n      throw new Error(`Failed to fetch project members: ${membersBatchError.message}`);\n    }\n    if (sessionsBatchError) {\n      throw new Error(`Failed to fetch project sessions: ${sessionsBatchError.message}`);\n    }\n\n    const memberCounts = this.countByProjectId((memberRows ?? []) as Array<{ project_id: string }>);\n    const sessionCounts = this.countByProjectId((sessionRows ?? []) as Array<{ project_id: string }>);\n\n    return projectIds.map((id) => {\n      const project = combined.get(id)!;\n      const def = project.saga_definitions;\n      const originRaw = def && typeof def.origin === 'string' ? def.origin : null;\n      const sagaOrigin =\n        originRaw === 'native' || originRaw === 'user' || originRaw === 'private_backfill'\n          ? originRaw\n          : null;\n      return {\n        id: project.id,\n        publicId: typeof project.public_id === 'string' ? project.public_id : '',\n        code: project.code,\n        name: project.name,\n        description: project.description,\n        worldId: typeof project.world_id === 'string' ? project.world_id : null,\n        worldProfileId:\n          typeof project.world_profile_id === 'string' ? project.world_profile_id : null,\n        sagaId: typeof project.saga_id === 'string' ? project.saga_id : null,\n        sagaVersionId: typeof project.saga_version_id === 'string' ? project.saga_version_id : null,\n        sagaTitle: def && typeof def.title === 'string' ? def.title : null,\n        sagaSlug: def && typeof def.slug === 'string' ? def.slug : null,\n        sagaOrigin,\n        gmUserId: project.gm_user_id,\n        status: project.status,\n        memberCount: memberCounts.get(id) ?? 0,\n        sessionCount: sessionCounts.get(id) ?? 0,\n      };\n    });\n  }"
           }
         },
@@ -39832,16 +39907,16 @@
           "kind": "auth-helper",
           "name": null,
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 463,
-          "endLine": 463,
+          "line": 533,
+          "endLine": 533,
           "resolution": "dynamic-expression",
           "expression": "getAuthenticatedUserId()",
           "chain": "getAuthenticatedUserId()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/project/project-service.ts",
-            "line": 462,
-            "endLine": 526,
+            "line": 532,
+            "endLine": 596,
             "text": "private async fetchUserProjects(): Promise<ProjectVm[]> {\n    const userId = await getAuthenticatedUserId();\n\n    const { data: gmProjects, error: gmError } = await supabase\n      .from(this.tableName)\n      .select(PROJECT_SAFE_COLUMNS)\n      .eq('gm_user_id', userId)\n      .order('created_at', { ascending: false });\n\n    if (gmError) {\n      throw new Error(`Failed to fetch GM projects: ${gmError.message}`);\n    }\n\n    const { data: memberRecords, error: memberError } = await supabase\n      .from(this.membersTableName)\n      .select(`*, projects!inner(${PROJECT_SAFE_COLUMNS})`)\n      .eq('user_id', userId)\n      .eq('status', 'active');\n\n    if (memberError) {\n      console.error('Failed to fetch player projects:', memberError);\n    }\n\n    const playerProjects: ProjectDto[] = [];\n    for (const record of memberRecords || []) {\n      if (!isRecord(record)) continue;\n      const project = record.projects;\n      if (isProjectDto(project)) playerProjects.push(project);\n    }\n\n    const allProjectIds = new Set<string>();\n    const combinedProjects: ProjectDto[] = [];\n    for (const project of [...(gmProjects || []), ...playerProjects]) {\n      if (!isProjectDto(project) || allProjectIds.has(project.id)) continue;\n      allProjectIds.add(project.id);\n      combinedProjects.push(project);\n    }\n\n    return Promise.all(\n      combinedProjects.map(async (project) => {\n        const { data: members } = await supabase\n          .from(this.membersTableName)\n          .select('*')\n          .eq('project_id', project.id);\n\n        const { data: sessions } = await supabase\n          .from(this.sessionsTableName)\n          .select(SESSION_SAFE_COLUMNS)\n          .eq('project_id', project.id)\n          .order('session_number', { ascending: true });\n\n        const sessionRows: SessionDto[] = [];\n        for (const row of sessions || []) {\n          if (!isSessionDto(row)) continue;\n          sessionRows.push(\n            normalizeSessionDto({\n              ...row,\n              notes: row.notes ?? null,\n            }),\n          );\n        }\n        return this.mapToViewModel(project, members || [], sessionRows);\n      })\n    );\n  }"
           }
         },
@@ -39849,22 +39924,24 @@
           "kind": "auth-helper",
           "name": null,
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 674,
-          "endLine": 674,
+          "line": 744,
+          "endLine": 744,
           "resolution": "dynamic-expression",
           "expression": "getAuthenticatedUserId()",
           "chain": "getAuthenticatedUserId()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/project/project-service.ts",
-            "line": 673,
-            "endLine": 676,
+            "line": 743,
+            "endLine": 746,
             "text": "async leaveProject(projectId: string): Promise<void> {\n    const userId = await getAuthenticatedUserId();\n    await projectMemberService.leave(projectId, userId);\n  }"
           }
         }
       ],
       "externalFetches": [],
-      "importedInfrastructure": [],
+      "importedInfrastructure": [
+        "host"
+      ],
       "providerSdkCalls": [],
       "backendCalls": [
         {
@@ -40006,16 +40083,16 @@
           "kind": "auth-helper",
           "name": null,
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 260,
-          "endLine": 260,
+          "line": 264,
+          "endLine": 264,
           "resolution": "dynamic-expression",
           "expression": "getAuthenticatedUserId()",
           "chain": "getAuthenticatedUserId()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/project/project-service.ts",
-            "line": 259,
-            "endLine": 293,
+            "line": 263,
+            "endLine": 297,
             "text": "async createProject(payload: CreateProjectDto): Promise<ProjectVm> {\n    const userId = await getAuthenticatedUserId();\n\n    const code = this.generateProjectCode();\n\n    const projectData: Partial<ProjectDto> = {\n      code,\n      name: payload.name,\n      description: payload.description || null,\n      world_id: payload.world_id || null,\n      world_profile_id: payload.world_profile_id || null,\n      gm_user_id: userId,\n      status: 'active',\n    };\n\n    const { data, error } = await supabase\n      .from(this.tableName)\n      .insert(projectData)\n      .select(PROJECT_SAFE_COLUMNS)\n      .single();\n\n    if (error) {\n      throw new Error(`Failed to create project: ${error.message}`);\n    }\n\n    // The GM-controlled membership policy permits this bootstrap row.\n    await supabase.from(this.membersTableName).insert({\n      project_id: data.id,\n      user_id: userId,\n      role: 'gm',\n      status: 'active',\n    });\n\n    return this.mapToViewModel(data, [], []);\n  }"
           }
         },
@@ -40023,8 +40100,8 @@
           "kind": "table",
           "name": "projects",
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 274,
-          "endLine": 275,
+          "line": 278,
+          "endLine": 279,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from(this.tableName)",
           "chain": "supabase\n      .from(this.tableName)\n      .insert(projectData)\n      .select(PROJECT_SAFE_COLUMNS)\n      .single()",
@@ -40033,8 +40110,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/project/project-service.ts",
-            "line": 259,
-            "endLine": 293,
+            "line": 263,
+            "endLine": 297,
             "text": "async createProject(payload: CreateProjectDto): Promise<ProjectVm> {\n    const userId = await getAuthenticatedUserId();\n\n    const code = this.generateProjectCode();\n\n    const projectData: Partial<ProjectDto> = {\n      code,\n      name: payload.name,\n      description: payload.description || null,\n      world_id: payload.world_id || null,\n      world_profile_id: payload.world_profile_id || null,\n      gm_user_id: userId,\n      status: 'active',\n    };\n\n    const { data, error } = await supabase\n      .from(this.tableName)\n      .insert(projectData)\n      .select(PROJECT_SAFE_COLUMNS)\n      .single();\n\n    if (error) {\n      throw new Error(`Failed to create project: ${error.message}`);\n    }\n\n    // The GM-controlled membership policy permits this bootstrap row.\n    await supabase.from(this.membersTableName).insert({\n      project_id: data.id,\n      user_id: userId,\n      role: 'gm',\n      status: 'active',\n    });\n\n    return this.mapToViewModel(data, [], []);\n  }"
           }
         },
@@ -40042,8 +40119,8 @@
           "kind": "table",
           "name": "project_members",
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 285,
-          "endLine": 285,
+          "line": 289,
+          "endLine": 289,
           "resolution": "literal-or-constant",
           "expression": "supabase.from(this.membersTableName)",
           "chain": "supabase.from(this.membersTableName).insert({\n      project_id: data.id,\n      user_id: userId,\n      role: 'gm',\n      status: 'active',\n    })",
@@ -40052,8 +40129,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/project/project-service.ts",
-            "line": 259,
-            "endLine": 293,
+            "line": 263,
+            "endLine": 297,
             "text": "async createProject(payload: CreateProjectDto): Promise<ProjectVm> {\n    const userId = await getAuthenticatedUserId();\n\n    const code = this.generateProjectCode();\n\n    const projectData: Partial<ProjectDto> = {\n      code,\n      name: payload.name,\n      description: payload.description || null,\n      world_id: payload.world_id || null,\n      world_profile_id: payload.world_profile_id || null,\n      gm_user_id: userId,\n      status: 'active',\n    };\n\n    const { data, error } = await supabase\n      .from(this.tableName)\n      .insert(projectData)\n      .select(PROJECT_SAFE_COLUMNS)\n      .single();\n\n    if (error) {\n      throw new Error(`Failed to create project: ${error.message}`);\n    }\n\n    // The GM-controlled membership policy permits this bootstrap row.\n    await supabase.from(this.membersTableName).insert({\n      project_id: data.id,\n      user_id: userId,\n      role: 'gm',\n      status: 'active',\n    });\n\n    return this.mapToViewModel(data, [], []);\n  }"
           }
         },
@@ -40061,8 +40138,8 @@
           "kind": "rpc",
           "name": "ensure_native_starter_project",
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 327,
-          "endLine": 329,
+          "line": 397,
+          "endLine": 399,
           "resolution": "literal-or-constant",
           "expression": "supabase.rpc('ensure_native_starter_project', {\n      p_slug: slug,\n    })",
           "chain": "supabase.rpc('ensure_native_starter_project', {\n      p_slug: slug,\n    })",
@@ -40072,25 +40149,25 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/project/project-service.ts",
-            "line": 326,
-            "endLine": 333,
-            "text": "async ensureNativeStarterProject(slug = 'dornhain.whisper'): Promise<void> {\n    const { error } = await supabase.rpc('ensure_native_starter_project', {\n      p_slug: slug,\n    });\n    if (error) {\n      console.warn('[project-service] ensure_native_starter_project:', error.message);\n    }\n  }"
+            "line": 391,
+            "endLine": 403,
+            "text": "async ensureNativeStarterProject(slug = 'dornhain.whisper'): Promise<void> {\n    if (isHostLibraryEnabled()) {\n      // Solo host boots seed Dornhain into SQLite (ensureDornhainDefaultCatalog).\n      void slug;\n      return;\n    }\n    const { error } = await supabase.rpc('ensure_native_starter_project', {\n      p_slug: slug,\n    });\n    if (error) {\n      console.warn('[project-service] ensure_native_starter_project:', error.message);\n    }\n  }"
           }
         },
         {
           "kind": "auth-helper",
           "name": null,
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 336,
-          "endLine": 336,
+          "line": 406,
+          "endLine": 406,
           "resolution": "dynamic-expression",
           "expression": "getAuthenticatedUserId()",
           "chain": "getAuthenticatedUserId()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/project/project-service.ts",
-            "line": 335,
-            "endLine": 460,
+            "line": 405,
+            "endLine": 530,
             "text": "private async fetchUserProjectSummaries(): Promise<ProjectSummaryVm[]> {\n    const userId = await getAuthenticatedUserId();\n\n    // Bridge native saga_definitions → selectable GM project (SessionJoin / Library).\n    await this.ensureNativeStarterProject();\n\n    const projectSummarySelect =\n      'id, public_id, code, name, description, world_id, world_profile_id, gm_user_id, status, saga_id, saga_version_id, saga_definitions(title, origin, slug)';\n\n    const { data: gmProjects, error: gmError } = await supabase\n      .from(this.tableName)\n      .select(projectSummarySelect)\n      .eq('gm_user_id', userId)\n      .order('created_at', { ascending: false });\n\n    if (gmError) {\n      throw new Error(`Failed to fetch GM projects: ${gmError.message}`);\n    }\n\n    const { data: memberRecords, error: memberError } = await supabase\n      .from(this.membersTableName)\n      .select(`projects!inner(${projectSummarySelect})`)\n      .eq('user_id', userId)\n      .eq('status', 'active');\n\n    if (memberError) {\n      console.error('Failed to fetch player projects:', memberError);\n    }\n\n    type ProjectSummaryRow = Pick<\n      ProjectDto,\n      'id' | 'code' | 'name' | 'description' | 'gm_user_id' | 'status'\n    > & {\n      public_id?: string | null;\n      world_id?: string | null;\n      world_profile_id?: string | null;\n      saga_id?: string | null;\n      saga_version_id?: string | null;\n      saga_definitions?: { title?: string | null; origin?: string | null; slug?: string | null } | null;\n    };\n    const combined = new Map<string, ProjectSummaryRow>();\n\n    const normalizeSummaryRow = (raw: unknown): ProjectSummaryRow | null => {\n      if (!isProjectSummaryRow(raw)) return null;\n      const row = raw as ProjectSummaryRow & { saga_definitions?: unknown };\n      let def: ProjectSummaryRow['saga_definitions'] = null;\n      if (Array.isArray(row.saga_definitions)) {\n        const first = row.saga_definitions[0];\n        if (isRecord(first)) {\n          def = {\n            title: typeof first.title === 'string' ? first.title : null,\n            origin: typeof first.origin === 'string' ? first.origin : null,\n            slug: typeof first.slug === 'string' ? first.slug : null,\n          };\n        }\n      } else if (isRecord(row.saga_definitions)) {\n        def = {\n          title: typeof row.saga_definitions.title === 'string' ? row.saga_definitions.title : null,\n          origin: typeof row.saga_definitions.origin === 'string' ? row.saga_definitions.origin : null,\n          slug: typeof row.saga_definitions.slug === 'string' ? row.saga_definitions.slug : null,\n        };\n      }\n      return { ...row, saga_definitions: def };\n    };\n\n    for (const project of gmProjects ?? []) {\n      const normalized = normalizeSummaryRow(project);\n      if (!normalized) continue;\n      combined.set(normalized.id, normalized);\n    }\n\n    for (const record of memberRecords ?? []) {\n      if (!isRecord(record)) continue;\n      const normalized = normalizeSummaryRow(record.projects);\n      if (!normalized) continue;\n      combined.set(normalized.id, normalized);\n    }\n\n    const projectIds = [...combined.keys()];\n    if (projectIds.length === 0) return [];\n\n    const [{ data: memberRows, error: membersBatchError }, { data: sessionRows, error: sessionsBatchError }] =\n      await Promise.all([\n        supabase.from(this.membersTableName).select('project_id').in('project_id', projectIds),\n        supabase.from(this.sessionsTableName).select('project_id').in('project_id', projectIds),\n      ]);\n\n    if (membersBatchError) {\n      throw new Error(`Failed to fetch project members: ${membersBatchError.message}`);\n    }\n    if (sessionsBatchError) {\n      throw new Error(`Failed to fetch project sessions: ${sessionsBatchError.message}`);\n    }\n\n    const memberCounts = this.countByProjectId((memberRows ?? []) as Array<{ project_id: string }>);\n    const sessionCounts = this.countByProjectId((sessionRows ?? []) as Array<{ project_id: string }>);\n\n    return projectIds.map((id) => {\n      const project = combined.get(id)!;\n      const def = project.saga_definitions;\n      const originRaw = def && typeof def.origin === 'string' ? def.origin : null;\n      const sagaOrigin =\n        originRaw === 'native' || originRaw === 'user' || originRaw === 'private_backfill'\n          ? originRaw\n          : null;\n      return {\n        id: project.id,\n        publicId: typeof project.public_id === 'string' ? project.public_id : '',\n        code: project.code,\n        name: project.name,\n        description: project.description,\n        worldId: typeof project.world_id === 'string' ? project.world_id : null,\n        worldProfileId:\n          typeof project.world_profile_id === 'string' ? project.world_profile_id : null,\n        sagaId: typeof project.saga_id === 'string' ? project.saga_id : null,\n        sagaVersionId: typeof project.saga_version_id === 'string' ? project.saga_version_id : null,\n        sagaTitle: def && typeof def.title === 'string' ? def.title : null,\n        sagaSlug: def && typeof def.slug === 'string' ? def.slug : null,\n        sagaOrigin,\n        gmUserId: project.gm_user_id,\n        status: project.status,\n        memberCount: memberCounts.get(id) ?? 0,\n        sessionCount: sessionCounts.get(id) ?? 0,\n      };\n    });\n  }"
           }
         },
@@ -40098,8 +40175,8 @@
           "kind": "table",
           "name": "projects",
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 344,
-          "endLine": 345,
+          "line": 414,
+          "endLine": 415,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from(this.tableName)",
           "chain": "supabase\n      .from(this.tableName)\n      .select(projectSummarySelect)\n      .eq('gm_user_id', userId)\n      .order('created_at', { ascending: false })",
@@ -40108,8 +40185,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/project/project-service.ts",
-            "line": 335,
-            "endLine": 460,
+            "line": 405,
+            "endLine": 530,
             "text": "private async fetchUserProjectSummaries(): Promise<ProjectSummaryVm[]> {\n    const userId = await getAuthenticatedUserId();\n\n    // Bridge native saga_definitions → selectable GM project (SessionJoin / Library).\n    await this.ensureNativeStarterProject();\n\n    const projectSummarySelect =\n      'id, public_id, code, name, description, world_id, world_profile_id, gm_user_id, status, saga_id, saga_version_id, saga_definitions(title, origin, slug)';\n\n    const { data: gmProjects, error: gmError } = await supabase\n      .from(this.tableName)\n      .select(projectSummarySelect)\n      .eq('gm_user_id', userId)\n      .order('created_at', { ascending: false });\n\n    if (gmError) {\n      throw new Error(`Failed to fetch GM projects: ${gmError.message}`);\n    }\n\n    const { data: memberRecords, error: memberError } = await supabase\n      .from(this.membersTableName)\n      .select(`projects!inner(${projectSummarySelect})`)\n      .eq('user_id', userId)\n      .eq('status', 'active');\n\n    if (memberError) {\n      console.error('Failed to fetch player projects:', memberError);\n    }\n\n    type ProjectSummaryRow = Pick<\n      ProjectDto,\n      'id' | 'code' | 'name' | 'description' | 'gm_user_id' | 'status'\n    > & {\n      public_id?: string | null;\n      world_id?: string | null;\n      world_profile_id?: string | null;\n      saga_id?: string | null;\n      saga_version_id?: string | null;\n      saga_definitions?: { title?: string | null; origin?: string | null; slug?: string | null } | null;\n    };\n    const combined = new Map<string, ProjectSummaryRow>();\n\n    const normalizeSummaryRow = (raw: unknown): ProjectSummaryRow | null => {\n      if (!isProjectSummaryRow(raw)) return null;\n      const row = raw as ProjectSummaryRow & { saga_definitions?: unknown };\n      let def: ProjectSummaryRow['saga_definitions'] = null;\n      if (Array.isArray(row.saga_definitions)) {\n        const first = row.saga_definitions[0];\n        if (isRecord(first)) {\n          def = {\n            title: typeof first.title === 'string' ? first.title : null,\n            origin: typeof first.origin === 'string' ? first.origin : null,\n            slug: typeof first.slug === 'string' ? first.slug : null,\n          };\n        }\n      } else if (isRecord(row.saga_definitions)) {\n        def = {\n          title: typeof row.saga_definitions.title === 'string' ? row.saga_definitions.title : null,\n          origin: typeof row.saga_definitions.origin === 'string' ? row.saga_definitions.origin : null,\n          slug: typeof row.saga_definitions.slug === 'string' ? row.saga_definitions.slug : null,\n        };\n      }\n      return { ...row, saga_definitions: def };\n    };\n\n    for (const project of gmProjects ?? []) {\n      const normalized = normalizeSummaryRow(project);\n      if (!normalized) continue;\n      combined.set(normalized.id, normalized);\n    }\n\n    for (const record of memberRecords ?? []) {\n      if (!isRecord(record)) continue;\n      const normalized = normalizeSummaryRow(record.projects);\n      if (!normalized) continue;\n      combined.set(normalized.id, normalized);\n    }\n\n    const projectIds = [...combined.keys()];\n    if (projectIds.length === 0) return [];\n\n    const [{ data: memberRows, error: membersBatchError }, { data: sessionRows, error: sessionsBatchError }] =\n      await Promise.all([\n        supabase.from(this.membersTableName).select('project_id').in('project_id', projectIds),\n        supabase.from(this.sessionsTableName).select('project_id').in('project_id', projectIds),\n      ]);\n\n    if (membersBatchError) {\n      throw new Error(`Failed to fetch project members: ${membersBatchError.message}`);\n    }\n    if (sessionsBatchError) {\n      throw new Error(`Failed to fetch project sessions: ${sessionsBatchError.message}`);\n    }\n\n    const memberCounts = this.countByProjectId((memberRows ?? []) as Array<{ project_id: string }>);\n    const sessionCounts = this.countByProjectId((sessionRows ?? []) as Array<{ project_id: string }>);\n\n    return projectIds.map((id) => {\n      const project = combined.get(id)!;\n      const def = project.saga_definitions;\n      const originRaw = def && typeof def.origin === 'string' ? def.origin : null;\n      const sagaOrigin =\n        originRaw === 'native' || originRaw === 'user' || originRaw === 'private_backfill'\n          ? originRaw\n          : null;\n      return {\n        id: project.id,\n        publicId: typeof project.public_id === 'string' ? project.public_id : '',\n        code: project.code,\n        name: project.name,\n        description: project.description,\n        worldId: typeof project.world_id === 'string' ? project.world_id : null,\n        worldProfileId:\n          typeof project.world_profile_id === 'string' ? project.world_profile_id : null,\n        sagaId: typeof project.saga_id === 'string' ? project.saga_id : null,\n        sagaVersionId: typeof project.saga_version_id === 'string' ? project.saga_version_id : null,\n        sagaTitle: def && typeof def.title === 'string' ? def.title : null,\n        sagaSlug: def && typeof def.slug === 'string' ? def.slug : null,\n        sagaOrigin,\n        gmUserId: project.gm_user_id,\n        status: project.status,\n        memberCount: memberCounts.get(id) ?? 0,\n        sessionCount: sessionCounts.get(id) ?? 0,\n      };\n    });\n  }"
           }
         },
@@ -40117,8 +40194,8 @@
           "kind": "table",
           "name": "project_members",
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 354,
-          "endLine": 355,
+          "line": 424,
+          "endLine": 425,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from(this.membersTableName)",
           "chain": "supabase\n      .from(this.membersTableName)\n      .select(`projects!inner(${projectSummarySelect})`)\n      .eq('user_id', userId)\n      .eq('status', 'active')",
@@ -40127,8 +40204,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/project/project-service.ts",
-            "line": 335,
-            "endLine": 460,
+            "line": 405,
+            "endLine": 530,
             "text": "private async fetchUserProjectSummaries(): Promise<ProjectSummaryVm[]> {\n    const userId = await getAuthenticatedUserId();\n\n    // Bridge native saga_definitions → selectable GM project (SessionJoin / Library).\n    await this.ensureNativeStarterProject();\n\n    const projectSummarySelect =\n      'id, public_id, code, name, description, world_id, world_profile_id, gm_user_id, status, saga_id, saga_version_id, saga_definitions(title, origin, slug)';\n\n    const { data: gmProjects, error: gmError } = await supabase\n      .from(this.tableName)\n      .select(projectSummarySelect)\n      .eq('gm_user_id', userId)\n      .order('created_at', { ascending: false });\n\n    if (gmError) {\n      throw new Error(`Failed to fetch GM projects: ${gmError.message}`);\n    }\n\n    const { data: memberRecords, error: memberError } = await supabase\n      .from(this.membersTableName)\n      .select(`projects!inner(${projectSummarySelect})`)\n      .eq('user_id', userId)\n      .eq('status', 'active');\n\n    if (memberError) {\n      console.error('Failed to fetch player projects:', memberError);\n    }\n\n    type ProjectSummaryRow = Pick<\n      ProjectDto,\n      'id' | 'code' | 'name' | 'description' | 'gm_user_id' | 'status'\n    > & {\n      public_id?: string | null;\n      world_id?: string | null;\n      world_profile_id?: string | null;\n      saga_id?: string | null;\n      saga_version_id?: string | null;\n      saga_definitions?: { title?: string | null; origin?: string | null; slug?: string | null } | null;\n    };\n    const combined = new Map<string, ProjectSummaryRow>();\n\n    const normalizeSummaryRow = (raw: unknown): ProjectSummaryRow | null => {\n      if (!isProjectSummaryRow(raw)) return null;\n      const row = raw as ProjectSummaryRow & { saga_definitions?: unknown };\n      let def: ProjectSummaryRow['saga_definitions'] = null;\n      if (Array.isArray(row.saga_definitions)) {\n        const first = row.saga_definitions[0];\n        if (isRecord(first)) {\n          def = {\n            title: typeof first.title === 'string' ? first.title : null,\n            origin: typeof first.origin === 'string' ? first.origin : null,\n            slug: typeof first.slug === 'string' ? first.slug : null,\n          };\n        }\n      } else if (isRecord(row.saga_definitions)) {\n        def = {\n          title: typeof row.saga_definitions.title === 'string' ? row.saga_definitions.title : null,\n          origin: typeof row.saga_definitions.origin === 'string' ? row.saga_definitions.origin : null,\n          slug: typeof row.saga_definitions.slug === 'string' ? row.saga_definitions.slug : null,\n        };\n      }\n      return { ...row, saga_definitions: def };\n    };\n\n    for (const project of gmProjects ?? []) {\n      const normalized = normalizeSummaryRow(project);\n      if (!normalized) continue;\n      combined.set(normalized.id, normalized);\n    }\n\n    for (const record of memberRecords ?? []) {\n      if (!isRecord(record)) continue;\n      const normalized = normalizeSummaryRow(record.projects);\n      if (!normalized) continue;\n      combined.set(normalized.id, normalized);\n    }\n\n    const projectIds = [...combined.keys()];\n    if (projectIds.length === 0) return [];\n\n    const [{ data: memberRows, error: membersBatchError }, { data: sessionRows, error: sessionsBatchError }] =\n      await Promise.all([\n        supabase.from(this.membersTableName).select('project_id').in('project_id', projectIds),\n        supabase.from(this.sessionsTableName).select('project_id').in('project_id', projectIds),\n      ]);\n\n    if (membersBatchError) {\n      throw new Error(`Failed to fetch project members: ${membersBatchError.message}`);\n    }\n    if (sessionsBatchError) {\n      throw new Error(`Failed to fetch project sessions: ${sessionsBatchError.message}`);\n    }\n\n    const memberCounts = this.countByProjectId((memberRows ?? []) as Array<{ project_id: string }>);\n    const sessionCounts = this.countByProjectId((sessionRows ?? []) as Array<{ project_id: string }>);\n\n    return projectIds.map((id) => {\n      const project = combined.get(id)!;\n      const def = project.saga_definitions;\n      const originRaw = def && typeof def.origin === 'string' ? def.origin : null;\n      const sagaOrigin =\n        originRaw === 'native' || originRaw === 'user' || originRaw === 'private_backfill'\n          ? originRaw\n          : null;\n      return {\n        id: project.id,\n        publicId: typeof project.public_id === 'string' ? project.public_id : '',\n        code: project.code,\n        name: project.name,\n        description: project.description,\n        worldId: typeof project.world_id === 'string' ? project.world_id : null,\n        worldProfileId:\n          typeof project.world_profile_id === 'string' ? project.world_profile_id : null,\n        sagaId: typeof project.saga_id === 'string' ? project.saga_id : null,\n        sagaVersionId: typeof project.saga_version_id === 'string' ? project.saga_version_id : null,\n        sagaTitle: def && typeof def.title === 'string' ? def.title : null,\n        sagaSlug: def && typeof def.slug === 'string' ? def.slug : null,\n        sagaOrigin,\n        gmUserId: project.gm_user_id,\n        status: project.status,\n        memberCount: memberCounts.get(id) ?? 0,\n        sessionCount: sessionCounts.get(id) ?? 0,\n      };\n    });\n  }"
           }
         },
@@ -40136,8 +40213,8 @@
           "kind": "table",
           "name": "project_members",
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 418,
-          "endLine": 418,
+          "line": 488,
+          "endLine": 488,
           "resolution": "literal-or-constant",
           "expression": "supabase.from(this.membersTableName)",
           "chain": "supabase.from(this.membersTableName).select('project_id').in('project_id', projectIds)",
@@ -40146,8 +40223,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/project/project-service.ts",
-            "line": 335,
-            "endLine": 460,
+            "line": 405,
+            "endLine": 530,
             "text": "private async fetchUserProjectSummaries(): Promise<ProjectSummaryVm[]> {\n    const userId = await getAuthenticatedUserId();\n\n    // Bridge native saga_definitions → selectable GM project (SessionJoin / Library).\n    await this.ensureNativeStarterProject();\n\n    const projectSummarySelect =\n      'id, public_id, code, name, description, world_id, world_profile_id, gm_user_id, status, saga_id, saga_version_id, saga_definitions(title, origin, slug)';\n\n    const { data: gmProjects, error: gmError } = await supabase\n      .from(this.tableName)\n      .select(projectSummarySelect)\n      .eq('gm_user_id', userId)\n      .order('created_at', { ascending: false });\n\n    if (gmError) {\n      throw new Error(`Failed to fetch GM projects: ${gmError.message}`);\n    }\n\n    const { data: memberRecords, error: memberError } = await supabase\n      .from(this.membersTableName)\n      .select(`projects!inner(${projectSummarySelect})`)\n      .eq('user_id', userId)\n      .eq('status', 'active');\n\n    if (memberError) {\n      console.error('Failed to fetch player projects:', memberError);\n    }\n\n    type ProjectSummaryRow = Pick<\n      ProjectDto,\n      'id' | 'code' | 'name' | 'description' | 'gm_user_id' | 'status'\n    > & {\n      public_id?: string | null;\n      world_id?: string | null;\n      world_profile_id?: string | null;\n      saga_id?: string | null;\n      saga_version_id?: string | null;\n      saga_definitions?: { title?: string | null; origin?: string | null; slug?: string | null } | null;\n    };\n    const combined = new Map<string, ProjectSummaryRow>();\n\n    const normalizeSummaryRow = (raw: unknown): ProjectSummaryRow | null => {\n      if (!isProjectSummaryRow(raw)) return null;\n      const row = raw as ProjectSummaryRow & { saga_definitions?: unknown };\n      let def: ProjectSummaryRow['saga_definitions'] = null;\n      if (Array.isArray(row.saga_definitions)) {\n        const first = row.saga_definitions[0];\n        if (isRecord(first)) {\n          def = {\n            title: typeof first.title === 'string' ? first.title : null,\n            origin: typeof first.origin === 'string' ? first.origin : null,\n            slug: typeof first.slug === 'string' ? first.slug : null,\n          };\n        }\n      } else if (isRecord(row.saga_definitions)) {\n        def = {\n          title: typeof row.saga_definitions.title === 'string' ? row.saga_definitions.title : null,\n          origin: typeof row.saga_definitions.origin === 'string' ? row.saga_definitions.origin : null,\n          slug: typeof row.saga_definitions.slug === 'string' ? row.saga_definitions.slug : null,\n        };\n      }\n      return { ...row, saga_definitions: def };\n    };\n\n    for (const project of gmProjects ?? []) {\n      const normalized = normalizeSummaryRow(project);\n      if (!normalized) continue;\n      combined.set(normalized.id, normalized);\n    }\n\n    for (const record of memberRecords ?? []) {\n      if (!isRecord(record)) continue;\n      const normalized = normalizeSummaryRow(record.projects);\n      if (!normalized) continue;\n      combined.set(normalized.id, normalized);\n    }\n\n    const projectIds = [...combined.keys()];\n    if (projectIds.length === 0) return [];\n\n    const [{ data: memberRows, error: membersBatchError }, { data: sessionRows, error: sessionsBatchError }] =\n      await Promise.all([\n        supabase.from(this.membersTableName).select('project_id').in('project_id', projectIds),\n        supabase.from(this.sessionsTableName).select('project_id').in('project_id', projectIds),\n      ]);\n\n    if (membersBatchError) {\n      throw new Error(`Failed to fetch project members: ${membersBatchError.message}`);\n    }\n    if (sessionsBatchError) {\n      throw new Error(`Failed to fetch project sessions: ${sessionsBatchError.message}`);\n    }\n\n    const memberCounts = this.countByProjectId((memberRows ?? []) as Array<{ project_id: string }>);\n    const sessionCounts = this.countByProjectId((sessionRows ?? []) as Array<{ project_id: string }>);\n\n    return projectIds.map((id) => {\n      const project = combined.get(id)!;\n      const def = project.saga_definitions;\n      const originRaw = def && typeof def.origin === 'string' ? def.origin : null;\n      const sagaOrigin =\n        originRaw === 'native' || originRaw === 'user' || originRaw === 'private_backfill'\n          ? originRaw\n          : null;\n      return {\n        id: project.id,\n        publicId: typeof project.public_id === 'string' ? project.public_id : '',\n        code: project.code,\n        name: project.name,\n        description: project.description,\n        worldId: typeof project.world_id === 'string' ? project.world_id : null,\n        worldProfileId:\n          typeof project.world_profile_id === 'string' ? project.world_profile_id : null,\n        sagaId: typeof project.saga_id === 'string' ? project.saga_id : null,\n        sagaVersionId: typeof project.saga_version_id === 'string' ? project.saga_version_id : null,\n        sagaTitle: def && typeof def.title === 'string' ? def.title : null,\n        sagaSlug: def && typeof def.slug === 'string' ? def.slug : null,\n        sagaOrigin,\n        gmUserId: project.gm_user_id,\n        status: project.status,\n        memberCount: memberCounts.get(id) ?? 0,\n        sessionCount: sessionCounts.get(id) ?? 0,\n      };\n    });\n  }"
           }
         },
@@ -40155,8 +40232,8 @@
           "kind": "table",
           "name": "sessions",
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 419,
-          "endLine": 419,
+          "line": 489,
+          "endLine": 489,
           "resolution": "literal-or-constant",
           "expression": "supabase.from(this.sessionsTableName)",
           "chain": "supabase.from(this.sessionsTableName).select('project_id').in('project_id', projectIds)",
@@ -40165,8 +40242,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/project/project-service.ts",
-            "line": 335,
-            "endLine": 460,
+            "line": 405,
+            "endLine": 530,
             "text": "private async fetchUserProjectSummaries(): Promise<ProjectSummaryVm[]> {\n    const userId = await getAuthenticatedUserId();\n\n    // Bridge native saga_definitions → selectable GM project (SessionJoin / Library).\n    await this.ensureNativeStarterProject();\n\n    const projectSummarySelect =\n      'id, public_id, code, name, description, world_id, world_profile_id, gm_user_id, status, saga_id, saga_version_id, saga_definitions(title, origin, slug)';\n\n    const { data: gmProjects, error: gmError } = await supabase\n      .from(this.tableName)\n      .select(projectSummarySelect)\n      .eq('gm_user_id', userId)\n      .order('created_at', { ascending: false });\n\n    if (gmError) {\n      throw new Error(`Failed to fetch GM projects: ${gmError.message}`);\n    }\n\n    const { data: memberRecords, error: memberError } = await supabase\n      .from(this.membersTableName)\n      .select(`projects!inner(${projectSummarySelect})`)\n      .eq('user_id', userId)\n      .eq('status', 'active');\n\n    if (memberError) {\n      console.error('Failed to fetch player projects:', memberError);\n    }\n\n    type ProjectSummaryRow = Pick<\n      ProjectDto,\n      'id' | 'code' | 'name' | 'description' | 'gm_user_id' | 'status'\n    > & {\n      public_id?: string | null;\n      world_id?: string | null;\n      world_profile_id?: string | null;\n      saga_id?: string | null;\n      saga_version_id?: string | null;\n      saga_definitions?: { title?: string | null; origin?: string | null; slug?: string | null } | null;\n    };\n    const combined = new Map<string, ProjectSummaryRow>();\n\n    const normalizeSummaryRow = (raw: unknown): ProjectSummaryRow | null => {\n      if (!isProjectSummaryRow(raw)) return null;\n      const row = raw as ProjectSummaryRow & { saga_definitions?: unknown };\n      let def: ProjectSummaryRow['saga_definitions'] = null;\n      if (Array.isArray(row.saga_definitions)) {\n        const first = row.saga_definitions[0];\n        if (isRecord(first)) {\n          def = {\n            title: typeof first.title === 'string' ? first.title : null,\n            origin: typeof first.origin === 'string' ? first.origin : null,\n            slug: typeof first.slug === 'string' ? first.slug : null,\n          };\n        }\n      } else if (isRecord(row.saga_definitions)) {\n        def = {\n          title: typeof row.saga_definitions.title === 'string' ? row.saga_definitions.title : null,\n          origin: typeof row.saga_definitions.origin === 'string' ? row.saga_definitions.origin : null,\n          slug: typeof row.saga_definitions.slug === 'string' ? row.saga_definitions.slug : null,\n        };\n      }\n      return { ...row, saga_definitions: def };\n    };\n\n    for (const project of gmProjects ?? []) {\n      const normalized = normalizeSummaryRow(project);\n      if (!normalized) continue;\n      combined.set(normalized.id, normalized);\n    }\n\n    for (const record of memberRecords ?? []) {\n      if (!isRecord(record)) continue;\n      const normalized = normalizeSummaryRow(record.projects);\n      if (!normalized) continue;\n      combined.set(normalized.id, normalized);\n    }\n\n    const projectIds = [...combined.keys()];\n    if (projectIds.length === 0) return [];\n\n    const [{ data: memberRows, error: membersBatchError }, { data: sessionRows, error: sessionsBatchError }] =\n      await Promise.all([\n        supabase.from(this.membersTableName).select('project_id').in('project_id', projectIds),\n        supabase.from(this.sessionsTableName).select('project_id').in('project_id', projectIds),\n      ]);\n\n    if (membersBatchError) {\n      throw new Error(`Failed to fetch project members: ${membersBatchError.message}`);\n    }\n    if (sessionsBatchError) {\n      throw new Error(`Failed to fetch project sessions: ${sessionsBatchError.message}`);\n    }\n\n    const memberCounts = this.countByProjectId((memberRows ?? []) as Array<{ project_id: string }>);\n    const sessionCounts = this.countByProjectId((sessionRows ?? []) as Array<{ project_id: string }>);\n\n    return projectIds.map((id) => {\n      const project = combined.get(id)!;\n      const def = project.saga_definitions;\n      const originRaw = def && typeof def.origin === 'string' ? def.origin : null;\n      const sagaOrigin =\n        originRaw === 'native' || originRaw === 'user' || originRaw === 'private_backfill'\n          ? originRaw\n          : null;\n      return {\n        id: project.id,\n        publicId: typeof project.public_id === 'string' ? project.public_id : '',\n        code: project.code,\n        name: project.name,\n        description: project.description,\n        worldId: typeof project.world_id === 'string' ? project.world_id : null,\n        worldProfileId:\n          typeof project.world_profile_id === 'string' ? project.world_profile_id : null,\n        sagaId: typeof project.saga_id === 'string' ? project.saga_id : null,\n        sagaVersionId: typeof project.saga_version_id === 'string' ? project.saga_version_id : null,\n        sagaTitle: def && typeof def.title === 'string' ? def.title : null,\n        sagaSlug: def && typeof def.slug === 'string' ? def.slug : null,\n        sagaOrigin,\n        gmUserId: project.gm_user_id,\n        status: project.status,\n        memberCount: memberCounts.get(id) ?? 0,\n        sessionCount: sessionCounts.get(id) ?? 0,\n      };\n    });\n  }"
           }
         },
@@ -40174,16 +40251,16 @@
           "kind": "auth-helper",
           "name": null,
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 463,
-          "endLine": 463,
+          "line": 533,
+          "endLine": 533,
           "resolution": "dynamic-expression",
           "expression": "getAuthenticatedUserId()",
           "chain": "getAuthenticatedUserId()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/project/project-service.ts",
-            "line": 462,
-            "endLine": 526,
+            "line": 532,
+            "endLine": 596,
             "text": "private async fetchUserProjects(): Promise<ProjectVm[]> {\n    const userId = await getAuthenticatedUserId();\n\n    const { data: gmProjects, error: gmError } = await supabase\n      .from(this.tableName)\n      .select(PROJECT_SAFE_COLUMNS)\n      .eq('gm_user_id', userId)\n      .order('created_at', { ascending: false });\n\n    if (gmError) {\n      throw new Error(`Failed to fetch GM projects: ${gmError.message}`);\n    }\n\n    const { data: memberRecords, error: memberError } = await supabase\n      .from(this.membersTableName)\n      .select(`*, projects!inner(${PROJECT_SAFE_COLUMNS})`)\n      .eq('user_id', userId)\n      .eq('status', 'active');\n\n    if (memberError) {\n      console.error('Failed to fetch player projects:', memberError);\n    }\n\n    const playerProjects: ProjectDto[] = [];\n    for (const record of memberRecords || []) {\n      if (!isRecord(record)) continue;\n      const project = record.projects;\n      if (isProjectDto(project)) playerProjects.push(project);\n    }\n\n    const allProjectIds = new Set<string>();\n    const combinedProjects: ProjectDto[] = [];\n    for (const project of [...(gmProjects || []), ...playerProjects]) {\n      if (!isProjectDto(project) || allProjectIds.has(project.id)) continue;\n      allProjectIds.add(project.id);\n      combinedProjects.push(project);\n    }\n\n    return Promise.all(\n      combinedProjects.map(async (project) => {\n        const { data: members } = await supabase\n          .from(this.membersTableName)\n          .select('*')\n          .eq('project_id', project.id);\n\n        const { data: sessions } = await supabase\n          .from(this.sessionsTableName)\n          .select(SESSION_SAFE_COLUMNS)\n          .eq('project_id', project.id)\n          .order('session_number', { ascending: true });\n\n        const sessionRows: SessionDto[] = [];\n        for (const row of sessions || []) {\n          if (!isSessionDto(row)) continue;\n          sessionRows.push(\n            normalizeSessionDto({\n              ...row,\n              notes: row.notes ?? null,\n            }),\n          );\n        }\n        return this.mapToViewModel(project, members || [], sessionRows);\n      })\n    );\n  }"
           }
         },
@@ -40191,8 +40268,8 @@
           "kind": "table",
           "name": "projects",
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 465,
-          "endLine": 466,
+          "line": 535,
+          "endLine": 536,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from(this.tableName)",
           "chain": "supabase\n      .from(this.tableName)\n      .select(PROJECT_SAFE_COLUMNS)\n      .eq('gm_user_id', userId)\n      .order('created_at', { ascending: false })",
@@ -40201,8 +40278,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/project/project-service.ts",
-            "line": 462,
-            "endLine": 526,
+            "line": 532,
+            "endLine": 596,
             "text": "private async fetchUserProjects(): Promise<ProjectVm[]> {\n    const userId = await getAuthenticatedUserId();\n\n    const { data: gmProjects, error: gmError } = await supabase\n      .from(this.tableName)\n      .select(PROJECT_SAFE_COLUMNS)\n      .eq('gm_user_id', userId)\n      .order('created_at', { ascending: false });\n\n    if (gmError) {\n      throw new Error(`Failed to fetch GM projects: ${gmError.message}`);\n    }\n\n    const { data: memberRecords, error: memberError } = await supabase\n      .from(this.membersTableName)\n      .select(`*, projects!inner(${PROJECT_SAFE_COLUMNS})`)\n      .eq('user_id', userId)\n      .eq('status', 'active');\n\n    if (memberError) {\n      console.error('Failed to fetch player projects:', memberError);\n    }\n\n    const playerProjects: ProjectDto[] = [];\n    for (const record of memberRecords || []) {\n      if (!isRecord(record)) continue;\n      const project = record.projects;\n      if (isProjectDto(project)) playerProjects.push(project);\n    }\n\n    const allProjectIds = new Set<string>();\n    const combinedProjects: ProjectDto[] = [];\n    for (const project of [...(gmProjects || []), ...playerProjects]) {\n      if (!isProjectDto(project) || allProjectIds.has(project.id)) continue;\n      allProjectIds.add(project.id);\n      combinedProjects.push(project);\n    }\n\n    return Promise.all(\n      combinedProjects.map(async (project) => {\n        const { data: members } = await supabase\n          .from(this.membersTableName)\n          .select('*')\n          .eq('project_id', project.id);\n\n        const { data: sessions } = await supabase\n          .from(this.sessionsTableName)\n          .select(SESSION_SAFE_COLUMNS)\n          .eq('project_id', project.id)\n          .order('session_number', { ascending: true });\n\n        const sessionRows: SessionDto[] = [];\n        for (const row of sessions || []) {\n          if (!isSessionDto(row)) continue;\n          sessionRows.push(\n            normalizeSessionDto({\n              ...row,\n              notes: row.notes ?? null,\n            }),\n          );\n        }\n        return this.mapToViewModel(project, members || [], sessionRows);\n      })\n    );\n  }"
           }
         },
@@ -40210,8 +40287,8 @@
           "kind": "table",
           "name": "project_members",
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 475,
-          "endLine": 476,
+          "line": 545,
+          "endLine": 546,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from(this.membersTableName)",
           "chain": "supabase\n      .from(this.membersTableName)\n      .select(`*, projects!inner(${PROJECT_SAFE_COLUMNS})`)\n      .eq('user_id', userId)\n      .eq('status', 'active')",
@@ -40220,8 +40297,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/project/project-service.ts",
-            "line": 462,
-            "endLine": 526,
+            "line": 532,
+            "endLine": 596,
             "text": "private async fetchUserProjects(): Promise<ProjectVm[]> {\n    const userId = await getAuthenticatedUserId();\n\n    const { data: gmProjects, error: gmError } = await supabase\n      .from(this.tableName)\n      .select(PROJECT_SAFE_COLUMNS)\n      .eq('gm_user_id', userId)\n      .order('created_at', { ascending: false });\n\n    if (gmError) {\n      throw new Error(`Failed to fetch GM projects: ${gmError.message}`);\n    }\n\n    const { data: memberRecords, error: memberError } = await supabase\n      .from(this.membersTableName)\n      .select(`*, projects!inner(${PROJECT_SAFE_COLUMNS})`)\n      .eq('user_id', userId)\n      .eq('status', 'active');\n\n    if (memberError) {\n      console.error('Failed to fetch player projects:', memberError);\n    }\n\n    const playerProjects: ProjectDto[] = [];\n    for (const record of memberRecords || []) {\n      if (!isRecord(record)) continue;\n      const project = record.projects;\n      if (isProjectDto(project)) playerProjects.push(project);\n    }\n\n    const allProjectIds = new Set<string>();\n    const combinedProjects: ProjectDto[] = [];\n    for (const project of [...(gmProjects || []), ...playerProjects]) {\n      if (!isProjectDto(project) || allProjectIds.has(project.id)) continue;\n      allProjectIds.add(project.id);\n      combinedProjects.push(project);\n    }\n\n    return Promise.all(\n      combinedProjects.map(async (project) => {\n        const { data: members } = await supabase\n          .from(this.membersTableName)\n          .select('*')\n          .eq('project_id', project.id);\n\n        const { data: sessions } = await supabase\n          .from(this.sessionsTableName)\n          .select(SESSION_SAFE_COLUMNS)\n          .eq('project_id', project.id)\n          .order('session_number', { ascending: true });\n\n        const sessionRows: SessionDto[] = [];\n        for (const row of sessions || []) {\n          if (!isSessionDto(row)) continue;\n          sessionRows.push(\n            normalizeSessionDto({\n              ...row,\n              notes: row.notes ?? null,\n            }),\n          );\n        }\n        return this.mapToViewModel(project, members || [], sessionRows);\n      })\n    );\n  }"
           }
         },
@@ -40229,8 +40306,8 @@
           "kind": "table",
           "name": "project_members",
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 502,
-          "endLine": 503,
+          "line": 572,
+          "endLine": 573,
           "resolution": "literal-or-constant",
           "expression": "supabase\n          .from(this.membersTableName)",
           "chain": "supabase\n          .from(this.membersTableName)\n          .select('*')\n          .eq('project_id', project.id)",
@@ -40239,8 +40316,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/project/project-service.ts",
-            "line": 501,
-            "endLine": 524,
+            "line": 571,
+            "endLine": 594,
             "text": "async (project) => {\n        const { data: members } = await supabase\n          .from(this.membersTableName)\n          .select('*')\n          .eq('project_id', project.id);\n\n        const { data: sessions } = await supabase\n          .from(this.sessionsTableName)\n          .select(SESSION_SAFE_COLUMNS)\n          .eq('project_id', project.id)\n          .order('session_number', { ascending: true });\n\n        const sessionRows: SessionDto[] = [];\n        for (const row of sessions || []) {\n          if (!isSessionDto(row)) continue;\n          sessionRows.push(\n            normalizeSessionDto({\n              ...row,\n              notes: row.notes ?? null,\n            }),\n          );\n        }\n        return this.mapToViewModel(project, members || [], sessionRows);\n      }"
           }
         },
@@ -40248,8 +40325,8 @@
           "kind": "table",
           "name": "sessions",
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 507,
-          "endLine": 508,
+          "line": 577,
+          "endLine": 578,
           "resolution": "literal-or-constant",
           "expression": "supabase\n          .from(this.sessionsTableName)",
           "chain": "supabase\n          .from(this.sessionsTableName)\n          .select(SESSION_SAFE_COLUMNS)\n          .eq('project_id', project.id)\n          .order('session_number', { ascending: true })",
@@ -40258,8 +40335,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/project/project-service.ts",
-            "line": 501,
-            "endLine": 524,
+            "line": 571,
+            "endLine": 594,
             "text": "async (project) => {\n        const { data: members } = await supabase\n          .from(this.membersTableName)\n          .select('*')\n          .eq('project_id', project.id);\n\n        const { data: sessions } = await supabase\n          .from(this.sessionsTableName)\n          .select(SESSION_SAFE_COLUMNS)\n          .eq('project_id', project.id)\n          .order('session_number', { ascending: true });\n\n        const sessionRows: SessionDto[] = [];\n        for (const row of sessions || []) {\n          if (!isSessionDto(row)) continue;\n          sessionRows.push(\n            normalizeSessionDto({\n              ...row,\n              notes: row.notes ?? null,\n            }),\n          );\n        }\n        return this.mapToViewModel(project, members || [], sessionRows);\n      }"
           }
         },
@@ -40267,8 +40344,8 @@
           "kind": "table",
           "name": "projects",
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 541,
-          "endLine": 542,
+          "line": 611,
+          "endLine": 612,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from(this.tableName)",
           "chain": "supabase\n      .from(this.tableName)\n      .select(PROJECT_SAFE_COLUMNS)\n      .eq('id', id)\n      .single()",
@@ -40277,8 +40354,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/project/project-service.ts",
-            "line": 540,
-            "endLine": 573,
+            "line": 610,
+            "endLine": 643,
             "text": "async getProjectById(id: string): Promise<ProjectVm> {\n    const { data: project, error: projectError } = await supabase\n      .from(this.tableName)\n      .select(PROJECT_SAFE_COLUMNS)\n      .eq('id', id)\n      .single();\n\n    if (projectError || !project || !isProjectDto(project)) {\n      throw new Error('Project not found');\n    }\n\n    const { data: members } = await supabase\n      .from(this.membersTableName)\n      .select('*')\n      .eq('project_id', id);\n\n    const { data: sessions } = await supabase\n      .from(this.sessionsTableName)\n      .select(SESSION_SAFE_COLUMNS)\n      .eq('project_id', id)\n      .order('session_number', { ascending: true });\n\n    const sessionRows: SessionDto[] = [];\n    for (const row of sessions || []) {\n      if (!isSessionDto(row)) continue;\n      sessionRows.push(\n        normalizeSessionDto({\n          ...row,\n          notes: row.notes ?? null,\n        }),\n      );\n    }\n    return this.mapToViewModel(project, members || [], sessionRows);\n  }"
           }
         },
@@ -40286,8 +40363,8 @@
           "kind": "table",
           "name": "project_members",
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 551,
-          "endLine": 552,
+          "line": 621,
+          "endLine": 622,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from(this.membersTableName)",
           "chain": "supabase\n      .from(this.membersTableName)\n      .select('*')\n      .eq('project_id', id)",
@@ -40296,8 +40373,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/project/project-service.ts",
-            "line": 540,
-            "endLine": 573,
+            "line": 610,
+            "endLine": 643,
             "text": "async getProjectById(id: string): Promise<ProjectVm> {\n    const { data: project, error: projectError } = await supabase\n      .from(this.tableName)\n      .select(PROJECT_SAFE_COLUMNS)\n      .eq('id', id)\n      .single();\n\n    if (projectError || !project || !isProjectDto(project)) {\n      throw new Error('Project not found');\n    }\n\n    const { data: members } = await supabase\n      .from(this.membersTableName)\n      .select('*')\n      .eq('project_id', id);\n\n    const { data: sessions } = await supabase\n      .from(this.sessionsTableName)\n      .select(SESSION_SAFE_COLUMNS)\n      .eq('project_id', id)\n      .order('session_number', { ascending: true });\n\n    const sessionRows: SessionDto[] = [];\n    for (const row of sessions || []) {\n      if (!isSessionDto(row)) continue;\n      sessionRows.push(\n        normalizeSessionDto({\n          ...row,\n          notes: row.notes ?? null,\n        }),\n      );\n    }\n    return this.mapToViewModel(project, members || [], sessionRows);\n  }"
           }
         },
@@ -40305,8 +40382,8 @@
           "kind": "table",
           "name": "sessions",
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 556,
-          "endLine": 557,
+          "line": 626,
+          "endLine": 627,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from(this.sessionsTableName)",
           "chain": "supabase\n      .from(this.sessionsTableName)\n      .select(SESSION_SAFE_COLUMNS)\n      .eq('project_id', id)\n      .order('session_number', { ascending: true })",
@@ -40315,8 +40392,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/project/project-service.ts",
-            "line": 540,
-            "endLine": 573,
+            "line": 610,
+            "endLine": 643,
             "text": "async getProjectById(id: string): Promise<ProjectVm> {\n    const { data: project, error: projectError } = await supabase\n      .from(this.tableName)\n      .select(PROJECT_SAFE_COLUMNS)\n      .eq('id', id)\n      .single();\n\n    if (projectError || !project || !isProjectDto(project)) {\n      throw new Error('Project not found');\n    }\n\n    const { data: members } = await supabase\n      .from(this.membersTableName)\n      .select('*')\n      .eq('project_id', id);\n\n    const { data: sessions } = await supabase\n      .from(this.sessionsTableName)\n      .select(SESSION_SAFE_COLUMNS)\n      .eq('project_id', id)\n      .order('session_number', { ascending: true });\n\n    const sessionRows: SessionDto[] = [];\n    for (const row of sessions || []) {\n      if (!isSessionDto(row)) continue;\n      sessionRows.push(\n        normalizeSessionDto({\n          ...row,\n          notes: row.notes ?? null,\n        }),\n      );\n    }\n    return this.mapToViewModel(project, members || [], sessionRows);\n  }"
           }
         },
@@ -40324,8 +40401,8 @@
           "kind": "table",
           "name": "projects",
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 579,
-          "endLine": 580,
+          "line": 649,
+          "endLine": 650,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from(this.tableName)",
           "chain": "supabase\n      .from(this.tableName)\n      .update(updates)\n      .eq('id', id)",
@@ -40334,8 +40411,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/project/project-service.ts",
-            "line": 578,
-            "endLine": 589,
+            "line": 648,
+            "endLine": 659,
             "text": "async updateProject(id: string, updates: Partial<ProjectDto>): Promise<ProjectVm> {\n    const { error } = await supabase\n      .from(this.tableName)\n      .update(updates)\n      .eq('id', id);\n\n    if (error) {\n      throw new Error(`Failed to update project: ${error.message}`);\n    }\n\n    return this.getProjectById(id);\n  }"
           }
         },
@@ -40343,8 +40420,8 @@
           "kind": "table",
           "name": "sessions",
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 625,
-          "endLine": 626,
+          "line": 695,
+          "endLine": 696,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from(this.sessionsTableName)",
           "chain": "supabase\n      .from(this.sessionsTableName)\n      .update({ look_profile_id: settings.lookProfileId })\n      .eq('id', sessionId)\n      .select(SESSION_SAFE_COLUMNS)\n      .single()",
@@ -40353,8 +40430,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/project/project-service.ts",
-            "line": 621,
-            "endLine": 654,
+            "line": 691,
+            "endLine": 724,
             "text": "async updateSessionLookSettings(\n    sessionId: string,\n    settings: { lookProfileId: string | null },\n  ): Promise<SessionVm> {\n    const { data, error } = await supabase\n      .from(this.sessionsTableName)\n      .update({ look_profile_id: settings.lookProfileId })\n      .eq('id', sessionId)\n      .select(SESSION_SAFE_COLUMNS)\n      .single();\n\n    if (error) {\n      throw new Error(`Failed to update session look: ${error.message}`);\n    }\n    if (!isSessionDto(data)) {\n      throw new Error('Failed to update session look: invalid response');\n    }\n    const normalized = normalizeSessionDto(data);\n    return {\n      id: normalized.id,\n      publicId: typeof normalized.public_id === 'string' ? normalized.public_id : '',\n      projectId: normalized.project_id,\n      sessionNumber: normalized.session_number,\n      name: normalized.name,\n      notes: normalized.notes,\n      status: normalized.status,\n      startedAt: normalized.started_at,\n      endedAt: normalized.ended_at,\n      durationMinutes: normalized.duration_minutes,\n      lookProfileId:\n        typeof normalized.look_profile_id === 'string' ? normalized.look_profile_id : null,\n      createdAt: normalized.created_at,\n    };\n  }"
           }
         },
@@ -40362,8 +40439,8 @@
           "kind": "table",
           "name": "projects",
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 660,
-          "endLine": 661,
+          "line": 730,
+          "endLine": 731,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from(this.tableName)",
           "chain": "supabase\n      .from(this.tableName)\n      .delete()\n      .eq('id', id)",
@@ -40372,8 +40449,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/project/project-service.ts",
-            "line": 659,
-            "endLine": 668,
+            "line": 729,
+            "endLine": 738,
             "text": "async deleteProject(id: string): Promise<void> {\n    const { error } = await supabase\n      .from(this.tableName)\n      .delete()\n      .eq('id', id);\n\n    if (error) {\n      throw new Error(`Failed to delete project: ${error.message}`);\n    }\n  }"
           }
         },
@@ -40381,16 +40458,16 @@
           "kind": "auth-helper",
           "name": null,
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 674,
-          "endLine": 674,
+          "line": 744,
+          "endLine": 744,
           "resolution": "dynamic-expression",
           "expression": "getAuthenticatedUserId()",
           "chain": "getAuthenticatedUserId()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/project/project-service.ts",
-            "line": 673,
-            "endLine": 676,
+            "line": 743,
+            "endLine": 746,
             "text": "async leaveProject(projectId: string): Promise<void> {\n    const userId = await getAuthenticatedUserId();\n    await projectMemberService.leave(projectId, userId);\n  }"
           }
         },
@@ -40398,8 +40475,8 @@
           "kind": "table",
           "name": "projects",
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 682,
-          "endLine": 683,
+          "line": 752,
+          "endLine": 753,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from(this.tableName)",
           "chain": "supabase\n      .from(this.tableName)\n      .select(PROJECT_SAFE_COLUMNS)\n      .eq('public_id', publicId.trim().toUpperCase())\n      .single()",
@@ -40408,8 +40485,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/project/project-service.ts",
-            "line": 681,
-            "endLine": 693,
+            "line": 751,
+            "endLine": 763,
             "text": "async getProjectByPublicId(publicId: string): Promise<ProjectVm> {\n    const { data: project, error } = await supabase\n      .from(this.tableName)\n      .select(PROJECT_SAFE_COLUMNS)\n      .eq('public_id', publicId.trim().toUpperCase())\n      .single();\n\n    if (error || !project || !isProjectDto(project)) {\n      throw new Error('Project not found');\n    }\n\n    return this.getProjectById(project.id);\n  }"
           }
         },
@@ -40417,8 +40494,8 @@
           "kind": "table",
           "name": "sessions",
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 707,
-          "endLine": 708,
+          "line": 777,
+          "endLine": 778,
           "resolution": "literal-or-constant",
           "expression": "supabase\n        .from(this.sessionsTableName)",
           "chain": "supabase\n        .from(this.sessionsTableName)\n        .select(SESSION_SAFE_COLUMNS)\n        .eq('project_id', project.id)\n        .eq('public_id', wanted)\n        .maybeSingle()",
@@ -40427,8 +40504,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/project/project-service.ts",
-            "line": 698,
-            "endLine": 737,
+            "line": 768,
+            "endLine": 807,
             "text": "async getSessionByPublicIds(\n    sagaPublicId: string,\n    sessionPublicId: string,\n  ): Promise<{ project: ProjectVm; session: SessionVm }> {\n    const project = await this.getProjectByPublicId(sagaPublicId);\n    const wanted = sessionPublicId.trim().toUpperCase();\n    let session = project.sessions.find((row) => row.publicId === wanted);\n    if (!session) {\n      // Direct lookup — avoids dropping rows when status filters/mapping lag behind create.\n      const { data: row, error } = await supabase\n        .from(this.sessionsTableName)\n        .select(SESSION_SAFE_COLUMNS)\n        .eq('project_id', project.id)\n        .eq('public_id', wanted)\n        .maybeSingle();\n      if (error || !row || !isSessionDto(row)) {\n        throw new Error('Session not found in saga');\n      }\n      const normalized = normalizeSessionDto({\n        ...row,\n        notes: row.notes ?? null,\n      });\n      session = {\n        id: normalized.id,\n        publicId: typeof normalized.public_id === 'string' ? normalized.public_id : '',\n        projectId: normalized.project_id,\n        sessionNumber: normalized.session_number,\n        name: normalized.name,\n        notes: normalized.notes,\n        status: normalized.status,\n        startedAt: normalized.started_at,\n        endedAt: normalized.ended_at,\n        durationMinutes: normalized.duration_minutes ?? null,\n        lookProfileId:\n          typeof normalized.look_profile_id === 'string' ? normalized.look_profile_id : null,\n        createdAt: normalized.created_at,\n      };\n    }\n    return { project, session };\n  }"
           }
         },
@@ -40436,8 +40513,8 @@
           "kind": "rpc",
           "name": "create_project_session",
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 747,
-          "endLine": 751,
+          "line": 817,
+          "endLine": 821,
           "resolution": "literal-or-constant",
           "expression": "supabase.rpc('create_project_session', {\n      p_project_id: payload.projectId,\n      p_name: payload.name ?? null,\n      p_notes: payload.notes ?? null,\n    })",
           "chain": "supabase.rpc('create_project_session', {\n      p_project_id: payload.projectId,\n      p_name: payload.name ?? null,\n      p_notes: payload.notes ?? null,\n    })",
@@ -40447,8 +40524,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/project/project-service.ts",
-            "line": 742,
-            "endLine": 777,
+            "line": 812,
+            "endLine": 847,
             "text": "async createProjectSession(payload: {\n    projectId: string;\n    name?: string;\n    notes?: string;\n  }): Promise<SessionVm> {\n    const { data, error } = await supabase.rpc('create_project_session', {\n      p_project_id: payload.projectId,\n      p_name: payload.name ?? null,\n      p_notes: payload.notes ?? null,\n    });\n\n    if (error) {\n      throw new Error(`Failed to create session: ${error.message}`);\n    }\n\n    if (!isSessionDto(data)) {\n      throw new Error('Failed to create session: invalid response');\n    }\n\n    const normalized = normalizeSessionDto(data);\n    return {\n      id: normalized.id,\n      publicId: typeof normalized.public_id === 'string' ? normalized.public_id : '',\n      projectId: normalized.project_id,\n      sessionNumber: normalized.session_number,\n      name: normalized.name,\n      notes: normalized.notes,\n      status: normalized.status,\n      startedAt: normalized.started_at,\n      endedAt: normalized.ended_at,\n      durationMinutes: normalized.duration_minutes,\n      lookProfileId:\n        typeof normalized.look_profile_id === 'string' ? normalized.look_profile_id : null,\n      createdAt: normalized.created_at,\n    };\n  }"
           }
         },
@@ -40735,140 +40812,140 @@
         },
         {
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 36,
-          "endLine": 38,
+          "line": 40,
+          "endLine": 42,
           "name": "isRecord"
         },
         {
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 40,
-          "endLine": 42,
+          "line": 44,
+          "endLine": 46,
           "name": "isProjectStatus"
         },
         {
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 44,
-          "endLine": 76,
+          "line": 48,
+          "endLine": 80,
           "name": "isProjectDto"
         },
         {
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 82,
-          "endLine": 116,
+          "line": 86,
+          "endLine": 120,
           "name": "isProjectSummaryRow"
         },
         {
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 118,
-          "endLine": 127,
+          "line": 122,
+          "endLine": 131,
           "name": "isSessionStatus"
         },
         {
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 129,
-          "endLine": 162,
+          "line": 133,
+          "endLine": 166,
           "name": "isSessionDto"
         },
         {
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 164,
-          "endLine": 171,
+          "line": 168,
+          "endLine": 175,
           "name": "normalizeSessionDto"
         },
         {
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 259,
-          "endLine": 293,
+          "line": 263,
+          "endLine": 297,
           "name": "createProject"
         },
         {
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 298,
-          "endLine": 304,
+          "line": 333,
+          "endLine": 343,
           "name": "getUserProjectSummaries"
         },
         {
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 306,
-          "endLine": 312,
+          "line": 345,
+          "endLine": 377,
           "name": "getUserProjects"
         },
         {
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 326,
-          "endLine": 333,
+          "line": 391,
+          "endLine": 403,
           "name": "ensureNativeStarterProject"
         },
         {
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 377,
-          "endLine": 398,
+          "line": 447,
+          "endLine": 468,
           "name": "normalizeSummaryRow"
         },
         {
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 532,
-          "endLine": 535,
+          "line": 602,
+          "endLine": 605,
           "name": "joinProject"
         },
         {
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 540,
-          "endLine": 573,
+          "line": 610,
+          "endLine": 643,
           "name": "getProjectById"
         },
         {
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 578,
-          "endLine": 589,
+          "line": 648,
+          "endLine": 659,
           "name": "updateProject"
         },
         {
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 594,
-          "endLine": 599,
+          "line": 664,
+          "endLine": 669,
           "name": "updateProjectWorldProfile"
         },
         {
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 604,
-          "endLine": 615,
+          "line": 674,
+          "endLine": 685,
           "name": "updateProjectLookSettings"
         },
         {
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 621,
-          "endLine": 654,
+          "line": 691,
+          "endLine": 724,
           "name": "updateSessionLookSettings"
         },
         {
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 659,
-          "endLine": 668,
+          "line": 729,
+          "endLine": 738,
           "name": "deleteProject"
         },
         {
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 673,
-          "endLine": 676,
+          "line": 743,
+          "endLine": 746,
           "name": "leaveProject"
         },
         {
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 681,
-          "endLine": 693,
+          "line": 751,
+          "endLine": 763,
           "name": "getProjectByPublicId"
         },
         {
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 698,
-          "endLine": 737,
+          "line": 768,
+          "endLine": 807,
           "name": "getSessionByPublicIds"
         },
         {
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 742,
-          "endLine": 777,
+          "line": 812,
+          "endLine": 847,
           "name": "createProjectSession"
         },
         {
@@ -44582,6 +44659,10 @@
             "sha256": "9683d27ea65c7a22456245c0e2e706168285f61e229f6ea181e0fb6a65064cc0"
           },
           {
+            "path": "src/infrastructure/host/host-library-http.ts",
+            "sha256": "5f736badfbaa6a0f3888c66eb41580a5d85f7f63ebfd30d2a6318f6de72bde3a"
+          },
+          {
             "path": "src/infrastructure/media/optimizer/engines/audio/index.ts",
             "sha256": "7585190a705085692bff0896e08b4d78f791895b47e24d57deeaaa10bb669d4e"
           },
@@ -44659,11 +44740,15 @@
           },
           {
             "path": "src/infrastructure/world/world-profile-service.ts",
-            "sha256": "1197f7e5445289e7a5302990b7f3b21b635813888e8f1e0703808cd693de09fb"
+            "sha256": "a45483722706cf4af91e90e41898f5b9c939dde8c92993868f39dc8269bd5ff0"
           },
           {
             "path": "src/lib/authenticatedUser.ts",
             "sha256": "c822140996ae4d318c19d2ccb5318d77f2ba4d302bdfbcb50a79420a7ef70d74"
+          },
+          {
+            "path": "src/lib/hostAuthBridge.ts",
+            "sha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b"
           },
           {
             "path": "src/lib/localAdmin.ts",
@@ -44683,7 +44768,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-world.json",
-      "sourceContractSha256": "62f1b661aed0c9caef575ab90f7f66e6abeb63341183e1e736a2d2102e90793a",
+      "sourceContractSha256": "4c35db6338aae03b9191b51eafcf4a22f0c6d3f324aef13808ad9192ed4625b7",
       "rpcUsed": [
         "archive_world_node_subtree",
         "create_world_node_with_maps",
@@ -44752,6 +44837,7 @@
       ],
       "externalFetches": [],
       "importedInfrastructure": [
+        "host",
         "media"
       ],
       "providerSdkCalls": [],
@@ -45191,8 +45277,8 @@
           "kind": "table",
           "name": "world_profiles",
           "path": "src/infrastructure/world/world-profile-service.ts",
-          "line": 55,
-          "endLine": 56,
+          "line": 84,
+          "endLine": 85,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from(this.tableName)",
           "chain": "supabase\n      .from(this.tableName)\n      .select(WORLD_SELECT)\n      .eq('owner_user_id', jwtUserId)\n      .order('created_at', { ascending: false })",
@@ -45201,17 +45287,17 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/world/world-profile-service.ts",
-            "line": 52,
-            "endLine": 63,
-            "text": "async getUserWorldProfiles(ownerUserId: string): Promise<WorldProfileVm[]> {\n    if (!ownerUserId) throw new Error('User not authenticated');\n    const jwtUserId = await assertSupabaseJwtSession();\n    const { data, error } = await supabase\n      .from(this.tableName)\n      .select(WORLD_SELECT)\n      .eq('owner_user_id', jwtUserId)\n      .order('created_at', { ascending: false });\n\n    if (error) throw new Error(`Welten konnten nicht geladen werden: ${error.message}`);\n    return (data ?? []).map((entry) => this.mapToViewModel(entry as WorldProfileDto));\n  }"
+            "line": 77,
+            "endLine": 92,
+            "text": "async getUserWorldProfiles(ownerUserId: string): Promise<WorldProfileVm[]> {\n    if (!ownerUserId) throw new Error('User not authenticated');\n    if (isHostLibraryEnabled()) {\n      const rows = await fetchHostLibraryWorlds();\n      return rows.map(mapHostWorld);\n    }\n    const jwtUserId = await assertSupabaseJwtSession();\n    const { data, error } = await supabase\n      .from(this.tableName)\n      .select(WORLD_SELECT)\n      .eq('owner_user_id', jwtUserId)\n      .order('created_at', { ascending: false });\n\n    if (error) throw new Error(`Welten konnten nicht geladen werden: ${error.message}`);\n    return (data ?? []).map((entry) => this.mapToViewModel(entry as WorldProfileDto));\n  }"
           }
         },
         {
           "kind": "table",
           "name": "world_profiles",
           "path": "src/infrastructure/world/world-profile-service.ts",
-          "line": 68,
-          "endLine": 69,
+          "line": 103,
+          "endLine": 104,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from(this.tableName)",
           "chain": "supabase\n      .from(this.tableName)\n      .select(WORLD_SELECT)\n      .eq('id', id)\n      .eq('owner_user_id', jwtUserId)\n      .single()",
@@ -45220,17 +45306,17 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/world/world-profile-service.ts",
-            "line": 65,
-            "endLine": 77,
-            "text": "async getWorldProfile(ownerUserId: string, id: string): Promise<WorldProfileVm> {\n    if (!ownerUserId) throw new Error('User not authenticated');\n    const jwtUserId = await assertSupabaseJwtSession();\n    const { data, error } = await supabase\n      .from(this.tableName)\n      .select(WORLD_SELECT)\n      .eq('id', id)\n      .eq('owner_user_id', jwtUserId)\n      .single();\n\n    if (error) throw new Error(`Welt konnte nicht geladen werden: ${error.message}`);\n    return this.mapToViewModel(data as WorldProfileDto);\n  }"
+            "line": 94,
+            "endLine": 112,
+            "text": "async getWorldProfile(ownerUserId: string, id: string): Promise<WorldProfileVm> {\n    if (!ownerUserId) throw new Error('User not authenticated');\n    if (isHostLibraryEnabled()) {\n      const rows = await fetchHostLibraryWorlds();\n      const match = rows.find((row) => row.id === id);\n      if (!match) throw new Error('Welt konnte nicht geladen werden');\n      return mapHostWorld(match);\n    }\n    const jwtUserId = await assertSupabaseJwtSession();\n    const { data, error } = await supabase\n      .from(this.tableName)\n      .select(WORLD_SELECT)\n      .eq('id', id)\n      .eq('owner_user_id', jwtUserId)\n      .single();\n\n    if (error) throw new Error(`Welt konnte nicht geladen werden: ${error.message}`);\n    return this.mapToViewModel(data as WorldProfileDto);\n  }"
           }
         },
         {
           "kind": "table",
           "name": "world_profiles",
           "path": "src/infrastructure/world/world-profile-service.ts",
-          "line": 84,
-          "endLine": 85,
+          "line": 119,
+          "endLine": 120,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from(this.tableName)",
           "chain": "supabase\n      .from(this.tableName)\n      .select(WORLD_SELECT)\n      .eq('public_id', publicId)\n      .maybeSingle()",
@@ -45239,8 +45325,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/world/world-profile-service.ts",
-            "line": 80,
-            "endLine": 92,
+            "line": 115,
+            "endLine": 127,
             "text": "async getByPublicId(worldPublicId: string): Promise<WorldProfileVm | null> {\n    await assertSupabaseJwtSession();\n    const publicId = worldPublicId.trim().toUpperCase();\n    if (!publicId) return null;\n    const { data, error } = await supabase\n      .from(this.tableName)\n      .select(WORLD_SELECT)\n      .eq('public_id', publicId)\n      .maybeSingle();\n    if (error) throw new Error(`Welt konnte nicht geladen werden: ${error.message}`);\n    if (!data) return null;\n    return this.mapToViewModel(data as WorldProfileDto);\n  }"
           }
         },
@@ -45248,8 +45334,8 @@
           "kind": "table",
           "name": "world_profiles",
           "path": "src/infrastructure/world/world-profile-service.ts",
-          "line": 104,
-          "endLine": 105,
+          "line": 151,
+          "endLine": 152,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from(this.tableName)",
           "chain": "supabase\n      .from(this.tableName)\n      .insert(insertPayload)\n      .select(WORLD_SELECT)\n      .single()",
@@ -45258,17 +45344,17 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/world/world-profile-service.ts",
-            "line": 94,
-            "endLine": 112,
-            "text": "async createWorldProfile(ownerUserId: string, payload: CreateWorldProfileDto): Promise<WorldProfileVm> {\n    if (!ownerUserId) throw new Error('User not authenticated');\n    const jwtUserId = await assertSupabaseJwtSession();\n    const insertPayload = {\n      owner_user_id: jwtUserId,\n      name: normalizeName(payload.name),\n      description: normalizeDescription(payload.description),\n      modules: normalizeWorldModuleConfigMap(payload.modules),\n    };\n\n    const { data, error } = await supabase\n      .from(this.tableName)\n      .insert(insertPayload)\n      .select(WORLD_SELECT)\n      .single();\n\n    if (error) throw new Error(`Welt konnte nicht erstellt werden: ${error.message}`);\n    return this.mapToViewModel(data as WorldProfileDto);\n  }"
+            "line": 129,
+            "endLine": 159,
+            "text": "async createWorldProfile(ownerUserId: string, payload: CreateWorldProfileDto): Promise<WorldProfileVm> {\n    if (!ownerUserId) throw new Error('User not authenticated');\n    if (isHostLibraryEnabled()) {\n      if (\n        (typeof payload.description === 'string' && payload.description.trim()) ||\n        (payload.modules && Object.keys(payload.modules).length > 0)\n      ) {\n        throw new Error(\n          'Host-Welten speichern derzeit nur den Namen. Beschreibung und Module folgen im nächsten Cutover-Schritt.',\n        );\n      }\n      const created = await createHostLibraryWorld({ name: normalizeName(payload.name) });\n      return mapHostWorld(created);\n    }\n    const jwtUserId = await assertSupabaseJwtSession();\n    const insertPayload = {\n      owner_user_id: jwtUserId,\n      name: normalizeName(payload.name),\n      description: normalizeDescription(payload.description),\n      modules: normalizeWorldModuleConfigMap(payload.modules),\n    };\n\n    const { data, error } = await supabase\n      .from(this.tableName)\n      .insert(insertPayload)\n      .select(WORLD_SELECT)\n      .single();\n\n    if (error) throw new Error(`Welt konnte nicht erstellt werden: ${error.message}`);\n    return this.mapToViewModel(data as WorldProfileDto);\n  }"
           }
         },
         {
           "kind": "table",
           "name": "world_profiles",
           "path": "src/infrastructure/world/world-profile-service.ts",
-          "line": 138,
-          "endLine": 139,
+          "line": 200,
+          "endLine": 201,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from(this.tableName)",
           "chain": "supabase\n      .from(this.tableName)\n      .update(updatePayload)\n      .eq('id', id)\n      .eq('owner_user_id', jwtUserId)\n      .select(WORLD_SELECT)\n      .single()",
@@ -45277,17 +45363,17 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/world/world-profile-service.ts",
-            "line": 124,
-            "endLine": 148,
-            "text": "async updateWorldProfile(\n    ownerUserId: string,\n    id: string,\n    payload: UpdateWorldProfileDto,\n  ): Promise<WorldProfileVm> {\n    if (!ownerUserId) throw new Error('User not authenticated');\n    const jwtUserId = await assertSupabaseJwtSession();\n    const updatePayload = {\n      ...(typeof payload.name === 'string' ? { name: normalizeName(payload.name) } : {}),\n      ...(typeof payload.description === 'string' ? { description: normalizeDescription(payload.description) } : {}),\n      ...(payload.modules ? { modules: normalizeWorldModuleConfigMap(payload.modules) } : {}),\n      updated_at: new Date().toISOString(),\n    };\n\n    const { data, error } = await supabase\n      .from(this.tableName)\n      .update(updatePayload)\n      .eq('id', id)\n      .eq('owner_user_id', jwtUserId)\n      .select(WORLD_SELECT)\n      .single();\n\n    if (error) throw new Error(`Welt konnte nicht gespeichert werden: ${error.message}`);\n    return this.mapToViewModel(data as WorldProfileDto);\n  }"
+            "line": 171,
+            "endLine": 210,
+            "text": "async updateWorldProfile(\n    ownerUserId: string,\n    id: string,\n    payload: UpdateWorldProfileDto,\n  ): Promise<WorldProfileVm> {\n    if (!ownerUserId) throw new Error('User not authenticated');\n    if (isHostLibraryEnabled()) {\n      if (\n        (typeof payload.description === 'string' && payload.description.trim()) ||\n        (payload.modules && Object.keys(payload.modules).length > 0)\n      ) {\n        throw new Error(\n          'Host-Welten speichern derzeit nur den Namen. Beschreibung und Module folgen im nächsten Cutover-Schritt.',\n        );\n      }\n      if (typeof payload.name !== 'string') {\n        return this.getWorldProfile(ownerUserId, id);\n      }\n      const updated = await updateHostLibraryWorld(id, { name: normalizeName(payload.name) });\n      return mapHostWorld(updated);\n    }\n    const jwtUserId = await assertSupabaseJwtSession();\n    const updatePayload = {\n      ...(typeof payload.name === 'string' ? { name: normalizeName(payload.name) } : {}),\n      ...(typeof payload.description === 'string' ? { description: normalizeDescription(payload.description) } : {}),\n      ...(payload.modules ? { modules: normalizeWorldModuleConfigMap(payload.modules) } : {}),\n      updated_at: new Date().toISOString(),\n    };\n\n    const { data, error } = await supabase\n      .from(this.tableName)\n      .update(updatePayload)\n      .eq('id', id)\n      .eq('owner_user_id', jwtUserId)\n      .select(WORLD_SELECT)\n      .single();\n\n    if (error) throw new Error(`Welt konnte nicht gespeichert werden: ${error.message}`);\n    return this.mapToViewModel(data as WorldProfileDto);\n  }"
           }
         },
         {
           "kind": "table",
           "name": "inventory_item_definitions",
           "path": "src/infrastructure/world/world-profile-service.ts",
-          "line": 157,
-          "endLine": 158,
+          "line": 223,
+          "endLine": 224,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from('inventory_item_definitions')",
           "chain": "supabase\n      .from('inventory_item_definitions')\n      .select('id', { count: 'exact', head: true })\n      .eq('world_profile_id', id)",
@@ -45296,17 +45382,17 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/world/world-profile-service.ts",
-            "line": 150,
-            "endLine": 190,
-            "text": "async deleteWorldProfile(ownerUserId: string, id: string): Promise<void> {\n    if (!ownerUserId) throw new Error('User not authenticated');\n    const jwtUserId = await assertSupabaseJwtSession();\n\n    // World item definitions reference this profile with ON DELETE RESTRICT so\n    // owned instances never become permanently unresolvable. Refuse early with\n    // a German message instead of surfacing the Postgres FK error.\n    const { count, error: catalogError } = await supabase\n      .from('inventory_item_definitions')\n      .select('id', { count: 'exact', head: true })\n      .eq('world_profile_id', id);\n    if (catalogError) {\n      throw new Error(`Welt konnte nicht gelöscht werden: ${catalogError.message}`);\n    }\n    if ((count ?? 0) > 0) {\n      throw new Error(\n        'Welt kann nicht gelöscht werden, solange Gegenstand-Definitionen darauf verweisen. Archivieren Sie die Definitionen zuerst — Löschen würde bestehende Inventare unauflösbar machen.',\n      );\n    }\n\n    const { count: npcCount, error: npcError } = await supabase\n      .from('npc_creature_definitions')\n      .select('id', { count: 'exact', head: true })\n      .eq('world_profile_id', id);\n    if (npcError) {\n      throw new Error(`Welt konnte nicht gelöscht werden: ${npcError.message}`);\n    }\n    if ((npcCount ?? 0) > 0) {\n      throw new Error(\n        'Welt kann nicht gelöscht werden, solange NPC-/Kreatur-Definitionen darauf verweisen.',\n      );\n    }\n\n    const { error } = await supabase\n      .from(this.tableName)\n      .delete()\n      .eq('id', id)\n      .eq('owner_user_id', jwtUserId);\n\n    if (error) throw new Error(`Welt konnte nicht gelöscht werden: ${error.message}`);\n  }"
+            "line": 212,
+            "endLine": 256,
+            "text": "async deleteWorldProfile(ownerUserId: string, id: string): Promise<void> {\n    if (!ownerUserId) throw new Error('User not authenticated');\n    if (isHostLibraryEnabled()) {\n      await deleteHostLibraryWorld(id);\n      return;\n    }\n    const jwtUserId = await assertSupabaseJwtSession();\n\n    // World item definitions reference this profile with ON DELETE RESTRICT so\n    // owned instances never become permanently unresolvable. Refuse early with\n    // a German message instead of surfacing the Postgres FK error.\n    const { count, error: catalogError } = await supabase\n      .from('inventory_item_definitions')\n      .select('id', { count: 'exact', head: true })\n      .eq('world_profile_id', id);\n    if (catalogError) {\n      throw new Error(`Welt konnte nicht gelöscht werden: ${catalogError.message}`);\n    }\n    if ((count ?? 0) > 0) {\n      throw new Error(\n        'Welt kann nicht gelöscht werden, solange Gegenstand-Definitionen darauf verweisen. Archivieren Sie die Definitionen zuerst — Löschen würde bestehende Inventare unauflösbar machen.',\n      );\n    }\n\n    const { count: npcCount, error: npcError } = await supabase\n      .from('npc_creature_definitions')\n      .select('id', { count: 'exact', head: true })\n      .eq('world_profile_id', id);\n    if (npcError) {\n      throw new Error(`Welt konnte nicht gelöscht werden: ${npcError.message}`);\n    }\n    if ((npcCount ?? 0) > 0) {\n      throw new Error(\n        'Welt kann nicht gelöscht werden, solange NPC-/Kreatur-Definitionen darauf verweisen.',\n      );\n    }\n\n    const { error } = await supabase\n      .from(this.tableName)\n      .delete()\n      .eq('id', id)\n      .eq('owner_user_id', jwtUserId);\n\n    if (error) throw new Error(`Welt konnte nicht gelöscht werden: ${error.message}`);\n  }"
           }
         },
         {
           "kind": "table",
           "name": "npc_creature_definitions",
           "path": "src/infrastructure/world/world-profile-service.ts",
-          "line": 170,
-          "endLine": 171,
+          "line": 236,
+          "endLine": 237,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from('npc_creature_definitions')",
           "chain": "supabase\n      .from('npc_creature_definitions')\n      .select('id', { count: 'exact', head: true })\n      .eq('world_profile_id', id)",
@@ -45315,17 +45401,17 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/world/world-profile-service.ts",
-            "line": 150,
-            "endLine": 190,
-            "text": "async deleteWorldProfile(ownerUserId: string, id: string): Promise<void> {\n    if (!ownerUserId) throw new Error('User not authenticated');\n    const jwtUserId = await assertSupabaseJwtSession();\n\n    // World item definitions reference this profile with ON DELETE RESTRICT so\n    // owned instances never become permanently unresolvable. Refuse early with\n    // a German message instead of surfacing the Postgres FK error.\n    const { count, error: catalogError } = await supabase\n      .from('inventory_item_definitions')\n      .select('id', { count: 'exact', head: true })\n      .eq('world_profile_id', id);\n    if (catalogError) {\n      throw new Error(`Welt konnte nicht gelöscht werden: ${catalogError.message}`);\n    }\n    if ((count ?? 0) > 0) {\n      throw new Error(\n        'Welt kann nicht gelöscht werden, solange Gegenstand-Definitionen darauf verweisen. Archivieren Sie die Definitionen zuerst — Löschen würde bestehende Inventare unauflösbar machen.',\n      );\n    }\n\n    const { count: npcCount, error: npcError } = await supabase\n      .from('npc_creature_definitions')\n      .select('id', { count: 'exact', head: true })\n      .eq('world_profile_id', id);\n    if (npcError) {\n      throw new Error(`Welt konnte nicht gelöscht werden: ${npcError.message}`);\n    }\n    if ((npcCount ?? 0) > 0) {\n      throw new Error(\n        'Welt kann nicht gelöscht werden, solange NPC-/Kreatur-Definitionen darauf verweisen.',\n      );\n    }\n\n    const { error } = await supabase\n      .from(this.tableName)\n      .delete()\n      .eq('id', id)\n      .eq('owner_user_id', jwtUserId);\n\n    if (error) throw new Error(`Welt konnte nicht gelöscht werden: ${error.message}`);\n  }"
+            "line": 212,
+            "endLine": 256,
+            "text": "async deleteWorldProfile(ownerUserId: string, id: string): Promise<void> {\n    if (!ownerUserId) throw new Error('User not authenticated');\n    if (isHostLibraryEnabled()) {\n      await deleteHostLibraryWorld(id);\n      return;\n    }\n    const jwtUserId = await assertSupabaseJwtSession();\n\n    // World item definitions reference this profile with ON DELETE RESTRICT so\n    // owned instances never become permanently unresolvable. Refuse early with\n    // a German message instead of surfacing the Postgres FK error.\n    const { count, error: catalogError } = await supabase\n      .from('inventory_item_definitions')\n      .select('id', { count: 'exact', head: true })\n      .eq('world_profile_id', id);\n    if (catalogError) {\n      throw new Error(`Welt konnte nicht gelöscht werden: ${catalogError.message}`);\n    }\n    if ((count ?? 0) > 0) {\n      throw new Error(\n        'Welt kann nicht gelöscht werden, solange Gegenstand-Definitionen darauf verweisen. Archivieren Sie die Definitionen zuerst — Löschen würde bestehende Inventare unauflösbar machen.',\n      );\n    }\n\n    const { count: npcCount, error: npcError } = await supabase\n      .from('npc_creature_definitions')\n      .select('id', { count: 'exact', head: true })\n      .eq('world_profile_id', id);\n    if (npcError) {\n      throw new Error(`Welt konnte nicht gelöscht werden: ${npcError.message}`);\n    }\n    if ((npcCount ?? 0) > 0) {\n      throw new Error(\n        'Welt kann nicht gelöscht werden, solange NPC-/Kreatur-Definitionen darauf verweisen.',\n      );\n    }\n\n    const { error } = await supabase\n      .from(this.tableName)\n      .delete()\n      .eq('id', id)\n      .eq('owner_user_id', jwtUserId);\n\n    if (error) throw new Error(`Welt konnte nicht gelöscht werden: ${error.message}`);\n  }"
           }
         },
         {
           "kind": "table",
           "name": "world_profiles",
           "path": "src/infrastructure/world/world-profile-service.ts",
-          "line": 183,
-          "endLine": 184,
+          "line": 249,
+          "endLine": 250,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from(this.tableName)",
           "chain": "supabase\n      .from(this.tableName)\n      .delete()\n      .eq('id', id)\n      .eq('owner_user_id', jwtUserId)",
@@ -45334,9 +45420,9 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/world/world-profile-service.ts",
-            "line": 150,
-            "endLine": 190,
-            "text": "async deleteWorldProfile(ownerUserId: string, id: string): Promise<void> {\n    if (!ownerUserId) throw new Error('User not authenticated');\n    const jwtUserId = await assertSupabaseJwtSession();\n\n    // World item definitions reference this profile with ON DELETE RESTRICT so\n    // owned instances never become permanently unresolvable. Refuse early with\n    // a German message instead of surfacing the Postgres FK error.\n    const { count, error: catalogError } = await supabase\n      .from('inventory_item_definitions')\n      .select('id', { count: 'exact', head: true })\n      .eq('world_profile_id', id);\n    if (catalogError) {\n      throw new Error(`Welt konnte nicht gelöscht werden: ${catalogError.message}`);\n    }\n    if ((count ?? 0) > 0) {\n      throw new Error(\n        'Welt kann nicht gelöscht werden, solange Gegenstand-Definitionen darauf verweisen. Archivieren Sie die Definitionen zuerst — Löschen würde bestehende Inventare unauflösbar machen.',\n      );\n    }\n\n    const { count: npcCount, error: npcError } = await supabase\n      .from('npc_creature_definitions')\n      .select('id', { count: 'exact', head: true })\n      .eq('world_profile_id', id);\n    if (npcError) {\n      throw new Error(`Welt konnte nicht gelöscht werden: ${npcError.message}`);\n    }\n    if ((npcCount ?? 0) > 0) {\n      throw new Error(\n        'Welt kann nicht gelöscht werden, solange NPC-/Kreatur-Definitionen darauf verweisen.',\n      );\n    }\n\n    const { error } = await supabase\n      .from(this.tableName)\n      .delete()\n      .eq('id', id)\n      .eq('owner_user_id', jwtUserId);\n\n    if (error) throw new Error(`Welt konnte nicht gelöscht werden: ${error.message}`);\n  }"
+            "line": 212,
+            "endLine": 256,
+            "text": "async deleteWorldProfile(ownerUserId: string, id: string): Promise<void> {\n    if (!ownerUserId) throw new Error('User not authenticated');\n    if (isHostLibraryEnabled()) {\n      await deleteHostLibraryWorld(id);\n      return;\n    }\n    const jwtUserId = await assertSupabaseJwtSession();\n\n    // World item definitions reference this profile with ON DELETE RESTRICT so\n    // owned instances never become permanently unresolvable. Refuse early with\n    // a German message instead of surfacing the Postgres FK error.\n    const { count, error: catalogError } = await supabase\n      .from('inventory_item_definitions')\n      .select('id', { count: 'exact', head: true })\n      .eq('world_profile_id', id);\n    if (catalogError) {\n      throw new Error(`Welt konnte nicht gelöscht werden: ${catalogError.message}`);\n    }\n    if ((count ?? 0) > 0) {\n      throw new Error(\n        'Welt kann nicht gelöscht werden, solange Gegenstand-Definitionen darauf verweisen. Archivieren Sie die Definitionen zuerst — Löschen würde bestehende Inventare unauflösbar machen.',\n      );\n    }\n\n    const { count: npcCount, error: npcError } = await supabase\n      .from('npc_creature_definitions')\n      .select('id', { count: 'exact', head: true })\n      .eq('world_profile_id', id);\n    if (npcError) {\n      throw new Error(`Welt konnte nicht gelöscht werden: ${npcError.message}`);\n    }\n    if ((npcCount ?? 0) > 0) {\n      throw new Error(\n        'Welt kann nicht gelöscht werden, solange NPC-/Kreatur-Definitionen darauf verweisen.',\n      );\n    }\n\n    const { error } = await supabase\n      .from(this.tableName)\n      .delete()\n      .eq('id', id)\n      .eq('owner_user_id', jwtUserId);\n\n    if (error) throw new Error(`Welt konnte nicht gelöscht werden: ${error.message}`);\n  }"
           }
         }
       ],
@@ -45623,62 +45709,68 @@
         },
         {
           "path": "src/infrastructure/world/world-profile-service.ts",
-          "line": 18,
-          "endLine": 23,
+          "line": 28,
+          "endLine": 41,
+          "name": "mapHostWorld"
+        },
+        {
+          "path": "src/infrastructure/world/world-profile-service.ts",
+          "line": 43,
+          "endLine": 48,
           "name": "normalizeName"
         },
         {
           "path": "src/infrastructure/world/world-profile-service.ts",
-          "line": 25,
-          "endLine": 28,
+          "line": 50,
+          "endLine": 53,
           "name": "normalizeDescription"
         },
         {
           "path": "src/infrastructure/world/world-profile-service.ts",
-          "line": 30,
-          "endLine": 35,
+          "line": 55,
+          "endLine": 60,
           "name": "duplicateWorldName"
         },
         {
           "path": "src/infrastructure/world/world-profile-service.ts",
-          "line": 52,
-          "endLine": 63,
-          "name": "getUserWorldProfiles"
-        },
-        {
-          "path": "src/infrastructure/world/world-profile-service.ts",
-          "line": 65,
-          "endLine": 77,
-          "name": "getWorldProfile"
-        },
-        {
-          "path": "src/infrastructure/world/world-profile-service.ts",
-          "line": 80,
+          "line": 77,
           "endLine": 92,
-          "name": "getByPublicId"
+          "name": "getUserWorldProfiles"
         },
         {
           "path": "src/infrastructure/world/world-profile-service.ts",
           "line": 94,
           "endLine": 112,
+          "name": "getWorldProfile"
+        },
+        {
+          "path": "src/infrastructure/world/world-profile-service.ts",
+          "line": 115,
+          "endLine": 127,
+          "name": "getByPublicId"
+        },
+        {
+          "path": "src/infrastructure/world/world-profile-service.ts",
+          "line": 129,
+          "endLine": 159,
           "name": "createWorldProfile"
         },
         {
           "path": "src/infrastructure/world/world-profile-service.ts",
-          "line": 114,
-          "endLine": 122,
+          "line": 161,
+          "endLine": 169,
           "name": "duplicateWorldProfile"
         },
         {
           "path": "src/infrastructure/world/world-profile-service.ts",
-          "line": 124,
-          "endLine": 148,
+          "line": 171,
+          "endLine": 210,
           "name": "updateWorldProfile"
         },
         {
           "path": "src/infrastructure/world/world-profile-service.ts",
-          "line": 150,
-          "endLine": 190,
+          "line": 212,
+          "endLine": 256,
           "name": "deleteWorldProfile"
         }
       ],

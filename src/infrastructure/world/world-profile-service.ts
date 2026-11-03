@@ -1,6 +1,8 @@
 /**
- * world-profile-service — Supabase adapter for world profiles.
+ * world-profile-service — world profile persistence facade.
  * Location: src/infrastructure/world/world-profile-service.ts
+ *
+ * Dual-path (MIG-313): Host Library CRUD when `VITE_SAGATREE_HOST_LIBRARY=1`.
  */
 import { assertSupabaseJwtSession } from '../../lib/authenticatedUser';
 import { supabase } from '../../lib/supabase';
@@ -11,9 +13,32 @@ import type {
   WorldProfileDto,
   WorldProfileVm,
 } from '../../domains/world/contracts/world.types';
+import {
+  createHostLibraryWorld,
+  deleteHostLibraryWorld,
+  fetchHostLibraryWorlds,
+  isHostLibraryEnabled,
+  updateHostLibraryWorld,
+  type HostLibraryWorldDto,
+} from '../host/host-library-http';
 
 const WORLD_SELECT =
   'id, owner_user_id, public_id, name, description, modules, created_at, updated_at';
+
+function mapHostWorld(row: HostLibraryWorldDto): WorldProfileVm {
+  const createdAt = row.createdAt ? new Date(row.createdAt) : new Date();
+  // Host world ports are title-only today (WorldReadDto). Description/modules
+  // land in a later FE-HOST world-profile slice — do not invent empty writes.
+  return {
+    id: row.id,
+    publicId: '',
+    name: row.title,
+    description: '',
+    modules: normalizeWorldModuleConfigMap(undefined),
+    createdAt,
+    updatedAt: createdAt,
+  };
+}
 
 function normalizeName(value: string): string {
   const name = value.trim();
@@ -51,6 +76,10 @@ class WorldProfileService {
 
   async getUserWorldProfiles(ownerUserId: string): Promise<WorldProfileVm[]> {
     if (!ownerUserId) throw new Error('User not authenticated');
+    if (isHostLibraryEnabled()) {
+      const rows = await fetchHostLibraryWorlds();
+      return rows.map(mapHostWorld);
+    }
     const jwtUserId = await assertSupabaseJwtSession();
     const { data, error } = await supabase
       .from(this.tableName)
@@ -64,6 +93,12 @@ class WorldProfileService {
 
   async getWorldProfile(ownerUserId: string, id: string): Promise<WorldProfileVm> {
     if (!ownerUserId) throw new Error('User not authenticated');
+    if (isHostLibraryEnabled()) {
+      const rows = await fetchHostLibraryWorlds();
+      const match = rows.find((row) => row.id === id);
+      if (!match) throw new Error('Welt konnte nicht geladen werden');
+      return mapHostWorld(match);
+    }
     const jwtUserId = await assertSupabaseJwtSession();
     const { data, error } = await supabase
       .from(this.tableName)
@@ -93,6 +128,18 @@ class WorldProfileService {
 
   async createWorldProfile(ownerUserId: string, payload: CreateWorldProfileDto): Promise<WorldProfileVm> {
     if (!ownerUserId) throw new Error('User not authenticated');
+    if (isHostLibraryEnabled()) {
+      if (
+        (typeof payload.description === 'string' && payload.description.trim()) ||
+        (payload.modules && Object.keys(payload.modules).length > 0)
+      ) {
+        throw new Error(
+          'Host-Welten speichern derzeit nur den Namen. Beschreibung und Module folgen im nächsten Cutover-Schritt.',
+        );
+      }
+      const created = await createHostLibraryWorld({ name: normalizeName(payload.name) });
+      return mapHostWorld(created);
+    }
     const jwtUserId = await assertSupabaseJwtSession();
     const insertPayload = {
       owner_user_id: jwtUserId,
@@ -127,6 +174,21 @@ class WorldProfileService {
     payload: UpdateWorldProfileDto,
   ): Promise<WorldProfileVm> {
     if (!ownerUserId) throw new Error('User not authenticated');
+    if (isHostLibraryEnabled()) {
+      if (
+        (typeof payload.description === 'string' && payload.description.trim()) ||
+        (payload.modules && Object.keys(payload.modules).length > 0)
+      ) {
+        throw new Error(
+          'Host-Welten speichern derzeit nur den Namen. Beschreibung und Module folgen im nächsten Cutover-Schritt.',
+        );
+      }
+      if (typeof payload.name !== 'string') {
+        return this.getWorldProfile(ownerUserId, id);
+      }
+      const updated = await updateHostLibraryWorld(id, { name: normalizeName(payload.name) });
+      return mapHostWorld(updated);
+    }
     const jwtUserId = await assertSupabaseJwtSession();
     const updatePayload = {
       ...(typeof payload.name === 'string' ? { name: normalizeName(payload.name) } : {}),
@@ -149,6 +211,10 @@ class WorldProfileService {
 
   async deleteWorldProfile(ownerUserId: string, id: string): Promise<void> {
     if (!ownerUserId) throw new Error('User not authenticated');
+    if (isHostLibraryEnabled()) {
+      await deleteHostLibraryWorld(id);
+      return;
+    }
     const jwtUserId = await assertSupabaseJwtSession();
 
     // World item definitions reference this profile with ON DELETE RESTRICT so

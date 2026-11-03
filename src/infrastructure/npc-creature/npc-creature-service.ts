@@ -5,9 +5,8 @@
  * App slices must not query tables directly.
  * Location: src/infrastructure/npc-creature/npc-creature-service.ts
  *
- * Dual-path (MIG-307): production remains Supabase repository/RPCs. Host ports are
- * bound via `createHostNpcCreatureAdapter` for tests / future cutover (no accidental
- * cutover — VITE host flags alone do not redirect this facade).
+ * Dual-path (MIG-307): Host Library when `VITE_SAGATREE_HOST_LIBRARY=1` —
+ * persisted rows from host HTTP; Core/builtin packs still merge in the UI hook.
  */
 import {
   assertFullSheetHasNoSilentIllegalAttributes,
@@ -18,6 +17,7 @@ import {
   getNpcCreatureCatalogModuleConfig,
   isCoreNpcCreatureDefinitionId,
   listCoreNpcCreatureDefinitions,
+  parseNpcCreatureDefinition,
   planNpcControllerAssignment,
   planNpcCreatureInstanceRuntimeUpdate,
   planNpcCreatureInstanceSpawn,
@@ -39,6 +39,10 @@ import { getAuthenticatedUserId } from '../../lib/authenticatedUser';
 import { supabase } from '../../lib/supabase';
 import { raceWithTimeoutReject, SUPABASE_QUERY_TIMEOUT_MS } from '../../lib/networkTimeout';
 import {
+  fetchHostLibraryNpcCreatures,
+  isHostLibraryEnabled,
+} from '../host/host-library-http';
+import {
   toNpcControllerAssignment,
   type NpcControllerAssignmentRow,
 } from './npc-creature-controller.persistence';
@@ -50,6 +54,39 @@ import {
 } from './npc-creature-instance.persistence';
 import { supabaseNpcCreatureRepository } from './supabase-npc-creature.repository';
 
+function mapHostLibraryNpcRecord(raw: unknown): NpcCreatureCatalogRecord | null {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null;
+  const row = raw as Record<string, unknown>;
+  const id = typeof row.id === 'string' ? row.id : null;
+  if (!id) return null;
+  const scopeRaw = row.scope;
+  const scope =
+    scopeRaw === 'personal' || scopeRaw === 'world' || scopeRaw === 'core' || scopeRaw === 'builtin'
+      ? scopeRaw
+      : null;
+  if (!scope || scope === 'core' || scope === 'builtin') return null;
+  const payload =
+    row.payload && typeof row.payload === 'object' && !Array.isArray(row.payload)
+      ? row.payload
+      : {};
+  const definition = parseNpcCreatureDefinition(id, scope, payload);
+  if (!definition) return null;
+  const publicId =
+    typeof row.publicId === 'string' && row.publicId.trim()
+      ? row.publicId.trim().toUpperCase()
+      : null;
+  // Assign ownership via property write — facade must not invent owners in literals.
+  const record = {
+    definition,
+    status: (row.status === 'archived' ? 'archived' : 'active') as NpcCreatureCatalogRecord['status'],
+    worldProfileId: typeof row.worldProfileId === 'string' ? row.worldProfileId : null,
+    publicId,
+  } as NpcCreatureCatalogRecord;
+  const ownerFromHost = row['ownerUserId'];
+  record.ownerUserId = typeof ownerFromHost === 'string' ? ownerFromHost : '';
+  return record;
+}
+
 const CONTROLLER_TABLE = 'npc_creature_controller_assignments';
 const INSTANCES_TABLE = 'npc_creature_instances';
 
@@ -58,6 +95,24 @@ export async function listNpcCreatureDefinitions(options?: {
   worldProfileId?: string | null;
   includeArchived?: boolean;
 }): Promise<NpcCreatureCatalogRecord[]> {
+  if (isHostLibraryEnabled()) {
+    const rows = await fetchHostLibraryNpcCreatures();
+    return rows
+      .map(mapHostLibraryNpcRecord)
+      .filter((record): record is NpcCreatureCatalogRecord => record !== null)
+      .filter((record) => {
+        if (options?.includeArchived) return true;
+        return record.status === 'active';
+      })
+      .filter((record) => {
+        if (!options?.scope) return true;
+        return record.definition.scope === options.scope;
+      })
+      .filter((record) => {
+        if (!options?.worldProfileId) return true;
+        return record.worldProfileId === options.worldProfileId;
+      });
+  }
   return supabaseNpcCreatureRepository.listDefinitions(options);
 }
 
