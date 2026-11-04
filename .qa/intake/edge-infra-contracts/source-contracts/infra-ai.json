@@ -9,7 +9,7 @@
     },
     {
       "path": "src/infrastructure/ai/host-ai-invoke.ts",
-      "sha256": "2ca0b59aa92fc669d37349ff52ee4b701ed6abcdfd476a7e8847dda23271c44e"
+      "sha256": "8310a4746f3f15aede6854e1bac3517f16cc4d8cec1803c9967f19393df14e78"
     },
     {
       "path": "src/infrastructure/ai/ollama-settings-service.ts",
@@ -30,12 +30,16 @@
       "sha256": "f3cbc6de1a3822b21cf3edf08f6debb19ea27299b46f54dbd1bfac0eaf83150c"
     },
     {
+      "path": "src/infrastructure/host/host-library-http.ts",
+      "sha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c"
+    },
+    {
       "path": "src/lib/hostAuthBridge.ts",
-      "sha256": "925a7e9e9c7cd24fcce69f39d39f7b1250b354800b5188636be319acbf1fe702"
+      "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
     },
     {
       "path": "src/lib/supabase.ts",
-      "sha256": "a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f"
+      "sha256": "267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c"
     }
   ],
   "importedTypeDeclarations": [
@@ -97,6 +101,46 @@
     },
     {
       "kind": "TypeAliasDeclaration",
+      "name": "EnvLike",
+      "path": "src/infrastructure/host/host-library-http.ts",
+      "line": 11,
+      "endLine": 14,
+      "text": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "HostLibraryCharacterDto",
+      "path": "src/infrastructure/host/host-library-http.ts",
+      "line": 68,
+      "endLine": 81,
+      "text": "export type HostLibraryCharacterDto = {\n  readonly id: string;\n  readonly publicId?: string;\n  readonly name: string;\n  readonly description?: string;\n  readonly class?: string;\n  readonly race?: string;\n  readonly level?: number;\n  readonly sheetStatus?: string;\n  readonly portraitUrl?: string | null;\n  readonly sheet?: Readonly<Record<string, unknown>>;\n  readonly createdAt?: string;\n  readonly updatedAt?: string;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "HostLibraryProjectDto",
+      "path": "src/infrastructure/host/host-library-http.ts",
+      "line": 96,
+      "endLine": 113,
+      "text": "export type HostLibraryProjectDto = {\n  readonly id: string;\n  readonly publicId?: string;\n  readonly code?: string;\n  readonly name: string;\n  readonly description?: string | null;\n  readonly worldId?: string | null;\n  readonly worldProfileId?: string | null;\n  readonly sagaId?: string | null;\n  readonly sagaVersionId?: string | null;\n  readonly sagaTitle?: string | null;\n  readonly sagaSlug?: string | null;\n  readonly sagaOrigin?: string | null;\n  readonly gmUserId: string;\n  readonly status?: string;\n  readonly memberCount?: number;\n  readonly sessionCount?: number;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "HostLibraryWorldDto",
+      "path": "src/infrastructure/host/host-library-http.ts",
+      "line": 128,
+      "endLine": 132,
+      "text": "export type HostLibraryWorldDto = {\n  readonly id: string;\n  readonly title: string;\n  readonly createdAt: string;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "HostPublishedAssetDto",
+      "path": "src/infrastructure/host/host-library-http.ts",
+      "line": 471,
+      "endLine": 478,
+      "text": "export type HostPublishedAssetDto = {\n  readonly assetId: string;\n  readonly contentType: string;\n  readonly byteSize: number;\n  readonly checksumSha256: string;\n  readonly url: string;\n  readonly storagePath: string;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
       "name": "HostWhoamiDto",
       "path": "src/lib/hostAuthBridge.ts",
       "line": 24,
@@ -117,8 +161,8 @@
       "kind": "edge",
       "name": "ai-provider-credentials",
       "path": "src/infrastructure/ai/host-ai-invoke.ts",
-      "line": 68,
-      "endLine": 68,
+      "line": 70,
+      "endLine": 70,
       "resolution": "finite-literal-union",
       "expression": "supabase.functions.invoke(functionName, { body })",
       "chain": "supabase.functions.invoke(functionName, { body })",
@@ -128,8 +172,8 @@
       ],
       "enclosingOperation": {
         "path": "src/infrastructure/ai/host-ai-invoke.ts",
-        "line": 63,
-        "endLine": 74,
+        "line": 65,
+        "endLine": 76,
         "text": "async function invokeEdge(\n  functionName: 'ai-provider-credentials' | 'ollama-settings',\n  body: Record<string, unknown>,\n  unreachableMessage: string,\n): Promise<unknown> {\n  const { data, error } = await supabase.functions.invoke(functionName, { body });\n  if (error) {\n    const serverMessage = await edgeErrorMessage(error);\n    throw new Error(serverMessage ?? unreachableMessage);\n  }\n  return data;\n}"
       }
     },
@@ -137,8 +181,8 @@
       "kind": "edge",
       "name": "ollama-settings",
       "path": "src/infrastructure/ai/host-ai-invoke.ts",
-      "line": 68,
-      "endLine": 68,
+      "line": 70,
+      "endLine": 70,
       "resolution": "finite-literal-union",
       "expression": "supabase.functions.invoke(functionName, { body })",
       "chain": "supabase.functions.invoke(functionName, { body })",
@@ -148,8 +192,8 @@
       ],
       "enclosingOperation": {
         "path": "src/infrastructure/ai/host-ai-invoke.ts",
-        "line": 63,
-        "endLine": 74,
+        "line": 65,
+        "endLine": 76,
         "text": "async function invokeEdge(\n  functionName: 'ai-provider-credentials' | 'ollama-settings',\n  body: Record<string, unknown>,\n  unreachableMessage: string,\n): Promise<unknown> {\n  const { data, error } = await supabase.functions.invoke(functionName, { body });\n  if (error) {\n    const serverMessage = await edgeErrorMessage(error);\n    throw new Error(serverMessage ?? unreachableMessage);\n  }\n  return data;\n}"
       }
     }
@@ -186,6 +230,14 @@
       "module": "../../lib/hostAuthBridge",
       "resolvedPath": "src/lib/hostAuthBridge.ts",
       "expression": "import { getHostAuthBaseUrl } from '../../lib/hostAuthBridge';"
+    },
+    {
+      "path": "src/infrastructure/ai/host-ai-invoke.ts",
+      "line": 11,
+      "endLine": 11,
+      "module": "../host/host-library-http",
+      "resolvedPath": "src/infrastructure/host/host-library-http.ts",
+      "expression": "import { isHostLibraryEnabled } from '../host/host-library-http';"
     },
     {
       "path": "src/infrastructure/ai/ollama-settings-service.ts",
@@ -227,20 +279,20 @@
     },
     {
       "path": "src/infrastructure/ai/host-ai-invoke.ts",
-      "line": 12,
-      "endLine": 15,
+      "line": 13,
+      "endLine": 16,
       "text": "export type AiInvokeFn = (\n  path: 'provider-credentials' | 'ollama-settings',\n  body: Record<string, unknown>,\n) => Promise<unknown>;"
     },
     {
       "path": "src/infrastructure/ai/host-ai-invoke.ts",
-      "line": 115,
-      "endLine": 147,
-      "text": "export function createAiInvoke(options?: {\n  readonly fetchImpl?: typeof fetch;\n  readonly env?: EnvLike;\n  /** Force Edge even when host AI opt-in is set (tests). */\n  readonly forceEdge?: boolean;\n}): AiInvokeFn {\n  const fetchImpl = options?.fetchImpl ?? fetch;\n  const env = options?.env ?? ((import.meta as ImportMeta & { env?: EnvLike }).env ?? {});\n  const forceEdge = options?.forceEdge === true;\n\n  return async (path, body) => {\n    const preferHost =\n      !forceEdge && getHostAuthBaseUrl(env) !== null && isHostAiEnabled(env);\n    if (preferHost) {\n      return invokeHost(\n        path,\n        body,\n        path === 'ollama-settings'\n          ? 'Ollama-Einstellungen nicht erreichbar.'\n          : 'AI-Provider-Dienst nicht erreichbar.',\n        fetchImpl,\n        env,\n      );\n    }\n    return invokeEdge(\n      path === 'ollama-settings' ? 'ollama-settings' : 'ai-provider-credentials',\n      body,\n      path === 'ollama-settings'\n        ? 'Ollama-Einstellungen nicht erreichbar.'\n        : 'AI-Provider-Dienst nicht erreichbar.',\n    );\n  };\n}"
+      "line": 117,
+      "endLine": 156,
+      "text": "export function createAiInvoke(options?: {\n  readonly fetchImpl?: typeof fetch;\n  readonly env?: EnvLike;\n  /** Force Edge even when host AI opt-in is set (tests). */\n  readonly forceEdge?: boolean;\n}): AiInvokeFn {\n  const fetchImpl = options?.fetchImpl ?? fetch;\n  const env = options?.env ?? ((import.meta as ImportMeta & { env?: EnvLike }).env ?? {});\n  const forceEdge = options?.forceEdge === true;\n\n  return async (path, body) => {\n    const preferHost =\n      !forceEdge && getHostAuthBaseUrl(env) !== null && isHostAiEnabled(env);\n    if (preferHost) {\n      return invokeHost(\n        path,\n        body,\n        path === 'ollama-settings'\n          ? 'Ollama-Einstellungen nicht erreichbar.'\n          : 'AI-Provider-Dienst nicht erreichbar.',\n        fetchImpl,\n        env,\n      );\n    }\n    if (!forceEdge && isHostLibraryEnabled(env)) {\n      throw new Error(\n        path === 'ollama-settings'\n          ? 'Ollama-Einstellungen sind im Host-Modus ohne VITE_SAGATREE_HOST_AI noch nicht verfügbar.'\n          : 'AI-Provider-Dienst ist im Host-Modus ohne VITE_SAGATREE_HOST_AI noch nicht verfügbar.',\n      );\n    }\n    return invokeEdge(\n      path === 'ollama-settings' ? 'ollama-settings' : 'ai-provider-credentials',\n      body,\n      path === 'ollama-settings'\n        ? 'Ollama-Einstellungen nicht erreichbar.'\n        : 'AI-Provider-Dienst nicht erreichbar.',\n    );\n  };\n}"
     },
     {
       "path": "src/infrastructure/ai/host-ai-invoke.ts",
-      "line": 149,
-      "endLine": 149,
+      "line": 158,
+      "endLine": 158,
       "text": "export const defaultAiInvoke = createAiInvoke();"
     },
     {
@@ -350,66 +402,66 @@
     },
     {
       "path": "src/infrastructure/ai/host-ai-invoke.ts",
-      "line": 31,
-      "endLine": 33,
+      "line": 33,
+      "endLine": 35,
       "name": "isRecord",
       "text": "function isRecord(value: unknown): value is Record<string, unknown> {\n  return typeof value === 'object' && value !== null;\n}"
     },
     {
       "path": "src/infrastructure/ai/host-ai-invoke.ts",
-      "line": 35,
-      "endLine": 38,
+      "line": 37,
+      "endLine": 40,
       "name": "isHostAiEnabled",
       "text": "function isHostAiEnabled(env: EnvLike): boolean {\n  const flag = env.VITE_SAGATREE_HOST_AI?.trim().toLowerCase();\n  return flag === '1' || flag === 'true' || flag === 'yes';\n}"
     },
     {
       "path": "src/infrastructure/ai/host-ai-invoke.ts",
-      "line": 40,
-      "endLine": 46,
+      "line": 42,
+      "endLine": 48,
       "name": "parseHostAiEnvelope",
       "text": "function parseHostAiEnvelope(value: unknown): HostAiEnvelope | null {\n  if (!isRecord(value) || typeof value.status !== 'string') return null;\n  if (value.status !== 'ok' && value.status !== 'error' && value.status !== 'not-configured') {\n    return null;\n  }\n  return value as HostAiEnvelope;\n}"
     },
     {
       "path": "src/infrastructure/ai/host-ai-invoke.ts",
-      "line": 48,
-      "endLine": 50,
+      "line": 50,
+      "endLine": 52,
       "name": "hasResponseContext",
       "text": "function hasResponseContext(error: unknown): error is { context: Response } {\n  return isRecord(error) && error.context instanceof Response;\n}"
     },
     {
       "path": "src/infrastructure/ai/host-ai-invoke.ts",
-      "line": 52,
-      "endLine": 61,
+      "line": 54,
+      "endLine": 63,
       "name": "edgeErrorMessage",
       "text": "async function edgeErrorMessage(error: unknown): Promise<string | undefined> {\n  if (!hasResponseContext(error)) return undefined;\n  try {\n    const body: unknown = await error.context.clone().json();\n    if (isRecord(body) && typeof body.message === 'string') return body.message;\n  } catch {\n    return undefined;\n  }\n  return undefined;\n}"
     },
     {
       "path": "src/infrastructure/ai/host-ai-invoke.ts",
-      "line": 63,
-      "endLine": 74,
+      "line": 65,
+      "endLine": 76,
       "name": "invokeEdge",
       "text": "async function invokeEdge(\n  functionName: 'ai-provider-credentials' | 'ollama-settings',\n  body: Record<string, unknown>,\n  unreachableMessage: string,\n): Promise<unknown> {\n  const { data, error } = await supabase.functions.invoke(functionName, { body });\n  if (error) {\n    const serverMessage = await edgeErrorMessage(error);\n    throw new Error(serverMessage ?? unreachableMessage);\n  }\n  return data;\n}"
     },
     {
       "path": "src/infrastructure/ai/host-ai-invoke.ts",
-      "line": 76,
-      "endLine": 109,
+      "line": 78,
+      "endLine": 111,
       "name": "invokeHost",
       "text": "async function invokeHost(\n  path: 'provider-credentials' | 'ollama-settings',\n  body: Record<string, unknown>,\n  unreachableMessage: string,\n  fetchImpl: typeof fetch,\n  env: EnvLike,\n): Promise<unknown> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}/api/v1/ai/${path}`, {\n      method: 'POST',\n      credentials: 'include',\n      headers: { Accept: 'application/json', 'content-type': 'application/json' },\n      body: JSON.stringify(body),\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  let data: unknown;\n  try {\n    data = await response.json();\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  const envelope = parseHostAiEnvelope(data);\n  if (!envelope) throw new Error(unreachableMessage);\n  if (!response.ok) {\n    // Preserve Edge-shaped error objects for client parsers (status/error/not-configured).\n    return envelope;\n  }\n  return envelope;\n}"
     },
     {
       "path": "src/infrastructure/ai/host-ai-invoke.ts",
-      "line": 115,
-      "endLine": 147,
+      "line": 117,
+      "endLine": 156,
       "name": "createAiInvoke",
-      "text": "export function createAiInvoke(options?: {\n  readonly fetchImpl?: typeof fetch;\n  readonly env?: EnvLike;\n  /** Force Edge even when host AI opt-in is set (tests). */\n  readonly forceEdge?: boolean;\n}): AiInvokeFn {\n  const fetchImpl = options?.fetchImpl ?? fetch;\n  const env = options?.env ?? ((import.meta as ImportMeta & { env?: EnvLike }).env ?? {});\n  const forceEdge = options?.forceEdge === true;\n\n  return async (path, body) => {\n    const preferHost =\n      !forceEdge && getHostAuthBaseUrl(env) !== null && isHostAiEnabled(env);\n    if (preferHost) {\n      return invokeHost(\n        path,\n        body,\n        path === 'ollama-settings'\n          ? 'Ollama-Einstellungen nicht erreichbar.'\n          : 'AI-Provider-Dienst nicht erreichbar.',\n        fetchImpl,\n        env,\n      );\n    }\n    return invokeEdge(\n      path === 'ollama-settings' ? 'ollama-settings' : 'ai-provider-credentials',\n      body,\n      path === 'ollama-settings'\n        ? 'Ollama-Einstellungen nicht erreichbar.'\n        : 'AI-Provider-Dienst nicht erreichbar.',\n    );\n  };\n}"
+      "text": "export function createAiInvoke(options?: {\n  readonly fetchImpl?: typeof fetch;\n  readonly env?: EnvLike;\n  /** Force Edge even when host AI opt-in is set (tests). */\n  readonly forceEdge?: boolean;\n}): AiInvokeFn {\n  const fetchImpl = options?.fetchImpl ?? fetch;\n  const env = options?.env ?? ((import.meta as ImportMeta & { env?: EnvLike }).env ?? {});\n  const forceEdge = options?.forceEdge === true;\n\n  return async (path, body) => {\n    const preferHost =\n      !forceEdge && getHostAuthBaseUrl(env) !== null && isHostAiEnabled(env);\n    if (preferHost) {\n      return invokeHost(\n        path,\n        body,\n        path === 'ollama-settings'\n          ? 'Ollama-Einstellungen nicht erreichbar.'\n          : 'AI-Provider-Dienst nicht erreichbar.',\n        fetchImpl,\n        env,\n      );\n    }\n    if (!forceEdge && isHostLibraryEnabled(env)) {\n      throw new Error(\n        path === 'ollama-settings'\n          ? 'Ollama-Einstellungen sind im Host-Modus ohne VITE_SAGATREE_HOST_AI noch nicht verfügbar.'\n          : 'AI-Provider-Dienst ist im Host-Modus ohne VITE_SAGATREE_HOST_AI noch nicht verfügbar.',\n      );\n    }\n    return invokeEdge(\n      path === 'ollama-settings' ? 'ollama-settings' : 'ai-provider-credentials',\n      body,\n      path === 'ollama-settings'\n        ? 'Ollama-Einstellungen nicht erreichbar.'\n        : 'AI-Provider-Dienst nicht erreichbar.',\n    );\n  };\n}"
     },
     {
       "path": "src/infrastructure/ai/host-ai-invoke.ts",
-      "line": 125,
-      "endLine": 146,
+      "line": 127,
+      "endLine": 155,
       "name": "callback",
-      "text": "async (path, body) => {\n    const preferHost =\n      !forceEdge && getHostAuthBaseUrl(env) !== null && isHostAiEnabled(env);\n    if (preferHost) {\n      return invokeHost(\n        path,\n        body,\n        path === 'ollama-settings'\n          ? 'Ollama-Einstellungen nicht erreichbar.'\n          : 'AI-Provider-Dienst nicht erreichbar.',\n        fetchImpl,\n        env,\n      );\n    }\n    return invokeEdge(\n      path === 'ollama-settings' ? 'ollama-settings' : 'ai-provider-credentials',\n      body,\n      path === 'ollama-settings'\n        ? 'Ollama-Einstellungen nicht erreichbar.'\n        : 'AI-Provider-Dienst nicht erreichbar.',\n    );\n  }"
+      "text": "async (path, body) => {\n    const preferHost =\n      !forceEdge && getHostAuthBaseUrl(env) !== null && isHostAiEnabled(env);\n    if (preferHost) {\n      return invokeHost(\n        path,\n        body,\n        path === 'ollama-settings'\n          ? 'Ollama-Einstellungen nicht erreichbar.'\n          : 'AI-Provider-Dienst nicht erreichbar.',\n        fetchImpl,\n        env,\n      );\n    }\n    if (!forceEdge && isHostLibraryEnabled(env)) {\n      throw new Error(\n        path === 'ollama-settings'\n          ? 'Ollama-Einstellungen sind im Host-Modus ohne VITE_SAGATREE_HOST_AI noch nicht verfügbar.'\n          : 'AI-Provider-Dienst ist im Host-Modus ohne VITE_SAGATREE_HOST_AI noch nicht verfügbar.',\n      );\n    }\n    return invokeEdge(\n      path === 'ollama-settings' ? 'ollama-settings' : 'ai-provider-credentials',\n      body,\n      path === 'ollama-settings'\n        ? 'Ollama-Einstellungen nicht erreichbar.'\n        : 'AI-Provider-Dienst nicht erreichbar.',\n    );\n  }"
     },
     {
       "path": "src/infrastructure/ai/ollama-settings-service.ts",

@@ -1,15 +1,17 @@
 /**
- * Resolves the current user id for service-layer Supabase calls.
+ * Resolves the current user id for service-layer calls.
  * Local-admin sessions short-circuit when the stack is unreachable.
  * Location: src/lib/authenticatedUser.ts
  *
- * World/Atlas RLS requires a real GoTrue JWT (`authenticated` role). Offline
- * Local Admin UI may resolve an owner id without a token — use
- * `assertSupabaseJwtSession` before PostgREST calls that hit world RPCs/RLS.
+ * FE-HOST-09: under host library, actor comes from Better Auth whoami (cookie).
+ * World/Atlas PostgREST still requires a GoTrue JWT when host library is off —
+ * use `assertSupabaseJwtSession` before those legacy RLS paths.
  */
 
 import { supabase } from './supabase';
 import { isLocalAdminSession, LOCAL_ADMIN_USER_ID } from './localAdmin';
+import { probeHostActor } from './hostAuthBridge';
+import { isHostLibraryEnabled } from '../infrastructure/host/host-library-http';
 import {
   AUTH_SESSION_TIMEOUT_MS,
   isTimedOut,
@@ -26,6 +28,12 @@ const JWT_WAIT_MS = 4_000;
 const JWT_POLL_MS = 200;
 
 export async function getAuthenticatedUserId(): Promise<string> {
+  if (isHostLibraryEnabled()) {
+    const actor = await probeHostActor();
+    if (actor?.actorId) return actor.actorId;
+    throw new Error('User not authenticated');
+  }
+
   if (isLocalAdminSession()) {
     const sessionResult = await raceWithTimeoutOrSymbol(
       supabase.auth.getSession(),
@@ -50,6 +58,8 @@ export async function getAuthenticatedUserId(): Promise<string> {
 /**
  * Ensures the Supabase client holds an access token (PostgREST `authenticated`).
  * Polls briefly so a late Local Admin GoTrue upgrade can land before failing.
+ * Host-first callers must branch on `isHostLibraryEnabled()` before invoking this —
+ * a Better Auth actor is not a GoTrue JWT (FE-HOST-09).
  * @returns authenticated user id from the JWT session
  */
 export async function assertSupabaseJwtSession(): Promise<string> {

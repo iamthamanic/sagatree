@@ -7,6 +7,7 @@
  * (no accidental cutover — VITE host flags alone do not redirect this facade).
  */
 import { supabase } from '../../lib/supabase';
+import { isHostLibraryEnabled } from '../host/host-library-http';
 import {
   parsePromoteRpcResult,
   type PromoteRpcResult,
@@ -17,6 +18,12 @@ async function callPromote(
   sessionId: string,
   consequenceId: string,
 ): Promise<PromoteRpcResult> {
+  if (isHostLibraryEnabled()) {
+    return {
+      ok: false,
+      messageDe: 'Session-Übernahme ist im Host-Modus noch nicht verfügbar.',
+    };
+  }
   const { data, error } = await supabase.rpc(rpc, {
     p_session_id: sessionId,
     p_consequence_id: consequenceId,

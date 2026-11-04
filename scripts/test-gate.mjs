@@ -1394,6 +1394,19 @@ function checkFeHost08CatalogHttp() {
   console.log('OK: fe-host-08-catalog-http.self-test');
 }
 
+function checkFeHost09HostFirst() {
+  console.log('FE-HOST-09 host-first default + residual DENY (#1101)...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/fe-host-09-host-first.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+  console.log('OK: fe-host-09-host-first.self-test');
+}
+
 function checkMig312UserProfileAdapter() {
   console.log('MIG-312 user-profile adapter (#811): user_profiles + user-avatars dual-path...');
   execFileSync(
@@ -3607,6 +3620,7 @@ checkFeHost05InventoryNpcHttp();
 checkFeHost06AssetsHttp();
 checkFeHost07ProductAuth();
 checkFeHost08CatalogHttp();
+checkFeHost09HostFirst();
 checkMig312UserProfileAdapter();
 checkMig309Rulesets();
 checkMig313WorldAdapter();

@@ -113,9 +113,15 @@ class WorldProfileService {
 
   /** Resolve by public id (WO-…); RLS decides readability (no client-elevated filter). */
   async getByPublicId(worldPublicId: string): Promise<WorldProfileVm | null> {
-    await assertSupabaseJwtSession();
     const publicId = worldPublicId.trim().toUpperCase();
     if (!publicId) return null;
+    if (isHostLibraryEnabled()) {
+      // Host world DTOs are title-only today (no publicId). Fail closed — no PostgREST.
+      throw new Error(
+        'Welt per öffentlicher ID laden ist im Host-Modus noch nicht verfügbar.',
+      );
+    }
+    await assertSupabaseJwtSession();
     const { data, error } = await supabase
       .from(this.tableName)
       .select(WORLD_SELECT)

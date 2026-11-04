@@ -942,8 +942,8 @@
         "agent-done"
       ],
       "bodyFile": ".qa/design/migration-issues/stack-migration-mig-301.md",
-      "sha256": "f5959130fb84c57c66d006b339955e375bae9e1bf87d4b02760255a4a5ff1a01",
-      "payloadSha256": "328cd264c8d71ebd4a7a67343d43f920c5e545808748a3ab303fcd10c18eb2dc"
+      "sha256": "2c77543e43c0555aca01c44bcd80564daff16245808ef36ac7733ec28449dac0",
+      "payloadSha256": "1c47f23061bd2481d844c8bf1467d25766b7cd97f02d6016b729264b5c393bce"
     },
     {
       "localId": "MIG-302",
@@ -956,8 +956,8 @@
         "agent-done"
       ],
       "bodyFile": ".qa/design/migration-issues/stack-migration-mig-302.md",
-      "sha256": "0ad21cfe5448e4b0771714fc24adcda90fb82076d85199b0e3bd70492cc11984",
-      "payloadSha256": "b519c777aa6c88d1c8849642b10820e93a32cdee6cb86bbf55f679235fe46ec2"
+      "sha256": "8edee07de6050d82b0bc573f57e1b05f007ce7640d4b6660679831be17d61a18",
+      "payloadSha256": "66f1b5d42719747ff4ec92575d52e90706db078c9a1903dce0b0252956ca122a"
     },
     {
       "localId": "MIG-303",
@@ -1040,8 +1040,8 @@
         "agent-done"
       ],
       "bodyFile": ".qa/design/migration-issues/stack-migration-mig-308.md",
-      "sha256": "9ccb0ad6fe018f80b629096fada8eedb89536cde5e7207a1df377daeb6be1d84",
-      "payloadSha256": "1941da5efc361de96e4356ea348fc290eaa19586388760eaac2a7bd5915c9410"
+      "sha256": "ff77c22d5ca6e4d3a57a9787464265d84ee0f8cea7105840819ebde4badb6e86",
+      "payloadSha256": "71599edcbdfc1df7cd504823fa87c099bc13e005a34a0ec27a73e14fb78114fa"
     },
     {
       "localId": "MIG-309",
@@ -1068,8 +1068,8 @@
         "agent-done"
       ],
       "bodyFile": ".qa/design/migration-issues/stack-migration-mig-310.md",
-      "sha256": "0d5c935fe3a0ebd9abbe9a40b771377b5c2f1c28ff0d9a8897c1394e326f415b",
-      "payloadSha256": "b60b59484b07b74ca13c063cd93c03c3dce76c456bdb72183479a29cfc8ef5f4"
+      "sha256": "7ad09ab3dac9d8cd2f56e4d2684caa636d4b48f91b73f60d9c6614a8d7bc6412",
+      "payloadSha256": "a73f42ff6bde110695c19d6fce1a0ea9dcdca5d076abfee6f51d1df11c3e71f2"
     },
     {
       "localId": "MIG-311",

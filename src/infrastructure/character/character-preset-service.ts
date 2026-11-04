@@ -3,6 +3,7 @@
  * Location: src/infrastructure/character/character-preset-service.ts
  */
 import { supabase } from '../../lib/supabase';
+import { assertHostProductSurfaceAvailable } from '../host/host-product-deny';
 import { getAuthenticatedUserId } from '../../lib/authenticatedUser';
 import { raceWithTimeoutReject, SUPABASE_QUERY_TIMEOUT_MS } from '../../lib/networkTimeout';
 import { normalizeCharacterAppearance, normalizeSafeUrl } from '../../domains/character/use-cases/avatar-presets';
@@ -196,6 +197,7 @@ function mapToViewModel(dto: CharacterPresetDto, sourceMissing: boolean): Charac
 
 class CharacterPresetService {
   async listUserPresets(): Promise<CharacterPresetVm[]> {
+    assertHostProductSurfaceAvailable('Charakter-Presets');
     const userId = await getAuthenticatedUserId();
     const { data, error } = await raceWithTimeoutReject(
       supabase
@@ -234,6 +236,7 @@ class CharacterPresetService {
   }
 
   async getPresetForCharacter(characterId: string): Promise<CharacterPresetVm | null> {
+    assertHostProductSurfaceAvailable('Charakter-Presets');
     const userId = await getAuthenticatedUserId();
     const { data, error } = await supabase
       .from(TABLE)
@@ -248,6 +251,7 @@ class CharacterPresetService {
   }
 
   async createPresetFromCharacter(input: CreateCharacterPresetInput): Promise<CharacterPresetVm> {
+    assertHostProductSurfaceAvailable('Charakter-Presets');
     const userId = await getAuthenticatedUserId();
     if (input.rulesetKey !== 'sagatree-core') {
       throw new Error('Presets sind derzeit nur für SagaTree Core verfügbar.');
@@ -283,6 +287,7 @@ class CharacterPresetService {
   }
 
   async releaseVersion(input: ReleaseCharacterPresetVersionInput): Promise<CharacterPresetVm> {
+    assertHostProductSurfaceAvailable('Charakter-Presets');
     const userId = await getAuthenticatedUserId();
     const snapshot = withSafePortraitUrl(input.snapshot);
     assertValidSnapshot(snapshot);
@@ -324,6 +329,7 @@ class CharacterPresetService {
   }
 
   async renamePreset(presetId: string, displayName: string): Promise<CharacterPresetVm> {
+    assertHostProductSurfaceAvailable('Charakter-Presets');
     const userId = await getAuthenticatedUserId();
     const trimmed = displayName.trim();
     if (!trimmed) throw new Error('Preset-Name darf nicht leer sein.');
@@ -339,6 +345,7 @@ class CharacterPresetService {
   }
 
   async duplicatePreset(presetId: string): Promise<CharacterPresetVm> {
+    assertHostProductSurfaceAvailable('Charakter-Presets');
     const userId = await getAuthenticatedUserId();
     const { data: existing, error: loadError } = await supabase
       .from(TABLE)
@@ -369,6 +376,7 @@ class CharacterPresetService {
   }
 
   async deletePreset(presetId: string): Promise<void> {
+    assertHostProductSurfaceAvailable('Charakter-Presets');
     const userId = await getAuthenticatedUserId();
     const { error } = await supabase.from(TABLE).delete().eq('id', presetId).eq('owner_user_id', userId);
     if (error) throw new Error(`Preset konnte nicht gelöscht werden: ${error.message}`);
@@ -384,6 +392,7 @@ class CharacterPresetService {
     snapshot: CharacterPresetSnapshot;
     releaseMode: 'manual' | 'auto';
   }): Promise<CharacterPresetVm | null> {
+    assertHostProductSurfaceAvailable('Charakter-Presets');
     if (input.releaseMode !== 'auto') return null;
     if (input.snapshot.level <= input.previousLevel) return null;
     const linked = await this.getPresetForCharacter(input.characterId);

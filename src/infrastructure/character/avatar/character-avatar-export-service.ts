@@ -19,6 +19,7 @@ import {
   type RuntimeTraitOverlay,
 } from '../../../domains/character/avatar';
 import { resolveBaseBodyModelUrl } from './base-body-catalog';
+import { assertHostProductSurfaceAvailable } from '../../host/host-product-deny';
 
 const BUCKET = 'character-avatars';
 const SIGNED_URL_SECONDS = 60 * 60 * 24 * 365;
@@ -62,6 +63,7 @@ export async function materializeAvatarSaveExport(
     onProgress?: (progress: AvatarSaveExportProgress) => void;
   },
 ): Promise<AvatarSaveExportArtifact> {
+  assertHostProductSurfaceAvailable('Avatar-Export');
   const report = (
     status: AvatarSaveExportUiStatus,
     message: string,

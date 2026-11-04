@@ -29,7 +29,7 @@
     },
     {
       "path": "src/infrastructure/look/look-reference-analysis-service.ts",
-      "sha256": "a032b123fff9a4fe81429f04cc3113fb776d296f069952f147293f350ebf50a3"
+      "sha256": "15decebbe271b416c473fd1a9ad0d4e1f6572c3ea0e1b0c85fc2cc8181066839"
     },
     {
       "path": "src/infrastructure/look/look-runtime-types.ts",
@@ -127,15 +127,15 @@
     },
     {
       "path": "src/infrastructure/host/host-library-http.ts",
-      "sha256": "c452cc3bf830068496fb10f705019cbdcc682586c1672b6a7572cd430b5d5069"
+      "sha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c"
     },
     {
       "path": "src/lib/authenticatedUser.ts",
-      "sha256": "c822140996ae4d318c19d2ccb5318d77f2ba4d302bdfbcb50a79420a7ef70d74"
+      "sha256": "d4cbf3a004f8375982ca03d474fb7b61559fc2ec58ad6fe7b1f8834d26abf10c"
     },
     {
       "path": "src/lib/hostAuthBridge.ts",
-      "sha256": "925a7e9e9c7cd24fcce69f39d39f7b1250b354800b5188636be319acbf1fe702"
+      "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
     },
     {
       "path": "src/lib/localAdmin.ts",
@@ -147,7 +147,7 @@
     },
     {
       "path": "src/lib/supabase.ts",
-      "sha256": "a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f"
+      "sha256": "267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c"
     }
   ],
   "importedTypeDeclarations": [
@@ -691,40 +691,40 @@
       "kind": "TypeAliasDeclaration",
       "name": "EnvLike",
       "path": "src/infrastructure/host/host-library-http.ts",
-      "line": 10,
-      "endLine": 13,
+      "line": 11,
+      "endLine": 14,
       "text": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "HostLibraryCharacterDto",
       "path": "src/infrastructure/host/host-library-http.ts",
-      "line": 62,
-      "endLine": 75,
+      "line": 68,
+      "endLine": 81,
       "text": "export type HostLibraryCharacterDto = {\n  readonly id: string;\n  readonly publicId?: string;\n  readonly name: string;\n  readonly description?: string;\n  readonly class?: string;\n  readonly race?: string;\n  readonly level?: number;\n  readonly sheetStatus?: string;\n  readonly portraitUrl?: string | null;\n  readonly sheet?: Readonly<Record<string, unknown>>;\n  readonly createdAt?: string;\n  readonly updatedAt?: string;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "HostLibraryProjectDto",
       "path": "src/infrastructure/host/host-library-http.ts",
-      "line": 90,
-      "endLine": 107,
+      "line": 96,
+      "endLine": 113,
       "text": "export type HostLibraryProjectDto = {\n  readonly id: string;\n  readonly publicId?: string;\n  readonly code?: string;\n  readonly name: string;\n  readonly description?: string | null;\n  readonly worldId?: string | null;\n  readonly worldProfileId?: string | null;\n  readonly sagaId?: string | null;\n  readonly sagaVersionId?: string | null;\n  readonly sagaTitle?: string | null;\n  readonly sagaSlug?: string | null;\n  readonly sagaOrigin?: string | null;\n  readonly gmUserId: string;\n  readonly status?: string;\n  readonly memberCount?: number;\n  readonly sessionCount?: number;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "HostLibraryWorldDto",
       "path": "src/infrastructure/host/host-library-http.ts",
-      "line": 122,
-      "endLine": 126,
+      "line": 128,
+      "endLine": 132,
       "text": "export type HostLibraryWorldDto = {\n  readonly id: string;\n  readonly title: string;\n  readonly createdAt: string;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "HostPublishedAssetDto",
       "path": "src/infrastructure/host/host-library-http.ts",
-      "line": 465,
-      "endLine": 472,
+      "line": 471,
+      "endLine": 478,
       "text": "export type HostPublishedAssetDto = {\n  readonly assetId: string;\n  readonly contentType: string;\n  readonly byteSize: number;\n  readonly checksumSha256: string;\n  readonly url: string;\n  readonly storagePath: string;\n};"
     },
     {
@@ -757,8 +757,8 @@
       "kind": "edge",
       "name": "look-reference-analysis",
       "path": "src/infrastructure/look/look-reference-analysis-service.ts",
-      "line": 127,
-      "endLine": 145,
+      "line": 135,
+      "endLine": 153,
       "resolution": "literal-or-constant",
       "expression": "supabase.functions.invoke(\n    'look-reference-analysis',\n    {\n      body: {\n        action: 'analyze',\n        displayNameHint: request.displayNameHint,\n        references: request.references.map((ref) => ({\n          id: ref.id,\n          kind: ref.kind,\n          mime: ref.mime,\n          uri: ref.uri,\n          weight: ref.weight,\n          label: ref.label,\n          contentBase64: ref.contentBase64,\n          storagePath: ref.storagePath,\n        })),\n      },\n    },\n  )",
       "chain": "supabase.functions.invoke(\n    'look-reference-analysis',\n    {\n      body: {\n        action: 'analyze',\n        displayNameHint: request.displayNameHint,\n        references: request.references.map((ref) => ({\n          id: ref.id,\n          kind: ref.kind,\n          mime: ref.mime,\n          uri: ref.uri,\n          weight: ref.weight,\n          label: ref.label,\n          contentBase64: ref.contentBase64,\n          storagePath: ref.storagePath,\n        })),\n      },\n    },\n  )",
@@ -768,9 +768,9 @@
       ],
       "enclosingOperation": {
         "path": "src/infrastructure/look/look-reference-analysis-service.ts",
-        "line": 101,
-        "endLine": 172,
-        "text": "export async function analyzeLookReferences(\n  request: LookReferenceAnalysisRequest,\n): Promise<LookReferenceAnalysisOutcome> {\n  const aggregateBytes = request.references.reduce(\n    (sum, ref) => sum + estimateBase64Bytes(ref.contentBase64),\n    0,\n  );\n  if (aggregateBytes > LOOK_REFERENCE_AGGREGATE_MAX_BYTES) {\n    return {\n      ok: false,\n      code: 'edge-error',\n      messageDe: `Gesamtgröße der Referenzbilder überschreitet ${(LOOK_REFERENCE_AGGREGATE_MAX_BYTES / (1024 * 1024)).toFixed(0)} MB.`,\n    };\n  }\n\n  const domainInputs: LookReferenceAnalysisImageInput[] = request.references.map(\n    (ref) => ({\n      id: ref.id,\n      kind: ref.kind,\n      mime: ref.mime,\n      uri: ref.uri,\n      weight: ref.weight,\n      label: ref.label,\n    }),\n  );\n\n  const { data, error } = await supabase.functions.invoke(\n    'look-reference-analysis',\n    {\n      body: {\n        action: 'analyze',\n        displayNameHint: request.displayNameHint,\n        references: request.references.map((ref) => ({\n          id: ref.id,\n          kind: ref.kind,\n          mime: ref.mime,\n          uri: ref.uri,\n          weight: ref.weight,\n          label: ref.label,\n          contentBase64: ref.contentBase64,\n          storagePath: ref.storagePath,\n        })),\n      },\n    },\n  );\n\n  if (error) {\n    const serverMessage = await getFunctionErrorMessage(error);\n    return {\n      ok: false,\n      code: 'edge-error',\n      messageDe:\n        serverMessage ??\n        'Look-Referenzanalyse fehlgeschlagen. Bitte erneut versuchen.',\n    };\n  }\n\n  const edge = parseEdgeResponse(data);\n  if (edge.status !== 'ok') {\n    return {\n      ok: false,\n      code: edge.status,\n      messageDe: edge.message,\n    };\n  }\n\n  return normalizeLookReferenceAnalysisPayload(edge.payload, {\n    references: domainInputs,\n    displayNameHint: request.displayNameHint,\n    analyzedAtIso: edge.analyzedAtIso,\n  });\n}"
+        "line": 102,
+        "endLine": 180,
+        "text": "export async function analyzeLookReferences(\n  request: LookReferenceAnalysisRequest,\n): Promise<LookReferenceAnalysisOutcome> {\n  if (isHostLibraryEnabled()) {\n    return {\n      ok: false,\n      code: 'edge-error',\n      messageDe: 'Look-Referenzanalyse ist im Host-Modus noch nicht verfügbar.',\n    };\n  }\n  const aggregateBytes = request.references.reduce(\n    (sum, ref) => sum + estimateBase64Bytes(ref.contentBase64),\n    0,\n  );\n  if (aggregateBytes > LOOK_REFERENCE_AGGREGATE_MAX_BYTES) {\n    return {\n      ok: false,\n      code: 'edge-error',\n      messageDe: `Gesamtgröße der Referenzbilder überschreitet ${(LOOK_REFERENCE_AGGREGATE_MAX_BYTES / (1024 * 1024)).toFixed(0)} MB.`,\n    };\n  }\n\n  const domainInputs: LookReferenceAnalysisImageInput[] = request.references.map(\n    (ref) => ({\n      id: ref.id,\n      kind: ref.kind,\n      mime: ref.mime,\n      uri: ref.uri,\n      weight: ref.weight,\n      label: ref.label,\n    }),\n  );\n\n  const { data, error } = await supabase.functions.invoke(\n    'look-reference-analysis',\n    {\n      body: {\n        action: 'analyze',\n        displayNameHint: request.displayNameHint,\n        references: request.references.map((ref) => ({\n          id: ref.id,\n          kind: ref.kind,\n          mime: ref.mime,\n          uri: ref.uri,\n          weight: ref.weight,\n          label: ref.label,\n          contentBase64: ref.contentBase64,\n          storagePath: ref.storagePath,\n        })),\n      },\n    },\n  );\n\n  if (error) {\n    const serverMessage = await getFunctionErrorMessage(error);\n    return {\n      ok: false,\n      code: 'edge-error',\n      messageDe:\n        serverMessage ??\n        'Look-Referenzanalyse fehlgeschlagen. Bitte erneut versuchen.',\n    };\n  }\n\n  const edge = parseEdgeResponse(data);\n  if (edge.status !== 'ok') {\n    return {\n      ok: false,\n      code: edge.status,\n      messageDe: edge.message,\n    };\n  }\n\n  return normalizeLookReferenceAnalysisPayload(edge.payload, {\n    references: domainInputs,\n    displayNameHint: request.displayNameHint,\n    analyzedAtIso: edge.analyzedAtIso,\n  });\n}"
       }
     },
     {
@@ -1162,6 +1162,14 @@
       "expression": "import { supabase } from '../../lib/supabase';"
     },
     {
+      "path": "src/infrastructure/look/look-reference-analysis-service.ts",
+      "line": 15,
+      "endLine": 15,
+      "module": "../host/host-library-http",
+      "resolvedPath": "src/infrastructure/host/host-library-http.ts",
+      "expression": "import { isHostLibraryEnabled } from '../host/host-library-http';"
+    },
+    {
       "path": "src/infrastructure/look/look-runtime-types.ts",
       "line": 7,
       "endLine": 11,
@@ -1377,26 +1385,26 @@
     },
     {
       "path": "src/infrastructure/look/look-reference-analysis-service.ts",
-      "line": 16,
-      "endLine": 21,
+      "line": 17,
+      "endLine": 22,
       "text": "export type LookReferenceAnalysisRequestImage = LookReferenceAnalysisImageInput & {\n  /** Inline image for edge vision call. */\n  readonly contentBase64?: string;\n  /** Owner-scoped storage path alternative to contentBase64. */\n  readonly storagePath?: string;\n};"
     },
     {
       "path": "src/infrastructure/look/look-reference-analysis-service.ts",
-      "line": 23,
-      "endLine": 26,
+      "line": 24,
+      "endLine": 27,
       "text": "export type LookReferenceAnalysisRequest = {\n  readonly references: readonly LookReferenceAnalysisRequestImage[];\n  readonly displayNameHint?: string;\n};"
     },
     {
       "path": "src/infrastructure/look/look-reference-analysis-service.ts",
-      "line": 101,
-      "endLine": 172,
-      "text": "export async function analyzeLookReferences(\n  request: LookReferenceAnalysisRequest,\n): Promise<LookReferenceAnalysisOutcome> {\n  const aggregateBytes = request.references.reduce(\n    (sum, ref) => sum + estimateBase64Bytes(ref.contentBase64),\n    0,\n  );\n  if (aggregateBytes > LOOK_REFERENCE_AGGREGATE_MAX_BYTES) {\n    return {\n      ok: false,\n      code: 'edge-error',\n      messageDe: `Gesamtgröße der Referenzbilder überschreitet ${(LOOK_REFERENCE_AGGREGATE_MAX_BYTES / (1024 * 1024)).toFixed(0)} MB.`,\n    };\n  }\n\n  const domainInputs: LookReferenceAnalysisImageInput[] = request.references.map(\n    (ref) => ({\n      id: ref.id,\n      kind: ref.kind,\n      mime: ref.mime,\n      uri: ref.uri,\n      weight: ref.weight,\n      label: ref.label,\n    }),\n  );\n\n  const { data, error } = await supabase.functions.invoke(\n    'look-reference-analysis',\n    {\n      body: {\n        action: 'analyze',\n        displayNameHint: request.displayNameHint,\n        references: request.references.map((ref) => ({\n          id: ref.id,\n          kind: ref.kind,\n          mime: ref.mime,\n          uri: ref.uri,\n          weight: ref.weight,\n          label: ref.label,\n          contentBase64: ref.contentBase64,\n          storagePath: ref.storagePath,\n        })),\n      },\n    },\n  );\n\n  if (error) {\n    const serverMessage = await getFunctionErrorMessage(error);\n    return {\n      ok: false,\n      code: 'edge-error',\n      messageDe:\n        serverMessage ??\n        'Look-Referenzanalyse fehlgeschlagen. Bitte erneut versuchen.',\n    };\n  }\n\n  const edge = parseEdgeResponse(data);\n  if (edge.status !== 'ok') {\n    return {\n      ok: false,\n      code: edge.status,\n      messageDe: edge.message,\n    };\n  }\n\n  return normalizeLookReferenceAnalysisPayload(edge.payload, {\n    references: domainInputs,\n    displayNameHint: request.displayNameHint,\n    analyzedAtIso: edge.analyzedAtIso,\n  });\n}"
+      "line": 102,
+      "endLine": 180,
+      "text": "export async function analyzeLookReferences(\n  request: LookReferenceAnalysisRequest,\n): Promise<LookReferenceAnalysisOutcome> {\n  if (isHostLibraryEnabled()) {\n    return {\n      ok: false,\n      code: 'edge-error',\n      messageDe: 'Look-Referenzanalyse ist im Host-Modus noch nicht verfügbar.',\n    };\n  }\n  const aggregateBytes = request.references.reduce(\n    (sum, ref) => sum + estimateBase64Bytes(ref.contentBase64),\n    0,\n  );\n  if (aggregateBytes > LOOK_REFERENCE_AGGREGATE_MAX_BYTES) {\n    return {\n      ok: false,\n      code: 'edge-error',\n      messageDe: `Gesamtgröße der Referenzbilder überschreitet ${(LOOK_REFERENCE_AGGREGATE_MAX_BYTES / (1024 * 1024)).toFixed(0)} MB.`,\n    };\n  }\n\n  const domainInputs: LookReferenceAnalysisImageInput[] = request.references.map(\n    (ref) => ({\n      id: ref.id,\n      kind: ref.kind,\n      mime: ref.mime,\n      uri: ref.uri,\n      weight: ref.weight,\n      label: ref.label,\n    }),\n  );\n\n  const { data, error } = await supabase.functions.invoke(\n    'look-reference-analysis',\n    {\n      body: {\n        action: 'analyze',\n        displayNameHint: request.displayNameHint,\n        references: request.references.map((ref) => ({\n          id: ref.id,\n          kind: ref.kind,\n          mime: ref.mime,\n          uri: ref.uri,\n          weight: ref.weight,\n          label: ref.label,\n          contentBase64: ref.contentBase64,\n          storagePath: ref.storagePath,\n        })),\n      },\n    },\n  );\n\n  if (error) {\n    const serverMessage = await getFunctionErrorMessage(error);\n    return {\n      ok: false,\n      code: 'edge-error',\n      messageDe:\n        serverMessage ??\n        'Look-Referenzanalyse fehlgeschlagen. Bitte erneut versuchen.',\n    };\n  }\n\n  const edge = parseEdgeResponse(data);\n  if (edge.status !== 'ok') {\n    return {\n      ok: false,\n      code: edge.status,\n      messageDe: edge.message,\n    };\n  }\n\n  return normalizeLookReferenceAnalysisPayload(edge.payload, {\n    references: domainInputs,\n    displayNameHint: request.displayNameHint,\n    analyzedAtIso: edge.analyzedAtIso,\n  });\n}"
     },
     {
       "path": "src/infrastructure/look/look-reference-analysis-service.ts",
-      "line": 175,
-      "endLine": 184,
+      "line": 183,
+      "endLine": 192,
       "text": "export function createEdgeLookReferenceAnalyzer(): LookReferenceAnalyzer {\n  return {\n    async analyze(input) {\n      return analyzeLookReferences({\n        references: input.references,\n        displayNameHint: input.displayNameHint,\n      });\n    },\n  };\n}"
     },
     {
@@ -1810,78 +1818,78 @@
     },
     {
       "path": "src/infrastructure/look/look-reference-analysis-service.ts",
-      "line": 39,
-      "endLine": 41,
+      "line": 40,
+      "endLine": 42,
       "name": "isRecord",
       "text": "function isRecord(value: unknown): value is Record<string, unknown> {\n  return typeof value === 'object' && value !== null;\n}"
     },
     {
       "path": "src/infrastructure/look/look-reference-analysis-service.ts",
-      "line": 43,
-      "endLine": 71,
+      "line": 44,
+      "endLine": 72,
       "name": "parseEdgeResponse",
       "text": "function parseEdgeResponse(value: unknown): EdgeOk | EdgeFail {\n  if (!isRecord(value) || typeof value.status !== 'string') {\n    return {\n      status: 'error',\n      message: 'Die Analyse-Antwort hatte ein ungültiges Format.',\n    };\n  }\n  if (\n    value.status === 'ok' &&\n    isRecord(value.payload) &&\n    typeof value.analyzedAtIso === 'string'\n  ) {\n    return {\n      status: 'ok',\n      payload: value.payload,\n      analyzedAtIso: value.analyzedAtIso,\n    };\n  }\n  if (\n    (value.status === 'not-configured' || value.status === 'error') &&\n    typeof value.message === 'string'\n  ) {\n    return { status: value.status, message: value.message };\n  }\n  return {\n    status: 'error',\n    message: 'Die Analyse-Antwort hatte ein ungültiges Format.',\n  };\n}"
     },
     {
       "path": "src/infrastructure/look/look-reference-analysis-service.ts",
-      "line": 73,
-      "endLine": 75,
+      "line": 74,
+      "endLine": 76,
       "name": "hasResponseContext",
       "text": "function hasResponseContext(error: unknown): error is { context: Response } {\n  return isRecord(error) && error.context instanceof Response;\n}"
     },
     {
       "path": "src/infrastructure/look/look-reference-analysis-service.ts",
-      "line": 77,
-      "endLine": 86,
+      "line": 78,
+      "endLine": 87,
       "name": "getFunctionErrorMessage",
       "text": "async function getFunctionErrorMessage(error: unknown): Promise<string | undefined> {\n  if (!hasResponseContext(error)) return undefined;\n  try {\n    const responseBody: unknown = await error.context.clone().json();\n    const parsed = parseEdgeResponse(responseBody);\n    return parsed.status === 'ok' ? undefined : parsed.message;\n  } catch {\n    return undefined;\n  }\n}"
     },
     {
       "path": "src/infrastructure/look/look-reference-analysis-service.ts",
-      "line": 91,
-      "endLine": 94,
+      "line": 92,
+      "endLine": 95,
       "name": "estimateBase64Bytes",
       "text": "function estimateBase64Bytes(b64: string | undefined): number {\n  if (!b64) return 0;\n  return Math.ceil((b64.length * 3) / 4);\n}"
     },
     {
       "path": "src/infrastructure/look/look-reference-analysis-service.ts",
-      "line": 101,
-      "endLine": 172,
+      "line": 102,
+      "endLine": 180,
       "name": "analyzeLookReferences",
-      "text": "export async function analyzeLookReferences(\n  request: LookReferenceAnalysisRequest,\n): Promise<LookReferenceAnalysisOutcome> {\n  const aggregateBytes = request.references.reduce(\n    (sum, ref) => sum + estimateBase64Bytes(ref.contentBase64),\n    0,\n  );\n  if (aggregateBytes > LOOK_REFERENCE_AGGREGATE_MAX_BYTES) {\n    return {\n      ok: false,\n      code: 'edge-error',\n      messageDe: `Gesamtgröße der Referenzbilder überschreitet ${(LOOK_REFERENCE_AGGREGATE_MAX_BYTES / (1024 * 1024)).toFixed(0)} MB.`,\n    };\n  }\n\n  const domainInputs: LookReferenceAnalysisImageInput[] = request.references.map(\n    (ref) => ({\n      id: ref.id,\n      kind: ref.kind,\n      mime: ref.mime,\n      uri: ref.uri,\n      weight: ref.weight,\n      label: ref.label,\n    }),\n  );\n\n  const { data, error } = await supabase.functions.invoke(\n    'look-reference-analysis',\n    {\n      body: {\n        action: 'analyze',\n        displayNameHint: request.displayNameHint,\n        references: request.references.map((ref) => ({\n          id: ref.id,\n          kind: ref.kind,\n          mime: ref.mime,\n          uri: ref.uri,\n          weight: ref.weight,\n          label: ref.label,\n          contentBase64: ref.contentBase64,\n          storagePath: ref.storagePath,\n        })),\n      },\n    },\n  );\n\n  if (error) {\n    const serverMessage = await getFunctionErrorMessage(error);\n    return {\n      ok: false,\n      code: 'edge-error',\n      messageDe:\n        serverMessage ??\n        'Look-Referenzanalyse fehlgeschlagen. Bitte erneut versuchen.',\n    };\n  }\n\n  const edge = parseEdgeResponse(data);\n  if (edge.status !== 'ok') {\n    return {\n      ok: false,\n      code: edge.status,\n      messageDe: edge.message,\n    };\n  }\n\n  return normalizeLookReferenceAnalysisPayload(edge.payload, {\n    references: domainInputs,\n    displayNameHint: request.displayNameHint,\n    analyzedAtIso: edge.analyzedAtIso,\n  });\n}"
+      "text": "export async function analyzeLookReferences(\n  request: LookReferenceAnalysisRequest,\n): Promise<LookReferenceAnalysisOutcome> {\n  if (isHostLibraryEnabled()) {\n    return {\n      ok: false,\n      code: 'edge-error',\n      messageDe: 'Look-Referenzanalyse ist im Host-Modus noch nicht verfügbar.',\n    };\n  }\n  const aggregateBytes = request.references.reduce(\n    (sum, ref) => sum + estimateBase64Bytes(ref.contentBase64),\n    0,\n  );\n  if (aggregateBytes > LOOK_REFERENCE_AGGREGATE_MAX_BYTES) {\n    return {\n      ok: false,\n      code: 'edge-error',\n      messageDe: `Gesamtgröße der Referenzbilder überschreitet ${(LOOK_REFERENCE_AGGREGATE_MAX_BYTES / (1024 * 1024)).toFixed(0)} MB.`,\n    };\n  }\n\n  const domainInputs: LookReferenceAnalysisImageInput[] = request.references.map(\n    (ref) => ({\n      id: ref.id,\n      kind: ref.kind,\n      mime: ref.mime,\n      uri: ref.uri,\n      weight: ref.weight,\n      label: ref.label,\n    }),\n  );\n\n  const { data, error } = await supabase.functions.invoke(\n    'look-reference-analysis',\n    {\n      body: {\n        action: 'analyze',\n        displayNameHint: request.displayNameHint,\n        references: request.references.map((ref) => ({\n          id: ref.id,\n          kind: ref.kind,\n          mime: ref.mime,\n          uri: ref.uri,\n          weight: ref.weight,\n          label: ref.label,\n          contentBase64: ref.contentBase64,\n          storagePath: ref.storagePath,\n        })),\n      },\n    },\n  );\n\n  if (error) {\n    const serverMessage = await getFunctionErrorMessage(error);\n    return {\n      ok: false,\n      code: 'edge-error',\n      messageDe:\n        serverMessage ??\n        'Look-Referenzanalyse fehlgeschlagen. Bitte erneut versuchen.',\n    };\n  }\n\n  const edge = parseEdgeResponse(data);\n  if (edge.status !== 'ok') {\n    return {\n      ok: false,\n      code: edge.status,\n      messageDe: edge.message,\n    };\n  }\n\n  return normalizeLookReferenceAnalysisPayload(edge.payload, {\n    references: domainInputs,\n    displayNameHint: request.displayNameHint,\n    analyzedAtIso: edge.analyzedAtIso,\n  });\n}"
     },
     {
       "path": "src/infrastructure/look/look-reference-analysis-service.ts",
-      "line": 105,
-      "endLine": 105,
+      "line": 113,
+      "endLine": 113,
       "name": "callback",
       "text": "(sum, ref) => sum + estimateBase64Bytes(ref.contentBase64)"
     },
     {
       "path": "src/infrastructure/look/look-reference-analysis-service.ts",
-      "line": 117,
-      "endLine": 124,
+      "line": 125,
+      "endLine": 132,
       "name": "callback",
       "text": "(ref) => ({\n      id: ref.id,\n      kind: ref.kind,\n      mime: ref.mime,\n      uri: ref.uri,\n      weight: ref.weight,\n      label: ref.label,\n    })"
     },
     {
       "path": "src/infrastructure/look/look-reference-analysis-service.ts",
-      "line": 133,
-      "endLine": 142,
+      "line": 141,
+      "endLine": 150,
       "name": "callback",
       "text": "(ref) => ({\n          id: ref.id,\n          kind: ref.kind,\n          mime: ref.mime,\n          uri: ref.uri,\n          weight: ref.weight,\n          label: ref.label,\n          contentBase64: ref.contentBase64,\n          storagePath: ref.storagePath,\n        })"
     },
     {
       "path": "src/infrastructure/look/look-reference-analysis-service.ts",
-      "line": 175,
-      "endLine": 184,
+      "line": 183,
+      "endLine": 192,
       "name": "createEdgeLookReferenceAnalyzer",
       "text": "export function createEdgeLookReferenceAnalyzer(): LookReferenceAnalyzer {\n  return {\n    async analyze(input) {\n      return analyzeLookReferences({\n        references: input.references,\n        displayNameHint: input.displayNameHint,\n      });\n    },\n  };\n}"
     },
     {
       "path": "src/infrastructure/look/look-reference-analysis-service.ts",
-      "line": 177,
-      "endLine": 182,
+      "line": 185,
+      "endLine": 190,
       "name": "analyze",
       "text": "async analyze(input) {\n      return analyzeLookReferences({\n        references: input.references,\n        displayNameHint: input.displayNameHint,\n      });\n    }"
     },

@@ -5,6 +5,7 @@
  */
 
 import { rewriteBrowserStorageUrl, supabase } from '../../../lib/supabase';
+import { assertHostProductSurfaceAvailable } from '../../host/host-product-deny';
 import {
   MESHY_AVATAR_IMAGE_MAX_BYTES,
   MESHY_AVATAR_PROMPT_MAX_CHARS,
@@ -87,6 +88,7 @@ function mapJob(raw: Record<string, unknown>, modelUrl?: string): MeshyAvatarJob
 }
 
 async function invoke(body: Record<string, unknown>): Promise<FunctionResponse> {
+  assertHostProductSurfaceAvailable('Avatar-3D-Generierung');
   const { data, error } = await supabase.functions.invoke('character-avatar-meshy', { body });
   if (error) {
     return { status: 'error', message: error.message || 'Edge Function fehlgeschlagen.' };

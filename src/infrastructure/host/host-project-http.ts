@@ -2,7 +2,7 @@
  * host-project-http — Browser project/saga cutover client (FE-HOST-04).
  * Location: src/infrastructure/host/host-project-http.ts
  *
- * Same gate as Library: `isHostLibraryEnabled()` (VITE_SAGATREE_HOST_LIBRARY + auth URL).
+ * Same gate as Library: `isHostLibraryEnabled()` (host-first when auth URL set).
  */
 import { getHostAuthBaseUrl } from '../../lib/hostAuthBridge';
 import { isHostLibraryEnabled } from './host-library-http';
@@ -118,6 +118,33 @@ export async function ensureHostNativeStarterProject(slug?: string | null): Prom
     { slug: slug ?? 'dornhain.whisper' },
     'Starter-Projekt konnte nicht angelegt werden',
   );
+}
+
+export type HostProjectSessionDto = {
+  readonly id: string;
+  readonly projectId: string;
+  readonly publicId?: string;
+  readonly status?: string;
+  readonly sessionNumber?: number | null;
+  readonly name?: string | null;
+};
+
+/** Create a project-scoped play session (FE-HOST-09 / create_project_session successor). */
+export async function createHostProjectSession(
+  projectId: string,
+  name?: string | null,
+  notes?: string | null,
+): Promise<HostProjectSessionDto> {
+  const body = await hostMutateJson<{ session?: HostProjectSessionDto }>(
+    `/api/v1/projects/${encodeURIComponent(projectId)}/sessions`,
+    'POST',
+    { name: name ?? null, notes: notes ?? null },
+    'Session konnte nicht erstellt werden',
+  );
+  if (!body.session || typeof body.session.id !== 'string') {
+    throw new Error('Session konnte nicht erstellt werden: ungültige Antwort');
+  }
+  return body.session;
 }
 
 export async function joinHostProjectByCode(

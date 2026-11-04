@@ -2,7 +2,7 @@
  * host-world-http — Browser world map/atlas/places cutover client.
  * Location: src/infrastructure/host/host-world-http.ts
  *
- * Same gate as Library: `isHostLibraryEnabled()` (VITE_SAGATREE_HOST_LIBRARY + auth URL).
+ * Same gate as Library: `isHostLibraryEnabled()` (host-first when auth URL set).
  */
 import { getHostAuthBaseUrl } from '../../lib/hostAuthBridge';
 import { isHostLibraryEnabled } from './host-library-http';

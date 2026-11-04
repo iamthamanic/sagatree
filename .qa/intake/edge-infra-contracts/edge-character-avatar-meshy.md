@@ -428,11 +428,12 @@ CORS_OPTS: CorsOptions = {
 
 ## All adapter call sites
 
-### src/infrastructure/character/avatar/character-avatar-meshy-service.ts:90
+### src/infrastructure/character/avatar/character-avatar-meshy-service.ts:92
 
 
 ```ts
 async function invoke(body: Record<string, unknown>): Promise<FunctionResponse> {
+  assertHostProductSurfaceAvailable('Avatar-3D-Generierung');
   const { data, error } = await supabase.functions.invoke('character-avatar-meshy', { body });
   if (error) {
     return { status: 'error', message: error.message || 'Edge Function fehlgeschlagen.' };
@@ -2658,7 +2659,7 @@ function parseGenerationMode(value: unknown): GenerationMode {
 
 | Path | SHA-256 |
 |---|---|
-| `src/infrastructure/character/avatar/character-avatar-meshy-service.ts` | `d651c0cac61f73bdd668c86f536d338411383ffc2b72792ad3b20c276b07147d` |
+| `src/infrastructure/character/avatar/character-avatar-meshy-service.ts` | `9bda4e7bfecd4d5ca9ad0dd6f1477ea58e5e98ace7381bd8f73b6d7c5b53a4d7` |
 | `supabase/functions/_shared/ai-provider-crypto.ts` | `45e60f76f744077e8d9b243719dcdba5d58a047d36a1c141df830afa2de16532` |
 | `supabase/functions/_shared/ai-provider-resolve-meshy.ts` | `b65f8aa91c02871a2661e1ca697c6115f3c7c4ec07c683d1e7ed19c39287a842` |
 | `supabase/functions/_shared/avatar-3d-generation.ts` | `59f0507973e94af6aff505622204a8f580a2b1594e6167943c888b4c7b0e250d` |
