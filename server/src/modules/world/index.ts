@@ -307,9 +307,15 @@ export function createWorldPorts(deps: {
   const read: WorldReadPort = {
     listOwnedWorlds(actor: Actor): WorldReadResult<readonly WorldReadDto[]> {
       if (!actor?.actorId) return { ok: false, error: 'missing-actor' };
-      // Owner-scoped list: empty resource filter must not widen — only actor's rows.
-      const rows = store.listByOwner(actor.actorId);
-      return { ok: true, value: rows.map(toDto) };
+      // Include linked solo ownership (MIG-015) so Dornhain default seed is visible
+      // after Better Auth login without rewriting owner_user_id.
+      const byId = new Map<string, ReturnType<typeof toDto>>();
+      for (const ownerId of actorIdentityIds(actor)) {
+        for (const row of store.listByOwner(ownerId)) {
+          byId.set(row.id, toDto(row));
+        }
+      }
+      return { ok: true, value: [...byId.values()] };
     },
 
     getWorld(actor: Actor, worldId: string): WorldReadResult<WorldReadDto> {

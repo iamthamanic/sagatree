@@ -98,5 +98,13 @@
     server: {
       port: 3004,
       open: true,
+      // First-party cookie session: browser talks to Vite, Vite forwards /api to host.
+      // Avoids localhost↔127.0.0.1 cross-site SameSite=Lax drops after sign-in.
+      proxy: {
+        '/api': {
+          target: process.env.SAGATREE_HOST_PROXY_TARGET || 'http://127.0.0.1:8787',
+          changeOrigin: true,
+        },
+      },
     },
   });

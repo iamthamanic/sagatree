@@ -81,11 +81,16 @@ export async function createCookieAuthProfile(
     baseURL: config.baseURL,
     secret: config.secret,
     trustedOrigins: [...config.trustedOrigins],
-    // Match LoginScreen minLength=6 (GoTrue default) so host signup UX stays aligned.
+    // DEV / explicit demo flag: accept documented `admin`/`player1` + `1234`.
+    // Production hosts keep a stronger floor unless SAGATREE_ALLOW_DEMO_PASSWORDS=1.
     emailAndPassword: {
       enabled: true,
       requireEmailVerification: false,
-      minPasswordLength: 6,
+      minPasswordLength:
+        process.env.NODE_ENV === 'production' &&
+        process.env.SAGATREE_ALLOW_DEMO_PASSWORDS !== '1'
+          ? 8
+          : 4,
     },
     session: { cookieCache: { enabled: false } },
     advanced: {

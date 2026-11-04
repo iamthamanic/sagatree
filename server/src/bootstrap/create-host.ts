@@ -389,6 +389,12 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
             world,
             permissions,
             session: sessionPorts,
+            // FE-HOST-10: each remote demo user gets an owned Dornhain copy
+            // (solo-link alone cannot cover admin + player).
+            ensureOwnedDornhainStarter: (ownerUserId) => {
+              const before = ensureDornhainDefaultCatalog(db, ownerUserId);
+              return { projectId: before.projectId, created: before.seeded };
+            },
           })
         : createProjectInfraPortsStub();
 

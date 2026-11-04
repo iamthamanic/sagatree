@@ -49,7 +49,7 @@
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
-            "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+            "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
           },
           {
             "path": "src/lib/supabase.ts",
@@ -493,7 +493,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 31,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "type EnvLike = { readonly VITE_SAGATREE_HOST_AUTH_URL?: string };"
             },
             {
@@ -501,16 +501,16 @@
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 33,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
               "name": "getHostAuthBaseUrl",
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
-              "line": 46,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
-              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  return url.replace(/\\/$/, '');\n}"
+              "line": 53,
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
+              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  const trimmed = url.trim().replace(/\\/$/, '');\n  if (trimmed === 'same-origin' || trimmed === '.') {\n    if (typeof window !== 'undefined' && typeof window.location?.origin === 'string') {\n      return window.location.origin;\n    }\n    // Node / Vitest: enabled, relative `/api/...` paths.\n    return '';\n  }\n  return trimmed;\n}"
             },
             {
               "name": "viteEnv",
@@ -7018,7 +7018,7 @@
         },
         {
           "path": "src/lib/hostAuthBridge.ts",
-          "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+          "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
         },
         {
           "path": "src/lib/supabase.ts",
@@ -7194,7 +7194,7 @@
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
-            "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+            "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
           },
           {
             "path": "src/lib/networkTimeout.ts",
@@ -7381,7 +7381,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 31,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "type EnvLike = { readonly VITE_SAGATREE_HOST_AUTH_URL?: string };"
             },
             {
@@ -7389,16 +7389,16 @@
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 33,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
               "name": "getHostAuthBaseUrl",
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
-              "line": 46,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
-              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  return url.replace(/\\/$/, '');\n}"
+              "line": 53,
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
+              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  const trimmed = url.trim().replace(/\\/$/, '');\n  if (trimmed === 'same-origin' || trimmed === '.') {\n    if (typeof window !== 'undefined' && typeof window.location?.origin === 'string') {\n      return window.location.origin;\n    }\n    // Node / Vitest: enabled, relative `/api/...` paths.\n    return '';\n  }\n  return trimmed;\n}"
             },
             {
               "name": "AUTH_SESSION_TIMEOUT_MS",
@@ -8253,7 +8253,7 @@
         },
         {
           "path": "src/lib/hostAuthBridge.ts",
-          "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+          "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
         },
         {
           "path": "src/lib/networkTimeout.ts",
@@ -8337,7 +8337,7 @@
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
-            "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+            "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
           },
           {
             "path": "src/lib/localAdmin.ts",
@@ -8619,7 +8619,7 @@
               "kind": "VariableDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 13,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "HOST_AUTH_PROBE_TIMEOUT_MS = 1_500"
             },
             {
@@ -8627,7 +8627,7 @@
               "kind": "VariableDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 16,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "HOST_AUTH_SESSION_BEARER_KEYS = [\n  'token',\n  'sessionToken',\n  'accessToken',\n  'refreshToken',\n  'idToken',\n] as const"
             },
             {
@@ -8635,7 +8635,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 24,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "export type HostWhoamiDto = {\n  readonly ok: true;\n  readonly actorId: string;\n  readonly kind: 'remote-account';\n  readonly email: string | null;\n};"
             },
             {
@@ -8643,7 +8643,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 31,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "type EnvLike = { readonly VITE_SAGATREE_HOST_AUTH_URL?: string };"
             },
             {
@@ -8651,31 +8651,31 @@
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 33,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
               "name": "getHostAuthBaseUrl",
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
-              "line": 46,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
-              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  return url.replace(/\\/$/, '');\n}"
+              "line": 53,
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
+              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  const trimmed = url.trim().replace(/\\/$/, '');\n  if (trimmed === 'same-origin' || trimmed === '.') {\n    if (typeof window !== 'undefined' && typeof window.location?.origin === 'string') {\n      return window.location.origin;\n    }\n    // Node / Vitest: enabled, relative `/api/...` paths.\n    return '';\n  }\n  return trimmed;\n}"
             },
             {
               "name": "scrubHostAuthJson",
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
-              "line": 56,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "line": 71,
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "export function scrubHostAuthJson<T>(value: T): T {\n  if (!value || typeof value !== 'object') return value;\n  if (Array.isArray(value)) {\n    for (const item of value) scrubHostAuthJson(item);\n    return value;\n  }\n  const record = value as Record<string, unknown>;\n  for (const key of Object.keys(record)) {\n    if (\n      (HOST_AUTH_SESSION_BEARER_KEYS as readonly string[]).includes(key) &&\n      typeof record[key] === 'string'\n    ) {\n      delete record[key];\n    } else {\n      scrubHostAuthJson(record[key]);\n    }\n  }\n  return value;\n}"
             },
             {
               "name": "probeHostActor",
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
-              "line": 80,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "line": 95,
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "export async function probeHostActor(\n  fetchImpl: typeof fetch = fetch,\n  env: EnvLike = defaultEnv(),\n  timeoutMs: number = HOST_AUTH_PROBE_TIMEOUT_MS,\n): Promise<HostWhoamiDto | null> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) return null;\n\n  const controller = new AbortController();\n  const timer = globalThis.setTimeout(() => controller.abort(), timeoutMs);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}/api/whoami`, {\n      method: 'GET',\n      credentials: 'include',\n      headers: { Accept: 'application/json' },\n      signal: controller.signal,\n    });\n  } catch {\n    return null;\n  } finally {\n    clearTimeout(timer);\n  }\n  if (!response.ok) return null;\n\n  let raw: unknown;\n  try {\n    raw = scrubHostAuthJson(await response.json());\n  } catch {\n    return null;\n  }\n  if (!raw || typeof raw !== 'object') return null;\n  const record = raw as Record<string, unknown>;\n  if (record.ok !== true) return null;\n  if (typeof record.actorId !== 'string' || record.actorId.length === 0) return null;\n  if (record.kind !== 'remote-account') return null;\n  let email: string | null = null;\n  if (record.email === null) email = null;\n  else if (typeof record.email === 'string') email = record.email;\n  else email = null;\n  return {\n    ok: true,\n    actorId: record.actorId,\n    kind: 'remote-account',\n    email,\n  };\n}"
             },
             {
@@ -9850,7 +9850,7 @@
         },
         {
           "path": "src/lib/hostAuthBridge.ts",
-          "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+          "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
         },
         {
           "path": "src/lib/localAdmin.ts",
@@ -9934,7 +9934,7 @@
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
-            "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+            "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
           },
           {
             "path": "src/lib/localAdmin.ts",
@@ -10098,7 +10098,7 @@
               "kind": "VariableDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 13,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "HOST_AUTH_PROBE_TIMEOUT_MS = 1_500"
             },
             {
@@ -10106,7 +10106,7 @@
               "kind": "VariableDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 16,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "HOST_AUTH_SESSION_BEARER_KEYS = [\n  'token',\n  'sessionToken',\n  'accessToken',\n  'refreshToken',\n  'idToken',\n] as const"
             },
             {
@@ -10114,7 +10114,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 24,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "export type HostWhoamiDto = {\n  readonly ok: true;\n  readonly actorId: string;\n  readonly kind: 'remote-account';\n  readonly email: string | null;\n};"
             },
             {
@@ -10122,7 +10122,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 31,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "type EnvLike = { readonly VITE_SAGATREE_HOST_AUTH_URL?: string };"
             },
             {
@@ -10130,31 +10130,31 @@
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 33,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
               "name": "getHostAuthBaseUrl",
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
-              "line": 46,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
-              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  return url.replace(/\\/$/, '');\n}"
+              "line": 53,
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
+              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  const trimmed = url.trim().replace(/\\/$/, '');\n  if (trimmed === 'same-origin' || trimmed === '.') {\n    if (typeof window !== 'undefined' && typeof window.location?.origin === 'string') {\n      return window.location.origin;\n    }\n    // Node / Vitest: enabled, relative `/api/...` paths.\n    return '';\n  }\n  return trimmed;\n}"
             },
             {
               "name": "scrubHostAuthJson",
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
-              "line": 56,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "line": 71,
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "export function scrubHostAuthJson<T>(value: T): T {\n  if (!value || typeof value !== 'object') return value;\n  if (Array.isArray(value)) {\n    for (const item of value) scrubHostAuthJson(item);\n    return value;\n  }\n  const record = value as Record<string, unknown>;\n  for (const key of Object.keys(record)) {\n    if (\n      (HOST_AUTH_SESSION_BEARER_KEYS as readonly string[]).includes(key) &&\n      typeof record[key] === 'string'\n    ) {\n      delete record[key];\n    } else {\n      scrubHostAuthJson(record[key]);\n    }\n  }\n  return value;\n}"
             },
             {
               "name": "probeHostActor",
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
-              "line": 80,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "line": 95,
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "export async function probeHostActor(\n  fetchImpl: typeof fetch = fetch,\n  env: EnvLike = defaultEnv(),\n  timeoutMs: number = HOST_AUTH_PROBE_TIMEOUT_MS,\n): Promise<HostWhoamiDto | null> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) return null;\n\n  const controller = new AbortController();\n  const timer = globalThis.setTimeout(() => controller.abort(), timeoutMs);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}/api/whoami`, {\n      method: 'GET',\n      credentials: 'include',\n      headers: { Accept: 'application/json' },\n      signal: controller.signal,\n    });\n  } catch {\n    return null;\n  } finally {\n    clearTimeout(timer);\n  }\n  if (!response.ok) return null;\n\n  let raw: unknown;\n  try {\n    raw = scrubHostAuthJson(await response.json());\n  } catch {\n    return null;\n  }\n  if (!raw || typeof raw !== 'object') return null;\n  const record = raw as Record<string, unknown>;\n  if (record.ok !== true) return null;\n  if (typeof record.actorId !== 'string' || record.actorId.length === 0) return null;\n  if (record.kind !== 'remote-account') return null;\n  let email: string | null = null;\n  if (record.email === null) email = null;\n  else if (typeof record.email === 'string') email = record.email;\n  else email = null;\n  return {\n    ok: true,\n    actorId: record.actorId,\n    kind: 'remote-account',\n    email,\n  };\n}"
             },
             {
@@ -11115,7 +11115,7 @@
         },
         {
           "path": "src/lib/hostAuthBridge.ts",
-          "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+          "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
         },
         {
           "path": "src/lib/localAdmin.ts",
@@ -11211,7 +11211,7 @@
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
-            "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+            "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
           },
           {
             "path": "src/lib/networkTimeout.ts",
@@ -11327,7 +11327,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 31,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "type EnvLike = { readonly VITE_SAGATREE_HOST_AUTH_URL?: string };"
             },
             {
@@ -11335,16 +11335,16 @@
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 33,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
               "name": "getHostAuthBaseUrl",
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
-              "line": 46,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
-              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  return url.replace(/\\/$/, '');\n}"
+              "line": 53,
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
+              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  const trimmed = url.trim().replace(/\\/$/, '');\n  if (trimmed === 'same-origin' || trimmed === '.') {\n    if (typeof window !== 'undefined' && typeof window.location?.origin === 'string') {\n      return window.location.origin;\n    }\n    // Node / Vitest: enabled, relative `/api/...` paths.\n    return '';\n  }\n  return trimmed;\n}"
             },
             {
               "name": "SUPABASE_QUERY_TIMEOUT_MS",
@@ -11972,7 +11972,7 @@
         },
         {
           "path": "src/lib/hostAuthBridge.ts",
-          "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+          "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
         },
         {
           "path": "src/lib/networkTimeout.ts",
@@ -12032,7 +12032,7 @@
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
-            "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+            "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
           },
           {
             "path": "src/lib/supabase.ts",
@@ -12271,7 +12271,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 31,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "type EnvLike = { readonly VITE_SAGATREE_HOST_AUTH_URL?: string };"
             },
             {
@@ -12279,16 +12279,16 @@
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 33,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
               "name": "getHostAuthBaseUrl",
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
-              "line": 46,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
-              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  return url.replace(/\\/$/, '');\n}"
+              "line": 53,
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
+              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  const trimmed = url.trim().replace(/\\/$/, '');\n  if (trimmed === 'same-origin' || trimmed === '.') {\n    if (typeof window !== 'undefined' && typeof window.location?.origin === 'string') {\n      return window.location.origin;\n    }\n    // Node / Vitest: enabled, relative `/api/...` paths.\n    return '';\n  }\n  return trimmed;\n}"
             },
             {
               "name": "viteEnv",
@@ -13400,7 +13400,7 @@
         },
         {
           "path": "src/lib/hostAuthBridge.ts",
-          "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+          "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
         },
         {
           "path": "src/lib/supabase.ts",
@@ -13492,7 +13492,7 @@
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
-            "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+            "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
           },
           {
             "path": "src/lib/networkTimeout.ts",
@@ -13660,7 +13660,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 31,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "type EnvLike = { readonly VITE_SAGATREE_HOST_AUTH_URL?: string };"
             },
             {
@@ -13668,16 +13668,16 @@
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 33,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
               "name": "getHostAuthBaseUrl",
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
-              "line": 46,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
-              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  return url.replace(/\\/$/, '');\n}"
+              "line": 53,
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
+              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  const trimmed = url.trim().replace(/\\/$/, '');\n  if (trimmed === 'same-origin' || trimmed === '.') {\n    if (typeof window !== 'undefined' && typeof window.location?.origin === 'string') {\n      return window.location.origin;\n    }\n    // Node / Vitest: enabled, relative `/api/...` paths.\n    return '';\n  }\n  return trimmed;\n}"
             },
             {
               "name": "SUPABASE_QUERY_TIMEOUT_MS",
@@ -15140,7 +15140,7 @@
         },
         {
           "path": "src/lib/hostAuthBridge.ts",
-          "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+          "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
         },
         {
           "path": "src/lib/networkTimeout.ts",
@@ -15244,7 +15244,7 @@
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
-            "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+            "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
           },
           {
             "path": "src/lib/supabase.ts",
@@ -15506,7 +15506,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 31,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "type EnvLike = { readonly VITE_SAGATREE_HOST_AUTH_URL?: string };"
             },
             {
@@ -15514,16 +15514,16 @@
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 33,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
               "name": "getHostAuthBaseUrl",
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
-              "line": 46,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
-              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  return url.replace(/\\/$/, '');\n}"
+              "line": 53,
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
+              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  const trimmed = url.trim().replace(/\\/$/, '');\n  if (trimmed === 'same-origin' || trimmed === '.') {\n    if (typeof window !== 'undefined' && typeof window.location?.origin === 'string') {\n      return window.location.origin;\n    }\n    // Node / Vitest: enabled, relative `/api/...` paths.\n    return '';\n  }\n  return trimmed;\n}"
             },
             {
               "name": "viteEnv",
@@ -16651,7 +16651,7 @@
         },
         {
           "path": "src/lib/hostAuthBridge.ts",
-          "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+          "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
         },
         {
           "path": "src/lib/supabase.ts",
@@ -16747,7 +16747,7 @@
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
-            "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+            "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
           },
           {
             "path": "src/lib/supabase.ts",
@@ -16929,7 +16929,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 31,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "type EnvLike = { readonly VITE_SAGATREE_HOST_AUTH_URL?: string };"
             },
             {
@@ -16937,16 +16937,16 @@
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 33,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
               "name": "getHostAuthBaseUrl",
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
-              "line": 46,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
-              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  return url.replace(/\\/$/, '');\n}"
+              "line": 53,
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
+              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  const trimmed = url.trim().replace(/\\/$/, '');\n  if (trimmed === 'same-origin' || trimmed === '.') {\n    if (typeof window !== 'undefined' && typeof window.location?.origin === 'string') {\n      return window.location.origin;\n    }\n    // Node / Vitest: enabled, relative `/api/...` paths.\n    return '';\n  }\n  return trimmed;\n}"
             },
             {
               "name": "viteEnv",
@@ -17877,7 +17877,7 @@
         },
         {
           "path": "src/lib/hostAuthBridge.ts",
-          "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+          "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
         },
         {
           "path": "src/lib/supabase.ts",
@@ -17961,7 +17961,7 @@
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
-            "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+            "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
           },
           {
             "path": "src/lib/networkTimeout.ts",
@@ -18078,7 +18078,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 31,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "type EnvLike = { readonly VITE_SAGATREE_HOST_AUTH_URL?: string };"
             },
             {
@@ -18086,16 +18086,16 @@
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 33,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
               "name": "getHostAuthBaseUrl",
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
-              "line": 46,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
-              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  return url.replace(/\\/$/, '');\n}"
+              "line": 53,
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
+              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  const trimmed = url.trim().replace(/\\/$/, '');\n  if (trimmed === 'same-origin' || trimmed === '.') {\n    if (typeof window !== 'undefined' && typeof window.location?.origin === 'string') {\n      return window.location.origin;\n    }\n    // Node / Vitest: enabled, relative `/api/...` paths.\n    return '';\n  }\n  return trimmed;\n}"
             },
             {
               "name": "SUPABASE_QUERY_TIMEOUT_MS",
@@ -18674,7 +18674,7 @@
         },
         {
           "path": "src/lib/hostAuthBridge.ts",
-          "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+          "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
         },
         {
           "path": "src/lib/networkTimeout.ts",
@@ -18730,7 +18730,7 @@
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
-            "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+            "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
           },
           {
             "path": "src/lib/networkTimeout.ts",
@@ -18921,7 +18921,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 31,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "type EnvLike = { readonly VITE_SAGATREE_HOST_AUTH_URL?: string };"
             },
             {
@@ -18929,16 +18929,16 @@
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 33,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
               "name": "getHostAuthBaseUrl",
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
-              "line": 46,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
-              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  return url.replace(/\\/$/, '');\n}"
+              "line": 53,
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
+              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  const trimmed = url.trim().replace(/\\/$/, '');\n  if (trimmed === 'same-origin' || trimmed === '.') {\n    if (typeof window !== 'undefined' && typeof window.location?.origin === 'string') {\n      return window.location.origin;\n    }\n    // Node / Vitest: enabled, relative `/api/...` paths.\n    return '';\n  }\n  return trimmed;\n}"
             },
             {
               "name": "AUTH_SESSION_TIMEOUT_MS",
@@ -20521,7 +20521,7 @@
         },
         {
           "path": "src/lib/hostAuthBridge.ts",
-          "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+          "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
         },
         {
           "path": "src/lib/networkTimeout.ts",
@@ -20597,7 +20597,7 @@
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
-            "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+            "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
           },
           {
             "path": "src/lib/networkTimeout.ts",
@@ -20794,7 +20794,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 31,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "type EnvLike = { readonly VITE_SAGATREE_HOST_AUTH_URL?: string };"
             },
             {
@@ -20802,16 +20802,16 @@
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 33,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
               "name": "getHostAuthBaseUrl",
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
-              "line": 46,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
-              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  return url.replace(/\\/$/, '');\n}"
+              "line": 53,
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
+              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  const trimmed = url.trim().replace(/\\/$/, '');\n  if (trimmed === 'same-origin' || trimmed === '.') {\n    if (typeof window !== 'undefined' && typeof window.location?.origin === 'string') {\n      return window.location.origin;\n    }\n    // Node / Vitest: enabled, relative `/api/...` paths.\n    return '';\n  }\n  return trimmed;\n}"
             },
             {
               "name": "AUTH_SESSION_TIMEOUT_MS",
@@ -21960,7 +21960,7 @@
         },
         {
           "path": "src/lib/hostAuthBridge.ts",
-          "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+          "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
         },
         {
           "path": "src/lib/networkTimeout.ts",
@@ -22040,7 +22040,7 @@
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
-            "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+            "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
           },
           {
             "path": "src/lib/networkTimeout.ts",
@@ -22209,7 +22209,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 31,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "type EnvLike = { readonly VITE_SAGATREE_HOST_AUTH_URL?: string };"
             },
             {
@@ -22217,16 +22217,16 @@
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 33,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
               "name": "getHostAuthBaseUrl",
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
-              "line": 46,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
-              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  return url.replace(/\\/$/, '');\n}"
+              "line": 53,
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
+              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  const trimmed = url.trim().replace(/\\/$/, '');\n  if (trimmed === 'same-origin' || trimmed === '.') {\n    if (typeof window !== 'undefined' && typeof window.location?.origin === 'string') {\n      return window.location.origin;\n    }\n    // Node / Vitest: enabled, relative `/api/...` paths.\n    return '';\n  }\n  return trimmed;\n}"
             },
             {
               "name": "SUPABASE_QUERY_TIMEOUT_MS",
@@ -23776,7 +23776,7 @@
         },
         {
           "path": "src/lib/hostAuthBridge.ts",
-          "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+          "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
         },
         {
           "path": "src/lib/networkTimeout.ts",
@@ -23884,7 +23884,7 @@
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
-            "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+            "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
           },
           {
             "path": "src/lib/networkTimeout.ts",
@@ -24075,7 +24075,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 31,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "type EnvLike = { readonly VITE_SAGATREE_HOST_AUTH_URL?: string };"
             },
             {
@@ -24083,16 +24083,16 @@
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 33,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
               "name": "getHostAuthBaseUrl",
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
-              "line": 46,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
-              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  return url.replace(/\\/$/, '');\n}"
+              "line": 53,
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
+              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  const trimmed = url.trim().replace(/\\/$/, '');\n  if (trimmed === 'same-origin' || trimmed === '.') {\n    if (typeof window !== 'undefined' && typeof window.location?.origin === 'string') {\n      return window.location.origin;\n    }\n    // Node / Vitest: enabled, relative `/api/...` paths.\n    return '';\n  }\n  return trimmed;\n}"
             },
             {
               "name": "AUTH_SESSION_TIMEOUT_MS",
@@ -25281,7 +25281,7 @@
         },
         {
           "path": "src/lib/hostAuthBridge.ts",
-          "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+          "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
         },
         {
           "path": "src/lib/networkTimeout.ts",
@@ -25353,7 +25353,7 @@
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
-            "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+            "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
           },
           {
             "path": "src/lib/supabase.ts",
@@ -25629,7 +25629,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 31,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "type EnvLike = { readonly VITE_SAGATREE_HOST_AUTH_URL?: string };"
             },
             {
@@ -25637,16 +25637,16 @@
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 33,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
               "name": "getHostAuthBaseUrl",
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
-              "line": 46,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
-              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  return url.replace(/\\/$/, '');\n}"
+              "line": 53,
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
+              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  const trimmed = url.trim().replace(/\\/$/, '');\n  if (trimmed === 'same-origin' || trimmed === '.') {\n    if (typeof window !== 'undefined' && typeof window.location?.origin === 'string') {\n      return window.location.origin;\n    }\n    // Node / Vitest: enabled, relative `/api/...` paths.\n    return '';\n  }\n  return trimmed;\n}"
             },
             {
               "name": "viteEnv",
@@ -28296,7 +28296,7 @@
         },
         {
           "path": "src/lib/hostAuthBridge.ts",
-          "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+          "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
         },
         {
           "path": "src/lib/supabase.ts",
@@ -28504,7 +28504,7 @@
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
-            "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+            "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
           },
           {
             "path": "src/lib/networkTimeout.ts",
@@ -28742,7 +28742,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 31,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "type EnvLike = { readonly VITE_SAGATREE_HOST_AUTH_URL?: string };"
             },
             {
@@ -28750,16 +28750,16 @@
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 33,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
               "name": "getHostAuthBaseUrl",
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
-              "line": 46,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
-              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  return url.replace(/\\/$/, '');\n}"
+              "line": 53,
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
+              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  const trimmed = url.trim().replace(/\\/$/, '');\n  if (trimmed === 'same-origin' || trimmed === '.') {\n    if (typeof window !== 'undefined' && typeof window.location?.origin === 'string') {\n      return window.location.origin;\n    }\n    // Node / Vitest: enabled, relative `/api/...` paths.\n    return '';\n  }\n  return trimmed;\n}"
             },
             {
               "name": "AUTH_SESSION_TIMEOUT_MS",
@@ -30131,7 +30131,7 @@
         },
         {
           "path": "src/lib/hostAuthBridge.ts",
-          "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+          "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
         },
         {
           "path": "src/lib/networkTimeout.ts",
@@ -30251,7 +30251,7 @@
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
-            "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+            "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
           },
           {
             "path": "src/lib/supabase.ts",
@@ -30439,7 +30439,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 31,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "type EnvLike = { readonly VITE_SAGATREE_HOST_AUTH_URL?: string };"
             },
             {
@@ -30447,16 +30447,16 @@
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 33,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
               "name": "getHostAuthBaseUrl",
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
-              "line": 46,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
-              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  return url.replace(/\\/$/, '');\n}"
+              "line": 53,
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
+              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  const trimmed = url.trim().replace(/\\/$/, '');\n  if (trimmed === 'same-origin' || trimmed === '.') {\n    if (typeof window !== 'undefined' && typeof window.location?.origin === 'string') {\n      return window.location.origin;\n    }\n    // Node / Vitest: enabled, relative `/api/...` paths.\n    return '';\n  }\n  return trimmed;\n}"
             },
             {
               "name": "viteEnv",
@@ -31353,7 +31353,7 @@
         },
         {
           "path": "src/lib/hostAuthBridge.ts",
-          "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+          "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
         },
         {
           "path": "src/lib/supabase.ts",
@@ -31433,7 +31433,7 @@
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
-            "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+            "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
           },
           {
             "path": "src/lib/networkTimeout.ts",
@@ -31689,7 +31689,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 31,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "type EnvLike = { readonly VITE_SAGATREE_HOST_AUTH_URL?: string };"
             },
             {
@@ -31697,16 +31697,16 @@
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 33,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
               "name": "getHostAuthBaseUrl",
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
-              "line": 46,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
-              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  return url.replace(/\\/$/, '');\n}"
+              "line": 53,
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
+              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  const trimmed = url.trim().replace(/\\/$/, '');\n  if (trimmed === 'same-origin' || trimmed === '.') {\n    if (typeof window !== 'undefined' && typeof window.location?.origin === 'string') {\n      return window.location.origin;\n    }\n    // Node / Vitest: enabled, relative `/api/...` paths.\n    return '';\n  }\n  return trimmed;\n}"
             },
             {
               "name": "SUPABASE_QUERY_TIMEOUT_MS",
@@ -32436,7 +32436,7 @@
         },
         {
           "path": "src/lib/hostAuthBridge.ts",
-          "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+          "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
         },
         {
           "path": "src/lib/networkTimeout.ts",
@@ -32528,7 +32528,7 @@
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
-            "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+            "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
           },
           {
             "path": "src/lib/networkTimeout.ts",
@@ -32752,7 +32752,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 31,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "type EnvLike = { readonly VITE_SAGATREE_HOST_AUTH_URL?: string };"
             },
             {
@@ -32760,16 +32760,16 @@
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 33,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
               "name": "getHostAuthBaseUrl",
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
-              "line": 46,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
-              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  return url.replace(/\\/$/, '');\n}"
+              "line": 53,
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
+              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  const trimmed = url.trim().replace(/\\/$/, '');\n  if (trimmed === 'same-origin' || trimmed === '.') {\n    if (typeof window !== 'undefined' && typeof window.location?.origin === 'string') {\n      return window.location.origin;\n    }\n    // Node / Vitest: enabled, relative `/api/...` paths.\n    return '';\n  }\n  return trimmed;\n}"
             },
             {
               "name": "SUPABASE_QUERY_TIMEOUT_MS",
@@ -33414,7 +33414,7 @@
         },
         {
           "path": "src/lib/hostAuthBridge.ts",
-          "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+          "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
         },
         {
           "path": "src/lib/networkTimeout.ts",
@@ -33474,7 +33474,7 @@
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
-            "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+            "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
           },
           {
             "path": "src/lib/networkTimeout.ts",
@@ -33730,7 +33730,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 31,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "type EnvLike = { readonly VITE_SAGATREE_HOST_AUTH_URL?: string };"
             },
             {
@@ -33738,16 +33738,16 @@
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 33,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
               "name": "getHostAuthBaseUrl",
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
-              "line": 46,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
-              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  return url.replace(/\\/$/, '');\n}"
+              "line": 53,
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
+              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  const trimmed = url.trim().replace(/\\/$/, '');\n  if (trimmed === 'same-origin' || trimmed === '.') {\n    if (typeof window !== 'undefined' && typeof window.location?.origin === 'string') {\n      return window.location.origin;\n    }\n    // Node / Vitest: enabled, relative `/api/...` paths.\n    return '';\n  }\n  return trimmed;\n}"
             },
             {
               "name": "SUPABASE_QUERY_TIMEOUT_MS",
@@ -34682,7 +34682,7 @@
         },
         {
           "path": "src/lib/hostAuthBridge.ts",
-          "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+          "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
         },
         {
           "path": "src/lib/networkTimeout.ts",
@@ -34774,7 +34774,7 @@
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
-            "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+            "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
           },
           {
             "path": "src/lib/supabase.ts",
@@ -35006,7 +35006,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 31,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "type EnvLike = { readonly VITE_SAGATREE_HOST_AUTH_URL?: string };"
             },
             {
@@ -35014,16 +35014,16 @@
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 33,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
               "name": "getHostAuthBaseUrl",
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
-              "line": 46,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
-              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  return url.replace(/\\/$/, '');\n}"
+              "line": 53,
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
+              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  const trimmed = url.trim().replace(/\\/$/, '');\n  if (trimmed === 'same-origin' || trimmed === '.') {\n    if (typeof window !== 'undefined' && typeof window.location?.origin === 'string') {\n      return window.location.origin;\n    }\n    // Node / Vitest: enabled, relative `/api/...` paths.\n    return '';\n  }\n  return trimmed;\n}"
             },
             {
               "name": "viteEnv",
@@ -36210,7 +36210,7 @@
         },
         {
           "path": "src/lib/hostAuthBridge.ts",
-          "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+          "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
         },
         {
           "path": "src/lib/supabase.ts",
@@ -36310,7 +36310,7 @@
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
-            "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+            "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
           },
           {
             "path": "src/lib/networkTimeout.ts",
@@ -36804,7 +36804,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 31,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "type EnvLike = { readonly VITE_SAGATREE_HOST_AUTH_URL?: string };"
             },
             {
@@ -36812,16 +36812,16 @@
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 33,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
               "name": "getHostAuthBaseUrl",
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
-              "line": 46,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
-              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  return url.replace(/\\/$/, '');\n}"
+              "line": 53,
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
+              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  const trimmed = url.trim().replace(/\\/$/, '');\n  if (trimmed === 'same-origin' || trimmed === '.') {\n    if (typeof window !== 'undefined' && typeof window.location?.origin === 'string') {\n      return window.location.origin;\n    }\n    // Node / Vitest: enabled, relative `/api/...` paths.\n    return '';\n  }\n  return trimmed;\n}"
             },
             {
               "name": "SUPABASE_QUERY_TIMEOUT_MS",
@@ -38536,7 +38536,7 @@
         },
         {
           "path": "src/lib/hostAuthBridge.ts",
-          "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+          "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
         },
         {
           "path": "src/lib/networkTimeout.ts",
@@ -38696,7 +38696,7 @@
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
-            "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+            "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
           },
           {
             "path": "src/lib/networkTimeout.ts",
@@ -38930,7 +38930,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 31,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "type EnvLike = { readonly VITE_SAGATREE_HOST_AUTH_URL?: string };"
             },
             {
@@ -38938,16 +38938,16 @@
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 33,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
               "name": "getHostAuthBaseUrl",
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
-              "line": 46,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
-              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  return url.replace(/\\/$/, '');\n}"
+              "line": 53,
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
+              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  const trimmed = url.trim().replace(/\\/$/, '');\n  if (trimmed === 'same-origin' || trimmed === '.') {\n    if (typeof window !== 'undefined' && typeof window.location?.origin === 'string') {\n      return window.location.origin;\n    }\n    // Node / Vitest: enabled, relative `/api/...` paths.\n    return '';\n  }\n  return trimmed;\n}"
             },
             {
               "name": "SUPABASE_QUERY_TIMEOUT_MS",
@@ -39970,7 +39970,7 @@
         },
         {
           "path": "src/lib/hostAuthBridge.ts",
-          "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+          "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
         },
         {
           "path": "src/lib/networkTimeout.ts",
@@ -40078,7 +40078,7 @@
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
-            "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+            "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
           },
           {
             "path": "src/lib/supabase.ts",
@@ -40358,7 +40358,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 31,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "type EnvLike = { readonly VITE_SAGATREE_HOST_AUTH_URL?: string };"
             },
             {
@@ -40366,16 +40366,16 @@
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 33,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
               "name": "getHostAuthBaseUrl",
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
-              "line": 46,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
-              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  return url.replace(/\\/$/, '');\n}"
+              "line": 53,
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
+              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  const trimmed = url.trim().replace(/\\/$/, '');\n  if (trimmed === 'same-origin' || trimmed === '.') {\n    if (typeof window !== 'undefined' && typeof window.location?.origin === 'string') {\n      return window.location.origin;\n    }\n    // Node / Vitest: enabled, relative `/api/...` paths.\n    return '';\n  }\n  return trimmed;\n}"
             },
             {
               "name": "viteEnv",
@@ -41392,7 +41392,7 @@
         },
         {
           "path": "src/lib/hostAuthBridge.ts",
-          "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+          "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
         },
         {
           "path": "src/lib/supabase.ts",
@@ -41496,7 +41496,7 @@
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
-            "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+            "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
           },
           {
             "path": "src/lib/networkTimeout.ts",
@@ -41770,7 +41770,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 31,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "type EnvLike = { readonly VITE_SAGATREE_HOST_AUTH_URL?: string };"
             },
             {
@@ -41778,16 +41778,16 @@
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 33,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
               "name": "getHostAuthBaseUrl",
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
-              "line": 46,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
-              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  return url.replace(/\\/$/, '');\n}"
+              "line": 53,
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
+              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  const trimmed = url.trim().replace(/\\/$/, '');\n  if (trimmed === 'same-origin' || trimmed === '.') {\n    if (typeof window !== 'undefined' && typeof window.location?.origin === 'string') {\n      return window.location.origin;\n    }\n    // Node / Vitest: enabled, relative `/api/...` paths.\n    return '';\n  }\n  return trimmed;\n}"
             },
             {
               "name": "AUTH_SESSION_TIMEOUT_MS",
@@ -43545,7 +43545,7 @@
         },
         {
           "path": "src/lib/hostAuthBridge.ts",
-          "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+          "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
         },
         {
           "path": "src/lib/networkTimeout.ts",
@@ -43665,7 +43665,7 @@
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
-            "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+            "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
           },
           {
             "path": "src/lib/supabase.ts",
@@ -43849,7 +43849,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 31,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "type EnvLike = { readonly VITE_SAGATREE_HOST_AUTH_URL?: string };"
             },
             {
@@ -43857,16 +43857,16 @@
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 33,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
               "name": "getHostAuthBaseUrl",
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
-              "line": 46,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
-              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  return url.replace(/\\/$/, '');\n}"
+              "line": 53,
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
+              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  const trimmed = url.trim().replace(/\\/$/, '');\n  if (trimmed === 'same-origin' || trimmed === '.') {\n    if (typeof window !== 'undefined' && typeof window.location?.origin === 'string') {\n      return window.location.origin;\n    }\n    // Node / Vitest: enabled, relative `/api/...` paths.\n    return '';\n  }\n  return trimmed;\n}"
             },
             {
               "name": "viteEnv",
@@ -44843,7 +44843,7 @@
         },
         {
           "path": "src/lib/hostAuthBridge.ts",
-          "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+          "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
         },
         {
           "path": "src/lib/supabase.ts",
@@ -44933,7 +44933,7 @@
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
-            "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+            "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
           },
           {
             "path": "src/lib/supabase.ts",
@@ -45063,7 +45063,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 31,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "type EnvLike = { readonly VITE_SAGATREE_HOST_AUTH_URL?: string };"
             },
             {
@@ -45071,16 +45071,16 @@
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 33,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
               "name": "getHostAuthBaseUrl",
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
-              "line": 46,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
-              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  return url.replace(/\\/$/, '');\n}"
+              "line": 53,
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
+              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  const trimmed = url.trim().replace(/\\/$/, '');\n  if (trimmed === 'same-origin' || trimmed === '.') {\n    if (typeof window !== 'undefined' && typeof window.location?.origin === 'string') {\n      return window.location.origin;\n    }\n    // Node / Vitest: enabled, relative `/api/...` paths.\n    return '';\n  }\n  return trimmed;\n}"
             },
             {
               "name": "viteEnv",
@@ -45317,7 +45317,7 @@
         },
         {
           "path": "src/lib/hostAuthBridge.ts",
-          "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+          "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
         },
         {
           "path": "src/lib/supabase.ts",
@@ -45553,7 +45553,7 @@
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
-            "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+            "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
           },
           {
             "path": "src/lib/supabase.ts",
@@ -45787,7 +45787,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 31,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "type EnvLike = { readonly VITE_SAGATREE_HOST_AUTH_URL?: string };"
             },
             {
@@ -45795,16 +45795,16 @@
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 33,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
               "name": "getHostAuthBaseUrl",
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
-              "line": 46,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
-              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  return url.replace(/\\/$/, '');\n}"
+              "line": 53,
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
+              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  const trimmed = url.trim().replace(/\\/$/, '');\n  if (trimmed === 'same-origin' || trimmed === '.') {\n    if (typeof window !== 'undefined' && typeof window.location?.origin === 'string') {\n      return window.location.origin;\n    }\n    // Node / Vitest: enabled, relative `/api/...` paths.\n    return '';\n  }\n  return trimmed;\n}"
             },
             {
               "name": "viteEnv",
@@ -46852,7 +46852,7 @@
         },
         {
           "path": "src/lib/hostAuthBridge.ts",
-          "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+          "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
         },
         {
           "path": "src/lib/supabase.ts",
@@ -46976,7 +46976,7 @@
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
-            "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+            "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
           },
           {
             "path": "src/lib/supabase.ts",
@@ -47287,7 +47287,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 31,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "type EnvLike = { readonly VITE_SAGATREE_HOST_AUTH_URL?: string };"
             },
             {
@@ -47295,16 +47295,16 @@
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 33,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
               "name": "getHostAuthBaseUrl",
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
-              "line": 46,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
-              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  return url.replace(/\\/$/, '');\n}"
+              "line": 53,
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
+              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  const trimmed = url.trim().replace(/\\/$/, '');\n  if (trimmed === 'same-origin' || trimmed === '.') {\n    if (typeof window !== 'undefined' && typeof window.location?.origin === 'string') {\n      return window.location.origin;\n    }\n    // Node / Vitest: enabled, relative `/api/...` paths.\n    return '';\n  }\n  return trimmed;\n}"
             },
             {
               "name": "viteEnv",
@@ -49105,7 +49105,7 @@
         },
         {
           "path": "src/lib/hostAuthBridge.ts",
-          "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+          "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
         },
         {
           "path": "src/lib/supabase.ts",
@@ -49253,7 +49253,7 @@
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
-            "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+            "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
           },
           {
             "path": "src/lib/supabase.ts",
@@ -49446,7 +49446,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 31,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "type EnvLike = { readonly VITE_SAGATREE_HOST_AUTH_URL?: string };"
             },
             {
@@ -49454,16 +49454,16 @@
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 33,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
               "name": "getHostAuthBaseUrl",
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
-              "line": 46,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
-              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  return url.replace(/\\/$/, '');\n}"
+              "line": 53,
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
+              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  const trimmed = url.trim().replace(/\\/$/, '');\n  if (trimmed === 'same-origin' || trimmed === '.') {\n    if (typeof window !== 'undefined' && typeof window.location?.origin === 'string') {\n      return window.location.origin;\n    }\n    // Node / Vitest: enabled, relative `/api/...` paths.\n    return '';\n  }\n  return trimmed;\n}"
             },
             {
               "name": "viteEnv",
@@ -50443,7 +50443,7 @@
         },
         {
           "path": "src/lib/hostAuthBridge.ts",
-          "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+          "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
         },
         {
           "path": "src/lib/supabase.ts",
@@ -50539,7 +50539,7 @@
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
-            "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+            "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
           },
           {
             "path": "src/lib/supabase.ts",
@@ -50742,7 +50742,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 31,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "type EnvLike = { readonly VITE_SAGATREE_HOST_AUTH_URL?: string };"
             },
             {
@@ -50750,16 +50750,16 @@
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 33,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
               "name": "getHostAuthBaseUrl",
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
-              "line": 46,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
-              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  return url.replace(/\\/$/, '');\n}"
+              "line": 53,
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
+              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  const trimmed = url.trim().replace(/\\/$/, '');\n  if (trimmed === 'same-origin' || trimmed === '.') {\n    if (typeof window !== 'undefined' && typeof window.location?.origin === 'string') {\n      return window.location.origin;\n    }\n    // Node / Vitest: enabled, relative `/api/...` paths.\n    return '';\n  }\n  return trimmed;\n}"
             },
             {
               "name": "viteEnv",
@@ -51628,7 +51628,7 @@
         },
         {
           "path": "src/lib/hostAuthBridge.ts",
-          "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+          "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
         },
         {
           "path": "src/lib/supabase.ts",
@@ -51712,7 +51712,7 @@
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
-            "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+            "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
           },
           {
             "path": "src/lib/supabase.ts",
@@ -51888,7 +51888,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 31,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "type EnvLike = { readonly VITE_SAGATREE_HOST_AUTH_URL?: string };"
             },
             {
@@ -51896,16 +51896,16 @@
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 33,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
               "name": "getHostAuthBaseUrl",
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
-              "line": 46,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
-              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  return url.replace(/\\/$/, '');\n}"
+              "line": 53,
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
+              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  const trimmed = url.trim().replace(/\\/$/, '');\n  if (trimmed === 'same-origin' || trimmed === '.') {\n    if (typeof window !== 'undefined' && typeof window.location?.origin === 'string') {\n      return window.location.origin;\n    }\n    // Node / Vitest: enabled, relative `/api/...` paths.\n    return '';\n  }\n  return trimmed;\n}"
             },
             {
               "name": "viteEnv",
@@ -52742,7 +52742,7 @@
         },
         {
           "path": "src/lib/hostAuthBridge.ts",
-          "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+          "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
         },
         {
           "path": "src/lib/supabase.ts",
@@ -52818,7 +52818,7 @@
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
-            "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+            "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
           },
           {
             "path": "src/lib/networkTimeout.ts",
@@ -53070,7 +53070,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 31,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "type EnvLike = { readonly VITE_SAGATREE_HOST_AUTH_URL?: string };"
             },
             {
@@ -53078,16 +53078,16 @@
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 33,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
               "name": "getHostAuthBaseUrl",
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
-              "line": 46,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
-              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  return url.replace(/\\/$/, '');\n}"
+              "line": 53,
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
+              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  const trimmed = url.trim().replace(/\\/$/, '');\n  if (trimmed === 'same-origin' || trimmed === '.') {\n    if (typeof window !== 'undefined' && typeof window.location?.origin === 'string') {\n      return window.location.origin;\n    }\n    // Node / Vitest: enabled, relative `/api/...` paths.\n    return '';\n  }\n  return trimmed;\n}"
             },
             {
               "name": "AUTH_SESSION_TIMEOUT_MS",
@@ -54679,7 +54679,7 @@
         },
         {
           "path": "src/lib/hostAuthBridge.ts",
-          "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+          "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
         },
         {
           "path": "src/lib/networkTimeout.ts",
@@ -54799,7 +54799,7 @@
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
-            "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+            "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
           },
           {
             "path": "src/lib/networkTimeout.ts",
@@ -55042,7 +55042,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 31,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "type EnvLike = { readonly VITE_SAGATREE_HOST_AUTH_URL?: string };"
             },
             {
@@ -55050,16 +55050,16 @@
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 33,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
               "name": "getHostAuthBaseUrl",
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
-              "line": 46,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
-              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  return url.replace(/\\/$/, '');\n}"
+              "line": 53,
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
+              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  const trimmed = url.trim().replace(/\\/$/, '');\n  if (trimmed === 'same-origin' || trimmed === '.') {\n    if (typeof window !== 'undefined' && typeof window.location?.origin === 'string') {\n      return window.location.origin;\n    }\n    // Node / Vitest: enabled, relative `/api/...` paths.\n    return '';\n  }\n  return trimmed;\n}"
             },
             {
               "name": "AUTH_SESSION_TIMEOUT_MS",
@@ -56200,7 +56200,7 @@
         },
         {
           "path": "src/lib/hostAuthBridge.ts",
-          "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+          "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
         },
         {
           "path": "src/lib/networkTimeout.ts",
@@ -56308,7 +56308,7 @@
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
-            "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+            "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
           },
           {
             "path": "src/lib/networkTimeout.ts",
@@ -56551,7 +56551,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 31,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "type EnvLike = { readonly VITE_SAGATREE_HOST_AUTH_URL?: string };"
             },
             {
@@ -56559,16 +56559,16 @@
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 33,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
               "name": "getHostAuthBaseUrl",
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
-              "line": 46,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
-              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  return url.replace(/\\/$/, '');\n}"
+              "line": 53,
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
+              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  const trimmed = url.trim().replace(/\\/$/, '');\n  if (trimmed === 'same-origin' || trimmed === '.') {\n    if (typeof window !== 'undefined' && typeof window.location?.origin === 'string') {\n      return window.location.origin;\n    }\n    // Node / Vitest: enabled, relative `/api/...` paths.\n    return '';\n  }\n  return trimmed;\n}"
             },
             {
               "name": "AUTH_SESSION_TIMEOUT_MS",
@@ -57801,7 +57801,7 @@
         },
         {
           "path": "src/lib/hostAuthBridge.ts",
-          "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+          "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
         },
         {
           "path": "src/lib/networkTimeout.ts",
@@ -57909,7 +57909,7 @@
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
-            "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+            "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
           },
           {
             "path": "src/lib/networkTimeout.ts",
@@ -58095,7 +58095,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 31,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "type EnvLike = { readonly VITE_SAGATREE_HOST_AUTH_URL?: string };"
             },
             {
@@ -58103,16 +58103,16 @@
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 33,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
               "name": "getHostAuthBaseUrl",
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
-              "line": 46,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
-              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  return url.replace(/\\/$/, '');\n}"
+              "line": 53,
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
+              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  const trimmed = url.trim().replace(/\\/$/, '');\n  if (trimmed === 'same-origin' || trimmed === '.') {\n    if (typeof window !== 'undefined' && typeof window.location?.origin === 'string') {\n      return window.location.origin;\n    }\n    // Node / Vitest: enabled, relative `/api/...` paths.\n    return '';\n  }\n  return trimmed;\n}"
             },
             {
               "name": "AUTH_SESSION_TIMEOUT_MS",
@@ -58886,7 +58886,7 @@
         },
         {
           "path": "src/lib/hostAuthBridge.ts",
-          "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+          "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
         },
         {
           "path": "src/lib/networkTimeout.ts",
@@ -58958,7 +58958,7 @@
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
-            "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+            "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
           },
           {
             "path": "src/lib/supabase.ts",
@@ -59152,7 +59152,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 31,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "type EnvLike = { readonly VITE_SAGATREE_HOST_AUTH_URL?: string };"
             },
             {
@@ -59160,16 +59160,16 @@
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 33,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
               "name": "getHostAuthBaseUrl",
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
-              "line": 46,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
-              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  return url.replace(/\\/$/, '');\n}"
+              "line": 53,
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
+              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  const trimmed = url.trim().replace(/\\/$/, '');\n  if (trimmed === 'same-origin' || trimmed === '.') {\n    if (typeof window !== 'undefined' && typeof window.location?.origin === 'string') {\n      return window.location.origin;\n    }\n    // Node / Vitest: enabled, relative `/api/...` paths.\n    return '';\n  }\n  return trimmed;\n}"
             },
             {
               "name": "viteEnv",
@@ -60862,7 +60862,7 @@
         },
         {
           "path": "src/lib/hostAuthBridge.ts",
-          "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+          "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
         },
         {
           "path": "src/lib/supabase.ts",
@@ -60982,7 +60982,7 @@
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
-            "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+            "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
           },
           {
             "path": "src/lib/supabase.ts",
@@ -61180,7 +61180,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 31,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "type EnvLike = { readonly VITE_SAGATREE_HOST_AUTH_URL?: string };"
             },
             {
@@ -61188,16 +61188,16 @@
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 33,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
               "name": "getHostAuthBaseUrl",
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
-              "line": 46,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
-              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  return url.replace(/\\/$/, '');\n}"
+              "line": 53,
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
+              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  const trimmed = url.trim().replace(/\\/$/, '');\n  if (trimmed === 'same-origin' || trimmed === '.') {\n    if (typeof window !== 'undefined' && typeof window.location?.origin === 'string') {\n      return window.location.origin;\n    }\n    // Node / Vitest: enabled, relative `/api/...` paths.\n    return '';\n  }\n  return trimmed;\n}"
             },
             {
               "name": "viteEnv",
@@ -62783,7 +62783,7 @@
         },
         {
           "path": "src/lib/hostAuthBridge.ts",
-          "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+          "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
         },
         {
           "path": "src/lib/supabase.ts",
@@ -62907,7 +62907,7 @@
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
-            "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+            "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
           },
           {
             "path": "src/lib/networkTimeout.ts",
@@ -63028,7 +63028,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 31,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "type EnvLike = { readonly VITE_SAGATREE_HOST_AUTH_URL?: string };"
             },
             {
@@ -63036,16 +63036,16 @@
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 33,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
               "name": "getHostAuthBaseUrl",
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
-              "line": 46,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
-              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  return url.replace(/\\/$/, '');\n}"
+              "line": 53,
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
+              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  const trimmed = url.trim().replace(/\\/$/, '');\n  if (trimmed === 'same-origin' || trimmed === '.') {\n    if (typeof window !== 'undefined' && typeof window.location?.origin === 'string') {\n      return window.location.origin;\n    }\n    // Node / Vitest: enabled, relative `/api/...` paths.\n    return '';\n  }\n  return trimmed;\n}"
             },
             {
               "name": "SUPABASE_QUERY_TIMEOUT_MS",
@@ -63759,7 +63759,7 @@
         },
         {
           "path": "src/lib/hostAuthBridge.ts",
-          "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+          "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
         },
         {
           "path": "src/lib/networkTimeout.ts",
@@ -63815,7 +63815,7 @@
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
-            "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+            "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
           },
           {
             "path": "src/lib/localAdmin.ts",
@@ -63963,7 +63963,7 @@
               "kind": "VariableDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 13,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "HOST_AUTH_PROBE_TIMEOUT_MS = 1_500"
             },
             {
@@ -63971,7 +63971,7 @@
               "kind": "VariableDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 16,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "HOST_AUTH_SESSION_BEARER_KEYS = [\n  'token',\n  'sessionToken',\n  'accessToken',\n  'refreshToken',\n  'idToken',\n] as const"
             },
             {
@@ -63979,7 +63979,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 24,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "export type HostWhoamiDto = {\n  readonly ok: true;\n  readonly actorId: string;\n  readonly kind: 'remote-account';\n  readonly email: string | null;\n};"
             },
             {
@@ -63987,7 +63987,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 31,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "type EnvLike = { readonly VITE_SAGATREE_HOST_AUTH_URL?: string };"
             },
             {
@@ -63995,31 +63995,31 @@
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 33,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
               "name": "getHostAuthBaseUrl",
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
-              "line": 46,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
-              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  return url.replace(/\\/$/, '');\n}"
+              "line": 53,
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
+              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  const trimmed = url.trim().replace(/\\/$/, '');\n  if (trimmed === 'same-origin' || trimmed === '.') {\n    if (typeof window !== 'undefined' && typeof window.location?.origin === 'string') {\n      return window.location.origin;\n    }\n    // Node / Vitest: enabled, relative `/api/...` paths.\n    return '';\n  }\n  return trimmed;\n}"
             },
             {
               "name": "scrubHostAuthJson",
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
-              "line": 56,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "line": 71,
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "export function scrubHostAuthJson<T>(value: T): T {\n  if (!value || typeof value !== 'object') return value;\n  if (Array.isArray(value)) {\n    for (const item of value) scrubHostAuthJson(item);\n    return value;\n  }\n  const record = value as Record<string, unknown>;\n  for (const key of Object.keys(record)) {\n    if (\n      (HOST_AUTH_SESSION_BEARER_KEYS as readonly string[]).includes(key) &&\n      typeof record[key] === 'string'\n    ) {\n      delete record[key];\n    } else {\n      scrubHostAuthJson(record[key]);\n    }\n  }\n  return value;\n}"
             },
             {
               "name": "probeHostActor",
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
-              "line": 80,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "line": 95,
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "export async function probeHostActor(\n  fetchImpl: typeof fetch = fetch,\n  env: EnvLike = defaultEnv(),\n  timeoutMs: number = HOST_AUTH_PROBE_TIMEOUT_MS,\n): Promise<HostWhoamiDto | null> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) return null;\n\n  const controller = new AbortController();\n  const timer = globalThis.setTimeout(() => controller.abort(), timeoutMs);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}/api/whoami`, {\n      method: 'GET',\n      credentials: 'include',\n      headers: { Accept: 'application/json' },\n      signal: controller.signal,\n    });\n  } catch {\n    return null;\n  } finally {\n    clearTimeout(timer);\n  }\n  if (!response.ok) return null;\n\n  let raw: unknown;\n  try {\n    raw = scrubHostAuthJson(await response.json());\n  } catch {\n    return null;\n  }\n  if (!raw || typeof raw !== 'object') return null;\n  const record = raw as Record<string, unknown>;\n  if (record.ok !== true) return null;\n  if (typeof record.actorId !== 'string' || record.actorId.length === 0) return null;\n  if (record.kind !== 'remote-account') return null;\n  let email: string | null = null;\n  if (record.email === null) email = null;\n  else if (typeof record.email === 'string') email = record.email;\n  else email = null;\n  return {\n    ok: true,\n    actorId: record.actorId,\n    kind: 'remote-account',\n    email,\n  };\n}"
             },
             {
@@ -64865,7 +64865,7 @@
         },
         {
           "path": "src/lib/hostAuthBridge.ts",
-          "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+          "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
         },
         {
           "path": "src/lib/localAdmin.ts",
@@ -64949,7 +64949,7 @@
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
-            "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+            "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
           },
           {
             "path": "src/lib/networkTimeout.ts",
@@ -65132,7 +65132,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 31,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "type EnvLike = { readonly VITE_SAGATREE_HOST_AUTH_URL?: string };"
             },
             {
@@ -65140,16 +65140,16 @@
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 33,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
               "name": "getHostAuthBaseUrl",
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
-              "line": 46,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
-              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  return url.replace(/\\/$/, '');\n}"
+              "line": 53,
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
+              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  const trimmed = url.trim().replace(/\\/$/, '');\n  if (trimmed === 'same-origin' || trimmed === '.') {\n    if (typeof window !== 'undefined' && typeof window.location?.origin === 'string') {\n      return window.location.origin;\n    }\n    // Node / Vitest: enabled, relative `/api/...` paths.\n    return '';\n  }\n  return trimmed;\n}"
             },
             {
               "name": "AUTH_SESSION_TIMEOUT_MS",
@@ -65891,7 +65891,7 @@
         },
         {
           "path": "src/lib/hostAuthBridge.ts",
-          "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+          "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
         },
         {
           "path": "src/lib/networkTimeout.ts",
@@ -65963,7 +65963,7 @@
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
-            "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+            "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
           },
           {
             "path": "src/lib/networkTimeout.ts",
@@ -66155,7 +66155,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 31,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "type EnvLike = { readonly VITE_SAGATREE_HOST_AUTH_URL?: string };"
             },
             {
@@ -66163,16 +66163,16 @@
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 33,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
               "name": "getHostAuthBaseUrl",
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
-              "line": 46,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
-              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  return url.replace(/\\/$/, '');\n}"
+              "line": 53,
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
+              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  const trimmed = url.trim().replace(/\\/$/, '');\n  if (trimmed === 'same-origin' || trimmed === '.') {\n    if (typeof window !== 'undefined' && typeof window.location?.origin === 'string') {\n      return window.location.origin;\n    }\n    // Node / Vitest: enabled, relative `/api/...` paths.\n    return '';\n  }\n  return trimmed;\n}"
             },
             {
               "name": "AUTH_SESSION_TIMEOUT_MS",
@@ -67540,7 +67540,7 @@
         },
         {
           "path": "src/lib/hostAuthBridge.ts",
-          "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+          "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
         },
         {
           "path": "src/lib/networkTimeout.ts",
@@ -67620,7 +67620,7 @@
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
-            "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+            "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
           },
           {
             "path": "src/lib/supabase.ts",
@@ -67882,7 +67882,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 31,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "type EnvLike = { readonly VITE_SAGATREE_HOST_AUTH_URL?: string };"
             },
             {
@@ -67890,16 +67890,16 @@
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 33,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
               "name": "getHostAuthBaseUrl",
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
-              "line": 46,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
-              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  return url.replace(/\\/$/, '');\n}"
+              "line": 53,
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
+              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  const trimmed = url.trim().replace(/\\/$/, '');\n  if (trimmed === 'same-origin' || trimmed === '.') {\n    if (typeof window !== 'undefined' && typeof window.location?.origin === 'string') {\n      return window.location.origin;\n    }\n    // Node / Vitest: enabled, relative `/api/...` paths.\n    return '';\n  }\n  return trimmed;\n}"
             },
             {
               "name": "viteEnv",
@@ -69182,7 +69182,7 @@
         },
         {
           "path": "src/lib/hostAuthBridge.ts",
-          "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+          "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
         },
         {
           "path": "src/lib/supabase.ts",
@@ -69318,7 +69318,7 @@
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
-            "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+            "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
           },
           {
             "path": "src/lib/supabase.ts",
@@ -69492,7 +69492,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 31,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "type EnvLike = { readonly VITE_SAGATREE_HOST_AUTH_URL?: string };"
             },
             {
@@ -69500,16 +69500,16 @@
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 33,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
               "name": "getHostAuthBaseUrl",
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
-              "line": 46,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
-              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  return url.replace(/\\/$/, '');\n}"
+              "line": 53,
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
+              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  const trimmed = url.trim().replace(/\\/$/, '');\n  if (trimmed === 'same-origin' || trimmed === '.') {\n    if (typeof window !== 'undefined' && typeof window.location?.origin === 'string') {\n      return window.location.origin;\n    }\n    // Node / Vitest: enabled, relative `/api/...` paths.\n    return '';\n  }\n  return trimmed;\n}"
             },
             {
               "name": "viteEnv",
@@ -70423,7 +70423,7 @@
         },
         {
           "path": "src/lib/hostAuthBridge.ts",
-          "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+          "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
         },
         {
           "path": "src/lib/supabase.ts",
@@ -70511,7 +70511,7 @@
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
-            "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+            "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
           },
           {
             "path": "src/lib/networkTimeout.ts",
@@ -70705,7 +70705,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 31,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "type EnvLike = { readonly VITE_SAGATREE_HOST_AUTH_URL?: string };"
             },
             {
@@ -70713,16 +70713,16 @@
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 33,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
               "name": "getHostAuthBaseUrl",
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
-              "line": 46,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
-              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  return url.replace(/\\/$/, '');\n}"
+              "line": 53,
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
+              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  const trimmed = url.trim().replace(/\\/$/, '');\n  if (trimmed === 'same-origin' || trimmed === '.') {\n    if (typeof window !== 'undefined' && typeof window.location?.origin === 'string') {\n      return window.location.origin;\n    }\n    // Node / Vitest: enabled, relative `/api/...` paths.\n    return '';\n  }\n  return trimmed;\n}"
             },
             {
               "name": "SUPABASE_QUERY_TIMEOUT_MS",
@@ -71458,7 +71458,7 @@
         },
         {
           "path": "src/lib/hostAuthBridge.ts",
-          "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+          "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
         },
         {
           "path": "src/lib/networkTimeout.ts",
@@ -72959,7 +72959,7 @@
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
-            "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+            "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
           },
           {
             "path": "src/lib/supabase.ts",
@@ -73092,7 +73092,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 31,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "type EnvLike = { readonly VITE_SAGATREE_HOST_AUTH_URL?: string };"
             },
             {
@@ -73100,16 +73100,16 @@
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 33,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
               "name": "getHostAuthBaseUrl",
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
-              "line": 46,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
-              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  return url.replace(/\\/$/, '');\n}"
+              "line": 53,
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
+              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  const trimmed = url.trim().replace(/\\/$/, '');\n  if (trimmed === 'same-origin' || trimmed === '.') {\n    if (typeof window !== 'undefined' && typeof window.location?.origin === 'string') {\n      return window.location.origin;\n    }\n    // Node / Vitest: enabled, relative `/api/...` paths.\n    return '';\n  }\n  return trimmed;\n}"
             },
             {
               "name": "viteEnv",
@@ -73937,7 +73937,7 @@
         },
         {
           "path": "src/lib/hostAuthBridge.ts",
-          "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+          "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
         },
         {
           "path": "src/lib/supabase.ts",
@@ -73993,7 +73993,7 @@
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
-            "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+            "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
           },
           {
             "path": "src/lib/supabase.ts",
@@ -74203,7 +74203,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 31,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "type EnvLike = { readonly VITE_SAGATREE_HOST_AUTH_URL?: string };"
             },
             {
@@ -74211,16 +74211,16 @@
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 33,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
               "name": "getHostAuthBaseUrl",
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
-              "line": 46,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
-              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  return url.replace(/\\/$/, '');\n}"
+              "line": 53,
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
+              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  const trimmed = url.trim().replace(/\\/$/, '');\n  if (trimmed === 'same-origin' || trimmed === '.') {\n    if (typeof window !== 'undefined' && typeof window.location?.origin === 'string') {\n      return window.location.origin;\n    }\n    // Node / Vitest: enabled, relative `/api/...` paths.\n    return '';\n  }\n  return trimmed;\n}"
             },
             {
               "name": "viteEnv",
@@ -74993,7 +74993,7 @@
         },
         {
           "path": "src/lib/hostAuthBridge.ts",
-          "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+          "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
         },
         {
           "path": "src/lib/supabase.ts",
@@ -75093,7 +75093,7 @@
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
-            "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+            "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
           },
           {
             "path": "src/lib/supabase.ts",
@@ -75275,7 +75275,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 31,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "type EnvLike = { readonly VITE_SAGATREE_HOST_AUTH_URL?: string };"
             },
             {
@@ -75283,16 +75283,16 @@
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 33,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
               "name": "getHostAuthBaseUrl",
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
-              "line": 46,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
-              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  return url.replace(/\\/$/, '');\n}"
+              "line": 53,
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
+              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  const trimmed = url.trim().replace(/\\/$/, '');\n  if (trimmed === 'same-origin' || trimmed === '.') {\n    if (typeof window !== 'undefined' && typeof window.location?.origin === 'string') {\n      return window.location.origin;\n    }\n    // Node / Vitest: enabled, relative `/api/...` paths.\n    return '';\n  }\n  return trimmed;\n}"
             },
             {
               "name": "viteEnv",
@@ -76171,7 +76171,7 @@
         },
         {
           "path": "src/lib/hostAuthBridge.ts",
-          "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+          "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
         },
         {
           "path": "src/lib/supabase.ts",
@@ -76247,7 +76247,7 @@
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
-            "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+            "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
           },
           {
             "path": "src/lib/supabase.ts",
@@ -76401,7 +76401,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 31,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "type EnvLike = { readonly VITE_SAGATREE_HOST_AUTH_URL?: string };"
             },
             {
@@ -76409,16 +76409,16 @@
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 33,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
               "name": "getHostAuthBaseUrl",
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
-              "line": 46,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
-              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  return url.replace(/\\/$/, '');\n}"
+              "line": 53,
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
+              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  const trimmed = url.trim().replace(/\\/$/, '');\n  if (trimmed === 'same-origin' || trimmed === '.') {\n    if (typeof window !== 'undefined' && typeof window.location?.origin === 'string') {\n      return window.location.origin;\n    }\n    // Node / Vitest: enabled, relative `/api/...` paths.\n    return '';\n  }\n  return trimmed;\n}"
             },
             {
               "name": "viteEnv",
@@ -77473,7 +77473,7 @@
         },
         {
           "path": "src/lib/hostAuthBridge.ts",
-          "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+          "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
         },
         {
           "path": "src/lib/supabase.ts",
@@ -77553,7 +77553,7 @@
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
-            "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+            "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
           },
           {
             "path": "src/lib/supabase.ts",
@@ -77849,7 +77849,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 31,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "type EnvLike = { readonly VITE_SAGATREE_HOST_AUTH_URL?: string };"
             },
             {
@@ -77857,16 +77857,16 @@
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 33,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
               "name": "getHostAuthBaseUrl",
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
-              "line": 46,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
-              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  return url.replace(/\\/$/, '');\n}"
+              "line": 53,
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
+              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  const trimmed = url.trim().replace(/\\/$/, '');\n  if (trimmed === 'same-origin' || trimmed === '.') {\n    if (typeof window !== 'undefined' && typeof window.location?.origin === 'string') {\n      return window.location.origin;\n    }\n    // Node / Vitest: enabled, relative `/api/...` paths.\n    return '';\n  }\n  return trimmed;\n}"
             },
             {
               "name": "viteEnv",
@@ -78970,7 +78970,7 @@
         },
         {
           "path": "src/lib/hostAuthBridge.ts",
-          "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+          "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
         },
         {
           "path": "src/lib/supabase.ts",
@@ -79086,7 +79086,7 @@
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
-            "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+            "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
           },
           {
             "path": "src/lib/supabase.ts",
@@ -79363,7 +79363,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 31,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "type EnvLike = { readonly VITE_SAGATREE_HOST_AUTH_URL?: string };"
             },
             {
@@ -79371,16 +79371,16 @@
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 33,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
               "name": "getHostAuthBaseUrl",
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
-              "line": 46,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
-              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  return url.replace(/\\/$/, '');\n}"
+              "line": 53,
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
+              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  const trimmed = url.trim().replace(/\\/$/, '');\n  if (trimmed === 'same-origin' || trimmed === '.') {\n    if (typeof window !== 'undefined' && typeof window.location?.origin === 'string') {\n      return window.location.origin;\n    }\n    // Node / Vitest: enabled, relative `/api/...` paths.\n    return '';\n  }\n  return trimmed;\n}"
             },
             {
               "name": "viteEnv",
@@ -80823,7 +80823,7 @@
         },
         {
           "path": "src/lib/hostAuthBridge.ts",
-          "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+          "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
         },
         {
           "path": "src/lib/supabase.ts",
@@ -80943,7 +80943,7 @@
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
-            "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+            "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
           },
           {
             "path": "src/lib/localAdmin.ts",
@@ -81330,7 +81330,7 @@
               "kind": "VariableDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 13,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "HOST_AUTH_PROBE_TIMEOUT_MS = 1_500"
             },
             {
@@ -81338,7 +81338,7 @@
               "kind": "VariableDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 16,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "HOST_AUTH_SESSION_BEARER_KEYS = [\n  'token',\n  'sessionToken',\n  'accessToken',\n  'refreshToken',\n  'idToken',\n] as const"
             },
             {
@@ -81346,7 +81346,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 24,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "export type HostWhoamiDto = {\n  readonly ok: true;\n  readonly actorId: string;\n  readonly kind: 'remote-account';\n  readonly email: string | null;\n};"
             },
             {
@@ -81354,7 +81354,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 31,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "type EnvLike = { readonly VITE_SAGATREE_HOST_AUTH_URL?: string };"
             },
             {
@@ -81362,31 +81362,31 @@
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 33,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
               "name": "getHostAuthBaseUrl",
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
-              "line": 46,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
-              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  return url.replace(/\\/$/, '');\n}"
+              "line": 53,
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
+              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  const trimmed = url.trim().replace(/\\/$/, '');\n  if (trimmed === 'same-origin' || trimmed === '.') {\n    if (typeof window !== 'undefined' && typeof window.location?.origin === 'string') {\n      return window.location.origin;\n    }\n    // Node / Vitest: enabled, relative `/api/...` paths.\n    return '';\n  }\n  return trimmed;\n}"
             },
             {
               "name": "scrubHostAuthJson",
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
-              "line": 56,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "line": 71,
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "export function scrubHostAuthJson<T>(value: T): T {\n  if (!value || typeof value !== 'object') return value;\n  if (Array.isArray(value)) {\n    for (const item of value) scrubHostAuthJson(item);\n    return value;\n  }\n  const record = value as Record<string, unknown>;\n  for (const key of Object.keys(record)) {\n    if (\n      (HOST_AUTH_SESSION_BEARER_KEYS as readonly string[]).includes(key) &&\n      typeof record[key] === 'string'\n    ) {\n      delete record[key];\n    } else {\n      scrubHostAuthJson(record[key]);\n    }\n  }\n  return value;\n}"
             },
             {
               "name": "probeHostActor",
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
-              "line": 80,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "line": 95,
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "export async function probeHostActor(\n  fetchImpl: typeof fetch = fetch,\n  env: EnvLike = defaultEnv(),\n  timeoutMs: number = HOST_AUTH_PROBE_TIMEOUT_MS,\n): Promise<HostWhoamiDto | null> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) return null;\n\n  const controller = new AbortController();\n  const timer = globalThis.setTimeout(() => controller.abort(), timeoutMs);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}/api/whoami`, {\n      method: 'GET',\n      credentials: 'include',\n      headers: { Accept: 'application/json' },\n      signal: controller.signal,\n    });\n  } catch {\n    return null;\n  } finally {\n    clearTimeout(timer);\n  }\n  if (!response.ok) return null;\n\n  let raw: unknown;\n  try {\n    raw = scrubHostAuthJson(await response.json());\n  } catch {\n    return null;\n  }\n  if (!raw || typeof raw !== 'object') return null;\n  const record = raw as Record<string, unknown>;\n  if (record.ok !== true) return null;\n  if (typeof record.actorId !== 'string' || record.actorId.length === 0) return null;\n  if (record.kind !== 'remote-account') return null;\n  let email: string | null = null;\n  if (record.email === null) email = null;\n  else if (typeof record.email === 'string') email = record.email;\n  else email = null;\n  return {\n    ok: true,\n    actorId: record.actorId,\n    kind: 'remote-account',\n    email,\n  };\n}"
             },
             {
@@ -83054,7 +83054,7 @@
         },
         {
           "path": "src/lib/hostAuthBridge.ts",
-          "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+          "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
         },
         {
           "path": "src/lib/localAdmin.ts",
@@ -83170,7 +83170,7 @@
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
-            "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+            "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
           },
           {
             "path": "src/lib/localAdmin.ts",
@@ -83367,7 +83367,7 @@
               "kind": "VariableDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 13,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "HOST_AUTH_PROBE_TIMEOUT_MS = 1_500"
             },
             {
@@ -83375,7 +83375,7 @@
               "kind": "VariableDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 16,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "HOST_AUTH_SESSION_BEARER_KEYS = [\n  'token',\n  'sessionToken',\n  'accessToken',\n  'refreshToken',\n  'idToken',\n] as const"
             },
             {
@@ -83383,7 +83383,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 24,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "export type HostWhoamiDto = {\n  readonly ok: true;\n  readonly actorId: string;\n  readonly kind: 'remote-account';\n  readonly email: string | null;\n};"
             },
             {
@@ -83391,7 +83391,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 31,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "type EnvLike = { readonly VITE_SAGATREE_HOST_AUTH_URL?: string };"
             },
             {
@@ -83399,31 +83399,31 @@
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 33,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
               "name": "getHostAuthBaseUrl",
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
-              "line": 46,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
-              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  return url.replace(/\\/$/, '');\n}"
+              "line": 53,
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
+              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  const trimmed = url.trim().replace(/\\/$/, '');\n  if (trimmed === 'same-origin' || trimmed === '.') {\n    if (typeof window !== 'undefined' && typeof window.location?.origin === 'string') {\n      return window.location.origin;\n    }\n    // Node / Vitest: enabled, relative `/api/...` paths.\n    return '';\n  }\n  return trimmed;\n}"
             },
             {
               "name": "scrubHostAuthJson",
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
-              "line": 56,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "line": 71,
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "export function scrubHostAuthJson<T>(value: T): T {\n  if (!value || typeof value !== 'object') return value;\n  if (Array.isArray(value)) {\n    for (const item of value) scrubHostAuthJson(item);\n    return value;\n  }\n  const record = value as Record<string, unknown>;\n  for (const key of Object.keys(record)) {\n    if (\n      (HOST_AUTH_SESSION_BEARER_KEYS as readonly string[]).includes(key) &&\n      typeof record[key] === 'string'\n    ) {\n      delete record[key];\n    } else {\n      scrubHostAuthJson(record[key]);\n    }\n  }\n  return value;\n}"
             },
             {
               "name": "probeHostActor",
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
-              "line": 80,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "line": 95,
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "export async function probeHostActor(\n  fetchImpl: typeof fetch = fetch,\n  env: EnvLike = defaultEnv(),\n  timeoutMs: number = HOST_AUTH_PROBE_TIMEOUT_MS,\n): Promise<HostWhoamiDto | null> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) return null;\n\n  const controller = new AbortController();\n  const timer = globalThis.setTimeout(() => controller.abort(), timeoutMs);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}/api/whoami`, {\n      method: 'GET',\n      credentials: 'include',\n      headers: { Accept: 'application/json' },\n      signal: controller.signal,\n    });\n  } catch {\n    return null;\n  } finally {\n    clearTimeout(timer);\n  }\n  if (!response.ok) return null;\n\n  let raw: unknown;\n  try {\n    raw = scrubHostAuthJson(await response.json());\n  } catch {\n    return null;\n  }\n  if (!raw || typeof raw !== 'object') return null;\n  const record = raw as Record<string, unknown>;\n  if (record.ok !== true) return null;\n  if (typeof record.actorId !== 'string' || record.actorId.length === 0) return null;\n  if (record.kind !== 'remote-account') return null;\n  let email: string | null = null;\n  if (record.email === null) email = null;\n  else if (typeof record.email === 'string') email = record.email;\n  else email = null;\n  return {\n    ok: true,\n    actorId: record.actorId,\n    kind: 'remote-account',\n    email,\n  };\n}"
             },
             {
@@ -84495,7 +84495,7 @@
         },
         {
           "path": "src/lib/hostAuthBridge.ts",
-          "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+          "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
         },
         {
           "path": "src/lib/localAdmin.ts",
@@ -84579,7 +84579,7 @@
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
-            "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+            "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
           },
           {
             "path": "src/lib/networkTimeout.ts",
@@ -84830,7 +84830,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 31,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "type EnvLike = { readonly VITE_SAGATREE_HOST_AUTH_URL?: string };"
             },
             {
@@ -84838,16 +84838,16 @@
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 33,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
               "name": "getHostAuthBaseUrl",
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
-              "line": 46,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
-              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  return url.replace(/\\/$/, '');\n}"
+              "line": 53,
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
+              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  const trimmed = url.trim().replace(/\\/$/, '');\n  if (trimmed === 'same-origin' || trimmed === '.') {\n    if (typeof window !== 'undefined' && typeof window.location?.origin === 'string') {\n      return window.location.origin;\n    }\n    // Node / Vitest: enabled, relative `/api/...` paths.\n    return '';\n  }\n  return trimmed;\n}"
             },
             {
               "name": "AUTH_SESSION_TIMEOUT_MS",
@@ -86553,7 +86553,7 @@
         },
         {
           "path": "src/lib/hostAuthBridge.ts",
-          "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+          "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
         },
         {
           "path": "src/lib/networkTimeout.ts",
@@ -86677,7 +86677,7 @@
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
-            "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+            "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
           },
           {
             "path": "src/lib/networkTimeout.ts",
@@ -86862,7 +86862,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 31,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "type EnvLike = { readonly VITE_SAGATREE_HOST_AUTH_URL?: string };"
             },
             {
@@ -86870,16 +86870,16 @@
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 33,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
               "name": "getHostAuthBaseUrl",
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
-              "line": 46,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
-              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  return url.replace(/\\/$/, '');\n}"
+              "line": 53,
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
+              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  const trimmed = url.trim().replace(/\\/$/, '');\n  if (trimmed === 'same-origin' || trimmed === '.') {\n    if (typeof window !== 'undefined' && typeof window.location?.origin === 'string') {\n      return window.location.origin;\n    }\n    // Node / Vitest: enabled, relative `/api/...` paths.\n    return '';\n  }\n  return trimmed;\n}"
             },
             {
               "name": "AUTH_SESSION_TIMEOUT_MS",
@@ -87748,7 +87748,7 @@
         },
         {
           "path": "src/lib/hostAuthBridge.ts",
-          "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+          "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
         },
         {
           "path": "src/lib/networkTimeout.ts",
@@ -87816,7 +87816,7 @@
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
-            "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+            "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
           },
           {
             "path": "src/lib/networkTimeout.ts",
@@ -88018,7 +88018,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 31,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "type EnvLike = { readonly VITE_SAGATREE_HOST_AUTH_URL?: string };"
             },
             {
@@ -88026,16 +88026,16 @@
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
               "line": 33,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
               "name": "getHostAuthBaseUrl",
               "kind": "FunctionDeclaration",
               "path": "src/lib/hostAuthBridge.ts",
-              "line": 46,
-              "sourceSha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529",
-              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  return url.replace(/\\/$/, '');\n}"
+              "line": 53,
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
+              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  const trimmed = url.trim().replace(/\\/$/, '');\n  if (trimmed === 'same-origin' || trimmed === '.') {\n    if (typeof window !== 'undefined' && typeof window.location?.origin === 'string') {\n      return window.location.origin;\n    }\n    // Node / Vitest: enabled, relative `/api/...` paths.\n    return '';\n  }\n  return trimmed;\n}"
             },
             {
               "name": "AUTH_SESSION_TIMEOUT_MS",
@@ -89089,7 +89089,7 @@
         },
         {
           "path": "src/lib/hostAuthBridge.ts",
-          "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+          "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
         },
         {
           "path": "src/lib/networkTimeout.ts",
