@@ -1282,7 +1282,7 @@ function parseHighlightLines(raw: unknown): SessionRecapPromptLine[] {
 
 | Path | SHA-256 |
 |---|---|
-| `src/infrastructure/session/session-recap-ai-service.ts` | `61b31d8ae8f680ac4755cf499b42b8da5f0ab5bf85edede1248de5d0e9a364f6` |
+| `src/infrastructure/session/session-recap-ai-service.ts` | `2c21ba1645d48214ea277cd15537bc93b4752737510e556e40bca11f80243c3e` |
 | `supabase/functions/_shared/ai-provider-crypto.ts` | `45e60f76f744077e8d9b243719dcdba5d58a047d36a1c141df830afa2de16532` |
 | `supabase/functions/_shared/character-lore-prompt.ts` | `54fffb4ba316515dff7add1998b2d6f02280ddc336c30e48d2a4ee045a60f818` |
 | `supabase/functions/_shared/character-lore-provider.ts` | `355c8635d417fd31f9f2afb93e2ae4fe9f26ddeadaf6c2986a74f0201fb5479e` |

@@ -347,3 +347,25 @@ export async function fetchHostSessionRecap(
   );
   return body.recap ?? null;
 }
+
+/** FE-HOST-14: persist manual session recap summary (no Edge AI). */
+export async function saveHostSessionRecapSummary(
+  sessionId: string,
+  summaryText: string,
+  status: 'draft' | 'approved',
+  env: EnvLike = defaultEnv(),
+  fetchImpl: typeof fetch = fetch,
+): Promise<Readonly<Record<string, unknown>>> {
+  const body = await hostMutateJson<{ recap?: Record<string, unknown> }>(
+    `/api/v1/sessions/${encodeURIComponent(sessionId)}/recap`,
+    'PUT',
+    { summaryText, status },
+    'Zusammenfassung konnte nicht gespeichert werden',
+    env,
+    fetchImpl,
+  );
+  if (!body.recap || typeof body.recap !== 'object') {
+    throw new Error('Zusammenfassung konnte nicht gespeichert werden: ungültige Antwort');
+  }
+  return body.recap;
+}

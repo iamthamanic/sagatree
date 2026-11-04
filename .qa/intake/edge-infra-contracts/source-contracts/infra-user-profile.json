@@ -29,7 +29,7 @@
     },
     {
       "path": "src/infrastructure/user-profile/user-profile-service.ts",
-      "sha256": "b842fa9db4e14d90424172ab942dcce00ebffd22e7404709703f9835f3a6eb62"
+      "sha256": "202170498fc10c6bcfadeaede6790eb5abc6da07fb4538f19a4b0f84dc39f65a"
     }
   ],
   "supportingSourceFiles": [
@@ -71,7 +71,7 @@
     },
     {
       "path": "src/infrastructure/host/host-catalog-http.ts",
-      "sha256": "a33c807b3bde9200f472b2d4d057d633960fba65fcf14b32e6f7053adb9c9f5a"
+      "sha256": "9049245360683a74e7e2602d35126d815d64344d384c6684e4c2c3d41aa626d3"
     },
     {
       "path": "src/infrastructure/host/host-library-http.ts",
@@ -903,15 +903,15 @@
     {
       "path": "src/infrastructure/user-profile/user-profile-service.ts",
       "line": 10,
-      "endLine": 14,
+      "endLine": 15,
       "module": "../host/host-catalog-http",
       "resolvedPath": "src/infrastructure/host/host-catalog-http.ts",
-      "expression": "import {\n  fetchHostOwnUserProfile,\n  isHostLibraryEnabled,\n  uploadHostUserAvatar,\n} from '../host/host-catalog-http';"
+      "expression": "import {\n  fetchHostOwnUserProfile,\n  fetchHostProfilesByUserIds,\n  isHostLibraryEnabled,\n  uploadHostUserAvatar,\n} from '../host/host-catalog-http';"
     },
     {
       "path": "src/infrastructure/user-profile/user-profile-service.ts",
-      "line": 33,
-      "endLine": 33,
+      "line": 34,
+      "endLine": 34,
       "module": "../media/optimizer",
       "resolvedPath": "src/infrastructure/media/optimizer/index.ts",
       "expression": "import('../media/optimizer')",
@@ -1035,21 +1035,21 @@
     },
     {
       "path": "src/infrastructure/user-profile/user-profile-service.ts",
-      "line": 16,
-      "endLine": 23,
+      "line": 17,
+      "endLine": 24,
       "text": "export type UploadUserAvatarOptions = {\n  /**\n   * When true, skip client optimize (caller already ran user-avatar intake).\n   * Storage MIME/magic-byte/owner checks still run in the repository.\n   */\n  readonly alreadyOptimized?: boolean;\n  readonly signal?: AbortSignal;\n};"
     },
     {
       "path": "src/infrastructure/user-profile/user-profile-service.ts",
-      "line": 29,
-      "endLine": 69,
+      "line": 30,
+      "endLine": 70,
       "text": "export async function prepareUserAvatarFile(\n  file: File,\n  signal?: AbortSignal,\n): Promise<File> {\n  const { optimizeMedia } = await import('../media/optimizer');\n  let optimizedBytes: Uint8Array | undefined;\n  const result = await optimizeMedia({\n    kind: 'image',\n    profileId: 'user-avatar',\n    mimeType: file.type || 'application/octet-stream',\n    byteSize: file.size,\n    bytes: file,\n    signal,\n    onOptimizedBytes: (bytes) => {\n      optimizedBytes = bytes;\n    },\n  });\n\n  if (result.status === 'unchanged') {\n    return file;\n  }\n\n  if (result.status === 'optimized') {\n    if (!optimizedBytes || optimizedBytes.byteLength === 0) {\n      throw new Error('Avatar-Optimierung lieferte keine Bytes (kein stilles Original).');\n    }\n    const copy = new Uint8Array(optimizedBytes.byteLength);\n    copy.set(optimizedBytes);\n    const base = file.name.replace(/\\.[^.]+$/, '') || 'avatar';\n    const ext = result.outputMimeType === 'image/webp' ? 'webp' : 'bin';\n    return new File([copy], `${base}.${ext}`, { type: result.outputMimeType });\n  }\n\n  if (result.status === 'aborted') {\n    throw new Error(result.message || 'Avatar-Optimierung abgebrochen.');\n  }\n\n  throw new Error(\n    result.message || `Avatar-Optimierung fehlgeschlagen (${result.status}).`,\n  );\n}"
     },
     {
       "path": "src/infrastructure/user-profile/user-profile-service.ts",
-      "line": 71,
-      "endLine": 101,
-      "text": "export const userProfileService = {\n  async getOwnProfile(): Promise<UserProfileVm | null> {\n    if (isHostLibraryEnabled()) {\n      return fetchHostOwnUserProfile();\n    }\n    return supabaseUserProfileRepository.getOwnProfile();\n  },\n\n  async getProfilesByUserIds(userIds: readonly string[]): Promise<UserProfileVm[]> {\n    if (isHostLibraryEnabled()) {\n      // Batch peer lobby profiles stay Supabase until a host batch route ships (FE-HOST-09).\n      if (userIds.length === 0) return [];\n      throw new Error(\n        'Fremde Profile laden ist im Host-Modus noch nicht verfügbar.',\n      );\n    }\n    return supabaseUserProfileRepository.getProfilesByUserIds(userIds);\n  },\n\n  async uploadAvatar(file: File, options?: UploadUserAvatarOptions): Promise<UserProfileVm> {\n    const prepared = options?.alreadyOptimized\n      ? file\n      : await prepareUserAvatarFile(file, options?.signal);\n    if (isHostLibraryEnabled()) {\n      return uploadHostUserAvatar(prepared);\n    }\n    return supabaseUserProfileRepository.uploadAvatar(prepared);\n  },\n\n  prepareAvatarFile: prepareUserAvatarFile,\n};"
+      "line": 72,
+      "endLine": 98,
+      "text": "export const userProfileService = {\n  async getOwnProfile(): Promise<UserProfileVm | null> {\n    if (isHostLibraryEnabled()) {\n      return fetchHostOwnUserProfile();\n    }\n    return supabaseUserProfileRepository.getOwnProfile();\n  },\n\n  async getProfilesByUserIds(userIds: readonly string[]): Promise<UserProfileVm[]> {\n    if (isHostLibraryEnabled()) {\n      return fetchHostProfilesByUserIds(userIds);\n    }\n    return supabaseUserProfileRepository.getProfilesByUserIds(userIds);\n  },\n\n  async uploadAvatar(file: File, options?: UploadUserAvatarOptions): Promise<UserProfileVm> {\n    const prepared = options?.alreadyOptimized\n      ? file\n      : await prepareUserAvatarFile(file, options?.signal);\n    if (isHostLibraryEnabled()) {\n      return uploadHostUserAvatar(prepared);\n    }\n    return supabaseUserProfileRepository.uploadAvatar(prepared);\n  },\n\n  prepareAvatarFile: prepareUserAvatarFile,\n};"
     }
   ],
   "operationDeclarations": [
@@ -1244,36 +1244,36 @@
     },
     {
       "path": "src/infrastructure/user-profile/user-profile-service.ts",
-      "line": 29,
-      "endLine": 69,
+      "line": 30,
+      "endLine": 70,
       "name": "prepareUserAvatarFile",
       "text": "export async function prepareUserAvatarFile(\n  file: File,\n  signal?: AbortSignal,\n): Promise<File> {\n  const { optimizeMedia } = await import('../media/optimizer');\n  let optimizedBytes: Uint8Array | undefined;\n  const result = await optimizeMedia({\n    kind: 'image',\n    profileId: 'user-avatar',\n    mimeType: file.type || 'application/octet-stream',\n    byteSize: file.size,\n    bytes: file,\n    signal,\n    onOptimizedBytes: (bytes) => {\n      optimizedBytes = bytes;\n    },\n  });\n\n  if (result.status === 'unchanged') {\n    return file;\n  }\n\n  if (result.status === 'optimized') {\n    if (!optimizedBytes || optimizedBytes.byteLength === 0) {\n      throw new Error('Avatar-Optimierung lieferte keine Bytes (kein stilles Original).');\n    }\n    const copy = new Uint8Array(optimizedBytes.byteLength);\n    copy.set(optimizedBytes);\n    const base = file.name.replace(/\\.[^.]+$/, '') || 'avatar';\n    const ext = result.outputMimeType === 'image/webp' ? 'webp' : 'bin';\n    return new File([copy], `${base}.${ext}`, { type: result.outputMimeType });\n  }\n\n  if (result.status === 'aborted') {\n    throw new Error(result.message || 'Avatar-Optimierung abgebrochen.');\n  }\n\n  throw new Error(\n    result.message || `Avatar-Optimierung fehlgeschlagen (${result.status}).`,\n  );\n}"
     },
     {
       "path": "src/infrastructure/user-profile/user-profile-service.ts",
-      "line": 42,
-      "endLine": 44,
+      "line": 43,
+      "endLine": 45,
       "name": "callback",
       "text": "(bytes) => {\n      optimizedBytes = bytes;\n    }"
     },
     {
       "path": "src/infrastructure/user-profile/user-profile-service.ts",
-      "line": 72,
-      "endLine": 77,
+      "line": 73,
+      "endLine": 78,
       "name": "getOwnProfile",
       "text": "async getOwnProfile(): Promise<UserProfileVm | null> {\n    if (isHostLibraryEnabled()) {\n      return fetchHostOwnUserProfile();\n    }\n    return supabaseUserProfileRepository.getOwnProfile();\n  }"
     },
     {
       "path": "src/infrastructure/user-profile/user-profile-service.ts",
-      "line": 79,
-      "endLine": 88,
+      "line": 80,
+      "endLine": 85,
       "name": "getProfilesByUserIds",
-      "text": "async getProfilesByUserIds(userIds: readonly string[]): Promise<UserProfileVm[]> {\n    if (isHostLibraryEnabled()) {\n      // Batch peer lobby profiles stay Supabase until a host batch route ships (FE-HOST-09).\n      if (userIds.length === 0) return [];\n      throw new Error(\n        'Fremde Profile laden ist im Host-Modus noch nicht verfügbar.',\n      );\n    }\n    return supabaseUserProfileRepository.getProfilesByUserIds(userIds);\n  }"
+      "text": "async getProfilesByUserIds(userIds: readonly string[]): Promise<UserProfileVm[]> {\n    if (isHostLibraryEnabled()) {\n      return fetchHostProfilesByUserIds(userIds);\n    }\n    return supabaseUserProfileRepository.getProfilesByUserIds(userIds);\n  }"
     },
     {
       "path": "src/infrastructure/user-profile/user-profile-service.ts",
-      "line": 90,
-      "endLine": 98,
+      "line": 87,
+      "endLine": 95,
       "name": "uploadAvatar",
       "text": "async uploadAvatar(file: File, options?: UploadUserAvatarOptions): Promise<UserProfileVm> {\n    const prepared = options?.alreadyOptimized\n      ? file\n      : await prepareUserAvatarFile(file, options?.signal);\n    if (isHostLibraryEnabled()) {\n      return uploadHostUserAvatar(prepared);\n    }\n    return supabaseUserProfileRepository.uploadAvatar(prepared);\n  }"
     }

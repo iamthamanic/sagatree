@@ -49,7 +49,7 @@
     },
     {
       "path": "src/infrastructure/session/session-recap-ai-service.ts",
-      "sha256": "61b31d8ae8f680ac4755cf499b42b8da5f0ab5bf85edede1248de5d0e9a364f6"
+      "sha256": "2c21ba1645d48214ea277cd15537bc93b4752737510e556e40bca11f80243c3e"
     },
     {
       "path": "src/infrastructure/session/session-recap-service.ts",
@@ -107,7 +107,7 @@
     },
     {
       "path": "src/infrastructure/host/host-session-http.ts",
-      "sha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf"
+      "sha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719"
     },
     {
       "path": "src/lib/authenticatedUser.ts",
@@ -888,8 +888,8 @@
       "kind": "rpc",
       "name": "save_session_recap_summary",
       "path": "src/infrastructure/session/session-recap-ai-service.ts",
-      "line": 118,
-      "endLine": 122,
+      "line": 126,
+      "endLine": 130,
       "resolution": "literal-or-constant",
       "expression": "supabase.rpc('save_session_recap_summary', {\n        p_session_id: sessionId,\n        p_summary_text: summaryText,\n        p_status: status,\n      })",
       "chain": "supabase.rpc('save_session_recap_summary', {\n        p_session_id: sessionId,\n        p_summary_text: summaryText,\n        p_status: status,\n      })",
@@ -900,8 +900,8 @@
       "enclosingOperation": {
         "path": "src/infrastructure/session/session-recap-ai-service.ts",
         "line": 107,
-        "endLine": 141,
-        "text": "async saveSummary(\n    sessionId: string,\n    summaryText: string,\n    status: 'draft' | 'approved',\n  ): Promise<{ summaryText: string | null; summaryStatus: EpisodeSummaryStatus }> {\n    if (isHostLibraryEnabled()) {\n      throw new Error(\n        'Zusammenfassung speichern ist im Host-Modus noch nicht verfügbar.',\n      );\n    }\n    const { data, error } = await raceWithTimeoutReject(\n      supabase.rpc('save_session_recap_summary', {\n        p_session_id: sessionId,\n        p_summary_text: summaryText,\n        p_status: status,\n      }),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'Speichern Zeitüberschreitung',\n    );\n    if (error) {\n      throw new Error(error.message || 'Zusammenfassung konnte nicht gespeichert werden');\n    }\n    if (!isRecord(data)) {\n      return { summaryText, summaryStatus: status };\n    }\n    return {\n      summaryText: typeof data.summaryText === 'string' ? data.summaryText : summaryText,\n      summaryStatus:\n        data.summaryStatus === 'approved'\n          ? 'approved'\n          : data.summaryStatus === 'draft'\n            ? 'draft'\n            : 'none',\n    };\n  }"
+        "endLine": 149,
+        "text": "async saveSummary(\n    sessionId: string,\n    summaryText: string,\n    status: 'draft' | 'approved',\n  ): Promise<{ summaryText: string | null; summaryStatus: EpisodeSummaryStatus }> {\n    if (isHostLibraryEnabled()) {\n      const saved = await saveHostSessionRecapSummary(sessionId, summaryText, status);\n      return {\n        summaryText:\n          typeof saved.summaryText === 'string' ? saved.summaryText : summaryText,\n        summaryStatus:\n          saved.summaryStatus === 'approved'\n            ? 'approved'\n            : saved.summaryStatus === 'draft'\n              ? 'draft'\n              : status,\n      };\n    }\n    const { data, error } = await raceWithTimeoutReject(\n      supabase.rpc('save_session_recap_summary', {\n        p_session_id: sessionId,\n        p_summary_text: summaryText,\n        p_status: status,\n      }),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'Speichern Zeitüberschreitung',\n    );\n    if (error) {\n      throw new Error(error.message || 'Zusammenfassung konnte nicht gespeichert werden');\n    }\n    if (!isRecord(data)) {\n      return { summaryText, summaryStatus: status };\n    }\n    return {\n      summaryText: typeof data.summaryText === 'string' ? data.summaryText : summaryText,\n      summaryStatus:\n        data.summaryStatus === 'approved'\n          ? 'approved'\n          : data.summaryStatus === 'draft'\n            ? 'draft'\n            : 'none',\n    };\n  }"
       }
     },
     {
@@ -1619,7 +1619,7 @@
       "endLine": 10,
       "module": "../host/host-session-http",
       "resolvedPath": "src/infrastructure/host/host-session-http.ts",
-      "expression": "import { isHostLibraryEnabled } from '../host/host-session-http';"
+      "expression": "import { isHostLibraryEnabled, saveHostSessionRecapSummary } from '../host/host-session-http';"
     },
     {
       "path": "src/infrastructure/session/session-recap-service.ts",
@@ -1999,8 +1999,8 @@
     },
     {
       "path": "src/infrastructure/session/session-recap-ai-service.ts",
-      "line": 144,
-      "endLine": 144,
+      "line": 152,
+      "endLine": 152,
       "text": "export const sessionRecapAiService = new SessionRecapAiService();"
     },
     {
@@ -2532,9 +2532,9 @@
     {
       "path": "src/infrastructure/session/session-recap-ai-service.ts",
       "line": 107,
-      "endLine": 141,
+      "endLine": 149,
       "name": "saveSummary",
-      "text": "async saveSummary(\n    sessionId: string,\n    summaryText: string,\n    status: 'draft' | 'approved',\n  ): Promise<{ summaryText: string | null; summaryStatus: EpisodeSummaryStatus }> {\n    if (isHostLibraryEnabled()) {\n      throw new Error(\n        'Zusammenfassung speichern ist im Host-Modus noch nicht verfügbar.',\n      );\n    }\n    const { data, error } = await raceWithTimeoutReject(\n      supabase.rpc('save_session_recap_summary', {\n        p_session_id: sessionId,\n        p_summary_text: summaryText,\n        p_status: status,\n      }),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'Speichern Zeitüberschreitung',\n    );\n    if (error) {\n      throw new Error(error.message || 'Zusammenfassung konnte nicht gespeichert werden');\n    }\n    if (!isRecord(data)) {\n      return { summaryText, summaryStatus: status };\n    }\n    return {\n      summaryText: typeof data.summaryText === 'string' ? data.summaryText : summaryText,\n      summaryStatus:\n        data.summaryStatus === 'approved'\n          ? 'approved'\n          : data.summaryStatus === 'draft'\n            ? 'draft'\n            : 'none',\n    };\n  }"
+      "text": "async saveSummary(\n    sessionId: string,\n    summaryText: string,\n    status: 'draft' | 'approved',\n  ): Promise<{ summaryText: string | null; summaryStatus: EpisodeSummaryStatus }> {\n    if (isHostLibraryEnabled()) {\n      const saved = await saveHostSessionRecapSummary(sessionId, summaryText, status);\n      return {\n        summaryText:\n          typeof saved.summaryText === 'string' ? saved.summaryText : summaryText,\n        summaryStatus:\n          saved.summaryStatus === 'approved'\n            ? 'approved'\n            : saved.summaryStatus === 'draft'\n              ? 'draft'\n              : status,\n      };\n    }\n    const { data, error } = await raceWithTimeoutReject(\n      supabase.rpc('save_session_recap_summary', {\n        p_session_id: sessionId,\n        p_summary_text: summaryText,\n        p_status: status,\n      }),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'Speichern Zeitüberschreitung',\n    );\n    if (error) {\n      throw new Error(error.message || 'Zusammenfassung konnte nicht gespeichert werden');\n    }\n    if (!isRecord(data)) {\n      return { summaryText, summaryStatus: status };\n    }\n    return {\n      summaryText: typeof data.summaryText === 'string' ? data.summaryText : summaryText,\n      summaryStatus:\n        data.summaryStatus === 'approved'\n          ? 'approved'\n          : data.summaryStatus === 'draft'\n            ? 'draft'\n            : 'none',\n    };\n  }"
     },
     {
       "path": "src/infrastructure/session/session-recap-service.ts",

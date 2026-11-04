@@ -9,7 +9,7 @@
     },
     {
       "path": "src/infrastructure/ai/host-ai-invoke.ts",
-      "sha256": "8310a4746f3f15aede6854e1bac3517f16cc4d8cec1803c9967f19393df14e78"
+      "sha256": "5437ec09fc80978c56d79856547a367e6aed1a116e6db8c1d4516e10ce9f7f52"
     },
     {
       "path": "src/infrastructure/ai/ollama-settings-service.ts",
@@ -286,13 +286,13 @@
     {
       "path": "src/infrastructure/ai/host-ai-invoke.ts",
       "line": 117,
-      "endLine": 156,
-      "text": "export function createAiInvoke(options?: {\n  readonly fetchImpl?: typeof fetch;\n  readonly env?: EnvLike;\n  /** Force Edge even when host AI opt-in is set (tests). */\n  readonly forceEdge?: boolean;\n}): AiInvokeFn {\n  const fetchImpl = options?.fetchImpl ?? fetch;\n  const env = options?.env ?? ((import.meta as ImportMeta & { env?: EnvLike }).env ?? {});\n  const forceEdge = options?.forceEdge === true;\n\n  return async (path, body) => {\n    const preferHost =\n      !forceEdge && getHostAuthBaseUrl(env) !== null && isHostAiEnabled(env);\n    if (preferHost) {\n      return invokeHost(\n        path,\n        body,\n        path === 'ollama-settings'\n          ? 'Ollama-Einstellungen nicht erreichbar.'\n          : 'AI-Provider-Dienst nicht erreichbar.',\n        fetchImpl,\n        env,\n      );\n    }\n    if (!forceEdge && isHostLibraryEnabled(env)) {\n      throw new Error(\n        path === 'ollama-settings'\n          ? 'Ollama-Einstellungen sind im Host-Modus ohne VITE_SAGATREE_HOST_AI noch nicht verfügbar.'\n          : 'AI-Provider-Dienst ist im Host-Modus ohne VITE_SAGATREE_HOST_AI noch nicht verfügbar.',\n      );\n    }\n    return invokeEdge(\n      path === 'ollama-settings' ? 'ollama-settings' : 'ai-provider-credentials',\n      body,\n      path === 'ollama-settings'\n        ? 'Ollama-Einstellungen nicht erreichbar.'\n        : 'AI-Provider-Dienst nicht erreichbar.',\n    );\n  };\n}"
+      "endLine": 152,
+      "text": "export function createAiInvoke(options?: {\n  readonly fetchImpl?: typeof fetch;\n  readonly env?: EnvLike;\n  /** Force Edge even when host AI opt-in is set (tests). */\n  readonly forceEdge?: boolean;\n}): AiInvokeFn {\n  const fetchImpl = options?.fetchImpl ?? fetch;\n  const env = options?.env ?? ((import.meta as ImportMeta & { env?: EnvLike }).env ?? {});\n  const forceEdge = options?.forceEdge === true;\n\n  return async (path, body) => {\n    // FE-HOST-14: host-first library runtime uses mounted /api/v1/ai/* (same as HOST_AI=1).\n    const preferHost =\n      !forceEdge &&\n      getHostAuthBaseUrl(env) !== null &&\n      (isHostAiEnabled(env) || isHostLibraryEnabled(env));\n    if (preferHost) {\n      return invokeHost(\n        path,\n        body,\n        path === 'ollama-settings'\n          ? 'Ollama-Einstellungen nicht erreichbar.'\n          : 'AI-Provider-Dienst nicht erreichbar.',\n        fetchImpl,\n        env,\n      );\n    }\n    return invokeEdge(\n      path === 'ollama-settings' ? 'ollama-settings' : 'ai-provider-credentials',\n      body,\n      path === 'ollama-settings'\n        ? 'Ollama-Einstellungen nicht erreichbar.'\n        : 'AI-Provider-Dienst nicht erreichbar.',\n    );\n  };\n}"
     },
     {
       "path": "src/infrastructure/ai/host-ai-invoke.ts",
-      "line": 158,
-      "endLine": 158,
+      "line": 154,
+      "endLine": 154,
       "text": "export const defaultAiInvoke = createAiInvoke();"
     },
     {
@@ -452,16 +452,16 @@
     {
       "path": "src/infrastructure/ai/host-ai-invoke.ts",
       "line": 117,
-      "endLine": 156,
+      "endLine": 152,
       "name": "createAiInvoke",
-      "text": "export function createAiInvoke(options?: {\n  readonly fetchImpl?: typeof fetch;\n  readonly env?: EnvLike;\n  /** Force Edge even when host AI opt-in is set (tests). */\n  readonly forceEdge?: boolean;\n}): AiInvokeFn {\n  const fetchImpl = options?.fetchImpl ?? fetch;\n  const env = options?.env ?? ((import.meta as ImportMeta & { env?: EnvLike }).env ?? {});\n  const forceEdge = options?.forceEdge === true;\n\n  return async (path, body) => {\n    const preferHost =\n      !forceEdge && getHostAuthBaseUrl(env) !== null && isHostAiEnabled(env);\n    if (preferHost) {\n      return invokeHost(\n        path,\n        body,\n        path === 'ollama-settings'\n          ? 'Ollama-Einstellungen nicht erreichbar.'\n          : 'AI-Provider-Dienst nicht erreichbar.',\n        fetchImpl,\n        env,\n      );\n    }\n    if (!forceEdge && isHostLibraryEnabled(env)) {\n      throw new Error(\n        path === 'ollama-settings'\n          ? 'Ollama-Einstellungen sind im Host-Modus ohne VITE_SAGATREE_HOST_AI noch nicht verfügbar.'\n          : 'AI-Provider-Dienst ist im Host-Modus ohne VITE_SAGATREE_HOST_AI noch nicht verfügbar.',\n      );\n    }\n    return invokeEdge(\n      path === 'ollama-settings' ? 'ollama-settings' : 'ai-provider-credentials',\n      body,\n      path === 'ollama-settings'\n        ? 'Ollama-Einstellungen nicht erreichbar.'\n        : 'AI-Provider-Dienst nicht erreichbar.',\n    );\n  };\n}"
+      "text": "export function createAiInvoke(options?: {\n  readonly fetchImpl?: typeof fetch;\n  readonly env?: EnvLike;\n  /** Force Edge even when host AI opt-in is set (tests). */\n  readonly forceEdge?: boolean;\n}): AiInvokeFn {\n  const fetchImpl = options?.fetchImpl ?? fetch;\n  const env = options?.env ?? ((import.meta as ImportMeta & { env?: EnvLike }).env ?? {});\n  const forceEdge = options?.forceEdge === true;\n\n  return async (path, body) => {\n    // FE-HOST-14: host-first library runtime uses mounted /api/v1/ai/* (same as HOST_AI=1).\n    const preferHost =\n      !forceEdge &&\n      getHostAuthBaseUrl(env) !== null &&\n      (isHostAiEnabled(env) || isHostLibraryEnabled(env));\n    if (preferHost) {\n      return invokeHost(\n        path,\n        body,\n        path === 'ollama-settings'\n          ? 'Ollama-Einstellungen nicht erreichbar.'\n          : 'AI-Provider-Dienst nicht erreichbar.',\n        fetchImpl,\n        env,\n      );\n    }\n    return invokeEdge(\n      path === 'ollama-settings' ? 'ollama-settings' : 'ai-provider-credentials',\n      body,\n      path === 'ollama-settings'\n        ? 'Ollama-Einstellungen nicht erreichbar.'\n        : 'AI-Provider-Dienst nicht erreichbar.',\n    );\n  };\n}"
     },
     {
       "path": "src/infrastructure/ai/host-ai-invoke.ts",
       "line": 127,
-      "endLine": 155,
+      "endLine": 151,
       "name": "callback",
-      "text": "async (path, body) => {\n    const preferHost =\n      !forceEdge && getHostAuthBaseUrl(env) !== null && isHostAiEnabled(env);\n    if (preferHost) {\n      return invokeHost(\n        path,\n        body,\n        path === 'ollama-settings'\n          ? 'Ollama-Einstellungen nicht erreichbar.'\n          : 'AI-Provider-Dienst nicht erreichbar.',\n        fetchImpl,\n        env,\n      );\n    }\n    if (!forceEdge && isHostLibraryEnabled(env)) {\n      throw new Error(\n        path === 'ollama-settings'\n          ? 'Ollama-Einstellungen sind im Host-Modus ohne VITE_SAGATREE_HOST_AI noch nicht verfügbar.'\n          : 'AI-Provider-Dienst ist im Host-Modus ohne VITE_SAGATREE_HOST_AI noch nicht verfügbar.',\n      );\n    }\n    return invokeEdge(\n      path === 'ollama-settings' ? 'ollama-settings' : 'ai-provider-credentials',\n      body,\n      path === 'ollama-settings'\n        ? 'Ollama-Einstellungen nicht erreichbar.'\n        : 'AI-Provider-Dienst nicht erreichbar.',\n    );\n  }"
+      "text": "async (path, body) => {\n    // FE-HOST-14: host-first library runtime uses mounted /api/v1/ai/* (same as HOST_AI=1).\n    const preferHost =\n      !forceEdge &&\n      getHostAuthBaseUrl(env) !== null &&\n      (isHostAiEnabled(env) || isHostLibraryEnabled(env));\n    if (preferHost) {\n      return invokeHost(\n        path,\n        body,\n        path === 'ollama-settings'\n          ? 'Ollama-Einstellungen nicht erreichbar.'\n          : 'AI-Provider-Dienst nicht erreichbar.',\n        fetchImpl,\n        env,\n      );\n    }\n    return invokeEdge(\n      path === 'ollama-settings' ? 'ollama-settings' : 'ai-provider-credentials',\n      body,\n      path === 'ollama-settings'\n        ? 'Ollama-Einstellungen nicht erreichbar.'\n        : 'AI-Provider-Dienst nicht erreichbar.',\n    );\n  }"
     },
     {
       "path": "src/infrastructure/ai/ollama-settings-service.ts",
