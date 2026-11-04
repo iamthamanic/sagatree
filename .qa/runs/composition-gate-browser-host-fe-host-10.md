@@ -1,7 +1,7 @@
 # Composition Gate — browser-host-FE-HOST-10
 
 **Verdict:** CLEAR  
-**HEAD:** (filled at ship)  
+**HEAD:** `cd9060036c9e969d522ad9f64a6aeed368c08b13`  
 **Issue:** #1115
 
 ## Intent
