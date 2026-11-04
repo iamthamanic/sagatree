@@ -7,7 +7,7 @@
  */
 import { supabase } from '../../lib/supabase';
 import { raceWithTimeoutReject, SUPABASE_QUERY_TIMEOUT_MS } from '../../lib/networkTimeout';
-import { isHostLibraryEnabled } from '../host/host-session-http';
+import { isHostLibraryEnabled, saveHostSessionRecapSummary } from '../host/host-session-http';
 
 export type EpisodeSummaryStatus = 'none' | 'draft' | 'approved';
 
@@ -110,9 +110,17 @@ class SessionRecapAiService {
     status: 'draft' | 'approved',
   ): Promise<{ summaryText: string | null; summaryStatus: EpisodeSummaryStatus }> {
     if (isHostLibraryEnabled()) {
-      throw new Error(
-        'Zusammenfassung speichern ist im Host-Modus noch nicht verfügbar.',
-      );
+      const saved = await saveHostSessionRecapSummary(sessionId, summaryText, status);
+      return {
+        summaryText:
+          typeof saved.summaryText === 'string' ? saved.summaryText : summaryText,
+        summaryStatus:
+          saved.summaryStatus === 'approved'
+            ? 'approved'
+            : saved.summaryStatus === 'draft'
+              ? 'draft'
+              : status,
+      };
     }
     const { data, error } = await raceWithTimeoutReject(
       supabase.rpc('save_session_recap_summary', {

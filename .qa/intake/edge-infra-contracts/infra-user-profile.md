@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-user-profile.json](source-contracts/infra-user-profile.json) (SHA-256 `5be4f090d71b811c59bb26c24912e81a8418b7fcfd81ca9cf6d1462b010f7e83`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-user-profile.json](source-contracts/infra-user-profile.json) (SHA-256 `b517058baea06fefa63b11e2a208547201ae5f9e36ef4086d2117bcade8ff820`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -427,7 +427,7 @@ export type HostUserProfileOp = (typeof HOST_USER_PROFILE_OPS)[number];
 export const supabaseUserProfileRepository = new SupabaseUserProfileRepository();
 ```
 
-### src/infrastructure/user-profile/user-profile-service.ts:16
+### src/infrastructure/user-profile/user-profile-service.ts:17
 
 ```ts
 export type UploadUserAvatarOptions = {
@@ -440,7 +440,7 @@ export type UploadUserAvatarOptions = {
 };
 ```
 
-### src/infrastructure/user-profile/user-profile-service.ts:29
+### src/infrastructure/user-profile/user-profile-service.ts:30
 
 ```ts
 export async function prepareUserAvatarFile(
@@ -486,7 +486,7 @@ export async function prepareUserAvatarFile(
 }
 ```
 
-### src/infrastructure/user-profile/user-profile-service.ts:71
+### src/infrastructure/user-profile/user-profile-service.ts:72
 
 ```ts
 export const userProfileService = {
@@ -499,11 +499,7 @@ export const userProfileService = {
 
   async getProfilesByUserIds(userIds: readonly string[]): Promise<UserProfileVm[]> {
     if (isHostLibraryEnabled()) {
-      // Batch peer lobby profiles stay Supabase until a host batch route ships (FE-HOST-09).
-      if (userIds.length === 0) return [];
-      throw new Error(
-        'Fremde Profile laden ist im Host-Modus noch nicht verfügbar.',
-      );
+      return fetchHostProfilesByUserIds(userIds);
     }
     return supabaseUserProfileRepository.getProfilesByUserIds(userIds);
   },
@@ -683,7 +679,7 @@ async uploadAvatar(file: File): Promise<UserProfileVm> {
 | `src/domains/user-profile/contracts/user-profile.types.ts` | `2f3f3472e9a3448099144be0993fd83bbbc2270050ce76dceadd8821501c26b7` |
 | `src/domains/user-profile/display-name.ts` | `87cfc4858f198e56ea2857c505162f112efd5edacde4dbb1f7fcd995b4535516` |
 | `src/domains/user-profile/index.ts` | `d094d245ff9356298ef20c48635ca3e7adcc0e1ccf180554586949e0b496c496` |
-| `src/infrastructure/host/host-catalog-http.ts` | `a33c807b3bde9200f472b2d4d057d633960fba65fcf14b32e6f7053adb9c9f5a` |
+| `src/infrastructure/host/host-catalog-http.ts` | `9049245360683a74e7e2602d35126d815d64344d384c6684e4c2c3d41aa626d3` |
 | `src/infrastructure/host/host-library-http.ts` | `3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a` |
 | `src/infrastructure/media/optimizer/engines/audio/index.ts` | `7585190a705085692bff0896e08b4d78f791895b47e24d57deeaaa10bb669d4e` |
 | `src/infrastructure/media/optimizer/engines/image/image.worker.ts` | `d34793b4de682556d9306194cfbcd05fdafdf215da25393f955d2669c7499276` |
@@ -704,7 +700,7 @@ async uploadAvatar(file: File): Promise<UserProfileVm> {
 | `src/infrastructure/user-profile/host-user-profile-ports.contract.ts` | `7f4aaaa098bd0a8625e916074ae7c4a0e2d34b99d4effd1ccb0a890148f01511` |
 | `src/infrastructure/user-profile/index.ts` | `5f2fbf0152a79c17b98a666612a79bfbef708482587e665604fa71cd16016e7a` |
 | `src/infrastructure/user-profile/supabase-user-profile.repository.ts` | `21c6318bd3941ea565a1160598a9ad6203c75d9a4d74a2ec10be33fe990dd076` |
-| `src/infrastructure/user-profile/user-profile-service.ts` | `b842fa9db4e14d90424172ab942dcce00ebffd22e7404709703f9835f3a6eb62` |
+| `src/infrastructure/user-profile/user-profile-service.ts` | `202170498fc10c6bcfadeaede6790eb5abc6da07fb4538f19a4b0f84dc39f65a` |
 | `src/lib/authenticatedUser.ts` | `d4cbf3a004f8375982ca03d474fb7b61559fc2ec58ad6fe7b1f8834d26abf10c` |
 | `src/lib/hostAuthBridge.ts` | `30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a` |
 | `src/lib/localAdmin.ts` | `3a28dec23e85f25ed3e70682bc6e7f8c6b55e81dbbefdd1f6a837f68ac80d6b5` |

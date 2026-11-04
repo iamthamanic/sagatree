@@ -3584,7 +3584,7 @@
       },
       {
         "path": "src/infrastructure/host/host-session-http.ts",
-        "sha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf"
+        "sha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719"
       },
       {
         "path": "src/infrastructure/session/session-runtime-service.ts",
@@ -3782,7 +3782,7 @@
       },
       {
         "path": "src/infrastructure/host/host-session-http.ts",
-        "sha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf"
+        "sha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719"
       },
       {
         "path": "src/infrastructure/session/session-runtime-service.ts",
@@ -3924,7 +3924,7 @@
       },
       {
         "path": "src/infrastructure/host/host-session-http.ts",
-        "sha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf"
+        "sha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719"
       },
       {
         "path": "src/infrastructure/session/session-runtime-service.ts",
@@ -4057,7 +4057,7 @@
       },
       {
         "path": "src/infrastructure/host/host-session-http.ts",
-        "sha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf"
+        "sha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719"
       },
       {
         "path": "src/infrastructure/session/session-service.ts",
@@ -4305,7 +4305,7 @@
       },
       {
         "path": "src/infrastructure/host/host-session-http.ts",
-        "sha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf"
+        "sha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719"
       },
       {
         "path": "src/infrastructure/session/session-service.ts",
@@ -4501,7 +4501,7 @@
       },
       {
         "path": "src/infrastructure/host/host-session-http.ts",
-        "sha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf"
+        "sha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719"
       },
       {
         "path": "src/infrastructure/session/session-service.ts",
@@ -4640,7 +4640,7 @@
       },
       {
         "path": "src/infrastructure/host/host-session-http.ts",
-        "sha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf"
+        "sha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719"
       },
       {
         "path": "src/infrastructure/session/session-service.ts",
@@ -4769,7 +4769,7 @@
       },
       {
         "path": "src/infrastructure/host/host-session-http.ts",
-        "sha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf"
+        "sha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719"
       },
       {
         "path": "src/infrastructure/session/session-service.ts",
@@ -4875,7 +4875,7 @@
       },
       {
         "path": "src/infrastructure/host/host-session-http.ts",
-        "sha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf"
+        "sha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719"
       },
       {
         "path": "src/infrastructure/session/session-service.ts",
@@ -5028,7 +5028,7 @@
       },
       {
         "path": "src/infrastructure/host/host-session-http.ts",
-        "sha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf"
+        "sha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719"
       },
       {
         "path": "src/infrastructure/session/session-service.ts",
@@ -5134,7 +5134,7 @@
       },
       {
         "path": "src/infrastructure/host/host-session-http.ts",
-        "sha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf"
+        "sha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719"
       },
       {
         "path": "src/infrastructure/session/session-recap-service.ts",
@@ -5270,8 +5270,16 @@
         "sha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a"
       },
       {
+        "path": "src/infrastructure/host/host-session-http.ts",
+        "sha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719"
+      },
+      {
         "path": "src/infrastructure/session/session-recap-ai-service.ts",
-        "sha256": "61b31d8ae8f680ac4755cf499b42b8da5f0ab5bf85edede1248de5d0e9a364f6"
+        "sha256": "2c21ba1645d48214ea277cd15537bc93b4752737510e556e40bca11f80243c3e"
+      },
+      {
+        "path": "src/lib/hostAuthBridge.ts",
+        "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
       },
       {
         "path": "src/lib/networkTimeout.ts",
@@ -10401,7 +10409,7 @@
     "reviewedSources": [
       {
         "path": "src/infrastructure/host/host-catalog-http.ts",
-        "sha256": "a33c807b3bde9200f472b2d4d057d633960fba65fcf14b32e6f7053adb9c9f5a"
+        "sha256": "9049245360683a74e7e2602d35126d815d64344d384c6684e4c2c3d41aa626d3"
       },
       {
         "path": "src/infrastructure/host/host-library-http.ts",

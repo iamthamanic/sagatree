@@ -439,6 +439,26 @@ export function mountCatalogHttpRoutes(app: Hono, deps: CatalogHttpDeps): void {
       },
     });
   });
+
+  /** FE-HOST-14: peer lobby profiles without PostgREST batch. */
+  app.post('/api/v1/user-profile/batch', async (c) => {
+    if (!deps.userProfile) return c.json({ error: 'not-configured' }, 503);
+    const parsed = await readJsonSafe(c);
+    if (!parsed.ok) return c.json({ error: 'invalid-json' }, 400);
+    const actorResult = await resolveCatalogActor(deps, c.req.raw.headers, parsed.body);
+    if (!actorResult.ok) return c.json({ error: actorResult.error }, actorResult.status);
+    const body =
+      parsed.body && typeof parsed.body === 'object' ? (parsed.body as Record<string, unknown>) : {};
+    const rawIds = Array.isArray(body.userIds)
+      ? body.userIds
+      : Array.isArray(body.user_ids)
+        ? body.user_ids
+        : [];
+    const userIds = rawIds.filter((id): id is string => typeof id === 'string');
+    const listed = deps.userProfile.getProfilesByUserIds(actorResult.actor, userIds);
+    if (!listed.ok) return c.json({ error: listed.error }, portStatus(listed.error));
+    return c.json({ profiles: listed.value }, 200);
+  });
 }
 
 function parseAttributesConfig(

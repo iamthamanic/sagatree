@@ -9,6 +9,7 @@ import type { UserProfileVm } from '../../domains/user-profile';
 import { supabaseUserProfileRepository } from './supabase-user-profile.repository';
 import {
   fetchHostOwnUserProfile,
+  fetchHostProfilesByUserIds,
   isHostLibraryEnabled,
   uploadHostUserAvatar,
 } from '../host/host-catalog-http';
@@ -78,11 +79,7 @@ export const userProfileService = {
 
   async getProfilesByUserIds(userIds: readonly string[]): Promise<UserProfileVm[]> {
     if (isHostLibraryEnabled()) {
-      // Batch peer lobby profiles stay Supabase until a host batch route ships (FE-HOST-09).
-      if (userIds.length === 0) return [];
-      throw new Error(
-        'Fremde Profile laden ist im Host-Modus noch nicht verfügbar.',
-      );
+      return fetchHostProfilesByUserIds(userIds);
     }
     return supabaseUserProfileRepository.getProfilesByUserIds(userIds);
   },

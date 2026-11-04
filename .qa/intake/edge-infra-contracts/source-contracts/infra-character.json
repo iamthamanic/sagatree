@@ -53,7 +53,7 @@
     },
     {
       "path": "src/infrastructure/character/avatar/character-avatar-meshy-service.ts",
-      "sha256": "9bda4e7bfecd4d5ca9ad0dd6f1477ea58e5e98ace7381bd8f73b6d7c5b53a4d7"
+      "sha256": "411c8c2cac60cf1904db46caca01e2577fb945949f0e278dbb7747a5911d8fa8"
     },
     {
       "path": "src/infrastructure/character/avatar/character-studio-manifest.ts",
@@ -8539,8 +8539,8 @@
       "kind": "edge",
       "name": "character-avatar-meshy",
       "path": "src/infrastructure/character/avatar/character-avatar-meshy-service.ts",
-      "line": 92,
-      "endLine": 92,
+      "line": 99,
+      "endLine": 99,
       "resolution": "literal-or-constant",
       "expression": "supabase.functions.invoke('character-avatar-meshy', { body })",
       "chain": "supabase.functions.invoke('character-avatar-meshy', { body })",
@@ -8551,8 +8551,8 @@
       "enclosingOperation": {
         "path": "src/infrastructure/character/avatar/character-avatar-meshy-service.ts",
         "line": 90,
-        "endLine": 97,
-        "text": "async function invoke(body: Record<string, unknown>): Promise<FunctionResponse> {\n  assertHostProductSurfaceAvailable('Avatar-3D-Generierung');\n  const { data, error } = await supabase.functions.invoke('character-avatar-meshy', { body });\n  if (error) {\n    return { status: 'error', message: error.message || 'Edge Function fehlgeschlagen.' };\n  }\n  return parseResponse(data);\n}"
+        "endLine": 104,
+        "text": "async function invoke(body: Record<string, unknown>): Promise<FunctionResponse> {\n  // FE-HOST-14: optional Meshy remains Edge-legacy; host-first returns soft unavailable\n  // (config/generate callers already tolerate status=error / meshyConfigured=false).\n  if (isHostLibraryEnabled()) {\n    return {\n      status: 'error',\n      message: 'Avatar-3D-Generierung ist im Host-Modus ohne Meshy-Edge nicht verfügbar.',\n    };\n  }\n  const { data, error } = await supabase.functions.invoke('character-avatar-meshy', { body });\n  if (error) {\n    return { status: 'error', message: error.message || 'Edge Function fehlgeschlagen.' };\n  }\n  return parseResponse(data);\n}"
       }
     },
     {
@@ -9948,9 +9948,9 @@
       "path": "src/infrastructure/character/avatar/character-avatar-meshy-service.ts",
       "line": 8,
       "endLine": 8,
-      "module": "../../host/host-product-deny",
-      "resolvedPath": "src/infrastructure/host/host-product-deny.ts",
-      "expression": "import { assertHostProductSurfaceAvailable } from '../../host/host-product-deny';"
+      "module": "../../host/host-library-http",
+      "resolvedPath": "src/infrastructure/host/host-library-http.ts",
+      "expression": "import { isHostLibraryEnabled } from '../../host/host-library-http';"
     },
     {
       "path": "src/infrastructure/character/avatar/character-avatar-meshy-service.ts",
@@ -11557,26 +11557,26 @@
     },
     {
       "path": "src/infrastructure/character/avatar/character-avatar-meshy-service.ts",
-      "line": 99,
-      "endLine": 143,
+      "line": 106,
+      "endLine": 150,
       "text": "export async function fetchMeshyAvatarConfig(): Promise<MeshyAvatarConfig> {\n  const response = await invoke({ action: 'config' });\n  if (response.status !== 'ok') {\n    return {\n      meshyConfigured: false,\n      edgeReachable: false,\n      promptMinChars: MESHY_AVATAR_PROMPT_MIN_CHARS,\n      promptMaxChars: MESHY_AVATAR_PROMPT_MAX_CHARS,\n      imageMaxBytes: MESHY_AVATAR_IMAGE_MAX_BYTES,\n      supportsImageTo3d: true,\n      costHintDe: 'KI-Server derzeit nicht erreichbar. Bitte Seite neu laden oder später erneut versuchen.',\n      wiredProviderIds: ['meshy'],\n      defaultProviderId: 'meshy',\n      defaultPresetId: 'recommended',\n    };\n  }\n  return {\n    meshyConfigured: Boolean(response.meshyConfigured),\n    edgeReachable: true,\n    promptMinChars:\n      typeof response.promptMinChars === 'number'\n        ? response.promptMinChars\n        : MESHY_AVATAR_PROMPT_MIN_CHARS,\n    promptMaxChars:\n      typeof response.promptMaxChars === 'number'\n        ? response.promptMaxChars\n        : MESHY_AVATAR_PROMPT_MAX_CHARS,\n    imageMaxBytes:\n      typeof response.imageMaxBytes === 'number'\n        ? response.imageMaxBytes\n        : MESHY_AVATAR_IMAGE_MAX_BYTES,\n    supportsImageTo3d: response.supportsImageTo3d !== false,\n    costHintDe:\n      typeof response.costHintDe === 'string'\n        ? response.costHintDe\n        : 'Externe KI. Es entstehen Provider-Kosten.',\n    wiredProviderIds: Array.isArray(response.wiredProviderIds)\n      ? response.wiredProviderIds.filter((id): id is string => typeof id === 'string')\n      : ['meshy'],\n    defaultProviderId:\n      typeof response.defaultProviderId === 'string' ? response.defaultProviderId : 'meshy',\n    defaultPresetId:\n      typeof response.defaultPresetId === 'string' ? response.defaultPresetId : 'recommended',\n  };\n}"
     },
     {
       "path": "src/infrastructure/character/avatar/character-avatar-meshy-service.ts",
-      "line": 145,
-      "endLine": 207,
+      "line": 152,
+      "endLine": 214,
       "text": "export async function startMeshyAvatarJob(input: {\n  mode: MeshyAvatarGenerationMode;\n  prompt?: string;\n  texturePrompt?: string;\n  imageDataUri?: string;\n  clientNonce: string;\n  characterId?: string | null;\n  providerId?: Avatar3dGenerationProviderId;\n  presetId?: GenerationPresetId | 'custom';\n  presetVersion?: number;\n  presetDirty?: boolean;\n  settings?: Avatar3dGenerationSettings;\n}): Promise<MeshyAvatarJobSnapshot> {\n  const mode = input.mode === 'image' ? 'image' : 'text';\n  const texturePrompt = input.texturePrompt ?? '';\n  const promptResolved = resolveMeshyAvatarJobPrompt({\n    mode,\n    prompt: input.prompt ?? '',\n    texturePrompt,\n  });\n  if (promptResolved.ok === false) {\n    throw new Error(promptResolved.message);\n  }\n\n  let imageDataUri: string | undefined;\n  if (mode === 'image') {\n    const imageCheck = validateMeshyAvatarImageDataUri(input.imageDataUri ?? '');\n    if (!imageCheck.ok) {\n      throw new Error(imageCheck.message ?? 'Bild ungültig.');\n    }\n    imageDataUri = imageCheck.normalized;\n  }\n\n  const response = await invoke({\n    action: 'start',\n    generationMode: mode,\n    prompt: mode === 'text' ? promptResolved.prompt : undefined,\n    texturePrompt: mode === 'image' ? texturePrompt : undefined,\n    imageDataUri,\n    clientNonce: input.clientNonce,\n    characterId: input.characterId ?? null,\n    providerId: input.providerId ?? 'meshy',\n    presetId: input.presetId ?? 'recommended',\n    presetVersion: input.presetVersion ?? 1,\n    presetDirty: input.presetDirty === true,\n    settings: input.settings,\n  });\n  if (response.status === 'not-configured') {\n    return {\n      jobId: '',\n      status: 'provider-unavailable',\n      progress: 0,\n      prompt: promptResolved.prompt,\n      idempotencyKey: '',\n      errorMessage: response.message,\n      rigAnalysisStatus: 'pending',\n    };\n  }\n  if (response.status !== 'ok' || !isRecord(response.job)) {\n    throw new Error(response.status === 'error' ? response.message : 'Start fehlgeschlagen.');\n  }\n  return mapJob(response.job as Record<string, unknown>);\n}"
     },
     {
       "path": "src/infrastructure/character/avatar/character-avatar-meshy-service.ts",
-      "line": 209,
-      "endLine": 216,
+      "line": 216,
+      "endLine": 223,
       "text": "export async function pollMeshyAvatarJob(jobId: string): Promise<MeshyAvatarJobSnapshot> {\n  const response = await invoke({ action: 'poll', jobId });\n  if (response.status !== 'ok' || !isRecord(response.job)) {\n    throw new Error(response.status === 'error' ? response.message : 'Poll fehlgeschlagen.');\n  }\n  const modelUrl = browserModelUrl(response.modelUrl);\n  return mapJob(response.job as Record<string, unknown>, modelUrl);\n}"
     },
     {
       "path": "src/infrastructure/character/avatar/character-avatar-meshy-service.ts",
-      "line": 218,
-      "endLine": 236,
+      "line": 225,
+      "endLine": 243,
       "text": "export async function retryMeshyAvatarJob(jobId: string): Promise<MeshyAvatarJobSnapshot> {\n  const response = await invoke({ action: 'retry', jobId });\n  if (response.status === 'not-configured') {\n    return {\n      jobId,\n      status: 'provider-unavailable',\n      progress: 0,\n      prompt: '',\n      idempotencyKey: '',\n      errorMessage: response.message,\n      rigAnalysisStatus: 'pending',\n    };\n  }\n  if (response.status !== 'ok' || !isRecord(response.job)) {\n    throw new Error(response.status === 'error' ? response.message : 'Retry fehlgeschlagen.');\n  }\n  const modelUrl = browserModelUrl(response.modelUrl);\n  return mapJob(response.job as Record<string, unknown>, modelUrl);\n}"
     },
     {
@@ -13525,42 +13525,42 @@
     {
       "path": "src/infrastructure/character/avatar/character-avatar-meshy-service.ts",
       "line": 90,
-      "endLine": 97,
+      "endLine": 104,
       "name": "invoke",
-      "text": "async function invoke(body: Record<string, unknown>): Promise<FunctionResponse> {\n  assertHostProductSurfaceAvailable('Avatar-3D-Generierung');\n  const { data, error } = await supabase.functions.invoke('character-avatar-meshy', { body });\n  if (error) {\n    return { status: 'error', message: error.message || 'Edge Function fehlgeschlagen.' };\n  }\n  return parseResponse(data);\n}"
+      "text": "async function invoke(body: Record<string, unknown>): Promise<FunctionResponse> {\n  // FE-HOST-14: optional Meshy remains Edge-legacy; host-first returns soft unavailable\n  // (config/generate callers already tolerate status=error / meshyConfigured=false).\n  if (isHostLibraryEnabled()) {\n    return {\n      status: 'error',\n      message: 'Avatar-3D-Generierung ist im Host-Modus ohne Meshy-Edge nicht verfügbar.',\n    };\n  }\n  const { data, error } = await supabase.functions.invoke('character-avatar-meshy', { body });\n  if (error) {\n    return { status: 'error', message: error.message || 'Edge Function fehlgeschlagen.' };\n  }\n  return parseResponse(data);\n}"
     },
     {
       "path": "src/infrastructure/character/avatar/character-avatar-meshy-service.ts",
-      "line": 99,
-      "endLine": 143,
+      "line": 106,
+      "endLine": 150,
       "name": "fetchMeshyAvatarConfig",
       "text": "export async function fetchMeshyAvatarConfig(): Promise<MeshyAvatarConfig> {\n  const response = await invoke({ action: 'config' });\n  if (response.status !== 'ok') {\n    return {\n      meshyConfigured: false,\n      edgeReachable: false,\n      promptMinChars: MESHY_AVATAR_PROMPT_MIN_CHARS,\n      promptMaxChars: MESHY_AVATAR_PROMPT_MAX_CHARS,\n      imageMaxBytes: MESHY_AVATAR_IMAGE_MAX_BYTES,\n      supportsImageTo3d: true,\n      costHintDe: 'KI-Server derzeit nicht erreichbar. Bitte Seite neu laden oder später erneut versuchen.',\n      wiredProviderIds: ['meshy'],\n      defaultProviderId: 'meshy',\n      defaultPresetId: 'recommended',\n    };\n  }\n  return {\n    meshyConfigured: Boolean(response.meshyConfigured),\n    edgeReachable: true,\n    promptMinChars:\n      typeof response.promptMinChars === 'number'\n        ? response.promptMinChars\n        : MESHY_AVATAR_PROMPT_MIN_CHARS,\n    promptMaxChars:\n      typeof response.promptMaxChars === 'number'\n        ? response.promptMaxChars\n        : MESHY_AVATAR_PROMPT_MAX_CHARS,\n    imageMaxBytes:\n      typeof response.imageMaxBytes === 'number'\n        ? response.imageMaxBytes\n        : MESHY_AVATAR_IMAGE_MAX_BYTES,\n    supportsImageTo3d: response.supportsImageTo3d !== false,\n    costHintDe:\n      typeof response.costHintDe === 'string'\n        ? response.costHintDe\n        : 'Externe KI. Es entstehen Provider-Kosten.',\n    wiredProviderIds: Array.isArray(response.wiredProviderIds)\n      ? response.wiredProviderIds.filter((id): id is string => typeof id === 'string')\n      : ['meshy'],\n    defaultProviderId:\n      typeof response.defaultProviderId === 'string' ? response.defaultProviderId : 'meshy',\n    defaultPresetId:\n      typeof response.defaultPresetId === 'string' ? response.defaultPresetId : 'recommended',\n  };\n}"
     },
     {
       "path": "src/infrastructure/character/avatar/character-avatar-meshy-service.ts",
-      "line": 136,
-      "endLine": 136,
+      "line": 143,
+      "endLine": 143,
       "name": "callback",
       "text": "(id): id is string => typeof id === 'string'"
     },
     {
       "path": "src/infrastructure/character/avatar/character-avatar-meshy-service.ts",
-      "line": 145,
-      "endLine": 207,
+      "line": 152,
+      "endLine": 214,
       "name": "startMeshyAvatarJob",
       "text": "export async function startMeshyAvatarJob(input: {\n  mode: MeshyAvatarGenerationMode;\n  prompt?: string;\n  texturePrompt?: string;\n  imageDataUri?: string;\n  clientNonce: string;\n  characterId?: string | null;\n  providerId?: Avatar3dGenerationProviderId;\n  presetId?: GenerationPresetId | 'custom';\n  presetVersion?: number;\n  presetDirty?: boolean;\n  settings?: Avatar3dGenerationSettings;\n}): Promise<MeshyAvatarJobSnapshot> {\n  const mode = input.mode === 'image' ? 'image' : 'text';\n  const texturePrompt = input.texturePrompt ?? '';\n  const promptResolved = resolveMeshyAvatarJobPrompt({\n    mode,\n    prompt: input.prompt ?? '',\n    texturePrompt,\n  });\n  if (promptResolved.ok === false) {\n    throw new Error(promptResolved.message);\n  }\n\n  let imageDataUri: string | undefined;\n  if (mode === 'image') {\n    const imageCheck = validateMeshyAvatarImageDataUri(input.imageDataUri ?? '');\n    if (!imageCheck.ok) {\n      throw new Error(imageCheck.message ?? 'Bild ungültig.');\n    }\n    imageDataUri = imageCheck.normalized;\n  }\n\n  const response = await invoke({\n    action: 'start',\n    generationMode: mode,\n    prompt: mode === 'text' ? promptResolved.prompt : undefined,\n    texturePrompt: mode === 'image' ? texturePrompt : undefined,\n    imageDataUri,\n    clientNonce: input.clientNonce,\n    characterId: input.characterId ?? null,\n    providerId: input.providerId ?? 'meshy',\n    presetId: input.presetId ?? 'recommended',\n    presetVersion: input.presetVersion ?? 1,\n    presetDirty: input.presetDirty === true,\n    settings: input.settings,\n  });\n  if (response.status === 'not-configured') {\n    return {\n      jobId: '',\n      status: 'provider-unavailable',\n      progress: 0,\n      prompt: promptResolved.prompt,\n      idempotencyKey: '',\n      errorMessage: response.message,\n      rigAnalysisStatus: 'pending',\n    };\n  }\n  if (response.status !== 'ok' || !isRecord(response.job)) {\n    throw new Error(response.status === 'error' ? response.message : 'Start fehlgeschlagen.');\n  }\n  return mapJob(response.job as Record<string, unknown>);\n}"
     },
     {
       "path": "src/infrastructure/character/avatar/character-avatar-meshy-service.ts",
-      "line": 209,
-      "endLine": 216,
+      "line": 216,
+      "endLine": 223,
       "name": "pollMeshyAvatarJob",
       "text": "export async function pollMeshyAvatarJob(jobId: string): Promise<MeshyAvatarJobSnapshot> {\n  const response = await invoke({ action: 'poll', jobId });\n  if (response.status !== 'ok' || !isRecord(response.job)) {\n    throw new Error(response.status === 'error' ? response.message : 'Poll fehlgeschlagen.');\n  }\n  const modelUrl = browserModelUrl(response.modelUrl);\n  return mapJob(response.job as Record<string, unknown>, modelUrl);\n}"
     },
     {
       "path": "src/infrastructure/character/avatar/character-avatar-meshy-service.ts",
-      "line": 218,
-      "endLine": 236,
+      "line": 225,
+      "endLine": 243,
       "name": "retryMeshyAvatarJob",
       "text": "export async function retryMeshyAvatarJob(jobId: string): Promise<MeshyAvatarJobSnapshot> {\n  const response = await invoke({ action: 'retry', jobId });\n  if (response.status === 'not-configured') {\n    return {\n      jobId,\n      status: 'provider-unavailable',\n      progress: 0,\n      prompt: '',\n      idempotencyKey: '',\n      errorMessage: response.message,\n      rigAnalysisStatus: 'pending',\n    };\n  }\n  if (response.status !== 'ok' || !isRecord(response.job)) {\n    throw new Error(response.status === 'error' ? response.message : 'Retry fehlgeschlagen.');\n  }\n  const modelUrl = browserModelUrl(response.modelUrl);\n  return mapJob(response.job as Record<string, unknown>, modelUrl);\n}"
     },

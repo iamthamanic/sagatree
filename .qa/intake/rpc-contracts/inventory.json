@@ -41,7 +41,7 @@
           },
           {
             "path": "src/infrastructure/host/host-session-http.ts",
-            "sha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf"
+            "sha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719"
           },
           {
             "path": "src/infrastructure/session/session-runtime-service.ts",
@@ -421,7 +421,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/infrastructure/host/host-session-http.ts",
               "line": 12,
-              "sourceSha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf",
+              "sourceSha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719",
               "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
             },
             {
@@ -429,7 +429,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-session-http.ts",
               "line": 17,
-              "sourceSha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf",
+              "sourceSha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
@@ -437,7 +437,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-session-http.ts",
               "line": 58,
-              "sourceSha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf",
+              "sourceSha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719",
               "source": "async function hostMutateJson<T>(\n  path: string,\n  method: 'POST' | 'PUT' | 'PATCH' | 'DELETE',\n  body: unknown,\n  unreachableMessage: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      method,\n      credentials: 'include',\n      headers: {\n        Accept: 'application/json',\n        'Content-Type': 'application/json',\n      },\n      body: body === undefined ? undefined : JSON.stringify(body),\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  if (!response.ok) {\n    let detail = '';\n    try {\n      const errBody: unknown = await response.json();\n      if (errBody && typeof errBody === 'object' && 'error' in errBody) {\n        detail = String((errBody as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  if (response.status === 204) return undefined as T;\n  return (await response.json()) as T;\n}"
             },
             {
@@ -445,7 +445,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-session-http.ts",
               "line": 238,
-              "sourceSha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf",
+              "sourceSha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719",
               "source": "export async function applyHostSessionRuntimeCommand(\n  input: {\n    readonly sessionId: string;\n    readonly expectedRevision: number;\n    readonly kind: string;\n    readonly payload?: Record<string, unknown>;\n    readonly idempotencyKey?: string | null;\n  },\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<Readonly<Record<string, unknown>>> {\n  return hostMutateJson(\n    `/api/v1/sessions/${encodeURIComponent(input.sessionId)}/runtime/commands`,\n    'POST',\n    {\n      expectedRevision: input.expectedRevision,\n      kind: input.kind,\n      payload: input.payload ?? {},\n      idempotencyKey: input.idempotencyKey ?? null,\n    },\n    'Host-Runtime-Befehl fehlgeschlagen',\n    env,\n    fetchImpl,\n  );\n}"
             },
             {
@@ -7010,7 +7010,7 @@
         },
         {
           "path": "src/infrastructure/host/host-session-http.ts",
-          "sha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf"
+          "sha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719"
         },
         {
           "path": "src/infrastructure/session/session-runtime-service.ts",
@@ -12065,7 +12065,7 @@
           },
           {
             "path": "src/infrastructure/host/host-session-http.ts",
-            "sha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf"
+            "sha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719"
           },
           {
             "path": "src/infrastructure/session/session-service.ts",
@@ -12256,7 +12256,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/infrastructure/host/host-session-http.ts",
               "line": 12,
-              "sourceSha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf",
+              "sourceSha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719",
               "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
             },
             {
@@ -12264,7 +12264,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-session-http.ts",
               "line": 17,
-              "sourceSha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf",
+              "sourceSha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
@@ -12272,7 +12272,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-session-http.ts",
               "line": 58,
-              "sourceSha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf",
+              "sourceSha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719",
               "source": "async function hostMutateJson<T>(\n  path: string,\n  method: 'POST' | 'PUT' | 'PATCH' | 'DELETE',\n  body: unknown,\n  unreachableMessage: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      method,\n      credentials: 'include',\n      headers: {\n        Accept: 'application/json',\n        'Content-Type': 'application/json',\n      },\n      body: body === undefined ? undefined : JSON.stringify(body),\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  if (!response.ok) {\n    let detail = '';\n    try {\n      const errBody: unknown = await response.json();\n      if (errBody && typeof errBody === 'object' && 'error' in errBody) {\n        detail = String((errBody as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  if (response.status === 204) return undefined as T;\n  return (await response.json()) as T;\n}"
             },
             {
@@ -12280,7 +12280,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/infrastructure/host/host-session-http.ts",
               "line": 98,
-              "sourceSha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf",
+              "sourceSha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719",
               "source": "export type HostPlaySessionDto = {\n  readonly sessionId: string;\n  readonly projectId: string;\n  readonly publicId?: string;\n  readonly joinCode?: string | null;\n  readonly code?: string | null;\n  readonly status: string;\n  readonly sessionNumber?: number;\n  readonly name?: string | null;\n  readonly createdAt?: string;\n  readonly startedAt?: string | null;\n  readonly endedAt?: string | null;\n  readonly gmUserId?: string;\n  readonly players?: readonly {\n    readonly id?: string;\n    readonly userId?: string;\n    readonly characterId?: string | null;\n    readonly isOnline?: boolean;\n    readonly joinedAt?: string;\n  }[];\n};"
             },
             {
@@ -12288,7 +12288,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-session-http.ts",
               "line": 150,
-              "sourceSha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf",
+              "sourceSha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719",
               "source": "export async function createHostPlaySession(\n  projectId: string,\n  name: string | null | undefined,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<HostPlaySessionDto> {\n  const body = await hostMutateJson<{ session?: HostPlaySessionDto }>(\n    '/api/v1/sessions',\n    'POST',\n    { projectId, name: name ?? null },\n    'Host-Session konnte nicht erstellt werden',\n    env,\n    fetchImpl,\n  );\n  if (!body.session?.sessionId) {\n    throw new Error('Host-Session konnte nicht erstellt werden');\n  }\n  return body.session;\n}"
             },
             {
@@ -13433,7 +13433,7 @@
         },
         {
           "path": "src/infrastructure/host/host-session-http.ts",
-          "sha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf"
+          "sha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719"
         },
         {
           "path": "src/infrastructure/session/session-service.ts",
@@ -16821,7 +16821,7 @@
           },
           {
             "path": "src/infrastructure/host/host-session-http.ts",
-            "sha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf"
+            "sha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719"
           },
           {
             "path": "src/infrastructure/session/session-service.ts",
@@ -16979,7 +16979,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/infrastructure/host/host-session-http.ts",
               "line": 12,
-              "sourceSha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf",
+              "sourceSha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719",
               "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
             },
             {
@@ -16987,7 +16987,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-session-http.ts",
               "line": 17,
-              "sourceSha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf",
+              "sourceSha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
@@ -16995,7 +16995,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-session-http.ts",
               "line": 58,
-              "sourceSha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf",
+              "sourceSha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719",
               "source": "async function hostMutateJson<T>(\n  path: string,\n  method: 'POST' | 'PUT' | 'PATCH' | 'DELETE',\n  body: unknown,\n  unreachableMessage: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      method,\n      credentials: 'include',\n      headers: {\n        Accept: 'application/json',\n        'Content-Type': 'application/json',\n      },\n      body: body === undefined ? undefined : JSON.stringify(body),\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  if (!response.ok) {\n    let detail = '';\n    try {\n      const errBody: unknown = await response.json();\n      if (errBody && typeof errBody === 'object' && 'error' in errBody) {\n        detail = String((errBody as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  if (response.status === 204) return undefined as T;\n  return (await response.json()) as T;\n}"
             },
             {
@@ -17003,7 +17003,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-session-http.ts",
               "line": 284,
-              "sourceSha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf",
+              "sourceSha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719",
               "source": "export async function createHostSessionInvite(\n  sessionId: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<Readonly<Record<string, unknown>>> {\n  const body = await hostMutateJson<{ invite?: Record<string, unknown> }>(\n    `/api/v1/sessions/${encodeURIComponent(sessionId)}/invites`,\n    'POST',\n    {},\n    'Host-Einladung konnte nicht erstellt werden',\n    env,\n    fetchImpl,\n  );\n  if (!body.invite) {\n    throw new Error('Host-Einladung konnte nicht erstellt werden');\n  }\n  return body.invite;\n}"
             },
             {
@@ -17951,7 +17951,7 @@
         },
         {
           "path": "src/infrastructure/host/host-session-http.ts",
-          "sha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf"
+          "sha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719"
         },
         {
           "path": "src/infrastructure/session/session-service.ts",
@@ -38975,7 +38975,7 @@
           },
           {
             "path": "src/infrastructure/host/host-session-http.ts",
-            "sha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf"
+            "sha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719"
           },
           {
             "path": "src/infrastructure/session/session-recap-service.ts",
@@ -39169,7 +39169,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/infrastructure/host/host-session-http.ts",
               "line": 12,
-              "sourceSha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf",
+              "sourceSha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719",
               "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
             },
             {
@@ -39177,7 +39177,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-session-http.ts",
               "line": 17,
-              "sourceSha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf",
+              "sourceSha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
@@ -39185,7 +39185,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-session-http.ts",
               "line": 25,
-              "sourceSha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf",
+              "sourceSha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719",
               "source": "async function hostGetJson<T>(\n  path: string,\n  unreachableMessage: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      method: 'GET',\n      credentials: 'include',\n      headers: { Accept: 'application/json' },\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  if (!response.ok) {\n    let detail = '';\n    try {\n      const body: unknown = await response.json();\n      if (body && typeof body === 'object' && 'error' in body) {\n        detail = String((body as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  return (await response.json()) as T;\n}"
             },
             {
@@ -39193,7 +39193,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-session-http.ts",
               "line": 337,
-              "sourceSha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf",
+              "sourceSha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719",
               "source": "export async function fetchHostSessionRecap(\n  sessionId: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<Readonly<Record<string, unknown>> | null> {\n  const body = await hostGetJson<{ recap?: Record<string, unknown> | null }>(\n    `/api/v1/sessions/${encodeURIComponent(sessionId)}/recap`,\n    'Host-Recap nicht erreichbar',\n    env,\n    fetchImpl,\n  );\n  return body.recap ?? null;\n}"
             },
             {
@@ -40249,7 +40249,7 @@
         },
         {
           "path": "src/infrastructure/host/host-session-http.ts",
-          "sha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf"
+          "sha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719"
         },
         {
           "path": "src/infrastructure/session/session-recap-service.ts",
@@ -40357,7 +40357,7 @@
           },
           {
             "path": "src/infrastructure/host/host-session-http.ts",
-            "sha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf"
+            "sha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719"
           },
           {
             "path": "src/infrastructure/session/session-runtime-service.ts",
@@ -40581,7 +40581,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/infrastructure/host/host-session-http.ts",
               "line": 12,
-              "sourceSha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf",
+              "sourceSha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719",
               "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
             },
             {
@@ -40589,7 +40589,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-session-http.ts",
               "line": 17,
-              "sourceSha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf",
+              "sourceSha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
@@ -40597,7 +40597,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-session-http.ts",
               "line": 25,
-              "sourceSha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf",
+              "sourceSha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719",
               "source": "async function hostGetJson<T>(\n  path: string,\n  unreachableMessage: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      method: 'GET',\n      credentials: 'include',\n      headers: { Accept: 'application/json' },\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  if (!response.ok) {\n    let detail = '';\n    try {\n      const body: unknown = await response.json();\n      if (body && typeof body === 'object' && 'error' in body) {\n        detail = String((body as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  return (await response.json()) as T;\n}"
             },
             {
@@ -40605,7 +40605,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-session-http.ts",
               "line": 225,
-              "sourceSha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf",
+              "sourceSha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719",
               "source": "export async function fetchHostSessionRuntime(\n  sessionId: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<Readonly<Record<string, unknown>>> {\n  return hostGetJson(\n    `/api/v1/sessions/${encodeURIComponent(sessionId)}/runtime`,\n    'Host-Runtime-Snapshot fehlgeschlagen',\n    env,\n    fetchImpl,\n  );\n}"
             },
             {
@@ -41671,7 +41671,7 @@
         },
         {
           "path": "src/infrastructure/host/host-session-http.ts",
-          "sha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf"
+          "sha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719"
         },
         {
           "path": "src/infrastructure/session/session-runtime-service.ts",
@@ -45208,7 +45208,7 @@
         "sourceFiles": [
           {
             "path": "src/infrastructure/host/host-catalog-http.ts",
-            "sha256": "a33c807b3bde9200f472b2d4d057d633960fba65fcf14b32e6f7053adb9c9f5a"
+            "sha256": "9049245360683a74e7e2602d35126d815d64344d384c6684e4c2c3d41aa626d3"
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
@@ -45294,7 +45294,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/infrastructure/host/host-catalog-http.ts",
               "line": 18,
-              "sourceSha256": "a33c807b3bde9200f472b2d4d057d633960fba65fcf14b32e6f7053adb9c9f5a",
+              "sourceSha256": "9049245360683a74e7e2602d35126d815d64344d384c6684e4c2c3d41aa626d3",
               "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
             },
             {
@@ -45302,7 +45302,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-catalog-http.ts",
               "line": 23,
-              "sourceSha256": "a33c807b3bde9200f472b2d4d057d633960fba65fcf14b32e6f7053adb9c9f5a",
+              "sourceSha256": "9049245360683a74e7e2602d35126d815d64344d384c6684e4c2c3d41aa626d3",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
@@ -45310,7 +45310,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-catalog-http.ts",
               "line": 31,
-              "sourceSha256": "a33c807b3bde9200f472b2d4d057d633960fba65fcf14b32e6f7053adb9c9f5a",
+              "sourceSha256": "9049245360683a74e7e2602d35126d815d64344d384c6684e4c2c3d41aa626d3",
               "source": "async function hostJson<T>(\n  path: string,\n  unreachableMessage: string,\n  init: RequestInit = {},\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      ...init,\n      credentials: 'include',\n      headers: {\n        Accept: 'application/json',\n        ...(init.body ? { 'Content-Type': 'application/json' } : {}),\n        ...(init.headers ?? {}),\n      },\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  let detail = '';\n  let json: unknown = null;\n  try {\n    json = await response.json();\n    if (json && typeof json === 'object' && 'error' in json) {\n      detail = String((json as { error: unknown }).error);\n    }\n  } catch {\n    json = null;\n  }\n  if (!response.ok) {\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  return json as T;\n}"
             },
             {
@@ -45318,7 +45318,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-catalog-http.ts",
               "line": 172,
-              "sourceSha256": "a33c807b3bde9200f472b2d4d057d633960fba65fcf14b32e6f7053adb9c9f5a",
+              "sourceSha256": "9049245360683a74e7e2602d35126d815d64344d384c6684e4c2c3d41aa626d3",
               "source": "export async function incrementHostMarketplaceDownloads(\n  id: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<void> {\n  await hostJson(\n    `/api/v1/marketplace/items/${encodeURIComponent(id)}/download`,\n    'Download-Zähler fehlgeschlagen',\n    { method: 'POST' },\n    env,\n    fetchImpl,\n  );\n}"
             },
             {
@@ -45592,7 +45592,7 @@
       "sourceFiles": [
         {
           "path": "src/infrastructure/host/host-catalog-http.ts",
-          "sha256": "a33c807b3bde9200f472b2d4d057d633960fba65fcf14b32e6f7053adb9c9f5a"
+          "sha256": "9049245360683a74e7e2602d35126d815d64344d384c6684e4c2c3d41aa626d3"
         },
         {
           "path": "src/infrastructure/host/host-library-http.ts",
@@ -47255,7 +47255,7 @@
           },
           {
             "path": "src/infrastructure/host/host-session-http.ts",
-            "sha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf"
+            "sha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719"
           },
           {
             "path": "src/infrastructure/session/session-service.ts",
@@ -47518,7 +47518,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/infrastructure/host/host-session-http.ts",
               "line": 12,
-              "sourceSha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf",
+              "sourceSha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719",
               "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
             },
             {
@@ -47526,7 +47526,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-session-http.ts",
               "line": 17,
-              "sourceSha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf",
+              "sourceSha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
@@ -47534,7 +47534,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-session-http.ts",
               "line": 58,
-              "sourceSha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf",
+              "sourceSha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719",
               "source": "async function hostMutateJson<T>(\n  path: string,\n  method: 'POST' | 'PUT' | 'PATCH' | 'DELETE',\n  body: unknown,\n  unreachableMessage: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      method,\n      credentials: 'include',\n      headers: {\n        Accept: 'application/json',\n        'Content-Type': 'application/json',\n      },\n      body: body === undefined ? undefined : JSON.stringify(body),\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  if (!response.ok) {\n    let detail = '';\n    try {\n      const errBody: unknown = await response.json();\n      if (errBody && typeof errBody === 'object' && 'error' in errBody) {\n        detail = String((errBody as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  if (response.status === 204) return undefined as T;\n  return (await response.json()) as T;\n}"
             },
             {
@@ -47542,7 +47542,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/infrastructure/host/host-session-http.ts",
               "line": 98,
-              "sourceSha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf",
+              "sourceSha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719",
               "source": "export type HostPlaySessionDto = {\n  readonly sessionId: string;\n  readonly projectId: string;\n  readonly publicId?: string;\n  readonly joinCode?: string | null;\n  readonly code?: string | null;\n  readonly status: string;\n  readonly sessionNumber?: number;\n  readonly name?: string | null;\n  readonly createdAt?: string;\n  readonly startedAt?: string | null;\n  readonly endedAt?: string | null;\n  readonly gmUserId?: string;\n  readonly players?: readonly {\n    readonly id?: string;\n    readonly userId?: string;\n    readonly characterId?: string | null;\n    readonly isOnline?: boolean;\n    readonly joinedAt?: string;\n  }[];\n};"
             },
             {
@@ -47550,7 +47550,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-session-http.ts",
               "line": 170,
-              "sourceSha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf",
+              "sourceSha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719",
               "source": "export async function joinHostSessionByCode(\n  code: string,\n  characterId: string | null | undefined,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<HostPlaySessionDto> {\n  const body = await hostMutateJson<{ session?: HostPlaySessionDto }>(\n    '/api/v1/sessions/join',\n    'POST',\n    { code, characterId: characterId ?? null },\n    'Host-Session Beitritt fehlgeschlagen',\n    env,\n    fetchImpl,\n  );\n  if (!body.session?.sessionId) {\n    throw new Error('Session nicht gefunden');\n  }\n  return body.session;\n}"
             },
             {
@@ -49384,7 +49384,7 @@
         },
         {
           "path": "src/infrastructure/host/host-session-http.ts",
-          "sha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf"
+          "sha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719"
         },
         {
           "path": "src/infrastructure/session/session-service.ts",
@@ -49532,7 +49532,7 @@
           },
           {
             "path": "src/infrastructure/host/host-session-http.ts",
-            "sha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf"
+            "sha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719"
           },
           {
             "path": "src/infrastructure/session/session-service.ts",
@@ -49701,7 +49701,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/infrastructure/host/host-session-http.ts",
               "line": 12,
-              "sourceSha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf",
+              "sourceSha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719",
               "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
             },
             {
@@ -49709,7 +49709,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-session-http.ts",
               "line": 17,
-              "sourceSha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf",
+              "sourceSha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
@@ -49717,7 +49717,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-session-http.ts",
               "line": 58,
-              "sourceSha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf",
+              "sourceSha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719",
               "source": "async function hostMutateJson<T>(\n  path: string,\n  method: 'POST' | 'PUT' | 'PATCH' | 'DELETE',\n  body: unknown,\n  unreachableMessage: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      method,\n      credentials: 'include',\n      headers: {\n        Accept: 'application/json',\n        'Content-Type': 'application/json',\n      },\n      body: body === undefined ? undefined : JSON.stringify(body),\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  if (!response.ok) {\n    let detail = '';\n    try {\n      const errBody: unknown = await response.json();\n      if (errBody && typeof errBody === 'object' && 'error' in errBody) {\n        detail = String((errBody as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  if (response.status === 204) return undefined as T;\n  return (await response.json()) as T;\n}"
             },
             {
@@ -49725,7 +49725,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-session-http.ts",
               "line": 210,
-              "sourceSha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf",
+              "sourceSha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719",
               "source": "export async function leaveHostPlaySession(\n  sessionId: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<void> {\n  await hostMutateJson(\n    `/api/v1/sessions/${encodeURIComponent(sessionId)}/leave`,\n    'POST',\n    {},\n    'Host-Session verlassen fehlgeschlagen',\n    env,\n    fetchImpl,\n  );\n}"
             },
             {
@@ -50722,7 +50722,7 @@
         },
         {
           "path": "src/infrastructure/host/host-session-http.ts",
-          "sha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf"
+          "sha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719"
         },
         {
           "path": "src/infrastructure/session/session-service.ts",
@@ -67940,7 +67940,7 @@
           },
           {
             "path": "src/infrastructure/host/host-session-http.ts",
-            "sha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf"
+            "sha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719"
           },
           {
             "path": "src/infrastructure/session/session-service.ts",
@@ -68178,7 +68178,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/infrastructure/host/host-session-http.ts",
               "line": 12,
-              "sourceSha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf",
+              "sourceSha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719",
               "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
             },
             {
@@ -68186,7 +68186,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-session-http.ts",
               "line": 17,
-              "sourceSha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf",
+              "sourceSha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
@@ -68194,7 +68194,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-session-http.ts",
               "line": 58,
-              "sourceSha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf",
+              "sourceSha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719",
               "source": "async function hostMutateJson<T>(\n  path: string,\n  method: 'POST' | 'PUT' | 'PATCH' | 'DELETE',\n  body: unknown,\n  unreachableMessage: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      method,\n      credentials: 'include',\n      headers: {\n        Accept: 'application/json',\n        'Content-Type': 'application/json',\n      },\n      body: body === undefined ? undefined : JSON.stringify(body),\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  if (!response.ok) {\n    let detail = '';\n    try {\n      const errBody: unknown = await response.json();\n      if (errBody && typeof errBody === 'object' && 'error' in errBody) {\n        detail = String((errBody as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  if (response.status === 204) return undefined as T;\n  return (await response.json()) as T;\n}"
             },
             {
@@ -68202,7 +68202,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-session-http.ts",
               "line": 303,
-              "sourceSha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf",
+              "sourceSha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719",
               "source": "export async function resolveHostSessionInvite(\n  token: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<Readonly<Record<string, unknown>>> {\n  const body = await hostMutateJson<{ invite?: Record<string, unknown> }>(\n    '/api/v1/sessions/invites/resolve',\n    'POST',\n    { token },\n    'Host-Einladung konnte nicht gelesen werden',\n    env,\n    fetchImpl,\n  );\n  if (!body.invite) {\n    throw new Error('Host-Einladung konnte nicht gelesen werden');\n  }\n  return body.invite;\n}"
             },
             {
@@ -69502,7 +69502,7 @@
         },
         {
           "path": "src/infrastructure/host/host-session-http.ts",
-          "sha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf"
+          "sha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719"
         },
         {
           "path": "src/infrastructure/session/session-service.ts",
@@ -69638,7 +69638,7 @@
           },
           {
             "path": "src/infrastructure/host/host-session-http.ts",
-            "sha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf"
+            "sha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719"
           },
           {
             "path": "src/infrastructure/session/session-service.ts",
@@ -69788,7 +69788,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/infrastructure/host/host-session-http.ts",
               "line": 12,
-              "sourceSha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf",
+              "sourceSha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719",
               "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
             },
             {
@@ -69796,7 +69796,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-session-http.ts",
               "line": 17,
-              "sourceSha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf",
+              "sourceSha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
@@ -69804,7 +69804,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-session-http.ts",
               "line": 58,
-              "sourceSha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf",
+              "sourceSha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719",
               "source": "async function hostMutateJson<T>(\n  path: string,\n  method: 'POST' | 'PUT' | 'PATCH' | 'DELETE',\n  body: unknown,\n  unreachableMessage: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      method,\n      credentials: 'include',\n      headers: {\n        Accept: 'application/json',\n        'Content-Type': 'application/json',\n      },\n      body: body === undefined ? undefined : JSON.stringify(body),\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  if (!response.ok) {\n    let detail = '';\n    try {\n      const errBody: unknown = await response.json();\n      if (errBody && typeof errBody === 'object' && 'error' in errBody) {\n        detail = String((errBody as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  if (response.status === 204) return undefined as T;\n  return (await response.json()) as T;\n}"
             },
             {
@@ -69812,7 +69812,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-session-http.ts",
               "line": 322,
-              "sourceSha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf",
+              "sourceSha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719",
               "source": "export async function revokeHostSessionInvite(\n  token: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<void> {\n  await hostMutateJson(\n    '/api/v1/sessions/invites/revoke',\n    'POST',\n    { token },\n    'Host-Einladung konnte nicht widerrufen werden',\n    env,\n    fetchImpl,\n  );\n}"
             },
             {
@@ -70743,7 +70743,7 @@
         },
         {
           "path": "src/infrastructure/host/host-session-http.ts",
-          "sha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf"
+          "sha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719"
         },
         {
           "path": "src/infrastructure/session/session-service.ts",
@@ -71874,8 +71874,16 @@
             "sha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a"
           },
           {
+            "path": "src/infrastructure/host/host-session-http.ts",
+            "sha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719"
+          },
+          {
             "path": "src/infrastructure/session/session-recap-ai-service.ts",
-            "sha256": "61b31d8ae8f680ac4755cf499b42b8da5f0ab5bf85edede1248de5d0e9a364f6"
+            "sha256": "2c21ba1645d48214ea277cd15537bc93b4752737510e556e40bca11f80243c3e"
+          },
+          {
+            "path": "src/lib/hostAuthBridge.ts",
+            "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
           },
           {
             "path": "src/lib/networkTimeout.ts",
@@ -72012,8 +72020,8 @@
           "rpc": "save_session_recap_summary",
           "resolution": "string-literal",
           "path": "src/infrastructure/session/session-recap-ai-service.ts",
-          "line": 118,
-          "sourceSha256": "61b31d8ae8f680ac4755cf499b42b8da5f0ab5bf85edede1248de5d0e9a364f6",
+          "line": 126,
+          "sourceSha256": "2c21ba1645d48214ea277cd15537bc93b4752737510e556e40bca11f80243c3e",
           "requestExpression": "{\n        p_session_id: sessionId,\n        p_summary_text: summaryText,\n        p_status: status,\n      }",
           "requestKeys": [
             "p_session_id",
@@ -72022,11 +72030,11 @@
           ],
           "callExpression": "supabase.rpc('save_session_recap_summary', {\n        p_session_id: sessionId,\n        p_summary_text: summaryText,\n        p_status: status,\n      })",
           "enclosingCallable": "saveSummary",
-          "callerContract": "async saveSummary(\n    sessionId: string,\n    summaryText: string,\n    status: 'draft' | 'approved',\n  ): Promise<{ summaryText: string | null; summaryStatus: EpisodeSummaryStatus }> {\n    if (isHostLibraryEnabled()) {\n      throw new Error(\n        'Zusammenfassung speichern ist im Host-Modus noch nicht verfügbar.',\n      );\n    }\n    const { data, error } = await raceWithTimeoutReject(\n      supabase.rpc('save_session_recap_summary', {\n        p_session_id: sessionId,\n        p_summary_text: summaryText,\n        p_status: status,\n      }),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'Speichern Zeitüberschreitung',\n    );\n    if (error) {\n      throw new Error(error.message || 'Zusammenfassung konnte nicht gespeichert werden');\n    }\n    if (!isRecord(data)) {\n      return { summaryText, summaryStatus: status };\n    }\n    return {\n      summaryText: typeof data.summaryText === 'string' ? data.summaryText : summaryText,\n      summaryStatus:\n        data.summaryStatus === 'approved'\n          ? 'approved'\n          : data.summaryStatus === 'draft'\n            ? 'draft'\n            : 'none',\n    };\n  }",
+          "callerContract": "async saveSummary(\n    sessionId: string,\n    summaryText: string,\n    status: 'draft' | 'approved',\n  ): Promise<{ summaryText: string | null; summaryStatus: EpisodeSummaryStatus }> {\n    if (isHostLibraryEnabled()) {\n      const saved = await saveHostSessionRecapSummary(sessionId, summaryText, status);\n      return {\n        summaryText:\n          typeof saved.summaryText === 'string' ? saved.summaryText : summaryText,\n        summaryStatus:\n          saved.summaryStatus === 'approved'\n            ? 'approved'\n            : saved.summaryStatus === 'draft'\n              ? 'draft'\n              : status,\n      };\n    }\n    const { data, error } = await raceWithTimeoutReject(\n      supabase.rpc('save_session_recap_summary', {\n        p_session_id: sessionId,\n        p_summary_text: summaryText,\n        p_status: status,\n      }),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'Speichern Zeitüberschreitung',\n    );\n    if (error) {\n      throw new Error(error.message || 'Zusammenfassung konnte nicht gespeichert werden');\n    }\n    if (!isRecord(data)) {\n      return { summaryText, summaryStatus: status };\n    }\n    return {\n      summaryText: typeof data.summaryText === 'string' ? data.summaryText : summaryText,\n      summaryStatus:\n        data.summaryStatus === 'approved'\n          ? 'approved'\n          : data.summaryStatus === 'draft'\n            ? 'draft'\n            : 'none',\n    };\n  }",
           "imports": [
             "import { supabase } from '../../lib/supabase';",
             "import { raceWithTimeoutReject, SUPABASE_QUERY_TIMEOUT_MS } from '../../lib/networkTimeout';",
-            "import { isHostLibraryEnabled } from '../host/host-session-http';"
+            "import { isHostLibraryEnabled, saveHostSessionRecapSummary } from '../host/host-session-http';"
           ],
           "supportingDeclarations": [
             {
@@ -72054,11 +72062,43 @@
               "source": "export function isHostLibraryExplicitlyDisabled(env: EnvLike = defaultEnv()): boolean {\n  const flag = env.VITE_SAGATREE_HOST_LIBRARY?.trim().toLowerCase();\n  return flag === '0' || flag === 'false' || flag === 'off' || flag === 'no';\n}"
             },
             {
+              "name": "EnvLike",
+              "kind": "TypeAliasDeclaration",
+              "path": "src/infrastructure/host/host-session-http.ts",
+              "line": 12,
+              "sourceSha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719",
+              "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
+            },
+            {
+              "name": "defaultEnv",
+              "kind": "FunctionDeclaration",
+              "path": "src/infrastructure/host/host-session-http.ts",
+              "line": 17,
+              "sourceSha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719",
+              "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
+            },
+            {
+              "name": "hostMutateJson",
+              "kind": "FunctionDeclaration",
+              "path": "src/infrastructure/host/host-session-http.ts",
+              "line": 58,
+              "sourceSha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719",
+              "source": "async function hostMutateJson<T>(\n  path: string,\n  method: 'POST' | 'PUT' | 'PATCH' | 'DELETE',\n  body: unknown,\n  unreachableMessage: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      method,\n      credentials: 'include',\n      headers: {\n        Accept: 'application/json',\n        'Content-Type': 'application/json',\n      },\n      body: body === undefined ? undefined : JSON.stringify(body),\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  if (!response.ok) {\n    let detail = '';\n    try {\n      const errBody: unknown = await response.json();\n      if (errBody && typeof errBody === 'object' && 'error' in errBody) {\n        detail = String((errBody as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  if (response.status === 204) return undefined as T;\n  return (await response.json()) as T;\n}"
+            },
+            {
+              "name": "saveHostSessionRecapSummary",
+              "kind": "FunctionDeclaration",
+              "path": "src/infrastructure/host/host-session-http.ts",
+              "line": 352,
+              "sourceSha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719",
+              "source": "export async function saveHostSessionRecapSummary(\n  sessionId: string,\n  summaryText: string,\n  status: 'draft' | 'approved',\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<Readonly<Record<string, unknown>>> {\n  const body = await hostMutateJson<{ recap?: Record<string, unknown> }>(\n    `/api/v1/sessions/${encodeURIComponent(sessionId)}/recap`,\n    'PUT',\n    { summaryText, status },\n    'Zusammenfassung konnte nicht gespeichert werden',\n    env,\n    fetchImpl,\n  );\n  if (!body.recap || typeof body.recap !== 'object') {\n    throw new Error('Zusammenfassung konnte nicht gespeichert werden: ungültige Antwort');\n  }\n  return body.recap;\n}"
+            },
+            {
               "name": "EpisodeSummaryStatus",
               "kind": "TypeAliasDeclaration",
               "path": "src/infrastructure/session/session-recap-ai-service.ts",
               "line": 12,
-              "sourceSha256": "61b31d8ae8f680ac4755cf499b42b8da5f0ab5bf85edede1248de5d0e9a364f6",
+              "sourceSha256": "2c21ba1645d48214ea277cd15537bc93b4752737510e556e40bca11f80243c3e",
               "source": "export type EpisodeSummaryStatus = 'none' | 'draft' | 'approved';"
             },
             {
@@ -72066,8 +72106,32 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/session/session-recap-ai-service.ts",
               "line": 32,
-              "sourceSha256": "61b31d8ae8f680ac4755cf499b42b8da5f0ab5bf85edede1248de5d0e9a364f6",
+              "sourceSha256": "2c21ba1645d48214ea277cd15537bc93b4752737510e556e40bca11f80243c3e",
               "source": "function isRecord(value: unknown): value is Record<string, unknown> {\n  return typeof value === 'object' && value !== null;\n}"
+            },
+            {
+              "name": "EnvLike",
+              "kind": "TypeAliasDeclaration",
+              "path": "src/lib/hostAuthBridge.ts",
+              "line": 31,
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
+              "source": "type EnvLike = { readonly VITE_SAGATREE_HOST_AUTH_URL?: string };"
+            },
+            {
+              "name": "defaultEnv",
+              "kind": "FunctionDeclaration",
+              "path": "src/lib/hostAuthBridge.ts",
+              "line": 33,
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
+              "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
+            },
+            {
+              "name": "getHostAuthBaseUrl",
+              "kind": "FunctionDeclaration",
+              "path": "src/lib/hostAuthBridge.ts",
+              "line": 53,
+              "sourceSha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a",
+              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  const trimmed = url.trim().replace(/\\/$/, '');\n  if (trimmed === 'same-origin' || trimmed === '.') {\n    if (typeof window !== 'undefined' && typeof window.location?.origin === 'string') {\n      return window.location.origin;\n    }\n    // Node / Vitest: enabled, relative `/api/...` paths.\n    return '';\n  }\n  return trimmed;\n}"
             },
             {
               "name": "SUPABASE_QUERY_TIMEOUT_MS",
@@ -73223,8 +73287,16 @@
           "sha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a"
         },
         {
+          "path": "src/infrastructure/host/host-session-http.ts",
+          "sha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719"
+        },
+        {
           "path": "src/infrastructure/session/session-recap-ai-service.ts",
-          "sha256": "61b31d8ae8f680ac4755cf499b42b8da5f0ab5bf85edede1248de5d0e9a364f6"
+          "sha256": "2c21ba1645d48214ea277cd15537bc93b4752737510e556e40bca11f80243c3e"
+        },
+        {
+          "path": "src/lib/hostAuthBridge.ts",
+          "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
         },
         {
           "path": "src/lib/networkTimeout.ts",
@@ -77914,7 +77986,7 @@
           },
           {
             "path": "src/infrastructure/host/host-session-http.ts",
-            "sha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf"
+            "sha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719"
           },
           {
             "path": "src/infrastructure/session/session-runtime-service.ts",
@@ -78146,7 +78218,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/infrastructure/host/host-session-http.ts",
               "line": 12,
-              "sourceSha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf",
+              "sourceSha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719",
               "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
             },
             {
@@ -78154,7 +78226,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-session-http.ts",
               "line": 17,
-              "sourceSha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf",
+              "sourceSha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
@@ -78162,7 +78234,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-session-http.ts",
               "line": 58,
-              "sourceSha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf",
+              "sourceSha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719",
               "source": "async function hostMutateJson<T>(\n  path: string,\n  method: 'POST' | 'PUT' | 'PATCH' | 'DELETE',\n  body: unknown,\n  unreachableMessage: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      method,\n      credentials: 'include',\n      headers: {\n        Accept: 'application/json',\n        'Content-Type': 'application/json',\n      },\n      body: body === undefined ? undefined : JSON.stringify(body),\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  if (!response.ok) {\n    let detail = '';\n    try {\n      const errBody: unknown = await response.json();\n      if (errBody && typeof errBody === 'object' && 'error' in errBody) {\n        detail = String((errBody as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  if (response.status === 204) return undefined as T;\n  return (await response.json()) as T;\n}"
             },
             {
@@ -78170,7 +78242,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-session-http.ts",
               "line": 264,
-              "sourceSha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf",
+              "sourceSha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719",
               "source": "export async function setHostSessionPresence(\n  sessionId: string,\n  isOnline: boolean,\n  expectedRevision: number | null | undefined,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<Readonly<Record<string, unknown>>> {\n  return hostMutateJson(\n    `/api/v1/sessions/${encodeURIComponent(sessionId)}/runtime/presence`,\n    'POST',\n    {\n      isOnline,\n      expectedRevision: expectedRevision ?? 0,\n    },\n    'Host-Presence-Update fehlgeschlagen',\n    env,\n    fetchImpl,\n  );\n}"
             },
             {
@@ -79331,7 +79403,7 @@
         },
         {
           "path": "src/infrastructure/host/host-session-http.ts",
-          "sha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf"
+          "sha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719"
         },
         {
           "path": "src/infrastructure/session/session-runtime-service.ts",
@@ -79447,7 +79519,7 @@
           },
           {
             "path": "src/infrastructure/host/host-session-http.ts",
-            "sha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf"
+            "sha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719"
           },
           {
             "path": "src/infrastructure/session/session-service.ts",
@@ -79676,7 +79748,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/infrastructure/host/host-session-http.ts",
               "line": 12,
-              "sourceSha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf",
+              "sourceSha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719",
               "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
             },
             {
@@ -79684,7 +79756,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-session-http.ts",
               "line": 17,
-              "sourceSha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf",
+              "sourceSha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
@@ -79692,7 +79764,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-session-http.ts",
               "line": 58,
-              "sourceSha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf",
+              "sourceSha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719",
               "source": "async function hostMutateJson<T>(\n  path: string,\n  method: 'POST' | 'PUT' | 'PATCH' | 'DELETE',\n  body: unknown,\n  unreachableMessage: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      method,\n      credentials: 'include',\n      headers: {\n        Accept: 'application/json',\n        'Content-Type': 'application/json',\n      },\n      body: body === undefined ? undefined : JSON.stringify(body),\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  if (!response.ok) {\n    let detail = '';\n    try {\n      const errBody: unknown = await response.json();\n      if (errBody && typeof errBody === 'object' && 'error' in errBody) {\n        detail = String((errBody as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  if (response.status === 204) return undefined as T;\n  return (await response.json()) as T;\n}"
             },
             {
@@ -79700,7 +79772,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/infrastructure/host/host-session-http.ts",
               "line": 98,
-              "sourceSha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf",
+              "sourceSha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719",
               "source": "export type HostPlaySessionDto = {\n  readonly sessionId: string;\n  readonly projectId: string;\n  readonly publicId?: string;\n  readonly joinCode?: string | null;\n  readonly code?: string | null;\n  readonly status: string;\n  readonly sessionNumber?: number;\n  readonly name?: string | null;\n  readonly createdAt?: string;\n  readonly startedAt?: string | null;\n  readonly endedAt?: string | null;\n  readonly gmUserId?: string;\n  readonly players?: readonly {\n    readonly id?: string;\n    readonly userId?: string;\n    readonly characterId?: string | null;\n    readonly isOnline?: boolean;\n    readonly joinedAt?: string;\n  }[];\n};"
             },
             {
@@ -79708,7 +79780,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-session-http.ts",
               "line": 190,
-              "sourceSha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf",
+              "sourceSha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719",
               "source": "export async function setHostSessionStatus(\n  sessionId: string,\n  status: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<HostPlaySessionDto> {\n  const body = await hostMutateJson<{ session?: HostPlaySessionDto }>(\n    `/api/v1/sessions/${encodeURIComponent(sessionId)}/status`,\n    'POST',\n    { status },\n    'Host-Session-Status konnte nicht gesetzt werden',\n    env,\n    fetchImpl,\n  );\n  if (!body.session?.sessionId) {\n    throw new Error('Host-Session-Status konnte nicht gesetzt werden');\n  }\n  return body.session;\n}"
             },
             {
@@ -81184,7 +81256,7 @@
         },
         {
           "path": "src/infrastructure/host/host-session-http.ts",
-          "sha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf"
+          "sha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719"
         },
         {
           "path": "src/infrastructure/session/session-service.ts",

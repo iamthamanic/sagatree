@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-character.json](source-contracts/infra-character.json) (SHA-256 `fb967fb5e9f2add0ee44e6cdd58e42f1f44f83e1a56365828b48bd433f57b484`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-character.json](source-contracts/infra-character.json) (SHA-256 `26b56967b710c13e3ba51cec648388bcc21dfa31f0d89c4feea4e5e65a4e4dd4`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -498,7 +498,7 @@ supabase
 Enclosing operation: `src/infrastructure/character/avatar/character-avatar-import-service.ts:236`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### edge: character-avatar-meshy
 
-`src/infrastructure/character/avatar/character-avatar-meshy-service.ts:92` — literal-or-constant.
+`src/infrastructure/character/avatar/character-avatar-meshy-service.ts:99` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -3788,7 +3788,7 @@ export interface MeshyAvatarConfig {
 }
 ```
 
-### src/infrastructure/character/avatar/character-avatar-meshy-service.ts:99
+### src/infrastructure/character/avatar/character-avatar-meshy-service.ts:106
 
 ```ts
 export async function fetchMeshyAvatarConfig(): Promise<MeshyAvatarConfig> {
@@ -3838,7 +3838,7 @@ export async function fetchMeshyAvatarConfig(): Promise<MeshyAvatarConfig> {
 }
 ```
 
-### src/infrastructure/character/avatar/character-avatar-meshy-service.ts:145
+### src/infrastructure/character/avatar/character-avatar-meshy-service.ts:152
 
 ```ts
 export async function startMeshyAvatarJob(input: {
@@ -3906,7 +3906,7 @@ export async function startMeshyAvatarJob(input: {
 }
 ```
 
-### src/infrastructure/character/avatar/character-avatar-meshy-service.ts:209
+### src/infrastructure/character/avatar/character-avatar-meshy-service.ts:216
 
 ```ts
 export async function pollMeshyAvatarJob(jobId: string): Promise<MeshyAvatarJobSnapshot> {
@@ -3919,7 +3919,7 @@ export async function pollMeshyAvatarJob(jobId: string): Promise<MeshyAvatarJobS
 }
 ```
 
-### src/infrastructure/character/avatar/character-avatar-meshy-service.ts:218
+### src/infrastructure/character/avatar/character-avatar-meshy-service.ts:225
 
 ```ts
 export async function retryMeshyAvatarJob(jobId: string): Promise<MeshyAvatarJobSnapshot> {
@@ -11331,7 +11331,14 @@ async function getAuthenticatedUserId(): Promise<string> {
 
 ```ts
 async function invoke(body: Record<string, unknown>): Promise<FunctionResponse> {
-  assertHostProductSurfaceAvailable('Avatar-3D-Generierung');
+  // FE-HOST-14: optional Meshy remains Edge-legacy; host-first returns soft unavailable
+  // (config/generate callers already tolerate status=error / meshyConfigured=false).
+  if (isHostLibraryEnabled()) {
+    return {
+      status: 'error',
+      message: 'Avatar-3D-Generierung ist im Host-Modus ohne Meshy-Edge nicht verfügbar.',
+    };
+  }
   const { data, error } = await supabase.functions.invoke('character-avatar-meshy', { body });
   if (error) {
     return { status: 'error', message: error.message || 'Edge Function fehlgeschlagen.' };
@@ -12048,7 +12055,7 @@ private async assertPersonalLookWriteGate(
 | `src/infrastructure/character/avatar/character-avatar-artifact-service.ts` | `7ccb4005c337866af2cf1298fb0282ea02b14b8cb3b7963a487eab507b799c1a` |
 | `src/infrastructure/character/avatar/character-avatar-export-service.ts` | `f7f06447589acbc55f116e4432dfc1ef1b02ef5ca5a0394dd240693251bbcc4b` |
 | `src/infrastructure/character/avatar/character-avatar-import-service.ts` | `7821f28066e2773ff19a5c52341e6fbe3c01995faa1f40ddcf32542b2f2848a5` |
-| `src/infrastructure/character/avatar/character-avatar-meshy-service.ts` | `9bda4e7bfecd4d5ca9ad0dd6f1477ea58e5e98ace7381bd8f73b6d7c5b53a4d7` |
+| `src/infrastructure/character/avatar/character-avatar-meshy-service.ts` | `411c8c2cac60cf1904db46caca01e2577fb945949f0e278dbb7747a5911d8fa8` |
 | `src/infrastructure/character/avatar/character-studio-manifest.ts` | `af5409910fb6f8a18ea2f5928dca2366b7574c19b7087aa2230add5989dfe77f` |
 | `src/infrastructure/character/avatar/character-studio-runtime.ts` | `83d5c4877e46c394a3c287e41f4620f932e2f1122e1abee993c6394136ead8cf` |
 | `src/infrastructure/character/avatar/face-anchor-runtime.ts` | `1cf63b090e45babe137a93244a2d3653afb7c723940487235e77b728c72575b0` |

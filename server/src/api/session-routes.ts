@@ -490,4 +490,39 @@ export function mountSessionHttpRoutes(app: Hono, deps: SessionHttpDeps): void {
     }
     return c.json({ recap: recap.value }, 200);
   });
+
+  /** FE-HOST-14: manual recap save (no Edge AI required). */
+  app.put('/api/v1/sessions/:sessionId/recap', async (c) => {
+    const sessionId = c.req.param('sessionId');
+    const parsed = await readJsonSafe(c);
+    if (!parsed.ok) return c.json({ error: 'INVALID_PAYLOAD' }, 422);
+    const body = asRecord(parsed.body);
+    const actorResult = await resolveSessionActor(deps, c.req.raw.headers, false, parsed.body);
+    if (!actorResult.ok) {
+      return c.json({ error: actorResult.error }, actorResult.status);
+    }
+    const summaryText =
+      typeof body.summaryText === 'string'
+        ? body.summaryText
+        : typeof body.summary_text === 'string'
+          ? body.summary_text
+          : '';
+    const statusRaw =
+      typeof body.status === 'string'
+        ? body.status
+        : typeof body.summaryStatus === 'string'
+          ? body.summaryStatus
+          : 'draft';
+    const status = statusRaw === 'approved' ? 'approved' : 'draft';
+    const saved = infra.saveSessionRecapSummary(
+      actorResult.actor.actorId,
+      sessionId,
+      summaryText,
+      status,
+    );
+    if (!saved.ok) {
+      return c.json({ error: saved.error }, infraStatus(saved.error));
+    }
+    return c.json({ recap: saved.value }, 200);
+  });
 }

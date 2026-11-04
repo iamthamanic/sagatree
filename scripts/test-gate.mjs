@@ -1433,6 +1433,19 @@ function checkFeHost13SagaDefinition() {
   console.log('OK: fe-host-13-saga-definition.self-test');
 }
 
+function checkFeHost14AiResiduals() {
+  console.log('FE-HOST-14 AI/Meshy residual host successors (#1119)...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/fe-host-14-ai-residuals.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+  console.log('OK: fe-host-14-ai-residuals.self-test');
+}
+
 function checkMig312UserProfileAdapter() {
   console.log('MIG-312 user-profile adapter (#811): user_profiles + user-avatars dual-path...');
   execFileSync(
@@ -3649,6 +3662,7 @@ checkFeHost08CatalogHttp();
 checkFeHost09HostFirst();
 checkFeHost12ProjectWrites();
 checkFeHost13SagaDefinition();
+checkFeHost14AiResiduals();
 checkMig312UserProfileAdapter();
 checkMig309Rulesets();
 checkMig313WorldAdapter();

@@ -278,6 +278,26 @@ export async function fetchHostOwnUserProfile(
   return body.profile ?? null;
 }
 
+/** FE-HOST-14: peer lobby profiles via host batch (no PostgREST). */
+export async function fetchHostProfilesByUserIds(
+  userIds: readonly string[],
+  env: EnvLike = defaultEnv(),
+  fetchImpl: typeof fetch = fetch,
+): Promise<UserProfileVm[]> {
+  if (userIds.length === 0) return [];
+  const body = await hostJson<{ profiles?: UserProfileVm[] }>(
+    '/api/v1/user-profile/batch',
+    'Fremde Profile nicht erreichbar',
+    {
+      method: 'POST',
+      body: JSON.stringify({ userIds }),
+    },
+    env,
+    fetchImpl,
+  );
+  return Array.isArray(body.profiles) ? body.profiles : [];
+}
+
 export async function uploadHostUserAvatar(
   file: File,
   env: EnvLike = defaultEnv(),

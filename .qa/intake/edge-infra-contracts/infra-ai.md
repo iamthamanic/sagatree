@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-ai.json](source-contracts/infra-ai.json) (SHA-256 `4cf59635fce64a661e882bf47737993e41800bc6617839bce247e892d1199aed`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-ai.json](source-contracts/infra-ai.json) (SHA-256 `fa977aa49e64fda597d34354d78bb1515f200bb8b2a9ab4e51e4969db41441a6`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -151,8 +151,11 @@ export function createAiInvoke(options?: {
   const forceEdge = options?.forceEdge === true;
 
   return async (path, body) => {
+    // FE-HOST-14: host-first library runtime uses mounted /api/v1/ai/* (same as HOST_AI=1).
     const preferHost =
-      !forceEdge && getHostAuthBaseUrl(env) !== null && isHostAiEnabled(env);
+      !forceEdge &&
+      getHostAuthBaseUrl(env) !== null &&
+      (isHostAiEnabled(env) || isHostLibraryEnabled(env));
     if (preferHost) {
       return invokeHost(
         path,
@@ -162,13 +165,6 @@ export function createAiInvoke(options?: {
           : 'AI-Provider-Dienst nicht erreichbar.',
         fetchImpl,
         env,
-      );
-    }
-    if (!forceEdge && isHostLibraryEnabled(env)) {
-      throw new Error(
-        path === 'ollama-settings'
-          ? 'Ollama-Einstellungen sind im Host-Modus ohne VITE_SAGATREE_HOST_AI noch nicht verfügbar.'
-          : 'AI-Provider-Dienst ist im Host-Modus ohne VITE_SAGATREE_HOST_AI noch nicht verfügbar.',
       );
     }
     return invokeEdge(
@@ -182,7 +178,7 @@ export function createAiInvoke(options?: {
 }
 ```
 
-### src/infrastructure/ai/host-ai-invoke.ts:158
+### src/infrastructure/ai/host-ai-invoke.ts:154
 
 ```ts
 export const defaultAiInvoke = createAiInvoke();
@@ -307,7 +303,7 @@ async function invokeEdge(
 | `src/domains/ai-providers/index.ts` | `460e4fa3639a12e0e028b19de91b947e482fee90585dc9844d6f8cfa70df2f05` |
 | `src/domains/ai-providers/ollama-settings.ts` | `f3cbc6de1a3822b21cf3edf08f6debb19ea27299b46f54dbd1bfac0eaf83150c` |
 | `src/infrastructure/ai/ai-provider-credentials-service.ts` | `deabff23986dd311748c7efff1539c2fe977465fa8357c5a1fda1577c5562e51` |
-| `src/infrastructure/ai/host-ai-invoke.ts` | `8310a4746f3f15aede6854e1bac3517f16cc4d8cec1803c9967f19393df14e78` |
+| `src/infrastructure/ai/host-ai-invoke.ts` | `5437ec09fc80978c56d79856547a367e6aed1a116e6db8c1d4516e10ce9f7f52` |
 | `src/infrastructure/ai/ollama-settings-service.ts` | `aaf53b0f3004f001018518dade230a67f923c98897413476c9635f7d0aae1116` |
 | `src/infrastructure/host/host-library-http.ts` | `3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a` |
 | `src/lib/hostAuthBridge.ts` | `30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a` |

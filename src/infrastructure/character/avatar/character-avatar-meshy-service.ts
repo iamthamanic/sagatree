@@ -5,7 +5,7 @@
  */
 
 import { rewriteBrowserStorageUrl, supabase } from '../../../lib/supabase';
-import { assertHostProductSurfaceAvailable } from '../../host/host-product-deny';
+import { isHostLibraryEnabled } from '../../host/host-library-http';
 import {
   MESHY_AVATAR_IMAGE_MAX_BYTES,
   MESHY_AVATAR_PROMPT_MAX_CHARS,
@@ -88,7 +88,14 @@ function mapJob(raw: Record<string, unknown>, modelUrl?: string): MeshyAvatarJob
 }
 
 async function invoke(body: Record<string, unknown>): Promise<FunctionResponse> {
-  assertHostProductSurfaceAvailable('Avatar-3D-Generierung');
+  // FE-HOST-14: optional Meshy remains Edge-legacy; host-first returns soft unavailable
+  // (config/generate callers already tolerate status=error / meshyConfigured=false).
+  if (isHostLibraryEnabled()) {
+    return {
+      status: 'error',
+      message: 'Avatar-3D-Generierung ist im Host-Modus ohne Meshy-Edge nicht verfügbar.',
+    };
+  }
   const { data, error } = await supabase.functions.invoke('character-avatar-meshy', { body });
   if (error) {
     return { status: 'error', message: error.message || 'Edge Function fehlgeschlagen.' };

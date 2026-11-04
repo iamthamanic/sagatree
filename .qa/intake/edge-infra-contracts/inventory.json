@@ -1066,7 +1066,7 @@
         "sourceFiles": [
           {
             "path": "src/infrastructure/ai/host-ai-invoke.ts",
-            "sha256": "8310a4746f3f15aede6854e1bac3517f16cc4d8cec1803c9967f19393df14e78"
+            "sha256": "5437ec09fc80978c56d79856547a367e6aed1a116e6db8c1d4516e10ce9f7f52"
           },
           {
             "path": "supabase/functions/_shared/ai-provider-crypto.ts",
@@ -3098,7 +3098,7 @@
         "sourceFiles": [
           {
             "path": "src/infrastructure/character/avatar/character-avatar-meshy-service.ts",
-            "sha256": "9bda4e7bfecd4d5ca9ad0dd6f1477ea58e5e98ace7381bd8f73b6d7c5b53a4d7"
+            "sha256": "411c8c2cac60cf1904db46caca01e2577fb945949f0e278dbb7747a5911d8fa8"
           },
           {
             "path": "supabase/functions/_shared/ai-provider-crypto.ts",
@@ -3405,8 +3405,8 @@
           "kind": "edge",
           "name": "character-avatar-meshy",
           "path": "src/infrastructure/character/avatar/character-avatar-meshy-service.ts",
-          "line": 92,
-          "endLine": 92,
+          "line": 99,
+          "endLine": 99,
           "resolution": "literal-or-constant",
           "expression": "supabase.functions.invoke('character-avatar-meshy', { body })",
           "chain": "supabase.functions.invoke('character-avatar-meshy', { body })",
@@ -3417,8 +3417,8 @@
           "enclosingOperation": {
             "path": "src/infrastructure/character/avatar/character-avatar-meshy-service.ts",
             "line": 90,
-            "endLine": 97,
-            "text": "async function invoke(body: Record<string, unknown>): Promise<FunctionResponse> {\n  assertHostProductSurfaceAvailable('Avatar-3D-Generierung');\n  const { data, error } = await supabase.functions.invoke('character-avatar-meshy', { body });\n  if (error) {\n    return { status: 'error', message: error.message || 'Edge Function fehlgeschlagen.' };\n  }\n  return parseResponse(data);\n}"
+            "endLine": 104,
+            "text": "async function invoke(body: Record<string, unknown>): Promise<FunctionResponse> {\n  // FE-HOST-14: optional Meshy remains Edge-legacy; host-first returns soft unavailable\n  // (config/generate callers already tolerate status=error / meshyConfigured=false).\n  if (isHostLibraryEnabled()) {\n    return {\n      status: 'error',\n      message: 'Avatar-3D-Generierung ist im Host-Modus ohne Meshy-Edge nicht verfügbar.',\n    };\n  }\n  const { data, error } = await supabase.functions.invoke('character-avatar-meshy', { body });\n  if (error) {\n    return { status: 'error', message: error.message || 'Edge Function fehlgeschlagen.' };\n  }\n  return parseResponse(data);\n}"
           }
         }
       ],
@@ -20482,7 +20482,7 @@
         "sourceFiles": [
           {
             "path": "src/infrastructure/ai/host-ai-invoke.ts",
-            "sha256": "8310a4746f3f15aede6854e1bac3517f16cc4d8cec1803c9967f19393df14e78"
+            "sha256": "5437ec09fc80978c56d79856547a367e6aed1a116e6db8c1d4516e10ce9f7f52"
           },
           {
             "path": "supabase/functions/_shared/ai-provider-crypto.ts",
@@ -24135,7 +24135,7 @@
         "sourceFiles": [
           {
             "path": "src/infrastructure/session/session-recap-ai-service.ts",
-            "sha256": "61b31d8ae8f680ac4755cf499b42b8da5f0ab5bf85edede1248de5d0e9a364f6"
+            "sha256": "2c21ba1645d48214ea277cd15537bc93b4752737510e556e40bca11f80243c3e"
           },
           {
             "path": "supabase/functions/_shared/ai-provider-crypto.ts",
@@ -28966,7 +28966,7 @@
           },
           {
             "path": "src/infrastructure/ai/host-ai-invoke.ts",
-            "sha256": "8310a4746f3f15aede6854e1bac3517f16cc4d8cec1803c9967f19393df14e78"
+            "sha256": "5437ec09fc80978c56d79856547a367e6aed1a116e6db8c1d4516e10ce9f7f52"
           },
           {
             "path": "src/infrastructure/ai/ollama-settings-service.ts",
@@ -28990,7 +28990,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-ai.json",
-      "sourceContractSha256": "4cf59635fce64a661e882bf47737993e41800bc6617839bce247e892d1199aed",
+      "sourceContractSha256": "fa977aa49e64fda597d34354d78bb1515f200bb8b2a9ab4e51e4969db41441a6",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],
@@ -29173,7 +29173,7 @@
         {
           "path": "src/infrastructure/ai/host-ai-invoke.ts",
           "line": 117,
-          "endLine": 156,
+          "endLine": 152,
           "name": "createAiInvoke"
         },
         {
@@ -30143,7 +30143,7 @@
           },
           {
             "path": "src/infrastructure/character/avatar/character-avatar-meshy-service.ts",
-            "sha256": "9bda4e7bfecd4d5ca9ad0dd6f1477ea58e5e98ace7381bd8f73b6d7c5b53a4d7"
+            "sha256": "411c8c2cac60cf1904db46caca01e2577fb945949f0e278dbb7747a5911d8fa8"
           },
           {
             "path": "src/infrastructure/character/avatar/character-studio-manifest.ts",
@@ -30491,7 +30491,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-character.json",
-      "sourceContractSha256": "fb967fb5e9f2add0ee44e6cdd58e42f1f44f83e1a56365828b48bd433f57b484",
+      "sourceContractSha256": "26b56967b710c13e3ba51cec648388bcc21dfa31f0d89c4feea4e5e65a4e4dd4",
       "rpcUsed": [],
       "tablesTouched": [
         "character_adventure_arcs",
@@ -31751,8 +31751,8 @@
           "kind": "edge",
           "name": "character-avatar-meshy",
           "path": "src/infrastructure/character/avatar/character-avatar-meshy-service.ts",
-          "line": 92,
-          "endLine": 92,
+          "line": 99,
+          "endLine": 99,
           "resolution": "literal-or-constant",
           "expression": "supabase.functions.invoke('character-avatar-meshy', { body })",
           "chain": "supabase.functions.invoke('character-avatar-meshy', { body })",
@@ -31763,8 +31763,8 @@
           "enclosingOperation": {
             "path": "src/infrastructure/character/avatar/character-avatar-meshy-service.ts",
             "line": 90,
-            "endLine": 97,
-            "text": "async function invoke(body: Record<string, unknown>): Promise<FunctionResponse> {\n  assertHostProductSurfaceAvailable('Avatar-3D-Generierung');\n  const { data, error } = await supabase.functions.invoke('character-avatar-meshy', { body });\n  if (error) {\n    return { status: 'error', message: error.message || 'Edge Function fehlgeschlagen.' };\n  }\n  return parseResponse(data);\n}"
+            "endLine": 104,
+            "text": "async function invoke(body: Record<string, unknown>): Promise<FunctionResponse> {\n  // FE-HOST-14: optional Meshy remains Edge-legacy; host-first returns soft unavailable\n  // (config/generate callers already tolerate status=error / meshyConfigured=false).\n  if (isHostLibraryEnabled()) {\n    return {\n      status: 'error',\n      message: 'Avatar-3D-Generierung ist im Host-Modus ohne Meshy-Edge nicht verfügbar.',\n    };\n  }\n  const { data, error } = await supabase.functions.invoke('character-avatar-meshy', { body });\n  if (error) {\n    return { status: 'error', message: error.message || 'Edge Function fehlgeschlagen.' };\n  }\n  return parseResponse(data);\n}"
           }
         },
         {
@@ -33426,31 +33426,31 @@
         {
           "path": "src/infrastructure/character/avatar/character-avatar-meshy-service.ts",
           "line": 90,
-          "endLine": 97,
+          "endLine": 104,
           "name": "invoke"
         },
         {
           "path": "src/infrastructure/character/avatar/character-avatar-meshy-service.ts",
-          "line": 99,
-          "endLine": 143,
+          "line": 106,
+          "endLine": 150,
           "name": "fetchMeshyAvatarConfig"
         },
         {
           "path": "src/infrastructure/character/avatar/character-avatar-meshy-service.ts",
-          "line": 145,
-          "endLine": 207,
+          "line": 152,
+          "endLine": 214,
           "name": "startMeshyAvatarJob"
         },
         {
           "path": "src/infrastructure/character/avatar/character-avatar-meshy-service.ts",
-          "line": 209,
-          "endLine": 216,
+          "line": 216,
+          "endLine": 223,
           "name": "pollMeshyAvatarJob"
         },
         {
           "path": "src/infrastructure/character/avatar/character-avatar-meshy-service.ts",
-          "line": 218,
-          "endLine": 236,
+          "line": 225,
+          "endLine": 243,
           "name": "retryMeshyAvatarJob"
         },
         {
@@ -37850,7 +37850,7 @@
           },
           {
             "path": "src/infrastructure/host/host-catalog-http.ts",
-            "sha256": "a33c807b3bde9200f472b2d4d057d633960fba65fcf14b32e6f7053adb9c9f5a"
+            "sha256": "9049245360683a74e7e2602d35126d815d64344d384c6684e4c2c3d41aa626d3"
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
@@ -37898,7 +37898,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-marketplace.json",
-      "sourceContractSha256": "d3fbde6a359dd56296e89186e2d0fc18b31008d4faa69c03b50ea077542139da",
+      "sourceContractSha256": "920e6422636925b0d3dbd0691dfb18b9561281abdc80dc01433ce83006959461",
       "rpcUsed": [
         "increment_marketplace_downloads"
       ],
@@ -41148,7 +41148,7 @@
           },
           {
             "path": "src/infrastructure/host/host-catalog-http.ts",
-            "sha256": "a33c807b3bde9200f472b2d4d057d633960fba65fcf14b32e6f7053adb9c9f5a"
+            "sha256": "9049245360683a74e7e2602d35126d815d64344d384c6684e4c2c3d41aa626d3"
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
@@ -41172,7 +41172,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-rulesets.json",
-      "sourceContractSha256": "4c592fdf7be8996b844d40b2fbbab84f61ec0fc1e912374ecda365a1e61489ae",
+      "sourceContractSha256": "c8b9233452b8ff231d9a06a778e0f365d90ec2b3070144b02f30a035735de37b",
       "rpcUsed": [],
       "tablesTouched": [
         "rulesets"
@@ -41923,7 +41923,7 @@
           },
           {
             "path": "src/infrastructure/host/host-session-http.ts",
-            "sha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf"
+            "sha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719"
           },
           {
             "path": "src/infrastructure/session/host-session-adapter.ts",
@@ -41971,7 +41971,7 @@
           },
           {
             "path": "src/infrastructure/session/session-recap-ai-service.ts",
-            "sha256": "61b31d8ae8f680ac4755cf499b42b8da5f0ab5bf85edede1248de5d0e9a364f6"
+            "sha256": "2c21ba1645d48214ea277cd15537bc93b4752737510e556e40bca11f80243c3e"
           },
           {
             "path": "src/infrastructure/session/session-recap-service.ts",
@@ -42015,7 +42015,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-session.json",
-      "sourceContractSha256": "ad45eeaea8b590cf4826754892d981dd94cc0babfbfb9b07fa45508e2be0db44",
+      "sourceContractSha256": "57246bab90c22ef593aafcfc4762a6999a488bf3a37b5cec586c5f84de428cce",
       "rpcUsed": [
         "apply_session_runtime_command",
         "create_play_session",
@@ -42823,8 +42823,8 @@
           "kind": "rpc",
           "name": "save_session_recap_summary",
           "path": "src/infrastructure/session/session-recap-ai-service.ts",
-          "line": 118,
-          "endLine": 122,
+          "line": 126,
+          "endLine": 130,
           "resolution": "literal-or-constant",
           "expression": "supabase.rpc('save_session_recap_summary', {\n        p_session_id: sessionId,\n        p_summary_text: summaryText,\n        p_status: status,\n      })",
           "chain": "supabase.rpc('save_session_recap_summary', {\n        p_session_id: sessionId,\n        p_summary_text: summaryText,\n        p_status: status,\n      })",
@@ -42835,8 +42835,8 @@
           "enclosingOperation": {
             "path": "src/infrastructure/session/session-recap-ai-service.ts",
             "line": 107,
-            "endLine": 141,
-            "text": "async saveSummary(\n    sessionId: string,\n    summaryText: string,\n    status: 'draft' | 'approved',\n  ): Promise<{ summaryText: string | null; summaryStatus: EpisodeSummaryStatus }> {\n    if (isHostLibraryEnabled()) {\n      throw new Error(\n        'Zusammenfassung speichern ist im Host-Modus noch nicht verfügbar.',\n      );\n    }\n    const { data, error } = await raceWithTimeoutReject(\n      supabase.rpc('save_session_recap_summary', {\n        p_session_id: sessionId,\n        p_summary_text: summaryText,\n        p_status: status,\n      }),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'Speichern Zeitüberschreitung',\n    );\n    if (error) {\n      throw new Error(error.message || 'Zusammenfassung konnte nicht gespeichert werden');\n    }\n    if (!isRecord(data)) {\n      return { summaryText, summaryStatus: status };\n    }\n    return {\n      summaryText: typeof data.summaryText === 'string' ? data.summaryText : summaryText,\n      summaryStatus:\n        data.summaryStatus === 'approved'\n          ? 'approved'\n          : data.summaryStatus === 'draft'\n            ? 'draft'\n            : 'none',\n    };\n  }"
+            "endLine": 149,
+            "text": "async saveSummary(\n    sessionId: string,\n    summaryText: string,\n    status: 'draft' | 'approved',\n  ): Promise<{ summaryText: string | null; summaryStatus: EpisodeSummaryStatus }> {\n    if (isHostLibraryEnabled()) {\n      const saved = await saveHostSessionRecapSummary(sessionId, summaryText, status);\n      return {\n        summaryText:\n          typeof saved.summaryText === 'string' ? saved.summaryText : summaryText,\n        summaryStatus:\n          saved.summaryStatus === 'approved'\n            ? 'approved'\n            : saved.summaryStatus === 'draft'\n              ? 'draft'\n              : status,\n      };\n    }\n    const { data, error } = await raceWithTimeoutReject(\n      supabase.rpc('save_session_recap_summary', {\n        p_session_id: sessionId,\n        p_summary_text: summaryText,\n        p_status: status,\n      }),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'Speichern Zeitüberschreitung',\n    );\n    if (error) {\n      throw new Error(error.message || 'Zusammenfassung konnte nicht gespeichert werden');\n    }\n    if (!isRecord(data)) {\n      return { summaryText, summaryStatus: status };\n    }\n    return {\n      summaryText: typeof data.summaryText === 'string' ? data.summaryText : summaryText,\n      summaryStatus:\n        data.summaryStatus === 'approved'\n          ? 'approved'\n          : data.summaryStatus === 'draft'\n            ? 'draft'\n            : 'none',\n    };\n  }"
           }
         },
         {
@@ -43707,7 +43707,7 @@
         {
           "path": "src/infrastructure/session/session-recap-ai-service.ts",
           "line": 107,
-          "endLine": 141,
+          "endLine": 149,
           "name": "saveSummary"
         },
         {
@@ -43928,7 +43928,7 @@
           },
           {
             "path": "src/infrastructure/host/host-catalog-http.ts",
-            "sha256": "a33c807b3bde9200f472b2d4d057d633960fba65fcf14b32e6f7053adb9c9f5a"
+            "sha256": "9049245360683a74e7e2602d35126d815d64344d384c6684e4c2c3d41aa626d3"
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
@@ -44012,7 +44012,7 @@
           },
           {
             "path": "src/infrastructure/user-profile/user-profile-service.ts",
-            "sha256": "b842fa9db4e14d90424172ab942dcce00ebffd22e7404709703f9835f3a6eb62"
+            "sha256": "202170498fc10c6bcfadeaede6790eb5abc6da07fb4538f19a4b0f84dc39f65a"
           },
           {
             "path": "src/lib/authenticatedUser.ts",
@@ -44040,7 +44040,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-user-profile.json",
-      "sourceContractSha256": "5be4f090d71b811c59bb26c24912e81a8418b7fcfd81ca9cf6d1462b010f7e83",
+      "sourceContractSha256": "b517058baea06fefa63b11e2a208547201ae5f9e36ef4086d2117bcade8ff820",
       "rpcUsed": [],
       "tablesTouched": [
         "user_profiles"
@@ -44486,26 +44486,26 @@
         },
         {
           "path": "src/infrastructure/user-profile/user-profile-service.ts",
-          "line": 29,
-          "endLine": 69,
+          "line": 30,
+          "endLine": 70,
           "name": "prepareUserAvatarFile"
         },
         {
           "path": "src/infrastructure/user-profile/user-profile-service.ts",
-          "line": 72,
-          "endLine": 77,
+          "line": 73,
+          "endLine": 78,
           "name": "getOwnProfile"
         },
         {
           "path": "src/infrastructure/user-profile/user-profile-service.ts",
-          "line": 79,
-          "endLine": 88,
+          "line": 80,
+          "endLine": 85,
           "name": "getProfilesByUserIds"
         },
         {
           "path": "src/infrastructure/user-profile/user-profile-service.ts",
-          "line": 90,
-          "endLine": 98,
+          "line": 87,
+          "endLine": 95,
           "name": "uploadAvatar"
         }
       ],

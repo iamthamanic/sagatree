@@ -5,29 +5,30 @@ Owner note (cutover milestone): with `VITE_SAGATREE_HOST_AUTH_URL` set and
 **host-first**. Covered journeys use host HTTP + Better Auth cookies. The
 Supabase JS client stays inert (no GoTrue session) unless the operator opts out.
 
-## Residual allowlist (DENY under host-first)
+## Residual allowlist (DENY / degraded under host-first)
 
 These FE facades still contain `supabase.from` / `rpc` / `storage` /
 `functions.invoke` for the **legacy** dual-path (`VITE_SAGATREE_HOST_LIBRARY=0`
-or missing auth URL). Under host-first they throw or return German unavailable
-via `assertHostProductSurfaceAvailable` / local stubs — never hang on PostgREST.
+or missing auth URL). Under host-first they use host HTTP, soft-degraded
+German UX, or throw unavailable — never hang on PostgREST/Edge.
 
 | Surface | Module | Severity | Notes |
 | --- | --- | --- | --- |
-| Saga definition RPC editor | `saga-definition-service.ts` | Medium | DONE (FE-HOST-13) — host HTTP + FE dual-path; legacy DENY only when host library off |
-| Session outcome promote | `session-outcome-promotion-service.ts` | Low | Returns `{ ok: false, messageDe }` |
-| Look reference Edge analysis | `look-reference-analysis-service.ts` | Medium | Look CRUD already host; analysis Edge only |
-| Item thumbnail / model3d Edge | `item-thumbnail-service.ts`, `item-model3d-service.ts` | Medium | Inventory CRUD host; Meshy Edge residual |
-| Session media token Edge | `media-token-client.ts` | Low | Degraded media UX |
-| Character lore AI Edge | `character-lore-service.ts` | Medium | Stubbed FE-HOST-08 |
-| Session recap AI Edge | `session-recap-ai-service.ts` | Medium | Stubbed FE-HOST-08; get-recap host |
-| Avatar Meshy Edge | `character-avatar-meshy-service.ts` | Medium | Needs host AI successor |
-| Avatar import/export/artifacts storage | `character-avatar-*-service.ts` | Medium | Portrait publish is host (FE-HOST-06) |
-| Character presets / adventure arcs | `character-preset-service.ts`, `character-adventure-arc-service.ts` | Low | PostgREST tables |
-| AI provider Edge fallback | `host-ai-invoke.ts` | Low | Host path when `VITE_SAGATREE_HOST_AI=1`; else DENY under host-first |
-| Peer profile batch | `user-profile-service.ts` `getProfilesByUserIds` | Low | Own profile host; batch DENY |
-| Project create/update/delete | `project-service.ts` | Medium | DONE (FE-HOST-12) — host HTTP + FE dual-path; legacy DENY only when host library off |
-| World by public id | `world-profile-service.ts` `getByPublicId` | Low | Host worlds title-only; DENY (no PostgREST) |
+| Saga definition RPC editor | `saga-definition-service.ts` | Medium | DONE (FE-HOST-13) — host HTTP + FE dual-path |
+| Project create/update/delete | `project-service.ts` | Medium | DONE (FE-HOST-12) — host HTTP + FE dual-path |
+| Peer profile batch | `user-profile-service.ts` `getProfilesByUserIds` | Low | DONE (FE-HOST-14) — `POST /api/v1/user-profile/batch` |
+| Session recap save | `session-recap-ai-service.ts` `saveSummary` | Medium | DONE (FE-HOST-14) — `PUT /api/v1/sessions/:id/recap` manual path |
+| AI provider / Ollama settings | `host-ai-invoke.ts` | Low | DONE (FE-HOST-14) — host `/api/v1/ai/*` under host-first |
+| Session outcome promote | `session-outcome-promotion-service.ts` | Info | Soft `{ ok: false, messageDe }`; no Edge required |
+| Look reference Edge analysis | `look-reference-analysis-service.ts` | Info | Soft `ok:false` host-degraded; Look CRUD is host |
+| Item thumbnail / model3d Edge | `item-thumbnail-service.ts`, `item-model3d-service.ts` | Info | Soft German unavailable; inventory CRUD is host |
+| Session media token Edge | `media-token-client.ts` | Info | Soft `degraded: true`; live media optional |
+| Character lore AI Edge | `character-lore-service.ts` | Info | Soft German unavailable; optional AI |
+| Session recap AI generate | `session-recap-ai-service.ts` `generateDraft` | Info | Soft German unavailable; manual save is host |
+| Avatar Meshy Edge | `character-avatar-meshy-service.ts` | Info | Soft error / `meshyConfigured:false`; portrait publish is host |
+| Avatar import/export/artifacts storage | `character-avatar-*-service.ts` | Info | Optional artifacts; portrait publish host (FE-HOST-06) |
+| Character presets / adventure arcs | `character-preset-service.ts`, `character-adventure-arc-service.ts` | Info | Soft DENY; not required for host-first play |
+| World by public id | `world-profile-service.ts` `getByPublicId` | Info | Host worlds title-only; soft DENY |
 | Historical `supabase/migrations` SQL | `supabase/migrations/**` | Info | Archive; not product runtime |
 | Edge Functions tree | `supabase/functions/**` | Info | Archive / optional stack; dispatcher allowlists unchanged |
 
@@ -39,5 +40,5 @@ product paths when `VITE_SUPABASE_*` are configured.
 ## Security
 
 - No silent anon Supabase fallback under host-first.
-- Residual surfaces fail closed with German UX copy.
+- Residual optional AI/Meshy surfaces fail closed with German UX copy (product remains usable).
 - All severities listed above (including Low/Info).

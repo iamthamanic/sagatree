@@ -1,10 +1,10 @@
 /**
- * host-ai-invoke — dual-path transport for infrastructure/ai (MIG-301 / #800).
+ * host-ai-invoke — dual-path transport for infrastructure/ai (MIG-301 / #800 / FE-HOST-14).
  * Location: src/infrastructure/ai/host-ai-invoke.ts
  *
- * Prefer host HTTP only when both `VITE_SAGATREE_HOST_AUTH_URL` and the explicit
- * AI cutover flag `VITE_SAGATREE_HOST_AI=1` are set. Otherwise keep Edge
- * `supabase.functions.invoke` (no accidental cutover when auth bridge alone is on).
+ * Prefer host HTTP when `VITE_SAGATREE_HOST_AUTH_URL` is set and either
+ * `VITE_SAGATREE_HOST_AI=1` or host-first library (`isHostLibraryEnabled`) is on.
+ * Otherwise keep Edge `supabase.functions.invoke` (legacy opt-out path).
  */
 import { supabase } from '../../lib/supabase';
 import { getHostAuthBaseUrl } from '../../lib/hostAuthBridge';
@@ -125,8 +125,11 @@ export function createAiInvoke(options?: {
   const forceEdge = options?.forceEdge === true;
 
   return async (path, body) => {
+    // FE-HOST-14: host-first library runtime uses mounted /api/v1/ai/* (same as HOST_AI=1).
     const preferHost =
-      !forceEdge && getHostAuthBaseUrl(env) !== null && isHostAiEnabled(env);
+      !forceEdge &&
+      getHostAuthBaseUrl(env) !== null &&
+      (isHostAiEnabled(env) || isHostLibraryEnabled(env));
     if (preferHost) {
       return invokeHost(
         path,
@@ -136,13 +139,6 @@ export function createAiInvoke(options?: {
           : 'AI-Provider-Dienst nicht erreichbar.',
         fetchImpl,
         env,
-      );
-    }
-    if (!forceEdge && isHostLibraryEnabled(env)) {
-      throw new Error(
-        path === 'ollama-settings'
-          ? 'Ollama-Einstellungen sind im Host-Modus ohne VITE_SAGATREE_HOST_AI noch nicht verfügbar.'
-          : 'AI-Provider-Dienst ist im Host-Modus ohne VITE_SAGATREE_HOST_AI noch nicht verfügbar.',
       );
     }
     return invokeEdge(
