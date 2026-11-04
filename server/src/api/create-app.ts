@@ -464,6 +464,7 @@ export function createHostApi(deps: HostApiDeps): Hono {
     identity: deps.identity,
     hostMode: deps.hostMode,
     sessionInfra: deps.sessionInfra,
+    look: deps.look,
   });
 
   mountWorldAtlasHttpRoutes(app, {
@@ -476,6 +477,9 @@ export function createHostApi(deps: HostApiDeps): Hono {
     identity: deps.identity,
     hostMode: deps.hostMode,
     projectInfra: deps.projectInfra,
+    project: deps.project,
+    world: deps.world,
+    look: deps.look,
   });
 
   mountAssetHttpRoutes(app, {

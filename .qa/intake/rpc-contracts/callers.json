@@ -132,7 +132,7 @@
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 11,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
         },
         {
@@ -140,7 +140,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 16,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
         },
         {
@@ -148,7 +148,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 25,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "export function isHostLibraryExplicitlyDisabled(env: EnvLike = defaultEnv()): boolean {\n  const flag = env.VITE_SAGATREE_HOST_LIBRARY?.trim().toLowerCase();\n  return flag === '0' || flag === 'false' || flag === 'off' || flag === 'no';\n}"
         },
         {
@@ -341,7 +341,7 @@
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 11,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
         },
         {
@@ -349,7 +349,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 16,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
         },
         {
@@ -357,7 +357,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 25,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "export function isHostLibraryExplicitlyDisabled(env: EnvLike = defaultEnv()): boolean {\n  const flag = env.VITE_SAGATREE_HOST_LIBRARY?.trim().toLowerCase();\n  return flag === '0' || flag === 'false' || flag === 'off' || flag === 'no';\n}"
         },
         {
@@ -585,7 +585,7 @@
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 11,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
         },
         {
@@ -593,7 +593,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 16,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
         },
         {
@@ -601,7 +601,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 25,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "export function isHostLibraryExplicitlyDisabled(env: EnvLike = defaultEnv()): boolean {\n  const flag = env.VITE_SAGATREE_HOST_LIBRARY?.trim().toLowerCase();\n  return flag === '0' || flag === 'false' || flag === 'off' || flag === 'no';\n}"
         },
         {
@@ -609,7 +609,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 30,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "export function isHostLibraryEnabled(env: EnvLike = defaultEnv()): boolean {\n  if (isHostLibraryExplicitlyDisabled(env)) return false;\n  return getHostAuthBaseUrl(env) !== null;\n}"
         },
         {
@@ -1003,7 +1003,7 @@
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 11,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
         },
         {
@@ -1011,7 +1011,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 16,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
         },
         {
@@ -1019,7 +1019,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 25,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "export function isHostLibraryExplicitlyDisabled(env: EnvLike = defaultEnv()): boolean {\n  const flag = env.VITE_SAGATREE_HOST_LIBRARY?.trim().toLowerCase();\n  return flag === '0' || flag === 'false' || flag === 'off' || flag === 'no';\n}"
         },
         {
@@ -1027,7 +1027,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 30,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "export function isHostLibraryEnabled(env: EnvLike = defaultEnv()): boolean {\n  if (isHostLibraryExplicitlyDisabled(env)) return false;\n  return getHostAuthBaseUrl(env) !== null;\n}"
         },
         {
@@ -1289,7 +1289,7 @@
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 11,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
         },
         {
@@ -1297,7 +1297,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 16,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
         },
         {
@@ -1305,7 +1305,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 25,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "export function isHostLibraryExplicitlyDisabled(env: EnvLike = defaultEnv()): boolean {\n  const flag = env.VITE_SAGATREE_HOST_LIBRARY?.trim().toLowerCase();\n  return flag === '0' || flag === 'false' || flag === 'off' || flag === 'no';\n}"
         },
         {
@@ -1313,7 +1313,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 30,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "export function isHostLibraryEnabled(env: EnvLike = defaultEnv()): boolean {\n  if (isHostLibraryExplicitlyDisabled(env)) return false;\n  return getHostAuthBaseUrl(env) !== null;\n}"
         },
         {
@@ -1498,7 +1498,7 @@
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 11,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
         },
         {
@@ -1506,7 +1506,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 16,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
         },
         {
@@ -1514,7 +1514,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 25,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "export function isHostLibraryExplicitlyDisabled(env: EnvLike = defaultEnv()): boolean {\n  const flag = env.VITE_SAGATREE_HOST_LIBRARY?.trim().toLowerCase();\n  return flag === '0' || flag === 'false' || flag === 'off' || flag === 'no';\n}"
         },
         {
@@ -1690,7 +1690,7 @@
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 11,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
         },
         {
@@ -1698,7 +1698,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 16,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
         },
         {
@@ -1706,7 +1706,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 25,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "export function isHostLibraryExplicitlyDisabled(env: EnvLike = defaultEnv()): boolean {\n  const flag = env.VITE_SAGATREE_HOST_LIBRARY?.trim().toLowerCase();\n  return flag === '0' || flag === 'false' || flag === 'off' || flag === 'no';\n}"
         },
         {
@@ -1714,7 +1714,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 30,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "export function isHostLibraryEnabled(env: EnvLike = defaultEnv()): boolean {\n  if (isHostLibraryExplicitlyDisabled(env)) return false;\n  return getHostAuthBaseUrl(env) !== null;\n}"
         },
         {
@@ -1835,8 +1835,8 @@
       "rpc": "create_project_session",
       "resolution": "string-literal",
       "path": "src/infrastructure/project/project-service.ts",
-      "line": 884,
-      "sourceSha256": "2b692de31098ccdf7c3a73383e4db950116f88b3fda10843d9edf4b479563210",
+      "line": 953,
+      "sourceSha256": "07549fce108bd735bdd7d48b07bccbf39947e3547d0f26ab60fdd013ca94aeff",
       "requestExpression": "{\n      p_project_id: payload.projectId,\n      p_name: payload.name ?? null,\n      p_notes: payload.notes ?? null,\n    }",
       "requestKeys": [
         "p_project_id",
@@ -1851,7 +1851,7 @@
         "import { getAuthenticatedUserId } from '../../lib/authenticatedUser';",
         "import { raceWithTimeoutReject, SUPABASE_QUERY_TIMEOUT_MS } from '../../lib/networkTimeout';",
         "import {\n  fetchHostLibraryProjects,\n  isHostLibraryEnabled,\n  type HostLibraryProjectDto,\n} from '../host/host-library-http';",
-        "import { createHostProjectSession } from '../host/host-project-http';",
+        "import {\n  createHostProject,\n  createHostProjectSession,\n  deleteHostProject,\n  updateHostProject,\n  updateHostSessionLook,\n  type HostProjectWriteDto,\n} from '../host/host-project-http';",
         "import { assertHostProductSurfaceAvailable } from '../host/host-product-deny';",
         "import { projectMemberService } from './project-member-service';",
         "import type {\n  ProjectDto,\n  ProjectVm,\n  CreateProjectDto,\n  JoinProjectDto,\n  ProjectMemberDto,\n  ProjectMemberVm,\n  ProjectSummaryVm,\n  SessionDto,\n  SessionVm,\n} from '../../domains/project/contracts/project.types';"
@@ -1886,7 +1886,7 @@
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 11,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
         },
         {
@@ -1894,7 +1894,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 16,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
         },
         {
@@ -1902,7 +1902,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 25,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "export function isHostLibraryExplicitlyDisabled(env: EnvLike = defaultEnv()): boolean {\n  const flag = env.VITE_SAGATREE_HOST_LIBRARY?.trim().toLowerCase();\n  return flag === '0' || flag === 'false' || flag === 'off' || flag === 'no';\n}"
         },
         {
@@ -1910,7 +1910,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 30,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "export function isHostLibraryEnabled(env: EnvLike = defaultEnv()): boolean {\n  if (isHostLibraryExplicitlyDisabled(env)) return false;\n  return getHostAuthBaseUrl(env) !== null;\n}"
         },
         {
@@ -1918,7 +1918,7 @@
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/host/host-project-http.ts",
           "line": 12,
-          "sourceSha256": "f617811defaa0b01d7991c9c411f045641636678e0ad17f5a4ee3fddf825cab0",
+          "sourceSha256": "f0a6c7b50b90ca9612b8b2e9abf2a5902a3164b2f693a1b6818d3e84bcd580c0",
           "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
         },
         {
@@ -1926,7 +1926,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-project-http.ts",
           "line": 17,
-          "sourceSha256": "f617811defaa0b01d7991c9c411f045641636678e0ad17f5a4ee3fddf825cab0",
+          "sourceSha256": "f0a6c7b50b90ca9612b8b2e9abf2a5902a3164b2f693a1b6818d3e84bcd580c0",
           "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
         },
         {
@@ -1934,7 +1934,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-project-http.ts",
           "line": 74,
-          "sourceSha256": "f617811defaa0b01d7991c9c411f045641636678e0ad17f5a4ee3fddf825cab0",
+          "sourceSha256": "f0a6c7b50b90ca9612b8b2e9abf2a5902a3164b2f693a1b6818d3e84bcd580c0",
           "source": "async function hostMutateJson<T>(\n  path: string,\n  method: 'POST' | 'PUT' | 'PATCH' | 'DELETE',\n  body: unknown,\n  unreachableMessage: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      method,\n      credentials: 'include',\n      headers: {\n        Accept: 'application/json',\n        'Content-Type': 'application/json',\n      },\n      body: body === undefined ? undefined : JSON.stringify(body),\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  if (!response.ok) {\n    let detail = '';\n    try {\n      const errBody: unknown = await response.json();\n      if (errBody && typeof errBody === 'object' && 'error' in errBody) {\n        detail = String((errBody as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  if (response.status === 204) return undefined as T;\n  return (await response.json()) as T;\n}"
         },
         {
@@ -1942,7 +1942,7 @@
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/host/host-project-http.ts",
           "line": 123,
-          "sourceSha256": "f617811defaa0b01d7991c9c411f045641636678e0ad17f5a4ee3fddf825cab0",
+          "sourceSha256": "f0a6c7b50b90ca9612b8b2e9abf2a5902a3164b2f693a1b6818d3e84bcd580c0",
           "source": "export type HostProjectSessionDto = {\n  readonly id: string;\n  readonly projectId: string;\n  readonly publicId?: string;\n  readonly status?: string;\n  readonly sessionNumber?: number | null;\n  readonly name?: string | null;\n};"
         },
         {
@@ -1950,39 +1950,39 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-project-http.ts",
           "line": 133,
-          "sourceSha256": "f617811defaa0b01d7991c9c411f045641636678e0ad17f5a4ee3fddf825cab0",
+          "sourceSha256": "f0a6c7b50b90ca9612b8b2e9abf2a5902a3164b2f693a1b6818d3e84bcd580c0",
           "source": "export async function createHostProjectSession(\n  projectId: string,\n  name?: string | null,\n  notes?: string | null,\n): Promise<HostProjectSessionDto> {\n  const body = await hostMutateJson<{ session?: HostProjectSessionDto }>(\n    `/api/v1/projects/${encodeURIComponent(projectId)}/sessions`,\n    'POST',\n    { name: name ?? null, notes: notes ?? null },\n    'Session konnte nicht erstellt werden',\n  );\n  if (!body.session || typeof body.session.id !== 'string') {\n    throw new Error('Session konnte nicht erstellt werden: ungültige Antwort');\n  }\n  return body.session;\n}"
         },
         {
           "name": "isRecord",
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 42,
-          "sourceSha256": "2b692de31098ccdf7c3a73383e4db950116f88b3fda10843d9edf4b479563210",
+          "line": 49,
+          "sourceSha256": "07549fce108bd735bdd7d48b07bccbf39947e3547d0f26ab60fdd013ca94aeff",
           "source": "function isRecord(value: unknown): value is Record<string, unknown> {\n  return typeof value === 'object' && value !== null;\n}"
         },
         {
           "name": "isSessionStatus",
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 124,
-          "sourceSha256": "2b692de31098ccdf7c3a73383e4db950116f88b3fda10843d9edf4b479563210",
+          "line": 131,
+          "sourceSha256": "07549fce108bd735bdd7d48b07bccbf39947e3547d0f26ab60fdd013ca94aeff",
           "source": "function isSessionStatus(value: unknown): value is SessionDto['status'] {\n  return (\n    value === 'scheduled'\n    || value === 'waiting'\n    || value === 'active'\n    || value === 'paused'\n    || value === 'completed'\n    || value === 'cancelled'\n  );\n}"
         },
         {
           "name": "isSessionDto",
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 135,
-          "sourceSha256": "2b692de31098ccdf7c3a73383e4db950116f88b3fda10843d9edf4b479563210",
+          "line": 142,
+          "sourceSha256": "07549fce108bd735bdd7d48b07bccbf39947e3547d0f26ab60fdd013ca94aeff",
           "source": "function isSessionDto(value: unknown): value is SessionDto {\n  if (!isRecord(value)) return false;\n  const durationOk =\n    value.duration_minutes === undefined\n    || typeof value.duration_minutes === 'number'\n    || value.duration_minutes === null;\n  const publicIdOk =\n    typeof value.public_id === 'string'\n    || value.public_id === undefined\n    || value.public_id === null;\n  const lookOk =\n    value.look_profile_id === undefined\n    || value.look_profile_id === null\n    || typeof value.look_profile_id === 'string';\n  const notesOk =\n    value.notes === undefined\n    || typeof value.notes === 'string'\n    || value.notes === null;\n  return (\n    typeof value.id === 'string'\n    && publicIdOk\n    && typeof value.project_id === 'string'\n    && typeof value.session_number === 'number'\n    && (typeof value.name === 'string' || value.name === null)\n    && notesOk\n    && isSessionStatus(value.status)\n    && (typeof value.started_at === 'string' || value.started_at === null)\n    && (typeof value.ended_at === 'string' || value.ended_at === null)\n    && durationOk\n    && lookOk\n    && typeof value.created_at === 'string'\n    && typeof value.updated_at === 'string'\n  );\n}"
         },
         {
           "name": "normalizeSessionDto",
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 170,
-          "sourceSha256": "2b692de31098ccdf7c3a73383e4db950116f88b3fda10843d9edf4b479563210",
+          "line": 177,
+          "sourceSha256": "07549fce108bd735bdd7d48b07bccbf39947e3547d0f26ab60fdd013ca94aeff",
           "source": "function normalizeSessionDto(value: SessionDto): SessionDto {\n  return {\n    ...value,\n    // #569: notes column not selectable by authenticated — treat missing as null.\n    notes: value.notes ?? null,\n    duration_minutes: value.duration_minutes ?? null,\n  };\n}"
         },
         {
@@ -2118,7 +2118,7 @@
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 11,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
         },
         {
@@ -2126,7 +2126,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 16,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
         },
         {
@@ -2134,7 +2134,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 25,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "export function isHostLibraryExplicitlyDisabled(env: EnvLike = defaultEnv()): boolean {\n  const flag = env.VITE_SAGATREE_HOST_LIBRARY?.trim().toLowerCase();\n  return flag === '0' || flag === 'false' || flag === 'off' || flag === 'no';\n}"
         },
         {
@@ -2285,7 +2285,7 @@
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 11,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
         },
         {
@@ -2293,7 +2293,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 16,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
         },
         {
@@ -2301,7 +2301,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 25,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "export function isHostLibraryExplicitlyDisabled(env: EnvLike = defaultEnv()): boolean {\n  const flag = env.VITE_SAGATREE_HOST_LIBRARY?.trim().toLowerCase();\n  return flag === '0' || flag === 'false' || flag === 'off' || flag === 'no';\n}"
         },
         {
@@ -2309,7 +2309,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 30,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "export function isHostLibraryEnabled(env: EnvLike = defaultEnv()): boolean {\n  if (isHostLibraryExplicitlyDisabled(env)) return false;\n  return getHostAuthBaseUrl(env) !== null;\n}"
         },
         {
@@ -2458,7 +2458,7 @@
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 11,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
         },
         {
@@ -2466,7 +2466,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 16,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
         },
         {
@@ -2474,7 +2474,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 25,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "export function isHostLibraryExplicitlyDisabled(env: EnvLike = defaultEnv()): boolean {\n  const flag = env.VITE_SAGATREE_HOST_LIBRARY?.trim().toLowerCase();\n  return flag === '0' || flag === 'false' || flag === 'off' || flag === 'no';\n}"
         },
         {
@@ -2699,7 +2699,7 @@
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 11,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
         },
         {
@@ -2707,7 +2707,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 16,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
         },
         {
@@ -2715,7 +2715,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 25,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "export function isHostLibraryExplicitlyDisabled(env: EnvLike = defaultEnv()): boolean {\n  const flag = env.VITE_SAGATREE_HOST_LIBRARY?.trim().toLowerCase();\n  return flag === '0' || flag === 'false' || flag === 'off' || flag === 'no';\n}"
         },
         {
@@ -2938,7 +2938,7 @@
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 11,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
         },
         {
@@ -2946,7 +2946,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 16,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
         },
         {
@@ -2954,7 +2954,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 25,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "export function isHostLibraryExplicitlyDisabled(env: EnvLike = defaultEnv()): boolean {\n  const flag = env.VITE_SAGATREE_HOST_LIBRARY?.trim().toLowerCase();\n  return flag === '0' || flag === 'false' || flag === 'off' || flag === 'no';\n}"
         },
         {
@@ -2962,7 +2962,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 30,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "export function isHostLibraryEnabled(env: EnvLike = defaultEnv()): boolean {\n  if (isHostLibraryExplicitlyDisabled(env)) return false;\n  return getHostAuthBaseUrl(env) !== null;\n}"
         },
         {
@@ -3107,7 +3107,7 @@
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 11,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
         },
         {
@@ -3115,7 +3115,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 16,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
         },
         {
@@ -3123,7 +3123,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 25,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "export function isHostLibraryExplicitlyDisabled(env: EnvLike = defaultEnv()): boolean {\n  const flag = env.VITE_SAGATREE_HOST_LIBRARY?.trim().toLowerCase();\n  return flag === '0' || flag === 'false' || flag === 'off' || flag === 'no';\n}"
         },
         {
@@ -3324,8 +3324,8 @@
       "rpc": "ensure_native_starter_project",
       "resolution": "string-literal",
       "path": "src/infrastructure/project/project-service.ts",
-      "line": 405,
-      "sourceSha256": "2b692de31098ccdf7c3a73383e4db950116f88b3fda10843d9edf4b479563210",
+      "line": 437,
+      "sourceSha256": "07549fce108bd735bdd7d48b07bccbf39947e3547d0f26ab60fdd013ca94aeff",
       "requestExpression": "{\n      p_slug: slug,\n    }",
       "requestKeys": [
         "p_slug"
@@ -3338,7 +3338,7 @@
         "import { getAuthenticatedUserId } from '../../lib/authenticatedUser';",
         "import { raceWithTimeoutReject, SUPABASE_QUERY_TIMEOUT_MS } from '../../lib/networkTimeout';",
         "import {\n  fetchHostLibraryProjects,\n  isHostLibraryEnabled,\n  type HostLibraryProjectDto,\n} from '../host/host-library-http';",
-        "import { createHostProjectSession } from '../host/host-project-http';",
+        "import {\n  createHostProject,\n  createHostProjectSession,\n  deleteHostProject,\n  updateHostProject,\n  updateHostSessionLook,\n  type HostProjectWriteDto,\n} from '../host/host-project-http';",
         "import { assertHostProductSurfaceAvailable } from '../host/host-product-deny';",
         "import { projectMemberService } from './project-member-service';",
         "import type {\n  ProjectDto,\n  ProjectVm,\n  CreateProjectDto,\n  JoinProjectDto,\n  ProjectMemberDto,\n  ProjectMemberVm,\n  ProjectSummaryVm,\n  SessionDto,\n  SessionVm,\n} from '../../domains/project/contracts/project.types';"
@@ -3349,7 +3349,7 @@
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 11,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
         },
         {
@@ -3357,7 +3357,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 16,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
         },
         {
@@ -3365,7 +3365,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 25,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "export function isHostLibraryExplicitlyDisabled(env: EnvLike = defaultEnv()): boolean {\n  const flag = env.VITE_SAGATREE_HOST_LIBRARY?.trim().toLowerCase();\n  return flag === '0' || flag === 'false' || flag === 'off' || flag === 'no';\n}"
         },
         {
@@ -3373,7 +3373,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 30,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "export function isHostLibraryEnabled(env: EnvLike = defaultEnv()): boolean {\n  if (isHostLibraryExplicitlyDisabled(env)) return false;\n  return getHostAuthBaseUrl(env) !== null;\n}"
         },
         {
@@ -3491,7 +3491,7 @@
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 11,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
         },
         {
@@ -3499,7 +3499,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 16,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
         },
         {
@@ -3507,7 +3507,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 25,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "export function isHostLibraryExplicitlyDisabled(env: EnvLike = defaultEnv()): boolean {\n  const flag = env.VITE_SAGATREE_HOST_LIBRARY?.trim().toLowerCase();\n  return flag === '0' || flag === 'false' || flag === 'off' || flag === 'no';\n}"
         },
         {
@@ -3729,7 +3729,7 @@
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 11,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
         },
         {
@@ -3737,7 +3737,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 16,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
         },
         {
@@ -3745,7 +3745,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 25,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "export function isHostLibraryExplicitlyDisabled(env: EnvLike = defaultEnv()): boolean {\n  const flag = env.VITE_SAGATREE_HOST_LIBRARY?.trim().toLowerCase();\n  return flag === '0' || flag === 'false' || flag === 'off' || flag === 'no';\n}"
         },
         {
@@ -3753,7 +3753,7 @@
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/host/host-project-http.ts",
           "line": 12,
-          "sourceSha256": "f617811defaa0b01d7991c9c411f045641636678e0ad17f5a4ee3fddf825cab0",
+          "sourceSha256": "f0a6c7b50b90ca9612b8b2e9abf2a5902a3164b2f693a1b6818d3e84bcd580c0",
           "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
         },
         {
@@ -3761,7 +3761,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-project-http.ts",
           "line": 17,
-          "sourceSha256": "f617811defaa0b01d7991c9c411f045641636678e0ad17f5a4ee3fddf825cab0",
+          "sourceSha256": "f0a6c7b50b90ca9612b8b2e9abf2a5902a3164b2f693a1b6818d3e84bcd580c0",
           "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
         },
         {
@@ -3769,7 +3769,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-project-http.ts",
           "line": 35,
-          "sourceSha256": "f617811defaa0b01d7991c9c411f045641636678e0ad17f5a4ee3fddf825cab0",
+          "sourceSha256": "f0a6c7b50b90ca9612b8b2e9abf2a5902a3164b2f693a1b6818d3e84bcd580c0",
           "source": "async function hostGetJson<T>(\n  path: string,\n  unreachableMessage: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      method: 'GET',\n      credentials: 'include',\n      headers: { Accept: 'application/json' },\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  if (!response.ok) {\n    let detail = '';\n    try {\n      const body: unknown = await response.json();\n      if (body && typeof body === 'object' && 'error' in body) {\n        detail = String((body as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    if (detail && /not authenticated|forbidden|42501/i.test(detail)) {\n      throw new Error('Kein Zugriff auf diese Saga');\n    }\n    if (detail && /not found|P0002/i.test(detail)) {\n      throw new Error('Saga nicht gefunden');\n    }\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  return (await response.json()) as T;\n}"
         },
         {
@@ -3777,7 +3777,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-project-http.ts",
           "line": 181,
-          "sourceSha256": "f617811defaa0b01d7991c9c411f045641636678e0ad17f5a4ee3fddf825cab0",
+          "sourceSha256": "f0a6c7b50b90ca9612b8b2e9abf2a5902a3164b2f693a1b6818d3e84bcd580c0",
           "source": "export async function fetchHostMySagaPermissions(publicId: string): Promise<unknown> {\n  return hostGetJson(\n    `/api/v1/sagas/${encodeURIComponent(publicId)}/permissions`,\n    'Berechtigungen konnten nicht geladen werden',\n  );\n}"
         },
         {
@@ -4031,7 +4031,7 @@
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 11,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
         },
         {
@@ -4039,7 +4039,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 16,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
         },
         {
@@ -4047,7 +4047,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 25,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "export function isHostLibraryExplicitlyDisabled(env: EnvLike = defaultEnv()): boolean {\n  const flag = env.VITE_SAGATREE_HOST_LIBRARY?.trim().toLowerCase();\n  return flag === '0' || flag === 'false' || flag === 'off' || flag === 'no';\n}"
         },
         {
@@ -4055,7 +4055,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 30,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "export function isHostLibraryEnabled(env: EnvLike = defaultEnv()): boolean {\n  if (isHostLibraryExplicitlyDisabled(env)) return false;\n  return getHostAuthBaseUrl(env) !== null;\n}"
         },
         {
@@ -4301,7 +4301,7 @@
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 11,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
         },
         {
@@ -4309,7 +4309,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 16,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
         },
         {
@@ -4317,7 +4317,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 25,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "export function isHostLibraryExplicitlyDisabled(env: EnvLike = defaultEnv()): boolean {\n  const flag = env.VITE_SAGATREE_HOST_LIBRARY?.trim().toLowerCase();\n  return flag === '0' || flag === 'false' || flag === 'off' || flag === 'no';\n}"
         },
         {
@@ -4325,7 +4325,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 30,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "export function isHostLibraryEnabled(env: EnvLike = defaultEnv()): boolean {\n  if (isHostLibraryExplicitlyDisabled(env)) return false;\n  return getHostAuthBaseUrl(env) !== null;\n}"
         },
         {
@@ -4571,7 +4571,7 @@
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 11,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
         },
         {
@@ -4579,7 +4579,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 16,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
         },
         {
@@ -4587,7 +4587,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 25,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "export function isHostLibraryExplicitlyDisabled(env: EnvLike = defaultEnv()): boolean {\n  const flag = env.VITE_SAGATREE_HOST_LIBRARY?.trim().toLowerCase();\n  return flag === '0' || flag === 'false' || flag === 'off' || flag === 'no';\n}"
         },
         {
@@ -4595,7 +4595,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 30,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "export function isHostLibraryEnabled(env: EnvLike = defaultEnv()): boolean {\n  if (isHostLibraryExplicitlyDisabled(env)) return false;\n  return getHostAuthBaseUrl(env) !== null;\n}"
         },
         {
@@ -4793,7 +4793,7 @@
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 11,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
         },
         {
@@ -4801,7 +4801,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 16,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
         },
         {
@@ -4809,7 +4809,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 25,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "export function isHostLibraryExplicitlyDisabled(env: EnvLike = defaultEnv()): boolean {\n  const flag = env.VITE_SAGATREE_HOST_LIBRARY?.trim().toLowerCase();\n  return flag === '0' || flag === 'false' || flag === 'off' || flag === 'no';\n}"
         },
         {
@@ -4817,7 +4817,7 @@
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/host/host-project-http.ts",
           "line": 12,
-          "sourceSha256": "f617811defaa0b01d7991c9c411f045641636678e0ad17f5a4ee3fddf825cab0",
+          "sourceSha256": "f0a6c7b50b90ca9612b8b2e9abf2a5902a3164b2f693a1b6818d3e84bcd580c0",
           "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
         },
         {
@@ -4825,7 +4825,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-project-http.ts",
           "line": 17,
-          "sourceSha256": "f617811defaa0b01d7991c9c411f045641636678e0ad17f5a4ee3fddf825cab0",
+          "sourceSha256": "f0a6c7b50b90ca9612b8b2e9abf2a5902a3164b2f693a1b6818d3e84bcd580c0",
           "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
         },
         {
@@ -4833,7 +4833,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-project-http.ts",
           "line": 35,
-          "sourceSha256": "f617811defaa0b01d7991c9c411f045641636678e0ad17f5a4ee3fddf825cab0",
+          "sourceSha256": "f0a6c7b50b90ca9612b8b2e9abf2a5902a3164b2f693a1b6818d3e84bcd580c0",
           "source": "async function hostGetJson<T>(\n  path: string,\n  unreachableMessage: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      method: 'GET',\n      credentials: 'include',\n      headers: { Accept: 'application/json' },\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  if (!response.ok) {\n    let detail = '';\n    try {\n      const body: unknown = await response.json();\n      if (body && typeof body === 'object' && 'error' in body) {\n        detail = String((body as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    if (detail && /not authenticated|forbidden|42501/i.test(detail)) {\n      throw new Error('Kein Zugriff auf diese Saga');\n    }\n    if (detail && /not found|P0002/i.test(detail)) {\n      throw new Error('Saga nicht gefunden');\n    }\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  return (await response.json()) as T;\n}"
         },
         {
@@ -4841,7 +4841,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-project-http.ts",
           "line": 188,
-          "sourceSha256": "f617811defaa0b01d7991c9c411f045641636678e0ad17f5a4ee3fddf825cab0",
+          "sourceSha256": "f0a6c7b50b90ca9612b8b2e9abf2a5902a3164b2f693a1b6818d3e84bcd580c0",
           "source": "export async function fetchHostSagaLoreTimeline(publicId: string): Promise<unknown> {\n  return hostGetJson(\n    `/api/v1/sagas/${encodeURIComponent(publicId)}/lore-timeline`,\n    'Lore-Zeitleiste fehlgeschlagen',\n  );\n}"
         },
         {
@@ -5167,7 +5167,7 @@
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 11,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
         },
         {
@@ -5175,7 +5175,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 16,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
         },
         {
@@ -5183,7 +5183,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 25,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "export function isHostLibraryExplicitlyDisabled(env: EnvLike = defaultEnv()): boolean {\n  const flag = env.VITE_SAGATREE_HOST_LIBRARY?.trim().toLowerCase();\n  return flag === '0' || flag === 'false' || flag === 'off' || flag === 'no';\n}"
         },
         {
@@ -5191,7 +5191,7 @@
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/host/host-project-http.ts",
           "line": 12,
-          "sourceSha256": "f617811defaa0b01d7991c9c411f045641636678e0ad17f5a4ee3fddf825cab0",
+          "sourceSha256": "f0a6c7b50b90ca9612b8b2e9abf2a5902a3164b2f693a1b6818d3e84bcd580c0",
           "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
         },
         {
@@ -5199,7 +5199,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-project-http.ts",
           "line": 17,
-          "sourceSha256": "f617811defaa0b01d7991c9c411f045641636678e0ad17f5a4ee3fddf825cab0",
+          "sourceSha256": "f0a6c7b50b90ca9612b8b2e9abf2a5902a3164b2f693a1b6818d3e84bcd580c0",
           "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
         },
         {
@@ -5207,7 +5207,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-project-http.ts",
           "line": 35,
-          "sourceSha256": "f617811defaa0b01d7991c9c411f045641636678e0ad17f5a4ee3fddf825cab0",
+          "sourceSha256": "f0a6c7b50b90ca9612b8b2e9abf2a5902a3164b2f693a1b6818d3e84bcd580c0",
           "source": "async function hostGetJson<T>(\n  path: string,\n  unreachableMessage: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      method: 'GET',\n      credentials: 'include',\n      headers: { Accept: 'application/json' },\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  if (!response.ok) {\n    let detail = '';\n    try {\n      const body: unknown = await response.json();\n      if (body && typeof body === 'object' && 'error' in body) {\n        detail = String((body as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    if (detail && /not authenticated|forbidden|42501/i.test(detail)) {\n      throw new Error('Kein Zugriff auf diese Saga');\n    }\n    if (detail && /not found|P0002/i.test(detail)) {\n      throw new Error('Saga nicht gefunden');\n    }\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  return (await response.json()) as T;\n}"
         },
         {
@@ -5215,7 +5215,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-project-http.ts",
           "line": 174,
-          "sourceSha256": "f617811defaa0b01d7991c9c411f045641636678e0ad17f5a4ee3fddf825cab0",
+          "sourceSha256": "f0a6c7b50b90ca9612b8b2e9abf2a5902a3164b2f693a1b6818d3e84bcd580c0",
           "source": "export async function fetchHostSagaOverview(publicId: string): Promise<unknown> {\n  return hostGetJson(\n    `/api/v1/sagas/${encodeURIComponent(publicId)}/overview`,\n    'Saga-Übersicht fehlgeschlagen',\n  );\n}"
         },
         {
@@ -5389,7 +5389,7 @@
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 11,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
         },
         {
@@ -5397,7 +5397,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 16,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
         },
         {
@@ -5405,7 +5405,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 25,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "export function isHostLibraryExplicitlyDisabled(env: EnvLike = defaultEnv()): boolean {\n  const flag = env.VITE_SAGATREE_HOST_LIBRARY?.trim().toLowerCase();\n  return flag === '0' || flag === 'false' || flag === 'off' || flag === 'no';\n}"
         },
         {
@@ -5643,7 +5643,7 @@
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 11,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
         },
         {
@@ -5651,7 +5651,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 16,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
         },
         {
@@ -5659,7 +5659,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 25,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "export function isHostLibraryExplicitlyDisabled(env: EnvLike = defaultEnv()): boolean {\n  const flag = env.VITE_SAGATREE_HOST_LIBRARY?.trim().toLowerCase();\n  return flag === '0' || flag === 'false' || flag === 'off' || flag === 'no';\n}"
         },
         {
@@ -5843,7 +5843,7 @@
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 11,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
         },
         {
@@ -5851,7 +5851,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 16,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
         },
         {
@@ -5859,7 +5859,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 25,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "export function isHostLibraryExplicitlyDisabled(env: EnvLike = defaultEnv()): boolean {\n  const flag = env.VITE_SAGATREE_HOST_LIBRARY?.trim().toLowerCase();\n  return flag === '0' || flag === 'false' || flag === 'off' || flag === 'no';\n}"
         },
         {
@@ -6089,7 +6089,7 @@
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 11,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
         },
         {
@@ -6097,7 +6097,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 16,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
         },
         {
@@ -6105,7 +6105,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 25,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "export function isHostLibraryExplicitlyDisabled(env: EnvLike = defaultEnv()): boolean {\n  const flag = env.VITE_SAGATREE_HOST_LIBRARY?.trim().toLowerCase();\n  return flag === '0' || flag === 'false' || flag === 'off' || flag === 'no';\n}"
         },
         {
@@ -6296,7 +6296,7 @@
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 11,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
         },
         {
@@ -6304,7 +6304,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 16,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
         },
         {
@@ -6312,7 +6312,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 25,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "export function isHostLibraryExplicitlyDisabled(env: EnvLike = defaultEnv()): boolean {\n  const flag = env.VITE_SAGATREE_HOST_LIBRARY?.trim().toLowerCase();\n  return flag === '0' || flag === 'false' || flag === 'off' || flag === 'no';\n}"
         },
         {
@@ -6446,7 +6446,7 @@
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 11,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
         },
         {
@@ -6454,7 +6454,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 16,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
         },
         {
@@ -6462,7 +6462,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 25,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "export function isHostLibraryExplicitlyDisabled(env: EnvLike = defaultEnv()): boolean {\n  const flag = env.VITE_SAGATREE_HOST_LIBRARY?.trim().toLowerCase();\n  return flag === '0' || flag === 'false' || flag === 'off' || flag === 'no';\n}"
         },
         {
@@ -6470,7 +6470,7 @@
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/host/host-project-http.ts",
           "line": 12,
-          "sourceSha256": "f617811defaa0b01d7991c9c411f045641636678e0ad17f5a4ee3fddf825cab0",
+          "sourceSha256": "f0a6c7b50b90ca9612b8b2e9abf2a5902a3164b2f693a1b6818d3e84bcd580c0",
           "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
         },
         {
@@ -6478,7 +6478,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-project-http.ts",
           "line": 17,
-          "sourceSha256": "f617811defaa0b01d7991c9c411f045641636678e0ad17f5a4ee3fddf825cab0",
+          "sourceSha256": "f0a6c7b50b90ca9612b8b2e9abf2a5902a3164b2f693a1b6818d3e84bcd580c0",
           "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
         },
         {
@@ -6486,7 +6486,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-project-http.ts",
           "line": 74,
-          "sourceSha256": "f617811defaa0b01d7991c9c411f045641636678e0ad17f5a4ee3fddf825cab0",
+          "sourceSha256": "f0a6c7b50b90ca9612b8b2e9abf2a5902a3164b2f693a1b6818d3e84bcd580c0",
           "source": "async function hostMutateJson<T>(\n  path: string,\n  method: 'POST' | 'PUT' | 'PATCH' | 'DELETE',\n  body: unknown,\n  unreachableMessage: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      method,\n      credentials: 'include',\n      headers: {\n        Accept: 'application/json',\n        'Content-Type': 'application/json',\n      },\n      body: body === undefined ? undefined : JSON.stringify(body),\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  if (!response.ok) {\n    let detail = '';\n    try {\n      const errBody: unknown = await response.json();\n      if (errBody && typeof errBody === 'object' && 'error' in errBody) {\n        detail = String((errBody as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  if (response.status === 204) return undefined as T;\n  return (await response.json()) as T;\n}"
         },
         {
@@ -6494,7 +6494,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-project-http.ts",
           "line": 150,
-          "sourceSha256": "f617811defaa0b01d7991c9c411f045641636678e0ad17f5a4ee3fddf825cab0",
+          "sourceSha256": "f0a6c7b50b90ca9612b8b2e9abf2a5902a3164b2f693a1b6818d3e84bcd580c0",
           "source": "export async function joinHostProjectByCode(\n  code: string,\n  characterId?: string | null,\n): Promise<{ readonly projectId: string; readonly userId: string }> {\n  return hostMutateJson(\n    '/api/v1/projects/join',\n    'POST',\n    { code, characterId: characterId ?? null },\n    'Beitritt fehlgeschlagen',\n  );\n}"
         },
         {
@@ -6679,7 +6679,7 @@
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 11,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
         },
         {
@@ -6687,7 +6687,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 16,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
         },
         {
@@ -6695,7 +6695,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 25,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "export function isHostLibraryExplicitlyDisabled(env: EnvLike = defaultEnv()): boolean {\n  const flag = env.VITE_SAGATREE_HOST_LIBRARY?.trim().toLowerCase();\n  return flag === '0' || flag === 'false' || flag === 'off' || flag === 'no';\n}"
         },
         {
@@ -6871,7 +6871,7 @@
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 11,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
         },
         {
@@ -6879,7 +6879,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 16,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
         },
         {
@@ -6887,7 +6887,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 25,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "export function isHostLibraryExplicitlyDisabled(env: EnvLike = defaultEnv()): boolean {\n  const flag = env.VITE_SAGATREE_HOST_LIBRARY?.trim().toLowerCase();\n  return flag === '0' || flag === 'false' || flag === 'off' || flag === 'no';\n}"
         },
         {
@@ -7038,7 +7038,7 @@
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 11,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
         },
         {
@@ -7046,7 +7046,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 16,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
         },
         {
@@ -7054,7 +7054,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 25,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "export function isHostLibraryExplicitlyDisabled(env: EnvLike = defaultEnv()): boolean {\n  const flag = env.VITE_SAGATREE_HOST_LIBRARY?.trim().toLowerCase();\n  return flag === '0' || flag === 'false' || flag === 'off' || flag === 'no';\n}"
         },
         {
@@ -7062,7 +7062,7 @@
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/host/host-project-http.ts",
           "line": 12,
-          "sourceSha256": "f617811defaa0b01d7991c9c411f045641636678e0ad17f5a4ee3fddf825cab0",
+          "sourceSha256": "f0a6c7b50b90ca9612b8b2e9abf2a5902a3164b2f693a1b6818d3e84bcd580c0",
           "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
         },
         {
@@ -7070,7 +7070,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-project-http.ts",
           "line": 17,
-          "sourceSha256": "f617811defaa0b01d7991c9c411f045641636678e0ad17f5a4ee3fddf825cab0",
+          "sourceSha256": "f0a6c7b50b90ca9612b8b2e9abf2a5902a3164b2f693a1b6818d3e84bcd580c0",
           "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
         },
         {
@@ -7078,7 +7078,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-project-http.ts",
           "line": 25,
-          "sourceSha256": "f617811defaa0b01d7991c9c411f045641636678e0ad17f5a4ee3fddf825cab0",
+          "sourceSha256": "f0a6c7b50b90ca9612b8b2e9abf2a5902a3164b2f693a1b6818d3e84bcd580c0",
           "source": "function qs(params: Record<string, string | null | undefined>): string {\n  const sp = new URLSearchParams();\n  for (const [key, value] of Object.entries(params)) {\n    if (value === null || value === undefined || value === '') continue;\n    sp.set(key, value);\n  }\n  const out = sp.toString();\n  return out ? `?${out}` : '';\n}"
         },
         {
@@ -7086,7 +7086,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-project-http.ts",
           "line": 35,
-          "sourceSha256": "f617811defaa0b01d7991c9c411f045641636678e0ad17f5a4ee3fddf825cab0",
+          "sourceSha256": "f0a6c7b50b90ca9612b8b2e9abf2a5902a3164b2f693a1b6818d3e84bcd580c0",
           "source": "async function hostGetJson<T>(\n  path: string,\n  unreachableMessage: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      method: 'GET',\n      credentials: 'include',\n      headers: { Accept: 'application/json' },\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  if (!response.ok) {\n    let detail = '';\n    try {\n      const body: unknown = await response.json();\n      if (body && typeof body === 'object' && 'error' in body) {\n        detail = String((body as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    if (detail && /not authenticated|forbidden|42501/i.test(detail)) {\n      throw new Error('Kein Zugriff auf diese Saga');\n    }\n    if (detail && /not found|P0002/i.test(detail)) {\n      throw new Error('Saga nicht gefunden');\n    }\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  return (await response.json()) as T;\n}"
         },
         {
@@ -7094,7 +7094,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-project-http.ts",
           "line": 195,
-          "sourceSha256": "f617811defaa0b01d7991c9c411f045641636678e0ad17f5a4ee3fddf825cab0",
+          "sourceSha256": "f0a6c7b50b90ca9612b8b2e9abf2a5902a3164b2f693a1b6818d3e84bcd580c0",
           "source": "export async function listHostSagaBindings(\n  publicId: string,\n  assetKind?: string | null,\n): Promise<unknown> {\n  return hostGetJson(\n    `/api/v1/sagas/${encodeURIComponent(publicId)}/bindings${qs({ assetKind })}`,\n    'Bindings fehlgeschlagen',\n  );\n}"
         },
         {
@@ -7236,7 +7236,7 @@
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 11,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
         },
         {
@@ -7244,7 +7244,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 16,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
         },
         {
@@ -7252,7 +7252,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 25,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "export function isHostLibraryExplicitlyDisabled(env: EnvLike = defaultEnv()): boolean {\n  const flag = env.VITE_SAGATREE_HOST_LIBRARY?.trim().toLowerCase();\n  return flag === '0' || flag === 'false' || flag === 'off' || flag === 'no';\n}"
         },
         {
@@ -7260,7 +7260,7 @@
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/host/host-project-http.ts",
           "line": 12,
-          "sourceSha256": "f617811defaa0b01d7991c9c411f045641636678e0ad17f5a4ee3fddf825cab0",
+          "sourceSha256": "f0a6c7b50b90ca9612b8b2e9abf2a5902a3164b2f693a1b6818d3e84bcd580c0",
           "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
         },
         {
@@ -7268,7 +7268,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-project-http.ts",
           "line": 17,
-          "sourceSha256": "f617811defaa0b01d7991c9c411f045641636678e0ad17f5a4ee3fddf825cab0",
+          "sourceSha256": "f0a6c7b50b90ca9612b8b2e9abf2a5902a3164b2f693a1b6818d3e84bcd580c0",
           "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
         },
         {
@@ -7276,7 +7276,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-project-http.ts",
           "line": 35,
-          "sourceSha256": "f617811defaa0b01d7991c9c411f045641636678e0ad17f5a4ee3fddf825cab0",
+          "sourceSha256": "f0a6c7b50b90ca9612b8b2e9abf2a5902a3164b2f693a1b6818d3e84bcd580c0",
           "source": "async function hostGetJson<T>(\n  path: string,\n  unreachableMessage: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      method: 'GET',\n      credentials: 'include',\n      headers: { Accept: 'application/json' },\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  if (!response.ok) {\n    let detail = '';\n    try {\n      const body: unknown = await response.json();\n      if (body && typeof body === 'object' && 'error' in body) {\n        detail = String((body as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    if (detail && /not authenticated|forbidden|42501/i.test(detail)) {\n      throw new Error('Kein Zugriff auf diese Saga');\n    }\n    if (detail && /not found|P0002/i.test(detail)) {\n      throw new Error('Saga nicht gefunden');\n    }\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  return (await response.json()) as T;\n}"
         },
         {
@@ -7284,7 +7284,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-project-http.ts",
           "line": 205,
-          "sourceSha256": "f617811defaa0b01d7991c9c411f045641636678e0ad17f5a4ee3fddf825cab0",
+          "sourceSha256": "f0a6c7b50b90ca9612b8b2e9abf2a5902a3164b2f693a1b6818d3e84bcd580c0",
           "source": "export async function listHostSagaMemberPermissionState(publicId: string): Promise<unknown> {\n  return hostGetJson(\n    `/api/v1/sagas/${encodeURIComponent(publicId)}/members`,\n    'Mitglieder-Berechtigungen fehlgeschlagen',\n  );\n}"
         },
         {
@@ -7428,7 +7428,7 @@
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 11,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
         },
         {
@@ -7436,7 +7436,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 16,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
         },
         {
@@ -7444,7 +7444,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 25,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "export function isHostLibraryExplicitlyDisabled(env: EnvLike = defaultEnv()): boolean {\n  const flag = env.VITE_SAGATREE_HOST_LIBRARY?.trim().toLowerCase();\n  return flag === '0' || flag === 'false' || flag === 'off' || flag === 'no';\n}"
         },
         {
@@ -7677,7 +7677,7 @@
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 11,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
         },
         {
@@ -7685,7 +7685,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 16,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
         },
         {
@@ -7693,7 +7693,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 25,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "export function isHostLibraryExplicitlyDisabled(env: EnvLike = defaultEnv()): boolean {\n  const flag = env.VITE_SAGATREE_HOST_LIBRARY?.trim().toLowerCase();\n  return flag === '0' || flag === 'false' || flag === 'off' || flag === 'no';\n}"
         },
         {
@@ -7934,7 +7934,7 @@
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 11,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
         },
         {
@@ -7942,7 +7942,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 16,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
         },
         {
@@ -7950,7 +7950,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 25,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "export function isHostLibraryExplicitlyDisabled(env: EnvLike = defaultEnv()): boolean {\n  const flag = env.VITE_SAGATREE_HOST_LIBRARY?.trim().toLowerCase();\n  return flag === '0' || flag === 'false' || flag === 'off' || flag === 'no';\n}"
         },
         {
@@ -8190,7 +8190,7 @@
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 11,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
         },
         {
@@ -8198,7 +8198,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 16,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
         },
         {
@@ -8206,7 +8206,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 25,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "export function isHostLibraryExplicitlyDisabled(env: EnvLike = defaultEnv()): boolean {\n  const flag = env.VITE_SAGATREE_HOST_LIBRARY?.trim().toLowerCase();\n  return flag === '0' || flag === 'false' || flag === 'off' || flag === 'no';\n}"
         },
         {
@@ -8444,7 +8444,7 @@
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 11,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
         },
         {
@@ -8452,7 +8452,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 16,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
         },
         {
@@ -8460,7 +8460,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 25,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "export function isHostLibraryExplicitlyDisabled(env: EnvLike = defaultEnv()): boolean {\n  const flag = env.VITE_SAGATREE_HOST_LIBRARY?.trim().toLowerCase();\n  return flag === '0' || flag === 'false' || flag === 'off' || flag === 'no';\n}"
         },
         {
@@ -8468,7 +8468,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 30,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "export function isHostLibraryEnabled(env: EnvLike = defaultEnv()): boolean {\n  if (isHostLibraryExplicitlyDisabled(env)) return false;\n  return getHostAuthBaseUrl(env) !== null;\n}"
         },
         {
@@ -8602,7 +8602,7 @@
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 11,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
         },
         {
@@ -8610,7 +8610,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 16,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
         },
         {
@@ -8618,7 +8618,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 25,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "export function isHostLibraryExplicitlyDisabled(env: EnvLike = defaultEnv()): boolean {\n  const flag = env.VITE_SAGATREE_HOST_LIBRARY?.trim().toLowerCase();\n  return flag === '0' || flag === 'false' || flag === 'off' || flag === 'no';\n}"
         },
         {
@@ -8626,7 +8626,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 30,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "export function isHostLibraryEnabled(env: EnvLike = defaultEnv()): boolean {\n  if (isHostLibraryExplicitlyDisabled(env)) return false;\n  return getHostAuthBaseUrl(env) !== null;\n}"
         },
         {
@@ -8745,7 +8745,7 @@
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 11,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
         },
         {
@@ -8753,7 +8753,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 16,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
         },
         {
@@ -8761,7 +8761,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 25,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "export function isHostLibraryExplicitlyDisabled(env: EnvLike = defaultEnv()): boolean {\n  const flag = env.VITE_SAGATREE_HOST_LIBRARY?.trim().toLowerCase();\n  return flag === '0' || flag === 'false' || flag === 'off' || flag === 'no';\n}"
         },
         {
@@ -8769,7 +8769,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 30,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "export function isHostLibraryEnabled(env: EnvLike = defaultEnv()): boolean {\n  if (isHostLibraryExplicitlyDisabled(env)) return false;\n  return getHostAuthBaseUrl(env) !== null;\n}"
         },
         {
@@ -8915,7 +8915,7 @@
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 11,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
         },
         {
@@ -8923,7 +8923,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 16,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
         },
         {
@@ -8931,7 +8931,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 25,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "export function isHostLibraryExplicitlyDisabled(env: EnvLike = defaultEnv()): boolean {\n  const flag = env.VITE_SAGATREE_HOST_LIBRARY?.trim().toLowerCase();\n  return flag === '0' || flag === 'false' || flag === 'off' || flag === 'no';\n}"
         },
         {
@@ -8939,7 +8939,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 30,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "export function isHostLibraryEnabled(env: EnvLike = defaultEnv()): boolean {\n  if (isHostLibraryExplicitlyDisabled(env)) return false;\n  return getHostAuthBaseUrl(env) !== null;\n}"
         },
         {
@@ -9204,7 +9204,7 @@
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 11,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
         },
         {
@@ -9212,7 +9212,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 16,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
         },
         {
@@ -9220,7 +9220,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 25,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "export function isHostLibraryExplicitlyDisabled(env: EnvLike = defaultEnv()): boolean {\n  const flag = env.VITE_SAGATREE_HOST_LIBRARY?.trim().toLowerCase();\n  return flag === '0' || flag === 'false' || flag === 'off' || flag === 'no';\n}"
         },
         {
@@ -9446,7 +9446,7 @@
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 11,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
         },
         {
@@ -9454,7 +9454,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 16,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
         },
         {
@@ -9462,7 +9462,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 25,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "export function isHostLibraryExplicitlyDisabled(env: EnvLike = defaultEnv()): boolean {\n  const flag = env.VITE_SAGATREE_HOST_LIBRARY?.trim().toLowerCase();\n  return flag === '0' || flag === 'false' || flag === 'off' || flag === 'no';\n}"
         },
         {
@@ -9734,7 +9734,7 @@
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 11,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
         },
         {
@@ -9742,7 +9742,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 16,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
         },
         {
@@ -9750,7 +9750,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 25,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "export function isHostLibraryExplicitlyDisabled(env: EnvLike = defaultEnv()): boolean {\n  const flag = env.VITE_SAGATREE_HOST_LIBRARY?.trim().toLowerCase();\n  return flag === '0' || flag === 'false' || flag === 'off' || flag === 'no';\n}"
         },
         {
@@ -9910,7 +9910,7 @@
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 11,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
         },
         {
@@ -9918,7 +9918,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 16,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
         },
         {
@@ -9926,7 +9926,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 25,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "export function isHostLibraryExplicitlyDisabled(env: EnvLike = defaultEnv()): boolean {\n  const flag = env.VITE_SAGATREE_HOST_LIBRARY?.trim().toLowerCase();\n  return flag === '0' || flag === 'false' || flag === 'off' || flag === 'no';\n}"
         },
         {
@@ -10150,7 +10150,7 @@
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 11,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
         },
         {
@@ -10158,7 +10158,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 16,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
         },
         {
@@ -10166,7 +10166,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 25,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "export function isHostLibraryExplicitlyDisabled(env: EnvLike = defaultEnv()): boolean {\n  const flag = env.VITE_SAGATREE_HOST_LIBRARY?.trim().toLowerCase();\n  return flag === '0' || flag === 'false' || flag === 'off' || flag === 'no';\n}"
         },
         {
@@ -10174,7 +10174,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 30,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "export function isHostLibraryEnabled(env: EnvLike = defaultEnv()): boolean {\n  if (isHostLibraryExplicitlyDisabled(env)) return false;\n  return getHostAuthBaseUrl(env) !== null;\n}"
         },
         {
@@ -10317,7 +10317,7 @@
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 11,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
         },
         {
@@ -10325,7 +10325,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 16,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
         },
         {
@@ -10333,7 +10333,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 25,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "export function isHostLibraryExplicitlyDisabled(env: EnvLike = defaultEnv()): boolean {\n  const flag = env.VITE_SAGATREE_HOST_LIBRARY?.trim().toLowerCase();\n  return flag === '0' || flag === 'false' || flag === 'off' || flag === 'no';\n}"
         },
         {
@@ -10460,7 +10460,7 @@
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 11,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
         },
         {
@@ -10468,7 +10468,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 16,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
         },
         {
@@ -10476,7 +10476,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 25,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "export function isHostLibraryExplicitlyDisabled(env: EnvLike = defaultEnv()): boolean {\n  const flag = env.VITE_SAGATREE_HOST_LIBRARY?.trim().toLowerCase();\n  return flag === '0' || flag === 'false' || flag === 'off' || flag === 'no';\n}"
         },
         {
@@ -10634,7 +10634,7 @@
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 11,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
         },
         {
@@ -10642,7 +10642,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 16,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
         },
         {
@@ -10650,7 +10650,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 25,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "export function isHostLibraryExplicitlyDisabled(env: EnvLike = defaultEnv()): boolean {\n  const flag = env.VITE_SAGATREE_HOST_LIBRARY?.trim().toLowerCase();\n  return flag === '0' || flag === 'false' || flag === 'off' || flag === 'no';\n}"
         },
         {
@@ -10658,7 +10658,7 @@
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/host/host-project-http.ts",
           "line": 12,
-          "sourceSha256": "f617811defaa0b01d7991c9c411f045641636678e0ad17f5a4ee3fddf825cab0",
+          "sourceSha256": "f0a6c7b50b90ca9612b8b2e9abf2a5902a3164b2f693a1b6818d3e84bcd580c0",
           "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
         },
         {
@@ -10666,7 +10666,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-project-http.ts",
           "line": 17,
-          "sourceSha256": "f617811defaa0b01d7991c9c411f045641636678e0ad17f5a4ee3fddf825cab0",
+          "sourceSha256": "f0a6c7b50b90ca9612b8b2e9abf2a5902a3164b2f693a1b6818d3e84bcd580c0",
           "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
         },
         {
@@ -10674,7 +10674,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-project-http.ts",
           "line": 74,
-          "sourceSha256": "f617811defaa0b01d7991c9c411f045641636678e0ad17f5a4ee3fddf825cab0",
+          "sourceSha256": "f0a6c7b50b90ca9612b8b2e9abf2a5902a3164b2f693a1b6818d3e84bcd580c0",
           "source": "async function hostMutateJson<T>(\n  path: string,\n  method: 'POST' | 'PUT' | 'PATCH' | 'DELETE',\n  body: unknown,\n  unreachableMessage: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      method,\n      credentials: 'include',\n      headers: {\n        Accept: 'application/json',\n        'Content-Type': 'application/json',\n      },\n      body: body === undefined ? undefined : JSON.stringify(body),\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  if (!response.ok) {\n    let detail = '';\n    try {\n      const errBody: unknown = await response.json();\n      if (errBody && typeof errBody === 'object' && 'error' in errBody) {\n        detail = String((errBody as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  if (response.status === 204) return undefined as T;\n  return (await response.json()) as T;\n}"
         },
         {
@@ -10682,7 +10682,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-project-http.ts",
           "line": 162,
-          "sourceSha256": "f617811defaa0b01d7991c9c411f045641636678e0ad17f5a4ee3fddf825cab0",
+          "sourceSha256": "f0a6c7b50b90ca9612b8b2e9abf2a5902a3164b2f693a1b6818d3e84bcd580c0",
           "source": "export async function setHostMyProjectCharacter(\n  projectId: string,\n  characterId?: string | null,\n): Promise<{ readonly memberId: string; readonly userId: string }> {\n  return hostMutateJson(\n    `/api/v1/projects/${encodeURIComponent(projectId)}/my-character`,\n    'POST',\n    { characterId: characterId ?? null },\n    'Charakter konnte nicht aktualisiert werden',\n  );\n}"
         },
         {
@@ -10818,7 +10818,7 @@
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 11,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
         },
         {
@@ -10826,7 +10826,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 16,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
         },
         {
@@ -10834,7 +10834,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 25,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "export function isHostLibraryExplicitlyDisabled(env: EnvLike = defaultEnv()): boolean {\n  const flag = env.VITE_SAGATREE_HOST_LIBRARY?.trim().toLowerCase();\n  return flag === '0' || flag === 'false' || flag === 'off' || flag === 'no';\n}"
         },
         {
@@ -10842,7 +10842,7 @@
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/host/host-project-http.ts",
           "line": 12,
-          "sourceSha256": "f617811defaa0b01d7991c9c411f045641636678e0ad17f5a4ee3fddf825cab0",
+          "sourceSha256": "f0a6c7b50b90ca9612b8b2e9abf2a5902a3164b2f693a1b6818d3e84bcd580c0",
           "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
         },
         {
@@ -10850,7 +10850,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-project-http.ts",
           "line": 17,
-          "sourceSha256": "f617811defaa0b01d7991c9c411f045641636678e0ad17f5a4ee3fddf825cab0",
+          "sourceSha256": "f0a6c7b50b90ca9612b8b2e9abf2a5902a3164b2f693a1b6818d3e84bcd580c0",
           "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
         },
         {
@@ -10858,7 +10858,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-project-http.ts",
           "line": 74,
-          "sourceSha256": "f617811defaa0b01d7991c9c411f045641636678e0ad17f5a4ee3fddf825cab0",
+          "sourceSha256": "f0a6c7b50b90ca9612b8b2e9abf2a5902a3164b2f693a1b6818d3e84bcd580c0",
           "source": "async function hostMutateJson<T>(\n  path: string,\n  method: 'POST' | 'PUT' | 'PATCH' | 'DELETE',\n  body: unknown,\n  unreachableMessage: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      method,\n      credentials: 'include',\n      headers: {\n        Accept: 'application/json',\n        'Content-Type': 'application/json',\n      },\n      body: body === undefined ? undefined : JSON.stringify(body),\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  if (!response.ok) {\n    let detail = '';\n    try {\n      const errBody: unknown = await response.json();\n      if (errBody && typeof errBody === 'object' && 'error' in errBody) {\n        detail = String((errBody as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  if (response.status === 204) return undefined as T;\n  return (await response.json()) as T;\n}"
         },
         {
@@ -10866,7 +10866,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-project-http.ts",
           "line": 212,
-          "sourceSha256": "f617811defaa0b01d7991c9c411f045641636678e0ad17f5a4ee3fddf825cab0",
+          "sourceSha256": "f0a6c7b50b90ca9612b8b2e9abf2a5902a3164b2f693a1b6818d3e84bcd580c0",
           "source": "export async function setHostSagaBindingReveal(\n  projectId: string,\n  bindingId: string,\n  reveal: string,\n): Promise<unknown> {\n  return hostMutateJson(\n    `/api/v1/projects/${encodeURIComponent(projectId)}/bindings/${encodeURIComponent(bindingId)}/reveal`,\n    'POST',\n    { reveal },\n    'Reveal konnte nicht gesetzt werden',\n  );\n}"
         },
         {
@@ -11010,7 +11010,7 @@
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 11,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
         },
         {
@@ -11018,7 +11018,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 16,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
         },
         {
@@ -11026,7 +11026,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 25,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "export function isHostLibraryExplicitlyDisabled(env: EnvLike = defaultEnv()): boolean {\n  const flag = env.VITE_SAGATREE_HOST_LIBRARY?.trim().toLowerCase();\n  return flag === '0' || flag === 'false' || flag === 'off' || flag === 'no';\n}"
         },
         {
@@ -11034,7 +11034,7 @@
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/host/host-project-http.ts",
           "line": 12,
-          "sourceSha256": "f617811defaa0b01d7991c9c411f045641636678e0ad17f5a4ee3fddf825cab0",
+          "sourceSha256": "f0a6c7b50b90ca9612b8b2e9abf2a5902a3164b2f693a1b6818d3e84bcd580c0",
           "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
         },
         {
@@ -11042,7 +11042,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-project-http.ts",
           "line": 17,
-          "sourceSha256": "f617811defaa0b01d7991c9c411f045641636678e0ad17f5a4ee3fddf825cab0",
+          "sourceSha256": "f0a6c7b50b90ca9612b8b2e9abf2a5902a3164b2f693a1b6818d3e84bcd580c0",
           "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
         },
         {
@@ -11050,7 +11050,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-project-http.ts",
           "line": 74,
-          "sourceSha256": "f617811defaa0b01d7991c9c411f045641636678e0ad17f5a4ee3fddf825cab0",
+          "sourceSha256": "f0a6c7b50b90ca9612b8b2e9abf2a5902a3164b2f693a1b6818d3e84bcd580c0",
           "source": "async function hostMutateJson<T>(\n  path: string,\n  method: 'POST' | 'PUT' | 'PATCH' | 'DELETE',\n  body: unknown,\n  unreachableMessage: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      method,\n      credentials: 'include',\n      headers: {\n        Accept: 'application/json',\n        'Content-Type': 'application/json',\n      },\n      body: body === undefined ? undefined : JSON.stringify(body),\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  if (!response.ok) {\n    let detail = '';\n    try {\n      const errBody: unknown = await response.json();\n      if (errBody && typeof errBody === 'object' && 'error' in errBody) {\n        detail = String((errBody as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  if (response.status === 204) return undefined as T;\n  return (await response.json()) as T;\n}"
         },
         {
@@ -11058,7 +11058,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-project-http.ts",
           "line": 225,
-          "sourceSha256": "f617811defaa0b01d7991c9c411f045641636678e0ad17f5a4ee3fddf825cab0",
+          "sourceSha256": "f0a6c7b50b90ca9612b8b2e9abf2a5902a3164b2f693a1b6818d3e84bcd580c0",
           "source": "export async function setHostSagaMemberBundle(\n  projectId: string,\n  memberId: string,\n  bundleId: string,\n): Promise<unknown> {\n  return hostMutateJson(\n    `/api/v1/projects/${encodeURIComponent(projectId)}/members/${encodeURIComponent(memberId)}/bundle`,\n    'POST',\n    { bundleId },\n    'Bundle konnte nicht gesetzt werden',\n  );\n}"
         },
         {
@@ -11242,7 +11242,7 @@
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 11,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
         },
         {
@@ -11250,7 +11250,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 16,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
         },
         {
@@ -11258,7 +11258,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 25,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "export function isHostLibraryExplicitlyDisabled(env: EnvLike = defaultEnv()): boolean {\n  const flag = env.VITE_SAGATREE_HOST_LIBRARY?.trim().toLowerCase();\n  return flag === '0' || flag === 'false' || flag === 'off' || flag === 'no';\n}"
         },
         {
@@ -11499,7 +11499,7 @@
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 11,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
         },
         {
@@ -11507,7 +11507,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 16,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
         },
         {
@@ -11515,7 +11515,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 25,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "export function isHostLibraryExplicitlyDisabled(env: EnvLike = defaultEnv()): boolean {\n  const flag = env.VITE_SAGATREE_HOST_LIBRARY?.trim().toLowerCase();\n  return flag === '0' || flag === 'false' || flag === 'off' || flag === 'no';\n}"
         },
         {
@@ -11700,7 +11700,7 @@
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 11,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
         },
         {
@@ -11708,7 +11708,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 16,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
         },
         {
@@ -11716,7 +11716,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 25,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "export function isHostLibraryExplicitlyDisabled(env: EnvLike = defaultEnv()): boolean {\n  const flag = env.VITE_SAGATREE_HOST_LIBRARY?.trim().toLowerCase();\n  return flag === '0' || flag === 'false' || flag === 'off' || flag === 'no';\n}"
         },
         {
@@ -11724,7 +11724,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 30,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "export function isHostLibraryEnabled(env: EnvLike = defaultEnv()): boolean {\n  if (isHostLibraryExplicitlyDisabled(env)) return false;\n  return getHostAuthBaseUrl(env) !== null;\n}"
         },
         {
@@ -12191,7 +12191,7 @@
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 11,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
         },
         {
@@ -12199,7 +12199,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 16,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
         },
         {
@@ -12207,7 +12207,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 25,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "export function isHostLibraryExplicitlyDisabled(env: EnvLike = defaultEnv()): boolean {\n  const flag = env.VITE_SAGATREE_HOST_LIBRARY?.trim().toLowerCase();\n  return flag === '0' || flag === 'false' || flag === 'off' || flag === 'no';\n}"
         },
         {
@@ -12215,7 +12215,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 30,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "export function isHostLibraryEnabled(env: EnvLike = defaultEnv()): boolean {\n  if (isHostLibraryExplicitlyDisabled(env)) return false;\n  return getHostAuthBaseUrl(env) !== null;\n}"
         },
         {
@@ -12536,7 +12536,7 @@
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 11,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
         },
         {
@@ -12544,7 +12544,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 16,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
         },
         {
@@ -12552,7 +12552,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 25,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "export function isHostLibraryExplicitlyDisabled(env: EnvLike = defaultEnv()): boolean {\n  const flag = env.VITE_SAGATREE_HOST_LIBRARY?.trim().toLowerCase();\n  return flag === '0' || flag === 'false' || flag === 'off' || flag === 'no';\n}"
         },
         {
@@ -12791,7 +12791,7 @@
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 11,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
         },
         {
@@ -12799,7 +12799,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 16,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
         },
         {
@@ -12807,7 +12807,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 25,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "export function isHostLibraryExplicitlyDisabled(env: EnvLike = defaultEnv()): boolean {\n  const flag = env.VITE_SAGATREE_HOST_LIBRARY?.trim().toLowerCase();\n  return flag === '0' || flag === 'false' || flag === 'off' || flag === 'no';\n}"
         },
         {
@@ -13035,7 +13035,7 @@
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 11,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
         },
         {
@@ -13043,7 +13043,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 16,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
         },
         {
@@ -13051,7 +13051,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 25,
-          "sourceSha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c",
+          "sourceSha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a",
           "source": "export function isHostLibraryExplicitlyDisabled(env: EnvLike = defaultEnv()): boolean {\n  const flag = env.VITE_SAGATREE_HOST_LIBRARY?.trim().toLowerCase();\n  return flag === '0' || flag === 'false' || flag === 'off' || flag === 'no';\n}"
         },
         {

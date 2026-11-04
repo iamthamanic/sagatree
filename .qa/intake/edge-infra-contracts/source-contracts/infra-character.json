@@ -1007,7 +1007,7 @@
     },
     {
       "path": "src/infrastructure/host/host-library-http.ts",
-      "sha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c"
+      "sha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a"
     },
     {
       "path": "src/infrastructure/host/host-product-deny.ts",
@@ -1015,7 +1015,7 @@
     },
     {
       "path": "src/infrastructure/host/host-project-http.ts",
-      "sha256": "f617811defaa0b01d7991c9c411f045641636678e0ad17f5a4ee3fddf825cab0"
+      "sha256": "f0a6c7b50b90ca9612b8b2e9abf2a5902a3164b2f693a1b6818d3e84bcd580c0"
     },
     {
       "path": "src/infrastructure/inventory/inventory-persistence.ts",
@@ -1135,7 +1135,7 @@
     },
     {
       "path": "src/infrastructure/project/project-service.ts",
-      "sha256": "2b692de31098ccdf7c3a73383e4db950116f88b3fda10843d9edf4b479563210"
+      "sha256": "07549fce108bd735bdd7d48b07bccbf39947e3547d0f26ab60fdd013ca94aeff"
     },
     {
       "path": "src/infrastructure/session/media/livekit-media-plane-adapter.ts",
@@ -7392,23 +7392,23 @@
       "name": "HostLibraryProjectDto",
       "path": "src/infrastructure/host/host-library-http.ts",
       "line": 96,
-      "endLine": 113,
-      "text": "export type HostLibraryProjectDto = {\n  readonly id: string;\n  readonly publicId?: string;\n  readonly code?: string;\n  readonly name: string;\n  readonly description?: string | null;\n  readonly worldId?: string | null;\n  readonly worldProfileId?: string | null;\n  readonly sagaId?: string | null;\n  readonly sagaVersionId?: string | null;\n  readonly sagaTitle?: string | null;\n  readonly sagaSlug?: string | null;\n  readonly sagaOrigin?: string | null;\n  readonly gmUserId: string;\n  readonly status?: string;\n  readonly memberCount?: number;\n  readonly sessionCount?: number;\n};"
+      "endLine": 117,
+      "text": "export type HostLibraryProjectDto = {\n  readonly id: string;\n  readonly publicId?: string;\n  readonly code?: string;\n  readonly name: string;\n  readonly description?: string | null;\n  readonly worldId?: string | null;\n  readonly worldProfileId?: string | null;\n  readonly defaultLookProfileId?: string | null;\n  readonly allowPlayerCharacterLookOverride?: boolean;\n  readonly sagaId?: string | null;\n  readonly sagaVersionId?: string | null;\n  readonly sagaTitle?: string | null;\n  readonly sagaSlug?: string | null;\n  readonly sagaOrigin?: string | null;\n  readonly gmUserId: string;\n  readonly status?: string;\n  readonly memberCount?: number;\n  readonly sessionCount?: number;\n  readonly createdAt?: string;\n  readonly updatedAt?: string;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "HostLibraryWorldDto",
       "path": "src/infrastructure/host/host-library-http.ts",
-      "line": 128,
-      "endLine": 132,
+      "line": 132,
+      "endLine": 136,
       "text": "export type HostLibraryWorldDto = {\n  readonly id: string;\n  readonly title: string;\n  readonly createdAt: string;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "HostPublishedAssetDto",
       "path": "src/infrastructure/host/host-library-http.ts",
-      "line": 471,
-      "endLine": 478,
+      "line": 475,
+      "endLine": 482,
       "text": "export type HostPublishedAssetDto = {\n  readonly assetId: string;\n  readonly contentType: string;\n  readonly byteSize: number;\n  readonly checksumSha256: string;\n  readonly url: string;\n  readonly storagePath: string;\n};"
     },
     {
@@ -7426,6 +7426,22 @@
       "line": 123,
       "endLine": 130,
       "text": "export type HostProjectSessionDto = {\n  readonly id: string;\n  readonly projectId: string;\n  readonly publicId?: string;\n  readonly status?: string;\n  readonly sessionNumber?: number | null;\n  readonly name?: string | null;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "HostProjectWriteDto",
+      "path": "src/infrastructure/host/host-project-http.ts",
+      "line": 239,
+      "endLine": 253,
+      "text": "export type HostProjectWriteDto = {\n  readonly id: string;\n  readonly publicId: string;\n  readonly code: string;\n  readonly name: string;\n  readonly description: string | null;\n  readonly worldId: string;\n  readonly worldProfileId: string;\n  readonly defaultLookProfileId: string | null;\n  readonly allowPlayerCharacterLookOverride: boolean;\n  readonly gmUserId: string;\n  readonly status: string;\n  readonly createdAt: string;\n  readonly updatedAt: string;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "HostSessionLookDto",
+      "path": "src/infrastructure/host/host-project-http.ts",
+      "line": 308,
+      "endLine": 316,
+      "text": "export type HostSessionLookDto = {\n  readonly id: string;\n  readonly projectId: string;\n  readonly lookProfileId: string | null;\n  readonly publicId?: string;\n  readonly status?: string;\n  readonly sessionNumber?: number | null;\n  readonly name?: string | null;\n};"
     },
     {
       "kind": "InterfaceDeclaration",

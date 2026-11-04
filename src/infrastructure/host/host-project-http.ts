@@ -234,3 +234,99 @@ export async function setHostSagaMemberBundle(
     'Bundle konnte nicht gesetzt werden',
   );
 }
+
+/** FE-HOST-12 project write DTO (host camelCase). */
+export type HostProjectWriteDto = {
+  readonly id: string;
+  readonly publicId: string;
+  readonly code: string;
+  readonly name: string;
+  readonly description: string | null;
+  readonly worldId: string;
+  readonly worldProfileId: string;
+  readonly defaultLookProfileId: string | null;
+  readonly allowPlayerCharacterLookOverride: boolean;
+  readonly gmUserId: string;
+  readonly status: string;
+  readonly createdAt: string;
+  readonly updatedAt: string;
+};
+
+export async function createHostProject(input: {
+  readonly name: string;
+  readonly description?: string | null;
+  readonly worldProfileId?: string | null;
+}): Promise<HostProjectWriteDto> {
+  const body = await hostMutateJson<{ project?: HostProjectWriteDto }>(
+    '/api/v1/projects',
+    'POST',
+    {
+      name: input.name,
+      description: input.description ?? null,
+      worldProfileId: input.worldProfileId ?? null,
+    },
+    'Saga konnte nicht angelegt werden',
+  );
+  if (!body.project || typeof body.project.id !== 'string') {
+    throw new Error('Saga konnte nicht angelegt werden: ungültige Antwort');
+  }
+  return body.project;
+}
+
+export async function updateHostProject(
+  projectId: string,
+  patch: {
+    readonly name?: string;
+    readonly description?: string | null;
+    readonly status?: string;
+    readonly worldProfileId?: string | null;
+    readonly defaultLookProfileId?: string | null;
+    readonly allowPlayerCharacterLookOverride?: boolean;
+  },
+): Promise<HostProjectWriteDto> {
+  const body = await hostMutateJson<{ project?: HostProjectWriteDto }>(
+    `/api/v1/projects/${encodeURIComponent(projectId)}`,
+    'PATCH',
+    patch,
+    'Saga konnte nicht aktualisiert werden',
+  );
+  if (!body.project || typeof body.project.id !== 'string') {
+    throw new Error('Saga konnte nicht aktualisiert werden: ungültige Antwort');
+  }
+  return body.project;
+}
+
+export async function deleteHostProject(projectId: string): Promise<void> {
+  await hostMutateJson(
+    `/api/v1/projects/${encodeURIComponent(projectId)}`,
+    'DELETE',
+    undefined,
+    'Saga konnte nicht gelöscht werden',
+  );
+}
+
+export type HostSessionLookDto = {
+  readonly id: string;
+  readonly projectId: string;
+  readonly lookProfileId: string | null;
+  readonly publicId?: string;
+  readonly status?: string;
+  readonly sessionNumber?: number | null;
+  readonly name?: string | null;
+};
+
+export async function updateHostSessionLook(
+  sessionId: string,
+  lookProfileId: string | null,
+): Promise<HostSessionLookDto> {
+  const body = await hostMutateJson<{ session?: HostSessionLookDto }>(
+    `/api/v1/sessions/${encodeURIComponent(sessionId)}/look`,
+    'PATCH',
+    { lookProfileId },
+    'Session-Look konnte nicht aktualisiert werden',
+  );
+  if (!body.session || typeof body.session.id !== 'string') {
+    throw new Error('Session-Look konnte nicht aktualisiert werden: ungültige Antwort');
+  }
+  return body.session;
+}

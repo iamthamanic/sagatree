@@ -5,8 +5,8 @@
  * #569: Never select projects.adventure_runtime or sessions.world_state/notes —
  * those columns are revoked for authenticated; use projected session RPCs.
  *
- * Dual-path (MIG-308): Host Library lists when `VITE_SAGATREE_HOST_LIBRARY=1`
- * (+ host auth URL). Remaining project mutations stay on Supabase until later FE-HOST slices.
+ * Dual-path (MIG-308): Host Library lists + project create/update/delete + session look
+ * when host-first (FE-HOST-12); legacy Supabase when `VITE_SAGATREE_HOST_LIBRARY=0`.
  */
 import { supabase } from '../../lib/supabase';
 import { getAuthenticatedUserId } from '../../lib/authenticatedUser';
@@ -16,7 +16,14 @@ import {
   isHostLibraryEnabled,
   type HostLibraryProjectDto,
 } from '../host/host-library-http';
-import { createHostProjectSession } from '../host/host-project-http';
+import {
+  createHostProject,
+  createHostProjectSession,
+  deleteHostProject,
+  updateHostProject,
+  updateHostSessionLook,
+  type HostProjectWriteDto,
+} from '../host/host-project-http';
 import { assertHostProductSurfaceAvailable } from '../host/host-product-deny';
 import { projectMemberService } from './project-member-service';
 import type {
@@ -263,6 +270,14 @@ class ProjectService {
    * Create new project (as GM)
    */
   async createProject(payload: CreateProjectDto): Promise<ProjectVm> {
+    if (isHostLibraryEnabled()) {
+      const created = await createHostProject({
+        name: payload.name,
+        description: payload.description ?? null,
+        worldProfileId: payload.world_profile_id ?? payload.world_id ?? null,
+      });
+      return this.mapHostProjectWriteToVm(created);
+    }
     assertHostProductSurfaceAvailable('Saga anlegen');
     const userId = await getAuthenticatedUserId();
 
@@ -330,6 +345,45 @@ class ProjectService {
     };
   }
 
+  private mapHostProjectWriteToVm(row: HostProjectWriteDto | HostLibraryProjectDto): ProjectVm {
+    const status =
+      row.status === 'paused' || row.status === 'completed' || row.status === 'archived'
+        ? row.status
+        : 'active';
+    const createdAt =
+      'createdAt' in row && typeof row.createdAt === 'string'
+        ? row.createdAt
+        : new Date().toISOString();
+    const updatedAt =
+      'updatedAt' in row && typeof row.updatedAt === 'string' ? row.updatedAt : createdAt;
+    return {
+      id: row.id,
+      publicId: typeof row.publicId === 'string' ? row.publicId : '',
+      code: typeof row.code === 'string' ? row.code : '',
+      name: row.name,
+      description: row.description ?? null,
+      worldId: row.worldId ?? null,
+      worldProfileId: row.worldProfileId ?? row.worldId ?? null,
+      defaultLookProfileId:
+        'defaultLookProfileId' in row && typeof row.defaultLookProfileId === 'string'
+          ? row.defaultLookProfileId
+          : null,
+      allowPlayerCharacterLookOverride:
+        'allowPlayerCharacterLookOverride' in row &&
+        typeof row.allowPlayerCharacterLookOverride === 'boolean'
+          ? row.allowPlayerCharacterLookOverride
+          : true,
+      gmUserId: row.gmUserId,
+      status,
+      createdAt,
+      updatedAt,
+      members: [],
+      sessions: [],
+      totalSessions: 0,
+      lastSessionDate: null,
+    };
+  }
+
   /**
    * Get user's projects (as GM or active player).
    */
@@ -348,29 +402,7 @@ class ProjectService {
   async getUserProjects(): Promise<ProjectVm[]> {
     if (isHostLibraryEnabled()) {
       const rows = await fetchHostLibraryProjects();
-      return rows.map((row) => {
-        const summary = this.mapHostProjectSummary(row);
-        const now = new Date().toISOString();
-        return {
-          id: summary.id,
-          publicId: summary.publicId,
-          code: summary.code,
-          name: summary.name,
-          description: summary.description,
-          worldId: summary.worldId,
-          worldProfileId: summary.worldProfileId,
-          defaultLookProfileId: null,
-          allowPlayerCharacterLookOverride: false,
-          gmUserId: summary.gmUserId,
-          status: summary.status,
-          createdAt: now,
-          updatedAt: now,
-          members: [],
-          sessions: [],
-          totalSessions: 0,
-          lastSessionDate: null,
-        } satisfies ProjectVm;
-      });
+      return rows.map((row) => this.mapHostProjectWriteToVm(row));
     }
     return raceWithTimeoutReject(
       this.fetchUserProjects(),
@@ -620,27 +652,7 @@ class ProjectService {
       const rows = await fetchHostLibraryProjects();
       const row = rows.find((item) => item.id === id);
       if (!row) throw new Error('Project not found');
-      const summary = this.mapHostProjectSummary(row);
-      const now = new Date().toISOString();
-      return {
-        id: summary.id,
-        publicId: summary.publicId,
-        code: summary.code,
-        name: summary.name,
-        description: summary.description,
-        worldId: summary.worldId,
-        worldProfileId: summary.worldProfileId,
-        defaultLookProfileId: null,
-        allowPlayerCharacterLookOverride: false,
-        gmUserId: summary.gmUserId,
-        status: summary.status,
-        createdAt: now,
-        updatedAt: now,
-        members: [],
-        sessions: [],
-        totalSessions: 0,
-        lastSessionDate: null,
-      } satisfies ProjectVm;
+      return this.mapHostProjectWriteToVm(row);
     }
     const { data: project, error: projectError } = await supabase
       .from(this.tableName)
@@ -680,6 +692,33 @@ class ProjectService {
    * Update project
    */
   async updateProject(id: string, updates: Partial<ProjectDto>): Promise<ProjectVm> {
+    if (isHostLibraryEnabled()) {
+      const updated = await updateHostProject(id, {
+        name: typeof updates.name === 'string' ? updates.name : undefined,
+        description:
+          updates.description === undefined
+            ? undefined
+            : updates.description === null
+              ? null
+              : String(updates.description),
+        status: typeof updates.status === 'string' ? updates.status : undefined,
+        worldProfileId:
+          updates.world_profile_id !== undefined
+            ? updates.world_profile_id
+            : updates.world_id !== undefined
+              ? updates.world_id
+              : undefined,
+        defaultLookProfileId:
+          updates.default_look_profile_id === undefined
+            ? undefined
+            : updates.default_look_profile_id,
+        allowPlayerCharacterLookOverride:
+          typeof updates.allow_player_character_look_override === 'boolean'
+            ? updates.allow_player_character_look_override
+            : undefined,
+      });
+      return this.mapHostProjectWriteToVm(updated);
+    }
     assertHostProductSurfaceAvailable('Saga bearbeiten');
     const { error } = await supabase
       .from(this.tableName)
@@ -727,6 +766,32 @@ class ProjectService {
     sessionId: string,
     settings: { lookProfileId: string | null },
   ): Promise<SessionVm> {
+    if (isHostLibraryEnabled()) {
+      const updated = await updateHostSessionLook(sessionId, settings.lookProfileId);
+      return {
+        id: updated.id,
+        publicId: typeof updated.publicId === 'string' ? updated.publicId : '',
+        projectId: updated.projectId,
+        sessionNumber:
+          typeof updated.sessionNumber === 'number' ? updated.sessionNumber : 0,
+        name: updated.name ?? null,
+        notes: null,
+        status:
+          updated.status === 'scheduled' ||
+          updated.status === 'waiting' ||
+          updated.status === 'active' ||
+          updated.status === 'paused' ||
+          updated.status === 'completed' ||
+          updated.status === 'cancelled'
+            ? updated.status
+            : 'scheduled',
+        startedAt: null,
+        endedAt: null,
+        durationMinutes: null,
+        lookProfileId: updated.lookProfileId,
+        createdAt: new Date().toISOString(),
+      };
+    }
     assertHostProductSurfaceAvailable('Session-Look');
     const { data, error } = await supabase
       .from(this.sessionsTableName)
@@ -763,6 +828,10 @@ class ProjectService {
    * Delete project
    */
   async deleteProject(id: string): Promise<void> {
+    if (isHostLibraryEnabled()) {
+      await deleteHostProject(id);
+      return;
+    }
     assertHostProductSurfaceAvailable('Saga löschen');
     const { error } = await supabase
       .from(this.tableName)
