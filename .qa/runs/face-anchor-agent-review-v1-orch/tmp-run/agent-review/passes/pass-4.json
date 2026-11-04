@@ -2,7 +2,7 @@
   "protocolVersion": "face-anchor-agent-review-v1",
   "passIndex": 4,
   "reviewerId": "agent-pass-4",
-  "evidenceManifestSha256": "9feb8b194ddc4b5aa19711ca7cf22d9579227b77380a5c40b39c537b4ba570ab",
+  "evidenceManifestSha256": "c65275c028c2042ba02261d11d1321cdbfc4f93b314efaa9349734ee574819e5",
   "modelSha256": "357e5d6fafa34d27360fec24b4326d3534905e33c6acdee60198fb078b7b79e5",
   "anchorsSha256": "53f8b498bcb62a4dfb5e40c77bc2834e007b0b4e1435f91c64abc234957e9109",
   "topologyFingerprint": "v1:t1000:m50",
