@@ -59,16 +59,18 @@ Optional E: MCP → same registry
 
 ## Issue cut
 
-| ID | Release | Title |
-| --- | --- | --- |
-| AIB-01 | A | Rulebook indexer + shared search |
-| AIB-02 | A | Shell companion + Rulebook browser |
-| AIB-03 | A | Phase-A QA gate |
-| AIB-04 | B | Host `aiberto-ask` + text inference + citations |
-| AIB-05 | B | Chat UI + streaming + degradation |
-| AIB-06 | C1 | Tool registry Read/Nav (+ owned character ports) |
-| AIB-07 | C2 | Confirmed write pilot |
-| AIB-08 | E | MCP facade (follow-up) |
+| ID | GitHub | Release | Title |
+| --- | --- | --- | --- |
+| Epic | #1123 | — | Aiberto companion |
+| AIB-01 | #1124 | A | Rulebook indexer + shared search |
+| AIB-02 | #1125 | A | Shell companion + Rulebook browser |
+| AIB-03 | #1126 | A | Phase-A QA gate |
+| AIB-04 | #1127 | B | Host `aiberto-ask` + text inference + citations |
+| AIB-05 | #1128 | B | Chat UI + streaming + degradation |
+| AIB-06 | #1129 | C1 | Tool registry Read/Nav (+ owned character ports) |
+| AIB-07 | #1130 | C2 | Confirmed write pilot |
+| AIB-08 | #1131 | E | MCP facade (follow-up) |
+| Docs PR | #1132 | — | Design + acceptance landing |
 
 ## UX (summary)
 
