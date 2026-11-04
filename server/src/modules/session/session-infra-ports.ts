@@ -56,6 +56,11 @@ export type SessionPortsForInfra = {
     readonly listAccessiblePlaySessions: (
       actor: Actor,
     ) => NestedOk<readonly Record<string, unknown>[]>;
+    readonly setSessionLookProfile: (
+      actor: Actor,
+      sessionId: string,
+      lookProfileId: string | null,
+    ) => NestedOk<Record<string, unknown>>;
   };
   readonly access: {
     readonly createSessionInvite: (actor: Actor, sessionId: string) => NestedOk<Record<string, unknown>>;
@@ -237,6 +242,18 @@ export function createSessionInfraPorts(session: SessionPortsForInfra) {
       actorId: string,
     ): SessionInfraResult<readonly Record<string, unknown>[]> {
       const r = session.lifecycle.listAccessiblePlaySessions(asActor(actorId));
+      return r.ok ? { ok: true, value: r.value } : { ok: false, error: r.error };
+    },
+    setSessionLookProfile(
+      actorId: string,
+      sessionId: string,
+      lookProfileId: string | null,
+    ): SessionInfraResult<Record<string, unknown>> {
+      const r = session.lifecycle.setSessionLookProfile(
+        asActor(actorId),
+        sessionId,
+        lookProfileId,
+      );
       return r.ok ? { ok: true, value: r.value } : { ok: false, error: r.error };
     },
   };

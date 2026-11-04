@@ -26,7 +26,7 @@ via `assertHostProductSurfaceAvailable` / local stubs — never hang on PostgRES
 | Character presets / adventure arcs | `character-preset-service.ts`, `character-adventure-arc-service.ts` | Low | PostgREST tables |
 | AI provider Edge fallback | `host-ai-invoke.ts` | Low | Host path when `VITE_SAGATREE_HOST_AI=1`; else DENY under host-first |
 | Peer profile batch | `user-profile-service.ts` `getProfilesByUserIds` | Low | Own profile host; batch DENY |
-| Project create/update/delete | `project-service.ts` | Medium | Lists/sessions host; CRUD DENY until project write HTTP |
+| Project create/update/delete | `project-service.ts` | Medium | DONE (FE-HOST-12) — host HTTP + FE dual-path; legacy DENY only when host library off |
 | World by public id | `world-profile-service.ts` `getByPublicId` | Low | Host worlds title-only; DENY (no PostgREST) |
 | Historical `supabase/migrations` SQL | `supabase/migrations/**` | Info | Archive; not product runtime |
 | Edge Functions tree | `supabase/functions/**` | Info | Archive / optional stack; dispatcher allowlists unchanged |

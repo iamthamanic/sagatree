@@ -101,6 +101,8 @@ export type HostLibraryProjectDto = {
   readonly description?: string | null;
   readonly worldId?: string | null;
   readonly worldProfileId?: string | null;
+  readonly defaultLookProfileId?: string | null;
+  readonly allowPlayerCharacterLookOverride?: boolean;
   readonly sagaId?: string | null;
   readonly sagaVersionId?: string | null;
   readonly sagaTitle?: string | null;
@@ -110,6 +112,8 @@ export type HostLibraryProjectDto = {
   readonly status?: string;
   readonly memberCount?: number;
   readonly sessionCount?: number;
+  readonly createdAt?: string;
+  readonly updatedAt?: string;
 };
 
 export async function fetchHostLibraryProjects(

@@ -1407,6 +1407,19 @@ function checkFeHost09HostFirst() {
   console.log('OK: fe-host-09-host-first.self-test');
 }
 
+function checkFeHost12ProjectWrites() {
+  console.log('FE-HOST-12 project create/update/delete + session look HTTP (#1117)...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/fe-host-12-project-writes.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+  console.log('OK: fe-host-12-project-writes.self-test');
+}
+
 function checkMig312UserProfileAdapter() {
   console.log('MIG-312 user-profile adapter (#811): user_profiles + user-avatars dual-path...');
   execFileSync(
@@ -3621,6 +3634,7 @@ checkFeHost06AssetsHttp();
 checkFeHost07ProductAuth();
 checkFeHost08CatalogHttp();
 checkFeHost09HostFirst();
+checkFeHost12ProjectWrites();
 checkMig312UserProfileAdapter();
 checkMig309Rulesets();
 checkMig313WorldAdapter();

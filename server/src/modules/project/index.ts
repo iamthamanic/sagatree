@@ -11,6 +11,7 @@ import { SagaMembershipStore } from './internal/saga-membership-store.ts';
 import {
   ProjectProvisionStore,
   type ProvisionedProject,
+  type ProjectWritePatch,
 } from './internal/project-provision-store.ts';
 import {
   ProjectMembershipStore,
@@ -22,7 +23,19 @@ export type ProjectResult<T> =
   | { readonly ok: true; readonly value: T }
   | { readonly ok: false; readonly error: string };
 
-export type { ProvisionedProject, JoinByCodeResult, SetMyCharacterResult };
+export type { ProvisionedProject, ProjectWritePatch, JoinByCodeResult, SetMyCharacterResult };
+
+function actorIdentityIds(actor: Actor): readonly string[] {
+  const ids = [actor.actorId];
+  if (
+    actor.kind === 'remote-account' &&
+    Array.isArray(actor.linkedSoloActorIds) &&
+    actor.linkedSoloActorIds.length > 0
+  ) {
+    return [...ids, ...actor.linkedSoloActorIds];
+  }
+  return ids;
+}
 
 export type ProjectPorts = {
   readonly moduleId: 'project';
@@ -99,6 +112,26 @@ export type ProjectPorts = {
   ) => { id: string; userId: string } | null;
   /** Owner/GM library list — projects where actor is GM or active member. */
   readonly listOwnedProjects: (actorId: string) => ProjectResult<readonly ProvisionedProject[]>;
+  /** FE-HOST-12: blank saga create (world already allocated). */
+  readonly createBlank: (
+    actor: Actor,
+    input: {
+      readonly worldId: string;
+      readonly title: string;
+      readonly description: string | null;
+    },
+  ) => ProjectResult<ProvisionedProject>;
+  /** FE-HOST-12: GM-only patch (look/world FKs validated by caller). */
+  readonly updateOwned: (
+    actor: Actor,
+    projectId: string,
+    patch: ProjectWritePatch,
+  ) => ProjectResult<ProvisionedProject>;
+  /** FE-HOST-12: GM-only soft-archive (list omits archived). */
+  readonly archiveOwned: (
+    actor: Actor,
+    projectId: string,
+  ) => ProjectResult<{ readonly id: string }>;
 };
 
 export function createProjectPorts(db?: HostDatabase): ProjectPorts {
@@ -123,6 +156,9 @@ export function createProjectPorts(db?: HostDatabase): ProjectPorts {
       listActiveMembers: () => [],
       getActiveMemberById: () => null,
       listOwnedProjects: () => ({ ok: false, error: 'store-unavailable' }),
+      createBlank: () => ({ ok: false, error: 'store-unavailable' }),
+      updateOwned: () => ({ ok: false, error: 'store-unavailable' }),
+      archiveOwned: () => ({ ok: false, error: 'store-unavailable' }),
     };
   }
   const membership = new SagaMembershipStore(db);
@@ -174,11 +210,14 @@ export function createProjectPorts(db?: HostDatabase): ProjectPorts {
       const rows = db
         .prepare(
           `SELECT DISTINCT p.id, p.world_id, p.gm_user_id, p.title, p.created_at, p.saga_id,
-                  p.saga_version_id, p.adventure_runtime, p.public_id, p.status, p.description
+                  p.saga_version_id, p.adventure_runtime, p.public_id, p.status, p.description,
+                  p.code, p.updated_at, p.default_look_profile_id,
+                  p.allow_player_character_look_override
            FROM projects p
            LEFT JOIN project_members m
              ON m.project_id = p.id AND m.user_id = ? AND m.active = 1
-           WHERE p.gm_user_id = ? OR m.user_id IS NOT NULL
+           WHERE (p.gm_user_id = ? OR m.user_id IS NOT NULL)
+             AND COALESCE(p.status, 'active') <> 'archived'
            ORDER BY p.created_at DESC`,
         )
         .all(actorId, actorId) as Array<{
@@ -193,11 +232,32 @@ export function createProjectPorts(db?: HostDatabase): ProjectPorts {
         public_id: string | null;
         status: string | null;
         description: string | null;
+        code: string | null;
+        updated_at: string | null;
+        default_look_profile_id: string | null;
+        allow_player_character_look_override: number | null;
       }>;
       return {
         ok: true,
         value: rows.map((row) => provision.toVm(row)),
       };
+    },
+    createBlank(actor, input) {
+      if (!actor?.actorId) return { ok: false, error: '42501' };
+      return provision.createBlank({
+        actorId: actor.actorId,
+        worldId: input.worldId,
+        title: input.title,
+        description: input.description,
+      });
+    },
+    updateOwned(actor, projectId, patch) {
+      if (!actor?.actorId) return { ok: false, error: '42501' };
+      return provision.updateOwned(actorIdentityIds(actor), projectId, patch);
+    },
+    archiveOwned(actor, projectId) {
+      if (!actor?.actorId) return { ok: false, error: '42501' };
+      return provision.archiveOwned(actorIdentityIds(actor), projectId);
     },
   };
 }

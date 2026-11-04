@@ -26,6 +26,8 @@ export type PlaySessionRow = {
   readonly createdAt: string;
   readonly startedAt: string | null;
   readonly endedAt: string | null;
+  /** Optional session Look override (FE-HOST-12). */
+  readonly lookProfileId?: string | null;
   /** Project GM — populated on read for FE lobby membership checks. */
   readonly gmUserId?: string;
 };
@@ -73,6 +75,7 @@ export class SessionLifecycleStore {
                 ps.session_number AS sessionNumber, ps.name AS name, ps.notes AS notes,
                 ps.runtime_revision AS runtimeRevision, ps.world_state AS worldState,
                 ps.created_at AS createdAt, ps.started_at AS startedAt, ps.ended_at AS endedAt,
+                ps.look_profile_id AS lookProfileId,
                 p.gm_user_id AS gmUserId
          FROM play_sessions ps
          LEFT JOIN projects p ON p.id = ps.project_id
@@ -376,6 +379,43 @@ export class SessionLifecycleStore {
     if (!this.#isActiveGmOrPlayer(row.projectId, actorIds)) {
       return { ok: false, error: '42501' };
     }
+    return { ok: true, value: row };
+  }
+
+  /**
+   * FE-HOST-12: GM-only session Look override (null clears → inherit saga default).
+   * Look ownership is validated by the HTTP/application caller before invoke.
+   */
+  setSessionLookProfile(
+    actorIds: readonly string[],
+    sessionId: string,
+    lookProfileId: string | null,
+  ): Ok<PlaySessionRow> | LifecycleError {
+    if (!actorIds[0]) return { ok: false, error: '42501' };
+    const id = typeof sessionId === 'string' ? sessionId.trim() : '';
+    if (!id) return { ok: false, error: '22023' };
+    const existing = this.#read(id);
+    if (!existing) return { ok: false, error: 'P0002' };
+    if (!this.#project.isProjectGm(existing.projectId, actorIds)) {
+      return { ok: false, error: '42501' };
+    }
+    const next =
+      lookProfileId === null || lookProfileId === undefined
+        ? null
+        : typeof lookProfileId === 'string'
+          ? lookProfileId.trim() || null
+          : null;
+    try {
+      this.#db
+        .prepare(
+          `UPDATE play_sessions SET look_profile_id = ?, updated_at = ? WHERE session_id = ?`,
+        )
+        .run(next, nowIso(), id);
+    } catch {
+      return { ok: false, error: 'P0001' };
+    }
+    const row = this.#read(id);
+    if (!row) return { ok: false, error: 'P0002' };
     return { ok: true, value: row };
   }
 

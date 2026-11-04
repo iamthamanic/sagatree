@@ -749,6 +749,8 @@ export function mountLibraryHttpRoutes(app: Hono, deps: LibraryHttpDeps): void {
         description: string | null;
         worldId: string;
         worldProfileId: string;
+        defaultLookProfileId: string | null;
+        allowPlayerCharacterLookOverride: boolean;
         sagaId: string | null;
         sagaVersionId: string | null;
         sagaTitle: string;
@@ -758,6 +760,8 @@ export function mountLibraryHttpRoutes(app: Hono, deps: LibraryHttpDeps): void {
         status: string;
         memberCount: number;
         sessionCount: number;
+        createdAt: string;
+        updatedAt: string;
       }
     >();
     for (const ownerId of libraryActorIds(actorResult.actor)) {
@@ -769,11 +773,13 @@ export function mountLibraryHttpRoutes(app: Hono, deps: LibraryHttpDeps): void {
         byId.set(row.id, {
           id: row.id,
           publicId: row.publicId,
-          code: '',
+          code: row.code || '',
           name: row.title,
           description: row.description,
           worldId: row.worldId,
           worldProfileId: row.worldId,
+          defaultLookProfileId: row.defaultLookProfileId,
+          allowPlayerCharacterLookOverride: row.allowPlayerCharacterLookOverride,
           sagaId: row.sagaId || null,
           sagaVersionId: row.sagaVersionId || null,
           sagaTitle: row.title,
@@ -786,6 +792,8 @@ export function mountLibraryHttpRoutes(app: Hono, deps: LibraryHttpDeps): void {
               : 'active',
           memberCount: 1,
           sessionCount: 0,
+          createdAt: row.createdAt,
+          updatedAt: row.updatedAt,
         });
       }
     }

@@ -125,6 +125,12 @@ export type SessionLifecyclePort = {
   ) =>
     | { readonly ok: true; readonly value: readonly PlaySessionRow[] }
     | { readonly ok: false; readonly error: string };
+  /** FE-HOST-12: GM-only session Look override. */
+  readonly setSessionLookProfile: (
+    actor: Actor,
+    sessionId: string,
+    lookProfileId: string | null,
+  ) => LifecycleResult;
 };
 
 export type AccessLeaveResult =
@@ -188,6 +194,7 @@ function unavailableLifecycle(): SessionLifecyclePort {
     setSessionStatus: fail,
     getPlaySession: fail,
     listAccessiblePlaySessions: fail,
+    setSessionLookProfile: fail,
   };
 }
 
@@ -275,6 +282,11 @@ export function createSessionPorts(deps: {
           const ids = actorIds(actor);
           if (!ids[0]) return { ok: false, error: '42501' };
           return lifecycleStore.listAccessiblePlaySessions(ids);
+        },
+        setSessionLookProfile(actor, sessionId, lookProfileId) {
+          const ids = actorIds(actor);
+          if (!ids[0]) return { ok: false, error: '42501' };
+          return lifecycleStore.setSessionLookProfile(ids, sessionId, lookProfileId);
         },
       }
     : unavailableLifecycle();

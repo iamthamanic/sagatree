@@ -14,6 +14,8 @@ export type SessionHttpDeps = {
   readonly identity: IdentityPorts;
   readonly hostMode?: 'solo' | 'remote';
   readonly sessionInfra?: SessionInfraPorts | null;
+  /** Optional Look ownership checks for session Look PATCH (FE-HOST-12). */
+  readonly look?: import('../modules/look/index.ts').LookProfilePorts | null;
 };
 
 function normalizeHostname(hostname: string): string {
@@ -86,8 +88,9 @@ function infraStatus(error: string): number {
   if (
     error === 'UNAUTHENTICATED' ||
     error === 'FORBIDDEN' ||
+    error === 'not-authorized' ||
     error.startsWith('42501') ||
-    /forbidden/i.test(error)
+    /forbidden|not[_-]?authorized/i.test(error)
   ) {
     return 403;
   }
@@ -252,6 +255,77 @@ export function mountSessionHttpRoutes(app: Hono, deps: SessionHttpDeps): void {
         session: publicSessionDto(updated.value as Record<string, unknown>, {
           includeJoinCode: false,
         }),
+      },
+      200,
+    );
+  });
+
+  app.patch('/api/v1/sessions/:sessionId/look', async (c) => {
+    const sessionId = c.req.param('sessionId');
+    const parsed = await readJsonSafe(c);
+    if (!parsed.ok) return c.json({ error: 'INVALID_PAYLOAD' }, 422);
+    const body = asRecord(parsed.body);
+    const actorResult = await resolveSessionActor(deps, c.req.raw.headers, false, parsed.body);
+    if (!actorResult.ok) {
+      return c.json({ error: actorResult.error }, actorResult.status);
+    }
+    if (!('lookProfileId' in body) && !('look_profile_id' in body)) {
+      return c.json({ error: '22023' }, 422);
+    }
+    const raw =
+      'lookProfileId' in body ? body.lookProfileId : body.look_profile_id;
+    if (raw !== null && raw !== undefined && typeof raw !== 'string') {
+      return c.json({ error: '22023' }, 422);
+    }
+    const lookProfileId =
+      raw === null || raw === undefined ? null : String(raw).trim() || null;
+    if (lookProfileId && deps.look) {
+      const owned = deps.look.getProfileById(actorResult.actor, lookProfileId);
+      if (!owned.ok) {
+        return c.json({ error: owned.error }, infraStatus(owned.error));
+      }
+      if (!owned.value) {
+        return c.json({ error: '42501' }, 403);
+      }
+    } else if (lookProfileId && !deps.look) {
+      return c.json({ error: 'store-unavailable' }, 503);
+    }
+    const updated = infra.setSessionLookProfile(
+      actorResult.actor.actorId,
+      sessionId,
+      lookProfileId,
+    );
+    if (!updated.ok) {
+      return c.json({ error: updated.error }, infraStatus(updated.error));
+    }
+    const value = updated.value as Record<string, unknown>;
+    return c.json(
+      {
+        session: {
+          id:
+            typeof value.sessionId === 'string'
+              ? value.sessionId
+              : typeof value.id === 'string'
+                ? value.id
+                : sessionId,
+          projectId:
+            typeof value.projectId === 'string'
+              ? value.projectId
+              : typeof value.project_id === 'string'
+                ? value.project_id
+                : '',
+          lookProfileId:
+            typeof value.lookProfileId === 'string'
+              ? value.lookProfileId
+              : value.lookProfileId === null
+                ? null
+                : lookProfileId,
+          publicId: typeof value.publicId === 'string' ? value.publicId : '',
+          status: typeof value.status === 'string' ? value.status : '',
+          sessionNumber:
+            typeof value.sessionNumber === 'number' ? value.sessionNumber : null,
+          name: typeof value.name === 'string' ? value.name : null,
+        },
       },
       200,
     );
