@@ -88,9 +88,19 @@ assert(
   'marketplace absent from allowlist values',
 );
 const createApp = readFileSync(join(root, 'server/src/api/create-app.ts'), 'utf8');
-assert(!/marketplace/i.test(createApp), 'create-app has no marketplace route');
+assert(
+  !/functions\/v1\/marketplace|\/marketplace\/templates/i.test(createApp),
+  'create-app has no Edge marketplace Map mount',
+);
+assert(
+  /mountCatalogHttpRoutes/.test(createApp),
+  'catalog HTTP (durable marketplace_items) mounted separately (FE-HOST-08)',
+);
 const routeRegistry = readFileSync(join(root, 'server/src/http/route-registry.ts'), 'utf8');
-assert(!/marketplace/i.test(routeRegistry), 'route-registry has no marketplace route');
+assert(
+  !/functions\/v1\/marketplace/i.test(routeRegistry),
+  'route-registry has no Edge marketplace Map mount',
+);
 
 await withHandler(stubDeps({ trustedOrigins: [] }), async (base) => {
   for (const path of [

@@ -113,14 +113,25 @@ $$ LANGUAGE plpgsql;
 
 ## Caller: Request-Mapping, Response-Decoding und Fehler
 
-### src/infrastructure/marketplace/marketplace-service.ts:242
+### src/infrastructure/marketplace/marketplace-service.ts:289
 
-AST-Auflösung: `string-literal`; SHA-256 `01b4f9b1474046827459e2930c90fc80b0cde69a70fda0e6cc043be46454c18f`.
+AST-Auflösung: `string-literal`; SHA-256 `52c856bd8d5be2885897e155ade57bfdfed1b8eb7e48fe6fb1376b8e1a5284e8`.
 
 Der vollständige aufrufende Funktionskörper enthält Parameterumformung, RPC-Aufruf, Response-Prüfung, Fehlerumwandlung und gegebenenfalls Fallback:
 
 ```typescript
 export async function incrementDownloads(id: string): Promise<void> {
+  if (isHostLibraryEnabled()) {
+    try {
+      await incrementHostMarketplaceDownloads(id);
+    } catch (error) {
+      console.error(
+        'incrementHostMarketplaceDownloads failed (no client counter write):',
+        error instanceof Error ? error.message : error,
+      );
+    }
+    return;
+  }
   try {
     const { error } = await supabase.rpc('increment_marketplace_downloads', {
       item_id: id,
@@ -142,6 +153,13 @@ Direkt oder transitiv referenzierte lokale/importierte Mapper, Decoder und Vertr
 
 | Symbol | Quelle | Zeile | SHA-256 |
 | --- | --- | --- | --- |
+| `EnvLike` | [src/infrastructure/host/host-catalog-http.ts](../../../src/infrastructure/host/host-catalog-http.ts) | 18 | `a33c807b3bde9200f472b2d4d057d633960fba65fcf14b32e6f7053adb9c9f5a` |
+| `defaultEnv` | [src/infrastructure/host/host-catalog-http.ts](../../../src/infrastructure/host/host-catalog-http.ts) | 23 | `a33c807b3bde9200f472b2d4d057d633960fba65fcf14b32e6f7053adb9c9f5a` |
+| `hostJson` | [src/infrastructure/host/host-catalog-http.ts](../../../src/infrastructure/host/host-catalog-http.ts) | 31 | `a33c807b3bde9200f472b2d4d057d633960fba65fcf14b32e6f7053adb9c9f5a` |
+| `incrementHostMarketplaceDownloads` | [src/infrastructure/host/host-catalog-http.ts](../../../src/infrastructure/host/host-catalog-http.ts) | 172 | `a33c807b3bde9200f472b2d4d057d633960fba65fcf14b32e6f7053adb9c9f5a` |
+| `EnvLike` | [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | 31 | `925a7e9e9c7cd24fcce69f39d39f7b1250b354800b5188636be319acbf1fe702` |
+| `defaultEnv` | [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | 33 | `925a7e9e9c7cd24fcce69f39d39f7b1250b354800b5188636be319acbf1fe702` |
+| `getHostAuthBaseUrl` | [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | 46 | `925a7e9e9c7cd24fcce69f39d39f7b1250b354800b5188636be319acbf1fe702` |
 | `viteEnv` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 3 | `a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f` |
 | `configuredSupabaseUrl` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 5 | `a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f` |
 | `configuredSupabaseAnonKey` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 6 | `a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f` |
@@ -182,7 +200,9 @@ Die folgenden Hashes binden SQL-Kette, transitive Tabellen-/Trigger-/Policyquell
 
 | Quelle | SHA-256 |
 | --- | --- |
-| [src/infrastructure/marketplace/marketplace-service.ts](../../../src/infrastructure/marketplace/marketplace-service.ts) | `01b4f9b1474046827459e2930c90fc80b0cde69a70fda0e6cc043be46454c18f` |
+| [src/infrastructure/host/host-catalog-http.ts](../../../src/infrastructure/host/host-catalog-http.ts) | `a33c807b3bde9200f472b2d4d057d633960fba65fcf14b32e6f7053adb9c9f5a` |
+| [src/infrastructure/marketplace/marketplace-service.ts](../../../src/infrastructure/marketplace/marketplace-service.ts) | `52c856bd8d5be2885897e155ade57bfdfed1b8eb7e48fe6fb1376b8e1a5284e8` |
+| [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | `925a7e9e9c7cd24fcce69f39d39f7b1250b354800b5188636be319acbf1fe702` |
 | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | `a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f` |
 | [src/supabase/add_marketplace_rpc.sql](../../../src/supabase/add_marketplace_rpc.sql) | `450d3ba94e44b796ce64bf8c5e2a7a82f53f37b23574f5b1a8dfd1ef1550c670` |
 | [src/supabase/deploy_marketplace.sql](../../../src/supabase/deploy_marketplace.sql) | `fcd99e2ea5dc98bd3b5284e8c2a69f532071be45ccdb66abf58ebfc31c57c38b` |

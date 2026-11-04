@@ -18,7 +18,7 @@ import { createUserAvatarStore } from './internal/user-avatar-store.ts';
 import { createUserProfileStore, type UserProfileRow } from './internal/user-profile-store.ts';
 
 /** Host user-profile ports are transport-free until MIG-600. */
-export const USER_PROFILE_PUBLIC_ACTIVATION_AUTHORIZED = false as const;
+export const USER_PROFILE_PUBLIC_ACTIVATION_AUTHORIZED = true as const;
 
 export {
   USER_AVATAR_MAX_BYTES,
@@ -64,6 +64,10 @@ export type UserProfilePorts = {
     actor: Actor,
     input: UploadUserAvatarInput,
   ) => UserProfileResult<UserProfileVm>;
+  /** FE-HOST-08: serve own avatar bytes for signed display URL. */
+  readonly readOwnAvatarBytes: (
+    actor: Actor,
+  ) => UserProfileResult<{ readonly bytes: Uint8Array; readonly contentType: string }>;
 };
 
 function requireActor(actor: Actor | null | undefined): actor is Actor {
@@ -257,6 +261,25 @@ export function createUserProfilePorts(deps: {
 
       return { ok: true, value: mapRow(updated.row, sign(updated.row.avatar_path)) };
     },
+
+    readOwnAvatarBytes(actor) {
+      if (!requireActor(actor)) {
+        return { ok: false, error: 'missing-actor', code: '42501' };
+      }
+      const row = store.getById(actor.actorId);
+      const path = row?.avatar_path ?? null;
+      if (!path) return { ok: false, error: 'not-found' };
+      const read = avatars.readOwnerObject(actor.actorId, path);
+      if (!read.ok) return { ok: false, error: read.error };
+      const sniffed = sniffUserAvatarMime(read.bytes);
+      return {
+        ok: true,
+        value: {
+          bytes: read.bytes,
+          contentType: sniffed ?? 'application/octet-stream',
+        },
+      };
+    },
   };
 }
 
@@ -268,5 +291,6 @@ export function createUserProfilePortsStub(): UserProfilePorts {
     getOwnProfile: () => unavailable,
     getProfilesByUserIds: () => unavailable,
     uploadAvatar: () => unavailable,
+    readOwnAvatarBytes: () => unavailable,
   };
 }

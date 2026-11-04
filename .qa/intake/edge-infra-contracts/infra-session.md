@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-session.json](source-contracts/infra-session.json) (SHA-256 `cf8d92882f2685d7a4e97748957246c038f3bfa0a5b36f7020dd4e47cfe32e79`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-session.json](source-contracts/infra-session.json) (SHA-256 `eadc5544f503faf5929655e4644e8a11bc21af49561ca7fe76b8cf118f63617d`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -276,7 +276,7 @@ supabase.removeChannel(channel)
 Enclosing operation: `src/infrastructure/session/session-lobby-channel.ts:80`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### edge: session-recap
 
-`src/infrastructure/session/session-recap-ai-service.ts:76` — literal-or-constant.
+`src/infrastructure/session/session-recap-ai-service.ts:85` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -285,10 +285,10 @@ supabase.functions.invoke('session-recap', {
     })
 ```
 
-Enclosing operation: `src/infrastructure/session/session-recap-ai-service.ts:75`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/session/session-recap-ai-service.ts:79`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### rpc: save_session_recap_summary
 
-`src/infrastructure/session/session-recap-ai-service.ts:104` — literal-or-constant.
+`src/infrastructure/session/session-recap-ai-service.ts:118` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -299,7 +299,7 @@ supabase.rpc('save_session_recap_summary', {
       })
 ```
 
-Enclosing operation: `src/infrastructure/session/session-recap-ai-service.ts:98`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/session/session-recap-ai-service.ts:107`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### rpc: get_session_recap
 
 `src/infrastructure/session/session-recap-service.ts:48` — literal-or-constant.
@@ -1760,13 +1760,13 @@ export async function subscribeSessionLobbyReady(
 }
 ```
 
-### src/infrastructure/session/session-recap-ai-service.ts:8
+### src/infrastructure/session/session-recap-ai-service.ts:12
 
 ```ts
 export type EpisodeSummaryStatus = 'none' | 'draft' | 'approved';
 ```
 
-### src/infrastructure/session/session-recap-ai-service.ts:10
+### src/infrastructure/session/session-recap-ai-service.ts:14
 
 ```ts
 export type SessionRecapAiGenerateResult = {
@@ -1777,7 +1777,7 @@ export type SessionRecapAiGenerateResult = {
 };
 ```
 
-### src/infrastructure/session/session-recap-ai-service.ts:130
+### src/infrastructure/session/session-recap-ai-service.ts:144
 
 ```ts
 export const sessionRecapAiService = new SessionRecapAiService();
@@ -1967,10 +1967,15 @@ export const sessionService = new SessionService();
 
 ## Remaining backend helper operations
 
-### src/infrastructure/session/session-recap-ai-service.ts:75
+### src/infrastructure/session/session-recap-ai-service.ts:79
 
 ```ts
 async generateDraft(sessionId: string): Promise<SessionRecapAiGenerateResult> {
+    if (isHostLibraryEnabled()) {
+      throw new Error(
+        'KI-Zusammenfassung ist im Host-Modus noch nicht verfügbar. Bitte manuell schreiben.',
+      );
+    }
     const { data, error } = await supabase.functions.invoke('session-recap', {
       body: { sessionId },
     });
@@ -1994,7 +1999,7 @@ async generateDraft(sessionId: string): Promise<SessionRecapAiGenerateResult> {
   }
 ```
 
-### src/infrastructure/session/session-recap-ai-service.ts:98
+### src/infrastructure/session/session-recap-ai-service.ts:107
 
 ```ts
 async saveSummary(
@@ -2002,6 +2007,11 @@ async saveSummary(
     summaryText: string,
     status: 'draft' | 'approved',
   ): Promise<{ summaryText: string | null; summaryStatus: EpisodeSummaryStatus }> {
+    if (isHostLibraryEnabled()) {
+      throw new Error(
+        'Zusammenfassung speichern ist im Host-Modus noch nicht verfügbar.',
+      );
+    }
     const { data, error } = await raceWithTimeoutReject(
       supabase.rpc('save_session_recap_summary', {
         p_session_id: sessionId,
@@ -2587,7 +2597,7 @@ async revokeSessionInvite(token: string): Promise<void> {
 | `src/infrastructure/session/media/memory-media-plane-bus.ts` | `1616d229067f513a12c67319aec28649e3a0afdf77779f9071b595dc024ff193` |
 | `src/infrastructure/session/media/session-media-plane.ts` | `ce8d3ec690f83745646400443d7870cd96383e341628a2d8f017e2d391fbb225` |
 | `src/infrastructure/session/session-lobby-channel.ts` | `ee5e6dd9c12b03ec7a1868c435b46b1226d4bc9415ef2be652eaa1498a2d7252` |
-| `src/infrastructure/session/session-recap-ai-service.ts` | `dffb89748b308636c99dee90d2af597de0a0fdbb995359bad085d6f799f5987d` |
+| `src/infrastructure/session/session-recap-ai-service.ts` | `61b31d8ae8f680ac4755cf499b42b8da5f0ab5bf85edede1248de5d0e9a364f6` |
 | `src/infrastructure/session/session-recap-service.ts` | `e98ca57169a56a5ce0943018e33b0d7c863754e4787eace8bf0e2bbc2930fca5` |
 | `src/infrastructure/session/session-runtime-channel.ts` | `248a264d97d01d522e05baa27132799d08bc092e661a72cca6ed501d7f48cdf5` |
 | `src/infrastructure/session/session-runtime-service.ts` | `67026e83dc5320ff5f2274d5ee4f65c95f97e3d1d6828dcfeb5d5652feddbe79` |

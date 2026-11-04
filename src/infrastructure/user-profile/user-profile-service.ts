@@ -2,12 +2,16 @@
  * User profile service — optimize + upload account avatars (#682).
  * Location: src/infrastructure/user-profile/user-profile-service.ts
  *
- * Dual-path (MIG-312): production remains Supabase repository/tables/storage.
- * Host ports are bound via `createHostUserProfileAdapter` for tests / future
- * cutover (no accidental cutover — VITE host flags alone do not redirect this facade).
+ * Dual-path (FE-HOST-08): Host HTTP when `VITE_SAGATREE_HOST_LIBRARY=1`.
+ * Host ports also via `createHostUserProfileAdapter` for tests.
  */
 import type { UserProfileVm } from '../../domains/user-profile';
 import { supabaseUserProfileRepository } from './supabase-user-profile.repository';
+import {
+  fetchHostOwnUserProfile,
+  isHostLibraryEnabled,
+  uploadHostUserAvatar,
+} from '../host/host-catalog-http';
 
 export type UploadUserAvatarOptions = {
   /**
@@ -66,10 +70,20 @@ export async function prepareUserAvatarFile(
 
 export const userProfileService = {
   async getOwnProfile(): Promise<UserProfileVm | null> {
+    if (isHostLibraryEnabled()) {
+      return fetchHostOwnUserProfile();
+    }
     return supabaseUserProfileRepository.getOwnProfile();
   },
 
   async getProfilesByUserIds(userIds: readonly string[]): Promise<UserProfileVm[]> {
+    if (isHostLibraryEnabled()) {
+      // Batch peer lobby profiles stay Supabase until a host batch route ships (FE-HOST-09).
+      if (userIds.length === 0) return [];
+      throw new Error(
+        'Fremde Profile laden ist im Host-Modus noch nicht verfügbar.',
+      );
+    }
     return supabaseUserProfileRepository.getProfilesByUserIds(userIds);
   },
 
@@ -77,6 +91,9 @@ export const userProfileService = {
     const prepared = options?.alreadyOptimized
       ? file
       : await prepareUserAvatarFile(file, options?.signal);
+    if (isHostLibraryEnabled()) {
+      return uploadHostUserAvatar(prepared);
+    }
     return supabaseUserProfileRepository.uploadAvatar(prepared);
   },
 

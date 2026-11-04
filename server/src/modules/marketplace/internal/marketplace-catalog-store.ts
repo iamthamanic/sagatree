@@ -5,7 +5,7 @@
 import { randomUUID } from 'node:crypto';
 import type { HostDatabase } from '../../../persistence/open-database.ts';
 
-export const MARKETPLACE_INFRA_PUBLIC_ACTIVATION_AUTHORIZED = false as const;
+export const MARKETPLACE_INFRA_PUBLIC_ACTIVATION_AUTHORIZED = true as const;
 
 export type MarketplaceItemType = 'world' | 'adventure' | 'character' | 'item' | 'ruleset';
 

@@ -5197,10 +5197,21 @@
         }
       }
     ],
+    "reviewedEffectiveSql": [
+      {
+        "path": ".qa/intake/rpc-contracts/effective-sql/save_session_recap_summary-1.sql",
+        "sha256": "78aa2e120df0e7ea548da637210560ee04c49a1b41f06fdd235b4c6255ba638e"
+      },
+      {
+        "path": ".qa/intake/rpc-contracts/effective-sql/save_session_recap_summary-2.sql",
+        "sha256": "9f32efdc341c62f5fbd16922d48bdd8ebc78ac535e41fc3cebb493f0b7942c52"
+      }
+    ],
+    "reviewedBaselineSha": "361af639940d0d4728387f07ae7a0797db8d4e58aa198df0f415440be9c3258c",
     "reviewedSources": [
       {
         "path": "src/infrastructure/session/session-recap-ai-service.ts",
-        "sha256": "dffb89748b308636c99dee90d2af597de0a0fdbb995359bad085d6f799f5987d"
+        "sha256": "61b31d8ae8f680ac4755cf499b42b8da5f0ab5bf85edede1248de5d0e9a364f6"
       },
       {
         "path": "src/lib/networkTimeout.ts",
@@ -5278,18 +5289,7 @@
         "path": "supabase/migrations/109_baseline_security_trust_boundaries.sql",
         "sha256": "4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b"
       }
-    ],
-    "reviewedEffectiveSql": [
-      {
-        "path": ".qa/intake/rpc-contracts/effective-sql/save_session_recap_summary-1.sql",
-        "sha256": "78aa2e120df0e7ea548da637210560ee04c49a1b41f06fdd235b4c6255ba638e"
-      },
-      {
-        "path": ".qa/intake/rpc-contracts/effective-sql/save_session_recap_summary-2.sql",
-        "sha256": "9f32efdc341c62f5fbd16922d48bdd8ebc78ac535e41fc3cebb493f0b7942c52"
-      }
-    ],
-    "reviewedBaselineSha": "361af639940d0d4728387f07ae7a0797db8d4e58aa198df0f415440be9c3258c"
+    ]
   },
   "create_user_saga_definition": {
     "summary": "Erzeugt eine eigene User-Saga mit erstem Entwurf und Revision null.",
@@ -10036,8 +10036,16 @@
     "reviewedBaselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248",
     "reviewedSources": [
       {
+        "path": "src/infrastructure/host/host-catalog-http.ts",
+        "sha256": "a33c807b3bde9200f472b2d4d057d633960fba65fcf14b32e6f7053adb9c9f5a"
+      },
+      {
         "path": "src/infrastructure/marketplace/marketplace-service.ts",
-        "sha256": "01b4f9b1474046827459e2930c90fc80b0cde69a70fda0e6cc043be46454c18f"
+        "sha256": "52c856bd8d5be2885897e155ade57bfdfed1b8eb7e48fe6fb1376b8e1a5284e8"
+      },
+      {
+        "path": "src/lib/hostAuthBridge.ts",
+        "sha256": "925a7e9e9c7cd24fcce69f39d39f7b1250b354800b5188636be319acbf1fe702"
       },
       {
         "path": "src/lib/supabase.ts",

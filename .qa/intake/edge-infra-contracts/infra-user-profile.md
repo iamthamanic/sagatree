@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-user-profile.json](source-contracts/infra-user-profile.json) (SHA-256 `26a60ad6e14bc3e4a447516cd4dd579c240b2e5ed53d4fc7b7dc06f6ca4b7d4e`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-user-profile.json](source-contracts/infra-user-profile.json) (SHA-256 `3b118d675a692fd5e4944d1727a1e3a0472d9815201213792d7eead1eb52e0cf`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -427,7 +427,7 @@ export type HostUserProfileOp = (typeof HOST_USER_PROFILE_OPS)[number];
 export const supabaseUserProfileRepository = new SupabaseUserProfileRepository();
 ```
 
-### src/infrastructure/user-profile/user-profile-service.ts:12
+### src/infrastructure/user-profile/user-profile-service.ts:16
 
 ```ts
 export type UploadUserAvatarOptions = {
@@ -440,7 +440,7 @@ export type UploadUserAvatarOptions = {
 };
 ```
 
-### src/infrastructure/user-profile/user-profile-service.ts:25
+### src/infrastructure/user-profile/user-profile-service.ts:29
 
 ```ts
 export async function prepareUserAvatarFile(
@@ -486,15 +486,25 @@ export async function prepareUserAvatarFile(
 }
 ```
 
-### src/infrastructure/user-profile/user-profile-service.ts:67
+### src/infrastructure/user-profile/user-profile-service.ts:71
 
 ```ts
 export const userProfileService = {
   async getOwnProfile(): Promise<UserProfileVm | null> {
+    if (isHostLibraryEnabled()) {
+      return fetchHostOwnUserProfile();
+    }
     return supabaseUserProfileRepository.getOwnProfile();
   },
 
   async getProfilesByUserIds(userIds: readonly string[]): Promise<UserProfileVm[]> {
+    if (isHostLibraryEnabled()) {
+      // Batch peer lobby profiles stay Supabase until a host batch route ships (FE-HOST-09).
+      if (userIds.length === 0) return [];
+      throw new Error(
+        'Fremde Profile laden ist im Host-Modus noch nicht verfügbar.',
+      );
+    }
     return supabaseUserProfileRepository.getProfilesByUserIds(userIds);
   },
 
@@ -502,6 +512,9 @@ export const userProfileService = {
     const prepared = options?.alreadyOptimized
       ? file
       : await prepareUserAvatarFile(file, options?.signal);
+    if (isHostLibraryEnabled()) {
+      return uploadHostUserAvatar(prepared);
+    }
     return supabaseUserProfileRepository.uploadAvatar(prepared);
   },
 
@@ -661,12 +674,17 @@ async uploadAvatar(file: File): Promise<UserProfileVm> {
 
 | Path | SHA-256 |
 |---|---|
+| `src/domains/marketplace/contracts/marketplace.types.ts` | `000aecc695577333ad6fce27422ad02bc15f26ffca88507ebfee1fafb04b9467` |
 | `src/domains/media/index.ts` | `768ded2d0f0fd1d510d660924e787817673955dbeff021d7de9e0a8d8e38bdec` |
 | `src/domains/media/optimization-contract.ts` | `ba9216dab79a9c03f66a16b77dedf1c26d4d00d6ae2693cc5a68919d1647846d` |
 | `src/domains/media/optimization-policy.ts` | `6145574bc08d1eb94f54d488ebc1f8bc030c2a956e3e3fd24cb15a7c8e50c5ec` |
+| `src/domains/rules/ruleset-catalog/index.ts` | `c2f52133fdeaa82ca586670b79ce0144063cc852a2a5ca8b5b6b44369fc0e21e` |
+| `src/domains/rules/ruleset-catalog/types.ts` | `1b76d37fc3c90d29d3f719644e6915a66462d7b55c4c6cec07a0caadfdf1512d` |
 | `src/domains/user-profile/contracts/user-profile.types.ts` | `2f3f3472e9a3448099144be0993fd83bbbc2270050ce76dceadd8821501c26b7` |
 | `src/domains/user-profile/display-name.ts` | `87cfc4858f198e56ea2857c505162f112efd5edacde4dbb1f7fcd995b4535516` |
 | `src/domains/user-profile/index.ts` | `d094d245ff9356298ef20c48635ca3e7adcc0e1ccf180554586949e0b496c496` |
+| `src/infrastructure/host/host-catalog-http.ts` | `a33c807b3bde9200f472b2d4d057d633960fba65fcf14b32e6f7053adb9c9f5a` |
+| `src/infrastructure/host/host-library-http.ts` | `c452cc3bf830068496fb10f705019cbdcc682586c1672b6a7572cd430b5d5069` |
 | `src/infrastructure/media/optimizer/engines/audio/index.ts` | `7585190a705085692bff0896e08b4d78f791895b47e24d57deeaaa10bb669d4e` |
 | `src/infrastructure/media/optimizer/engines/image/image.worker.ts` | `d34793b4de682556d9306194cfbcd05fdafdf215da25393f955d2669c7499276` |
 | `src/infrastructure/media/optimizer/engines/image/index.ts` | `4944001b7e0f7784d487da2e60d06d845aa564e9ddd7516ff50633af1591a322` |
@@ -686,8 +704,9 @@ async uploadAvatar(file: File): Promise<UserProfileVm> {
 | `src/infrastructure/user-profile/host-user-profile-ports.contract.ts` | `7f4aaaa098bd0a8625e916074ae7c4a0e2d34b99d4effd1ccb0a890148f01511` |
 | `src/infrastructure/user-profile/index.ts` | `5f2fbf0152a79c17b98a666612a79bfbef708482587e665604fa71cd16016e7a` |
 | `src/infrastructure/user-profile/supabase-user-profile.repository.ts` | `21c6318bd3941ea565a1160598a9ad6203c75d9a4d74a2ec10be33fe990dd076` |
-| `src/infrastructure/user-profile/user-profile-service.ts` | `0363483f748d866d6b361edcd5d94b6963cfb1a4d4e35a218e57801d166713d0` |
+| `src/infrastructure/user-profile/user-profile-service.ts` | `b842fa9db4e14d90424172ab942dcce00ebffd22e7404709703f9835f3a6eb62` |
 | `src/lib/authenticatedUser.ts` | `c822140996ae4d318c19d2ccb5318d77f2ba4d302bdfbcb50a79420a7ef70d74` |
+| `src/lib/hostAuthBridge.ts` | `925a7e9e9c7cd24fcce69f39d39f7b1250b354800b5188636be319acbf1fe702` |
 | `src/lib/localAdmin.ts` | `3a28dec23e85f25ed3e70682bc6e7f8c6b55e81dbbefdd1f6a837f68ac80d6b5` |
 | `src/lib/networkTimeout.ts` | `835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851` |
 | `src/lib/supabase.ts` | `a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f` |

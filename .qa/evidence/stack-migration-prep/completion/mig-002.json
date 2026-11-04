@@ -5,8 +5,8 @@
   "result": "PASS",
   "testedCommit": "2fd0686bd22f0ae69cfb45d020cf41ff8910f1bb",
   "githubClosed": true,
-  "mergeRef": "PR #860 → main (after #782)",
-  "note": "Completion requires merge SHA + hashed check artifacts. Inventories refreshed after FE-HOST-07/#1099 Codex P1/P2 auth hardening.",
+  "mergeRef": "PR #860 \u2192 main (after #782)",
+  "note": "Completion requires merge SHA + hashed check artifacts. Inventories refreshed after FE-HOST-08/#1100 marketplace/rulesets/user-profile catalog HTTP cutover.",
   "checks": [
     {
       "command": "legacy inventory matrix",
@@ -18,13 +18,13 @@
       "command": "rpc inventory 57",
       "result": "PASS",
       "evidenceFile": ".qa/intake/rpc-contracts/inventory.json",
-      "sha256": "91828647e5b8e75fb0fbc09b423a24466fb52cc8727fe8a5e2fb1b4f3f938de2"
+      "sha256": "2509632c9183c6675ed975ab6954f2f9d9abfefa535b9aeec47d6edfe0a1d839"
     },
     {
       "command": "edge/infra inventory 25+13",
       "result": "PASS",
       "evidenceFile": ".qa/intake/edge-infra-contracts/inventory.json",
-      "sha256": "d4ef7c5bf95e1158acbf8feab5b1d03c4c679af4a5d726175ea882b539557e68"
+      "sha256": "e797d809db6e9834a9e0f75f3cdd27a238f8a20a7f00f15b04238aca8a6774c3"
     }
   ]
 }

@@ -88,11 +88,18 @@ assert(RULESETS_MAP_IS_HOST_CATALOG_POLICY === false, 'Map is not host catalog p
 assert(isEdgeDispatcherAllowed('rulesets') === false, 'allowlist deny');
 assert(!EDGE_DISPATCHER_ALLOWLIST.includes('rulesets'), 'not in allowlist');
 const createApp = readFileSync(join(root, 'server/src/api/create-app.ts'), 'utf8');
-assert(!/\/rulesets|functions\/v1\/rulesets/i.test(createApp), 'create-app has no rulesets mount');
+assert(
+  !/functions\/v1\/rulesets|['"`]\/rulesets/i.test(createApp),
+  'create-app has no Edge rulesets Map mount',
+);
+assert(
+  /mountCatalogHttpRoutes/.test(createApp),
+  'catalog HTTP (host ruleset ports) mounted separately (FE-HOST-08)',
+);
 const routeRegistry = readFileSync(join(root, 'server/src/http/route-registry.ts'), 'utf8');
 assert(
-  !/\/rulesets|functions\/v1\/rulesets/.test(routeRegistry),
-  'route-registry has no rulesets mount',
+  !/functions\/v1\/rulesets|['"`]\/rulesets/.test(routeRegistry),
+  'route-registry has no Edge rulesets Map mount',
 );
 
 await withHandler(stubDeps({ trustedOrigins: [] }), async (base) => {

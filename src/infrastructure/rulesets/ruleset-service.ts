@@ -1,12 +1,25 @@
 /**
- * ruleset-service — Ruleset catalog service (Supabase adapter).
+ * ruleset-service — Ruleset catalog service (Supabase + host dual-path).
  * Location: src/infrastructure/rulesets/ruleset-service.ts
+ *
+ * Dual-path (FE-HOST-08): Host HTTP when `VITE_SAGATREE_HOST_LIBRARY=1`.
  */
 import { supabase } from '../../lib/supabase';
 import type { CreateRulesetDTO, Ruleset, UpdateRulesetDTO } from '../../domains/rules/ruleset-catalog';
+import {
+  createHostRuleset,
+  deleteHostRuleset,
+  fetchHostRuleset,
+  fetchHostRulesets,
+  isHostLibraryEnabled,
+  updateHostRuleset,
+} from '../host/host-catalog-http';
 
 export const rulesetService = {
   async getAll(): Promise<Ruleset[]> {
+    if (isHostLibraryEnabled()) {
+      return fetchHostRulesets(false);
+    }
     const { data, error } = await supabase
       .from('rulesets')
       .select('*')
@@ -18,6 +31,9 @@ export const rulesetService = {
   },
 
   async getOfficial(): Promise<Ruleset[]> {
+    if (isHostLibraryEnabled()) {
+      return fetchHostRulesets(true);
+    }
     const { data, error } = await supabase
       .from('rulesets')
       .select('*')
@@ -29,6 +45,9 @@ export const rulesetService = {
   },
 
   async getById(id: string): Promise<Ruleset | null> {
+    if (isHostLibraryEnabled()) {
+      return fetchHostRuleset(id);
+    }
     const { data, error } = await supabase.from('rulesets').select('*').eq('id', id).single();
 
     if (error) throw error;
@@ -36,6 +55,9 @@ export const rulesetService = {
   },
 
   async create(dto: CreateRulesetDTO): Promise<Ruleset> {
+    if (isHostLibraryEnabled()) {
+      return createHostRuleset(dto);
+    }
     const { data, error } = await supabase
       .from('rulesets')
       .insert({
@@ -51,6 +73,9 @@ export const rulesetService = {
   },
 
   async update(dto: UpdateRulesetDTO): Promise<Ruleset> {
+    if (isHostLibraryEnabled()) {
+      return updateHostRuleset(dto);
+    }
     const { id, ...updates } = dto;
     const { data, error } = await supabase
       .from('rulesets')
@@ -67,6 +92,10 @@ export const rulesetService = {
   },
 
   async delete(id: string): Promise<void> {
+    if (isHostLibraryEnabled()) {
+      await deleteHostRuleset(id);
+      return;
+    }
     const { error } = await supabase.from('rulesets').delete().eq('id', id);
 
     if (error) throw error;

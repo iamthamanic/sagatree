@@ -1,9 +1,13 @@
 /**
  * character-lore-service — Edge-function adapter for AI background generation.
  * Location: src/infrastructure/character/character-lore-service.ts
+ *
+ * FE-HOST-08: under host library flag, AI lore generation is explicitly unavailable
+ * (German error) until a host AI path is mounted — no Supabase hang.
  */
 import { supabase } from '../../lib/supabase';
 import type { CharacterLoreGenerationRequest, CharacterLoreGenerationResult } from '../../domains/character/contracts/character-lore.types';
+import { isHostLibraryEnabled } from '../host/host-library-http';
 
 type CharacterLoreFunctionResponse =
   | {
@@ -74,6 +78,11 @@ class CharacterLoreService {
   async generateBackground(
     request: CharacterLoreGenerationRequest,
   ): Promise<CharacterLoreGenerationResult> {
+    if (isHostLibraryEnabled()) {
+      throw new Error(
+        'KI-Hintergrundgeschichte ist im Host-Modus noch nicht verfügbar.',
+      );
+    }
     const { data, error } = await supabase.functions.invoke('character-lore', {
       body: {
         action: 'generate-background',

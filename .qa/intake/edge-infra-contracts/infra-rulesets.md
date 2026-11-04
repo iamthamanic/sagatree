@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-rulesets.json](source-contracts/infra-rulesets.json) (SHA-256 `b26a7d7ac4a716ef7316d76344bb229b97f3b92263252d221f66721315a78fec`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-rulesets.json](source-contracts/infra-rulesets.json) (SHA-256 `4ef3a8dc3ceff73fef99ef3ffd21944faa2e9c435b6c3ecb9ebfeba7d8c3bbf9`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -46,7 +46,7 @@ None in the reviewed source.
 
 ### table: rulesets
 
-`src/infrastructure/rulesets/ruleset-service.ts:10` — literal-or-constant.
+`src/infrastructure/rulesets/ruleset-service.ts:23` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -57,10 +57,10 @@ supabase
       .order('name')
 ```
 
-Enclosing operation: `src/infrastructure/rulesets/ruleset-service.ts:9`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/rulesets/ruleset-service.ts:19`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: rulesets
 
-`src/infrastructure/rulesets/ruleset-service.ts:21` — literal-or-constant.
+`src/infrastructure/rulesets/ruleset-service.ts:37` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -71,20 +71,20 @@ supabase
       .order('name')
 ```
 
-Enclosing operation: `src/infrastructure/rulesets/ruleset-service.ts:20`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/rulesets/ruleset-service.ts:33`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: rulesets
 
-`src/infrastructure/rulesets/ruleset-service.ts:32` — literal-or-constant.
+`src/infrastructure/rulesets/ruleset-service.ts:51` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
 supabase.from('rulesets').select('*').eq('id', id).single()
 ```
 
-Enclosing operation: `src/infrastructure/rulesets/ruleset-service.ts:31`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/rulesets/ruleset-service.ts:47`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: rulesets
 
-`src/infrastructure/rulesets/ruleset-service.ts:39` — literal-or-constant.
+`src/infrastructure/rulesets/ruleset-service.ts:61` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -99,10 +99,10 @@ supabase
       .single()
 ```
 
-Enclosing operation: `src/infrastructure/rulesets/ruleset-service.ts:38`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/rulesets/ruleset-service.ts:57`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: rulesets
 
-`src/infrastructure/rulesets/ruleset-service.ts:55` — literal-or-constant.
+`src/infrastructure/rulesets/ruleset-service.ts:80` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -117,25 +117,28 @@ supabase
       .single()
 ```
 
-Enclosing operation: `src/infrastructure/rulesets/ruleset-service.ts:53`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/rulesets/ruleset-service.ts:75`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: rulesets
 
-`src/infrastructure/rulesets/ruleset-service.ts:70` — literal-or-constant.
+`src/infrastructure/rulesets/ruleset-service.ts:99` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
 supabase.from('rulesets').delete().eq('id', id)
 ```
 
-Enclosing operation: `src/infrastructure/rulesets/ruleset-service.ts:69`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/rulesets/ruleset-service.ts:94`; complete request/default/result/error logic is in the declarations below and the snapshot.
 
 ## Complete public declarations and facade operation contracts
 
-### src/infrastructure/rulesets/ruleset-service.ts:8
+### src/infrastructure/rulesets/ruleset-service.ts:18
 
 ```ts
 export const rulesetService = {
   async getAll(): Promise<Ruleset[]> {
+    if (isHostLibraryEnabled()) {
+      return fetchHostRulesets(false);
+    }
     const { data, error } = await supabase
       .from('rulesets')
       .select('*')
@@ -147,6 +150,9 @@ export const rulesetService = {
   },
 
   async getOfficial(): Promise<Ruleset[]> {
+    if (isHostLibraryEnabled()) {
+      return fetchHostRulesets(true);
+    }
     const { data, error } = await supabase
       .from('rulesets')
       .select('*')
@@ -158,6 +164,9 @@ export const rulesetService = {
   },
 
   async getById(id: string): Promise<Ruleset | null> {
+    if (isHostLibraryEnabled()) {
+      return fetchHostRuleset(id);
+    }
     const { data, error } = await supabase.from('rulesets').select('*').eq('id', id).single();
 
     if (error) throw error;
@@ -165,6 +174,9 @@ export const rulesetService = {
   },
 
   async create(dto: CreateRulesetDTO): Promise<Ruleset> {
+    if (isHostLibraryEnabled()) {
+      return createHostRuleset(dto);
+    }
     const { data, error } = await supabase
       .from('rulesets')
       .insert({
@@ -180,6 +192,9 @@ export const rulesetService = {
   },
 
   async update(dto: UpdateRulesetDTO): Promise<Ruleset> {
+    if (isHostLibraryEnabled()) {
+      return updateHostRuleset(dto);
+    }
     const { id, ...updates } = dto;
     const { data, error } = await supabase
       .from('rulesets')
@@ -196,6 +211,10 @@ export const rulesetService = {
   },
 
   async delete(id: string): Promise<void> {
+    if (isHostLibraryEnabled()) {
+      await deleteHostRuleset(id);
+      return;
+    }
     const { error } = await supabase.from('rulesets').delete().eq('id', id);
 
     if (error) throw error;
@@ -212,8 +231,15 @@ All backend operations are included in the public declarations above.
 
 | Path | SHA-256 |
 |---|---|
+| `src/domains/marketplace/contracts/marketplace.types.ts` | `000aecc695577333ad6fce27422ad02bc15f26ffca88507ebfee1fafb04b9467` |
 | `src/domains/rules/ruleset-catalog/index.ts` | `c2f52133fdeaa82ca586670b79ce0144063cc852a2a5ca8b5b6b44369fc0e21e` |
 | `src/domains/rules/ruleset-catalog/types.ts` | `1b76d37fc3c90d29d3f719644e6915a66462d7b55c4c6cec07a0caadfdf1512d` |
-| `src/infrastructure/rulesets/ruleset-service.ts` | `edc092742690e6c376d1a9e8b6c4900672dc79f0f4754773c0953f87a91e1d4d` |
+| `src/domains/user-profile/contracts/user-profile.types.ts` | `2f3f3472e9a3448099144be0993fd83bbbc2270050ce76dceadd8821501c26b7` |
+| `src/domains/user-profile/display-name.ts` | `87cfc4858f198e56ea2857c505162f112efd5edacde4dbb1f7fcd995b4535516` |
+| `src/domains/user-profile/index.ts` | `d094d245ff9356298ef20c48635ca3e7adcc0e1ccf180554586949e0b496c496` |
+| `src/infrastructure/host/host-catalog-http.ts` | `a33c807b3bde9200f472b2d4d057d633960fba65fcf14b32e6f7053adb9c9f5a` |
+| `src/infrastructure/host/host-library-http.ts` | `c452cc3bf830068496fb10f705019cbdcc682586c1672b6a7572cd430b5d5069` |
+| `src/infrastructure/rulesets/ruleset-service.ts` | `bab6988a93fe3d917d9014a02b832dd8c4b803f81e9cfb36f107411f0e763542` |
+| `src/lib/hostAuthBridge.ts` | `925a7e9e9c7cd24fcce69f39d39f7b1250b354800b5188636be319acbf1fe702` |
 | `src/lib/supabase.ts` | `a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f` |
 
