@@ -1,26 +1,43 @@
-# Composition Gate — browser-host-FE-HOST-10
+# Composition Gate — browser-host-fe-host-10 (#1115)
 
-**Verdict:** CLEAR  
-**HEAD:** `8b685325431e1509f9f4ffeaa6a02a6e9d6e64d4`  
-**Issue:** #1115
+- HEAD_SHA: c7c499dc9331905f4e3c6c8861f8bc40ef2bd97d
+- BASE_SHA: ed1ea80a38070b35a6cf59ba6c8add50ba41c079
+- Date: 2026-11-04
+- Verdict: CLEAR
+- Acceptance tier: feature-integration
+- Deferred integration: FE-HOST-11 atlas seed; FE-HOST-12 project writes; FE-HOST-13 saga HTTP; FE-HOST-14 AI/Meshy residuals; GATE-05
 
-## Intent
+## Event
 
-Dual demo users + per-actor Dornhain defaults + host auth session UX under host-first.
+Host-first product defaults: Better Auth demo users get per-actor Dornhain
+via ensure-starter; MIG-015 solo identity + FE auto-link; Library mutations
+honor linked solo owners; Vite `/api` same-origin proxy; Dashboard „Session hosten“.
 
-## Composition
+## Hop chain
 
-- Auth: Better Auth cookies + solo identity link (MIG-015) + ensure-starter owned seed
-- Library: linked-owner list/get/patch/delete
-- FE: same-origin Vite `/api` proxy; Dashboard Session hosten
-- No new Supabase product path
+1. **Producer (UI):** Login / Library / ensureNativeStarterProject
+2. **Gate:** `isHostLibraryEnabled` + host cookie session
+3. **Transport:** credentialed `/api/auth`, `/api/solo/*`, `/api/v1/library/*`, ensure-starter
+4. **Authorize:** Better Auth cookie; solo link confirm; owner-scoped ids
+5. **Persist:** Host SQLite (`ensureDornhainDefaultCatalog` + library ports)
+6. **Consumer:** Library VMs / Session hosten CTA
 
-## Boundaries
+Cardinality: one remote actor per owned Dornhain copy; shared saga slug reused.
 
-- domains untouched for business rules beyond nativeTag metadata in seed sheets
-- infrastructure host HTTP + auth bridge only
-- Residual DENY allowlist otherwise unchanged (deferred FE-HOST-11..14)
+## Simulations
 
-## Risks
+| Case | Intended | Composed | Result |
+|------|----------|----------|--------|
+| N-actors | Two remotes each get ≥4 Dornhain pregens | ensure-starter + scoped catalog ids | pass |
+| Invalid/missing | Unauth library/whoami DENY | fe-host-07 self-test | pass |
+| Two consumers / crash | Solo link optional; owned seed still works | project-infra fallback | pass |
 
-- Scoped catalog ids diverge from cutover drill fixture ids for remote actors (intentional)
+## Flags
+
+| Tag | Severity | Hops | Why local review missed it | Fix |
+|-----|----------|------|----------------------------|-----|
+| (none) | — | — | — | — |
+
+## Residual risk
+
+Atlas geometry still empty until FE-HOST-11; residual DENY allowlist otherwise unchanged.
