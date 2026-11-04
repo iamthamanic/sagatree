@@ -237,6 +237,111 @@ function applyOwnedDornhainCatalog(
   }
 }
 
+const DORHAIN_ATLAS_ROOT_STABLE = 'dh-atlas-root';
+const DORHAIN_ATLAS_PLACES: readonly {
+  readonly stableId: string;
+  readonly seedKey: string;
+  readonly name: string;
+  readonly kind: string;
+  readonly description: string;
+  readonly anchor: { readonly x: number; readonly y: number } | null;
+}[] = [
+  {
+    stableId: 'dh-place-square',
+    seedKey: 'dornhain.marktplatz',
+    name: 'Marktplatz',
+    kind: 'settlement',
+    description: 'Dornhain Marktplatz — Startpunkt der Whisper-Road.',
+    anchor: { x: 10, y: 12 },
+  },
+  {
+    stableId: 'dh-place-whisper',
+    seedKey: 'dornhain.whisper-road',
+    name: 'Whisper Road',
+    kind: 'region',
+    description: 'Die Whisper Road führt hinaus aus Dornhain.',
+    anchor: null,
+  },
+];
+
+/** FE-HOST-11: idempotent root atlas map + places for the owned Dornhain world. */
+function seedOwnedDornhainAtlas(
+  db: HostDatabase,
+  ownerUserId: string,
+  worldId: string,
+  now: string,
+): void {
+  const mapId = scopedCatalogId(ownerUserId, DORHAIN_ATLAS_ROOT_STABLE);
+  const layers = {
+    type: 'FeatureCollection',
+    features: DORHAIN_ATLAS_PLACES.filter((p) => p.anchor).map((p) => ({
+      type: 'Feature',
+      id: scopedCatalogId(ownerUserId, p.stableId),
+      properties: { name: p.name, seedKey: p.seedKey },
+      geometry: {
+        type: 'Point',
+        coordinates: [p.anchor!.x, p.anchor!.y],
+      },
+    })),
+  };
+
+  db.prepare(
+    `INSERT OR IGNORE INTO world_atlas_maps (
+       id, world_profile_id, parent_map_id, kind, title, sort_order,
+       bounds, layers, generator_meta, revision, created_at, updated_at
+     ) VALUES (?, ?, NULL, 'world', ?, 0, ?, ?, ?, 1, ?, ?)`,
+  ).run(
+    mapId,
+    worldId,
+    'Dornhain — Weltkarte',
+    JSON.stringify({ minX: 0, minY: 0, maxX: 1000, maxY: 1000 }),
+    JSON.stringify(layers),
+    JSON.stringify({ engine: 'manual', nativeTag: 'SagaTree Native', sagaSlug: DORHAIN_SLUG }),
+    now,
+    now,
+  );
+
+  for (const [index, place] of DORHAIN_ATLAS_PLACES.entries()) {
+    const placeId = scopedCatalogId(ownerUserId, place.stableId);
+    db.prepare(
+      `INSERT OR IGNORE INTO world_places (
+         id, world_profile_id, parent_place_id, kind, name, description,
+         status, seed_key, sort_order, revision, created_at, updated_at
+       ) VALUES (?, ?, NULL, ?, ?, ?, 'canonical', ?, ?, 0, ?, ?)`,
+    ).run(
+      placeId,
+      worldId,
+      place.kind,
+      place.name,
+      place.description,
+      place.seedKey,
+      index,
+      now,
+      now,
+    );
+
+    const linkId = scopedCatalogId(ownerUserId, `${place.stableId}-link`);
+    const usage = place.anchor ? 'primary' : 'overview';
+    const anchor = place.anchor ? { x: place.anchor.x, y: place.anchor.y } : {};
+    db.prepare(
+      `INSERT OR IGNORE INTO world_place_map_links (
+         id, world_profile_id, place_id, map_id, usage, feature_id, anchor,
+         created_at, updated_at
+       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    ).run(
+      linkId,
+      worldId,
+      placeId,
+      mapId,
+      usage,
+      place.anchor ? placeId : null,
+      JSON.stringify(anchor),
+      now,
+      now,
+    );
+  }
+}
+
 function createDornhainProject(
   db: HostDatabase,
   ownerUserId: string,
@@ -288,6 +393,7 @@ export function ensureDornhainDefaultCatalog(
 
   if (existingWorldId && ownedSagaId) {
     applyOwnedDornhainCatalog(db, ownerUserId, existingWorldId, catalog, now);
+    seedOwnedDornhainAtlas(db, ownerUserId, existingWorldId, now);
     const projectId =
       findOwnedProjectId(db, ownerUserId, existingWorldId) ??
       createDornhainProject(db, ownerUserId, existingWorldId, ownedSagaId, now);
@@ -354,6 +460,7 @@ export function ensureDornhainDefaultCatalog(
   ).run(assetId, ownerUserId, bytes.byteLength, checksum, assetId, now);
 
   applyOwnedDornhainCatalog(db, ownerUserId, worldId, catalog, now);
+  seedOwnedDornhainAtlas(db, ownerUserId, worldId, now);
 
   return { seeded: true, worldId, projectId: resolvedProjectId };
 }

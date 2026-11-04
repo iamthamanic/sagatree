@@ -174,10 +174,29 @@ try {
     cookie,
     headers: { Origin: baseURL },
   });
-  assert(
-    (worlds.json?.worlds ?? []).some((w) => w.title === 'Dornhain'),
-    'Dornhain world listed',
-  );
+  const dornhainWorld = (worlds.json?.worlds ?? []).find((w) => w.title === 'Dornhain');
+  assert(dornhainWorld, 'Dornhain world listed');
+
+  // FE-HOST-11 — atlas maps + places seeded with Dornhain starter world
+  const atlasMaps = await httpJson(baseURL, `/api/v1/worlds/${dornhainWorld.id}/atlas/maps`, {
+    cookie,
+    headers: { Origin: baseURL },
+  });
+  assert(atlasMaps.res.status === 200, `atlas maps ${atlasMaps.res.status} ${atlasMaps.text}`);
+  const mapCount = Array.isArray(atlasMaps.json?.maps)
+    ? atlasMaps.json.maps.length
+    : Array.isArray(atlasMaps.json)
+      ? atlasMaps.json.length
+      : 0;
+  assert(mapCount >= 1, `Dornhain atlas maps ≥1 (got ${mapCount})`);
+
+  const places = await httpJson(baseURL, `/api/v1/worlds/${dornhainWorld.id}/places`, {
+    cookie,
+    headers: { Origin: baseURL },
+  });
+  assert(places.res.status === 200, `places ${places.res.status} ${places.text}`);
+  const placeCount = Array.isArray(places.json?.places) ? places.json.places.length : 0;
+  assert(placeCount >= 2, `Dornhain places ≥2 (got ${placeCount})`);
 
   // Second remote user also gets an owned Dornhain copy (no solo-link required).
   const email2 = 'player@fehost07.test';
