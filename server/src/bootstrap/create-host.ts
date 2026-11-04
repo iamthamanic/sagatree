@@ -472,6 +472,7 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
       project,
       sessionInfra: sessionInfraPorts,
       projectInfra,
+      sagaInfra,
       assets,
       marketplace,
       rulesets,

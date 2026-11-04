@@ -5387,8 +5387,12 @@
         "sha256": "69b148debc95006bb31daa7a94caf4e1507ac3089fdf399952102c4effa3759c"
       },
       {
+        "path": "src/infrastructure/host/host-saga-definition-http.ts",
+        "sha256": "3bf857114def303681691297c71f09a9b6278658e51cad659f0d7e51e0a819f1"
+      },
+      {
         "path": "src/infrastructure/saga/saga-definition-service.ts",
-        "sha256": "5a5b280f5ba4e37d9d6153146d4f2d1629ac19a30f0c34fc8213a30638a92d79"
+        "sha256": "bff1c95f3554628b28ba1db530db0807bcd3351e8f76139730756e9b1a54fea3"
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
@@ -5457,8 +5461,12 @@
         "sha256": "69b148debc95006bb31daa7a94caf4e1507ac3089fdf399952102c4effa3759c"
       },
       {
+        "path": "src/infrastructure/host/host-saga-definition-http.ts",
+        "sha256": "3bf857114def303681691297c71f09a9b6278658e51cad659f0d7e51e0a819f1"
+      },
+      {
         "path": "src/infrastructure/saga/saga-definition-service.ts",
-        "sha256": "5a5b280f5ba4e37d9d6153146d4f2d1629ac19a30f0c34fc8213a30638a92d79"
+        "sha256": "bff1c95f3554628b28ba1db530db0807bcd3351e8f76139730756e9b1a54fea3"
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
@@ -5530,8 +5538,12 @@
         "sha256": "69b148debc95006bb31daa7a94caf4e1507ac3089fdf399952102c4effa3759c"
       },
       {
+        "path": "src/infrastructure/host/host-saga-definition-http.ts",
+        "sha256": "3bf857114def303681691297c71f09a9b6278658e51cad659f0d7e51e0a819f1"
+      },
+      {
         "path": "src/infrastructure/saga/saga-definition-service.ts",
-        "sha256": "5a5b280f5ba4e37d9d6153146d4f2d1629ac19a30f0c34fc8213a30638a92d79"
+        "sha256": "bff1c95f3554628b28ba1db530db0807bcd3351e8f76139730756e9b1a54fea3"
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
@@ -5640,8 +5652,12 @@
         "sha256": "69b148debc95006bb31daa7a94caf4e1507ac3089fdf399952102c4effa3759c"
       },
       {
+        "path": "src/infrastructure/host/host-saga-definition-http.ts",
+        "sha256": "3bf857114def303681691297c71f09a9b6278658e51cad659f0d7e51e0a819f1"
+      },
+      {
         "path": "src/infrastructure/saga/saga-definition-service.ts",
-        "sha256": "5a5b280f5ba4e37d9d6153146d4f2d1629ac19a30f0c34fc8213a30638a92d79"
+        "sha256": "bff1c95f3554628b28ba1db530db0807bcd3351e8f76139730756e9b1a54fea3"
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
@@ -5750,8 +5766,12 @@
         "sha256": "69b148debc95006bb31daa7a94caf4e1507ac3089fdf399952102c4effa3759c"
       },
       {
+        "path": "src/infrastructure/host/host-saga-definition-http.ts",
+        "sha256": "3bf857114def303681691297c71f09a9b6278658e51cad659f0d7e51e0a819f1"
+      },
+      {
         "path": "src/infrastructure/saga/saga-definition-service.ts",
-        "sha256": "5a5b280f5ba4e37d9d6153146d4f2d1629ac19a30f0c34fc8213a30638a92d79"
+        "sha256": "bff1c95f3554628b28ba1db530db0807bcd3351e8f76139730756e9b1a54fea3"
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
@@ -5828,8 +5848,12 @@
         "sha256": "69b148debc95006bb31daa7a94caf4e1507ac3089fdf399952102c4effa3759c"
       },
       {
+        "path": "src/infrastructure/host/host-saga-definition-http.ts",
+        "sha256": "3bf857114def303681691297c71f09a9b6278658e51cad659f0d7e51e0a819f1"
+      },
+      {
         "path": "src/infrastructure/saga/saga-definition-service.ts",
-        "sha256": "5a5b280f5ba4e37d9d6153146d4f2d1629ac19a30f0c34fc8213a30638a92d79"
+        "sha256": "bff1c95f3554628b28ba1db530db0807bcd3351e8f76139730756e9b1a54fea3"
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
@@ -5902,8 +5926,12 @@
         "sha256": "69b148debc95006bb31daa7a94caf4e1507ac3089fdf399952102c4effa3759c"
       },
       {
+        "path": "src/infrastructure/host/host-saga-definition-http.ts",
+        "sha256": "3bf857114def303681691297c71f09a9b6278658e51cad659f0d7e51e0a819f1"
+      },
+      {
         "path": "src/infrastructure/saga/saga-definition-service.ts",
-        "sha256": "5a5b280f5ba4e37d9d6153146d4f2d1629ac19a30f0c34fc8213a30638a92d79"
+        "sha256": "bff1c95f3554628b28ba1db530db0807bcd3351e8f76139730756e9b1a54fea3"
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
@@ -5986,8 +6014,12 @@
         "sha256": "69b148debc95006bb31daa7a94caf4e1507ac3089fdf399952102c4effa3759c"
       },
       {
+        "path": "src/infrastructure/host/host-saga-definition-http.ts",
+        "sha256": "3bf857114def303681691297c71f09a9b6278658e51cad659f0d7e51e0a819f1"
+      },
+      {
         "path": "src/infrastructure/saga/saga-definition-service.ts",
-        "sha256": "5a5b280f5ba4e37d9d6153146d4f2d1629ac19a30f0c34fc8213a30638a92d79"
+        "sha256": "bff1c95f3554628b28ba1db530db0807bcd3351e8f76139730756e9b1a54fea3"
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
@@ -6104,8 +6136,12 @@
         "sha256": "69b148debc95006bb31daa7a94caf4e1507ac3089fdf399952102c4effa3759c"
       },
       {
+        "path": "src/infrastructure/host/host-saga-definition-http.ts",
+        "sha256": "3bf857114def303681691297c71f09a9b6278658e51cad659f0d7e51e0a819f1"
+      },
+      {
         "path": "src/infrastructure/saga/saga-definition-service.ts",
-        "sha256": "5a5b280f5ba4e37d9d6153146d4f2d1629ac19a30f0c34fc8213a30638a92d79"
+        "sha256": "bff1c95f3554628b28ba1db530db0807bcd3351e8f76139730756e9b1a54fea3"
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
