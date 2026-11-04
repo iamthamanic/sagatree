@@ -35,7 +35,7 @@
     },
     {
       "path": "src/lib/hostAuthBridge.ts",
-      "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+      "sha256": "0de05e68ee6699238e48897ea41de2d6f133ef4818159729ba694d96fbee1c98"
     },
     {
       "path": "src/lib/supabase.ts",
