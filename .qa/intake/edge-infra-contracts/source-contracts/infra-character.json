@@ -1015,7 +1015,7 @@
     },
     {
       "path": "src/infrastructure/host/host-project-http.ts",
-      "sha256": "2d666f7c1ac35c7760f725e53b98310f28033800418d67a79a69d801c3e1a8fe"
+      "sha256": "f617811defaa0b01d7991c9c411f045641636678e0ad17f5a4ee3fddf825cab0"
     },
     {
       "path": "src/infrastructure/inventory/inventory-persistence.ts",
@@ -1135,7 +1135,7 @@
     },
     {
       "path": "src/infrastructure/project/project-service.ts",
-      "sha256": "c92385b9656039cf348230edf003a7f37b90f519d91ab7bc9eb0c9d2ac0d8a3a"
+      "sha256": "2b692de31098ccdf7c3a73383e4db950116f88b3fda10843d9edf4b479563210"
     },
     {
       "path": "src/infrastructure/session/media/livekit-media-plane-adapter.ts",
@@ -1163,7 +1163,7 @@
     },
     {
       "path": "src/lib/authenticatedUser.ts",
-      "sha256": "6511efe22e63dcd5a964bfb413f1ab8aa1beda804abcf7d4e5936e617b6d169b"
+      "sha256": "d4cbf3a004f8375982ca03d474fb7b61559fc2ec58ad6fe7b1f8834d26abf10c"
     },
     {
       "path": "src/lib/entityCache.ts",
@@ -7418,6 +7418,14 @@
       "line": 12,
       "endLine": 15,
       "text": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "HostProjectSessionDto",
+      "path": "src/infrastructure/host/host-project-http.ts",
+      "line": 123,
+      "endLine": 130,
+      "text": "export type HostProjectSessionDto = {\n  readonly id: string;\n  readonly projectId: string;\n  readonly publicId?: string;\n  readonly status?: string;\n  readonly sessionNumber?: number | null;\n  readonly name?: string | null;\n};"
     },
     {
       "kind": "InterfaceDeclaration",

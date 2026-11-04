@@ -16,6 +16,8 @@ import {
   isHostLibraryEnabled,
   type HostLibraryProjectDto,
 } from '../host/host-library-http';
+import { createHostProjectSession } from '../host/host-project-http';
+import { assertHostProductSurfaceAvailable } from '../host/host-product-deny';
 import { projectMemberService } from './project-member-service';
 import type {
   ProjectDto,
@@ -261,6 +263,7 @@ class ProjectService {
    * Create new project (as GM)
    */
   async createProject(payload: CreateProjectDto): Promise<ProjectVm> {
+    assertHostProductSurfaceAvailable('Saga anlegen');
     const userId = await getAuthenticatedUserId();
 
     const code = this.generateProjectCode();
@@ -677,6 +680,7 @@ class ProjectService {
    * Update project
    */
   async updateProject(id: string, updates: Partial<ProjectDto>): Promise<ProjectVm> {
+    assertHostProductSurfaceAvailable('Saga bearbeiten');
     const { error } = await supabase
       .from(this.tableName)
       .update(updates)
@@ -723,6 +727,7 @@ class ProjectService {
     sessionId: string,
     settings: { lookProfileId: string | null },
   ): Promise<SessionVm> {
+    assertHostProductSurfaceAvailable('Session-Look');
     const { data, error } = await supabase
       .from(this.sessionsTableName)
       .update({ look_profile_id: settings.lookProfileId })
@@ -758,6 +763,7 @@ class ProjectService {
    * Delete project
    */
   async deleteProject(id: string): Promise<void> {
+    assertHostProductSurfaceAvailable('Saga löschen');
     const { error } = await supabase
       .from(this.tableName)
       .delete()
@@ -845,6 +851,36 @@ class ProjectService {
     name?: string;
     notes?: string;
   }): Promise<SessionVm> {
+    if (isHostLibraryEnabled()) {
+      const row = await createHostProjectSession(
+        payload.projectId,
+        payload.name ?? null,
+        payload.notes ?? null,
+      );
+      const status =
+        row.status === 'scheduled' ||
+        row.status === 'waiting' ||
+        row.status === 'active' ||
+        row.status === 'paused' ||
+        row.status === 'completed'
+          ? row.status
+          : 'scheduled';
+      return {
+        id: row.id,
+        publicId: typeof row.publicId === 'string' ? row.publicId : '',
+        projectId: row.projectId,
+        sessionNumber: typeof row.sessionNumber === 'number' ? row.sessionNumber : 0,
+        name: row.name ?? null,
+        notes: null,
+        status,
+        startedAt: null,
+        endedAt: null,
+        durationMinutes: null,
+        lookProfileId: null,
+        createdAt: new Date().toISOString(),
+      };
+    }
+
     const { data, error } = await supabase.rpc('create_project_session', {
       p_project_id: payload.projectId,
       p_name: payload.name ?? null,

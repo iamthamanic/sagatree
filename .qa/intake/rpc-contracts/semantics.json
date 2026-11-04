@@ -4170,8 +4170,16 @@
         "sha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c"
       },
       {
+        "path": "src/infrastructure/host/host-project-http.ts",
+        "sha256": "f617811defaa0b01d7991c9c411f045641636678e0ad17f5a4ee3fddf825cab0"
+      },
+      {
         "path": "src/infrastructure/project/project-service.ts",
-        "sha256": "c92385b9656039cf348230edf003a7f37b90f519d91ab7bc9eb0c9d2ac0d8a3a"
+        "sha256": "2b692de31098ccdf7c3a73383e4db950116f88b3fda10843d9edf4b479563210"
+      },
+      {
+        "path": "src/lib/hostAuthBridge.ts",
+        "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
       },
       {
         "path": "src/lib/supabase.ts",
@@ -6215,7 +6223,7 @@
       },
       {
         "path": "src/infrastructure/project/project-service.ts",
-        "sha256": "c92385b9656039cf348230edf003a7f37b90f519d91ab7bc9eb0c9d2ac0d8a3a"
+        "sha256": "2b692de31098ccdf7c3a73383e4db950116f88b3fda10843d9edf4b479563210"
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
@@ -6436,7 +6444,7 @@
       },
       {
         "path": "src/infrastructure/host/host-project-http.ts",
-        "sha256": "2d666f7c1ac35c7760f725e53b98310f28033800418d67a79a69d801c3e1a8fe"
+        "sha256": "f617811defaa0b01d7991c9c411f045641636678e0ad17f5a4ee3fddf825cab0"
       },
       {
         "path": "src/infrastructure/project/project-member-service.ts",
@@ -6573,7 +6581,7 @@
       },
       {
         "path": "src/infrastructure/host/host-project-http.ts",
-        "sha256": "2d666f7c1ac35c7760f725e53b98310f28033800418d67a79a69d801c3e1a8fe"
+        "sha256": "f617811defaa0b01d7991c9c411f045641636678e0ad17f5a4ee3fddf825cab0"
       },
       {
         "path": "src/infrastructure/project/project-member-service.ts",
@@ -6690,7 +6698,7 @@
       },
       {
         "path": "src/infrastructure/host/host-project-http.ts",
-        "sha256": "2d666f7c1ac35c7760f725e53b98310f28033800418d67a79a69d801c3e1a8fe"
+        "sha256": "f617811defaa0b01d7991c9c411f045641636678e0ad17f5a4ee3fddf825cab0"
       },
       {
         "path": "src/infrastructure/project/saga-permission-service.ts",
@@ -6783,7 +6791,7 @@
       },
       {
         "path": "src/infrastructure/host/host-project-http.ts",
-        "sha256": "2d666f7c1ac35c7760f725e53b98310f28033800418d67a79a69d801c3e1a8fe"
+        "sha256": "f617811defaa0b01d7991c9c411f045641636678e0ad17f5a4ee3fddf825cab0"
       },
       {
         "path": "src/infrastructure/project/saga-permission-service.ts",
@@ -6884,7 +6892,7 @@
       },
       {
         "path": "src/infrastructure/host/host-project-http.ts",
-        "sha256": "2d666f7c1ac35c7760f725e53b98310f28033800418d67a79a69d801c3e1a8fe"
+        "sha256": "f617811defaa0b01d7991c9c411f045641636678e0ad17f5a4ee3fddf825cab0"
       },
       {
         "path": "src/infrastructure/project/saga-permission-service.ts",
@@ -6974,7 +6982,7 @@
       },
       {
         "path": "src/infrastructure/host/host-project-http.ts",
-        "sha256": "2d666f7c1ac35c7760f725e53b98310f28033800418d67a79a69d801c3e1a8fe"
+        "sha256": "f617811defaa0b01d7991c9c411f045641636678e0ad17f5a4ee3fddf825cab0"
       },
       {
         "path": "src/infrastructure/project/saga-permission-service.ts",
@@ -7063,7 +7071,7 @@
       },
       {
         "path": "src/infrastructure/host/host-project-http.ts",
-        "sha256": "2d666f7c1ac35c7760f725e53b98310f28033800418d67a79a69d801c3e1a8fe"
+        "sha256": "f617811defaa0b01d7991c9c411f045641636678e0ad17f5a4ee3fddf825cab0"
       },
       {
         "path": "src/infrastructure/project/saga-permission-service.ts",
@@ -7160,7 +7168,7 @@
       },
       {
         "path": "src/infrastructure/host/host-project-http.ts",
-        "sha256": "2d666f7c1ac35c7760f725e53b98310f28033800418d67a79a69d801c3e1a8fe"
+        "sha256": "f617811defaa0b01d7991c9c411f045641636678e0ad17f5a4ee3fddf825cab0"
       },
       {
         "path": "src/infrastructure/project/saga-permission-service.ts",
@@ -7278,7 +7286,7 @@
       },
       {
         "path": "src/infrastructure/host/host-project-http.ts",
-        "sha256": "2d666f7c1ac35c7760f725e53b98310f28033800418d67a79a69d801c3e1a8fe"
+        "sha256": "f617811defaa0b01d7991c9c411f045641636678e0ad17f5a4ee3fddf825cab0"
       },
       {
         "path": "src/infrastructure/project/saga-overview-service.ts",
@@ -7965,15 +7973,11 @@
       },
       {
         "path": "src/lib/authenticatedUser.ts",
-        "sha256": "6511efe22e63dcd5a964bfb413f1ab8aa1beda804abcf7d4e5936e617b6d169b"
+        "sha256": "d4cbf3a004f8375982ca03d474fb7b61559fc2ec58ad6fe7b1f8834d26abf10c"
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
         "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
-      },
-      {
-        "path": "src/lib/localAdmin.ts",
-        "sha256": "3a28dec23e85f25ed3e70682bc6e7f8c6b55e81dbbefdd1f6a837f68ac80d6b5"
       },
       {
         "path": "src/lib/networkTimeout.ts",
@@ -8155,15 +8159,11 @@
       },
       {
         "path": "src/lib/authenticatedUser.ts",
-        "sha256": "6511efe22e63dcd5a964bfb413f1ab8aa1beda804abcf7d4e5936e617b6d169b"
+        "sha256": "d4cbf3a004f8375982ca03d474fb7b61559fc2ec58ad6fe7b1f8834d26abf10c"
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
         "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
-      },
-      {
-        "path": "src/lib/localAdmin.ts",
-        "sha256": "3a28dec23e85f25ed3e70682bc6e7f8c6b55e81dbbefdd1f6a837f68ac80d6b5"
       },
       {
         "path": "src/lib/networkTimeout.ts",
@@ -8342,15 +8342,11 @@
       },
       {
         "path": "src/lib/authenticatedUser.ts",
-        "sha256": "6511efe22e63dcd5a964bfb413f1ab8aa1beda804abcf7d4e5936e617b6d169b"
+        "sha256": "d4cbf3a004f8375982ca03d474fb7b61559fc2ec58ad6fe7b1f8834d26abf10c"
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
         "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
-      },
-      {
-        "path": "src/lib/localAdmin.ts",
-        "sha256": "3a28dec23e85f25ed3e70682bc6e7f8c6b55e81dbbefdd1f6a837f68ac80d6b5"
       },
       {
         "path": "src/lib/networkTimeout.ts",
@@ -8491,15 +8487,11 @@
       },
       {
         "path": "src/lib/authenticatedUser.ts",
-        "sha256": "6511efe22e63dcd5a964bfb413f1ab8aa1beda804abcf7d4e5936e617b6d169b"
+        "sha256": "d4cbf3a004f8375982ca03d474fb7b61559fc2ec58ad6fe7b1f8834d26abf10c"
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
         "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
-      },
-      {
-        "path": "src/lib/localAdmin.ts",
-        "sha256": "3a28dec23e85f25ed3e70682bc6e7f8c6b55e81dbbefdd1f6a837f68ac80d6b5"
       },
       {
         "path": "src/lib/networkTimeout.ts",
@@ -8654,15 +8646,11 @@
       },
       {
         "path": "src/lib/authenticatedUser.ts",
-        "sha256": "6511efe22e63dcd5a964bfb413f1ab8aa1beda804abcf7d4e5936e617b6d169b"
+        "sha256": "d4cbf3a004f8375982ca03d474fb7b61559fc2ec58ad6fe7b1f8834d26abf10c"
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
         "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
-      },
-      {
-        "path": "src/lib/localAdmin.ts",
-        "sha256": "3a28dec23e85f25ed3e70682bc6e7f8c6b55e81dbbefdd1f6a837f68ac80d6b5"
       },
       {
         "path": "src/lib/networkTimeout.ts",
@@ -8800,15 +8788,11 @@
       },
       {
         "path": "src/lib/authenticatedUser.ts",
-        "sha256": "6511efe22e63dcd5a964bfb413f1ab8aa1beda804abcf7d4e5936e617b6d169b"
+        "sha256": "d4cbf3a004f8375982ca03d474fb7b61559fc2ec58ad6fe7b1f8834d26abf10c"
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
         "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
-      },
-      {
-        "path": "src/lib/localAdmin.ts",
-        "sha256": "3a28dec23e85f25ed3e70682bc6e7f8c6b55e81dbbefdd1f6a837f68ac80d6b5"
       },
       {
         "path": "src/lib/networkTimeout.ts",
@@ -8931,15 +8915,11 @@
       },
       {
         "path": "src/lib/authenticatedUser.ts",
-        "sha256": "6511efe22e63dcd5a964bfb413f1ab8aa1beda804abcf7d4e5936e617b6d169b"
+        "sha256": "d4cbf3a004f8375982ca03d474fb7b61559fc2ec58ad6fe7b1f8834d26abf10c"
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
         "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
-      },
-      {
-        "path": "src/lib/localAdmin.ts",
-        "sha256": "3a28dec23e85f25ed3e70682bc6e7f8c6b55e81dbbefdd1f6a837f68ac80d6b5"
       },
       {
         "path": "src/lib/networkTimeout.ts",
@@ -9021,15 +9001,11 @@
       },
       {
         "path": "src/lib/authenticatedUser.ts",
-        "sha256": "6511efe22e63dcd5a964bfb413f1ab8aa1beda804abcf7d4e5936e617b6d169b"
+        "sha256": "d4cbf3a004f8375982ca03d474fb7b61559fc2ec58ad6fe7b1f8834d26abf10c"
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
         "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
-      },
-      {
-        "path": "src/lib/localAdmin.ts",
-        "sha256": "3a28dec23e85f25ed3e70682bc6e7f8c6b55e81dbbefdd1f6a837f68ac80d6b5"
       },
       {
         "path": "src/lib/networkTimeout.ts",
@@ -9124,15 +9100,11 @@
       },
       {
         "path": "src/lib/authenticatedUser.ts",
-        "sha256": "6511efe22e63dcd5a964bfb413f1ab8aa1beda804abcf7d4e5936e617b6d169b"
+        "sha256": "d4cbf3a004f8375982ca03d474fb7b61559fc2ec58ad6fe7b1f8834d26abf10c"
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
         "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
-      },
-      {
-        "path": "src/lib/localAdmin.ts",
-        "sha256": "3a28dec23e85f25ed3e70682bc6e7f8c6b55e81dbbefdd1f6a837f68ac80d6b5"
       },
       {
         "path": "src/lib/networkTimeout.ts",
@@ -9222,15 +9194,11 @@
       },
       {
         "path": "src/lib/authenticatedUser.ts",
-        "sha256": "6511efe22e63dcd5a964bfb413f1ab8aa1beda804abcf7d4e5936e617b6d169b"
+        "sha256": "d4cbf3a004f8375982ca03d474fb7b61559fc2ec58ad6fe7b1f8834d26abf10c"
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
         "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
-      },
-      {
-        "path": "src/lib/localAdmin.ts",
-        "sha256": "3a28dec23e85f25ed3e70682bc6e7f8c6b55e81dbbefdd1f6a837f68ac80d6b5"
       },
       {
         "path": "src/lib/networkTimeout.ts",
@@ -9317,15 +9285,11 @@
       },
       {
         "path": "src/lib/authenticatedUser.ts",
-        "sha256": "6511efe22e63dcd5a964bfb413f1ab8aa1beda804abcf7d4e5936e617b6d169b"
+        "sha256": "d4cbf3a004f8375982ca03d474fb7b61559fc2ec58ad6fe7b1f8834d26abf10c"
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
         "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
-      },
-      {
-        "path": "src/lib/localAdmin.ts",
-        "sha256": "3a28dec23e85f25ed3e70682bc6e7f8c6b55e81dbbefdd1f6a837f68ac80d6b5"
       },
       {
         "path": "src/lib/networkTimeout.ts",
@@ -9420,15 +9384,11 @@
       },
       {
         "path": "src/lib/authenticatedUser.ts",
-        "sha256": "6511efe22e63dcd5a964bfb413f1ab8aa1beda804abcf7d4e5936e617b6d169b"
+        "sha256": "d4cbf3a004f8375982ca03d474fb7b61559fc2ec58ad6fe7b1f8834d26abf10c"
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
         "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
-      },
-      {
-        "path": "src/lib/localAdmin.ts",
-        "sha256": "3a28dec23e85f25ed3e70682bc6e7f8c6b55e81dbbefdd1f6a837f68ac80d6b5"
       },
       {
         "path": "src/lib/networkTimeout.ts",
@@ -9522,15 +9482,11 @@
       },
       {
         "path": "src/lib/authenticatedUser.ts",
-        "sha256": "6511efe22e63dcd5a964bfb413f1ab8aa1beda804abcf7d4e5936e617b6d169b"
+        "sha256": "d4cbf3a004f8375982ca03d474fb7b61559fc2ec58ad6fe7b1f8834d26abf10c"
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
         "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
-      },
-      {
-        "path": "src/lib/localAdmin.ts",
-        "sha256": "3a28dec23e85f25ed3e70682bc6e7f8c6b55e81dbbefdd1f6a837f68ac80d6b5"
       },
       {
         "path": "src/lib/networkTimeout.ts",
@@ -9620,15 +9576,11 @@
       },
       {
         "path": "src/lib/authenticatedUser.ts",
-        "sha256": "6511efe22e63dcd5a964bfb413f1ab8aa1beda804abcf7d4e5936e617b6d169b"
+        "sha256": "d4cbf3a004f8375982ca03d474fb7b61559fc2ec58ad6fe7b1f8834d26abf10c"
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
         "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
-      },
-      {
-        "path": "src/lib/localAdmin.ts",
-        "sha256": "3a28dec23e85f25ed3e70682bc6e7f8c6b55e81dbbefdd1f6a837f68ac80d6b5"
       },
       {
         "path": "src/lib/networkTimeout.ts",
@@ -9730,15 +9682,11 @@
       },
       {
         "path": "src/lib/authenticatedUser.ts",
-        "sha256": "6511efe22e63dcd5a964bfb413f1ab8aa1beda804abcf7d4e5936e617b6d169b"
+        "sha256": "d4cbf3a004f8375982ca03d474fb7b61559fc2ec58ad6fe7b1f8834d26abf10c"
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
         "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
-      },
-      {
-        "path": "src/lib/localAdmin.ts",
-        "sha256": "3a28dec23e85f25ed3e70682bc6e7f8c6b55e81dbbefdd1f6a837f68ac80d6b5"
       },
       {
         "path": "src/lib/networkTimeout.ts",
@@ -9844,7 +9792,7 @@
       },
       {
         "path": "src/lib/authenticatedUser.ts",
-        "sha256": "6511efe22e63dcd5a964bfb413f1ab8aa1beda804abcf7d4e5936e617b6d169b"
+        "sha256": "d4cbf3a004f8375982ca03d474fb7b61559fc2ec58ad6fe7b1f8834d26abf10c"
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
@@ -9959,7 +9907,7 @@
       },
       {
         "path": "src/lib/authenticatedUser.ts",
-        "sha256": "6511efe22e63dcd5a964bfb413f1ab8aa1beda804abcf7d4e5936e617b6d169b"
+        "sha256": "d4cbf3a004f8375982ca03d474fb7b61559fc2ec58ad6fe7b1f8834d26abf10c"
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
@@ -10093,7 +10041,7 @@
       },
       {
         "path": "src/lib/authenticatedUser.ts",
-        "sha256": "6511efe22e63dcd5a964bfb413f1ab8aa1beda804abcf7d4e5936e617b6d169b"
+        "sha256": "d4cbf3a004f8375982ca03d474fb7b61559fc2ec58ad6fe7b1f8834d26abf10c"
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
@@ -10190,7 +10138,7 @@
       },
       {
         "path": "src/lib/authenticatedUser.ts",
-        "sha256": "6511efe22e63dcd5a964bfb413f1ab8aa1beda804abcf7d4e5936e617b6d169b"
+        "sha256": "d4cbf3a004f8375982ca03d474fb7b61559fc2ec58ad6fe7b1f8834d26abf10c"
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
@@ -10288,7 +10236,7 @@
       },
       {
         "path": "src/lib/authenticatedUser.ts",
-        "sha256": "6511efe22e63dcd5a964bfb413f1ab8aa1beda804abcf7d4e5936e617b6d169b"
+        "sha256": "d4cbf3a004f8375982ca03d474fb7b61559fc2ec58ad6fe7b1f8834d26abf10c"
       },
       {
         "path": "src/lib/hostAuthBridge.ts",

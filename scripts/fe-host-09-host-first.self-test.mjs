@@ -109,6 +109,10 @@ for (const [file, needle] of [
   ['src/infrastructure/saga/saga-definition-service.ts', 'assertHostProductSurfaceAvailable'],
   ['src/infrastructure/character/avatar/character-avatar-meshy-service.ts', 'assertHostProductSurfaceAvailable'],
   ['src/infrastructure/ai/host-ai-invoke.ts', 'ohne VITE_SAGATREE_HOST_AI'],
+  ['src/infrastructure/project/project-service.ts', 'assertHostProductSurfaceAvailable'],
+  ['src/infrastructure/project/project-service.ts', 'createHostProjectSession'],
+  ['src/lib/authenticatedUser.ts', 'branch on `isHostLibraryEnabled()`'],
+  ['src/infrastructure/world/world-profile-service.ts', 'öffentlicher ID laden ist im Host-Modus'],
 ]) {
   const src = readFileSync(join(root, file), 'utf8');
   assert(src.includes(needle), `residual gate in ${file}`);

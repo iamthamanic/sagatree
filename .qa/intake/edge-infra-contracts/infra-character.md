@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-character.json](source-contracts/infra-character.json) (SHA-256 `d1624aabc0e98c04b75ac44ac1670b1baaf12698426d7d56e6d8a6a5c8c79055`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-character.json](source-contracts/infra-character.json) (SHA-256 `fa2ad46a169351b5da8a10ec2138c41e25248f8a6cada6b73d26356a3d58f1e2`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -12091,7 +12091,7 @@ private async assertPersonalLookWriteGate(
 | `src/infrastructure/character/supabase-character.repository.ts` | `ae0034e06c55c384124c933bc8093c3926b7ece34a5222213913d1fdc03a9878` |
 | `src/infrastructure/host/host-library-http.ts` | `88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c` |
 | `src/infrastructure/host/host-product-deny.ts` | `69b148debc95006bb31daa7a94caf4e1507ac3089fdf399952102c4effa3759c` |
-| `src/infrastructure/host/host-project-http.ts` | `2d666f7c1ac35c7760f725e53b98310f28033800418d67a79a69d801c3e1a8fe` |
+| `src/infrastructure/host/host-project-http.ts` | `f617811defaa0b01d7991c9c411f045641636678e0ad17f5a4ee3fddf825cab0` |
 | `src/infrastructure/inventory/inventory-persistence.ts` | `79aaa09053ecd72a0bec8f8f0610b31ab0c9b34779f4a4c87f19f0d2ef7e4ac2` |
 | `src/infrastructure/inventory/item-catalog.persistence.ts` | `a68903ba909af8030e81d28555a65798800c9a32a790a4281e96f52b1550c566` |
 | `src/infrastructure/inventory/supabase-item-catalog.repository.ts` | `1ea1b14afc3d01c117c13e96af516a8cc0a315edfb170a6f1f11c6903ab366eb` |
@@ -12121,14 +12121,14 @@ private async assertPersonalLookWriteGate(
 | `src/infrastructure/media/optimizer/index.ts` | `c1b162af47239195707de742a8991bea14d85f2238108968613c3bad3d91cf02` |
 | `src/infrastructure/media/optimizer/media-optimizer.ts` | `7d58424f12b7855ccb3c0153270628850e03afc15c285b1fc2b47218918255d9` |
 | `src/infrastructure/project/project-member-service.ts` | `e2e4afc1eb144d257d3ef5fda84fde8bac40fce8bd3e049a946fc76255b4dc54` |
-| `src/infrastructure/project/project-service.ts` | `c92385b9656039cf348230edf003a7f37b90f519d91ab7bc9eb0c9d2ac0d8a3a` |
+| `src/infrastructure/project/project-service.ts` | `2b692de31098ccdf7c3a73383e4db950116f88b3fda10843d9edf4b479563210` |
 | `src/infrastructure/session/media/livekit-media-plane-adapter.ts` | `ba41c95f3816b79818a9c312c056ec896ac75fd4633dba27954cdcdb797b381d` |
 | `src/infrastructure/session/media/media-plane-adapter.ts` | `1dbdf0f7c75c1edc435fb629d5029a1c04806a5a6cbcf9b037ad8a620dcc34cd` |
 | `src/infrastructure/session/media/media-token-client.ts` | `ca49601bad72d7534020f2a0ffbeb3a0074b937e24062648a3a5918c4cf64fe8` |
 | `src/infrastructure/session/media/memory-media-plane-adapter.ts` | `31fc7cee75c49c1e3af09b784e4a8dad3446bbe5ae5ddd6f7b2c9aee142dc5be` |
 | `src/infrastructure/session/media/memory-media-plane-bus.ts` | `1616d229067f513a12c67319aec28649e3a0afdf77779f9071b595dc024ff193` |
 | `src/infrastructure/session/media/session-media-plane.ts` | `ce8d3ec690f83745646400443d7870cd96383e341628a2d8f017e2d391fbb225` |
-| `src/lib/authenticatedUser.ts` | `6511efe22e63dcd5a964bfb413f1ab8aa1beda804abcf7d4e5936e617b6d169b` |
+| `src/lib/authenticatedUser.ts` | `d4cbf3a004f8375982ca03d474fb7b61559fc2ec58ad6fe7b1f8834d26abf10c` |
 | `src/lib/entityCache.ts` | `02b7a3d41ae651c6562d4523a1c94a395608aa13785f0849cfc9acd834aecd61` |
 | `src/lib/hostAuthBridge.ts` | `ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529` |
 | `src/lib/localAdmin.ts` | `3a28dec23e85f25ed3e70682bc6e7f8c6b55e81dbbefdd1f6a837f68ac80d6b5` |

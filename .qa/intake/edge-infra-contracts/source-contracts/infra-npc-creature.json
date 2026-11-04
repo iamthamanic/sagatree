@@ -179,7 +179,7 @@
     },
     {
       "path": "src/lib/authenticatedUser.ts",
-      "sha256": "6511efe22e63dcd5a964bfb413f1ab8aa1beda804abcf7d4e5936e617b6d169b"
+      "sha256": "d4cbf3a004f8375982ca03d474fb7b61559fc2ec58ad6fe7b1f8834d26abf10c"
     },
     {
       "path": "src/lib/hostAuthBridge.ts",

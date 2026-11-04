@@ -58,13 +58,11 @@ export async function getAuthenticatedUserId(): Promise<string> {
 /**
  * Ensures the Supabase client holds an access token (PostgREST `authenticated`).
  * Polls briefly so a late Local Admin GoTrue upgrade can land before failing.
- * Under host library, returns the host actor id (no GoTrue JWT required).
- * @returns authenticated user id from the JWT session (or host whoami)
+ * Host-first callers must branch on `isHostLibraryEnabled()` before invoking this —
+ * a Better Auth actor is not a GoTrue JWT (FE-HOST-09).
+ * @returns authenticated user id from the JWT session
  */
 export async function assertSupabaseJwtSession(): Promise<string> {
-  if (isHostLibraryEnabled()) {
-    return getAuthenticatedUserId();
-  }
   const deadline = Date.now() + JWT_WAIT_MS;
   while (Date.now() <= deadline) {
     const sessionResult = await raceWithTimeoutOrSymbol(
