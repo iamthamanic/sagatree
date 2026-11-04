@@ -1330,7 +1330,7 @@
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/host/host-saga-definition-http.ts",
           "line": 12,
-          "sourceSha256": "557415ec92bf596f4585559c45633b4fb48ce1d4295052bca021f84e7b122a59",
+          "sourceSha256": "3bf857114def303681691297c71f09a9b6278658e51cad659f0d7e51e0a819f1",
           "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
         },
         {
@@ -1338,7 +1338,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-saga-definition-http.ts",
           "line": 17,
-          "sourceSha256": "557415ec92bf596f4585559c45633b4fb48ce1d4295052bca021f84e7b122a59",
+          "sourceSha256": "3bf857114def303681691297c71f09a9b6278658e51cad659f0d7e51e0a819f1",
           "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
         },
         {
@@ -1346,15 +1346,15 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-saga-definition-http.ts",
           "line": 58,
-          "sourceSha256": "557415ec92bf596f4585559c45633b4fb48ce1d4295052bca021f84e7b122a59",
-          "source": "async function hostMutateJson<T>(\n  path: string,\n  method: 'POST' | 'PUT' | 'PATCH' | 'DELETE',\n  body: unknown,\n  unreachableMessage: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      method,\n      credentials: 'include',\n      headers: {\n        Accept: 'application/json',\n        'Content-Type': 'application/json',\n      },\n      body: body === undefined ? undefined : JSON.stringify(body),\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  if (!response.ok) {\n    let detail = '';\n    try {\n      const errBody: unknown = await response.json();\n      if (errBody && typeof errBody === 'object' && 'error' in errBody) {\n        detail = String((errBody as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  return (await response.json()) as T;\n}"
+          "sourceSha256": "3bf857114def303681691297c71f09a9b6278658e51cad659f0d7e51e0a819f1",
+          "source": "async function hostMutateJson<T>(\n  path: string,\n  method: 'POST' | 'PUT' | 'PATCH' | 'DELETE',\n  body: unknown,\n  unreachableMessage: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      method,\n      credentials: 'include',\n      headers: {\n        Accept: 'application/json',\n        'Content-Type': 'application/json',\n      },\n      body: body === undefined ? undefined : JSON.stringify(body),\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  if (!response.ok) {\n    let detail = '';\n    try {\n      const errBody: unknown = await response.json();\n      if (errBody && typeof errBody === 'object' && 'error' in errBody) {\n        detail = String((errBody as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    // Editor recovery looks for \"revision\" in the message (useSagaDefinitionEditor).\n    if (detail === '40001' || /40001|STALE_REVISION/i.test(detail)) {\n      throw new Error(`Revisionskonflikt (${detail || response.status})`);\n    }\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  return (await response.json()) as T;\n}"
         },
         {
           "name": "copyHostNativeSagaDefinition",
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-saga-definition-http.ts",
-          "line": 198,
-          "sourceSha256": "557415ec92bf596f4585559c45633b4fb48ce1d4295052bca021f84e7b122a59",
+          "line": 202,
+          "sourceSha256": "3bf857114def303681691297c71f09a9b6278658e51cad659f0d7e51e0a819f1",
           "source": "export async function copyHostNativeSagaDefinition(\n  sourceSagaId: string,\n): Promise<{ readonly sagaId: string }> {\n  const body = await hostMutateJson<{ saga?: { sagaId?: string } }>(\n    '/api/v1/saga-definitions/copy-native',\n    'POST',\n    { sourceSagaId },\n    'Kopie konnte nicht erstellt werden',\n  );\n  if (!body.saga || typeof body.saga.sagaId !== 'string') {\n    throw new Error('Kopie konnte nicht erstellt werden: ungültige Antwort');\n  }\n  return { sagaId: body.saga.sagaId };\n}"
         },
         {
@@ -1764,7 +1764,7 @@
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/host/host-saga-definition-http.ts",
           "line": 12,
-          "sourceSha256": "557415ec92bf596f4585559c45633b4fb48ce1d4295052bca021f84e7b122a59",
+          "sourceSha256": "3bf857114def303681691297c71f09a9b6278658e51cad659f0d7e51e0a819f1",
           "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
         },
         {
@@ -1772,7 +1772,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-saga-definition-http.ts",
           "line": 17,
-          "sourceSha256": "557415ec92bf596f4585559c45633b4fb48ce1d4295052bca021f84e7b122a59",
+          "sourceSha256": "3bf857114def303681691297c71f09a9b6278658e51cad659f0d7e51e0a819f1",
           "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
         },
         {
@@ -1780,15 +1780,15 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-saga-definition-http.ts",
           "line": 58,
-          "sourceSha256": "557415ec92bf596f4585559c45633b4fb48ce1d4295052bca021f84e7b122a59",
-          "source": "async function hostMutateJson<T>(\n  path: string,\n  method: 'POST' | 'PUT' | 'PATCH' | 'DELETE',\n  body: unknown,\n  unreachableMessage: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      method,\n      credentials: 'include',\n      headers: {\n        Accept: 'application/json',\n        'Content-Type': 'application/json',\n      },\n      body: body === undefined ? undefined : JSON.stringify(body),\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  if (!response.ok) {\n    let detail = '';\n    try {\n      const errBody: unknown = await response.json();\n      if (errBody && typeof errBody === 'object' && 'error' in errBody) {\n        detail = String((errBody as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  return (await response.json()) as T;\n}"
+          "sourceSha256": "3bf857114def303681691297c71f09a9b6278658e51cad659f0d7e51e0a819f1",
+          "source": "async function hostMutateJson<T>(\n  path: string,\n  method: 'POST' | 'PUT' | 'PATCH' | 'DELETE',\n  body: unknown,\n  unreachableMessage: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      method,\n      credentials: 'include',\n      headers: {\n        Accept: 'application/json',\n        'Content-Type': 'application/json',\n      },\n      body: body === undefined ? undefined : JSON.stringify(body),\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  if (!response.ok) {\n    let detail = '';\n    try {\n      const errBody: unknown = await response.json();\n      if (errBody && typeof errBody === 'object' && 'error' in errBody) {\n        detail = String((errBody as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    // Editor recovery looks for \"revision\" in the message (useSagaDefinitionEditor).\n    if (detail === '40001' || /40001|STALE_REVISION/i.test(detail)) {\n      throw new Error(`Revisionskonflikt (${detail || response.status})`);\n    }\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  return (await response.json()) as T;\n}"
         },
         {
           "name": "createHostProjectFromSagaVersion",
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-saga-definition-http.ts",
-          "line": 213,
-          "sourceSha256": "557415ec92bf596f4585559c45633b4fb48ce1d4295052bca021f84e7b122a59",
+          "line": 217,
+          "sourceSha256": "3bf857114def303681691297c71f09a9b6278658e51cad659f0d7e51e0a819f1",
           "source": "export async function createHostProjectFromSagaVersion(input: {\n  readonly sagaId: string;\n  readonly versionId: string;\n  readonly name?: string;\n}): Promise<{ readonly id: string; readonly publicId: string }> {\n  const body = await hostMutateJson<{ project?: { id?: string; publicId?: string } }>(\n    '/api/v1/saga-definitions/create-project',\n    'POST',\n    {\n      sagaId: input.sagaId,\n      versionId: input.versionId,\n      name: input.name ?? null,\n    },\n    'Gruppe konnte nicht erstellt werden',\n  );\n  if (!body.project || typeof body.project.id !== 'string') {\n    throw new Error('Gruppe konnte nicht erstellt werden: ungültige Antwort');\n  }\n  return {\n    id: body.project.id,\n    publicId: typeof body.project.publicId === 'string' ? body.project.publicId : '',\n  };\n}"
         },
         {
@@ -2392,7 +2392,7 @@
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/host/host-saga-definition-http.ts",
           "line": 12,
-          "sourceSha256": "557415ec92bf596f4585559c45633b4fb48ce1d4295052bca021f84e7b122a59",
+          "sourceSha256": "3bf857114def303681691297c71f09a9b6278658e51cad659f0d7e51e0a819f1",
           "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
         },
         {
@@ -2400,7 +2400,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-saga-definition-http.ts",
           "line": 17,
-          "sourceSha256": "557415ec92bf596f4585559c45633b4fb48ce1d4295052bca021f84e7b122a59",
+          "sourceSha256": "3bf857114def303681691297c71f09a9b6278658e51cad659f0d7e51e0a819f1",
           "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
         },
         {
@@ -2408,15 +2408,15 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-saga-definition-http.ts",
           "line": 58,
-          "sourceSha256": "557415ec92bf596f4585559c45633b4fb48ce1d4295052bca021f84e7b122a59",
-          "source": "async function hostMutateJson<T>(\n  path: string,\n  method: 'POST' | 'PUT' | 'PATCH' | 'DELETE',\n  body: unknown,\n  unreachableMessage: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      method,\n      credentials: 'include',\n      headers: {\n        Accept: 'application/json',\n        'Content-Type': 'application/json',\n      },\n      body: body === undefined ? undefined : JSON.stringify(body),\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  if (!response.ok) {\n    let detail = '';\n    try {\n      const errBody: unknown = await response.json();\n      if (errBody && typeof errBody === 'object' && 'error' in errBody) {\n        detail = String((errBody as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  return (await response.json()) as T;\n}"
+          "sourceSha256": "3bf857114def303681691297c71f09a9b6278658e51cad659f0d7e51e0a819f1",
+          "source": "async function hostMutateJson<T>(\n  path: string,\n  method: 'POST' | 'PUT' | 'PATCH' | 'DELETE',\n  body: unknown,\n  unreachableMessage: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      method,\n      credentials: 'include',\n      headers: {\n        Accept: 'application/json',\n        'Content-Type': 'application/json',\n      },\n      body: body === undefined ? undefined : JSON.stringify(body),\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  if (!response.ok) {\n    let detail = '';\n    try {\n      const errBody: unknown = await response.json();\n      if (errBody && typeof errBody === 'object' && 'error' in errBody) {\n        detail = String((errBody as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    // Editor recovery looks for \"revision\" in the message (useSagaDefinitionEditor).\n    if (detail === '40001' || /40001|STALE_REVISION/i.test(detail)) {\n      throw new Error(`Revisionskonflikt (${detail || response.status})`);\n    }\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  return (await response.json()) as T;\n}"
         },
         {
           "name": "createHostUserSagaDefinition",
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-saga-definition-http.ts",
-          "line": 182,
-          "sourceSha256": "557415ec92bf596f4585559c45633b4fb48ce1d4295052bca021f84e7b122a59",
+          "line": 186,
+          "sourceSha256": "3bf857114def303681691297c71f09a9b6278658e51cad659f0d7e51e0a819f1",
           "source": "export async function createHostUserSagaDefinition(input: {\n  readonly title: string;\n  readonly blurb?: string;\n}): Promise<{ readonly sagaId: string }> {\n  const body = await hostMutateJson<{ saga?: { sagaId?: string } }>(\n    '/api/v1/saga-definitions',\n    'POST',\n    { title: input.title, blurb: input.blurb ?? '' },\n    'Saga konnte nicht angelegt werden',\n  );\n  if (!body.saga || typeof body.saga.sagaId !== 'string') {\n    throw new Error('Saga konnte nicht angelegt werden: ungültige Antwort');\n  }\n  return { sagaId: body.saga.sagaId };\n}"
         },
         {
@@ -3078,7 +3078,7 @@
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/host/host-saga-definition-http.ts",
           "line": 12,
-          "sourceSha256": "557415ec92bf596f4585559c45633b4fb48ce1d4295052bca021f84e7b122a59",
+          "sourceSha256": "3bf857114def303681691297c71f09a9b6278658e51cad659f0d7e51e0a819f1",
           "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
         },
         {
@@ -3086,7 +3086,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-saga-definition-http.ts",
           "line": 17,
-          "sourceSha256": "557415ec92bf596f4585559c45633b4fb48ce1d4295052bca021f84e7b122a59",
+          "sourceSha256": "3bf857114def303681691297c71f09a9b6278658e51cad659f0d7e51e0a819f1",
           "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
         },
         {
@@ -3094,15 +3094,15 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-saga-definition-http.ts",
           "line": 58,
-          "sourceSha256": "557415ec92bf596f4585559c45633b4fb48ce1d4295052bca021f84e7b122a59",
-          "source": "async function hostMutateJson<T>(\n  path: string,\n  method: 'POST' | 'PUT' | 'PATCH' | 'DELETE',\n  body: unknown,\n  unreachableMessage: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      method,\n      credentials: 'include',\n      headers: {\n        Accept: 'application/json',\n        'Content-Type': 'application/json',\n      },\n      body: body === undefined ? undefined : JSON.stringify(body),\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  if (!response.ok) {\n    let detail = '';\n    try {\n      const errBody: unknown = await response.json();\n      if (errBody && typeof errBody === 'object' && 'error' in errBody) {\n        detail = String((errBody as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  return (await response.json()) as T;\n}"
+          "sourceSha256": "3bf857114def303681691297c71f09a9b6278658e51cad659f0d7e51e0a819f1",
+          "source": "async function hostMutateJson<T>(\n  path: string,\n  method: 'POST' | 'PUT' | 'PATCH' | 'DELETE',\n  body: unknown,\n  unreachableMessage: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      method,\n      credentials: 'include',\n      headers: {\n        Accept: 'application/json',\n        'Content-Type': 'application/json',\n      },\n      body: body === undefined ? undefined : JSON.stringify(body),\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  if (!response.ok) {\n    let detail = '';\n    try {\n      const errBody: unknown = await response.json();\n      if (errBody && typeof errBody === 'object' && 'error' in errBody) {\n        detail = String((errBody as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    // Editor recovery looks for \"revision\" in the message (useSagaDefinitionEditor).\n    if (detail === '40001' || /40001|STALE_REVISION/i.test(detail)) {\n      throw new Error(`Revisionskonflikt (${detail || response.status})`);\n    }\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  return (await response.json()) as T;\n}"
         },
         {
           "name": "duplicateHostSagaPlaythrough",
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-saga-definition-http.ts",
-          "line": 237,
-          "sourceSha256": "557415ec92bf596f4585559c45633b4fb48ce1d4295052bca021f84e7b122a59",
+          "line": 241,
+          "sourceSha256": "3bf857114def303681691297c71f09a9b6278658e51cad659f0d7e51e0a819f1",
           "source": "export async function duplicateHostSagaPlaythrough(input: {\n  readonly projectId: string;\n  readonly mode: 'fresh' | 'with_progress';\n}): Promise<{ readonly id: string; readonly publicId: string }> {\n  const body = await hostMutateJson<{ project?: { id?: string; publicId?: string } }>(\n    '/api/v1/saga-definitions/duplicate-playthrough',\n    'POST',\n    { projectId: input.projectId, mode: input.mode },\n    'Saga konnte nicht dupliziert werden',\n  );\n  if (!body.project || typeof body.project.id !== 'string') {\n    throw new Error('Saga konnte nicht dupliziert werden: ungültige Antwort');\n  }\n  return {\n    id: body.project.id,\n    publicId: typeof body.project.publicId === 'string' ? body.project.publicId : '',\n  };\n}"
         },
         {
@@ -4204,7 +4204,7 @@
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/host/host-saga-definition-http.ts",
           "line": 12,
-          "sourceSha256": "557415ec92bf596f4585559c45633b4fb48ce1d4295052bca021f84e7b122a59",
+          "sourceSha256": "3bf857114def303681691297c71f09a9b6278658e51cad659f0d7e51e0a819f1",
           "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
         },
         {
@@ -4212,7 +4212,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-saga-definition-http.ts",
           "line": 17,
-          "sourceSha256": "557415ec92bf596f4585559c45633b4fb48ce1d4295052bca021f84e7b122a59",
+          "sourceSha256": "3bf857114def303681691297c71f09a9b6278658e51cad659f0d7e51e0a819f1",
           "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
         },
         {
@@ -4220,15 +4220,15 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-saga-definition-http.ts",
           "line": 25,
-          "sourceSha256": "557415ec92bf596f4585559c45633b4fb48ce1d4295052bca021f84e7b122a59",
+          "sourceSha256": "3bf857114def303681691297c71f09a9b6278658e51cad659f0d7e51e0a819f1",
           "source": "async function hostGetJson<T>(\n  path: string,\n  unreachableMessage: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      method: 'GET',\n      credentials: 'include',\n      headers: { Accept: 'application/json' },\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  if (!response.ok) {\n    let detail = '';\n    try {\n      const body: unknown = await response.json();\n      if (body && typeof body === 'object' && 'error' in body) {\n        detail = String((body as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  return (await response.json()) as T;\n}"
         },
         {
           "name": "getHostNativeSagaDefinitionBySlug",
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-saga-definition-http.ts",
-          "line": 110,
-          "sourceSha256": "557415ec92bf596f4585559c45633b4fb48ce1d4295052bca021f84e7b122a59",
+          "line": 114,
+          "sourceSha256": "3bf857114def303681691297c71f09a9b6278658e51cad659f0d7e51e0a819f1",
           "source": "export async function getHostNativeSagaDefinitionBySlug(\n  slug: string,\n): Promise<Record<string, unknown>> {\n  const body = await hostGetJson<{ version?: Record<string, unknown> }>(\n    `/api/v1/saga-definitions/by-slug/${encodeURIComponent(slug)}`,\n    'Native Saga konnte nicht geladen werden',\n  );\n  if (!body.version || typeof body.version !== 'object') {\n    throw new Error('Native Saga konnte nicht geladen werden: ungültige Antwort');\n  }\n  return body.version;\n}"
         },
         {
@@ -4507,7 +4507,7 @@
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/host/host-saga-definition-http.ts",
           "line": 12,
-          "sourceSha256": "557415ec92bf596f4585559c45633b4fb48ce1d4295052bca021f84e7b122a59",
+          "sourceSha256": "3bf857114def303681691297c71f09a9b6278658e51cad659f0d7e51e0a819f1",
           "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
         },
         {
@@ -4515,7 +4515,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-saga-definition-http.ts",
           "line": 17,
-          "sourceSha256": "557415ec92bf596f4585559c45633b4fb48ce1d4295052bca021f84e7b122a59",
+          "sourceSha256": "3bf857114def303681691297c71f09a9b6278658e51cad659f0d7e51e0a819f1",
           "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
         },
         {
@@ -4523,15 +4523,15 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-saga-definition-http.ts",
           "line": 25,
-          "sourceSha256": "557415ec92bf596f4585559c45633b4fb48ce1d4295052bca021f84e7b122a59",
+          "sourceSha256": "3bf857114def303681691297c71f09a9b6278658e51cad659f0d7e51e0a819f1",
           "source": "async function hostGetJson<T>(\n  path: string,\n  unreachableMessage: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      method: 'GET',\n      credentials: 'include',\n      headers: { Accept: 'application/json' },\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  if (!response.ok) {\n    let detail = '';\n    try {\n      const body: unknown = await response.json();\n      if (body && typeof body === 'object' && 'error' in body) {\n        detail = String((body as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  return (await response.json()) as T;\n}"
         },
         {
           "name": "getHostSagaDefinitionEditor",
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-saga-definition-http.ts",
-          "line": 123,
-          "sourceSha256": "557415ec92bf596f4585559c45633b4fb48ce1d4295052bca021f84e7b122a59",
+          "line": 127,
+          "sourceSha256": "3bf857114def303681691297c71f09a9b6278658e51cad659f0d7e51e0a819f1",
           "source": "export async function getHostSagaDefinitionEditor(\n  sagaId: string,\n): Promise<Record<string, unknown>> {\n  const body = await hostGetJson<{ editor?: Record<string, unknown> }>(\n    `/api/v1/saga-definitions/${encodeURIComponent(sagaId)}/editor`,\n    'Saga-Editor konnte nicht geladen werden',\n  );\n  if (!body.editor || typeof body.editor !== 'object') {\n    throw new Error('Saga-Editor konnte nicht geladen werden: ungültige Antwort');\n  }\n  return body.editor;\n}"
         },
         {
@@ -4810,7 +4810,7 @@
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/host/host-saga-definition-http.ts",
           "line": 12,
-          "sourceSha256": "557415ec92bf596f4585559c45633b4fb48ce1d4295052bca021f84e7b122a59",
+          "sourceSha256": "3bf857114def303681691297c71f09a9b6278658e51cad659f0d7e51e0a819f1",
           "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
         },
         {
@@ -4818,7 +4818,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-saga-definition-http.ts",
           "line": 17,
-          "sourceSha256": "557415ec92bf596f4585559c45633b4fb48ce1d4295052bca021f84e7b122a59",
+          "sourceSha256": "3bf857114def303681691297c71f09a9b6278658e51cad659f0d7e51e0a819f1",
           "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
         },
         {
@@ -4826,15 +4826,15 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-saga-definition-http.ts",
           "line": 25,
-          "sourceSha256": "557415ec92bf596f4585559c45633b4fb48ce1d4295052bca021f84e7b122a59",
+          "sourceSha256": "3bf857114def303681691297c71f09a9b6278658e51cad659f0d7e51e0a819f1",
           "source": "async function hostGetJson<T>(\n  path: string,\n  unreachableMessage: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      method: 'GET',\n      credentials: 'include',\n      headers: { Accept: 'application/json' },\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  if (!response.ok) {\n    let detail = '';\n    try {\n      const body: unknown = await response.json();\n      if (body && typeof body === 'object' && 'error' in body) {\n        detail = String((body as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  return (await response.json()) as T;\n}"
         },
         {
           "name": "getHostSagaDefinitionVersion",
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-saga-definition-http.ts",
-          "line": 97,
-          "sourceSha256": "557415ec92bf596f4585559c45633b4fb48ce1d4295052bca021f84e7b122a59",
+          "line": 101,
+          "sourceSha256": "3bf857114def303681691297c71f09a9b6278658e51cad659f0d7e51e0a819f1",
           "source": "export async function getHostSagaDefinitionVersion(\n  versionId: string,\n): Promise<Record<string, unknown>> {\n  const body = await hostGetJson<{ version?: Record<string, unknown> }>(\n    `/api/v1/saga-definitions/versions/${encodeURIComponent(versionId)}`,\n    'Saga-Definition konnte nicht geladen werden',\n  );\n  if (!body.version || typeof body.version !== 'object') {\n    throw new Error('Saga-Definition konnte nicht geladen werden: ungültige Antwort');\n  }\n  return body.version;\n}"
         },
         {
@@ -9017,7 +9017,7 @@
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/host/host-saga-definition-http.ts",
           "line": 12,
-          "sourceSha256": "557415ec92bf596f4585559c45633b4fb48ce1d4295052bca021f84e7b122a59",
+          "sourceSha256": "3bf857114def303681691297c71f09a9b6278658e51cad659f0d7e51e0a819f1",
           "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
         },
         {
@@ -9025,7 +9025,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-saga-definition-http.ts",
           "line": 17,
-          "sourceSha256": "557415ec92bf596f4585559c45633b4fb48ce1d4295052bca021f84e7b122a59",
+          "sourceSha256": "3bf857114def303681691297c71f09a9b6278658e51cad659f0d7e51e0a819f1",
           "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
         },
         {
@@ -9033,15 +9033,15 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-saga-definition-http.ts",
           "line": 58,
-          "sourceSha256": "557415ec92bf596f4585559c45633b4fb48ce1d4295052bca021f84e7b122a59",
-          "source": "async function hostMutateJson<T>(\n  path: string,\n  method: 'POST' | 'PUT' | 'PATCH' | 'DELETE',\n  body: unknown,\n  unreachableMessage: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      method,\n      credentials: 'include',\n      headers: {\n        Accept: 'application/json',\n        'Content-Type': 'application/json',\n      },\n      body: body === undefined ? undefined : JSON.stringify(body),\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  if (!response.ok) {\n    let detail = '';\n    try {\n      const errBody: unknown = await response.json();\n      if (errBody && typeof errBody === 'object' && 'error' in errBody) {\n        detail = String((errBody as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  return (await response.json()) as T;\n}"
+          "sourceSha256": "3bf857114def303681691297c71f09a9b6278658e51cad659f0d7e51e0a819f1",
+          "source": "async function hostMutateJson<T>(\n  path: string,\n  method: 'POST' | 'PUT' | 'PATCH' | 'DELETE',\n  body: unknown,\n  unreachableMessage: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      method,\n      credentials: 'include',\n      headers: {\n        Accept: 'application/json',\n        'Content-Type': 'application/json',\n      },\n      body: body === undefined ? undefined : JSON.stringify(body),\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  if (!response.ok) {\n    let detail = '';\n    try {\n      const errBody: unknown = await response.json();\n      if (errBody && typeof errBody === 'object' && 'error' in errBody) {\n        detail = String((errBody as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    // Editor recovery looks for \"revision\" in the message (useSagaDefinitionEditor).\n    if (detail === '40001' || /40001|STALE_REVISION/i.test(detail)) {\n      throw new Error(`Revisionskonflikt (${detail || response.status})`);\n    }\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  return (await response.json()) as T;\n}"
         },
         {
           "name": "publishHostSagaDefinitionVersion",
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-saga-definition-http.ts",
-          "line": 160,
-          "sourceSha256": "557415ec92bf596f4585559c45633b4fb48ce1d4295052bca021f84e7b122a59",
+          "line": 164,
+          "sourceSha256": "3bf857114def303681691297c71f09a9b6278658e51cad659f0d7e51e0a819f1",
           "source": "export async function publishHostSagaDefinitionVersion(input: {\n  readonly sagaId: string;\n  readonly expectedRevision: number;\n}): Promise<{ readonly versionId: string; readonly versionLabel: string }> {\n  const body = await hostMutateJson<{\n    publish?: { versionId?: string; versionLabel?: string };\n  }>(\n    `/api/v1/saga-definitions/${encodeURIComponent(input.sagaId)}/publish`,\n    'POST',\n    { expectedRevision: input.expectedRevision },\n    'Fassung konnte nicht veröffentlicht werden',\n  );\n  const pub = body.publish;\n  if (!pub || typeof pub.versionId !== 'string') {\n    throw new Error('Fassung konnte nicht veröffentlicht werden: ungültige Antwort');\n  }\n  return {\n    versionId: pub.versionId,\n    versionLabel: typeof pub.versionLabel === 'string' ? pub.versionLabel : 'v?',\n  };\n}"
         },
         {
@@ -10455,7 +10455,7 @@
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/host/host-saga-definition-http.ts",
           "line": 12,
-          "sourceSha256": "557415ec92bf596f4585559c45633b4fb48ce1d4295052bca021f84e7b122a59",
+          "sourceSha256": "3bf857114def303681691297c71f09a9b6278658e51cad659f0d7e51e0a819f1",
           "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
         },
         {
@@ -10463,7 +10463,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-saga-definition-http.ts",
           "line": 17,
-          "sourceSha256": "557415ec92bf596f4585559c45633b4fb48ce1d4295052bca021f84e7b122a59",
+          "sourceSha256": "3bf857114def303681691297c71f09a9b6278658e51cad659f0d7e51e0a819f1",
           "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
         },
         {
@@ -10471,15 +10471,15 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-saga-definition-http.ts",
           "line": 58,
-          "sourceSha256": "557415ec92bf596f4585559c45633b4fb48ce1d4295052bca021f84e7b122a59",
-          "source": "async function hostMutateJson<T>(\n  path: string,\n  method: 'POST' | 'PUT' | 'PATCH' | 'DELETE',\n  body: unknown,\n  unreachableMessage: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      method,\n      credentials: 'include',\n      headers: {\n        Accept: 'application/json',\n        'Content-Type': 'application/json',\n      },\n      body: body === undefined ? undefined : JSON.stringify(body),\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  if (!response.ok) {\n    let detail = '';\n    try {\n      const errBody: unknown = await response.json();\n      if (errBody && typeof errBody === 'object' && 'error' in errBody) {\n        detail = String((errBody as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  return (await response.json()) as T;\n}"
+          "sourceSha256": "3bf857114def303681691297c71f09a9b6278658e51cad659f0d7e51e0a819f1",
+          "source": "async function hostMutateJson<T>(\n  path: string,\n  method: 'POST' | 'PUT' | 'PATCH' | 'DELETE',\n  body: unknown,\n  unreachableMessage: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      method,\n      credentials: 'include',\n      headers: {\n        Accept: 'application/json',\n        'Content-Type': 'application/json',\n      },\n      body: body === undefined ? undefined : JSON.stringify(body),\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  if (!response.ok) {\n    let detail = '';\n    try {\n      const errBody: unknown = await response.json();\n      if (errBody && typeof errBody === 'object' && 'error' in errBody) {\n        detail = String((errBody as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    // Editor recovery looks for \"revision\" in the message (useSagaDefinitionEditor).\n    if (detail === '40001' || /40001|STALE_REVISION/i.test(detail)) {\n      throw new Error(`Revisionskonflikt (${detail || response.status})`);\n    }\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  return (await response.json()) as T;\n}"
         },
         {
           "name": "saveHostSagaDefinitionDraft",
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-saga-definition-http.ts",
-          "line": 136,
-          "sourceSha256": "557415ec92bf596f4585559c45633b4fb48ce1d4295052bca021f84e7b122a59",
+          "line": 140,
+          "sourceSha256": "3bf857114def303681691297c71f09a9b6278658e51cad659f0d7e51e0a819f1",
           "source": "export async function saveHostSagaDefinitionDraft(input: {\n  readonly sagaId: string;\n  readonly payload: Record<string, unknown>;\n  readonly expectedRevision: number;\n}): Promise<{ readonly revision: number; readonly versionId: string }> {\n  const body = await hostMutateJson<{\n    draft?: { revision?: number; versionId?: string };\n  }>(\n    `/api/v1/saga-definitions/${encodeURIComponent(input.sagaId)}/draft`,\n    'PUT',\n    { payload: input.payload, expectedRevision: input.expectedRevision },\n    'Entwurf konnte nicht gespeichert werden',\n  );\n  const draft = body.draft;\n  if (\n    !draft ||\n    typeof draft.revision !== 'number' ||\n    typeof draft.versionId !== 'string'\n  ) {\n    throw new Error('Entwurf konnte nicht gespeichert werden: ungültige Antwort');\n  }\n  return { revision: draft.revision, versionId: draft.versionId };\n}"
         },
         {

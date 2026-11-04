@@ -39,7 +39,7 @@
     },
     {
       "path": "src/infrastructure/host/host-saga-definition-http.ts",
-      "sha256": "557415ec92bf596f4585559c45633b4fb48ce1d4295052bca021f84e7b122a59"
+      "sha256": "3bf857114def303681691297c71f09a9b6278658e51cad659f0d7e51e0a819f1"
     },
     {
       "path": "src/lib/hostAuthBridge.ts",

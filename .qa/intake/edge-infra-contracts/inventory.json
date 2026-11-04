@@ -41399,7 +41399,7 @@
           },
           {
             "path": "src/infrastructure/host/host-saga-definition-http.ts",
-            "sha256": "557415ec92bf596f4585559c45633b4fb48ce1d4295052bca021f84e7b122a59"
+            "sha256": "3bf857114def303681691297c71f09a9b6278658e51cad659f0d7e51e0a819f1"
           },
           {
             "path": "src/infrastructure/saga/host-saga-adapter.ts",
@@ -41435,7 +41435,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-saga.json",
-      "sourceContractSha256": "e19188c200aeeddc1c690e07b202f797e3a66155e189039c3baa42a39e5f26e5",
+      "sourceContractSha256": "5dbc074bff0859e8c9b3c8c0de42a00b22df782476d5780f9e6e47fd6a9caef1",
       "rpcUsed": [
         "copy_native_saga_definition",
         "create_project_from_saga_version",
