@@ -323,11 +323,11 @@
     },
     {
       "path": "src/infrastructure/host/host-library-http.ts",
-      "sha256": "c452cc3bf830068496fb10f705019cbdcc682586c1672b6a7572cd430b5d5069"
+      "sha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c"
     },
     {
       "path": "src/infrastructure/host/host-world-http.ts",
-      "sha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b"
+      "sha256": "bfb69f91e69543a66ee96cab4ad21273c86a2b167e4c21211c42c7e6ccb3c072"
     },
     {
       "path": "src/infrastructure/media/optimizer/engines/audio/index.ts",
@@ -383,11 +383,11 @@
     },
     {
       "path": "src/lib/authenticatedUser.ts",
-      "sha256": "c822140996ae4d318c19d2ccb5318d77f2ba4d302bdfbcb50a79420a7ef70d74"
+      "sha256": "6511efe22e63dcd5a964bfb413f1ab8aa1beda804abcf7d4e5936e617b6d169b"
     },
     {
       "path": "src/lib/hostAuthBridge.ts",
-      "sha256": "925a7e9e9c7cd24fcce69f39d39f7b1250b354800b5188636be319acbf1fe702"
+      "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
     },
     {
       "path": "src/lib/localAdmin.ts",
@@ -399,7 +399,7 @@
     },
     {
       "path": "src/lib/supabase.ts",
-      "sha256": "a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f"
+      "sha256": "267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c"
     }
   ],
   "importedTypeDeclarations": [
@@ -2039,40 +2039,40 @@
       "kind": "TypeAliasDeclaration",
       "name": "EnvLike",
       "path": "src/infrastructure/host/host-library-http.ts",
-      "line": 10,
-      "endLine": 13,
+      "line": 11,
+      "endLine": 14,
       "text": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "HostLibraryCharacterDto",
       "path": "src/infrastructure/host/host-library-http.ts",
-      "line": 62,
-      "endLine": 75,
+      "line": 68,
+      "endLine": 81,
       "text": "export type HostLibraryCharacterDto = {\n  readonly id: string;\n  readonly publicId?: string;\n  readonly name: string;\n  readonly description?: string;\n  readonly class?: string;\n  readonly race?: string;\n  readonly level?: number;\n  readonly sheetStatus?: string;\n  readonly portraitUrl?: string | null;\n  readonly sheet?: Readonly<Record<string, unknown>>;\n  readonly createdAt?: string;\n  readonly updatedAt?: string;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "HostLibraryProjectDto",
       "path": "src/infrastructure/host/host-library-http.ts",
-      "line": 90,
-      "endLine": 107,
+      "line": 96,
+      "endLine": 113,
       "text": "export type HostLibraryProjectDto = {\n  readonly id: string;\n  readonly publicId?: string;\n  readonly code?: string;\n  readonly name: string;\n  readonly description?: string | null;\n  readonly worldId?: string | null;\n  readonly worldProfileId?: string | null;\n  readonly sagaId?: string | null;\n  readonly sagaVersionId?: string | null;\n  readonly sagaTitle?: string | null;\n  readonly sagaSlug?: string | null;\n  readonly sagaOrigin?: string | null;\n  readonly gmUserId: string;\n  readonly status?: string;\n  readonly memberCount?: number;\n  readonly sessionCount?: number;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "HostLibraryWorldDto",
       "path": "src/infrastructure/host/host-library-http.ts",
-      "line": 122,
-      "endLine": 126,
+      "line": 128,
+      "endLine": 132,
       "text": "export type HostLibraryWorldDto = {\n  readonly id: string;\n  readonly title: string;\n  readonly createdAt: string;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "HostPublishedAssetDto",
       "path": "src/infrastructure/host/host-library-http.ts",
-      "line": 465,
-      "endLine": 472,
+      "line": 471,
+      "endLine": 478,
       "text": "export type HostPublishedAssetDto = {\n  readonly assetId: string;\n  readonly contentType: string;\n  readonly byteSize: number;\n  readonly checksumSha256: string;\n  readonly url: string;\n  readonly storagePath: string;\n};"
     },
     {

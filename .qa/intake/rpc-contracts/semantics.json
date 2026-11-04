@@ -3562,6 +3562,13 @@
         ]
       }
     ],
+    "reviewedEffectiveSql": [
+      {
+        "path": ".qa/intake/rpc-contracts/effective-sql/apply_session_runtime_command-1.sql",
+        "sha256": "bb69a3638e9e085c410b89afa5218eb221830484f6011824b19bd784019bf9ae"
+      }
+    ],
+    "reviewedBaselineSha": "f64fd957d959dcf71a4221a18a24a721b73eb6a753957f67758584cb73f137fd",
     "reviewedSources": [
       {
         "path": "src/domains/session/contracts/session-lifecycle.ts",
@@ -3572,8 +3579,12 @@
         "sha256": "c928a253185cf9aa6fac10b380807033d86c0df4120fdc80b223800c626b84e2"
       },
       {
+        "path": "src/infrastructure/host/host-library-http.ts",
+        "sha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c"
+      },
+      {
         "path": "src/infrastructure/host/host-session-http.ts",
-        "sha256": "6c6baf668174dd76e44f1a0a0e7ceb16b6ec1960539b4e038d87d9274ebc804e"
+        "sha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf"
       },
       {
         "path": "src/infrastructure/session/session-runtime-service.ts",
@@ -3581,11 +3592,11 @@
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "925a7e9e9c7cd24fcce69f39d39f7b1250b354800b5188636be319acbf1fe702"
+        "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
       },
       {
         "path": "src/lib/supabase.ts",
-        "sha256": "a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f"
+        "sha256": "267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c"
       },
       {
         "path": "supabase/migrations/001_initial.sql",
@@ -3727,14 +3738,7 @@
         "path": "supabase/migrations/109_baseline_security_trust_boundaries.sql",
         "sha256": "4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b"
       }
-    ],
-    "reviewedEffectiveSql": [
-      {
-        "path": ".qa/intake/rpc-contracts/effective-sql/apply_session_runtime_command-1.sql",
-        "sha256": "bb69a3638e9e085c410b89afa5218eb221830484f6011824b19bd784019bf9ae"
-      }
-    ],
-    "reviewedBaselineSha": "f64fd957d959dcf71a4221a18a24a721b73eb6a753957f67758584cb73f137fd"
+    ]
   },
   "get_session_runtime_snapshot": {
     "summary": "Liest den aktuellen Runtime-Zustand einer Session und projiziert Knowledge/Adventure anhand der Rolle.",
@@ -3756,6 +3760,13 @@
       "Reiner Lesevertrag ohne Roster-/Event-/Revision-Write; Antwort ist aktueller Zustand, keine Event-Replay-Historie."
     ],
     "legacyDefects": [],
+    "reviewedEffectiveSql": [
+      {
+        "path": ".qa/intake/rpc-contracts/effective-sql/get_session_runtime_snapshot-1.sql",
+        "sha256": "52ceeac44ab281c6aaab0f95e59c15d458329801603e4f942ae4c8861bed81b7"
+      }
+    ],
+    "reviewedBaselineSha": "3e9f4097db652afbf733a1864516966ee53ed39852bfbd6378ec72b35b11af42",
     "reviewedSources": [
       {
         "path": "src/domains/session/contracts/session-lifecycle.ts",
@@ -3766,8 +3777,12 @@
         "sha256": "c928a253185cf9aa6fac10b380807033d86c0df4120fdc80b223800c626b84e2"
       },
       {
+        "path": "src/infrastructure/host/host-library-http.ts",
+        "sha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c"
+      },
+      {
         "path": "src/infrastructure/host/host-session-http.ts",
-        "sha256": "6c6baf668174dd76e44f1a0a0e7ceb16b6ec1960539b4e038d87d9274ebc804e"
+        "sha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf"
       },
       {
         "path": "src/infrastructure/session/session-runtime-service.ts",
@@ -3775,11 +3790,11 @@
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "925a7e9e9c7cd24fcce69f39d39f7b1250b354800b5188636be319acbf1fe702"
+        "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
       },
       {
         "path": "src/lib/supabase.ts",
-        "sha256": "a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f"
+        "sha256": "267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c"
       },
       {
         "path": "supabase/migrations/001_initial.sql",
@@ -3849,14 +3864,7 @@
         "path": "supabase/migrations/092_fix_projects_rls_recursion.sql",
         "sha256": "8e98ae8e52beb6ab57359338e7b30bdc2db322b7cdb44bdbf4059a41ab26e1bd"
       }
-    ],
-    "reviewedEffectiveSql": [
-      {
-        "path": ".qa/intake/rpc-contracts/effective-sql/get_session_runtime_snapshot-1.sql",
-        "sha256": "52ceeac44ab281c6aaab0f95e59c15d458329801603e4f942ae4c8861bed81b7"
-      }
-    ],
-    "reviewedBaselineSha": "3e9f4097db652afbf733a1864516966ee53ed39852bfbd6378ec72b35b11af42"
+    ]
   },
   "set_session_player_presence": {
     "summary": "Setzt die eigene Anwesenheit und liefert einen neuen Session-Snapshot.",
@@ -3894,6 +3902,13 @@
         "deployedExploitVerified": false
       }
     ],
+    "reviewedEffectiveSql": [
+      {
+        "path": ".qa/intake/rpc-contracts/effective-sql/set_session_player_presence-1.sql",
+        "sha256": "36a626408b344495a75f1f34fcc2e59f450d2af1a847371a34c5bb44614728d5"
+      }
+    ],
+    "reviewedBaselineSha": "b7be169de351fca6938a09c934e274403120c8387c269807d97fcc6d77acebea",
     "reviewedSources": [
       {
         "path": "src/domains/session/contracts/session-lifecycle.ts",
@@ -3904,8 +3919,12 @@
         "sha256": "c928a253185cf9aa6fac10b380807033d86c0df4120fdc80b223800c626b84e2"
       },
       {
+        "path": "src/infrastructure/host/host-library-http.ts",
+        "sha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c"
+      },
+      {
         "path": "src/infrastructure/host/host-session-http.ts",
-        "sha256": "6c6baf668174dd76e44f1a0a0e7ceb16b6ec1960539b4e038d87d9274ebc804e"
+        "sha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf"
       },
       {
         "path": "src/infrastructure/session/session-runtime-service.ts",
@@ -3913,11 +3932,11 @@
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "925a7e9e9c7cd24fcce69f39d39f7b1250b354800b5188636be319acbf1fe702"
+        "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
       },
       {
         "path": "src/lib/supabase.ts",
-        "sha256": "a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f"
+        "sha256": "267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c"
       },
       {
         "path": "supabase/migrations/001_initial.sql",
@@ -3995,14 +4014,7 @@
         "path": "supabase/migrations/109_baseline_security_trust_boundaries.sql",
         "sha256": "4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b"
       }
-    ],
-    "reviewedEffectiveSql": [
-      {
-        "path": ".qa/intake/rpc-contracts/effective-sql/set_session_player_presence-1.sql",
-        "sha256": "36a626408b344495a75f1f34fcc2e59f450d2af1a847371a34c5bb44614728d5"
-      }
-    ],
-    "reviewedBaselineSha": "b7be169de351fca6938a09c934e274403120c8387c269807d97fcc6d77acebea"
+    ]
   },
   "create_play_session": {
     "summary": "Erzeugt als Projekt-GM eine unmittelbar wartende Spielsession.",
@@ -4023,6 +4035,13 @@
       "Jeder Aufruf erzeugt eine neue Session; kein Dedup-Schlüssel. Advisory-Lock serialisiert die Nummernvergabe."
     ],
     "legacyDefects": [],
+    "reviewedEffectiveSql": [
+      {
+        "path": ".qa/intake/rpc-contracts/effective-sql/create_play_session-1.sql",
+        "sha256": "d9cfe0173cc4ad2fb500d411750e46972e195b1fb3e6ec66504d61f703171717"
+      }
+    ],
+    "reviewedBaselineSha": "a9c1040a3e1528b9ca09490ff72ec8c76a40224584b8211316adee6e1b516b2b",
     "reviewedSources": [
       {
         "path": "src/domains/session/contracts/session-lifecycle.ts",
@@ -4033,8 +4052,12 @@
         "sha256": "3f2056b6b4cb4ef86dbffd4271482131a3bf4714c3329b8827a067acfde29a04"
       },
       {
+        "path": "src/infrastructure/host/host-library-http.ts",
+        "sha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c"
+      },
+      {
         "path": "src/infrastructure/host/host-session-http.ts",
-        "sha256": "6c6baf668174dd76e44f1a0a0e7ceb16b6ec1960539b4e038d87d9274ebc804e"
+        "sha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf"
       },
       {
         "path": "src/infrastructure/session/session-service.ts",
@@ -4042,11 +4065,11 @@
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "925a7e9e9c7cd24fcce69f39d39f7b1250b354800b5188636be319acbf1fe702"
+        "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
       },
       {
         "path": "src/lib/supabase.ts",
-        "sha256": "a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f"
+        "sha256": "267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c"
       },
       {
         "path": "supabase/migrations/001_initial.sql",
@@ -4108,14 +4131,7 @@
         "path": "supabase/migrations/092_fix_projects_rls_recursion.sql",
         "sha256": "8e98ae8e52beb6ab57359338e7b30bdc2db322b7cdb44bdbf4059a41ab26e1bd"
       }
-    ],
-    "reviewedEffectiveSql": [
-      {
-        "path": ".qa/intake/rpc-contracts/effective-sql/create_play_session-1.sql",
-        "sha256": "d9cfe0173cc4ad2fb500d411750e46972e195b1fb3e6ec66504d61f703171717"
-      }
-    ],
-    "reviewedBaselineSha": "a9c1040a3e1528b9ca09490ff72ec8c76a40224584b8211316adee6e1b516b2b"
+    ]
   },
   "create_project_session": {
     "summary": "Legt eine geplante Projekt-Session mit Adventure- und Wissensübergabe an.",
@@ -4150,12 +4166,16 @@
         "sha256": "1777f75b3bd865b09e3fba61324b7331439f5846c98dea1230e27b6f976a0ca8"
       },
       {
+        "path": "src/infrastructure/host/host-library-http.ts",
+        "sha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c"
+      },
+      {
         "path": "src/infrastructure/project/project-service.ts",
         "sha256": "c92385b9656039cf348230edf003a7f37b90f519d91ab7bc9eb0c9d2ac0d8a3a"
       },
       {
         "path": "src/lib/supabase.ts",
-        "sha256": "a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f"
+        "sha256": "267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c"
       },
       {
         "path": "supabase/migrations/001_initial.sql",
@@ -4255,6 +4275,13 @@
         "deployedExploitVerified": false
       }
     ],
+    "reviewedEffectiveSql": [
+      {
+        "path": ".qa/intake/rpc-contracts/effective-sql/join_session_by_code-1.sql",
+        "sha256": "ecebdd88c046db43f02ab0f30053adc51e5d98d4319c25094034d8477cdc82e9"
+      }
+    ],
+    "reviewedBaselineSha": "59b63880b29dfa579ad5db280430ddcf376f81c9f5469822bec1bc9b8ba1ed2f",
     "reviewedSources": [
       {
         "path": "src/domains/session/contracts/session-lifecycle.ts",
@@ -4265,8 +4292,12 @@
         "sha256": "3f2056b6b4cb4ef86dbffd4271482131a3bf4714c3329b8827a067acfde29a04"
       },
       {
+        "path": "src/infrastructure/host/host-library-http.ts",
+        "sha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c"
+      },
+      {
         "path": "src/infrastructure/host/host-session-http.ts",
-        "sha256": "6c6baf668174dd76e44f1a0a0e7ceb16b6ec1960539b4e038d87d9274ebc804e"
+        "sha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf"
       },
       {
         "path": "src/infrastructure/session/session-service.ts",
@@ -4274,11 +4305,11 @@
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "925a7e9e9c7cd24fcce69f39d39f7b1250b354800b5188636be319acbf1fe702"
+        "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
       },
       {
         "path": "src/lib/supabase.ts",
-        "sha256": "a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f"
+        "sha256": "267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c"
       },
       {
         "path": "supabase/migrations/001_initial.sql",
@@ -4396,14 +4427,7 @@
         "path": "supabase/migrations/109_baseline_security_trust_boundaries.sql",
         "sha256": "4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b"
       }
-    ],
-    "reviewedEffectiveSql": [
-      {
-        "path": ".qa/intake/rpc-contracts/effective-sql/join_session_by_code-1.sql",
-        "sha256": "ecebdd88c046db43f02ab0f30053adc51e5d98d4319c25094034d8477cdc82e9"
-      }
-    ],
-    "reviewedBaselineSha": "59b63880b29dfa579ad5db280430ddcf376f81c9f5469822bec1bc9b8ba1ed2f"
+    ]
   },
   "leave_play_session": {
     "summary": "Entfernt die eigene Roster-Zeile; die bestehende Implementierung hat einen Fremdnutzer-Autorisierungsfehler.",
@@ -4455,10 +4479,21 @@
         "deployedExploitVerified": false
       }
     ],
+    "reviewedEffectiveSql": [
+      {
+        "path": ".qa/intake/rpc-contracts/effective-sql/leave_play_session-1.sql",
+        "sha256": "63a612d00dcb4c9772501293f253ef00459717ab542e4e4f4317434ea61af239"
+      }
+    ],
+    "reviewedBaselineSha": "1bcb33dbe41b9c784d038f8802abbfcb78537530aa3fbd2da7034ff70eb05389",
     "reviewedSources": [
       {
+        "path": "src/infrastructure/host/host-library-http.ts",
+        "sha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c"
+      },
+      {
         "path": "src/infrastructure/host/host-session-http.ts",
-        "sha256": "6c6baf668174dd76e44f1a0a0e7ceb16b6ec1960539b4e038d87d9274ebc804e"
+        "sha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf"
       },
       {
         "path": "src/infrastructure/session/session-service.ts",
@@ -4466,11 +4501,11 @@
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "925a7e9e9c7cd24fcce69f39d39f7b1250b354800b5188636be319acbf1fe702"
+        "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
       },
       {
         "path": "src/lib/supabase.ts",
-        "sha256": "a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f"
+        "sha256": "267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c"
       },
       {
         "path": "supabase/migrations/001_initial.sql",
@@ -4536,14 +4571,7 @@
         "path": "supabase/migrations/109_baseline_security_trust_boundaries.sql",
         "sha256": "4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b"
       }
-    ],
-    "reviewedEffectiveSql": [
-      {
-        "path": ".qa/intake/rpc-contracts/effective-sql/leave_play_session-1.sql",
-        "sha256": "63a612d00dcb4c9772501293f253ef00459717ab542e4e4f4317434ea61af239"
-      }
-    ],
-    "reviewedBaselineSha": "1bcb33dbe41b9c784d038f8802abbfcb78537530aa3fbd2da7034ff70eb05389"
+    ]
   },
   "set_session_status": {
     "summary": "Führt den GM-Statusübergang einer Session einschließlich Abschluss-Recap und Handover aus.",
@@ -4582,6 +4610,13 @@
         "deployedExploitVerified": false
       }
     ],
+    "reviewedEffectiveSql": [
+      {
+        "path": ".qa/intake/rpc-contracts/effective-sql/set_session_status-1.sql",
+        "sha256": "1c6f30f85e9cabff01631c424723fc681f6b1e80edb5f96a6ad01a5234b484ef"
+      }
+    ],
+    "reviewedBaselineSha": "e9745a1752ab779ee077b5fd644e2a9d0433839e34a59cfe6bca2d4a2d477d21",
     "reviewedSources": [
       {
         "path": "src/domains/session/contracts/session-lifecycle.ts",
@@ -4592,8 +4627,12 @@
         "sha256": "3f2056b6b4cb4ef86dbffd4271482131a3bf4714c3329b8827a067acfde29a04"
       },
       {
+        "path": "src/infrastructure/host/host-library-http.ts",
+        "sha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c"
+      },
+      {
         "path": "src/infrastructure/host/host-session-http.ts",
-        "sha256": "6c6baf668174dd76e44f1a0a0e7ceb16b6ec1960539b4e038d87d9274ebc804e"
+        "sha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf"
       },
       {
         "path": "src/infrastructure/session/session-service.ts",
@@ -4601,11 +4640,11 @@
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "925a7e9e9c7cd24fcce69f39d39f7b1250b354800b5188636be319acbf1fe702"
+        "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
       },
       {
         "path": "src/lib/supabase.ts",
-        "sha256": "a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f"
+        "sha256": "267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c"
       },
       {
         "path": "supabase/migrations/001_initial.sql",
@@ -4683,14 +4722,7 @@
         "path": "supabase/migrations/109_baseline_security_trust_boundaries.sql",
         "sha256": "4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b"
       }
-    ],
-    "reviewedEffectiveSql": [
-      {
-        "path": ".qa/intake/rpc-contracts/effective-sql/set_session_status-1.sql",
-        "sha256": "1c6f30f85e9cabff01631c424723fc681f6b1e80edb5f96a6ad01a5234b484ef"
-      }
-    ],
-    "reviewedBaselineSha": "e9745a1752ab779ee077b5fd644e2a9d0433839e34a59cfe6bca2d4a2d477d21"
+    ]
   },
   "create_session_invite": {
     "summary": "Rotiert als Session-GM das Einladungs-Token mit sieben Tagen Gültigkeit.",
@@ -4711,14 +4743,25 @@
       "Widerruf und Neuanlage sind atomar; jeder erfolgreiche Aufruf rotiert, keine Idempotenz."
     ],
     "legacyDefects": [],
+    "reviewedEffectiveSql": [
+      {
+        "path": ".qa/intake/rpc-contracts/effective-sql/create_session_invite-1.sql",
+        "sha256": "4ec6008871addc8a98e487d8fac6b70f59fe4a7f56571e50fab09c330d8a29c1"
+      }
+    ],
+    "reviewedBaselineSha": "9af2aa4bb59513d42447f8ad29152cba1bf5155fa90f16826a2891e7b0ab5ec7",
     "reviewedSources": [
       {
         "path": "src/domains/session/contracts/session-invite.ts",
         "sha256": "dac4795822314800fb59ff5e11b56ab8ce808071c43185e99711a92b66c0d4dc"
       },
       {
+        "path": "src/infrastructure/host/host-library-http.ts",
+        "sha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c"
+      },
+      {
         "path": "src/infrastructure/host/host-session-http.ts",
-        "sha256": "6c6baf668174dd76e44f1a0a0e7ceb16b6ec1960539b4e038d87d9274ebc804e"
+        "sha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf"
       },
       {
         "path": "src/infrastructure/session/session-service.ts",
@@ -4726,11 +4769,11 @@
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "925a7e9e9c7cd24fcce69f39d39f7b1250b354800b5188636be319acbf1fe702"
+        "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
       },
       {
         "path": "src/lib/supabase.ts",
-        "sha256": "a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f"
+        "sha256": "267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c"
       },
       {
         "path": "supabase/migrations/001_initial.sql",
@@ -4784,14 +4827,7 @@
         "path": "supabase/migrations/092_fix_projects_rls_recursion.sql",
         "sha256": "8e98ae8e52beb6ab57359338e7b30bdc2db322b7cdb44bdbf4059a41ab26e1bd"
       }
-    ],
-    "reviewedEffectiveSql": [
-      {
-        "path": ".qa/intake/rpc-contracts/effective-sql/create_session_invite-1.sql",
-        "sha256": "4ec6008871addc8a98e487d8fac6b70f59fe4a7f56571e50fab09c330d8a29c1"
-      }
-    ],
-    "reviewedBaselineSha": "9af2aa4bb59513d42447f8ad29152cba1bf5155fa90f16826a2891e7b0ab5ec7"
+    ]
   },
   "resolve_session_invite": {
     "summary": "Löst ein Invite-Token auf und liefert die für die Beitrittsoberfläche benötigten IDs und Zustände.",
@@ -4813,14 +4849,25 @@
       "Token-Auflösung hat einen last_resolved_at-Write; kein Session-Event und keine Revisionsänderung. Wiederholung aktualisiert den Zeitstempel."
     ],
     "legacyDefects": [],
+    "reviewedEffectiveSql": [
+      {
+        "path": ".qa/intake/rpc-contracts/effective-sql/resolve_session_invite-1.sql",
+        "sha256": "2f8149c3ae5216fa20055d4fb2127e3bb4cf1e1d15f490f262e8b1558318e4d1"
+      }
+    ],
+    "reviewedBaselineSha": "c5544240f7e6d7bc7a893b82b018e10e52bf692d23d549ab516990e318ad561b",
     "reviewedSources": [
       {
         "path": "src/domains/session/contracts/session-invite.ts",
         "sha256": "dac4795822314800fb59ff5e11b56ab8ce808071c43185e99711a92b66c0d4dc"
       },
       {
+        "path": "src/infrastructure/host/host-library-http.ts",
+        "sha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c"
+      },
+      {
         "path": "src/infrastructure/host/host-session-http.ts",
-        "sha256": "6c6baf668174dd76e44f1a0a0e7ceb16b6ec1960539b4e038d87d9274ebc804e"
+        "sha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf"
       },
       {
         "path": "src/infrastructure/session/session-service.ts",
@@ -4828,11 +4875,11 @@
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "925a7e9e9c7cd24fcce69f39d39f7b1250b354800b5188636be319acbf1fe702"
+        "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
       },
       {
         "path": "src/lib/supabase.ts",
-        "sha256": "a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f"
+        "sha256": "267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c"
       },
       {
         "path": "supabase/migrations/001_initial.sql",
@@ -4934,14 +4981,7 @@
         "path": "supabase/migrations/092_fix_projects_rls_recursion.sql",
         "sha256": "8e98ae8e52beb6ab57359338e7b30bdc2db322b7cdb44bdbf4059a41ab26e1bd"
       }
-    ],
-    "reviewedEffectiveSql": [
-      {
-        "path": ".qa/intake/rpc-contracts/effective-sql/resolve_session_invite-1.sql",
-        "sha256": "2f8149c3ae5216fa20055d4fb2127e3bb4cf1e1d15f490f262e8b1558318e4d1"
-      }
-    ],
-    "reviewedBaselineSha": "c5544240f7e6d7bc7a893b82b018e10e52bf692d23d549ab516990e318ad561b"
+    ]
   },
   "revoke_session_invite": {
     "summary": "Widerruft ein konkretes Session-Einladungs-Token.",
@@ -4962,14 +5002,25 @@
       "Ein Invite-Update pro Transaktion; Wiederholung setzt den Widerrufszeitpunkt neu."
     ],
     "legacyDefects": [],
+    "reviewedEffectiveSql": [
+      {
+        "path": ".qa/intake/rpc-contracts/effective-sql/revoke_session_invite-1.sql",
+        "sha256": "b1fb5a736cab509595e074a3ef638a1c30b82c863e94ba8d9effde24e20c8e1e"
+      }
+    ],
+    "reviewedBaselineSha": "39a4d81cc644782ed20285c7e2a7149291878a8b1c50cf7d704aeb07b6714cca",
     "reviewedSources": [
       {
         "path": "src/domains/session/contracts/session-invite.ts",
         "sha256": "dac4795822314800fb59ff5e11b56ab8ce808071c43185e99711a92b66c0d4dc"
       },
       {
+        "path": "src/infrastructure/host/host-library-http.ts",
+        "sha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c"
+      },
+      {
         "path": "src/infrastructure/host/host-session-http.ts",
-        "sha256": "6c6baf668174dd76e44f1a0a0e7ceb16b6ec1960539b4e038d87d9274ebc804e"
+        "sha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf"
       },
       {
         "path": "src/infrastructure/session/session-service.ts",
@@ -4977,11 +5028,11 @@
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "925a7e9e9c7cd24fcce69f39d39f7b1250b354800b5188636be319acbf1fe702"
+        "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
       },
       {
         "path": "src/lib/supabase.ts",
-        "sha256": "a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f"
+        "sha256": "267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c"
       },
       {
         "path": "supabase/migrations/001_initial.sql",
@@ -5035,14 +5086,7 @@
         "path": "supabase/migrations/092_fix_projects_rls_recursion.sql",
         "sha256": "8e98ae8e52beb6ab57359338e7b30bdc2db322b7cdb44bdbf4059a41ab26e1bd"
       }
-    ],
-    "reviewedEffectiveSql": [
-      {
-        "path": ".qa/intake/rpc-contracts/effective-sql/revoke_session_invite-1.sql",
-        "sha256": "b1fb5a736cab509595e074a3ef638a1c30b82c863e94ba8d9effde24e20c8e1e"
-      }
-    ],
-    "reviewedBaselineSha": "39a4d81cc644782ed20285c7e2a7149291878a8b1c50cf7d704aeb07b6714cca"
+    ]
   },
   "get_session_recap": {
     "summary": "Liest den Recap und projiziert Zusammenfassung und Highlights nach Session-Rolle.",
@@ -5064,14 +5108,25 @@
       "Leseoperation ohne Mutation; Summary-Freigabe ist Bestandteil der Projektion."
     ],
     "legacyDefects": [],
+    "reviewedEffectiveSql": [
+      {
+        "path": ".qa/intake/rpc-contracts/effective-sql/get_session_recap-1.sql",
+        "sha256": "d33e6ece5a7d11bf75b7b0d63d663c5d9a52b3e6010c73b4c1365e179090437b"
+      }
+    ],
+    "reviewedBaselineSha": "d1d803418b7c77b54fa47c5f67dd4fd6c88cd9af0dd6f5602af0874886ca8645",
     "reviewedSources": [
       {
         "path": "src/domains/session/contracts/session-prepare-recap.ts",
         "sha256": "14a939d627bc1b7393a8e32c1a9bf9f2b74aab0058416bd6e73a9a59cbcc7c7f"
       },
       {
+        "path": "src/infrastructure/host/host-library-http.ts",
+        "sha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c"
+      },
+      {
         "path": "src/infrastructure/host/host-session-http.ts",
-        "sha256": "6c6baf668174dd76e44f1a0a0e7ceb16b6ec1960539b4e038d87d9274ebc804e"
+        "sha256": "4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf"
       },
       {
         "path": "src/infrastructure/session/session-recap-service.ts",
@@ -5079,7 +5134,7 @@
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "925a7e9e9c7cd24fcce69f39d39f7b1250b354800b5188636be319acbf1fe702"
+        "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
       },
       {
         "path": "src/lib/networkTimeout.ts",
@@ -5087,7 +5142,7 @@
       },
       {
         "path": "src/lib/supabase.ts",
-        "sha256": "a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f"
+        "sha256": "267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c"
       },
       {
         "path": "supabase/migrations/001_initial.sql",
@@ -5153,14 +5208,7 @@
         "path": "supabase/migrations/092_fix_projects_rls_recursion.sql",
         "sha256": "8e98ae8e52beb6ab57359338e7b30bdc2db322b7cdb44bdbf4059a41ab26e1bd"
       }
-    ],
-    "reviewedEffectiveSql": [
-      {
-        "path": ".qa/intake/rpc-contracts/effective-sql/get_session_recap-1.sql",
-        "sha256": "d33e6ece5a7d11bf75b7b0d63d663c5d9a52b3e6010c73b4c1365e179090437b"
-      }
-    ],
-    "reviewedBaselineSha": "d1d803418b7c77b54fa47c5f67dd4fd6c88cd9af0dd6f5602af0874886ca8645"
+    ]
   },
   "save_session_recap_summary": {
     "summary": "Speichert Summary und Freigabestatus eines Recaps; zwei effektive SQL-Overloads bleiben erhalten.",
@@ -5210,6 +5258,10 @@
     "reviewedBaselineSha": "361af639940d0d4728387f07ae7a0797db8d4e58aa198df0f415440be9c3258c",
     "reviewedSources": [
       {
+        "path": "src/infrastructure/host/host-library-http.ts",
+        "sha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c"
+      },
+      {
         "path": "src/infrastructure/session/session-recap-ai-service.ts",
         "sha256": "61b31d8ae8f680ac4755cf499b42b8da5f0ab5bf85edede1248de5d0e9a364f6"
       },
@@ -5219,7 +5271,7 @@
       },
       {
         "path": "src/lib/supabase.ts",
-        "sha256": "a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f"
+        "sha256": "267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c"
       },
       {
         "path": "supabase/migrations/001_initial.sql",
@@ -5319,8 +5371,20 @@
     "reviewedBaselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248",
     "reviewedSources": [
       {
+        "path": "src/infrastructure/host/host-library-http.ts",
+        "sha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c"
+      },
+      {
+        "path": "src/infrastructure/host/host-product-deny.ts",
+        "sha256": "69b148debc95006bb31daa7a94caf4e1507ac3089fdf399952102c4effa3759c"
+      },
+      {
         "path": "src/infrastructure/saga/saga-definition-service.ts",
-        "sha256": "4d361fe8dff964fdd8fc2a15a7a7c8a8254dd936f7536ad543637b52280fd611"
+        "sha256": "5a5b280f5ba4e37d9d6153146d4f2d1629ac19a30f0c34fc8213a30638a92d79"
+      },
+      {
+        "path": "src/lib/hostAuthBridge.ts",
+        "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
       },
       {
         "path": "src/lib/networkTimeout.ts",
@@ -5328,7 +5392,7 @@
       },
       {
         "path": "src/lib/supabase.ts",
-        "sha256": "a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f"
+        "sha256": "267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c"
       },
       {
         "path": "supabase/migrations/063_saga_definitions.sql",
@@ -5377,8 +5441,20 @@
     "reviewedBaselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248",
     "reviewedSources": [
       {
+        "path": "src/infrastructure/host/host-library-http.ts",
+        "sha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c"
+      },
+      {
+        "path": "src/infrastructure/host/host-product-deny.ts",
+        "sha256": "69b148debc95006bb31daa7a94caf4e1507ac3089fdf399952102c4effa3759c"
+      },
+      {
         "path": "src/infrastructure/saga/saga-definition-service.ts",
-        "sha256": "4d361fe8dff964fdd8fc2a15a7a7c8a8254dd936f7536ad543637b52280fd611"
+        "sha256": "5a5b280f5ba4e37d9d6153146d4f2d1629ac19a30f0c34fc8213a30638a92d79"
+      },
+      {
+        "path": "src/lib/hostAuthBridge.ts",
+        "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
       },
       {
         "path": "src/lib/networkTimeout.ts",
@@ -5386,7 +5462,7 @@
       },
       {
         "path": "src/lib/supabase.ts",
-        "sha256": "a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f"
+        "sha256": "267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c"
       },
       {
         "path": "supabase/migrations/063_saga_definitions.sql",
@@ -5438,8 +5514,20 @@
         "sha256": "69b8fab72a158942d4f807e8b9fabcdae815506fb18e4e82434a71d0cdb9ee05"
       },
       {
+        "path": "src/infrastructure/host/host-library-http.ts",
+        "sha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c"
+      },
+      {
+        "path": "src/infrastructure/host/host-product-deny.ts",
+        "sha256": "69b148debc95006bb31daa7a94caf4e1507ac3089fdf399952102c4effa3759c"
+      },
+      {
         "path": "src/infrastructure/saga/saga-definition-service.ts",
-        "sha256": "4d361fe8dff964fdd8fc2a15a7a7c8a8254dd936f7536ad543637b52280fd611"
+        "sha256": "5a5b280f5ba4e37d9d6153146d4f2d1629ac19a30f0c34fc8213a30638a92d79"
+      },
+      {
+        "path": "src/lib/hostAuthBridge.ts",
+        "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
       },
       {
         "path": "src/lib/networkTimeout.ts",
@@ -5447,7 +5535,7 @@
       },
       {
         "path": "src/lib/supabase.ts",
-        "sha256": "a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f"
+        "sha256": "267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c"
       },
       {
         "path": "supabase/migrations/001_initial.sql",
@@ -5536,8 +5624,20 @@
         "sha256": "69b8fab72a158942d4f807e8b9fabcdae815506fb18e4e82434a71d0cdb9ee05"
       },
       {
+        "path": "src/infrastructure/host/host-library-http.ts",
+        "sha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c"
+      },
+      {
+        "path": "src/infrastructure/host/host-product-deny.ts",
+        "sha256": "69b148debc95006bb31daa7a94caf4e1507ac3089fdf399952102c4effa3759c"
+      },
+      {
         "path": "src/infrastructure/saga/saga-definition-service.ts",
-        "sha256": "4d361fe8dff964fdd8fc2a15a7a7c8a8254dd936f7536ad543637b52280fd611"
+        "sha256": "5a5b280f5ba4e37d9d6153146d4f2d1629ac19a30f0c34fc8213a30638a92d79"
+      },
+      {
+        "path": "src/lib/hostAuthBridge.ts",
+        "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
       },
       {
         "path": "src/lib/networkTimeout.ts",
@@ -5545,7 +5645,7 @@
       },
       {
         "path": "src/lib/supabase.ts",
-        "sha256": "a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f"
+        "sha256": "267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c"
       },
       {
         "path": "supabase/migrations/001_initial.sql",
@@ -5634,8 +5734,20 @@
         "sha256": "69b8fab72a158942d4f807e8b9fabcdae815506fb18e4e82434a71d0cdb9ee05"
       },
       {
+        "path": "src/infrastructure/host/host-library-http.ts",
+        "sha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c"
+      },
+      {
+        "path": "src/infrastructure/host/host-product-deny.ts",
+        "sha256": "69b148debc95006bb31daa7a94caf4e1507ac3089fdf399952102c4effa3759c"
+      },
+      {
         "path": "src/infrastructure/saga/saga-definition-service.ts",
-        "sha256": "4d361fe8dff964fdd8fc2a15a7a7c8a8254dd936f7536ad543637b52280fd611"
+        "sha256": "5a5b280f5ba4e37d9d6153146d4f2d1629ac19a30f0c34fc8213a30638a92d79"
+      },
+      {
+        "path": "src/lib/hostAuthBridge.ts",
+        "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
       },
       {
         "path": "src/lib/networkTimeout.ts",
@@ -5643,7 +5755,7 @@
       },
       {
         "path": "src/lib/supabase.ts",
-        "sha256": "a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f"
+        "sha256": "267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c"
       },
       {
         "path": "supabase/migrations/063_saga_definitions.sql",
@@ -5700,8 +5812,20 @@
         "sha256": "69b8fab72a158942d4f807e8b9fabcdae815506fb18e4e82434a71d0cdb9ee05"
       },
       {
+        "path": "src/infrastructure/host/host-library-http.ts",
+        "sha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c"
+      },
+      {
+        "path": "src/infrastructure/host/host-product-deny.ts",
+        "sha256": "69b148debc95006bb31daa7a94caf4e1507ac3089fdf399952102c4effa3759c"
+      },
+      {
         "path": "src/infrastructure/saga/saga-definition-service.ts",
-        "sha256": "4d361fe8dff964fdd8fc2a15a7a7c8a8254dd936f7536ad543637b52280fd611"
+        "sha256": "5a5b280f5ba4e37d9d6153146d4f2d1629ac19a30f0c34fc8213a30638a92d79"
+      },
+      {
+        "path": "src/lib/hostAuthBridge.ts",
+        "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
       },
       {
         "path": "src/lib/networkTimeout.ts",
@@ -5709,7 +5833,7 @@
       },
       {
         "path": "src/lib/supabase.ts",
-        "sha256": "a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f"
+        "sha256": "267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c"
       },
       {
         "path": "supabase/migrations/063_saga_definitions.sql",
@@ -5762,8 +5886,20 @@
     "reviewedBaselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248",
     "reviewedSources": [
       {
+        "path": "src/infrastructure/host/host-library-http.ts",
+        "sha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c"
+      },
+      {
+        "path": "src/infrastructure/host/host-product-deny.ts",
+        "sha256": "69b148debc95006bb31daa7a94caf4e1507ac3089fdf399952102c4effa3759c"
+      },
+      {
         "path": "src/infrastructure/saga/saga-definition-service.ts",
-        "sha256": "4d361fe8dff964fdd8fc2a15a7a7c8a8254dd936f7536ad543637b52280fd611"
+        "sha256": "5a5b280f5ba4e37d9d6153146d4f2d1629ac19a30f0c34fc8213a30638a92d79"
+      },
+      {
+        "path": "src/lib/hostAuthBridge.ts",
+        "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
       },
       {
         "path": "src/lib/networkTimeout.ts",
@@ -5771,7 +5907,7 @@
       },
       {
         "path": "src/lib/supabase.ts",
-        "sha256": "a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f"
+        "sha256": "267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c"
       },
       {
         "path": "supabase/migrations/063_saga_definitions.sql",
@@ -5834,8 +5970,20 @@
     "reviewedBaselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248",
     "reviewedSources": [
       {
+        "path": "src/infrastructure/host/host-library-http.ts",
+        "sha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c"
+      },
+      {
+        "path": "src/infrastructure/host/host-product-deny.ts",
+        "sha256": "69b148debc95006bb31daa7a94caf4e1507ac3089fdf399952102c4effa3759c"
+      },
+      {
         "path": "src/infrastructure/saga/saga-definition-service.ts",
-        "sha256": "4d361fe8dff964fdd8fc2a15a7a7c8a8254dd936f7536ad543637b52280fd611"
+        "sha256": "5a5b280f5ba4e37d9d6153146d4f2d1629ac19a30f0c34fc8213a30638a92d79"
+      },
+      {
+        "path": "src/lib/hostAuthBridge.ts",
+        "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
       },
       {
         "path": "src/lib/networkTimeout.ts",
@@ -5843,7 +5991,7 @@
       },
       {
         "path": "src/lib/supabase.ts",
-        "sha256": "a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f"
+        "sha256": "267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c"
       },
       {
         "path": "supabase/migrations/001_initial.sql",
@@ -5940,8 +6088,20 @@
     "reviewedBaselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248",
     "reviewedSources": [
       {
+        "path": "src/infrastructure/host/host-library-http.ts",
+        "sha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c"
+      },
+      {
+        "path": "src/infrastructure/host/host-product-deny.ts",
+        "sha256": "69b148debc95006bb31daa7a94caf4e1507ac3089fdf399952102c4effa3759c"
+      },
+      {
         "path": "src/infrastructure/saga/saga-definition-service.ts",
-        "sha256": "4d361fe8dff964fdd8fc2a15a7a7c8a8254dd936f7536ad543637b52280fd611"
+        "sha256": "5a5b280f5ba4e37d9d6153146d4f2d1629ac19a30f0c34fc8213a30638a92d79"
+      },
+      {
+        "path": "src/lib/hostAuthBridge.ts",
+        "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
       },
       {
         "path": "src/lib/networkTimeout.ts",
@@ -5949,7 +6109,7 @@
       },
       {
         "path": "src/lib/supabase.ts",
-        "sha256": "a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f"
+        "sha256": "267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c"
       },
       {
         "path": "supabase/migrations/001_initial.sql",
@@ -6051,7 +6211,7 @@
     "reviewedSources": [
       {
         "path": "src/infrastructure/host/host-library-http.ts",
-        "sha256": "c452cc3bf830068496fb10f705019cbdcc682586c1672b6a7572cd430b5d5069"
+        "sha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c"
       },
       {
         "path": "src/infrastructure/project/project-service.ts",
@@ -6059,11 +6219,11 @@
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "925a7e9e9c7cd24fcce69f39d39f7b1250b354800b5188636be319acbf1fe702"
+        "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
       },
       {
         "path": "src/lib/supabase.ts",
-        "sha256": "a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f"
+        "sha256": "267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c"
       },
       {
         "path": "supabase/migrations/001_initial.sql",
@@ -6271,8 +6431,12 @@
         "sha256": "1777f75b3bd865b09e3fba61324b7331439f5846c98dea1230e27b6f976a0ca8"
       },
       {
+        "path": "src/infrastructure/host/host-library-http.ts",
+        "sha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c"
+      },
+      {
         "path": "src/infrastructure/host/host-project-http.ts",
-        "sha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681"
+        "sha256": "2d666f7c1ac35c7760f725e53b98310f28033800418d67a79a69d801c3e1a8fe"
       },
       {
         "path": "src/infrastructure/project/project-member-service.ts",
@@ -6280,11 +6444,11 @@
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "925a7e9e9c7cd24fcce69f39d39f7b1250b354800b5188636be319acbf1fe702"
+        "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
       },
       {
         "path": "src/lib/supabase.ts",
-        "sha256": "a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f"
+        "sha256": "267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c"
       },
       {
         "path": "supabase/migrations/001_initial.sql",
@@ -6404,8 +6568,12 @@
         "sha256": "1777f75b3bd865b09e3fba61324b7331439f5846c98dea1230e27b6f976a0ca8"
       },
       {
+        "path": "src/infrastructure/host/host-library-http.ts",
+        "sha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c"
+      },
+      {
         "path": "src/infrastructure/host/host-project-http.ts",
-        "sha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681"
+        "sha256": "2d666f7c1ac35c7760f725e53b98310f28033800418d67a79a69d801c3e1a8fe"
       },
       {
         "path": "src/infrastructure/project/project-member-service.ts",
@@ -6413,11 +6581,11 @@
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "925a7e9e9c7cd24fcce69f39d39f7b1250b354800b5188636be319acbf1fe702"
+        "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
       },
       {
         "path": "src/lib/supabase.ts",
-        "sha256": "a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f"
+        "sha256": "267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c"
       },
       {
         "path": "supabase/migrations/001_initial.sql",
@@ -6517,8 +6685,12 @@
     "reviewedBaselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248",
     "reviewedSources": [
       {
+        "path": "src/infrastructure/host/host-library-http.ts",
+        "sha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c"
+      },
+      {
         "path": "src/infrastructure/host/host-project-http.ts",
-        "sha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681"
+        "sha256": "2d666f7c1ac35c7760f725e53b98310f28033800418d67a79a69d801c3e1a8fe"
       },
       {
         "path": "src/infrastructure/project/saga-permission-service.ts",
@@ -6526,11 +6698,11 @@
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "925a7e9e9c7cd24fcce69f39d39f7b1250b354800b5188636be319acbf1fe702"
+        "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
       },
       {
         "path": "src/lib/supabase.ts",
-        "sha256": "a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f"
+        "sha256": "267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c"
       },
       {
         "path": "supabase/migrations/001_initial.sql",
@@ -6606,8 +6778,12 @@
     "reviewedBaselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248",
     "reviewedSources": [
       {
+        "path": "src/infrastructure/host/host-library-http.ts",
+        "sha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c"
+      },
+      {
         "path": "src/infrastructure/host/host-project-http.ts",
-        "sha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681"
+        "sha256": "2d666f7c1ac35c7760f725e53b98310f28033800418d67a79a69d801c3e1a8fe"
       },
       {
         "path": "src/infrastructure/project/saga-permission-service.ts",
@@ -6615,11 +6791,11 @@
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "925a7e9e9c7cd24fcce69f39d39f7b1250b354800b5188636be319acbf1fe702"
+        "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
       },
       {
         "path": "src/lib/supabase.ts",
-        "sha256": "a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f"
+        "sha256": "267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c"
       },
       {
         "path": "supabase/migrations/001_initial.sql",
@@ -6703,8 +6879,12 @@
     "reviewedBaselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248",
     "reviewedSources": [
       {
+        "path": "src/infrastructure/host/host-library-http.ts",
+        "sha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c"
+      },
+      {
         "path": "src/infrastructure/host/host-project-http.ts",
-        "sha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681"
+        "sha256": "2d666f7c1ac35c7760f725e53b98310f28033800418d67a79a69d801c3e1a8fe"
       },
       {
         "path": "src/infrastructure/project/saga-permission-service.ts",
@@ -6712,11 +6892,11 @@
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "925a7e9e9c7cd24fcce69f39d39f7b1250b354800b5188636be319acbf1fe702"
+        "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
       },
       {
         "path": "src/lib/supabase.ts",
-        "sha256": "a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f"
+        "sha256": "267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c"
       },
       {
         "path": "supabase/migrations/001_initial.sql",
@@ -6789,8 +6969,12 @@
     "reviewedBaselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248",
     "reviewedSources": [
       {
+        "path": "src/infrastructure/host/host-library-http.ts",
+        "sha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c"
+      },
+      {
         "path": "src/infrastructure/host/host-project-http.ts",
-        "sha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681"
+        "sha256": "2d666f7c1ac35c7760f725e53b98310f28033800418d67a79a69d801c3e1a8fe"
       },
       {
         "path": "src/infrastructure/project/saga-permission-service.ts",
@@ -6798,11 +6982,11 @@
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "925a7e9e9c7cd24fcce69f39d39f7b1250b354800b5188636be319acbf1fe702"
+        "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
       },
       {
         "path": "src/lib/supabase.ts",
-        "sha256": "a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f"
+        "sha256": "267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c"
       },
       {
         "path": "supabase/migrations/001_initial.sql",
@@ -6874,8 +7058,12 @@
     "reviewedBaselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248",
     "reviewedSources": [
       {
+        "path": "src/infrastructure/host/host-library-http.ts",
+        "sha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c"
+      },
+      {
         "path": "src/infrastructure/host/host-project-http.ts",
-        "sha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681"
+        "sha256": "2d666f7c1ac35c7760f725e53b98310f28033800418d67a79a69d801c3e1a8fe"
       },
       {
         "path": "src/infrastructure/project/saga-permission-service.ts",
@@ -6883,11 +7071,11 @@
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "925a7e9e9c7cd24fcce69f39d39f7b1250b354800b5188636be319acbf1fe702"
+        "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
       },
       {
         "path": "src/lib/supabase.ts",
-        "sha256": "a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f"
+        "sha256": "267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c"
       },
       {
         "path": "supabase/migrations/001_initial.sql",
@@ -6967,8 +7155,12 @@
         "sha256": "f245a4b02ce971d772808ddcdb70944992ba7f8cb0fbc1d012e5f6c93e11b48b"
       },
       {
+        "path": "src/infrastructure/host/host-library-http.ts",
+        "sha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c"
+      },
+      {
         "path": "src/infrastructure/host/host-project-http.ts",
-        "sha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681"
+        "sha256": "2d666f7c1ac35c7760f725e53b98310f28033800418d67a79a69d801c3e1a8fe"
       },
       {
         "path": "src/infrastructure/project/saga-permission-service.ts",
@@ -6976,11 +7168,11 @@
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "925a7e9e9c7cd24fcce69f39d39f7b1250b354800b5188636be319acbf1fe702"
+        "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
       },
       {
         "path": "src/lib/supabase.ts",
-        "sha256": "a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f"
+        "sha256": "267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c"
       },
       {
         "path": "supabase/migrations/001_initial.sql",
@@ -7081,8 +7273,12 @@
         "sha256": "d4ddafbea6f3d8a8678c44d6fd9096ebe1f6985e4c335f5050dac2915918dc94"
       },
       {
+        "path": "src/infrastructure/host/host-library-http.ts",
+        "sha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c"
+      },
+      {
         "path": "src/infrastructure/host/host-project-http.ts",
-        "sha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681"
+        "sha256": "2d666f7c1ac35c7760f725e53b98310f28033800418d67a79a69d801c3e1a8fe"
       },
       {
         "path": "src/infrastructure/project/saga-overview-service.ts",
@@ -7090,7 +7286,7 @@
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "925a7e9e9c7cd24fcce69f39d39f7b1250b354800b5188636be319acbf1fe702"
+        "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
       },
       {
         "path": "src/lib/networkTimeout.ts",
@@ -7098,7 +7294,7 @@
       },
       {
         "path": "src/lib/supabase.ts",
-        "sha256": "a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f"
+        "sha256": "267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c"
       },
       {
         "path": "supabase/migrations/001_initial.sql",
@@ -7272,12 +7468,20 @@
         "sha256": "d3c26e886f5f1da3b617723feaad5510218d486413ea7953bbc382593578bedd"
       },
       {
+        "path": "src/infrastructure/host/host-library-http.ts",
+        "sha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c"
+      },
+      {
         "path": "src/infrastructure/saga/session-outcome-promotion-service.ts",
-        "sha256": "068813032aab3e73e4a304a55eb62b2fd9c45c92cc627eba698ad7875feab399"
+        "sha256": "4c6214a1eaa4d4f25f9ae6b0a5052989fce08ed94139ac4701cbb65df5208a9d"
+      },
+      {
+        "path": "src/lib/hostAuthBridge.ts",
+        "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
       },
       {
         "path": "src/lib/supabase.ts",
-        "sha256": "a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f"
+        "sha256": "267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c"
       },
       {
         "path": "supabase/migrations/001_initial.sql",
@@ -7419,12 +7623,20 @@
         "sha256": "d3c26e886f5f1da3b617723feaad5510218d486413ea7953bbc382593578bedd"
       },
       {
+        "path": "src/infrastructure/host/host-library-http.ts",
+        "sha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c"
+      },
+      {
         "path": "src/infrastructure/saga/session-outcome-promotion-service.ts",
-        "sha256": "068813032aab3e73e4a304a55eb62b2fd9c45c92cc627eba698ad7875feab399"
+        "sha256": "4c6214a1eaa4d4f25f9ae6b0a5052989fce08ed94139ac4701cbb65df5208a9d"
+      },
+      {
+        "path": "src/lib/hostAuthBridge.ts",
+        "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
       },
       {
         "path": "src/lib/supabase.ts",
-        "sha256": "a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f"
+        "sha256": "267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c"
       },
       {
         "path": "supabase/migrations/001_initial.sql",
@@ -7564,8 +7776,12 @@
     "reviewedBaselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248",
     "reviewedSources": [
       {
+        "path": "src/infrastructure/host/host-library-http.ts",
+        "sha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c"
+      },
+      {
         "path": "src/infrastructure/host/host-world-http.ts",
-        "sha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b"
+        "sha256": "bfb69f91e69543a66ee96cab4ad21273c86a2b167e4c21211c42c7e6ccb3c072"
       },
       {
         "path": "src/infrastructure/world/world-map-service.ts",
@@ -7573,11 +7789,11 @@
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "925a7e9e9c7cd24fcce69f39d39f7b1250b354800b5188636be319acbf1fe702"
+        "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
       },
       {
         "path": "src/lib/supabase.ts",
-        "sha256": "a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f"
+        "sha256": "267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c"
       },
       {
         "path": "supabase/migrations/001_initial.sql",
@@ -7666,8 +7882,12 @@
     "reviewedBaselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248",
     "reviewedSources": [
       {
+        "path": "src/infrastructure/host/host-library-http.ts",
+        "sha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c"
+      },
+      {
         "path": "src/infrastructure/host/host-world-http.ts",
-        "sha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b"
+        "sha256": "bfb69f91e69543a66ee96cab4ad21273c86a2b167e4c21211c42c7e6ccb3c072"
       },
       {
         "path": "src/infrastructure/world/world-map-service.ts",
@@ -7675,11 +7895,11 @@
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "925a7e9e9c7cd24fcce69f39d39f7b1250b354800b5188636be319acbf1fe702"
+        "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
       },
       {
         "path": "src/lib/supabase.ts",
-        "sha256": "a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f"
+        "sha256": "267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c"
       },
       {
         "path": "supabase/migrations/008_world_profiles.sql",
@@ -7732,8 +7952,12 @@
     "reviewedBaselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248",
     "reviewedSources": [
       {
+        "path": "src/infrastructure/host/host-library-http.ts",
+        "sha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c"
+      },
+      {
         "path": "src/infrastructure/host/host-world-http.ts",
-        "sha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b"
+        "sha256": "bfb69f91e69543a66ee96cab4ad21273c86a2b167e4c21211c42c7e6ccb3c072"
       },
       {
         "path": "src/infrastructure/world/world-atlas-service.ts",
@@ -7741,11 +7965,15 @@
       },
       {
         "path": "src/lib/authenticatedUser.ts",
-        "sha256": "c822140996ae4d318c19d2ccb5318d77f2ba4d302bdfbcb50a79420a7ef70d74"
+        "sha256": "6511efe22e63dcd5a964bfb413f1ab8aa1beda804abcf7d4e5936e617b6d169b"
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "925a7e9e9c7cd24fcce69f39d39f7b1250b354800b5188636be319acbf1fe702"
+        "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+      },
+      {
+        "path": "src/lib/localAdmin.ts",
+        "sha256": "3a28dec23e85f25ed3e70682bc6e7f8c6b55e81dbbefdd1f6a837f68ac80d6b5"
       },
       {
         "path": "src/lib/networkTimeout.ts",
@@ -7753,7 +7981,7 @@
       },
       {
         "path": "src/lib/supabase.ts",
-        "sha256": "a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f"
+        "sha256": "267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c"
       },
       {
         "path": "supabase/migrations/001_initial.sql",
@@ -7914,8 +8142,12 @@
     "reviewedBaselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248",
     "reviewedSources": [
       {
+        "path": "src/infrastructure/host/host-library-http.ts",
+        "sha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c"
+      },
+      {
         "path": "src/infrastructure/host/host-world-http.ts",
-        "sha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b"
+        "sha256": "bfb69f91e69543a66ee96cab4ad21273c86a2b167e4c21211c42c7e6ccb3c072"
       },
       {
         "path": "src/infrastructure/world/world-atlas-service.ts",
@@ -7923,11 +8155,15 @@
       },
       {
         "path": "src/lib/authenticatedUser.ts",
-        "sha256": "c822140996ae4d318c19d2ccb5318d77f2ba4d302bdfbcb50a79420a7ef70d74"
+        "sha256": "6511efe22e63dcd5a964bfb413f1ab8aa1beda804abcf7d4e5936e617b6d169b"
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "925a7e9e9c7cd24fcce69f39d39f7b1250b354800b5188636be319acbf1fe702"
+        "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+      },
+      {
+        "path": "src/lib/localAdmin.ts",
+        "sha256": "3a28dec23e85f25ed3e70682bc6e7f8c6b55e81dbbefdd1f6a837f68ac80d6b5"
       },
       {
         "path": "src/lib/networkTimeout.ts",
@@ -7935,7 +8171,7 @@
       },
       {
         "path": "src/lib/supabase.ts",
-        "sha256": "a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f"
+        "sha256": "267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c"
       },
       {
         "path": "supabase/migrations/001_initial.sql",
@@ -8093,8 +8329,12 @@
     "reviewedBaselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248",
     "reviewedSources": [
       {
+        "path": "src/infrastructure/host/host-library-http.ts",
+        "sha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c"
+      },
+      {
         "path": "src/infrastructure/host/host-world-http.ts",
-        "sha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b"
+        "sha256": "bfb69f91e69543a66ee96cab4ad21273c86a2b167e4c21211c42c7e6ccb3c072"
       },
       {
         "path": "src/infrastructure/world/world-atlas-service.ts",
@@ -8102,11 +8342,15 @@
       },
       {
         "path": "src/lib/authenticatedUser.ts",
-        "sha256": "c822140996ae4d318c19d2ccb5318d77f2ba4d302bdfbcb50a79420a7ef70d74"
+        "sha256": "6511efe22e63dcd5a964bfb413f1ab8aa1beda804abcf7d4e5936e617b6d169b"
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "925a7e9e9c7cd24fcce69f39d39f7b1250b354800b5188636be319acbf1fe702"
+        "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+      },
+      {
+        "path": "src/lib/localAdmin.ts",
+        "sha256": "3a28dec23e85f25ed3e70682bc6e7f8c6b55e81dbbefdd1f6a837f68ac80d6b5"
       },
       {
         "path": "src/lib/networkTimeout.ts",
@@ -8114,7 +8358,7 @@
       },
       {
         "path": "src/lib/supabase.ts",
-        "sha256": "a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f"
+        "sha256": "267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c"
       },
       {
         "path": "supabase/migrations/001_initial.sql",
@@ -8234,8 +8478,12 @@
     "reviewedBaselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248",
     "reviewedSources": [
       {
+        "path": "src/infrastructure/host/host-library-http.ts",
+        "sha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c"
+      },
+      {
         "path": "src/infrastructure/host/host-world-http.ts",
-        "sha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b"
+        "sha256": "bfb69f91e69543a66ee96cab4ad21273c86a2b167e4c21211c42c7e6ccb3c072"
       },
       {
         "path": "src/infrastructure/world/world-atlas-service.ts",
@@ -8243,11 +8491,15 @@
       },
       {
         "path": "src/lib/authenticatedUser.ts",
-        "sha256": "c822140996ae4d318c19d2ccb5318d77f2ba4d302bdfbcb50a79420a7ef70d74"
+        "sha256": "6511efe22e63dcd5a964bfb413f1ab8aa1beda804abcf7d4e5936e617b6d169b"
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "925a7e9e9c7cd24fcce69f39d39f7b1250b354800b5188636be319acbf1fe702"
+        "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+      },
+      {
+        "path": "src/lib/localAdmin.ts",
+        "sha256": "3a28dec23e85f25ed3e70682bc6e7f8c6b55e81dbbefdd1f6a837f68ac80d6b5"
       },
       {
         "path": "src/lib/networkTimeout.ts",
@@ -8255,7 +8507,7 @@
       },
       {
         "path": "src/lib/supabase.ts",
-        "sha256": "a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f"
+        "sha256": "267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c"
       },
       {
         "path": "supabase/migrations/001_initial.sql",
@@ -8389,8 +8641,12 @@
     "reviewedBaselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248",
     "reviewedSources": [
       {
+        "path": "src/infrastructure/host/host-library-http.ts",
+        "sha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c"
+      },
+      {
         "path": "src/infrastructure/host/host-world-http.ts",
-        "sha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b"
+        "sha256": "bfb69f91e69543a66ee96cab4ad21273c86a2b167e4c21211c42c7e6ccb3c072"
       },
       {
         "path": "src/infrastructure/world/world-place-service.ts",
@@ -8398,11 +8654,15 @@
       },
       {
         "path": "src/lib/authenticatedUser.ts",
-        "sha256": "c822140996ae4d318c19d2ccb5318d77f2ba4d302bdfbcb50a79420a7ef70d74"
+        "sha256": "6511efe22e63dcd5a964bfb413f1ab8aa1beda804abcf7d4e5936e617b6d169b"
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "925a7e9e9c7cd24fcce69f39d39f7b1250b354800b5188636be319acbf1fe702"
+        "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+      },
+      {
+        "path": "src/lib/localAdmin.ts",
+        "sha256": "3a28dec23e85f25ed3e70682bc6e7f8c6b55e81dbbefdd1f6a837f68ac80d6b5"
       },
       {
         "path": "src/lib/networkTimeout.ts",
@@ -8410,7 +8670,7 @@
       },
       {
         "path": "src/lib/supabase.ts",
-        "sha256": "a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f"
+        "sha256": "267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c"
       },
       {
         "path": "supabase/migrations/001_initial.sql",
@@ -8527,8 +8787,12 @@
     "reviewedBaselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248",
     "reviewedSources": [
       {
+        "path": "src/infrastructure/host/host-library-http.ts",
+        "sha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c"
+      },
+      {
         "path": "src/infrastructure/host/host-world-http.ts",
-        "sha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b"
+        "sha256": "bfb69f91e69543a66ee96cab4ad21273c86a2b167e4c21211c42c7e6ccb3c072"
       },
       {
         "path": "src/infrastructure/world/world-place-service.ts",
@@ -8536,11 +8800,15 @@
       },
       {
         "path": "src/lib/authenticatedUser.ts",
-        "sha256": "c822140996ae4d318c19d2ccb5318d77f2ba4d302bdfbcb50a79420a7ef70d74"
+        "sha256": "6511efe22e63dcd5a964bfb413f1ab8aa1beda804abcf7d4e5936e617b6d169b"
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "925a7e9e9c7cd24fcce69f39d39f7b1250b354800b5188636be319acbf1fe702"
+        "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+      },
+      {
+        "path": "src/lib/localAdmin.ts",
+        "sha256": "3a28dec23e85f25ed3e70682bc6e7f8c6b55e81dbbefdd1f6a837f68ac80d6b5"
       },
       {
         "path": "src/lib/networkTimeout.ts",
@@ -8548,7 +8816,7 @@
       },
       {
         "path": "src/lib/supabase.ts",
-        "sha256": "a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f"
+        "sha256": "267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c"
       },
       {
         "path": "supabase/migrations/001_initial.sql",
@@ -8650,8 +8918,12 @@
     "reviewedBaselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248",
     "reviewedSources": [
       {
+        "path": "src/infrastructure/host/host-library-http.ts",
+        "sha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c"
+      },
+      {
         "path": "src/infrastructure/host/host-world-http.ts",
-        "sha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b"
+        "sha256": "bfb69f91e69543a66ee96cab4ad21273c86a2b167e4c21211c42c7e6ccb3c072"
       },
       {
         "path": "src/infrastructure/world/world-place-service.ts",
@@ -8659,11 +8931,15 @@
       },
       {
         "path": "src/lib/authenticatedUser.ts",
-        "sha256": "c822140996ae4d318c19d2ccb5318d77f2ba4d302bdfbcb50a79420a7ef70d74"
+        "sha256": "6511efe22e63dcd5a964bfb413f1ab8aa1beda804abcf7d4e5936e617b6d169b"
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "925a7e9e9c7cd24fcce69f39d39f7b1250b354800b5188636be319acbf1fe702"
+        "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+      },
+      {
+        "path": "src/lib/localAdmin.ts",
+        "sha256": "3a28dec23e85f25ed3e70682bc6e7f8c6b55e81dbbefdd1f6a837f68ac80d6b5"
       },
       {
         "path": "src/lib/networkTimeout.ts",
@@ -8671,7 +8947,7 @@
       },
       {
         "path": "src/lib/supabase.ts",
-        "sha256": "a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f"
+        "sha256": "267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c"
       },
       {
         "path": "supabase/migrations/008_world_profiles.sql",
@@ -8732,8 +9008,12 @@
     "reviewedBaselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248",
     "reviewedSources": [
       {
+        "path": "src/infrastructure/host/host-library-http.ts",
+        "sha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c"
+      },
+      {
         "path": "src/infrastructure/host/host-world-http.ts",
-        "sha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b"
+        "sha256": "bfb69f91e69543a66ee96cab4ad21273c86a2b167e4c21211c42c7e6ccb3c072"
       },
       {
         "path": "src/infrastructure/world/world-place-service.ts",
@@ -8741,11 +9021,15 @@
       },
       {
         "path": "src/lib/authenticatedUser.ts",
-        "sha256": "c822140996ae4d318c19d2ccb5318d77f2ba4d302bdfbcb50a79420a7ef70d74"
+        "sha256": "6511efe22e63dcd5a964bfb413f1ab8aa1beda804abcf7d4e5936e617b6d169b"
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "925a7e9e9c7cd24fcce69f39d39f7b1250b354800b5188636be319acbf1fe702"
+        "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+      },
+      {
+        "path": "src/lib/localAdmin.ts",
+        "sha256": "3a28dec23e85f25ed3e70682bc6e7f8c6b55e81dbbefdd1f6a837f68ac80d6b5"
       },
       {
         "path": "src/lib/networkTimeout.ts",
@@ -8753,7 +9037,7 @@
       },
       {
         "path": "src/lib/supabase.ts",
-        "sha256": "a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f"
+        "sha256": "267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c"
       },
       {
         "path": "supabase/migrations/008_world_profiles.sql",
@@ -8827,8 +9111,12 @@
     "reviewedBaselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248",
     "reviewedSources": [
       {
+        "path": "src/infrastructure/host/host-library-http.ts",
+        "sha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c"
+      },
+      {
         "path": "src/infrastructure/host/host-world-http.ts",
-        "sha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b"
+        "sha256": "bfb69f91e69543a66ee96cab4ad21273c86a2b167e4c21211c42c7e6ccb3c072"
       },
       {
         "path": "src/infrastructure/world/world-place-service.ts",
@@ -8836,11 +9124,15 @@
       },
       {
         "path": "src/lib/authenticatedUser.ts",
-        "sha256": "c822140996ae4d318c19d2ccb5318d77f2ba4d302bdfbcb50a79420a7ef70d74"
+        "sha256": "6511efe22e63dcd5a964bfb413f1ab8aa1beda804abcf7d4e5936e617b6d169b"
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "925a7e9e9c7cd24fcce69f39d39f7b1250b354800b5188636be319acbf1fe702"
+        "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+      },
+      {
+        "path": "src/lib/localAdmin.ts",
+        "sha256": "3a28dec23e85f25ed3e70682bc6e7f8c6b55e81dbbefdd1f6a837f68ac80d6b5"
       },
       {
         "path": "src/lib/networkTimeout.ts",
@@ -8848,7 +9140,7 @@
       },
       {
         "path": "src/lib/supabase.ts",
-        "sha256": "a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f"
+        "sha256": "267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c"
       },
       {
         "path": "supabase/migrations/008_world_profiles.sql",
@@ -8917,8 +9209,12 @@
     "reviewedBaselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248",
     "reviewedSources": [
       {
+        "path": "src/infrastructure/host/host-library-http.ts",
+        "sha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c"
+      },
+      {
         "path": "src/infrastructure/host/host-world-http.ts",
-        "sha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b"
+        "sha256": "bfb69f91e69543a66ee96cab4ad21273c86a2b167e4c21211c42c7e6ccb3c072"
       },
       {
         "path": "src/infrastructure/world/world-place-service.ts",
@@ -8926,11 +9222,15 @@
       },
       {
         "path": "src/lib/authenticatedUser.ts",
-        "sha256": "c822140996ae4d318c19d2ccb5318d77f2ba4d302bdfbcb50a79420a7ef70d74"
+        "sha256": "6511efe22e63dcd5a964bfb413f1ab8aa1beda804abcf7d4e5936e617b6d169b"
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "925a7e9e9c7cd24fcce69f39d39f7b1250b354800b5188636be319acbf1fe702"
+        "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+      },
+      {
+        "path": "src/lib/localAdmin.ts",
+        "sha256": "3a28dec23e85f25ed3e70682bc6e7f8c6b55e81dbbefdd1f6a837f68ac80d6b5"
       },
       {
         "path": "src/lib/networkTimeout.ts",
@@ -8938,7 +9238,7 @@
       },
       {
         "path": "src/lib/supabase.ts",
-        "sha256": "a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f"
+        "sha256": "267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c"
       },
       {
         "path": "supabase/migrations/008_world_profiles.sql",
@@ -9004,8 +9304,12 @@
     "reviewedBaselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248",
     "reviewedSources": [
       {
+        "path": "src/infrastructure/host/host-library-http.ts",
+        "sha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c"
+      },
+      {
         "path": "src/infrastructure/host/host-world-http.ts",
-        "sha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b"
+        "sha256": "bfb69f91e69543a66ee96cab4ad21273c86a2b167e4c21211c42c7e6ccb3c072"
       },
       {
         "path": "src/infrastructure/world/world-place-service.ts",
@@ -9013,11 +9317,15 @@
       },
       {
         "path": "src/lib/authenticatedUser.ts",
-        "sha256": "c822140996ae4d318c19d2ccb5318d77f2ba4d302bdfbcb50a79420a7ef70d74"
+        "sha256": "6511efe22e63dcd5a964bfb413f1ab8aa1beda804abcf7d4e5936e617b6d169b"
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "925a7e9e9c7cd24fcce69f39d39f7b1250b354800b5188636be319acbf1fe702"
+        "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+      },
+      {
+        "path": "src/lib/localAdmin.ts",
+        "sha256": "3a28dec23e85f25ed3e70682bc6e7f8c6b55e81dbbefdd1f6a837f68ac80d6b5"
       },
       {
         "path": "src/lib/networkTimeout.ts",
@@ -9025,7 +9333,7 @@
       },
       {
         "path": "src/lib/supabase.ts",
-        "sha256": "a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f"
+        "sha256": "267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c"
       },
       {
         "path": "supabase/migrations/008_world_profiles.sql",
@@ -9099,8 +9407,12 @@
     "reviewedBaselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248",
     "reviewedSources": [
       {
+        "path": "src/infrastructure/host/host-library-http.ts",
+        "sha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c"
+      },
+      {
         "path": "src/infrastructure/host/host-world-http.ts",
-        "sha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b"
+        "sha256": "bfb69f91e69543a66ee96cab4ad21273c86a2b167e4c21211c42c7e6ccb3c072"
       },
       {
         "path": "src/infrastructure/world/world-place-service.ts",
@@ -9108,11 +9420,15 @@
       },
       {
         "path": "src/lib/authenticatedUser.ts",
-        "sha256": "c822140996ae4d318c19d2ccb5318d77f2ba4d302bdfbcb50a79420a7ef70d74"
+        "sha256": "6511efe22e63dcd5a964bfb413f1ab8aa1beda804abcf7d4e5936e617b6d169b"
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "925a7e9e9c7cd24fcce69f39d39f7b1250b354800b5188636be319acbf1fe702"
+        "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+      },
+      {
+        "path": "src/lib/localAdmin.ts",
+        "sha256": "3a28dec23e85f25ed3e70682bc6e7f8c6b55e81dbbefdd1f6a837f68ac80d6b5"
       },
       {
         "path": "src/lib/networkTimeout.ts",
@@ -9120,7 +9436,7 @@
       },
       {
         "path": "src/lib/supabase.ts",
-        "sha256": "a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f"
+        "sha256": "267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c"
       },
       {
         "path": "supabase/migrations/008_world_profiles.sql",
@@ -9193,8 +9509,12 @@
     "reviewedBaselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248",
     "reviewedSources": [
       {
+        "path": "src/infrastructure/host/host-library-http.ts",
+        "sha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c"
+      },
+      {
         "path": "src/infrastructure/host/host-world-http.ts",
-        "sha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b"
+        "sha256": "bfb69f91e69543a66ee96cab4ad21273c86a2b167e4c21211c42c7e6ccb3c072"
       },
       {
         "path": "src/infrastructure/world/world-place-service.ts",
@@ -9202,11 +9522,15 @@
       },
       {
         "path": "src/lib/authenticatedUser.ts",
-        "sha256": "c822140996ae4d318c19d2ccb5318d77f2ba4d302bdfbcb50a79420a7ef70d74"
+        "sha256": "6511efe22e63dcd5a964bfb413f1ab8aa1beda804abcf7d4e5936e617b6d169b"
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "925a7e9e9c7cd24fcce69f39d39f7b1250b354800b5188636be319acbf1fe702"
+        "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+      },
+      {
+        "path": "src/lib/localAdmin.ts",
+        "sha256": "3a28dec23e85f25ed3e70682bc6e7f8c6b55e81dbbefdd1f6a837f68ac80d6b5"
       },
       {
         "path": "src/lib/networkTimeout.ts",
@@ -9214,7 +9538,7 @@
       },
       {
         "path": "src/lib/supabase.ts",
-        "sha256": "a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f"
+        "sha256": "267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c"
       },
       {
         "path": "supabase/migrations/008_world_profiles.sql",
@@ -9283,8 +9607,12 @@
     "reviewedBaselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248",
     "reviewedSources": [
       {
+        "path": "src/infrastructure/host/host-library-http.ts",
+        "sha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c"
+      },
+      {
         "path": "src/infrastructure/host/host-world-http.ts",
-        "sha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b"
+        "sha256": "bfb69f91e69543a66ee96cab4ad21273c86a2b167e4c21211c42c7e6ccb3c072"
       },
       {
         "path": "src/infrastructure/world/world-place-service.ts",
@@ -9292,11 +9620,15 @@
       },
       {
         "path": "src/lib/authenticatedUser.ts",
-        "sha256": "c822140996ae4d318c19d2ccb5318d77f2ba4d302bdfbcb50a79420a7ef70d74"
+        "sha256": "6511efe22e63dcd5a964bfb413f1ab8aa1beda804abcf7d4e5936e617b6d169b"
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "925a7e9e9c7cd24fcce69f39d39f7b1250b354800b5188636be319acbf1fe702"
+        "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+      },
+      {
+        "path": "src/lib/localAdmin.ts",
+        "sha256": "3a28dec23e85f25ed3e70682bc6e7f8c6b55e81dbbefdd1f6a837f68ac80d6b5"
       },
       {
         "path": "src/lib/networkTimeout.ts",
@@ -9304,7 +9636,7 @@
       },
       {
         "path": "src/lib/supabase.ts",
-        "sha256": "a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f"
+        "sha256": "267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c"
       },
       {
         "path": "supabase/migrations/008_world_profiles.sql",
@@ -9385,8 +9717,12 @@
     "reviewedBaselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248",
     "reviewedSources": [
       {
+        "path": "src/infrastructure/host/host-library-http.ts",
+        "sha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c"
+      },
+      {
         "path": "src/infrastructure/host/host-world-http.ts",
-        "sha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b"
+        "sha256": "bfb69f91e69543a66ee96cab4ad21273c86a2b167e4c21211c42c7e6ccb3c072"
       },
       {
         "path": "src/infrastructure/world/world-place-service.ts",
@@ -9394,11 +9730,15 @@
       },
       {
         "path": "src/lib/authenticatedUser.ts",
-        "sha256": "c822140996ae4d318c19d2ccb5318d77f2ba4d302bdfbcb50a79420a7ef70d74"
+        "sha256": "6511efe22e63dcd5a964bfb413f1ab8aa1beda804abcf7d4e5936e617b6d169b"
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "925a7e9e9c7cd24fcce69f39d39f7b1250b354800b5188636be319acbf1fe702"
+        "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
+      },
+      {
+        "path": "src/lib/localAdmin.ts",
+        "sha256": "3a28dec23e85f25ed3e70682bc6e7f8c6b55e81dbbefdd1f6a837f68ac80d6b5"
       },
       {
         "path": "src/lib/networkTimeout.ts",
@@ -9406,7 +9746,7 @@
       },
       {
         "path": "src/lib/supabase.ts",
-        "sha256": "a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f"
+        "sha256": "267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c"
       },
       {
         "path": "supabase/migrations/008_world_profiles.sql",
@@ -9483,6 +9823,10 @@
     "reviewedBaselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248",
     "reviewedSources": [
       {
+        "path": "src/infrastructure/host/host-library-http.ts",
+        "sha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c"
+      },
+      {
         "path": "src/infrastructure/npc-creature/npc-creature-controller.persistence.ts",
         "sha256": "9832d02675fdfc5a7d9520ff68c60a3636e25de2ed497e523218e7c8985fe530"
       },
@@ -9500,7 +9844,11 @@
       },
       {
         "path": "src/lib/authenticatedUser.ts",
-        "sha256": "c822140996ae4d318c19d2ccb5318d77f2ba4d302bdfbcb50a79420a7ef70d74"
+        "sha256": "6511efe22e63dcd5a964bfb413f1ab8aa1beda804abcf7d4e5936e617b6d169b"
+      },
+      {
+        "path": "src/lib/hostAuthBridge.ts",
+        "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
       },
       {
         "path": "src/lib/localAdmin.ts",
@@ -9512,7 +9860,7 @@
       },
       {
         "path": "src/lib/supabase.ts",
-        "sha256": "a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f"
+        "sha256": "267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c"
       },
       {
         "path": "supabase/migrations/001_initial.sql",
@@ -9590,6 +9938,10 @@
     "reviewedBaselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248",
     "reviewedSources": [
       {
+        "path": "src/infrastructure/host/host-library-http.ts",
+        "sha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c"
+      },
+      {
         "path": "src/infrastructure/npc-creature/npc-creature-instance.persistence.ts",
         "sha256": "00aaa3e07b5cdc72305da5381e0c8e0754b2a159df623a4a6355748cb269776f"
       },
@@ -9607,7 +9959,11 @@
       },
       {
         "path": "src/lib/authenticatedUser.ts",
-        "sha256": "c822140996ae4d318c19d2ccb5318d77f2ba4d302bdfbcb50a79420a7ef70d74"
+        "sha256": "6511efe22e63dcd5a964bfb413f1ab8aa1beda804abcf7d4e5936e617b6d169b"
+      },
+      {
+        "path": "src/lib/hostAuthBridge.ts",
+        "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
       },
       {
         "path": "src/lib/localAdmin.ts",
@@ -9619,7 +9975,7 @@
       },
       {
         "path": "src/lib/supabase.ts",
-        "sha256": "a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f"
+        "sha256": "267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c"
       },
       {
         "path": "supabase/migrations/001_initial.sql",
@@ -9724,6 +10080,10 @@
     "reviewedBaselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248",
     "reviewedSources": [
       {
+        "path": "src/infrastructure/host/host-library-http.ts",
+        "sha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c"
+      },
+      {
         "path": "src/infrastructure/npc-creature/npc-creature-instance.persistence.ts",
         "sha256": "00aaa3e07b5cdc72305da5381e0c8e0754b2a159df623a4a6355748cb269776f"
       },
@@ -9733,7 +10093,11 @@
       },
       {
         "path": "src/lib/authenticatedUser.ts",
-        "sha256": "c822140996ae4d318c19d2ccb5318d77f2ba4d302bdfbcb50a79420a7ef70d74"
+        "sha256": "6511efe22e63dcd5a964bfb413f1ab8aa1beda804abcf7d4e5936e617b6d169b"
+      },
+      {
+        "path": "src/lib/hostAuthBridge.ts",
+        "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
       },
       {
         "path": "src/lib/localAdmin.ts",
@@ -9745,7 +10109,7 @@
       },
       {
         "path": "src/lib/supabase.ts",
-        "sha256": "a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f"
+        "sha256": "267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c"
       },
       {
         "path": "supabase/migrations/001_initial.sql",
@@ -9817,12 +10181,20 @@
     "reviewedBaselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248",
     "reviewedSources": [
       {
+        "path": "src/infrastructure/host/host-library-http.ts",
+        "sha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c"
+      },
+      {
         "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
         "sha256": "56d5cb3de96aa4b15dafab7e22ed7066d91ce23e3ff10c6decea0435ca1f5c0b"
       },
       {
         "path": "src/lib/authenticatedUser.ts",
-        "sha256": "c822140996ae4d318c19d2ccb5318d77f2ba4d302bdfbcb50a79420a7ef70d74"
+        "sha256": "6511efe22e63dcd5a964bfb413f1ab8aa1beda804abcf7d4e5936e617b6d169b"
+      },
+      {
+        "path": "src/lib/hostAuthBridge.ts",
+        "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
       },
       {
         "path": "src/lib/localAdmin.ts",
@@ -9834,7 +10206,7 @@
       },
       {
         "path": "src/lib/supabase.ts",
-        "sha256": "a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f"
+        "sha256": "267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c"
       },
       {
         "path": "supabase/migrations/001_initial.sql",
@@ -9907,12 +10279,20 @@
     "reviewedBaselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248",
     "reviewedSources": [
       {
+        "path": "src/infrastructure/host/host-library-http.ts",
+        "sha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c"
+      },
+      {
         "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
         "sha256": "56d5cb3de96aa4b15dafab7e22ed7066d91ce23e3ff10c6decea0435ca1f5c0b"
       },
       {
         "path": "src/lib/authenticatedUser.ts",
-        "sha256": "c822140996ae4d318c19d2ccb5318d77f2ba4d302bdfbcb50a79420a7ef70d74"
+        "sha256": "6511efe22e63dcd5a964bfb413f1ab8aa1beda804abcf7d4e5936e617b6d169b"
+      },
+      {
+        "path": "src/lib/hostAuthBridge.ts",
+        "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
       },
       {
         "path": "src/lib/localAdmin.ts",
@@ -9924,7 +10304,7 @@
       },
       {
         "path": "src/lib/supabase.ts",
-        "sha256": "a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f"
+        "sha256": "267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c"
       },
       {
         "path": "supabase/migrations/001_initial.sql",
@@ -10040,16 +10420,20 @@
         "sha256": "a33c807b3bde9200f472b2d4d057d633960fba65fcf14b32e6f7053adb9c9f5a"
       },
       {
+        "path": "src/infrastructure/host/host-library-http.ts",
+        "sha256": "88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c"
+      },
+      {
         "path": "src/infrastructure/marketplace/marketplace-service.ts",
         "sha256": "52c856bd8d5be2885897e155ade57bfdfed1b8eb7e48fe6fb1376b8e1a5284e8"
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "925a7e9e9c7cd24fcce69f39d39f7b1250b354800b5188636be319acbf1fe702"
+        "sha256": "ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529"
       },
       {
         "path": "src/lib/supabase.ts",
-        "sha256": "a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f"
+        "sha256": "267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c"
       },
       {
         "path": "src/supabase/add_marketplace_rpc.sql",

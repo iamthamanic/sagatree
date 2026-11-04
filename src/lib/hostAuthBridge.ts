@@ -2,8 +2,8 @@
  * Host Better Auth cookie bridge (MIG-014) — credentials-only, no bearer store.
  * Location: src/lib/hostAuthBridge.ts
  *
- * Supabase/GoTrue remains the default product auth until an explicit cutover ticket.
- * This bridge is opt-in via VITE_SAGATREE_HOST_AUTH_URL and never mints JWTs.
+ * FE-HOST-09: product auth uses host cookies when the auth URL is set.
+ * This bridge never mints JWTs.
  */
 
 /**

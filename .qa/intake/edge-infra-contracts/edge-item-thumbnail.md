@@ -373,11 +373,15 @@ CORS_OPTS: CorsOptions = {
 
 ## All adapter call sites
 
-### src/infrastructure/inventory/item-thumbnail-service.ts:146
+### src/infrastructure/inventory/item-thumbnail-service.ts:150
 
 
 ```ts
 async function invoke(body: Record<string, unknown>): Promise<FunctionResponse> {
+  const { isHostLibraryEnabled } = await import('../host/host-library-http');
+  if (isHostLibraryEnabled()) {
+    throw new Error('Item-Thumbnails sind im Host-Modus noch nicht verfügbar.');
+  }
   const { data, error } = await supabase.functions.invoke('item-thumbnail', { body });
   if (error) {
     const serverMessage = await getFunctionErrorMessage(error);
@@ -1476,7 +1480,7 @@ SIGNED_URL_SECONDS = 60 * 60 * 24 * 7
 
 | Path | SHA-256 |
 |---|---|
-| `src/infrastructure/inventory/item-thumbnail-service.ts` | `907b1f5589d6063b804727b636cd74e53507dbdc4578adde805738fac4be4b78` |
+| `src/infrastructure/inventory/item-thumbnail-service.ts` | `a17aecc412f3766d52e2a54c8ffa4ffc0e55cd64363a77a9a0f0dd7d5e07622a` |
 | `supabase/functions/_shared/ai-provider-crypto.ts` | `45e60f76f744077e8d9b243719dcdba5d58a047d36a1c141df830afa2de16532` |
 | `supabase/functions/_shared/ai-provider-resolve-meshy.ts` | `b65f8aa91c02871a2661e1ca697c6115f3c7c4ec07c683d1e7ed19c39287a842` |
 | `supabase/functions/_shared/client-trust-body.ts` | `33c68553dbd89d9c7899520b0ebfa35c4f245ed8ab8ebd242c6f79e9852add95` |

@@ -1,9 +1,26 @@
+/**
+ * supabase client factory — inert under host-first (FE-HOST-09).
+ * Location: src/lib/supabase.ts
+ *
+ * When `VITE_SAGATREE_HOST_AUTH_URL` is set and host library is not explicitly
+ * disabled, missing `VITE_SUPABASE_*` is allowed (placeholders only) so Vite can
+ * boot without GoTrue/PostgREST. Dual-path facades must not call this client
+ * while `isHostLibraryEnabled()` is true.
+ */
 import { createClient } from '@supabase/supabase-js';
+import { isHostLibraryExplicitlyDisabled } from '../infrastructure/host/host-library-http';
 
 const viteEnv = (import.meta as ImportMeta & { env?: Record<string, string | boolean | undefined> })
   .env;
 const configuredSupabaseUrl = String(viteEnv?.VITE_SUPABASE_URL ?? '').trim();
 const configuredSupabaseAnonKey = String(viteEnv?.VITE_SUPABASE_ANON_KEY ?? '').trim();
+const hostAuthUrl = String(viteEnv?.VITE_SAGATREE_HOST_AUTH_URL ?? '').trim();
+const hostFirst =
+  hostAuthUrl.length > 0 &&
+  !isHostLibraryExplicitlyDisabled({
+    VITE_SAGATREE_HOST_AUTH_URL: hostAuthUrl,
+    VITE_SAGATREE_HOST_LIBRARY: String(viteEnv?.VITE_SAGATREE_HOST_LIBRARY ?? ''),
+  });
 
 const hasUrl = Boolean(configuredSupabaseUrl);
 const hasAnon = Boolean(configuredSupabaseAnonKey);
@@ -16,16 +33,17 @@ if (hasUrl !== hasAnon) {
 
 /**
  * #672 — no committed hosted JWT fallback.
- * Browser/Vite and production builds fail closed when env is missing.
+ * Browser/Vite and production builds fail closed when env is missing —
+ * except FE-HOST-09 host-first (auth URL present, library not opted out).
  * Node tooling that bundles this module (no Vite env) gets inert placeholders
  * so offline checks can import the graph without real credentials.
  */
 const isBrowser = typeof window !== 'undefined';
-const mustHaveEnv = Boolean(viteEnv?.PROD) || isBrowser;
+const mustHaveEnv = (Boolean(viteEnv?.PROD) || isBrowser) && !hostFirst;
 
 if (mustHaveEnv && (!hasUrl || !hasAnon)) {
   throw new Error(
-    'VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY are required (see .env.example).',
+    'VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY are required (see .env.example), or set VITE_SAGATREE_HOST_AUTH_URL for host-first.',
   );
 }
 
@@ -42,8 +60,8 @@ const supabaseAnonKey = configuredSupabaseAnonKey || 'missing-vite-supabase-anon
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
-    persistSession: true,
-    autoRefreshToken: true,
+    persistSession: !hostFirst,
+    autoRefreshToken: !hostFirst,
   },
 });
 

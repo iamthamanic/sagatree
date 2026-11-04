@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-session.json](source-contracts/infra-session.json) (SHA-256 `eadc5544f503faf5929655e4644e8a11bc21af49561ca7fe76b8cf118f63617d`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-session.json](source-contracts/infra-session.json) (SHA-256 `2a9c7b0af662ce197941ab451e1044ec7e4a8404c9e7072579b11b9962b3344b`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -182,7 +182,7 @@ this.room.off('dataReceived', this.dataListener)
 Enclosing operation: `src/infrastructure/session/media/livekit-media-plane-adapter.ts:184`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### edge: session-media-token
 
-`src/infrastructure/session/media/media-token-client.ts:39` — literal-or-constant.
+`src/infrastructure/session/media/media-token-client.ts:51` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -191,7 +191,7 @@ supabase.functions.invoke('session-media-token', {
     })
 ```
 
-Enclosing operation: `src/infrastructure/session/media/media-token-client.ts:25`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/session/media/media-token-client.ts:28`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### realtime-subscription: broadcast
 
 `src/infrastructure/session/session-lobby-channel.ts:49` — literal-or-constant.
@@ -1220,7 +1220,7 @@ export type MediaPlaneAdapter = {
 };
 ```
 
-### src/infrastructure/session/media/media-token-client.ts:7
+### src/infrastructure/session/media/media-token-client.ts:10
 
 ```ts
 export type MediaTokenSuccess = {
@@ -1233,7 +1233,7 @@ export type MediaTokenSuccess = {
 };
 ```
 
-### src/infrastructure/session/media/media-token-client.ts:16
+### src/infrastructure/session/media/media-token-client.ts:19
 
 ```ts
 export type MediaTokenDegraded = {
@@ -1244,13 +1244,13 @@ export type MediaTokenDegraded = {
 };
 ```
 
-### src/infrastructure/session/media/media-token-client.ts:23
+### src/infrastructure/session/media/media-token-client.ts:26
 
 ```ts
 export type MediaTokenResult = MediaTokenSuccess | MediaTokenDegraded;
 ```
 
-### src/infrastructure/session/media/media-token-client.ts:25
+### src/infrastructure/session/media/media-token-client.ts:28
 
 ```ts
 export async function fetchSessionMediaToken(input: {
@@ -1263,6 +1263,15 @@ export async function fetchSessionMediaToken(input: {
       degraded: true,
       reason: 'bad_request',
       message: 'sessionId fehlt.',
+    };
+  }
+
+  if (isHostLibraryEnabled()) {
+    return {
+      ok: false,
+      degraded: true,
+      reason: 'media_service_unavailable',
+      message: 'Media-Token ist im Host-Modus noch nicht verfügbar.',
     };
   }
 
@@ -2584,15 +2593,15 @@ async revokeSessionInvite(token: string): Promise<void> {
 | `src/domains/session/contracts/session-runtime.ts` | `c928a253185cf9aa6fac10b380807033d86c0df4120fdc80b223800c626b84e2` |
 | `src/domains/session/contracts/session.types.ts` | `3f2056b6b4cb4ef86dbffd4271482131a3bf4714c3329b8827a067acfde29a04` |
 | `src/domains/session/media/media-plane-contract.ts` | `7cba204291a86a1159b961048280899541f95c102abad8e2c8f61e7662ba8c1b` |
-| `src/infrastructure/host/host-library-http.ts` | `c452cc3bf830068496fb10f705019cbdcc682586c1672b6a7572cd430b5d5069` |
-| `src/infrastructure/host/host-session-http.ts` | `6c6baf668174dd76e44f1a0a0e7ceb16b6ec1960539b4e038d87d9274ebc804e` |
+| `src/infrastructure/host/host-library-http.ts` | `88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c` |
+| `src/infrastructure/host/host-session-http.ts` | `4a6fe3477aeb117e1a6fa7b0dad8ed22c8a6dc61168ff66740010a0e00fbf5cf` |
 | `src/infrastructure/session/host-session-adapter.ts` | `57c52ff948f0e5169f302c2de0a58e4eabffa35668fb121605533bcddbb3d4fb` |
 | `src/infrastructure/session/host-session-ports.contract.ts` | `b7d49eee90da55c7a0acadd765ddb202527fc003789f855ae910425e073f928f` |
 | `src/infrastructure/session/live-session-access.resolver.ts` | `88276a0afb9522e2dbb75f98959562ace873f33662ec2dea668428f91a762b9a` |
 | `src/infrastructure/session/media/index.ts` | `ba6906bf57e04303b283786671d0ae7e0024949e512d59b3b783289e6ba19155` |
 | `src/infrastructure/session/media/livekit-media-plane-adapter.ts` | `ba41c95f3816b79818a9c312c056ec896ac75fd4633dba27954cdcdb797b381d` |
 | `src/infrastructure/session/media/media-plane-adapter.ts` | `1dbdf0f7c75c1edc435fb629d5029a1c04806a5a6cbcf9b037ad8a620dcc34cd` |
-| `src/infrastructure/session/media/media-token-client.ts` | `07e4692a4eb42ab86393e808e495383f3c7348d8a2699881dc4590869cc90bd6` |
+| `src/infrastructure/session/media/media-token-client.ts` | `ca49601bad72d7534020f2a0ffbeb3a0074b937e24062648a3a5918c4cf64fe8` |
 | `src/infrastructure/session/media/memory-media-plane-adapter.ts` | `31fc7cee75c49c1e3af09b784e4a8dad3446bbe5ae5ddd6f7b2c9aee142dc5be` |
 | `src/infrastructure/session/media/memory-media-plane-bus.ts` | `1616d229067f513a12c67319aec28649e3a0afdf77779f9071b595dc024ff193` |
 | `src/infrastructure/session/media/session-media-plane.ts` | `ce8d3ec690f83745646400443d7870cd96383e341628a2d8f017e2d391fbb225` |
@@ -2602,9 +2611,9 @@ async revokeSessionInvite(token: string): Promise<void> {
 | `src/infrastructure/session/session-runtime-channel.ts` | `248a264d97d01d522e05baa27132799d08bc092e661a72cca6ed501d7f48cdf5` |
 | `src/infrastructure/session/session-runtime-service.ts` | `67026e83dc5320ff5f2274d5ee4f65c95f97e3d1d6828dcfeb5d5652feddbe79` |
 | `src/infrastructure/session/session-service.ts` | `13cae162249e329b2e55dccf63ea63c63fecda761a922f21f8aa3dcdca01d296` |
-| `src/lib/authenticatedUser.ts` | `c822140996ae4d318c19d2ccb5318d77f2ba4d302bdfbcb50a79420a7ef70d74` |
-| `src/lib/hostAuthBridge.ts` | `925a7e9e9c7cd24fcce69f39d39f7b1250b354800b5188636be319acbf1fe702` |
+| `src/lib/authenticatedUser.ts` | `6511efe22e63dcd5a964bfb413f1ab8aa1beda804abcf7d4e5936e617b6d169b` |
+| `src/lib/hostAuthBridge.ts` | `ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529` |
 | `src/lib/localAdmin.ts` | `3a28dec23e85f25ed3e70682bc6e7f8c6b55e81dbbefdd1f6a837f68ac80d6b5` |
 | `src/lib/networkTimeout.ts` | `835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851` |
-| `src/lib/supabase.ts` | `a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f` |
+| `src/lib/supabase.ts` | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
 

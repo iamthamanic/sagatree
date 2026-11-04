@@ -3,6 +3,7 @@
  * Location: src/infrastructure/character/character-adventure-arc-service.ts
  */
 import { supabase } from '../../lib/supabase';
+import { assertHostProductSurfaceAvailable } from '../host/host-product-deny';
 import type {
   AppendAdventureDevelopmentInput,
   CharacterAdventureArcDto,
@@ -82,6 +83,7 @@ class CharacterAdventureArcService {
    * Response: CharacterAdventureArcVm[] ordered by startedAt desc.
    */
   async listArcsForCharacter(characterId: string): Promise<CharacterAdventureArcVm[]> {
+    assertHostProductSurfaceAvailable('Abenteuer-Bögen');
     const trimmedId = characterId.trim();
     if (!trimmedId) throw new Error('Character id is required.');
 
@@ -193,6 +195,7 @@ class CharacterAdventureArcService {
     arcId: string,
     input: AppendAdventureDevelopmentInput,
   ): Promise<CharacterAdventureArcVm> {
+    assertHostProductSurfaceAvailable('Abenteuer-Bögen');
     const title = input.title.trim();
     if (!title) throw new Error('Titel der Entwicklung ist erforderlich.');
     if (!isDevelopmentKind(input.kind)) throw new Error('Ungültige Entwicklungsart.');

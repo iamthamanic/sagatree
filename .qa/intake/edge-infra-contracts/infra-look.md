@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-look.json](source-contracts/infra-look.json) (SHA-256 `00bb03b0c2bba8e23dff18285b71102b103a84ae378f3ae43a412e9f4b8aaeb8`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-look.json](source-contracts/infra-look.json) (SHA-256 `5904ec5b21f7c8832281139d0b52e867cf90349e25224605a7229c49d656bee0`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -50,7 +50,7 @@ None in the reviewed source.
 
 ### edge: look-reference-analysis
 
-`src/infrastructure/look/look-reference-analysis-service.ts:127` — literal-or-constant.
+`src/infrastructure/look/look-reference-analysis-service.ts:135` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -75,7 +75,7 @@ supabase.functions.invoke(
   )
 ```
 
-Enclosing operation: `src/infrastructure/look/look-reference-analysis-service.ts:101`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/look/look-reference-analysis-service.ts:102`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### auth-helper: session identity
 
 `src/infrastructure/look/supabase-look.repository.ts:62` — dynamic-expression.
@@ -534,7 +534,7 @@ export function isTintableLookMaterialRole(role: LookMaterialRole): boolean {
 }
 ```
 
-### src/infrastructure/look/look-reference-analysis-service.ts:16
+### src/infrastructure/look/look-reference-analysis-service.ts:17
 
 ```ts
 export type LookReferenceAnalysisRequestImage = LookReferenceAnalysisImageInput & {
@@ -545,7 +545,7 @@ export type LookReferenceAnalysisRequestImage = LookReferenceAnalysisImageInput 
 };
 ```
 
-### src/infrastructure/look/look-reference-analysis-service.ts:23
+### src/infrastructure/look/look-reference-analysis-service.ts:24
 
 ```ts
 export type LookReferenceAnalysisRequest = {
@@ -554,12 +554,19 @@ export type LookReferenceAnalysisRequest = {
 };
 ```
 
-### src/infrastructure/look/look-reference-analysis-service.ts:101
+### src/infrastructure/look/look-reference-analysis-service.ts:102
 
 ```ts
 export async function analyzeLookReferences(
   request: LookReferenceAnalysisRequest,
 ): Promise<LookReferenceAnalysisOutcome> {
+  if (isHostLibraryEnabled()) {
+    return {
+      ok: false,
+      code: 'edge-error',
+      messageDe: 'Look-Referenzanalyse ist im Host-Modus noch nicht verfügbar.',
+    };
+  }
   const aggregateBytes = request.references.reduce(
     (sum, ref) => sum + estimateBase64Bytes(ref.contentBase64),
     0,
@@ -631,7 +638,7 @@ export async function analyzeLookReferences(
 }
 ```
 
-### src/infrastructure/look/look-reference-analysis-service.ts:175
+### src/infrastructure/look/look-reference-analysis-service.ts:183
 
 ```ts
 export function createEdgeLookReferenceAnalyzer(): LookReferenceAnalyzer {
@@ -1398,22 +1405,22 @@ All backend operations are included in the public declarations above.
 | `src/domains/look/write-draft.ts` | `7c8b04b229269b73a26b64d68f0656dc5ada2048e75cd29d5a53887fc6f29e58` |
 | `src/infrastructure/character/avatar/mtoon-style-applier.ts` | `1c9fc4fdb30546c0b34ccb222035c74d78251985e575f8a79da86f3f6cd762be` |
 | `src/infrastructure/character/avatar/toonlab-compatibility-spike.ts` | `e896927b2a2fa4c4ad74550b0909a681596d41bdc356980a31afd42b493f5d30` |
-| `src/infrastructure/host/host-library-http.ts` | `c452cc3bf830068496fb10f705019cbdcc682586c1672b6a7572cd430b5d5069` |
+| `src/infrastructure/host/host-library-http.ts` | `88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c` |
 | `src/infrastructure/look/adapters/host-mtoon-look-adapter.ts` | `19b2f7008ffa27b5bd6c951019a55bde20d82f195ff9f798aa91b4d0a729e3a5` |
 | `src/infrastructure/look/adapters/toonlab-look-adapter.ts` | `4edeab261bda3b114a4a9c9d7dcdb16a1cc73c24df0db23539480aa3a0834acb` |
 | `src/infrastructure/look/host-look-adapter.ts` | `f1c8129f9ff83fb5e586da01b59cf26e3d6e54385f20e631ee353d0802c409c1` |
 | `src/infrastructure/look/host-look-ports.contract.ts` | `f815bac34628b904e1c813d4929872b688d6dc140bebdf2a17a586c11556cf0f` |
 | `src/infrastructure/look/index.ts` | `c51fc97d92ac25e40f1427086c846cb000990dd7556f2f1aab7deb14a9ccccd0` |
 | `src/infrastructure/look/look-material-roles.ts` | `2e8161b18a046bb073664a586bb645dc1428c5796d04ade0b625c9339f8cfcdb` |
-| `src/infrastructure/look/look-reference-analysis-service.ts` | `a032b123fff9a4fe81429f04cc3113fb776d296f069952f147293f350ebf50a3` |
+| `src/infrastructure/look/look-reference-analysis-service.ts` | `15decebbe271b416c473fd1a9ad0d4e1f6572c3ea0e1b0c85fc2cc8181066839` |
 | `src/infrastructure/look/look-runtime-types.ts` | `c31d27eaf600ed47e69f16120e584b06a985f29618923118a4c08570f276b2c6` |
 | `src/infrastructure/look/look-runtime.ts` | `64487d02f2831514e86b721d41b0964ac8e99b37faf1a33b8771b4fa7b955d23` |
 | `src/infrastructure/look/look-service.ts` | `5487c8b7cafae4996d793c427a87378c211b89292472350d68804205736d8425` |
 | `src/infrastructure/look/look.persistence.ts` | `ed0a97cba6560930610fc032bd7679b5a7e4b49f837e401cd5a872974598f482` |
 | `src/infrastructure/look/supabase-look.repository.ts` | `4dc795897a12bf3319998860b855b0b9b55425e2be7e4c9b0844e7b2ec647121` |
-| `src/lib/authenticatedUser.ts` | `c822140996ae4d318c19d2ccb5318d77f2ba4d302bdfbcb50a79420a7ef70d74` |
-| `src/lib/hostAuthBridge.ts` | `925a7e9e9c7cd24fcce69f39d39f7b1250b354800b5188636be319acbf1fe702` |
+| `src/lib/authenticatedUser.ts` | `6511efe22e63dcd5a964bfb413f1ab8aa1beda804abcf7d4e5936e617b6d169b` |
+| `src/lib/hostAuthBridge.ts` | `ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529` |
 | `src/lib/localAdmin.ts` | `3a28dec23e85f25ed3e70682bc6e7f8c6b55e81dbbefdd1f6a837f68ac80d6b5` |
 | `src/lib/networkTimeout.ts` | `835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851` |
-| `src/lib/supabase.ts` | `a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f` |
+| `src/lib/supabase.ts` | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
 

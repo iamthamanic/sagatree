@@ -2,9 +2,10 @@
  * saga-definition-service — Load/save/publish saga definitions via RPC (#574 / #575).
  * Location: src/infrastructure/saga/saga-definition-service.ts
  *
- * Dual-path (MIG-310): production remains Supabase RPCs. Host ports are
- * bound via `createHostSagaAdapter` for tests / future cutover (no accidental
- * cutover — VITE host flags alone do not redirect this facade).
+ * Dual-path (MIG-310): host ports via `createHostSagaAdapter` for tests /
+ * future cutover (no accidental cutover — VITE host flags alone do not redirect
+ * this facade to host HTTP). FE-HOST-09: under host-first this facade DENYs
+ * with German error until saga-definition HTTP is mounted.
  */
 import { supabase } from '../../lib/supabase';
 import { raceWithTimeoutReject, SUPABASE_QUERY_TIMEOUT_MS } from '../../lib/networkTimeout';
@@ -16,9 +17,11 @@ import {
   type SagaDefinitionEditorVm,
   type SagaDefinitionVersionVm,
 } from '../../domains/saga/contracts/saga-definition';
+import { assertHostProductSurfaceAvailable } from '../host/host-product-deny';
 
 class SagaDefinitionService {
   async getVersionById(versionId: string): Promise<SagaDefinitionVersionVm> {
+    assertHostProductSurfaceAvailable('Saga-Definitionen');
     const { data, error } = await raceWithTimeoutReject(
       supabase.rpc('get_saga_definition_version', { p_version_id: versionId }),
       SUPABASE_QUERY_TIMEOUT_MS,
@@ -31,6 +34,7 @@ class SagaDefinitionService {
   }
 
   async getNativeBySlug(slug: string): Promise<SagaDefinitionVersionVm> {
+    assertHostProductSurfaceAvailable('Saga-Definitionen');
     const { data, error } = await raceWithTimeoutReject(
       supabase.rpc('get_native_saga_definition_by_slug', { p_slug: slug }),
       SUPABASE_QUERY_TIMEOUT_MS,
@@ -43,6 +47,7 @@ class SagaDefinitionService {
   }
 
   async getEditor(sagaId: string): Promise<SagaDefinitionEditorVm> {
+    assertHostProductSurfaceAvailable('Saga-Definitionen');
     const { data, error } = await raceWithTimeoutReject(
       supabase.rpc('get_saga_definition_editor', { p_saga_id: sagaId }),
       SUPABASE_QUERY_TIMEOUT_MS,
@@ -60,6 +65,7 @@ class SagaDefinitionService {
     readonly expectedRevision: number;
   }): Promise<{ readonly revision: number; readonly versionId: string }> {
     const payload = draftToPayload(input.draft);
+    assertHostProductSurfaceAvailable('Saga-Definitionen');
     const { data, error } = await raceWithTimeoutReject(
       supabase.rpc('save_saga_definition_draft', {
         p_saga_id: input.sagaId,
@@ -86,6 +92,7 @@ class SagaDefinitionService {
     readonly sagaId: string;
     readonly expectedRevision: number;
   }): Promise<{ readonly versionId: string; readonly versionLabel: string }> {
+    assertHostProductSurfaceAvailable('Saga-Definitionen');
     const { data, error } = await raceWithTimeoutReject(
       supabase.rpc('publish_saga_definition_version', {
         p_saga_id: input.sagaId,
@@ -111,6 +118,7 @@ class SagaDefinitionService {
   }
 
   async createCopyFromNative(sourceSagaId: string): Promise<{ readonly sagaId: string }> {
+    assertHostProductSurfaceAvailable('Saga-Definitionen');
     const { data, error } = await raceWithTimeoutReject(
       supabase.rpc('copy_native_saga_definition', { p_source_saga_id: sourceSagaId }),
       SUPABASE_QUERY_TIMEOUT_MS,
@@ -133,6 +141,7 @@ class SagaDefinitionService {
     readonly title: string;
     readonly blurb?: string;
   }): Promise<{ readonly sagaId: string }> {
+    assertHostProductSurfaceAvailable('Saga-Definitionen');
     const { data, error } = await raceWithTimeoutReject(
       supabase.rpc('create_user_saga_definition', {
         p_title: input.title,
@@ -159,6 +168,7 @@ class SagaDefinitionService {
     readonly versionId: string;
     readonly name?: string;
   }): Promise<{ readonly id: string; readonly publicId: string }> {
+    assertHostProductSurfaceAvailable('Saga-Definitionen');
     const { data, error } = await raceWithTimeoutReject(
       supabase.rpc('create_project_from_saga_version', {
         p_saga_id: input.sagaId,
@@ -191,6 +201,7 @@ class SagaDefinitionService {
     readonly projectId: string;
     readonly mode: 'fresh' | 'with_progress';
   }): Promise<{ readonly id: string; readonly publicId: string }> {
+    assertHostProductSurfaceAvailable('Saga-Definitionen');
     const { data, error } = await raceWithTimeoutReject(
       supabase.rpc('duplicate_saga_playthrough', {
         p_project_id: input.projectId,

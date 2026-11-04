@@ -143,6 +143,10 @@ async function getFunctionErrorMessage(error: unknown): Promise<string | undefin
 }
 
 async function invoke(body: Record<string, unknown>): Promise<FunctionResponse> {
+  const { isHostLibraryEnabled } = await import('../host/host-library-http');
+  if (isHostLibraryEnabled()) {
+    throw new Error('Item-Thumbnails sind im Host-Modus noch nicht verfügbar.');
+  }
   const { data, error } = await supabase.functions.invoke('item-thumbnail', { body });
   if (error) {
     const serverMessage = await getFunctionErrorMessage(error);

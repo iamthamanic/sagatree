@@ -12,6 +12,7 @@ import {
   type LookReferenceAnalyzer,
 } from '../../domains/look';
 import { supabase } from '../../lib/supabase';
+import { isHostLibraryEnabled } from '../host/host-library-http';
 
 export type LookReferenceAnalysisRequestImage = LookReferenceAnalysisImageInput & {
   /** Inline image for edge vision call. */
@@ -101,6 +102,13 @@ function estimateBase64Bytes(b64: string | undefined): number {
 export async function analyzeLookReferences(
   request: LookReferenceAnalysisRequest,
 ): Promise<LookReferenceAnalysisOutcome> {
+  if (isHostLibraryEnabled()) {
+    return {
+      ok: false,
+      code: 'edge-error',
+      messageDe: 'Look-Referenzanalyse ist im Host-Modus noch nicht verfügbar.',
+    };
+  }
   const aggregateBytes = request.references.reduce(
     (sum, ref) => sum + estimateBase64Bytes(ref.contentBase64),
     0,

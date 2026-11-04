@@ -2,7 +2,7 @@
  * host-session-http — Browser session cutover client (credentials cookie / solo host).
  * Location: src/infrastructure/host/host-session-http.ts
  *
- * Same gate as Library: `isHostLibraryEnabled()` (VITE_SAGATREE_HOST_LIBRARY + auth URL).
+ * Same gate as Library: `isHostLibraryEnabled()` (host-first when auth URL set).
  */
 import { getHostAuthBaseUrl } from '../../lib/hostAuthBridge';
 import { isHostLibraryEnabled } from './host-library-http';

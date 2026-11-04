@@ -382,11 +382,15 @@ CORS_OPTS: CorsOptions = {
 
 ## All adapter call sites
 
-### src/infrastructure/inventory/item-model3d-service.ts:89
+### src/infrastructure/inventory/item-model3d-service.ts:93
 
 
 ```ts
 async function invoke(body: Record<string, unknown>): Promise<FunctionResponse> {
+  const { isHostLibraryEnabled } = await import('../host/host-library-http');
+  if (isHostLibraryEnabled()) {
+    throw new Error('3D-Modell-Dienst ist im Host-Modus noch nicht verfügbar.');
+  }
   const { data, error } = await supabase.functions.invoke('item-model3d', { body });
   if (error) {
     const serverMessage = await getFunctionErrorMessage(error);
@@ -1380,7 +1384,7 @@ SIGNED_URL_SECONDS = 60 * 60 * 24 * 7
 
 | Path | SHA-256 |
 |---|---|
-| `src/infrastructure/inventory/item-model3d-service.ts` | `c2ab599cea52e8ba923fc12c71129d38801dc00027064c5fe72aa2ceffafff55` |
+| `src/infrastructure/inventory/item-model3d-service.ts` | `cbf9eb726d58bd20ae3c43c6364771c6ebd8ef21bbcc4575197f6fe67d311035` |
 | `supabase/functions/_shared/ai-provider-crypto.ts` | `45e60f76f744077e8d9b243719dcdba5d58a047d36a1c141df830afa2de16532` |
 | `supabase/functions/_shared/ai-provider-resolve-meshy.ts` | `b65f8aa91c02871a2661e1ca697c6115f3c7c4ec07c683d1e7ed19c39287a842` |
 | `supabase/functions/_shared/client-trust-body.ts` | `33c68553dbd89d9c7899520b0ebfa35c4f245ed8ab8ebd242c6f79e9852add95` |

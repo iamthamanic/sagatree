@@ -8,6 +8,7 @@
  */
 import { supabase } from '../../lib/supabase';
 import { getHostAuthBaseUrl } from '../../lib/hostAuthBridge';
+import { isHostLibraryEnabled } from '../host/host-library-http';
 
 export type AiInvokeFn = (
   path: 'provider-credentials' | 'ollama-settings',
@@ -16,6 +17,7 @@ export type AiInvokeFn = (
 
 type EnvLike = {
   readonly VITE_SAGATREE_HOST_AUTH_URL?: string;
+  readonly VITE_SAGATREE_HOST_LIBRARY?: string;
   /** Explicit opt-in for host AI adapters (`1` / `true`). Auth URL alone is not enough. */
   readonly VITE_SAGATREE_HOST_AI?: string;
 };
@@ -134,6 +136,13 @@ export function createAiInvoke(options?: {
           : 'AI-Provider-Dienst nicht erreichbar.',
         fetchImpl,
         env,
+      );
+    }
+    if (!forceEdge && isHostLibraryEnabled(env)) {
+      throw new Error(
+        path === 'ollama-settings'
+          ? 'Ollama-Einstellungen sind im Host-Modus ohne VITE_SAGATREE_HOST_AI noch nicht verfügbar.'
+          : 'AI-Provider-Dienst ist im Host-Modus ohne VITE_SAGATREE_HOST_AI noch nicht verfügbar.',
       );
     }
     return invokeEdge(

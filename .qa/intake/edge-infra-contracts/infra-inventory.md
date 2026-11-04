@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-inventory.json](source-contracts/infra-inventory.json) (SHA-256 `3551f8c7c37d1ca63c1add8b07411aad3aff253246ca9daf832ab4856f994513`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-inventory.json](source-contracts/infra-inventory.json) (SHA-256 `194c9c2a1e99cb78b7bf08dd7f71bb79c070826c2d2745c6a703ac306a4dd2b4`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -135,7 +135,7 @@ supabase
 Enclosing operation: `src/infrastructure/inventory/inventory-persistence.ts:234`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### edge: item-model3d
 
-`src/infrastructure/inventory/item-model3d-service.ts:89` — literal-or-constant.
+`src/infrastructure/inventory/item-model3d-service.ts:93` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -145,7 +145,7 @@ supabase.functions.invoke('item-model3d', { body })
 Enclosing operation: `src/infrastructure/inventory/item-model3d-service.ts:88`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### edge: item-thumbnail
 
-`src/infrastructure/inventory/item-thumbnail-service.ts:146` — literal-or-constant.
+`src/infrastructure/inventory/item-thumbnail-service.ts:150` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -972,7 +972,7 @@ export interface ItemModel3dJobSnapshot {
 }
 ```
 
-### src/infrastructure/inventory/item-model3d-service.ts:119
+### src/infrastructure/inventory/item-model3d-service.ts:123
 
 ```ts
 export async function validateModel3dFileClient(file: File): Promise<ItemModel3dMime> {
@@ -992,7 +992,7 @@ export async function validateModel3dFileClient(file: File): Promise<ItemModel3d
 }
 ```
 
-### src/infrastructure/inventory/item-model3d-service.ts:263
+### src/infrastructure/inventory/item-model3d-service.ts:267
 
 ```ts
 export const itemModel3dService = new ItemModel3dService();
@@ -1110,7 +1110,7 @@ export interface ItemThumbnailJobSnapshot {
 }
 ```
 
-### src/infrastructure/inventory/item-thumbnail-service.ts:171
+### src/infrastructure/inventory/item-thumbnail-service.ts:175
 
 ```ts
 export function validateThumbnailFileClient(file: File): ItemThumbnailMime {
@@ -1124,7 +1124,7 @@ export function validateThumbnailFileClient(file: File): ItemThumbnailMime {
 }
 ```
 
-### src/infrastructure/inventory/item-thumbnail-service.ts:318
+### src/infrastructure/inventory/item-thumbnail-service.ts:322
 
 ```ts
 export const itemThumbnailService = new ItemThumbnailService();
@@ -1635,6 +1635,10 @@ async function fetchDefinitionById(id: string): Promise<string | null> {
 
 ```ts
 async function invoke(body: Record<string, unknown>): Promise<FunctionResponse> {
+  const { isHostLibraryEnabled } = await import('../host/host-library-http');
+  if (isHostLibraryEnabled()) {
+    throw new Error('3D-Modell-Dienst ist im Host-Modus noch nicht verfügbar.');
+  }
   const { data, error } = await supabase.functions.invoke('item-model3d', { body });
   if (error) {
     const serverMessage = await getFunctionErrorMessage(error);
@@ -1648,6 +1652,10 @@ async function invoke(body: Record<string, unknown>): Promise<FunctionResponse> 
 
 ```ts
 async function invoke(body: Record<string, unknown>): Promise<FunctionResponse> {
+  const { isHostLibraryEnabled } = await import('../host/host-library-http');
+  if (isHostLibraryEnabled()) {
+    throw new Error('Item-Thumbnails sind im Host-Modus noch nicht verfügbar.');
+  }
   const { data, error } = await supabase.functions.invoke('item-thumbnail', { body });
   if (error) {
     const serverMessage = await getFunctionErrorMessage(error);
@@ -1712,14 +1720,14 @@ async function invoke(body: Record<string, unknown>): Promise<FunctionResponse> 
 | `src/domains/rules/sagatree/skill-progression/index.ts` | `7b4f5f109d49785497b4639a154b6e3856d58e52421befa7fa0ba0a278967cb7` |
 | `src/domains/rules/sagatree/species-trait-options/index.ts` | `b21687494d66c5e5b3e1b791eadf3aa1ecabb9094695768a7961bba8b36730c4` |
 | `src/infrastructure/character/character.persistence.ts` | `5ed5f363555b9c4a3922507e01a227f74aee706764065641eb27ac9510024bd5` |
-| `src/infrastructure/host/host-library-http.ts` | `c452cc3bf830068496fb10f705019cbdcc682586c1672b6a7572cd430b5d5069` |
+| `src/infrastructure/host/host-library-http.ts` | `88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c` |
 | `src/infrastructure/inventory/host-inventory-adapter.ts` | `705ee213e4ffa49ea7b0d89583a01b5ae78bcd6a990464dd5104d88abc83b6b2` |
 | `src/infrastructure/inventory/host-inventory-ports.contract.ts` | `115502542d1d6c8a94292ca0f15a683ebc78cf2997aa3c5a130b682cccc448d2` |
 | `src/infrastructure/inventory/inventory-persistence.ts` | `79aaa09053ecd72a0bec8f8f0610b31ab0c9b34779f4a4c87f19f0d2ef7e4ac2` |
 | `src/infrastructure/inventory/item-catalog-service.ts` | `bd57f46625d0b162bc107c302429befe2bfc12b843da99c3be65f1e14f980b38` |
 | `src/infrastructure/inventory/item-catalog.persistence.ts` | `a68903ba909af8030e81d28555a65798800c9a32a790a4281e96f52b1550c566` |
-| `src/infrastructure/inventory/item-model3d-service.ts` | `c2ab599cea52e8ba923fc12c71129d38801dc00027064c5fe72aa2ceffafff55` |
-| `src/infrastructure/inventory/item-thumbnail-service.ts` | `907b1f5589d6063b804727b636cd74e53507dbdc4578adde805738fac4be4b78` |
+| `src/infrastructure/inventory/item-model3d-service.ts` | `cbf9eb726d58bd20ae3c43c6364771c6ebd8ef21bbcc4575197f6fe67d311035` |
+| `src/infrastructure/inventory/item-thumbnail-service.ts` | `a17aecc412f3766d52e2a54c8ffa4ffc0e55cd64363a77a9a0f0dd7d5e07622a` |
 | `src/infrastructure/inventory/supabase-item-catalog.repository.ts` | `1ea1b14afc3d01c117c13e96af516a8cc0a315edfb170a6f1f11c6903ab366eb` |
 | `src/infrastructure/media/optimizer/engines/audio/index.ts` | `7585190a705085692bff0896e08b4d78f791895b47e24d57deeaaa10bb669d4e` |
 | `src/infrastructure/media/optimizer/engines/image/image.worker.ts` | `d34793b4de682556d9306194cfbcd05fdafdf215da25393f955d2669c7499276` |
@@ -1734,9 +1742,9 @@ async function invoke(body: Record<string, unknown>): Promise<FunctionResponse> 
 | `src/infrastructure/media/optimizer/engines/video/index.ts` | `d8c6aaaabb2ad762d4c15f9ef4aa9bc016f5968b2512cfe52f71cb09655dd842` |
 | `src/infrastructure/media/optimizer/index.ts` | `c1b162af47239195707de742a8991bea14d85f2238108968613c3bad3d91cf02` |
 | `src/infrastructure/media/optimizer/media-optimizer.ts` | `7d58424f12b7855ccb3c0153270628850e03afc15c285b1fc2b47218918255d9` |
-| `src/lib/authenticatedUser.ts` | `c822140996ae4d318c19d2ccb5318d77f2ba4d302bdfbcb50a79420a7ef70d74` |
-| `src/lib/hostAuthBridge.ts` | `925a7e9e9c7cd24fcce69f39d39f7b1250b354800b5188636be319acbf1fe702` |
+| `src/lib/authenticatedUser.ts` | `6511efe22e63dcd5a964bfb413f1ab8aa1beda804abcf7d4e5936e617b6d169b` |
+| `src/lib/hostAuthBridge.ts` | `ff246980f94464bf05521d7787980161efb37e0db60125a953b4efec97c54529` |
 | `src/lib/localAdmin.ts` | `3a28dec23e85f25ed3e70682bc6e7f8c6b55e81dbbefdd1f6a837f68ac80d6b5` |
 | `src/lib/networkTimeout.ts` | `835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851` |
-| `src/lib/supabase.ts` | `a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f` |
+| `src/lib/supabase.ts` | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
 

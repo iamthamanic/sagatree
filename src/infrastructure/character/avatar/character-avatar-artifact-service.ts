@@ -23,6 +23,7 @@ import {
   type AvatarStructureAnalysisResultV2,
 } from '../../../domains/character/avatar';
 import type { AvatarV2Source } from '../../../domains/character/avatar';
+import { assertHostProductSurfaceAvailable } from '../../host/host-product-deny';
 
 interface ArtifactRow {
   id: string;
@@ -114,6 +115,7 @@ function artifactToInsert(artifact: AvatarArtifactV2) {
 export async function createAvatarArtifact(
   artifact: AvatarArtifactV2,
 ): Promise<AvatarArtifactV2> {
+  assertHostProductSurfaceAvailable('Avatar-Artefakte');
   const ownerUserId = await getAuthenticatedUserId();
   if (artifact.ownerUserId !== ownerUserId) {
     throw new Error('Artefakt-Owner stimmt nicht mit der Session überein.');
@@ -154,6 +156,7 @@ export async function createAvatarArtifact(
 export async function getAvatarArtifactById(
   artifactId: string,
 ): Promise<AvatarArtifactV2 | null> {
+  assertHostProductSurfaceAvailable('Avatar-Artefakte');
   const ownerUserId = await getAuthenticatedUserId();
   const { data, error } = await supabase
     .from('character_avatar_artifacts')
@@ -174,6 +177,7 @@ export async function findAvatarArtifactByIdempotencyKey(
   ownerUserId: string,
   idempotencyKey: string,
 ): Promise<AvatarArtifactV2 | null> {
+  assertHostProductSurfaceAvailable('Avatar-Artefakte');
   const { data, error } = await supabase
     .from('character_avatar_artifacts')
     .select('*')
@@ -192,6 +196,7 @@ export async function findAvatarArtifactByIdempotencyKey(
 export async function listAvatarArtifacts(options: {
   characterId?: string | null;
 } = {}): Promise<readonly AvatarArtifactV2[]> {
+  assertHostProductSurfaceAvailable('Avatar-Artefakte');
   const ownerUserId = await getAuthenticatedUserId();
   let query = supabase
     .from('character_avatar_artifacts')
@@ -220,6 +225,7 @@ export async function listAvatarArtifacts(options: {
 export async function activateAvatarArtifact(
   artifactId: string,
 ): Promise<AvatarArtifactActivateResult> {
+  assertHostProductSurfaceAvailable('Avatar-Artefakte');
   const ownerUserId = await getAuthenticatedUserId();
   const current = await getAvatarArtifactById(artifactId);
   if (!current) {
@@ -272,6 +278,7 @@ export async function materializeArtifactFromImportAsset(input: {
   storagePath: string;
   format: 'vrm' | 'glb';
 }): Promise<AvatarArtifactV2> {
+  assertHostProductSurfaceAvailable('Avatar-Artefakte');
   const ownerUserId = await getAuthenticatedUserId();
   const draft = materializeAvatarArtifact(
     mapImportAssetToArtifactInput({
@@ -292,6 +299,7 @@ export async function materializeArtifactFromGenerateJob(input: {
   storagePath: string;
   providerId?: string;
 }): Promise<AvatarArtifactV2> {
+  assertHostProductSurfaceAvailable('Avatar-Artefakte');
   const ownerUserId = await getAuthenticatedUserId();
   const draft = materializeAvatarArtifact(
     mapGenerateJobToArtifactInput({
@@ -312,6 +320,7 @@ export async function materializeArtifactFromTemplate(input: {
   characterId?: string | null;
   storagePath: string;
 }): Promise<AvatarArtifactV2> {
+  assertHostProductSurfaceAvailable('Avatar-Artefakte');
   const ownerUserId = await getAuthenticatedUserId();
   const draft = materializeAvatarArtifact(
     mapTemplateToArtifactInput({
@@ -334,6 +343,7 @@ export async function persistAuthoritativeArtifactAnalysis(input: {
   artifactId: string;
   result: AvatarStructureAnalysisResultV2;
 }): Promise<void> {
+  assertHostProductSurfaceAvailable('Avatar-Artefakte');
   if (!input.result.authoritative) {
     throw new Error('Nur autoritative Analyse-Ergebnisse dürfen persistiert werden.');
   }

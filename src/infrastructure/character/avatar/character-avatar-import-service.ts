@@ -26,6 +26,7 @@ import {
 } from './character-avatar-artifact-service';
 import { previewAnalyzeAvatarGlbBytes } from './avatar-structure-scanner';
 import { resolveFamilyCompatibilityFromAnalysis } from './body-profile-metrics';
+import { assertHostProductSurfaceAvailable } from '../../host/host-product-deny';
 
 const BUCKET = 'character-avatars';
 const SIGNED_URL_SECONDS = 60 * 60 * 24 * 365;
@@ -73,6 +74,7 @@ export async function uploadAndAnalyzeCharacterAvatarModel(
     onProgress?: (progress: AvatarImportProgress) => void;
   } = {},
 ): Promise<AvatarImportDraftV2> {
+  assertHostProductSurfaceAvailable('Avatar-Import');
   const report = (
     status: AvatarImportUiStatus,
     message: string,
@@ -235,6 +237,7 @@ export async function keepOriginalImportedAvatar(input: {
   draft: AvatarImportDraftV2;
   characterId?: string | null;
 }): Promise<ImportOriginalKeepSeedV1> {
+  assertHostProductSurfaceAvailable('Avatar-Import');
   if (!input.draft.summary.canKeepOriginal || input.draft.summary.flowStatus === 'failed') {
     throw new Error('Original behalten ist für dieses Analyseergebnis nicht verfügbar.');
   }
@@ -288,6 +291,7 @@ export async function importCharacterAvatarModel(
     onProgress?: (progress: AvatarImportProgress) => void;
   } = {},
 ): Promise<AvatarImportArtifact> {
+  assertHostProductSurfaceAvailable('Avatar-Import');
   const draft = await uploadAndAnalyzeCharacterAvatarModel(file, options);
   if (draft.summary.flowStatus === 'failed') {
     throw new Error(draft.summary.detailDe);
