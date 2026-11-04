@@ -22,6 +22,7 @@ export type ShellViewId =
   | 'session-join'
   | 'session-invite'
   | 'rulesets-test'
+  | 'download'
   | 'item-create'
   | 'item-detail'
   | 'look-create'
@@ -153,6 +154,8 @@ const VIEW_PATHS: Record<
   'session-join': '/session-join',
   'session-invite': '/session-invite',
   'rulesets-test': '/rulesets-test',
+  /** Public marketing page (also handled outside AuthGate). */
+  download: '/download',
 };
 
 /** Legacy aliases still emitted by Dashboard / older callers. */
@@ -165,6 +168,7 @@ const VIEW_ALIASES: Record<
   home: 'dashboard',
   sagas: 'saga-list',
   settings: 'profile',
+  get: 'download',
 };
 
 const PATH_TO_VIEW = new Map<string, keyof typeof VIEW_PATHS>(
@@ -616,6 +620,11 @@ function resolveCharacterRoutes(path: string): ResolvedRoute | null {
 
 export function resolvePathname(pathname: string): ResolvedRoute {
   const path = normalizePathname(pathname);
+
+  // Alias for marketing download landing (canonical `/download`).
+  if (path === '/get') {
+    return { kind: 'view', view: 'download' };
+  }
 
   const sagaRoute = resolveSagaRoutes(path);
   if (sagaRoute) return sagaRoute;
