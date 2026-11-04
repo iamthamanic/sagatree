@@ -7369,7 +7369,7 @@
         "sourceFiles": [
           {
             "path": "src/infrastructure/character/character-lore-service.ts",
-            "sha256": "864f22acd15e0605a0a8e5e848b09eaf85e0a95838ab3b5c2e62b2828457cba0"
+            "sha256": "f14fdcb2290d57a7b2e6646cebb9756b63de4be624920188de1299236e40362a"
           },
           {
             "path": "supabase/functions/_shared/ai-provider-crypto.ts",
@@ -7608,8 +7608,8 @@
           "kind": "edge",
           "name": "character-lore",
           "path": "src/infrastructure/character/character-lore-service.ts",
-          "line": 77,
-          "endLine": 83,
+          "line": 86,
+          "endLine": 92,
           "resolution": "literal-or-constant",
           "expression": "supabase.functions.invoke('character-lore', {\n      body: {\n        action: 'generate-background',\n        context: request.context,\n        currentBackgroundStory: request.currentBackgroundStory,\n      },\n    })",
           "chain": "supabase.functions.invoke('character-lore', {\n      body: {\n        action: 'generate-background',\n        context: request.context,\n        currentBackgroundStory: request.currentBackgroundStory,\n      },\n    })",
@@ -7619,9 +7619,9 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/character/character-lore-service.ts",
-            "line": 74,
-            "endLine": 103,
-            "text": "async generateBackground(\n    request: CharacterLoreGenerationRequest,\n  ): Promise<CharacterLoreGenerationResult> {\n    const { data, error } = await supabase.functions.invoke('character-lore', {\n      body: {\n        action: 'generate-background',\n        context: request.context,\n        currentBackgroundStory: request.currentBackgroundStory,\n      },\n    });\n\n    if (error) {\n      const serverMessage = await getFunctionErrorMessage(error);\n      throw new Error(\n        serverMessage ??\n          'Hintergrundgeschichte konnte nicht generiert werden. Bitte versuche es erneut.',\n      );\n    }\n\n    const response = parseFunctionResponse(data);\n    if (response.status !== 'ok') {\n      throw new Error(response.message);\n    }\n\n    return {\n      story: response.story,\n      provider: response.provider,\n      model: response.model,\n    };\n  }"
+            "line": 78,
+            "endLine": 112,
+            "text": "async generateBackground(\n    request: CharacterLoreGenerationRequest,\n  ): Promise<CharacterLoreGenerationResult> {\n    if (isHostLibraryEnabled()) {\n      throw new Error(\n        'KI-Hintergrundgeschichte ist im Host-Modus noch nicht verfügbar.',\n      );\n    }\n    const { data, error } = await supabase.functions.invoke('character-lore', {\n      body: {\n        action: 'generate-background',\n        context: request.context,\n        currentBackgroundStory: request.currentBackgroundStory,\n      },\n    });\n\n    if (error) {\n      const serverMessage = await getFunctionErrorMessage(error);\n      throw new Error(\n        serverMessage ??\n          'Hintergrundgeschichte konnte nicht generiert werden. Bitte versuche es erneut.',\n      );\n    }\n\n    const response = parseFunctionResponse(data);\n    if (response.status !== 'ok') {\n      throw new Error(response.message);\n    }\n\n    return {\n      story: response.story,\n      provider: response.provider,\n      model: response.model,\n    };\n  }"
           }
         }
       ],
@@ -24135,7 +24135,7 @@
         "sourceFiles": [
           {
             "path": "src/infrastructure/session/session-recap-ai-service.ts",
-            "sha256": "dffb89748b308636c99dee90d2af597de0a0fdbb995359bad085d6f799f5987d"
+            "sha256": "61b31d8ae8f680ac4755cf499b42b8da5f0ab5bf85edede1248de5d0e9a364f6"
           },
           {
             "path": "supabase/functions/_shared/ai-provider-crypto.ts",
@@ -24399,8 +24399,8 @@
           "kind": "edge",
           "name": "session-recap",
           "path": "src/infrastructure/session/session-recap-ai-service.ts",
-          "line": 76,
-          "endLine": 78,
+          "line": 85,
+          "endLine": 87,
           "resolution": "literal-or-constant",
           "expression": "supabase.functions.invoke('session-recap', {\n      body: { sessionId },\n    })",
           "chain": "supabase.functions.invoke('session-recap', {\n      body: { sessionId },\n    })",
@@ -24410,9 +24410,9 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/session/session-recap-ai-service.ts",
-            "line": 75,
-            "endLine": 96,
-            "text": "async generateDraft(sessionId: string): Promise<SessionRecapAiGenerateResult> {\n    const { data, error } = await supabase.functions.invoke('session-recap', {\n      body: { sessionId },\n    });\n    if (error) {\n      const serverMessage = await getFunctionErrorMessage(error);\n      throw new Error(\n        serverMessage ??\n          'Zusammenfassung konnte nicht generiert werden. Bitte manuell schreiben.',\n      );\n    }\n    const response = parseFunctionResponse(data);\n    if (response.status !== 'ok') {\n      throw new Error(response.message);\n    }\n    return {\n      summaryText: response.summaryText,\n      summaryStatus: response.summaryStatus === 'approved' ? 'approved' : 'draft',\n      provider: response.provider,\n      model: response.model,\n    };\n  }"
+            "line": 79,
+            "endLine": 105,
+            "text": "async generateDraft(sessionId: string): Promise<SessionRecapAiGenerateResult> {\n    if (isHostLibraryEnabled()) {\n      throw new Error(\n        'KI-Zusammenfassung ist im Host-Modus noch nicht verfügbar. Bitte manuell schreiben.',\n      );\n    }\n    const { data, error } = await supabase.functions.invoke('session-recap', {\n      body: { sessionId },\n    });\n    if (error) {\n      const serverMessage = await getFunctionErrorMessage(error);\n      throw new Error(\n        serverMessage ??\n          'Zusammenfassung konnte nicht generiert werden. Bitte manuell schreiben.',\n      );\n    }\n    const response = parseFunctionResponse(data);\n    if (response.status !== 'ok') {\n      throw new Error(response.message);\n    }\n    return {\n      summaryText: response.summaryText,\n      summaryStatus: response.summaryStatus === 'approved' ? 'approved' : 'draft',\n      provider: response.provider,\n      model: response.model,\n    };\n  }"
           }
         }
       ],
@@ -30193,7 +30193,7 @@
           },
           {
             "path": "src/infrastructure/character/character-lore-service.ts",
-            "sha256": "864f22acd15e0605a0a8e5e848b09eaf85e0a95838ab3b5c2e62b2828457cba0"
+            "sha256": "f14fdcb2290d57a7b2e6646cebb9756b63de4be624920188de1299236e40362a"
           },
           {
             "path": "src/infrastructure/character/character-preset-service.ts",
@@ -30481,7 +30481,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-character.json",
-      "sourceContractSha256": "98aa8acf63b44cc4259855c5e6222af37a957e002f084f9c5e738434c77c3df4",
+      "sourceContractSha256": "5ba3964be2543b44b20bad6b525947d30c398acabf41257c926171307082207a",
       "rpcUsed": [],
       "tablesTouched": [
         "character_adventure_arcs",
@@ -31990,8 +31990,8 @@
           "kind": "edge",
           "name": "character-lore",
           "path": "src/infrastructure/character/character-lore-service.ts",
-          "line": 77,
-          "endLine": 83,
+          "line": 86,
+          "endLine": 92,
           "resolution": "literal-or-constant",
           "expression": "supabase.functions.invoke('character-lore', {\n      body: {\n        action: 'generate-background',\n        context: request.context,\n        currentBackgroundStory: request.currentBackgroundStory,\n      },\n    })",
           "chain": "supabase.functions.invoke('character-lore', {\n      body: {\n        action: 'generate-background',\n        context: request.context,\n        currentBackgroundStory: request.currentBackgroundStory,\n      },\n    })",
@@ -32001,9 +32001,9 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/character/character-lore-service.ts",
-            "line": 74,
-            "endLine": 103,
-            "text": "async generateBackground(\n    request: CharacterLoreGenerationRequest,\n  ): Promise<CharacterLoreGenerationResult> {\n    const { data, error } = await supabase.functions.invoke('character-lore', {\n      body: {\n        action: 'generate-background',\n        context: request.context,\n        currentBackgroundStory: request.currentBackgroundStory,\n      },\n    });\n\n    if (error) {\n      const serverMessage = await getFunctionErrorMessage(error);\n      throw new Error(\n        serverMessage ??\n          'Hintergrundgeschichte konnte nicht generiert werden. Bitte versuche es erneut.',\n      );\n    }\n\n    const response = parseFunctionResponse(data);\n    if (response.status !== 'ok') {\n      throw new Error(response.message);\n    }\n\n    return {\n      story: response.story,\n      provider: response.provider,\n      model: response.model,\n    };\n  }"
+            "line": 78,
+            "endLine": 112,
+            "text": "async generateBackground(\n    request: CharacterLoreGenerationRequest,\n  ): Promise<CharacterLoreGenerationResult> {\n    if (isHostLibraryEnabled()) {\n      throw new Error(\n        'KI-Hintergrundgeschichte ist im Host-Modus noch nicht verfügbar.',\n      );\n    }\n    const { data, error } = await supabase.functions.invoke('character-lore', {\n      body: {\n        action: 'generate-background',\n        context: request.context,\n        currentBackgroundStory: request.currentBackgroundStory,\n      },\n    });\n\n    if (error) {\n      const serverMessage = await getFunctionErrorMessage(error);\n      throw new Error(\n        serverMessage ??\n          'Hintergrundgeschichte konnte nicht generiert werden. Bitte versuche es erneut.',\n      );\n    }\n\n    const response = parseFunctionResponse(data);\n    if (response.status !== 'ok') {\n      throw new Error(response.message);\n    }\n\n    return {\n      story: response.story,\n      provider: response.provider,\n      model: response.model,\n    };\n  }"
           }
         },
         {
@@ -34285,32 +34285,32 @@
         },
         {
           "path": "src/infrastructure/character/character-lore-service.ts",
-          "line": 24,
-          "endLine": 26,
+          "line": 28,
+          "endLine": 30,
           "name": "isRecord"
         },
         {
           "path": "src/infrastructure/character/character-lore-service.ts",
-          "line": 28,
-          "endLine": 55,
+          "line": 32,
+          "endLine": 59,
           "name": "parseFunctionResponse"
         },
         {
           "path": "src/infrastructure/character/character-lore-service.ts",
-          "line": 57,
-          "endLine": 59,
+          "line": 61,
+          "endLine": 63,
           "name": "hasResponseContext"
         },
         {
           "path": "src/infrastructure/character/character-lore-service.ts",
-          "line": 61,
-          "endLine": 71,
+          "line": 65,
+          "endLine": 75,
           "name": "getFunctionErrorMessage"
         },
         {
           "path": "src/infrastructure/character/character-lore-service.ts",
-          "line": 74,
-          "endLine": 103,
+          "line": 78,
+          "endLine": 112,
           "name": "generateBackground"
         },
         {
@@ -37819,6 +37819,34 @@
             "sha256": "000aecc695577333ad6fce27422ad02bc15f26ffca88507ebfee1fafb04b9467"
           },
           {
+            "path": "src/domains/rules/ruleset-catalog/index.ts",
+            "sha256": "c2f52133fdeaa82ca586670b79ce0144063cc852a2a5ca8b5b6b44369fc0e21e"
+          },
+          {
+            "path": "src/domains/rules/ruleset-catalog/types.ts",
+            "sha256": "1b76d37fc3c90d29d3f719644e6915a66462d7b55c4c6cec07a0caadfdf1512d"
+          },
+          {
+            "path": "src/domains/user-profile/contracts/user-profile.types.ts",
+            "sha256": "2f3f3472e9a3448099144be0993fd83bbbc2270050ce76dceadd8821501c26b7"
+          },
+          {
+            "path": "src/domains/user-profile/display-name.ts",
+            "sha256": "87cfc4858f198e56ea2857c505162f112efd5edacde4dbb1f7fcd995b4535516"
+          },
+          {
+            "path": "src/domains/user-profile/index.ts",
+            "sha256": "d094d245ff9356298ef20c48635ca3e7adcc0e1ccf180554586949e0b496c496"
+          },
+          {
+            "path": "src/infrastructure/host/host-catalog-http.ts",
+            "sha256": "a33c807b3bde9200f472b2d4d057d633960fba65fcf14b32e6f7053adb9c9f5a"
+          },
+          {
+            "path": "src/infrastructure/host/host-library-http.ts",
+            "sha256": "c452cc3bf830068496fb10f705019cbdcc682586c1672b6a7572cd430b5d5069"
+          },
+          {
             "path": "src/infrastructure/marketplace/host-marketplace-adapter.ts",
             "sha256": "26df96d9df6c7ae0cebd69e90e85a77075fbbc1138c86b505f8dee97e7e072e0"
           },
@@ -37832,11 +37860,15 @@
           },
           {
             "path": "src/infrastructure/marketplace/marketplace-service.ts",
-            "sha256": "01b4f9b1474046827459e2930c90fc80b0cde69a70fda0e6cc043be46454c18f"
+            "sha256": "52c856bd8d5be2885897e155ade57bfdfed1b8eb7e48fe6fb1376b8e1a5284e8"
           },
           {
             "path": "src/lib/authenticatedUser.ts",
             "sha256": "c822140996ae4d318c19d2ccb5318d77f2ba4d302bdfbcb50a79420a7ef70d74"
+          },
+          {
+            "path": "src/lib/hostAuthBridge.ts",
+            "sha256": "925a7e9e9c7cd24fcce69f39d39f7b1250b354800b5188636be319acbf1fe702"
           },
           {
             "path": "src/lib/localAdmin.ts",
@@ -37856,7 +37888,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-marketplace.json",
-      "sourceContractSha256": "8bec42f29c08d87fa9677ded8d48b725c37be2ca276894bef22302ce42d7ce0e",
+      "sourceContractSha256": "040876c063b459d6668e27dc263ec04ee14395b946ab0645bfcb04eaa11f4038",
       "rpcUsed": [
         "increment_marketplace_downloads"
       ],
@@ -37871,64 +37903,66 @@
           "kind": "auth-helper",
           "name": null,
           "path": "src/infrastructure/marketplace/marketplace-service.ts",
-          "line": 129,
-          "endLine": 129,
+          "line": 150,
+          "endLine": 150,
           "resolution": "dynamic-expression",
           "expression": "getAuthenticatedUserId()",
           "chain": "getAuthenticatedUserId()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/marketplace/marketplace-service.ts",
-            "line": 125,
-            "endLine": 159,
-            "text": "export async function createMarketplaceItem(\n  dto: CreateMarketplaceItemDTO\n): Promise<MarketplaceItem> {\n  try {\n    const userId = await getAuthenticatedUserId();\n    const safe = whitelistMarketplaceCreateDto(dto);\n\n    const { data, error } = await supabase\n      .from('marketplace_items')\n      .insert({\n        type: safe.type,\n        title: safe.title,\n        description: safe.description || null,\n        author_id: userId,\n        data: safe.data,\n        price: safe.price || 0,\n        image_url: safe.image_url || null,\n        tags: safe.tags || [],\n        rating: 0,\n        downloads: 0,\n      })\n      .select()\n      .single();\n\n    if (error) {\n      console.error('Error creating marketplace item:', error);\n      throw new Error(`Failed to create marketplace item: ${error.message}`);\n    }\n\n    return data;\n  } catch (error) {\n    console.error('Error in createMarketplaceItem:', error);\n    throw error;\n  }\n}"
+            "line": 143,
+            "endLine": 180,
+            "text": "export async function createMarketplaceItem(\n  dto: CreateMarketplaceItemDTO\n): Promise<MarketplaceItem> {\n  if (isHostLibraryEnabled()) {\n    return createHostMarketplaceItem(whitelistMarketplaceCreateDto(dto));\n  }\n  try {\n    const userId = await getAuthenticatedUserId();\n    const safe = whitelistMarketplaceCreateDto(dto);\n\n    const { data, error } = await supabase\n      .from('marketplace_items')\n      .insert({\n        type: safe.type,\n        title: safe.title,\n        description: safe.description || null,\n        author_id: userId,\n        data: safe.data,\n        price: safe.price || 0,\n        image_url: safe.image_url || null,\n        tags: safe.tags || [],\n        rating: 0,\n        downloads: 0,\n      })\n      .select()\n      .single();\n\n    if (error) {\n      console.error('Error creating marketplace item:', error);\n      throw new Error(`Failed to create marketplace item: ${error.message}`);\n    }\n\n    return data;\n  } catch (error) {\n    console.error('Error in createMarketplaceItem:', error);\n    throw error;\n  }\n}"
           }
         },
         {
           "kind": "auth-helper",
           "name": null,
           "path": "src/infrastructure/marketplace/marketplace-service.ts",
-          "line": 169,
-          "endLine": 169,
+          "line": 197,
+          "endLine": 197,
           "resolution": "dynamic-expression",
           "expression": "getAuthenticatedUserId()",
           "chain": "getAuthenticatedUserId()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/marketplace/marketplace-service.ts",
-            "line": 164,
-            "endLine": 202,
-            "text": "export async function updateMarketplaceItem(\n  id: string,\n  dto: UpdateMarketplaceItemDTO\n): Promise<MarketplaceItem> {\n  try {\n    const userId = await getAuthenticatedUserId();\n    const patch = whitelistMarketplaceUpdatePatch(dto);\n    if (Object.keys(patch).length === 0) {\n      throw new Error('Keine erlaubten Update-Felder');\n    }\n\n    const { data, error } = await supabase\n      .from('marketplace_items')\n      .update({\n        ...patch,\n        updated_at: new Date().toISOString(),\n      })\n      .eq('id', id)\n      .eq('author_id', userId)\n      .select()\n      .maybeSingle();\n\n    if (error) {\n      console.error('Error updating marketplace item:', error);\n      throw new Error(`Failed to update marketplace item: ${error.message}`);\n    }\n\n    if (!data) {\n      throw new Error(\n        'Marketplace-Eintrag nicht gefunden oder fremder Autor — Update verweigert',\n      );\n    }\n\n    return data;\n  } catch (error) {\n    console.error('Error in updateMarketplaceItem:', error);\n    throw error;\n  }\n}"
+            "line": 185,
+            "endLine": 230,
+            "text": "export async function updateMarketplaceItem(\n  id: string,\n  dto: UpdateMarketplaceItemDTO\n): Promise<MarketplaceItem> {\n  if (isHostLibraryEnabled()) {\n    const patch = whitelistMarketplaceUpdatePatch(dto);\n    if (Object.keys(patch).length === 0) {\n      throw new Error('Keine erlaubten Update-Felder');\n    }\n    return updateHostMarketplaceItem(id, patch);\n  }\n  try {\n    const userId = await getAuthenticatedUserId();\n    const patch = whitelistMarketplaceUpdatePatch(dto);\n    if (Object.keys(patch).length === 0) {\n      throw new Error('Keine erlaubten Update-Felder');\n    }\n\n    const { data, error } = await supabase\n      .from('marketplace_items')\n      .update({\n        ...patch,\n        updated_at: new Date().toISOString(),\n      })\n      .eq('id', id)\n      .eq('author_id', userId)\n      .select()\n      .maybeSingle();\n\n    if (error) {\n      console.error('Error updating marketplace item:', error);\n      throw new Error(`Failed to update marketplace item: ${error.message}`);\n    }\n\n    if (!data) {\n      throw new Error(\n        'Marketplace-Eintrag nicht gefunden oder fremder Autor — Update verweigert',\n      );\n    }\n\n    return data;\n  } catch (error) {\n    console.error('Error in updateMarketplaceItem:', error);\n    throw error;\n  }\n}"
           }
         },
         {
           "kind": "auth-helper",
           "name": null,
           "path": "src/infrastructure/marketplace/marketplace-service.ts",
-          "line": 209,
-          "endLine": 209,
+          "line": 245,
+          "endLine": 245,
           "resolution": "dynamic-expression",
           "expression": "getAuthenticatedUserId()",
           "chain": "getAuthenticatedUserId()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/marketplace/marketplace-service.ts",
-            "line": 207,
-            "endLine": 234,
-            "text": "export async function deleteMarketplaceItem(id: string): Promise<boolean> {\n  try {\n    const userId = await getAuthenticatedUserId();\n\n    const { data, error } = await supabase\n      .from('marketplace_items')\n      .delete()\n      .eq('id', id)\n      .eq('author_id', userId)\n      .select('id');\n\n    if (error) {\n      console.error('Error deleting marketplace item:', error);\n      throw new Error(`Failed to delete marketplace item: ${error.message}`);\n    }\n\n    if (!data || data.length === 0) {\n      throw new Error(\n        'Marketplace-Eintrag nicht gefunden oder fremder Autor — Delete verweigert',\n      );\n    }\n\n    return true;\n  } catch (error) {\n    console.error('Error in deleteMarketplaceItem:', error);\n    return false;\n  }\n}"
+            "line": 235,
+            "endLine": 270,
+            "text": "export async function deleteMarketplaceItem(id: string): Promise<boolean> {\n  if (isHostLibraryEnabled()) {\n    try {\n      await deleteHostMarketplaceItem(id);\n      return true;\n    } catch {\n      return false;\n    }\n  }\n  try {\n    const userId = await getAuthenticatedUserId();\n\n    const { data, error } = await supabase\n      .from('marketplace_items')\n      .delete()\n      .eq('id', id)\n      .eq('author_id', userId)\n      .select('id');\n\n    if (error) {\n      console.error('Error deleting marketplace item:', error);\n      throw new Error(`Failed to delete marketplace item: ${error.message}`);\n    }\n\n    if (!data || data.length === 0) {\n      throw new Error(\n        'Marketplace-Eintrag nicht gefunden oder fremder Autor — Delete verweigert',\n      );\n    }\n\n    return true;\n  } catch (error) {\n    console.error('Error in deleteMarketplaceItem:', error);\n    return false;\n  }\n}"
           }
         }
       ],
       "externalFetches": [],
-      "importedInfrastructure": [],
+      "importedInfrastructure": [
+        "host"
+      ],
       "providerSdkCalls": [],
       "backendCalls": [
         {
           "kind": "table",
           "name": "marketplace_items",
           "path": "src/infrastructure/marketplace/marketplace-service.ts",
-          "line": 32,
-          "endLine": 33,
+          "line": 44,
+          "endLine": 45,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from('marketplace_items')",
           "chain": "supabase\n      .from('marketplace_items')\n      .select('*')",
@@ -37937,17 +37971,17 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/marketplace/marketplace-service.ts",
-            "line": 28,
-            "endLine": 72,
-            "text": "export async function getMarketplaceItems(\n  filters?: MarketplaceFilters\n): Promise<MarketplaceItem[]> {\n  try {\n    let query = supabase\n      .from('marketplace_items')\n      .select('*');\n\n    // Apply filters\n    if (filters?.type && filters.type !== 'all') {\n      query = query.eq('type', filters.type);\n    }\n\n    if (filters?.searchQuery) {\n      query = query.or(\n        `title.ilike.%${filters.searchQuery}%,description.ilike.%${filters.searchQuery}%`\n      );\n    }\n\n    if (filters?.minRating !== undefined) {\n      query = query.gte('rating', filters.minRating);\n    }\n\n    if (filters?.maxPrice !== undefined) {\n      query = query.lte('price', filters.maxPrice);\n    }\n\n    // Sorting\n    const sortBy = filters?.sortBy || 'downloads';\n    const sortOrder = filters?.sortOrder || 'desc';\n    query = query.order(sortBy, { ascending: sortOrder === 'asc' });\n\n    const { data, error } = await query;\n\n    if (error) {\n      console.error('Error fetching marketplace items:', error);\n      throw new Error(`Failed to fetch marketplace items: ${error.message}`);\n    }\n\n    return data || [];\n  } catch (error) {\n    console.error('Error in getMarketplaceItems:', error);\n    throw error;\n  }\n}"
+            "line": 37,
+            "endLine": 84,
+            "text": "export async function getMarketplaceItems(\n  filters?: MarketplaceFilters\n): Promise<MarketplaceItem[]> {\n  if (isHostLibraryEnabled()) {\n    return fetchHostMarketplaceItems(filters);\n  }\n  try {\n    let query = supabase\n      .from('marketplace_items')\n      .select('*');\n\n    // Apply filters\n    if (filters?.type && filters.type !== 'all') {\n      query = query.eq('type', filters.type);\n    }\n\n    if (filters?.searchQuery) {\n      query = query.or(\n        `title.ilike.%${filters.searchQuery}%,description.ilike.%${filters.searchQuery}%`\n      );\n    }\n\n    if (filters?.minRating !== undefined) {\n      query = query.gte('rating', filters.minRating);\n    }\n\n    if (filters?.maxPrice !== undefined) {\n      query = query.lte('price', filters.maxPrice);\n    }\n\n    // Sorting\n    const sortBy = filters?.sortBy || 'downloads';\n    const sortOrder = filters?.sortOrder || 'desc';\n    query = query.order(sortBy, { ascending: sortOrder === 'asc' });\n\n    const { data, error } = await query;\n\n    if (error) {\n      console.error('Error fetching marketplace items:', error);\n      throw new Error(`Failed to fetch marketplace items: ${error.message}`);\n    }\n\n    return data || [];\n  } catch (error) {\n    console.error('Error in getMarketplaceItems:', error);\n    throw error;\n  }\n}"
           }
         },
         {
           "kind": "table",
           "name": "marketplace_items",
           "path": "src/infrastructure/marketplace/marketplace-service.ts",
-          "line": 79,
-          "endLine": 80,
+          "line": 94,
+          "endLine": 95,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from('marketplace_items')",
           "chain": "supabase\n      .from('marketplace_items')\n      .select('*')\n      .eq('id', id)\n      .single()",
@@ -37956,17 +37990,17 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/marketplace/marketplace-service.ts",
-            "line": 77,
-            "endLine": 95,
-            "text": "export async function getMarketplaceItemById(id: string): Promise<MarketplaceItem | null> {\n  try {\n    const { data, error } = await supabase\n      .from('marketplace_items')\n      .select('*')\n      .eq('id', id)\n      .single();\n\n    if (error) {\n      console.error('Error fetching marketplace item:', error);\n      throw new Error(`Failed to fetch marketplace item: ${error.message}`);\n    }\n\n    return data;\n  } catch (error) {\n    console.error('Error in getMarketplaceItemById:', error);\n    throw error;\n  }\n}"
+            "line": 89,
+            "endLine": 110,
+            "text": "export async function getMarketplaceItemById(id: string): Promise<MarketplaceItem | null> {\n  if (isHostLibraryEnabled()) {\n    return fetchHostMarketplaceItem(id);\n  }\n  try {\n    const { data, error } = await supabase\n      .from('marketplace_items')\n      .select('*')\n      .eq('id', id)\n      .single();\n\n    if (error) {\n      console.error('Error fetching marketplace item:', error);\n      throw new Error(`Failed to fetch marketplace item: ${error.message}`);\n    }\n\n    return data;\n  } catch (error) {\n    console.error('Error in getMarketplaceItemById:', error);\n    throw error;\n  }\n}"
           }
         },
         {
           "kind": "table",
           "name": "marketplace_items",
           "path": "src/infrastructure/marketplace/marketplace-service.ts",
-          "line": 104,
-          "endLine": 105,
+          "line": 122,
+          "endLine": 123,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from('marketplace_items')",
           "chain": "supabase\n      .from('marketplace_items')\n      .select('*')\n      .order('downloads', { ascending: false })\n      .limit(6)",
@@ -37975,34 +38009,34 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/marketplace/marketplace-service.ts",
-            "line": 102,
-            "endLine": 120,
-            "text": "export async function getFeaturedItems(): Promise<MarketplaceItem[]> {\n  try {\n    const { data, error } = await supabase\n      .from('marketplace_items')\n      .select('*')\n      .order('downloads', { ascending: false })\n      .limit(6);\n\n    if (error) {\n      console.error('Error fetching featured items:', error);\n      throw new Error(`Failed to fetch featured items: ${error.message}`);\n    }\n\n    return data || [];\n  } catch (error) {\n    console.error('Error in getFeaturedItems:', error);\n    throw error;\n  }\n}"
+            "line": 117,
+            "endLine": 138,
+            "text": "export async function getFeaturedItems(): Promise<MarketplaceItem[]> {\n  if (isHostLibraryEnabled()) {\n    return fetchHostFeaturedMarketplaceItems();\n  }\n  try {\n    const { data, error } = await supabase\n      .from('marketplace_items')\n      .select('*')\n      .order('downloads', { ascending: false })\n      .limit(6);\n\n    if (error) {\n      console.error('Error fetching featured items:', error);\n      throw new Error(`Failed to fetch featured items: ${error.message}`);\n    }\n\n    return data || [];\n  } catch (error) {\n    console.error('Error in getFeaturedItems:', error);\n    throw error;\n  }\n}"
           }
         },
         {
           "kind": "auth-helper",
           "name": null,
           "path": "src/infrastructure/marketplace/marketplace-service.ts",
-          "line": 129,
-          "endLine": 129,
+          "line": 150,
+          "endLine": 150,
           "resolution": "dynamic-expression",
           "expression": "getAuthenticatedUserId()",
           "chain": "getAuthenticatedUserId()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/marketplace/marketplace-service.ts",
-            "line": 125,
-            "endLine": 159,
-            "text": "export async function createMarketplaceItem(\n  dto: CreateMarketplaceItemDTO\n): Promise<MarketplaceItem> {\n  try {\n    const userId = await getAuthenticatedUserId();\n    const safe = whitelistMarketplaceCreateDto(dto);\n\n    const { data, error } = await supabase\n      .from('marketplace_items')\n      .insert({\n        type: safe.type,\n        title: safe.title,\n        description: safe.description || null,\n        author_id: userId,\n        data: safe.data,\n        price: safe.price || 0,\n        image_url: safe.image_url || null,\n        tags: safe.tags || [],\n        rating: 0,\n        downloads: 0,\n      })\n      .select()\n      .single();\n\n    if (error) {\n      console.error('Error creating marketplace item:', error);\n      throw new Error(`Failed to create marketplace item: ${error.message}`);\n    }\n\n    return data;\n  } catch (error) {\n    console.error('Error in createMarketplaceItem:', error);\n    throw error;\n  }\n}"
+            "line": 143,
+            "endLine": 180,
+            "text": "export async function createMarketplaceItem(\n  dto: CreateMarketplaceItemDTO\n): Promise<MarketplaceItem> {\n  if (isHostLibraryEnabled()) {\n    return createHostMarketplaceItem(whitelistMarketplaceCreateDto(dto));\n  }\n  try {\n    const userId = await getAuthenticatedUserId();\n    const safe = whitelistMarketplaceCreateDto(dto);\n\n    const { data, error } = await supabase\n      .from('marketplace_items')\n      .insert({\n        type: safe.type,\n        title: safe.title,\n        description: safe.description || null,\n        author_id: userId,\n        data: safe.data,\n        price: safe.price || 0,\n        image_url: safe.image_url || null,\n        tags: safe.tags || [],\n        rating: 0,\n        downloads: 0,\n      })\n      .select()\n      .single();\n\n    if (error) {\n      console.error('Error creating marketplace item:', error);\n      throw new Error(`Failed to create marketplace item: ${error.message}`);\n    }\n\n    return data;\n  } catch (error) {\n    console.error('Error in createMarketplaceItem:', error);\n    throw error;\n  }\n}"
           }
         },
         {
           "kind": "table",
           "name": "marketplace_items",
           "path": "src/infrastructure/marketplace/marketplace-service.ts",
-          "line": 132,
-          "endLine": 133,
+          "line": 153,
+          "endLine": 154,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from('marketplace_items')",
           "chain": "supabase\n      .from('marketplace_items')\n      .insert({\n        type: safe.type,\n        title: safe.title,\n        description: safe.description || null,\n        author_id: userId,\n        data: safe.data,\n        price: safe.price || 0,\n        image_url: safe.image_url || null,\n        tags: safe.tags || [],\n        rating: 0,\n        downloads: 0,\n      })\n      .select()\n      .single()",
@@ -38011,34 +38045,34 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/marketplace/marketplace-service.ts",
-            "line": 125,
-            "endLine": 159,
-            "text": "export async function createMarketplaceItem(\n  dto: CreateMarketplaceItemDTO\n): Promise<MarketplaceItem> {\n  try {\n    const userId = await getAuthenticatedUserId();\n    const safe = whitelistMarketplaceCreateDto(dto);\n\n    const { data, error } = await supabase\n      .from('marketplace_items')\n      .insert({\n        type: safe.type,\n        title: safe.title,\n        description: safe.description || null,\n        author_id: userId,\n        data: safe.data,\n        price: safe.price || 0,\n        image_url: safe.image_url || null,\n        tags: safe.tags || [],\n        rating: 0,\n        downloads: 0,\n      })\n      .select()\n      .single();\n\n    if (error) {\n      console.error('Error creating marketplace item:', error);\n      throw new Error(`Failed to create marketplace item: ${error.message}`);\n    }\n\n    return data;\n  } catch (error) {\n    console.error('Error in createMarketplaceItem:', error);\n    throw error;\n  }\n}"
+            "line": 143,
+            "endLine": 180,
+            "text": "export async function createMarketplaceItem(\n  dto: CreateMarketplaceItemDTO\n): Promise<MarketplaceItem> {\n  if (isHostLibraryEnabled()) {\n    return createHostMarketplaceItem(whitelistMarketplaceCreateDto(dto));\n  }\n  try {\n    const userId = await getAuthenticatedUserId();\n    const safe = whitelistMarketplaceCreateDto(dto);\n\n    const { data, error } = await supabase\n      .from('marketplace_items')\n      .insert({\n        type: safe.type,\n        title: safe.title,\n        description: safe.description || null,\n        author_id: userId,\n        data: safe.data,\n        price: safe.price || 0,\n        image_url: safe.image_url || null,\n        tags: safe.tags || [],\n        rating: 0,\n        downloads: 0,\n      })\n      .select()\n      .single();\n\n    if (error) {\n      console.error('Error creating marketplace item:', error);\n      throw new Error(`Failed to create marketplace item: ${error.message}`);\n    }\n\n    return data;\n  } catch (error) {\n    console.error('Error in createMarketplaceItem:', error);\n    throw error;\n  }\n}"
           }
         },
         {
           "kind": "auth-helper",
           "name": null,
           "path": "src/infrastructure/marketplace/marketplace-service.ts",
-          "line": 169,
-          "endLine": 169,
+          "line": 197,
+          "endLine": 197,
           "resolution": "dynamic-expression",
           "expression": "getAuthenticatedUserId()",
           "chain": "getAuthenticatedUserId()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/marketplace/marketplace-service.ts",
-            "line": 164,
-            "endLine": 202,
-            "text": "export async function updateMarketplaceItem(\n  id: string,\n  dto: UpdateMarketplaceItemDTO\n): Promise<MarketplaceItem> {\n  try {\n    const userId = await getAuthenticatedUserId();\n    const patch = whitelistMarketplaceUpdatePatch(dto);\n    if (Object.keys(patch).length === 0) {\n      throw new Error('Keine erlaubten Update-Felder');\n    }\n\n    const { data, error } = await supabase\n      .from('marketplace_items')\n      .update({\n        ...patch,\n        updated_at: new Date().toISOString(),\n      })\n      .eq('id', id)\n      .eq('author_id', userId)\n      .select()\n      .maybeSingle();\n\n    if (error) {\n      console.error('Error updating marketplace item:', error);\n      throw new Error(`Failed to update marketplace item: ${error.message}`);\n    }\n\n    if (!data) {\n      throw new Error(\n        'Marketplace-Eintrag nicht gefunden oder fremder Autor — Update verweigert',\n      );\n    }\n\n    return data;\n  } catch (error) {\n    console.error('Error in updateMarketplaceItem:', error);\n    throw error;\n  }\n}"
+            "line": 185,
+            "endLine": 230,
+            "text": "export async function updateMarketplaceItem(\n  id: string,\n  dto: UpdateMarketplaceItemDTO\n): Promise<MarketplaceItem> {\n  if (isHostLibraryEnabled()) {\n    const patch = whitelistMarketplaceUpdatePatch(dto);\n    if (Object.keys(patch).length === 0) {\n      throw new Error('Keine erlaubten Update-Felder');\n    }\n    return updateHostMarketplaceItem(id, patch);\n  }\n  try {\n    const userId = await getAuthenticatedUserId();\n    const patch = whitelistMarketplaceUpdatePatch(dto);\n    if (Object.keys(patch).length === 0) {\n      throw new Error('Keine erlaubten Update-Felder');\n    }\n\n    const { data, error } = await supabase\n      .from('marketplace_items')\n      .update({\n        ...patch,\n        updated_at: new Date().toISOString(),\n      })\n      .eq('id', id)\n      .eq('author_id', userId)\n      .select()\n      .maybeSingle();\n\n    if (error) {\n      console.error('Error updating marketplace item:', error);\n      throw new Error(`Failed to update marketplace item: ${error.message}`);\n    }\n\n    if (!data) {\n      throw new Error(\n        'Marketplace-Eintrag nicht gefunden oder fremder Autor — Update verweigert',\n      );\n    }\n\n    return data;\n  } catch (error) {\n    console.error('Error in updateMarketplaceItem:', error);\n    throw error;\n  }\n}"
           }
         },
         {
           "kind": "table",
           "name": "marketplace_items",
           "path": "src/infrastructure/marketplace/marketplace-service.ts",
-          "line": 175,
-          "endLine": 176,
+          "line": 203,
+          "endLine": 204,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from('marketplace_items')",
           "chain": "supabase\n      .from('marketplace_items')\n      .update({\n        ...patch,\n        updated_at: new Date().toISOString(),\n      })\n      .eq('id', id)\n      .eq('author_id', userId)\n      .select()\n      .maybeSingle()",
@@ -38047,34 +38081,34 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/marketplace/marketplace-service.ts",
-            "line": 164,
-            "endLine": 202,
-            "text": "export async function updateMarketplaceItem(\n  id: string,\n  dto: UpdateMarketplaceItemDTO\n): Promise<MarketplaceItem> {\n  try {\n    const userId = await getAuthenticatedUserId();\n    const patch = whitelistMarketplaceUpdatePatch(dto);\n    if (Object.keys(patch).length === 0) {\n      throw new Error('Keine erlaubten Update-Felder');\n    }\n\n    const { data, error } = await supabase\n      .from('marketplace_items')\n      .update({\n        ...patch,\n        updated_at: new Date().toISOString(),\n      })\n      .eq('id', id)\n      .eq('author_id', userId)\n      .select()\n      .maybeSingle();\n\n    if (error) {\n      console.error('Error updating marketplace item:', error);\n      throw new Error(`Failed to update marketplace item: ${error.message}`);\n    }\n\n    if (!data) {\n      throw new Error(\n        'Marketplace-Eintrag nicht gefunden oder fremder Autor — Update verweigert',\n      );\n    }\n\n    return data;\n  } catch (error) {\n    console.error('Error in updateMarketplaceItem:', error);\n    throw error;\n  }\n}"
+            "line": 185,
+            "endLine": 230,
+            "text": "export async function updateMarketplaceItem(\n  id: string,\n  dto: UpdateMarketplaceItemDTO\n): Promise<MarketplaceItem> {\n  if (isHostLibraryEnabled()) {\n    const patch = whitelistMarketplaceUpdatePatch(dto);\n    if (Object.keys(patch).length === 0) {\n      throw new Error('Keine erlaubten Update-Felder');\n    }\n    return updateHostMarketplaceItem(id, patch);\n  }\n  try {\n    const userId = await getAuthenticatedUserId();\n    const patch = whitelistMarketplaceUpdatePatch(dto);\n    if (Object.keys(patch).length === 0) {\n      throw new Error('Keine erlaubten Update-Felder');\n    }\n\n    const { data, error } = await supabase\n      .from('marketplace_items')\n      .update({\n        ...patch,\n        updated_at: new Date().toISOString(),\n      })\n      .eq('id', id)\n      .eq('author_id', userId)\n      .select()\n      .maybeSingle();\n\n    if (error) {\n      console.error('Error updating marketplace item:', error);\n      throw new Error(`Failed to update marketplace item: ${error.message}`);\n    }\n\n    if (!data) {\n      throw new Error(\n        'Marketplace-Eintrag nicht gefunden oder fremder Autor — Update verweigert',\n      );\n    }\n\n    return data;\n  } catch (error) {\n    console.error('Error in updateMarketplaceItem:', error);\n    throw error;\n  }\n}"
           }
         },
         {
           "kind": "auth-helper",
           "name": null,
           "path": "src/infrastructure/marketplace/marketplace-service.ts",
-          "line": 209,
-          "endLine": 209,
+          "line": 245,
+          "endLine": 245,
           "resolution": "dynamic-expression",
           "expression": "getAuthenticatedUserId()",
           "chain": "getAuthenticatedUserId()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/marketplace/marketplace-service.ts",
-            "line": 207,
-            "endLine": 234,
-            "text": "export async function deleteMarketplaceItem(id: string): Promise<boolean> {\n  try {\n    const userId = await getAuthenticatedUserId();\n\n    const { data, error } = await supabase\n      .from('marketplace_items')\n      .delete()\n      .eq('id', id)\n      .eq('author_id', userId)\n      .select('id');\n\n    if (error) {\n      console.error('Error deleting marketplace item:', error);\n      throw new Error(`Failed to delete marketplace item: ${error.message}`);\n    }\n\n    if (!data || data.length === 0) {\n      throw new Error(\n        'Marketplace-Eintrag nicht gefunden oder fremder Autor — Delete verweigert',\n      );\n    }\n\n    return true;\n  } catch (error) {\n    console.error('Error in deleteMarketplaceItem:', error);\n    return false;\n  }\n}"
+            "line": 235,
+            "endLine": 270,
+            "text": "export async function deleteMarketplaceItem(id: string): Promise<boolean> {\n  if (isHostLibraryEnabled()) {\n    try {\n      await deleteHostMarketplaceItem(id);\n      return true;\n    } catch {\n      return false;\n    }\n  }\n  try {\n    const userId = await getAuthenticatedUserId();\n\n    const { data, error } = await supabase\n      .from('marketplace_items')\n      .delete()\n      .eq('id', id)\n      .eq('author_id', userId)\n      .select('id');\n\n    if (error) {\n      console.error('Error deleting marketplace item:', error);\n      throw new Error(`Failed to delete marketplace item: ${error.message}`);\n    }\n\n    if (!data || data.length === 0) {\n      throw new Error(\n        'Marketplace-Eintrag nicht gefunden oder fremder Autor — Delete verweigert',\n      );\n    }\n\n    return true;\n  } catch (error) {\n    console.error('Error in deleteMarketplaceItem:', error);\n    return false;\n  }\n}"
           }
         },
         {
           "kind": "table",
           "name": "marketplace_items",
           "path": "src/infrastructure/marketplace/marketplace-service.ts",
-          "line": 211,
-          "endLine": 212,
+          "line": 247,
+          "endLine": 248,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from('marketplace_items')",
           "chain": "supabase\n      .from('marketplace_items')\n      .delete()\n      .eq('id', id)\n      .eq('author_id', userId)\n      .select('id')",
@@ -38083,17 +38117,17 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/marketplace/marketplace-service.ts",
-            "line": 207,
-            "endLine": 234,
-            "text": "export async function deleteMarketplaceItem(id: string): Promise<boolean> {\n  try {\n    const userId = await getAuthenticatedUserId();\n\n    const { data, error } = await supabase\n      .from('marketplace_items')\n      .delete()\n      .eq('id', id)\n      .eq('author_id', userId)\n      .select('id');\n\n    if (error) {\n      console.error('Error deleting marketplace item:', error);\n      throw new Error(`Failed to delete marketplace item: ${error.message}`);\n    }\n\n    if (!data || data.length === 0) {\n      throw new Error(\n        'Marketplace-Eintrag nicht gefunden oder fremder Autor — Delete verweigert',\n      );\n    }\n\n    return true;\n  } catch (error) {\n    console.error('Error in deleteMarketplaceItem:', error);\n    return false;\n  }\n}"
+            "line": 235,
+            "endLine": 270,
+            "text": "export async function deleteMarketplaceItem(id: string): Promise<boolean> {\n  if (isHostLibraryEnabled()) {\n    try {\n      await deleteHostMarketplaceItem(id);\n      return true;\n    } catch {\n      return false;\n    }\n  }\n  try {\n    const userId = await getAuthenticatedUserId();\n\n    const { data, error } = await supabase\n      .from('marketplace_items')\n      .delete()\n      .eq('id', id)\n      .eq('author_id', userId)\n      .select('id');\n\n    if (error) {\n      console.error('Error deleting marketplace item:', error);\n      throw new Error(`Failed to delete marketplace item: ${error.message}`);\n    }\n\n    if (!data || data.length === 0) {\n      throw new Error(\n        'Marketplace-Eintrag nicht gefunden oder fremder Autor — Delete verweigert',\n      );\n    }\n\n    return true;\n  } catch (error) {\n    console.error('Error in deleteMarketplaceItem:', error);\n    return false;\n  }\n}"
           }
         },
         {
           "kind": "rpc",
           "name": "increment_marketplace_downloads",
           "path": "src/infrastructure/marketplace/marketplace-service.ts",
-          "line": 242,
-          "endLine": 244,
+          "line": 289,
+          "endLine": 291,
           "resolution": "literal-or-constant",
           "expression": "supabase.rpc('increment_marketplace_downloads', {\n      item_id: id,\n    })",
           "chain": "supabase.rpc('increment_marketplace_downloads', {\n      item_id: id,\n    })",
@@ -38103,17 +38137,17 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/marketplace/marketplace-service.ts",
-            "line": 240,
-            "endLine": 255,
-            "text": "export async function incrementDownloads(id: string): Promise<void> {\n  try {\n    const { error } = await supabase.rpc('increment_marketplace_downloads', {\n      item_id: id,\n    });\n\n    if (error) {\n      console.error(\n        'increment_marketplace_downloads RPC failed (no client counter write):',\n        error.message,\n      );\n    }\n  } catch (error) {\n    console.error('Error incrementing downloads:', error);\n  }\n}"
+            "line": 276,
+            "endLine": 302,
+            "text": "export async function incrementDownloads(id: string): Promise<void> {\n  if (isHostLibraryEnabled()) {\n    try {\n      await incrementHostMarketplaceDownloads(id);\n    } catch (error) {\n      console.error(\n        'incrementHostMarketplaceDownloads failed (no client counter write):',\n        error instanceof Error ? error.message : error,\n      );\n    }\n    return;\n  }\n  try {\n    const { error } = await supabase.rpc('increment_marketplace_downloads', {\n      item_id: id,\n    });\n\n    if (error) {\n      console.error(\n        'increment_marketplace_downloads RPC failed (no client counter write):',\n        error.message,\n      );\n    }\n  } catch (error) {\n    console.error('Error incrementing downloads:', error);\n  }\n}"
           }
         },
         {
           "kind": "table",
           "name": "marketplace_items",
           "path": "src/infrastructure/marketplace/marketplace-service.ts",
-          "line": 262,
-          "endLine": 263,
+          "line": 309,
+          "endLine": 310,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from('marketplace_items')",
           "chain": "supabase\n      .from('marketplace_items')\n      .select('*')\n      .eq('author_id', authorId)\n      .order('created_at', { ascending: false })",
@@ -38122,8 +38156,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/marketplace/marketplace-service.ts",
-            "line": 260,
-            "endLine": 278,
+            "line": 307,
+            "endLine": 325,
             "text": "export async function getItemsByAuthor(authorId: string): Promise<MarketplaceItem[]> {\n  try {\n    const { data, error } = await supabase\n      .from('marketplace_items')\n      .select('*')\n      .eq('author_id', authorId)\n      .order('created_at', { ascending: false });\n\n    if (error) {\n      console.error('Error fetching author items:', error);\n      throw new Error(`Failed to fetch author items: ${error.message}`);\n    }\n\n    return data || [];\n  } catch (error) {\n    console.error('Error in getItemsByAuthor:', error);\n    throw error;\n  }\n}"
           }
         }
@@ -38163,50 +38197,50 @@
         },
         {
           "path": "src/infrastructure/marketplace/marketplace-service.ts",
-          "line": 28,
-          "endLine": 72,
+          "line": 37,
+          "endLine": 84,
           "name": "getMarketplaceItems"
         },
         {
           "path": "src/infrastructure/marketplace/marketplace-service.ts",
-          "line": 77,
-          "endLine": 95,
+          "line": 89,
+          "endLine": 110,
           "name": "getMarketplaceItemById"
         },
         {
           "path": "src/infrastructure/marketplace/marketplace-service.ts",
-          "line": 102,
-          "endLine": 120,
+          "line": 117,
+          "endLine": 138,
           "name": "getFeaturedItems"
         },
         {
           "path": "src/infrastructure/marketplace/marketplace-service.ts",
-          "line": 125,
-          "endLine": 159,
+          "line": 143,
+          "endLine": 180,
           "name": "createMarketplaceItem"
         },
         {
           "path": "src/infrastructure/marketplace/marketplace-service.ts",
-          "line": 164,
-          "endLine": 202,
+          "line": 185,
+          "endLine": 230,
           "name": "updateMarketplaceItem"
         },
         {
           "path": "src/infrastructure/marketplace/marketplace-service.ts",
-          "line": 207,
-          "endLine": 234,
+          "line": 235,
+          "endLine": 270,
           "name": "deleteMarketplaceItem"
         },
         {
           "path": "src/infrastructure/marketplace/marketplace-service.ts",
-          "line": 240,
-          "endLine": 255,
+          "line": 276,
+          "endLine": 302,
           "name": "incrementDownloads"
         },
         {
           "path": "src/infrastructure/marketplace/marketplace-service.ts",
-          "line": 260,
-          "endLine": 278,
+          "line": 307,
+          "endLine": 325,
           "name": "getItemsByAuthor"
         }
       ],
@@ -41075,6 +41109,10 @@
         "baselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248",
         "sourceFiles": [
           {
+            "path": "src/domains/marketplace/contracts/marketplace.types.ts",
+            "sha256": "000aecc695577333ad6fce27422ad02bc15f26ffca88507ebfee1fafb04b9467"
+          },
+          {
             "path": "src/domains/rules/ruleset-catalog/index.ts",
             "sha256": "c2f52133fdeaa82ca586670b79ce0144063cc852a2a5ca8b5b6b44369fc0e21e"
           },
@@ -41083,8 +41121,32 @@
             "sha256": "1b76d37fc3c90d29d3f719644e6915a66462d7b55c4c6cec07a0caadfdf1512d"
           },
           {
+            "path": "src/domains/user-profile/contracts/user-profile.types.ts",
+            "sha256": "2f3f3472e9a3448099144be0993fd83bbbc2270050ce76dceadd8821501c26b7"
+          },
+          {
+            "path": "src/domains/user-profile/display-name.ts",
+            "sha256": "87cfc4858f198e56ea2857c505162f112efd5edacde4dbb1f7fcd995b4535516"
+          },
+          {
+            "path": "src/domains/user-profile/index.ts",
+            "sha256": "d094d245ff9356298ef20c48635ca3e7adcc0e1ccf180554586949e0b496c496"
+          },
+          {
+            "path": "src/infrastructure/host/host-catalog-http.ts",
+            "sha256": "a33c807b3bde9200f472b2d4d057d633960fba65fcf14b32e6f7053adb9c9f5a"
+          },
+          {
+            "path": "src/infrastructure/host/host-library-http.ts",
+            "sha256": "c452cc3bf830068496fb10f705019cbdcc682586c1672b6a7572cd430b5d5069"
+          },
+          {
             "path": "src/infrastructure/rulesets/ruleset-service.ts",
-            "sha256": "edc092742690e6c376d1a9e8b6c4900672dc79f0f4754773c0953f87a91e1d4d"
+            "sha256": "bab6988a93fe3d917d9014a02b832dd8c4b803f81e9cfb36f107411f0e763542"
+          },
+          {
+            "path": "src/lib/hostAuthBridge.ts",
+            "sha256": "925a7e9e9c7cd24fcce69f39d39f7b1250b354800b5188636be319acbf1fe702"
           },
           {
             "path": "src/lib/supabase.ts",
@@ -41096,7 +41158,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-rulesets.json",
-      "sourceContractSha256": "b26a7d7ac4a716ef7316d76344bb229b97f3b92263252d221f66721315a78fec",
+      "sourceContractSha256": "4ef3a8dc3ceff73fef99ef3ffd21944faa2e9c435b6c3ecb9ebfeba7d8c3bbf9",
       "rpcUsed": [],
       "tablesTouched": [
         "rulesets"
@@ -41106,15 +41168,17 @@
       "realtime": [],
       "authCalls": [],
       "externalFetches": [],
-      "importedInfrastructure": [],
+      "importedInfrastructure": [
+        "host"
+      ],
       "providerSdkCalls": [],
       "backendCalls": [
         {
           "kind": "table",
           "name": "rulesets",
           "path": "src/infrastructure/rulesets/ruleset-service.ts",
-          "line": 10,
-          "endLine": 11,
+          "line": 23,
+          "endLine": 24,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from('rulesets')",
           "chain": "supabase\n      .from('rulesets')\n      .select('*')\n      .order('is_official', { ascending: false })\n      .order('name')",
@@ -41123,17 +41187,17 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/rulesets/ruleset-service.ts",
-            "line": 9,
-            "endLine": 18,
-            "text": "async getAll(): Promise<Ruleset[]> {\n    const { data, error } = await supabase\n      .from('rulesets')\n      .select('*')\n      .order('is_official', { ascending: false })\n      .order('name');\n\n    if (error) throw error;\n    return data || [];\n  }"
+            "line": 19,
+            "endLine": 31,
+            "text": "async getAll(): Promise<Ruleset[]> {\n    if (isHostLibraryEnabled()) {\n      return fetchHostRulesets(false);\n    }\n    const { data, error } = await supabase\n      .from('rulesets')\n      .select('*')\n      .order('is_official', { ascending: false })\n      .order('name');\n\n    if (error) throw error;\n    return data || [];\n  }"
           }
         },
         {
           "kind": "table",
           "name": "rulesets",
           "path": "src/infrastructure/rulesets/ruleset-service.ts",
-          "line": 21,
-          "endLine": 22,
+          "line": 37,
+          "endLine": 38,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from('rulesets')",
           "chain": "supabase\n      .from('rulesets')\n      .select('*')\n      .eq('is_official', true)\n      .order('name')",
@@ -41142,17 +41206,17 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/rulesets/ruleset-service.ts",
-            "line": 20,
-            "endLine": 29,
-            "text": "async getOfficial(): Promise<Ruleset[]> {\n    const { data, error } = await supabase\n      .from('rulesets')\n      .select('*')\n      .eq('is_official', true)\n      .order('name');\n\n    if (error) throw error;\n    return data || [];\n  }"
+            "line": 33,
+            "endLine": 45,
+            "text": "async getOfficial(): Promise<Ruleset[]> {\n    if (isHostLibraryEnabled()) {\n      return fetchHostRulesets(true);\n    }\n    const { data, error } = await supabase\n      .from('rulesets')\n      .select('*')\n      .eq('is_official', true)\n      .order('name');\n\n    if (error) throw error;\n    return data || [];\n  }"
           }
         },
         {
           "kind": "table",
           "name": "rulesets",
           "path": "src/infrastructure/rulesets/ruleset-service.ts",
-          "line": 32,
-          "endLine": 32,
+          "line": 51,
+          "endLine": 51,
           "resolution": "literal-or-constant",
           "expression": "supabase.from('rulesets')",
           "chain": "supabase.from('rulesets').select('*').eq('id', id).single()",
@@ -41161,17 +41225,17 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/rulesets/ruleset-service.ts",
-            "line": 31,
-            "endLine": 36,
-            "text": "async getById(id: string): Promise<Ruleset | null> {\n    const { data, error } = await supabase.from('rulesets').select('*').eq('id', id).single();\n\n    if (error) throw error;\n    return data;\n  }"
+            "line": 47,
+            "endLine": 55,
+            "text": "async getById(id: string): Promise<Ruleset | null> {\n    if (isHostLibraryEnabled()) {\n      return fetchHostRuleset(id);\n    }\n    const { data, error } = await supabase.from('rulesets').select('*').eq('id', id).single();\n\n    if (error) throw error;\n    return data;\n  }"
           }
         },
         {
           "kind": "table",
           "name": "rulesets",
           "path": "src/infrastructure/rulesets/ruleset-service.ts",
-          "line": 39,
-          "endLine": 40,
+          "line": 61,
+          "endLine": 62,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from('rulesets')",
           "chain": "supabase\n      .from('rulesets')\n      .insert({\n        ...dto,\n        is_official: false,\n        is_marketplace_item: false,\n      })\n      .select()\n      .single()",
@@ -41180,17 +41244,17 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/rulesets/ruleset-service.ts",
-            "line": 38,
-            "endLine": 51,
-            "text": "async create(dto: CreateRulesetDTO): Promise<Ruleset> {\n    const { data, error } = await supabase\n      .from('rulesets')\n      .insert({\n        ...dto,\n        is_official: false,\n        is_marketplace_item: false,\n      })\n      .select()\n      .single();\n\n    if (error) throw error;\n    return data;\n  }"
+            "line": 57,
+            "endLine": 73,
+            "text": "async create(dto: CreateRulesetDTO): Promise<Ruleset> {\n    if (isHostLibraryEnabled()) {\n      return createHostRuleset(dto);\n    }\n    const { data, error } = await supabase\n      .from('rulesets')\n      .insert({\n        ...dto,\n        is_official: false,\n        is_marketplace_item: false,\n      })\n      .select()\n      .single();\n\n    if (error) throw error;\n    return data;\n  }"
           }
         },
         {
           "kind": "table",
           "name": "rulesets",
           "path": "src/infrastructure/rulesets/ruleset-service.ts",
-          "line": 55,
-          "endLine": 56,
+          "line": 80,
+          "endLine": 81,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from('rulesets')",
           "chain": "supabase\n      .from('rulesets')\n      .update({\n        ...updates,\n        updated_at: new Date().toISOString(),\n      })\n      .eq('id', id)\n      .select()\n      .single()",
@@ -41199,17 +41263,17 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/rulesets/ruleset-service.ts",
-            "line": 53,
-            "endLine": 67,
-            "text": "async update(dto: UpdateRulesetDTO): Promise<Ruleset> {\n    const { id, ...updates } = dto;\n    const { data, error } = await supabase\n      .from('rulesets')\n      .update({\n        ...updates,\n        updated_at: new Date().toISOString(),\n      })\n      .eq('id', id)\n      .select()\n      .single();\n\n    if (error) throw error;\n    return data;\n  }"
+            "line": 75,
+            "endLine": 92,
+            "text": "async update(dto: UpdateRulesetDTO): Promise<Ruleset> {\n    if (isHostLibraryEnabled()) {\n      return updateHostRuleset(dto);\n    }\n    const { id, ...updates } = dto;\n    const { data, error } = await supabase\n      .from('rulesets')\n      .update({\n        ...updates,\n        updated_at: new Date().toISOString(),\n      })\n      .eq('id', id)\n      .select()\n      .single();\n\n    if (error) throw error;\n    return data;\n  }"
           }
         },
         {
           "kind": "table",
           "name": "rulesets",
           "path": "src/infrastructure/rulesets/ruleset-service.ts",
-          "line": 70,
-          "endLine": 70,
+          "line": 99,
+          "endLine": 99,
           "resolution": "literal-or-constant",
           "expression": "supabase.from('rulesets')",
           "chain": "supabase.from('rulesets').delete().eq('id', id)",
@@ -41218,9 +41282,9 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/rulesets/ruleset-service.ts",
-            "line": 69,
-            "endLine": 73,
-            "text": "async delete(id: string): Promise<void> {\n    const { error } = await supabase.from('rulesets').delete().eq('id', id);\n\n    if (error) throw error;\n  }"
+            "line": 94,
+            "endLine": 102,
+            "text": "async delete(id: string): Promise<void> {\n    if (isHostLibraryEnabled()) {\n      await deleteHostRuleset(id);\n      return;\n    }\n    const { error } = await supabase.from('rulesets').delete().eq('id', id);\n\n    if (error) throw error;\n  }"
           }
         }
       ],
@@ -41244,38 +41308,38 @@
       "publicOperationSources": [
         {
           "path": "src/infrastructure/rulesets/ruleset-service.ts",
-          "line": 9,
-          "endLine": 18,
+          "line": 19,
+          "endLine": 31,
           "name": "getAll"
         },
         {
           "path": "src/infrastructure/rulesets/ruleset-service.ts",
-          "line": 20,
-          "endLine": 29,
+          "line": 33,
+          "endLine": 45,
           "name": "getOfficial"
         },
         {
           "path": "src/infrastructure/rulesets/ruleset-service.ts",
-          "line": 31,
-          "endLine": 36,
+          "line": 47,
+          "endLine": 55,
           "name": "getById"
         },
         {
           "path": "src/infrastructure/rulesets/ruleset-service.ts",
-          "line": 38,
-          "endLine": 51,
+          "line": 57,
+          "endLine": 73,
           "name": "create"
         },
         {
           "path": "src/infrastructure/rulesets/ruleset-service.ts",
-          "line": 53,
-          "endLine": 67,
+          "line": 75,
+          "endLine": 92,
           "name": "update"
         },
         {
           "path": "src/infrastructure/rulesets/ruleset-service.ts",
-          "line": 69,
-          "endLine": 73,
+          "line": 94,
+          "endLine": 102,
           "name": "delete"
         }
       ],
@@ -41875,7 +41939,7 @@
           },
           {
             "path": "src/infrastructure/session/session-recap-ai-service.ts",
-            "sha256": "dffb89748b308636c99dee90d2af597de0a0fdbb995359bad085d6f799f5987d"
+            "sha256": "61b31d8ae8f680ac4755cf499b42b8da5f0ab5bf85edede1248de5d0e9a364f6"
           },
           {
             "path": "src/infrastructure/session/session-recap-service.ts",
@@ -41919,7 +41983,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-session.json",
-      "sourceContractSha256": "cf8d92882f2685d7a4e97748957246c038f3bfa0a5b36f7020dd4e47cfe32e79",
+      "sourceContractSha256": "eadc5544f503faf5929655e4644e8a11bc21af49561ca7fe76b8cf118f63617d",
       "rpcUsed": [
         "apply_session_runtime_command",
         "create_play_session",
@@ -42707,8 +42771,8 @@
           "kind": "edge",
           "name": "session-recap",
           "path": "src/infrastructure/session/session-recap-ai-service.ts",
-          "line": 76,
-          "endLine": 78,
+          "line": 85,
+          "endLine": 87,
           "resolution": "literal-or-constant",
           "expression": "supabase.functions.invoke('session-recap', {\n      body: { sessionId },\n    })",
           "chain": "supabase.functions.invoke('session-recap', {\n      body: { sessionId },\n    })",
@@ -42718,17 +42782,17 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/session/session-recap-ai-service.ts",
-            "line": 75,
-            "endLine": 96,
-            "text": "async generateDraft(sessionId: string): Promise<SessionRecapAiGenerateResult> {\n    const { data, error } = await supabase.functions.invoke('session-recap', {\n      body: { sessionId },\n    });\n    if (error) {\n      const serverMessage = await getFunctionErrorMessage(error);\n      throw new Error(\n        serverMessage ??\n          'Zusammenfassung konnte nicht generiert werden. Bitte manuell schreiben.',\n      );\n    }\n    const response = parseFunctionResponse(data);\n    if (response.status !== 'ok') {\n      throw new Error(response.message);\n    }\n    return {\n      summaryText: response.summaryText,\n      summaryStatus: response.summaryStatus === 'approved' ? 'approved' : 'draft',\n      provider: response.provider,\n      model: response.model,\n    };\n  }"
+            "line": 79,
+            "endLine": 105,
+            "text": "async generateDraft(sessionId: string): Promise<SessionRecapAiGenerateResult> {\n    if (isHostLibraryEnabled()) {\n      throw new Error(\n        'KI-Zusammenfassung ist im Host-Modus noch nicht verfügbar. Bitte manuell schreiben.',\n      );\n    }\n    const { data, error } = await supabase.functions.invoke('session-recap', {\n      body: { sessionId },\n    });\n    if (error) {\n      const serverMessage = await getFunctionErrorMessage(error);\n      throw new Error(\n        serverMessage ??\n          'Zusammenfassung konnte nicht generiert werden. Bitte manuell schreiben.',\n      );\n    }\n    const response = parseFunctionResponse(data);\n    if (response.status !== 'ok') {\n      throw new Error(response.message);\n    }\n    return {\n      summaryText: response.summaryText,\n      summaryStatus: response.summaryStatus === 'approved' ? 'approved' : 'draft',\n      provider: response.provider,\n      model: response.model,\n    };\n  }"
           }
         },
         {
           "kind": "rpc",
           "name": "save_session_recap_summary",
           "path": "src/infrastructure/session/session-recap-ai-service.ts",
-          "line": 104,
-          "endLine": 108,
+          "line": 118,
+          "endLine": 122,
           "resolution": "literal-or-constant",
           "expression": "supabase.rpc('save_session_recap_summary', {\n        p_session_id: sessionId,\n        p_summary_text: summaryText,\n        p_status: status,\n      })",
           "chain": "supabase.rpc('save_session_recap_summary', {\n        p_session_id: sessionId,\n        p_summary_text: summaryText,\n        p_status: status,\n      })",
@@ -42738,9 +42802,9 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/session/session-recap-ai-service.ts",
-            "line": 98,
-            "endLine": 127,
-            "text": "async saveSummary(\n    sessionId: string,\n    summaryText: string,\n    status: 'draft' | 'approved',\n  ): Promise<{ summaryText: string | null; summaryStatus: EpisodeSummaryStatus }> {\n    const { data, error } = await raceWithTimeoutReject(\n      supabase.rpc('save_session_recap_summary', {\n        p_session_id: sessionId,\n        p_summary_text: summaryText,\n        p_status: status,\n      }),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'Speichern Zeitüberschreitung',\n    );\n    if (error) {\n      throw new Error(error.message || 'Zusammenfassung konnte nicht gespeichert werden');\n    }\n    if (!isRecord(data)) {\n      return { summaryText, summaryStatus: status };\n    }\n    return {\n      summaryText: typeof data.summaryText === 'string' ? data.summaryText : summaryText,\n      summaryStatus:\n        data.summaryStatus === 'approved'\n          ? 'approved'\n          : data.summaryStatus === 'draft'\n            ? 'draft'\n            : 'none',\n    };\n  }"
+            "line": 107,
+            "endLine": 141,
+            "text": "async saveSummary(\n    sessionId: string,\n    summaryText: string,\n    status: 'draft' | 'approved',\n  ): Promise<{ summaryText: string | null; summaryStatus: EpisodeSummaryStatus }> {\n    if (isHostLibraryEnabled()) {\n      throw new Error(\n        'Zusammenfassung speichern ist im Host-Modus noch nicht verfügbar.',\n      );\n    }\n    const { data, error } = await raceWithTimeoutReject(\n      supabase.rpc('save_session_recap_summary', {\n        p_session_id: sessionId,\n        p_summary_text: summaryText,\n        p_status: status,\n      }),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'Speichern Zeitüberschreitung',\n    );\n    if (error) {\n      throw new Error(error.message || 'Zusammenfassung konnte nicht gespeichert werden');\n    }\n    if (!isRecord(data)) {\n      return { summaryText, summaryStatus: status };\n    }\n    return {\n      summaryText: typeof data.summaryText === 'string' ? data.summaryText : summaryText,\n      summaryStatus:\n        data.summaryStatus === 'approved'\n          ? 'approved'\n          : data.summaryStatus === 'draft'\n            ? 'draft'\n            : 'none',\n    };\n  }"
           }
         },
         {
@@ -43580,38 +43644,38 @@
         },
         {
           "path": "src/infrastructure/session/session-recap-ai-service.ts",
-          "line": 28,
-          "endLine": 30,
+          "line": 32,
+          "endLine": 34,
           "name": "isRecord"
         },
         {
           "path": "src/infrastructure/session/session-recap-ai-service.ts",
-          "line": 32,
-          "endLine": 57,
+          "line": 36,
+          "endLine": 61,
           "name": "parseFunctionResponse"
         },
         {
           "path": "src/infrastructure/session/session-recap-ai-service.ts",
-          "line": 59,
-          "endLine": 61,
+          "line": 63,
+          "endLine": 65,
           "name": "hasResponseContext"
         },
         {
           "path": "src/infrastructure/session/session-recap-ai-service.ts",
-          "line": 63,
-          "endLine": 72,
+          "line": 67,
+          "endLine": 76,
           "name": "getFunctionErrorMessage"
         },
         {
           "path": "src/infrastructure/session/session-recap-ai-service.ts",
-          "line": 75,
-          "endLine": 96,
+          "line": 79,
+          "endLine": 105,
           "name": "generateDraft"
         },
         {
           "path": "src/infrastructure/session/session-recap-ai-service.ts",
-          "line": 98,
-          "endLine": 127,
+          "line": 107,
+          "endLine": 141,
           "name": "saveSummary"
         },
         {
@@ -43795,6 +43859,10 @@
         "baselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248",
         "sourceFiles": [
           {
+            "path": "src/domains/marketplace/contracts/marketplace.types.ts",
+            "sha256": "000aecc695577333ad6fce27422ad02bc15f26ffca88507ebfee1fafb04b9467"
+          },
+          {
             "path": "src/domains/media/index.ts",
             "sha256": "768ded2d0f0fd1d510d660924e787817673955dbeff021d7de9e0a8d8e38bdec"
           },
@@ -43807,6 +43875,14 @@
             "sha256": "6145574bc08d1eb94f54d488ebc1f8bc030c2a956e3e3fd24cb15a7c8e50c5ec"
           },
           {
+            "path": "src/domains/rules/ruleset-catalog/index.ts",
+            "sha256": "c2f52133fdeaa82ca586670b79ce0144063cc852a2a5ca8b5b6b44369fc0e21e"
+          },
+          {
+            "path": "src/domains/rules/ruleset-catalog/types.ts",
+            "sha256": "1b76d37fc3c90d29d3f719644e6915a66462d7b55c4c6cec07a0caadfdf1512d"
+          },
+          {
             "path": "src/domains/user-profile/contracts/user-profile.types.ts",
             "sha256": "2f3f3472e9a3448099144be0993fd83bbbc2270050ce76dceadd8821501c26b7"
           },
@@ -43817,6 +43893,14 @@
           {
             "path": "src/domains/user-profile/index.ts",
             "sha256": "d094d245ff9356298ef20c48635ca3e7adcc0e1ccf180554586949e0b496c496"
+          },
+          {
+            "path": "src/infrastructure/host/host-catalog-http.ts",
+            "sha256": "a33c807b3bde9200f472b2d4d057d633960fba65fcf14b32e6f7053adb9c9f5a"
+          },
+          {
+            "path": "src/infrastructure/host/host-library-http.ts",
+            "sha256": "c452cc3bf830068496fb10f705019cbdcc682586c1672b6a7572cd430b5d5069"
           },
           {
             "path": "src/infrastructure/media/optimizer/engines/audio/index.ts",
@@ -43896,11 +43980,15 @@
           },
           {
             "path": "src/infrastructure/user-profile/user-profile-service.ts",
-            "sha256": "0363483f748d866d6b361edcd5d94b6963cfb1a4d4e35a218e57801d166713d0"
+            "sha256": "b842fa9db4e14d90424172ab942dcce00ebffd22e7404709703f9835f3a6eb62"
           },
           {
             "path": "src/lib/authenticatedUser.ts",
             "sha256": "c822140996ae4d318c19d2ccb5318d77f2ba4d302bdfbcb50a79420a7ef70d74"
+          },
+          {
+            "path": "src/lib/hostAuthBridge.ts",
+            "sha256": "925a7e9e9c7cd24fcce69f39d39f7b1250b354800b5188636be319acbf1fe702"
           },
           {
             "path": "src/lib/localAdmin.ts",
@@ -43920,7 +44008,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-user-profile.json",
-      "sourceContractSha256": "26a60ad6e14bc3e4a447516cd4dd579c240b2e5ed53d4fc7b7dc06f6ca4b7d4e",
+      "sourceContractSha256": "3b118d675a692fd5e4944d1727a1e3a0472d9815201213792d7eead1eb52e0cf",
       "rpcUsed": [],
       "tablesTouched": [
         "user_profiles"
@@ -43985,6 +44073,7 @@
       ],
       "externalFetches": [],
       "importedInfrastructure": [
+        "host",
         "media"
       ],
       "providerSdkCalls": [],
@@ -44365,26 +44454,26 @@
         },
         {
           "path": "src/infrastructure/user-profile/user-profile-service.ts",
-          "line": 25,
-          "endLine": 65,
+          "line": 29,
+          "endLine": 69,
           "name": "prepareUserAvatarFile"
         },
         {
           "path": "src/infrastructure/user-profile/user-profile-service.ts",
-          "line": 68,
-          "endLine": 70,
+          "line": 72,
+          "endLine": 77,
           "name": "getOwnProfile"
         },
         {
           "path": "src/infrastructure/user-profile/user-profile-service.ts",
-          "line": 72,
-          "endLine": 74,
+          "line": 79,
+          "endLine": 88,
           "name": "getProfilesByUserIds"
         },
         {
           "path": "src/infrastructure/user-profile/user-profile-service.ts",
-          "line": 76,
-          "endLine": 81,
+          "line": 90,
+          "endLine": 98,
           "name": "uploadAvatar"
         }
       ],

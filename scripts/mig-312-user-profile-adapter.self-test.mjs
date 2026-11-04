@@ -80,7 +80,7 @@ const dataDir = join(work, 'data');
 mkdirSync(dataDir, { recursive: true });
 
 try {
-  assert(USER_PROFILE_PUBLIC_ACTIVATION_AUTHORIZED === false, 'no user-profile HTTP mount');
+  assert(USER_PROFILE_PUBLIC_ACTIVATION_AUTHORIZED === true, 'user-profile HTTP authorized (FE-HOST-08)');
   assert(TABLE_OWNERSHIP.user_profiles === 'user-profile', 'user_profiles ownership');
 
   const boot = bootstrapHostPersistence({
@@ -313,7 +313,7 @@ try {
     rmSync(hostWork, { recursive: true, force: true });
   }
 
-  // Client dual-path wiring + Supabase default remains
+  // Client dual-path wiring: Supabase default; host when VITE_SAGATREE_HOST_LIBRARY=1 (FE-HOST-08)
   const serviceSrc = readFileSync(
     join(root, 'src/infrastructure/user-profile/user-profile-service.ts'),
     'utf8',
@@ -323,18 +323,14 @@ try {
     join(root, 'src/infrastructure/user-profile/host-user-profile-adapter.ts'),
     'utf8',
   );
-  assert(/Dual-path \(MIG-312\)/.test(serviceSrc), 'dual-path note on service');
+  assert(/Dual-path \(FE-HOST-08\)/.test(serviceSrc), 'dual-path note on service');
   assert(/supabaseUserProfileRepository/.test(serviceSrc), 'service default remains Supabase');
+  assert(/isHostLibraryEnabled/.test(serviceSrc), 'host library gate');
   assert(/createHostUserProfileAdapter/.test(indexSrc), 'barrel exports host adapter');
   assert(/transport: 'host'/.test(adapterSrc), 'adapter marks host transport');
-  const codeOnly = serviceSrc.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*$/gm, '');
-  assert(!/VITE_SAGATREE_HOST/i.test(codeOnly), 'flags do not redirect facade');
 
   const createApp = readFileSync(join(root, 'server/src/api/create-app.ts'), 'utf8');
-  assert(
-    !/mountUserProfile|user-profile-http|userProfileHttp/i.test(createApp),
-    'no user-profile HTTP mount yet',
-  );
+  assert(/mountCatalogHttpRoutes/.test(createApp), 'catalog HTTP includes user-profile (FE-HOST-08)');
 
   // Typed-strict Boy Scout on touched FE files
   for (const rel of [

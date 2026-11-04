@@ -400,13 +400,18 @@ CORS_OPTS: CorsOptions = {
 
 ## All adapter call sites
 
-### src/infrastructure/character/character-lore-service.ts:77
+### src/infrastructure/character/character-lore-service.ts:86
 
 
 ```ts
 async generateBackground(
     request: CharacterLoreGenerationRequest,
   ): Promise<CharacterLoreGenerationResult> {
+    if (isHostLibraryEnabled()) {
+      throw new Error(
+        'KI-Hintergrundgeschichte ist im Host-Modus noch nicht verfügbar.',
+      );
+    }
     const { data, error } = await supabase.functions.invoke('character-lore', {
       body: {
         action: 'generate-background',
@@ -1250,7 +1255,7 @@ function parseWorldRow(value: unknown): WorldRow | null {
 
 | Path | SHA-256 |
 |---|---|
-| `src/infrastructure/character/character-lore-service.ts` | `864f22acd15e0605a0a8e5e848b09eaf85e0a95838ab3b5c2e62b2828457cba0` |
+| `src/infrastructure/character/character-lore-service.ts` | `f14fdcb2290d57a7b2e6646cebb9756b63de4be624920188de1299236e40362a` |
 | `supabase/functions/_shared/ai-provider-crypto.ts` | `45e60f76f744077e8d9b243719dcdba5d58a047d36a1c141df830afa2de16532` |
 | `supabase/functions/_shared/character-lore-access.ts` | `922adb04eb27314f8194a7f189b1b143970945d82ab0219480ea08d44181c70f` |
 | `supabase/functions/_shared/character-lore-prompt.ts` | `54fffb4ba316515dff7add1998b2d6f02280ddc336c30e48d2a4ee045a60f818` |

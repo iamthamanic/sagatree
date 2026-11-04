@@ -40,6 +40,9 @@ import type { ProjectPorts } from '../modules/project/index.ts';
 import type { SessionInfraPorts } from '../modules/session/index.ts';
 import type { ProjectInfraPorts } from '../application/project-infra/index.ts';
 import type { AssetPorts } from '../assets/index.ts';
+import type { MarketplacePorts } from '../modules/marketplace/index.ts';
+import type { RulesetPorts } from '../modules/rulesets/index.ts';
+import type { UserProfilePorts } from '../modules/user-profile/index.ts';
 import type { RealtimeSessionRooms } from '../realtime/index.ts';
 import type { NodeAuthHandler } from '../auth/wrap-auth-handler.ts';
 import { createHostApi } from '../api/index.ts';
@@ -96,6 +99,10 @@ export type RouteRegistryDeps = {
   readonly projectInfra?: ProjectInfraPorts | null;
   /** FE-HOST-06 local assets publish/get. */
   readonly assets?: AssetPorts | null;
+  /** FE-HOST-08 catalog facades. */
+  readonly marketplace?: MarketplacePorts | null;
+  readonly rulesets?: RulesetPorts | null;
+  readonly userProfile?: UserProfilePorts | null;
 };
 
 export function sendJson(
@@ -151,6 +158,9 @@ export function createRouteHandler(deps: RouteRegistryDeps) {
     sessionInfra: deps.sessionInfra,
     projectInfra: deps.projectInfra,
     assets: deps.assets,
+    marketplace: deps.marketplace,
+    rulesets: deps.rulesets,
+    userProfile: deps.userProfile,
   });
   const honoListener = getRequestListener(app.fetch, { overrideGlobalObjects: false });
 

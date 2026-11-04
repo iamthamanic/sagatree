@@ -58,7 +58,7 @@ const notes = [];
 /** @type {{ ok: true, db: { close?: () => void } } | { ok: false } | null} */
 let boot = null;
 try {
-  assert(MARKETPLACE_INFRA_PUBLIC_ACTIVATION_AUTHORIZED === false, "no HTTP");
+  assert(MARKETPLACE_INFRA_PUBLIC_ACTIVATION_AUTHORIZED === true, "marketplace catalog HTTP authorized (FE-HOST-08)");
   assert(MARKETPLACE_COUNT_PUBLIC_ACTIVATION_AUTHORIZED === false, "no count HTTP");
   assert(MARKETPLACE_LEGACY_CLIENT_COUNTER_FALLBACK_SUPERSEDED === true, "legacy superseded");
   assert(MARKETPLACE_SEARCH_USES_PARAMETERIZED_LIKE === true, "param LIKE");
@@ -171,7 +171,10 @@ try {
   }
 
   assert(/createHostMarketplaceAdapter/.test(readFileSync(join(root, "src/infrastructure/marketplace/index.ts"), "utf8")), "barrel");
-  assert(!/marketplaceRoutes/i.test(readFileSync(join(root, "server/src/api/create-app.ts"), "utf8")), "no HTTP");
+  assert(
+    /mountCatalogHttpRoutes/.test(readFileSync(join(root, "server/src/api/create-app.ts"), "utf8")),
+    "catalog HTTP mount (FE-HOST-08)",
+  );
   for (const rel of [
     "server/src/modules/marketplace/index.ts",
     "server/src/modules/marketplace/internal/marketplace-catalog-store.ts",

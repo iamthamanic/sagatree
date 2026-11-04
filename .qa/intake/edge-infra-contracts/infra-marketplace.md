@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-marketplace.json](source-contracts/infra-marketplace.json) (SHA-256 `8bec42f29c08d87fa9677ded8d48b725c37be2ca276894bef22302ce42d7ce0e`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-marketplace.json](source-contracts/infra-marketplace.json) (SHA-256 `040876c063b459d6668e27dc263ec04ee14395b946ab0645bfcb04eaa11f4038`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -50,7 +50,7 @@ Realtime call sites: 0. Direct fetch sites: 0. Explicit auth/helper sites: 3.
 
 ### table: marketplace_items
 
-`src/infrastructure/marketplace/marketplace-service.ts:32` — literal-or-constant.
+`src/infrastructure/marketplace/marketplace-service.ts:44` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -59,10 +59,10 @@ supabase
       .select('*')
 ```
 
-Enclosing operation: `src/infrastructure/marketplace/marketplace-service.ts:28`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/marketplace/marketplace-service.ts:37`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: marketplace_items
 
-`src/infrastructure/marketplace/marketplace-service.ts:79` — literal-or-constant.
+`src/infrastructure/marketplace/marketplace-service.ts:94` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -73,10 +73,10 @@ supabase
       .single()
 ```
 
-Enclosing operation: `src/infrastructure/marketplace/marketplace-service.ts:77`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/marketplace/marketplace-service.ts:89`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: marketplace_items
 
-`src/infrastructure/marketplace/marketplace-service.ts:104` — literal-or-constant.
+`src/infrastructure/marketplace/marketplace-service.ts:122` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -87,20 +87,20 @@ supabase
       .limit(6)
 ```
 
-Enclosing operation: `src/infrastructure/marketplace/marketplace-service.ts:102`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/marketplace/marketplace-service.ts:117`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### auth-helper: session identity
 
-`src/infrastructure/marketplace/marketplace-service.ts:129` — dynamic-expression.
+`src/infrastructure/marketplace/marketplace-service.ts:150` — dynamic-expression.
 
 Exact call/query chain:
 ```ts
 getAuthenticatedUserId()
 ```
 
-Enclosing operation: `src/infrastructure/marketplace/marketplace-service.ts:125`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/marketplace/marketplace-service.ts:143`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: marketplace_items
 
-`src/infrastructure/marketplace/marketplace-service.ts:132` — literal-or-constant.
+`src/infrastructure/marketplace/marketplace-service.ts:153` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -122,20 +122,20 @@ supabase
       .single()
 ```
 
-Enclosing operation: `src/infrastructure/marketplace/marketplace-service.ts:125`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/marketplace/marketplace-service.ts:143`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### auth-helper: session identity
 
-`src/infrastructure/marketplace/marketplace-service.ts:169` — dynamic-expression.
+`src/infrastructure/marketplace/marketplace-service.ts:197` — dynamic-expression.
 
 Exact call/query chain:
 ```ts
 getAuthenticatedUserId()
 ```
 
-Enclosing operation: `src/infrastructure/marketplace/marketplace-service.ts:164`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/marketplace/marketplace-service.ts:185`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: marketplace_items
 
-`src/infrastructure/marketplace/marketplace-service.ts:175` — literal-or-constant.
+`src/infrastructure/marketplace/marketplace-service.ts:203` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -151,20 +151,20 @@ supabase
       .maybeSingle()
 ```
 
-Enclosing operation: `src/infrastructure/marketplace/marketplace-service.ts:164`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/marketplace/marketplace-service.ts:185`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### auth-helper: session identity
 
-`src/infrastructure/marketplace/marketplace-service.ts:209` — dynamic-expression.
+`src/infrastructure/marketplace/marketplace-service.ts:245` — dynamic-expression.
 
 Exact call/query chain:
 ```ts
 getAuthenticatedUserId()
 ```
 
-Enclosing operation: `src/infrastructure/marketplace/marketplace-service.ts:207`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/marketplace/marketplace-service.ts:235`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: marketplace_items
 
-`src/infrastructure/marketplace/marketplace-service.ts:211` — literal-or-constant.
+`src/infrastructure/marketplace/marketplace-service.ts:247` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -176,10 +176,10 @@ supabase
       .select('id')
 ```
 
-Enclosing operation: `src/infrastructure/marketplace/marketplace-service.ts:207`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/marketplace/marketplace-service.ts:235`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### rpc: increment_marketplace_downloads
 
-`src/infrastructure/marketplace/marketplace-service.ts:242` — literal-or-constant.
+`src/infrastructure/marketplace/marketplace-service.ts:289` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -188,10 +188,10 @@ supabase.rpc('increment_marketplace_downloads', {
     })
 ```
 
-Enclosing operation: `src/infrastructure/marketplace/marketplace-service.ts:240`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/marketplace/marketplace-service.ts:276`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: marketplace_items
 
-`src/infrastructure/marketplace/marketplace-service.ts:262` — literal-or-constant.
+`src/infrastructure/marketplace/marketplace-service.ts:309` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -202,7 +202,7 @@ supabase
       .order('created_at', { ascending: false })
 ```
 
-Enclosing operation: `src/infrastructure/marketplace/marketplace-service.ts:260`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/marketplace/marketplace-service.ts:307`; complete request/default/result/error logic is in the declarations below and the snapshot.
 
 ## Complete public declarations and facade operation contracts
 
@@ -377,12 +377,15 @@ export const HOST_MARKETPLACE_OPS = [
 export type HostMarketplaceOp = (typeof HOST_MARKETPLACE_OPS)[number];
 ```
 
-### src/infrastructure/marketplace/marketplace-service.ts:28
+### src/infrastructure/marketplace/marketplace-service.ts:37
 
 ```ts
 export async function getMarketplaceItems(
   filters?: MarketplaceFilters
 ): Promise<MarketplaceItem[]> {
+  if (isHostLibraryEnabled()) {
+    return fetchHostMarketplaceItems(filters);
+  }
   try {
     let query = supabase
       .from('marketplace_items')
@@ -427,10 +430,13 @@ export async function getMarketplaceItems(
 }
 ```
 
-### src/infrastructure/marketplace/marketplace-service.ts:77
+### src/infrastructure/marketplace/marketplace-service.ts:89
 
 ```ts
 export async function getMarketplaceItemById(id: string): Promise<MarketplaceItem | null> {
+  if (isHostLibraryEnabled()) {
+    return fetchHostMarketplaceItem(id);
+  }
   try {
     const { data, error } = await supabase
       .from('marketplace_items')
@@ -451,10 +457,13 @@ export async function getMarketplaceItemById(id: string): Promise<MarketplaceIte
 }
 ```
 
-### src/infrastructure/marketplace/marketplace-service.ts:102
+### src/infrastructure/marketplace/marketplace-service.ts:117
 
 ```ts
 export async function getFeaturedItems(): Promise<MarketplaceItem[]> {
+  if (isHostLibraryEnabled()) {
+    return fetchHostFeaturedMarketplaceItems();
+  }
   try {
     const { data, error } = await supabase
       .from('marketplace_items')
@@ -475,12 +484,15 @@ export async function getFeaturedItems(): Promise<MarketplaceItem[]> {
 }
 ```
 
-### src/infrastructure/marketplace/marketplace-service.ts:125
+### src/infrastructure/marketplace/marketplace-service.ts:143
 
 ```ts
 export async function createMarketplaceItem(
   dto: CreateMarketplaceItemDTO
 ): Promise<MarketplaceItem> {
+  if (isHostLibraryEnabled()) {
+    return createHostMarketplaceItem(whitelistMarketplaceCreateDto(dto));
+  }
   try {
     const userId = await getAuthenticatedUserId();
     const safe = whitelistMarketplaceCreateDto(dto);
@@ -515,13 +527,20 @@ export async function createMarketplaceItem(
 }
 ```
 
-### src/infrastructure/marketplace/marketplace-service.ts:164
+### src/infrastructure/marketplace/marketplace-service.ts:185
 
 ```ts
 export async function updateMarketplaceItem(
   id: string,
   dto: UpdateMarketplaceItemDTO
 ): Promise<MarketplaceItem> {
+  if (isHostLibraryEnabled()) {
+    const patch = whitelistMarketplaceUpdatePatch(dto);
+    if (Object.keys(patch).length === 0) {
+      throw new Error('Keine erlaubten Update-Felder');
+    }
+    return updateHostMarketplaceItem(id, patch);
+  }
   try {
     const userId = await getAuthenticatedUserId();
     const patch = whitelistMarketplaceUpdatePatch(dto);
@@ -559,10 +578,18 @@ export async function updateMarketplaceItem(
 }
 ```
 
-### src/infrastructure/marketplace/marketplace-service.ts:207
+### src/infrastructure/marketplace/marketplace-service.ts:235
 
 ```ts
 export async function deleteMarketplaceItem(id: string): Promise<boolean> {
+  if (isHostLibraryEnabled()) {
+    try {
+      await deleteHostMarketplaceItem(id);
+      return true;
+    } catch {
+      return false;
+    }
+  }
   try {
     const userId = await getAuthenticatedUserId();
 
@@ -592,10 +619,21 @@ export async function deleteMarketplaceItem(id: string): Promise<boolean> {
 }
 ```
 
-### src/infrastructure/marketplace/marketplace-service.ts:240
+### src/infrastructure/marketplace/marketplace-service.ts:276
 
 ```ts
 export async function incrementDownloads(id: string): Promise<void> {
+  if (isHostLibraryEnabled()) {
+    try {
+      await incrementHostMarketplaceDownloads(id);
+    } catch (error) {
+      console.error(
+        'incrementHostMarketplaceDownloads failed (no client counter write):',
+        error instanceof Error ? error.message : error,
+      );
+    }
+    return;
+  }
   try {
     const { error } = await supabase.rpc('increment_marketplace_downloads', {
       item_id: id,
@@ -613,7 +651,7 @@ export async function incrementDownloads(id: string): Promise<void> {
 }
 ```
 
-### src/infrastructure/marketplace/marketplace-service.ts:260
+### src/infrastructure/marketplace/marketplace-service.ts:307
 
 ```ts
 export async function getItemsByAuthor(authorId: string): Promise<MarketplaceItem[]> {
@@ -648,11 +686,19 @@ All backend operations are included in the public declarations above.
 |---|---|
 | `src/domains/marketplace/client-trust.ts` | `35e6c76ef6fb9f0db4d4bb013e6fa14b9a4db37f1bf05af722e0368d969d3a34` |
 | `src/domains/marketplace/contracts/marketplace.types.ts` | `000aecc695577333ad6fce27422ad02bc15f26ffca88507ebfee1fafb04b9467` |
+| `src/domains/rules/ruleset-catalog/index.ts` | `c2f52133fdeaa82ca586670b79ce0144063cc852a2a5ca8b5b6b44369fc0e21e` |
+| `src/domains/rules/ruleset-catalog/types.ts` | `1b76d37fc3c90d29d3f719644e6915a66462d7b55c4c6cec07a0caadfdf1512d` |
+| `src/domains/user-profile/contracts/user-profile.types.ts` | `2f3f3472e9a3448099144be0993fd83bbbc2270050ce76dceadd8821501c26b7` |
+| `src/domains/user-profile/display-name.ts` | `87cfc4858f198e56ea2857c505162f112efd5edacde4dbb1f7fcd995b4535516` |
+| `src/domains/user-profile/index.ts` | `d094d245ff9356298ef20c48635ca3e7adcc0e1ccf180554586949e0b496c496` |
+| `src/infrastructure/host/host-catalog-http.ts` | `a33c807b3bde9200f472b2d4d057d633960fba65fcf14b32e6f7053adb9c9f5a` |
+| `src/infrastructure/host/host-library-http.ts` | `c452cc3bf830068496fb10f705019cbdcc682586c1672b6a7572cd430b5d5069` |
 | `src/infrastructure/marketplace/host-marketplace-adapter.ts` | `26df96d9df6c7ae0cebd69e90e85a77075fbbc1138c86b505f8dee97e7e072e0` |
 | `src/infrastructure/marketplace/host-marketplace-ports.contract.ts` | `f77e7aee8352e2155253cddead1f51d9de10170ca250db27405f7f1f336fcf1b` |
 | `src/infrastructure/marketplace/index.ts` | `15e40b95148db8d15546f5c1815b51f7846c343e5fc334406548c64858162542` |
-| `src/infrastructure/marketplace/marketplace-service.ts` | `01b4f9b1474046827459e2930c90fc80b0cde69a70fda0e6cc043be46454c18f` |
+| `src/infrastructure/marketplace/marketplace-service.ts` | `52c856bd8d5be2885897e155ade57bfdfed1b8eb7e48fe6fb1376b8e1a5284e8` |
 | `src/lib/authenticatedUser.ts` | `c822140996ae4d318c19d2ccb5318d77f2ba4d302bdfbcb50a79420a7ef70d74` |
+| `src/lib/hostAuthBridge.ts` | `925a7e9e9c7cd24fcce69f39d39f7b1250b354800b5188636be319acbf1fe702` |
 | `src/lib/localAdmin.ts` | `3a28dec23e85f25ed3e70682bc6e7f8c6b55e81dbbefdd1f6a837f68ac80d6b5` |
 | `src/lib/networkTimeout.ts` | `835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851` |
 | `src/lib/supabase.ts` | `a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f` |

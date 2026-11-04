@@ -1,9 +1,13 @@
 /**
  * session-recap-ai-service — Invoke session-recap Edge Function + summary RPCs (#573).
  * Location: src/infrastructure/session/session-recap-ai-service.ts
+ *
+ * FE-HOST-08: under host library flag, AI generate/save are explicitly unavailable
+ * (German error) until host AI paths ship — get-recap remains on host-session-http.
  */
 import { supabase } from '../../lib/supabase';
 import { raceWithTimeoutReject, SUPABASE_QUERY_TIMEOUT_MS } from '../../lib/networkTimeout';
+import { isHostLibraryEnabled } from '../host/host-session-http';
 
 export type EpisodeSummaryStatus = 'none' | 'draft' | 'approved';
 
@@ -73,6 +77,11 @@ async function getFunctionErrorMessage(error: unknown): Promise<string | undefin
 
 class SessionRecapAiService {
   async generateDraft(sessionId: string): Promise<SessionRecapAiGenerateResult> {
+    if (isHostLibraryEnabled()) {
+      throw new Error(
+        'KI-Zusammenfassung ist im Host-Modus noch nicht verfügbar. Bitte manuell schreiben.',
+      );
+    }
     const { data, error } = await supabase.functions.invoke('session-recap', {
       body: { sessionId },
     });
@@ -100,6 +109,11 @@ class SessionRecapAiService {
     summaryText: string,
     status: 'draft' | 'approved',
   ): Promise<{ summaryText: string | null; summaryStatus: EpisodeSummaryStatus }> {
+    if (isHostLibraryEnabled()) {
+      throw new Error(
+        'Zusammenfassung speichern ist im Host-Modus noch nicht verfügbar.',
+      );
+    }
     const { data, error } = await raceWithTimeoutReject(
       supabase.rpc('save_session_recap_summary', {
         p_session_id: sessionId,

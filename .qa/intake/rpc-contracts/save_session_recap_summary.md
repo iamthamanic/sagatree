@@ -137,9 +137,9 @@ Die finalen Datenbank-Constraints der beteiligten Relationen sind pro RPC in inv
 
 ## Caller: Request-Mapping, Response-Decoding und Fehler
 
-### src/infrastructure/session/session-recap-ai-service.ts:104
+### src/infrastructure/session/session-recap-ai-service.ts:118
 
-AST-Auflösung: `string-literal`; SHA-256 `dffb89748b308636c99dee90d2af597de0a0fdbb995359bad085d6f799f5987d`.
+AST-Auflösung: `string-literal`; SHA-256 `61b31d8ae8f680ac4755cf499b42b8da5f0ab5bf85edede1248de5d0e9a364f6`.
 
 Der vollständige aufrufende Funktionskörper enthält Parameterumformung, RPC-Aufruf, Response-Prüfung, Fehlerumwandlung und gegebenenfalls Fallback:
 
@@ -149,6 +149,11 @@ async saveSummary(
     summaryText: string,
     status: 'draft' | 'approved',
   ): Promise<{ summaryText: string | null; summaryStatus: EpisodeSummaryStatus }> {
+    if (isHostLibraryEnabled()) {
+      throw new Error(
+        'Zusammenfassung speichern ist im Host-Modus noch nicht verfügbar.',
+      );
+    }
     const { data, error } = await raceWithTimeoutReject(
       supabase.rpc('save_session_recap_summary', {
         p_session_id: sessionId,
@@ -180,8 +185,8 @@ Direkt oder transitiv referenzierte lokale/importierte Mapper, Decoder und Vertr
 
 | Symbol | Quelle | Zeile | SHA-256 |
 | --- | --- | --- | --- |
-| `EpisodeSummaryStatus` | [src/infrastructure/session/session-recap-ai-service.ts](../../../src/infrastructure/session/session-recap-ai-service.ts) | 8 | `dffb89748b308636c99dee90d2af597de0a0fdbb995359bad085d6f799f5987d` |
-| `isRecord` | [src/infrastructure/session/session-recap-ai-service.ts](../../../src/infrastructure/session/session-recap-ai-service.ts) | 28 | `dffb89748b308636c99dee90d2af597de0a0fdbb995359bad085d6f799f5987d` |
+| `EpisodeSummaryStatus` | [src/infrastructure/session/session-recap-ai-service.ts](../../../src/infrastructure/session/session-recap-ai-service.ts) | 12 | `61b31d8ae8f680ac4755cf499b42b8da5f0ab5bf85edede1248de5d0e9a364f6` |
+| `isRecord` | [src/infrastructure/session/session-recap-ai-service.ts](../../../src/infrastructure/session/session-recap-ai-service.ts) | 32 | `61b31d8ae8f680ac4755cf499b42b8da5f0ab5bf85edede1248de5d0e9a364f6` |
 | `SUPABASE_QUERY_TIMEOUT_MS` | [src/lib/networkTimeout.ts](../../../src/lib/networkTimeout.ts) | 8 | `835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851` |
 | `raceWithTimeoutReject` | [src/lib/networkTimeout.ts](../../../src/lib/networkTimeout.ts) | 36 | `835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851` |
 | `viteEnv` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 3 | `a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f` |
@@ -225,7 +230,7 @@ Die folgenden Hashes binden SQL-Kette, transitive Tabellen-/Trigger-/Policyquell
 
 | Quelle | SHA-256 |
 | --- | --- |
-| [src/infrastructure/session/session-recap-ai-service.ts](../../../src/infrastructure/session/session-recap-ai-service.ts) | `dffb89748b308636c99dee90d2af597de0a0fdbb995359bad085d6f799f5987d` |
+| [src/infrastructure/session/session-recap-ai-service.ts](../../../src/infrastructure/session/session-recap-ai-service.ts) | `61b31d8ae8f680ac4755cf499b42b8da5f0ab5bf85edede1248de5d0e9a364f6` |
 | [src/lib/networkTimeout.ts](../../../src/lib/networkTimeout.ts) | `835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851` |
 | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | `a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f` |
 | [supabase/migrations/001_initial.sql](../../../supabase/migrations/001_initial.sql) | `e3325c56d68286a2e293ddff791736ef91346ff90ac018c045843a5d52afb8c8` |

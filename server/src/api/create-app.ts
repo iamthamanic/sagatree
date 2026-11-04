@@ -27,10 +27,14 @@ import { actorToWhoamiDto } from '../auth/session.ts';
 import { authDenyStatus, transportStatus } from './errors.ts';
 import { mountAiHttpRoutes } from './ai-routes.ts';
 import { mountAssetHttpRoutes } from './asset-routes.ts';
+import { mountCatalogHttpRoutes } from './catalog-routes.ts';
 import { mountLibraryHttpRoutes } from './library-routes.ts';
 import { mountSessionHttpRoutes } from './session-routes.ts';
 import { mountWorldAtlasHttpRoutes } from './world-atlas-routes.ts';
 import { mountProjectHttpRoutes } from './project-routes.ts';
+import type { MarketplacePorts } from '../modules/marketplace/index.ts';
+import type { RulesetPorts } from '../modules/rulesets/index.ts';
+import type { UserProfilePorts } from '../modules/user-profile/index.ts';
 
 export type HostApiDeps = {
   readonly health: ReturnType<typeof createHealthUseCase>;
@@ -69,6 +73,10 @@ export type HostApiDeps = {
   readonly projectInfra?: ProjectInfraPorts | null;
   /** FE-HOST-06 local assets publish/get. */
   readonly assets?: AssetPorts | null;
+  /** FE-HOST-08 marketplace / rulesets / user-profile catalog HTTP. */
+  readonly marketplace?: MarketplacePorts | null;
+  readonly rulesets?: RulesetPorts | null;
+  readonly userProfile?: UserProfilePorts | null;
 };
 
 async function readJsonSafe(c: {
@@ -450,6 +458,14 @@ export function createHostApi(deps: HostApiDeps): Hono {
     identity: deps.identity,
     hostMode: deps.hostMode,
     assets: deps.assets,
+  });
+
+  mountCatalogHttpRoutes(app, {
+    identity: deps.identity,
+    hostMode: deps.hostMode,
+    marketplace: deps.marketplace,
+    rulesets: deps.rulesets,
+    userProfile: deps.userProfile,
   });
 
   app.notFound((c) => c.json({ error: 'not-found' }, 404));

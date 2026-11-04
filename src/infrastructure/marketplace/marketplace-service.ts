@@ -2,9 +2,8 @@
  * marketplace-service — Supabase adapter for marketplace catalog/downloads.
  * Location: src/infrastructure/marketplace/marketplace-service.ts
  *
- * MIG-305 dual-path note: live browser traffic stays on this Supabase adapter;
- * host catalog/download ports are wired via createHostMarketplaceAdapter when the
- * stack selects the host transport (see src/infrastructure/marketplace/index.ts).
+ * Dual-path (FE-HOST-08): Host HTTP when `VITE_SAGATREE_HOST_LIBRARY=1`.
+ * Host catalog/download ports also via createHostMarketplaceAdapter for tests.
  *
  * Client-trust (#675): mutations scope to authenticated author_id; update/create
  * DTOs are allowlisted — never spread rating/downloads/author_id from the client.
@@ -21,6 +20,16 @@ import type {
   UpdateMarketplaceItemDTO,
   MarketplaceFilters,
 } from '../../domains/marketplace/contracts/marketplace.types';
+import {
+  createHostMarketplaceItem,
+  deleteHostMarketplaceItem,
+  fetchHostFeaturedMarketplaceItems,
+  fetchHostMarketplaceItem,
+  fetchHostMarketplaceItems,
+  incrementHostMarketplaceDownloads,
+  isHostLibraryEnabled,
+  updateHostMarketplaceItem,
+} from '../host/host-catalog-http';
 
 /**
  * Get all marketplace items with optional filtering
@@ -28,6 +37,9 @@ import type {
 export async function getMarketplaceItems(
   filters?: MarketplaceFilters
 ): Promise<MarketplaceItem[]> {
+  if (isHostLibraryEnabled()) {
+    return fetchHostMarketplaceItems(filters);
+  }
   try {
     let query = supabase
       .from('marketplace_items')
@@ -75,6 +87,9 @@ export async function getMarketplaceItems(
  * Get a single marketplace item by ID
  */
 export async function getMarketplaceItemById(id: string): Promise<MarketplaceItem | null> {
+  if (isHostLibraryEnabled()) {
+    return fetchHostMarketplaceItem(id);
+  }
   try {
     const { data, error } = await supabase
       .from('marketplace_items')
@@ -100,6 +115,9 @@ export async function getMarketplaceItemById(id: string): Promise<MarketplaceIte
  * listings must not filter on client-impossible rating thresholds.
  */
 export async function getFeaturedItems(): Promise<MarketplaceItem[]> {
+  if (isHostLibraryEnabled()) {
+    return fetchHostFeaturedMarketplaceItems();
+  }
   try {
     const { data, error } = await supabase
       .from('marketplace_items')
@@ -125,6 +143,9 @@ export async function getFeaturedItems(): Promise<MarketplaceItem[]> {
 export async function createMarketplaceItem(
   dto: CreateMarketplaceItemDTO
 ): Promise<MarketplaceItem> {
+  if (isHostLibraryEnabled()) {
+    return createHostMarketplaceItem(whitelistMarketplaceCreateDto(dto));
+  }
   try {
     const userId = await getAuthenticatedUserId();
     const safe = whitelistMarketplaceCreateDto(dto);
@@ -165,6 +186,13 @@ export async function updateMarketplaceItem(
   id: string,
   dto: UpdateMarketplaceItemDTO
 ): Promise<MarketplaceItem> {
+  if (isHostLibraryEnabled()) {
+    const patch = whitelistMarketplaceUpdatePatch(dto);
+    if (Object.keys(patch).length === 0) {
+      throw new Error('Keine erlaubten Update-Felder');
+    }
+    return updateHostMarketplaceItem(id, patch);
+  }
   try {
     const userId = await getAuthenticatedUserId();
     const patch = whitelistMarketplaceUpdatePatch(dto);
@@ -205,6 +233,14 @@ export async function updateMarketplaceItem(
  * Delete a marketplace item (only if you're the author)
  */
 export async function deleteMarketplaceItem(id: string): Promise<boolean> {
+  if (isHostLibraryEnabled()) {
+    try {
+      await deleteHostMarketplaceItem(id);
+      return true;
+    } catch {
+      return false;
+    }
+  }
   try {
     const userId = await getAuthenticatedUserId();
 
@@ -238,6 +274,17 @@ export async function deleteMarketplaceItem(id: string): Promise<boolean> {
  * Counters are server-authority only — no client write fallback (#675).
  */
 export async function incrementDownloads(id: string): Promise<void> {
+  if (isHostLibraryEnabled()) {
+    try {
+      await incrementHostMarketplaceDownloads(id);
+    } catch (error) {
+      console.error(
+        'incrementHostMarketplaceDownloads failed (no client counter write):',
+        error instanceof Error ? error.message : error,
+      );
+    }
+    return;
+  }
   try {
     const { error } = await supabase.rpc('increment_marketplace_downloads', {
       item_id: id,

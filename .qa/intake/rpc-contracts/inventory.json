@@ -43045,8 +43045,16 @@
         "blockers": [],
         "sourceFiles": [
           {
+            "path": "src/infrastructure/host/host-catalog-http.ts",
+            "sha256": "a33c807b3bde9200f472b2d4d057d633960fba65fcf14b32e6f7053adb9c9f5a"
+          },
+          {
             "path": "src/infrastructure/marketplace/marketplace-service.ts",
-            "sha256": "01b4f9b1474046827459e2930c90fc80b0cde69a70fda0e6cc043be46454c18f"
+            "sha256": "52c856bd8d5be2885897e155ade57bfdfed1b8eb7e48fe6fb1376b8e1a5284e8"
+          },
+          {
+            "path": "src/lib/hostAuthBridge.ts",
+            "sha256": "925a7e9e9c7cd24fcce69f39d39f7b1250b354800b5188636be319acbf1fe702"
           },
           {
             "path": "src/lib/supabase.ts",
@@ -43098,22 +43106,79 @@
           "rpc": "increment_marketplace_downloads",
           "resolution": "string-literal",
           "path": "src/infrastructure/marketplace/marketplace-service.ts",
-          "line": 242,
-          "sourceSha256": "01b4f9b1474046827459e2930c90fc80b0cde69a70fda0e6cc043be46454c18f",
+          "line": 289,
+          "sourceSha256": "52c856bd8d5be2885897e155ade57bfdfed1b8eb7e48fe6fb1376b8e1a5284e8",
           "requestExpression": "{\n      item_id: id,\n    }",
           "requestKeys": [
             "item_id"
           ],
           "callExpression": "supabase.rpc('increment_marketplace_downloads', {\n      item_id: id,\n    })",
           "enclosingCallable": "incrementDownloads",
-          "callerContract": "export async function incrementDownloads(id: string): Promise<void> {\n  try {\n    const { error } = await supabase.rpc('increment_marketplace_downloads', {\n      item_id: id,\n    });\n\n    if (error) {\n      console.error(\n        'increment_marketplace_downloads RPC failed (no client counter write):',\n        error.message,\n      );\n    }\n  } catch (error) {\n    console.error('Error incrementing downloads:', error);\n  }\n}",
+          "callerContract": "export async function incrementDownloads(id: string): Promise<void> {\n  if (isHostLibraryEnabled()) {\n    try {\n      await incrementHostMarketplaceDownloads(id);\n    } catch (error) {\n      console.error(\n        'incrementHostMarketplaceDownloads failed (no client counter write):',\n        error instanceof Error ? error.message : error,\n      );\n    }\n    return;\n  }\n  try {\n    const { error } = await supabase.rpc('increment_marketplace_downloads', {\n      item_id: id,\n    });\n\n    if (error) {\n      console.error(\n        'increment_marketplace_downloads RPC failed (no client counter write):',\n        error.message,\n      );\n    }\n  } catch (error) {\n    console.error('Error incrementing downloads:', error);\n  }\n}",
           "imports": [
             "import { supabase } from '../../lib/supabase';",
             "import { getAuthenticatedUserId } from '../../lib/authenticatedUser';",
             "import {\n  whitelistMarketplaceCreateDto,\n  whitelistMarketplaceUpdatePatch,\n} from '../../domains/marketplace/client-trust';",
-            "import type {\n  MarketplaceItem,\n  CreateMarketplaceItemDTO,\n  UpdateMarketplaceItemDTO,\n  MarketplaceFilters,\n} from '../../domains/marketplace/contracts/marketplace.types';"
+            "import type {\n  MarketplaceItem,\n  CreateMarketplaceItemDTO,\n  UpdateMarketplaceItemDTO,\n  MarketplaceFilters,\n} from '../../domains/marketplace/contracts/marketplace.types';",
+            "import {\n  createHostMarketplaceItem,\n  deleteHostMarketplaceItem,\n  fetchHostFeaturedMarketplaceItems,\n  fetchHostMarketplaceItem,\n  fetchHostMarketplaceItems,\n  incrementHostMarketplaceDownloads,\n  isHostLibraryEnabled,\n  updateHostMarketplaceItem,\n} from '../host/host-catalog-http';"
           ],
           "supportingDeclarations": [
+            {
+              "name": "EnvLike",
+              "kind": "TypeAliasDeclaration",
+              "path": "src/infrastructure/host/host-catalog-http.ts",
+              "line": 18,
+              "sourceSha256": "a33c807b3bde9200f472b2d4d057d633960fba65fcf14b32e6f7053adb9c9f5a",
+              "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
+            },
+            {
+              "name": "defaultEnv",
+              "kind": "FunctionDeclaration",
+              "path": "src/infrastructure/host/host-catalog-http.ts",
+              "line": 23,
+              "sourceSha256": "a33c807b3bde9200f472b2d4d057d633960fba65fcf14b32e6f7053adb9c9f5a",
+              "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
+            },
+            {
+              "name": "hostJson",
+              "kind": "FunctionDeclaration",
+              "path": "src/infrastructure/host/host-catalog-http.ts",
+              "line": 31,
+              "sourceSha256": "a33c807b3bde9200f472b2d4d057d633960fba65fcf14b32e6f7053adb9c9f5a",
+              "source": "async function hostJson<T>(\n  path: string,\n  unreachableMessage: string,\n  init: RequestInit = {},\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      ...init,\n      credentials: 'include',\n      headers: {\n        Accept: 'application/json',\n        ...(init.body ? { 'Content-Type': 'application/json' } : {}),\n        ...(init.headers ?? {}),\n      },\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  let detail = '';\n  let json: unknown = null;\n  try {\n    json = await response.json();\n    if (json && typeof json === 'object' && 'error' in json) {\n      detail = String((json as { error: unknown }).error);\n    }\n  } catch {\n    json = null;\n  }\n  if (!response.ok) {\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  return json as T;\n}"
+            },
+            {
+              "name": "incrementHostMarketplaceDownloads",
+              "kind": "FunctionDeclaration",
+              "path": "src/infrastructure/host/host-catalog-http.ts",
+              "line": 172,
+              "sourceSha256": "a33c807b3bde9200f472b2d4d057d633960fba65fcf14b32e6f7053adb9c9f5a",
+              "source": "export async function incrementHostMarketplaceDownloads(\n  id: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<void> {\n  await hostJson(\n    `/api/v1/marketplace/items/${encodeURIComponent(id)}/download`,\n    'Download-Zähler fehlgeschlagen',\n    { method: 'POST' },\n    env,\n    fetchImpl,\n  );\n}"
+            },
+            {
+              "name": "EnvLike",
+              "kind": "TypeAliasDeclaration",
+              "path": "src/lib/hostAuthBridge.ts",
+              "line": 31,
+              "sourceSha256": "925a7e9e9c7cd24fcce69f39d39f7b1250b354800b5188636be319acbf1fe702",
+              "source": "type EnvLike = { readonly VITE_SAGATREE_HOST_AUTH_URL?: string };"
+            },
+            {
+              "name": "defaultEnv",
+              "kind": "FunctionDeclaration",
+              "path": "src/lib/hostAuthBridge.ts",
+              "line": 33,
+              "sourceSha256": "925a7e9e9c7cd24fcce69f39d39f7b1250b354800b5188636be319acbf1fe702",
+              "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
+            },
+            {
+              "name": "getHostAuthBaseUrl",
+              "kind": "FunctionDeclaration",
+              "path": "src/lib/hostAuthBridge.ts",
+              "line": 46,
+              "sourceSha256": "925a7e9e9c7cd24fcce69f39d39f7b1250b354800b5188636be319acbf1fe702",
+              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  return url.replace(/\\/$/, '');\n}"
+            },
             {
               "name": "viteEnv",
               "kind": "VariableDeclaration",
@@ -43320,8 +43385,16 @@
       "removedOverloads": [],
       "sourceFiles": [
         {
+          "path": "src/infrastructure/host/host-catalog-http.ts",
+          "sha256": "a33c807b3bde9200f472b2d4d057d633960fba65fcf14b32e6f7053adb9c9f5a"
+        },
+        {
           "path": "src/infrastructure/marketplace/marketplace-service.ts",
-          "sha256": "01b4f9b1474046827459e2930c90fc80b0cde69a70fda0e6cc043be46454c18f"
+          "sha256": "52c856bd8d5be2885897e155ade57bfdfed1b8eb7e48fe6fb1376b8e1a5284e8"
+        },
+        {
+          "path": "src/lib/hostAuthBridge.ts",
+          "sha256": "925a7e9e9c7cd24fcce69f39d39f7b1250b354800b5188636be319acbf1fe702"
         },
         {
           "path": "src/lib/supabase.ts",
@@ -68366,7 +68439,7 @@
         "sourceFiles": [
           {
             "path": "src/infrastructure/session/session-recap-ai-service.ts",
-            "sha256": "dffb89748b308636c99dee90d2af597de0a0fdbb995359bad085d6f799f5987d"
+            "sha256": "61b31d8ae8f680ac4755cf499b42b8da5f0ab5bf85edede1248de5d0e9a364f6"
           },
           {
             "path": "src/lib/networkTimeout.ts",
@@ -68503,8 +68576,8 @@
           "rpc": "save_session_recap_summary",
           "resolution": "string-literal",
           "path": "src/infrastructure/session/session-recap-ai-service.ts",
-          "line": 104,
-          "sourceSha256": "dffb89748b308636c99dee90d2af597de0a0fdbb995359bad085d6f799f5987d",
+          "line": 118,
+          "sourceSha256": "61b31d8ae8f680ac4755cf499b42b8da5f0ab5bf85edede1248de5d0e9a364f6",
           "requestExpression": "{\n        p_session_id: sessionId,\n        p_summary_text: summaryText,\n        p_status: status,\n      }",
           "requestKeys": [
             "p_session_id",
@@ -68513,26 +68586,27 @@
           ],
           "callExpression": "supabase.rpc('save_session_recap_summary', {\n        p_session_id: sessionId,\n        p_summary_text: summaryText,\n        p_status: status,\n      })",
           "enclosingCallable": "saveSummary",
-          "callerContract": "async saveSummary(\n    sessionId: string,\n    summaryText: string,\n    status: 'draft' | 'approved',\n  ): Promise<{ summaryText: string | null; summaryStatus: EpisodeSummaryStatus }> {\n    const { data, error } = await raceWithTimeoutReject(\n      supabase.rpc('save_session_recap_summary', {\n        p_session_id: sessionId,\n        p_summary_text: summaryText,\n        p_status: status,\n      }),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'Speichern Zeitüberschreitung',\n    );\n    if (error) {\n      throw new Error(error.message || 'Zusammenfassung konnte nicht gespeichert werden');\n    }\n    if (!isRecord(data)) {\n      return { summaryText, summaryStatus: status };\n    }\n    return {\n      summaryText: typeof data.summaryText === 'string' ? data.summaryText : summaryText,\n      summaryStatus:\n        data.summaryStatus === 'approved'\n          ? 'approved'\n          : data.summaryStatus === 'draft'\n            ? 'draft'\n            : 'none',\n    };\n  }",
+          "callerContract": "async saveSummary(\n    sessionId: string,\n    summaryText: string,\n    status: 'draft' | 'approved',\n  ): Promise<{ summaryText: string | null; summaryStatus: EpisodeSummaryStatus }> {\n    if (isHostLibraryEnabled()) {\n      throw new Error(\n        'Zusammenfassung speichern ist im Host-Modus noch nicht verfügbar.',\n      );\n    }\n    const { data, error } = await raceWithTimeoutReject(\n      supabase.rpc('save_session_recap_summary', {\n        p_session_id: sessionId,\n        p_summary_text: summaryText,\n        p_status: status,\n      }),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'Speichern Zeitüberschreitung',\n    );\n    if (error) {\n      throw new Error(error.message || 'Zusammenfassung konnte nicht gespeichert werden');\n    }\n    if (!isRecord(data)) {\n      return { summaryText, summaryStatus: status };\n    }\n    return {\n      summaryText: typeof data.summaryText === 'string' ? data.summaryText : summaryText,\n      summaryStatus:\n        data.summaryStatus === 'approved'\n          ? 'approved'\n          : data.summaryStatus === 'draft'\n            ? 'draft'\n            : 'none',\n    };\n  }",
           "imports": [
             "import { supabase } from '../../lib/supabase';",
-            "import { raceWithTimeoutReject, SUPABASE_QUERY_TIMEOUT_MS } from '../../lib/networkTimeout';"
+            "import { raceWithTimeoutReject, SUPABASE_QUERY_TIMEOUT_MS } from '../../lib/networkTimeout';",
+            "import { isHostLibraryEnabled } from '../host/host-session-http';"
           ],
           "supportingDeclarations": [
             {
               "name": "EpisodeSummaryStatus",
               "kind": "TypeAliasDeclaration",
               "path": "src/infrastructure/session/session-recap-ai-service.ts",
-              "line": 8,
-              "sourceSha256": "dffb89748b308636c99dee90d2af597de0a0fdbb995359bad085d6f799f5987d",
+              "line": 12,
+              "sourceSha256": "61b31d8ae8f680ac4755cf499b42b8da5f0ab5bf85edede1248de5d0e9a364f6",
               "source": "export type EpisodeSummaryStatus = 'none' | 'draft' | 'approved';"
             },
             {
               "name": "isRecord",
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/session/session-recap-ai-service.ts",
-              "line": 28,
-              "sourceSha256": "dffb89748b308636c99dee90d2af597de0a0fdbb995359bad085d6f799f5987d",
+              "line": 32,
+              "sourceSha256": "61b31d8ae8f680ac4755cf499b42b8da5f0ab5bf85edede1248de5d0e9a364f6",
               "source": "function isRecord(value: unknown): value is Record<string, unknown> {\n  return typeof value === 'object' && value !== null;\n}"
             },
             {
@@ -69670,7 +69744,7 @@
       "sourceFiles": [
         {
           "path": "src/infrastructure/session/session-recap-ai-service.ts",
-          "sha256": "dffb89748b308636c99dee90d2af597de0a0fdbb995359bad085d6f799f5987d"
+          "sha256": "61b31d8ae8f680ac4755cf499b42b8da5f0ab5bf85edede1248de5d0e9a364f6"
         },
         {
           "path": "src/lib/networkTimeout.ts",

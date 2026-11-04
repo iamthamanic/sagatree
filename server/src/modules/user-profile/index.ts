@@ -18,7 +18,7 @@ import { createUserAvatarStore } from './internal/user-avatar-store.ts';
 import { createUserProfileStore, type UserProfileRow } from './internal/user-profile-store.ts';
 
 /** Host user-profile ports are transport-free until MIG-600. */
-export const USER_PROFILE_PUBLIC_ACTIVATION_AUTHORIZED = false as const;
+export const USER_PROFILE_PUBLIC_ACTIVATION_AUTHORIZED = true as const;
 
 export {
   USER_AVATAR_MAX_BYTES,

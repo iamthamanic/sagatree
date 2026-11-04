@@ -49,7 +49,7 @@
     },
     {
       "path": "src/infrastructure/session/session-recap-ai-service.ts",
-      "sha256": "dffb89748b308636c99dee90d2af597de0a0fdbb995359bad085d6f799f5987d"
+      "sha256": "61b31d8ae8f680ac4755cf499b42b8da5f0ab5bf85edede1248de5d0e9a364f6"
     },
     {
       "path": "src/infrastructure/session/session-recap-service.ts",
@@ -868,8 +868,8 @@
       "kind": "edge",
       "name": "session-recap",
       "path": "src/infrastructure/session/session-recap-ai-service.ts",
-      "line": 76,
-      "endLine": 78,
+      "line": 85,
+      "endLine": 87,
       "resolution": "literal-or-constant",
       "expression": "supabase.functions.invoke('session-recap', {\n      body: { sessionId },\n    })",
       "chain": "supabase.functions.invoke('session-recap', {\n      body: { sessionId },\n    })",
@@ -879,17 +879,17 @@
       ],
       "enclosingOperation": {
         "path": "src/infrastructure/session/session-recap-ai-service.ts",
-        "line": 75,
-        "endLine": 96,
-        "text": "async generateDraft(sessionId: string): Promise<SessionRecapAiGenerateResult> {\n    const { data, error } = await supabase.functions.invoke('session-recap', {\n      body: { sessionId },\n    });\n    if (error) {\n      const serverMessage = await getFunctionErrorMessage(error);\n      throw new Error(\n        serverMessage ??\n          'Zusammenfassung konnte nicht generiert werden. Bitte manuell schreiben.',\n      );\n    }\n    const response = parseFunctionResponse(data);\n    if (response.status !== 'ok') {\n      throw new Error(response.message);\n    }\n    return {\n      summaryText: response.summaryText,\n      summaryStatus: response.summaryStatus === 'approved' ? 'approved' : 'draft',\n      provider: response.provider,\n      model: response.model,\n    };\n  }"
+        "line": 79,
+        "endLine": 105,
+        "text": "async generateDraft(sessionId: string): Promise<SessionRecapAiGenerateResult> {\n    if (isHostLibraryEnabled()) {\n      throw new Error(\n        'KI-Zusammenfassung ist im Host-Modus noch nicht verfügbar. Bitte manuell schreiben.',\n      );\n    }\n    const { data, error } = await supabase.functions.invoke('session-recap', {\n      body: { sessionId },\n    });\n    if (error) {\n      const serverMessage = await getFunctionErrorMessage(error);\n      throw new Error(\n        serverMessage ??\n          'Zusammenfassung konnte nicht generiert werden. Bitte manuell schreiben.',\n      );\n    }\n    const response = parseFunctionResponse(data);\n    if (response.status !== 'ok') {\n      throw new Error(response.message);\n    }\n    return {\n      summaryText: response.summaryText,\n      summaryStatus: response.summaryStatus === 'approved' ? 'approved' : 'draft',\n      provider: response.provider,\n      model: response.model,\n    };\n  }"
       }
     },
     {
       "kind": "rpc",
       "name": "save_session_recap_summary",
       "path": "src/infrastructure/session/session-recap-ai-service.ts",
-      "line": 104,
-      "endLine": 108,
+      "line": 118,
+      "endLine": 122,
       "resolution": "literal-or-constant",
       "expression": "supabase.rpc('save_session_recap_summary', {\n        p_session_id: sessionId,\n        p_summary_text: summaryText,\n        p_status: status,\n      })",
       "chain": "supabase.rpc('save_session_recap_summary', {\n        p_session_id: sessionId,\n        p_summary_text: summaryText,\n        p_status: status,\n      })",
@@ -899,9 +899,9 @@
       ],
       "enclosingOperation": {
         "path": "src/infrastructure/session/session-recap-ai-service.ts",
-        "line": 98,
-        "endLine": 127,
-        "text": "async saveSummary(\n    sessionId: string,\n    summaryText: string,\n    status: 'draft' | 'approved',\n  ): Promise<{ summaryText: string | null; summaryStatus: EpisodeSummaryStatus }> {\n    const { data, error } = await raceWithTimeoutReject(\n      supabase.rpc('save_session_recap_summary', {\n        p_session_id: sessionId,\n        p_summary_text: summaryText,\n        p_status: status,\n      }),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'Speichern Zeitüberschreitung',\n    );\n    if (error) {\n      throw new Error(error.message || 'Zusammenfassung konnte nicht gespeichert werden');\n    }\n    if (!isRecord(data)) {\n      return { summaryText, summaryStatus: status };\n    }\n    return {\n      summaryText: typeof data.summaryText === 'string' ? data.summaryText : summaryText,\n      summaryStatus:\n        data.summaryStatus === 'approved'\n          ? 'approved'\n          : data.summaryStatus === 'draft'\n            ? 'draft'\n            : 'none',\n    };\n  }"
+        "line": 107,
+        "endLine": 141,
+        "text": "async saveSummary(\n    sessionId: string,\n    summaryText: string,\n    status: 'draft' | 'approved',\n  ): Promise<{ summaryText: string | null; summaryStatus: EpisodeSummaryStatus }> {\n    if (isHostLibraryEnabled()) {\n      throw new Error(\n        'Zusammenfassung speichern ist im Host-Modus noch nicht verfügbar.',\n      );\n    }\n    const { data, error } = await raceWithTimeoutReject(\n      supabase.rpc('save_session_recap_summary', {\n        p_session_id: sessionId,\n        p_summary_text: summaryText,\n        p_status: status,\n      }),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'Speichern Zeitüberschreitung',\n    );\n    if (error) {\n      throw new Error(error.message || 'Zusammenfassung konnte nicht gespeichert werden');\n    }\n    if (!isRecord(data)) {\n      return { summaryText, summaryStatus: status };\n    }\n    return {\n      summaryText: typeof data.summaryText === 'string' ? data.summaryText : summaryText,\n      summaryStatus:\n        data.summaryStatus === 'approved'\n          ? 'approved'\n          : data.summaryStatus === 'draft'\n            ? 'draft'\n            : 'none',\n    };\n  }"
       }
     },
     {
@@ -1591,19 +1591,27 @@
     },
     {
       "path": "src/infrastructure/session/session-recap-ai-service.ts",
-      "line": 5,
-      "endLine": 5,
+      "line": 8,
+      "endLine": 8,
       "module": "../../lib/supabase",
       "resolvedPath": "src/lib/supabase.ts",
       "expression": "import { supabase } from '../../lib/supabase';"
     },
     {
       "path": "src/infrastructure/session/session-recap-ai-service.ts",
-      "line": 6,
-      "endLine": 6,
+      "line": 9,
+      "endLine": 9,
       "module": "../../lib/networkTimeout",
       "resolvedPath": "src/lib/networkTimeout.ts",
       "expression": "import { raceWithTimeoutReject, SUPABASE_QUERY_TIMEOUT_MS } from '../../lib/networkTimeout';"
+    },
+    {
+      "path": "src/infrastructure/session/session-recap-ai-service.ts",
+      "line": 10,
+      "endLine": 10,
+      "module": "../host/host-session-http",
+      "resolvedPath": "src/infrastructure/host/host-session-http.ts",
+      "expression": "import { isHostLibraryEnabled } from '../host/host-session-http';"
     },
     {
       "path": "src/infrastructure/session/session-recap-service.ts",
@@ -1971,20 +1979,20 @@
     },
     {
       "path": "src/infrastructure/session/session-recap-ai-service.ts",
-      "line": 8,
-      "endLine": 8,
+      "line": 12,
+      "endLine": 12,
       "text": "export type EpisodeSummaryStatus = 'none' | 'draft' | 'approved';"
     },
     {
       "path": "src/infrastructure/session/session-recap-ai-service.ts",
-      "line": 10,
-      "endLine": 15,
+      "line": 14,
+      "endLine": 19,
       "text": "export type SessionRecapAiGenerateResult = {\n  readonly summaryText: string;\n  readonly summaryStatus: EpisodeSummaryStatus;\n  readonly provider: string;\n  readonly model: string;\n};"
     },
     {
       "path": "src/infrastructure/session/session-recap-ai-service.ts",
-      "line": 130,
-      "endLine": 130,
+      "line": 144,
+      "endLine": 144,
       "text": "export const sessionRecapAiService = new SessionRecapAiService();"
     },
     {
@@ -2480,45 +2488,45 @@
     },
     {
       "path": "src/infrastructure/session/session-recap-ai-service.ts",
-      "line": 28,
-      "endLine": 30,
+      "line": 32,
+      "endLine": 34,
       "name": "isRecord",
       "text": "function isRecord(value: unknown): value is Record<string, unknown> {\n  return typeof value === 'object' && value !== null;\n}"
     },
     {
       "path": "src/infrastructure/session/session-recap-ai-service.ts",
-      "line": 32,
-      "endLine": 57,
+      "line": 36,
+      "endLine": 61,
       "name": "parseFunctionResponse",
       "text": "function parseFunctionResponse(value: unknown): FunctionResponse {\n  if (!isRecord(value) || typeof value.status !== 'string') {\n    return { status: 'error', message: 'Die KI-Antwort hatte ein ungültiges Format.' };\n  }\n  if (\n    value.status === 'ok' &&\n    typeof value.summaryText === 'string' &&\n    typeof value.provider === 'string' &&\n    typeof value.model === 'string'\n  ) {\n    return {\n      status: 'ok',\n      summaryText: value.summaryText,\n      summaryStatus: typeof value.summaryStatus === 'string' ? value.summaryStatus : 'draft',\n      provider: value.provider,\n      model: value.model,\n    };\n  }\n  if (\n    (value.status === 'not-configured' || value.status === 'error') &&\n    typeof value.message === 'string'\n  ) {\n    return { status: value.status, message: value.message };\n  }\n  return { status: 'error', message: 'Die KI-Antwort hatte ein ungültiges Format.' };\n}"
     },
     {
       "path": "src/infrastructure/session/session-recap-ai-service.ts",
-      "line": 59,
-      "endLine": 61,
+      "line": 63,
+      "endLine": 65,
       "name": "hasResponseContext",
       "text": "function hasResponseContext(error: unknown): error is { context: Response } {\n  return isRecord(error) && error.context instanceof Response;\n}"
     },
     {
       "path": "src/infrastructure/session/session-recap-ai-service.ts",
-      "line": 63,
-      "endLine": 72,
+      "line": 67,
+      "endLine": 76,
       "name": "getFunctionErrorMessage",
       "text": "async function getFunctionErrorMessage(error: unknown): Promise<string | undefined> {\n  if (!hasResponseContext(error)) return undefined;\n  try {\n    const responseBody: unknown = await error.context.clone().json();\n    const parsed = parseFunctionResponse(responseBody);\n    return parsed.status === 'ok' ? undefined : parsed.message;\n  } catch {\n    return undefined;\n  }\n}"
     },
     {
       "path": "src/infrastructure/session/session-recap-ai-service.ts",
-      "line": 75,
-      "endLine": 96,
+      "line": 79,
+      "endLine": 105,
       "name": "generateDraft",
-      "text": "async generateDraft(sessionId: string): Promise<SessionRecapAiGenerateResult> {\n    const { data, error } = await supabase.functions.invoke('session-recap', {\n      body: { sessionId },\n    });\n    if (error) {\n      const serverMessage = await getFunctionErrorMessage(error);\n      throw new Error(\n        serverMessage ??\n          'Zusammenfassung konnte nicht generiert werden. Bitte manuell schreiben.',\n      );\n    }\n    const response = parseFunctionResponse(data);\n    if (response.status !== 'ok') {\n      throw new Error(response.message);\n    }\n    return {\n      summaryText: response.summaryText,\n      summaryStatus: response.summaryStatus === 'approved' ? 'approved' : 'draft',\n      provider: response.provider,\n      model: response.model,\n    };\n  }"
+      "text": "async generateDraft(sessionId: string): Promise<SessionRecapAiGenerateResult> {\n    if (isHostLibraryEnabled()) {\n      throw new Error(\n        'KI-Zusammenfassung ist im Host-Modus noch nicht verfügbar. Bitte manuell schreiben.',\n      );\n    }\n    const { data, error } = await supabase.functions.invoke('session-recap', {\n      body: { sessionId },\n    });\n    if (error) {\n      const serverMessage = await getFunctionErrorMessage(error);\n      throw new Error(\n        serverMessage ??\n          'Zusammenfassung konnte nicht generiert werden. Bitte manuell schreiben.',\n      );\n    }\n    const response = parseFunctionResponse(data);\n    if (response.status !== 'ok') {\n      throw new Error(response.message);\n    }\n    return {\n      summaryText: response.summaryText,\n      summaryStatus: response.summaryStatus === 'approved' ? 'approved' : 'draft',\n      provider: response.provider,\n      model: response.model,\n    };\n  }"
     },
     {
       "path": "src/infrastructure/session/session-recap-ai-service.ts",
-      "line": 98,
-      "endLine": 127,
+      "line": 107,
+      "endLine": 141,
       "name": "saveSummary",
-      "text": "async saveSummary(\n    sessionId: string,\n    summaryText: string,\n    status: 'draft' | 'approved',\n  ): Promise<{ summaryText: string | null; summaryStatus: EpisodeSummaryStatus }> {\n    const { data, error } = await raceWithTimeoutReject(\n      supabase.rpc('save_session_recap_summary', {\n        p_session_id: sessionId,\n        p_summary_text: summaryText,\n        p_status: status,\n      }),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'Speichern Zeitüberschreitung',\n    );\n    if (error) {\n      throw new Error(error.message || 'Zusammenfassung konnte nicht gespeichert werden');\n    }\n    if (!isRecord(data)) {\n      return { summaryText, summaryStatus: status };\n    }\n    return {\n      summaryText: typeof data.summaryText === 'string' ? data.summaryText : summaryText,\n      summaryStatus:\n        data.summaryStatus === 'approved'\n          ? 'approved'\n          : data.summaryStatus === 'draft'\n            ? 'draft'\n            : 'none',\n    };\n  }"
+      "text": "async saveSummary(\n    sessionId: string,\n    summaryText: string,\n    status: 'draft' | 'approved',\n  ): Promise<{ summaryText: string | null; summaryStatus: EpisodeSummaryStatus }> {\n    if (isHostLibraryEnabled()) {\n      throw new Error(\n        'Zusammenfassung speichern ist im Host-Modus noch nicht verfügbar.',\n      );\n    }\n    const { data, error } = await raceWithTimeoutReject(\n      supabase.rpc('save_session_recap_summary', {\n        p_session_id: sessionId,\n        p_summary_text: summaryText,\n        p_status: status,\n      }),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'Speichern Zeitüberschreitung',\n    );\n    if (error) {\n      throw new Error(error.message || 'Zusammenfassung konnte nicht gespeichert werden');\n    }\n    if (!isRecord(data)) {\n      return { summaryText, summaryStatus: status };\n    }\n    return {\n      summaryText: typeof data.summaryText === 'string' ? data.summaryText : summaryText,\n      summaryStatus:\n        data.summaryStatus === 'approved'\n          ? 'approved'\n          : data.summaryStatus === 'draft'\n            ? 'draft'\n            : 'none',\n    };\n  }"
     },
     {
       "path": "src/infrastructure/session/session-recap-service.ts",
