@@ -287,11 +287,14 @@ export function mountSessionHttpRoutes(app: Hono, deps: SessionHttpDeps): void {
       if (!owned.value) {
         return c.json({ error: '42501' }, 403);
       }
+      if (owned.value.status !== 'active') {
+        return c.json({ error: '42501' }, 403);
+      }
     } else if (lookProfileId && !deps.look) {
       return c.json({ error: 'store-unavailable' }, 503);
     }
     const updated = infra.setSessionLookProfile(
-      actorResult.actor.actorId,
+      actorResult.actor,
       sessionId,
       lookProfileId,
     );

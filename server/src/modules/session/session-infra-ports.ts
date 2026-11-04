@@ -245,12 +245,15 @@ export function createSessionInfraPorts(session: SessionPortsForInfra) {
       return r.ok ? { ok: true, value: r.value } : { ok: false, error: r.error };
     },
     setSessionLookProfile(
-      actorId: string,
+      actorOrId: Actor | string,
       sessionId: string,
       lookProfileId: string | null,
     ): SessionInfraResult<Record<string, unknown>> {
+      // Prefer the resolved Actor so linkedSoloActorIds survive the infra bridge
+      // (asActor(id) alone drops linked solos and falsely 403s migrated owners).
+      const actor = typeof actorOrId === 'string' ? asActor(actorOrId) : actorOrId;
       const r = session.lifecycle.setSessionLookProfile(
-        asActor(actorId),
+        actor,
         sessionId,
         lookProfileId,
       );

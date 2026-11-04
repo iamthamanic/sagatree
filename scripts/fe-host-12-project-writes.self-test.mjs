@@ -208,6 +208,52 @@ try {
     `foreign look DENY ${foreignLook.res.status}`,
   );
 
+  const lookToArchive = await httpJson(baseURL, '/api/v1/library/looks', {
+    method: 'POST',
+    cookie: gmCookie,
+    headers: { Origin: baseURL },
+    body: {
+      displayName: 'Soon Archived',
+      source: 'manual',
+      capabilities: [],
+      executionModes: ['realtime'],
+      references: [],
+    },
+  });
+  assert(lookToArchive.res.status === 201, `look2 create ${lookToArchive.res.status}`);
+  const archivedLookId =
+    lookToArchive.json?.look?.profile?.id ||
+    lookToArchive.json?.look?.id ||
+    lookToArchive.json?.look?.profileId;
+  assert(typeof archivedLookId === 'string', 'archived look id');
+  const archiveRes = await httpJson(baseURL, `/api/v1/library/looks/${archivedLookId}/archive`, {
+    method: 'POST',
+    cookie: gmCookie,
+    headers: { Origin: baseURL },
+    body: {},
+  });
+  assert(archiveRes.res.status === 200, `look archive ${archiveRes.res.status} ${archiveRes.text}`);
+  const archivedBind = await httpJson(baseURL, `/api/v1/projects/${projectId}`, {
+    method: 'PATCH',
+    cookie: gmCookie,
+    headers: { Origin: baseURL },
+    body: { defaultLookProfileId: archivedLookId },
+  });
+  assert(
+    archivedBind.res.status === 403 || archivedBind.res.status === 404,
+    `archived look DENY ${archivedBind.res.status}`,
+  );
+  const archivedSessionLook = await httpJson(baseURL, `/api/v1/sessions/${sessionId}/look`, {
+    method: 'PATCH',
+    cookie: gmCookie,
+    headers: { Origin: baseURL },
+    body: { lookProfileId: archivedLookId },
+  });
+  assert(
+    archivedSessionLook.res.status === 403 || archivedSessionLook.res.status === 404,
+    `archived session look DENY ${archivedSessionLook.res.status}`,
+  );
+
   const sessionLook = await httpJson(baseURL, `/api/v1/sessions/${sessionId}/look`, {
     method: 'PATCH',
     cookie: gmCookie,

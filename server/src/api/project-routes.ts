@@ -159,6 +159,10 @@ async function assertOwnedLook(
   const loaded = look.getProfileById(actor, id);
   if (!loaded.ok) return { ok: false, status: infraStatus(loaded.error), error: loaded.error };
   if (!loaded.value) return { ok: false, status: 403, error: '42501' };
+  // Binding invariant: only active Look profiles may be set as project default.
+  if (loaded.value.status !== 'active') {
+    return { ok: false, status: 403, error: '42501' };
+  }
   return { ok: true };
 }
 
