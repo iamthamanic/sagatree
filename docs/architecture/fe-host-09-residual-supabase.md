@@ -14,7 +14,7 @@ via `assertHostProductSurfaceAvailable` / local stubs — never hang on PostgRES
 
 | Surface | Module | Severity | Notes |
 | --- | --- | --- | --- |
-| Saga definition RPC editor | `saga-definition-service.ts` | Medium | Host ports exist for tests; product HTTP not mounted |
+| Saga definition RPC editor | `saga-definition-service.ts` | Medium | DONE (FE-HOST-13) — host HTTP + FE dual-path; legacy DENY only when host library off |
 | Session outcome promote | `session-outcome-promotion-service.ts` | Low | Returns `{ ok: false, messageDe }` |
 | Look reference Edge analysis | `look-reference-analysis-service.ts` | Medium | Look CRUD already host; analysis Edge only |
 | Item thumbnail / model3d Edge | `item-thumbnail-service.ts`, `item-model3d-service.ts` | Medium | Inventory CRUD host; Meshy Edge residual |

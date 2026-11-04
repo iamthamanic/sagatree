@@ -39,6 +39,7 @@ import type { InventoryPorts } from '../modules/inventory/index.ts';
 import type { ProjectPorts } from '../modules/project/index.ts';
 import type { SessionInfraPorts } from '../modules/session/index.ts';
 import type { ProjectInfraPorts } from '../application/project-infra/index.ts';
+import type { SagaInfraPorts } from '../application/saga-infra/index.ts';
 import type { AssetPorts } from '../assets/index.ts';
 import type { MarketplacePorts } from '../modules/marketplace/index.ts';
 import type { RulesetPorts } from '../modules/rulesets/index.ts';
@@ -97,6 +98,8 @@ export type RouteRegistryDeps = {
   readonly project?: ProjectPorts | null;
   readonly sessionInfra?: SessionInfraPorts | null;
   readonly projectInfra?: ProjectInfraPorts | null;
+  /** FE-HOST-13 saga-definition authoring HTTP. */
+  readonly sagaInfra?: SagaInfraPorts | null;
   /** FE-HOST-06 local assets publish/get. */
   readonly assets?: AssetPorts | null;
   /** FE-HOST-08 catalog facades. */
@@ -157,6 +160,7 @@ export function createRouteHandler(deps: RouteRegistryDeps) {
     project: deps.project,
     sessionInfra: deps.sessionInfra,
     projectInfra: deps.projectInfra,
+    sagaInfra: deps.sagaInfra,
     assets: deps.assets,
     marketplace: deps.marketplace,
     rulesets: deps.rulesets,

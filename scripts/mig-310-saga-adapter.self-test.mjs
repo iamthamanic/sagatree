@@ -350,18 +350,25 @@ try {
     rmSync(hostWork, { recursive: true, force: true });
   }
 
-  // Client dual-path wiring + Supabase default remains
-  const serviceFiles = [
-    'saga-definition-service.ts',
-    'session-outcome-promotion-service.ts',
-  ];
-  for (const name of serviceFiles) {
-    const src = readFileSync(join(root, 'src/infrastructure/saga', name), 'utf8');
-    assert(/Dual-path \(MIG-310\)/.test(src), `dual-path note on ${name}`);
-    assert(/supabase\.rpc|from ['"].*supabase['"]/.test(src), `${name} uses supabase`);
-    const code = src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*$/gm, '');
-    assert(!/VITE_SAGATREE_HOST/i.test(code), `${name}: flags do not redirect facade`);
-  }
+  // Client dual-path wiring: saga-definition uses host HTTP under host-first (FE-HOST-13);
+  // session-outcome promote remains DENY / no flag redirect until its residual ticket.
+  const sagaDefSrc = readFileSync(
+    join(root, 'src/infrastructure/saga/saga-definition-service.ts'),
+    'utf8',
+  );
+  assert(/Dual-path \(MIG-310/.test(sagaDefSrc), 'dual-path note on saga-definition-service');
+  assert(/isHostLibraryEnabled/.test(sagaDefSrc), 'saga-definition host-first dual-path');
+  assert(/host-saga-definition-http/.test(sagaDefSrc), 'saga-definition host HTTP client');
+  assert(/supabase\.rpc|from ['"].*supabase['"]/.test(sagaDefSrc), 'saga-definition keeps legacy rpc');
+
+  const promoteSrc = readFileSync(
+    join(root, 'src/infrastructure/saga/session-outcome-promotion-service.ts'),
+    'utf8',
+  );
+  assert(/Dual-path \(MIG-310\)/.test(promoteSrc), 'dual-path note on promote service');
+  assert(/supabase\.rpc|from ['"].*supabase['"]/.test(promoteSrc), 'promote uses supabase');
+  const promoteCode = promoteSrc.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*$/gm, '');
+  assert(!/VITE_SAGATREE_HOST/i.test(promoteCode), 'promote: flags do not redirect facade');
   const adapterSrc = readFileSync(
     join(root, 'src/infrastructure/saga/host-saga-adapter.ts'),
     'utf8',
@@ -376,8 +383,8 @@ try {
 
   const createApp = readFileSync(join(root, 'server/src/api/create-app.ts'), 'utf8');
   assert(
-    !/mountSagaInfra|saga-infra-http|sagaInfraHttp/i.test(createApp),
-    'no saga-infra HTTP mount yet',
+    /mountSagaDefinitionHttpRoutes/.test(createApp),
+    'FE-HOST-13 mounts saga-definition HTTP',
   );
 
   db.close();

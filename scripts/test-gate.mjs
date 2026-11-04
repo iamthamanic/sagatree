@@ -1420,6 +1420,19 @@ function checkFeHost12ProjectWrites() {
   console.log('OK: fe-host-12-project-writes.self-test');
 }
 
+function checkFeHost13SagaDefinition() {
+  console.log('FE-HOST-13 saga-definition product HTTP (#1118)...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/fe-host-13-saga-definition.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+  console.log('OK: fe-host-13-saga-definition.self-test');
+}
+
 function checkMig312UserProfileAdapter() {
   console.log('MIG-312 user-profile adapter (#811): user_profiles + user-avatars dual-path...');
   execFileSync(
@@ -3635,6 +3648,7 @@ checkFeHost07ProductAuth();
 checkFeHost08CatalogHttp();
 checkFeHost09HostFirst();
 checkFeHost12ProjectWrites();
+checkFeHost13SagaDefinition();
 checkMig312UserProfileAdapter();
 checkMig309Rulesets();
 checkMig313WorldAdapter();

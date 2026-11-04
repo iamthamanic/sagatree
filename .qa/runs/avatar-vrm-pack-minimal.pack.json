@@ -1,6 +1,6 @@
 {
   "contractVersion": "SagaTreeAvatarVrmPackV1",
-  "packedAt": "2026-10-13T12:06:16.203Z",
+  "packedAt": "2026-11-04T17:17:57.822Z",
   "inputGlbPath": "/Users/halteverbotsocialmacpro/Desktop/arsvivai/2-DEV-PROJEKTE/sagatree/.qa/fixtures/avatar-vrm-pack/minimal-humanoid-face.glb",
   "inventoryPath": "/Users/halteverbotsocialmacpro/Desktop/arsvivai/2-DEV-PROJEKTE/sagatree/.qa/fixtures/avatar-vrm-pack/face-inventory.json",
   "rigPath": null,
@@ -13,8 +13,8 @@
   "humanoidBoneCount": 17,
   "expressionPresetCount": 2,
   "expressionCustomCount": 3,
-  "inputSha256": "77be1bf560e2b5603f6086de311c3c7de2598e3de9005ac858923452c833f68d",
-  "outputSha256": "93b40e3716c42592e869ae0942e723071e5eba5cec7e7aff094e2a4ac152fe72",
+  "inputSha256": "237546e4d68c3ff593ab9af654255451a36667c72b4d691d2701801cd183e913",
+  "outputSha256": "5047c54c5d42f56ee0b9619f1c558b6ff0bbf4cb766fdbfa382c47af9ef21a0a",
   "outputBytes": 3648,
   "inventoryProfile": "core-v1"
 }

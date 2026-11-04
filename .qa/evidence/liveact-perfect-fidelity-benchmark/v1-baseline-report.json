@@ -461,5 +461,5 @@
     "Dense contour / iris runtime NOT_MEASURED until #445/#446",
     "Camera→avatar latency NOT_MEASURED without acquisition timestamp (except latency fixture)"
   ],
-  "measuredAt": "2026-10-13T12:06:23.920Z"
+  "measuredAt": "2026-11-04T17:18:05.431Z"
 }

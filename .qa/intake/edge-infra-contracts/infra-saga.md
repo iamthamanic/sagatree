@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-saga.json](source-contracts/infra-saga.json) (SHA-256 `2d7ca466c89ba16ae3a60efbb1fee5da2112a7af61ffe83460e05fc598968199`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-saga.json](source-contracts/infra-saga.json) (SHA-256 `e19188c200aeeddc1c690e07b202f797e3a66155e189039c3baa42a39e5f26e5`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -68,37 +68,37 @@ None in the reviewed source.
 
 ### rpc: get_saga_definition_version
 
-`src/infrastructure/saga/saga-definition-service.ts:26` — literal-or-constant.
+`src/infrastructure/saga/saga-definition-service.ts:39` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
 supabase.rpc('get_saga_definition_version', { p_version_id: versionId })
 ```
 
-Enclosing operation: `src/infrastructure/saga/saga-definition-service.ts:23`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/saga/saga-definition-service.ts:33`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### rpc: get_native_saga_definition_by_slug
 
-`src/infrastructure/saga/saga-definition-service.ts:39` — literal-or-constant.
+`src/infrastructure/saga/saga-definition-service.ts:55` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
 supabase.rpc('get_native_saga_definition_by_slug', { p_slug: slug })
 ```
 
-Enclosing operation: `src/infrastructure/saga/saga-definition-service.ts:36`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/saga/saga-definition-service.ts:49`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### rpc: get_saga_definition_editor
 
-`src/infrastructure/saga/saga-definition-service.ts:52` — literal-or-constant.
+`src/infrastructure/saga/saga-definition-service.ts:71` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
 supabase.rpc('get_saga_definition_editor', { p_saga_id: sagaId })
 ```
 
-Enclosing operation: `src/infrastructure/saga/saga-definition-service.ts:49`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/saga/saga-definition-service.ts:65`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### rpc: save_saga_definition_draft
 
-`src/infrastructure/saga/saga-definition-service.ts:70` — literal-or-constant.
+`src/infrastructure/saga/saga-definition-service.ts:96` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -109,10 +109,10 @@ supabase.rpc('save_saga_definition_draft', {
       })
 ```
 
-Enclosing operation: `src/infrastructure/saga/saga-definition-service.ts:62`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/saga/saga-definition-service.ts:81`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### rpc: publish_saga_definition_version
 
-`src/infrastructure/saga/saga-definition-service.ts:97` — literal-or-constant.
+`src/infrastructure/saga/saga-definition-service.ts:126` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -122,20 +122,20 @@ supabase.rpc('publish_saga_definition_version', {
       })
 ```
 
-Enclosing operation: `src/infrastructure/saga/saga-definition-service.ts:91`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/saga/saga-definition-service.ts:117`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### rpc: copy_native_saga_definition
 
-`src/infrastructure/saga/saga-definition-service.ts:123` — literal-or-constant.
+`src/infrastructure/saga/saga-definition-service.ts:155` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
 supabase.rpc('copy_native_saga_definition', { p_source_saga_id: sourceSagaId })
 ```
 
-Enclosing operation: `src/infrastructure/saga/saga-definition-service.ts:120`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/saga/saga-definition-service.ts:149`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### rpc: create_user_saga_definition
 
-`src/infrastructure/saga/saga-definition-service.ts:146` — literal-or-constant.
+`src/infrastructure/saga/saga-definition-service.ts:181` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -145,10 +145,10 @@ supabase.rpc('create_user_saga_definition', {
       })
 ```
 
-Enclosing operation: `src/infrastructure/saga/saga-definition-service.ts:140`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/saga/saga-definition-service.ts:172`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### rpc: create_project_from_saga_version
 
-`src/infrastructure/saga/saga-definition-service.ts:173` — literal-or-constant.
+`src/infrastructure/saga/saga-definition-service.ts:211` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -159,10 +159,10 @@ supabase.rpc('create_project_from_saga_version', {
       })
 ```
 
-Enclosing operation: `src/infrastructure/saga/saga-definition-service.ts:166`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/saga/saga-definition-service.ts:201`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### rpc: duplicate_saga_playthrough
 
-`src/infrastructure/saga/saga-definition-service.ts:206` — literal-or-constant.
+`src/infrastructure/saga/saga-definition-service.ts:247` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -172,7 +172,7 @@ supabase.rpc('duplicate_saga_playthrough', {
       })
 ```
 
-Enclosing operation: `src/infrastructure/saga/saga-definition-service.ts:200`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/saga/saga-definition-service.ts:238`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### rpc: promote_session_outcome_to_saga
 
 `src/infrastructure/saga/session-outcome-promotion-service.ts:27` — finite-literal-union.
@@ -422,7 +422,7 @@ export const HOST_SAGA_OPS = [
 export type HostSagaOp = (typeof HOST_SAGA_OPS)[number];
 ```
 
-### src/infrastructure/saga/saga-definition-service.ts:231
+### src/infrastructure/saga/saga-definition-service.ts:272
 
 ```ts
 export const sagaDefinitionService = new SagaDefinitionService();
@@ -444,10 +444,13 @@ export const sessionOutcomePromotionService = {
 
 ## Remaining backend helper operations
 
-### src/infrastructure/saga/saga-definition-service.ts:23
+### src/infrastructure/saga/saga-definition-service.ts:33
 
 ```ts
 async getVersionById(versionId: string): Promise<SagaDefinitionVersionVm> {
+    if (isHostLibraryEnabled()) {
+      return parseSagaDefinitionVersion(await getHostSagaDefinitionVersion(versionId));
+    }
     assertHostProductSurfaceAvailable('Saga-Definitionen');
     const { data, error } = await raceWithTimeoutReject(
       supabase.rpc('get_saga_definition_version', { p_version_id: versionId }),
@@ -461,10 +464,13 @@ async getVersionById(versionId: string): Promise<SagaDefinitionVersionVm> {
   }
 ```
 
-### src/infrastructure/saga/saga-definition-service.ts:36
+### src/infrastructure/saga/saga-definition-service.ts:49
 
 ```ts
 async getNativeBySlug(slug: string): Promise<SagaDefinitionVersionVm> {
+    if (isHostLibraryEnabled()) {
+      return parseSagaDefinitionVersion(await getHostNativeSagaDefinitionBySlug(slug));
+    }
     assertHostProductSurfaceAvailable('Saga-Definitionen');
     const { data, error } = await raceWithTimeoutReject(
       supabase.rpc('get_native_saga_definition_by_slug', { p_slug: slug }),
@@ -478,10 +484,13 @@ async getNativeBySlug(slug: string): Promise<SagaDefinitionVersionVm> {
   }
 ```
 
-### src/infrastructure/saga/saga-definition-service.ts:49
+### src/infrastructure/saga/saga-definition-service.ts:65
 
 ```ts
 async getEditor(sagaId: string): Promise<SagaDefinitionEditorVm> {
+    if (isHostLibraryEnabled()) {
+      return parseSagaDefinitionEditor(await getHostSagaDefinitionEditor(sagaId));
+    }
     assertHostProductSurfaceAvailable('Saga-Definitionen');
     const { data, error } = await raceWithTimeoutReject(
       supabase.rpc('get_saga_definition_editor', { p_saga_id: sagaId }),
@@ -495,7 +504,7 @@ async getEditor(sagaId: string): Promise<SagaDefinitionEditorVm> {
   }
 ```
 
-### src/infrastructure/saga/saga-definition-service.ts:62
+### src/infrastructure/saga/saga-definition-service.ts:81
 
 ```ts
 async saveDraft(input: {
@@ -504,6 +513,13 @@ async saveDraft(input: {
     readonly expectedRevision: number;
   }): Promise<{ readonly revision: number; readonly versionId: string }> {
     const payload = draftToPayload(input.draft);
+    if (isHostLibraryEnabled()) {
+      return saveHostSagaDefinitionDraft({
+        sagaId: input.sagaId,
+        payload: payload as unknown as Record<string, unknown>,
+        expectedRevision: input.expectedRevision,
+      });
+    }
     assertHostProductSurfaceAvailable('Saga-Definitionen');
     const { data, error } = await raceWithTimeoutReject(
       supabase.rpc('save_saga_definition_draft', {
@@ -528,13 +544,16 @@ async saveDraft(input: {
   }
 ```
 
-### src/infrastructure/saga/saga-definition-service.ts:91
+### src/infrastructure/saga/saga-definition-service.ts:117
 
 ```ts
 async publishVersion(input: {
     readonly sagaId: string;
     readonly expectedRevision: number;
   }): Promise<{ readonly versionId: string; readonly versionLabel: string }> {
+    if (isHostLibraryEnabled()) {
+      return publishHostSagaDefinitionVersion(input);
+    }
     assertHostProductSurfaceAvailable('Saga-Definitionen');
     const { data, error } = await raceWithTimeoutReject(
       supabase.rpc('publish_saga_definition_version', {
@@ -561,10 +580,13 @@ async publishVersion(input: {
   }
 ```
 
-### src/infrastructure/saga/saga-definition-service.ts:120
+### src/infrastructure/saga/saga-definition-service.ts:149
 
 ```ts
 async createCopyFromNative(sourceSagaId: string): Promise<{ readonly sagaId: string }> {
+    if (isHostLibraryEnabled()) {
+      return copyHostNativeSagaDefinition(sourceSagaId);
+    }
     assertHostProductSurfaceAvailable('Saga-Definitionen');
     const { data, error } = await raceWithTimeoutReject(
       supabase.rpc('copy_native_saga_definition', { p_source_saga_id: sourceSagaId }),
@@ -585,13 +607,16 @@ async createCopyFromNative(sourceSagaId: string): Promise<{ readonly sagaId: str
   }
 ```
 
-### src/infrastructure/saga/saga-definition-service.ts:140
+### src/infrastructure/saga/saga-definition-service.ts:172
 
 ```ts
 async createUserSaga(input: {
     readonly title: string;
     readonly blurb?: string;
   }): Promise<{ readonly sagaId: string }> {
+    if (isHostLibraryEnabled()) {
+      return createHostUserSagaDefinition(input);
+    }
     assertHostProductSurfaceAvailable('Saga-Definitionen');
     const { data, error } = await raceWithTimeoutReject(
       supabase.rpc('create_user_saga_definition', {
@@ -615,7 +640,7 @@ async createUserSaga(input: {
   }
 ```
 
-### src/infrastructure/saga/saga-definition-service.ts:166
+### src/infrastructure/saga/saga-definition-service.ts:201
 
 ```ts
 async createProjectFromVersion(input: {
@@ -623,6 +648,9 @@ async createProjectFromVersion(input: {
     readonly versionId: string;
     readonly name?: string;
   }): Promise<{ readonly id: string; readonly publicId: string }> {
+    if (isHostLibraryEnabled()) {
+      return createHostProjectFromSagaVersion(input);
+    }
     assertHostProductSurfaceAvailable('Saga-Definitionen');
     const { data, error } = await raceWithTimeoutReject(
       supabase.rpc('create_project_from_saga_version', {
@@ -650,13 +678,16 @@ async createProjectFromVersion(input: {
   }
 ```
 
-### src/infrastructure/saga/saga-definition-service.ts:200
+### src/infrastructure/saga/saga-definition-service.ts:238
 
 ```ts
 async duplicatePlaythrough(input: {
     readonly projectId: string;
     readonly mode: 'fresh' | 'with_progress';
   }): Promise<{ readonly id: string; readonly publicId: string }> {
+    if (isHostLibraryEnabled()) {
+      return duplicateHostSagaPlaythrough(input);
+    }
     assertHostProductSurfaceAvailable('Saga-Definitionen');
     const { data, error } = await raceWithTimeoutReject(
       supabase.rpc('duplicate_saga_playthrough', {
@@ -722,9 +753,10 @@ async function callPromote(
 | `src/domains/session/contracts/session-outcome-promotion.ts` | `d3c26e886f5f1da3b617723feaad5510218d486413ea7953bbc382593578bedd` |
 | `src/infrastructure/host/host-library-http.ts` | `3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a` |
 | `src/infrastructure/host/host-product-deny.ts` | `69b148debc95006bb31daa7a94caf4e1507ac3089fdf399952102c4effa3759c` |
+| `src/infrastructure/host/host-saga-definition-http.ts` | `557415ec92bf596f4585559c45633b4fb48ce1d4295052bca021f84e7b122a59` |
 | `src/infrastructure/saga/host-saga-adapter.ts` | `7f0c52eaafcd6ee4f0deec9e5e4a5a282dc1d2ded67bd3a0e00a65636097aa62` |
 | `src/infrastructure/saga/host-saga-ports.contract.ts` | `c3734bbd18e4a04460915e128bbc2c46626934cf7bde76305918355f0ba85649` |
-| `src/infrastructure/saga/saga-definition-service.ts` | `5a5b280f5ba4e37d9d6153146d4f2d1629ac19a30f0c34fc8213a30638a92d79` |
+| `src/infrastructure/saga/saga-definition-service.ts` | `bff1c95f3554628b28ba1db530db0807bcd3351e8f76139730756e9b1a54fea3` |
 | `src/infrastructure/saga/session-outcome-promotion-service.ts` | `4c6214a1eaa4d4f25f9ae6b0a5052989fce08ed94139ac4701cbb65df5208a9d` |
 | `src/lib/hostAuthBridge.ts` | `30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a` |
 | `src/lib/networkTimeout.ts` | `835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851` |
