@@ -60,7 +60,9 @@ export function handleCorsPreflight(
   }
   applyCredentialedCorsHeaders(res, decision.origin);
   res.writeHead(204, {
-    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+    // PUT/PATCH/DELETE required for credentialed cross-origin product writes
+    // (e.g. FE-HOST-13 saga-definition draft PUT).
+    'Access-Control-Allow-Methods': 'GET, POST, PUT, PATCH, DELETE, OPTIONS',
     'Access-Control-Allow-Headers': 'content-type',
     'Access-Control-Max-Age': '600',
   });

@@ -89,6 +89,10 @@ async function hostMutateJson<T>(
     } catch {
       /* ignore */
     }
+    // Editor recovery looks for "revision" in the message (useSagaDefinitionEditor).
+    if (detail === '40001' || /40001|STALE_REVISION/i.test(detail)) {
+      throw new Error(`Revisionskonflikt (${detail || response.status})`);
+    }
     throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);
   }
   return (await response.json()) as T;
