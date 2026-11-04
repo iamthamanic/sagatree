@@ -1,6 +1,6 @@
 # Composition Gate — browser-host-fe-host-14 (#1119)
 
-- HEAD_SHA: b8bab3cbd08cfa0ec6d04b5c74e7ba7fa3a3c619
+- HEAD_SHA: a65ef27191f90cd3e47c9db0cd60aa50fb90b1aa
 - BASE_SHA: c48e7dbab9747167229b2e04faf01ca3ecd1faeb
 - Date: 2026-11-04
 - Verdict: CLEAR
@@ -27,7 +27,7 @@ soft-degraded without PostgREST hang.
 |------|----------|----------|--------|
 | N-actors | Stranger cannot save foreign session recap | self-test | pass |
 | Invalid/missing | Unauth profile batch → 401/403 | HTTP status | pass |
-| Two consumers | Batch returns peer profiles; missing ids omitted | catalog route | pass |
+| Two consumers / crash | Batch returns peer profiles; missing ids omitted | catalog route | pass |
 
 ## Flags
 
