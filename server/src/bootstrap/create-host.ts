@@ -324,7 +324,17 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
         })
       : createNpcCreaturePortsStub();
     const userProfile: UserProfilePorts = db
-      ? createUserProfilePorts({ db, dataDir: config.dataDir })
+      ? createUserProfilePorts({
+          db,
+          dataDir: config.dataDir,
+          // FE-HOST-08: authenticated display URL for AccountAvatarSection <img>.
+          signAvatarUrl: (path) => {
+            if (!path) return null;
+            const base = config.auth?.baseURL?.replace(/\/$/, '') ?? '';
+            if (!base) return null;
+            return `${base}/api/v1/user-profile/me/avatar`;
+          },
+        })
       : createUserProfilePortsStub();
     const ops = createOpsPorts({
       isReady: () => ready,

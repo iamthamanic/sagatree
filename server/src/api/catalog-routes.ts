@@ -328,28 +328,20 @@ export function mountCatalogHttpRoutes(app: Hono, deps: CatalogHttpDeps): void {
     if (!actorResult.ok) return c.json({ error: actorResult.error }, actorResult.status);
     const body = parsed.body && typeof parsed.body === 'object' ? (parsed.body as Record<string, unknown>) : {};
     const name = typeof body.name === 'string' ? body.name.trim() : '';
-    const attributes_config = body.attributes_config;
-    if (
-      !name ||
-      !attributes_config ||
-      typeof attributes_config !== 'object' ||
-      Array.isArray(attributes_config)
-    ) {
+    const attributesConfig = parseAttributesConfig(body.attributes_config);
+    if (!name || !attributesConfig) {
       return c.json({ error: 'invalid-payload' }, 400);
     }
-    const attrs = attributes_config as { primary?: unknown; derived?: unknown };
     const created = deps.rulesets.create(actorResult.actor, {
       name,
       description: typeof body.description === 'string' ? body.description : undefined,
       version: typeof body.version === 'string' ? body.version : undefined,
-      attributesConfig: {
-        primary: Array.isArray(attrs.primary)
-          ? attrs.primary.filter((x): x is string => typeof x === 'string')
-          : [],
-        derived: Array.isArray(attrs.derived)
-          ? attrs.derived.filter((x): x is string => typeof x === 'string')
-          : [],
-      },
+      attributesConfig,
+      skillsConfig: parseSkillsConfig(body.skills_config),
+      classesConfig: parseClassesConfig(body.classes_config),
+      racesConfig: parseRacesConfig(body.races_config),
+      combatRules: parseRecordObject(body.combat_rules),
+      diceRules: parseRecordObject(body.dice_rules),
       isPublic: body.is_public === true,
     });
     if (!created.ok) return c.json({ error: created.error }, portStatus(created.error));
@@ -374,6 +366,12 @@ export function mountCatalogHttpRoutes(app: Hono, deps: CatalogHttpDeps): void {
         body.version === null || typeof body.version === 'string'
           ? (body.version as string | null)
           : undefined,
+      attributesConfig: parseAttributesConfig(body.attributes_config) ?? undefined,
+      skillsConfig: parseSkillsConfig(body.skills_config),
+      classesConfig: parseClassesConfig(body.classes_config),
+      racesConfig: parseRacesConfig(body.races_config),
+      combatRules: parseRecordObject(body.combat_rules),
+      diceRules: parseRecordObject(body.dice_rules),
       isPublic: typeof body.is_public === 'boolean' ? body.is_public : undefined,
     });
     if (!updated.ok) return c.json({ error: updated.error }, portStatus(updated.error));
@@ -426,4 +424,88 @@ export function mountCatalogHttpRoutes(app: Hono, deps: CatalogHttpDeps): void {
     if (!uploaded.ok) return c.json({ error: uploaded.error }, portStatus(uploaded.error));
     return c.json({ profile: uploaded.value }, 200);
   });
+
+  app.get('/api/v1/user-profile/me/avatar', async (c) => {
+    if (!deps.userProfile) return c.json({ error: 'not-configured' }, 503);
+    const actorResult = await resolveCatalogActor(deps, c.req.raw.headers);
+    if (!actorResult.ok) return c.json({ error: actorResult.error }, actorResult.status);
+    const got = deps.userProfile.readOwnAvatarBytes(actorResult.actor);
+    if (!got.ok) return c.json({ error: got.error }, portStatus(got.error));
+    return new Response(got.value.bytes, {
+      status: 200,
+      headers: {
+        'content-type': got.value.contentType,
+        'cache-control': 'private, max-age=60',
+      },
+    });
+  });
+}
+
+function parseAttributesConfig(
+  raw: unknown,
+): { primary: string[]; derived: string[] } | null {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null;
+  const attrs = raw as { primary?: unknown; derived?: unknown };
+  return {
+    primary: Array.isArray(attrs.primary)
+      ? attrs.primary.filter((x): x is string => typeof x === 'string')
+      : [],
+    derived: Array.isArray(attrs.derived)
+      ? attrs.derived.filter((x): x is string => typeof x === 'string')
+      : [],
+  };
+}
+
+function parseSkillsConfig(
+  raw: unknown,
+): { name: string; ability: string }[] | undefined {
+  if (!Array.isArray(raw)) return undefined;
+  const out: { name: string; ability: string }[] = [];
+  for (const item of raw) {
+    if (!item || typeof item !== 'object' || Array.isArray(item)) continue;
+    const row = item as { name?: unknown; ability?: unknown };
+    if (typeof row.name === 'string' && typeof row.ability === 'string') {
+      out.push({ name: row.name, ability: row.ability });
+    }
+  }
+  return out;
+}
+
+function parseClassesConfig(
+  raw: unknown,
+): { name: string; hit_die: string }[] | undefined {
+  if (!Array.isArray(raw)) return undefined;
+  const out: { name: string; hit_die: string }[] = [];
+  for (const item of raw) {
+    if (!item || typeof item !== 'object' || Array.isArray(item)) continue;
+    const row = item as { name?: unknown; hit_die?: unknown };
+    if (typeof row.name === 'string' && typeof row.hit_die === 'string') {
+      out.push({ name: row.name, hit_die: row.hit_die });
+    }
+  }
+  return out;
+}
+
+function parseRacesConfig(
+  raw: unknown,
+): { name: string; speed: number; size: string }[] | undefined {
+  if (!Array.isArray(raw)) return undefined;
+  const out: { name: string; speed: number; size: string }[] = [];
+  for (const item of raw) {
+    if (!item || typeof item !== 'object' || Array.isArray(item)) continue;
+    const row = item as { name?: unknown; speed?: unknown; size?: unknown };
+    if (
+      typeof row.name === 'string' &&
+      typeof row.speed === 'number' &&
+      typeof row.size === 'string'
+    ) {
+      out.push({ name: row.name, speed: row.speed, size: row.size });
+    }
+  }
+  return out;
+}
+
+function parseRecordObject(raw: unknown): Record<string, unknown> | undefined {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return undefined;
+  return raw as Record<string, unknown>;
 }

@@ -192,6 +192,11 @@ try {
     body: {
       name: 'Host Homebrew',
       attributes_config: { primary: ['STR'], derived: ['HP'] },
+      skills_config: [{ name: 'Athletik', ability: 'STR' }],
+      classes_config: [{ name: 'Krieger', hit_die: 'd10' }],
+      races_config: [{ name: 'Mensch', speed: 30, size: 'medium' }],
+      combat_rules: { initiative: 'dex' },
+      dice_rules: { explode: false },
       is_public: false,
     },
   });
@@ -199,6 +204,12 @@ try {
   const rulesetId = rsCreated.json?.ruleset?.id;
   assert(typeof rulesetId === 'string', 'ruleset id');
   assert(rsCreated.json.ruleset.is_official === false, 'custom not official');
+  assert(
+    Array.isArray(rsCreated.json.ruleset.skills_config) &&
+      rsCreated.json.ruleset.skills_config[0]?.name === 'Athletik',
+    'skills preserved',
+  );
+  assert(rsCreated.json.ruleset.combat_rules?.initiative === 'dex', 'combat_rules preserved');
 
   const rsList = await httpJson(baseURL, '/api/v1/rulesets', {
     cookie: ownerCookie,
@@ -221,9 +232,23 @@ try {
     method: 'PATCH',
     cookie: ownerCookie,
     headers: { Origin: baseURL },
-    body: { name: 'Host Homebrew+', is_public: true },
+    body: {
+      name: 'Host Homebrew+',
+      is_public: true,
+      attributes_config: { primary: ['STR', 'DEX'], derived: ['HP'] },
+      skills_config: [
+        { name: 'Athletik', ability: 'STR' },
+        { name: 'Akrobatik', ability: 'DEX' },
+      ],
+    },
   });
   assert(rsPatch.res.status === 200 && rsPatch.json?.ruleset?.name === 'Host Homebrew+', 'ruleset update');
+  assert(
+    Array.isArray(rsPatch.json.ruleset.attributes_config?.primary) &&
+      rsPatch.json.ruleset.attributes_config.primary.includes('DEX'),
+    'attributes_config patch',
+  );
+  assert(rsPatch.json.ruleset.skills_config?.length === 2, 'skills_config patch');
 
   const rsHijack = await httpJson(baseURL, `/api/v1/rulesets/${rulesetId}`, {
     method: 'PATCH',
@@ -270,6 +295,18 @@ try {
     avatar.json?.profile?.avatarPath !== null && avatar.json.profile.avatarPath !== undefined,
     'avatar path stored',
   );
+  assert(
+    typeof avatar.json.profile.avatarUrl === 'string' &&
+      avatar.json.profile.avatarUrl.includes('/api/v1/user-profile/me/avatar'),
+    `avatarUrl display ${avatar.json.profile.avatarUrl}`,
+  );
+  const avatarGet = await fetch(avatar.json.profile.avatarUrl, {
+    headers: { cookie: ownerCookie, Origin: baseURL },
+  });
+  assert(avatarGet.status === 200, `avatar get ${avatarGet.status}`);
+  assert((avatarGet.headers.get('content-type') || '').startsWith('image/png'), 'avatar content-type');
+  const avatarBytes = Buffer.from(await avatarGet.arrayBuffer());
+  assert(avatarBytes.equals(PNG_BYTES), 'avatar bytes round-trip');
 
   // Claimed foreign owner id DENY
   const claimed = await httpJson(baseURL, '/api/v1/user-profile/me/avatars', {

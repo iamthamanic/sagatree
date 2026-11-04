@@ -5,7 +5,7 @@
  * Bucket parity with Supabase `user-avatars`. Path prefix is owner-scoped;
  * object deletion is best-effort and separate from profile row updates.
  */
-import { mkdirSync, unlinkSync, writeFileSync, existsSync } from 'node:fs';
+import { mkdirSync, unlinkSync, writeFileSync, existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { assertOwnerScopedAvatarPath } from './user-avatar-mime.ts';
 
@@ -67,6 +67,25 @@ export function createUserAvatarStore(dataDir: string) {
       const resolved = resolveUnderAvatarsRoot(avatarsRoot, relativePath);
       if (!resolved.ok) return false;
       return existsSync(resolved.absolute);
+    },
+
+    readOwnerObject(
+      ownerUserId: string,
+      relativePath: string,
+    ): { ok: true; bytes: Uint8Array } | { ok: false; error: string } {
+      try {
+        assertOwnerScopedAvatarPath(relativePath, ownerUserId);
+      } catch {
+        return { ok: false, error: 'not-authorized' };
+      }
+      const resolved = resolveUnderAvatarsRoot(avatarsRoot, relativePath);
+      if (!resolved.ok) return resolved;
+      if (!existsSync(resolved.absolute)) return { ok: false, error: 'not-found' };
+      try {
+        return { ok: true, bytes: new Uint8Array(readFileSync(resolved.absolute)) };
+      } catch {
+        return { ok: false, error: 'not-found' };
+      }
     },
   };
 }
