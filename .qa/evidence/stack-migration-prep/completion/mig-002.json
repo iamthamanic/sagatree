@@ -3,7 +3,6 @@
   "kind": "migration-acceptance",
   "localId": "MIG-002",
   "result": "PASS",
-  "testedCommit": "c48e7dbab9747167229b2e04faf01ca3ecd1faeb",
   "githubClosed": true,
   "mergeRef": "PR #860 → main (after #782)",
   "note": "Completion requires merge SHA + hashed check artifacts. Inventories refreshed after FE-HOST-14 AI residual host successors.",
@@ -26,5 +25,6 @@
       "evidenceFile": ".qa/intake/edge-infra-contracts/inventory.json",
       "sha256": "0ab23367499dfcf1b32973d100e4af558a94494d800154a85784d5ca348b0b3b"
     }
-  ]
+  ],
+  "testedCommit": "31e43e15bbe01d9d8b67245b90faf37c5fe899ca"
 }
