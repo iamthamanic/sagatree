@@ -43,10 +43,25 @@ export function isHostAuthBridgeEnabled(env: EnvLike = defaultEnv()): boolean {
   return typeof url === 'string' && url.trim().length > 0;
 }
 
+/**
+ * Resolve the host auth HTTP base.
+ * - Absolute URL (e.g. `http://127.0.0.1:8787`) for direct host calls.
+ * - `same-origin` / `.` → page origin (use with Vite `/api` proxy) so session
+ *   cookies stay first-party. Mixing `localhost` FE with `127.0.0.1` host
+ *   makes SameSite=Lax cookies invisible to `/api/whoami` → "Sitzung nicht aktiv".
+ */
 export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {
   const url = env.VITE_SAGATREE_HOST_AUTH_URL;
   if (typeof url !== 'string' || !url.trim()) return null;
-  return url.replace(/\/$/, '');
+  const trimmed = url.trim().replace(/\/$/, '');
+  if (trimmed === 'same-origin' || trimmed === '.') {
+    if (typeof window !== 'undefined' && typeof window.location?.origin === 'string') {
+      return window.location.origin;
+    }
+    // Node / Vitest: enabled, relative `/api/...` paths.
+    return '';
+  }
+  return trimmed;
 }
 
 /**
@@ -168,6 +183,51 @@ async function hostAuthJson(
   return raw;
 }
 
+/**
+ * MIG-015: Dornhain/default catalog is seeded under the host solo actor.
+ * After Better Auth login, link that solo id so Library/World/Saga lists see it.
+ * Idempotent; soft-fails (ACCOUNT_LINK_TAKEN when another remote already claimed).
+ */
+export async function ensureHostSoloAccountLinked(
+  fetchImpl: typeof fetch = fetch,
+  env: EnvLike = defaultEnv(),
+): Promise<void> {
+  const base = getHostAuthBaseUrl(env);
+  if (base === null) return;
+  let identityRaw: unknown;
+  try {
+    const response = await fetchImpl(`${base}/api/solo/identity`, {
+      method: 'GET',
+      credentials: 'include',
+      headers: { Accept: 'application/json' },
+    });
+    if (!response.ok) return;
+    identityRaw = await response.json();
+  } catch {
+    return;
+  }
+  if (!identityRaw || typeof identityRaw !== 'object') return;
+  const identity = identityRaw as {
+    soloActorId?: unknown;
+    linked?: unknown;
+  };
+  if (identity.linked === true) return;
+  const soloActorId =
+    typeof identity.soloActorId === 'string' ? identity.soloActorId.trim() : '';
+  if (!soloActorId) return;
+  try {
+    await hostAuthJson(
+      '/api/solo/link-account',
+      { soloActorId, confirm: true },
+      'Solo-Account-Link fehlgeschlagen',
+      fetchImpl,
+      env,
+    );
+  } catch {
+    /* ACCOUNT_LINK_TAKEN / mismatch — Library stays empty until resolved */
+  }
+}
+
 /** Better Auth email/password sign-in — sets HttpOnly session cookie. */
 export async function signInHostEmail(
   email: string,
@@ -183,7 +243,12 @@ export async function signInHostEmail(
     env,
   );
   const actor = await probeHostActor(fetchImpl, env);
-  if (!actor) throw new Error('Host-Anmeldung: Sitzung nicht aktiv');
+  if (!actor) {
+    throw new Error(
+      'Host-Anmeldung: Sitzung nicht aktiv. FE und Host müssen denselben Hostnamen nutzen (beide 127.0.0.1 oder beide localhost) — oder VITE_SAGATREE_HOST_AUTH_URL=same-origin mit Vite-/api-Proxy.',
+    );
+  }
+  await ensureHostSoloAccountLinked(fetchImpl, env);
   return actor;
 }
 

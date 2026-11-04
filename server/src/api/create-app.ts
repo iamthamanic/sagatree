@@ -119,6 +119,30 @@ export function createHostApi(deps: HostApiDeps): Hono {
     return c.json(actorToWhoamiDto(resolved.actor), 200);
   });
 
+  /** Solo host identity for explicit account-link (MIG-015). Cookie session required. */
+  app.get('/api/solo/identity', async (c) => {
+    const resolved = await deps.identity.resolveRemoteSession(c.req.raw.headers, {
+      allowSameOriginRead: true,
+    });
+    if (!resolved.ok) {
+      return c.json({ error: resolved.code }, authDenyStatus(resolved.code));
+    }
+    const solo = deps.identity.resolveSoloActor();
+    const linked =
+      resolved.actor.kind === 'remote-account' && Array.isArray(resolved.actor.linkedSoloActorIds)
+        ? resolved.actor.linkedSoloActorIds
+        : [];
+    return c.json(
+      {
+        ok: true,
+        soloActorId: solo.actorId,
+        linked: linked.includes(solo.actorId),
+        linkedSoloActorIds: linked,
+      },
+      200,
+    );
+  });
+
   app.post('/api/solo/link-account', async (c) => {
     const parsed = await readJsonSafe(c);
     if (!parsed.ok) {

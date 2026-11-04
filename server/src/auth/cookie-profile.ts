@@ -81,11 +81,12 @@ export async function createCookieAuthProfile(
     baseURL: config.baseURL,
     secret: config.secret,
     trustedOrigins: [...config.trustedOrigins],
-    // Match LoginScreen minLength=6 (GoTrue default) so host signup UX stays aligned.
+    // Align with DEV demo shortcut `admin`/`player1` + `1234` (FE-HOST-09 host-first).
+    // Signup UI still suggests 6+ chars; Better Auth must accept the documented demo password.
     emailAndPassword: {
       enabled: true,
       requireEmailVerification: false,
-      minPasswordLength: 6,
+      minPasswordLength: 4,
     },
     session: { cookieCache: { enabled: false } },
     advanced: {

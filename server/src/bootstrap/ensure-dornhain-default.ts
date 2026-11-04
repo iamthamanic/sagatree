@@ -8,7 +8,6 @@
 import { createHash, randomUUID } from 'node:crypto';
 import type { HostDatabase } from '../persistence/index.ts';
 import {
-  applyDornhainCatalogToHost,
   dornhainFixtureCatalog,
   DORHAIN_SLUG,
   DORHAIN_WORLD_TITLE,
@@ -61,6 +60,37 @@ function findOwnedSagaId(db: HostDatabase, ownerUserId: string): string | null {
   return row?.id ?? null;
 }
 
+/** Slug is globally unique — reuse the host Dornhain definition across actors. */
+function findSagaIdBySlug(db: HostDatabase, slug: string): string | null {
+  const row = db
+    .prepare(
+      `SELECT id FROM saga_definitions WHERE slug = ? ORDER BY created_at ASC LIMIT 1`,
+    )
+    .get(slug) as { id: string } | undefined;
+  return row?.id ?? null;
+}
+
+/** Solo boot keeps fixture ids; remote actors get owner-scoped ids (no REPLACE steal). */
+function scopedCatalogId(ownerUserId: string, stableId: string): string {
+  if (ownerUserId.startsWith('solo-')) return stableId;
+  const digest = createHash('sha256')
+    .update(`${ownerUserId}:${stableId}`)
+    .digest('hex')
+    .slice(0, 12);
+  return `${stableId}__${digest}`;
+}
+
+function scopedPublicId(ownerUserId: string, publicId: string): string {
+  if (ownerUserId.startsWith('solo-')) return publicId;
+  const digest = createHash('sha256')
+    .update(`${ownerUserId}:${publicId}`)
+    .digest('hex')
+    .slice(0, 6)
+    .toUpperCase();
+  const base = publicId.length <= 10 ? publicId : publicId.slice(0, 10);
+  return `${base}-${digest}`;
+}
+
 function seedCharacterSheets(
   db: HostDatabase,
   ownerUserId: string,
@@ -78,22 +108,107 @@ function seedCharacterSheets(
       race: labels.raceLabel,
       classLabel: labels.classLabel,
       raceLabel: labels.raceLabel,
+      nativeTag: 'SagaTree Native',
+      sagaSlug: DORHAIN_SLUG,
     };
-    // Never REPLACE — preserve user edits / imported rows that reuse the stable id.
+    const id = scopedCatalogId(ownerUserId, ch.id);
+    const publicId = scopedPublicId(ownerUserId, ch.publicId);
+    // Never REPLACE across owners — scoped ids keep admin + player copies distinct.
     db.prepare(
       `INSERT OR IGNORE INTO characters
        (id, owner_user_id, character_type, sheet_status, name, created_at, public_id,
         updated_at, description, level, sheet_json, portrait_storage_path, deleted_at)
        VALUES (?, ?, 'pc', 'complete', ?, ?, ?, ?, ?, 1, ?, NULL, NULL)`,
     ).run(
-      ch.id,
+      id,
       ownerUserId,
       ch.displayName,
       now,
-      ch.publicId,
+      publicId,
       now,
       ch.archetype,
       JSON.stringify(sheet),
+    );
+  }
+}
+
+/** Owner-scoped catalog apply (avoids INSERT OR REPLACE stealing solo fixture rows). */
+function applyOwnedDornhainCatalog(
+  db: HostDatabase,
+  ownerUserId: string,
+  worldId: string,
+  catalog: DornhainCatalog,
+  now: string,
+): void {
+  seedCharacterSheets(db, ownerUserId, catalog, now);
+
+  for (const itemId of catalog.itemDefinitionIds) {
+    const id = scopedCatalogId(ownerUserId, itemId);
+    const publicId = scopedPublicId(
+      ownerUserId,
+      `IT-${itemId.replace(/^dh-item-/, 'DH').toUpperCase()}`,
+    );
+    db.prepare(
+      `INSERT OR IGNORE INTO inventory_item_definitions
+       (id, public_id, origin, owner_user_id, world_profile_id, status, name, payload_json, created_at, updated_at)
+       VALUES (?, ?, 'world', ?, ?, 'active', ?, ?, ?, ?)`,
+    ).run(
+      id,
+      publicId,
+      ownerUserId,
+      worldId,
+      itemId,
+      JSON.stringify({ nativeTag: 'SagaTree Native', sagaSlug: DORHAIN_SLUG }),
+      now,
+      now,
+    );
+  }
+
+  for (const mon of catalog.monsters) {
+    const id = scopedCatalogId(ownerUserId, mon.id);
+    db.prepare(
+      `INSERT OR IGNORE INTO npc_creature_definitions
+       (id, scope, owner_user_id, world_profile_id, status, payload, created_at, updated_at, public_id)
+       VALUES (?, 'world', ?, ?, 'active', ?, ?, ?, ?)`,
+    ).run(
+      id,
+      ownerUserId,
+      worldId,
+      JSON.stringify({
+        kind: 'monster',
+        publicId: scopedPublicId(ownerUserId, mon.publicId),
+        displayName: mon.displayName,
+        nativeTag: 'SagaTree Native',
+        sagaSlug: DORHAIN_SLUG,
+      }),
+      now,
+      now,
+      scopedPublicId(ownerUserId, mon.publicId),
+    );
+  }
+
+  for (const [index, publicId] of catalog.npcPublicIds.entries()) {
+    const stable = `dh-npc-def-${index + 1}`;
+    const id = scopedCatalogId(ownerUserId, stable);
+    const scopedPub = scopedPublicId(ownerUserId, publicId);
+    db.prepare(
+      `INSERT OR IGNORE INTO npc_creature_definitions
+       (id, scope, owner_user_id, world_profile_id, status, payload, created_at, updated_at, public_id)
+       VALUES (?, 'world', ?, ?, 'active', ?, ?, ?, ?)`,
+    ).run(
+      id,
+      ownerUserId,
+      worldId,
+      JSON.stringify({
+        kind: 'npc',
+        publicId: scopedPub,
+        displayName: publicId,
+        nativeTag: 'SagaTree Native',
+        sagaSlug: DORHAIN_SLUG,
+      }),
+      now,
+      now,
+      scopedPub,
     );
   }
 }
@@ -144,20 +259,22 @@ export function ensureDornhainDefaultCatalog(
   const now = new Date().toISOString();
 
   const existingWorldId = findOwnedWorldId(db, ownerUserId);
-  const existingSagaId = findOwnedSagaId(db, ownerUserId);
-  if (existingWorldId && existingSagaId) {
-    applyDornhainCatalogToHost(db, ownerUserId, existingWorldId, catalog, now);
-    seedCharacterSheets(db, ownerUserId, catalog, now);
+  const ownedSagaId = findOwnedSagaId(db, ownerUserId);
+  const sharedSagaId = findSagaIdBySlug(db, catalog.sagaSlug);
+  const sagaId = ownedSagaId ?? sharedSagaId;
+
+  if (existingWorldId && sagaId) {
+    applyOwnedDornhainCatalog(db, ownerUserId, existingWorldId, catalog, now);
     const projectId =
       findOwnedProjectId(db, ownerUserId, existingWorldId) ??
-      createDornhainProject(db, ownerUserId, existingWorldId, existingSagaId, now);
+      createDornhainProject(db, ownerUserId, existingWorldId, sagaId, now);
     return { seeded: false, worldId: existingWorldId, projectId };
   }
 
   const worldId = existingWorldId ?? randomUUID();
-  const sagaId = existingSagaId ?? randomUUID().replace(/-/g, '').slice(0, 32);
+  const createdSagaId = sagaId ?? randomUUID().replace(/-/g, '').slice(0, 32);
   const versionId = randomUUID().replace(/-/g, '').slice(0, 32);
-  const assetId = randomUUID().replace(/-/g, '').slice(0, 32);
+  const assetId = scopedCatalogId(ownerUserId, 'dornhain-product-cover');
   const bytes = Buffer.from('dornhain-product-cover');
   const checksum = createHash('sha256').update(bytes).digest('hex');
 
@@ -167,21 +284,31 @@ export function ensureDornhainDefaultCatalog(
     ).run(worldId, ownerUserId, catalog.worldTitle, now);
   }
 
-  if (!existingSagaId) {
+  // Only the first host actor creates the shared slug row (UNIQUE slug).
+  if (!sagaId) {
     db.prepare(
       `INSERT INTO saga_definitions
        (id, slug, title, synopsis, origin, owner_user_id, draft_revision, created_at, updated_at)
-       VALUES (?, ?, ?, '', 'user', ?, 0, ?, ?)`,
-    ).run(sagaId, catalog.sagaSlug, catalog.sagaTitle, ownerUserId, now, now);
+       VALUES (?, ?, ?, ?, 'user', ?, 0, ?, ?)`,
+    ).run(
+      createdSagaId,
+      catalog.sagaSlug,
+      catalog.sagaTitle,
+      'SagaTree Native — Dornhain starter',
+      ownerUserId,
+      now,
+      now,
+    );
     db.prepare(
       `INSERT INTO saga_definition_versions
        (id, saga_id, version_label, status, payload, published_at, created_at)
        VALUES (?, ?, 'v1', 'published', ?, ?, ?)`,
     ).run(
       versionId,
-      sagaId,
+      createdSagaId,
       JSON.stringify({
         title: catalog.sagaTitle,
+        nativeTag: 'SagaTree Native',
         characters: catalog.characters.map((c) => c.id),
         monsters: catalog.monsters.map((m) => m.id),
         itemDefinitionIds: [...catalog.itemDefinitionIds],
@@ -192,9 +319,10 @@ export function ensureDornhainDefaultCatalog(
     );
   }
 
+  const resolvedSagaId = sagaId ?? createdSagaId;
   const existingProject = findOwnedProjectId(db, ownerUserId, worldId);
   const resolvedProjectId =
-    existingProject ?? createDornhainProject(db, ownerUserId, worldId, sagaId, now);
+    existingProject ?? createDornhainProject(db, ownerUserId, worldId, resolvedSagaId, now);
 
   db.prepare(
     `INSERT OR IGNORE INTO assets
@@ -202,8 +330,7 @@ export function ensureDornhainDefaultCatalog(
      VALUES (?, ?, 'image/png', ?, ?, ?, 1, ?)`,
   ).run(assetId, ownerUserId, bytes.byteLength, checksum, assetId, now);
 
-  applyDornhainCatalogToHost(db, ownerUserId, worldId, catalog, now);
-  seedCharacterSheets(db, ownerUserId, catalog, now);
+  applyOwnedDornhainCatalog(db, ownerUserId, worldId, catalog, now);
 
   return { seeded: true, worldId, projectId: resolvedProjectId };
 }

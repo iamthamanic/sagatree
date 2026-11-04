@@ -88,7 +88,7 @@ mustInclude(
 
 mustInclude(
   'src/app/dashboard/Dashboard.tsx',
-  ['session-join', 'Session starten'],
+  ['session-join', 'Session hosten'],
   'Dashboard session CTA',
 );
 

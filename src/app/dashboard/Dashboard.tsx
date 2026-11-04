@@ -98,11 +98,11 @@ export function Dashboard({ onNavigate }: DashboardProps) {
             variant="outline"
             className={actionButtonClass}
             onClick={() => onNavigate('/session-join')}
-            aria-label="Session starten"
+            aria-label="Session hosten"
             data-dashboard-session-host
           >
             <Broadcast className="size-7 sm:size-8" size={32} weight="regular" aria-hidden />
-            <span className="text-center whitespace-normal leading-snug">Session starten</span>
+            <span className="text-center whitespace-normal leading-snug">Session hosten</span>
           </Button>
         </div>
 

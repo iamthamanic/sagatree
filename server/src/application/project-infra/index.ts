@@ -157,6 +157,14 @@ export function createProjectInfraPorts(deps: {
   readonly world: WorldPorts;
   readonly permissions: PermissionsPorts;
   readonly session: SessionPorts;
+  /**
+   * FE-HOST-10: when native (owner-null) Dornhain is absent, seed an owned copy
+   * for this actor and return its project id.
+   */
+  readonly ensureOwnedDornhainStarter?: (actorId: string) => {
+    readonly projectId: string;
+    readonly created: boolean;
+  };
 }): ProjectInfraPorts {
   const createSession = create_project_session(deps.session);
   const ensureStarter = ensure_native_starter_project({
@@ -184,7 +192,29 @@ export function createProjectInfraPorts(deps: {
     moduleId: 'project-infra',
     createProjectSession: (actor, projectId, name, notes) =>
       mapSession(createSession(actor, projectId, name, notes)),
-    ensureNativeStarterProject: (actor, slug) => mapOkValue(ensureStarter(actor, slug)),
+    ensureNativeStarterProject: (actor, slug) => {
+      const primary = mapOkValue(ensureStarter(actor, slug));
+      if (primary.ok) return primary;
+      const trimmed = typeof slug === 'string' ? slug.trim() : '';
+      const wantsDornhain = trimmed === '' || trimmed === 'dornhain.whisper';
+      if (!wantsDornhain || !deps.ensureOwnedDornhainStarter || !actor?.actorId) {
+        return primary;
+      }
+      const seeded = deps.ensureOwnedDornhainStarter(actor.actorId);
+      const project = deps.project.getProject(seeded.projectId);
+      if (!project.ok) return { ok: false, error: project.error };
+      return {
+        ok: true,
+        value: {
+          id: project.value.id,
+          publicId: project.value.publicId ?? project.value.id,
+          created: seeded.created,
+          name: project.value.title,
+          sagaId: project.value.sagaId,
+          sagaVersionId: project.value.sagaVersionId,
+        },
+      };
+    },
     getMySagaPermissions: (actor, publicId) => mapOkValue(getPerms(actor, publicId)),
     getSagaLoreTimeline: (actor, publicId) => mapOkValue(getLore(actor, publicId)),
     getSagaOverview: (actor, publicId) => mapOkValue(getOverview(actor, publicId)),

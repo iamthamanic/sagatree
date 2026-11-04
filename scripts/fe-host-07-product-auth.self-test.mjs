@@ -56,10 +56,18 @@ const atlas = readFileSync(join(root, 'src/app/world/atlas/useWorldAtlasEditor.t
 assert(/!isHostLibraryEnabled\(\) && !hasJwtSession/.test(atlas), 'atlas JWT gate skipped under host flag');
 const bridge = readFileSync(join(root, 'src/lib/hostAuthBridge.ts'), 'utf8');
 assert(/signInHostEmail/.test(bridge) && /signUpHostEmail/.test(bridge), 'hostAuthBridge product auth');
+assert(/ensureHostSoloAccountLinked/.test(bridge), 'hostAuthBridge links solo after sign-in');
+assert(/same-origin/.test(bridge), 'hostAuthBridge documents same-origin auth base');
 assert(/response\.ok/.test(bridge) && /Host-Abmeldung/.test(bridge), 'signOutHost checks response.ok');
 assert(/AbortController|abort\(/.test(bridge), 'probeHostActor is bounded by abort timeout');
 const cookieProfile = readFileSync(join(root, 'server/src/auth/cookie-profile.ts'), 'utf8');
-assert(/minPasswordLength:\s*6/.test(cookieProfile), 'host minPasswordLength matches LoginScreen');
+assert(/minPasswordLength:\s*4/.test(cookieProfile), 'host minPasswordLength accepts DEV demo 1234');
+const viteCfg = readFileSync(join(root, 'vite.config.ts'), 'utf8');
+assert(/proxy[\s\S]*['"]\/api['"]/.test(viteCfg), 'vite proxies /api to host for first-party cookies');
+const dash = readFileSync(join(root, 'src/app/dashboard/Dashboard.tsx'), 'utf8');
+assert(/Session hosten/.test(dash), 'Dashboard CTA Session hosten');
+const libRoutes = readFileSync(join(root, 'server/src/api/library-routes.ts'), 'utf8');
+assert(/libraryActorIds/.test(libRoutes), 'library routes honor linked solo ids');
 
 const { createHost } = await import(createHostUrl);
 const { generateAuthSecret } = await import(authIndexUrl);
@@ -128,6 +136,78 @@ try {
   });
   assert(listed.res.status === 200, `library ${listed.res.status}`);
   assert(Array.isArray(listed.json?.characters), 'characters array');
+
+  // FE-HOST-10 — solo identity probe + ensure-starter seeds owned Dornhain
+  const soloId = await httpJson(baseURL, '/api/solo/identity', {
+    cookie,
+    headers: { Origin: baseURL },
+  });
+  assert(soloId.res.status === 200, `solo identity ${soloId.res.status}`);
+  assert(typeof soloId.json?.soloActorId === 'string', 'soloActorId');
+  assert(soloId.json?.soloActorId.startsWith('solo-'), 'solo id prefix');
+
+  const starter = await httpJson(baseURL, '/api/v1/projects/ensure-starter', {
+    method: 'POST',
+    cookie,
+    headers: { Origin: baseURL },
+    body: { slug: 'dornhain.whisper' },
+  });
+  assert(starter.res.status === 200, `ensure-starter ${starter.res.status} ${starter.text}`);
+  assert(typeof starter.json?.id === 'string', 'starter project id');
+
+  const afterSeed = await httpJson(baseURL, '/api/v1/library/characters', {
+    cookie,
+    headers: { Origin: baseURL },
+  });
+  assert(afterSeed.res.status === 200, `library after seed ${afterSeed.res.status}`);
+  assert(
+    (afterSeed.json?.characters?.length ?? 0) >= 4,
+    `dornhain pregens for remote actor (got ${afterSeed.json?.characters?.length ?? 0})`,
+  );
+
+  const worlds = await httpJson(baseURL, '/api/v1/library/worlds', {
+    cookie,
+    headers: { Origin: baseURL },
+  });
+  assert(
+    (worlds.json?.worlds ?? []).some((w) => w.title === 'Dornhain'),
+    'Dornhain world listed',
+  );
+
+  // Second remote user also gets an owned Dornhain copy (no solo-link required).
+  const email2 = 'player@fehost07.test';
+  const password2 = '1234';
+  const signUp2 = await httpJson(baseURL, '/api/auth/sign-up/email', {
+    method: 'POST',
+    headers: { Origin: baseURL },
+    body: { email: email2, password: password2, name: 'player1' },
+  });
+  assert(signUp2.res.status < 400, `player sign-up ${signUp2.res.status} ${signUp2.text}`);
+  let cookie2 = signUp2.cookie;
+  if (!cookie2) {
+    const signIn2 = await httpJson(baseURL, '/api/auth/sign-in/email', {
+      method: 'POST',
+      headers: { Origin: baseURL },
+      body: { email: email2, password: password2 },
+    });
+    assert(signIn2.res.status < 400, `player sign-in ${signIn2.res.status}`);
+    cookie2 = signIn2.cookie;
+  }
+  const starter2 = await httpJson(baseURL, '/api/v1/projects/ensure-starter', {
+    method: 'POST',
+    cookie: cookie2,
+    headers: { Origin: baseURL },
+    body: { slug: 'dornhain.whisper' },
+  });
+  assert(starter2.res.status === 200, `player ensure-starter ${starter2.res.status}`);
+  const chars2 = await httpJson(baseURL, '/api/v1/library/characters', {
+    cookie: cookie2,
+    headers: { Origin: baseURL },
+  });
+  assert(
+    (chars2.json?.characters?.length ?? 0) >= 4,
+    'player Dornhain pregens without stealing owner1 rows',
+  );
 
   // Sign-out clears session
   await httpJson(baseURL, '/api/auth/sign-out', {

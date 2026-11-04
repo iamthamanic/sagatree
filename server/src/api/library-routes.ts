@@ -165,15 +165,20 @@ export function mountLibraryHttpRoutes(app: Hono, deps: LibraryHttpDeps): void {
     if (!deps.character) {
       return c.json({ characters: [] }, 200);
     }
-    const listed = deps.character.listOwnedCharacters(actorResult.actor.actorId);
-    if (!listed.ok) {
-      return c.json({ error: listed.error }, listed.error === 'store-unavailable' ? 503 : 400);
-    }
+    // MIG-015: Dornhain pregens are seeded under the host solo actor; honor links.
+    const byId = new Map<string, ReturnType<typeof mapCharacterRow>>();
     const origin = new URL(c.req.url).origin;
-    const characters = listed.value
-      .filter((row) => row.characterType === 'pc')
-      .map((row) => mapCharacterRow(row, origin));
-    return c.json({ characters }, 200);
+    for (const ownerId of libraryActorIds(actorResult.actor)) {
+      const listed = deps.character.listOwnedCharacters(ownerId);
+      if (!listed.ok) {
+        return c.json({ error: listed.error }, listed.error === 'store-unavailable' ? 503 : 400);
+      }
+      for (const row of listed.value) {
+        if (row.characterType !== 'pc') continue;
+        byId.set(row.id, mapCharacterRow(row, origin));
+      }
+    }
+    return c.json({ characters: [...byId.values()] }, 200);
   });
 
   app.post('/api/v1/library/characters', async (c) => {
@@ -247,14 +252,26 @@ export function mountLibraryHttpRoutes(app: Hono, deps: LibraryHttpDeps): void {
       return c.json({ error: 'store-unavailable' }, 503);
     }
     const id = c.req.param('id');
-    const got = deps.character.getOwnedCharacter(actorResult.actor.actorId, id);
-    if (!got.ok) {
-      return c.json({ error: got.error }, got.error === 'not-authorized' ? 403 : 400);
+    let found: ReturnType<typeof mapCharacterRow> | null = null;
+    let lastError: string | null = null;
+    for (const ownerId of libraryActorIds(actorResult.actor)) {
+      const got = deps.character.getOwnedCharacter(ownerId, id);
+      if (!got.ok) {
+        lastError = got.error;
+        continue;
+      }
+      if (got.value) {
+        found = mapCharacterRow(got.value, new URL(c.req.url).origin);
+        break;
+      }
     }
-    if (!got.value) {
+    if (!found) {
+      if (lastError === 'not-authorized') {
+        return c.json({ error: 'not-authorized' }, 403);
+      }
       return c.json({ error: 'not-found' }, 404);
     }
-    return c.json({ character: mapCharacterRow(got.value, new URL(c.req.url).origin) }, 200);
+    return c.json({ character: found }, 200);
   });
 
   app.patch('/api/v1/library/characters/:id', async (c) => {
@@ -289,23 +306,38 @@ export function mountLibraryHttpRoutes(app: Hono, deps: LibraryHttpDeps): void {
     if (!portraitNorm.ok) {
       return c.json({ error: portraitNorm.error }, 400);
     }
-    const updated = deps.character.updateOwnedCharacter(actorResult.actor.actorId, id, {
-      name: record.name,
-      description: record.description,
-      level: record.level,
-      sheetStatus: record.sheet_status ?? record.sheetStatus,
-      sheet: record.sheet,
-      portraitStoragePath: portraitNorm.value,
-      characterType: 'pc',
-    });
-    if (!updated.ok) {
+    let updated: ReturnType<NonNullable<LibraryHttpDeps['character']>['updateOwnedCharacter']> | null =
+      null;
+    for (const ownerId of libraryActorIds(actorResult.actor)) {
+      const attempt = deps.character.updateOwnedCharacter(ownerId, id, {
+        name: record.name,
+        description: record.description,
+        level: record.level,
+        sheetStatus: record.sheet_status ?? record.sheetStatus,
+        sheet: record.sheet,
+        portraitStoragePath: portraitNorm.value,
+        characterType: 'pc',
+      });
+      if (attempt.ok) {
+        updated = attempt;
+        break;
+      }
+      // Try linked solo owner when remote id is not the row owner.
+      if (attempt.error !== 'not-authorized' && attempt.error !== 'not-found') {
+        updated = attempt;
+        break;
+      }
+      updated = attempt;
+    }
+    if (!updated || !updated.ok) {
+      const err = updated && !updated.ok ? updated.error : 'not-found';
       return c.json(
-        { error: updated.error },
-        updated.error === 'not-authorized'
+        { error: err },
+        err === 'not-authorized'
           ? 403
-          : updated.error === 'not-found'
+          : err === 'not-found'
             ? 404
-            : updated.error === 'store-unavailable'
+            : err === 'store-unavailable'
               ? 503
               : 400,
       );
@@ -322,11 +354,27 @@ export function mountLibraryHttpRoutes(app: Hono, deps: LibraryHttpDeps): void {
       return c.json({ error: 'store-unavailable' }, 503);
     }
     const id = c.req.param('id');
-    const deleted = deps.character.deleteOwnedCharacter(actorResult.actor.actorId, id);
-    if (!deleted.ok) {
+    // MIG-015: solo-seeded rows (e.g. Test Held) delete under linked solo owner id.
+    let deleted: ReturnType<
+      NonNullable<LibraryHttpDeps['character']>['deleteOwnedCharacter']
+    > | null = null;
+    for (const ownerId of libraryActorIds(actorResult.actor)) {
+      const attempt = deps.character.deleteOwnedCharacter(ownerId, id);
+      if (attempt.ok) {
+        deleted = attempt;
+        break;
+      }
+      if (attempt.error !== 'not-authorized' && attempt.error !== 'not-found') {
+        deleted = attempt;
+        break;
+      }
+      deleted = attempt;
+    }
+    if (!deleted || !deleted.ok) {
+      const err = deleted && !deleted.ok ? deleted.error : 'not-found';
       return c.json(
-        { error: deleted.error },
-        deleted.error === 'not-authorized' ? 403 : deleted.error === 'not-found' ? 404 : 400,
+        { error: err },
+        err === 'not-authorized' ? 403 : err === 'not-found' ? 404 : 400,
       );
     }
     return c.json({ ok: true, id: deleted.value.id }, 200);
@@ -691,30 +739,56 @@ export function mountLibraryHttpRoutes(app: Hono, deps: LibraryHttpDeps): void {
     if (!deps.project?.listOwnedProjects) {
       return c.json({ projects: [] }, 200);
     }
-    const listed = deps.project.listOwnedProjects(actorResult.actor.actorId);
-    if (!listed.ok) {
-      return c.json({ error: listed.error }, 503);
+    const byId = new Map<
+      string,
+      {
+        id: string;
+        publicId: string | null;
+        code: string;
+        name: string;
+        description: string | null;
+        worldId: string;
+        worldProfileId: string;
+        sagaId: string | null;
+        sagaVersionId: string | null;
+        sagaTitle: string;
+        sagaSlug: null;
+        sagaOrigin: null;
+        gmUserId: string;
+        status: string;
+        memberCount: number;
+        sessionCount: number;
+      }
+    >();
+    for (const ownerId of libraryActorIds(actorResult.actor)) {
+      const listed = deps.project.listOwnedProjects(ownerId);
+      if (!listed.ok) {
+        return c.json({ error: listed.error }, 503);
+      }
+      for (const row of listed.value) {
+        byId.set(row.id, {
+          id: row.id,
+          publicId: row.publicId,
+          code: '',
+          name: row.title,
+          description: row.description,
+          worldId: row.worldId,
+          worldProfileId: row.worldId,
+          sagaId: row.sagaId || null,
+          sagaVersionId: row.sagaVersionId || null,
+          sagaTitle: row.title,
+          sagaSlug: null,
+          sagaOrigin: null,
+          gmUserId: row.gmUserId,
+          status:
+            row.status === 'paused' || row.status === 'completed' || row.status === 'archived'
+              ? row.status
+              : 'active',
+          memberCount: 1,
+          sessionCount: 0,
+        });
+      }
     }
-    const projects = listed.value.map((row) => ({
-      id: row.id,
-      publicId: row.publicId,
-      code: '',
-      name: row.title,
-      description: row.description,
-      worldId: row.worldId,
-      worldProfileId: row.worldId,
-      sagaId: row.sagaId || null,
-      sagaVersionId: row.sagaVersionId || null,
-      sagaTitle: row.title,
-      sagaSlug: null,
-      sagaOrigin: null,
-      gmUserId: row.gmUserId,
-      status: row.status === 'paused' || row.status === 'completed' || row.status === 'archived'
-        ? row.status
-        : 'active',
-      memberCount: 1,
-      sessionCount: 0,
-    }));
-    return c.json({ projects }, 200);
+    return c.json({ projects: [...byId.values()] }, 200);
   });
 }

@@ -500,11 +500,47 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (isHostLibraryEnabled()) {
       const generation = bumpAuthGeneration();
       setLocalAdminSession(false);
-      const actor = await signInHostEmail(email.trim(), password);
-      if (!isLiveGeneration(generation)) return;
-      applyUser(createHostSessionUser(actor), generation);
-      setHasJwtSession(true);
-      return;
+      // Better Auth requires an email address — map DEV shortcuts (admin/player1)
+      // to the same seeded local emails used by the GoTrue path.
+      let hostEmail = email.trim();
+      let hostPassword = password;
+      if (isLocalAdminShortcut(email, password)) {
+        hostEmail = LOCAL_ADMIN_EMAIL;
+        hostPassword = LOCAL_ADMIN_PASSWORD;
+      } else if (isLocalPlayerShortcut(email, password)) {
+        hostEmail = LOCAL_PLAYER_EMAIL;
+        hostPassword = LOCAL_PLAYER_PASSWORD;
+      } else if (!hostEmail.includes('@')) {
+        throw new Error(
+          'Bitte eine E-Mail eingeben (z. B. name@example.com). DEV: admin oder player1 / 1234.',
+        );
+      }
+      try {
+        const actor = await signInHostEmail(hostEmail, hostPassword);
+        if (!isLiveGeneration(generation)) return;
+        applyUser(createHostSessionUser(actor), generation);
+        setHasJwtSession(true);
+        // Solo Dornhain seed is under host-identity; link runs inside signInHostEmail.
+        // Still ensure starter project for this remote actor when native defs exist.
+        provisionDornhainDefaultForSession();
+        return;
+      } catch (err) {
+        // First host boot: provision DEV demo accounts when missing (sign-up then sign-in).
+        const isDemo =
+          isLocalAdminShortcut(email, password) || isLocalPlayerShortcut(email, password);
+        if (!isDemo || !import.meta.env.DEV) throw err;
+        try {
+          await signUpHostEmail(hostEmail, hostPassword);
+        } catch {
+          /* already exists or race — fall through to sign-in */
+        }
+        const actor = await signInHostEmail(hostEmail, hostPassword);
+        if (!isLiveGeneration(generation)) return;
+        applyUser(createHostSessionUser(actor), generation);
+        setHasJwtSession(true);
+        provisionDornhainDefaultForSession();
+        return;
+      }
     }
 
     if (isLocalAdminShortcut(email, password)) {

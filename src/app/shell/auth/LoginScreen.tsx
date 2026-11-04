@@ -10,20 +10,33 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../../shared/ui/tab
 import { Alert, AlertDescription } from '../../../shared/ui/alert';
 import {
   CircleNotch,
+  Eye,
+  EyeSlash,
   WarningCircle,
   Moon,
-  Sun
+  Sun,
 } from '@phosphor-icons/react';
 import { toast } from 'sonner';
 import { SagaTreeLogo } from '../SagaTreeLogo';
+import { isHostLibraryEnabled } from '../../../infrastructure/host/host-library-http';
 
-/** Map Kong/GoTrue rate-limit responses (#670) to a clear DE message. */
+/** Map Kong/GoTrue / Better Auth responses to a clear DE message. */
 function authErrorMessage(err: unknown, fallback: string): string {
   if (err && typeof err === 'object') {
     const status = 'status' in err ? Number((err as { status?: number }).status) : NaN;
     const raw = err instanceof Error ? err.message : '';
     if (status === 429 || /rate limit|too many requests|429/i.test(raw)) {
       return 'Zu viele Anmeldeversuche. Bitte warte kurz und versuche es erneut.';
+    }
+    // Match credentials failure before bare "Invalid email" (substring trap).
+    if (/invalid email or password/i.test(raw)) {
+      return 'E-Mail oder Passwort falsch. DEV: admin oder player1 / 1234.';
+    }
+    if (/password too short/i.test(raw)) {
+      return 'Passwort zu kurz. DEV Demo: 1234 (Host muss minPasswordLength ≥ 4 haben).';
+    }
+    if (/^invalid email$/i.test(raw.trim()) || /code["']?\s*:\s*["']?INVALID_EMAIL\b/i.test(raw)) {
+      return 'Ungültige E-Mail. Bitte eine E-Mail eingeben — DEV: admin oder player1 / 1234.';
     }
     if (raw) return raw;
   }
@@ -36,8 +49,11 @@ export function LoginScreen() {
   const [loginIdentifier, setLoginIdentifier] = useState('');
   const [signupEmail, setSignupEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showLoginPassword, setShowLoginPassword] = useState(false);
+  const [showSignupPassword, setShowSignupPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const hostFirst = isHostLibraryEnabled();
   const isDarkMode = theme === 'dark' || (
     theme === 'system' &&
     typeof window !== 'undefined' &&
@@ -142,11 +158,14 @@ export function LoginScreen() {
                   )}
 
                   <div className="space-y-2">
-                    <Label htmlFor="login-identifier">Benutzername oder E-Mail</Label>
+                    <Label htmlFor="login-identifier">
+                      {hostFirst ? 'E-Mail' : 'Benutzername oder E-Mail'}
+                    </Label>
                     <Input
                       id="login-identifier"
                       type="text"
-                      placeholder="admin oder deine@email.de"
+                      autoComplete="username"
+                      placeholder={hostFirst ? 'deine@email.de' : 'admin oder deine@email.de'}
                       value={loginIdentifier}
                       onChange={(e) => setLoginIdentifier(e.target.value)}
                       required
@@ -158,21 +177,48 @@ export function LoginScreen() {
                         <span className="font-mono">admin</span> oder{' '}
                         <span className="font-mono">player1</span> /{' '}
                         <span className="font-mono">1234</span>
+                        {hostFirst ? (
+                          <>
+                            {' '}
+                            (Host mappt auf{' '}
+                            <span className="font-mono">admin@sagatree.local</span>)
+                          </>
+                        ) : null}
                       </p>
                     ) : null}
                   </div>
 
                   <div className="space-y-2">
                     <Label htmlFor="login-password">Passwort</Label>
-                    <Input
-                      id="login-password"
-                      type="password"
-                      placeholder="••••••••"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      required
-                      disabled={isLoading}
-                    />
+                    <div className="relative">
+                      <Input
+                        id="login-password"
+                        type={showLoginPassword ? 'text' : 'password'}
+                        autoComplete="current-password"
+                        placeholder="••••••••"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                        disabled={isLoading}
+                        className="pr-11"
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="absolute right-1 top-1/2 h-9 w-9 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                        aria-label={showLoginPassword ? 'Passwort verbergen' : 'Passwort anzeigen'}
+                        aria-pressed={showLoginPassword}
+                        onClick={() => setShowLoginPassword((v) => !v)}
+                        disabled={isLoading}
+                      >
+                        {showLoginPassword ? (
+                          <EyeSlash className="h-4 w-4" weight="regular" aria-hidden />
+                        ) : (
+                          <Eye className="h-4 w-4" weight="regular" aria-hidden />
+                        )}
+                      </Button>
+                    </div>
                   </div>
 
                   <Button type="submit" className="min-h-11 w-full" disabled={isLoading}>
@@ -213,18 +259,38 @@ export function LoginScreen() {
 
                   <div className="space-y-2">
                     <Label htmlFor="signup-password">Passwort</Label>
-                    <Input
-                      id="signup-password"
-                      type="password"
-                      placeholder="••••••••"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      required
-                      minLength={6}
-                      disabled={isLoading}
-                    />
+                    <div className="relative">
+                      <Input
+                        id="signup-password"
+                        type={showSignupPassword ? 'text' : 'password'}
+                        autoComplete="new-password"
+                        placeholder="••••••••"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                        minLength={hostFirst ? 4 : 6}
+                        disabled={isLoading}
+                        className="pr-11"
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="absolute right-1 top-1/2 h-9 w-9 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                        aria-label={showSignupPassword ? 'Passwort verbergen' : 'Passwort anzeigen'}
+                        aria-pressed={showSignupPassword}
+                        onClick={() => setShowSignupPassword((v) => !v)}
+                        disabled={isLoading}
+                      >
+                        {showSignupPassword ? (
+                          <EyeSlash className="h-4 w-4" weight="regular" aria-hidden />
+                        ) : (
+                          <Eye className="h-4 w-4" weight="regular" aria-hidden />
+                        )}
+                      </Button>
+                    </div>
                     <p className="text-xs text-muted-foreground">
-                      Mindestens 6 Zeichen
+                      Mindestens {hostFirst ? 4 : 6} Zeichen
                     </p>
                   </div>
 
