@@ -186,13 +186,15 @@ export function createSessionInfraPorts(session: SessionPortsForInfra) {
         : { ok: false, error: r.error };
     },
     saveSessionRecapSummary(
-      actorId: string,
+      actorOrId: Actor | string,
       sessionId: string,
       summaryText: string,
       status?: string | null,
     ): SessionInfraResult<Record<string, unknown>> {
+      // Prefer resolved Actor so linkedSoloActorIds survive (asActor drops them → false 403).
+      const actor = typeof actorOrId === 'string' ? asActor(actorOrId) : actorOrId;
       const r = session.recap.saveSessionRecapSummary(
-        asActor(actorId),
+        actor,
         sessionId,
         summaryText,
         status ?? 'draft',

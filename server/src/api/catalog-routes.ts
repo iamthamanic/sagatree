@@ -457,7 +457,13 @@ export function mountCatalogHttpRoutes(app: Hono, deps: CatalogHttpDeps): void {
     const userIds = rawIds.filter((id): id is string => typeof id === 'string');
     const listed = deps.userProfile.getProfilesByUserIds(actorResult.actor, userIds);
     if (!listed.ok) return c.json({ error: listed.error }, portStatus(listed.error));
-    return c.json({ profiles: listed.value }, 200);
+    // Peer avatar bytes are only served via /me/avatar today; do not advertise that
+    // URL for other users (would paint the caller's face on every peer).
+    const callerId = actorResult.actor.actorId;
+    const profiles = listed.value.map((profile) =>
+      profile.id === callerId ? profile : { ...profile, avatarUrl: null },
+    );
+    return c.json({ profiles }, 200);
   });
 }
 

@@ -515,7 +515,7 @@ export function mountSessionHttpRoutes(app: Hono, deps: SessionHttpDeps): void {
           : 'draft';
     const status = statusRaw === 'approved' ? 'approved' : 'draft';
     const saved = infra.saveSessionRecapSummary(
-      actorResult.actor.actorId,
+      actorResult.actor,
       sessionId,
       summaryText,
       status,

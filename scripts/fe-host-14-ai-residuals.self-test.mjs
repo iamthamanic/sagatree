@@ -147,6 +147,8 @@ try {
   assert(batch.res.status === 200, `batch ${batch.res.status} ${batch.text}`);
   assert(Array.isArray(batch.json?.profiles), 'profiles array');
   assert(batch.json.profiles.some((p) => p.id === idB), 'includes peer B');
+  const peerB = batch.json.profiles.find((p) => p.id === idB);
+  assert(peerB && peerB.avatarUrl == null, 'peer avatarUrl null (no /me/avatar leak)');
 
   const unauthBatch = await httpJson(baseURL, '/api/v1/user-profile/batch', {
     method: 'POST',
