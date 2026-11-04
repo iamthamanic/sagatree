@@ -61,7 +61,12 @@ assert(/same-origin/.test(bridge), 'hostAuthBridge documents same-origin auth ba
 assert(/response\.ok/.test(bridge) && /Host-Abmeldung/.test(bridge), 'signOutHost checks response.ok');
 assert(/AbortController|abort\(/.test(bridge), 'probeHostActor is bounded by abort timeout');
 const cookieProfile = readFileSync(join(root, 'server/src/auth/cookie-profile.ts'), 'utf8');
-assert(/minPasswordLength:\s*4/.test(cookieProfile), 'host minPasswordLength accepts DEV demo 1234');
+assert(
+  /minPasswordLength:/.test(cookieProfile) &&
+    /SAGATREE_ALLOW_DEMO_PASSWORDS/.test(cookieProfile) &&
+    /:\s*4/.test(cookieProfile),
+  'host minPasswordLength gates DEV demo 1234 (prod floor 8)',
+);
 const viteCfg = readFileSync(join(root, 'vite.config.ts'), 'utf8');
 assert(/proxy[\s\S]*['"]\/api['"]/.test(viteCfg), 'vite proxies /api to host for first-party cookies');
 const dash = readFileSync(join(root, 'src/app/dashboard/Dashboard.tsx'), 'utf8');

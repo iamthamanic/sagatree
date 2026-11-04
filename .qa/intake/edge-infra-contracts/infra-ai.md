@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-ai.json](source-contracts/infra-ai.json) (SHA-256 `edaedf8aa839df1c35e9f6c3f5fad22392b1d1dfcf720231af0b13334cf76896`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-ai.json](source-contracts/infra-ai.json) (SHA-256 `dc1e05cdb6a32c434d92c6ba09c1362b25ecadad98617b391290871a2e62f379`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -310,6 +310,6 @@ async function invokeEdge(
 | `src/infrastructure/ai/host-ai-invoke.ts` | `8310a4746f3f15aede6854e1bac3517f16cc4d8cec1803c9967f19393df14e78` |
 | `src/infrastructure/ai/ollama-settings-service.ts` | `aaf53b0f3004f001018518dade230a67f923c98897413476c9635f7d0aae1116` |
 | `src/infrastructure/host/host-library-http.ts` | `88754decbf6c4b587d9901f090eb63cd2bb9406e34086984acb9e316196ae84c` |
-| `src/lib/hostAuthBridge.ts` | `0de05e68ee6699238e48897ea41de2d6f133ef4818159729ba694d96fbee1c98` |
+| `src/lib/hostAuthBridge.ts` | `30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a` |
 | `src/lib/supabase.ts` | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
 

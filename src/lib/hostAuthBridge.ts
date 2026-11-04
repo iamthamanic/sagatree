@@ -184,16 +184,32 @@ async function hostAuthJson(
 }
 
 /**
+ * DEV host-operator emails allowed to auto-claim the single MIG-015 solo link.
+ * Arbitrary remote sign-ups must not silently inherit solo-owned worlds/characters.
+ */
+const HOST_SOLO_AUTO_LINK_EMAILS = new Set([
+  'admin@sagatree.local',
+]);
+
+/**
  * MIG-015: Dornhain/default catalog is seeded under the host solo actor.
- * After Better Auth login, link that solo id so Library/World/Saga lists see it.
+ * After Better Auth login, the host operator may link that solo id so
+ * Library/World/Saga lists see it. Requires confirm + matching host solo id;
+ * only auto-confirm for known DEV operator emails (not every sign-in).
  * Idempotent; soft-fails (ACCOUNT_LINK_TAKEN when another remote already claimed).
  */
 export async function ensureHostSoloAccountLinked(
   fetchImpl: typeof fetch = fetch,
   env: EnvLike = defaultEnv(),
+  options: { readonly email?: string | null; readonly allowAutoConfirm?: boolean } = {},
 ): Promise<void> {
   const base = getHostAuthBaseUrl(env);
   if (base === null) return;
+  const email = typeof options.email === 'string' ? options.email.trim().toLowerCase() : '';
+  const allowAutoConfirm =
+    options.allowAutoConfirm === true ||
+    (email.length > 0 && HOST_SOLO_AUTO_LINK_EMAILS.has(email));
+  if (!allowAutoConfirm) return;
   let identityRaw: unknown;
   try {
     const response = await fetchImpl(`${base}/api/solo/identity`, {
@@ -248,7 +264,7 @@ export async function signInHostEmail(
       'Host-Anmeldung: Sitzung nicht aktiv. FE und Host müssen denselben Hostnamen nutzen (beide 127.0.0.1 oder beide localhost) — oder VITE_SAGATREE_HOST_AUTH_URL=same-origin mit Vite-/api-Proxy.',
     );
   }
-  await ensureHostSoloAccountLinked(fetchImpl, env);
+  await ensureHostSoloAccountLinked(fetchImpl, env, { email: actor.email });
   return actor;
 }
 
@@ -258,7 +274,7 @@ export async function signUpHostEmail(
   password: string,
   fetchImpl: typeof fetch = fetch,
   env: EnvLike = defaultEnv(),
-): Promise<void> {
+): Promise<HostWhoamiDto | null> {
   await hostAuthJson(
     '/api/auth/sign-up/email',
     { email: email.trim(), password, name: email.trim() },
@@ -266,6 +282,10 @@ export async function signUpHostEmail(
     fetchImpl,
     env,
   );
+  const actor = await probeHostActor(fetchImpl, env);
+  if (!actor) return null;
+  await ensureHostSoloAccountLinked(fetchImpl, env, { email: actor.email });
+  return actor;
 }
 
 /** Clear host Better Auth cookie session. Throws when the cookie was not cleared. */

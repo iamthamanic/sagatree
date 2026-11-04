@@ -3592,7 +3592,7 @@
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "0de05e68ee6699238e48897ea41de2d6f133ef4818159729ba694d96fbee1c98"
+        "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
       },
       {
         "path": "src/lib/supabase.ts",
@@ -3790,7 +3790,7 @@
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "0de05e68ee6699238e48897ea41de2d6f133ef4818159729ba694d96fbee1c98"
+        "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
       },
       {
         "path": "src/lib/supabase.ts",
@@ -3932,7 +3932,7 @@
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "0de05e68ee6699238e48897ea41de2d6f133ef4818159729ba694d96fbee1c98"
+        "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
       },
       {
         "path": "src/lib/supabase.ts",
@@ -4065,7 +4065,7 @@
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "0de05e68ee6699238e48897ea41de2d6f133ef4818159729ba694d96fbee1c98"
+        "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
       },
       {
         "path": "src/lib/supabase.ts",
@@ -4179,7 +4179,7 @@
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "0de05e68ee6699238e48897ea41de2d6f133ef4818159729ba694d96fbee1c98"
+        "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
       },
       {
         "path": "src/lib/supabase.ts",
@@ -4313,7 +4313,7 @@
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "0de05e68ee6699238e48897ea41de2d6f133ef4818159729ba694d96fbee1c98"
+        "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
       },
       {
         "path": "src/lib/supabase.ts",
@@ -4509,7 +4509,7 @@
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "0de05e68ee6699238e48897ea41de2d6f133ef4818159729ba694d96fbee1c98"
+        "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
       },
       {
         "path": "src/lib/supabase.ts",
@@ -4648,7 +4648,7 @@
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "0de05e68ee6699238e48897ea41de2d6f133ef4818159729ba694d96fbee1c98"
+        "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
       },
       {
         "path": "src/lib/supabase.ts",
@@ -4777,7 +4777,7 @@
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "0de05e68ee6699238e48897ea41de2d6f133ef4818159729ba694d96fbee1c98"
+        "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
       },
       {
         "path": "src/lib/supabase.ts",
@@ -4883,7 +4883,7 @@
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "0de05e68ee6699238e48897ea41de2d6f133ef4818159729ba694d96fbee1c98"
+        "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
       },
       {
         "path": "src/lib/supabase.ts",
@@ -5036,7 +5036,7 @@
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "0de05e68ee6699238e48897ea41de2d6f133ef4818159729ba694d96fbee1c98"
+        "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
       },
       {
         "path": "src/lib/supabase.ts",
@@ -5142,7 +5142,7 @@
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "0de05e68ee6699238e48897ea41de2d6f133ef4818159729ba694d96fbee1c98"
+        "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
       },
       {
         "path": "src/lib/networkTimeout.ts",
@@ -5392,7 +5392,7 @@
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "0de05e68ee6699238e48897ea41de2d6f133ef4818159729ba694d96fbee1c98"
+        "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
       },
       {
         "path": "src/lib/networkTimeout.ts",
@@ -5462,7 +5462,7 @@
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "0de05e68ee6699238e48897ea41de2d6f133ef4818159729ba694d96fbee1c98"
+        "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
       },
       {
         "path": "src/lib/networkTimeout.ts",
@@ -5535,7 +5535,7 @@
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "0de05e68ee6699238e48897ea41de2d6f133ef4818159729ba694d96fbee1c98"
+        "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
       },
       {
         "path": "src/lib/networkTimeout.ts",
@@ -5645,7 +5645,7 @@
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "0de05e68ee6699238e48897ea41de2d6f133ef4818159729ba694d96fbee1c98"
+        "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
       },
       {
         "path": "src/lib/networkTimeout.ts",
@@ -5755,7 +5755,7 @@
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "0de05e68ee6699238e48897ea41de2d6f133ef4818159729ba694d96fbee1c98"
+        "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
       },
       {
         "path": "src/lib/networkTimeout.ts",
@@ -5833,7 +5833,7 @@
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "0de05e68ee6699238e48897ea41de2d6f133ef4818159729ba694d96fbee1c98"
+        "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
       },
       {
         "path": "src/lib/networkTimeout.ts",
@@ -5907,7 +5907,7 @@
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "0de05e68ee6699238e48897ea41de2d6f133ef4818159729ba694d96fbee1c98"
+        "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
       },
       {
         "path": "src/lib/networkTimeout.ts",
@@ -5991,7 +5991,7 @@
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "0de05e68ee6699238e48897ea41de2d6f133ef4818159729ba694d96fbee1c98"
+        "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
       },
       {
         "path": "src/lib/networkTimeout.ts",
@@ -6109,7 +6109,7 @@
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "0de05e68ee6699238e48897ea41de2d6f133ef4818159729ba694d96fbee1c98"
+        "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
       },
       {
         "path": "src/lib/networkTimeout.ts",
@@ -6227,7 +6227,7 @@
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "0de05e68ee6699238e48897ea41de2d6f133ef4818159729ba694d96fbee1c98"
+        "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
       },
       {
         "path": "src/lib/supabase.ts",
@@ -6452,7 +6452,7 @@
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "0de05e68ee6699238e48897ea41de2d6f133ef4818159729ba694d96fbee1c98"
+        "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
       },
       {
         "path": "src/lib/supabase.ts",
@@ -6589,7 +6589,7 @@
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "0de05e68ee6699238e48897ea41de2d6f133ef4818159729ba694d96fbee1c98"
+        "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
       },
       {
         "path": "src/lib/supabase.ts",
@@ -6706,7 +6706,7 @@
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "0de05e68ee6699238e48897ea41de2d6f133ef4818159729ba694d96fbee1c98"
+        "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
       },
       {
         "path": "src/lib/supabase.ts",
@@ -6799,7 +6799,7 @@
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "0de05e68ee6699238e48897ea41de2d6f133ef4818159729ba694d96fbee1c98"
+        "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
       },
       {
         "path": "src/lib/supabase.ts",
@@ -6900,7 +6900,7 @@
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "0de05e68ee6699238e48897ea41de2d6f133ef4818159729ba694d96fbee1c98"
+        "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
       },
       {
         "path": "src/lib/supabase.ts",
@@ -6990,7 +6990,7 @@
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "0de05e68ee6699238e48897ea41de2d6f133ef4818159729ba694d96fbee1c98"
+        "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
       },
       {
         "path": "src/lib/supabase.ts",
@@ -7079,7 +7079,7 @@
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "0de05e68ee6699238e48897ea41de2d6f133ef4818159729ba694d96fbee1c98"
+        "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
       },
       {
         "path": "src/lib/supabase.ts",
@@ -7176,7 +7176,7 @@
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "0de05e68ee6699238e48897ea41de2d6f133ef4818159729ba694d96fbee1c98"
+        "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
       },
       {
         "path": "src/lib/supabase.ts",
@@ -7294,7 +7294,7 @@
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "0de05e68ee6699238e48897ea41de2d6f133ef4818159729ba694d96fbee1c98"
+        "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
       },
       {
         "path": "src/lib/networkTimeout.ts",
@@ -7485,7 +7485,7 @@
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "0de05e68ee6699238e48897ea41de2d6f133ef4818159729ba694d96fbee1c98"
+        "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
       },
       {
         "path": "src/lib/supabase.ts",
@@ -7640,7 +7640,7 @@
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "0de05e68ee6699238e48897ea41de2d6f133ef4818159729ba694d96fbee1c98"
+        "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
       },
       {
         "path": "src/lib/supabase.ts",
@@ -7797,7 +7797,7 @@
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "0de05e68ee6699238e48897ea41de2d6f133ef4818159729ba694d96fbee1c98"
+        "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
       },
       {
         "path": "src/lib/supabase.ts",
@@ -7903,7 +7903,7 @@
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "0de05e68ee6699238e48897ea41de2d6f133ef4818159729ba694d96fbee1c98"
+        "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
       },
       {
         "path": "src/lib/supabase.ts",
@@ -7977,7 +7977,7 @@
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "0de05e68ee6699238e48897ea41de2d6f133ef4818159729ba694d96fbee1c98"
+        "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
       },
       {
         "path": "src/lib/networkTimeout.ts",
@@ -8163,7 +8163,7 @@
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "0de05e68ee6699238e48897ea41de2d6f133ef4818159729ba694d96fbee1c98"
+        "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
       },
       {
         "path": "src/lib/networkTimeout.ts",
@@ -8346,7 +8346,7 @@
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "0de05e68ee6699238e48897ea41de2d6f133ef4818159729ba694d96fbee1c98"
+        "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
       },
       {
         "path": "src/lib/networkTimeout.ts",
@@ -8491,7 +8491,7 @@
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "0de05e68ee6699238e48897ea41de2d6f133ef4818159729ba694d96fbee1c98"
+        "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
       },
       {
         "path": "src/lib/networkTimeout.ts",
@@ -8650,7 +8650,7 @@
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "0de05e68ee6699238e48897ea41de2d6f133ef4818159729ba694d96fbee1c98"
+        "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
       },
       {
         "path": "src/lib/networkTimeout.ts",
@@ -8792,7 +8792,7 @@
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "0de05e68ee6699238e48897ea41de2d6f133ef4818159729ba694d96fbee1c98"
+        "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
       },
       {
         "path": "src/lib/networkTimeout.ts",
@@ -8919,7 +8919,7 @@
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "0de05e68ee6699238e48897ea41de2d6f133ef4818159729ba694d96fbee1c98"
+        "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
       },
       {
         "path": "src/lib/networkTimeout.ts",
@@ -9005,7 +9005,7 @@
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "0de05e68ee6699238e48897ea41de2d6f133ef4818159729ba694d96fbee1c98"
+        "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
       },
       {
         "path": "src/lib/networkTimeout.ts",
@@ -9104,7 +9104,7 @@
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "0de05e68ee6699238e48897ea41de2d6f133ef4818159729ba694d96fbee1c98"
+        "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
       },
       {
         "path": "src/lib/networkTimeout.ts",
@@ -9198,7 +9198,7 @@
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "0de05e68ee6699238e48897ea41de2d6f133ef4818159729ba694d96fbee1c98"
+        "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
       },
       {
         "path": "src/lib/networkTimeout.ts",
@@ -9289,7 +9289,7 @@
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "0de05e68ee6699238e48897ea41de2d6f133ef4818159729ba694d96fbee1c98"
+        "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
       },
       {
         "path": "src/lib/networkTimeout.ts",
@@ -9388,7 +9388,7 @@
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "0de05e68ee6699238e48897ea41de2d6f133ef4818159729ba694d96fbee1c98"
+        "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
       },
       {
         "path": "src/lib/networkTimeout.ts",
@@ -9486,7 +9486,7 @@
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "0de05e68ee6699238e48897ea41de2d6f133ef4818159729ba694d96fbee1c98"
+        "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
       },
       {
         "path": "src/lib/networkTimeout.ts",
@@ -9580,7 +9580,7 @@
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "0de05e68ee6699238e48897ea41de2d6f133ef4818159729ba694d96fbee1c98"
+        "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
       },
       {
         "path": "src/lib/networkTimeout.ts",
@@ -9686,7 +9686,7 @@
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "0de05e68ee6699238e48897ea41de2d6f133ef4818159729ba694d96fbee1c98"
+        "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
       },
       {
         "path": "src/lib/networkTimeout.ts",
@@ -9796,7 +9796,7 @@
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "0de05e68ee6699238e48897ea41de2d6f133ef4818159729ba694d96fbee1c98"
+        "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
       },
       {
         "path": "src/lib/localAdmin.ts",
@@ -9911,7 +9911,7 @@
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "0de05e68ee6699238e48897ea41de2d6f133ef4818159729ba694d96fbee1c98"
+        "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
       },
       {
         "path": "src/lib/localAdmin.ts",
@@ -10045,7 +10045,7 @@
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "0de05e68ee6699238e48897ea41de2d6f133ef4818159729ba694d96fbee1c98"
+        "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
       },
       {
         "path": "src/lib/localAdmin.ts",
@@ -10142,7 +10142,7 @@
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "0de05e68ee6699238e48897ea41de2d6f133ef4818159729ba694d96fbee1c98"
+        "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
       },
       {
         "path": "src/lib/localAdmin.ts",
@@ -10240,7 +10240,7 @@
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "0de05e68ee6699238e48897ea41de2d6f133ef4818159729ba694d96fbee1c98"
+        "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
       },
       {
         "path": "src/lib/localAdmin.ts",
@@ -10377,7 +10377,7 @@
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
-        "sha256": "0de05e68ee6699238e48897ea41de2d6f133ef4818159729ba694d96fbee1c98"
+        "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
       },
       {
         "path": "src/lib/supabase.ts",

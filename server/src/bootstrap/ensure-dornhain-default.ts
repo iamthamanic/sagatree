@@ -49,24 +49,22 @@ function findOwnedProjectId(db: HostDatabase, ownerUserId: string, worldId: stri
   return row?.id ?? null;
 }
 
+/** Solo keeps canonical slug; remotes get UNIQUE owner-scoped slug (no cross-owner saga FK). */
+function ownedDornhainSlug(ownerUserId: string): string {
+  if (ownerUserId.startsWith('solo-')) return DORHAIN_SLUG;
+  const digest = createHash('sha256').update(ownerUserId).digest('hex').slice(0, 12);
+  return `${DORHAIN_SLUG}__${digest}`;
+}
+
 function findOwnedSagaId(db: HostDatabase, ownerUserId: string): string | null {
+  const slug = ownedDornhainSlug(ownerUserId);
   const row = db
     .prepare(
       `SELECT id FROM saga_definitions
        WHERE owner_user_id = ? AND slug = ?
        ORDER BY created_at ASC LIMIT 1`,
     )
-    .get(ownerUserId, DORHAIN_SLUG) as { id: string } | undefined;
-  return row?.id ?? null;
-}
-
-/** Slug is globally unique — reuse the host Dornhain definition across actors. */
-function findSagaIdBySlug(db: HostDatabase, slug: string): string | null {
-  const row = db
-    .prepare(
-      `SELECT id FROM saga_definitions WHERE slug = ? ORDER BY created_at ASC LIMIT 1`,
-    )
-    .get(slug) as { id: string } | undefined;
+    .get(ownerUserId, slug) as { id: string } | undefined;
   return row?.id ?? null;
 }
 
@@ -80,15 +78,41 @@ function scopedCatalogId(ownerUserId: string, stableId: string): string {
   return `${stableId}__${digest}`;
 }
 
+/** Public-ID alphabet mirrors resource-id (no O/0/I/1); host must not import FE domains. */
+const PUBLIC_ID_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+const PUBLIC_ID_BODY_LENGTH = 5;
+
+function hasLetterAndDigitBody(body: string): boolean {
+  let hasLetter = false;
+  let hasDigit = false;
+  for (const ch of body) {
+    if (ch >= 'A' && ch <= 'Z') hasLetter = true;
+    if (ch >= '2' && ch <= '9') hasDigit = true;
+  }
+  return hasLetter && hasDigit;
+}
+
+/**
+ * Owner-scoped Public ID: keep canonical PREFIX + 5-char body (CH-/NPCC-/IT-/…).
+ * Fixture ids stay for solo; remotes derive a collision-resistant body from owner+seed.
+ */
 function scopedPublicId(ownerUserId: string, publicId: string): string {
   if (ownerUserId.startsWith('solo-')) return publicId;
-  const digest = createHash('sha256')
-    .update(`${ownerUserId}:${publicId}`)
-    .digest('hex')
-    .slice(0, 6)
-    .toUpperCase();
-  const base = publicId.length <= 10 ? publicId : publicId.slice(0, 10);
-  return `${base}-${digest}`;
+  const dash = publicId.indexOf('-');
+  const prefix = dash > 0 ? publicId.slice(0, dash).toUpperCase() : 'CH';
+  const seed = `${ownerUserId}:${publicId}`;
+  let hash = createHash('sha256').update(seed).digest();
+  for (let attempt = 0; attempt < 64; attempt += 1) {
+    if (attempt > 0) {
+      hash = createHash('sha256').update(hash).update(String(attempt)).digest();
+    }
+    let body = '';
+    for (let i = 0; i < PUBLIC_ID_BODY_LENGTH; i += 1) {
+      body += PUBLIC_ID_ALPHABET[hash[i]! % PUBLIC_ID_ALPHABET.length] ?? 'A';
+    }
+    if (hasLetterAndDigitBody(body)) return `${prefix}-${body}`;
+  }
+  return `${prefix}-A2BC3`;
 }
 
 function seedCharacterSheets(
@@ -259,20 +283,19 @@ export function ensureDornhainDefaultCatalog(
   const now = new Date().toISOString();
 
   const existingWorldId = findOwnedWorldId(db, ownerUserId);
+  const sagaSlug = ownedDornhainSlug(ownerUserId);
   const ownedSagaId = findOwnedSagaId(db, ownerUserId);
-  const sharedSagaId = findSagaIdBySlug(db, catalog.sagaSlug);
-  const sagaId = ownedSagaId ?? sharedSagaId;
 
-  if (existingWorldId && sagaId) {
+  if (existingWorldId && ownedSagaId) {
     applyOwnedDornhainCatalog(db, ownerUserId, existingWorldId, catalog, now);
     const projectId =
       findOwnedProjectId(db, ownerUserId, existingWorldId) ??
-      createDornhainProject(db, ownerUserId, existingWorldId, sagaId, now);
+      createDornhainProject(db, ownerUserId, existingWorldId, ownedSagaId, now);
     return { seeded: false, worldId: existingWorldId, projectId };
   }
 
   const worldId = existingWorldId ?? randomUUID();
-  const createdSagaId = sagaId ?? randomUUID().replace(/-/g, '').slice(0, 32);
+  const createdSagaId = ownedSagaId ?? randomUUID().replace(/-/g, '').slice(0, 32);
   const versionId = randomUUID().replace(/-/g, '').slice(0, 32);
   const assetId = scopedCatalogId(ownerUserId, 'dornhain-product-cover');
   const bytes = Buffer.from('dornhain-product-cover');
@@ -284,15 +307,15 @@ export function ensureDornhainDefaultCatalog(
     ).run(worldId, ownerUserId, catalog.worldTitle, now);
   }
 
-  // Only the first host actor creates the shared slug row (UNIQUE slug).
-  if (!sagaId) {
+  // Each actor owns their Dornhain saga definition (owner-scoped UNIQUE slug).
+  if (!ownedSagaId) {
     db.prepare(
       `INSERT INTO saga_definitions
        (id, slug, title, synopsis, origin, owner_user_id, draft_revision, created_at, updated_at)
        VALUES (?, ?, ?, ?, 'user', ?, 0, ?, ?)`,
     ).run(
       createdSagaId,
-      catalog.sagaSlug,
+      sagaSlug,
       catalog.sagaTitle,
       'SagaTree Native — Dornhain starter',
       ownerUserId,
@@ -319,7 +342,7 @@ export function ensureDornhainDefaultCatalog(
     );
   }
 
-  const resolvedSagaId = sagaId ?? createdSagaId;
+  const resolvedSagaId = ownedSagaId ?? createdSagaId;
   const existingProject = findOwnedProjectId(db, ownerUserId, worldId);
   const resolvedProjectId =
     existingProject ?? createDornhainProject(db, ownerUserId, worldId, resolvedSagaId, now);

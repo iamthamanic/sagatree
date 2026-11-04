@@ -669,13 +669,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signUp = async (email: string, password: string) => {
     if (isHostLibraryEnabled()) {
-      await signUpHostEmail(email.trim(), password);
-      // Auto-login when Better Auth returns a session cookie.
-      const actor = await probeHostActor();
+      const signedUp = await signUpHostEmail(email.trim(), password);
+      // Auto-login when Better Auth returns a session cookie — same post-auth
+      // init as sign-in (solo link for operator + Dornhain ensure-starter).
+      const actor = signedUp ?? (await probeHostActor());
       if (actor) {
         const generation = bumpAuthGeneration();
         applyUser(createHostSessionUser(actor), generation);
         setHasJwtSession(true);
+        provisionDornhainDefaultForSession();
       }
       return;
     }
