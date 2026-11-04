@@ -1,7 +1,7 @@
 # Composition Gate — browser-host-FE-HOST-12 (#1117)
 
 **Verdict:** CLEAR  
-**WORKTREE:** issue-1117-fe-host-12-project-writes (uncommitted FE-HOST-12)  
+**HEAD:** `3b6dbea37e905d260fa8c1dc725b17904a9b5a9b`  
 **Slug:** browser-host-fe-host-12
 
 ## Producer → consumer
