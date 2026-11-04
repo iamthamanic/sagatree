@@ -1,9 +1,10 @@
 # Composition Gate — browser-host-fe-host-14 (#1119)
 
-- HEAD_SHA: 31e43e15bbe01d9d8b67245b90faf37c5fe899ca
+- HEAD_SHA: 9515db2e8ce30ebf2a298cbd50ff0a65d1647b1f
 - BASE_SHA: c48e7dbab9747167229b2e04faf01ca3ecd1faeb
 - Date: 2026-11-04
 - Verdict: CLEAR
+- note: tip may include composition-pin-only commits after HEAD_SHA (proofOnlyChangesSince this file)
 - Acceptance tier: feature-integration
 - Deferred integration: none for FE-HOST cutover residuals (optional Edge AI remains Info soft-degraded)
 
