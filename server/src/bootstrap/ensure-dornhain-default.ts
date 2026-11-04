@@ -238,6 +238,12 @@ function applyOwnedDornhainCatalog(
 }
 
 const DORHAIN_ATLAS_ROOT_STABLE = 'dh-atlas-root';
+/** Matches FE `DORNHAIN_WORLD_LAYER_TITLE` / dornhain-unified-starter. */
+const DORHAIN_WORLD_LAYER_TITLE = 'Welt';
+const DORHAIN_UNIFIED_SEED = 'dornhain.unified.v3';
+/** Settlement overview anchor on the world canvas (FE DORNHAIN_WORLD_ANCHOR). */
+const DORHAIN_WORLD_ANCHOR = { x: 360, y: 510 } as const;
+
 const DORHAIN_ATLAS_PLACES: readonly {
   readonly stableId: string;
   readonly seedKey: string;
@@ -252,7 +258,7 @@ const DORHAIN_ATLAS_PLACES: readonly {
     name: 'Marktplatz',
     kind: 'settlement',
     description: 'Dornhain Marktplatz — Startpunkt der Whisper-Road.',
-    anchor: { x: 10, y: 12 },
+    anchor: DORHAIN_WORLD_ANCHOR,
   },
   {
     stableId: 'dh-place-whisper',
@@ -264,6 +270,38 @@ const DORHAIN_ATLAS_PLACES: readonly {
   },
 ];
 
+/**
+ * Host-side copy of FE `buildDornhainUnifiedGeneratorMeta` (no FE domain import).
+ * `demoSeed: false` so UnifiedAtlasEditor does not fall back to Eldoria demo.
+ */
+function dornhainUnifiedGeneratorMeta(): Record<string, unknown> {
+  return {
+    engine: 'unified_canvas',
+    sagaSlug: DORHAIN_SLUG,
+    seed: DORHAIN_UNIFIED_SEED,
+    scale: 'world',
+    nativeTag: 'SagaTree Native',
+    unifiedCanvas: {
+      format: 'sagatree-unified-atlas-v1',
+      layers: {
+        terrain: true,
+        roads: true,
+        region: true,
+        city: true,
+        interior: true,
+        drawings: true,
+        objects: true,
+        grid: false,
+      },
+      strokes: [],
+      objects: [],
+      rooms: [{ id: 'w.ocean', material: 'wasser', x: 0, y: 0, w: 1000, h: 1000 }],
+      walls: [],
+      demoSeed: false,
+    },
+  };
+}
+
 /** FE-HOST-11: idempotent root atlas map + places for the owned Dornhain world. */
 function seedOwnedDornhainAtlas(
   db: HostDatabase,
@@ -271,7 +309,17 @@ function seedOwnedDornhainAtlas(
   worldId: string,
   now: string,
 ): void {
-  const mapId = scopedCatalogId(ownerUserId, DORHAIN_ATLAS_ROOT_STABLE);
+  const existingRoot = db
+    .prepare(
+      `SELECT id FROM world_atlas_maps
+       WHERE world_profile_id = ? AND parent_map_id IS NULL
+       ORDER BY CASE WHEN kind = 'world' THEN 0 ELSE 1 END, sort_order, title
+       LIMIT 1`,
+    )
+    .get(worldId) as { id: string } | undefined;
+
+  const mapId =
+    existingRoot?.id ?? scopedCatalogId(ownerUserId, DORHAIN_ATLAS_ROOT_STABLE);
   const layers = {
     type: 'FeatureCollection',
     features: DORHAIN_ATLAS_PLACES.filter((p) => p.anchor).map((p) => ({
@@ -284,22 +332,43 @@ function seedOwnedDornhainAtlas(
       },
     })),
   };
+  const generatorMeta = JSON.stringify(dornhainUnifiedGeneratorMeta());
 
-  db.prepare(
-    `INSERT OR IGNORE INTO world_atlas_maps (
-       id, world_profile_id, parent_map_id, kind, title, sort_order,
-       bounds, layers, generator_meta, revision, created_at, updated_at
-     ) VALUES (?, ?, NULL, 'world', ?, 0, ?, ?, ?, 1, ?, ?)`,
-  ).run(
-    mapId,
-    worldId,
-    'Dornhain — Weltkarte',
-    JSON.stringify({ minX: 0, minY: 0, maxX: 1000, maxY: 1000 }),
-    JSON.stringify(layers),
-    JSON.stringify({ engine: 'manual', nativeTag: 'SagaTree Native', sagaSlug: DORHAIN_SLUG }),
-    now,
-    now,
-  );
+  if (!existingRoot) {
+    db.prepare(
+      `INSERT OR IGNORE INTO world_atlas_maps (
+         id, world_profile_id, parent_map_id, kind, title, sort_order,
+         bounds, layers, generator_meta, revision, created_at, updated_at
+       ) VALUES (?, ?, NULL, 'world', ?, 0, ?, ?, ?, 1, ?, ?)`,
+    ).run(
+      mapId,
+      worldId,
+      DORHAIN_WORLD_LAYER_TITLE,
+      JSON.stringify({ minX: 0, minY: 0, maxX: 1000, maxY: 1000 }),
+      JSON.stringify(layers),
+      generatorMeta,
+      now,
+      now,
+    );
+  } else {
+    // Reuse authored root — only fill missing product canvas meta / empty layers.
+    const row = db
+      .prepare(`SELECT generator_meta, layers FROM world_atlas_maps WHERE id = ?`)
+      .get(mapId) as { generator_meta: string; layers: string } | undefined;
+    let meta: Record<string, unknown> = {};
+    try {
+      meta = row?.generator_meta ? (JSON.parse(row.generator_meta) as Record<string, unknown>) : {};
+    } catch {
+      meta = {};
+    }
+    if (meta.unifiedCanvas === undefined || meta.engine !== 'unified_canvas') {
+      db.prepare(
+        `UPDATE world_atlas_maps
+         SET title = ?, generator_meta = ?, updated_at = ?
+         WHERE id = ? AND world_profile_id = ?`,
+      ).run(DORHAIN_WORLD_LAYER_TITLE, generatorMeta, now, mapId, worldId);
+    }
+  }
 
   for (const [index, place] of DORHAIN_ATLAS_PLACES.entries()) {
     const placeId = scopedCatalogId(ownerUserId, place.stableId);
@@ -321,7 +390,8 @@ function seedOwnedDornhainAtlas(
     );
 
     const linkId = scopedCatalogId(ownerUserId, `${place.stableId}-link`);
-    const usage = place.anchor ? 'primary' : 'overview';
+    // Root-map anchors are overview (containing world map), never place-owned primary.
+    const usage = 'overview';
     const anchor = place.anchor ? { x: place.anchor.x, y: place.anchor.y } : {};
     db.prepare(
       `INSERT OR IGNORE INTO world_place_map_links (
