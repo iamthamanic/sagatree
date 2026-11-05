@@ -213,9 +213,17 @@ export function importHostBundle(input: ImportBundleInput): BundleResult<ImportR
     for (const world of bundle.worlds) {
       input.db
         .prepare(
-          `INSERT INTO worlds (id, owner_user_id, title, created_at) VALUES (?, ?, ?, ?)`,
+          `INSERT INTO worlds (id, owner_user_id, title, created_at, public_id) VALUES (?, ?, ?, ?, ?)`,
         )
-        .run(String(world.id), owner, String(world.title ?? 'World'), String(world.created_at ?? new Date().toISOString()));
+        .run(
+          String(world.id),
+          owner,
+          String(world.title ?? 'World'),
+          String(world.created_at ?? new Date().toISOString()),
+          typeof world.public_id === 'string' && world.public_id.trim()
+            ? world.public_id.trim().toUpperCase()
+            : null,
+        );
     }
 
     for (const project of bundle.projects) {

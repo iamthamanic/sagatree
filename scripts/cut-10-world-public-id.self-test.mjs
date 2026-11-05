@@ -8,6 +8,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { randomBytes } from 'node:crypto';
+import { DatabaseSync } from 'node:sqlite';
 
 const root = new URL('..', import.meta.url).pathname;
 const createHostUrl = pathToFileURL(join(root, 'server/src/bootstrap/create-host.ts')).href;
@@ -143,6 +144,81 @@ try {
     stranger.res.status === 404 || stranger.res.status === 403,
     `stranger denied ${stranger.res.status}`,
   );
+
+  // Backfill formula must always yield letter+digit (Codex P2 / parsePublicResourceId).
+  {
+    const tmpDbPath = join(work, 'backfill-check.sqlite');
+    const db = new DatabaseSync(tmpDbPath);
+    db.exec(`CREATE TABLE worlds (id TEXT PRIMARY KEY, public_id TEXT);`);
+    // Historical bad case: all-digit body when first char could be digit.
+    db.prepare(`INSERT INTO worlds (rowid, id) VALUES (811800, 'w-high')`).run();
+    db.exec(`
+      UPDATE worlds
+      SET public_id = printf(
+        'WO-%s2%s%s%s',
+        substr('ABCDEFGHJKLMNPQRSTUVWXYZ', (rowid / 32768) % 24 + 1, 1),
+        substr('ABCDEFGHJKLMNPQRSTUVWXYZ23456789', (rowid / 1024) % 32 + 1, 1),
+        substr('ABCDEFGHJKLMNPQRSTUVWXYZ23456789', (rowid / 32) % 32 + 1, 1),
+        substr('ABCDEFGHJKLMNPQRSTUVWXYZ23456789', rowid % 32 + 1, 1)
+      )
+      WHERE public_id IS NULL OR TRIM(public_id) = '';
+    `);
+    const row = db.prepare(`SELECT public_id AS publicId FROM worlds WHERE id = 'w-high'`).get();
+    db.close();
+    const pid = String(row?.publicId ?? '');
+    assert(/^WO-[A-Z2-9]{5}$/.test(pid), `backfill shape ${pid}`);
+    assert(/[A-Z]/.test(pid.slice(3)), `backfill has letter ${pid}`);
+    assert(/[2-9]/.test(pid.slice(3)), `backfill has digit ${pid}`);
+  }
+
+  // Export → import must preserve immutable WO- public_id (Codex P1).
+  {
+    const persistenceUrl = pathToFileURL(join(root, 'server/src/persistence/index.ts')).href;
+    const bundlesUrl = pathToFileURL(join(root, 'server/src/migration/bundles/index.ts')).href;
+    const { bootstrapHostPersistence } = await import(persistenceUrl);
+    const { exportHostBundle, importHostBundle } = await import(bundlesUrl);
+    const srcDir = join(work, 'bundle-src');
+    const dstDir = join(work, 'bundle-dst');
+    mkdirSync(srcDir);
+    mkdirSync(dstDir);
+    const src = bootstrapHostPersistence({
+      dataDir: srcDir,
+      migrationsDir: join(root, 'server/migrations'),
+    });
+    const dst = bootstrapHostPersistence({
+      dataDir: dstDir,
+      migrationsDir: join(root, 'server/migrations'),
+    });
+    assert(src.ok && dst.ok, 'bundle bootstrap');
+    const now = new Date().toISOString();
+    const wid = `world-${randomBytes(8).toString('hex')}`;
+    const preserved = 'WO-ABC2D';
+    src.db
+      .prepare(
+        `INSERT INTO worlds (id, owner_user_id, title, created_at, public_id) VALUES (?, ?, ?, ?, ?)`,
+      )
+      .run(wid, 'owner-bundle', 'Bundle World', now, preserved);
+    const exported = exportHostBundle({
+      db: src.db,
+      ownerUserId: 'owner-bundle',
+      assetBytesById: new Map(),
+    });
+    assert(exported.ok, `export ok ${exported.ok ? '' : exported.error}`);
+    assert(exported.value.worlds[0]?.public_id === preserved, 'export keeps public_id');
+    const imported = importHostBundle({
+      db: dst.db,
+      dataDir: dstDir,
+      bundle: exported.value,
+      importingOwnerUserId: 'restore-owner',
+    });
+    assert(imported.ok, `import ok ${imported.ok ? '' : imported.error}`);
+    const restored = dst.db
+      .prepare(`SELECT public_id AS publicId FROM worlds WHERE id = ?`)
+      .get(wid);
+    assert(restored?.publicId === preserved, `import restored public_id ${restored?.publicId}`);
+    src.db.close();
+    dst.db.close();
+  }
 
   await host.stop();
   console.log('PASS: cut-10-world-public-id.self-test');

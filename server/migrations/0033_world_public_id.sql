@@ -3,11 +3,12 @@
 
 ALTER TABLE worlds ADD COLUMN public_id TEXT;
 
--- Collision-free backfill over alphabet without O/0/I/1; digit forced at index 2.
+-- Collision-free backfill: letter-only first char + fixed digit at index 2
+-- so bodies always contain both a letter and a digit (parsePublicResourceId).
 UPDATE worlds
 SET public_id = printf(
   'WO-%s2%s%s%s',
-  substr('ABCDEFGHJKLMNPQRSTUVWXYZ23456789', (rowid / 32768) % 32 + 1, 1),
+  substr('ABCDEFGHJKLMNPQRSTUVWXYZ', (rowid / 32768) % 24 + 1, 1),
   substr('ABCDEFGHJKLMNPQRSTUVWXYZ23456789', (rowid / 1024) % 32 + 1, 1),
   substr('ABCDEFGHJKLMNPQRSTUVWXYZ23456789', (rowid / 32) % 32 + 1, 1),
   substr('ABCDEFGHJKLMNPQRSTUVWXYZ23456789', rowid % 32 + 1, 1)

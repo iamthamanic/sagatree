@@ -62,9 +62,10 @@ try {
   const bytes = Buffer.from('atlas-png-bytes');
   const checksum = createHash('sha256').update(bytes).digest('hex');
 
+  const worldPublicId = 'WO-EXP2T';
   db.prepare(
-    `INSERT INTO worlds (id, owner_user_id, title, created_at) VALUES (?, ?, ?, ?)`,
-  ).run(worldId, OWNER, 'Export World', now);
+    `INSERT INTO worlds (id, owner_user_id, title, created_at, public_id) VALUES (?, ?, ?, ?, ?)`,
+  ).run(worldId, OWNER, 'Export World', now, worldPublicId);
   db.prepare(
     `INSERT INTO projects (id, world_id, gm_user_id, title, created_at, saga_id) VALUES (?, ?, ?, ?, ?, ?)`,
   ).run(projectId, worldId, OWNER, 'Export Project', now, null);
@@ -108,6 +109,7 @@ try {
   });
   assert(exported.ok, `export: ${exported.ok ? '' : exported.error}`);
   assert(exported.value.worlds[0].id === worldId, 'world id');
+  assert(exported.value.worlds[0].public_id === worldPublicId, 'world public_id exported');
   assert(exported.value.assets[0].checksumSha256 === checksum, 'asset hash');
   assert(exported.value.npcs[0].publicId === 'NPCC-1', 'npc public id');
   assert(exported.value.inventory[0].publicId === 'IT-1', 'item public id');
@@ -129,8 +131,11 @@ try {
   assert(imported.value.inventory[0]?.publicId === 'IT-1', 'inventory restored in report');
   assert(existsSync(join(target.dataDir, 'assets', assetId)), 'asset bytes on disk');
   assert(readFileSync(join(target.dataDir, 'assets', assetId)).equals(bytes), 'asset bytes match');
-  const restoredWorld = target.db.prepare(`SELECT owner_user_id FROM worlds WHERE id = ?`).get(worldId);
+  const restoredWorld = target.db
+    .prepare(`SELECT owner_user_id, public_id FROM worlds WHERE id = ?`)
+    .get(worldId);
   assert(restoredWorld.owner_user_id === RESTORE, 'owner remapped on restore');
+  assert(restoredWorld.public_id === worldPublicId, 'world public_id preserved on restore');
   const restoredAsset = target.db
     .prepare(`SELECT checksum_sha256, published FROM assets WHERE id = ?`)
     .get(assetId);
