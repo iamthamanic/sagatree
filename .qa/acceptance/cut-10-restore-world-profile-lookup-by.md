@@ -1,6 +1,6 @@
 # Acceptance — CUT-10 (#1145)
 
-- HEAD_SHA: 5566cb24f2c773c9363ae86128251324e4ec6de0
+- HEAD_SHA: 9134de208b2da88c4f94b885ed9fe7654ba8e40c
 - Issue: #1145
 - Slug: cut-10-restore-world-profile-lookup-by
 
@@ -12,7 +12,7 @@ Public id is identity only — `world.read` policy still authorizes access.
 
 ## Composition Gate
 
-- HEAD_SHA: 5566cb24f2c773c9363ae86128251324e4ec6de0
+- HEAD_SHA: 9134de208b2da88c4f94b885ed9fe7654ba8e40c
 - Verdict: CLEAR
 
 ## Required Tests

@@ -1,6 +1,6 @@
 # Composition Gate — cut-10-restore-world-profile-lookup-by (#1145)
 
-- HEAD_SHA: 5566cb24f2c773c9363ae86128251324e4ec6de0
+- HEAD_SHA: 9134de208b2da88c4f94b885ed9fe7654ba8e40c
 - BASE_SHA: 8b28a0bad822c0a80e5f08a57592e3e3816d7ca1
 - Date: 2026-11-05
 - Verdict: CLEAR
