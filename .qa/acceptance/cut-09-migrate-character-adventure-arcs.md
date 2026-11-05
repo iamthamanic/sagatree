@@ -1,6 +1,6 @@
 # Acceptance — CUT-09 (#1144)
 
-- HEAD_SHA: pending
+- HEAD_SHA: 60e6125d7ebc73d3b2cd8decf9e3d18f9390e792
 - Issue: #1144
 - Slug: cut-09-migrate-character-adventure-arcs
 
@@ -13,7 +13,7 @@ FE dual-path; Soft-DENY removed; migration `0032_character_adventure_arcs.sql`.
 
 ## Composition Gate
 
-- HEAD_SHA: pending
+- HEAD_SHA: 60e6125d7ebc73d3b2cd8decf9e3d18f9390e792
 - Verdict: CLEAR
 
 ## Required Tests
