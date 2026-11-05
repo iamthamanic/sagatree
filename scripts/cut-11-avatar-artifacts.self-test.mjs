@@ -213,7 +213,7 @@ try {
   const analysis = host.character.persistAuthoritativeArtifactAnalysis(ownerId, artifactId, {
     authoritative: true,
     status: 'ready',
-    contractVersion: 'SagaDriveAvatarStructureAnalyzerV2',
+    contractVersion: 'SagaTreeAvatarStructureAnalyzerV2',
     anatomy: { ok: true },
   });
   assert(analysis.ok === true, `analysis port ${JSON.stringify(analysis)}`);
