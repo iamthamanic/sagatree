@@ -27,6 +27,12 @@ import {
   type CreateCharacterPresetProductInput,
 } from './internal/character-preset-product-store.ts';
 import {
+  CharacterAdventureArcStore,
+  type AdventureArcRecord,
+  type AdventureDevelopmentKind,
+  type AdventureMembershipProjection,
+} from './internal/character-adventure-arc-store.ts';
+import {
   CharacterInventoryColumnsStore,
   type CharacterInventoryColumnsRecord,
   type CharacterInventoryColumnsResult,
@@ -99,6 +105,9 @@ export type {
   CharacterInventoryColumnsResult,
   CharacterPresetProductRecord,
   CreateCharacterPresetProductInput,
+  AdventureArcRecord,
+  AdventureDevelopmentKind,
+  AdventureMembershipProjection,
 };
 export {
   CHARACTER_INFRA_PUBLIC_ACTIVATION_AUTHORIZED,
@@ -174,6 +183,26 @@ export type CharacterPorts = {
     actorId: string,
     presetId: string,
   ) => CharacterSheetResult<{ readonly id: string }>;
+  /** CUT-09 — adventure arcs (memberships supplied by project projection). */
+  readonly syncAndListAdventureArcs: (
+    actorId: string,
+    characterId: string,
+    memberships: readonly AdventureMembershipProjection[],
+  ) => CharacterSheetResult<readonly AdventureArcRecord[]>;
+  readonly appendAdventureDevelopment: (
+    actorId: string,
+    arcId: string,
+    input: {
+      readonly kind: AdventureDevelopmentKind;
+      readonly title: string;
+      readonly detail?: string;
+      readonly meta?: Readonly<Record<string, unknown>>;
+    },
+  ) => CharacterSheetResult<AdventureArcRecord>;
+  readonly getOwnedAdventureArc: (
+    actorId: string,
+    arcId: string,
+  ) => CharacterSheetResult<AdventureArcRecord>;
   readonly resolveOwnedArtifact: (
     actorId: string,
     storagePath: string,
@@ -233,6 +262,9 @@ export function createCharacterPorts(db?: HostDatabase): CharacterPorts {
       renamePreset: () => unavailableSheet(),
       duplicatePreset: () => unavailableSheet(),
       deletePreset: () => unavailableSheet(),
+      syncAndListAdventureArcs: () => unavailableSheet(),
+      appendAdventureDevelopment: () => unavailableSheet(),
+      getOwnedAdventureArc: () => unavailableSheet(),
       resolveOwnedArtifact: () => unavailableSheet(),
       seedPublicPresetForTests: () => {
         throw new Error('store-unavailable');
@@ -245,6 +277,7 @@ export function createCharacterPorts(db?: HostDatabase): CharacterPorts {
   const membership = new CharacterMembershipStore(db);
   const sheets = new CharacterSheetStore(db);
   const productPresets = new CharacterPresetProductStore(db);
+  const adventureArcs = new CharacterAdventureArcStore(db);
   const inventoryColumns = new CharacterInventoryColumnsStore(db);
   return {
     moduleId: 'character',
@@ -270,6 +303,11 @@ export function createCharacterPorts(db?: HostDatabase): CharacterPorts {
       productPresets.renamePreset(actorId, presetId, displayName),
     duplicatePreset: (actorId, presetId) => productPresets.duplicatePreset(actorId, presetId),
     deletePreset: (actorId, presetId) => productPresets.deletePreset(actorId, presetId),
+    syncAndListAdventureArcs: (actorId, characterId, memberships) =>
+      adventureArcs.syncAndList(actorId, characterId, memberships),
+    appendAdventureDevelopment: (actorId, arcId, input) =>
+      adventureArcs.appendDevelopment(actorId, arcId, input),
+    getOwnedAdventureArc: (actorId, arcId) => adventureArcs.getOwnedArc(actorId, arcId),
     resolveOwnedArtifact: (actorId, storagePath) => sheets.resolveArtifact(actorId, storagePath),
     seedPublicPresetForTests: (input) => sheets.seedPublicPreset(input),
     seedArtifactForTests: (input) => sheets.seedArtifact(input),

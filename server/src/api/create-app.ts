@@ -69,6 +69,10 @@ export type HostApiDeps = {
   readonly look?: LookProfilePorts | null;
   readonly inventory?: InventoryPorts | null;
   readonly project?: ProjectPorts | null;
+  /** CUT-09 — session count projection for adventure arcs. */
+  readonly sessionLookup?: {
+    readonly countSessionsForProject: (projectId: string) => number;
+  } | null;
   /** FE-HOST-02 session product HTTP (lifecycle/runtime/invites). */
   readonly sessionInfra?: SessionInfraPorts | null;
   /** FE-HOST-04 project / saga overview product HTTP. */
@@ -462,6 +466,7 @@ export function createHostApi(deps: HostApiDeps): Hono {
     inventory: deps.inventory,
     project: deps.project,
     assets: deps.assets,
+    sessionLookup: deps.sessionLookup,
   });
 
   mountSessionHttpRoutes(app, {

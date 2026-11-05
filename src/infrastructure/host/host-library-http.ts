@@ -513,6 +513,45 @@ export async function deleteHostLibraryCharacterPreset(
   );
 }
 
+/** CUT-09 — GET `/api/v1/library/characters/:id/adventure-arcs`. */
+export async function fetchHostLibraryAdventureArcs(
+  characterId: string,
+  env: EnvLike = defaultEnv(),
+  fetchImpl: typeof fetch = fetch,
+): Promise<readonly unknown[]> {
+  const body = await hostGetJson<{ arcs?: unknown[] }>(
+    `/api/v1/library/characters/${encodeURIComponent(characterId)}/adventure-arcs`,
+    'Host-Abenteuer-Bögen nicht erreichbar',
+    env,
+    fetchImpl,
+  );
+  return Array.isArray(body.arcs) ? body.arcs : [];
+}
+
+/** CUT-09 — POST `/api/v1/library/adventure-arcs/:id/developments`. */
+export async function appendHostLibraryAdventureDevelopment(
+  arcId: string,
+  input: {
+    readonly kind: string;
+    readonly title: string;
+    readonly detail?: string;
+    readonly meta?: Readonly<Record<string, unknown>>;
+  },
+  env: EnvLike = defaultEnv(),
+  fetchImpl: typeof fetch = fetch,
+): Promise<unknown> {
+  const body = await hostMutateJson<{ arc?: unknown }>(
+    `/api/v1/library/adventure-arcs/${encodeURIComponent(arcId)}/developments`,
+    'POST',
+    'Host-Abenteuer-Entwicklung speichern fehlgeschlagen',
+    input,
+    env,
+    fetchImpl,
+  );
+  if (!body.arc) throw new Error('Host-Abenteuer-Entwicklung: leere Antwort');
+  return body.arc;
+}
+
 export async function fetchHostLibraryNpcCreatures(
   env: EnvLike = defaultEnv(),
   fetchImpl: typeof fetch = fetch,

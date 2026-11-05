@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-character.json](source-contracts/infra-character.json) (SHA-256 `629c08abda799089ddf7bd7f5609c8ab30fa46604ddc12758ba9b1f770f31129`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-character.json](source-contracts/infra-character.json) (SHA-256 `351460257a0a0846198112e2ca301725a7054b3af45d4a3a3aee80a40048c699`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -532,7 +532,7 @@ fetch(manifestUrl)
 Enclosing operation: `src/infrastructure/character/avatar/character-studio-runtime.ts:1347`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: project_members
 
-`src/infrastructure/character/character-adventure-arc-service.ts:90` — literal-or-constant.
+`src/infrastructure/character/character-adventure-arc-service.ts:124` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -542,10 +542,10 @@ supabase
       .eq('character_id', trimmedId)
 ```
 
-Enclosing operation: `src/infrastructure/character/character-adventure-arc-service.ts:85`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/character/character-adventure-arc-service.ts:113`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: character_adventure_arcs
 
-`src/infrastructure/character/character-adventure-arc-service.ts:101` — literal-or-constant.
+`src/infrastructure/character/character-adventure-arc-service.ts:135` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -556,10 +556,10 @@ supabase
       .order('started_at', { ascending: false })
 ```
 
-Enclosing operation: `src/infrastructure/character/character-adventure-arc-service.ts:85`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/character/character-adventure-arc-service.ts:113`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: character_adventure_arcs
 
-`src/infrastructure/character/character-adventure-arc-service.ts:119` — literal-or-constant.
+`src/infrastructure/character/character-adventure-arc-service.ts:153` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -576,10 +576,10 @@ supabase
         .single()
 ```
 
-Enclosing operation: `src/infrastructure/character/character-adventure-arc-service.ts:85`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/character/character-adventure-arc-service.ts:113`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: character_adventure_arcs
 
-`src/infrastructure/character/character-adventure-arc-service.ts:140` — literal-or-constant.
+`src/infrastructure/character/character-adventure-arc-service.ts:174` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -590,30 +590,30 @@ supabase
       .order('started_at', { ascending: false })
 ```
 
-Enclosing operation: `src/infrastructure/character/character-adventure-arc-service.ts:85`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/character/character-adventure-arc-service.ts:113`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: projects
 
-`src/infrastructure/character/character-adventure-arc-service.ts:156` — literal-or-constant.
+`src/infrastructure/character/character-adventure-arc-service.ts:190` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
 supabase.from('projects').select('id, name, status').in('id', projectIds)
 ```
 
-Enclosing operation: `src/infrastructure/character/character-adventure-arc-service.ts:85`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/character/character-adventure-arc-service.ts:113`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: sessions
 
-`src/infrastructure/character/character-adventure-arc-service.ts:157` — literal-or-constant.
+`src/infrastructure/character/character-adventure-arc-service.ts:191` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
 supabase.from('sessions').select('project_id').in('project_id', projectIds)
 ```
 
-Enclosing operation: `src/infrastructure/character/character-adventure-arc-service.ts:85`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/character/character-adventure-arc-service.ts:113`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: character_adventure_arcs
 
-`src/infrastructure/character/character-adventure-arc-service.ts:203` — literal-or-constant.
+`src/infrastructure/character/character-adventure-arc-service.ts:248` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -624,10 +624,10 @@ supabase
       .single()
 ```
 
-Enclosing operation: `src/infrastructure/character/character-adventure-arc-service.ts:194`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/character/character-adventure-arc-service.ts:228`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: character_adventure_arcs
 
-`src/infrastructure/character/character-adventure-arc-service.ts:227` — literal-or-constant.
+`src/infrastructure/character/character-adventure-arc-service.ts:272` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -639,10 +639,10 @@ supabase
       .single()
 ```
 
-Enclosing operation: `src/infrastructure/character/character-adventure-arc-service.ts:194`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/character/character-adventure-arc-service.ts:228`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: projects
 
-`src/infrastructure/character/character-adventure-arc-service.ts:238` — literal-or-constant.
+`src/infrastructure/character/character-adventure-arc-service.ts:283` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -653,10 +653,10 @@ supabase
       .maybeSingle()
 ```
 
-Enclosing operation: `src/infrastructure/character/character-adventure-arc-service.ts:194`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/character/character-adventure-arc-service.ts:228`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: sessions
 
-`src/infrastructure/character/character-adventure-arc-service.ts:244` — literal-or-constant.
+`src/infrastructure/character/character-adventure-arc-service.ts:289` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -666,7 +666,7 @@ supabase
       .eq('project_id', (updated as CharacterAdventureArcDto).project_id)
 ```
 
-Enclosing operation: `src/infrastructure/character/character-adventure-arc-service.ts:194`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/character/character-adventure-arc-service.ts:228`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### edge: character-lore
 
 `src/infrastructure/character/character-lore-service.ts:86` — literal-or-constant.
@@ -7120,7 +7120,7 @@ export function toCharacterTraitManifest(input: {
 }
 ```
 
-### src/infrastructure/character/character-adventure-arc-service.ts:258
+### src/infrastructure/character/character-adventure-arc-service.ts:303
 
 ```ts
 export const characterAdventureArcService = new CharacterAdventureArcService();
@@ -11347,13 +11347,19 @@ async function invoke(body: Record<string, unknown>): Promise<FunctionResponse> 
 }
 ```
 
-### src/infrastructure/character/character-adventure-arc-service.ts:85
+### src/infrastructure/character/character-adventure-arc-service.ts:113
 
 ```ts
 async listArcsForCharacter(characterId: string): Promise<CharacterAdventureArcVm[]> {
-    assertHostProductSurfaceAvailable('Abenteuer-Bögen');
     const trimmedId = characterId.trim();
     if (!trimmedId) throw new Error('Character id is required.');
+
+    if (isHostLibraryEnabled()) {
+      const rows = await fetchHostLibraryAdventureArcs(trimmedId);
+      return rows
+        .map(mapHostArc)
+        .filter((row): row is CharacterAdventureArcVm => row !== null);
+    }
 
     const { data: memberships, error: membershipError } = await supabase
       .from('project_members')
@@ -11460,17 +11466,28 @@ async listArcsForCharacter(characterId: string): Promise<CharacterAdventureArcVm
   }
 ```
 
-### src/infrastructure/character/character-adventure-arc-service.ts:194
+### src/infrastructure/character/character-adventure-arc-service.ts:228
 
 ```ts
 async appendDevelopment(
     arcId: string,
     input: AppendAdventureDevelopmentInput,
   ): Promise<CharacterAdventureArcVm> {
-    assertHostProductSurfaceAvailable('Abenteuer-Bögen');
     const title = input.title.trim();
     if (!title) throw new Error('Titel der Entwicklung ist erforderlich.');
     if (!isDevelopmentKind(input.kind)) throw new Error('Ungültige Entwicklungsart.');
+
+    if (isHostLibraryEnabled()) {
+      const updated = await appendHostLibraryAdventureDevelopment(arcId, {
+        kind: input.kind,
+        title,
+        detail: input.detail,
+        meta: input.meta,
+      });
+      const mapped = mapHostArc(updated);
+      if (!mapped) throw new Error('Host-Abenteuer-Entwicklung: ungültige Antwort');
+      return mapped;
+    }
 
     const { data: current, error: loadError } = await supabase
       .from(TABLE)
@@ -12109,7 +12126,7 @@ private async assertPersonalLookWriteGate(
 | `src/infrastructure/character/avatar/toonlab-compatibility-spike.ts` | `e896927b2a2fa4c4ad74550b0909a681596d41bdc356980a31afd42b493f5d30` |
 | `src/infrastructure/character/avatar/trait-asset-allowlist.ts` | `9aa2ecef7d49f63909420f2df21b66a62167e844fd6c97202f49c28058feec57` |
 | `src/infrastructure/character/avatar/trait-lifecycle-three-adapter.ts` | `e02df093e7e626eb3d46d2f8fce8bb133d0a8e7546b89980aee5ae0469072303` |
-| `src/infrastructure/character/character-adventure-arc-service.ts` | `f636072dd9e8636f15fa40fa37cad7d1f607dd2edb3887beba707095bda33e5b` |
+| `src/infrastructure/character/character-adventure-arc-service.ts` | `fb4481775a7c53b3e194ec5885fa84af90adc259cfbcdf3dd475645ad6c6fea6` |
 | `src/infrastructure/character/character-lore-service.ts` | `f14fdcb2290d57a7b2e6646cebb9756b63de4be624920188de1299236e40362a` |
 | `src/infrastructure/character/character-preset-service.ts` | `26902a435cfb08e53c4e13ec588fc02527fd58fe81f64b7e83f74509590dac0e` |
 | `src/infrastructure/character/character-service.ts` | `9eb0f8385a4d8d2cec29013dc99df9420bcde14a7ba37461f5e6b7d47cac0172` |
@@ -12137,7 +12154,7 @@ private async assertPersonalLookWriteGate(
 | `src/infrastructure/character/liveact/mediapipe-sagatree-face-anchor-map-v1.ts` | `b092e31c50b885b9dbeb396ef2bdbfa39a953df717da7e0042e081849c173d9a` |
 | `src/infrastructure/character/liveact/vrm-liveact-avatar-output.ts` | `f5ef95d582ee0f3a2ec47748e8d958306f3833d45a5e8e1b250d1eecfba5d9a6` |
 | `src/infrastructure/character/supabase-character.repository.ts` | `ae0034e06c55c384124c933bc8093c3926b7ece34a5222213913d1fdc03a9878` |
-| `src/infrastructure/host/host-library-http.ts` | `e39553aaf251977db8b72a0db88350dd5893430cfbd5fa5c3007b41f5b23efd5` |
+| `src/infrastructure/host/host-library-http.ts` | `69904d232219d72d3ee991eadc688ed47f9a3eb98289d516d7b437119d6e4d3d` |
 | `src/infrastructure/host/host-product-deny.ts` | `69b148debc95006bb31daa7a94caf4e1507ac3089fdf399952102c4effa3759c` |
 | `src/infrastructure/host/host-project-http.ts` | `b5a68f6452217b08d2217a983113a9a356ce70890693319227f35c82fbdcd818` |
 | `src/infrastructure/inventory/inventory-persistence.ts` | `79aaa09053ecd72a0bec8f8f0610b31ab0c9b34779f4a4c87f19f0d2ef7e4ac2` |

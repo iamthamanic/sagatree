@@ -110,6 +110,13 @@ export type ProjectPorts = {
     projectId: string,
     memberId: string,
   ) => { id: string; userId: string } | null;
+  /** CUT-09 — character→project membership projection for adventure arcs. */
+  readonly listMembershipsByCharacter: (characterId: string) => readonly {
+    projectId: string;
+    userId: string;
+    joinedAt: string | null;
+    status: 'active' | 'inactive';
+  }[];
   /** Owner/GM library list — projects where actor is GM or active member. */
   readonly listOwnedProjects: (actorId: string) => ProjectResult<readonly ProvisionedProject[]>;
   /** FE-HOST-12: blank saga create (world already allocated). */
@@ -155,6 +162,7 @@ export function createProjectPorts(db?: HostDatabase): ProjectPorts {
       worldHasProjects: () => false,
       listActiveMembers: () => [],
       getActiveMemberById: () => null,
+      listMembershipsByCharacter: () => [],
       listOwnedProjects: () => ({ ok: false, error: 'store-unavailable' }),
       createBlank: () => ({ ok: false, error: 'store-unavailable' }),
       updateOwned: () => ({ ok: false, error: 'store-unavailable' }),
@@ -205,6 +213,8 @@ export function createProjectPorts(db?: HostDatabase): ProjectPorts {
     listActiveMembers: (projectId) => projectMembership.listActiveMembers(projectId),
     getActiveMemberById: (projectId, memberId) =>
       projectMembership.getActiveMemberById(projectId, memberId),
+    listMembershipsByCharacter: (characterId) =>
+      projectMembership.listMembershipsByCharacter(characterId),
     listOwnedProjects(actorId) {
       if (!actorId) return { ok: false, error: '42501' };
       const rows = db

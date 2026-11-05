@@ -28974,7 +28974,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "e39553aaf251977db8b72a0db88350dd5893430cfbd5fa5c3007b41f5b23efd5"
+            "sha256": "69904d232219d72d3ee991eadc688ed47f9a3eb98289d516d7b437119d6e4d3d"
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
@@ -28990,7 +28990,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-ai.json",
-      "sourceContractSha256": "ef10985a759263dd88c01eefb777a4741e254a1127fe189765b100881e6ceead",
+      "sourceContractSha256": "61066eeb04840f07ed4d78e00ca3c45f49fbc9bba52bd56500fcfa6d28a6bd24",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],
@@ -30195,7 +30195,7 @@
           },
           {
             "path": "src/infrastructure/character/character-adventure-arc-service.ts",
-            "sha256": "f636072dd9e8636f15fa40fa37cad7d1f607dd2edb3887beba707095bda33e5b"
+            "sha256": "fb4481775a7c53b3e194ec5885fa84af90adc259cfbcdf3dd475645ad6c6fea6"
           },
           {
             "path": "src/infrastructure/character/character-lore-service.ts",
@@ -30307,7 +30307,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "e39553aaf251977db8b72a0db88350dd5893430cfbd5fa5c3007b41f5b23efd5"
+            "sha256": "69904d232219d72d3ee991eadc688ed47f9a3eb98289d516d7b437119d6e4d3d"
           },
           {
             "path": "src/infrastructure/host/host-product-deny.ts",
@@ -30491,7 +30491,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-character.json",
-      "sourceContractSha256": "629c08abda799089ddf7bd7f5609c8ab30fa46604ddc12758ba9b1f770f31129",
+      "sourceContractSha256": "351460257a0a0846198112e2ca301725a7054b3af45d4a3a3aee80a40048c699",
       "rpcUsed": [],
       "tablesTouched": [
         "character_adventure_arcs",
@@ -31810,8 +31810,8 @@
           "kind": "table",
           "name": "project_members",
           "path": "src/infrastructure/character/character-adventure-arc-service.ts",
-          "line": 90,
-          "endLine": 91,
+          "line": 124,
+          "endLine": 125,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from('project_members')",
           "chain": "supabase\n      .from('project_members')\n      .select('project_id, joined_at, status')\n      .eq('character_id', trimmedId)",
@@ -31820,17 +31820,17 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/character/character-adventure-arc-service.ts",
-            "line": 85,
-            "endLine": 192,
-            "text": "async listArcsForCharacter(characterId: string): Promise<CharacterAdventureArcVm[]> {\n    assertHostProductSurfaceAvailable('Abenteuer-Bögen');\n    const trimmedId = characterId.trim();\n    if (!trimmedId) throw new Error('Character id is required.');\n\n    const { data: memberships, error: membershipError } = await supabase\n      .from('project_members')\n      .select('project_id, joined_at, status')\n      .eq('character_id', trimmedId);\n\n    if (membershipError) {\n      throw new Error(`Abenteuer-Mitgliedschaften konnten nicht geladen werden: ${membershipError.message}`);\n    }\n\n    const activeMemberships = (memberships ?? []).filter((row) => row.status === 'active');\n\n    const { data: existingArcs, error: arcsError } = await supabase\n      .from(TABLE)\n      .select('*')\n      .eq('character_id', trimmedId)\n      .order('started_at', { ascending: false });\n\n    if (arcsError) {\n      throw new Error(`Abenteuer-Statistik konnte nicht geladen werden: ${arcsError.message}`);\n    }\n\n    const arcsByProject = new Map(\n      ((existingArcs ?? []) as CharacterAdventureArcDto[]).map((arc) => [arc.project_id, arc]),\n    );\n\n    for (const membership of activeMemberships) {\n      const projectId = membership.project_id as string;\n      if (arcsByProject.has(projectId)) continue;\n\n      const { data: inserted, error: insertError } = await supabase\n        .from(TABLE)\n        .insert({\n          character_id: trimmedId,\n          project_id: projectId,\n          status: 'active',\n          started_at: membership.joined_at ?? new Date().toISOString(),\n          developments: [],\n        })\n        .select('*')\n        .single();\n\n      if (insertError) {\n        // Concurrent upsert / unique race: reload later in this pass.\n        if (insertError.code === '23505') continue;\n        throw new Error(`Abenteuer-Bogen konnte nicht angelegt werden: ${insertError.message}`);\n      }\n\n      arcsByProject.set(projectId, inserted as CharacterAdventureArcDto);\n    }\n\n    const { data: refreshed, error: refreshError } = await supabase\n      .from(TABLE)\n      .select('*')\n      .eq('character_id', trimmedId)\n      .order('started_at', { ascending: false });\n\n    if (refreshError) {\n      throw new Error(`Abenteuer-Statistik konnte nicht aktualisiert werden: ${refreshError.message}`);\n    }\n\n    const arcs = (refreshed ?? []) as CharacterAdventureArcDto[];\n    if (arcs.length === 0) return [];\n\n    const projectIds = [...new Set(arcs.map((arc) => arc.project_id))];\n\n    const [{ data: projects, error: projectsError }, { data: sessions, error: sessionsError }] = await Promise.all([\n      supabase.from('projects').select('id, name, status').in('id', projectIds),\n      supabase.from('sessions').select('project_id').in('project_id', projectIds),\n    ]);\n\n    if (projectsError) {\n      throw new Error(`Projekte zur Statistik konnten nicht geladen werden: ${projectsError.message}`);\n    }\n    if (sessionsError) {\n      throw new Error(`Sessions zur Statistik konnten nicht geladen werden: ${sessionsError.message}`);\n    }\n\n    const projectMeta = new Map(\n      (projects ?? []).map((project) => [\n        project.id as string,\n        {\n          name: typeof project.name === 'string' ? project.name : 'Unbenanntes Abenteuer',\n          status: typeof project.status === 'string' ? project.status : null,\n        },\n      ]),\n    );\n\n    const sessionCounts = new Map<string, number>();\n    for (const session of sessions ?? []) {\n      const projectId = session.project_id as string;\n      sessionCounts.set(projectId, (sessionCounts.get(projectId) ?? 0) + 1);\n    }\n\n    return arcs.map((arc) => {\n      const meta = projectMeta.get(arc.project_id);\n      return mapArc(\n        arc,\n        meta?.name ?? 'Unbekanntes Abenteuer',\n        meta?.status ?? null,\n        sessionCounts.get(arc.project_id) ?? 0,\n      );\n    });\n  }"
+            "line": 113,
+            "endLine": 226,
+            "text": "async listArcsForCharacter(characterId: string): Promise<CharacterAdventureArcVm[]> {\n    const trimmedId = characterId.trim();\n    if (!trimmedId) throw new Error('Character id is required.');\n\n    if (isHostLibraryEnabled()) {\n      const rows = await fetchHostLibraryAdventureArcs(trimmedId);\n      return rows\n        .map(mapHostArc)\n        .filter((row): row is CharacterAdventureArcVm => row !== null);\n    }\n\n    const { data: memberships, error: membershipError } = await supabase\n      .from('project_members')\n      .select('project_id, joined_at, status')\n      .eq('character_id', trimmedId);\n\n    if (membershipError) {\n      throw new Error(`Abenteuer-Mitgliedschaften konnten nicht geladen werden: ${membershipError.message}`);\n    }\n\n    const activeMemberships = (memberships ?? []).filter((row) => row.status === 'active');\n\n    const { data: existingArcs, error: arcsError } = await supabase\n      .from(TABLE)\n      .select('*')\n      .eq('character_id', trimmedId)\n      .order('started_at', { ascending: false });\n\n    if (arcsError) {\n      throw new Error(`Abenteuer-Statistik konnte nicht geladen werden: ${arcsError.message}`);\n    }\n\n    const arcsByProject = new Map(\n      ((existingArcs ?? []) as CharacterAdventureArcDto[]).map((arc) => [arc.project_id, arc]),\n    );\n\n    for (const membership of activeMemberships) {\n      const projectId = membership.project_id as string;\n      if (arcsByProject.has(projectId)) continue;\n\n      const { data: inserted, error: insertError } = await supabase\n        .from(TABLE)\n        .insert({\n          character_id: trimmedId,\n          project_id: projectId,\n          status: 'active',\n          started_at: membership.joined_at ?? new Date().toISOString(),\n          developments: [],\n        })\n        .select('*')\n        .single();\n\n      if (insertError) {\n        // Concurrent upsert / unique race: reload later in this pass.\n        if (insertError.code === '23505') continue;\n        throw new Error(`Abenteuer-Bogen konnte nicht angelegt werden: ${insertError.message}`);\n      }\n\n      arcsByProject.set(projectId, inserted as CharacterAdventureArcDto);\n    }\n\n    const { data: refreshed, error: refreshError } = await supabase\n      .from(TABLE)\n      .select('*')\n      .eq('character_id', trimmedId)\n      .order('started_at', { ascending: false });\n\n    if (refreshError) {\n      throw new Error(`Abenteuer-Statistik konnte nicht aktualisiert werden: ${refreshError.message}`);\n    }\n\n    const arcs = (refreshed ?? []) as CharacterAdventureArcDto[];\n    if (arcs.length === 0) return [];\n\n    const projectIds = [...new Set(arcs.map((arc) => arc.project_id))];\n\n    const [{ data: projects, error: projectsError }, { data: sessions, error: sessionsError }] = await Promise.all([\n      supabase.from('projects').select('id, name, status').in('id', projectIds),\n      supabase.from('sessions').select('project_id').in('project_id', projectIds),\n    ]);\n\n    if (projectsError) {\n      throw new Error(`Projekte zur Statistik konnten nicht geladen werden: ${projectsError.message}`);\n    }\n    if (sessionsError) {\n      throw new Error(`Sessions zur Statistik konnten nicht geladen werden: ${sessionsError.message}`);\n    }\n\n    const projectMeta = new Map(\n      (projects ?? []).map((project) => [\n        project.id as string,\n        {\n          name: typeof project.name === 'string' ? project.name : 'Unbenanntes Abenteuer',\n          status: typeof project.status === 'string' ? project.status : null,\n        },\n      ]),\n    );\n\n    const sessionCounts = new Map<string, number>();\n    for (const session of sessions ?? []) {\n      const projectId = session.project_id as string;\n      sessionCounts.set(projectId, (sessionCounts.get(projectId) ?? 0) + 1);\n    }\n\n    return arcs.map((arc) => {\n      const meta = projectMeta.get(arc.project_id);\n      return mapArc(\n        arc,\n        meta?.name ?? 'Unbekanntes Abenteuer',\n        meta?.status ?? null,\n        sessionCounts.get(arc.project_id) ?? 0,\n      );\n    });\n  }"
           }
         },
         {
           "kind": "table",
           "name": "character_adventure_arcs",
           "path": "src/infrastructure/character/character-adventure-arc-service.ts",
-          "line": 101,
-          "endLine": 102,
+          "line": 135,
+          "endLine": 136,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from(TABLE)",
           "chain": "supabase\n      .from(TABLE)\n      .select('*')\n      .eq('character_id', trimmedId)\n      .order('started_at', { ascending: false })",
@@ -31839,17 +31839,17 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/character/character-adventure-arc-service.ts",
-            "line": 85,
-            "endLine": 192,
-            "text": "async listArcsForCharacter(characterId: string): Promise<CharacterAdventureArcVm[]> {\n    assertHostProductSurfaceAvailable('Abenteuer-Bögen');\n    const trimmedId = characterId.trim();\n    if (!trimmedId) throw new Error('Character id is required.');\n\n    const { data: memberships, error: membershipError } = await supabase\n      .from('project_members')\n      .select('project_id, joined_at, status')\n      .eq('character_id', trimmedId);\n\n    if (membershipError) {\n      throw new Error(`Abenteuer-Mitgliedschaften konnten nicht geladen werden: ${membershipError.message}`);\n    }\n\n    const activeMemberships = (memberships ?? []).filter((row) => row.status === 'active');\n\n    const { data: existingArcs, error: arcsError } = await supabase\n      .from(TABLE)\n      .select('*')\n      .eq('character_id', trimmedId)\n      .order('started_at', { ascending: false });\n\n    if (arcsError) {\n      throw new Error(`Abenteuer-Statistik konnte nicht geladen werden: ${arcsError.message}`);\n    }\n\n    const arcsByProject = new Map(\n      ((existingArcs ?? []) as CharacterAdventureArcDto[]).map((arc) => [arc.project_id, arc]),\n    );\n\n    for (const membership of activeMemberships) {\n      const projectId = membership.project_id as string;\n      if (arcsByProject.has(projectId)) continue;\n\n      const { data: inserted, error: insertError } = await supabase\n        .from(TABLE)\n        .insert({\n          character_id: trimmedId,\n          project_id: projectId,\n          status: 'active',\n          started_at: membership.joined_at ?? new Date().toISOString(),\n          developments: [],\n        })\n        .select('*')\n        .single();\n\n      if (insertError) {\n        // Concurrent upsert / unique race: reload later in this pass.\n        if (insertError.code === '23505') continue;\n        throw new Error(`Abenteuer-Bogen konnte nicht angelegt werden: ${insertError.message}`);\n      }\n\n      arcsByProject.set(projectId, inserted as CharacterAdventureArcDto);\n    }\n\n    const { data: refreshed, error: refreshError } = await supabase\n      .from(TABLE)\n      .select('*')\n      .eq('character_id', trimmedId)\n      .order('started_at', { ascending: false });\n\n    if (refreshError) {\n      throw new Error(`Abenteuer-Statistik konnte nicht aktualisiert werden: ${refreshError.message}`);\n    }\n\n    const arcs = (refreshed ?? []) as CharacterAdventureArcDto[];\n    if (arcs.length === 0) return [];\n\n    const projectIds = [...new Set(arcs.map((arc) => arc.project_id))];\n\n    const [{ data: projects, error: projectsError }, { data: sessions, error: sessionsError }] = await Promise.all([\n      supabase.from('projects').select('id, name, status').in('id', projectIds),\n      supabase.from('sessions').select('project_id').in('project_id', projectIds),\n    ]);\n\n    if (projectsError) {\n      throw new Error(`Projekte zur Statistik konnten nicht geladen werden: ${projectsError.message}`);\n    }\n    if (sessionsError) {\n      throw new Error(`Sessions zur Statistik konnten nicht geladen werden: ${sessionsError.message}`);\n    }\n\n    const projectMeta = new Map(\n      (projects ?? []).map((project) => [\n        project.id as string,\n        {\n          name: typeof project.name === 'string' ? project.name : 'Unbenanntes Abenteuer',\n          status: typeof project.status === 'string' ? project.status : null,\n        },\n      ]),\n    );\n\n    const sessionCounts = new Map<string, number>();\n    for (const session of sessions ?? []) {\n      const projectId = session.project_id as string;\n      sessionCounts.set(projectId, (sessionCounts.get(projectId) ?? 0) + 1);\n    }\n\n    return arcs.map((arc) => {\n      const meta = projectMeta.get(arc.project_id);\n      return mapArc(\n        arc,\n        meta?.name ?? 'Unbekanntes Abenteuer',\n        meta?.status ?? null,\n        sessionCounts.get(arc.project_id) ?? 0,\n      );\n    });\n  }"
+            "line": 113,
+            "endLine": 226,
+            "text": "async listArcsForCharacter(characterId: string): Promise<CharacterAdventureArcVm[]> {\n    const trimmedId = characterId.trim();\n    if (!trimmedId) throw new Error('Character id is required.');\n\n    if (isHostLibraryEnabled()) {\n      const rows = await fetchHostLibraryAdventureArcs(trimmedId);\n      return rows\n        .map(mapHostArc)\n        .filter((row): row is CharacterAdventureArcVm => row !== null);\n    }\n\n    const { data: memberships, error: membershipError } = await supabase\n      .from('project_members')\n      .select('project_id, joined_at, status')\n      .eq('character_id', trimmedId);\n\n    if (membershipError) {\n      throw new Error(`Abenteuer-Mitgliedschaften konnten nicht geladen werden: ${membershipError.message}`);\n    }\n\n    const activeMemberships = (memberships ?? []).filter((row) => row.status === 'active');\n\n    const { data: existingArcs, error: arcsError } = await supabase\n      .from(TABLE)\n      .select('*')\n      .eq('character_id', trimmedId)\n      .order('started_at', { ascending: false });\n\n    if (arcsError) {\n      throw new Error(`Abenteuer-Statistik konnte nicht geladen werden: ${arcsError.message}`);\n    }\n\n    const arcsByProject = new Map(\n      ((existingArcs ?? []) as CharacterAdventureArcDto[]).map((arc) => [arc.project_id, arc]),\n    );\n\n    for (const membership of activeMemberships) {\n      const projectId = membership.project_id as string;\n      if (arcsByProject.has(projectId)) continue;\n\n      const { data: inserted, error: insertError } = await supabase\n        .from(TABLE)\n        .insert({\n          character_id: trimmedId,\n          project_id: projectId,\n          status: 'active',\n          started_at: membership.joined_at ?? new Date().toISOString(),\n          developments: [],\n        })\n        .select('*')\n        .single();\n\n      if (insertError) {\n        // Concurrent upsert / unique race: reload later in this pass.\n        if (insertError.code === '23505') continue;\n        throw new Error(`Abenteuer-Bogen konnte nicht angelegt werden: ${insertError.message}`);\n      }\n\n      arcsByProject.set(projectId, inserted as CharacterAdventureArcDto);\n    }\n\n    const { data: refreshed, error: refreshError } = await supabase\n      .from(TABLE)\n      .select('*')\n      .eq('character_id', trimmedId)\n      .order('started_at', { ascending: false });\n\n    if (refreshError) {\n      throw new Error(`Abenteuer-Statistik konnte nicht aktualisiert werden: ${refreshError.message}`);\n    }\n\n    const arcs = (refreshed ?? []) as CharacterAdventureArcDto[];\n    if (arcs.length === 0) return [];\n\n    const projectIds = [...new Set(arcs.map((arc) => arc.project_id))];\n\n    const [{ data: projects, error: projectsError }, { data: sessions, error: sessionsError }] = await Promise.all([\n      supabase.from('projects').select('id, name, status').in('id', projectIds),\n      supabase.from('sessions').select('project_id').in('project_id', projectIds),\n    ]);\n\n    if (projectsError) {\n      throw new Error(`Projekte zur Statistik konnten nicht geladen werden: ${projectsError.message}`);\n    }\n    if (sessionsError) {\n      throw new Error(`Sessions zur Statistik konnten nicht geladen werden: ${sessionsError.message}`);\n    }\n\n    const projectMeta = new Map(\n      (projects ?? []).map((project) => [\n        project.id as string,\n        {\n          name: typeof project.name === 'string' ? project.name : 'Unbenanntes Abenteuer',\n          status: typeof project.status === 'string' ? project.status : null,\n        },\n      ]),\n    );\n\n    const sessionCounts = new Map<string, number>();\n    for (const session of sessions ?? []) {\n      const projectId = session.project_id as string;\n      sessionCounts.set(projectId, (sessionCounts.get(projectId) ?? 0) + 1);\n    }\n\n    return arcs.map((arc) => {\n      const meta = projectMeta.get(arc.project_id);\n      return mapArc(\n        arc,\n        meta?.name ?? 'Unbekanntes Abenteuer',\n        meta?.status ?? null,\n        sessionCounts.get(arc.project_id) ?? 0,\n      );\n    });\n  }"
           }
         },
         {
           "kind": "table",
           "name": "character_adventure_arcs",
           "path": "src/infrastructure/character/character-adventure-arc-service.ts",
-          "line": 119,
-          "endLine": 120,
+          "line": 153,
+          "endLine": 154,
           "resolution": "literal-or-constant",
           "expression": "supabase\n        .from(TABLE)",
           "chain": "supabase\n        .from(TABLE)\n        .insert({\n          character_id: trimmedId,\n          project_id: projectId,\n          status: 'active',\n          started_at: membership.joined_at ?? new Date().toISOString(),\n          developments: [],\n        })\n        .select('*')\n        .single()",
@@ -31858,17 +31858,17 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/character/character-adventure-arc-service.ts",
-            "line": 85,
-            "endLine": 192,
-            "text": "async listArcsForCharacter(characterId: string): Promise<CharacterAdventureArcVm[]> {\n    assertHostProductSurfaceAvailable('Abenteuer-Bögen');\n    const trimmedId = characterId.trim();\n    if (!trimmedId) throw new Error('Character id is required.');\n\n    const { data: memberships, error: membershipError } = await supabase\n      .from('project_members')\n      .select('project_id, joined_at, status')\n      .eq('character_id', trimmedId);\n\n    if (membershipError) {\n      throw new Error(`Abenteuer-Mitgliedschaften konnten nicht geladen werden: ${membershipError.message}`);\n    }\n\n    const activeMemberships = (memberships ?? []).filter((row) => row.status === 'active');\n\n    const { data: existingArcs, error: arcsError } = await supabase\n      .from(TABLE)\n      .select('*')\n      .eq('character_id', trimmedId)\n      .order('started_at', { ascending: false });\n\n    if (arcsError) {\n      throw new Error(`Abenteuer-Statistik konnte nicht geladen werden: ${arcsError.message}`);\n    }\n\n    const arcsByProject = new Map(\n      ((existingArcs ?? []) as CharacterAdventureArcDto[]).map((arc) => [arc.project_id, arc]),\n    );\n\n    for (const membership of activeMemberships) {\n      const projectId = membership.project_id as string;\n      if (arcsByProject.has(projectId)) continue;\n\n      const { data: inserted, error: insertError } = await supabase\n        .from(TABLE)\n        .insert({\n          character_id: trimmedId,\n          project_id: projectId,\n          status: 'active',\n          started_at: membership.joined_at ?? new Date().toISOString(),\n          developments: [],\n        })\n        .select('*')\n        .single();\n\n      if (insertError) {\n        // Concurrent upsert / unique race: reload later in this pass.\n        if (insertError.code === '23505') continue;\n        throw new Error(`Abenteuer-Bogen konnte nicht angelegt werden: ${insertError.message}`);\n      }\n\n      arcsByProject.set(projectId, inserted as CharacterAdventureArcDto);\n    }\n\n    const { data: refreshed, error: refreshError } = await supabase\n      .from(TABLE)\n      .select('*')\n      .eq('character_id', trimmedId)\n      .order('started_at', { ascending: false });\n\n    if (refreshError) {\n      throw new Error(`Abenteuer-Statistik konnte nicht aktualisiert werden: ${refreshError.message}`);\n    }\n\n    const arcs = (refreshed ?? []) as CharacterAdventureArcDto[];\n    if (arcs.length === 0) return [];\n\n    const projectIds = [...new Set(arcs.map((arc) => arc.project_id))];\n\n    const [{ data: projects, error: projectsError }, { data: sessions, error: sessionsError }] = await Promise.all([\n      supabase.from('projects').select('id, name, status').in('id', projectIds),\n      supabase.from('sessions').select('project_id').in('project_id', projectIds),\n    ]);\n\n    if (projectsError) {\n      throw new Error(`Projekte zur Statistik konnten nicht geladen werden: ${projectsError.message}`);\n    }\n    if (sessionsError) {\n      throw new Error(`Sessions zur Statistik konnten nicht geladen werden: ${sessionsError.message}`);\n    }\n\n    const projectMeta = new Map(\n      (projects ?? []).map((project) => [\n        project.id as string,\n        {\n          name: typeof project.name === 'string' ? project.name : 'Unbenanntes Abenteuer',\n          status: typeof project.status === 'string' ? project.status : null,\n        },\n      ]),\n    );\n\n    const sessionCounts = new Map<string, number>();\n    for (const session of sessions ?? []) {\n      const projectId = session.project_id as string;\n      sessionCounts.set(projectId, (sessionCounts.get(projectId) ?? 0) + 1);\n    }\n\n    return arcs.map((arc) => {\n      const meta = projectMeta.get(arc.project_id);\n      return mapArc(\n        arc,\n        meta?.name ?? 'Unbekanntes Abenteuer',\n        meta?.status ?? null,\n        sessionCounts.get(arc.project_id) ?? 0,\n      );\n    });\n  }"
+            "line": 113,
+            "endLine": 226,
+            "text": "async listArcsForCharacter(characterId: string): Promise<CharacterAdventureArcVm[]> {\n    const trimmedId = characterId.trim();\n    if (!trimmedId) throw new Error('Character id is required.');\n\n    if (isHostLibraryEnabled()) {\n      const rows = await fetchHostLibraryAdventureArcs(trimmedId);\n      return rows\n        .map(mapHostArc)\n        .filter((row): row is CharacterAdventureArcVm => row !== null);\n    }\n\n    const { data: memberships, error: membershipError } = await supabase\n      .from('project_members')\n      .select('project_id, joined_at, status')\n      .eq('character_id', trimmedId);\n\n    if (membershipError) {\n      throw new Error(`Abenteuer-Mitgliedschaften konnten nicht geladen werden: ${membershipError.message}`);\n    }\n\n    const activeMemberships = (memberships ?? []).filter((row) => row.status === 'active');\n\n    const { data: existingArcs, error: arcsError } = await supabase\n      .from(TABLE)\n      .select('*')\n      .eq('character_id', trimmedId)\n      .order('started_at', { ascending: false });\n\n    if (arcsError) {\n      throw new Error(`Abenteuer-Statistik konnte nicht geladen werden: ${arcsError.message}`);\n    }\n\n    const arcsByProject = new Map(\n      ((existingArcs ?? []) as CharacterAdventureArcDto[]).map((arc) => [arc.project_id, arc]),\n    );\n\n    for (const membership of activeMemberships) {\n      const projectId = membership.project_id as string;\n      if (arcsByProject.has(projectId)) continue;\n\n      const { data: inserted, error: insertError } = await supabase\n        .from(TABLE)\n        .insert({\n          character_id: trimmedId,\n          project_id: projectId,\n          status: 'active',\n          started_at: membership.joined_at ?? new Date().toISOString(),\n          developments: [],\n        })\n        .select('*')\n        .single();\n\n      if (insertError) {\n        // Concurrent upsert / unique race: reload later in this pass.\n        if (insertError.code === '23505') continue;\n        throw new Error(`Abenteuer-Bogen konnte nicht angelegt werden: ${insertError.message}`);\n      }\n\n      arcsByProject.set(projectId, inserted as CharacterAdventureArcDto);\n    }\n\n    const { data: refreshed, error: refreshError } = await supabase\n      .from(TABLE)\n      .select('*')\n      .eq('character_id', trimmedId)\n      .order('started_at', { ascending: false });\n\n    if (refreshError) {\n      throw new Error(`Abenteuer-Statistik konnte nicht aktualisiert werden: ${refreshError.message}`);\n    }\n\n    const arcs = (refreshed ?? []) as CharacterAdventureArcDto[];\n    if (arcs.length === 0) return [];\n\n    const projectIds = [...new Set(arcs.map((arc) => arc.project_id))];\n\n    const [{ data: projects, error: projectsError }, { data: sessions, error: sessionsError }] = await Promise.all([\n      supabase.from('projects').select('id, name, status').in('id', projectIds),\n      supabase.from('sessions').select('project_id').in('project_id', projectIds),\n    ]);\n\n    if (projectsError) {\n      throw new Error(`Projekte zur Statistik konnten nicht geladen werden: ${projectsError.message}`);\n    }\n    if (sessionsError) {\n      throw new Error(`Sessions zur Statistik konnten nicht geladen werden: ${sessionsError.message}`);\n    }\n\n    const projectMeta = new Map(\n      (projects ?? []).map((project) => [\n        project.id as string,\n        {\n          name: typeof project.name === 'string' ? project.name : 'Unbenanntes Abenteuer',\n          status: typeof project.status === 'string' ? project.status : null,\n        },\n      ]),\n    );\n\n    const sessionCounts = new Map<string, number>();\n    for (const session of sessions ?? []) {\n      const projectId = session.project_id as string;\n      sessionCounts.set(projectId, (sessionCounts.get(projectId) ?? 0) + 1);\n    }\n\n    return arcs.map((arc) => {\n      const meta = projectMeta.get(arc.project_id);\n      return mapArc(\n        arc,\n        meta?.name ?? 'Unbekanntes Abenteuer',\n        meta?.status ?? null,\n        sessionCounts.get(arc.project_id) ?? 0,\n      );\n    });\n  }"
           }
         },
         {
           "kind": "table",
           "name": "character_adventure_arcs",
           "path": "src/infrastructure/character/character-adventure-arc-service.ts",
-          "line": 140,
-          "endLine": 141,
+          "line": 174,
+          "endLine": 175,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from(TABLE)",
           "chain": "supabase\n      .from(TABLE)\n      .select('*')\n      .eq('character_id', trimmedId)\n      .order('started_at', { ascending: false })",
@@ -31877,17 +31877,17 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/character/character-adventure-arc-service.ts",
-            "line": 85,
-            "endLine": 192,
-            "text": "async listArcsForCharacter(characterId: string): Promise<CharacterAdventureArcVm[]> {\n    assertHostProductSurfaceAvailable('Abenteuer-Bögen');\n    const trimmedId = characterId.trim();\n    if (!trimmedId) throw new Error('Character id is required.');\n\n    const { data: memberships, error: membershipError } = await supabase\n      .from('project_members')\n      .select('project_id, joined_at, status')\n      .eq('character_id', trimmedId);\n\n    if (membershipError) {\n      throw new Error(`Abenteuer-Mitgliedschaften konnten nicht geladen werden: ${membershipError.message}`);\n    }\n\n    const activeMemberships = (memberships ?? []).filter((row) => row.status === 'active');\n\n    const { data: existingArcs, error: arcsError } = await supabase\n      .from(TABLE)\n      .select('*')\n      .eq('character_id', trimmedId)\n      .order('started_at', { ascending: false });\n\n    if (arcsError) {\n      throw new Error(`Abenteuer-Statistik konnte nicht geladen werden: ${arcsError.message}`);\n    }\n\n    const arcsByProject = new Map(\n      ((existingArcs ?? []) as CharacterAdventureArcDto[]).map((arc) => [arc.project_id, arc]),\n    );\n\n    for (const membership of activeMemberships) {\n      const projectId = membership.project_id as string;\n      if (arcsByProject.has(projectId)) continue;\n\n      const { data: inserted, error: insertError } = await supabase\n        .from(TABLE)\n        .insert({\n          character_id: trimmedId,\n          project_id: projectId,\n          status: 'active',\n          started_at: membership.joined_at ?? new Date().toISOString(),\n          developments: [],\n        })\n        .select('*')\n        .single();\n\n      if (insertError) {\n        // Concurrent upsert / unique race: reload later in this pass.\n        if (insertError.code === '23505') continue;\n        throw new Error(`Abenteuer-Bogen konnte nicht angelegt werden: ${insertError.message}`);\n      }\n\n      arcsByProject.set(projectId, inserted as CharacterAdventureArcDto);\n    }\n\n    const { data: refreshed, error: refreshError } = await supabase\n      .from(TABLE)\n      .select('*')\n      .eq('character_id', trimmedId)\n      .order('started_at', { ascending: false });\n\n    if (refreshError) {\n      throw new Error(`Abenteuer-Statistik konnte nicht aktualisiert werden: ${refreshError.message}`);\n    }\n\n    const arcs = (refreshed ?? []) as CharacterAdventureArcDto[];\n    if (arcs.length === 0) return [];\n\n    const projectIds = [...new Set(arcs.map((arc) => arc.project_id))];\n\n    const [{ data: projects, error: projectsError }, { data: sessions, error: sessionsError }] = await Promise.all([\n      supabase.from('projects').select('id, name, status').in('id', projectIds),\n      supabase.from('sessions').select('project_id').in('project_id', projectIds),\n    ]);\n\n    if (projectsError) {\n      throw new Error(`Projekte zur Statistik konnten nicht geladen werden: ${projectsError.message}`);\n    }\n    if (sessionsError) {\n      throw new Error(`Sessions zur Statistik konnten nicht geladen werden: ${sessionsError.message}`);\n    }\n\n    const projectMeta = new Map(\n      (projects ?? []).map((project) => [\n        project.id as string,\n        {\n          name: typeof project.name === 'string' ? project.name : 'Unbenanntes Abenteuer',\n          status: typeof project.status === 'string' ? project.status : null,\n        },\n      ]),\n    );\n\n    const sessionCounts = new Map<string, number>();\n    for (const session of sessions ?? []) {\n      const projectId = session.project_id as string;\n      sessionCounts.set(projectId, (sessionCounts.get(projectId) ?? 0) + 1);\n    }\n\n    return arcs.map((arc) => {\n      const meta = projectMeta.get(arc.project_id);\n      return mapArc(\n        arc,\n        meta?.name ?? 'Unbekanntes Abenteuer',\n        meta?.status ?? null,\n        sessionCounts.get(arc.project_id) ?? 0,\n      );\n    });\n  }"
+            "line": 113,
+            "endLine": 226,
+            "text": "async listArcsForCharacter(characterId: string): Promise<CharacterAdventureArcVm[]> {\n    const trimmedId = characterId.trim();\n    if (!trimmedId) throw new Error('Character id is required.');\n\n    if (isHostLibraryEnabled()) {\n      const rows = await fetchHostLibraryAdventureArcs(trimmedId);\n      return rows\n        .map(mapHostArc)\n        .filter((row): row is CharacterAdventureArcVm => row !== null);\n    }\n\n    const { data: memberships, error: membershipError } = await supabase\n      .from('project_members')\n      .select('project_id, joined_at, status')\n      .eq('character_id', trimmedId);\n\n    if (membershipError) {\n      throw new Error(`Abenteuer-Mitgliedschaften konnten nicht geladen werden: ${membershipError.message}`);\n    }\n\n    const activeMemberships = (memberships ?? []).filter((row) => row.status === 'active');\n\n    const { data: existingArcs, error: arcsError } = await supabase\n      .from(TABLE)\n      .select('*')\n      .eq('character_id', trimmedId)\n      .order('started_at', { ascending: false });\n\n    if (arcsError) {\n      throw new Error(`Abenteuer-Statistik konnte nicht geladen werden: ${arcsError.message}`);\n    }\n\n    const arcsByProject = new Map(\n      ((existingArcs ?? []) as CharacterAdventureArcDto[]).map((arc) => [arc.project_id, arc]),\n    );\n\n    for (const membership of activeMemberships) {\n      const projectId = membership.project_id as string;\n      if (arcsByProject.has(projectId)) continue;\n\n      const { data: inserted, error: insertError } = await supabase\n        .from(TABLE)\n        .insert({\n          character_id: trimmedId,\n          project_id: projectId,\n          status: 'active',\n          started_at: membership.joined_at ?? new Date().toISOString(),\n          developments: [],\n        })\n        .select('*')\n        .single();\n\n      if (insertError) {\n        // Concurrent upsert / unique race: reload later in this pass.\n        if (insertError.code === '23505') continue;\n        throw new Error(`Abenteuer-Bogen konnte nicht angelegt werden: ${insertError.message}`);\n      }\n\n      arcsByProject.set(projectId, inserted as CharacterAdventureArcDto);\n    }\n\n    const { data: refreshed, error: refreshError } = await supabase\n      .from(TABLE)\n      .select('*')\n      .eq('character_id', trimmedId)\n      .order('started_at', { ascending: false });\n\n    if (refreshError) {\n      throw new Error(`Abenteuer-Statistik konnte nicht aktualisiert werden: ${refreshError.message}`);\n    }\n\n    const arcs = (refreshed ?? []) as CharacterAdventureArcDto[];\n    if (arcs.length === 0) return [];\n\n    const projectIds = [...new Set(arcs.map((arc) => arc.project_id))];\n\n    const [{ data: projects, error: projectsError }, { data: sessions, error: sessionsError }] = await Promise.all([\n      supabase.from('projects').select('id, name, status').in('id', projectIds),\n      supabase.from('sessions').select('project_id').in('project_id', projectIds),\n    ]);\n\n    if (projectsError) {\n      throw new Error(`Projekte zur Statistik konnten nicht geladen werden: ${projectsError.message}`);\n    }\n    if (sessionsError) {\n      throw new Error(`Sessions zur Statistik konnten nicht geladen werden: ${sessionsError.message}`);\n    }\n\n    const projectMeta = new Map(\n      (projects ?? []).map((project) => [\n        project.id as string,\n        {\n          name: typeof project.name === 'string' ? project.name : 'Unbenanntes Abenteuer',\n          status: typeof project.status === 'string' ? project.status : null,\n        },\n      ]),\n    );\n\n    const sessionCounts = new Map<string, number>();\n    for (const session of sessions ?? []) {\n      const projectId = session.project_id as string;\n      sessionCounts.set(projectId, (sessionCounts.get(projectId) ?? 0) + 1);\n    }\n\n    return arcs.map((arc) => {\n      const meta = projectMeta.get(arc.project_id);\n      return mapArc(\n        arc,\n        meta?.name ?? 'Unbekanntes Abenteuer',\n        meta?.status ?? null,\n        sessionCounts.get(arc.project_id) ?? 0,\n      );\n    });\n  }"
           }
         },
         {
           "kind": "table",
           "name": "projects",
           "path": "src/infrastructure/character/character-adventure-arc-service.ts",
-          "line": 156,
-          "endLine": 156,
+          "line": 190,
+          "endLine": 190,
           "resolution": "literal-or-constant",
           "expression": "supabase.from('projects')",
           "chain": "supabase.from('projects').select('id, name, status').in('id', projectIds)",
@@ -31896,17 +31896,17 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/character/character-adventure-arc-service.ts",
-            "line": 85,
-            "endLine": 192,
-            "text": "async listArcsForCharacter(characterId: string): Promise<CharacterAdventureArcVm[]> {\n    assertHostProductSurfaceAvailable('Abenteuer-Bögen');\n    const trimmedId = characterId.trim();\n    if (!trimmedId) throw new Error('Character id is required.');\n\n    const { data: memberships, error: membershipError } = await supabase\n      .from('project_members')\n      .select('project_id, joined_at, status')\n      .eq('character_id', trimmedId);\n\n    if (membershipError) {\n      throw new Error(`Abenteuer-Mitgliedschaften konnten nicht geladen werden: ${membershipError.message}`);\n    }\n\n    const activeMemberships = (memberships ?? []).filter((row) => row.status === 'active');\n\n    const { data: existingArcs, error: arcsError } = await supabase\n      .from(TABLE)\n      .select('*')\n      .eq('character_id', trimmedId)\n      .order('started_at', { ascending: false });\n\n    if (arcsError) {\n      throw new Error(`Abenteuer-Statistik konnte nicht geladen werden: ${arcsError.message}`);\n    }\n\n    const arcsByProject = new Map(\n      ((existingArcs ?? []) as CharacterAdventureArcDto[]).map((arc) => [arc.project_id, arc]),\n    );\n\n    for (const membership of activeMemberships) {\n      const projectId = membership.project_id as string;\n      if (arcsByProject.has(projectId)) continue;\n\n      const { data: inserted, error: insertError } = await supabase\n        .from(TABLE)\n        .insert({\n          character_id: trimmedId,\n          project_id: projectId,\n          status: 'active',\n          started_at: membership.joined_at ?? new Date().toISOString(),\n          developments: [],\n        })\n        .select('*')\n        .single();\n\n      if (insertError) {\n        // Concurrent upsert / unique race: reload later in this pass.\n        if (insertError.code === '23505') continue;\n        throw new Error(`Abenteuer-Bogen konnte nicht angelegt werden: ${insertError.message}`);\n      }\n\n      arcsByProject.set(projectId, inserted as CharacterAdventureArcDto);\n    }\n\n    const { data: refreshed, error: refreshError } = await supabase\n      .from(TABLE)\n      .select('*')\n      .eq('character_id', trimmedId)\n      .order('started_at', { ascending: false });\n\n    if (refreshError) {\n      throw new Error(`Abenteuer-Statistik konnte nicht aktualisiert werden: ${refreshError.message}`);\n    }\n\n    const arcs = (refreshed ?? []) as CharacterAdventureArcDto[];\n    if (arcs.length === 0) return [];\n\n    const projectIds = [...new Set(arcs.map((arc) => arc.project_id))];\n\n    const [{ data: projects, error: projectsError }, { data: sessions, error: sessionsError }] = await Promise.all([\n      supabase.from('projects').select('id, name, status').in('id', projectIds),\n      supabase.from('sessions').select('project_id').in('project_id', projectIds),\n    ]);\n\n    if (projectsError) {\n      throw new Error(`Projekte zur Statistik konnten nicht geladen werden: ${projectsError.message}`);\n    }\n    if (sessionsError) {\n      throw new Error(`Sessions zur Statistik konnten nicht geladen werden: ${sessionsError.message}`);\n    }\n\n    const projectMeta = new Map(\n      (projects ?? []).map((project) => [\n        project.id as string,\n        {\n          name: typeof project.name === 'string' ? project.name : 'Unbenanntes Abenteuer',\n          status: typeof project.status === 'string' ? project.status : null,\n        },\n      ]),\n    );\n\n    const sessionCounts = new Map<string, number>();\n    for (const session of sessions ?? []) {\n      const projectId = session.project_id as string;\n      sessionCounts.set(projectId, (sessionCounts.get(projectId) ?? 0) + 1);\n    }\n\n    return arcs.map((arc) => {\n      const meta = projectMeta.get(arc.project_id);\n      return mapArc(\n        arc,\n        meta?.name ?? 'Unbekanntes Abenteuer',\n        meta?.status ?? null,\n        sessionCounts.get(arc.project_id) ?? 0,\n      );\n    });\n  }"
+            "line": 113,
+            "endLine": 226,
+            "text": "async listArcsForCharacter(characterId: string): Promise<CharacterAdventureArcVm[]> {\n    const trimmedId = characterId.trim();\n    if (!trimmedId) throw new Error('Character id is required.');\n\n    if (isHostLibraryEnabled()) {\n      const rows = await fetchHostLibraryAdventureArcs(trimmedId);\n      return rows\n        .map(mapHostArc)\n        .filter((row): row is CharacterAdventureArcVm => row !== null);\n    }\n\n    const { data: memberships, error: membershipError } = await supabase\n      .from('project_members')\n      .select('project_id, joined_at, status')\n      .eq('character_id', trimmedId);\n\n    if (membershipError) {\n      throw new Error(`Abenteuer-Mitgliedschaften konnten nicht geladen werden: ${membershipError.message}`);\n    }\n\n    const activeMemberships = (memberships ?? []).filter((row) => row.status === 'active');\n\n    const { data: existingArcs, error: arcsError } = await supabase\n      .from(TABLE)\n      .select('*')\n      .eq('character_id', trimmedId)\n      .order('started_at', { ascending: false });\n\n    if (arcsError) {\n      throw new Error(`Abenteuer-Statistik konnte nicht geladen werden: ${arcsError.message}`);\n    }\n\n    const arcsByProject = new Map(\n      ((existingArcs ?? []) as CharacterAdventureArcDto[]).map((arc) => [arc.project_id, arc]),\n    );\n\n    for (const membership of activeMemberships) {\n      const projectId = membership.project_id as string;\n      if (arcsByProject.has(projectId)) continue;\n\n      const { data: inserted, error: insertError } = await supabase\n        .from(TABLE)\n        .insert({\n          character_id: trimmedId,\n          project_id: projectId,\n          status: 'active',\n          started_at: membership.joined_at ?? new Date().toISOString(),\n          developments: [],\n        })\n        .select('*')\n        .single();\n\n      if (insertError) {\n        // Concurrent upsert / unique race: reload later in this pass.\n        if (insertError.code === '23505') continue;\n        throw new Error(`Abenteuer-Bogen konnte nicht angelegt werden: ${insertError.message}`);\n      }\n\n      arcsByProject.set(projectId, inserted as CharacterAdventureArcDto);\n    }\n\n    const { data: refreshed, error: refreshError } = await supabase\n      .from(TABLE)\n      .select('*')\n      .eq('character_id', trimmedId)\n      .order('started_at', { ascending: false });\n\n    if (refreshError) {\n      throw new Error(`Abenteuer-Statistik konnte nicht aktualisiert werden: ${refreshError.message}`);\n    }\n\n    const arcs = (refreshed ?? []) as CharacterAdventureArcDto[];\n    if (arcs.length === 0) return [];\n\n    const projectIds = [...new Set(arcs.map((arc) => arc.project_id))];\n\n    const [{ data: projects, error: projectsError }, { data: sessions, error: sessionsError }] = await Promise.all([\n      supabase.from('projects').select('id, name, status').in('id', projectIds),\n      supabase.from('sessions').select('project_id').in('project_id', projectIds),\n    ]);\n\n    if (projectsError) {\n      throw new Error(`Projekte zur Statistik konnten nicht geladen werden: ${projectsError.message}`);\n    }\n    if (sessionsError) {\n      throw new Error(`Sessions zur Statistik konnten nicht geladen werden: ${sessionsError.message}`);\n    }\n\n    const projectMeta = new Map(\n      (projects ?? []).map((project) => [\n        project.id as string,\n        {\n          name: typeof project.name === 'string' ? project.name : 'Unbenanntes Abenteuer',\n          status: typeof project.status === 'string' ? project.status : null,\n        },\n      ]),\n    );\n\n    const sessionCounts = new Map<string, number>();\n    for (const session of sessions ?? []) {\n      const projectId = session.project_id as string;\n      sessionCounts.set(projectId, (sessionCounts.get(projectId) ?? 0) + 1);\n    }\n\n    return arcs.map((arc) => {\n      const meta = projectMeta.get(arc.project_id);\n      return mapArc(\n        arc,\n        meta?.name ?? 'Unbekanntes Abenteuer',\n        meta?.status ?? null,\n        sessionCounts.get(arc.project_id) ?? 0,\n      );\n    });\n  }"
           }
         },
         {
           "kind": "table",
           "name": "sessions",
           "path": "src/infrastructure/character/character-adventure-arc-service.ts",
-          "line": 157,
-          "endLine": 157,
+          "line": 191,
+          "endLine": 191,
           "resolution": "literal-or-constant",
           "expression": "supabase.from('sessions')",
           "chain": "supabase.from('sessions').select('project_id').in('project_id', projectIds)",
@@ -31915,17 +31915,17 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/character/character-adventure-arc-service.ts",
-            "line": 85,
-            "endLine": 192,
-            "text": "async listArcsForCharacter(characterId: string): Promise<CharacterAdventureArcVm[]> {\n    assertHostProductSurfaceAvailable('Abenteuer-Bögen');\n    const trimmedId = characterId.trim();\n    if (!trimmedId) throw new Error('Character id is required.');\n\n    const { data: memberships, error: membershipError } = await supabase\n      .from('project_members')\n      .select('project_id, joined_at, status')\n      .eq('character_id', trimmedId);\n\n    if (membershipError) {\n      throw new Error(`Abenteuer-Mitgliedschaften konnten nicht geladen werden: ${membershipError.message}`);\n    }\n\n    const activeMemberships = (memberships ?? []).filter((row) => row.status === 'active');\n\n    const { data: existingArcs, error: arcsError } = await supabase\n      .from(TABLE)\n      .select('*')\n      .eq('character_id', trimmedId)\n      .order('started_at', { ascending: false });\n\n    if (arcsError) {\n      throw new Error(`Abenteuer-Statistik konnte nicht geladen werden: ${arcsError.message}`);\n    }\n\n    const arcsByProject = new Map(\n      ((existingArcs ?? []) as CharacterAdventureArcDto[]).map((arc) => [arc.project_id, arc]),\n    );\n\n    for (const membership of activeMemberships) {\n      const projectId = membership.project_id as string;\n      if (arcsByProject.has(projectId)) continue;\n\n      const { data: inserted, error: insertError } = await supabase\n        .from(TABLE)\n        .insert({\n          character_id: trimmedId,\n          project_id: projectId,\n          status: 'active',\n          started_at: membership.joined_at ?? new Date().toISOString(),\n          developments: [],\n        })\n        .select('*')\n        .single();\n\n      if (insertError) {\n        // Concurrent upsert / unique race: reload later in this pass.\n        if (insertError.code === '23505') continue;\n        throw new Error(`Abenteuer-Bogen konnte nicht angelegt werden: ${insertError.message}`);\n      }\n\n      arcsByProject.set(projectId, inserted as CharacterAdventureArcDto);\n    }\n\n    const { data: refreshed, error: refreshError } = await supabase\n      .from(TABLE)\n      .select('*')\n      .eq('character_id', trimmedId)\n      .order('started_at', { ascending: false });\n\n    if (refreshError) {\n      throw new Error(`Abenteuer-Statistik konnte nicht aktualisiert werden: ${refreshError.message}`);\n    }\n\n    const arcs = (refreshed ?? []) as CharacterAdventureArcDto[];\n    if (arcs.length === 0) return [];\n\n    const projectIds = [...new Set(arcs.map((arc) => arc.project_id))];\n\n    const [{ data: projects, error: projectsError }, { data: sessions, error: sessionsError }] = await Promise.all([\n      supabase.from('projects').select('id, name, status').in('id', projectIds),\n      supabase.from('sessions').select('project_id').in('project_id', projectIds),\n    ]);\n\n    if (projectsError) {\n      throw new Error(`Projekte zur Statistik konnten nicht geladen werden: ${projectsError.message}`);\n    }\n    if (sessionsError) {\n      throw new Error(`Sessions zur Statistik konnten nicht geladen werden: ${sessionsError.message}`);\n    }\n\n    const projectMeta = new Map(\n      (projects ?? []).map((project) => [\n        project.id as string,\n        {\n          name: typeof project.name === 'string' ? project.name : 'Unbenanntes Abenteuer',\n          status: typeof project.status === 'string' ? project.status : null,\n        },\n      ]),\n    );\n\n    const sessionCounts = new Map<string, number>();\n    for (const session of sessions ?? []) {\n      const projectId = session.project_id as string;\n      sessionCounts.set(projectId, (sessionCounts.get(projectId) ?? 0) + 1);\n    }\n\n    return arcs.map((arc) => {\n      const meta = projectMeta.get(arc.project_id);\n      return mapArc(\n        arc,\n        meta?.name ?? 'Unbekanntes Abenteuer',\n        meta?.status ?? null,\n        sessionCounts.get(arc.project_id) ?? 0,\n      );\n    });\n  }"
+            "line": 113,
+            "endLine": 226,
+            "text": "async listArcsForCharacter(characterId: string): Promise<CharacterAdventureArcVm[]> {\n    const trimmedId = characterId.trim();\n    if (!trimmedId) throw new Error('Character id is required.');\n\n    if (isHostLibraryEnabled()) {\n      const rows = await fetchHostLibraryAdventureArcs(trimmedId);\n      return rows\n        .map(mapHostArc)\n        .filter((row): row is CharacterAdventureArcVm => row !== null);\n    }\n\n    const { data: memberships, error: membershipError } = await supabase\n      .from('project_members')\n      .select('project_id, joined_at, status')\n      .eq('character_id', trimmedId);\n\n    if (membershipError) {\n      throw new Error(`Abenteuer-Mitgliedschaften konnten nicht geladen werden: ${membershipError.message}`);\n    }\n\n    const activeMemberships = (memberships ?? []).filter((row) => row.status === 'active');\n\n    const { data: existingArcs, error: arcsError } = await supabase\n      .from(TABLE)\n      .select('*')\n      .eq('character_id', trimmedId)\n      .order('started_at', { ascending: false });\n\n    if (arcsError) {\n      throw new Error(`Abenteuer-Statistik konnte nicht geladen werden: ${arcsError.message}`);\n    }\n\n    const arcsByProject = new Map(\n      ((existingArcs ?? []) as CharacterAdventureArcDto[]).map((arc) => [arc.project_id, arc]),\n    );\n\n    for (const membership of activeMemberships) {\n      const projectId = membership.project_id as string;\n      if (arcsByProject.has(projectId)) continue;\n\n      const { data: inserted, error: insertError } = await supabase\n        .from(TABLE)\n        .insert({\n          character_id: trimmedId,\n          project_id: projectId,\n          status: 'active',\n          started_at: membership.joined_at ?? new Date().toISOString(),\n          developments: [],\n        })\n        .select('*')\n        .single();\n\n      if (insertError) {\n        // Concurrent upsert / unique race: reload later in this pass.\n        if (insertError.code === '23505') continue;\n        throw new Error(`Abenteuer-Bogen konnte nicht angelegt werden: ${insertError.message}`);\n      }\n\n      arcsByProject.set(projectId, inserted as CharacterAdventureArcDto);\n    }\n\n    const { data: refreshed, error: refreshError } = await supabase\n      .from(TABLE)\n      .select('*')\n      .eq('character_id', trimmedId)\n      .order('started_at', { ascending: false });\n\n    if (refreshError) {\n      throw new Error(`Abenteuer-Statistik konnte nicht aktualisiert werden: ${refreshError.message}`);\n    }\n\n    const arcs = (refreshed ?? []) as CharacterAdventureArcDto[];\n    if (arcs.length === 0) return [];\n\n    const projectIds = [...new Set(arcs.map((arc) => arc.project_id))];\n\n    const [{ data: projects, error: projectsError }, { data: sessions, error: sessionsError }] = await Promise.all([\n      supabase.from('projects').select('id, name, status').in('id', projectIds),\n      supabase.from('sessions').select('project_id').in('project_id', projectIds),\n    ]);\n\n    if (projectsError) {\n      throw new Error(`Projekte zur Statistik konnten nicht geladen werden: ${projectsError.message}`);\n    }\n    if (sessionsError) {\n      throw new Error(`Sessions zur Statistik konnten nicht geladen werden: ${sessionsError.message}`);\n    }\n\n    const projectMeta = new Map(\n      (projects ?? []).map((project) => [\n        project.id as string,\n        {\n          name: typeof project.name === 'string' ? project.name : 'Unbenanntes Abenteuer',\n          status: typeof project.status === 'string' ? project.status : null,\n        },\n      ]),\n    );\n\n    const sessionCounts = new Map<string, number>();\n    for (const session of sessions ?? []) {\n      const projectId = session.project_id as string;\n      sessionCounts.set(projectId, (sessionCounts.get(projectId) ?? 0) + 1);\n    }\n\n    return arcs.map((arc) => {\n      const meta = projectMeta.get(arc.project_id);\n      return mapArc(\n        arc,\n        meta?.name ?? 'Unbekanntes Abenteuer',\n        meta?.status ?? null,\n        sessionCounts.get(arc.project_id) ?? 0,\n      );\n    });\n  }"
           }
         },
         {
           "kind": "table",
           "name": "character_adventure_arcs",
           "path": "src/infrastructure/character/character-adventure-arc-service.ts",
-          "line": 203,
-          "endLine": 204,
+          "line": 248,
+          "endLine": 249,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from(TABLE)",
           "chain": "supabase\n      .from(TABLE)\n      .select('*')\n      .eq('id', arcId)\n      .single()",
@@ -31934,17 +31934,17 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/character/character-adventure-arc-service.ts",
-            "line": 194,
-            "endLine": 255,
-            "text": "async appendDevelopment(\n    arcId: string,\n    input: AppendAdventureDevelopmentInput,\n  ): Promise<CharacterAdventureArcVm> {\n    assertHostProductSurfaceAvailable('Abenteuer-Bögen');\n    const title = input.title.trim();\n    if (!title) throw new Error('Titel der Entwicklung ist erforderlich.');\n    if (!isDevelopmentKind(input.kind)) throw new Error('Ungültige Entwicklungsart.');\n\n    const { data: current, error: loadError } = await supabase\n      .from(TABLE)\n      .select('*')\n      .eq('id', arcId)\n      .single();\n\n    if (loadError || !current) {\n      throw new Error(`Abenteuer-Bogen nicht gefunden: ${loadError?.message ?? 'missing'}`);\n    }\n\n    const dto = current as CharacterAdventureArcDto;\n    const developments = normalizeDevelopments(dto.developments);\n    const nextEntry: CharacterAdventureDevelopmentDto = {\n      id: createDevelopmentId(),\n      at: new Date().toISOString(),\n      kind: input.kind,\n      title,\n    };\n    const detail = input.detail?.trim();\n    if (detail) nextEntry.detail = detail;\n    if (input.meta && Object.keys(input.meta).length > 0) nextEntry.meta = input.meta;\n\n    const nextDevelopments = [...developments, nextEntry];\n\n    const { data: updated, error: updateError } = await supabase\n      .from(TABLE)\n      .update({ developments: nextDevelopments })\n      .eq('id', arcId)\n      .select('*')\n      .single();\n\n    if (updateError || !updated) {\n      throw new Error(`Entwicklung konnte nicht gespeichert werden: ${updateError?.message ?? 'missing'}`);\n    }\n\n    const { data: project } = await supabase\n      .from('projects')\n      .select('name, status')\n      .eq('id', (updated as CharacterAdventureArcDto).project_id)\n      .maybeSingle();\n\n    const { count } = await supabase\n      .from('sessions')\n      .select('id', { count: 'exact', head: true })\n      .eq('project_id', (updated as CharacterAdventureArcDto).project_id);\n\n    return mapArc(\n      updated as CharacterAdventureArcDto,\n      typeof project?.name === 'string' ? project.name : 'Unbenanntes Abenteuer',\n      typeof project?.status === 'string' ? project.status : null,\n      count ?? 0,\n    );\n  }"
+            "line": 228,
+            "endLine": 300,
+            "text": "async appendDevelopment(\n    arcId: string,\n    input: AppendAdventureDevelopmentInput,\n  ): Promise<CharacterAdventureArcVm> {\n    const title = input.title.trim();\n    if (!title) throw new Error('Titel der Entwicklung ist erforderlich.');\n    if (!isDevelopmentKind(input.kind)) throw new Error('Ungültige Entwicklungsart.');\n\n    if (isHostLibraryEnabled()) {\n      const updated = await appendHostLibraryAdventureDevelopment(arcId, {\n        kind: input.kind,\n        title,\n        detail: input.detail,\n        meta: input.meta,\n      });\n      const mapped = mapHostArc(updated);\n      if (!mapped) throw new Error('Host-Abenteuer-Entwicklung: ungültige Antwort');\n      return mapped;\n    }\n\n    const { data: current, error: loadError } = await supabase\n      .from(TABLE)\n      .select('*')\n      .eq('id', arcId)\n      .single();\n\n    if (loadError || !current) {\n      throw new Error(`Abenteuer-Bogen nicht gefunden: ${loadError?.message ?? 'missing'}`);\n    }\n\n    const dto = current as CharacterAdventureArcDto;\n    const developments = normalizeDevelopments(dto.developments);\n    const nextEntry: CharacterAdventureDevelopmentDto = {\n      id: createDevelopmentId(),\n      at: new Date().toISOString(),\n      kind: input.kind,\n      title,\n    };\n    const detail = input.detail?.trim();\n    if (detail) nextEntry.detail = detail;\n    if (input.meta && Object.keys(input.meta).length > 0) nextEntry.meta = input.meta;\n\n    const nextDevelopments = [...developments, nextEntry];\n\n    const { data: updated, error: updateError } = await supabase\n      .from(TABLE)\n      .update({ developments: nextDevelopments })\n      .eq('id', arcId)\n      .select('*')\n      .single();\n\n    if (updateError || !updated) {\n      throw new Error(`Entwicklung konnte nicht gespeichert werden: ${updateError?.message ?? 'missing'}`);\n    }\n\n    const { data: project } = await supabase\n      .from('projects')\n      .select('name, status')\n      .eq('id', (updated as CharacterAdventureArcDto).project_id)\n      .maybeSingle();\n\n    const { count } = await supabase\n      .from('sessions')\n      .select('id', { count: 'exact', head: true })\n      .eq('project_id', (updated as CharacterAdventureArcDto).project_id);\n\n    return mapArc(\n      updated as CharacterAdventureArcDto,\n      typeof project?.name === 'string' ? project.name : 'Unbenanntes Abenteuer',\n      typeof project?.status === 'string' ? project.status : null,\n      count ?? 0,\n    );\n  }"
           }
         },
         {
           "kind": "table",
           "name": "character_adventure_arcs",
           "path": "src/infrastructure/character/character-adventure-arc-service.ts",
-          "line": 227,
-          "endLine": 228,
+          "line": 272,
+          "endLine": 273,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from(TABLE)",
           "chain": "supabase\n      .from(TABLE)\n      .update({ developments: nextDevelopments })\n      .eq('id', arcId)\n      .select('*')\n      .single()",
@@ -31953,17 +31953,17 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/character/character-adventure-arc-service.ts",
-            "line": 194,
-            "endLine": 255,
-            "text": "async appendDevelopment(\n    arcId: string,\n    input: AppendAdventureDevelopmentInput,\n  ): Promise<CharacterAdventureArcVm> {\n    assertHostProductSurfaceAvailable('Abenteuer-Bögen');\n    const title = input.title.trim();\n    if (!title) throw new Error('Titel der Entwicklung ist erforderlich.');\n    if (!isDevelopmentKind(input.kind)) throw new Error('Ungültige Entwicklungsart.');\n\n    const { data: current, error: loadError } = await supabase\n      .from(TABLE)\n      .select('*')\n      .eq('id', arcId)\n      .single();\n\n    if (loadError || !current) {\n      throw new Error(`Abenteuer-Bogen nicht gefunden: ${loadError?.message ?? 'missing'}`);\n    }\n\n    const dto = current as CharacterAdventureArcDto;\n    const developments = normalizeDevelopments(dto.developments);\n    const nextEntry: CharacterAdventureDevelopmentDto = {\n      id: createDevelopmentId(),\n      at: new Date().toISOString(),\n      kind: input.kind,\n      title,\n    };\n    const detail = input.detail?.trim();\n    if (detail) nextEntry.detail = detail;\n    if (input.meta && Object.keys(input.meta).length > 0) nextEntry.meta = input.meta;\n\n    const nextDevelopments = [...developments, nextEntry];\n\n    const { data: updated, error: updateError } = await supabase\n      .from(TABLE)\n      .update({ developments: nextDevelopments })\n      .eq('id', arcId)\n      .select('*')\n      .single();\n\n    if (updateError || !updated) {\n      throw new Error(`Entwicklung konnte nicht gespeichert werden: ${updateError?.message ?? 'missing'}`);\n    }\n\n    const { data: project } = await supabase\n      .from('projects')\n      .select('name, status')\n      .eq('id', (updated as CharacterAdventureArcDto).project_id)\n      .maybeSingle();\n\n    const { count } = await supabase\n      .from('sessions')\n      .select('id', { count: 'exact', head: true })\n      .eq('project_id', (updated as CharacterAdventureArcDto).project_id);\n\n    return mapArc(\n      updated as CharacterAdventureArcDto,\n      typeof project?.name === 'string' ? project.name : 'Unbenanntes Abenteuer',\n      typeof project?.status === 'string' ? project.status : null,\n      count ?? 0,\n    );\n  }"
+            "line": 228,
+            "endLine": 300,
+            "text": "async appendDevelopment(\n    arcId: string,\n    input: AppendAdventureDevelopmentInput,\n  ): Promise<CharacterAdventureArcVm> {\n    const title = input.title.trim();\n    if (!title) throw new Error('Titel der Entwicklung ist erforderlich.');\n    if (!isDevelopmentKind(input.kind)) throw new Error('Ungültige Entwicklungsart.');\n\n    if (isHostLibraryEnabled()) {\n      const updated = await appendHostLibraryAdventureDevelopment(arcId, {\n        kind: input.kind,\n        title,\n        detail: input.detail,\n        meta: input.meta,\n      });\n      const mapped = mapHostArc(updated);\n      if (!mapped) throw new Error('Host-Abenteuer-Entwicklung: ungültige Antwort');\n      return mapped;\n    }\n\n    const { data: current, error: loadError } = await supabase\n      .from(TABLE)\n      .select('*')\n      .eq('id', arcId)\n      .single();\n\n    if (loadError || !current) {\n      throw new Error(`Abenteuer-Bogen nicht gefunden: ${loadError?.message ?? 'missing'}`);\n    }\n\n    const dto = current as CharacterAdventureArcDto;\n    const developments = normalizeDevelopments(dto.developments);\n    const nextEntry: CharacterAdventureDevelopmentDto = {\n      id: createDevelopmentId(),\n      at: new Date().toISOString(),\n      kind: input.kind,\n      title,\n    };\n    const detail = input.detail?.trim();\n    if (detail) nextEntry.detail = detail;\n    if (input.meta && Object.keys(input.meta).length > 0) nextEntry.meta = input.meta;\n\n    const nextDevelopments = [...developments, nextEntry];\n\n    const { data: updated, error: updateError } = await supabase\n      .from(TABLE)\n      .update({ developments: nextDevelopments })\n      .eq('id', arcId)\n      .select('*')\n      .single();\n\n    if (updateError || !updated) {\n      throw new Error(`Entwicklung konnte nicht gespeichert werden: ${updateError?.message ?? 'missing'}`);\n    }\n\n    const { data: project } = await supabase\n      .from('projects')\n      .select('name, status')\n      .eq('id', (updated as CharacterAdventureArcDto).project_id)\n      .maybeSingle();\n\n    const { count } = await supabase\n      .from('sessions')\n      .select('id', { count: 'exact', head: true })\n      .eq('project_id', (updated as CharacterAdventureArcDto).project_id);\n\n    return mapArc(\n      updated as CharacterAdventureArcDto,\n      typeof project?.name === 'string' ? project.name : 'Unbenanntes Abenteuer',\n      typeof project?.status === 'string' ? project.status : null,\n      count ?? 0,\n    );\n  }"
           }
         },
         {
           "kind": "table",
           "name": "projects",
           "path": "src/infrastructure/character/character-adventure-arc-service.ts",
-          "line": 238,
-          "endLine": 239,
+          "line": 283,
+          "endLine": 284,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from('projects')",
           "chain": "supabase\n      .from('projects')\n      .select('name, status')\n      .eq('id', (updated as CharacterAdventureArcDto).project_id)\n      .maybeSingle()",
@@ -31972,17 +31972,17 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/character/character-adventure-arc-service.ts",
-            "line": 194,
-            "endLine": 255,
-            "text": "async appendDevelopment(\n    arcId: string,\n    input: AppendAdventureDevelopmentInput,\n  ): Promise<CharacterAdventureArcVm> {\n    assertHostProductSurfaceAvailable('Abenteuer-Bögen');\n    const title = input.title.trim();\n    if (!title) throw new Error('Titel der Entwicklung ist erforderlich.');\n    if (!isDevelopmentKind(input.kind)) throw new Error('Ungültige Entwicklungsart.');\n\n    const { data: current, error: loadError } = await supabase\n      .from(TABLE)\n      .select('*')\n      .eq('id', arcId)\n      .single();\n\n    if (loadError || !current) {\n      throw new Error(`Abenteuer-Bogen nicht gefunden: ${loadError?.message ?? 'missing'}`);\n    }\n\n    const dto = current as CharacterAdventureArcDto;\n    const developments = normalizeDevelopments(dto.developments);\n    const nextEntry: CharacterAdventureDevelopmentDto = {\n      id: createDevelopmentId(),\n      at: new Date().toISOString(),\n      kind: input.kind,\n      title,\n    };\n    const detail = input.detail?.trim();\n    if (detail) nextEntry.detail = detail;\n    if (input.meta && Object.keys(input.meta).length > 0) nextEntry.meta = input.meta;\n\n    const nextDevelopments = [...developments, nextEntry];\n\n    const { data: updated, error: updateError } = await supabase\n      .from(TABLE)\n      .update({ developments: nextDevelopments })\n      .eq('id', arcId)\n      .select('*')\n      .single();\n\n    if (updateError || !updated) {\n      throw new Error(`Entwicklung konnte nicht gespeichert werden: ${updateError?.message ?? 'missing'}`);\n    }\n\n    const { data: project } = await supabase\n      .from('projects')\n      .select('name, status')\n      .eq('id', (updated as CharacterAdventureArcDto).project_id)\n      .maybeSingle();\n\n    const { count } = await supabase\n      .from('sessions')\n      .select('id', { count: 'exact', head: true })\n      .eq('project_id', (updated as CharacterAdventureArcDto).project_id);\n\n    return mapArc(\n      updated as CharacterAdventureArcDto,\n      typeof project?.name === 'string' ? project.name : 'Unbenanntes Abenteuer',\n      typeof project?.status === 'string' ? project.status : null,\n      count ?? 0,\n    );\n  }"
+            "line": 228,
+            "endLine": 300,
+            "text": "async appendDevelopment(\n    arcId: string,\n    input: AppendAdventureDevelopmentInput,\n  ): Promise<CharacterAdventureArcVm> {\n    const title = input.title.trim();\n    if (!title) throw new Error('Titel der Entwicklung ist erforderlich.');\n    if (!isDevelopmentKind(input.kind)) throw new Error('Ungültige Entwicklungsart.');\n\n    if (isHostLibraryEnabled()) {\n      const updated = await appendHostLibraryAdventureDevelopment(arcId, {\n        kind: input.kind,\n        title,\n        detail: input.detail,\n        meta: input.meta,\n      });\n      const mapped = mapHostArc(updated);\n      if (!mapped) throw new Error('Host-Abenteuer-Entwicklung: ungültige Antwort');\n      return mapped;\n    }\n\n    const { data: current, error: loadError } = await supabase\n      .from(TABLE)\n      .select('*')\n      .eq('id', arcId)\n      .single();\n\n    if (loadError || !current) {\n      throw new Error(`Abenteuer-Bogen nicht gefunden: ${loadError?.message ?? 'missing'}`);\n    }\n\n    const dto = current as CharacterAdventureArcDto;\n    const developments = normalizeDevelopments(dto.developments);\n    const nextEntry: CharacterAdventureDevelopmentDto = {\n      id: createDevelopmentId(),\n      at: new Date().toISOString(),\n      kind: input.kind,\n      title,\n    };\n    const detail = input.detail?.trim();\n    if (detail) nextEntry.detail = detail;\n    if (input.meta && Object.keys(input.meta).length > 0) nextEntry.meta = input.meta;\n\n    const nextDevelopments = [...developments, nextEntry];\n\n    const { data: updated, error: updateError } = await supabase\n      .from(TABLE)\n      .update({ developments: nextDevelopments })\n      .eq('id', arcId)\n      .select('*')\n      .single();\n\n    if (updateError || !updated) {\n      throw new Error(`Entwicklung konnte nicht gespeichert werden: ${updateError?.message ?? 'missing'}`);\n    }\n\n    const { data: project } = await supabase\n      .from('projects')\n      .select('name, status')\n      .eq('id', (updated as CharacterAdventureArcDto).project_id)\n      .maybeSingle();\n\n    const { count } = await supabase\n      .from('sessions')\n      .select('id', { count: 'exact', head: true })\n      .eq('project_id', (updated as CharacterAdventureArcDto).project_id);\n\n    return mapArc(\n      updated as CharacterAdventureArcDto,\n      typeof project?.name === 'string' ? project.name : 'Unbenanntes Abenteuer',\n      typeof project?.status === 'string' ? project.status : null,\n      count ?? 0,\n    );\n  }"
           }
         },
         {
           "kind": "table",
           "name": "sessions",
           "path": "src/infrastructure/character/character-adventure-arc-service.ts",
-          "line": 244,
-          "endLine": 245,
+          "line": 289,
+          "endLine": 290,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from('sessions')",
           "chain": "supabase\n      .from('sessions')\n      .select('id', { count: 'exact', head: true })\n      .eq('project_id', (updated as CharacterAdventureArcDto).project_id)",
@@ -31991,9 +31991,9 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/character/character-adventure-arc-service.ts",
-            "line": 194,
-            "endLine": 255,
-            "text": "async appendDevelopment(\n    arcId: string,\n    input: AppendAdventureDevelopmentInput,\n  ): Promise<CharacterAdventureArcVm> {\n    assertHostProductSurfaceAvailable('Abenteuer-Bögen');\n    const title = input.title.trim();\n    if (!title) throw new Error('Titel der Entwicklung ist erforderlich.');\n    if (!isDevelopmentKind(input.kind)) throw new Error('Ungültige Entwicklungsart.');\n\n    const { data: current, error: loadError } = await supabase\n      .from(TABLE)\n      .select('*')\n      .eq('id', arcId)\n      .single();\n\n    if (loadError || !current) {\n      throw new Error(`Abenteuer-Bogen nicht gefunden: ${loadError?.message ?? 'missing'}`);\n    }\n\n    const dto = current as CharacterAdventureArcDto;\n    const developments = normalizeDevelopments(dto.developments);\n    const nextEntry: CharacterAdventureDevelopmentDto = {\n      id: createDevelopmentId(),\n      at: new Date().toISOString(),\n      kind: input.kind,\n      title,\n    };\n    const detail = input.detail?.trim();\n    if (detail) nextEntry.detail = detail;\n    if (input.meta && Object.keys(input.meta).length > 0) nextEntry.meta = input.meta;\n\n    const nextDevelopments = [...developments, nextEntry];\n\n    const { data: updated, error: updateError } = await supabase\n      .from(TABLE)\n      .update({ developments: nextDevelopments })\n      .eq('id', arcId)\n      .select('*')\n      .single();\n\n    if (updateError || !updated) {\n      throw new Error(`Entwicklung konnte nicht gespeichert werden: ${updateError?.message ?? 'missing'}`);\n    }\n\n    const { data: project } = await supabase\n      .from('projects')\n      .select('name, status')\n      .eq('id', (updated as CharacterAdventureArcDto).project_id)\n      .maybeSingle();\n\n    const { count } = await supabase\n      .from('sessions')\n      .select('id', { count: 'exact', head: true })\n      .eq('project_id', (updated as CharacterAdventureArcDto).project_id);\n\n    return mapArc(\n      updated as CharacterAdventureArcDto,\n      typeof project?.name === 'string' ? project.name : 'Unbenanntes Abenteuer',\n      typeof project?.status === 'string' ? project.status : null,\n      count ?? 0,\n    );\n  }"
+            "line": 228,
+            "endLine": 300,
+            "text": "async appendDevelopment(\n    arcId: string,\n    input: AppendAdventureDevelopmentInput,\n  ): Promise<CharacterAdventureArcVm> {\n    const title = input.title.trim();\n    if (!title) throw new Error('Titel der Entwicklung ist erforderlich.');\n    if (!isDevelopmentKind(input.kind)) throw new Error('Ungültige Entwicklungsart.');\n\n    if (isHostLibraryEnabled()) {\n      const updated = await appendHostLibraryAdventureDevelopment(arcId, {\n        kind: input.kind,\n        title,\n        detail: input.detail,\n        meta: input.meta,\n      });\n      const mapped = mapHostArc(updated);\n      if (!mapped) throw new Error('Host-Abenteuer-Entwicklung: ungültige Antwort');\n      return mapped;\n    }\n\n    const { data: current, error: loadError } = await supabase\n      .from(TABLE)\n      .select('*')\n      .eq('id', arcId)\n      .single();\n\n    if (loadError || !current) {\n      throw new Error(`Abenteuer-Bogen nicht gefunden: ${loadError?.message ?? 'missing'}`);\n    }\n\n    const dto = current as CharacterAdventureArcDto;\n    const developments = normalizeDevelopments(dto.developments);\n    const nextEntry: CharacterAdventureDevelopmentDto = {\n      id: createDevelopmentId(),\n      at: new Date().toISOString(),\n      kind: input.kind,\n      title,\n    };\n    const detail = input.detail?.trim();\n    if (detail) nextEntry.detail = detail;\n    if (input.meta && Object.keys(input.meta).length > 0) nextEntry.meta = input.meta;\n\n    const nextDevelopments = [...developments, nextEntry];\n\n    const { data: updated, error: updateError } = await supabase\n      .from(TABLE)\n      .update({ developments: nextDevelopments })\n      .eq('id', arcId)\n      .select('*')\n      .single();\n\n    if (updateError || !updated) {\n      throw new Error(`Entwicklung konnte nicht gespeichert werden: ${updateError?.message ?? 'missing'}`);\n    }\n\n    const { data: project } = await supabase\n      .from('projects')\n      .select('name, status')\n      .eq('id', (updated as CharacterAdventureArcDto).project_id)\n      .maybeSingle();\n\n    const { count } = await supabase\n      .from('sessions')\n      .select('id', { count: 'exact', head: true })\n      .eq('project_id', (updated as CharacterAdventureArcDto).project_id);\n\n    return mapArc(\n      updated as CharacterAdventureArcDto,\n      typeof project?.name === 'string' ? project.name : 'Unbenanntes Abenteuer',\n      typeof project?.status === 'string' ? project.status : null,\n      count ?? 0,\n    );\n  }"
           }
         },
         {
@@ -34247,50 +34247,56 @@
         },
         {
           "path": "src/infrastructure/character/character-adventure-arc-service.ts",
-          "line": 18,
-          "endLine": 20,
+          "line": 24,
+          "endLine": 26,
           "name": "isRecord"
         },
         {
           "path": "src/infrastructure/character/character-adventure-arc-service.ts",
-          "line": 22,
-          "endLine": 24,
+          "line": 28,
+          "endLine": 30,
           "name": "isDevelopmentKind"
         },
         {
           "path": "src/infrastructure/character/character-adventure-arc-service.ts",
-          "line": 26,
-          "endLine": 28,
+          "line": 32,
+          "endLine": 34,
           "name": "isArcStatus"
         },
         {
           "path": "src/infrastructure/character/character-adventure-arc-service.ts",
-          "line": 30,
-          "endLine": 48,
+          "line": 36,
+          "endLine": 54,
           "name": "normalizeDevelopments"
         },
         {
           "path": "src/infrastructure/character/character-adventure-arc-service.ts",
-          "line": 50,
-          "endLine": 71,
+          "line": 56,
+          "endLine": 77,
           "name": "mapArc"
         },
         {
           "path": "src/infrastructure/character/character-adventure-arc-service.ts",
-          "line": 73,
-          "endLine": 78,
+          "line": 79,
+          "endLine": 99,
+          "name": "mapHostArc"
+        },
+        {
+          "path": "src/infrastructure/character/character-adventure-arc-service.ts",
+          "line": 101,
+          "endLine": 106,
           "name": "createDevelopmentId"
         },
         {
           "path": "src/infrastructure/character/character-adventure-arc-service.ts",
-          "line": 85,
-          "endLine": 192,
+          "line": 113,
+          "endLine": 226,
           "name": "listArcsForCharacter"
         },
         {
           "path": "src/infrastructure/character/character-adventure-arc-service.ts",
-          "line": 194,
-          "endLine": 255,
+          "line": 228,
+          "endLine": 300,
           "name": "appendDevelopment"
         },
         {
@@ -35605,7 +35611,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "e39553aaf251977db8b72a0db88350dd5893430cfbd5fa5c3007b41f5b23efd5"
+            "sha256": "69904d232219d72d3ee991eadc688ed47f9a3eb98289d516d7b437119d6e4d3d"
           },
           {
             "path": "src/infrastructure/inventory/host-inventory-adapter.ts",
@@ -35717,7 +35723,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-inventory.json",
-      "sourceContractSha256": "c2a0f62eebfd3a28473fbb22c31c7048ef1d6d1ac7c379d35a66fa15f464f882",
+      "sourceContractSha256": "fc0cce2f84e69cb7232ff75ba5419f30d531af90c7a90e6aad95f87823d1eed3",
       "rpcUsed": [],
       "tablesTouched": [
         "characters",
@@ -36921,7 +36927,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "e39553aaf251977db8b72a0db88350dd5893430cfbd5fa5c3007b41f5b23efd5"
+            "sha256": "69904d232219d72d3ee991eadc688ed47f9a3eb98289d516d7b437119d6e4d3d"
           },
           {
             "path": "src/infrastructure/look/adapters/host-mtoon-look-adapter.ts",
@@ -36997,7 +37003,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-look.json",
-      "sourceContractSha256": "65533c1d176ba87e657384d8a2c672784fc72b716e465c16f6d1ac2220468a44",
+      "sourceContractSha256": "bb748766d207fc9cf77ea042bdf0f93620ef6858b494ec3d7a7a1da6c5e6b871",
       "rpcUsed": [],
       "tablesTouched": [
         "look_profile_versions",
@@ -37866,7 +37872,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "e39553aaf251977db8b72a0db88350dd5893430cfbd5fa5c3007b41f5b23efd5"
+            "sha256": "69904d232219d72d3ee991eadc688ed47f9a3eb98289d516d7b437119d6e4d3d"
           },
           {
             "path": "src/infrastructure/marketplace/host-marketplace-adapter.ts",
@@ -37910,7 +37916,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-marketplace.json",
-      "sourceContractSha256": "c1c51698a9f4cc2f798d7561c864fcbfd67763a018512db4c8fadbf6123f125d",
+      "sourceContractSha256": "b38aa10e6d25bd58d0bdbbfdba9b4fe9744b2cd1e236f2961fd2129d0d6e2d23",
       "rpcUsed": [
         "increment_marketplace_downloads"
       ],
@@ -38725,7 +38731,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "e39553aaf251977db8b72a0db88350dd5893430cfbd5fa5c3007b41f5b23efd5"
+            "sha256": "69904d232219d72d3ee991eadc688ed47f9a3eb98289d516d7b437119d6e4d3d"
           },
           {
             "path": "src/infrastructure/host/host-session-http.ts",
@@ -38785,7 +38791,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-npc-creature.json",
-      "sourceContractSha256": "558e074253450d2870e39d0556975d74315054cc165933783c1942b315922732",
+      "sourceContractSha256": "28c6e92672f9cab584019b0d423c1127ee98184f8ef7cdf3b89419ba726a3f9a",
       "rpcUsed": [
         "assign_npc_creature_controller",
         "clear_npc_creature_instance_temp_controllers_for_session",
@@ -39882,7 +39888,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "e39553aaf251977db8b72a0db88350dd5893430cfbd5fa5c3007b41f5b23efd5"
+            "sha256": "69904d232219d72d3ee991eadc688ed47f9a3eb98289d516d7b437119d6e4d3d"
           },
           {
             "path": "src/infrastructure/host/host-product-deny.ts",
@@ -39942,7 +39948,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-project.json",
-      "sourceContractSha256": "9d180c7235fc5e3bdf24871971f44468ec02d0d72fc853b89a2d53fedeb7c655",
+      "sourceContractSha256": "5c6f15a1c7f3877888f08057da725ce13db18b3eb7c12980b173c28baa57ee08",
       "rpcUsed": [
         "create_project_session",
         "ensure_native_starter_project",
@@ -41180,7 +41186,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "e39553aaf251977db8b72a0db88350dd5893430cfbd5fa5c3007b41f5b23efd5"
+            "sha256": "69904d232219d72d3ee991eadc688ed47f9a3eb98289d516d7b437119d6e4d3d"
           },
           {
             "path": "src/infrastructure/rulesets/ruleset-service.ts",
@@ -41200,7 +41206,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-rulesets.json",
-      "sourceContractSha256": "fab97038c6efbf895a52047d3e4aad17468c8fc7d369d9c0362f57fff6f63148",
+      "sourceContractSha256": "750f94f6b0bd5b460fb516608f90618100057d27184f3b1a2e195f852b4eecec",
       "rpcUsed": [],
       "tablesTouched": [
         "rulesets"
@@ -41419,7 +41425,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "e39553aaf251977db8b72a0db88350dd5893430cfbd5fa5c3007b41f5b23efd5"
+            "sha256": "69904d232219d72d3ee991eadc688ed47f9a3eb98289d516d7b437119d6e4d3d"
           },
           {
             "path": "src/infrastructure/host/host-product-deny.ts",
@@ -41467,7 +41473,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-saga.json",
-      "sourceContractSha256": "3df8667a42a1f2600f06d7e8412c3f39028c97e8c179d0ece779716813a9b88f",
+      "sourceContractSha256": "76f05b7d4c145bef0dd76b8917e50f96bbcfc10abd984070f3d375177785a10f",
       "rpcUsed": [
         "copy_native_saga_definition",
         "create_project_from_saga_version",
@@ -41957,7 +41963,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "e39553aaf251977db8b72a0db88350dd5893430cfbd5fa5c3007b41f5b23efd5"
+            "sha256": "69904d232219d72d3ee991eadc688ed47f9a3eb98289d516d7b437119d6e4d3d"
           },
           {
             "path": "src/infrastructure/host/host-session-http.ts",
@@ -42053,7 +42059,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-session.json",
-      "sourceContractSha256": "e2850035f4c7e092687e4743f88920cafaf88414091927a996774aca07c6f17c",
+      "sourceContractSha256": "718898bc48c2c9fc043af756d497713f4c93ccb25b61b4049fbcae9a11f06a95",
       "rpcUsed": [
         "apply_session_runtime_command",
         "create_play_session",
@@ -43970,7 +43976,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "e39553aaf251977db8b72a0db88350dd5893430cfbd5fa5c3007b41f5b23efd5"
+            "sha256": "69904d232219d72d3ee991eadc688ed47f9a3eb98289d516d7b437119d6e4d3d"
           },
           {
             "path": "src/infrastructure/media/optimizer/engines/audio/index.ts",
@@ -44078,7 +44084,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-user-profile.json",
-      "sourceContractSha256": "397a0c2ae94c9a0ea8fa1246e59ce3defbd2cb572565f4151692da30efd6875e",
+      "sourceContractSha256": "da8871e3c37b6569f471e0d2cb1ef77f03a67cc99616fb30689f68294c351dd8",
       "rpcUsed": [],
       "tablesTouched": [
         "user_profiles"
@@ -44865,7 +44871,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "e39553aaf251977db8b72a0db88350dd5893430cfbd5fa5c3007b41f5b23efd5"
+            "sha256": "69904d232219d72d3ee991eadc688ed47f9a3eb98289d516d7b437119d6e4d3d"
           },
           {
             "path": "src/infrastructure/host/host-world-http.ts",
@@ -44977,7 +44983,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-world.json",
-      "sourceContractSha256": "74f67ff153402c9bbf4374a10a3899efa0c5c80f06e248c0ebf5c5c419ea2242",
+      "sourceContractSha256": "fe7f88d6883eaed09704dfb40ce9d61bbf918b0aa9a5c7b6fd2862adf3067a8e",
       "rpcUsed": [
         "archive_world_node_subtree",
         "create_world_node_with_maps",

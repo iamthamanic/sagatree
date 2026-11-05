@@ -33,6 +33,7 @@ export const TABLE_OWNERSHIP: Readonly<Record<string, HostModuleId>> = Object.fr
   project_members: 'project',
   characters: 'character',
   character_presets: 'character',
+  character_adventure_arcs: 'character',
   character_avatar_artifacts: 'character',
   inventory_item_definitions: 'inventory',
   saga_permission_keys: 'permissions',

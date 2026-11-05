@@ -1546,6 +1546,19 @@ function checkCut08CharacterPresets() {
   console.log('OK: cut-08-presets.self-test');
 }
 
+function checkCut09CharacterArcs() {
+  console.log('CUT-09 character adventure arcs (#1144)...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/cut-09-character-arcs.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+  console.log('OK: cut-09-character-arcs.self-test');
+}
+
 function checkMig312UserProfileAdapter() {
   console.log('MIG-312 user-profile adapter (#811): user_profiles + user-avatars dual-path...');
   execFileSync(
@@ -3771,6 +3784,7 @@ checkCut05OutcomePromotion();
 checkCut06ItemDefinition();
 checkCut07LookVersions();
 checkCut08CharacterPresets();
+checkCut09CharacterArcs();
 checkMig312UserProfileAdapter();
 checkMig309Rulesets();
 checkMig313WorldAdapter();
