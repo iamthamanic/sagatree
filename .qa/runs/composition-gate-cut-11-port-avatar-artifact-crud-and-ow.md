@@ -1,6 +1,6 @@
 # Composition Gate — cut-11-port-avatar-artifact-crud-and-ow (#1146)
 
-- HEAD_SHA: b63930074bb24bd0ef887bba1206ab16460d81c9
+- HEAD_SHA: 1622c9ad65de7cbf3279eb1050265fa3b66d3bba
 - BASE_SHA: 9e9e71122095d19862d2f24125acae346438a5f2
 - Date: 2026-11-05
 - Verdict: CLEAR
@@ -40,3 +40,7 @@ Authorization is owner-scoped; public paths are never authority.
 ## Verdict rationale
 
 Service + backend + persistence hops changed; covered by cut-11-avatar-artifacts.self-test.
+
+## Follow-up (Codex)
+
+- Origin derived from source ids; analysis host-internal; linked-owner retry; store-unavailable → 503.
