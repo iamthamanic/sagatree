@@ -22,6 +22,11 @@ import {
   type CharacterSheetResult,
 } from './internal/character-sheet-store.ts';
 import {
+  CharacterPresetProductStore,
+  type CharacterPresetProductRecord,
+  type CreateCharacterPresetProductInput,
+} from './internal/character-preset-product-store.ts';
+import {
   CharacterInventoryColumnsStore,
   type CharacterInventoryColumnsRecord,
   type CharacterInventoryColumnsResult,
@@ -92,6 +97,8 @@ export type {
   CharacterSheetResult,
   CharacterInventoryColumnsRecord,
   CharacterInventoryColumnsResult,
+  CharacterPresetProductRecord,
+  CreateCharacterPresetProductInput,
 };
 export {
   CHARACTER_INFRA_PUBLIC_ACTIVATION_AUTHORIZED,
@@ -137,6 +144,36 @@ export type CharacterPorts = {
   readonly listReadablePresets: (
     actorId: string,
   ) => CharacterSheetResult<readonly CharacterPresetRecord[]>;
+  /** CUT-08 — product user presets (versions / source character / publish flag). */
+  readonly listUserPresets: (
+    actorId: string,
+  ) => CharacterSheetResult<readonly CharacterPresetProductRecord[]>;
+  readonly getPresetForCharacter: (
+    actorId: string,
+    characterId: string,
+  ) => CharacterSheetResult<CharacterPresetProductRecord | null>;
+  readonly createPresetFromCharacter: (
+    actorId: string,
+    input: CreateCharacterPresetProductInput,
+  ) => CharacterSheetResult<CharacterPresetProductRecord>;
+  readonly releasePresetVersion: (
+    actorId: string,
+    presetId: string,
+    snapshot: Readonly<Record<string, unknown>>,
+  ) => CharacterSheetResult<CharacterPresetProductRecord>;
+  readonly renamePreset: (
+    actorId: string,
+    presetId: string,
+    displayName: string,
+  ) => CharacterSheetResult<CharacterPresetProductRecord>;
+  readonly duplicatePreset: (
+    actorId: string,
+    presetId: string,
+  ) => CharacterSheetResult<CharacterPresetProductRecord>;
+  readonly deletePreset: (
+    actorId: string,
+    presetId: string,
+  ) => CharacterSheetResult<{ readonly id: string }>;
   readonly resolveOwnedArtifact: (
     actorId: string,
     storagePath: string,
@@ -189,6 +226,13 @@ export function createCharacterPorts(db?: HostDatabase): CharacterPorts {
       updateOwnedCharacter: () => unavailableSheet(),
       deleteOwnedCharacter: () => unavailableSheet(),
       listReadablePresets: () => unavailableSheet(),
+      listUserPresets: () => unavailableSheet(),
+      getPresetForCharacter: () => unavailableSheet(),
+      createPresetFromCharacter: () => unavailableSheet(),
+      releasePresetVersion: () => unavailableSheet(),
+      renamePreset: () => unavailableSheet(),
+      duplicatePreset: () => unavailableSheet(),
+      deletePreset: () => unavailableSheet(),
       resolveOwnedArtifact: () => unavailableSheet(),
       seedPublicPresetForTests: () => {
         throw new Error('store-unavailable');
@@ -200,6 +244,7 @@ export function createCharacterPorts(db?: HostDatabase): CharacterPorts {
   }
   const membership = new CharacterMembershipStore(db);
   const sheets = new CharacterSheetStore(db);
+  const productPresets = new CharacterPresetProductStore(db);
   const inventoryColumns = new CharacterInventoryColumnsStore(db);
   return {
     moduleId: 'character',
@@ -214,6 +259,17 @@ export function createCharacterPorts(db?: HostDatabase): CharacterPorts {
       sheets.updateOwned(actorId, characterId, draft),
     deleteOwnedCharacter: (actorId, characterId) => sheets.deleteOwned(actorId, characterId),
     listReadablePresets: (actorId) => sheets.listReadablePresets(actorId),
+    listUserPresets: (actorId) => productPresets.listUserPresets(actorId),
+    getPresetForCharacter: (actorId, characterId) =>
+      productPresets.getPresetForCharacter(actorId, characterId),
+    createPresetFromCharacter: (actorId, input) =>
+      productPresets.createFromCharacter(actorId, input),
+    releasePresetVersion: (actorId, presetId, snapshot) =>
+      productPresets.releaseVersion(actorId, presetId, snapshot),
+    renamePreset: (actorId, presetId, displayName) =>
+      productPresets.renamePreset(actorId, presetId, displayName),
+    duplicatePreset: (actorId, presetId) => productPresets.duplicatePreset(actorId, presetId),
+    deletePreset: (actorId, presetId) => productPresets.deletePreset(actorId, presetId),
     resolveOwnedArtifact: (actorId, storagePath) => sheets.resolveArtifact(actorId, storagePath),
     seedPublicPresetForTests: (input) => sheets.seedPublicPreset(input),
     seedArtifactForTests: (input) => sheets.seedArtifact(input),

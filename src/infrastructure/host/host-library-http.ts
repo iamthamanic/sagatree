@@ -389,6 +389,130 @@ export async function fetchHostLibraryLookVersions(
   return Array.isArray(body.versions) ? body.versions : [];
 }
 
+/** CUT-08 — GET `/api/v1/library/character-presets`. */
+export async function fetchHostLibraryCharacterPresets(
+  env: EnvLike = defaultEnv(),
+  fetchImpl: typeof fetch = fetch,
+): Promise<readonly unknown[]> {
+  const body = await hostGetJson<{ presets?: unknown[] }>(
+    '/api/v1/library/character-presets',
+    'Host-Charakter-Presets nicht erreichbar',
+    env,
+    fetchImpl,
+  );
+  return Array.isArray(body.presets) ? body.presets : [];
+}
+
+/** CUT-08 — GET `/api/v1/library/character-presets/by-character/:characterId`. */
+export async function fetchHostLibraryCharacterPresetForCharacter(
+  characterId: string,
+  env: EnvLike = defaultEnv(),
+  fetchImpl: typeof fetch = fetch,
+): Promise<unknown | null> {
+  const body = await hostGetJson<{ preset?: unknown | null }>(
+    `/api/v1/library/character-presets/by-character/${encodeURIComponent(characterId)}`,
+    'Host-Charakter-Preset nicht erreichbar',
+    env,
+    fetchImpl,
+  );
+  return body.preset ?? null;
+}
+
+/** CUT-08 — POST `/api/v1/library/character-presets`. */
+export async function createHostLibraryCharacterPreset(
+  input: {
+    readonly displayName: string;
+    readonly rulesetKey: string;
+    readonly sourceCharacterId: string;
+    readonly snapshot: unknown;
+  },
+  env: EnvLike = defaultEnv(),
+  fetchImpl: typeof fetch = fetch,
+): Promise<unknown> {
+  const body = await hostMutateJson<{ preset?: unknown }>(
+    '/api/v1/library/character-presets',
+    'POST',
+    'Host-Charakter-Preset anlegen fehlgeschlagen',
+    input,
+    env,
+    fetchImpl,
+  );
+  if (!body.preset) throw new Error('Host-Charakter-Preset anlegen: leere Antwort');
+  return body.preset;
+}
+
+/** CUT-08 — POST `/api/v1/library/character-presets/:id/versions`. */
+export async function releaseHostLibraryCharacterPresetVersion(
+  presetId: string,
+  snapshot: unknown,
+  env: EnvLike = defaultEnv(),
+  fetchImpl: typeof fetch = fetch,
+): Promise<unknown> {
+  const body = await hostMutateJson<{ preset?: unknown }>(
+    `/api/v1/library/character-presets/${encodeURIComponent(presetId)}/versions`,
+    'POST',
+    'Host-Charakter-Preset-Version freigeben fehlgeschlagen',
+    { snapshot },
+    env,
+    fetchImpl,
+  );
+  if (!body.preset) throw new Error('Host-Charakter-Preset-Version: leere Antwort');
+  return body.preset;
+}
+
+/** CUT-08 — PATCH `/api/v1/library/character-presets/:id`. */
+export async function renameHostLibraryCharacterPreset(
+  presetId: string,
+  displayName: string,
+  env: EnvLike = defaultEnv(),
+  fetchImpl: typeof fetch = fetch,
+): Promise<unknown> {
+  const body = await hostMutateJson<{ preset?: unknown }>(
+    `/api/v1/library/character-presets/${encodeURIComponent(presetId)}`,
+    'PATCH',
+    'Host-Charakter-Preset umbenennen fehlgeschlagen',
+    { displayName },
+    env,
+    fetchImpl,
+  );
+  if (!body.preset) throw new Error('Host-Charakter-Preset umbenennen: leere Antwort');
+  return body.preset;
+}
+
+/** CUT-08 — POST `/api/v1/library/character-presets/:id/duplicate`. */
+export async function duplicateHostLibraryCharacterPreset(
+  presetId: string,
+  env: EnvLike = defaultEnv(),
+  fetchImpl: typeof fetch = fetch,
+): Promise<unknown> {
+  const body = await hostMutateJson<{ preset?: unknown }>(
+    `/api/v1/library/character-presets/${encodeURIComponent(presetId)}/duplicate`,
+    'POST',
+    'Host-Charakter-Preset duplizieren fehlgeschlagen',
+    {},
+    env,
+    fetchImpl,
+  );
+  if (!body.preset) throw new Error('Host-Charakter-Preset duplizieren: leere Antwort');
+  return body.preset;
+}
+
+/** CUT-08 — DELETE `/api/v1/library/character-presets/:id`. */
+export async function deleteHostLibraryCharacterPreset(
+  presetId: string,
+  env: EnvLike = defaultEnv(),
+  fetchImpl: typeof fetch = fetch,
+): Promise<void> {
+  await hostMutateJson<{ ok?: boolean }>(
+    `/api/v1/library/character-presets/${encodeURIComponent(presetId)}`,
+    'DELETE',
+    'Host-Charakter-Preset löschen fehlgeschlagen',
+    undefined,
+    env,
+    fetchImpl,
+  );
+}
+
 export async function fetchHostLibraryNpcCreatures(
   env: EnvLike = defaultEnv(),
   fetchImpl: typeof fetch = fetch,
