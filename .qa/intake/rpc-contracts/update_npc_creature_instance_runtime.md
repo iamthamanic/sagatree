@@ -176,13 +176,13 @@ Direkt oder transitiv referenzierte lokale/importierte Mapper, Decoder und Vertr
 
 | Symbol | Quelle | Zeile | SHA-256 |
 | --- | --- | --- | --- |
-| `EnvLike` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 11 | `a8b7e3260e23481d4e9fae898c1bfa0db711a956741f6bdec806670a2e71bd6d` |
-| `defaultEnv` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 16 | `a8b7e3260e23481d4e9fae898c1bfa0db711a956741f6bdec806670a2e71bd6d` |
-| `isHostLibraryExplicitlyDisabled` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 25 | `a8b7e3260e23481d4e9fae898c1bfa0db711a956741f6bdec806670a2e71bd6d` |
-| `isHostLibraryEnabled` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 30 | `a8b7e3260e23481d4e9fae898c1bfa0db711a956741f6bdec806670a2e71bd6d` |
-| `hostMutateJson` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 151 | `a8b7e3260e23481d4e9fae898c1bfa0db711a956741f6bdec806670a2e71bd6d` |
-| `HostNpcInstanceDto` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 710 | `a8b7e3260e23481d4e9fae898c1bfa0db711a956741f6bdec806670a2e71bd6d` |
-| `updateHostNpcInstanceRuntime` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 783 | `a8b7e3260e23481d4e9fae898c1bfa0db711a956741f6bdec806670a2e71bd6d` |
+| `EnvLike` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 11 | `e39553aaf251977db8b72a0db88350dd5893430cfbd5fa5c3007b41f5b23efd5` |
+| `defaultEnv` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 16 | `e39553aaf251977db8b72a0db88350dd5893430cfbd5fa5c3007b41f5b23efd5` |
+| `isHostLibraryExplicitlyDisabled` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 25 | `e39553aaf251977db8b72a0db88350dd5893430cfbd5fa5c3007b41f5b23efd5` |
+| `isHostLibraryEnabled` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 30 | `e39553aaf251977db8b72a0db88350dd5893430cfbd5fa5c3007b41f5b23efd5` |
+| `hostMutateJson` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 151 | `e39553aaf251977db8b72a0db88350dd5893430cfbd5fa5c3007b41f5b23efd5` |
+| `HostNpcInstanceDto` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 834 | `e39553aaf251977db8b72a0db88350dd5893430cfbd5fa5c3007b41f5b23efd5` |
+| `updateHostNpcInstanceRuntime` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 907 | `e39553aaf251977db8b72a0db88350dd5893430cfbd5fa5c3007b41f5b23efd5` |
 | `NpcCreatureInstanceRow` | [src/infrastructure/npc-creature/npc-creature-instance.persistence.ts](../../../src/infrastructure/npc-creature/npc-creature-instance.persistence.ts) | 13 | `00aaa3e07b5cdc72305da5381e0c8e0754b2a159df623a4a6355748cb269776f` |
 | `asStringArray` | [src/infrastructure/npc-creature/npc-creature-instance.persistence.ts](../../../src/infrastructure/npc-creature/npc-creature-instance.persistence.ts) | 28 | `00aaa3e07b5cdc72305da5381e0c8e0754b2a159df623a4a6355748cb269776f` |
 | `parseSnapshot` | [src/infrastructure/npc-creature/npc-creature-instance.persistence.ts](../../../src/infrastructure/npc-creature/npc-creature-instance.persistence.ts) | 33 | `00aaa3e07b5cdc72305da5381e0c8e0754b2a159df623a4a6355748cb269776f` |
@@ -239,7 +239,7 @@ Die folgenden Hashes binden SQL-Kette, transitive Tabellen-/Trigger-/Policyquell
 
 | Quelle | SHA-256 |
 | --- | --- |
-| [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | `a8b7e3260e23481d4e9fae898c1bfa0db711a956741f6bdec806670a2e71bd6d` |
+| [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | `e39553aaf251977db8b72a0db88350dd5893430cfbd5fa5c3007b41f5b23efd5` |
 | [src/infrastructure/npc-creature/npc-creature-instance.persistence.ts](../../../src/infrastructure/npc-creature/npc-creature-instance.persistence.ts) | `00aaa3e07b5cdc72305da5381e0c8e0754b2a159df623a4a6355748cb269776f` |
 | [src/infrastructure/npc-creature/npc-creature-service.ts](../../../src/infrastructure/npc-creature/npc-creature-service.ts) | `92485b07e7ebccdc3c6f8232c74485c450aa1c565186290f94edb8dcfb16aadf` |
 | [src/lib/authenticatedUser.ts](../../../src/lib/authenticatedUser.ts) | `d4cbf3a004f8375982ca03d474fb7b61559fc2ec58ad6fe7b1f8834d26abf10c` |

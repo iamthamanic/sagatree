@@ -87,7 +87,7 @@ function snapshotAt(level, name = 'CUT-08 Held') {
     },
     skills: {},
     sagatree_profile: {
-      essence: 'forge',
+      essence: 'physical',
       background: {
         name: 'Dorf',
         milieuAccess: 'Markt',
@@ -103,7 +103,11 @@ function snapshotAt(level, name = 'CUT-08 Held') {
         perception: 2,
         charisma: 2,
       },
-      speciesTraitInstances: [],
+      // Budget 3: natural-protection (2) + sharpened-sense (1)
+      speciesTraitInstances: [
+        { trait: 'natural-protection' },
+        { trait: 'sharpened-sense', detail: 'Gehör' },
+      ],
     },
     abilities: [],
     inventory: [],
@@ -234,6 +238,27 @@ try {
     },
   );
   assert(badSchema.res.status === 400, `bad schema ${badSchema.res.status}`);
+
+  const badEssence = await httpJson(
+    baseURL,
+    `/api/v1/library/character-presets/${presetId}/versions`,
+    {
+      method: 'POST',
+      cookie: ownerCookie,
+      headers: { Origin: baseURL },
+      body: {
+        snapshot: {
+          ...snapshotAt(3),
+          sagatree_profile: {
+            ...snapshotAt(3).sagatree_profile,
+            essence: 'forge',
+            speciesTraitInstances: [],
+          },
+        },
+      },
+    },
+  );
+  assert(badEssence.res.status === 400, `bad essence/traits ${badEssence.res.status}`);
 
   const renamed = await httpJson(baseURL, `/api/v1/library/character-presets/${presetId}`, {
     method: 'PATCH',

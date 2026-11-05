@@ -28974,7 +28974,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "a8b7e3260e23481d4e9fae898c1bfa0db711a956741f6bdec806670a2e71bd6d"
+            "sha256": "e39553aaf251977db8b72a0db88350dd5893430cfbd5fa5c3007b41f5b23efd5"
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
@@ -28990,7 +28990,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-ai.json",
-      "sourceContractSha256": "4be983b850bf5a5c68ebed3e6652e29a94e0e31252e36301290fe877fe94bcd8",
+      "sourceContractSha256": "ef10985a759263dd88c01eefb777a4741e254a1127fe189765b100881e6ceead",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],
@@ -30203,7 +30203,7 @@
           },
           {
             "path": "src/infrastructure/character/character-preset-service.ts",
-            "sha256": "11df48060862f169ca9e4fb42d8b350bd652e9f42183ee32abe2314e1f50d0e5"
+            "sha256": "26902a435cfb08e53c4e13ec588fc02527fd58fe81f64b7e83f74509590dac0e"
           },
           {
             "path": "src/infrastructure/character/character-service.ts",
@@ -30307,7 +30307,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "a8b7e3260e23481d4e9fae898c1bfa0db711a956741f6bdec806670a2e71bd6d"
+            "sha256": "e39553aaf251977db8b72a0db88350dd5893430cfbd5fa5c3007b41f5b23efd5"
           },
           {
             "path": "src/infrastructure/host/host-product-deny.ts",
@@ -30491,7 +30491,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-character.json",
-      "sourceContractSha256": "0bf4a11469476739795bb58efc4a514a6a27bc7551a6b9d4e1c86cbec19627a1",
+      "sourceContractSha256": "629c08abda799089ddf7bd7f5609c8ab30fa46604ddc12758ba9b1f770f31129",
       "rpcUsed": [],
       "tablesTouched": [
         "character_adventure_arcs",
@@ -30756,119 +30756,119 @@
           "kind": "auth-helper",
           "name": null,
           "path": "src/infrastructure/character/character-preset-service.ts",
-          "line": 201,
-          "endLine": 201,
+          "line": 242,
+          "endLine": 242,
           "resolution": "dynamic-expression",
           "expression": "getAuthenticatedUserId()",
           "chain": "getAuthenticatedUserId()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/character/character-preset-service.ts",
-            "line": 199,
-            "endLine": 236,
-            "text": "async listUserPresets(): Promise<CharacterPresetVm[]> {\n    assertHostProductSurfaceAvailable('Charakter-Presets');\n    const userId = await getAuthenticatedUserId();\n    const { data, error } = await raceWithTimeoutReject(\n      supabase\n        .from(TABLE)\n        .select('*')\n        .eq('owner_user_id', userId)\n        .eq('origin', 'user')\n        .order('created_at', { ascending: false }),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'Presets konnten nicht geladen werden: Zeitüberschreitung',\n    );\n    if (error) throw new Error(`Presets konnten nicht geladen werden: ${error.message}`);\n\n    const rows = (data ?? []) as CharacterPresetDto[];\n    const sourceIds = Array.from(new Set(rows.map((row) => row.source_character_id).filter((id): id is string => Boolean(id))));\n    const existingSourceIds = new Set<string>();\n    if (sourceIds.length > 0) {\n      const { data: characters, error: charactersError } = await supabase\n        .from('characters')\n        .select('id')\n        .eq('owner_user_id', userId)\n        .in('id', sourceIds);\n      if (charactersError) {\n        console.error('Preset source character lookup failed:', charactersError.message);\n      } else {\n        for (const row of characters ?? []) {\n          if (typeof row.id === 'string') existingSourceIds.add(row.id);\n        }\n      }\n    }\n\n    return rows.map((row) => {\n      const missing = Boolean(row.source_character_id) && !existingSourceIds.has(row.source_character_id as string);\n      return mapToViewModel(row, missing);\n    });\n  }"
+            "line": 235,
+            "endLine": 277,
+            "text": "async listUserPresets(): Promise<CharacterPresetVm[]> {\n    if (isHostLibraryEnabled()) {\n      const rows = await fetchHostLibraryCharacterPresets();\n      return rows\n        .map(mapHostPresetRow)\n        .filter((row): row is CharacterPresetVm => row !== null);\n    }\n    const userId = await getAuthenticatedUserId();\n    const { data, error } = await raceWithTimeoutReject(\n      supabase\n        .from(TABLE)\n        .select('*')\n        .eq('owner_user_id', userId)\n        .eq('origin', 'user')\n        .order('created_at', { ascending: false }),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'Presets konnten nicht geladen werden: Zeitüberschreitung',\n    );\n    if (error) throw new Error(`Presets konnten nicht geladen werden: ${error.message}`);\n\n    const rows = (data ?? []) as CharacterPresetDto[];\n    const sourceIds = Array.from(new Set(rows.map((row) => row.source_character_id).filter((id): id is string => Boolean(id))));\n    const existingSourceIds = new Set<string>();\n    if (sourceIds.length > 0) {\n      const { data: characters, error: charactersError } = await supabase\n        .from('characters')\n        .select('id')\n        .eq('owner_user_id', userId)\n        .in('id', sourceIds);\n      if (charactersError) {\n        console.error('Preset source character lookup failed:', charactersError.message);\n      } else {\n        for (const row of characters ?? []) {\n          if (typeof row.id === 'string') existingSourceIds.add(row.id);\n        }\n      }\n    }\n\n    return rows.map((row) => {\n      const missing = Boolean(row.source_character_id) && !existingSourceIds.has(row.source_character_id as string);\n      return mapToViewModel(row, missing);\n    });\n  }"
           }
         },
         {
           "kind": "auth-helper",
           "name": null,
           "path": "src/infrastructure/character/character-preset-service.ts",
-          "line": 240,
-          "endLine": 240,
+          "line": 284,
+          "endLine": 284,
           "resolution": "dynamic-expression",
           "expression": "getAuthenticatedUserId()",
           "chain": "getAuthenticatedUserId()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/character/character-preset-service.ts",
-            "line": 238,
-            "endLine": 251,
-            "text": "async getPresetForCharacter(characterId: string): Promise<CharacterPresetVm | null> {\n    assertHostProductSurfaceAvailable('Charakter-Presets');\n    const userId = await getAuthenticatedUserId();\n    const { data, error } = await supabase\n      .from(TABLE)\n      .select('*')\n      .eq('owner_user_id', userId)\n      .eq('source_character_id', characterId)\n      .eq('origin', 'user')\n      .maybeSingle();\n    if (error) throw new Error(`Preset konnte nicht geladen werden: ${error.message}`);\n    if (!data) return null;\n    return mapToViewModel(data as CharacterPresetDto, false);\n  }"
+            "line": 279,
+            "endLine": 295,
+            "text": "async getPresetForCharacter(characterId: string): Promise<CharacterPresetVm | null> {\n    if (isHostLibraryEnabled()) {\n      const row = await fetchHostLibraryCharacterPresetForCharacter(characterId);\n      return row ? mapHostPresetRow(row) : null;\n    }\n    const userId = await getAuthenticatedUserId();\n    const { data, error } = await supabase\n      .from(TABLE)\n      .select('*')\n      .eq('owner_user_id', userId)\n      .eq('source_character_id', characterId)\n      .eq('origin', 'user')\n      .maybeSingle();\n    if (error) throw new Error(`Preset konnte nicht geladen werden: ${error.message}`);\n    if (!data) return null;\n    return mapToViewModel(data as CharacterPresetDto, false);\n  }"
           }
         },
         {
           "kind": "auth-helper",
           "name": null,
           "path": "src/infrastructure/character/character-preset-service.ts",
-          "line": 255,
-          "endLine": 255,
+          "line": 316,
+          "endLine": 316,
           "resolution": "dynamic-expression",
           "expression": "getAuthenticatedUserId()",
           "chain": "getAuthenticatedUserId()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/character/character-preset-service.ts",
-            "line": 253,
-            "endLine": 287,
-            "text": "async createPresetFromCharacter(input: CreateCharacterPresetInput): Promise<CharacterPresetVm> {\n    assertHostProductSurfaceAvailable('Charakter-Presets');\n    const userId = await getAuthenticatedUserId();\n    if (input.rulesetKey !== 'sagatree-core') {\n      throw new Error('Presets sind derzeit nur für SagaTree Core verfügbar.');\n    }\n    const snapshot = withSafePortraitUrl(input.snapshot);\n    assertValidSnapshot(snapshot);\n\n    const existing = await this.getPresetForCharacter(input.sourceCharacterId);\n    if (existing) {\n      throw new Error('Für diesen Charakter existiert bereits ein Preset. Nutze „Version freigeben“.');\n    }\n\n    const version: CharacterPresetVersionDto = {\n      level: snapshot.level,\n      snapshot,\n      created_at: new Date().toISOString(),\n    };\n    const { data, error } = await supabase\n      .from(TABLE)\n      .insert({\n        owner_user_id: userId,\n        display_name: input.displayName.trim() || `${snapshot.name.trim()} Preset`,\n        ruleset_key: 'sagatree-core',\n        origin: 'user',\n        source_character_id: input.sourceCharacterId,\n        published: false,\n        versions: [version],\n      })\n      .select()\n      .single();\n    if (error) throw new Error(`Preset konnte nicht gespeichert werden: ${error.message}`);\n    return mapToViewModel(data as CharacterPresetDto, false);\n  }"
+            "line": 297,
+            "endLine": 342,
+            "text": "async createPresetFromCharacter(input: CreateCharacterPresetInput): Promise<CharacterPresetVm> {\n    if (input.rulesetKey !== 'sagatree-core') {\n      throw new Error('Presets sind derzeit nur für SagaTree Core verfügbar.');\n    }\n    const snapshot = withSafePortraitUrl(input.snapshot);\n    assertValidSnapshot(snapshot);\n\n    if (isHostLibraryEnabled()) {\n      const created = await createHostLibraryCharacterPreset({\n        displayName: input.displayName.trim() || `${snapshot.name.trim()} Preset`,\n        rulesetKey: 'sagatree-core',\n        sourceCharacterId: input.sourceCharacterId,\n        snapshot,\n      });\n      const mapped = mapHostPresetRow(created);\n      if (!mapped) throw new Error('Host-Charakter-Preset anlegen: ungültige Antwort');\n      return mapped;\n    }\n\n    const userId = await getAuthenticatedUserId();\n    const existing = await this.getPresetForCharacter(input.sourceCharacterId);\n    if (existing) {\n      throw new Error('Für diesen Charakter existiert bereits ein Preset. Nutze „Version freigeben“.');\n    }\n\n    const version: CharacterPresetVersionDto = {\n      level: snapshot.level,\n      snapshot,\n      created_at: new Date().toISOString(),\n    };\n    const { data, error } = await supabase\n      .from(TABLE)\n      .insert({\n        owner_user_id: userId,\n        display_name: input.displayName.trim() || `${snapshot.name.trim()} Preset`,\n        ruleset_key: 'sagatree-core',\n        origin: 'user',\n        source_character_id: input.sourceCharacterId,\n        published: false,\n        versions: [version],\n      })\n      .select()\n      .single();\n    if (error) throw new Error(`Preset konnte nicht gespeichert werden: ${error.message}`);\n    return mapToViewModel(data as CharacterPresetDto, false);\n  }"
           }
         },
         {
           "kind": "auth-helper",
           "name": null,
           "path": "src/infrastructure/character/character-preset-service.ts",
-          "line": 291,
-          "endLine": 291,
+          "line": 355,
+          "endLine": 355,
           "resolution": "dynamic-expression",
           "expression": "getAuthenticatedUserId()",
           "chain": "getAuthenticatedUserId()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/character/character-preset-service.ts",
-            "line": 289,
-            "endLine": 329,
-            "text": "async releaseVersion(input: ReleaseCharacterPresetVersionInput): Promise<CharacterPresetVm> {\n    assertHostProductSurfaceAvailable('Charakter-Presets');\n    const userId = await getAuthenticatedUserId();\n    const snapshot = withSafePortraitUrl(input.snapshot);\n    assertValidSnapshot(snapshot);\n\n    const { data: existing, error: loadError } = await supabase\n      .from(TABLE)\n      .select('*')\n      .eq('id', input.presetId)\n      .eq('owner_user_id', userId)\n      .single();\n    if (loadError || !existing) {\n      throw new Error(loadError ? `Preset nicht gefunden: ${loadError.message}` : 'Preset nicht gefunden.');\n    }\n\n    const dto = existing as CharacterPresetDto;\n    const versions = normalizeVersions(dto.versions);\n    if (versions.some((version) => version.level === snapshot.level)) {\n      throw new Error(`Für Level ${snapshot.level} existiert bereits eine Preset-Version.`);\n    }\n\n    const nextVersions = [\n      ...versions,\n      {\n        level: snapshot.level,\n        snapshot,\n        created_at: new Date().toISOString(),\n      },\n    ].sort((a, b) => a.level - b.level || a.created_at.localeCompare(b.created_at));\n\n    const { data, error } = await supabase\n      .from(TABLE)\n      .update({ versions: nextVersions, published: false, updated_at: new Date().toISOString() })\n      .eq('id', input.presetId)\n      .eq('owner_user_id', userId)\n      .select()\n      .single();\n    if (error) throw new Error(`Version konnte nicht freigegeben werden: ${error.message}`);\n    return mapToViewModel(data as CharacterPresetDto, false);\n  }"
+            "line": 344,
+            "endLine": 390,
+            "text": "async releaseVersion(input: ReleaseCharacterPresetVersionInput): Promise<CharacterPresetVm> {\n    const snapshot = withSafePortraitUrl(input.snapshot);\n    assertValidSnapshot(snapshot);\n\n    if (isHostLibraryEnabled()) {\n      const released = await releaseHostLibraryCharacterPresetVersion(input.presetId, snapshot);\n      const mapped = mapHostPresetRow(released);\n      if (!mapped) throw new Error('Host-Charakter-Preset-Version: ungültige Antwort');\n      return mapped;\n    }\n\n    const userId = await getAuthenticatedUserId();\n    const { data: existing, error: loadError } = await supabase\n      .from(TABLE)\n      .select('*')\n      .eq('id', input.presetId)\n      .eq('owner_user_id', userId)\n      .single();\n    if (loadError || !existing) {\n      throw new Error(loadError ? `Preset nicht gefunden: ${loadError.message}` : 'Preset nicht gefunden.');\n    }\n\n    const dto = existing as CharacterPresetDto;\n    const versions = normalizeVersions(dto.versions);\n    if (versions.some((version) => version.level === snapshot.level)) {\n      throw new Error(`Für Level ${snapshot.level} existiert bereits eine Preset-Version.`);\n    }\n\n    const nextVersions = [\n      ...versions,\n      {\n        level: snapshot.level,\n        snapshot,\n        created_at: new Date().toISOString(),\n      },\n    ].sort((a, b) => a.level - b.level || a.created_at.localeCompare(b.created_at));\n\n    const { data, error } = await supabase\n      .from(TABLE)\n      .update({ versions: nextVersions, published: false, updated_at: new Date().toISOString() })\n      .eq('id', input.presetId)\n      .eq('owner_user_id', userId)\n      .select()\n      .single();\n    if (error) throw new Error(`Version konnte nicht freigegeben werden: ${error.message}`);\n    return mapToViewModel(data as CharacterPresetDto, false);\n  }"
           }
         },
         {
           "kind": "auth-helper",
           "name": null,
           "path": "src/infrastructure/character/character-preset-service.ts",
-          "line": 333,
-          "endLine": 333,
+          "line": 403,
+          "endLine": 403,
           "resolution": "dynamic-expression",
           "expression": "getAuthenticatedUserId()",
           "chain": "getAuthenticatedUserId()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/character/character-preset-service.ts",
-            "line": 331,
-            "endLine": 345,
-            "text": "async renamePreset(presetId: string, displayName: string): Promise<CharacterPresetVm> {\n    assertHostProductSurfaceAvailable('Charakter-Presets');\n    const userId = await getAuthenticatedUserId();\n    const trimmed = displayName.trim();\n    if (!trimmed) throw new Error('Preset-Name darf nicht leer sein.');\n    const { data, error } = await supabase\n      .from(TABLE)\n      .update({ display_name: trimmed, published: false, updated_at: new Date().toISOString() })\n      .eq('id', presetId)\n      .eq('owner_user_id', userId)\n      .select()\n      .single();\n    if (error) throw new Error(`Preset konnte nicht umbenannt werden: ${error.message}`);\n    return mapToViewModel(data as CharacterPresetDto, false);\n  }"
+            "line": 392,
+            "endLine": 413,
+            "text": "async renamePreset(presetId: string, displayName: string): Promise<CharacterPresetVm> {\n    const trimmed = displayName.trim();\n    if (!trimmed) throw new Error('Preset-Name darf nicht leer sein.');\n\n    if (isHostLibraryEnabled()) {\n      const renamed = await renameHostLibraryCharacterPreset(presetId, trimmed);\n      const mapped = mapHostPresetRow(renamed);\n      if (!mapped) throw new Error('Host-Charakter-Preset umbenennen: ungültige Antwort');\n      return mapped;\n    }\n\n    const userId = await getAuthenticatedUserId();\n    const { data, error } = await supabase\n      .from(TABLE)\n      .update({ display_name: trimmed, published: false, updated_at: new Date().toISOString() })\n      .eq('id', presetId)\n      .eq('owner_user_id', userId)\n      .select()\n      .single();\n    if (error) throw new Error(`Preset konnte nicht umbenannt werden: ${error.message}`);\n    return mapToViewModel(data as CharacterPresetDto, false);\n  }"
           }
         },
         {
           "kind": "auth-helper",
           "name": null,
           "path": "src/infrastructure/character/character-preset-service.ts",
-          "line": 349,
-          "endLine": 349,
+          "line": 423,
+          "endLine": 423,
           "resolution": "dynamic-expression",
           "expression": "getAuthenticatedUserId()",
           "chain": "getAuthenticatedUserId()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/character/character-preset-service.ts",
-            "line": 347,
-            "endLine": 376,
-            "text": "async duplicatePreset(presetId: string): Promise<CharacterPresetVm> {\n    assertHostProductSurfaceAvailable('Charakter-Presets');\n    const userId = await getAuthenticatedUserId();\n    const { data: existing, error: loadError } = await supabase\n      .from(TABLE)\n      .select('*')\n      .eq('id', presetId)\n      .eq('owner_user_id', userId)\n      .single();\n    if (loadError || !existing) {\n      throw new Error(loadError ? `Preset nicht gefunden: ${loadError.message}` : 'Preset nicht gefunden.');\n    }\n    const dto = existing as CharacterPresetDto;\n    const versions = normalizeVersions(dto.versions);\n    const { data, error } = await supabase\n      .from(TABLE)\n      .insert({\n        owner_user_id: userId,\n        display_name: `${dto.display_name} (Kopie)`,\n        ruleset_key: dto.ruleset_key,\n        origin: 'user',\n        source_character_id: null,\n        published: false,\n        versions,\n      })\n      .select()\n      .single();\n    if (error) throw new Error(`Preset konnte nicht dupliziert werden: ${error.message}`);\n    return mapToViewModel(data as CharacterPresetDto, false);\n  }"
+            "line": 415,
+            "endLine": 450,
+            "text": "async duplicatePreset(presetId: string): Promise<CharacterPresetVm> {\n    if (isHostLibraryEnabled()) {\n      const duplicated = await duplicateHostLibraryCharacterPreset(presetId);\n      const mapped = mapHostPresetRow(duplicated);\n      if (!mapped) throw new Error('Host-Charakter-Preset duplizieren: ungültige Antwort');\n      return mapped;\n    }\n\n    const userId = await getAuthenticatedUserId();\n    const { data: existing, error: loadError } = await supabase\n      .from(TABLE)\n      .select('*')\n      .eq('id', presetId)\n      .eq('owner_user_id', userId)\n      .single();\n    if (loadError || !existing) {\n      throw new Error(loadError ? `Preset nicht gefunden: ${loadError.message}` : 'Preset nicht gefunden.');\n    }\n    const dto = existing as CharacterPresetDto;\n    const versions = normalizeVersions(dto.versions);\n    const { data, error } = await supabase\n      .from(TABLE)\n      .insert({\n        owner_user_id: userId,\n        display_name: `${dto.display_name} (Kopie)`,\n        ruleset_key: dto.ruleset_key,\n        origin: 'user',\n        source_character_id: null,\n        published: false,\n        versions,\n      })\n      .select()\n      .single();\n    if (error) throw new Error(`Preset konnte nicht dupliziert werden: ${error.message}`);\n    return mapToViewModel(data as CharacterPresetDto, false);\n  }"
           }
         },
         {
           "kind": "auth-helper",
           "name": null,
           "path": "src/infrastructure/character/character-preset-service.ts",
-          "line": 380,
-          "endLine": 380,
+          "line": 457,
+          "endLine": 457,
           "resolution": "dynamic-expression",
           "expression": "getAuthenticatedUserId()",
           "chain": "getAuthenticatedUserId()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/character/character-preset-service.ts",
-            "line": 378,
-            "endLine": 383,
-            "text": "async deletePreset(presetId: string): Promise<void> {\n    assertHostProductSurfaceAvailable('Charakter-Presets');\n    const userId = await getAuthenticatedUserId();\n    const { error } = await supabase.from(TABLE).delete().eq('id', presetId).eq('owner_user_id', userId);\n    if (error) throw new Error(`Preset konnte nicht gelöscht werden: ${error.message}`);\n  }"
+            "line": 452,
+            "endLine": 460,
+            "text": "async deletePreset(presetId: string): Promise<void> {\n    if (isHostLibraryEnabled()) {\n      await deleteHostLibraryCharacterPreset(presetId);\n      return;\n    }\n    const userId = await getAuthenticatedUserId();\n    const { error } = await supabase.from(TABLE).delete().eq('id', presetId).eq('owner_user_id', userId);\n    if (error) throw new Error(`Preset konnte nicht gelöscht werden: ${error.message}`);\n  }"
           }
         },
         {
@@ -32020,25 +32020,25 @@
           "kind": "auth-helper",
           "name": null,
           "path": "src/infrastructure/character/character-preset-service.ts",
-          "line": 201,
-          "endLine": 201,
+          "line": 242,
+          "endLine": 242,
           "resolution": "dynamic-expression",
           "expression": "getAuthenticatedUserId()",
           "chain": "getAuthenticatedUserId()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/character/character-preset-service.ts",
-            "line": 199,
-            "endLine": 236,
-            "text": "async listUserPresets(): Promise<CharacterPresetVm[]> {\n    assertHostProductSurfaceAvailable('Charakter-Presets');\n    const userId = await getAuthenticatedUserId();\n    const { data, error } = await raceWithTimeoutReject(\n      supabase\n        .from(TABLE)\n        .select('*')\n        .eq('owner_user_id', userId)\n        .eq('origin', 'user')\n        .order('created_at', { ascending: false }),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'Presets konnten nicht geladen werden: Zeitüberschreitung',\n    );\n    if (error) throw new Error(`Presets konnten nicht geladen werden: ${error.message}`);\n\n    const rows = (data ?? []) as CharacterPresetDto[];\n    const sourceIds = Array.from(new Set(rows.map((row) => row.source_character_id).filter((id): id is string => Boolean(id))));\n    const existingSourceIds = new Set<string>();\n    if (sourceIds.length > 0) {\n      const { data: characters, error: charactersError } = await supabase\n        .from('characters')\n        .select('id')\n        .eq('owner_user_id', userId)\n        .in('id', sourceIds);\n      if (charactersError) {\n        console.error('Preset source character lookup failed:', charactersError.message);\n      } else {\n        for (const row of characters ?? []) {\n          if (typeof row.id === 'string') existingSourceIds.add(row.id);\n        }\n      }\n    }\n\n    return rows.map((row) => {\n      const missing = Boolean(row.source_character_id) && !existingSourceIds.has(row.source_character_id as string);\n      return mapToViewModel(row, missing);\n    });\n  }"
+            "line": 235,
+            "endLine": 277,
+            "text": "async listUserPresets(): Promise<CharacterPresetVm[]> {\n    if (isHostLibraryEnabled()) {\n      const rows = await fetchHostLibraryCharacterPresets();\n      return rows\n        .map(mapHostPresetRow)\n        .filter((row): row is CharacterPresetVm => row !== null);\n    }\n    const userId = await getAuthenticatedUserId();\n    const { data, error } = await raceWithTimeoutReject(\n      supabase\n        .from(TABLE)\n        .select('*')\n        .eq('owner_user_id', userId)\n        .eq('origin', 'user')\n        .order('created_at', { ascending: false }),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'Presets konnten nicht geladen werden: Zeitüberschreitung',\n    );\n    if (error) throw new Error(`Presets konnten nicht geladen werden: ${error.message}`);\n\n    const rows = (data ?? []) as CharacterPresetDto[];\n    const sourceIds = Array.from(new Set(rows.map((row) => row.source_character_id).filter((id): id is string => Boolean(id))));\n    const existingSourceIds = new Set<string>();\n    if (sourceIds.length > 0) {\n      const { data: characters, error: charactersError } = await supabase\n        .from('characters')\n        .select('id')\n        .eq('owner_user_id', userId)\n        .in('id', sourceIds);\n      if (charactersError) {\n        console.error('Preset source character lookup failed:', charactersError.message);\n      } else {\n        for (const row of characters ?? []) {\n          if (typeof row.id === 'string') existingSourceIds.add(row.id);\n        }\n      }\n    }\n\n    return rows.map((row) => {\n      const missing = Boolean(row.source_character_id) && !existingSourceIds.has(row.source_character_id as string);\n      return mapToViewModel(row, missing);\n    });\n  }"
           }
         },
         {
           "kind": "table",
           "name": "character_presets",
           "path": "src/infrastructure/character/character-preset-service.ts",
-          "line": 203,
-          "endLine": 204,
+          "line": 244,
+          "endLine": 245,
           "resolution": "literal-or-constant",
           "expression": "supabase\n        .from(TABLE)",
           "chain": "supabase\n        .from(TABLE)\n        .select('*')\n        .eq('owner_user_id', userId)\n        .eq('origin', 'user')\n        .order('created_at', { ascending: false })",
@@ -32047,17 +32047,17 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/character/character-preset-service.ts",
-            "line": 199,
-            "endLine": 236,
-            "text": "async listUserPresets(): Promise<CharacterPresetVm[]> {\n    assertHostProductSurfaceAvailable('Charakter-Presets');\n    const userId = await getAuthenticatedUserId();\n    const { data, error } = await raceWithTimeoutReject(\n      supabase\n        .from(TABLE)\n        .select('*')\n        .eq('owner_user_id', userId)\n        .eq('origin', 'user')\n        .order('created_at', { ascending: false }),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'Presets konnten nicht geladen werden: Zeitüberschreitung',\n    );\n    if (error) throw new Error(`Presets konnten nicht geladen werden: ${error.message}`);\n\n    const rows = (data ?? []) as CharacterPresetDto[];\n    const sourceIds = Array.from(new Set(rows.map((row) => row.source_character_id).filter((id): id is string => Boolean(id))));\n    const existingSourceIds = new Set<string>();\n    if (sourceIds.length > 0) {\n      const { data: characters, error: charactersError } = await supabase\n        .from('characters')\n        .select('id')\n        .eq('owner_user_id', userId)\n        .in('id', sourceIds);\n      if (charactersError) {\n        console.error('Preset source character lookup failed:', charactersError.message);\n      } else {\n        for (const row of characters ?? []) {\n          if (typeof row.id === 'string') existingSourceIds.add(row.id);\n        }\n      }\n    }\n\n    return rows.map((row) => {\n      const missing = Boolean(row.source_character_id) && !existingSourceIds.has(row.source_character_id as string);\n      return mapToViewModel(row, missing);\n    });\n  }"
+            "line": 235,
+            "endLine": 277,
+            "text": "async listUserPresets(): Promise<CharacterPresetVm[]> {\n    if (isHostLibraryEnabled()) {\n      const rows = await fetchHostLibraryCharacterPresets();\n      return rows\n        .map(mapHostPresetRow)\n        .filter((row): row is CharacterPresetVm => row !== null);\n    }\n    const userId = await getAuthenticatedUserId();\n    const { data, error } = await raceWithTimeoutReject(\n      supabase\n        .from(TABLE)\n        .select('*')\n        .eq('owner_user_id', userId)\n        .eq('origin', 'user')\n        .order('created_at', { ascending: false }),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'Presets konnten nicht geladen werden: Zeitüberschreitung',\n    );\n    if (error) throw new Error(`Presets konnten nicht geladen werden: ${error.message}`);\n\n    const rows = (data ?? []) as CharacterPresetDto[];\n    const sourceIds = Array.from(new Set(rows.map((row) => row.source_character_id).filter((id): id is string => Boolean(id))));\n    const existingSourceIds = new Set<string>();\n    if (sourceIds.length > 0) {\n      const { data: characters, error: charactersError } = await supabase\n        .from('characters')\n        .select('id')\n        .eq('owner_user_id', userId)\n        .in('id', sourceIds);\n      if (charactersError) {\n        console.error('Preset source character lookup failed:', charactersError.message);\n      } else {\n        for (const row of characters ?? []) {\n          if (typeof row.id === 'string') existingSourceIds.add(row.id);\n        }\n      }\n    }\n\n    return rows.map((row) => {\n      const missing = Boolean(row.source_character_id) && !existingSourceIds.has(row.source_character_id as string);\n      return mapToViewModel(row, missing);\n    });\n  }"
           }
         },
         {
           "kind": "table",
           "name": "characters",
           "path": "src/infrastructure/character/character-preset-service.ts",
-          "line": 218,
-          "endLine": 219,
+          "line": 259,
+          "endLine": 260,
           "resolution": "literal-or-constant",
           "expression": "supabase\n        .from('characters')",
           "chain": "supabase\n        .from('characters')\n        .select('id')\n        .eq('owner_user_id', userId)\n        .in('id', sourceIds)",
@@ -32066,34 +32066,34 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/character/character-preset-service.ts",
-            "line": 199,
-            "endLine": 236,
-            "text": "async listUserPresets(): Promise<CharacterPresetVm[]> {\n    assertHostProductSurfaceAvailable('Charakter-Presets');\n    const userId = await getAuthenticatedUserId();\n    const { data, error } = await raceWithTimeoutReject(\n      supabase\n        .from(TABLE)\n        .select('*')\n        .eq('owner_user_id', userId)\n        .eq('origin', 'user')\n        .order('created_at', { ascending: false }),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'Presets konnten nicht geladen werden: Zeitüberschreitung',\n    );\n    if (error) throw new Error(`Presets konnten nicht geladen werden: ${error.message}`);\n\n    const rows = (data ?? []) as CharacterPresetDto[];\n    const sourceIds = Array.from(new Set(rows.map((row) => row.source_character_id).filter((id): id is string => Boolean(id))));\n    const existingSourceIds = new Set<string>();\n    if (sourceIds.length > 0) {\n      const { data: characters, error: charactersError } = await supabase\n        .from('characters')\n        .select('id')\n        .eq('owner_user_id', userId)\n        .in('id', sourceIds);\n      if (charactersError) {\n        console.error('Preset source character lookup failed:', charactersError.message);\n      } else {\n        for (const row of characters ?? []) {\n          if (typeof row.id === 'string') existingSourceIds.add(row.id);\n        }\n      }\n    }\n\n    return rows.map((row) => {\n      const missing = Boolean(row.source_character_id) && !existingSourceIds.has(row.source_character_id as string);\n      return mapToViewModel(row, missing);\n    });\n  }"
+            "line": 235,
+            "endLine": 277,
+            "text": "async listUserPresets(): Promise<CharacterPresetVm[]> {\n    if (isHostLibraryEnabled()) {\n      const rows = await fetchHostLibraryCharacterPresets();\n      return rows\n        .map(mapHostPresetRow)\n        .filter((row): row is CharacterPresetVm => row !== null);\n    }\n    const userId = await getAuthenticatedUserId();\n    const { data, error } = await raceWithTimeoutReject(\n      supabase\n        .from(TABLE)\n        .select('*')\n        .eq('owner_user_id', userId)\n        .eq('origin', 'user')\n        .order('created_at', { ascending: false }),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'Presets konnten nicht geladen werden: Zeitüberschreitung',\n    );\n    if (error) throw new Error(`Presets konnten nicht geladen werden: ${error.message}`);\n\n    const rows = (data ?? []) as CharacterPresetDto[];\n    const sourceIds = Array.from(new Set(rows.map((row) => row.source_character_id).filter((id): id is string => Boolean(id))));\n    const existingSourceIds = new Set<string>();\n    if (sourceIds.length > 0) {\n      const { data: characters, error: charactersError } = await supabase\n        .from('characters')\n        .select('id')\n        .eq('owner_user_id', userId)\n        .in('id', sourceIds);\n      if (charactersError) {\n        console.error('Preset source character lookup failed:', charactersError.message);\n      } else {\n        for (const row of characters ?? []) {\n          if (typeof row.id === 'string') existingSourceIds.add(row.id);\n        }\n      }\n    }\n\n    return rows.map((row) => {\n      const missing = Boolean(row.source_character_id) && !existingSourceIds.has(row.source_character_id as string);\n      return mapToViewModel(row, missing);\n    });\n  }"
           }
         },
         {
           "kind": "auth-helper",
           "name": null,
           "path": "src/infrastructure/character/character-preset-service.ts",
-          "line": 240,
-          "endLine": 240,
+          "line": 284,
+          "endLine": 284,
           "resolution": "dynamic-expression",
           "expression": "getAuthenticatedUserId()",
           "chain": "getAuthenticatedUserId()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/character/character-preset-service.ts",
-            "line": 238,
-            "endLine": 251,
-            "text": "async getPresetForCharacter(characterId: string): Promise<CharacterPresetVm | null> {\n    assertHostProductSurfaceAvailable('Charakter-Presets');\n    const userId = await getAuthenticatedUserId();\n    const { data, error } = await supabase\n      .from(TABLE)\n      .select('*')\n      .eq('owner_user_id', userId)\n      .eq('source_character_id', characterId)\n      .eq('origin', 'user')\n      .maybeSingle();\n    if (error) throw new Error(`Preset konnte nicht geladen werden: ${error.message}`);\n    if (!data) return null;\n    return mapToViewModel(data as CharacterPresetDto, false);\n  }"
+            "line": 279,
+            "endLine": 295,
+            "text": "async getPresetForCharacter(characterId: string): Promise<CharacterPresetVm | null> {\n    if (isHostLibraryEnabled()) {\n      const row = await fetchHostLibraryCharacterPresetForCharacter(characterId);\n      return row ? mapHostPresetRow(row) : null;\n    }\n    const userId = await getAuthenticatedUserId();\n    const { data, error } = await supabase\n      .from(TABLE)\n      .select('*')\n      .eq('owner_user_id', userId)\n      .eq('source_character_id', characterId)\n      .eq('origin', 'user')\n      .maybeSingle();\n    if (error) throw new Error(`Preset konnte nicht geladen werden: ${error.message}`);\n    if (!data) return null;\n    return mapToViewModel(data as CharacterPresetDto, false);\n  }"
           }
         },
         {
           "kind": "table",
           "name": "character_presets",
           "path": "src/infrastructure/character/character-preset-service.ts",
-          "line": 241,
-          "endLine": 242,
+          "line": 285,
+          "endLine": 286,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from(TABLE)",
           "chain": "supabase\n      .from(TABLE)\n      .select('*')\n      .eq('owner_user_id', userId)\n      .eq('source_character_id', characterId)\n      .eq('origin', 'user')\n      .maybeSingle()",
@@ -32102,34 +32102,34 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/character/character-preset-service.ts",
-            "line": 238,
-            "endLine": 251,
-            "text": "async getPresetForCharacter(characterId: string): Promise<CharacterPresetVm | null> {\n    assertHostProductSurfaceAvailable('Charakter-Presets');\n    const userId = await getAuthenticatedUserId();\n    const { data, error } = await supabase\n      .from(TABLE)\n      .select('*')\n      .eq('owner_user_id', userId)\n      .eq('source_character_id', characterId)\n      .eq('origin', 'user')\n      .maybeSingle();\n    if (error) throw new Error(`Preset konnte nicht geladen werden: ${error.message}`);\n    if (!data) return null;\n    return mapToViewModel(data as CharacterPresetDto, false);\n  }"
+            "line": 279,
+            "endLine": 295,
+            "text": "async getPresetForCharacter(characterId: string): Promise<CharacterPresetVm | null> {\n    if (isHostLibraryEnabled()) {\n      const row = await fetchHostLibraryCharacterPresetForCharacter(characterId);\n      return row ? mapHostPresetRow(row) : null;\n    }\n    const userId = await getAuthenticatedUserId();\n    const { data, error } = await supabase\n      .from(TABLE)\n      .select('*')\n      .eq('owner_user_id', userId)\n      .eq('source_character_id', characterId)\n      .eq('origin', 'user')\n      .maybeSingle();\n    if (error) throw new Error(`Preset konnte nicht geladen werden: ${error.message}`);\n    if (!data) return null;\n    return mapToViewModel(data as CharacterPresetDto, false);\n  }"
           }
         },
         {
           "kind": "auth-helper",
           "name": null,
           "path": "src/infrastructure/character/character-preset-service.ts",
-          "line": 255,
-          "endLine": 255,
+          "line": 316,
+          "endLine": 316,
           "resolution": "dynamic-expression",
           "expression": "getAuthenticatedUserId()",
           "chain": "getAuthenticatedUserId()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/character/character-preset-service.ts",
-            "line": 253,
-            "endLine": 287,
-            "text": "async createPresetFromCharacter(input: CreateCharacterPresetInput): Promise<CharacterPresetVm> {\n    assertHostProductSurfaceAvailable('Charakter-Presets');\n    const userId = await getAuthenticatedUserId();\n    if (input.rulesetKey !== 'sagatree-core') {\n      throw new Error('Presets sind derzeit nur für SagaTree Core verfügbar.');\n    }\n    const snapshot = withSafePortraitUrl(input.snapshot);\n    assertValidSnapshot(snapshot);\n\n    const existing = await this.getPresetForCharacter(input.sourceCharacterId);\n    if (existing) {\n      throw new Error('Für diesen Charakter existiert bereits ein Preset. Nutze „Version freigeben“.');\n    }\n\n    const version: CharacterPresetVersionDto = {\n      level: snapshot.level,\n      snapshot,\n      created_at: new Date().toISOString(),\n    };\n    const { data, error } = await supabase\n      .from(TABLE)\n      .insert({\n        owner_user_id: userId,\n        display_name: input.displayName.trim() || `${snapshot.name.trim()} Preset`,\n        ruleset_key: 'sagatree-core',\n        origin: 'user',\n        source_character_id: input.sourceCharacterId,\n        published: false,\n        versions: [version],\n      })\n      .select()\n      .single();\n    if (error) throw new Error(`Preset konnte nicht gespeichert werden: ${error.message}`);\n    return mapToViewModel(data as CharacterPresetDto, false);\n  }"
+            "line": 297,
+            "endLine": 342,
+            "text": "async createPresetFromCharacter(input: CreateCharacterPresetInput): Promise<CharacterPresetVm> {\n    if (input.rulesetKey !== 'sagatree-core') {\n      throw new Error('Presets sind derzeit nur für SagaTree Core verfügbar.');\n    }\n    const snapshot = withSafePortraitUrl(input.snapshot);\n    assertValidSnapshot(snapshot);\n\n    if (isHostLibraryEnabled()) {\n      const created = await createHostLibraryCharacterPreset({\n        displayName: input.displayName.trim() || `${snapshot.name.trim()} Preset`,\n        rulesetKey: 'sagatree-core',\n        sourceCharacterId: input.sourceCharacterId,\n        snapshot,\n      });\n      const mapped = mapHostPresetRow(created);\n      if (!mapped) throw new Error('Host-Charakter-Preset anlegen: ungültige Antwort');\n      return mapped;\n    }\n\n    const userId = await getAuthenticatedUserId();\n    const existing = await this.getPresetForCharacter(input.sourceCharacterId);\n    if (existing) {\n      throw new Error('Für diesen Charakter existiert bereits ein Preset. Nutze „Version freigeben“.');\n    }\n\n    const version: CharacterPresetVersionDto = {\n      level: snapshot.level,\n      snapshot,\n      created_at: new Date().toISOString(),\n    };\n    const { data, error } = await supabase\n      .from(TABLE)\n      .insert({\n        owner_user_id: userId,\n        display_name: input.displayName.trim() || `${snapshot.name.trim()} Preset`,\n        ruleset_key: 'sagatree-core',\n        origin: 'user',\n        source_character_id: input.sourceCharacterId,\n        published: false,\n        versions: [version],\n      })\n      .select()\n      .single();\n    if (error) throw new Error(`Preset konnte nicht gespeichert werden: ${error.message}`);\n    return mapToViewModel(data as CharacterPresetDto, false);\n  }"
           }
         },
         {
           "kind": "table",
           "name": "character_presets",
           "path": "src/infrastructure/character/character-preset-service.ts",
-          "line": 272,
-          "endLine": 273,
+          "line": 327,
+          "endLine": 328,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from(TABLE)",
           "chain": "supabase\n      .from(TABLE)\n      .insert({\n        owner_user_id: userId,\n        display_name: input.displayName.trim() || `${snapshot.name.trim()} Preset`,\n        ruleset_key: 'sagatree-core',\n        origin: 'user',\n        source_character_id: input.sourceCharacterId,\n        published: false,\n        versions: [version],\n      })\n      .select()\n      .single()",
@@ -32138,34 +32138,34 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/character/character-preset-service.ts",
-            "line": 253,
-            "endLine": 287,
-            "text": "async createPresetFromCharacter(input: CreateCharacterPresetInput): Promise<CharacterPresetVm> {\n    assertHostProductSurfaceAvailable('Charakter-Presets');\n    const userId = await getAuthenticatedUserId();\n    if (input.rulesetKey !== 'sagatree-core') {\n      throw new Error('Presets sind derzeit nur für SagaTree Core verfügbar.');\n    }\n    const snapshot = withSafePortraitUrl(input.snapshot);\n    assertValidSnapshot(snapshot);\n\n    const existing = await this.getPresetForCharacter(input.sourceCharacterId);\n    if (existing) {\n      throw new Error('Für diesen Charakter existiert bereits ein Preset. Nutze „Version freigeben“.');\n    }\n\n    const version: CharacterPresetVersionDto = {\n      level: snapshot.level,\n      snapshot,\n      created_at: new Date().toISOString(),\n    };\n    const { data, error } = await supabase\n      .from(TABLE)\n      .insert({\n        owner_user_id: userId,\n        display_name: input.displayName.trim() || `${snapshot.name.trim()} Preset`,\n        ruleset_key: 'sagatree-core',\n        origin: 'user',\n        source_character_id: input.sourceCharacterId,\n        published: false,\n        versions: [version],\n      })\n      .select()\n      .single();\n    if (error) throw new Error(`Preset konnte nicht gespeichert werden: ${error.message}`);\n    return mapToViewModel(data as CharacterPresetDto, false);\n  }"
+            "line": 297,
+            "endLine": 342,
+            "text": "async createPresetFromCharacter(input: CreateCharacterPresetInput): Promise<CharacterPresetVm> {\n    if (input.rulesetKey !== 'sagatree-core') {\n      throw new Error('Presets sind derzeit nur für SagaTree Core verfügbar.');\n    }\n    const snapshot = withSafePortraitUrl(input.snapshot);\n    assertValidSnapshot(snapshot);\n\n    if (isHostLibraryEnabled()) {\n      const created = await createHostLibraryCharacterPreset({\n        displayName: input.displayName.trim() || `${snapshot.name.trim()} Preset`,\n        rulesetKey: 'sagatree-core',\n        sourceCharacterId: input.sourceCharacterId,\n        snapshot,\n      });\n      const mapped = mapHostPresetRow(created);\n      if (!mapped) throw new Error('Host-Charakter-Preset anlegen: ungültige Antwort');\n      return mapped;\n    }\n\n    const userId = await getAuthenticatedUserId();\n    const existing = await this.getPresetForCharacter(input.sourceCharacterId);\n    if (existing) {\n      throw new Error('Für diesen Charakter existiert bereits ein Preset. Nutze „Version freigeben“.');\n    }\n\n    const version: CharacterPresetVersionDto = {\n      level: snapshot.level,\n      snapshot,\n      created_at: new Date().toISOString(),\n    };\n    const { data, error } = await supabase\n      .from(TABLE)\n      .insert({\n        owner_user_id: userId,\n        display_name: input.displayName.trim() || `${snapshot.name.trim()} Preset`,\n        ruleset_key: 'sagatree-core',\n        origin: 'user',\n        source_character_id: input.sourceCharacterId,\n        published: false,\n        versions: [version],\n      })\n      .select()\n      .single();\n    if (error) throw new Error(`Preset konnte nicht gespeichert werden: ${error.message}`);\n    return mapToViewModel(data as CharacterPresetDto, false);\n  }"
           }
         },
         {
           "kind": "auth-helper",
           "name": null,
           "path": "src/infrastructure/character/character-preset-service.ts",
-          "line": 291,
-          "endLine": 291,
+          "line": 355,
+          "endLine": 355,
           "resolution": "dynamic-expression",
           "expression": "getAuthenticatedUserId()",
           "chain": "getAuthenticatedUserId()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/character/character-preset-service.ts",
-            "line": 289,
-            "endLine": 329,
-            "text": "async releaseVersion(input: ReleaseCharacterPresetVersionInput): Promise<CharacterPresetVm> {\n    assertHostProductSurfaceAvailable('Charakter-Presets');\n    const userId = await getAuthenticatedUserId();\n    const snapshot = withSafePortraitUrl(input.snapshot);\n    assertValidSnapshot(snapshot);\n\n    const { data: existing, error: loadError } = await supabase\n      .from(TABLE)\n      .select('*')\n      .eq('id', input.presetId)\n      .eq('owner_user_id', userId)\n      .single();\n    if (loadError || !existing) {\n      throw new Error(loadError ? `Preset nicht gefunden: ${loadError.message}` : 'Preset nicht gefunden.');\n    }\n\n    const dto = existing as CharacterPresetDto;\n    const versions = normalizeVersions(dto.versions);\n    if (versions.some((version) => version.level === snapshot.level)) {\n      throw new Error(`Für Level ${snapshot.level} existiert bereits eine Preset-Version.`);\n    }\n\n    const nextVersions = [\n      ...versions,\n      {\n        level: snapshot.level,\n        snapshot,\n        created_at: new Date().toISOString(),\n      },\n    ].sort((a, b) => a.level - b.level || a.created_at.localeCompare(b.created_at));\n\n    const { data, error } = await supabase\n      .from(TABLE)\n      .update({ versions: nextVersions, published: false, updated_at: new Date().toISOString() })\n      .eq('id', input.presetId)\n      .eq('owner_user_id', userId)\n      .select()\n      .single();\n    if (error) throw new Error(`Version konnte nicht freigegeben werden: ${error.message}`);\n    return mapToViewModel(data as CharacterPresetDto, false);\n  }"
+            "line": 344,
+            "endLine": 390,
+            "text": "async releaseVersion(input: ReleaseCharacterPresetVersionInput): Promise<CharacterPresetVm> {\n    const snapshot = withSafePortraitUrl(input.snapshot);\n    assertValidSnapshot(snapshot);\n\n    if (isHostLibraryEnabled()) {\n      const released = await releaseHostLibraryCharacterPresetVersion(input.presetId, snapshot);\n      const mapped = mapHostPresetRow(released);\n      if (!mapped) throw new Error('Host-Charakter-Preset-Version: ungültige Antwort');\n      return mapped;\n    }\n\n    const userId = await getAuthenticatedUserId();\n    const { data: existing, error: loadError } = await supabase\n      .from(TABLE)\n      .select('*')\n      .eq('id', input.presetId)\n      .eq('owner_user_id', userId)\n      .single();\n    if (loadError || !existing) {\n      throw new Error(loadError ? `Preset nicht gefunden: ${loadError.message}` : 'Preset nicht gefunden.');\n    }\n\n    const dto = existing as CharacterPresetDto;\n    const versions = normalizeVersions(dto.versions);\n    if (versions.some((version) => version.level === snapshot.level)) {\n      throw new Error(`Für Level ${snapshot.level} existiert bereits eine Preset-Version.`);\n    }\n\n    const nextVersions = [\n      ...versions,\n      {\n        level: snapshot.level,\n        snapshot,\n        created_at: new Date().toISOString(),\n      },\n    ].sort((a, b) => a.level - b.level || a.created_at.localeCompare(b.created_at));\n\n    const { data, error } = await supabase\n      .from(TABLE)\n      .update({ versions: nextVersions, published: false, updated_at: new Date().toISOString() })\n      .eq('id', input.presetId)\n      .eq('owner_user_id', userId)\n      .select()\n      .single();\n    if (error) throw new Error(`Version konnte nicht freigegeben werden: ${error.message}`);\n    return mapToViewModel(data as CharacterPresetDto, false);\n  }"
           }
         },
         {
           "kind": "table",
           "name": "character_presets",
           "path": "src/infrastructure/character/character-preset-service.ts",
-          "line": 295,
-          "endLine": 296,
+          "line": 356,
+          "endLine": 357,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from(TABLE)",
           "chain": "supabase\n      .from(TABLE)\n      .select('*')\n      .eq('id', input.presetId)\n      .eq('owner_user_id', userId)\n      .single()",
@@ -32174,17 +32174,17 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/character/character-preset-service.ts",
-            "line": 289,
-            "endLine": 329,
-            "text": "async releaseVersion(input: ReleaseCharacterPresetVersionInput): Promise<CharacterPresetVm> {\n    assertHostProductSurfaceAvailable('Charakter-Presets');\n    const userId = await getAuthenticatedUserId();\n    const snapshot = withSafePortraitUrl(input.snapshot);\n    assertValidSnapshot(snapshot);\n\n    const { data: existing, error: loadError } = await supabase\n      .from(TABLE)\n      .select('*')\n      .eq('id', input.presetId)\n      .eq('owner_user_id', userId)\n      .single();\n    if (loadError || !existing) {\n      throw new Error(loadError ? `Preset nicht gefunden: ${loadError.message}` : 'Preset nicht gefunden.');\n    }\n\n    const dto = existing as CharacterPresetDto;\n    const versions = normalizeVersions(dto.versions);\n    if (versions.some((version) => version.level === snapshot.level)) {\n      throw new Error(`Für Level ${snapshot.level} existiert bereits eine Preset-Version.`);\n    }\n\n    const nextVersions = [\n      ...versions,\n      {\n        level: snapshot.level,\n        snapshot,\n        created_at: new Date().toISOString(),\n      },\n    ].sort((a, b) => a.level - b.level || a.created_at.localeCompare(b.created_at));\n\n    const { data, error } = await supabase\n      .from(TABLE)\n      .update({ versions: nextVersions, published: false, updated_at: new Date().toISOString() })\n      .eq('id', input.presetId)\n      .eq('owner_user_id', userId)\n      .select()\n      .single();\n    if (error) throw new Error(`Version konnte nicht freigegeben werden: ${error.message}`);\n    return mapToViewModel(data as CharacterPresetDto, false);\n  }"
+            "line": 344,
+            "endLine": 390,
+            "text": "async releaseVersion(input: ReleaseCharacterPresetVersionInput): Promise<CharacterPresetVm> {\n    const snapshot = withSafePortraitUrl(input.snapshot);\n    assertValidSnapshot(snapshot);\n\n    if (isHostLibraryEnabled()) {\n      const released = await releaseHostLibraryCharacterPresetVersion(input.presetId, snapshot);\n      const mapped = mapHostPresetRow(released);\n      if (!mapped) throw new Error('Host-Charakter-Preset-Version: ungültige Antwort');\n      return mapped;\n    }\n\n    const userId = await getAuthenticatedUserId();\n    const { data: existing, error: loadError } = await supabase\n      .from(TABLE)\n      .select('*')\n      .eq('id', input.presetId)\n      .eq('owner_user_id', userId)\n      .single();\n    if (loadError || !existing) {\n      throw new Error(loadError ? `Preset nicht gefunden: ${loadError.message}` : 'Preset nicht gefunden.');\n    }\n\n    const dto = existing as CharacterPresetDto;\n    const versions = normalizeVersions(dto.versions);\n    if (versions.some((version) => version.level === snapshot.level)) {\n      throw new Error(`Für Level ${snapshot.level} existiert bereits eine Preset-Version.`);\n    }\n\n    const nextVersions = [\n      ...versions,\n      {\n        level: snapshot.level,\n        snapshot,\n        created_at: new Date().toISOString(),\n      },\n    ].sort((a, b) => a.level - b.level || a.created_at.localeCompare(b.created_at));\n\n    const { data, error } = await supabase\n      .from(TABLE)\n      .update({ versions: nextVersions, published: false, updated_at: new Date().toISOString() })\n      .eq('id', input.presetId)\n      .eq('owner_user_id', userId)\n      .select()\n      .single();\n    if (error) throw new Error(`Version konnte nicht freigegeben werden: ${error.message}`);\n    return mapToViewModel(data as CharacterPresetDto, false);\n  }"
           }
         },
         {
           "kind": "table",
           "name": "character_presets",
           "path": "src/infrastructure/character/character-preset-service.ts",
-          "line": 320,
-          "endLine": 321,
+          "line": 381,
+          "endLine": 382,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from(TABLE)",
           "chain": "supabase\n      .from(TABLE)\n      .update({ versions: nextVersions, published: false, updated_at: new Date().toISOString() })\n      .eq('id', input.presetId)\n      .eq('owner_user_id', userId)\n      .select()\n      .single()",
@@ -32193,34 +32193,34 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/character/character-preset-service.ts",
-            "line": 289,
-            "endLine": 329,
-            "text": "async releaseVersion(input: ReleaseCharacterPresetVersionInput): Promise<CharacterPresetVm> {\n    assertHostProductSurfaceAvailable('Charakter-Presets');\n    const userId = await getAuthenticatedUserId();\n    const snapshot = withSafePortraitUrl(input.snapshot);\n    assertValidSnapshot(snapshot);\n\n    const { data: existing, error: loadError } = await supabase\n      .from(TABLE)\n      .select('*')\n      .eq('id', input.presetId)\n      .eq('owner_user_id', userId)\n      .single();\n    if (loadError || !existing) {\n      throw new Error(loadError ? `Preset nicht gefunden: ${loadError.message}` : 'Preset nicht gefunden.');\n    }\n\n    const dto = existing as CharacterPresetDto;\n    const versions = normalizeVersions(dto.versions);\n    if (versions.some((version) => version.level === snapshot.level)) {\n      throw new Error(`Für Level ${snapshot.level} existiert bereits eine Preset-Version.`);\n    }\n\n    const nextVersions = [\n      ...versions,\n      {\n        level: snapshot.level,\n        snapshot,\n        created_at: new Date().toISOString(),\n      },\n    ].sort((a, b) => a.level - b.level || a.created_at.localeCompare(b.created_at));\n\n    const { data, error } = await supabase\n      .from(TABLE)\n      .update({ versions: nextVersions, published: false, updated_at: new Date().toISOString() })\n      .eq('id', input.presetId)\n      .eq('owner_user_id', userId)\n      .select()\n      .single();\n    if (error) throw new Error(`Version konnte nicht freigegeben werden: ${error.message}`);\n    return mapToViewModel(data as CharacterPresetDto, false);\n  }"
+            "line": 344,
+            "endLine": 390,
+            "text": "async releaseVersion(input: ReleaseCharacterPresetVersionInput): Promise<CharacterPresetVm> {\n    const snapshot = withSafePortraitUrl(input.snapshot);\n    assertValidSnapshot(snapshot);\n\n    if (isHostLibraryEnabled()) {\n      const released = await releaseHostLibraryCharacterPresetVersion(input.presetId, snapshot);\n      const mapped = mapHostPresetRow(released);\n      if (!mapped) throw new Error('Host-Charakter-Preset-Version: ungültige Antwort');\n      return mapped;\n    }\n\n    const userId = await getAuthenticatedUserId();\n    const { data: existing, error: loadError } = await supabase\n      .from(TABLE)\n      .select('*')\n      .eq('id', input.presetId)\n      .eq('owner_user_id', userId)\n      .single();\n    if (loadError || !existing) {\n      throw new Error(loadError ? `Preset nicht gefunden: ${loadError.message}` : 'Preset nicht gefunden.');\n    }\n\n    const dto = existing as CharacterPresetDto;\n    const versions = normalizeVersions(dto.versions);\n    if (versions.some((version) => version.level === snapshot.level)) {\n      throw new Error(`Für Level ${snapshot.level} existiert bereits eine Preset-Version.`);\n    }\n\n    const nextVersions = [\n      ...versions,\n      {\n        level: snapshot.level,\n        snapshot,\n        created_at: new Date().toISOString(),\n      },\n    ].sort((a, b) => a.level - b.level || a.created_at.localeCompare(b.created_at));\n\n    const { data, error } = await supabase\n      .from(TABLE)\n      .update({ versions: nextVersions, published: false, updated_at: new Date().toISOString() })\n      .eq('id', input.presetId)\n      .eq('owner_user_id', userId)\n      .select()\n      .single();\n    if (error) throw new Error(`Version konnte nicht freigegeben werden: ${error.message}`);\n    return mapToViewModel(data as CharacterPresetDto, false);\n  }"
           }
         },
         {
           "kind": "auth-helper",
           "name": null,
           "path": "src/infrastructure/character/character-preset-service.ts",
-          "line": 333,
-          "endLine": 333,
+          "line": 403,
+          "endLine": 403,
           "resolution": "dynamic-expression",
           "expression": "getAuthenticatedUserId()",
           "chain": "getAuthenticatedUserId()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/character/character-preset-service.ts",
-            "line": 331,
-            "endLine": 345,
-            "text": "async renamePreset(presetId: string, displayName: string): Promise<CharacterPresetVm> {\n    assertHostProductSurfaceAvailable('Charakter-Presets');\n    const userId = await getAuthenticatedUserId();\n    const trimmed = displayName.trim();\n    if (!trimmed) throw new Error('Preset-Name darf nicht leer sein.');\n    const { data, error } = await supabase\n      .from(TABLE)\n      .update({ display_name: trimmed, published: false, updated_at: new Date().toISOString() })\n      .eq('id', presetId)\n      .eq('owner_user_id', userId)\n      .select()\n      .single();\n    if (error) throw new Error(`Preset konnte nicht umbenannt werden: ${error.message}`);\n    return mapToViewModel(data as CharacterPresetDto, false);\n  }"
+            "line": 392,
+            "endLine": 413,
+            "text": "async renamePreset(presetId: string, displayName: string): Promise<CharacterPresetVm> {\n    const trimmed = displayName.trim();\n    if (!trimmed) throw new Error('Preset-Name darf nicht leer sein.');\n\n    if (isHostLibraryEnabled()) {\n      const renamed = await renameHostLibraryCharacterPreset(presetId, trimmed);\n      const mapped = mapHostPresetRow(renamed);\n      if (!mapped) throw new Error('Host-Charakter-Preset umbenennen: ungültige Antwort');\n      return mapped;\n    }\n\n    const userId = await getAuthenticatedUserId();\n    const { data, error } = await supabase\n      .from(TABLE)\n      .update({ display_name: trimmed, published: false, updated_at: new Date().toISOString() })\n      .eq('id', presetId)\n      .eq('owner_user_id', userId)\n      .select()\n      .single();\n    if (error) throw new Error(`Preset konnte nicht umbenannt werden: ${error.message}`);\n    return mapToViewModel(data as CharacterPresetDto, false);\n  }"
           }
         },
         {
           "kind": "table",
           "name": "character_presets",
           "path": "src/infrastructure/character/character-preset-service.ts",
-          "line": 336,
-          "endLine": 337,
+          "line": 404,
+          "endLine": 405,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from(TABLE)",
           "chain": "supabase\n      .from(TABLE)\n      .update({ display_name: trimmed, published: false, updated_at: new Date().toISOString() })\n      .eq('id', presetId)\n      .eq('owner_user_id', userId)\n      .select()\n      .single()",
@@ -32229,34 +32229,34 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/character/character-preset-service.ts",
-            "line": 331,
-            "endLine": 345,
-            "text": "async renamePreset(presetId: string, displayName: string): Promise<CharacterPresetVm> {\n    assertHostProductSurfaceAvailable('Charakter-Presets');\n    const userId = await getAuthenticatedUserId();\n    const trimmed = displayName.trim();\n    if (!trimmed) throw new Error('Preset-Name darf nicht leer sein.');\n    const { data, error } = await supabase\n      .from(TABLE)\n      .update({ display_name: trimmed, published: false, updated_at: new Date().toISOString() })\n      .eq('id', presetId)\n      .eq('owner_user_id', userId)\n      .select()\n      .single();\n    if (error) throw new Error(`Preset konnte nicht umbenannt werden: ${error.message}`);\n    return mapToViewModel(data as CharacterPresetDto, false);\n  }"
+            "line": 392,
+            "endLine": 413,
+            "text": "async renamePreset(presetId: string, displayName: string): Promise<CharacterPresetVm> {\n    const trimmed = displayName.trim();\n    if (!trimmed) throw new Error('Preset-Name darf nicht leer sein.');\n\n    if (isHostLibraryEnabled()) {\n      const renamed = await renameHostLibraryCharacterPreset(presetId, trimmed);\n      const mapped = mapHostPresetRow(renamed);\n      if (!mapped) throw new Error('Host-Charakter-Preset umbenennen: ungültige Antwort');\n      return mapped;\n    }\n\n    const userId = await getAuthenticatedUserId();\n    const { data, error } = await supabase\n      .from(TABLE)\n      .update({ display_name: trimmed, published: false, updated_at: new Date().toISOString() })\n      .eq('id', presetId)\n      .eq('owner_user_id', userId)\n      .select()\n      .single();\n    if (error) throw new Error(`Preset konnte nicht umbenannt werden: ${error.message}`);\n    return mapToViewModel(data as CharacterPresetDto, false);\n  }"
           }
         },
         {
           "kind": "auth-helper",
           "name": null,
           "path": "src/infrastructure/character/character-preset-service.ts",
-          "line": 349,
-          "endLine": 349,
+          "line": 423,
+          "endLine": 423,
           "resolution": "dynamic-expression",
           "expression": "getAuthenticatedUserId()",
           "chain": "getAuthenticatedUserId()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/character/character-preset-service.ts",
-            "line": 347,
-            "endLine": 376,
-            "text": "async duplicatePreset(presetId: string): Promise<CharacterPresetVm> {\n    assertHostProductSurfaceAvailable('Charakter-Presets');\n    const userId = await getAuthenticatedUserId();\n    const { data: existing, error: loadError } = await supabase\n      .from(TABLE)\n      .select('*')\n      .eq('id', presetId)\n      .eq('owner_user_id', userId)\n      .single();\n    if (loadError || !existing) {\n      throw new Error(loadError ? `Preset nicht gefunden: ${loadError.message}` : 'Preset nicht gefunden.');\n    }\n    const dto = existing as CharacterPresetDto;\n    const versions = normalizeVersions(dto.versions);\n    const { data, error } = await supabase\n      .from(TABLE)\n      .insert({\n        owner_user_id: userId,\n        display_name: `${dto.display_name} (Kopie)`,\n        ruleset_key: dto.ruleset_key,\n        origin: 'user',\n        source_character_id: null,\n        published: false,\n        versions,\n      })\n      .select()\n      .single();\n    if (error) throw new Error(`Preset konnte nicht dupliziert werden: ${error.message}`);\n    return mapToViewModel(data as CharacterPresetDto, false);\n  }"
+            "line": 415,
+            "endLine": 450,
+            "text": "async duplicatePreset(presetId: string): Promise<CharacterPresetVm> {\n    if (isHostLibraryEnabled()) {\n      const duplicated = await duplicateHostLibraryCharacterPreset(presetId);\n      const mapped = mapHostPresetRow(duplicated);\n      if (!mapped) throw new Error('Host-Charakter-Preset duplizieren: ungültige Antwort');\n      return mapped;\n    }\n\n    const userId = await getAuthenticatedUserId();\n    const { data: existing, error: loadError } = await supabase\n      .from(TABLE)\n      .select('*')\n      .eq('id', presetId)\n      .eq('owner_user_id', userId)\n      .single();\n    if (loadError || !existing) {\n      throw new Error(loadError ? `Preset nicht gefunden: ${loadError.message}` : 'Preset nicht gefunden.');\n    }\n    const dto = existing as CharacterPresetDto;\n    const versions = normalizeVersions(dto.versions);\n    const { data, error } = await supabase\n      .from(TABLE)\n      .insert({\n        owner_user_id: userId,\n        display_name: `${dto.display_name} (Kopie)`,\n        ruleset_key: dto.ruleset_key,\n        origin: 'user',\n        source_character_id: null,\n        published: false,\n        versions,\n      })\n      .select()\n      .single();\n    if (error) throw new Error(`Preset konnte nicht dupliziert werden: ${error.message}`);\n    return mapToViewModel(data as CharacterPresetDto, false);\n  }"
           }
         },
         {
           "kind": "table",
           "name": "character_presets",
           "path": "src/infrastructure/character/character-preset-service.ts",
-          "line": 350,
-          "endLine": 351,
+          "line": 424,
+          "endLine": 425,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from(TABLE)",
           "chain": "supabase\n      .from(TABLE)\n      .select('*')\n      .eq('id', presetId)\n      .eq('owner_user_id', userId)\n      .single()",
@@ -32265,17 +32265,17 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/character/character-preset-service.ts",
-            "line": 347,
-            "endLine": 376,
-            "text": "async duplicatePreset(presetId: string): Promise<CharacterPresetVm> {\n    assertHostProductSurfaceAvailable('Charakter-Presets');\n    const userId = await getAuthenticatedUserId();\n    const { data: existing, error: loadError } = await supabase\n      .from(TABLE)\n      .select('*')\n      .eq('id', presetId)\n      .eq('owner_user_id', userId)\n      .single();\n    if (loadError || !existing) {\n      throw new Error(loadError ? `Preset nicht gefunden: ${loadError.message}` : 'Preset nicht gefunden.');\n    }\n    const dto = existing as CharacterPresetDto;\n    const versions = normalizeVersions(dto.versions);\n    const { data, error } = await supabase\n      .from(TABLE)\n      .insert({\n        owner_user_id: userId,\n        display_name: `${dto.display_name} (Kopie)`,\n        ruleset_key: dto.ruleset_key,\n        origin: 'user',\n        source_character_id: null,\n        published: false,\n        versions,\n      })\n      .select()\n      .single();\n    if (error) throw new Error(`Preset konnte nicht dupliziert werden: ${error.message}`);\n    return mapToViewModel(data as CharacterPresetDto, false);\n  }"
+            "line": 415,
+            "endLine": 450,
+            "text": "async duplicatePreset(presetId: string): Promise<CharacterPresetVm> {\n    if (isHostLibraryEnabled()) {\n      const duplicated = await duplicateHostLibraryCharacterPreset(presetId);\n      const mapped = mapHostPresetRow(duplicated);\n      if (!mapped) throw new Error('Host-Charakter-Preset duplizieren: ungültige Antwort');\n      return mapped;\n    }\n\n    const userId = await getAuthenticatedUserId();\n    const { data: existing, error: loadError } = await supabase\n      .from(TABLE)\n      .select('*')\n      .eq('id', presetId)\n      .eq('owner_user_id', userId)\n      .single();\n    if (loadError || !existing) {\n      throw new Error(loadError ? `Preset nicht gefunden: ${loadError.message}` : 'Preset nicht gefunden.');\n    }\n    const dto = existing as CharacterPresetDto;\n    const versions = normalizeVersions(dto.versions);\n    const { data, error } = await supabase\n      .from(TABLE)\n      .insert({\n        owner_user_id: userId,\n        display_name: `${dto.display_name} (Kopie)`,\n        ruleset_key: dto.ruleset_key,\n        origin: 'user',\n        source_character_id: null,\n        published: false,\n        versions,\n      })\n      .select()\n      .single();\n    if (error) throw new Error(`Preset konnte nicht dupliziert werden: ${error.message}`);\n    return mapToViewModel(data as CharacterPresetDto, false);\n  }"
           }
         },
         {
           "kind": "table",
           "name": "character_presets",
           "path": "src/infrastructure/character/character-preset-service.ts",
-          "line": 361,
-          "endLine": 362,
+          "line": 435,
+          "endLine": 436,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from(TABLE)",
           "chain": "supabase\n      .from(TABLE)\n      .insert({\n        owner_user_id: userId,\n        display_name: `${dto.display_name} (Kopie)`,\n        ruleset_key: dto.ruleset_key,\n        origin: 'user',\n        source_character_id: null,\n        published: false,\n        versions,\n      })\n      .select()\n      .single()",
@@ -32284,34 +32284,34 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/character/character-preset-service.ts",
-            "line": 347,
-            "endLine": 376,
-            "text": "async duplicatePreset(presetId: string): Promise<CharacterPresetVm> {\n    assertHostProductSurfaceAvailable('Charakter-Presets');\n    const userId = await getAuthenticatedUserId();\n    const { data: existing, error: loadError } = await supabase\n      .from(TABLE)\n      .select('*')\n      .eq('id', presetId)\n      .eq('owner_user_id', userId)\n      .single();\n    if (loadError || !existing) {\n      throw new Error(loadError ? `Preset nicht gefunden: ${loadError.message}` : 'Preset nicht gefunden.');\n    }\n    const dto = existing as CharacterPresetDto;\n    const versions = normalizeVersions(dto.versions);\n    const { data, error } = await supabase\n      .from(TABLE)\n      .insert({\n        owner_user_id: userId,\n        display_name: `${dto.display_name} (Kopie)`,\n        ruleset_key: dto.ruleset_key,\n        origin: 'user',\n        source_character_id: null,\n        published: false,\n        versions,\n      })\n      .select()\n      .single();\n    if (error) throw new Error(`Preset konnte nicht dupliziert werden: ${error.message}`);\n    return mapToViewModel(data as CharacterPresetDto, false);\n  }"
+            "line": 415,
+            "endLine": 450,
+            "text": "async duplicatePreset(presetId: string): Promise<CharacterPresetVm> {\n    if (isHostLibraryEnabled()) {\n      const duplicated = await duplicateHostLibraryCharacterPreset(presetId);\n      const mapped = mapHostPresetRow(duplicated);\n      if (!mapped) throw new Error('Host-Charakter-Preset duplizieren: ungültige Antwort');\n      return mapped;\n    }\n\n    const userId = await getAuthenticatedUserId();\n    const { data: existing, error: loadError } = await supabase\n      .from(TABLE)\n      .select('*')\n      .eq('id', presetId)\n      .eq('owner_user_id', userId)\n      .single();\n    if (loadError || !existing) {\n      throw new Error(loadError ? `Preset nicht gefunden: ${loadError.message}` : 'Preset nicht gefunden.');\n    }\n    const dto = existing as CharacterPresetDto;\n    const versions = normalizeVersions(dto.versions);\n    const { data, error } = await supabase\n      .from(TABLE)\n      .insert({\n        owner_user_id: userId,\n        display_name: `${dto.display_name} (Kopie)`,\n        ruleset_key: dto.ruleset_key,\n        origin: 'user',\n        source_character_id: null,\n        published: false,\n        versions,\n      })\n      .select()\n      .single();\n    if (error) throw new Error(`Preset konnte nicht dupliziert werden: ${error.message}`);\n    return mapToViewModel(data as CharacterPresetDto, false);\n  }"
           }
         },
         {
           "kind": "auth-helper",
           "name": null,
           "path": "src/infrastructure/character/character-preset-service.ts",
-          "line": 380,
-          "endLine": 380,
+          "line": 457,
+          "endLine": 457,
           "resolution": "dynamic-expression",
           "expression": "getAuthenticatedUserId()",
           "chain": "getAuthenticatedUserId()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/character/character-preset-service.ts",
-            "line": 378,
-            "endLine": 383,
-            "text": "async deletePreset(presetId: string): Promise<void> {\n    assertHostProductSurfaceAvailable('Charakter-Presets');\n    const userId = await getAuthenticatedUserId();\n    const { error } = await supabase.from(TABLE).delete().eq('id', presetId).eq('owner_user_id', userId);\n    if (error) throw new Error(`Preset konnte nicht gelöscht werden: ${error.message}`);\n  }"
+            "line": 452,
+            "endLine": 460,
+            "text": "async deletePreset(presetId: string): Promise<void> {\n    if (isHostLibraryEnabled()) {\n      await deleteHostLibraryCharacterPreset(presetId);\n      return;\n    }\n    const userId = await getAuthenticatedUserId();\n    const { error } = await supabase.from(TABLE).delete().eq('id', presetId).eq('owner_user_id', userId);\n    if (error) throw new Error(`Preset konnte nicht gelöscht werden: ${error.message}`);\n  }"
           }
         },
         {
           "kind": "table",
           "name": "character_presets",
           "path": "src/infrastructure/character/character-preset-service.ts",
-          "line": 381,
-          "endLine": 381,
+          "line": 458,
+          "endLine": 458,
           "resolution": "literal-or-constant",
           "expression": "supabase.from(TABLE)",
           "chain": "supabase.from(TABLE).delete().eq('id', presetId).eq('owner_user_id', userId)",
@@ -32320,9 +32320,9 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/character/character-preset-service.ts",
-            "line": 378,
-            "endLine": 383,
-            "text": "async deletePreset(presetId: string): Promise<void> {\n    assertHostProductSurfaceAvailable('Charakter-Presets');\n    const userId = await getAuthenticatedUserId();\n    const { error } = await supabase.from(TABLE).delete().eq('id', presetId).eq('owner_user_id', userId);\n    if (error) throw new Error(`Preset konnte nicht gelöscht werden: ${error.message}`);\n  }"
+            "line": 452,
+            "endLine": 460,
+            "text": "async deletePreset(presetId: string): Promise<void> {\n    if (isHostLibraryEnabled()) {\n      await deleteHostLibraryCharacterPreset(presetId);\n      return;\n    }\n    const userId = await getAuthenticatedUserId();\n    const { error } = await supabase.from(TABLE).delete().eq('id', presetId).eq('owner_user_id', userId);\n    if (error) throw new Error(`Preset konnte nicht gelöscht werden: ${error.message}`);\n  }"
           }
         },
         {
@@ -34325,104 +34325,110 @@
         },
         {
           "path": "src/infrastructure/character/character-preset-service.ts",
-          "line": 34,
-          "endLine": 36,
+          "line": 46,
+          "endLine": 48,
           "name": "isRecord"
         },
         {
           "path": "src/infrastructure/character/character-preset-service.ts",
-          "line": 38,
-          "endLine": 40,
+          "line": 50,
+          "endLine": 52,
           "name": "isPresetOrigin"
         },
         {
           "path": "src/infrastructure/character/character-preset-service.ts",
-          "line": 42,
-          "endLine": 44,
+          "line": 54,
+          "endLine": 56,
           "name": "isGenderReading"
         },
         {
           "path": "src/infrastructure/character/character-preset-service.ts",
-          "line": 46,
-          "endLine": 56,
+          "line": 58,
+          "endLine": 68,
           "name": "normalizeSkills"
         },
         {
           "path": "src/infrastructure/character/character-preset-service.ts",
-          "line": 59,
-          "endLine": 105,
+          "line": 71,
+          "endLine": 117,
           "name": "assertValidSnapshot"
         },
         {
           "path": "src/infrastructure/character/character-preset-service.ts",
-          "line": 107,
-          "endLine": 112,
+          "line": 119,
+          "endLine": 124,
           "name": "withSafePortraitUrl"
         },
         {
           "path": "src/infrastructure/character/character-preset-service.ts",
-          "line": 114,
-          "endLine": 160,
+          "line": 126,
+          "endLine": 172,
           "name": "normalizeSnapshot"
         },
         {
           "path": "src/infrastructure/character/character-preset-service.ts",
-          "line": 162,
-          "endLine": 181,
+          "line": 174,
+          "endLine": 193,
           "name": "normalizeVersions"
         },
         {
           "path": "src/infrastructure/character/character-preset-service.ts",
-          "line": 183,
-          "endLine": 196,
+          "line": 195,
+          "endLine": 208,
           "name": "mapToViewModel"
         },
         {
           "path": "src/infrastructure/character/character-preset-service.ts",
-          "line": 199,
-          "endLine": 236,
+          "line": 210,
+          "endLine": 232,
+          "name": "mapHostPresetRow"
+        },
+        {
+          "path": "src/infrastructure/character/character-preset-service.ts",
+          "line": 235,
+          "endLine": 277,
           "name": "listUserPresets"
         },
         {
           "path": "src/infrastructure/character/character-preset-service.ts",
-          "line": 238,
-          "endLine": 251,
+          "line": 279,
+          "endLine": 295,
           "name": "getPresetForCharacter"
         },
         {
           "path": "src/infrastructure/character/character-preset-service.ts",
-          "line": 253,
-          "endLine": 287,
+          "line": 297,
+          "endLine": 342,
           "name": "createPresetFromCharacter"
         },
         {
           "path": "src/infrastructure/character/character-preset-service.ts",
-          "line": 289,
-          "endLine": 329,
+          "line": 344,
+          "endLine": 390,
           "name": "releaseVersion"
         },
         {
           "path": "src/infrastructure/character/character-preset-service.ts",
-          "line": 331,
-          "endLine": 345,
+          "line": 392,
+          "endLine": 413,
           "name": "renamePreset"
         },
         {
           "path": "src/infrastructure/character/character-preset-service.ts",
-          "line": 347,
-          "endLine": 376,
+          "line": 415,
+          "endLine": 450,
           "name": "duplicatePreset"
         },
         {
           "path": "src/infrastructure/character/character-preset-service.ts",
-          "line": 378,
-          "endLine": 383,
+          "line": 452,
+          "endLine": 460,
           "name": "deletePreset"
         },
         {
           "path": "src/infrastructure/character/character-preset-service.ts",
-          "line": 389,
-          "endLine": 407,
+          "line": 466,
+          "endLine": 483,
           "name": "maybeAutoReleaseVersion"
         },
         {
@@ -35599,7 +35605,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "a8b7e3260e23481d4e9fae898c1bfa0db711a956741f6bdec806670a2e71bd6d"
+            "sha256": "e39553aaf251977db8b72a0db88350dd5893430cfbd5fa5c3007b41f5b23efd5"
           },
           {
             "path": "src/infrastructure/inventory/host-inventory-adapter.ts",
@@ -35711,7 +35717,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-inventory.json",
-      "sourceContractSha256": "ba5b7cb83b54396bf13bf2e37371ef882bcb0fc4531dcd0aa6ac11f7d7c5bb20",
+      "sourceContractSha256": "c2a0f62eebfd3a28473fbb22c31c7048ef1d6d1ac7c379d35a66fa15f464f882",
       "rpcUsed": [],
       "tablesTouched": [
         "characters",
@@ -36915,7 +36921,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "a8b7e3260e23481d4e9fae898c1bfa0db711a956741f6bdec806670a2e71bd6d"
+            "sha256": "e39553aaf251977db8b72a0db88350dd5893430cfbd5fa5c3007b41f5b23efd5"
           },
           {
             "path": "src/infrastructure/look/adapters/host-mtoon-look-adapter.ts",
@@ -36991,7 +36997,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-look.json",
-      "sourceContractSha256": "cb6aecb7a5bff978e66cfd3df38ac9202e7fcf5069af958d8b668451553efac5",
+      "sourceContractSha256": "65533c1d176ba87e657384d8a2c672784fc72b716e465c16f6d1ac2220468a44",
       "rpcUsed": [],
       "tablesTouched": [
         "look_profile_versions",
@@ -37860,7 +37866,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "a8b7e3260e23481d4e9fae898c1bfa0db711a956741f6bdec806670a2e71bd6d"
+            "sha256": "e39553aaf251977db8b72a0db88350dd5893430cfbd5fa5c3007b41f5b23efd5"
           },
           {
             "path": "src/infrastructure/marketplace/host-marketplace-adapter.ts",
@@ -37904,7 +37910,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-marketplace.json",
-      "sourceContractSha256": "ed265b4281ee06e6b1924e472706cb8206ed85fdd903348bda33da09158e1c1b",
+      "sourceContractSha256": "c1c51698a9f4cc2f798d7561c864fcbfd67763a018512db4c8fadbf6123f125d",
       "rpcUsed": [
         "increment_marketplace_downloads"
       ],
@@ -38719,7 +38725,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "a8b7e3260e23481d4e9fae898c1bfa0db711a956741f6bdec806670a2e71bd6d"
+            "sha256": "e39553aaf251977db8b72a0db88350dd5893430cfbd5fa5c3007b41f5b23efd5"
           },
           {
             "path": "src/infrastructure/host/host-session-http.ts",
@@ -38779,7 +38785,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-npc-creature.json",
-      "sourceContractSha256": "d9cf2a7be0ed18bfab3a9740f730ae5aabbc0923638722f5eda9eaa266a2a699",
+      "sourceContractSha256": "558e074253450d2870e39d0556975d74315054cc165933783c1942b315922732",
       "rpcUsed": [
         "assign_npc_creature_controller",
         "clear_npc_creature_instance_temp_controllers_for_session",
@@ -39876,7 +39882,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "a8b7e3260e23481d4e9fae898c1bfa0db711a956741f6bdec806670a2e71bd6d"
+            "sha256": "e39553aaf251977db8b72a0db88350dd5893430cfbd5fa5c3007b41f5b23efd5"
           },
           {
             "path": "src/infrastructure/host/host-product-deny.ts",
@@ -39936,7 +39942,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-project.json",
-      "sourceContractSha256": "cac743bc5f694b0361a2dbd3736b7b41bcfbc129605ae9c066e2e95dc9d9397f",
+      "sourceContractSha256": "9d180c7235fc5e3bdf24871971f44468ec02d0d72fc853b89a2d53fedeb7c655",
       "rpcUsed": [
         "create_project_session",
         "ensure_native_starter_project",
@@ -41174,7 +41180,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "a8b7e3260e23481d4e9fae898c1bfa0db711a956741f6bdec806670a2e71bd6d"
+            "sha256": "e39553aaf251977db8b72a0db88350dd5893430cfbd5fa5c3007b41f5b23efd5"
           },
           {
             "path": "src/infrastructure/rulesets/ruleset-service.ts",
@@ -41194,7 +41200,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-rulesets.json",
-      "sourceContractSha256": "0ae6fd62c1e5017487af296951185531616fedfe329f3ed3fc3c6f4db5f83c40",
+      "sourceContractSha256": "fab97038c6efbf895a52047d3e4aad17468c8fc7d369d9c0362f57fff6f63148",
       "rpcUsed": [],
       "tablesTouched": [
         "rulesets"
@@ -41413,7 +41419,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "a8b7e3260e23481d4e9fae898c1bfa0db711a956741f6bdec806670a2e71bd6d"
+            "sha256": "e39553aaf251977db8b72a0db88350dd5893430cfbd5fa5c3007b41f5b23efd5"
           },
           {
             "path": "src/infrastructure/host/host-product-deny.ts",
@@ -41461,7 +41467,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-saga.json",
-      "sourceContractSha256": "501f84dab9e9de5ed3d944f0040724dd0e9dec405342af50b1c4a9eb1bb2cede",
+      "sourceContractSha256": "3df8667a42a1f2600f06d7e8412c3f39028c97e8c179d0ece779716813a9b88f",
       "rpcUsed": [
         "copy_native_saga_definition",
         "create_project_from_saga_version",
@@ -41951,7 +41957,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "a8b7e3260e23481d4e9fae898c1bfa0db711a956741f6bdec806670a2e71bd6d"
+            "sha256": "e39553aaf251977db8b72a0db88350dd5893430cfbd5fa5c3007b41f5b23efd5"
           },
           {
             "path": "src/infrastructure/host/host-session-http.ts",
@@ -42047,7 +42053,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-session.json",
-      "sourceContractSha256": "8e93ddbb20e20e199d6ac9bad3a87382c41d9e18823946745916a53267612158",
+      "sourceContractSha256": "e2850035f4c7e092687e4743f88920cafaf88414091927a996774aca07c6f17c",
       "rpcUsed": [
         "apply_session_runtime_command",
         "create_play_session",
@@ -43964,7 +43970,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "a8b7e3260e23481d4e9fae898c1bfa0db711a956741f6bdec806670a2e71bd6d"
+            "sha256": "e39553aaf251977db8b72a0db88350dd5893430cfbd5fa5c3007b41f5b23efd5"
           },
           {
             "path": "src/infrastructure/media/optimizer/engines/audio/index.ts",
@@ -44072,7 +44078,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-user-profile.json",
-      "sourceContractSha256": "e184758533557d48d78d8ce222066afa5348160b23b9055b282d771855d8277a",
+      "sourceContractSha256": "397a0c2ae94c9a0ea8fa1246e59ce3defbd2cb572565f4151692da30efd6875e",
       "rpcUsed": [],
       "tablesTouched": [
         "user_profiles"
@@ -44859,7 +44865,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "a8b7e3260e23481d4e9fae898c1bfa0db711a956741f6bdec806670a2e71bd6d"
+            "sha256": "e39553aaf251977db8b72a0db88350dd5893430cfbd5fa5c3007b41f5b23efd5"
           },
           {
             "path": "src/infrastructure/host/host-world-http.ts",
@@ -44971,7 +44977,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-world.json",
-      "sourceContractSha256": "607d7f58e55057c3f7c2a0c2412f110e016492849ef8145c7616f6675e03318b",
+      "sourceContractSha256": "74f67ff153402c9bbf4374a10a3899efa0c5c80f06e248c0ebf5c5c419ea2242",
       "rpcUsed": [
         "archive_world_node_subtree",
         "create_world_node_with_maps",

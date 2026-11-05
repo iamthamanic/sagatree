@@ -537,14 +537,35 @@ export function mountLibraryHttpRoutes(app: Hono, deps: LibraryHttpDeps): void {
     if (!snapshot) {
       return c.json({ error: 'invalid-snapshot' }, 400);
     }
-    const created = deps.character.createPresetFromCharacter(actorResult.actor.actorId, {
-      displayName,
-      rulesetKey,
-      sourceCharacterId,
-      snapshot,
-    });
-    if (!created.ok) {
-      return c.json({ error: created.error }, presetProductErrorStatus(created.error));
+    // MIG-015: linked solo-owned characters are listed under libraryActorIds — create
+    // under the same owner that actually owns the source character.
+    let created: ReturnType<
+      NonNullable<LibraryHttpDeps['character']>['createPresetFromCharacter']
+    > | null = null;
+    for (const ownerId of libraryActorIds(actorResult.actor)) {
+      const attempt = deps.character.createPresetFromCharacter(ownerId, {
+        displayName,
+        rulesetKey,
+        sourceCharacterId,
+        snapshot,
+      });
+      if (attempt.ok) {
+        created = attempt;
+        break;
+      }
+      if (
+        attempt.error !== 'not-found' &&
+        attempt.error !== 'not-authorized' &&
+        !/bereits ein Preset/i.test(attempt.error)
+      ) {
+        created = attempt;
+        break;
+      }
+      created = attempt;
+    }
+    if (!created || !created.ok) {
+      const err = created && !created.ok ? created.error : 'not-found';
+      return c.json({ error: err }, presetProductErrorStatus(err));
     }
     return c.json({ preset: mapPresetProduct(created.value) }, 201);
   });

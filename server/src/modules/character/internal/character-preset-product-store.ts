@@ -59,6 +59,34 @@ function safePortraitUrl(value: unknown): string | undefined {
   return trimmed;
 }
 
+const ESSENCE_KEYS = new Set([
+  'physical',
+  'mental',
+  'spiritual',
+  'bound',
+  'technological',
+]);
+
+/** Cost table mirrors FE `sagaTreeSpeciesTraitDefinitions` (budget = 3). */
+const SPECIES_TRAIT_COST: Readonly<Record<string, number>> = {
+  'sharpened-sense': 1,
+  'natural-weapon': 1,
+  'narrow-resistance': 1,
+  'environment-adaptation': 1,
+  'enduring-organism': 1,
+  'low-rest-need': 1,
+  'natural-protection': 2,
+  'enhanced-climbing': 2,
+  'enhanced-swimming': 2,
+  amphibious: 2,
+  'enhanced-sight': 2,
+  flight: 3,
+  'extreme-environment': 3,
+  'exceptional-body': 3,
+};
+
+const SPECIES_TRAIT_BUDGET = 3;
+
 /** Structural snapshot gate — mirrors FE assertValidSnapshot fail-closed rules. */
 export function assertProductSnapshot(
   snapshot: Readonly<Record<string, unknown>>,
@@ -88,8 +116,53 @@ export function assertProductSnapshot(
   if (!isRecord(profile)) {
     return { ok: false, error: 'Preset-Snapshot braucht ein SagaTree-Profil.' };
   }
-  if (typeof profile.essence !== 'string' || !profile.essence.trim()) {
+  if (typeof profile.essence !== 'string' || !ESSENCE_KEYS.has(profile.essence)) {
     return { ok: false, error: 'Preset-Snapshot braucht eine Essenz.' };
+  }
+  const bg = profile.background;
+  if (!isRecord(bg) || typeof bg.name !== 'string' || !bg.name.trim()) {
+    return { ok: false, error: 'Preset-Snapshot: Hintergrund braucht einen Namen.' };
+  }
+  const bgFields = [bg.milieuAccess, bg.contact, bg.complication, bg.communication];
+  if (!bgFields.every((field) => typeof field === 'string' && field.trim())) {
+    return {
+      ok: false,
+      error:
+        'Preset-Snapshot: Hintergrund-Felder (Milieu/Kontakt/Komplikation/Kommunikation) unvollständig.',
+    };
+  }
+  const traitsRaw = profile.speciesTraitInstances;
+  if (!Array.isArray(traitsRaw)) {
+    return {
+      ok: false,
+      error: `Preset-Snapshot: Speziesmerkmale müssen genau ${SPECIES_TRAIT_BUDGET} Punkte ergeben.`,
+    };
+  }
+  let traitCost = 0;
+  for (const entry of traitsRaw) {
+    if (!isRecord(entry) || typeof entry.trait !== 'string') {
+      return { ok: false, error: 'Preset-Snapshot: ungültiges Speziesmerkmal.' };
+    }
+    const cost = SPECIES_TRAIT_COST[entry.trait];
+    if (typeof cost !== 'number') {
+      return { ok: false, error: 'Preset-Snapshot: unbekanntes Speziesmerkmal.' };
+    }
+    traitCost += cost;
+  }
+  if (traitCost !== SPECIES_TRAIT_BUDGET) {
+    return {
+      ok: false,
+      error: `Preset-Snapshot: Speziesmerkmale müssen genau ${SPECIES_TRAIT_BUDGET} Punkte ergeben.`,
+    };
+  }
+  if (snapshot.race === 'alien') {
+    const speciesProfile = profile.speciesProfile;
+    if (!isRecord(speciesProfile) || typeof speciesProfile.name !== 'string' || !speciesProfile.name.trim()) {
+      return { ok: false, error: 'Preset-Snapshot: Alien-Speziesprofil braucht einen Namen.' };
+    }
+  }
+  if (!isRecord(profile.baseAttributes) && !isRecord(snapshot.attributes)) {
+    return { ok: false, error: 'Preset-Snapshot: baseAttributes fehlen.' };
   }
   if (!isRecord(snapshot.attributes)) {
     return { ok: false, error: 'Preset-Snapshot: baseAttributes fehlen.' };
