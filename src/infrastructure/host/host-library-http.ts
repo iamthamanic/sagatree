@@ -368,6 +368,44 @@ export async function fetchHostLibraryNpcCreatures(
   return Array.isArray(body.definitions) ? body.definitions : [];
 }
 
+/** Single NPC definition by id (archived rows included when readable). */
+export async function fetchHostLibraryNpcCreatureById(
+  definitionId: string,
+  env: EnvLike = defaultEnv(),
+  fetchImpl: typeof fetch = fetch,
+): Promise<unknown | null> {
+  const base = getHostAuthBaseUrl(env);
+  if (!base) throw new Error('Host-NPC nicht erreichbar');
+  let response: Response;
+  try {
+    response = await fetchImpl(
+      `${base}/api/v1/library/npc-creatures/${encodeURIComponent(definitionId)}`,
+      {
+        method: 'GET',
+        credentials: 'include',
+        headers: { Accept: 'application/json' },
+      },
+    );
+  } catch {
+    throw new Error('Host-NPC nicht erreichbar');
+  }
+  if (response.status === 404) return null;
+  if (!response.ok) {
+    let detail = '';
+    try {
+      const body: unknown = await response.json();
+      if (body && typeof body === 'object' && 'error' in body) {
+        detail = String((body as { error: unknown }).error);
+      }
+    } catch {
+      /* ignore */
+    }
+    throw new Error(detail ? `Host-NPC laden fehlgeschlagen: ${detail}` : 'Host-NPC laden fehlgeschlagen');
+  }
+  const body = (await response.json()) as { definition?: unknown };
+  return body.definition ?? null;
+}
+
 export async function fetchHostLibraryItems(
   env: EnvLike = defaultEnv(),
   fetchImpl: typeof fetch = fetch,

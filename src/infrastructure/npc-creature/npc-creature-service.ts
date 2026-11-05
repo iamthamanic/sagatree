@@ -42,6 +42,7 @@ import {
   archiveHostLibraryNpcCreature,
   assignHostNpcCreatureController,
   createHostLibraryNpcCreature,
+  fetchHostLibraryNpcCreatureById,
   fetchHostLibraryNpcCreatures,
   fetchHostNpcCreatureControllerAssignment,
   fetchHostNpcInstances,
@@ -146,13 +147,8 @@ export async function getNpcCreatureDefinition(
       record.ownerUserId = '';
       return record;
     }
-    const rows = await fetchHostLibraryNpcCreatures();
-    return (
-      rows
-        .map(mapHostLibraryNpcRecord)
-        .find((row): row is NpcCreatureCatalogRecord => row !== null && row.definition.id === definitionId) ??
-      null
-    );
+    const raw = await fetchHostLibraryNpcCreatureById(definitionId);
+    return raw ? mapHostLibraryNpcRecord(raw) : null;
   }
   return supabaseNpcCreatureRepository.getDefinitionById(definitionId);
 }
@@ -449,15 +445,7 @@ async function resolveDefinitionForInstance(
   if (builtin) return builtin;
   const core = getCoreNpcCreatureDefinition(definitionId);
   if (core) return core;
-  if (isHostLibraryEnabled()) {
-    const rows = await fetchHostLibraryNpcCreatures();
-    for (const raw of rows) {
-      const mapped = mapHostLibraryNpcRecord(raw);
-      if (mapped?.definition.id === definitionId) return mapped.definition;
-    }
-    return null;
-  }
-  const record = await supabaseNpcCreatureRepository.getDefinitionById(definitionId);
+  const record = await getNpcCreatureDefinition(definitionId);
   return record?.definition ?? null;
 }
 

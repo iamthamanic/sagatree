@@ -156,9 +156,9 @@ Direkt oder transitiv referenzierte lokale/importierte Mapper, Decoder und Vertr
 | `RecapConsequenceInput` | [src/domains/session/contracts/session-prepare-recap.ts](../../../src/domains/session/contracts/session-prepare-recap.ts) | 107 | `14a939d627bc1b7393a8e32c1a9bf9f2b74aab0058416bd6e73a9a59cbcc7c7f` |
 | `buildRecapHighlightLines` | [src/domains/session/contracts/session-prepare-recap.ts](../../../src/domains/session/contracts/session-prepare-recap.ts) | 119 | `14a939d627bc1b7393a8e32c1a9bf9f2b74aab0058416bd6e73a9a59cbcc7c7f` |
 | `parsePersistedRecapHighlightLines` | [src/domains/session/contracts/session-prepare-recap.ts](../../../src/domains/session/contracts/session-prepare-recap.ts) | 170 | `14a939d627bc1b7393a8e32c1a9bf9f2b74aab0058416bd6e73a9a59cbcc7c7f` |
-| `EnvLike` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 11 | `6e81f5e20588e4dc072a5d6b5861ad15f987ef4328f39ab029cd23e74b2582a5` |
-| `defaultEnv` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 16 | `6e81f5e20588e4dc072a5d6b5861ad15f987ef4328f39ab029cd23e74b2582a5` |
-| `isHostLibraryExplicitlyDisabled` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 25 | `6e81f5e20588e4dc072a5d6b5861ad15f987ef4328f39ab029cd23e74b2582a5` |
+| `EnvLike` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 11 | `45d3c37d4a5ce1c328c42c50fd5482590b9811150d71a55e3029071916fd281e` |
+| `defaultEnv` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 16 | `45d3c37d4a5ce1c328c42c50fd5482590b9811150d71a55e3029071916fd281e` |
+| `isHostLibraryExplicitlyDisabled` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 25 | `45d3c37d4a5ce1c328c42c50fd5482590b9811150d71a55e3029071916fd281e` |
 | `EnvLike` | [src/infrastructure/host/host-session-http.ts](../../../src/infrastructure/host/host-session-http.ts) | 12 | `872234ca8977b0543ed26dd24cdd0c7c3bffd34dc029837fd478f9251b29c31c` |
 | `defaultEnv` | [src/infrastructure/host/host-session-http.ts](../../../src/infrastructure/host/host-session-http.ts) | 17 | `872234ca8977b0543ed26dd24cdd0c7c3bffd34dc029837fd478f9251b29c31c` |
 | `hostGetJson` | [src/infrastructure/host/host-session-http.ts](../../../src/infrastructure/host/host-session-http.ts) | 25 | `872234ca8977b0543ed26dd24cdd0c7c3bffd34dc029837fd478f9251b29c31c` |
@@ -199,7 +199,7 @@ Die folgenden Hashes binden SQL-Kette, transitive Tabellen-/Trigger-/Policyquell
 | Quelle | SHA-256 |
 | --- | --- |
 | [src/domains/session/contracts/session-prepare-recap.ts](../../../src/domains/session/contracts/session-prepare-recap.ts) | `14a939d627bc1b7393a8e32c1a9bf9f2b74aab0058416bd6e73a9a59cbcc7c7f` |
-| [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | `6e81f5e20588e4dc072a5d6b5861ad15f987ef4328f39ab029cd23e74b2582a5` |
+| [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | `45d3c37d4a5ce1c328c42c50fd5482590b9811150d71a55e3029071916fd281e` |
 | [src/infrastructure/host/host-session-http.ts](../../../src/infrastructure/host/host-session-http.ts) | `872234ca8977b0543ed26dd24cdd0c7c3bffd34dc029837fd478f9251b29c31c` |
 | [src/infrastructure/session/session-recap-service.ts](../../../src/infrastructure/session/session-recap-service.ts) | `e98ca57169a56a5ce0943018e33b0d7c863754e4787eace8bf0e2bbc2930fca5` |
 | [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | `30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a` |

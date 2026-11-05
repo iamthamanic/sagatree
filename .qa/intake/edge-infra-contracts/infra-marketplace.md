@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-marketplace.json](source-contracts/infra-marketplace.json) (SHA-256 `60dac95aa160edd3de909ed4a914328806f1a75047a05bce42accf2e125343a5`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-marketplace.json](source-contracts/infra-marketplace.json) (SHA-256 `4dcf43041a4fd158dba6889223eff9e05447a8b849593c925f0fe8daa8373560`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -692,7 +692,7 @@ All backend operations are included in the public declarations above.
 | `src/domains/user-profile/display-name.ts` | `87cfc4858f198e56ea2857c505162f112efd5edacde4dbb1f7fcd995b4535516` |
 | `src/domains/user-profile/index.ts` | `d094d245ff9356298ef20c48635ca3e7adcc0e1ccf180554586949e0b496c496` |
 | `src/infrastructure/host/host-catalog-http.ts` | `9049245360683a74e7e2602d35126d815d64344d384c6684e4c2c3d41aa626d3` |
-| `src/infrastructure/host/host-library-http.ts` | `6e81f5e20588e4dc072a5d6b5861ad15f987ef4328f39ab029cd23e74b2582a5` |
+| `src/infrastructure/host/host-library-http.ts` | `45d3c37d4a5ce1c328c42c50fd5482590b9811150d71a55e3029071916fd281e` |
 | `src/infrastructure/marketplace/host-marketplace-adapter.ts` | `26df96d9df6c7ae0cebd69e90e85a77075fbbc1138c86b505f8dee97e7e072e0` |
 | `src/infrastructure/marketplace/host-marketplace-ports.contract.ts` | `f77e7aee8352e2155253cddead1f51d9de10170ca250db27405f7f1f336fcf1b` |
 | `src/infrastructure/marketplace/index.ts` | `15e40b95148db8d15546f5c1815b51f7846c343e5fc334406548c64858162542` |

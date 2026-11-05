@@ -646,6 +646,28 @@ export function mountLibraryHttpRoutes(app: Hono, deps: LibraryHttpDeps): void {
     return c.json({ ok: true, id: removed.value.id }, 200);
   });
 
+  /** Single definition by id (includes archived when readable) — CUT-03 spawn resolve. */
+  app.get('/api/v1/library/npc-creatures/:id', async (c) => {
+    const actorResult = await resolveLibraryActor(deps, c.req.raw.headers);
+    if (!actorResult.ok) {
+      return c.json({ error: actorResult.error }, actorResult.status);
+    }
+    if (!deps.npcCreature?.getDefinition) {
+      return c.json({ error: 'store-unavailable' }, 503);
+    }
+    const loaded = deps.npcCreature.getDefinition(actorResult.actor, c.req.param('id'));
+    if (!loaded.ok) {
+      return c.json(
+        { error: loaded.error },
+        loaded.error === 'not-authorized' ? 403 : npcControllerErrorStatus(loaded.error),
+      );
+    }
+    if (!loaded.value) {
+      return c.json({ error: 'not-found' }, 404);
+    }
+    return c.json({ definition: loaded.value }, 200);
+  });
+
   app.post('/api/v1/library/npc-creatures', async (c) => {
     const actorResult = await resolveLibraryActor(deps, c.req.raw.headers);
     if (!actorResult.ok) {
