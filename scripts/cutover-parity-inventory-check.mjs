@@ -6,9 +6,9 @@
  * Fail-closed: unsupported classification, missing issueRef on PARITY_MISSING,
  * unassigned ownership vs CUT tickets, and injected fake reachable gaps.
  */
-import { copyFileSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { copyFileSync, mkdtempSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { dirname, join } from 'node:path';
+import { dirname, join, relative } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -184,24 +184,112 @@ function selfTestLegacyUnusedNeverActivated() {
   }
 }
 
+const SOURCE_SIGNAL =
+  /supabase\.(from|rpc|storage|functions|auth)|functions\.invoke|assertHostProductSurfaceAvailable|Host-Modus noch nicht|auf dem Host noch nicht verfügbar|isHostLibraryEnabled/;
+
+/** Pure adapters / helpers covered by parent service rows or dual-path host HTTP. */
+const SOURCE_COVERAGE_ALLOWLIST = new Set([
+  'src/infrastructure/character/supabase-character.repository.ts',
+  'src/infrastructure/inventory/supabase-item-catalog.repository.ts',
+  'src/infrastructure/look/supabase-look.repository.ts',
+  'src/infrastructure/npc-creature/supabase-npc-creature.repository.ts',
+  'src/infrastructure/user-profile/supabase-user-profile.repository.ts',
+  'src/infrastructure/host/host-catalog-http.ts',
+  'src/infrastructure/host/host-library-http.ts',
+  'src/infrastructure/host/host-product-deny.ts',
+  'src/infrastructure/host/host-project-http.ts',
+  'src/infrastructure/host/host-saga-definition-http.ts',
+  'src/infrastructure/host/host-session-http.ts',
+  'src/infrastructure/host/host-world-http.ts',
+  'src/lib/supabase.ts',
+  'src/lib/supabase-client.ts',
+  'src/lib/auth-context.tsx',
+  'src/lib/authenticatedUser.ts',
+]);
+
+function walkTsFiles(dir, out = []) {
+  for (const name of readdirSync(dir)) {
+    const full = join(dir, name);
+    const st = statSync(full);
+    if (st.isDirectory()) {
+      if (name === 'node_modules' || name === 'dist') continue;
+      walkTsFiles(full, out);
+      continue;
+    }
+    if (name.endsWith('.ts') || name.endsWith('.tsx')) out.push(full);
+  }
+  return out;
+}
+
+function assertSourceCoverage(matrix) {
+  const callers = matrix.rows.map((r) => String(r.historicalCaller));
+  const roots = [join(root, 'src/infrastructure'), join(root, 'src/lib')];
+  const missing = [];
+  for (const base of roots) {
+    for (const abs of walkTsFiles(base)) {
+      const rel = relative(root, abs).split('\\').join('/');
+      const src = readFileSync(abs, 'utf8');
+      if (!SOURCE_SIGNAL.test(src)) continue;
+      if (SOURCE_COVERAGE_ALLOWLIST.has(rel)) continue;
+      const covered = callers.some((c) => c.includes(rel) || c.includes(rel.replace(/^src\//, '')));
+      // Also accept basename service matches already in matrix (short historicalCaller forms).
+      const baseName = rel.split('/').pop() ?? rel;
+      const coveredShort = callers.some((c) => c.includes(baseName));
+      if (!covered && !coveredShort) missing.push(rel);
+    }
+  }
+  assert(
+    missing.length === 0,
+    `reachable supabase/DENY sources missing from matrix: ${missing.join(', ')}`,
+  );
+}
+
+/**
+ * Soft-DENY fingerprints are required only while the owning PARITY_MISSING row remains.
+ * After a CUT successor removes the DENY, the matrix row must flip to HOST_VERIFIED
+ * (or leave PARITY_MISSING) before this gate stops asserting the string.
+ */
+function assertConditionalDenyFingerprints(matrix) {
+  const byKey = new Map(matrix.rows.map((r) => [r.stableKey, r]));
+  /** @type {Array<{ keys: string[], file: string, needle: string }>} */
+  const fingerprints = [
+    {
+      keys: ['item-catalog.update-definition'],
+      file: 'src/infrastructure/inventory/item-catalog-service.ts',
+      needle: 'Item-Definition aktualisieren ist auf dem Host noch nicht verfügbar.',
+    },
+    {
+      keys: ['look.append-version'],
+      file: 'src/infrastructure/look/look-service.ts',
+      needle: 'Look-Version anhängen ist auf dem Host noch nicht verfügbar.',
+    },
+    {
+      keys: ['session.delete-session'],
+      file: 'src/infrastructure/session/session-service.ts',
+      needle: 'Session-Löschen ist im Host-Modus noch nicht verfügbar',
+    },
+    {
+      keys: ['session-outcome.promote-to-saga', 'session-outcome.promote-to-world'],
+      file: 'src/infrastructure/saga/session-outcome-promotion-service.ts',
+      needle: 'isHostLibraryEnabled',
+    },
+  ];
+  for (const fp of fingerprints) {
+    const stillMissing = fp.keys.some((k) => byKey.get(k)?.classification === 'PARITY_MISSING');
+    if (!stillMissing) continue;
+    const src = readFileSync(join(root, fp.file), 'utf8');
+    assert(src.includes(fp.needle), `PARITY_MISSING ${fp.keys.join('|')} still expects DENY fingerprint in ${fp.file}`);
+  }
+}
+
 // --- main ---
 assert(readFileSync(baselinePath, 'utf8').includes('54b6ee7c6'), 'baseline.md must cite freeze SHA');
 const matrix = loadMatrix(matrixPath);
 validateMatrix(matrix);
 selfTestInjectFakeMissing();
 selfTestLegacyUnusedNeverActivated();
-
-// Static residual DENY still present for known PARITY_MISSING facades (fingerprint that audit is honest)
-const denyNeedles = [
-  ['src/infrastructure/inventory/item-catalog-service.ts', 'Item-Definition aktualisieren ist auf dem Host noch nicht verfügbar.'],
-  ['src/infrastructure/look/look-service.ts', 'Look-Version anhängen ist auf dem Host noch nicht verfügbar.'],
-  ['src/infrastructure/session/session-service.ts', 'Session-Löschen ist im Host-Modus noch nicht verfügbar'],
-  ['src/infrastructure/saga/session-outcome-promotion-service.ts', 'isHostLibraryEnabled'],
-];
-for (const [rel, needle] of denyNeedles) {
-  const src = readFileSync(join(root, rel), 'utf8');
-  assert(src.includes(needle), `expected residual host gate still present in ${rel} (audit honesty)`);
-}
+assertSourceCoverage(matrix);
+assertConditionalDenyFingerprints(matrix);
 
 console.log(
   `cutover-parity-inventory-check OK: rows=${matrix.rows.length} ` +
@@ -211,7 +299,5 @@ console.log(
     `baseline=${matrix.baselineSha.slice(0, 9)}`,
 );
 
-// Allow importing validateMatrix in future tooling
 export { validateMatrix, PLANNED_ISSUE_REFS, loadMatrix };
-// Avoid unused import lint in plain node
 void pathToFileURL;
