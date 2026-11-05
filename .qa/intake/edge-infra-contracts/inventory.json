@@ -38717,7 +38717,7 @@
           },
           {
             "path": "src/infrastructure/host/host-session-http.ts",
-            "sha256": "872234ca8977b0543ed26dd24cdd0c7c3bffd34dc029837fd478f9251b29c31c"
+            "sha256": "1d0e576d58da7285a08cbad7ee864fabb7033d9d822841240dda6c11935a4818"
           },
           {
             "path": "src/infrastructure/npc-creature/host-npc-creature-adapter.ts",
@@ -38773,7 +38773,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-npc-creature.json",
-      "sourceContractSha256": "46624f628cc818a1aeb6898dbc7696372d89970393782471b6533aef163c7cbf",
+      "sourceContractSha256": "18a86f02373b96f5cb5c54f152a79d660dfc2336b7508cf8e6210735f699f987",
       "rpcUsed": [
         "assign_npc_creature_controller",
         "clear_npc_creature_instance_temp_controllers_for_session",
@@ -41939,7 +41939,7 @@
           },
           {
             "path": "src/infrastructure/host/host-session-http.ts",
-            "sha256": "872234ca8977b0543ed26dd24cdd0c7c3bffd34dc029837fd478f9251b29c31c"
+            "sha256": "1d0e576d58da7285a08cbad7ee864fabb7033d9d822841240dda6c11935a4818"
           },
           {
             "path": "src/infrastructure/session/host-session-adapter.ts",
@@ -42003,7 +42003,7 @@
           },
           {
             "path": "src/infrastructure/session/session-service.ts",
-            "sha256": "13cae162249e329b2e55dccf63ea63c63fecda761a922f21f8aa3dcdca01d296"
+            "sha256": "9109e84fb2c7625aae96928d15b3c0e44ea4598cded3a9e0601d6e4031e8db2d"
           },
           {
             "path": "src/lib/authenticatedUser.ts",
@@ -42031,7 +42031,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-session.json",
-      "sourceContractSha256": "0801857a8efe6387812fd0f050c3e4ca6a4ca63ff053e01ac3ef5a6189086207",
+      "sourceContractSha256": "f2c3eebba1c717506a5c57df52dee47ba96cab36e58fe8b7a1dd5921664b5b2a",
       "rpcUsed": [
         "apply_session_runtime_command",
         "create_play_session",
@@ -42297,16 +42297,16 @@
           "kind": "auth",
           "name": null,
           "path": "src/infrastructure/session/session-service.ts",
-          "line": 107,
-          "endLine": 107,
+          "line": 108,
+          "endLine": 108,
           "resolution": "dynamic-expression",
           "expression": "supabase.auth.getSession()",
           "chain": "supabase.auth.getSession()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/session/session-service.ts",
-            "line": 104,
-            "endLine": 120,
+            "line": 105,
+            "endLine": 121,
             "text": "private async requireAuthUser(): Promise<{ id: string }> {\n    const {\n      data: { session },\n    } = await supabase.auth.getSession();\n    if (session?.user?.id) return session.user;\n\n    const {\n      data: { user },\n    } = await supabase.auth.getUser();\n    if (user?.id) return user;\n\n    if (isLocalAdminSession()) {\n      return { id: LOCAL_ADMIN_USER_ID };\n    }\n\n    throw new Error('User not authenticated');\n  }"
           }
         },
@@ -42314,16 +42314,16 @@
           "kind": "auth",
           "name": null,
           "path": "src/infrastructure/session/session-service.ts",
-          "line": 112,
-          "endLine": 112,
+          "line": 113,
+          "endLine": 113,
           "resolution": "dynamic-expression",
           "expression": "supabase.auth.getUser()",
           "chain": "supabase.auth.getUser()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/session/session-service.ts",
-            "line": 104,
-            "endLine": 120,
+            "line": 105,
+            "endLine": 121,
             "text": "private async requireAuthUser(): Promise<{ id: string }> {\n    const {\n      data: { session },\n    } = await supabase.auth.getSession();\n    if (session?.user?.id) return session.user;\n\n    const {\n      data: { user },\n    } = await supabase.auth.getUser();\n    if (user?.id) return user;\n\n    if (isLocalAdminSession()) {\n      return { id: LOCAL_ADMIN_USER_ID };\n    }\n\n    throw new Error('User not authenticated');\n  }"
           }
         }
@@ -43059,16 +43059,16 @@
           "kind": "auth",
           "name": null,
           "path": "src/infrastructure/session/session-service.ts",
-          "line": 107,
-          "endLine": 107,
+          "line": 108,
+          "endLine": 108,
           "resolution": "dynamic-expression",
           "expression": "supabase.auth.getSession()",
           "chain": "supabase.auth.getSession()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/session/session-service.ts",
-            "line": 104,
-            "endLine": 120,
+            "line": 105,
+            "endLine": 121,
             "text": "private async requireAuthUser(): Promise<{ id: string }> {\n    const {\n      data: { session },\n    } = await supabase.auth.getSession();\n    if (session?.user?.id) return session.user;\n\n    const {\n      data: { user },\n    } = await supabase.auth.getUser();\n    if (user?.id) return user;\n\n    if (isLocalAdminSession()) {\n      return { id: LOCAL_ADMIN_USER_ID };\n    }\n\n    throw new Error('User not authenticated');\n  }"
           }
         },
@@ -43076,16 +43076,16 @@
           "kind": "auth",
           "name": null,
           "path": "src/infrastructure/session/session-service.ts",
-          "line": 112,
-          "endLine": 112,
+          "line": 113,
+          "endLine": 113,
           "resolution": "dynamic-expression",
           "expression": "supabase.auth.getUser()",
           "chain": "supabase.auth.getUser()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/session/session-service.ts",
-            "line": 104,
-            "endLine": 120,
+            "line": 105,
+            "endLine": 121,
             "text": "private async requireAuthUser(): Promise<{ id: string }> {\n    const {\n      data: { session },\n    } = await supabase.auth.getSession();\n    if (session?.user?.id) return session.user;\n\n    const {\n      data: { user },\n    } = await supabase.auth.getUser();\n    if (user?.id) return user;\n\n    if (isLocalAdminSession()) {\n      return { id: LOCAL_ADMIN_USER_ID };\n    }\n\n    throw new Error('User not authenticated');\n  }"
           }
         },
@@ -43093,8 +43093,8 @@
           "kind": "table",
           "name": "projects",
           "path": "src/infrastructure/session/session-service.ts",
-          "line": 124,
-          "endLine": 125,
+          "line": 125,
+          "endLine": 126,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from('projects')",
           "chain": "supabase\n      .from('projects')\n      .select('gm_user_id')\n      .eq('id', projectId)\n      .maybeSingle()",
@@ -43103,8 +43103,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/session/session-service.ts",
-            "line": 122,
-            "endLine": 131,
+            "line": 123,
+            "endLine": 132,
             "text": "private async resolveGmUserId(projectId: string | null): Promise<string> {\n    if (!projectId) return '';\n    const { data, error } = await supabase\n      .from('projects')\n      .select('gm_user_id')\n      .eq('id', projectId)\n      .maybeSingle();\n    if (error || !data) return '';\n    return typeof data.gm_user_id === 'string' ? data.gm_user_id : '';\n  }"
           }
         },
@@ -43112,8 +43112,8 @@
           "kind": "table",
           "name": "session_players",
           "path": "src/infrastructure/session/session-service.ts",
-          "line": 182,
-          "endLine": 183,
+          "line": 183,
+          "endLine": 184,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from(this.playersTableName)",
           "chain": "supabase\n      .from(this.playersTableName)\n      .select('*')\n      .eq('session_id', sessionId)",
@@ -43122,8 +43122,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/session/session-service.ts",
-            "line": 181,
-            "endLine": 192,
+            "line": 182,
+            "endLine": 193,
             "text": "private async loadPlayers(sessionId: string): Promise<SessionPlayerDto[]> {\n    const { data, error } = await supabase\n      .from(this.playersTableName)\n      .select('*')\n      .eq('session_id', sessionId);\n\n    if (error) {\n      console.error('Failed to load session players:', error);\n      return [];\n    }\n    return (data ?? []) as SessionPlayerDto[];\n  }"
           }
         },
@@ -43131,8 +43131,8 @@
           "kind": "rpc",
           "name": "create_play_session",
           "path": "src/infrastructure/session/session-service.ts",
-          "line": 209,
-          "endLine": 212,
+          "line": 210,
+          "endLine": 213,
           "resolution": "literal-or-constant",
           "expression": "supabase.rpc('create_play_session', {\n      p_project_id: projectId,\n      p_name: payload.name,\n    })",
           "chain": "supabase.rpc('create_play_session', {\n      p_project_id: projectId,\n      p_name: payload.name,\n    })",
@@ -43142,8 +43142,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/session/session-service.ts",
-            "line": 194,
-            "endLine": 220,
+            "line": 195,
+            "endLine": 221,
             "text": "async createSession(payload: CreateSessionDto): Promise<SessionVm> {\n    const projectId = payload.project_id || payload.adventure_id;\n    if (!projectId) {\n      throw new Error('project_id ist erforderlich, um eine Session zu erstellen');\n    }\n\n    // Dual-path (MIG-311 / FE-HOST-02): host authenticates its own cookie — do not\n    // require a Supabase JWT first (Better Auth cookie-only deployments).\n    if (isHostLibraryEnabled()) {\n      const row = await createHostPlaySession(projectId, payload.name ?? null);\n      return mapHostPlaySessionToVm(row);\n    }\n\n    await this.requireAuthUser();\n\n    const { data, error } = await supabase.rpc('create_play_session', {\n      p_project_id: projectId,\n      p_name: payload.name,\n    });\n\n    if (error || !data) {\n      throw new Error(`Failed to create session: ${error?.message ?? 'unknown'}`);\n    }\n\n    const dto = await this.mapRowToDto(data as SessionRow);\n    return this.mapToViewModel(dto, []);\n  }"
           }
         },
@@ -43151,8 +43151,8 @@
           "kind": "rpc",
           "name": "join_session_by_code",
           "path": "src/infrastructure/session/session-service.ts",
-          "line": 232,
-          "endLine": 235,
+          "line": 233,
+          "endLine": 236,
           "resolution": "literal-or-constant",
           "expression": "supabase.rpc('join_session_by_code', {\n      p_code: code,\n      p_character_id: payload.character_id ?? null,\n    })",
           "chain": "supabase.rpc('join_session_by_code', {\n      p_code: code,\n      p_character_id: payload.character_id ?? null,\n    })",
@@ -43162,8 +43162,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/session/session-service.ts",
-            "line": 222,
-            "endLine": 244,
+            "line": 223,
+            "endLine": 245,
             "text": "async joinSession(payload: JoinSessionDto): Promise<SessionVm> {\n    const code = normalizeSessionJoinCode(payload.code);\n\n    if (isHostLibraryEnabled()) {\n      const row = await joinHostSessionByCode(code, payload.character_id ?? null);\n      return mapHostPlaySessionToVm(row);\n    }\n\n    await this.requireAuthUser();\n\n    const { data, error } = await supabase.rpc('join_session_by_code', {\n      p_code: code,\n      p_character_id: payload.character_id ?? null,\n    });\n\n    if (error || !data) {\n      throw new Error(error?.message || 'Session nicht gefunden');\n    }\n\n    const dto = await this.mapRowToDto(data as SessionRow);\n    const players = await this.loadPlayers(dto.id);\n    return this.mapToViewModel(dto, players);\n  }"
           }
         },
@@ -43171,8 +43171,8 @@
           "kind": "table",
           "name": "sessions",
           "path": "src/infrastructure/session/session-service.ts",
-          "line": 252,
-          "endLine": 253,
+          "line": 253,
+          "endLine": 254,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from(this.tableName)",
           "chain": "supabase\n      .from(this.tableName)\n      .select(SESSION_SAFE_COLUMNS)\n      .eq('id', id)\n      .single()",
@@ -43181,8 +43181,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/session/session-service.ts",
-            "line": 246,
-            "endLine": 265,
+            "line": 247,
+            "endLine": 266,
             "text": "async getSessionById(id: string): Promise<SessionVm> {\n    if (isHostLibraryEnabled()) {\n      const row = await fetchHostSession(id);\n      return mapHostPlaySessionToVm(row);\n    }\n\n    const { data: session, error: sessionError } = await supabase\n      .from(this.tableName)\n      .select(SESSION_SAFE_COLUMNS)\n      .eq('id', id)\n      .single();\n\n    if (sessionError || !session) {\n      throw new Error('Session not found');\n    }\n\n    const dto = await this.mapRowToDto(session as unknown as SessionRow);\n    const players = await this.loadPlayers(id);\n    return this.mapToViewModel(dto, players);\n  }"
           }
         },
@@ -43190,8 +43190,8 @@
           "kind": "table",
           "name": "projects",
           "path": "src/infrastructure/session/session-service.ts",
-          "line": 275,
-          "endLine": 276,
+          "line": 276,
+          "endLine": 277,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from('projects')",
           "chain": "supabase\n      .from('projects')\n      .select('id')\n      .eq('gm_user_id', user.id)",
@@ -43200,8 +43200,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/session/session-service.ts",
-            "line": 267,
-            "endLine": 331,
+            "line": 268,
+            "endLine": 332,
             "text": "async getUserSessions(): Promise<SessionVm[]> {\n    if (isHostLibraryEnabled()) {\n      const rows = await fetchHostSessions();\n      return rows.map(mapHostPlaySessionToVm);\n    }\n\n    const user = await this.requireAuthUser();\n\n    const { data: gmProjects, error: gmProjectsError } = await supabase\n      .from('projects')\n      .select('id')\n      .eq('gm_user_id', user.id);\n\n    if (gmProjectsError) {\n      throw new Error(`Failed to fetch GM projects: ${gmProjectsError.message}`);\n    }\n\n    const gmProjectIds = (gmProjects ?? []).map((p) => p.id as string);\n\n    let gmSessions: SessionRow[] = [];\n    if (gmProjectIds.length > 0) {\n      const { data, error } = await supabase\n        .from(this.tableName)\n        .select(SESSION_SAFE_COLUMNS)\n        .in('project_id', gmProjectIds)\n        .neq('status', 'completed')\n        .order('created_at', { ascending: false });\n      if (error) {\n        throw new Error(`Failed to fetch GM sessions: ${error.message}`);\n      }\n      gmSessions = (data ?? []) as unknown as SessionRow[];\n    }\n\n    const { data: playerRecords, error: playerError } = await supabase\n      .from(this.playersTableName)\n      .select(`*, sessions!inner(${SESSION_SAFE_COLUMNS})`)\n      .eq('user_id', user.id);\n\n    if (playerError) {\n      console.error('Failed to fetch player sessions:', playerError);\n    }\n\n    type PlayerSessionJoinRow = { sessions: SessionRow | SessionRow[] | null };\n    const playerSessions = ((playerRecords || []) as PlayerSessionJoinRow[])\n      .map((record) => record.sessions)\n      .flatMap((session) => (Array.isArray(session) ? session : session ? [session] : []))\n      .filter((session) => session.status !== 'completed');\n\n    const allSessionIds = new Set<string>();\n    const combined: SessionRow[] = [];\n    [...gmSessions, ...playerSessions].forEach((session) => {\n      if (!allSessionIds.has(session.id)) {\n        allSessionIds.add(session.id);\n        combined.push(session);\n      }\n    });\n\n    return Promise.all(\n      combined.map(async (session) => {\n        const dto = await this.mapRowToDto(session);\n        const players = await this.loadPlayers(session.id);\n        return this.mapToViewModel(dto, players);\n      }),\n    );\n  }"
           }
         },
@@ -43209,8 +43209,8 @@
           "kind": "table",
           "name": "sessions",
           "path": "src/infrastructure/session/session-service.ts",
-          "line": 288,
-          "endLine": 289,
+          "line": 289,
+          "endLine": 290,
           "resolution": "literal-or-constant",
           "expression": "supabase\n        .from(this.tableName)",
           "chain": "supabase\n        .from(this.tableName)\n        .select(SESSION_SAFE_COLUMNS)\n        .in('project_id', gmProjectIds)\n        .neq('status', 'completed')\n        .order('created_at', { ascending: false })",
@@ -43219,8 +43219,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/session/session-service.ts",
-            "line": 267,
-            "endLine": 331,
+            "line": 268,
+            "endLine": 332,
             "text": "async getUserSessions(): Promise<SessionVm[]> {\n    if (isHostLibraryEnabled()) {\n      const rows = await fetchHostSessions();\n      return rows.map(mapHostPlaySessionToVm);\n    }\n\n    const user = await this.requireAuthUser();\n\n    const { data: gmProjects, error: gmProjectsError } = await supabase\n      .from('projects')\n      .select('id')\n      .eq('gm_user_id', user.id);\n\n    if (gmProjectsError) {\n      throw new Error(`Failed to fetch GM projects: ${gmProjectsError.message}`);\n    }\n\n    const gmProjectIds = (gmProjects ?? []).map((p) => p.id as string);\n\n    let gmSessions: SessionRow[] = [];\n    if (gmProjectIds.length > 0) {\n      const { data, error } = await supabase\n        .from(this.tableName)\n        .select(SESSION_SAFE_COLUMNS)\n        .in('project_id', gmProjectIds)\n        .neq('status', 'completed')\n        .order('created_at', { ascending: false });\n      if (error) {\n        throw new Error(`Failed to fetch GM sessions: ${error.message}`);\n      }\n      gmSessions = (data ?? []) as unknown as SessionRow[];\n    }\n\n    const { data: playerRecords, error: playerError } = await supabase\n      .from(this.playersTableName)\n      .select(`*, sessions!inner(${SESSION_SAFE_COLUMNS})`)\n      .eq('user_id', user.id);\n\n    if (playerError) {\n      console.error('Failed to fetch player sessions:', playerError);\n    }\n\n    type PlayerSessionJoinRow = { sessions: SessionRow | SessionRow[] | null };\n    const playerSessions = ((playerRecords || []) as PlayerSessionJoinRow[])\n      .map((record) => record.sessions)\n      .flatMap((session) => (Array.isArray(session) ? session : session ? [session] : []))\n      .filter((session) => session.status !== 'completed');\n\n    const allSessionIds = new Set<string>();\n    const combined: SessionRow[] = [];\n    [...gmSessions, ...playerSessions].forEach((session) => {\n      if (!allSessionIds.has(session.id)) {\n        allSessionIds.add(session.id);\n        combined.push(session);\n      }\n    });\n\n    return Promise.all(\n      combined.map(async (session) => {\n        const dto = await this.mapRowToDto(session);\n        const players = await this.loadPlayers(session.id);\n        return this.mapToViewModel(dto, players);\n      }),\n    );\n  }"
           }
         },
@@ -43228,8 +43228,8 @@
           "kind": "table",
           "name": "session_players",
           "path": "src/infrastructure/session/session-service.ts",
-          "line": 300,
-          "endLine": 301,
+          "line": 301,
+          "endLine": 302,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from(this.playersTableName)",
           "chain": "supabase\n      .from(this.playersTableName)\n      .select(`*, sessions!inner(${SESSION_SAFE_COLUMNS})`)\n      .eq('user_id', user.id)",
@@ -43238,8 +43238,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/session/session-service.ts",
-            "line": 267,
-            "endLine": 331,
+            "line": 268,
+            "endLine": 332,
             "text": "async getUserSessions(): Promise<SessionVm[]> {\n    if (isHostLibraryEnabled()) {\n      const rows = await fetchHostSessions();\n      return rows.map(mapHostPlaySessionToVm);\n    }\n\n    const user = await this.requireAuthUser();\n\n    const { data: gmProjects, error: gmProjectsError } = await supabase\n      .from('projects')\n      .select('id')\n      .eq('gm_user_id', user.id);\n\n    if (gmProjectsError) {\n      throw new Error(`Failed to fetch GM projects: ${gmProjectsError.message}`);\n    }\n\n    const gmProjectIds = (gmProjects ?? []).map((p) => p.id as string);\n\n    let gmSessions: SessionRow[] = [];\n    if (gmProjectIds.length > 0) {\n      const { data, error } = await supabase\n        .from(this.tableName)\n        .select(SESSION_SAFE_COLUMNS)\n        .in('project_id', gmProjectIds)\n        .neq('status', 'completed')\n        .order('created_at', { ascending: false });\n      if (error) {\n        throw new Error(`Failed to fetch GM sessions: ${error.message}`);\n      }\n      gmSessions = (data ?? []) as unknown as SessionRow[];\n    }\n\n    const { data: playerRecords, error: playerError } = await supabase\n      .from(this.playersTableName)\n      .select(`*, sessions!inner(${SESSION_SAFE_COLUMNS})`)\n      .eq('user_id', user.id);\n\n    if (playerError) {\n      console.error('Failed to fetch player sessions:', playerError);\n    }\n\n    type PlayerSessionJoinRow = { sessions: SessionRow | SessionRow[] | null };\n    const playerSessions = ((playerRecords || []) as PlayerSessionJoinRow[])\n      .map((record) => record.sessions)\n      .flatMap((session) => (Array.isArray(session) ? session : session ? [session] : []))\n      .filter((session) => session.status !== 'completed');\n\n    const allSessionIds = new Set<string>();\n    const combined: SessionRow[] = [];\n    [...gmSessions, ...playerSessions].forEach((session) => {\n      if (!allSessionIds.has(session.id)) {\n        allSessionIds.add(session.id);\n        combined.push(session);\n      }\n    });\n\n    return Promise.all(\n      combined.map(async (session) => {\n        const dto = await this.mapRowToDto(session);\n        const players = await this.loadPlayers(session.id);\n        return this.mapToViewModel(dto, players);\n      }),\n    );\n  }"
           }
         },
@@ -43247,8 +43247,8 @@
           "kind": "rpc",
           "name": "set_session_status",
           "path": "src/infrastructure/session/session-service.ts",
-          "line": 345,
-          "endLine": 348,
+          "line": 346,
+          "endLine": 349,
           "resolution": "literal-or-constant",
           "expression": "supabase.rpc('set_session_status', {\n      p_session_id: id,\n      p_status: status,\n    })",
           "chain": "supabase.rpc('set_session_status', {\n      p_session_id: id,\n      p_status: status,\n    })",
@@ -43258,8 +43258,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/session/session-service.ts",
-            "line": 333,
-            "endLine": 357,
+            "line": 334,
+            "endLine": 358,
             "text": "async updateSessionStatus(\n    id: string,\n    status: PlaySessionStatus,\n  ): Promise<SessionVm> {\n    const current = await this.getSessionById(id);\n    assertPlaySessionStatusTransition(current.status, status);\n\n    if (isHostLibraryEnabled()) {\n      const row = await setHostSessionStatus(id, status);\n      return mapHostPlaySessionToVm(row);\n    }\n\n    const { data, error } = await supabase.rpc('set_session_status', {\n      p_session_id: id,\n      p_status: status,\n    });\n\n    if (error || !data) {\n      throw new Error(`Failed to update session: ${error?.message ?? 'unknown'}`);\n    }\n\n    const dto = await this.mapRowToDto(data as SessionRow);\n    const players = await this.loadPlayers(id);\n    return this.mapToViewModel(dto, players);\n  }"
           }
         },
@@ -43267,8 +43267,8 @@
           "kind": "rpc",
           "name": "leave_play_session",
           "path": "src/infrastructure/session/session-service.ts",
-          "line": 367,
-          "endLine": 369,
+          "line": 368,
+          "endLine": 370,
           "resolution": "literal-or-constant",
           "expression": "supabase.rpc('leave_play_session', {\n      p_session_id: sessionId,\n    })",
           "chain": "supabase.rpc('leave_play_session', {\n      p_session_id: sessionId,\n    })",
@@ -43278,8 +43278,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/session/session-service.ts",
-            "line": 359,
-            "endLine": 374,
+            "line": 360,
+            "endLine": 375,
             "text": "async leaveSession(sessionId: string): Promise<void> {\n    if (isHostLibraryEnabled()) {\n      await leaveHostPlaySession(sessionId);\n      return;\n    }\n\n    await this.requireAuthUser();\n\n    const { error } = await supabase.rpc('leave_play_session', {\n      p_session_id: sessionId,\n    });\n\n    if (error) {\n      throw new Error(`Failed to leave session: ${error.message}`);\n    }\n  }"
           }
         },
@@ -43287,8 +43287,8 @@
           "kind": "table",
           "name": "sessions",
           "path": "src/infrastructure/session/session-service.ts",
-          "line": 389,
-          "endLine": 389,
+          "line": 405,
+          "endLine": 405,
           "resolution": "literal-or-constant",
           "expression": "supabase.from(this.tableName)",
           "chain": "supabase.from(this.tableName).delete().eq('id', id)",
@@ -43297,17 +43297,17 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/session/session-service.ts",
-            "line": 379,
-            "endLine": 398,
-            "text": "async deleteSession(sessionId: string): Promise<void> {\n    await this.requireAuthUser();\n    const id = sessionId.trim();\n    if (!id) {\n      throw new Error('Session-ID fehlt');\n    }\n    if (isHostLibraryEnabled()) {\n      throw new Error('Session-Löschen ist im Host-Modus noch nicht verfügbar');\n    }\n\n    const { error } = await supabase.from(this.tableName).delete().eq('id', id);\n\n    if (error) {\n      throw new Error(\n        error.message.includes('row-level security')\n          ? 'Nur der Gamemaster kann Sessions löschen.'\n          : `Session konnte nicht gelöscht werden: ${error.message}`,\n      );\n    }\n  }"
+            "line": 380,
+            "endLine": 414,
+            "text": "async deleteSession(sessionId: string): Promise<void> {\n    const id = sessionId.trim();\n    if (!id) {\n      throw new Error('Session-ID fehlt');\n    }\n    // Host-first: Better Auth cookie path — never require Supabase session first.\n    if (isHostLibraryEnabled()) {\n      try {\n        await deleteHostPlaySession(id);\n      } catch (error) {\n        const message = error instanceof Error ? error.message : String(error);\n        if (/42501|forbidden|not[_-]?authorized/i.test(message)) {\n          throw new Error('Nur der Gamemaster kann Sessions löschen.');\n        }\n        throw new Error(\n          message.includes('Host-Session löschen fehlgeschlagen')\n            ? message\n            : `Session konnte nicht gelöscht werden: ${message}`,\n        );\n      }\n      return;\n    }\n\n    await this.requireAuthUser();\n\n    const { error } = await supabase.from(this.tableName).delete().eq('id', id);\n\n    if (error) {\n      throw new Error(\n        error.message.includes('row-level security')\n          ? 'Nur der Gamemaster kann Sessions löschen.'\n          : `Session konnte nicht gelöscht werden: ${error.message}`,\n      );\n    }\n  }"
           }
         },
         {
           "kind": "rpc",
           "name": "create_session_invite",
           "path": "src/infrastructure/session/session-service.ts",
-          "line": 413,
-          "endLine": 415,
+          "line": 429,
+          "endLine": 431,
           "resolution": "literal-or-constant",
           "expression": "supabase.rpc('create_session_invite', {\n      p_session_id: sessionId,\n    })",
           "chain": "supabase.rpc('create_session_invite', {\n      p_session_id: sessionId,\n    })",
@@ -43317,8 +43317,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/session/session-service.ts",
-            "line": 403,
-            "endLine": 424,
+            "line": 419,
+            "endLine": 440,
             "text": "async createSessionInvite(sessionId: string): Promise<SessionInviteCreateResult> {\n    if (isHostLibraryEnabled()) {\n      const invite = await createHostSessionInvite(sessionId);\n      const mapped = mapInviteCreatePayload(invite);\n      if (!mapped) {\n        throw new Error('Einladung konnte nicht erstellt werden: ungültige Server-Antwort');\n      }\n      return mapped;\n    }\n    await this.requireAuthUser();\n    const { data, error } = await supabase.rpc('create_session_invite', {\n      p_session_id: sessionId,\n    });\n    if (error) {\n      throw new Error(`Einladung konnte nicht erstellt werden: ${error.message}`);\n    }\n    const mapped = mapInviteCreatePayload(data);\n    if (!mapped) {\n      throw new Error('Einladung konnte nicht erstellt werden: ungültige Server-Antwort');\n    }\n    return mapped;\n  }"
           }
         },
@@ -43326,8 +43326,8 @@
           "kind": "rpc",
           "name": "resolve_session_invite",
           "path": "src/infrastructure/session/session-service.ts",
-          "line": 456,
-          "endLine": 458,
+          "line": 472,
+          "endLine": 474,
           "resolution": "literal-or-constant",
           "expression": "supabase.rpc('resolve_session_invite', {\n      p_token: normalized,\n    })",
           "chain": "supabase.rpc('resolve_session_invite', {\n      p_token: normalized,\n    })",
@@ -43337,8 +43337,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/session/session-service.ts",
-            "line": 429,
-            "endLine": 463,
+            "line": 445,
+            "endLine": 479,
             "text": "async resolveSessionInvite(token: string): Promise<SessionInviteResolveResult> {\n    const normalized = normalizeInviteToken(token);\n    if (!normalized) {\n      return { ok: false, errorCode: 'missing_token' };\n    }\n    if (isHostLibraryEnabled()) {\n      try {\n        const invite = await resolveHostSessionInvite(normalized);\n        return mapInviteResolvePayload(invite);\n      } catch (err) {\n        const message = err instanceof Error ? err.message : String(err);\n        const mapped = mapInviteResolvePayload({\n          ok: false,\n          error_code: message.includes('expired')\n            ? 'expired'\n            : message.includes('revoked')\n              ? 'revoked'\n              : message.includes('completed')\n                ? 'session_completed'\n                : message.includes('missing') || message.includes('P0002')\n                  ? 'not_found'\n                  : 'not_found',\n        });\n        return mapped;\n      }\n    }\n    await this.requireAuthUser();\n    const { data, error } = await supabase.rpc('resolve_session_invite', {\n      p_token: normalized,\n    });\n    if (error) {\n      throw new Error(`Einladung konnte nicht gelesen werden: ${error.message}`);\n    }\n    return mapInviteResolvePayload(data);\n  }"
           }
         },
@@ -43346,8 +43346,8 @@
           "kind": "rpc",
           "name": "revoke_session_invite",
           "path": "src/infrastructure/session/session-service.ts",
-          "line": 475,
-          "endLine": 477,
+          "line": 491,
+          "endLine": 493,
           "resolution": "literal-or-constant",
           "expression": "supabase.rpc('revoke_session_invite', {\n      p_token: normalized,\n    })",
           "chain": "supabase.rpc('revoke_session_invite', {\n      p_token: normalized,\n    })",
@@ -43357,8 +43357,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/session/session-service.ts",
-            "line": 465,
-            "endLine": 481,
+            "line": 481,
+            "endLine": 497,
             "text": "async revokeSessionInvite(token: string): Promise<void> {\n    const normalized = normalizeInviteToken(token);\n    if (!normalized) {\n      throw new Error('Token fehlt');\n    }\n    if (isHostLibraryEnabled()) {\n      await revokeHostSessionInvite(normalized);\n      return;\n    }\n    await this.requireAuthUser();\n    const { error } = await supabase.rpc('revoke_session_invite', {\n      p_token: normalized,\n    });\n    if (error) {\n      throw new Error(`Einladung konnte nicht widerrufen werden: ${error.message}`);\n    }\n  }"
           }
         }
@@ -43800,68 +43800,68 @@
         },
         {
           "path": "src/infrastructure/session/session-service.ts",
-          "line": 54,
-          "endLine": 79,
+          "line": 55,
+          "endLine": 80,
           "name": "mapHostPlaySessionToVm"
         },
         {
           "path": "src/infrastructure/session/session-service.ts",
-          "line": 194,
-          "endLine": 220,
+          "line": 195,
+          "endLine": 221,
           "name": "createSession"
         },
         {
           "path": "src/infrastructure/session/session-service.ts",
-          "line": 222,
-          "endLine": 244,
+          "line": 223,
+          "endLine": 245,
           "name": "joinSession"
         },
         {
           "path": "src/infrastructure/session/session-service.ts",
-          "line": 246,
-          "endLine": 265,
+          "line": 247,
+          "endLine": 266,
           "name": "getSessionById"
         },
         {
           "path": "src/infrastructure/session/session-service.ts",
-          "line": 267,
-          "endLine": 331,
+          "line": 268,
+          "endLine": 332,
           "name": "getUserSessions"
         },
         {
           "path": "src/infrastructure/session/session-service.ts",
-          "line": 333,
-          "endLine": 357,
+          "line": 334,
+          "endLine": 358,
           "name": "updateSessionStatus"
         },
         {
           "path": "src/infrastructure/session/session-service.ts",
-          "line": 359,
-          "endLine": 374,
+          "line": 360,
+          "endLine": 375,
           "name": "leaveSession"
         },
         {
           "path": "src/infrastructure/session/session-service.ts",
-          "line": 379,
-          "endLine": 398,
+          "line": 380,
+          "endLine": 414,
           "name": "deleteSession"
         },
         {
           "path": "src/infrastructure/session/session-service.ts",
-          "line": 403,
-          "endLine": 424,
+          "line": 419,
+          "endLine": 440,
           "name": "createSessionInvite"
         },
         {
           "path": "src/infrastructure/session/session-service.ts",
-          "line": 429,
-          "endLine": 463,
+          "line": 445,
+          "endLine": 479,
           "name": "resolveSessionInvite"
         },
         {
           "path": "src/infrastructure/session/session-service.ts",
-          "line": 465,
-          "endLine": 481,
+          "line": 481,
+          "endLine": 497,
           "name": "revokeSessionInvite"
         }
       ],

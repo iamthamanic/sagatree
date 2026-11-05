@@ -222,6 +222,22 @@ export async function leaveHostPlaySession(
   );
 }
 
+/** CUT-04 — GM deletes play session via host product HTTP. */
+export async function deleteHostPlaySession(
+  sessionId: string,
+  env: EnvLike = defaultEnv(),
+  fetchImpl: typeof fetch = fetch,
+): Promise<void> {
+  await hostMutateJson(
+    `/api/v1/sessions/${encodeURIComponent(sessionId)}`,
+    'DELETE',
+    {},
+    'Host-Session löschen fehlgeschlagen',
+    env,
+    fetchImpl,
+  );
+}
+
 export async function fetchHostSessionRuntime(
   sessionId: string,
   env: EnvLike = defaultEnv(),

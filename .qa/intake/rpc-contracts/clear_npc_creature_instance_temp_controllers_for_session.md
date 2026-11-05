@@ -136,10 +136,10 @@ Direkt oder transitiv referenzierte lokale/importierte Mapper, Decoder und Vertr
 | `defaultEnv` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 16 | `45d3c37d4a5ce1c328c42c50fd5482590b9811150d71a55e3029071916fd281e` |
 | `isHostLibraryExplicitlyDisabled` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 25 | `45d3c37d4a5ce1c328c42c50fd5482590b9811150d71a55e3029071916fd281e` |
 | `isHostLibraryEnabled` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 30 | `45d3c37d4a5ce1c328c42c50fd5482590b9811150d71a55e3029071916fd281e` |
-| `EnvLike` | [src/infrastructure/host/host-session-http.ts](../../../src/infrastructure/host/host-session-http.ts) | 12 | `872234ca8977b0543ed26dd24cdd0c7c3bffd34dc029837fd478f9251b29c31c` |
-| `defaultEnv` | [src/infrastructure/host/host-session-http.ts](../../../src/infrastructure/host/host-session-http.ts) | 17 | `872234ca8977b0543ed26dd24cdd0c7c3bffd34dc029837fd478f9251b29c31c` |
-| `hostMutateJson` | [src/infrastructure/host/host-session-http.ts](../../../src/infrastructure/host/host-session-http.ts) | 58 | `872234ca8977b0543ed26dd24cdd0c7c3bffd34dc029837fd478f9251b29c31c` |
-| `clearHostNpcTempControllersForSession` | [src/infrastructure/host/host-session-http.ts](../../../src/infrastructure/host/host-session-http.ts) | 374 | `872234ca8977b0543ed26dd24cdd0c7c3bffd34dc029837fd478f9251b29c31c` |
+| `EnvLike` | [src/infrastructure/host/host-session-http.ts](../../../src/infrastructure/host/host-session-http.ts) | 12 | `1d0e576d58da7285a08cbad7ee864fabb7033d9d822841240dda6c11935a4818` |
+| `defaultEnv` | [src/infrastructure/host/host-session-http.ts](../../../src/infrastructure/host/host-session-http.ts) | 17 | `1d0e576d58da7285a08cbad7ee864fabb7033d9d822841240dda6c11935a4818` |
+| `hostMutateJson` | [src/infrastructure/host/host-session-http.ts](../../../src/infrastructure/host/host-session-http.ts) | 58 | `1d0e576d58da7285a08cbad7ee864fabb7033d9d822841240dda6c11935a4818` |
+| `clearHostNpcTempControllersForSession` | [src/infrastructure/host/host-session-http.ts](../../../src/infrastructure/host/host-session-http.ts) | 390 | `1d0e576d58da7285a08cbad7ee864fabb7033d9d822841240dda6c11935a4818` |
 | `getAuthenticatedUserId` | [src/lib/authenticatedUser.ts](../../../src/lib/authenticatedUser.ts) | 30 | `d4cbf3a004f8375982ca03d474fb7b61559fc2ec58ad6fe7b1f8834d26abf10c` |
 | `HOST_AUTH_PROBE_TIMEOUT_MS` | [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | 13 | `30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a` |
 | `HOST_AUTH_SESSION_BEARER_KEYS` | [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | 16 | `30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a` |
@@ -190,7 +190,7 @@ Die folgenden Hashes binden SQL-Kette, transitive Tabellen-/Trigger-/Policyquell
 | Quelle | SHA-256 |
 | --- | --- |
 | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | `45d3c37d4a5ce1c328c42c50fd5482590b9811150d71a55e3029071916fd281e` |
-| [src/infrastructure/host/host-session-http.ts](../../../src/infrastructure/host/host-session-http.ts) | `872234ca8977b0543ed26dd24cdd0c7c3bffd34dc029837fd478f9251b29c31c` |
+| [src/infrastructure/host/host-session-http.ts](../../../src/infrastructure/host/host-session-http.ts) | `1d0e576d58da7285a08cbad7ee864fabb7033d9d822841240dda6c11935a4818` |
 | [src/infrastructure/npc-creature/npc-creature-service.ts](../../../src/infrastructure/npc-creature/npc-creature-service.ts) | `92485b07e7ebccdc3c6f8232c74485c450aa1c565186290f94edb8dcfb16aadf` |
 | [src/lib/authenticatedUser.ts](../../../src/lib/authenticatedUser.ts) | `d4cbf3a004f8375982ca03d474fb7b61559fc2ec58ad6fe7b1f8834d26abf10c` |
 | [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | `30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a` |

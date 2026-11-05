@@ -1481,6 +1481,19 @@ function checkCut03NpcInstance() {
   console.log('OK: cut-03-npc-instance.self-test');
 }
 
+function checkCut04SessionDelete() {
+  console.log('CUT-04 GM session deletion host HTTP (#1139)...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/cut-04-session-delete.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+  console.log('OK: cut-04-session-delete.self-test');
+}
+
 function checkMig312UserProfileAdapter() {
   console.log('MIG-312 user-profile adapter (#811): user_profiles + user-avatars dual-path...');
   execFileSync(
@@ -3701,6 +3714,7 @@ checkFeHost14AiResiduals();
 checkCutoverParityInventory();
 checkCut02NpcController();
 checkCut03NpcInstance();
+checkCut04SessionDelete();
 checkMig312UserProfileAdapter();
 checkMig309Rulesets();
 checkMig313WorldAdapter();

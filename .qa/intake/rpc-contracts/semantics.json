@@ -3584,7 +3584,7 @@
       },
       {
         "path": "src/infrastructure/host/host-session-http.ts",
-        "sha256": "872234ca8977b0543ed26dd24cdd0c7c3bffd34dc029837fd478f9251b29c31c"
+        "sha256": "1d0e576d58da7285a08cbad7ee864fabb7033d9d822841240dda6c11935a4818"
       },
       {
         "path": "src/infrastructure/session/session-runtime-service.ts",
@@ -3782,7 +3782,7 @@
       },
       {
         "path": "src/infrastructure/host/host-session-http.ts",
-        "sha256": "872234ca8977b0543ed26dd24cdd0c7c3bffd34dc029837fd478f9251b29c31c"
+        "sha256": "1d0e576d58da7285a08cbad7ee864fabb7033d9d822841240dda6c11935a4818"
       },
       {
         "path": "src/infrastructure/session/session-runtime-service.ts",
@@ -3924,7 +3924,7 @@
       },
       {
         "path": "src/infrastructure/host/host-session-http.ts",
-        "sha256": "872234ca8977b0543ed26dd24cdd0c7c3bffd34dc029837fd478f9251b29c31c"
+        "sha256": "1d0e576d58da7285a08cbad7ee864fabb7033d9d822841240dda6c11935a4818"
       },
       {
         "path": "src/infrastructure/session/session-runtime-service.ts",
@@ -4057,11 +4057,11 @@
       },
       {
         "path": "src/infrastructure/host/host-session-http.ts",
-        "sha256": "872234ca8977b0543ed26dd24cdd0c7c3bffd34dc029837fd478f9251b29c31c"
+        "sha256": "1d0e576d58da7285a08cbad7ee864fabb7033d9d822841240dda6c11935a4818"
       },
       {
         "path": "src/infrastructure/session/session-service.ts",
-        "sha256": "13cae162249e329b2e55dccf63ea63c63fecda761a922f21f8aa3dcdca01d296"
+        "sha256": "9109e84fb2c7625aae96928d15b3c0e44ea4598cded3a9e0601d6e4031e8db2d"
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
@@ -4305,11 +4305,11 @@
       },
       {
         "path": "src/infrastructure/host/host-session-http.ts",
-        "sha256": "872234ca8977b0543ed26dd24cdd0c7c3bffd34dc029837fd478f9251b29c31c"
+        "sha256": "1d0e576d58da7285a08cbad7ee864fabb7033d9d822841240dda6c11935a4818"
       },
       {
         "path": "src/infrastructure/session/session-service.ts",
-        "sha256": "13cae162249e329b2e55dccf63ea63c63fecda761a922f21f8aa3dcdca01d296"
+        "sha256": "9109e84fb2c7625aae96928d15b3c0e44ea4598cded3a9e0601d6e4031e8db2d"
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
@@ -4501,11 +4501,11 @@
       },
       {
         "path": "src/infrastructure/host/host-session-http.ts",
-        "sha256": "872234ca8977b0543ed26dd24cdd0c7c3bffd34dc029837fd478f9251b29c31c"
+        "sha256": "1d0e576d58da7285a08cbad7ee864fabb7033d9d822841240dda6c11935a4818"
       },
       {
         "path": "src/infrastructure/session/session-service.ts",
-        "sha256": "13cae162249e329b2e55dccf63ea63c63fecda761a922f21f8aa3dcdca01d296"
+        "sha256": "9109e84fb2c7625aae96928d15b3c0e44ea4598cded3a9e0601d6e4031e8db2d"
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
@@ -4640,11 +4640,11 @@
       },
       {
         "path": "src/infrastructure/host/host-session-http.ts",
-        "sha256": "872234ca8977b0543ed26dd24cdd0c7c3bffd34dc029837fd478f9251b29c31c"
+        "sha256": "1d0e576d58da7285a08cbad7ee864fabb7033d9d822841240dda6c11935a4818"
       },
       {
         "path": "src/infrastructure/session/session-service.ts",
-        "sha256": "13cae162249e329b2e55dccf63ea63c63fecda761a922f21f8aa3dcdca01d296"
+        "sha256": "9109e84fb2c7625aae96928d15b3c0e44ea4598cded3a9e0601d6e4031e8db2d"
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
@@ -4769,11 +4769,11 @@
       },
       {
         "path": "src/infrastructure/host/host-session-http.ts",
-        "sha256": "872234ca8977b0543ed26dd24cdd0c7c3bffd34dc029837fd478f9251b29c31c"
+        "sha256": "1d0e576d58da7285a08cbad7ee864fabb7033d9d822841240dda6c11935a4818"
       },
       {
         "path": "src/infrastructure/session/session-service.ts",
-        "sha256": "13cae162249e329b2e55dccf63ea63c63fecda761a922f21f8aa3dcdca01d296"
+        "sha256": "9109e84fb2c7625aae96928d15b3c0e44ea4598cded3a9e0601d6e4031e8db2d"
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
@@ -4875,11 +4875,11 @@
       },
       {
         "path": "src/infrastructure/host/host-session-http.ts",
-        "sha256": "872234ca8977b0543ed26dd24cdd0c7c3bffd34dc029837fd478f9251b29c31c"
+        "sha256": "1d0e576d58da7285a08cbad7ee864fabb7033d9d822841240dda6c11935a4818"
       },
       {
         "path": "src/infrastructure/session/session-service.ts",
-        "sha256": "13cae162249e329b2e55dccf63ea63c63fecda761a922f21f8aa3dcdca01d296"
+        "sha256": "9109e84fb2c7625aae96928d15b3c0e44ea4598cded3a9e0601d6e4031e8db2d"
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
@@ -5028,11 +5028,11 @@
       },
       {
         "path": "src/infrastructure/host/host-session-http.ts",
-        "sha256": "872234ca8977b0543ed26dd24cdd0c7c3bffd34dc029837fd478f9251b29c31c"
+        "sha256": "1d0e576d58da7285a08cbad7ee864fabb7033d9d822841240dda6c11935a4818"
       },
       {
         "path": "src/infrastructure/session/session-service.ts",
-        "sha256": "13cae162249e329b2e55dccf63ea63c63fecda761a922f21f8aa3dcdca01d296"
+        "sha256": "9109e84fb2c7625aae96928d15b3c0e44ea4598cded3a9e0601d6e4031e8db2d"
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
@@ -5134,7 +5134,7 @@
       },
       {
         "path": "src/infrastructure/host/host-session-http.ts",
-        "sha256": "872234ca8977b0543ed26dd24cdd0c7c3bffd34dc029837fd478f9251b29c31c"
+        "sha256": "1d0e576d58da7285a08cbad7ee864fabb7033d9d822841240dda6c11935a4818"
       },
       {
         "path": "src/infrastructure/session/session-recap-service.ts",
@@ -5271,7 +5271,7 @@
       },
       {
         "path": "src/infrastructure/host/host-session-http.ts",
-        "sha256": "872234ca8977b0543ed26dd24cdd0c7c3bffd34dc029837fd478f9251b29c31c"
+        "sha256": "1d0e576d58da7285a08cbad7ee864fabb7033d9d822841240dda6c11935a4818"
       },
       {
         "path": "src/infrastructure/session/session-recap-ai-service.ts",
@@ -10276,7 +10276,7 @@
       },
       {
         "path": "src/infrastructure/host/host-session-http.ts",
-        "sha256": "872234ca8977b0543ed26dd24cdd0c7c3bffd34dc029837fd478f9251b29c31c"
+        "sha256": "1d0e576d58da7285a08cbad7ee864fabb7033d9d822841240dda6c11935a4818"
       },
       {
         "path": "src/infrastructure/npc-creature/npc-creature-service.ts",

@@ -470,6 +470,46 @@ export class SessionLifecycleStore {
     };
   }
 
+  /**
+   * GM deletes a play session. Cascades invites/players/recaps via FK;
+   * removes session_runtime graph. NPC session_id detach is owned by
+   * npc-creature (`detachInstancesFromSession`) and must run first.
+   * Idempotent missing → P0002.
+   */
+  deletePlaySession(
+    actorIds: readonly string[],
+    sessionId: string,
+  ): Ok<{ readonly sessionId: string }> | LifecycleError {
+    if (!actorIds[0]) return { ok: false, error: '42501' };
+    const id = typeof sessionId === 'string' ? sessionId.trim() : '';
+    if (!id) return { ok: false, error: '22023' };
+    try {
+      return this.#withImmediateTx(() => {
+        const current = this.#read(id);
+        if (!current) return { ok: false, error: 'P0002' };
+        if (!this.#isGm(current.projectId, actorIds)) return { ok: false, error: '42501' };
+
+        // Runtime graph is not FK-bound to play_sessions — delete explicitly.
+        this.#db.prepare(`DELETE FROM session_events WHERE session_id = ?`).run(id);
+        this.#db.prepare(`DELETE FROM command_idempotency WHERE session_id = ?`).run(id);
+        this.#db.prepare(`DELETE FROM session_members WHERE session_id = ?`).run(id);
+        this.#db.prepare(`DELETE FROM session_runtime WHERE session_id = ?`).run(id);
+        // Optional revlog table (may be absent on older DBs)
+        try {
+          this.#db.prepare(`DELETE FROM session_events_revlog WHERE session_id = ?`).run(id);
+        } catch {
+          /* table may not exist */
+        }
+
+        // Cascades: session_invites, session_players, session_recaps, session_outcome_promotions
+        this.#db.prepare(`DELETE FROM play_sessions WHERE session_id = ?`).run(id);
+        return { ok: true, value: { sessionId: id } };
+      });
+    } catch {
+      return { ok: false, error: 'P0001' };
+    }
+  }
+
   setSessionStatus(
     actorIds: readonly string[],
     sessionId: string,
