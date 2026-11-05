@@ -441,6 +441,83 @@ export async function createHostLibraryItem(
   return body.item;
 }
 
+/** CUT-06 — PATCH `/api/v1/library/items/:id`. */
+export async function updateHostLibraryItem(
+  definitionId: string,
+  draft: {
+    readonly name?: string;
+    readonly payload?: Readonly<Record<string, unknown>>;
+  },
+  env: EnvLike = defaultEnv(),
+  fetchImpl: typeof fetch = fetch,
+): Promise<unknown> {
+  const body = await hostMutateJson<{ item?: unknown }>(
+    `/api/v1/library/items/${encodeURIComponent(definitionId)}`,
+    'PATCH',
+    'Host-Item speichern fehlgeschlagen',
+    draft,
+    env,
+    fetchImpl,
+  );
+  if (!body.item) throw new Error('Host-Item speichern: leere Antwort');
+  return body.item;
+}
+
+export async function archiveHostLibraryItem(
+  definitionId: string,
+  env: EnvLike = defaultEnv(),
+  fetchImpl: typeof fetch = fetch,
+): Promise<unknown> {
+  const body = await hostMutateJson<{ item?: unknown }>(
+    `/api/v1/library/items/${encodeURIComponent(definitionId)}/archive`,
+    'POST',
+    'Host-Item archivieren fehlgeschlagen',
+    {},
+    env,
+    fetchImpl,
+  );
+  if (!body.item) throw new Error('Host-Item archivieren: leere Antwort');
+  return body.item;
+}
+
+export async function restoreHostLibraryItem(
+  definitionId: string,
+  env: EnvLike = defaultEnv(),
+  fetchImpl: typeof fetch = fetch,
+): Promise<unknown> {
+  const body = await hostMutateJson<{ item?: unknown }>(
+    `/api/v1/library/items/${encodeURIComponent(definitionId)}/restore`,
+    'POST',
+    'Host-Item wiederherstellen fehlgeschlagen',
+    {},
+    env,
+    fetchImpl,
+  );
+  if (!body.item) throw new Error('Host-Item wiederherstellen: leere Antwort');
+  return body.item;
+}
+
+export async function forkHostLibraryItem(
+  sourceDefinitionId: string,
+  target: {
+    readonly origin: 'personal' | 'world';
+    readonly worldProfileId?: string | null;
+  },
+  env: EnvLike = defaultEnv(),
+  fetchImpl: typeof fetch = fetch,
+): Promise<unknown> {
+  const body = await hostMutateJson<{ item?: unknown }>(
+    `/api/v1/library/items/${encodeURIComponent(sourceDefinitionId)}/fork`,
+    'POST',
+    'Host-Item forken fehlgeschlagen',
+    target,
+    env,
+    fetchImpl,
+  );
+  if (!body.item) throw new Error('Host-Item forken: leere Antwort');
+  return body.item;
+}
+
 export async function createHostLibraryNpcCreature(
   input: {
     readonly scope: 'personal' | 'world';

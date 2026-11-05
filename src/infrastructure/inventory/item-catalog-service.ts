@@ -22,6 +22,7 @@ import type {
   ItemDefinitionLookup,
 } from '../../domains/character/inventory-v2';
 import {
+  buildForkedItemDefinitionDraft,
   compareLibraryItemDefinitions,
   composeCharacterInventoryAddCatalog,
   getBuiltinStandardDefinition,
@@ -31,9 +32,13 @@ import {
 } from '../../domains/items';
 import { deriveStablePublicResourceId } from '../../domains/resource-id';
 import {
+  archiveHostLibraryItem,
   createHostLibraryItem,
   fetchHostLibraryItems,
+  forkHostLibraryItem,
   isHostLibraryEnabled,
+  restoreHostLibraryItem,
+  updateHostLibraryItem,
 } from '../host/host-library-http';
 import { toDefinitionPayload } from './item-catalog.persistence';
 import {
@@ -292,7 +297,20 @@ export async function updateDefinition(
   draft: ItemDefinitionDraft,
 ): Promise<CatalogDefinitionRecord> {
   if (isHostLibraryEnabled()) {
-    throw new Error('Item-Definition aktualisieren ist auf dem Host noch nicht verfügbar.');
+    // Scope is a column on the host; payload builder strips id/scope — use personal as a
+    // typed placeholder so Draft→payload matches createHostCatalogDefinition.
+    const payload = toDefinitionPayload({
+      ...draft,
+      id: definitionId,
+      scope: 'personal',
+    });
+    const updated = await updateHostLibraryItem(definitionId, {
+      name: draft.name,
+      payload,
+    });
+    const record = mapHostLibraryItemRecord(updated);
+    if (!record) throw new Error('Host-Item speichern: ungültige Antwort');
+    return record;
   }
   return supabaseItemCatalogRepository.updateDefinition(definitionId, draft);
 }
@@ -302,7 +320,10 @@ export async function archiveDefinition(
   definitionId: string,
 ): Promise<CatalogDefinitionRecord> {
   if (isHostLibraryEnabled()) {
-    throw new Error('Item-Definition archivieren ist auf dem Host noch nicht verfügbar.');
+    const archived = await archiveHostLibraryItem(definitionId);
+    const record = mapHostLibraryItemRecord(archived);
+    if (!record) throw new Error('Host-Item archivieren: ungültige Antwort');
+    return record;
   }
   return supabaseItemCatalogRepository.setDefinitionStatus(definitionId, 'archived');
 }
@@ -311,7 +332,10 @@ export async function restoreDefinition(
   definitionId: string,
 ): Promise<CatalogDefinitionRecord> {
   if (isHostLibraryEnabled()) {
-    throw new Error('Item-Definition wiederherstellen ist auf dem Host noch nicht verfügbar.');
+    const restored = await restoreHostLibraryItem(definitionId);
+    const record = mapHostLibraryItemRecord(restored);
+    if (!record) throw new Error('Host-Item wiederherstellen: ungültige Antwort');
+    return record;
   }
   return supabaseItemCatalogRepository.setDefinitionStatus(definitionId, 'active');
 }
@@ -319,13 +343,36 @@ export async function restoreDefinition(
 /**
  * Fork Core/World/Personal into a new Personal or World definition.
  * Always a new id with provenance; never overwrites the source.
+ * Dual-path (CUT-06): host-first uses `/api/v1/library/items/:id/fork`.
  */
 export async function forkDefinition(
   sourceDefinitionId: string,
   target: ForkDefinitionTarget,
 ): Promise<CatalogDefinitionRecord> {
   if (isHostLibraryEnabled()) {
-    throw new Error('Item-Definition forken ist auf dem Host noch nicht verfügbar.');
+    const origin = target.scope === 'world' ? 'world' : 'personal';
+    // Core/builtin packs are local (not SQLite rows) — fork by creating a new host definition.
+    const localSource =
+      getCoreItemDefinition(sourceDefinitionId) ??
+      getBuiltinStandardDefinition(sourceDefinitionId);
+    if (localSource) {
+      const draft = buildForkedItemDefinitionDraft(
+        localSource,
+        origin === 'world' ? 'world' : 'personal',
+      );
+      return createHostCatalogDefinition(
+        origin,
+        draft,
+        origin === 'world' ? target.worldProfileId : null,
+      );
+    }
+    const forked = await forkHostLibraryItem(sourceDefinitionId, {
+      origin,
+      worldProfileId: target.scope === 'world' ? target.worldProfileId : null,
+    });
+    const record = mapHostLibraryItemRecord(forked);
+    if (!record) throw new Error('Host-Item forken: ungültige Antwort');
+    return record;
   }
   return supabaseItemCatalogRepository.forkDefinition(sourceDefinitionId, target);
 }

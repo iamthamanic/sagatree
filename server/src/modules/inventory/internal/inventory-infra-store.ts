@@ -123,6 +123,14 @@ function parseOrigin(value: unknown): 'standard' | 'personal' | 'world' | null {
   return value === 'standard' || value === 'personal' || value === 'world' ? value : null;
 }
 
+function normalizeActorIds(
+  actorIdOrIds: string | readonly string[],
+): readonly string[] {
+  return (typeof actorIdOrIds === 'string' ? [actorIdOrIds] : [...actorIdOrIds]).filter(
+    (id) => typeof id === 'string' && id.length > 0,
+  );
+}
+
 /** Escape LIKE wildcards so user query cannot match everything via % / _. */
 function escapeLikePattern(raw: string): string {
   return raw.replace(/\\/g, '\\\\').replace(/%/g, '\\%').replace(/_/g, '\\_');
@@ -409,6 +417,203 @@ export class InventoryInfraStore {
       name: input.name,
       payload: input.payload ?? {},
     };
+  }
+
+  /**
+   * CUT-06 — update mutable name/payload only. Origin, owner, world and id stay fixed.
+   * Standard/core rows are immutable.
+   */
+  updateDefinition(
+    actorIdOrIds: string | readonly string[],
+    definitionId: string,
+    draft: InventoryDefinitionDraft,
+  ): InventoryResult<InventoryDefinitionRecord> {
+    const actorIds = normalizeActorIds(actorIdOrIds);
+    if (actorIds.length === 0) return { ok: false, error: 'missing-actor' };
+    const id = typeof definitionId === 'string' ? definitionId.trim() : '';
+    if (!id) return { ok: false, error: 'not-found' };
+    const existing = this.#loadDefinition(id);
+    if (!existing) return { ok: false, error: 'not-found' };
+    if (!this.#canMutateDefinition(actorIds, existing)) {
+      return { ok: false, error: 'not-authorized' };
+    }
+    const name =
+      typeof draft.name === 'string' && draft.name.trim()
+        ? draft.name.trim()
+        : existing.name;
+    if (!name) return { ok: false, error: 'name-required' };
+    const payload =
+      draft.payload === undefined ? { ...existing.payload } : asObject(draft.payload);
+    const updatedAt = nowIso();
+    let inTx = false;
+    try {
+      this.#db.exec('BEGIN IMMEDIATE');
+      inTx = true;
+      const result = this.#db
+        .prepare(
+          `UPDATE inventory_item_definitions
+              SET name = ?, payload_json = ?, updated_at = ?
+            WHERE id = ?
+              AND origin = ?
+              AND status IN ('active', 'archived')`,
+        )
+        .run(name, JSON.stringify(payload), updatedAt, id, existing.origin);
+      if (result.changes !== 1) {
+        this.#db.exec('ROLLBACK');
+        inTx = false;
+        return { ok: false, error: 'update-failed' };
+      }
+      this.#db.exec('COMMIT');
+      inTx = false;
+    } catch {
+      if (inTx) {
+        try {
+          this.#db.exec('ROLLBACK');
+        } catch {
+          /* ignore */
+        }
+      }
+      return { ok: false, error: 'update-failed' };
+    }
+    return {
+      ok: true,
+      value: {
+        ...existing,
+        name,
+        payload,
+      },
+    };
+  }
+
+  /** CUT-06 — archive or restore. Archived definitions remain resolvable for owned instances. */
+  setDefinitionStatus(
+    actorIdOrIds: string | readonly string[],
+    definitionId: string,
+    status: 'active' | 'archived',
+  ): InventoryResult<InventoryDefinitionRecord> {
+    const actorIds = normalizeActorIds(actorIdOrIds);
+    if (actorIds.length === 0) return { ok: false, error: 'missing-actor' };
+    if (status !== 'active' && status !== 'archived') {
+      return { ok: false, error: 'invalid-status' };
+    }
+    const id = typeof definitionId === 'string' ? definitionId.trim() : '';
+    if (!id) return { ok: false, error: 'not-found' };
+    const existing = this.#loadDefinition(id);
+    if (!existing) return { ok: false, error: 'not-found' };
+    if (!this.#canMutateDefinition(actorIds, existing)) {
+      return { ok: false, error: 'not-authorized' };
+    }
+    if (existing.status === status) {
+      return { ok: true, value: existing };
+    }
+    const updatedAt = nowIso();
+    let inTx = false;
+    try {
+      this.#db.exec('BEGIN IMMEDIATE');
+      inTx = true;
+      const result = this.#db
+        .prepare(
+          `UPDATE inventory_item_definitions
+              SET status = ?, updated_at = ?
+            WHERE id = ? AND origin = ?`,
+        )
+        .run(status, updatedAt, id, existing.origin);
+      if (result.changes !== 1) {
+        this.#db.exec('ROLLBACK');
+        inTx = false;
+        return { ok: false, error: 'status-failed' };
+      }
+      this.#db.exec('COMMIT');
+      inTx = false;
+    } catch {
+      if (inTx) {
+        try {
+          this.#db.exec('ROLLBACK');
+        } catch {
+          /* ignore */
+        }
+      }
+      return { ok: false, error: 'status-failed' };
+    }
+    return { ok: true, value: { ...existing, status } };
+  }
+
+  /**
+   * CUT-06 — fork readable source into a new personal/world definition.
+   * Never mutates the source; standard/builtin sources are allowed as fork inputs.
+   */
+  forkDefinition(
+    actorIdOrIds: string | readonly string[],
+    sourceDefinitionId: string,
+    target: {
+      readonly origin: 'personal' | 'world';
+      readonly worldProfileId?: string | null;
+    },
+  ): InventoryResult<InventoryDefinitionRecord> {
+    const actorIds = normalizeActorIds(actorIdOrIds);
+    if (actorIds.length === 0) return { ok: false, error: 'missing-actor' };
+    const sourceId =
+      typeof sourceDefinitionId === 'string' ? sourceDefinitionId.trim() : '';
+    if (!sourceId) return { ok: false, error: 'not-found' };
+    const source = this.#loadDefinition(sourceId);
+    if (!source || !this.#canReadDefinition(actorIds, source)) {
+      return { ok: false, error: 'not-found' };
+    }
+    if (target.origin !== 'personal' && target.origin !== 'world') {
+      return { ok: false, error: 'origin-not-allowed' };
+    }
+    const ownerActorId = actorIds[0]!;
+    const forkedPayload = {
+      ...source.payload,
+      forkedFromId: source.id,
+      forkedFromOrigin: source.origin,
+    };
+    return this.createDefinition(ownerActorId, {
+      name: source.name,
+      origin: target.origin,
+      worldProfileId: target.worldProfileId ?? null,
+      payload: forkedPayload,
+    });
+  }
+
+  #loadDefinition(definitionId: string): InventoryDefinitionRecord | null {
+    const row = this.#db
+      .prepare(`SELECT * FROM inventory_item_definitions WHERE id = ? LIMIT 1`)
+      .get(definitionId) as DefinitionRow | undefined;
+    if (!row) return null;
+    return mapDefinition(row);
+  }
+
+  #canMutateDefinition(
+    actorIds: readonly string[],
+    def: InventoryDefinitionRecord,
+  ): boolean {
+    if (def.origin === 'standard') return false;
+    if (def.origin === 'personal') {
+      return (
+        typeof def.ownerUserId === 'string' && actorIds.includes(def.ownerUserId)
+      );
+    }
+    if (def.origin === 'world' && def.worldProfileId) {
+      return this.#world.canEditWorldProfile(actorIds, def.worldProfileId);
+    }
+    return false;
+  }
+
+  #canReadDefinition(
+    actorIds: readonly string[],
+    def: InventoryDefinitionRecord,
+  ): boolean {
+    if (def.origin === 'standard') return true;
+    if (def.origin === 'personal') {
+      return (
+        typeof def.ownerUserId === 'string' && actorIds.includes(def.ownerUserId)
+      );
+    }
+    if (def.origin === 'world' && def.worldProfileId) {
+      return this.#world.canReadWorldProfile(actorIds, def.worldProfileId);
+    }
+    return false;
   }
 
   #allocatePublicId(): string {

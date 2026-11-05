@@ -989,6 +989,152 @@ export function mountLibraryHttpRoutes(app: Hono, deps: LibraryHttpDeps): void {
     return c.json({ item: created.value }, 201);
   });
 
+  /** CUT-06 — update personal/world item definition (name/payload only). */
+  app.patch('/api/v1/library/items/:id', async (c) => {
+    const actorResult = await resolveLibraryActor(deps, c.req.raw.headers);
+    if (!actorResult.ok) {
+      return c.json({ error: actorResult.error }, actorResult.status);
+    }
+    if (!deps.inventory?.updateDefinition) {
+      return c.json({ error: 'store-unavailable' }, 503);
+    }
+    let body: unknown;
+    try {
+      body = await c.req.json();
+    } catch {
+      return c.json({ error: 'invalid-json' }, 400);
+    }
+    const record =
+      body && typeof body === 'object' && !Array.isArray(body)
+        ? (body as Record<string, unknown>)
+        : {};
+    const draft =
+      'draft' in record && record.draft && typeof record.draft === 'object'
+        ? (record.draft as Record<string, unknown>)
+        : record;
+    const updated = deps.inventory.updateDefinition(
+      libraryActorIds(actorResult.actor),
+      c.req.param('id'),
+      {
+        name: draft.name,
+        payload: draft.payload,
+      },
+    );
+    if (!updated.ok) {
+      const status =
+        updated.error === 'not-authorized'
+          ? 403
+          : updated.error === 'not-found'
+            ? 404
+            : updated.error === 'name-required'
+              ? 422
+              : 400;
+      return c.json({ error: updated.error }, status);
+    }
+    return c.json({ item: updated.value }, 200);
+  });
+
+  app.post('/api/v1/library/items/:id/archive', async (c) => {
+    const actorResult = await resolveLibraryActor(deps, c.req.raw.headers);
+    if (!actorResult.ok) {
+      return c.json({ error: actorResult.error }, actorResult.status);
+    }
+    if (!deps.inventory?.setDefinitionStatus) {
+      return c.json({ error: 'store-unavailable' }, 503);
+    }
+    const archived = deps.inventory.setDefinitionStatus(
+      libraryActorIds(actorResult.actor),
+      c.req.param('id'),
+      'archived',
+    );
+    if (!archived.ok) {
+      return c.json(
+        { error: archived.error },
+        archived.error === 'not-authorized'
+          ? 403
+          : archived.error === 'not-found'
+            ? 404
+            : 400,
+      );
+    }
+    return c.json({ item: archived.value }, 200);
+  });
+
+  app.post('/api/v1/library/items/:id/restore', async (c) => {
+    const actorResult = await resolveLibraryActor(deps, c.req.raw.headers);
+    if (!actorResult.ok) {
+      return c.json({ error: actorResult.error }, actorResult.status);
+    }
+    if (!deps.inventory?.setDefinitionStatus) {
+      return c.json({ error: 'store-unavailable' }, 503);
+    }
+    const restored = deps.inventory.setDefinitionStatus(
+      libraryActorIds(actorResult.actor),
+      c.req.param('id'),
+      'active',
+    );
+    if (!restored.ok) {
+      return c.json(
+        { error: restored.error },
+        restored.error === 'not-authorized'
+          ? 403
+          : restored.error === 'not-found'
+            ? 404
+            : 400,
+      );
+    }
+    return c.json({ item: restored.value }, 200);
+  });
+
+  app.post('/api/v1/library/items/:id/fork', async (c) => {
+    const actorResult = await resolveLibraryActor(deps, c.req.raw.headers);
+    if (!actorResult.ok) {
+      return c.json({ error: actorResult.error }, actorResult.status);
+    }
+    if (!deps.inventory?.forkDefinition) {
+      return c.json({ error: 'store-unavailable' }, 503);
+    }
+    let body: unknown;
+    try {
+      body = await c.req.json();
+    } catch {
+      return c.json({ error: 'invalid-json' }, 400);
+    }
+    const record =
+      body && typeof body === 'object' && !Array.isArray(body)
+        ? (body as Record<string, unknown>)
+        : {};
+    const origin =
+      record.origin === 'world' || record.scope === 'world'
+        ? 'world'
+        : record.origin === 'personal' || record.scope === 'personal'
+          ? 'personal'
+          : null;
+    if (!origin) {
+      return c.json({ error: 'origin-not-allowed' }, 422);
+    }
+    const worldProfileId =
+      typeof record.worldProfileId === 'string' ? record.worldProfileId : null;
+    const forked = deps.inventory.forkDefinition(
+      libraryActorIds(actorResult.actor),
+      c.req.param('id'),
+      { origin, worldProfileId },
+    );
+    if (!forked.ok) {
+      const status =
+        forked.error === 'not-authorized'
+          ? 403
+          : forked.error === 'not-found'
+            ? 404
+            : forked.error === 'world-profile-required' ||
+                forked.error === 'origin-not-allowed'
+              ? 422
+              : 400;
+      return c.json({ error: forked.error }, status);
+    }
+    return c.json({ item: forked.value }, 201);
+  });
+
   app.get('/api/v1/library/projects', async (c) => {
     const actorResult = await resolveLibraryActor(deps, c.req.raw.headers);
     if (!actorResult.ok) {

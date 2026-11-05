@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-look.json](source-contracts/infra-look.json) (SHA-256 `715ab65b0b45c70625c63fc1dc257e9cb159e69a2886b9114138f14c895b3209`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-look.json](source-contracts/infra-look.json) (SHA-256 `d8fabb30584f89fbea1edd47bc61953b5afc3ebc7be285a28b400fade9165f86`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -1405,7 +1405,7 @@ All backend operations are included in the public declarations above.
 | `src/domains/look/write-draft.ts` | `7c8b04b229269b73a26b64d68f0656dc5ada2048e75cd29d5a53887fc6f29e58` |
 | `src/infrastructure/character/avatar/mtoon-style-applier.ts` | `1c9fc4fdb30546c0b34ccb222035c74d78251985e575f8a79da86f3f6cd762be` |
 | `src/infrastructure/character/avatar/toonlab-compatibility-spike.ts` | `e896927b2a2fa4c4ad74550b0909a681596d41bdc356980a31afd42b493f5d30` |
-| `src/infrastructure/host/host-library-http.ts` | `45d3c37d4a5ce1c328c42c50fd5482590b9811150d71a55e3029071916fd281e` |
+| `src/infrastructure/host/host-library-http.ts` | `ff335f2846b58da7bc0db69ea932cebfbee45c9ca970b1624c3ae64e8754cfa2` |
 | `src/infrastructure/look/adapters/host-mtoon-look-adapter.ts` | `19b2f7008ffa27b5bd6c951019a55bde20d82f195ff9f798aa91b4d0a729e3a5` |
 | `src/infrastructure/look/adapters/toonlab-look-adapter.ts` | `4edeab261bda3b114a4a9c9d7dcdb16a1cc73c24df0db23539480aa3a0834acb` |
 | `src/infrastructure/look/host-look-adapter.ts` | `f1c8129f9ff83fb5e586da01b59cf26e3d6e54385f20e631ee353d0802c409c1` |
