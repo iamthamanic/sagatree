@@ -1,6 +1,6 @@
 # Composition Gate — cut-03-npc-session-instance-lifecycle (#1138)
 
-- HEAD_SHA: 1ea02b6a6d981ccf50b689aacc8a30cc568594af
+- HEAD_SHA: 9dc10a68643400eb8e793d467fe23b14bc327d22
 - BASE_SHA: 430fe6d22801e05ed0806ce0e96740ee9228c83e
 - Date: 2026-11-05
 - Verdict: CLEAR
