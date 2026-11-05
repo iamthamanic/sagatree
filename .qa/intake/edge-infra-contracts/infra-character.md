@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-character.json](source-contracts/infra-character.json) (SHA-256 `0bf4a11469476739795bb58efc4a514a6a27bc7551a6b9d4e1c86cbec19627a1`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-character.json](source-contracts/infra-character.json) (SHA-256 `629c08abda799089ddf7bd7f5609c8ab30fa46604ddc12758ba9b1f770f31129`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -685,17 +685,17 @@ supabase.functions.invoke('character-lore', {
 Enclosing operation: `src/infrastructure/character/character-lore-service.ts:78`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### auth-helper: session identity
 
-`src/infrastructure/character/character-preset-service.ts:201` — dynamic-expression.
+`src/infrastructure/character/character-preset-service.ts:242` — dynamic-expression.
 
 Exact call/query chain:
 ```ts
 getAuthenticatedUserId()
 ```
 
-Enclosing operation: `src/infrastructure/character/character-preset-service.ts:199`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/character/character-preset-service.ts:235`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: character_presets
 
-`src/infrastructure/character/character-preset-service.ts:203` — literal-or-constant.
+`src/infrastructure/character/character-preset-service.ts:244` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -707,10 +707,10 @@ supabase
         .order('created_at', { ascending: false })
 ```
 
-Enclosing operation: `src/infrastructure/character/character-preset-service.ts:199`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/character/character-preset-service.ts:235`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: characters
 
-`src/infrastructure/character/character-preset-service.ts:218` — literal-or-constant.
+`src/infrastructure/character/character-preset-service.ts:259` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -721,20 +721,20 @@ supabase
         .in('id', sourceIds)
 ```
 
-Enclosing operation: `src/infrastructure/character/character-preset-service.ts:199`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/character/character-preset-service.ts:235`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### auth-helper: session identity
 
-`src/infrastructure/character/character-preset-service.ts:240` — dynamic-expression.
+`src/infrastructure/character/character-preset-service.ts:284` — dynamic-expression.
 
 Exact call/query chain:
 ```ts
 getAuthenticatedUserId()
 ```
 
-Enclosing operation: `src/infrastructure/character/character-preset-service.ts:238`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/character/character-preset-service.ts:279`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: character_presets
 
-`src/infrastructure/character/character-preset-service.ts:241` — literal-or-constant.
+`src/infrastructure/character/character-preset-service.ts:285` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -747,20 +747,20 @@ supabase
       .maybeSingle()
 ```
 
-Enclosing operation: `src/infrastructure/character/character-preset-service.ts:238`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/character/character-preset-service.ts:279`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### auth-helper: session identity
 
-`src/infrastructure/character/character-preset-service.ts:255` — dynamic-expression.
+`src/infrastructure/character/character-preset-service.ts:316` — dynamic-expression.
 
 Exact call/query chain:
 ```ts
 getAuthenticatedUserId()
 ```
 
-Enclosing operation: `src/infrastructure/character/character-preset-service.ts:253`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/character/character-preset-service.ts:297`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: character_presets
 
-`src/infrastructure/character/character-preset-service.ts:272` — literal-or-constant.
+`src/infrastructure/character/character-preset-service.ts:327` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -779,20 +779,20 @@ supabase
       .single()
 ```
 
-Enclosing operation: `src/infrastructure/character/character-preset-service.ts:253`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/character/character-preset-service.ts:297`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### auth-helper: session identity
 
-`src/infrastructure/character/character-preset-service.ts:291` — dynamic-expression.
+`src/infrastructure/character/character-preset-service.ts:355` — dynamic-expression.
 
 Exact call/query chain:
 ```ts
 getAuthenticatedUserId()
 ```
 
-Enclosing operation: `src/infrastructure/character/character-preset-service.ts:289`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/character/character-preset-service.ts:344`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: character_presets
 
-`src/infrastructure/character/character-preset-service.ts:295` — literal-or-constant.
+`src/infrastructure/character/character-preset-service.ts:356` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -804,10 +804,10 @@ supabase
       .single()
 ```
 
-Enclosing operation: `src/infrastructure/character/character-preset-service.ts:289`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/character/character-preset-service.ts:344`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: character_presets
 
-`src/infrastructure/character/character-preset-service.ts:320` — literal-or-constant.
+`src/infrastructure/character/character-preset-service.ts:381` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -820,20 +820,20 @@ supabase
       .single()
 ```
 
-Enclosing operation: `src/infrastructure/character/character-preset-service.ts:289`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/character/character-preset-service.ts:344`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### auth-helper: session identity
 
-`src/infrastructure/character/character-preset-service.ts:333` — dynamic-expression.
+`src/infrastructure/character/character-preset-service.ts:403` — dynamic-expression.
 
 Exact call/query chain:
 ```ts
 getAuthenticatedUserId()
 ```
 
-Enclosing operation: `src/infrastructure/character/character-preset-service.ts:331`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/character/character-preset-service.ts:392`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: character_presets
 
-`src/infrastructure/character/character-preset-service.ts:336` — literal-or-constant.
+`src/infrastructure/character/character-preset-service.ts:404` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -846,20 +846,20 @@ supabase
       .single()
 ```
 
-Enclosing operation: `src/infrastructure/character/character-preset-service.ts:331`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/character/character-preset-service.ts:392`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### auth-helper: session identity
 
-`src/infrastructure/character/character-preset-service.ts:349` — dynamic-expression.
+`src/infrastructure/character/character-preset-service.ts:423` — dynamic-expression.
 
 Exact call/query chain:
 ```ts
 getAuthenticatedUserId()
 ```
 
-Enclosing operation: `src/infrastructure/character/character-preset-service.ts:347`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/character/character-preset-service.ts:415`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: character_presets
 
-`src/infrastructure/character/character-preset-service.ts:350` — literal-or-constant.
+`src/infrastructure/character/character-preset-service.ts:424` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -871,10 +871,10 @@ supabase
       .single()
 ```
 
-Enclosing operation: `src/infrastructure/character/character-preset-service.ts:347`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/character/character-preset-service.ts:415`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: character_presets
 
-`src/infrastructure/character/character-preset-service.ts:361` — literal-or-constant.
+`src/infrastructure/character/character-preset-service.ts:435` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -893,27 +893,27 @@ supabase
       .single()
 ```
 
-Enclosing operation: `src/infrastructure/character/character-preset-service.ts:347`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/character/character-preset-service.ts:415`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### auth-helper: session identity
 
-`src/infrastructure/character/character-preset-service.ts:380` — dynamic-expression.
+`src/infrastructure/character/character-preset-service.ts:457` — dynamic-expression.
 
 Exact call/query chain:
 ```ts
 getAuthenticatedUserId()
 ```
 
-Enclosing operation: `src/infrastructure/character/character-preset-service.ts:378`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/character/character-preset-service.ts:452`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: character_presets
 
-`src/infrastructure/character/character-preset-service.ts:381` — literal-or-constant.
+`src/infrastructure/character/character-preset-service.ts:458` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
 supabase.from(TABLE).delete().eq('id', presetId).eq('owner_user_id', userId)
 ```
 
-Enclosing operation: `src/infrastructure/character/character-preset-service.ts:378`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/character/character-preset-service.ts:452`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### auth-helper: session identity
 
 `src/infrastructure/character/character-service.ts:353` — dynamic-expression.
@@ -7132,7 +7132,7 @@ export const characterAdventureArcService = new CharacterAdventureArcService();
 export const characterLoreService = new CharacterLoreService();
 ```
 
-### src/infrastructure/character/character-preset-service.ts:59
+### src/infrastructure/character/character-preset-service.ts:71
 
 ```ts
 export function assertValidSnapshot(snapshot: CharacterPresetSnapshot): void {
@@ -7184,7 +7184,7 @@ export function assertValidSnapshot(snapshot: CharacterPresetSnapshot): void {
 }
 ```
 
-### src/infrastructure/character/character-preset-service.ts:410
+### src/infrastructure/character/character-preset-service.ts:486
 
 ```ts
 export const characterPresetService = new CharacterPresetService();
@@ -11567,11 +11567,16 @@ async generateBackground(
   }
 ```
 
-### src/infrastructure/character/character-preset-service.ts:199
+### src/infrastructure/character/character-preset-service.ts:235
 
 ```ts
 async listUserPresets(): Promise<CharacterPresetVm[]> {
-    assertHostProductSurfaceAvailable('Charakter-Presets');
+    if (isHostLibraryEnabled()) {
+      const rows = await fetchHostLibraryCharacterPresets();
+      return rows
+        .map(mapHostPresetRow)
+        .filter((row): row is CharacterPresetVm => row !== null);
+    }
     const userId = await getAuthenticatedUserId();
     const { data, error } = await raceWithTimeoutReject(
       supabase
@@ -11610,11 +11615,14 @@ async listUserPresets(): Promise<CharacterPresetVm[]> {
   }
 ```
 
-### src/infrastructure/character/character-preset-service.ts:238
+### src/infrastructure/character/character-preset-service.ts:279
 
 ```ts
 async getPresetForCharacter(characterId: string): Promise<CharacterPresetVm | null> {
-    assertHostProductSurfaceAvailable('Charakter-Presets');
+    if (isHostLibraryEnabled()) {
+      const row = await fetchHostLibraryCharacterPresetForCharacter(characterId);
+      return row ? mapHostPresetRow(row) : null;
+    }
     const userId = await getAuthenticatedUserId();
     const { data, error } = await supabase
       .from(TABLE)
@@ -11629,18 +11637,29 @@ async getPresetForCharacter(characterId: string): Promise<CharacterPresetVm | nu
   }
 ```
 
-### src/infrastructure/character/character-preset-service.ts:253
+### src/infrastructure/character/character-preset-service.ts:297
 
 ```ts
 async createPresetFromCharacter(input: CreateCharacterPresetInput): Promise<CharacterPresetVm> {
-    assertHostProductSurfaceAvailable('Charakter-Presets');
-    const userId = await getAuthenticatedUserId();
     if (input.rulesetKey !== 'sagatree-core') {
       throw new Error('Presets sind derzeit nur für SagaTree Core verfügbar.');
     }
     const snapshot = withSafePortraitUrl(input.snapshot);
     assertValidSnapshot(snapshot);
 
+    if (isHostLibraryEnabled()) {
+      const created = await createHostLibraryCharacterPreset({
+        displayName: input.displayName.trim() || `${snapshot.name.trim()} Preset`,
+        rulesetKey: 'sagatree-core',
+        sourceCharacterId: input.sourceCharacterId,
+        snapshot,
+      });
+      const mapped = mapHostPresetRow(created);
+      if (!mapped) throw new Error('Host-Charakter-Preset anlegen: ungültige Antwort');
+      return mapped;
+    }
+
+    const userId = await getAuthenticatedUserId();
     const existing = await this.getPresetForCharacter(input.sourceCharacterId);
     if (existing) {
       throw new Error('Für diesen Charakter existiert bereits ein Preset. Nutze „Version freigeben“.');
@@ -11669,15 +11688,21 @@ async createPresetFromCharacter(input: CreateCharacterPresetInput): Promise<Char
   }
 ```
 
-### src/infrastructure/character/character-preset-service.ts:289
+### src/infrastructure/character/character-preset-service.ts:344
 
 ```ts
 async releaseVersion(input: ReleaseCharacterPresetVersionInput): Promise<CharacterPresetVm> {
-    assertHostProductSurfaceAvailable('Charakter-Presets');
-    const userId = await getAuthenticatedUserId();
     const snapshot = withSafePortraitUrl(input.snapshot);
     assertValidSnapshot(snapshot);
 
+    if (isHostLibraryEnabled()) {
+      const released = await releaseHostLibraryCharacterPresetVersion(input.presetId, snapshot);
+      const mapped = mapHostPresetRow(released);
+      if (!mapped) throw new Error('Host-Charakter-Preset-Version: ungültige Antwort');
+      return mapped;
+    }
+
+    const userId = await getAuthenticatedUserId();
     const { data: existing, error: loadError } = await supabase
       .from(TABLE)
       .select('*')
@@ -11715,14 +11740,21 @@ async releaseVersion(input: ReleaseCharacterPresetVersionInput): Promise<Charact
   }
 ```
 
-### src/infrastructure/character/character-preset-service.ts:331
+### src/infrastructure/character/character-preset-service.ts:392
 
 ```ts
 async renamePreset(presetId: string, displayName: string): Promise<CharacterPresetVm> {
-    assertHostProductSurfaceAvailable('Charakter-Presets');
-    const userId = await getAuthenticatedUserId();
     const trimmed = displayName.trim();
     if (!trimmed) throw new Error('Preset-Name darf nicht leer sein.');
+
+    if (isHostLibraryEnabled()) {
+      const renamed = await renameHostLibraryCharacterPreset(presetId, trimmed);
+      const mapped = mapHostPresetRow(renamed);
+      if (!mapped) throw new Error('Host-Charakter-Preset umbenennen: ungültige Antwort');
+      return mapped;
+    }
+
+    const userId = await getAuthenticatedUserId();
     const { data, error } = await supabase
       .from(TABLE)
       .update({ display_name: trimmed, published: false, updated_at: new Date().toISOString() })
@@ -11735,11 +11767,17 @@ async renamePreset(presetId: string, displayName: string): Promise<CharacterPres
   }
 ```
 
-### src/infrastructure/character/character-preset-service.ts:347
+### src/infrastructure/character/character-preset-service.ts:415
 
 ```ts
 async duplicatePreset(presetId: string): Promise<CharacterPresetVm> {
-    assertHostProductSurfaceAvailable('Charakter-Presets');
+    if (isHostLibraryEnabled()) {
+      const duplicated = await duplicateHostLibraryCharacterPreset(presetId);
+      const mapped = mapHostPresetRow(duplicated);
+      if (!mapped) throw new Error('Host-Charakter-Preset duplizieren: ungültige Antwort');
+      return mapped;
+    }
+
     const userId = await getAuthenticatedUserId();
     const { data: existing, error: loadError } = await supabase
       .from(TABLE)
@@ -11770,11 +11808,14 @@ async duplicatePreset(presetId: string): Promise<CharacterPresetVm> {
   }
 ```
 
-### src/infrastructure/character/character-preset-service.ts:378
+### src/infrastructure/character/character-preset-service.ts:452
 
 ```ts
 async deletePreset(presetId: string): Promise<void> {
-    assertHostProductSurfaceAvailable('Charakter-Presets');
+    if (isHostLibraryEnabled()) {
+      await deleteHostLibraryCharacterPreset(presetId);
+      return;
+    }
     const userId = await getAuthenticatedUserId();
     const { error } = await supabase.from(TABLE).delete().eq('id', presetId).eq('owner_user_id', userId);
     if (error) throw new Error(`Preset konnte nicht gelöscht werden: ${error.message}`);
@@ -12070,7 +12111,7 @@ private async assertPersonalLookWriteGate(
 | `src/infrastructure/character/avatar/trait-lifecycle-three-adapter.ts` | `e02df093e7e626eb3d46d2f8fce8bb133d0a8e7546b89980aee5ae0469072303` |
 | `src/infrastructure/character/character-adventure-arc-service.ts` | `f636072dd9e8636f15fa40fa37cad7d1f607dd2edb3887beba707095bda33e5b` |
 | `src/infrastructure/character/character-lore-service.ts` | `f14fdcb2290d57a7b2e6646cebb9756b63de4be624920188de1299236e40362a` |
-| `src/infrastructure/character/character-preset-service.ts` | `11df48060862f169ca9e4fb42d8b350bd652e9f42183ee32abe2314e1f50d0e5` |
+| `src/infrastructure/character/character-preset-service.ts` | `26902a435cfb08e53c4e13ec588fc02527fd58fe81f64b7e83f74509590dac0e` |
 | `src/infrastructure/character/character-service.ts` | `9eb0f8385a4d8d2cec29013dc99df9420bcde14a7ba37461f5e6b7d47cac0172` |
 | `src/infrastructure/character/character.persistence.ts` | `5ed5f363555b9c4a3922507e01a227f74aee706764065641eb27ac9510024bd5` |
 | `src/infrastructure/character/host-character-adapter.ts` | `13f20441555da88736aa75337568f69c2e2d516ca2a1193f0fe3d4da83317fa8` |
@@ -12096,7 +12137,7 @@ private async assertPersonalLookWriteGate(
 | `src/infrastructure/character/liveact/mediapipe-sagatree-face-anchor-map-v1.ts` | `b092e31c50b885b9dbeb396ef2bdbfa39a953df717da7e0042e081849c173d9a` |
 | `src/infrastructure/character/liveact/vrm-liveact-avatar-output.ts` | `f5ef95d582ee0f3a2ec47748e8d958306f3833d45a5e8e1b250d1eecfba5d9a6` |
 | `src/infrastructure/character/supabase-character.repository.ts` | `ae0034e06c55c384124c933bc8093c3926b7ece34a5222213913d1fdc03a9878` |
-| `src/infrastructure/host/host-library-http.ts` | `a8b7e3260e23481d4e9fae898c1bfa0db711a956741f6bdec806670a2e71bd6d` |
+| `src/infrastructure/host/host-library-http.ts` | `e39553aaf251977db8b72a0db88350dd5893430cfbd5fa5c3007b41f5b23efd5` |
 | `src/infrastructure/host/host-product-deny.ts` | `69b148debc95006bb31daa7a94caf4e1507ac3089fdf399952102c4effa3759c` |
 | `src/infrastructure/host/host-project-http.ts` | `b5a68f6452217b08d2217a983113a9a356ce70890693319227f35c82fbdcd818` |
 | `src/infrastructure/inventory/inventory-persistence.ts` | `79aaa09053ecd72a0bec8f8f0610b31ab0c9b34779f4a4c87f19f0d2ef7e4ac2` |

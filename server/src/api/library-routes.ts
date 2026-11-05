@@ -191,6 +191,48 @@ function mapCharacterRow(
   };
 }
 
+/** CUT-08 — FE CharacterPresetDto / Vm wire shape. */
+function mapPresetProduct(row: {
+  readonly id: string;
+  readonly ownerUserId: string;
+  readonly displayName: string;
+  readonly rulesetKey: string;
+  readonly origin: 'user' | 'system';
+  readonly sourceCharacterId: string | null;
+  readonly sourceCharacterMissing: boolean;
+  readonly published: boolean;
+  readonly versions: readonly {
+    readonly level: number;
+    readonly snapshot: Readonly<Record<string, unknown>>;
+    readonly created_at: string;
+  }[];
+  readonly createdAt: string;
+  readonly updatedAt: string;
+}) {
+  return {
+    id: row.id,
+    owner_user_id: row.ownerUserId,
+    display_name: row.displayName,
+    ruleset_key: row.rulesetKey,
+    origin: row.origin,
+    source_character_id: row.sourceCharacterId,
+    source_character_missing: row.sourceCharacterMissing,
+    published: row.published,
+    versions: row.versions,
+    created_at: row.createdAt,
+    updated_at: row.updatedAt,
+  };
+}
+
+function presetProductErrorStatus(error: string): 400 | 403 | 404 | 409 | 422 | 503 {
+  if (error === 'store-unavailable') return 503;
+  if (error === 'not-authorized') return 403;
+  if (error === 'not-found') return 404;
+  if (error === 'invalid-character-id' || error === 'invalid-preset-id') return 422;
+  if (/bereits eine Preset-Version|bereits ein Preset/i.test(error)) return 409;
+  return 400;
+}
+
 /**
  * Mount library list/create endpoints used by the Vite Library screen.
  */
@@ -414,6 +456,272 @@ export function mountLibraryHttpRoutes(app: Hono, deps: LibraryHttpDeps): void {
         { error: err },
         err === 'not-authorized' ? 403 : err === 'not-found' ? 404 : 400,
       );
+    }
+    return c.json({ ok: true, id: deleted.value.id }, 200);
+  });
+
+  /** CUT-08 — list owner user character presets. */
+  app.get('/api/v1/library/character-presets', async (c) => {
+    const actorResult = await resolveLibraryActor(deps, c.req.raw.headers);
+    if (!actorResult.ok) {
+      return c.json({ error: actorResult.error }, actorResult.status);
+    }
+    if (!deps.character?.listUserPresets) {
+      return c.json({ presets: [] }, 200);
+    }
+    const byId = new Map<string, ReturnType<typeof mapPresetProduct>>();
+    for (const ownerId of libraryActorIds(actorResult.actor)) {
+      const listed = deps.character.listUserPresets(ownerId);
+      if (!listed.ok) {
+        return c.json(
+          { error: listed.error },
+          listed.error === 'store-unavailable' ? 503 : 400,
+        );
+      }
+      for (const row of listed.value) {
+        byId.set(row.id, mapPresetProduct(row));
+      }
+    }
+    return c.json({ presets: [...byId.values()] }, 200);
+  });
+
+  /** CUT-08 — preset linked to a source character (or null). */
+  app.get('/api/v1/library/character-presets/by-character/:characterId', async (c) => {
+    const actorResult = await resolveLibraryActor(deps, c.req.raw.headers);
+    if (!actorResult.ok) {
+      return c.json({ error: actorResult.error }, actorResult.status);
+    }
+    if (!deps.character?.getPresetForCharacter) {
+      return c.json({ preset: null }, 200);
+    }
+    const characterId = c.req.param('characterId');
+    for (const ownerId of libraryActorIds(actorResult.actor)) {
+      const got = deps.character.getPresetForCharacter(ownerId, characterId);
+      if (!got.ok) {
+        return c.json({ error: got.error }, presetProductErrorStatus(got.error));
+      }
+      if (got.value) {
+        return c.json({ preset: mapPresetProduct(got.value) }, 200);
+      }
+    }
+    return c.json({ preset: null }, 200);
+  });
+
+  /** CUT-08 — create preset from owned character snapshot. */
+  app.post('/api/v1/library/character-presets', async (c) => {
+    const actorResult = await resolveLibraryActor(deps, c.req.raw.headers);
+    if (!actorResult.ok) {
+      return c.json({ error: actorResult.error }, actorResult.status);
+    }
+    if (!deps.character?.createPresetFromCharacter) {
+      return c.json({ error: 'store-unavailable' }, 503);
+    }
+    let body: unknown;
+    try {
+      body = await c.req.json();
+    } catch {
+      return c.json({ error: 'invalid-json' }, 400);
+    }
+    const record =
+      body && typeof body === 'object' && !Array.isArray(body)
+        ? (body as Record<string, unknown>)
+        : {};
+    const displayName = typeof record.displayName === 'string' ? record.displayName : '';
+    const rulesetKey = typeof record.rulesetKey === 'string' ? record.rulesetKey : '';
+    const sourceCharacterId =
+      typeof record.sourceCharacterId === 'string' ? record.sourceCharacterId : '';
+    const snapshot =
+      record.snapshot && typeof record.snapshot === 'object' && !Array.isArray(record.snapshot)
+        ? (record.snapshot as Record<string, unknown>)
+        : null;
+    if (!snapshot) {
+      return c.json({ error: 'invalid-snapshot' }, 400);
+    }
+    // MIG-015: linked solo-owned characters are listed under libraryActorIds — create
+    // under the same owner that actually owns the source character.
+    let created: ReturnType<
+      NonNullable<LibraryHttpDeps['character']>['createPresetFromCharacter']
+    > | null = null;
+    for (const ownerId of libraryActorIds(actorResult.actor)) {
+      const attempt = deps.character.createPresetFromCharacter(ownerId, {
+        displayName,
+        rulesetKey,
+        sourceCharacterId,
+        snapshot,
+      });
+      if (attempt.ok) {
+        created = attempt;
+        break;
+      }
+      if (
+        attempt.error !== 'not-found' &&
+        attempt.error !== 'not-authorized' &&
+        !/bereits ein Preset/i.test(attempt.error)
+      ) {
+        created = attempt;
+        break;
+      }
+      created = attempt;
+    }
+    if (!created || !created.ok) {
+      const err = created && !created.ok ? created.error : 'not-found';
+      return c.json({ error: err }, presetProductErrorStatus(err));
+    }
+    return c.json({ preset: mapPresetProduct(created.value) }, 201);
+  });
+
+  /** CUT-08 — append level version (publish revision). */
+  app.post('/api/v1/library/character-presets/:id/versions', async (c) => {
+    const actorResult = await resolveLibraryActor(deps, c.req.raw.headers);
+    if (!actorResult.ok) {
+      return c.json({ error: actorResult.error }, actorResult.status);
+    }
+    if (!deps.character?.releasePresetVersion) {
+      return c.json({ error: 'store-unavailable' }, 503);
+    }
+    let body: unknown;
+    try {
+      body = await c.req.json();
+    } catch {
+      return c.json({ error: 'invalid-json' }, 400);
+    }
+    const record =
+      body && typeof body === 'object' && !Array.isArray(body)
+        ? (body as Record<string, unknown>)
+        : {};
+    const snapshot =
+      record.snapshot && typeof record.snapshot === 'object' && !Array.isArray(record.snapshot)
+        ? (record.snapshot as Record<string, unknown>)
+        : null;
+    if (!snapshot) {
+      return c.json({ error: 'invalid-snapshot' }, 400);
+    }
+    const presetId = c.req.param('id');
+    let released: ReturnType<
+      NonNullable<LibraryHttpDeps['character']>['releasePresetVersion']
+    > | null = null;
+    for (const ownerId of libraryActorIds(actorResult.actor)) {
+      const attempt = deps.character.releasePresetVersion(ownerId, presetId, snapshot);
+      if (attempt.ok) {
+        released = attempt;
+        break;
+      }
+      if (attempt.error !== 'not-found' && attempt.error !== 'not-authorized') {
+        released = attempt;
+        break;
+      }
+      released = attempt;
+    }
+    if (!released || !released.ok) {
+      const err = released && !released.ok ? released.error : 'not-found';
+      return c.json({ error: err }, presetProductErrorStatus(err));
+    }
+    return c.json({ preset: mapPresetProduct(released.value) }, 201);
+  });
+
+  /** CUT-08 — rename display name. */
+  app.patch('/api/v1/library/character-presets/:id', async (c) => {
+    const actorResult = await resolveLibraryActor(deps, c.req.raw.headers);
+    if (!actorResult.ok) {
+      return c.json({ error: actorResult.error }, actorResult.status);
+    }
+    if (!deps.character?.renamePreset) {
+      return c.json({ error: 'store-unavailable' }, 503);
+    }
+    let body: unknown;
+    try {
+      body = await c.req.json();
+    } catch {
+      return c.json({ error: 'invalid-json' }, 400);
+    }
+    const record =
+      body && typeof body === 'object' && !Array.isArray(body)
+        ? (body as Record<string, unknown>)
+        : {};
+    const displayName = typeof record.displayName === 'string' ? record.displayName : '';
+    const presetId = c.req.param('id');
+    let renamed: ReturnType<
+      NonNullable<LibraryHttpDeps['character']>['renamePreset']
+    > | null = null;
+    for (const ownerId of libraryActorIds(actorResult.actor)) {
+      const attempt = deps.character.renamePreset(ownerId, presetId, displayName);
+      if (attempt.ok) {
+        renamed = attempt;
+        break;
+      }
+      if (attempt.error !== 'not-found' && attempt.error !== 'not-authorized') {
+        renamed = attempt;
+        break;
+      }
+      renamed = attempt;
+    }
+    if (!renamed || !renamed.ok) {
+      const err = renamed && !renamed.ok ? renamed.error : 'not-found';
+      return c.json({ error: err }, presetProductErrorStatus(err));
+    }
+    return c.json({ preset: mapPresetProduct(renamed.value) }, 200);
+  });
+
+  /** CUT-08 — duplicate (clears source character link). */
+  app.post('/api/v1/library/character-presets/:id/duplicate', async (c) => {
+    const actorResult = await resolveLibraryActor(deps, c.req.raw.headers);
+    if (!actorResult.ok) {
+      return c.json({ error: actorResult.error }, actorResult.status);
+    }
+    if (!deps.character?.duplicatePreset) {
+      return c.json({ error: 'store-unavailable' }, 503);
+    }
+    const presetId = c.req.param('id');
+    let duplicated: ReturnType<
+      NonNullable<LibraryHttpDeps['character']>['duplicatePreset']
+    > | null = null;
+    for (const ownerId of libraryActorIds(actorResult.actor)) {
+      const attempt = deps.character.duplicatePreset(ownerId, presetId);
+      if (attempt.ok) {
+        duplicated = attempt;
+        break;
+      }
+      if (attempt.error !== 'not-found' && attempt.error !== 'not-authorized') {
+        duplicated = attempt;
+        break;
+      }
+      duplicated = attempt;
+    }
+    if (!duplicated || !duplicated.ok) {
+      const err = duplicated && !duplicated.ok ? duplicated.error : 'not-found';
+      return c.json({ error: err }, presetProductErrorStatus(err));
+    }
+    return c.json({ preset: mapPresetProduct(duplicated.value) }, 201);
+  });
+
+  /** CUT-08 — delete owner user preset. */
+  app.delete('/api/v1/library/character-presets/:id', async (c) => {
+    const actorResult = await resolveLibraryActor(deps, c.req.raw.headers);
+    if (!actorResult.ok) {
+      return c.json({ error: actorResult.error }, actorResult.status);
+    }
+    if (!deps.character?.deletePreset) {
+      return c.json({ error: 'store-unavailable' }, 503);
+    }
+    const presetId = c.req.param('id');
+    let deleted: ReturnType<
+      NonNullable<LibraryHttpDeps['character']>['deletePreset']
+    > | null = null;
+    for (const ownerId of libraryActorIds(actorResult.actor)) {
+      const attempt = deps.character.deletePreset(ownerId, presetId);
+      if (attempt.ok) {
+        deleted = attempt;
+        break;
+      }
+      if (attempt.error !== 'not-found' && attempt.error !== 'not-authorized') {
+        deleted = attempt;
+        break;
+      }
+      deleted = attempt;
+    }
+    if (!deleted || !deleted.ok) {
+      const err = deleted && !deleted.ok ? deleted.error : 'not-found';
+      return c.json({ error: err }, presetProductErrorStatus(err));
     }
     return c.json({ ok: true, id: deleted.value.id }, 200);
   });

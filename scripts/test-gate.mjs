@@ -1533,6 +1533,19 @@ function checkCut07LookVersions() {
   console.log('OK: cut-07-look-versions.self-test');
 }
 
+function checkCut08CharacterPresets() {
+  console.log('CUT-08 character preset CRUD/versions (#1143)...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/cut-08-presets.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+  console.log('OK: cut-08-presets.self-test');
+}
+
 function checkMig312UserProfileAdapter() {
   console.log('MIG-312 user-profile adapter (#811): user_profiles + user-avatars dual-path...');
   execFileSync(
@@ -3757,6 +3770,7 @@ checkCut04SessionDelete();
 checkCut05OutcomePromotion();
 checkCut06ItemDefinition();
 checkCut07LookVersions();
+checkCut08CharacterPresets();
 checkMig312UserProfileAdapter();
 checkMig309Rulesets();
 checkMig313WorldAdapter();
