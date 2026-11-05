@@ -1,6 +1,6 @@
 # Acceptance — CUT-10 (#1145)
 
-- HEAD_SHA: pending
+- HEAD_SHA: 5566cb24f2c773c9363ae86128251324e4ec6de0
 - Issue: #1145
 - Slug: cut-10-restore-world-profile-lookup-by
 
@@ -12,7 +12,7 @@ Public id is identity only — `world.read` policy still authorizes access.
 
 ## Composition Gate
 
-- HEAD_SHA: pending
+- HEAD_SHA: 5566cb24f2c773c9363ae86128251324e4ec6de0
 - Verdict: CLEAR
 
 ## Required Tests
