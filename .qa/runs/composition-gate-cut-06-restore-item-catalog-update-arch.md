@@ -30,7 +30,7 @@ Cardinality: one definition row per id; fork allocates a new id. No cross-owner 
 |------|----------|----------|--------|
 | N-actors | Stranger cannot mutate | Owner/world ACL | pass |
 | Invalid/missing | Missing id → 404; bad origin → 422 | Fail-closed | pass |
-| Two consumers | Dual-path exclusive | Flag off → Supabase | pass |
+| Two consumers / crash | Dual-path exclusive | Flag off → Supabase | pass |
 | Idempotent archive | Re-archive returns archived | Status no-op | pass |
 
 ## Flags
