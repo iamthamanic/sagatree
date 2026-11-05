@@ -1,6 +1,6 @@
 # Composition Gate — cut-02-npc-controller-assignment-host (#1137)
 
-- HEAD_SHA: 1bf0d043e601e47bc59002b1e53aee6d78bad170
+- HEAD_SHA: 436ce134a74b45038d24579ff31788b6fc19a43d
 - BASE_SHA: 8281ad3342b0bfe55129207629e255cbb44b48d3
 - Date: 2026-11-05
 - Verdict: CLEAR
@@ -12,15 +12,17 @@
 Under host-first (`isHostLibraryEnabled()`), NPC controller assign/load uses Host HTTP
 `GET|POST /api/v1/library/npc-creatures/:id/controller` backed by
 `NpcCreaturePorts.getControllerAssignment` / `assignController` + SQLite
-`npc_creature_controller_assignments`. Legacy Supabase path remains only when host library is off.
+`npc_creature_controller_assignments`. Dialog member roster loads via
+`GET /api/v1/projects/:projectId/members` (`projectMemberService.getMembers` dual-path).
+Legacy Supabase path remains only when host library is off.
 `activeMemberUserIds` stays a client domain-plan hint; GM/membership authority is server-side.
 
 ## Hop chain
 
-1. **Producer (UI):** `NpcCreatureAssignControllerDialog` → `npc-creature-service`
-2. **Gate:** `isHostLibraryEnabled()` (`host-library-http`)
-3. **Transport:** credentialed `fetch` to library controller routes
-4. **Authorize:** Session actor; ports require active GM for mutate, active member for read
+1. **Producer (UI):** `NpcCreatureAssignControllerDialog` → `projectMemberService.getMembers` + `npc-creature-service`
+2. **Gate:** `isHostLibraryEnabled()` (`host-library-http` / `host-project-http`)
+3. **Transport:** credentialed `fetch` to project members + library controller routes
+4. **Authorize:** Session actor; ports require active GM for mutate, active member for read/list
 5. **Persist:** SQLite `npc_creature_controller_assignments` upsert (null controller = clear)
 6. **Consumer:** Same facade re-reads host GET or legacy Supabase exclusively per env
 
