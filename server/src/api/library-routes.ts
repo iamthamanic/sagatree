@@ -989,6 +989,29 @@ export function mountLibraryHttpRoutes(app: Hono, deps: LibraryHttpDeps): void {
     return c.json({ item: created.value }, 201);
   });
 
+  /** CUT-06 — single item including archived (restore/workbench). */
+  app.get('/api/v1/library/items/:id', async (c) => {
+    const actorResult = await resolveLibraryActor(deps, c.req.raw.headers);
+    if (!actorResult.ok) {
+      return c.json({ error: actorResult.error }, actorResult.status);
+    }
+    if (!deps.inventory?.getDefinition) {
+      return c.json({ error: 'store-unavailable' }, 503);
+    }
+    const loaded = deps.inventory.getDefinition(
+      libraryActorIds(actorResult.actor),
+      c.req.param('id'),
+    );
+    if (!loaded.ok) {
+      return c.json(
+        { error: loaded.error },
+        loaded.error === 'not-authorized' ? 403 : 400,
+      );
+    }
+    if (!loaded.value) return c.json({ error: 'not-found' }, 404);
+    return c.json({ item: loaded.value }, 200);
+  });
+
   /** CUT-06 — update personal/world item definition (name/payload only). */
   app.patch('/api/v1/library/items/:id', async (c) => {
     const actorResult = await resolveLibraryActor(deps, c.req.raw.headers);
@@ -1026,7 +1049,7 @@ export function mountLibraryHttpRoutes(app: Hono, deps: LibraryHttpDeps): void {
           ? 403
           : updated.error === 'not-found'
             ? 404
-            : updated.error === 'name-required'
+            : updated.error === 'name-required' || updated.error === 'invalid-payload'
               ? 422
               : 400;
       return c.json({ error: updated.error }, status);

@@ -131,6 +131,66 @@ function normalizeActorIds(
   );
 }
 
+/** Host mirror of FE InventoryItemType — keep aligned with domains/character/inventory-v2. */
+const HOST_ITEM_TYPES = new Set([
+  'weapon',
+  'armor',
+  'shield',
+  'tool',
+  'consumable',
+  'container',
+  'misc',
+]);
+
+function isIntegerInRange(value: unknown, min: number, max: number): boolean {
+  return Number.isInteger(value) && (value as number) >= min && (value as number) <= max;
+}
+
+/**
+ * Fail-closed writable payload check (mirror of parseItemDefinition core gates).
+ * Rejects empty/corrupt replacements that would drop owned-instance resolution.
+ */
+function assertWritableItemPayload(
+  payload: Record<string, unknown>,
+  fallbackName: string,
+): { ok: true; payload: Record<string, unknown>; name: string } | { ok: false; error: string } {
+  const nameRaw = typeof payload.name === 'string' ? payload.name.trim() : fallbackName.trim();
+  if (!nameRaw) return { ok: false, error: 'invalid-payload' };
+  const type = payload.type;
+  if (typeof type !== 'string' || !HOST_ITEM_TYPES.has(type)) {
+    return { ok: false, error: 'invalid-payload' };
+  }
+  if (!isIntegerInRange(payload.load, 0, 3) || !isIntegerInRange(payload.cost, 0, 5)) {
+    return { ok: false, error: 'invalid-payload' };
+  }
+  return { ok: true, payload: { ...payload, name: nameRaw }, name: nameRaw };
+}
+
+/**
+ * Canonical fork transformation (mirror of domains/items/fork buildForkedItemDefinitionDraft).
+ * Sets basedOnDefinitionId + target origin; strips source-owned assetKey/model3d.
+ */
+function buildForkedHostPayload(
+  source: InventoryDefinitionRecord,
+  targetOrigin: 'personal' | 'world',
+): Record<string, unknown> {
+  const {
+    assetKey: _assetKey,
+    model3d: _model3d,
+    basedOnDefinitionId: _basedOn,
+    origin: _origin,
+    forkedFromId: _forkedFromId,
+    forkedFromOrigin: _forkedFromOrigin,
+    ...rest
+  } = source.payload;
+  return {
+    ...rest,
+    name: typeof rest.name === 'string' && rest.name.trim() ? rest.name : source.name,
+    basedOnDefinitionId: source.id,
+    origin: targetOrigin,
+  };
+}
+
 /** Escape LIKE wildcards so user query cannot match everything via % / _. */
 function escapeLikePattern(raw: string): string {
   return raw.replace(/\\/g, '\\\\').replace(/%/g, '\\%').replace(/_/g, '\\_');
@@ -437,13 +497,15 @@ export class InventoryInfraStore {
     if (!this.#canMutateDefinition(actorIds, existing)) {
       return { ok: false, error: 'not-authorized' };
     }
-    const name =
-      typeof draft.name === 'string' && draft.name.trim()
-        ? draft.name.trim()
-        : existing.name;
-    if (!name) return { ok: false, error: 'name-required' };
-    const payload =
-      draft.payload === undefined ? { ...existing.payload } : asObject(draft.payload);
+    const draftName =
+      typeof draft.name === 'string' && draft.name.trim() ? draft.name.trim() : existing.name;
+    const rawPayload =
+      draft.payload === undefined
+        ? { ...existing.payload, name: draftName }
+        : { ...asObject(draft.payload), name: draftName };
+    const validated = assertWritableItemPayload(rawPayload, draftName);
+    if (!validated.ok) return { ok: false, error: validated.error };
+    const { name, payload } = validated;
     const updatedAt = nowIso();
     let inTx = false;
     try {
@@ -563,17 +625,33 @@ export class InventoryInfraStore {
       return { ok: false, error: 'origin-not-allowed' };
     }
     const ownerActorId = actorIds[0]!;
-    const forkedPayload = {
-      ...source.payload,
-      forkedFromId: source.id,
-      forkedFromOrigin: source.origin,
-    };
+    const forkedPayload = buildForkedHostPayload(source, target.origin);
     return this.createDefinition(ownerActorId, {
-      name: source.name,
+      name: typeof forkedPayload.name === 'string' ? forkedPayload.name : source.name,
       origin: target.origin,
       worldProfileId: target.worldProfileId ?? null,
       payload: forkedPayload,
     });
+  }
+
+  /**
+   * CUT-06 — single definition by id including archived (owner/world-readable).
+   * Required so restore/workbench can reload after archive.
+   */
+  getDefinition(
+    actorIdOrIds: string | readonly string[],
+    definitionId: string,
+  ): InventoryResult<InventoryDefinitionRecord | null> {
+    const actorIds = normalizeActorIds(actorIdOrIds);
+    if (actorIds.length === 0) return { ok: false, error: 'missing-actor' };
+    const id = typeof definitionId === 'string' ? definitionId.trim() : '';
+    if (!id) return { ok: true, value: null };
+    const existing = this.#loadDefinition(id);
+    if (!existing) return { ok: true, value: null };
+    if (!this.#canReadDefinition(actorIds, existing) && !this.#canMutateDefinition(actorIds, existing)) {
+      return { ok: false, error: 'not-authorized' };
+    }
+    return { ok: true, value: existing };
   }
 
   #loadDefinition(definitionId: string): InventoryDefinitionRecord | null {

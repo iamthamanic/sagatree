@@ -34,6 +34,7 @@ import { deriveStablePublicResourceId } from '../../domains/resource-id';
 import {
   archiveHostLibraryItem,
   createHostLibraryItem,
+  fetchHostLibraryItem,
   fetchHostLibraryItems,
   forkHostLibraryItem,
   isHostLibraryEnabled,
@@ -241,10 +242,8 @@ export async function getItemDefinitionById(definitionId: string): Promise<{
   record: CatalogDefinitionRecord | null;
 } | null> {
   if (isHostLibraryEnabled()) {
-    const hostItems = await fetchHostLibraryItems();
-    const record = hostItems
-      .map(mapHostLibraryItemRecord)
-      .find((row): row is CatalogDefinitionRecord => row !== null && row.definition.id === definitionId);
+    const hostItem = await fetchHostLibraryItem(definitionId);
+    const record = mapHostLibraryItemRecord(hostItem);
     if (record) return { definition: record.definition, record };
     const core = getCoreItemDefinition(definitionId);
     if (core) return { definition: withCatalogPublicId(core), record: null };

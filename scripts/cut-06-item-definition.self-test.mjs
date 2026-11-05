@@ -96,6 +96,12 @@ try {
   const ownerCookie = await signIn(baseURL, 'owner@cut06.test', ownerPassword);
   const strangerCookie = await signIn(baseURL, 'stranger@cut06.test', strangerPassword);
 
+  const validPayload = {
+    name: 'CUT-06 Dolch',
+    type: 'weapon',
+    load: 1,
+    cost: 2,
+  };
   const created = await httpJson(baseURL, '/api/v1/library/items', {
     method: 'POST',
     cookie: ownerCookie,
@@ -103,7 +109,7 @@ try {
     body: {
       name: 'CUT-06 Dolch',
       origin: 'personal',
-      payload: { name: 'CUT-06 Dolch', category: 'weapon' },
+      payload: validPayload,
     },
   });
   assert(created.res.status === 201, `create ${created.res.status} ${created.text}`);
@@ -116,27 +122,35 @@ try {
     headers: { Origin: baseURL },
     body: {
       name: 'CUT-06 Dolch+',
-      payload: { name: 'CUT-06 Dolch+', category: 'weapon', rarity: 'uncommon' },
+      payload: { ...validPayload, name: 'CUT-06 Dolch+', cost: 3 },
     },
   });
   assert(patched.res.status === 200, `patch ${patched.res.status} ${patched.text}`);
   assert(patched.json.item.name === 'CUT-06 Dolch+', 'name updated');
-  assert(patched.json.item.payload?.rarity === 'uncommon', 'payload updated');
+  assert(patched.json.item.payload?.cost === 3, 'payload updated');
   assert(patched.json.item.origin === 'personal', 'origin immutable');
   assert(patched.json.item.id === itemId, 'id immutable');
+
+  const badPatch = await httpJson(baseURL, `/api/v1/library/items/${itemId}`, {
+    method: 'PATCH',
+    cookie: ownerCookie,
+    headers: { Origin: baseURL },
+    body: { name: 'Broken', payload: {} },
+  });
+  assert(badPatch.res.status === 422, `invalid payload ${badPatch.res.status}`);
 
   const strangerPatch = await httpJson(baseURL, `/api/v1/library/items/${itemId}`, {
     method: 'PATCH',
     cookie: strangerCookie,
     headers: { Origin: baseURL },
-    body: { name: 'Stolen', payload: { name: 'Stolen' } },
+    body: { name: 'Stolen', payload: { ...validPayload, name: 'Stolen' } },
   });
   assert(strangerPatch.res.status === 403 || strangerPatch.res.status === 404, `stranger patch ${strangerPatch.res.status}`);
 
   const unauthPatch = await httpJson(baseURL, `/api/v1/library/items/${itemId}`, {
     method: 'PATCH',
     headers: { Origin: baseURL },
-    body: { name: 'No Auth', payload: { name: 'No Auth' } },
+    body: { name: 'No Auth', payload: { ...validPayload, name: 'No Auth' } },
   });
   assert(unauthPatch.res.status === 401, `unauth patch ${unauthPatch.res.status}`);
 
@@ -159,6 +173,13 @@ try {
     'archived omitted from active list',
   );
 
+  const getArchived = await httpJson(baseURL, `/api/v1/library/items/${itemId}`, {
+    cookie: ownerCookie,
+    headers: { Origin: baseURL },
+  });
+  assert(getArchived.res.status === 200, `get archived ${getArchived.res.status}`);
+  assert(getArchived.json.item.status === 'archived', 'get returns archived');
+
   const restored = await httpJson(baseURL, `/api/v1/library/items/${itemId}/restore`, {
     method: 'POST',
     cookie: ownerCookie,
@@ -177,7 +198,8 @@ try {
   assert(forked.res.status === 201, `fork ${forked.res.status} ${forked.text}`);
   assert(forked.json.item.id !== itemId, 'fork new id');
   assert(forked.json.item.origin === 'personal', 'fork personal');
-  assert(forked.json.item.payload?.forkedFromId === itemId, 'fork provenance');
+  assert(forked.json.item.payload?.basedOnDefinitionId === itemId, 'fork basedOn provenance');
+  assert(forked.json.item.payload?.origin === 'personal', 'fork payload origin');
 
   const strangerFork = await httpJson(baseURL, `/api/v1/library/items/${itemId}/fork`, {
     method: 'POST',
@@ -192,14 +214,17 @@ try {
 
   const standard = host.inventory?.seedStandardDefinitionForTests?.({
     name: 'Standard Seed Blade',
-    payload: { name: 'Standard Seed Blade' },
+    payload: { name: 'Standard Seed Blade', type: 'weapon', load: 1, cost: 1 },
   });
   if (standard && typeof standard.id === 'string') {
     const stdUpdate = await httpJson(baseURL, `/api/v1/library/items/${standard.id}`, {
       method: 'PATCH',
       cookie: ownerCookie,
       headers: { Origin: baseURL },
-      body: { name: 'Hijack', payload: { name: 'Hijack' } },
+      body: {
+        name: 'Hijack',
+        payload: { name: 'Hijack', type: 'weapon', load: 1, cost: 1 },
+      },
     });
     assert(
       stdUpdate.res.status === 403 || stdUpdate.res.status === 404,
@@ -213,6 +238,7 @@ try {
     });
     assert(stdFork.res.status === 201, `standard fork ${stdFork.res.status} ${stdFork.text}`);
     assert(stdFork.json.item.id !== standard.id, 'standard fork new id');
+    assert(stdFork.json.item.payload?.basedOnDefinitionId === standard.id, 'standard fork basedOn');
   }
 
   // Restart durability (new port — prior listener may linger briefly after stop)

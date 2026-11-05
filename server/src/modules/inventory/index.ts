@@ -103,6 +103,11 @@ export type InventoryPorts = {
       readonly worldProfileId?: string | null;
     },
   ) => InventoryResult<InventoryDefinitionRecord>;
+  /** CUT-06 — load one definition including archived (for restore/workbench). */
+  readonly getDefinition: (
+    actorIdOrIds: string | readonly string[],
+    definitionId: string,
+  ) => InventoryResult<InventoryDefinitionRecord | null>;
   readonly seedStandardDefinitionForTests: (input: {
     readonly name: string;
     readonly payload?: Readonly<Record<string, unknown>>;
@@ -130,6 +135,7 @@ export function createInventoryPorts(input?: CreateInventoryPortsInput): Invento
       updateDefinition: () => unavailable(),
       setDefinitionStatus: () => unavailable(),
       forkDefinition: () => unavailable(),
+      getDefinition: () => unavailable(),
       seedStandardDefinitionForTests: () => {
         throw new Error('store-unavailable');
       },
@@ -149,6 +155,8 @@ export function createInventoryPorts(input?: CreateInventoryPortsInput): Invento
       store.setDefinitionStatus(actorIdOrIds, definitionId, status),
     forkDefinition: (actorIdOrIds, sourceDefinitionId, target) =>
       store.forkDefinition(actorIdOrIds, sourceDefinitionId, target),
+    getDefinition: (actorIdOrIds, definitionId) =>
+      store.getDefinition(actorIdOrIds, definitionId),
     seedStandardDefinitionForTests: (seedInput) => store.seedStandardDefinition(seedInput),
   };
 }

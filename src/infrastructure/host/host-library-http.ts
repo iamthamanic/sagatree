@@ -441,6 +441,46 @@ export async function createHostLibraryItem(
   return body.item;
 }
 
+/** CUT-06 — GET `/api/v1/library/items/:id` including archived. */
+export async function fetchHostLibraryItem(
+  definitionId: string,
+  env: EnvLike = defaultEnv(),
+  fetchImpl: typeof fetch = fetch,
+): Promise<unknown | null> {
+  const base = getHostAuthBaseUrl(env);
+  if (!base) throw new Error('Host-Itemkatalog nicht erreichbar');
+  let response: Response;
+  try {
+    response = await fetchImpl(
+      `${base}/api/v1/library/items/${encodeURIComponent(definitionId)}`,
+      {
+        method: 'GET',
+        credentials: 'include',
+        headers: { Accept: 'application/json' },
+      },
+    );
+  } catch {
+    throw new Error('Host-Itemkatalog nicht erreichbar');
+  }
+  if (response.status === 404) return null;
+  if (!response.ok) {
+    let detail = '';
+    try {
+      const body: unknown = await response.json();
+      if (body && typeof body === 'object' && 'error' in body) {
+        detail = String((body as { error: unknown }).error);
+      }
+    } catch {
+      /* ignore */
+    }
+    throw new Error(
+      detail ? `Host-Item laden fehlgeschlagen: ${detail}` : 'Host-Item laden fehlgeschlagen',
+    );
+  }
+  const body = (await response.json()) as { item?: unknown };
+  return body.item ?? null;
+}
+
 /** CUT-06 — PATCH `/api/v1/library/items/:id`. */
 export async function updateHostLibraryItem(
   definitionId: string,

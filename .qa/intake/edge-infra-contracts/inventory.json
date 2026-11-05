@@ -28974,7 +28974,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "ff335f2846b58da7bc0db69ea932cebfbee45c9ca970b1624c3ae64e8754cfa2"
+            "sha256": "41009cd3b0176f71e939383f9d227b7e31ccab685b88390c61dfd9756a8b6a99"
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
@@ -28990,7 +28990,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-ai.json",
-      "sourceContractSha256": "6c37dbb775dcd224e03e803f4bbed785cbba60f2167f2130460f17991e008003",
+      "sourceContractSha256": "610815dfff6df15b1879ef50cf944dc69f50bf399dae7c45ec5b8a15fd497a1b",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],
@@ -30307,7 +30307,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "ff335f2846b58da7bc0db69ea932cebfbee45c9ca970b1624c3ae64e8754cfa2"
+            "sha256": "41009cd3b0176f71e939383f9d227b7e31ccab685b88390c61dfd9756a8b6a99"
           },
           {
             "path": "src/infrastructure/host/host-product-deny.ts",
@@ -30491,7 +30491,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-character.json",
-      "sourceContractSha256": "acb143bb1671b816f6a5e08e78355fd31d2d471c36fdaff6972593f71ce80fd8",
+      "sourceContractSha256": "145696966e0123fbeb6717d0607a4b4b2b83e37063083c48fe43f8d95f986422",
       "rpcUsed": [],
       "tablesTouched": [
         "character_adventure_arcs",
@@ -35599,7 +35599,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "ff335f2846b58da7bc0db69ea932cebfbee45c9ca970b1624c3ae64e8754cfa2"
+            "sha256": "41009cd3b0176f71e939383f9d227b7e31ccab685b88390c61dfd9756a8b6a99"
           },
           {
             "path": "src/infrastructure/inventory/host-inventory-adapter.ts",
@@ -35615,7 +35615,7 @@
           },
           {
             "path": "src/infrastructure/inventory/item-catalog-service.ts",
-            "sha256": "921f0f8543419be39722c95996bb50447c3a706011e963505b5f80bccbe0602f"
+            "sha256": "a2164f40d92e9446d8a53ea589841d8d669fc34de045f9f94be92e2bcca4ebff"
           },
           {
             "path": "src/infrastructure/inventory/item-catalog.persistence.ts",
@@ -35711,7 +35711,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-inventory.json",
-      "sourceContractSha256": "abeb86c7450ddb1ec6281ef447b2a8e5c4a47cce46306711e2b18136d70866aa",
+      "sourceContractSha256": "807eb2348e5ae032444e4d97c5468b5bde4af45bc489f259d5ca786f48824225",
       "rpcUsed": [],
       "tablesTouched": [
         "characters",
@@ -36437,92 +36437,92 @@
         },
         {
           "path": "src/infrastructure/inventory/item-catalog-service.ts",
-          "line": 53,
-          "endLine": 82,
+          "line": 54,
+          "endLine": 83,
           "name": "mapHostLibraryItemRecord"
         },
         {
           "path": "src/infrastructure/inventory/item-catalog-service.ts",
-          "line": 85,
-          "endLine": 92,
+          "line": 86,
+          "endLine": 93,
           "name": "withCatalogPublicId"
         },
         {
           "path": "src/infrastructure/inventory/item-catalog-service.ts",
-          "line": 121,
-          "endLine": 182,
+          "line": 122,
+          "endLine": 183,
           "name": "loadCharacterItemCatalog"
         },
         {
           "path": "src/infrastructure/inventory/item-catalog-service.ts",
-          "line": 154,
-          "endLine": 161,
+          "line": 155,
+          "endLine": 162,
           "name": "resolveDefinition"
         },
         {
           "path": "src/infrastructure/inventory/item-catalog-service.ts",
-          "line": 173,
-          "endLine": 174,
+          "line": 174,
+          "endLine": 175,
           "name": "lookup"
         },
         {
           "path": "src/infrastructure/inventory/item-catalog-service.ts",
-          "line": 189,
-          "endLine": 220,
+          "line": 190,
+          "endLine": 221,
           "name": "loadLibraryItemCatalog"
         },
         {
           "path": "src/infrastructure/inventory/item-catalog-service.ts",
-          "line": 226,
-          "endLine": 233,
+          "line": 227,
+          "endLine": 234,
           "name": "loadWorldProfileItemCatalog"
         },
         {
           "path": "src/infrastructure/inventory/item-catalog-service.ts",
-          "line": 239,
-          "endLine": 256,
+          "line": 240,
+          "endLine": 255,
           "name": "getItemDefinitionById"
         },
         {
           "path": "src/infrastructure/inventory/item-catalog-service.ts",
-          "line": 258,
-          "endLine": 274,
+          "line": 257,
+          "endLine": 273,
           "name": "createHostCatalogDefinition"
         },
         {
           "path": "src/infrastructure/inventory/item-catalog-service.ts",
-          "line": 276,
-          "endLine": 283,
+          "line": 275,
+          "endLine": 282,
           "name": "createPersonalDefinition"
         },
         {
           "path": "src/infrastructure/inventory/item-catalog-service.ts",
-          "line": 285,
-          "endLine": 293,
+          "line": 284,
+          "endLine": 292,
           "name": "createWorldDefinition"
         },
         {
           "path": "src/infrastructure/inventory/item-catalog-service.ts",
-          "line": 295,
-          "endLine": 316,
+          "line": 294,
+          "endLine": 315,
           "name": "updateDefinition"
         },
         {
           "path": "src/infrastructure/inventory/item-catalog-service.ts",
-          "line": 319,
-          "endLine": 329,
+          "line": 318,
+          "endLine": 328,
           "name": "archiveDefinition"
         },
         {
           "path": "src/infrastructure/inventory/item-catalog-service.ts",
-          "line": 331,
-          "endLine": 341,
+          "line": 330,
+          "endLine": 340,
           "name": "restoreDefinition"
         },
         {
           "path": "src/infrastructure/inventory/item-catalog-service.ts",
-          "line": 348,
-          "endLine": 372,
+          "line": 347,
+          "endLine": 371,
           "name": "forkDefinition"
         },
         {
@@ -36915,7 +36915,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "ff335f2846b58da7bc0db69ea932cebfbee45c9ca970b1624c3ae64e8754cfa2"
+            "sha256": "41009cd3b0176f71e939383f9d227b7e31ccab685b88390c61dfd9756a8b6a99"
           },
           {
             "path": "src/infrastructure/look/adapters/host-mtoon-look-adapter.ts",
@@ -36991,7 +36991,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-look.json",
-      "sourceContractSha256": "d8fabb30584f89fbea1edd47bc61953b5afc3ebc7be285a28b400fade9165f86",
+      "sourceContractSha256": "1548897a96ce42e8456f24d497dd27058cf65670647df5b1dd16a82aaf7fa29a",
       "rpcUsed": [],
       "tablesTouched": [
         "look_profile_versions",
@@ -37854,7 +37854,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "ff335f2846b58da7bc0db69ea932cebfbee45c9ca970b1624c3ae64e8754cfa2"
+            "sha256": "41009cd3b0176f71e939383f9d227b7e31ccab685b88390c61dfd9756a8b6a99"
           },
           {
             "path": "src/infrastructure/marketplace/host-marketplace-adapter.ts",
@@ -37898,7 +37898,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-marketplace.json",
-      "sourceContractSha256": "511d939dc1009e0ad75ca93c702abbca66386101896de29d22f0127ebcc27073",
+      "sourceContractSha256": "0c44e9e24f4782edd2bb7f9d6ad67a6f4d3b31e7ea961c69d039a8f937f6a060",
       "rpcUsed": [
         "increment_marketplace_downloads"
       ],
@@ -38713,7 +38713,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "ff335f2846b58da7bc0db69ea932cebfbee45c9ca970b1624c3ae64e8754cfa2"
+            "sha256": "41009cd3b0176f71e939383f9d227b7e31ccab685b88390c61dfd9756a8b6a99"
           },
           {
             "path": "src/infrastructure/host/host-session-http.ts",
@@ -38773,7 +38773,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-npc-creature.json",
-      "sourceContractSha256": "c86ac32151e0b7679ed077e84264f53adfcf0d49379a69fc048fa8bd909a83cd",
+      "sourceContractSha256": "b0d10bd65a4f63d71b511e24f5f10fd69cf930707924add15365fe7f92b38919",
       "rpcUsed": [
         "assign_npc_creature_controller",
         "clear_npc_creature_instance_temp_controllers_for_session",
@@ -39870,7 +39870,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "ff335f2846b58da7bc0db69ea932cebfbee45c9ca970b1624c3ae64e8754cfa2"
+            "sha256": "41009cd3b0176f71e939383f9d227b7e31ccab685b88390c61dfd9756a8b6a99"
           },
           {
             "path": "src/infrastructure/host/host-product-deny.ts",
@@ -39930,7 +39930,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-project.json",
-      "sourceContractSha256": "77ff2bf736f9a5b687157bbe3d76896eff3a5a6def0555847b8280e94e167ca9",
+      "sourceContractSha256": "5844a92b510b33530c16c11ec62d981326abd55f5c87b1945d9980380c90af9a",
       "rpcUsed": [
         "create_project_session",
         "ensure_native_starter_project",
@@ -41168,7 +41168,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "ff335f2846b58da7bc0db69ea932cebfbee45c9ca970b1624c3ae64e8754cfa2"
+            "sha256": "41009cd3b0176f71e939383f9d227b7e31ccab685b88390c61dfd9756a8b6a99"
           },
           {
             "path": "src/infrastructure/rulesets/ruleset-service.ts",
@@ -41188,7 +41188,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-rulesets.json",
-      "sourceContractSha256": "7df8430c3c9f290fe777d2df8018222d060f469924ebde80c5613c2107273395",
+      "sourceContractSha256": "3769625e1d3ff9175702e7f72b6a03e40d460d923f467fab7247a33613af3094",
       "rpcUsed": [],
       "tablesTouched": [
         "rulesets"
@@ -41407,7 +41407,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "ff335f2846b58da7bc0db69ea932cebfbee45c9ca970b1624c3ae64e8754cfa2"
+            "sha256": "41009cd3b0176f71e939383f9d227b7e31ccab685b88390c61dfd9756a8b6a99"
           },
           {
             "path": "src/infrastructure/host/host-product-deny.ts",
@@ -41455,7 +41455,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-saga.json",
-      "sourceContractSha256": "0e83cbd856339030580e6c1bcbe433c8ba2fcce204056c528e8e4d87491c5cb1",
+      "sourceContractSha256": "86d4a5d14a538125cd70a28a8ce7d94c72f68e978b40113f353e339a1b624ac1",
       "rpcUsed": [
         "copy_native_saga_definition",
         "create_project_from_saga_version",
@@ -41945,7 +41945,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "ff335f2846b58da7bc0db69ea932cebfbee45c9ca970b1624c3ae64e8754cfa2"
+            "sha256": "41009cd3b0176f71e939383f9d227b7e31ccab685b88390c61dfd9756a8b6a99"
           },
           {
             "path": "src/infrastructure/host/host-session-http.ts",
@@ -42041,7 +42041,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-session.json",
-      "sourceContractSha256": "bab4d68cb6a0b3f4f2a1d0013d0fe6bb44b587df73e13b33c7b5e41bc96ec6e4",
+      "sourceContractSha256": "b589895beccc3addff7ba70c5118311756e9f209cfb3e52bc274c058728dd29e",
       "rpcUsed": [
         "apply_session_runtime_command",
         "create_play_session",
@@ -43958,7 +43958,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "ff335f2846b58da7bc0db69ea932cebfbee45c9ca970b1624c3ae64e8754cfa2"
+            "sha256": "41009cd3b0176f71e939383f9d227b7e31ccab685b88390c61dfd9756a8b6a99"
           },
           {
             "path": "src/infrastructure/media/optimizer/engines/audio/index.ts",
@@ -44066,7 +44066,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-user-profile.json",
-      "sourceContractSha256": "aa7ddc3cf968e15fb6197364db682c63bf4deceba287c7798114eb3a27f8182f",
+      "sourceContractSha256": "1805c5a29e5c7e321e24f1ef1e1a5164b8f9b011927299828731d700b0541035",
       "rpcUsed": [],
       "tablesTouched": [
         "user_profiles"
@@ -44853,7 +44853,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "ff335f2846b58da7bc0db69ea932cebfbee45c9ca970b1624c3ae64e8754cfa2"
+            "sha256": "41009cd3b0176f71e939383f9d227b7e31ccab685b88390c61dfd9756a8b6a99"
           },
           {
             "path": "src/infrastructure/host/host-world-http.ts",
@@ -44965,7 +44965,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-world.json",
-      "sourceContractSha256": "013c95ed8744f0f701a3697d71d21e2d0f86a232513c3e86854f9013263a53b2",
+      "sourceContractSha256": "0c2f8e3b60590d4989b1c20d76d4cb8edc771e740dd4cd60437c410b21f7326e",
       "rpcUsed": [
         "archive_world_node_subtree",
         "create_world_node_with_maps",
