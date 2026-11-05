@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-session.json](source-contracts/infra-session.json) (SHA-256 `b1310e6874e81c3c0d7b69c8ecf8bd6e4e45afeedf679e8e1c4238713feba3f0`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-session.json](source-contracts/infra-session.json) (SHA-256 `f2c3eebba1c717506a5c57df52dee47ba96cab36e58fe8b7a1dd5921664b5b2a`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -705,7 +705,7 @@ supabase.rpc('leave_play_session', {
 Enclosing operation: `src/infrastructure/session/session-service.ts:360`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: sessions
 
-`src/infrastructure/session/session-service.ts:403` — literal-or-constant.
+`src/infrastructure/session/session-service.ts:405` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -715,7 +715,7 @@ supabase.from(this.tableName).delete().eq('id', id)
 Enclosing operation: `src/infrastructure/session/session-service.ts:380`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### rpc: create_session_invite
 
-`src/infrastructure/session/session-service.ts:427` — literal-or-constant.
+`src/infrastructure/session/session-service.ts:429` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -724,10 +724,10 @@ supabase.rpc('create_session_invite', {
     })
 ```
 
-Enclosing operation: `src/infrastructure/session/session-service.ts:417`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/session/session-service.ts:419`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### rpc: resolve_session_invite
 
-`src/infrastructure/session/session-service.ts:470` — literal-or-constant.
+`src/infrastructure/session/session-service.ts:472` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -736,10 +736,10 @@ supabase.rpc('resolve_session_invite', {
     })
 ```
 
-Enclosing operation: `src/infrastructure/session/session-service.ts:443`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/session/session-service.ts:445`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### rpc: revoke_session_invite
 
-`src/infrastructure/session/session-service.ts:489` — literal-or-constant.
+`src/infrastructure/session/session-service.ts:491` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -748,7 +748,7 @@ supabase.rpc('revoke_session_invite', {
     })
 ```
 
-Enclosing operation: `src/infrastructure/session/session-service.ts:479`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/session/session-service.ts:481`; complete request/default/result/error logic is in the declarations below and the snapshot.
 
 ## Complete public declarations and facade operation contracts
 
@@ -1967,7 +1967,7 @@ export function mapSnapshotJson(data: SnapshotJson): SessionRuntimeState {
 export const sessionRuntimeService = new SessionRuntimeService();
 ```
 
-### src/infrastructure/session/session-service.ts:498
+### src/infrastructure/session/session-service.ts:500
 
 ```ts
 export const sessionService = new SessionService();
@@ -2478,11 +2478,11 @@ async leaveSession(sessionId: string): Promise<void> {
 
 ```ts
 async deleteSession(sessionId: string): Promise<void> {
-    await this.requireAuthUser();
     const id = sessionId.trim();
     if (!id) {
       throw new Error('Session-ID fehlt');
     }
+    // Host-first: Better Auth cookie path — never require Supabase session first.
     if (isHostLibraryEnabled()) {
       try {
         await deleteHostPlaySession(id);
@@ -2500,6 +2500,8 @@ async deleteSession(sessionId: string): Promise<void> {
       return;
     }
 
+    await this.requireAuthUser();
+
     const { error } = await supabase.from(this.tableName).delete().eq('id', id);
 
     if (error) {
@@ -2512,7 +2514,7 @@ async deleteSession(sessionId: string): Promise<void> {
   }
 ```
 
-### src/infrastructure/session/session-service.ts:417
+### src/infrastructure/session/session-service.ts:419
 
 ```ts
 async createSessionInvite(sessionId: string): Promise<SessionInviteCreateResult> {
@@ -2539,7 +2541,7 @@ async createSessionInvite(sessionId: string): Promise<SessionInviteCreateResult>
   }
 ```
 
-### src/infrastructure/session/session-service.ts:443
+### src/infrastructure/session/session-service.ts:445
 
 ```ts
 async resolveSessionInvite(token: string): Promise<SessionInviteResolveResult> {
@@ -2579,7 +2581,7 @@ async resolveSessionInvite(token: string): Promise<SessionInviteResolveResult> {
   }
 ```
 
-### src/infrastructure/session/session-service.ts:479
+### src/infrastructure/session/session-service.ts:481
 
 ```ts
 async revokeSessionInvite(token: string): Promise<void> {
@@ -2631,7 +2633,7 @@ async revokeSessionInvite(token: string): Promise<void> {
 | `src/infrastructure/session/session-recap-service.ts` | `e98ca57169a56a5ce0943018e33b0d7c863754e4787eace8bf0e2bbc2930fca5` |
 | `src/infrastructure/session/session-runtime-channel.ts` | `248a264d97d01d522e05baa27132799d08bc092e661a72cca6ed501d7f48cdf5` |
 | `src/infrastructure/session/session-runtime-service.ts` | `67026e83dc5320ff5f2274d5ee4f65c95f97e3d1d6828dcfeb5d5652feddbe79` |
-| `src/infrastructure/session/session-service.ts` | `21a66ecf5936408ff231aa53ab4255e4590e7cb9c8e8dc3de6fd0156e8dc4069` |
+| `src/infrastructure/session/session-service.ts` | `9109e84fb2c7625aae96928d15b3c0e44ea4598cded3a9e0601d6e4031e8db2d` |
 | `src/lib/authenticatedUser.ts` | `d4cbf3a004f8375982ca03d474fb7b61559fc2ec58ad6fe7b1f8834d26abf10c` |
 | `src/lib/hostAuthBridge.ts` | `30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a` |
 | `src/lib/localAdmin.ts` | `3a28dec23e85f25ed3e70682bc6e7f8c6b55e81dbbefdd1f6a837f68ac80d6b5` |

@@ -65,7 +65,7 @@
     },
     {
       "path": "src/infrastructure/session/session-service.ts",
-      "sha256": "21a66ecf5936408ff231aa53ab4255e4590e7cb9c8e8dc3de6fd0156e8dc4069"
+      "sha256": "9109e84fb2c7625aae96928d15b3c0e44ea4598cded3a9e0601d6e4031e8db2d"
     }
   ],
   "supportingSourceFiles": [
@@ -1352,8 +1352,8 @@
       "kind": "table",
       "name": "sessions",
       "path": "src/infrastructure/session/session-service.ts",
-      "line": 403,
-      "endLine": 403,
+      "line": 405,
+      "endLine": 405,
       "resolution": "literal-or-constant",
       "expression": "supabase.from(this.tableName)",
       "chain": "supabase.from(this.tableName).delete().eq('id', id)",
@@ -1363,16 +1363,16 @@
       "enclosingOperation": {
         "path": "src/infrastructure/session/session-service.ts",
         "line": 380,
-        "endLine": 412,
-        "text": "async deleteSession(sessionId: string): Promise<void> {\n    await this.requireAuthUser();\n    const id = sessionId.trim();\n    if (!id) {\n      throw new Error('Session-ID fehlt');\n    }\n    if (isHostLibraryEnabled()) {\n      try {\n        await deleteHostPlaySession(id);\n      } catch (error) {\n        const message = error instanceof Error ? error.message : String(error);\n        if (/42501|forbidden|not[_-]?authorized/i.test(message)) {\n          throw new Error('Nur der Gamemaster kann Sessions löschen.');\n        }\n        throw new Error(\n          message.includes('Host-Session löschen fehlgeschlagen')\n            ? message\n            : `Session konnte nicht gelöscht werden: ${message}`,\n        );\n      }\n      return;\n    }\n\n    const { error } = await supabase.from(this.tableName).delete().eq('id', id);\n\n    if (error) {\n      throw new Error(\n        error.message.includes('row-level security')\n          ? 'Nur der Gamemaster kann Sessions löschen.'\n          : `Session konnte nicht gelöscht werden: ${error.message}`,\n      );\n    }\n  }"
+        "endLine": 414,
+        "text": "async deleteSession(sessionId: string): Promise<void> {\n    const id = sessionId.trim();\n    if (!id) {\n      throw new Error('Session-ID fehlt');\n    }\n    // Host-first: Better Auth cookie path — never require Supabase session first.\n    if (isHostLibraryEnabled()) {\n      try {\n        await deleteHostPlaySession(id);\n      } catch (error) {\n        const message = error instanceof Error ? error.message : String(error);\n        if (/42501|forbidden|not[_-]?authorized/i.test(message)) {\n          throw new Error('Nur der Gamemaster kann Sessions löschen.');\n        }\n        throw new Error(\n          message.includes('Host-Session löschen fehlgeschlagen')\n            ? message\n            : `Session konnte nicht gelöscht werden: ${message}`,\n        );\n      }\n      return;\n    }\n\n    await this.requireAuthUser();\n\n    const { error } = await supabase.from(this.tableName).delete().eq('id', id);\n\n    if (error) {\n      throw new Error(\n        error.message.includes('row-level security')\n          ? 'Nur der Gamemaster kann Sessions löschen.'\n          : `Session konnte nicht gelöscht werden: ${error.message}`,\n      );\n    }\n  }"
       }
     },
     {
       "kind": "rpc",
       "name": "create_session_invite",
       "path": "src/infrastructure/session/session-service.ts",
-      "line": 427,
-      "endLine": 429,
+      "line": 429,
+      "endLine": 431,
       "resolution": "literal-or-constant",
       "expression": "supabase.rpc('create_session_invite', {\n      p_session_id: sessionId,\n    })",
       "chain": "supabase.rpc('create_session_invite', {\n      p_session_id: sessionId,\n    })",
@@ -1382,8 +1382,8 @@
       ],
       "enclosingOperation": {
         "path": "src/infrastructure/session/session-service.ts",
-        "line": 417,
-        "endLine": 438,
+        "line": 419,
+        "endLine": 440,
         "text": "async createSessionInvite(sessionId: string): Promise<SessionInviteCreateResult> {\n    if (isHostLibraryEnabled()) {\n      const invite = await createHostSessionInvite(sessionId);\n      const mapped = mapInviteCreatePayload(invite);\n      if (!mapped) {\n        throw new Error('Einladung konnte nicht erstellt werden: ungültige Server-Antwort');\n      }\n      return mapped;\n    }\n    await this.requireAuthUser();\n    const { data, error } = await supabase.rpc('create_session_invite', {\n      p_session_id: sessionId,\n    });\n    if (error) {\n      throw new Error(`Einladung konnte nicht erstellt werden: ${error.message}`);\n    }\n    const mapped = mapInviteCreatePayload(data);\n    if (!mapped) {\n      throw new Error('Einladung konnte nicht erstellt werden: ungültige Server-Antwort');\n    }\n    return mapped;\n  }"
       }
     },
@@ -1391,8 +1391,8 @@
       "kind": "rpc",
       "name": "resolve_session_invite",
       "path": "src/infrastructure/session/session-service.ts",
-      "line": 470,
-      "endLine": 472,
+      "line": 472,
+      "endLine": 474,
       "resolution": "literal-or-constant",
       "expression": "supabase.rpc('resolve_session_invite', {\n      p_token: normalized,\n    })",
       "chain": "supabase.rpc('resolve_session_invite', {\n      p_token: normalized,\n    })",
@@ -1402,8 +1402,8 @@
       ],
       "enclosingOperation": {
         "path": "src/infrastructure/session/session-service.ts",
-        "line": 443,
-        "endLine": 477,
+        "line": 445,
+        "endLine": 479,
         "text": "async resolveSessionInvite(token: string): Promise<SessionInviteResolveResult> {\n    const normalized = normalizeInviteToken(token);\n    if (!normalized) {\n      return { ok: false, errorCode: 'missing_token' };\n    }\n    if (isHostLibraryEnabled()) {\n      try {\n        const invite = await resolveHostSessionInvite(normalized);\n        return mapInviteResolvePayload(invite);\n      } catch (err) {\n        const message = err instanceof Error ? err.message : String(err);\n        const mapped = mapInviteResolvePayload({\n          ok: false,\n          error_code: message.includes('expired')\n            ? 'expired'\n            : message.includes('revoked')\n              ? 'revoked'\n              : message.includes('completed')\n                ? 'session_completed'\n                : message.includes('missing') || message.includes('P0002')\n                  ? 'not_found'\n                  : 'not_found',\n        });\n        return mapped;\n      }\n    }\n    await this.requireAuthUser();\n    const { data, error } = await supabase.rpc('resolve_session_invite', {\n      p_token: normalized,\n    });\n    if (error) {\n      throw new Error(`Einladung konnte nicht gelesen werden: ${error.message}`);\n    }\n    return mapInviteResolvePayload(data);\n  }"
       }
     },
@@ -1411,8 +1411,8 @@
       "kind": "rpc",
       "name": "revoke_session_invite",
       "path": "src/infrastructure/session/session-service.ts",
-      "line": 489,
-      "endLine": 491,
+      "line": 491,
+      "endLine": 493,
       "resolution": "literal-or-constant",
       "expression": "supabase.rpc('revoke_session_invite', {\n      p_token: normalized,\n    })",
       "chain": "supabase.rpc('revoke_session_invite', {\n      p_token: normalized,\n    })",
@@ -1422,8 +1422,8 @@
       ],
       "enclosingOperation": {
         "path": "src/infrastructure/session/session-service.ts",
-        "line": 479,
-        "endLine": 495,
+        "line": 481,
+        "endLine": 497,
         "text": "async revokeSessionInvite(token: string): Promise<void> {\n    const normalized = normalizeInviteToken(token);\n    if (!normalized) {\n      throw new Error('Token fehlt');\n    }\n    if (isHostLibraryEnabled()) {\n      await revokeHostSessionInvite(normalized);\n      return;\n    }\n    await this.requireAuthUser();\n    const { error } = await supabase.rpc('revoke_session_invite', {\n      p_token: normalized,\n    });\n    if (error) {\n      throw new Error(`Einladung konnte nicht widerrufen werden: ${error.message}`);\n    }\n  }"
       }
     }
@@ -2063,8 +2063,8 @@
     },
     {
       "path": "src/infrastructure/session/session-service.ts",
-      "line": 498,
-      "endLine": 498,
+      "line": 500,
+      "endLine": 500,
       "text": "export const sessionService = new SessionService();"
     }
   ],
@@ -2821,28 +2821,28 @@
     {
       "path": "src/infrastructure/session/session-service.ts",
       "line": 380,
-      "endLine": 412,
+      "endLine": 414,
       "name": "deleteSession",
-      "text": "async deleteSession(sessionId: string): Promise<void> {\n    await this.requireAuthUser();\n    const id = sessionId.trim();\n    if (!id) {\n      throw new Error('Session-ID fehlt');\n    }\n    if (isHostLibraryEnabled()) {\n      try {\n        await deleteHostPlaySession(id);\n      } catch (error) {\n        const message = error instanceof Error ? error.message : String(error);\n        if (/42501|forbidden|not[_-]?authorized/i.test(message)) {\n          throw new Error('Nur der Gamemaster kann Sessions löschen.');\n        }\n        throw new Error(\n          message.includes('Host-Session löschen fehlgeschlagen')\n            ? message\n            : `Session konnte nicht gelöscht werden: ${message}`,\n        );\n      }\n      return;\n    }\n\n    const { error } = await supabase.from(this.tableName).delete().eq('id', id);\n\n    if (error) {\n      throw new Error(\n        error.message.includes('row-level security')\n          ? 'Nur der Gamemaster kann Sessions löschen.'\n          : `Session konnte nicht gelöscht werden: ${error.message}`,\n      );\n    }\n  }"
+      "text": "async deleteSession(sessionId: string): Promise<void> {\n    const id = sessionId.trim();\n    if (!id) {\n      throw new Error('Session-ID fehlt');\n    }\n    // Host-first: Better Auth cookie path — never require Supabase session first.\n    if (isHostLibraryEnabled()) {\n      try {\n        await deleteHostPlaySession(id);\n      } catch (error) {\n        const message = error instanceof Error ? error.message : String(error);\n        if (/42501|forbidden|not[_-]?authorized/i.test(message)) {\n          throw new Error('Nur der Gamemaster kann Sessions löschen.');\n        }\n        throw new Error(\n          message.includes('Host-Session löschen fehlgeschlagen')\n            ? message\n            : `Session konnte nicht gelöscht werden: ${message}`,\n        );\n      }\n      return;\n    }\n\n    await this.requireAuthUser();\n\n    const { error } = await supabase.from(this.tableName).delete().eq('id', id);\n\n    if (error) {\n      throw new Error(\n        error.message.includes('row-level security')\n          ? 'Nur der Gamemaster kann Sessions löschen.'\n          : `Session konnte nicht gelöscht werden: ${error.message}`,\n      );\n    }\n  }"
     },
     {
       "path": "src/infrastructure/session/session-service.ts",
-      "line": 417,
-      "endLine": 438,
+      "line": 419,
+      "endLine": 440,
       "name": "createSessionInvite",
       "text": "async createSessionInvite(sessionId: string): Promise<SessionInviteCreateResult> {\n    if (isHostLibraryEnabled()) {\n      const invite = await createHostSessionInvite(sessionId);\n      const mapped = mapInviteCreatePayload(invite);\n      if (!mapped) {\n        throw new Error('Einladung konnte nicht erstellt werden: ungültige Server-Antwort');\n      }\n      return mapped;\n    }\n    await this.requireAuthUser();\n    const { data, error } = await supabase.rpc('create_session_invite', {\n      p_session_id: sessionId,\n    });\n    if (error) {\n      throw new Error(`Einladung konnte nicht erstellt werden: ${error.message}`);\n    }\n    const mapped = mapInviteCreatePayload(data);\n    if (!mapped) {\n      throw new Error('Einladung konnte nicht erstellt werden: ungültige Server-Antwort');\n    }\n    return mapped;\n  }"
     },
     {
       "path": "src/infrastructure/session/session-service.ts",
-      "line": 443,
-      "endLine": 477,
+      "line": 445,
+      "endLine": 479,
       "name": "resolveSessionInvite",
       "text": "async resolveSessionInvite(token: string): Promise<SessionInviteResolveResult> {\n    const normalized = normalizeInviteToken(token);\n    if (!normalized) {\n      return { ok: false, errorCode: 'missing_token' };\n    }\n    if (isHostLibraryEnabled()) {\n      try {\n        const invite = await resolveHostSessionInvite(normalized);\n        return mapInviteResolvePayload(invite);\n      } catch (err) {\n        const message = err instanceof Error ? err.message : String(err);\n        const mapped = mapInviteResolvePayload({\n          ok: false,\n          error_code: message.includes('expired')\n            ? 'expired'\n            : message.includes('revoked')\n              ? 'revoked'\n              : message.includes('completed')\n                ? 'session_completed'\n                : message.includes('missing') || message.includes('P0002')\n                  ? 'not_found'\n                  : 'not_found',\n        });\n        return mapped;\n      }\n    }\n    await this.requireAuthUser();\n    const { data, error } = await supabase.rpc('resolve_session_invite', {\n      p_token: normalized,\n    });\n    if (error) {\n      throw new Error(`Einladung konnte nicht gelesen werden: ${error.message}`);\n    }\n    return mapInviteResolvePayload(data);\n  }"
     },
     {
       "path": "src/infrastructure/session/session-service.ts",
-      "line": 479,
-      "endLine": 495,
+      "line": 481,
+      "endLine": 497,
       "name": "revokeSessionInvite",
       "text": "async revokeSessionInvite(token: string): Promise<void> {\n    const normalized = normalizeInviteToken(token);\n    if (!normalized) {\n      throw new Error('Token fehlt');\n    }\n    if (isHostLibraryEnabled()) {\n      await revokeHostSessionInvite(normalized);\n      return;\n    }\n    await this.requireAuthUser();\n    const { error } = await supabase.rpc('revoke_session_invite', {\n      p_token: normalized,\n    });\n    if (error) {\n      throw new Error(`Einladung konnte nicht widerrufen werden: ${error.message}`);\n    }\n  }"
     }

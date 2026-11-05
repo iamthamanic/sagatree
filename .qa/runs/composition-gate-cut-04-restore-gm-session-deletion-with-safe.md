@@ -12,7 +12,9 @@
 Under host-first, GM session deletion uses Host HTTP
 `DELETE /api/v1/sessions/:sessionId` backed by
 `SessionLifecyclePort.deletePlaySession`. Cascades invites/players/recaps via FK;
-clears `npc_creature_instances.session_id`; deletes session_runtime graph.
+NPC instance `session_id` is detached via owning
+`NpcCreaturePorts.detachInstancesFromSession` before the session row delete;
+session_runtime graph is removed in the session transaction.
 Legacy Supabase path remains only when host library is off.
 
 ## Hop chain
@@ -21,7 +23,7 @@ Legacy Supabase path remains only when host library is off.
 2. **Gate:** `isHostLibraryEnabled()`
 3. **Transport:** credentialed `DELETE` via `deleteHostPlaySession`
 4. **Authorize:** Session actor; GM-only mutate
-5. **Persist:** SQLite transaction (SET NULL npc → delete runtime graph → delete play_sessions)
+5. **Persist:** NPC detach port then session SQLite transaction (runtime graph → delete play_sessions)
 6. **Consumer:** UI navigates back; reload finds session absent
 
 Cardinality: one delete per session id. No cross-owner fan-out. Shared world/character assets retained.

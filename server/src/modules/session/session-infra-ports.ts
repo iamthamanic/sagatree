@@ -167,10 +167,12 @@ export function createSessionInfraPorts(session: SessionPortsForInfra) {
         : { ok: false, error: r.error };
     },
     deletePlaySession(
-      actorId: string,
+      actorOrId: Actor | string,
       sessionId: string,
     ): SessionInfraResult<{ readonly sessionId: string }> {
-      const r = session.lifecycle.deletePlaySession(asActor(actorId), sessionId);
+      // Prefer resolved Actor so linkedSoloActorIds survive (asActor drops them → false 403).
+      const actor = typeof actorOrId === 'string' ? asActor(actorOrId) : actorOrId;
+      const r = session.lifecycle.deletePlaySession(actor, sessionId);
       return r.ok ? { ok: true, value: r.value } : { ok: false, error: r.error };
     },
     resolveSessionInvite(

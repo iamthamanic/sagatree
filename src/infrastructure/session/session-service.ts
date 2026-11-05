@@ -378,11 +378,11 @@ class SessionService {
    * GM deletes a play session (RLS: "GMs can manage sessions"). Cascades players/runtime.
    */
   async deleteSession(sessionId: string): Promise<void> {
-    await this.requireAuthUser();
     const id = sessionId.trim();
     if (!id) {
       throw new Error('Session-ID fehlt');
     }
+    // Host-first: Better Auth cookie path — never require Supabase session first.
     if (isHostLibraryEnabled()) {
       try {
         await deleteHostPlaySession(id);
@@ -399,6 +399,8 @@ class SessionService {
       }
       return;
     }
+
+    await this.requireAuthUser();
 
     const { error } = await supabase.from(this.tableName).delete().eq('id', id);
 

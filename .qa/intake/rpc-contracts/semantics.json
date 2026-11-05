@@ -4061,7 +4061,7 @@
       },
       {
         "path": "src/infrastructure/session/session-service.ts",
-        "sha256": "21a66ecf5936408ff231aa53ab4255e4590e7cb9c8e8dc3de6fd0156e8dc4069"
+        "sha256": "9109e84fb2c7625aae96928d15b3c0e44ea4598cded3a9e0601d6e4031e8db2d"
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
@@ -4309,7 +4309,7 @@
       },
       {
         "path": "src/infrastructure/session/session-service.ts",
-        "sha256": "21a66ecf5936408ff231aa53ab4255e4590e7cb9c8e8dc3de6fd0156e8dc4069"
+        "sha256": "9109e84fb2c7625aae96928d15b3c0e44ea4598cded3a9e0601d6e4031e8db2d"
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
@@ -4505,7 +4505,7 @@
       },
       {
         "path": "src/infrastructure/session/session-service.ts",
-        "sha256": "21a66ecf5936408ff231aa53ab4255e4590e7cb9c8e8dc3de6fd0156e8dc4069"
+        "sha256": "9109e84fb2c7625aae96928d15b3c0e44ea4598cded3a9e0601d6e4031e8db2d"
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
@@ -4644,7 +4644,7 @@
       },
       {
         "path": "src/infrastructure/session/session-service.ts",
-        "sha256": "21a66ecf5936408ff231aa53ab4255e4590e7cb9c8e8dc3de6fd0156e8dc4069"
+        "sha256": "9109e84fb2c7625aae96928d15b3c0e44ea4598cded3a9e0601d6e4031e8db2d"
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
@@ -4773,7 +4773,7 @@
       },
       {
         "path": "src/infrastructure/session/session-service.ts",
-        "sha256": "21a66ecf5936408ff231aa53ab4255e4590e7cb9c8e8dc3de6fd0156e8dc4069"
+        "sha256": "9109e84fb2c7625aae96928d15b3c0e44ea4598cded3a9e0601d6e4031e8db2d"
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
@@ -4879,7 +4879,7 @@
       },
       {
         "path": "src/infrastructure/session/session-service.ts",
-        "sha256": "21a66ecf5936408ff231aa53ab4255e4590e7cb9c8e8dc3de6fd0156e8dc4069"
+        "sha256": "9109e84fb2c7625aae96928d15b3c0e44ea4598cded3a9e0601d6e4031e8db2d"
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
@@ -5032,7 +5032,7 @@
       },
       {
         "path": "src/infrastructure/session/session-service.ts",
-        "sha256": "21a66ecf5936408ff231aa53ab4255e4590e7cb9c8e8dc3de6fd0156e8dc4069"
+        "sha256": "9109e84fb2c7625aae96928d15b3c0e44ea4598cded3a9e0601d6e4031e8db2d"
       },
       {
         "path": "src/lib/hostAuthBridge.ts",

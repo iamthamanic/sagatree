@@ -943,4 +943,38 @@ export class NpcInstanceStore {
       return { ok: false, error: 'P0001' };
     }
   }
+
+  /**
+   * CUT-04 — detach instance→session FK before play_sessions delete
+   * (PG parity: ON DELETE SET NULL). Owning-module write only.
+   */
+  detachInstancesFromSession(
+    actorIds: readonly string[],
+    sessionId: string,
+  ): Ok<{ readonly detached: number }> | NpcError {
+    if (!actorIds[0]) return { ok: false, error: 'P0001:not authenticated' };
+    const id = typeof sessionId === 'string' ? sessionId.trim() : '';
+    if (!id) return { ok: false, error: 'P0001:session not found' };
+    const projectId = this.#session.sessionProjectId(id);
+    if (!projectId) return { ok: false, error: 'P0001:session not found' };
+    if (!this.#isNarrowGm(projectId, actorIds)) {
+      return { ok: false, error: 'P0001:only gm may detach session instances' };
+    }
+    try {
+      const now = nowIso();
+      const result = this.#db
+        .prepare(
+          `UPDATE npc_creature_instances SET session_id = NULL, updated_at = ?
+           WHERE session_id = ?`,
+        )
+        .run(now, id);
+      const detached =
+        typeof result === 'object' && result !== null && 'changes' in result
+          ? Number((result as { changes: number }).changes)
+          : 0;
+      return { ok: true, value: { detached } };
+    } catch {
+      return { ok: false, error: 'P0001' };
+    }
+  }
 }

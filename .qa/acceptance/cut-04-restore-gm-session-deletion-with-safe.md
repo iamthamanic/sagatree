@@ -12,8 +12,9 @@ See `.qa/runs/composition-gate-cut-04-restore-gm-session-deletion-with-safe.md`.
 ## Evidence
 
 - `scripts/cut-04-session-delete.self-test.mjs` — GM delete OK; player/stranger DENY; missing/idempotent; cascade + npc SET NULL; restart durable
-- Dual-path: `session-service.deleteSession` + `deleteHostPlaySession`
+- Dual-path: `session-service.deleteSession` (host before Supabase auth) + `deleteHostPlaySession`
 - Port: `SessionLifecyclePort.deletePlaySession` → `DELETE /api/v1/sessions/:sessionId`
+- NPC detach: `NpcCreaturePorts.detachInstancesFromSession` before session row delete
 
 ## UI/UX
 

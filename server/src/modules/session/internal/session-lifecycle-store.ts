@@ -472,7 +472,8 @@ export class SessionLifecycleStore {
 
   /**
    * GM deletes a play session. Cascades invites/players/recaps via FK;
-   * clears npc instance session_id; removes session_runtime graph.
+   * removes session_runtime graph. NPC session_id detach is owned by
+   * npc-creature (`detachInstancesFromSession`) and must run first.
    * Idempotent missing → P0002.
    */
   deletePlaySession(
@@ -487,14 +488,6 @@ export class SessionLifecycleStore {
         const current = this.#read(id);
         if (!current) return { ok: false, error: 'P0002' };
         if (!this.#isGm(current.projectId, actorIds)) return { ok: false, error: '42501' };
-
-        // PG parity: npc_creature_instances.session_id ON DELETE SET NULL
-        this.#db
-          .prepare(
-            `UPDATE npc_creature_instances SET session_id = NULL, updated_at = ?
-             WHERE session_id = ?`,
-          )
-          .run(nowIso(), id);
 
         // Runtime graph is not FK-bound to play_sessions — delete explicitly.
         this.#db.prepare(`DELETE FROM session_events WHERE session_id = ?`).run(id);

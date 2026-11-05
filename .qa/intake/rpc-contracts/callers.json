@@ -1558,7 +1558,7 @@
       "resolution": "string-literal",
       "path": "src/infrastructure/session/session-service.ts",
       "line": 210,
-      "sourceSha256": "21a66ecf5936408ff231aa53ab4255e4590e7cb9c8e8dc3de6fd0156e8dc4069",
+      "sourceSha256": "9109e84fb2c7625aae96928d15b3c0e44ea4598cded3a9e0601d6e4031e8db2d",
       "requestExpression": "{\n      p_project_id: projectId,\n      p_name: payload.name,\n    }",
       "requestKeys": [
         "p_project_id",
@@ -1685,7 +1685,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/session/session-service.ts",
           "line": 55,
-          "sourceSha256": "21a66ecf5936408ff231aa53ab4255e4590e7cb9c8e8dc3de6fd0156e8dc4069",
+          "sourceSha256": "9109e84fb2c7625aae96928d15b3c0e44ea4598cded3a9e0601d6e4031e8db2d",
           "source": "function mapHostPlaySessionToVm(row: HostPlaySessionDto): SessionVm {\n  const createdAt = row.createdAt ? new Date(row.createdAt) : new Date();\n  const code = row.joinCode ?? row.code ?? '';\n  return {\n    id: row.sessionId,\n    code: typeof code === 'string' ? code : '',\n    name: row.name ?? '',\n    adventureId: row.projectId,\n    projectId: row.projectId,\n    publicId: row.publicId ?? null,\n    gmUserId: row.gmUserId ?? '',\n    status: normalizePlaySessionStatus(row.status),\n    createdAt,\n    updatedAt: createdAt,\n    startedAt: row.startedAt ? new Date(row.startedAt) : null,\n    endedAt: row.endedAt ? new Date(row.endedAt) : null,\n    players: (row.players ?? []).map((p, index) => ({\n      id: p.id ?? `${row.sessionId}-${p.userId ?? index}`,\n      sessionId: row.sessionId,\n      userId: p.userId ?? '',\n      characterId: p.characterId ?? null,\n      isOnline: p.isOnline === true,\n      joinedAt: p.joinedAt ? new Date(p.joinedAt) : createdAt,\n    })),\n  };\n}"
         },
         {
@@ -1693,7 +1693,7 @@
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/session/session-service.ts",
           "line": 82,
-          "sourceSha256": "21a66ecf5936408ff231aa53ab4255e4590e7cb9c8e8dc3de6fd0156e8dc4069",
+          "sourceSha256": "9109e84fb2c7625aae96928d15b3c0e44ea4598cded3a9e0601d6e4031e8db2d",
           "source": "type SessionRow = {\n  id: string;\n  /** Join code — optional; not always present on older schemas / safe selects. */\n  code?: string | null;\n  name: string | null;\n  project_id: string | null;\n  public_id?: string | null;\n  status: string;\n  created_at: string;\n  updated_at: string;\n  started_at: string | null;\n  ended_at: string | null;\n};"
         },
         {
@@ -2235,8 +2235,8 @@
       "rpc": "create_session_invite",
       "resolution": "string-literal",
       "path": "src/infrastructure/session/session-service.ts",
-      "line": 427,
-      "sourceSha256": "21a66ecf5936408ff231aa53ab4255e4590e7cb9c8e8dc3de6fd0156e8dc4069",
+      "line": 429,
+      "sourceSha256": "9109e84fb2c7625aae96928d15b3c0e44ea4598cded3a9e0601d6e4031e8db2d",
       "requestExpression": "{\n      p_session_id: sessionId,\n    }",
       "requestKeys": [
         "p_session_id"
@@ -6929,7 +6929,7 @@
       "resolution": "string-literal",
       "path": "src/infrastructure/session/session-service.ts",
       "line": 233,
-      "sourceSha256": "21a66ecf5936408ff231aa53ab4255e4590e7cb9c8e8dc3de6fd0156e8dc4069",
+      "sourceSha256": "9109e84fb2c7625aae96928d15b3c0e44ea4598cded3a9e0601d6e4031e8db2d",
       "requestExpression": "{\n      p_code: code,\n      p_character_id: payload.character_id ?? null,\n    }",
       "requestKeys": [
         "p_code",
@@ -7064,7 +7064,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/session/session-service.ts",
           "line": 55,
-          "sourceSha256": "21a66ecf5936408ff231aa53ab4255e4590e7cb9c8e8dc3de6fd0156e8dc4069",
+          "sourceSha256": "9109e84fb2c7625aae96928d15b3c0e44ea4598cded3a9e0601d6e4031e8db2d",
           "source": "function mapHostPlaySessionToVm(row: HostPlaySessionDto): SessionVm {\n  const createdAt = row.createdAt ? new Date(row.createdAt) : new Date();\n  const code = row.joinCode ?? row.code ?? '';\n  return {\n    id: row.sessionId,\n    code: typeof code === 'string' ? code : '',\n    name: row.name ?? '',\n    adventureId: row.projectId,\n    projectId: row.projectId,\n    publicId: row.publicId ?? null,\n    gmUserId: row.gmUserId ?? '',\n    status: normalizePlaySessionStatus(row.status),\n    createdAt,\n    updatedAt: createdAt,\n    startedAt: row.startedAt ? new Date(row.startedAt) : null,\n    endedAt: row.endedAt ? new Date(row.endedAt) : null,\n    players: (row.players ?? []).map((p, index) => ({\n      id: p.id ?? `${row.sessionId}-${p.userId ?? index}`,\n      sessionId: row.sessionId,\n      userId: p.userId ?? '',\n      characterId: p.characterId ?? null,\n      isOnline: p.isOnline === true,\n      joinedAt: p.joinedAt ? new Date(p.joinedAt) : createdAt,\n    })),\n  };\n}"
         },
         {
@@ -7072,7 +7072,7 @@
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/session/session-service.ts",
           "line": 82,
-          "sourceSha256": "21a66ecf5936408ff231aa53ab4255e4590e7cb9c8e8dc3de6fd0156e8dc4069",
+          "sourceSha256": "9109e84fb2c7625aae96928d15b3c0e44ea4598cded3a9e0601d6e4031e8db2d",
           "source": "type SessionRow = {\n  id: string;\n  /** Join code — optional; not always present on older schemas / safe selects. */\n  code?: string | null;\n  name: string | null;\n  project_id: string | null;\n  public_id?: string | null;\n  status: string;\n  created_at: string;\n  updated_at: string;\n  started_at: string | null;\n  ended_at: string | null;\n};"
         },
         {
@@ -7170,7 +7170,7 @@
       "resolution": "string-literal",
       "path": "src/infrastructure/session/session-service.ts",
       "line": 368,
-      "sourceSha256": "21a66ecf5936408ff231aa53ab4255e4590e7cb9c8e8dc3de6fd0156e8dc4069",
+      "sourceSha256": "9109e84fb2c7625aae96928d15b3c0e44ea4598cded3a9e0601d6e4031e8db2d",
       "requestExpression": "{\n      p_session_id: sessionId,\n    }",
       "requestKeys": [
         "p_session_id"
@@ -10034,8 +10034,8 @@
       "rpc": "resolve_session_invite",
       "resolution": "string-literal",
       "path": "src/infrastructure/session/session-service.ts",
-      "line": 470,
-      "sourceSha256": "21a66ecf5936408ff231aa53ab4255e4590e7cb9c8e8dc3de6fd0156e8dc4069",
+      "line": 472,
+      "sourceSha256": "9109e84fb2c7625aae96928d15b3c0e44ea4598cded3a9e0601d6e4031e8db2d",
       "requestExpression": "{\n      p_token: normalized,\n    }",
       "requestKeys": [
         "p_token"
@@ -10250,8 +10250,8 @@
       "rpc": "revoke_session_invite",
       "resolution": "string-literal",
       "path": "src/infrastructure/session/session-service.ts",
-      "line": 489,
-      "sourceSha256": "21a66ecf5936408ff231aa53ab4255e4590e7cb9c8e8dc3de6fd0156e8dc4069",
+      "line": 491,
+      "sourceSha256": "9109e84fb2c7625aae96928d15b3c0e44ea4598cded3a9e0601d6e4031e8db2d",
       "requestExpression": "{\n      p_token: normalized,\n    }",
       "requestKeys": [
         "p_token"
@@ -11888,7 +11888,7 @@
       "resolution": "string-literal",
       "path": "src/infrastructure/session/session-service.ts",
       "line": 346,
-      "sourceSha256": "21a66ecf5936408ff231aa53ab4255e4590e7cb9c8e8dc3de6fd0156e8dc4069",
+      "sourceSha256": "9109e84fb2c7625aae96928d15b3c0e44ea4598cded3a9e0601d6e4031e8db2d",
       "requestExpression": "{\n      p_session_id: id,\n      p_status: status,\n    }",
       "requestKeys": [
         "p_session_id",
@@ -12023,7 +12023,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/session/session-service.ts",
           "line": 55,
-          "sourceSha256": "21a66ecf5936408ff231aa53ab4255e4590e7cb9c8e8dc3de6fd0156e8dc4069",
+          "sourceSha256": "9109e84fb2c7625aae96928d15b3c0e44ea4598cded3a9e0601d6e4031e8db2d",
           "source": "function mapHostPlaySessionToVm(row: HostPlaySessionDto): SessionVm {\n  const createdAt = row.createdAt ? new Date(row.createdAt) : new Date();\n  const code = row.joinCode ?? row.code ?? '';\n  return {\n    id: row.sessionId,\n    code: typeof code === 'string' ? code : '',\n    name: row.name ?? '',\n    adventureId: row.projectId,\n    projectId: row.projectId,\n    publicId: row.publicId ?? null,\n    gmUserId: row.gmUserId ?? '',\n    status: normalizePlaySessionStatus(row.status),\n    createdAt,\n    updatedAt: createdAt,\n    startedAt: row.startedAt ? new Date(row.startedAt) : null,\n    endedAt: row.endedAt ? new Date(row.endedAt) : null,\n    players: (row.players ?? []).map((p, index) => ({\n      id: p.id ?? `${row.sessionId}-${p.userId ?? index}`,\n      sessionId: row.sessionId,\n      userId: p.userId ?? '',\n      characterId: p.characterId ?? null,\n      isOnline: p.isOnline === true,\n      joinedAt: p.joinedAt ? new Date(p.joinedAt) : createdAt,\n    })),\n  };\n}"
         },
         {
@@ -12031,7 +12031,7 @@
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/session/session-service.ts",
           "line": 82,
-          "sourceSha256": "21a66ecf5936408ff231aa53ab4255e4590e7cb9c8e8dc3de6fd0156e8dc4069",
+          "sourceSha256": "9109e84fb2c7625aae96928d15b3c0e44ea4598cded3a9e0601d6e4031e8db2d",
           "source": "type SessionRow = {\n  id: string;\n  /** Join code — optional; not always present on older schemas / safe selects. */\n  code?: string | null;\n  name: string | null;\n  project_id: string | null;\n  public_id?: string | null;\n  status: string;\n  created_at: string;\n  updated_at: string;\n  started_at: string | null;\n  ended_at: string | null;\n};"
         },
         {

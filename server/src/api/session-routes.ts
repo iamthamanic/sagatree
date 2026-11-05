@@ -336,7 +336,10 @@ export function mountSessionHttpRoutes(app: Hono, deps: SessionHttpDeps): void {
     );
   });
 
-  /** CUT-04 — GM deletes play session (cascade dependents; npc session_id cleared). */
+  /**
+   * CUT-04 — GM deletes play session (cascade dependents).
+   * NPC instance session_id detach via owning npc-creature port first.
+   */
   app.delete('/api/v1/sessions/:sessionId', async (c) => {
     const sessionId = c.req.param('sessionId');
     const actorResult = await resolveSessionActor(deps, c.req.raw.headers, false);
@@ -346,7 +349,27 @@ export function mountSessionHttpRoutes(app: Hono, deps: SessionHttpDeps): void {
     if (!infra?.deletePlaySession) {
       return c.json({ error: 'store-unavailable' }, 503);
     }
-    const deleted = infra.deletePlaySession(actorResult.actor.actorId, sessionId);
+    if (deps.npcCreature?.detachInstancesFromSession) {
+      const detached = deps.npcCreature.detachInstancesFromSession(
+        actorResult.actor,
+        sessionId,
+      );
+      if (!detached.ok) {
+        const err = detached.error;
+        // Missing session here is OK — deletePlaySession returns P0002 next.
+        if (err !== 'P0001:session not found') {
+          const status =
+            err === 'P0001:only gm may detach session instances' ||
+            err === 'P0001:actor is not an active project member'
+              ? 403
+              : err === 'P0001:not authenticated' || err === 'missing-actor'
+                ? 401
+                : 400;
+          return c.json({ error: err }, status);
+        }
+      }
+    }
+    const deleted = infra.deletePlaySession(actorResult.actor, sessionId);
     if (!deleted.ok) {
       return c.json({ error: deleted.error }, infraStatus(deleted.error));
     }

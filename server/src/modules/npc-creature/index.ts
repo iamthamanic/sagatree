@@ -172,6 +172,13 @@ export type NpcCreaturePorts = {
   ) =>
     | { readonly ok: true; readonly value: { readonly cleared: number } }
     | { readonly ok: false; readonly error: string };
+  /** CUT-04 — SET NULL instance.session_id before play session delete. */
+  readonly detachInstancesFromSession: (
+    actor: Actor,
+    sessionId: string,
+  ) =>
+    | { readonly ok: true; readonly value: { readonly detached: number } }
+    | { readonly ok: false; readonly error: string };
   readonly seedDefinitionForTests: (input: {
     readonly id: string;
     readonly scope: 'personal' | 'world' | 'core' | 'builtin';
@@ -247,6 +254,10 @@ export function createNpcCreaturePorts(deps: {
       if (!requireActor(actor)) return { ok: false, error: 'missing-actor' };
       return store.clearTempControllersForSession(actorIds(actor), sessionId);
     },
+    detachInstancesFromSession(actor, sessionId) {
+      if (!requireActor(actor)) return { ok: false, error: 'missing-actor' };
+      return store.detachInstancesFromSession(actorIds(actor), sessionId);
+    },
     seedDefinitionForTests: (input) => store.seedDefinitionForTests(input),
   };
 }
@@ -269,6 +280,7 @@ export function createNpcCreaturePortsStub(): NpcCreaturePorts {
     updateRuntime: () => unavailable,
     removeInstance: () => unavailable,
     clearTempControllersForSession: () => unavailable,
+    detachInstancesFromSession: () => unavailable,
     seedDefinitionForTests: () => undefined,
   };
 }
