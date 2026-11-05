@@ -1,6 +1,6 @@
 # Acceptance — CUT-06 (#1141)
 
-- HEAD_SHA: 60b2fdd6f57a4497ae0904bb522b38b76b82e902
+- HEAD_SHA: 20d1253f01f1a0c0cac89ddc4a93b457c2b52ccd
 - Issue: #1141
 - Slug: cut-06-restore-item-catalog-update-arch
 
@@ -11,7 +11,7 @@ FE dual-path via host-library-http; Soft-DENY removed. Core/builtin fork uses lo
 
 ## Composition Gate
 
-- HEAD_SHA: 60b2fdd6f57a4497ae0904bb522b38b76b82e902
+- HEAD_SHA: 20d1253f01f1a0c0cac89ddc4a93b457c2b52ccd
 - Verdict: CLEAR
 
 ## Required Tests

@@ -1,6 +1,6 @@
 # Composition Gate — cut-06-restore-item-catalog-update-arch (#1141)
 
-- HEAD_SHA: 60b2fdd6f57a4497ae0904bb522b38b76b82e902
+- HEAD_SHA: 20d1253f01f1a0c0cac89ddc4a93b457c2b52ccd
 - BASE_SHA: fd4318190f7384c708015894024e5c8a44a750dd
 - Date: 2026-11-05
 - Verdict: CLEAR
