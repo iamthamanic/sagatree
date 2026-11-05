@@ -142,9 +142,9 @@ Direkt oder transitiv referenzierte lokale/importierte Mapper, Decoder und Vertr
 
 | Symbol | Quelle | Zeile | SHA-256 |
 | --- | --- | --- | --- |
-| `EnvLike` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 11 | `73aff05d4133b8501c130d41f8e4430f09cfe24f7c6e7b115b653c8f96903a84` |
-| `defaultEnv` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 16 | `73aff05d4133b8501c130d41f8e4430f09cfe24f7c6e7b115b653c8f96903a84` |
-| `isHostLibraryExplicitlyDisabled` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 25 | `73aff05d4133b8501c130d41f8e4430f09cfe24f7c6e7b115b653c8f96903a84` |
+| `EnvLike` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 11 | `6e81f5e20588e4dc072a5d6b5861ad15f987ef4328f39ab029cd23e74b2582a5` |
+| `defaultEnv` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 16 | `6e81f5e20588e4dc072a5d6b5861ad15f987ef4328f39ab029cd23e74b2582a5` |
+| `isHostLibraryExplicitlyDisabled` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 25 | `6e81f5e20588e4dc072a5d6b5861ad15f987ef4328f39ab029cd23e74b2582a5` |
 | `EnvLike` | [src/infrastructure/host/host-project-http.ts](../../../src/infrastructure/host/host-project-http.ts) | 12 | `b5a68f6452217b08d2217a983113a9a356ce70890693319227f35c82fbdcd818` |
 | `defaultEnv` | [src/infrastructure/host/host-project-http.ts](../../../src/infrastructure/host/host-project-http.ts) | 17 | `b5a68f6452217b08d2217a983113a9a356ce70890693319227f35c82fbdcd818` |
 | `hostMutateJson` | [src/infrastructure/host/host-project-http.ts](../../../src/infrastructure/host/host-project-http.ts) | 74 | `b5a68f6452217b08d2217a983113a9a356ce70890693319227f35c82fbdcd818` |
@@ -183,7 +183,7 @@ Die folgenden Hashes binden SQL-Kette, transitive Tabellen-/Trigger-/Policyquell
 
 | Quelle | SHA-256 |
 | --- | --- |
-| [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | `73aff05d4133b8501c130d41f8e4430f09cfe24f7c6e7b115b653c8f96903a84` |
+| [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | `6e81f5e20588e4dc072a5d6b5861ad15f987ef4328f39ab029cd23e74b2582a5` |
 | [src/infrastructure/host/host-project-http.ts](../../../src/infrastructure/host/host-project-http.ts) | `b5a68f6452217b08d2217a983113a9a356ce70890693319227f35c82fbdcd818` |
 | [src/infrastructure/project/saga-permission-service.ts](../../../src/infrastructure/project/saga-permission-service.ts) | `cb3d8329b86626f710e3f5da8e3f7679fe0d37333a4e9112ad61e9b4975aa919` |
 | [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | `30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a` |

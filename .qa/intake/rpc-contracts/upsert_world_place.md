@@ -161,9 +161,9 @@ Direkt oder transitiv referenzierte lokale/importierte Mapper, Decoder und Vertr
 
 | Symbol | Quelle | Zeile | SHA-256 |
 | --- | --- | --- | --- |
-| `EnvLike` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 11 | `73aff05d4133b8501c130d41f8e4430f09cfe24f7c6e7b115b653c8f96903a84` |
-| `defaultEnv` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 16 | `73aff05d4133b8501c130d41f8e4430f09cfe24f7c6e7b115b653c8f96903a84` |
-| `isHostLibraryExplicitlyDisabled` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 25 | `73aff05d4133b8501c130d41f8e4430f09cfe24f7c6e7b115b653c8f96903a84` |
+| `EnvLike` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 11 | `6e81f5e20588e4dc072a5d6b5861ad15f987ef4328f39ab029cd23e74b2582a5` |
+| `defaultEnv` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 16 | `6e81f5e20588e4dc072a5d6b5861ad15f987ef4328f39ab029cd23e74b2582a5` |
+| `isHostLibraryExplicitlyDisabled` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 25 | `6e81f5e20588e4dc072a5d6b5861ad15f987ef4328f39ab029cd23e74b2582a5` |
 | `EnvLike` | [src/infrastructure/host/host-world-http.ts](../../../src/infrastructure/host/host-world-http.ts) | 12 | `bfb69f91e69543a66ee96cab4ad21273c86a2b167e4c21211c42c7e6ccb3c072` |
 | `defaultEnv` | [src/infrastructure/host/host-world-http.ts](../../../src/infrastructure/host/host-world-http.ts) | 17 | `bfb69f91e69543a66ee96cab4ad21273c86a2b167e4c21211c42c7e6ccb3c072` |
 | `hostMutateJson` | [src/infrastructure/host/host-world-http.ts](../../../src/infrastructure/host/host-world-http.ts) | 68 | `bfb69f91e69543a66ee96cab4ad21273c86a2b167e4c21211c42c7e6ccb3c072` |
@@ -208,7 +208,7 @@ Die folgenden Hashes binden SQL-Kette, transitive Tabellen-/Trigger-/Policyquell
 
 | Quelle | SHA-256 |
 | --- | --- |
-| [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | `73aff05d4133b8501c130d41f8e4430f09cfe24f7c6e7b115b653c8f96903a84` |
+| [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | `6e81f5e20588e4dc072a5d6b5861ad15f987ef4328f39ab029cd23e74b2582a5` |
 | [src/infrastructure/host/host-world-http.ts](../../../src/infrastructure/host/host-world-http.ts) | `bfb69f91e69543a66ee96cab4ad21273c86a2b167e4c21211c42c7e6ccb3c072` |
 | [src/infrastructure/world/world-place-service.ts](../../../src/infrastructure/world/world-place-service.ts) | `c8b48bc3e5ecdf33ecfe6db705115f17b423a7fbf5e504aa89d815cdf27551b4` |
 | [src/lib/authenticatedUser.ts](../../../src/lib/authenticatedUser.ts) | `d4cbf3a004f8375982ca03d474fb7b61559fc2ec58ad6fe7b1f8834d26abf10c` |

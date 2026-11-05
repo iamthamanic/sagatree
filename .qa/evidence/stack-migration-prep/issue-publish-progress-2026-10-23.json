@@ -2,10 +2,10 @@
   "schemaVersion": 1,
   "repository": "iamthamanic/sagatree",
   "mode": "write",
-  "startedAt": "2026-11-04T08:05:46.978Z",
+  "startedAt": "2026-11-05T09:16:07.834Z",
   "total": 90,
-  "updated": 3,
-  "unchanged": 87,
+  "updated": 1,
+  "unchanged": 89,
   "failed": [],
   "issues": [
     {
@@ -673,20 +673,20 @@
       "number": 800,
       "state": "CLOSED",
       "titleOk": true,
-      "bodyOk": false,
+      "bodyOk": true,
       "labelsOk": true,
       "sha256": "2c77543e43c0555aca01c44bcd80564daff16245808ef36ac7733ec28449dac0",
-      "action": "updated"
+      "action": "unchanged"
     },
     {
       "localId": "MIG-302",
       "number": 801,
       "state": "CLOSED",
       "titleOk": true,
-      "bodyOk": false,
+      "bodyOk": true,
       "labelsOk": true,
       "sha256": "8edee07de6050d82b0bc573f57e1b05f007ce7640d4b6660679831be17d61a18",
-      "action": "updated"
+      "action": "unchanged"
     },
     {
       "localId": "MIG-303",
@@ -733,10 +733,10 @@
       "number": 806,
       "state": "CLOSED",
       "titleOk": true,
-      "bodyOk": true,
+      "bodyOk": false,
       "labelsOk": true,
-      "sha256": "b6d2210d5ee452f6c1c7fbc97eaab7c8829b832c1a618bfd20b4e2f198489c46",
-      "action": "unchanged"
+      "sha256": "7c87295fdaee9f22b43bf97737e84a14e695c538a6acdc37a46793fc4e95396a",
+      "action": "updated"
     },
     {
       "localId": "MIG-308",
@@ -745,7 +745,7 @@
       "titleOk": true,
       "bodyOk": true,
       "labelsOk": true,
-      "sha256": "9ccb0ad6fe018f80b629096fada8eedb89536cde5e7207a1df377daeb6be1d84",
+      "sha256": "ff77c22d5ca6e4d3a57a9787464265d84ee0f8cea7105840819ebde4badb6e86",
       "action": "unchanged"
     },
     {
@@ -763,10 +763,10 @@
       "number": 809,
       "state": "CLOSED",
       "titleOk": true,
-      "bodyOk": false,
+      "bodyOk": true,
       "labelsOk": true,
-      "sha256": "7ad09ab3dac9d8cd2f56e4d2684caa636d4b48f91b73f60d9c6614a8d7bc6412",
-      "action": "updated"
+      "sha256": "5dcae99f5f991516c00a47c3183002dd551799454fdb13d606a3b74fdd4a4b15",
+      "action": "unchanged"
     },
     {
       "localId": "MIG-311",
@@ -909,5 +909,5 @@
       "action": "unchanged"
     }
   ],
-  "finishedAt": "2026-11-04T08:06:37.083Z"
+  "finishedAt": "2026-11-05T09:17:02.158Z"
 }

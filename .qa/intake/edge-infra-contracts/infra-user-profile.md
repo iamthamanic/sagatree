@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-user-profile.json](source-contracts/infra-user-profile.json) (SHA-256 `424a4bdef4320aff11dfd57de3da0a87c1683259128de917335ff6a9dfd04475`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-user-profile.json](source-contracts/infra-user-profile.json) (SHA-256 `c16e75e12a7c17051dcaf7e27fda0ecb6bd851b560e144df13ed45a29e48a878`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -680,7 +680,7 @@ async uploadAvatar(file: File): Promise<UserProfileVm> {
 | `src/domains/user-profile/display-name.ts` | `87cfc4858f198e56ea2857c505162f112efd5edacde4dbb1f7fcd995b4535516` |
 | `src/domains/user-profile/index.ts` | `d094d245ff9356298ef20c48635ca3e7adcc0e1ccf180554586949e0b496c496` |
 | `src/infrastructure/host/host-catalog-http.ts` | `9049245360683a74e7e2602d35126d815d64344d384c6684e4c2c3d41aa626d3` |
-| `src/infrastructure/host/host-library-http.ts` | `73aff05d4133b8501c130d41f8e4430f09cfe24f7c6e7b115b653c8f96903a84` |
+| `src/infrastructure/host/host-library-http.ts` | `6e81f5e20588e4dc072a5d6b5861ad15f987ef4328f39ab029cd23e74b2582a5` |
 | `src/infrastructure/media/optimizer/engines/audio/index.ts` | `7585190a705085692bff0896e08b4d78f791895b47e24d57deeaaa10bb669d4e` |
 | `src/infrastructure/media/optimizer/engines/image/image.worker.ts` | `d34793b4de682556d9306194cfbcd05fdafdf215da25393f955d2669c7499276` |
 | `src/infrastructure/media/optimizer/engines/image/index.ts` | `4944001b7e0f7784d487da2e60d06d845aa564e9ddd7516ff50633af1591a322` |

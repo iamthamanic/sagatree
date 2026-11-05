@@ -3580,11 +3580,11 @@
       },
       {
         "path": "src/infrastructure/host/host-library-http.ts",
-        "sha256": "73aff05d4133b8501c130d41f8e4430f09cfe24f7c6e7b115b653c8f96903a84"
+        "sha256": "6e81f5e20588e4dc072a5d6b5861ad15f987ef4328f39ab029cd23e74b2582a5"
       },
       {
         "path": "src/infrastructure/host/host-session-http.ts",
-        "sha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719"
+        "sha256": "872234ca8977b0543ed26dd24cdd0c7c3bffd34dc029837fd478f9251b29c31c"
       },
       {
         "path": "src/infrastructure/session/session-runtime-service.ts",
@@ -3778,11 +3778,11 @@
       },
       {
         "path": "src/infrastructure/host/host-library-http.ts",
-        "sha256": "73aff05d4133b8501c130d41f8e4430f09cfe24f7c6e7b115b653c8f96903a84"
+        "sha256": "6e81f5e20588e4dc072a5d6b5861ad15f987ef4328f39ab029cd23e74b2582a5"
       },
       {
         "path": "src/infrastructure/host/host-session-http.ts",
-        "sha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719"
+        "sha256": "872234ca8977b0543ed26dd24cdd0c7c3bffd34dc029837fd478f9251b29c31c"
       },
       {
         "path": "src/infrastructure/session/session-runtime-service.ts",
@@ -3920,11 +3920,11 @@
       },
       {
         "path": "src/infrastructure/host/host-library-http.ts",
-        "sha256": "73aff05d4133b8501c130d41f8e4430f09cfe24f7c6e7b115b653c8f96903a84"
+        "sha256": "6e81f5e20588e4dc072a5d6b5861ad15f987ef4328f39ab029cd23e74b2582a5"
       },
       {
         "path": "src/infrastructure/host/host-session-http.ts",
-        "sha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719"
+        "sha256": "872234ca8977b0543ed26dd24cdd0c7c3bffd34dc029837fd478f9251b29c31c"
       },
       {
         "path": "src/infrastructure/session/session-runtime-service.ts",
@@ -4053,11 +4053,11 @@
       },
       {
         "path": "src/infrastructure/host/host-library-http.ts",
-        "sha256": "73aff05d4133b8501c130d41f8e4430f09cfe24f7c6e7b115b653c8f96903a84"
+        "sha256": "6e81f5e20588e4dc072a5d6b5861ad15f987ef4328f39ab029cd23e74b2582a5"
       },
       {
         "path": "src/infrastructure/host/host-session-http.ts",
-        "sha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719"
+        "sha256": "872234ca8977b0543ed26dd24cdd0c7c3bffd34dc029837fd478f9251b29c31c"
       },
       {
         "path": "src/infrastructure/session/session-service.ts",
@@ -4167,7 +4167,7 @@
       },
       {
         "path": "src/infrastructure/host/host-library-http.ts",
-        "sha256": "73aff05d4133b8501c130d41f8e4430f09cfe24f7c6e7b115b653c8f96903a84"
+        "sha256": "6e81f5e20588e4dc072a5d6b5861ad15f987ef4328f39ab029cd23e74b2582a5"
       },
       {
         "path": "src/infrastructure/host/host-project-http.ts",
@@ -4301,11 +4301,11 @@
       },
       {
         "path": "src/infrastructure/host/host-library-http.ts",
-        "sha256": "73aff05d4133b8501c130d41f8e4430f09cfe24f7c6e7b115b653c8f96903a84"
+        "sha256": "6e81f5e20588e4dc072a5d6b5861ad15f987ef4328f39ab029cd23e74b2582a5"
       },
       {
         "path": "src/infrastructure/host/host-session-http.ts",
-        "sha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719"
+        "sha256": "872234ca8977b0543ed26dd24cdd0c7c3bffd34dc029837fd478f9251b29c31c"
       },
       {
         "path": "src/infrastructure/session/session-service.ts",
@@ -4497,11 +4497,11 @@
     "reviewedSources": [
       {
         "path": "src/infrastructure/host/host-library-http.ts",
-        "sha256": "73aff05d4133b8501c130d41f8e4430f09cfe24f7c6e7b115b653c8f96903a84"
+        "sha256": "6e81f5e20588e4dc072a5d6b5861ad15f987ef4328f39ab029cd23e74b2582a5"
       },
       {
         "path": "src/infrastructure/host/host-session-http.ts",
-        "sha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719"
+        "sha256": "872234ca8977b0543ed26dd24cdd0c7c3bffd34dc029837fd478f9251b29c31c"
       },
       {
         "path": "src/infrastructure/session/session-service.ts",
@@ -4636,11 +4636,11 @@
       },
       {
         "path": "src/infrastructure/host/host-library-http.ts",
-        "sha256": "73aff05d4133b8501c130d41f8e4430f09cfe24f7c6e7b115b653c8f96903a84"
+        "sha256": "6e81f5e20588e4dc072a5d6b5861ad15f987ef4328f39ab029cd23e74b2582a5"
       },
       {
         "path": "src/infrastructure/host/host-session-http.ts",
-        "sha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719"
+        "sha256": "872234ca8977b0543ed26dd24cdd0c7c3bffd34dc029837fd478f9251b29c31c"
       },
       {
         "path": "src/infrastructure/session/session-service.ts",
@@ -4765,11 +4765,11 @@
       },
       {
         "path": "src/infrastructure/host/host-library-http.ts",
-        "sha256": "73aff05d4133b8501c130d41f8e4430f09cfe24f7c6e7b115b653c8f96903a84"
+        "sha256": "6e81f5e20588e4dc072a5d6b5861ad15f987ef4328f39ab029cd23e74b2582a5"
       },
       {
         "path": "src/infrastructure/host/host-session-http.ts",
-        "sha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719"
+        "sha256": "872234ca8977b0543ed26dd24cdd0c7c3bffd34dc029837fd478f9251b29c31c"
       },
       {
         "path": "src/infrastructure/session/session-service.ts",
@@ -4871,11 +4871,11 @@
       },
       {
         "path": "src/infrastructure/host/host-library-http.ts",
-        "sha256": "73aff05d4133b8501c130d41f8e4430f09cfe24f7c6e7b115b653c8f96903a84"
+        "sha256": "6e81f5e20588e4dc072a5d6b5861ad15f987ef4328f39ab029cd23e74b2582a5"
       },
       {
         "path": "src/infrastructure/host/host-session-http.ts",
-        "sha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719"
+        "sha256": "872234ca8977b0543ed26dd24cdd0c7c3bffd34dc029837fd478f9251b29c31c"
       },
       {
         "path": "src/infrastructure/session/session-service.ts",
@@ -5024,11 +5024,11 @@
       },
       {
         "path": "src/infrastructure/host/host-library-http.ts",
-        "sha256": "73aff05d4133b8501c130d41f8e4430f09cfe24f7c6e7b115b653c8f96903a84"
+        "sha256": "6e81f5e20588e4dc072a5d6b5861ad15f987ef4328f39ab029cd23e74b2582a5"
       },
       {
         "path": "src/infrastructure/host/host-session-http.ts",
-        "sha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719"
+        "sha256": "872234ca8977b0543ed26dd24cdd0c7c3bffd34dc029837fd478f9251b29c31c"
       },
       {
         "path": "src/infrastructure/session/session-service.ts",
@@ -5130,11 +5130,11 @@
       },
       {
         "path": "src/infrastructure/host/host-library-http.ts",
-        "sha256": "73aff05d4133b8501c130d41f8e4430f09cfe24f7c6e7b115b653c8f96903a84"
+        "sha256": "6e81f5e20588e4dc072a5d6b5861ad15f987ef4328f39ab029cd23e74b2582a5"
       },
       {
         "path": "src/infrastructure/host/host-session-http.ts",
-        "sha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719"
+        "sha256": "872234ca8977b0543ed26dd24cdd0c7c3bffd34dc029837fd478f9251b29c31c"
       },
       {
         "path": "src/infrastructure/session/session-recap-service.ts",
@@ -5267,11 +5267,11 @@
     "reviewedSources": [
       {
         "path": "src/infrastructure/host/host-library-http.ts",
-        "sha256": "73aff05d4133b8501c130d41f8e4430f09cfe24f7c6e7b115b653c8f96903a84"
+        "sha256": "6e81f5e20588e4dc072a5d6b5861ad15f987ef4328f39ab029cd23e74b2582a5"
       },
       {
         "path": "src/infrastructure/host/host-session-http.ts",
-        "sha256": "b4ce6f60d82bbf2ca14d7732e278d85422ede333c3841e06205b8afb2cf8d719"
+        "sha256": "872234ca8977b0543ed26dd24cdd0c7c3bffd34dc029837fd478f9251b29c31c"
       },
       {
         "path": "src/infrastructure/session/session-recap-ai-service.ts",
@@ -5388,7 +5388,7 @@
     "reviewedSources": [
       {
         "path": "src/infrastructure/host/host-library-http.ts",
-        "sha256": "73aff05d4133b8501c130d41f8e4430f09cfe24f7c6e7b115b653c8f96903a84"
+        "sha256": "6e81f5e20588e4dc072a5d6b5861ad15f987ef4328f39ab029cd23e74b2582a5"
       },
       {
         "path": "src/infrastructure/host/host-product-deny.ts",
@@ -5462,7 +5462,7 @@
     "reviewedSources": [
       {
         "path": "src/infrastructure/host/host-library-http.ts",
-        "sha256": "73aff05d4133b8501c130d41f8e4430f09cfe24f7c6e7b115b653c8f96903a84"
+        "sha256": "6e81f5e20588e4dc072a5d6b5861ad15f987ef4328f39ab029cd23e74b2582a5"
       },
       {
         "path": "src/infrastructure/host/host-product-deny.ts",
@@ -5539,7 +5539,7 @@
       },
       {
         "path": "src/infrastructure/host/host-library-http.ts",
-        "sha256": "73aff05d4133b8501c130d41f8e4430f09cfe24f7c6e7b115b653c8f96903a84"
+        "sha256": "6e81f5e20588e4dc072a5d6b5861ad15f987ef4328f39ab029cd23e74b2582a5"
       },
       {
         "path": "src/infrastructure/host/host-product-deny.ts",
@@ -5653,7 +5653,7 @@
       },
       {
         "path": "src/infrastructure/host/host-library-http.ts",
-        "sha256": "73aff05d4133b8501c130d41f8e4430f09cfe24f7c6e7b115b653c8f96903a84"
+        "sha256": "6e81f5e20588e4dc072a5d6b5861ad15f987ef4328f39ab029cd23e74b2582a5"
       },
       {
         "path": "src/infrastructure/host/host-product-deny.ts",
@@ -5767,7 +5767,7 @@
       },
       {
         "path": "src/infrastructure/host/host-library-http.ts",
-        "sha256": "73aff05d4133b8501c130d41f8e4430f09cfe24f7c6e7b115b653c8f96903a84"
+        "sha256": "6e81f5e20588e4dc072a5d6b5861ad15f987ef4328f39ab029cd23e74b2582a5"
       },
       {
         "path": "src/infrastructure/host/host-product-deny.ts",
@@ -5849,7 +5849,7 @@
       },
       {
         "path": "src/infrastructure/host/host-library-http.ts",
-        "sha256": "73aff05d4133b8501c130d41f8e4430f09cfe24f7c6e7b115b653c8f96903a84"
+        "sha256": "6e81f5e20588e4dc072a5d6b5861ad15f987ef4328f39ab029cd23e74b2582a5"
       },
       {
         "path": "src/infrastructure/host/host-product-deny.ts",
@@ -5927,7 +5927,7 @@
     "reviewedSources": [
       {
         "path": "src/infrastructure/host/host-library-http.ts",
-        "sha256": "73aff05d4133b8501c130d41f8e4430f09cfe24f7c6e7b115b653c8f96903a84"
+        "sha256": "6e81f5e20588e4dc072a5d6b5861ad15f987ef4328f39ab029cd23e74b2582a5"
       },
       {
         "path": "src/infrastructure/host/host-product-deny.ts",
@@ -6015,7 +6015,7 @@
     "reviewedSources": [
       {
         "path": "src/infrastructure/host/host-library-http.ts",
-        "sha256": "73aff05d4133b8501c130d41f8e4430f09cfe24f7c6e7b115b653c8f96903a84"
+        "sha256": "6e81f5e20588e4dc072a5d6b5861ad15f987ef4328f39ab029cd23e74b2582a5"
       },
       {
         "path": "src/infrastructure/host/host-product-deny.ts",
@@ -6137,7 +6137,7 @@
     "reviewedSources": [
       {
         "path": "src/infrastructure/host/host-library-http.ts",
-        "sha256": "73aff05d4133b8501c130d41f8e4430f09cfe24f7c6e7b115b653c8f96903a84"
+        "sha256": "6e81f5e20588e4dc072a5d6b5861ad15f987ef4328f39ab029cd23e74b2582a5"
       },
       {
         "path": "src/infrastructure/host/host-product-deny.ts",
@@ -6263,7 +6263,7 @@
     "reviewedSources": [
       {
         "path": "src/infrastructure/host/host-library-http.ts",
-        "sha256": "73aff05d4133b8501c130d41f8e4430f09cfe24f7c6e7b115b653c8f96903a84"
+        "sha256": "6e81f5e20588e4dc072a5d6b5861ad15f987ef4328f39ab029cd23e74b2582a5"
       },
       {
         "path": "src/infrastructure/project/project-service.ts",
@@ -6484,7 +6484,7 @@
       },
       {
         "path": "src/infrastructure/host/host-library-http.ts",
-        "sha256": "73aff05d4133b8501c130d41f8e4430f09cfe24f7c6e7b115b653c8f96903a84"
+        "sha256": "6e81f5e20588e4dc072a5d6b5861ad15f987ef4328f39ab029cd23e74b2582a5"
       },
       {
         "path": "src/infrastructure/host/host-project-http.ts",
@@ -6621,7 +6621,7 @@
       },
       {
         "path": "src/infrastructure/host/host-library-http.ts",
-        "sha256": "73aff05d4133b8501c130d41f8e4430f09cfe24f7c6e7b115b653c8f96903a84"
+        "sha256": "6e81f5e20588e4dc072a5d6b5861ad15f987ef4328f39ab029cd23e74b2582a5"
       },
       {
         "path": "src/infrastructure/host/host-project-http.ts",
@@ -6738,7 +6738,7 @@
     "reviewedSources": [
       {
         "path": "src/infrastructure/host/host-library-http.ts",
-        "sha256": "73aff05d4133b8501c130d41f8e4430f09cfe24f7c6e7b115b653c8f96903a84"
+        "sha256": "6e81f5e20588e4dc072a5d6b5861ad15f987ef4328f39ab029cd23e74b2582a5"
       },
       {
         "path": "src/infrastructure/host/host-project-http.ts",
@@ -6831,7 +6831,7 @@
     "reviewedSources": [
       {
         "path": "src/infrastructure/host/host-library-http.ts",
-        "sha256": "73aff05d4133b8501c130d41f8e4430f09cfe24f7c6e7b115b653c8f96903a84"
+        "sha256": "6e81f5e20588e4dc072a5d6b5861ad15f987ef4328f39ab029cd23e74b2582a5"
       },
       {
         "path": "src/infrastructure/host/host-project-http.ts",
@@ -6932,7 +6932,7 @@
     "reviewedSources": [
       {
         "path": "src/infrastructure/host/host-library-http.ts",
-        "sha256": "73aff05d4133b8501c130d41f8e4430f09cfe24f7c6e7b115b653c8f96903a84"
+        "sha256": "6e81f5e20588e4dc072a5d6b5861ad15f987ef4328f39ab029cd23e74b2582a5"
       },
       {
         "path": "src/infrastructure/host/host-project-http.ts",
@@ -7022,7 +7022,7 @@
     "reviewedSources": [
       {
         "path": "src/infrastructure/host/host-library-http.ts",
-        "sha256": "73aff05d4133b8501c130d41f8e4430f09cfe24f7c6e7b115b653c8f96903a84"
+        "sha256": "6e81f5e20588e4dc072a5d6b5861ad15f987ef4328f39ab029cd23e74b2582a5"
       },
       {
         "path": "src/infrastructure/host/host-project-http.ts",
@@ -7111,7 +7111,7 @@
     "reviewedSources": [
       {
         "path": "src/infrastructure/host/host-library-http.ts",
-        "sha256": "73aff05d4133b8501c130d41f8e4430f09cfe24f7c6e7b115b653c8f96903a84"
+        "sha256": "6e81f5e20588e4dc072a5d6b5861ad15f987ef4328f39ab029cd23e74b2582a5"
       },
       {
         "path": "src/infrastructure/host/host-project-http.ts",
@@ -7208,7 +7208,7 @@
       },
       {
         "path": "src/infrastructure/host/host-library-http.ts",
-        "sha256": "73aff05d4133b8501c130d41f8e4430f09cfe24f7c6e7b115b653c8f96903a84"
+        "sha256": "6e81f5e20588e4dc072a5d6b5861ad15f987ef4328f39ab029cd23e74b2582a5"
       },
       {
         "path": "src/infrastructure/host/host-project-http.ts",
@@ -7326,7 +7326,7 @@
       },
       {
         "path": "src/infrastructure/host/host-library-http.ts",
-        "sha256": "73aff05d4133b8501c130d41f8e4430f09cfe24f7c6e7b115b653c8f96903a84"
+        "sha256": "6e81f5e20588e4dc072a5d6b5861ad15f987ef4328f39ab029cd23e74b2582a5"
       },
       {
         "path": "src/infrastructure/host/host-project-http.ts",
@@ -7521,7 +7521,7 @@
       },
       {
         "path": "src/infrastructure/host/host-library-http.ts",
-        "sha256": "73aff05d4133b8501c130d41f8e4430f09cfe24f7c6e7b115b653c8f96903a84"
+        "sha256": "6e81f5e20588e4dc072a5d6b5861ad15f987ef4328f39ab029cd23e74b2582a5"
       },
       {
         "path": "src/infrastructure/saga/session-outcome-promotion-service.ts",
@@ -7676,7 +7676,7 @@
       },
       {
         "path": "src/infrastructure/host/host-library-http.ts",
-        "sha256": "73aff05d4133b8501c130d41f8e4430f09cfe24f7c6e7b115b653c8f96903a84"
+        "sha256": "6e81f5e20588e4dc072a5d6b5861ad15f987ef4328f39ab029cd23e74b2582a5"
       },
       {
         "path": "src/infrastructure/saga/session-outcome-promotion-service.ts",
@@ -7829,7 +7829,7 @@
     "reviewedSources": [
       {
         "path": "src/infrastructure/host/host-library-http.ts",
-        "sha256": "73aff05d4133b8501c130d41f8e4430f09cfe24f7c6e7b115b653c8f96903a84"
+        "sha256": "6e81f5e20588e4dc072a5d6b5861ad15f987ef4328f39ab029cd23e74b2582a5"
       },
       {
         "path": "src/infrastructure/host/host-world-http.ts",
@@ -7935,7 +7935,7 @@
     "reviewedSources": [
       {
         "path": "src/infrastructure/host/host-library-http.ts",
-        "sha256": "73aff05d4133b8501c130d41f8e4430f09cfe24f7c6e7b115b653c8f96903a84"
+        "sha256": "6e81f5e20588e4dc072a5d6b5861ad15f987ef4328f39ab029cd23e74b2582a5"
       },
       {
         "path": "src/infrastructure/host/host-world-http.ts",
@@ -8005,7 +8005,7 @@
     "reviewedSources": [
       {
         "path": "src/infrastructure/host/host-library-http.ts",
-        "sha256": "73aff05d4133b8501c130d41f8e4430f09cfe24f7c6e7b115b653c8f96903a84"
+        "sha256": "6e81f5e20588e4dc072a5d6b5861ad15f987ef4328f39ab029cd23e74b2582a5"
       },
       {
         "path": "src/infrastructure/host/host-world-http.ts",
@@ -8191,7 +8191,7 @@
     "reviewedSources": [
       {
         "path": "src/infrastructure/host/host-library-http.ts",
-        "sha256": "73aff05d4133b8501c130d41f8e4430f09cfe24f7c6e7b115b653c8f96903a84"
+        "sha256": "6e81f5e20588e4dc072a5d6b5861ad15f987ef4328f39ab029cd23e74b2582a5"
       },
       {
         "path": "src/infrastructure/host/host-world-http.ts",
@@ -8374,7 +8374,7 @@
     "reviewedSources": [
       {
         "path": "src/infrastructure/host/host-library-http.ts",
-        "sha256": "73aff05d4133b8501c130d41f8e4430f09cfe24f7c6e7b115b653c8f96903a84"
+        "sha256": "6e81f5e20588e4dc072a5d6b5861ad15f987ef4328f39ab029cd23e74b2582a5"
       },
       {
         "path": "src/infrastructure/host/host-world-http.ts",
@@ -8519,7 +8519,7 @@
     "reviewedSources": [
       {
         "path": "src/infrastructure/host/host-library-http.ts",
-        "sha256": "73aff05d4133b8501c130d41f8e4430f09cfe24f7c6e7b115b653c8f96903a84"
+        "sha256": "6e81f5e20588e4dc072a5d6b5861ad15f987ef4328f39ab029cd23e74b2582a5"
       },
       {
         "path": "src/infrastructure/host/host-world-http.ts",
@@ -8678,7 +8678,7 @@
     "reviewedSources": [
       {
         "path": "src/infrastructure/host/host-library-http.ts",
-        "sha256": "73aff05d4133b8501c130d41f8e4430f09cfe24f7c6e7b115b653c8f96903a84"
+        "sha256": "6e81f5e20588e4dc072a5d6b5861ad15f987ef4328f39ab029cd23e74b2582a5"
       },
       {
         "path": "src/infrastructure/host/host-world-http.ts",
@@ -8820,7 +8820,7 @@
     "reviewedSources": [
       {
         "path": "src/infrastructure/host/host-library-http.ts",
-        "sha256": "73aff05d4133b8501c130d41f8e4430f09cfe24f7c6e7b115b653c8f96903a84"
+        "sha256": "6e81f5e20588e4dc072a5d6b5861ad15f987ef4328f39ab029cd23e74b2582a5"
       },
       {
         "path": "src/infrastructure/host/host-world-http.ts",
@@ -8947,7 +8947,7 @@
     "reviewedSources": [
       {
         "path": "src/infrastructure/host/host-library-http.ts",
-        "sha256": "73aff05d4133b8501c130d41f8e4430f09cfe24f7c6e7b115b653c8f96903a84"
+        "sha256": "6e81f5e20588e4dc072a5d6b5861ad15f987ef4328f39ab029cd23e74b2582a5"
       },
       {
         "path": "src/infrastructure/host/host-world-http.ts",
@@ -9033,7 +9033,7 @@
     "reviewedSources": [
       {
         "path": "src/infrastructure/host/host-library-http.ts",
-        "sha256": "73aff05d4133b8501c130d41f8e4430f09cfe24f7c6e7b115b653c8f96903a84"
+        "sha256": "6e81f5e20588e4dc072a5d6b5861ad15f987ef4328f39ab029cd23e74b2582a5"
       },
       {
         "path": "src/infrastructure/host/host-world-http.ts",
@@ -9132,7 +9132,7 @@
     "reviewedSources": [
       {
         "path": "src/infrastructure/host/host-library-http.ts",
-        "sha256": "73aff05d4133b8501c130d41f8e4430f09cfe24f7c6e7b115b653c8f96903a84"
+        "sha256": "6e81f5e20588e4dc072a5d6b5861ad15f987ef4328f39ab029cd23e74b2582a5"
       },
       {
         "path": "src/infrastructure/host/host-world-http.ts",
@@ -9226,7 +9226,7 @@
     "reviewedSources": [
       {
         "path": "src/infrastructure/host/host-library-http.ts",
-        "sha256": "73aff05d4133b8501c130d41f8e4430f09cfe24f7c6e7b115b653c8f96903a84"
+        "sha256": "6e81f5e20588e4dc072a5d6b5861ad15f987ef4328f39ab029cd23e74b2582a5"
       },
       {
         "path": "src/infrastructure/host/host-world-http.ts",
@@ -9317,7 +9317,7 @@
     "reviewedSources": [
       {
         "path": "src/infrastructure/host/host-library-http.ts",
-        "sha256": "73aff05d4133b8501c130d41f8e4430f09cfe24f7c6e7b115b653c8f96903a84"
+        "sha256": "6e81f5e20588e4dc072a5d6b5861ad15f987ef4328f39ab029cd23e74b2582a5"
       },
       {
         "path": "src/infrastructure/host/host-world-http.ts",
@@ -9416,7 +9416,7 @@
     "reviewedSources": [
       {
         "path": "src/infrastructure/host/host-library-http.ts",
-        "sha256": "73aff05d4133b8501c130d41f8e4430f09cfe24f7c6e7b115b653c8f96903a84"
+        "sha256": "6e81f5e20588e4dc072a5d6b5861ad15f987ef4328f39ab029cd23e74b2582a5"
       },
       {
         "path": "src/infrastructure/host/host-world-http.ts",
@@ -9514,7 +9514,7 @@
     "reviewedSources": [
       {
         "path": "src/infrastructure/host/host-library-http.ts",
-        "sha256": "73aff05d4133b8501c130d41f8e4430f09cfe24f7c6e7b115b653c8f96903a84"
+        "sha256": "6e81f5e20588e4dc072a5d6b5861ad15f987ef4328f39ab029cd23e74b2582a5"
       },
       {
         "path": "src/infrastructure/host/host-world-http.ts",
@@ -9608,7 +9608,7 @@
     "reviewedSources": [
       {
         "path": "src/infrastructure/host/host-library-http.ts",
-        "sha256": "73aff05d4133b8501c130d41f8e4430f09cfe24f7c6e7b115b653c8f96903a84"
+        "sha256": "6e81f5e20588e4dc072a5d6b5861ad15f987ef4328f39ab029cd23e74b2582a5"
       },
       {
         "path": "src/infrastructure/host/host-world-http.ts",
@@ -9714,7 +9714,7 @@
     "reviewedSources": [
       {
         "path": "src/infrastructure/host/host-library-http.ts",
-        "sha256": "73aff05d4133b8501c130d41f8e4430f09cfe24f7c6e7b115b653c8f96903a84"
+        "sha256": "6e81f5e20588e4dc072a5d6b5861ad15f987ef4328f39ab029cd23e74b2582a5"
       },
       {
         "path": "src/infrastructure/host/host-world-http.ts",
@@ -9816,7 +9816,7 @@
     "reviewedSources": [
       {
         "path": "src/infrastructure/host/host-library-http.ts",
-        "sha256": "73aff05d4133b8501c130d41f8e4430f09cfe24f7c6e7b115b653c8f96903a84"
+        "sha256": "6e81f5e20588e4dc072a5d6b5861ad15f987ef4328f39ab029cd23e74b2582a5"
       },
       {
         "path": "src/infrastructure/npc-creature/npc-creature-controller.persistence.ts",
@@ -9824,7 +9824,7 @@
       },
       {
         "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-        "sha256": "42bb824871a85fed0fbc16c79184e9357a64d0e239c832c28b58c559d3231790"
+        "sha256": "afca3565cde9d1d94d7d4eaa4d798e0a4a981c319606f3ccc2b1fa61fb0177ab"
       },
       {
         "path": "src/infrastructure/npc-creature/npc-creature.persistence.ts",
@@ -9931,7 +9931,7 @@
     "reviewedSources": [
       {
         "path": "src/infrastructure/host/host-library-http.ts",
-        "sha256": "73aff05d4133b8501c130d41f8e4430f09cfe24f7c6e7b115b653c8f96903a84"
+        "sha256": "6e81f5e20588e4dc072a5d6b5861ad15f987ef4328f39ab029cd23e74b2582a5"
       },
       {
         "path": "src/infrastructure/npc-creature/npc-creature-instance.persistence.ts",
@@ -9939,7 +9939,7 @@
       },
       {
         "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-        "sha256": "42bb824871a85fed0fbc16c79184e9357a64d0e239c832c28b58c559d3231790"
+        "sha256": "afca3565cde9d1d94d7d4eaa4d798e0a4a981c319606f3ccc2b1fa61fb0177ab"
       },
       {
         "path": "src/infrastructure/npc-creature/npc-creature.persistence.ts",
@@ -10073,7 +10073,7 @@
     "reviewedSources": [
       {
         "path": "src/infrastructure/host/host-library-http.ts",
-        "sha256": "73aff05d4133b8501c130d41f8e4430f09cfe24f7c6e7b115b653c8f96903a84"
+        "sha256": "6e81f5e20588e4dc072a5d6b5861ad15f987ef4328f39ab029cd23e74b2582a5"
       },
       {
         "path": "src/infrastructure/npc-creature/npc-creature-instance.persistence.ts",
@@ -10081,7 +10081,7 @@
       },
       {
         "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-        "sha256": "42bb824871a85fed0fbc16c79184e9357a64d0e239c832c28b58c559d3231790"
+        "sha256": "afca3565cde9d1d94d7d4eaa4d798e0a4a981c319606f3ccc2b1fa61fb0177ab"
       },
       {
         "path": "src/lib/authenticatedUser.ts",
@@ -10174,11 +10174,11 @@
     "reviewedSources": [
       {
         "path": "src/infrastructure/host/host-library-http.ts",
-        "sha256": "73aff05d4133b8501c130d41f8e4430f09cfe24f7c6e7b115b653c8f96903a84"
+        "sha256": "6e81f5e20588e4dc072a5d6b5861ad15f987ef4328f39ab029cd23e74b2582a5"
       },
       {
         "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-        "sha256": "42bb824871a85fed0fbc16c79184e9357a64d0e239c832c28b58c559d3231790"
+        "sha256": "afca3565cde9d1d94d7d4eaa4d798e0a4a981c319606f3ccc2b1fa61fb0177ab"
       },
       {
         "path": "src/lib/authenticatedUser.ts",
@@ -10272,11 +10272,15 @@
     "reviewedSources": [
       {
         "path": "src/infrastructure/host/host-library-http.ts",
-        "sha256": "73aff05d4133b8501c130d41f8e4430f09cfe24f7c6e7b115b653c8f96903a84"
+        "sha256": "6e81f5e20588e4dc072a5d6b5861ad15f987ef4328f39ab029cd23e74b2582a5"
+      },
+      {
+        "path": "src/infrastructure/host/host-session-http.ts",
+        "sha256": "872234ca8977b0543ed26dd24cdd0c7c3bffd34dc029837fd478f9251b29c31c"
       },
       {
         "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-        "sha256": "42bb824871a85fed0fbc16c79184e9357a64d0e239c832c28b58c559d3231790"
+        "sha256": "afca3565cde9d1d94d7d4eaa4d798e0a4a981c319606f3ccc2b1fa61fb0177ab"
       },
       {
         "path": "src/lib/authenticatedUser.ts",
@@ -10413,7 +10417,7 @@
       },
       {
         "path": "src/infrastructure/host/host-library-http.ts",
-        "sha256": "73aff05d4133b8501c130d41f8e4430f09cfe24f7c6e7b115b653c8f96903a84"
+        "sha256": "6e81f5e20588e4dc072a5d6b5861ad15f987ef4328f39ab029cd23e74b2582a5"
       },
       {
         "path": "src/infrastructure/marketplace/marketplace-service.ts",

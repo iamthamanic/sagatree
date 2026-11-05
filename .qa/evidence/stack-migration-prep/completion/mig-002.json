@@ -5,7 +5,7 @@
   "result": "PASS",
   "githubClosed": true,
   "mergeRef": "PR #860 → main (after #782)",
-  "note": "Completion requires merge SHA + hashed check artifacts. Inventories refreshed after CUT-02 host project members dual-path.",
+  "note": "Inventories refreshed after CUT-03 NPC instance host dual-path.",
   "checks": [
     {
       "command": "legacy inventory matrix",
@@ -17,14 +17,14 @@
       "command": "rpc inventory 57",
       "result": "PASS",
       "evidenceFile": ".qa/intake/rpc-contracts/inventory.json",
-      "sha256": "8e37cd52e5e285e7a0bf981b0ba17b9727350919bebaa6d40f31b0a2faddc32a"
+      "sha256": "bdec508d2d694231b3122fb02e7aff38d2e8d8ce7c6e92428942d9816751d8ae"
     },
     {
       "command": "edge/infra inventory 25+13",
       "result": "PASS",
       "evidenceFile": ".qa/intake/edge-infra-contracts/inventory.json",
-      "sha256": "98c08df3066f9e1b24675e532138d3e11829fb3f354bf836e01cd9e8e98e67bb"
+      "sha256": "5cbf1eb7b4af6d86eeec5c324df68a6a317a0cb14e1ae610b44142cff568a097"
     }
   ],
-  "testedCommit": "436ce134a74b45038d24579ff31788b6fc19a43d"
+  "testedCommit": "430fe6d22801e05ed0806ce0e96740ee9228c83e"
 }

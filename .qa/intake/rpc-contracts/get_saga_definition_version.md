@@ -135,10 +135,10 @@ Direkt oder transitiv referenzierte lokale/importierte Mapper, Decoder und Vertr
 | `parseOrigin` | [src/domains/saga/contracts/saga-definition.ts](../../../src/domains/saga/contracts/saga-definition.ts) | 192 | `69b8fab72a158942d4f807e8b9fabcdae815506fb18e4e82434a71d0cdb9ee05` |
 | `parseSagaDefinitionPayload` | [src/domains/saga/contracts/saga-definition.ts](../../../src/domains/saga/contracts/saga-definition.ts) | 212 | `69b8fab72a158942d4f807e8b9fabcdae815506fb18e4e82434a71d0cdb9ee05` |
 | `parseSagaDefinitionVersion` | [src/domains/saga/contracts/saga-definition.ts](../../../src/domains/saga/contracts/saga-definition.ts) | 352 | `69b8fab72a158942d4f807e8b9fabcdae815506fb18e4e82434a71d0cdb9ee05` |
-| `EnvLike` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 11 | `73aff05d4133b8501c130d41f8e4430f09cfe24f7c6e7b115b653c8f96903a84` |
-| `defaultEnv` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 16 | `73aff05d4133b8501c130d41f8e4430f09cfe24f7c6e7b115b653c8f96903a84` |
-| `isHostLibraryExplicitlyDisabled` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 25 | `73aff05d4133b8501c130d41f8e4430f09cfe24f7c6e7b115b653c8f96903a84` |
-| `isHostLibraryEnabled` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 30 | `73aff05d4133b8501c130d41f8e4430f09cfe24f7c6e7b115b653c8f96903a84` |
+| `EnvLike` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 11 | `6e81f5e20588e4dc072a5d6b5861ad15f987ef4328f39ab029cd23e74b2582a5` |
+| `defaultEnv` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 16 | `6e81f5e20588e4dc072a5d6b5861ad15f987ef4328f39ab029cd23e74b2582a5` |
+| `isHostLibraryExplicitlyDisabled` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 25 | `6e81f5e20588e4dc072a5d6b5861ad15f987ef4328f39ab029cd23e74b2582a5` |
+| `isHostLibraryEnabled` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 30 | `6e81f5e20588e4dc072a5d6b5861ad15f987ef4328f39ab029cd23e74b2582a5` |
 | `assertHostProductSurfaceAvailable` | [src/infrastructure/host/host-product-deny.ts](../../../src/infrastructure/host/host-product-deny.ts) | 10 | `69b148debc95006bb31daa7a94caf4e1507ac3089fdf399952102c4effa3759c` |
 | `EnvLike` | [src/infrastructure/host/host-saga-definition-http.ts](../../../src/infrastructure/host/host-saga-definition-http.ts) | 12 | `3bf857114def303681691297c71f09a9b6278658e51cad659f0d7e51e0a819f1` |
 | `defaultEnv` | [src/infrastructure/host/host-saga-definition-http.ts](../../../src/infrastructure/host/host-saga-definition-http.ts) | 17 | `3bf857114def303681691297c71f09a9b6278658e51cad659f0d7e51e0a819f1` |
@@ -178,7 +178,7 @@ Die folgenden Hashes binden SQL-Kette, transitive Tabellen-/Trigger-/Policyquell
 | Quelle | SHA-256 |
 | --- | --- |
 | [src/domains/saga/contracts/saga-definition.ts](../../../src/domains/saga/contracts/saga-definition.ts) | `69b8fab72a158942d4f807e8b9fabcdae815506fb18e4e82434a71d0cdb9ee05` |
-| [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | `73aff05d4133b8501c130d41f8e4430f09cfe24f7c6e7b115b653c8f96903a84` |
+| [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | `6e81f5e20588e4dc072a5d6b5861ad15f987ef4328f39ab029cd23e74b2582a5` |
 | [src/infrastructure/host/host-product-deny.ts](../../../src/infrastructure/host/host-product-deny.ts) | `69b148debc95006bb31daa7a94caf4e1507ac3089fdf399952102c4effa3759c` |
 | [src/infrastructure/host/host-saga-definition-http.ts](../../../src/infrastructure/host/host-saga-definition-http.ts) | `3bf857114def303681691297c71f09a9b6278658e51cad659f0d7e51e0a819f1` |
 | [src/infrastructure/saga/saga-definition-service.ts](../../../src/infrastructure/saga/saga-definition-service.ts) | `bff1c95f3554628b28ba1db530db0807bcd3351e8f76139730756e9b1a54fea3` |

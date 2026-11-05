@@ -518,6 +518,115 @@ export async function assignHostNpcCreatureController(
   return body.assignment;
 }
 
+export type HostNpcInstanceDto = {
+  readonly id: string;
+  readonly projectId: string;
+  readonly sessionId: string | null;
+  readonly definitionId: string;
+  readonly displayName: string;
+  readonly instanceKind: string;
+  readonly sequenceNumber: number;
+  readonly snapshot: Record<string, unknown>;
+  readonly runtime: Record<string, unknown>;
+  readonly createdBy?: string;
+  readonly createdAt?: string;
+  readonly updatedAt?: string;
+};
+
+/** CUT-03 — list NPC instances for a project. */
+export async function fetchHostNpcInstances(
+  projectId: string,
+  env: EnvLike = defaultEnv(),
+  fetchImpl: typeof fetch = fetch,
+): Promise<readonly HostNpcInstanceDto[]> {
+  const qs = new URLSearchParams({ projectId });
+  const body = await hostGetJson<{ instances?: HostNpcInstanceDto[] }>(
+    `/api/v1/library/npc-instances?${qs.toString()}`,
+    'Host-NPC-Instanzen nicht erreichbar',
+    env,
+    fetchImpl,
+  );
+  if (!Array.isArray(body.instances)) {
+    throw new Error('Host-NPC-Instanzen: ungültige Antwort');
+  }
+  return body.instances;
+}
+
+/** CUT-03 — spawn NPC instance via host product HTTP. */
+export async function spawnHostNpcInstance(
+  input: {
+    readonly projectId: string;
+    readonly definitionId: string;
+    readonly instanceKind: string;
+    readonly snapshot: unknown;
+    readonly runtime: unknown;
+    readonly displayName: string;
+    readonly sequenceNumber: number;
+    readonly sessionId?: string | null;
+  },
+  env: EnvLike = defaultEnv(),
+  fetchImpl: typeof fetch = fetch,
+): Promise<HostNpcInstanceDto> {
+  const body = await hostMutateJson<{ instance?: HostNpcInstanceDto }>(
+    '/api/v1/library/npc-instances',
+    'POST',
+    'Host-NPC-Instanz erzeugen fehlgeschlagen',
+    {
+      projectId: input.projectId,
+      definitionId: input.definitionId,
+      instanceKind: input.instanceKind,
+      snapshot: input.snapshot,
+      runtime: input.runtime,
+      displayName: input.displayName,
+      sequenceNumber: input.sequenceNumber,
+      sessionId: input.sessionId ?? null,
+    },
+    env,
+    fetchImpl,
+  );
+  if (!body.instance || typeof body.instance.id !== 'string') {
+    throw new Error('Host-NPC-Instanz erzeugen: leere Antwort');
+  }
+  return body.instance;
+}
+
+/** CUT-03 — update instance runtime. */
+export async function updateHostNpcInstanceRuntime(
+  instanceId: string,
+  runtime: unknown,
+  env: EnvLike = defaultEnv(),
+  fetchImpl: typeof fetch = fetch,
+): Promise<HostNpcInstanceDto> {
+  const body = await hostMutateJson<{ instance?: HostNpcInstanceDto }>(
+    `/api/v1/library/npc-instances/${encodeURIComponent(instanceId)}/runtime`,
+    'PATCH',
+    'Host-NPC-Instanz-Status fehlgeschlagen',
+    { runtime },
+    env,
+    fetchImpl,
+  );
+  if (!body.instance || typeof body.instance.id !== 'string') {
+    throw new Error('Host-NPC-Instanz-Status: leere Antwort');
+  }
+  return body.instance;
+}
+
+/** CUT-03 — remove instance. */
+export async function removeHostNpcInstance(
+  instanceId: string,
+  env: EnvLike = defaultEnv(),
+  fetchImpl: typeof fetch = fetch,
+): Promise<void> {
+  await hostMutateJson(
+    `/api/v1/library/npc-instances/${encodeURIComponent(instanceId)}`,
+    'DELETE',
+    'Host-NPC-Instanz entfernen fehlgeschlagen',
+    undefined,
+    env,
+    fetchImpl,
+  );
+}
+
 export async function fetchHostLibraryLooks(
   env: EnvLike = defaultEnv(),
   fetchImpl: typeof fetch = fetch,

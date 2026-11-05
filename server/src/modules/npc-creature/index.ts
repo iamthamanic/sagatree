@@ -132,6 +132,12 @@ export type NpcCreaturePorts = {
   ) =>
     | { readonly ok: true; readonly value: ControllerAssignmentRow }
     | { readonly ok: false; readonly error: string };
+  readonly listInstances: (
+    actor: Actor,
+    projectId: string,
+  ) =>
+    | { readonly ok: true; readonly value: readonly NpcInstanceRow[] }
+    | { readonly ok: false; readonly error: string };
   readonly spawnInstance: (
     actor: Actor,
     input: {
@@ -221,16 +227,24 @@ export function createNpcCreaturePorts(deps: {
     assignController(actor, projectId, definitionId, controllerUserId) {
       return store.assignController(actorIds(actor), projectId, definitionId, controllerUserId);
     },
+    listInstances(actor, projectId) {
+      if (!requireActor(actor)) return { ok: false, error: 'missing-actor' };
+      return store.listInstances(actorIds(actor), projectId);
+    },
     spawnInstance(actor, input) {
+      if (!requireActor(actor)) return { ok: false, error: 'missing-actor' };
       return store.spawnInstance(actorIds(actor), input);
     },
     updateRuntime(actor, instanceId, runtime) {
+      if (!requireActor(actor)) return { ok: false, error: 'missing-actor' };
       return store.updateRuntime(actorIds(actor), instanceId, runtime);
     },
     removeInstance(actor, instanceId) {
+      if (!requireActor(actor)) return { ok: false, error: 'missing-actor' };
       return store.removeInstance(actorIds(actor), instanceId);
     },
     clearTempControllersForSession(actor, sessionId) {
+      if (!requireActor(actor)) return { ok: false, error: 'missing-actor' };
       return store.clearTempControllersForSession(actorIds(actor), sessionId);
     },
     seedDefinitionForTests: (input) => store.seedDefinitionForTests(input),
@@ -250,6 +264,7 @@ export function createNpcCreaturePortsStub(): NpcCreaturePorts {
     duplicateDefinition: () => unavailable,
     getControllerAssignment: () => unavailable,
     assignController: () => unavailable,
+    listInstances: () => unavailable,
     spawnInstance: () => unavailable,
     updateRuntime: () => unavailable,
     removeInstance: () => unavailable,
