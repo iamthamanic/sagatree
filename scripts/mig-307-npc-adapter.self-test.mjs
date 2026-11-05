@@ -85,7 +85,7 @@ const [{ createHostNpcCreatureAdapter }, { HOST_NPC_CREATURE_OPS }] = await Prom
 ]);
 assert(typeof createHostNpcCreatureAdapter === 'function', 'createHostNpcCreatureAdapter loaded');
 assert(
-  Array.isArray(HOST_NPC_CREATURE_OPS) && HOST_NPC_CREATURE_OPS.length === 12,
+  Array.isArray(HOST_NPC_CREATURE_OPS) && HOST_NPC_CREATURE_OPS.length === 13,
   'HOST_NPC_CREATURE_OPS count',
 );
 
@@ -350,6 +350,8 @@ try {
     archiveDefinition: async (actorId, id) => npc.archiveDefinition(actor(actorId), id),
     restoreDefinition: async (actorId, id) => npc.restoreDefinition(actor(actorId), id),
     duplicateDefinition: async (actorId, id) => npc.duplicateDefinition(actor(actorId), id),
+    getControllerAssignment: async (actorId, pid, did) =>
+      npc.getControllerAssignment(actor(actorId), pid, did),
     assignController: async (actorId, pid, did, cid) =>
       npc.assignController(actor(actorId), pid, did, cid),
     spawnInstance: async (actorId, input) => npc.spawnInstance(actor(actorId), input),

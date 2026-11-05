@@ -40,10 +40,13 @@ import { supabase } from '../../lib/supabase';
 import { raceWithTimeoutReject, SUPABASE_QUERY_TIMEOUT_MS } from '../../lib/networkTimeout';
 import {
   archiveHostLibraryNpcCreature,
+  assignHostNpcCreatureController,
   createHostLibraryNpcCreature,
   fetchHostLibraryNpcCreatures,
+  fetchHostNpcCreatureControllerAssignment,
   isHostLibraryEnabled,
   updateHostLibraryNpcCreature,
+  type HostNpcControllerAssignmentDto,
 } from '../host/host-library-http';
 import {
   toNpcControllerAssignment,
@@ -335,11 +338,25 @@ export async function promoteNpcCreatureCompactToFull(input: {
   });
 }
 
-/** Load controller assignment for a campaign + definition (#200). */
+function mapHostControllerAssignment(
+  dto: HostNpcControllerAssignmentDto,
+): NpcControllerAssignment {
+  return {
+    projectId: dto.projectId,
+    definitionId: dto.definitionId,
+    controllerUserId: dto.controllerUserId,
+  };
+}
+
+/** Load controller assignment for a campaign + definition (#200 / CUT-02). */
 export async function getNpcCreatureControllerAssignment(
   projectId: string,
   definitionId: string,
 ): Promise<NpcControllerAssignment | null> {
+  if (isHostLibraryEnabled()) {
+    const assignment = await fetchHostNpcCreatureControllerAssignment(projectId, definitionId);
+    return assignment ? mapHostControllerAssignment(assignment) : null;
+  }
   await getAuthenticatedUserId();
   const { data, error } = await raceWithTimeoutReject(
     supabase
@@ -359,8 +376,9 @@ export async function getNpcCreatureControllerAssignment(
 }
 
 /**
- * Assign / clear controller via SECURITY DEFINER RPC (#200).
- * Domain plan runs first; server re-validates GM + membership.
+ * Assign / clear controller (#200 / CUT-02).
+ * Domain plan is a client hint only; host ports re-validate GM + membership.
+ * Under host-first: Host HTTP — never Supabase RPC.
  */
 export async function assignNpcCreatureController(input: {
   projectId: string;
@@ -369,7 +387,7 @@ export async function assignNpcCreatureController(input: {
   activeMemberUserIds: readonly string[];
 }): Promise<NpcControllerAssignment> {
   const actorUserId = await getAuthenticatedUserId();
-  const record = await supabaseNpcCreatureRepository.getDefinitionById(input.definitionId);
+  const record = await getNpcCreatureDefinition(input.definitionId);
   if (!record) {
     throw new Error('Figur wurde nicht gefunden.');
   }
@@ -389,6 +407,15 @@ export async function assignNpcCreatureController(input: {
   );
   if (planned.ok === false) {
     throw new Error(planned.message);
+  }
+
+  if (isHostLibraryEnabled()) {
+    const assignment = await assignHostNpcCreatureController({
+      projectId: planned.assignment.projectId,
+      definitionId: planned.assignment.definitionId,
+      controllerUserId: planned.assignment.controllerUserId,
+    });
+    return mapHostControllerAssignment(assignment);
   }
 
   const { data, error } = await raceWithTimeoutReject(

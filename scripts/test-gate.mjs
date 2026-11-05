@@ -1455,6 +1455,19 @@ function checkCutoverParityInventory() {
   console.log('OK: cutover-parity-inventory-check');
 }
 
+function checkCut02NpcController() {
+  console.log('CUT-02 NPC controller assignment host HTTP (#1137)...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/cut-02-npc-controller.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+  console.log('OK: cut-02-npc-controller.self-test');
+}
+
 function checkMig312UserProfileAdapter() {
   console.log('MIG-312 user-profile adapter (#811): user_profiles + user-avatars dual-path...');
   execFileSync(
@@ -3673,6 +3686,7 @@ checkFeHost12ProjectWrites();
 checkFeHost13SagaDefinition();
 checkFeHost14AiResiduals();
 checkCutoverParityInventory();
+checkCut02NpcController();
 checkMig312UserProfileAdapter();
 checkMig309Rulesets();
 checkMig313WorldAdapter();

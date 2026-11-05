@@ -459,6 +459,65 @@ export async function archiveHostLibraryNpcCreature(
   return body.definition;
 }
 
+export type HostNpcControllerAssignmentDto = {
+  readonly projectId: string;
+  readonly definitionId: string;
+  readonly controllerUserId: string | null;
+  readonly assignedBy?: string;
+  readonly updatedAt?: string;
+};
+
+/** CUT-02 — load NPC controller assignment via host product HTTP. */
+export async function fetchHostNpcCreatureControllerAssignment(
+  projectId: string,
+  definitionId: string,
+  env: EnvLike = defaultEnv(),
+  fetchImpl: typeof fetch = fetch,
+): Promise<HostNpcControllerAssignmentDto | null> {
+  const qs = new URLSearchParams({ projectId });
+  const body = await hostGetJson<{ assignment?: HostNpcControllerAssignmentDto | null }>(
+    `/api/v1/library/npc-creatures/${encodeURIComponent(definitionId)}/controller?${qs.toString()}`,
+    'Host-Controller-Zuweisung nicht erreichbar',
+    env,
+    fetchImpl,
+  );
+  if (body.assignment === null || body.assignment === undefined) return null;
+  if (typeof body.assignment.projectId !== 'string' || typeof body.assignment.definitionId !== 'string') {
+    throw new Error('Host-Controller-Zuweisung: ungültige Antwort');
+  }
+  return body.assignment;
+}
+
+/**
+ * CUT-02 — assign or clear NPC controller (null clears).
+ * Actor is cookie/session only; never send client role claims.
+ */
+export async function assignHostNpcCreatureController(
+  input: {
+    readonly projectId: string;
+    readonly definitionId: string;
+    readonly controllerUserId: string | null;
+  },
+  env: EnvLike = defaultEnv(),
+  fetchImpl: typeof fetch = fetch,
+): Promise<HostNpcControllerAssignmentDto> {
+  const body = await hostMutateJson<{ assignment?: HostNpcControllerAssignmentDto }>(
+    `/api/v1/library/npc-creatures/${encodeURIComponent(input.definitionId)}/controller`,
+    'POST',
+    'Host-Controller-Zuweisung fehlgeschlagen',
+    {
+      projectId: input.projectId,
+      controllerUserId: input.controllerUserId,
+    },
+    env,
+    fetchImpl,
+  );
+  if (!body.assignment || typeof body.assignment.projectId !== 'string') {
+    throw new Error('Host-Controller-Zuweisung: leere Antwort');
+  }
+  return body.assignment;
+}
+
 export async function fetchHostLibraryLooks(
   env: EnvLike = defaultEnv(),
   fetchImpl: typeof fetch = fetch,
