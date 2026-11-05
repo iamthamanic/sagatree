@@ -15,26 +15,31 @@ function mapRow(row: {
   ownerUserId: string;
   title: string;
   createdAt: string;
+  publicId: string | null;
 }): WorldStoredRow {
   return {
     id: row.id,
     ownerUserId: row.ownerUserId,
     title: row.title,
     createdAt: row.createdAt,
+    publicId: row.publicId,
   };
 }
+
+const worldSelect = {
+  id: worlds.id,
+  ownerUserId: worlds.ownerUserId,
+  title: worlds.title,
+  createdAt: worlds.createdAt,
+  publicId: worlds.publicId,
+} as const;
 
 export function createSqliteWorldReadStore(db: HostDatabase): WorldReadStore {
   const orm = db.orm;
   return {
     listByOwner(ownerUserId: string): readonly WorldStoredRow[] {
       const rows = orm
-        .select({
-          id: worlds.id,
-          ownerUserId: worlds.ownerUserId,
-          title: worlds.title,
-          createdAt: worlds.createdAt,
-        })
+        .select(worldSelect)
         .from(worlds)
         .where(eq(worlds.ownerUserId, ownerUserId))
         .orderBy(desc(worlds.createdAt), asc(worlds.id))
@@ -43,14 +48,17 @@ export function createSqliteWorldReadStore(db: HostDatabase): WorldReadStore {
     },
     findById(worldId: string): WorldStoredRow | null {
       const row = orm
-        .select({
-          id: worlds.id,
-          ownerUserId: worlds.ownerUserId,
-          title: worlds.title,
-          createdAt: worlds.createdAt,
-        })
+        .select(worldSelect)
         .from(worlds)
         .where(eq(worlds.id, worldId))
+        .get();
+      return row ? mapRow(row) : null;
+    },
+    findByPublicId(publicId: string): WorldStoredRow | null {
+      const row = orm
+        .select(worldSelect)
+        .from(worlds)
+        .where(eq(worlds.publicId, publicId))
         .get();
       return row ? mapRow(row) : null;
     },

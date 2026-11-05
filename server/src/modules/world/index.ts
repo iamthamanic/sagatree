@@ -130,6 +130,8 @@ export type WorldReadDto = {
   readonly id: string;
   readonly title: string;
   readonly createdAt: string;
+  /** CUT-10 — WO-XXXXX when allocated; never an authorization token. */
+  readonly publicId: string | null;
 };
 
 export type WorldReadOk<T> = { readonly ok: true; readonly value: T };
@@ -139,6 +141,11 @@ export type WorldReadResult<T> = WorldReadOk<T> | WorldReadErr;
 export type WorldReadPort = {
   readonly listOwnedWorlds: (actor: Actor) => WorldReadResult<readonly WorldReadDto[]>;
   readonly getWorld: (actor: Actor, worldId: string) => WorldReadResult<WorldReadDto>;
+  /** CUT-10 — authorized projection by WO- public id (ID ≠ permission). */
+  readonly getWorldByPublicId: (
+    actor: Actor,
+    publicId: string,
+  ) => WorldReadResult<WorldReadDto>;
 };
 
 export type WorldPorts = {
@@ -148,7 +155,7 @@ export type WorldPorts = {
   readonly createOwnedWorld: (
     actor: Actor,
     title: string,
-  ) => WorldReadResult<{ id: string; title: string; createdAt: string }>;
+  ) => WorldReadResult<{ id: string; title: string; createdAt: string; publicId: string | null }>;
   /** Owner-only title update — profile CRUD transport (MIG-313). */
   readonly updateOwnedWorld: (
     actor: Actor,
@@ -250,8 +257,18 @@ export type WorldPorts = {
 
 type AuthorizeFn = (op: PolicyOp, actor: Actor, resource?: PolicyResource) => PolicyDecision;
 
-function toDto(row: { id: string; title: string; createdAt: string }): WorldReadDto {
-  return { id: row.id, title: row.title, createdAt: row.createdAt };
+function toDto(row: {
+  id: string;
+  title: string;
+  createdAt: string;
+  publicId?: string | null;
+}): WorldReadDto {
+  return {
+    id: row.id,
+    title: row.title,
+    createdAt: row.createdAt,
+    publicId: typeof row.publicId === 'string' && row.publicId.trim() ? row.publicId.trim() : null,
+  };
 }
 
 /**
@@ -333,6 +350,21 @@ export function createWorldPorts(deps: {
       if (!row) return { ok: false, error: 'world-not-found' };
       return { ok: true, value: toDto(row) };
     },
+
+    getWorldByPublicId(actor: Actor, publicIdRaw: string): WorldReadResult<WorldReadDto> {
+      if (!actor?.actorId) return { ok: false, error: 'missing-actor' };
+      const publicId =
+        typeof publicIdRaw === 'string' ? publicIdRaw.trim().toUpperCase() : '';
+      if (!publicId) return { ok: false, error: 'missing-world' };
+      const row = store.findByPublicId(publicId);
+      if (!row) return { ok: false, error: 'world-not-found' };
+      const decision = authorize('world.read', actor, { worldId: row.id });
+      if (!decision.allow) {
+        // Non-disclosing: do not advertise that the public id exists.
+        return { ok: false, error: 'world-not-found' };
+      }
+      return { ok: true, value: toDto(row) };
+    },
   };
 
   return {
@@ -345,17 +377,19 @@ export function createWorldPorts(deps: {
       const id = randomUUID();
       const createdAt = new Date().toISOString();
       const safeTitle = typeof title === 'string' && title.trim() ? title.trim() : 'World';
+      const publicId = writeStore.allocatePublicId();
       try {
         writeStore.insertOwned({
           id,
           ownerUserId: actor.actorId,
           title: safeTitle,
           createdAt,
+          publicId,
         });
       } catch {
         return { ok: false, error: 'P0001' };
       }
-      return { ok: true, value: { id, title: safeTitle, createdAt } };
+      return { ok: true, value: { id, title: safeTitle, createdAt, publicId } };
     },
 
     updateOwnedWorld(actor, worldId, title) {
@@ -716,6 +750,7 @@ export function createWorldPortsStub(): WorldPorts {
     read: {
       listOwnedWorlds: () => ({ ok: false, error: 'store-unavailable' }),
       getWorld: () => ({ ok: false, error: 'store-unavailable' }),
+      getWorldByPublicId: () => ({ ok: false, error: 'store-unavailable' }),
     },
     createOwnedWorld: () => ({ ok: false, error: 'store-unavailable' }),
     updateOwnedWorld: () => ({ ok: false, error: 'store-unavailable' }),

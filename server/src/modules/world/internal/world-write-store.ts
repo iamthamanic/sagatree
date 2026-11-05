@@ -6,6 +6,7 @@
 import { and, eq, inArray } from 'drizzle-orm';
 import type { HostDatabase } from '../../../persistence/open-database.ts';
 import { worlds, worldMaps } from '../../../persistence/schema/world.ts';
+import { generateWorldPublicId } from './public-world-id.ts';
 
 export type WorldWriteStore = {
   readonly insertOwned: (input: {
@@ -13,7 +14,9 @@ export type WorldWriteStore = {
     readonly ownerUserId: string;
     readonly title: string;
     readonly createdAt: string;
+    readonly publicId?: string;
   }) => void;
+  readonly allocatePublicId: () => string;
   readonly updateOwnedTitle: (input: {
     readonly id: string;
     readonly ownerUserIds: readonly string[];
@@ -29,8 +32,20 @@ export type WorldWriteStore = {
 
 export function createSqliteWorldWriteStore(db: HostDatabase): WorldWriteStore {
   const orm = db.orm;
+  const allocatePublicId = (): string => {
+    for (let attempt = 0; attempt < 32; attempt += 1) {
+      const candidate = generateWorldPublicId();
+      const hit = db
+        .prepare(`SELECT 1 AS ok FROM worlds WHERE public_id = ? LIMIT 1`)
+        .get(candidate) as { ok: number } | undefined;
+      if (!hit) return candidate;
+    }
+    return generateWorldPublicId();
+  };
   return {
+    allocatePublicId,
     insertOwned(input) {
+      const publicId = input.publicId?.trim() || allocatePublicId();
       orm
         .insert(worlds)
         .values({
@@ -38,6 +53,7 @@ export function createSqliteWorldWriteStore(db: HostDatabase): WorldWriteStore {
           ownerUserId: input.ownerUserId,
           title: input.title,
           createdAt: input.createdAt,
+          publicId,
         })
         .run();
     },

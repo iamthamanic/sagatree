@@ -16,6 +16,7 @@ import type {
 import {
   createHostLibraryWorld,
   deleteHostLibraryWorld,
+  fetchHostLibraryWorldByPublicId,
   fetchHostLibraryWorlds,
   isHostLibraryEnabled,
   updateHostLibraryWorld,
@@ -27,11 +28,11 @@ const WORLD_SELECT =
 
 function mapHostWorld(row: HostLibraryWorldDto): WorldProfileVm {
   const createdAt = row.createdAt ? new Date(row.createdAt) : new Date();
-  // Host world ports are title-only today (WorldReadDto). Description/modules
+  // Host world ports are title + publicId today (WorldReadDto). Description/modules
   // land in a later FE-HOST world-profile slice — do not invent empty writes.
   return {
     id: row.id,
-    publicId: '',
+    publicId: typeof row.publicId === 'string' ? row.publicId : '',
     name: row.title,
     description: '',
     modules: normalizeWorldModuleConfigMap(undefined),
@@ -111,15 +112,14 @@ class WorldProfileService {
     return this.mapToViewModel(data as WorldProfileDto);
   }
 
-  /** Resolve by public id (WO-…); RLS decides readability (no client-elevated filter). */
+  /** Resolve by public id (WO-…); RLS / host policy decides readability (no client-elevated filter). */
   async getByPublicId(worldPublicId: string): Promise<WorldProfileVm | null> {
     const publicId = worldPublicId.trim().toUpperCase();
     if (!publicId) return null;
     if (isHostLibraryEnabled()) {
-      // Host world DTOs are title-only today (no publicId). Fail closed — no PostgREST.
-      throw new Error(
-        'Welt per öffentlicher ID laden ist im Host-Modus noch nicht verfügbar.',
-      );
+      const row = await fetchHostLibraryWorldByPublicId(publicId);
+      if (!row) return null;
+      return mapHostWorld(row);
     }
     await assertSupabaseJwtSession();
     const { data, error } = await supabase

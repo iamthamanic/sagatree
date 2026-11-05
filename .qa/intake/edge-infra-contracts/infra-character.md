@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-character.json](source-contracts/infra-character.json) (SHA-256 `351460257a0a0846198112e2ca301725a7054b3af45d4a3a3aee80a40048c699`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-character.json](source-contracts/infra-character.json) (SHA-256 `f2c319349fe51657d883635e0ceb92a16bbdf60ea3cbb1443f71a65221d70a63`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -12154,7 +12154,7 @@ private async assertPersonalLookWriteGate(
 | `src/infrastructure/character/liveact/mediapipe-sagatree-face-anchor-map-v1.ts` | `b092e31c50b885b9dbeb396ef2bdbfa39a953df717da7e0042e081849c173d9a` |
 | `src/infrastructure/character/liveact/vrm-liveact-avatar-output.ts` | `f5ef95d582ee0f3a2ec47748e8d958306f3833d45a5e8e1b250d1eecfba5d9a6` |
 | `src/infrastructure/character/supabase-character.repository.ts` | `ae0034e06c55c384124c933bc8093c3926b7ece34a5222213913d1fdc03a9878` |
-| `src/infrastructure/host/host-library-http.ts` | `69904d232219d72d3ee991eadc688ed47f9a3eb98289d516d7b437119d6e4d3d` |
+| `src/infrastructure/host/host-library-http.ts` | `225526477a7e5920f614ab73e2db1beeab6154c54dbc32f107713f2f046613af` |
 | `src/infrastructure/host/host-product-deny.ts` | `69b148debc95006bb31daa7a94caf4e1507ac3089fdf399952102c4effa3759c` |
 | `src/infrastructure/host/host-project-http.ts` | `b5a68f6452217b08d2217a983113a9a356ce70890693319227f35c82fbdcd818` |
 | `src/infrastructure/inventory/inventory-persistence.ts` | `79aaa09053ecd72a0bec8f8f0610b31ab0c9b34779f4a4c87f19f0d2ef7e4ac2` |

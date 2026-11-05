@@ -27,8 +27,6 @@ German UX, or throw unavailable — never hang on PostgREST/Edge.
 | Session recap AI generate | `session-recap-ai-service.ts` `generateDraft` | Info | Soft German unavailable; manual save is host |
 | Avatar Meshy Edge | `character-avatar-meshy-service.ts` | Info | Soft error / `meshyConfigured:false`; portrait publish is host |
 | Avatar import/export/artifacts storage | `character-avatar-*-service.ts` | Info | Optional artifacts; portrait publish host (FE-HOST-06) |
-| Character presets / adventure arcs | `character-preset-service.ts`, `character-adventure-arc-service.ts` | Info | Soft DENY; not required for host-first play |
-| World by public id | `world-profile-service.ts` `getByPublicId` | Info | Host worlds title-only; soft DENY |
 | Historical `supabase/migrations` SQL | `supabase/migrations/**` | Info | Archive; not product runtime |
 | Edge Functions tree | `supabase/functions/**` | Info | Archive / optional stack; dispatcher allowlists unchanged |
 

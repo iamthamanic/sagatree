@@ -896,6 +896,32 @@ export function mountLibraryHttpRoutes(app: Hono, deps: LibraryHttpDeps): void {
     return c.json({ worlds: listed.value }, 200);
   });
 
+  /** CUT-10 — authorized world profile by WO- public id. */
+  app.get('/api/v1/library/worlds/by-public-id/:publicId', async (c) => {
+    const actorResult = await resolveLibraryActor(deps, c.req.raw.headers);
+    if (!actorResult.ok) {
+      return c.json({ error: actorResult.error }, actorResult.status);
+    }
+    if (!deps.world?.read?.getWorldByPublicId) {
+      return c.json({ error: 'store-unavailable' }, 503);
+    }
+    const lookedUp = deps.world.read.getWorldByPublicId(
+      actorResult.actor,
+      c.req.param('publicId'),
+    );
+    if (!lookedUp.ok) {
+      return c.json(
+        { error: lookedUp.error },
+        lookedUp.error === 'world-not-found' || lookedUp.error === 'missing-world'
+          ? 404
+          : lookedUp.error === 'not-authorized'
+            ? 404
+            : 400,
+      );
+    }
+    return c.json({ world: lookedUp.value }, 200);
+  });
+
   app.post('/api/v1/library/worlds', async (c) => {
     const actorResult = await resolveLibraryActor(deps, c.req.raw.headers);
     if (!actorResult.ok) {

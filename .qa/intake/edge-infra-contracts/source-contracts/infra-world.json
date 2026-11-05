@@ -29,7 +29,7 @@
     },
     {
       "path": "src/infrastructure/world/world-profile-service.ts",
-      "sha256": "8b06871f77fac89a1c424efbaa722d543f8c291645a2bcc92fe258ca9d51286e"
+      "sha256": "d8846780836ca065c8c14ad5d411b3ad235583c4002481365ce20fa8963a34c0"
     }
   ],
   "supportingSourceFiles": [
@@ -323,7 +323,7 @@
     },
     {
       "path": "src/infrastructure/host/host-library-http.ts",
-      "sha256": "69904d232219d72d3ee991eadc688ed47f9a3eb98289d516d7b437119d6e4d3d"
+      "sha256": "225526477a7e5920f614ab73e2db1beeab6154c54dbc32f107713f2f046613af"
     },
     {
       "path": "src/infrastructure/host/host-world-http.ts",
@@ -2064,31 +2064,31 @@
       "name": "HostLibraryWorldDto",
       "path": "src/infrastructure/host/host-library-http.ts",
       "line": 132,
-      "endLine": 136,
-      "text": "export type HostLibraryWorldDto = {\n  readonly id: string;\n  readonly title: string;\n  readonly createdAt: string;\n};"
+      "endLine": 138,
+      "text": "export type HostLibraryWorldDto = {\n  readonly id: string;\n  readonly title: string;\n  readonly createdAt: string;\n  /** CUT-10 — WO-XXXXX when present. */\n  readonly publicId?: string | null;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "HostNpcControllerAssignmentDto",
       "path": "src/infrastructure/host/host-library-http.ts",
-      "line": 814,
-      "endLine": 820,
+      "line": 860,
+      "endLine": 866,
       "text": "export type HostNpcControllerAssignmentDto = {\n  readonly projectId: string;\n  readonly definitionId: string;\n  readonly controllerUserId: string | null;\n  readonly assignedBy?: string;\n  readonly updatedAt?: string;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "HostNpcInstanceDto",
       "path": "src/infrastructure/host/host-library-http.ts",
-      "line": 873,
-      "endLine": 886,
+      "line": 919,
+      "endLine": 932,
       "text": "export type HostNpcInstanceDto = {\n  readonly id: string;\n  readonly projectId: string;\n  readonly sessionId: string | null;\n  readonly definitionId: string;\n  readonly displayName: string;\n  readonly instanceKind: string;\n  readonly sequenceNumber: number;\n  readonly snapshot: Record<string, unknown>;\n  readonly runtime: Record<string, unknown>;\n  readonly createdBy?: string;\n  readonly createdAt?: string;\n  readonly updatedAt?: string;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "HostPublishedAssetDto",
       "path": "src/infrastructure/host/host-library-http.ts",
-      "line": 995,
-      "endLine": 1002,
+      "line": 1041,
+      "endLine": 1048,
       "text": "export type HostPublishedAssetDto = {\n  readonly assetId: string;\n  readonly contentType: string;\n  readonly byteSize: number;\n  readonly checksumSha256: string;\n  readonly url: string;\n  readonly storagePath: string;\n};"
     },
     {
@@ -2696,8 +2696,8 @@
       "kind": "table",
       "name": "world_profiles",
       "path": "src/infrastructure/world/world-profile-service.ts",
-      "line": 84,
-      "endLine": 85,
+      "line": 85,
+      "endLine": 86,
       "resolution": "literal-or-constant",
       "expression": "supabase\n      .from(this.tableName)",
       "chain": "supabase\n      .from(this.tableName)\n      .select(WORLD_SELECT)\n      .eq('owner_user_id', jwtUserId)\n      .order('created_at', { ascending: false })",
@@ -2706,8 +2706,8 @@
       ],
       "enclosingOperation": {
         "path": "src/infrastructure/world/world-profile-service.ts",
-        "line": 77,
-        "endLine": 92,
+        "line": 78,
+        "endLine": 93,
         "text": "async getUserWorldProfiles(ownerUserId: string): Promise<WorldProfileVm[]> {\n    if (!ownerUserId) throw new Error('User not authenticated');\n    if (isHostLibraryEnabled()) {\n      const rows = await fetchHostLibraryWorlds();\n      return rows.map(mapHostWorld);\n    }\n    const jwtUserId = await assertSupabaseJwtSession();\n    const { data, error } = await supabase\n      .from(this.tableName)\n      .select(WORLD_SELECT)\n      .eq('owner_user_id', jwtUserId)\n      .order('created_at', { ascending: false });\n\n    if (error) throw new Error(`Welten konnten nicht geladen werden: ${error.message}`);\n    return (data ?? []).map((entry) => this.mapToViewModel(entry as WorldProfileDto));\n  }"
       }
     },
@@ -2715,8 +2715,8 @@
       "kind": "table",
       "name": "world_profiles",
       "path": "src/infrastructure/world/world-profile-service.ts",
-      "line": 103,
-      "endLine": 104,
+      "line": 104,
+      "endLine": 105,
       "resolution": "literal-or-constant",
       "expression": "supabase\n      .from(this.tableName)",
       "chain": "supabase\n      .from(this.tableName)\n      .select(WORLD_SELECT)\n      .eq('id', id)\n      .eq('owner_user_id', jwtUserId)\n      .single()",
@@ -2725,8 +2725,8 @@
       ],
       "enclosingOperation": {
         "path": "src/infrastructure/world/world-profile-service.ts",
-        "line": 94,
-        "endLine": 112,
+        "line": 95,
+        "endLine": 113,
         "text": "async getWorldProfile(ownerUserId: string, id: string): Promise<WorldProfileVm> {\n    if (!ownerUserId) throw new Error('User not authenticated');\n    if (isHostLibraryEnabled()) {\n      const rows = await fetchHostLibraryWorlds();\n      const match = rows.find((row) => row.id === id);\n      if (!match) throw new Error('Welt konnte nicht geladen werden');\n      return mapHostWorld(match);\n    }\n    const jwtUserId = await assertSupabaseJwtSession();\n    const { data, error } = await supabase\n      .from(this.tableName)\n      .select(WORLD_SELECT)\n      .eq('id', id)\n      .eq('owner_user_id', jwtUserId)\n      .single();\n\n    if (error) throw new Error(`Welt konnte nicht geladen werden: ${error.message}`);\n    return this.mapToViewModel(data as WorldProfileDto);\n  }"
       }
     },
@@ -2744,9 +2744,9 @@
       ],
       "enclosingOperation": {
         "path": "src/infrastructure/world/world-profile-service.ts",
-        "line": 115,
+        "line": 116,
         "endLine": 133,
-        "text": "async getByPublicId(worldPublicId: string): Promise<WorldProfileVm | null> {\n    const publicId = worldPublicId.trim().toUpperCase();\n    if (!publicId) return null;\n    if (isHostLibraryEnabled()) {\n      // Host world DTOs are title-only today (no publicId). Fail closed — no PostgREST.\n      throw new Error(\n        'Welt per öffentlicher ID laden ist im Host-Modus noch nicht verfügbar.',\n      );\n    }\n    await assertSupabaseJwtSession();\n    const { data, error } = await supabase\n      .from(this.tableName)\n      .select(WORLD_SELECT)\n      .eq('public_id', publicId)\n      .maybeSingle();\n    if (error) throw new Error(`Welt konnte nicht geladen werden: ${error.message}`);\n    if (!data) return null;\n    return this.mapToViewModel(data as WorldProfileDto);\n  }"
+        "text": "async getByPublicId(worldPublicId: string): Promise<WorldProfileVm | null> {\n    const publicId = worldPublicId.trim().toUpperCase();\n    if (!publicId) return null;\n    if (isHostLibraryEnabled()) {\n      const row = await fetchHostLibraryWorldByPublicId(publicId);\n      if (!row) return null;\n      return mapHostWorld(row);\n    }\n    await assertSupabaseJwtSession();\n    const { data, error } = await supabase\n      .from(this.tableName)\n      .select(WORLD_SELECT)\n      .eq('public_id', publicId)\n      .maybeSingle();\n    if (error) throw new Error(`Welt konnte nicht geladen werden: ${error.message}`);\n    if (!data) return null;\n    return this.mapToViewModel(data as WorldProfileDto);\n  }"
       }
     },
     {
@@ -3010,10 +3010,10 @@
     {
       "path": "src/infrastructure/world/world-profile-service.ts",
       "line": 16,
-      "endLine": 23,
+      "endLine": 24,
       "module": "../host/host-library-http",
       "resolvedPath": "src/infrastructure/host/host-library-http.ts",
-      "expression": "import {\n  createHostLibraryWorld,\n  deleteHostLibraryWorld,\n  fetchHostLibraryWorlds,\n  isHostLibraryEnabled,\n  updateHostLibraryWorld,\n  type HostLibraryWorldDto,\n} from '../host/host-library-http';"
+      "expression": "import {\n  createHostLibraryWorld,\n  deleteHostLibraryWorld,\n  fetchHostLibraryWorldByPublicId,\n  fetchHostLibraryWorlds,\n  isHostLibraryEnabled,\n  updateHostLibraryWorld,\n  type HostLibraryWorldDto,\n} from '../host/host-library-http';"
     }
   ],
   "publicDeclarations": [
@@ -3553,66 +3553,66 @@
     },
     {
       "path": "src/infrastructure/world/world-profile-service.ts",
-      "line": 28,
-      "endLine": 41,
+      "line": 29,
+      "endLine": 42,
       "name": "mapHostWorld",
-      "text": "function mapHostWorld(row: HostLibraryWorldDto): WorldProfileVm {\n  const createdAt = row.createdAt ? new Date(row.createdAt) : new Date();\n  // Host world ports are title-only today (WorldReadDto). Description/modules\n  // land in a later FE-HOST world-profile slice — do not invent empty writes.\n  return {\n    id: row.id,\n    publicId: '',\n    name: row.title,\n    description: '',\n    modules: normalizeWorldModuleConfigMap(undefined),\n    createdAt,\n    updatedAt: createdAt,\n  };\n}"
+      "text": "function mapHostWorld(row: HostLibraryWorldDto): WorldProfileVm {\n  const createdAt = row.createdAt ? new Date(row.createdAt) : new Date();\n  // Host world ports are title + publicId today (WorldReadDto). Description/modules\n  // land in a later FE-HOST world-profile slice — do not invent empty writes.\n  return {\n    id: row.id,\n    publicId: typeof row.publicId === 'string' ? row.publicId : '',\n    name: row.title,\n    description: '',\n    modules: normalizeWorldModuleConfigMap(undefined),\n    createdAt,\n    updatedAt: createdAt,\n  };\n}"
     },
     {
       "path": "src/infrastructure/world/world-profile-service.ts",
-      "line": 43,
-      "endLine": 48,
+      "line": 44,
+      "endLine": 49,
       "name": "normalizeName",
       "text": "function normalizeName(value: string): string {\n  const name = value.trim();\n  if (!name) throw new Error('Der Name der Welt ist erforderlich.');\n  if (name.length > 255) throw new Error('Der Name der Welt darf höchstens 255 Zeichen lang sein.');\n  return name;\n}"
     },
     {
       "path": "src/infrastructure/world/world-profile-service.ts",
-      "line": 50,
-      "endLine": 53,
+      "line": 51,
+      "endLine": 54,
       "name": "normalizeDescription",
       "text": "function normalizeDescription(value?: string): string | null {\n  const description = value?.trim() ?? '';\n  return description || null;\n}"
     },
     {
       "path": "src/infrastructure/world/world-profile-service.ts",
-      "line": 55,
-      "endLine": 60,
+      "line": 56,
+      "endLine": 61,
       "name": "duplicateWorldName",
       "text": "function duplicateWorldName(sourceName: string): string {\n  const suffix = ' (Kopie)';\n  const base = sourceName.trim() || 'Welt';\n  const maxBase = Math.max(1, 255 - suffix.length);\n  return `${base.slice(0, maxBase)}${suffix}`;\n}"
     },
     {
       "path": "src/infrastructure/world/world-profile-service.ts",
-      "line": 77,
-      "endLine": 92,
+      "line": 78,
+      "endLine": 93,
       "name": "getUserWorldProfiles",
       "text": "async getUserWorldProfiles(ownerUserId: string): Promise<WorldProfileVm[]> {\n    if (!ownerUserId) throw new Error('User not authenticated');\n    if (isHostLibraryEnabled()) {\n      const rows = await fetchHostLibraryWorlds();\n      return rows.map(mapHostWorld);\n    }\n    const jwtUserId = await assertSupabaseJwtSession();\n    const { data, error } = await supabase\n      .from(this.tableName)\n      .select(WORLD_SELECT)\n      .eq('owner_user_id', jwtUserId)\n      .order('created_at', { ascending: false });\n\n    if (error) throw new Error(`Welten konnten nicht geladen werden: ${error.message}`);\n    return (data ?? []).map((entry) => this.mapToViewModel(entry as WorldProfileDto));\n  }"
     },
     {
       "path": "src/infrastructure/world/world-profile-service.ts",
-      "line": 91,
-      "endLine": 91,
+      "line": 92,
+      "endLine": 92,
       "name": "callback",
       "text": "(entry) => this.mapToViewModel(entry as WorldProfileDto)"
     },
     {
       "path": "src/infrastructure/world/world-profile-service.ts",
-      "line": 94,
-      "endLine": 112,
+      "line": 95,
+      "endLine": 113,
       "name": "getWorldProfile",
       "text": "async getWorldProfile(ownerUserId: string, id: string): Promise<WorldProfileVm> {\n    if (!ownerUserId) throw new Error('User not authenticated');\n    if (isHostLibraryEnabled()) {\n      const rows = await fetchHostLibraryWorlds();\n      const match = rows.find((row) => row.id === id);\n      if (!match) throw new Error('Welt konnte nicht geladen werden');\n      return mapHostWorld(match);\n    }\n    const jwtUserId = await assertSupabaseJwtSession();\n    const { data, error } = await supabase\n      .from(this.tableName)\n      .select(WORLD_SELECT)\n      .eq('id', id)\n      .eq('owner_user_id', jwtUserId)\n      .single();\n\n    if (error) throw new Error(`Welt konnte nicht geladen werden: ${error.message}`);\n    return this.mapToViewModel(data as WorldProfileDto);\n  }"
     },
     {
       "path": "src/infrastructure/world/world-profile-service.ts",
-      "line": 98,
-      "endLine": 98,
+      "line": 99,
+      "endLine": 99,
       "name": "callback",
       "text": "(row) => row.id === id"
     },
     {
       "path": "src/infrastructure/world/world-profile-service.ts",
-      "line": 115,
+      "line": 116,
       "endLine": 133,
       "name": "getByPublicId",
-      "text": "async getByPublicId(worldPublicId: string): Promise<WorldProfileVm | null> {\n    const publicId = worldPublicId.trim().toUpperCase();\n    if (!publicId) return null;\n    if (isHostLibraryEnabled()) {\n      // Host world DTOs are title-only today (no publicId). Fail closed — no PostgREST.\n      throw new Error(\n        'Welt per öffentlicher ID laden ist im Host-Modus noch nicht verfügbar.',\n      );\n    }\n    await assertSupabaseJwtSession();\n    const { data, error } = await supabase\n      .from(this.tableName)\n      .select(WORLD_SELECT)\n      .eq('public_id', publicId)\n      .maybeSingle();\n    if (error) throw new Error(`Welt konnte nicht geladen werden: ${error.message}`);\n    if (!data) return null;\n    return this.mapToViewModel(data as WorldProfileDto);\n  }"
+      "text": "async getByPublicId(worldPublicId: string): Promise<WorldProfileVm | null> {\n    const publicId = worldPublicId.trim().toUpperCase();\n    if (!publicId) return null;\n    if (isHostLibraryEnabled()) {\n      const row = await fetchHostLibraryWorldByPublicId(publicId);\n      if (!row) return null;\n      return mapHostWorld(row);\n    }\n    await assertSupabaseJwtSession();\n    const { data, error } = await supabase\n      .from(this.tableName)\n      .select(WORLD_SELECT)\n      .eq('public_id', publicId)\n      .maybeSingle();\n    if (error) throw new Error(`Welt konnte nicht geladen werden: ${error.message}`);\n    if (!data) return null;\n    return this.mapToViewModel(data as WorldProfileDto);\n  }"
     },
     {
       "path": "src/infrastructure/world/world-profile-service.ts",

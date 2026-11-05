@@ -157,9 +157,9 @@ Direkt oder transitiv referenzierte lokale/importierte Mapper, Decoder und Vertr
 | `defaultEnv` | [src/infrastructure/host/host-catalog-http.ts](../../../src/infrastructure/host/host-catalog-http.ts) | 23 | `9049245360683a74e7e2602d35126d815d64344d384c6684e4c2c3d41aa626d3` |
 | `hostJson` | [src/infrastructure/host/host-catalog-http.ts](../../../src/infrastructure/host/host-catalog-http.ts) | 31 | `9049245360683a74e7e2602d35126d815d64344d384c6684e4c2c3d41aa626d3` |
 | `incrementHostMarketplaceDownloads` | [src/infrastructure/host/host-catalog-http.ts](../../../src/infrastructure/host/host-catalog-http.ts) | 172 | `9049245360683a74e7e2602d35126d815d64344d384c6684e4c2c3d41aa626d3` |
-| `EnvLike` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 11 | `69904d232219d72d3ee991eadc688ed47f9a3eb98289d516d7b437119d6e4d3d` |
-| `defaultEnv` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 16 | `69904d232219d72d3ee991eadc688ed47f9a3eb98289d516d7b437119d6e4d3d` |
-| `isHostLibraryExplicitlyDisabled` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 25 | `69904d232219d72d3ee991eadc688ed47f9a3eb98289d516d7b437119d6e4d3d` |
+| `EnvLike` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 11 | `225526477a7e5920f614ab73e2db1beeab6154c54dbc32f107713f2f046613af` |
+| `defaultEnv` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 16 | `225526477a7e5920f614ab73e2db1beeab6154c54dbc32f107713f2f046613af` |
+| `isHostLibraryExplicitlyDisabled` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 25 | `225526477a7e5920f614ab73e2db1beeab6154c54dbc32f107713f2f046613af` |
 | `EnvLike` | [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | 31 | `30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a` |
 | `defaultEnv` | [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | 33 | `30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a` |
 | `getHostAuthBaseUrl` | [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | 53 | `30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a` |
@@ -206,7 +206,7 @@ Die folgenden Hashes binden SQL-Kette, transitive Tabellen-/Trigger-/Policyquell
 | Quelle | SHA-256 |
 | --- | --- |
 | [src/infrastructure/host/host-catalog-http.ts](../../../src/infrastructure/host/host-catalog-http.ts) | `9049245360683a74e7e2602d35126d815d64344d384c6684e4c2c3d41aa626d3` |
-| [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | `69904d232219d72d3ee991eadc688ed47f9a3eb98289d516d7b437119d6e4d3d` |
+| [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | `225526477a7e5920f614ab73e2db1beeab6154c54dbc32f107713f2f046613af` |
 | [src/infrastructure/marketplace/marketplace-service.ts](../../../src/infrastructure/marketplace/marketplace-service.ts) | `52c856bd8d5be2885897e155ade57bfdfed1b8eb7e48fe6fb1376b8e1a5284e8` |
 | [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | `30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a` |
 | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |

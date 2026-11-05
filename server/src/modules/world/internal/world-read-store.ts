@@ -8,9 +8,12 @@ export type WorldStoredRow = {
   readonly ownerUserId: string;
   readonly title: string;
   readonly createdAt: string;
+  readonly publicId: string | null;
 };
 
 export type WorldReadStore = {
   readonly listByOwner: (ownerUserId: string) => readonly WorldStoredRow[];
   readonly findById: (worldId: string) => WorldStoredRow | null;
+  /** CUT-10 — resolve by WO- public id (case-normalized by caller). */
+  readonly findByPublicId: (publicId: string) => WorldStoredRow | null;
 };

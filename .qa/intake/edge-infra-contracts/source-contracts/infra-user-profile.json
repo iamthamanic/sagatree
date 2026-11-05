@@ -75,7 +75,7 @@
     },
     {
       "path": "src/infrastructure/host/host-library-http.ts",
-      "sha256": "69904d232219d72d3ee991eadc688ed47f9a3eb98289d516d7b437119d6e4d3d"
+      "sha256": "225526477a7e5920f614ab73e2db1beeab6154c54dbc32f107713f2f046613af"
     },
     {
       "path": "src/infrastructure/media/optimizer/engines/audio/index.ts",
@@ -420,31 +420,31 @@
       "name": "HostLibraryWorldDto",
       "path": "src/infrastructure/host/host-library-http.ts",
       "line": 132,
-      "endLine": 136,
-      "text": "export type HostLibraryWorldDto = {\n  readonly id: string;\n  readonly title: string;\n  readonly createdAt: string;\n};"
+      "endLine": 138,
+      "text": "export type HostLibraryWorldDto = {\n  readonly id: string;\n  readonly title: string;\n  readonly createdAt: string;\n  /** CUT-10 — WO-XXXXX when present. */\n  readonly publicId?: string | null;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "HostNpcControllerAssignmentDto",
       "path": "src/infrastructure/host/host-library-http.ts",
-      "line": 814,
-      "endLine": 820,
+      "line": 860,
+      "endLine": 866,
       "text": "export type HostNpcControllerAssignmentDto = {\n  readonly projectId: string;\n  readonly definitionId: string;\n  readonly controllerUserId: string | null;\n  readonly assignedBy?: string;\n  readonly updatedAt?: string;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "HostNpcInstanceDto",
       "path": "src/infrastructure/host/host-library-http.ts",
-      "line": 873,
-      "endLine": 886,
+      "line": 919,
+      "endLine": 932,
       "text": "export type HostNpcInstanceDto = {\n  readonly id: string;\n  readonly projectId: string;\n  readonly sessionId: string | null;\n  readonly definitionId: string;\n  readonly displayName: string;\n  readonly instanceKind: string;\n  readonly sequenceNumber: number;\n  readonly snapshot: Record<string, unknown>;\n  readonly runtime: Record<string, unknown>;\n  readonly createdBy?: string;\n  readonly createdAt?: string;\n  readonly updatedAt?: string;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "HostPublishedAssetDto",
       "path": "src/infrastructure/host/host-library-http.ts",
-      "line": 995,
-      "endLine": 1002,
+      "line": 1041,
+      "endLine": 1048,
       "text": "export type HostPublishedAssetDto = {\n  readonly assetId: string;\n  readonly contentType: string;\n  readonly byteSize: number;\n  readonly checksumSha256: string;\n  readonly url: string;\n  readonly storagePath: string;\n};"
     },
     {
