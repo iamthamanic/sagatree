@@ -932,6 +932,72 @@ export function mountLibraryHttpRoutes(app: Hono, deps: LibraryHttpDeps): void {
     return c.json({ look: duplicated.value }, 201);
   });
 
+  /** CUT-07 — append-only LookProfile version. */
+  app.post('/api/v1/library/looks/:id/versions', async (c) => {
+    const actorResult = await resolveLibraryActor(deps, c.req.raw.headers);
+    if (!actorResult.ok) {
+      return c.json({ error: actorResult.error }, actorResult.status);
+    }
+    if (!deps.look?.appendVersion) {
+      return c.json({ error: 'store-unavailable' }, 503);
+    }
+    let body: unknown;
+    try {
+      body = await c.req.json();
+    } catch {
+      return c.json({ error: 'invalid-json' }, 400);
+    }
+    const record =
+      body && typeof body === 'object' && !Array.isArray(body)
+        ? (body as Record<string, unknown>)
+        : {};
+    const draft = 'draft' in record ? record.draft : record;
+    const appended = deps.look.appendVersion(
+      actorResult.actor,
+      c.req.param('id'),
+      draft,
+    );
+    if (!appended.ok) {
+      const status =
+        appended.error === 'not-authorized'
+          ? 403
+          : appended.error === 'not-found'
+            ? 404
+            : appended.error === 'invalid-profile-id'
+              ? 422
+              : /Konflikt|parallel/i.test(appended.error)
+                ? 409
+                : 400;
+      return c.json({ error: appended.error }, status);
+    }
+    return c.json({ look: appended.value }, 201);
+  });
+
+  /** CUT-07 — full immutable version history for a LookProfile. */
+  app.get('/api/v1/library/looks/:id/versions', async (c) => {
+    const actorResult = await resolveLibraryActor(deps, c.req.raw.headers);
+    if (!actorResult.ok) {
+      return c.json({ error: actorResult.error }, actorResult.status);
+    }
+    if (!deps.look?.listVersions) {
+      return c.json({ error: 'store-unavailable' }, 503);
+    }
+    const listed = deps.look.listVersions(actorResult.actor, c.req.param('id'));
+    if (!listed.ok) {
+      return c.json(
+        { error: listed.error },
+        listed.error === 'not-authorized'
+          ? 403
+          : listed.error === 'not-found'
+            ? 404
+            : listed.error === 'invalid-profile-id'
+              ? 422
+              : 400,
+      );
+    }
+    return c.json({ versions: listed.value }, 200);
+  });
+
   app.get('/api/v1/library/items', async (c) => {
     const actorResult = await resolveLibraryActor(deps, c.req.raw.headers);
     if (!actorResult.ok) {

@@ -387,29 +387,29 @@
       "stableKey": "look.append-version",
       "historicalCaller": "src/infrastructure/look/look-service.ts:appendLookProfileVersion",
       "uiJourney": "Look editor save version",
-      "previousBehavior": "soft DENY; supabase append",
-      "hostSuccessor": "PORT_MISSING POST /library/looks/:id/versions",
+      "previousBehavior": "host dual-path; legacy supabase when host off",
+      "hostSuccessor": "LookProfilePorts.appendVersion/listVersions + /api/v1/library/looks/:id/versions",
       "dataOwner": "look",
       "risk": "high",
-      "classification": "PARITY_MISSING",
+      "classification": "HOST_VERIFIED",
       "issueRef": 1142,
-      "evidenceTest": "pending CUT-07",
+      "evidenceTest": "scripts/cut-07-look-versions.self-test.mjs",
       "featureAvailableBeforeCutover": true,
-      "notes": ""
+      "notes": "CUT-07 dual-path; append-only history"
     },
     {
       "stableKey": "look.list-versions",
       "historicalCaller": "src/infrastructure/look/look-service.ts:listLookProfileVersions",
       "uiJourney": "Look editor history",
-      "previousBehavior": "host returns [current] only",
-      "hostSuccessor": "PORT_MISSING GET /library/looks/:id/versions",
+      "previousBehavior": "host dual-path; legacy supabase when host off",
+      "hostSuccessor": "LookProfilePorts.appendVersion/listVersions + /api/v1/library/looks/:id/versions",
       "dataOwner": "look",
       "risk": "medium",
-      "classification": "PARITY_MISSING",
+      "classification": "HOST_VERIFIED",
       "issueRef": 1142,
-      "evidenceTest": "pending CUT-07",
+      "evidenceTest": "scripts/cut-07-look-versions.self-test.mjs",
       "featureAvailableBeforeCutover": true,
-      "notes": ""
+      "notes": "CUT-07 dual-path; append-only history"
     },
     {
       "stableKey": "character-preset.listUserPresets",
@@ -1953,8 +1953,8 @@
     }
   ],
   "counts": {
-    "HOST_VERIFIED": 62,
-    "PARITY_MISSING": 60,
+    "HOST_VERIFIED": 64,
+    "PARITY_MISSING": 58,
     "LEGACY_UNUSED": 4,
     "total": 126
   },

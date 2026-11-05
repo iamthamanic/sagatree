@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-look.json](source-contracts/infra-look.json) (SHA-256 `1548897a96ce42e8456f24d497dd27058cf65670647df5b1dd16a82aaf7fa29a`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-look.json](source-contracts/infra-look.json) (SHA-256 `cb6aecb7a5bff978e66cfd3df38ac9202e7fcf5069af958d8b668451553efac5`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -836,7 +836,7 @@ export function createLookRuntime(options?: LookRuntimeOptions): LookRuntime {
 }
 ```
 
-### src/infrastructure/look/look-service.ts:39
+### src/infrastructure/look/look-service.ts:41
 
 ```ts
 export async function listLookProfiles(options?: {
@@ -853,7 +853,7 @@ export async function listLookProfiles(options?: {
 }
 ```
 
-### src/infrastructure/look/look-service.ts:52
+### src/infrastructure/look/look-service.ts:54
 
 ```ts
 export async function getLookProfile(
@@ -867,7 +867,7 @@ export async function getLookProfile(
 }
 ```
 
-### src/infrastructure/look/look-service.ts:62
+### src/infrastructure/look/look-service.ts:64
 
 ```ts
 export async function createLookProfile(
@@ -883,21 +883,23 @@ export async function createLookProfile(
 }
 ```
 
-### src/infrastructure/look/look-service.ts:74
+### src/infrastructure/look/look-service.ts:76
 
 ```ts
 export async function appendLookProfileVersion(
   input: AppendLookProfileVersionInput,
 ): Promise<LookProfileRecord> {
   if (isHostLibraryEnabled()) {
-    // Host append-version HTTP not mounted yet — recreate via create for solo cutover.
-    throw new Error('Look-Version anhängen ist auf dem Host noch nicht verfügbar.');
+    const appended = await appendHostLibraryLookVersion(input.profileId, input.draft);
+    const record = asLookRecord(appended);
+    if (!record) throw new Error('Host-Look-Version anhängen: ungültige Antwort');
+    return record;
   }
   return supabaseLookProfileRepository.appendVersion(input);
 }
 ```
 
-### src/infrastructure/look/look-service.ts:84
+### src/infrastructure/look/look-service.ts:88
 
 ```ts
 export async function archiveLookProfile(
@@ -913,7 +915,7 @@ export async function archiveLookProfile(
 }
 ```
 
-### src/infrastructure/look/look-service.ts:96
+### src/infrastructure/look/look-service.ts:100
 
 ```ts
 export async function duplicateLookProfile(
@@ -932,21 +934,24 @@ export async function duplicateLookProfile(
 }
 ```
 
-### src/infrastructure/look/look-service.ts:111
+### src/infrastructure/look/look-service.ts:129
 
 ```ts
 export async function listLookProfileVersions(
   profileId: string,
 ): Promise<LookProfileVersion[]> {
   if (isHostLibraryEnabled()) {
-    const profile = await getLookProfile(profileId);
-    return profile ? [profile.current] : [];
+    const rows = await fetchHostLibraryLookVersions(profileId);
+    return rows
+      .map(asLookVersion)
+      .filter((row): row is LookProfileVersion => row !== null)
+      .sort((a, b) => a.version - b.version);
   }
   return supabaseLookProfileRepository.listVersions(profileId);
 }
 ```
 
-### src/infrastructure/look/look-service.ts:122
+### src/infrastructure/look/look-service.ts:143
 
 ```ts
 export async function analyzeLookReferencesForDraft(
@@ -956,7 +961,7 @@ export async function analyzeLookReferencesForDraft(
 }
 ```
 
-### src/infrastructure/look/look-service.ts:132
+### src/infrastructure/look/look-service.ts:153
 
 ```ts
 export async function createLookProfileFromReferenceAnalysis(
@@ -1405,7 +1410,7 @@ All backend operations are included in the public declarations above.
 | `src/domains/look/write-draft.ts` | `7c8b04b229269b73a26b64d68f0656dc5ada2048e75cd29d5a53887fc6f29e58` |
 | `src/infrastructure/character/avatar/mtoon-style-applier.ts` | `1c9fc4fdb30546c0b34ccb222035c74d78251985e575f8a79da86f3f6cd762be` |
 | `src/infrastructure/character/avatar/toonlab-compatibility-spike.ts` | `e896927b2a2fa4c4ad74550b0909a681596d41bdc356980a31afd42b493f5d30` |
-| `src/infrastructure/host/host-library-http.ts` | `41009cd3b0176f71e939383f9d227b7e31ccab685b88390c61dfd9756a8b6a99` |
+| `src/infrastructure/host/host-library-http.ts` | `a8b7e3260e23481d4e9fae898c1bfa0db711a956741f6bdec806670a2e71bd6d` |
 | `src/infrastructure/look/adapters/host-mtoon-look-adapter.ts` | `19b2f7008ffa27b5bd6c951019a55bde20d82f195ff9f798aa91b4d0a729e3a5` |
 | `src/infrastructure/look/adapters/toonlab-look-adapter.ts` | `4edeab261bda3b114a4a9c9d7dcdb16a1cc73c24df0db23539480aa3a0834acb` |
 | `src/infrastructure/look/host-look-adapter.ts` | `f1c8129f9ff83fb5e586da01b59cf26e3d6e54385f20e631ee353d0802c409c1` |
@@ -1415,7 +1420,7 @@ All backend operations are included in the public declarations above.
 | `src/infrastructure/look/look-reference-analysis-service.ts` | `15decebbe271b416c473fd1a9ad0d4e1f6572c3ea0e1b0c85fc2cc8181066839` |
 | `src/infrastructure/look/look-runtime-types.ts` | `c31d27eaf600ed47e69f16120e584b06a985f29618923118a4c08570f276b2c6` |
 | `src/infrastructure/look/look-runtime.ts` | `64487d02f2831514e86b721d41b0964ac8e99b37faf1a33b8771b4fa7b955d23` |
-| `src/infrastructure/look/look-service.ts` | `5487c8b7cafae4996d793c427a87378c211b89292472350d68804205736d8425` |
+| `src/infrastructure/look/look-service.ts` | `d1a1a1d5e0747b492b21258c981547abddc6bc7b763a7a3914f6aadb65ec8eed` |
 | `src/infrastructure/look/look.persistence.ts` | `ed0a97cba6560930610fc032bd7679b5a7e4b49f837e401cd5a872974598f482` |
 | `src/infrastructure/look/supabase-look.repository.ts` | `4dc795897a12bf3319998860b855b0b9b55425e2be7e4c9b0844e7b2ec647121` |
 | `src/lib/authenticatedUser.ts` | `d4cbf3a004f8375982ca03d474fb7b61559fc2ec58ad6fe7b1f8834d26abf10c` |

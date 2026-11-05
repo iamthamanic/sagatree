@@ -5,7 +5,7 @@
   "result": "PASS",
   "githubClosed": true,
   "mergeRef": "PR #860 \u2192 main (after #782)",
-  "note": "Inventories refreshed after CUT-06 Codex P1/P2 fixes.",
+  "note": "Inventories refreshed after CUT-07 look versions.",
   "checks": [
     {
       "command": "legacy inventory matrix",
@@ -17,14 +17,14 @@
       "command": "rpc inventory 57",
       "result": "PASS",
       "evidenceFile": ".qa/intake/rpc-contracts/inventory.json",
-      "sha256": "199c59dd4db93af862cd4b2c4cc0c6f2898309b095317da051e02ec4a49c2f52"
+      "sha256": "0f34ad8d779dd797d1d83a583a43ade209043dcb1be7e8cc7b841bde8a3f2ce4"
     },
     {
       "command": "edge/infra inventory 25+13",
       "result": "PASS",
       "evidenceFile": ".qa/intake/edge-infra-contracts/inventory.json",
-      "sha256": "a770b55f3ebf9547badd5529b2d84c34734cde2bef6da3b2389124e8c4fd7c48"
+      "sha256": "8877b6aa8ca5da741537254f2d68b4f15ccf2ef34c099f0723375f4391036e1a"
     }
   ],
-  "testedCommit": "abc15254e1b2b5132f9ef20cf42bd66a72551574"
+  "testedCommit": "c73c60539f648b9e4f464315d8dfd1e491819788"
 }

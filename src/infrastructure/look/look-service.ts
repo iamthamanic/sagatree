@@ -17,9 +17,11 @@ import type {
 } from '../../domains/look';
 import { buildLookProfileWriteDraftFromAnalysis } from '../../domains/look';
 import {
+  appendHostLibraryLookVersion,
   archiveHostLibraryLook,
   createHostLibraryLook,
   duplicateHostLibraryLook,
+  fetchHostLibraryLookVersions,
   fetchHostLibraryLooks,
   isHostLibraryEnabled,
 } from '../host/host-library-http';
@@ -75,8 +77,10 @@ export async function appendLookProfileVersion(
   input: AppendLookProfileVersionInput,
 ): Promise<LookProfileRecord> {
   if (isHostLibraryEnabled()) {
-    // Host append-version HTTP not mounted yet — recreate via create for solo cutover.
-    throw new Error('Look-Version anhängen ist auf dem Host noch nicht verfügbar.');
+    const appended = await appendHostLibraryLookVersion(input.profileId, input.draft);
+    const record = asLookRecord(appended);
+    if (!record) throw new Error('Host-Look-Version anhängen: ungültige Antwort');
+    return record;
   }
   return supabaseLookProfileRepository.appendVersion(input);
 }
@@ -108,12 +112,29 @@ export async function duplicateLookProfile(
   return supabaseLookProfileRepository.duplicateProfile(input);
 }
 
+function asLookVersion(value: unknown): LookProfileVersion | null {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
+  const row = value as LookProfileVersion;
+  if (
+    typeof row.profileId !== 'string' ||
+    typeof row.version !== 'number' ||
+    typeof row.displayName !== 'string' ||
+    typeof row.createdAtIso !== 'string'
+  ) {
+    return null;
+  }
+  return row;
+}
+
 export async function listLookProfileVersions(
   profileId: string,
 ): Promise<LookProfileVersion[]> {
   if (isHostLibraryEnabled()) {
-    const profile = await getLookProfile(profileId);
-    return profile ? [profile.current] : [];
+    const rows = await fetchHostLibraryLookVersions(profileId);
+    return rows
+      .map(asLookVersion)
+      .filter((row): row is LookProfileVersion => row !== null)
+      .sort((a, b) => a.version - b.version);
   }
   return supabaseLookProfileRepository.listVersions(profileId);
 }

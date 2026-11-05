@@ -1520,6 +1520,19 @@ function checkCut06ItemDefinition() {
   console.log('OK: cut-06-item-definition.self-test');
 }
 
+function checkCut07LookVersions() {
+  console.log('CUT-07 look profile append/list versions (#1142)...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/cut-07-look-versions.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+  console.log('OK: cut-07-look-versions.self-test');
+}
+
 function checkMig312UserProfileAdapter() {
   console.log('MIG-312 user-profile adapter (#811): user_profiles + user-avatars dual-path...');
   execFileSync(
@@ -3743,6 +3756,7 @@ checkCut03NpcInstance();
 checkCut04SessionDelete();
 checkCut05OutcomePromotion();
 checkCut06ItemDefinition();
+checkCut07LookVersions();
 checkMig312UserProfileAdapter();
 checkMig309Rulesets();
 checkMig313WorldAdapter();

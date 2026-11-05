@@ -28974,7 +28974,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "41009cd3b0176f71e939383f9d227b7e31ccab685b88390c61dfd9756a8b6a99"
+            "sha256": "a8b7e3260e23481d4e9fae898c1bfa0db711a956741f6bdec806670a2e71bd6d"
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
@@ -28990,7 +28990,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-ai.json",
-      "sourceContractSha256": "610815dfff6df15b1879ef50cf944dc69f50bf399dae7c45ec5b8a15fd497a1b",
+      "sourceContractSha256": "4be983b850bf5a5c68ebed3e6652e29a94e0e31252e36301290fe877fe94bcd8",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],
@@ -30307,7 +30307,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "41009cd3b0176f71e939383f9d227b7e31ccab685b88390c61dfd9756a8b6a99"
+            "sha256": "a8b7e3260e23481d4e9fae898c1bfa0db711a956741f6bdec806670a2e71bd6d"
           },
           {
             "path": "src/infrastructure/host/host-product-deny.ts",
@@ -30367,7 +30367,7 @@
           },
           {
             "path": "src/infrastructure/look/look-service.ts",
-            "sha256": "5487c8b7cafae4996d793c427a87378c211b89292472350d68804205736d8425"
+            "sha256": "d1a1a1d5e0747b492b21258c981547abddc6bc7b763a7a3914f6aadb65ec8eed"
           },
           {
             "path": "src/infrastructure/look/look.persistence.ts",
@@ -30491,7 +30491,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-character.json",
-      "sourceContractSha256": "145696966e0123fbeb6717d0607a4b4b2b83e37063083c48fe43f8d95f986422",
+      "sourceContractSha256": "0bf4a11469476739795bb58efc4a514a6a27bc7551a6b9d4e1c86cbec19627a1",
       "rpcUsed": [],
       "tablesTouched": [
         "character_adventure_arcs",
@@ -35599,7 +35599,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "41009cd3b0176f71e939383f9d227b7e31ccab685b88390c61dfd9756a8b6a99"
+            "sha256": "a8b7e3260e23481d4e9fae898c1bfa0db711a956741f6bdec806670a2e71bd6d"
           },
           {
             "path": "src/infrastructure/inventory/host-inventory-adapter.ts",
@@ -35711,7 +35711,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-inventory.json",
-      "sourceContractSha256": "807eb2348e5ae032444e4d97c5468b5bde4af45bc489f259d5ca786f48824225",
+      "sourceContractSha256": "ba5b7cb83b54396bf13bf2e37371ef882bcb0fc4531dcd0aa6ac11f7d7c5bb20",
       "rpcUsed": [],
       "tablesTouched": [
         "characters",
@@ -36915,7 +36915,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "41009cd3b0176f71e939383f9d227b7e31ccab685b88390c61dfd9756a8b6a99"
+            "sha256": "a8b7e3260e23481d4e9fae898c1bfa0db711a956741f6bdec806670a2e71bd6d"
           },
           {
             "path": "src/infrastructure/look/adapters/host-mtoon-look-adapter.ts",
@@ -36955,7 +36955,7 @@
           },
           {
             "path": "src/infrastructure/look/look-service.ts",
-            "sha256": "5487c8b7cafae4996d793c427a87378c211b89292472350d68804205736d8425"
+            "sha256": "d1a1a1d5e0747b492b21258c981547abddc6bc7b763a7a3914f6aadb65ec8eed"
           },
           {
             "path": "src/infrastructure/look/look.persistence.ts",
@@ -36991,7 +36991,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-look.json",
-      "sourceContractSha256": "1548897a96ce42e8456f24d497dd27058cf65670647df5b1dd16a82aaf7fa29a",
+      "sourceContractSha256": "cb6aecb7a5bff978e66cfd3df38ac9202e7fcf5069af958d8b668451553efac5",
       "rpcUsed": [],
       "tablesTouched": [
         "look_profile_versions",
@@ -37628,62 +37628,68 @@
         },
         {
           "path": "src/infrastructure/look/look-service.ts",
-          "line": 32,
-          "endLine": 37,
+          "line": 34,
+          "endLine": 39,
           "name": "asLookRecord"
         },
         {
           "path": "src/infrastructure/look/look-service.ts",
-          "line": 39,
-          "endLine": 50,
+          "line": 41,
+          "endLine": 52,
           "name": "listLookProfiles"
         },
         {
           "path": "src/infrastructure/look/look-service.ts",
-          "line": 52,
-          "endLine": 60,
+          "line": 54,
+          "endLine": 62,
           "name": "getLookProfile"
         },
         {
           "path": "src/infrastructure/look/look-service.ts",
-          "line": 62,
-          "endLine": 72,
+          "line": 64,
+          "endLine": 74,
           "name": "createLookProfile"
         },
         {
           "path": "src/infrastructure/look/look-service.ts",
-          "line": 74,
-          "endLine": 82,
+          "line": 76,
+          "endLine": 86,
           "name": "appendLookProfileVersion"
         },
         {
           "path": "src/infrastructure/look/look-service.ts",
-          "line": 84,
-          "endLine": 94,
+          "line": 88,
+          "endLine": 98,
           "name": "archiveLookProfile"
         },
         {
           "path": "src/infrastructure/look/look-service.ts",
-          "line": 96,
-          "endLine": 109,
+          "line": 100,
+          "endLine": 113,
           "name": "duplicateLookProfile"
         },
         {
           "path": "src/infrastructure/look/look-service.ts",
-          "line": 111,
-          "endLine": 119,
+          "line": 115,
+          "endLine": 127,
+          "name": "asLookVersion"
+        },
+        {
+          "path": "src/infrastructure/look/look-service.ts",
+          "line": 129,
+          "endLine": 140,
           "name": "listLookProfileVersions"
         },
         {
           "path": "src/infrastructure/look/look-service.ts",
-          "line": 122,
-          "endLine": 126,
+          "line": 143,
+          "endLine": 147,
           "name": "analyzeLookReferencesForDraft"
         },
         {
           "path": "src/infrastructure/look/look-service.ts",
-          "line": 132,
-          "endLine": 140,
+          "line": 153,
+          "endLine": 161,
           "name": "createLookProfileFromReferenceAnalysis"
         },
         {
@@ -37854,7 +37860,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "41009cd3b0176f71e939383f9d227b7e31ccab685b88390c61dfd9756a8b6a99"
+            "sha256": "a8b7e3260e23481d4e9fae898c1bfa0db711a956741f6bdec806670a2e71bd6d"
           },
           {
             "path": "src/infrastructure/marketplace/host-marketplace-adapter.ts",
@@ -37898,7 +37904,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-marketplace.json",
-      "sourceContractSha256": "0c44e9e24f4782edd2bb7f9d6ad67a6f4d3b31e7ea961c69d039a8f937f6a060",
+      "sourceContractSha256": "ed265b4281ee06e6b1924e472706cb8206ed85fdd903348bda33da09158e1c1b",
       "rpcUsed": [
         "increment_marketplace_downloads"
       ],
@@ -38713,7 +38719,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "41009cd3b0176f71e939383f9d227b7e31ccab685b88390c61dfd9756a8b6a99"
+            "sha256": "a8b7e3260e23481d4e9fae898c1bfa0db711a956741f6bdec806670a2e71bd6d"
           },
           {
             "path": "src/infrastructure/host/host-session-http.ts",
@@ -38773,7 +38779,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-npc-creature.json",
-      "sourceContractSha256": "b0d10bd65a4f63d71b511e24f5f10fd69cf930707924add15365fe7f92b38919",
+      "sourceContractSha256": "d9cf2a7be0ed18bfab3a9740f730ae5aabbc0923638722f5eda9eaa266a2a699",
       "rpcUsed": [
         "assign_npc_creature_controller",
         "clear_npc_creature_instance_temp_controllers_for_session",
@@ -39870,7 +39876,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "41009cd3b0176f71e939383f9d227b7e31ccab685b88390c61dfd9756a8b6a99"
+            "sha256": "a8b7e3260e23481d4e9fae898c1bfa0db711a956741f6bdec806670a2e71bd6d"
           },
           {
             "path": "src/infrastructure/host/host-product-deny.ts",
@@ -39930,7 +39936,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-project.json",
-      "sourceContractSha256": "5844a92b510b33530c16c11ec62d981326abd55f5c87b1945d9980380c90af9a",
+      "sourceContractSha256": "cac743bc5f694b0361a2dbd3736b7b41bcfbc129605ae9c066e2e95dc9d9397f",
       "rpcUsed": [
         "create_project_session",
         "ensure_native_starter_project",
@@ -41168,7 +41174,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "41009cd3b0176f71e939383f9d227b7e31ccab685b88390c61dfd9756a8b6a99"
+            "sha256": "a8b7e3260e23481d4e9fae898c1bfa0db711a956741f6bdec806670a2e71bd6d"
           },
           {
             "path": "src/infrastructure/rulesets/ruleset-service.ts",
@@ -41188,7 +41194,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-rulesets.json",
-      "sourceContractSha256": "3769625e1d3ff9175702e7f72b6a03e40d460d923f467fab7247a33613af3094",
+      "sourceContractSha256": "0ae6fd62c1e5017487af296951185531616fedfe329f3ed3fc3c6f4db5f83c40",
       "rpcUsed": [],
       "tablesTouched": [
         "rulesets"
@@ -41407,7 +41413,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "41009cd3b0176f71e939383f9d227b7e31ccab685b88390c61dfd9756a8b6a99"
+            "sha256": "a8b7e3260e23481d4e9fae898c1bfa0db711a956741f6bdec806670a2e71bd6d"
           },
           {
             "path": "src/infrastructure/host/host-product-deny.ts",
@@ -41455,7 +41461,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-saga.json",
-      "sourceContractSha256": "86d4a5d14a538125cd70a28a8ce7d94c72f68e978b40113f353e339a1b624ac1",
+      "sourceContractSha256": "501f84dab9e9de5ed3d944f0040724dd0e9dec405342af50b1c4a9eb1bb2cede",
       "rpcUsed": [
         "copy_native_saga_definition",
         "create_project_from_saga_version",
@@ -41945,7 +41951,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "41009cd3b0176f71e939383f9d227b7e31ccab685b88390c61dfd9756a8b6a99"
+            "sha256": "a8b7e3260e23481d4e9fae898c1bfa0db711a956741f6bdec806670a2e71bd6d"
           },
           {
             "path": "src/infrastructure/host/host-session-http.ts",
@@ -42041,7 +42047,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-session.json",
-      "sourceContractSha256": "b589895beccc3addff7ba70c5118311756e9f209cfb3e52bc274c058728dd29e",
+      "sourceContractSha256": "8e93ddbb20e20e199d6ac9bad3a87382c41d9e18823946745916a53267612158",
       "rpcUsed": [
         "apply_session_runtime_command",
         "create_play_session",
@@ -43958,7 +43964,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "41009cd3b0176f71e939383f9d227b7e31ccab685b88390c61dfd9756a8b6a99"
+            "sha256": "a8b7e3260e23481d4e9fae898c1bfa0db711a956741f6bdec806670a2e71bd6d"
           },
           {
             "path": "src/infrastructure/media/optimizer/engines/audio/index.ts",
@@ -44066,7 +44072,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-user-profile.json",
-      "sourceContractSha256": "1805c5a29e5c7e321e24f1ef1e1a5164b8f9b011927299828731d700b0541035",
+      "sourceContractSha256": "e184758533557d48d78d8ce222066afa5348160b23b9055b282d771855d8277a",
       "rpcUsed": [],
       "tablesTouched": [
         "user_profiles"
@@ -44853,7 +44859,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "41009cd3b0176f71e939383f9d227b7e31ccab685b88390c61dfd9756a8b6a99"
+            "sha256": "a8b7e3260e23481d4e9fae898c1bfa0db711a956741f6bdec806670a2e71bd6d"
           },
           {
             "path": "src/infrastructure/host/host-world-http.ts",
@@ -44965,7 +44971,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-world.json",
-      "sourceContractSha256": "0c2f8e3b60590d4989b1c20d76d4cb8edc771e740dd4cd60437c410b21f7326e",
+      "sourceContractSha256": "607d7f58e55057c3f7c2a0c2412f110e016492849ef8145c7616f6675e03318b",
       "rpcUsed": [
         "archive_world_node_subtree",
         "create_world_node_with_maps",

@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-character.json](source-contracts/infra-character.json) (SHA-256 `145696966e0123fbeb6717d0607a4b4b2b83e37063083c48fe43f8d95f986422`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-character.json](source-contracts/infra-character.json) (SHA-256 `0bf4a11469476739795bb58efc4a514a6a27bc7551a6b9d4e1c86cbec19627a1`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -12096,7 +12096,7 @@ private async assertPersonalLookWriteGate(
 | `src/infrastructure/character/liveact/mediapipe-sagatree-face-anchor-map-v1.ts` | `b092e31c50b885b9dbeb396ef2bdbfa39a953df717da7e0042e081849c173d9a` |
 | `src/infrastructure/character/liveact/vrm-liveact-avatar-output.ts` | `f5ef95d582ee0f3a2ec47748e8d958306f3833d45a5e8e1b250d1eecfba5d9a6` |
 | `src/infrastructure/character/supabase-character.repository.ts` | `ae0034e06c55c384124c933bc8093c3926b7ece34a5222213913d1fdc03a9878` |
-| `src/infrastructure/host/host-library-http.ts` | `41009cd3b0176f71e939383f9d227b7e31ccab685b88390c61dfd9756a8b6a99` |
+| `src/infrastructure/host/host-library-http.ts` | `a8b7e3260e23481d4e9fae898c1bfa0db711a956741f6bdec806670a2e71bd6d` |
 | `src/infrastructure/host/host-product-deny.ts` | `69b148debc95006bb31daa7a94caf4e1507ac3089fdf399952102c4effa3759c` |
 | `src/infrastructure/host/host-project-http.ts` | `b5a68f6452217b08d2217a983113a9a356ce70890693319227f35c82fbdcd818` |
 | `src/infrastructure/inventory/inventory-persistence.ts` | `79aaa09053ecd72a0bec8f8f0610b31ab0c9b34779f4a4c87f19f0d2ef7e4ac2` |
@@ -12111,7 +12111,7 @@ private async assertPersonalLookWriteGate(
 | `src/infrastructure/look/look-reference-analysis-service.ts` | `15decebbe271b416c473fd1a9ad0d4e1f6572c3ea0e1b0c85fc2cc8181066839` |
 | `src/infrastructure/look/look-runtime-types.ts` | `c31d27eaf600ed47e69f16120e584b06a985f29618923118a4c08570f276b2c6` |
 | `src/infrastructure/look/look-runtime.ts` | `64487d02f2831514e86b721d41b0964ac8e99b37faf1a33b8771b4fa7b955d23` |
-| `src/infrastructure/look/look-service.ts` | `5487c8b7cafae4996d793c427a87378c211b89292472350d68804205736d8425` |
+| `src/infrastructure/look/look-service.ts` | `d1a1a1d5e0747b492b21258c981547abddc6bc7b763a7a3914f6aadb65ec8eed` |
 | `src/infrastructure/look/look.persistence.ts` | `ed0a97cba6560930610fc032bd7679b5a7e4b49f837e401cd5a872974598f482` |
 | `src/infrastructure/look/supabase-look.repository.ts` | `4dc795897a12bf3319998860b855b0b9b55425e2be7e4c9b0844e7b2ec647121` |
 | `src/infrastructure/media/optimizer/engines/audio/index.ts` | `7585190a705085692bff0896e08b4d78f791895b47e24d57deeaaa10bb669d4e` |
