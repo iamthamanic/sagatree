@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-character.json](source-contracts/infra-character.json) (SHA-256 `f2c319349fe51657d883635e0ceb92a16bbdf60ea3cbb1443f71a65221d70a63`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-character.json](source-contracts/infra-character.json) (SHA-256 `13bc834c5b59b129133be44d7946e5ad9ce4894fca3ea3b7a16d103f0c27747d`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -64,27 +64,27 @@ None in the reviewed source.
 
 ### auth: session identity
 
-`src/infrastructure/character/avatar/character-avatar-artifact-service.ts:51` — dynamic-expression.
+`src/infrastructure/character/avatar/character-avatar-artifact-service.ts:57` — dynamic-expression.
 
 Exact call/query chain:
 ```ts
 supabase.auth.getUser()
 ```
 
-Enclosing operation: `src/infrastructure/character/avatar/character-avatar-artifact-service.ts:50`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/character/avatar/character-avatar-artifact-service.ts:56`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### auth-helper: session identity
 
-`src/infrastructure/character/avatar/character-avatar-artifact-service.ts:119` — dynamic-expression.
+`src/infrastructure/character/avatar/character-avatar-artifact-service.ts:186` — dynamic-expression.
 
 Exact call/query chain:
 ```ts
 getAuthenticatedUserId()
 ```
 
-Enclosing operation: `src/infrastructure/character/avatar/character-avatar-artifact-service.ts:115`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/character/avatar/character-avatar-artifact-service.ts:177`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: character_avatar_artifacts
 
-`src/infrastructure/character/avatar/character-avatar-artifact-service.ts:135` — literal-or-constant.
+`src/infrastructure/character/avatar/character-avatar-artifact-service.ts:202` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -95,20 +95,20 @@ supabase
     .single()
 ```
 
-Enclosing operation: `src/infrastructure/character/avatar/character-avatar-artifact-service.ts:115`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/character/avatar/character-avatar-artifact-service.ts:177`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### auth-helper: session identity
 
-`src/infrastructure/character/avatar/character-avatar-artifact-service.ts:160` — dynamic-expression.
+`src/infrastructure/character/avatar/character-avatar-artifact-service.ts:229` — dynamic-expression.
 
 Exact call/query chain:
 ```ts
 getAuthenticatedUserId()
 ```
 
-Enclosing operation: `src/infrastructure/character/avatar/character-avatar-artifact-service.ts:156`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/character/avatar/character-avatar-artifact-service.ts:222`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: character_avatar_artifacts
 
-`src/infrastructure/character/avatar/character-avatar-artifact-service.ts:161` — literal-or-constant.
+`src/infrastructure/character/avatar/character-avatar-artifact-service.ts:230` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -121,10 +121,10 @@ supabase
     .maybeSingle()
 ```
 
-Enclosing operation: `src/infrastructure/character/avatar/character-avatar-artifact-service.ts:156`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/character/avatar/character-avatar-artifact-service.ts:222`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: character_avatar_artifacts
 
-`src/infrastructure/character/avatar/character-avatar-artifact-service.ts:181` — literal-or-constant.
+`src/infrastructure/character/avatar/character-avatar-artifact-service.ts:259` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -137,20 +137,20 @@ supabase
     .maybeSingle()
 ```
 
-Enclosing operation: `src/infrastructure/character/avatar/character-avatar-artifact-service.ts:176`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/character/avatar/character-avatar-artifact-service.ts:245`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### auth-helper: session identity
 
-`src/infrastructure/character/avatar/character-avatar-artifact-service.ts:200` — dynamic-expression.
+`src/infrastructure/character/avatar/character-avatar-artifact-service.ts:283` — dynamic-expression.
 
 Exact call/query chain:
 ```ts
 getAuthenticatedUserId()
 ```
 
-Enclosing operation: `src/infrastructure/character/avatar/character-avatar-artifact-service.ts:196`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/character/avatar/character-avatar-artifact-service.ts:274`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: character_avatar_artifacts
 
-`src/infrastructure/character/avatar/character-avatar-artifact-service.ts:201` — literal-or-constant.
+`src/infrastructure/character/avatar/character-avatar-artifact-service.ts:284` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -162,20 +162,20 @@ supabase
     .order('created_at', { ascending: false })
 ```
 
-Enclosing operation: `src/infrastructure/character/avatar/character-avatar-artifact-service.ts:196`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/character/avatar/character-avatar-artifact-service.ts:274`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### auth-helper: session identity
 
-`src/infrastructure/character/avatar/character-avatar-artifact-service.ts:229` — dynamic-expression.
+`src/infrastructure/character/avatar/character-avatar-artifact-service.ts:318` — dynamic-expression.
 
 Exact call/query chain:
 ```ts
 getAuthenticatedUserId()
 ```
 
-Enclosing operation: `src/infrastructure/character/avatar/character-avatar-artifact-service.ts:225`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/character/avatar/character-avatar-artifact-service.ts:308`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: character_avatar_artifacts
 
-`src/infrastructure/character/avatar/character-avatar-artifact-service.ts:238` — literal-or-constant.
+`src/infrastructure/character/avatar/character-avatar-artifact-service.ts:327` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -188,10 +188,10 @@ supabase
       .is('deleted_at', null)
 ```
 
-Enclosing operation: `src/infrastructure/character/avatar/character-avatar-artifact-service.ts:225`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/character/avatar/character-avatar-artifact-service.ts:308`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: character_avatar_artifacts
 
-`src/infrastructure/character/avatar/character-avatar-artifact-service.ts:253` — literal-or-constant.
+`src/infrastructure/character/avatar/character-avatar-artifact-service.ts:342` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -207,50 +207,50 @@ supabase
     .maybeSingle()
 ```
 
-Enclosing operation: `src/infrastructure/character/avatar/character-avatar-artifact-service.ts:225`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/character/avatar/character-avatar-artifact-service.ts:308`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### auth-helper: session identity
 
-`src/infrastructure/character/avatar/character-avatar-artifact-service.ts:282` — dynamic-expression.
+`src/infrastructure/character/avatar/character-avatar-artifact-service.ts:386` — dynamic-expression.
 
 Exact call/query chain:
 ```ts
 getAuthenticatedUserId()
 ```
 
-Enclosing operation: `src/infrastructure/character/avatar/character-avatar-artifact-service.ts:275`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/character/avatar/character-avatar-artifact-service.ts:364`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### auth-helper: session identity
 
-`src/infrastructure/character/avatar/character-avatar-artifact-service.ts:303` — dynamic-expression.
+`src/infrastructure/character/avatar/character-avatar-artifact-service.ts:419` — dynamic-expression.
 
 Exact call/query chain:
 ```ts
 getAuthenticatedUserId()
 ```
 
-Enclosing operation: `src/infrastructure/character/avatar/character-avatar-artifact-service.ts:296`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/character/avatar/character-avatar-artifact-service.ts:400`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### auth-helper: session identity
 
-`src/infrastructure/character/avatar/character-avatar-artifact-service.ts:324` — dynamic-expression.
+`src/infrastructure/character/avatar/character-avatar-artifact-service.ts:452` — dynamic-expression.
 
 Exact call/query chain:
 ```ts
 getAuthenticatedUserId()
 ```
 
-Enclosing operation: `src/infrastructure/character/avatar/character-avatar-artifact-service.ts:317`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/character/avatar/character-avatar-artifact-service.ts:433`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### auth-helper: session identity
 
-`src/infrastructure/character/avatar/character-avatar-artifact-service.ts:350` — dynamic-expression.
+`src/infrastructure/character/avatar/character-avatar-artifact-service.ts:483` — dynamic-expression.
 
 Exact call/query chain:
 ```ts
 getAuthenticatedUserId()
 ```
 
-Enclosing operation: `src/infrastructure/character/avatar/character-avatar-artifact-service.ts:342`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/character/avatar/character-avatar-artifact-service.ts:469`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: character_avatar_artifacts
 
-`src/infrastructure/character/avatar/character-avatar-artifact-service.ts:362` — literal-or-constant.
+`src/infrastructure/character/avatar/character-avatar-artifact-service.ts:493` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -265,7 +265,7 @@ supabase
     .is('deleted_at', null)
 ```
 
-Enclosing operation: `src/infrastructure/character/avatar/character-avatar-artifact-service.ts:342`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/character/avatar/character-avatar-artifact-service.ts:469`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### auth: session identity
 
 `src/infrastructure/character/avatar/character-avatar-export-service.ts:28` — dynamic-expression.
@@ -3062,13 +3062,18 @@ export function resolveFamilyCompatibilityFromAnalysis(
 }
 ```
 
-### src/infrastructure/character/avatar/character-avatar-artifact-service.ts:115
+### src/infrastructure/character/avatar/character-avatar-artifact-service.ts:177
 
 ```ts
 export async function createAvatarArtifact(
   artifact: AvatarArtifactV2,
 ): Promise<AvatarArtifactV2> {
-  assertHostProductSurfaceAvailable('Avatar-Artefakte');
+  if (isHostLibraryEnabled()) {
+    if (artifact.isActive) {
+      throw new Error('Neues Artefakt darf nicht direkt aktiv sein — activate verwenden.');
+    }
+    return parseHostArtifact(await createHostLibraryAvatarArtifact(artifact));
+  }
   const ownerUserId = await getAuthenticatedUserId();
   if (artifact.ownerUserId !== ownerUserId) {
     throw new Error('Artefakt-Owner stimmt nicht mit der Session überein.');
@@ -3092,7 +3097,6 @@ export async function createAvatarArtifact(
     .single();
 
   if (error) {
-    // Unique idempotency race — re-read.
     if (artifact.idempotencyKey && /duplicate|unique/i.test(error.message)) {
       const again = await findAvatarArtifactByIdempotencyKey(
         ownerUserId,
@@ -3107,13 +3111,16 @@ export async function createAvatarArtifact(
 }
 ```
 
-### src/infrastructure/character/avatar/character-avatar-artifact-service.ts:156
+### src/infrastructure/character/avatar/character-avatar-artifact-service.ts:222
 
 ```ts
 export async function getAvatarArtifactById(
   artifactId: string,
 ): Promise<AvatarArtifactV2 | null> {
-  assertHostProductSurfaceAvailable('Avatar-Artefakte');
+  if (isHostLibraryEnabled()) {
+    const raw = await fetchHostLibraryAvatarArtifactById(artifactId);
+    return raw ? parseHostArtifact(raw) : null;
+  }
   const ownerUserId = await getAuthenticatedUserId();
   const { data, error } = await supabase
     .from('character_avatar_artifacts')
@@ -3131,14 +3138,23 @@ export async function getAvatarArtifactById(
 }
 ```
 
-### src/infrastructure/character/avatar/character-avatar-artifact-service.ts:176
+### src/infrastructure/character/avatar/character-avatar-artifact-service.ts:245
 
 ```ts
 export async function findAvatarArtifactByIdempotencyKey(
   ownerUserId: string,
   idempotencyKey: string,
 ): Promise<AvatarArtifactV2 | null> {
-  assertHostProductSurfaceAvailable('Avatar-Artefakte');
+  if (isHostLibraryEnabled()) {
+    const listed = await fetchHostLibraryAvatarArtifacts();
+    for (const raw of listed) {
+      const artifact = parseHostArtifact(raw);
+      if (artifact.ownerUserId === ownerUserId && artifact.idempotencyKey === idempotencyKey) {
+        return artifact;
+      }
+    }
+    return null;
+  }
   const { data, error } = await supabase
     .from('character_avatar_artifacts')
     .select('*')
@@ -3155,13 +3171,18 @@ export async function findAvatarArtifactByIdempotencyKey(
 }
 ```
 
-### src/infrastructure/character/avatar/character-avatar-artifact-service.ts:196
+### src/infrastructure/character/avatar/character-avatar-artifact-service.ts:274
 
 ```ts
 export async function listAvatarArtifacts(options: {
   characterId?: string | null;
 } = {}): Promise<readonly AvatarArtifactV2[]> {
-  assertHostProductSurfaceAvailable('Avatar-Artefakte');
+  if (isHostLibraryEnabled()) {
+    const listed = await fetchHostLibraryAvatarArtifacts({
+      characterId: options.characterId,
+    });
+    return listed.map(parseHostArtifact);
+  }
   const ownerUserId = await getAuthenticatedUserId();
   let query = supabase
     .from('character_avatar_artifacts')
@@ -3185,13 +3206,19 @@ export async function listAvatarArtifacts(options: {
 }
 ```
 
-### src/infrastructure/character/avatar/character-avatar-artifact-service.ts:225
+### src/infrastructure/character/avatar/character-avatar-artifact-service.ts:308
 
 ```ts
 export async function activateAvatarArtifact(
   artifactId: string,
 ): Promise<AvatarArtifactActivateResult> {
-  assertHostProductSurfaceAvailable('Avatar-Artefakte');
+  if (isHostLibraryEnabled()) {
+    const result = await activateHostLibraryAvatarArtifact(artifactId);
+    if (!result.ok) {
+      return { ok: false, reasonDe: result.reasonDe };
+    }
+    return { ok: true, artifact: parseHostArtifact(result.artifact) };
+  }
   const ownerUserId = await getAuthenticatedUserId();
   const current = await getAvatarArtifactById(artifactId);
   if (!current) {
@@ -3238,7 +3265,7 @@ export async function activateAvatarArtifact(
 }
 ```
 
-### src/infrastructure/character/avatar/character-avatar-artifact-service.ts:275
+### src/infrastructure/character/avatar/character-avatar-artifact-service.ts:364
 
 ```ts
 export async function materializeArtifactFromImportAsset(input: {
@@ -3247,7 +3274,22 @@ export async function materializeArtifactFromImportAsset(input: {
   storagePath: string;
   format: 'vrm' | 'glb';
 }): Promise<AvatarArtifactV2> {
-  assertHostProductSurfaceAvailable('Avatar-Artefakte');
+  if (isHostLibraryEnabled()) {
+    const ownerFromPath = input.storagePath.split('/')[0] ?? '';
+    if (!ownerFromPath) {
+      throw new Error('Storage-Pfad muss owner-scoped sein.');
+    }
+    const draft = materializeAvatarArtifact(
+      mapImportAssetToArtifactInput({
+        importAssetId: input.importAssetId,
+        ownerUserId: ownerFromPath,
+        characterId: input.characterId,
+        storagePath: input.storagePath,
+        format: input.format,
+      }),
+    );
+    return createAvatarArtifact(draft);
+  }
   const ownerUserId = await getAuthenticatedUserId();
   const draft = materializeAvatarArtifact(
     mapImportAssetToArtifactInput({
@@ -3262,7 +3304,7 @@ export async function materializeArtifactFromImportAsset(input: {
 }
 ```
 
-### src/infrastructure/character/avatar/character-avatar-artifact-service.ts:296
+### src/infrastructure/character/avatar/character-avatar-artifact-service.ts:400
 
 ```ts
 export async function materializeArtifactFromGenerateJob(input: {
@@ -3271,7 +3313,19 @@ export async function materializeArtifactFromGenerateJob(input: {
   storagePath: string;
   providerId?: string;
 }): Promise<AvatarArtifactV2> {
-  assertHostProductSurfaceAvailable('Avatar-Artefakte');
+  if (isHostLibraryEnabled()) {
+    const ownerFromPath = input.storagePath.split('/')[0] ?? '';
+    const draft = materializeAvatarArtifact(
+      mapGenerateJobToArtifactInput({
+        generateJobId: input.generateJobId,
+        ownerUserId: ownerFromPath || 'host-pending',
+        characterId: input.characterId,
+        storagePath: input.storagePath,
+        providerId: input.providerId,
+      }),
+    );
+    return createAvatarArtifact(draft);
+  }
   const ownerUserId = await getAuthenticatedUserId();
   const draft = materializeAvatarArtifact(
     mapGenerateJobToArtifactInput({
@@ -3286,7 +3340,7 @@ export async function materializeArtifactFromGenerateJob(input: {
 }
 ```
 
-### src/infrastructure/character/avatar/character-avatar-artifact-service.ts:317
+### src/infrastructure/character/avatar/character-avatar-artifact-service.ts:433
 
 ```ts
 export async function materializeArtifactFromTemplate(input: {
@@ -3295,7 +3349,19 @@ export async function materializeArtifactFromTemplate(input: {
   characterId?: string | null;
   storagePath: string;
 }): Promise<AvatarArtifactV2> {
-  assertHostProductSurfaceAvailable('Avatar-Artefakte');
+  if (isHostLibraryEnabled()) {
+    const ownerFromPath = input.storagePath.split('/')[0] ?? '';
+    const draft = materializeAvatarArtifact(
+      mapTemplateToArtifactInput({
+        artifactId: input.artifactId,
+        ownerUserId: ownerFromPath || 'host-pending',
+        characterId: input.characterId,
+        templateId: input.templateId,
+        storagePath: input.storagePath,
+      }),
+    );
+    return createAvatarArtifact(draft);
+  }
   const ownerUserId = await getAuthenticatedUserId();
   const draft = materializeAvatarArtifact(
     mapTemplateToArtifactInput({
@@ -3310,14 +3376,20 @@ export async function materializeArtifactFromTemplate(input: {
 }
 ```
 
-### src/infrastructure/character/avatar/character-avatar-artifact-service.ts:342
+### src/infrastructure/character/avatar/character-avatar-artifact-service.ts:469
 
 ```ts
 export async function persistAuthoritativeArtifactAnalysis(input: {
   artifactId: string;
   result: AvatarStructureAnalysisResultV2;
 }): Promise<void> {
-  assertHostProductSurfaceAvailable('Avatar-Artefakte');
+  if (isHostLibraryEnabled()) {
+    // Host parity with Postgres RLS: browser sessions cannot escalate trusted analysis.
+    // In-process CharacterPorts remain available for host analyzer workers/self-tests.
+    throw new Error(
+      'Autoritative Avatar-Analyse ist im Host-Modus nur serverseitig verfügbar.',
+    );
+  }
   if (!input.result.authoritative) {
     throw new Error('Nur autoritative Analyse-Ergebnisse dürfen persistiert werden.');
   }
@@ -3331,8 +3403,6 @@ export async function persistAuthoritativeArtifactAnalysis(input: {
           ? 'unsupported'
           : 'failed';
 
-  // Client RLS blocks trusted status writes — this path is intended for
-  // Edge/service_role callers. Authenticated clients will fail closed here.
   const { error } = await supabase
     .from('character_avatar_artifacts')
     .update({
@@ -11275,7 +11345,7 @@ export const supabaseCharacterRepository = new SupabaseCharacterRepository();
 
 ## Remaining backend helper operations
 
-### src/infrastructure/character/avatar/character-avatar-artifact-service.ts:50
+### src/infrastructure/character/avatar/character-avatar-artifact-service.ts:56
 
 ```ts
 async function getAuthenticatedUserId(): Promise<string> {
@@ -12110,7 +12180,7 @@ private async assertPersonalLookWriteGate(
 | `src/infrastructure/character/avatar/avatar-structure-scanner.ts` | `9b824439400cd99d35ecca9cabb9f1b945870a7b28feaf1d999f9ea85c41d6c1` |
 | `src/infrastructure/character/avatar/base-body-catalog.ts` | `b2ddcc05a3b83c54312ea0eb669deff02b0f058a41b5c1f6b833c48475f9f499` |
 | `src/infrastructure/character/avatar/body-profile-metrics.ts` | `327e1d33b62844c3819cbfdb6985ab2a4093842c596c633f086de6a4357e2e3a` |
-| `src/infrastructure/character/avatar/character-avatar-artifact-service.ts` | `7ccb4005c337866af2cf1298fb0282ea02b14b8cb3b7963a487eab507b799c1a` |
+| `src/infrastructure/character/avatar/character-avatar-artifact-service.ts` | `53a27ff1d0456f923f801685598be019b438e8f2772619bd7da687df7d1ef888` |
 | `src/infrastructure/character/avatar/character-avatar-export-service.ts` | `f7f06447589acbc55f116e4432dfc1ef1b02ef5ca5a0394dd240693251bbcc4b` |
 | `src/infrastructure/character/avatar/character-avatar-import-service.ts` | `7821f28066e2773ff19a5c52341e6fbe3c01995faa1f40ddcf32542b2f2848a5` |
 | `src/infrastructure/character/avatar/character-avatar-meshy-service.ts` | `411c8c2cac60cf1904db46caca01e2577fb945949f0e278dbb7747a5911d8fa8` |
@@ -12154,7 +12224,7 @@ private async assertPersonalLookWriteGate(
 | `src/infrastructure/character/liveact/mediapipe-sagatree-face-anchor-map-v1.ts` | `b092e31c50b885b9dbeb396ef2bdbfa39a953df717da7e0042e081849c173d9a` |
 | `src/infrastructure/character/liveact/vrm-liveact-avatar-output.ts` | `f5ef95d582ee0f3a2ec47748e8d958306f3833d45a5e8e1b250d1eecfba5d9a6` |
 | `src/infrastructure/character/supabase-character.repository.ts` | `ae0034e06c55c384124c933bc8093c3926b7ece34a5222213913d1fdc03a9878` |
-| `src/infrastructure/host/host-library-http.ts` | `225526477a7e5920f614ab73e2db1beeab6154c54dbc32f107713f2f046613af` |
+| `src/infrastructure/host/host-library-http.ts` | `229b35aacdebddf47048b109b5ff221dd8985f2c5f97e2fb362e959567a98deb` |
 | `src/infrastructure/host/host-product-deny.ts` | `69b148debc95006bb31daa7a94caf4e1507ac3089fdf399952102c4effa3759c` |
 | `src/infrastructure/host/host-project-http.ts` | `b5a68f6452217b08d2217a983113a9a356ce70890693319227f35c82fbdcd818` |
 | `src/infrastructure/inventory/inventory-persistence.ts` | `79aaa09053ecd72a0bec8f8f0610b31ab0c9b34779f4a4c87f19f0d2ef7e4ac2` |

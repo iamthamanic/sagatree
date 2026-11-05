@@ -250,7 +250,7 @@ export type CharacterPorts = {
   readonly persistAuthoritativeArtifactAnalysis: (
     actorId: string,
     artifactId: string,
-    result: { readonly authoritative: boolean; readonly status: string },
+    result: Readonly<Record<string, unknown>>,
   ) => CharacterSheetResult<{ readonly ok: true }>;
   /** MIG-303: inventory module writes characters.inventory_* via this port only. */
   readonly getOwnedInventoryColumns: (

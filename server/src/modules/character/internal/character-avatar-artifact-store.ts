@@ -411,17 +411,18 @@ export class CharacterAvatarArtifactStore {
   persistAuthoritativeAnalysis(
     ownerUserId: string,
     artifactId: string,
-    result: { readonly authoritative: boolean; readonly status: string },
+    result: Readonly<Record<string, unknown>>,
   ): CharacterSheetResult<{ readonly ok: true }> {
-    if (!result.authoritative) {
+    if (result.authoritative !== true) {
       return { ok: false, error: 'analysis-not-authoritative' };
     }
+    const status = typeof result.status === 'string' ? result.status : '';
     const analysisStatus: AvatarArtifactAnalysisStatus =
-      result.status === 'ready'
+      status === 'ready'
         ? 'ready'
-        : result.status === 'limited'
+        : status === 'limited'
           ? 'limited'
-          : result.status === 'unsupported'
+          : status === 'unsupported'
             ? 'unsupported'
             : 'failed';
     const now = nowIso();

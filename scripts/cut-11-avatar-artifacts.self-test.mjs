@@ -156,7 +156,7 @@ try {
     body: {
       artifactId: randomUUID(),
       characterId,
-      source: { origin: 'import' },
+      source: { origin: 'import', importAssetId: randomUUID() },
       asset: {
         assetKey: `avatar-asset:${ownerId}:other`,
         storagePath: `${ownerId}/other.glb`,
@@ -205,23 +205,18 @@ try {
   assert(activated.res.status === 200, `activate ${activated.res.status} ${activated.text}`);
   assert(activated.json.ok === true && activated.json.artifact?.isActive === true, 'active');
 
-  const analysis = await httpJson(
-    baseURL,
-    `/api/v1/library/avatar-artifacts/${artifactId}/analysis`,
-    {
-      method: 'POST',
-      cookie: ownerCookie,
-      headers: { Origin: baseURL },
-      body: {
-        result: {
-          authoritative: true,
-          status: 'ready',
-          contractVersion: 'SagaDriveAvatarStructureAnalyzerV2',
-        },
-      },
-    },
+  // Authoritative analysis is host-internal only (Postgres RLS parity — no browser escalate).
+  assert(
+    typeof host.character?.persistAuthoritativeArtifactAnalysis === 'function',
+    'analysis port',
   );
-  assert(analysis.res.status === 200, `analysis ${analysis.res.status} ${analysis.text}`);
+  const analysis = host.character.persistAuthoritativeArtifactAnalysis(ownerId, artifactId, {
+    authoritative: true,
+    status: 'ready',
+    contractVersion: 'SagaDriveAvatarStructureAnalyzerV2',
+    anatomy: { ok: true },
+  });
+  assert(analysis.ok === true, `analysis port ${JSON.stringify(analysis)}`);
 
   const after = await httpJson(baseURL, `/api/v1/library/avatar-artifacts/${artifactId}`, {
     cookie: ownerCookie,
@@ -234,7 +229,7 @@ try {
     cookie: ownerCookie,
     headers: { Origin: baseURL },
     body: {
-      source: { origin: 'import' },
+      source: { origin: 'import', importAssetId: randomUUID() },
       asset: {
         assetKey: `avatar-asset:${ownerId}:${randomUUID()}`,
         storagePath: '../etc/passwd',

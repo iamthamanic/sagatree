@@ -933,12 +933,22 @@ export function mountLibraryHttpRoutes(app: Hono, deps: LibraryHttpDeps): void {
           ? { characterId: null as string | null }
           : { characterId: characterIdRaw };
     const byId = new Map<string, ReturnType<typeof mapAvatarArtifact>>();
+    let lastError: string | null = null;
     for (const ownerId of libraryActorIds(actorResult.actor)) {
       const listed = deps.character.listAvatarArtifacts(ownerId, options);
-      if (!listed.ok) continue;
+      if (!listed.ok) {
+        lastError = listed.error;
+        if (listed.error === 'store-unavailable') {
+          return c.json({ error: listed.error }, 503);
+        }
+        continue;
+      }
       for (const row of listed.value) {
         byId.set(row.artifactId, mapAvatarArtifact(row));
       }
+    }
+    if (byId.size === 0 && lastError === 'store-unavailable') {
+      return c.json({ error: 'store-unavailable' }, 503);
     }
     return c.json({ artifacts: [...byId.values()] }, 200);
   });
@@ -953,12 +963,18 @@ export function mountLibraryHttpRoutes(app: Hono, deps: LibraryHttpDeps): void {
       return c.json({ error: 'store-unavailable' }, 503);
     }
     const artifactId = c.req.param('id');
+    let sawUnavailable = false;
     for (const ownerId of libraryActorIds(actorResult.actor)) {
       const got = deps.character.getAvatarArtifactById(ownerId, artifactId);
-      if (got.ok && got.value) {
+      if (!got.ok) {
+        if (got.error === 'store-unavailable') sawUnavailable = true;
+        continue;
+      }
+      if (got.value) {
         return c.json({ artifact: mapAvatarArtifact(got.value) }, 200);
       }
     }
+    if (sawUnavailable) return c.json({ error: 'store-unavailable' }, 503);
     return c.json({ error: 'not-found' }, 404);
   });
 
@@ -989,7 +1005,22 @@ export function mountLibraryHttpRoutes(app: Hono, deps: LibraryHttpDeps): void {
       record.asset && typeof record.asset === 'object' && !Array.isArray(record.asset)
         ? (record.asset as Record<string, unknown>)
         : {};
-    const origin = typeof source.origin === 'string' ? source.origin : typeof record.origin === 'string' ? record.origin : '';
+    const importAssetId =
+      typeof source.importAssetId === 'string' ? source.importAssetId.trim() : '';
+    const generateJobId =
+      typeof source.generateJobId === 'string' ? source.generateJobId.trim() : '';
+    const templateId = typeof source.templateId === 'string' ? source.templateId.trim() : '';
+    // Derive provenance from verified source ids — never trust client origin labels.
+    const origin: 'sagadrive' | 'import' | 'generate' | null = importAssetId
+      ? 'import'
+      : generateJobId
+        ? 'generate'
+        : templateId
+          ? 'sagadrive'
+          : null;
+    if (!origin) {
+      return c.json({ error: 'invalid-origin' }, 422);
+    }
     const assetKey =
       typeof asset.assetKey === 'string'
         ? asset.assetKey
@@ -1025,6 +1056,13 @@ export function mountLibraryHttpRoutes(app: Hono, deps: LibraryHttpDeps): void {
         ? record.materializationStatus
         : 'materialized';
 
+    const retryable = new Set([
+      'not-found',
+      'not-authorized',
+      'invalid-storage-path',
+      'foreign-character-owner',
+      'asset-key-owner-mismatch',
+    ]);
     let created: ReturnType<
       NonNullable<LibraryHttpDeps['character']>['createAvatarArtifact']
     > | null = null;
@@ -1032,7 +1070,7 @@ export function mountLibraryHttpRoutes(app: Hono, deps: LibraryHttpDeps): void {
       const attempt = deps.character.createAvatarArtifact(ownerId, {
         artifactId,
         characterId,
-        origin: origin as 'sagadrive' | 'import' | 'generate',
+        origin,
         assetKey,
         storagePath,
         format: format as 'vrm' | 'glb' | 'template',
@@ -1041,11 +1079,9 @@ export function mountLibraryHttpRoutes(app: Hono, deps: LibraryHttpDeps): void {
           | 'materialized'
           | 'failed'
           | 'superseded',
-        importAssetId:
-          typeof source.importAssetId === 'string' ? source.importAssetId : null,
-        generateJobId:
-          typeof source.generateJobId === 'string' ? source.generateJobId : null,
-        templateId: typeof source.templateId === 'string' ? source.templateId : null,
+        importAssetId: importAssetId || null,
+        generateJobId: generateJobId || null,
+        templateId: templateId || null,
         providerId: typeof source.providerId === 'string' ? source.providerId : null,
         idempotencyKey:
           typeof record.idempotencyKey === 'string' ? record.idempotencyKey : null,
@@ -1054,11 +1090,8 @@ export function mountLibraryHttpRoutes(app: Hono, deps: LibraryHttpDeps): void {
         created = attempt;
         break;
       }
-      if (attempt.error !== 'not-found' && attempt.error !== 'not-authorized') {
-        created = attempt;
-        break;
-      }
       created = attempt;
+      if (!retryable.has(attempt.error)) break;
     }
     if (!created || !created.ok) {
       const err = created && !created.ok ? created.error : 'create-failed';
@@ -1090,47 +1123,6 @@ export function mountLibraryHttpRoutes(app: Hono, deps: LibraryHttpDeps): void {
       { ok: false, reasonDe: 'Artefakt nicht gefunden oder fremder Owner.' },
       404,
     );
-  });
-
-  /** CUT-11 — persist authoritative analysis (host-trusted). */
-  app.post('/api/v1/library/avatar-artifacts/:id/analysis', async (c) => {
-    const actorResult = await resolveLibraryActor(deps, c.req.raw.headers);
-    if (!actorResult.ok) {
-      return c.json({ error: actorResult.error }, actorResult.status);
-    }
-    if (!deps.character?.persistAuthoritativeArtifactAnalysis) {
-      return c.json({ error: 'store-unavailable' }, 503);
-    }
-    let body: unknown;
-    try {
-      body = await c.req.json();
-    } catch {
-      return c.json({ error: 'invalid-json' }, 400);
-    }
-    const record =
-      body && typeof body === 'object' && !Array.isArray(body)
-        ? (body as Record<string, unknown>)
-        : {};
-    const result =
-      record.result && typeof record.result === 'object' && !Array.isArray(record.result)
-        ? (record.result as Record<string, unknown>)
-        : record;
-    const authoritative = result.authoritative === true;
-    const status = typeof result.status === 'string' ? result.status : '';
-    const artifactId = c.req.param('id');
-    for (const ownerId of libraryActorIds(actorResult.actor)) {
-      const attempt = deps.character.persistAuthoritativeArtifactAnalysis(ownerId, artifactId, {
-        authoritative,
-        status,
-      });
-      if (attempt.ok) {
-        return c.json({ ok: true }, 200);
-      }
-      if (attempt.error !== 'not-found') {
-        return c.json({ error: attempt.error }, avatarArtifactErrorStatus(attempt.error));
-      }
-    }
-    return c.json({ error: 'not-found' }, 404);
   });
 
   /** CUT-08 — delete owner user preset. */

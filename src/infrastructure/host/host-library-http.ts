@@ -692,23 +692,6 @@ export async function activateHostLibraryAvatarArtifact(
   };
 }
 
-/** CUT-11 — POST `/api/v1/library/avatar-artifacts/:id/analysis`. */
-export async function persistHostLibraryAvatarArtifactAnalysis(
-  artifactId: string,
-  result: unknown,
-  env: EnvLike = defaultEnv(),
-  fetchImpl: typeof fetch = fetch,
-): Promise<void> {
-  await hostMutateJson<{ ok?: boolean }>(
-    `/api/v1/library/avatar-artifacts/${encodeURIComponent(artifactId)}/analysis`,
-    'POST',
-    'Host-Avatar-Analyse speichern fehlgeschlagen',
-    { result },
-    env,
-    fetchImpl,
-  );
-}
-
 export async function fetchHostLibraryNpcCreatures(
   env: EnvLike = defaultEnv(),
   fetchImpl: typeof fetch = fetch,

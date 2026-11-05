@@ -29,7 +29,6 @@ import {
   fetchHostLibraryAvatarArtifactById,
   fetchHostLibraryAvatarArtifacts,
   isHostLibraryEnabled,
-  persistHostLibraryAvatarArtifactAnalysis,
 } from '../../host/host-library-http';
 
 interface ArtifactRow {
@@ -311,7 +310,9 @@ export async function activateAvatarArtifact(
 ): Promise<AvatarArtifactActivateResult> {
   if (isHostLibraryEnabled()) {
     const result = await activateHostLibraryAvatarArtifact(artifactId);
-    if (!result.ok) return result;
+    if (!result.ok) {
+      return { ok: false, reasonDe: result.reasonDe };
+    }
     return { ok: true, artifact: parseHostArtifact(result.artifact) };
   }
   const ownerUserId = await getAuthenticatedUserId();
@@ -470,11 +471,11 @@ export async function persistAuthoritativeArtifactAnalysis(input: {
   result: AvatarStructureAnalysisResultV2;
 }): Promise<void> {
   if (isHostLibraryEnabled()) {
-    if (!input.result.authoritative) {
-      throw new Error('Nur autoritative Analyse-Ergebnisse dürfen persistiert werden.');
-    }
-    await persistHostLibraryAvatarArtifactAnalysis(input.artifactId, input.result);
-    return;
+    // Host parity with Postgres RLS: browser sessions cannot escalate trusted analysis.
+    // In-process CharacterPorts remain available for host analyzer workers/self-tests.
+    throw new Error(
+      'Autoritative Avatar-Analyse ist im Host-Modus nur serverseitig verfügbar.',
+    );
   }
   if (!input.result.authoritative) {
     throw new Error('Nur autoritative Analyse-Ergebnisse dürfen persistiert werden.');
