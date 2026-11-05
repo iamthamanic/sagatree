@@ -30,6 +30,7 @@ WorldPorts + `worlds.public_id` on SQLite. Soft-DENY removed. Authorization via
 | Invalid/missing | Unknown WO- → 404 | Fail-closed | pass |
 | Case fold | lowercase path param works | normalize toUpperCase | pass |
 | Dual-path | Flag off → Supabase | Exclusive | pass |
+| Two consumers / crash | Atlas deep-link + library list both resolve same WO-; host stop mid-request fails closed | Shared WorldPorts read | pass |
 
 ## Flags
 
