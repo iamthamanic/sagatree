@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-project.json](source-contracts/infra-project.json) (SHA-256 `1201f3afb2a7567c76b05dedc4898e92826942fc90f2636f7d4f62eea10537e0`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-project.json](source-contracts/infra-project.json) (SHA-256 `7e8dd9a128af61fe087dea96124074644fac3a4378c1319658f64af2c2f178d4`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -71,7 +71,7 @@ None in the reviewed source.
 
 ### table: project_members
 
-`src/infrastructure/project/project-member-service.ts:31` — literal-or-constant.
+`src/infrastructure/project/project-member-service.ts:45` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -82,10 +82,10 @@ supabase
       .order('joined_at')
 ```
 
-Enclosing operation: `src/infrastructure/project/project-member-service.ts:30`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/project/project-member-service.ts:32`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### rpc: join_project_by_code
 
-`src/infrastructure/project/project-member-service.ts:60` — literal-or-constant.
+`src/infrastructure/project/project-member-service.ts:74` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -95,10 +95,10 @@ supabase.rpc('join_project_by_code', {
     })
 ```
 
-Enclosing operation: `src/infrastructure/project/project-member-service.ts:45`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/project/project-member-service.ts:59`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: project_members
 
-`src/infrastructure/project/project-member-service.ts:68` — literal-or-constant.
+`src/infrastructure/project/project-member-service.ts:82` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -109,10 +109,10 @@ supabase
       .single()
 ```
 
-Enclosing operation: `src/infrastructure/project/project-member-service.ts:45`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/project/project-member-service.ts:59`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### rpc: set_my_project_character
 
-`src/infrastructure/project/project-member-service.ts:97` — literal-or-constant.
+`src/infrastructure/project/project-member-service.ts:111` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -122,10 +122,10 @@ supabase.rpc('set_my_project_character', {
     })
 ```
 
-Enclosing operation: `src/infrastructure/project/project-member-service.ts:82`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/project/project-member-service.ts:96`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: project_members
 
-`src/infrastructure/project/project-member-service.ts:105` — literal-or-constant.
+`src/infrastructure/project/project-member-service.ts:119` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -136,10 +136,10 @@ supabase
       .single()
 ```
 
-Enclosing operation: `src/infrastructure/project/project-member-service.ts:82`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/project/project-member-service.ts:96`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: project_members
 
-`src/infrastructure/project/project-member-service.ts:119` — literal-or-constant.
+`src/infrastructure/project/project-member-service.ts:133` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -150,10 +150,10 @@ supabase
       .eq('user_id', userId)
 ```
 
-Enclosing operation: `src/infrastructure/project/project-member-service.ts:118`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/project/project-member-service.ts:132`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: project_members
 
-`src/infrastructure/project/project-member-service.ts:132` — literal-or-constant.
+`src/infrastructure/project/project-member-service.ts:146` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -168,7 +168,7 @@ supabase
       .order('joined_at', { ascending: false })
 ```
 
-Enclosing operation: `src/infrastructure/project/project-member-service.ts:131`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/project/project-member-service.ts:145`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### auth-helper: session identity
 
 `src/infrastructure/project/project-service.ts:282` — dynamic-expression.
@@ -785,14 +785,27 @@ export const HOST_PROJECT_OPS = [
 export type HostProjectOp = (typeof HOST_PROJECT_OPS)[number];
 ```
 
-### src/infrastructure/project/project-member-service.ts:26
+### src/infrastructure/project/project-member-service.ts:27
 
 ```ts
 export const projectMemberService = {
   /**
-   * Get all members of a project
+   * Get all members of a project.
+   * Host-first: GET /api/v1/projects/:projectId/members (active roster only).
    */
   async getMembers(projectId: string): Promise<ProjectMemberDto[]> {
+    if (isHostLibraryEnabled()) {
+      const rows = await listHostProjectMembers(projectId);
+      return rows.map((row) => ({
+        id: row.id,
+        project_id: row.projectId,
+        user_id: row.userId,
+        character_id: row.characterId,
+        role: row.role,
+        status: row.status === 'active' ? 'active' : 'inactive',
+        joined_at: row.joinedAt ?? new Date(0).toISOString(),
+      }));
+    }
     const { data, error } = await supabase
       .from('project_members')
       .select('*')
@@ -1773,12 +1786,12 @@ async getOverviewByPublicId(sagaPublicId: string): Promise<SagaOverviewVm> {
 | `src/domains/saga/permissions/catalog.ts` | `fa18a08f5e4fd9db4886aa51e89858769d2fa84853d3109df36a1db8913ee3c7` |
 | `src/domains/saga/permissions/index.ts` | `27ab6076d9afb89c5dc6d0bf11b9a0e3502efade690cd7dba2973e2acad24bba` |
 | `src/domains/saga/permissions/lore-timeline.ts` | `f245a4b02ce971d772808ddcdb70944992ba7f8cb0fbc1d012e5f6c93e11b48b` |
-| `src/infrastructure/host/host-library-http.ts` | `3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a` |
+| `src/infrastructure/host/host-library-http.ts` | `73aff05d4133b8501c130d41f8e4430f09cfe24f7c6e7b115b653c8f96903a84` |
 | `src/infrastructure/host/host-product-deny.ts` | `69b148debc95006bb31daa7a94caf4e1507ac3089fdf399952102c4effa3759c` |
-| `src/infrastructure/host/host-project-http.ts` | `f0a6c7b50b90ca9612b8b2e9abf2a5902a3164b2f693a1b6818d3e84bcd580c0` |
+| `src/infrastructure/host/host-project-http.ts` | `b5a68f6452217b08d2217a983113a9a356ce70890693319227f35c82fbdcd818` |
 | `src/infrastructure/project/host-project-adapter.ts` | `41d162d05407e6f54f118a60a6aaf5f29bb1a61d28758c7d1c0698cdc3c35a70` |
 | `src/infrastructure/project/host-project-ports.contract.ts` | `4e9023655c95ed3e3ade8837af0c14c53c5541571a1591526aae760ffbbd9902` |
-| `src/infrastructure/project/project-member-service.ts` | `e2e4afc1eb144d257d3ef5fda84fde8bac40fce8bd3e049a946fc76255b4dc54` |
+| `src/infrastructure/project/project-member-service.ts` | `bc15c872ef4979b1f6c67c9dc01838e8a7ee45083f225121d688d60b442bbb26` |
 | `src/infrastructure/project/project-service.ts` | `07549fce108bd735bdd7d48b07bccbf39947e3547d0f26ab60fdd013ca94aeff` |
 | `src/infrastructure/project/saga-overview-service.ts` | `fdcfe378e727d5409e430eda4c37b1f8aae6d08dd2636aace8d66a96e19d02aa` |
 | `src/infrastructure/project/saga-permission-service.ts` | `cb3d8329b86626f710e3f5da8e3f7679fe0d37333a4e9112ad61e9b4975aa919` |

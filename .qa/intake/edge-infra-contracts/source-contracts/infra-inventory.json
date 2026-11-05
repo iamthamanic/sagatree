@@ -239,7 +239,7 @@
     },
     {
       "path": "src/infrastructure/host/host-library-http.ts",
-      "sha256": "3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a"
+      "sha256": "73aff05d4133b8501c130d41f8e4430f09cfe24f7c6e7b115b653c8f96903a84"
     },
     {
       "path": "src/infrastructure/media/optimizer/engines/audio/index.ts",
@@ -1781,10 +1781,18 @@
     },
     {
       "kind": "TypeAliasDeclaration",
+      "name": "HostNpcControllerAssignmentDto",
+      "path": "src/infrastructure/host/host-library-http.ts",
+      "line": 462,
+      "endLine": 468,
+      "text": "export type HostNpcControllerAssignmentDto = {\n  readonly projectId: string;\n  readonly definitionId: string;\n  readonly controllerUserId: string | null;\n  readonly assignedBy?: string;\n  readonly updatedAt?: string;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
       "name": "HostPublishedAssetDto",
       "path": "src/infrastructure/host/host-library-http.ts",
-      "line": 475,
-      "endLine": 482,
+      "line": 534,
+      "endLine": 541,
       "text": "export type HostPublishedAssetDto = {\n  readonly assetId: string;\n  readonly contentType: string;\n  readonly byteSize: number;\n  readonly checksumSha256: string;\n  readonly url: string;\n  readonly storagePath: string;\n};"
     },
     {

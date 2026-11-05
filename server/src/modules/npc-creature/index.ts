@@ -117,6 +117,13 @@ export type NpcCreaturePorts = {
     actor: Actor,
     sourceDefinitionId: string,
   ) => NpcCreatureResult<NpcDefinitionRecord>;
+  readonly getControllerAssignment: (
+    actor: Actor,
+    projectId: string,
+    definitionId: string,
+  ) =>
+    | { readonly ok: true; readonly value: ControllerAssignmentRow | null }
+    | { readonly ok: false; readonly error: string };
   readonly assignController: (
     actor: Actor,
     projectId: string,
@@ -207,6 +214,10 @@ export function createNpcCreaturePorts(deps: {
       if (!requireActor(actor)) return { ok: false, error: 'missing-actor' };
       return store.duplicateDefinition(actorIds(actor), sourceDefinitionId);
     },
+    getControllerAssignment(actor, projectId, definitionId) {
+      if (!requireActor(actor)) return { ok: false, error: 'missing-actor' };
+      return store.getControllerAssignment(actorIds(actor), projectId, definitionId);
+    },
     assignController(actor, projectId, definitionId, controllerUserId) {
       return store.assignController(actorIds(actor), projectId, definitionId, controllerUserId);
     },
@@ -237,6 +248,7 @@ export function createNpcCreaturePortsStub(): NpcCreaturePorts {
     archiveDefinition: () => unavailable,
     restoreDefinition: () => unavailable,
     duplicateDefinition: () => unavailable,
+    getControllerAssignment: () => unavailable,
     assignController: () => unavailable,
     spawnInstance: () => unavailable,
     updateRuntime: () => unavailable,

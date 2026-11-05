@@ -34,6 +34,29 @@ export type LibraryHttpDeps = {
   readonly assets?: AssetPorts | null;
 };
 
+function npcControllerErrorStatus(error: string): 400 | 401 | 403 | 404 | 422 {
+  if (error === 'P0001:not authenticated' || error === 'missing-actor') return 401;
+  if (
+    error === 'P0001:only gm may assign controller' ||
+    error === 'P0001:actor is not an active project member' ||
+    error === 'P0001:definition not readable' ||
+    error === 'not-authorized'
+  ) {
+    return 403;
+  }
+  if (error === 'not-found') return 404;
+  if (
+    error === 'P0001:missing project' ||
+    error === 'P0001:invalid definition id' ||
+    error === 'P0001:invalid controller id' ||
+    error === 'P0001:controller is not an active project member' ||
+    error === 'P0001:definition is not a full character sheet'
+  ) {
+    return 422;
+  }
+  return 400;
+}
+
 function normalizeHostname(hostname: string): string {
   const raw = hostname.trim().toLowerCase();
   if (raw.startsWith('[') && raw.endsWith(']')) return raw.slice(1, -1);
@@ -581,6 +604,77 @@ export function mountLibraryHttpRoutes(app: Hono, deps: LibraryHttpDeps): void {
       );
     }
     return c.json({ definition: archived.value }, 200);
+  });
+
+  /** CUT-02 — load controller assignment for a campaign + definition. */
+  app.get('/api/v1/library/npc-creatures/:id/controller', async (c) => {
+    const actorResult = await resolveLibraryActor(deps, c.req.raw.headers);
+    if (!actorResult.ok) {
+      return c.json({ error: actorResult.error }, actorResult.status);
+    }
+    if (!deps.npcCreature?.getControllerAssignment) {
+      return c.json({ error: 'store-unavailable' }, 503);
+    }
+    const projectId = c.req.query('projectId')?.trim() ?? '';
+    if (!projectId) return c.json({ error: 'P0001:missing project' }, 422);
+    const loaded = deps.npcCreature.getControllerAssignment(
+      actorResult.actor,
+      projectId,
+      c.req.param('id'),
+    );
+    if (!loaded.ok) {
+      return c.json({ error: loaded.error }, npcControllerErrorStatus(loaded.error));
+    }
+    return c.json({ assignment: loaded.value }, 200);
+  });
+
+  /**
+   * CUT-02 — assign or clear controller (nullable controllerUserId = clear).
+   * Body: { projectId, controllerUserId: string | null }. Actor is session-only.
+   */
+  app.post('/api/v1/library/npc-creatures/:id/controller', async (c) => {
+    const actorResult = await resolveLibraryActor(deps, c.req.raw.headers);
+    if (!actorResult.ok) {
+      return c.json({ error: actorResult.error }, actorResult.status);
+    }
+    if (!deps.npcCreature?.assignController) {
+      return c.json({ error: 'store-unavailable' }, 503);
+    }
+    let body: unknown;
+    try {
+      body = await c.req.json();
+    } catch {
+      return c.json({ error: 'invalid-json' }, 400);
+    }
+    const record =
+      body && typeof body === 'object' && !Array.isArray(body)
+        ? (body as Record<string, unknown>)
+        : {};
+    const projectId = typeof record.projectId === 'string' ? record.projectId.trim() : '';
+    if (!projectId) return c.json({ error: 'P0001:missing project' }, 422);
+    const hasControllerKey = Object.prototype.hasOwnProperty.call(record, 'controllerUserId');
+    if (!hasControllerKey) {
+      return c.json({ error: 'P0001:invalid controller id' }, 422);
+    }
+    const rawController = record.controllerUserId;
+    let controllerUserId: string | null;
+    if (rawController === null) {
+      controllerUserId = null;
+    } else if (typeof rawController === 'string') {
+      controllerUserId = rawController;
+    } else {
+      return c.json({ error: 'P0001:invalid controller id' }, 422);
+    }
+    const assigned = deps.npcCreature.assignController(
+      actorResult.actor,
+      projectId,
+      c.req.param('id'),
+      controllerUserId,
+    );
+    if (!assigned.ok) {
+      return c.json({ error: assigned.error }, npcControllerErrorStatus(assigned.error));
+    }
+    return c.json({ assignment: assigned.value }, 200);
   });
 
   app.get('/api/v1/library/looks', async (c) => {

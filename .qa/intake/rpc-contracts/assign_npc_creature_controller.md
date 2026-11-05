@@ -116,9 +116,9 @@ Die finalen Datenbank-Constraints der beteiligten Relationen sind pro RPC in inv
 
 ## Caller: Request-Mapping, Response-Decoding und Fehler
 
-### src/infrastructure/npc-creature/npc-creature-service.ts:395
+### src/infrastructure/npc-creature/npc-creature-service.ts:422
 
-AST-Auflösung: `string-literal`; SHA-256 `56d5cb3de96aa4b15dafab7e22ed7066d91ce23e3ff10c6decea0435ca1f5c0b`.
+AST-Auflösung: `string-literal`; SHA-256 `42bb824871a85fed0fbc16c79184e9357a64d0e239c832c28b58c559d3231790`.
 
 Der vollständige aufrufende Funktionskörper enthält Parameterumformung, RPC-Aufruf, Response-Prüfung, Fehlerumwandlung und gegebenenfalls Fallback:
 
@@ -130,7 +130,7 @@ export async function assignNpcCreatureController(input: {
   activeMemberUserIds: readonly string[];
 }): Promise<NpcControllerAssignment> {
   const actorUserId = await getAuthenticatedUserId();
-  const record = await supabaseNpcCreatureRepository.getDefinitionById(input.definitionId);
+  const record = await getNpcCreatureDefinition(input.definitionId);
   if (!record) {
     throw new Error('Figur wurde nicht gefunden.');
   }
@@ -150,6 +150,15 @@ export async function assignNpcCreatureController(input: {
   );
   if (planned.ok === false) {
     throw new Error(planned.message);
+  }
+
+  if (isHostLibraryEnabled()) {
+    const assignment = await assignHostNpcCreatureController({
+      projectId: planned.assignment.projectId,
+      definitionId: planned.assignment.definitionId,
+      controllerUserId: planned.assignment.controllerUserId,
+    });
+    return mapHostControllerAssignment(assignment);
   }
 
   const { data, error } = await raceWithTimeoutReject(
@@ -175,12 +184,20 @@ Direkt oder transitiv referenzierte lokale/importierte Mapper, Decoder und Vertr
 
 | Symbol | Quelle | Zeile | SHA-256 |
 | --- | --- | --- | --- |
-| `EnvLike` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 11 | `3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a` |
-| `defaultEnv` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 16 | `3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a` |
-| `isHostLibraryExplicitlyDisabled` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 25 | `3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a` |
-| `isHostLibraryEnabled` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 30 | `3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a` |
+| `EnvLike` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 11 | `73aff05d4133b8501c130d41f8e4430f09cfe24f7c6e7b115b653c8f96903a84` |
+| `defaultEnv` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 16 | `73aff05d4133b8501c130d41f8e4430f09cfe24f7c6e7b115b653c8f96903a84` |
+| `isHostLibraryExplicitlyDisabled` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 25 | `73aff05d4133b8501c130d41f8e4430f09cfe24f7c6e7b115b653c8f96903a84` |
+| `isHostLibraryEnabled` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 30 | `73aff05d4133b8501c130d41f8e4430f09cfe24f7c6e7b115b653c8f96903a84` |
+| `hostGetJson` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 35 | `73aff05d4133b8501c130d41f8e4430f09cfe24f7c6e7b115b653c8f96903a84` |
+| `hostMutateJson` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 151 | `73aff05d4133b8501c130d41f8e4430f09cfe24f7c6e7b115b653c8f96903a84` |
+| `fetchHostLibraryNpcCreatures` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 358 | `73aff05d4133b8501c130d41f8e4430f09cfe24f7c6e7b115b653c8f96903a84` |
+| `HostNpcControllerAssignmentDto` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 462 | `73aff05d4133b8501c130d41f8e4430f09cfe24f7c6e7b115b653c8f96903a84` |
+| `assignHostNpcCreatureController` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 495 | `73aff05d4133b8501c130d41f8e4430f09cfe24f7c6e7b115b653c8f96903a84` |
 | `NpcControllerAssignmentRow` | [src/infrastructure/npc-creature/npc-creature-controller.persistence.ts](../../../src/infrastructure/npc-creature/npc-creature-controller.persistence.ts) | 7 | `9832d02675fdfc5a7d9520ff68c60a3636e25de2ed497e523218e7c8985fe530` |
 | `toNpcControllerAssignment` | [src/infrastructure/npc-creature/npc-creature-controller.persistence.ts](../../../src/infrastructure/npc-creature/npc-creature-controller.persistence.ts) | 15 | `9832d02675fdfc5a7d9520ff68c60a3636e25de2ed497e523218e7c8985fe530` |
+| `mapHostLibraryNpcRecord` | [src/infrastructure/npc-creature/npc-creature-service.ts](../../../src/infrastructure/npc-creature/npc-creature-service.ts) | 63 | `42bb824871a85fed0fbc16c79184e9357a64d0e239c832c28b58c559d3231790` |
+| `getNpcCreatureDefinition` | [src/infrastructure/npc-creature/npc-creature-service.ts](../../../src/infrastructure/npc-creature/npc-creature-service.ts) | 125 | `42bb824871a85fed0fbc16c79184e9357a64d0e239c832c28b58c559d3231790` |
+| `mapHostControllerAssignment` | [src/infrastructure/npc-creature/npc-creature-service.ts](../../../src/infrastructure/npc-creature/npc-creature-service.ts) | 341 | `42bb824871a85fed0fbc16c79184e9357a64d0e239c832c28b58c559d3231790` |
 | `PersistedNpcCreatureScope` | [src/infrastructure/npc-creature/npc-creature.persistence.ts](../../../src/infrastructure/npc-creature/npc-creature.persistence.ts) | 18 | `2823d44f52887026e5e5bac5120bb7d2def738e29e1354686d06f670e0d33420` |
 | `NpcCreatureDefinitionDto` | [src/infrastructure/npc-creature/npc-creature.persistence.ts](../../../src/infrastructure/npc-creature/npc-creature.persistence.ts) | 21 | `2823d44f52887026e5e5bac5120bb7d2def738e29e1354686d06f670e0d33420` |
 | `NPC_CREATURE_DEFINITION_COLUMNS` | [src/infrastructure/npc-creature/npc-creature.persistence.ts](../../../src/infrastructure/npc-creature/npc-creature.persistence.ts) | 34 | `2823d44f52887026e5e5bac5120bb7d2def738e29e1354686d06f670e0d33420` |
@@ -244,9 +261,9 @@ Die folgenden Hashes binden SQL-Kette, transitive Tabellen-/Trigger-/Policyquell
 
 | Quelle | SHA-256 |
 | --- | --- |
-| [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | `3d8c732df0b3b41e538309309b9b2af84134afefcb7e97920b1e561db296e12a` |
+| [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | `73aff05d4133b8501c130d41f8e4430f09cfe24f7c6e7b115b653c8f96903a84` |
 | [src/infrastructure/npc-creature/npc-creature-controller.persistence.ts](../../../src/infrastructure/npc-creature/npc-creature-controller.persistence.ts) | `9832d02675fdfc5a7d9520ff68c60a3636e25de2ed497e523218e7c8985fe530` |
-| [src/infrastructure/npc-creature/npc-creature-service.ts](../../../src/infrastructure/npc-creature/npc-creature-service.ts) | `56d5cb3de96aa4b15dafab7e22ed7066d91ce23e3ff10c6decea0435ca1f5c0b` |
+| [src/infrastructure/npc-creature/npc-creature-service.ts](../../../src/infrastructure/npc-creature/npc-creature-service.ts) | `42bb824871a85fed0fbc16c79184e9357a64d0e239c832c28b58c559d3231790` |
 | [src/infrastructure/npc-creature/npc-creature.persistence.ts](../../../src/infrastructure/npc-creature/npc-creature.persistence.ts) | `2823d44f52887026e5e5bac5120bb7d2def738e29e1354686d06f670e0d33420` |
 | [src/infrastructure/npc-creature/supabase-npc-creature.repository.ts](../../../src/infrastructure/npc-creature/supabase-npc-creature.repository.ts) | `5a4ffd9548db32d83f852e36c5ec77b878a758d16e080a45a014c9f15256c041` |
 | [src/lib/authenticatedUser.ts](../../../src/lib/authenticatedUser.ts) | `d4cbf3a004f8375982ca03d474fb7b61559fc2ec58ad6fe7b1f8834d26abf10c` |

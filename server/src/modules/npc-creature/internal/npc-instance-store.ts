@@ -628,6 +628,50 @@ export class NpcInstanceStore {
     return this.#insertDefinition('personal', actorIds[0], null, draft);
   }
 
+  getControllerAssignment(
+    actorIds: readonly string[],
+    projectId: string,
+    definitionIdRaw: string,
+  ): Ok<ControllerAssignmentRow | null> | NpcError {
+    if (!actorIds[0]) return { ok: false, error: 'P0001:not authenticated' };
+    if (!projectId) return { ok: false, error: 'P0001:missing project' };
+    const definitionId = typeof definitionIdRaw === 'string' ? definitionIdRaw.trim() : '';
+    if (definitionId.length < 10 || definitionId.length > 160) {
+      return { ok: false, error: 'P0001:invalid definition id' };
+    }
+    if (!this.#project.isActiveMember(projectId, actorIds)) {
+      return { ok: false, error: 'P0001:actor is not an active project member' };
+    }
+    const row = this.#db
+      .prepare(
+        `SELECT project_id AS projectId, definition_id AS definitionId,
+                controller_user_id AS controllerUserId, assigned_by AS assignedBy,
+                updated_at AS updatedAt
+         FROM npc_creature_controller_assignments
+         WHERE project_id = ? AND definition_id = ?`,
+      )
+      .get(projectId, definitionId) as
+      | {
+          projectId: string;
+          definitionId: string;
+          controllerUserId: string | null;
+          assignedBy: string;
+          updatedAt: string;
+        }
+      | undefined;
+    if (!row) return { ok: true, value: null };
+    return {
+      ok: true,
+      value: {
+        projectId: row.projectId,
+        definitionId: row.definitionId,
+        controllerUserId: row.controllerUserId,
+        assignedBy: row.assignedBy,
+        updatedAt: row.updatedAt,
+      },
+    };
+  }
+
   assignController(
     actorIds: readonly string[],
     projectId: string,

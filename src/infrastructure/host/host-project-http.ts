@@ -235,6 +235,30 @@ export async function setHostSagaMemberBundle(
   );
 }
 
+/** Active project members for host-first NPC controller / spawn dialogs (CUT-02). */
+export type HostProjectMemberDto = {
+  readonly id: string;
+  readonly projectId: string;
+  readonly userId: string;
+  readonly characterId: string | null;
+  readonly role: 'gm' | 'player';
+  readonly status: 'active' | 'inactive';
+  readonly joinedAt: string | null;
+};
+
+export async function listHostProjectMembers(
+  projectId: string,
+): Promise<readonly HostProjectMemberDto[]> {
+  const body = await hostGetJson<{ members?: HostProjectMemberDto[] }>(
+    `/api/v1/projects/${encodeURIComponent(projectId)}/members`,
+    'Mitglieder konnten nicht geladen werden',
+  );
+  if (!Array.isArray(body.members)) {
+    throw new Error('Mitglieder konnten nicht geladen werden: ungültige Antwort');
+  }
+  return body.members;
+}
+
 /** FE-HOST-12 project write DTO (host camelCase). */
 export type HostProjectWriteDto = {
   readonly id: string;

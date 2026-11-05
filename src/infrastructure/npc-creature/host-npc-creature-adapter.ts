@@ -35,6 +35,8 @@ export function createHostNpcCreatureAdapter(
       ports.restoreDefinition(actorId, definitionId),
     duplicateDefinition: (actorId, sourceDefinitionId) =>
       ports.duplicateDefinition(actorId, sourceDefinitionId),
+    getControllerAssignment: (actorId, projectId, definitionId) =>
+      ports.getControllerAssignment(actorId, projectId, definitionId),
     assignController: (actorId, projectId, definitionId, controllerUserId) =>
       ports.assignController(actorId, projectId, definitionId, controllerUserId),
     spawnInstance: (actorId, input) => ports.spawnInstance(actorId, input),

@@ -192,28 +192,28 @@
       "historicalCaller": "src/infrastructure/npc-creature/npc-creature-service.ts:getNpcCreatureControllerAssignment",
       "uiJourney": "Library → Assign Controller",
       "previousBehavior": "from(npc_creature_controller_assignments)",
-      "hostSuccessor": "PORT_MISSING",
+      "hostSuccessor": "GET /api/v1/library/npc-creatures/:id/controller",
       "dataOwner": "npc-creature",
       "risk": "high",
-      "classification": "PARITY_MISSING",
+      "classification": "HOST_VERIFIED",
       "issueRef": 1137,
-      "evidenceTest": "pending CUT-02",
+      "evidenceTest": "scripts/cut-02-npc-controller.self-test.mjs",
       "featureAvailableBeforeCutover": true,
-      "notes": "Always Supabase under host-first"
+      "notes": "CUT-02 dual-path; host-first uses NpcCreaturePorts.getControllerAssignment"
     },
     {
       "stableKey": "npc-creature.assign-controller",
       "historicalCaller": "src/infrastructure/npc-creature/npc-creature-service.ts:assignNpcCreatureController",
       "uiJourney": "Library → Assign Controller",
       "previousBehavior": "rpc(assign_npc_creature_controller)",
-      "hostSuccessor": "PORT_MISSING",
+      "hostSuccessor": "POST /api/v1/library/npc-creatures/:id/controller",
       "dataOwner": "npc-creature",
       "risk": "high",
-      "classification": "PARITY_MISSING",
+      "classification": "HOST_VERIFIED",
       "issueRef": 1137,
-      "evidenceTest": "pending CUT-02",
+      "evidenceTest": "scripts/cut-02-npc-controller.self-test.mjs",
       "featureAvailableBeforeCutover": true,
-      "notes": "Always Supabase under host-first"
+      "notes": "CUT-02 dual-path; nullable controllerUserId clears; activeMemberUserIds client hint only"
     },
     {
       "stableKey": "npc-creature.list-instances",
@@ -1954,8 +1954,8 @@
   ],
   "counts": {
     "total": 126,
-    "HOST_VERIFIED": 48,
-    "PARITY_MISSING": 73,
+    "HOST_VERIFIED": 50,
+    "PARITY_MISSING": 71,
     "LEGACY_UNUSED": 5,
     "followUpTagged": 11
   },

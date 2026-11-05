@@ -2,8 +2,8 @@
  * project-member-service — Supabase adapter for project membership RPCs.
  * Location: src/infrastructure/project/project-member-service.ts
  *
- * Dual-path (FE-HOST-04): join / set-character via host HTTP when library flag on.
- * Direct `project_members` table reads/leave stay Supabase until a later cutover.
+ * Dual-path (FE-HOST-04): join / set-character / getMembers via host HTTP when
+ * library flag on (CUT-02). Leave / getMyProjects stay Supabase until a later cutover.
  */
 
 import { supabase } from '../../lib/supabase';
@@ -11,6 +11,7 @@ import type { ProjectMemberDto, JoinProjectDto } from '../../domains/project/con
 import {
   isHostLibraryEnabled,
   joinHostProjectByCode,
+  listHostProjectMembers,
   setHostMyProjectCharacter,
 } from '../host/host-project-http';
 
@@ -25,9 +26,22 @@ function requireUuid(value: unknown, operation: string): string {
 
 export const projectMemberService = {
   /**
-   * Get all members of a project
+   * Get all members of a project.
+   * Host-first: GET /api/v1/projects/:projectId/members (active roster only).
    */
   async getMembers(projectId: string): Promise<ProjectMemberDto[]> {
+    if (isHostLibraryEnabled()) {
+      const rows = await listHostProjectMembers(projectId);
+      return rows.map((row) => ({
+        id: row.id,
+        project_id: row.projectId,
+        user_id: row.userId,
+        character_id: row.characterId,
+        role: row.role,
+        status: row.status === 'active' ? 'active' : 'inactive',
+        joined_at: row.joinedAt ?? new Date(0).toISOString(),
+      }));
+    }
     const { data, error } = await supabase
       .from('project_members')
       .select('*')

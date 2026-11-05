@@ -89,6 +89,11 @@ export type HostNpcCreaturePorts = {
     actorId: string,
     sourceDefinitionId: string,
   ) => Promise<HostNpcCreatureResult<HostNpcDefinitionRecord>>;
+  readonly getControllerAssignment: (
+    actorId: string,
+    projectId: string,
+    definitionId: string,
+  ) => Promise<HostNpcCreatureResult<HostNpcControllerAssignmentRow | null>>;
   readonly assignController: (
     actorId: string,
     projectId: string,
@@ -132,6 +137,7 @@ export const HOST_NPC_CREATURE_OPS = [
   'archiveDefinition',
   'restoreDefinition',
   'duplicateDefinition',
+  'getControllerAssignment',
   'assignController',
   'spawnInstance',
   'updateRuntime',
