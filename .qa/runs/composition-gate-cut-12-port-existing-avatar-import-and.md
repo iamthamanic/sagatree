@@ -5,6 +5,7 @@
 - Date: 2026-11-05
 - Verdict: CLEAR
 - Acceptance tier: feature-integration
+- Deferred integration: none (CUT-12 closes avatar import/export host parity)
 
 ## Event
 
