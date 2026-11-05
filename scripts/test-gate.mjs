@@ -1446,6 +1446,15 @@ function checkFeHost14AiResiduals() {
   console.log('OK: fe-host-14-ai-residuals.self-test');
 }
 
+function checkCutoverParityInventory() {
+  console.log('CUT-01 cutover parity inventory matrix (#1136)...');
+  execFileSync(process.execPath, ['scripts/cutover-parity-inventory-check.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
+  console.log('OK: cutover-parity-inventory-check');
+}
+
 function checkMig312UserProfileAdapter() {
   console.log('MIG-312 user-profile adapter (#811): user_profiles + user-avatars dual-path...');
   execFileSync(
@@ -3663,6 +3672,7 @@ checkFeHost09HostFirst();
 checkFeHost12ProjectWrites();
 checkFeHost13SagaDefinition();
 checkFeHost14AiResiduals();
+checkCutoverParityInventory();
 checkMig312UserProfileAdapter();
 checkMig309Rulesets();
 checkMig313WorldAdapter();
