@@ -41,6 +41,7 @@ import {
   isHostLibraryEnabled,
   joinHostSessionByCode,
   leaveHostPlaySession,
+  deleteHostPlaySession,
   resolveHostSessionInvite,
   revokeHostSessionInvite,
   setHostSessionStatus,
@@ -383,7 +384,20 @@ class SessionService {
       throw new Error('Session-ID fehlt');
     }
     if (isHostLibraryEnabled()) {
-      throw new Error('Session-Löschen ist im Host-Modus noch nicht verfügbar');
+      try {
+        await deleteHostPlaySession(id);
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        if (/42501|forbidden|not[_-]?authorized/i.test(message)) {
+          throw new Error('Nur der Gamemaster kann Sessions löschen.');
+        }
+        throw new Error(
+          message.includes('Host-Session löschen fehlgeschlagen')
+            ? message
+            : `Session konnte nicht gelöscht werden: ${message}`,
+        );
+      }
+      return;
     }
 
     const { error } = await supabase.from(this.tableName).delete().eq('id', id);

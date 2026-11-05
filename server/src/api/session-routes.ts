@@ -336,6 +336,23 @@ export function mountSessionHttpRoutes(app: Hono, deps: SessionHttpDeps): void {
     );
   });
 
+  /** CUT-04 — GM deletes play session (cascade dependents; npc session_id cleared). */
+  app.delete('/api/v1/sessions/:sessionId', async (c) => {
+    const sessionId = c.req.param('sessionId');
+    const actorResult = await resolveSessionActor(deps, c.req.raw.headers, false);
+    if (!actorResult.ok) {
+      return c.json({ error: actorResult.error }, actorResult.status);
+    }
+    if (!infra?.deletePlaySession) {
+      return c.json({ error: 'store-unavailable' }, 503);
+    }
+    const deleted = infra.deletePlaySession(actorResult.actor.actorId, sessionId);
+    if (!deleted.ok) {
+      return c.json({ error: deleted.error }, infraStatus(deleted.error));
+    }
+    return c.json({ ok: true, sessionId: deleted.value.sessionId }, 200);
+  });
+
   app.post('/api/v1/sessions/:sessionId/leave', async (c) => {
     const sessionId = c.req.param('sessionId');
     const actorResult = await resolveSessionActor(deps, c.req.raw.headers, false);

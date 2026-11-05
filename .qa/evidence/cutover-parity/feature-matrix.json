@@ -290,14 +290,14 @@
       "historicalCaller": "src/infrastructure/session/session-service.ts:deleteSession",
       "uiJourney": "SagaResourceScreen episode delete",
       "previousBehavior": "from(sessions).delete / host soft DENY throw",
-      "hostSuccessor": "PORT_MISSING",
+      "hostSuccessor": "SessionLifecyclePort.deletePlaySession + DELETE /api/v1/sessions/:sessionId",
       "dataOwner": "session",
       "risk": "high",
-      "classification": "PARITY_MISSING",
+      "classification": "HOST_VERIFIED",
       "issueRef": 1139,
-      "evidenceTest": "pending CUT-04",
+      "evidenceTest": "scripts/cut-04-session-delete.self-test.mjs",
       "featureAvailableBeforeCutover": true,
-      "notes": ""
+      "notes": "CUT-04 dual-path; cascade invites/players/recaps; npc session_id SET NULL; runtime graph deleted"
     },
     {
       "stableKey": "session-outcome.promote-to-saga",
@@ -1954,8 +1954,8 @@
   ],
   "counts": {
     "total": 126,
-    "HOST_VERIFIED": 55,
-    "PARITY_MISSING": 67,
+    "HOST_VERIFIED": 56,
+    "PARITY_MISSING": 66,
     "LEGACY_UNUSED": 4
   },
   "followUpIssues": {

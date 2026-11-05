@@ -61,6 +61,10 @@ export type SessionPortsForInfra = {
       sessionId: string,
       lookProfileId: string | null,
     ) => NestedOk<Record<string, unknown>>;
+    readonly deletePlaySession: (
+      actor: Actor,
+      sessionId: string,
+    ) => NestedOk<{ readonly sessionId: string }>;
   };
   readonly access: {
     readonly createSessionInvite: (actor: Actor, sessionId: string) => NestedOk<Record<string, unknown>>;
@@ -161,6 +165,13 @@ export function createSessionInfraPorts(session: SessionPortsForInfra) {
       return r.ok
         ? { ok: true, value: { sessionId } }
         : { ok: false, error: r.error };
+    },
+    deletePlaySession(
+      actorId: string,
+      sessionId: string,
+    ): SessionInfraResult<{ readonly sessionId: string }> {
+      const r = session.lifecycle.deletePlaySession(asActor(actorId), sessionId);
+      return r.ok ? { ok: true, value: r.value } : { ok: false, error: r.error };
     },
     resolveSessionInvite(
       actorId: string,

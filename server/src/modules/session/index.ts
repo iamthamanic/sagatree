@@ -131,6 +131,13 @@ export type SessionLifecyclePort = {
     sessionId: string,
     lookProfileId: string | null,
   ) => LifecycleResult;
+  /** CUT-04: GM deletes play session (+ cascade dependents). */
+  readonly deletePlaySession: (
+    actor: Actor,
+    sessionId: string,
+  ) =>
+    | { readonly ok: true; readonly value: { readonly sessionId: string } }
+    | { readonly ok: false; readonly error: string };
 };
 
 export type AccessLeaveResult =
@@ -195,6 +202,7 @@ function unavailableLifecycle(): SessionLifecyclePort {
     getPlaySession: fail,
     listAccessiblePlaySessions: fail,
     setSessionLookProfile: fail,
+    deletePlaySession: () => ({ ok: false, error: 'store-unavailable' }),
   };
 }
 
@@ -287,6 +295,11 @@ export function createSessionPorts(deps: {
           const ids = actorIds(actor);
           if (!ids[0]) return { ok: false, error: '42501' };
           return lifecycleStore.setSessionLookProfile(ids, sessionId, lookProfileId);
+        },
+        deletePlaySession(actor, sessionId) {
+          const ids = actorIds(actor);
+          if (!ids[0]) return { ok: false, error: '42501' };
+          return lifecycleStore.deletePlaySession(ids, sessionId);
         },
       }
     : unavailableLifecycle();
