@@ -37,6 +37,8 @@ export type AdventureArcRecord = {
 
 export type AdventureMembershipProjection = {
   readonly projectId: string;
+  /** project_members.user_id — must match the character owner actor before sync creates an arc. */
+  readonly userId: string;
   readonly joinedAt: string | null;
   readonly status: 'active' | 'inactive';
 };
@@ -184,6 +186,8 @@ export class CharacterAdventureArcStore {
 
     for (const membership of memberships) {
       if (membership.status !== 'active') continue;
+      // Only the caller's own membership rows may seed arcs (no foreign user_id on character_id).
+      if (membership.userId.trim() !== actorId) continue;
       if (byProject.has(membership.projectId)) continue;
       const id = randomUUID();
       const createdAt = nowIso();

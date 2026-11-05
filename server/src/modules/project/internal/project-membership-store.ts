@@ -280,6 +280,7 @@ export class ProjectMembershipStore {
   /** CUT-09 — memberships bound to a character (active + historical). */
   listMembershipsByCharacter(characterId: string): readonly {
     projectId: string;
+    userId: string;
     joinedAt: string | null;
     status: 'active' | 'inactive';
   }[] {
@@ -287,7 +288,7 @@ export class ProjectMembershipStore {
     if (!trimmed) return [];
     return this.#db
       .prepare(
-        `SELECT project_id AS projectId, joined_at AS joinedAt,
+        `SELECT project_id AS projectId, user_id AS userId, joined_at AS joinedAt,
                 CASE WHEN active = 1 THEN 'active' ELSE 'inactive' END AS status
          FROM project_members
          WHERE character_id = ?
@@ -295,6 +296,7 @@ export class ProjectMembershipStore {
       )
       .all(trimmed) as Array<{
       projectId: string;
+      userId: string;
       joinedAt: string | null;
       status: 'active' | 'inactive';
     }>;

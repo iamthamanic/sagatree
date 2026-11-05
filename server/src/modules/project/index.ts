@@ -113,6 +113,7 @@ export type ProjectPorts = {
   /** CUT-09 — character→project membership projection for adventure arcs. */
   readonly listMembershipsByCharacter: (characterId: string) => readonly {
     projectId: string;
+    userId: string;
     joinedAt: string | null;
     status: 'active' | 'inactive';
   }[];
