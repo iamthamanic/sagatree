@@ -1,7 +1,7 @@
 # Composition Gate — cut-12-port-existing-avatar-import-and (#1147)
 
-- HEAD_SHA: PLACEHOLDER
-- BASE_SHA: PLACEHOLDER
+- HEAD_SHA: 4f6d1ea345a8b39187a3fada295234aa669cdb70
+- BASE_SHA: 7da2ab3f9086911c1c4dcf9645f3e180c4d1f75b
 - Date: 2026-11-05
 - Verdict: CLEAR
 - Acceptance tier: feature-integration
