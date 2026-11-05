@@ -1,7 +1,7 @@
 # Composition Gate — cut-08-migrate-character-preset-crud-pu (#1143)
 
 - HEAD_SHA: 60ddcf0a94a00dfa1d96266e6afccf20ca8d68e2
-- BASE_SHA: 81b6de294 (main @ CUT-07)
+- BASE_SHA: 81b6de294647fe70830dc7b229fac6e119765fa5
 - Date: 2026-11-05
 - Verdict: CLEAR
 - Acceptance tier: feature-integration
