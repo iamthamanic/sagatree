@@ -1572,6 +1572,19 @@ function checkCut10WorldPublicId() {
   console.log('OK: cut-10-world-public-id.self-test');
 }
 
+function checkCut11AvatarArtifacts() {
+  console.log('CUT-11 avatar artifacts (#1146): host CRUD / authz...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/cut-11-avatar-artifacts.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+  console.log('OK: cut-11-avatar-artifacts.self-test');
+}
+
 function checkMig312UserProfileAdapter() {
   console.log('MIG-312 user-profile adapter (#811): user_profiles + user-avatars dual-path...');
   execFileSync(
@@ -3799,6 +3812,7 @@ checkCut07LookVersions();
 checkCut08CharacterPresets();
 checkCut09CharacterArcs();
 checkCut10WorldPublicId();
+checkCut11AvatarArtifacts();
 checkMig312UserProfileAdapter();
 checkMig309Rulesets();
 checkMig313WorldAdapter();

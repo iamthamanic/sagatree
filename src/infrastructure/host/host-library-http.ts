@@ -598,6 +598,100 @@ export async function appendHostLibraryAdventureDevelopment(
   return body.arc;
 }
 
+/** CUT-11 — GET `/api/v1/library/avatar-artifacts`. */
+export async function fetchHostLibraryAvatarArtifacts(
+  options: { readonly characterId?: string | null } = {},
+  env: EnvLike = defaultEnv(),
+  fetchImpl: typeof fetch = fetch,
+): Promise<readonly unknown[]> {
+  const query =
+    options.characterId === undefined
+      ? ''
+      : options.characterId === null
+        ? '?characterId=null'
+        : `?characterId=${encodeURIComponent(options.characterId)}`;
+  const body = await hostGetJson<{ artifacts?: unknown[] }>(
+    `/api/v1/library/avatar-artifacts${query}`,
+    'Host-Avatar-Artefakte nicht erreichbar',
+    env,
+    fetchImpl,
+  );
+  return Array.isArray(body.artifacts) ? body.artifacts : [];
+}
+
+/** CUT-11 — GET `/api/v1/library/avatar-artifacts/:id`. */
+export async function fetchHostLibraryAvatarArtifactById(
+  artifactId: string,
+  env: EnvLike = defaultEnv(),
+  fetchImpl: typeof fetch = fetch,
+): Promise<unknown | null> {
+  const body = await hostGetJson<{ artifact?: unknown | null }>(
+    `/api/v1/library/avatar-artifacts/${encodeURIComponent(artifactId)}`,
+    'Host-Avatar-Artefakt nicht erreichbar',
+    env,
+    fetchImpl,
+  );
+  return body.artifact ?? null;
+}
+
+/** CUT-11 — POST `/api/v1/library/avatar-artifacts`. */
+export async function createHostLibraryAvatarArtifact(
+  artifact: unknown,
+  env: EnvLike = defaultEnv(),
+  fetchImpl: typeof fetch = fetch,
+): Promise<unknown> {
+  const body = await hostMutateJson<{ artifact?: unknown }>(
+    '/api/v1/library/avatar-artifacts',
+    'POST',
+    'Host-Avatar-Artefakt anlegen fehlgeschlagen',
+    artifact,
+    env,
+    fetchImpl,
+  );
+  if (!body.artifact) throw new Error('Host-Avatar-Artefakt anlegen: leere Antwort');
+  return body.artifact;
+}
+
+/** CUT-11 — POST `/api/v1/library/avatar-artifacts/:id/activate`. */
+export async function activateHostLibraryAvatarArtifact(
+  artifactId: string,
+  env: EnvLike = defaultEnv(),
+  fetchImpl: typeof fetch = fetch,
+): Promise<{ readonly ok: true; readonly artifact: unknown } | { readonly ok: false; readonly reasonDe: string }> {
+  const base = getHostAuthBaseUrl(env);
+  if (!base) throw new Error('Host-Avatar-Artefakt aktivieren fehlgeschlagen');
+  let response: Response;
+  try {
+    response = await fetchImpl(
+      `${base}/api/v1/library/avatar-artifacts/${encodeURIComponent(artifactId)}/activate`,
+      {
+        method: 'POST',
+        credentials: 'include',
+        headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
+        body: '{}',
+      },
+    );
+  } catch {
+    throw new Error('Host-Avatar-Artefakt aktivieren fehlgeschlagen');
+  }
+  let body: { ok?: boolean; artifact?: unknown; reasonDe?: string } = {};
+  try {
+    body = (await response.json()) as typeof body;
+  } catch {
+    body = {};
+  }
+  if (response.ok && body.ok === true && body.artifact) {
+    return { ok: true, artifact: body.artifact };
+  }
+  return {
+    ok: false,
+    reasonDe:
+      typeof body.reasonDe === 'string' && body.reasonDe
+        ? body.reasonDe
+        : 'Aktivierung fehlgeschlagen.',
+  };
+}
+
 export async function fetchHostLibraryNpcCreatures(
   env: EnvLike = defaultEnv(),
   fetchImpl: typeof fetch = fetch,

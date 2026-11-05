@@ -1,9 +1,9 @@
 /**
- * character-avatar-artifact-service — Supabase facade for Avatar V2 artifacts (#251).
+ * character-avatar-artifact-service — Avatar V2 artifacts facade (#251 / CUT-11).
  * Location: src/infrastructure/character/avatar/character-avatar-artifact-service.ts
  *
- * create / read / activate + map legacy import/generate rows. Domain owns validation;
- * App slices must not import supabase directly.
+ * Host-first dual-path: Better Auth library HTTP → CharacterPorts; else Supabase.
+ * Domain owns validation; App slices must not import supabase directly.
  */
 
 import { supabase } from '../../../lib/supabase';
@@ -23,7 +23,13 @@ import {
   type AvatarStructureAnalysisResultV2,
 } from '../../../domains/character/avatar';
 import type { AvatarV2Source } from '../../../domains/character/avatar';
-import { assertHostProductSurfaceAvailable } from '../../host/host-product-deny';
+import {
+  activateHostLibraryAvatarArtifact,
+  createHostLibraryAvatarArtifact,
+  fetchHostLibraryAvatarArtifactById,
+  fetchHostLibraryAvatarArtifacts,
+  isHostLibraryEnabled,
+} from '../../host/host-library-http';
 
 interface ArtifactRow {
   id: string;
@@ -88,6 +94,62 @@ function rowToArtifact(row: ArtifactRow): AvatarArtifactV2 {
   };
 }
 
+function parseHostArtifact(raw: unknown): AvatarArtifactV2 {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) {
+    throw new Error('Ungültige Host-Avatar-Artefakt-Antwort.');
+  }
+  const row = raw as Record<string, unknown>;
+  const source =
+    row.source && typeof row.source === 'object' && !Array.isArray(row.source)
+      ? (row.source as Record<string, unknown>)
+      : {};
+  const asset =
+    row.asset && typeof row.asset === 'object' && !Array.isArray(row.asset)
+      ? (row.asset as Record<string, unknown>)
+      : {};
+  const artifactId = typeof row.artifactId === 'string' ? row.artifactId : '';
+  const ownerUserId = typeof row.ownerUserId === 'string' ? row.ownerUserId : '';
+  const assetKey = typeof asset.assetKey === 'string' ? asset.assetKey : '';
+  const storagePath = typeof asset.storagePath === 'string' ? asset.storagePath : '';
+  const format = typeof asset.format === 'string' ? asset.format : '';
+  const origin = typeof source.origin === 'string' ? source.origin : '';
+  if (!artifactId || !ownerUserId || !assetKey || !storagePath || !format || !origin) {
+    throw new Error('Unvollständige Host-Avatar-Artefakt-Antwort.');
+  }
+  assertLogicalAvatarArtifactAssetKey(assetKey);
+  assertOwnerScopedStoragePath({ ownerUserId, storagePath });
+  return {
+    contractVersion: 'SagaTreeAvatarArtifactV2',
+    artifactId,
+    ownerUserId,
+    characterId: typeof row.characterId === 'string' ? row.characterId : null,
+    source: {
+      origin: origin as AvatarV2Source,
+      importAssetId: typeof source.importAssetId === 'string' ? source.importAssetId : undefined,
+      generateJobId: typeof source.generateJobId === 'string' ? source.generateJobId : undefined,
+      templateId: typeof source.templateId === 'string' ? source.templateId : undefined,
+      providerId: typeof source.providerId === 'string' ? source.providerId : undefined,
+    },
+    asset: {
+      assetKey,
+      storagePath,
+      format: format as AvatarArtifactFormat,
+    },
+    analysisStatus: (typeof row.analysisStatus === 'string'
+      ? row.analysisStatus
+      : 'pending') as AvatarArtifactAnalysisStatus,
+    materializationStatus: (typeof row.materializationStatus === 'string'
+      ? row.materializationStatus
+      : 'draft') as AvatarArtifactMaterializationStatus,
+    isActive: row.isActive === true,
+    schemaVersion: 2,
+    idempotencyKey:
+      typeof row.idempotencyKey === 'string' ? row.idempotencyKey : undefined,
+    createdAt: typeof row.createdAt === 'string' ? row.createdAt : new Date().toISOString(),
+    updatedAt: typeof row.updatedAt === 'string' ? row.updatedAt : new Date().toISOString(),
+  };
+}
+
 function artifactToInsert(artifact: AvatarArtifactV2) {
   return {
     id: artifact.artifactId,
@@ -115,7 +177,12 @@ function artifactToInsert(artifact: AvatarArtifactV2) {
 export async function createAvatarArtifact(
   artifact: AvatarArtifactV2,
 ): Promise<AvatarArtifactV2> {
-  assertHostProductSurfaceAvailable('Avatar-Artefakte');
+  if (isHostLibraryEnabled()) {
+    if (artifact.isActive) {
+      throw new Error('Neues Artefakt darf nicht direkt aktiv sein — activate verwenden.');
+    }
+    return parseHostArtifact(await createHostLibraryAvatarArtifact(artifact));
+  }
   const ownerUserId = await getAuthenticatedUserId();
   if (artifact.ownerUserId !== ownerUserId) {
     throw new Error('Artefakt-Owner stimmt nicht mit der Session überein.');
@@ -139,7 +206,6 @@ export async function createAvatarArtifact(
     .single();
 
   if (error) {
-    // Unique idempotency race — re-read.
     if (artifact.idempotencyKey && /duplicate|unique/i.test(error.message)) {
       const again = await findAvatarArtifactByIdempotencyKey(
         ownerUserId,
@@ -156,7 +222,10 @@ export async function createAvatarArtifact(
 export async function getAvatarArtifactById(
   artifactId: string,
 ): Promise<AvatarArtifactV2 | null> {
-  assertHostProductSurfaceAvailable('Avatar-Artefakte');
+  if (isHostLibraryEnabled()) {
+    const raw = await fetchHostLibraryAvatarArtifactById(artifactId);
+    return raw ? parseHostArtifact(raw) : null;
+  }
   const ownerUserId = await getAuthenticatedUserId();
   const { data, error } = await supabase
     .from('character_avatar_artifacts')
@@ -177,7 +246,16 @@ export async function findAvatarArtifactByIdempotencyKey(
   ownerUserId: string,
   idempotencyKey: string,
 ): Promise<AvatarArtifactV2 | null> {
-  assertHostProductSurfaceAvailable('Avatar-Artefakte');
+  if (isHostLibraryEnabled()) {
+    const listed = await fetchHostLibraryAvatarArtifacts();
+    for (const raw of listed) {
+      const artifact = parseHostArtifact(raw);
+      if (artifact.ownerUserId === ownerUserId && artifact.idempotencyKey === idempotencyKey) {
+        return artifact;
+      }
+    }
+    return null;
+  }
   const { data, error } = await supabase
     .from('character_avatar_artifacts')
     .select('*')
@@ -196,7 +274,12 @@ export async function findAvatarArtifactByIdempotencyKey(
 export async function listAvatarArtifacts(options: {
   characterId?: string | null;
 } = {}): Promise<readonly AvatarArtifactV2[]> {
-  assertHostProductSurfaceAvailable('Avatar-Artefakte');
+  if (isHostLibraryEnabled()) {
+    const listed = await fetchHostLibraryAvatarArtifacts({
+      characterId: options.characterId,
+    });
+    return listed.map(parseHostArtifact);
+  }
   const ownerUserId = await getAuthenticatedUserId();
   let query = supabase
     .from('character_avatar_artifacts')
@@ -225,7 +308,13 @@ export async function listAvatarArtifacts(options: {
 export async function activateAvatarArtifact(
   artifactId: string,
 ): Promise<AvatarArtifactActivateResult> {
-  assertHostProductSurfaceAvailable('Avatar-Artefakte');
+  if (isHostLibraryEnabled()) {
+    const result = await activateHostLibraryAvatarArtifact(artifactId);
+    if (result.ok === false) {
+      return { ok: false, reasonDe: result.reasonDe };
+    }
+    return { ok: true, artifact: parseHostArtifact(result.artifact) };
+  }
   const ownerUserId = await getAuthenticatedUserId();
   const current = await getAvatarArtifactById(artifactId);
   if (!current) {
@@ -278,7 +367,22 @@ export async function materializeArtifactFromImportAsset(input: {
   storagePath: string;
   format: 'vrm' | 'glb';
 }): Promise<AvatarArtifactV2> {
-  assertHostProductSurfaceAvailable('Avatar-Artefakte');
+  if (isHostLibraryEnabled()) {
+    const ownerFromPath = input.storagePath.split('/')[0] ?? '';
+    if (!ownerFromPath) {
+      throw new Error('Storage-Pfad muss owner-scoped sein.');
+    }
+    const draft = materializeAvatarArtifact(
+      mapImportAssetToArtifactInput({
+        importAssetId: input.importAssetId,
+        ownerUserId: ownerFromPath,
+        characterId: input.characterId,
+        storagePath: input.storagePath,
+        format: input.format,
+      }),
+    );
+    return createAvatarArtifact(draft);
+  }
   const ownerUserId = await getAuthenticatedUserId();
   const draft = materializeAvatarArtifact(
     mapImportAssetToArtifactInput({
@@ -299,7 +403,19 @@ export async function materializeArtifactFromGenerateJob(input: {
   storagePath: string;
   providerId?: string;
 }): Promise<AvatarArtifactV2> {
-  assertHostProductSurfaceAvailable('Avatar-Artefakte');
+  if (isHostLibraryEnabled()) {
+    const ownerFromPath = input.storagePath.split('/')[0] ?? '';
+    const draft = materializeAvatarArtifact(
+      mapGenerateJobToArtifactInput({
+        generateJobId: input.generateJobId,
+        ownerUserId: ownerFromPath || 'host-pending',
+        characterId: input.characterId,
+        storagePath: input.storagePath,
+        providerId: input.providerId,
+      }),
+    );
+    return createAvatarArtifact(draft);
+  }
   const ownerUserId = await getAuthenticatedUserId();
   const draft = materializeAvatarArtifact(
     mapGenerateJobToArtifactInput({
@@ -320,7 +436,19 @@ export async function materializeArtifactFromTemplate(input: {
   characterId?: string | null;
   storagePath: string;
 }): Promise<AvatarArtifactV2> {
-  assertHostProductSurfaceAvailable('Avatar-Artefakte');
+  if (isHostLibraryEnabled()) {
+    const ownerFromPath = input.storagePath.split('/')[0] ?? '';
+    const draft = materializeAvatarArtifact(
+      mapTemplateToArtifactInput({
+        artifactId: input.artifactId,
+        ownerUserId: ownerFromPath || 'host-pending',
+        characterId: input.characterId,
+        templateId: input.templateId,
+        storagePath: input.storagePath,
+      }),
+    );
+    return createAvatarArtifact(draft);
+  }
   const ownerUserId = await getAuthenticatedUserId();
   const draft = materializeAvatarArtifact(
     mapTemplateToArtifactInput({
@@ -337,13 +465,18 @@ export async function materializeArtifactFromTemplate(input: {
 /**
  * Persist an authoritative AnalysisResult on an owner-scoped artifact.
  * Callers must obtain `result` from the server Analyzer (authoritative=true).
- * Browser sessions cannot escalate analysis_status via RLS/trigger.
  */
 export async function persistAuthoritativeArtifactAnalysis(input: {
   artifactId: string;
   result: AvatarStructureAnalysisResultV2;
 }): Promise<void> {
-  assertHostProductSurfaceAvailable('Avatar-Artefakte');
+  if (isHostLibraryEnabled()) {
+    // Host parity with Postgres RLS: browser sessions cannot escalate trusted analysis.
+    // In-process CharacterPorts remain available for host analyzer workers/self-tests.
+    throw new Error(
+      'Autoritative Avatar-Analyse ist im Host-Modus nur serverseitig verfügbar.',
+    );
+  }
   if (!input.result.authoritative) {
     throw new Error('Nur autoritative Analyse-Ergebnisse dürfen persistiert werden.');
   }
@@ -357,8 +490,6 @@ export async function persistAuthoritativeArtifactAnalysis(input: {
           ? 'unsupported'
           : 'failed';
 
-  // Client RLS blocks trusted status writes — this path is intended for
-  // Edge/service_role callers. Authenticated clients will fail closed here.
   const { error } = await supabase
     .from('character_avatar_artifacts')
     .update({

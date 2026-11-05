@@ -28974,7 +28974,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "225526477a7e5920f614ab73e2db1beeab6154c54dbc32f107713f2f046613af"
+            "sha256": "229b35aacdebddf47048b109b5ff221dd8985f2c5f97e2fb362e959567a98deb"
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
@@ -28990,7 +28990,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-ai.json",
-      "sourceContractSha256": "f6acc0cf6af0ae8e8a92ad5267cb57b71c9239ba88d2debeedbe3394cc9eeecb",
+      "sourceContractSha256": "fe682cca707a3483ced58917560e20af55fdc79ffac39fa187d72086499c7764",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],
@@ -30131,7 +30131,7 @@
           },
           {
             "path": "src/infrastructure/character/avatar/character-avatar-artifact-service.ts",
-            "sha256": "7ccb4005c337866af2cf1298fb0282ea02b14b8cb3b7963a487eab507b799c1a"
+            "sha256": "8b4ca91f419497ed1fe31b7b63cdaf4a9d451a0a3e0b0d4e44ba290207ce2089"
           },
           {
             "path": "src/infrastructure/character/avatar/character-avatar-export-service.ts",
@@ -30307,7 +30307,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "225526477a7e5920f614ab73e2db1beeab6154c54dbc32f107713f2f046613af"
+            "sha256": "229b35aacdebddf47048b109b5ff221dd8985f2c5f97e2fb362e959567a98deb"
           },
           {
             "path": "src/infrastructure/host/host-product-deny.ts",
@@ -30491,7 +30491,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-character.json",
-      "sourceContractSha256": "f2c319349fe51657d883635e0ceb92a16bbdf60ea3cbb1443f71a65221d70a63",
+      "sourceContractSha256": "cb7614f66c1467ba21b3a9fdcb8bd29bc47ba2fd321236e2dacaeadf3c44368f",
       "rpcUsed": [],
       "tablesTouched": [
         "character_adventure_arcs",
@@ -30518,16 +30518,16 @@
           "kind": "auth",
           "name": null,
           "path": "src/infrastructure/character/avatar/character-avatar-artifact-service.ts",
-          "line": 51,
-          "endLine": 51,
+          "line": 57,
+          "endLine": 57,
           "resolution": "dynamic-expression",
           "expression": "supabase.auth.getUser()",
           "chain": "supabase.auth.getUser()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/character/avatar/character-avatar-artifact-service.ts",
-            "line": 50,
-            "endLine": 56,
+            "line": 56,
+            "endLine": 62,
             "text": "async function getAuthenticatedUserId(): Promise<string> {\n  const { data, error } = await supabase.auth.getUser();\n  if (error || !data.user?.id) {\n    throw new Error('Anmeldung erforderlich für Avatar-Artefakte.');\n  }\n  return data.user.id;\n}"
           }
         },
@@ -30535,51 +30535,17 @@
           "kind": "auth-helper",
           "name": null,
           "path": "src/infrastructure/character/avatar/character-avatar-artifact-service.ts",
-          "line": 119,
-          "endLine": 119,
+          "line": 186,
+          "endLine": 186,
           "resolution": "dynamic-expression",
           "expression": "getAuthenticatedUserId()",
           "chain": "getAuthenticatedUserId()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/character/avatar/character-avatar-artifact-service.ts",
-            "line": 115,
-            "endLine": 154,
-            "text": "export async function createAvatarArtifact(\n  artifact: AvatarArtifactV2,\n): Promise<AvatarArtifactV2> {\n  assertHostProductSurfaceAvailable('Avatar-Artefakte');\n  const ownerUserId = await getAuthenticatedUserId();\n  if (artifact.ownerUserId !== ownerUserId) {\n    throw new Error('Artefakt-Owner stimmt nicht mit der Session überein.');\n  }\n  if (artifact.isActive) {\n    throw new Error('Neues Artefakt darf nicht direkt aktiv sein — activate verwenden.');\n  }\n\n  if (artifact.idempotencyKey) {\n    const existing = await findAvatarArtifactByIdempotencyKey(\n      ownerUserId,\n      artifact.idempotencyKey,\n    );\n    if (existing) return existing;\n  }\n\n  const { data, error } = await supabase\n    .from('character_avatar_artifacts')\n    .insert(artifactToInsert(artifact))\n    .select('*')\n    .single();\n\n  if (error) {\n    // Unique idempotency race — re-read.\n    if (artifact.idempotencyKey && /duplicate|unique/i.test(error.message)) {\n      const again = await findAvatarArtifactByIdempotencyKey(\n        ownerUserId,\n        artifact.idempotencyKey,\n      );\n      if (again) return again;\n    }\n    throw new Error(`Avatar-Artefakt konnte nicht gespeichert werden: ${error.message}`);\n  }\n\n  return rowToArtifact(data as ArtifactRow);\n}"
-          }
-        },
-        {
-          "kind": "auth-helper",
-          "name": null,
-          "path": "src/infrastructure/character/avatar/character-avatar-artifact-service.ts",
-          "line": 160,
-          "endLine": 160,
-          "resolution": "dynamic-expression",
-          "expression": "getAuthenticatedUserId()",
-          "chain": "getAuthenticatedUserId()",
-          "arguments": [],
-          "enclosingOperation": {
-            "path": "src/infrastructure/character/avatar/character-avatar-artifact-service.ts",
-            "line": 156,
-            "endLine": 174,
-            "text": "export async function getAvatarArtifactById(\n  artifactId: string,\n): Promise<AvatarArtifactV2 | null> {\n  assertHostProductSurfaceAvailable('Avatar-Artefakte');\n  const ownerUserId = await getAuthenticatedUserId();\n  const { data, error } = await supabase\n    .from('character_avatar_artifacts')\n    .select('*')\n    .eq('id', artifactId)\n    .eq('owner_user_id', ownerUserId)\n    .is('deleted_at', null)\n    .maybeSingle();\n\n  if (error) {\n    throw new Error(`Avatar-Artefakt lesen fehlgeschlagen: ${error.message}`);\n  }\n  if (!data) return null;\n  return rowToArtifact(data as ArtifactRow);\n}"
-          }
-        },
-        {
-          "kind": "auth-helper",
-          "name": null,
-          "path": "src/infrastructure/character/avatar/character-avatar-artifact-service.ts",
-          "line": 200,
-          "endLine": 200,
-          "resolution": "dynamic-expression",
-          "expression": "getAuthenticatedUserId()",
-          "chain": "getAuthenticatedUserId()",
-          "arguments": [],
-          "enclosingOperation": {
-            "path": "src/infrastructure/character/avatar/character-avatar-artifact-service.ts",
-            "line": 196,
+            "line": 177,
             "endLine": 220,
-            "text": "export async function listAvatarArtifacts(options: {\n  characterId?: string | null;\n} = {}): Promise<readonly AvatarArtifactV2[]> {\n  assertHostProductSurfaceAvailable('Avatar-Artefakte');\n  const ownerUserId = await getAuthenticatedUserId();\n  let query = supabase\n    .from('character_avatar_artifacts')\n    .select('*')\n    .eq('owner_user_id', ownerUserId)\n    .is('deleted_at', null)\n    .order('created_at', { ascending: false });\n\n  if (options.characterId !== undefined) {\n    query =\n      options.characterId === null\n        ? query.is('character_id', null)\n        : query.eq('character_id', options.characterId);\n  }\n\n  const { data, error } = await query;\n  if (error) {\n    throw new Error(`Avatar-Artefakte listen fehlgeschlagen: ${error.message}`);\n  }\n  return (data as ArtifactRow[]).map(rowToArtifact);\n}"
+            "text": "export async function createAvatarArtifact(\n  artifact: AvatarArtifactV2,\n): Promise<AvatarArtifactV2> {\n  if (isHostLibraryEnabled()) {\n    if (artifact.isActive) {\n      throw new Error('Neues Artefakt darf nicht direkt aktiv sein — activate verwenden.');\n    }\n    return parseHostArtifact(await createHostLibraryAvatarArtifact(artifact));\n  }\n  const ownerUserId = await getAuthenticatedUserId();\n  if (artifact.ownerUserId !== ownerUserId) {\n    throw new Error('Artefakt-Owner stimmt nicht mit der Session überein.');\n  }\n  if (artifact.isActive) {\n    throw new Error('Neues Artefakt darf nicht direkt aktiv sein — activate verwenden.');\n  }\n\n  if (artifact.idempotencyKey) {\n    const existing = await findAvatarArtifactByIdempotencyKey(\n      ownerUserId,\n      artifact.idempotencyKey,\n    );\n    if (existing) return existing;\n  }\n\n  const { data, error } = await supabase\n    .from('character_avatar_artifacts')\n    .insert(artifactToInsert(artifact))\n    .select('*')\n    .single();\n\n  if (error) {\n    if (artifact.idempotencyKey && /duplicate|unique/i.test(error.message)) {\n      const again = await findAvatarArtifactByIdempotencyKey(\n        ownerUserId,\n        artifact.idempotencyKey,\n      );\n      if (again) return again;\n    }\n    throw new Error(`Avatar-Artefakt konnte nicht gespeichert werden: ${error.message}`);\n  }\n\n  return rowToArtifact(data as ArtifactRow);\n}"
           }
         },
         {
@@ -30594,77 +30560,111 @@
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/character/avatar/character-avatar-artifact-service.ts",
-            "line": 225,
-            "endLine": 272,
-            "text": "export async function activateAvatarArtifact(\n  artifactId: string,\n): Promise<AvatarArtifactActivateResult> {\n  assertHostProductSurfaceAvailable('Avatar-Artefakte');\n  const ownerUserId = await getAuthenticatedUserId();\n  const current = await getAvatarArtifactById(artifactId);\n  if (!current) {\n    return { ok: false, reasonDe: 'Artefakt nicht gefunden oder fremder Owner.' };\n  }\n  const gate = assertCanActivateAvatarArtifact(current);\n  if (!gate.ok) return gate;\n\n  if (current.characterId) {\n    const { error: deactivateError } = await supabase\n      .from('character_avatar_artifacts')\n      .update({ is_active: false })\n      .eq('owner_user_id', ownerUserId)\n      .eq('character_id', current.characterId)\n      .eq('is_active', true)\n      .is('deleted_at', null);\n    if (deactivateError) {\n      return {\n        ok: false,\n        reasonDe: `Vorheriges Artefakt konnte nicht deaktiviert werden: ${deactivateError.message}`,\n      };\n    }\n  }\n\n  const { data, error } = await supabase\n    .from('character_avatar_artifacts')\n    .update({ is_active: true })\n    .eq('id', artifactId)\n    .eq('owner_user_id', ownerUserId)\n    .eq('materialization_status', 'materialized')\n    .neq('analysis_status', 'failed')\n    .is('deleted_at', null)\n    .select('*')\n    .maybeSingle();\n\n  if (error || !data) {\n    return {\n      ok: false,\n      reasonDe: error?.message ?? 'Aktivierung fehlgeschlagen.',\n    };\n  }\n\n  return { ok: true, artifact: rowToArtifact(data as ArtifactRow) };\n}"
+            "line": 222,
+            "endLine": 243,
+            "text": "export async function getAvatarArtifactById(\n  artifactId: string,\n): Promise<AvatarArtifactV2 | null> {\n  if (isHostLibraryEnabled()) {\n    const raw = await fetchHostLibraryAvatarArtifactById(artifactId);\n    return raw ? parseHostArtifact(raw) : null;\n  }\n  const ownerUserId = await getAuthenticatedUserId();\n  const { data, error } = await supabase\n    .from('character_avatar_artifacts')\n    .select('*')\n    .eq('id', artifactId)\n    .eq('owner_user_id', ownerUserId)\n    .is('deleted_at', null)\n    .maybeSingle();\n\n  if (error) {\n    throw new Error(`Avatar-Artefakt lesen fehlgeschlagen: ${error.message}`);\n  }\n  if (!data) return null;\n  return rowToArtifact(data as ArtifactRow);\n}"
           }
         },
         {
           "kind": "auth-helper",
           "name": null,
           "path": "src/infrastructure/character/avatar/character-avatar-artifact-service.ts",
-          "line": 282,
-          "endLine": 282,
+          "line": 283,
+          "endLine": 283,
           "resolution": "dynamic-expression",
           "expression": "getAuthenticatedUserId()",
           "chain": "getAuthenticatedUserId()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/character/avatar/character-avatar-artifact-service.ts",
-            "line": 275,
-            "endLine": 293,
-            "text": "export async function materializeArtifactFromImportAsset(input: {\n  importAssetId: string;\n  characterId?: string | null;\n  storagePath: string;\n  format: 'vrm' | 'glb';\n}): Promise<AvatarArtifactV2> {\n  assertHostProductSurfaceAvailable('Avatar-Artefakte');\n  const ownerUserId = await getAuthenticatedUserId();\n  const draft = materializeAvatarArtifact(\n    mapImportAssetToArtifactInput({\n      importAssetId: input.importAssetId,\n      ownerUserId,\n      characterId: input.characterId,\n      storagePath: input.storagePath,\n      format: input.format,\n    }),\n  );\n  return createAvatarArtifact(draft);\n}"
+            "line": 274,
+            "endLine": 303,
+            "text": "export async function listAvatarArtifacts(options: {\n  characterId?: string | null;\n} = {}): Promise<readonly AvatarArtifactV2[]> {\n  if (isHostLibraryEnabled()) {\n    const listed = await fetchHostLibraryAvatarArtifacts({\n      characterId: options.characterId,\n    });\n    return listed.map(parseHostArtifact);\n  }\n  const ownerUserId = await getAuthenticatedUserId();\n  let query = supabase\n    .from('character_avatar_artifacts')\n    .select('*')\n    .eq('owner_user_id', ownerUserId)\n    .is('deleted_at', null)\n    .order('created_at', { ascending: false });\n\n  if (options.characterId !== undefined) {\n    query =\n      options.characterId === null\n        ? query.is('character_id', null)\n        : query.eq('character_id', options.characterId);\n  }\n\n  const { data, error } = await query;\n  if (error) {\n    throw new Error(`Avatar-Artefakte listen fehlgeschlagen: ${error.message}`);\n  }\n  return (data as ArtifactRow[]).map(rowToArtifact);\n}"
           }
         },
         {
           "kind": "auth-helper",
           "name": null,
           "path": "src/infrastructure/character/avatar/character-avatar-artifact-service.ts",
-          "line": 303,
-          "endLine": 303,
+          "line": 318,
+          "endLine": 318,
           "resolution": "dynamic-expression",
           "expression": "getAuthenticatedUserId()",
           "chain": "getAuthenticatedUserId()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/character/avatar/character-avatar-artifact-service.ts",
-            "line": 296,
-            "endLine": 314,
-            "text": "export async function materializeArtifactFromGenerateJob(input: {\n  generateJobId: string;\n  characterId?: string | null;\n  storagePath: string;\n  providerId?: string;\n}): Promise<AvatarArtifactV2> {\n  assertHostProductSurfaceAvailable('Avatar-Artefakte');\n  const ownerUserId = await getAuthenticatedUserId();\n  const draft = materializeAvatarArtifact(\n    mapGenerateJobToArtifactInput({\n      generateJobId: input.generateJobId,\n      ownerUserId,\n      characterId: input.characterId,\n      storagePath: input.storagePath,\n      providerId: input.providerId,\n    }),\n  );\n  return createAvatarArtifact(draft);\n}"
+            "line": 308,
+            "endLine": 361,
+            "text": "export async function activateAvatarArtifact(\n  artifactId: string,\n): Promise<AvatarArtifactActivateResult> {\n  if (isHostLibraryEnabled()) {\n    const result = await activateHostLibraryAvatarArtifact(artifactId);\n    if (result.ok === false) {\n      return { ok: false, reasonDe: result.reasonDe };\n    }\n    return { ok: true, artifact: parseHostArtifact(result.artifact) };\n  }\n  const ownerUserId = await getAuthenticatedUserId();\n  const current = await getAvatarArtifactById(artifactId);\n  if (!current) {\n    return { ok: false, reasonDe: 'Artefakt nicht gefunden oder fremder Owner.' };\n  }\n  const gate = assertCanActivateAvatarArtifact(current);\n  if (!gate.ok) return gate;\n\n  if (current.characterId) {\n    const { error: deactivateError } = await supabase\n      .from('character_avatar_artifacts')\n      .update({ is_active: false })\n      .eq('owner_user_id', ownerUserId)\n      .eq('character_id', current.characterId)\n      .eq('is_active', true)\n      .is('deleted_at', null);\n    if (deactivateError) {\n      return {\n        ok: false,\n        reasonDe: `Vorheriges Artefakt konnte nicht deaktiviert werden: ${deactivateError.message}`,\n      };\n    }\n  }\n\n  const { data, error } = await supabase\n    .from('character_avatar_artifacts')\n    .update({ is_active: true })\n    .eq('id', artifactId)\n    .eq('owner_user_id', ownerUserId)\n    .eq('materialization_status', 'materialized')\n    .neq('analysis_status', 'failed')\n    .is('deleted_at', null)\n    .select('*')\n    .maybeSingle();\n\n  if (error || !data) {\n    return {\n      ok: false,\n      reasonDe: error?.message ?? 'Aktivierung fehlgeschlagen.',\n    };\n  }\n\n  return { ok: true, artifact: rowToArtifact(data as ArtifactRow) };\n}"
           }
         },
         {
           "kind": "auth-helper",
           "name": null,
           "path": "src/infrastructure/character/avatar/character-avatar-artifact-service.ts",
-          "line": 324,
-          "endLine": 324,
+          "line": 386,
+          "endLine": 386,
           "resolution": "dynamic-expression",
           "expression": "getAuthenticatedUserId()",
           "chain": "getAuthenticatedUserId()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/character/avatar/character-avatar-artifact-service.ts",
-            "line": 317,
-            "endLine": 335,
-            "text": "export async function materializeArtifactFromTemplate(input: {\n  artifactId: string;\n  templateId: string;\n  characterId?: string | null;\n  storagePath: string;\n}): Promise<AvatarArtifactV2> {\n  assertHostProductSurfaceAvailable('Avatar-Artefakte');\n  const ownerUserId = await getAuthenticatedUserId();\n  const draft = materializeAvatarArtifact(\n    mapTemplateToArtifactInput({\n      artifactId: input.artifactId,\n      ownerUserId,\n      characterId: input.characterId,\n      templateId: input.templateId,\n      storagePath: input.storagePath,\n    }),\n  );\n  return createAvatarArtifact(draft);\n}"
+            "line": 364,
+            "endLine": 397,
+            "text": "export async function materializeArtifactFromImportAsset(input: {\n  importAssetId: string;\n  characterId?: string | null;\n  storagePath: string;\n  format: 'vrm' | 'glb';\n}): Promise<AvatarArtifactV2> {\n  if (isHostLibraryEnabled()) {\n    const ownerFromPath = input.storagePath.split('/')[0] ?? '';\n    if (!ownerFromPath) {\n      throw new Error('Storage-Pfad muss owner-scoped sein.');\n    }\n    const draft = materializeAvatarArtifact(\n      mapImportAssetToArtifactInput({\n        importAssetId: input.importAssetId,\n        ownerUserId: ownerFromPath,\n        characterId: input.characterId,\n        storagePath: input.storagePath,\n        format: input.format,\n      }),\n    );\n    return createAvatarArtifact(draft);\n  }\n  const ownerUserId = await getAuthenticatedUserId();\n  const draft = materializeAvatarArtifact(\n    mapImportAssetToArtifactInput({\n      importAssetId: input.importAssetId,\n      ownerUserId,\n      characterId: input.characterId,\n      storagePath: input.storagePath,\n      format: input.format,\n    }),\n  );\n  return createAvatarArtifact(draft);\n}"
           }
         },
         {
           "kind": "auth-helper",
           "name": null,
           "path": "src/infrastructure/character/avatar/character-avatar-artifact-service.ts",
-          "line": 350,
-          "endLine": 350,
+          "line": 419,
+          "endLine": 419,
           "resolution": "dynamic-expression",
           "expression": "getAuthenticatedUserId()",
           "chain": "getAuthenticatedUserId()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/character/avatar/character-avatar-artifact-service.ts",
-            "line": 342,
-            "endLine": 375,
-            "text": "export async function persistAuthoritativeArtifactAnalysis(input: {\n  artifactId: string;\n  result: AvatarStructureAnalysisResultV2;\n}): Promise<void> {\n  assertHostProductSurfaceAvailable('Avatar-Artefakte');\n  if (!input.result.authoritative) {\n    throw new Error('Nur autoritative Analyse-Ergebnisse dürfen persistiert werden.');\n  }\n  const ownerUserId = await getAuthenticatedUserId();\n  const analysisStatus =\n    input.result.status === 'ready'\n      ? 'ready'\n      : input.result.status === 'limited'\n        ? 'limited'\n        : input.result.status === 'unsupported'\n          ? 'unsupported'\n          : 'failed';\n\n  // Client RLS blocks trusted status writes — this path is intended for\n  // Edge/service_role callers. Authenticated clients will fail closed here.\n  const { error } = await supabase\n    .from('character_avatar_artifacts')\n    .update({\n      analysis_status: analysisStatus,\n      analysis_result: input.result,\n    })\n    .eq('id', input.artifactId)\n    .eq('owner_user_id', ownerUserId)\n    .is('deleted_at', null);\n\n  if (error) {\n    throw new Error(`Analyse-Persistenz fehlgeschlagen: ${error.message}`);\n  }\n}"
+            "line": 400,
+            "endLine": 430,
+            "text": "export async function materializeArtifactFromGenerateJob(input: {\n  generateJobId: string;\n  characterId?: string | null;\n  storagePath: string;\n  providerId?: string;\n}): Promise<AvatarArtifactV2> {\n  if (isHostLibraryEnabled()) {\n    const ownerFromPath = input.storagePath.split('/')[0] ?? '';\n    const draft = materializeAvatarArtifact(\n      mapGenerateJobToArtifactInput({\n        generateJobId: input.generateJobId,\n        ownerUserId: ownerFromPath || 'host-pending',\n        characterId: input.characterId,\n        storagePath: input.storagePath,\n        providerId: input.providerId,\n      }),\n    );\n    return createAvatarArtifact(draft);\n  }\n  const ownerUserId = await getAuthenticatedUserId();\n  const draft = materializeAvatarArtifact(\n    mapGenerateJobToArtifactInput({\n      generateJobId: input.generateJobId,\n      ownerUserId,\n      characterId: input.characterId,\n      storagePath: input.storagePath,\n      providerId: input.providerId,\n    }),\n  );\n  return createAvatarArtifact(draft);\n}"
+          }
+        },
+        {
+          "kind": "auth-helper",
+          "name": null,
+          "path": "src/infrastructure/character/avatar/character-avatar-artifact-service.ts",
+          "line": 452,
+          "endLine": 452,
+          "resolution": "dynamic-expression",
+          "expression": "getAuthenticatedUserId()",
+          "chain": "getAuthenticatedUserId()",
+          "arguments": [],
+          "enclosingOperation": {
+            "path": "src/infrastructure/character/avatar/character-avatar-artifact-service.ts",
+            "line": 433,
+            "endLine": 463,
+            "text": "export async function materializeArtifactFromTemplate(input: {\n  artifactId: string;\n  templateId: string;\n  characterId?: string | null;\n  storagePath: string;\n}): Promise<AvatarArtifactV2> {\n  if (isHostLibraryEnabled()) {\n    const ownerFromPath = input.storagePath.split('/')[0] ?? '';\n    const draft = materializeAvatarArtifact(\n      mapTemplateToArtifactInput({\n        artifactId: input.artifactId,\n        ownerUserId: ownerFromPath || 'host-pending',\n        characterId: input.characterId,\n        templateId: input.templateId,\n        storagePath: input.storagePath,\n      }),\n    );\n    return createAvatarArtifact(draft);\n  }\n  const ownerUserId = await getAuthenticatedUserId();\n  const draft = materializeAvatarArtifact(\n    mapTemplateToArtifactInput({\n      artifactId: input.artifactId,\n      ownerUserId,\n      characterId: input.characterId,\n      templateId: input.templateId,\n      storagePath: input.storagePath,\n    }),\n  );\n  return createAvatarArtifact(draft);\n}"
+          }
+        },
+        {
+          "kind": "auth-helper",
+          "name": null,
+          "path": "src/infrastructure/character/avatar/character-avatar-artifact-service.ts",
+          "line": 483,
+          "endLine": 483,
+          "resolution": "dynamic-expression",
+          "expression": "getAuthenticatedUserId()",
+          "chain": "getAuthenticatedUserId()",
+          "arguments": [],
+          "enclosingOperation": {
+            "path": "src/infrastructure/character/avatar/character-avatar-artifact-service.ts",
+            "line": 469,
+            "endLine": 506,
+            "text": "export async function persistAuthoritativeArtifactAnalysis(input: {\n  artifactId: string;\n  result: AvatarStructureAnalysisResultV2;\n}): Promise<void> {\n  if (isHostLibraryEnabled()) {\n    // Host parity with Postgres RLS: browser sessions cannot escalate trusted analysis.\n    // In-process CharacterPorts remain available for host analyzer workers/self-tests.\n    throw new Error(\n      'Autoritative Avatar-Analyse ist im Host-Modus nur serverseitig verfügbar.',\n    );\n  }\n  if (!input.result.authoritative) {\n    throw new Error('Nur autoritative Analyse-Ergebnisse dürfen persistiert werden.');\n  }\n  const ownerUserId = await getAuthenticatedUserId();\n  const analysisStatus =\n    input.result.status === 'ready'\n      ? 'ready'\n      : input.result.status === 'limited'\n        ? 'limited'\n        : input.result.status === 'unsupported'\n          ? 'unsupported'\n          : 'failed';\n\n  const { error } = await supabase\n    .from('character_avatar_artifacts')\n    .update({\n      analysis_status: analysisStatus,\n      analysis_result: input.result,\n    })\n    .eq('id', input.artifactId)\n    .eq('owner_user_id', ownerUserId)\n    .is('deleted_at', null);\n\n  if (error) {\n    throw new Error(`Analyse-Persistenz fehlgeschlagen: ${error.message}`);\n  }\n}"
           }
         },
         {
@@ -31133,16 +31133,16 @@
           "kind": "auth",
           "name": null,
           "path": "src/infrastructure/character/avatar/character-avatar-artifact-service.ts",
-          "line": 51,
-          "endLine": 51,
+          "line": 57,
+          "endLine": 57,
           "resolution": "dynamic-expression",
           "expression": "supabase.auth.getUser()",
           "chain": "supabase.auth.getUser()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/character/avatar/character-avatar-artifact-service.ts",
-            "line": 50,
-            "endLine": 56,
+            "line": 56,
+            "endLine": 62,
             "text": "async function getAuthenticatedUserId(): Promise<string> {\n  const { data, error } = await supabase.auth.getUser();\n  if (error || !data.user?.id) {\n    throw new Error('Anmeldung erforderlich für Avatar-Artefakte.');\n  }\n  return data.user.id;\n}"
           }
         },
@@ -31150,25 +31150,25 @@
           "kind": "auth-helper",
           "name": null,
           "path": "src/infrastructure/character/avatar/character-avatar-artifact-service.ts",
-          "line": 119,
-          "endLine": 119,
+          "line": 186,
+          "endLine": 186,
           "resolution": "dynamic-expression",
           "expression": "getAuthenticatedUserId()",
           "chain": "getAuthenticatedUserId()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/character/avatar/character-avatar-artifact-service.ts",
-            "line": 115,
-            "endLine": 154,
-            "text": "export async function createAvatarArtifact(\n  artifact: AvatarArtifactV2,\n): Promise<AvatarArtifactV2> {\n  assertHostProductSurfaceAvailable('Avatar-Artefakte');\n  const ownerUserId = await getAuthenticatedUserId();\n  if (artifact.ownerUserId !== ownerUserId) {\n    throw new Error('Artefakt-Owner stimmt nicht mit der Session überein.');\n  }\n  if (artifact.isActive) {\n    throw new Error('Neues Artefakt darf nicht direkt aktiv sein — activate verwenden.');\n  }\n\n  if (artifact.idempotencyKey) {\n    const existing = await findAvatarArtifactByIdempotencyKey(\n      ownerUserId,\n      artifact.idempotencyKey,\n    );\n    if (existing) return existing;\n  }\n\n  const { data, error } = await supabase\n    .from('character_avatar_artifacts')\n    .insert(artifactToInsert(artifact))\n    .select('*')\n    .single();\n\n  if (error) {\n    // Unique idempotency race — re-read.\n    if (artifact.idempotencyKey && /duplicate|unique/i.test(error.message)) {\n      const again = await findAvatarArtifactByIdempotencyKey(\n        ownerUserId,\n        artifact.idempotencyKey,\n      );\n      if (again) return again;\n    }\n    throw new Error(`Avatar-Artefakt konnte nicht gespeichert werden: ${error.message}`);\n  }\n\n  return rowToArtifact(data as ArtifactRow);\n}"
+            "line": 177,
+            "endLine": 220,
+            "text": "export async function createAvatarArtifact(\n  artifact: AvatarArtifactV2,\n): Promise<AvatarArtifactV2> {\n  if (isHostLibraryEnabled()) {\n    if (artifact.isActive) {\n      throw new Error('Neues Artefakt darf nicht direkt aktiv sein — activate verwenden.');\n    }\n    return parseHostArtifact(await createHostLibraryAvatarArtifact(artifact));\n  }\n  const ownerUserId = await getAuthenticatedUserId();\n  if (artifact.ownerUserId !== ownerUserId) {\n    throw new Error('Artefakt-Owner stimmt nicht mit der Session überein.');\n  }\n  if (artifact.isActive) {\n    throw new Error('Neues Artefakt darf nicht direkt aktiv sein — activate verwenden.');\n  }\n\n  if (artifact.idempotencyKey) {\n    const existing = await findAvatarArtifactByIdempotencyKey(\n      ownerUserId,\n      artifact.idempotencyKey,\n    );\n    if (existing) return existing;\n  }\n\n  const { data, error } = await supabase\n    .from('character_avatar_artifacts')\n    .insert(artifactToInsert(artifact))\n    .select('*')\n    .single();\n\n  if (error) {\n    if (artifact.idempotencyKey && /duplicate|unique/i.test(error.message)) {\n      const again = await findAvatarArtifactByIdempotencyKey(\n        ownerUserId,\n        artifact.idempotencyKey,\n      );\n      if (again) return again;\n    }\n    throw new Error(`Avatar-Artefakt konnte nicht gespeichert werden: ${error.message}`);\n  }\n\n  return rowToArtifact(data as ArtifactRow);\n}"
           }
         },
         {
           "kind": "table",
           "name": "character_avatar_artifacts",
           "path": "src/infrastructure/character/avatar/character-avatar-artifact-service.ts",
-          "line": 135,
-          "endLine": 136,
+          "line": 202,
+          "endLine": 203,
           "resolution": "literal-or-constant",
           "expression": "supabase\n    .from('character_avatar_artifacts')",
           "chain": "supabase\n    .from('character_avatar_artifacts')\n    .insert(artifactToInsert(artifact))\n    .select('*')\n    .single()",
@@ -31177,100 +31177,9 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/character/avatar/character-avatar-artifact-service.ts",
-            "line": 115,
-            "endLine": 154,
-            "text": "export async function createAvatarArtifact(\n  artifact: AvatarArtifactV2,\n): Promise<AvatarArtifactV2> {\n  assertHostProductSurfaceAvailable('Avatar-Artefakte');\n  const ownerUserId = await getAuthenticatedUserId();\n  if (artifact.ownerUserId !== ownerUserId) {\n    throw new Error('Artefakt-Owner stimmt nicht mit der Session überein.');\n  }\n  if (artifact.isActive) {\n    throw new Error('Neues Artefakt darf nicht direkt aktiv sein — activate verwenden.');\n  }\n\n  if (artifact.idempotencyKey) {\n    const existing = await findAvatarArtifactByIdempotencyKey(\n      ownerUserId,\n      artifact.idempotencyKey,\n    );\n    if (existing) return existing;\n  }\n\n  const { data, error } = await supabase\n    .from('character_avatar_artifacts')\n    .insert(artifactToInsert(artifact))\n    .select('*')\n    .single();\n\n  if (error) {\n    // Unique idempotency race — re-read.\n    if (artifact.idempotencyKey && /duplicate|unique/i.test(error.message)) {\n      const again = await findAvatarArtifactByIdempotencyKey(\n        ownerUserId,\n        artifact.idempotencyKey,\n      );\n      if (again) return again;\n    }\n    throw new Error(`Avatar-Artefakt konnte nicht gespeichert werden: ${error.message}`);\n  }\n\n  return rowToArtifact(data as ArtifactRow);\n}"
-          }
-        },
-        {
-          "kind": "auth-helper",
-          "name": null,
-          "path": "src/infrastructure/character/avatar/character-avatar-artifact-service.ts",
-          "line": 160,
-          "endLine": 160,
-          "resolution": "dynamic-expression",
-          "expression": "getAuthenticatedUserId()",
-          "chain": "getAuthenticatedUserId()",
-          "arguments": [],
-          "enclosingOperation": {
-            "path": "src/infrastructure/character/avatar/character-avatar-artifact-service.ts",
-            "line": 156,
-            "endLine": 174,
-            "text": "export async function getAvatarArtifactById(\n  artifactId: string,\n): Promise<AvatarArtifactV2 | null> {\n  assertHostProductSurfaceAvailable('Avatar-Artefakte');\n  const ownerUserId = await getAuthenticatedUserId();\n  const { data, error } = await supabase\n    .from('character_avatar_artifacts')\n    .select('*')\n    .eq('id', artifactId)\n    .eq('owner_user_id', ownerUserId)\n    .is('deleted_at', null)\n    .maybeSingle();\n\n  if (error) {\n    throw new Error(`Avatar-Artefakt lesen fehlgeschlagen: ${error.message}`);\n  }\n  if (!data) return null;\n  return rowToArtifact(data as ArtifactRow);\n}"
-          }
-        },
-        {
-          "kind": "table",
-          "name": "character_avatar_artifacts",
-          "path": "src/infrastructure/character/avatar/character-avatar-artifact-service.ts",
-          "line": 161,
-          "endLine": 162,
-          "resolution": "literal-or-constant",
-          "expression": "supabase\n    .from('character_avatar_artifacts')",
-          "chain": "supabase\n    .from('character_avatar_artifacts')\n    .select('*')\n    .eq('id', artifactId)\n    .eq('owner_user_id', ownerUserId)\n    .is('deleted_at', null)\n    .maybeSingle()",
-          "arguments": [
-            "'character_avatar_artifacts'"
-          ],
-          "enclosingOperation": {
-            "path": "src/infrastructure/character/avatar/character-avatar-artifact-service.ts",
-            "line": 156,
-            "endLine": 174,
-            "text": "export async function getAvatarArtifactById(\n  artifactId: string,\n): Promise<AvatarArtifactV2 | null> {\n  assertHostProductSurfaceAvailable('Avatar-Artefakte');\n  const ownerUserId = await getAuthenticatedUserId();\n  const { data, error } = await supabase\n    .from('character_avatar_artifacts')\n    .select('*')\n    .eq('id', artifactId)\n    .eq('owner_user_id', ownerUserId)\n    .is('deleted_at', null)\n    .maybeSingle();\n\n  if (error) {\n    throw new Error(`Avatar-Artefakt lesen fehlgeschlagen: ${error.message}`);\n  }\n  if (!data) return null;\n  return rowToArtifact(data as ArtifactRow);\n}"
-          }
-        },
-        {
-          "kind": "table",
-          "name": "character_avatar_artifacts",
-          "path": "src/infrastructure/character/avatar/character-avatar-artifact-service.ts",
-          "line": 181,
-          "endLine": 182,
-          "resolution": "literal-or-constant",
-          "expression": "supabase\n    .from('character_avatar_artifacts')",
-          "chain": "supabase\n    .from('character_avatar_artifacts')\n    .select('*')\n    .eq('owner_user_id', ownerUserId)\n    .eq('idempotency_key', idempotencyKey)\n    .is('deleted_at', null)\n    .maybeSingle()",
-          "arguments": [
-            "'character_avatar_artifacts'"
-          ],
-          "enclosingOperation": {
-            "path": "src/infrastructure/character/avatar/character-avatar-artifact-service.ts",
-            "line": 176,
-            "endLine": 194,
-            "text": "export async function findAvatarArtifactByIdempotencyKey(\n  ownerUserId: string,\n  idempotencyKey: string,\n): Promise<AvatarArtifactV2 | null> {\n  assertHostProductSurfaceAvailable('Avatar-Artefakte');\n  const { data, error } = await supabase\n    .from('character_avatar_artifacts')\n    .select('*')\n    .eq('owner_user_id', ownerUserId)\n    .eq('idempotency_key', idempotencyKey)\n    .is('deleted_at', null)\n    .maybeSingle();\n\n  if (error) {\n    throw new Error(`Idempotency-Lookup fehlgeschlagen: ${error.message}`);\n  }\n  if (!data) return null;\n  return rowToArtifact(data as ArtifactRow);\n}"
-          }
-        },
-        {
-          "kind": "auth-helper",
-          "name": null,
-          "path": "src/infrastructure/character/avatar/character-avatar-artifact-service.ts",
-          "line": 200,
-          "endLine": 200,
-          "resolution": "dynamic-expression",
-          "expression": "getAuthenticatedUserId()",
-          "chain": "getAuthenticatedUserId()",
-          "arguments": [],
-          "enclosingOperation": {
-            "path": "src/infrastructure/character/avatar/character-avatar-artifact-service.ts",
-            "line": 196,
+            "line": 177,
             "endLine": 220,
-            "text": "export async function listAvatarArtifacts(options: {\n  characterId?: string | null;\n} = {}): Promise<readonly AvatarArtifactV2[]> {\n  assertHostProductSurfaceAvailable('Avatar-Artefakte');\n  const ownerUserId = await getAuthenticatedUserId();\n  let query = supabase\n    .from('character_avatar_artifacts')\n    .select('*')\n    .eq('owner_user_id', ownerUserId)\n    .is('deleted_at', null)\n    .order('created_at', { ascending: false });\n\n  if (options.characterId !== undefined) {\n    query =\n      options.characterId === null\n        ? query.is('character_id', null)\n        : query.eq('character_id', options.characterId);\n  }\n\n  const { data, error } = await query;\n  if (error) {\n    throw new Error(`Avatar-Artefakte listen fehlgeschlagen: ${error.message}`);\n  }\n  return (data as ArtifactRow[]).map(rowToArtifact);\n}"
-          }
-        },
-        {
-          "kind": "table",
-          "name": "character_avatar_artifacts",
-          "path": "src/infrastructure/character/avatar/character-avatar-artifact-service.ts",
-          "line": 201,
-          "endLine": 202,
-          "resolution": "literal-or-constant",
-          "expression": "supabase\n    .from('character_avatar_artifacts')",
-          "chain": "supabase\n    .from('character_avatar_artifacts')\n    .select('*')\n    .eq('owner_user_id', ownerUserId)\n    .is('deleted_at', null)\n    .order('created_at', { ascending: false })",
-          "arguments": [
-            "'character_avatar_artifacts'"
-          ],
-          "enclosingOperation": {
-            "path": "src/infrastructure/character/avatar/character-avatar-artifact-service.ts",
-            "line": 196,
-            "endLine": 220,
-            "text": "export async function listAvatarArtifacts(options: {\n  characterId?: string | null;\n} = {}): Promise<readonly AvatarArtifactV2[]> {\n  assertHostProductSurfaceAvailable('Avatar-Artefakte');\n  const ownerUserId = await getAuthenticatedUserId();\n  let query = supabase\n    .from('character_avatar_artifacts')\n    .select('*')\n    .eq('owner_user_id', ownerUserId)\n    .is('deleted_at', null)\n    .order('created_at', { ascending: false });\n\n  if (options.characterId !== undefined) {\n    query =\n      options.characterId === null\n        ? query.is('character_id', null)\n        : query.eq('character_id', options.characterId);\n  }\n\n  const { data, error } = await query;\n  if (error) {\n    throw new Error(`Avatar-Artefakte listen fehlgeschlagen: ${error.message}`);\n  }\n  return (data as ArtifactRow[]).map(rowToArtifact);\n}"
+            "text": "export async function createAvatarArtifact(\n  artifact: AvatarArtifactV2,\n): Promise<AvatarArtifactV2> {\n  if (isHostLibraryEnabled()) {\n    if (artifact.isActive) {\n      throw new Error('Neues Artefakt darf nicht direkt aktiv sein — activate verwenden.');\n    }\n    return parseHostArtifact(await createHostLibraryAvatarArtifact(artifact));\n  }\n  const ownerUserId = await getAuthenticatedUserId();\n  if (artifact.ownerUserId !== ownerUserId) {\n    throw new Error('Artefakt-Owner stimmt nicht mit der Session überein.');\n  }\n  if (artifact.isActive) {\n    throw new Error('Neues Artefakt darf nicht direkt aktiv sein — activate verwenden.');\n  }\n\n  if (artifact.idempotencyKey) {\n    const existing = await findAvatarArtifactByIdempotencyKey(\n      ownerUserId,\n      artifact.idempotencyKey,\n    );\n    if (existing) return existing;\n  }\n\n  const { data, error } = await supabase\n    .from('character_avatar_artifacts')\n    .insert(artifactToInsert(artifact))\n    .select('*')\n    .single();\n\n  if (error) {\n    if (artifact.idempotencyKey && /duplicate|unique/i.test(error.message)) {\n      const again = await findAvatarArtifactByIdempotencyKey(\n        ownerUserId,\n        artifact.idempotencyKey,\n      );\n      if (again) return again;\n    }\n    throw new Error(`Avatar-Artefakt konnte nicht gespeichert werden: ${error.message}`);\n  }\n\n  return rowToArtifact(data as ArtifactRow);\n}"
           }
         },
         {
@@ -31285,17 +31194,108 @@
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/character/avatar/character-avatar-artifact-service.ts",
-            "line": 225,
-            "endLine": 272,
-            "text": "export async function activateAvatarArtifact(\n  artifactId: string,\n): Promise<AvatarArtifactActivateResult> {\n  assertHostProductSurfaceAvailable('Avatar-Artefakte');\n  const ownerUserId = await getAuthenticatedUserId();\n  const current = await getAvatarArtifactById(artifactId);\n  if (!current) {\n    return { ok: false, reasonDe: 'Artefakt nicht gefunden oder fremder Owner.' };\n  }\n  const gate = assertCanActivateAvatarArtifact(current);\n  if (!gate.ok) return gate;\n\n  if (current.characterId) {\n    const { error: deactivateError } = await supabase\n      .from('character_avatar_artifacts')\n      .update({ is_active: false })\n      .eq('owner_user_id', ownerUserId)\n      .eq('character_id', current.characterId)\n      .eq('is_active', true)\n      .is('deleted_at', null);\n    if (deactivateError) {\n      return {\n        ok: false,\n        reasonDe: `Vorheriges Artefakt konnte nicht deaktiviert werden: ${deactivateError.message}`,\n      };\n    }\n  }\n\n  const { data, error } = await supabase\n    .from('character_avatar_artifacts')\n    .update({ is_active: true })\n    .eq('id', artifactId)\n    .eq('owner_user_id', ownerUserId)\n    .eq('materialization_status', 'materialized')\n    .neq('analysis_status', 'failed')\n    .is('deleted_at', null)\n    .select('*')\n    .maybeSingle();\n\n  if (error || !data) {\n    return {\n      ok: false,\n      reasonDe: error?.message ?? 'Aktivierung fehlgeschlagen.',\n    };\n  }\n\n  return { ok: true, artifact: rowToArtifact(data as ArtifactRow) };\n}"
+            "line": 222,
+            "endLine": 243,
+            "text": "export async function getAvatarArtifactById(\n  artifactId: string,\n): Promise<AvatarArtifactV2 | null> {\n  if (isHostLibraryEnabled()) {\n    const raw = await fetchHostLibraryAvatarArtifactById(artifactId);\n    return raw ? parseHostArtifact(raw) : null;\n  }\n  const ownerUserId = await getAuthenticatedUserId();\n  const { data, error } = await supabase\n    .from('character_avatar_artifacts')\n    .select('*')\n    .eq('id', artifactId)\n    .eq('owner_user_id', ownerUserId)\n    .is('deleted_at', null)\n    .maybeSingle();\n\n  if (error) {\n    throw new Error(`Avatar-Artefakt lesen fehlgeschlagen: ${error.message}`);\n  }\n  if (!data) return null;\n  return rowToArtifact(data as ArtifactRow);\n}"
           }
         },
         {
           "kind": "table",
           "name": "character_avatar_artifacts",
           "path": "src/infrastructure/character/avatar/character-avatar-artifact-service.ts",
-          "line": 238,
-          "endLine": 239,
+          "line": 230,
+          "endLine": 231,
+          "resolution": "literal-or-constant",
+          "expression": "supabase\n    .from('character_avatar_artifacts')",
+          "chain": "supabase\n    .from('character_avatar_artifacts')\n    .select('*')\n    .eq('id', artifactId)\n    .eq('owner_user_id', ownerUserId)\n    .is('deleted_at', null)\n    .maybeSingle()",
+          "arguments": [
+            "'character_avatar_artifacts'"
+          ],
+          "enclosingOperation": {
+            "path": "src/infrastructure/character/avatar/character-avatar-artifact-service.ts",
+            "line": 222,
+            "endLine": 243,
+            "text": "export async function getAvatarArtifactById(\n  artifactId: string,\n): Promise<AvatarArtifactV2 | null> {\n  if (isHostLibraryEnabled()) {\n    const raw = await fetchHostLibraryAvatarArtifactById(artifactId);\n    return raw ? parseHostArtifact(raw) : null;\n  }\n  const ownerUserId = await getAuthenticatedUserId();\n  const { data, error } = await supabase\n    .from('character_avatar_artifacts')\n    .select('*')\n    .eq('id', artifactId)\n    .eq('owner_user_id', ownerUserId)\n    .is('deleted_at', null)\n    .maybeSingle();\n\n  if (error) {\n    throw new Error(`Avatar-Artefakt lesen fehlgeschlagen: ${error.message}`);\n  }\n  if (!data) return null;\n  return rowToArtifact(data as ArtifactRow);\n}"
+          }
+        },
+        {
+          "kind": "table",
+          "name": "character_avatar_artifacts",
+          "path": "src/infrastructure/character/avatar/character-avatar-artifact-service.ts",
+          "line": 259,
+          "endLine": 260,
+          "resolution": "literal-or-constant",
+          "expression": "supabase\n    .from('character_avatar_artifacts')",
+          "chain": "supabase\n    .from('character_avatar_artifacts')\n    .select('*')\n    .eq('owner_user_id', ownerUserId)\n    .eq('idempotency_key', idempotencyKey)\n    .is('deleted_at', null)\n    .maybeSingle()",
+          "arguments": [
+            "'character_avatar_artifacts'"
+          ],
+          "enclosingOperation": {
+            "path": "src/infrastructure/character/avatar/character-avatar-artifact-service.ts",
+            "line": 245,
+            "endLine": 272,
+            "text": "export async function findAvatarArtifactByIdempotencyKey(\n  ownerUserId: string,\n  idempotencyKey: string,\n): Promise<AvatarArtifactV2 | null> {\n  if (isHostLibraryEnabled()) {\n    const listed = await fetchHostLibraryAvatarArtifacts();\n    for (const raw of listed) {\n      const artifact = parseHostArtifact(raw);\n      if (artifact.ownerUserId === ownerUserId && artifact.idempotencyKey === idempotencyKey) {\n        return artifact;\n      }\n    }\n    return null;\n  }\n  const { data, error } = await supabase\n    .from('character_avatar_artifacts')\n    .select('*')\n    .eq('owner_user_id', ownerUserId)\n    .eq('idempotency_key', idempotencyKey)\n    .is('deleted_at', null)\n    .maybeSingle();\n\n  if (error) {\n    throw new Error(`Idempotency-Lookup fehlgeschlagen: ${error.message}`);\n  }\n  if (!data) return null;\n  return rowToArtifact(data as ArtifactRow);\n}"
+          }
+        },
+        {
+          "kind": "auth-helper",
+          "name": null,
+          "path": "src/infrastructure/character/avatar/character-avatar-artifact-service.ts",
+          "line": 283,
+          "endLine": 283,
+          "resolution": "dynamic-expression",
+          "expression": "getAuthenticatedUserId()",
+          "chain": "getAuthenticatedUserId()",
+          "arguments": [],
+          "enclosingOperation": {
+            "path": "src/infrastructure/character/avatar/character-avatar-artifact-service.ts",
+            "line": 274,
+            "endLine": 303,
+            "text": "export async function listAvatarArtifacts(options: {\n  characterId?: string | null;\n} = {}): Promise<readonly AvatarArtifactV2[]> {\n  if (isHostLibraryEnabled()) {\n    const listed = await fetchHostLibraryAvatarArtifacts({\n      characterId: options.characterId,\n    });\n    return listed.map(parseHostArtifact);\n  }\n  const ownerUserId = await getAuthenticatedUserId();\n  let query = supabase\n    .from('character_avatar_artifacts')\n    .select('*')\n    .eq('owner_user_id', ownerUserId)\n    .is('deleted_at', null)\n    .order('created_at', { ascending: false });\n\n  if (options.characterId !== undefined) {\n    query =\n      options.characterId === null\n        ? query.is('character_id', null)\n        : query.eq('character_id', options.characterId);\n  }\n\n  const { data, error } = await query;\n  if (error) {\n    throw new Error(`Avatar-Artefakte listen fehlgeschlagen: ${error.message}`);\n  }\n  return (data as ArtifactRow[]).map(rowToArtifact);\n}"
+          }
+        },
+        {
+          "kind": "table",
+          "name": "character_avatar_artifacts",
+          "path": "src/infrastructure/character/avatar/character-avatar-artifact-service.ts",
+          "line": 284,
+          "endLine": 285,
+          "resolution": "literal-or-constant",
+          "expression": "supabase\n    .from('character_avatar_artifacts')",
+          "chain": "supabase\n    .from('character_avatar_artifacts')\n    .select('*')\n    .eq('owner_user_id', ownerUserId)\n    .is('deleted_at', null)\n    .order('created_at', { ascending: false })",
+          "arguments": [
+            "'character_avatar_artifacts'"
+          ],
+          "enclosingOperation": {
+            "path": "src/infrastructure/character/avatar/character-avatar-artifact-service.ts",
+            "line": 274,
+            "endLine": 303,
+            "text": "export async function listAvatarArtifacts(options: {\n  characterId?: string | null;\n} = {}): Promise<readonly AvatarArtifactV2[]> {\n  if (isHostLibraryEnabled()) {\n    const listed = await fetchHostLibraryAvatarArtifacts({\n      characterId: options.characterId,\n    });\n    return listed.map(parseHostArtifact);\n  }\n  const ownerUserId = await getAuthenticatedUserId();\n  let query = supabase\n    .from('character_avatar_artifacts')\n    .select('*')\n    .eq('owner_user_id', ownerUserId)\n    .is('deleted_at', null)\n    .order('created_at', { ascending: false });\n\n  if (options.characterId !== undefined) {\n    query =\n      options.characterId === null\n        ? query.is('character_id', null)\n        : query.eq('character_id', options.characterId);\n  }\n\n  const { data, error } = await query;\n  if (error) {\n    throw new Error(`Avatar-Artefakte listen fehlgeschlagen: ${error.message}`);\n  }\n  return (data as ArtifactRow[]).map(rowToArtifact);\n}"
+          }
+        },
+        {
+          "kind": "auth-helper",
+          "name": null,
+          "path": "src/infrastructure/character/avatar/character-avatar-artifact-service.ts",
+          "line": 318,
+          "endLine": 318,
+          "resolution": "dynamic-expression",
+          "expression": "getAuthenticatedUserId()",
+          "chain": "getAuthenticatedUserId()",
+          "arguments": [],
+          "enclosingOperation": {
+            "path": "src/infrastructure/character/avatar/character-avatar-artifact-service.ts",
+            "line": 308,
+            "endLine": 361,
+            "text": "export async function activateAvatarArtifact(\n  artifactId: string,\n): Promise<AvatarArtifactActivateResult> {\n  if (isHostLibraryEnabled()) {\n    const result = await activateHostLibraryAvatarArtifact(artifactId);\n    if (result.ok === false) {\n      return { ok: false, reasonDe: result.reasonDe };\n    }\n    return { ok: true, artifact: parseHostArtifact(result.artifact) };\n  }\n  const ownerUserId = await getAuthenticatedUserId();\n  const current = await getAvatarArtifactById(artifactId);\n  if (!current) {\n    return { ok: false, reasonDe: 'Artefakt nicht gefunden oder fremder Owner.' };\n  }\n  const gate = assertCanActivateAvatarArtifact(current);\n  if (!gate.ok) return gate;\n\n  if (current.characterId) {\n    const { error: deactivateError } = await supabase\n      .from('character_avatar_artifacts')\n      .update({ is_active: false })\n      .eq('owner_user_id', ownerUserId)\n      .eq('character_id', current.characterId)\n      .eq('is_active', true)\n      .is('deleted_at', null);\n    if (deactivateError) {\n      return {\n        ok: false,\n        reasonDe: `Vorheriges Artefakt konnte nicht deaktiviert werden: ${deactivateError.message}`,\n      };\n    }\n  }\n\n  const { data, error } = await supabase\n    .from('character_avatar_artifacts')\n    .update({ is_active: true })\n    .eq('id', artifactId)\n    .eq('owner_user_id', ownerUserId)\n    .eq('materialization_status', 'materialized')\n    .neq('analysis_status', 'failed')\n    .is('deleted_at', null)\n    .select('*')\n    .maybeSingle();\n\n  if (error || !data) {\n    return {\n      ok: false,\n      reasonDe: error?.message ?? 'Aktivierung fehlgeschlagen.',\n    };\n  }\n\n  return { ok: true, artifact: rowToArtifact(data as ArtifactRow) };\n}"
+          }
+        },
+        {
+          "kind": "table",
+          "name": "character_avatar_artifacts",
+          "path": "src/infrastructure/character/avatar/character-avatar-artifact-service.ts",
+          "line": 327,
+          "endLine": 328,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from('character_avatar_artifacts')",
           "chain": "supabase\n      .from('character_avatar_artifacts')\n      .update({ is_active: false })\n      .eq('owner_user_id', ownerUserId)\n      .eq('character_id', current.characterId)\n      .eq('is_active', true)\n      .is('deleted_at', null)",
@@ -31304,17 +31304,17 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/character/avatar/character-avatar-artifact-service.ts",
-            "line": 225,
-            "endLine": 272,
-            "text": "export async function activateAvatarArtifact(\n  artifactId: string,\n): Promise<AvatarArtifactActivateResult> {\n  assertHostProductSurfaceAvailable('Avatar-Artefakte');\n  const ownerUserId = await getAuthenticatedUserId();\n  const current = await getAvatarArtifactById(artifactId);\n  if (!current) {\n    return { ok: false, reasonDe: 'Artefakt nicht gefunden oder fremder Owner.' };\n  }\n  const gate = assertCanActivateAvatarArtifact(current);\n  if (!gate.ok) return gate;\n\n  if (current.characterId) {\n    const { error: deactivateError } = await supabase\n      .from('character_avatar_artifacts')\n      .update({ is_active: false })\n      .eq('owner_user_id', ownerUserId)\n      .eq('character_id', current.characterId)\n      .eq('is_active', true)\n      .is('deleted_at', null);\n    if (deactivateError) {\n      return {\n        ok: false,\n        reasonDe: `Vorheriges Artefakt konnte nicht deaktiviert werden: ${deactivateError.message}`,\n      };\n    }\n  }\n\n  const { data, error } = await supabase\n    .from('character_avatar_artifacts')\n    .update({ is_active: true })\n    .eq('id', artifactId)\n    .eq('owner_user_id', ownerUserId)\n    .eq('materialization_status', 'materialized')\n    .neq('analysis_status', 'failed')\n    .is('deleted_at', null)\n    .select('*')\n    .maybeSingle();\n\n  if (error || !data) {\n    return {\n      ok: false,\n      reasonDe: error?.message ?? 'Aktivierung fehlgeschlagen.',\n    };\n  }\n\n  return { ok: true, artifact: rowToArtifact(data as ArtifactRow) };\n}"
+            "line": 308,
+            "endLine": 361,
+            "text": "export async function activateAvatarArtifact(\n  artifactId: string,\n): Promise<AvatarArtifactActivateResult> {\n  if (isHostLibraryEnabled()) {\n    const result = await activateHostLibraryAvatarArtifact(artifactId);\n    if (result.ok === false) {\n      return { ok: false, reasonDe: result.reasonDe };\n    }\n    return { ok: true, artifact: parseHostArtifact(result.artifact) };\n  }\n  const ownerUserId = await getAuthenticatedUserId();\n  const current = await getAvatarArtifactById(artifactId);\n  if (!current) {\n    return { ok: false, reasonDe: 'Artefakt nicht gefunden oder fremder Owner.' };\n  }\n  const gate = assertCanActivateAvatarArtifact(current);\n  if (!gate.ok) return gate;\n\n  if (current.characterId) {\n    const { error: deactivateError } = await supabase\n      .from('character_avatar_artifacts')\n      .update({ is_active: false })\n      .eq('owner_user_id', ownerUserId)\n      .eq('character_id', current.characterId)\n      .eq('is_active', true)\n      .is('deleted_at', null);\n    if (deactivateError) {\n      return {\n        ok: false,\n        reasonDe: `Vorheriges Artefakt konnte nicht deaktiviert werden: ${deactivateError.message}`,\n      };\n    }\n  }\n\n  const { data, error } = await supabase\n    .from('character_avatar_artifacts')\n    .update({ is_active: true })\n    .eq('id', artifactId)\n    .eq('owner_user_id', ownerUserId)\n    .eq('materialization_status', 'materialized')\n    .neq('analysis_status', 'failed')\n    .is('deleted_at', null)\n    .select('*')\n    .maybeSingle();\n\n  if (error || !data) {\n    return {\n      ok: false,\n      reasonDe: error?.message ?? 'Aktivierung fehlgeschlagen.',\n    };\n  }\n\n  return { ok: true, artifact: rowToArtifact(data as ArtifactRow) };\n}"
           }
         },
         {
           "kind": "table",
           "name": "character_avatar_artifacts",
           "path": "src/infrastructure/character/avatar/character-avatar-artifact-service.ts",
-          "line": 253,
-          "endLine": 254,
+          "line": 342,
+          "endLine": 343,
           "resolution": "literal-or-constant",
           "expression": "supabase\n    .from('character_avatar_artifacts')",
           "chain": "supabase\n    .from('character_avatar_artifacts')\n    .update({ is_active: true })\n    .eq('id', artifactId)\n    .eq('owner_user_id', ownerUserId)\n    .eq('materialization_status', 'materialized')\n    .neq('analysis_status', 'failed')\n    .is('deleted_at', null)\n    .select('*')\n    .maybeSingle()",
@@ -31323,85 +31323,85 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/character/avatar/character-avatar-artifact-service.ts",
-            "line": 225,
-            "endLine": 272,
-            "text": "export async function activateAvatarArtifact(\n  artifactId: string,\n): Promise<AvatarArtifactActivateResult> {\n  assertHostProductSurfaceAvailable('Avatar-Artefakte');\n  const ownerUserId = await getAuthenticatedUserId();\n  const current = await getAvatarArtifactById(artifactId);\n  if (!current) {\n    return { ok: false, reasonDe: 'Artefakt nicht gefunden oder fremder Owner.' };\n  }\n  const gate = assertCanActivateAvatarArtifact(current);\n  if (!gate.ok) return gate;\n\n  if (current.characterId) {\n    const { error: deactivateError } = await supabase\n      .from('character_avatar_artifacts')\n      .update({ is_active: false })\n      .eq('owner_user_id', ownerUserId)\n      .eq('character_id', current.characterId)\n      .eq('is_active', true)\n      .is('deleted_at', null);\n    if (deactivateError) {\n      return {\n        ok: false,\n        reasonDe: `Vorheriges Artefakt konnte nicht deaktiviert werden: ${deactivateError.message}`,\n      };\n    }\n  }\n\n  const { data, error } = await supabase\n    .from('character_avatar_artifacts')\n    .update({ is_active: true })\n    .eq('id', artifactId)\n    .eq('owner_user_id', ownerUserId)\n    .eq('materialization_status', 'materialized')\n    .neq('analysis_status', 'failed')\n    .is('deleted_at', null)\n    .select('*')\n    .maybeSingle();\n\n  if (error || !data) {\n    return {\n      ok: false,\n      reasonDe: error?.message ?? 'Aktivierung fehlgeschlagen.',\n    };\n  }\n\n  return { ok: true, artifact: rowToArtifact(data as ArtifactRow) };\n}"
+            "line": 308,
+            "endLine": 361,
+            "text": "export async function activateAvatarArtifact(\n  artifactId: string,\n): Promise<AvatarArtifactActivateResult> {\n  if (isHostLibraryEnabled()) {\n    const result = await activateHostLibraryAvatarArtifact(artifactId);\n    if (result.ok === false) {\n      return { ok: false, reasonDe: result.reasonDe };\n    }\n    return { ok: true, artifact: parseHostArtifact(result.artifact) };\n  }\n  const ownerUserId = await getAuthenticatedUserId();\n  const current = await getAvatarArtifactById(artifactId);\n  if (!current) {\n    return { ok: false, reasonDe: 'Artefakt nicht gefunden oder fremder Owner.' };\n  }\n  const gate = assertCanActivateAvatarArtifact(current);\n  if (!gate.ok) return gate;\n\n  if (current.characterId) {\n    const { error: deactivateError } = await supabase\n      .from('character_avatar_artifacts')\n      .update({ is_active: false })\n      .eq('owner_user_id', ownerUserId)\n      .eq('character_id', current.characterId)\n      .eq('is_active', true)\n      .is('deleted_at', null);\n    if (deactivateError) {\n      return {\n        ok: false,\n        reasonDe: `Vorheriges Artefakt konnte nicht deaktiviert werden: ${deactivateError.message}`,\n      };\n    }\n  }\n\n  const { data, error } = await supabase\n    .from('character_avatar_artifacts')\n    .update({ is_active: true })\n    .eq('id', artifactId)\n    .eq('owner_user_id', ownerUserId)\n    .eq('materialization_status', 'materialized')\n    .neq('analysis_status', 'failed')\n    .is('deleted_at', null)\n    .select('*')\n    .maybeSingle();\n\n  if (error || !data) {\n    return {\n      ok: false,\n      reasonDe: error?.message ?? 'Aktivierung fehlgeschlagen.',\n    };\n  }\n\n  return { ok: true, artifact: rowToArtifact(data as ArtifactRow) };\n}"
           }
         },
         {
           "kind": "auth-helper",
           "name": null,
           "path": "src/infrastructure/character/avatar/character-avatar-artifact-service.ts",
-          "line": 282,
-          "endLine": 282,
+          "line": 386,
+          "endLine": 386,
           "resolution": "dynamic-expression",
           "expression": "getAuthenticatedUserId()",
           "chain": "getAuthenticatedUserId()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/character/avatar/character-avatar-artifact-service.ts",
-            "line": 275,
-            "endLine": 293,
-            "text": "export async function materializeArtifactFromImportAsset(input: {\n  importAssetId: string;\n  characterId?: string | null;\n  storagePath: string;\n  format: 'vrm' | 'glb';\n}): Promise<AvatarArtifactV2> {\n  assertHostProductSurfaceAvailable('Avatar-Artefakte');\n  const ownerUserId = await getAuthenticatedUserId();\n  const draft = materializeAvatarArtifact(\n    mapImportAssetToArtifactInput({\n      importAssetId: input.importAssetId,\n      ownerUserId,\n      characterId: input.characterId,\n      storagePath: input.storagePath,\n      format: input.format,\n    }),\n  );\n  return createAvatarArtifact(draft);\n}"
+            "line": 364,
+            "endLine": 397,
+            "text": "export async function materializeArtifactFromImportAsset(input: {\n  importAssetId: string;\n  characterId?: string | null;\n  storagePath: string;\n  format: 'vrm' | 'glb';\n}): Promise<AvatarArtifactV2> {\n  if (isHostLibraryEnabled()) {\n    const ownerFromPath = input.storagePath.split('/')[0] ?? '';\n    if (!ownerFromPath) {\n      throw new Error('Storage-Pfad muss owner-scoped sein.');\n    }\n    const draft = materializeAvatarArtifact(\n      mapImportAssetToArtifactInput({\n        importAssetId: input.importAssetId,\n        ownerUserId: ownerFromPath,\n        characterId: input.characterId,\n        storagePath: input.storagePath,\n        format: input.format,\n      }),\n    );\n    return createAvatarArtifact(draft);\n  }\n  const ownerUserId = await getAuthenticatedUserId();\n  const draft = materializeAvatarArtifact(\n    mapImportAssetToArtifactInput({\n      importAssetId: input.importAssetId,\n      ownerUserId,\n      characterId: input.characterId,\n      storagePath: input.storagePath,\n      format: input.format,\n    }),\n  );\n  return createAvatarArtifact(draft);\n}"
           }
         },
         {
           "kind": "auth-helper",
           "name": null,
           "path": "src/infrastructure/character/avatar/character-avatar-artifact-service.ts",
-          "line": 303,
-          "endLine": 303,
+          "line": 419,
+          "endLine": 419,
           "resolution": "dynamic-expression",
           "expression": "getAuthenticatedUserId()",
           "chain": "getAuthenticatedUserId()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/character/avatar/character-avatar-artifact-service.ts",
-            "line": 296,
-            "endLine": 314,
-            "text": "export async function materializeArtifactFromGenerateJob(input: {\n  generateJobId: string;\n  characterId?: string | null;\n  storagePath: string;\n  providerId?: string;\n}): Promise<AvatarArtifactV2> {\n  assertHostProductSurfaceAvailable('Avatar-Artefakte');\n  const ownerUserId = await getAuthenticatedUserId();\n  const draft = materializeAvatarArtifact(\n    mapGenerateJobToArtifactInput({\n      generateJobId: input.generateJobId,\n      ownerUserId,\n      characterId: input.characterId,\n      storagePath: input.storagePath,\n      providerId: input.providerId,\n    }),\n  );\n  return createAvatarArtifact(draft);\n}"
+            "line": 400,
+            "endLine": 430,
+            "text": "export async function materializeArtifactFromGenerateJob(input: {\n  generateJobId: string;\n  characterId?: string | null;\n  storagePath: string;\n  providerId?: string;\n}): Promise<AvatarArtifactV2> {\n  if (isHostLibraryEnabled()) {\n    const ownerFromPath = input.storagePath.split('/')[0] ?? '';\n    const draft = materializeAvatarArtifact(\n      mapGenerateJobToArtifactInput({\n        generateJobId: input.generateJobId,\n        ownerUserId: ownerFromPath || 'host-pending',\n        characterId: input.characterId,\n        storagePath: input.storagePath,\n        providerId: input.providerId,\n      }),\n    );\n    return createAvatarArtifact(draft);\n  }\n  const ownerUserId = await getAuthenticatedUserId();\n  const draft = materializeAvatarArtifact(\n    mapGenerateJobToArtifactInput({\n      generateJobId: input.generateJobId,\n      ownerUserId,\n      characterId: input.characterId,\n      storagePath: input.storagePath,\n      providerId: input.providerId,\n    }),\n  );\n  return createAvatarArtifact(draft);\n}"
           }
         },
         {
           "kind": "auth-helper",
           "name": null,
           "path": "src/infrastructure/character/avatar/character-avatar-artifact-service.ts",
-          "line": 324,
-          "endLine": 324,
+          "line": 452,
+          "endLine": 452,
           "resolution": "dynamic-expression",
           "expression": "getAuthenticatedUserId()",
           "chain": "getAuthenticatedUserId()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/character/avatar/character-avatar-artifact-service.ts",
-            "line": 317,
-            "endLine": 335,
-            "text": "export async function materializeArtifactFromTemplate(input: {\n  artifactId: string;\n  templateId: string;\n  characterId?: string | null;\n  storagePath: string;\n}): Promise<AvatarArtifactV2> {\n  assertHostProductSurfaceAvailable('Avatar-Artefakte');\n  const ownerUserId = await getAuthenticatedUserId();\n  const draft = materializeAvatarArtifact(\n    mapTemplateToArtifactInput({\n      artifactId: input.artifactId,\n      ownerUserId,\n      characterId: input.characterId,\n      templateId: input.templateId,\n      storagePath: input.storagePath,\n    }),\n  );\n  return createAvatarArtifact(draft);\n}"
+            "line": 433,
+            "endLine": 463,
+            "text": "export async function materializeArtifactFromTemplate(input: {\n  artifactId: string;\n  templateId: string;\n  characterId?: string | null;\n  storagePath: string;\n}): Promise<AvatarArtifactV2> {\n  if (isHostLibraryEnabled()) {\n    const ownerFromPath = input.storagePath.split('/')[0] ?? '';\n    const draft = materializeAvatarArtifact(\n      mapTemplateToArtifactInput({\n        artifactId: input.artifactId,\n        ownerUserId: ownerFromPath || 'host-pending',\n        characterId: input.characterId,\n        templateId: input.templateId,\n        storagePath: input.storagePath,\n      }),\n    );\n    return createAvatarArtifact(draft);\n  }\n  const ownerUserId = await getAuthenticatedUserId();\n  const draft = materializeAvatarArtifact(\n    mapTemplateToArtifactInput({\n      artifactId: input.artifactId,\n      ownerUserId,\n      characterId: input.characterId,\n      templateId: input.templateId,\n      storagePath: input.storagePath,\n    }),\n  );\n  return createAvatarArtifact(draft);\n}"
           }
         },
         {
           "kind": "auth-helper",
           "name": null,
           "path": "src/infrastructure/character/avatar/character-avatar-artifact-service.ts",
-          "line": 350,
-          "endLine": 350,
+          "line": 483,
+          "endLine": 483,
           "resolution": "dynamic-expression",
           "expression": "getAuthenticatedUserId()",
           "chain": "getAuthenticatedUserId()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/character/avatar/character-avatar-artifact-service.ts",
-            "line": 342,
-            "endLine": 375,
-            "text": "export async function persistAuthoritativeArtifactAnalysis(input: {\n  artifactId: string;\n  result: AvatarStructureAnalysisResultV2;\n}): Promise<void> {\n  assertHostProductSurfaceAvailable('Avatar-Artefakte');\n  if (!input.result.authoritative) {\n    throw new Error('Nur autoritative Analyse-Ergebnisse dürfen persistiert werden.');\n  }\n  const ownerUserId = await getAuthenticatedUserId();\n  const analysisStatus =\n    input.result.status === 'ready'\n      ? 'ready'\n      : input.result.status === 'limited'\n        ? 'limited'\n        : input.result.status === 'unsupported'\n          ? 'unsupported'\n          : 'failed';\n\n  // Client RLS blocks trusted status writes — this path is intended for\n  // Edge/service_role callers. Authenticated clients will fail closed here.\n  const { error } = await supabase\n    .from('character_avatar_artifacts')\n    .update({\n      analysis_status: analysisStatus,\n      analysis_result: input.result,\n    })\n    .eq('id', input.artifactId)\n    .eq('owner_user_id', ownerUserId)\n    .is('deleted_at', null);\n\n  if (error) {\n    throw new Error(`Analyse-Persistenz fehlgeschlagen: ${error.message}`);\n  }\n}"
+            "line": 469,
+            "endLine": 506,
+            "text": "export async function persistAuthoritativeArtifactAnalysis(input: {\n  artifactId: string;\n  result: AvatarStructureAnalysisResultV2;\n}): Promise<void> {\n  if (isHostLibraryEnabled()) {\n    // Host parity with Postgres RLS: browser sessions cannot escalate trusted analysis.\n    // In-process CharacterPorts remain available for host analyzer workers/self-tests.\n    throw new Error(\n      'Autoritative Avatar-Analyse ist im Host-Modus nur serverseitig verfügbar.',\n    );\n  }\n  if (!input.result.authoritative) {\n    throw new Error('Nur autoritative Analyse-Ergebnisse dürfen persistiert werden.');\n  }\n  const ownerUserId = await getAuthenticatedUserId();\n  const analysisStatus =\n    input.result.status === 'ready'\n      ? 'ready'\n      : input.result.status === 'limited'\n        ? 'limited'\n        : input.result.status === 'unsupported'\n          ? 'unsupported'\n          : 'failed';\n\n  const { error } = await supabase\n    .from('character_avatar_artifacts')\n    .update({\n      analysis_status: analysisStatus,\n      analysis_result: input.result,\n    })\n    .eq('id', input.artifactId)\n    .eq('owner_user_id', ownerUserId)\n    .is('deleted_at', null);\n\n  if (error) {\n    throw new Error(`Analyse-Persistenz fehlgeschlagen: ${error.message}`);\n  }\n}"
           }
         },
         {
           "kind": "table",
           "name": "character_avatar_artifacts",
           "path": "src/infrastructure/character/avatar/character-avatar-artifact-service.ts",
-          "line": 362,
-          "endLine": 363,
+          "line": 493,
+          "endLine": 494,
           "resolution": "literal-or-constant",
           "expression": "supabase\n    .from('character_avatar_artifacts')",
           "chain": "supabase\n    .from('character_avatar_artifacts')\n    .update({\n      analysis_status: analysisStatus,\n      analysis_result: input.result,\n    })\n    .eq('id', input.artifactId)\n    .eq('owner_user_id', ownerUserId)\n    .is('deleted_at', null)",
@@ -31410,9 +31410,9 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/character/avatar/character-avatar-artifact-service.ts",
-            "line": 342,
-            "endLine": 375,
-            "text": "export async function persistAuthoritativeArtifactAnalysis(input: {\n  artifactId: string;\n  result: AvatarStructureAnalysisResultV2;\n}): Promise<void> {\n  assertHostProductSurfaceAvailable('Avatar-Artefakte');\n  if (!input.result.authoritative) {\n    throw new Error('Nur autoritative Analyse-Ergebnisse dürfen persistiert werden.');\n  }\n  const ownerUserId = await getAuthenticatedUserId();\n  const analysisStatus =\n    input.result.status === 'ready'\n      ? 'ready'\n      : input.result.status === 'limited'\n        ? 'limited'\n        : input.result.status === 'unsupported'\n          ? 'unsupported'\n          : 'failed';\n\n  // Client RLS blocks trusted status writes — this path is intended for\n  // Edge/service_role callers. Authenticated clients will fail closed here.\n  const { error } = await supabase\n    .from('character_avatar_artifacts')\n    .update({\n      analysis_status: analysisStatus,\n      analysis_result: input.result,\n    })\n    .eq('id', input.artifactId)\n    .eq('owner_user_id', ownerUserId)\n    .is('deleted_at', null);\n\n  if (error) {\n    throw new Error(`Analyse-Persistenz fehlgeschlagen: ${error.message}`);\n  }\n}"
+            "line": 469,
+            "endLine": 506,
+            "text": "export async function persistAuthoritativeArtifactAnalysis(input: {\n  artifactId: string;\n  result: AvatarStructureAnalysisResultV2;\n}): Promise<void> {\n  if (isHostLibraryEnabled()) {\n    // Host parity with Postgres RLS: browser sessions cannot escalate trusted analysis.\n    // In-process CharacterPorts remain available for host analyzer workers/self-tests.\n    throw new Error(\n      'Autoritative Avatar-Analyse ist im Host-Modus nur serverseitig verfügbar.',\n    );\n  }\n  if (!input.result.authoritative) {\n    throw new Error('Nur autoritative Analyse-Ergebnisse dürfen persistiert werden.');\n  }\n  const ownerUserId = await getAuthenticatedUserId();\n  const analysisStatus =\n    input.result.status === 'ready'\n      ? 'ready'\n      : input.result.status === 'limited'\n        ? 'limited'\n        : input.result.status === 'unsupported'\n          ? 'unsupported'\n          : 'failed';\n\n  const { error } = await supabase\n    .from('character_avatar_artifacts')\n    .update({\n      analysis_status: analysisStatus,\n      analysis_result: input.result,\n    })\n    .eq('id', input.artifactId)\n    .eq('owner_user_id', ownerUserId)\n    .is('deleted_at', null);\n\n  if (error) {\n    throw new Error(`Analyse-Persistenz fehlgeschlagen: ${error.message}`);\n  }\n}"
           }
         },
         {
@@ -33263,74 +33263,80 @@
         },
         {
           "path": "src/infrastructure/character/avatar/character-avatar-artifact-service.ts",
-          "line": 50,
-          "endLine": 56,
+          "line": 56,
+          "endLine": 62,
           "name": "getAuthenticatedUserId"
         },
         {
           "path": "src/infrastructure/character/avatar/character-avatar-artifact-service.ts",
-          "line": 58,
-          "endLine": 89,
+          "line": 64,
+          "endLine": 95,
           "name": "rowToArtifact"
         },
         {
           "path": "src/infrastructure/character/avatar/character-avatar-artifact-service.ts",
-          "line": 91,
-          "endLine": 110,
+          "line": 97,
+          "endLine": 151,
+          "name": "parseHostArtifact"
+        },
+        {
+          "path": "src/infrastructure/character/avatar/character-avatar-artifact-service.ts",
+          "line": 153,
+          "endLine": 172,
           "name": "artifactToInsert"
         },
         {
           "path": "src/infrastructure/character/avatar/character-avatar-artifact-service.ts",
-          "line": 115,
-          "endLine": 154,
+          "line": 177,
+          "endLine": 220,
           "name": "createAvatarArtifact"
         },
         {
           "path": "src/infrastructure/character/avatar/character-avatar-artifact-service.ts",
-          "line": 156,
-          "endLine": 174,
+          "line": 222,
+          "endLine": 243,
           "name": "getAvatarArtifactById"
         },
         {
           "path": "src/infrastructure/character/avatar/character-avatar-artifact-service.ts",
-          "line": 176,
-          "endLine": 194,
+          "line": 245,
+          "endLine": 272,
           "name": "findAvatarArtifactByIdempotencyKey"
         },
         {
           "path": "src/infrastructure/character/avatar/character-avatar-artifact-service.ts",
-          "line": 196,
-          "endLine": 220,
+          "line": 274,
+          "endLine": 303,
           "name": "listAvatarArtifacts"
         },
         {
           "path": "src/infrastructure/character/avatar/character-avatar-artifact-service.ts",
-          "line": 225,
-          "endLine": 272,
+          "line": 308,
+          "endLine": 361,
           "name": "activateAvatarArtifact"
         },
         {
           "path": "src/infrastructure/character/avatar/character-avatar-artifact-service.ts",
-          "line": 275,
-          "endLine": 293,
+          "line": 364,
+          "endLine": 397,
           "name": "materializeArtifactFromImportAsset"
         },
         {
           "path": "src/infrastructure/character/avatar/character-avatar-artifact-service.ts",
-          "line": 296,
-          "endLine": 314,
+          "line": 400,
+          "endLine": 430,
           "name": "materializeArtifactFromGenerateJob"
         },
         {
           "path": "src/infrastructure/character/avatar/character-avatar-artifact-service.ts",
-          "line": 317,
-          "endLine": 335,
+          "line": 433,
+          "endLine": 463,
           "name": "materializeArtifactFromTemplate"
         },
         {
           "path": "src/infrastructure/character/avatar/character-avatar-artifact-service.ts",
-          "line": 342,
-          "endLine": 375,
+          "line": 469,
+          "endLine": 506,
           "name": "persistAuthoritativeArtifactAnalysis"
         },
         {
@@ -35611,7 +35617,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "225526477a7e5920f614ab73e2db1beeab6154c54dbc32f107713f2f046613af"
+            "sha256": "229b35aacdebddf47048b109b5ff221dd8985f2c5f97e2fb362e959567a98deb"
           },
           {
             "path": "src/infrastructure/inventory/host-inventory-adapter.ts",
@@ -35723,7 +35729,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-inventory.json",
-      "sourceContractSha256": "2a1bb29e22eed76c4a5688a559703958cf2b024a24ae56af2983b471d46b30ee",
+      "sourceContractSha256": "d2f6b10324c9f4deb5ae6c7da7d66dd60da2a9f3a82c172eee1c6bbf7e4883da",
       "rpcUsed": [],
       "tablesTouched": [
         "characters",
@@ -36927,7 +36933,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "225526477a7e5920f614ab73e2db1beeab6154c54dbc32f107713f2f046613af"
+            "sha256": "229b35aacdebddf47048b109b5ff221dd8985f2c5f97e2fb362e959567a98deb"
           },
           {
             "path": "src/infrastructure/look/adapters/host-mtoon-look-adapter.ts",
@@ -37003,7 +37009,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-look.json",
-      "sourceContractSha256": "a4ad8f8a1b94f178c28998a09668a0e6cc29e58b45d28006f118124b8b1bf306",
+      "sourceContractSha256": "2a0b7194111d9796c8fef9b7c5364cfa532ce3237715c5f98471c6a834b25415",
       "rpcUsed": [],
       "tablesTouched": [
         "look_profile_versions",
@@ -37872,7 +37878,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "225526477a7e5920f614ab73e2db1beeab6154c54dbc32f107713f2f046613af"
+            "sha256": "229b35aacdebddf47048b109b5ff221dd8985f2c5f97e2fb362e959567a98deb"
           },
           {
             "path": "src/infrastructure/marketplace/host-marketplace-adapter.ts",
@@ -37916,7 +37922,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-marketplace.json",
-      "sourceContractSha256": "1fb87e13877bf01504c504b0a9f2076c022c9e8b6a173b870036122cd096c07b",
+      "sourceContractSha256": "824a438ff8d3cfc4cbb6beb03efa0efa92df0cd34ed065531455020e1ce99383",
       "rpcUsed": [
         "increment_marketplace_downloads"
       ],
@@ -38731,7 +38737,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "225526477a7e5920f614ab73e2db1beeab6154c54dbc32f107713f2f046613af"
+            "sha256": "229b35aacdebddf47048b109b5ff221dd8985f2c5f97e2fb362e959567a98deb"
           },
           {
             "path": "src/infrastructure/host/host-session-http.ts",
@@ -38791,7 +38797,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-npc-creature.json",
-      "sourceContractSha256": "445897d78f2520d892483db31e4a3683e35f5ffd60ebe602e7513eb809524eec",
+      "sourceContractSha256": "38f2c5431daeee2db86adcf160842dd62cb3cfcf72e1ef75ceb924ccaee7d3f5",
       "rpcUsed": [
         "assign_npc_creature_controller",
         "clear_npc_creature_instance_temp_controllers_for_session",
@@ -39888,7 +39894,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "225526477a7e5920f614ab73e2db1beeab6154c54dbc32f107713f2f046613af"
+            "sha256": "229b35aacdebddf47048b109b5ff221dd8985f2c5f97e2fb362e959567a98deb"
           },
           {
             "path": "src/infrastructure/host/host-product-deny.ts",
@@ -39948,7 +39954,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-project.json",
-      "sourceContractSha256": "f24bcb1a4969bfc6127be22824bec67b4c7196c2b10c8bdbc6ae1759c5d52357",
+      "sourceContractSha256": "01dd45a9d9f76412d6d83e27dc3396ec91a1ad58b65860ebc6b22c88afd58e33",
       "rpcUsed": [
         "create_project_session",
         "ensure_native_starter_project",
@@ -41186,7 +41192,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "225526477a7e5920f614ab73e2db1beeab6154c54dbc32f107713f2f046613af"
+            "sha256": "229b35aacdebddf47048b109b5ff221dd8985f2c5f97e2fb362e959567a98deb"
           },
           {
             "path": "src/infrastructure/rulesets/ruleset-service.ts",
@@ -41206,7 +41212,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-rulesets.json",
-      "sourceContractSha256": "b6ffbeb1a90f5cd803ba7b34bd49516cd86595a197d63069fa19d64cfa2c5654",
+      "sourceContractSha256": "73ba1a1a68f6cbc81800514e716c8fe88f5d76c9b6d7d205c8c024a4c5117a9e",
       "rpcUsed": [],
       "tablesTouched": [
         "rulesets"
@@ -41425,7 +41431,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "225526477a7e5920f614ab73e2db1beeab6154c54dbc32f107713f2f046613af"
+            "sha256": "229b35aacdebddf47048b109b5ff221dd8985f2c5f97e2fb362e959567a98deb"
           },
           {
             "path": "src/infrastructure/host/host-product-deny.ts",
@@ -41473,7 +41479,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-saga.json",
-      "sourceContractSha256": "a00e589c16a97823eac12c63771862eb916f1f213ee3c10e38e68d61f50ea879",
+      "sourceContractSha256": "4fd5a212020760921a8afc937bacbbab128bd850d54a5f2e559f4867a7c1c401",
       "rpcUsed": [
         "copy_native_saga_definition",
         "create_project_from_saga_version",
@@ -41963,7 +41969,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "225526477a7e5920f614ab73e2db1beeab6154c54dbc32f107713f2f046613af"
+            "sha256": "229b35aacdebddf47048b109b5ff221dd8985f2c5f97e2fb362e959567a98deb"
           },
           {
             "path": "src/infrastructure/host/host-session-http.ts",
@@ -42059,7 +42065,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-session.json",
-      "sourceContractSha256": "96b357a13b83fe741af709f351dd5921df724fe57e87efddc1d40f5cf0024f40",
+      "sourceContractSha256": "febbe3b062de58732366e38687d96530eaea1611d1e7b562f14b2d8a142e0887",
       "rpcUsed": [
         "apply_session_runtime_command",
         "create_play_session",
@@ -43976,7 +43982,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "225526477a7e5920f614ab73e2db1beeab6154c54dbc32f107713f2f046613af"
+            "sha256": "229b35aacdebddf47048b109b5ff221dd8985f2c5f97e2fb362e959567a98deb"
           },
           {
             "path": "src/infrastructure/media/optimizer/engines/audio/index.ts",
@@ -44084,7 +44090,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-user-profile.json",
-      "sourceContractSha256": "1357228d9843fe9916aeb179c736235e2890adef540bab46e6f2f7849493970f",
+      "sourceContractSha256": "c0282af6eca89b813aa10cd1995171fc03bc4203d4002ce65db0fb06d7bdc70d",
       "rpcUsed": [],
       "tablesTouched": [
         "user_profiles"
@@ -44871,7 +44877,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "225526477a7e5920f614ab73e2db1beeab6154c54dbc32f107713f2f046613af"
+            "sha256": "229b35aacdebddf47048b109b5ff221dd8985f2c5f97e2fb362e959567a98deb"
           },
           {
             "path": "src/infrastructure/host/host-world-http.ts",
@@ -44983,7 +44989,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-world.json",
-      "sourceContractSha256": "5c6434f5f356a2a11170fabc1d287aff505dedf47b8d629a62351e2240a9bdee",
+      "sourceContractSha256": "b2941eab26ce5ca205685e9f42d8a78675d0981a8a90f3606fe17a13c01cb34c",
       "rpcUsed": [
         "archive_world_node_subtree",
         "create_world_node_with_maps",

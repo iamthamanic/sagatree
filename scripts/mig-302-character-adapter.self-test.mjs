@@ -301,13 +301,25 @@ try {
     'npc parent seedArtifact DENY',
   );
   // Bypass port to plant a legacy artifact row, then confirm resolve still hides npc parents.
-  boot.db
-    .prepare(
-      `INSERT INTO character_avatar_artifacts
-         (id, character_id, owner_user_id, storage_path, kind, created_at)
-       VALUES ('art-npc-1', ?, ?, ?, 'artifact', ?)`,
-    )
-    .run(npcId, owner, `${owner}/avatars/npc-legacy.glb`, new Date().toISOString());
+  {
+    const now = new Date().toISOString();
+    boot.db
+      .prepare(
+        `INSERT INTO character_avatar_artifacts (
+           id, character_id, owner_user_id, origin, asset_key, storage_path, format,
+           analysis_status, materialization_status, is_active, schema_version,
+           created_at, updated_at
+         ) VALUES ('art-npc-1', ?, ?, 'import', ?, ?, 'glb', 'pending', 'materialized', 0, 2, ?, ?)`,
+      )
+      .run(
+        npcId,
+        owner,
+        `avatar-asset:${owner}:art-npc-1`,
+        `${owner}/avatars/npc-legacy.glb`,
+        now,
+        now,
+      );
+  }
   const npcResolve = character.resolveOwnedArtifact(owner, `${owner}/avatars/npc-legacy.glb`);
   assert(
     npcResolve.ok === false && npcResolve.error === 'not-found',
