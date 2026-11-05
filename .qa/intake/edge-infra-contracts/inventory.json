@@ -41435,7 +41435,7 @@
           },
           {
             "path": "src/infrastructure/saga/session-outcome-promotion-service.ts",
-            "sha256": "dfa1da6b1d731d2544210b7839f9b56e2782da23078f2f36f358fd907750fdda"
+            "sha256": "7fa7783c3570ffe91db7627dfc2d5211c5f64127f3fd2281c54b370fefcaab49"
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
@@ -41455,7 +41455,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-saga.json",
-      "sourceContractSha256": "a44a52b0874442729ef3660425625d13dd52b65f2df337ebf63c448c9d1fe161",
+      "sourceContractSha256": "ba4e21cb84281fc0469e356c267f455600346f7a681f44f72f8234123bab7960",
       "rpcUsed": [
         "copy_native_saga_definition",
         "create_project_from_saga_version",

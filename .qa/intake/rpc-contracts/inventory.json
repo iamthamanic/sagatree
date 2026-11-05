@@ -59343,7 +59343,7 @@
           },
           {
             "path": "src/infrastructure/saga/session-outcome-promotion-service.ts",
-            "sha256": "dfa1da6b1d731d2544210b7839f9b56e2782da23078f2f36f358fd907750fdda"
+            "sha256": "7fa7783c3570ffe91db7627dfc2d5211c5f64127f3fd2281c54b370fefcaab49"
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
@@ -59473,7 +59473,7 @@
           "resolution": "literal-union-parameter",
           "path": "src/infrastructure/saga/session-outcome-promotion-service.ts",
           "line": 51,
-          "sourceSha256": "dfa1da6b1d731d2544210b7839f9b56e2782da23078f2f36f358fd907750fdda",
+          "sourceSha256": "7fa7783c3570ffe91db7627dfc2d5211c5f64127f3fd2281c54b370fefcaab49",
           "requestExpression": "{\n    p_session_id: sessionId,\n    p_consequence_id: consequenceId,\n  }",
           "requestKeys": [
             "p_session_id",
@@ -59590,7 +59590,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/saga/session-outcome-promotion-service.ts",
               "line": 19,
-              "sourceSha256": "dfa1da6b1d731d2544210b7839f9b56e2782da23078f2f36f358fd907750fdda",
+              "sourceSha256": "7fa7783c3570ffe91db7627dfc2d5211c5f64127f3fd2281c54b370fefcaab49",
               "source": "function hostErrorToResult(message: string): PromoteRpcResult {\n  // Strip SQLSTATE / P-code prefixes when present (\"42501:Nur …\").\n  const colon = message.indexOf(':');\n  const messageDe =\n    colon > 0 && /^[A-Z0-9]+$/i.test(message.slice(0, colon).trim())\n      ? message.slice(colon + 1).trim() || message\n      : message;\n  return {\n    ok: false,\n    messageDe: messageDe || 'Übernehmen fehlgeschlagen',\n  };\n}"
             },
             {
@@ -61308,7 +61308,7 @@
         },
         {
           "path": "src/infrastructure/saga/session-outcome-promotion-service.ts",
-          "sha256": "dfa1da6b1d731d2544210b7839f9b56e2782da23078f2f36f358fd907750fdda"
+          "sha256": "7fa7783c3570ffe91db7627dfc2d5211c5f64127f3fd2281c54b370fefcaab49"
         },
         {
           "path": "src/lib/hostAuthBridge.ts",
@@ -61432,7 +61432,7 @@
           },
           {
             "path": "src/infrastructure/saga/session-outcome-promotion-service.ts",
-            "sha256": "dfa1da6b1d731d2544210b7839f9b56e2782da23078f2f36f358fd907750fdda"
+            "sha256": "7fa7783c3570ffe91db7627dfc2d5211c5f64127f3fd2281c54b370fefcaab49"
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
@@ -61566,7 +61566,7 @@
           "resolution": "literal-union-parameter",
           "path": "src/infrastructure/saga/session-outcome-promotion-service.ts",
           "line": 51,
-          "sourceSha256": "dfa1da6b1d731d2544210b7839f9b56e2782da23078f2f36f358fd907750fdda",
+          "sourceSha256": "7fa7783c3570ffe91db7627dfc2d5211c5f64127f3fd2281c54b370fefcaab49",
           "requestExpression": "{\n    p_session_id: sessionId,\n    p_consequence_id: consequenceId,\n  }",
           "requestKeys": [
             "p_session_id",
@@ -61683,7 +61683,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/saga/session-outcome-promotion-service.ts",
               "line": 19,
-              "sourceSha256": "dfa1da6b1d731d2544210b7839f9b56e2782da23078f2f36f358fd907750fdda",
+              "sourceSha256": "7fa7783c3570ffe91db7627dfc2d5211c5f64127f3fd2281c54b370fefcaab49",
               "source": "function hostErrorToResult(message: string): PromoteRpcResult {\n  // Strip SQLSTATE / P-code prefixes when present (\"42501:Nur …\").\n  const colon = message.indexOf(':');\n  const messageDe =\n    colon > 0 && /^[A-Z0-9]+$/i.test(message.slice(0, colon).trim())\n      ? message.slice(colon + 1).trim() || message\n      : message;\n  return {\n    ok: false,\n    messageDe: messageDe || 'Übernehmen fehlgeschlagen',\n  };\n}"
             },
             {
@@ -63294,7 +63294,7 @@
         },
         {
           "path": "src/infrastructure/saga/session-outcome-promotion-service.ts",
-          "sha256": "dfa1da6b1d731d2544210b7839f9b56e2782da23078f2f36f358fd907750fdda"
+          "sha256": "7fa7783c3570ffe91db7627dfc2d5211c5f64127f3fd2281c54b370fefcaab49"
         },
         {
           "path": "src/lib/hostAuthBridge.ts",
