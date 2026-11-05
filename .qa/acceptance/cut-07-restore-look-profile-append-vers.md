@@ -1,6 +1,6 @@
 # Acceptance — CUT-07 (#1142)
 
-- HEAD_SHA: WORKTREE
+- HEAD_SHA: 5d2b483c979b2e2a257f07e70a5f17aeb27da13c
 - Issue: #1142
 - Slug: cut-07-restore-look-profile-append-vers
 
@@ -10,7 +10,7 @@ FE dual-path via host-library-http; Soft-DENY removed; full immutable history re
 
 ## Composition Gate
 
-- HEAD_SHA: WORKTREE
+- HEAD_SHA: 5d2b483c979b2e2a257f07e70a5f17aeb27da13c
 - Verdict: CLEAR
 
 ## Required Tests

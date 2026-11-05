@@ -1,6 +1,6 @@
 # Composition Gate — cut-07-restore-look-profile-append-vers (#1142)
 
-- HEAD_SHA: WORKTREE
+- HEAD_SHA: 5d2b483c979b2e2a257f07e70a5f17aeb27da13c
 - BASE_SHA: c73c60539f648b9e4f464315d8dfd1e491819788
 - Date: 2026-11-05
 - Verdict: CLEAR
