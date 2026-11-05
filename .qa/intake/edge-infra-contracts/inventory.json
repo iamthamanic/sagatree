@@ -30315,7 +30315,7 @@
           },
           {
             "path": "src/infrastructure/host/host-project-http.ts",
-            "sha256": "f0a6c7b50b90ca9612b8b2e9abf2a5902a3164b2f693a1b6818d3e84bcd580c0"
+            "sha256": "b5a68f6452217b08d2217a983113a9a356ce70890693319227f35c82fbdcd818"
           },
           {
             "path": "src/infrastructure/inventory/inventory-persistence.ts",
@@ -30431,7 +30431,7 @@
           },
           {
             "path": "src/infrastructure/project/project-member-service.ts",
-            "sha256": "e2e4afc1eb144d257d3ef5fda84fde8bac40fce8bd3e049a946fc76255b4dc54"
+            "sha256": "e400a1c407aa0640cf6d467fd7fdb87ba8877b6621646288a951572a9aee74aa"
           },
           {
             "path": "src/infrastructure/project/project-service.ts",
@@ -30491,7 +30491,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-character.json",
-      "sourceContractSha256": "7f0961c78ba4f21858884b78c6850e9157ded57a81b8c6d8c373ec4c8fd5022d",
+      "sourceContractSha256": "e2fc2b2a42ce4f8f011ed51e890f6fe444eadbb66a07004d5f2cae9a7fb256f8",
       "rpcUsed": [],
       "tablesTouched": [
         "character_adventure_arcs",
@@ -39868,7 +39868,7 @@
           },
           {
             "path": "src/infrastructure/host/host-project-http.ts",
-            "sha256": "f0a6c7b50b90ca9612b8b2e9abf2a5902a3164b2f693a1b6818d3e84bcd580c0"
+            "sha256": "b5a68f6452217b08d2217a983113a9a356ce70890693319227f35c82fbdcd818"
           },
           {
             "path": "src/infrastructure/project/host-project-adapter.ts",
@@ -39880,7 +39880,7 @@
           },
           {
             "path": "src/infrastructure/project/project-member-service.ts",
-            "sha256": "e2e4afc1eb144d257d3ef5fda84fde8bac40fce8bd3e049a946fc76255b4dc54"
+            "sha256": "e400a1c407aa0640cf6d467fd7fdb87ba8877b6621646288a951572a9aee74aa"
           },
           {
             "path": "src/infrastructure/project/project-service.ts",
@@ -39920,7 +39920,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-project.json",
-      "sourceContractSha256": "d82a58e3b6de05605517ab0e51216178aa11d458b224182cb2f13e8325ba9f1e",
+      "sourceContractSha256": "f63fb10693913032528c11b1efef33d2bc1dcf989a8b56d3f64f482961009715",
       "rpcUsed": [
         "create_project_session",
         "ensure_native_starter_project",
@@ -40022,8 +40022,8 @@
           "kind": "table",
           "name": "project_members",
           "path": "src/infrastructure/project/project-member-service.ts",
-          "line": 31,
-          "endLine": 32,
+          "line": 45,
+          "endLine": 46,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from('project_members')",
           "chain": "supabase\n      .from('project_members')\n      .select('*')\n      .eq('project_id', projectId)\n      .order('joined_at')",
@@ -40032,17 +40032,17 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/project/project-member-service.ts",
-            "line": 30,
-            "endLine": 39,
-            "text": "async getMembers(projectId: string): Promise<ProjectMemberDto[]> {\n    const { data, error } = await supabase\n      .from('project_members')\n      .select('*')\n      .eq('project_id', projectId)\n      .order('joined_at');\n\n    if (error) throw error;\n    return data || [];\n  }"
+            "line": 32,
+            "endLine": 53,
+            "text": "async getMembers(projectId: string): Promise<ProjectMemberDto[]> {\n    if (isHostLibraryEnabled()) {\n      const rows = await listHostProjectMembers(projectId);\n      return rows.map((row) => ({\n        id: row.id,\n        project_id: row.projectId,\n        user_id: row.userId,\n        character_id: row.characterId,\n        role: row.role,\n        status: row.status === 'active' ? 'active' : 'inactive',\n        joined_at: row.joinedAt ?? new Date(0).toISOString(),\n      }));\n    }\n    const { data, error } = await supabase\n      .from('project_members')\n      .select('*')\n      .eq('project_id', projectId)\n      .order('joined_at');\n\n    if (error) throw error;\n    return data || [];\n  }"
           }
         },
         {
           "kind": "rpc",
           "name": "join_project_by_code",
           "path": "src/infrastructure/project/project-member-service.ts",
-          "line": 60,
-          "endLine": 63,
+          "line": 74,
+          "endLine": 77,
           "resolution": "literal-or-constant",
           "expression": "supabase.rpc('join_project_by_code', {\n      p_code: dto.code.toUpperCase(),\n      p_character_id: dto.character_id || null,\n    })",
           "chain": "supabase.rpc('join_project_by_code', {\n      p_code: dto.code.toUpperCase(),\n      p_character_id: dto.character_id || null,\n    })",
@@ -40052,8 +40052,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/project/project-member-service.ts",
-            "line": 45,
-            "endLine": 76,
+            "line": 59,
+            "endLine": 90,
             "text": "async joinByCode(dto: JoinProjectDto): Promise<ProjectMemberDto> {\n    if (isHostLibraryEnabled()) {\n      const joined = await joinHostProjectByCode(dto.code.toUpperCase(), dto.character_id || null);\n      const projectId = requireUuid(joined.projectId, 'join_project_by_code');\n      const userId = requireUuid(joined.userId, 'join_project_by_code.userId');\n      return {\n        id: projectId,\n        project_id: projectId,\n        user_id: userId,\n        role: 'player',\n        status: 'active',\n        character_id: dto.character_id || null,\n        joined_at: new Date().toISOString(),\n      } as ProjectMemberDto;\n    }\n    const { data: projectId, error: joinError } = await supabase.rpc('join_project_by_code', {\n      p_code: dto.code.toUpperCase(),\n      p_character_id: dto.character_id || null,\n    });\n\n    if (joinError) throw new Error(`Beitritt fehlgeschlagen: ${joinError.message}`);\n    const joinedProjectId = requireUuid(projectId, 'join_project_by_code');\n\n    const { data, error } = await supabase\n      .from('project_members')\n      .select('*')\n      .eq('project_id', joinedProjectId)\n      .single();\n\n    if (error) throw error;\n    return data;\n  }"
           }
         },
@@ -40061,8 +40061,8 @@
           "kind": "table",
           "name": "project_members",
           "path": "src/infrastructure/project/project-member-service.ts",
-          "line": 68,
-          "endLine": 69,
+          "line": 82,
+          "endLine": 83,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from('project_members')",
           "chain": "supabase\n      .from('project_members')\n      .select('*')\n      .eq('project_id', joinedProjectId)\n      .single()",
@@ -40071,8 +40071,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/project/project-member-service.ts",
-            "line": 45,
-            "endLine": 76,
+            "line": 59,
+            "endLine": 90,
             "text": "async joinByCode(dto: JoinProjectDto): Promise<ProjectMemberDto> {\n    if (isHostLibraryEnabled()) {\n      const joined = await joinHostProjectByCode(dto.code.toUpperCase(), dto.character_id || null);\n      const projectId = requireUuid(joined.projectId, 'join_project_by_code');\n      const userId = requireUuid(joined.userId, 'join_project_by_code.userId');\n      return {\n        id: projectId,\n        project_id: projectId,\n        user_id: userId,\n        role: 'player',\n        status: 'active',\n        character_id: dto.character_id || null,\n        joined_at: new Date().toISOString(),\n      } as ProjectMemberDto;\n    }\n    const { data: projectId, error: joinError } = await supabase.rpc('join_project_by_code', {\n      p_code: dto.code.toUpperCase(),\n      p_character_id: dto.character_id || null,\n    });\n\n    if (joinError) throw new Error(`Beitritt fehlgeschlagen: ${joinError.message}`);\n    const joinedProjectId = requireUuid(projectId, 'join_project_by_code');\n\n    const { data, error } = await supabase\n      .from('project_members')\n      .select('*')\n      .eq('project_id', joinedProjectId)\n      .single();\n\n    if (error) throw error;\n    return data;\n  }"
           }
         },
@@ -40080,8 +40080,8 @@
           "kind": "rpc",
           "name": "set_my_project_character",
           "path": "src/infrastructure/project/project-member-service.ts",
-          "line": 97,
-          "endLine": 100,
+          "line": 111,
+          "endLine": 114,
           "resolution": "literal-or-constant",
           "expression": "supabase.rpc('set_my_project_character', {\n      p_project_id: projectId,\n      p_character_id: characterId,\n    })",
           "chain": "supabase.rpc('set_my_project_character', {\n      p_project_id: projectId,\n      p_character_id: characterId,\n    })",
@@ -40091,27 +40091,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/project/project-member-service.ts",
-            "line": 82,
-            "endLine": 113,
-            "text": "async updateCharacter(projectId: string, characterId: string): Promise<ProjectMemberDto> {\n    if (isHostLibraryEnabled()) {\n      const updated = await setHostMyProjectCharacter(projectId, characterId);\n      const memberId = requireUuid(updated.memberId, 'set_my_project_character');\n      const userId = requireUuid(updated.userId, 'set_my_project_character.userId');\n      return {\n        id: memberId,\n        project_id: projectId,\n        user_id: userId,\n        role: 'player',\n        status: 'active',\n        character_id: characterId,\n        joined_at: new Date().toISOString(),\n      } as ProjectMemberDto;\n    }\n    const { data: memberId, error: updateError } = await supabase.rpc('set_my_project_character', {\n      p_project_id: projectId,\n      p_character_id: characterId,\n    });\n\n    if (updateError) throw new Error(`Charakter konnte nicht aktualisiert werden: ${updateError.message}`);\n    const updatedMemberId = requireUuid(memberId, 'set_my_project_character');\n\n    const { data, error } = await supabase\n      .from('project_members')\n      .select('*')\n      .eq('id', updatedMemberId)\n      .single();\n\n    if (error) throw error;\n    return data;\n  }"
-          }
-        },
-        {
-          "kind": "table",
-          "name": "project_members",
-          "path": "src/infrastructure/project/project-member-service.ts",
-          "line": 105,
-          "endLine": 106,
-          "resolution": "literal-or-constant",
-          "expression": "supabase\n      .from('project_members')",
-          "chain": "supabase\n      .from('project_members')\n      .select('*')\n      .eq('id', updatedMemberId)\n      .single()",
-          "arguments": [
-            "'project_members'"
-          ],
-          "enclosingOperation": {
-            "path": "src/infrastructure/project/project-member-service.ts",
-            "line": 82,
-            "endLine": 113,
+            "line": 96,
+            "endLine": 127,
             "text": "async updateCharacter(projectId: string, characterId: string): Promise<ProjectMemberDto> {\n    if (isHostLibraryEnabled()) {\n      const updated = await setHostMyProjectCharacter(projectId, characterId);\n      const memberId = requireUuid(updated.memberId, 'set_my_project_character');\n      const userId = requireUuid(updated.userId, 'set_my_project_character.userId');\n      return {\n        id: memberId,\n        project_id: projectId,\n        user_id: userId,\n        role: 'player',\n        status: 'active',\n        character_id: characterId,\n        joined_at: new Date().toISOString(),\n      } as ProjectMemberDto;\n    }\n    const { data: memberId, error: updateError } = await supabase.rpc('set_my_project_character', {\n      p_project_id: projectId,\n      p_character_id: characterId,\n    });\n\n    if (updateError) throw new Error(`Charakter konnte nicht aktualisiert werden: ${updateError.message}`);\n    const updatedMemberId = requireUuid(memberId, 'set_my_project_character');\n\n    const { data, error } = await supabase\n      .from('project_members')\n      .select('*')\n      .eq('id', updatedMemberId)\n      .single();\n\n    if (error) throw error;\n    return data;\n  }"
           }
         },
@@ -40123,14 +40104,33 @@
           "endLine": 120,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from('project_members')",
+          "chain": "supabase\n      .from('project_members')\n      .select('*')\n      .eq('id', updatedMemberId)\n      .single()",
+          "arguments": [
+            "'project_members'"
+          ],
+          "enclosingOperation": {
+            "path": "src/infrastructure/project/project-member-service.ts",
+            "line": 96,
+            "endLine": 127,
+            "text": "async updateCharacter(projectId: string, characterId: string): Promise<ProjectMemberDto> {\n    if (isHostLibraryEnabled()) {\n      const updated = await setHostMyProjectCharacter(projectId, characterId);\n      const memberId = requireUuid(updated.memberId, 'set_my_project_character');\n      const userId = requireUuid(updated.userId, 'set_my_project_character.userId');\n      return {\n        id: memberId,\n        project_id: projectId,\n        user_id: userId,\n        role: 'player',\n        status: 'active',\n        character_id: characterId,\n        joined_at: new Date().toISOString(),\n      } as ProjectMemberDto;\n    }\n    const { data: memberId, error: updateError } = await supabase.rpc('set_my_project_character', {\n      p_project_id: projectId,\n      p_character_id: characterId,\n    });\n\n    if (updateError) throw new Error(`Charakter konnte nicht aktualisiert werden: ${updateError.message}`);\n    const updatedMemberId = requireUuid(memberId, 'set_my_project_character');\n\n    const { data, error } = await supabase\n      .from('project_members')\n      .select('*')\n      .eq('id', updatedMemberId)\n      .single();\n\n    if (error) throw error;\n    return data;\n  }"
+          }
+        },
+        {
+          "kind": "table",
+          "name": "project_members",
+          "path": "src/infrastructure/project/project-member-service.ts",
+          "line": 133,
+          "endLine": 134,
+          "resolution": "literal-or-constant",
+          "expression": "supabase\n      .from('project_members')",
           "chain": "supabase\n      .from('project_members')\n      .delete()\n      .eq('project_id', projectId)\n      .eq('user_id', userId)",
           "arguments": [
             "'project_members'"
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/project/project-member-service.ts",
-            "line": 118,
-            "endLine": 126,
+            "line": 132,
+            "endLine": 140,
             "text": "async leave(projectId: string, userId: string): Promise<void> {\n    const { error } = await supabase\n      .from('project_members')\n      .delete()\n      .eq('project_id', projectId)\n      .eq('user_id', userId);\n\n    if (error) throw error;\n  }"
           }
         },
@@ -40138,8 +40138,8 @@
           "kind": "table",
           "name": "project_members",
           "path": "src/infrastructure/project/project-member-service.ts",
-          "line": 132,
-          "endLine": 133,
+          "line": 146,
+          "endLine": 147,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from('project_members')",
           "chain": "supabase\n      .from('project_members')\n      .select(`\n        *,\n        project:projects(*)\n      `)\n      .eq('user_id', userId)\n      .eq('status', 'active')\n      .order('joined_at', { ascending: false })",
@@ -40148,8 +40148,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/project/project-member-service.ts",
-            "line": 131,
-            "endLine": 144,
+            "line": 145,
+            "endLine": 158,
             "text": "async getMyProjects(userId: string): Promise<ProjectMemberDto[]> {\n    const { data, error } = await supabase\n      .from('project_members')\n      .select(`\n        *,\n        project:projects(*)\n      `)\n      .eq('user_id', userId)\n      .eq('status', 'active')\n      .order('joined_at', { ascending: false });\n\n    if (error) throw error;\n    return data || [];\n  }"
           }
         },
@@ -40850,38 +40850,38 @@
         },
         {
           "path": "src/infrastructure/project/project-member-service.ts",
-          "line": 19,
-          "endLine": 24,
+          "line": 20,
+          "endLine": 25,
           "name": "requireUuid"
         },
         {
           "path": "src/infrastructure/project/project-member-service.ts",
-          "line": 30,
-          "endLine": 39,
+          "line": 32,
+          "endLine": 53,
           "name": "getMembers"
         },
         {
           "path": "src/infrastructure/project/project-member-service.ts",
-          "line": 45,
-          "endLine": 76,
+          "line": 59,
+          "endLine": 90,
           "name": "joinByCode"
         },
         {
           "path": "src/infrastructure/project/project-member-service.ts",
-          "line": 82,
-          "endLine": 113,
+          "line": 96,
+          "endLine": 127,
           "name": "updateCharacter"
         },
         {
           "path": "src/infrastructure/project/project-member-service.ts",
-          "line": 118,
-          "endLine": 126,
+          "line": 132,
+          "endLine": 140,
           "name": "leave"
         },
         {
           "path": "src/infrastructure/project/project-member-service.ts",
-          "line": 131,
-          "endLine": 144,
+          "line": 145,
+          "endLine": 158,
           "name": "getMyProjects"
         },
         {

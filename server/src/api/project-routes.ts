@@ -344,6 +344,36 @@ export function mountProjectHttpRoutes(app: Hono, deps: ProjectHttpDeps): void {
       if (!archived.ok) return c.json({ error: archived.error }, infraStatus(archived.error));
       return c.json({ ok: true, id: archived.value.id }, 200);
     });
+
+    /** Active membership roster for controller/spawn dialogs (CUT-02 FE dual-path). */
+    app.get('/api/v1/projects/:projectId/members', async (c) => {
+      const actorResult = await resolveProjectActor(deps, c.req.raw.headers, true);
+      if (!actorResult.ok) {
+        return c.json({ error: actorResult.error }, actorResult.status);
+      }
+      const projectId = c.req.param('projectId');
+      const loaded = project.getProject(projectId);
+      if (!loaded.ok) {
+        return c.json({ error: loaded.error }, infraStatus(loaded.error));
+      }
+      const actorIds = [actorResult.actor.actorId];
+      if (
+        !project.isActiveMember(projectId, actorIds) &&
+        !project.isProjectGm(projectId, actorIds)
+      ) {
+        return c.json({ error: '42501' }, 403);
+      }
+      const members = project.listActiveMembers(projectId).map((row) => ({
+        id: row.memberId,
+        projectId,
+        userId: row.userId,
+        characterId: null as string | null,
+        role: row.role === 'gm' ? 'gm' : 'player',
+        status: row.status === 'active' ? 'active' : 'inactive',
+        joinedAt: row.joinedAt,
+      }));
+      return c.json({ members }, 200);
+    });
   }
 
   if (!infra) return;

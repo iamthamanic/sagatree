@@ -151,6 +151,29 @@ try {
   });
   assert(joinPlayer.res.status === 200, `player join ${joinPlayer.res.status} ${joinPlayer.text}`);
 
+  const membersList = await httpJson(
+    baseURL,
+    `/api/v1/projects/${encodeURIComponent(projectId)}/members`,
+    { cookie: gmCookie, headers: { Origin: baseURL, 'Sec-Fetch-Site': 'same-origin' } },
+  );
+  assert(
+    membersList.res.status === 200,
+    `members list ${membersList.res.status} ${membersList.text}`,
+  );
+  const memberUserIds = (membersList.json?.members ?? []).map((m) => m.userId);
+  assert(memberUserIds.includes(gmActorId), 'members include GM');
+  assert(memberUserIds.includes(playerActorId), 'members include player');
+
+  const strangerMembers = await httpJson(
+    baseURL,
+    `/api/v1/projects/${encodeURIComponent(projectId)}/members`,
+    { cookie: strangerCookie, headers: { Origin: baseURL, 'Sec-Fetch-Site': 'same-origin' } },
+  );
+  assert(
+    strangerMembers.res.status === 403,
+    `stranger members DENY ${strangerMembers.res.status}`,
+  );
+
   const createdNpc = await httpJson(baseURL, '/api/v1/library/npc-creatures', {
     method: 'POST',
     cookie: gmCookie,
