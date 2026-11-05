@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-inventory.json](source-contracts/infra-inventory.json) (SHA-256 `80ba976d553be3db9bf9d9947b4bf94c063e895e3264369660eef7eaefdf40e2`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-inventory.json](source-contracts/infra-inventory.json) (SHA-256 `807eb2348e5ae032444e4d97c5468b5bde4af45bc489f259d5ca786f48824225`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -619,7 +619,7 @@ export function migrationDefinitionId(fingerprint: string): string {
 }
 ```
 
-### src/infrastructure/inventory/item-catalog-service.ts:90
+### src/infrastructure/inventory/item-catalog-service.ts:96
 
 ```ts
 export interface CharacterItemCatalog {
@@ -633,7 +633,7 @@ export interface CharacterItemCatalog {
 }
 ```
 
-### src/infrastructure/inventory/item-catalog-service.ts:101
+### src/infrastructure/inventory/item-catalog-service.ts:107
 
 ```ts
 export interface LibraryItemCatalog {
@@ -644,7 +644,7 @@ export interface LibraryItemCatalog {
 }
 ```
 
-### src/infrastructure/inventory/item-catalog-service.ts:116
+### src/infrastructure/inventory/item-catalog-service.ts:122
 
 ```ts
 export async function loadCharacterItemCatalog(
@@ -711,7 +711,7 @@ export async function loadCharacterItemCatalog(
 }
 ```
 
-### src/infrastructure/inventory/item-catalog-service.ts:184
+### src/infrastructure/inventory/item-catalog-service.ts:190
 
 ```ts
 export async function loadLibraryItemCatalog(): Promise<LibraryItemCatalog> {
@@ -748,7 +748,7 @@ export async function loadLibraryItemCatalog(): Promise<LibraryItemCatalog> {
 }
 ```
 
-### src/infrastructure/inventory/item-catalog-service.ts:221
+### src/infrastructure/inventory/item-catalog-service.ts:227
 
 ```ts
 export async function loadWorldProfileItemCatalog(
@@ -761,7 +761,7 @@ export async function loadWorldProfileItemCatalog(
 }
 ```
 
-### src/infrastructure/inventory/item-catalog-service.ts:234
+### src/infrastructure/inventory/item-catalog-service.ts:240
 
 ```ts
 export async function getItemDefinitionById(definitionId: string): Promise<{
@@ -769,10 +769,8 @@ export async function getItemDefinitionById(definitionId: string): Promise<{
   record: CatalogDefinitionRecord | null;
 } | null> {
   if (isHostLibraryEnabled()) {
-    const hostItems = await fetchHostLibraryItems();
-    const record = hostItems
-      .map(mapHostLibraryItemRecord)
-      .find((row): row is CatalogDefinitionRecord => row !== null && row.definition.id === definitionId);
+    const hostItem = await fetchHostLibraryItem(definitionId);
+    const record = mapHostLibraryItemRecord(hostItem);
     if (record) return { definition: record.definition, record };
     const core = getCoreItemDefinition(definitionId);
     if (core) return { definition: withCatalogPublicId(core), record: null };
@@ -784,7 +782,7 @@ export async function getItemDefinitionById(definitionId: string): Promise<{
 }
 ```
 
-### src/infrastructure/inventory/item-catalog-service.ts:271
+### src/infrastructure/inventory/item-catalog-service.ts:275
 
 ```ts
 export async function createPersonalDefinition(
@@ -797,7 +795,7 @@ export async function createPersonalDefinition(
 }
 ```
 
-### src/infrastructure/inventory/item-catalog-service.ts:280
+### src/infrastructure/inventory/item-catalog-service.ts:284
 
 ```ts
 export async function createWorldDefinition(
@@ -811,7 +809,7 @@ export async function createWorldDefinition(
 }
 ```
 
-### src/infrastructure/inventory/item-catalog-service.ts:290
+### src/infrastructure/inventory/item-catalog-service.ts:294
 
 ```ts
 export async function updateDefinition(
@@ -819,39 +817,58 @@ export async function updateDefinition(
   draft: ItemDefinitionDraft,
 ): Promise<CatalogDefinitionRecord> {
   if (isHostLibraryEnabled()) {
-    throw new Error('Item-Definition aktualisieren ist auf dem Host noch nicht verfügbar.');
+    // Scope is a column on the host; payload builder strips id/scope — use personal as a
+    // typed placeholder so Draft→payload matches createHostCatalogDefinition.
+    const payload = toDefinitionPayload({
+      ...draft,
+      id: definitionId,
+      scope: 'personal',
+    });
+    const updated = await updateHostLibraryItem(definitionId, {
+      name: draft.name,
+      payload,
+    });
+    const record = mapHostLibraryItemRecord(updated);
+    if (!record) throw new Error('Host-Item speichern: ungültige Antwort');
+    return record;
   }
   return supabaseItemCatalogRepository.updateDefinition(definitionId, draft);
 }
 ```
 
-### src/infrastructure/inventory/item-catalog-service.ts:301
+### src/infrastructure/inventory/item-catalog-service.ts:318
 
 ```ts
 export async function archiveDefinition(
   definitionId: string,
 ): Promise<CatalogDefinitionRecord> {
   if (isHostLibraryEnabled()) {
-    throw new Error('Item-Definition archivieren ist auf dem Host noch nicht verfügbar.');
+    const archived = await archiveHostLibraryItem(definitionId);
+    const record = mapHostLibraryItemRecord(archived);
+    if (!record) throw new Error('Host-Item archivieren: ungültige Antwort');
+    return record;
   }
   return supabaseItemCatalogRepository.setDefinitionStatus(definitionId, 'archived');
 }
 ```
 
-### src/infrastructure/inventory/item-catalog-service.ts:310
+### src/infrastructure/inventory/item-catalog-service.ts:330
 
 ```ts
 export async function restoreDefinition(
   definitionId: string,
 ): Promise<CatalogDefinitionRecord> {
   if (isHostLibraryEnabled()) {
-    throw new Error('Item-Definition wiederherstellen ist auf dem Host noch nicht verfügbar.');
+    const restored = await restoreHostLibraryItem(definitionId);
+    const record = mapHostLibraryItemRecord(restored);
+    if (!record) throw new Error('Host-Item wiederherstellen: ungültige Antwort');
+    return record;
   }
   return supabaseItemCatalogRepository.setDefinitionStatus(definitionId, 'active');
 }
 ```
 
-### src/infrastructure/inventory/item-catalog-service.ts:323
+### src/infrastructure/inventory/item-catalog-service.ts:347
 
 ```ts
 export async function forkDefinition(
@@ -859,7 +876,23 @@ export async function forkDefinition(
   target: ForkDefinitionTarget,
 ): Promise<CatalogDefinitionRecord> {
   if (isHostLibraryEnabled()) {
-    throw new Error('Item-Definition forken ist auf dem Host noch nicht verfügbar.');
+    const origin = target.scope === 'world' ? 'world' : 'personal';
+    const worldProfileId = target.scope === 'world' ? target.worldProfileId : null;
+    // Core/builtin packs are local (not SQLite rows) — fork by creating a new host definition.
+    const localSource =
+      getCoreItemDefinition(sourceDefinitionId) ??
+      getBuiltinStandardDefinition(sourceDefinitionId);
+    if (localSource) {
+      const draft = buildForkedItemDefinitionDraft(localSource, origin);
+      return createHostCatalogDefinition(origin, draft, worldProfileId);
+    }
+    const forked = await forkHostLibraryItem(sourceDefinitionId, {
+      origin,
+      worldProfileId,
+    });
+    const record = mapHostLibraryItemRecord(forked);
+    if (!record) throw new Error('Host-Item forken: ungültige Antwort');
+    return record;
   }
   return supabaseItemCatalogRepository.forkDefinition(sourceDefinitionId, target);
 }
@@ -1720,11 +1753,11 @@ async function invoke(body: Record<string, unknown>): Promise<FunctionResponse> 
 | `src/domains/rules/sagatree/skill-progression/index.ts` | `7b4f5f109d49785497b4639a154b6e3856d58e52421befa7fa0ba0a278967cb7` |
 | `src/domains/rules/sagatree/species-trait-options/index.ts` | `b21687494d66c5e5b3e1b791eadf3aa1ecabb9094695768a7961bba8b36730c4` |
 | `src/infrastructure/character/character.persistence.ts` | `5ed5f363555b9c4a3922507e01a227f74aee706764065641eb27ac9510024bd5` |
-| `src/infrastructure/host/host-library-http.ts` | `45d3c37d4a5ce1c328c42c50fd5482590b9811150d71a55e3029071916fd281e` |
+| `src/infrastructure/host/host-library-http.ts` | `41009cd3b0176f71e939383f9d227b7e31ccab685b88390c61dfd9756a8b6a99` |
 | `src/infrastructure/inventory/host-inventory-adapter.ts` | `705ee213e4ffa49ea7b0d89583a01b5ae78bcd6a990464dd5104d88abc83b6b2` |
 | `src/infrastructure/inventory/host-inventory-ports.contract.ts` | `115502542d1d6c8a94292ca0f15a683ebc78cf2997aa3c5a130b682cccc448d2` |
 | `src/infrastructure/inventory/inventory-persistence.ts` | `79aaa09053ecd72a0bec8f8f0610b31ab0c9b34779f4a4c87f19f0d2ef7e4ac2` |
-| `src/infrastructure/inventory/item-catalog-service.ts` | `bd57f46625d0b162bc107c302429befe2bfc12b843da99c3be65f1e14f980b38` |
+| `src/infrastructure/inventory/item-catalog-service.ts` | `a2164f40d92e9446d8a53ea589841d8d669fc34de045f9f94be92e2bcca4ebff` |
 | `src/infrastructure/inventory/item-catalog.persistence.ts` | `a68903ba909af8030e81d28555a65798800c9a32a790a4281e96f52b1550c566` |
 | `src/infrastructure/inventory/item-model3d-service.ts` | `cbf9eb726d58bd20ae3c43c6364771c6ebd8ef21bbcc4575197f6fe67d311035` |
 | `src/infrastructure/inventory/item-thumbnail-service.ts` | `a17aecc412f3766d52e2a54c8ffa4ffc0e55cd64363a77a9a0f0dd7d5e07622a` |

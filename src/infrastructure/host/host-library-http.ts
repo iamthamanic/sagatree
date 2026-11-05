@@ -441,6 +441,123 @@ export async function createHostLibraryItem(
   return body.item;
 }
 
+/** CUT-06 — GET `/api/v1/library/items/:id` including archived. */
+export async function fetchHostLibraryItem(
+  definitionId: string,
+  env: EnvLike = defaultEnv(),
+  fetchImpl: typeof fetch = fetch,
+): Promise<unknown | null> {
+  const base = getHostAuthBaseUrl(env);
+  if (!base) throw new Error('Host-Itemkatalog nicht erreichbar');
+  let response: Response;
+  try {
+    response = await fetchImpl(
+      `${base}/api/v1/library/items/${encodeURIComponent(definitionId)}`,
+      {
+        method: 'GET',
+        credentials: 'include',
+        headers: { Accept: 'application/json' },
+      },
+    );
+  } catch {
+    throw new Error('Host-Itemkatalog nicht erreichbar');
+  }
+  if (response.status === 404) return null;
+  if (!response.ok) {
+    let detail = '';
+    try {
+      const body: unknown = await response.json();
+      if (body && typeof body === 'object' && 'error' in body) {
+        detail = String((body as { error: unknown }).error);
+      }
+    } catch {
+      /* ignore */
+    }
+    throw new Error(
+      detail ? `Host-Item laden fehlgeschlagen: ${detail}` : 'Host-Item laden fehlgeschlagen',
+    );
+  }
+  const body = (await response.json()) as { item?: unknown };
+  return body.item ?? null;
+}
+
+/** CUT-06 — PATCH `/api/v1/library/items/:id`. */
+export async function updateHostLibraryItem(
+  definitionId: string,
+  draft: {
+    readonly name?: string;
+    readonly payload?: Readonly<Record<string, unknown>>;
+  },
+  env: EnvLike = defaultEnv(),
+  fetchImpl: typeof fetch = fetch,
+): Promise<unknown> {
+  const body = await hostMutateJson<{ item?: unknown }>(
+    `/api/v1/library/items/${encodeURIComponent(definitionId)}`,
+    'PATCH',
+    'Host-Item speichern fehlgeschlagen',
+    draft,
+    env,
+    fetchImpl,
+  );
+  if (!body.item) throw new Error('Host-Item speichern: leere Antwort');
+  return body.item;
+}
+
+export async function archiveHostLibraryItem(
+  definitionId: string,
+  env: EnvLike = defaultEnv(),
+  fetchImpl: typeof fetch = fetch,
+): Promise<unknown> {
+  const body = await hostMutateJson<{ item?: unknown }>(
+    `/api/v1/library/items/${encodeURIComponent(definitionId)}/archive`,
+    'POST',
+    'Host-Item archivieren fehlgeschlagen',
+    {},
+    env,
+    fetchImpl,
+  );
+  if (!body.item) throw new Error('Host-Item archivieren: leere Antwort');
+  return body.item;
+}
+
+export async function restoreHostLibraryItem(
+  definitionId: string,
+  env: EnvLike = defaultEnv(),
+  fetchImpl: typeof fetch = fetch,
+): Promise<unknown> {
+  const body = await hostMutateJson<{ item?: unknown }>(
+    `/api/v1/library/items/${encodeURIComponent(definitionId)}/restore`,
+    'POST',
+    'Host-Item wiederherstellen fehlgeschlagen',
+    {},
+    env,
+    fetchImpl,
+  );
+  if (!body.item) throw new Error('Host-Item wiederherstellen: leere Antwort');
+  return body.item;
+}
+
+export async function forkHostLibraryItem(
+  sourceDefinitionId: string,
+  target: {
+    readonly origin: 'personal' | 'world';
+    readonly worldProfileId?: string | null;
+  },
+  env: EnvLike = defaultEnv(),
+  fetchImpl: typeof fetch = fetch,
+): Promise<unknown> {
+  const body = await hostMutateJson<{ item?: unknown }>(
+    `/api/v1/library/items/${encodeURIComponent(sourceDefinitionId)}/fork`,
+    'POST',
+    'Host-Item forken fehlgeschlagen',
+    target,
+    env,
+    fetchImpl,
+  );
+  if (!body.item) throw new Error('Host-Item forken: leere Antwort');
+  return body.item;
+}
+
 export async function createHostLibraryNpcCreature(
   input: {
     readonly scope: 'personal' | 'world';

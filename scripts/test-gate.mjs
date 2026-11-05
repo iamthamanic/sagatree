@@ -1507,6 +1507,19 @@ function checkCut05OutcomePromotion() {
   console.log('OK: cut-05-outcome-promotion.self-test');
 }
 
+function checkCut06ItemDefinition() {
+  console.log('CUT-06 item catalog update/archive/restore/fork (#1141)...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/cut-06-item-definition.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+  console.log('OK: cut-06-item-definition.self-test');
+}
+
 function checkMig312UserProfileAdapter() {
   console.log('MIG-312 user-profile adapter (#811): user_profiles + user-avatars dual-path...');
   execFileSync(
@@ -3729,6 +3742,7 @@ checkCut02NpcController();
 checkCut03NpcInstance();
 checkCut04SessionDelete();
 checkCut05OutcomePromotion();
+checkCut06ItemDefinition();
 checkMig312UserProfileAdapter();
 checkMig309Rulesets();
 checkMig313WorldAdapter();

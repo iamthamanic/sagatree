@@ -82,6 +82,32 @@ export type InventoryPorts = {
     actorId: string,
     draft: InventoryDefinitionDraft,
   ) => InventoryResult<InventoryDefinitionRecord>;
+  /** CUT-06 — mutate name/payload; id/origin/owner immutable. */
+  readonly updateDefinition: (
+    actorIdOrIds: string | readonly string[],
+    definitionId: string,
+    draft: InventoryDefinitionDraft,
+  ) => InventoryResult<InventoryDefinitionRecord>;
+  /** CUT-06 — archive or restore; archived rows stay resolvable for instances. */
+  readonly setDefinitionStatus: (
+    actorIdOrIds: string | readonly string[],
+    definitionId: string,
+    status: 'active' | 'archived',
+  ) => InventoryResult<InventoryDefinitionRecord>;
+  /** CUT-06 — fork readable source into a new personal/world definition. */
+  readonly forkDefinition: (
+    actorIdOrIds: string | readonly string[],
+    sourceDefinitionId: string,
+    target: {
+      readonly origin: 'personal' | 'world';
+      readonly worldProfileId?: string | null;
+    },
+  ) => InventoryResult<InventoryDefinitionRecord>;
+  /** CUT-06 — load one definition including archived (for restore/workbench). */
+  readonly getDefinition: (
+    actorIdOrIds: string | readonly string[],
+    definitionId: string,
+  ) => InventoryResult<InventoryDefinitionRecord | null>;
   readonly seedStandardDefinitionForTests: (input: {
     readonly name: string;
     readonly payload?: Readonly<Record<string, unknown>>;
@@ -106,6 +132,10 @@ export function createInventoryPorts(input?: CreateInventoryPortsInput): Invento
       putOwnedInventory: () => unavailable(),
       listCatalog: () => unavailable(),
       createDefinition: () => unavailable(),
+      updateDefinition: () => unavailable(),
+      setDefinitionStatus: () => unavailable(),
+      forkDefinition: () => unavailable(),
+      getDefinition: () => unavailable(),
       seedStandardDefinitionForTests: () => {
         throw new Error('store-unavailable');
       },
@@ -119,6 +149,14 @@ export function createInventoryPorts(input?: CreateInventoryPortsInput): Invento
       store.putOwnedInventory(actorId, characterId, inventory),
     listCatalog: (actorIdOrIds, options) => store.listCatalog(actorIdOrIds, options),
     createDefinition: (actorId, draft) => store.createDefinition(actorId, draft),
+    updateDefinition: (actorIdOrIds, definitionId, draft) =>
+      store.updateDefinition(actorIdOrIds, definitionId, draft),
+    setDefinitionStatus: (actorIdOrIds, definitionId, status) =>
+      store.setDefinitionStatus(actorIdOrIds, definitionId, status),
+    forkDefinition: (actorIdOrIds, sourceDefinitionId, target) =>
+      store.forkDefinition(actorIdOrIds, sourceDefinitionId, target),
+    getDefinition: (actorIdOrIds, definitionId) =>
+      store.getDefinition(actorIdOrIds, definitionId),
     seedStandardDefinitionForTests: (seedInput) => store.seedStandardDefinition(seedInput),
   };
 }

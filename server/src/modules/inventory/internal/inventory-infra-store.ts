@@ -123,6 +123,74 @@ function parseOrigin(value: unknown): 'standard' | 'personal' | 'world' | null {
   return value === 'standard' || value === 'personal' || value === 'world' ? value : null;
 }
 
+function normalizeActorIds(
+  actorIdOrIds: string | readonly string[],
+): readonly string[] {
+  return (typeof actorIdOrIds === 'string' ? [actorIdOrIds] : [...actorIdOrIds]).filter(
+    (id) => typeof id === 'string' && id.length > 0,
+  );
+}
+
+/** Host mirror of FE InventoryItemType — keep aligned with domains/character/inventory-v2. */
+const HOST_ITEM_TYPES = new Set([
+  'weapon',
+  'armor',
+  'shield',
+  'tool',
+  'consumable',
+  'container',
+  'misc',
+]);
+
+function isIntegerInRange(value: unknown, min: number, max: number): boolean {
+  return Number.isInteger(value) && (value as number) >= min && (value as number) <= max;
+}
+
+/**
+ * Fail-closed writable payload check (mirror of parseItemDefinition core gates).
+ * Rejects empty/corrupt replacements that would drop owned-instance resolution.
+ */
+function assertWritableItemPayload(
+  payload: Record<string, unknown>,
+  fallbackName: string,
+): { ok: true; payload: Record<string, unknown>; name: string } | { ok: false; error: string } {
+  const nameRaw = typeof payload.name === 'string' ? payload.name.trim() : fallbackName.trim();
+  if (!nameRaw) return { ok: false, error: 'invalid-payload' };
+  const type = payload.type;
+  if (typeof type !== 'string' || !HOST_ITEM_TYPES.has(type)) {
+    return { ok: false, error: 'invalid-payload' };
+  }
+  if (!isIntegerInRange(payload.load, 0, 3) || !isIntegerInRange(payload.cost, 0, 5)) {
+    return { ok: false, error: 'invalid-payload' };
+  }
+  return { ok: true, payload: { ...payload, name: nameRaw }, name: nameRaw };
+}
+
+/**
+ * Canonical fork transformation (mirror of domains/items/fork buildForkedItemDefinitionDraft).
+ * Sets basedOnDefinitionId + target origin; strips source-owned assetKey/model3d.
+ */
+function buildForkedHostPayload(
+  source: InventoryDefinitionRecord,
+  targetOrigin: 'personal' | 'world',
+): Record<string, unknown> {
+  const {
+    assetKey: _assetKey,
+    model3d: _model3d,
+    basedOnDefinitionId: _basedOn,
+    origin: _origin,
+    forkedFromId: _forkedFromId,
+    forkedFromOrigin: _forkedFromOrigin,
+    ...rest
+  } = source.payload;
+  return {
+    ...rest,
+    name: typeof rest.name === 'string' && rest.name.trim() ? rest.name : source.name,
+    basedOnDefinitionId: source.id,
+    origin: targetOrigin,
+  };
+}
+
 /** Escape LIKE wildcards so user query cannot match everything via % / _. */
 function escapeLikePattern(raw: string): string {
   return raw.replace(/\\/g, '\\\\').replace(/%/g, '\\%').replace(/_/g, '\\_');
@@ -409,6 +477,221 @@ export class InventoryInfraStore {
       name: input.name,
       payload: input.payload ?? {},
     };
+  }
+
+  /**
+   * CUT-06 — update mutable name/payload only. Origin, owner, world and id stay fixed.
+   * Standard/core rows are immutable.
+   */
+  updateDefinition(
+    actorIdOrIds: string | readonly string[],
+    definitionId: string,
+    draft: InventoryDefinitionDraft,
+  ): InventoryResult<InventoryDefinitionRecord> {
+    const actorIds = normalizeActorIds(actorIdOrIds);
+    if (actorIds.length === 0) return { ok: false, error: 'missing-actor' };
+    const id = typeof definitionId === 'string' ? definitionId.trim() : '';
+    if (!id) return { ok: false, error: 'not-found' };
+    const existing = this.#loadDefinition(id);
+    if (!existing) return { ok: false, error: 'not-found' };
+    if (!this.#canMutateDefinition(actorIds, existing)) {
+      return { ok: false, error: 'not-authorized' };
+    }
+    const draftName =
+      typeof draft.name === 'string' && draft.name.trim() ? draft.name.trim() : existing.name;
+    const rawPayload =
+      draft.payload === undefined
+        ? { ...existing.payload, name: draftName }
+        : { ...asObject(draft.payload), name: draftName };
+    const validated = assertWritableItemPayload(rawPayload, draftName);
+    if (!validated.ok) return { ok: false, error: validated.error };
+    const { name, payload } = validated;
+    const updatedAt = nowIso();
+    let inTx = false;
+    try {
+      this.#db.exec('BEGIN IMMEDIATE');
+      inTx = true;
+      const result = this.#db
+        .prepare(
+          `UPDATE inventory_item_definitions
+              SET name = ?, payload_json = ?, updated_at = ?
+            WHERE id = ?
+              AND origin = ?
+              AND status IN ('active', 'archived')`,
+        )
+        .run(name, JSON.stringify(payload), updatedAt, id, existing.origin);
+      if (result.changes !== 1) {
+        this.#db.exec('ROLLBACK');
+        inTx = false;
+        return { ok: false, error: 'update-failed' };
+      }
+      this.#db.exec('COMMIT');
+      inTx = false;
+    } catch {
+      if (inTx) {
+        try {
+          this.#db.exec('ROLLBACK');
+        } catch {
+          /* ignore */
+        }
+      }
+      return { ok: false, error: 'update-failed' };
+    }
+    return {
+      ok: true,
+      value: {
+        ...existing,
+        name,
+        payload,
+      },
+    };
+  }
+
+  /** CUT-06 — archive or restore. Archived definitions remain resolvable for owned instances. */
+  setDefinitionStatus(
+    actorIdOrIds: string | readonly string[],
+    definitionId: string,
+    status: 'active' | 'archived',
+  ): InventoryResult<InventoryDefinitionRecord> {
+    const actorIds = normalizeActorIds(actorIdOrIds);
+    if (actorIds.length === 0) return { ok: false, error: 'missing-actor' };
+    if (status !== 'active' && status !== 'archived') {
+      return { ok: false, error: 'invalid-status' };
+    }
+    const id = typeof definitionId === 'string' ? definitionId.trim() : '';
+    if (!id) return { ok: false, error: 'not-found' };
+    const existing = this.#loadDefinition(id);
+    if (!existing) return { ok: false, error: 'not-found' };
+    if (!this.#canMutateDefinition(actorIds, existing)) {
+      return { ok: false, error: 'not-authorized' };
+    }
+    if (existing.status === status) {
+      return { ok: true, value: existing };
+    }
+    const updatedAt = nowIso();
+    let inTx = false;
+    try {
+      this.#db.exec('BEGIN IMMEDIATE');
+      inTx = true;
+      const result = this.#db
+        .prepare(
+          `UPDATE inventory_item_definitions
+              SET status = ?, updated_at = ?
+            WHERE id = ? AND origin = ?`,
+        )
+        .run(status, updatedAt, id, existing.origin);
+      if (result.changes !== 1) {
+        this.#db.exec('ROLLBACK');
+        inTx = false;
+        return { ok: false, error: 'status-failed' };
+      }
+      this.#db.exec('COMMIT');
+      inTx = false;
+    } catch {
+      if (inTx) {
+        try {
+          this.#db.exec('ROLLBACK');
+        } catch {
+          /* ignore */
+        }
+      }
+      return { ok: false, error: 'status-failed' };
+    }
+    return { ok: true, value: { ...existing, status } };
+  }
+
+  /**
+   * CUT-06 — fork readable source into a new personal/world definition.
+   * Never mutates the source; standard/builtin sources are allowed as fork inputs.
+   */
+  forkDefinition(
+    actorIdOrIds: string | readonly string[],
+    sourceDefinitionId: string,
+    target: {
+      readonly origin: 'personal' | 'world';
+      readonly worldProfileId?: string | null;
+    },
+  ): InventoryResult<InventoryDefinitionRecord> {
+    const actorIds = normalizeActorIds(actorIdOrIds);
+    if (actorIds.length === 0) return { ok: false, error: 'missing-actor' };
+    const sourceId =
+      typeof sourceDefinitionId === 'string' ? sourceDefinitionId.trim() : '';
+    if (!sourceId) return { ok: false, error: 'not-found' };
+    const source = this.#loadDefinition(sourceId);
+    if (!source || !this.#canReadDefinition(actorIds, source)) {
+      return { ok: false, error: 'not-found' };
+    }
+    if (target.origin !== 'personal' && target.origin !== 'world') {
+      return { ok: false, error: 'origin-not-allowed' };
+    }
+    const ownerActorId = actorIds[0]!;
+    const forkedPayload = buildForkedHostPayload(source, target.origin);
+    return this.createDefinition(ownerActorId, {
+      name: typeof forkedPayload.name === 'string' ? forkedPayload.name : source.name,
+      origin: target.origin,
+      worldProfileId: target.worldProfileId ?? null,
+      payload: forkedPayload,
+    });
+  }
+
+  /**
+   * CUT-06 — single definition by id including archived (owner/world-readable).
+   * Required so restore/workbench can reload after archive.
+   */
+  getDefinition(
+    actorIdOrIds: string | readonly string[],
+    definitionId: string,
+  ): InventoryResult<InventoryDefinitionRecord | null> {
+    const actorIds = normalizeActorIds(actorIdOrIds);
+    if (actorIds.length === 0) return { ok: false, error: 'missing-actor' };
+    const id = typeof definitionId === 'string' ? definitionId.trim() : '';
+    if (!id) return { ok: true, value: null };
+    const existing = this.#loadDefinition(id);
+    if (!existing) return { ok: true, value: null };
+    if (!this.#canReadDefinition(actorIds, existing) && !this.#canMutateDefinition(actorIds, existing)) {
+      return { ok: false, error: 'not-authorized' };
+    }
+    return { ok: true, value: existing };
+  }
+
+  #loadDefinition(definitionId: string): InventoryDefinitionRecord | null {
+    const row = this.#db
+      .prepare(`SELECT * FROM inventory_item_definitions WHERE id = ? LIMIT 1`)
+      .get(definitionId) as DefinitionRow | undefined;
+    if (!row) return null;
+    return mapDefinition(row);
+  }
+
+  #canMutateDefinition(
+    actorIds: readonly string[],
+    def: InventoryDefinitionRecord,
+  ): boolean {
+    if (def.origin === 'standard') return false;
+    if (def.origin === 'personal') {
+      return (
+        typeof def.ownerUserId === 'string' && actorIds.includes(def.ownerUserId)
+      );
+    }
+    if (def.origin === 'world' && def.worldProfileId) {
+      return this.#world.canEditWorldProfile(actorIds, def.worldProfileId);
+    }
+    return false;
+  }
+
+  #canReadDefinition(
+    actorIds: readonly string[],
+    def: InventoryDefinitionRecord,
+  ): boolean {
+    if (def.origin === 'standard') return true;
+    if (def.origin === 'personal') {
+      return (
+        typeof def.ownerUserId === 'string' && actorIds.includes(def.ownerUserId)
+      );
+    }
+    if (def.origin === 'world' && def.worldProfileId) {
+      return this.#world.canReadWorldProfile(actorIds, def.worldProfileId);
+    }
+    return false;
   }
 
   #allocatePublicId(): string {
