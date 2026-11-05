@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-inventory.json](source-contracts/infra-inventory.json) (SHA-256 `2ecad2ba8a0c4a090fd5c889c136ea2c70c2ce59ab51e25103757e23a877195d`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-inventory.json](source-contracts/infra-inventory.json) (SHA-256 `abeb86c7450ddb1ec6281ef447b2a8e5c4a47cce46306711e2b18136d70866aa`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -879,24 +879,18 @@ export async function forkDefinition(
 ): Promise<CatalogDefinitionRecord> {
   if (isHostLibraryEnabled()) {
     const origin = target.scope === 'world' ? 'world' : 'personal';
+    const worldProfileId = target.scope === 'world' ? target.worldProfileId : null;
     // Core/builtin packs are local (not SQLite rows) — fork by creating a new host definition.
     const localSource =
       getCoreItemDefinition(sourceDefinitionId) ??
       getBuiltinStandardDefinition(sourceDefinitionId);
     if (localSource) {
-      const draft = buildForkedItemDefinitionDraft(
-        localSource,
-        origin === 'world' ? 'world' : 'personal',
-      );
-      return createHostCatalogDefinition(
-        origin,
-        draft,
-        origin === 'world' ? target.worldProfileId : null,
-      );
+      const draft = buildForkedItemDefinitionDraft(localSource, origin);
+      return createHostCatalogDefinition(origin, draft, worldProfileId);
     }
     const forked = await forkHostLibraryItem(sourceDefinitionId, {
       origin,
-      worldProfileId: target.scope === 'world' ? target.worldProfileId : null,
+      worldProfileId,
     });
     const record = mapHostLibraryItemRecord(forked);
     if (!record) throw new Error('Host-Item forken: ungültige Antwort');
@@ -1765,7 +1759,7 @@ async function invoke(body: Record<string, unknown>): Promise<FunctionResponse> 
 | `src/infrastructure/inventory/host-inventory-adapter.ts` | `705ee213e4ffa49ea7b0d89583a01b5ae78bcd6a990464dd5104d88abc83b6b2` |
 | `src/infrastructure/inventory/host-inventory-ports.contract.ts` | `115502542d1d6c8a94292ca0f15a683ebc78cf2997aa3c5a130b682cccc448d2` |
 | `src/infrastructure/inventory/inventory-persistence.ts` | `79aaa09053ecd72a0bec8f8f0610b31ab0c9b34779f4a4c87f19f0d2ef7e4ac2` |
-| `src/infrastructure/inventory/item-catalog-service.ts` | `ee7caabff86ea7d05046dcc78659cb5737e786d3c108a83d80abb3e314a0c259` |
+| `src/infrastructure/inventory/item-catalog-service.ts` | `921f0f8543419be39722c95996bb50447c3a706011e963505b5f80bccbe0602f` |
 | `src/infrastructure/inventory/item-catalog.persistence.ts` | `a68903ba909af8030e81d28555a65798800c9a32a790a4281e96f52b1550c566` |
 | `src/infrastructure/inventory/item-model3d-service.ts` | `cbf9eb726d58bd20ae3c43c6364771c6ebd8ef21bbcc4575197f6fe67d311035` |
 | `src/infrastructure/inventory/item-thumbnail-service.ts` | `a17aecc412f3766d52e2a54c8ffa4ffc0e55cd64363a77a9a0f0dd7d5e07622a` |

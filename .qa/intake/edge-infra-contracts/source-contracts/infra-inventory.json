@@ -17,7 +17,7 @@
     },
     {
       "path": "src/infrastructure/inventory/item-catalog-service.ts",
-      "sha256": "ee7caabff86ea7d05046dcc78659cb5737e786d3c108a83d80abb3e314a0c259"
+      "sha256": "921f0f8543419be39722c95996bb50447c3a706011e963505b5f80bccbe0602f"
     },
     {
       "path": "src/infrastructure/inventory/item-catalog.persistence.ts",
@@ -2889,8 +2889,8 @@
     {
       "path": "src/infrastructure/inventory/item-catalog-service.ts",
       "line": 348,
-      "endLine": 378,
-      "text": "export async function forkDefinition(\n  sourceDefinitionId: string,\n  target: ForkDefinitionTarget,\n): Promise<CatalogDefinitionRecord> {\n  if (isHostLibraryEnabled()) {\n    const origin = target.scope === 'world' ? 'world' : 'personal';\n    // Core/builtin packs are local (not SQLite rows) — fork by creating a new host definition.\n    const localSource =\n      getCoreItemDefinition(sourceDefinitionId) ??\n      getBuiltinStandardDefinition(sourceDefinitionId);\n    if (localSource) {\n      const draft = buildForkedItemDefinitionDraft(\n        localSource,\n        origin === 'world' ? 'world' : 'personal',\n      );\n      return createHostCatalogDefinition(\n        origin,\n        draft,\n        origin === 'world' ? target.worldProfileId : null,\n      );\n    }\n    const forked = await forkHostLibraryItem(sourceDefinitionId, {\n      origin,\n      worldProfileId: target.scope === 'world' ? target.worldProfileId : null,\n    });\n    const record = mapHostLibraryItemRecord(forked);\n    if (!record) throw new Error('Host-Item forken: ungültige Antwort');\n    return record;\n  }\n  return supabaseItemCatalogRepository.forkDefinition(sourceDefinitionId, target);\n}"
+      "endLine": 372,
+      "text": "export async function forkDefinition(\n  sourceDefinitionId: string,\n  target: ForkDefinitionTarget,\n): Promise<CatalogDefinitionRecord> {\n  if (isHostLibraryEnabled()) {\n    const origin = target.scope === 'world' ? 'world' : 'personal';\n    const worldProfileId = target.scope === 'world' ? target.worldProfileId : null;\n    // Core/builtin packs are local (not SQLite rows) — fork by creating a new host definition.\n    const localSource =\n      getCoreItemDefinition(sourceDefinitionId) ??\n      getBuiltinStandardDefinition(sourceDefinitionId);\n    if (localSource) {\n      const draft = buildForkedItemDefinitionDraft(localSource, origin);\n      return createHostCatalogDefinition(origin, draft, worldProfileId);\n    }\n    const forked = await forkHostLibraryItem(sourceDefinitionId, {\n      origin,\n      worldProfileId,\n    });\n    const record = mapHostLibraryItemRecord(forked);\n    if (!record) throw new Error('Host-Item forken: ungültige Antwort');\n    return record;\n  }\n  return supabaseItemCatalogRepository.forkDefinition(sourceDefinitionId, target);\n}"
     },
     {
       "path": "src/infrastructure/inventory/item-catalog.persistence.ts",
@@ -3301,9 +3301,9 @@
     {
       "path": "src/infrastructure/inventory/item-catalog-service.ts",
       "line": 348,
-      "endLine": 378,
+      "endLine": 372,
       "name": "forkDefinition",
-      "text": "export async function forkDefinition(\n  sourceDefinitionId: string,\n  target: ForkDefinitionTarget,\n): Promise<CatalogDefinitionRecord> {\n  if (isHostLibraryEnabled()) {\n    const origin = target.scope === 'world' ? 'world' : 'personal';\n    // Core/builtin packs are local (not SQLite rows) — fork by creating a new host definition.\n    const localSource =\n      getCoreItemDefinition(sourceDefinitionId) ??\n      getBuiltinStandardDefinition(sourceDefinitionId);\n    if (localSource) {\n      const draft = buildForkedItemDefinitionDraft(\n        localSource,\n        origin === 'world' ? 'world' : 'personal',\n      );\n      return createHostCatalogDefinition(\n        origin,\n        draft,\n        origin === 'world' ? target.worldProfileId : null,\n      );\n    }\n    const forked = await forkHostLibraryItem(sourceDefinitionId, {\n      origin,\n      worldProfileId: target.scope === 'world' ? target.worldProfileId : null,\n    });\n    const record = mapHostLibraryItemRecord(forked);\n    if (!record) throw new Error('Host-Item forken: ungültige Antwort');\n    return record;\n  }\n  return supabaseItemCatalogRepository.forkDefinition(sourceDefinitionId, target);\n}"
+      "text": "export async function forkDefinition(\n  sourceDefinitionId: string,\n  target: ForkDefinitionTarget,\n): Promise<CatalogDefinitionRecord> {\n  if (isHostLibraryEnabled()) {\n    const origin = target.scope === 'world' ? 'world' : 'personal';\n    const worldProfileId = target.scope === 'world' ? target.worldProfileId : null;\n    // Core/builtin packs are local (not SQLite rows) — fork by creating a new host definition.\n    const localSource =\n      getCoreItemDefinition(sourceDefinitionId) ??\n      getBuiltinStandardDefinition(sourceDefinitionId);\n    if (localSource) {\n      const draft = buildForkedItemDefinitionDraft(localSource, origin);\n      return createHostCatalogDefinition(origin, draft, worldProfileId);\n    }\n    const forked = await forkHostLibraryItem(sourceDefinitionId, {\n      origin,\n      worldProfileId,\n    });\n    const record = mapHostLibraryItemRecord(forked);\n    if (!record) throw new Error('Host-Item forken: ungültige Antwort');\n    return record;\n  }\n  return supabaseItemCatalogRepository.forkDefinition(sourceDefinitionId, target);\n}"
     },
     {
       "path": "src/infrastructure/inventory/item-catalog.persistence.ts",

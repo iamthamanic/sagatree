@@ -35615,7 +35615,7 @@
           },
           {
             "path": "src/infrastructure/inventory/item-catalog-service.ts",
-            "sha256": "ee7caabff86ea7d05046dcc78659cb5737e786d3c108a83d80abb3e314a0c259"
+            "sha256": "921f0f8543419be39722c95996bb50447c3a706011e963505b5f80bccbe0602f"
           },
           {
             "path": "src/infrastructure/inventory/item-catalog.persistence.ts",
@@ -35711,7 +35711,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-inventory.json",
-      "sourceContractSha256": "2ecad2ba8a0c4a090fd5c889c136ea2c70c2ce59ab51e25103757e23a877195d",
+      "sourceContractSha256": "abeb86c7450ddb1ec6281ef447b2a8e5c4a47cce46306711e2b18136d70866aa",
       "rpcUsed": [],
       "tablesTouched": [
         "characters",
@@ -36522,7 +36522,7 @@
         {
           "path": "src/infrastructure/inventory/item-catalog-service.ts",
           "line": 348,
-          "endLine": 378,
+          "endLine": 372,
           "name": "forkDefinition"
         },
         {

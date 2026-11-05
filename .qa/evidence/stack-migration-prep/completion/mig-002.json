@@ -5,7 +5,7 @@
   "result": "PASS",
   "githubClosed": true,
   "mergeRef": "PR #860 \u2192 main (after #782)",
-  "note": "Inventories refreshed after CUT-06 item catalog mutations.",
+  "note": "Inventories refreshed after CUT-06 TS narrow fix.",
   "checks": [
     {
       "command": "legacy inventory matrix",
@@ -23,8 +23,8 @@
       "command": "edge/infra inventory 25+13",
       "result": "PASS",
       "evidenceFile": ".qa/intake/edge-infra-contracts/inventory.json",
-      "sha256": "1c4eda06688a345e392e4604649be8a9648b04e0b82aa872ff84f56dced1d27a"
+      "sha256": "4364b527594227d5b8627287ebc7cb005e85ff6048403f1eee8a33f827f17c1c"
     }
   ],
-  "testedCommit": "fd4318190f7384c708015894024e5c8a44a750dd"
+  "testedCommit": "8c2216e989d6da2f5671549c964ee2a5aa9ee174"
 }
