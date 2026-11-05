@@ -355,6 +355,40 @@ export async function duplicateHostLibraryLook(
   return body.look;
 }
 
+/** CUT-07 — POST `/api/v1/library/looks/:id/versions`. */
+export async function appendHostLibraryLookVersion(
+  profileId: string,
+  draft: unknown,
+  env: EnvLike = defaultEnv(),
+  fetchImpl: typeof fetch = fetch,
+): Promise<unknown> {
+  const body = await hostMutateJson<{ look?: unknown }>(
+    `/api/v1/library/looks/${encodeURIComponent(profileId)}/versions`,
+    'POST',
+    'Host-Look-Version anhängen fehlgeschlagen',
+    { draft },
+    env,
+    fetchImpl,
+  );
+  if (!body.look) throw new Error('Host-Look-Version anhängen: leere Antwort');
+  return body.look;
+}
+
+/** CUT-07 — GET `/api/v1/library/looks/:id/versions`. */
+export async function fetchHostLibraryLookVersions(
+  profileId: string,
+  env: EnvLike = defaultEnv(),
+  fetchImpl: typeof fetch = fetch,
+): Promise<readonly unknown[]> {
+  const body = await hostGetJson<{ versions?: unknown[] }>(
+    `/api/v1/library/looks/${encodeURIComponent(profileId)}/versions`,
+    'Host-Look-Versionen nicht erreichbar',
+    env,
+    fetchImpl,
+  );
+  return Array.isArray(body.versions) ? body.versions : [];
+}
+
 export async function fetchHostLibraryNpcCreatures(
   env: EnvLike = defaultEnv(),
   fetchImpl: typeof fetch = fetch,
