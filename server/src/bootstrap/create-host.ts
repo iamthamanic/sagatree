@@ -470,6 +470,7 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
       look,
       inventory,
       project,
+      sessionLookup: sessionProjectLookup,
       sessionInfra: sessionInfraPorts,
       projectInfra,
       sagaInfra,

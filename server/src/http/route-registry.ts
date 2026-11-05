@@ -96,6 +96,9 @@ export type RouteRegistryDeps = {
   readonly look?: LookProfilePorts | null;
   readonly inventory?: InventoryPorts | null;
   readonly project?: ProjectPorts | null;
+  readonly sessionLookup?: {
+    readonly countSessionsForProject: (projectId: string) => number;
+  } | null;
   readonly sessionInfra?: SessionInfraPorts | null;
   readonly projectInfra?: ProjectInfraPorts | null;
   /** FE-HOST-13 saga-definition authoring HTTP. */
@@ -158,6 +161,7 @@ export function createRouteHandler(deps: RouteRegistryDeps) {
     look: deps.look,
     inventory: deps.inventory,
     project: deps.project,
+    sessionLookup: deps.sessionLookup,
     sessionInfra: deps.sessionInfra,
     projectInfra: deps.projectInfra,
     sagaInfra: deps.sagaInfra,

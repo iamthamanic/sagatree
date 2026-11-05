@@ -1,9 +1,10 @@
 /**
  * characterAdventureArc.service — Sync memberships to arcs and persist developments.
  * Location: src/infrastructure/character/character-adventure-arc-service.ts
+ *
+ * CUT-09: host-first via library adventure-arc routes when library host is enabled.
  */
 import { supabase } from '../../lib/supabase';
-import { assertHostProductSurfaceAvailable } from '../host/host-product-deny';
 import type {
   AppendAdventureDevelopmentInput,
   CharacterAdventureArcDto,
@@ -12,6 +13,11 @@ import type {
   CharacterAdventureDevelopmentDto,
   CharacterAdventureDevelopmentKind,
 } from '../../domains/character/contracts/character-adventure-arc.types';
+import {
+  appendHostLibraryAdventureDevelopment,
+  fetchHostLibraryAdventureArcs,
+  isHostLibraryEnabled,
+} from '../host/host-library-http';
 
 const TABLE = 'character_adventure_arcs';
 
@@ -70,6 +76,28 @@ function mapArc(
   };
 }
 
+function mapHostArc(value: unknown): CharacterAdventureArcVm | null {
+  if (!isRecord(value) || typeof value.id !== 'string') return null;
+  const dto: CharacterAdventureArcDto = {
+    id: value.id,
+    character_id: typeof value.character_id === 'string' ? value.character_id : '',
+    project_id: typeof value.project_id === 'string' ? value.project_id : '',
+    status: isArcStatus(value.status) ? value.status : 'active',
+    started_at: typeof value.started_at === 'string' ? value.started_at : new Date().toISOString(),
+    ended_at: typeof value.ended_at === 'string' ? value.ended_at : null,
+    summary: typeof value.summary === 'string' ? value.summary : null,
+    developments: Array.isArray(value.developments) ? value.developments : [],
+    created_at: typeof value.created_at === 'string' ? value.created_at : new Date().toISOString(),
+    updated_at: typeof value.updated_at === 'string' ? value.updated_at : new Date().toISOString(),
+  };
+  return mapArc(
+    dto,
+    typeof value.project_name === 'string' ? value.project_name : 'Unbekanntes Abenteuer',
+    typeof value.project_status === 'string' ? value.project_status : null,
+    typeof value.session_count === 'number' ? value.session_count : 0,
+  );
+}
+
 function createDevelopmentId(): string {
   if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
     return crypto.randomUUID();
@@ -83,9 +111,15 @@ class CharacterAdventureArcService {
    * Response: CharacterAdventureArcVm[] ordered by startedAt desc.
    */
   async listArcsForCharacter(characterId: string): Promise<CharacterAdventureArcVm[]> {
-    assertHostProductSurfaceAvailable('Abenteuer-Bögen');
     const trimmedId = characterId.trim();
     if (!trimmedId) throw new Error('Character id is required.');
+
+    if (isHostLibraryEnabled()) {
+      const rows = await fetchHostLibraryAdventureArcs(trimmedId);
+      return rows
+        .map(mapHostArc)
+        .filter((row): row is CharacterAdventureArcVm => row !== null);
+    }
 
     const { data: memberships, error: membershipError } = await supabase
       .from('project_members')
@@ -195,10 +229,21 @@ class CharacterAdventureArcService {
     arcId: string,
     input: AppendAdventureDevelopmentInput,
   ): Promise<CharacterAdventureArcVm> {
-    assertHostProductSurfaceAvailable('Abenteuer-Bögen');
     const title = input.title.trim();
     if (!title) throw new Error('Titel der Entwicklung ist erforderlich.');
     if (!isDevelopmentKind(input.kind)) throw new Error('Ungültige Entwicklungsart.');
+
+    if (isHostLibraryEnabled()) {
+      const updated = await appendHostLibraryAdventureDevelopment(arcId, {
+        kind: input.kind,
+        title,
+        detail: input.detail,
+        meta: input.meta,
+      });
+      const mapped = mapHostArc(updated);
+      if (!mapped) throw new Error('Host-Abenteuer-Entwicklung: ungültige Antwort');
+      return mapped;
+    }
 
     const { data: current, error: loadError } = await supabase
       .from(TABLE)

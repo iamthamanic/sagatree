@@ -382,6 +382,8 @@ export function createSessionPorts(deps: {
  */
 export function createSessionProjectLookup(db: HostDatabase): {
   readonly projectIdForSession: (sessionId: string) => string | null;
+  /** CUT-09 — session count for adventure-arc enrichment. */
+  readonly countSessionsForProject: (projectId: string) => number;
 } {
   return {
     projectIdForSession(sessionId: string): string | null {
@@ -393,6 +395,16 @@ export function createSessionProjectLookup(db: HostDatabase): {
         )
         .get(trimmed) as { projectId: string } | undefined;
       return row?.projectId ?? null;
+    },
+    countSessionsForProject(projectId: string): number {
+      const trimmed = typeof projectId === 'string' ? projectId.trim() : '';
+      if (!trimmed) return 0;
+      const row = db
+        .prepare(
+          `SELECT COUNT(*) AS c FROM play_sessions WHERE project_id = ?`,
+        )
+        .get(trimmed) as { c: number } | undefined;
+      return typeof row?.c === 'number' ? row.c : 0;
     },
   };
 }

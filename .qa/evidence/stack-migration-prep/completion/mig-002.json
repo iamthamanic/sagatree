@@ -5,7 +5,7 @@
   "result": "PASS",
   "githubClosed": true,
   "mergeRef": "PR #860 \u2192 main (after #782)",
-  "note": "Inventories refreshed after CUT-08 character preset host dual-path.",
+  "note": "Inventories refreshed after CUT-09 character adventure arcs host dual-path.",
   "checks": [
     {
       "command": "legacy inventory matrix",
@@ -17,13 +17,13 @@
       "command": "rpc inventory 57",
       "result": "PASS",
       "evidenceFile": ".qa/intake/rpc-contracts/inventory.json",
-      "sha256": "4dd8a39184ff6394f426f68af6ade87798ba02b68f1b5fd3b1e38952dc0541e8"
+      "sha256": "c46d5d38509987d77a3f9ead369391d6ec88693e578bb9549f93537af16a414f"
     },
     {
       "command": "edge/infra inventory 25+13",
       "result": "PASS",
       "evidenceFile": ".qa/intake/edge-infra-contracts/inventory.json",
-      "sha256": "75d04f17bb1ccee81dee17b045b2a5675927dbd52199bca0c700e37cdec81ff5"
+      "sha256": "6c319891736a81e058fdb00573f29fbaaf7a1331db1723752c1dfd54565f4233"
     }
   ],
   "testedCommit": "60ddcf0a94a00dfa1d96266e6afccf20ca8d68e2"

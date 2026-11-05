@@ -32,6 +32,10 @@ export type LibraryHttpDeps = {
   readonly project?: ProjectPorts | null;
   /** FE-HOST-06 — used to verify portrait display URLs before character save. */
   readonly assets?: AssetPorts | null;
+  /** CUT-09 — session count projection (keeps play_sessions SQL in session module). */
+  readonly sessionLookup?: {
+    readonly countSessionsForProject: (projectId: string) => number;
+  } | null;
 };
 
 function npcControllerErrorStatus(error: string): 400 | 401 | 403 | 404 | 422 {
@@ -692,6 +696,157 @@ export function mountLibraryHttpRoutes(app: Hono, deps: LibraryHttpDeps): void {
       return c.json({ error: err }, presetProductErrorStatus(err));
     }
     return c.json({ preset: mapPresetProduct(duplicated.value) }, 201);
+  });
+
+  /** CUT-09 — list/sync adventure arcs for an owned character. */
+  app.get('/api/v1/library/characters/:id/adventure-arcs', async (c) => {
+    const actorResult = await resolveLibraryActor(deps, c.req.raw.headers);
+    if (!actorResult.ok) {
+      return c.json({ error: actorResult.error }, actorResult.status);
+    }
+    if (!deps.character?.syncAndListAdventureArcs || !deps.project?.listMembershipsByCharacter) {
+      return c.json({ arcs: [] }, 200);
+    }
+    const characterId = c.req.param('id');
+    const memberships = deps.project.listMembershipsByCharacter(characterId);
+    let listed: ReturnType<
+      NonNullable<LibraryHttpDeps['character']>['syncAndListAdventureArcs']
+    > | null = null;
+    for (const ownerId of libraryActorIds(actorResult.actor)) {
+      const attempt = deps.character.syncAndListAdventureArcs(
+        ownerId,
+        characterId,
+        memberships,
+      );
+      if (attempt.ok) {
+        listed = attempt;
+        break;
+      }
+      if (attempt.error !== 'not-found' && attempt.error !== 'not-authorized') {
+        listed = attempt;
+        break;
+      }
+      listed = attempt;
+    }
+    if (!listed || !listed.ok) {
+      const err = listed && !listed.ok ? listed.error : 'not-found';
+      return c.json(
+        { error: err },
+        err === 'not-authorized' ? 403 : err === 'not-found' ? 404 : 400,
+      );
+    }
+    const arcs = listed.value.map((arc) => {
+      const project = deps.project?.getProject(arc.projectId);
+      const projectName =
+        project?.ok === true ? project.value.title : 'Unbekanntes Abenteuer';
+      const projectStatus =
+        project?.ok === true ? project.value.status : null;
+      const sessionCount =
+        deps.sessionLookup?.countSessionsForProject(arc.projectId) ?? 0;
+      return {
+        id: arc.id,
+        character_id: arc.characterId,
+        project_id: arc.projectId,
+        project_name: projectName,
+        project_status: projectStatus,
+        session_count: sessionCount,
+        status: arc.status,
+        started_at: arc.startedAt,
+        ended_at: arc.endedAt,
+        summary: arc.summary,
+        developments: arc.developments,
+        created_at: arc.createdAt,
+        updated_at: arc.updatedAt,
+      };
+    });
+    return c.json({ arcs }, 200);
+  });
+
+  /** CUT-09 — append development entry to owned arc. */
+  app.post('/api/v1/library/adventure-arcs/:id/developments', async (c) => {
+    const actorResult = await resolveLibraryActor(deps, c.req.raw.headers);
+    if (!actorResult.ok) {
+      return c.json({ error: actorResult.error }, actorResult.status);
+    }
+    if (!deps.character?.appendAdventureDevelopment) {
+      return c.json({ error: 'store-unavailable' }, 503);
+    }
+    let body: unknown;
+    try {
+      body = await c.req.json();
+    } catch {
+      return c.json({ error: 'invalid-json' }, 400);
+    }
+    const record =
+      body && typeof body === 'object' && !Array.isArray(body)
+        ? (body as Record<string, unknown>)
+        : {};
+    const kind = typeof record.kind === 'string' ? record.kind : '';
+    const title = typeof record.title === 'string' ? record.title : '';
+    const detail = typeof record.detail === 'string' ? record.detail : undefined;
+    const meta =
+      record.meta && typeof record.meta === 'object' && !Array.isArray(record.meta)
+        ? (record.meta as Record<string, unknown>)
+        : undefined;
+    if (
+      kind !== 'level' &&
+      kind !== 'species-trait' &&
+      kind !== 'skill' &&
+      kind !== 'note'
+    ) {
+      return c.json({ error: 'Ungültige Entwicklungsart.' }, 400);
+    }
+    const arcId = c.req.param('id');
+    let appended: ReturnType<
+      NonNullable<LibraryHttpDeps['character']>['appendAdventureDevelopment']
+    > | null = null;
+    for (const ownerId of libraryActorIds(actorResult.actor)) {
+      const attempt = deps.character.appendAdventureDevelopment(ownerId, arcId, {
+        kind,
+        title,
+        detail,
+        meta,
+      });
+      if (attempt.ok) {
+        appended = attempt;
+        break;
+      }
+      if (attempt.error !== 'not-found' && attempt.error !== 'not-authorized') {
+        appended = attempt;
+        break;
+      }
+      appended = attempt;
+    }
+    if (!appended || !appended.ok) {
+      const err = appended && !appended.ok ? appended.error : 'not-found';
+      return c.json(
+        { error: err },
+        err === 'not-authorized' ? 403 : err === 'not-found' ? 404 : 400,
+      );
+    }
+    const arc = appended.value;
+    const project = deps.project?.getProject(arc.projectId);
+    return c.json(
+      {
+        arc: {
+          id: arc.id,
+          character_id: arc.characterId,
+          project_id: arc.projectId,
+          project_name: project?.ok === true ? project.value.title : 'Unbenanntes Abenteuer',
+          project_status: project?.ok === true ? project.value.status : null,
+          session_count:
+            deps.sessionLookup?.countSessionsForProject(arc.projectId) ?? 0,
+          status: arc.status,
+          started_at: arc.startedAt,
+          ended_at: arc.endedAt,
+          summary: arc.summary,
+          developments: arc.developments,
+          created_at: arc.createdAt,
+          updated_at: arc.updatedAt,
+        },
+      },
+      201,
+    );
   });
 
   /** CUT-08 — delete owner user preset. */

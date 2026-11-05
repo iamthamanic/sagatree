@@ -276,4 +276,27 @@ export class ProjectMembershipStore {
         .get(memberId, projectId) as { id: string; userId: string } | undefined) ?? null
     );
   }
+
+  /** CUT-09 — memberships bound to a character (active + historical). */
+  listMembershipsByCharacter(characterId: string): readonly {
+    projectId: string;
+    joinedAt: string | null;
+    status: 'active' | 'inactive';
+  }[] {
+    const trimmed = characterId.trim();
+    if (!trimmed) return [];
+    return this.#db
+      .prepare(
+        `SELECT project_id AS projectId, joined_at AS joinedAt,
+                CASE WHEN active = 1 THEN 'active' ELSE 'inactive' END AS status
+         FROM project_members
+         WHERE character_id = ?
+         ORDER BY joined_at DESC`,
+      )
+      .all(trimmed) as Array<{
+      projectId: string;
+      joinedAt: string | null;
+      status: 'active' | 'inactive';
+    }>;
+  }
 }

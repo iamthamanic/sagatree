@@ -528,28 +528,28 @@
       "historicalCaller": "src/infrastructure/character/character-adventure-arc-service.ts:listArcsForCharacter",
       "uiJourney": "CharacterStatisticsPanel",
       "previousBehavior": "DENY + supabase arcs",
-      "hostSuccessor": "PORT_MISSING",
+      "hostSuccessor": "/api/v1/library/characters/:id/adventure-arcs",
       "dataOwner": "character",
       "risk": "medium",
-      "classification": "PARITY_MISSING",
+      "classification": "HOST_VERIFIED",
       "issueRef": 1144,
-      "evidenceTest": "pending CUT-09",
+      "evidenceTest": "scripts/cut-09-character-arcs.self-test.mjs",
       "featureAvailableBeforeCutover": true,
-      "notes": ""
+      "notes": "CUT-09; membership via ProjectPorts.listMembershipsByCharacter; session count via SessionLookup"
     },
     {
       "stableKey": "character-adventure.append-development",
       "historicalCaller": "src/infrastructure/character/character-adventure-arc-service.ts:appendDevelopment",
       "uiJourney": "CharacterStatisticsPanel",
       "previousBehavior": "DENY + supabase update",
-      "hostSuccessor": "PORT_MISSING",
+      "hostSuccessor": "/api/v1/library/adventure-arcs/:id/developments",
       "dataOwner": "character",
       "risk": "medium",
-      "classification": "PARITY_MISSING",
+      "classification": "HOST_VERIFIED",
       "issueRef": 1144,
-      "evidenceTest": "pending CUT-09",
+      "evidenceTest": "scripts/cut-09-character-arcs.self-test.mjs",
       "featureAvailableBeforeCutover": true,
-      "notes": ""
+      "notes": "CUT-09; owner-scoped append; stranger denied"
     },
     {
       "stableKey": "world-profile.get-by-public-id",
@@ -1953,8 +1953,8 @@
     }
   ],
   "counts": {
-    "HOST_VERIFIED": 72,
-    "PARITY_MISSING": 50,
+    "HOST_VERIFIED": 74,
+    "PARITY_MISSING": 48,
     "LEGACY_UNUSED": 4,
     "total": 126
   },
