@@ -220,70 +220,70 @@
       "historicalCaller": "src/infrastructure/npc-creature/npc-creature-service.ts:listNpcCreatureInstances",
       "uiJourney": "Adventure instances / Combat GM",
       "previousBehavior": "from(npc_creature_instances)",
-      "hostSuccessor": "PORT_MISSING",
+      "hostSuccessor": "GET /api/v1/library/npc-instances?projectId=",
       "dataOwner": "npc-creature",
       "risk": "high",
-      "classification": "PARITY_MISSING",
+      "classification": "HOST_VERIFIED",
       "issueRef": 1138,
-      "evidenceTest": "pending CUT-03",
+      "evidenceTest": "scripts/cut-03-npc-instance.self-test.mjs",
       "featureAvailableBeforeCutover": true,
-      "notes": ""
+      "notes": "CUT-03 dual-path; listInstances port + active-member auth"
     },
     {
       "stableKey": "npc-creature.spawn-instance",
       "historicalCaller": "src/infrastructure/npc-creature/npc-creature-service.ts:spawnNpcCreatureInstance",
       "uiJourney": "Spawn dialog",
       "previousBehavior": "rpc(spawn_npc_creature_instance)",
-      "hostSuccessor": "PORT_MISSING",
+      "hostSuccessor": "POST /api/v1/library/npc-instances",
       "dataOwner": "npc-creature",
       "risk": "high",
-      "classification": "PARITY_MISSING",
+      "classification": "HOST_VERIFIED",
       "issueRef": 1138,
-      "evidenceTest": "pending CUT-03",
+      "evidenceTest": "scripts/cut-03-npc-instance.self-test.mjs",
       "featureAvailableBeforeCutover": true,
-      "notes": ""
+      "notes": "CUT-03 dual-path; domain plan client hint; host GM authority"
     },
     {
       "stableKey": "npc-creature.update-instance-runtime",
       "historicalCaller": "src/infrastructure/npc-creature/npc-creature-service.ts:updateNpcCreatureInstanceRuntime",
       "uiJourney": "AdventureNpcCreatureInstancesPanel",
       "previousBehavior": "rpc(update_npc_creature_instance_runtime)",
-      "hostSuccessor": "PORT_MISSING",
+      "hostSuccessor": "PATCH /api/v1/library/npc-instances/:id/runtime",
       "dataOwner": "npc-creature",
       "risk": "high",
-      "classification": "PARITY_MISSING",
+      "classification": "HOST_VERIFIED",
       "issueRef": 1138,
-      "evidenceTest": "pending CUT-03",
+      "evidenceTest": "scripts/cut-03-npc-instance.self-test.mjs",
       "featureAvailableBeforeCutover": true,
-      "notes": ""
+      "notes": "CUT-03 dual-path; snapshot frozen server-side"
     },
     {
       "stableKey": "npc-creature.remove-instance",
       "historicalCaller": "src/infrastructure/npc-creature/npc-creature-service.ts:removeNpcCreatureInstance",
       "uiJourney": "Adventure NpcCreatureInstancesPanel",
       "previousBehavior": "rpc(remove_npc_creature_instance)",
-      "hostSuccessor": "PORT_MISSING",
+      "hostSuccessor": "DELETE /api/v1/library/npc-instances/:id",
       "dataOwner": "npc-creature",
       "risk": "high",
-      "classification": "PARITY_MISSING",
+      "classification": "HOST_VERIFIED",
       "issueRef": 1138,
-      "evidenceTest": "pending CUT-03",
+      "evidenceTest": "scripts/cut-03-npc-instance.self-test.mjs",
       "featureAvailableBeforeCutover": true,
-      "notes": ""
+      "notes": "CUT-03 dual-path"
     },
     {
       "stableKey": "npc-creature.clear-temp-controllers",
       "historicalCaller": "src/infrastructure/npc-creature/npc-creature-service.ts:clearNpcCreatureInstanceTempControllersForSession",
       "uiJourney": "NONE",
       "previousBehavior": "rpc(clear_npc_creature_instance_temp_controllers_for_session)",
-      "hostSuccessor": "PORT_MISSING",
+      "hostSuccessor": "POST /api/v1/sessions/:sessionId/npc-temp-controllers/clear",
       "dataOwner": "npc-creature",
       "risk": "low",
-      "classification": "LEGACY_UNUSED",
+      "classification": "HOST_VERIFIED",
       "issueRef": 1138,
-      "evidenceTest": "no src/app caller",
-      "featureAvailableBeforeCutover": false,
-      "notes": "no src/app caller; FE export only"
+      "evidenceTest": "scripts/cut-03-npc-instance.self-test.mjs",
+      "featureAvailableBeforeCutover": true,
+      "notes": "CUT-03 dual-path; FE export + host session route"
     },
     {
       "stableKey": "session.delete-session",
@@ -1954,10 +1954,9 @@
   ],
   "counts": {
     "total": 126,
-    "HOST_VERIFIED": 50,
-    "PARITY_MISSING": 71,
-    "LEGACY_UNUSED": 5,
-    "followUpTagged": 11
+    "HOST_VERIFIED": 55,
+    "PARITY_MISSING": 67,
+    "LEGACY_UNUSED": 4
   },
   "followUpIssues": {
     "1159": "CUT-02b NPC definition duplicate/restore/world-catalog/promote",

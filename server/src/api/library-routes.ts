@@ -38,19 +38,34 @@ function npcControllerErrorStatus(error: string): 400 | 401 | 403 | 404 | 422 {
   if (error === 'P0001:not authenticated' || error === 'missing-actor') return 401;
   if (
     error === 'P0001:only gm may assign controller' ||
+    error === 'P0001:only gm may spawn' ||
+    error === 'P0001:only gm may update runtime' ||
+    error === 'P0001:only gm may remove' ||
+    error === 'P0001:only gm may clear temp controllers' ||
     error === 'P0001:actor is not an active project member' ||
     error === 'P0001:definition not readable' ||
     error === 'not-authorized'
   ) {
     return 403;
   }
-  if (error === 'not-found') return 404;
+  if (error === 'not-found' || error === 'P0001:instance not found' || error === 'P0001:session not found') {
+    return 404;
+  }
   if (
     error === 'P0001:missing project' ||
     error === 'P0001:invalid definition id' ||
     error === 'P0001:invalid controller id' ||
     error === 'P0001:controller is not an active project member' ||
-    error === 'P0001:definition is not a full character sheet'
+    error === 'P0001:definition is not a full character sheet' ||
+    error === 'P0001:invalid instance kind' ||
+    error === 'P0001:invalid display name' ||
+    error === 'P0001:invalid sequence number' ||
+    error === 'P0001:invalid snapshot' ||
+    error === 'P0001:invalid runtime' ||
+    error === 'P0001:persistent instances must not bind a session' ||
+    error === 'P0001:session does not belong to project' ||
+    error === 'P0001:temporary controller is not an active project member' ||
+    error === 'P0001:invalid temporary controller'
   ) {
     return 422;
   }
@@ -502,6 +517,155 @@ export function mountLibraryHttpRoutes(app: Hono, deps: LibraryHttpDeps): void {
       return c.json({ error: listed.error }, 503);
     }
     return c.json({ definitions: listed.value }, 200);
+  });
+
+  /** CUT-03 — list adventure/session instances for a project. */
+  app.get('/api/v1/library/npc-instances', async (c) => {
+    const actorResult = await resolveLibraryActor(deps, c.req.raw.headers);
+    if (!actorResult.ok) {
+      return c.json({ error: actorResult.error }, actorResult.status);
+    }
+    if (!deps.npcCreature?.listInstances) {
+      return c.json({ error: 'store-unavailable' }, 503);
+    }
+    const projectId = c.req.query('projectId')?.trim() ?? '';
+    if (!projectId) return c.json({ error: 'P0001:missing project' }, 422);
+    const listed = deps.npcCreature.listInstances(actorResult.actor, projectId);
+    if (!listed.ok) {
+      return c.json({ error: listed.error }, npcControllerErrorStatus(listed.error));
+    }
+    return c.json({ instances: listed.value }, 200);
+  });
+
+  /**
+   * CUT-03 — spawn instance. Body mirrors planned domain spawn payload
+   * (snapshot/runtime/displayName/sequenceNumber); actor is session-only.
+   */
+  app.post('/api/v1/library/npc-instances', async (c) => {
+    const actorResult = await resolveLibraryActor(deps, c.req.raw.headers);
+    if (!actorResult.ok) {
+      return c.json({ error: actorResult.error }, actorResult.status);
+    }
+    if (!deps.npcCreature?.spawnInstance) {
+      return c.json({ error: 'store-unavailable' }, 503);
+    }
+    let body: unknown;
+    try {
+      body = await c.req.json();
+    } catch {
+      return c.json({ error: 'invalid-json' }, 400);
+    }
+    const record =
+      body && typeof body === 'object' && !Array.isArray(body)
+        ? (body as Record<string, unknown>)
+        : {};
+    const projectId = typeof record.projectId === 'string' ? record.projectId.trim() : '';
+    const definitionId =
+      typeof record.definitionId === 'string' ? record.definitionId.trim() : '';
+    const instanceKind =
+      typeof record.instanceKind === 'string' ? record.instanceKind.trim() : '';
+    const displayName =
+      typeof record.displayName === 'string' ? record.displayName : '';
+    const sequenceNumber =
+      typeof record.sequenceNumber === 'number' ? record.sequenceNumber : NaN;
+    let sessionId: string | null = null;
+    if (Object.prototype.hasOwnProperty.call(record, 'sessionId')) {
+      if (record.sessionId === null) {
+        sessionId = null;
+      } else if (typeof record.sessionId === 'string') {
+        sessionId = record.sessionId;
+      } else {
+        return c.json({ error: 'P0001:session does not belong to project' }, 422);
+      }
+    }
+    if (!projectId || !definitionId) {
+      return c.json({ error: 'P0001:missing project' }, 422);
+    }
+    const spawned = deps.npcCreature.spawnInstance(actorResult.actor, {
+      projectId,
+      definitionId,
+      instanceKind,
+      snapshot: record.snapshot,
+      runtime: record.runtime,
+      displayName,
+      sequenceNumber,
+      sessionId,
+    });
+    if (!spawned.ok) {
+      return c.json({ error: spawned.error }, npcControllerErrorStatus(spawned.error));
+    }
+    return c.json({ instance: spawned.value }, 201);
+  });
+
+  /** CUT-03 — update instance runtime only (snapshot frozen). */
+  app.patch('/api/v1/library/npc-instances/:instanceId/runtime', async (c) => {
+    const actorResult = await resolveLibraryActor(deps, c.req.raw.headers);
+    if (!actorResult.ok) {
+      return c.json({ error: actorResult.error }, actorResult.status);
+    }
+    if (!deps.npcCreature?.updateRuntime) {
+      return c.json({ error: 'store-unavailable' }, 503);
+    }
+    let body: unknown;
+    try {
+      body = await c.req.json();
+    } catch {
+      return c.json({ error: 'invalid-json' }, 400);
+    }
+    const record =
+      body && typeof body === 'object' && !Array.isArray(body)
+        ? (body as Record<string, unknown>)
+        : {};
+    const updated = deps.npcCreature.updateRuntime(
+      actorResult.actor,
+      c.req.param('instanceId'),
+      record.runtime,
+    );
+    if (!updated.ok) {
+      return c.json({ error: updated.error }, npcControllerErrorStatus(updated.error));
+    }
+    return c.json({ instance: updated.value }, 200);
+  });
+
+  /** CUT-03 — remove instance (definition untouched). */
+  app.delete('/api/v1/library/npc-instances/:instanceId', async (c) => {
+    const actorResult = await resolveLibraryActor(deps, c.req.raw.headers);
+    if (!actorResult.ok) {
+      return c.json({ error: actorResult.error }, actorResult.status);
+    }
+    if (!deps.npcCreature?.removeInstance) {
+      return c.json({ error: 'store-unavailable' }, 503);
+    }
+    const removed = deps.npcCreature.removeInstance(
+      actorResult.actor,
+      c.req.param('instanceId'),
+    );
+    if (!removed.ok) {
+      return c.json({ error: removed.error }, npcControllerErrorStatus(removed.error));
+    }
+    return c.json({ ok: true, id: removed.value.id }, 200);
+  });
+
+  /** Single definition by id (includes archived when readable) — CUT-03 spawn resolve. */
+  app.get('/api/v1/library/npc-creatures/:id', async (c) => {
+    const actorResult = await resolveLibraryActor(deps, c.req.raw.headers);
+    if (!actorResult.ok) {
+      return c.json({ error: actorResult.error }, actorResult.status);
+    }
+    if (!deps.npcCreature?.getDefinition) {
+      return c.json({ error: 'store-unavailable' }, 503);
+    }
+    const loaded = deps.npcCreature.getDefinition(actorResult.actor, c.req.param('id'));
+    if (!loaded.ok) {
+      return c.json(
+        { error: loaded.error },
+        loaded.error === 'not-authorized' ? 403 : npcControllerErrorStatus(loaded.error),
+      );
+    }
+    if (!loaded.value) {
+      return c.json({ error: 'not-found' }, 404);
+    }
+    return c.json({ definition: loaded.value }, 200);
   });
 
   app.post('/api/v1/library/npc-creatures', async (c) => {

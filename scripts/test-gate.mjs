@@ -1468,6 +1468,19 @@ function checkCut02NpcController() {
   console.log('OK: cut-02-npc-controller.self-test');
 }
 
+function checkCut03NpcInstance() {
+  console.log('CUT-03 NPC session-instance lifecycle host HTTP (#1138)...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/cut-03-npc-instance.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+  console.log('OK: cut-03-npc-instance.self-test');
+}
+
 function checkMig312UserProfileAdapter() {
   console.log('MIG-312 user-profile adapter (#811): user_profiles + user-avatars dual-path...');
   execFileSync(
@@ -3687,6 +3700,7 @@ checkFeHost13SagaDefinition();
 checkFeHost14AiResiduals();
 checkCutoverParityInventory();
 checkCut02NpcController();
+checkCut03NpcInstance();
 checkMig312UserProfileAdapter();
 checkMig309Rulesets();
 checkMig313WorldAdapter();

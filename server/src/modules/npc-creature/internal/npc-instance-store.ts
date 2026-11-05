@@ -743,6 +743,30 @@ export class NpcInstanceStore {
     };
   }
 
+  listInstances(
+    actorIds: readonly string[],
+    projectId: string,
+  ): Ok<readonly NpcInstanceRow[]> | NpcError {
+    if (!actorIds[0]) return { ok: false, error: 'P0001:not authenticated' };
+    if (!projectId) return { ok: false, error: 'P0001:missing project' };
+    if (!this.#project.isActiveMember(projectId, actorIds)) {
+      return { ok: false, error: 'P0001:actor is not an active project member' };
+    }
+    const rows = this.#db
+      .prepare(
+        `SELECT id FROM npc_creature_instances
+         WHERE project_id = ?
+         ORDER BY updated_at DESC`,
+      )
+      .all(projectId) as { id: string }[];
+    const instances: NpcInstanceRow[] = [];
+    for (const row of rows) {
+      const loaded = this.#readInstance(row.id);
+      if (loaded) instances.push(loaded);
+    }
+    return { ok: true, value: instances };
+  }
+
   spawnInstance(
     actorIds: readonly string[],
     input: {

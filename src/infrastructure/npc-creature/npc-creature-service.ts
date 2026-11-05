@@ -42,12 +42,19 @@ import {
   archiveHostLibraryNpcCreature,
   assignHostNpcCreatureController,
   createHostLibraryNpcCreature,
+  fetchHostLibraryNpcCreatureById,
   fetchHostLibraryNpcCreatures,
   fetchHostNpcCreatureControllerAssignment,
+  fetchHostNpcInstances,
   isHostLibraryEnabled,
+  removeHostNpcInstance,
+  spawnHostNpcInstance,
   updateHostLibraryNpcCreature,
+  updateHostNpcInstanceRuntime,
   type HostNpcControllerAssignmentDto,
+  type HostNpcInstanceDto,
 } from '../host/host-library-http';
+import { clearHostNpcTempControllersForSession } from '../host/host-session-http';
 import {
   toNpcControllerAssignment,
   type NpcControllerAssignmentRow,
@@ -140,13 +147,8 @@ export async function getNpcCreatureDefinition(
       record.ownerUserId = '';
       return record;
     }
-    const rows = await fetchHostLibraryNpcCreatures();
-    return (
-      rows
-        .map(mapHostLibraryNpcRecord)
-        .find((row): row is NpcCreatureCatalogRecord => row !== null && row.definition.id === definitionId) ??
-      null
-    );
+    const raw = await fetchHostLibraryNpcCreatureById(definitionId);
+    return raw ? mapHostLibraryNpcRecord(raw) : null;
   }
   return supabaseNpcCreatureRepository.getDefinitionById(definitionId);
 }
@@ -443,8 +445,25 @@ async function resolveDefinitionForInstance(
   if (builtin) return builtin;
   const core = getCoreNpcCreatureDefinition(definitionId);
   if (core) return core;
-  const record = await supabaseNpcCreatureRepository.getDefinitionById(definitionId);
+  const record = await getNpcCreatureDefinition(definitionId);
   return record?.definition ?? null;
+}
+
+function mapHostInstanceDto(dto: HostNpcInstanceDto): NpcCreatureInstance {
+  return toNpcCreatureInstance({
+    id: dto.id,
+    project_id: dto.projectId,
+    session_id: dto.sessionId,
+    definition_id: dto.definitionId,
+    display_name: dto.displayName,
+    instance_kind: dto.instanceKind,
+    sequence_number: dto.sequenceNumber,
+    snapshot: dto.snapshot,
+    runtime: dto.runtime,
+    created_by: dto.createdBy,
+    created_at: dto.createdAt,
+    updated_at: dto.updatedAt,
+  });
 }
 
 function isBuiltinOrCoreDefinitionId(definitionId: string): boolean {
@@ -457,6 +476,10 @@ export async function listNpcCreatureInstances(
   projectId: string,
 ): Promise<NpcCreatureInstance[]> {
   await getAuthenticatedUserId();
+  if (isHostLibraryEnabled()) {
+    const rows = await fetchHostNpcInstances(projectId);
+    return rows.map(mapHostInstanceDto);
+  }
   const { data, error } = await raceWithTimeoutReject(
     supabase
       .from(INSTANCES_TABLE)
@@ -495,8 +518,10 @@ export async function spawnNpcCreatureInstance(input: {
 
   const existing = await listNpcCreatureInstances(input.projectId);
   const definitionReadable =
-    isBuiltinOrCoreDefinitionId(definition.id)
-    || Boolean(await supabaseNpcCreatureRepository.getDefinitionById(definition.id));
+    isBuiltinOrCoreDefinitionId(definition.id) ||
+    (isHostLibraryEnabled()
+      ? true
+      : Boolean(await supabaseNpcCreatureRepository.getDefinitionById(definition.id)));
 
   const planned = planNpcCreatureInstanceSpawn(
     definition,
@@ -517,6 +542,20 @@ export async function spawnNpcCreatureInstance(input: {
   );
   if (planned.ok === false) {
     throw new Error(planned.message);
+  }
+
+  if (isHostLibraryEnabled()) {
+    const instance = await spawnHostNpcInstance({
+      projectId: planned.instance.projectId,
+      definitionId: planned.instance.definitionId,
+      instanceKind: planned.instance.instanceKind,
+      snapshot: toInstanceSnapshotPayload(planned.instance.snapshot),
+      runtime: toInstanceRuntimePayload(planned.instance.runtime),
+      displayName: planned.instance.displayName,
+      sequenceNumber: planned.instance.sequenceNumber,
+      sessionId: planned.instance.sessionId,
+    });
+    return mapHostInstanceDto(instance);
   }
 
   const { data, error } = await raceWithTimeoutReject(
@@ -562,6 +601,14 @@ export async function updateNpcCreatureInstanceRuntime(input: {
     throw new Error(planned.message);
   }
 
+  if (isHostLibraryEnabled()) {
+    const instance = await updateHostNpcInstanceRuntime(
+      planned.instance.id!,
+      toInstanceRuntimePayload(planned.instance.runtime),
+    );
+    return mapHostInstanceDto(instance);
+  }
+
   const { data, error } = await raceWithTimeoutReject(
     supabase.rpc('update_npc_creature_instance_runtime', {
       p_instance_id: planned.instance.id,
@@ -582,6 +629,10 @@ export async function updateNpcCreatureInstanceRuntime(input: {
 /** Remove an instance from the adventure (#201). Does not archive the definition. */
 export async function removeNpcCreatureInstance(instanceId: string): Promise<void> {
   await getAuthenticatedUserId();
+  if (isHostLibraryEnabled()) {
+    await removeHostNpcInstance(instanceId);
+    return;
+  }
   const { error } = await raceWithTimeoutReject(
     supabase.rpc('remove_npc_creature_instance', {
       p_instance_id: instanceId,
@@ -602,6 +653,9 @@ export async function clearNpcCreatureInstanceTempControllersForSession(
   sessionId: string,
 ): Promise<number> {
   await getAuthenticatedUserId();
+  if (isHostLibraryEnabled()) {
+    return clearHostNpcTempControllersForSession(sessionId);
+  }
   const { data, error } = await raceWithTimeoutReject(
     supabase.rpc('clear_npc_creature_instance_temp_controllers_for_session', {
       p_session_id: sessionId,

@@ -16,6 +16,8 @@ export type SessionHttpDeps = {
   readonly sessionInfra?: SessionInfraPorts | null;
   /** Optional Look ownership checks for session Look PATCH (FE-HOST-12). */
   readonly look?: import('../modules/look/index.ts').LookProfilePorts | null;
+  /** CUT-03 — clear temporary NPC controllers on session end. */
+  readonly npcCreature?: import('../modules/npc-creature/index.ts').NpcCreaturePorts | null;
 };
 
 function normalizeHostname(hostname: string): string {
@@ -524,5 +526,37 @@ export function mountSessionHttpRoutes(app: Hono, deps: SessionHttpDeps): void {
       return c.json({ error: saved.error }, infraStatus(saved.error));
     }
     return c.json({ recap: saved.value }, 200);
+  });
+
+  /**
+   * CUT-03 — clear temporary NPC controllers for session-scoped instances.
+   * Does not touch campaign controller assignments.
+   */
+  app.post('/api/v1/sessions/:sessionId/npc-temp-controllers/clear', async (c) => {
+    const actorResult = await resolveSessionActor(deps, c.req.raw.headers, false);
+    if (!actorResult.ok) {
+      return c.json({ error: actorResult.error }, actorResult.status);
+    }
+    if (!deps.npcCreature?.clearTempControllersForSession) {
+      return c.json({ error: 'store-unavailable' }, 503);
+    }
+    const cleared = deps.npcCreature.clearTempControllersForSession(
+      actorResult.actor,
+      c.req.param('sessionId'),
+    );
+    if (!cleared.ok) {
+      const err = cleared.error;
+      const status =
+        err === 'P0001:only gm may clear temp controllers' ||
+        err === 'P0001:actor is not an active project member'
+          ? 403
+          : err === 'P0001:session not found'
+            ? 404
+            : err === 'P0001:not authenticated' || err === 'missing-actor'
+              ? 401
+              : 400;
+      return c.json({ error: err }, status);
+    }
+    return c.json({ cleared: cleared.value.cleared }, 200);
   });
 }

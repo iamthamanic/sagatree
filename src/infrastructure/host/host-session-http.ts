@@ -369,3 +369,20 @@ export async function saveHostSessionRecapSummary(
   }
   return body.recap;
 }
+
+/** CUT-03 — clear temporary NPC controllers for session-scoped instances. */
+export async function clearHostNpcTempControllersForSession(
+  sessionId: string,
+  env: EnvLike = defaultEnv(),
+  fetchImpl: typeof fetch = fetch,
+): Promise<number> {
+  const body = await hostMutateJson<{ cleared?: number }>(
+    `/api/v1/sessions/${encodeURIComponent(sessionId)}/npc-temp-controllers/clear`,
+    'POST',
+    {},
+    'Temporäre Controller konnten nicht zurückgesetzt werden',
+    env,
+    fetchImpl,
+  );
+  return typeof body.cleared === 'number' ? body.cleared : 0;
+}
