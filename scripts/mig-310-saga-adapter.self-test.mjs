@@ -351,7 +351,7 @@ try {
   }
 
   // Client dual-path wiring: saga-definition uses host HTTP under host-first (FE-HOST-13);
-  // session-outcome promote remains DENY / no flag redirect until its residual ticket.
+  // session-outcome promote uses host HTTP under host-first (CUT-05).
   const sagaDefSrc = readFileSync(
     join(root, 'src/infrastructure/saga/saga-definition-service.ts'),
     'utf8',

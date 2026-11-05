@@ -18,6 +18,8 @@ export type SessionHttpDeps = {
   readonly look?: import('../modules/look/index.ts').LookProfilePorts | null;
   /** CUT-03 — clear temporary NPC controllers on session end. */
   readonly npcCreature?: import('../modules/npc-creature/index.ts').NpcCreaturePorts | null;
+  /** CUT-05 — session outcome promote via saga-infra ports. */
+  readonly sagaInfra?: import('../application/saga-infra/index.ts').SagaInfraPorts | null;
 };
 
 function normalizeHostname(hostname: string): string {
@@ -96,7 +98,12 @@ function infraStatus(error: string): number {
   ) {
     return 403;
   }
-  if (error === 'SESSION_NOT_FOUND' || error === 'P0002' || /not[_-]?found/i.test(error)) {
+  if (
+    error === 'SESSION_NOT_FOUND' ||
+    error === 'P0002' ||
+    error.startsWith('P0002:') ||
+    /not[_-]?found/i.test(error)
+  ) {
     return 404;
   }
   if (error === 'STALE_REVISION' || error === 'INVALID_REVISION') return 409;
@@ -105,7 +112,8 @@ function infraStatus(error: string): number {
     error === 'INVALID_PAYLOAD' ||
     error === 'INVALID_OPERATION' ||
     error === 'INVALID_IDEMPOTENCY_KEY' ||
-    error === '22023'
+    error === '22023' ||
+    error.startsWith('22023:')
   ) {
     return 422;
   }
@@ -599,4 +607,56 @@ export function mountSessionHttpRoutes(app: Hono, deps: SessionHttpDeps): void {
     }
     return c.json({ cleared: cleared.value.cleared }, 200);
   });
+
+  /**
+   * CUT-05 — promote accepted session consequence into saga definition.
+   * Reuses SagaInfraPorts.promoteSessionOutcomeToSaga (no Postgres RPC).
+   */
+  app.post(
+    '/api/v1/sessions/:sessionId/outcomes/:consequenceId/promote/saga',
+    async (c) => {
+      const actorResult = await resolveSessionActor(deps, c.req.raw.headers, false);
+      if (!actorResult.ok) {
+        return c.json({ error: actorResult.error }, actorResult.status);
+      }
+      if (!deps.sagaInfra?.promoteSessionOutcomeToSaga) {
+        return c.json({ error: 'store-unavailable' }, 503);
+      }
+      const promoted = deps.sagaInfra.promoteSessionOutcomeToSaga(
+        actorResult.actor,
+        c.req.param('sessionId'),
+        c.req.param('consequenceId'),
+      );
+      if (!promoted.ok) {
+        return c.json({ error: promoted.error }, infraStatus(promoted.error));
+      }
+      return c.json(promoted.value, 200);
+    },
+  );
+
+  /**
+   * CUT-05 — promote accepted session consequence into world lore.
+   * Reuses SagaInfraPorts.promoteSessionOutcomeToWorld (no Postgres RPC).
+   */
+  app.post(
+    '/api/v1/sessions/:sessionId/outcomes/:consequenceId/promote/world',
+    async (c) => {
+      const actorResult = await resolveSessionActor(deps, c.req.raw.headers, false);
+      if (!actorResult.ok) {
+        return c.json({ error: actorResult.error }, actorResult.status);
+      }
+      if (!deps.sagaInfra?.promoteSessionOutcomeToWorld) {
+        return c.json({ error: 'store-unavailable' }, 503);
+      }
+      const promoted = deps.sagaInfra.promoteSessionOutcomeToWorld(
+        actorResult.actor,
+        c.req.param('sessionId'),
+        c.req.param('consequenceId'),
+      );
+      if (!promoted.ok) {
+        return c.json({ error: promoted.error }, infraStatus(promoted.error));
+      }
+      return c.json(promoted.value, 200);
+    },
+  );
 }

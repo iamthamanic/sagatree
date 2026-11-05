@@ -402,3 +402,45 @@ export async function clearHostNpcTempControllersForSession(
   );
   return typeof body.cleared === 'number' ? body.cleared : 0;
 }
+
+export type HostPromoteOutcomeDto = {
+  readonly ok?: boolean;
+  readonly idempotent?: boolean;
+  readonly targetKind?: string;
+  readonly targetRef?: string;
+  readonly messageDe?: string;
+};
+
+/** CUT-05 — promote consequence into saga definition via host product HTTP. */
+export async function promoteHostSessionOutcomeToSaga(
+  sessionId: string,
+  consequenceId: string,
+  env: EnvLike = defaultEnv(),
+  fetchImpl: typeof fetch = fetch,
+): Promise<HostPromoteOutcomeDto> {
+  return hostMutateJson<HostPromoteOutcomeDto>(
+    `/api/v1/sessions/${encodeURIComponent(sessionId)}/outcomes/${encodeURIComponent(consequenceId)}/promote/saga`,
+    'POST',
+    {},
+    'Host-Saga-Übernahme fehlgeschlagen',
+    env,
+    fetchImpl,
+  );
+}
+
+/** CUT-05 — promote consequence into world lore via host product HTTP. */
+export async function promoteHostSessionOutcomeToWorld(
+  sessionId: string,
+  consequenceId: string,
+  env: EnvLike = defaultEnv(),
+  fetchImpl: typeof fetch = fetch,
+): Promise<HostPromoteOutcomeDto> {
+  return hostMutateJson<HostPromoteOutcomeDto>(
+    `/api/v1/sessions/${encodeURIComponent(sessionId)}/outcomes/${encodeURIComponent(consequenceId)}/promote/world`,
+    'POST',
+    {},
+    'Host-Welt-Übernahme fehlgeschlagen',
+    env,
+    fetchImpl,
+  );
+}

@@ -5,7 +5,7 @@
   "result": "PASS",
   "githubClosed": true,
   "mergeRef": "PR #860 \u2192 main (after #782)",
-  "note": "Inventories refreshed after CUT-04 Codex P1/P2 host-delete fixes.",
+  "note": "Inventories refreshed after CUT-05 session outcome promote host dual-path.",
   "checks": [
     {
       "command": "legacy inventory matrix",
@@ -17,13 +17,13 @@
       "command": "rpc inventory 57",
       "result": "PASS",
       "evidenceFile": ".qa/intake/rpc-contracts/inventory.json",
-      "sha256": "deee7787f87de51b7fa8aacab7108238a451dd98448befd290416d44a3cac99a"
+      "sha256": "6f7e34ea3fb791c9a7abe6a368abc25e41e36633605404fbb4d5ecb70e682e17"
     },
     {
       "command": "edge/infra inventory 25+13",
       "result": "PASS",
       "evidenceFile": ".qa/intake/edge-infra-contracts/inventory.json",
-      "sha256": "eee5ca9837966be01bdcfe80dd9c998fa2cb3c29491c581efd0fd1985eea3988"
+      "sha256": "6b6720de85ef7018b6fe42b9ef909d0b60c019694caf4ac4d79eab3ef94bf6e8"
     }
   ],
   "testedCommit": "e806cd29dfc7b2be468a989cfd771d142c4d73b0"

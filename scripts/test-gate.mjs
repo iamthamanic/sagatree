@@ -1494,6 +1494,19 @@ function checkCut04SessionDelete() {
   console.log('OK: cut-04-session-delete.self-test');
 }
 
+function checkCut05OutcomePromotion() {
+  console.log('CUT-05 session outcome promote host HTTP (#1140)...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/cut-05-outcome-promotion.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+  console.log('OK: cut-05-outcome-promotion.self-test');
+}
+
 function checkMig312UserProfileAdapter() {
   console.log('MIG-312 user-profile adapter (#811): user_profiles + user-avatars dual-path...');
   execFileSync(
@@ -3715,6 +3728,7 @@ checkCutoverParityInventory();
 checkCut02NpcController();
 checkCut03NpcInstance();
 checkCut04SessionDelete();
+checkCut05OutcomePromotion();
 checkMig312UserProfileAdapter();
 checkMig309Rulesets();
 checkMig313WorldAdapter();
