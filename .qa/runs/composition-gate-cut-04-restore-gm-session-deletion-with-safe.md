@@ -1,6 +1,6 @@
 # Composition Gate — cut-04-restore-gm-session-deletion-with-safe (#1139)
 
-- HEAD_SHA: 18f1ad58a53d686b40c093f9cd9f3042db20717c
+- HEAD_SHA: e806cd29dfc7b2be468a989cfd771d142c4d73b0
 - BASE_SHA: 7bbec6b8ac95b7a18fc8aa02918b23c3ee2c413e
 - Date: 2026-11-05
 - Verdict: CLEAR
