@@ -1,6 +1,6 @@
 # Acceptance — CUT-08 (#1143)
 
-- HEAD_SHA: 6512e13e2921308a2cbfe4067fde80333e646672
+- HEAD_SHA: 60ddcf0a94a00dfa1d96266e6afccf20ca8d68e2
 - Issue: #1143
 - Slug: cut-08-migrate-character-preset-crud-pu
 
@@ -11,7 +11,7 @@ Soft-DENY removed; migration `0031_character_preset_product.sql`.
 
 ## Composition Gate
 
-- HEAD_SHA: 6512e13e2921308a2cbfe4067fde80333e646672
+- HEAD_SHA: 60ddcf0a94a00dfa1d96266e6afccf20ca8d68e2
 - Verdict: CLEAR
 
 ## Required Tests
