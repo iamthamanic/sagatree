@@ -491,13 +491,24 @@ export class CharacterSheetStore {
         inTx = false;
         return { ok: false, error: 'foreign-character-owner' };
       }
+      const now = nowIso();
       this.#db
         .prepare(
-          `INSERT INTO character_avatar_artifacts
-             (id, character_id, owner_user_id, storage_path, kind, created_at)
-           VALUES (?, ?, ?, ?, 'artifact', ?)`,
+          `INSERT INTO character_avatar_artifacts (
+             id, character_id, owner_user_id, origin, asset_key, storage_path, format,
+             analysis_status, materialization_status, is_active, schema_version,
+             created_at, updated_at
+           ) VALUES (?, ?, ?, 'import', ?, ?, 'glb', 'pending', 'materialized', 0, 2, ?, ?)`,
         )
-        .run(id, input.characterId, input.ownerUserId, normalized, nowIso());
+        .run(
+          id,
+          input.characterId,
+          input.ownerUserId,
+          `avatar-asset:${input.ownerUserId}:${id}`,
+          normalized,
+          now,
+          now,
+        );
       this.#db.exec('COMMIT');
       inTx = false;
     } catch {

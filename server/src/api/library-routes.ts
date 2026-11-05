@@ -237,6 +237,73 @@ function presetProductErrorStatus(error: string): 400 | 403 | 404 | 409 | 422 | 
   return 400;
 }
 
+/** CUT-11 — FE AvatarArtifactV2 wire shape. */
+function mapAvatarArtifact(row: {
+  readonly artifactId: string;
+  readonly ownerUserId: string;
+  readonly characterId: string | null;
+  readonly origin: string;
+  readonly assetKey: string;
+  readonly storagePath: string;
+  readonly format: string;
+  readonly analysisStatus: string;
+  readonly materializationStatus: string;
+  readonly isActive: boolean;
+  readonly schemaVersion: 2;
+  readonly importAssetId: string | null;
+  readonly generateJobId: string | null;
+  readonly templateId: string | null;
+  readonly providerId: string | null;
+  readonly idempotencyKey: string | null;
+  readonly createdAt: string;
+  readonly updatedAt: string;
+}) {
+  return {
+    contractVersion: 'SagaTreeAvatarArtifactV2',
+    artifactId: row.artifactId,
+    ownerUserId: row.ownerUserId,
+    characterId: row.characterId,
+    source: {
+      origin: row.origin,
+      importAssetId: row.importAssetId ?? undefined,
+      generateJobId: row.generateJobId ?? undefined,
+      templateId: row.templateId ?? undefined,
+      providerId: row.providerId ?? undefined,
+    },
+    asset: {
+      assetKey: row.assetKey,
+      storagePath: row.storagePath,
+      format: row.format,
+    },
+    analysisStatus: row.analysisStatus,
+    materializationStatus: row.materializationStatus,
+    isActive: row.isActive,
+    schemaVersion: 2 as const,
+    idempotencyKey: row.idempotencyKey ?? undefined,
+    createdAt: row.createdAt,
+    updatedAt: row.updatedAt,
+  };
+}
+
+function avatarArtifactErrorStatus(error: string): 400 | 403 | 404 | 422 | 503 {
+  if (error === 'store-unavailable') return 503;
+  if (error === 'not-authorized' || error === 'foreign-character-owner') return 403;
+  if (error === 'not-found') return 404;
+  if (
+    error === 'invalid-artifact-id' ||
+    error === 'invalid-asset-key' ||
+    error === 'invalid-storage-path' ||
+    error === 'invalid-origin' ||
+    error === 'invalid-format' ||
+    error === 'asset-key-owner-mismatch' ||
+    error === 'analysis-escalation-forbidden' ||
+    error === 'analysis-not-authoritative'
+  ) {
+    return 422;
+  }
+  return 400;
+}
+
 /**
  * Mount library list/create endpoints used by the Vite Library screen.
  */
@@ -847,6 +914,223 @@ export function mountLibraryHttpRoutes(app: Hono, deps: LibraryHttpDeps): void {
       },
       201,
     );
+  });
+
+  /** CUT-11 — list owner avatar artifacts. */
+  app.get('/api/v1/library/avatar-artifacts', async (c) => {
+    const actorResult = await resolveLibraryActor(deps, c.req.raw.headers);
+    if (!actorResult.ok) {
+      return c.json({ error: actorResult.error }, actorResult.status);
+    }
+    if (!deps.character?.listAvatarArtifacts) {
+      return c.json({ artifacts: [] }, 200);
+    }
+    const characterIdRaw = c.req.query('characterId');
+    const options =
+      characterIdRaw === undefined
+        ? {}
+        : characterIdRaw === '' || characterIdRaw === 'null'
+          ? { characterId: null as string | null }
+          : { characterId: characterIdRaw };
+    const byId = new Map<string, ReturnType<typeof mapAvatarArtifact>>();
+    for (const ownerId of libraryActorIds(actorResult.actor)) {
+      const listed = deps.character.listAvatarArtifacts(ownerId, options);
+      if (!listed.ok) continue;
+      for (const row of listed.value) {
+        byId.set(row.artifactId, mapAvatarArtifact(row));
+      }
+    }
+    return c.json({ artifacts: [...byId.values()] }, 200);
+  });
+
+  /** CUT-11 — get one owned avatar artifact. */
+  app.get('/api/v1/library/avatar-artifacts/:id', async (c) => {
+    const actorResult = await resolveLibraryActor(deps, c.req.raw.headers);
+    if (!actorResult.ok) {
+      return c.json({ error: actorResult.error }, actorResult.status);
+    }
+    if (!deps.character?.getAvatarArtifactById) {
+      return c.json({ error: 'store-unavailable' }, 503);
+    }
+    const artifactId = c.req.param('id');
+    for (const ownerId of libraryActorIds(actorResult.actor)) {
+      const got = deps.character.getAvatarArtifactById(ownerId, artifactId);
+      if (got.ok && got.value) {
+        return c.json({ artifact: mapAvatarArtifact(got.value) }, 200);
+      }
+    }
+    return c.json({ error: 'not-found' }, 404);
+  });
+
+  /** CUT-11 — create inactive avatar artifact (idempotent). */
+  app.post('/api/v1/library/avatar-artifacts', async (c) => {
+    const actorResult = await resolveLibraryActor(deps, c.req.raw.headers);
+    if (!actorResult.ok) {
+      return c.json({ error: actorResult.error }, actorResult.status);
+    }
+    if (!deps.character?.createAvatarArtifact) {
+      return c.json({ error: 'store-unavailable' }, 503);
+    }
+    let body: unknown;
+    try {
+      body = await c.req.json();
+    } catch {
+      return c.json({ error: 'invalid-json' }, 400);
+    }
+    const record =
+      body && typeof body === 'object' && !Array.isArray(body)
+        ? (body as Record<string, unknown>)
+        : {};
+    const source =
+      record.source && typeof record.source === 'object' && !Array.isArray(record.source)
+        ? (record.source as Record<string, unknown>)
+        : {};
+    const asset =
+      record.asset && typeof record.asset === 'object' && !Array.isArray(record.asset)
+        ? (record.asset as Record<string, unknown>)
+        : {};
+    const origin = typeof source.origin === 'string' ? source.origin : typeof record.origin === 'string' ? record.origin : '';
+    const assetKey =
+      typeof asset.assetKey === 'string'
+        ? asset.assetKey
+        : typeof record.assetKey === 'string'
+          ? record.assetKey
+          : '';
+    const storagePath =
+      typeof asset.storagePath === 'string'
+        ? asset.storagePath
+        : typeof record.storagePath === 'string'
+          ? record.storagePath
+          : '';
+    const format =
+      typeof asset.format === 'string'
+        ? asset.format
+        : typeof record.format === 'string'
+          ? record.format
+          : '';
+    const artifactId =
+      typeof record.artifactId === 'string'
+        ? record.artifactId
+        : typeof record.id === 'string'
+          ? record.id
+          : undefined;
+    const characterId =
+      record.characterId === null
+        ? null
+        : typeof record.characterId === 'string'
+          ? record.characterId
+          : undefined;
+    const materializationStatus =
+      typeof record.materializationStatus === 'string'
+        ? record.materializationStatus
+        : 'materialized';
+
+    let created: ReturnType<
+      NonNullable<LibraryHttpDeps['character']>['createAvatarArtifact']
+    > | null = null;
+    for (const ownerId of libraryActorIds(actorResult.actor)) {
+      const attempt = deps.character.createAvatarArtifact(ownerId, {
+        artifactId,
+        characterId,
+        origin: origin as 'sagadrive' | 'import' | 'generate',
+        assetKey,
+        storagePath,
+        format: format as 'vrm' | 'glb' | 'template',
+        materializationStatus: materializationStatus as
+          | 'draft'
+          | 'materialized'
+          | 'failed'
+          | 'superseded',
+        importAssetId:
+          typeof source.importAssetId === 'string' ? source.importAssetId : null,
+        generateJobId:
+          typeof source.generateJobId === 'string' ? source.generateJobId : null,
+        templateId: typeof source.templateId === 'string' ? source.templateId : null,
+        providerId: typeof source.providerId === 'string' ? source.providerId : null,
+        idempotencyKey:
+          typeof record.idempotencyKey === 'string' ? record.idempotencyKey : null,
+      });
+      if (attempt.ok) {
+        created = attempt;
+        break;
+      }
+      if (attempt.error !== 'not-found' && attempt.error !== 'not-authorized') {
+        created = attempt;
+        break;
+      }
+      created = attempt;
+    }
+    if (!created || !created.ok) {
+      const err = created && !created.ok ? created.error : 'create-failed';
+      return c.json({ error: err }, avatarArtifactErrorStatus(err));
+    }
+    return c.json({ artifact: mapAvatarArtifact(created.value) }, 201);
+  });
+
+  /** CUT-11 — activate one owned artifact. */
+  app.post('/api/v1/library/avatar-artifacts/:id/activate', async (c) => {
+    const actorResult = await resolveLibraryActor(deps, c.req.raw.headers);
+    if (!actorResult.ok) {
+      return c.json({ error: actorResult.error }, actorResult.status);
+    }
+    if (!deps.character?.activateAvatarArtifact) {
+      return c.json({ error: 'store-unavailable' }, 503);
+    }
+    const artifactId = c.req.param('id');
+    for (const ownerId of libraryActorIds(actorResult.actor)) {
+      const result = deps.character.activateAvatarArtifact(ownerId, artifactId);
+      if (result.ok) {
+        return c.json({ ok: true, artifact: mapAvatarArtifact(result.artifact) }, 200);
+      }
+      if (!/nicht gefunden|fremder Owner/i.test(result.reasonDe)) {
+        return c.json({ ok: false, reasonDe: result.reasonDe }, 400);
+      }
+    }
+    return c.json(
+      { ok: false, reasonDe: 'Artefakt nicht gefunden oder fremder Owner.' },
+      404,
+    );
+  });
+
+  /** CUT-11 — persist authoritative analysis (host-trusted). */
+  app.post('/api/v1/library/avatar-artifacts/:id/analysis', async (c) => {
+    const actorResult = await resolveLibraryActor(deps, c.req.raw.headers);
+    if (!actorResult.ok) {
+      return c.json({ error: actorResult.error }, actorResult.status);
+    }
+    if (!deps.character?.persistAuthoritativeArtifactAnalysis) {
+      return c.json({ error: 'store-unavailable' }, 503);
+    }
+    let body: unknown;
+    try {
+      body = await c.req.json();
+    } catch {
+      return c.json({ error: 'invalid-json' }, 400);
+    }
+    const record =
+      body && typeof body === 'object' && !Array.isArray(body)
+        ? (body as Record<string, unknown>)
+        : {};
+    const result =
+      record.result && typeof record.result === 'object' && !Array.isArray(record.result)
+        ? (record.result as Record<string, unknown>)
+        : record;
+    const authoritative = result.authoritative === true;
+    const status = typeof result.status === 'string' ? result.status : '';
+    const artifactId = c.req.param('id');
+    for (const ownerId of libraryActorIds(actorResult.actor)) {
+      const attempt = deps.character.persistAuthoritativeArtifactAnalysis(ownerId, artifactId, {
+        authoritative,
+        status,
+      });
+      if (attempt.ok) {
+        return c.json({ ok: true }, 200);
+      }
+      if (attempt.error !== 'not-found') {
+        return c.json({ error: attempt.error }, avatarArtifactErrorStatus(attempt.error));
+      }
+    }
+    return c.json({ error: 'not-found' }, 404);
   });
 
   /** CUT-08 — delete owner user preset. */

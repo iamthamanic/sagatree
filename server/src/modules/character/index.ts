@@ -37,6 +37,12 @@ import {
   type CharacterInventoryColumnsRecord,
   type CharacterInventoryColumnsResult,
 } from './internal/character-inventory-columns.ts';
+import {
+  CharacterAvatarArtifactStore,
+  type AvatarArtifactActivateResult,
+  type AvatarArtifactCreateInput,
+  type AvatarArtifactRecord,
+} from './internal/character-avatar-artifact-store.ts';
 
 export {
   CHARACTERS_PUBLIC_ACTIVATION_AUTHORIZED,
@@ -108,6 +114,9 @@ export type {
   AdventureArcRecord,
   AdventureDevelopmentKind,
   AdventureMembershipProjection,
+  AvatarArtifactRecord,
+  AvatarArtifactCreateInput,
+  AvatarArtifactActivateResult,
 };
 export {
   CHARACTER_INFRA_PUBLIC_ACTIVATION_AUTHORIZED,
@@ -217,6 +226,32 @@ export type CharacterPorts = {
     readonly characterId: string;
     readonly storagePath: string;
   }) => CharacterSheetResult<{ readonly id: string }>;
+  /** CUT-11 — Avatar V2 artifacts (owner-scoped metadata). */
+  readonly createAvatarArtifact: (
+    actorId: string,
+    input: AvatarArtifactCreateInput,
+  ) => CharacterSheetResult<AvatarArtifactRecord>;
+  readonly getAvatarArtifactById: (
+    actorId: string,
+    artifactId: string,
+  ) => CharacterSheetResult<AvatarArtifactRecord | null>;
+  readonly findAvatarArtifactByIdempotencyKey: (
+    actorId: string,
+    idempotencyKey: string,
+  ) => CharacterSheetResult<AvatarArtifactRecord | null>;
+  readonly listAvatarArtifacts: (
+    actorId: string,
+    options?: { readonly characterId?: string | null },
+  ) => CharacterSheetResult<readonly AvatarArtifactRecord[]>;
+  readonly activateAvatarArtifact: (
+    actorId: string,
+    artifactId: string,
+  ) => AvatarArtifactActivateResult;
+  readonly persistAuthoritativeArtifactAnalysis: (
+    actorId: string,
+    artifactId: string,
+    result: { readonly authoritative: boolean; readonly status: string },
+  ) => CharacterSheetResult<{ readonly ok: true }>;
   /** MIG-303: inventory module writes characters.inventory_* via this port only. */
   readonly getOwnedInventoryColumns: (
     actorId: string,
@@ -270,6 +305,15 @@ export function createCharacterPorts(db?: HostDatabase): CharacterPorts {
         throw new Error('store-unavailable');
       },
       seedArtifactForTests: () => unavailableSheet(),
+      createAvatarArtifact: () => unavailableSheet(),
+      getAvatarArtifactById: () => unavailableSheet(),
+      findAvatarArtifactByIdempotencyKey: () => unavailableSheet(),
+      listAvatarArtifacts: () => unavailableSheet(),
+      activateAvatarArtifact: () => ({
+        ok: false,
+        reasonDe: 'Avatar-Artefakte nicht verfügbar.',
+      }),
+      persistAuthoritativeArtifactAnalysis: () => unavailableSheet(),
       getOwnedInventoryColumns: () => unavailableInventoryColumns(),
       putOwnedInventoryColumns: () => unavailableInventoryColumns(),
     };
@@ -279,6 +323,7 @@ export function createCharacterPorts(db?: HostDatabase): CharacterPorts {
   const productPresets = new CharacterPresetProductStore(db);
   const adventureArcs = new CharacterAdventureArcStore(db);
   const inventoryColumns = new CharacterInventoryColumnsStore(db);
+  const avatarArtifacts = new CharacterAvatarArtifactStore(db);
   return {
     moduleId: 'character',
     assertOwnedCompletePc: (ownerUserId, characterId) =>
@@ -311,6 +356,16 @@ export function createCharacterPorts(db?: HostDatabase): CharacterPorts {
     resolveOwnedArtifact: (actorId, storagePath) => sheets.resolveArtifact(actorId, storagePath),
     seedPublicPresetForTests: (input) => sheets.seedPublicPreset(input),
     seedArtifactForTests: (input) => sheets.seedArtifact(input),
+    createAvatarArtifact: (actorId, input) => avatarArtifacts.createOwned(actorId, input),
+    getAvatarArtifactById: (actorId, artifactId) =>
+      avatarArtifacts.getOwned(actorId, artifactId),
+    findAvatarArtifactByIdempotencyKey: (actorId, idempotencyKey) =>
+      avatarArtifacts.findByIdempotencyKey(actorId, idempotencyKey),
+    listAvatarArtifacts: (actorId, options) => avatarArtifacts.listOwned(actorId, options),
+    activateAvatarArtifact: (actorId, artifactId) =>
+      avatarArtifacts.activateOwned(actorId, artifactId),
+    persistAuthoritativeArtifactAnalysis: (actorId, artifactId, result) =>
+      avatarArtifacts.persistAuthoritativeAnalysis(actorId, artifactId, result),
     getOwnedInventoryColumns: (actorId, characterId) =>
       inventoryColumns.getOwned(actorId, characterId),
     putOwnedInventoryColumns: (
