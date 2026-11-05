@@ -1,6 +1,6 @@
 # Composition Gate — cut-09-migrate-character-adventure-arcs (#1144)
 
-- HEAD_SHA: 3f83cdfe4c4c18212429e8637ce8ea7ae8e2afd9
+- HEAD_SHA: 0a7bd66366764403f3e127e1195240f0e76f42cb
 - BASE_SHA: 87df28a89c3789231976a34b8c3f70669c211385
 - Date: 2026-11-05
 - Verdict: CLEAR
