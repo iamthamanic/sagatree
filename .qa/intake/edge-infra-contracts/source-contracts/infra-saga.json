@@ -17,7 +17,7 @@
     },
     {
       "path": "src/infrastructure/saga/session-outcome-promotion-service.ts",
-      "sha256": "4c6214a1eaa4d4f25f9ae6b0a5052989fce08ed94139ac4701cbb65df5208a9d"
+      "sha256": "7fa7783c3570ffe91db7627dfc2d5211c5f64127f3fd2281c54b370fefcaab49"
     }
   ],
   "supportingSourceFiles": [
@@ -40,6 +40,10 @@
     {
       "path": "src/infrastructure/host/host-saga-definition-http.ts",
       "sha256": "3bf857114def303681691297c71f09a9b6278658e51cad659f0d7e51e0a819f1"
+    },
+    {
+      "path": "src/infrastructure/host/host-session-http.ts",
+      "sha256": "dd70c163f15af4d1ec881a9fe8cb6e87c5ccc441de2307b9b24e9a5c4b6b8172"
     },
     {
       "path": "src/lib/hostAuthBridge.ts",
@@ -238,6 +242,30 @@
       "line": 12,
       "endLine": 15,
       "text": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "EnvLike",
+      "path": "src/infrastructure/host/host-session-http.ts",
+      "line": 12,
+      "endLine": 15,
+      "text": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "HostPlaySessionDto",
+      "path": "src/infrastructure/host/host-session-http.ts",
+      "line": 98,
+      "endLine": 118,
+      "text": "export type HostPlaySessionDto = {\n  readonly sessionId: string;\n  readonly projectId: string;\n  readonly publicId?: string;\n  readonly joinCode?: string | null;\n  readonly code?: string | null;\n  readonly status: string;\n  readonly sessionNumber?: number;\n  readonly name?: string | null;\n  readonly createdAt?: string;\n  readonly startedAt?: string | null;\n  readonly endedAt?: string | null;\n  readonly gmUserId?: string;\n  readonly players?: readonly {\n    readonly id?: string;\n    readonly userId?: string;\n    readonly characterId?: string | null;\n    readonly isOnline?: boolean;\n    readonly joinedAt?: string;\n  }[];\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "HostPromoteOutcomeDto",
+      "path": "src/infrastructure/host/host-session-http.ts",
+      "line": 406,
+      "endLine": 412,
+      "text": "export type HostPromoteOutcomeDto = {\n  readonly ok?: boolean;\n  readonly idempotent?: boolean;\n  readonly targetKind?: string;\n  readonly targetRef?: string;\n  readonly messageDe?: string;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
@@ -449,8 +477,8 @@
       "kind": "rpc",
       "name": "promote_session_outcome_to_saga",
       "path": "src/infrastructure/saga/session-outcome-promotion-service.ts",
-      "line": 27,
-      "endLine": 30,
+      "line": 51,
+      "endLine": 54,
       "resolution": "finite-literal-union",
       "expression": "supabase.rpc(rpc, {\n    p_session_id: sessionId,\n    p_consequence_id: consequenceId,\n  })",
       "chain": "supabase.rpc(rpc, {\n    p_session_id: sessionId,\n    p_consequence_id: consequenceId,\n  })",
@@ -460,17 +488,17 @@
       ],
       "enclosingOperation": {
         "path": "src/infrastructure/saga/session-outcome-promotion-service.ts",
-        "line": 16,
-        "endLine": 39,
-        "text": "async function callPromote(\n  rpc: 'promote_session_outcome_to_saga' | 'promote_session_outcome_to_world',\n  sessionId: string,\n  consequenceId: string,\n): Promise<PromoteRpcResult> {\n  if (isHostLibraryEnabled()) {\n    return {\n      ok: false,\n      messageDe: 'Session-Übernahme ist im Host-Modus noch nicht verfügbar.',\n    };\n  }\n  const { data, error } = await supabase.rpc(rpc, {\n    p_session_id: sessionId,\n    p_consequence_id: consequenceId,\n  });\n  if (error) {\n    console.error(`[session-outcome-promotion] ${rpc} failed`, error);\n    return {\n      ok: false,\n      messageDe: error.message || 'Übernehmen fehlgeschlagen',\n    };\n  }\n  return parsePromoteRpcResult(data);\n}"
+        "line": 32,
+        "endLine": 63,
+        "text": "async function callPromote(\n  rpc: 'promote_session_outcome_to_saga' | 'promote_session_outcome_to_world',\n  sessionId: string,\n  consequenceId: string,\n): Promise<PromoteRpcResult> {\n  if (isHostLibraryEnabled()) {\n    try {\n      const dto =\n        rpc === 'promote_session_outcome_to_saga'\n          ? await promoteHostSessionOutcomeToSaga(sessionId, consequenceId)\n          : await promoteHostSessionOutcomeToWorld(sessionId, consequenceId);\n      return parsePromoteRpcResult(dto);\n    } catch (error) {\n      const message = error instanceof Error ? error.message : String(error);\n      // hostMutateJson prefixes unreachableMessage — peel trailing detail.\n      const detailMatch = message.match(/: (.+)$/);\n      return hostErrorToResult(detailMatch ? detailMatch[1] : message);\n    }\n  }\n  const { data, error } = await supabase.rpc(rpc, {\n    p_session_id: sessionId,\n    p_consequence_id: consequenceId,\n  });\n  if (error) {\n    console.error(`[session-outcome-promotion] ${rpc} failed`, error);\n    return {\n      ok: false,\n      messageDe: error.message || 'Übernehmen fehlgeschlagen',\n    };\n  }\n  return parsePromoteRpcResult(data);\n}"
       }
     },
     {
       "kind": "rpc",
       "name": "promote_session_outcome_to_world",
       "path": "src/infrastructure/saga/session-outcome-promotion-service.ts",
-      "line": 27,
-      "endLine": 30,
+      "line": 51,
+      "endLine": 54,
       "resolution": "finite-literal-union",
       "expression": "supabase.rpc(rpc, {\n    p_session_id: sessionId,\n    p_consequence_id: consequenceId,\n  })",
       "chain": "supabase.rpc(rpc, {\n    p_session_id: sessionId,\n    p_consequence_id: consequenceId,\n  })",
@@ -480,9 +508,9 @@
       ],
       "enclosingOperation": {
         "path": "src/infrastructure/saga/session-outcome-promotion-service.ts",
-        "line": 16,
-        "endLine": 39,
-        "text": "async function callPromote(\n  rpc: 'promote_session_outcome_to_saga' | 'promote_session_outcome_to_world',\n  sessionId: string,\n  consequenceId: string,\n): Promise<PromoteRpcResult> {\n  if (isHostLibraryEnabled()) {\n    return {\n      ok: false,\n      messageDe: 'Session-Übernahme ist im Host-Modus noch nicht verfügbar.',\n    };\n  }\n  const { data, error } = await supabase.rpc(rpc, {\n    p_session_id: sessionId,\n    p_consequence_id: consequenceId,\n  });\n  if (error) {\n    console.error(`[session-outcome-promotion] ${rpc} failed`, error);\n    return {\n      ok: false,\n      messageDe: error.message || 'Übernehmen fehlgeschlagen',\n    };\n  }\n  return parsePromoteRpcResult(data);\n}"
+        "line": 32,
+        "endLine": 63,
+        "text": "async function callPromote(\n  rpc: 'promote_session_outcome_to_saga' | 'promote_session_outcome_to_world',\n  sessionId: string,\n  consequenceId: string,\n): Promise<PromoteRpcResult> {\n  if (isHostLibraryEnabled()) {\n    try {\n      const dto =\n        rpc === 'promote_session_outcome_to_saga'\n          ? await promoteHostSessionOutcomeToSaga(sessionId, consequenceId)\n          : await promoteHostSessionOutcomeToWorld(sessionId, consequenceId);\n      return parsePromoteRpcResult(dto);\n    } catch (error) {\n      const message = error instanceof Error ? error.message : String(error);\n      // hostMutateJson prefixes unreachableMessage — peel trailing detail.\n      const detailMatch = message.match(/: (.+)$/);\n      return hostErrorToResult(detailMatch ? detailMatch[1] : message);\n    }\n  }\n  const { data, error } = await supabase.rpc(rpc, {\n    p_session_id: sessionId,\n    p_consequence_id: consequenceId,\n  });\n  if (error) {\n    console.error(`[session-outcome-promotion] ${rpc} failed`, error);\n    return {\n      ok: false,\n      messageDe: error.message || 'Übernehmen fehlgeschlagen',\n    };\n  }\n  return parsePromoteRpcResult(data);\n}"
       }
     }
   ],
@@ -545,24 +573,32 @@
     },
     {
       "path": "src/infrastructure/saga/session-outcome-promotion-service.ts",
-      "line": 9,
-      "endLine": 9,
+      "line": 8,
+      "endLine": 8,
       "module": "../../lib/supabase",
       "resolvedPath": "src/lib/supabase.ts",
       "expression": "import { supabase } from '../../lib/supabase';"
     },
     {
       "path": "src/infrastructure/saga/session-outcome-promotion-service.ts",
-      "line": 10,
-      "endLine": 10,
+      "line": 9,
+      "endLine": 9,
       "module": "../host/host-library-http",
       "resolvedPath": "src/infrastructure/host/host-library-http.ts",
       "expression": "import { isHostLibraryEnabled } from '../host/host-library-http';"
     },
     {
       "path": "src/infrastructure/saga/session-outcome-promotion-service.ts",
-      "line": 11,
-      "endLine": 14,
+      "line": 10,
+      "endLine": 13,
+      "module": "../host/host-session-http",
+      "resolvedPath": "src/infrastructure/host/host-session-http.ts",
+      "expression": "import {\n  promoteHostSessionOutcomeToSaga,\n  promoteHostSessionOutcomeToWorld,\n} from '../host/host-session-http';"
+    },
+    {
+      "path": "src/infrastructure/saga/session-outcome-promotion-service.ts",
+      "line": 14,
+      "endLine": 17,
       "module": "../../domains/session/contracts/session-outcome-promotion",
       "resolvedPath": "src/domains/session/contracts/session-outcome-promotion.ts",
       "expression": "import {\n  parsePromoteRpcResult,\n  type PromoteRpcResult,\n} from '../../domains/session/contracts/session-outcome-promotion';"
@@ -655,8 +691,8 @@
     },
     {
       "path": "src/infrastructure/saga/session-outcome-promotion-service.ts",
-      "line": 41,
-      "endLine": 48,
+      "line": 65,
+      "endLine": 72,
       "text": "export const sessionOutcomePromotionService = {\n  promoteToSaga(sessionId: string, consequenceId: string): Promise<PromoteRpcResult> {\n    return callPromote('promote_session_outcome_to_saga', sessionId, consequenceId);\n  },\n  promoteToWorld(sessionId: string, consequenceId: string): Promise<PromoteRpcResult> {\n    return callPromote('promote_session_outcome_to_world', sessionId, consequenceId);\n  },\n};"
     }
   ],
@@ -810,22 +846,29 @@
     },
     {
       "path": "src/infrastructure/saga/session-outcome-promotion-service.ts",
-      "line": 16,
-      "endLine": 39,
-      "name": "callPromote",
-      "text": "async function callPromote(\n  rpc: 'promote_session_outcome_to_saga' | 'promote_session_outcome_to_world',\n  sessionId: string,\n  consequenceId: string,\n): Promise<PromoteRpcResult> {\n  if (isHostLibraryEnabled()) {\n    return {\n      ok: false,\n      messageDe: 'Session-Übernahme ist im Host-Modus noch nicht verfügbar.',\n    };\n  }\n  const { data, error } = await supabase.rpc(rpc, {\n    p_session_id: sessionId,\n    p_consequence_id: consequenceId,\n  });\n  if (error) {\n    console.error(`[session-outcome-promotion] ${rpc} failed`, error);\n    return {\n      ok: false,\n      messageDe: error.message || 'Übernehmen fehlgeschlagen',\n    };\n  }\n  return parsePromoteRpcResult(data);\n}"
+      "line": 19,
+      "endLine": 30,
+      "name": "hostErrorToResult",
+      "text": "function hostErrorToResult(message: string): PromoteRpcResult {\n  // Strip SQLSTATE / P-code prefixes when present (\"42501:Nur …\").\n  const colon = message.indexOf(':');\n  const messageDe =\n    colon > 0 && /^[A-Z0-9]+$/i.test(message.slice(0, colon).trim())\n      ? message.slice(colon + 1).trim() || message\n      : message;\n  return {\n    ok: false,\n    messageDe: messageDe || 'Übernehmen fehlgeschlagen',\n  };\n}"
     },
     {
       "path": "src/infrastructure/saga/session-outcome-promotion-service.ts",
-      "line": 42,
-      "endLine": 44,
+      "line": 32,
+      "endLine": 63,
+      "name": "callPromote",
+      "text": "async function callPromote(\n  rpc: 'promote_session_outcome_to_saga' | 'promote_session_outcome_to_world',\n  sessionId: string,\n  consequenceId: string,\n): Promise<PromoteRpcResult> {\n  if (isHostLibraryEnabled()) {\n    try {\n      const dto =\n        rpc === 'promote_session_outcome_to_saga'\n          ? await promoteHostSessionOutcomeToSaga(sessionId, consequenceId)\n          : await promoteHostSessionOutcomeToWorld(sessionId, consequenceId);\n      return parsePromoteRpcResult(dto);\n    } catch (error) {\n      const message = error instanceof Error ? error.message : String(error);\n      // hostMutateJson prefixes unreachableMessage — peel trailing detail.\n      const detailMatch = message.match(/: (.+)$/);\n      return hostErrorToResult(detailMatch ? detailMatch[1] : message);\n    }\n  }\n  const { data, error } = await supabase.rpc(rpc, {\n    p_session_id: sessionId,\n    p_consequence_id: consequenceId,\n  });\n  if (error) {\n    console.error(`[session-outcome-promotion] ${rpc} failed`, error);\n    return {\n      ok: false,\n      messageDe: error.message || 'Übernehmen fehlgeschlagen',\n    };\n  }\n  return parsePromoteRpcResult(data);\n}"
+    },
+    {
+      "path": "src/infrastructure/saga/session-outcome-promotion-service.ts",
+      "line": 66,
+      "endLine": 68,
       "name": "promoteToSaga",
       "text": "promoteToSaga(sessionId: string, consequenceId: string): Promise<PromoteRpcResult> {\n    return callPromote('promote_session_outcome_to_saga', sessionId, consequenceId);\n  }"
     },
     {
       "path": "src/infrastructure/saga/session-outcome-promotion-service.ts",
-      "line": 45,
-      "endLine": 47,
+      "line": 69,
+      "endLine": 71,
       "name": "promoteToWorld",
       "text": "promoteToWorld(sessionId: string, consequenceId: string): Promise<PromoteRpcResult> {\n    return callPromote('promote_session_outcome_to_world', sessionId, consequenceId);\n  }"
     }

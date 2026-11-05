@@ -304,28 +304,28 @@
       "historicalCaller": "src/infrastructure/saga/session-outcome-promotion-service.ts:promoteToSaga",
       "uiJourney": "SessionRecapPromoteActions",
       "previousBehavior": "soft DENY / rpc promote_to_saga",
-      "hostSuccessor": "PORT_MISSING (SagaPorts.promoteSessionOutcomeToSaga)",
+      "hostSuccessor": "SagaInfraPorts.promoteSessionOutcomeToSaga + POST .../promote/saga",
       "dataOwner": "saga",
       "risk": "medium",
-      "classification": "PARITY_MISSING",
+      "classification": "HOST_VERIFIED",
       "issueRef": 1140,
-      "evidenceTest": "pending CUT-05",
+      "evidenceTest": "scripts/cut-05-outcome-promotion.self-test.mjs",
       "featureAvailableBeforeCutover": true,
-      "notes": ""
+      "notes": "CUT-05 dual-path; idempotent ledger"
     },
     {
       "stableKey": "session-outcome.promote-to-world",
       "historicalCaller": "src/infrastructure/saga/session-outcome-promotion-service.ts:promoteToWorld",
       "uiJourney": "SessionRecapPromoteActions",
       "previousBehavior": "soft DENY / rpc promote_to_world",
-      "hostSuccessor": "PORT_MISSING",
+      "hostSuccessor": "SagaInfraPorts.promoteSessionOutcomeToWorld + POST .../promote/world",
       "dataOwner": "saga",
       "risk": "medium",
-      "classification": "PARITY_MISSING",
+      "classification": "HOST_VERIFIED",
       "issueRef": 1140,
-      "evidenceTest": "pending CUT-05",
+      "evidenceTest": "scripts/cut-05-outcome-promotion.self-test.mjs",
       "featureAvailableBeforeCutover": true,
-      "notes": ""
+      "notes": "CUT-05 dual-path; idempotent ledger"
     },
     {
       "stableKey": "item-catalog.update-definition",
@@ -1954,8 +1954,8 @@
   ],
   "counts": {
     "total": 126,
-    "HOST_VERIFIED": 56,
-    "PARITY_MISSING": 66,
+    "HOST_VERIFIED": 58,
+    "PARITY_MISSING": 64,
     "LEGACY_UNUSED": 4
   },
   "followUpIssues": {

@@ -179,7 +179,7 @@
     },
     {
       "path": "src/infrastructure/host/host-session-http.ts",
-      "sha256": "1d0e576d58da7285a08cbad7ee864fabb7033d9d822841240dda6c11935a4818"
+      "sha256": "dd70c163f15af4d1ec881a9fe8cb6e87c5ccc441de2307b9b24e9a5c4b6b8172"
     },
     {
       "path": "src/lib/authenticatedUser.ts",
@@ -1250,6 +1250,14 @@
       "line": 98,
       "endLine": 118,
       "text": "export type HostPlaySessionDto = {\n  readonly sessionId: string;\n  readonly projectId: string;\n  readonly publicId?: string;\n  readonly joinCode?: string | null;\n  readonly code?: string | null;\n  readonly status: string;\n  readonly sessionNumber?: number;\n  readonly name?: string | null;\n  readonly createdAt?: string;\n  readonly startedAt?: string | null;\n  readonly endedAt?: string | null;\n  readonly gmUserId?: string;\n  readonly players?: readonly {\n    readonly id?: string;\n    readonly userId?: string;\n    readonly characterId?: string | null;\n    readonly isOnline?: boolean;\n    readonly joinedAt?: string;\n  }[];\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "HostPromoteOutcomeDto",
+      "path": "src/infrastructure/host/host-session-http.ts",
+      "line": 406,
+      "endLine": 412,
+      "text": "export type HostPromoteOutcomeDto = {\n  readonly ok?: boolean;\n  readonly idempotent?: boolean;\n  readonly targetKind?: string;\n  readonly targetRef?: string;\n  readonly messageDe?: string;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",

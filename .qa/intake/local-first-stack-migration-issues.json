@@ -14447,6 +14447,7 @@
           "src/infrastructure/host/host-library-http.ts",
           "src/infrastructure/host/host-product-deny.ts",
           "src/infrastructure/host/host-saga-definition-http.ts",
+          "src/infrastructure/host/host-session-http.ts",
           "src/infrastructure/saga/host-saga-adapter.ts",
           "src/infrastructure/saga/host-saga-ports.contract.ts",
           "src/infrastructure/saga/saga-definition-service.ts",
@@ -14631,7 +14632,7 @@
         "approvalRequired": null
       },
       "contractSections": {
-        "vorher": "Baseline 3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248; Quellpfade: src/domains/saga/contracts/saga-definition.ts, src/domains/session/contracts/session-outcome-promotion.ts, src/infrastructure/host/host-library-http.ts, src/infrastructure/host/host-product-deny.ts, src/infrastructure/host/host-saga-definition-http.ts, src/infrastructure/saga/host-saga-adapter.ts, src/infrastructure/saga/host-saga-ports.contract.ts, src/infrastructure/saga/saga-definition-service.ts, src/infrastructure/saga/session-outcome-promotion-service.ts, src/lib/hostAuthBridge.ts, src/lib/networkTimeout.ts, src/lib/supabase.ts. Detaillierte Aufruf-/SQL-Nachweise: .qa/intake/edge-infra-contracts/infra-saga.md, .qa/intake/edge-infra-contracts/source-contracts/infra-saga.json.",
+        "vorher": "Baseline 3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248; Quellpfade: src/domains/saga/contracts/saga-definition.ts, src/domains/session/contracts/session-outcome-promotion.ts, src/infrastructure/host/host-library-http.ts, src/infrastructure/host/host-product-deny.ts, src/infrastructure/host/host-saga-definition-http.ts, src/infrastructure/host/host-session-http.ts, src/infrastructure/saga/host-saga-adapter.ts, src/infrastructure/saga/host-saga-ports.contract.ts, src/infrastructure/saga/saga-definition-service.ts, src/infrastructure/saga/session-outcome-promotion-service.ts, src/lib/hostAuthBridge.ts, src/lib/networkTimeout.ts, src/lib/supabase.ts. Detaillierte Aufruf-/SQL-Nachweise: .qa/intake/edge-infra-contracts/infra-saga.md, .qa/intake/edge-infra-contracts/source-contracts/infra-saga.json.",
         "nachher": "src/infrastructure/saga: bestehende Aufrufer über den freigegebenen Host transportieren und die vollständige RPC-/Tabellen-/Storage-/Realtime-Abhängigkeit erhalten. Zielpfade: .",
         "verhalten": "src/infrastructure/saga: bestehende Aufrufer über den freigegebenen Host transportieren und die vollständige RPC-/Tabellen-/Storage-/Realtime-Abhängigkeit erhalten.",
         "sicherheit": "Der Adapter überträgt einen verifizierbaren Actor-Kontext und übernimmt keine privilegierten Client-Rollen. Serverseitige Policy, Projektion und Asset-Rechte müssen auch bei direkten Requests wirksam bleiben.",

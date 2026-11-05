@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "repository": "iamthamanic/sagatree",
   "mode": "write",
-  "startedAt": "2026-11-05T09:16:07.834Z",
+  "startedAt": "2026-11-05T11:10:42.142Z",
   "total": 90,
   "updated": 1,
   "unchanged": 89,
@@ -733,10 +733,10 @@
       "number": 806,
       "state": "CLOSED",
       "titleOk": true,
-      "bodyOk": false,
+      "bodyOk": true,
       "labelsOk": true,
       "sha256": "7c87295fdaee9f22b43bf97737e84a14e695c538a6acdc37a46793fc4e95396a",
-      "action": "updated"
+      "action": "unchanged"
     },
     {
       "localId": "MIG-308",
@@ -763,10 +763,10 @@
       "number": 809,
       "state": "CLOSED",
       "titleOk": true,
-      "bodyOk": true,
+      "bodyOk": false,
       "labelsOk": true,
-      "sha256": "5dcae99f5f991516c00a47c3183002dd551799454fdb13d606a3b74fdd4a4b15",
-      "action": "unchanged"
+      "sha256": "3dbb92e5f166475f26a8cdf9e0e6fe339c536be2cf11e952317fb3813e43edb9",
+      "action": "updated"
     },
     {
       "localId": "MIG-311",
@@ -909,5 +909,5 @@
       "action": "unchanged"
     }
   ],
-  "finishedAt": "2026-11-05T09:17:02.158Z"
+  "finishedAt": "2026-11-05T11:11:31.889Z"
 }

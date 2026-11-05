@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-saga.json](source-contracts/infra-saga.json) (SHA-256 `6382e07e6554644e70bc3c9d18386709667495239789491080648aef7f5cb2d7`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-saga.json](source-contracts/infra-saga.json) (SHA-256 `ba4e21cb84281fc0469e356c267f455600346f7a681f44f72f8234123bab7960`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -175,7 +175,7 @@ supabase.rpc('duplicate_saga_playthrough', {
 Enclosing operation: `src/infrastructure/saga/saga-definition-service.ts:238`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### rpc: promote_session_outcome_to_saga
 
-`src/infrastructure/saga/session-outcome-promotion-service.ts:27` — finite-literal-union.
+`src/infrastructure/saga/session-outcome-promotion-service.ts:51` — finite-literal-union.
 
 Exact call/query chain:
 ```ts
@@ -185,10 +185,10 @@ supabase.rpc(rpc, {
   })
 ```
 
-Enclosing operation: `src/infrastructure/saga/session-outcome-promotion-service.ts:16`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/saga/session-outcome-promotion-service.ts:32`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### rpc: promote_session_outcome_to_world
 
-`src/infrastructure/saga/session-outcome-promotion-service.ts:27` — finite-literal-union.
+`src/infrastructure/saga/session-outcome-promotion-service.ts:51` — finite-literal-union.
 
 Exact call/query chain:
 ```ts
@@ -198,7 +198,7 @@ supabase.rpc(rpc, {
   })
 ```
 
-Enclosing operation: `src/infrastructure/saga/session-outcome-promotion-service.ts:16`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/saga/session-outcome-promotion-service.ts:32`; complete request/default/result/error logic is in the declarations below and the snapshot.
 
 ## Complete public declarations and facade operation contracts
 
@@ -428,7 +428,7 @@ export type HostSagaOp = (typeof HOST_SAGA_OPS)[number];
 export const sagaDefinitionService = new SagaDefinitionService();
 ```
 
-### src/infrastructure/saga/session-outcome-promotion-service.ts:41
+### src/infrastructure/saga/session-outcome-promotion-service.ts:65
 
 ```ts
 export const sessionOutcomePromotionService = {
@@ -715,7 +715,7 @@ async duplicatePlaythrough(input: {
   }
 ```
 
-### src/infrastructure/saga/session-outcome-promotion-service.ts:16
+### src/infrastructure/saga/session-outcome-promotion-service.ts:32
 
 ```ts
 async function callPromote(
@@ -724,10 +724,18 @@ async function callPromote(
   consequenceId: string,
 ): Promise<PromoteRpcResult> {
   if (isHostLibraryEnabled()) {
-    return {
-      ok: false,
-      messageDe: 'Session-Übernahme ist im Host-Modus noch nicht verfügbar.',
-    };
+    try {
+      const dto =
+        rpc === 'promote_session_outcome_to_saga'
+          ? await promoteHostSessionOutcomeToSaga(sessionId, consequenceId)
+          : await promoteHostSessionOutcomeToWorld(sessionId, consequenceId);
+      return parsePromoteRpcResult(dto);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      // hostMutateJson prefixes unreachableMessage — peel trailing detail.
+      const detailMatch = message.match(/: (.+)$/);
+      return hostErrorToResult(detailMatch ? detailMatch[1] : message);
+    }
   }
   const { data, error } = await supabase.rpc(rpc, {
     p_session_id: sessionId,
@@ -754,10 +762,11 @@ async function callPromote(
 | `src/infrastructure/host/host-library-http.ts` | `45d3c37d4a5ce1c328c42c50fd5482590b9811150d71a55e3029071916fd281e` |
 | `src/infrastructure/host/host-product-deny.ts` | `69b148debc95006bb31daa7a94caf4e1507ac3089fdf399952102c4effa3759c` |
 | `src/infrastructure/host/host-saga-definition-http.ts` | `3bf857114def303681691297c71f09a9b6278658e51cad659f0d7e51e0a819f1` |
+| `src/infrastructure/host/host-session-http.ts` | `dd70c163f15af4d1ec881a9fe8cb6e87c5ccc441de2307b9b24e9a5c4b6b8172` |
 | `src/infrastructure/saga/host-saga-adapter.ts` | `7f0c52eaafcd6ee4f0deec9e5e4a5a282dc1d2ded67bd3a0e00a65636097aa62` |
 | `src/infrastructure/saga/host-saga-ports.contract.ts` | `c3734bbd18e4a04460915e128bbc2c46626934cf7bde76305918355f0ba85649` |
 | `src/infrastructure/saga/saga-definition-service.ts` | `bff1c95f3554628b28ba1db530db0807bcd3351e8f76139730756e9b1a54fea3` |
-| `src/infrastructure/saga/session-outcome-promotion-service.ts` | `4c6214a1eaa4d4f25f9ae6b0a5052989fce08ed94139ac4701cbb65df5208a9d` |
+| `src/infrastructure/saga/session-outcome-promotion-service.ts` | `7fa7783c3570ffe91db7627dfc2d5211c5f64127f3fd2281c54b370fefcaab49` |
 | `src/lib/hostAuthBridge.ts` | `30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a` |
 | `src/lib/networkTimeout.ts` | `835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851` |
 | `src/lib/supabase.ts` | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |

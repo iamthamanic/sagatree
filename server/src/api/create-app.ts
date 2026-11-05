@@ -470,6 +470,7 @@ export function createHostApi(deps: HostApiDeps): Hono {
     sessionInfra: deps.sessionInfra,
     look: deps.look,
     npcCreature: deps.npcCreature,
+    sagaInfra: deps.sagaInfra,
   });
 
   mountWorldAtlasHttpRoutes(app, {
