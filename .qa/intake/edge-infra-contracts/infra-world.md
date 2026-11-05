@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-world.json](source-contracts/infra-world.json) (SHA-256 `fe7f88d6883eaed09704dfb40ce9d61bbf918b0aa9a5c7b6fd2862adf3067a8e`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-world.json](source-contracts/infra-world.json) (SHA-256 `5c6434f5f356a2a11170fabc1d287aff505dedf47b8d629a62351e2240a9bdee`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -401,7 +401,7 @@ supabase.rpc('upsert_world_place_map_link', {
 Enclosing operation: `src/infrastructure/world/world-place-service.ts:323`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: world_profiles
 
-`src/infrastructure/world/world-profile-service.ts:84` — literal-or-constant.
+`src/infrastructure/world/world-profile-service.ts:85` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -412,10 +412,10 @@ supabase
       .order('created_at', { ascending: false })
 ```
 
-Enclosing operation: `src/infrastructure/world/world-profile-service.ts:77`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/world/world-profile-service.ts:78`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: world_profiles
 
-`src/infrastructure/world/world-profile-service.ts:103` — literal-or-constant.
+`src/infrastructure/world/world-profile-service.ts:104` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -427,7 +427,7 @@ supabase
       .single()
 ```
 
-Enclosing operation: `src/infrastructure/world/world-profile-service.ts:94`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/world/world-profile-service.ts:95`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: world_profiles
 
 `src/infrastructure/world/world-profile-service.ts:125` — literal-or-constant.
@@ -441,7 +441,7 @@ supabase
       .maybeSingle()
 ```
 
-Enclosing operation: `src/infrastructure/world/world-profile-service.ts:115`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/world/world-profile-service.ts:116`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: world_profiles
 
 `src/infrastructure/world/world-profile-service.ts:157` — literal-or-constant.
@@ -1654,7 +1654,7 @@ async linkMap(input: LinkWorldPlaceMapInput): Promise<WorldPlaceMapLinkVm> {
   }
 ```
 
-### src/infrastructure/world/world-profile-service.ts:77
+### src/infrastructure/world/world-profile-service.ts:78
 
 ```ts
 async getUserWorldProfiles(ownerUserId: string): Promise<WorldProfileVm[]> {
@@ -1675,7 +1675,7 @@ async getUserWorldProfiles(ownerUserId: string): Promise<WorldProfileVm[]> {
   }
 ```
 
-### src/infrastructure/world/world-profile-service.ts:94
+### src/infrastructure/world/world-profile-service.ts:95
 
 ```ts
 async getWorldProfile(ownerUserId: string, id: string): Promise<WorldProfileVm> {
@@ -1699,17 +1699,16 @@ async getWorldProfile(ownerUserId: string, id: string): Promise<WorldProfileVm> 
   }
 ```
 
-### src/infrastructure/world/world-profile-service.ts:115
+### src/infrastructure/world/world-profile-service.ts:116
 
 ```ts
 async getByPublicId(worldPublicId: string): Promise<WorldProfileVm | null> {
     const publicId = worldPublicId.trim().toUpperCase();
     if (!publicId) return null;
     if (isHostLibraryEnabled()) {
-      // Host world DTOs are title-only today (no publicId). Fail closed — no PostgREST.
-      throw new Error(
-        'Welt per öffentlicher ID laden ist im Host-Modus noch nicht verfügbar.',
-      );
+      const row = await fetchHostLibraryWorldByPublicId(publicId);
+      if (!row) return null;
+      return mapHostWorld(row);
     }
     await assertSupabaseJwtSession();
     const { data, error } = await supabase
@@ -1931,7 +1930,7 @@ async deleteWorldProfile(ownerUserId: string, id: string): Promise<void> {
 | `src/domains/world/places/settlement-presets.ts` | `b2b5b95f43524fda6c7a76eeb332150202f9750c47db5d7a6518fee98b796199` |
 | `src/domains/world/places/world-place.types.ts` | `32081a2c16516c68393e879ebc4e888441ca4e5009b20404158c6b25d09f4ef0` |
 | `src/domains/world/worldModuleRegistry.ts` | `9683d27ea65c7a22456245c0e2e706168285f61e229f6ea181e0fb6a65064cc0` |
-| `src/infrastructure/host/host-library-http.ts` | `69904d232219d72d3ee991eadc688ed47f9a3eb98289d516d7b437119d6e4d3d` |
+| `src/infrastructure/host/host-library-http.ts` | `225526477a7e5920f614ab73e2db1beeab6154c54dbc32f107713f2f046613af` |
 | `src/infrastructure/host/host-world-http.ts` | `bfb69f91e69543a66ee96cab4ad21273c86a2b167e4c21211c42c7e6ccb3c072` |
 | `src/infrastructure/media/optimizer/engines/audio/index.ts` | `7585190a705085692bff0896e08b4d78f791895b47e24d57deeaaa10bb669d4e` |
 | `src/infrastructure/media/optimizer/engines/image/image.worker.ts` | `d34793b4de682556d9306194cfbcd05fdafdf215da25393f955d2669c7499276` |
@@ -1952,7 +1951,7 @@ async deleteWorldProfile(ownerUserId: string, id: string): Promise<void> {
 | `src/infrastructure/world/world-atlas-service.ts` | `6f39628cc7b8448dd100850a7e2fce652cf87bca68d134c2d8cc766b7ee90b27` |
 | `src/infrastructure/world/world-map-service.ts` | `ec49afd5715b21860c05dba3fb92eb1ba90a3a8009277c6ac14b637463ab2a27` |
 | `src/infrastructure/world/world-place-service.ts` | `c8b48bc3e5ecdf33ecfe6db705115f17b423a7fbf5e504aa89d815cdf27551b4` |
-| `src/infrastructure/world/world-profile-service.ts` | `8b06871f77fac89a1c424efbaa722d543f8c291645a2bcc92fe258ca9d51286e` |
+| `src/infrastructure/world/world-profile-service.ts` | `d8846780836ca065c8c14ad5d411b3ad235583c4002481365ce20fa8963a34c0` |
 | `src/lib/authenticatedUser.ts` | `d4cbf3a004f8375982ca03d474fb7b61559fc2ec58ad6fe7b1f8834d26abf10c` |
 | `src/lib/hostAuthBridge.ts` | `30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a` |
 | `src/lib/localAdmin.ts` | `3a28dec23e85f25ed3e70682bc6e7f8c6b55e81dbbefdd1f6a837f68ac80d6b5` |

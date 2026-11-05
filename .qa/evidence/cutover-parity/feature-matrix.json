@@ -556,14 +556,14 @@
       "historicalCaller": "src/infrastructure/world/world-profile-service.ts:getByPublicId",
       "uiJourney": "WorldAtlasScreen deep link",
       "previousBehavior": "soft DENY host; supabase public_id",
-      "hostSuccessor": "PORT_MISSING",
+      "hostSuccessor": "/api/v1/library/worlds/by-public-id/:publicId",
       "dataOwner": "world",
       "risk": "medium",
-      "classification": "PARITY_MISSING",
+      "classification": "HOST_VERIFIED",
       "issueRef": 1145,
-      "evidenceTest": "pending CUT-10",
+      "evidenceTest": "scripts/cut-10-world-public-id.self-test.mjs",
       "featureAvailableBeforeCutover": true,
-      "notes": ""
+      "notes": "CUT-10; WO-XXXXX on worlds; authorize via world.read; Soft-DENY removed"
     },
     {
       "stableKey": "avatar-artifact.createAvatarArtifact",
@@ -1953,8 +1953,8 @@
     }
   ],
   "counts": {
-    "HOST_VERIFIED": 74,
-    "PARITY_MISSING": 48,
+    "HOST_VERIFIED": 75,
+    "PARITY_MISSING": 47,
     "LEGACY_UNUSED": 4,
     "total": 126
   },

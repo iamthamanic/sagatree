@@ -15,6 +15,7 @@ import {
 } from '../migration/cutover/index.ts';
 import { generateSagaPublicId } from '../modules/project/internal/public-project-id.ts';
 import { generateProjectJoinCode } from '../modules/project/internal/project-membership-store.ts';
+import { generateWorldPublicId } from '../modules/world/internal/public-world-id.ts';
 
 export type EnsureDornhainResult = {
   readonly seeded: boolean;
@@ -479,8 +480,8 @@ export function ensureDornhainDefaultCatalog(
 
   if (!existingWorldId) {
     db.prepare(
-      `INSERT INTO worlds (id, owner_user_id, title, created_at) VALUES (?, ?, ?, ?)`,
-    ).run(worldId, ownerUserId, catalog.worldTitle, now);
+      `INSERT INTO worlds (id, owner_user_id, title, created_at, public_id) VALUES (?, ?, ?, ?, ?)`,
+    ).run(worldId, ownerUserId, catalog.worldTitle, now, generateWorldPublicId());
   }
 
   // Each actor owns their Dornhain saga definition (owner-scoped UNIQUE slug).

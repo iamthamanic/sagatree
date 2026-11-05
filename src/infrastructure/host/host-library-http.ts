@@ -133,6 +133,8 @@ export type HostLibraryWorldDto = {
   readonly id: string;
   readonly title: string;
   readonly createdAt: string;
+  /** CUT-10 — WO-XXXXX when present. */
+  readonly publicId?: string | null;
 };
 
 export async function fetchHostLibraryWorlds(
@@ -146,6 +148,50 @@ export async function fetchHostLibraryWorlds(
     fetchImpl,
   );
   return Array.isArray(body.worlds) ? body.worlds : [];
+}
+
+/** CUT-10 — GET `/api/v1/library/worlds/by-public-id/:publicId`. */
+export async function fetchHostLibraryWorldByPublicId(
+  publicId: string,
+  env: EnvLike = defaultEnv(),
+  fetchImpl: typeof fetch = fetch,
+): Promise<HostLibraryWorldDto | null> {
+  const trimmed = publicId.trim();
+  if (!trimmed) return null;
+  const base = getHostAuthBaseUrl(env);
+  if (!base) throw new Error('Host-Welt per öffentlicher ID nicht erreichbar');
+  let response: Response;
+  try {
+    response = await fetchImpl(
+      `${base}/api/v1/library/worlds/by-public-id/${encodeURIComponent(trimmed)}`,
+      {
+        method: 'GET',
+        credentials: 'include',
+        headers: { Accept: 'application/json' },
+      },
+    );
+  } catch {
+    throw new Error('Host-Welt per öffentlicher ID nicht erreichbar');
+  }
+  if (response.status === 404) return null;
+  if (!response.ok) {
+    let detail = '';
+    try {
+      const body: unknown = await response.json();
+      if (body && typeof body === 'object' && 'error' in body) {
+        detail = String((body as { error: unknown }).error);
+      }
+    } catch {
+      /* ignore */
+    }
+    throw new Error(
+      detail
+        ? `Host-Welt per öffentlicher ID laden fehlgeschlagen: ${detail}`
+        : 'Host-Welt per öffentlicher ID laden fehlgeschlagen',
+    );
+  }
+  const body = (await response.json()) as { world?: HostLibraryWorldDto };
+  return body.world ?? null;
 }
 
 async function hostMutateJson<T>(

@@ -13,6 +13,8 @@ export const worlds = sqliteTable('worlds', {
   ownerUserId: text('owner_user_id').notNull(),
   title: text('title').notNull(),
   createdAt: text('created_at').notNull(),
+  /** CUT-10 — WO-XXXXX public identifier (not authorization). */
+  publicId: text('public_id'),
 });
 
 export const worldMaps = sqliteTable('world_maps', {

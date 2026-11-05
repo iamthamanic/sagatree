@@ -28974,7 +28974,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "69904d232219d72d3ee991eadc688ed47f9a3eb98289d516d7b437119d6e4d3d"
+            "sha256": "225526477a7e5920f614ab73e2db1beeab6154c54dbc32f107713f2f046613af"
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
@@ -28990,7 +28990,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-ai.json",
-      "sourceContractSha256": "61066eeb04840f07ed4d78e00ca3c45f49fbc9bba52bd56500fcfa6d28a6bd24",
+      "sourceContractSha256": "f6acc0cf6af0ae8e8a92ad5267cb57b71c9239ba88d2debeedbe3394cc9eeecb",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],
@@ -30307,7 +30307,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "69904d232219d72d3ee991eadc688ed47f9a3eb98289d516d7b437119d6e4d3d"
+            "sha256": "225526477a7e5920f614ab73e2db1beeab6154c54dbc32f107713f2f046613af"
           },
           {
             "path": "src/infrastructure/host/host-product-deny.ts",
@@ -30491,7 +30491,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-character.json",
-      "sourceContractSha256": "351460257a0a0846198112e2ca301725a7054b3af45d4a3a3aee80a40048c699",
+      "sourceContractSha256": "f2c319349fe51657d883635e0ceb92a16bbdf60ea3cbb1443f71a65221d70a63",
       "rpcUsed": [],
       "tablesTouched": [
         "character_adventure_arcs",
@@ -35611,7 +35611,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "69904d232219d72d3ee991eadc688ed47f9a3eb98289d516d7b437119d6e4d3d"
+            "sha256": "225526477a7e5920f614ab73e2db1beeab6154c54dbc32f107713f2f046613af"
           },
           {
             "path": "src/infrastructure/inventory/host-inventory-adapter.ts",
@@ -35723,7 +35723,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-inventory.json",
-      "sourceContractSha256": "fc0cce2f84e69cb7232ff75ba5419f30d531af90c7a90e6aad95f87823d1eed3",
+      "sourceContractSha256": "2a1bb29e22eed76c4a5688a559703958cf2b024a24ae56af2983b471d46b30ee",
       "rpcUsed": [],
       "tablesTouched": [
         "characters",
@@ -36927,7 +36927,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "69904d232219d72d3ee991eadc688ed47f9a3eb98289d516d7b437119d6e4d3d"
+            "sha256": "225526477a7e5920f614ab73e2db1beeab6154c54dbc32f107713f2f046613af"
           },
           {
             "path": "src/infrastructure/look/adapters/host-mtoon-look-adapter.ts",
@@ -37003,7 +37003,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-look.json",
-      "sourceContractSha256": "bb748766d207fc9cf77ea042bdf0f93620ef6858b494ec3d7a7a1da6c5e6b871",
+      "sourceContractSha256": "a4ad8f8a1b94f178c28998a09668a0e6cc29e58b45d28006f118124b8b1bf306",
       "rpcUsed": [],
       "tablesTouched": [
         "look_profile_versions",
@@ -37872,7 +37872,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "69904d232219d72d3ee991eadc688ed47f9a3eb98289d516d7b437119d6e4d3d"
+            "sha256": "225526477a7e5920f614ab73e2db1beeab6154c54dbc32f107713f2f046613af"
           },
           {
             "path": "src/infrastructure/marketplace/host-marketplace-adapter.ts",
@@ -37916,7 +37916,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-marketplace.json",
-      "sourceContractSha256": "b38aa10e6d25bd58d0bdbbfdba9b4fe9744b2cd1e236f2961fd2129d0d6e2d23",
+      "sourceContractSha256": "1fb87e13877bf01504c504b0a9f2076c022c9e8b6a173b870036122cd096c07b",
       "rpcUsed": [
         "increment_marketplace_downloads"
       ],
@@ -38731,7 +38731,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "69904d232219d72d3ee991eadc688ed47f9a3eb98289d516d7b437119d6e4d3d"
+            "sha256": "225526477a7e5920f614ab73e2db1beeab6154c54dbc32f107713f2f046613af"
           },
           {
             "path": "src/infrastructure/host/host-session-http.ts",
@@ -38791,7 +38791,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-npc-creature.json",
-      "sourceContractSha256": "28c6e92672f9cab584019b0d423c1127ee98184f8ef7cdf3b89419ba726a3f9a",
+      "sourceContractSha256": "445897d78f2520d892483db31e4a3683e35f5ffd60ebe602e7513eb809524eec",
       "rpcUsed": [
         "assign_npc_creature_controller",
         "clear_npc_creature_instance_temp_controllers_for_session",
@@ -39888,7 +39888,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "69904d232219d72d3ee991eadc688ed47f9a3eb98289d516d7b437119d6e4d3d"
+            "sha256": "225526477a7e5920f614ab73e2db1beeab6154c54dbc32f107713f2f046613af"
           },
           {
             "path": "src/infrastructure/host/host-product-deny.ts",
@@ -39948,7 +39948,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-project.json",
-      "sourceContractSha256": "5c6f15a1c7f3877888f08057da725ce13db18b3eb7c12980b173c28baa57ee08",
+      "sourceContractSha256": "f24bcb1a4969bfc6127be22824bec67b4c7196c2b10c8bdbc6ae1759c5d52357",
       "rpcUsed": [
         "create_project_session",
         "ensure_native_starter_project",
@@ -41186,7 +41186,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "69904d232219d72d3ee991eadc688ed47f9a3eb98289d516d7b437119d6e4d3d"
+            "sha256": "225526477a7e5920f614ab73e2db1beeab6154c54dbc32f107713f2f046613af"
           },
           {
             "path": "src/infrastructure/rulesets/ruleset-service.ts",
@@ -41206,7 +41206,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-rulesets.json",
-      "sourceContractSha256": "750f94f6b0bd5b460fb516608f90618100057d27184f3b1a2e195f852b4eecec",
+      "sourceContractSha256": "b6ffbeb1a90f5cd803ba7b34bd49516cd86595a197d63069fa19d64cfa2c5654",
       "rpcUsed": [],
       "tablesTouched": [
         "rulesets"
@@ -41425,7 +41425,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "69904d232219d72d3ee991eadc688ed47f9a3eb98289d516d7b437119d6e4d3d"
+            "sha256": "225526477a7e5920f614ab73e2db1beeab6154c54dbc32f107713f2f046613af"
           },
           {
             "path": "src/infrastructure/host/host-product-deny.ts",
@@ -41473,7 +41473,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-saga.json",
-      "sourceContractSha256": "76f05b7d4c145bef0dd76b8917e50f96bbcfc10abd984070f3d375177785a10f",
+      "sourceContractSha256": "a00e589c16a97823eac12c63771862eb916f1f213ee3c10e38e68d61f50ea879",
       "rpcUsed": [
         "copy_native_saga_definition",
         "create_project_from_saga_version",
@@ -41963,7 +41963,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "69904d232219d72d3ee991eadc688ed47f9a3eb98289d516d7b437119d6e4d3d"
+            "sha256": "225526477a7e5920f614ab73e2db1beeab6154c54dbc32f107713f2f046613af"
           },
           {
             "path": "src/infrastructure/host/host-session-http.ts",
@@ -42059,7 +42059,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-session.json",
-      "sourceContractSha256": "718898bc48c2c9fc043af756d497713f4c93ccb25b61b4049fbcae9a11f06a95",
+      "sourceContractSha256": "96b357a13b83fe741af709f351dd5921df724fe57e87efddc1d40f5cf0024f40",
       "rpcUsed": [
         "apply_session_runtime_command",
         "create_play_session",
@@ -43976,7 +43976,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "69904d232219d72d3ee991eadc688ed47f9a3eb98289d516d7b437119d6e4d3d"
+            "sha256": "225526477a7e5920f614ab73e2db1beeab6154c54dbc32f107713f2f046613af"
           },
           {
             "path": "src/infrastructure/media/optimizer/engines/audio/index.ts",
@@ -44084,7 +44084,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-user-profile.json",
-      "sourceContractSha256": "da8871e3c37b6569f471e0d2cb1ef77f03a67cc99616fb30689f68294c351dd8",
+      "sourceContractSha256": "1357228d9843fe9916aeb179c736235e2890adef540bab46e6f2f7849493970f",
       "rpcUsed": [],
       "tablesTouched": [
         "user_profiles"
@@ -44871,7 +44871,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "69904d232219d72d3ee991eadc688ed47f9a3eb98289d516d7b437119d6e4d3d"
+            "sha256": "225526477a7e5920f614ab73e2db1beeab6154c54dbc32f107713f2f046613af"
           },
           {
             "path": "src/infrastructure/host/host-world-http.ts",
@@ -44955,7 +44955,7 @@
           },
           {
             "path": "src/infrastructure/world/world-profile-service.ts",
-            "sha256": "8b06871f77fac89a1c424efbaa722d543f8c291645a2bcc92fe258ca9d51286e"
+            "sha256": "d8846780836ca065c8c14ad5d411b3ad235583c4002481365ce20fa8963a34c0"
           },
           {
             "path": "src/lib/authenticatedUser.ts",
@@ -44983,7 +44983,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-world.json",
-      "sourceContractSha256": "fe7f88d6883eaed09704dfb40ce9d61bbf918b0aa9a5c7b6fd2862adf3067a8e",
+      "sourceContractSha256": "5c6434f5f356a2a11170fabc1d287aff505dedf47b8d629a62351e2240a9bdee",
       "rpcUsed": [
         "archive_world_node_subtree",
         "create_world_node_with_maps",
@@ -45492,8 +45492,8 @@
           "kind": "table",
           "name": "world_profiles",
           "path": "src/infrastructure/world/world-profile-service.ts",
-          "line": 84,
-          "endLine": 85,
+          "line": 85,
+          "endLine": 86,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from(this.tableName)",
           "chain": "supabase\n      .from(this.tableName)\n      .select(WORLD_SELECT)\n      .eq('owner_user_id', jwtUserId)\n      .order('created_at', { ascending: false })",
@@ -45502,8 +45502,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/world/world-profile-service.ts",
-            "line": 77,
-            "endLine": 92,
+            "line": 78,
+            "endLine": 93,
             "text": "async getUserWorldProfiles(ownerUserId: string): Promise<WorldProfileVm[]> {\n    if (!ownerUserId) throw new Error('User not authenticated');\n    if (isHostLibraryEnabled()) {\n      const rows = await fetchHostLibraryWorlds();\n      return rows.map(mapHostWorld);\n    }\n    const jwtUserId = await assertSupabaseJwtSession();\n    const { data, error } = await supabase\n      .from(this.tableName)\n      .select(WORLD_SELECT)\n      .eq('owner_user_id', jwtUserId)\n      .order('created_at', { ascending: false });\n\n    if (error) throw new Error(`Welten konnten nicht geladen werden: ${error.message}`);\n    return (data ?? []).map((entry) => this.mapToViewModel(entry as WorldProfileDto));\n  }"
           }
         },
@@ -45511,8 +45511,8 @@
           "kind": "table",
           "name": "world_profiles",
           "path": "src/infrastructure/world/world-profile-service.ts",
-          "line": 103,
-          "endLine": 104,
+          "line": 104,
+          "endLine": 105,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from(this.tableName)",
           "chain": "supabase\n      .from(this.tableName)\n      .select(WORLD_SELECT)\n      .eq('id', id)\n      .eq('owner_user_id', jwtUserId)\n      .single()",
@@ -45521,8 +45521,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/world/world-profile-service.ts",
-            "line": 94,
-            "endLine": 112,
+            "line": 95,
+            "endLine": 113,
             "text": "async getWorldProfile(ownerUserId: string, id: string): Promise<WorldProfileVm> {\n    if (!ownerUserId) throw new Error('User not authenticated');\n    if (isHostLibraryEnabled()) {\n      const rows = await fetchHostLibraryWorlds();\n      const match = rows.find((row) => row.id === id);\n      if (!match) throw new Error('Welt konnte nicht geladen werden');\n      return mapHostWorld(match);\n    }\n    const jwtUserId = await assertSupabaseJwtSession();\n    const { data, error } = await supabase\n      .from(this.tableName)\n      .select(WORLD_SELECT)\n      .eq('id', id)\n      .eq('owner_user_id', jwtUserId)\n      .single();\n\n    if (error) throw new Error(`Welt konnte nicht geladen werden: ${error.message}`);\n    return this.mapToViewModel(data as WorldProfileDto);\n  }"
           }
         },
@@ -45540,9 +45540,9 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/world/world-profile-service.ts",
-            "line": 115,
+            "line": 116,
             "endLine": 133,
-            "text": "async getByPublicId(worldPublicId: string): Promise<WorldProfileVm | null> {\n    const publicId = worldPublicId.trim().toUpperCase();\n    if (!publicId) return null;\n    if (isHostLibraryEnabled()) {\n      // Host world DTOs are title-only today (no publicId). Fail closed — no PostgREST.\n      throw new Error(\n        'Welt per öffentlicher ID laden ist im Host-Modus noch nicht verfügbar.',\n      );\n    }\n    await assertSupabaseJwtSession();\n    const { data, error } = await supabase\n      .from(this.tableName)\n      .select(WORLD_SELECT)\n      .eq('public_id', publicId)\n      .maybeSingle();\n    if (error) throw new Error(`Welt konnte nicht geladen werden: ${error.message}`);\n    if (!data) return null;\n    return this.mapToViewModel(data as WorldProfileDto);\n  }"
+            "text": "async getByPublicId(worldPublicId: string): Promise<WorldProfileVm | null> {\n    const publicId = worldPublicId.trim().toUpperCase();\n    if (!publicId) return null;\n    if (isHostLibraryEnabled()) {\n      const row = await fetchHostLibraryWorldByPublicId(publicId);\n      if (!row) return null;\n      return mapHostWorld(row);\n    }\n    await assertSupabaseJwtSession();\n    const { data, error } = await supabase\n      .from(this.tableName)\n      .select(WORLD_SELECT)\n      .eq('public_id', publicId)\n      .maybeSingle();\n    if (error) throw new Error(`Welt konnte nicht geladen werden: ${error.message}`);\n    if (!data) return null;\n    return this.mapToViewModel(data as WorldProfileDto);\n  }"
           }
         },
         {
@@ -45924,43 +45924,43 @@
         },
         {
           "path": "src/infrastructure/world/world-profile-service.ts",
-          "line": 28,
-          "endLine": 41,
+          "line": 29,
+          "endLine": 42,
           "name": "mapHostWorld"
         },
         {
           "path": "src/infrastructure/world/world-profile-service.ts",
-          "line": 43,
-          "endLine": 48,
+          "line": 44,
+          "endLine": 49,
           "name": "normalizeName"
         },
         {
           "path": "src/infrastructure/world/world-profile-service.ts",
-          "line": 50,
-          "endLine": 53,
+          "line": 51,
+          "endLine": 54,
           "name": "normalizeDescription"
         },
         {
           "path": "src/infrastructure/world/world-profile-service.ts",
-          "line": 55,
-          "endLine": 60,
+          "line": 56,
+          "endLine": 61,
           "name": "duplicateWorldName"
         },
         {
           "path": "src/infrastructure/world/world-profile-service.ts",
-          "line": 77,
-          "endLine": 92,
+          "line": 78,
+          "endLine": 93,
           "name": "getUserWorldProfiles"
         },
         {
           "path": "src/infrastructure/world/world-profile-service.ts",
-          "line": 94,
-          "endLine": 112,
+          "line": 95,
+          "endLine": 113,
           "name": "getWorldProfile"
         },
         {
           "path": "src/infrastructure/world/world-profile-service.ts",
-          "line": 115,
+          "line": 116,
           "endLine": 133,
           "name": "getByPublicId"
         },

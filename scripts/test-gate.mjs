@@ -1559,6 +1559,19 @@ function checkCut09CharacterArcs() {
   console.log('OK: cut-09-character-arcs.self-test');
 }
 
+function checkCut10WorldPublicId() {
+  console.log('CUT-10 world profile public-id lookup (#1145)...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/cut-10-world-public-id.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+  console.log('OK: cut-10-world-public-id.self-test');
+}
+
 function checkMig312UserProfileAdapter() {
   console.log('MIG-312 user-profile adapter (#811): user_profiles + user-avatars dual-path...');
   execFileSync(
@@ -3785,6 +3798,7 @@ checkCut06ItemDefinition();
 checkCut07LookVersions();
 checkCut08CharacterPresets();
 checkCut09CharacterArcs();
+checkCut10WorldPublicId();
 checkMig312UserProfileAdapter();
 checkMig309Rulesets();
 checkMig313WorldAdapter();
