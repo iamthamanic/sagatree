@@ -4,7 +4,7 @@
   "auditIssue": 1136,
   "baselineSha": "54b6ee7c6f3a07abd49b5450e507df78591f9b05",
   "baselineNote": "FE-HOST-14 merged; host-first core with residual soft-DENYs",
-  "generatedAt": "2026-11-05T08:10:00.000Z",
+  "generatedAt": "2026-11-05T23:44:37Z",
   "classifications": [
     "HOST_VERIFIED",
     "PARITY_MISSING",
@@ -695,57 +695,57 @@
       "stableKey": "avatar-io.uploadAndAnalyzeCharacterAvatarModel",
       "historicalCaller": "src/infrastructure/character/avatar/character-avatar-import-service.ts:uploadAndAnalyzeCharacterAvatarModel",
       "uiJourney": "AvatarImportPanel / CharacterEditor save",
-      "previousBehavior": "DENY + storage",
-      "hostSuccessor": "PORT_MISSING (/api/v1/assets partial)",
+      "previousBehavior": "Host dual-path (legacy storage when flag off)",
+      "hostSuccessor": "/api/v1/assets (purpose=avatar-model) + /api/v1/library/avatar-artifacts*",
       "dataOwner": "character",
       "risk": "medium",
-      "classification": "PARITY_MISSING",
+      "classification": "HOST_VERIFIED",
       "issueRef": 1147,
-      "evidenceTest": "pending CUT-12",
+      "evidenceTest": "scripts/cut-12-avatar-transfer.self-test.mjs",
       "featureAvailableBeforeCutover": true,
-      "notes": ""
+      "notes": "CUT-12 shipped"
     },
     {
       "stableKey": "avatar-io.keepOriginalImportedAvatar",
       "historicalCaller": "src/infrastructure/character/avatar/character-avatar-import-service.ts:keepOriginalImportedAvatar",
       "uiJourney": "AvatarImportPanel / CharacterEditor save",
-      "previousBehavior": "DENY + storage",
-      "hostSuccessor": "PORT_MISSING (/api/v1/assets partial)",
+      "previousBehavior": "Host dual-path (legacy storage when flag off)",
+      "hostSuccessor": "/api/v1/assets (purpose=avatar-model) + /api/v1/library/avatar-artifacts*",
       "dataOwner": "character",
       "risk": "medium",
-      "classification": "PARITY_MISSING",
+      "classification": "HOST_VERIFIED",
       "issueRef": 1147,
-      "evidenceTest": "pending CUT-12",
+      "evidenceTest": "scripts/cut-12-avatar-transfer.self-test.mjs",
       "featureAvailableBeforeCutover": true,
-      "notes": ""
+      "notes": "CUT-12 shipped"
     },
     {
       "stableKey": "avatar-io.importCharacterAvatarModel",
       "historicalCaller": "src/infrastructure/character/avatar/character-avatar-import-service.ts:importCharacterAvatarModel",
       "uiJourney": "AvatarImportPanel / CharacterEditor save",
-      "previousBehavior": "DENY + storage",
-      "hostSuccessor": "PORT_MISSING (/api/v1/assets partial)",
+      "previousBehavior": "Host dual-path (legacy storage when flag off)",
+      "hostSuccessor": "/api/v1/assets (purpose=avatar-model) + /api/v1/library/avatar-artifacts*",
       "dataOwner": "character",
       "risk": "medium",
-      "classification": "PARITY_MISSING",
+      "classification": "HOST_VERIFIED",
       "issueRef": 1147,
-      "evidenceTest": "pending CUT-12",
+      "evidenceTest": "scripts/cut-12-avatar-transfer.self-test.mjs",
       "featureAvailableBeforeCutover": true,
-      "notes": ""
+      "notes": "CUT-12 shipped"
     },
     {
       "stableKey": "avatar-io.materializeAvatarSaveExport",
       "historicalCaller": "src/infrastructure/character/avatar/character-avatar-export-service.ts:materializeAvatarSaveExport",
       "uiJourney": "AvatarImportPanel / CharacterEditor save",
-      "previousBehavior": "DENY + storage",
-      "hostSuccessor": "PORT_MISSING (/api/v1/assets partial)",
+      "previousBehavior": "Host dual-path (legacy storage when flag off)",
+      "hostSuccessor": "/api/v1/assets (purpose=avatar-model) + /api/v1/library/avatar-artifacts*",
       "dataOwner": "character",
       "risk": "medium",
-      "classification": "PARITY_MISSING",
+      "classification": "HOST_VERIFIED",
       "issueRef": 1147,
-      "evidenceTest": "pending CUT-12",
+      "evidenceTest": "scripts/cut-12-avatar-transfer.self-test.mjs",
       "featureAvailableBeforeCutover": true,
-      "notes": ""
+      "notes": "CUT-12 shipped"
     },
     {
       "stableKey": "character-lore.generate-background",
@@ -1953,8 +1953,8 @@
     }
   ],
   "counts": {
-    "HOST_VERIFIED": 84,
-    "PARITY_MISSING": 38,
+    "HOST_VERIFIED": 88,
+    "PARITY_MISSING": 34,
     "LEGACY_UNUSED": 4,
     "total": 126
   },

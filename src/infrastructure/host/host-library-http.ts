@@ -1141,21 +1141,15 @@ export type HostPublishedAssetDto = {
   readonly storagePath: string;
 };
 
-/**
- * Publish owner-scoped bytes via host AssetPorts (FE-HOST-06).
- * Returns display `url` suitable for `<img src>` + character portrait_url save.
- */
-export async function publishHostAsset(
-  file: File,
-  env: EnvLike = defaultEnv(),
-  fetchImpl: typeof fetch = fetch,
+async function publishHostAssetForm(
+  form: FormData,
+  fallbackContentType: string,
+  fallbackByteSize: number,
+  env: EnvLike,
+  fetchImpl: typeof fetch,
 ): Promise<HostPublishedAssetDto> {
   const base = getHostAuthBaseUrl(env);
   if (!base) throw new Error('Host-Asset-Upload nicht erreichbar');
-
-  const form = new FormData();
-  form.append('file', file, file.name || 'portrait.bin');
-  if (file.type) form.append('contentType', file.type);
 
   let response: Response;
   try {
@@ -1179,6 +1173,9 @@ export async function publishHostAsset(
     } catch {
       /* ignore */
     }
+    if (response.status === 413) {
+      throw new Error('Datei zu groß für den Host-Asset-Speicher.');
+    }
     throw new Error(detail || 'Host-Asset-Upload fehlgeschlagen');
   }
 
@@ -1188,10 +1185,56 @@ export async function publishHostAsset(
   }
   return {
     assetId: body.assetId,
-    contentType: typeof body.contentType === 'string' ? body.contentType : file.type || 'application/octet-stream',
-    byteSize: typeof body.byteSize === 'number' ? body.byteSize : file.size,
+    contentType:
+      typeof body.contentType === 'string' ? body.contentType : fallbackContentType,
+    byteSize: typeof body.byteSize === 'number' ? body.byteSize : fallbackByteSize,
     checksumSha256: typeof body.checksumSha256 === 'string' ? body.checksumSha256 : '',
     url: body.url,
     storagePath: typeof body.storagePath === 'string' ? body.storagePath : '',
   };
+}
+
+/**
+ * Publish owner-scoped bytes via host AssetPorts (FE-HOST-06).
+ * Returns display `url` suitable for `<img src>` + character portrait_url save.
+ */
+export async function publishHostAsset(
+  file: File,
+  env: EnvLike = defaultEnv(),
+  fetchImpl: typeof fetch = fetch,
+): Promise<HostPublishedAssetDto> {
+  const form = new FormData();
+  form.append('file', file, file.name || 'portrait.bin');
+  if (file.type) form.append('contentType', file.type);
+  return publishHostAssetForm(
+    form,
+    file.type || 'application/octet-stream',
+    file.size,
+    env,
+    fetchImpl,
+  );
+}
+
+/**
+ * Publish owner-scoped avatar GLB/VRM bytes (CUT-12) via host AssetPorts.
+ * `purpose=avatar-model` unlocks glTF binary sniffing on POST /api/v1/assets.
+ */
+export async function publishHostAvatarModel(
+  file: File,
+  options: { readonly assetId?: string } = {},
+  env: EnvLike = defaultEnv(),
+  fetchImpl: typeof fetch = fetch,
+): Promise<HostPublishedAssetDto> {
+  const form = new FormData();
+  form.append('file', file, file.name || 'avatar.glb');
+  form.append('purpose', 'avatar-model');
+  form.append('contentType', file.type || 'model/gltf-binary');
+  if (options.assetId) form.append('assetId', options.assetId);
+  return publishHostAssetForm(
+    form,
+    file.type || 'model/gltf-binary',
+    file.size,
+    env,
+    fetchImpl,
+  );
 }
