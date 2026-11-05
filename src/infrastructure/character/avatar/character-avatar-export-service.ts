@@ -25,9 +25,12 @@ import {
   isHostLibraryEnabled,
   publishHostAvatarModel,
 } from '../../host/host-library-http';
+import { getHostAuthBaseUrl } from '../../../lib/hostAuthBridge';
 
 const BUCKET = 'character-avatars';
 const SIGNED_URL_SECONDS = 60 * 60 * 24 * 365;
+/** Matches server AssetPorts.publish DEFAULT_ASSET_MAX_BYTES (host avatar-model path). */
+const HOST_AVATAR_MODEL_MAX_BYTES = 16 * 1024 * 1024;
 
 export interface AvatarSaveExportProgress {
   status: AvatarSaveExportUiStatus;
@@ -35,10 +38,23 @@ export interface AvatarSaveExportProgress {
   artifact?: AvatarSaveExportArtifact;
 }
 
+function usesHostAssetCredentials(url: string): boolean {
+  if (url.includes('/api/v1/assets/')) return true;
+  const hostBase = getHostAuthBaseUrl();
+  if (!hostBase) return false;
+  try {
+    return new URL(url).origin === new URL(hostBase).origin && url.includes('/api/v1/assets/');
+  } catch {
+    return false;
+  }
+}
+
 async function tryFetchSourceMeshBytes(url: string | undefined): Promise<Uint8Array | undefined> {
   if (!url) return undefined;
   try {
-    const response = await fetch(url, { credentials: 'include' });
+    const response = await fetch(url, {
+      credentials: usesHostAssetCredentials(url) ? 'include' : 'omit',
+    });
     if (!response.ok) return undefined;
     const buffer = await response.arrayBuffer();
     return new Uint8Array(buffer);
@@ -90,6 +106,12 @@ export async function materializeAvatarSaveExport(
   const artifactId = crypto.randomUUID();
 
   if (isHostLibraryEnabled()) {
+    if (bytes.byteLength > HOST_AVATAR_MODEL_MAX_BYTES) {
+      report('error', 'Avatar-Export zu groß für den Host-Speicher.');
+      throw new Error(
+        `Avatar-Export zu groß für den Host-Speicher (max. ${HOST_AVATAR_MODEL_MAX_BYTES} Bytes).`,
+      );
+    }
     const blob = new File([new Uint8Array(bytes)], `avatar-export-${artifactId}.glb`, {
       type: 'model/gltf-binary',
     });

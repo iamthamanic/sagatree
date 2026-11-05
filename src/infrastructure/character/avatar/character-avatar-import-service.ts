@@ -35,6 +35,8 @@ import {
 
 const BUCKET = 'character-avatars';
 const SIGNED_URL_SECONDS = 60 * 60 * 24 * 365;
+/** Matches server AssetPorts.publish DEFAULT_ASSET_MAX_BYTES (host avatar-model path). */
+const HOST_AVATAR_MODEL_MAX_BYTES = 16 * 1024 * 1024;
 
 async function readFileBytes(file: File): Promise<Uint8Array> {
   const buffer = await file.arrayBuffer();
@@ -167,26 +169,27 @@ async function uploadAndAnalyzeHost(
     throw new Error(message);
   }
 
-  let v2ArtifactId: string = importAssetId;
+  let artifact;
   try {
-    const artifact = await materializeArtifactFromImportAsset({
+    artifact = await materializeArtifactFromImportAsset({
       importAssetId,
       characterId: options.characterId,
       storagePath: published.storagePath,
       format,
     });
-    v2ArtifactId = artifact.artifactId;
   } catch (error) {
-    console.warn(
-      '[avatar-import] V2 artifact materialize skipped:',
-      error instanceof Error ? error.message : error,
-    );
+    const message =
+      error instanceof Error
+        ? error.message
+        : 'Avatar-Artefakt konnte nicht materialisiert werden.';
+    options.report('failed', message);
+    throw new Error(message);
   }
 
   const summary = await analyzeImportBytes(bytes, options.report);
   return finishDraft({
     importAssetId,
-    artifactId: v2ArtifactId,
+    artifactId: artifact.artifactId,
     format,
     byteSize: bytes.byteLength,
     storagePath: published.storagePath,
@@ -297,6 +300,11 @@ export async function uploadAndAnalyzeCharacterAvatarModel(
   };
 
   report('validating', 'Datei wird geprüft …');
+  if (isHostLibraryEnabled() && file.size > HOST_AVATAR_MODEL_MAX_BYTES) {
+    const message = `Datei zu groß für den Host-Import (max. ${HOST_AVATAR_MODEL_MAX_BYTES} Bytes).`;
+    report('failed', message);
+    throw new Error(message);
+  }
   const early = earlyCheckAvatarImportFile({ fileName: file.name, byteSize: file.size });
   if (!early.ok) {
     report('failed', early.message ?? 'Datei ungültig.');
@@ -441,7 +449,7 @@ export async function importCharacterAvatarModel(
 
 export function avatarImportLimits() {
   return {
-    maxBytes: AVATAR_IMPORT_MAX_BYTES,
+    maxBytes: isHostLibraryEnabled() ? HOST_AVATAR_MODEL_MAX_BYTES : AVATAR_IMPORT_MAX_BYTES,
     accept: '.vrm,.glb,model/gltf-binary,application/octet-stream',
   };
 }

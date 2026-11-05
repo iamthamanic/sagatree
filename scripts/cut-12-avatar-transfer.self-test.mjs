@@ -6,7 +6,7 @@
  * Covers: purpose=avatar-model publish, credentialed download, artifact materialize,
  * stranger deny, non-glTF reject, raster-without-purpose still image-only.
  */
-import { mkdtempSync, mkdirSync, readFileSync, rmSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
@@ -15,7 +15,29 @@ import { randomBytes, randomUUID } from 'node:crypto';
 const root = new URL('..', import.meta.url).pathname;
 const createHostUrl = pathToFileURL(join(root, 'server/src/bootstrap/create-host.ts')).href;
 const authIndexUrl = pathToFileURL(join(root, 'server/src/auth/index.ts')).href;
-const fixturePath = join(root, '.qa/fixtures/liveact-face-asset/face-core-ok.glb');
+
+/** Minimal valid GLB (no gitignored fixtures — CI has none checked in). */
+function minimalGlbBytes() {
+  const json = Buffer.from(
+    JSON.stringify({
+      asset: { version: '2.0' },
+      scenes: [{ nodes: [0] }],
+      nodes: [{}],
+      scene: 0,
+    }),
+  );
+  const pad = (4 - (json.length % 4)) % 4;
+  const jsonChunkLen = json.length + pad;
+  const total = 12 + 8 + jsonChunkLen;
+  const out = Buffer.alloc(total);
+  out.writeUInt32LE(0x46546c67, 0); // glTF
+  out.writeUInt32LE(2, 4);
+  out.writeUInt32LE(total, 8);
+  out.writeUInt32LE(jsonChunkLen, 12);
+  out.writeUInt32LE(0x4e4f534a, 16); // JSON
+  json.copy(out, 20);
+  return new Uint8Array(out);
+}
 
 function assert(cond, msg) {
   if (!cond) {
@@ -105,7 +127,7 @@ mkdirSync(dataDir);
 const port = 19800 + Math.floor(Math.random() * 1000);
 const authSecret = generateAuthSecret();
 const baseURL = `http://127.0.0.1:${port}`;
-const glbBytes = new Uint8Array(readFileSync(fixturePath));
+const glbBytes = minimalGlbBytes();
 
 try {
   const host = createHost({

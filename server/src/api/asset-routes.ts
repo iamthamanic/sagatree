@@ -250,6 +250,8 @@ export function mountAssetHttpRoutes(app: Hono, deps: AssetHttpDeps): void {
     const isAvatarModel = parsed.purpose === AVATAR_MODEL_PURPOSE;
     let contentType: string;
     if (isAvatarModel) {
+      // Avatar-model uses the ordinary AssetPorts.publish ceiling (DEFAULT_ASSET_MAX_BYTES).
+      // FE host import/export must advertise the same limit — never silent 16–150 MB trap.
       if (!isGlbContainer(parsed.bytes)) {
         return c.json({ error: 'invalid-content-type' }, 400);
       }
