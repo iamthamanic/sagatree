@@ -1,6 +1,6 @@
 # Composition Gate — cut-02-npc-controller-assignment-host (#1137)
 
-- HEAD_SHA: 436ce134a74b45038d24579ff31788b6fc19a43d
+- HEAD_SHA: e35757fc78b305b9573bd15380408cabe76b7b3a
 - BASE_SHA: 8281ad3342b0bfe55129207629e255cbb44b48d3
 - Date: 2026-11-05
 - Verdict: CLEAR
