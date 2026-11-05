@@ -6,7 +6,7 @@ Session outcome promote-to-saga / promote-to-world runs on host HTTP + SagaInfra
 
 ## Composition Gate
 
-- HEAD_SHA: 947e01ab7dae75aef14e83493b40ead32dd43f79
+- HEAD_SHA: a19ce66cf301fea650e9eecc5aaa22340c8baf56
 - Verdict: CLEAR
 
 See `.qa/runs/composition-gate-cut-05-wire-session-outcome-promotion-to-exis.md`.
