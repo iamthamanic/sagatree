@@ -30431,7 +30431,7 @@
           },
           {
             "path": "src/infrastructure/project/project-member-service.ts",
-            "sha256": "e400a1c407aa0640cf6d467fd7fdb87ba8877b6621646288a951572a9aee74aa"
+            "sha256": "bc15c872ef4979b1f6c67c9dc01838e8a7ee45083f225121d688d60b442bbb26"
           },
           {
             "path": "src/infrastructure/project/project-service.ts",
@@ -30491,7 +30491,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-character.json",
-      "sourceContractSha256": "e2fc2b2a42ce4f8f011ed51e890f6fe444eadbb66a07004d5f2cae9a7fb256f8",
+      "sourceContractSha256": "1541d7c0e9252a7f2d863b4dca5663c48a344f8bdca8d2469c6ad8f9b13570ac",
       "rpcUsed": [],
       "tablesTouched": [
         "character_adventure_arcs",
@@ -39880,7 +39880,7 @@
           },
           {
             "path": "src/infrastructure/project/project-member-service.ts",
-            "sha256": "e400a1c407aa0640cf6d467fd7fdb87ba8877b6621646288a951572a9aee74aa"
+            "sha256": "bc15c872ef4979b1f6c67c9dc01838e8a7ee45083f225121d688d60b442bbb26"
           },
           {
             "path": "src/infrastructure/project/project-service.ts",
@@ -39920,7 +39920,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-project.json",
-      "sourceContractSha256": "f63fb10693913032528c11b1efef33d2bc1dcf989a8b56d3f64f482961009715",
+      "sourceContractSha256": "7e8dd9a128af61fe087dea96124074644fac3a4378c1319658f64af2c2f178d4",
       "rpcUsed": [
         "create_project_session",
         "ensure_native_starter_project",

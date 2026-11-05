@@ -6705,7 +6705,7 @@
       "resolution": "string-literal",
       "path": "src/infrastructure/project/project-member-service.ts",
       "line": 74,
-      "sourceSha256": "e400a1c407aa0640cf6d467fd7fdb87ba8877b6621646288a951572a9aee74aa",
+      "sourceSha256": "bc15c872ef4979b1f6c67c9dc01838e8a7ee45083f225121d688d60b442bbb26",
       "requestExpression": "{\n      p_code: dto.code.toUpperCase(),\n      p_character_id: dto.character_id || null,\n    }",
       "requestKeys": [
         "p_code",
@@ -6797,7 +6797,7 @@
           "kind": "VariableDeclaration",
           "path": "src/infrastructure/project/project-member-service.ts",
           "line": 18,
-          "sourceSha256": "e400a1c407aa0640cf6d467fd7fdb87ba8877b6621646288a951572a9aee74aa",
+          "sourceSha256": "bc15c872ef4979b1f6c67c9dc01838e8a7ee45083f225121d688d60b442bbb26",
           "source": "UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i"
         },
         {
@@ -6805,7 +6805,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/project/project-member-service.ts",
           "line": 20,
-          "sourceSha256": "e400a1c407aa0640cf6d467fd7fdb87ba8877b6621646288a951572a9aee74aa",
+          "sourceSha256": "bc15c872ef4979b1f6c67c9dc01838e8a7ee45083f225121d688d60b442bbb26",
           "source": "function requireUuid(value: unknown, operation: string): string {\n  if (typeof value !== 'string' || !UUID_PATTERN.test(value)) {\n    throw new Error(`${operation} returned an invalid identifier`);\n  }\n  return value;\n}"
         },
         {
@@ -11023,7 +11023,7 @@
       "resolution": "string-literal",
       "path": "src/infrastructure/project/project-member-service.ts",
       "line": 111,
-      "sourceSha256": "e400a1c407aa0640cf6d467fd7fdb87ba8877b6621646288a951572a9aee74aa",
+      "sourceSha256": "bc15c872ef4979b1f6c67c9dc01838e8a7ee45083f225121d688d60b442bbb26",
       "requestExpression": "{\n      p_project_id: projectId,\n      p_character_id: characterId,\n    }",
       "requestKeys": [
         "p_project_id",
@@ -11107,7 +11107,7 @@
           "kind": "VariableDeclaration",
           "path": "src/infrastructure/project/project-member-service.ts",
           "line": 18,
-          "sourceSha256": "e400a1c407aa0640cf6d467fd7fdb87ba8877b6621646288a951572a9aee74aa",
+          "sourceSha256": "bc15c872ef4979b1f6c67c9dc01838e8a7ee45083f225121d688d60b442bbb26",
           "source": "UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i"
         },
         {
@@ -11115,7 +11115,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/project/project-member-service.ts",
           "line": 20,
-          "sourceSha256": "e400a1c407aa0640cf6d467fd7fdb87ba8877b6621646288a951572a9aee74aa",
+          "sourceSha256": "bc15c872ef4979b1f6c67c9dc01838e8a7ee45083f225121d688d60b442bbb26",
           "source": "function requireUuid(value: unknown, operation: string): string {\n  if (typeof value !== 'string' || !UUID_PATTERN.test(value)) {\n    throw new Error(`${operation} returned an invalid identifier`);\n  }\n  return value;\n}"
         },
         {

@@ -6492,7 +6492,7 @@
       },
       {
         "path": "src/infrastructure/project/project-member-service.ts",
-        "sha256": "e400a1c407aa0640cf6d467fd7fdb87ba8877b6621646288a951572a9aee74aa"
+        "sha256": "bc15c872ef4979b1f6c67c9dc01838e8a7ee45083f225121d688d60b442bbb26"
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
@@ -6629,7 +6629,7 @@
       },
       {
         "path": "src/infrastructure/project/project-member-service.ts",
-        "sha256": "e400a1c407aa0640cf6d467fd7fdb87ba8877b6621646288a951572a9aee74aa"
+        "sha256": "bc15c872ef4979b1f6c67c9dc01838e8a7ee45083f225121d688d60b442bbb26"
       },
       {
         "path": "src/lib/hostAuthBridge.ts",

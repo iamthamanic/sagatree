@@ -2,8 +2,8 @@
  * project-member-service — Supabase adapter for project membership RPCs.
  * Location: src/infrastructure/project/project-member-service.ts
  *
- * Dual-path (FE-HOST-04 / CUT-02): join / set-character / getMembers via host HTTP
- * when library flag on. Leave / getMyProjects stay Supabase until a later cutover.
+ * Dual-path (FE-HOST-04): join / set-character / getMembers via host HTTP when
+ * library flag on (CUT-02). Leave / getMyProjects stay Supabase until a later cutover.
  */
 
 import { supabase } from '../../lib/supabase';
