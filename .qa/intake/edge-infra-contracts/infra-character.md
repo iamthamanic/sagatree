@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-character.json](source-contracts/infra-character.json) (SHA-256 `13bc834c5b59b129133be44d7946e5ad9ce4894fca3ea3b7a16d103f0c27747d`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-character.json](source-contracts/infra-character.json) (SHA-256 `cb7614f66c1467ba21b3a9fdcb8bd29bc47ba2fd321236e2dacaeadf3c44368f`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -3214,7 +3214,7 @@ export async function activateAvatarArtifact(
 ): Promise<AvatarArtifactActivateResult> {
   if (isHostLibraryEnabled()) {
     const result = await activateHostLibraryAvatarArtifact(artifactId);
-    if (!result.ok) {
+    if (result.ok === false) {
       return { ok: false, reasonDe: result.reasonDe };
     }
     return { ok: true, artifact: parseHostArtifact(result.artifact) };
@@ -12180,7 +12180,7 @@ private async assertPersonalLookWriteGate(
 | `src/infrastructure/character/avatar/avatar-structure-scanner.ts` | `9b824439400cd99d35ecca9cabb9f1b945870a7b28feaf1d999f9ea85c41d6c1` |
 | `src/infrastructure/character/avatar/base-body-catalog.ts` | `b2ddcc05a3b83c54312ea0eb669deff02b0f058a41b5c1f6b833c48475f9f499` |
 | `src/infrastructure/character/avatar/body-profile-metrics.ts` | `327e1d33b62844c3819cbfdb6985ab2a4093842c596c633f086de6a4357e2e3a` |
-| `src/infrastructure/character/avatar/character-avatar-artifact-service.ts` | `53a27ff1d0456f923f801685598be019b438e8f2772619bd7da687df7d1ef888` |
+| `src/infrastructure/character/avatar/character-avatar-artifact-service.ts` | `8b4ca91f419497ed1fe31b7b63cdaf4a9d451a0a3e0b0d4e44ba290207ce2089` |
 | `src/infrastructure/character/avatar/character-avatar-export-service.ts` | `f7f06447589acbc55f116e4432dfc1ef1b02ef5ca5a0394dd240693251bbcc4b` |
 | `src/infrastructure/character/avatar/character-avatar-import-service.ts` | `7821f28066e2773ff19a5c52341e6fbe3c01995faa1f40ddcf32542b2f2848a5` |
 | `src/infrastructure/character/avatar/character-avatar-meshy-service.ts` | `411c8c2cac60cf1904db46caca01e2577fb945949f0e278dbb7747a5911d8fa8` |

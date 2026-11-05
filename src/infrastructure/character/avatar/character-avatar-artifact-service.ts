@@ -310,7 +310,7 @@ export async function activateAvatarArtifact(
 ): Promise<AvatarArtifactActivateResult> {
   if (isHostLibraryEnabled()) {
     const result = await activateHostLibraryAvatarArtifact(artifactId);
-    if (!result.ok) {
+    if (result.ok === false) {
       return { ok: false, reasonDe: result.reasonDe };
     }
     return { ok: true, artifact: parseHostArtifact(result.artifact) };
