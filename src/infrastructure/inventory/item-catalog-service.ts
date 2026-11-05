@@ -351,24 +351,18 @@ export async function forkDefinition(
 ): Promise<CatalogDefinitionRecord> {
   if (isHostLibraryEnabled()) {
     const origin = target.scope === 'world' ? 'world' : 'personal';
+    const worldProfileId = target.scope === 'world' ? target.worldProfileId : null;
     // Core/builtin packs are local (not SQLite rows) — fork by creating a new host definition.
     const localSource =
       getCoreItemDefinition(sourceDefinitionId) ??
       getBuiltinStandardDefinition(sourceDefinitionId);
     if (localSource) {
-      const draft = buildForkedItemDefinitionDraft(
-        localSource,
-        origin === 'world' ? 'world' : 'personal',
-      );
-      return createHostCatalogDefinition(
-        origin,
-        draft,
-        origin === 'world' ? target.worldProfileId : null,
-      );
+      const draft = buildForkedItemDefinitionDraft(localSource, origin);
+      return createHostCatalogDefinition(origin, draft, worldProfileId);
     }
     const forked = await forkHostLibraryItem(sourceDefinitionId, {
       origin,
-      worldProfileId: target.scope === 'world' ? target.worldProfileId : null,
+      worldProfileId,
     });
     const record = mapHostLibraryItemRecord(forked);
     if (!record) throw new Error('Host-Item forken: ungültige Antwort');
