@@ -24,3 +24,7 @@ Host-first avatar import/export over existing AssetPorts + CUT-11 artifact ports
 ## Composition Gate
 
 See `.qa/runs/composition-gate-cut-12-port-existing-avatar-import-and.md`.
+
+## Review
+
+- Codex P1/P2 addressed on host size/credentials/materialize fail-closed.
