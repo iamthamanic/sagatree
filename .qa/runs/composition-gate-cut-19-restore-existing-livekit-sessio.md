@@ -1,6 +1,6 @@
 # Composition Gate — cut-19-restore-existing-livekit-sessio (#1154)
 
-- HEAD_SHA: WORKTREE (pre-commit; re-stamp after feature commit)
+- HEAD_SHA: 0fbcd3a43d0f3228d9b279294b12f3d976d5c46a
 - BASE_SHA: 271c3232457e3a641566ef60e3d27323cbf8aed2
 - Date: 2026-11-06
 - Verdict: CLEAR
