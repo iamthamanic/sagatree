@@ -35,6 +35,7 @@ export const TABLE_OWNERSHIP: Readonly<Record<string, HostModuleId>> = Object.fr
   character_presets: 'character',
   character_adventure_arcs: 'character',
   character_avatar_artifacts: 'character',
+  character_lore_rate_limits: 'character',
   inventory_item_definitions: 'inventory',
   saga_permission_keys: 'permissions',
   saga_permission_bundles: 'permissions',

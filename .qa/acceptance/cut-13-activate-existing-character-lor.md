@@ -17,3 +17,8 @@ No new providers, no AI-GM, no UI redesign, no Edge removal (CUT-20).
 
 ## Composition Gate
 CLEAR — see `.qa/runs/composition-gate-cut-13-activate-existing-character-lor.md` (HEAD `dbab93bb3a75d6396ef83f6c5dbefed732cfdd7b`).
+
+## Codex follow-ups
+- Body size capped before buffer; Content-Length preflight.
+- Linked solo actor IDs honored for project/world authz.
+- CHARACTER_AI_RATE_LIMIT_PER_MINUTE wired; SQLite durable quota (`character_lore_rate_limits`).

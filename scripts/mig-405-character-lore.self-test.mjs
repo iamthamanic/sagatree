@@ -127,7 +127,8 @@ const members = new Set([`${PROJECT_ID}:${MEMBER}`]);
 function makeReferences() {
   return {
     getProject: async (id) => projects.get(id) ?? null,
-    isActiveMember: async (projectId, userId) => members.has(`${projectId}:${userId}`),
+    isActiveMember: async (projectId, actorIds) =>
+      actorIds.some((id) => members.has(`${projectId}:${id}`)),
     getWorld: async (id) => worlds.get(id) ?? null,
   };
 }

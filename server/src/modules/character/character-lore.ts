@@ -19,6 +19,7 @@ export {
   checkCharacterLoreBodySize,
   consumeCharacterLoreRateLimit,
   createCharacterLoreStore,
+  createSqliteCharacterLoreStore,
   describeCharacterLoreAuthDenialLegacyDefect,
   errorPayloadContainsSecrets,
   generateCharacterLoreBackground,

@@ -90,10 +90,12 @@ import {
   resolveCharacterLoreProviderConfig,
   type CharacterLoreUseCases,
 } from '../application/character-lore/index.ts';
-import type {
-  CharacterLoreProjectRow,
-  CharacterLoreReferencePorts,
-  CharacterLoreWorldRow,
+import {
+  createSqliteCharacterLoreStore,
+  resolveCharacterLoreRateLimit,
+  type CharacterLoreProjectRow,
+  type CharacterLoreReferencePorts,
+  type CharacterLoreWorldRow,
 } from '../modules/character/character-lore.ts';
 import {
   decryptProviderSecret,
@@ -281,8 +283,8 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
           gmUserId: value.gmUserId,
         } satisfies CharacterLoreProjectRow;
       },
-      isActiveMember: async (projectId, userId) =>
-        project.isActiveMember(projectId, [userId]) || project.isProjectGm(projectId, [userId]),
+      isActiveMember: async (projectId, actorIds) =>
+        project.isActiveMember(projectId, actorIds) || project.isProjectGm(projectId, actorIds),
       getWorld: async (worldId) => {
         if (!db) return null;
         const row = db
@@ -395,9 +397,13 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
     }
 
     const characterLore: CharacterLoreUseCases = createCharacterLoreUseCases({
+      store: db ? createSqliteCharacterLoreStore(db) : undefined,
       references: characterLoreReferences,
       resolveProvider: resolveCharacterLoreProviderForUser,
       generateStory: generateCharacterLoreStory,
+      rateLimitPerMinute: resolveCharacterLoreRateLimit(
+        env.CHARACTER_AI_RATE_LIMIT_PER_MINUTE,
+      ),
     });
     const rulesets: RulesetPorts = db
       ? createRulesetPorts({ db, authorize: permissions.authorize })

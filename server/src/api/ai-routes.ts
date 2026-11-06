@@ -12,6 +12,10 @@ import type { IdentityPorts } from '../modules/identity/index.ts';
 import type { createAiProviderCredentialsUseCases } from '../application/ai-provider-credentials/index.ts';
 import type { createOllamaSettingsUseCases } from '../application/ollama-settings/index.ts';
 import type { CharacterLoreUseCases } from '../application/character-lore/index.ts';
+import {
+  CHARACTER_LORE_MAX_REQUEST_BYTES,
+  checkCharacterLoreBodySize,
+} from '../modules/character/character-lore.ts';
 import { isLoopbackHost } from '../auth/solo/bind-guard.ts';
 import { authDenyStatus } from './errors.ts';
 
@@ -307,11 +311,56 @@ export function mountAiHttpRoutes(app: Hono, deps: AiHttpDeps): void {
           415,
         );
       }
+      // Reject oversized declared Content-Length before buffering (Codex P1).
+      const contentLengthHeader = c.req.header('content-length') ?? null;
+      const headerSize = checkCharacterLoreBodySize(contentLengthHeader);
+      if (!headerSize.ok) {
+        return c.json(
+          { status: 'error', message: headerSize.message },
+          headerSize.status,
+        );
+      }
+
       let rawText = '';
       try {
-        rawText = await c.req.text();
+        const stream = c.req.raw.body;
+        if (!stream) {
+          rawText = '';
+        } else {
+          const reader = stream.getReader();
+          const chunks: Uint8Array[] = [];
+          let total = 0;
+          for (;;) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            if (value) {
+              total += value.byteLength;
+              if (total > CHARACTER_LORE_MAX_REQUEST_BYTES) {
+                await reader.cancel().catch(() => undefined);
+                return c.json(
+                  {
+                    status: 'error',
+                    message:
+                      'Request-Body ist zu groß. Bitte kürze Charakterdaten und versuche es erneut.',
+                  },
+                  413,
+                );
+              }
+              chunks.push(value);
+            }
+          }
+          rawText = Buffer.concat(chunks.map((u) => Buffer.from(u))).toString('utf8');
+        }
       } catch {
         return c.json({ status: 'error', message: 'Ungültiger Request-Body.' }, 400);
+      }
+      const rawBodyUtf8Bytes = Buffer.byteLength(rawText, 'utf8');
+      const decodedSize = checkCharacterLoreBodySize(null, rawBodyUtf8Bytes);
+      if (!decodedSize.ok) {
+        return c.json(
+          { status: 'error', message: decodedSize.message },
+          decodedSize.status,
+        );
       }
       let body: unknown = {};
       if (rawText.trim().length > 0) {
@@ -329,8 +378,8 @@ export function mountAiHttpRoutes(app: Hono, deps: AiHttpDeps): void {
         );
       }
       const result = await lore.generate(actorResult.actor, {
-        contentLengthHeader: c.req.header('content-length') ?? null,
-        rawBodyUtf8Bytes: Buffer.byteLength(rawText, 'utf8'),
+        contentLengthHeader,
+        rawBodyUtf8Bytes,
         body,
       });
       if (result.status === 'ok') {
