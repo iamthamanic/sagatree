@@ -85,6 +85,28 @@ import { createTransportUseCase } from '../application/transport/index.ts';
 import { createAiProviderCredentialsUseCases } from '../application/ai-provider-credentials/index.ts';
 import { createOllamaSettingsUseCases } from '../application/ollama-settings/index.ts';
 import {
+  createCharacterLoreUseCases,
+  generateCharacterLoreStory,
+  resolveCharacterLoreProviderConfig,
+  type CharacterLoreUseCases,
+} from '../application/character-lore/index.ts';
+import {
+  createSqliteCharacterLoreStore,
+  resolveCharacterLoreRateLimit,
+  type CharacterLoreProjectRow,
+  type CharacterLoreReferencePorts,
+  type CharacterLoreWorldRow,
+} from '../modules/character/character-lore.ts';
+import {
+  decryptProviderSecret,
+  parseCredentialsEncryptionKey,
+} from '../modules/ai/internal/crypto.ts';
+import {
+  OLLAMA_NONE_SECRET,
+  OLLAMA_PROVIDER_ID,
+} from '../modules/ai/internal/registry.ts';
+import { assertSafeOllamaBaseUrl } from '../modules/ai/internal/ollama-url-policy.ts';
+import {
   createSessionPorts,
   createSessionProjectLookup,
 } from '../modules/session/index.ts';
@@ -247,6 +269,142 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
     const ai: AiPorts = db ? createAiPorts({ db, env }) : createAiPortsStub();
     const aiCredentials = createAiProviderCredentialsUseCases(ai);
     const aiOllama = createOllamaSettingsUseCases(ai);
+
+    const characterLoreReferences: CharacterLoreReferencePorts = {
+      getProject: async (projectId) => {
+        const result = project.getProject(projectId);
+        if (!result.ok) return null;
+        const value = result.value;
+        return {
+          id: value.id,
+          name: value.title,
+          description: value.description,
+          worldId: value.worldId,
+          gmUserId: value.gmUserId,
+        } satisfies CharacterLoreProjectRow;
+      },
+      isActiveMember: async (projectId, actorIds) =>
+        project.isActiveMember(projectId, actorIds) || project.isProjectGm(projectId, actorIds),
+      getWorld: async (worldId) => {
+        if (!db) return null;
+        const row = db
+          .prepare(
+            `SELECT id, owner_user_id AS ownerUserId, title, payload
+             FROM worlds WHERE id = ? LIMIT 1`,
+          )
+          .get(worldId) as
+          | { id: string; ownerUserId: string; title: string; payload: string }
+          | undefined;
+        if (!row) return null;
+        let lore: string | null = null;
+        try {
+          const payload = JSON.parse(row.payload || '{}') as Record<string, unknown>;
+          if (typeof payload.lore === 'string' && payload.lore.trim()) {
+            lore = payload.lore.trim();
+          } else if (typeof payload.description === 'string' && payload.description.trim()) {
+            lore = payload.description.trim();
+          } else {
+            const modules =
+              payload.modules && typeof payload.modules === 'object' && !Array.isArray(payload.modules)
+                ? (payload.modules as Record<string, unknown>)
+                : null;
+            const promoted =
+              modules?.promotedLore &&
+              typeof modules.promotedLore === 'object' &&
+              !Array.isArray(modules.promotedLore)
+                ? (modules.promotedLore as Record<string, unknown>)
+                : null;
+            const facts = Array.isArray(promoted?.facts) ? promoted.facts : [];
+            const joined = facts
+              .map((f) => {
+                if (typeof f === 'string') return f.trim();
+                if (f && typeof f === 'object' && typeof (f as { text?: unknown }).text === 'string') {
+                  return ((f as { text: string }).text).trim();
+                }
+                return '';
+              })
+              .filter(Boolean)
+              .join('\n');
+            lore = joined || null;
+          }
+        } catch {
+          lore = null;
+        }
+        return {
+          id: row.id,
+          creatorUserId: row.ownerUserId,
+          name: row.title,
+          lore,
+          settingType: null,
+          // Host worlds have no public flag — fail closed (GM/owner path only).
+          isPublic: false,
+        } satisfies CharacterLoreWorldRow;
+      },
+    };
+
+    async function resolveCharacterLoreProviderForUser(userId: string) {
+      const store = ai.store;
+      const row =
+        store && typeof store.loadWithSecret === 'function'
+          ? store.loadWithSecret(userId, OLLAMA_PROVIDER_ID)
+          : null;
+      if (row && row.status === 'active') {
+        const meta = row.meta;
+        const model = typeof meta.model === 'string' ? meta.model.trim() : '';
+        if (model) {
+          const useCloud = meta.useCloud === true;
+          const baseRaw =
+            typeof meta.baseUrl === 'string' && meta.baseUrl.trim()
+              ? meta.baseUrl.trim()
+              : useCloud
+                ? 'https://ollama.com/v1'
+                : 'http://127.0.0.1:11434';
+          const safe = assertSafeOllamaBaseUrl(baseRaw);
+          if (safe.ok) {
+            let apiKey = '';
+            if (row.secretCiphertext && row.secretCiphertext !== OLLAMA_NONE_SECRET) {
+              const enc = parseCredentialsEncryptionKey(env.CREDENTIALS_ENCRYPTION_KEY);
+              if (enc) {
+                try {
+                  apiKey = await decryptProviderSecret(row.secretCiphertext, enc);
+                } catch {
+                  apiKey = '';
+                }
+              }
+            }
+            if (useCloud) {
+              if (apiKey) {
+                return {
+                  provider: 'openai-compatible' as const,
+                  baseUrl: safe.url,
+                  model,
+                  apiKey,
+                };
+              }
+            } else {
+              const native = safe.url.replace(/\/v1\/?$/i, '');
+              return {
+                provider: 'ollama' as const,
+                baseUrl: native,
+                model,
+                ...(apiKey ? { apiKey } : {}),
+              };
+            }
+          }
+        }
+      }
+      return resolveCharacterLoreProviderConfig((key) => env[key]);
+    }
+
+    const characterLore: CharacterLoreUseCases = createCharacterLoreUseCases({
+      store: db ? createSqliteCharacterLoreStore(db) : undefined,
+      references: characterLoreReferences,
+      resolveProvider: resolveCharacterLoreProviderForUser,
+      generateStory: generateCharacterLoreStory,
+      rateLimitPerMinute: resolveCharacterLoreRateLimit(
+        env.CHARACTER_AI_RATE_LIMIT_PER_MINUTE,
+      ),
+    });
     const rulesets: RulesetPorts = db
       ? createRulesetPorts({ db, authorize: permissions.authorize })
       : createRulesetPortsStub();
@@ -464,6 +622,7 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
       tryAuthorizedWorldTouch,
       aiCredentials,
       aiOllama,
+      characterLore,
       character,
       world,
       npcCreature,

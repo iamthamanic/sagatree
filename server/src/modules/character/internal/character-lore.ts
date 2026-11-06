@@ -1,13 +1,13 @@
 /**
- * Host characterization of Edge `character-lore` (MIG-405 / #821).
+ * Host characterization of Edge `character-lore` (MIG-405 / #821 → CUT-13 / #1148).
  * Location: server/src/modules/character/internal/character-lore.ts
  *
- * Allowlisted Edge worker remains the live mount. Host ports pin authz /
- * validation / quota / provider / draft-only fixtures. No public activation.
+ * Host HTTP activation mounts generate-background via `/api/v1/ai/character-lore`.
+ * Edge allowlisted worker remains until CUT-20 dual-path removal.
  */
 
-/** Explicit: no automatic host/public cutover (successor + MIG-600 still required). */
-export const CHARACTER_LORE_PUBLIC_ACTIVATION_AUTHORIZED = false as const;
+/** CUT-13: public host route activation authorized with validated policies + tests. */
+export const CHARACTER_LORE_PUBLIC_ACTIVATION_AUTHORIZED = true as const;
 
 export const CHARACTER_LORE_PROMPT_VERSION = 'character-background-v1' as const;
 export const CHARACTER_LORE_MAX_REQUEST_BYTES = 128_000 as const;
@@ -131,6 +131,15 @@ export type CharacterLoreStore = {
   providerInvocations: number;
   /** Tracks whether reference context was resolved (lore inclusion). */
   referenceLookups: number;
+  /**
+   * Durable quota consumer (CUT-13 host). When set, preferred over the in-memory map.
+   */
+  consumeDurable?: (
+    userId: string,
+    limit: number,
+    windowSeconds: number,
+    nowMs: number,
+  ) => { ok: true } | { ok: false; status: 429 | 503; message: string };
 };
 
 export function createCharacterLoreStore(
@@ -143,6 +152,74 @@ export function createCharacterLoreStore(
     providerInvocations: 0,
     referenceLookups: 0,
   };
+}
+
+type LoreQuotaDb = {
+  readonly prepare: (sql: string) => {
+    get: (...params: unknown[]) => unknown;
+    run: (...params: unknown[]) => unknown;
+  };
+  readonly exec: (sql: string) => void;
+};
+
+/**
+ * Durable SQLite quota store for host activation (CUT-13).
+ * Survives process restart; shared across workers on the same DB file.
+ */
+export function createSqliteCharacterLoreStore(db: LoreQuotaDb): CharacterLoreStore {
+  const store = createCharacterLoreStore(true);
+  store.consumeDurable = (userId, limit, windowSeconds, nowMs) => {
+    const nowIso = new Date(nowMs).toISOString();
+    try {
+      db.exec('BEGIN IMMEDIATE');
+      const row = db
+        .prepare(
+          `SELECT window_started_at AS windowStartedAt, request_count AS requestCount
+           FROM character_lore_rate_limits WHERE user_id = ?`,
+        )
+        .get(userId) as { windowStartedAt: string; requestCount: number } | undefined;
+      let count = 1;
+      let windowStart = nowIso;
+      if (row) {
+        const started = Date.parse(row.windowStartedAt);
+        if (Number.isFinite(started) && nowMs - started < windowSeconds * 1000) {
+          windowStart = row.windowStartedAt;
+          count = row.requestCount + 1;
+        }
+        db.prepare(
+          `UPDATE character_lore_rate_limits
+           SET window_started_at = ?, request_count = ?, updated_at = ? WHERE user_id = ?`,
+        ).run(windowStart, count, nowIso, userId);
+      } else {
+        db.prepare(
+          `INSERT INTO character_lore_rate_limits
+           (user_id, window_started_at, request_count, updated_at) VALUES (?, ?, 1, ?)`,
+        ).run(userId, nowIso, nowIso);
+      }
+      db.exec('COMMIT');
+      if (count > limit) {
+        return {
+          ok: false,
+          status: 429,
+          message: 'Zu viele Generierungen. Bitte warte kurz und versuche es erneut.',
+        };
+      }
+      return { ok: true };
+    } catch {
+      try {
+        db.exec('ROLLBACK');
+      } catch {
+        /* ignore */
+      }
+      return {
+        ok: false,
+        status: 503,
+        message:
+          'Character-Lore ist vorübergehend nicht verfügbar. Bitte versuche es später erneut.',
+      };
+    }
+  };
+  return store;
 }
 
 /**
@@ -447,6 +524,10 @@ export function consumeCharacterLoreRateLimit(
     throw new Error('Rate limit window must be an integer between 1 and 3600 seconds');
   }
 
+  if (typeof store.consumeDurable === 'function') {
+    return store.consumeDurable(userId, limit, windowSeconds, nowMs);
+  }
+
   const existing = store.quota.get(userId);
   // Replace expired window for this user only (O(1); avoids unbounded growth + full-map scans).
   if (!existing || existing.resetAt <= nowMs) {
@@ -536,19 +617,22 @@ export function describeCharacterLoreAuthDenialLegacyDefect(): string {
 
 export type CharacterLoreReferencePorts = {
   getProject: (projectId: string) => Promise<CharacterLoreProjectRow | null>;
-  isActiveMember: (projectId: string, userId: string) => Promise<boolean>;
+  /** Membership check for all linked actor identities (remote + linked solo). */
+  isActiveMember: (projectId: string, actorIds: readonly string[]) => Promise<boolean>;
   getWorld: (worldId: string) => Promise<CharacterLoreWorldRow | null>;
 };
 
 export async function getAuthorizedReferenceContext(
   store: CharacterLoreStore,
   ports: CharacterLoreReferencePorts,
-  userId: string,
+  actorIds: readonly string[],
   projectId?: string,
   directWorldId?: string,
 ): Promise<CharacterLoreReferenceContext> {
   if (!projectId && !directWorldId) return {};
   store.referenceLookups += 1;
+  const ids = actorIds.filter((id) => typeof id === 'string' && id.trim().length > 0);
+  if (ids.length === 0) throw new Error('Project access denied');
 
   let project: CharacterLoreProjectRow | null = null;
   if (projectId) {
@@ -556,7 +640,7 @@ export async function getAuthorizedReferenceContext(
     if (!project) throw new Error('Project not found');
 
     const projectAuthorized =
-      project.gmUserId === userId || (await ports.isActiveMember(projectId, userId));
+      ids.includes(project.gmUserId) || (await ports.isActiveMember(projectId, ids));
     if (!projectAuthorized) throw new Error('Project access denied');
   }
 
@@ -569,16 +653,14 @@ export async function getAuthorizedReferenceContext(
   if (worldId) {
     world = await ports.getWorld(worldId);
     if (!world) throw new Error('World not found');
-    if (
-      !canUseWorldLoreReference(
-        {
-          creatorUserId: world.creatorUserId,
-          isPublic: world.isPublic,
-        },
-        userId,
-        project?.gmUserId,
-      )
-    ) {
+    const worldGrant = {
+      creatorUserId: world.creatorUserId,
+      isPublic: world.isPublic,
+    };
+    const worldAuthorized = ids.some((id) =>
+      canUseWorldLoreReference(worldGrant, id, project?.gmUserId),
+    );
+    if (!worldAuthorized) {
       throw new Error('World access denied');
     }
   }
@@ -636,6 +718,8 @@ export async function generateCharacterLoreBackground(
   deps: CharacterLoreGenerateDeps,
   input: {
     readonly userId: string;
+    /** Remote + linked solo ids for project/world authz (defaults to [userId]). */
+    readonly actorIds?: readonly string[];
     readonly contentLengthHeader: string | null;
     readonly rawBodyUtf8Bytes?: number;
     readonly body: unknown;
@@ -720,10 +804,12 @@ export async function generateCharacterLoreBackground(
   }
 
   try {
+    const actorIds =
+      input.actorIds && input.actorIds.length > 0 ? input.actorIds : [input.userId];
     const reference = await getAuthorizedReferenceContext(
       deps.store,
       deps.references,
-      input.userId,
+      actorIds,
       parsed.projectId,
       parsed.worldId,
     );
@@ -756,6 +842,101 @@ export async function generateCharacterLoreBackground(
       httpStatus: 500,
     };
   }
+}
+
+function extractOpenAiCompatibleContent(value: unknown): string | null {
+  if (!isRecord(value) || !Array.isArray(value.choices) || value.choices.length === 0) {
+    return null;
+  }
+  const choice = value.choices[0];
+  if (
+    !isRecord(choice) ||
+    !isRecord(choice.message) ||
+    typeof choice.message.content !== 'string'
+  ) {
+    return null;
+  }
+  return choice.message.content.trim() || null;
+}
+
+function extractOllamaChatContent(value: unknown): string | null {
+  if (
+    !isRecord(value) ||
+    !isRecord(value.message) ||
+    typeof value.message.content !== 'string'
+  ) {
+    return null;
+  }
+  return value.message.content.trim() || null;
+}
+
+async function generateOpenAiCompatibleStory(
+  config: CharacterLoreProviderConfig,
+  prompt: CharacterLorePrompt,
+): Promise<string> {
+  const response = await fetch(`${config.baseUrl}/chat/completions`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${config.apiKey ?? ''}`,
+    },
+    body: JSON.stringify({
+      model: config.model,
+      temperature: 0.85,
+      messages: [
+        { role: 'system', content: prompt.system },
+        { role: 'user', content: prompt.user },
+      ],
+    }),
+    signal: AbortSignal.timeout(60_000),
+  });
+  if (!response.ok) {
+    throw new Error(`OpenAI-compatible provider returned ${response.status}`);
+  }
+  const body: unknown = await response.json();
+  const story = extractOpenAiCompatibleContent(body);
+  if (!story) throw new Error('OpenAI-compatible provider returned an invalid response');
+  return story;
+}
+
+async function generateOllamaStory(
+  config: CharacterLoreProviderConfig,
+  prompt: CharacterLorePrompt,
+): Promise<string> {
+  const response = await fetch(`${config.baseUrl}/api/chat`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: config.model,
+      stream: false,
+      messages: [
+        { role: 'system', content: prompt.system },
+        { role: 'user', content: prompt.user },
+      ],
+      options: { temperature: 0.85 },
+    }),
+    signal: AbortSignal.timeout(60_000),
+  });
+  if (!response.ok) {
+    throw new Error(`Ollama provider returned ${response.status}`);
+  }
+  const body: unknown = await response.json();
+  const story = extractOllamaChatContent(body);
+  if (!story) throw new Error('Ollama provider returned an invalid response');
+  return story;
+}
+
+/**
+ * Host inference adapter (Edge `generateCharacterLore` parity).
+ * Secrets stay in Authorization / request body only — never in thrown messages.
+ */
+export async function generateCharacterLoreStory(
+  config: CharacterLoreProviderConfig,
+  prompt: CharacterLorePrompt,
+): Promise<string> {
+  return config.provider === 'openai-compatible'
+    ? generateOpenAiCompatibleStory(config, prompt)
+    : generateOllamaStory(config, prompt);
 }
 
 /** Minimal valid context fixture for isolated tests. */

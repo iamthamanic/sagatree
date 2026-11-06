@@ -1,8 +1,8 @@
 /**
- * character-lore use-cases (MIG-405 / #821).
+ * character-lore use-cases (MIG-405 / #821 → CUT-13 / #1148).
  * Location: server/src/application/character-lore/index.ts
  *
- * Isolated-contract host surface. Edge allowlisted worker remains live; no cutover.
+ * Host HTTP activation via `/api/v1/ai/character-lore`. Edge remains allowlisted until dual-path removal.
  */
 import type { Actor } from '../../modules/identity/index.ts';
 import {
@@ -14,9 +14,26 @@ import {
   type CharacterLoreStore,
 } from '../../modules/character/character-lore.ts';
 
+export {
+  CHARACTER_LORE_PUBLIC_ACTIVATION_AUTHORIZED,
+  generateCharacterLoreStory,
+  resolveCharacterLoreProviderConfig,
+  characterLoreMinimalContext,
+} from '../../modules/character/character-lore.ts';
+
 function actorUserId(actor: Actor): string | null {
   const id = typeof actor?.actorId === 'string' ? actor.actorId.trim() : '';
   return id || null;
+}
+
+function actorIdsForAuthz(actor: Actor): readonly string[] {
+  const primary = actorUserId(actor);
+  if (!primary) return [];
+  const linked =
+    actor.kind === 'remote-account' && Array.isArray(actor.linkedSoloActorIds)
+      ? actor.linkedSoloActorIds.filter((id): id is string => typeof id === 'string' && id.trim().length > 0)
+      : [];
+  return [...new Set([primary, ...linked])];
 }
 
 export type CharacterLoreUseCaseDeps = Omit<CharacterLoreGenerateDeps, 'store'> & {
@@ -48,6 +65,7 @@ export function createCharacterLoreUseCases(deps: CharacterLoreUseCaseDeps) {
       }
       return generateCharacterLoreBackground(generateDeps, {
         userId,
+        actorIds: actorIdsForAuthz(actor),
         contentLengthHeader: input.contentLengthHeader,
         rawBodyUtf8Bytes: input.rawBodyUtf8Bytes,
         body: input.body,

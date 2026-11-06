@@ -1,9 +1,9 @@
 /**
- * Host HTTP adapters for infrastructure/ai (MIG-301 / #800).
+ * Host HTTP adapters for infrastructure/ai (MIG-301 / #800 + CUT-13 / #1148).
  * Location: server/src/api/ai-routes.ts
  *
  * Action-shaped bodies match Edge `ai-provider-credentials` / `ollama-settings`.
- * No production cutover — Edge allowlist remains until an explicit cutover ticket.
+ * Character lore generate-background mounts at POST `/api/v1/ai/character-lore`.
  */
 import type { Hono } from 'hono';
 import type { Context } from 'hono';
@@ -11,6 +11,11 @@ import type { Actor } from '../modules/identity/index.ts';
 import type { IdentityPorts } from '../modules/identity/index.ts';
 import type { createAiProviderCredentialsUseCases } from '../application/ai-provider-credentials/index.ts';
 import type { createOllamaSettingsUseCases } from '../application/ollama-settings/index.ts';
+import type { CharacterLoreUseCases } from '../application/character-lore/index.ts';
+import {
+  CHARACTER_LORE_MAX_REQUEST_BYTES,
+  checkCharacterLoreBodySize,
+} from '../modules/character/character-lore.ts';
 import { isLoopbackHost } from '../auth/solo/bind-guard.ts';
 import { authDenyStatus } from './errors.ts';
 
@@ -19,6 +24,8 @@ export type AiHttpDeps = {
   readonly hostMode?: 'solo' | 'remote';
   readonly credentials: ReturnType<typeof createAiProviderCredentialsUseCases>;
   readonly ollama: ReturnType<typeof createOllamaSettingsUseCases>;
+  /** CUT-13 — optional until composition root wires character-lore use-cases. */
+  readonly characterLore?: CharacterLoreUseCases;
 };
 
 type JsonBody = Record<string, unknown>;
@@ -283,4 +290,119 @@ export function mountAiHttpRoutes(app: Hono, deps: AiHttpDeps): void {
     }
     return c.json(result.value, 200);
   });
+
+  // CUT-13: character lore generate-background (Edge `character-lore` parity).
+  if (deps.characterLore?.publicActivationAuthorized) {
+    app.post('/api/v1/ai/character-lore', async (c) => {
+      const lore = deps.characterLore;
+      if (!lore) {
+        return c.json(
+          {
+            status: 'error',
+            message:
+              'Character-Lore ist vorübergehend nicht verfügbar. Bitte versuche es später erneut.',
+          },
+          503,
+        );
+      }
+      if (!contentTypeIsJson(c)) {
+        return c.json(
+          { status: 'error', message: 'Content-Type application/json erforderlich.' },
+          415,
+        );
+      }
+      // Reject oversized declared Content-Length before buffering (Codex P1).
+      const contentLengthHeader = c.req.header('content-length') ?? null;
+      const headerSize = checkCharacterLoreBodySize(contentLengthHeader);
+      if (!headerSize.ok) {
+        return c.json(
+          { status: 'error', message: headerSize.message },
+          headerSize.status,
+        );
+      }
+
+      let rawText = '';
+      try {
+        const stream = c.req.raw.body;
+        if (!stream) {
+          rawText = '';
+        } else {
+          const reader = stream.getReader();
+          const chunks: Uint8Array[] = [];
+          let total = 0;
+          for (;;) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            if (value) {
+              total += value.byteLength;
+              if (total > CHARACTER_LORE_MAX_REQUEST_BYTES) {
+                await reader.cancel().catch(() => undefined);
+                return c.json(
+                  {
+                    status: 'error',
+                    message:
+                      'Request-Body ist zu groß. Bitte kürze Charakterdaten und versuche es erneut.',
+                  },
+                  413,
+                );
+              }
+              chunks.push(value);
+            }
+          }
+          rawText = Buffer.concat(chunks.map((u) => Buffer.from(u))).toString('utf8');
+        }
+      } catch {
+        return c.json({ status: 'error', message: 'Ungültiger Request-Body.' }, 400);
+      }
+      const rawBodyUtf8Bytes = Buffer.byteLength(rawText, 'utf8');
+      const decodedSize = checkCharacterLoreBodySize(null, rawBodyUtf8Bytes);
+      if (!decodedSize.ok) {
+        return c.json(
+          { status: 'error', message: decodedSize.message },
+          decodedSize.status,
+        );
+      }
+      let body: unknown = {};
+      if (rawText.trim().length > 0) {
+        try {
+          body = JSON.parse(rawText) as unknown;
+        } catch {
+          return c.json({ status: 'error', message: 'Ungültiger Request-Body.' }, 400);
+        }
+      }
+      const actorResult = await resolveActor(deps, c.req.raw.headers, body);
+      if (!actorResult.ok) {
+        return c.json(
+          { status: 'error', message: 'Nicht angemeldet.', code: actorResult.error },
+          actorResult.status,
+        );
+      }
+      const result = await lore.generate(actorResult.actor, {
+        contentLengthHeader,
+        rawBodyUtf8Bytes,
+        body,
+      });
+      if (result.status === 'ok') {
+        return c.json(
+          {
+            status: 'ok' as const,
+            story: result.story,
+            provider: result.provider,
+            model: result.model,
+          },
+          200,
+        );
+      }
+      if (result.status === 'not-configured') {
+        return c.json(
+          { status: 'not-configured' as const, message: result.message },
+          result.httpStatus,
+        );
+      }
+      return c.json(
+        { status: 'error' as const, message: result.message },
+        result.httpStatus,
+      );
+    });
+  }
 }

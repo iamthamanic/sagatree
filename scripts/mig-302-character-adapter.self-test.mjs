@@ -167,8 +167,13 @@ try {
     'meshy edge stays unmounted (shape retained in module)',
   );
   assert(
-    CHARACTER_LORE_PUBLIC_ACTIVATION_AUTHORIZED === false,
-    'lore edge stays unmounted (shape retained in module)',
+    CHARACTER_LORE_PUBLIC_ACTIVATION_AUTHORIZED === true,
+    'CUT-13 lore host activation authorized',
+  );
+  const aiRoutesSrc = readFileSync(join(root, 'server/src/api/ai-routes.ts'), 'utf8');
+  assert(
+    aiRoutesSrc.includes('/api/v1/ai/character-lore'),
+    'ai-routes mounts character-lore host path',
   );
   const clientRenderPaths = [
     'src/infrastructure/character/avatar/character-studio-runtime.ts',

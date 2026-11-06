@@ -28,6 +28,7 @@ import type { createHealthUseCase } from '../application/health/index.ts';
 import type { TransportUseCase } from '../application/transport/index.ts';
 import type { createAiProviderCredentialsUseCases } from '../application/ai-provider-credentials/index.ts';
 import type { createOllamaSettingsUseCases } from '../application/ollama-settings/index.ts';
+import type { CharacterLoreUseCases } from '../application/character-lore/index.ts';
 import type { OpsPorts } from '../modules/ops/index.ts';
 import type { PermissionsPorts } from '../modules/permissions/index.ts';
 import type { IdentityPorts } from '../modules/identity/index.ts';
@@ -89,6 +90,8 @@ export type RouteRegistryDeps = {
   /** MIG-301 AI host HTTP adapters. */
   readonly aiCredentials?: ReturnType<typeof createAiProviderCredentialsUseCases>;
   readonly aiOllama?: ReturnType<typeof createOllamaSettingsUseCases>;
+  /** CUT-13 character-lore generate-background. */
+  readonly characterLore?: CharacterLoreUseCases;
   /** Browser Library cutover ports. */
   readonly character?: CharacterPorts | null;
   readonly world?: WorldPorts | null;
@@ -155,6 +158,7 @@ export function createRouteHandler(deps: RouteRegistryDeps) {
     tryAuthorizedWorldTouch: deps.tryAuthorizedWorldTouch,
     aiCredentials: deps.aiCredentials,
     aiOllama: deps.aiOllama,
+    characterLore: deps.characterLore,
     character: deps.character,
     world: deps.world,
     npcCreature: deps.npcCreature,

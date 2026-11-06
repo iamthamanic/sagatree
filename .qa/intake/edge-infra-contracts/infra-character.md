@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-character.json](source-contracts/infra-character.json) (SHA-256 `e61210785d1733fe5d6de7d8360f0d21e35c3ad323e2ce9311abda65c9976ae9`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-character.json](source-contracts/infra-character.json) (SHA-256 `5cbfd38d8d7e59e1f9f6f1cc45afdb4f495bd5fb47203138e44951e1bb56f8b8`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -24,7 +24,7 @@ Storage buckets (2): `character-avatars`, `character-portraits`.
 
 Edge invokes (2): `character-avatar-meshy`, `character-lore`.
 
-Realtime call sites: 0. Direct fetch sites: 3. Explicit auth/helper sites: 30.
+Realtime call sites: 0. Direct fetch sites: 4. Explicit auth/helper sites: 30.
 
 ## Complete implementation dependencies
 
@@ -649,22 +649,33 @@ supabase
 ```
 
 Enclosing operation: `src/infrastructure/character/character-adventure-arc-service.ts:228`; complete request/default/result/error logic is in the declarations below and the snapshot.
+### fetch: requestUrl
+
+`src/infrastructure/character/character-lore-service.ts:104` — dynamic-expression.
+
+Exact call/query chain:
+```ts
+fetch(requestUrl, {
+      method: 'POST',
+      credentials: 'include',
+      headers: { Accept: 'application/json', 'content-type': 'application/json' },
+      body: JSON.stringify(body),
+    })
+```
+
+Enclosing operation: `src/infrastructure/character/character-lore-service.ts:89`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### edge: character-lore
 
-`src/infrastructure/character/character-lore-service.ts:86` — literal-or-constant.
+`src/infrastructure/character/character-lore-service.ts:148` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
 supabase.functions.invoke('character-lore', {
-      body: {
-        action: 'generate-background',
-        context: request.context,
-        currentBackgroundStory: request.currentBackgroundStory,
-      },
+      body,
     })
 ```
 
-Enclosing operation: `src/infrastructure/character/character-lore-service.ts:78`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/character/character-lore-service.ts:131`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### auth-helper: session identity
 
 `src/infrastructure/character/character-preset-service.ts:242` — dynamic-expression.
@@ -7115,7 +7126,7 @@ export function toCharacterTraitManifest(input: {
 export const characterAdventureArcService = new CharacterAdventureArcService();
 ```
 
-### src/infrastructure/character/character-lore-service.ts:115
+### src/infrastructure/character/character-lore-service.ts:173
 
 ```ts
 export const characterLoreService = new CharacterLoreService();
@@ -11600,23 +11611,73 @@ async appendDevelopment(
   }
 ```
 
-### src/infrastructure/character/character-lore-service.ts:78
+### src/infrastructure/character/character-lore-service.ts:89
+
+```ts
+async function invokeHostCharacterLore(
+  body: Record<string, unknown>,
+): Promise<CharacterLoreFunctionResponse> {
+  const base = getHostAuthBaseUrl();
+  if (base === null) {
+    return {
+      status: 'error',
+      message:
+        'Hintergrundgeschichte konnte nicht generiert werden. Bitte versuche es erneut.',
+    };
+  }
+  // same-origin: base === '' → relative `/api/v1/ai/character-lore`
+  const requestUrl = base === '' ? '/api/v1/ai/character-lore' : `${base}/api/v1/ai/character-lore`;
+  let response: Response;
+  try {
+    response = await fetch(requestUrl, {
+      method: 'POST',
+      credentials: 'include',
+      headers: { Accept: 'application/json', 'content-type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+  } catch {
+    return {
+      status: 'error',
+      message:
+        'Hintergrundgeschichte konnte nicht generiert werden. Bitte versuche es erneut.',
+    };
+  }
+  let data: unknown;
+  try {
+    data = await response.json();
+  } catch {
+    return {
+      status: 'error',
+      message:
+        'Hintergrundgeschichte konnte nicht generiert werden. Bitte versuche es erneut.',
+    };
+  }
+  return parseFunctionResponse(data);
+}
+```
+
+### src/infrastructure/character/character-lore-service.ts:131
 
 ```ts
 async generateBackground(
     request: CharacterLoreGenerationRequest,
   ): Promise<CharacterLoreGenerationResult> {
+    const body = buildRequestBody(request);
+
     if (isHostLibraryEnabled()) {
-      throw new Error(
-        'KI-Hintergrundgeschichte ist im Host-Modus noch nicht verfügbar.',
-      );
+      const response = await invokeHostCharacterLore(body);
+      if (response.status !== 'ok') {
+        throw new Error(response.message);
+      }
+      return {
+        story: response.story,
+        provider: response.provider,
+        model: response.model,
+      };
     }
+
     const { data, error } = await supabase.functions.invoke('character-lore', {
-      body: {
-        action: 'generate-background',
-        context: request.context,
-        currentBackgroundStory: request.currentBackgroundStory,
-      },
+      body,
     });
 
     if (error) {
@@ -12183,7 +12244,7 @@ private async assertPersonalLookWriteGate(
 | `src/infrastructure/character/avatar/trait-asset-allowlist.ts` | `9aa2ecef7d49f63909420f2df21b66a62167e844fd6c97202f49c28058feec57` |
 | `src/infrastructure/character/avatar/trait-lifecycle-three-adapter.ts` | `e02df093e7e626eb3d46d2f8fce8bb133d0a8e7546b89980aee5ae0469072303` |
 | `src/infrastructure/character/character-adventure-arc-service.ts` | `fb4481775a7c53b3e194ec5885fa84af90adc259cfbcdf3dd475645ad6c6fea6` |
-| `src/infrastructure/character/character-lore-service.ts` | `f14fdcb2290d57a7b2e6646cebb9756b63de4be624920188de1299236e40362a` |
+| `src/infrastructure/character/character-lore-service.ts` | `081f130c10cb49b371d534b6686c9d8339a97e53f5cd134921b47f40018f3921` |
 | `src/infrastructure/character/character-preset-service.ts` | `26902a435cfb08e53c4e13ec588fc02527fd58fe81f64b7e83f74509590dac0e` |
 | `src/infrastructure/character/character-service.ts` | `9eb0f8385a4d8d2cec29013dc99df9420bcde14a7ba37461f5e6b7d47cac0172` |
 | `src/infrastructure/character/character.persistence.ts` | `5ed5f363555b9c4a3922507e01a227f74aee706764065641eb27ac9510024bd5` |
