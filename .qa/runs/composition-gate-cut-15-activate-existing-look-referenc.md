@@ -1,6 +1,6 @@
 # Composition Gate — cut-15-activate-existing-look-referenc (#1150)
 
-- HEAD_SHA: 28ea1ec4827573289c5530ded9bc3b6ab150f8cd
+- HEAD_SHA: e3d3b3641fb496d3078489c4e4036cf798ba0854
 - BASE_SHA: 2ebbf51640f83ecc98e7de271e7ef60600e61817
 - Date: 2026-11-06
 - Verdict: CLEAR
