@@ -25,7 +25,7 @@
     },
     {
       "path": "src/infrastructure/inventory/item-model3d-service.ts",
-      "sha256": "cbf9eb726d58bd20ae3c43c6364771c6ebd8ef21bbcc4575197f6fe67d311035"
+      "sha256": "a2b20eec8c22bc9a171f65f2bbdc47d7bcc7bb940155e090664dbd7266bd37ea"
     },
     {
       "path": "src/infrastructure/inventory/item-thumbnail-service.ts",
@@ -2059,11 +2059,31 @@
       }
     },
     {
+      "kind": "fetch",
+      "name": null,
+      "path": "src/infrastructure/inventory/item-model3d-service.ts",
+      "line": 99,
+      "endLine": 104,
+      "resolution": "dynamic-expression",
+      "expression": "fetch(`${base}/api/v1/items/model3d`, {\n      method: 'POST',\n      credentials: 'include',\n      headers: { Accept: 'application/json', 'content-type': 'application/json' },\n      body: JSON.stringify(body),\n    })",
+      "chain": "fetch(`${base}/api/v1/items/model3d`, {\n      method: 'POST',\n      credentials: 'include',\n      headers: { Accept: 'application/json', 'content-type': 'application/json' },\n      body: JSON.stringify(body),\n    })",
+      "arguments": [
+        "`${base}/api/v1/items/model3d`",
+        "{\n      method: 'POST',\n      credentials: 'include',\n      headers: { Accept: 'application/json', 'content-type': 'application/json' },\n      body: JSON.stringify(body),\n    }"
+      ],
+      "enclosingOperation": {
+        "path": "src/infrastructure/inventory/item-model3d-service.ts",
+        "line": 92,
+        "endLine": 115,
+        "text": "async function invokeHost(body: Record<string, unknown>): Promise<FunctionResponse> {\n  const base = getHostAuthBaseUrl()?.replace(/\\/$/, '') ?? '';\n  if (!base) {\n    return { status: 'error', message: '3D-Modell-Dienst nicht erreichbar.' };\n  }\n  let response: Response;\n  try {\n    response = await fetch(`${base}/api/v1/items/model3d`, {\n      method: 'POST',\n      credentials: 'include',\n      headers: { Accept: 'application/json', 'content-type': 'application/json' },\n      body: JSON.stringify(body),\n    });\n  } catch {\n    return { status: 'error', message: '3D-Modell-Dienst nicht erreichbar.' };\n  }\n  let data: unknown;\n  try {\n    data = await response.json();\n  } catch {\n    return { status: 'error', message: '3D-Modell-Dienst nicht erreichbar.' };\n  }\n  return parseResponse(data);\n}"
+      }
+    },
+    {
       "kind": "edge",
       "name": "item-model3d",
       "path": "src/infrastructure/inventory/item-model3d-service.ts",
-      "line": 93,
-      "endLine": 93,
+      "line": 121,
+      "endLine": 121,
       "resolution": "literal-or-constant",
       "expression": "supabase.functions.invoke('item-model3d', { body })",
       "chain": "supabase.functions.invoke('item-model3d', { body })",
@@ -2073,9 +2093,9 @@
       ],
       "enclosingOperation": {
         "path": "src/infrastructure/inventory/item-model3d-service.ts",
-        "line": 88,
-        "endLine": 99,
-        "text": "async function invoke(body: Record<string, unknown>): Promise<FunctionResponse> {\n  const { isHostLibraryEnabled } = await import('../host/host-library-http');\n  if (isHostLibraryEnabled()) {\n    throw new Error('3D-Modell-Dienst ist im Host-Modus noch nicht verfügbar.');\n  }\n  const { data, error } = await supabase.functions.invoke('item-model3d', { body });\n  if (error) {\n    const serverMessage = await getFunctionErrorMessage(error);\n    throw new Error(serverMessage ?? '3D-Modell-Dienst nicht erreichbar.');\n  }\n  return parseResponse(data);\n}"
+        "line": 117,
+        "endLine": 127,
+        "text": "async function invoke(body: Record<string, unknown>): Promise<FunctionResponse> {\n  if (isHostLibraryEnabled()) {\n    return invokeHost(body);\n  }\n  const { data, error } = await supabase.functions.invoke('item-model3d', { body });\n  if (error) {\n    const serverMessage = await getFunctionErrorMessage(error);\n    throw new Error(serverMessage ?? '3D-Modell-Dienst nicht erreichbar.');\n  }\n  return parseResponse(data);\n}"
       }
     },
     {
@@ -2631,28 +2651,35 @@
     },
     {
       "path": "src/infrastructure/inventory/item-model3d-service.ts",
-      "line": 6,
-      "endLine": 6,
+      "line": 8,
+      "endLine": 8,
+      "module": "../../lib/hostAuthBridge",
+      "resolvedPath": "src/lib/hostAuthBridge.ts",
+      "expression": "import { getHostAuthBaseUrl } from '../../lib/hostAuthBridge';"
+    },
+    {
+      "path": "src/infrastructure/inventory/item-model3d-service.ts",
+      "line": 9,
+      "endLine": 9,
       "module": "../../lib/supabase",
       "resolvedPath": "src/lib/supabase.ts",
       "expression": "import { rewriteBrowserStorageUrl, supabase } from '../../lib/supabase';"
     },
     {
       "path": "src/infrastructure/inventory/item-model3d-service.ts",
-      "line": 7,
-      "endLine": 14,
+      "line": 10,
+      "endLine": 17,
       "module": "../../domains/items",
       "resolvedPath": "src/domains/items/index.ts",
       "expression": "import {\n  ITEM_MODEL3D_MAX_BYTES,\n  ITEM_MODEL3D_MIME,\n  isAllowedItemModel3dMime,\n  parseItemModel3dAssetKey,\n  sniffItemModel3dGlb,\n  type ItemModel3dMime,\n} from '../../domains/items';"
     },
     {
       "path": "src/infrastructure/inventory/item-model3d-service.ts",
-      "line": 89,
-      "endLine": 89,
+      "line": 18,
+      "endLine": 18,
       "module": "../host/host-library-http",
       "resolvedPath": "src/infrastructure/host/host-library-http.ts",
-      "expression": "import('../host/host-library-http')",
-      "kind": "dynamic-import"
+      "expression": "import { isHostLibraryEnabled } from '../host/host-library-http';"
     },
     {
       "path": "src/infrastructure/inventory/item-thumbnail-service.ts",
@@ -2951,38 +2978,38 @@
     },
     {
       "path": "src/infrastructure/inventory/item-model3d-service.ts",
-      "line": 16,
-      "endLine": 22,
+      "line": 20,
+      "endLine": 26,
       "text": "export type ItemModel3dJobUiStatus =\n  | 'idle'\n  | 'waiting'\n  | 'generating'\n  | 'succeeded'\n  | 'failed'\n  | 'canceled';"
     },
     {
       "path": "src/infrastructure/inventory/item-model3d-service.ts",
-      "line": 24,
-      "endLine": 28,
+      "line": 28,
+      "endLine": 32,
       "text": "export interface ItemModel3dConfig {\n  meshyConfigured: boolean;\n  maxBytes: number;\n  allowedMime: readonly string[];\n}"
     },
     {
       "path": "src/infrastructure/inventory/item-model3d-service.ts",
-      "line": 30,
-      "endLine": 35,
+      "line": 34,
+      "endLine": 39,
       "text": "export interface ItemModel3dUploadResult {\n  model3d: string;\n  signedUrl: string;\n  mime: ItemModel3dMime;\n  byteSize: number;\n}"
     },
     {
       "path": "src/infrastructure/inventory/item-model3d-service.ts",
-      "line": 37,
-      "endLine": 44,
+      "line": 41,
+      "endLine": 48,
       "text": "export interface ItemModel3dJobSnapshot {\n  jobId: string;\n  jobStatus: ItemModel3dJobUiStatus;\n  progress: number;\n  errorMessage?: string;\n  model3d?: string;\n  signedUrl?: string;\n}"
     },
     {
       "path": "src/infrastructure/inventory/item-model3d-service.ts",
-      "line": 123,
-      "endLine": 137,
+      "line": 151,
+      "endLine": 165,
       "text": "export async function validateModel3dFileClient(file: File): Promise<ItemModel3dMime> {\n  if (file.size > ITEM_MODEL3D_MAX_BYTES) {\n    throw new Error('Datei zu groß (max. 50 MB).');\n  }\n  const nameOk = file.name.toLowerCase().endsWith('.glb');\n  const mimeOk = isAllowedItemModel3dMime(file.type) || file.type === '' || nameOk;\n  if (!mimeOk) {\n    throw new Error('Nur GLB-Dateien sind erlaubt.');\n  }\n  const magic = await readFileMagic(file);\n  if (!sniffItemModel3dGlb(magic)) {\n    throw new Error('Datei ist kein gültiges GLB (glTF Binary).');\n  }\n  return ITEM_MODEL3D_MIME;\n}"
     },
     {
       "path": "src/infrastructure/inventory/item-model3d-service.ts",
-      "line": 267,
-      "endLine": 267,
+      "line": 295,
+      "endLine": 295,
       "text": "export const itemModel3dService = new ItemModel3dService();"
     },
     {
@@ -3341,134 +3368,141 @@
     },
     {
       "path": "src/infrastructure/inventory/item-model3d-service.ts",
-      "line": 51,
-      "endLine": 53,
+      "line": 55,
+      "endLine": 57,
       "name": "isRecord",
       "text": "function isRecord(value: unknown): value is Record<string, unknown> {\n  return typeof value === 'object' && value !== null;\n}"
     },
     {
       "path": "src/infrastructure/inventory/item-model3d-service.ts",
-      "line": 55,
-      "endLine": 71,
+      "line": 59,
+      "endLine": 75,
       "name": "parseResponse",
       "text": "function parseResponse(value: unknown): FunctionResponse {\n  if (!isRecord(value) || typeof value.status !== 'string') {\n    return { status: 'error', message: 'Ungültige Serverantwort.' };\n  }\n  if (value.status === 'ok') return value as FunctionResponse;\n  if (\n    (value.status === 'not-configured' || value.status === 'error') &&\n    typeof value.message === 'string'\n  ) {\n    return {\n      status: value.status,\n      message: value.message,\n      code: typeof value.code === 'string' ? value.code : undefined,\n    };\n  }\n  return { status: 'error', message: 'Ungültige Serverantwort.' };\n}"
     },
     {
       "path": "src/infrastructure/inventory/item-model3d-service.ts",
-      "line": 73,
-      "endLine": 75,
+      "line": 77,
+      "endLine": 79,
       "name": "hasResponseContext",
       "text": "function hasResponseContext(error: unknown): error is { context: Response } {\n  return isRecord(error) && error.context instanceof Response;\n}"
     },
     {
       "path": "src/infrastructure/inventory/item-model3d-service.ts",
-      "line": 77,
-      "endLine": 86,
+      "line": 81,
+      "endLine": 90,
       "name": "getFunctionErrorMessage",
       "text": "async function getFunctionErrorMessage(error: unknown): Promise<string | undefined> {\n  if (!hasResponseContext(error)) return undefined;\n  try {\n    const body: unknown = await error.context.clone().json();\n    const parsed = parseResponse(body);\n    return parsed.status === 'ok' ? undefined : parsed.message;\n  } catch {\n    return undefined;\n  }\n}"
     },
     {
       "path": "src/infrastructure/inventory/item-model3d-service.ts",
-      "line": 88,
-      "endLine": 99,
-      "name": "invoke",
-      "text": "async function invoke(body: Record<string, unknown>): Promise<FunctionResponse> {\n  const { isHostLibraryEnabled } = await import('../host/host-library-http');\n  if (isHostLibraryEnabled()) {\n    throw new Error('3D-Modell-Dienst ist im Host-Modus noch nicht verfügbar.');\n  }\n  const { data, error } = await supabase.functions.invoke('item-model3d', { body });\n  if (error) {\n    const serverMessage = await getFunctionErrorMessage(error);\n    throw new Error(serverMessage ?? '3D-Modell-Dienst nicht erreichbar.');\n  }\n  return parseResponse(data);\n}"
+      "line": 92,
+      "endLine": 115,
+      "name": "invokeHost",
+      "text": "async function invokeHost(body: Record<string, unknown>): Promise<FunctionResponse> {\n  const base = getHostAuthBaseUrl()?.replace(/\\/$/, '') ?? '';\n  if (!base) {\n    return { status: 'error', message: '3D-Modell-Dienst nicht erreichbar.' };\n  }\n  let response: Response;\n  try {\n    response = await fetch(`${base}/api/v1/items/model3d`, {\n      method: 'POST',\n      credentials: 'include',\n      headers: { Accept: 'application/json', 'content-type': 'application/json' },\n      body: JSON.stringify(body),\n    });\n  } catch {\n    return { status: 'error', message: '3D-Modell-Dienst nicht erreichbar.' };\n  }\n  let data: unknown;\n  try {\n    data = await response.json();\n  } catch {\n    return { status: 'error', message: '3D-Modell-Dienst nicht erreichbar.' };\n  }\n  return parseResponse(data);\n}"
     },
     {
       "path": "src/infrastructure/inventory/item-model3d-service.ts",
-      "line": 101,
-      "endLine": 116,
+      "line": 117,
+      "endLine": 127,
+      "name": "invoke",
+      "text": "async function invoke(body: Record<string, unknown>): Promise<FunctionResponse> {\n  if (isHostLibraryEnabled()) {\n    return invokeHost(body);\n  }\n  const { data, error } = await supabase.functions.invoke('item-model3d', { body });\n  if (error) {\n    const serverMessage = await getFunctionErrorMessage(error);\n    throw new Error(serverMessage ?? '3D-Modell-Dienst nicht erreichbar.');\n  }\n  return parseResponse(data);\n}"
+    },
+    {
+      "path": "src/infrastructure/inventory/item-model3d-service.ts",
+      "line": 129,
+      "endLine": 144,
       "name": "fileToBase64",
       "text": "function fileToBase64(file: File): Promise<string> {\n  return new Promise((resolve, reject) => {\n    const reader = new FileReader();\n    reader.onerror = () => reject(new Error('Datei konnte nicht gelesen werden.'));\n    reader.onload = () => {\n      const result = reader.result;\n      if (typeof result !== 'string') {\n        reject(new Error('Datei konnte nicht gelesen werden.'));\n        return;\n      }\n      const comma = result.indexOf(',');\n      resolve(comma >= 0 ? result.slice(comma + 1) : result);\n    };\n    reader.readAsDataURL(file);\n  });\n}"
     },
     {
       "path": "src/infrastructure/inventory/item-model3d-service.ts",
-      "line": 102,
-      "endLine": 115,
+      "line": 130,
+      "endLine": 143,
       "name": "callback",
       "text": "(resolve, reject) => {\n    const reader = new FileReader();\n    reader.onerror = () => reject(new Error('Datei konnte nicht gelesen werden.'));\n    reader.onload = () => {\n      const result = reader.result;\n      if (typeof result !== 'string') {\n        reject(new Error('Datei konnte nicht gelesen werden.'));\n        return;\n      }\n      const comma = result.indexOf(',');\n      resolve(comma >= 0 ? result.slice(comma + 1) : result);\n    };\n    reader.readAsDataURL(file);\n  }"
     },
     {
       "path": "src/infrastructure/inventory/item-model3d-service.ts",
-      "line": 104,
-      "endLine": 104,
+      "line": 132,
+      "endLine": 132,
       "name": "callback",
       "text": "() => reject(new Error('Datei konnte nicht gelesen werden.'))"
     },
     {
       "path": "src/infrastructure/inventory/item-model3d-service.ts",
-      "line": 105,
-      "endLine": 113,
+      "line": 133,
+      "endLine": 141,
       "name": "callback",
       "text": "() => {\n      const result = reader.result;\n      if (typeof result !== 'string') {\n        reject(new Error('Datei konnte nicht gelesen werden.'));\n        return;\n      }\n      const comma = result.indexOf(',');\n      resolve(comma >= 0 ? result.slice(comma + 1) : result);\n    }"
     },
     {
       "path": "src/infrastructure/inventory/item-model3d-service.ts",
-      "line": 118,
-      "endLine": 121,
+      "line": 146,
+      "endLine": 149,
       "name": "readFileMagic",
       "text": "async function readFileMagic(file: File): Promise<Uint8Array> {\n  const buffer = await file.slice(0, 8).arrayBuffer();\n  return new Uint8Array(buffer);\n}"
     },
     {
       "path": "src/infrastructure/inventory/item-model3d-service.ts",
-      "line": 123,
-      "endLine": 137,
+      "line": 151,
+      "endLine": 165,
       "name": "validateModel3dFileClient",
       "text": "export async function validateModel3dFileClient(file: File): Promise<ItemModel3dMime> {\n  if (file.size > ITEM_MODEL3D_MAX_BYTES) {\n    throw new Error('Datei zu groß (max. 50 MB).');\n  }\n  const nameOk = file.name.toLowerCase().endsWith('.glb');\n  const mimeOk = isAllowedItemModel3dMime(file.type) || file.type === '' || nameOk;\n  if (!mimeOk) {\n    throw new Error('Nur GLB-Dateien sind erlaubt.');\n  }\n  const magic = await readFileMagic(file);\n  if (!sniffItemModel3dGlb(magic)) {\n    throw new Error('Datei ist kein gültiges GLB (glTF Binary).');\n  }\n  return ITEM_MODEL3D_MIME;\n}"
     },
     {
       "path": "src/infrastructure/inventory/item-model3d-service.ts",
-      "line": 140,
-      "endLine": 164,
+      "line": 168,
+      "endLine": 192,
       "name": "getConfig",
       "text": "async getConfig(): Promise<ItemModel3dConfig> {\n    try {\n      const response = await invoke({ action: 'config' });\n      if (response.status !== 'ok') {\n        return {\n          meshyConfigured: false,\n          maxBytes: ITEM_MODEL3D_MAX_BYTES,\n          allowedMime: [ITEM_MODEL3D_MIME],\n        };\n      }\n      return {\n        meshyConfigured: response.meshyConfigured === true,\n        maxBytes: typeof response.maxBytes === 'number' ? response.maxBytes : ITEM_MODEL3D_MAX_BYTES,\n        allowedMime: Array.isArray(response.allowedMime)\n          ? response.allowedMime.filter((m): m is string => typeof m === 'string')\n          : [ITEM_MODEL3D_MIME],\n      };\n    } catch {\n      return {\n        meshyConfigured: false,\n        maxBytes: ITEM_MODEL3D_MAX_BYTES,\n        allowedMime: [ITEM_MODEL3D_MIME],\n      };\n    }\n  }"
     },
     {
       "path": "src/infrastructure/inventory/item-model3d-service.ts",
-      "line": 154,
-      "endLine": 154,
+      "line": 182,
+      "endLine": 182,
       "name": "callback",
       "text": "(m): m is string => typeof m === 'string'"
     },
     {
       "path": "src/infrastructure/inventory/item-model3d-service.ts",
-      "line": 166,
-      "endLine": 193,
+      "line": 194,
+      "endLine": 221,
       "name": "uploadModel",
       "text": "async uploadModel(definitionId: string, file: File): Promise<ItemModel3dUploadResult> {\n    const mime = await validateModel3dFileClient(file);\n    const contentBase64 = await fileToBase64(file);\n    const response = await invoke({\n      action: 'upload',\n      definitionId,\n      contentBase64,\n      mime,\n    });\n    if (response.status !== 'ok') throw new Error(response.message);\n    if (\n      typeof response.model3d !== 'string' ||\n      typeof response.signedUrl !== 'string' ||\n      typeof response.mime !== 'string' ||\n      typeof response.byteSize !== 'number'\n    ) {\n      throw new Error('Upload-Antwort unvollständig.');\n    }\n    if (response.mime !== ITEM_MODEL3D_MIME) {\n      throw new Error('Upload-Antwort: ungültiger MIME-Typ.');\n    }\n    return {\n      model3d: response.model3d,\n      signedUrl: rewriteBrowserStorageUrl(response.signedUrl),\n      mime: ITEM_MODEL3D_MIME,\n      byteSize: response.byteSize,\n    };\n  }"
     },
     {
       "path": "src/infrastructure/inventory/item-model3d-service.ts",
-      "line": 195,
-      "endLine": 212,
+      "line": 223,
+      "endLine": 240,
       "name": "startGenerate",
       "text": "async startGenerate(definitionId: string): Promise<ItemModel3dJobSnapshot> {\n    const response = await invoke({\n      action: 'generate',\n      definitionId,\n    });\n    if (response.status === 'not-configured') {\n      throw new Error(response.message);\n    }\n    if (response.status !== 'ok') throw new Error(response.message);\n    if (typeof response.jobId !== 'string') throw new Error('Job-ID fehlt.');\n    return {\n      jobId: response.jobId,\n      jobStatus: typeof response.jobStatus === 'string'\n        ? (response.jobStatus as ItemModel3dJobUiStatus)\n        : 'waiting',\n      progress: typeof response.progress === 'number' ? response.progress : 5,\n    };\n  }"
     },
     {
       "path": "src/infrastructure/inventory/item-model3d-service.ts",
-      "line": 214,
-      "endLine": 231,
+      "line": 242,
+      "endLine": 259,
       "name": "pollJob",
       "text": "async pollJob(jobId: string): Promise<ItemModel3dJobSnapshot> {\n    const response = await invoke({ action: 'status', jobId });\n    if (response.status !== 'ok') throw new Error(response.message);\n    if (typeof response.jobId !== 'string') throw new Error('Job-ID fehlt.');\n    return {\n      jobId: response.jobId,\n      jobStatus: typeof response.jobStatus === 'string'\n        ? (response.jobStatus as ItemModel3dJobUiStatus)\n        : 'waiting',\n      progress: typeof response.progress === 'number' ? response.progress : 0,\n      errorMessage: typeof response.errorMessage === 'string' ? response.errorMessage : undefined,\n      model3d: typeof response.model3d === 'string' ? response.model3d : undefined,\n      signedUrl:\n        typeof response.signedUrl === 'string'\n          ? rewriteBrowserStorageUrl(response.signedUrl)\n          : undefined,\n    };\n  }"
     },
     {
       "path": "src/infrastructure/inventory/item-model3d-service.ts",
-      "line": 233,
-      "endLine": 248,
+      "line": 261,
+      "endLine": 276,
       "name": "loadLatestJob",
       "text": "async loadLatestJob(definitionId: string): Promise<ItemModel3dJobSnapshot | null> {\n    const response = await invoke({ action: 'latest-job', definitionId });\n    if (response.status !== 'ok') return null;\n    if (!isRecord(response.job)) return null;\n    const job = response.job;\n    if (typeof job.jobId !== 'string') return null;\n    return {\n      jobId: job.jobId,\n      jobStatus: typeof job.jobStatus === 'string'\n        ? (job.jobStatus as ItemModel3dJobUiStatus)\n        : 'idle',\n      progress: typeof job.progress === 'number' ? job.progress : 0,\n      errorMessage: typeof job.errorMessage === 'string' ? job.errorMessage : undefined,\n      model3d: typeof job.model3d === 'string' ? job.model3d : undefined,\n    };\n  }"
     },
     {
       "path": "src/infrastructure/inventory/item-model3d-service.ts",
-      "line": 250,
-      "endLine": 259,
+      "line": 278,
+      "endLine": 287,
       "name": "resolveSignedUrl",
       "text": "async resolveSignedUrl(model3d: string): Promise<string | null> {\n    if (!parseItemModel3dAssetKey(model3d)) return null;\n    try {\n      const response = await invoke({ action: 'resolve', model3d });\n      if (response.status !== 'ok' || typeof response.signedUrl !== 'string') return null;\n      return rewriteBrowserStorageUrl(response.signedUrl);\n    } catch {\n      return null;\n    }\n  }"
     },
     {
       "path": "src/infrastructure/inventory/item-model3d-service.ts",
-      "line": 261,
-      "endLine": 264,
+      "line": 289,
+      "endLine": 292,
       "name": "removeModel",
       "text": "async removeModel(definitionId: string): Promise<void> {\n    const response = await invoke({ action: 'remove', definitionId });\n    if (response.status !== 'ok') throw new Error(response.message);\n  }"
     },

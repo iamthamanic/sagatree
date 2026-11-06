@@ -162,7 +162,7 @@ async function dispatchAction(
 
   switch (action) {
     case 'config':
-      return deps.itemModel3d.config(actor);
+      return await deps.itemModel3d.config(actor);
     case 'upload':
       return deps.itemModel3d.upload(actor, {
         definitionId,
@@ -170,7 +170,7 @@ async function dispatchAction(
         mime: typeof body.mime === 'string' ? body.mime : undefined,
       });
     case 'generate':
-      return deps.itemModel3d.generate(actor, definitionId);
+      return await deps.itemModel3d.generate(actor, definitionId);
     case 'status': {
       const jobId = typeof body.jobId === 'string' ? body.jobId.trim() : '';
       return deps.itemModel3d.status(actor, jobId);
@@ -223,7 +223,7 @@ export function mountItemModel3dHttpRoutes(app: Hono, deps: ItemModel3dHttpDeps)
         actorResult.status,
       );
     }
-    return resultToResponse(c, deps.itemModel3d.config(actorResult.actor));
+    return resultToResponse(c, await deps.itemModel3d.config(actorResult.actor));
   });
 
   app.post('/api/v1/items/:id/model3d/upload', async (c) => {

@@ -7,9 +7,11 @@
  */
 import type { Actor } from '../../modules/identity/index.ts';
 import type { AssetPorts } from '../../assets/index.ts';
+import { DEFAULT_ASSET_MAX_BYTES } from '../../assets/index.ts';
 import {
   ITEM_MODEL3D_PUBLIC_ACTIVATION_AUTHORIZED,
   ITEM_MODEL3D_FIXTURE_GLB,
+  ITEM_MODEL3D_MAX_BYTES,
   ITEM_MODEL3D_MIME,
   assertDefinitionAuthorized,
   buildItemModel3dAssetKey,
@@ -47,6 +49,18 @@ export type ItemModel3dUseCaseDeps = {
   readonly store?: ItemModel3dStore;
   readonly assets?: AssetPorts | null;
   readonly publicOrigin?: string;
+  /** True only for ITEM_*_MESHY_MOCK — enables fixture generate materialize. */
+  readonly meshyMockMode?: boolean;
+  /** Env MESHY_API_KEY present (server-wide). */
+  readonly meshyEnvConfigured?: boolean;
+  /** Per-user BYOK Meshy credential lookup (Codex P1). */
+  readonly resolveUserMeshyConfigured?: (actor: Actor) => boolean | Promise<boolean>;
+  /** Persist model3d key onto inventory_item_definitions.payload (Codex P1). */
+  readonly persistModel3dKey?: (
+    actorIds: readonly string[],
+    definitionId: string,
+    model3d: string | null,
+  ) => void;
 };
 
 function assetUrl(origin: string | undefined, assetId: string): string {
@@ -64,15 +78,62 @@ export function createItemModel3dUseCases(deps?: ItemModel3dUseCaseDeps | ItemMo
   const resolved = normalized.store ?? createItemModel3dStore();
   const assets = normalized.assets ?? null;
   const publicOrigin = normalized.publicOrigin;
+  // Bare-store callers (mig-409) pass a configured store without mock flag — treat as mock.
+  const meshyMockMode =
+    normalized.meshyMockMode === true ||
+    (normalized.meshyMockMode === undefined &&
+      resolved.meshyConfigured === true &&
+      normalized.meshyEnvConfigured !== true &&
+      !normalized.resolveUserMeshyConfigured);
+  const meshyEnvConfigured = normalized.meshyEnvConfigured === true;
+  const resolveUserMeshy = normalized.resolveUserMeshyConfigured;
+  const persistKey = normalized.persistModel3dKey;
+
+  const publishGlb = (actor: Actor, bytes: Uint8Array) => {
+    if (!assets) return { ok: false as const, error: 'store-unavailable' };
+    if (bytes.byteLength > DEFAULT_ASSET_MAX_BYTES) {
+      // Prefer elevated finalize when large-upload capability is on; else fail closed with 413.
+      const elevated = assets.publishResumableFinalize(actor, {
+        bytes,
+        contentType: ITEM_MODEL3D_MIME,
+      });
+      if (elevated.ok) return elevated;
+      if (elevated.error === 'capability-disabled' || elevated.error === 'bytes-too-large') {
+        return { ok: false as const, error: 'bytes-too-large' };
+      }
+      return elevated;
+    }
+    return assets.publish(actor, { bytes, contentType: ITEM_MODEL3D_MIME });
+  };
+
+  async function meshyConfiguredFor(actor: Actor): Promise<boolean> {
+    if (meshyMockMode || meshyEnvConfigured) return true;
+    if (!resolveUserMeshy) return false;
+    return Boolean(await resolveUserMeshy(actor));
+  }
+
+  function persist(actor: Actor, definitionId: string, model3d: string | null): void {
+    if (!persistKey) return;
+    persistKey(actorIdsForAuthz(actor), definitionId, model3d);
+  }
 
   return {
     publicActivationAuthorized: ITEM_MODEL3D_PUBLIC_ACTIVATION_AUTHORIZED,
     store: resolved,
-    config: (actor: Actor) => {
+    config: async (actor: Actor) => {
       if (!actorUserId(actor)) {
         return { status: 'error' as const, message: 'Authentication required', httpStatus: 401 };
       }
-      return itemModel3dConfig(resolved);
+      const configured = await meshyConfiguredFor(actor);
+      const base = itemModel3dConfig(resolved);
+      const maxBytes = assets
+        ? Math.min(ITEM_MODEL3D_MAX_BYTES, DEFAULT_ASSET_MAX_BYTES)
+        : ITEM_MODEL3D_MAX_BYTES;
+      return {
+        ...base,
+        meshyConfigured: configured,
+        maxBytes,
+      };
     },
     upload: (
       actor: Actor,
@@ -104,21 +165,28 @@ export function createItemModel3dUseCases(deps?: ItemModel3dUseCaseDeps | ItemMo
       }
 
       if (!assets) {
-        return itemModel3dUpload(resolved, authorizedAs, input);
+        const uploaded = itemModel3dUpload(resolved, authorizedAs, input);
+        if (uploaded.status === 'ok' && typeof uploaded.model3d === 'string') {
+          persist(actor, input.definitionId.trim(), uploaded.model3d);
+        }
+        return uploaded;
       }
 
       try {
         const bytes = decodeStrictBase64(input.contentBase64);
         const validated = validateItemModel3dGlbBytes(bytes, input.mime);
-        const published = assets.publish(actor, {
-          bytes: validated.bytes,
-          contentType: ITEM_MODEL3D_MIME,
-        });
+        if (validated.bytes.byteLength > ITEM_MODEL3D_MAX_BYTES) {
+          return { status: 'error' as const, message: 'GLB exceeds size limit', httpStatus: 413 };
+        }
+        const published = publishGlb(actor, validated.bytes);
         if (!published.ok) {
+          const tooLarge = published.error === 'bytes-too-large';
           return {
             status: 'error' as const,
-            message: published.error,
-            httpStatus: published.error === 'not-authorized' ? 403 : 500,
+            message: tooLarge
+              ? `GLB exceeds durable asset limit (${DEFAULT_ASSET_MAX_BYTES} bytes)`
+              : published.error,
+            httpStatus: tooLarge ? 413 : published.error === 'not-authorized' ? 403 : 500,
           };
         }
         const assetId = published.value.assetId;
@@ -137,6 +205,7 @@ export function createItemModel3dUseCases(deps?: ItemModel3dUseCaseDeps | ItemMo
           deletedAt: null,
           byteSize: published.value.byteSize,
         });
+        persist(actor, def.id, model3d);
         return {
           status: 'ok' as const,
           assetId,
@@ -153,23 +222,47 @@ export function createItemModel3dUseCases(deps?: ItemModel3dUseCaseDeps | ItemMo
         };
       }
     },
-    generate: (actor: Actor, definitionId: string) => {
+    generate: async (actor: Actor, definitionId: string) => {
       const userId = actorUserId(actor);
       if (!userId) {
         return { status: 'error' as const, message: 'Authentication required', httpStatus: 401 };
       }
-      const ids = actorIdsForAuthz(actor);
-      let authorizedAs = userId;
-      for (const id of ids) {
-        try {
-          assertDefinitionAuthorized(resolved, id, definitionId.trim());
-          authorizedAs = id;
-          break;
-        } catch {
-          // continue
-        }
+      const configured = await meshyConfiguredFor(actor);
+      if (!configured) {
+        return {
+          status: 'not-configured' as const,
+          message: 'Meshy is not configured',
+          httpStatus: 503,
+        };
       }
-      return itemModel3dGenerate(resolved, authorizedAs, definitionId);
+      // Codex P1: fixture materialize only in explicit mock mode — never for live BYOK/env key.
+      if (!meshyMockMode) {
+        return {
+          status: 'not-configured' as const,
+          message:
+            'Live Meshy Image-to-3D host adapter is not enabled (set ITEM_MODEL3D_MESHY_MOCK=1 for isolated characterization).',
+          httpStatus: 503,
+        };
+      }
+      // Temporarily flip store flag so isolated generate path runs under mock.
+      const prev = resolved.meshyConfigured;
+      resolved.meshyConfigured = true;
+      try {
+        const ids = actorIdsForAuthz(actor);
+        let authorizedAs = userId;
+        for (const id of ids) {
+          try {
+            assertDefinitionAuthorized(resolved, id, definitionId.trim());
+            authorizedAs = id;
+            break;
+          } catch {
+            // continue
+          }
+        }
+        return itemModel3dGenerate(resolved, authorizedAs, definitionId);
+      } finally {
+        resolved.meshyConfigured = prev;
+      }
     },
     status: (actor: Actor, jobId: string, claimerId = 'poller') => {
       const userId = actorUserId(actor);
@@ -178,23 +271,39 @@ export function createItemModel3dUseCases(deps?: ItemModel3dUseCaseDeps | ItemMo
       }
       const runStatus = (asUser: string) => {
         const result = itemModel3dStatus(resolved, asUser, jobId, claimerId);
-        if (result.status !== 'ok' || !assets) return result;
+        if (result.status !== 'ok' || !assets) {
+          if (
+            result.status === 'ok' &&
+            typeof result.model3d === 'string' &&
+            typeof jobId === 'string'
+          ) {
+            const job = resolved.jobs.get(jobId.trim());
+            if (job?.definitionId) persist(actor, job.definitionId, result.model3d);
+          }
+          return result;
+        }
         const job = resolved.jobs.get(jobId.trim());
         if (!job?.assetId) return result;
         const already = assets.get(actor, job.assetId);
         if (already.ok) {
+          const model3d = buildItemModel3dAssetKey(job.assetId);
+          persist(actor, job.definitionId, model3d);
           return {
             ...result,
             assetId: job.assetId,
-            model3d: buildItemModel3dAssetKey(job.assetId),
+            model3d,
             signedUrl: assetUrl(publicOrigin, job.assetId),
           };
         }
+        if (!meshyMockMode) {
+          return {
+            status: 'error' as const,
+            message: 'Provider model bytes unavailable without Meshy mock',
+            httpStatus: 503,
+          };
+        }
         const bytes = job.providerModelBytes ?? ITEM_MODEL3D_FIXTURE_GLB;
-        const published = assets.publish(actor, {
-          bytes,
-          contentType: ITEM_MODEL3D_MIME,
-        });
+        const published = publishGlb(actor, bytes);
         if (!published.ok) {
           return {
             status: 'error' as const,
@@ -215,11 +324,13 @@ export function createItemModel3dUseCases(deps?: ItemModel3dUseCaseDeps | ItemMo
           byteSize: published.value.byteSize,
         });
         const def = resolved.definitions.get(job.definitionId);
-        if (def) def.payload.model3d = buildItemModel3dAssetKey(durableId);
+        const model3d = buildItemModel3dAssetKey(durableId);
+        if (def) def.payload.model3d = model3d;
+        persist(actor, job.definitionId, model3d);
         return {
           ...result,
           assetId: durableId,
-          model3d: buildItemModel3dAssetKey(durableId),
+          model3d,
           signedUrl: assetUrl(publicOrigin, durableId),
         };
       };
@@ -278,12 +389,19 @@ export function createItemModel3dUseCases(deps?: ItemModel3dUseCaseDeps | ItemMo
       for (const id of actorIdsForAuthz(actor)) {
         try {
           assertDefinitionAuthorized(resolved, id, definitionId.trim());
-          return itemModel3dRemove(resolved, id, definitionId);
+          const removed = itemModel3dRemove(resolved, id, definitionId);
+          if (removed.status === 'ok') {
+            persist(actor, definitionId.trim(), null);
+          }
+          // Durable AssetPorts bytes are not deleted — no revoke API on AssetPorts yet (Codex P2).
+          return removed;
         } catch {
           // try next
         }
       }
-      return itemModel3dRemove(resolved, userId, definitionId);
+      const removed = itemModel3dRemove(resolved, userId, definitionId);
+      if (removed.status === 'ok') persist(actor, definitionId.trim(), null);
+      return removed;
     },
     latestJob: (actor: Actor, definitionId: string) => {
       const userId = actorUserId(actor);

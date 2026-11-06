@@ -462,8 +462,10 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
           : undefined,
       });
 
-    const meshyConfigured =
-      Boolean(env.MESHY_API_KEY?.trim()) || env.ITEM_THUMBNAIL_MESHY_MOCK === '1';
+    const meshyMockMode =
+      env.ITEM_THUMBNAIL_MESHY_MOCK === '1' || env.ITEM_MODEL3D_MESHY_MOCK === '1';
+    const meshyEnvConfigured = Boolean(env.MESHY_API_KEY?.trim());
+    const meshyConfigured = meshyMockMode || meshyEnvConfigured;
     let itemThumbnailAssetBase = 'http://127.0.0.1/assets';
     try {
       if (env.MESHY_ASSET_BASE_URL?.trim()) {
@@ -479,9 +481,12 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
     let itemThumbnail: ItemThumbnailUseCases = createItemThumbnailUseCases({
       store: itemThumbnailStore,
     });
-    const itemModel3dStore: ItemModel3dStore = createItemModel3dStore(meshyConfigured);
+    // Model3d store meshyConfigured tracks mock path for isolated generate; BYOK resolved in use-cases.
+    const itemModel3dStore: ItemModel3dStore = createItemModel3dStore(meshyMockMode);
     let itemModel3d: ItemModel3dUseCases = createItemModel3dUseCases({
       store: itemModel3dStore,
+      meshyMockMode,
+      meshyEnvConfigured,
     });
 
     async function resolveSessionRecapProviderForUser(userId: string) {
@@ -722,6 +727,36 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
       store: itemModel3dStore,
       assets,
       publicOrigin: `http://127.0.0.1:${config.port}`,
+      meshyMockMode,
+      meshyEnvConfigured,
+      resolveUserMeshyConfigured: async (actor) => {
+        try {
+          // Meshy catalog modalities include image + 3d; null modality returns full catalog.
+          const listed = await ai.listCredentials(actor);
+          if (!listed.ok || !listed.value?.providers) return false;
+          return listed.value.providers.some(
+            (p) => p.providerId === 'meshy' && p.configured === true,
+          );
+        } catch {
+          return false;
+        }
+      },
+      persistModel3dKey: (actorIds, definitionId, model3d) => {
+        if (!inventory?.getDefinition || !inventory?.updateDefinition) return;
+        const loaded = inventory.getDefinition(actorIds, definitionId);
+        if (!loaded.ok || !loaded.value) return;
+        const def = loaded.value;
+        const nextPayload = { ...def.payload };
+        if (model3d === null) {
+          delete nextPayload.model3d;
+        } else {
+          nextPayload.model3d = model3d;
+        }
+        inventory.updateDefinition(actorIds, definitionId, {
+          name: def.name,
+          payload: nextPayload,
+        });
+      },
     });
 
     const ensureItemThumbnailDefinition = (
