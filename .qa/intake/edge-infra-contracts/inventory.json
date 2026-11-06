@@ -11067,7 +11067,7 @@
         "sourceFiles": [
           {
             "path": "src/infrastructure/inventory/item-model3d-service.ts",
-            "sha256": "cbf9eb726d58bd20ae3c43c6364771c6ebd8ef21bbcc4575197f6fe67d311035"
+            "sha256": "a2b20eec8c22bc9a171f65f2bbdc47d7bcc7bb940155e090664dbd7266bd37ea"
           },
           {
             "path": "supabase/functions/_shared/ai-provider-crypto.ts",
@@ -11321,8 +11321,8 @@
           "kind": "edge",
           "name": "item-model3d",
           "path": "src/infrastructure/inventory/item-model3d-service.ts",
-          "line": 93,
-          "endLine": 93,
+          "line": 121,
+          "endLine": 121,
           "resolution": "literal-or-constant",
           "expression": "supabase.functions.invoke('item-model3d', { body })",
           "chain": "supabase.functions.invoke('item-model3d', { body })",
@@ -11332,9 +11332,9 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/inventory/item-model3d-service.ts",
-            "line": 88,
-            "endLine": 99,
-            "text": "async function invoke(body: Record<string, unknown>): Promise<FunctionResponse> {\n  const { isHostLibraryEnabled } = await import('../host/host-library-http');\n  if (isHostLibraryEnabled()) {\n    throw new Error('3D-Modell-Dienst ist im Host-Modus noch nicht verfügbar.');\n  }\n  const { data, error } = await supabase.functions.invoke('item-model3d', { body });\n  if (error) {\n    const serverMessage = await getFunctionErrorMessage(error);\n    throw new Error(serverMessage ?? '3D-Modell-Dienst nicht erreichbar.');\n  }\n  return parseResponse(data);\n}"
+            "line": 117,
+            "endLine": 127,
+            "text": "async function invoke(body: Record<string, unknown>): Promise<FunctionResponse> {\n  if (isHostLibraryEnabled()) {\n    return invokeHost(body);\n  }\n  const { data, error } = await supabase.functions.invoke('item-model3d', { body });\n  if (error) {\n    const serverMessage = await getFunctionErrorMessage(error);\n    throw new Error(serverMessage ?? '3D-Modell-Dienst nicht erreichbar.');\n  }\n  return parseResponse(data);\n}"
           }
         }
       ],
@@ -35645,7 +35645,7 @@
           },
           {
             "path": "src/infrastructure/inventory/item-model3d-service.ts",
-            "sha256": "cbf9eb726d58bd20ae3c43c6364771c6ebd8ef21bbcc4575197f6fe67d311035"
+            "sha256": "a2b20eec8c22bc9a171f65f2bbdc47d7bcc7bb940155e090664dbd7266bd37ea"
           },
           {
             "path": "src/infrastructure/inventory/item-thumbnail-service.ts",
@@ -35733,7 +35733,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-inventory.json",
-      "sourceContractSha256": "69cb372f4afec8b8415a2b46ee47e2974777e8c9b5809615a9ebec475e4b9a7f",
+      "sourceContractSha256": "9c26cd640a77270f131fccca494352cd69aead191c205176d358a301a5b9a5c3",
       "rpcUsed": [],
       "tablesTouched": [
         "characters",
@@ -35890,6 +35890,26 @@
         {
           "kind": "fetch",
           "name": null,
+          "path": "src/infrastructure/inventory/item-model3d-service.ts",
+          "line": 99,
+          "endLine": 104,
+          "resolution": "dynamic-expression",
+          "expression": "fetch(`${base}/api/v1/items/model3d`, {\n      method: 'POST',\n      credentials: 'include',\n      headers: { Accept: 'application/json', 'content-type': 'application/json' },\n      body: JSON.stringify(body),\n    })",
+          "chain": "fetch(`${base}/api/v1/items/model3d`, {\n      method: 'POST',\n      credentials: 'include',\n      headers: { Accept: 'application/json', 'content-type': 'application/json' },\n      body: JSON.stringify(body),\n    })",
+          "arguments": [
+            "`${base}/api/v1/items/model3d`",
+            "{\n      method: 'POST',\n      credentials: 'include',\n      headers: { Accept: 'application/json', 'content-type': 'application/json' },\n      body: JSON.stringify(body),\n    }"
+          ],
+          "enclosingOperation": {
+            "path": "src/infrastructure/inventory/item-model3d-service.ts",
+            "line": 92,
+            "endLine": 115,
+            "text": "async function invokeHost(body: Record<string, unknown>): Promise<FunctionResponse> {\n  const base = getHostAuthBaseUrl()?.replace(/\\/$/, '') ?? '';\n  if (!base) {\n    return { status: 'error', message: '3D-Modell-Dienst nicht erreichbar.' };\n  }\n  let response: Response;\n  try {\n    response = await fetch(`${base}/api/v1/items/model3d`, {\n      method: 'POST',\n      credentials: 'include',\n      headers: { Accept: 'application/json', 'content-type': 'application/json' },\n      body: JSON.stringify(body),\n    });\n  } catch {\n    return { status: 'error', message: '3D-Modell-Dienst nicht erreichbar.' };\n  }\n  let data: unknown;\n  try {\n    data = await response.json();\n  } catch {\n    return { status: 'error', message: '3D-Modell-Dienst nicht erreichbar.' };\n  }\n  return parseResponse(data);\n}"
+          }
+        },
+        {
+          "kind": "fetch",
+          "name": null,
           "path": "src/infrastructure/inventory/item-thumbnail-service.ts",
           "line": 158,
           "endLine": 163,
@@ -36009,11 +36029,31 @@
           }
         },
         {
+          "kind": "fetch",
+          "name": null,
+          "path": "src/infrastructure/inventory/item-model3d-service.ts",
+          "line": 99,
+          "endLine": 104,
+          "resolution": "dynamic-expression",
+          "expression": "fetch(`${base}/api/v1/items/model3d`, {\n      method: 'POST',\n      credentials: 'include',\n      headers: { Accept: 'application/json', 'content-type': 'application/json' },\n      body: JSON.stringify(body),\n    })",
+          "chain": "fetch(`${base}/api/v1/items/model3d`, {\n      method: 'POST',\n      credentials: 'include',\n      headers: { Accept: 'application/json', 'content-type': 'application/json' },\n      body: JSON.stringify(body),\n    })",
+          "arguments": [
+            "`${base}/api/v1/items/model3d`",
+            "{\n      method: 'POST',\n      credentials: 'include',\n      headers: { Accept: 'application/json', 'content-type': 'application/json' },\n      body: JSON.stringify(body),\n    }"
+          ],
+          "enclosingOperation": {
+            "path": "src/infrastructure/inventory/item-model3d-service.ts",
+            "line": 92,
+            "endLine": 115,
+            "text": "async function invokeHost(body: Record<string, unknown>): Promise<FunctionResponse> {\n  const base = getHostAuthBaseUrl()?.replace(/\\/$/, '') ?? '';\n  if (!base) {\n    return { status: 'error', message: '3D-Modell-Dienst nicht erreichbar.' };\n  }\n  let response: Response;\n  try {\n    response = await fetch(`${base}/api/v1/items/model3d`, {\n      method: 'POST',\n      credentials: 'include',\n      headers: { Accept: 'application/json', 'content-type': 'application/json' },\n      body: JSON.stringify(body),\n    });\n  } catch {\n    return { status: 'error', message: '3D-Modell-Dienst nicht erreichbar.' };\n  }\n  let data: unknown;\n  try {\n    data = await response.json();\n  } catch {\n    return { status: 'error', message: '3D-Modell-Dienst nicht erreichbar.' };\n  }\n  return parseResponse(data);\n}"
+          }
+        },
+        {
           "kind": "edge",
           "name": "item-model3d",
           "path": "src/infrastructure/inventory/item-model3d-service.ts",
-          "line": 93,
-          "endLine": 93,
+          "line": 121,
+          "endLine": 121,
           "resolution": "literal-or-constant",
           "expression": "supabase.functions.invoke('item-model3d', { body })",
           "chain": "supabase.functions.invoke('item-model3d', { body })",
@@ -36023,9 +36063,9 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/inventory/item-model3d-service.ts",
-            "line": 88,
-            "endLine": 99,
-            "text": "async function invoke(body: Record<string, unknown>): Promise<FunctionResponse> {\n  const { isHostLibraryEnabled } = await import('../host/host-library-http');\n  if (isHostLibraryEnabled()) {\n    throw new Error('3D-Modell-Dienst ist im Host-Modus noch nicht verfügbar.');\n  }\n  const { data, error } = await supabase.functions.invoke('item-model3d', { body });\n  if (error) {\n    const serverMessage = await getFunctionErrorMessage(error);\n    throw new Error(serverMessage ?? '3D-Modell-Dienst nicht erreichbar.');\n  }\n  return parseResponse(data);\n}"
+            "line": 117,
+            "endLine": 127,
+            "text": "async function invoke(body: Record<string, unknown>): Promise<FunctionResponse> {\n  if (isHostLibraryEnabled()) {\n    return invokeHost(body);\n  }\n  const { data, error } = await supabase.functions.invoke('item-model3d', { body });\n  if (error) {\n    const serverMessage = await getFunctionErrorMessage(error);\n    throw new Error(serverMessage ?? '3D-Modell-Dienst nicht erreichbar.');\n  }\n  return parseResponse(data);\n}"
           }
         },
         {
@@ -36602,92 +36642,98 @@
         },
         {
           "path": "src/infrastructure/inventory/item-model3d-service.ts",
-          "line": 51,
-          "endLine": 53,
+          "line": 55,
+          "endLine": 57,
           "name": "isRecord"
         },
         {
           "path": "src/infrastructure/inventory/item-model3d-service.ts",
-          "line": 55,
-          "endLine": 71,
+          "line": 59,
+          "endLine": 75,
           "name": "parseResponse"
         },
         {
           "path": "src/infrastructure/inventory/item-model3d-service.ts",
-          "line": 73,
-          "endLine": 75,
+          "line": 77,
+          "endLine": 79,
           "name": "hasResponseContext"
         },
         {
           "path": "src/infrastructure/inventory/item-model3d-service.ts",
-          "line": 77,
-          "endLine": 86,
+          "line": 81,
+          "endLine": 90,
           "name": "getFunctionErrorMessage"
         },
         {
           "path": "src/infrastructure/inventory/item-model3d-service.ts",
-          "line": 88,
-          "endLine": 99,
+          "line": 92,
+          "endLine": 115,
+          "name": "invokeHost"
+        },
+        {
+          "path": "src/infrastructure/inventory/item-model3d-service.ts",
+          "line": 117,
+          "endLine": 127,
           "name": "invoke"
         },
         {
           "path": "src/infrastructure/inventory/item-model3d-service.ts",
-          "line": 101,
-          "endLine": 116,
+          "line": 129,
+          "endLine": 144,
           "name": "fileToBase64"
         },
         {
           "path": "src/infrastructure/inventory/item-model3d-service.ts",
-          "line": 118,
-          "endLine": 121,
+          "line": 146,
+          "endLine": 149,
           "name": "readFileMagic"
         },
         {
           "path": "src/infrastructure/inventory/item-model3d-service.ts",
-          "line": 123,
-          "endLine": 137,
+          "line": 151,
+          "endLine": 165,
           "name": "validateModel3dFileClient"
         },
         {
           "path": "src/infrastructure/inventory/item-model3d-service.ts",
-          "line": 140,
-          "endLine": 164,
+          "line": 168,
+          "endLine": 192,
           "name": "getConfig"
         },
         {
           "path": "src/infrastructure/inventory/item-model3d-service.ts",
-          "line": 166,
-          "endLine": 193,
+          "line": 194,
+          "endLine": 221,
           "name": "uploadModel"
         },
         {
           "path": "src/infrastructure/inventory/item-model3d-service.ts",
-          "line": 195,
-          "endLine": 212,
+          "line": 223,
+          "endLine": 240,
           "name": "startGenerate"
         },
         {
           "path": "src/infrastructure/inventory/item-model3d-service.ts",
-          "line": 214,
-          "endLine": 231,
+          "line": 242,
+          "endLine": 259,
           "name": "pollJob"
         },
         {
           "path": "src/infrastructure/inventory/item-model3d-service.ts",
-          "line": 233,
-          "endLine": 248,
+          "line": 261,
+          "endLine": 276,
           "name": "loadLatestJob"
         },
         {
           "path": "src/infrastructure/inventory/item-model3d-service.ts",
-          "line": 250,
-          "endLine": 259,
+          "line": 278,
+          "endLine": 287,
           "name": "resolveSignedUrl"
         },
         {
           "path": "src/infrastructure/inventory/item-model3d-service.ts",
-          "line": 261,
-          "endLine": 264,
+          "line": 289,
+          "endLine": 292,
           "name": "removeModel"
         },
         {

@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-inventory.json](source-contracts/infra-inventory.json) (SHA-256 `69cb372f4afec8b8415a2b46ee47e2974777e8c9b5809615a9ebec475e4b9a7f`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-inventory.json](source-contracts/infra-inventory.json) (SHA-256 `9c26cd640a77270f131fccca494352cd69aead191c205176d358a301a5b9a5c3`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -24,7 +24,7 @@ Storage buckets (0): none.
 
 Edge invokes (2): `item-model3d`, `item-thumbnail`.
 
-Realtime call sites: 0. Direct fetch sites: 1. Explicit auth/helper sites: 8.
+Realtime call sites: 0. Direct fetch sites: 2. Explicit auth/helper sites: 8.
 
 ## Complete implementation dependencies
 
@@ -133,16 +133,31 @@ supabase
 ```
 
 Enclosing operation: `src/infrastructure/inventory/inventory-persistence.ts:234`; complete request/default/result/error logic is in the declarations below and the snapshot.
+### fetch: `${base}/api/v1/items/model3d`
+
+`src/infrastructure/inventory/item-model3d-service.ts:99` — dynamic-expression.
+
+Exact call/query chain:
+```ts
+fetch(`${base}/api/v1/items/model3d`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: { Accept: 'application/json', 'content-type': 'application/json' },
+      body: JSON.stringify(body),
+    })
+```
+
+Enclosing operation: `src/infrastructure/inventory/item-model3d-service.ts:92`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### edge: item-model3d
 
-`src/infrastructure/inventory/item-model3d-service.ts:93` — literal-or-constant.
+`src/infrastructure/inventory/item-model3d-service.ts:121` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
 supabase.functions.invoke('item-model3d', { body })
 ```
 
-Enclosing operation: `src/infrastructure/inventory/item-model3d-service.ts:88`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/inventory/item-model3d-service.ts:117`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### fetch: requestUrl
 
 `src/infrastructure/inventory/item-thumbnail-service.ts:158` — dynamic-expression.
@@ -974,7 +989,7 @@ export function toDefinitionPayload(definition: ItemDefinition): Record<string, 
 }
 ```
 
-### src/infrastructure/inventory/item-model3d-service.ts:16
+### src/infrastructure/inventory/item-model3d-service.ts:20
 
 ```ts
 export type ItemModel3dJobUiStatus =
@@ -986,7 +1001,7 @@ export type ItemModel3dJobUiStatus =
   | 'canceled';
 ```
 
-### src/infrastructure/inventory/item-model3d-service.ts:24
+### src/infrastructure/inventory/item-model3d-service.ts:28
 
 ```ts
 export interface ItemModel3dConfig {
@@ -996,7 +1011,7 @@ export interface ItemModel3dConfig {
 }
 ```
 
-### src/infrastructure/inventory/item-model3d-service.ts:30
+### src/infrastructure/inventory/item-model3d-service.ts:34
 
 ```ts
 export interface ItemModel3dUploadResult {
@@ -1007,7 +1022,7 @@ export interface ItemModel3dUploadResult {
 }
 ```
 
-### src/infrastructure/inventory/item-model3d-service.ts:37
+### src/infrastructure/inventory/item-model3d-service.ts:41
 
 ```ts
 export interface ItemModel3dJobSnapshot {
@@ -1020,7 +1035,7 @@ export interface ItemModel3dJobSnapshot {
 }
 ```
 
-### src/infrastructure/inventory/item-model3d-service.ts:123
+### src/infrastructure/inventory/item-model3d-service.ts:151
 
 ```ts
 export async function validateModel3dFileClient(file: File): Promise<ItemModel3dMime> {
@@ -1040,7 +1055,7 @@ export async function validateModel3dFileClient(file: File): Promise<ItemModel3d
 }
 ```
 
-### src/infrastructure/inventory/item-model3d-service.ts:267
+### src/infrastructure/inventory/item-model3d-service.ts:295
 
 ```ts
 export const itemModel3dService = new ItemModel3dService();
@@ -1679,13 +1694,41 @@ async function fetchDefinitionById(id: string): Promise<string | null> {
 }
 ```
 
-### src/infrastructure/inventory/item-model3d-service.ts:88
+### src/infrastructure/inventory/item-model3d-service.ts:92
+
+```ts
+async function invokeHost(body: Record<string, unknown>): Promise<FunctionResponse> {
+  const base = getHostAuthBaseUrl()?.replace(/\/$/, '') ?? '';
+  if (!base) {
+    return { status: 'error', message: '3D-Modell-Dienst nicht erreichbar.' };
+  }
+  let response: Response;
+  try {
+    response = await fetch(`${base}/api/v1/items/model3d`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: { Accept: 'application/json', 'content-type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+  } catch {
+    return { status: 'error', message: '3D-Modell-Dienst nicht erreichbar.' };
+  }
+  let data: unknown;
+  try {
+    data = await response.json();
+  } catch {
+    return { status: 'error', message: '3D-Modell-Dienst nicht erreichbar.' };
+  }
+  return parseResponse(data);
+}
+```
+
+### src/infrastructure/inventory/item-model3d-service.ts:117
 
 ```ts
 async function invoke(body: Record<string, unknown>): Promise<FunctionResponse> {
-  const { isHostLibraryEnabled } = await import('../host/host-library-http');
   if (isHostLibraryEnabled()) {
-    throw new Error('3D-Modell-Dienst ist im Host-Modus noch nicht verfügbar.');
+    return invokeHost(body);
   }
   const { data, error } = await supabase.functions.invoke('item-model3d', { body });
   if (error) {
@@ -1804,7 +1847,7 @@ async function invoke(body: Record<string, unknown>): Promise<FunctionResponse> 
 | `src/infrastructure/inventory/inventory-persistence.ts` | `79aaa09053ecd72a0bec8f8f0610b31ab0c9b34779f4a4c87f19f0d2ef7e4ac2` |
 | `src/infrastructure/inventory/item-catalog-service.ts` | `a2164f40d92e9446d8a53ea589841d8d669fc34de045f9f94be92e2bcca4ebff` |
 | `src/infrastructure/inventory/item-catalog.persistence.ts` | `a68903ba909af8030e81d28555a65798800c9a32a790a4281e96f52b1550c566` |
-| `src/infrastructure/inventory/item-model3d-service.ts` | `cbf9eb726d58bd20ae3c43c6364771c6ebd8ef21bbcc4575197f6fe67d311035` |
+| `src/infrastructure/inventory/item-model3d-service.ts` | `a2b20eec8c22bc9a171f65f2bbdc47d7bcc7bb940155e090664dbd7266bd37ea` |
 | `src/infrastructure/inventory/item-thumbnail-service.ts` | `192943a7e10c7da296d33e1bf2c023f244136ed84fcb55f4c7d3a0caa0993f0c` |
 | `src/infrastructure/inventory/supabase-item-catalog.repository.ts` | `1ea1b14afc3d01c117c13e96af516a8cc0a315edfb170a6f1f11c6903ab366eb` |
 | `src/infrastructure/media/optimizer/engines/audio/index.ts` | `7585190a705085692bff0896e08b4d78f791895b47e24d57deeaaa10bb669d4e` |

@@ -173,7 +173,7 @@ try {
 
   // --- Fall 2: thumbnail/model shapes retained ---
   assert(ITEM_THUMBNAIL_PUBLIC_ACTIVATION_AUTHORIZED === true, 'CUT-16 thumbnail activated');
-  assert(ITEM_MODEL3D_PUBLIC_ACTIVATION_AUTHORIZED === false, 'model3d unmounted');
+  assert(ITEM_MODEL3D_PUBLIC_ACTIVATION_AUTHORIZED === true, 'CUT-17 model3d activated');
   assert(ITEM_THUMBNAIL_SIGNED_URL_TTL_SECONDS === 604_800, 'signed URL TTL shape');
   assert(typeof createItemThumbnailStore === 'function', 'thumbnail store factory');
   assert(typeof createItemModel3dStore === 'function', 'model3d store factory');

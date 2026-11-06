@@ -43,13 +43,16 @@ const {
 const { createItemModel3dUseCases } = app;
 const { isEdgeDispatcherAllowed } = allow;
 
-assert(ITEM_MODEL3D_PUBLIC_ACTIVATION_AUTHORIZED === false, 'no public activation');
+assert(ITEM_MODEL3D_PUBLIC_ACTIVATION_AUTHORIZED === true, 'CUT-17 model3d activated');
 assert(isEdgeDispatcherAllowed('item-model3d') === true, 'edge stays allowlisted');
 assert(ITEM_MODEL3D_RATE_LIMIT === 2, 'quota 2');
 assert(ITEM_MODEL3D_SIGNED_URL_TTL_SECONDS === 604_800, 'signed TTL 7d');
 
 const createApp = readFileSync(join(root, 'server/src/api/create-app.ts'), 'utf8');
-assert(!/item-model3d/i.test(createApp), 'no create-app cutover mount');
+assert(/itemModel3d|item-model3d/i.test(createApp), 'create-app wires item model3d CUT-17');
+const routes = readFileSync(join(root, 'server/src/api/item-model3d-routes.ts'), 'utf8');
+assert(routes.includes('/api/v1/items/model3d'), 'action mount present');
+assert(routes.includes('/api/v1/items/:id/model3d/'), 'REST family present');
 
 const OWNER = 'owner-a';
 const WORLD_OWNER = 'world-owner';
@@ -122,14 +125,14 @@ assert(store.providerCreates === 0, 'upload does not charge provider');
 
 // --- Fall 2: generate quota 2/60s; 3rd 429; store down 500; config uncharged ---
 const cfgBefore = store.quota.get(OWNER)?.count ?? 0;
-uc.config(actor(OWNER));
+await uc.config(actor(OWNER));
 assert((store.quota.get(OWNER)?.count ?? 0) === cfgBefore, 'config uncharged');
 
-const g1 = uc.generate(actor(OWNER), 'def-personal');
+const g1 = await uc.generate(actor(OWNER), 'def-personal');
 assert(g1.status === 'ok' && g1.jobStatus === 'waiting', 'generate 1');
-const g2 = uc.generate(actor(OWNER), 'def-personal');
+const g2 = await uc.generate(actor(OWNER), 'def-personal');
 assert(g2.status === 'ok', 'generate 2');
-const g3 = uc.generate(actor(OWNER), 'def-personal');
+const g3 = await uc.generate(actor(OWNER), 'def-personal');
 assert(g3.status === 'error' && g3.httpStatus === 429 && g3.code === 'RATE_LIMIT', '3rd → 429');
 assert(store.providerCreates === 2, 'only 2 paid creates');
 
@@ -137,12 +140,12 @@ const down = createItemModel3dStore(true);
 seedStore(down);
 down.persistentQuotaAvailable = false;
 const downUc = createItemModel3dUseCases(down);
-const gDown = downUc.generate(actor(OWNER), 'def-personal');
+const gDown = await downUc.generate(actor(OWNER), 'def-personal');
 assert(gDown.httpStatus === 500 && down.providerCreates === 0, 'quota store down → 500 before create');
 
 const noMeshy = createItemModel3dStore(false);
 seedStore(noMeshy);
-const noCfg = createItemModel3dUseCases(noMeshy).generate(actor(OWNER), 'def-personal');
+const noCfg = await createItemModel3dUseCases(noMeshy).generate(actor(OWNER), 'def-personal');
 assert(noCfg.status === 'not-configured' && noCfg.httpStatus === 503, 'not-configured 503');
 
 // empty thumbnail suffix → THUMBNAIL_REQUIRED (no paid create)
@@ -150,7 +153,7 @@ const emptyThumb = createItemModel3dStore(true);
 seedStore(emptyThumb);
 emptyThumb.definitions.get('def-personal').payload.assetKey = 'thumbnail2d:';
 const emptyThumbUc = createItemModel3dUseCases(emptyThumb);
-const emptyGen = emptyThumbUc.generate(actor(OWNER), 'def-personal');
+const emptyGen = await emptyThumbUc.generate(actor(OWNER), 'def-personal');
 assert(
   emptyGen.code === 'THUMBNAIL_REQUIRED' && emptyThumb.providerCreates === 0,
   'empty thumb suffix',
@@ -170,7 +173,7 @@ assert(uc.status(actor(OWNER), '').httpStatus === 400, 'empty jobId 400');
 const pollStore = createItemModel3dStore(true);
 seedStore(pollStore);
 const pollUc = createItemModel3dUseCases(pollStore);
-const pj = pollUc.generate(actor(OWNER), 'def-personal');
+const pj = await pollUc.generate(actor(OWNER), 'def-personal');
 pollStore.jobs.get(pj.jobId).providerPollStatus = 'in_progress';
 const mid = pollUc.status(actor(OWNER), pj.jobId);
 assert(mid.jobStatus === 'in_progress', 'provider still running');
@@ -180,7 +183,7 @@ const badHost = pollUc.status(actor(OWNER), pj.jobId);
 assert(badHost.jobStatus === 'failed', 'off-allowlist never materializes');
 
 // --- Fall 3: unions + latest null + signed TTL ---
-assert(uc.config(actor(OWNER)).maxBytes === ITEM_MODEL3D_MAX_BYTES, 'config maxBytes');
+assert((await uc.config(actor(OWNER))).maxBytes === ITEM_MODEL3D_MAX_BYTES, 'config maxBytes');
 const latestEmptyStore = createItemModel3dStore(true);
 seedStore(latestEmptyStore);
 const latestNull = createItemModel3dUseCases(latestEmptyStore).latestJob(
@@ -194,7 +197,7 @@ assert(String(upOwner.signedUrl).includes(String(ITEM_MODEL3D_SIGNED_URL_TTL_SEC
 const claimStore = createItemModel3dStore(true);
 seedStore(claimStore);
 const claimUc = createItemModel3dUseCases(claimStore);
-const started = claimUc.generate(actor(OWNER), 'def-personal');
+const started = await claimUc.generate(actor(OWNER), 'def-personal');
 const a = claimUc.status(actor(OWNER), started.jobId, 'poller-a');
 const b = claimUc.status(actor(OWNER), started.jobId, 'poller-b');
 assert(a.status === 'ok' && a.jobStatus === 'succeeded', 'claimer succeeds');
@@ -261,4 +264,4 @@ assert(
   '70MiB+ header 413',
 );
 
-console.log('PASS: mig-409 item-model3d host isolated-contract (no cutover)');
+console.log('PASS: mig-409 item-model3d host isolated-contract + CUT-17 activation');

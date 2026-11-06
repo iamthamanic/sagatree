@@ -109,6 +109,10 @@ import {
   type ItemThumbnailUseCases,
 } from '../application/item-thumbnail/index.ts';
 import {
+  createItemModel3dUseCases,
+  type ItemModel3dUseCases,
+} from '../application/item-model3d/index.ts';
+import {
   analyzeLookReferencesWithVision,
   createLookReferenceMediaStore,
   createLookReferenceRateLimitStore,
@@ -120,6 +124,11 @@ import {
   seedItemThumbnailDefinition,
   type ItemThumbnailStore,
 } from '../modules/inventory/item-thumbnail.ts';
+import {
+  createItemModel3dStore,
+  seedItemModel3dDefinition,
+  type ItemModel3dStore,
+} from '../modules/inventory/item-model3d.ts';
 import {
   createSqliteCharacterLoreStore,
   resolveCharacterLoreRateLimit,
@@ -453,8 +462,10 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
           : undefined,
       });
 
-    const meshyConfigured =
-      Boolean(env.MESHY_API_KEY?.trim()) || env.ITEM_THUMBNAIL_MESHY_MOCK === '1';
+    const meshyMockMode =
+      env.ITEM_THUMBNAIL_MESHY_MOCK === '1' || env.ITEM_MODEL3D_MESHY_MOCK === '1';
+    const meshyEnvConfigured = Boolean(env.MESHY_API_KEY?.trim());
+    const meshyConfigured = meshyMockMode || meshyEnvConfigured;
     let itemThumbnailAssetBase = 'http://127.0.0.1/assets';
     try {
       if (env.MESHY_ASSET_BASE_URL?.trim()) {
@@ -469,6 +480,13 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
     // Use-cases created after `assets` ports exist — see below.
     let itemThumbnail: ItemThumbnailUseCases = createItemThumbnailUseCases({
       store: itemThumbnailStore,
+    });
+    // Model3d store meshyConfigured tracks mock path for isolated generate; BYOK resolved in use-cases.
+    const itemModel3dStore: ItemModel3dStore = createItemModel3dStore(meshyMockMode);
+    let itemModel3d: ItemModel3dUseCases = createItemModel3dUseCases({
+      store: itemModel3dStore,
+      meshyMockMode,
+      meshyEnvConfigured,
     });
 
     async function resolveSessionRecapProviderForUser(userId: string) {
@@ -699,11 +717,46 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
     const authHandlerRef: { current: ReturnType<typeof wrapCookieAuthHandler> | null } = {
       current: null,
     };
-    // Rebind thumbnail use-cases with durable AssetPorts (Codex P1).
+    // Rebind thumbnail / model3d use-cases with durable AssetPorts (Codex P1).
     itemThumbnail = createItemThumbnailUseCases({
       store: itemThumbnailStore,
       assets,
       publicOrigin: `http://127.0.0.1:${config.port}`,
+    });
+    itemModel3d = createItemModel3dUseCases({
+      store: itemModel3dStore,
+      assets,
+      publicOrigin: `http://127.0.0.1:${config.port}`,
+      meshyMockMode,
+      meshyEnvConfigured,
+      resolveUserMeshyConfigured: async (actor) => {
+        try {
+          // Meshy catalog modalities include image + 3d; null modality returns full catalog.
+          const listed = await ai.listCredentials(actor);
+          if (!listed.ok || !listed.value?.providers) return false;
+          return listed.value.providers.some(
+            (p) => p.providerId === 'meshy' && p.configured === true,
+          );
+        } catch {
+          return false;
+        }
+      },
+      persistModel3dKey: (actorIds, definitionId, model3d) => {
+        if (!inventory?.getDefinition || !inventory?.updateDefinition) return;
+        const loaded = inventory.getDefinition(actorIds, definitionId);
+        if (!loaded.ok || !loaded.value) return;
+        const def = loaded.value;
+        const nextPayload = { ...def.payload };
+        if (model3d === null) {
+          delete nextPayload.model3d;
+        } else {
+          nextPayload.model3d = model3d;
+        }
+        inventory.updateDefinition(actorIds, definitionId, {
+          name: def.name,
+          payload: nextPayload,
+        });
+      },
     });
 
     const ensureItemThumbnailDefinition = (
@@ -774,6 +827,66 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
       });
     };
 
+    const ensureItemModel3dDefinition = (
+      actor: import('../modules/identity/index.ts').Actor,
+      definitionId: string,
+    ): void => {
+      if (!definitionId || itemModel3dStore.definitions.has(definitionId)) return;
+      if (!inventory?.getDefinition) return;
+      const actorIds = [actor.actorId];
+      if (actor.kind === 'remote-account' && Array.isArray(actor.linkedSoloActorIds)) {
+        for (const id of actor.linkedSoloActorIds) {
+          if (typeof id === 'string' && id.length > 0) actorIds.push(id);
+        }
+      }
+      const loaded = inventory.getDefinition(actorIds, definitionId);
+      if (!loaded.ok || !loaded.value) return;
+      const def = loaded.value;
+      if (def.origin === 'standard') return;
+
+      if (def.origin === 'world') {
+        if (!def.worldProfileId || !world?.canEditWorld) return;
+        if (!world.canEditWorld(actorIds, def.worldProfileId)) return;
+        const worldOwner =
+          typeof def.ownerUserId === 'string' &&
+          def.ownerUserId.length > 0 &&
+          actorIds.includes(def.ownerUserId)
+            ? def.ownerUserId
+            : actorIds.find((id) => world.canEditWorld([id], def.worldProfileId!));
+        if (!worldOwner) return;
+        seedItemModel3dDefinition(itemModel3dStore, {
+          id: def.id,
+          scope: 'world',
+          ownerUserId: worldOwner,
+          worldProfileId: def.worldProfileId,
+          status: def.status === 'archived' ? 'archived' : 'active',
+          payload: {
+            model3d:
+              typeof def.payload.model3d === 'string' ? def.payload.model3d : undefined,
+            assetKey:
+              typeof def.payload.assetKey === 'string' ? def.payload.assetKey : undefined,
+          },
+        });
+        return;
+      }
+
+      if (typeof def.ownerUserId !== 'string' || !actorIds.includes(def.ownerUserId)) {
+        return;
+      }
+      seedItemModel3dDefinition(itemModel3dStore, {
+        id: def.id,
+        scope: 'personal',
+        ownerUserId: def.ownerUserId,
+        worldProfileId: null,
+        status: def.status === 'archived' ? 'archived' : 'active',
+        payload: {
+          model3d: typeof def.payload.model3d === 'string' ? def.payload.model3d : undefined,
+          assetKey:
+            typeof def.payload.assetKey === 'string' ? def.payload.assetKey : undefined,
+        },
+      });
+    };
+
     const handler = createRouteHandler({
       health,
       ops,
@@ -794,6 +907,8 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
       sessionRecapGenerate,
       itemThumbnail,
       ensureItemThumbnailDefinition,
+      itemModel3d,
+      ensureItemModel3dDefinition,
       character,
       world,
       npcCreature,

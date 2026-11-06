@@ -22,7 +22,7 @@ German UX, or throw unavailable — never hang on PostgREST/Edge.
 | Session outcome promote | `session-outcome-promotion-service.ts` | Info | Soft `{ ok: false, messageDe }`; no Edge required |
 | Look reference Edge analysis | `look-reference-analysis-service.ts` | Info | DONE (CUT-15) — host `/api/v1/looks/reference-analysis`; Look CRUD is host |
 | Item thumbnail Edge | `item-thumbnail-service.ts` | Info | DONE (CUT-16) — host `/api/v1/items/thumbnail` + AssetPorts; dual-path Edge until CUT-20 |
-| Item model3d Edge | `item-model3d-service.ts` | Info | Soft German unavailable; inventory CRUD is host |
+| Item model3d Edge | `item-model3d-service.ts` | Info | DONE (CUT-17) — host `/api/v1/items/model3d` + AssetPorts; dual-path Edge until CUT-20 |
 | Session media token Edge | `media-token-client.ts` | Info | Soft `degraded: true`; live media optional |
 | Character lore AI Edge | `character-lore-service.ts` | Info | Soft German unavailable; optional AI |
 | Session recap AI generate | `session-recap-ai-service.ts` `generateDraft` | Info | Soft German unavailable; manual save is host |
