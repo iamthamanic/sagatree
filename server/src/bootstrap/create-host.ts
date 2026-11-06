@@ -733,10 +733,16 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
       current: null,
     };
     // Rebind thumbnail / model3d use-cases with durable AssetPorts (Codex P1).
+    // Prefer Better Auth public origin; fall back to same-origin relative asset URLs.
+    const assetPublicOrigin =
+      config.auth?.baseURL?.replace(/\/$/, '') ||
+      (config.host && config.port
+        ? `http://${config.host === '0.0.0.0' ? '127.0.0.1' : config.host}:${config.port}`
+        : '');
     itemThumbnail = createItemThumbnailUseCases({
       store: itemThumbnailStore,
       assets,
-      publicOrigin: `http://127.0.0.1:${config.port}`,
+      publicOrigin: assetPublicOrigin,
     });
     const resolveUserMeshyConfigured = async (
       actor: import('../modules/identity/index.ts').Actor,
@@ -755,7 +761,7 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
     itemModel3d = createItemModel3dUseCases({
       store: itemModel3dStore,
       assets,
-      publicOrigin: `http://127.0.0.1:${config.port}`,
+      publicOrigin: assetPublicOrigin,
       meshyMockMode,
       meshyEnvConfigured,
       resolveUserMeshyConfigured,
@@ -779,7 +785,7 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
     characterAvatarMeshy = createCharacterAvatarMeshyUseCases({
       store: characterAvatarMeshyStore,
       assets,
-      publicOrigin: `http://127.0.0.1:${config.port}`,
+      publicOrigin: assetPublicOrigin,
       meshyMockMode,
       meshyEnvConfigured,
       resolveUserMeshyConfigured,

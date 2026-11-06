@@ -163,8 +163,8 @@ try {
 
   // --- Fall 2: meshy/lore shapes retained; rendering stays client-side ---
   assert(
-    CHARACTER_AVATAR_MESHY_PUBLIC_ACTIVATION_AUTHORIZED === false,
-    'meshy edge stays unmounted (shape retained in module)',
+    CHARACTER_AVATAR_MESHY_PUBLIC_ACTIVATION_AUTHORIZED === true,
+    'CUT-18 meshy host activation authorized (Edge retained until CUT-20)',
   );
   assert(
     CHARACTER_LORE_PUBLIC_ACTIVATION_AUTHORIZED === true,
