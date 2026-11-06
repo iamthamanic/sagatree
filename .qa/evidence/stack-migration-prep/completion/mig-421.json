@@ -3,7 +3,7 @@
   "kind": "migration-acceptance",
   "localId": "MIG-421",
   "result": "PASS",
-  "testedCommit": "16aee66cc0912f152c4479ae06a7cf89b922e0a1",
+  "testedCommit": "067e781878677efef21f9ac460125f08d666c0bb",
   "githubClosed": true,
   "mergeRef": "PR #1028 → main (#837)",
   "note": "session-recap isolated host port; CUT-14 activates public generate; Edge remains allowlisted.",
