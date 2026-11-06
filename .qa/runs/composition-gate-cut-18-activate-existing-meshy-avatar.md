@@ -1,6 +1,6 @@
 # Composition Gate — cut-18-activate-existing-meshy-avatar (#1153)
 
-- HEAD_SHA: 1a77e7e0f009082088fc368bc1d7a07355afa9bd
+- HEAD_SHA: ed588839a429aedf2e602ac9f1c42ad81a697657
 - BASE_SHA: b42f1de0a282bcdea8e39569e61a20e85f588141
 - Date: 2026-11-06
 - Verdict: CLEAR
