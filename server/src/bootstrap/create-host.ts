@@ -466,7 +466,10 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
     const itemThumbnailStore: ItemThumbnailStore = createItemThumbnailStore(meshyConfigured, {
       assetBaseUrl: itemThumbnailAssetBase,
     });
-    const itemThumbnail: ItemThumbnailUseCases = createItemThumbnailUseCases(itemThumbnailStore);
+    // Use-cases created after `assets` ports exist — see below.
+    let itemThumbnail: ItemThumbnailUseCases = createItemThumbnailUseCases({
+      store: itemThumbnailStore,
+    });
 
     async function resolveSessionRecapProviderForUser(userId: string) {
       // Codex P2: honor per-user AI → Organize prefs before server env fallback.
@@ -696,6 +699,13 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
     const authHandlerRef: { current: ReturnType<typeof wrapCookieAuthHandler> | null } = {
       current: null,
     };
+    // Rebind thumbnail use-cases with durable AssetPorts (Codex P1).
+    itemThumbnail = createItemThumbnailUseCases({
+      store: itemThumbnailStore,
+      assets,
+      publicOrigin: `http://127.0.0.1:${config.port}`,
+    });
+
     const ensureItemThumbnailDefinition = (
       actor: import('../modules/identity/index.ts').Actor,
       definitionId: string,
@@ -712,15 +722,47 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
       if (!loaded.ok || !loaded.value) return;
       const def = loaded.value;
       if (def.origin === 'standard') return;
-      const ownerUserId =
-        def.origin === 'personal'
-          ? def.ownerUserId ?? actor.actorId
-          : def.ownerUserId ?? actor.actorId;
+
+      if (def.origin === 'world') {
+        // Codex P1: readers must not become world owners — require edit authority.
+        // canEditWorld ≡ world owner; pick the linked id that owns the world (never invent).
+        if (!def.worldProfileId || !world?.canEditWorld) return;
+        if (!world.canEditWorld(actorIds, def.worldProfileId)) return;
+        const worldOwner =
+          typeof def.ownerUserId === 'string' &&
+          def.ownerUserId.length > 0 &&
+          actorIds.includes(def.ownerUserId)
+            ? def.ownerUserId
+            : actorIds.find((id) => world.canEditWorld([id], def.worldProfileId!));
+        if (!worldOwner) return;
+        seedItemThumbnailDefinition(itemThumbnailStore, {
+          id: def.id,
+          scope: 'world',
+          ownerUserId: worldOwner,
+          worldProfileId: def.worldProfileId,
+          status: def.status === 'archived' ? 'archived' : 'active',
+          payload: {
+            assetKey:
+              typeof def.payload.assetKey === 'string' ? def.payload.assetKey : undefined,
+            name: def.name,
+            description:
+              typeof def.payload.description === 'string'
+                ? def.payload.description
+                : undefined,
+          },
+        });
+        return;
+      }
+
+      // personal
+      if (typeof def.ownerUserId !== 'string' || !actorIds.includes(def.ownerUserId)) {
+        return;
+      }
       seedItemThumbnailDefinition(itemThumbnailStore, {
         id: def.id,
-        scope: def.origin === 'world' ? 'world' : 'personal',
-        ownerUserId,
-        worldProfileId: def.worldProfileId,
+        scope: 'personal',
+        ownerUserId: def.ownerUserId,
+        worldProfileId: null,
         status: def.status === 'archived' ? 'archived' : 'active',
         payload: {
           assetKey:

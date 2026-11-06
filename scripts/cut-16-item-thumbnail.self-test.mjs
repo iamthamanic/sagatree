@@ -206,6 +206,14 @@ try {
   assert(upload.res.status === 200 && upload.json?.status === 'ok', `upload ${upload.text}`);
   assert(typeof upload.json?.assetKey === 'string', 'assetKey');
   assert(typeof upload.json?.signedUrl === 'string', 'signedUrl');
+  assert(
+    String(upload.json.signedUrl).includes('/api/v1/assets/'),
+    `durable asset URL ${upload.json.signedUrl}`,
+  );
+  const assetGet = await fetch(String(upload.json.signedUrl), {
+    headers: { cookie: ownerCookie, Origin: baseURL },
+  });
+  assert(assetGet.status === 200, `asset GET ${assetGet.status}`);
 
   const foreignUpload = await httpJson(baseURL, '/api/v1/items/thumbnail', {
     method: 'POST',

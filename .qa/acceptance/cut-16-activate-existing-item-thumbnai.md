@@ -43,3 +43,6 @@ CLEAR — see `.qa/runs/composition-gate-cut-16-activate-existing-item-thumbnai.
 - Action POST `/api/v1/items/thumbnail` + REST family under `/api/v1/items/:id/thumbnail/*`.
 - Soft-DENY removed; Edge retained until CUT-20.
 - Definitions hydrated from inventory ports into in-memory thumbnail store.
+- Upload/status materialize publish durable bytes via AssetPorts (`/api/v1/assets/...`).
+- World hydrate requires `canEditWorld`; owner derived from world-owner actor id (not readers).
+- Linked solo actor ids authorized across upload/generate/status/resolve/remove.
