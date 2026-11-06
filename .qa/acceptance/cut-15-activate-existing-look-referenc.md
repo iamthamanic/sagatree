@@ -43,3 +43,6 @@ Existing Look Adaption and image reference selection unchanged.
 - Vision provider: `LOOK_AI_*` with `CHARACTER_AI_*` fallback (Edge parity).
 - Soft-DENY removed when `isHostLibraryEnabled()`; Edge retained until CUT-20.
 - LookProfile HTTP mount remains deferred (MIG-600); no auto-persist of LookDraft.
+
+## Composition Gate
+CLEAR — see `.qa/runs/composition-gate-cut-15-activate-existing-look-referenc.md`.
