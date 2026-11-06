@@ -1663,6 +1663,19 @@ function checkCut17ItemModel3d() {
   console.log('OK: cut-17-item-model3d.self-test');
 }
 
+function checkCut18MeshyAvatar() {
+  console.log('CUT-18 meshy-avatar (#1153): host config/start/poll/retry...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/cut-18-meshy-avatar.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+  console.log('OK: cut-18-meshy-avatar.self-test');
+}
+
 function checkMig312UserProfileAdapter() {
   console.log('MIG-312 user-profile adapter (#811): user_profiles + user-avatars dual-path...');
   execFileSync(
@@ -3897,6 +3910,7 @@ checkCut14SessionRecapGenerate();
 checkCut15LookReference();
 checkCut16ItemThumbnail();
 checkCut17ItemModel3d();
+checkCut18MeshyAvatar();
 checkMig312UserProfileAdapter();
 checkMig309Rulesets();
 checkMig313WorldAdapter();

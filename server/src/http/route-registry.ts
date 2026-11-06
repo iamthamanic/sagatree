@@ -94,6 +94,8 @@ export type RouteRegistryDeps = {
   readonly characterLore?: CharacterLoreUseCases;
   /** CUT-15 look reference analysis. */
   readonly lookReferenceAnalysis?: import('../application/look-reference-analysis/index.ts').LookReferenceAnalysisUseCases;
+  /** CUT-18 character avatar Meshy. */
+  readonly characterAvatarMeshy?: import('../application/character-avatar-meshy/index.ts').CharacterAvatarMeshyUseCases;
   /** CUT-14 session-recap AI generate. */
   readonly sessionRecapGenerate?: import('../application/session-recap/index.ts').SessionRecapGenerateUseCases;
   /** CUT-16 item thumbnail. */
@@ -176,6 +178,7 @@ export function createRouteHandler(deps: RouteRegistryDeps) {
     aiOllama: deps.aiOllama,
     characterLore: deps.characterLore,
     lookReferenceAnalysis: deps.lookReferenceAnalysis,
+    characterAvatarMeshy: deps.characterAvatarMeshy,
     sessionRecapGenerate: deps.sessionRecapGenerate,
     itemThumbnail: deps.itemThumbnail,
     ensureItemThumbnailDefinition: deps.ensureItemThumbnailDefinition,

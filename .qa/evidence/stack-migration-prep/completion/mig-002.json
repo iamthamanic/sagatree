@@ -4,8 +4,8 @@
   "localId": "MIG-002",
   "result": "PASS",
   "githubClosed": true,
-  "mergeRef": "PR #860 → main (after #782)",
-  "note": "Inventories refreshed after CUT-17 item-model3d activation.",
+  "mergeRef": "PR #860 \u2192 main (after #782)",
+  "note": "Inventories refreshed after CUT-18 character-avatar-meshy activation.",
   "checks": [
     {
       "command": "legacy inventory matrix",
@@ -23,8 +23,8 @@
       "command": "edge/infra inventory 25+13",
       "result": "PASS",
       "evidenceFile": ".qa/intake/edge-infra-contracts/inventory.json",
-      "sha256": "60bdcb703540fa993e7ba15973a9002297f10dbf8d48a40778c4853c8b034f5b"
+      "sha256": "a1899875bf648087ec5bc3fbfb1f123953b8080d674dfa4e64861e0b99237982"
     }
   ],
-  "testedCommit": "79f9f63de5b56d043c51b184bb2144120025ee42"
+  "testedCommit": "487d1003461dc32c0b4ef639885142123cf29cac"
 }

@@ -102,7 +102,7 @@ const envExample = readFileSync(join(root, '.env.example'), 'utf8');
 assert(/FE-HOST-09 host-first/.test(envExample), '.env.example host-first');
 assert(/VITE_SAGATREE_HOST_LIBRARY=0/.test(envExample), '.env.example opt-out');
 
-// CUT-16/17: item-thumbnail + item-model3d Soft-DENY removed — host dual-path.
+// CUT-16/17/18: item-thumbnail + item-model3d + avatar-meshy Soft-DENY removed — host dual-path.
 {
   const thumbSrc = readFileSync(
     join(root, 'src/infrastructure/inventory/item-thumbnail-service.ts'),
@@ -121,11 +121,19 @@ assert(/VITE_SAGATREE_HOST_LIBRARY=0/.test(envExample), '.env.example opt-out');
   assert(/isHostLibraryEnabled\(\)/.test(modelSrc), 'model3d host-first gate');
   assert(/\/api\/v1\/items\/model3d/.test(modelSrc), 'model3d host route');
 }
+{
+  const avatarSrc = readFileSync(
+    join(root, 'src/infrastructure/character/avatar/character-avatar-meshy-service.ts'),
+    'utf8',
+  );
+  assert(!/ohne Meshy-Edge nicht verfügbar/.test(avatarSrc), 'avatar Soft-DENY removed');
+  assert(/isHostLibraryEnabled\(\)/.test(avatarSrc), 'avatar host-first gate');
+  assert(/\/api\/v1\/ai\/character-avatar-meshy/.test(avatarSrc), 'avatar host route');
+}
 
 for (const [file, needle] of [
   ['src/infrastructure/session/media/media-token-client.ts', 'Host-Modus noch nicht verfügbar'],
   ['src/infrastructure/saga/saga-definition-service.ts', 'assertHostProductSurfaceAvailable'],
-  ['src/infrastructure/character/avatar/character-avatar-meshy-service.ts', 'Avatar-3D-Generierung ist im Host-Modus ohne Meshy-Edge nicht verfügbar.'],
   ['src/infrastructure/ai/host-ai-invoke.ts', 'isHostLibraryEnabled'],
   ['src/infrastructure/project/project-service.ts', 'assertHostProductSurfaceAvailable'],
   ['src/infrastructure/project/project-service.ts', 'createHostProjectSession'],

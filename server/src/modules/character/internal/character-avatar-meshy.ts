@@ -6,8 +6,23 @@
  * quota/idempotency/claim fixtures. No public activation / cutover in this slice.
  */
 
-/** Explicit: no automatic host/public cutover (successor + MIG-600 still required). */
-export const CHARACTER_AVATAR_MESHY_PUBLIC_ACTIVATION_AUTHORIZED = false as const;
+/** CUT-18 / #1153 — host HTTP activation authorized; Edge remains until CUT-20. */
+export const CHARACTER_AVATAR_MESHY_PUBLIC_ACTIVATION_AUTHORIZED = true as const;
+
+/**
+ * Minimal valid GLB 2.0 (empty scene/node) for mock materialize.
+ * GLTFLoader-parseable — not a header-only stub.
+ */
+export const CHARACTER_AVATAR_MESHY_FIXTURE_GLB = new Uint8Array([
+  103, 108, 84, 70, 2, 0, 0, 0, 96, 0, 0, 0, 76, 0, 0, 0, 74, 83, 79, 78, 123, 34,
+  97, 115, 115, 101, 116, 34, 58, 123, 34, 118, 101, 114, 115, 105, 111, 110, 34,
+  58, 34, 50, 46, 48, 34, 125, 44, 34, 115, 99, 101, 110, 101, 115, 34, 58, 91,
+  123, 34, 110, 111, 100, 101, 115, 34, 58, 91, 48, 93, 125, 93, 44, 34, 110,
+  111, 100, 101, 115, 34, 58, 91, 123, 125, 93, 44, 34, 115, 99, 101, 110, 101,
+  34, 58, 48, 125, 32,
+]);
+
+export const CHARACTER_AVATAR_MESHY_MIME = 'model/gltf-binary' as const;
 
 export const MESHY_AVATAR_PROMPT_MIN = 8 as const;
 export const MESHY_AVATAR_PROMPT_MAX = 500 as const;
@@ -332,7 +347,6 @@ export function startAvatarMeshyJob(
   store: CharacterAvatarMeshyStore,
   input: StartAvatarMeshyInput,
 ): MeshyAvatarPortsResult<MeshyAvatarJob> {
-  void CHARACTER_AVATAR_MESHY_PUBLIC_ACTIVATION_AUTHORIZED;
   const nonce = validateAvatarMeshyNonce(input.clientNonce);
   if (!nonce.ok) return nonce;
   const provider = validateAvatarMeshyProvider(input.providerId);

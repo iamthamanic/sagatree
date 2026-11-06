@@ -1,10 +1,11 @@
 /**
- * Host HTTP adapters for infrastructure/ai (MIG-301 / #800 + CUT-13 / #1148 + CUT-15 / #1150).
+ * Host HTTP adapters for infrastructure/ai (MIG-301 / #800 + CUT-13 / #1148 + CUT-15 / #1150 + CUT-18 / #1153).
  * Location: server/src/api/ai-routes.ts
  *
  * Action-shaped bodies match Edge `ai-provider-credentials` / `ollama-settings`.
  * Character lore generate-background mounts at POST `/api/v1/ai/character-lore`.
  * Look reference analysis mounts at POST `/api/v1/ai/look-reference-analysis`.
+ * Character avatar Meshy mounts at POST `/api/v1/ai/character-avatar-meshy`.
  */
 import type { Hono } from 'hono';
 import type { Context } from 'hono';
@@ -14,6 +15,7 @@ import type { createAiProviderCredentialsUseCases } from '../application/ai-prov
 import type { createOllamaSettingsUseCases } from '../application/ollama-settings/index.ts';
 import type { CharacterLoreUseCases } from '../application/character-lore/index.ts';
 import type { LookReferenceAnalysisUseCases } from '../application/look-reference-analysis/index.ts';
+import type { CharacterAvatarMeshyUseCases } from '../application/character-avatar-meshy/index.ts';
 import {
   LOOK_REF_MAX_REQUEST_BYTES,
   checkContentLengthEnvelope,
@@ -22,8 +24,12 @@ import {
   CHARACTER_LORE_MAX_REQUEST_BYTES,
   checkCharacterLoreBodySize,
 } from '../modules/character/character-lore.ts';
+import { MESHY_AVATAR_IMAGE_MAX_BYTES } from '../modules/character/character-avatar-meshy.ts';
 import { isLoopbackHost } from '../auth/solo/bind-guard.ts';
 import { authDenyStatus } from './errors.ts';
+
+/** Base64 image data-URI expands ~4/3; allow envelope headroom over decoded max. */
+const AVATAR_MESHY_MAX_REQUEST_BYTES = Math.ceil(MESHY_AVATAR_IMAGE_MAX_BYTES * 1.4) + 64 * 1024;
 
 export type AiHttpDeps = {
   readonly identity: IdentityPorts;
@@ -34,6 +40,8 @@ export type AiHttpDeps = {
   readonly characterLore?: CharacterLoreUseCases;
   /** CUT-15 — look reference vision analysis. */
   readonly lookReferenceAnalysis?: LookReferenceAnalysisUseCases;
+  /** CUT-18 — character avatar Meshy generation. */
+  readonly characterAvatarMeshy?: CharacterAvatarMeshyUseCases;
 };
 
 type JsonBody = Record<string, unknown>;
@@ -513,6 +521,133 @@ export function mountAiHttpRoutes(app: Hono, deps: AiHttpDeps): void {
       return c.json(
         { status: 'error' as const, message: result.message },
         result.httpStatus,
+      );
+    });
+  }
+
+  // CUT-18: character-avatar-meshy (Edge `character-avatar-meshy` parity).
+  if (deps.characterAvatarMeshy?.publicActivationAuthorized) {
+    app.post('/api/v1/ai/character-avatar-meshy', async (c) => {
+      const uc = deps.characterAvatarMeshy;
+      if (!uc) {
+        return c.json(
+          {
+            status: 'error',
+            message:
+              'Avatar-3D-Generierung ist vorübergehend nicht verfügbar. Bitte versuche es später erneut.',
+          },
+          503,
+        );
+      }
+      if (!contentTypeIsJson(c)) {
+        return c.json(
+          { status: 'error', message: 'Content-Type application/json erforderlich.' },
+          415,
+        );
+      }
+      const contentLengthHeader = c.req.header('content-length');
+      if (contentLengthHeader) {
+        const declared = Number(contentLengthHeader);
+        if (Number.isFinite(declared) && declared > AVATAR_MESHY_MAX_REQUEST_BYTES) {
+          return c.json(
+            { status: 'error', message: 'Request-Body ist zu groß.' },
+            413,
+          );
+        }
+      }
+      let rawText = '';
+      try {
+        rawText = await c.req.text();
+      } catch {
+        return c.json({ status: 'error', message: 'Ungültiger Request-Body.' }, 400);
+      }
+      if (Buffer.byteLength(rawText, 'utf8') > AVATAR_MESHY_MAX_REQUEST_BYTES) {
+        return c.json({ status: 'error', message: 'Request-Body ist zu groß.' }, 413);
+      }
+      let body: JsonBody = {};
+      if (rawText.trim().length > 0) {
+        try {
+          const parsed: unknown = JSON.parse(rawText);
+          if (!isRecord(parsed)) {
+            return c.json({ status: 'error', message: 'Ungültiger Request-Body.' }, 400);
+          }
+          body = parsed;
+        } catch {
+          return c.json({ status: 'error', message: 'Ungültiger Request-Body.' }, 400);
+        }
+      }
+      const actorResult = await resolveActor(deps, c.req.raw.headers, body);
+      if (!actorResult.ok) {
+        return c.json(
+          { status: 'error', message: 'Nicht angemeldet.', code: actorResult.error },
+          actorResult.status,
+        );
+      }
+      const action = typeof body.action === 'string' ? body.action.trim() : '';
+      let result;
+      switch (action) {
+        case 'config':
+          result = await uc.httpConfig(actorResult.actor);
+          break;
+        case 'start':
+          result = await uc.httpStart(actorResult.actor, {
+            clientNonce: body.clientNonce,
+            generationMode: body.generationMode,
+            prompt: body.prompt,
+            imageDataUri: body.imageDataUri,
+            texturePrompt: body.texturePrompt,
+            providerId: body.providerId,
+            settings: body.settings,
+          });
+          break;
+        case 'poll':
+          result = await uc.httpPoll(
+            actorResult.actor,
+            typeof body.jobId === 'string' ? body.jobId : '',
+          );
+          break;
+        case 'get':
+          result = await uc.httpGet(
+            actorResult.actor,
+            typeof body.jobId === 'string' ? body.jobId : '',
+          );
+          break;
+        case 'retry':
+          result = await uc.httpRetry(
+            actorResult.actor,
+            typeof body.jobId === 'string' ? body.jobId : '',
+          );
+          break;
+        case 'signStoragePath':
+          result = uc.httpSignStoragePath(
+            actorResult.actor,
+            typeof body.storagePath === 'string' ? body.storagePath : '',
+          );
+          break;
+        default:
+          result = {
+            status: 'error' as const,
+            message: 'Ungültige Aktion.',
+            httpStatus: 400,
+          };
+      }
+      if (result.status === 'ok') {
+        const { httpStatus: _h, ...rest } = result;
+        return c.json(rest, 200);
+      }
+      if (result.status === 'not-configured') {
+        return c.json(
+          { status: 'not-configured' as const, message: result.message },
+          typeof result.httpStatus === 'number' ? result.httpStatus : 503,
+        );
+      }
+      return c.json(
+        {
+          status: 'error' as const,
+          message: result.message,
+          ...(typeof result.code === 'string' ? { code: result.code } : {}),
+        },
+        typeof result.httpStatus === 'number' ? result.httpStatus : 500,
       );
     });
   }

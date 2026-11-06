@@ -45,15 +45,20 @@ const {
 const { createCharacterAvatarMeshyUseCases } = await import(appUrl);
 const { isEdgeDispatcherAllowed } = await import(allowUrl);
 
-assert(CHARACTER_AVATAR_MESHY_PUBLIC_ACTIVATION_AUTHORIZED === false, 'no public activation');
-assert(isEdgeDispatcherAllowed('character-avatar-meshy') === true, 'edge stays allowlisted');
+assert(CHARACTER_AVATAR_MESHY_PUBLIC_ACTIVATION_AUTHORIZED === true, 'CUT-18 activation');
+assert(isEdgeDispatcherAllowed('character-avatar-meshy') === true, 'edge stays allowlisted until CUT-20');
 assert(MESHY_AVATAR_RATE_LIMIT === 2, 'quota 2');
 assert(MESHY_AVATAR_RATE_WINDOW_SECONDS === 60, 'window 60s');
 
 const createApp = readFileSync(join(root, 'server/src/api/create-app.ts'), 'utf8');
 assert(
-  !/character-avatar-meshy/i.test(createApp),
-  'create-app has no avatar-meshy cutover mount',
+  /characterAvatarMeshy/i.test(createApp),
+  'create-app wires avatar-meshy cutover dep',
+);
+const aiRoutes = readFileSync(join(root, 'server/src/api/ai-routes.ts'), 'utf8');
+assert(
+  aiRoutes.includes('/api/v1/ai/character-avatar-meshy'),
+  'ai-routes mounts avatar-meshy',
 );
 
 const owner = actor('owner-a');
@@ -206,4 +211,4 @@ const keyB = buildAvatarMeshyIdempotencyKey({
 });
 assert(keyA === keyB, 'equal-length prompts collide (legacy length key)');
 
-console.log('PASS: mig-404 character-avatar-meshy host isolated-contract (no cutover)');
+console.log('PASS: mig-404 character-avatar-meshy host isolated-contract (CUT-18 activated)');

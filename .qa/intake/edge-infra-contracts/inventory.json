@@ -3098,7 +3098,7 @@
         "sourceFiles": [
           {
             "path": "src/infrastructure/character/avatar/character-avatar-meshy-service.ts",
-            "sha256": "411c8c2cac60cf1904db46caca01e2577fb945949f0e278dbb7747a5911d8fa8"
+            "sha256": "a7f47abccf1f21e7c64a23f70e260bb5247166f8a3b032710994bb9717bf35e2"
           },
           {
             "path": "supabase/functions/_shared/ai-provider-crypto.ts",
@@ -3405,8 +3405,8 @@
           "kind": "edge",
           "name": "character-avatar-meshy",
           "path": "src/infrastructure/character/avatar/character-avatar-meshy-service.ts",
-          "line": 99,
-          "endLine": 99,
+          "line": 121,
+          "endLine": 121,
           "resolution": "literal-or-constant",
           "expression": "supabase.functions.invoke('character-avatar-meshy', { body })",
           "chain": "supabase.functions.invoke('character-avatar-meshy', { body })",
@@ -3416,9 +3416,9 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/character/avatar/character-avatar-meshy-service.ts",
-            "line": 90,
-            "endLine": 104,
-            "text": "async function invoke(body: Record<string, unknown>): Promise<FunctionResponse> {\n  // FE-HOST-14: optional Meshy remains Edge-legacy; host-first returns soft unavailable\n  // (config/generate callers already tolerate status=error / meshyConfigured=false).\n  if (isHostLibraryEnabled()) {\n    return {\n      status: 'error',\n      message: 'Avatar-3D-Generierung ist im Host-Modus ohne Meshy-Edge nicht verfügbar.',\n    };\n  }\n  const { data, error } = await supabase.functions.invoke('character-avatar-meshy', { body });\n  if (error) {\n    return { status: 'error', message: error.message || 'Edge Function fehlgeschlagen.' };\n  }\n  return parseResponse(data);\n}"
+            "line": 117,
+            "endLine": 126,
+            "text": "async function invoke(body: Record<string, unknown>): Promise<FunctionResponse> {\n  if (isHostLibraryEnabled()) {\n    return invokeHost(body);\n  }\n  const { data, error } = await supabase.functions.invoke('character-avatar-meshy', { body });\n  if (error) {\n    return { status: 'error', message: error.message || 'Edge Function fehlgeschlagen.' };\n  }\n  return parseResponse(data);\n}"
           }
         }
       ],
@@ -30143,7 +30143,7 @@
           },
           {
             "path": "src/infrastructure/character/avatar/character-avatar-meshy-service.ts",
-            "sha256": "411c8c2cac60cf1904db46caca01e2577fb945949f0e278dbb7747a5911d8fa8"
+            "sha256": "a7f47abccf1f21e7c64a23f70e260bb5247166f8a3b032710994bb9717bf35e2"
           },
           {
             "path": "src/infrastructure/character/avatar/character-studio-manifest.ts",
@@ -30491,7 +30491,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-character.json",
-      "sourceContractSha256": "87c4fcc383bbd5d50082e63af83f3dda2b66486054b7facb3baada2e61480146",
+      "sourceContractSha256": "1d2ac63830d51b00339dd39c54abb687e3b26af671abc7234ce70420b6ba9a47",
       "rpcUsed": [],
       "tablesTouched": [
         "character_adventure_arcs",
@@ -31044,6 +31044,26 @@
             "line": 52,
             "endLine": 64,
             "text": "async function tryFetchSourceMeshBytes(url: string | undefined): Promise<Uint8Array | undefined> {\n  if (!url) return undefined;\n  try {\n    const response = await fetch(url, {\n      credentials: usesHostAssetCredentials(url) ? 'include' : 'omit',\n    });\n    if (!response.ok) return undefined;\n    const buffer = await response.arrayBuffer();\n    return new Uint8Array(buffer);\n  } catch {\n    return undefined;\n  }\n}"
+          }
+        },
+        {
+          "kind": "fetch",
+          "name": null,
+          "path": "src/infrastructure/character/avatar/character-avatar-meshy-service.ts",
+          "line": 99,
+          "endLine": 104,
+          "resolution": "dynamic-expression",
+          "expression": "fetch(`${base}/api/v1/ai/character-avatar-meshy`, {\n      method: 'POST',\n      credentials: 'include',\n      headers: { Accept: 'application/json', 'content-type': 'application/json' },\n      body: JSON.stringify(body),\n    })",
+          "chain": "fetch(`${base}/api/v1/ai/character-avatar-meshy`, {\n      method: 'POST',\n      credentials: 'include',\n      headers: { Accept: 'application/json', 'content-type': 'application/json' },\n      body: JSON.stringify(body),\n    })",
+          "arguments": [
+            "`${base}/api/v1/ai/character-avatar-meshy`",
+            "{\n      method: 'POST',\n      credentials: 'include',\n      headers: { Accept: 'application/json', 'content-type': 'application/json' },\n      body: JSON.stringify(body),\n    }"
+          ],
+          "enclosingOperation": {
+            "path": "src/infrastructure/character/avatar/character-avatar-meshy-service.ts",
+            "line": 92,
+            "endLine": 115,
+            "text": "async function invokeHost(body: Record<string, unknown>): Promise<FunctionResponse> {\n  const base = getHostAuthBaseUrl()?.replace(/\\/$/, '') ?? '';\n  if (!base) {\n    return { status: 'error', message: 'Avatar-3D-Dienst nicht erreichbar.' };\n  }\n  let response: Response;\n  try {\n    response = await fetch(`${base}/api/v1/ai/character-avatar-meshy`, {\n      method: 'POST',\n      credentials: 'include',\n      headers: { Accept: 'application/json', 'content-type': 'application/json' },\n      body: JSON.stringify(body),\n    });\n  } catch {\n    return { status: 'error', message: 'Avatar-3D-Dienst nicht erreichbar.' };\n  }\n  let data: unknown;\n  try {\n    data = await response.json();\n  } catch {\n    return { status: 'error', message: 'Avatar-3D-Dienst nicht erreichbar.' };\n  }\n  return parseResponse(data);\n}"
           }
         },
         {
@@ -31702,11 +31722,31 @@
           }
         },
         {
+          "kind": "fetch",
+          "name": null,
+          "path": "src/infrastructure/character/avatar/character-avatar-meshy-service.ts",
+          "line": 99,
+          "endLine": 104,
+          "resolution": "dynamic-expression",
+          "expression": "fetch(`${base}/api/v1/ai/character-avatar-meshy`, {\n      method: 'POST',\n      credentials: 'include',\n      headers: { Accept: 'application/json', 'content-type': 'application/json' },\n      body: JSON.stringify(body),\n    })",
+          "chain": "fetch(`${base}/api/v1/ai/character-avatar-meshy`, {\n      method: 'POST',\n      credentials: 'include',\n      headers: { Accept: 'application/json', 'content-type': 'application/json' },\n      body: JSON.stringify(body),\n    })",
+          "arguments": [
+            "`${base}/api/v1/ai/character-avatar-meshy`",
+            "{\n      method: 'POST',\n      credentials: 'include',\n      headers: { Accept: 'application/json', 'content-type': 'application/json' },\n      body: JSON.stringify(body),\n    }"
+          ],
+          "enclosingOperation": {
+            "path": "src/infrastructure/character/avatar/character-avatar-meshy-service.ts",
+            "line": 92,
+            "endLine": 115,
+            "text": "async function invokeHost(body: Record<string, unknown>): Promise<FunctionResponse> {\n  const base = getHostAuthBaseUrl()?.replace(/\\/$/, '') ?? '';\n  if (!base) {\n    return { status: 'error', message: 'Avatar-3D-Dienst nicht erreichbar.' };\n  }\n  let response: Response;\n  try {\n    response = await fetch(`${base}/api/v1/ai/character-avatar-meshy`, {\n      method: 'POST',\n      credentials: 'include',\n      headers: { Accept: 'application/json', 'content-type': 'application/json' },\n      body: JSON.stringify(body),\n    });\n  } catch {\n    return { status: 'error', message: 'Avatar-3D-Dienst nicht erreichbar.' };\n  }\n  let data: unknown;\n  try {\n    data = await response.json();\n  } catch {\n    return { status: 'error', message: 'Avatar-3D-Dienst nicht erreichbar.' };\n  }\n  return parseResponse(data);\n}"
+          }
+        },
+        {
           "kind": "edge",
           "name": "character-avatar-meshy",
           "path": "src/infrastructure/character/avatar/character-avatar-meshy-service.ts",
-          "line": 99,
-          "endLine": 99,
+          "line": 121,
+          "endLine": 121,
           "resolution": "literal-or-constant",
           "expression": "supabase.functions.invoke('character-avatar-meshy', { body })",
           "chain": "supabase.functions.invoke('character-avatar-meshy', { body })",
@@ -31716,9 +31756,9 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/character/avatar/character-avatar-meshy-service.ts",
-            "line": 90,
-            "endLine": 104,
-            "text": "async function invoke(body: Record<string, unknown>): Promise<FunctionResponse> {\n  // FE-HOST-14: optional Meshy remains Edge-legacy; host-first returns soft unavailable\n  // (config/generate callers already tolerate status=error / meshyConfigured=false).\n  if (isHostLibraryEnabled()) {\n    return {\n      status: 'error',\n      message: 'Avatar-3D-Generierung ist im Host-Modus ohne Meshy-Edge nicht verfügbar.',\n    };\n  }\n  const { data, error } = await supabase.functions.invoke('character-avatar-meshy', { body });\n  if (error) {\n    return { status: 'error', message: error.message || 'Edge Function fehlgeschlagen.' };\n  }\n  return parseResponse(data);\n}"
+            "line": 117,
+            "endLine": 126,
+            "text": "async function invoke(body: Record<string, unknown>): Promise<FunctionResponse> {\n  if (isHostLibraryEnabled()) {\n    return invokeHost(body);\n  }\n  const { data, error } = await supabase.functions.invoke('character-avatar-meshy', { body });\n  if (error) {\n    return { status: 'error', message: error.message || 'Edge Function fehlgeschlagen.' };\n  }\n  return parseResponse(data);\n}"
           }
         },
         {
@@ -33399,56 +33439,62 @@
         },
         {
           "path": "src/infrastructure/character/avatar/character-avatar-meshy-service.ts",
-          "line": 47,
-          "endLine": 49,
+          "line": 49,
+          "endLine": 51,
           "name": "isRecord"
         },
         {
           "path": "src/infrastructure/character/avatar/character-avatar-meshy-service.ts",
-          "line": 52,
-          "endLine": 55,
+          "line": 54,
+          "endLine": 57,
           "name": "browserModelUrl"
         },
         {
           "path": "src/infrastructure/character/avatar/character-avatar-meshy-service.ts",
-          "line": 57,
-          "endLine": 73,
+          "line": 59,
+          "endLine": 75,
           "name": "parseResponse"
         },
         {
           "path": "src/infrastructure/character/avatar/character-avatar-meshy-service.ts",
-          "line": 75,
-          "endLine": 88,
+          "line": 77,
+          "endLine": 90,
           "name": "mapJob"
         },
         {
           "path": "src/infrastructure/character/avatar/character-avatar-meshy-service.ts",
-          "line": 90,
-          "endLine": 104,
+          "line": 92,
+          "endLine": 115,
+          "name": "invokeHost"
+        },
+        {
+          "path": "src/infrastructure/character/avatar/character-avatar-meshy-service.ts",
+          "line": 117,
+          "endLine": 126,
           "name": "invoke"
         },
         {
           "path": "src/infrastructure/character/avatar/character-avatar-meshy-service.ts",
-          "line": 106,
-          "endLine": 150,
+          "line": 128,
+          "endLine": 172,
           "name": "fetchMeshyAvatarConfig"
         },
         {
           "path": "src/infrastructure/character/avatar/character-avatar-meshy-service.ts",
-          "line": 152,
-          "endLine": 214,
+          "line": 174,
+          "endLine": 236,
           "name": "startMeshyAvatarJob"
         },
         {
           "path": "src/infrastructure/character/avatar/character-avatar-meshy-service.ts",
-          "line": 216,
-          "endLine": 223,
+          "line": 238,
+          "endLine": 245,
           "name": "pollMeshyAvatarJob"
         },
         {
           "path": "src/infrastructure/character/avatar/character-avatar-meshy-service.ts",
-          "line": 225,
-          "endLine": 243,
+          "line": 247,
+          "endLine": 265,
           "name": "retryMeshyAvatarJob"
         },
         {

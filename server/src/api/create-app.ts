@@ -69,6 +69,8 @@ export type HostApiDeps = {
   readonly characterLore?: CharacterLoreUseCases;
   /** CUT-15 look reference analysis (optional until wired). */
   readonly lookReferenceAnalysis?: import('../application/look-reference-analysis/index.ts').LookReferenceAnalysisUseCases;
+  /** CUT-18 character avatar Meshy (optional until wired). */
+  readonly characterAvatarMeshy?: import('../application/character-avatar-meshy/index.ts').CharacterAvatarMeshyUseCases;
   /** CUT-14 session-recap AI generate (optional until wired). */
   readonly sessionRecapGenerate?: import('../application/session-recap/index.ts').SessionRecapGenerateUseCases;
   /** CUT-16 item thumbnail (optional until wired). */
@@ -444,6 +446,7 @@ export function createHostApi(deps: HostApiDeps): Hono {
       ollama: deps.aiOllama,
       characterLore: deps.characterLore,
       lookReferenceAnalysis: deps.lookReferenceAnalysis,
+      characterAvatarMeshy: deps.characterAvatarMeshy,
     });
   }
 
