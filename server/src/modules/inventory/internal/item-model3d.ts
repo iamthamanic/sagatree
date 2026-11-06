@@ -3,10 +3,10 @@
  * Location: server/src/modules/inventory/internal/item-model3d.ts
  *
  * Allowlisted Edge worker remains live. Isolated authz/quota/GLB/action fixtures.
- * No public activation / cutover.
+ * CUT-17 / #1152: public host activation authorized.
  */
 
-export const ITEM_MODEL3D_PUBLIC_ACTIVATION_AUTHORIZED = false as const;
+export const ITEM_MODEL3D_PUBLIC_ACTIVATION_AUTHORIZED = true as const;
 export const ITEM_MODEL3D_MAX_BYTES = 50 * 1024 * 1024;
 export const ITEM_MODEL3D_HEADER_MAX_BYTES = 70 * 1024 * 1024;
 export const ITEM_MODEL3D_MIME = 'model/gltf-binary' as const;
@@ -14,6 +14,8 @@ export const ITEM_MODEL3D_RATE_LIMIT = 2 as const;
 export const ITEM_MODEL3D_RATE_WINDOW_SECONDS = 60 as const;
 export const ITEM_MODEL3D_SIGNED_URL_TTL_SECONDS = 604_800 as const;
 export const ITEM_MODEL3D_THUMBNAIL_PREFIX = 'thumbnail2d:' as const;
+/** Minimal glTF-binary magic for Meshy mock materialize (CUT-17). */
+export const ITEM_MODEL3D_FIXTURE_GLB = new Uint8Array([0x67, 0x6c, 0x54, 0x46, 0, 0, 0, 0]);
 
 const MESHY_HOST_ALLOWLIST = new Set([
   'assets.meshy.ai',
@@ -56,6 +58,7 @@ export type ItemModel3dJob = {
   /** Isolated provider poll result: succeeded | failed | in_progress */
   providerPollStatus?: 'succeeded' | 'failed' | 'in_progress' | 'canceled';
   providerModelUrl?: string;
+  providerModelBytes?: Uint8Array;
   materializeClaimedBy?: string | null;
   paidCreateDone: boolean;
 };
@@ -396,6 +399,7 @@ export function itemModel3dGenerate(
       providerTaskId: `meshy-${jobId}`,
       providerPollStatus: 'succeeded',
       providerModelUrl: 'https://cdn.meshy.ai/models/ok.glb',
+      providerModelBytes: ITEM_MODEL3D_FIXTURE_GLB,
       materializeClaimedBy: null,
     });
     return { status: 'ok', jobId, jobStatus: 'waiting', progress: 5 };
@@ -478,13 +482,14 @@ export function itemModel3dStatus(
           worldProfileId: def?.worldProfileId,
           assetId,
         });
+        const glbBytes = job.providerModelBytes ?? ITEM_MODEL3D_FIXTURE_GLB;
         store.assets.set(assetId, {
           id: assetId,
           ownerUserId: userId,
           definitionId: job.definitionId,
           storagePath,
           deletedAt: null,
-          byteSize: 1024,
+          byteSize: glbBytes.byteLength,
         });
         job.assetId = assetId;
         if (def) def.payload.model3d = buildItemModel3dAssetKey(assetId);

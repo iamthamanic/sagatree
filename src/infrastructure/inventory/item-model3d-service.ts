@@ -1,8 +1,11 @@
 /**
- * item-model3d-service — client facade for Workbench GLB upload / Meshy Image-to-3D (#141).
- * Invokes Edge Function only; never embeds Meshy secrets.
+ * item-model3d-service — client facade for Workbench GLB upload / Meshy Image-to-3D (#141 / CUT-17).
  * Location: src/infrastructure/inventory/item-model3d-service.ts
+ *
+ * CUT-17: host-first via POST `/api/v1/items/model3d` when host library is on.
+ * Legacy Edge `item-model3d` remains until dual-path removal (CUT-20).
  */
+import { getHostAuthBaseUrl } from '../../lib/hostAuthBridge';
 import { rewriteBrowserStorageUrl, supabase } from '../../lib/supabase';
 import {
   ITEM_MODEL3D_MAX_BYTES,
@@ -12,6 +15,7 @@ import {
   sniffItemModel3dGlb,
   type ItemModel3dMime,
 } from '../../domains/items';
+import { isHostLibraryEnabled } from '../host/host-library-http';
 
 export type ItemModel3dJobUiStatus =
   | 'idle'
@@ -85,10 +89,34 @@ async function getFunctionErrorMessage(error: unknown): Promise<string | undefin
   }
 }
 
+async function invokeHost(body: Record<string, unknown>): Promise<FunctionResponse> {
+  const base = getHostAuthBaseUrl()?.replace(/\/$/, '') ?? '';
+  if (!base) {
+    return { status: 'error', message: '3D-Modell-Dienst nicht erreichbar.' };
+  }
+  let response: Response;
+  try {
+    response = await fetch(`${base}/api/v1/items/model3d`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: { Accept: 'application/json', 'content-type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+  } catch {
+    return { status: 'error', message: '3D-Modell-Dienst nicht erreichbar.' };
+  }
+  let data: unknown;
+  try {
+    data = await response.json();
+  } catch {
+    return { status: 'error', message: '3D-Modell-Dienst nicht erreichbar.' };
+  }
+  return parseResponse(data);
+}
+
 async function invoke(body: Record<string, unknown>): Promise<FunctionResponse> {
-  const { isHostLibraryEnabled } = await import('../host/host-library-http');
   if (isHostLibraryEnabled()) {
-    throw new Error('3D-Modell-Dienst ist im Host-Modus noch nicht verfügbar.');
+    return invokeHost(body);
   }
   const { data, error } = await supabase.functions.invoke('item-model3d', { body });
   if (error) {

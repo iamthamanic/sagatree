@@ -1650,6 +1650,19 @@ function checkCut16ItemThumbnail() {
   console.log('OK: cut-16-item-thumbnail.self-test');
 }
 
+function checkCut17ItemModel3d() {
+  console.log('CUT-17 item-model3d (#1152): host upload/generate/status...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/cut-17-item-model3d.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+  console.log('OK: cut-17-item-model3d.self-test');
+}
+
 function checkMig312UserProfileAdapter() {
   console.log('MIG-312 user-profile adapter (#811): user_profiles + user-avatars dual-path...');
   execFileSync(
@@ -3883,6 +3896,7 @@ checkCut13CharacterLore();
 checkCut14SessionRecapGenerate();
 checkCut15LookReference();
 checkCut16ItemThumbnail();
+checkCut17ItemModel3d();
 checkMig312UserProfileAdapter();
 checkMig309Rulesets();
 checkMig313WorldAdapter();

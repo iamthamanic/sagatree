@@ -43,13 +43,16 @@ const {
 const { createItemModel3dUseCases } = app;
 const { isEdgeDispatcherAllowed } = allow;
 
-assert(ITEM_MODEL3D_PUBLIC_ACTIVATION_AUTHORIZED === false, 'no public activation');
+assert(ITEM_MODEL3D_PUBLIC_ACTIVATION_AUTHORIZED === true, 'CUT-17 model3d activated');
 assert(isEdgeDispatcherAllowed('item-model3d') === true, 'edge stays allowlisted');
 assert(ITEM_MODEL3D_RATE_LIMIT === 2, 'quota 2');
 assert(ITEM_MODEL3D_SIGNED_URL_TTL_SECONDS === 604_800, 'signed TTL 7d');
 
 const createApp = readFileSync(join(root, 'server/src/api/create-app.ts'), 'utf8');
-assert(!/item-model3d/i.test(createApp), 'no create-app cutover mount');
+assert(/itemModel3d|item-model3d/i.test(createApp), 'create-app wires item model3d CUT-17');
+const routes = readFileSync(join(root, 'server/src/api/item-model3d-routes.ts'), 'utf8');
+assert(routes.includes('/api/v1/items/model3d'), 'action mount present');
+assert(routes.includes('/api/v1/items/:id/model3d/'), 'REST family present');
 
 const OWNER = 'owner-a';
 const WORLD_OWNER = 'world-owner';
@@ -261,4 +264,4 @@ assert(
   '70MiB+ header 413',
 );
 
-console.log('PASS: mig-409 item-model3d host isolated-contract (no cutover)');
+console.log('PASS: mig-409 item-model3d host isolated-contract + CUT-17 activation');

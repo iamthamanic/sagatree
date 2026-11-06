@@ -102,6 +102,12 @@ export type RouteRegistryDeps = {
     actor: import('../modules/identity/index.ts').Actor,
     definitionId: string,
   ) => Promise<void> | void;
+  /** CUT-17 item model3d. */
+  readonly itemModel3d?: import('../application/item-model3d/index.ts').ItemModel3dUseCases;
+  readonly ensureItemModel3dDefinition?: (
+    actor: import('../modules/identity/index.ts').Actor,
+    definitionId: string,
+  ) => Promise<void> | void;
   /** Browser Library cutover ports. */
   readonly character?: CharacterPorts | null;
   readonly world?: WorldPorts | null;
@@ -173,6 +179,8 @@ export function createRouteHandler(deps: RouteRegistryDeps) {
     sessionRecapGenerate: deps.sessionRecapGenerate,
     itemThumbnail: deps.itemThumbnail,
     ensureItemThumbnailDefinition: deps.ensureItemThumbnailDefinition,
+    itemModel3d: deps.itemModel3d,
+    ensureItemModel3dDefinition: deps.ensureItemModel3dDefinition,
     character: deps.character,
     world: deps.world,
     npcCreature: deps.npcCreature,

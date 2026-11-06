@@ -10,6 +10,7 @@ export {
   ITEM_MODEL3D_RATE_LIMIT,
   ITEM_MODEL3D_RATE_WINDOW_SECONDS,
   ITEM_MODEL3D_SIGNED_URL_TTL_SECONDS,
+  ITEM_MODEL3D_FIXTURE_GLB,
   assertDefinitionAuthorized,
   buildItemModel3dAssetKey,
   buildItemModel3dStoragePath,

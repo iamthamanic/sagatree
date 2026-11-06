@@ -109,6 +109,10 @@ import {
   type ItemThumbnailUseCases,
 } from '../application/item-thumbnail/index.ts';
 import {
+  createItemModel3dUseCases,
+  type ItemModel3dUseCases,
+} from '../application/item-model3d/index.ts';
+import {
   analyzeLookReferencesWithVision,
   createLookReferenceMediaStore,
   createLookReferenceRateLimitStore,
@@ -120,6 +124,11 @@ import {
   seedItemThumbnailDefinition,
   type ItemThumbnailStore,
 } from '../modules/inventory/item-thumbnail.ts';
+import {
+  createItemModel3dStore,
+  seedItemModel3dDefinition,
+  type ItemModel3dStore,
+} from '../modules/inventory/item-model3d.ts';
 import {
   createSqliteCharacterLoreStore,
   resolveCharacterLoreRateLimit,
@@ -470,6 +479,10 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
     let itemThumbnail: ItemThumbnailUseCases = createItemThumbnailUseCases({
       store: itemThumbnailStore,
     });
+    const itemModel3dStore: ItemModel3dStore = createItemModel3dStore(meshyConfigured);
+    let itemModel3d: ItemModel3dUseCases = createItemModel3dUseCases({
+      store: itemModel3dStore,
+    });
 
     async function resolveSessionRecapProviderForUser(userId: string) {
       // Codex P2: honor per-user AI → Organize prefs before server env fallback.
@@ -699,9 +712,14 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
     const authHandlerRef: { current: ReturnType<typeof wrapCookieAuthHandler> | null } = {
       current: null,
     };
-    // Rebind thumbnail use-cases with durable AssetPorts (Codex P1).
+    // Rebind thumbnail / model3d use-cases with durable AssetPorts (Codex P1).
     itemThumbnail = createItemThumbnailUseCases({
       store: itemThumbnailStore,
+      assets,
+      publicOrigin: `http://127.0.0.1:${config.port}`,
+    });
+    itemModel3d = createItemModel3dUseCases({
+      store: itemModel3dStore,
       assets,
       publicOrigin: `http://127.0.0.1:${config.port}`,
     });
@@ -774,6 +792,66 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
       });
     };
 
+    const ensureItemModel3dDefinition = (
+      actor: import('../modules/identity/index.ts').Actor,
+      definitionId: string,
+    ): void => {
+      if (!definitionId || itemModel3dStore.definitions.has(definitionId)) return;
+      if (!inventory?.getDefinition) return;
+      const actorIds = [actor.actorId];
+      if (actor.kind === 'remote-account' && Array.isArray(actor.linkedSoloActorIds)) {
+        for (const id of actor.linkedSoloActorIds) {
+          if (typeof id === 'string' && id.length > 0) actorIds.push(id);
+        }
+      }
+      const loaded = inventory.getDefinition(actorIds, definitionId);
+      if (!loaded.ok || !loaded.value) return;
+      const def = loaded.value;
+      if (def.origin === 'standard') return;
+
+      if (def.origin === 'world') {
+        if (!def.worldProfileId || !world?.canEditWorld) return;
+        if (!world.canEditWorld(actorIds, def.worldProfileId)) return;
+        const worldOwner =
+          typeof def.ownerUserId === 'string' &&
+          def.ownerUserId.length > 0 &&
+          actorIds.includes(def.ownerUserId)
+            ? def.ownerUserId
+            : actorIds.find((id) => world.canEditWorld([id], def.worldProfileId!));
+        if (!worldOwner) return;
+        seedItemModel3dDefinition(itemModel3dStore, {
+          id: def.id,
+          scope: 'world',
+          ownerUserId: worldOwner,
+          worldProfileId: def.worldProfileId,
+          status: def.status === 'archived' ? 'archived' : 'active',
+          payload: {
+            model3d:
+              typeof def.payload.model3d === 'string' ? def.payload.model3d : undefined,
+            assetKey:
+              typeof def.payload.assetKey === 'string' ? def.payload.assetKey : undefined,
+          },
+        });
+        return;
+      }
+
+      if (typeof def.ownerUserId !== 'string' || !actorIds.includes(def.ownerUserId)) {
+        return;
+      }
+      seedItemModel3dDefinition(itemModel3dStore, {
+        id: def.id,
+        scope: 'personal',
+        ownerUserId: def.ownerUserId,
+        worldProfileId: null,
+        status: def.status === 'archived' ? 'archived' : 'active',
+        payload: {
+          model3d: typeof def.payload.model3d === 'string' ? def.payload.model3d : undefined,
+          assetKey:
+            typeof def.payload.assetKey === 'string' ? def.payload.assetKey : undefined,
+        },
+      });
+    };
+
     const handler = createRouteHandler({
       health,
       ops,
@@ -794,6 +872,8 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
       sessionRecapGenerate,
       itemThumbnail,
       ensureItemThumbnailDefinition,
+      itemModel3d,
+      ensureItemModel3dDefinition,
       character,
       world,
       npcCreature,

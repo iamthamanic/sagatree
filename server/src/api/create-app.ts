@@ -31,6 +31,7 @@ import { mountAiHttpRoutes } from './ai-routes.ts';
 import { mountAssetHttpRoutes } from './asset-routes.ts';
 import { mountCatalogHttpRoutes } from './catalog-routes.ts';
 import { mountItemThumbnailHttpRoutes } from './item-thumbnail-routes.ts';
+import { mountItemModel3dHttpRoutes } from './item-model3d-routes.ts';
 import { mountLibraryHttpRoutes } from './library-routes.ts';
 import { mountSessionHttpRoutes } from './session-routes.ts';
 import { mountWorldAtlasHttpRoutes } from './world-atlas-routes.ts';
@@ -73,6 +74,12 @@ export type HostApiDeps = {
   /** CUT-16 item thumbnail (optional until wired). */
   readonly itemThumbnail?: import('../application/item-thumbnail/index.ts').ItemThumbnailUseCases;
   readonly ensureItemThumbnailDefinition?: (
+    actor: import('../modules/identity/index.ts').Actor,
+    definitionId: string,
+  ) => Promise<void> | void;
+  /** CUT-17 item model3d (optional until wired). */
+  readonly itemModel3d?: import('../application/item-model3d/index.ts').ItemModel3dUseCases;
+  readonly ensureItemModel3dDefinition?: (
     actor: import('../modules/identity/index.ts').Actor,
     definitionId: string,
   ) => Promise<void> | void;
@@ -522,6 +529,15 @@ export function createHostApi(deps: HostApiDeps): Hono {
       hostMode: deps.hostMode,
       itemThumbnail: deps.itemThumbnail,
       ensureDefinition: deps.ensureItemThumbnailDefinition,
+    });
+  }
+
+  if (deps.itemModel3d?.publicActivationAuthorized) {
+    mountItemModel3dHttpRoutes(app, {
+      identity: deps.identity,
+      hostMode: deps.hostMode,
+      itemModel3d: deps.itemModel3d,
+      ensureDefinition: deps.ensureItemModel3dDefinition,
     });
   }
 
