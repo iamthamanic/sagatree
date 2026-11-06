@@ -1,13 +1,13 @@
 /**
- * Host characterization of Edge `session-recap` (MIG-421 / #837).
+ * Host characterization of Edge `session-recap` (MIG-421 / #837 → CUT-14 / #1149).
  * Location: server/src/modules/session/internal/session-recap-generate.ts
  *
- * Allowlisted Edge worker remains the live mount. Host ports pin GM-equality
- * authz / body rejection / quota / draft-only persist fixtures. No public activation.
+ * Host HTTP activation mounts generate via POST `/api/v1/sessions/:id/recap/generate`.
+ * Edge remains allowlisted until dual-path removal (CUT-20).
  */
 
-/** Explicit: no automatic host/public cutover (successor + MIG-600 still required). */
-export const SESSION_RECAP_PUBLIC_ACTIVATION_AUTHORIZED = false as const;
+/** CUT-14: public host route activation authorized with validated policies + tests. */
+export const SESSION_RECAP_PUBLIC_ACTIVATION_AUTHORIZED = true as const;
 
 export const SESSION_RECAP_PROMPT_VERSION = 'episode-summary-v1' as const;
 export const SESSION_RECAP_MAX_REQUEST_BYTES = 8_000 as const;
@@ -89,6 +89,15 @@ export type SessionRecapGenerateStore = {
   /** Captures last prompt lines that reached the provider (for sentinel checks). */
   lastPromptLines: SessionRecapPromptLine[] | null;
   lastProviderPrompt: SessionRecapPrompt | null;
+  /**
+   * Durable quota consumer (CUT-14 host). When set, preferred over the in-memory map.
+   */
+  consumeDurable?: (
+    userId: string,
+    limit: number,
+    windowSeconds: number,
+    nowMs: number,
+  ) => { ok: true } | { ok: false; status: 429 | 503; message: string };
 };
 
 export function createSessionRecapGenerateStore(
@@ -180,6 +189,229 @@ export function resolveSessionRecapRateLimit(envLimit?: string | number): number
     : SESSION_RECAP_DEFAULT_RATE_LIMIT;
 }
 
+type RecapQuotaDb = {
+  readonly prepare: (sql: string) => {
+    get: (...params: unknown[]) => unknown;
+    run: (...params: unknown[]) => unknown;
+  };
+  readonly exec: (sql: string) => void;
+};
+
+/**
+ * Durable SQLite quota store for host activation (CUT-14).
+ * Survives process restart; shared across workers on the same DB file.
+ */
+export function createSqliteSessionRecapGenerateStore(
+  db: RecapQuotaDb,
+): SessionRecapGenerateStore {
+  const store = createSessionRecapGenerateStore(true);
+  store.consumeDurable = (userId, limit, windowSeconds, nowMs) => {
+    const nowIso = new Date(nowMs).toISOString();
+    try {
+      db.exec('BEGIN IMMEDIATE');
+      const row = db
+        .prepare(
+          `SELECT window_started_at AS windowStartedAt, request_count AS requestCount
+           FROM session_recap_rate_limits WHERE user_id = ?`,
+        )
+        .get(userId) as { windowStartedAt: string; requestCount: number } | undefined;
+      let count = 1;
+      let windowStart = nowIso;
+      if (row) {
+        const started = Date.parse(row.windowStartedAt);
+        if (Number.isFinite(started) && nowMs - started < windowSeconds * 1000) {
+          windowStart = row.windowStartedAt;
+          count = row.requestCount + 1;
+        }
+        db.prepare(
+          `UPDATE session_recap_rate_limits
+           SET window_started_at = ?, request_count = ?, updated_at = ? WHERE user_id = ?`,
+        ).run(windowStart, count, nowIso, userId);
+      } else {
+        db.prepare(
+          `INSERT INTO session_recap_rate_limits
+           (user_id, window_started_at, request_count, updated_at) VALUES (?, ?, 1, ?)`,
+        ).run(userId, nowIso, nowIso);
+      }
+      db.exec('COMMIT');
+      if (count > limit) {
+        return {
+          ok: false,
+          status: 429,
+          message: 'Zu viele Generierungen. Bitte warte kurz und versuche es erneut.',
+        };
+      }
+      return { ok: true };
+    } catch {
+      try {
+        db.exec('ROLLBACK');
+      } catch {
+        /* ignore */
+      }
+      return {
+        ok: false,
+        status: 503,
+        message:
+          'Session-Recap ist vorübergehend nicht verfügbar. Bitte versuche es später erneut.',
+      };
+    }
+  };
+  return store;
+}
+
+/**
+ * Load play_sessions / projects / session_recaps for one generate call into the Map store.
+ */
+export function hydrateSessionRecapGenerateStoreFromDb(
+  db: RecapQuotaDb,
+  store: SessionRecapGenerateStore,
+  sessionId: string,
+): void {
+  const session = db
+    .prepare(
+      `SELECT session_id AS id, name, status, project_id AS projectId, world_state AS worldState
+       FROM play_sessions WHERE session_id = ?`,
+    )
+    .get(sessionId) as
+    | {
+        id: string;
+        name: string | null;
+        status: string;
+        projectId: string;
+        worldState: string;
+      }
+    | undefined;
+  if (!session) return;
+
+  let worldState: unknown = {};
+  try {
+    worldState = JSON.parse(session.worldState || '{}');
+  } catch {
+    worldState = {};
+  }
+  seedSessionRecapSession(store, {
+    id: session.id,
+    name: typeof session.name === 'string' ? session.name : 'Episode',
+    status: session.status,
+    project_id: session.projectId,
+    world_state: worldState,
+  });
+
+  const project = db
+    .prepare(
+      `SELECT id, title, gm_user_id AS gmUserId FROM projects WHERE id = ?`,
+    )
+    .get(session.projectId) as
+    | {
+        id: string;
+        title: string;
+        gmUserId: string;
+      }
+    | undefined;
+  if (project) {
+    seedSessionRecapProject(store, {
+      id: project.id,
+      name: project.title,
+      gm_user_id: project.gmUserId,
+    });
+  }
+
+  const recap = db
+    .prepare(
+      `SELECT session_id AS sessionId, snapshot, highlight_lines AS highlightLines,
+              summary_text AS summaryText, summary_status AS summaryStatus
+       FROM session_recaps WHERE session_id = ?`,
+    )
+    .get(sessionId) as
+    | {
+        sessionId: string;
+        snapshot: string;
+        highlightLines: string;
+        summaryText: string | null;
+        summaryStatus: string | null;
+      }
+    | undefined;
+  if (recap) {
+    let snapshot: Record<string, unknown> | null = {};
+    try {
+      const parsed: unknown = JSON.parse(recap.snapshot || '{}');
+      snapshot =
+        typeof parsed === 'object' && parsed !== null && !Array.isArray(parsed)
+          ? (parsed as Record<string, unknown>)
+          : {};
+    } catch {
+      snapshot = {};
+    }
+    let highlightLines: unknown = [];
+    try {
+      highlightLines = JSON.parse(recap.highlightLines || '[]');
+    } catch {
+      highlightLines = [];
+    }
+    seedSessionRecapRow(store, {
+      session_id: recap.sessionId,
+      snapshot,
+      highlight_lines: highlightLines,
+      summary_text: recap.summaryText,
+      summary_status: recap.summaryStatus,
+    });
+  }
+}
+
+/**
+ * Persist generate draft (snapshot + highlight_lines + summary) to SQLite.
+ * Never writes summary_status=approved. Atomically refuses to overwrite approved
+ * (Codex P1: approve/save race while provider is in flight).
+ */
+export function persistSessionRecapGenerateDraft(
+  db: RecapQuotaDb,
+  row: SessionRecapRow,
+): { ok: true } | { ok: false; reason: 'approved-locked' | 'store-unavailable' } {
+  const now = new Date().toISOString();
+  const snapshot = JSON.stringify(row.snapshot ?? {});
+  const highlights = JSON.stringify(
+    Array.isArray(row.highlight_lines) ? row.highlight_lines : [],
+  );
+  const summary =
+    typeof row.summary_text === 'string' && row.summary_text.trim()
+      ? row.summary_text.trim()
+      : null;
+  try {
+    db.exec('BEGIN IMMEDIATE');
+    const existing = db
+      .prepare(
+        `SELECT summary_status AS summaryStatus FROM session_recaps WHERE session_id = ?`,
+      )
+      .get(row.session_id) as { summaryStatus: string } | undefined;
+    if ((existing?.summaryStatus ?? '').toLowerCase() === 'approved') {
+      db.exec('ROLLBACK');
+      return { ok: false, reason: 'approved-locked' };
+    }
+    db.prepare(
+      `INSERT INTO session_recaps (
+         session_id, summary_text, summary_status, highlight_lines, snapshot,
+         created_at, updated_at
+       ) VALUES (?, ?, 'draft', ?, ?, ?, ?)
+       ON CONFLICT(session_id) DO UPDATE SET
+         summary_text = excluded.summary_text,
+         summary_status = 'draft',
+         highlight_lines = excluded.highlight_lines,
+         snapshot = excluded.snapshot,
+         updated_at = excluded.updated_at
+       WHERE session_recaps.summary_status IS NOT 'approved'`,
+    ).run(row.session_id, summary, highlights, snapshot, now, now);
+    db.exec('COMMIT');
+    return { ok: true };
+  } catch {
+    try {
+      db.exec('ROLLBACK');
+    } catch {
+      /* ignore */
+    }
+    return { ok: false, reason: 'store-unavailable' };
+  }
+}
+
 /**
  * Process-memory stand-in for `consume_session_recap_rate_limit` RPC.
  * Charged for every authenticated POST before body/session/GM validation.
@@ -207,6 +439,10 @@ export function consumeSessionRecapRateLimit(
   }
   if (!Number.isInteger(windowSeconds) || windowSeconds < 1 || windowSeconds > 3600) {
     throw new Error('Rate limit window must be an integer between 1 and 3600 seconds');
+  }
+
+  if (typeof store.consumeDurable === 'function') {
+    return store.consumeDurable(userId, limit, windowSeconds, nowMs);
   }
 
   const existing = store.quota.get(userId);
@@ -393,7 +629,7 @@ export type SessionRecapGenerateResult =
   | {
       readonly status: 'error';
       readonly message: string;
-      readonly httpStatus: 400 | 401 | 403 | 404 | 405 | 413 | 429 | 500 | 503;
+      readonly httpStatus: 400 | 401 | 403 | 404 | 405 | 409 | 413 | 429 | 500 | 503;
       readonly reason?: string;
     };
 
@@ -412,6 +648,8 @@ export type SessionRecapGenerateDeps = {
 
 export type SessionRecapGenerateInput = {
   readonly userId: string | null;
+  /** Remote + linked solo ids for GM equality (defaults to [userId]). */
+  readonly actorIds?: readonly string[];
   readonly method?: string;
   readonly contentLengthHeader: string | null;
   readonly rawBodyUtf8Bytes?: number;
@@ -599,12 +837,27 @@ export async function generateSessionRecap(
       };
     }
     // Strict GM equality — owner/member/GM-label alone never substitutes.
-    if (project.gm_user_id !== userId) {
+    // Linked solo identities may match projects.gm_user_id (CUT-14 / MIG-015).
+    const actorIds =
+      input.actorIds && input.actorIds.length > 0 ? input.actorIds : [userId];
+    if (!actorIds.includes(project.gm_user_id)) {
       return {
         status: 'error',
         message: 'Nur der Gamemaster darf generieren.',
         httpStatus: 403,
         reason: 'forbidden-not-gm',
+      };
+    }
+
+    // CUT-14: never silently rewrite an already-approved recap (manual re-open required).
+    const locked = deps.store.recaps.get(sessionId);
+    if (locked?.summary_status === 'approved') {
+      return {
+        status: 'error',
+        message:
+          'Die Zusammenfassung ist bereits freigegeben. Setze sie manuell zurück, bevor du neu generierst.',
+        httpStatus: 409,
+        reason: 'approved-locked',
       };
     }
 
@@ -663,6 +916,16 @@ export async function generateSessionRecap(
     if (!existing) {
       throw new Error('recap missing after upsert');
     }
+    // Re-check after provider await — concurrent approve must not be overwritten in-memory.
+    if (existing.summary_status === 'approved') {
+      return {
+        status: 'error',
+        message:
+          'Die Zusammenfassung ist bereits freigegeben. Setze sie manuell zurück, bevor du neu generierst.',
+        httpStatus: 409,
+        reason: 'approved-locked',
+      };
+    }
     if (deps.store.draftPersistFails) {
       throw new Error('draft persist failed');
     }
@@ -692,4 +955,95 @@ export async function generateSessionRecap(
       httpStatus: 500,
     };
   }
+}
+
+function extractOpenAiCompatibleContent(value: unknown): string | null {
+  if (!isRecord(value) || !Array.isArray(value.choices) || value.choices.length === 0) {
+    return null;
+  }
+  const first = value.choices[0];
+  if (!isRecord(first) || !isRecord(first.message) || typeof first.message.content !== 'string') {
+    return null;
+  }
+  return first.message.content.trim() || null;
+}
+
+function extractOllamaChatContent(value: unknown): string | null {
+  if (
+    !isRecord(value) ||
+    !isRecord(value.message) ||
+    typeof value.message.content !== 'string'
+  ) {
+    return null;
+  }
+  return value.message.content.trim() || null;
+}
+
+async function generateOpenAiCompatibleSummary(
+  config: SessionRecapProviderConfig,
+  prompt: SessionRecapPrompt,
+): Promise<string> {
+  const response = await fetch(`${config.baseUrl}/chat/completions`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${config.apiKey ?? ''}`,
+    },
+    body: JSON.stringify({
+      model: config.model,
+      temperature: 0.7,
+      messages: [
+        { role: 'system', content: prompt.system },
+        { role: 'user', content: prompt.user },
+      ],
+    }),
+    signal: AbortSignal.timeout(60_000),
+  });
+  if (!response.ok) {
+    throw new Error(`OpenAI-compatible provider returned ${response.status}`);
+  }
+  const body: unknown = await response.json();
+  const summary = extractOpenAiCompatibleContent(body);
+  if (!summary) throw new Error('OpenAI-compatible provider returned an invalid response');
+  return summary;
+}
+
+async function generateOllamaSummary(
+  config: SessionRecapProviderConfig,
+  prompt: SessionRecapPrompt,
+): Promise<string> {
+  const response = await fetch(`${config.baseUrl}/api/chat`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: config.model,
+      stream: false,
+      messages: [
+        { role: 'system', content: prompt.system },
+        { role: 'user', content: prompt.user },
+      ],
+      options: { temperature: 0.7 },
+    }),
+    signal: AbortSignal.timeout(60_000),
+  });
+  if (!response.ok) {
+    throw new Error(`Ollama provider returned ${response.status}`);
+  }
+  const body: unknown = await response.json();
+  const summary = extractOllamaChatContent(body);
+  if (!summary) throw new Error('Ollama provider returned an invalid response');
+  return summary;
+}
+
+/**
+ * Host inference adapter (Edge `generateSessionRecapSummary` parity).
+ * Secrets stay in Authorization / request body only — never in thrown messages.
+ */
+export async function generateSessionRecapStory(
+  config: SessionRecapProviderConfig,
+  prompt: SessionRecapPrompt,
+): Promise<string> {
+  return config.provider === 'openai-compatible'
+    ? generateOpenAiCompatibleSummary(config, prompt)
+    : generateOllamaSummary(config, prompt);
 }

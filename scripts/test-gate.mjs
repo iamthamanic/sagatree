@@ -1611,6 +1611,19 @@ function checkCut13CharacterLore() {
   console.log('OK: cut-13-character-lore.self-test');
 }
 
+function checkCut14SessionRecapGenerate() {
+  console.log('CUT-14 session-recap (#1149): host generate draft...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/cut-14-recap-generate.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+  console.log('OK: cut-14-recap-generate.self-test');
+}
+
 function checkMig312UserProfileAdapter() {
   console.log('MIG-312 user-profile adapter (#811): user_profiles + user-avatars dual-path...');
   execFileSync(
@@ -3841,6 +3854,7 @@ checkCut10WorldPublicId();
 checkCut11AvatarArtifacts();
 checkCut12AvatarTransfer();
 checkCut13CharacterLore();
+checkCut14SessionRecapGenerate();
 checkMig312UserProfileAdapter();
 checkMig309Rulesets();
 checkMig313WorldAdapter();

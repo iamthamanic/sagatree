@@ -8,6 +8,11 @@
 import type { Hono } from 'hono';
 import type { Actor, IdentityPorts } from '../modules/identity/index.ts';
 import type { SessionInfraPorts } from '../modules/session/index.ts';
+import type { SessionRecapGenerateUseCases } from '../application/session-recap/index.ts';
+import {
+  SESSION_RECAP_MAX_REQUEST_BYTES,
+  checkSessionRecapBodySize,
+} from '../modules/session/session-recap-generate.ts';
 import { authDenyStatus } from './errors.ts';
 
 export type SessionHttpDeps = {
@@ -20,7 +25,16 @@ export type SessionHttpDeps = {
   readonly npcCreature?: import('../modules/npc-creature/index.ts').NpcCreaturePorts | null;
   /** CUT-05 — session outcome promote via saga-infra ports. */
   readonly sagaInfra?: import('../application/saga-infra/index.ts').SagaInfraPorts | null;
+  /** CUT-14 — AI session-recap generate (optional until activation). */
+  readonly sessionRecapGenerate?: SessionRecapGenerateUseCases | null;
 };
+
+function contentTypeIsJson(c: {
+  req: { header: (name: string) => string | undefined };
+}): boolean {
+  const raw = c.req.header('content-type') ?? '';
+  return raw.toLowerCase().includes('application/json');
+}
 
 function normalizeHostname(hostname: string): string {
   const raw = hostname.trim().toLowerCase();
@@ -575,6 +589,143 @@ export function mountSessionHttpRoutes(app: Hono, deps: SessionHttpDeps): void {
     }
     return c.json({ recap: saved.value }, 200);
   });
+
+  // CUT-14: AI generate draft (Edge `session-recap` parity). Path param wins over body.
+  if (deps.sessionRecapGenerate?.publicActivationAuthorized) {
+    app.post('/api/v1/sessions/:sessionId/recap/generate', async (c) => {
+      const generate = deps.sessionRecapGenerate;
+      if (!generate) {
+        return c.json(
+          {
+            status: 'error',
+            message:
+              'Session-Recap ist vorübergehend nicht verfügbar. Bitte versuche es später erneut.',
+          },
+          503,
+        );
+      }
+      if (!contentTypeIsJson(c)) {
+        return c.json(
+          { status: 'error', message: 'Content-Type application/json erforderlich.' },
+          415,
+        );
+      }
+      const pathSessionId = c.req.param('sessionId');
+      const contentLengthHeader = c.req.header('content-length') ?? null;
+      const headerSize = checkSessionRecapBodySize(contentLengthHeader);
+      if (!headerSize.ok) {
+        return c.json(
+          { status: 'error', message: headerSize.message },
+          headerSize.status,
+        );
+      }
+
+      let rawText = '';
+      try {
+        const stream = c.req.raw.body;
+        if (!stream) {
+          rawText = '';
+        } else {
+          const reader = stream.getReader();
+          const chunks: Uint8Array[] = [];
+          let total = 0;
+          for (;;) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            if (value) {
+              total += value.byteLength;
+              if (total > SESSION_RECAP_MAX_REQUEST_BYTES) {
+                await reader.cancel().catch(() => undefined);
+                return c.json(
+                  { status: 'error', message: 'Request body too large' },
+                  413,
+                );
+              }
+              chunks.push(value);
+            }
+          }
+          rawText = Buffer.concat(chunks.map((u) => Buffer.from(u))).toString('utf8');
+        }
+      } catch {
+        return c.json({ status: 'error', message: 'Ungültiger Request-Body.' }, 400);
+      }
+      const rawBodyUtf8Bytes = Buffer.byteLength(rawText, 'utf8');
+      const decodedSize = checkSessionRecapBodySize(null, rawBodyUtf8Bytes);
+      if (!decodedSize.ok) {
+        return c.json(
+          { status: 'error', message: decodedSize.message },
+          decodedSize.status,
+        );
+      }
+      let body: unknown = {};
+      if (rawText.trim().length > 0) {
+        try {
+          body = JSON.parse(rawText) as unknown;
+        } catch {
+          return c.json({ status: 'error', message: 'Ungültiger Request-Body.' }, 400);
+        }
+      }
+      // Path sessionId is authoritative — reject mismatched body.sessionId.
+      const bodyRecord =
+        typeof body === 'object' && body !== null && !Array.isArray(body)
+          ? (body as Record<string, unknown>)
+          : {};
+      if (
+        typeof bodyRecord.sessionId === 'string' &&
+        bodyRecord.sessionId.trim() &&
+        bodyRecord.sessionId.trim() !== pathSessionId
+      ) {
+        return c.json(
+          { status: 'error', message: 'Session-ID in Pfad und Body stimmen nicht überein.' },
+          400,
+        );
+      }
+      const requestBody = { ...bodyRecord, sessionId: pathSessionId };
+
+      const actorResult = await resolveSessionActor(
+        deps,
+        c.req.raw.headers,
+        false,
+        requestBody,
+      );
+      if (!actorResult.ok) {
+        return c.json(
+          { status: 'error', message: 'Nicht angemeldet.', code: actorResult.error },
+          actorResult.status,
+        );
+      }
+      const result = await generate.generate(actorResult.actor, {
+        method: 'POST',
+        contentLengthHeader,
+        rawBodyUtf8Bytes,
+        body: requestBody,
+      });
+      if (result.status === 'ok') {
+        return c.json(
+          {
+            status: 'ok' as const,
+            summaryText: result.summaryText,
+            summaryStatus: result.summaryStatus,
+            provider: result.provider,
+            model: result.model,
+            promptVersion: result.promptVersion,
+            eventCount: result.eventCount,
+          },
+          200,
+        );
+      }
+      if (result.status === 'not-configured') {
+        return c.json(
+          { status: 'not-configured' as const, message: result.message },
+          result.httpStatus,
+        );
+      }
+      return c.json(
+        { status: 'error' as const, message: result.message },
+        result.httpStatus,
+      );
+    });
+  }
 
   /**
    * CUT-03 — clear temporary NPC controllers for session-scoped instances.

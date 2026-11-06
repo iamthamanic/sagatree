@@ -24135,7 +24135,7 @@
         "sourceFiles": [
           {
             "path": "src/infrastructure/session/session-recap-ai-service.ts",
-            "sha256": "2c21ba1645d48214ea277cd15537bc93b4752737510e556e40bca11f80243c3e"
+            "sha256": "549ecbd3c5d57a6c8e3f1b64430f24c2d198c62b4df610d2e124d07caddf8c0e"
           },
           {
             "path": "supabase/functions/_shared/ai-provider-crypto.ts",
@@ -24399,8 +24399,8 @@
           "kind": "edge",
           "name": "session-recap",
           "path": "src/infrastructure/session/session-recap-ai-service.ts",
-          "line": 85,
-          "endLine": 87,
+          "line": 97,
+          "endLine": 99,
           "resolution": "literal-or-constant",
           "expression": "supabase.functions.invoke('session-recap', {\n      body: { sessionId },\n    })",
           "chain": "supabase.functions.invoke('session-recap', {\n      body: { sessionId },\n    })",
@@ -24410,9 +24410,9 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/session/session-recap-ai-service.ts",
-            "line": 79,
-            "endLine": 105,
-            "text": "async generateDraft(sessionId: string): Promise<SessionRecapAiGenerateResult> {\n    if (isHostLibraryEnabled()) {\n      throw new Error(\n        'KI-Zusammenfassung ist im Host-Modus noch nicht verfügbar. Bitte manuell schreiben.',\n      );\n    }\n    const { data, error } = await supabase.functions.invoke('session-recap', {\n      body: { sessionId },\n    });\n    if (error) {\n      const serverMessage = await getFunctionErrorMessage(error);\n      throw new Error(\n        serverMessage ??\n          'Zusammenfassung konnte nicht generiert werden. Bitte manuell schreiben.',\n      );\n    }\n    const response = parseFunctionResponse(data);\n    if (response.status !== 'ok') {\n      throw new Error(response.message);\n    }\n    return {\n      summaryText: response.summaryText,\n      summaryStatus: response.summaryStatus === 'approved' ? 'approved' : 'draft',\n      provider: response.provider,\n      model: response.model,\n    };\n  }"
+            "line": 84,
+            "endLine": 117,
+            "text": "async generateDraft(sessionId: string): Promise<SessionRecapAiGenerateResult> {\n    if (isHostLibraryEnabled()) {\n      const response = await generateHostSessionRecapDraft(sessionId);\n      if (response.status !== 'ok') {\n        throw new Error(response.message);\n      }\n      return {\n        summaryText: response.summaryText,\n        summaryStatus: response.summaryStatus === 'approved' ? 'approved' : 'draft',\n        provider: response.provider,\n        model: response.model,\n      };\n    }\n    const { data, error } = await supabase.functions.invoke('session-recap', {\n      body: { sessionId },\n    });\n    if (error) {\n      const serverMessage = await getFunctionErrorMessage(error);\n      throw new Error(\n        serverMessage ??\n          'Zusammenfassung konnte nicht generiert werden. Bitte manuell schreiben.',\n      );\n    }\n    const response = parseFunctionResponse(data);\n    if (response.status !== 'ok') {\n      throw new Error(response.message);\n    }\n    return {\n      summaryText: response.summaryText,\n      summaryStatus: response.summaryStatus === 'approved' ? 'approved' : 'draft',\n      provider: response.provider,\n      model: response.model,\n    };\n  }"
           }
         }
       ],
@@ -38745,7 +38745,7 @@
           },
           {
             "path": "src/infrastructure/host/host-session-http.ts",
-            "sha256": "dd70c163f15af4d1ec881a9fe8cb6e87c5ccc441de2307b9b24e9a5c4b6b8172"
+            "sha256": "bc35b154cf69a205bfbabb150cf15b07283136473726daaeb331de0de19ceb0c"
           },
           {
             "path": "src/infrastructure/npc-creature/host-npc-creature-adapter.ts",
@@ -38801,7 +38801,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-npc-creature.json",
-      "sourceContractSha256": "ea1af02f6aae3e5f55d7073bb30af790ba0f17f1296ed806bb61829cd5924754",
+      "sourceContractSha256": "e077bf2d57ee21ad731e56f93f53ed19748c8f5cc50822fc3f6f5c93719ff951",
       "rpcUsed": [
         "assign_npc_creature_controller",
         "clear_npc_creature_instance_temp_controllers_for_session",
@@ -41447,7 +41447,7 @@
           },
           {
             "path": "src/infrastructure/host/host-session-http.ts",
-            "sha256": "dd70c163f15af4d1ec881a9fe8cb6e87c5ccc441de2307b9b24e9a5c4b6b8172"
+            "sha256": "bc35b154cf69a205bfbabb150cf15b07283136473726daaeb331de0de19ceb0c"
           },
           {
             "path": "src/infrastructure/saga/host-saga-adapter.ts",
@@ -41483,7 +41483,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-saga.json",
-      "sourceContractSha256": "31c694eea15b15293fa1a22f188afcf976ba81e8e1667121e24b8740b912ef05",
+      "sourceContractSha256": "7ee772e09ff170b8f0be185d271ead526ffe62e9da9e903be48311171a9ec5a0",
       "rpcUsed": [
         "copy_native_saga_definition",
         "create_project_from_saga_version",
@@ -41977,7 +41977,7 @@
           },
           {
             "path": "src/infrastructure/host/host-session-http.ts",
-            "sha256": "dd70c163f15af4d1ec881a9fe8cb6e87c5ccc441de2307b9b24e9a5c4b6b8172"
+            "sha256": "bc35b154cf69a205bfbabb150cf15b07283136473726daaeb331de0de19ceb0c"
           },
           {
             "path": "src/infrastructure/session/host-session-adapter.ts",
@@ -42025,7 +42025,7 @@
           },
           {
             "path": "src/infrastructure/session/session-recap-ai-service.ts",
-            "sha256": "2c21ba1645d48214ea277cd15537bc93b4752737510e556e40bca11f80243c3e"
+            "sha256": "549ecbd3c5d57a6c8e3f1b64430f24c2d198c62b4df610d2e124d07caddf8c0e"
           },
           {
             "path": "src/infrastructure/session/session-recap-service.ts",
@@ -42069,7 +42069,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-session.json",
-      "sourceContractSha256": "c626fe3ef686f928b411dbc5d7423e314d50f44fe50031995511d3f1750bd814",
+      "sourceContractSha256": "e8a91b2e35f3e9f896d01b557f159967ad5235c2defc8010b2a6bbb2cf8b71d9",
       "rpcUsed": [
         "apply_session_runtime_command",
         "create_play_session",
@@ -42857,8 +42857,8 @@
           "kind": "edge",
           "name": "session-recap",
           "path": "src/infrastructure/session/session-recap-ai-service.ts",
-          "line": 85,
-          "endLine": 87,
+          "line": 97,
+          "endLine": 99,
           "resolution": "literal-or-constant",
           "expression": "supabase.functions.invoke('session-recap', {\n      body: { sessionId },\n    })",
           "chain": "supabase.functions.invoke('session-recap', {\n      body: { sessionId },\n    })",
@@ -42868,17 +42868,17 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/session/session-recap-ai-service.ts",
-            "line": 79,
-            "endLine": 105,
-            "text": "async generateDraft(sessionId: string): Promise<SessionRecapAiGenerateResult> {\n    if (isHostLibraryEnabled()) {\n      throw new Error(\n        'KI-Zusammenfassung ist im Host-Modus noch nicht verfügbar. Bitte manuell schreiben.',\n      );\n    }\n    const { data, error } = await supabase.functions.invoke('session-recap', {\n      body: { sessionId },\n    });\n    if (error) {\n      const serverMessage = await getFunctionErrorMessage(error);\n      throw new Error(\n        serverMessage ??\n          'Zusammenfassung konnte nicht generiert werden. Bitte manuell schreiben.',\n      );\n    }\n    const response = parseFunctionResponse(data);\n    if (response.status !== 'ok') {\n      throw new Error(response.message);\n    }\n    return {\n      summaryText: response.summaryText,\n      summaryStatus: response.summaryStatus === 'approved' ? 'approved' : 'draft',\n      provider: response.provider,\n      model: response.model,\n    };\n  }"
+            "line": 84,
+            "endLine": 117,
+            "text": "async generateDraft(sessionId: string): Promise<SessionRecapAiGenerateResult> {\n    if (isHostLibraryEnabled()) {\n      const response = await generateHostSessionRecapDraft(sessionId);\n      if (response.status !== 'ok') {\n        throw new Error(response.message);\n      }\n      return {\n        summaryText: response.summaryText,\n        summaryStatus: response.summaryStatus === 'approved' ? 'approved' : 'draft',\n        provider: response.provider,\n        model: response.model,\n      };\n    }\n    const { data, error } = await supabase.functions.invoke('session-recap', {\n      body: { sessionId },\n    });\n    if (error) {\n      const serverMessage = await getFunctionErrorMessage(error);\n      throw new Error(\n        serverMessage ??\n          'Zusammenfassung konnte nicht generiert werden. Bitte manuell schreiben.',\n      );\n    }\n    const response = parseFunctionResponse(data);\n    if (response.status !== 'ok') {\n      throw new Error(response.message);\n    }\n    return {\n      summaryText: response.summaryText,\n      summaryStatus: response.summaryStatus === 'approved' ? 'approved' : 'draft',\n      provider: response.provider,\n      model: response.model,\n    };\n  }"
           }
         },
         {
           "kind": "rpc",
           "name": "save_session_recap_summary",
           "path": "src/infrastructure/session/session-recap-ai-service.ts",
-          "line": 126,
-          "endLine": 130,
+          "line": 138,
+          "endLine": 142,
           "resolution": "literal-or-constant",
           "expression": "supabase.rpc('save_session_recap_summary', {\n        p_session_id: sessionId,\n        p_summary_text: summaryText,\n        p_status: status,\n      })",
           "chain": "supabase.rpc('save_session_recap_summary', {\n        p_session_id: sessionId,\n        p_summary_text: summaryText,\n        p_status: status,\n      })",
@@ -42888,8 +42888,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/session/session-recap-ai-service.ts",
-            "line": 107,
-            "endLine": 149,
+            "line": 119,
+            "endLine": 161,
             "text": "async saveSummary(\n    sessionId: string,\n    summaryText: string,\n    status: 'draft' | 'approved',\n  ): Promise<{ summaryText: string | null; summaryStatus: EpisodeSummaryStatus }> {\n    if (isHostLibraryEnabled()) {\n      const saved = await saveHostSessionRecapSummary(sessionId, summaryText, status);\n      return {\n        summaryText:\n          typeof saved.summaryText === 'string' ? saved.summaryText : summaryText,\n        summaryStatus:\n          saved.summaryStatus === 'approved'\n            ? 'approved'\n            : saved.summaryStatus === 'draft'\n              ? 'draft'\n              : status,\n      };\n    }\n    const { data, error } = await raceWithTimeoutReject(\n      supabase.rpc('save_session_recap_summary', {\n        p_session_id: sessionId,\n        p_summary_text: summaryText,\n        p_status: status,\n      }),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'Speichern Zeitüberschreitung',\n    );\n    if (error) {\n      throw new Error(error.message || 'Zusammenfassung konnte nicht gespeichert werden');\n    }\n    if (!isRecord(data)) {\n      return { summaryText, summaryStatus: status };\n    }\n    return {\n      summaryText: typeof data.summaryText === 'string' ? data.summaryText : summaryText,\n      summaryStatus:\n        data.summaryStatus === 'approved'\n          ? 'approved'\n          : data.summaryStatus === 'draft'\n            ? 'draft'\n            : 'none',\n    };\n  }"
           }
         },
@@ -43730,38 +43730,38 @@
         },
         {
           "path": "src/infrastructure/session/session-recap-ai-service.ts",
-          "line": 32,
-          "endLine": 34,
+          "line": 37,
+          "endLine": 39,
           "name": "isRecord"
         },
         {
           "path": "src/infrastructure/session/session-recap-ai-service.ts",
-          "line": 36,
-          "endLine": 61,
+          "line": 41,
+          "endLine": 66,
           "name": "parseFunctionResponse"
         },
         {
           "path": "src/infrastructure/session/session-recap-ai-service.ts",
-          "line": 63,
-          "endLine": 65,
+          "line": 68,
+          "endLine": 70,
           "name": "hasResponseContext"
         },
         {
           "path": "src/infrastructure/session/session-recap-ai-service.ts",
-          "line": 67,
-          "endLine": 76,
+          "line": 72,
+          "endLine": 81,
           "name": "getFunctionErrorMessage"
         },
         {
           "path": "src/infrastructure/session/session-recap-ai-service.ts",
-          "line": 79,
-          "endLine": 105,
+          "line": 84,
+          "endLine": 117,
           "name": "generateDraft"
         },
         {
           "path": "src/infrastructure/session/session-recap-ai-service.ts",
-          "line": 107,
-          "endLine": 149,
+          "line": 119,
+          "endLine": 161,
           "name": "saveSummary"
         },
         {

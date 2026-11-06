@@ -65,6 +65,8 @@ export type HostApiDeps = {
   readonly aiOllama?: ReturnType<typeof createOllamaSettingsUseCases>;
   /** CUT-13 character-lore generate-background (optional until wired). */
   readonly characterLore?: CharacterLoreUseCases;
+  /** CUT-14 session-recap AI generate (optional until wired). */
+  readonly sessionRecapGenerate?: import('../application/session-recap/index.ts').SessionRecapGenerateUseCases;
   /** Browser Library cutover — optional until composition root wires module ports. */
   readonly character?: CharacterPorts | null;
   readonly world?: WorldPorts | null;
@@ -480,6 +482,7 @@ export function createHostApi(deps: HostApiDeps): Hono {
     look: deps.look,
     npcCreature: deps.npcCreature,
     sagaInfra: deps.sagaInfra,
+    sessionRecapGenerate: deps.sessionRecapGenerate,
   });
 
   mountWorldAtlasHttpRoutes(app, {

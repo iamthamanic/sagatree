@@ -352,7 +352,8 @@ try {
   assert(/isHostLibraryEnabled/.test(profileSrc), 'profile dual-path');
   assert(/\/api\/v1\/ai\/character-lore/.test(loreSrc), 'CUT-13 lore host dual-path');
   assert(!/Host-Modus noch nicht verfügbar/.test(loreSrc), 'lore Soft-DENY removed');
-  assert(/Host-Modus noch nicht verfügbar/.test(recapAiSrc), 'recap-ai host stub');
+  assert(/generateHostSessionRecapDraft/.test(recapAiSrc), 'CUT-14 recap host dual-path');
+  assert(!/Host-Modus noch nicht verfügbar/.test(recapAiSrc), 'recap Soft-DENY removed');
   assert(
     /mountCatalogHttpRoutes/.test(readFileSync(join(root, 'server/src/api/create-app.ts'), 'utf8')),
     'catalog routes mounted',
