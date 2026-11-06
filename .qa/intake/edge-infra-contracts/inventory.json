@@ -23436,7 +23436,7 @@
         "sourceFiles": [
           {
             "path": "src/infrastructure/session/media/media-token-client.ts",
-            "sha256": "ca49601bad72d7534020f2a0ffbeb3a0074b937e24062648a3a5918c4cf64fe8"
+            "sha256": "870b4220178bcd0f10ef961a6f6f0bbf307c8c31370b9360507f3a23d28fa84a"
           },
           {
             "path": "supabase/functions/_shared/client-trust-body.ts",
@@ -23579,8 +23579,8 @@
           "kind": "edge",
           "name": "session-media-token",
           "path": "src/infrastructure/session/media/media-token-client.ts",
-          "line": 51,
-          "endLine": 53,
+          "line": 50,
+          "endLine": 52,
           "resolution": "literal-or-constant",
           "expression": "supabase.functions.invoke('session-media-token', {\n      body: { sessionId },\n    })",
           "chain": "supabase.functions.invoke('session-media-token', {\n      body: { sessionId },\n    })",
@@ -23590,9 +23590,9 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/session/media/media-token-client.ts",
-            "line": 28,
-            "endLine": 112,
-            "text": "export async function fetchSessionMediaToken(input: {\n  sessionId: string;\n}): Promise<MediaTokenResult> {\n  const sessionId = input.sessionId.trim();\n  if (!sessionId) {\n    return {\n      ok: false,\n      degraded: true,\n      reason: 'bad_request',\n      message: 'sessionId fehlt.',\n    };\n  }\n\n  if (isHostLibraryEnabled()) {\n    return {\n      ok: false,\n      degraded: true,\n      reason: 'media_service_unavailable',\n      message: 'Media-Token ist im Host-Modus noch nicht verfügbar.',\n    };\n  }\n\n  try {\n    const { data, error } = await supabase.functions.invoke('session-media-token', {\n      body: { sessionId },\n    });\n    if (error) {\n      return {\n        ok: false,\n        degraded: true,\n        reason: 'media_service_unavailable',\n        message: error.message || 'Media-Token-Dienst nicht erreichbar.',\n      };\n    }\n    const record = data as Record<string, unknown> | null;\n    if (!record || typeof record !== 'object') {\n      return {\n        ok: false,\n        degraded: true,\n        reason: 'media_service_unavailable',\n        message: 'Leere Media-Token-Antwort.',\n      };\n    }\n    if (record.degraded === true || record.ok === false) {\n      const reason =\n        record.reason === 'forbidden' ||\n        record.reason === 'unauthorized' ||\n        record.reason === 'bad_request'\n          ? record.reason\n          : 'media_service_unavailable';\n      return {\n        ok: false,\n        degraded: true,\n        reason,\n        message:\n          typeof record.message === 'string'\n            ? record.message\n            : 'Media plane degraded.',\n      };\n    }\n    const token = typeof record.token === 'string' ? record.token : '';\n    const url = typeof record.url === 'string' ? record.url : '';\n    const roomId = typeof record.roomId === 'string' ? record.roomId : '';\n    const expiresAt =\n      typeof record.expiresAt === 'string' ? record.expiresAt : '';\n    const ttlSeconds =\n      typeof record.ttlSeconds === 'number' ? record.ttlSeconds : 0;\n    if (!token || !url || !roomId) {\n      return {\n        ok: false,\n        degraded: true,\n        reason: 'media_service_unavailable',\n        message: 'Media-Token unvollständig.',\n      };\n    }\n    return { ok: true, token, url, roomId, expiresAt, ttlSeconds };\n  } catch (error) {\n    return {\n      ok: false,\n      degraded: true,\n      reason: 'media_service_unavailable',\n      message: error instanceof Error ? error.message : 'Media-Token-Fehler.',\n    };\n  }\n}"
+            "line": 32,
+            "endLine": 111,
+            "text": "export async function fetchSessionMediaToken(input: {\n  sessionId: string;\n}): Promise<MediaTokenResult> {\n  const sessionId = input.sessionId.trim();\n  if (!sessionId) {\n    return {\n      ok: false,\n      degraded: true,\n      reason: 'bad_request',\n      message: 'sessionId fehlt.',\n    };\n  }\n\n  if (isHostLibraryEnabled()) {\n    return fetchHostSessionMediaToken(sessionId);\n  }\n\n  try {\n    const { data, error } = await supabase.functions.invoke('session-media-token', {\n      body: { sessionId },\n    });\n    if (error) {\n      return {\n        ok: false,\n        degraded: true,\n        reason: 'media_service_unavailable',\n        message: error.message || 'Media-Token-Dienst nicht erreichbar.',\n      };\n    }\n    const record = data as Record<string, unknown> | null;\n    if (!record || typeof record !== 'object') {\n      return {\n        ok: false,\n        degraded: true,\n        reason: 'media_service_unavailable',\n        message: 'Leere Media-Token-Antwort.',\n      };\n    }\n    if (record.degraded === true || record.ok === false) {\n      const reason =\n        record.reason === 'forbidden' ||\n        record.reason === 'unauthorized' ||\n        record.reason === 'bad_request'\n          ? record.reason\n          : 'media_service_unavailable';\n      return {\n        ok: false,\n        degraded: true,\n        reason,\n        message:\n          typeof record.message === 'string'\n            ? record.message\n            : 'Media plane degraded.',\n      };\n    }\n    const token = typeof record.token === 'string' ? record.token : '';\n    const url = typeof record.url === 'string' ? record.url : '';\n    const roomId = typeof record.roomId === 'string' ? record.roomId : '';\n    const expiresAt =\n      typeof record.expiresAt === 'string' ? record.expiresAt : '';\n    const ttlSeconds =\n      typeof record.ttlSeconds === 'number' ? record.ttlSeconds : 0;\n    if (!token || !url || !roomId) {\n      return {\n        ok: false,\n        degraded: true,\n        reason: 'media_service_unavailable',\n        message: 'Media-Token unvollständig.',\n      };\n    }\n    return { ok: true, token, url, roomId, expiresAt, ttlSeconds };\n  } catch (error) {\n    return {\n      ok: false,\n      degraded: true,\n      reason: 'media_service_unavailable',\n      message: error instanceof Error ? error.message : 'Media-Token-Fehler.',\n    };\n  }\n}"
           }
         }
       ],
@@ -30318,6 +30318,10 @@
             "sha256": "b5a68f6452217b08d2217a983113a9a356ce70890693319227f35c82fbdcd818"
           },
           {
+            "path": "src/infrastructure/host/host-session-http.ts",
+            "sha256": "763c2535c26f746b60ff3f68358fb7c37c20384bd9f4a9a5a7d9bf2710e0ab81"
+          },
+          {
             "path": "src/infrastructure/inventory/inventory-persistence.ts",
             "sha256": "79aaa09053ecd72a0bec8f8f0610b31ab0c9b34779f4a4c87f19f0d2ef7e4ac2"
           },
@@ -30447,7 +30451,7 @@
           },
           {
             "path": "src/infrastructure/session/media/media-token-client.ts",
-            "sha256": "ca49601bad72d7534020f2a0ffbeb3a0074b937e24062648a3a5918c4cf64fe8"
+            "sha256": "870b4220178bcd0f10ef961a6f6f0bbf307c8c31370b9360507f3a23d28fa84a"
           },
           {
             "path": "src/infrastructure/session/media/memory-media-plane-adapter.ts",
@@ -30491,7 +30495,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-character.json",
-      "sourceContractSha256": "1d2ac63830d51b00339dd39c54abb687e3b26af671abc7234ce70420b6ba9a47",
+      "sourceContractSha256": "c4de5206fa3c4bbeb053912df5640f7c19b70e7b6b421935cf363a0903caabbd",
       "rpcUsed": [],
       "tablesTouched": [
         "character_adventure_arcs",
@@ -38937,7 +38941,7 @@
           },
           {
             "path": "src/infrastructure/host/host-session-http.ts",
-            "sha256": "bc35b154cf69a205bfbabb150cf15b07283136473726daaeb331de0de19ceb0c"
+            "sha256": "763c2535c26f746b60ff3f68358fb7c37c20384bd9f4a9a5a7d9bf2710e0ab81"
           },
           {
             "path": "src/infrastructure/npc-creature/host-npc-creature-adapter.ts",
@@ -38993,7 +38997,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-npc-creature.json",
-      "sourceContractSha256": "e077bf2d57ee21ad731e56f93f53ed19748c8f5cc50822fc3f6f5c93719ff951",
+      "sourceContractSha256": "d45be1a772118a5365a74f60a2e65ffe8712b90365f397f36318eb6a6f83670e",
       "rpcUsed": [
         "assign_npc_creature_controller",
         "clear_npc_creature_instance_temp_controllers_for_session",
@@ -41639,7 +41643,7 @@
           },
           {
             "path": "src/infrastructure/host/host-session-http.ts",
-            "sha256": "bc35b154cf69a205bfbabb150cf15b07283136473726daaeb331de0de19ceb0c"
+            "sha256": "763c2535c26f746b60ff3f68358fb7c37c20384bd9f4a9a5a7d9bf2710e0ab81"
           },
           {
             "path": "src/infrastructure/saga/host-saga-adapter.ts",
@@ -41675,7 +41679,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-saga.json",
-      "sourceContractSha256": "7ee772e09ff170b8f0be185d271ead526ffe62e9da9e903be48311171a9ec5a0",
+      "sourceContractSha256": "3936ce841625eb70a2902d4c49e86483d1df45973fa0f8f7911a3a50c121eb7f",
       "rpcUsed": [
         "copy_native_saga_definition",
         "create_project_from_saga_version",
@@ -42169,7 +42173,7 @@
           },
           {
             "path": "src/infrastructure/host/host-session-http.ts",
-            "sha256": "bc35b154cf69a205bfbabb150cf15b07283136473726daaeb331de0de19ceb0c"
+            "sha256": "763c2535c26f746b60ff3f68358fb7c37c20384bd9f4a9a5a7d9bf2710e0ab81"
           },
           {
             "path": "src/infrastructure/session/host-session-adapter.ts",
@@ -42197,7 +42201,7 @@
           },
           {
             "path": "src/infrastructure/session/media/media-token-client.ts",
-            "sha256": "ca49601bad72d7534020f2a0ffbeb3a0074b937e24062648a3a5918c4cf64fe8"
+            "sha256": "870b4220178bcd0f10ef961a6f6f0bbf307c8c31370b9360507f3a23d28fa84a"
           },
           {
             "path": "src/infrastructure/session/media/memory-media-plane-adapter.ts",
@@ -42261,7 +42265,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-session.json",
-      "sourceContractSha256": "e8a91b2e35f3e9f896d01b557f159967ad5235c2defc8010b2a6bbb2cf8b71d9",
+      "sourceContractSha256": "663ac7f45df327725c9be48d4b72db77e58f2e893fe94e8969fb47bc25afdcd8",
       "rpcUsed": [
         "apply_session_runtime_command",
         "create_play_session",
@@ -42932,8 +42936,8 @@
           "kind": "edge",
           "name": "session-media-token",
           "path": "src/infrastructure/session/media/media-token-client.ts",
-          "line": 51,
-          "endLine": 53,
+          "line": 50,
+          "endLine": 52,
           "resolution": "literal-or-constant",
           "expression": "supabase.functions.invoke('session-media-token', {\n      body: { sessionId },\n    })",
           "chain": "supabase.functions.invoke('session-media-token', {\n      body: { sessionId },\n    })",
@@ -42943,9 +42947,9 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/session/media/media-token-client.ts",
-            "line": 28,
-            "endLine": 112,
-            "text": "export async function fetchSessionMediaToken(input: {\n  sessionId: string;\n}): Promise<MediaTokenResult> {\n  const sessionId = input.sessionId.trim();\n  if (!sessionId) {\n    return {\n      ok: false,\n      degraded: true,\n      reason: 'bad_request',\n      message: 'sessionId fehlt.',\n    };\n  }\n\n  if (isHostLibraryEnabled()) {\n    return {\n      ok: false,\n      degraded: true,\n      reason: 'media_service_unavailable',\n      message: 'Media-Token ist im Host-Modus noch nicht verfügbar.',\n    };\n  }\n\n  try {\n    const { data, error } = await supabase.functions.invoke('session-media-token', {\n      body: { sessionId },\n    });\n    if (error) {\n      return {\n        ok: false,\n        degraded: true,\n        reason: 'media_service_unavailable',\n        message: error.message || 'Media-Token-Dienst nicht erreichbar.',\n      };\n    }\n    const record = data as Record<string, unknown> | null;\n    if (!record || typeof record !== 'object') {\n      return {\n        ok: false,\n        degraded: true,\n        reason: 'media_service_unavailable',\n        message: 'Leere Media-Token-Antwort.',\n      };\n    }\n    if (record.degraded === true || record.ok === false) {\n      const reason =\n        record.reason === 'forbidden' ||\n        record.reason === 'unauthorized' ||\n        record.reason === 'bad_request'\n          ? record.reason\n          : 'media_service_unavailable';\n      return {\n        ok: false,\n        degraded: true,\n        reason,\n        message:\n          typeof record.message === 'string'\n            ? record.message\n            : 'Media plane degraded.',\n      };\n    }\n    const token = typeof record.token === 'string' ? record.token : '';\n    const url = typeof record.url === 'string' ? record.url : '';\n    const roomId = typeof record.roomId === 'string' ? record.roomId : '';\n    const expiresAt =\n      typeof record.expiresAt === 'string' ? record.expiresAt : '';\n    const ttlSeconds =\n      typeof record.ttlSeconds === 'number' ? record.ttlSeconds : 0;\n    if (!token || !url || !roomId) {\n      return {\n        ok: false,\n        degraded: true,\n        reason: 'media_service_unavailable',\n        message: 'Media-Token unvollständig.',\n      };\n    }\n    return { ok: true, token, url, roomId, expiresAt, ttlSeconds };\n  } catch (error) {\n    return {\n      ok: false,\n      degraded: true,\n      reason: 'media_service_unavailable',\n      message: error instanceof Error ? error.message : 'Media-Token-Fehler.',\n    };\n  }\n}"
+            "line": 32,
+            "endLine": 111,
+            "text": "export async function fetchSessionMediaToken(input: {\n  sessionId: string;\n}): Promise<MediaTokenResult> {\n  const sessionId = input.sessionId.trim();\n  if (!sessionId) {\n    return {\n      ok: false,\n      degraded: true,\n      reason: 'bad_request',\n      message: 'sessionId fehlt.',\n    };\n  }\n\n  if (isHostLibraryEnabled()) {\n    return fetchHostSessionMediaToken(sessionId);\n  }\n\n  try {\n    const { data, error } = await supabase.functions.invoke('session-media-token', {\n      body: { sessionId },\n    });\n    if (error) {\n      return {\n        ok: false,\n        degraded: true,\n        reason: 'media_service_unavailable',\n        message: error.message || 'Media-Token-Dienst nicht erreichbar.',\n      };\n    }\n    const record = data as Record<string, unknown> | null;\n    if (!record || typeof record !== 'object') {\n      return {\n        ok: false,\n        degraded: true,\n        reason: 'media_service_unavailable',\n        message: 'Leere Media-Token-Antwort.',\n      };\n    }\n    if (record.degraded === true || record.ok === false) {\n      const reason =\n        record.reason === 'forbidden' ||\n        record.reason === 'unauthorized' ||\n        record.reason === 'bad_request'\n          ? record.reason\n          : 'media_service_unavailable';\n      return {\n        ok: false,\n        degraded: true,\n        reason,\n        message:\n          typeof record.message === 'string'\n            ? record.message\n            : 'Media plane degraded.',\n      };\n    }\n    const token = typeof record.token === 'string' ? record.token : '';\n    const url = typeof record.url === 'string' ? record.url : '';\n    const roomId = typeof record.roomId === 'string' ? record.roomId : '';\n    const expiresAt =\n      typeof record.expiresAt === 'string' ? record.expiresAt : '';\n    const ttlSeconds =\n      typeof record.ttlSeconds === 'number' ? record.ttlSeconds : 0;\n    if (!token || !url || !roomId) {\n      return {\n        ok: false,\n        degraded: true,\n        reason: 'media_service_unavailable',\n        message: 'Media-Token unvollständig.',\n      };\n    }\n    return { ok: true, token, url, roomId, expiresAt, ttlSeconds };\n  } catch (error) {\n    return {\n      ok: false,\n      degraded: true,\n      reason: 'media_service_unavailable',\n      message: error instanceof Error ? error.message : 'Media-Token-Fehler.',\n    };\n  }\n}"
           }
         },
         {
@@ -43790,8 +43794,8 @@
         },
         {
           "path": "src/infrastructure/session/media/media-token-client.ts",
-          "line": 28,
-          "endLine": 112,
+          "line": 32,
+          "endLine": 111,
           "name": "fetchSessionMediaToken"
         },
         {

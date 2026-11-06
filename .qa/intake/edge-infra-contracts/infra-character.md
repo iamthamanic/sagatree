@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-character.json](source-contracts/infra-character.json) (SHA-256 `1d2ac63830d51b00339dd39c54abb687e3b26af671abc7234ce70420b6ba9a47`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-character.json](source-contracts/infra-character.json) (SHA-256 `c4de5206fa3c4bbeb053912df5640f7c19b70e7b6b421935cf363a0903caabbd`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -12313,6 +12313,7 @@ private async assertPersonalLookWriteGate(
 | `src/infrastructure/host/host-library-http.ts` | `b2343081ddce2e2edd73651b0622e8b4cc6d8583d746a863dbe3343e3a98f71a` |
 | `src/infrastructure/host/host-product-deny.ts` | `69b148debc95006bb31daa7a94caf4e1507ac3089fdf399952102c4effa3759c` |
 | `src/infrastructure/host/host-project-http.ts` | `b5a68f6452217b08d2217a983113a9a356ce70890693319227f35c82fbdcd818` |
+| `src/infrastructure/host/host-session-http.ts` | `763c2535c26f746b60ff3f68358fb7c37c20384bd9f4a9a5a7d9bf2710e0ab81` |
 | `src/infrastructure/inventory/inventory-persistence.ts` | `79aaa09053ecd72a0bec8f8f0610b31ab0c9b34779f4a4c87f19f0d2ef7e4ac2` |
 | `src/infrastructure/inventory/item-catalog.persistence.ts` | `a68903ba909af8030e81d28555a65798800c9a32a790a4281e96f52b1550c566` |
 | `src/infrastructure/inventory/supabase-item-catalog.repository.ts` | `1ea1b14afc3d01c117c13e96af516a8cc0a315edfb170a6f1f11c6903ab366eb` |
@@ -12345,7 +12346,7 @@ private async assertPersonalLookWriteGate(
 | `src/infrastructure/project/project-service.ts` | `07549fce108bd735bdd7d48b07bccbf39947e3547d0f26ab60fdd013ca94aeff` |
 | `src/infrastructure/session/media/livekit-media-plane-adapter.ts` | `ba41c95f3816b79818a9c312c056ec896ac75fd4633dba27954cdcdb797b381d` |
 | `src/infrastructure/session/media/media-plane-adapter.ts` | `1dbdf0f7c75c1edc435fb629d5029a1c04806a5a6cbcf9b037ad8a620dcc34cd` |
-| `src/infrastructure/session/media/media-token-client.ts` | `ca49601bad72d7534020f2a0ffbeb3a0074b937e24062648a3a5918c4cf64fe8` |
+| `src/infrastructure/session/media/media-token-client.ts` | `870b4220178bcd0f10ef961a6f6f0bbf307c8c31370b9360507f3a23d28fa84a` |
 | `src/infrastructure/session/media/memory-media-plane-adapter.ts` | `31fc7cee75c49c1e3af09b784e4a8dad3446bbe5ae5ddd6f7b2c9aee142dc5be` |
 | `src/infrastructure/session/media/memory-media-plane-bus.ts` | `1616d229067f513a12c67319aec28649e3a0afdf77779f9071b595dc024ff193` |
 | `src/infrastructure/session/media/session-media-plane.ts` | `ce8d3ec690f83745646400443d7870cd96383e341628a2d8f017e2d391fbb225` |

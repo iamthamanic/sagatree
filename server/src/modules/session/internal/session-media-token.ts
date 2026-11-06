@@ -1,13 +1,13 @@
 /**
- * Host characterization of Edge `session-media-token` (MIG-420 / #836).
+ * Host characterization of Edge `session-media-token` (MIG-420 / #836 → CUT-19 / #1154).
  * Location: server/src/modules/session/internal/session-media-token.ts
  *
- * Allowlisted Edge worker remains the live mount. Isolated authz / membership /
- * JWT / LiveKit fixtures only. No public activation or production cutover.
+ * Host HTTP activation via POST `/api/v1/sessions/:sessionId/media-token`.
+ * Edge remains allowlisted until dual-path removal (CUT-20).
  */
 
-/** Explicit: no automatic host/public cutover (successor + MIG-600 still required). */
-export const SESSION_MEDIA_TOKEN_PUBLIC_ACTIVATION_AUTHORIZED = false as const;
+/** CUT-19 / #1154 — host HTTP activation authorized; Edge remains until CUT-20. */
+export const SESSION_MEDIA_TOKEN_PUBLIC_ACTIVATION_AUTHORIZED = true as const;
 
 export const SESSION_MEDIA_TOKEN_DEFAULT_TTL_SECONDS = 120 as const;
 export const SESSION_MEDIA_TOKEN_MAX_TTL_SECONDS = 300 as const;
@@ -155,6 +155,86 @@ export function seedSessionMediaTokenMember(
   row: SessionMediaTokenMemberRow,
 ): void {
   store.projectMembers.set(memberKey(projectId, row.user_id), row);
+}
+
+/** Drop a cached session (+ its project membership map entries) after delete/miss. */
+export function evictSessionMediaTokenSession(
+  store: SessionMediaTokenStore,
+  sessionId: string,
+): void {
+  const sid = sessionId.trim();
+  if (!sid) return;
+  const existing = store.sessions.get(sid);
+  store.sessions.delete(sid);
+  if (!existing) return;
+  const prefix = `${existing.project_id}::`;
+  for (const key of [...store.projectMembers.keys()]) {
+    if (key.startsWith(prefix)) store.projectMembers.delete(key);
+  }
+}
+
+type SessionMediaTokenDb = {
+  readonly prepare: (sql: string) => {
+    get: (...params: unknown[]) => unknown;
+    all: (...params: unknown[]) => unknown;
+  };
+};
+
+export type SessionMediaTokenHydrateResult = {
+  readonly session: SessionMediaTokenSessionRow;
+  readonly members: ReadonlyArray<{
+    readonly projectId: string;
+    readonly member: SessionMediaTokenMemberRow;
+  }>;
+};
+
+/**
+ * Load play_sessions + project_members for one media-token issue into the Map store.
+ * Maps host `active=1` → Edge-shaped `status: 'active'`.
+ */
+export function hydrateSessionMediaTokenFromDb(
+  db: SessionMediaTokenDb,
+  sessionId: string,
+): SessionMediaTokenHydrateResult | null {
+  const sid = sessionId.trim();
+  if (!sid) return null;
+  const session = db
+    .prepare(
+      `SELECT session_id AS id, project_id AS projectId
+       FROM play_sessions WHERE session_id = ?`,
+    )
+    .get(sid) as { id: string; projectId: string } | undefined;
+  if (!session) return null;
+
+  const membersRaw = db
+    .prepare(
+      `SELECT user_id AS userId, role, active, character_id AS characterId
+       FROM project_members WHERE project_id = ?`,
+    )
+    .all(session.projectId) as Array<{
+    userId: string;
+    role: string;
+    active: number | boolean;
+    characterId: string | null;
+  }>;
+
+  const members = (Array.isArray(membersRaw) ? membersRaw : []).map((row) => {
+    const active = row.active === true || row.active === 1;
+    return {
+      projectId: session.projectId,
+      member: {
+        user_id: row.userId,
+        role: row.role,
+        status: (active ? 'active' : 'inactive') as SessionMediaTokenMemberRow['status'],
+        character_id: typeof row.characterId === 'string' ? row.characterId : null,
+      },
+    };
+  });
+
+  return {
+    session: { id: session.id, project_id: session.projectId },
+    members,
+  };
 }
 
 export function deriveMediaRoomId(sessionId: string): string {

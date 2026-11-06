@@ -51,14 +51,19 @@ const {
 const { createSessionMediaTokenUseCases } = app;
 const { isEdgeDispatcherAllowed } = allow;
 
-assert(SESSION_MEDIA_TOKEN_PUBLIC_ACTIVATION_AUTHORIZED === false, 'no public activation');
-assert(isEdgeDispatcherAllowed('session-media-token') === true, 'edge stays allowlisted');
+assert(SESSION_MEDIA_TOKEN_PUBLIC_ACTIVATION_AUTHORIZED === true, 'CUT-19 activation');
+assert(isEdgeDispatcherAllowed('session-media-token') === true, 'edge stays allowlisted until CUT-20');
 assert(SESSION_MEDIA_TOKEN_DEFAULT_TTL_SECONDS === 120, 'default TTL 120');
 assert(SESSION_MEDIA_TOKEN_MIN_TTL_SECONDS === 30, 'min TTL 30');
 assert(SESSION_MEDIA_TOKEN_MAX_TTL_SECONDS === 300, 'max TTL 300');
 
 const createApp = readFileSync(join(root, 'server/src/api/create-app.ts'), 'utf8');
-assert(!/session-media-token/i.test(createApp), 'no create-app cutover mount');
+assert(/sessionMediaToken/i.test(createApp), 'create-app wires session-media-token cutover dep');
+const sessionRoutes = readFileSync(join(root, 'server/src/api/session-routes.ts'), 'utf8');
+assert(
+  sessionRoutes.includes('/api/v1/sessions/:sessionId/media-token'),
+  'session-routes mounts media-token',
+);
 
 const PLAYER = 'player-user-1';
 const GM = 'gm-user-1';
@@ -396,6 +401,41 @@ function configuredStore() {
   };
   const denied = await uc.issue(remoteOnly, { body: { sessionId: SESSION_ID } });
   assert(denied.httpStatus === 403, 'remote without linked solo still 403');
+}
+
+// --- Codex P1: hydrate miss evicts stale session (no mint after delete) ---
+{
+  const store = configuredStore();
+  let present = true;
+  const uc = createSessionMediaTokenUseCases({
+    store,
+    hydrateSession: (sessionId) => {
+      if (!present) return null;
+      return {
+        session: { id: sessionId, project_id: PROJECT_ID },
+        members: [
+          {
+            projectId: PROJECT_ID,
+            member: {
+              user_id: PLAYER,
+              role: 'player',
+              status: 'active',
+              character_id: null,
+            },
+          },
+        ],
+      };
+    },
+  });
+  const first = await uc.issue(actor(PLAYER), { body: { sessionId: SESSION_ID } });
+  assert(first.status === 'ok', 'first mint before delete');
+  present = false;
+  const afterDelete = await uc.issue(actor(PLAYER), { body: { sessionId: SESSION_ID } });
+  assert(
+    afterDelete.httpStatus === 403 && afterDelete.reason === 'forbidden',
+    'stale cache evicted after hydrate miss',
+  );
+  assert(!store.sessions.has(SESSION_ID), 'session map cleared');
 }
 
 console.log('PASS: mig-420-session-media-token.self-test');

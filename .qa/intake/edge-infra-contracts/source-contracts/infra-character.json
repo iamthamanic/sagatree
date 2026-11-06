@@ -1018,6 +1018,10 @@
       "sha256": "b5a68f6452217b08d2217a983113a9a356ce70890693319227f35c82fbdcd818"
     },
     {
+      "path": "src/infrastructure/host/host-session-http.ts",
+      "sha256": "763c2535c26f746b60ff3f68358fb7c37c20384bd9f4a9a5a7d9bf2710e0ab81"
+    },
+    {
       "path": "src/infrastructure/inventory/inventory-persistence.ts",
       "sha256": "79aaa09053ecd72a0bec8f8f0610b31ab0c9b34779f4a4c87f19f0d2ef7e4ac2"
     },
@@ -1147,7 +1151,7 @@
     },
     {
       "path": "src/infrastructure/session/media/media-token-client.ts",
-      "sha256": "ca49601bad72d7534020f2a0ffbeb3a0074b937e24062648a3a5918c4cf64fe8"
+      "sha256": "870b4220178bcd0f10ef961a6f6f0bbf307c8c31370b9360507f3a23d28fa84a"
     },
     {
       "path": "src/infrastructure/session/media/memory-media-plane-adapter.ts",
@@ -7468,6 +7472,46 @@
       "text": "export type HostSessionLookDto = {\n  readonly id: string;\n  readonly projectId: string;\n  readonly lookProfileId: string | null;\n  readonly publicId?: string;\n  readonly status?: string;\n  readonly sessionNumber?: number | null;\n  readonly name?: string | null;\n};"
     },
     {
+      "kind": "TypeAliasDeclaration",
+      "name": "EnvLike",
+      "path": "src/infrastructure/host/host-session-http.ts",
+      "line": 12,
+      "endLine": 15,
+      "text": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "HostPlaySessionDto",
+      "path": "src/infrastructure/host/host-session-http.ts",
+      "line": 98,
+      "endLine": 118,
+      "text": "export type HostPlaySessionDto = {\n  readonly sessionId: string;\n  readonly projectId: string;\n  readonly publicId?: string;\n  readonly joinCode?: string | null;\n  readonly code?: string | null;\n  readonly status: string;\n  readonly sessionNumber?: number;\n  readonly name?: string | null;\n  readonly createdAt?: string;\n  readonly startedAt?: string | null;\n  readonly endedAt?: string | null;\n  readonly gmUserId?: string;\n  readonly players?: readonly {\n    readonly id?: string;\n    readonly userId?: string;\n    readonly characterId?: string | null;\n    readonly isOnline?: boolean;\n    readonly joinedAt?: string;\n  }[];\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "HostSessionRecapGenerateResult",
+      "path": "src/infrastructure/host/host-session-http.ts",
+      "line": 389,
+      "endLine": 398,
+      "text": "export type HostSessionRecapGenerateResult =\n  | {\n      readonly status: 'ok';\n      readonly summaryText: string;\n      readonly summaryStatus: string;\n      readonly provider: string;\n      readonly model: string;\n    }\n  | { readonly status: 'not-configured'; readonly message: string }\n  | { readonly status: 'error'; readonly message: string };"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "HostSessionMediaTokenResult",
+      "path": "src/infrastructure/host/host-session-http.ts",
+      "line": 434,
+      "endLine": 452,
+      "text": "export type HostSessionMediaTokenResult =\n  | {\n      readonly ok: true;\n      readonly token: string;\n      readonly url: string;\n      readonly roomId: string;\n      readonly expiresAt: string;\n      readonly ttlSeconds: number;\n    }\n  | {\n      readonly ok: false;\n      readonly degraded: true;\n      readonly reason:\n        | 'media_service_unavailable'\n        | 'forbidden'\n        | 'unauthorized'\n        | 'bad_request';\n      readonly message: string;\n    };"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "HostPromoteOutcomeDto",
+      "path": "src/infrastructure/host/host-session-http.ts",
+      "line": 601,
+      "endLine": 607,
+      "text": "export type HostPromoteOutcomeDto = {\n  readonly ok?: boolean;\n  readonly idempotent?: boolean;\n  readonly targetKind?: string;\n  readonly targetRef?: string;\n  readonly messageDe?: string;\n};"
+    },
+    {
       "kind": "InterfaceDeclaration",
       "name": "CharacterInventoryRead",
       "path": "src/infrastructure/inventory/inventory-persistence.ts",
@@ -7879,24 +7923,24 @@
       "kind": "TypeAliasDeclaration",
       "name": "MediaTokenSuccess",
       "path": "src/infrastructure/session/media/media-token-client.ts",
-      "line": 10,
-      "endLine": 17,
+      "line": 14,
+      "endLine": 21,
       "text": "export type MediaTokenSuccess = {\n  readonly ok: true;\n  readonly token: string;\n  readonly url: string;\n  readonly roomId: string;\n  readonly expiresAt: string;\n  readonly ttlSeconds: number;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "MediaTokenDegraded",
       "path": "src/infrastructure/session/media/media-token-client.ts",
-      "line": 19,
-      "endLine": 24,
+      "line": 23,
+      "endLine": 28,
       "text": "export type MediaTokenDegraded = {\n  readonly ok: false;\n  readonly degraded: true;\n  readonly reason: 'media_service_unavailable' | 'forbidden' | 'unauthorized' | 'bad_request';\n  readonly message: string;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "MediaTokenResult",
       "path": "src/infrastructure/session/media/media-token-client.ts",
-      "line": 26,
-      "endLine": 26,
+      "line": 30,
+      "endLine": 30,
       "text": "export type MediaTokenResult = MediaTokenSuccess | MediaTokenDegraded;"
     },
     {

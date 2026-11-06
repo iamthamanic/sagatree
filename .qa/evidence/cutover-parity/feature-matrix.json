@@ -1088,14 +1088,14 @@
       "historicalCaller": "src/infrastructure/session/media/media-token-client.ts:fetchSessionMediaToken",
       "uiJourney": "SessionMediaPlane / LiveAct",
       "previousBehavior": "soft degraded; Edge session-media-token",
-      "hostSuccessor": "PORT_MISSING",
+      "hostSuccessor": "POST /api/v1/sessions/:sessionId/media-token",
       "dataOwner": "media",
       "risk": "medium",
-      "classification": "PARITY_MISSING",
+      "classification": "HOST_VERIFIED",
       "issueRef": 1154,
-      "evidenceTest": "pending CUT-19",
+      "evidenceTest": "scripts/cut-19-session-media-token.self-test.mjs",
       "featureAvailableBeforeCutover": true,
-      "notes": ""
+      "notes": "CUT-19 host activate; Soft-DENY removed; LiveKit env + membership hydrate"
     },
     {
       "stableKey": "auth.context-dual-path",
@@ -1954,9 +1954,9 @@
   ],
   "counts": {
     "total": 126,
-    "HOST_VERIFIED": 110,
+    "HOST_VERIFIED": 111,
     "LEGACY_UNUSED": 4,
-    "PARITY_MISSING": 12
+    "PARITY_MISSING": 11
   },
   "followUpIssues": {
     "1159": "CUT-02b NPC definition duplicate/restore/world-catalog/promote",

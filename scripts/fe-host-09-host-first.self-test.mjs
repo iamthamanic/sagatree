@@ -130,9 +130,20 @@ assert(/VITE_SAGATREE_HOST_LIBRARY=0/.test(envExample), '.env.example opt-out');
   assert(/isHostLibraryEnabled\(\)/.test(avatarSrc), 'avatar host-first gate');
   assert(/\/api\/v1\/ai\/character-avatar-meshy/.test(avatarSrc), 'avatar host route');
 }
+{
+  const mediaSrc = readFileSync(
+    join(root, 'src/infrastructure/session/media/media-token-client.ts'),
+    'utf8',
+  );
+  assert(!/Host-Modus noch nicht verfügbar/.test(mediaSrc), 'media Soft-DENY removed');
+  assert(/isHostLibraryEnabled\(\)/.test(mediaSrc), 'media host-first gate');
+  assert(
+    /fetchHostSessionMediaToken/.test(mediaSrc) || /\/media-token/.test(mediaSrc),
+    'media host route',
+  );
+}
 
 for (const [file, needle] of [
-  ['src/infrastructure/session/media/media-token-client.ts', 'Host-Modus noch nicht verfügbar'],
   ['src/infrastructure/saga/saga-definition-service.ts', 'assertHostProductSurfaceAvailable'],
   ['src/infrastructure/ai/host-ai-invoke.ts', 'isHostLibraryEnabled'],
   ['src/infrastructure/project/project-service.ts', 'assertHostProductSurfaceAvailable'],

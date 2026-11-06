@@ -98,6 +98,8 @@ export type RouteRegistryDeps = {
   readonly characterAvatarMeshy?: import('../application/character-avatar-meshy/index.ts').CharacterAvatarMeshyUseCases;
   /** CUT-14 session-recap AI generate. */
   readonly sessionRecapGenerate?: import('../application/session-recap/index.ts').SessionRecapGenerateUseCases;
+  /** CUT-19 LiveKit session media token. */
+  readonly sessionMediaToken?: import('../application/session-media-token/index.ts').SessionMediaTokenUseCases;
   /** CUT-16 item thumbnail. */
   readonly itemThumbnail?: import('../application/item-thumbnail/index.ts').ItemThumbnailUseCases;
   readonly ensureItemThumbnailDefinition?: (
@@ -180,6 +182,7 @@ export function createRouteHandler(deps: RouteRegistryDeps) {
     lookReferenceAnalysis: deps.lookReferenceAnalysis,
     characterAvatarMeshy: deps.characterAvatarMeshy,
     sessionRecapGenerate: deps.sessionRecapGenerate,
+    sessionMediaToken: deps.sessionMediaToken,
     itemThumbnail: deps.itemThumbnail,
     ensureItemThumbnailDefinition: deps.ensureItemThumbnailDefinition,
     itemModel3d: deps.itemModel3d,

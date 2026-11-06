@@ -4,8 +4,8 @@
   "localId": "MIG-002",
   "result": "PASS",
   "githubClosed": true,
-  "mergeRef": "PR #860 \u2192 main (after #782)",
-  "note": "Inventories refreshed after CUT-18 character-avatar-meshy activation.",
+  "mergeRef": "PR #860 → main (after #782)",
+  "note": "Inventories refreshed after CUT-19 session-media-token activation.",
   "checks": [
     {
       "command": "legacy inventory matrix",
@@ -17,14 +17,14 @@
       "command": "rpc inventory 57",
       "result": "PASS",
       "evidenceFile": ".qa/intake/rpc-contracts/inventory.json",
-      "sha256": "743f903762936d0ff58d8deaf5709288f7a5d75f573cabd8e43904a34e7f0012"
+      "sha256": "480025b86bf5ad3a55e39509d1dd013fb24b1a19e0fe558af995434e6b65507b"
     },
     {
       "command": "edge/infra inventory 25+13",
       "result": "PASS",
       "evidenceFile": ".qa/intake/edge-infra-contracts/inventory.json",
-      "sha256": "a1899875bf648087ec5bc3fbfb1f123953b8080d674dfa4e64861e0b99237982"
+      "sha256": "9cfe1b980d021830091ae7aa481a3470cc7bb7588c0f88bad9ed43b7430bfec9"
     }
   ],
-  "testedCommit": "487d1003461dc32c0b4ef639885142123cf29cac"
+  "testedCommit": "271c3232457e3a641566ef60e3d27323cbf8aed2"
 }

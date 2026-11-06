@@ -29,7 +29,7 @@
     },
     {
       "path": "src/infrastructure/session/media/media-token-client.ts",
-      "sha256": "ca49601bad72d7534020f2a0ffbeb3a0074b937e24062648a3a5918c4cf64fe8"
+      "sha256": "870b4220178bcd0f10ef961a6f6f0bbf307c8c31370b9360507f3a23d28fa84a"
     },
     {
       "path": "src/infrastructure/session/media/memory-media-plane-adapter.ts",
@@ -107,7 +107,7 @@
     },
     {
       "path": "src/infrastructure/host/host-session-http.ts",
-      "sha256": "bc35b154cf69a205bfbabb150cf15b07283136473726daaeb331de0de19ceb0c"
+      "sha256": "763c2535c26f746b60ff3f68358fb7c37c20384bd9f4a9a5a7d9bf2710e0ab81"
     },
     {
       "path": "src/lib/authenticatedUser.ts",
@@ -557,10 +557,18 @@
     },
     {
       "kind": "TypeAliasDeclaration",
+      "name": "HostSessionMediaTokenResult",
+      "path": "src/infrastructure/host/host-session-http.ts",
+      "line": 434,
+      "endLine": 452,
+      "text": "export type HostSessionMediaTokenResult =\n  | {\n      readonly ok: true;\n      readonly token: string;\n      readonly url: string;\n      readonly roomId: string;\n      readonly expiresAt: string;\n      readonly ttlSeconds: number;\n    }\n  | {\n      readonly ok: false;\n      readonly degraded: true;\n      readonly reason:\n        | 'media_service_unavailable'\n        | 'forbidden'\n        | 'unauthorized'\n        | 'bad_request';\n      readonly message: string;\n    };"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
       "name": "HostPromoteOutcomeDto",
       "path": "src/infrastructure/host/host-session-http.ts",
-      "line": 492,
-      "endLine": 498,
+      "line": 601,
+      "endLine": 607,
       "text": "export type HostPromoteOutcomeDto = {\n  readonly ok?: boolean;\n  readonly idempotent?: boolean;\n  readonly targetKind?: string;\n  readonly targetRef?: string;\n  readonly messageDe?: string;\n};"
     },
     {
@@ -783,8 +791,8 @@
       "kind": "edge",
       "name": "session-media-token",
       "path": "src/infrastructure/session/media/media-token-client.ts",
-      "line": 51,
-      "endLine": 53,
+      "line": 50,
+      "endLine": 52,
       "resolution": "literal-or-constant",
       "expression": "supabase.functions.invoke('session-media-token', {\n      body: { sessionId },\n    })",
       "chain": "supabase.functions.invoke('session-media-token', {\n      body: { sessionId },\n    })",
@@ -794,9 +802,9 @@
       ],
       "enclosingOperation": {
         "path": "src/infrastructure/session/media/media-token-client.ts",
-        "line": 28,
-        "endLine": 112,
-        "text": "export async function fetchSessionMediaToken(input: {\n  sessionId: string;\n}): Promise<MediaTokenResult> {\n  const sessionId = input.sessionId.trim();\n  if (!sessionId) {\n    return {\n      ok: false,\n      degraded: true,\n      reason: 'bad_request',\n      message: 'sessionId fehlt.',\n    };\n  }\n\n  if (isHostLibraryEnabled()) {\n    return {\n      ok: false,\n      degraded: true,\n      reason: 'media_service_unavailable',\n      message: 'Media-Token ist im Host-Modus noch nicht verfügbar.',\n    };\n  }\n\n  try {\n    const { data, error } = await supabase.functions.invoke('session-media-token', {\n      body: { sessionId },\n    });\n    if (error) {\n      return {\n        ok: false,\n        degraded: true,\n        reason: 'media_service_unavailable',\n        message: error.message || 'Media-Token-Dienst nicht erreichbar.',\n      };\n    }\n    const record = data as Record<string, unknown> | null;\n    if (!record || typeof record !== 'object') {\n      return {\n        ok: false,\n        degraded: true,\n        reason: 'media_service_unavailable',\n        message: 'Leere Media-Token-Antwort.',\n      };\n    }\n    if (record.degraded === true || record.ok === false) {\n      const reason =\n        record.reason === 'forbidden' ||\n        record.reason === 'unauthorized' ||\n        record.reason === 'bad_request'\n          ? record.reason\n          : 'media_service_unavailable';\n      return {\n        ok: false,\n        degraded: true,\n        reason,\n        message:\n          typeof record.message === 'string'\n            ? record.message\n            : 'Media plane degraded.',\n      };\n    }\n    const token = typeof record.token === 'string' ? record.token : '';\n    const url = typeof record.url === 'string' ? record.url : '';\n    const roomId = typeof record.roomId === 'string' ? record.roomId : '';\n    const expiresAt =\n      typeof record.expiresAt === 'string' ? record.expiresAt : '';\n    const ttlSeconds =\n      typeof record.ttlSeconds === 'number' ? record.ttlSeconds : 0;\n    if (!token || !url || !roomId) {\n      return {\n        ok: false,\n        degraded: true,\n        reason: 'media_service_unavailable',\n        message: 'Media-Token unvollständig.',\n      };\n    }\n    return { ok: true, token, url, roomId, expiresAt, ttlSeconds };\n  } catch (error) {\n    return {\n      ok: false,\n      degraded: true,\n      reason: 'media_service_unavailable',\n      message: error instanceof Error ? error.message : 'Media-Token-Fehler.',\n    };\n  }\n}"
+        "line": 32,
+        "endLine": 111,
+        "text": "export async function fetchSessionMediaToken(input: {\n  sessionId: string;\n}): Promise<MediaTokenResult> {\n  const sessionId = input.sessionId.trim();\n  if (!sessionId) {\n    return {\n      ok: false,\n      degraded: true,\n      reason: 'bad_request',\n      message: 'sessionId fehlt.',\n    };\n  }\n\n  if (isHostLibraryEnabled()) {\n    return fetchHostSessionMediaToken(sessionId);\n  }\n\n  try {\n    const { data, error } = await supabase.functions.invoke('session-media-token', {\n      body: { sessionId },\n    });\n    if (error) {\n      return {\n        ok: false,\n        degraded: true,\n        reason: 'media_service_unavailable',\n        message: error.message || 'Media-Token-Dienst nicht erreichbar.',\n      };\n    }\n    const record = data as Record<string, unknown> | null;\n    if (!record || typeof record !== 'object') {\n      return {\n        ok: false,\n        degraded: true,\n        reason: 'media_service_unavailable',\n        message: 'Leere Media-Token-Antwort.',\n      };\n    }\n    if (record.degraded === true || record.ok === false) {\n      const reason =\n        record.reason === 'forbidden' ||\n        record.reason === 'unauthorized' ||\n        record.reason === 'bad_request'\n          ? record.reason\n          : 'media_service_unavailable';\n      return {\n        ok: false,\n        degraded: true,\n        reason,\n        message:\n          typeof record.message === 'string'\n            ? record.message\n            : 'Media plane degraded.',\n      };\n    }\n    const token = typeof record.token === 'string' ? record.token : '';\n    const url = typeof record.url === 'string' ? record.url : '';\n    const roomId = typeof record.roomId === 'string' ? record.roomId : '';\n    const expiresAt =\n      typeof record.expiresAt === 'string' ? record.expiresAt : '';\n    const ttlSeconds =\n      typeof record.ttlSeconds === 'number' ? record.ttlSeconds : 0;\n    if (!token || !url || !roomId) {\n      return {\n        ok: false,\n        degraded: true,\n        reason: 'media_service_unavailable',\n        message: 'Media-Token unvollständig.',\n      };\n    }\n    return { ok: true, token, url, roomId, expiresAt, ttlSeconds };\n  } catch (error) {\n    return {\n      ok: false,\n      degraded: true,\n      reason: 'media_service_unavailable',\n      message: error instanceof Error ? error.message : 'Media-Token-Fehler.',\n    };\n  }\n}"
       }
     },
     {
@@ -1511,19 +1519,19 @@
     },
     {
       "path": "src/infrastructure/session/media/media-token-client.ts",
-      "line": 7,
-      "endLine": 7,
+      "line": 8,
+      "endLine": 8,
       "module": "../../../lib/supabase",
       "resolvedPath": "src/lib/supabase.ts",
       "expression": "import { supabase } from '../../../lib/supabase';"
     },
     {
       "path": "src/infrastructure/session/media/media-token-client.ts",
-      "line": 8,
-      "endLine": 8,
-      "module": "../../host/host-library-http",
-      "resolvedPath": "src/infrastructure/host/host-library-http.ts",
-      "expression": "import { isHostLibraryEnabled } from '../../host/host-library-http';"
+      "line": 9,
+      "endLine": 12,
+      "module": "../../host/host-session-http",
+      "resolvedPath": "src/infrastructure/host/host-session-http.ts",
+      "expression": "import {\n  fetchHostSessionMediaToken,\n  isHostLibraryEnabled,\n} from '../../host/host-session-http';"
     },
     {
       "path": "src/infrastructure/session/media/memory-media-plane-adapter.ts",
@@ -1941,27 +1949,27 @@
     },
     {
       "path": "src/infrastructure/session/media/media-token-client.ts",
-      "line": 10,
-      "endLine": 17,
+      "line": 14,
+      "endLine": 21,
       "text": "export type MediaTokenSuccess = {\n  readonly ok: true;\n  readonly token: string;\n  readonly url: string;\n  readonly roomId: string;\n  readonly expiresAt: string;\n  readonly ttlSeconds: number;\n};"
     },
     {
       "path": "src/infrastructure/session/media/media-token-client.ts",
-      "line": 19,
-      "endLine": 24,
+      "line": 23,
+      "endLine": 28,
       "text": "export type MediaTokenDegraded = {\n  readonly ok: false;\n  readonly degraded: true;\n  readonly reason: 'media_service_unavailable' | 'forbidden' | 'unauthorized' | 'bad_request';\n  readonly message: string;\n};"
     },
     {
       "path": "src/infrastructure/session/media/media-token-client.ts",
-      "line": 26,
-      "endLine": 26,
+      "line": 30,
+      "endLine": 30,
       "text": "export type MediaTokenResult = MediaTokenSuccess | MediaTokenDegraded;"
     },
     {
       "path": "src/infrastructure/session/media/media-token-client.ts",
-      "line": 28,
-      "endLine": 112,
-      "text": "export async function fetchSessionMediaToken(input: {\n  sessionId: string;\n}): Promise<MediaTokenResult> {\n  const sessionId = input.sessionId.trim();\n  if (!sessionId) {\n    return {\n      ok: false,\n      degraded: true,\n      reason: 'bad_request',\n      message: 'sessionId fehlt.',\n    };\n  }\n\n  if (isHostLibraryEnabled()) {\n    return {\n      ok: false,\n      degraded: true,\n      reason: 'media_service_unavailable',\n      message: 'Media-Token ist im Host-Modus noch nicht verfügbar.',\n    };\n  }\n\n  try {\n    const { data, error } = await supabase.functions.invoke('session-media-token', {\n      body: { sessionId },\n    });\n    if (error) {\n      return {\n        ok: false,\n        degraded: true,\n        reason: 'media_service_unavailable',\n        message: error.message || 'Media-Token-Dienst nicht erreichbar.',\n      };\n    }\n    const record = data as Record<string, unknown> | null;\n    if (!record || typeof record !== 'object') {\n      return {\n        ok: false,\n        degraded: true,\n        reason: 'media_service_unavailable',\n        message: 'Leere Media-Token-Antwort.',\n      };\n    }\n    if (record.degraded === true || record.ok === false) {\n      const reason =\n        record.reason === 'forbidden' ||\n        record.reason === 'unauthorized' ||\n        record.reason === 'bad_request'\n          ? record.reason\n          : 'media_service_unavailable';\n      return {\n        ok: false,\n        degraded: true,\n        reason,\n        message:\n          typeof record.message === 'string'\n            ? record.message\n            : 'Media plane degraded.',\n      };\n    }\n    const token = typeof record.token === 'string' ? record.token : '';\n    const url = typeof record.url === 'string' ? record.url : '';\n    const roomId = typeof record.roomId === 'string' ? record.roomId : '';\n    const expiresAt =\n      typeof record.expiresAt === 'string' ? record.expiresAt : '';\n    const ttlSeconds =\n      typeof record.ttlSeconds === 'number' ? record.ttlSeconds : 0;\n    if (!token || !url || !roomId) {\n      return {\n        ok: false,\n        degraded: true,\n        reason: 'media_service_unavailable',\n        message: 'Media-Token unvollständig.',\n      };\n    }\n    return { ok: true, token, url, roomId, expiresAt, ttlSeconds };\n  } catch (error) {\n    return {\n      ok: false,\n      degraded: true,\n      reason: 'media_service_unavailable',\n      message: error instanceof Error ? error.message : 'Media-Token-Fehler.',\n    };\n  }\n}"
+      "line": 32,
+      "endLine": 111,
+      "text": "export async function fetchSessionMediaToken(input: {\n  sessionId: string;\n}): Promise<MediaTokenResult> {\n  const sessionId = input.sessionId.trim();\n  if (!sessionId) {\n    return {\n      ok: false,\n      degraded: true,\n      reason: 'bad_request',\n      message: 'sessionId fehlt.',\n    };\n  }\n\n  if (isHostLibraryEnabled()) {\n    return fetchHostSessionMediaToken(sessionId);\n  }\n\n  try {\n    const { data, error } = await supabase.functions.invoke('session-media-token', {\n      body: { sessionId },\n    });\n    if (error) {\n      return {\n        ok: false,\n        degraded: true,\n        reason: 'media_service_unavailable',\n        message: error.message || 'Media-Token-Dienst nicht erreichbar.',\n      };\n    }\n    const record = data as Record<string, unknown> | null;\n    if (!record || typeof record !== 'object') {\n      return {\n        ok: false,\n        degraded: true,\n        reason: 'media_service_unavailable',\n        message: 'Leere Media-Token-Antwort.',\n      };\n    }\n    if (record.degraded === true || record.ok === false) {\n      const reason =\n        record.reason === 'forbidden' ||\n        record.reason === 'unauthorized' ||\n        record.reason === 'bad_request'\n          ? record.reason\n          : 'media_service_unavailable';\n      return {\n        ok: false,\n        degraded: true,\n        reason,\n        message:\n          typeof record.message === 'string'\n            ? record.message\n            : 'Media plane degraded.',\n      };\n    }\n    const token = typeof record.token === 'string' ? record.token : '';\n    const url = typeof record.url === 'string' ? record.url : '';\n    const roomId = typeof record.roomId === 'string' ? record.roomId : '';\n    const expiresAt =\n      typeof record.expiresAt === 'string' ? record.expiresAt : '';\n    const ttlSeconds =\n      typeof record.ttlSeconds === 'number' ? record.ttlSeconds : 0;\n    if (!token || !url || !roomId) {\n      return {\n        ok: false,\n        degraded: true,\n        reason: 'media_service_unavailable',\n        message: 'Media-Token unvollständig.',\n      };\n    }\n    return { ok: true, token, url, roomId, expiresAt, ttlSeconds };\n  } catch (error) {\n    return {\n      ok: false,\n      degraded: true,\n      reason: 'media_service_unavailable',\n      message: error instanceof Error ? error.message : 'Media-Token-Fehler.',\n    };\n  }\n}"
     },
     {
       "path": "src/infrastructure/session/media/memory-media-plane-adapter.ts",
@@ -2276,10 +2284,10 @@
     },
     {
       "path": "src/infrastructure/session/media/media-token-client.ts",
-      "line": 28,
-      "endLine": 112,
+      "line": 32,
+      "endLine": 111,
       "name": "fetchSessionMediaToken",
-      "text": "export async function fetchSessionMediaToken(input: {\n  sessionId: string;\n}): Promise<MediaTokenResult> {\n  const sessionId = input.sessionId.trim();\n  if (!sessionId) {\n    return {\n      ok: false,\n      degraded: true,\n      reason: 'bad_request',\n      message: 'sessionId fehlt.',\n    };\n  }\n\n  if (isHostLibraryEnabled()) {\n    return {\n      ok: false,\n      degraded: true,\n      reason: 'media_service_unavailable',\n      message: 'Media-Token ist im Host-Modus noch nicht verfügbar.',\n    };\n  }\n\n  try {\n    const { data, error } = await supabase.functions.invoke('session-media-token', {\n      body: { sessionId },\n    });\n    if (error) {\n      return {\n        ok: false,\n        degraded: true,\n        reason: 'media_service_unavailable',\n        message: error.message || 'Media-Token-Dienst nicht erreichbar.',\n      };\n    }\n    const record = data as Record<string, unknown> | null;\n    if (!record || typeof record !== 'object') {\n      return {\n        ok: false,\n        degraded: true,\n        reason: 'media_service_unavailable',\n        message: 'Leere Media-Token-Antwort.',\n      };\n    }\n    if (record.degraded === true || record.ok === false) {\n      const reason =\n        record.reason === 'forbidden' ||\n        record.reason === 'unauthorized' ||\n        record.reason === 'bad_request'\n          ? record.reason\n          : 'media_service_unavailable';\n      return {\n        ok: false,\n        degraded: true,\n        reason,\n        message:\n          typeof record.message === 'string'\n            ? record.message\n            : 'Media plane degraded.',\n      };\n    }\n    const token = typeof record.token === 'string' ? record.token : '';\n    const url = typeof record.url === 'string' ? record.url : '';\n    const roomId = typeof record.roomId === 'string' ? record.roomId : '';\n    const expiresAt =\n      typeof record.expiresAt === 'string' ? record.expiresAt : '';\n    const ttlSeconds =\n      typeof record.ttlSeconds === 'number' ? record.ttlSeconds : 0;\n    if (!token || !url || !roomId) {\n      return {\n        ok: false,\n        degraded: true,\n        reason: 'media_service_unavailable',\n        message: 'Media-Token unvollständig.',\n      };\n    }\n    return { ok: true, token, url, roomId, expiresAt, ttlSeconds };\n  } catch (error) {\n    return {\n      ok: false,\n      degraded: true,\n      reason: 'media_service_unavailable',\n      message: error instanceof Error ? error.message : 'Media-Token-Fehler.',\n    };\n  }\n}"
+      "text": "export async function fetchSessionMediaToken(input: {\n  sessionId: string;\n}): Promise<MediaTokenResult> {\n  const sessionId = input.sessionId.trim();\n  if (!sessionId) {\n    return {\n      ok: false,\n      degraded: true,\n      reason: 'bad_request',\n      message: 'sessionId fehlt.',\n    };\n  }\n\n  if (isHostLibraryEnabled()) {\n    return fetchHostSessionMediaToken(sessionId);\n  }\n\n  try {\n    const { data, error } = await supabase.functions.invoke('session-media-token', {\n      body: { sessionId },\n    });\n    if (error) {\n      return {\n        ok: false,\n        degraded: true,\n        reason: 'media_service_unavailable',\n        message: error.message || 'Media-Token-Dienst nicht erreichbar.',\n      };\n    }\n    const record = data as Record<string, unknown> | null;\n    if (!record || typeof record !== 'object') {\n      return {\n        ok: false,\n        degraded: true,\n        reason: 'media_service_unavailable',\n        message: 'Leere Media-Token-Antwort.',\n      };\n    }\n    if (record.degraded === true || record.ok === false) {\n      const reason =\n        record.reason === 'forbidden' ||\n        record.reason === 'unauthorized' ||\n        record.reason === 'bad_request'\n          ? record.reason\n          : 'media_service_unavailable';\n      return {\n        ok: false,\n        degraded: true,\n        reason,\n        message:\n          typeof record.message === 'string'\n            ? record.message\n            : 'Media plane degraded.',\n      };\n    }\n    const token = typeof record.token === 'string' ? record.token : '';\n    const url = typeof record.url === 'string' ? record.url : '';\n    const roomId = typeof record.roomId === 'string' ? record.roomId : '';\n    const expiresAt =\n      typeof record.expiresAt === 'string' ? record.expiresAt : '';\n    const ttlSeconds =\n      typeof record.ttlSeconds === 'number' ? record.ttlSeconds : 0;\n    if (!token || !url || !roomId) {\n      return {\n        ok: false,\n        degraded: true,\n        reason: 'media_service_unavailable',\n        message: 'Media-Token unvollständig.',\n      };\n    }\n    return { ok: true, token, url, roomId, expiresAt, ttlSeconds };\n  } catch (error) {\n    return {\n      ok: false,\n      degraded: true,\n      reason: 'media_service_unavailable',\n      message: error instanceof Error ? error.message : 'Media-Token-Fehler.',\n    };\n  }\n}"
     },
     {
       "path": "src/infrastructure/session/media/memory-media-plane-adapter.ts",

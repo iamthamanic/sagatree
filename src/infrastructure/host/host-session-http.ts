@@ -431,6 +431,115 @@ function parseSessionRecapGenerateBody(value: unknown): HostSessionRecapGenerate
   };
 }
 
+export type HostSessionMediaTokenResult =
+  | {
+      readonly ok: true;
+      readonly token: string;
+      readonly url: string;
+      readonly roomId: string;
+      readonly expiresAt: string;
+      readonly ttlSeconds: number;
+    }
+  | {
+      readonly ok: false;
+      readonly degraded: true;
+      readonly reason:
+        | 'media_service_unavailable'
+        | 'forbidden'
+        | 'unauthorized'
+        | 'bad_request';
+      readonly message: string;
+    };
+
+/** CUT-19: LiveKit media token via host POST …/media-token. */
+export async function fetchHostSessionMediaToken(
+  sessionId: string,
+  env: EnvLike = defaultEnv(),
+  fetchImpl: typeof fetch = fetch,
+): Promise<HostSessionMediaTokenResult> {
+  const base = getHostAuthBaseUrl(env);
+  if (base === null) {
+    return {
+      ok: false,
+      degraded: true,
+      reason: 'media_service_unavailable',
+      message: 'Media-Token-Dienst nicht erreichbar.',
+    };
+  }
+  const path = `/api/v1/sessions/${encodeURIComponent(sessionId)}/media-token`;
+  const requestUrl = base === '' ? path : `${base}${path}`;
+  let response: Response;
+  try {
+    response = await fetchImpl(requestUrl, {
+      method: 'POST',
+      credentials: 'include',
+      headers: { Accept: 'application/json', 'content-type': 'application/json' },
+      body: JSON.stringify({ sessionId }),
+    });
+  } catch {
+    return {
+      ok: false,
+      degraded: true,
+      reason: 'media_service_unavailable',
+      message: 'Media-Token-Dienst nicht erreichbar.',
+    };
+  }
+  let data: unknown;
+  try {
+    data = await response.json();
+  } catch {
+    return {
+      ok: false,
+      degraded: true,
+      reason: 'media_service_unavailable',
+      message: 'Leere Media-Token-Antwort.',
+    };
+  }
+  const record =
+    data && typeof data === 'object' && !Array.isArray(data)
+      ? (data as Record<string, unknown>)
+      : null;
+  if (!record) {
+    return {
+      ok: false,
+      degraded: true,
+      reason: 'media_service_unavailable',
+      message: 'Leere Media-Token-Antwort.',
+    };
+  }
+  if (record.degraded === true || record.ok === false) {
+    const reason =
+      record.reason === 'forbidden' ||
+      record.reason === 'unauthorized' ||
+      record.reason === 'bad_request'
+        ? record.reason
+        : 'media_service_unavailable';
+    return {
+      ok: false,
+      degraded: true,
+      reason,
+      message:
+        typeof record.message === 'string'
+          ? record.message
+          : 'Media plane degraded.',
+    };
+  }
+  const token = typeof record.token === 'string' ? record.token : '';
+  const url = typeof record.url === 'string' ? record.url : '';
+  const roomId = typeof record.roomId === 'string' ? record.roomId : '';
+  const expiresAt = typeof record.expiresAt === 'string' ? record.expiresAt : '';
+  const ttlSeconds = typeof record.ttlSeconds === 'number' ? record.ttlSeconds : 0;
+  if (!token || !url || !roomId) {
+    return {
+      ok: false,
+      degraded: true,
+      reason: 'media_service_unavailable',
+      message: 'Media-Token unvollständig.',
+    };
+  }
+  return { ok: true, token, url, roomId, expiresAt, ttlSeconds };
+}
+
 /** CUT-14: AI generate draft via host POST …/recap/generate. */
 export async function generateHostSessionRecapDraft(
   sessionId: string,

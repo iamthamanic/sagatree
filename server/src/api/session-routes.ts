@@ -9,6 +9,7 @@ import type { Hono } from 'hono';
 import type { Actor, IdentityPorts } from '../modules/identity/index.ts';
 import type { SessionInfraPorts } from '../modules/session/index.ts';
 import type { SessionRecapGenerateUseCases } from '../application/session-recap/index.ts';
+import type { SessionMediaTokenUseCases } from '../application/session-media-token/index.ts';
 import {
   SESSION_RECAP_MAX_REQUEST_BYTES,
   checkSessionRecapBodySize,
@@ -27,6 +28,8 @@ export type SessionHttpDeps = {
   readonly sagaInfra?: import('../application/saga-infra/index.ts').SagaInfraPorts | null;
   /** CUT-14 — AI session-recap generate (optional until activation). */
   readonly sessionRecapGenerate?: SessionRecapGenerateUseCases | null;
+  /** CUT-19 — LiveKit session media token. */
+  readonly sessionMediaToken?: SessionMediaTokenUseCases | null;
 };
 
 function contentTypeIsJson(c: {
@@ -589,6 +592,109 @@ export function mountSessionHttpRoutes(app: Hono, deps: SessionHttpDeps): void {
     }
     return c.json({ recap: saved.value }, 200);
   });
+
+  // CUT-19: LiveKit media token (Edge `session-media-token` parity).
+  if (deps.sessionMediaToken?.publicActivationAuthorized) {
+    app.post('/api/v1/sessions/:sessionId/media-token', async (c) => {
+      const uc = deps.sessionMediaToken;
+      if (!uc) {
+        return c.json(
+          {
+            ok: false,
+            degraded: true,
+            reason: 'media_service_unavailable',
+            message:
+              'Media-Token ist vorübergehend nicht verfügbar. Bitte versuche es später erneut.',
+          },
+          503,
+        );
+      }
+      if (!contentTypeIsJson(c)) {
+        return c.json(
+          {
+            ok: false,
+            degraded: true,
+            reason: 'bad_request',
+            message: 'Content-Type application/json erforderlich.',
+          },
+          415,
+        );
+      }
+      let body: unknown = {};
+      try {
+        const text = await c.req.text();
+        if (text && text.trim().length > 0) {
+          body = JSON.parse(text) as unknown;
+        }
+      } catch {
+        return c.json(
+          {
+            ok: false,
+            degraded: true,
+            reason: 'bad_request',
+            message: 'Ungültiger JSON-Body.',
+          },
+          400,
+        );
+      }
+      const pathSessionId = c.req.param('sessionId');
+      const bodyRecord =
+        typeof body === 'object' && body !== null && !Array.isArray(body)
+          ? (body as Record<string, unknown>)
+          : {};
+      const requestBody = { ...bodyRecord, sessionId: pathSessionId };
+      const actorResult = await resolveSessionActor(
+        deps,
+        c.req.raw.headers,
+        false,
+        requestBody,
+      );
+      if (!actorResult.ok) {
+        return c.json(
+          {
+            ok: false,
+            degraded: true,
+            reason: 'unauthorized',
+            message: 'Nicht angemeldet.',
+            code: actorResult.error,
+          },
+          actorResult.status,
+        );
+      }
+      const result = await uc.issue(actorResult.actor, {
+        method: 'POST',
+        body: requestBody,
+        pathSessionId,
+        clientRole: bodyRecord.role,
+        clientCapabilities: bodyRecord.capabilities,
+        clientRoom: bodyRecord.room,
+      });
+      if (result.ok) {
+        return c.json(
+          {
+            ok: true,
+            token: result.token,
+            url: result.url,
+            roomId: result.roomId,
+            expiresAt: result.expiresAt,
+            ttlSeconds: result.ttlSeconds,
+            grant: result.grant,
+          },
+          200,
+        );
+      }
+      return c.json(
+        {
+          ok: false,
+          degraded: true,
+          reason: result.reason,
+          message: result.message,
+          ...(result.methodNotAllowed ? { methodNotAllowed: true } : {}),
+        },
+        result.httpStatus,
+      );
+    });
+  }
 
   // CUT-14: AI generate draft (Edge `session-recap` parity). Path param wins over body.
   if (deps.sessionRecapGenerate?.publicActivationAuthorized) {

@@ -1676,6 +1676,19 @@ function checkCut18MeshyAvatar() {
   console.log('OK: cut-18-meshy-avatar.self-test');
 }
 
+function checkCut19SessionMediaToken() {
+  console.log('CUT-19 session-media-token (#1154): host LiveKit issue...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/cut-19-session-media-token.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+  console.log('OK: cut-19-session-media-token.self-test');
+}
+
 function checkMig312UserProfileAdapter() {
   console.log('MIG-312 user-profile adapter (#811): user_profiles + user-avatars dual-path...');
   execFileSync(
@@ -3911,6 +3924,7 @@ checkCut15LookReference();
 checkCut16ItemThumbnail();
 checkCut17ItemModel3d();
 checkCut18MeshyAvatar();
+checkCut19SessionMediaToken();
 checkMig312UserProfileAdapter();
 checkMig309Rulesets();
 checkMig313WorldAdapter();
