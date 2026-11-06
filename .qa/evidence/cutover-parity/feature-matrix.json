@@ -4,7 +4,7 @@
   "auditIssue": 1136,
   "baselineSha": "54b6ee7c6f3a07abd49b5450e507df78591f9b05",
   "baselineNote": "FE-HOST-14 merged; host-first core with residual soft-DENYs",
-  "generatedAt": "2026-11-06T04:52:17.273Z",
+  "generatedAt": "2026-11-06T05:10:39.407Z",
   "classifications": [
     "HOST_VERIFIED",
     "PARITY_MISSING",
@@ -1953,6 +1953,7 @@
     }
   ],
   "counts": {
+    "total": 126,
     "HOST_VERIFIED": 92,
     "LEGACY_UNUSED": 4,
     "PARITY_MISSING": 30
