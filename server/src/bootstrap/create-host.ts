@@ -91,6 +91,16 @@ import {
   type CharacterLoreUseCases,
 } from '../application/character-lore/index.ts';
 import {
+  createSessionRecapGenerateUseCases,
+  createSqliteSessionRecapGenerateStore,
+  generateSessionRecapStory,
+  hydrateSessionRecapGenerateStoreFromDb,
+  persistSessionRecapGenerateDraft,
+  resolveSessionRecapProviderConfig,
+  resolveSessionRecapRateLimit,
+  type SessionRecapGenerateUseCases,
+} from '../application/session-recap/index.ts';
+import {
   createSqliteCharacterLoreStore,
   resolveCharacterLoreRateLimit,
   type CharacterLoreProjectRow,
@@ -405,6 +415,31 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
         env.CHARACTER_AI_RATE_LIMIT_PER_MINUTE,
       ),
     });
+
+    async function resolveSessionRecapProviderForUser(userId: string) {
+      // Prefer SESSION_RECAP_* / CHARACTER_AI_* env; fall back to same Ollama Organize prefs.
+      const fromEnv = resolveSessionRecapProviderConfig((key) => env[key]);
+      if (fromEnv) return fromEnv;
+      return resolveCharacterLoreProviderForUser(userId);
+    }
+
+    const sessionRecapGenerate: SessionRecapGenerateUseCases =
+      createSessionRecapGenerateUseCases({
+        store: db ? createSqliteSessionRecapGenerateStore(db) : undefined,
+        resolveProvider: resolveSessionRecapProviderForUser,
+        generateSummary: generateSessionRecapStory,
+        rateLimitPerMinute: resolveSessionRecapRateLimit(
+          env.SESSION_RECAP_AI_RATE_LIMIT_PER_MINUTE ||
+            env.CHARACTER_AI_RATE_LIMIT_PER_MINUTE,
+        ),
+        hydrateSession: db
+          ? (sessionId, store) =>
+              hydrateSessionRecapGenerateStoreFromDb(db, store, sessionId)
+          : undefined,
+        afterDraftPersist: db
+          ? (row) => persistSessionRecapGenerateDraft(db, row)
+          : undefined,
+      });
     const rulesets: RulesetPorts = db
       ? createRulesetPorts({ db, authorize: permissions.authorize })
       : createRulesetPortsStub();
@@ -623,6 +658,7 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
       aiCredentials,
       aiOllama,
       characterLore,
+      sessionRecapGenerate,
       character,
       world,
       npcCreature,

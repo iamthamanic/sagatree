@@ -179,7 +179,7 @@
     },
     {
       "path": "src/infrastructure/host/host-session-http.ts",
-      "sha256": "dd70c163f15af4d1ec881a9fe8cb6e87c5ccc441de2307b9b24e9a5c4b6b8172"
+      "sha256": "bc35b154cf69a205bfbabb150cf15b07283136473726daaeb331de0de19ceb0c"
     },
     {
       "path": "src/lib/authenticatedUser.ts",
@@ -1253,10 +1253,18 @@
     },
     {
       "kind": "TypeAliasDeclaration",
+      "name": "HostSessionRecapGenerateResult",
+      "path": "src/infrastructure/host/host-session-http.ts",
+      "line": 389,
+      "endLine": 398,
+      "text": "export type HostSessionRecapGenerateResult =\n  | {\n      readonly status: 'ok';\n      readonly summaryText: string;\n      readonly summaryStatus: string;\n      readonly provider: string;\n      readonly model: string;\n    }\n  | { readonly status: 'not-configured'; readonly message: string }\n  | { readonly status: 'error'; readonly message: string };"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
       "name": "HostPromoteOutcomeDto",
       "path": "src/infrastructure/host/host-session-http.ts",
-      "line": 406,
-      "endLine": 412,
+      "line": 492,
+      "endLine": 498,
       "text": "export type HostPromoteOutcomeDto = {\n  readonly ok?: boolean;\n  readonly idempotent?: boolean;\n  readonly targetKind?: string;\n  readonly targetRef?: string;\n  readonly messageDe?: string;\n};"
     },
     {

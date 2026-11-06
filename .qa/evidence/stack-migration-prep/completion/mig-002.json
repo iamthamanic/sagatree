@@ -4,8 +4,8 @@
   "localId": "MIG-002",
   "result": "PASS",
   "githubClosed": true,
-  "mergeRef": "PR #860 \u2192 main (after #782)",
-  "note": "Inventories refreshed after CUT-13 Codex harden.",
+  "mergeRef": "PR #860 → main (after #782)",
+  "note": "Inventories refreshed after CUT-14 session-recap generate activation.",
   "checks": [
     {
       "command": "legacy inventory matrix",
@@ -17,13 +17,13 @@
       "command": "rpc inventory 57",
       "result": "PASS",
       "evidenceFile": ".qa/intake/rpc-contracts/inventory.json",
-      "sha256": "f8726e47d440ed0d1cae2c6376533d92cea671451b5715e92f4ba447a0236e31"
+      "sha256": "743f903762936d0ff58d8deaf5709288f7a5d75f573cabd8e43904a34e7f0012"
     },
     {
       "command": "edge/infra inventory 25+13",
       "result": "PASS",
       "evidenceFile": ".qa/intake/edge-infra-contracts/inventory.json",
-      "sha256": "110329e8ac36968eb1ca4c8a59fe630404ea08ed7a23a74bffed3fb832944792"
+      "sha256": "9308d3babb20f5ed18e18afbd9c635a39da27543c2659452a2bc92ea2ecadc4b"
     }
   ],
   "testedCommit": "94e69bd7d5ae3fcc33faefb7cfb4280110d36954"

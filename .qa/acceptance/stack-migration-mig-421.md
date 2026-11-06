@@ -1,7 +1,7 @@
 # Acceptance — MIG-421 Session-Recap Host Port (#837)
 
 ## Intent
-Port allowlisted Edge `session-recap` contracts onto the host as an isolated use-case surface under `server/src/application/session-recap/`. Edge remains the live mount; no public activation or production cutover.
+Port allowlisted Edge `session-recap` contracts onto the host as an isolated use-case surface under `server/src/application/session-recap/`. CUT-14 (#1149) activates public host POST `/api/v1/sessions/:id/recap/generate`; Edge remains allowlisted until dual-path removal.
 
 ## Acceptance tier
 `isolated-contract` — SLICE DONE.
@@ -32,7 +32,7 @@ N/A — not a launch ticket.
 `node --experimental-strip-types scripts/mig-421-session-recap.self-test.mjs` → PASS (wired into `npm run test-gate`).
 
 ## Implementation Notes
-Isolated host ports under `server/src/modules/session/internal/session-recap-generate.ts` + slim barrel + application generate use-cases; Edge allowlist unchanged; no `create-app` mount. RPC get/save remain under `get_session_recap/` / `save_session_recap_summary/`.
+Isolated host ports under `server/src/modules/session/internal/session-recap-generate.ts` + slim barrel + application generate use-cases; activated via session-routes + create-host; Edge allowlist unchanged until CUT-20. Manual get/save remain under host GET/PUT `/recap`.
 
 ## Composition Gate
 See `.qa/runs/composition-gate-stack-migration-mig-421.md` (CLEAR).

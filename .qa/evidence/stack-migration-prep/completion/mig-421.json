@@ -5,14 +5,14 @@
   "result": "PASS",
   "testedCommit": "509f92026b74451057b3187a1820e743abbc58f0",
   "githubClosed": true,
-  "mergeRef": "PR #1028 \u2192 main (#837)",
-  "note": "session-recap isolated host port; Edge remains live mount.",
+  "mergeRef": "PR #1028 → main (#837)",
+  "note": "session-recap isolated host port; CUT-14 activates public generate; Edge remains allowlisted.",
   "checks": [
     {
       "command": "node --experimental-strip-types scripts/mig-421-session-recap.self-test.mjs",
       "result": "PASS",
       "evidenceFile": ".qa/acceptance/stack-migration-mig-421.md",
-      "sha256": "d0427a20cb8cb571725c1f5c4efef6f21307bbeddef9c59bf17afad020a54644"
+      "sha256": "af1462d9b663d21243744488a68110d6ce9f6e2f74da1ef5510141a1970ae107"
     },
     {
       "command": "composition-gate CLEAR",

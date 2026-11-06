@@ -766,14 +766,14 @@
       "historicalCaller": "src/infrastructure/session/session-recap-ai-service.ts:generateDraft",
       "uiJourney": "useEpisodeSummary",
       "previousBehavior": "soft DENY; Edge session-recap",
-      "hostSuccessor": "PORT_MISSING",
+      "hostSuccessor": "POST /api/v1/sessions/:id/recap/generate + createSessionRecapGenerateUseCases",
       "dataOwner": "ai",
       "risk": "medium",
-      "classification": "PARITY_MISSING",
+      "classification": "HOST_VERIFIED",
       "issueRef": 1149,
-      "evidenceTest": "pending CUT-14",
+      "evidenceTest": "scripts/cut-14-recap-generate.self-test.mjs",
       "featureAvailableBeforeCutover": true,
-      "notes": ""
+      "notes": "CUT-14 shipped"
     },
     {
       "stableKey": "session-recap-ai.save-summary",
@@ -787,7 +787,7 @@
       "issueRef": 1149,
       "evidenceTest": "fe-host-14-ai-residuals.self-test.mjs",
       "featureAvailableBeforeCutover": true,
-      "notes": ""
+      "notes": "CUT-14 keep"
     },
     {
       "stableKey": "look-reference.analyze",
@@ -1953,8 +1953,8 @@
     }
   ],
   "counts": {
-    "HOST_VERIFIED": 89,
-    "PARITY_MISSING": 33,
+    "HOST_VERIFIED": 90,
+    "PARITY_MISSING": 32,
     "LEGACY_UNUSED": 4,
     "total": 126
   },

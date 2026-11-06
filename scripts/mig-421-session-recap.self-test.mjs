@@ -57,16 +57,23 @@ const {
 const { createSessionRecapGenerateUseCases } = app;
 const { isEdgeDispatcherAllowed } = allow;
 
-assert(SESSION_RECAP_PUBLIC_ACTIVATION_AUTHORIZED === false, 'no public activation');
-assert(isEdgeDispatcherAllowed('session-recap') === true, 'edge stays allowlisted');
+assert(SESSION_RECAP_PUBLIC_ACTIVATION_AUTHORIZED === true, 'CUT-14 public activation');
+assert(isEdgeDispatcherAllowed('session-recap') === true, 'edge stays allowlisted until CUT-20');
 assert(SESSION_RECAP_DEFAULT_RATE_LIMIT === 6, 'quota 6');
 assert(SESSION_RECAP_RATE_WINDOW_SECONDS === 60, 'window 60s');
 assert(SESSION_RECAP_MAX_REQUEST_BYTES === 8_000, '8k body');
 assert(SESSION_RECAP_MAX_SUMMARY_LENGTH === 4_000, 'summary max 4k');
 assert(SESSION_RECAP_PROMPT_VERSION === 'episode-summary-v1', 'prompt version');
 
-const createApp = readFileSync(join(root, 'server/src/api/create-app.ts'), 'utf8');
-assert(!/session-recap/i.test(createApp), 'create-app has no session-recap cutover mount');
+const sessionRoutes = readFileSync(join(root, 'server/src/api/session-routes.ts'), 'utf8');
+assert(
+  sessionRoutes.includes('/api/v1/sessions/:sessionId/recap/generate'),
+  'session-routes mounts recap/generate',
+);
+assert(
+  sessionRoutes.includes('sessionRecapGenerate'),
+  'session-routes wires sessionRecapGenerate deps',
+);
 
 const OWNER = '11111111-1111-4111-8111-111111111111';
 const GM = '22222222-2222-4222-8222-222222222222';
@@ -456,4 +463,4 @@ assert(
   'legacy defects documented',
 );
 
-console.log('PASS: mig-421 session-recap host isolated-contract (no cutover)');
+console.log('PASS: mig-421 session-recap host isolated-contract (CUT-14 activated)');

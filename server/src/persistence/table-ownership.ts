@@ -51,6 +51,7 @@ export const TABLE_OWNERSHIP: Readonly<Record<string, HostModuleId>> = Object.fr
   session_events: 'session',
   play_sessions: 'session',
   session_recaps: 'session',
+  session_recap_rate_limits: 'session',
   session_outcome_promotions: 'session',
   npc_creature_definitions: 'npc-creature',
   npc_creature_controller_assignments: 'npc-creature',

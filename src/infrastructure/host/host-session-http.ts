@@ -386,6 +386,92 @@ export async function saveHostSessionRecapSummary(
   return body.recap;
 }
 
+export type HostSessionRecapGenerateResult =
+  | {
+      readonly status: 'ok';
+      readonly summaryText: string;
+      readonly summaryStatus: string;
+      readonly provider: string;
+      readonly model: string;
+    }
+  | { readonly status: 'not-configured'; readonly message: string }
+  | { readonly status: 'error'; readonly message: string };
+
+function parseSessionRecapGenerateBody(value: unknown): HostSessionRecapGenerateResult {
+  if (typeof value !== 'object' || value === null) {
+    return {
+      status: 'error',
+      message: 'Die KI-Antwort hatte ein ungültiges Format.',
+    };
+  }
+  const rec = value as Record<string, unknown>;
+  if (
+    rec.status === 'ok' &&
+    typeof rec.summaryText === 'string' &&
+    typeof rec.provider === 'string' &&
+    typeof rec.model === 'string'
+  ) {
+    return {
+      status: 'ok',
+      summaryText: rec.summaryText,
+      summaryStatus: typeof rec.summaryStatus === 'string' ? rec.summaryStatus : 'draft',
+      provider: rec.provider,
+      model: rec.model,
+    };
+  }
+  if (
+    (rec.status === 'not-configured' || rec.status === 'error') &&
+    typeof rec.message === 'string'
+  ) {
+    return { status: rec.status, message: rec.message };
+  }
+  return {
+    status: 'error',
+    message: 'Die KI-Antwort hatte ein ungültiges Format.',
+  };
+}
+
+/** CUT-14: AI generate draft via host POST …/recap/generate. */
+export async function generateHostSessionRecapDraft(
+  sessionId: string,
+  env: EnvLike = defaultEnv(),
+  fetchImpl: typeof fetch = fetch,
+): Promise<HostSessionRecapGenerateResult> {
+  const base = getHostAuthBaseUrl(env);
+  if (base === null) {
+    return {
+      status: 'error',
+      message: 'Zusammenfassung konnte nicht generiert werden. Bitte manuell schreiben.',
+    };
+  }
+  const path = `/api/v1/sessions/${encodeURIComponent(sessionId)}/recap/generate`;
+  const requestUrl = base === '' ? path : `${base}${path}`;
+  let response: Response;
+  try {
+    response = await fetchImpl(requestUrl, {
+      method: 'POST',
+      credentials: 'include',
+      headers: { Accept: 'application/json', 'content-type': 'application/json' },
+      body: JSON.stringify({ sessionId }),
+    });
+  } catch {
+    return {
+      status: 'error',
+      message: 'Zusammenfassung konnte nicht generiert werden. Bitte manuell schreiben.',
+    };
+  }
+  let data: unknown;
+  try {
+    data = await response.json();
+  } catch {
+    return {
+      status: 'error',
+      message: 'Zusammenfassung konnte nicht generiert werden. Bitte manuell schreiben.',
+    };
+  }
+  return parseSessionRecapGenerateBody(data);
+}
+
 /** CUT-03 — clear temporary NPC controllers for session-scoped instances. */
 export async function clearHostNpcTempControllersForSession(
   sessionId: string,
