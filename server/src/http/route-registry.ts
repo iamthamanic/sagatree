@@ -96,6 +96,12 @@ export type RouteRegistryDeps = {
   readonly lookReferenceAnalysis?: import('../application/look-reference-analysis/index.ts').LookReferenceAnalysisUseCases;
   /** CUT-14 session-recap AI generate. */
   readonly sessionRecapGenerate?: import('../application/session-recap/index.ts').SessionRecapGenerateUseCases;
+  /** CUT-16 item thumbnail. */
+  readonly itemThumbnail?: import('../application/item-thumbnail/index.ts').ItemThumbnailUseCases;
+  readonly ensureItemThumbnailDefinition?: (
+    actor: import('../modules/identity/index.ts').Actor,
+    definitionId: string,
+  ) => Promise<void> | void;
   /** Browser Library cutover ports. */
   readonly character?: CharacterPorts | null;
   readonly world?: WorldPorts | null;
@@ -165,6 +171,8 @@ export function createRouteHandler(deps: RouteRegistryDeps) {
     characterLore: deps.characterLore,
     lookReferenceAnalysis: deps.lookReferenceAnalysis,
     sessionRecapGenerate: deps.sessionRecapGenerate,
+    itemThumbnail: deps.itemThumbnail,
+    ensureItemThumbnailDefinition: deps.ensureItemThumbnailDefinition,
     character: deps.character,
     world: deps.world,
     npcCreature: deps.npcCreature,

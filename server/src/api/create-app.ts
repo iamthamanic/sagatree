@@ -30,6 +30,7 @@ import { authDenyStatus, transportStatus } from './errors.ts';
 import { mountAiHttpRoutes } from './ai-routes.ts';
 import { mountAssetHttpRoutes } from './asset-routes.ts';
 import { mountCatalogHttpRoutes } from './catalog-routes.ts';
+import { mountItemThumbnailHttpRoutes } from './item-thumbnail-routes.ts';
 import { mountLibraryHttpRoutes } from './library-routes.ts';
 import { mountSessionHttpRoutes } from './session-routes.ts';
 import { mountWorldAtlasHttpRoutes } from './world-atlas-routes.ts';
@@ -69,6 +70,12 @@ export type HostApiDeps = {
   readonly lookReferenceAnalysis?: import('../application/look-reference-analysis/index.ts').LookReferenceAnalysisUseCases;
   /** CUT-14 session-recap AI generate (optional until wired). */
   readonly sessionRecapGenerate?: import('../application/session-recap/index.ts').SessionRecapGenerateUseCases;
+  /** CUT-16 item thumbnail (optional until wired). */
+  readonly itemThumbnail?: import('../application/item-thumbnail/index.ts').ItemThumbnailUseCases;
+  readonly ensureItemThumbnailDefinition?: (
+    actor: import('../modules/identity/index.ts').Actor,
+    definitionId: string,
+  ) => Promise<void> | void;
   /** Browser Library cutover — optional until composition root wires module ports. */
   readonly character?: CharacterPorts | null;
   readonly world?: WorldPorts | null;
@@ -508,6 +515,15 @@ export function createHostApi(deps: HostApiDeps): Hono {
     hostMode: deps.hostMode,
     assets: deps.assets,
   });
+
+  if (deps.itemThumbnail?.publicActivationAuthorized) {
+    mountItemThumbnailHttpRoutes(app, {
+      identity: deps.identity,
+      hostMode: deps.hostMode,
+      itemThumbnail: deps.itemThumbnail,
+      ensureDefinition: deps.ensureItemThumbnailDefinition,
+    });
+  }
 
   mountCatalogHttpRoutes(app, {
     identity: deps.identity,

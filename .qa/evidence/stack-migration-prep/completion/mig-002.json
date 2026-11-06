@@ -5,7 +5,7 @@
   "result": "PASS",
   "githubClosed": true,
   "mergeRef": "PR #860 → main (after #782)",
-  "note": "Inventories refreshed after CUT-15 look-reference-analysis activation.",
+  "note": "Inventories refreshed after CUT-16 item-thumbnail activation.",
   "checks": [
     {
       "command": "legacy inventory matrix",
@@ -23,7 +23,7 @@
       "command": "edge/infra inventory 25+13",
       "result": "PASS",
       "evidenceFile": ".qa/intake/edge-infra-contracts/inventory.json",
-      "sha256": "8c621fa6668f1f97efe7ba4c3f73f8ca5e76e0b16a2480c88c3e1b200937c684"
+      "sha256": "0d545a74b7d9bd76621cac65d276909444e97621cd358f6fd106ebd118d435f5"
     }
   ],
   "testedCommit": "79f9f63de5b56d043c51b184bb2144120025ee42"

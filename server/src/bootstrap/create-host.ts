@@ -105,12 +105,21 @@ import {
   type LookReferenceAnalysisUseCases,
 } from '../application/look-reference-analysis/index.ts';
 import {
+  createItemThumbnailUseCases,
+  type ItemThumbnailUseCases,
+} from '../application/item-thumbnail/index.ts';
+import {
   analyzeLookReferencesWithVision,
   createLookReferenceMediaStore,
   createLookReferenceRateLimitStore,
   resolveLookRefRateLimit,
   resolveLookRefVisionProviderConfig,
 } from '../modules/look/index.ts';
+import {
+  createItemThumbnailStore,
+  seedItemThumbnailDefinition,
+  type ItemThumbnailStore,
+} from '../modules/inventory/item-thumbnail.ts';
 import {
   createSqliteCharacterLoreStore,
   resolveCharacterLoreRateLimit,
@@ -444,6 +453,24 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
           : undefined,
       });
 
+    const meshyConfigured =
+      Boolean(env.MESHY_API_KEY?.trim()) || env.ITEM_THUMBNAIL_MESHY_MOCK === '1';
+    let itemThumbnailAssetBase = 'http://127.0.0.1/assets';
+    try {
+      if (env.MESHY_ASSET_BASE_URL?.trim()) {
+        itemThumbnailAssetBase = env.MESHY_ASSET_BASE_URL.trim().replace(/\/$/, '');
+      }
+    } catch {
+      itemThumbnailAssetBase = 'http://127.0.0.1/assets';
+    }
+    const itemThumbnailStore: ItemThumbnailStore = createItemThumbnailStore(meshyConfigured, {
+      assetBaseUrl: itemThumbnailAssetBase,
+    });
+    // Use-cases created after `assets` ports exist — see below.
+    let itemThumbnail: ItemThumbnailUseCases = createItemThumbnailUseCases({
+      store: itemThumbnailStore,
+    });
+
     async function resolveSessionRecapProviderForUser(userId: string) {
       // Codex P2: honor per-user AI → Organize prefs before server env fallback.
       // Character-lore resolver checks user prefs first, then CHARACTER_AI_*.
@@ -672,6 +699,81 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
     const authHandlerRef: { current: ReturnType<typeof wrapCookieAuthHandler> | null } = {
       current: null,
     };
+    // Rebind thumbnail use-cases with durable AssetPorts (Codex P1).
+    itemThumbnail = createItemThumbnailUseCases({
+      store: itemThumbnailStore,
+      assets,
+      publicOrigin: `http://127.0.0.1:${config.port}`,
+    });
+
+    const ensureItemThumbnailDefinition = (
+      actor: import('../modules/identity/index.ts').Actor,
+      definitionId: string,
+    ): void => {
+      if (!definitionId || itemThumbnailStore.definitions.has(definitionId)) return;
+      if (!inventory?.getDefinition) return;
+      const actorIds = [actor.actorId];
+      if (actor.kind === 'remote-account' && Array.isArray(actor.linkedSoloActorIds)) {
+        for (const id of actor.linkedSoloActorIds) {
+          if (typeof id === 'string' && id.length > 0) actorIds.push(id);
+        }
+      }
+      const loaded = inventory.getDefinition(actorIds, definitionId);
+      if (!loaded.ok || !loaded.value) return;
+      const def = loaded.value;
+      if (def.origin === 'standard') return;
+
+      if (def.origin === 'world') {
+        // Codex P1: readers must not become world owners — require edit authority.
+        // canEditWorld ≡ world owner; pick the linked id that owns the world (never invent).
+        if (!def.worldProfileId || !world?.canEditWorld) return;
+        if (!world.canEditWorld(actorIds, def.worldProfileId)) return;
+        const worldOwner =
+          typeof def.ownerUserId === 'string' &&
+          def.ownerUserId.length > 0 &&
+          actorIds.includes(def.ownerUserId)
+            ? def.ownerUserId
+            : actorIds.find((id) => world.canEditWorld([id], def.worldProfileId!));
+        if (!worldOwner) return;
+        seedItemThumbnailDefinition(itemThumbnailStore, {
+          id: def.id,
+          scope: 'world',
+          ownerUserId: worldOwner,
+          worldProfileId: def.worldProfileId,
+          status: def.status === 'archived' ? 'archived' : 'active',
+          payload: {
+            assetKey:
+              typeof def.payload.assetKey === 'string' ? def.payload.assetKey : undefined,
+            name: def.name,
+            description:
+              typeof def.payload.description === 'string'
+                ? def.payload.description
+                : undefined,
+          },
+        });
+        return;
+      }
+
+      // personal
+      if (typeof def.ownerUserId !== 'string' || !actorIds.includes(def.ownerUserId)) {
+        return;
+      }
+      seedItemThumbnailDefinition(itemThumbnailStore, {
+        id: def.id,
+        scope: 'personal',
+        ownerUserId: def.ownerUserId,
+        worldProfileId: null,
+        status: def.status === 'archived' ? 'archived' : 'active',
+        payload: {
+          assetKey:
+            typeof def.payload.assetKey === 'string' ? def.payload.assetKey : undefined,
+          name: def.name,
+          description:
+            typeof def.payload.description === 'string' ? def.payload.description : undefined,
+        },
+      });
+    };
+
     const handler = createRouteHandler({
       health,
       ops,
@@ -690,6 +792,8 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
       characterLore,
       lookReferenceAnalysis,
       sessionRecapGenerate,
+      itemThumbnail,
+      ensureItemThumbnailDefinition,
       character,
       world,
       npcCreature,

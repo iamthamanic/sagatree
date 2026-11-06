@@ -13383,7 +13383,7 @@
         "sourceFiles": [
           {
             "path": "src/infrastructure/inventory/item-thumbnail-service.ts",
-            "sha256": "a17aecc412f3766d52e2a54c8ffa4ffc0e55cd64363a77a9a0f0dd7d5e07622a"
+            "sha256": "192943a7e10c7da296d33e1bf2c023f244136ed84fcb55f4c7d3a0caa0993f0c"
           },
           {
             "path": "supabase/functions/_shared/ai-provider-crypto.ts",
@@ -13645,8 +13645,8 @@
           "kind": "edge",
           "name": "item-thumbnail",
           "path": "src/infrastructure/inventory/item-thumbnail-service.ts",
-          "line": 150,
-          "endLine": 150,
+          "line": 180,
+          "endLine": 180,
           "resolution": "literal-or-constant",
           "expression": "supabase.functions.invoke('item-thumbnail', { body })",
           "chain": "supabase.functions.invoke('item-thumbnail', { body })",
@@ -13656,9 +13656,9 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/inventory/item-thumbnail-service.ts",
-            "line": 145,
-            "endLine": 156,
-            "text": "async function invoke(body: Record<string, unknown>): Promise<FunctionResponse> {\n  const { isHostLibraryEnabled } = await import('../host/host-library-http');\n  if (isHostLibraryEnabled()) {\n    throw new Error('Item-Thumbnails sind im Host-Modus noch nicht verfügbar.');\n  }\n  const { data, error } = await supabase.functions.invoke('item-thumbnail', { body });\n  if (error) {\n    const serverMessage = await getFunctionErrorMessage(error);\n    throw new Error(serverMessage ?? 'Thumbnail-Dienst nicht erreichbar.');\n  }\n  return parseResponse(data);\n}"
+            "line": 176,
+            "endLine": 186,
+            "text": "async function invoke(body: Record<string, unknown>): Promise<FunctionResponse> {\n  if (isHostLibraryEnabled()) {\n    return invokeHost(body);\n  }\n  const { data, error } = await supabase.functions.invoke('item-thumbnail', { body });\n  if (error) {\n    const serverMessage = await getFunctionErrorMessage(error);\n    throw new Error(serverMessage ?? 'Thumbnail-Dienst nicht erreichbar.');\n  }\n  return parseResponse(data);\n}"
           }
         }
       ],
@@ -35649,7 +35649,7 @@
           },
           {
             "path": "src/infrastructure/inventory/item-thumbnail-service.ts",
-            "sha256": "a17aecc412f3766d52e2a54c8ffa4ffc0e55cd64363a77a9a0f0dd7d5e07622a"
+            "sha256": "192943a7e10c7da296d33e1bf2c023f244136ed84fcb55f4c7d3a0caa0993f0c"
           },
           {
             "path": "src/infrastructure/inventory/supabase-item-catalog.repository.ts",
@@ -35733,7 +35733,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-inventory.json",
-      "sourceContractSha256": "53a83415afa4b23c57bcfb925871490109c492e19bb47cfc580b139e28093309",
+      "sourceContractSha256": "69cb372f4afec8b8415a2b46ee47e2974777e8c9b5809615a9ebec475e4b9a7f",
       "rpcUsed": [],
       "tablesTouched": [
         "characters",
@@ -35886,7 +35886,28 @@
           }
         }
       ],
-      "externalFetches": [],
+      "externalFetches": [
+        {
+          "kind": "fetch",
+          "name": null,
+          "path": "src/infrastructure/inventory/item-thumbnail-service.ts",
+          "line": 158,
+          "endLine": 163,
+          "resolution": "dynamic-expression",
+          "expression": "fetch(requestUrl, {\n      method: 'POST',\n      credentials: 'include',\n      headers: { Accept: 'application/json', 'content-type': 'application/json' },\n      body: JSON.stringify(body),\n    })",
+          "chain": "fetch(requestUrl, {\n      method: 'POST',\n      credentials: 'include',\n      headers: { Accept: 'application/json', 'content-type': 'application/json' },\n      body: JSON.stringify(body),\n    })",
+          "arguments": [
+            "requestUrl",
+            "{\n      method: 'POST',\n      credentials: 'include',\n      headers: { Accept: 'application/json', 'content-type': 'application/json' },\n      body: JSON.stringify(body),\n    }"
+          ],
+          "enclosingOperation": {
+            "path": "src/infrastructure/inventory/item-thumbnail-service.ts",
+            "line": 149,
+            "endLine": 174,
+            "text": "async function invokeHost(body: Record<string, unknown>): Promise<FunctionResponse> {\n  const base = getHostAuthBaseUrl();\n  if (base === null) {\n    return { status: 'error', message: 'Thumbnail-Dienst nicht erreichbar.' };\n  }\n  const requestUrl =\n    base === '' ? '/api/v1/items/thumbnail' : `${base}/api/v1/items/thumbnail`;\n  let response: Response;\n  try {\n    response = await fetch(requestUrl, {\n      method: 'POST',\n      credentials: 'include',\n      headers: { Accept: 'application/json', 'content-type': 'application/json' },\n      body: JSON.stringify(body),\n    });\n  } catch {\n    return { status: 'error', message: 'Thumbnail-Dienst nicht erreichbar.' };\n  }\n  let data: unknown;\n  try {\n    data = await response.json();\n  } catch {\n    return { status: 'error', message: 'Thumbnail-Dienst nicht erreichbar.' };\n  }\n  return parseResponse(data);\n}"
+          }
+        }
+      ],
       "importedInfrastructure": [
         "character",
         "host",
@@ -36008,11 +36029,31 @@
           }
         },
         {
+          "kind": "fetch",
+          "name": null,
+          "path": "src/infrastructure/inventory/item-thumbnail-service.ts",
+          "line": 158,
+          "endLine": 163,
+          "resolution": "dynamic-expression",
+          "expression": "fetch(requestUrl, {\n      method: 'POST',\n      credentials: 'include',\n      headers: { Accept: 'application/json', 'content-type': 'application/json' },\n      body: JSON.stringify(body),\n    })",
+          "chain": "fetch(requestUrl, {\n      method: 'POST',\n      credentials: 'include',\n      headers: { Accept: 'application/json', 'content-type': 'application/json' },\n      body: JSON.stringify(body),\n    })",
+          "arguments": [
+            "requestUrl",
+            "{\n      method: 'POST',\n      credentials: 'include',\n      headers: { Accept: 'application/json', 'content-type': 'application/json' },\n      body: JSON.stringify(body),\n    }"
+          ],
+          "enclosingOperation": {
+            "path": "src/infrastructure/inventory/item-thumbnail-service.ts",
+            "line": 149,
+            "endLine": 174,
+            "text": "async function invokeHost(body: Record<string, unknown>): Promise<FunctionResponse> {\n  const base = getHostAuthBaseUrl();\n  if (base === null) {\n    return { status: 'error', message: 'Thumbnail-Dienst nicht erreichbar.' };\n  }\n  const requestUrl =\n    base === '' ? '/api/v1/items/thumbnail' : `${base}/api/v1/items/thumbnail`;\n  let response: Response;\n  try {\n    response = await fetch(requestUrl, {\n      method: 'POST',\n      credentials: 'include',\n      headers: { Accept: 'application/json', 'content-type': 'application/json' },\n      body: JSON.stringify(body),\n    });\n  } catch {\n    return { status: 'error', message: 'Thumbnail-Dienst nicht erreichbar.' };\n  }\n  let data: unknown;\n  try {\n    data = await response.json();\n  } catch {\n    return { status: 'error', message: 'Thumbnail-Dienst nicht erreichbar.' };\n  }\n  return parseResponse(data);\n}"
+          }
+        },
+        {
           "kind": "edge",
           "name": "item-thumbnail",
           "path": "src/infrastructure/inventory/item-thumbnail-service.ts",
-          "line": 150,
-          "endLine": 150,
+          "line": 180,
+          "endLine": 180,
           "resolution": "literal-or-constant",
           "expression": "supabase.functions.invoke('item-thumbnail', { body })",
           "chain": "supabase.functions.invoke('item-thumbnail', { body })",
@@ -36022,9 +36063,9 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/inventory/item-thumbnail-service.ts",
-            "line": 145,
-            "endLine": 156,
-            "text": "async function invoke(body: Record<string, unknown>): Promise<FunctionResponse> {\n  const { isHostLibraryEnabled } = await import('../host/host-library-http');\n  if (isHostLibraryEnabled()) {\n    throw new Error('Item-Thumbnails sind im Host-Modus noch nicht verfügbar.');\n  }\n  const { data, error } = await supabase.functions.invoke('item-thumbnail', { body });\n  if (error) {\n    const serverMessage = await getFunctionErrorMessage(error);\n    throw new Error(serverMessage ?? 'Thumbnail-Dienst nicht erreichbar.');\n  }\n  return parseResponse(data);\n}"
+            "line": 176,
+            "endLine": 186,
+            "text": "async function invoke(body: Record<string, unknown>): Promise<FunctionResponse> {\n  if (isHostLibraryEnabled()) {\n    return invokeHost(body);\n  }\n  const { data, error } = await supabase.functions.invoke('item-thumbnail', { body });\n  if (error) {\n    const serverMessage = await getFunctionErrorMessage(error);\n    throw new Error(serverMessage ?? 'Thumbnail-Dienst nicht erreichbar.');\n  }\n  return parseResponse(data);\n}"
           }
         },
         {
@@ -36651,92 +36692,98 @@
         },
         {
           "path": "src/infrastructure/inventory/item-thumbnail-service.ts",
-          "line": 24,
-          "endLine": 75,
+          "line": 28,
+          "endLine": 79,
           "name": "prepareItemThumbnailFile"
         },
         {
           "path": "src/infrastructure/inventory/item-thumbnail-service.ts",
-          "line": 112,
-          "endLine": 114,
+          "line": 116,
+          "endLine": 118,
           "name": "isRecord"
         },
         {
           "path": "src/infrastructure/inventory/item-thumbnail-service.ts",
-          "line": 116,
-          "endLine": 128,
+          "line": 120,
+          "endLine": 132,
           "name": "parseResponse"
         },
         {
           "path": "src/infrastructure/inventory/item-thumbnail-service.ts",
-          "line": 130,
-          "endLine": 132,
+          "line": 134,
+          "endLine": 136,
           "name": "hasResponseContext"
         },
         {
           "path": "src/infrastructure/inventory/item-thumbnail-service.ts",
-          "line": 134,
-          "endLine": 143,
+          "line": 138,
+          "endLine": 147,
           "name": "getFunctionErrorMessage"
         },
         {
           "path": "src/infrastructure/inventory/item-thumbnail-service.ts",
-          "line": 145,
-          "endLine": 156,
+          "line": 149,
+          "endLine": 174,
+          "name": "invokeHost"
+        },
+        {
+          "path": "src/infrastructure/inventory/item-thumbnail-service.ts",
+          "line": 176,
+          "endLine": 186,
           "name": "invoke"
         },
         {
           "path": "src/infrastructure/inventory/item-thumbnail-service.ts",
-          "line": 158,
-          "endLine": 173,
+          "line": 188,
+          "endLine": 203,
           "name": "fileToBase64"
         },
         {
           "path": "src/infrastructure/inventory/item-thumbnail-service.ts",
-          "line": 175,
-          "endLine": 183,
+          "line": 205,
+          "endLine": 213,
           "name": "validateThumbnailFileClient"
         },
         {
           "path": "src/infrastructure/inventory/item-thumbnail-service.ts",
-          "line": 186,
-          "endLine": 210,
+          "line": 216,
+          "endLine": 240,
           "name": "getConfig"
         },
         {
           "path": "src/infrastructure/inventory/item-thumbnail-service.ts",
-          "line": 212,
-          "endLine": 246,
+          "line": 242,
+          "endLine": 276,
           "name": "uploadThumbnail"
         },
         {
           "path": "src/infrastructure/inventory/item-thumbnail-service.ts",
-          "line": 248,
-          "endLine": 266,
+          "line": 278,
+          "endLine": 296,
           "name": "startGenerate"
         },
         {
           "path": "src/infrastructure/inventory/item-thumbnail-service.ts",
-          "line": 268,
-          "endLine": 285,
+          "line": 298,
+          "endLine": 315,
           "name": "pollJob"
         },
         {
           "path": "src/infrastructure/inventory/item-thumbnail-service.ts",
-          "line": 287,
-          "endLine": 303,
+          "line": 317,
+          "endLine": 333,
           "name": "loadLatestJob"
         },
         {
           "path": "src/infrastructure/inventory/item-thumbnail-service.ts",
-          "line": 305,
-          "endLine": 314,
+          "line": 335,
+          "endLine": 344,
           "name": "resolveSignedUrl"
         },
         {
           "path": "src/infrastructure/inventory/item-thumbnail-service.ts",
-          "line": 316,
-          "endLine": 319,
+          "line": 346,
+          "endLine": 349,
           "name": "removeThumbnail"
         },
         {

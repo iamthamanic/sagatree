@@ -43,14 +43,17 @@ const {
 const { createItemThumbnailUseCases } = app;
 const { isEdgeDispatcherAllowed } = allow;
 
-assert(ITEM_THUMBNAIL_PUBLIC_ACTIVATION_AUTHORIZED === false, 'no public activation');
+assert(ITEM_THUMBNAIL_PUBLIC_ACTIVATION_AUTHORIZED === true, 'CUT-16 public activation');
 assert(isEdgeDispatcherAllowed('item-thumbnail') === true, 'edge stays allowlisted');
 assert(ITEM_THUMBNAIL_RATE_LIMIT === 4, 'quota 4');
 assert(ITEM_THUMBNAIL_SIGNED_URL_TTL_SECONDS === 604_800, 'signed TTL 7d');
 assert(ITEM_THUMBNAIL_MAX_BYTES === 10 * 1024 * 1024, '10MiB');
 
 const createApp = readFileSync(join(root, 'server/src/api/create-app.ts'), 'utf8');
-assert(!/item-thumbnail/i.test(createApp), 'no create-app cutover mount');
+assert(/itemThumbnail|item-thumbnail/i.test(createApp), 'create-app wires item thumbnail CUT-16');
+const routes = readFileSync(join(root, 'server/src/api/item-thumbnail-routes.ts'), 'utf8');
+assert(routes.includes('/api/v1/items/thumbnail'), 'action mount present');
+assert(routes.includes('/api/v1/items/:id/thumbnail/'), 'REST family present');
 
 const OWNER = 'owner-a';
 const WORLD_OWNER = 'world-owner';
