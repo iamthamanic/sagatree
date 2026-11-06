@@ -28974,7 +28974,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "229b35aacdebddf47048b109b5ff221dd8985f2c5f97e2fb362e959567a98deb"
+            "sha256": "b2343081ddce2e2edd73651b0622e8b4cc6d8583d746a863dbe3343e3a98f71a"
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
@@ -28990,7 +28990,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-ai.json",
-      "sourceContractSha256": "fe682cca707a3483ced58917560e20af55fdc79ffac39fa187d72086499c7764",
+      "sourceContractSha256": "542000a6f6ed3e0df39096cbb9721457a2e8cca9d1485a18d6276e37a2078283",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],
@@ -30135,11 +30135,11 @@
           },
           {
             "path": "src/infrastructure/character/avatar/character-avatar-export-service.ts",
-            "sha256": "f7f06447589acbc55f116e4432dfc1ef1b02ef5ca5a0394dd240693251bbcc4b"
+            "sha256": "a818a81ca45e11bf194a0de002b8c3e0f4c633d5a5a49e2d05166a3ada01d767"
           },
           {
             "path": "src/infrastructure/character/avatar/character-avatar-import-service.ts",
-            "sha256": "7821f28066e2773ff19a5c52341e6fbe3c01995faa1f40ddcf32542b2f2848a5"
+            "sha256": "ecaf625caea200469c08fc76a56d44e33e79b36ff7a18a7aa37d66f3c409cd88"
           },
           {
             "path": "src/infrastructure/character/avatar/character-avatar-meshy-service.ts",
@@ -30151,7 +30151,7 @@
           },
           {
             "path": "src/infrastructure/character/avatar/character-studio-runtime.ts",
-            "sha256": "83d5c4877e46c394a3c287e41f4620f932e2f1122e1abee993c6394136ead8cf"
+            "sha256": "1849e8b5418159d2dad700523888ac2a70ea9c99bc4cf240cfae568de042b325"
           },
           {
             "path": "src/infrastructure/character/avatar/face-anchor-runtime.ts",
@@ -30307,7 +30307,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "229b35aacdebddf47048b109b5ff221dd8985f2c5f97e2fb362e959567a98deb"
+            "sha256": "b2343081ddce2e2edd73651b0622e8b4cc6d8583d746a863dbe3343e3a98f71a"
           },
           {
             "path": "src/infrastructure/host/host-product-deny.ts",
@@ -30491,7 +30491,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-character.json",
-      "sourceContractSha256": "cb7614f66c1467ba21b3a9fdcb8bd29bc47ba2fd321236e2dacaeadf3c44368f",
+      "sourceContractSha256": "e61210785d1733fe5d6de7d8360f0d21e35c3ad323e2ce9311abda65c9976ae9",
       "rpcUsed": [],
       "tablesTouched": [
         "character_adventure_arcs",
@@ -30668,88 +30668,54 @@
           }
         },
         {
-          "kind": "auth",
-          "name": null,
-          "path": "src/infrastructure/character/avatar/character-avatar-export-service.ts",
-          "line": 28,
-          "endLine": 28,
-          "resolution": "dynamic-expression",
-          "expression": "supabase.auth.getUser()",
-          "chain": "supabase.auth.getUser()",
-          "arguments": [],
-          "enclosingOperation": {
-            "path": "src/infrastructure/character/avatar/character-avatar-export-service.ts",
-            "line": 27,
-            "endLine": 33,
-            "text": "async function getAuthenticatedUserId(): Promise<string> {\n  const { data, error } = await supabase.auth.getUser();\n  if (error || !data.user?.id) {\n    throw new Error('Anmeldung erforderlich, um den Avatar zu exportieren.');\n  }\n  return data.user.id;\n}"
-          }
-        },
-        {
           "kind": "auth-helper",
           "name": null,
           "path": "src/infrastructure/character/avatar/character-avatar-export-service.ts",
-          "line": 94,
-          "endLine": 94,
+          "line": 140,
+          "endLine": 140,
           "resolution": "dynamic-expression",
           "expression": "getAuthenticatedUserId()",
           "chain": "getAuthenticatedUserId()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/character/avatar/character-avatar-export-service.ts",
-            "line": 57,
-            "endLine": 164,
-            "text": "export async function materializeAvatarSaveExport(\n  input: {\n    avatar: CharacterAvatarDto;\n    characterId?: string | null;\n    runtimeOverlays?: readonly RuntimeTraitOverlay[];\n    sourceModelUrl?: string;\n    onProgress?: (progress: AvatarSaveExportProgress) => void;\n  },\n): Promise<AvatarSaveExportArtifact> {\n  assertHostProductSurfaceAvailable('Avatar-Export');\n  const report = (\n    status: AvatarSaveExportUiStatus,\n    message: string,\n    artifact?: AvatarSaveExportArtifact,\n  ) => {\n    input.onProgress?.({ status, message, artifact });\n  };\n\n  report('preparing', 'Avatar-Export wird vorbereitet …');\n\n  const sourceUrl = input.sourceModelUrl ?? input.avatar.model_url ?? resolveBaseBodyModelUrl();\n  const sourceBytes = await tryFetchSourceMeshBytes(sourceUrl);\n  const embedsSourceMesh = Boolean(sourceBytes && sourceBytes.byteLength > 12);\n\n  const payload = buildAvatarSaveExportPayload({\n    avatar: input.avatar,\n    runtimeOverlays: input.runtimeOverlays,\n    embedsSourceMesh,\n    catalogBasePath: embedsSourceMesh ? undefined : 'sagatree-base-humanoid-v1.vrm',\n  });\n\n  const bytes = encodeAvatarExportGlb({\n    payload,\n    sourceMeshBytes: sourceBytes,\n  });\n\n  report('uploading', 'Avatar-Artefakt wird gespeichert …');\n  const ownerUserId = await getAuthenticatedUserId();\n  const artifactId = crypto.randomUUID();\n  const storagePath = buildAvatarExportStoragePath({ ownerUserId, artifactId });\n\n  const blob = new Blob([new Uint8Array(bytes)], { type: 'model/gltf-binary' });\n  const { error: uploadError } = await supabase.storage.from(BUCKET).upload(storagePath, blob, {\n    contentType: 'model/gltf-binary',\n    upsert: false,\n  });\n  if (uploadError) {\n    report('error', 'Avatar-Export fehlgeschlagen. Bitte erneut speichern.');\n    throw new Error(`Avatar-Export-Upload fehlgeschlagen: ${uploadError.message}`);\n  }\n\n  report('activating', 'Export wird aktiviert …');\n\n  // Deactivate previous active export for this character (exactly-one active).\n  if (input.characterId) {\n    await supabase\n      .from('character_avatar_export_assets')\n      .update({ is_active: false })\n      .eq('owner_user_id', ownerUserId)\n      .eq('character_id', input.characterId)\n      .eq('is_active', true);\n  }\n\n  const { error: insertError } = await supabase.from('character_avatar_export_assets').insert({\n    id: artifactId,\n    owner_user_id: ownerUserId,\n    character_id: input.characterId ?? null,\n    format: 'glb',\n    mime: 'model/gltf-binary',\n    byte_size: bytes.byteLength,\n    storage_path: storagePath,\n    export_contract_version: AVATAR_SAVE_EXPORT_VERSION,\n    morph_contract_version: MORPH_CONTRACT_VERSION,\n    embeds_source_mesh: embedsSourceMesh,\n    is_active: true,\n  });\n  if (insertError) {\n    await supabase.storage.from(BUCKET).remove([storagePath]);\n    report('error', 'Avatar-Export konnte nicht bestätigt werden.');\n    throw new Error(`Avatar-Export-Artefakt konnte nicht gespeichert werden: ${insertError.message}`);\n  }\n\n  const { data: signed, error: signedError } = await supabase.storage\n    .from(BUCKET)\n    .createSignedUrl(storagePath, SIGNED_URL_SECONDS);\n  if (signedError || !signed?.signedUrl) {\n    // Roll back active flag so previous artifact remains the only active one.\n    await supabase\n      .from('character_avatar_export_assets')\n      .update({ is_active: false })\n      .eq('id', artifactId)\n      .eq('owner_user_id', ownerUserId);\n    report('error', 'Export-URL konnte nicht erzeugt werden.');\n    throw new Error(signedError?.message ?? 'Signed URL fehlt');\n  }\n\n  const artifact: AvatarSaveExportArtifact = {\n    artifactId,\n    storagePath,\n    modelUrl: signed.signedUrl,\n    byteSize: bytes.byteLength,\n    format: 'glb',\n    payload,\n  };\n\n  report('success', 'Avatar-Export materialisiert.', artifact);\n  return artifact;\n}"
-          }
-        },
-        {
-          "kind": "auth",
-          "name": null,
-          "path": "src/infrastructure/character/avatar/character-avatar-import-service.ts",
-          "line": 35,
-          "endLine": 35,
-          "resolution": "dynamic-expression",
-          "expression": "supabase.auth.getUser()",
-          "chain": "supabase.auth.getUser()",
-          "arguments": [],
-          "enclosingOperation": {
-            "path": "src/infrastructure/character/avatar/character-avatar-import-service.ts",
-            "line": 34,
-            "endLine": 40,
-            "text": "async function getAuthenticatedUserId(): Promise<string> {\n  const { data, error } = await supabase.auth.getUser();\n  if (error || !data.user?.id) {\n    throw new Error('Anmeldung erforderlich, um einen 3D-Charakter zu importieren.');\n  }\n  return data.user.id;\n}"
-          }
-        },
-        {
-          "kind": "auth-helper",
-          "name": null,
-          "path": "src/infrastructure/character/avatar/character-avatar-import-service.ts",
-          "line": 111,
-          "endLine": 111,
-          "resolution": "dynamic-expression",
-          "expression": "getAuthenticatedUserId()",
-          "chain": "getAuthenticatedUserId()",
-          "arguments": [],
-          "enclosingOperation": {
-            "path": "src/infrastructure/character/avatar/character-avatar-import-service.ts",
             "line": 70,
-            "endLine": 230,
-            "text": "export async function uploadAndAnalyzeCharacterAvatarModel(\n  file: File,\n  options: {\n    characterId?: string | null;\n    onProgress?: (progress: AvatarImportProgress) => void;\n  } = {},\n): Promise<AvatarImportDraftV2> {\n  assertHostProductSurfaceAvailable('Avatar-Import');\n  const report = (\n    status: AvatarImportUiStatus,\n    message: string,\n    extra?: { artifact?: AvatarImportArtifact; summary?: ImportAnalysisSummaryV1 },\n  ) => {\n    options.onProgress?.({ status, message, artifact: extra?.artifact, summary: extra?.summary });\n  };\n\n  report('validating', 'Datei wird geprüft …');\n  const early = earlyCheckAvatarImportFile({ fileName: file.name, byteSize: file.size });\n  if (!early.ok) {\n    report('failed', early.message ?? 'Datei ungültig.');\n    throw new Error(early.message ?? 'Datei ungültig.');\n  }\n\n  const bytes = await readFileBytes(file);\n  let format: AvatarImportArtifact['format'];\n  let mime: string;\n  try {\n    const validated = validateAvatarImportBytes({\n      bytes,\n      fileName: file.name,\n      claimedMime: file.type,\n    });\n    format = validated.format;\n    mime = validated.mime;\n  } catch (error) {\n    const message = error instanceof Error ? error.message : 'Validierung fehlgeschlagen.';\n    report('failed', message);\n    throw new Error(message);\n  }\n\n  report('uploading', 'Modell wird hochgeladen …');\n  const ownerUserId = await getAuthenticatedUserId();\n  const importAssetId = crypto.randomUUID();\n  const storagePath = buildAvatarImportStoragePath({\n    ownerUserId,\n    artifactId: importAssetId,\n    format,\n  });\n\n  const blob = new Blob([new Uint8Array(bytes)], { type: mime });\n  const { error: uploadError } = await supabase.storage.from(BUCKET).upload(storagePath, blob, {\n    contentType: mime,\n    upsert: false,\n  });\n  if (uploadError) {\n    report('failed', 'Upload fehlgeschlagen. Bitte erneut versuchen.');\n    throw new Error(`Avatar-Upload fehlgeschlagen: ${uploadError.message}`);\n  }\n\n  // Draft row — inactive so a failed analysis never replaces the active avatar.\n  const { error: insertError } = await supabase.from('character_avatar_import_assets').insert({\n    id: importAssetId,\n    owner_user_id: ownerUserId,\n    character_id: options.characterId ?? null,\n    format,\n    mime,\n    byte_size: bytes.byteLength,\n    storage_path: storagePath,\n    rig_analysis_status: 'pending',\n    is_active: false,\n  });\n  if (insertError) {\n    await supabase.storage.from(BUCKET).remove([storagePath]);\n    report('failed', 'Import konnte nicht bestätigt werden.');\n    throw new Error(`Avatar-Artefakt konnte nicht gespeichert werden: ${insertError.message}`);\n  }\n\n  let v2ArtifactId: string = importAssetId;\n  try {\n    const artifact = await materializeArtifactFromImportAsset({\n      importAssetId,\n      characterId: options.characterId,\n      storagePath,\n      format,\n    });\n    v2ArtifactId = artifact.artifactId;\n  } catch (error) {\n    // Artifact table may be unavailable in older envs — keep import draft usable.\n    console.warn(\n      '[avatar-import] V2 artifact materialize skipped:',\n      error instanceof Error ? error.message : error,\n    );\n  }\n\n  report('analyzing', 'Modell wird analysiert …');\n\n  const { data: signed, error: signedError } = await supabase.storage\n    .from(BUCKET)\n    .createSignedUrl(storagePath, SIGNED_URL_SECONDS);\n  if (signedError || !signed?.signedUrl) {\n    report('failed', 'Vorschau-URL konnte nicht erzeugt werden.');\n    throw new Error(signedError?.message ?? 'Signed URL fehlt');\n  }\n\n  let summary: ImportAnalysisSummaryV1;\n  try {\n    const analysis = await previewAnalyzeAvatarGlbBytes(bytes);\n    const { compatibility } = resolveFamilyCompatibilityFromAnalysis(analysis);\n    summary = buildImportAnalysisSummary({ analysis, compatibility });\n  } catch (error) {\n    const message =\n      error instanceof Error ? error.message : 'Analyse fehlgeschlagen. Bitte erneut versuchen.';\n    report('failed', message);\n    throw new Error(message);\n  }\n\n  const keepSeed = buildImportOriginalKeepSeed({\n    modelUrl: signed.signedUrl,\n    artifactId: v2ArtifactId,\n    importAssetId,\n    analysis: {\n      anatomy: summary.anatomy,\n      modularity: summary.modularity,\n    },\n    compatibility: {\n      recommendedFamily: summary.recommendedFamily,\n      status:\n        summary.flowStatus === 'ready-humanoid' ? 'family-compatible' : 'custom',\n    },\n  });\n\n  const legacyArtifact: AvatarImportArtifact = {\n    artifactId: importAssetId,\n    format,\n    byteSize: bytes.byteLength,\n    storagePath,\n    modelUrl: signed.signedUrl,\n    rigAnalysisStatus: 'pending',\n  };\n\n  const uiStatus: AvatarImportUiStatus =\n    summary.flowStatus === 'ready-humanoid' ||\n    summary.flowStatus === 'ready-custom' ||\n    summary.flowStatus === 'limited' ||\n    summary.flowStatus === 'failed'\n      ? summary.flowStatus\n      : 'analyzing';\n\n  report(uiStatus, summary.headlineDe, { artifact: legacyArtifact, summary });\n\n  return {\n    importAssetId,\n    artifactId: v2ArtifactId,\n    format,\n    byteSize: bytes.byteLength,\n    storagePath,\n    modelUrl: signed.signedUrl,\n    summary,\n    keepSeed,\n  };\n}"
+            "endLine": 209,
+            "text": "export async function materializeAvatarSaveExport(\n  input: {\n    avatar: CharacterAvatarDto;\n    characterId?: string | null;\n    runtimeOverlays?: readonly RuntimeTraitOverlay[];\n    sourceModelUrl?: string;\n    onProgress?: (progress: AvatarSaveExportProgress) => void;\n  },\n): Promise<AvatarSaveExportArtifact> {\n  const report = (\n    status: AvatarSaveExportUiStatus,\n    message: string,\n    artifact?: AvatarSaveExportArtifact,\n  ) => {\n    input.onProgress?.({ status, message, artifact });\n  };\n\n  report('preparing', 'Avatar-Export wird vorbereitet …');\n\n  const sourceUrl = input.sourceModelUrl ?? input.avatar.model_url ?? resolveBaseBodyModelUrl();\n  const sourceBytes = await tryFetchSourceMeshBytes(sourceUrl);\n  const embedsSourceMesh = Boolean(sourceBytes && sourceBytes.byteLength > 12);\n\n  const payload = buildAvatarSaveExportPayload({\n    avatar: input.avatar,\n    runtimeOverlays: input.runtimeOverlays,\n    embedsSourceMesh,\n    catalogBasePath: embedsSourceMesh ? undefined : 'sagatree-base-humanoid-v1.vrm',\n  });\n\n  const bytes = encodeAvatarExportGlb({\n    payload,\n    sourceMeshBytes: sourceBytes,\n  });\n\n  report('uploading', 'Avatar-Artefakt wird gespeichert …');\n  const artifactId = crypto.randomUUID();\n\n  if (isHostLibraryEnabled()) {\n    if (bytes.byteLength > HOST_AVATAR_MODEL_MAX_BYTES) {\n      report('error', 'Avatar-Export zu groß für den Host-Speicher.');\n      throw new Error(\n        `Avatar-Export zu groß für den Host-Speicher (max. ${HOST_AVATAR_MODEL_MAX_BYTES} Bytes).`,\n      );\n    }\n    const blob = new File([new Uint8Array(bytes)], `avatar-export-${artifactId}.glb`, {\n      type: 'model/gltf-binary',\n    });\n    let published;\n    try {\n      published = await publishHostAvatarModel(blob, { assetId: artifactId });\n    } catch (error) {\n      report('error', 'Avatar-Export fehlgeschlagen. Bitte erneut speichern.');\n      throw new Error(\n        error instanceof Error ? error.message : 'Avatar-Export-Upload fehlgeschlagen',\n      );\n    }\n    report('activating', 'Export wird aktiviert …');\n    const artifact: AvatarSaveExportArtifact = {\n      artifactId,\n      storagePath: published.storagePath,\n      modelUrl: published.url,\n      byteSize: bytes.byteLength,\n      format: 'glb',\n      payload,\n    };\n    report('success', 'Avatar-Export materialisiert.', artifact);\n    return artifact;\n  }\n\n  const ownerUserId = await getAuthenticatedUserId();\n  const storagePath = buildAvatarExportStoragePath({ ownerUserId, artifactId });\n\n  const blob = new Blob([new Uint8Array(bytes)], { type: 'model/gltf-binary' });\n  const { error: uploadError } = await supabase.storage.from(BUCKET).upload(storagePath, blob, {\n    contentType: 'model/gltf-binary',\n    upsert: false,\n  });\n  if (uploadError) {\n    report('error', 'Avatar-Export fehlgeschlagen. Bitte erneut speichern.');\n    throw new Error(`Avatar-Export-Upload fehlgeschlagen: ${uploadError.message}`);\n  }\n\n  report('activating', 'Export wird aktiviert …');\n\n  // Deactivate previous active export for this character (exactly-one active).\n  if (input.characterId) {\n    await supabase\n      .from('character_avatar_export_assets')\n      .update({ is_active: false })\n      .eq('owner_user_id', ownerUserId)\n      .eq('character_id', input.characterId)\n      .eq('is_active', true);\n  }\n\n  const { error: insertError } = await supabase.from('character_avatar_export_assets').insert({\n    id: artifactId,\n    owner_user_id: ownerUserId,\n    character_id: input.characterId ?? null,\n    format: 'glb',\n    mime: 'model/gltf-binary',\n    byte_size: bytes.byteLength,\n    storage_path: storagePath,\n    export_contract_version: AVATAR_SAVE_EXPORT_VERSION,\n    morph_contract_version: MORPH_CONTRACT_VERSION,\n    embeds_source_mesh: embedsSourceMesh,\n    is_active: true,\n  });\n  if (insertError) {\n    await supabase.storage.from(BUCKET).remove([storagePath]);\n    report('error', 'Avatar-Export konnte nicht bestätigt werden.');\n    throw new Error(`Avatar-Export-Artefakt konnte nicht gespeichert werden: ${insertError.message}`);\n  }\n\n  const { data: signed, error: signedError } = await supabase.storage\n    .from(BUCKET)\n    .createSignedUrl(storagePath, SIGNED_URL_SECONDS);\n  if (signedError || !signed?.signedUrl) {\n    // Roll back active flag so previous artifact remains the only active one.\n    await supabase\n      .from('character_avatar_export_assets')\n      .update({ is_active: false })\n      .eq('id', artifactId)\n      .eq('owner_user_id', ownerUserId);\n    report('error', 'Export-URL konnte nicht erzeugt werden.');\n    throw new Error(signedError?.message ?? 'Signed URL fehlt');\n  }\n\n  const artifact: AvatarSaveExportArtifact = {\n    artifactId,\n    storagePath,\n    modelUrl: signed.signedUrl,\n    byteSize: bytes.byteLength,\n    format: 'glb',\n    payload,\n  };\n\n  report('success', 'Avatar-Export materialisiert.', artifact);\n  return artifact;\n}"
           }
         },
         {
           "kind": "auth-helper",
           "name": null,
           "path": "src/infrastructure/character/avatar/character-avatar-import-service.ts",
-          "line": 245,
-          "endLine": 245,
+          "line": 213,
+          "endLine": 213,
           "resolution": "dynamic-expression",
           "expression": "getAuthenticatedUserId()",
           "chain": "getAuthenticatedUserId()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/character/avatar/character-avatar-import-service.ts",
-            "line": 236,
-            "endLine": 281,
-            "text": "export async function keepOriginalImportedAvatar(input: {\n  draft: AvatarImportDraftV2;\n  characterId?: string | null;\n}): Promise<ImportOriginalKeepSeedV1> {\n  assertHostProductSurfaceAvailable('Avatar-Import');\n  if (!input.draft.summary.canKeepOriginal || input.draft.summary.flowStatus === 'failed') {\n    throw new Error('Original behalten ist für dieses Analyseergebnis nicht verfügbar.');\n  }\n\n  const ownerUserId = await getAuthenticatedUserId();\n\n  if (input.characterId) {\n    await supabase\n      .from('character_avatar_import_assets')\n      .update({ is_active: false })\n      .eq('owner_user_id', ownerUserId)\n      .eq('character_id', input.characterId)\n      .eq('is_active', true);\n  }\n\n  const { error: activateImportError } = await supabase\n    .from('character_avatar_import_assets')\n    .update({ is_active: true })\n    .eq('id', input.draft.importAssetId)\n    .eq('owner_user_id', ownerUserId);\n\n  if (activateImportError) {\n    throw new Error(\n      `Import konnte nicht aktiviert werden: ${activateImportError.message}`,\n    );\n  }\n\n  try {\n    const activated = await activateAvatarArtifact(input.draft.artifactId);\n    if (activated.ok === false) {\n      console.warn('[avatar-import] V2 artifact activate:', activated.reasonDe);\n    }\n  } catch (error) {\n    console.warn(\n      '[avatar-import] V2 artifact activate skipped:',\n      error instanceof Error ? error.message : error,\n    );\n  }\n\n  return input.draft.keepSeed;\n}"
+            "line": 202,
+            "endLine": 285,
+            "text": "async function uploadAndAnalyzeLegacy(\n  file: File,\n  bytes: Uint8Array,\n  format: AvatarImportArtifact['format'],\n  mime: string,\n  options: {\n    characterId?: string | null;\n    report: ProgressReporter;\n  },\n): Promise<AvatarImportDraftV2> {\n  options.report('uploading', 'Modell wird hochgeladen …');\n  const ownerUserId = await getAuthenticatedUserId();\n  const importAssetId = crypto.randomUUID();\n  const storagePath = buildAvatarImportStoragePath({\n    ownerUserId,\n    artifactId: importAssetId,\n    format,\n  });\n\n  const blob = new Blob([new Uint8Array(bytes)], { type: mime });\n  const { error: uploadError } = await supabase.storage.from(BUCKET).upload(storagePath, blob, {\n    contentType: mime,\n    upsert: false,\n  });\n  if (uploadError) {\n    options.report('failed', 'Upload fehlgeschlagen. Bitte erneut versuchen.');\n    throw new Error(`Avatar-Upload fehlgeschlagen: ${uploadError.message}`);\n  }\n\n  // Draft row — inactive so a failed analysis never replaces the active avatar.\n  const { error: insertError } = await supabase.from('character_avatar_import_assets').insert({\n    id: importAssetId,\n    owner_user_id: ownerUserId,\n    character_id: options.characterId ?? null,\n    format,\n    mime,\n    byte_size: bytes.byteLength,\n    storage_path: storagePath,\n    rig_analysis_status: 'pending',\n    is_active: false,\n  });\n  if (insertError) {\n    await supabase.storage.from(BUCKET).remove([storagePath]);\n    options.report('failed', 'Import konnte nicht bestätigt werden.');\n    throw new Error(`Avatar-Artefakt konnte nicht gespeichert werden: ${insertError.message}`);\n  }\n\n  let v2ArtifactId: string = importAssetId;\n  try {\n    const artifact = await materializeArtifactFromImportAsset({\n      importAssetId,\n      characterId: options.characterId,\n      storagePath,\n      format,\n    });\n    v2ArtifactId = artifact.artifactId;\n  } catch (error) {\n    // Artifact table may be unavailable in older envs — keep import draft usable.\n    console.warn(\n      '[avatar-import] V2 artifact materialize skipped:',\n      error instanceof Error ? error.message : error,\n    );\n  }\n\n  const { data: signed, error: signedError } = await supabase.storage\n    .from(BUCKET)\n    .createSignedUrl(storagePath, SIGNED_URL_SECONDS);\n  if (signedError || !signed?.signedUrl) {\n    options.report('failed', 'Vorschau-URL konnte nicht erzeugt werden.');\n    throw new Error(signedError?.message ?? 'Signed URL fehlt');\n  }\n\n  const summary = await analyzeImportBytes(bytes, options.report);\n  return finishDraft({\n    importAssetId,\n    artifactId: v2ArtifactId,\n    format,\n    byteSize: bytes.byteLength,\n    storagePath,\n    modelUrl: signed.signedUrl,\n    summary,\n    report: options.report,\n  });\n}"
+          }
+        },
+        {
+          "kind": "auth-helper",
+          "name": null,
+          "path": "src/infrastructure/character/avatar/character-avatar-import-service.ts",
+          "line": 370,
+          "endLine": 370,
+          "resolution": "dynamic-expression",
+          "expression": "getAuthenticatedUserId()",
+          "chain": "getAuthenticatedUserId()",
+          "arguments": [],
+          "enclosingOperation": {
+            "path": "src/infrastructure/character/avatar/character-avatar-import-service.ts",
+            "line": 348,
+            "endLine": 406,
+            "text": "export async function keepOriginalImportedAvatar(input: {\n  draft: AvatarImportDraftV2;\n  characterId?: string | null;\n}): Promise<ImportOriginalKeepSeedV1> {\n  if (!input.draft.summary.canKeepOriginal || input.draft.summary.flowStatus === 'failed') {\n    throw new Error('Original behalten ist für dieses Analyseergebnis nicht verfügbar.');\n  }\n\n  if (isHostLibraryEnabled()) {\n    try {\n      const activated = await activateAvatarArtifact(input.draft.artifactId);\n      if (activated.ok === false) {\n        throw new Error(activated.reasonDe);\n      }\n    } catch (error) {\n      const message =\n        error instanceof Error ? error.message : 'Import konnte nicht aktiviert werden.';\n      throw new Error(message);\n    }\n    return input.draft.keepSeed;\n  }\n\n  const ownerUserId = await getAuthenticatedUserId();\n\n  if (input.characterId) {\n    await supabase\n      .from('character_avatar_import_assets')\n      .update({ is_active: false })\n      .eq('owner_user_id', ownerUserId)\n      .eq('character_id', input.characterId)\n      .eq('is_active', true);\n  }\n\n  const { error: activateImportError } = await supabase\n    .from('character_avatar_import_assets')\n    .update({ is_active: true })\n    .eq('id', input.draft.importAssetId)\n    .eq('owner_user_id', ownerUserId);\n\n  if (activateImportError) {\n    throw new Error(\n      `Import konnte nicht aktiviert werden: ${activateImportError.message}`,\n    );\n  }\n\n  try {\n    const activated = await activateAvatarArtifact(input.draft.artifactId);\n    if (activated.ok === false) {\n      console.warn('[avatar-import] V2 artifact activate:', activated.reasonDe);\n    }\n  } catch (error) {\n    console.warn(\n      '[avatar-import] V2 artifact activate skipped:',\n      error instanceof Error ? error.message : error,\n    );\n  }\n\n  return input.draft.keepSeed;\n}"
           }
         },
         {
@@ -31064,19 +31030,20 @@
           "kind": "fetch",
           "name": null,
           "path": "src/infrastructure/character/avatar/character-avatar-export-service.ts",
-          "line": 44,
-          "endLine": 44,
+          "line": 55,
+          "endLine": 57,
           "resolution": "dynamic-expression",
-          "expression": "fetch(url)",
-          "chain": "fetch(url)",
+          "expression": "fetch(url, {\n      credentials: usesHostAssetCredentials(url) ? 'include' : 'omit',\n    })",
+          "chain": "fetch(url, {\n      credentials: usesHostAssetCredentials(url) ? 'include' : 'omit',\n    })",
           "arguments": [
-            "url"
+            "url",
+            "{\n      credentials: usesHostAssetCredentials(url) ? 'include' : 'omit',\n    }"
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/character/avatar/character-avatar-export-service.ts",
-            "line": 41,
-            "endLine": 51,
-            "text": "async function tryFetchSourceMeshBytes(url: string | undefined): Promise<Uint8Array | undefined> {\n  if (!url) return undefined;\n  try {\n    const response = await fetch(url);\n    if (!response.ok) return undefined;\n    const buffer = await response.arrayBuffer();\n    return new Uint8Array(buffer);\n  } catch {\n    return undefined;\n  }\n}"
+            "line": 52,
+            "endLine": 64,
+            "text": "async function tryFetchSourceMeshBytes(url: string | undefined): Promise<Uint8Array | undefined> {\n  if (!url) return undefined;\n  try {\n    const response = await fetch(url, {\n      credentials: usesHostAssetCredentials(url) ? 'include' : 'omit',\n    });\n    if (!response.ok) return undefined;\n    const buffer = await response.arrayBuffer();\n    return new Uint8Array(buffer);\n  } catch {\n    return undefined;\n  }\n}"
           }
         },
         {
@@ -31103,8 +31070,8 @@
           "kind": "fetch",
           "name": null,
           "path": "src/infrastructure/character/avatar/character-studio-runtime.ts",
-          "line": 1365,
-          "endLine": 1365,
+          "line": 1367,
+          "endLine": 1367,
           "resolution": "dynamic-expression",
           "expression": "fetch(manifestUrl)",
           "chain": "fetch(manifestUrl)",
@@ -31113,8 +31080,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/character/avatar/character-studio-runtime.ts",
-            "line": 1347,
-            "endLine": 1378,
+            "line": 1349,
+            "endLine": 1380,
             "text": "private async loadFaceAnchorsManifestForModel(\n    modelUrl: string,\n    characterOverride: SagaTreeFaceAnchorsManifestV1 | null = null,\n  ): Promise<void> {\n    const token = ++this.faceAnchorManifestLoadToken;\n    // Character-persisted anchors win over asset sidecar (#persist).\n    if (characterOverride) {\n      const parsed = parseFaceAnchorsManifestV1(characterOverride);\n      if (parsed.ok && token === this.faceAnchorManifestLoadToken) {\n        this.liveActCharacterFaceDebug.bindManifest(parsed.manifest);\n        return;\n      }\n    }\n    this.liveActCharacterFaceDebug.bindManifest(null);\n    const candidates = listFaceAnchorsManifestUrlCandidates(modelUrl);\n    if (!candidates.length) return;\n    for (const manifestUrl of candidates) {\n      try {\n        const response = await fetch(manifestUrl);\n        if (!response.ok || token !== this.faceAnchorManifestLoadToken) continue;\n        const payload: unknown = await response.json();\n        if (token !== this.faceAnchorManifestLoadToken) return;\n        const parsed = parseFaceAnchorsManifestV1(payload);\n        if (parsed.ok) {\n          this.liveActCharacterFaceDebug.bindManifest(parsed.manifest);\n          return;\n        }\n      } catch {\n        // Try next candidate — mapping stays unavailable if all fail (#400).\n      }\n    }\n  }"
           }
         }
@@ -31416,64 +31383,48 @@
           }
         },
         {
-          "kind": "auth",
-          "name": null,
-          "path": "src/infrastructure/character/avatar/character-avatar-export-service.ts",
-          "line": 28,
-          "endLine": 28,
-          "resolution": "dynamic-expression",
-          "expression": "supabase.auth.getUser()",
-          "chain": "supabase.auth.getUser()",
-          "arguments": [],
-          "enclosingOperation": {
-            "path": "src/infrastructure/character/avatar/character-avatar-export-service.ts",
-            "line": 27,
-            "endLine": 33,
-            "text": "async function getAuthenticatedUserId(): Promise<string> {\n  const { data, error } = await supabase.auth.getUser();\n  if (error || !data.user?.id) {\n    throw new Error('Anmeldung erforderlich, um den Avatar zu exportieren.');\n  }\n  return data.user.id;\n}"
-          }
-        },
-        {
           "kind": "fetch",
           "name": null,
           "path": "src/infrastructure/character/avatar/character-avatar-export-service.ts",
-          "line": 44,
-          "endLine": 44,
+          "line": 55,
+          "endLine": 57,
           "resolution": "dynamic-expression",
-          "expression": "fetch(url)",
-          "chain": "fetch(url)",
+          "expression": "fetch(url, {\n      credentials: usesHostAssetCredentials(url) ? 'include' : 'omit',\n    })",
+          "chain": "fetch(url, {\n      credentials: usesHostAssetCredentials(url) ? 'include' : 'omit',\n    })",
           "arguments": [
-            "url"
+            "url",
+            "{\n      credentials: usesHostAssetCredentials(url) ? 'include' : 'omit',\n    }"
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/character/avatar/character-avatar-export-service.ts",
-            "line": 41,
-            "endLine": 51,
-            "text": "async function tryFetchSourceMeshBytes(url: string | undefined): Promise<Uint8Array | undefined> {\n  if (!url) return undefined;\n  try {\n    const response = await fetch(url);\n    if (!response.ok) return undefined;\n    const buffer = await response.arrayBuffer();\n    return new Uint8Array(buffer);\n  } catch {\n    return undefined;\n  }\n}"
+            "line": 52,
+            "endLine": 64,
+            "text": "async function tryFetchSourceMeshBytes(url: string | undefined): Promise<Uint8Array | undefined> {\n  if (!url) return undefined;\n  try {\n    const response = await fetch(url, {\n      credentials: usesHostAssetCredentials(url) ? 'include' : 'omit',\n    });\n    if (!response.ok) return undefined;\n    const buffer = await response.arrayBuffer();\n    return new Uint8Array(buffer);\n  } catch {\n    return undefined;\n  }\n}"
           }
         },
         {
           "kind": "auth-helper",
           "name": null,
           "path": "src/infrastructure/character/avatar/character-avatar-export-service.ts",
-          "line": 94,
-          "endLine": 94,
+          "line": 140,
+          "endLine": 140,
           "resolution": "dynamic-expression",
           "expression": "getAuthenticatedUserId()",
           "chain": "getAuthenticatedUserId()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/character/avatar/character-avatar-export-service.ts",
-            "line": 57,
-            "endLine": 164,
-            "text": "export async function materializeAvatarSaveExport(\n  input: {\n    avatar: CharacterAvatarDto;\n    characterId?: string | null;\n    runtimeOverlays?: readonly RuntimeTraitOverlay[];\n    sourceModelUrl?: string;\n    onProgress?: (progress: AvatarSaveExportProgress) => void;\n  },\n): Promise<AvatarSaveExportArtifact> {\n  assertHostProductSurfaceAvailable('Avatar-Export');\n  const report = (\n    status: AvatarSaveExportUiStatus,\n    message: string,\n    artifact?: AvatarSaveExportArtifact,\n  ) => {\n    input.onProgress?.({ status, message, artifact });\n  };\n\n  report('preparing', 'Avatar-Export wird vorbereitet …');\n\n  const sourceUrl = input.sourceModelUrl ?? input.avatar.model_url ?? resolveBaseBodyModelUrl();\n  const sourceBytes = await tryFetchSourceMeshBytes(sourceUrl);\n  const embedsSourceMesh = Boolean(sourceBytes && sourceBytes.byteLength > 12);\n\n  const payload = buildAvatarSaveExportPayload({\n    avatar: input.avatar,\n    runtimeOverlays: input.runtimeOverlays,\n    embedsSourceMesh,\n    catalogBasePath: embedsSourceMesh ? undefined : 'sagatree-base-humanoid-v1.vrm',\n  });\n\n  const bytes = encodeAvatarExportGlb({\n    payload,\n    sourceMeshBytes: sourceBytes,\n  });\n\n  report('uploading', 'Avatar-Artefakt wird gespeichert …');\n  const ownerUserId = await getAuthenticatedUserId();\n  const artifactId = crypto.randomUUID();\n  const storagePath = buildAvatarExportStoragePath({ ownerUserId, artifactId });\n\n  const blob = new Blob([new Uint8Array(bytes)], { type: 'model/gltf-binary' });\n  const { error: uploadError } = await supabase.storage.from(BUCKET).upload(storagePath, blob, {\n    contentType: 'model/gltf-binary',\n    upsert: false,\n  });\n  if (uploadError) {\n    report('error', 'Avatar-Export fehlgeschlagen. Bitte erneut speichern.');\n    throw new Error(`Avatar-Export-Upload fehlgeschlagen: ${uploadError.message}`);\n  }\n\n  report('activating', 'Export wird aktiviert …');\n\n  // Deactivate previous active export for this character (exactly-one active).\n  if (input.characterId) {\n    await supabase\n      .from('character_avatar_export_assets')\n      .update({ is_active: false })\n      .eq('owner_user_id', ownerUserId)\n      .eq('character_id', input.characterId)\n      .eq('is_active', true);\n  }\n\n  const { error: insertError } = await supabase.from('character_avatar_export_assets').insert({\n    id: artifactId,\n    owner_user_id: ownerUserId,\n    character_id: input.characterId ?? null,\n    format: 'glb',\n    mime: 'model/gltf-binary',\n    byte_size: bytes.byteLength,\n    storage_path: storagePath,\n    export_contract_version: AVATAR_SAVE_EXPORT_VERSION,\n    morph_contract_version: MORPH_CONTRACT_VERSION,\n    embeds_source_mesh: embedsSourceMesh,\n    is_active: true,\n  });\n  if (insertError) {\n    await supabase.storage.from(BUCKET).remove([storagePath]);\n    report('error', 'Avatar-Export konnte nicht bestätigt werden.');\n    throw new Error(`Avatar-Export-Artefakt konnte nicht gespeichert werden: ${insertError.message}`);\n  }\n\n  const { data: signed, error: signedError } = await supabase.storage\n    .from(BUCKET)\n    .createSignedUrl(storagePath, SIGNED_URL_SECONDS);\n  if (signedError || !signed?.signedUrl) {\n    // Roll back active flag so previous artifact remains the only active one.\n    await supabase\n      .from('character_avatar_export_assets')\n      .update({ is_active: false })\n      .eq('id', artifactId)\n      .eq('owner_user_id', ownerUserId);\n    report('error', 'Export-URL konnte nicht erzeugt werden.');\n    throw new Error(signedError?.message ?? 'Signed URL fehlt');\n  }\n\n  const artifact: AvatarSaveExportArtifact = {\n    artifactId,\n    storagePath,\n    modelUrl: signed.signedUrl,\n    byteSize: bytes.byteLength,\n    format: 'glb',\n    payload,\n  };\n\n  report('success', 'Avatar-Export materialisiert.', artifact);\n  return artifact;\n}"
+            "line": 70,
+            "endLine": 209,
+            "text": "export async function materializeAvatarSaveExport(\n  input: {\n    avatar: CharacterAvatarDto;\n    characterId?: string | null;\n    runtimeOverlays?: readonly RuntimeTraitOverlay[];\n    sourceModelUrl?: string;\n    onProgress?: (progress: AvatarSaveExportProgress) => void;\n  },\n): Promise<AvatarSaveExportArtifact> {\n  const report = (\n    status: AvatarSaveExportUiStatus,\n    message: string,\n    artifact?: AvatarSaveExportArtifact,\n  ) => {\n    input.onProgress?.({ status, message, artifact });\n  };\n\n  report('preparing', 'Avatar-Export wird vorbereitet …');\n\n  const sourceUrl = input.sourceModelUrl ?? input.avatar.model_url ?? resolveBaseBodyModelUrl();\n  const sourceBytes = await tryFetchSourceMeshBytes(sourceUrl);\n  const embedsSourceMesh = Boolean(sourceBytes && sourceBytes.byteLength > 12);\n\n  const payload = buildAvatarSaveExportPayload({\n    avatar: input.avatar,\n    runtimeOverlays: input.runtimeOverlays,\n    embedsSourceMesh,\n    catalogBasePath: embedsSourceMesh ? undefined : 'sagatree-base-humanoid-v1.vrm',\n  });\n\n  const bytes = encodeAvatarExportGlb({\n    payload,\n    sourceMeshBytes: sourceBytes,\n  });\n\n  report('uploading', 'Avatar-Artefakt wird gespeichert …');\n  const artifactId = crypto.randomUUID();\n\n  if (isHostLibraryEnabled()) {\n    if (bytes.byteLength > HOST_AVATAR_MODEL_MAX_BYTES) {\n      report('error', 'Avatar-Export zu groß für den Host-Speicher.');\n      throw new Error(\n        `Avatar-Export zu groß für den Host-Speicher (max. ${HOST_AVATAR_MODEL_MAX_BYTES} Bytes).`,\n      );\n    }\n    const blob = new File([new Uint8Array(bytes)], `avatar-export-${artifactId}.glb`, {\n      type: 'model/gltf-binary',\n    });\n    let published;\n    try {\n      published = await publishHostAvatarModel(blob, { assetId: artifactId });\n    } catch (error) {\n      report('error', 'Avatar-Export fehlgeschlagen. Bitte erneut speichern.');\n      throw new Error(\n        error instanceof Error ? error.message : 'Avatar-Export-Upload fehlgeschlagen',\n      );\n    }\n    report('activating', 'Export wird aktiviert …');\n    const artifact: AvatarSaveExportArtifact = {\n      artifactId,\n      storagePath: published.storagePath,\n      modelUrl: published.url,\n      byteSize: bytes.byteLength,\n      format: 'glb',\n      payload,\n    };\n    report('success', 'Avatar-Export materialisiert.', artifact);\n    return artifact;\n  }\n\n  const ownerUserId = await getAuthenticatedUserId();\n  const storagePath = buildAvatarExportStoragePath({ ownerUserId, artifactId });\n\n  const blob = new Blob([new Uint8Array(bytes)], { type: 'model/gltf-binary' });\n  const { error: uploadError } = await supabase.storage.from(BUCKET).upload(storagePath, blob, {\n    contentType: 'model/gltf-binary',\n    upsert: false,\n  });\n  if (uploadError) {\n    report('error', 'Avatar-Export fehlgeschlagen. Bitte erneut speichern.');\n    throw new Error(`Avatar-Export-Upload fehlgeschlagen: ${uploadError.message}`);\n  }\n\n  report('activating', 'Export wird aktiviert …');\n\n  // Deactivate previous active export for this character (exactly-one active).\n  if (input.characterId) {\n    await supabase\n      .from('character_avatar_export_assets')\n      .update({ is_active: false })\n      .eq('owner_user_id', ownerUserId)\n      .eq('character_id', input.characterId)\n      .eq('is_active', true);\n  }\n\n  const { error: insertError } = await supabase.from('character_avatar_export_assets').insert({\n    id: artifactId,\n    owner_user_id: ownerUserId,\n    character_id: input.characterId ?? null,\n    format: 'glb',\n    mime: 'model/gltf-binary',\n    byte_size: bytes.byteLength,\n    storage_path: storagePath,\n    export_contract_version: AVATAR_SAVE_EXPORT_VERSION,\n    morph_contract_version: MORPH_CONTRACT_VERSION,\n    embeds_source_mesh: embedsSourceMesh,\n    is_active: true,\n  });\n  if (insertError) {\n    await supabase.storage.from(BUCKET).remove([storagePath]);\n    report('error', 'Avatar-Export konnte nicht bestätigt werden.');\n    throw new Error(`Avatar-Export-Artefakt konnte nicht gespeichert werden: ${insertError.message}`);\n  }\n\n  const { data: signed, error: signedError } = await supabase.storage\n    .from(BUCKET)\n    .createSignedUrl(storagePath, SIGNED_URL_SECONDS);\n  if (signedError || !signed?.signedUrl) {\n    // Roll back active flag so previous artifact remains the only active one.\n    await supabase\n      .from('character_avatar_export_assets')\n      .update({ is_active: false })\n      .eq('id', artifactId)\n      .eq('owner_user_id', ownerUserId);\n    report('error', 'Export-URL konnte nicht erzeugt werden.');\n    throw new Error(signedError?.message ?? 'Signed URL fehlt');\n  }\n\n  const artifact: AvatarSaveExportArtifact = {\n    artifactId,\n    storagePath,\n    modelUrl: signed.signedUrl,\n    byteSize: bytes.byteLength,\n    format: 'glb',\n    payload,\n  };\n\n  report('success', 'Avatar-Export materialisiert.', artifact);\n  return artifact;\n}"
           }
         },
         {
           "kind": "storage",
           "name": "character-avatars",
           "path": "src/infrastructure/character/avatar/character-avatar-export-service.ts",
-          "line": 99,
-          "endLine": 99,
+          "line": 144,
+          "endLine": 144,
           "resolution": "literal-or-constant",
           "expression": "supabase.storage.from(BUCKET)",
           "chain": "supabase.storage.from(BUCKET).upload(storagePath, blob, {\n    contentType: 'model/gltf-binary',\n    upsert: false,\n  })",
@@ -31482,17 +31433,17 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/character/avatar/character-avatar-export-service.ts",
-            "line": 57,
-            "endLine": 164,
-            "text": "export async function materializeAvatarSaveExport(\n  input: {\n    avatar: CharacterAvatarDto;\n    characterId?: string | null;\n    runtimeOverlays?: readonly RuntimeTraitOverlay[];\n    sourceModelUrl?: string;\n    onProgress?: (progress: AvatarSaveExportProgress) => void;\n  },\n): Promise<AvatarSaveExportArtifact> {\n  assertHostProductSurfaceAvailable('Avatar-Export');\n  const report = (\n    status: AvatarSaveExportUiStatus,\n    message: string,\n    artifact?: AvatarSaveExportArtifact,\n  ) => {\n    input.onProgress?.({ status, message, artifact });\n  };\n\n  report('preparing', 'Avatar-Export wird vorbereitet …');\n\n  const sourceUrl = input.sourceModelUrl ?? input.avatar.model_url ?? resolveBaseBodyModelUrl();\n  const sourceBytes = await tryFetchSourceMeshBytes(sourceUrl);\n  const embedsSourceMesh = Boolean(sourceBytes && sourceBytes.byteLength > 12);\n\n  const payload = buildAvatarSaveExportPayload({\n    avatar: input.avatar,\n    runtimeOverlays: input.runtimeOverlays,\n    embedsSourceMesh,\n    catalogBasePath: embedsSourceMesh ? undefined : 'sagatree-base-humanoid-v1.vrm',\n  });\n\n  const bytes = encodeAvatarExportGlb({\n    payload,\n    sourceMeshBytes: sourceBytes,\n  });\n\n  report('uploading', 'Avatar-Artefakt wird gespeichert …');\n  const ownerUserId = await getAuthenticatedUserId();\n  const artifactId = crypto.randomUUID();\n  const storagePath = buildAvatarExportStoragePath({ ownerUserId, artifactId });\n\n  const blob = new Blob([new Uint8Array(bytes)], { type: 'model/gltf-binary' });\n  const { error: uploadError } = await supabase.storage.from(BUCKET).upload(storagePath, blob, {\n    contentType: 'model/gltf-binary',\n    upsert: false,\n  });\n  if (uploadError) {\n    report('error', 'Avatar-Export fehlgeschlagen. Bitte erneut speichern.');\n    throw new Error(`Avatar-Export-Upload fehlgeschlagen: ${uploadError.message}`);\n  }\n\n  report('activating', 'Export wird aktiviert …');\n\n  // Deactivate previous active export for this character (exactly-one active).\n  if (input.characterId) {\n    await supabase\n      .from('character_avatar_export_assets')\n      .update({ is_active: false })\n      .eq('owner_user_id', ownerUserId)\n      .eq('character_id', input.characterId)\n      .eq('is_active', true);\n  }\n\n  const { error: insertError } = await supabase.from('character_avatar_export_assets').insert({\n    id: artifactId,\n    owner_user_id: ownerUserId,\n    character_id: input.characterId ?? null,\n    format: 'glb',\n    mime: 'model/gltf-binary',\n    byte_size: bytes.byteLength,\n    storage_path: storagePath,\n    export_contract_version: AVATAR_SAVE_EXPORT_VERSION,\n    morph_contract_version: MORPH_CONTRACT_VERSION,\n    embeds_source_mesh: embedsSourceMesh,\n    is_active: true,\n  });\n  if (insertError) {\n    await supabase.storage.from(BUCKET).remove([storagePath]);\n    report('error', 'Avatar-Export konnte nicht bestätigt werden.');\n    throw new Error(`Avatar-Export-Artefakt konnte nicht gespeichert werden: ${insertError.message}`);\n  }\n\n  const { data: signed, error: signedError } = await supabase.storage\n    .from(BUCKET)\n    .createSignedUrl(storagePath, SIGNED_URL_SECONDS);\n  if (signedError || !signed?.signedUrl) {\n    // Roll back active flag so previous artifact remains the only active one.\n    await supabase\n      .from('character_avatar_export_assets')\n      .update({ is_active: false })\n      .eq('id', artifactId)\n      .eq('owner_user_id', ownerUserId);\n    report('error', 'Export-URL konnte nicht erzeugt werden.');\n    throw new Error(signedError?.message ?? 'Signed URL fehlt');\n  }\n\n  const artifact: AvatarSaveExportArtifact = {\n    artifactId,\n    storagePath,\n    modelUrl: signed.signedUrl,\n    byteSize: bytes.byteLength,\n    format: 'glb',\n    payload,\n  };\n\n  report('success', 'Avatar-Export materialisiert.', artifact);\n  return artifact;\n}"
+            "line": 70,
+            "endLine": 209,
+            "text": "export async function materializeAvatarSaveExport(\n  input: {\n    avatar: CharacterAvatarDto;\n    characterId?: string | null;\n    runtimeOverlays?: readonly RuntimeTraitOverlay[];\n    sourceModelUrl?: string;\n    onProgress?: (progress: AvatarSaveExportProgress) => void;\n  },\n): Promise<AvatarSaveExportArtifact> {\n  const report = (\n    status: AvatarSaveExportUiStatus,\n    message: string,\n    artifact?: AvatarSaveExportArtifact,\n  ) => {\n    input.onProgress?.({ status, message, artifact });\n  };\n\n  report('preparing', 'Avatar-Export wird vorbereitet …');\n\n  const sourceUrl = input.sourceModelUrl ?? input.avatar.model_url ?? resolveBaseBodyModelUrl();\n  const sourceBytes = await tryFetchSourceMeshBytes(sourceUrl);\n  const embedsSourceMesh = Boolean(sourceBytes && sourceBytes.byteLength > 12);\n\n  const payload = buildAvatarSaveExportPayload({\n    avatar: input.avatar,\n    runtimeOverlays: input.runtimeOverlays,\n    embedsSourceMesh,\n    catalogBasePath: embedsSourceMesh ? undefined : 'sagatree-base-humanoid-v1.vrm',\n  });\n\n  const bytes = encodeAvatarExportGlb({\n    payload,\n    sourceMeshBytes: sourceBytes,\n  });\n\n  report('uploading', 'Avatar-Artefakt wird gespeichert …');\n  const artifactId = crypto.randomUUID();\n\n  if (isHostLibraryEnabled()) {\n    if (bytes.byteLength > HOST_AVATAR_MODEL_MAX_BYTES) {\n      report('error', 'Avatar-Export zu groß für den Host-Speicher.');\n      throw new Error(\n        `Avatar-Export zu groß für den Host-Speicher (max. ${HOST_AVATAR_MODEL_MAX_BYTES} Bytes).`,\n      );\n    }\n    const blob = new File([new Uint8Array(bytes)], `avatar-export-${artifactId}.glb`, {\n      type: 'model/gltf-binary',\n    });\n    let published;\n    try {\n      published = await publishHostAvatarModel(blob, { assetId: artifactId });\n    } catch (error) {\n      report('error', 'Avatar-Export fehlgeschlagen. Bitte erneut speichern.');\n      throw new Error(\n        error instanceof Error ? error.message : 'Avatar-Export-Upload fehlgeschlagen',\n      );\n    }\n    report('activating', 'Export wird aktiviert …');\n    const artifact: AvatarSaveExportArtifact = {\n      artifactId,\n      storagePath: published.storagePath,\n      modelUrl: published.url,\n      byteSize: bytes.byteLength,\n      format: 'glb',\n      payload,\n    };\n    report('success', 'Avatar-Export materialisiert.', artifact);\n    return artifact;\n  }\n\n  const ownerUserId = await getAuthenticatedUserId();\n  const storagePath = buildAvatarExportStoragePath({ ownerUserId, artifactId });\n\n  const blob = new Blob([new Uint8Array(bytes)], { type: 'model/gltf-binary' });\n  const { error: uploadError } = await supabase.storage.from(BUCKET).upload(storagePath, blob, {\n    contentType: 'model/gltf-binary',\n    upsert: false,\n  });\n  if (uploadError) {\n    report('error', 'Avatar-Export fehlgeschlagen. Bitte erneut speichern.');\n    throw new Error(`Avatar-Export-Upload fehlgeschlagen: ${uploadError.message}`);\n  }\n\n  report('activating', 'Export wird aktiviert …');\n\n  // Deactivate previous active export for this character (exactly-one active).\n  if (input.characterId) {\n    await supabase\n      .from('character_avatar_export_assets')\n      .update({ is_active: false })\n      .eq('owner_user_id', ownerUserId)\n      .eq('character_id', input.characterId)\n      .eq('is_active', true);\n  }\n\n  const { error: insertError } = await supabase.from('character_avatar_export_assets').insert({\n    id: artifactId,\n    owner_user_id: ownerUserId,\n    character_id: input.characterId ?? null,\n    format: 'glb',\n    mime: 'model/gltf-binary',\n    byte_size: bytes.byteLength,\n    storage_path: storagePath,\n    export_contract_version: AVATAR_SAVE_EXPORT_VERSION,\n    morph_contract_version: MORPH_CONTRACT_VERSION,\n    embeds_source_mesh: embedsSourceMesh,\n    is_active: true,\n  });\n  if (insertError) {\n    await supabase.storage.from(BUCKET).remove([storagePath]);\n    report('error', 'Avatar-Export konnte nicht bestätigt werden.');\n    throw new Error(`Avatar-Export-Artefakt konnte nicht gespeichert werden: ${insertError.message}`);\n  }\n\n  const { data: signed, error: signedError } = await supabase.storage\n    .from(BUCKET)\n    .createSignedUrl(storagePath, SIGNED_URL_SECONDS);\n  if (signedError || !signed?.signedUrl) {\n    // Roll back active flag so previous artifact remains the only active one.\n    await supabase\n      .from('character_avatar_export_assets')\n      .update({ is_active: false })\n      .eq('id', artifactId)\n      .eq('owner_user_id', ownerUserId);\n    report('error', 'Export-URL konnte nicht erzeugt werden.');\n    throw new Error(signedError?.message ?? 'Signed URL fehlt');\n  }\n\n  const artifact: AvatarSaveExportArtifact = {\n    artifactId,\n    storagePath,\n    modelUrl: signed.signedUrl,\n    byteSize: bytes.byteLength,\n    format: 'glb',\n    payload,\n  };\n\n  report('success', 'Avatar-Export materialisiert.', artifact);\n  return artifact;\n}"
           }
         },
         {
           "kind": "table",
           "name": "character_avatar_export_assets",
           "path": "src/infrastructure/character/avatar/character-avatar-export-service.ts",
-          "line": 112,
-          "endLine": 113,
+          "line": 157,
+          "endLine": 158,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from('character_avatar_export_assets')",
           "chain": "supabase\n      .from('character_avatar_export_assets')\n      .update({ is_active: false })\n      .eq('owner_user_id', ownerUserId)\n      .eq('character_id', input.characterId)\n      .eq('is_active', true)",
@@ -31501,17 +31452,17 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/character/avatar/character-avatar-export-service.ts",
-            "line": 57,
-            "endLine": 164,
-            "text": "export async function materializeAvatarSaveExport(\n  input: {\n    avatar: CharacterAvatarDto;\n    characterId?: string | null;\n    runtimeOverlays?: readonly RuntimeTraitOverlay[];\n    sourceModelUrl?: string;\n    onProgress?: (progress: AvatarSaveExportProgress) => void;\n  },\n): Promise<AvatarSaveExportArtifact> {\n  assertHostProductSurfaceAvailable('Avatar-Export');\n  const report = (\n    status: AvatarSaveExportUiStatus,\n    message: string,\n    artifact?: AvatarSaveExportArtifact,\n  ) => {\n    input.onProgress?.({ status, message, artifact });\n  };\n\n  report('preparing', 'Avatar-Export wird vorbereitet …');\n\n  const sourceUrl = input.sourceModelUrl ?? input.avatar.model_url ?? resolveBaseBodyModelUrl();\n  const sourceBytes = await tryFetchSourceMeshBytes(sourceUrl);\n  const embedsSourceMesh = Boolean(sourceBytes && sourceBytes.byteLength > 12);\n\n  const payload = buildAvatarSaveExportPayload({\n    avatar: input.avatar,\n    runtimeOverlays: input.runtimeOverlays,\n    embedsSourceMesh,\n    catalogBasePath: embedsSourceMesh ? undefined : 'sagatree-base-humanoid-v1.vrm',\n  });\n\n  const bytes = encodeAvatarExportGlb({\n    payload,\n    sourceMeshBytes: sourceBytes,\n  });\n\n  report('uploading', 'Avatar-Artefakt wird gespeichert …');\n  const ownerUserId = await getAuthenticatedUserId();\n  const artifactId = crypto.randomUUID();\n  const storagePath = buildAvatarExportStoragePath({ ownerUserId, artifactId });\n\n  const blob = new Blob([new Uint8Array(bytes)], { type: 'model/gltf-binary' });\n  const { error: uploadError } = await supabase.storage.from(BUCKET).upload(storagePath, blob, {\n    contentType: 'model/gltf-binary',\n    upsert: false,\n  });\n  if (uploadError) {\n    report('error', 'Avatar-Export fehlgeschlagen. Bitte erneut speichern.');\n    throw new Error(`Avatar-Export-Upload fehlgeschlagen: ${uploadError.message}`);\n  }\n\n  report('activating', 'Export wird aktiviert …');\n\n  // Deactivate previous active export for this character (exactly-one active).\n  if (input.characterId) {\n    await supabase\n      .from('character_avatar_export_assets')\n      .update({ is_active: false })\n      .eq('owner_user_id', ownerUserId)\n      .eq('character_id', input.characterId)\n      .eq('is_active', true);\n  }\n\n  const { error: insertError } = await supabase.from('character_avatar_export_assets').insert({\n    id: artifactId,\n    owner_user_id: ownerUserId,\n    character_id: input.characterId ?? null,\n    format: 'glb',\n    mime: 'model/gltf-binary',\n    byte_size: bytes.byteLength,\n    storage_path: storagePath,\n    export_contract_version: AVATAR_SAVE_EXPORT_VERSION,\n    morph_contract_version: MORPH_CONTRACT_VERSION,\n    embeds_source_mesh: embedsSourceMesh,\n    is_active: true,\n  });\n  if (insertError) {\n    await supabase.storage.from(BUCKET).remove([storagePath]);\n    report('error', 'Avatar-Export konnte nicht bestätigt werden.');\n    throw new Error(`Avatar-Export-Artefakt konnte nicht gespeichert werden: ${insertError.message}`);\n  }\n\n  const { data: signed, error: signedError } = await supabase.storage\n    .from(BUCKET)\n    .createSignedUrl(storagePath, SIGNED_URL_SECONDS);\n  if (signedError || !signed?.signedUrl) {\n    // Roll back active flag so previous artifact remains the only active one.\n    await supabase\n      .from('character_avatar_export_assets')\n      .update({ is_active: false })\n      .eq('id', artifactId)\n      .eq('owner_user_id', ownerUserId);\n    report('error', 'Export-URL konnte nicht erzeugt werden.');\n    throw new Error(signedError?.message ?? 'Signed URL fehlt');\n  }\n\n  const artifact: AvatarSaveExportArtifact = {\n    artifactId,\n    storagePath,\n    modelUrl: signed.signedUrl,\n    byteSize: bytes.byteLength,\n    format: 'glb',\n    payload,\n  };\n\n  report('success', 'Avatar-Export materialisiert.', artifact);\n  return artifact;\n}"
+            "line": 70,
+            "endLine": 209,
+            "text": "export async function materializeAvatarSaveExport(\n  input: {\n    avatar: CharacterAvatarDto;\n    characterId?: string | null;\n    runtimeOverlays?: readonly RuntimeTraitOverlay[];\n    sourceModelUrl?: string;\n    onProgress?: (progress: AvatarSaveExportProgress) => void;\n  },\n): Promise<AvatarSaveExportArtifact> {\n  const report = (\n    status: AvatarSaveExportUiStatus,\n    message: string,\n    artifact?: AvatarSaveExportArtifact,\n  ) => {\n    input.onProgress?.({ status, message, artifact });\n  };\n\n  report('preparing', 'Avatar-Export wird vorbereitet …');\n\n  const sourceUrl = input.sourceModelUrl ?? input.avatar.model_url ?? resolveBaseBodyModelUrl();\n  const sourceBytes = await tryFetchSourceMeshBytes(sourceUrl);\n  const embedsSourceMesh = Boolean(sourceBytes && sourceBytes.byteLength > 12);\n\n  const payload = buildAvatarSaveExportPayload({\n    avatar: input.avatar,\n    runtimeOverlays: input.runtimeOverlays,\n    embedsSourceMesh,\n    catalogBasePath: embedsSourceMesh ? undefined : 'sagatree-base-humanoid-v1.vrm',\n  });\n\n  const bytes = encodeAvatarExportGlb({\n    payload,\n    sourceMeshBytes: sourceBytes,\n  });\n\n  report('uploading', 'Avatar-Artefakt wird gespeichert …');\n  const artifactId = crypto.randomUUID();\n\n  if (isHostLibraryEnabled()) {\n    if (bytes.byteLength > HOST_AVATAR_MODEL_MAX_BYTES) {\n      report('error', 'Avatar-Export zu groß für den Host-Speicher.');\n      throw new Error(\n        `Avatar-Export zu groß für den Host-Speicher (max. ${HOST_AVATAR_MODEL_MAX_BYTES} Bytes).`,\n      );\n    }\n    const blob = new File([new Uint8Array(bytes)], `avatar-export-${artifactId}.glb`, {\n      type: 'model/gltf-binary',\n    });\n    let published;\n    try {\n      published = await publishHostAvatarModel(blob, { assetId: artifactId });\n    } catch (error) {\n      report('error', 'Avatar-Export fehlgeschlagen. Bitte erneut speichern.');\n      throw new Error(\n        error instanceof Error ? error.message : 'Avatar-Export-Upload fehlgeschlagen',\n      );\n    }\n    report('activating', 'Export wird aktiviert …');\n    const artifact: AvatarSaveExportArtifact = {\n      artifactId,\n      storagePath: published.storagePath,\n      modelUrl: published.url,\n      byteSize: bytes.byteLength,\n      format: 'glb',\n      payload,\n    };\n    report('success', 'Avatar-Export materialisiert.', artifact);\n    return artifact;\n  }\n\n  const ownerUserId = await getAuthenticatedUserId();\n  const storagePath = buildAvatarExportStoragePath({ ownerUserId, artifactId });\n\n  const blob = new Blob([new Uint8Array(bytes)], { type: 'model/gltf-binary' });\n  const { error: uploadError } = await supabase.storage.from(BUCKET).upload(storagePath, blob, {\n    contentType: 'model/gltf-binary',\n    upsert: false,\n  });\n  if (uploadError) {\n    report('error', 'Avatar-Export fehlgeschlagen. Bitte erneut speichern.');\n    throw new Error(`Avatar-Export-Upload fehlgeschlagen: ${uploadError.message}`);\n  }\n\n  report('activating', 'Export wird aktiviert …');\n\n  // Deactivate previous active export for this character (exactly-one active).\n  if (input.characterId) {\n    await supabase\n      .from('character_avatar_export_assets')\n      .update({ is_active: false })\n      .eq('owner_user_id', ownerUserId)\n      .eq('character_id', input.characterId)\n      .eq('is_active', true);\n  }\n\n  const { error: insertError } = await supabase.from('character_avatar_export_assets').insert({\n    id: artifactId,\n    owner_user_id: ownerUserId,\n    character_id: input.characterId ?? null,\n    format: 'glb',\n    mime: 'model/gltf-binary',\n    byte_size: bytes.byteLength,\n    storage_path: storagePath,\n    export_contract_version: AVATAR_SAVE_EXPORT_VERSION,\n    morph_contract_version: MORPH_CONTRACT_VERSION,\n    embeds_source_mesh: embedsSourceMesh,\n    is_active: true,\n  });\n  if (insertError) {\n    await supabase.storage.from(BUCKET).remove([storagePath]);\n    report('error', 'Avatar-Export konnte nicht bestätigt werden.');\n    throw new Error(`Avatar-Export-Artefakt konnte nicht gespeichert werden: ${insertError.message}`);\n  }\n\n  const { data: signed, error: signedError } = await supabase.storage\n    .from(BUCKET)\n    .createSignedUrl(storagePath, SIGNED_URL_SECONDS);\n  if (signedError || !signed?.signedUrl) {\n    // Roll back active flag so previous artifact remains the only active one.\n    await supabase\n      .from('character_avatar_export_assets')\n      .update({ is_active: false })\n      .eq('id', artifactId)\n      .eq('owner_user_id', ownerUserId);\n    report('error', 'Export-URL konnte nicht erzeugt werden.');\n    throw new Error(signedError?.message ?? 'Signed URL fehlt');\n  }\n\n  const artifact: AvatarSaveExportArtifact = {\n    artifactId,\n    storagePath,\n    modelUrl: signed.signedUrl,\n    byteSize: bytes.byteLength,\n    format: 'glb',\n    payload,\n  };\n\n  report('success', 'Avatar-Export materialisiert.', artifact);\n  return artifact;\n}"
           }
         },
         {
           "kind": "table",
           "name": "character_avatar_export_assets",
           "path": "src/infrastructure/character/avatar/character-avatar-export-service.ts",
-          "line": 120,
-          "endLine": 120,
+          "line": 165,
+          "endLine": 165,
           "resolution": "literal-or-constant",
           "expression": "supabase.from('character_avatar_export_assets')",
           "chain": "supabase.from('character_avatar_export_assets').insert({\n    id: artifactId,\n    owner_user_id: ownerUserId,\n    character_id: input.characterId ?? null,\n    format: 'glb',\n    mime: 'model/gltf-binary',\n    byte_size: bytes.byteLength,\n    storage_path: storagePath,\n    export_contract_version: AVATAR_SAVE_EXPORT_VERSION,\n    morph_contract_version: MORPH_CONTRACT_VERSION,\n    embeds_source_mesh: embedsSourceMesh,\n    is_active: true,\n  })",
@@ -31520,17 +31471,17 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/character/avatar/character-avatar-export-service.ts",
-            "line": 57,
-            "endLine": 164,
-            "text": "export async function materializeAvatarSaveExport(\n  input: {\n    avatar: CharacterAvatarDto;\n    characterId?: string | null;\n    runtimeOverlays?: readonly RuntimeTraitOverlay[];\n    sourceModelUrl?: string;\n    onProgress?: (progress: AvatarSaveExportProgress) => void;\n  },\n): Promise<AvatarSaveExportArtifact> {\n  assertHostProductSurfaceAvailable('Avatar-Export');\n  const report = (\n    status: AvatarSaveExportUiStatus,\n    message: string,\n    artifact?: AvatarSaveExportArtifact,\n  ) => {\n    input.onProgress?.({ status, message, artifact });\n  };\n\n  report('preparing', 'Avatar-Export wird vorbereitet …');\n\n  const sourceUrl = input.sourceModelUrl ?? input.avatar.model_url ?? resolveBaseBodyModelUrl();\n  const sourceBytes = await tryFetchSourceMeshBytes(sourceUrl);\n  const embedsSourceMesh = Boolean(sourceBytes && sourceBytes.byteLength > 12);\n\n  const payload = buildAvatarSaveExportPayload({\n    avatar: input.avatar,\n    runtimeOverlays: input.runtimeOverlays,\n    embedsSourceMesh,\n    catalogBasePath: embedsSourceMesh ? undefined : 'sagatree-base-humanoid-v1.vrm',\n  });\n\n  const bytes = encodeAvatarExportGlb({\n    payload,\n    sourceMeshBytes: sourceBytes,\n  });\n\n  report('uploading', 'Avatar-Artefakt wird gespeichert …');\n  const ownerUserId = await getAuthenticatedUserId();\n  const artifactId = crypto.randomUUID();\n  const storagePath = buildAvatarExportStoragePath({ ownerUserId, artifactId });\n\n  const blob = new Blob([new Uint8Array(bytes)], { type: 'model/gltf-binary' });\n  const { error: uploadError } = await supabase.storage.from(BUCKET).upload(storagePath, blob, {\n    contentType: 'model/gltf-binary',\n    upsert: false,\n  });\n  if (uploadError) {\n    report('error', 'Avatar-Export fehlgeschlagen. Bitte erneut speichern.');\n    throw new Error(`Avatar-Export-Upload fehlgeschlagen: ${uploadError.message}`);\n  }\n\n  report('activating', 'Export wird aktiviert …');\n\n  // Deactivate previous active export for this character (exactly-one active).\n  if (input.characterId) {\n    await supabase\n      .from('character_avatar_export_assets')\n      .update({ is_active: false })\n      .eq('owner_user_id', ownerUserId)\n      .eq('character_id', input.characterId)\n      .eq('is_active', true);\n  }\n\n  const { error: insertError } = await supabase.from('character_avatar_export_assets').insert({\n    id: artifactId,\n    owner_user_id: ownerUserId,\n    character_id: input.characterId ?? null,\n    format: 'glb',\n    mime: 'model/gltf-binary',\n    byte_size: bytes.byteLength,\n    storage_path: storagePath,\n    export_contract_version: AVATAR_SAVE_EXPORT_VERSION,\n    morph_contract_version: MORPH_CONTRACT_VERSION,\n    embeds_source_mesh: embedsSourceMesh,\n    is_active: true,\n  });\n  if (insertError) {\n    await supabase.storage.from(BUCKET).remove([storagePath]);\n    report('error', 'Avatar-Export konnte nicht bestätigt werden.');\n    throw new Error(`Avatar-Export-Artefakt konnte nicht gespeichert werden: ${insertError.message}`);\n  }\n\n  const { data: signed, error: signedError } = await supabase.storage\n    .from(BUCKET)\n    .createSignedUrl(storagePath, SIGNED_URL_SECONDS);\n  if (signedError || !signed?.signedUrl) {\n    // Roll back active flag so previous artifact remains the only active one.\n    await supabase\n      .from('character_avatar_export_assets')\n      .update({ is_active: false })\n      .eq('id', artifactId)\n      .eq('owner_user_id', ownerUserId);\n    report('error', 'Export-URL konnte nicht erzeugt werden.');\n    throw new Error(signedError?.message ?? 'Signed URL fehlt');\n  }\n\n  const artifact: AvatarSaveExportArtifact = {\n    artifactId,\n    storagePath,\n    modelUrl: signed.signedUrl,\n    byteSize: bytes.byteLength,\n    format: 'glb',\n    payload,\n  };\n\n  report('success', 'Avatar-Export materialisiert.', artifact);\n  return artifact;\n}"
+            "line": 70,
+            "endLine": 209,
+            "text": "export async function materializeAvatarSaveExport(\n  input: {\n    avatar: CharacterAvatarDto;\n    characterId?: string | null;\n    runtimeOverlays?: readonly RuntimeTraitOverlay[];\n    sourceModelUrl?: string;\n    onProgress?: (progress: AvatarSaveExportProgress) => void;\n  },\n): Promise<AvatarSaveExportArtifact> {\n  const report = (\n    status: AvatarSaveExportUiStatus,\n    message: string,\n    artifact?: AvatarSaveExportArtifact,\n  ) => {\n    input.onProgress?.({ status, message, artifact });\n  };\n\n  report('preparing', 'Avatar-Export wird vorbereitet …');\n\n  const sourceUrl = input.sourceModelUrl ?? input.avatar.model_url ?? resolveBaseBodyModelUrl();\n  const sourceBytes = await tryFetchSourceMeshBytes(sourceUrl);\n  const embedsSourceMesh = Boolean(sourceBytes && sourceBytes.byteLength > 12);\n\n  const payload = buildAvatarSaveExportPayload({\n    avatar: input.avatar,\n    runtimeOverlays: input.runtimeOverlays,\n    embedsSourceMesh,\n    catalogBasePath: embedsSourceMesh ? undefined : 'sagatree-base-humanoid-v1.vrm',\n  });\n\n  const bytes = encodeAvatarExportGlb({\n    payload,\n    sourceMeshBytes: sourceBytes,\n  });\n\n  report('uploading', 'Avatar-Artefakt wird gespeichert …');\n  const artifactId = crypto.randomUUID();\n\n  if (isHostLibraryEnabled()) {\n    if (bytes.byteLength > HOST_AVATAR_MODEL_MAX_BYTES) {\n      report('error', 'Avatar-Export zu groß für den Host-Speicher.');\n      throw new Error(\n        `Avatar-Export zu groß für den Host-Speicher (max. ${HOST_AVATAR_MODEL_MAX_BYTES} Bytes).`,\n      );\n    }\n    const blob = new File([new Uint8Array(bytes)], `avatar-export-${artifactId}.glb`, {\n      type: 'model/gltf-binary',\n    });\n    let published;\n    try {\n      published = await publishHostAvatarModel(blob, { assetId: artifactId });\n    } catch (error) {\n      report('error', 'Avatar-Export fehlgeschlagen. Bitte erneut speichern.');\n      throw new Error(\n        error instanceof Error ? error.message : 'Avatar-Export-Upload fehlgeschlagen',\n      );\n    }\n    report('activating', 'Export wird aktiviert …');\n    const artifact: AvatarSaveExportArtifact = {\n      artifactId,\n      storagePath: published.storagePath,\n      modelUrl: published.url,\n      byteSize: bytes.byteLength,\n      format: 'glb',\n      payload,\n    };\n    report('success', 'Avatar-Export materialisiert.', artifact);\n    return artifact;\n  }\n\n  const ownerUserId = await getAuthenticatedUserId();\n  const storagePath = buildAvatarExportStoragePath({ ownerUserId, artifactId });\n\n  const blob = new Blob([new Uint8Array(bytes)], { type: 'model/gltf-binary' });\n  const { error: uploadError } = await supabase.storage.from(BUCKET).upload(storagePath, blob, {\n    contentType: 'model/gltf-binary',\n    upsert: false,\n  });\n  if (uploadError) {\n    report('error', 'Avatar-Export fehlgeschlagen. Bitte erneut speichern.');\n    throw new Error(`Avatar-Export-Upload fehlgeschlagen: ${uploadError.message}`);\n  }\n\n  report('activating', 'Export wird aktiviert …');\n\n  // Deactivate previous active export for this character (exactly-one active).\n  if (input.characterId) {\n    await supabase\n      .from('character_avatar_export_assets')\n      .update({ is_active: false })\n      .eq('owner_user_id', ownerUserId)\n      .eq('character_id', input.characterId)\n      .eq('is_active', true);\n  }\n\n  const { error: insertError } = await supabase.from('character_avatar_export_assets').insert({\n    id: artifactId,\n    owner_user_id: ownerUserId,\n    character_id: input.characterId ?? null,\n    format: 'glb',\n    mime: 'model/gltf-binary',\n    byte_size: bytes.byteLength,\n    storage_path: storagePath,\n    export_contract_version: AVATAR_SAVE_EXPORT_VERSION,\n    morph_contract_version: MORPH_CONTRACT_VERSION,\n    embeds_source_mesh: embedsSourceMesh,\n    is_active: true,\n  });\n  if (insertError) {\n    await supabase.storage.from(BUCKET).remove([storagePath]);\n    report('error', 'Avatar-Export konnte nicht bestätigt werden.');\n    throw new Error(`Avatar-Export-Artefakt konnte nicht gespeichert werden: ${insertError.message}`);\n  }\n\n  const { data: signed, error: signedError } = await supabase.storage\n    .from(BUCKET)\n    .createSignedUrl(storagePath, SIGNED_URL_SECONDS);\n  if (signedError || !signed?.signedUrl) {\n    // Roll back active flag so previous artifact remains the only active one.\n    await supabase\n      .from('character_avatar_export_assets')\n      .update({ is_active: false })\n      .eq('id', artifactId)\n      .eq('owner_user_id', ownerUserId);\n    report('error', 'Export-URL konnte nicht erzeugt werden.');\n    throw new Error(signedError?.message ?? 'Signed URL fehlt');\n  }\n\n  const artifact: AvatarSaveExportArtifact = {\n    artifactId,\n    storagePath,\n    modelUrl: signed.signedUrl,\n    byteSize: bytes.byteLength,\n    format: 'glb',\n    payload,\n  };\n\n  report('success', 'Avatar-Export materialisiert.', artifact);\n  return artifact;\n}"
           }
         },
         {
           "kind": "storage",
           "name": "character-avatars",
           "path": "src/infrastructure/character/avatar/character-avatar-export-service.ts",
-          "line": 134,
-          "endLine": 134,
+          "line": 179,
+          "endLine": 179,
           "resolution": "literal-or-constant",
           "expression": "supabase.storage.from(BUCKET)",
           "chain": "supabase.storage.from(BUCKET).remove([storagePath])",
@@ -31539,17 +31490,17 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/character/avatar/character-avatar-export-service.ts",
-            "line": 57,
-            "endLine": 164,
-            "text": "export async function materializeAvatarSaveExport(\n  input: {\n    avatar: CharacterAvatarDto;\n    characterId?: string | null;\n    runtimeOverlays?: readonly RuntimeTraitOverlay[];\n    sourceModelUrl?: string;\n    onProgress?: (progress: AvatarSaveExportProgress) => void;\n  },\n): Promise<AvatarSaveExportArtifact> {\n  assertHostProductSurfaceAvailable('Avatar-Export');\n  const report = (\n    status: AvatarSaveExportUiStatus,\n    message: string,\n    artifact?: AvatarSaveExportArtifact,\n  ) => {\n    input.onProgress?.({ status, message, artifact });\n  };\n\n  report('preparing', 'Avatar-Export wird vorbereitet …');\n\n  const sourceUrl = input.sourceModelUrl ?? input.avatar.model_url ?? resolveBaseBodyModelUrl();\n  const sourceBytes = await tryFetchSourceMeshBytes(sourceUrl);\n  const embedsSourceMesh = Boolean(sourceBytes && sourceBytes.byteLength > 12);\n\n  const payload = buildAvatarSaveExportPayload({\n    avatar: input.avatar,\n    runtimeOverlays: input.runtimeOverlays,\n    embedsSourceMesh,\n    catalogBasePath: embedsSourceMesh ? undefined : 'sagatree-base-humanoid-v1.vrm',\n  });\n\n  const bytes = encodeAvatarExportGlb({\n    payload,\n    sourceMeshBytes: sourceBytes,\n  });\n\n  report('uploading', 'Avatar-Artefakt wird gespeichert …');\n  const ownerUserId = await getAuthenticatedUserId();\n  const artifactId = crypto.randomUUID();\n  const storagePath = buildAvatarExportStoragePath({ ownerUserId, artifactId });\n\n  const blob = new Blob([new Uint8Array(bytes)], { type: 'model/gltf-binary' });\n  const { error: uploadError } = await supabase.storage.from(BUCKET).upload(storagePath, blob, {\n    contentType: 'model/gltf-binary',\n    upsert: false,\n  });\n  if (uploadError) {\n    report('error', 'Avatar-Export fehlgeschlagen. Bitte erneut speichern.');\n    throw new Error(`Avatar-Export-Upload fehlgeschlagen: ${uploadError.message}`);\n  }\n\n  report('activating', 'Export wird aktiviert …');\n\n  // Deactivate previous active export for this character (exactly-one active).\n  if (input.characterId) {\n    await supabase\n      .from('character_avatar_export_assets')\n      .update({ is_active: false })\n      .eq('owner_user_id', ownerUserId)\n      .eq('character_id', input.characterId)\n      .eq('is_active', true);\n  }\n\n  const { error: insertError } = await supabase.from('character_avatar_export_assets').insert({\n    id: artifactId,\n    owner_user_id: ownerUserId,\n    character_id: input.characterId ?? null,\n    format: 'glb',\n    mime: 'model/gltf-binary',\n    byte_size: bytes.byteLength,\n    storage_path: storagePath,\n    export_contract_version: AVATAR_SAVE_EXPORT_VERSION,\n    morph_contract_version: MORPH_CONTRACT_VERSION,\n    embeds_source_mesh: embedsSourceMesh,\n    is_active: true,\n  });\n  if (insertError) {\n    await supabase.storage.from(BUCKET).remove([storagePath]);\n    report('error', 'Avatar-Export konnte nicht bestätigt werden.');\n    throw new Error(`Avatar-Export-Artefakt konnte nicht gespeichert werden: ${insertError.message}`);\n  }\n\n  const { data: signed, error: signedError } = await supabase.storage\n    .from(BUCKET)\n    .createSignedUrl(storagePath, SIGNED_URL_SECONDS);\n  if (signedError || !signed?.signedUrl) {\n    // Roll back active flag so previous artifact remains the only active one.\n    await supabase\n      .from('character_avatar_export_assets')\n      .update({ is_active: false })\n      .eq('id', artifactId)\n      .eq('owner_user_id', ownerUserId);\n    report('error', 'Export-URL konnte nicht erzeugt werden.');\n    throw new Error(signedError?.message ?? 'Signed URL fehlt');\n  }\n\n  const artifact: AvatarSaveExportArtifact = {\n    artifactId,\n    storagePath,\n    modelUrl: signed.signedUrl,\n    byteSize: bytes.byteLength,\n    format: 'glb',\n    payload,\n  };\n\n  report('success', 'Avatar-Export materialisiert.', artifact);\n  return artifact;\n}"
+            "line": 70,
+            "endLine": 209,
+            "text": "export async function materializeAvatarSaveExport(\n  input: {\n    avatar: CharacterAvatarDto;\n    characterId?: string | null;\n    runtimeOverlays?: readonly RuntimeTraitOverlay[];\n    sourceModelUrl?: string;\n    onProgress?: (progress: AvatarSaveExportProgress) => void;\n  },\n): Promise<AvatarSaveExportArtifact> {\n  const report = (\n    status: AvatarSaveExportUiStatus,\n    message: string,\n    artifact?: AvatarSaveExportArtifact,\n  ) => {\n    input.onProgress?.({ status, message, artifact });\n  };\n\n  report('preparing', 'Avatar-Export wird vorbereitet …');\n\n  const sourceUrl = input.sourceModelUrl ?? input.avatar.model_url ?? resolveBaseBodyModelUrl();\n  const sourceBytes = await tryFetchSourceMeshBytes(sourceUrl);\n  const embedsSourceMesh = Boolean(sourceBytes && sourceBytes.byteLength > 12);\n\n  const payload = buildAvatarSaveExportPayload({\n    avatar: input.avatar,\n    runtimeOverlays: input.runtimeOverlays,\n    embedsSourceMesh,\n    catalogBasePath: embedsSourceMesh ? undefined : 'sagatree-base-humanoid-v1.vrm',\n  });\n\n  const bytes = encodeAvatarExportGlb({\n    payload,\n    sourceMeshBytes: sourceBytes,\n  });\n\n  report('uploading', 'Avatar-Artefakt wird gespeichert …');\n  const artifactId = crypto.randomUUID();\n\n  if (isHostLibraryEnabled()) {\n    if (bytes.byteLength > HOST_AVATAR_MODEL_MAX_BYTES) {\n      report('error', 'Avatar-Export zu groß für den Host-Speicher.');\n      throw new Error(\n        `Avatar-Export zu groß für den Host-Speicher (max. ${HOST_AVATAR_MODEL_MAX_BYTES} Bytes).`,\n      );\n    }\n    const blob = new File([new Uint8Array(bytes)], `avatar-export-${artifactId}.glb`, {\n      type: 'model/gltf-binary',\n    });\n    let published;\n    try {\n      published = await publishHostAvatarModel(blob, { assetId: artifactId });\n    } catch (error) {\n      report('error', 'Avatar-Export fehlgeschlagen. Bitte erneut speichern.');\n      throw new Error(\n        error instanceof Error ? error.message : 'Avatar-Export-Upload fehlgeschlagen',\n      );\n    }\n    report('activating', 'Export wird aktiviert …');\n    const artifact: AvatarSaveExportArtifact = {\n      artifactId,\n      storagePath: published.storagePath,\n      modelUrl: published.url,\n      byteSize: bytes.byteLength,\n      format: 'glb',\n      payload,\n    };\n    report('success', 'Avatar-Export materialisiert.', artifact);\n    return artifact;\n  }\n\n  const ownerUserId = await getAuthenticatedUserId();\n  const storagePath = buildAvatarExportStoragePath({ ownerUserId, artifactId });\n\n  const blob = new Blob([new Uint8Array(bytes)], { type: 'model/gltf-binary' });\n  const { error: uploadError } = await supabase.storage.from(BUCKET).upload(storagePath, blob, {\n    contentType: 'model/gltf-binary',\n    upsert: false,\n  });\n  if (uploadError) {\n    report('error', 'Avatar-Export fehlgeschlagen. Bitte erneut speichern.');\n    throw new Error(`Avatar-Export-Upload fehlgeschlagen: ${uploadError.message}`);\n  }\n\n  report('activating', 'Export wird aktiviert …');\n\n  // Deactivate previous active export for this character (exactly-one active).\n  if (input.characterId) {\n    await supabase\n      .from('character_avatar_export_assets')\n      .update({ is_active: false })\n      .eq('owner_user_id', ownerUserId)\n      .eq('character_id', input.characterId)\n      .eq('is_active', true);\n  }\n\n  const { error: insertError } = await supabase.from('character_avatar_export_assets').insert({\n    id: artifactId,\n    owner_user_id: ownerUserId,\n    character_id: input.characterId ?? null,\n    format: 'glb',\n    mime: 'model/gltf-binary',\n    byte_size: bytes.byteLength,\n    storage_path: storagePath,\n    export_contract_version: AVATAR_SAVE_EXPORT_VERSION,\n    morph_contract_version: MORPH_CONTRACT_VERSION,\n    embeds_source_mesh: embedsSourceMesh,\n    is_active: true,\n  });\n  if (insertError) {\n    await supabase.storage.from(BUCKET).remove([storagePath]);\n    report('error', 'Avatar-Export konnte nicht bestätigt werden.');\n    throw new Error(`Avatar-Export-Artefakt konnte nicht gespeichert werden: ${insertError.message}`);\n  }\n\n  const { data: signed, error: signedError } = await supabase.storage\n    .from(BUCKET)\n    .createSignedUrl(storagePath, SIGNED_URL_SECONDS);\n  if (signedError || !signed?.signedUrl) {\n    // Roll back active flag so previous artifact remains the only active one.\n    await supabase\n      .from('character_avatar_export_assets')\n      .update({ is_active: false })\n      .eq('id', artifactId)\n      .eq('owner_user_id', ownerUserId);\n    report('error', 'Export-URL konnte nicht erzeugt werden.');\n    throw new Error(signedError?.message ?? 'Signed URL fehlt');\n  }\n\n  const artifact: AvatarSaveExportArtifact = {\n    artifactId,\n    storagePath,\n    modelUrl: signed.signedUrl,\n    byteSize: bytes.byteLength,\n    format: 'glb',\n    payload,\n  };\n\n  report('success', 'Avatar-Export materialisiert.', artifact);\n  return artifact;\n}"
           }
         },
         {
           "kind": "storage",
           "name": "character-avatars",
           "path": "src/infrastructure/character/avatar/character-avatar-export-service.ts",
-          "line": 139,
-          "endLine": 140,
+          "line": 184,
+          "endLine": 185,
           "resolution": "literal-or-constant",
           "expression": "supabase.storage\n    .from(BUCKET)",
           "chain": "supabase.storage\n    .from(BUCKET)\n    .createSignedUrl(storagePath, SIGNED_URL_SECONDS)",
@@ -31558,17 +31509,17 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/character/avatar/character-avatar-export-service.ts",
-            "line": 57,
-            "endLine": 164,
-            "text": "export async function materializeAvatarSaveExport(\n  input: {\n    avatar: CharacterAvatarDto;\n    characterId?: string | null;\n    runtimeOverlays?: readonly RuntimeTraitOverlay[];\n    sourceModelUrl?: string;\n    onProgress?: (progress: AvatarSaveExportProgress) => void;\n  },\n): Promise<AvatarSaveExportArtifact> {\n  assertHostProductSurfaceAvailable('Avatar-Export');\n  const report = (\n    status: AvatarSaveExportUiStatus,\n    message: string,\n    artifact?: AvatarSaveExportArtifact,\n  ) => {\n    input.onProgress?.({ status, message, artifact });\n  };\n\n  report('preparing', 'Avatar-Export wird vorbereitet …');\n\n  const sourceUrl = input.sourceModelUrl ?? input.avatar.model_url ?? resolveBaseBodyModelUrl();\n  const sourceBytes = await tryFetchSourceMeshBytes(sourceUrl);\n  const embedsSourceMesh = Boolean(sourceBytes && sourceBytes.byteLength > 12);\n\n  const payload = buildAvatarSaveExportPayload({\n    avatar: input.avatar,\n    runtimeOverlays: input.runtimeOverlays,\n    embedsSourceMesh,\n    catalogBasePath: embedsSourceMesh ? undefined : 'sagatree-base-humanoid-v1.vrm',\n  });\n\n  const bytes = encodeAvatarExportGlb({\n    payload,\n    sourceMeshBytes: sourceBytes,\n  });\n\n  report('uploading', 'Avatar-Artefakt wird gespeichert …');\n  const ownerUserId = await getAuthenticatedUserId();\n  const artifactId = crypto.randomUUID();\n  const storagePath = buildAvatarExportStoragePath({ ownerUserId, artifactId });\n\n  const blob = new Blob([new Uint8Array(bytes)], { type: 'model/gltf-binary' });\n  const { error: uploadError } = await supabase.storage.from(BUCKET).upload(storagePath, blob, {\n    contentType: 'model/gltf-binary',\n    upsert: false,\n  });\n  if (uploadError) {\n    report('error', 'Avatar-Export fehlgeschlagen. Bitte erneut speichern.');\n    throw new Error(`Avatar-Export-Upload fehlgeschlagen: ${uploadError.message}`);\n  }\n\n  report('activating', 'Export wird aktiviert …');\n\n  // Deactivate previous active export for this character (exactly-one active).\n  if (input.characterId) {\n    await supabase\n      .from('character_avatar_export_assets')\n      .update({ is_active: false })\n      .eq('owner_user_id', ownerUserId)\n      .eq('character_id', input.characterId)\n      .eq('is_active', true);\n  }\n\n  const { error: insertError } = await supabase.from('character_avatar_export_assets').insert({\n    id: artifactId,\n    owner_user_id: ownerUserId,\n    character_id: input.characterId ?? null,\n    format: 'glb',\n    mime: 'model/gltf-binary',\n    byte_size: bytes.byteLength,\n    storage_path: storagePath,\n    export_contract_version: AVATAR_SAVE_EXPORT_VERSION,\n    morph_contract_version: MORPH_CONTRACT_VERSION,\n    embeds_source_mesh: embedsSourceMesh,\n    is_active: true,\n  });\n  if (insertError) {\n    await supabase.storage.from(BUCKET).remove([storagePath]);\n    report('error', 'Avatar-Export konnte nicht bestätigt werden.');\n    throw new Error(`Avatar-Export-Artefakt konnte nicht gespeichert werden: ${insertError.message}`);\n  }\n\n  const { data: signed, error: signedError } = await supabase.storage\n    .from(BUCKET)\n    .createSignedUrl(storagePath, SIGNED_URL_SECONDS);\n  if (signedError || !signed?.signedUrl) {\n    // Roll back active flag so previous artifact remains the only active one.\n    await supabase\n      .from('character_avatar_export_assets')\n      .update({ is_active: false })\n      .eq('id', artifactId)\n      .eq('owner_user_id', ownerUserId);\n    report('error', 'Export-URL konnte nicht erzeugt werden.');\n    throw new Error(signedError?.message ?? 'Signed URL fehlt');\n  }\n\n  const artifact: AvatarSaveExportArtifact = {\n    artifactId,\n    storagePath,\n    modelUrl: signed.signedUrl,\n    byteSize: bytes.byteLength,\n    format: 'glb',\n    payload,\n  };\n\n  report('success', 'Avatar-Export materialisiert.', artifact);\n  return artifact;\n}"
+            "line": 70,
+            "endLine": 209,
+            "text": "export async function materializeAvatarSaveExport(\n  input: {\n    avatar: CharacterAvatarDto;\n    characterId?: string | null;\n    runtimeOverlays?: readonly RuntimeTraitOverlay[];\n    sourceModelUrl?: string;\n    onProgress?: (progress: AvatarSaveExportProgress) => void;\n  },\n): Promise<AvatarSaveExportArtifact> {\n  const report = (\n    status: AvatarSaveExportUiStatus,\n    message: string,\n    artifact?: AvatarSaveExportArtifact,\n  ) => {\n    input.onProgress?.({ status, message, artifact });\n  };\n\n  report('preparing', 'Avatar-Export wird vorbereitet …');\n\n  const sourceUrl = input.sourceModelUrl ?? input.avatar.model_url ?? resolveBaseBodyModelUrl();\n  const sourceBytes = await tryFetchSourceMeshBytes(sourceUrl);\n  const embedsSourceMesh = Boolean(sourceBytes && sourceBytes.byteLength > 12);\n\n  const payload = buildAvatarSaveExportPayload({\n    avatar: input.avatar,\n    runtimeOverlays: input.runtimeOverlays,\n    embedsSourceMesh,\n    catalogBasePath: embedsSourceMesh ? undefined : 'sagatree-base-humanoid-v1.vrm',\n  });\n\n  const bytes = encodeAvatarExportGlb({\n    payload,\n    sourceMeshBytes: sourceBytes,\n  });\n\n  report('uploading', 'Avatar-Artefakt wird gespeichert …');\n  const artifactId = crypto.randomUUID();\n\n  if (isHostLibraryEnabled()) {\n    if (bytes.byteLength > HOST_AVATAR_MODEL_MAX_BYTES) {\n      report('error', 'Avatar-Export zu groß für den Host-Speicher.');\n      throw new Error(\n        `Avatar-Export zu groß für den Host-Speicher (max. ${HOST_AVATAR_MODEL_MAX_BYTES} Bytes).`,\n      );\n    }\n    const blob = new File([new Uint8Array(bytes)], `avatar-export-${artifactId}.glb`, {\n      type: 'model/gltf-binary',\n    });\n    let published;\n    try {\n      published = await publishHostAvatarModel(blob, { assetId: artifactId });\n    } catch (error) {\n      report('error', 'Avatar-Export fehlgeschlagen. Bitte erneut speichern.');\n      throw new Error(\n        error instanceof Error ? error.message : 'Avatar-Export-Upload fehlgeschlagen',\n      );\n    }\n    report('activating', 'Export wird aktiviert …');\n    const artifact: AvatarSaveExportArtifact = {\n      artifactId,\n      storagePath: published.storagePath,\n      modelUrl: published.url,\n      byteSize: bytes.byteLength,\n      format: 'glb',\n      payload,\n    };\n    report('success', 'Avatar-Export materialisiert.', artifact);\n    return artifact;\n  }\n\n  const ownerUserId = await getAuthenticatedUserId();\n  const storagePath = buildAvatarExportStoragePath({ ownerUserId, artifactId });\n\n  const blob = new Blob([new Uint8Array(bytes)], { type: 'model/gltf-binary' });\n  const { error: uploadError } = await supabase.storage.from(BUCKET).upload(storagePath, blob, {\n    contentType: 'model/gltf-binary',\n    upsert: false,\n  });\n  if (uploadError) {\n    report('error', 'Avatar-Export fehlgeschlagen. Bitte erneut speichern.');\n    throw new Error(`Avatar-Export-Upload fehlgeschlagen: ${uploadError.message}`);\n  }\n\n  report('activating', 'Export wird aktiviert …');\n\n  // Deactivate previous active export for this character (exactly-one active).\n  if (input.characterId) {\n    await supabase\n      .from('character_avatar_export_assets')\n      .update({ is_active: false })\n      .eq('owner_user_id', ownerUserId)\n      .eq('character_id', input.characterId)\n      .eq('is_active', true);\n  }\n\n  const { error: insertError } = await supabase.from('character_avatar_export_assets').insert({\n    id: artifactId,\n    owner_user_id: ownerUserId,\n    character_id: input.characterId ?? null,\n    format: 'glb',\n    mime: 'model/gltf-binary',\n    byte_size: bytes.byteLength,\n    storage_path: storagePath,\n    export_contract_version: AVATAR_SAVE_EXPORT_VERSION,\n    morph_contract_version: MORPH_CONTRACT_VERSION,\n    embeds_source_mesh: embedsSourceMesh,\n    is_active: true,\n  });\n  if (insertError) {\n    await supabase.storage.from(BUCKET).remove([storagePath]);\n    report('error', 'Avatar-Export konnte nicht bestätigt werden.');\n    throw new Error(`Avatar-Export-Artefakt konnte nicht gespeichert werden: ${insertError.message}`);\n  }\n\n  const { data: signed, error: signedError } = await supabase.storage\n    .from(BUCKET)\n    .createSignedUrl(storagePath, SIGNED_URL_SECONDS);\n  if (signedError || !signed?.signedUrl) {\n    // Roll back active flag so previous artifact remains the only active one.\n    await supabase\n      .from('character_avatar_export_assets')\n      .update({ is_active: false })\n      .eq('id', artifactId)\n      .eq('owner_user_id', ownerUserId);\n    report('error', 'Export-URL konnte nicht erzeugt werden.');\n    throw new Error(signedError?.message ?? 'Signed URL fehlt');\n  }\n\n  const artifact: AvatarSaveExportArtifact = {\n    artifactId,\n    storagePath,\n    modelUrl: signed.signedUrl,\n    byteSize: bytes.byteLength,\n    format: 'glb',\n    payload,\n  };\n\n  report('success', 'Avatar-Export materialisiert.', artifact);\n  return artifact;\n}"
           }
         },
         {
           "kind": "table",
           "name": "character_avatar_export_assets",
           "path": "src/infrastructure/character/avatar/character-avatar-export-service.ts",
-          "line": 144,
-          "endLine": 145,
+          "line": 189,
+          "endLine": 190,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from('character_avatar_export_assets')",
           "chain": "supabase\n      .from('character_avatar_export_assets')\n      .update({ is_active: false })\n      .eq('id', artifactId)\n      .eq('owner_user_id', ownerUserId)",
@@ -31577,51 +31528,34 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/character/avatar/character-avatar-export-service.ts",
-            "line": 57,
-            "endLine": 164,
-            "text": "export async function materializeAvatarSaveExport(\n  input: {\n    avatar: CharacterAvatarDto;\n    characterId?: string | null;\n    runtimeOverlays?: readonly RuntimeTraitOverlay[];\n    sourceModelUrl?: string;\n    onProgress?: (progress: AvatarSaveExportProgress) => void;\n  },\n): Promise<AvatarSaveExportArtifact> {\n  assertHostProductSurfaceAvailable('Avatar-Export');\n  const report = (\n    status: AvatarSaveExportUiStatus,\n    message: string,\n    artifact?: AvatarSaveExportArtifact,\n  ) => {\n    input.onProgress?.({ status, message, artifact });\n  };\n\n  report('preparing', 'Avatar-Export wird vorbereitet …');\n\n  const sourceUrl = input.sourceModelUrl ?? input.avatar.model_url ?? resolveBaseBodyModelUrl();\n  const sourceBytes = await tryFetchSourceMeshBytes(sourceUrl);\n  const embedsSourceMesh = Boolean(sourceBytes && sourceBytes.byteLength > 12);\n\n  const payload = buildAvatarSaveExportPayload({\n    avatar: input.avatar,\n    runtimeOverlays: input.runtimeOverlays,\n    embedsSourceMesh,\n    catalogBasePath: embedsSourceMesh ? undefined : 'sagatree-base-humanoid-v1.vrm',\n  });\n\n  const bytes = encodeAvatarExportGlb({\n    payload,\n    sourceMeshBytes: sourceBytes,\n  });\n\n  report('uploading', 'Avatar-Artefakt wird gespeichert …');\n  const ownerUserId = await getAuthenticatedUserId();\n  const artifactId = crypto.randomUUID();\n  const storagePath = buildAvatarExportStoragePath({ ownerUserId, artifactId });\n\n  const blob = new Blob([new Uint8Array(bytes)], { type: 'model/gltf-binary' });\n  const { error: uploadError } = await supabase.storage.from(BUCKET).upload(storagePath, blob, {\n    contentType: 'model/gltf-binary',\n    upsert: false,\n  });\n  if (uploadError) {\n    report('error', 'Avatar-Export fehlgeschlagen. Bitte erneut speichern.');\n    throw new Error(`Avatar-Export-Upload fehlgeschlagen: ${uploadError.message}`);\n  }\n\n  report('activating', 'Export wird aktiviert …');\n\n  // Deactivate previous active export for this character (exactly-one active).\n  if (input.characterId) {\n    await supabase\n      .from('character_avatar_export_assets')\n      .update({ is_active: false })\n      .eq('owner_user_id', ownerUserId)\n      .eq('character_id', input.characterId)\n      .eq('is_active', true);\n  }\n\n  const { error: insertError } = await supabase.from('character_avatar_export_assets').insert({\n    id: artifactId,\n    owner_user_id: ownerUserId,\n    character_id: input.characterId ?? null,\n    format: 'glb',\n    mime: 'model/gltf-binary',\n    byte_size: bytes.byteLength,\n    storage_path: storagePath,\n    export_contract_version: AVATAR_SAVE_EXPORT_VERSION,\n    morph_contract_version: MORPH_CONTRACT_VERSION,\n    embeds_source_mesh: embedsSourceMesh,\n    is_active: true,\n  });\n  if (insertError) {\n    await supabase.storage.from(BUCKET).remove([storagePath]);\n    report('error', 'Avatar-Export konnte nicht bestätigt werden.');\n    throw new Error(`Avatar-Export-Artefakt konnte nicht gespeichert werden: ${insertError.message}`);\n  }\n\n  const { data: signed, error: signedError } = await supabase.storage\n    .from(BUCKET)\n    .createSignedUrl(storagePath, SIGNED_URL_SECONDS);\n  if (signedError || !signed?.signedUrl) {\n    // Roll back active flag so previous artifact remains the only active one.\n    await supabase\n      .from('character_avatar_export_assets')\n      .update({ is_active: false })\n      .eq('id', artifactId)\n      .eq('owner_user_id', ownerUserId);\n    report('error', 'Export-URL konnte nicht erzeugt werden.');\n    throw new Error(signedError?.message ?? 'Signed URL fehlt');\n  }\n\n  const artifact: AvatarSaveExportArtifact = {\n    artifactId,\n    storagePath,\n    modelUrl: signed.signedUrl,\n    byteSize: bytes.byteLength,\n    format: 'glb',\n    payload,\n  };\n\n  report('success', 'Avatar-Export materialisiert.', artifact);\n  return artifact;\n}"
-          }
-        },
-        {
-          "kind": "auth",
-          "name": null,
-          "path": "src/infrastructure/character/avatar/character-avatar-import-service.ts",
-          "line": 35,
-          "endLine": 35,
-          "resolution": "dynamic-expression",
-          "expression": "supabase.auth.getUser()",
-          "chain": "supabase.auth.getUser()",
-          "arguments": [],
-          "enclosingOperation": {
-            "path": "src/infrastructure/character/avatar/character-avatar-import-service.ts",
-            "line": 34,
-            "endLine": 40,
-            "text": "async function getAuthenticatedUserId(): Promise<string> {\n  const { data, error } = await supabase.auth.getUser();\n  if (error || !data.user?.id) {\n    throw new Error('Anmeldung erforderlich, um einen 3D-Charakter zu importieren.');\n  }\n  return data.user.id;\n}"
+            "line": 70,
+            "endLine": 209,
+            "text": "export async function materializeAvatarSaveExport(\n  input: {\n    avatar: CharacterAvatarDto;\n    characterId?: string | null;\n    runtimeOverlays?: readonly RuntimeTraitOverlay[];\n    sourceModelUrl?: string;\n    onProgress?: (progress: AvatarSaveExportProgress) => void;\n  },\n): Promise<AvatarSaveExportArtifact> {\n  const report = (\n    status: AvatarSaveExportUiStatus,\n    message: string,\n    artifact?: AvatarSaveExportArtifact,\n  ) => {\n    input.onProgress?.({ status, message, artifact });\n  };\n\n  report('preparing', 'Avatar-Export wird vorbereitet …');\n\n  const sourceUrl = input.sourceModelUrl ?? input.avatar.model_url ?? resolveBaseBodyModelUrl();\n  const sourceBytes = await tryFetchSourceMeshBytes(sourceUrl);\n  const embedsSourceMesh = Boolean(sourceBytes && sourceBytes.byteLength > 12);\n\n  const payload = buildAvatarSaveExportPayload({\n    avatar: input.avatar,\n    runtimeOverlays: input.runtimeOverlays,\n    embedsSourceMesh,\n    catalogBasePath: embedsSourceMesh ? undefined : 'sagatree-base-humanoid-v1.vrm',\n  });\n\n  const bytes = encodeAvatarExportGlb({\n    payload,\n    sourceMeshBytes: sourceBytes,\n  });\n\n  report('uploading', 'Avatar-Artefakt wird gespeichert …');\n  const artifactId = crypto.randomUUID();\n\n  if (isHostLibraryEnabled()) {\n    if (bytes.byteLength > HOST_AVATAR_MODEL_MAX_BYTES) {\n      report('error', 'Avatar-Export zu groß für den Host-Speicher.');\n      throw new Error(\n        `Avatar-Export zu groß für den Host-Speicher (max. ${HOST_AVATAR_MODEL_MAX_BYTES} Bytes).`,\n      );\n    }\n    const blob = new File([new Uint8Array(bytes)], `avatar-export-${artifactId}.glb`, {\n      type: 'model/gltf-binary',\n    });\n    let published;\n    try {\n      published = await publishHostAvatarModel(blob, { assetId: artifactId });\n    } catch (error) {\n      report('error', 'Avatar-Export fehlgeschlagen. Bitte erneut speichern.');\n      throw new Error(\n        error instanceof Error ? error.message : 'Avatar-Export-Upload fehlgeschlagen',\n      );\n    }\n    report('activating', 'Export wird aktiviert …');\n    const artifact: AvatarSaveExportArtifact = {\n      artifactId,\n      storagePath: published.storagePath,\n      modelUrl: published.url,\n      byteSize: bytes.byteLength,\n      format: 'glb',\n      payload,\n    };\n    report('success', 'Avatar-Export materialisiert.', artifact);\n    return artifact;\n  }\n\n  const ownerUserId = await getAuthenticatedUserId();\n  const storagePath = buildAvatarExportStoragePath({ ownerUserId, artifactId });\n\n  const blob = new Blob([new Uint8Array(bytes)], { type: 'model/gltf-binary' });\n  const { error: uploadError } = await supabase.storage.from(BUCKET).upload(storagePath, blob, {\n    contentType: 'model/gltf-binary',\n    upsert: false,\n  });\n  if (uploadError) {\n    report('error', 'Avatar-Export fehlgeschlagen. Bitte erneut speichern.');\n    throw new Error(`Avatar-Export-Upload fehlgeschlagen: ${uploadError.message}`);\n  }\n\n  report('activating', 'Export wird aktiviert …');\n\n  // Deactivate previous active export for this character (exactly-one active).\n  if (input.characterId) {\n    await supabase\n      .from('character_avatar_export_assets')\n      .update({ is_active: false })\n      .eq('owner_user_id', ownerUserId)\n      .eq('character_id', input.characterId)\n      .eq('is_active', true);\n  }\n\n  const { error: insertError } = await supabase.from('character_avatar_export_assets').insert({\n    id: artifactId,\n    owner_user_id: ownerUserId,\n    character_id: input.characterId ?? null,\n    format: 'glb',\n    mime: 'model/gltf-binary',\n    byte_size: bytes.byteLength,\n    storage_path: storagePath,\n    export_contract_version: AVATAR_SAVE_EXPORT_VERSION,\n    morph_contract_version: MORPH_CONTRACT_VERSION,\n    embeds_source_mesh: embedsSourceMesh,\n    is_active: true,\n  });\n  if (insertError) {\n    await supabase.storage.from(BUCKET).remove([storagePath]);\n    report('error', 'Avatar-Export konnte nicht bestätigt werden.');\n    throw new Error(`Avatar-Export-Artefakt konnte nicht gespeichert werden: ${insertError.message}`);\n  }\n\n  const { data: signed, error: signedError } = await supabase.storage\n    .from(BUCKET)\n    .createSignedUrl(storagePath, SIGNED_URL_SECONDS);\n  if (signedError || !signed?.signedUrl) {\n    // Roll back active flag so previous artifact remains the only active one.\n    await supabase\n      .from('character_avatar_export_assets')\n      .update({ is_active: false })\n      .eq('id', artifactId)\n      .eq('owner_user_id', ownerUserId);\n    report('error', 'Export-URL konnte nicht erzeugt werden.');\n    throw new Error(signedError?.message ?? 'Signed URL fehlt');\n  }\n\n  const artifact: AvatarSaveExportArtifact = {\n    artifactId,\n    storagePath,\n    modelUrl: signed.signedUrl,\n    byteSize: bytes.byteLength,\n    format: 'glb',\n    payload,\n  };\n\n  report('success', 'Avatar-Export materialisiert.', artifact);\n  return artifact;\n}"
           }
         },
         {
           "kind": "auth-helper",
           "name": null,
           "path": "src/infrastructure/character/avatar/character-avatar-import-service.ts",
-          "line": 111,
-          "endLine": 111,
+          "line": 213,
+          "endLine": 213,
           "resolution": "dynamic-expression",
           "expression": "getAuthenticatedUserId()",
           "chain": "getAuthenticatedUserId()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/character/avatar/character-avatar-import-service.ts",
-            "line": 70,
-            "endLine": 230,
-            "text": "export async function uploadAndAnalyzeCharacterAvatarModel(\n  file: File,\n  options: {\n    characterId?: string | null;\n    onProgress?: (progress: AvatarImportProgress) => void;\n  } = {},\n): Promise<AvatarImportDraftV2> {\n  assertHostProductSurfaceAvailable('Avatar-Import');\n  const report = (\n    status: AvatarImportUiStatus,\n    message: string,\n    extra?: { artifact?: AvatarImportArtifact; summary?: ImportAnalysisSummaryV1 },\n  ) => {\n    options.onProgress?.({ status, message, artifact: extra?.artifact, summary: extra?.summary });\n  };\n\n  report('validating', 'Datei wird geprüft …');\n  const early = earlyCheckAvatarImportFile({ fileName: file.name, byteSize: file.size });\n  if (!early.ok) {\n    report('failed', early.message ?? 'Datei ungültig.');\n    throw new Error(early.message ?? 'Datei ungültig.');\n  }\n\n  const bytes = await readFileBytes(file);\n  let format: AvatarImportArtifact['format'];\n  let mime: string;\n  try {\n    const validated = validateAvatarImportBytes({\n      bytes,\n      fileName: file.name,\n      claimedMime: file.type,\n    });\n    format = validated.format;\n    mime = validated.mime;\n  } catch (error) {\n    const message = error instanceof Error ? error.message : 'Validierung fehlgeschlagen.';\n    report('failed', message);\n    throw new Error(message);\n  }\n\n  report('uploading', 'Modell wird hochgeladen …');\n  const ownerUserId = await getAuthenticatedUserId();\n  const importAssetId = crypto.randomUUID();\n  const storagePath = buildAvatarImportStoragePath({\n    ownerUserId,\n    artifactId: importAssetId,\n    format,\n  });\n\n  const blob = new Blob([new Uint8Array(bytes)], { type: mime });\n  const { error: uploadError } = await supabase.storage.from(BUCKET).upload(storagePath, blob, {\n    contentType: mime,\n    upsert: false,\n  });\n  if (uploadError) {\n    report('failed', 'Upload fehlgeschlagen. Bitte erneut versuchen.');\n    throw new Error(`Avatar-Upload fehlgeschlagen: ${uploadError.message}`);\n  }\n\n  // Draft row — inactive so a failed analysis never replaces the active avatar.\n  const { error: insertError } = await supabase.from('character_avatar_import_assets').insert({\n    id: importAssetId,\n    owner_user_id: ownerUserId,\n    character_id: options.characterId ?? null,\n    format,\n    mime,\n    byte_size: bytes.byteLength,\n    storage_path: storagePath,\n    rig_analysis_status: 'pending',\n    is_active: false,\n  });\n  if (insertError) {\n    await supabase.storage.from(BUCKET).remove([storagePath]);\n    report('failed', 'Import konnte nicht bestätigt werden.');\n    throw new Error(`Avatar-Artefakt konnte nicht gespeichert werden: ${insertError.message}`);\n  }\n\n  let v2ArtifactId: string = importAssetId;\n  try {\n    const artifact = await materializeArtifactFromImportAsset({\n      importAssetId,\n      characterId: options.characterId,\n      storagePath,\n      format,\n    });\n    v2ArtifactId = artifact.artifactId;\n  } catch (error) {\n    // Artifact table may be unavailable in older envs — keep import draft usable.\n    console.warn(\n      '[avatar-import] V2 artifact materialize skipped:',\n      error instanceof Error ? error.message : error,\n    );\n  }\n\n  report('analyzing', 'Modell wird analysiert …');\n\n  const { data: signed, error: signedError } = await supabase.storage\n    .from(BUCKET)\n    .createSignedUrl(storagePath, SIGNED_URL_SECONDS);\n  if (signedError || !signed?.signedUrl) {\n    report('failed', 'Vorschau-URL konnte nicht erzeugt werden.');\n    throw new Error(signedError?.message ?? 'Signed URL fehlt');\n  }\n\n  let summary: ImportAnalysisSummaryV1;\n  try {\n    const analysis = await previewAnalyzeAvatarGlbBytes(bytes);\n    const { compatibility } = resolveFamilyCompatibilityFromAnalysis(analysis);\n    summary = buildImportAnalysisSummary({ analysis, compatibility });\n  } catch (error) {\n    const message =\n      error instanceof Error ? error.message : 'Analyse fehlgeschlagen. Bitte erneut versuchen.';\n    report('failed', message);\n    throw new Error(message);\n  }\n\n  const keepSeed = buildImportOriginalKeepSeed({\n    modelUrl: signed.signedUrl,\n    artifactId: v2ArtifactId,\n    importAssetId,\n    analysis: {\n      anatomy: summary.anatomy,\n      modularity: summary.modularity,\n    },\n    compatibility: {\n      recommendedFamily: summary.recommendedFamily,\n      status:\n        summary.flowStatus === 'ready-humanoid' ? 'family-compatible' : 'custom',\n    },\n  });\n\n  const legacyArtifact: AvatarImportArtifact = {\n    artifactId: importAssetId,\n    format,\n    byteSize: bytes.byteLength,\n    storagePath,\n    modelUrl: signed.signedUrl,\n    rigAnalysisStatus: 'pending',\n  };\n\n  const uiStatus: AvatarImportUiStatus =\n    summary.flowStatus === 'ready-humanoid' ||\n    summary.flowStatus === 'ready-custom' ||\n    summary.flowStatus === 'limited' ||\n    summary.flowStatus === 'failed'\n      ? summary.flowStatus\n      : 'analyzing';\n\n  report(uiStatus, summary.headlineDe, { artifact: legacyArtifact, summary });\n\n  return {\n    importAssetId,\n    artifactId: v2ArtifactId,\n    format,\n    byteSize: bytes.byteLength,\n    storagePath,\n    modelUrl: signed.signedUrl,\n    summary,\n    keepSeed,\n  };\n}"
+            "line": 202,
+            "endLine": 285,
+            "text": "async function uploadAndAnalyzeLegacy(\n  file: File,\n  bytes: Uint8Array,\n  format: AvatarImportArtifact['format'],\n  mime: string,\n  options: {\n    characterId?: string | null;\n    report: ProgressReporter;\n  },\n): Promise<AvatarImportDraftV2> {\n  options.report('uploading', 'Modell wird hochgeladen …');\n  const ownerUserId = await getAuthenticatedUserId();\n  const importAssetId = crypto.randomUUID();\n  const storagePath = buildAvatarImportStoragePath({\n    ownerUserId,\n    artifactId: importAssetId,\n    format,\n  });\n\n  const blob = new Blob([new Uint8Array(bytes)], { type: mime });\n  const { error: uploadError } = await supabase.storage.from(BUCKET).upload(storagePath, blob, {\n    contentType: mime,\n    upsert: false,\n  });\n  if (uploadError) {\n    options.report('failed', 'Upload fehlgeschlagen. Bitte erneut versuchen.');\n    throw new Error(`Avatar-Upload fehlgeschlagen: ${uploadError.message}`);\n  }\n\n  // Draft row — inactive so a failed analysis never replaces the active avatar.\n  const { error: insertError } = await supabase.from('character_avatar_import_assets').insert({\n    id: importAssetId,\n    owner_user_id: ownerUserId,\n    character_id: options.characterId ?? null,\n    format,\n    mime,\n    byte_size: bytes.byteLength,\n    storage_path: storagePath,\n    rig_analysis_status: 'pending',\n    is_active: false,\n  });\n  if (insertError) {\n    await supabase.storage.from(BUCKET).remove([storagePath]);\n    options.report('failed', 'Import konnte nicht bestätigt werden.');\n    throw new Error(`Avatar-Artefakt konnte nicht gespeichert werden: ${insertError.message}`);\n  }\n\n  let v2ArtifactId: string = importAssetId;\n  try {\n    const artifact = await materializeArtifactFromImportAsset({\n      importAssetId,\n      characterId: options.characterId,\n      storagePath,\n      format,\n    });\n    v2ArtifactId = artifact.artifactId;\n  } catch (error) {\n    // Artifact table may be unavailable in older envs — keep import draft usable.\n    console.warn(\n      '[avatar-import] V2 artifact materialize skipped:',\n      error instanceof Error ? error.message : error,\n    );\n  }\n\n  const { data: signed, error: signedError } = await supabase.storage\n    .from(BUCKET)\n    .createSignedUrl(storagePath, SIGNED_URL_SECONDS);\n  if (signedError || !signed?.signedUrl) {\n    options.report('failed', 'Vorschau-URL konnte nicht erzeugt werden.');\n    throw new Error(signedError?.message ?? 'Signed URL fehlt');\n  }\n\n  const summary = await analyzeImportBytes(bytes, options.report);\n  return finishDraft({\n    importAssetId,\n    artifactId: v2ArtifactId,\n    format,\n    byteSize: bytes.byteLength,\n    storagePath,\n    modelUrl: signed.signedUrl,\n    summary,\n    report: options.report,\n  });\n}"
           }
         },
         {
           "kind": "storage",
           "name": "character-avatars",
           "path": "src/infrastructure/character/avatar/character-avatar-import-service.ts",
-          "line": 120,
-          "endLine": 120,
+          "line": 222,
+          "endLine": 222,
           "resolution": "literal-or-constant",
           "expression": "supabase.storage.from(BUCKET)",
           "chain": "supabase.storage.from(BUCKET).upload(storagePath, blob, {\n    contentType: mime,\n    upsert: false,\n  })",
@@ -31630,17 +31564,17 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/character/avatar/character-avatar-import-service.ts",
-            "line": 70,
-            "endLine": 230,
-            "text": "export async function uploadAndAnalyzeCharacterAvatarModel(\n  file: File,\n  options: {\n    characterId?: string | null;\n    onProgress?: (progress: AvatarImportProgress) => void;\n  } = {},\n): Promise<AvatarImportDraftV2> {\n  assertHostProductSurfaceAvailable('Avatar-Import');\n  const report = (\n    status: AvatarImportUiStatus,\n    message: string,\n    extra?: { artifact?: AvatarImportArtifact; summary?: ImportAnalysisSummaryV1 },\n  ) => {\n    options.onProgress?.({ status, message, artifact: extra?.artifact, summary: extra?.summary });\n  };\n\n  report('validating', 'Datei wird geprüft …');\n  const early = earlyCheckAvatarImportFile({ fileName: file.name, byteSize: file.size });\n  if (!early.ok) {\n    report('failed', early.message ?? 'Datei ungültig.');\n    throw new Error(early.message ?? 'Datei ungültig.');\n  }\n\n  const bytes = await readFileBytes(file);\n  let format: AvatarImportArtifact['format'];\n  let mime: string;\n  try {\n    const validated = validateAvatarImportBytes({\n      bytes,\n      fileName: file.name,\n      claimedMime: file.type,\n    });\n    format = validated.format;\n    mime = validated.mime;\n  } catch (error) {\n    const message = error instanceof Error ? error.message : 'Validierung fehlgeschlagen.';\n    report('failed', message);\n    throw new Error(message);\n  }\n\n  report('uploading', 'Modell wird hochgeladen …');\n  const ownerUserId = await getAuthenticatedUserId();\n  const importAssetId = crypto.randomUUID();\n  const storagePath = buildAvatarImportStoragePath({\n    ownerUserId,\n    artifactId: importAssetId,\n    format,\n  });\n\n  const blob = new Blob([new Uint8Array(bytes)], { type: mime });\n  const { error: uploadError } = await supabase.storage.from(BUCKET).upload(storagePath, blob, {\n    contentType: mime,\n    upsert: false,\n  });\n  if (uploadError) {\n    report('failed', 'Upload fehlgeschlagen. Bitte erneut versuchen.');\n    throw new Error(`Avatar-Upload fehlgeschlagen: ${uploadError.message}`);\n  }\n\n  // Draft row — inactive so a failed analysis never replaces the active avatar.\n  const { error: insertError } = await supabase.from('character_avatar_import_assets').insert({\n    id: importAssetId,\n    owner_user_id: ownerUserId,\n    character_id: options.characterId ?? null,\n    format,\n    mime,\n    byte_size: bytes.byteLength,\n    storage_path: storagePath,\n    rig_analysis_status: 'pending',\n    is_active: false,\n  });\n  if (insertError) {\n    await supabase.storage.from(BUCKET).remove([storagePath]);\n    report('failed', 'Import konnte nicht bestätigt werden.');\n    throw new Error(`Avatar-Artefakt konnte nicht gespeichert werden: ${insertError.message}`);\n  }\n\n  let v2ArtifactId: string = importAssetId;\n  try {\n    const artifact = await materializeArtifactFromImportAsset({\n      importAssetId,\n      characterId: options.characterId,\n      storagePath,\n      format,\n    });\n    v2ArtifactId = artifact.artifactId;\n  } catch (error) {\n    // Artifact table may be unavailable in older envs — keep import draft usable.\n    console.warn(\n      '[avatar-import] V2 artifact materialize skipped:',\n      error instanceof Error ? error.message : error,\n    );\n  }\n\n  report('analyzing', 'Modell wird analysiert …');\n\n  const { data: signed, error: signedError } = await supabase.storage\n    .from(BUCKET)\n    .createSignedUrl(storagePath, SIGNED_URL_SECONDS);\n  if (signedError || !signed?.signedUrl) {\n    report('failed', 'Vorschau-URL konnte nicht erzeugt werden.');\n    throw new Error(signedError?.message ?? 'Signed URL fehlt');\n  }\n\n  let summary: ImportAnalysisSummaryV1;\n  try {\n    const analysis = await previewAnalyzeAvatarGlbBytes(bytes);\n    const { compatibility } = resolveFamilyCompatibilityFromAnalysis(analysis);\n    summary = buildImportAnalysisSummary({ analysis, compatibility });\n  } catch (error) {\n    const message =\n      error instanceof Error ? error.message : 'Analyse fehlgeschlagen. Bitte erneut versuchen.';\n    report('failed', message);\n    throw new Error(message);\n  }\n\n  const keepSeed = buildImportOriginalKeepSeed({\n    modelUrl: signed.signedUrl,\n    artifactId: v2ArtifactId,\n    importAssetId,\n    analysis: {\n      anatomy: summary.anatomy,\n      modularity: summary.modularity,\n    },\n    compatibility: {\n      recommendedFamily: summary.recommendedFamily,\n      status:\n        summary.flowStatus === 'ready-humanoid' ? 'family-compatible' : 'custom',\n    },\n  });\n\n  const legacyArtifact: AvatarImportArtifact = {\n    artifactId: importAssetId,\n    format,\n    byteSize: bytes.byteLength,\n    storagePath,\n    modelUrl: signed.signedUrl,\n    rigAnalysisStatus: 'pending',\n  };\n\n  const uiStatus: AvatarImportUiStatus =\n    summary.flowStatus === 'ready-humanoid' ||\n    summary.flowStatus === 'ready-custom' ||\n    summary.flowStatus === 'limited' ||\n    summary.flowStatus === 'failed'\n      ? summary.flowStatus\n      : 'analyzing';\n\n  report(uiStatus, summary.headlineDe, { artifact: legacyArtifact, summary });\n\n  return {\n    importAssetId,\n    artifactId: v2ArtifactId,\n    format,\n    byteSize: bytes.byteLength,\n    storagePath,\n    modelUrl: signed.signedUrl,\n    summary,\n    keepSeed,\n  };\n}"
+            "line": 202,
+            "endLine": 285,
+            "text": "async function uploadAndAnalyzeLegacy(\n  file: File,\n  bytes: Uint8Array,\n  format: AvatarImportArtifact['format'],\n  mime: string,\n  options: {\n    characterId?: string | null;\n    report: ProgressReporter;\n  },\n): Promise<AvatarImportDraftV2> {\n  options.report('uploading', 'Modell wird hochgeladen …');\n  const ownerUserId = await getAuthenticatedUserId();\n  const importAssetId = crypto.randomUUID();\n  const storagePath = buildAvatarImportStoragePath({\n    ownerUserId,\n    artifactId: importAssetId,\n    format,\n  });\n\n  const blob = new Blob([new Uint8Array(bytes)], { type: mime });\n  const { error: uploadError } = await supabase.storage.from(BUCKET).upload(storagePath, blob, {\n    contentType: mime,\n    upsert: false,\n  });\n  if (uploadError) {\n    options.report('failed', 'Upload fehlgeschlagen. Bitte erneut versuchen.');\n    throw new Error(`Avatar-Upload fehlgeschlagen: ${uploadError.message}`);\n  }\n\n  // Draft row — inactive so a failed analysis never replaces the active avatar.\n  const { error: insertError } = await supabase.from('character_avatar_import_assets').insert({\n    id: importAssetId,\n    owner_user_id: ownerUserId,\n    character_id: options.characterId ?? null,\n    format,\n    mime,\n    byte_size: bytes.byteLength,\n    storage_path: storagePath,\n    rig_analysis_status: 'pending',\n    is_active: false,\n  });\n  if (insertError) {\n    await supabase.storage.from(BUCKET).remove([storagePath]);\n    options.report('failed', 'Import konnte nicht bestätigt werden.');\n    throw new Error(`Avatar-Artefakt konnte nicht gespeichert werden: ${insertError.message}`);\n  }\n\n  let v2ArtifactId: string = importAssetId;\n  try {\n    const artifact = await materializeArtifactFromImportAsset({\n      importAssetId,\n      characterId: options.characterId,\n      storagePath,\n      format,\n    });\n    v2ArtifactId = artifact.artifactId;\n  } catch (error) {\n    // Artifact table may be unavailable in older envs — keep import draft usable.\n    console.warn(\n      '[avatar-import] V2 artifact materialize skipped:',\n      error instanceof Error ? error.message : error,\n    );\n  }\n\n  const { data: signed, error: signedError } = await supabase.storage\n    .from(BUCKET)\n    .createSignedUrl(storagePath, SIGNED_URL_SECONDS);\n  if (signedError || !signed?.signedUrl) {\n    options.report('failed', 'Vorschau-URL konnte nicht erzeugt werden.');\n    throw new Error(signedError?.message ?? 'Signed URL fehlt');\n  }\n\n  const summary = await analyzeImportBytes(bytes, options.report);\n  return finishDraft({\n    importAssetId,\n    artifactId: v2ArtifactId,\n    format,\n    byteSize: bytes.byteLength,\n    storagePath,\n    modelUrl: signed.signedUrl,\n    summary,\n    report: options.report,\n  });\n}"
           }
         },
         {
           "kind": "table",
           "name": "character_avatar_import_assets",
           "path": "src/infrastructure/character/avatar/character-avatar-import-service.ts",
-          "line": 130,
-          "endLine": 130,
+          "line": 232,
+          "endLine": 232,
           "resolution": "literal-or-constant",
           "expression": "supabase.from('character_avatar_import_assets')",
           "chain": "supabase.from('character_avatar_import_assets').insert({\n    id: importAssetId,\n    owner_user_id: ownerUserId,\n    character_id: options.characterId ?? null,\n    format,\n    mime,\n    byte_size: bytes.byteLength,\n    storage_path: storagePath,\n    rig_analysis_status: 'pending',\n    is_active: false,\n  })",
@@ -31649,17 +31583,17 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/character/avatar/character-avatar-import-service.ts",
-            "line": 70,
-            "endLine": 230,
-            "text": "export async function uploadAndAnalyzeCharacterAvatarModel(\n  file: File,\n  options: {\n    characterId?: string | null;\n    onProgress?: (progress: AvatarImportProgress) => void;\n  } = {},\n): Promise<AvatarImportDraftV2> {\n  assertHostProductSurfaceAvailable('Avatar-Import');\n  const report = (\n    status: AvatarImportUiStatus,\n    message: string,\n    extra?: { artifact?: AvatarImportArtifact; summary?: ImportAnalysisSummaryV1 },\n  ) => {\n    options.onProgress?.({ status, message, artifact: extra?.artifact, summary: extra?.summary });\n  };\n\n  report('validating', 'Datei wird geprüft …');\n  const early = earlyCheckAvatarImportFile({ fileName: file.name, byteSize: file.size });\n  if (!early.ok) {\n    report('failed', early.message ?? 'Datei ungültig.');\n    throw new Error(early.message ?? 'Datei ungültig.');\n  }\n\n  const bytes = await readFileBytes(file);\n  let format: AvatarImportArtifact['format'];\n  let mime: string;\n  try {\n    const validated = validateAvatarImportBytes({\n      bytes,\n      fileName: file.name,\n      claimedMime: file.type,\n    });\n    format = validated.format;\n    mime = validated.mime;\n  } catch (error) {\n    const message = error instanceof Error ? error.message : 'Validierung fehlgeschlagen.';\n    report('failed', message);\n    throw new Error(message);\n  }\n\n  report('uploading', 'Modell wird hochgeladen …');\n  const ownerUserId = await getAuthenticatedUserId();\n  const importAssetId = crypto.randomUUID();\n  const storagePath = buildAvatarImportStoragePath({\n    ownerUserId,\n    artifactId: importAssetId,\n    format,\n  });\n\n  const blob = new Blob([new Uint8Array(bytes)], { type: mime });\n  const { error: uploadError } = await supabase.storage.from(BUCKET).upload(storagePath, blob, {\n    contentType: mime,\n    upsert: false,\n  });\n  if (uploadError) {\n    report('failed', 'Upload fehlgeschlagen. Bitte erneut versuchen.');\n    throw new Error(`Avatar-Upload fehlgeschlagen: ${uploadError.message}`);\n  }\n\n  // Draft row — inactive so a failed analysis never replaces the active avatar.\n  const { error: insertError } = await supabase.from('character_avatar_import_assets').insert({\n    id: importAssetId,\n    owner_user_id: ownerUserId,\n    character_id: options.characterId ?? null,\n    format,\n    mime,\n    byte_size: bytes.byteLength,\n    storage_path: storagePath,\n    rig_analysis_status: 'pending',\n    is_active: false,\n  });\n  if (insertError) {\n    await supabase.storage.from(BUCKET).remove([storagePath]);\n    report('failed', 'Import konnte nicht bestätigt werden.');\n    throw new Error(`Avatar-Artefakt konnte nicht gespeichert werden: ${insertError.message}`);\n  }\n\n  let v2ArtifactId: string = importAssetId;\n  try {\n    const artifact = await materializeArtifactFromImportAsset({\n      importAssetId,\n      characterId: options.characterId,\n      storagePath,\n      format,\n    });\n    v2ArtifactId = artifact.artifactId;\n  } catch (error) {\n    // Artifact table may be unavailable in older envs — keep import draft usable.\n    console.warn(\n      '[avatar-import] V2 artifact materialize skipped:',\n      error instanceof Error ? error.message : error,\n    );\n  }\n\n  report('analyzing', 'Modell wird analysiert …');\n\n  const { data: signed, error: signedError } = await supabase.storage\n    .from(BUCKET)\n    .createSignedUrl(storagePath, SIGNED_URL_SECONDS);\n  if (signedError || !signed?.signedUrl) {\n    report('failed', 'Vorschau-URL konnte nicht erzeugt werden.');\n    throw new Error(signedError?.message ?? 'Signed URL fehlt');\n  }\n\n  let summary: ImportAnalysisSummaryV1;\n  try {\n    const analysis = await previewAnalyzeAvatarGlbBytes(bytes);\n    const { compatibility } = resolveFamilyCompatibilityFromAnalysis(analysis);\n    summary = buildImportAnalysisSummary({ analysis, compatibility });\n  } catch (error) {\n    const message =\n      error instanceof Error ? error.message : 'Analyse fehlgeschlagen. Bitte erneut versuchen.';\n    report('failed', message);\n    throw new Error(message);\n  }\n\n  const keepSeed = buildImportOriginalKeepSeed({\n    modelUrl: signed.signedUrl,\n    artifactId: v2ArtifactId,\n    importAssetId,\n    analysis: {\n      anatomy: summary.anatomy,\n      modularity: summary.modularity,\n    },\n    compatibility: {\n      recommendedFamily: summary.recommendedFamily,\n      status:\n        summary.flowStatus === 'ready-humanoid' ? 'family-compatible' : 'custom',\n    },\n  });\n\n  const legacyArtifact: AvatarImportArtifact = {\n    artifactId: importAssetId,\n    format,\n    byteSize: bytes.byteLength,\n    storagePath,\n    modelUrl: signed.signedUrl,\n    rigAnalysisStatus: 'pending',\n  };\n\n  const uiStatus: AvatarImportUiStatus =\n    summary.flowStatus === 'ready-humanoid' ||\n    summary.flowStatus === 'ready-custom' ||\n    summary.flowStatus === 'limited' ||\n    summary.flowStatus === 'failed'\n      ? summary.flowStatus\n      : 'analyzing';\n\n  report(uiStatus, summary.headlineDe, { artifact: legacyArtifact, summary });\n\n  return {\n    importAssetId,\n    artifactId: v2ArtifactId,\n    format,\n    byteSize: bytes.byteLength,\n    storagePath,\n    modelUrl: signed.signedUrl,\n    summary,\n    keepSeed,\n  };\n}"
+            "line": 202,
+            "endLine": 285,
+            "text": "async function uploadAndAnalyzeLegacy(\n  file: File,\n  bytes: Uint8Array,\n  format: AvatarImportArtifact['format'],\n  mime: string,\n  options: {\n    characterId?: string | null;\n    report: ProgressReporter;\n  },\n): Promise<AvatarImportDraftV2> {\n  options.report('uploading', 'Modell wird hochgeladen …');\n  const ownerUserId = await getAuthenticatedUserId();\n  const importAssetId = crypto.randomUUID();\n  const storagePath = buildAvatarImportStoragePath({\n    ownerUserId,\n    artifactId: importAssetId,\n    format,\n  });\n\n  const blob = new Blob([new Uint8Array(bytes)], { type: mime });\n  const { error: uploadError } = await supabase.storage.from(BUCKET).upload(storagePath, blob, {\n    contentType: mime,\n    upsert: false,\n  });\n  if (uploadError) {\n    options.report('failed', 'Upload fehlgeschlagen. Bitte erneut versuchen.');\n    throw new Error(`Avatar-Upload fehlgeschlagen: ${uploadError.message}`);\n  }\n\n  // Draft row — inactive so a failed analysis never replaces the active avatar.\n  const { error: insertError } = await supabase.from('character_avatar_import_assets').insert({\n    id: importAssetId,\n    owner_user_id: ownerUserId,\n    character_id: options.characterId ?? null,\n    format,\n    mime,\n    byte_size: bytes.byteLength,\n    storage_path: storagePath,\n    rig_analysis_status: 'pending',\n    is_active: false,\n  });\n  if (insertError) {\n    await supabase.storage.from(BUCKET).remove([storagePath]);\n    options.report('failed', 'Import konnte nicht bestätigt werden.');\n    throw new Error(`Avatar-Artefakt konnte nicht gespeichert werden: ${insertError.message}`);\n  }\n\n  let v2ArtifactId: string = importAssetId;\n  try {\n    const artifact = await materializeArtifactFromImportAsset({\n      importAssetId,\n      characterId: options.characterId,\n      storagePath,\n      format,\n    });\n    v2ArtifactId = artifact.artifactId;\n  } catch (error) {\n    // Artifact table may be unavailable in older envs — keep import draft usable.\n    console.warn(\n      '[avatar-import] V2 artifact materialize skipped:',\n      error instanceof Error ? error.message : error,\n    );\n  }\n\n  const { data: signed, error: signedError } = await supabase.storage\n    .from(BUCKET)\n    .createSignedUrl(storagePath, SIGNED_URL_SECONDS);\n  if (signedError || !signed?.signedUrl) {\n    options.report('failed', 'Vorschau-URL konnte nicht erzeugt werden.');\n    throw new Error(signedError?.message ?? 'Signed URL fehlt');\n  }\n\n  const summary = await analyzeImportBytes(bytes, options.report);\n  return finishDraft({\n    importAssetId,\n    artifactId: v2ArtifactId,\n    format,\n    byteSize: bytes.byteLength,\n    storagePath,\n    modelUrl: signed.signedUrl,\n    summary,\n    report: options.report,\n  });\n}"
           }
         },
         {
           "kind": "storage",
           "name": "character-avatars",
           "path": "src/infrastructure/character/avatar/character-avatar-import-service.ts",
-          "line": 142,
-          "endLine": 142,
+          "line": 244,
+          "endLine": 244,
           "resolution": "literal-or-constant",
           "expression": "supabase.storage.from(BUCKET)",
           "chain": "supabase.storage.from(BUCKET).remove([storagePath])",
@@ -31668,17 +31602,17 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/character/avatar/character-avatar-import-service.ts",
-            "line": 70,
-            "endLine": 230,
-            "text": "export async function uploadAndAnalyzeCharacterAvatarModel(\n  file: File,\n  options: {\n    characterId?: string | null;\n    onProgress?: (progress: AvatarImportProgress) => void;\n  } = {},\n): Promise<AvatarImportDraftV2> {\n  assertHostProductSurfaceAvailable('Avatar-Import');\n  const report = (\n    status: AvatarImportUiStatus,\n    message: string,\n    extra?: { artifact?: AvatarImportArtifact; summary?: ImportAnalysisSummaryV1 },\n  ) => {\n    options.onProgress?.({ status, message, artifact: extra?.artifact, summary: extra?.summary });\n  };\n\n  report('validating', 'Datei wird geprüft …');\n  const early = earlyCheckAvatarImportFile({ fileName: file.name, byteSize: file.size });\n  if (!early.ok) {\n    report('failed', early.message ?? 'Datei ungültig.');\n    throw new Error(early.message ?? 'Datei ungültig.');\n  }\n\n  const bytes = await readFileBytes(file);\n  let format: AvatarImportArtifact['format'];\n  let mime: string;\n  try {\n    const validated = validateAvatarImportBytes({\n      bytes,\n      fileName: file.name,\n      claimedMime: file.type,\n    });\n    format = validated.format;\n    mime = validated.mime;\n  } catch (error) {\n    const message = error instanceof Error ? error.message : 'Validierung fehlgeschlagen.';\n    report('failed', message);\n    throw new Error(message);\n  }\n\n  report('uploading', 'Modell wird hochgeladen …');\n  const ownerUserId = await getAuthenticatedUserId();\n  const importAssetId = crypto.randomUUID();\n  const storagePath = buildAvatarImportStoragePath({\n    ownerUserId,\n    artifactId: importAssetId,\n    format,\n  });\n\n  const blob = new Blob([new Uint8Array(bytes)], { type: mime });\n  const { error: uploadError } = await supabase.storage.from(BUCKET).upload(storagePath, blob, {\n    contentType: mime,\n    upsert: false,\n  });\n  if (uploadError) {\n    report('failed', 'Upload fehlgeschlagen. Bitte erneut versuchen.');\n    throw new Error(`Avatar-Upload fehlgeschlagen: ${uploadError.message}`);\n  }\n\n  // Draft row — inactive so a failed analysis never replaces the active avatar.\n  const { error: insertError } = await supabase.from('character_avatar_import_assets').insert({\n    id: importAssetId,\n    owner_user_id: ownerUserId,\n    character_id: options.characterId ?? null,\n    format,\n    mime,\n    byte_size: bytes.byteLength,\n    storage_path: storagePath,\n    rig_analysis_status: 'pending',\n    is_active: false,\n  });\n  if (insertError) {\n    await supabase.storage.from(BUCKET).remove([storagePath]);\n    report('failed', 'Import konnte nicht bestätigt werden.');\n    throw new Error(`Avatar-Artefakt konnte nicht gespeichert werden: ${insertError.message}`);\n  }\n\n  let v2ArtifactId: string = importAssetId;\n  try {\n    const artifact = await materializeArtifactFromImportAsset({\n      importAssetId,\n      characterId: options.characterId,\n      storagePath,\n      format,\n    });\n    v2ArtifactId = artifact.artifactId;\n  } catch (error) {\n    // Artifact table may be unavailable in older envs — keep import draft usable.\n    console.warn(\n      '[avatar-import] V2 artifact materialize skipped:',\n      error instanceof Error ? error.message : error,\n    );\n  }\n\n  report('analyzing', 'Modell wird analysiert …');\n\n  const { data: signed, error: signedError } = await supabase.storage\n    .from(BUCKET)\n    .createSignedUrl(storagePath, SIGNED_URL_SECONDS);\n  if (signedError || !signed?.signedUrl) {\n    report('failed', 'Vorschau-URL konnte nicht erzeugt werden.');\n    throw new Error(signedError?.message ?? 'Signed URL fehlt');\n  }\n\n  let summary: ImportAnalysisSummaryV1;\n  try {\n    const analysis = await previewAnalyzeAvatarGlbBytes(bytes);\n    const { compatibility } = resolveFamilyCompatibilityFromAnalysis(analysis);\n    summary = buildImportAnalysisSummary({ analysis, compatibility });\n  } catch (error) {\n    const message =\n      error instanceof Error ? error.message : 'Analyse fehlgeschlagen. Bitte erneut versuchen.';\n    report('failed', message);\n    throw new Error(message);\n  }\n\n  const keepSeed = buildImportOriginalKeepSeed({\n    modelUrl: signed.signedUrl,\n    artifactId: v2ArtifactId,\n    importAssetId,\n    analysis: {\n      anatomy: summary.anatomy,\n      modularity: summary.modularity,\n    },\n    compatibility: {\n      recommendedFamily: summary.recommendedFamily,\n      status:\n        summary.flowStatus === 'ready-humanoid' ? 'family-compatible' : 'custom',\n    },\n  });\n\n  const legacyArtifact: AvatarImportArtifact = {\n    artifactId: importAssetId,\n    format,\n    byteSize: bytes.byteLength,\n    storagePath,\n    modelUrl: signed.signedUrl,\n    rigAnalysisStatus: 'pending',\n  };\n\n  const uiStatus: AvatarImportUiStatus =\n    summary.flowStatus === 'ready-humanoid' ||\n    summary.flowStatus === 'ready-custom' ||\n    summary.flowStatus === 'limited' ||\n    summary.flowStatus === 'failed'\n      ? summary.flowStatus\n      : 'analyzing';\n\n  report(uiStatus, summary.headlineDe, { artifact: legacyArtifact, summary });\n\n  return {\n    importAssetId,\n    artifactId: v2ArtifactId,\n    format,\n    byteSize: bytes.byteLength,\n    storagePath,\n    modelUrl: signed.signedUrl,\n    summary,\n    keepSeed,\n  };\n}"
+            "line": 202,
+            "endLine": 285,
+            "text": "async function uploadAndAnalyzeLegacy(\n  file: File,\n  bytes: Uint8Array,\n  format: AvatarImportArtifact['format'],\n  mime: string,\n  options: {\n    characterId?: string | null;\n    report: ProgressReporter;\n  },\n): Promise<AvatarImportDraftV2> {\n  options.report('uploading', 'Modell wird hochgeladen …');\n  const ownerUserId = await getAuthenticatedUserId();\n  const importAssetId = crypto.randomUUID();\n  const storagePath = buildAvatarImportStoragePath({\n    ownerUserId,\n    artifactId: importAssetId,\n    format,\n  });\n\n  const blob = new Blob([new Uint8Array(bytes)], { type: mime });\n  const { error: uploadError } = await supabase.storage.from(BUCKET).upload(storagePath, blob, {\n    contentType: mime,\n    upsert: false,\n  });\n  if (uploadError) {\n    options.report('failed', 'Upload fehlgeschlagen. Bitte erneut versuchen.');\n    throw new Error(`Avatar-Upload fehlgeschlagen: ${uploadError.message}`);\n  }\n\n  // Draft row — inactive so a failed analysis never replaces the active avatar.\n  const { error: insertError } = await supabase.from('character_avatar_import_assets').insert({\n    id: importAssetId,\n    owner_user_id: ownerUserId,\n    character_id: options.characterId ?? null,\n    format,\n    mime,\n    byte_size: bytes.byteLength,\n    storage_path: storagePath,\n    rig_analysis_status: 'pending',\n    is_active: false,\n  });\n  if (insertError) {\n    await supabase.storage.from(BUCKET).remove([storagePath]);\n    options.report('failed', 'Import konnte nicht bestätigt werden.');\n    throw new Error(`Avatar-Artefakt konnte nicht gespeichert werden: ${insertError.message}`);\n  }\n\n  let v2ArtifactId: string = importAssetId;\n  try {\n    const artifact = await materializeArtifactFromImportAsset({\n      importAssetId,\n      characterId: options.characterId,\n      storagePath,\n      format,\n    });\n    v2ArtifactId = artifact.artifactId;\n  } catch (error) {\n    // Artifact table may be unavailable in older envs — keep import draft usable.\n    console.warn(\n      '[avatar-import] V2 artifact materialize skipped:',\n      error instanceof Error ? error.message : error,\n    );\n  }\n\n  const { data: signed, error: signedError } = await supabase.storage\n    .from(BUCKET)\n    .createSignedUrl(storagePath, SIGNED_URL_SECONDS);\n  if (signedError || !signed?.signedUrl) {\n    options.report('failed', 'Vorschau-URL konnte nicht erzeugt werden.');\n    throw new Error(signedError?.message ?? 'Signed URL fehlt');\n  }\n\n  const summary = await analyzeImportBytes(bytes, options.report);\n  return finishDraft({\n    importAssetId,\n    artifactId: v2ArtifactId,\n    format,\n    byteSize: bytes.byteLength,\n    storagePath,\n    modelUrl: signed.signedUrl,\n    summary,\n    report: options.report,\n  });\n}"
           }
         },
         {
           "kind": "storage",
           "name": "character-avatars",
           "path": "src/infrastructure/character/avatar/character-avatar-import-service.ts",
-          "line": 166,
-          "endLine": 167,
+          "line": 266,
+          "endLine": 267,
           "resolution": "literal-or-constant",
           "expression": "supabase.storage\n    .from(BUCKET)",
           "chain": "supabase.storage\n    .from(BUCKET)\n    .createSignedUrl(storagePath, SIGNED_URL_SECONDS)",
@@ -31687,34 +31621,34 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/character/avatar/character-avatar-import-service.ts",
-            "line": 70,
-            "endLine": 230,
-            "text": "export async function uploadAndAnalyzeCharacterAvatarModel(\n  file: File,\n  options: {\n    characterId?: string | null;\n    onProgress?: (progress: AvatarImportProgress) => void;\n  } = {},\n): Promise<AvatarImportDraftV2> {\n  assertHostProductSurfaceAvailable('Avatar-Import');\n  const report = (\n    status: AvatarImportUiStatus,\n    message: string,\n    extra?: { artifact?: AvatarImportArtifact; summary?: ImportAnalysisSummaryV1 },\n  ) => {\n    options.onProgress?.({ status, message, artifact: extra?.artifact, summary: extra?.summary });\n  };\n\n  report('validating', 'Datei wird geprüft …');\n  const early = earlyCheckAvatarImportFile({ fileName: file.name, byteSize: file.size });\n  if (!early.ok) {\n    report('failed', early.message ?? 'Datei ungültig.');\n    throw new Error(early.message ?? 'Datei ungültig.');\n  }\n\n  const bytes = await readFileBytes(file);\n  let format: AvatarImportArtifact['format'];\n  let mime: string;\n  try {\n    const validated = validateAvatarImportBytes({\n      bytes,\n      fileName: file.name,\n      claimedMime: file.type,\n    });\n    format = validated.format;\n    mime = validated.mime;\n  } catch (error) {\n    const message = error instanceof Error ? error.message : 'Validierung fehlgeschlagen.';\n    report('failed', message);\n    throw new Error(message);\n  }\n\n  report('uploading', 'Modell wird hochgeladen …');\n  const ownerUserId = await getAuthenticatedUserId();\n  const importAssetId = crypto.randomUUID();\n  const storagePath = buildAvatarImportStoragePath({\n    ownerUserId,\n    artifactId: importAssetId,\n    format,\n  });\n\n  const blob = new Blob([new Uint8Array(bytes)], { type: mime });\n  const { error: uploadError } = await supabase.storage.from(BUCKET).upload(storagePath, blob, {\n    contentType: mime,\n    upsert: false,\n  });\n  if (uploadError) {\n    report('failed', 'Upload fehlgeschlagen. Bitte erneut versuchen.');\n    throw new Error(`Avatar-Upload fehlgeschlagen: ${uploadError.message}`);\n  }\n\n  // Draft row — inactive so a failed analysis never replaces the active avatar.\n  const { error: insertError } = await supabase.from('character_avatar_import_assets').insert({\n    id: importAssetId,\n    owner_user_id: ownerUserId,\n    character_id: options.characterId ?? null,\n    format,\n    mime,\n    byte_size: bytes.byteLength,\n    storage_path: storagePath,\n    rig_analysis_status: 'pending',\n    is_active: false,\n  });\n  if (insertError) {\n    await supabase.storage.from(BUCKET).remove([storagePath]);\n    report('failed', 'Import konnte nicht bestätigt werden.');\n    throw new Error(`Avatar-Artefakt konnte nicht gespeichert werden: ${insertError.message}`);\n  }\n\n  let v2ArtifactId: string = importAssetId;\n  try {\n    const artifact = await materializeArtifactFromImportAsset({\n      importAssetId,\n      characterId: options.characterId,\n      storagePath,\n      format,\n    });\n    v2ArtifactId = artifact.artifactId;\n  } catch (error) {\n    // Artifact table may be unavailable in older envs — keep import draft usable.\n    console.warn(\n      '[avatar-import] V2 artifact materialize skipped:',\n      error instanceof Error ? error.message : error,\n    );\n  }\n\n  report('analyzing', 'Modell wird analysiert …');\n\n  const { data: signed, error: signedError } = await supabase.storage\n    .from(BUCKET)\n    .createSignedUrl(storagePath, SIGNED_URL_SECONDS);\n  if (signedError || !signed?.signedUrl) {\n    report('failed', 'Vorschau-URL konnte nicht erzeugt werden.');\n    throw new Error(signedError?.message ?? 'Signed URL fehlt');\n  }\n\n  let summary: ImportAnalysisSummaryV1;\n  try {\n    const analysis = await previewAnalyzeAvatarGlbBytes(bytes);\n    const { compatibility } = resolveFamilyCompatibilityFromAnalysis(analysis);\n    summary = buildImportAnalysisSummary({ analysis, compatibility });\n  } catch (error) {\n    const message =\n      error instanceof Error ? error.message : 'Analyse fehlgeschlagen. Bitte erneut versuchen.';\n    report('failed', message);\n    throw new Error(message);\n  }\n\n  const keepSeed = buildImportOriginalKeepSeed({\n    modelUrl: signed.signedUrl,\n    artifactId: v2ArtifactId,\n    importAssetId,\n    analysis: {\n      anatomy: summary.anatomy,\n      modularity: summary.modularity,\n    },\n    compatibility: {\n      recommendedFamily: summary.recommendedFamily,\n      status:\n        summary.flowStatus === 'ready-humanoid' ? 'family-compatible' : 'custom',\n    },\n  });\n\n  const legacyArtifact: AvatarImportArtifact = {\n    artifactId: importAssetId,\n    format,\n    byteSize: bytes.byteLength,\n    storagePath,\n    modelUrl: signed.signedUrl,\n    rigAnalysisStatus: 'pending',\n  };\n\n  const uiStatus: AvatarImportUiStatus =\n    summary.flowStatus === 'ready-humanoid' ||\n    summary.flowStatus === 'ready-custom' ||\n    summary.flowStatus === 'limited' ||\n    summary.flowStatus === 'failed'\n      ? summary.flowStatus\n      : 'analyzing';\n\n  report(uiStatus, summary.headlineDe, { artifact: legacyArtifact, summary });\n\n  return {\n    importAssetId,\n    artifactId: v2ArtifactId,\n    format,\n    byteSize: bytes.byteLength,\n    storagePath,\n    modelUrl: signed.signedUrl,\n    summary,\n    keepSeed,\n  };\n}"
+            "line": 202,
+            "endLine": 285,
+            "text": "async function uploadAndAnalyzeLegacy(\n  file: File,\n  bytes: Uint8Array,\n  format: AvatarImportArtifact['format'],\n  mime: string,\n  options: {\n    characterId?: string | null;\n    report: ProgressReporter;\n  },\n): Promise<AvatarImportDraftV2> {\n  options.report('uploading', 'Modell wird hochgeladen …');\n  const ownerUserId = await getAuthenticatedUserId();\n  const importAssetId = crypto.randomUUID();\n  const storagePath = buildAvatarImportStoragePath({\n    ownerUserId,\n    artifactId: importAssetId,\n    format,\n  });\n\n  const blob = new Blob([new Uint8Array(bytes)], { type: mime });\n  const { error: uploadError } = await supabase.storage.from(BUCKET).upload(storagePath, blob, {\n    contentType: mime,\n    upsert: false,\n  });\n  if (uploadError) {\n    options.report('failed', 'Upload fehlgeschlagen. Bitte erneut versuchen.');\n    throw new Error(`Avatar-Upload fehlgeschlagen: ${uploadError.message}`);\n  }\n\n  // Draft row — inactive so a failed analysis never replaces the active avatar.\n  const { error: insertError } = await supabase.from('character_avatar_import_assets').insert({\n    id: importAssetId,\n    owner_user_id: ownerUserId,\n    character_id: options.characterId ?? null,\n    format,\n    mime,\n    byte_size: bytes.byteLength,\n    storage_path: storagePath,\n    rig_analysis_status: 'pending',\n    is_active: false,\n  });\n  if (insertError) {\n    await supabase.storage.from(BUCKET).remove([storagePath]);\n    options.report('failed', 'Import konnte nicht bestätigt werden.');\n    throw new Error(`Avatar-Artefakt konnte nicht gespeichert werden: ${insertError.message}`);\n  }\n\n  let v2ArtifactId: string = importAssetId;\n  try {\n    const artifact = await materializeArtifactFromImportAsset({\n      importAssetId,\n      characterId: options.characterId,\n      storagePath,\n      format,\n    });\n    v2ArtifactId = artifact.artifactId;\n  } catch (error) {\n    // Artifact table may be unavailable in older envs — keep import draft usable.\n    console.warn(\n      '[avatar-import] V2 artifact materialize skipped:',\n      error instanceof Error ? error.message : error,\n    );\n  }\n\n  const { data: signed, error: signedError } = await supabase.storage\n    .from(BUCKET)\n    .createSignedUrl(storagePath, SIGNED_URL_SECONDS);\n  if (signedError || !signed?.signedUrl) {\n    options.report('failed', 'Vorschau-URL konnte nicht erzeugt werden.');\n    throw new Error(signedError?.message ?? 'Signed URL fehlt');\n  }\n\n  const summary = await analyzeImportBytes(bytes, options.report);\n  return finishDraft({\n    importAssetId,\n    artifactId: v2ArtifactId,\n    format,\n    byteSize: bytes.byteLength,\n    storagePath,\n    modelUrl: signed.signedUrl,\n    summary,\n    report: options.report,\n  });\n}"
           }
         },
         {
           "kind": "auth-helper",
           "name": null,
           "path": "src/infrastructure/character/avatar/character-avatar-import-service.ts",
-          "line": 245,
-          "endLine": 245,
+          "line": 370,
+          "endLine": 370,
           "resolution": "dynamic-expression",
           "expression": "getAuthenticatedUserId()",
           "chain": "getAuthenticatedUserId()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/character/avatar/character-avatar-import-service.ts",
-            "line": 236,
-            "endLine": 281,
-            "text": "export async function keepOriginalImportedAvatar(input: {\n  draft: AvatarImportDraftV2;\n  characterId?: string | null;\n}): Promise<ImportOriginalKeepSeedV1> {\n  assertHostProductSurfaceAvailable('Avatar-Import');\n  if (!input.draft.summary.canKeepOriginal || input.draft.summary.flowStatus === 'failed') {\n    throw new Error('Original behalten ist für dieses Analyseergebnis nicht verfügbar.');\n  }\n\n  const ownerUserId = await getAuthenticatedUserId();\n\n  if (input.characterId) {\n    await supabase\n      .from('character_avatar_import_assets')\n      .update({ is_active: false })\n      .eq('owner_user_id', ownerUserId)\n      .eq('character_id', input.characterId)\n      .eq('is_active', true);\n  }\n\n  const { error: activateImportError } = await supabase\n    .from('character_avatar_import_assets')\n    .update({ is_active: true })\n    .eq('id', input.draft.importAssetId)\n    .eq('owner_user_id', ownerUserId);\n\n  if (activateImportError) {\n    throw new Error(\n      `Import konnte nicht aktiviert werden: ${activateImportError.message}`,\n    );\n  }\n\n  try {\n    const activated = await activateAvatarArtifact(input.draft.artifactId);\n    if (activated.ok === false) {\n      console.warn('[avatar-import] V2 artifact activate:', activated.reasonDe);\n    }\n  } catch (error) {\n    console.warn(\n      '[avatar-import] V2 artifact activate skipped:',\n      error instanceof Error ? error.message : error,\n    );\n  }\n\n  return input.draft.keepSeed;\n}"
+            "line": 348,
+            "endLine": 406,
+            "text": "export async function keepOriginalImportedAvatar(input: {\n  draft: AvatarImportDraftV2;\n  characterId?: string | null;\n}): Promise<ImportOriginalKeepSeedV1> {\n  if (!input.draft.summary.canKeepOriginal || input.draft.summary.flowStatus === 'failed') {\n    throw new Error('Original behalten ist für dieses Analyseergebnis nicht verfügbar.');\n  }\n\n  if (isHostLibraryEnabled()) {\n    try {\n      const activated = await activateAvatarArtifact(input.draft.artifactId);\n      if (activated.ok === false) {\n        throw new Error(activated.reasonDe);\n      }\n    } catch (error) {\n      const message =\n        error instanceof Error ? error.message : 'Import konnte nicht aktiviert werden.';\n      throw new Error(message);\n    }\n    return input.draft.keepSeed;\n  }\n\n  const ownerUserId = await getAuthenticatedUserId();\n\n  if (input.characterId) {\n    await supabase\n      .from('character_avatar_import_assets')\n      .update({ is_active: false })\n      .eq('owner_user_id', ownerUserId)\n      .eq('character_id', input.characterId)\n      .eq('is_active', true);\n  }\n\n  const { error: activateImportError } = await supabase\n    .from('character_avatar_import_assets')\n    .update({ is_active: true })\n    .eq('id', input.draft.importAssetId)\n    .eq('owner_user_id', ownerUserId);\n\n  if (activateImportError) {\n    throw new Error(\n      `Import konnte nicht aktiviert werden: ${activateImportError.message}`,\n    );\n  }\n\n  try {\n    const activated = await activateAvatarArtifact(input.draft.artifactId);\n    if (activated.ok === false) {\n      console.warn('[avatar-import] V2 artifact activate:', activated.reasonDe);\n    }\n  } catch (error) {\n    console.warn(\n      '[avatar-import] V2 artifact activate skipped:',\n      error instanceof Error ? error.message : error,\n    );\n  }\n\n  return input.draft.keepSeed;\n}"
           }
         },
         {
           "kind": "table",
           "name": "character_avatar_import_assets",
           "path": "src/infrastructure/character/avatar/character-avatar-import-service.ts",
-          "line": 248,
-          "endLine": 249,
+          "line": 373,
+          "endLine": 374,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from('character_avatar_import_assets')",
           "chain": "supabase\n      .from('character_avatar_import_assets')\n      .update({ is_active: false })\n      .eq('owner_user_id', ownerUserId)\n      .eq('character_id', input.characterId)\n      .eq('is_active', true)",
@@ -31723,17 +31657,17 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/character/avatar/character-avatar-import-service.ts",
-            "line": 236,
-            "endLine": 281,
-            "text": "export async function keepOriginalImportedAvatar(input: {\n  draft: AvatarImportDraftV2;\n  characterId?: string | null;\n}): Promise<ImportOriginalKeepSeedV1> {\n  assertHostProductSurfaceAvailable('Avatar-Import');\n  if (!input.draft.summary.canKeepOriginal || input.draft.summary.flowStatus === 'failed') {\n    throw new Error('Original behalten ist für dieses Analyseergebnis nicht verfügbar.');\n  }\n\n  const ownerUserId = await getAuthenticatedUserId();\n\n  if (input.characterId) {\n    await supabase\n      .from('character_avatar_import_assets')\n      .update({ is_active: false })\n      .eq('owner_user_id', ownerUserId)\n      .eq('character_id', input.characterId)\n      .eq('is_active', true);\n  }\n\n  const { error: activateImportError } = await supabase\n    .from('character_avatar_import_assets')\n    .update({ is_active: true })\n    .eq('id', input.draft.importAssetId)\n    .eq('owner_user_id', ownerUserId);\n\n  if (activateImportError) {\n    throw new Error(\n      `Import konnte nicht aktiviert werden: ${activateImportError.message}`,\n    );\n  }\n\n  try {\n    const activated = await activateAvatarArtifact(input.draft.artifactId);\n    if (activated.ok === false) {\n      console.warn('[avatar-import] V2 artifact activate:', activated.reasonDe);\n    }\n  } catch (error) {\n    console.warn(\n      '[avatar-import] V2 artifact activate skipped:',\n      error instanceof Error ? error.message : error,\n    );\n  }\n\n  return input.draft.keepSeed;\n}"
+            "line": 348,
+            "endLine": 406,
+            "text": "export async function keepOriginalImportedAvatar(input: {\n  draft: AvatarImportDraftV2;\n  characterId?: string | null;\n}): Promise<ImportOriginalKeepSeedV1> {\n  if (!input.draft.summary.canKeepOriginal || input.draft.summary.flowStatus === 'failed') {\n    throw new Error('Original behalten ist für dieses Analyseergebnis nicht verfügbar.');\n  }\n\n  if (isHostLibraryEnabled()) {\n    try {\n      const activated = await activateAvatarArtifact(input.draft.artifactId);\n      if (activated.ok === false) {\n        throw new Error(activated.reasonDe);\n      }\n    } catch (error) {\n      const message =\n        error instanceof Error ? error.message : 'Import konnte nicht aktiviert werden.';\n      throw new Error(message);\n    }\n    return input.draft.keepSeed;\n  }\n\n  const ownerUserId = await getAuthenticatedUserId();\n\n  if (input.characterId) {\n    await supabase\n      .from('character_avatar_import_assets')\n      .update({ is_active: false })\n      .eq('owner_user_id', ownerUserId)\n      .eq('character_id', input.characterId)\n      .eq('is_active', true);\n  }\n\n  const { error: activateImportError } = await supabase\n    .from('character_avatar_import_assets')\n    .update({ is_active: true })\n    .eq('id', input.draft.importAssetId)\n    .eq('owner_user_id', ownerUserId);\n\n  if (activateImportError) {\n    throw new Error(\n      `Import konnte nicht aktiviert werden: ${activateImportError.message}`,\n    );\n  }\n\n  try {\n    const activated = await activateAvatarArtifact(input.draft.artifactId);\n    if (activated.ok === false) {\n      console.warn('[avatar-import] V2 artifact activate:', activated.reasonDe);\n    }\n  } catch (error) {\n    console.warn(\n      '[avatar-import] V2 artifact activate skipped:',\n      error instanceof Error ? error.message : error,\n    );\n  }\n\n  return input.draft.keepSeed;\n}"
           }
         },
         {
           "kind": "table",
           "name": "character_avatar_import_assets",
           "path": "src/infrastructure/character/avatar/character-avatar-import-service.ts",
-          "line": 256,
-          "endLine": 257,
+          "line": 381,
+          "endLine": 382,
           "resolution": "literal-or-constant",
           "expression": "supabase\n    .from('character_avatar_import_assets')",
           "chain": "supabase\n    .from('character_avatar_import_assets')\n    .update({ is_active: true })\n    .eq('id', input.draft.importAssetId)\n    .eq('owner_user_id', ownerUserId)",
@@ -31742,9 +31676,9 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/character/avatar/character-avatar-import-service.ts",
-            "line": 236,
-            "endLine": 281,
-            "text": "export async function keepOriginalImportedAvatar(input: {\n  draft: AvatarImportDraftV2;\n  characterId?: string | null;\n}): Promise<ImportOriginalKeepSeedV1> {\n  assertHostProductSurfaceAvailable('Avatar-Import');\n  if (!input.draft.summary.canKeepOriginal || input.draft.summary.flowStatus === 'failed') {\n    throw new Error('Original behalten ist für dieses Analyseergebnis nicht verfügbar.');\n  }\n\n  const ownerUserId = await getAuthenticatedUserId();\n\n  if (input.characterId) {\n    await supabase\n      .from('character_avatar_import_assets')\n      .update({ is_active: false })\n      .eq('owner_user_id', ownerUserId)\n      .eq('character_id', input.characterId)\n      .eq('is_active', true);\n  }\n\n  const { error: activateImportError } = await supabase\n    .from('character_avatar_import_assets')\n    .update({ is_active: true })\n    .eq('id', input.draft.importAssetId)\n    .eq('owner_user_id', ownerUserId);\n\n  if (activateImportError) {\n    throw new Error(\n      `Import konnte nicht aktiviert werden: ${activateImportError.message}`,\n    );\n  }\n\n  try {\n    const activated = await activateAvatarArtifact(input.draft.artifactId);\n    if (activated.ok === false) {\n      console.warn('[avatar-import] V2 artifact activate:', activated.reasonDe);\n    }\n  } catch (error) {\n    console.warn(\n      '[avatar-import] V2 artifact activate skipped:',\n      error instanceof Error ? error.message : error,\n    );\n  }\n\n  return input.draft.keepSeed;\n}"
+            "line": 348,
+            "endLine": 406,
+            "text": "export async function keepOriginalImportedAvatar(input: {\n  draft: AvatarImportDraftV2;\n  characterId?: string | null;\n}): Promise<ImportOriginalKeepSeedV1> {\n  if (!input.draft.summary.canKeepOriginal || input.draft.summary.flowStatus === 'failed') {\n    throw new Error('Original behalten ist für dieses Analyseergebnis nicht verfügbar.');\n  }\n\n  if (isHostLibraryEnabled()) {\n    try {\n      const activated = await activateAvatarArtifact(input.draft.artifactId);\n      if (activated.ok === false) {\n        throw new Error(activated.reasonDe);\n      }\n    } catch (error) {\n      const message =\n        error instanceof Error ? error.message : 'Import konnte nicht aktiviert werden.';\n      throw new Error(message);\n    }\n    return input.draft.keepSeed;\n  }\n\n  const ownerUserId = await getAuthenticatedUserId();\n\n  if (input.characterId) {\n    await supabase\n      .from('character_avatar_import_assets')\n      .update({ is_active: false })\n      .eq('owner_user_id', ownerUserId)\n      .eq('character_id', input.characterId)\n      .eq('is_active', true);\n  }\n\n  const { error: activateImportError } = await supabase\n    .from('character_avatar_import_assets')\n    .update({ is_active: true })\n    .eq('id', input.draft.importAssetId)\n    .eq('owner_user_id', ownerUserId);\n\n  if (activateImportError) {\n    throw new Error(\n      `Import konnte nicht aktiviert werden: ${activateImportError.message}`,\n    );\n  }\n\n  try {\n    const activated = await activateAvatarArtifact(input.draft.artifactId);\n    if (activated.ok === false) {\n      console.warn('[avatar-import] V2 artifact activate:', activated.reasonDe);\n    }\n  } catch (error) {\n    console.warn(\n      '[avatar-import] V2 artifact activate skipped:',\n      error instanceof Error ? error.message : error,\n    );\n  }\n\n  return input.draft.keepSeed;\n}"
           }
         },
         {
@@ -31791,8 +31725,8 @@
           "kind": "fetch",
           "name": null,
           "path": "src/infrastructure/character/avatar/character-studio-runtime.ts",
-          "line": 1365,
-          "endLine": 1365,
+          "line": 1367,
+          "endLine": 1367,
           "resolution": "dynamic-expression",
           "expression": "fetch(manifestUrl)",
           "chain": "fetch(manifestUrl)",
@@ -31801,8 +31735,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/character/avatar/character-studio-runtime.ts",
-            "line": 1347,
-            "endLine": 1378,
+            "line": 1349,
+            "endLine": 1380,
             "text": "private async loadFaceAnchorsManifestForModel(\n    modelUrl: string,\n    characterOverride: SagaTreeFaceAnchorsManifestV1 | null = null,\n  ): Promise<void> {\n    const token = ++this.faceAnchorManifestLoadToken;\n    // Character-persisted anchors win over asset sidecar (#persist).\n    if (characterOverride) {\n      const parsed = parseFaceAnchorsManifestV1(characterOverride);\n      if (parsed.ok && token === this.faceAnchorManifestLoadToken) {\n        this.liveActCharacterFaceDebug.bindManifest(parsed.manifest);\n        return;\n      }\n    }\n    this.liveActCharacterFaceDebug.bindManifest(null);\n    const candidates = listFaceAnchorsManifestUrlCandidates(modelUrl);\n    if (!candidates.length) return;\n    for (const manifestUrl of candidates) {\n      try {\n        const response = await fetch(manifestUrl);\n        if (!response.ok || token !== this.faceAnchorManifestLoadToken) continue;\n        const payload: unknown = await response.json();\n        if (token !== this.faceAnchorManifestLoadToken) return;\n        const parsed = parseFaceAnchorsManifestV1(payload);\n        if (parsed.ok) {\n          this.liveActCharacterFaceDebug.bindManifest(parsed.manifest);\n          return;\n        }\n      } catch {\n        // Try next candidate — mapping stays unavailable if all fail (#400).\n      }\n    }\n  }"
           }
         },
@@ -33341,68 +33275,86 @@
         },
         {
           "path": "src/infrastructure/character/avatar/character-avatar-export-service.ts",
-          "line": 27,
-          "endLine": 33,
-          "name": "getAuthenticatedUserId"
+          "line": 41,
+          "endLine": 50,
+          "name": "usesHostAssetCredentials"
         },
         {
           "path": "src/infrastructure/character/avatar/character-avatar-export-service.ts",
-          "line": 41,
-          "endLine": 51,
+          "line": 52,
+          "endLine": 64,
           "name": "tryFetchSourceMeshBytes"
         },
         {
           "path": "src/infrastructure/character/avatar/character-avatar-export-service.ts",
-          "line": 57,
-          "endLine": 164,
+          "line": 70,
+          "endLine": 209,
           "name": "materializeAvatarSaveExport"
         },
         {
           "path": "src/infrastructure/character/avatar/character-avatar-export-service.ts",
-          "line": 67,
-          "endLine": 73,
+          "line": 79,
+          "endLine": 85,
           "name": "report"
         },
         {
           "path": "src/infrastructure/character/avatar/character-avatar-import-service.ts",
-          "line": 34,
-          "endLine": 40,
-          "name": "getAuthenticatedUserId"
-        },
-        {
-          "path": "src/infrastructure/character/avatar/character-avatar-import-service.ts",
-          "line": 42,
-          "endLine": 45,
+          "line": 41,
+          "endLine": 44,
           "name": "readFileBytes"
         },
         {
           "path": "src/infrastructure/character/avatar/character-avatar-import-service.ts",
-          "line": 70,
-          "endLine": 230,
+          "line": 71,
+          "endLine": 86,
+          "name": "analyzeImportBytes"
+        },
+        {
+          "path": "src/infrastructure/character/avatar/character-avatar-import-service.ts",
+          "line": 88,
+          "endLine": 145,
+          "name": "finishDraft"
+        },
+        {
+          "path": "src/infrastructure/character/avatar/character-avatar-import-service.ts",
+          "line": 147,
+          "endLine": 200,
+          "name": "uploadAndAnalyzeHost"
+        },
+        {
+          "path": "src/infrastructure/character/avatar/character-avatar-import-service.ts",
+          "line": 202,
+          "endLine": 285,
+          "name": "uploadAndAnalyzeLegacy"
+        },
+        {
+          "path": "src/infrastructure/character/avatar/character-avatar-import-service.ts",
+          "line": 291,
+          "endLine": 342,
           "name": "uploadAndAnalyzeCharacterAvatarModel"
         },
         {
           "path": "src/infrastructure/character/avatar/character-avatar-import-service.ts",
-          "line": 78,
-          "endLine": 84,
+          "line": 298,
+          "endLine": 300,
           "name": "report"
         },
         {
           "path": "src/infrastructure/character/avatar/character-avatar-import-service.ts",
-          "line": 236,
-          "endLine": 281,
+          "line": 348,
+          "endLine": 406,
           "name": "keepOriginalImportedAvatar"
         },
         {
           "path": "src/infrastructure/character/avatar/character-avatar-import-service.ts",
-          "line": 287,
-          "endLine": 324,
+          "line": 412,
+          "endLine": 448,
           "name": "importCharacterAvatarModel"
         },
         {
           "path": "src/infrastructure/character/avatar/character-avatar-import-service.ts",
-          "line": 326,
-          "endLine": 331,
+          "line": 450,
+          "endLine": 455,
           "name": "avatarImportLimits"
         },
         {
@@ -33534,373 +33486,373 @@
         {
           "path": "src/infrastructure/character/avatar/character-studio-runtime.ts",
           "line": 316,
-          "endLine": 388,
+          "endLine": 390,
           "name": "loadModel"
         },
         {
           "path": "src/infrastructure/character/avatar/character-studio-runtime.ts",
-          "line": 393,
-          "endLine": 398,
+          "line": 395,
+          "endLine": 400,
           "name": "setRuntimeOverlays"
         },
         {
           "path": "src/infrastructure/character/avatar/character-studio-runtime.ts",
-          "line": 400,
-          "endLine": 402,
+          "line": 402,
+          "endLine": 404,
           "name": "setRigidEquipmentUrlResolver"
         },
         {
           "path": "src/infrastructure/character/avatar/character-studio-runtime.ts",
-          "line": 405,
-          "endLine": 407,
+          "line": 407,
+          "endLine": 409,
           "name": "applyRigidEquipmentVisuals"
         },
         {
           "path": "src/infrastructure/character/avatar/character-studio-runtime.ts",
-          "line": 409,
-          "endLine": 411,
+          "line": 411,
+          "endLine": 413,
           "name": "setSkinnedWearableUrlResolver"
         },
         {
           "path": "src/infrastructure/character/avatar/character-studio-runtime.ts",
-          "line": 413,
-          "endLine": 415,
+          "line": 415,
+          "endLine": 417,
           "name": "applySkinnedWearableVisuals"
         },
         {
           "path": "src/infrastructure/character/avatar/character-studio-runtime.ts",
-          "line": 417,
-          "endLine": 419,
+          "line": 419,
+          "endLine": 421,
           "name": "getRigidEquipmentRuntime"
         },
         {
           "path": "src/infrastructure/character/avatar/character-studio-runtime.ts",
-          "line": 421,
-          "endLine": 423,
+          "line": 423,
+          "endLine": 425,
           "name": "getSkinnedWearableRuntime"
         },
         {
           "path": "src/infrastructure/character/avatar/character-studio-runtime.ts",
-          "line": 425,
-          "endLine": 427,
+          "line": 427,
+          "endLine": 429,
           "name": "getLastRigAnalysis"
         },
         {
           "path": "src/infrastructure/character/avatar/character-studio-runtime.ts",
-          "line": 429,
-          "endLine": 431,
+          "line": 431,
+          "endLine": 433,
           "name": "getTraitLifecycle"
         },
         {
           "path": "src/infrastructure/character/avatar/character-studio-runtime.ts",
-          "line": 433,
-          "endLine": 435,
+          "line": 435,
+          "endLine": 437,
           "name": "getStyleCompatibility"
         },
         {
           "path": "src/infrastructure/character/avatar/character-studio-runtime.ts",
-          "line": 437,
-          "endLine": 439,
+          "line": 439,
+          "endLine": 441,
           "name": "getStyleProfile"
         },
         {
           "path": "src/infrastructure/character/avatar/character-studio-runtime.ts",
-          "line": 442,
-          "endLine": 444,
+          "line": 444,
+          "endLine": 446,
           "name": "isMtoonStyleEnabled"
         },
         {
           "path": "src/infrastructure/character/avatar/character-studio-runtime.ts",
-          "line": 446,
-          "endLine": 452,
+          "line": 448,
+          "endLine": 454,
           "name": "setMtoonStyleEnabled"
         },
         {
           "path": "src/infrastructure/character/avatar/character-studio-runtime.ts",
-          "line": 454,
-          "endLine": 456,
+          "line": 456,
+          "endLine": 458,
           "name": "getLookRuntime"
         },
         {
           "path": "src/infrastructure/character/avatar/character-studio-runtime.ts",
-          "line": 458,
-          "endLine": 460,
+          "line": 460,
+          "endLine": 462,
           "name": "getLastLookApplyResult"
         },
         {
           "path": "src/infrastructure/character/avatar/character-studio-runtime.ts",
-          "line": 466,
-          "endLine": 505,
+          "line": 468,
+          "endLine": 507,
           "name": "applyLookProfile"
         },
         {
           "path": "src/infrastructure/character/avatar/character-studio-runtime.ts",
-          "line": 508,
-          "endLine": 538,
+          "line": 510,
+          "endLine": 540,
           "name": "restorePbrNeutralLook"
         },
         {
           "path": "src/infrastructure/character/avatar/character-studio-runtime.ts",
-          "line": 540,
-          "endLine": 542,
+          "line": 542,
+          "endLine": 544,
           "name": "playAnimation"
         },
         {
           "path": "src/infrastructure/character/avatar/character-studio-runtime.ts",
-          "line": 544,
-          "endLine": 546,
+          "line": 546,
+          "endLine": 548,
           "name": "getAnimationRuntime"
         },
         {
           "path": "src/infrastructure/character/avatar/character-studio-runtime.ts",
-          "line": 548,
-          "endLine": 550,
+          "line": 550,
+          "endLine": 552,
           "name": "setPrefersReducedMotion"
         },
         {
           "path": "src/infrastructure/character/avatar/character-studio-runtime.ts",
-          "line": 552,
-          "endLine": 554,
+          "line": 554,
+          "endLine": 556,
           "name": "setFacialWeight"
         },
         {
           "path": "src/infrastructure/character/avatar/character-studio-runtime.ts",
-          "line": 556,
-          "endLine": 558,
+          "line": 558,
+          "endLine": 560,
           "name": "resetFacialToNeutral"
         },
         {
           "path": "src/infrastructure/character/avatar/character-studio-runtime.ts",
-          "line": 560,
-          "endLine": 562,
+          "line": 562,
+          "endLine": 564,
           "name": "getFacialRuntime"
         },
         {
           "path": "src/infrastructure/character/avatar/character-studio-runtime.ts",
-          "line": 565,
-          "endLine": 568,
+          "line": 567,
+          "endLine": 570,
           "name": "getLiveActAvatarOutput"
         },
         {
           "path": "src/infrastructure/character/avatar/character-studio-runtime.ts",
-          "line": 571,
-          "endLine": 574,
+          "line": 573,
+          "endLine": 576,
           "name": "setLiveActDriveActive"
         },
         {
           "path": "src/infrastructure/character/avatar/character-studio-runtime.ts",
-          "line": 587,
-          "endLine": 589,
+          "line": 589,
+          "endLine": 591,
           "name": "getLiveActAvatarCapabilities"
         },
         {
           "path": "src/infrastructure/character/avatar/character-studio-runtime.ts",
-          "line": 592,
-          "endLine": 594,
+          "line": 594,
+          "endLine": 596,
           "name": "hasLiveActSkeleton"
         },
         {
           "path": "src/infrastructure/character/avatar/character-studio-runtime.ts",
-          "line": 597,
-          "endLine": 600,
+          "line": 599,
+          "endLine": 602,
           "name": "setLiveActRigDebugEnabled"
         },
         {
           "path": "src/infrastructure/character/avatar/character-studio-runtime.ts",
-          "line": 603,
-          "endLine": 606,
+          "line": 605,
+          "endLine": 608,
           "name": "setLiveActCharacterFaceDebugEnabled"
         },
         {
           "path": "src/infrastructure/character/avatar/character-studio-runtime.ts",
-          "line": 609,
-          "endLine": 611,
+          "line": 611,
+          "endLine": 613,
           "name": "hasLiveActCharacterFaceMapping"
         },
         {
           "path": "src/infrastructure/character/avatar/character-studio-runtime.ts",
-          "line": 614,
-          "endLine": 616,
+          "line": 616,
+          "endLine": 618,
           "name": "getLiveActCharacterFaceDebugHandle"
         },
         {
           "path": "src/infrastructure/character/avatar/character-studio-runtime.ts",
-          "line": 619,
-          "endLine": 621,
+          "line": 621,
+          "endLine": 623,
           "name": "getFaceAnchorsManifest"
         },
         {
           "path": "src/infrastructure/character/avatar/character-studio-runtime.ts",
-          "line": 626,
-          "endLine": 629,
+          "line": 628,
+          "endLine": 631,
           "name": "bindFaceAnchorsManifestSession"
         },
         {
           "path": "src/infrastructure/character/avatar/character-studio-runtime.ts",
-          "line": 632,
-          "endLine": 651,
+          "line": 634,
+          "endLine": 653,
           "name": "setFaceMappingAuthoringActive"
         },
         {
           "path": "src/infrastructure/character/avatar/character-studio-runtime.ts",
-          "line": 653,
-          "endLine": 655,
+          "line": 655,
+          "endLine": 657,
           "name": "isFaceMappingAuthoringActive"
         },
         {
           "path": "src/infrastructure/character/avatar/character-studio-runtime.ts",
-          "line": 661,
-          "endLine": 668,
+          "line": 663,
+          "endLine": 670,
           "name": "setOrbitControlsEnabled"
         },
         {
           "path": "src/infrastructure/character/avatar/character-studio-runtime.ts",
-          "line": 674,
-          "endLine": 690,
+          "line": 676,
+          "endLine": 692,
           "name": "dollyFaceMappingCamera"
         },
         {
           "path": "src/infrastructure/character/avatar/character-studio-runtime.ts",
-          "line": 696,
-          "endLine": 720,
+          "line": 698,
+          "endLine": 722,
           "name": "panFaceMappingCamera"
         },
         {
           "path": "src/infrastructure/character/avatar/character-studio-runtime.ts",
-          "line": 743,
-          "endLine": 771,
+          "line": 745,
+          "endLine": 773,
           "name": "resolveFaceMappingFaceWidthWorld"
         },
         {
           "path": "src/infrastructure/character/avatar/character-studio-runtime.ts",
-          "line": 778,
-          "endLine": 827,
+          "line": 780,
+          "endLine": 829,
           "name": "raycastFaceMappingAtCanvas"
         },
         {
           "path": "src/infrastructure/character/avatar/character-studio-runtime.ts",
-          "line": 830,
-          "endLine": 846,
+          "line": 832,
+          "endLine": 848,
           "name": "listFaceMappingRaycastCandidatesAtCanvas"
         },
         {
           "path": "src/infrastructure/character/avatar/character-studio-runtime.ts",
-          "line": 849,
-          "endLine": 870,
+          "line": 851,
+          "endLine": 872,
           "name": "projectWorldToFaceMappingCanvas"
         },
         {
           "path": "src/infrastructure/character/avatar/character-studio-runtime.ts",
-          "line": 873,
-          "endLine": 882,
+          "line": 875,
+          "endLine": 884,
           "name": "evaluateFaceMappingBindingWorld"
         },
         {
           "path": "src/infrastructure/character/avatar/character-studio-runtime.ts",
-          "line": 884,
-          "endLine": 886,
+          "line": 886,
+          "endLine": 888,
           "name": "getFaceMappingCanvasElement"
         },
         {
           "path": "src/infrastructure/character/avatar/character-studio-runtime.ts",
-          "line": 892,
-          "endLine": 898,
+          "line": 894,
+          "endLine": 900,
           "name": "applyFaceMappingAutoCameraState"
         },
         {
           "path": "src/infrastructure/character/avatar/character-studio-runtime.ts",
-          "line": 906,
-          "endLine": 913,
+          "line": 908,
+          "endLine": 915,
           "name": "withFaceMappingBaseFaceCapture"
         },
         {
           "path": "src/infrastructure/character/avatar/character-studio-runtime.ts",
-          "line": 951,
-          "endLine": 975,
+          "line": 953,
+          "endLine": 977,
           "name": "captureFaceMappingAutoFrame"
         },
         {
           "path": "src/infrastructure/character/avatar/character-studio-runtime.ts",
-          "line": 998,
-          "endLine": 1019,
+          "line": 1000,
+          "endLine": 1021,
           "name": "applyFaceTrackingDrive"
         },
         {
           "path": "src/infrastructure/character/avatar/character-studio-runtime.ts",
-          "line": 1021,
-          "endLine": 1026,
+          "line": 1023,
+          "endLine": 1028,
           "name": "resetFaceTrackingPose"
         },
         {
           "path": "src/infrastructure/character/avatar/character-studio-runtime.ts",
-          "line": 1028,
-          "endLine": 1030,
+          "line": 1030,
+          "endLine": 1032,
           "name": "resetLiveActPose"
         },
         {
           "path": "src/infrastructure/character/avatar/character-studio-runtime.ts",
-          "line": 1033,
-          "endLine": 1035,
+          "line": 1035,
+          "endLine": 1037,
           "name": "isPortraitReady"
         },
         {
           "path": "src/infrastructure/character/avatar/character-studio-runtime.ts",
-          "line": 1037,
-          "endLine": 1039,
+          "line": 1039,
+          "endLine": 1041,
           "name": "isInspectMode"
         },
         {
           "path": "src/infrastructure/character/avatar/character-studio-runtime.ts",
-          "line": 1045,
-          "endLine": 1050,
+          "line": 1047,
+          "endLine": 1052,
           "name": "setInspectMode"
         },
         {
           "path": "src/infrastructure/character/avatar/character-studio-runtime.ts",
-          "line": 1053,
-          "endLine": 1083,
+          "line": 1055,
+          "endLine": 1085,
           "name": "applyCameraFrame"
         },
         {
           "path": "src/infrastructure/character/avatar/character-studio-runtime.ts",
-          "line": 1086,
-          "endLine": 1090,
+          "line": 1088,
+          "endLine": 1092,
           "name": "resetCamera"
         },
         {
           "path": "src/infrastructure/character/avatar/character-studio-runtime.ts",
-          "line": 1096,
-          "endLine": 1118,
+          "line": 1098,
+          "endLine": 1120,
           "name": "capturePortraitDataUrl"
         },
         {
           "path": "src/infrastructure/character/avatar/character-studio-runtime.ts",
-          "line": 1120,
-          "endLine": 1181,
+          "line": 1122,
+          "endLine": 1183,
           "name": "applyAppearance"
         },
         {
           "path": "src/infrastructure/character/avatar/character-studio-runtime.ts",
-          "line": 1183,
-          "endLine": 1188,
+          "line": 1185,
+          "endLine": 1190,
           "name": "renderNow"
         },
         {
           "path": "src/infrastructure/character/avatar/character-studio-runtime.ts",
-          "line": 1194,
-          "endLine": 1225,
+          "line": 1196,
+          "endLine": 1227,
           "name": "applyMorphState"
         },
         {
           "path": "src/infrastructure/character/avatar/character-studio-runtime.ts",
-          "line": 1394,
-          "endLine": 1395,
+          "line": 1396,
+          "endLine": 1397,
           "name": "pick"
         },
         {
           "path": "src/infrastructure/character/avatar/character-studio-runtime.ts",
-          "line": 1455,
-          "endLine": 1480,
+          "line": 1457,
+          "endLine": 1482,
           "name": "dispose"
         },
         {
@@ -35617,7 +35569,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "229b35aacdebddf47048b109b5ff221dd8985f2c5f97e2fb362e959567a98deb"
+            "sha256": "b2343081ddce2e2edd73651b0622e8b4cc6d8583d746a863dbe3343e3a98f71a"
           },
           {
             "path": "src/infrastructure/inventory/host-inventory-adapter.ts",
@@ -35729,7 +35681,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-inventory.json",
-      "sourceContractSha256": "d2f6b10324c9f4deb5ae6c7da7d66dd60da2a9f3a82c172eee1c6bbf7e4883da",
+      "sourceContractSha256": "53a83415afa4b23c57bcfb925871490109c492e19bb47cfc580b139e28093309",
       "rpcUsed": [],
       "tablesTouched": [
         "characters",
@@ -36933,7 +36885,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "229b35aacdebddf47048b109b5ff221dd8985f2c5f97e2fb362e959567a98deb"
+            "sha256": "b2343081ddce2e2edd73651b0622e8b4cc6d8583d746a863dbe3343e3a98f71a"
           },
           {
             "path": "src/infrastructure/look/adapters/host-mtoon-look-adapter.ts",
@@ -37009,7 +36961,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-look.json",
-      "sourceContractSha256": "2a0b7194111d9796c8fef9b7c5364cfa532ce3237715c5f98471c6a834b25415",
+      "sourceContractSha256": "da854f091a5673cb31fc2d040347cca787d727bc5e477adcfce025cedf69a038",
       "rpcUsed": [],
       "tablesTouched": [
         "look_profile_versions",
@@ -37878,7 +37830,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "229b35aacdebddf47048b109b5ff221dd8985f2c5f97e2fb362e959567a98deb"
+            "sha256": "b2343081ddce2e2edd73651b0622e8b4cc6d8583d746a863dbe3343e3a98f71a"
           },
           {
             "path": "src/infrastructure/marketplace/host-marketplace-adapter.ts",
@@ -37922,7 +37874,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-marketplace.json",
-      "sourceContractSha256": "824a438ff8d3cfc4cbb6beb03efa0efa92df0cd34ed065531455020e1ce99383",
+      "sourceContractSha256": "dfb5e393ad3f6e4a158e543e5d56b209976b15fecec22c7555268610392b0d59",
       "rpcUsed": [
         "increment_marketplace_downloads"
       ],
@@ -38737,7 +38689,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "229b35aacdebddf47048b109b5ff221dd8985f2c5f97e2fb362e959567a98deb"
+            "sha256": "b2343081ddce2e2edd73651b0622e8b4cc6d8583d746a863dbe3343e3a98f71a"
           },
           {
             "path": "src/infrastructure/host/host-session-http.ts",
@@ -38797,7 +38749,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-npc-creature.json",
-      "sourceContractSha256": "38f2c5431daeee2db86adcf160842dd62cb3cfcf72e1ef75ceb924ccaee7d3f5",
+      "sourceContractSha256": "ea1af02f6aae3e5f55d7073bb30af790ba0f17f1296ed806bb61829cd5924754",
       "rpcUsed": [
         "assign_npc_creature_controller",
         "clear_npc_creature_instance_temp_controllers_for_session",
@@ -39894,7 +39846,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "229b35aacdebddf47048b109b5ff221dd8985f2c5f97e2fb362e959567a98deb"
+            "sha256": "b2343081ddce2e2edd73651b0622e8b4cc6d8583d746a863dbe3343e3a98f71a"
           },
           {
             "path": "src/infrastructure/host/host-product-deny.ts",
@@ -39954,7 +39906,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-project.json",
-      "sourceContractSha256": "01dd45a9d9f76412d6d83e27dc3396ec91a1ad58b65860ebc6b22c88afd58e33",
+      "sourceContractSha256": "3589d71a1a49f5e3367dca159928642c865d84686fe2185ad51953f8358de807",
       "rpcUsed": [
         "create_project_session",
         "ensure_native_starter_project",
@@ -41192,7 +41144,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "229b35aacdebddf47048b109b5ff221dd8985f2c5f97e2fb362e959567a98deb"
+            "sha256": "b2343081ddce2e2edd73651b0622e8b4cc6d8583d746a863dbe3343e3a98f71a"
           },
           {
             "path": "src/infrastructure/rulesets/ruleset-service.ts",
@@ -41212,7 +41164,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-rulesets.json",
-      "sourceContractSha256": "73ba1a1a68f6cbc81800514e716c8fe88f5d76c9b6d7d205c8c024a4c5117a9e",
+      "sourceContractSha256": "13927c4eff636feccb6729d45c52bc1d808baea3bee9a5d80aac8f5564b6d946",
       "rpcUsed": [],
       "tablesTouched": [
         "rulesets"
@@ -41431,7 +41383,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "229b35aacdebddf47048b109b5ff221dd8985f2c5f97e2fb362e959567a98deb"
+            "sha256": "b2343081ddce2e2edd73651b0622e8b4cc6d8583d746a863dbe3343e3a98f71a"
           },
           {
             "path": "src/infrastructure/host/host-product-deny.ts",
@@ -41479,7 +41431,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-saga.json",
-      "sourceContractSha256": "4fd5a212020760921a8afc937bacbbab128bd850d54a5f2e559f4867a7c1c401",
+      "sourceContractSha256": "31c694eea15b15293fa1a22f188afcf976ba81e8e1667121e24b8740b912ef05",
       "rpcUsed": [
         "copy_native_saga_definition",
         "create_project_from_saga_version",
@@ -41969,7 +41921,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "229b35aacdebddf47048b109b5ff221dd8985f2c5f97e2fb362e959567a98deb"
+            "sha256": "b2343081ddce2e2edd73651b0622e8b4cc6d8583d746a863dbe3343e3a98f71a"
           },
           {
             "path": "src/infrastructure/host/host-session-http.ts",
@@ -42065,7 +42017,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-session.json",
-      "sourceContractSha256": "febbe3b062de58732366e38687d96530eaea1611d1e7b562f14b2d8a142e0887",
+      "sourceContractSha256": "c626fe3ef686f928b411dbc5d7423e314d50f44fe50031995511d3f1750bd814",
       "rpcUsed": [
         "apply_session_runtime_command",
         "create_play_session",
@@ -43982,7 +43934,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "229b35aacdebddf47048b109b5ff221dd8985f2c5f97e2fb362e959567a98deb"
+            "sha256": "b2343081ddce2e2edd73651b0622e8b4cc6d8583d746a863dbe3343e3a98f71a"
           },
           {
             "path": "src/infrastructure/media/optimizer/engines/audio/index.ts",
@@ -44090,7 +44042,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-user-profile.json",
-      "sourceContractSha256": "c0282af6eca89b813aa10cd1995171fc03bc4203d4002ce65db0fb06d7bdc70d",
+      "sourceContractSha256": "22a2bab848221b1cc8181e95b2c96b32dd76461ab7f669fd4a8a988a0213059a",
       "rpcUsed": [],
       "tablesTouched": [
         "user_profiles"
@@ -44877,7 +44829,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "229b35aacdebddf47048b109b5ff221dd8985f2c5f97e2fb362e959567a98deb"
+            "sha256": "b2343081ddce2e2edd73651b0622e8b4cc6d8583d746a863dbe3343e3a98f71a"
           },
           {
             "path": "src/infrastructure/host/host-world-http.ts",
@@ -44989,7 +44941,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-world.json",
-      "sourceContractSha256": "b2941eab26ce5ca205685e9f42d8a78675d0981a8a90f3606fe17a13c01cb34c",
+      "sourceContractSha256": "afe5fa331b715cb27ad9cd3ddb3e3837e48b433b0a2ce684aa4b5061a2557107",
       "rpcUsed": [
         "archive_world_node_subtree",
         "create_world_node_with_maps",

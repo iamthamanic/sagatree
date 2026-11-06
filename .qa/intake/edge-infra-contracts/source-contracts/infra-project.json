@@ -51,7 +51,7 @@
     },
     {
       "path": "src/infrastructure/host/host-library-http.ts",
-      "sha256": "229b35aacdebddf47048b109b5ff221dd8985f2c5f97e2fb362e959567a98deb"
+      "sha256": "b2343081ddce2e2edd73651b0622e8b4cc6d8583d746a863dbe3343e3a98f71a"
     },
     {
       "path": "src/infrastructure/host/host-product-deny.ts",

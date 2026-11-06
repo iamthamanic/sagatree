@@ -335,6 +335,8 @@ export class CharacterStudioRuntime {
     this.onStateChange({ status: 'loading', message: `Lade ${manifest.displayName} …` });
 
     try {
+      // Host AssetPorts URLs need the Better Auth cookie on cross-origin absolute hosts.
+      this.loader.setWithCredentials(/\/api\/v1\/assets\//.test(safeUrl));
       const gltf = await this.loader.loadAsync(safeUrl);
       const vrm = getVrm(gltf.userData as unknown);
       if (vrm) {

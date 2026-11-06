@@ -1,12 +1,14 @@
 /**
- * character-avatar-export-service — materialize owner-scoped GLB on Character Save (#7).
+ * character-avatar-export-service — materialize owner-scoped GLB on Character Save (#7 / CUT-12).
  * Location: src/infrastructure/character/avatar/character-avatar-export-service.ts
  *
  * Validates/builds domain payload, uploads once, activates exactly one artifact.
  * On failure: does not activate; caller must keep prior model_url + draft.
+ * Host-first: publish via /api/v1/assets (purpose=avatar-model); no Supabase Storage.
  */
 
 import { supabase } from '../../../lib/supabase';
+import { getAuthenticatedUserId } from '../../../lib/authenticatedUser';
 import type { CharacterAvatarDto } from '../../../domains/character/domain/character.entity';
 import {
   AVATAR_SAVE_EXPORT_VERSION,
@@ -19,18 +21,16 @@ import {
   type RuntimeTraitOverlay,
 } from '../../../domains/character/avatar';
 import { resolveBaseBodyModelUrl } from './base-body-catalog';
-import { assertHostProductSurfaceAvailable } from '../../host/host-product-deny';
+import {
+  isHostLibraryEnabled,
+  publishHostAvatarModel,
+} from '../../host/host-library-http';
+import { getHostAuthBaseUrl } from '../../../lib/hostAuthBridge';
 
 const BUCKET = 'character-avatars';
 const SIGNED_URL_SECONDS = 60 * 60 * 24 * 365;
-
-async function getAuthenticatedUserId(): Promise<string> {
-  const { data, error } = await supabase.auth.getUser();
-  if (error || !data.user?.id) {
-    throw new Error('Anmeldung erforderlich, um den Avatar zu exportieren.');
-  }
-  return data.user.id;
-}
+/** Matches server AssetPorts.publish DEFAULT_ASSET_MAX_BYTES (host avatar-model path). */
+const HOST_AVATAR_MODEL_MAX_BYTES = 16 * 1024 * 1024;
 
 export interface AvatarSaveExportProgress {
   status: AvatarSaveExportUiStatus;
@@ -38,10 +38,23 @@ export interface AvatarSaveExportProgress {
   artifact?: AvatarSaveExportArtifact;
 }
 
+function usesHostAssetCredentials(url: string): boolean {
+  if (url.includes('/api/v1/assets/')) return true;
+  const hostBase = getHostAuthBaseUrl();
+  if (!hostBase) return false;
+  try {
+    return new URL(url).origin === new URL(hostBase).origin && url.includes('/api/v1/assets/');
+  } catch {
+    return false;
+  }
+}
+
 async function tryFetchSourceMeshBytes(url: string | undefined): Promise<Uint8Array | undefined> {
   if (!url) return undefined;
   try {
-    const response = await fetch(url);
+    const response = await fetch(url, {
+      credentials: usesHostAssetCredentials(url) ? 'include' : 'omit',
+    });
     if (!response.ok) return undefined;
     const buffer = await response.arrayBuffer();
     return new Uint8Array(buffer);
@@ -63,7 +76,6 @@ export async function materializeAvatarSaveExport(
     onProgress?: (progress: AvatarSaveExportProgress) => void;
   },
 ): Promise<AvatarSaveExportArtifact> {
-  assertHostProductSurfaceAvailable('Avatar-Export');
   const report = (
     status: AvatarSaveExportUiStatus,
     message: string,
@@ -91,8 +103,41 @@ export async function materializeAvatarSaveExport(
   });
 
   report('uploading', 'Avatar-Artefakt wird gespeichert …');
-  const ownerUserId = await getAuthenticatedUserId();
   const artifactId = crypto.randomUUID();
+
+  if (isHostLibraryEnabled()) {
+    if (bytes.byteLength > HOST_AVATAR_MODEL_MAX_BYTES) {
+      report('error', 'Avatar-Export zu groß für den Host-Speicher.');
+      throw new Error(
+        `Avatar-Export zu groß für den Host-Speicher (max. ${HOST_AVATAR_MODEL_MAX_BYTES} Bytes).`,
+      );
+    }
+    const blob = new File([new Uint8Array(bytes)], `avatar-export-${artifactId}.glb`, {
+      type: 'model/gltf-binary',
+    });
+    let published;
+    try {
+      published = await publishHostAvatarModel(blob, { assetId: artifactId });
+    } catch (error) {
+      report('error', 'Avatar-Export fehlgeschlagen. Bitte erneut speichern.');
+      throw new Error(
+        error instanceof Error ? error.message : 'Avatar-Export-Upload fehlgeschlagen',
+      );
+    }
+    report('activating', 'Export wird aktiviert …');
+    const artifact: AvatarSaveExportArtifact = {
+      artifactId,
+      storagePath: published.storagePath,
+      modelUrl: published.url,
+      byteSize: bytes.byteLength,
+      format: 'glb',
+      payload,
+    };
+    report('success', 'Avatar-Export materialisiert.', artifact);
+    return artifact;
+  }
+
+  const ownerUserId = await getAuthenticatedUserId();
   const storagePath = buildAvatarExportStoragePath({ ownerUserId, artifactId });
 
   const blob = new Blob([new Uint8Array(bytes)], { type: 'model/gltf-binary' });

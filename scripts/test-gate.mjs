@@ -1585,6 +1585,19 @@ function checkCut11AvatarArtifacts() {
   console.log('OK: cut-11-avatar-artifacts.self-test');
 }
 
+function checkCut12AvatarTransfer() {
+  console.log('CUT-12 avatar transfer (#1147): host import/export assets...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/cut-12-avatar-transfer.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+  console.log('OK: cut-12-avatar-transfer.self-test');
+}
+
 function checkMig312UserProfileAdapter() {
   console.log('MIG-312 user-profile adapter (#811): user_profiles + user-avatars dual-path...');
   execFileSync(
@@ -3813,6 +3826,7 @@ checkCut08CharacterPresets();
 checkCut09CharacterArcs();
 checkCut10WorldPublicId();
 checkCut11AvatarArtifacts();
+checkCut12AvatarTransfer();
 checkMig312UserProfileAdapter();
 checkMig309Rulesets();
 checkMig313WorldAdapter();

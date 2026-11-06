@@ -77,6 +77,10 @@ const ALLOWED_IMAGE_TYPES = new Set([
   'image/gif',
 ]);
 
+/** Avatar import/export binary (CUT-12) — glTF/VRM container only. */
+const AVATAR_MODEL_CONTENT_TYPE = 'model/gltf-binary';
+const AVATAR_MODEL_PURPOSE = 'avatar-model';
+
 function sniffRasterMime(bytes: Uint8Array): string | null {
   if (
     bytes.length >= 8 &&
@@ -117,6 +121,17 @@ function sniffRasterMime(bytes: Uint8Array): string | null {
   return null;
 }
 
+/** True when bytes look like a glTF Binary (.glb / .vrm) container. */
+function isGlbContainer(bytes: Uint8Array): boolean {
+  return (
+    bytes.length >= 12 &&
+    bytes[0] === 0x67 &&
+    bytes[1] === 0x6c &&
+    bytes[2] === 0x54 &&
+    bytes[3] === 0x46
+  );
+}
+
 function decodeBase64Bytes(value: string): Uint8Array | null {
   try {
     const buf = Buffer.from(value, 'base64');
@@ -130,7 +145,7 @@ function decodeBase64Bytes(value: string): Uint8Array | null {
 async function readPublishBytes(
   c: { req: { header: (name: string) => string | undefined; parseBody: () => Promise<Record<string, unknown>>; json: () => Promise<unknown>; arrayBuffer: () => Promise<ArrayBuffer> } },
 ): Promise<
-  | { ok: true; bytes: Uint8Array; contentType: string }
+  | { ok: true; bytes: Uint8Array; contentType: string; purpose: string | null; assetId: string | null }
   | { ok: false; status: number; error: string }
 > {
   const contentTypeHeader = (c.req.header('content-type') ?? '').toLowerCase();
@@ -155,7 +170,15 @@ async function readPublishBytes(
         : typeof body.contentType === 'string'
           ? body.contentType.trim()
           : 'application/octet-stream';
-    return { ok: true, bytes, contentType: declared };
+    const purpose =
+      typeof body.purpose === 'string' && body.purpose.trim().length > 0
+        ? body.purpose.trim()
+        : null;
+    const assetId =
+      typeof body.assetId === 'string' && body.assetId.trim().length > 0
+        ? body.assetId.trim()
+        : null;
+    return { ok: true, bytes, contentType: declared, purpose, assetId };
   }
 
   if (contentTypeHeader.includes('application/json')) {
@@ -182,7 +205,15 @@ async function readPublishBytes(
       typeof record.contentType === 'string' && record.contentType.trim().length > 0
         ? record.contentType.trim()
         : 'application/octet-stream';
-    return { ok: true, bytes, contentType: declared };
+    const purpose =
+      typeof record.purpose === 'string' && record.purpose.trim().length > 0
+        ? record.purpose.trim()
+        : null;
+    const assetId =
+      typeof record.assetId === 'string' && record.assetId.trim().length > 0
+        ? record.assetId.trim()
+        : null;
+    return { ok: true, bytes, contentType: declared, purpose, assetId };
   }
 
   // Raw body with Content-Type (optional fallback for tests).
@@ -192,7 +223,7 @@ async function readPublishBytes(
     if (bytes.byteLength === 0) return { ok: false, status: 400, error: 'empty-bytes' };
     const declared =
       contentTypeHeader.split(';')[0]?.trim() || 'application/octet-stream';
-    return { ok: true, bytes, contentType: declared };
+    return { ok: true, bytes, contentType: declared, purpose: null, assetId: null };
   } catch {
     return { ok: false, status: 400, error: 'invalid-body' };
   }
@@ -216,21 +247,42 @@ export function mountAssetHttpRoutes(app: Hono, deps: AssetHttpDeps): void {
       return c.json({ error: parsed.error }, parsed.status);
     }
 
-    const sniffed = sniffRasterMime(parsed.bytes);
-    if (!sniffed || !ALLOWED_IMAGE_TYPES.has(sniffed)) {
-      return c.json({ error: 'invalid-content-type' }, 400);
-    }
-    if (
-      parsed.contentType !== 'application/octet-stream' &&
-      ALLOWED_IMAGE_TYPES.has(parsed.contentType) &&
-      parsed.contentType !== sniffed
-    ) {
-      return c.json({ error: 'content-type-mismatch' }, 400);
+    const isAvatarModel = parsed.purpose === AVATAR_MODEL_PURPOSE;
+    let contentType: string;
+    if (isAvatarModel) {
+      // Avatar-model uses the ordinary AssetPorts.publish ceiling (DEFAULT_ASSET_MAX_BYTES).
+      // FE host import/export must advertise the same limit — never silent 16–150 MB trap.
+      if (!isGlbContainer(parsed.bytes)) {
+        return c.json({ error: 'invalid-content-type' }, 400);
+      }
+      const declared = parsed.contentType.toLowerCase();
+      if (
+        declared !== 'application/octet-stream' &&
+        declared !== AVATAR_MODEL_CONTENT_TYPE &&
+        declared !== 'model/vrm'
+      ) {
+        return c.json({ error: 'content-type-mismatch' }, 400);
+      }
+      contentType = AVATAR_MODEL_CONTENT_TYPE;
+    } else {
+      const sniffed = sniffRasterMime(parsed.bytes);
+      if (!sniffed || !ALLOWED_IMAGE_TYPES.has(sniffed)) {
+        return c.json({ error: 'invalid-content-type' }, 400);
+      }
+      if (
+        parsed.contentType !== 'application/octet-stream' &&
+        ALLOWED_IMAGE_TYPES.has(parsed.contentType) &&
+        parsed.contentType !== sniffed
+      ) {
+        return c.json({ error: 'content-type-mismatch' }, 400);
+      }
+      contentType = sniffed;
     }
 
     const published = deps.assets.publish(actorResult.actor, {
       bytes: parsed.bytes,
-      contentType: sniffed,
+      contentType,
+      assetId: parsed.assetId ?? undefined,
     });
     if (!published.ok) {
       const status =
