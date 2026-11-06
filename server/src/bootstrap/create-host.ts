@@ -113,6 +113,11 @@ import {
   type ItemModel3dUseCases,
 } from '../application/item-model3d/index.ts';
 import {
+  createCharacterAvatarMeshyUseCases,
+  type CharacterAvatarMeshyUseCases,
+} from '../application/character-avatar-meshy/index.ts';
+import { createCharacterAvatarMeshyStore } from '../modules/character/character-avatar-meshy.ts';
+import {
   analyzeLookReferencesWithVision,
   createLookReferenceMediaStore,
   createLookReferenceRateLimitStore,
@@ -463,7 +468,10 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
       });
 
     const meshyMockMode =
-      env.ITEM_THUMBNAIL_MESHY_MOCK === '1' || env.ITEM_MODEL3D_MESHY_MOCK === '1';
+      env.ITEM_THUMBNAIL_MESHY_MOCK === '1' ||
+      env.ITEM_MODEL3D_MESHY_MOCK === '1' ||
+      env.CHARACTER_AVATAR_MESHY_MOCK === '1' ||
+      env.MESHY_AVATAR_USE_MOCK === '1';
     const meshyEnvConfigured = Boolean(env.MESHY_API_KEY?.trim());
     const meshyConfigured = meshyMockMode || meshyEnvConfigured;
     let itemThumbnailAssetBase = 'http://127.0.0.1/assets';
@@ -485,6 +493,13 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
     const itemModel3dStore: ItemModel3dStore = createItemModel3dStore(meshyMockMode);
     let itemModel3d: ItemModel3dUseCases = createItemModel3dUseCases({
       store: itemModel3dStore,
+      meshyMockMode,
+      meshyEnvConfigured,
+    });
+    // Avatar Meshy store meshyConfigured tracks mock; BYOK resolved in use-cases.
+    const characterAvatarMeshyStore = createCharacterAvatarMeshyStore(meshyMockMode);
+    let characterAvatarMeshy: CharacterAvatarMeshyUseCases = createCharacterAvatarMeshyUseCases({
+      store: characterAvatarMeshyStore,
       meshyMockMode,
       meshyEnvConfigured,
     });
@@ -723,24 +738,27 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
       assets,
       publicOrigin: `http://127.0.0.1:${config.port}`,
     });
+    const resolveUserMeshyConfigured = async (
+      actor: import('../modules/identity/index.ts').Actor,
+    ) => {
+      try {
+        // Meshy catalog modalities include image + 3d; null modality returns full catalog.
+        const listed = await ai.listCredentials(actor);
+        if (!listed.ok || !listed.value?.providers) return false;
+        return listed.value.providers.some(
+          (p) => p.providerId === 'meshy' && p.configured === true,
+        );
+      } catch {
+        return false;
+      }
+    };
     itemModel3d = createItemModel3dUseCases({
       store: itemModel3dStore,
       assets,
       publicOrigin: `http://127.0.0.1:${config.port}`,
       meshyMockMode,
       meshyEnvConfigured,
-      resolveUserMeshyConfigured: async (actor) => {
-        try {
-          // Meshy catalog modalities include image + 3d; null modality returns full catalog.
-          const listed = await ai.listCredentials(actor);
-          if (!listed.ok || !listed.value?.providers) return false;
-          return listed.value.providers.some(
-            (p) => p.providerId === 'meshy' && p.configured === true,
-          );
-        } catch {
-          return false;
-        }
-      },
+      resolveUserMeshyConfigured,
       persistModel3dKey: (actorIds, definitionId, model3d) => {
         if (!inventory?.getDefinition || !inventory?.updateDefinition) return;
         const loaded = inventory.getDefinition(actorIds, definitionId);
@@ -757,6 +775,14 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
           payload: nextPayload,
         });
       },
+    });
+    characterAvatarMeshy = createCharacterAvatarMeshyUseCases({
+      store: characterAvatarMeshyStore,
+      assets,
+      publicOrigin: `http://127.0.0.1:${config.port}`,
+      meshyMockMode,
+      meshyEnvConfigured,
+      resolveUserMeshyConfigured,
     });
 
     const ensureItemThumbnailDefinition = (
@@ -904,6 +930,7 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
       aiOllama,
       characterLore,
       lookReferenceAnalysis,
+      characterAvatarMeshy,
       sessionRecapGenerate,
       itemThumbnail,
       ensureItemThumbnailDefinition,

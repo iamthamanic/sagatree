@@ -6,8 +6,15 @@
  * quota/idempotency/claim fixtures. No public activation / cutover in this slice.
  */
 
-/** Explicit: no automatic host/public cutover (successor + MIG-600 still required). */
-export const CHARACTER_AVATAR_MESHY_PUBLIC_ACTIVATION_AUTHORIZED = false as const;
+/** CUT-18 / #1153 — host HTTP activation authorized; Edge remains until CUT-20. */
+export const CHARACTER_AVATAR_MESHY_PUBLIC_ACTIVATION_AUTHORIZED = true as const;
+
+/** Minimal valid-enough GLB header for mock materialize (AssetPorts publish). */
+export const CHARACTER_AVATAR_MESHY_FIXTURE_GLB = new Uint8Array([
+  0x67, 0x6c, 0x54, 0x46, 0, 0, 0, 0, 0, 0, 0, 0,
+]);
+
+export const CHARACTER_AVATAR_MESHY_MIME = 'model/gltf-binary' as const;
 
 export const MESHY_AVATAR_PROMPT_MIN = 8 as const;
 export const MESHY_AVATAR_PROMPT_MAX = 500 as const;
@@ -332,7 +339,6 @@ export function startAvatarMeshyJob(
   store: CharacterAvatarMeshyStore,
   input: StartAvatarMeshyInput,
 ): MeshyAvatarPortsResult<MeshyAvatarJob> {
-  void CHARACTER_AVATAR_MESHY_PUBLIC_ACTIVATION_AUTHORIZED;
   const nonce = validateAvatarMeshyNonce(input.clientNonce);
   if (!nonce.ok) return nonce;
   const provider = validateAvatarMeshyProvider(input.providerId);

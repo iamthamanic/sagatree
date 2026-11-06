@@ -1,9 +1,11 @@
 /**
  * character-avatar-meshy-service — client facade for avatar 3D generation (Meshy adapter today).
- * Invokes Edge Function only; never embeds provider secrets.
+ * CUT-18: host-first via POST `/api/v1/ai/character-avatar-meshy` when host library is on.
+ * Legacy Edge remains until dual-path removal (CUT-20). Never embeds provider secrets.
  * Location: src/infrastructure/character/avatar/character-avatar-meshy-service.ts
  */
 
+import { getHostAuthBaseUrl } from '../../../lib/hostAuthBridge';
 import { rewriteBrowserStorageUrl, supabase } from '../../../lib/supabase';
 import { isHostLibraryEnabled } from '../../host/host-library-http';
 import {
@@ -87,14 +89,34 @@ function mapJob(raw: Record<string, unknown>, modelUrl?: string): MeshyAvatarJob
   };
 }
 
+async function invokeHost(body: Record<string, unknown>): Promise<FunctionResponse> {
+  const base = getHostAuthBaseUrl()?.replace(/\/$/, '') ?? '';
+  if (!base) {
+    return { status: 'error', message: 'Avatar-3D-Dienst nicht erreichbar.' };
+  }
+  let response: Response;
+  try {
+    response = await fetch(`${base}/api/v1/ai/character-avatar-meshy`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: { Accept: 'application/json', 'content-type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+  } catch {
+    return { status: 'error', message: 'Avatar-3D-Dienst nicht erreichbar.' };
+  }
+  let data: unknown;
+  try {
+    data = await response.json();
+  } catch {
+    return { status: 'error', message: 'Avatar-3D-Dienst nicht erreichbar.' };
+  }
+  return parseResponse(data);
+}
+
 async function invoke(body: Record<string, unknown>): Promise<FunctionResponse> {
-  // FE-HOST-14: optional Meshy remains Edge-legacy; host-first returns soft unavailable
-  // (config/generate callers already tolerate status=error / meshyConfigured=false).
   if (isHostLibraryEnabled()) {
-    return {
-      status: 'error',
-      message: 'Avatar-3D-Generierung ist im Host-Modus ohne Meshy-Edge nicht verfügbar.',
-    };
+    return invokeHost(body);
   }
   const { data, error } = await supabase.functions.invoke('character-avatar-meshy', { body });
   if (error) {

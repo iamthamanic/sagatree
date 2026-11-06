@@ -26,7 +26,7 @@ German UX, or throw unavailable — never hang on PostgREST/Edge.
 | Session media token Edge | `media-token-client.ts` | Info | Soft `degraded: true`; live media optional |
 | Character lore AI Edge | `character-lore-service.ts` | Info | Soft German unavailable; optional AI |
 | Session recap AI generate | `session-recap-ai-service.ts` `generateDraft` | Info | Soft German unavailable; manual save is host |
-| Avatar Meshy Edge | `character-avatar-meshy-service.ts` | Info | Soft error / `meshyConfigured:false`; portrait publish is host |
+| Avatar Meshy Edge | `character-avatar-meshy-service.ts` | Info | DONE (CUT-18) — host `/api/v1/ai/character-avatar-meshy` + AssetPorts; dual-path Edge until CUT-20 |
 | Avatar import/export/artifacts storage | `character-avatar-*-service.ts` | Info | Optional artifacts; portrait publish host (FE-HOST-06) |
 | Historical `supabase/migrations` SQL | `supabase/migrations/**` | Info | Archive; not product runtime |
 | Edge Functions tree | `supabase/functions/**` | Info | Archive / optional stack; dispatcher allowlists unchanged |
