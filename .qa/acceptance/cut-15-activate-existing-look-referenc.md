@@ -42,6 +42,7 @@ Existing Look Adaption and image reference selection unchanged.
 - Mounted `createLookReferenceAnalysisHttpUseCases` at `POST /api/v1/ai/look-reference-analysis`.
 - Vision provider: `LOOK_AI_*` with `CHARACTER_AI_*` fallback (Edge parity).
 - Soft-DENY removed when `isHostLibraryEnabled()`; Edge retained until CUT-20.
+- Owner-scoped `dataDir/media/{ownerId}/…` loader for `storagePath` (Codex P2).
 - LookProfile HTTP mount remains deferred (MIG-600); no auto-persist of LookDraft.
 
 ## Composition Gate

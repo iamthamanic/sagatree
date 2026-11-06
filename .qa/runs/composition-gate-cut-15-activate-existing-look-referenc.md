@@ -1,6 +1,6 @@
 # Composition Gate — cut-15-activate-existing-look-referenc (#1150)
 
-- HEAD_SHA: dcad10794e8d47a41859c6c12159f7dd01f34b8f
+- HEAD_SHA: 28ea1ec4827573289c5530ded9bc3b6ab150f8cd
 - BASE_SHA: 2ebbf51640f83ecc98e7de271e7ef60600e61817
 - Date: 2026-11-06
 - Verdict: CLEAR
@@ -12,7 +12,7 @@
 Under host-first, Look Adaption calls `analyzeLookReferences` which POSTs to
 `/api/v1/ai/look-reference-analysis`. Actor is resolved from Better Auth; use-case
 enforces rate/size/MIME/owner-scoped storagePath, strips top-level secrets, invokes
-vision provider (`LOOK_AI_*` → `CHARACTER_AI_*`). Soft-DENY removed. Without provider:
+vision provider (`LOOK_AI_*` → `CHARACTER_AI_*`). Soft-DENY removed. Owner-scoped `dataDir/media` loader for storagePath. Without provider:
 `not-configured`. No LookProfile persist (draft normalize client-side only).
 
 ## Hop chain
