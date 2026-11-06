@@ -1,6 +1,6 @@
 # Composition Gate — cut-15-activate-existing-look-referenc (#1150)
 
-- HEAD_SHA: 42c53cbc81ff2e710ba8b20ea3094b30434678d5
+- HEAD_SHA: dcad10794e8d47a41859c6c12159f7dd01f34b8f
 - BASE_SHA: 2ebbf51640f83ecc98e7de271e7ef60600e61817
 - Date: 2026-11-06
 - Verdict: CLEAR
@@ -46,3 +46,6 @@ vision provider (`LOOK_AI_*` → `CHARACTER_AI_*`). Soft-DENY removed. Without p
 
 Service + HTTP + provider hops changed; covered by cut-15-look-reference.self-test with
 injected deterministic vision adapter. Tip docs/qa pins are proofOnly after feature HEAD.
+
+## Tip
+Subsequent tip commits after feature HEAD are proofOnly (docs/qa pin + MIG retarget).
