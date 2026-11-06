@@ -14,3 +14,6 @@ Unchanged CharacterBackgroundComposer affordance, spinner, and German errors. No
 
 ## Non-goals respected
 No new providers, no AI-GM, no UI redesign, no Edge removal (CUT-20).
+
+## Composition Gate
+CLEAR — see `.qa/runs/composition-gate-cut-13-activate-existing-character-lor.md` (HEAD `dbab93bb3a75d6396ef83f6c5dbefed732cfdd7b`).

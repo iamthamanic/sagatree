@@ -5,7 +5,7 @@
   "result": "PASS",
   "githubClosed": true,
   "mergeRef": "PR #860 \u2192 main (after #782)",
-  "note": "Inventories refreshed after CUT-13 character-lore host activation (pre-commit tip; retarget after ship).",
+  "note": "Inventories refreshed after CUT-13 character-lore host activation.",
   "checks": [
     {
       "command": "legacy inventory matrix",
@@ -26,5 +26,5 @@
       "sha256": "110329e8ac36968eb1ca4c8a59fe630404ea08ed7a23a74bffed3fb832944792"
     }
   ],
-  "testedCommit": "8cf4e4d81abaf441e4b1db64d7fa96aae05a63a5"
+  "testedCommit": "dbab93bb3a75d6396ef83f6c5dbefed732cfdd7b"
 }
