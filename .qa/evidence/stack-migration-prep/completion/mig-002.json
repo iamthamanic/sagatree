@@ -4,7 +4,7 @@
   "localId": "MIG-002",
   "result": "PASS",
   "githubClosed": true,
-  "mergeRef": "PR #860 → main (after #782)",
+  "mergeRef": "PR #860 \u2192 main (after #782)",
   "note": "Inventories refreshed after CUT-14 session-recap generate activation.",
   "checks": [
     {
@@ -26,5 +26,5 @@
       "sha256": "9308d3babb20f5ed18e18afbd9c635a39da27543c2659452a2bc92ea2ecadc4b"
     }
   ],
-  "testedCommit": "067e781878677efef21f9ac460125f08d666c0bb"
+  "testedCommit": "79f9f63de5b56d043c51b184bb2144120025ee42"
 }
