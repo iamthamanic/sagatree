@@ -35,6 +35,7 @@ Manual GET/PUT recap unchanged.
 | Approved lock | Re-generate after approve | 409 | pass |
 | Dual-path | Flag off → Edge session-recap | Exclusive | pass |
 | Quota | SESSION_RECAP / CHARACTER rate | SQLite durable 429 | pass |
+| Two consumers / crash | Concurrent generate shares durable SQLite quota | Same rate-limit table | pass |
 
 ## Flags
 
