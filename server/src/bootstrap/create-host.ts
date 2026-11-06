@@ -101,6 +101,12 @@ import {
   type SessionRecapGenerateUseCases,
 } from '../application/session-recap/index.ts';
 import {
+  createSessionMediaTokenUseCases,
+  hydrateSessionMediaTokenFromDb,
+  type SessionMediaTokenUseCases,
+} from '../application/session-media-token/index.ts';
+import { createSessionMediaTokenStore } from '../modules/session/session-media-token.ts';
+import {
   createLookReferenceAnalysisHttpUseCases,
   type LookReferenceAnalysisUseCases,
 } from '../application/look-reference-analysis/index.ts';
@@ -530,6 +536,27 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
           ? (row) => persistSessionRecapGenerateDraft(db, row)
           : undefined, // returns ok/approved-locked for race safety
       });
+
+    // CUT-19 — LiveKit media token. Host SQLite replaces Supabase config flags.
+    const livekitApiKey = (env.LIVEKIT_API_KEY ?? '').trim();
+    const livekitApiSecret = (env.LIVEKIT_API_SECRET ?? '').trim();
+    const livekitUrl = (env.LIVEKIT_URL ?? '').trim();
+    const livekitConfig =
+      livekitApiKey && livekitApiSecret && livekitUrl
+        ? { apiKey: livekitApiKey, apiSecret: livekitApiSecret, url: livekitUrl }
+        : null;
+    const sessionMediaTokenStore = createSessionMediaTokenStore({
+      livekit: livekitConfig,
+      supabaseConfigured: Boolean(db),
+      membershipLookupConfigured: Boolean(db),
+    });
+    const sessionMediaToken: SessionMediaTokenUseCases =
+      createSessionMediaTokenUseCases({
+        store: sessionMediaTokenStore,
+        hydrateSession: db
+          ? (sessionId) => hydrateSessionMediaTokenFromDb(db, sessionId)
+          : undefined,
+      });
     const rulesets: RulesetPorts = db
       ? createRulesetPorts({ db, authorize: permissions.authorize })
       : createRulesetPortsStub();
@@ -938,6 +965,7 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
       lookReferenceAnalysis,
       characterAvatarMeshy,
       sessionRecapGenerate,
+      sessionMediaToken,
       itemThumbnail,
       ensureItemThumbnailDefinition,
       itemModel3d,

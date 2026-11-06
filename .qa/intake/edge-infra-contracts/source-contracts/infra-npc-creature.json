@@ -179,7 +179,7 @@
     },
     {
       "path": "src/infrastructure/host/host-session-http.ts",
-      "sha256": "bc35b154cf69a205bfbabb150cf15b07283136473726daaeb331de0de19ceb0c"
+      "sha256": "763c2535c26f746b60ff3f68358fb7c37c20384bd9f4a9a5a7d9bf2710e0ab81"
     },
     {
       "path": "src/lib/authenticatedUser.ts",
@@ -1261,10 +1261,18 @@
     },
     {
       "kind": "TypeAliasDeclaration",
+      "name": "HostSessionMediaTokenResult",
+      "path": "src/infrastructure/host/host-session-http.ts",
+      "line": 434,
+      "endLine": 452,
+      "text": "export type HostSessionMediaTokenResult =\n  | {\n      readonly ok: true;\n      readonly token: string;\n      readonly url: string;\n      readonly roomId: string;\n      readonly expiresAt: string;\n      readonly ttlSeconds: number;\n    }\n  | {\n      readonly ok: false;\n      readonly degraded: true;\n      readonly reason:\n        | 'media_service_unavailable'\n        | 'forbidden'\n        | 'unauthorized'\n        | 'bad_request';\n      readonly message: string;\n    };"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
       "name": "HostPromoteOutcomeDto",
       "path": "src/infrastructure/host/host-session-http.ts",
-      "line": 492,
-      "endLine": 498,
+      "line": 601,
+      "endLine": 607,
       "text": "export type HostPromoteOutcomeDto = {\n  readonly ok?: boolean;\n  readonly idempotent?: boolean;\n  readonly targetKind?: string;\n  readonly targetRef?: string;\n  readonly messageDe?: string;\n};"
     },
     {

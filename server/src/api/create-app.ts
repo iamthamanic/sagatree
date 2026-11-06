@@ -73,6 +73,8 @@ export type HostApiDeps = {
   readonly characterAvatarMeshy?: import('../application/character-avatar-meshy/index.ts').CharacterAvatarMeshyUseCases;
   /** CUT-14 session-recap AI generate (optional until wired). */
   readonly sessionRecapGenerate?: import('../application/session-recap/index.ts').SessionRecapGenerateUseCases;
+  /** CUT-19 LiveKit session media token (optional until wired). */
+  readonly sessionMediaToken?: import('../application/session-media-token/index.ts').SessionMediaTokenUseCases;
   /** CUT-16 item thumbnail (optional until wired). */
   readonly itemThumbnail?: import('../application/item-thumbnail/index.ts').ItemThumbnailUseCases;
   readonly ensureItemThumbnailDefinition?: (
@@ -503,6 +505,7 @@ export function createHostApi(deps: HostApiDeps): Hono {
     npcCreature: deps.npcCreature,
     sagaInfra: deps.sagaInfra,
     sessionRecapGenerate: deps.sessionRecapGenerate,
+    sessionMediaToken: deps.sessionMediaToken,
   });
 
   mountWorldAtlasHttpRoutes(app, {

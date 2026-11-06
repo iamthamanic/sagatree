@@ -2,10 +2,14 @@
  * Session media token client — short-lived membership-derived tokens (#363).
  * Location: src/infrastructure/session/media/media-token-client.ts
  *
- * FE-HOST-09: under host library, returns degraded German unavailable (no Edge hang).
+ * CUT-19: host-first via POST `/api/v1/sessions/:id/media-token` when host library is on.
+ * Legacy Edge `session-media-token` remains until dual-path removal (CUT-20).
  */
 import { supabase } from '../../../lib/supabase';
-import { isHostLibraryEnabled } from '../../host/host-library-http';
+import {
+  fetchHostSessionMediaToken,
+  isHostLibraryEnabled,
+} from '../../host/host-session-http';
 
 export type MediaTokenSuccess = {
   readonly ok: true;
@@ -39,12 +43,7 @@ export async function fetchSessionMediaToken(input: {
   }
 
   if (isHostLibraryEnabled()) {
-    return {
-      ok: false,
-      degraded: true,
-      reason: 'media_service_unavailable',
-      message: 'Media-Token ist im Host-Modus noch nicht verfügbar.',
-    };
+    return fetchHostSessionMediaToken(sessionId);
   }
 
   try {

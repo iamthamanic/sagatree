@@ -154,7 +154,7 @@ CORS_OPTS: CorsOptions = {
 
 ## All adapter call sites
 
-### src/infrastructure/session/media/media-token-client.ts:51
+### src/infrastructure/session/media/media-token-client.ts:50
 
 
 ```ts
@@ -172,12 +172,7 @@ export async function fetchSessionMediaToken(input: {
   }
 
   if (isHostLibraryEnabled()) {
-    return {
-      ok: false,
-      degraded: true,
-      reason: 'media_service_unavailable',
-      message: 'Media-Token ist im Host-Modus noch nicht verfügbar.',
-    };
+    return fetchHostSessionMediaToken(sessionId);
   }
 
   try {
@@ -569,7 +564,7 @@ MAX_TTL_SECONDS = 300
 
 | Path | SHA-256 |
 |---|---|
-| `src/infrastructure/session/media/media-token-client.ts` | `ca49601bad72d7534020f2a0ffbeb3a0074b937e24062648a3a5918c4cf64fe8` |
+| `src/infrastructure/session/media/media-token-client.ts` | `870b4220178bcd0f10ef961a6f6f0bbf307c8c31370b9360507f3a23d28fa84a` |
 | `supabase/functions/_shared/client-trust-body.ts` | `33c68553dbd89d9c7899520b0ebfa35c4f245ed8ab8ebd242c6f79e9852add95` |
 | `supabase/functions/_shared/cors.ts` | `f8286c91d79fa5fc5cfea2fa47081916523fa7a440f234aecd9a47c6a8cf5b38` |
 | `supabase/functions/_shared/edge-dispatcher-allowlist.ts` | `6d1ae7bde0ba9e41fcaa7b61247732168a62699e7811fb8574cef266cfad3a27` |
