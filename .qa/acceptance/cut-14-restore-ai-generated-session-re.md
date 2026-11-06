@@ -16,4 +16,4 @@ Unchanged Session Recap `generateDraft` affordance and manual save/approval. No 
 No new providers, no AI-GM, no UI redesign, no Edge removal (CUT-20).
 
 ## Composition Gate
-CLEAR — see `.qa/runs/composition-gate-cut-14-restore-ai-generated-session-re.md` (HEAD `067e781878677efef21f9ac460125f08d666c0bb`).
+CLEAR — see `.qa/runs/composition-gate-cut-14-restore-ai-generated-session-re.md` (proof HEAD `16aee66cc0912f152c4479ae06a7cf89b922e0a1`, proofOnly tip).
