@@ -1,6 +1,6 @@
 # Composition Gate — cut-16-activate-existing-item-thumbnai (#1151)
 
-- HEAD_SHA: e9edd7c4e7eab280f2e7e4165ebb9be24c192771
+- HEAD_SHA: 154c88c03fce594777aab8f36bb5d7b790337aa2
 - BASE_SHA: 156dee3da136a9f1f730b77e1163403f06e0a6a3
 - Date: 2026-11-06
 - Verdict: CLEAR
@@ -42,3 +42,5 @@ via `createItemThumbnailUseCases`. Soft-DENY removed. Without Meshy: generate `n
 ## Verdict rationale
 
 Service + HTTP hops covered by cut-16-item-thumbnail.self-test (includes durable asset GET). Tip docs/qa pins are proofOnly.
+
+FE Soft-DENY residual gate updated in fe-host-09; tip docs/qa pins are proofOnly after this feature HEAD.
