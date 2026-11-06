@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-inventory.json](source-contracts/infra-inventory.json) (SHA-256 `53a83415afa4b23c57bcfb925871490109c492e19bb47cfc580b139e28093309`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-inventory.json](source-contracts/infra-inventory.json) (SHA-256 `69cb372f4afec8b8415a2b46ee47e2974777e8c9b5809615a9ebec475e4b9a7f`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -24,7 +24,7 @@ Storage buckets (0): none.
 
 Edge invokes (2): `item-model3d`, `item-thumbnail`.
 
-Realtime call sites: 0. Direct fetch sites: 0. Explicit auth/helper sites: 8.
+Realtime call sites: 0. Direct fetch sites: 1. Explicit auth/helper sites: 8.
 
 ## Complete implementation dependencies
 
@@ -143,16 +143,31 @@ supabase.functions.invoke('item-model3d', { body })
 ```
 
 Enclosing operation: `src/infrastructure/inventory/item-model3d-service.ts:88`; complete request/default/result/error logic is in the declarations below and the snapshot.
+### fetch: requestUrl
+
+`src/infrastructure/inventory/item-thumbnail-service.ts:158` — dynamic-expression.
+
+Exact call/query chain:
+```ts
+fetch(requestUrl, {
+      method: 'POST',
+      credentials: 'include',
+      headers: { Accept: 'application/json', 'content-type': 'application/json' },
+      body: JSON.stringify(body),
+    })
+```
+
+Enclosing operation: `src/infrastructure/inventory/item-thumbnail-service.ts:149`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### edge: item-thumbnail
 
-`src/infrastructure/inventory/item-thumbnail-service.ts:150` — literal-or-constant.
+`src/infrastructure/inventory/item-thumbnail-service.ts:180` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
 supabase.functions.invoke('item-thumbnail', { body })
 ```
 
-Enclosing operation: `src/infrastructure/inventory/item-thumbnail-service.ts:145`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/inventory/item-thumbnail-service.ts:176`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: characters
 
 `src/infrastructure/inventory/supabase-item-catalog.repository.ts:63` — literal-or-constant.
@@ -1031,7 +1046,7 @@ export async function validateModel3dFileClient(file: File): Promise<ItemModel3d
 export const itemModel3dService = new ItemModel3dService();
 ```
 
-### src/infrastructure/inventory/item-thumbnail-service.ts:15
+### src/infrastructure/inventory/item-thumbnail-service.ts:19
 
 ```ts
 export type PrepareItemThumbnailOptions = {
@@ -1040,7 +1055,7 @@ export type PrepareItemThumbnailOptions = {
 };
 ```
 
-### src/infrastructure/inventory/item-thumbnail-service.ts:24
+### src/infrastructure/inventory/item-thumbnail-service.ts:28
 
 ```ts
 export async function prepareItemThumbnailFile(
@@ -1097,7 +1112,7 @@ export async function prepareItemThumbnailFile(
 }
 ```
 
-### src/infrastructure/inventory/item-thumbnail-service.ts:77
+### src/infrastructure/inventory/item-thumbnail-service.ts:81
 
 ```ts
 export type ItemThumbnailJobUiStatus =
@@ -1109,7 +1124,7 @@ export type ItemThumbnailJobUiStatus =
   | 'canceled';
 ```
 
-### src/infrastructure/inventory/item-thumbnail-service.ts:85
+### src/infrastructure/inventory/item-thumbnail-service.ts:89
 
 ```ts
 export interface ItemThumbnailConfig {
@@ -1119,7 +1134,7 @@ export interface ItemThumbnailConfig {
 }
 ```
 
-### src/infrastructure/inventory/item-thumbnail-service.ts:91
+### src/infrastructure/inventory/item-thumbnail-service.ts:95
 
 ```ts
 export interface ItemThumbnailUploadResult {
@@ -1130,7 +1145,7 @@ export interface ItemThumbnailUploadResult {
 }
 ```
 
-### src/infrastructure/inventory/item-thumbnail-service.ts:98
+### src/infrastructure/inventory/item-thumbnail-service.ts:102
 
 ```ts
 export interface ItemThumbnailJobSnapshot {
@@ -1143,7 +1158,7 @@ export interface ItemThumbnailJobSnapshot {
 }
 ```
 
-### src/infrastructure/inventory/item-thumbnail-service.ts:175
+### src/infrastructure/inventory/item-thumbnail-service.ts:205
 
 ```ts
 export function validateThumbnailFileClient(file: File): ItemThumbnailMime {
@@ -1157,7 +1172,7 @@ export function validateThumbnailFileClient(file: File): ItemThumbnailMime {
 }
 ```
 
-### src/infrastructure/inventory/item-thumbnail-service.ts:322
+### src/infrastructure/inventory/item-thumbnail-service.ts:352
 
 ```ts
 export const itemThumbnailService = new ItemThumbnailService();
@@ -1681,13 +1696,43 @@ async function invoke(body: Record<string, unknown>): Promise<FunctionResponse> 
 }
 ```
 
-### src/infrastructure/inventory/item-thumbnail-service.ts:145
+### src/infrastructure/inventory/item-thumbnail-service.ts:149
+
+```ts
+async function invokeHost(body: Record<string, unknown>): Promise<FunctionResponse> {
+  const base = getHostAuthBaseUrl();
+  if (base === null) {
+    return { status: 'error', message: 'Thumbnail-Dienst nicht erreichbar.' };
+  }
+  const requestUrl =
+    base === '' ? '/api/v1/items/thumbnail' : `${base}/api/v1/items/thumbnail`;
+  let response: Response;
+  try {
+    response = await fetch(requestUrl, {
+      method: 'POST',
+      credentials: 'include',
+      headers: { Accept: 'application/json', 'content-type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+  } catch {
+    return { status: 'error', message: 'Thumbnail-Dienst nicht erreichbar.' };
+  }
+  let data: unknown;
+  try {
+    data = await response.json();
+  } catch {
+    return { status: 'error', message: 'Thumbnail-Dienst nicht erreichbar.' };
+  }
+  return parseResponse(data);
+}
+```
+
+### src/infrastructure/inventory/item-thumbnail-service.ts:176
 
 ```ts
 async function invoke(body: Record<string, unknown>): Promise<FunctionResponse> {
-  const { isHostLibraryEnabled } = await import('../host/host-library-http');
   if (isHostLibraryEnabled()) {
-    throw new Error('Item-Thumbnails sind im Host-Modus noch nicht verfügbar.');
+    return invokeHost(body);
   }
   const { data, error } = await supabase.functions.invoke('item-thumbnail', { body });
   if (error) {
@@ -1760,7 +1805,7 @@ async function invoke(body: Record<string, unknown>): Promise<FunctionResponse> 
 | `src/infrastructure/inventory/item-catalog-service.ts` | `a2164f40d92e9446d8a53ea589841d8d669fc34de045f9f94be92e2bcca4ebff` |
 | `src/infrastructure/inventory/item-catalog.persistence.ts` | `a68903ba909af8030e81d28555a65798800c9a32a790a4281e96f52b1550c566` |
 | `src/infrastructure/inventory/item-model3d-service.ts` | `cbf9eb726d58bd20ae3c43c6364771c6ebd8ef21bbcc4575197f6fe67d311035` |
-| `src/infrastructure/inventory/item-thumbnail-service.ts` | `a17aecc412f3766d52e2a54c8ffa4ffc0e55cd64363a77a9a0f0dd7d5e07622a` |
+| `src/infrastructure/inventory/item-thumbnail-service.ts` | `192943a7e10c7da296d33e1bf2c023f244136ed84fcb55f4c7d3a0caa0993f0c` |
 | `src/infrastructure/inventory/supabase-item-catalog.repository.ts` | `1ea1b14afc3d01c117c13e96af516a8cc0a315edfb170a6f1f11c6903ab366eb` |
 | `src/infrastructure/media/optimizer/engines/audio/index.ts` | `7585190a705085692bff0896e08b4d78f791895b47e24d57deeaaa10bb669d4e` |
 | `src/infrastructure/media/optimizer/engines/image/image.worker.ts` | `d34793b4de682556d9306194cfbcd05fdafdf215da25393f955d2669c7499276` |

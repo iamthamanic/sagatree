@@ -1,12 +1,12 @@
 /**
- * Host characterization of Edge `item-thumbnail` (MIG-410 / #826).
+ * Host characterization of Edge `item-thumbnail` (MIG-410 / #826 → CUT-16 / #1151).
  * Location: server/src/modules/inventory/internal/item-thumbnail.ts
  *
- * Allowlisted Edge worker remains live. Isolated authz/quota/image/action fixtures.
- * No public activation / cutover.
+ * Allowlisted Edge worker remains live until dual-path removal.
+ * Public activation authorized (CUT-16).
  */
 
-export const ITEM_THUMBNAIL_PUBLIC_ACTIVATION_AUTHORIZED = false as const;
+export const ITEM_THUMBNAIL_PUBLIC_ACTIVATION_AUTHORIZED = true as const;
 export const ITEM_THUMBNAIL_MAX_BYTES = 10 * 1024 * 1024;
 export const ITEM_THUMBNAIL_HEADER_MAX_BYTES = 14 * 1024 * 1024;
 export const ITEM_THUMBNAIL_ALLOWED_MIME = ['image/png', 'image/jpeg', 'image/webp'] as const;

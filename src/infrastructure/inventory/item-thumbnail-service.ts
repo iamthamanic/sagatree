@@ -1,8 +1,11 @@
 /**
- * item-thumbnail-service — client facade for Workbench thumbnail upload/generate (#140/#643).
- * Invokes Edge Function only; never embeds Meshy secrets.
+ * item-thumbnail-service — client facade for Workbench thumbnail upload/generate (#140/#643 / CUT-16).
  * Location: src/infrastructure/inventory/item-thumbnail-service.ts
+ *
+ * CUT-16: host-first via POST `/api/v1/items/thumbnail` when host library is on.
+ * Legacy Edge `item-thumbnail` remains until dual-path removal (CUT-20).
  */
+import { getHostAuthBaseUrl } from '../../lib/hostAuthBridge';
 import { rewriteBrowserStorageUrl, supabase } from '../../lib/supabase';
 import {
   ITEM_THUMBNAIL_ALLOWED_MIME,
@@ -11,6 +14,7 @@ import {
   parseItemThumbnailAssetKey,
   type ItemThumbnailMime,
 } from '../../domains/items';
+import { isHostLibraryEnabled } from '../host/host-library-http';
 
 export type PrepareItemThumbnailOptions = {
   readonly alreadyOptimized?: boolean;
@@ -142,10 +146,36 @@ async function getFunctionErrorMessage(error: unknown): Promise<string | undefin
   }
 }
 
+async function invokeHost(body: Record<string, unknown>): Promise<FunctionResponse> {
+  const base = getHostAuthBaseUrl();
+  if (base === null) {
+    return { status: 'error', message: 'Thumbnail-Dienst nicht erreichbar.' };
+  }
+  const requestUrl =
+    base === '' ? '/api/v1/items/thumbnail' : `${base}/api/v1/items/thumbnail`;
+  let response: Response;
+  try {
+    response = await fetch(requestUrl, {
+      method: 'POST',
+      credentials: 'include',
+      headers: { Accept: 'application/json', 'content-type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+  } catch {
+    return { status: 'error', message: 'Thumbnail-Dienst nicht erreichbar.' };
+  }
+  let data: unknown;
+  try {
+    data = await response.json();
+  } catch {
+    return { status: 'error', message: 'Thumbnail-Dienst nicht erreichbar.' };
+  }
+  return parseResponse(data);
+}
+
 async function invoke(body: Record<string, unknown>): Promise<FunctionResponse> {
-  const { isHostLibraryEnabled } = await import('../host/host-library-http');
   if (isHostLibraryEnabled()) {
-    throw new Error('Item-Thumbnails sind im Host-Modus noch nicht verfügbar.');
+    return invokeHost(body);
   }
   const { data, error } = await supabase.functions.invoke('item-thumbnail', { body });
   if (error) {
