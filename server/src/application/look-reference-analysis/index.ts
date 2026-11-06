@@ -1,11 +1,13 @@
 /**
- * look-reference-analysis use-case (MIG-412 / #828) — isolated-contract.
+ * look-reference-analysis use-case (MIG-412 / #828 → CUT-15 / #1150).
  * Location: server/src/application/look-reference-analysis/index.ts
  *
- * HTTP mount deferred (MIG-600). publicActivationAuthorized=false.
+ * Host HTTP: POST `/api/v1/ai/look-reference-analysis`.
  * Legacy: Content-Length envelope trust; top-level secret strip only.
  */
+import type { Actor } from '../../modules/identity/index.ts';
 import {
+  LOOK_REFERENCE_PUBLIC_ACTIVATION_AUTHORIZED,
   LOOK_REF_ANALYSIS_MAX_BYTES,
   assertOwnerScopedStoragePath,
   decodeLookRefBase64Image,
@@ -15,6 +17,7 @@ import {
 } from '../../modules/look/index.ts';
 import type { createLookReferenceRateLimitStore } from '../../modules/look/index.ts';
 
+export { LOOK_REFERENCE_PUBLIC_ACTIVATION_AUTHORIZED };
 export const LOOK_REF_MAX_REQUEST_BYTES = 12 * 1024 * 1024;
 export const LOOK_REF_MIN_IMAGES = 1;
 export const LOOK_REF_MAX_IMAGES = 10;
@@ -130,8 +133,14 @@ export type AnalyzeResult =
   | { readonly status: 'not-configured'; readonly message: string }
   | { readonly status: 'error'; readonly message: string; readonly httpStatus: number };
 
+function actorUserId(actor: Actor): string | null {
+  const id = typeof actor?.actorId === 'string' ? actor.actorId.trim() : '';
+  return id || null;
+}
+
 export function createLookReferenceAnalysisUseCase(deps: AnalyzeDeps) {
   return {
+    publicActivationAuthorized: LOOK_REFERENCE_PUBLIC_ACTIVATION_AUTHORIZED,
     async analyze(input: {
       readonly actorId: string;
       readonly contentLengthHeader: string | null;
@@ -256,6 +265,43 @@ export function createLookReferenceAnalysisUseCase(deps: AnalyzeDeps) {
         payload: safePayload,
         analyzedAtIso: deps.nowIso?.() ?? new Date().toISOString(),
       };
+    },
+  };
+}
+
+export type LookReferenceAnalysisUseCases = ReturnType<
+  typeof createLookReferenceAnalysisUseCase
+> & {
+  readonly analyzeForActor: (
+    actor: Actor,
+    input: {
+      readonly contentLengthHeader: string | null;
+      readonly body: unknown;
+    },
+  ) => Promise<AnalyzeResult>;
+};
+
+/** HTTP facade: resolve actor → existing analyze use-case. */
+export function createLookReferenceAnalysisHttpUseCases(
+  deps: AnalyzeDeps,
+): LookReferenceAnalysisUseCases {
+  const inner = createLookReferenceAnalysisUseCase(deps);
+  return {
+    ...inner,
+    analyzeForActor: async (actor, input) => {
+      const userId = actorUserId(actor);
+      if (!userId) {
+        return {
+          status: 'error',
+          message: 'Nicht angemeldet.',
+          httpStatus: 401,
+        };
+      }
+      return inner.analyze({
+        actorId: userId,
+        contentLengthHeader: input.contentLengthHeader,
+        body: input.body,
+      });
     },
   };
 }

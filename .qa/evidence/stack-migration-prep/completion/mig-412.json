@@ -6,13 +6,13 @@
   "testedCommit": "284bfacea3e1c0953ca9884f269edfda530a42b7",
   "githubClosed": true,
   "mergeRef": "PR #964 → main (#828)",
-  "note": "look-reference-analysis isolated use-case; no LookProfile persist; no HTTP mount.",
+  "note": "look-reference-analysis isolated use-case; CUT-15 activates public host HTTP; Edge remains allowlisted.",
   "checks": [
     {
       "command": "node --experimental-strip-types scripts/mig-412-look-reference-analysis.self-test.mjs",
       "result": "PASS",
       "evidenceFile": ".qa/acceptance/stack-migration-mig-412.md",
-      "sha256": "d5202ba0faf1c3e29b93a9de7806d5432fc364c36edf63ceee3060ef22aa42dc"
+      "sha256": "85762299be406a9a926ad01a55b36e7618ad724db709055d46f6300e24a1b223"
     },
     {
       "command": "composition-gate CLEAR",

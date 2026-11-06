@@ -42,11 +42,22 @@ const allowUrl = pathToFileURL(
 ).href;
 const { isEdgeDispatcherAllowed } = await import(allowUrl);
 
-assert(LOOK_REFERENCE_PUBLIC_ACTIVATION_AUTHORIZED === false, 'no public host activation this slice');
+assert(
+  LOOK_REFERENCE_PUBLIC_ACTIVATION_AUTHORIZED === true,
+  'CUT-15 public activation',
+);
 assert(isEdgeDispatcherAllowed('look-reference-analysis') === true, 'Edge remains allowlisted');
 
 const createApp = readFileSync(join(root, 'server/src/api/create-app.ts'), 'utf8');
-assert(!/look-reference-analysis/i.test(createApp), 'no host HTTP mount yet (MIG-600)');
+assert(
+  /lookReferenceAnalysis/i.test(createApp),
+  'create-app wires lookReferenceAnalysis CUT-15 mount',
+);
+const aiRoutes = readFileSync(join(root, 'server/src/api/ai-routes.ts'), 'utf8');
+assert(
+  aiRoutes.includes('/api/v1/ai/look-reference-analysis'),
+  'ai-routes mounts look-reference-analysis',
+);
 
 // Minimal PNG (8-byte signature + padding to pass sniff)
 const pngBytes = new Uint8Array([

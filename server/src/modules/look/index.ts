@@ -1,9 +1,9 @@
 /**
- * look module public API — MIG-412 reference-analysis quarantine + MIG-304 LookProfile ports.
+ * look module public API — MIG-412 reference-analysis + MIG-304 LookProfile ports + CUT-15.
  * Location: server/src/modules/look/index.ts
  *
  * LookProfile HTTP publicActivation remains false (cutover → MIG-600).
- * Reference-analysis publicActivationAuthorized remains false (MIG-412).
+ * Reference-analysis publicActivationAuthorized=true (CUT-15 / #1150).
  */
 import type { Actor } from '../identity/index.ts';
 import type { HostDatabase } from '../../persistence/open-database.ts';
@@ -13,7 +13,7 @@ import {
   type LookProfileVersionRecord,
 } from './internal/look-profile-store.ts';
 
-export const LOOK_REFERENCE_PUBLIC_ACTIVATION_AUTHORIZED = false as const;
+export const LOOK_REFERENCE_PUBLIC_ACTIVATION_AUTHORIZED = true as const;
 /** LookProfile host HTTP mount is deferred to MIG-600; ports are transport-free. */
 export const LOOK_PROFILE_PUBLIC_ACTIVATION_AUTHORIZED = false as const;
 
@@ -30,6 +30,14 @@ export {
 } from './internal/look-reference-image.ts';
 
 export { createLookReferenceRateLimitStore } from './internal/look-reference-rate-limit.ts';
+
+export {
+  analyzeLookReferencesWithVision,
+  resolveLookRefRateLimit,
+  resolveLookRefVisionProviderConfig,
+  type LookRefVisionImagePart,
+  type LookRefVisionProviderConfig,
+} from './internal/look-reference-vision.ts';
 
 export type {
   LookProfileRecord,

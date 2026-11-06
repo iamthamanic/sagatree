@@ -92,6 +92,8 @@ export type RouteRegistryDeps = {
   readonly aiOllama?: ReturnType<typeof createOllamaSettingsUseCases>;
   /** CUT-13 character-lore generate-background. */
   readonly characterLore?: CharacterLoreUseCases;
+  /** CUT-15 look reference analysis. */
+  readonly lookReferenceAnalysis?: import('../application/look-reference-analysis/index.ts').LookReferenceAnalysisUseCases;
   /** CUT-14 session-recap AI generate. */
   readonly sessionRecapGenerate?: import('../application/session-recap/index.ts').SessionRecapGenerateUseCases;
   /** Browser Library cutover ports. */
@@ -161,6 +163,7 @@ export function createRouteHandler(deps: RouteRegistryDeps) {
     aiCredentials: deps.aiCredentials,
     aiOllama: deps.aiOllama,
     characterLore: deps.characterLore,
+    lookReferenceAnalysis: deps.lookReferenceAnalysis,
     sessionRecapGenerate: deps.sessionRecapGenerate,
     character: deps.character,
     world: deps.world,

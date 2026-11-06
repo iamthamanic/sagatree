@@ -1,13 +1,13 @@
 # Acceptance — MIG-412 look-reference-analysis (#828)
 
 ## Intent
-Isolated-contract host use-case for look-reference-analysis. Edge stays allowlisted; host HTTP mount deferred (MIG-600). `LOOK_REFERENCE_PUBLIC_ACTIVATION_AUTHORIZED=false`.
+Isolated-contract host use-case for look-reference-analysis. Edge stays allowlisted until dual-path removal. CUT-15 (#1150) activates `LOOK_REFERENCE_PUBLIC_ACTIVATION_AUTHORIZED=true` and mounts `POST /api/v1/ai/look-reference-analysis`.
 
 ## Acceptance tier
-`isolated-contract` — SLICE DONE under `server/src/application/look-reference-analysis/`.
+`isolated-contract` — SLICE DONE under `server/src/application/look-reference-analysis/`; public activation via CUT-15.
 
 ## Deferred integration
-authorized host routes + MIG-600. FEATURE VERIFIED → MIG-600/#845 + MIG-602/#847.
+LookProfile HTTP mount remains MIG-600. Dual-path Edge removal → CUT-20.
 
 ## Required Tests
 - [x] 1/10 images ok; 0/11, duplicate IDs, bad MIME/weight, absent bytes rejected.

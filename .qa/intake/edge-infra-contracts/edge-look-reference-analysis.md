@@ -238,20 +238,13 @@ CORS_OPTS: CorsOptions = {
 
 ## All adapter call sites
 
-### src/infrastructure/look/look-reference-analysis-service.ts:135
+### src/infrastructure/look/look-reference-analysis-service.ts:204
 
 
 ```ts
 export async function analyzeLookReferences(
   request: LookReferenceAnalysisRequest,
 ): Promise<LookReferenceAnalysisOutcome> {
-  if (isHostLibraryEnabled()) {
-    return {
-      ok: false,
-      code: 'edge-error',
-      messageDe: 'Look-Referenzanalyse ist im Host-Modus noch nicht verfügbar.',
-    };
-  }
   const aggregateBytes = request.references.reduce(
     (sum, ref) => sum + estimateBase64Bytes(ref.contentBase64),
     0,
@@ -275,24 +268,27 @@ export async function analyzeLookReferences(
     }),
   );
 
+  const body = buildRequestBody(request);
+
+  if (isHostLibraryEnabled()) {
+    const edge = await invokeHostLookReferenceAnalysis(body);
+    if (edge.status !== 'ok') {
+      return {
+        ok: false,
+        code: edge.status,
+        messageDe: edge.message,
+      };
+    }
+    return normalizeLookReferenceAnalysisPayload(edge.payload, {
+      references: domainInputs,
+      displayNameHint: request.displayNameHint,
+      analyzedAtIso: edge.analyzedAtIso,
+    });
+  }
+
   const { data, error } = await supabase.functions.invoke(
     'look-reference-analysis',
-    {
-      body: {
-        action: 'analyze',
-        displayNameHint: request.displayNameHint,
-        references: request.references.map((ref) => ({
-          id: ref.id,
-          kind: ref.kind,
-          mime: ref.mime,
-          uri: ref.uri,
-          weight: ref.weight,
-          label: ref.label,
-          contentBase64: ref.contentBase64,
-          storagePath: ref.storagePath,
-        })),
-      },
-    },
+    { body },
   );
 
   if (error) {
@@ -735,7 +731,7 @@ function parseReferences(value: unknown): ParsedRef[] {
 
 | Path | SHA-256 |
 |---|---|
-| `src/infrastructure/look/look-reference-analysis-service.ts` | `15decebbe271b416c473fd1a9ad0d4e1f6572c3ea0e1b0c85fc2cc8181066839` |
+| `src/infrastructure/look/look-reference-analysis-service.ts` | `75972e6d9b049942cf205e82e0330d26f878c855b7f3ebf8484e7e1ed651dffd` |
 | `supabase/functions/_shared/client-trust-body.ts` | `33c68553dbd89d9c7899520b0ebfa35c4f245ed8ab8ebd242c6f79e9852add95` |
 | `supabase/functions/_shared/cors.ts` | `f8286c91d79fa5fc5cfea2fa47081916523fa7a440f234aecd9a47c6a8cf5b38` |
 | `supabase/functions/_shared/edge-dispatcher-allowlist.ts` | `6d1ae7bde0ba9e41fcaa7b61247732168a62699e7811fb8574cef266cfad3a27` |

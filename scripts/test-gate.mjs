@@ -1624,6 +1624,19 @@ function checkCut14SessionRecapGenerate() {
   console.log('OK: cut-14-recap-generate.self-test');
 }
 
+function checkCut15LookReference() {
+  console.log('CUT-15 look-reference-analysis (#1150): host vision analyze...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/cut-15-look-reference.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+  console.log('OK: cut-15-look-reference.self-test');
+}
+
 function checkMig312UserProfileAdapter() {
   console.log('MIG-312 user-profile adapter (#811): user_profiles + user-avatars dual-path...');
   execFileSync(
@@ -3855,6 +3868,7 @@ checkCut11AvatarArtifacts();
 checkCut12AvatarTransfer();
 checkCut13CharacterLore();
 checkCut14SessionRecapGenerate();
+checkCut15LookReference();
 checkMig312UserProfileAdapter();
 checkMig309Rulesets();
 checkMig313WorldAdapter();
