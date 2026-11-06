@@ -22,6 +22,7 @@ export {
   describeCharacterLoreAuthDenialLegacyDefect,
   errorPayloadContainsSecrets,
   generateCharacterLoreBackground,
+  generateCharacterLoreStory,
   getAuthorizedReferenceContext,
   isCharacterLoreUuid,
   parseCharacterLoreRequestBody,

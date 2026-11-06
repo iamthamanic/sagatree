@@ -54,15 +54,17 @@ const {
 const { createCharacterLoreUseCases } = app;
 const { isEdgeDispatcherAllowed } = allow;
 
-assert(CHARACTER_LORE_PUBLIC_ACTIVATION_AUTHORIZED === false, 'no public activation');
-assert(isEdgeDispatcherAllowed('character-lore') === true, 'edge stays allowlisted');
+assert(CHARACTER_LORE_PUBLIC_ACTIVATION_AUTHORIZED === true, 'CUT-13 public activation');
+assert(isEdgeDispatcherAllowed('character-lore') === true, 'edge stays allowlisted until CUT-20');
 assert(CHARACTER_LORE_DEFAULT_RATE_LIMIT === 6, 'quota 6');
 assert(CHARACTER_LORE_RATE_WINDOW_SECONDS === 60, 'window 60s');
 assert(CHARACTER_LORE_MAX_REQUEST_BYTES === 128_000, '128k body');
 assert(CHARACTER_LORE_MAX_STORY_LENGTH === 12_000, 'story max 12k');
 
 const createApp = readFileSync(join(root, 'server/src/api/create-app.ts'), 'utf8');
-assert(!/character-lore/i.test(createApp), 'create-app has no character-lore cutover mount');
+assert(/characterLore/i.test(createApp), 'create-app wires characterLore CUT-13 mount');
+const aiRoutes = readFileSync(join(root, 'server/src/api/ai-routes.ts'), 'utf8');
+assert(aiRoutes.includes('/api/v1/ai/character-lore'), 'ai-routes mounts character-lore');
 
 const OWNER = '11111111-1111-4111-8111-111111111111';
 const MEMBER = '22222222-2222-4222-8222-222222222222';
@@ -381,4 +383,4 @@ assert(
   assert(res.httpStatus === 401, 'empty actor → 401');
 }
 
-console.log('PASS: mig-405 character-lore host isolated-contract (no cutover)');
+console.log('PASS: mig-405 character-lore host isolated-contract (CUT-13 activated)');

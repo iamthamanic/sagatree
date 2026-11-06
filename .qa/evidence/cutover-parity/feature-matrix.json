@@ -752,14 +752,14 @@
       "historicalCaller": "src/infrastructure/character/character-lore-service.ts:generateBackground",
       "uiJourney": "CharacterBackgroundComposer",
       "previousBehavior": "soft DENY; Edge character-lore",
-      "hostSuccessor": "PORT_MISSING /api/v1/ai successor",
+      "hostSuccessor": "POST /api/v1/ai/character-lore + createCharacterLoreUseCases",
       "dataOwner": "ai",
       "risk": "medium",
-      "classification": "PARITY_MISSING",
+      "classification": "HOST_VERIFIED",
       "issueRef": 1148,
-      "evidenceTest": "pending CUT-13",
+      "evidenceTest": "scripts/cut-13-character-lore.self-test.mjs",
       "featureAvailableBeforeCutover": true,
-      "notes": ""
+      "notes": "CUT-13 shipped"
     },
     {
       "stableKey": "session-recap-ai.generate-draft",
@@ -1953,8 +1953,8 @@
     }
   ],
   "counts": {
-    "HOST_VERIFIED": 88,
-    "PARITY_MISSING": 34,
+    "HOST_VERIFIED": 89,
+    "PARITY_MISSING": 33,
     "LEGACY_UNUSED": 4,
     "total": 126
   },

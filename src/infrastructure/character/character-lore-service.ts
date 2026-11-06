@@ -1,12 +1,16 @@
 /**
- * character-lore-service — Edge-function adapter for AI background generation.
+ * character-lore-service — AI background generation facade.
  * Location: src/infrastructure/character/character-lore-service.ts
  *
- * FE-HOST-08: under host library flag, AI lore generation is explicitly unavailable
- * (German error) until a host AI path is mounted — no Supabase hang.
+ * CUT-13: host-first via POST `/api/v1/ai/character-lore` when host library is on.
+ * Legacy Edge `character-lore` remains until dual-path removal (CUT-20).
  */
 import { supabase } from '../../lib/supabase';
-import type { CharacterLoreGenerationRequest, CharacterLoreGenerationResult } from '../../domains/character/contracts/character-lore.types';
+import { getHostAuthBaseUrl } from '../../lib/hostAuthBridge';
+import type {
+  CharacterLoreGenerationRequest,
+  CharacterLoreGenerationResult,
+} from '../../domains/character/contracts/character-lore.types';
 import { isHostLibraryEnabled } from '../host/host-library-http';
 
 type CharacterLoreFunctionResponse =
@@ -74,21 +78,75 @@ async function getFunctionErrorMessage(error: unknown): Promise<string | undefin
   }
 }
 
+function buildRequestBody(request: CharacterLoreGenerationRequest): Record<string, unknown> {
+  return {
+    action: 'generate-background',
+    context: request.context,
+    currentBackgroundStory: request.currentBackgroundStory,
+  };
+}
+
+async function invokeHostCharacterLore(
+  body: Record<string, unknown>,
+): Promise<CharacterLoreFunctionResponse> {
+  const base = getHostAuthBaseUrl();
+  if (base === null) {
+    return {
+      status: 'error',
+      message:
+        'Hintergrundgeschichte konnte nicht generiert werden. Bitte versuche es erneut.',
+    };
+  }
+  // same-origin: base === '' → relative `/api/v1/ai/character-lore`
+  const requestUrl = base === '' ? '/api/v1/ai/character-lore' : `${base}/api/v1/ai/character-lore`;
+  let response: Response;
+  try {
+    response = await fetch(requestUrl, {
+      method: 'POST',
+      credentials: 'include',
+      headers: { Accept: 'application/json', 'content-type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+  } catch {
+    return {
+      status: 'error',
+      message:
+        'Hintergrundgeschichte konnte nicht generiert werden. Bitte versuche es erneut.',
+    };
+  }
+  let data: unknown;
+  try {
+    data = await response.json();
+  } catch {
+    return {
+      status: 'error',
+      message:
+        'Hintergrundgeschichte konnte nicht generiert werden. Bitte versuche es erneut.',
+    };
+  }
+  return parseFunctionResponse(data);
+}
+
 class CharacterLoreService {
   async generateBackground(
     request: CharacterLoreGenerationRequest,
   ): Promise<CharacterLoreGenerationResult> {
+    const body = buildRequestBody(request);
+
     if (isHostLibraryEnabled()) {
-      throw new Error(
-        'KI-Hintergrundgeschichte ist im Host-Modus noch nicht verfügbar.',
-      );
+      const response = await invokeHostCharacterLore(body);
+      if (response.status !== 'ok') {
+        throw new Error(response.message);
+      }
+      return {
+        story: response.story,
+        provider: response.provider,
+        model: response.model,
+      };
     }
+
     const { data, error } = await supabase.functions.invoke('character-lore', {
-      body: {
-        action: 'generate-background',
-        context: request.context,
-        currentBackgroundStory: request.currentBackgroundStory,
-      },
+      body,
     });
 
     if (error) {

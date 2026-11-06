@@ -1598,6 +1598,19 @@ function checkCut12AvatarTransfer() {
   console.log('OK: cut-12-avatar-transfer.self-test');
 }
 
+function checkCut13CharacterLore() {
+  console.log('CUT-13 character-lore (#1148): host generate-background...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/cut-13-character-lore.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+  console.log('OK: cut-13-character-lore.self-test');
+}
+
 function checkMig312UserProfileAdapter() {
   console.log('MIG-312 user-profile adapter (#811): user_profiles + user-avatars dual-path...');
   execFileSync(
@@ -3827,6 +3840,7 @@ checkCut09CharacterArcs();
 checkCut10WorldPublicId();
 checkCut11AvatarArtifacts();
 checkCut12AvatarTransfer();
+checkCut13CharacterLore();
 checkMig312UserProfileAdapter();
 checkMig309Rulesets();
 checkMig313WorldAdapter();

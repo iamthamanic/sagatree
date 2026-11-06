@@ -109,7 +109,7 @@
     },
     {
       "path": "src/infrastructure/character/character-lore-service.ts",
-      "sha256": "f14fdcb2290d57a7b2e6646cebb9756b63de4be624920188de1299236e40362a"
+      "sha256": "081f130c10cb49b371d534b6686c9d8339a97e53f5cd134921b47f40018f3921"
     },
     {
       "path": "src/infrastructure/character/character-preset-service.ts",
@@ -8776,23 +8776,43 @@
       }
     },
     {
-      "kind": "edge",
-      "name": "character-lore",
+      "kind": "fetch",
+      "name": null,
       "path": "src/infrastructure/character/character-lore-service.ts",
-      "line": 86,
-      "endLine": 92,
-      "resolution": "literal-or-constant",
-      "expression": "supabase.functions.invoke('character-lore', {\n      body: {\n        action: 'generate-background',\n        context: request.context,\n        currentBackgroundStory: request.currentBackgroundStory,\n      },\n    })",
-      "chain": "supabase.functions.invoke('character-lore', {\n      body: {\n        action: 'generate-background',\n        context: request.context,\n        currentBackgroundStory: request.currentBackgroundStory,\n      },\n    })",
+      "line": 104,
+      "endLine": 109,
+      "resolution": "dynamic-expression",
+      "expression": "fetch(requestUrl, {\n      method: 'POST',\n      credentials: 'include',\n      headers: { Accept: 'application/json', 'content-type': 'application/json' },\n      body: JSON.stringify(body),\n    })",
+      "chain": "fetch(requestUrl, {\n      method: 'POST',\n      credentials: 'include',\n      headers: { Accept: 'application/json', 'content-type': 'application/json' },\n      body: JSON.stringify(body),\n    })",
       "arguments": [
-        "'character-lore'",
-        "{\n      body: {\n        action: 'generate-background',\n        context: request.context,\n        currentBackgroundStory: request.currentBackgroundStory,\n      },\n    }"
+        "requestUrl",
+        "{\n      method: 'POST',\n      credentials: 'include',\n      headers: { Accept: 'application/json', 'content-type': 'application/json' },\n      body: JSON.stringify(body),\n    }"
       ],
       "enclosingOperation": {
         "path": "src/infrastructure/character/character-lore-service.ts",
-        "line": 78,
-        "endLine": 112,
-        "text": "async generateBackground(\n    request: CharacterLoreGenerationRequest,\n  ): Promise<CharacterLoreGenerationResult> {\n    if (isHostLibraryEnabled()) {\n      throw new Error(\n        'KI-Hintergrundgeschichte ist im Host-Modus noch nicht verfügbar.',\n      );\n    }\n    const { data, error } = await supabase.functions.invoke('character-lore', {\n      body: {\n        action: 'generate-background',\n        context: request.context,\n        currentBackgroundStory: request.currentBackgroundStory,\n      },\n    });\n\n    if (error) {\n      const serverMessage = await getFunctionErrorMessage(error);\n      throw new Error(\n        serverMessage ??\n          'Hintergrundgeschichte konnte nicht generiert werden. Bitte versuche es erneut.',\n      );\n    }\n\n    const response = parseFunctionResponse(data);\n    if (response.status !== 'ok') {\n      throw new Error(response.message);\n    }\n\n    return {\n      story: response.story,\n      provider: response.provider,\n      model: response.model,\n    };\n  }"
+        "line": 89,
+        "endLine": 128,
+        "text": "async function invokeHostCharacterLore(\n  body: Record<string, unknown>,\n): Promise<CharacterLoreFunctionResponse> {\n  const base = getHostAuthBaseUrl();\n  if (base === null) {\n    return {\n      status: 'error',\n      message:\n        'Hintergrundgeschichte konnte nicht generiert werden. Bitte versuche es erneut.',\n    };\n  }\n  // same-origin: base === '' → relative `/api/v1/ai/character-lore`\n  const requestUrl = base === '' ? '/api/v1/ai/character-lore' : `${base}/api/v1/ai/character-lore`;\n  let response: Response;\n  try {\n    response = await fetch(requestUrl, {\n      method: 'POST',\n      credentials: 'include',\n      headers: { Accept: 'application/json', 'content-type': 'application/json' },\n      body: JSON.stringify(body),\n    });\n  } catch {\n    return {\n      status: 'error',\n      message:\n        'Hintergrundgeschichte konnte nicht generiert werden. Bitte versuche es erneut.',\n    };\n  }\n  let data: unknown;\n  try {\n    data = await response.json();\n  } catch {\n    return {\n      status: 'error',\n      message:\n        'Hintergrundgeschichte konnte nicht generiert werden. Bitte versuche es erneut.',\n    };\n  }\n  return parseFunctionResponse(data);\n}"
+      }
+    },
+    {
+      "kind": "edge",
+      "name": "character-lore",
+      "path": "src/infrastructure/character/character-lore-service.ts",
+      "line": 148,
+      "endLine": 150,
+      "resolution": "literal-or-constant",
+      "expression": "supabase.functions.invoke('character-lore', {\n      body,\n    })",
+      "chain": "supabase.functions.invoke('character-lore', {\n      body,\n    })",
+      "arguments": [
+        "'character-lore'",
+        "{\n      body,\n    }"
+      ],
+      "enclosingOperation": {
+        "path": "src/infrastructure/character/character-lore-service.ts",
+        "line": 131,
+        "endLine": 170,
+        "text": "async generateBackground(\n    request: CharacterLoreGenerationRequest,\n  ): Promise<CharacterLoreGenerationResult> {\n    const body = buildRequestBody(request);\n\n    if (isHostLibraryEnabled()) {\n      const response = await invokeHostCharacterLore(body);\n      if (response.status !== 'ok') {\n        throw new Error(response.message);\n      }\n      return {\n        story: response.story,\n        provider: response.provider,\n        model: response.model,\n      };\n    }\n\n    const { data, error } = await supabase.functions.invoke('character-lore', {\n      body,\n    });\n\n    if (error) {\n      const serverMessage = await getFunctionErrorMessage(error);\n      throw new Error(\n        serverMessage ??\n          'Hintergrundgeschichte konnte nicht generiert werden. Bitte versuche es erneut.',\n      );\n    }\n\n    const response = parseFunctionResponse(data);\n    if (response.status !== 'ok') {\n      throw new Error(response.message);\n    }\n\n    return {\n      story: response.story,\n      provider: response.provider,\n      model: response.model,\n    };\n  }"
       }
     },
     {
@@ -10475,14 +10495,22 @@
       "path": "src/infrastructure/character/character-lore-service.ts",
       "line": 9,
       "endLine": 9,
-      "module": "../../domains/character/contracts/character-lore.types",
-      "resolvedPath": "src/domains/character/contracts/character-lore.types.ts",
-      "expression": "import type { CharacterLoreGenerationRequest, CharacterLoreGenerationResult } from '../../domains/character/contracts/character-lore.types';"
+      "module": "../../lib/hostAuthBridge",
+      "resolvedPath": "src/lib/hostAuthBridge.ts",
+      "expression": "import { getHostAuthBaseUrl } from '../../lib/hostAuthBridge';"
     },
     {
       "path": "src/infrastructure/character/character-lore-service.ts",
       "line": 10,
-      "endLine": 10,
+      "endLine": 13,
+      "module": "../../domains/character/contracts/character-lore.types",
+      "resolvedPath": "src/domains/character/contracts/character-lore.types.ts",
+      "expression": "import type {\n  CharacterLoreGenerationRequest,\n  CharacterLoreGenerationResult,\n} from '../../domains/character/contracts/character-lore.types';"
+    },
+    {
+      "path": "src/infrastructure/character/character-lore-service.ts",
+      "line": 14,
+      "endLine": 14,
       "module": "../host/host-library-http",
       "resolvedPath": "src/infrastructure/host/host-library-http.ts",
       "expression": "import { isHostLibraryEnabled } from '../host/host-library-http';"
@@ -12040,8 +12068,8 @@
     },
     {
       "path": "src/infrastructure/character/character-lore-service.ts",
-      "line": 115,
-      "endLine": 115,
+      "line": 173,
+      "endLine": 173,
       "text": "export const characterLoreService = new CharacterLoreService();"
     },
     {
@@ -14869,38 +14897,52 @@
     },
     {
       "path": "src/infrastructure/character/character-lore-service.ts",
-      "line": 28,
-      "endLine": 30,
+      "line": 32,
+      "endLine": 34,
       "name": "isRecord",
       "text": "function isRecord(value: unknown): value is Record<string, unknown> {\n  return typeof value === 'object' && value !== null;\n}"
     },
     {
       "path": "src/infrastructure/character/character-lore-service.ts",
-      "line": 32,
-      "endLine": 59,
+      "line": 36,
+      "endLine": 63,
       "name": "parseFunctionResponse",
       "text": "function parseFunctionResponse(value: unknown): CharacterLoreFunctionResponse {\n  if (!isRecord(value) || typeof value.status !== 'string') {\n    return { status: 'error', message: 'Die KI-Antwort hatte ein ungültiges Format.' };\n  }\n\n  if (\n    value.status === 'ok' &&\n    typeof value.story === 'string' &&\n    (value.provider === 'openai-compatible' || value.provider === 'ollama') &&\n    typeof value.model === 'string'\n  ) {\n    return {\n      status: 'ok',\n      story: value.story,\n      provider: value.provider,\n      model: value.model,\n    };\n  }\n\n  if (\n    (value.status === 'not-configured' || value.status === 'error') &&\n    typeof value.message === 'string'\n  ) {\n    return { status: value.status, message: value.message };\n  }\n\n  return { status: 'error', message: 'Die KI-Antwort hatte ein ungültiges Format.' };\n}"
     },
     {
       "path": "src/infrastructure/character/character-lore-service.ts",
-      "line": 61,
-      "endLine": 63,
+      "line": 65,
+      "endLine": 67,
       "name": "hasResponseContext",
       "text": "function hasResponseContext(error: unknown): error is { context: Response } {\n  return isRecord(error) && error.context instanceof Response;\n}"
     },
     {
       "path": "src/infrastructure/character/character-lore-service.ts",
-      "line": 65,
-      "endLine": 75,
+      "line": 69,
+      "endLine": 79,
       "name": "getFunctionErrorMessage",
       "text": "async function getFunctionErrorMessage(error: unknown): Promise<string | undefined> {\n  if (!hasResponseContext(error)) return undefined;\n\n  try {\n    const responseBody: unknown = await error.context.clone().json();\n    const parsed = parseFunctionResponse(responseBody);\n    return parsed.status === 'ok' ? undefined : parsed.message;\n  } catch {\n    return undefined;\n  }\n}"
     },
     {
       "path": "src/infrastructure/character/character-lore-service.ts",
-      "line": 78,
-      "endLine": 112,
+      "line": 81,
+      "endLine": 87,
+      "name": "buildRequestBody",
+      "text": "function buildRequestBody(request: CharacterLoreGenerationRequest): Record<string, unknown> {\n  return {\n    action: 'generate-background',\n    context: request.context,\n    currentBackgroundStory: request.currentBackgroundStory,\n  };\n}"
+    },
+    {
+      "path": "src/infrastructure/character/character-lore-service.ts",
+      "line": 89,
+      "endLine": 128,
+      "name": "invokeHostCharacterLore",
+      "text": "async function invokeHostCharacterLore(\n  body: Record<string, unknown>,\n): Promise<CharacterLoreFunctionResponse> {\n  const base = getHostAuthBaseUrl();\n  if (base === null) {\n    return {\n      status: 'error',\n      message:\n        'Hintergrundgeschichte konnte nicht generiert werden. Bitte versuche es erneut.',\n    };\n  }\n  // same-origin: base === '' → relative `/api/v1/ai/character-lore`\n  const requestUrl = base === '' ? '/api/v1/ai/character-lore' : `${base}/api/v1/ai/character-lore`;\n  let response: Response;\n  try {\n    response = await fetch(requestUrl, {\n      method: 'POST',\n      credentials: 'include',\n      headers: { Accept: 'application/json', 'content-type': 'application/json' },\n      body: JSON.stringify(body),\n    });\n  } catch {\n    return {\n      status: 'error',\n      message:\n        'Hintergrundgeschichte konnte nicht generiert werden. Bitte versuche es erneut.',\n    };\n  }\n  let data: unknown;\n  try {\n    data = await response.json();\n  } catch {\n    return {\n      status: 'error',\n      message:\n        'Hintergrundgeschichte konnte nicht generiert werden. Bitte versuche es erneut.',\n    };\n  }\n  return parseFunctionResponse(data);\n}"
+    },
+    {
+      "path": "src/infrastructure/character/character-lore-service.ts",
+      "line": 131,
+      "endLine": 170,
       "name": "generateBackground",
-      "text": "async generateBackground(\n    request: CharacterLoreGenerationRequest,\n  ): Promise<CharacterLoreGenerationResult> {\n    if (isHostLibraryEnabled()) {\n      throw new Error(\n        'KI-Hintergrundgeschichte ist im Host-Modus noch nicht verfügbar.',\n      );\n    }\n    const { data, error } = await supabase.functions.invoke('character-lore', {\n      body: {\n        action: 'generate-background',\n        context: request.context,\n        currentBackgroundStory: request.currentBackgroundStory,\n      },\n    });\n\n    if (error) {\n      const serverMessage = await getFunctionErrorMessage(error);\n      throw new Error(\n        serverMessage ??\n          'Hintergrundgeschichte konnte nicht generiert werden. Bitte versuche es erneut.',\n      );\n    }\n\n    const response = parseFunctionResponse(data);\n    if (response.status !== 'ok') {\n      throw new Error(response.message);\n    }\n\n    return {\n      story: response.story,\n      provider: response.provider,\n      model: response.model,\n    };\n  }"
+      "text": "async generateBackground(\n    request: CharacterLoreGenerationRequest,\n  ): Promise<CharacterLoreGenerationResult> {\n    const body = buildRequestBody(request);\n\n    if (isHostLibraryEnabled()) {\n      const response = await invokeHostCharacterLore(body);\n      if (response.status !== 'ok') {\n        throw new Error(response.message);\n      }\n      return {\n        story: response.story,\n        provider: response.provider,\n        model: response.model,\n      };\n    }\n\n    const { data, error } = await supabase.functions.invoke('character-lore', {\n      body,\n    });\n\n    if (error) {\n      const serverMessage = await getFunctionErrorMessage(error);\n      throw new Error(\n        serverMessage ??\n          'Hintergrundgeschichte konnte nicht generiert werden. Bitte versuche es erneut.',\n      );\n    }\n\n    const response = parseFunctionResponse(data);\n    if (response.status !== 'ok') {\n      throw new Error(response.message);\n    }\n\n    return {\n      story: response.story,\n      provider: response.provider,\n      model: response.model,\n    };\n  }"
     },
     {
       "path": "src/infrastructure/character/character-preset-service.ts",

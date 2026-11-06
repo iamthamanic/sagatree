@@ -1,13 +1,13 @@
 /**
- * Host characterization of Edge `character-lore` (MIG-405 / #821).
+ * Host characterization of Edge `character-lore` (MIG-405 / #821 → CUT-13 / #1148).
  * Location: server/src/modules/character/internal/character-lore.ts
  *
- * Allowlisted Edge worker remains the live mount. Host ports pin authz /
- * validation / quota / provider / draft-only fixtures. No public activation.
+ * Host HTTP activation mounts generate-background via `/api/v1/ai/character-lore`.
+ * Edge allowlisted worker remains until CUT-20 dual-path removal.
  */
 
-/** Explicit: no automatic host/public cutover (successor + MIG-600 still required). */
-export const CHARACTER_LORE_PUBLIC_ACTIVATION_AUTHORIZED = false as const;
+/** CUT-13: public host route activation authorized with validated policies + tests. */
+export const CHARACTER_LORE_PUBLIC_ACTIVATION_AUTHORIZED = true as const;
 
 export const CHARACTER_LORE_PROMPT_VERSION = 'character-background-v1' as const;
 export const CHARACTER_LORE_MAX_REQUEST_BYTES = 128_000 as const;
@@ -756,6 +756,101 @@ export async function generateCharacterLoreBackground(
       httpStatus: 500,
     };
   }
+}
+
+function extractOpenAiCompatibleContent(value: unknown): string | null {
+  if (!isRecord(value) || !Array.isArray(value.choices) || value.choices.length === 0) {
+    return null;
+  }
+  const choice = value.choices[0];
+  if (
+    !isRecord(choice) ||
+    !isRecord(choice.message) ||
+    typeof choice.message.content !== 'string'
+  ) {
+    return null;
+  }
+  return choice.message.content.trim() || null;
+}
+
+function extractOllamaChatContent(value: unknown): string | null {
+  if (
+    !isRecord(value) ||
+    !isRecord(value.message) ||
+    typeof value.message.content !== 'string'
+  ) {
+    return null;
+  }
+  return value.message.content.trim() || null;
+}
+
+async function generateOpenAiCompatibleStory(
+  config: CharacterLoreProviderConfig,
+  prompt: CharacterLorePrompt,
+): Promise<string> {
+  const response = await fetch(`${config.baseUrl}/chat/completions`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${config.apiKey ?? ''}`,
+    },
+    body: JSON.stringify({
+      model: config.model,
+      temperature: 0.85,
+      messages: [
+        { role: 'system', content: prompt.system },
+        { role: 'user', content: prompt.user },
+      ],
+    }),
+    signal: AbortSignal.timeout(60_000),
+  });
+  if (!response.ok) {
+    throw new Error(`OpenAI-compatible provider returned ${response.status}`);
+  }
+  const body: unknown = await response.json();
+  const story = extractOpenAiCompatibleContent(body);
+  if (!story) throw new Error('OpenAI-compatible provider returned an invalid response');
+  return story;
+}
+
+async function generateOllamaStory(
+  config: CharacterLoreProviderConfig,
+  prompt: CharacterLorePrompt,
+): Promise<string> {
+  const response = await fetch(`${config.baseUrl}/api/chat`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: config.model,
+      stream: false,
+      messages: [
+        { role: 'system', content: prompt.system },
+        { role: 'user', content: prompt.user },
+      ],
+      options: { temperature: 0.85 },
+    }),
+    signal: AbortSignal.timeout(60_000),
+  });
+  if (!response.ok) {
+    throw new Error(`Ollama provider returned ${response.status}`);
+  }
+  const body: unknown = await response.json();
+  const story = extractOllamaChatContent(body);
+  if (!story) throw new Error('Ollama provider returned an invalid response');
+  return story;
+}
+
+/**
+ * Host inference adapter (Edge `generateCharacterLore` parity).
+ * Secrets stay in Authorization / request body only — never in thrown messages.
+ */
+export async function generateCharacterLoreStory(
+  config: CharacterLoreProviderConfig,
+  prompt: CharacterLorePrompt,
+): Promise<string> {
+  return config.provider === 'openai-compatible'
+    ? generateOpenAiCompatibleStory(config, prompt)
+    : generateOllamaStory(config, prompt);
 }
 
 /** Minimal valid context fixture for isolated tests. */

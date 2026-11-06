@@ -10,6 +10,7 @@ import type { createHealthUseCase } from '../application/health/index.ts';
 import type { TransportUseCase } from '../application/transport/index.ts';
 import type { createAiProviderCredentialsUseCases } from '../application/ai-provider-credentials/index.ts';
 import type { createOllamaSettingsUseCases } from '../application/ollama-settings/index.ts';
+import type { CharacterLoreUseCases } from '../application/character-lore/index.ts';
 import type { OpsPorts } from '../modules/ops/index.ts';
 import type { PermissionsPorts } from '../modules/permissions/index.ts';
 import type { IdentityPorts } from '../modules/identity/index.ts';
@@ -62,6 +63,8 @@ export type HostApiDeps = {
   /** MIG-301 infrastructure/ai host HTTP adapters (optional until ports wired). */
   readonly aiCredentials?: ReturnType<typeof createAiProviderCredentialsUseCases>;
   readonly aiOllama?: ReturnType<typeof createOllamaSettingsUseCases>;
+  /** CUT-13 character-lore generate-background (optional until wired). */
+  readonly characterLore?: CharacterLoreUseCases;
   /** Browser Library cutover — optional until composition root wires module ports. */
   readonly character?: CharacterPorts | null;
   readonly world?: WorldPorts | null;
@@ -414,13 +417,14 @@ export function createHostApi(deps: HostApiDeps): Hono {
     return c.json(result.sync, 200);
   });
 
-  // MIG-301: BYOK + Ollama Organize host HTTP (Edge remains allowlisted until cutover).
+  // MIG-301 + CUT-13: BYOK / Ollama Organize / character-lore host HTTP.
   if (deps.aiCredentials && deps.aiOllama) {
     mountAiHttpRoutes(app, {
       identity: deps.identity,
       hostMode: deps.hostMode,
       credentials: deps.aiCredentials,
       ollama: deps.aiOllama,
+      characterLore: deps.characterLore,
     });
   }
 

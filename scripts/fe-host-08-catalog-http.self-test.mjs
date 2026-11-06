@@ -350,7 +350,8 @@ try {
   assert(/isHostLibraryEnabled/.test(marketplaceSrc), 'marketplace dual-path');
   assert(/isHostLibraryEnabled/.test(rulesetSrc), 'ruleset dual-path');
   assert(/isHostLibraryEnabled/.test(profileSrc), 'profile dual-path');
-  assert(/Host-Modus noch nicht verfügbar/.test(loreSrc), 'lore host stub');
+  assert(/\/api\/v1\/ai\/character-lore/.test(loreSrc), 'CUT-13 lore host dual-path');
+  assert(!/Host-Modus noch nicht verfügbar/.test(loreSrc), 'lore Soft-DENY removed');
   assert(/Host-Modus noch nicht verfügbar/.test(recapAiSrc), 'recap-ai host stub');
   assert(
     /mountCatalogHttpRoutes/.test(readFileSync(join(root, 'server/src/api/create-app.ts'), 'utf8')),
