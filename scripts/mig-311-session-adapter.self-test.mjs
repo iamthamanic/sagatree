@@ -95,7 +95,7 @@ mkdirSync(dataDir, { recursive: true });
 
 try {
   assert(SESSION_INFRA_PUBLIC_ACTIVATION_AUTHORIZED === true, 'session infra HTTP authorized (FE-HOST-02)');
-  assert(SESSION_MEDIA_TOKEN_PUBLIC_ACTIVATION_AUTHORIZED === false, 'media token unmounted');
+  assert(SESSION_MEDIA_TOKEN_PUBLIC_ACTIVATION_AUTHORIZED === true, 'media token CUT-19 activated');
   assert(SESSION_RECAP_PUBLIC_ACTIVATION_AUTHORIZED === true, 'CUT-14 recap generate activated');
 
   const boot = bootstrapHostPersistence({

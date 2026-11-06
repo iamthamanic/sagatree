@@ -157,6 +157,22 @@ export function seedSessionMediaTokenMember(
   store.projectMembers.set(memberKey(projectId, row.user_id), row);
 }
 
+/** Drop a cached session (+ its project membership map entries) after delete/miss. */
+export function evictSessionMediaTokenSession(
+  store: SessionMediaTokenStore,
+  sessionId: string,
+): void {
+  const sid = sessionId.trim();
+  if (!sid) return;
+  const existing = store.sessions.get(sid);
+  store.sessions.delete(sid);
+  if (!existing) return;
+  const prefix = `${existing.project_id}::`;
+  for (const key of [...store.projectMembers.keys()]) {
+    if (key.startsWith(prefix)) store.projectMembers.delete(key);
+  }
+}
+
 type SessionMediaTokenDb = {
   readonly prepare: (sql: string) => {
     get: (...params: unknown[]) => unknown;

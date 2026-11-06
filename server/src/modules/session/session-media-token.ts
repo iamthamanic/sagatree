@@ -14,6 +14,7 @@ export {
   createSessionMediaTokenStore,
   deriveMediaRoomId,
   describeSessionMediaTokenLegacyDefects,
+  evictSessionMediaTokenSession,
   hydrateSessionMediaTokenFromDb,
   issueSessionMediaToken,
   memberKey,

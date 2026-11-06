@@ -9,6 +9,7 @@ import type { Actor } from '../../modules/identity/index.ts';
 import {
   SESSION_MEDIA_TOKEN_PUBLIC_ACTIVATION_AUTHORIZED,
   createSessionMediaTokenStore,
+  evictSessionMediaTokenSession,
   hydrateSessionMediaTokenFromDb,
   issueSessionMediaToken,
   seedSessionMediaTokenMember,
@@ -108,6 +109,9 @@ export function createSessionMediaTokenUseCases(
           for (const row of hydrated.members) {
             seedSessionMediaTokenMember(store, row.projectId, row.member);
           }
+        } else {
+          // Codex P1: deleted/missing sessions must not keep minting from stale cache.
+          evictSessionMediaTokenSession(store, sessionId);
         }
       }
 

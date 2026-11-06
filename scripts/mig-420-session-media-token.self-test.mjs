@@ -403,4 +403,39 @@ function configuredStore() {
   assert(denied.httpStatus === 403, 'remote without linked solo still 403');
 }
 
+// --- Codex P1: hydrate miss evicts stale session (no mint after delete) ---
+{
+  const store = configuredStore();
+  let present = true;
+  const uc = createSessionMediaTokenUseCases({
+    store,
+    hydrateSession: (sessionId) => {
+      if (!present) return null;
+      return {
+        session: { id: sessionId, project_id: PROJECT_ID },
+        members: [
+          {
+            projectId: PROJECT_ID,
+            member: {
+              user_id: PLAYER,
+              role: 'player',
+              status: 'active',
+              character_id: null,
+            },
+          },
+        ],
+      };
+    },
+  });
+  const first = await uc.issue(actor(PLAYER), { body: { sessionId: SESSION_ID } });
+  assert(first.status === 'ok', 'first mint before delete');
+  present = false;
+  const afterDelete = await uc.issue(actor(PLAYER), { body: { sessionId: SESSION_ID } });
+  assert(
+    afterDelete.httpStatus === 403 && afterDelete.reason === 'forbidden',
+    'stale cache evicted after hydrate miss',
+  );
+  assert(!store.sessions.has(SESSION_ID), 'session map cleared');
+}
+
 console.log('PASS: mig-420-session-media-token.self-test');
