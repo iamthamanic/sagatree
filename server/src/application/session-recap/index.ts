@@ -62,7 +62,12 @@ export type SessionRecapGenerateUseCaseDeps = Omit<SessionRecapGenerateDeps, 'st
     store: SessionRecapGenerateStore,
   ) => void;
   /** Persist draft row after successful generate (host SQLite). */
-  readonly afterDraftPersist?: (row: SessionRecapRow) => void;
+  readonly afterDraftPersist?: (
+    row: SessionRecapRow,
+  ) =>
+    | void
+    | { ok: true }
+    | { ok: false; reason: 'approved-locked' | 'store-unavailable' };
 };
 
 export function createSessionRecapGenerateUseCases(
@@ -103,7 +108,27 @@ export function createSessionRecapGenerateUseCases(
       });
       if (result.status === 'ok' && sessionId && deps.afterDraftPersist) {
         const row = store.recaps.get(sessionId);
-        if (row) deps.afterDraftPersist(row);
+        if (row) {
+          const persisted = deps.afterDraftPersist(row);
+          if (persisted && persisted.ok === false) {
+            if (persisted.reason === 'approved-locked') {
+              return {
+                status: 'error',
+                message:
+                  'Die Zusammenfassung ist bereits freigegeben. Setze sie manuell zurück, bevor du neu generierst.',
+                httpStatus: 409,
+                reason: 'approved-locked',
+              };
+            }
+            return {
+              status: 'error',
+              message:
+                'Zusammenfassung konnte nicht gespeichert werden. Du kannst den Text manuell schreiben.',
+              httpStatus: 503,
+              reason: 'store-unavailable',
+            };
+          }
+        }
       }
       return result;
     },

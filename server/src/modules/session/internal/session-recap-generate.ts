@@ -360,12 +360,13 @@ export function hydrateSessionRecapGenerateStoreFromDb(
 
 /**
  * Persist generate draft (snapshot + highlight_lines + summary) to SQLite.
- * Never writes summary_status=approved.
+ * Never writes summary_status=approved. Atomically refuses to overwrite approved
+ * (Codex P1: approve/save race while provider is in flight).
  */
 export function persistSessionRecapGenerateDraft(
   db: RecapQuotaDb,
   row: SessionRecapRow,
-): void {
+): { ok: true } | { ok: false; reason: 'approved-locked' | 'store-unavailable' } {
   const now = new Date().toISOString();
   const snapshot = JSON.stringify(row.snapshot ?? {});
   const highlights = JSON.stringify(
@@ -375,18 +376,40 @@ export function persistSessionRecapGenerateDraft(
     typeof row.summary_text === 'string' && row.summary_text.trim()
       ? row.summary_text.trim()
       : null;
-  db.prepare(
-    `INSERT INTO session_recaps (
-       session_id, summary_text, summary_status, highlight_lines, snapshot,
-       created_at, updated_at
-     ) VALUES (?, ?, 'draft', ?, ?, ?, ?)
-     ON CONFLICT(session_id) DO UPDATE SET
-       summary_text = excluded.summary_text,
-       summary_status = 'draft',
-       highlight_lines = excluded.highlight_lines,
-       snapshot = excluded.snapshot,
-       updated_at = excluded.updated_at`,
-  ).run(row.session_id, summary, highlights, snapshot, now, now);
+  try {
+    db.exec('BEGIN IMMEDIATE');
+    const existing = db
+      .prepare(
+        `SELECT summary_status AS summaryStatus FROM session_recaps WHERE session_id = ?`,
+      )
+      .get(row.session_id) as { summaryStatus: string } | undefined;
+    if ((existing?.summaryStatus ?? '').toLowerCase() === 'approved') {
+      db.exec('ROLLBACK');
+      return { ok: false, reason: 'approved-locked' };
+    }
+    db.prepare(
+      `INSERT INTO session_recaps (
+         session_id, summary_text, summary_status, highlight_lines, snapshot,
+         created_at, updated_at
+       ) VALUES (?, ?, 'draft', ?, ?, ?, ?)
+       ON CONFLICT(session_id) DO UPDATE SET
+         summary_text = excluded.summary_text,
+         summary_status = 'draft',
+         highlight_lines = excluded.highlight_lines,
+         snapshot = excluded.snapshot,
+         updated_at = excluded.updated_at
+       WHERE session_recaps.summary_status IS NOT 'approved'`,
+    ).run(row.session_id, summary, highlights, snapshot, now, now);
+    db.exec('COMMIT');
+    return { ok: true };
+  } catch {
+    try {
+      db.exec('ROLLBACK');
+    } catch {
+      /* ignore */
+    }
+    return { ok: false, reason: 'store-unavailable' };
+  }
 }
 
 /**
@@ -892,6 +915,16 @@ export async function generateSessionRecap(
     const existing = deps.store.recaps.get(sessionId);
     if (!existing) {
       throw new Error('recap missing after upsert');
+    }
+    // Re-check after provider await — concurrent approve must not be overwritten in-memory.
+    if (existing.summary_status === 'approved') {
+      return {
+        status: 'error',
+        message:
+          'Die Zusammenfassung ist bereits freigegeben. Setze sie manuell zurück, bevor du neu generierst.',
+        httpStatus: 409,
+        reason: 'approved-locked',
+      };
     }
     if (deps.store.draftPersistFails) {
       throw new Error('draft persist failed');

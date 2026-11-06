@@ -417,10 +417,12 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
     });
 
     async function resolveSessionRecapProviderForUser(userId: string) {
-      // Prefer SESSION_RECAP_* / CHARACTER_AI_* env; fall back to same Ollama Organize prefs.
-      const fromEnv = resolveSessionRecapProviderConfig((key) => env[key]);
-      if (fromEnv) return fromEnv;
-      return resolveCharacterLoreProviderForUser(userId);
+      // Codex P2: honor per-user AI → Organize prefs before server env fallback.
+      // Character-lore resolver checks user prefs first, then CHARACTER_AI_*.
+      const fromUserOrCharacter = await resolveCharacterLoreProviderForUser(userId);
+      if (fromUserOrCharacter) return fromUserOrCharacter;
+      // SESSION_RECAP_* env when CHARACTER_* unset.
+      return resolveSessionRecapProviderConfig((key) => env[key]);
     }
 
     const sessionRecapGenerate: SessionRecapGenerateUseCases =
@@ -438,7 +440,7 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
           : undefined,
         afterDraftPersist: db
           ? (row) => persistSessionRecapGenerateDraft(db, row)
-          : undefined,
+          : undefined, // returns ok/approved-locked for race safety
       });
     const rulesets: RulesetPorts = db
       ? createRulesetPorts({ db, authorize: permissions.authorize })
