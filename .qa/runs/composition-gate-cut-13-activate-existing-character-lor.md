@@ -1,6 +1,6 @@
 # Composition Gate — cut-13-activate-existing-character-lor (#1148)
 
-- HEAD_SHA: be205188165d93eec5ab00ee8bb91ed83c22b9c6
+- HEAD_SHA: dbab93bb3a75d6396ef83f6c5dbefed732cfdd7b
 - BASE_SHA: 8cf4e4d81abaf441e4b1db64d7fa96aae05a63a5
 - Date: 2026-11-05
 - Verdict: CLEAR
