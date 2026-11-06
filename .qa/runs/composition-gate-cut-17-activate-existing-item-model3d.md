@@ -1,6 +1,6 @@
 # Composition Gate — cut-17-activate-existing-item-model3d (#1152)
 
-- HEAD_SHA: e9d638bdf140bb984ee838158647a67f379d4a95
+- HEAD_SHA: 183fdf0eeff1c4e5808e79577bd9ec946e611343
 - BASE_SHA: 4e89e826a8ed9ec6d275512aaa5b3365c40ba107
 - Date: 2026-11-06
 - Verdict: CLEAR
