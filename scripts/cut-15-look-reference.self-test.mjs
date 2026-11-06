@@ -7,7 +7,7 @@
  * Covers: configured OK, not-configured, 401, invalid MIME, rate limit, secret strip.
  */
 import { createServer } from 'node:http';
-import { mkdtempSync, mkdirSync, rmSync, readFileSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, rmSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
@@ -236,15 +236,14 @@ try {
     LOOK_AI_BASE_URL: mock.baseUrl,
     LOOK_AI_API_KEY: 'test-key-not-secret-for-fixture',
     LOOK_AI_MODEL: 'cut15-mock',
-    LOOK_AI_RATE_LIMIT_PER_MINUTE: '4',
+    // High ceiling for functional cases; dedicated rate host below uses 4/min.
+    LOOK_AI_RATE_LIMIT_PER_MINUTE: '30',
   });
   assert(!('error' in host), `host create: ${JSON.stringify(host)}`);
   await host.start();
 
   const ownerPassword = `Pw-${randomBytes(12).toString('base64url')}`;
-  const quotaPassword = `Pw-${randomBytes(12).toString('base64url')}`;
   const ownerCookie = await signIn(baseURL, 'owner@cut15.test', ownerPassword);
-  const quotaCookie = await signIn(baseURL, 'quota@cut15.test', quotaPassword);
 
   // 401 without cookie
   const unauth = await httpJson(baseURL, '/api/v1/ai/look-reference-analysis', {
@@ -270,6 +269,41 @@ try {
   assert(ok.json.payload.apiKey === undefined, 'top-level secret stripped');
   assert(typeof ok.json?.analyzedAtIso === 'string', 'analyzedAtIso');
   assert(mock.invocations === beforeInv + 1, 'provider invoked once');
+
+  // Owner-scoped storagePath under dataDir/media loads (Codex P2) — before rate burn.
+  const meRes = await httpJson(baseURL, '/api/auth/get-session', {
+    cookie: ownerCookie,
+    headers: { Origin: baseURL },
+  });
+  const ownerId =
+    meRes.json?.user?.id || meRes.json?.session?.userId || meRes.json?.user?.userId;
+  assert(typeof ownerId === 'string' && ownerId.length > 0, `owner id ${JSON.stringify(meRes.json)}`);
+  const mediaDir = join(dataDir, 'media', ownerId);
+  mkdirSync(mediaDir, { recursive: true });
+  writeFileSync(join(mediaDir, 'ref.png'), pngBytes);
+  const beforeStorage = mock.invocations;
+  const fromStorage = await httpJson(baseURL, '/api/v1/ai/look-reference-analysis', {
+    method: 'POST',
+    cookie: ownerCookie,
+    headers: { Origin: baseURL },
+    body: {
+      action: 'analyze',
+      references: [
+        {
+          id: 'stored',
+          kind: 'style',
+          mime: 'image/png',
+          uri: 'storage://ref.png',
+          storagePath: `${ownerId}/ref.png`,
+        },
+      ],
+    },
+  });
+  assert(
+    fromStorage.res.status === 200 && fromStorage.json?.status === 'ok',
+    `storagePath ok ${fromStorage.res.status} ${fromStorage.text}`,
+  );
+  assert(mock.invocations === beforeStorage + 1, 'storagePath invoked provider');
 
   // Invalid MIME rejected (rate slot consumed before validation — expected legacy order)
   const badMime = await httpJson(baseURL, '/api/v1/ai/look-reference-analysis', {
@@ -323,24 +357,54 @@ try {
   assert(foreign.res.status === 400, `foreign path ${foreign.res.status}`);
   assert(mock.invocations === beforeForeign, 'foreign denied before provider');
 
-  // Rate limit on fresh actor: 4/min — burn 4 then 5th fails.
-  for (let i = 0; i < 4; i += 1) {
-    const r = await httpJson(baseURL, '/api/v1/ai/look-reference-analysis', {
-      method: 'POST',
-      cookie: quotaCookie,
-      headers: { Origin: baseURL },
-      body: analyzeBody(),
+  // Dedicated rate-limit host: 4/min — burn 4 then 5th fails.
+  {
+    const rateDir = join(work, 'rate');
+    mkdirSync(rateDir);
+    const ratePort = port + 2;
+    const rateURL = `http://127.0.0.1:${ratePort}`;
+    const rateHost = createHost({
+      SAGATREE_DATA_DIR: rateDir,
+      SAGATREE_PORT: String(ratePort),
+      SAGATREE_HOST: '127.0.0.1',
+      SAGATREE_ENABLE_HOST_AUTH: '1',
+      SAGATREE_BETTER_AUTH_SECRET: authSecret,
+      SAGATREE_AUTH_BASE_URL: rateURL,
+      SAGATREE_AUTH_TRUSTED_ORIGINS: rateURL,
+      LOOK_AI_BASE_URL: mock.baseUrl,
+      LOOK_AI_API_KEY: 'test-key-not-secret-for-fixture',
+      LOOK_AI_MODEL: 'cut15-mock',
+      LOOK_AI_RATE_LIMIT_PER_MINUTE: '4',
     });
-    assert(r.res.status === 200 && r.json?.status === 'ok', `quota burn ${i + 1}`);
+    assert(!('error' in rateHost), `rate host: ${JSON.stringify(rateHost)}`);
+    await rateHost.start();
+    try {
+      const quotaCookie = await signIn(
+        rateURL,
+        'quota@cut15.test',
+        `Pw-${randomBytes(12).toString('base64url')}`,
+      );
+      for (let i = 0; i < 4; i += 1) {
+        const r = await httpJson(rateURL, '/api/v1/ai/look-reference-analysis', {
+          method: 'POST',
+          cookie: quotaCookie,
+          headers: { Origin: rateURL },
+          body: analyzeBody(),
+        });
+        assert(r.res.status === 200 && r.json?.status === 'ok', `quota burn ${i + 1}`);
+      }
+      const limited = await httpJson(rateURL, '/api/v1/ai/look-reference-analysis', {
+        method: 'POST',
+        cookie: quotaCookie,
+        headers: { Origin: rateURL },
+        body: analyzeBody(),
+      });
+      assert(limited.res.status === 429, `rate limit ${limited.res.status}`);
+      assert(limited.json?.status === 'error', '429 error envelope');
+    } finally {
+      await rateHost.stop().catch(() => {});
+    }
   }
-  const limited = await httpJson(baseURL, '/api/v1/ai/look-reference-analysis', {
-    method: 'POST',
-    cookie: quotaCookie,
-    headers: { Origin: baseURL },
-    body: analyzeBody(),
-  });
-  assert(limited.res.status === 429, `rate limit ${limited.res.status}`);
-  assert(limited.json?.status === 'error', '429 error envelope');
 
   console.log('PASS: cut-15 look-reference-analysis host activate');
 } finally {

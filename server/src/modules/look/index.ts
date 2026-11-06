@@ -39,6 +39,8 @@ export {
   type LookRefVisionProviderConfig,
 } from './internal/look-reference-vision.ts';
 
+export { createLookReferenceMediaStore } from './internal/look-reference-media-store.ts';
+
 export type {
   LookProfileRecord,
   LookProfileVersionRecord,

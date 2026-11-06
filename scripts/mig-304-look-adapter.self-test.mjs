@@ -69,7 +69,10 @@ mkdirSync(dataDir, { recursive: true });
 
 try {
   assert(LOOK_PROFILE_PUBLIC_ACTIVATION_AUTHORIZED === false, 'no LookProfile HTTP mount');
-  assert(LOOK_REFERENCE_PUBLIC_ACTIVATION_AUTHORIZED === false, 'no ref-analysis HTTP mount');
+  assert(
+    LOOK_REFERENCE_PUBLIC_ACTIVATION_AUTHORIZED === true,
+    'CUT-15 ref-analysis HTTP mount authorized',
+  );
   assert(TABLE_OWNERSHIP.look_profiles === 'look', 'look_profiles ownership');
   assert(TABLE_OWNERSHIP.look_profile_versions === 'look', 'look_profile_versions ownership');
 

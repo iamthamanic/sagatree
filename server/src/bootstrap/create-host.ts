@@ -106,6 +106,7 @@ import {
 } from '../application/look-reference-analysis/index.ts';
 import {
   analyzeLookReferencesWithVision,
+  createLookReferenceMediaStore,
   createLookReferenceRateLimitStore,
   resolveLookRefRateLimit,
   resolveLookRefVisionProviderConfig,
@@ -427,6 +428,7 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
     });
 
     const lookVisionConfig = resolveLookRefVisionProviderConfig((key) => env[key]);
+    const lookMediaStore = createLookReferenceMediaStore(config.dataDir);
     const lookReferenceAnalysis: LookReferenceAnalysisUseCases =
       createLookReferenceAnalysisHttpUseCases({
         rateLimit: createLookReferenceRateLimitStore(),
@@ -434,6 +436,8 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
           env.LOOK_AI_RATE_LIMIT_PER_MINUTE || env.CHARACTER_AI_RATE_LIMIT_PER_MINUTE,
         ),
         providerConfigured: lookVisionConfig !== null,
+        fetchStorageBytes: (storagePath, ownerUserId) =>
+          lookMediaStore.fetchOwnerBytes(storagePath, ownerUserId),
         analyzeVision: lookVisionConfig
           ? (images, displayNameHint) =>
               analyzeLookReferencesWithVision(lookVisionConfig, images, displayNameHint)
