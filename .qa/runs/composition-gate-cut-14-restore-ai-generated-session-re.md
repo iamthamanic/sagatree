@@ -1,7 +1,7 @@
 # Composition Gate — cut-14-restore-ai-generated-session-re (#1149)
 
-- HEAD_SHA: 067e781878677efef21f9ac460125f08d666c0bb
-- BASE_SHA: 0e211f0e99124a02f758513ce4ae362bf4d9e82e
+- HEAD_SHA: 6bd4fa6e3c3e855b8bb1bea79a6bb048755bf240
+- BASE_SHA: 6bd4fa6e3c3e855b8bb1bea79a6bb048755bf240
 - Date: 2026-11-05
 - Verdict: CLEAR
 - Acceptance tier: feature-integration
