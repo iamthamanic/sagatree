@@ -1,9 +1,9 @@
 /**
- * look-reference-analysis-service — Edge adapter for Basic Look reference analysis (#352).
+ * look-reference-analysis-service — Look reference analysis facade (#352 / CUT-15).
  * Location: src/infrastructure/look/look-reference-analysis-service.ts
  *
- * Invokes the edge function, then applies domain normalization. Invalid payloads
- * never become LookProfileWriteDrafts (not saved).
+ * CUT-15: host-first via POST `/api/v1/ai/look-reference-analysis` when host library is on.
+ * Legacy Edge `look-reference-analysis` remains until dual-path removal (CUT-20).
  */
 import {
   normalizeLookReferenceAnalysisPayload,
@@ -11,11 +11,12 @@ import {
   type LookReferenceAnalysisOutcome,
   type LookReferenceAnalyzer,
 } from '../../domains/look';
+import { getHostAuthBaseUrl } from '../../lib/hostAuthBridge';
 import { supabase } from '../../lib/supabase';
 import { isHostLibraryEnabled } from '../host/host-library-http';
 
 export type LookReferenceAnalysisRequestImage = LookReferenceAnalysisImageInput & {
-  /** Inline image for edge vision call. */
+  /** Inline image for vision call. */
   readonly contentBase64?: string;
   /** Owner-scoped storage path alternative to contentBase64. */
   readonly storagePath?: string;
@@ -94,21 +95,71 @@ function estimateBase64Bytes(b64: string | undefined): number {
   return Math.ceil((b64.length * 3) / 4);
 }
 
+function buildRequestBody(request: LookReferenceAnalysisRequest): Record<string, unknown> {
+  return {
+    action: 'analyze',
+    displayNameHint: request.displayNameHint,
+    references: request.references.map((ref) => ({
+      id: ref.id,
+      kind: ref.kind,
+      mime: ref.mime,
+      uri: ref.uri,
+      weight: ref.weight,
+      label: ref.label,
+      contentBase64: ref.contentBase64,
+      storagePath: ref.storagePath,
+    })),
+  };
+}
+
+async function invokeHostLookReferenceAnalysis(
+  body: Record<string, unknown>,
+): Promise<EdgeOk | EdgeFail> {
+  const base = getHostAuthBaseUrl();
+  if (base === null) {
+    return {
+      status: 'error',
+      message: 'Look-Referenzanalyse fehlgeschlagen. Bitte erneut versuchen.',
+    };
+  }
+  const requestUrl =
+    base === ''
+      ? '/api/v1/ai/look-reference-analysis'
+      : `${base}/api/v1/ai/look-reference-analysis`;
+  let response: Response;
+  try {
+    response = await fetch(requestUrl, {
+      method: 'POST',
+      credentials: 'include',
+      headers: { Accept: 'application/json', 'content-type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+  } catch {
+    return {
+      status: 'error',
+      message: 'Look-Referenzanalyse fehlgeschlagen. Bitte erneut versuchen.',
+    };
+  }
+  let data: unknown;
+  try {
+    data = await response.json();
+  } catch {
+    return {
+      status: 'error',
+      message: 'Look-Referenzanalyse fehlgeschlagen. Bitte erneut versuchen.',
+    };
+  }
+  return parseEdgeResponse(data);
+}
+
 /**
- * Analyze references via edge + domain normalize.
+ * Analyze references via host (CUT-15) or Edge + domain normalize.
  * Callers should optimize with look-reference profile before Base64 (#639).
  * Does not persist — callers must save only when outcome.ok.
  */
 export async function analyzeLookReferences(
   request: LookReferenceAnalysisRequest,
 ): Promise<LookReferenceAnalysisOutcome> {
-  if (isHostLibraryEnabled()) {
-    return {
-      ok: false,
-      code: 'edge-error',
-      messageDe: 'Look-Referenzanalyse ist im Host-Modus noch nicht verfügbar.',
-    };
-  }
   const aggregateBytes = request.references.reduce(
     (sum, ref) => sum + estimateBase64Bytes(ref.contentBase64),
     0,
@@ -132,24 +183,27 @@ export async function analyzeLookReferences(
     }),
   );
 
+  const body = buildRequestBody(request);
+
+  if (isHostLibraryEnabled()) {
+    const edge = await invokeHostLookReferenceAnalysis(body);
+    if (edge.status !== 'ok') {
+      return {
+        ok: false,
+        code: edge.status,
+        messageDe: edge.message,
+      };
+    }
+    return normalizeLookReferenceAnalysisPayload(edge.payload, {
+      references: domainInputs,
+      displayNameHint: request.displayNameHint,
+      analyzedAtIso: edge.analyzedAtIso,
+    });
+  }
+
   const { data, error } = await supabase.functions.invoke(
     'look-reference-analysis',
-    {
-      body: {
-        action: 'analyze',
-        displayNameHint: request.displayNameHint,
-        references: request.references.map((ref) => ({
-          id: ref.id,
-          kind: ref.kind,
-          mime: ref.mime,
-          uri: ref.uri,
-          weight: ref.weight,
-          label: ref.label,
-          contentBase64: ref.contentBase64,
-          storagePath: ref.storagePath,
-        })),
-      },
-    },
+    { body },
   );
 
   if (error) {

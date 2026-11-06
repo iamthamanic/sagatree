@@ -101,6 +101,17 @@ import {
   type SessionRecapGenerateUseCases,
 } from '../application/session-recap/index.ts';
 import {
+  createLookReferenceAnalysisHttpUseCases,
+  type LookReferenceAnalysisUseCases,
+} from '../application/look-reference-analysis/index.ts';
+import {
+  analyzeLookReferencesWithVision,
+  createLookReferenceMediaStore,
+  createLookReferenceRateLimitStore,
+  resolveLookRefRateLimit,
+  resolveLookRefVisionProviderConfig,
+} from '../modules/look/index.ts';
+import {
   createSqliteCharacterLoreStore,
   resolveCharacterLoreRateLimit,
   type CharacterLoreProjectRow,
@@ -416,6 +427,23 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
       ),
     });
 
+    const lookVisionConfig = resolveLookRefVisionProviderConfig((key) => env[key]);
+    const lookMediaStore = createLookReferenceMediaStore(config.dataDir);
+    const lookReferenceAnalysis: LookReferenceAnalysisUseCases =
+      createLookReferenceAnalysisHttpUseCases({
+        rateLimit: createLookReferenceRateLimitStore(),
+        rateLimitPerMinute: resolveLookRefRateLimit(
+          env.LOOK_AI_RATE_LIMIT_PER_MINUTE || env.CHARACTER_AI_RATE_LIMIT_PER_MINUTE,
+        ),
+        providerConfigured: lookVisionConfig !== null,
+        fetchStorageBytes: (storagePath, ownerUserId) =>
+          lookMediaStore.fetchOwnerBytes(storagePath, ownerUserId),
+        analyzeVision: lookVisionConfig
+          ? (images, displayNameHint) =>
+              analyzeLookReferencesWithVision(lookVisionConfig, images, displayNameHint)
+          : undefined,
+      });
+
     async function resolveSessionRecapProviderForUser(userId: string) {
       // Codex P2: honor per-user AI → Organize prefs before server env fallback.
       // Character-lore resolver checks user prefs first, then CHARACTER_AI_*.
@@ -660,6 +688,7 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
       aiCredentials,
       aiOllama,
       characterLore,
+      lookReferenceAnalysis,
       sessionRecapGenerate,
       character,
       world,

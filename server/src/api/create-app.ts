@@ -65,6 +65,8 @@ export type HostApiDeps = {
   readonly aiOllama?: ReturnType<typeof createOllamaSettingsUseCases>;
   /** CUT-13 character-lore generate-background (optional until wired). */
   readonly characterLore?: CharacterLoreUseCases;
+  /** CUT-15 look reference analysis (optional until wired). */
+  readonly lookReferenceAnalysis?: import('../application/look-reference-analysis/index.ts').LookReferenceAnalysisUseCases;
   /** CUT-14 session-recap AI generate (optional until wired). */
   readonly sessionRecapGenerate?: import('../application/session-recap/index.ts').SessionRecapGenerateUseCases;
   /** Browser Library cutover — optional until composition root wires module ports. */
@@ -427,6 +429,7 @@ export function createHostApi(deps: HostApiDeps): Hono {
       credentials: deps.aiCredentials,
       ollama: deps.aiOllama,
       characterLore: deps.characterLore,
+      lookReferenceAnalysis: deps.lookReferenceAnalysis,
     });
   }
 

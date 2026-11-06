@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-look.json](source-contracts/infra-look.json) (SHA-256 `da854f091a5673cb31fc2d040347cca787d727bc5e477adcfce025cedf69a038`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-look.json](source-contracts/infra-look.json) (SHA-256 `64299eef830bdd2631c1240f6f6c11d631ac19a97affe066bb735f0b9b9e6845`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -24,7 +24,7 @@ Storage buckets (0): none.
 
 Edge invokes (1): `look-reference-analysis`.
 
-Realtime call sites: 0. Direct fetch sites: 0. Explicit auth/helper sites: 7.
+Realtime call sites: 0. Direct fetch sites: 1. Explicit auth/helper sites: 7.
 
 ## Complete implementation dependencies
 
@@ -48,34 +48,34 @@ None in the reviewed source.
 
 ## All backend calls, arguments, filters and result handling
 
+### fetch: requestUrl
+
+`src/infrastructure/look/look-reference-analysis-service.ts:131` — dynamic-expression.
+
+Exact call/query chain:
+```ts
+fetch(requestUrl, {
+      method: 'POST',
+      credentials: 'include',
+      headers: { Accept: 'application/json', 'content-type': 'application/json' },
+      body: JSON.stringify(body),
+    })
+```
+
+Enclosing operation: `src/infrastructure/look/look-reference-analysis-service.ts:115`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### edge: look-reference-analysis
 
-`src/infrastructure/look/look-reference-analysis-service.ts:135` — literal-or-constant.
+`src/infrastructure/look/look-reference-analysis-service.ts:204` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
 supabase.functions.invoke(
     'look-reference-analysis',
-    {
-      body: {
-        action: 'analyze',
-        displayNameHint: request.displayNameHint,
-        references: request.references.map((ref) => ({
-          id: ref.id,
-          kind: ref.kind,
-          mime: ref.mime,
-          uri: ref.uri,
-          weight: ref.weight,
-          label: ref.label,
-          contentBase64: ref.contentBase64,
-          storagePath: ref.storagePath,
-        })),
-      },
-    },
+    { body },
   )
 ```
 
-Enclosing operation: `src/infrastructure/look/look-reference-analysis-service.ts:102`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/look/look-reference-analysis-service.ts:160`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### auth-helper: session identity
 
 `src/infrastructure/look/supabase-look.repository.ts:62` — dynamic-expression.
@@ -534,18 +534,18 @@ export function isTintableLookMaterialRole(role: LookMaterialRole): boolean {
 }
 ```
 
-### src/infrastructure/look/look-reference-analysis-service.ts:17
+### src/infrastructure/look/look-reference-analysis-service.ts:18
 
 ```ts
 export type LookReferenceAnalysisRequestImage = LookReferenceAnalysisImageInput & {
-  /** Inline image for edge vision call. */
+  /** Inline image for vision call. */
   readonly contentBase64?: string;
   /** Owner-scoped storage path alternative to contentBase64. */
   readonly storagePath?: string;
 };
 ```
 
-### src/infrastructure/look/look-reference-analysis-service.ts:24
+### src/infrastructure/look/look-reference-analysis-service.ts:25
 
 ```ts
 export type LookReferenceAnalysisRequest = {
@@ -554,19 +554,12 @@ export type LookReferenceAnalysisRequest = {
 };
 ```
 
-### src/infrastructure/look/look-reference-analysis-service.ts:102
+### src/infrastructure/look/look-reference-analysis-service.ts:160
 
 ```ts
 export async function analyzeLookReferences(
   request: LookReferenceAnalysisRequest,
 ): Promise<LookReferenceAnalysisOutcome> {
-  if (isHostLibraryEnabled()) {
-    return {
-      ok: false,
-      code: 'edge-error',
-      messageDe: 'Look-Referenzanalyse ist im Host-Modus noch nicht verfügbar.',
-    };
-  }
   const aggregateBytes = request.references.reduce(
     (sum, ref) => sum + estimateBase64Bytes(ref.contentBase64),
     0,
@@ -590,24 +583,27 @@ export async function analyzeLookReferences(
     }),
   );
 
+  const body = buildRequestBody(request);
+
+  if (isHostLibraryEnabled()) {
+    const edge = await invokeHostLookReferenceAnalysis(body);
+    if (edge.status !== 'ok') {
+      return {
+        ok: false,
+        code: edge.status,
+        messageDe: edge.message,
+      };
+    }
+    return normalizeLookReferenceAnalysisPayload(edge.payload, {
+      references: domainInputs,
+      displayNameHint: request.displayNameHint,
+      analyzedAtIso: edge.analyzedAtIso,
+    });
+  }
+
   const { data, error } = await supabase.functions.invoke(
     'look-reference-analysis',
-    {
-      body: {
-        action: 'analyze',
-        displayNameHint: request.displayNameHint,
-        references: request.references.map((ref) => ({
-          id: ref.id,
-          kind: ref.kind,
-          mime: ref.mime,
-          uri: ref.uri,
-          weight: ref.weight,
-          label: ref.label,
-          contentBase64: ref.contentBase64,
-          storagePath: ref.storagePath,
-        })),
-      },
-    },
+    { body },
   );
 
   if (error) {
@@ -638,7 +634,7 @@ export async function analyzeLookReferences(
 }
 ```
 
-### src/infrastructure/look/look-reference-analysis-service.ts:183
+### src/infrastructure/look/look-reference-analysis-service.ts:237
 
 ```ts
 export function createEdgeLookReferenceAnalyzer(): LookReferenceAnalyzer {
@@ -1386,7 +1382,50 @@ export const supabaseLookProfileRepository = new SupabaseLookProfileRepository()
 
 ## Remaining backend helper operations
 
-All backend operations are included in the public declarations above.
+### src/infrastructure/look/look-reference-analysis-service.ts:115
+
+```ts
+async function invokeHostLookReferenceAnalysis(
+  body: Record<string, unknown>,
+): Promise<EdgeOk | EdgeFail> {
+  const base = getHostAuthBaseUrl();
+  if (base === null) {
+    return {
+      status: 'error',
+      message: 'Look-Referenzanalyse fehlgeschlagen. Bitte erneut versuchen.',
+    };
+  }
+  const requestUrl =
+    base === ''
+      ? '/api/v1/ai/look-reference-analysis'
+      : `${base}/api/v1/ai/look-reference-analysis`;
+  let response: Response;
+  try {
+    response = await fetch(requestUrl, {
+      method: 'POST',
+      credentials: 'include',
+      headers: { Accept: 'application/json', 'content-type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+  } catch {
+    return {
+      status: 'error',
+      message: 'Look-Referenzanalyse fehlgeschlagen. Bitte erneut versuchen.',
+    };
+  }
+  let data: unknown;
+  try {
+    data = await response.json();
+  } catch {
+    return {
+      status: 'error',
+      message: 'Look-Referenzanalyse fehlgeschlagen. Bitte erneut versuchen.',
+    };
+  }
+  return parseEdgeResponse(data);
+}
+```
+
 
 ## Verification source manifest
 
@@ -1417,7 +1456,7 @@ All backend operations are included in the public declarations above.
 | `src/infrastructure/look/host-look-ports.contract.ts` | `f815bac34628b904e1c813d4929872b688d6dc140bebdf2a17a586c11556cf0f` |
 | `src/infrastructure/look/index.ts` | `c51fc97d92ac25e40f1427086c846cb000990dd7556f2f1aab7deb14a9ccccd0` |
 | `src/infrastructure/look/look-material-roles.ts` | `2e8161b18a046bb073664a586bb645dc1428c5796d04ade0b625c9339f8cfcdb` |
-| `src/infrastructure/look/look-reference-analysis-service.ts` | `15decebbe271b416c473fd1a9ad0d4e1f6572c3ea0e1b0c85fc2cc8181066839` |
+| `src/infrastructure/look/look-reference-analysis-service.ts` | `75972e6d9b049942cf205e82e0330d26f878c855b7f3ebf8484e7e1ed651dffd` |
 | `src/infrastructure/look/look-runtime-types.ts` | `c31d27eaf600ed47e69f16120e584b06a985f29618923118a4c08570f276b2c6` |
 | `src/infrastructure/look/look-runtime.ts` | `64487d02f2831514e86b721d41b0964ac8e99b37faf1a33b8771b4fa7b955d23` |
 | `src/infrastructure/look/look-service.ts` | `d1a1a1d5e0747b492b21258c981547abddc6bc7b763a7a3914f6aadb65ec8eed` |
