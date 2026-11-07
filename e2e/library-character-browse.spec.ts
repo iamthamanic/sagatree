@@ -1,62 +1,11 @@
-import { test, expect, type Page, type Route } from '@playwright/test';
+import { test, expect } from '@playwright/test';
 import fs from 'node:fs';
 import path from 'node:path';
 import { ensureLoggedIn } from './helpers/auth';
+import { MOCK_LIBRARY_CHARACTERS, mockHostLibraryCharacters } from './helpers/host-route-mocks';
 
 const EVIDENCE_DIR = '.qa/evidence/library-entity-browser';
 const VIEW_MODE_STORAGE_KEY = 'sagatree_library_characters_view_mode';
-
-type StoredCharacter = {
-  id: string;
-  owner_user_id: string;
-  name: string;
-  description: string | null;
-  class: string;
-  race: string;
-  ruleset_key: string;
-  level: number;
-  portrait_url: string | null;
-  created_at: string;
-  updated_at: string;
-};
-
-const MOCK_CHARACTERS: StoredCharacter[] = [
-  {
-    id: 'char-1',
-    owner_user_id: '00000000-0000-4000-8000-000000000001',
-    name: 'Kara Sturmklinge',
-    description: null,
-    class: 'Wanderer',
-    race: 'Mensch',
-    ruleset_key: 'sagatree-core',
-    level: 3,
-    portrait_url: 'http://localhost:3004/test-assets/portrait-kara.png',
-    created_at: '2026-08-28T10:00:00.000Z',
-    updated_at: '2026-08-28T10:00:00.000Z',
-  },
-  {
-    id: 'char-2',
-    owner_user_id: '00000000-0000-4000-8000-000000000001',
-    name: 'Bror Steinfuss',
-    description: null,
-    class: 'Schmied',
-    race: 'Zwerg',
-    ruleset_key: 'sagatree-core',
-    level: 1,
-    portrait_url: null,
-    created_at: '2026-08-28T09:00:00.000Z',
-    updated_at: '2026-08-28T09:00:00.000Z',
-  },
-];
-
-
-function json(route: Route, value: unknown, status = 200) {
-  return route.fulfill({
-    status,
-    contentType: 'application/json',
-    body: JSON.stringify(value),
-  });
-}
 
 test.beforeAll(() => {
   fs.mkdirSync(EVIDENCE_DIR, { recursive: true });
@@ -65,13 +14,7 @@ test.beforeAll(() => {
 test('library characters tab browses via carousel/list with persisted view mode', async ({ page }) => {
   test.setTimeout(60_000);
 
-  await page.route('**/rest/v1/characters*', async (route) => {
-    if (route.request().method() === 'GET') {
-      await json(route, MOCK_CHARACTERS);
-      return;
-    }
-    await route.fallback();
-  });
+  await mockHostLibraryCharacters(page, MOCK_LIBRARY_CHARACTERS);
 
   await page.setViewportSize({ width: 1440, height: 900 });
   await ensureLoggedIn(page);
@@ -97,13 +40,7 @@ test('library characters tab browses via carousel/list with persisted view mode'
 test('library characters search-empty state stays actionable', async ({ page }) => {
   test.setTimeout(60_000);
 
-  await page.route('**/rest/v1/characters*', async (route) => {
-    if (route.request().method() === 'GET') {
-      await json(route, MOCK_CHARACTERS);
-      return;
-    }
-    await route.fallback();
-  });
+  await mockHostLibraryCharacters(page, MOCK_LIBRARY_CHARACTERS);
 
   await page.setViewportSize({ width: 1440, height: 900 });
   await ensureLoggedIn(page);

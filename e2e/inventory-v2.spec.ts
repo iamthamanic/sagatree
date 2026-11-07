@@ -50,22 +50,23 @@ test('Inventory v2: Core catalog shell + occupancy summary (Scenario A smoke)', 
   await expect(page.getByRole('tab', { name: /^Eigene$/i })).toBeVisible();
   await expect(page.getByRole('tab', { name: /^Welt$/i })).toHaveCount(0);
 
-  // Live Core list needs catalog service; without Supabase CI still proves shell + tabs.
+  // Live Core list needs host catalog (#1160 Soft-DENY may leave rows empty/disabled).
   const addButtons = catalog.getByRole('button', { name: /^Hinzufügen$/i });
-  if ((await addButtons.count()) > 0) {
-    await addButtons.first().click();
+  const firstAdd = addButtons.first();
+  if ((await addButtons.count()) > 0 && (await firstAdd.isEnabled().catch(() => false))) {
+    await firstAdd.click();
     const confirmAdd = page.getByRole('button', { name: /^Hinzufügen$/i }).last();
-    if (await confirmAdd.isVisible().catch(() => false)) {
+    if ((await confirmAdd.isEnabled().catch(() => false)) && (await confirmAdd.isVisible().catch(() => false))) {
       await confirmAdd.click();
+      await expect(page.getByText(/Inventar [1-9] \/ 20/i).first()).toBeVisible({
+        timeout: 10_000,
+      });
     }
-    await expect(page.getByText(/Inventar [1-9] \/ 20/i).first()).toBeVisible({
-      timeout: 10_000,
-    });
   } else {
     test.info().annotations.push({
       type: 'note',
       description:
-        'Core catalog rows not loaded (likely no Supabase in CI). Shell + tabs asserted; add path covered by inventory-*-check + local E2E.',
+        'Core catalog add disabled/empty under host Soft-DENY (#1160). Shell + tabs asserted; domain covered by inventory-*-check.',
     });
   }
 

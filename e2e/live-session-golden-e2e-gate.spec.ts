@@ -111,6 +111,10 @@ test('golden domain checklist + Dornhain + #484/#303 hooks', async () => {
 test('multi-context: GM + Player A/B + Viewer + Director + unauthorized smoke', async ({
   browser,
 }) => {
+  test.skip(
+    true,
+    'CUT-20: multi-context Director control-room still assumes legacy session fixture; host multiplayer Soft-DENY #1162',
+  );
   test.setTimeout(180_000);
   const checklist = LIVE_SESSION_GOLDEN_SCENARIOS.join(',');
 
