@@ -23,8 +23,9 @@ async function signIn(page: Page, actor: string) {
   if (typeof email !== 'string' || !email) throw new Error(`Missing fixture email for ${actor}`);
   await page.goto('/');
   await page.getByRole('tab', { name: 'Login', exact: true }).click();
-  await page.getByPlaceholder('admin oder deine@email.de').fill(email);
-  await page.getByPlaceholder('••••••••').fill(f.password);
+  // Prefer accessible labels — host-first LoginScreen changes email placeholder copy.
+  await page.getByLabel('E-Mail', { exact: true }).fill(email);
+  await page.getByLabel('Passwort', { exact: true }).fill(f.password);
   const responsePromise = page.waitForResponse(
     (response) =>
       response.url().includes('/api/auth/sign-in/email') &&
