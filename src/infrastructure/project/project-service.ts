@@ -60,11 +60,7 @@ class ProjectService {
       ended_at: row.endedAt ?? null,
       duration_minutes: null,
       look_profile_id:
-        typeof row.lookProfileId === 'string'
-          ? row.lookProfileId
-          : row.lookProfileId === null
-            ? null
-            : null,
+        typeof row.lookProfileId === 'string' ? row.lookProfileId : null,
       created_at: createdAt,
       updated_at: updatedAt,
     };
