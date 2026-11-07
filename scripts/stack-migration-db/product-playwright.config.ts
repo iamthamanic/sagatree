@@ -27,6 +27,16 @@ export default defineConfig({
   },
   webServer: {
     command: `node node_modules/vite/bin/vite.js --host 127.0.0.1 --port ${new URL(baseURL).port} --strictPort`,
-    cwd: join(here, '../..'), url: baseURL, reuseExistingServer: false, timeout: 120_000,
+    cwd: join(here, '../..'),
+    url: baseURL,
+    reuseExistingServer: false,
+    timeout: 120_000,
+    env: {
+      ...process.env,
+      VITE_SAGATREE_HOST_AUTH_URL: process.env.VITE_SAGATREE_HOST_AUTH_URL || 'same-origin',
+      SAGATREE_HOST_PROXY_TARGET: process.env.SAGATREE_HOST_PROXY_TARGET || '',
+      VITE_SUPABASE_URL: '',
+      VITE_SUPABASE_ANON_KEY: '',
+    },
   },
 });
