@@ -86,9 +86,9 @@ export async function ensureLoggedIn(
   const loginTab = page.getByRole('tab', { name: 'Login' });
   if (await loginTab.count()) {
     await loginTab.click();
-    // CUT-20 host-first uses placeholder `deine@email.de`; prefer accessible name.
-    await page.getByLabel('E-Mail').fill(user);
-    await page.getByLabel('Passwort', { exact: true }).fill(password);
+    // CUT-20 host-first LoginScreen ids (placeholders differ from GoTrue-era copy).
+    await page.locator('#login-identifier').fill(user);
+    await page.locator('#login-password').fill(password);
     await page.getByRole('button', { name: 'Einloggen' }).click();
   }
 
