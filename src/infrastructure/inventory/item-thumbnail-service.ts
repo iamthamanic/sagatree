@@ -6,7 +6,8 @@
  * Legacy Edge `item-thumbnail` remains until dual-path removal (CUT-20).
  */
 import { getHostAuthBaseUrl } from '../../lib/hostAuthBridge';
-import { rewriteBrowserStorageUrl, supabase } from '../../lib/supabase';
+import { rewriteBrowserStorageUrl } from '../../lib/supabase';
+import { isHostLibraryEnabled } from '../host/host-library-http';
 import {
   ITEM_THUMBNAIL_ALLOWED_MIME,
   ITEM_THUMBNAIL_MAX_BYTES,
@@ -14,7 +15,6 @@ import {
   parseItemThumbnailAssetKey,
   type ItemThumbnailMime,
 } from '../../domains/items';
-import { isHostLibraryEnabled } from '../host/host-library-http';
 
 export type PrepareItemThumbnailOptions = {
   readonly alreadyOptimized?: boolean;
@@ -147,6 +147,9 @@ async function getFunctionErrorMessage(error: unknown): Promise<string | undefin
 }
 
 async function invokeHost(body: Record<string, unknown>): Promise<FunctionResponse> {
+  if (!isHostLibraryEnabled()) {
+    return { status: 'error', message: 'Thumbnail-Dienst nicht erreichbar.' };
+  }
   const base = getHostAuthBaseUrl();
   if (base === null) {
     return { status: 'error', message: 'Thumbnail-Dienst nicht erreichbar.' };
@@ -174,15 +177,7 @@ async function invokeHost(body: Record<string, unknown>): Promise<FunctionRespon
 }
 
 async function invoke(body: Record<string, unknown>): Promise<FunctionResponse> {
-  if (isHostLibraryEnabled()) {
-    return invokeHost(body);
-  }
-  const { data, error } = await supabase.functions.invoke('item-thumbnail', { body });
-  if (error) {
-    const serverMessage = await getFunctionErrorMessage(error);
-    throw new Error(serverMessage ?? 'Thumbnail-Dienst nicht erreichbar.');
-  }
-  return parseResponse(data);
+  return invokeHost(body);
 }
 
 function fileToBase64(file: File): Promise<string> {

@@ -522,101 +522,130 @@ Jeder erfolgreiche Erstaufruf endet im gemeinsamen Session-Lock-/Revision-/Event
 
 ## Caller: Request-Mapping, Response-Decoding und Fehler
 
-### src/infrastructure/session/session-runtime-service.ts:136
+### src/infrastructure/session/session-runtime-service.ts:1
 
-AST-Auflösung: `string-literal`; SHA-256 `67026e83dc5320ff5f2274d5ee4f65c95f97e3d1d6828dcfeb5d5652feddbe79`.
+AST-Auflösung: `host-transport-cut-20`; SHA-256 `49c9781729542abf9ca36d23d26ddf7206bd1247b6f5fe6b7e964f5942cf2961`.
 
 Der vollständige aufrufende Funktionskörper enthält Parameterumformung, RPC-Aufruf, Response-Prüfung, Fehlerumwandlung und gegebenenfalls Fallback:
 
 ```typescript
-async applyCommand(input: {
+/**
+ * session-runtime-service — Snapshot + revisioned mutating commands for SessionRuntimeState (CUT-20).
+ * Location: src/infrastructure/session/session-runtime-service.ts
+ */
+import type {
+  SessionEventKind,
+  SessionRuntimeState,
+} from '../../domains/session/contracts/session-runtime';
+import {
+  StaleRuntimeRevisionError,
+  assertSessionEventKind,
+  emptyGameplayState,
+  normalizeRuntimeStatus,
+} from '../../domains/session/contracts/session-runtime';
+import {
+  applyHostSessionRuntimeCommand,
+  fetchHostSessionRuntime,
+  isHostLibraryEnabled,
+  setHostSessionPresence,
+} from '../host/host-session-http';
+
+type SnapshotJson = {
+  sessionId?: string;
+  revision?: number;
+  status?: string;
+  roster?: unknown;
+  gameplay?: unknown;
+  updatedAt?: string;
+  idempotentReplay?: boolean;
+  eventId?: string;
+};
+
+function assertHost(): void {
+  if (!isHostLibraryEnabled()) {
+    throw new Error('Host-Anmeldung nicht konfiguriert (VITE_SAGATREE_HOST_AUTH_URL fehlt).');
+  }
+}
+
+function mapRoster(raw: unknown): import('../../domains/session/contracts/session-runtime').SessionPresenceEntry[] {
+  if (!Array.isArray(raw)) return [];
+  const out: import('../../domains/session/contracts/session-runtime').SessionPresenceEntry[] = [];
+  for (const item of raw) {
+    if (!item || typeof item !== 'object') continue;
+    const row = item as Record<string, unknown>;
+    const userId = typeof row.userId === 'string' ? row.userId : null;
+    if (!userId) continue;
+    out.push({
+      userId,
+      characterId: typeof row.characterId === 'string' ? row.characterId : null,
+      isOnline: row.isOnline === true,
+      joinedAt: typeof row.joinedAt === 'string' ? row.joinedAt : new Date(0).toISOString(),
+    });
+  }
+  return out;
+}
+
+function mapGameplay(raw: unknown): import('../../domains/session/contracts/session-runtime').SessionGameplayState {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) {
+    return emptyGameplayState();
+  }
+  const row = raw as Record<string, unknown>;
+  const sceneId = typeof row.sceneId === 'string' && row.sceneId.trim() !== '' ? row.sceneId : null;
+  const combatActive = row.combatActive === true;
+  const sharedRaw = row.shared;
+  const shared =
+    sharedRaw && typeof sharedRaw === 'object' && !Array.isArray(sharedRaw)
+      ? (sharedRaw as Record<string, unknown>)
+      : {};
+  return { sceneId, combatActive, shared };
+}
+
+export function mapSnapshotJson(data: SnapshotJson): SessionRuntimeState {
+  const sessionId = typeof data.sessionId === 'string' ? data.sessionId : '';
+  if (!sessionId) {
+    throw new Error('Runtime-Snapshot ohne sessionId');
+  }
+  const revision = typeof data.revision === 'number' ? data.revision : Number(data.revision ?? 0);
+  if (!Number.isFinite(revision)) {
+    throw new Error('Runtime-Snapshot ohne gültige Revision');
+  }
+  return {
+    sessionId,
+    revision,
+    status: normalizeRuntimeStatus(typeof data.status === 'string' ? data.status : 'waiting'),
+    roster: mapRoster(data.roster),
+    gameplay: mapGameplay(data.gameplay),
+    updatedAt: typeof data.updatedAt === 'string' ? data.updatedAt : new Date().toISOString(),
+  };
+}
+
+function isStaleRpcError(message: string): boolean {
+  const lower = message.toLowerCase();
+  return lower.includes('stale revision') || lower.includes('40001');
+}
+
+class SessionRuntimeService {
+  async getSnapshot(sessionId: string): Promise<SessionRuntimeState> {
+    assertHost();
+    const data = await fetchHostSessionRuntime(sessionId);
+    return mapSnapshotJson(data as SnapshotJson);
+  }
+
+  async applyCommand(input: {
     sessionId: string;
     expectedRevision: number;
     kind: SessionEventKind | string;
     payload?: Record<string, unknown>;
     idempotencyKey?: string | null;
   }): Promise<SessionRuntimeState> {
+    assertHost();
     const kind = assertSessionEventKind(input.kind);
-    if (isHostLibraryEnabled()) {
-      try {
-        const data = await applyHostSessionRuntimeCommand({
-          sessionId: input.sessionId,
-          expectedRevision: input.expectedRevision,
-          kind,
-          payload: input.payload ?? {},
-          idempotencyKey: input.idempotencyKey ?? null,
-        });
-        return mapSnapshotJson(data as SnapshotJson);
-      } catch (err) {
-        const message = err instanceof Error ? err.message : String(err);
-        if (isStaleRpcError(message) || /STALE_REVISION/i.test(message)) {
-          const snap = await this.getSnapshot(input.sessionId);
-          throw new StaleRuntimeRevisionError(input.expectedRevision, snap.revision);
-        }
-        throw err instanceof Error ? err : new Error(message);
-      }
-    }
-    const { data, error } = await supabase.rpc('apply_session_runtime_command', {
-      p_session_id: input.sessionId,
-      p_expected_revision: input.expectedRevision,
-      p_kind: kind,
-      p_payload: input.payload ?? {},
-      p_idempotency_key: input.idempotencyKey ?? null,
-    });
-
-    if (error) {
-      if (isStaleRpcError(error.message)) {
-        const snap = await this.getSnapshot(input.sessionId);
-        throw new StaleRuntimeRevisionError(input.expectedRevision, snap.revision);
-      }
-      throw new Error(error.message);
-    }
-    if (!data) {
-      throw new Error('Runtime-Befehl lieferte kein Ergebnis');
-    }
-    return mapSnapshotJson(data as SnapshotJson);
-  }
+    try {
+      const data = await applyHostSessionRuntimeCommand({
+        sessionId: input.sessionId,
+        expectedRevision: input.expectedRevision,
+        
 ```
-
-Direkt oder transitiv referenzierte lokale/importierte Mapper, Decoder und Vertrags-Typen sind zusätzlich mit vollständigem Source-Text in callers.json und inventory.json.callerContracts.supportingDeclarations gespeichert:
-
-| Symbol | Quelle | Zeile | SHA-256 |
-| --- | --- | --- | --- |
-| `PlaySessionStatus` | [src/domains/session/contracts/session-lifecycle.ts](../../../src/domains/session/contracts/session-lifecycle.ts) | 7 | `c70eb365aa31906dc8cd8f7a3cc2c5ed1141b5bab8489a1d56ced8a41c1ce5be` |
-| `normalizePlaySessionStatus` | [src/domains/session/contracts/session-lifecycle.ts](../../../src/domains/session/contracts/session-lifecycle.ts) | 17 | `c70eb365aa31906dc8cd8f7a3cc2c5ed1141b5bab8489a1d56ced8a41c1ce5be` |
-| `SessionEventKind` | [src/domains/session/contracts/session-runtime.ts](../../../src/domains/session/contracts/session-runtime.ts) | 11 | `c928a253185cf9aa6fac10b380807033d86c0df4120fdc80b223800c626b84e2` |
-| `EVENT_KINDS` | [src/domains/session/contracts/session-runtime.ts](../../../src/domains/session/contracts/session-runtime.ts) | 28 | `c928a253185cf9aa6fac10b380807033d86c0df4120fdc80b223800c626b84e2` |
-| `SessionPresenceEntry` | [src/domains/session/contracts/session-runtime.ts](../../../src/domains/session/contracts/session-runtime.ts) | 46 | `c928a253185cf9aa6fac10b380807033d86c0df4120fdc80b223800c626b84e2` |
-| `SessionGameplayState` | [src/domains/session/contracts/session-runtime.ts](../../../src/domains/session/contracts/session-runtime.ts) | 56 | `c928a253185cf9aa6fac10b380807033d86c0df4120fdc80b223800c626b84e2` |
-| `SessionRuntimeState` | [src/domains/session/contracts/session-runtime.ts](../../../src/domains/session/contracts/session-runtime.ts) | 65 | `c928a253185cf9aa6fac10b380807033d86c0df4120fdc80b223800c626b84e2` |
-| `StaleRuntimeRevisionError` | [src/domains/session/contracts/session-runtime.ts](../../../src/domains/session/contracts/session-runtime.ts) | 85 | `c928a253185cf9aa6fac10b380807033d86c0df4120fdc80b223800c626b84e2` |
-| `isSessionEventKind` | [src/domains/session/contracts/session-runtime.ts](../../../src/domains/session/contracts/session-runtime.ts) | 97 | `c928a253185cf9aa6fac10b380807033d86c0df4120fdc80b223800c626b84e2` |
-| `assertSessionEventKind` | [src/domains/session/contracts/session-runtime.ts](../../../src/domains/session/contracts/session-runtime.ts) | 101 | `c928a253185cf9aa6fac10b380807033d86c0df4120fdc80b223800c626b84e2` |
-| `emptyGameplayState` | [src/domains/session/contracts/session-runtime.ts](../../../src/domains/session/contracts/session-runtime.ts) | 108 | `c928a253185cf9aa6fac10b380807033d86c0df4120fdc80b223800c626b84e2` |
-| `normalizeRuntimeStatus` | [src/domains/session/contracts/session-runtime.ts](../../../src/domains/session/contracts/session-runtime.ts) | 167 | `c928a253185cf9aa6fac10b380807033d86c0df4120fdc80b223800c626b84e2` |
-| `EnvLike` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 11 | `b2343081ddce2e2edd73651b0622e8b4cc6d8583d746a863dbe3343e3a98f71a` |
-| `defaultEnv` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 16 | `b2343081ddce2e2edd73651b0622e8b4cc6d8583d746a863dbe3343e3a98f71a` |
-| `isHostLibraryExplicitlyDisabled` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 25 | `b2343081ddce2e2edd73651b0622e8b4cc6d8583d746a863dbe3343e3a98f71a` |
-| `EnvLike` | [src/infrastructure/host/host-session-http.ts](../../../src/infrastructure/host/host-session-http.ts) | 12 | `763c2535c26f746b60ff3f68358fb7c37c20384bd9f4a9a5a7d9bf2710e0ab81` |
-| `defaultEnv` | [src/infrastructure/host/host-session-http.ts](../../../src/infrastructure/host/host-session-http.ts) | 17 | `763c2535c26f746b60ff3f68358fb7c37c20384bd9f4a9a5a7d9bf2710e0ab81` |
-| `hostMutateJson` | [src/infrastructure/host/host-session-http.ts](../../../src/infrastructure/host/host-session-http.ts) | 58 | `763c2535c26f746b60ff3f68358fb7c37c20384bd9f4a9a5a7d9bf2710e0ab81` |
-| `applyHostSessionRuntimeCommand` | [src/infrastructure/host/host-session-http.ts](../../../src/infrastructure/host/host-session-http.ts) | 254 | `763c2535c26f746b60ff3f68358fb7c37c20384bd9f4a9a5a7d9bf2710e0ab81` |
-| `SnapshotJson` | [src/infrastructure/session/session-runtime-service.ts](../../../src/infrastructure/session/session-runtime-service.ts) | 26 | `67026e83dc5320ff5f2274d5ee4f65c95f97e3d1d6828dcfeb5d5652feddbe79` |
-| `mapRoster` | [src/infrastructure/session/session-runtime-service.ts](../../../src/infrastructure/session/session-runtime-service.ts) | 37 | `67026e83dc5320ff5f2274d5ee4f65c95f97e3d1d6828dcfeb5d5652feddbe79` |
-| `mapGameplay` | [src/infrastructure/session/session-runtime-service.ts](../../../src/infrastructure/session/session-runtime-service.ts) | 55 | `67026e83dc5320ff5f2274d5ee4f65c95f97e3d1d6828dcfeb5d5652feddbe79` |
-| `mapSnapshotJson` | [src/infrastructure/session/session-runtime-service.ts](../../../src/infrastructure/session/session-runtime-service.ts) | 70 | `67026e83dc5320ff5f2274d5ee4f65c95f97e3d1d6828dcfeb5d5652feddbe79` |
-| `isStaleRpcError` | [src/infrastructure/session/session-runtime-service.ts](../../../src/infrastructure/session/session-runtime-service.ts) | 89 | `67026e83dc5320ff5f2274d5ee4f65c95f97e3d1d6828dcfeb5d5652feddbe79` |
-| `EnvLike` | [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | 31 | `30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a` |
-| `defaultEnv` | [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | 33 | `30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a` |
-| `getHostAuthBaseUrl` | [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | 53 | `30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a` |
-| `viteEnv` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 13 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
-| `configuredSupabaseUrl` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 15 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
-| `configuredSupabaseAnonKey` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 16 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
-| `hostAuthUrl` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 17 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
-| `hostFirst` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 18 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
-| `supabaseUrl` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 58 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
-| `supabaseAnonKey` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 59 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
-| `supabase` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 61 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
 
 ## Konkrete Abnahmekriterien
 
@@ -696,13 +725,7 @@ Die folgenden Hashes binden SQL-Kette, transitive Tabellen-/Trigger-/Policyquell
 
 | Quelle | SHA-256 |
 | --- | --- |
-| [src/domains/session/contracts/session-lifecycle.ts](../../../src/domains/session/contracts/session-lifecycle.ts) | `c70eb365aa31906dc8cd8f7a3cc2c5ed1141b5bab8489a1d56ced8a41c1ce5be` |
-| [src/domains/session/contracts/session-runtime.ts](../../../src/domains/session/contracts/session-runtime.ts) | `c928a253185cf9aa6fac10b380807033d86c0df4120fdc80b223800c626b84e2` |
-| [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | `b2343081ddce2e2edd73651b0622e8b4cc6d8583d746a863dbe3343e3a98f71a` |
-| [src/infrastructure/host/host-session-http.ts](../../../src/infrastructure/host/host-session-http.ts) | `763c2535c26f746b60ff3f68358fb7c37c20384bd9f4a9a5a7d9bf2710e0ab81` |
-| [src/infrastructure/session/session-runtime-service.ts](../../../src/infrastructure/session/session-runtime-service.ts) | `67026e83dc5320ff5f2274d5ee4f65c95f97e3d1d6828dcfeb5d5652feddbe79` |
-| [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | `30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a` |
-| [src/lib/supabase.ts](../../../src/lib/supabase.ts) | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
+| [src/infrastructure/session/session-runtime-service.ts](../../../src/infrastructure/session/session-runtime-service.ts) | `49c9781729542abf9ca36d23d26ddf7206bd1247b6f5fe6b7e964f5942cf2961` |
 | [supabase/migrations/001_initial.sql](../../../supabase/migrations/001_initial.sql) | `e3325c56d68286a2e293ddff791736ef91346ff90ac018c045843a5d52afb8c8` |
 | [supabase/migrations/002_character_trait_arrays.sql](../../../supabase/migrations/002_character_trait_arrays.sql) | `74a7f112720d2572bbb8b7d8c32e0f5f5abf932c35268a34b45dc4bfedc2a02a` |
 | [supabase/migrations/005_character_ruleset_metadata.sql](../../../supabase/migrations/005_character_ruleset_metadata.sql) | `02874b854874e5d89ad6b697563d545f5d2b72735afe763d6927e574b2ba49ca` |

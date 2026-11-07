@@ -141,7 +141,11 @@ try {
 
   // RT4 — FE has no client write fallback (#675)
   const fe = readFileSync(join(root, 'src/infrastructure/marketplace/marketplace-service.ts'), 'utf8');
-  assert(fe.includes('increment_marketplace_downloads'), 'FE calls RPC');
+  assert(
+    fe.includes('incrementHostMarketplaceDownloads') &&
+      !fe.includes("rpc('increment_marketplace_downloads'"),
+    'FE calls host marketplace downloads (CUT-20)',
+  );
   assert(
     fe.includes('no client counter write') || fe.includes('no client write fallback'),
     'FE documents no client counter write',

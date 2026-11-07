@@ -14,6 +14,8 @@ export default defineConfig({
   // Platform-agnostic baselines so darwin-authored PNGs work on linux CI (#483).
   snapshotPathTemplate:
     '{testDir}/{testFileDir}/{testFileName}-snapshots/{arg}-{projectName}{ext}',
+  // CUT-20: GoTrue Local Admin timeout contract removed — product auth is Host Better Auth.
+  testIgnore: [/auth-local-admin-timeout\.spec\.ts/],
   fullyParallel: true,
   forbidOnly: isCi,
   // CI: two retries absorb transient shell/auth races without masking hard failures.
@@ -76,5 +78,15 @@ export default defineConfig({
     url: devUrl,
     reuseExistingServer: !isCi,
     timeout: 180_000,
+    env: {
+      ...process.env,
+      // Propagated by scripts/browser-e2e-with-host.mjs (CUT-20 host-only FE).
+      ...(process.env.VITE_SAGATREE_HOST_AUTH_URL
+        ? { VITE_SAGATREE_HOST_AUTH_URL: process.env.VITE_SAGATREE_HOST_AUTH_URL }
+        : {}),
+      ...(process.env.SAGATREE_HOST_PROXY_TARGET
+        ? { SAGATREE_HOST_PROXY_TARGET: process.env.SAGATREE_HOST_PROXY_TARGET }
+        : {}),
+    },
   },
 });

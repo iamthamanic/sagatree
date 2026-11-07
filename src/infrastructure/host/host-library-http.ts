@@ -2,15 +2,13 @@
  * host-library-http — Browser Library cutover client (credentials cookie / solo host).
  * Location: src/infrastructure/host/host-library-http.ts
  *
- * FE-HOST-09 host-first: enabled when `VITE_SAGATREE_HOST_AUTH_URL` is set,
- * unless `VITE_SAGATREE_HOST_LIBRARY` is explicitly off (`0`/`false`/`off`/`no`).
- * Explicit `1`/`true`/`yes` still enables when the auth URL is present.
+ * CUT-20: host product runtime when `VITE_SAGATREE_HOST_AUTH_URL` is set.
+ * Legacy `VITE_SAGATREE_HOST_LIBRARY=0` opt-out removed — no Supabase dual-path.
  */
 import { getHostAuthBaseUrl } from '../../lib/hostAuthBridge';
 
 type EnvLike = {
   readonly VITE_SAGATREE_HOST_AUTH_URL?: string;
-  readonly VITE_SAGATREE_HOST_LIBRARY?: string;
 };
 
 function defaultEnv(): EnvLike {
@@ -21,14 +19,7 @@ function defaultEnv(): EnvLike {
   }
 }
 
-/** Explicit opt-out of host-first product runtime. */
-export function isHostLibraryExplicitlyDisabled(env: EnvLike = defaultEnv()): boolean {
-  const flag = env.VITE_SAGATREE_HOST_LIBRARY?.trim().toLowerCase();
-  return flag === '0' || flag === 'false' || flag === 'off' || flag === 'no';
-}
-
 export function isHostLibraryEnabled(env: EnvLike = defaultEnv()): boolean {
-  if (isHostLibraryExplicitlyDisabled(env)) return false;
   return getHostAuthBaseUrl(env) !== null;
 }
 

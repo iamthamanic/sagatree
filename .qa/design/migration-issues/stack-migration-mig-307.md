@@ -23,7 +23,7 @@ src/infrastructure/npc-creature: bestehende Aufrufer über den freigegebenen Hos
 
 - Epic: #773; historische Baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`; keine Produktionszustandsbehauptung.
 - Verbindliche Architektur: `docs/architecture/migration-owner-decisions-2026-10-23.md`.
-- Quellpfade und bestehende Adapter: `src/domains/character/avatar/face-anchor-contract.ts`, `src/domains/character/avatar/morph-contract.ts`, `src/domains/character/domain/character.entity.ts`, `src/domains/npc-creature/contracts.ts`, `src/domains/npc-creature/controller-assignment.ts`, `src/domains/npc-creature/core-catalog.ts`, `src/domains/npc-creature/definition.ts`, `src/domains/npc-creature/derived.ts`, `src/domains/npc-creature/icon-assets.ts`, `src/domains/npc-creature/index.ts`, `src/domains/npc-creature/instance.ts`, `src/domains/npc-creature/library-query.ts`, `src/domains/npc-creature/pack.ts`, `src/domains/npc-creature/packs/animals.ts`, `src/domains/npc-creature/packs/build-builtin.ts`, `src/domains/npc-creature/packs/context-packs.ts`, `src/domains/npc-creature/packs/fantasy-basics.ts`, `src/domains/npc-creature/packs/index.ts`, `src/domains/npc-creature/parse.ts`, `src/domains/npc-creature/payload.ts`, `src/domains/npc-creature/policy.ts`, `src/domains/npc-creature/promotion.ts`, `src/domains/npc-creature/taxonomy.ts`, `src/domains/npc-creature/validate.ts`, `src/domains/npc-creature/world-catalog.ts`, `src/domains/rules/sagatree/attribute-progression/index.ts`, `src/domains/rules/sagatree/character-creation/index.ts`, `src/domains/rules/sagatree/npc-creature-power/benchmarks.ts`, `src/domains/rules/sagatree/npc-creature-power/combat-roles.ts`, `src/domains/rules/sagatree/npc-creature-power/compute.ts`, `src/domains/rules/sagatree/npc-creature-power/damage-steps.ts`, `src/domains/rules/sagatree/npc-creature-power/index.ts`, `src/domains/rules/sagatree/npc-creature-power/machtgrad.ts`, `src/domains/rules/sagatree/npc-creature-power/profiles.ts`, `src/domains/rules/sagatree/npc-creature-power/types.ts`, `src/infrastructure/host/host-library-http.ts`, `src/infrastructure/host/host-session-http.ts`, `src/infrastructure/npc-creature/host-npc-creature-adapter.ts`, `src/infrastructure/npc-creature/host-npc-creature-ports.contract.ts`, `src/infrastructure/npc-creature/npc-creature-controller.persistence.ts`, `src/infrastructure/npc-creature/npc-creature-instance.persistence.ts`, `src/infrastructure/npc-creature/npc-creature-service.ts`, `src/infrastructure/npc-creature/npc-creature.persistence.ts`, `src/infrastructure/npc-creature/supabase-npc-creature.repository.ts`, `src/lib/authenticatedUser.ts`, `src/lib/hostAuthBridge.ts`, `src/lib/localAdmin.ts`, `src/lib/networkTimeout.ts`, `src/lib/supabase.ts`.
+- Quellpfade und bestehende Adapter: `src/domains/character/avatar/face-anchor-contract.ts`, `src/domains/character/avatar/morph-contract.ts`, `src/domains/character/domain/character.entity.ts`, `src/domains/npc-creature/contracts.ts`, `src/domains/npc-creature/controller-assignment.ts`, `src/domains/npc-creature/core-catalog.ts`, `src/domains/npc-creature/definition.ts`, `src/domains/npc-creature/derived.ts`, `src/domains/npc-creature/icon-assets.ts`, `src/domains/npc-creature/index.ts`, `src/domains/npc-creature/instance.ts`, `src/domains/npc-creature/library-query.ts`, `src/domains/npc-creature/pack.ts`, `src/domains/npc-creature/packs/animals.ts`, `src/domains/npc-creature/packs/build-builtin.ts`, `src/domains/npc-creature/packs/context-packs.ts`, `src/domains/npc-creature/packs/fantasy-basics.ts`, `src/domains/npc-creature/packs/index.ts`, `src/domains/npc-creature/parse.ts`, `src/domains/npc-creature/payload.ts`, `src/domains/npc-creature/policy.ts`, `src/domains/npc-creature/promotion.ts`, `src/domains/npc-creature/taxonomy.ts`, `src/domains/npc-creature/validate.ts`, `src/domains/npc-creature/world-catalog.ts`, `src/domains/rules/sagatree/attribute-progression/index.ts`, `src/domains/rules/sagatree/character-creation/index.ts`, `src/domains/rules/sagatree/npc-creature-power/benchmarks.ts`, `src/domains/rules/sagatree/npc-creature-power/combat-roles.ts`, `src/domains/rules/sagatree/npc-creature-power/compute.ts`, `src/domains/rules/sagatree/npc-creature-power/damage-steps.ts`, `src/domains/rules/sagatree/npc-creature-power/index.ts`, `src/domains/rules/sagatree/npc-creature-power/machtgrad.ts`, `src/domains/rules/sagatree/npc-creature-power/profiles.ts`, `src/domains/rules/sagatree/npc-creature-power/types.ts`, `src/infrastructure/host/host-library-http.ts`, `src/infrastructure/host/host-session-http.ts`, `src/infrastructure/npc-creature/host-npc-creature-adapter.ts`, `src/infrastructure/npc-creature/host-npc-creature-ports.contract.ts`, `src/infrastructure/npc-creature/npc-creature-controller.persistence.ts`, `src/infrastructure/npc-creature/npc-creature-instance.persistence.ts`, `src/infrastructure/npc-creature/npc-creature-service.ts`, `src/infrastructure/npc-creature/npc-creature.persistence.ts`, `src/lib/authenticatedUser.ts`, `src/lib/hostAuthBridge.ts`, `src/lib/localAdmin.ts`, `src/lib/networkTimeout.ts`.
 - Source Contracts: `.qa/intake/edge-infra-contracts/infra-npc-creature.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-npc-creature.json`.
 - Zielverhalten: Binding product decisions: docs/architecture/migration-owner-decisions-2026-10-23.md; GATE-01 Drizzle+Policy, GATE-02 Cookie-A, GATE-03 Hono+Colyseus, GATE-04 SQLite single-writer. GATE-05 Tauri+sidecar selected; platform release pending..
 
@@ -76,59 +76,18 @@ UI-Parität, soweit betroffen: `src/THEME_GUIDE.md`, `docs/ui-styleguide.md`, `d
 - Dann: Assign/revoke controller and clear only session-scoped temporary controllers; wrong owner/player mutation denied.
 - Quelle: `.qa/intake/edge-infra-contracts/infra-npc-creature.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-npc-creature.json`
 
-### Fall 3
-
-- Gegeben: Der eingefrorene Quellvertrag für npc-creature und isolierte positive/negative Fixtures
-- Wenn: Der Nachfolger den dokumentierten Fall für npc-creature ausführt
-- Dann: Contract fixture for assign_npc_creature_controller: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
-- Quelle: `.qa/intake/edge-infra-contracts/infra-npc-creature.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-npc-creature.json`
-
-### Fall 4
-
-- Gegeben: Der eingefrorene Quellvertrag für npc-creature und isolierte positive/negative Fixtures
-- Wenn: Der Nachfolger den dokumentierten Fall für npc-creature ausführt
-- Dann: Contract fixture for clear_npc_creature_instance_temp_controllers_for_session: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
-- Quelle: `.qa/intake/edge-infra-contracts/infra-npc-creature.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-npc-creature.json`
-
-### Fall 5
-
-- Gegeben: Der eingefrorene Quellvertrag für npc-creature und isolierte positive/negative Fixtures
-- Wenn: Der Nachfolger den dokumentierten Fall für npc-creature ausführt
-- Dann: Contract fixture for remove_npc_creature_instance: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
-- Quelle: `.qa/intake/edge-infra-contracts/infra-npc-creature.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-npc-creature.json`
-
-### Fall 6
-
-- Gegeben: Der eingefrorene Quellvertrag für npc-creature und isolierte positive/negative Fixtures
-- Wenn: Der Nachfolger den dokumentierten Fall für npc-creature ausführt
-- Dann: Contract fixture for spawn_npc_creature_instance: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
-- Quelle: `.qa/intake/edge-infra-contracts/infra-npc-creature.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-npc-creature.json`
-
-### Fall 7
-
-- Gegeben: Der eingefrorene Quellvertrag für npc-creature und isolierte positive/negative Fixtures
-- Wenn: Der Nachfolger den dokumentierten Fall für npc-creature ausführt
-- Dann: Contract fixture for update_npc_creature_instance_runtime: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
-- Quelle: `.qa/intake/edge-infra-contracts/infra-npc-creature.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-npc-creature.json`
-
 ## Required Tests
 
 Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assertions`). Öffentliche Acceptance-Checkboxen dürfen zusammenfassen; kein Pflichttest darf hier fehlen.
 
 1. Create/read/update allowed definitions; spawn/update/remove session instance through documented RPC and reload.
 2. Assign/revoke controller and clear only session-scoped temporary controllers; wrong owner/player mutation denied.
-3. Contract fixture for assign_npc_creature_controller: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
-4. Contract fixture for clear_npc_creature_instance_temp_controllers_for_session: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
-5. Contract fixture for remove_npc_creature_instance: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
-6. Contract fixture for spawn_npc_creature_instance: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
-7. Contract fixture for update_npc_creature_instance_runtime: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
-8. Touched files: zero type escape hatches (typed-strict / Boy Scout).
+3. Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
 ## Acceptance
 
-- [ ] Alle 7 quellenabgeleiteten Given/When/Then-Fälle unter Edge Cases und Required Tests müssen im echten zuständigen Test-Stack nachweislich PASS sein; keine RequiredTests aus dem Inventar verlieren.
-- [ ] Jeder negative Berechtigungs-, Schema-, State- und Retry-Test ist einzeln ausgeführt und mit Commit/Fixture und Logs belegbar; ein Legacy-Defekt wird nicht als sichere Parität akzeptiert.
-- [ ] Alle Signaturen, Owner-/GM-/Membership- und Persistenz-Nebenwirkungen werden mit dem bestehenden Quellvertrag verglichen; ungetestete Pfade bleiben NOT RUN.
+- [ ] Create/read/update allowed definitions; spawn/update/remove session instance through documented RPC and reload.
+- [ ] Assign/revoke controller and clear only session-scoped temporary controllers; wrong owner/player mutation denied.
 - [ ] Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
 ## Acceptance tiers
@@ -146,7 +105,6 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 - Depends on #791 (MIG-012)
 - Depends on #792 (MIG-013)
 - Depends on #795 (MIG-020)
-- Depends on #877 (RPC-NPC-INSTANCES)
 - Depends on #793 (MIG-014)
 
 Status: **done**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance.

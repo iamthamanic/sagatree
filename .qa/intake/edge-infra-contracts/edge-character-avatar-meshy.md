@@ -428,22 +428,7 @@ CORS_OPTS: CorsOptions = {
 
 ## All adapter call sites
 
-### src/infrastructure/character/avatar/character-avatar-meshy-service.ts:121
-
-
-```ts
-async function invoke(body: Record<string, unknown>): Promise<FunctionResponse> {
-  if (isHostLibraryEnabled()) {
-    return invokeHost(body);
-  }
-  const { data, error } = await supabase.functions.invoke('character-avatar-meshy', { body });
-  if (error) {
-    return { status: 'error', message: error.message || 'Edge Function fehlgeschlagen.' };
-  }
-  return parseResponse(data);
-}
-```
-
+No src/infrastructure caller in the reviewed branch. This does not authorize adding a public mount.
 
 ## Exact ordered operations
 
@@ -2661,7 +2646,6 @@ function parseGenerationMode(value: unknown): GenerationMode {
 
 | Path | SHA-256 |
 |---|---|
-| `src/infrastructure/character/avatar/character-avatar-meshy-service.ts` | `a7f47abccf1f21e7c64a23f70e260bb5247166f8a3b032710994bb9717bf35e2` |
 | `supabase/functions/_shared/ai-provider-crypto.ts` | `45e60f76f744077e8d9b243719dcdba5d58a047d36a1c141df830afa2de16532` |
 | `supabase/functions/_shared/ai-provider-resolve-meshy.ts` | `b65f8aa91c02871a2661e1ca697c6115f3c7c4ec07c683d1e7ed19c39287a842` |
 | `supabase/functions/_shared/avatar-3d-generation.ts` | `59f0507973e94af6aff505622204a8f580a2b1594e6167943c888b4c7b0e250d` |

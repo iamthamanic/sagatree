@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * mig-303-inventory-adapter.self-test — Inventory host ports + dual-path (#802).
+ * mig-303-inventory-adapter.self-test — Inventory host ports + host-only FE (#802 / CUT-20).
  * Location: scripts/mig-303-inventory-adapter.self-test.mjs
  *
  * Acceptance tier: isolated-contract. Supabase facades stay live (no cutover).

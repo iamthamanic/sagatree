@@ -31,7 +31,7 @@ const creation = read('src/domains/rules/sagatree/character-creation/index.ts');
 const assertPersistence = read('src/domains/character/use-cases/assert-character-persistence.ts');
 const normalize = read('src/domains/character/use-cases/normalize-character.ts');
 const derived = read('src/domains/rules/sagatree/derived-stats/compute-derived-stats.ts');
-const repository = read('src/infrastructure/character/supabase-character.repository.ts');
+const characterFacade = read('src/infrastructure/character/character-service.ts');
 const presetService = read('src/infrastructure/character/character-preset-service.ts');
 const domainCheck = read('scripts/skill-progression-domain-check.mjs');
 
@@ -69,8 +69,9 @@ requireMatch(normalize, /normalizeFreeSkillRanks/, 'free skill ranks normalizati
 forbidMatch(normalize, /skillProvenanceStatus/, 'normalization still copies skillProvenanceStatus');
 forbidMatch(normalize, /value\?\.trainedSkills/, 'normalization still restores trainedSkills as a source');
 requireMatch(derived, /getSagaTreeAppliedExperienceBonus/, 'initiative uses applied EB');
-requireMatch(repository, /assertValidSagaTreeCharacterPersistence/, 'repository enforces skill persistence');
-requireMatch(repository, /touchesSagaTreeState/, 'partial updates validate the effective combined state');
+requireMatch(characterFacade, /payload\.sagatree_profile/, 'facade forwards saga tree profile patches to host');
+requireMatch(characterFacade, /payload\.skills/, 'facade forwards skill patches to host sheet merge');
+requireMatch(characterFacade, /assertHost\(\)/, 'host-only character facade');
 requireMatch(presetService, /assertValidSagaTreeCharacterPersistence/, 'preset snapshots use central character persistence');
 forbidMatch(presetService, /SAGA_TREE_START_MIN_TRAINED_SKILLS/, 'preset service still imports min-trained-skills constant');
 forbidMatch(presetService, /trainedCount/, 'preset service still counts distinct trained skills');

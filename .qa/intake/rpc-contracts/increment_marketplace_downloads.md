@@ -113,64 +113,139 @@ $$ LANGUAGE plpgsql;
 
 ## Caller: Request-Mapping, Response-Decoding und Fehler
 
-### src/infrastructure/marketplace/marketplace-service.ts:289
+### src/infrastructure/marketplace/marketplace-service.ts:1
 
-AST-Auflösung: `string-literal`; SHA-256 `52c856bd8d5be2885897e155ade57bfdfed1b8eb7e48fe6fb1376b8e1a5284e8`.
+AST-Auflösung: `host-transport-cut-20`; SHA-256 `d2135007e96a4775dea0a8b238312a72539a0541c9095024323c128b15a8afe1`.
 
 Der vollständige aufrufende Funktionskörper enthält Parameterumformung, RPC-Aufruf, Response-Prüfung, Fehlerumwandlung und gegebenenfalls Fallback:
 
 ```typescript
-export async function incrementDownloads(id: string): Promise<void> {
-  if (isHostLibraryEnabled()) {
-    try {
-      await incrementHostMarketplaceDownloads(id);
-    } catch (error) {
-      console.error(
-        'incrementHostMarketplaceDownloads failed (no client counter write):',
-        error instanceof Error ? error.message : error,
-      );
-    }
-    return;
-  }
-  try {
-    const { error } = await supabase.rpc('increment_marketplace_downloads', {
-      item_id: id,
-    });
+/**
+ * marketplace-service — Host catalog adapter for marketplace (#675 / CUT-20).
+ * Location: src/infrastructure/marketplace/marketplace-service.ts
+ *
+ * Client-trust (#675): mutations scope to authenticated author_id; update/create
+ * DTOs are allowlisted — never spread rating/downloads/author_id from the client.
+ */
+import {
+  whitelistMarketplaceCreateDto,
+  whitelistMarketplaceUpdatePatch,
+} from '../../domains/marketplace/client-trust';
+import type {
+  MarketplaceItem,
+  CreateMarketplaceItemDTO,
+  UpdateMarketplaceItemDTO,
+  MarketplaceFilters,
+} from '../../domains/marketplace/contracts/marketplace.types';
+import {
+  createHostMarketplaceItem,
+  deleteHostMarketplaceItem,
+  fetchHostFeaturedMarketplaceItems,
+  fetchHostMarketplaceItem,
+  fetchHostMarketplaceItems,
+  incrementHostMarketplaceDownloads,
+  isHostLibraryEnabled,
+  updateHostMarketplaceItem,
+} from '../host/host-catalog-http';
 
-    if (error) {
-      console.error(
-        'increment_marketplace_downloads RPC failed (no client counter write):',
-        error.message,
-      );
-    }
-  } catch (error) {
-    console.error('Error incrementing downloads:', error);
+function assertHost(): void {
+  if (!isHostLibraryEnabled()) {
+    throw new Error('Host-Anmeldung nicht konfiguriert (VITE_SAGATREE_HOST_AUTH_URL fehlt).');
   }
 }
+
+/**
+ * Get all marketplace items with optional filtering
+ */
+export async function getMarketplaceItems(
+  filters?: MarketplaceFilters
+): Promise<MarketplaceItem[]> {
+  assertHost();
+  return fetchHostMarketplaceItems(filters);
+}
+
+/**
+ * Get a single marketplace item by ID
+ */
+export async function getMarketplaceItemById(id: string): Promise<MarketplaceItem | null> {
+  assertHost();
+  return fetchHostMarketplaceItem(id);
+}
+
+/**
+ * Get featured marketplace items (top downloads).
+ */
+export async function getFeaturedItems(): Promise<MarketplaceItem[]> {
+  assertHost();
+  return fetchHostFeaturedMarketplaceItems();
+}
+
+/**
+ * Create a new marketplace item (publish your content)
+ */
+export async function createMarketplaceItem(
+  dto: CreateMarketplaceItemDTO
+): Promise<MarketplaceItem> {
+  assertHost();
+  return createHostMarketplaceItem(whitelistMarketplaceCreateDto(dto));
+}
+
+/**
+ * Update a marketplace item (only if you're the author)
+ */
+export async function updateMarketplaceItem(
+  id: string,
+  dto: UpdateMarketplaceItemDTO
+): Promise<MarketplaceItem> {
+  assertHost();
+  const patch = whitelistMarketplaceUpdatePatch(dto);
+  if (Object.keys(patch).length === 0) {
+    throw new Error('Keine erlaubten Update-Felder');
+  }
+  return updateHostMarketplaceItem(id, patch);
+}
+
+/**
+ * Delete a marketplace item (only if you're the author)
+ */
+export async function deleteMarketplaceItem(id: string): Promise<boolean> {
+  assertHost();
+  try {
+    await deleteHostMarketplaceItem(id);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Increment downloads counter when a user downloads an item.
+ * Counters are server-authority only — no client write fallback (#675).
+ */
+export async function incrementDownloads(id: string): Promise<void> {
+  assertHost();
+  try {
+    await incrementHostMarketplaceDownloads(id);
+  } catch (error) {
+    console.error(
+      'incrementHostMarketplaceDownloads failed (no client counter write):',
+      error instanceof Error ? error.message : error,
+    );
+  }
+}
+
+/**
+ * Get items by a specific author
+ */
+export async function getItemsByAuthor(authorId: string): Promise<MarketplaceItem[]> {
+  assertHost();
+  const items = await fetchHostMarketplaceItems();
+  return items
+    .filter((item) => item.author_id === authorId)
+    .sort((a, b) => (b.created_at ?? '').localeCompare(a.created_at ?? ''));
+}
+
 ```
-
-Direkt oder transitiv referenzierte lokale/importierte Mapper, Decoder und Vertrags-Typen sind zusätzlich mit vollständigem Source-Text in callers.json und inventory.json.callerContracts.supportingDeclarations gespeichert:
-
-| Symbol | Quelle | Zeile | SHA-256 |
-| --- | --- | --- | --- |
-| `EnvLike` | [src/infrastructure/host/host-catalog-http.ts](../../../src/infrastructure/host/host-catalog-http.ts) | 18 | `9049245360683a74e7e2602d35126d815d64344d384c6684e4c2c3d41aa626d3` |
-| `defaultEnv` | [src/infrastructure/host/host-catalog-http.ts](../../../src/infrastructure/host/host-catalog-http.ts) | 23 | `9049245360683a74e7e2602d35126d815d64344d384c6684e4c2c3d41aa626d3` |
-| `hostJson` | [src/infrastructure/host/host-catalog-http.ts](../../../src/infrastructure/host/host-catalog-http.ts) | 31 | `9049245360683a74e7e2602d35126d815d64344d384c6684e4c2c3d41aa626d3` |
-| `incrementHostMarketplaceDownloads` | [src/infrastructure/host/host-catalog-http.ts](../../../src/infrastructure/host/host-catalog-http.ts) | 172 | `9049245360683a74e7e2602d35126d815d64344d384c6684e4c2c3d41aa626d3` |
-| `EnvLike` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 11 | `b2343081ddce2e2edd73651b0622e8b4cc6d8583d746a863dbe3343e3a98f71a` |
-| `defaultEnv` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 16 | `b2343081ddce2e2edd73651b0622e8b4cc6d8583d746a863dbe3343e3a98f71a` |
-| `isHostLibraryExplicitlyDisabled` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 25 | `b2343081ddce2e2edd73651b0622e8b4cc6d8583d746a863dbe3343e3a98f71a` |
-| `EnvLike` | [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | 31 | `30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a` |
-| `defaultEnv` | [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | 33 | `30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a` |
-| `getHostAuthBaseUrl` | [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | 53 | `30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a` |
-| `viteEnv` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 13 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
-| `configuredSupabaseUrl` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 15 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
-| `configuredSupabaseAnonKey` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 16 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
-| `hostAuthUrl` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 17 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
-| `hostFirst` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 18 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
-| `supabaseUrl` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 58 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
-| `supabaseAnonKey` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 59 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
-| `supabase` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 61 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
 
 ## Konkrete Abnahmekriterien
 
@@ -205,10 +280,6 @@ Die folgenden Hashes binden SQL-Kette, transitive Tabellen-/Trigger-/Policyquell
 
 | Quelle | SHA-256 |
 | --- | --- |
-| [src/infrastructure/host/host-catalog-http.ts](../../../src/infrastructure/host/host-catalog-http.ts) | `9049245360683a74e7e2602d35126d815d64344d384c6684e4c2c3d41aa626d3` |
-| [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | `b2343081ddce2e2edd73651b0622e8b4cc6d8583d746a863dbe3343e3a98f71a` |
-| [src/infrastructure/marketplace/marketplace-service.ts](../../../src/infrastructure/marketplace/marketplace-service.ts) | `52c856bd8d5be2885897e155ade57bfdfed1b8eb7e48fe6fb1376b8e1a5284e8` |
-| [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | `30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a` |
-| [src/lib/supabase.ts](../../../src/lib/supabase.ts) | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
+| [src/infrastructure/marketplace/marketplace-service.ts](../../../src/infrastructure/marketplace/marketplace-service.ts) | `d2135007e96a4775dea0a8b238312a72539a0541c9095024323c128b15a8afe1` |
 | [src/supabase/add_marketplace_rpc.sql](../../../src/supabase/add_marketplace_rpc.sql) | `450d3ba94e44b796ce64bf8c5e2a7a82f53f37b23574f5b1a8dfd1ef1550c670` |
 | [src/supabase/deploy_marketplace.sql](../../../src/supabase/deploy_marketplace.sql) | `fcd99e2ea5dc98bd3b5284e8c2a69f532071be45ccdb66abf58ebfc31c57c38b` |

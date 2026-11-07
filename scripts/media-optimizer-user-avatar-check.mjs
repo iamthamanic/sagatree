@@ -32,7 +32,6 @@ const paths = [
   'src/app/shell/Layout.tsx',
   'src/app/session/SessionLobbyScreen.tsx',
   'src/infrastructure/user-profile/user-profile-service.ts',
-  'src/infrastructure/user-profile/supabase-user-profile.repository.ts',
   'src/infrastructure/user-profile/account-avatar-store.ts',
   'src/domains/user-profile/display-name.ts',
   'supabase/migrations/081_user_profiles_and_avatars.sql',
@@ -46,10 +45,6 @@ section('2 · intake + alreadyOptimized + no silent original');
 const ui = readFileSync(join(root, 'src/app/profile/AccountAvatarSection.tsx'), 'utf8');
 const service = readFileSync(
   join(root, 'src/infrastructure/user-profile/user-profile-service.ts'),
-  'utf8',
-);
-const repo = readFileSync(
-  join(root, 'src/infrastructure/user-profile/supabase-user-profile.repository.ts'),
   'utf8',
 );
 const contract = readFileSync(
@@ -88,12 +83,10 @@ check(/profileId:\s*['"]user-avatar['"]/.test(service), 'service prepare uses us
 check(/optimizeMedia/.test(service), 'service calls optimizeMedia');
 check(/alreadyOptimized/.test(service), 'service respects alreadyOptimized');
 check(/kein stilles Original|no silent/.test(service), 'service fails closed on empty optimize');
-check(/sniffUserAvatarMime/.test(repo), 'repository magic-byte sniff');
-check(/image\/webp/.test(repo), 'repository accepts webp');
-check(/user-avatars/.test(repo), 'repository uses user-avatars bucket');
-check(/ensureOwnProfileRow/.test(repo), 'repository ensures profile row');
-check(/select\('id'\)/.test(repo) && /\.insert\(/.test(repo), 'ensure is select-then-insert');
-check(/formatSupabaseError/.test(repo), 'errors format code/message (no undefined)');
+check(/uploadHostUserAvatar/.test(service), 'service uploads via host HTTP');
+check(/image\/webp/.test(service), 'service accepts webp output');
+check(/fetchHostOwnUserProfile/.test(service), 'service reads own profile via host');
+check(/assertHost\(\)/.test(service), 'host-only user profile facade');
 check(/'user-avatar'/.test(contract), 'contract lists user-avatar');
 check(/profileId:\s*['"]user-avatar['"]/.test(policy), 'policy defines user-avatar');
 check(/gifAnimation:\s*['"]reject['"]/.test(policy) && /USER_AVATAR/.test(policy), 'avatar rejects gif');
@@ -134,7 +127,6 @@ section('5 · typed-strict on touched');
 for (const [rel, text] of [
   ['AccountAvatarSection.tsx', ui],
   ['user-profile-service.ts', service],
-  ['supabase-user-profile.repository.ts', repo],
 ]) {
   const codeOnly = text.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*$/gm, '');
   check(!/\bany\b/.test(codeOnly), `${rel}: no any`);

@@ -13,7 +13,6 @@ import {
 } from '../../domains/look';
 import { getHostAuthBaseUrl } from '../../lib/hostAuthBridge';
 import { supabase } from '../../lib/supabase';
-import { isHostLibraryEnabled } from '../host/host-library-http';
 
 export type LookReferenceAnalysisRequestImage = LookReferenceAnalysisImageInput & {
   /** Inline image for vision call. */
@@ -185,39 +184,7 @@ export async function analyzeLookReferences(
 
   const body = buildRequestBody(request);
 
-  if (isHostLibraryEnabled()) {
-    const edge = await invokeHostLookReferenceAnalysis(body);
-    if (edge.status !== 'ok') {
-      return {
-        ok: false,
-        code: edge.status,
-        messageDe: edge.message,
-      };
-    }
-    return normalizeLookReferenceAnalysisPayload(edge.payload, {
-      references: domainInputs,
-      displayNameHint: request.displayNameHint,
-      analyzedAtIso: edge.analyzedAtIso,
-    });
-  }
-
-  const { data, error } = await supabase.functions.invoke(
-    'look-reference-analysis',
-    { body },
-  );
-
-  if (error) {
-    const serverMessage = await getFunctionErrorMessage(error);
-    return {
-      ok: false,
-      code: 'edge-error',
-      messageDe:
-        serverMessage ??
-        'Look-Referenzanalyse fehlgeschlagen. Bitte erneut versuchen.',
-    };
-  }
-
-  const edge = parseEdgeResponse(data);
+  const edge = await invokeHostLookReferenceAnalysis(body);
   if (edge.status !== 'ok') {
     return {
       ok: false,
@@ -225,7 +192,6 @@ export async function analyzeLookReferences(
       messageDe: edge.message,
     };
   }
-
   return normalizeLookReferenceAnalysisPayload(edge.payload, {
     references: domainInputs,
     displayNameHint: request.displayNameHint,

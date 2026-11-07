@@ -120,56 +120,21 @@ requireMatch(
 const projectService = read('src/infrastructure/project/project-service.ts');
 const sessionService = read('src/infrastructure/session/session-service.ts');
 
-requireMatch(projectService, /PROJECT_SAFE_COLUMNS/, 'PROJECT_SAFE_COLUMNS constant');
-requireMatch(projectService, /SESSION_SAFE_COLUMNS/, 'SESSION_SAFE_COLUMNS in project-service');
-requireMatch(sessionService, /SESSION_SAFE_COLUMNS/, 'SESSION_SAFE_COLUMNS in session-service');
+// CUT-20: facades must not read projects/sessions via PostgREST; host API is scoped server-side.
 requireMatch(
   projectService,
-  /\.insert\(projectData\)\s*\.select\(PROJECT_SAFE_COLUMNS\)/,
-  'createProject returns PROJECT_SAFE_COLUMNS (not select *)',
+  /fetchHostLibraryProjects|createHostProject/,
+  'project-service host HTTP (CUT-20)',
 );
-requireMatch(projectService, /saga_id, saga_version_id/, 'PROJECT_SAFE_COLUMNS includes saga pins');
-
-function safeColumnList(source, constName) {
-  const match = source.match(
-    new RegExp(`const ${constName}\\s*=\\s*([\\\`'"])([\\s\\S]*?)\\1`),
-  );
-  return match ? match[2] : '';
-}
-
-const projectSafe = safeColumnList(projectService, 'PROJECT_SAFE_COLUMNS');
-const projectSessionSafe = safeColumnList(projectService, 'SESSION_SAFE_COLUMNS');
-const sessionSafe = safeColumnList(sessionService, 'SESSION_SAFE_COLUMNS');
-if (!projectSafe) fail('PROJECT_SAFE_COLUMNS string not found');
-if (!projectSessionSafe) fail('project-service SESSION_SAFE_COLUMNS string not found');
-if (!sessionSafe) fail('session-service SESSION_SAFE_COLUMNS string not found');
-if (/\badventure_runtime\b/.test(projectSafe)) {
-  fail('PROJECT_SAFE_COLUMNS must not include adventure_runtime');
-}
-if (/\b(world_state|notes)\b/.test(projectSessionSafe)) {
-  fail('project-service SESSION_SAFE_COLUMNS must not include world_state/notes');
-}
-if (/\b(world_state|notes)\b/.test(sessionSafe)) {
-  fail('session-service SESSION_SAFE_COLUMNS must not include world_state/notes');
-}
-
-rejectMatch(
-  projectService,
-  /\.from\(\s*this\.tableName\s*\)[\s\S]{0,120}?\.select\(\s*['"]\*['"]\s*\)/,
-  'project-service selects * from projects',
-);
-rejectMatch(
-  projectService,
-  /\.from\(\s*this\.sessionsTableName\s*\)[\s\S]{0,120}?\.select\(\s*['"]\*['"]\s*\)/,
-  'project-service selects * from sessions',
-);
-rejectMatch(projectService, /projects!inner\(\*\)/, 'project-service nested projects!inner(*)');
-rejectMatch(
+requireMatch(
   sessionService,
-  /\.from\(\s*this\.tableName\s*\)[\s\S]{0,120}?\.select\(\s*['"]\*['"]\s*\)/,
-  'session-service selects * from sessions',
+  /fetchHostSession|createHostPlaySession/,
+  'session-service host HTTP (CUT-20)',
 );
-rejectMatch(sessionService, /sessions!inner\(\*\)/, 'session-service nested sessions!inner(*)');
+rejectMatch(projectService, /\.from\(\s*['"]projects['"]/, 'project-service must not query projects table');
+rejectMatch(sessionService, /\.from\(\s*['"]sessions['"]/, 'session-service must not query sessions table');
+rejectMatch(projectService, /supabase\.rpc\s*\(/, 'project-service must not call supabase.rpc');
+rejectMatch(sessionService, /supabase\.rpc\s*\(/, 'session-service must not call supabase.rpc');
 
 const infraDir = join(root, 'src/infrastructure');
 function walk(dir, out = []) {

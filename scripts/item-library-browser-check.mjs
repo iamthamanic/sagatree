@@ -106,11 +106,10 @@ section('5 · UI contract strings / a11y hooks');
 section('6 · catalog service merges Core + builtin + persisted');
 {
   const service = read('src/infrastructure/inventory/item-catalog-service.ts');
-  const repo = read('src/infrastructure/inventory/supabase-item-catalog.repository.ts');
   check(/loadLibraryItemCatalog/.test(service), 'loadLibraryItemCatalog exported');
   check(/listBuiltinStandardDefinitions/.test(service), 'merges builtin standards');
   check(/listCoreItemDefinitions/.test(service), 'merges core definitions');
-  check(/listLibraryPersistedRecords/.test(repo), 'repository library list method');
+  check(/fetchAllHostItemRecords/.test(service), 'host library list for persisted rows');
 }
 
 section('7 · pure filter domain behaviour');

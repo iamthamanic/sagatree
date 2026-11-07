@@ -6,7 +6,8 @@
  * Legacy Edge `item-model3d` remains until dual-path removal (CUT-20).
  */
 import { getHostAuthBaseUrl } from '../../lib/hostAuthBridge';
-import { rewriteBrowserStorageUrl, supabase } from '../../lib/supabase';
+import { rewriteBrowserStorageUrl } from '../../lib/supabase';
+import { isHostLibraryEnabled } from '../host/host-library-http';
 import {
   ITEM_MODEL3D_MAX_BYTES,
   ITEM_MODEL3D_MIME,
@@ -15,7 +16,6 @@ import {
   sniffItemModel3dGlb,
   type ItemModel3dMime,
 } from '../../domains/items';
-import { isHostLibraryEnabled } from '../host/host-library-http';
 
 export type ItemModel3dJobUiStatus =
   | 'idle'
@@ -90,6 +90,9 @@ async function getFunctionErrorMessage(error: unknown): Promise<string | undefin
 }
 
 async function invokeHost(body: Record<string, unknown>): Promise<FunctionResponse> {
+  if (!isHostLibraryEnabled()) {
+    return { status: 'error', message: '3D-Modell-Dienst nicht erreichbar.' };
+  }
   const base = getHostAuthBaseUrl()?.replace(/\/$/, '') ?? '';
   if (!base) {
     return { status: 'error', message: '3D-Modell-Dienst nicht erreichbar.' };
@@ -115,15 +118,7 @@ async function invokeHost(body: Record<string, unknown>): Promise<FunctionRespon
 }
 
 async function invoke(body: Record<string, unknown>): Promise<FunctionResponse> {
-  if (isHostLibraryEnabled()) {
-    return invokeHost(body);
-  }
-  const { data, error } = await supabase.functions.invoke('item-model3d', { body });
-  if (error) {
-    const serverMessage = await getFunctionErrorMessage(error);
-    throw new Error(serverMessage ?? '3D-Modell-Dienst nicht erreichbar.');
-  }
-  return parseResponse(data);
+  return invokeHost(body);
 }
 
 function fileToBase64(file: File): Promise<string> {

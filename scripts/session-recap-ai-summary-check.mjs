@@ -59,7 +59,11 @@ requireMatch(panel, /data-episode-summary-approve/i, 'approve CTA');
 requireMatch(panel, /isGm/i, 'GM gate');
 
 const service = read('src/infrastructure/session/session-recap-ai-service.ts');
-requireMatch(service, /functions\.invoke\('session-recap'/i, 'invoke edge');
+requireMatch(service, /generateHostSessionRecapDraft/i, 'host generate (CUT-20)');
+requireMatch(service, /saveHostSessionRecapSummary/i, 'host save summary (CUT-20)');
+if (/functions\.invoke|\.rpc\s*\(|supabase/.test(service)) {
+  fail('service must not invoke Edge/RPC (CUT-20 host HTTP)');
+}
 if (/\bas any\b|eslint-disable|@ts-ignore/.test(service + domain + hook)) {
   fail('type escape hatch');
 }

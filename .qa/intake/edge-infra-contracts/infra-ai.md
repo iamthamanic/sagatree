@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-ai.json](source-contracts/infra-ai.json) (SHA-256 `542000a6f6ed3e0df39096cbb9721457a2e8cca9d1485a18d6276e37a2078283`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-ai.json](source-contracts/infra-ai.json) (SHA-256 `ae716626043a35a546d45cfaea6c1e37b3de12304785823888e16d8124530de5`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -22,7 +22,7 @@ Tables (0): none.
 
 Storage buckets (0): none.
 
-Edge invokes (2): `ai-provider-credentials`, `ollama-settings`.
+Edge invokes (0): none.
 
 Realtime call sites: 0. Direct fetch sites: 0. Explicit auth/helper sites: 0.
 
@@ -30,9 +30,7 @@ Realtime call sites: 0. Direct fetch sites: 0. Explicit auth/helper sites: 0.
 
 | Kind | Contract dependency | Implementation issue | Additional policy/group |
 |---|---|---|---|
-| edge | `ai-provider-credentials` | #818 |  |
-| edge | `ollama-settings` | #818 |  |
-| auth | `authenticated account/session transport` | #793 |  |
+
 
 ## Acceptance and negative tests (required, not executed)
 
@@ -46,26 +44,7 @@ None in the reviewed source.
 
 ## All backend calls, arguments, filters and result handling
 
-### edge: ai-provider-credentials
-
-`src/infrastructure/ai/host-ai-invoke.ts:70` — finite-literal-union.
-
-Exact call/query chain:
-```ts
-supabase.functions.invoke(functionName, { body })
-```
-
-Enclosing operation: `src/infrastructure/ai/host-ai-invoke.ts:65`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### edge: ollama-settings
-
-`src/infrastructure/ai/host-ai-invoke.ts:70` — finite-literal-union.
-
-Exact call/query chain:
-```ts
-supabase.functions.invoke(functionName, { body })
-```
-
-Enclosing operation: `src/infrastructure/ai/host-ai-invoke.ts:65`; complete request/default/result/error logic is in the declarations below and the snapshot.
+This area has no RPC, Edge, table, storage, realtime, fetch or auth calls. Its public browser processing/worker API is retained in the complete public declarations.
 
 ## Complete public declarations and facade operation contracts
 
@@ -128,7 +107,7 @@ export class AiProviderCredentialsService {
 export const aiProviderCredentialsService = new AiProviderCredentialsService();
 ```
 
-### src/infrastructure/ai/host-ai-invoke.ts:13
+### src/infrastructure/ai/host-ai-invoke.ts:10
 
 ```ts
 export type AiInvokeFn = (
@@ -137,48 +116,31 @@ export type AiInvokeFn = (
 ) => Promise<unknown>;
 ```
 
-### src/infrastructure/ai/host-ai-invoke.ts:117
+### src/infrastructure/ai/host-ai-invoke.ts:80
 
 ```ts
 export function createAiInvoke(options?: {
   readonly fetchImpl?: typeof fetch;
   readonly env?: EnvLike;
-  /** Force Edge even when host AI opt-in is set (tests). */
-  readonly forceEdge?: boolean;
 }): AiInvokeFn {
   const fetchImpl = options?.fetchImpl ?? fetch;
   const env = options?.env ?? ((import.meta as ImportMeta & { env?: EnvLike }).env ?? {});
-  const forceEdge = options?.forceEdge === true;
 
   return async (path, body) => {
-    // FE-HOST-14: host-first library runtime uses mounted /api/v1/ai/* (same as HOST_AI=1).
-    const preferHost =
-      !forceEdge &&
-      getHostAuthBaseUrl(env) !== null &&
-      (isHostAiEnabled(env) || isHostLibraryEnabled(env));
-    if (preferHost) {
-      return invokeHost(
-        path,
-        body,
-        path === 'ollama-settings'
-          ? 'Ollama-Einstellungen nicht erreichbar.'
-          : 'AI-Provider-Dienst nicht erreichbar.',
-        fetchImpl,
-        env,
-      );
-    }
-    return invokeEdge(
-      path === 'ollama-settings' ? 'ollama-settings' : 'ai-provider-credentials',
+    return invokeHost(
+      path,
       body,
       path === 'ollama-settings'
         ? 'Ollama-Einstellungen nicht erreichbar.'
         : 'AI-Provider-Dienst nicht erreichbar.',
+      fetchImpl,
+      env,
     );
   };
 }
 ```
 
-### src/infrastructure/ai/host-ai-invoke.ts:154
+### src/infrastructure/ai/host-ai-invoke.ts:100
 
 ```ts
 export const defaultAiInvoke = createAiInvoke();
@@ -277,23 +239,7 @@ export const ollamaSettingsService = new OllamaSettingsService();
 
 ## Remaining backend helper operations
 
-### src/infrastructure/ai/host-ai-invoke.ts:65
-
-```ts
-async function invokeEdge(
-  functionName: 'ai-provider-credentials' | 'ollama-settings',
-  body: Record<string, unknown>,
-  unreachableMessage: string,
-): Promise<unknown> {
-  const { data, error } = await supabase.functions.invoke(functionName, { body });
-  if (error) {
-    const serverMessage = await edgeErrorMessage(error);
-    throw new Error(serverMessage ?? unreachableMessage);
-  }
-  return data;
-}
-```
-
+All backend operations are included in the public declarations above.
 
 ## Verification source manifest
 
@@ -303,9 +249,8 @@ async function invokeEdge(
 | `src/domains/ai-providers/index.ts` | `460e4fa3639a12e0e028b19de91b947e482fee90585dc9844d6f8cfa70df2f05` |
 | `src/domains/ai-providers/ollama-settings.ts` | `f3cbc6de1a3822b21cf3edf08f6debb19ea27299b46f54dbd1bfac0eaf83150c` |
 | `src/infrastructure/ai/ai-provider-credentials-service.ts` | `deabff23986dd311748c7efff1539c2fe977465fa8357c5a1fda1577c5562e51` |
-| `src/infrastructure/ai/host-ai-invoke.ts` | `5437ec09fc80978c56d79856547a367e6aed1a116e6db8c1d4516e10ce9f7f52` |
+| `src/infrastructure/ai/host-ai-invoke.ts` | `1d85a9e6c3aad0022c11202a5e829f35eb40a9b503f3eced462d028169fb81db` |
 | `src/infrastructure/ai/ollama-settings-service.ts` | `aaf53b0f3004f001018518dade230a67f923c98897413476c9635f7d0aae1116` |
-| `src/infrastructure/host/host-library-http.ts` | `b2343081ddce2e2edd73651b0622e8b4cc6d8583d746a863dbe3343e3a98f71a` |
+| `src/infrastructure/host/host-library-http.ts` | `1d41f3b1eb3e71a3a8b12306993b605f2d05f2f41cd35f73b9c362b12f9c1cb6` |
 | `src/lib/hostAuthBridge.ts` | `30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a` |
-| `src/lib/supabase.ts` | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
 

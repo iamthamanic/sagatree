@@ -3,8 +3,8 @@
  * mig-312-user-profile-adapter.self-test — user_profiles + user-avatars host ports (#811).
  * Location: scripts/mig-312-user-profile-adapter.self-test.mjs
  *
- * Acceptance tier: isolated-contract. Supabase facades stay live (no cutover).
- * 0 RPCs — table + storage dual-path only.
+ * Acceptance tier: isolated-contract. Product user-profile facade is host HTTP only (CUT-20).
+ * 0 RPCs — table + storage via host ports.
  */
 import { mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync, existsSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -264,13 +264,15 @@ try {
   const moduleSrc = readFileSync(join(root, 'server/src/modules/user-profile/index.ts'), 'utf8');
   assert(!/deleteAvatar|updateDisplayName/.test(moduleSrc), 'no delete/display-name host methods');
   assert(/removeBestEffort|Best-effort/.test(moduleSrc), 'best-effort object deletion documented');
-  const repoSrc = readFileSync(
-    join(root, 'src/infrastructure/user-profile/supabase-user-profile.repository.ts'),
+  const facadeSrc = readFileSync(
+    join(root, 'src/infrastructure/user-profile/user-profile-service.ts'),
     'utf8',
   );
-  assert(!/async deleteAvatar|async updateDisplayName/.test(repoSrc), 'FE facade no delete/display-name');
+  assert(/uploadHostUserAvatar/.test(facadeSrc), 'FE facade uploads via host HTTP');
+  assert(!/async deleteAvatar|async updateDisplayName/.test(facadeSrc), 'FE facade no delete/display-name');
+  assert(!existsSync(join(root, 'src/infrastructure/user-profile/supabase-user-profile.repository.ts')), 'supabase user-profile repo removed (CUT-20)');
 
-  // Dual-path adapter binds host ports
+  // Host adapter binds host ports
   const bound = createHostUserProfileAdapter({
     ensureOwnProfileRow: async (actorId) => ports.ensureOwnProfileRow(actor(actorId)),
     getOwnProfile: async (actorId) => ports.getOwnProfile(actor(actorId)),
@@ -313,7 +315,7 @@ try {
     rmSync(hostWork, { recursive: true, force: true });
   }
 
-  // Client dual-path wiring: Supabase default; host when VITE_SAGATREE_HOST_LIBRARY=1 (FE-HOST-08)
+  // Client CUT-20: host HTTP facade only; adapter remains for host port tests (FE-HOST-08).
   const serviceSrc = readFileSync(
     join(root, 'src/infrastructure/user-profile/user-profile-service.ts'),
     'utf8',
@@ -323,9 +325,10 @@ try {
     join(root, 'src/infrastructure/user-profile/host-user-profile-adapter.ts'),
     'utf8',
   );
-  assert(/Dual-path \(FE-HOST-08\)/.test(serviceSrc), 'dual-path note on service');
-  assert(/supabaseUserProfileRepository/.test(serviceSrc), 'service default remains Supabase');
+  assert(/Host HTTP only \(CUT-20\)/.test(serviceSrc), 'host-only note on service');
+  assert(/uploadHostUserAvatar/.test(serviceSrc), 'service uploads via host catalog HTTP');
   assert(/isHostLibraryEnabled/.test(serviceSrc), 'host library gate');
+  assert(!/supabaseUserProfileRepository/.test(serviceSrc), 'service no longer wires Supabase repository');
   assert(/createHostUserProfileAdapter/.test(indexSrc), 'barrel exports host adapter');
   assert(/transport: 'host'/.test(adapterSrc), 'adapter marks host transport');
 

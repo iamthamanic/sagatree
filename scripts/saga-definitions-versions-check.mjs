@@ -53,8 +53,12 @@ requireMatch(domain, /projectSagaDefinitionPayload/i, 'audience project');
 requireMatch(domain, /groupProjectsBySagaDefinition/i, 'group helper');
 
 const service = read('src/infrastructure/saga/saga-definition-service.ts');
-requireMatch(service, /get_native_saga_definition_by_slug/i, 'service native RPC');
-requireMatch(service, /create_project_from_saga_version/i, 'service create RPC');
+requireMatch(service, /getHostNativeSagaDefinitionBySlug/i, 'service native host HTTP (CUT-20)');
+requireMatch(service, /createHostProjectFromSagaVersion/i, 'service create host HTTP (CUT-20)');
+requireMatch(service, /isHostLibraryEnabled/i, 'service host library gate');
+if (/get_native_saga_definition_by_slug|create_project_from_saga_version|\.rpc\s*\(|supabase/.test(service)) {
+  fail('service must not call legacy saga-definition RPCs (CUT-20)');
+}
 
 const panel = read('src/app/session/GoldenAdventureDornhainPanel.tsx');
 requireMatch(panel, /sagaDefinitionService/i, 'panel loads server definition');

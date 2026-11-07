@@ -238,87 +238,7 @@ CORS_OPTS: CorsOptions = {
 
 ## All adapter call sites
 
-### src/infrastructure/look/look-reference-analysis-service.ts:204
-
-
-```ts
-export async function analyzeLookReferences(
-  request: LookReferenceAnalysisRequest,
-): Promise<LookReferenceAnalysisOutcome> {
-  const aggregateBytes = request.references.reduce(
-    (sum, ref) => sum + estimateBase64Bytes(ref.contentBase64),
-    0,
-  );
-  if (aggregateBytes > LOOK_REFERENCE_AGGREGATE_MAX_BYTES) {
-    return {
-      ok: false,
-      code: 'edge-error',
-      messageDe: `Gesamtgröße der Referenzbilder überschreitet ${(LOOK_REFERENCE_AGGREGATE_MAX_BYTES / (1024 * 1024)).toFixed(0)} MB.`,
-    };
-  }
-
-  const domainInputs: LookReferenceAnalysisImageInput[] = request.references.map(
-    (ref) => ({
-      id: ref.id,
-      kind: ref.kind,
-      mime: ref.mime,
-      uri: ref.uri,
-      weight: ref.weight,
-      label: ref.label,
-    }),
-  );
-
-  const body = buildRequestBody(request);
-
-  if (isHostLibraryEnabled()) {
-    const edge = await invokeHostLookReferenceAnalysis(body);
-    if (edge.status !== 'ok') {
-      return {
-        ok: false,
-        code: edge.status,
-        messageDe: edge.message,
-      };
-    }
-    return normalizeLookReferenceAnalysisPayload(edge.payload, {
-      references: domainInputs,
-      displayNameHint: request.displayNameHint,
-      analyzedAtIso: edge.analyzedAtIso,
-    });
-  }
-
-  const { data, error } = await supabase.functions.invoke(
-    'look-reference-analysis',
-    { body },
-  );
-
-  if (error) {
-    const serverMessage = await getFunctionErrorMessage(error);
-    return {
-      ok: false,
-      code: 'edge-error',
-      messageDe:
-        serverMessage ??
-        'Look-Referenzanalyse fehlgeschlagen. Bitte erneut versuchen.',
-    };
-  }
-
-  const edge = parseEdgeResponse(data);
-  if (edge.status !== 'ok') {
-    return {
-      ok: false,
-      code: edge.status,
-      messageDe: edge.message,
-    };
-  }
-
-  return normalizeLookReferenceAnalysisPayload(edge.payload, {
-    references: domainInputs,
-    displayNameHint: request.displayNameHint,
-    analyzedAtIso: edge.analyzedAtIso,
-  });
-}
-```
-
+No src/infrastructure caller in the reviewed branch. This does not authorize adding a public mount.
 
 ## Exact ordered operations
 
@@ -731,7 +651,6 @@ function parseReferences(value: unknown): ParsedRef[] {
 
 | Path | SHA-256 |
 |---|---|
-| `src/infrastructure/look/look-reference-analysis-service.ts` | `75972e6d9b049942cf205e82e0330d26f878c855b7f3ebf8484e7e1ed651dffd` |
 | `supabase/functions/_shared/client-trust-body.ts` | `33c68553dbd89d9c7899520b0ebfa35c4f245ed8ab8ebd242c6f79e9852add95` |
 | `supabase/functions/_shared/cors.ts` | `f8286c91d79fa5fc5cfea2fa47081916523fa7a440f234aecd9a47c6a8cf5b38` |
 | `supabase/functions/_shared/edge-dispatcher-allowlist.ts` | `6d1ae7bde0ba9e41fcaa7b61247732168a62699e7811fb8574cef266cfad3a27` |

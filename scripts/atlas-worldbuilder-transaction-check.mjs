@@ -45,8 +45,8 @@ mustInclude('src/domains/world/hierarchy/create-plan.ts', [
 ]);
 mustInclude('src/infrastructure/world/world-place-service.ts', [
   'createNodeWithMaps',
-  'create_world_node_with_maps',
-  'assertSupabaseJwtSession',
+  'createHostWorldNodeWithMaps',
+  'assertHost',
 ]);
 mustInclude('src/domains/world/places/world-place.types.ts', [
   "'country'",

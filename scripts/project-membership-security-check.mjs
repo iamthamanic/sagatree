@@ -148,13 +148,13 @@ requireMatch(
 
 requireMatch(
   memberService,
-  /\.rpc\('join_project_by_code'/,
-  'frontend join path through secure RPC',
+  /joinHostProjectByCode/,
+  'frontend join path through host HTTP (CUT-20)',
 );
 requireMatch(
   memberService,
-  /\.rpc\('set_my_project_character'/,
-  'frontend character selection through secure RPC',
+  /setHostMyProjectCharacter/,
+  'frontend character selection through host HTTP (CUT-20)',
 );
 rejectMatch(
   memberService,
@@ -173,8 +173,8 @@ requireMatch(
 );
 requireMatch(
   projectService,
-  /\.eq\('status', 'active'\)/,
-  'project listing filters inactive memberships',
+  /fetchHostLibraryProjects/,
+  'project listing via host library (server-scoped memberships, CUT-20)',
 );
 
 const sheetGate = read('supabase/migrations/035_guard_sheet_status_complete.sql');

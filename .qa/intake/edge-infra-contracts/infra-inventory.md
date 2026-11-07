@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-inventory.json](source-contracts/infra-inventory.json) (SHA-256 `9c26cd640a77270f131fccca494352cd69aead191c205176d358a301a5b9a5c3`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-inventory.json](source-contracts/infra-inventory.json) (SHA-256 `9796fd96177a956f9d05df0f89be899fbb66d40a2f0917649dc779cfe94de33c`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -18,28 +18,22 @@ The adapter establishes request/filter behavior. Server permission and rollback 
 
 RPCs (0): none.
 
-Tables (5): `characters`, `inventory_item_definitions`, `project_members`, `projects`, `world_profiles`.
+Tables (0): none.
 
 Storage buckets (0): none.
 
-Edge invokes (2): `item-model3d`, `item-thumbnail`.
+Edge invokes (0): none.
 
-Realtime call sites: 0. Direct fetch sites: 2. Explicit auth/helper sites: 8.
+Realtime call sites: 0. Direct fetch sites: 2. Explicit auth/helper sites: 2.
 
 ## Complete implementation dependencies
 
 | Kind | Contract dependency | Implementation issue | Additional policy/group |
 |---|---|---|---|
-| edge | `item-model3d` | #825 |  |
-| edge | `item-thumbnail` | #826 |  |
-| table | `characters` | #791 | Policy #792 |
-| table | `inventory_item_definitions` | #791 | Policy #792 |
-| table | `project_members` | #791 | Policy #792 |
-| table | `projects` | #791 | Policy #792 |
-| table | `world_profiles` | #791 | Policy #792 |
 | auth | `authenticated account/session transport` | #793 |  |
 | infra | `character` | #801 |  |
 | infra | `media` | #805 |  |
+| infra | `project` | #807 |  |
 
 ## Acceptance and negative tests (required, not executed)
 
@@ -53,89 +47,29 @@ None in the reviewed source.
 
 ## All backend calls, arguments, filters and result handling
 
-### table: characters
-
-`src/infrastructure/inventory/inventory-persistence.ts:138` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase
-      .from('characters')
-      .select('updated_at, inventory_schema_version')
-      .eq('id', characterId)
-      .maybeSingle()
-```
-
-Enclosing operation: `src/infrastructure/inventory/inventory-persistence.ts:124`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: characters
-
-`src/infrastructure/inventory/inventory-persistence.ts:156` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase
-      .from('characters')
-      .update({
-        inventory_v2: bound,
-        inventory_schema_version: 2,
-        updated_at: new Date().toISOString(),
-      })
-      .eq('id', characterId)
-      .eq('inventory_schema_version', 1)
-      .eq('updated_at', current.updated_at as string)
-      .select('id')
-      .maybeSingle()
-```
-
-Enclosing operation: `src/infrastructure/inventory/inventory-persistence.ts:124`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### auth-helper: session identity
 
-`src/infrastructure/inventory/inventory-persistence.ts:194` — dynamic-expression.
+`src/infrastructure/inventory/inventory-persistence.ts:115` — dynamic-expression.
 
 Exact call/query chain:
 ```ts
 getAuthenticatedUserId()
 ```
 
-Enclosing operation: `src/infrastructure/inventory/inventory-persistence.ts:189`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: inventory_item_definitions
+Enclosing operation: `src/infrastructure/inventory/inventory-persistence.ts:110`; complete request/default/result/error logic is in the declarations below and the snapshot.
+### auth-helper: session identity
 
-`src/infrastructure/inventory/inventory-persistence.ts:202` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase
-      .from('inventory_item_definitions')
-      .insert({
-        id,
-        scope: 'personal',
-        world_profile_id: null,
-        owner_user_id: userId,
-        payload,
-        status: 'active',
-      })
-      .select(ITEM_DEFINITION_COLUMNS)
-      .maybeSingle()
-```
-
-Enclosing operation: `src/infrastructure/inventory/inventory-persistence.ts:189`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: inventory_item_definitions
-
-`src/infrastructure/inventory/inventory-persistence.ts:236` — literal-or-constant.
+`src/infrastructure/inventory/item-catalog-service.ts:391` — dynamic-expression.
 
 Exact call/query chain:
 ```ts
-supabase
-      .from('inventory_item_definitions')
-      .select('id')
-      .eq('id', id)
-      .maybeSingle()
+getAuthenticatedUserId()
 ```
 
-Enclosing operation: `src/infrastructure/inventory/inventory-persistence.ts:234`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/inventory/item-catalog-service.ts:378`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### fetch: `${base}/api/v1/items/model3d`
 
-`src/infrastructure/inventory/item-model3d-service.ts:99` — dynamic-expression.
+`src/infrastructure/inventory/item-model3d-service.ts:102` — dynamic-expression.
 
 Exact call/query chain:
 ```ts
@@ -148,19 +82,9 @@ fetch(`${base}/api/v1/items/model3d`, {
 ```
 
 Enclosing operation: `src/infrastructure/inventory/item-model3d-service.ts:92`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### edge: item-model3d
-
-`src/infrastructure/inventory/item-model3d-service.ts:121` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase.functions.invoke('item-model3d', { body })
-```
-
-Enclosing operation: `src/infrastructure/inventory/item-model3d-service.ts:117`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### fetch: requestUrl
 
-`src/infrastructure/inventory/item-thumbnail-service.ts:158` — dynamic-expression.
+`src/infrastructure/inventory/item-thumbnail-service.ts:161` — dynamic-expression.
 
 Exact call/query chain:
 ```ts
@@ -173,225 +97,6 @@ fetch(requestUrl, {
 ```
 
 Enclosing operation: `src/infrastructure/inventory/item-thumbnail-service.ts:149`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### edge: item-thumbnail
-
-`src/infrastructure/inventory/item-thumbnail-service.ts:180` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase.functions.invoke('item-thumbnail', { body })
-```
-
-Enclosing operation: `src/infrastructure/inventory/item-thumbnail-service.ts:176`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: characters
-
-`src/infrastructure/inventory/supabase-item-catalog.repository.ts:63` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase
-        .from(CHARACTERS_TABLE)
-        .select('world_profile_id, project_id')
-        .eq('id', characterId)
-        .maybeSingle()
-```
-
-Enclosing operation: `src/infrastructure/inventory/supabase-item-catalog.repository.ts:61`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: project_members
-
-`src/infrastructure/inventory/supabase-item-catalog.repository.ts:89` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase
-        .from('project_members')
-        .select('project_id')
-        .eq('character_id', characterId)
-        .eq('status', 'active')
-```
-
-Enclosing operation: `src/infrastructure/inventory/supabase-item-catalog.repository.ts:61`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: projects
-
-`src/infrastructure/inventory/supabase-item-catalog.repository.ts:108` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase
-          .from(PROJECTS_TABLE)
-          .select('id, world_profile_id')
-          .in('id', projectIds)
-```
-
-Enclosing operation: `src/infrastructure/inventory/supabase-item-catalog.repository.ts:61`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### auth-helper: session identity
-
-`src/infrastructure/inventory/supabase-item-catalog.repository.ts:141` — dynamic-expression.
-
-Exact call/query chain:
-```ts
-getAuthenticatedUserId()
-```
-
-Enclosing operation: `src/infrastructure/inventory/supabase-item-catalog.repository.ts:140`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: inventory_item_definitions
-
-`src/infrastructure/inventory/supabase-item-catalog.repository.ts:143` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase.from(DEFINITIONS_TABLE).select(ITEM_DEFINITION_COLUMNS)
-```
-
-Enclosing operation: `src/infrastructure/inventory/supabase-item-catalog.repository.ts:140`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: world_profiles
-
-`src/infrastructure/inventory/supabase-item-catalog.repository.ts:181` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase
-        .from('world_profiles')
-        .select('modules')
-        .eq('id', id)
-        .maybeSingle()
-```
-
-Enclosing operation: `src/infrastructure/inventory/supabase-item-catalog.repository.ts:176`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### auth-helper: session identity
-
-`src/infrastructure/inventory/supabase-item-catalog.repository.ts:204` — dynamic-expression.
-
-Exact call/query chain:
-```ts
-getAuthenticatedUserId()
-```
-
-Enclosing operation: `src/infrastructure/inventory/supabase-item-catalog.repository.ts:203`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: inventory_item_definitions
-
-`src/infrastructure/inventory/supabase-item-catalog.repository.ts:207` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase.from(DEFINITIONS_TABLE).select(ITEM_DEFINITION_COLUMNS)
-```
-
-Enclosing operation: `src/infrastructure/inventory/supabase-item-catalog.repository.ts:203`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### auth-helper: session identity
-
-`src/infrastructure/inventory/supabase-item-catalog.repository.ts:222` — dynamic-expression.
-
-Exact call/query chain:
-```ts
-getAuthenticatedUserId()
-```
-
-Enclosing operation: `src/infrastructure/inventory/supabase-item-catalog.repository.ts:221`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### auth-helper: session identity
-
-`src/infrastructure/inventory/supabase-item-catalog.repository.ts:239` — dynamic-expression.
-
-Exact call/query chain:
-```ts
-getAuthenticatedUserId()
-```
-
-Enclosing operation: `src/infrastructure/inventory/supabase-item-catalog.repository.ts:235`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### auth-helper: session identity
-
-`src/infrastructure/inventory/supabase-item-catalog.repository.ts:260` — dynamic-expression.
-
-Exact call/query chain:
-```ts
-getAuthenticatedUserId()
-```
-
-Enclosing operation: `src/infrastructure/inventory/supabase-item-catalog.repository.ts:258`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: inventory_item_definitions
-
-`src/infrastructure/inventory/supabase-item-catalog.repository.ts:278` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase
-      .from(DEFINITIONS_TABLE)
-      .update({ payload })
-      .eq('id', definitionId)
-      .eq('scope', scope)
-```
-
-Enclosing operation: `src/infrastructure/inventory/supabase-item-catalog.repository.ts:258`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### auth-helper: session identity
-
-`src/infrastructure/inventory/supabase-item-catalog.repository.ts:312` — dynamic-expression.
-
-Exact call/query chain:
-```ts
-getAuthenticatedUserId()
-```
-
-Enclosing operation: `src/infrastructure/inventory/supabase-item-catalog.repository.ts:307`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: inventory_item_definitions
-
-`src/infrastructure/inventory/supabase-item-catalog.repository.ts:327` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase
-      .from(DEFINITIONS_TABLE)
-      .update({ status })
-      .eq('id', definitionId)
-      .eq('scope', scope)
-```
-
-Enclosing operation: `src/infrastructure/inventory/supabase-item-catalog.repository.ts:307`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### auth-helper: session identity
-
-`src/infrastructure/inventory/supabase-item-catalog.repository.ts:359` — dynamic-expression.
-
-Exact call/query chain:
-```ts
-getAuthenticatedUserId()
-```
-
-Enclosing operation: `src/infrastructure/inventory/supabase-item-catalog.repository.ts:354`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: inventory_item_definitions
-
-`src/infrastructure/inventory/supabase-item-catalog.repository.ts:412` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase
-        .from(DEFINITIONS_TABLE)
-        .select(ITEM_DEFINITION_COLUMNS)
-        .eq('id', definitionId)
-        .maybeSingle()
-```
-
-Enclosing operation: `src/infrastructure/inventory/supabase-item-catalog.repository.ts:410`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: inventory_item_definitions
-
-`src/infrastructure/inventory/supabase-item-catalog.repository.ts:437` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase
-        .from(DEFINITIONS_TABLE)
-        .insert({
-          id,
-          scope,
-          world_profile_id: worldProfileId,
-          // Derived from the authenticated session, never from client input.
-          owner_user_id: ownerUserId,
-          payload,
-          status: 'active',
-        })
-        .select(ITEM_DEFINITION_COLUMNS)
-        .maybeSingle()
-```
-
-Enclosing operation: `src/infrastructure/inventory/supabase-item-catalog.repository.ts:427`; complete request/default/result/error logic is in the declarations below and the snapshot.
 
 ## Complete public declarations and facade operation contracts
 
@@ -500,19 +205,17 @@ export const HOST_INVENTORY_OPS = [
 ] as const;
 ```
 
-### src/infrastructure/inventory/inventory-persistence.ts:38
+### src/infrastructure/inventory/inventory-persistence.ts:32
 
 ```ts
 export interface CharacterInventoryRead {
   state: InventoryState;
-  /** True when the persisted version marker is 2 and the payload validated. */
   authoritativeV2: boolean;
-  /** Set when the reader fell back to legacy ItemDto[] (migrate in memory only). */
   legacyFallback: boolean;
 }
 ```
 
-### src/infrastructure/inventory/inventory-persistence.ts:51
+### src/infrastructure/inventory/inventory-persistence.ts:38
 
 ```ts
 export function readCharacterInventory(
@@ -541,51 +244,32 @@ export function readCharacterInventory(
 }
 ```
 
-### src/infrastructure/inventory/inventory-persistence.ts:82
+### src/infrastructure/inventory/inventory-persistence.ts:63
 
 ```ts
 export async function assertWritableInventoryV2(
   state: unknown,
   characterId: string | null,
 ): Promise<InventoryState> {
-  if (!isInventoryV2State(state)) {
-    throw new Error('Ungültiges Inventar v2 — Speichern abgebrochen.');
+  if (!isHostLibraryEnabled()) {
+    throw new Error('Host-Anmeldung nicht konfiguriert (VITE_SAGATREE_HOST_AUTH_URL fehlt).');
   }
-
-  const definitionIds = new Set(
-    Object.values(state.instances).map((instance) => instance.definitionId),
-  );
-  if (definitionIds.size === 0) return state;
-
-  const worldProfileId = characterId
-    ? await supabaseItemCatalogRepository.resolveEffectiveWorldProfileId(characterId)
-    : null;
-  const catalog = await supabaseItemCatalogRepository.listCatalogRecords(worldProfileId);
-  const visible = new Set(catalog.map((record) => record.definition.id));
-  // Builtin-standard ids resolve locally (#137/#143). Owned pack instances must
-  // remain writable after the world excludes them from the add-catalog.
-  const missing = [...definitionIds].filter((id) => {
-    if (visible.has(id)) return false;
-    return getBuiltinStandardDefinition(id) === undefined;
-  });
-  if (missing.length > 0) {
-    throw new Error(
-      `Unbekannte oder nicht sichtbare Gegenstandsdefinitionen: ${missing.slice(0, 5).join(', ')}`,
-    );
-  }
-  return state;
+  return catalogAssertWritableInventoryV2(state, characterId);
 }
 ```
 
-### src/infrastructure/inventory/inventory-persistence.ts:124
+### src/infrastructure/inventory/inventory-persistence.ts:73
 
 ```ts
 export async function persistMigratedInventory(
   characterId: string,
   migration: LegacyMigrationResult,
 ): Promise<InventoryState> {
-  const fingerprintToId = new Map<string, string>();
+  if (!isHostLibraryEnabled()) {
+    throw new Error('Host-Anmeldung nicht konfiguriert (VITE_SAGATREE_HOST_AUTH_URL fehlt).');
+  }
 
+  const fingerprintToId = new Map<string, string>();
   for (const draft of migration.personalDrafts) {
     const stableId = await ensurePersonalDefinition(draft);
     fingerprintToId.set(draft.fingerprint, stableId);
@@ -593,55 +277,29 @@ export async function persistMigratedInventory(
 
   const bound = bindPendingDefinitions(migration.state, fingerprintToId);
 
-  const { data: current, error: readError } = await raceWithTimeoutReject(
-    supabase
-      .from('characters')
-      .select('updated_at, inventory_schema_version')
-      .eq('id', characterId)
-      .maybeSingle(),
-    SUPABASE_QUERY_TIMEOUT_MS,
-    'Charakter konnte nicht für die Inventar-Migration geladen werden (Zeitüberschreitung).',
-  );
-  if (readError) {
-    throw new Error(`Inventar-Migration konnte den Charakter nicht laden: ${readError.message}`);
-  }
-  if (!current || current.inventory_schema_version !== 1) {
+  const current = await fetchHostLibraryCharacter(characterId);
+  const sheet = { ...(current.sheet ?? {}) } as Record<string, unknown>;
+  const schemaVersion =
+    typeof sheet.inventory_schema_version === 'number' ? sheet.inventory_schema_version : 1;
+  if (schemaVersion !== 1) {
     throw new Error(
       'Inventar-Migration kollidierte mit einer anderen Speicherung. Bitte erneut versuchen.',
     );
   }
 
-  const { data, error } = await raceWithTimeoutReject(
-    supabase
-      .from('characters')
-      .update({
-        inventory_v2: bound,
-        inventory_schema_version: 2,
-        updated_at: new Date().toISOString(),
-      })
-      .eq('id', characterId)
-      .eq('inventory_schema_version', 1)
-      .eq('updated_at', current.updated_at as string)
-      .select('id')
-      .maybeSingle(),
-    SUPABASE_QUERY_TIMEOUT_MS,
-    'Inventar v2 konnte nicht gespeichert werden (Zeitüberschreitung).',
-  );
+  const nextSheet = {
+    ...sheet,
+    inventory_v2: bound,
+    inventory_schema_version: 2,
+  };
 
-  if (error) {
-    throw new Error(`Inventar v2 konnte nicht gespeichert werden: ${error.message}`);
-  }
-  if (!data) {
-    throw new Error(
-      'Inventar-Migration kollidierte mit einer anderen Speicherung. Bitte erneut versuchen.',
-    );
-  }
+  await updateHostLibraryCharacter(characterId, { sheet: nextSheet });
 
   return bound;
 }
 ```
 
-### src/infrastructure/inventory/inventory-persistence.ts:249
+### src/infrastructure/inventory/inventory-persistence.ts:136
 
 ```ts
 export function migrationDefinitionId(fingerprint: string): string {
@@ -649,47 +307,93 @@ export function migrationDefinitionId(fingerprint: string): string {
 }
 ```
 
-### src/infrastructure/inventory/item-catalog-service.ts:96
+### src/infrastructure/inventory/item-catalog-service.ts:48
+
+```ts
+export type ForkDefinitionTarget =
+  | { scope: 'personal' }
+  | { scope: 'world'; worldProfileId: string };
+```
+
+### src/infrastructure/inventory/item-catalog-service.ts:53
+
+```ts
+export type ItemDefinitionDraft = ItemDefinitionWriteDraft;
+```
+
+### src/infrastructure/inventory/item-catalog-service.ts:117
+
+```ts
+export async function resolveEffectiveWorldProfileId(characterId: string): Promise<string | null> {
+  assertHost();
+  const trimmed = characterId.trim();
+  if (!trimmed) return null;
+
+  const row = await fetchHostLibraryCharacter(trimmed);
+  const sheet = isRecord(row.sheet) ? row.sheet : {};
+  const characterWorldRaw =
+    (typeof sheet.world_profile_id === 'string' ? sheet.world_profile_id : null) ??
+    (typeof sheet.worldProfileId === 'string' ? sheet.worldProfileId : null);
+
+  let adventureWorldProfileId: string | null = null;
+  const arcs = await fetchHostLibraryAdventureArcs(trimmed);
+  for (const arc of arcs) {
+    if (!isRecord(arc)) continue;
+    if (arc.status !== 'active' && arc.status !== undefined) continue;
+    const projectId = typeof arc.project_id === 'string' ? arc.project_id : '';
+    if (!projectId) continue;
+    try {
+      const project = await projectService.getProjectById(projectId);
+      if (project.worldProfileId) {
+        adventureWorldProfileId = project.worldProfileId;
+        break;
+      }
+    } catch {
+      /* ignore missing project */
+    }
+  }
+
+  return resolveEffectiveWorldProfileIdFromBinding({
+    adventureWorldProfileId,
+    characterWorldProfileId: typeof characterWorldRaw === 'string' ? characterWorldRaw : null,
+  });
+}
+```
+
+### src/infrastructure/inventory/item-catalog-service.ts:161
 
 ```ts
 export interface CharacterItemCatalog {
   effectiveWorldProfileId: string | null;
-  /** Active definitions offered by Add/Catalog surfaces, already ordered. */
   addable: ItemDefinition[];
-  /** Resolves owned instances, including archived definitions. */
   lookup: ItemDefinitionLookup;
-  /** Raw records, for callers that need status or ownership. */
   records: CatalogDefinitionRecord[];
 }
 ```
 
-### src/infrastructure/inventory/item-catalog-service.ts:107
+### src/infrastructure/inventory/item-catalog-service.ts:168
 
 ```ts
 export interface LibraryItemCatalog {
-  /** Active definitions visible in the Library Items tab, already ordered. */
   definitions: ItemDefinition[];
-  /** Raw persisted records (Personal/World), including archived. */
   persistedRecords: CatalogDefinitionRecord[];
 }
 ```
 
-### src/infrastructure/inventory/item-catalog-service.ts:122
+### src/infrastructure/inventory/item-catalog-service.ts:173
 
 ```ts
 export async function loadCharacterItemCatalog(
   characterId: string | null,
   userId: string,
 ): Promise<CharacterItemCatalog> {
-  const effectiveWorldProfileId = characterId
-    ? await supabaseItemCatalogRepository.resolveEffectiveWorldProfileId(characterId)
-    : null;
-  const records = await supabaseItemCatalogRepository.listCatalogRecords(effectiveWorldProfileId);
+  assertHost();
+  const effectiveWorldProfileId = characterId ? await resolveEffectiveWorldProfileId(characterId) : null;
+  const records = await listCatalogRecordsForEffectiveWorld(effectiveWorldProfileId, userId);
   const context = { userId, effectiveWorldProfileId };
 
-  const modules = effectiveWorldProfileId
-    ? await supabaseItemCatalogRepository.loadWorldProfileModules(effectiveWorldProfileId)
-    : null;
+  // Host world `modules` parity (#1159): defaults until host exposes modules JSON.
+  const modules = null;
   const { config } = getItemCatalogModuleConfig(modules);
 
   const worldDefinitions = records
@@ -741,21 +445,12 @@ export async function loadCharacterItemCatalog(
 }
 ```
 
-### src/infrastructure/inventory/item-catalog-service.ts:190
+### src/infrastructure/inventory/item-catalog-service.ts:234
 
 ```ts
 export async function loadLibraryItemCatalog(): Promise<LibraryItemCatalog> {
-  let persistedRecords: Awaited<
-    ReturnType<typeof supabaseItemCatalogRepository.listLibraryPersistedRecords>
-  > = [];
-  if (isHostLibraryEnabled()) {
-    const hostItems = await fetchHostLibraryItems();
-    persistedRecords = hostItems
-      .map(mapHostLibraryItemRecord)
-      .filter((record): record is CatalogDefinitionRecord => record !== null);
-  } else {
-    persistedRecords = await supabaseItemCatalogRepository.listLibraryPersistedRecords();
-  }
+  assertHost();
+  const persistedRecords = await fetchAllHostItemRecords();
   const byId = new Map<string, ItemDefinition>();
 
   for (const definition of listCoreItemDefinitions()) {
@@ -778,153 +473,170 @@ export async function loadLibraryItemCatalog(): Promise<LibraryItemCatalog> {
 }
 ```
 
-### src/infrastructure/inventory/item-catalog-service.ts:227
+### src/infrastructure/inventory/item-catalog-service.ts:258
 
 ```ts
 export async function loadWorldProfileItemCatalog(
   worldProfileId: string,
 ): Promise<CatalogDefinitionRecord[]> {
-  const records = await supabaseItemCatalogRepository.listCatalogRecords(worldProfileId);
-  return records.filter(
-    (r) => r.definition.scope === 'world' && r.worldProfileId === worldProfileId,
+  assertHost();
+  const all = await fetchAllHostItemRecords();
+  const wid = worldProfileId.trim();
+  return all.filter(
+    (r) => r.definition.scope === 'world' && r.worldProfileId === wid && r.worldProfileId !== null,
   );
 }
 ```
 
-### src/infrastructure/inventory/item-catalog-service.ts:240
+### src/infrastructure/inventory/item-catalog-service.ts:269
 
 ```ts
 export async function getItemDefinitionById(definitionId: string): Promise<{
   definition: ItemDefinition;
   record: CatalogDefinitionRecord | null;
 } | null> {
-  if (isHostLibraryEnabled()) {
-    const hostItem = await fetchHostLibraryItem(definitionId);
-    const record = mapHostLibraryItemRecord(hostItem);
-    if (record) return { definition: record.definition, record };
-    const core = getCoreItemDefinition(definitionId);
-    if (core) return { definition: withCatalogPublicId(core), record: null };
-    const builtin = getBuiltinStandardDefinition(definitionId);
-    if (builtin) return { definition: withCatalogPublicId(builtin), record: null };
-    return null;
-  }
-  return supabaseItemCatalogRepository.getDefinitionById(definitionId);
+  assertHost();
+  const hostItem = await fetchHostLibraryItem(definitionId);
+  const record = mapHostLibraryItemRecord(hostItem);
+  if (record) return { definition: record.definition, record };
+  const core = getCoreItemDefinition(definitionId);
+  if (core) return { definition: withCatalogPublicId(core), record: null };
+  const builtin = getBuiltinStandardDefinition(definitionId);
+  if (builtin) return { definition: withCatalogPublicId(builtin), record: null };
+  return null;
 }
 ```
 
-### src/infrastructure/inventory/item-catalog-service.ts:275
+### src/infrastructure/inventory/item-catalog-service.ts:302
 
 ```ts
 export async function createPersonalDefinition(
   draft: ItemDefinitionDraft,
 ): Promise<CatalogDefinitionRecord> {
-  if (isHostLibraryEnabled()) {
-    return createHostCatalogDefinition('personal', draft, null);
-  }
-  return supabaseItemCatalogRepository.createPersonalDefinition(draft);
+  assertHost();
+  return createHostCatalogDefinition('personal', draft, null);
 }
 ```
 
-### src/infrastructure/inventory/item-catalog-service.ts:284
+### src/infrastructure/inventory/item-catalog-service.ts:309
 
 ```ts
 export async function createWorldDefinition(
   worldProfileId: string,
   draft: ItemDefinitionDraft,
 ): Promise<CatalogDefinitionRecord> {
-  if (isHostLibraryEnabled()) {
-    return createHostCatalogDefinition('world', draft, worldProfileId);
-  }
-  return supabaseItemCatalogRepository.createWorldDefinition(worldProfileId, draft);
+  assertHost();
+  return createHostCatalogDefinition('world', draft, worldProfileId);
 }
 ```
 
-### src/infrastructure/inventory/item-catalog-service.ts:294
+### src/infrastructure/inventory/item-catalog-service.ts:317
 
 ```ts
 export async function updateDefinition(
   definitionId: string,
   draft: ItemDefinitionDraft,
 ): Promise<CatalogDefinitionRecord> {
-  if (isHostLibraryEnabled()) {
-    // Scope is a column on the host; payload builder strips id/scope — use personal as a
-    // typed placeholder so Draft→payload matches createHostCatalogDefinition.
-    const payload = toDefinitionPayload({
-      ...draft,
-      id: definitionId,
-      scope: 'personal',
-    });
-    const updated = await updateHostLibraryItem(definitionId, {
-      name: draft.name,
-      payload,
-    });
-    const record = mapHostLibraryItemRecord(updated);
-    if (!record) throw new Error('Host-Item speichern: ungültige Antwort');
-    return record;
-  }
-  return supabaseItemCatalogRepository.updateDefinition(definitionId, draft);
+  assertHost();
+  const payload = toDefinitionPayload({
+    ...draft,
+    id: definitionId,
+    scope: 'personal',
+  });
+  const updated = await updateHostLibraryItem(definitionId, {
+    name: draft.name,
+    payload,
+  });
+  const record = mapHostLibraryItemRecord(updated);
+  if (!record) throw new Error('Host-Item speichern: ungültige Antwort');
+  return record;
 }
 ```
 
-### src/infrastructure/inventory/item-catalog-service.ts:318
+### src/infrastructure/inventory/item-catalog-service.ts:336
 
 ```ts
-export async function archiveDefinition(
-  definitionId: string,
-): Promise<CatalogDefinitionRecord> {
-  if (isHostLibraryEnabled()) {
-    const archived = await archiveHostLibraryItem(definitionId);
-    const record = mapHostLibraryItemRecord(archived);
-    if (!record) throw new Error('Host-Item archivieren: ungültige Antwort');
-    return record;
-  }
-  return supabaseItemCatalogRepository.setDefinitionStatus(definitionId, 'archived');
+export async function archiveDefinition(definitionId: string): Promise<CatalogDefinitionRecord> {
+  assertHost();
+  const archived = await archiveHostLibraryItem(definitionId);
+  const record = mapHostLibraryItemRecord(archived);
+  if (!record) throw new Error('Host-Item archivieren: ungültige Antwort');
+  return record;
 }
 ```
 
-### src/infrastructure/inventory/item-catalog-service.ts:330
+### src/infrastructure/inventory/item-catalog-service.ts:344
 
 ```ts
-export async function restoreDefinition(
-  definitionId: string,
-): Promise<CatalogDefinitionRecord> {
-  if (isHostLibraryEnabled()) {
-    const restored = await restoreHostLibraryItem(definitionId);
-    const record = mapHostLibraryItemRecord(restored);
-    if (!record) throw new Error('Host-Item wiederherstellen: ungültige Antwort');
-    return record;
-  }
-  return supabaseItemCatalogRepository.setDefinitionStatus(definitionId, 'active');
+export async function restoreDefinition(definitionId: string): Promise<CatalogDefinitionRecord> {
+  assertHost();
+  const restored = await restoreHostLibraryItem(definitionId);
+  const record = mapHostLibraryItemRecord(restored);
+  if (!record) throw new Error('Host-Item wiederherstellen: ungültige Antwort');
+  return record;
 }
 ```
 
-### src/infrastructure/inventory/item-catalog-service.ts:347
+### src/infrastructure/inventory/item-catalog-service.ts:352
 
 ```ts
 export async function forkDefinition(
   sourceDefinitionId: string,
   target: ForkDefinitionTarget,
 ): Promise<CatalogDefinitionRecord> {
-  if (isHostLibraryEnabled()) {
-    const origin = target.scope === 'world' ? 'world' : 'personal';
-    const worldProfileId = target.scope === 'world' ? target.worldProfileId : null;
-    // Core/builtin packs are local (not SQLite rows) — fork by creating a new host definition.
-    const localSource =
-      getCoreItemDefinition(sourceDefinitionId) ??
-      getBuiltinStandardDefinition(sourceDefinitionId);
-    if (localSource) {
-      const draft = buildForkedItemDefinitionDraft(localSource, origin);
-      return createHostCatalogDefinition(origin, draft, worldProfileId);
-    }
-    const forked = await forkHostLibraryItem(sourceDefinitionId, {
-      origin,
-      worldProfileId,
-    });
-    const record = mapHostLibraryItemRecord(forked);
-    if (!record) throw new Error('Host-Item forken: ungültige Antwort');
-    return record;
+  assertHost();
+  const origin = target.scope === 'world' ? 'world' : 'personal';
+  const worldProfileId = target.scope === 'world' ? target.worldProfileId : null;
+  const localSource =
+    getCoreItemDefinition(sourceDefinitionId) ?? getBuiltinStandardDefinition(sourceDefinitionId);
+  if (localSource) {
+    const draft = buildForkedItemDefinitionDraft(localSource, origin);
+    return createHostCatalogDefinition(origin, draft, worldProfileId);
   }
-  return supabaseItemCatalogRepository.forkDefinition(sourceDefinitionId, target);
+  const forked = await forkHostLibraryItem(sourceDefinitionId, {
+    origin,
+    worldProfileId,
+  });
+  const record = mapHostLibraryItemRecord(forked);
+  if (!record) throw new Error('Host-Item forken: ungültige Antwort');
+  return record;
+}
+```
+
+### src/infrastructure/inventory/item-catalog-service.ts:378
+
+```ts
+export async function assertWritableInventoryV2(
+  state: unknown,
+  characterId: string | null,
+): Promise<InventoryState> {
+  assertHost();
+  if (!isInventoryV2State(state)) {
+    throw new Error('Inventar-Zustand ist ungültig.');
+  }
+  const definitionIds = new Set(
+    Object.values(state.instances).map((instance) => instance.definitionId),
+  );
+  if (definitionIds.size === 0) return state;
+
+  const userId = await getAuthenticatedUserId();
+  const effectiveWorldProfileId = characterId
+    ? await resolveEffectiveWorldProfileId(characterId)
+    : null;
+  const catalog = await listCatalogRecordsForEffectiveWorld(effectiveWorldProfileId, userId);
+  const visible = new Set(catalog.map((record) => record.definition.id));
+  // Builtin-standard ids resolve locally (#137/#143). Owned pack instances must
+  // remain writable after the world excludes them from the add-catalog.
+  const missing = [...definitionIds].filter((id) => {
+    if (visible.has(id)) return false;
+    return getBuiltinStandardDefinition(id) === undefined;
+  });
+  if (missing.length > 0) {
+    throw new Error(
+      `Unbekannte oder nicht sichtbare Gegenstandsdefinitionen: ${missing.slice(0, 5).join(', ')}`,
+    );
+  }
+  return state;
 }
 ```
 
@@ -1035,7 +747,7 @@ export interface ItemModel3dJobSnapshot {
 }
 ```
 
-### src/infrastructure/inventory/item-model3d-service.ts:151
+### src/infrastructure/inventory/item-model3d-service.ts:146
 
 ```ts
 export async function validateModel3dFileClient(file: File): Promise<ItemModel3dMime> {
@@ -1055,7 +767,7 @@ export async function validateModel3dFileClient(file: File): Promise<ItemModel3d
 }
 ```
 
-### src/infrastructure/inventory/item-model3d-service.ts:295
+### src/infrastructure/inventory/item-model3d-service.ts:290
 
 ```ts
 export const itemModel3dService = new ItemModel3dService();
@@ -1173,7 +885,7 @@ export interface ItemThumbnailJobSnapshot {
 }
 ```
 
-### src/infrastructure/inventory/item-thumbnail-service.ts:205
+### src/infrastructure/inventory/item-thumbnail-service.ts:200
 
 ```ts
 export function validateThumbnailFileClient(file: File): ItemThumbnailMime {
@@ -1187,510 +899,42 @@ export function validateThumbnailFileClient(file: File): ItemThumbnailMime {
 }
 ```
 
-### src/infrastructure/inventory/item-thumbnail-service.ts:352
+### src/infrastructure/inventory/item-thumbnail-service.ts:347
 
 ```ts
 export const itemThumbnailService = new ItemThumbnailService();
 ```
 
-### src/infrastructure/inventory/supabase-item-catalog.repository.ts:46
-
-```ts
-export interface ItemDefinitionDraft extends ItemDefinitionWriteDraft {}
-```
-
-### src/infrastructure/inventory/supabase-item-catalog.repository.ts:49
-
-```ts
-export type ForkDefinitionTarget =
-  | { scope: 'personal' }
-  | { scope: 'world'; worldProfileId: string };
-```
-
-### src/infrastructure/inventory/supabase-item-catalog.repository.ts:53
-
-```ts
-export class SupabaseItemCatalogRepository {
-  /**
-   * Effective world profile for a character.
-   *
-   * `adventureWorldProfileId ?? characterWorldProfileId ?? null`. The precedence
-   * itself is the domain rule in `resolveEffectiveWorldProfileId` — this method
-   * only supplies the two bindings.
-   */
-  async resolveEffectiveWorldProfileId(characterId: string): Promise<string | null> {
-    const { data, error } = await raceWithTimeoutReject(
-      supabase
-        .from(CHARACTERS_TABLE)
-        .select('world_profile_id, project_id')
-        .eq('id', characterId)
-        .maybeSingle(),
-      SUPABASE_QUERY_TIMEOUT_MS,
-      'Weltprofil konnte nicht aufgelöst werden (Zeitüberschreitung).',
-    );
-    if (error) {
-      throw new Error(`Failed to resolve world profile for character: ${error.message}`);
-    }
-    if (!data) return null;
-
-    const characterWorldProfileId = typeof data.world_profile_id === 'string' ? data.world_profile_id : null;
-
-    // Adventure binding: characters.project_id is optional and often unset for
-    // players — join_project_by_code / set_my_project_character only write
-    // project_members.character_id. Active memberships are therefore the
-    // authoritative adventure context, with characters.project_id preferred
-    // when present (first in the candidate list).
-    const projectIds: string[] = [];
-    if (typeof data.project_id === 'string' && data.project_id) {
-      projectIds.push(data.project_id);
-    }
-
-    const { data: memberships, error: membershipError } = await raceWithTimeoutReject(
-      supabase
-        .from('project_members')
-        .select('project_id')
-        .eq('character_id', characterId)
-        .eq('status', 'active'),
-      SUPABASE_QUERY_TIMEOUT_MS,
-      'Abenteuer-Mitgliedschaft konnte nicht aufgelöst werden (Zeitüberschreitung).',
-    );
-    if (membershipError) {
-      throw new Error(`Failed to resolve adventure memberships: ${membershipError.message}`);
-    }
-    for (const membership of memberships ?? []) {
-      const projectId = typeof membership.project_id === 'string' ? membership.project_id : null;
-      if (projectId && !projectIds.includes(projectId)) projectIds.push(projectId);
-    }
-
-    let adventureWorldProfileId: string | null = null;
-    if (projectIds.length > 0) {
-      const { data: projects, error: projectError } = await raceWithTimeoutReject(
-        supabase
-          .from(PROJECTS_TABLE)
-          .select('id, world_profile_id')
-          .in('id', projectIds),
-        SUPABASE_QUERY_TIMEOUT_MS,
-        'Abenteuer-Weltprofil konnte nicht aufgelöst werden (Zeitüberschreitung).',
-      );
-      if (projectError) {
-        throw new Error(`Failed to resolve world profile for adventure: ${projectError.message}`);
-      }
-      const byId = new Map(
-        (projects ?? []).map((project) => [project.id as string, project.world_profile_id as string | null]),
-      );
-      for (const projectId of projectIds) {
-        const worldProfileId = byId.get(projectId);
-        if (typeof worldProfileId === 'string' && worldProfileId) {
-          adventureWorldProfileId = worldProfileId;
-          break;
-        }
-      }
-    }
-
-    return resolveEffectiveWorldProfileId({ adventureWorldProfileId, characterWorldProfileId });
-  }
-
-  /**
-   * Every catalog record the signed-in user may see for this world profile:
-   * Core from the repository, plus the World and Personal rows RLS returns.
-   *
-   * Includes archived rows so owned instances stay resolvable; callers that
-   * render an Add catalog filter them out via `selectCatalogDefinitions`.
-   */
-  async listCatalogRecords(effectiveWorldProfileId: string | null): Promise<CatalogDefinitionRecord[]> {
-    const userId = await getAuthenticatedUserId();
-
-    let query = supabase.from(DEFINITIONS_TABLE).select(ITEM_DEFINITION_COLUMNS);
-    if (effectiveWorldProfileId) {
-      // `.or()` takes a raw PostgREST filter string, so both ids are checked
-      // against the UUID shape before they are interpolated into it.
-      query = query.or(
-        `and(scope.eq.personal,owner_user_id.eq.${assertUuid(userId, 'Benutzer')}),` +
-          `and(scope.eq.world,world_profile_id.eq.${assertUuid(effectiveWorldProfileId, 'Weltprofil')})`,
-      );
-    } else {
-      query = query.eq('scope', 'personal').eq('owner_user_id', userId);
-    }
-
-    const { data, error } = await raceWithTimeoutReject(
-      query,
-      SUPABASE_QUERY_TIMEOUT_MS,
-      'Gegenstandskatalog konnte nicht geladen werden (Zeitüberschreitung).',
-    );
-    if (error) {
-      throw new Error(`Failed to load item definitions: ${error.message}`);
-    }
-
-    const persisted = ((data ?? []) as ItemDefinitionDto[])
-      .map(mapDefinitionRow)
-      .filter((record): record is CatalogDefinitionRecord => record !== null);
-
-    return [...coreCatalogRecords(), ...persisted];
-  }
-
-  /**
-   * Read `world_profiles.modules` for the effective world (#143).
-   * Returns null when the row is missing or RLS denies read — callers apply
-   * `item-catalog` module defaults (prior Core+World+Personal semantics).
-   */
-  async loadWorldProfileModules(
-    worldProfileId: string,
-  ): Promise<Record<string, unknown> | null> {
-    const id = assertUuid(worldProfileId, 'Weltprofil');
-    const { data, error } = await raceWithTimeoutReject(
-      supabase
-        .from('world_profiles')
-        .select('modules')
-        .eq('id', id)
-        .maybeSingle(),
-      SUPABASE_QUERY_TIMEOUT_MS,
-      'Weltmodule konnten nicht geladen werden (Zeitüberschreitung).',
-    );
-    if (error) {
-      throw new Error(`Failed to load world profile modules: ${error.message}`);
-    }
-    if (!data || typeof data.modules !== 'object' || data.modules === null || Array.isArray(data.modules)) {
-      return null;
-    }
-    return data.modules as Record<string, unknown>;
-  }
-
-  /**
-   * Library Items browser (#138): Personal + all World definitions RLS already
-   * allows (no character effective-world narrowing). Core/builtin stay local.
-   * Includes archived rows; UI filters to active.
-   */
-  async listLibraryPersistedRecords(): Promise<CatalogDefinitionRecord[]> {
-    await getAuthenticatedUserId();
-
-    const { data, error } = await raceWithTimeoutReject(
-      supabase.from(DEFINITIONS_TABLE).select(ITEM_DEFINITION_COLUMNS),
-      SUPABASE_QUERY_TIMEOUT_MS,
-      'Gegenstandskatalog konnte nicht geladen werden (Zeitüberschreitung).',
-    );
-    if (error) {
-      throw new Error(`Failed to load library item definitions: ${error.message}`);
-    }
-
-    return ((data ?? []) as ItemDefinitionDto[])
-      .map(mapDefinitionRow)
-      .filter((record): record is CatalogDefinitionRecord => record !== null);
-  }
-
-  /** Create a Personal definition owned by the authenticated user. */
-  async createPersonalDefinition(draft: ItemDefinitionDraft): Promise<CatalogDefinitionRecord> {
-    const userId = await getAuthenticatedUserId();
-    const context: CatalogMutationContext = { userId, editableWorldProfileIds: [] };
-    if (!canCreateDefinition('personal', context)) {
-      throw new Error('Persönliche Definition nicht erlaubt.');
-    }
-    return this.insertDefinition('personal', draft, userId, null);
-  }
-
-  /**
-   * Create a World definition. Authorization is the world profile's own edit
-   * rule, enforced by RLS via `current_user_can_edit_world_profile`.
-   * `worldProfileId` comes from trusted caller context, never from the draft.
-   */
-  async createWorldDefinition(
-    worldProfileId: string,
-    draft: ItemDefinitionDraft,
-  ): Promise<CatalogDefinitionRecord> {
-    const userId = await getAuthenticatedUserId();
-    if (!worldProfileId) {
-      throw new Error('Eine Welt-Definition benötigt ein Weltprofil.');
-    }
-    const context: CatalogMutationContext = {
-      userId,
-      editableWorldProfileIds: [worldProfileId],
-    };
-    if (!canCreateDefinition('world', context, worldProfileId)) {
-      throw new Error('Welt-Definition nicht erlaubt.');
-    }
-    return this.insertDefinition('world', draft, userId, worldProfileId);
-  }
-
-  /**
-   * Update a definition's payload. Id, scope and ownership are immutable — the
-   * database triggers reject any attempt to change them, so a rename can never
-   * strand an owned instance. Cross-owner / Core writes fail closed.
-   */
-  async updateDefinition(definitionId: string, draft: ItemDefinitionDraft): Promise<CatalogDefinitionRecord> {
-    assertPersistedMutableId(definitionId);
-    const userId = await getAuthenticatedUserId();
-    const existing = await this.loadPersistedRecord(definitionId);
-    if (!existing) {
-      throw new Error('Definition konnte nicht gespeichert werden.');
-    }
-
-    if (existing.definition.scope === 'personal') {
-      if (!canMutateDefinition(existing, { userId, editableWorldProfileIds: [] })) {
-        throw new Error('Definition konnte nicht gespeichert werden.');
-      }
-    } else if (existing.definition.scope !== 'world' || !existing.worldProfileId) {
-      // World edit authority remains RLS (`current_user_can_edit_world_profile`).
-      throw new Error('Definition konnte nicht gespeichert werden.');
-    }
-
-    const scope = scopeOfId(definitionId);
-    const payload = assertWritablePayload(definitionId, scope, draft);
-
-    let query = supabase
-      .from(DEFINITIONS_TABLE)
-      .update({ payload })
-      .eq('id', definitionId)
-      .eq('scope', scope);
-
-    // Defense in depth: Personal updates must match the session owner even if
-    // RLS were misconfigured. World writes bind the known world_profile_id.
-    if (scope === 'personal') {
-      query = query.eq('owner_user_id', userId);
-    } else {
-      query = query.eq('world_profile_id', assertUuid(existing.worldProfileId as string, 'Weltprofil'));
-    }
-
-    const { data, error } = await raceWithTimeoutReject(
-      query.select(ITEM_DEFINITION_COLUMNS).maybeSingle(),
-      SUPABASE_QUERY_TIMEOUT_MS,
-      'Definition konnte nicht gespeichert werden (Zeitüberschreitung).',
-    );
-    if (error) {
-      throw new Error(`Failed to update item definition: ${error.message}`);
-    }
-    return requireRecord(data as ItemDefinitionDto | null, 'Definition konnte nicht gespeichert werden.');
-  }
-
-  /**
-   * Archive or restore a definition. Archiving is the only removal path — there
-   * is no DELETE policy on the table, so owned instances always keep resolving.
-   */
-  async setDefinitionStatus(
-    definitionId: string,
-    status: 'active' | 'archived',
-  ): Promise<CatalogDefinitionRecord> {
-    assertPersistedMutableId(definitionId);
-    const userId = await getAuthenticatedUserId();
-    const existing = await this.loadPersistedRecord(definitionId);
-    if (!existing) {
-      throw new Error('Definition konnte nicht geändert werden.');
-    }
-    if (existing.definition.scope === 'personal') {
-      if (!canMutateDefinition(existing, { userId, editableWorldProfileIds: [] })) {
-        throw new Error('Definition konnte nicht geändert werden.');
-      }
-    } else if (existing.definition.scope !== 'world' || !existing.worldProfileId) {
-      throw new Error('Definition konnte nicht geändert werden.');
-    }
-
-    const scope = scopeOfId(definitionId);
-
-    let query = supabase
-      .from(DEFINITIONS_TABLE)
-      .update({ status })
-      .eq('id', definitionId)
-      .eq('scope', scope);
-
-    if (scope === 'personal') {
-      query = query.eq('owner_user_id', userId);
-    } else {
-      query = query.eq('world_profile_id', assertUuid(existing.worldProfileId as string, 'Weltprofil'));
-    }
-
-    const { data, error } = await raceWithTimeoutReject(
-      query.select(ITEM_DEFINITION_COLUMNS).maybeSingle(),
-      SUPABASE_QUERY_TIMEOUT_MS,
-      'Status konnte nicht geändert werden (Zeitüberschreitung).',
-    );
-    if (error) {
-      throw new Error(`Failed to change item definition status: ${error.message}`);
-    }
-    return requireRecord(data as ItemDefinitionDto | null, 'Definition konnte nicht geändert werden.');
-  }
-
-  /**
-   * Fork any readable source (Core/World/Personal) into a new Personal or World
-   * definition. Always allocates a new id; never overwrites the source.
-   */
-  async forkDefinition(
-    sourceDefinitionId: string,
-    target: ForkDefinitionTarget,
-  ): Promise<CatalogDefinitionRecord> {
-    // Ensure session before resolving source (RLS + owner derivation).
-    await getAuthenticatedUserId();
-    const source = await this.resolveForkSource(sourceDefinitionId);
-    if (!source) {
-      throw new Error('Quell-Definition wurde nicht gefunden.');
-    }
-
-    if (target.scope === 'personal') {
-      const draft = buildForkedItemDefinitionDraft(source, 'personal');
-      return this.createPersonalDefinition(draft);
-    }
-
-    const worldProfileId = target.worldProfileId;
-    if (!worldProfileId) {
-      throw new Error('Eine Welt-Definition benötigt ein Weltprofil.');
-    }
-    const draft = buildForkedItemDefinitionDraft(source, 'world');
-    return this.createWorldDefinition(worldProfileId, draft);
-  }
-
-  /**
-   * Resolve any readable definition by id for Workbench load / fork (#139).
-   * Core and builtin-standard are local; Personal/World go through RLS.
-   */
-  async getDefinitionById(definitionId: string): Promise<{
-    definition: ItemDefinition;
-    record: CatalogDefinitionRecord | null;
-  } | null> {
-    const trimmed = definitionId.trim();
-    if (!trimmed) return null;
-
-    const core = getCoreItemDefinition(trimmed);
-    if (core) {
-      return { definition: core, record: null };
-    }
-
-    const builtin = getBuiltinStandardDefinition(trimmed);
-    if (builtin) {
-      return { definition: builtin, record: null };
-    }
-
-    const record = await this.loadPersistedRecord(trimmed);
-    if (!record) return null;
-    return { definition: record.definition, record };
-  }
-
-  private async resolveForkSource(sourceDefinitionId: string): Promise<ItemDefinition | null> {
-    const resolved = await this.getDefinitionById(sourceDefinitionId);
-    return resolved?.definition ?? null;
-  }
-
-  /** Load one persisted row; RLS decides visibility. Returns null when absent. */
-  private async loadPersistedRecord(definitionId: string): Promise<CatalogDefinitionRecord | null> {
-    const { data, error } = await raceWithTimeoutReject(
-      supabase
-        .from(DEFINITIONS_TABLE)
-        .select(ITEM_DEFINITION_COLUMNS)
-        .eq('id', definitionId)
-        .maybeSingle(),
-      SUPABASE_QUERY_TIMEOUT_MS,
-      'Definition konnte nicht geladen werden (Zeitüberschreitung).',
-    );
-    if (error) {
-      throw new Error(`Failed to load item definition: ${error.message}`);
-    }
-    if (!data) return null;
-    return mapDefinitionRow(data as ItemDefinitionDto);
-  }
-
-  private async insertDefinition(
-    scope: PersistedDefinitionScope,
-    draft: ItemDefinitionDraft,
-    ownerUserId: string,
-    worldProfileId: string | null,
-  ): Promise<CatalogDefinitionRecord> {
-    const id = `${scope}:${crypto.randomUUID()}`;
-    const payload = assertWritablePayload(id, scope, draft);
-
-    const { data, error } = await raceWithTimeoutReject(
-      supabase
-        .from(DEFINITIONS_TABLE)
-        .insert({
-          id,
-          scope,
-          world_profile_id: worldProfileId,
-          // Derived from the authenticated session, never from client input.
-          owner_user_id: ownerUserId,
-          payload,
-          status: 'active',
-        })
-        .select(ITEM_DEFINITION_COLUMNS)
-        .maybeSingle(),
-      SUPABASE_QUERY_TIMEOUT_MS,
-      'Definition konnte nicht angelegt werden (Zeitüberschreitung).',
-    );
-    if (error) {
-      throw new Error(`Failed to create item definition: ${error.message}`);
-    }
-    return requireRecord(data as ItemDefinitionDto | null, 'Definition konnte nicht angelegt werden.');
-  }
-}
-```
-
-### src/infrastructure/inventory/supabase-item-catalog.repository.ts:514
-
-```ts
-export const supabaseItemCatalogRepository = new SupabaseItemCatalogRepository();
-```
-
 
 ## Remaining backend helper operations
 
-### src/infrastructure/inventory/inventory-persistence.ts:189
+### src/infrastructure/inventory/inventory-persistence.ts:110
 
 ```ts
 async function ensurePersonalDefinition(draft: MigratedPersonalDefinitionDraft): Promise<string> {
   const id = migrationDefinitionId(draft.fingerprint);
-  const existing = await fetchDefinitionById(id);
-  if (existing) return existing;
+  const existing = await fetchHostLibraryItem(id);
+  if (existing) return id;
 
-  const userId = await getAuthenticatedUserId();
+  await getAuthenticatedUserId();
   const payload = toDefinitionPayload({
     ...toItemDefinitionDraft(draft),
     id,
     scope: 'personal',
   });
 
-  const { data, error } = await raceWithTimeoutReject(
-    supabase
-      .from('inventory_item_definitions')
-      .insert({
-        id,
-        scope: 'personal',
-        world_profile_id: null,
-        owner_user_id: userId,
-        payload,
-        status: 'active',
-      })
-      .select(ITEM_DEFINITION_COLUMNS)
-      .maybeSingle(),
-    SUPABASE_QUERY_TIMEOUT_MS,
-    'Persönliche Definition konnte nicht angelegt werden (Zeitüberschreitung).',
-  );
-
-  if (error) {
-    // Unique violation / race: another retry created it — read it back.
-    const raced = await fetchDefinitionById(id);
-    if (raced) return raced;
-    throw new Error(`Failed to create item definition: ${error.message}`);
+  const created = await createHostLibraryItem({
+    name: draft.name,
+    origin: 'personal',
+    worldProfileId: null,
+    payload,
+  });
+  if (!created || typeof created !== 'object') {
+    throw new Error('Persönliche Definition konnte nicht angelegt werden.');
   }
-  if (!data) {
-    const raced = await fetchDefinitionById(id);
-    if (raced) return raced;
-    throw new Error('Definition konnte nicht angelegt werden.');
-  }
-  const record = mapDefinitionRow(data as ItemDefinitionDto);
-  if (!record) throw new Error('Definition konnte nicht angelegt werden.');
-  return record.definition.id;
-}
-```
-
-### src/infrastructure/inventory/inventory-persistence.ts:234
-
-```ts
-async function fetchDefinitionById(id: string): Promise<string | null> {
-  const { data, error } = await raceWithTimeoutReject(
-    supabase
-      .from('inventory_item_definitions')
-      .select('id')
-      .eq('id', id)
-      .maybeSingle(),
-    SUPABASE_QUERY_TIMEOUT_MS,
-    'Definition konnte nicht geladen werden (Zeitüberschreitung).',
-  );
-  if (error) throw new Error(`Failed to load item definition: ${error.message}`);
-  return typeof data?.id === 'string' ? data.id : null;
+  const row = created as Record<string, unknown>;
+  const newId = typeof row.id === 'string' ? row.id : id;
+  return newId;
 }
 ```
 
@@ -1698,6 +942,9 @@ async function fetchDefinitionById(id: string): Promise<string | null> {
 
 ```ts
 async function invokeHost(body: Record<string, unknown>): Promise<FunctionResponse> {
+  if (!isHostLibraryEnabled()) {
+    return { status: 'error', message: '3D-Modell-Dienst nicht erreichbar.' };
+  }
   const base = getHostAuthBaseUrl()?.replace(/\/$/, '') ?? '';
   if (!base) {
     return { status: 'error', message: '3D-Modell-Dienst nicht erreichbar.' };
@@ -1723,26 +970,13 @@ async function invokeHost(body: Record<string, unknown>): Promise<FunctionRespon
 }
 ```
 
-### src/infrastructure/inventory/item-model3d-service.ts:117
-
-```ts
-async function invoke(body: Record<string, unknown>): Promise<FunctionResponse> {
-  if (isHostLibraryEnabled()) {
-    return invokeHost(body);
-  }
-  const { data, error } = await supabase.functions.invoke('item-model3d', { body });
-  if (error) {
-    const serverMessage = await getFunctionErrorMessage(error);
-    throw new Error(serverMessage ?? '3D-Modell-Dienst nicht erreichbar.');
-  }
-  return parseResponse(data);
-}
-```
-
 ### src/infrastructure/inventory/item-thumbnail-service.ts:149
 
 ```ts
 async function invokeHost(body: Record<string, unknown>): Promise<FunctionResponse> {
+  if (!isHostLibraryEnabled()) {
+    return { status: 'error', message: 'Thumbnail-Dienst nicht erreichbar.' };
+  }
   const base = getHostAuthBaseUrl();
   if (base === null) {
     return { status: 'error', message: 'Thumbnail-Dienst nicht erreichbar.' };
@@ -1765,22 +999,6 @@ async function invokeHost(body: Record<string, unknown>): Promise<FunctionRespon
     data = await response.json();
   } catch {
     return { status: 'error', message: 'Thumbnail-Dienst nicht erreichbar.' };
-  }
-  return parseResponse(data);
-}
-```
-
-### src/infrastructure/inventory/item-thumbnail-service.ts:176
-
-```ts
-async function invoke(body: Record<string, unknown>): Promise<FunctionResponse> {
-  if (isHostLibraryEnabled()) {
-    return invokeHost(body);
-  }
-  const { data, error } = await supabase.functions.invoke('item-thumbnail', { body });
-  if (error) {
-    const serverMessage = await getFunctionErrorMessage(error);
-    throw new Error(serverMessage ?? 'Thumbnail-Dienst nicht erreichbar.');
   }
   return parseResponse(data);
 }
@@ -1827,6 +1045,7 @@ async function invoke(body: Record<string, unknown>): Promise<FunctionResponse> 
 | `src/domains/media/index.ts` | `768ded2d0f0fd1d510d660924e787817673955dbeff021d7de9e0a8d8e38bdec` |
 | `src/domains/media/optimization-contract.ts` | `ba9216dab79a9c03f66a16b77dedf1c26d4d00d6ae2693cc5a68919d1647846d` |
 | `src/domains/media/optimization-policy.ts` | `6145574bc08d1eb94f54d488ebc1f8bc030c2a956e3e3fd24cb15a7c8e50c5ec` |
+| `src/domains/project/contracts/project.types.ts` | `1777f75b3bd865b09e3fba61324b7331439f5846c98dea1230e27b6f976a0ca8` |
 | `src/domains/resource-id/index.ts` | `0ba8da924c8d9d62250e0428d4acfed48b0055205d3e256808a3f6ac4d045c0b` |
 | `src/domains/resource-id/public-resource-id.ts` | `6df4fbe9cc3c7c1705ab88c1fba8baea8e7daef9b3869b96dcef8ce1e547a9ca` |
 | `src/domains/resource-id/screen-vs-modal.ts` | `3a4b3a3cbfba83eccd410cb08fdbe73c02c9b911effb3ff7918fdf703816ecb1` |
@@ -1840,16 +1059,18 @@ async function invoke(body: Record<string, unknown>): Promise<FunctionResponse> 
 | `src/domains/rules/sagatree/items/validators.ts` | `257732bceab776a0afc34f01340eb7e47a94b5c9d984ebf3fff8e0bb7c8ff543` |
 | `src/domains/rules/sagatree/skill-progression/index.ts` | `7b4f5f109d49785497b4639a154b6e3856d58e52421befa7fa0ba0a278967cb7` |
 | `src/domains/rules/sagatree/species-trait-options/index.ts` | `b21687494d66c5e5b3e1b791eadf3aa1ecabb9094695768a7961bba8b36730c4` |
+| `src/domains/session/contracts/session-lifecycle.ts` | `c70eb365aa31906dc8cd8f7a3cc2c5ed1141b5bab8489a1d56ced8a41c1ce5be` |
 | `src/infrastructure/character/character.persistence.ts` | `5ed5f363555b9c4a3922507e01a227f74aee706764065641eb27ac9510024bd5` |
-| `src/infrastructure/host/host-library-http.ts` | `b2343081ddce2e2edd73651b0622e8b4cc6d8583d746a863dbe3343e3a98f71a` |
+| `src/infrastructure/host/host-library-http.ts` | `1d41f3b1eb3e71a3a8b12306993b605f2d05f2f41cd35f73b9c362b12f9c1cb6` |
+| `src/infrastructure/host/host-project-http.ts` | `b5a68f6452217b08d2217a983113a9a356ce70890693319227f35c82fbdcd818` |
+| `src/infrastructure/host/host-session-http.ts` | `39b5efefc00297d57c1c4f248953cbbed4d7053e51974cd25a2ed43e368a64eb` |
 | `src/infrastructure/inventory/host-inventory-adapter.ts` | `705ee213e4ffa49ea7b0d89583a01b5ae78bcd6a990464dd5104d88abc83b6b2` |
 | `src/infrastructure/inventory/host-inventory-ports.contract.ts` | `115502542d1d6c8a94292ca0f15a683ebc78cf2997aa3c5a130b682cccc448d2` |
-| `src/infrastructure/inventory/inventory-persistence.ts` | `79aaa09053ecd72a0bec8f8f0610b31ab0c9b34779f4a4c87f19f0d2ef7e4ac2` |
-| `src/infrastructure/inventory/item-catalog-service.ts` | `a2164f40d92e9446d8a53ea589841d8d669fc34de045f9f94be92e2bcca4ebff` |
+| `src/infrastructure/inventory/inventory-persistence.ts` | `f62a29cc17219f2c455155f3f0a0e3fe14ca6838ac3d43df7fa19f3578773357` |
+| `src/infrastructure/inventory/item-catalog-service.ts` | `adea9220e02d2dbb96e107743c2ad8dfb7eaa8a9f1b1314620f16d5bb2979175` |
 | `src/infrastructure/inventory/item-catalog.persistence.ts` | `a68903ba909af8030e81d28555a65798800c9a32a790a4281e96f52b1550c566` |
-| `src/infrastructure/inventory/item-model3d-service.ts` | `a2b20eec8c22bc9a171f65f2bbdc47d7bcc7bb940155e090664dbd7266bd37ea` |
-| `src/infrastructure/inventory/item-thumbnail-service.ts` | `192943a7e10c7da296d33e1bf2c023f244136ed84fcb55f4c7d3a0caa0993f0c` |
-| `src/infrastructure/inventory/supabase-item-catalog.repository.ts` | `1ea1b14afc3d01c117c13e96af516a8cc0a315edfb170a6f1f11c6903ab366eb` |
+| `src/infrastructure/inventory/item-model3d-service.ts` | `78ea9163f36e15ce80fa6fb6da215f097c88b46d9bcae3bc78e5e3652d71cfe7` |
+| `src/infrastructure/inventory/item-thumbnail-service.ts` | `5725377b8fcb3ff8b95ecaab949c561aab4837fe7d5b966c305a9c6ca9eb6a2f` |
 | `src/infrastructure/media/optimizer/engines/audio/index.ts` | `7585190a705085692bff0896e08b4d78f791895b47e24d57deeaaa10bb669d4e` |
 | `src/infrastructure/media/optimizer/engines/image/image.worker.ts` | `d34793b4de682556d9306194cfbcd05fdafdf215da25393f955d2669c7499276` |
 | `src/infrastructure/media/optimizer/engines/image/index.ts` | `4944001b7e0f7784d487da2e60d06d845aa564e9ddd7516ff50633af1591a322` |
@@ -1863,9 +1084,11 @@ async function invoke(body: Record<string, unknown>): Promise<FunctionResponse> 
 | `src/infrastructure/media/optimizer/engines/video/index.ts` | `d8c6aaaabb2ad762d4c15f9ef4aa9bc016f5968b2512cfe52f71cb09655dd842` |
 | `src/infrastructure/media/optimizer/index.ts` | `c1b162af47239195707de742a8991bea14d85f2238108968613c3bad3d91cf02` |
 | `src/infrastructure/media/optimizer/media-optimizer.ts` | `7d58424f12b7855ccb3c0153270628850e03afc15c285b1fc2b47218918255d9` |
-| `src/lib/authenticatedUser.ts` | `d4cbf3a004f8375982ca03d474fb7b61559fc2ec58ad6fe7b1f8834d26abf10c` |
+| `src/infrastructure/project/project-member-service.ts` | `e67c3c5c9dd332d15d699a489dce4db743c183a5ce6aab09efc2deb89628236f` |
+| `src/infrastructure/project/project-service.ts` | `29846df2ae25287b68cba443a9c85f2f9952fa9cc1afd3faf762a78eb57a6fa6` |
+| `src/lib/authenticatedUser.ts` | `5d9deef60efd85a3ecd56e9b55f67ecb2d03c2964c4f9217e6de6842d8e0b403` |
 | `src/lib/hostAuthBridge.ts` | `30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a` |
-| `src/lib/localAdmin.ts` | `3a28dec23e85f25ed3e70682bc6e7f8c6b55e81dbbefdd1f6a837f68ac80d6b5` |
+| `src/lib/localAdmin.ts` | `103feaea892b0582022557ff81cef61105f3d9ed4eb421a20d8b0b415c2de498` |
 | `src/lib/networkTimeout.ts` | `835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851` |
-| `src/lib/supabase.ts` | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
+| `src/lib/supabase.ts` | `a385b96048d1e73f8dd1a78ee00a5c1a4e6cbb5f50e1f705ae527e2493f9f373` |
 

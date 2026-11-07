@@ -76,12 +76,13 @@ mustInclude(
 mustInclude(
   'src/infrastructure/project/saga-overview-service.ts',
   [
-    'get_saga_overview',
+    'fetchHostSagaOverview',
+    'isHostLibraryEnabled',
     'getOverviewByPublicId',
     'parseSagaOverview',
     'assertSagaOverviewAudienceSafe',
   ],
-  'overview service',
+  'overview service (CUT-20 host HTTP)',
 );
 
 const service = read('src/infrastructure/project/saga-overview-service.ts');
@@ -94,6 +95,16 @@ rejectMatch(
   service,
   /adventure_runtime/,
   'service must not mention adventure_runtime column select',
+);
+rejectMatch(
+  service,
+  /supabase|\.rpc\s*\(/,
+  'service must not call Supabase RPC (CUT-20)',
+);
+rejectMatch(
+  service,
+  /get_saga_overview/,
+  'service must not name legacy RPC (CUT-20 host HTTP)',
 );
 
 mustInclude(

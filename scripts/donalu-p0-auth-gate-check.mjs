@@ -24,6 +24,19 @@ function requireIncludes(content, needle, label) {
   if (!content.includes(needle)) fail(`missing ${label}: ${needle}`);
 }
 
+/** CUT-20 host-only facades use assertHost(); legacy dual-path keeps assertSupabaseJwtSession. */
+function requireProductAuthGate(content, label) {
+  const hostOnly =
+    content.includes('assertHost') &&
+    (content.includes('isHostLibraryEnabled') ||
+      content.includes('Host-Anmeldung nicht konfiguriert'));
+  if (!content.includes('assertSupabaseJwtSession') && !hostOnly) {
+    fail(
+      `missing ${label}: assertSupabaseJwtSession or CUT-20 assertHost() + isHostLibraryEnabled`,
+    );
+  }
+}
+
 const authUser = read('src/lib/authenticatedUser.ts');
 requireIncludes(authUser, 'export async function assertSupabaseJwtSession', 'assertSupabaseJwtSession export');
 requireIncludes(authUser, 'API_AUTH_REQUIRED_DE', 'German API auth message');
@@ -33,14 +46,14 @@ requireIncludes(authCtx, 'hasJwtSession', 'hasJwtSession on AuthContext');
 requireIncludes(authCtx, 'ensureJwtSession', 'ensureJwtSession on AuthContext');
 
 const worldProfiles = read('src/infrastructure/world/world-profile-service.ts');
-requireIncludes(worldProfiles, 'assertSupabaseJwtSession', 'world-profile-service JWT assert');
+requireProductAuthGate(worldProfiles, 'world-profile-service auth gate');
 
 const atlas = read('src/infrastructure/world/world-atlas-service.ts');
-requireIncludes(atlas, 'assertSupabaseJwtSession', 'world-atlas-service JWT assert');
+requireProductAuthGate(atlas, 'world-atlas-service auth gate');
 requireIncludes(atlas, 'ensureRoot', 'ensureRoot still present');
 
 const places = read('src/infrastructure/world/world-place-service.ts');
-requireIncludes(places, 'assertSupabaseJwtSession', 'world-place-service JWT assert');
+requireProductAuthGate(places, 'world-place-service auth gate');
 
 // No client service-role bypass for world auth
 for (const [label, src] of [

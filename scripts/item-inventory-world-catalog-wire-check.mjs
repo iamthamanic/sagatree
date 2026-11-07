@@ -52,16 +52,18 @@ section('1 · structure & wiring');
   const service = read('src/infrastructure/inventory/item-catalog-service.ts');
   check(service.includes('composeCharacterInventoryAddCatalog'), 'service uses compose');
   check(service.includes('getItemCatalogModuleConfig'), 'service reads module config');
-  check(service.includes('loadWorldProfileModules'), 'service loads world modules');
+  check(service.includes('getItemCatalogModuleConfig'), 'service reads item catalog module config');
   check(service.includes('getBuiltinStandardDefinition'), 'service resolves builtins for lookup');
   check(!/selectCatalogDefinitions/.test(service), 'service no longer uses selectCatalogDefinitions for addable');
+  check(service.includes('resolveEffectiveWorldProfileId'), 'service resolves effective world profile');
+  check(service.includes('fetchHostLibraryItems'), 'service loads catalog via host library HTTP');
 
-  const repo = read('src/infrastructure/inventory/supabase-item-catalog.repository.ts');
-  check(repo.includes('loadWorldProfileModules'), 'repo loads modules');
-  check(repo.includes("from('world_profiles')"), 'repo queries world_profiles');
-
-  const persistence = read('src/infrastructure/inventory/inventory-persistence.ts');
-  check(persistence.includes('getBuiltinStandardDefinition'), 'writable inventory accepts builtins');
+  const catalogWritable = read('src/infrastructure/inventory/item-catalog-service.ts');
+  check(
+    catalogWritable.includes('getBuiltinStandardDefinition') &&
+      catalogWritable.includes('assertWritableInventoryV2'),
+    'writable inventory accepts builtins',
+  );
 
   const migration = read('supabase/migrations/019_world_profiles_read_for_adventure.sql');
   check(migration.includes('current_user_can_read_world_profile'), 'RLS uses read helper');

@@ -2,18 +2,10 @@
  * character-avatar-export-service — materialize owner-scoped GLB on Character Save (#7 / CUT-12).
  * Location: src/infrastructure/character/avatar/character-avatar-export-service.ts
  *
- * Validates/builds domain payload, uploads once, activates exactly one artifact.
- * On failure: does not activate; caller must keep prior model_url + draft.
- * Host-first: publish via /api/v1/assets (purpose=avatar-model); no Supabase Storage.
+ * Validates/builds domain payload, uploads once via host AssetPorts (CUT-20).
  */
-
-import { supabase } from '../../../lib/supabase';
-import { getAuthenticatedUserId } from '../../../lib/authenticatedUser';
 import type { CharacterAvatarDto } from '../../../domains/character/domain/character.entity';
 import {
-  AVATAR_SAVE_EXPORT_VERSION,
-  MORPH_CONTRACT_VERSION,
-  buildAvatarExportStoragePath,
   buildAvatarSaveExportPayload,
   encodeAvatarExportGlb,
   type AvatarSaveExportArtifact,
@@ -21,14 +13,9 @@ import {
   type RuntimeTraitOverlay,
 } from '../../../domains/character/avatar';
 import { resolveBaseBodyModelUrl } from './base-body-catalog';
-import {
-  isHostLibraryEnabled,
-  publishHostAvatarModel,
-} from '../../host/host-library-http';
+import { isHostLibraryEnabled, publishHostAvatarModel } from '../../host/host-library-http';
 import { getHostAuthBaseUrl } from '../../../lib/hostAuthBridge';
 
-const BUCKET = 'character-avatars';
-const SIGNED_URL_SECONDS = 60 * 60 * 24 * 365;
 /** Matches server AssetPorts.publish DEFAULT_ASSET_MAX_BYTES (host avatar-model path). */
 const HOST_AVATAR_MODEL_MAX_BYTES = 16 * 1024 * 1024;
 
@@ -36,6 +23,12 @@ export interface AvatarSaveExportProgress {
   status: AvatarSaveExportUiStatus;
   message: string;
   artifact?: AvatarSaveExportArtifact;
+}
+
+function assertHost(): void {
+  if (!isHostLibraryEnabled()) {
+    throw new Error('Host-Anmeldung nicht konfiguriert (VITE_SAGATREE_HOST_AUTH_URL fehlt).');
+  }
 }
 
 function usesHostAssetCredentials(url: string): boolean {
@@ -76,6 +69,7 @@ export async function materializeAvatarSaveExport(
     onProgress?: (progress: AvatarSaveExportProgress) => void;
   },
 ): Promise<AvatarSaveExportArtifact> {
+  assertHost();
   const report = (
     status: AvatarSaveExportUiStatus,
     message: string,
@@ -105,105 +99,33 @@ export async function materializeAvatarSaveExport(
   report('uploading', 'Avatar-Artefakt wird gespeichert …');
   const artifactId = crypto.randomUUID();
 
-  if (isHostLibraryEnabled()) {
-    if (bytes.byteLength > HOST_AVATAR_MODEL_MAX_BYTES) {
-      report('error', 'Avatar-Export zu groß für den Host-Speicher.');
-      throw new Error(
-        `Avatar-Export zu groß für den Host-Speicher (max. ${HOST_AVATAR_MODEL_MAX_BYTES} Bytes).`,
-      );
-    }
-    const blob = new File([new Uint8Array(bytes)], `avatar-export-${artifactId}.glb`, {
-      type: 'model/gltf-binary',
-    });
-    let published;
-    try {
-      published = await publishHostAvatarModel(blob, { assetId: artifactId });
-    } catch (error) {
-      report('error', 'Avatar-Export fehlgeschlagen. Bitte erneut speichern.');
-      throw new Error(
-        error instanceof Error ? error.message : 'Avatar-Export-Upload fehlgeschlagen',
-      );
-    }
-    report('activating', 'Export wird aktiviert …');
-    const artifact: AvatarSaveExportArtifact = {
-      artifactId,
-      storagePath: published.storagePath,
-      modelUrl: published.url,
-      byteSize: bytes.byteLength,
-      format: 'glb',
-      payload,
-    };
-    report('success', 'Avatar-Export materialisiert.', artifact);
-    return artifact;
+  if (bytes.byteLength > HOST_AVATAR_MODEL_MAX_BYTES) {
+    report('error', 'Avatar-Export zu groß für den Host-Speicher.');
+    throw new Error(
+      `Avatar-Export zu groß für den Host-Speicher (max. ${HOST_AVATAR_MODEL_MAX_BYTES} Bytes).`,
+    );
   }
-
-  const ownerUserId = await getAuthenticatedUserId();
-  const storagePath = buildAvatarExportStoragePath({ ownerUserId, artifactId });
-
-  const blob = new Blob([new Uint8Array(bytes)], { type: 'model/gltf-binary' });
-  const { error: uploadError } = await supabase.storage.from(BUCKET).upload(storagePath, blob, {
-    contentType: 'model/gltf-binary',
-    upsert: false,
+  const blob = new File([new Uint8Array(bytes)], `avatar-export-${artifactId}.glb`, {
+    type: 'model/gltf-binary',
   });
-  if (uploadError) {
+  let published;
+  try {
+    published = await publishHostAvatarModel(blob, { assetId: artifactId });
+  } catch (error) {
     report('error', 'Avatar-Export fehlgeschlagen. Bitte erneut speichern.');
-    throw new Error(`Avatar-Export-Upload fehlgeschlagen: ${uploadError.message}`);
+    throw new Error(
+      error instanceof Error ? error.message : 'Avatar-Export-Upload fehlgeschlagen',
+    );
   }
-
   report('activating', 'Export wird aktiviert …');
-
-  // Deactivate previous active export for this character (exactly-one active).
-  if (input.characterId) {
-    await supabase
-      .from('character_avatar_export_assets')
-      .update({ is_active: false })
-      .eq('owner_user_id', ownerUserId)
-      .eq('character_id', input.characterId)
-      .eq('is_active', true);
-  }
-
-  const { error: insertError } = await supabase.from('character_avatar_export_assets').insert({
-    id: artifactId,
-    owner_user_id: ownerUserId,
-    character_id: input.characterId ?? null,
-    format: 'glb',
-    mime: 'model/gltf-binary',
-    byte_size: bytes.byteLength,
-    storage_path: storagePath,
-    export_contract_version: AVATAR_SAVE_EXPORT_VERSION,
-    morph_contract_version: MORPH_CONTRACT_VERSION,
-    embeds_source_mesh: embedsSourceMesh,
-    is_active: true,
-  });
-  if (insertError) {
-    await supabase.storage.from(BUCKET).remove([storagePath]);
-    report('error', 'Avatar-Export konnte nicht bestätigt werden.');
-    throw new Error(`Avatar-Export-Artefakt konnte nicht gespeichert werden: ${insertError.message}`);
-  }
-
-  const { data: signed, error: signedError } = await supabase.storage
-    .from(BUCKET)
-    .createSignedUrl(storagePath, SIGNED_URL_SECONDS);
-  if (signedError || !signed?.signedUrl) {
-    // Roll back active flag so previous artifact remains the only active one.
-    await supabase
-      .from('character_avatar_export_assets')
-      .update({ is_active: false })
-      .eq('id', artifactId)
-      .eq('owner_user_id', ownerUserId);
-    report('error', 'Export-URL konnte nicht erzeugt werden.');
-    throw new Error(signedError?.message ?? 'Signed URL fehlt');
-  }
-
   const artifact: AvatarSaveExportArtifact = {
     artifactId,
-    storagePath,
-    modelUrl: signed.signedUrl,
+    storagePath: published.storagePath,
+    modelUrl: published.url,
     byteSize: bytes.byteLength,
     format: 'glb',
     payload,
   };
-
   report('success', 'Avatar-Export materialisiert.', artifact);
   return artifact;
 }

@@ -67,11 +67,12 @@ mustNotInclude(
 mustInclude(
   'src/infrastructure/session/session-service.ts',
   [
-    "rpc('create_session_invite'",
-    "rpc('resolve_session_invite'",
-    "rpc('revoke_session_invite'",
+    'createHostSessionInvite',
+    'resolveHostSessionInvite',
+    'revokeHostSessionInvite',
+    'host-session-http',
   ],
-  'session-service invite RPCs',
+  'session-service invite host HTTP (CUT-20)',
 );
 
 mustInclude(

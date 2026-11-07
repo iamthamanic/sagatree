@@ -50,7 +50,8 @@ mustInclude('src/infrastructure/world/world-place-service.ts', [
   'archiveNodeSubtree',
   'deleteNode',
   'previewNodeConsequences',
-  'assertSupabaseJwtSession',
+  'assertHost',
+  'host-world-http',
 ]);
 
 const svc = readFileSync(join(root, 'src/infrastructure/world/world-place-service.ts'), 'utf8');

@@ -278,10 +278,11 @@ section('4 · Core-Katalog ist universell und unveränderlich');
   const migration = read('supabase/migrations/015_inventory_item_definitions.sql');
   requireMatch(migration, /CHECK \(scope IN \('world', 'personal'\)\)/, 'Scope-Check ohne core');
   requireMatch(migration, /CHECK \(id LIKE scope \|\| ':%'\)/, 'Id-Präfix bindet die Id an den Scope');
+  const catalogFacade = read('src/infrastructure/inventory/item-catalog-service.ts');
   rejectMatch(
-    read('src/infrastructure/inventory/supabase-item-catalog.repository.ts'),
-    /scopeOfId[\s\S]*?return 'core'/,
-    'Repository kann keinen Core-Scope schreiben',
+    catalogFacade,
+    /origin:\s*['"]core['"]/,
+    'Facade schreibt keinen Core-Scope',
   );
 }
 
@@ -324,9 +325,9 @@ section('5 · Archivierung ohne Auflösungsverlust');
   );
   requireMatch(migration, /status TEXT NOT NULL DEFAULT 'active' CHECK \(status IN \('active', 'archived'\)\)/, 'Status active/archived');
 
-  const repository = read('src/infrastructure/inventory/supabase-item-catalog.repository.ts');
-  rejectMatch(repository, /\.delete\(\)/, 'Repository löscht keine Definitionen');
-  requireMatch(repository, /setDefinitionStatus/, 'Archivierung über Statuswechsel');
+  const catalogFacade = read('src/infrastructure/inventory/item-catalog-service.ts');
+  rejectMatch(catalogFacade, /\.delete\(\)/, 'Facade löscht keine Definitionen');
+  requireMatch(catalogFacade, /archiveDefinition/, 'Archivierung über host archive');
 }
 
 // ===========================================================================
@@ -391,18 +392,10 @@ section('6 · Welt-Autorisierung für Schreibzugriffe');
 
   // World definition writes must go through the world profile id, never through
   // a client-supplied owner.
-  const repository = read('src/infrastructure/inventory/supabase-item-catalog.repository.ts');
-  requireMatch(repository, /createWorldDefinition\(/, 'Welt-Definition anlegen');
-  requireMatch(
-    repository,
-    /owner_user_id: ownerUserId/,
-    'Besitzer kommt aus der authentifizierten Sitzung',
-  );
-  requireMatch(
-    repository,
-    /await getAuthenticatedUserId\(\)/,
-    'Besitzer wird aus der Sitzung aufgelöst',
-  );
+  const catalogFacade = read('src/infrastructure/inventory/item-catalog-service.ts');
+  requireMatch(catalogFacade, /createWorldDefinition\(/, 'Welt-Definition anlegen');
+  requireMatch(catalogFacade, /assertHost\(\)/, 'Host-only catalog facade');
+  requireMatch(catalogFacade, /createHostLibraryItem/, 'Persistenz über Host Library HTTP');
   rejectMatch(
     read('src/infrastructure/inventory/item-catalog-service.ts'),
     /ownerUserId:/,
@@ -444,12 +437,9 @@ section('7 · Null-Weltprofil ohne Welt-Gegenstände');
     'persönliche Definition ohne Besitzer ist nie sichtbar',
   );
 
-  const repository = read('src/infrastructure/inventory/supabase-item-catalog.repository.ts');
-  requireMatch(
-    repository,
-    /query\.eq\('scope', 'personal'\)\.eq\('owner_user_id', userId\)/,
-    'ohne Weltprofil werden nur persönliche Zeilen gelesen',
-  );
+  const catalogFacade = read('src/infrastructure/inventory/item-catalog-service.ts');
+  requireMatch(catalogFacade, /listCatalogRecordsForEffectiveWorld/, 'Katalogfilter über Sichtbarkeitsregeln');
+  requireMatch(catalogFacade, /isDefinitionVisible/, 'ohne Weltprofil greifen Domain-Sichtbarkeitsregeln');
 }
 
 // ===========================================================================
@@ -589,43 +579,42 @@ section('9 · Persistenz- und Sicherheitsvertrag');
   const worldService = read('src/infrastructure/world/world-profile-service.ts');
   requireMatch(
     worldService,
-    /inventory_item_definitions/,
-    'Welt-Löschen prüft auf abhängige Definitionen',
+    /deleteHostLibraryWorld/,
+    'Welt-Löschen über Host Library HTTP (CUT-20)',
+  );
+  requireMatch(
+    worldService,
+    /world-in-use|inventory_item_definitions/,
+    'Welt-Löschen prüft auf abhängige Definitionen (Host world-in-use / FK)',
   );
   requireMatch(
     worldService,
     /Archivieren Sie die Definitionen zuerst/,
     'Welt-Löschen verweigert mit deutscher Fehlermeldung',
   );
-
-  const repository = read('src/infrastructure/inventory/supabase-item-catalog.repository.ts');
-  requireMatch(repository, /assertWritablePayload/, 'Schreiben validiert vor dem Persistieren');
+  const hostWorldDelete = read('server/src/modules/world/index.ts');
   requireMatch(
-    repository,
-    /Ungültige Definition — Speichern abgebrochen/,
-    'ungültiges Payload wird vor dem Schreiben abgewiesen',
-  );
-  requireMatch(repository, /UUID_PATTERN/, 'UUID-Prüfung vor PostgREST-Filter');
-  requireMatch(repository, /assertUuid\(/, 'Filterwerte werden geprüft');
-  requireMatch(repository, /raceWithTimeoutReject/, 'Abfrage mit Zeitüberschreitung');
-  requireMatch(repository, /resolveEffectiveWorldProfileId/, 'Auflösung des wirksamen Weltprofils');
-  requireMatch(repository, /coreCatalogRecords\(\)/, 'Core kommt aus dem Repository-Quelltext');
-  requireMatch(
-    repository,
-    /from\('project_members'\)/,
-    'Abenteuer-Auflösung über aktive Mitgliedschaften',
+    hostWorldDelete,
+    /deleteOwnedWorld/,
+    'Host deleteOwnedWorld vorhanden',
   );
   requireMatch(
-    repository,
-    /\.eq\('status', 'active'\)/,
-    'nur aktive Mitgliedschaften zählen für das Abenteuer-Weltprofil',
+    hostWorldDelete,
+    /world-in-use/,
+    'Host verweigert Löschen bei abhängigen Referenzen',
   );
 
   const service = read('src/infrastructure/inventory/item-catalog-service.ts');
+  requireMatch(service, /toDefinitionPayload/, 'Schreiben serialisiert Payload');
+  requireMatch(service, /parseItemDefinition/, 'ungültiges Payload wird beim Lesen verworfen');
+  requireMatch(service, /resolveEffectiveWorldProfileId/, 'Auflösung des wirksamen Weltprofils');
+  requireMatch(service, /listCoreItemDefinitions/, 'Core kommt aus dem Domain-Katalog');
+  requireMatch(service, /fetchHostLibraryAdventureArcs/, 'Abenteuer-Auflösung über aktive Arcs');
+  requireMatch(service, /arc\.status !== 'active'/, 'nur aktive Arcs zählen für Abenteuer-Weltprofil');
   requireMatch(service, /composeCharacterInventoryAddCatalog/, 'Facade komponiert Add-Katalog über World-Resolver (#143)');
   requireMatch(service, /createDefinitionLookup/, 'Facade liefert Lookup für besessene Instanzen');
   requireMatch(service, /getBuiltinStandardDefinition/, 'Lookup löst Builtin-Standard für Besitz auf');
-  requireMatch(service, /loadWorldProfileModules/, 'Facade lädt Weltmodule für item-catalog');
+  requireMatch(service, /getItemCatalogModuleConfig/, 'Facade lädt Weltmodul-Konfiguration (#1159 host parity)');
 
   // Layering: the domain policy must not import persistence or infrastructure.
   // Comments may legitimately name where the enforcement lives, so only import

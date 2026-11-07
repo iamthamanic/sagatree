@@ -22,6 +22,10 @@ function read(rel) {
   return fs.readFileSync(path.join(root, rel), 'utf8');
 }
 
+function stripComments(src) {
+  return src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*$/gm, '');
+}
+
 const migration = read('supabase/migrations/020_user_ai_provider_credentials.sql');
 check(migration.includes('user_ai_provider_credentials'), 'migration creates credentials table');
 check(migration.includes('service_role'), 'migration grants service_role only');
@@ -56,15 +60,15 @@ const clientSvc = read('src/infrastructure/ai/ai-provider-credentials-service.ts
 const hostInvoke = read('src/infrastructure/ai/host-ai-invoke.ts');
 check(
   clientSvc.includes("invokeFn('provider-credentials'") ||
-    clientSvc.includes("invoke('ai-provider-credentials'"),
-  'client invokes credentials via host dual-path or edge',
+    clientSvc.includes("createAiInvoke"),
+  'client invokes credentials via host AI invoke',
 );
+const hostInvokeCode = stripComments(hostInvoke);
 check(
-  hostInvoke.includes('functions.invoke') &&
-    hostInvoke.includes('ai-provider-credentials') &&
-    hostInvoke.includes('/api/v1/ai/') &&
-    hostInvoke.includes('VITE_SAGATREE_HOST_AI'),
-  'host-ai-invoke keeps Edge fallback, host HTTP path, and explicit AI opt-in',
+  hostInvoke.includes('/api/v1/ai/') &&
+    !hostInvokeCode.includes('functions.invoke') &&
+    hostInvoke.includes('provider-credentials'),
+  'host-ai-invoke is host-only HTTP (CUT-20, no Edge fallback)',
 );
 check(!/msy_[A-Za-z0-9]{8,}/.test(clientSvc), 'client service has no hardcoded meshy key');
 

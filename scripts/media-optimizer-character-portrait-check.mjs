@@ -28,7 +28,6 @@ section('1 · files');
 const paths = [
   'src/app/character/edit/useCharacterAvatarEditor.ts',
   'src/infrastructure/character/character-service.ts',
-  'src/infrastructure/character/supabase-character.repository.ts',
 ];
 for (const p of paths) {
   check(existsSync(join(root, p)), `exists ${p}`);
@@ -44,10 +43,6 @@ const service = readFileSync(
   join(root, 'src/infrastructure/character/character-service.ts'),
   'utf8',
 );
-const repo = readFileSync(
-  join(root, 'src/infrastructure/character/supabase-character.repository.ts'),
-  'utf8',
-);
 const ui = readFileSync(join(root, 'src/app/character/edit/CharacterEditor.tsx'), 'utf8');
 
 check(/useMediaOptimizeIntake/.test(editor), 'editor uses intake hook');
@@ -59,8 +54,8 @@ check(/prepareCharacterPortraitFile|preparePortraitFile/.test(service), 'service
 check(/profileId:\s*['"]character-portrait['"]/.test(service), 'service prepare uses character-portrait');
 check(/optimizeMedia/.test(service), 'service calls optimizeMedia');
 check(/alreadyOptimized/.test(service), 'service respects alreadyOptimized');
-check(/image\/webp/.test(repo), 'repository accepts webp');
-check(/sniffPortraitMime/.test(repo), 'repository magic-byte sniff remains');
+check(/image\/webp/.test(service), 'service accepts webp output');
+check(/publishHostAsset/.test(service), 'portrait upload via host asset publish');
 
 section('3 · preview / AU / abort / asset survival');
 

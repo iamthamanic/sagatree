@@ -70,13 +70,14 @@ mustInclude(
 mustInclude(
   'src/infrastructure/project/saga-permission-service.ts',
   [
-    'get_my_saga_permissions',
-    'set_saga_member_bundle',
-    'set_saga_binding_reveal',
-    'get_saga_lore_timeline',
-    'list_saga_bindings',
+    'fetchHostMySagaPermissions',
+    'setHostSagaMemberBundle',
+    'setHostSagaBindingReveal',
+    'fetchHostSagaLoreTimeline',
+    'listHostSagaBindings',
+    'isHostLibraryEnabled',
   ],
-  'permission service',
+  'permission service (CUT-20 host HTTP)',
 );
 
 mustInclude(

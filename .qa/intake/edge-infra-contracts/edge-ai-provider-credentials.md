@@ -235,24 +235,7 @@ CORS_OPTS: CorsOptions = {
 
 ## All adapter call sites
 
-### src/infrastructure/ai/host-ai-invoke.ts:70
-
-
-```ts
-async function invokeEdge(
-  functionName: 'ai-provider-credentials' | 'ollama-settings',
-  body: Record<string, unknown>,
-  unreachableMessage: string,
-): Promise<unknown> {
-  const { data, error } = await supabase.functions.invoke(functionName, { body });
-  if (error) {
-    const serverMessage = await edgeErrorMessage(error);
-    throw new Error(serverMessage ?? unreachableMessage);
-  }
-  return data;
-}
-```
-
+No src/infrastructure caller in the reviewed branch. This does not authorize adding a public mount.
 
 ## Exact ordered operations
 
@@ -889,7 +872,6 @@ async function validateProviderApiKey(
 
 | Path | SHA-256 |
 |---|---|
-| `src/infrastructure/ai/host-ai-invoke.ts` | `5437ec09fc80978c56d79856547a367e6aed1a116e6db8c1d4516e10ce9f7f52` |
 | `supabase/functions/_shared/ai-provider-crypto.ts` | `45e60f76f744077e8d9b243719dcdba5d58a047d36a1c141df830afa2de16532` |
 | `supabase/functions/_shared/ai-provider-meshy.ts` | `8cfcb3698217a8352e91ddd46986bb5e3232caf843dc6d2b7a64585f920cc9a7` |
 | `supabase/functions/_shared/ai-provider-registry.ts` | `3c0f5266905d025d4174f7ff58dec37efa2036571c2bdbf518640bd0282fb478` |

@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 /**
- * mig-307-npc-adapter.self-test — NpcCreature host ports + dual-path seam (#806).
+ * mig-307-npc-adapter.self-test — NpcCreature host ports + host-only FE (#806 / CUT-20).
  * Location: scripts/mig-307-npc-adapter.self-test.mjs
  *
- * Acceptance tier: isolated-contract. Supabase facades stay live (no cutover).
+ * Acceptance tier: isolated-contract. Product npc facade is host HTTP only.
  */
 import { mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -340,7 +340,7 @@ try {
   const gone = db.prepare(`SELECT 1 AS o FROM npc_creature_instances WHERE id = ?`).get(instanceId);
   assert(!gone, 'instance removed');
 
-  // Dual-path adapter seam
+  // Host adapter seam
   const bound = createHostNpcCreatureAdapter({
     listDefinitions: async (actorId, options) => npc.listDefinitions(actor(actorId), options),
     getDefinition: async (actorId, id) => npc.getDefinition(actor(actorId), id),
@@ -384,7 +384,7 @@ try {
     rmSync(hostWork, { recursive: true, force: true });
   }
 
-  // Client dual-path wiring + Supabase default remains
+  // Client host-only wiring (CUT-20)
   const serviceSrc = readFileSync(
     join(root, 'src/infrastructure/npc-creature/npc-creature-service.ts'),
     'utf8',
@@ -393,11 +393,10 @@ try {
     join(root, 'src/infrastructure/npc-creature/host-npc-creature-adapter.ts'),
     'utf8',
   );
-  assert(/supabaseNpcCreatureRepository/.test(serviceSrc), 'service default remains Supabase');
-  assert(
-    /Dual-path \(MIG-307\)/.test(serviceSrc) || /Dual-path \(FE-HOST-05\)/.test(serviceSrc),
-    'dual-path note on service',
-  );
+  const serviceCode = serviceSrc.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*$/gm, '');
+  assert(/CUT-20|Host Library HTTP only/i.test(serviceSrc), 'npc service CUT-20 host note');
+  assert(!/supabaseNpcCreatureRepository/.test(serviceSrc), 'supabase npc repo removed');
+  assert(!/supabase\.(from|rpc)|functions\.invoke/.test(serviceCode), 'npc service no supabase invoke');
   assert(/transport: 'host'/.test(adapterSrc), 'adapter marks host transport');
   assert(/isHostLibraryEnabled/.test(serviceSrc), 'FE-HOST-05 host library gate');
   assert(/createHostLibraryNpcCreature/.test(serviceSrc), 'FE-HOST-05 create via host HTTP');

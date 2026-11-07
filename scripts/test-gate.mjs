@@ -1407,6 +1407,15 @@ function checkFeHost09HostFirst() {
   console.log('OK: fe-host-09-host-first.self-test');
 }
 
+function checkCut20LegacyClientBan() {
+  console.log('CUT-20 legacy Supabase client ban (#1155)...');
+  execFileSync(process.execPath, ['scripts/cut-20-legacy-client-ban.self-test.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
+  console.log('OK: cut-20-legacy-client-ban.self-test');
+}
+
 function checkFeHost12ProjectWrites() {
   console.log('FE-HOST-12 project create/update/delete + session look HTTP (#1117)...');
   execFileSync(
@@ -3903,6 +3912,7 @@ checkFeHost06AssetsHttp();
 checkFeHost07ProductAuth();
 checkFeHost08CatalogHttp();
 checkFeHost09HostFirst();
+checkCut20LegacyClientBan();
 checkFeHost12ProjectWrites();
 checkFeHost13SagaDefinition();
 checkFeHost14AiResiduals();
