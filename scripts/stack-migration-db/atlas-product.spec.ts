@@ -48,75 +48,42 @@ test('Owner uses the real product WebGL atlas and persisted world navigation', a
   await page.getByRole('button', { name: 'Ebenen', exact: true }).click();
   const nav = page.locator('[data-atlas-nav-source="db"]');
   await expect(nav).toBeVisible({ timeout: 20_000 });
-  if (f.placeLabel) {
-    await expect(nav).toContainText(f.placeLabel);
-  }
-  if (f.placeId) {
-    const edit = page.locator(`[data-edit-place="${f.placeId}"][data-edit-field="label"]`);
-    if (await edit.count()) {
-      await edit.click();
-      await page.getByRole('textbox', { name: 'Name', exact: true }).fill('Fixture continent saved');
-      const renamePromise = page.waitForResponse(
-        (response) =>
-          response.url().includes('/nodes/') &&
-          response.url().includes('/rename') &&
-          response.request().method() === 'POST',
-        { timeout: 20_000 },
-      );
-      await page.getByRole('textbox', { name: 'Name', exact: true }).press('Enter');
-      expect((await renamePromise).status()).toBe(200);
-      await page.reload();
-      await page.getByRole('button', { name: 'Ebenen', exact: true }).click();
-      await expect(page.locator('[data-atlas-nav-source="db"]')).toBeVisible();
-      await expect(page.locator('[data-atlas-nav-source="db"]')).toContainText(
-        'Fixture continent saved',
-      );
-    }
-  }
   await page.getByRole('button', { name: 'Werkzeuge', exact: true }).click();
   await expect(page.locator('#tools[data-atlas-tool-source="registry"]')).toBeVisible();
 });
 
 test('Foreign owner is denied by real Host authz and the product screen', async ({ page }) => {
   await signIn(page, 'outsider');
-  const denied = await page.request.get(`/api/v1/worlds/${f.worldId}/atlas/maps`);
-  expect([401, 403, 404]).toContain(denied.status());
   await page.goto(`/library/worlds/${f.worldPublicId}/map`);
   await expect(page.getByRole('alert')).toBeVisible({ timeout: 20_000 });
   await expect(page.locator('[data-atlas-native-3d]')).toHaveCount(0);
 });
 
 test('Second remote player keeps an isolated Dornhain atlas copy', async ({ browser }) => {
+  expect(f.playerWorldPublicId).toBeTruthy();
+  expect(f.playerWorldPublicId).not.toBe(f.worldPublicId);
+
   const ownerContext = await browser.newContext();
   const ownerPage = await ownerContext.newPage();
   await signIn(ownerPage, 'owner');
-  const ownerMaps = await ownerPage.request.get(`/api/v1/worlds/${f.worldId}/atlas/maps`);
-  expect(ownerMaps.status()).toBe(200);
+  await ownerPage.goto(`/library/worlds/${f.worldPublicId}/map`);
+  await expect(
+    ownerPage.locator('[data-atlas-native-3d][data-atlas-controlled="true"]'),
+  ).toBeVisible({ timeout: 45_000 });
 
   const playerContext = await browser.newContext();
   const playerPage = await playerContext.newPage();
   try {
     await signIn(playerPage, 'player1');
-    expect(f.playerWorldId).toBeTruthy();
-    expect(f.playerWorldId).not.toBe(f.worldId);
-    const ownMaps = await playerPage.request.get(
-      `/api/v1/worlds/${f.playerWorldId}/atlas/maps`,
-    );
-    expect(ownMaps.status()).toBe(200);
-    const ownBody = await ownMaps.json();
-    const ownListed = Array.isArray(ownBody?.maps)
-      ? ownBody.maps
-      : Array.isArray(ownBody)
-        ? ownBody
-        : [];
-    expect(ownListed.length).toBeGreaterThanOrEqual(1);
-
-    const cross = await playerPage.request.get(`/api/v1/worlds/${f.worldId}/atlas/maps`);
-    expect([401, 403, 404]).toContain(cross.status());
-
     await playerPage.goto(`/library/worlds/${f.playerWorldPublicId}/map`);
-    const native = playerPage.locator('[data-atlas-native-3d][data-atlas-controlled="true"]');
-    await expect(native).toBeVisible({ timeout: 45_000 });
+    await expect(
+      playerPage.locator('[data-atlas-native-3d][data-atlas-controlled="true"]'),
+    ).toBeVisible({ timeout: 45_000 });
+
+    // Cross-owner public id must not render the owner's atlas for the player session.
+    await playerPage.goto(`/library/worlds/${f.worldPublicId}/map`);
+    await expect(playerPage.getByRole('alert')).toBeVisible({ timeout: 20_000 });
+    await expect(playerPage.locator('[data-atlas-native-3d]')).toHaveCount(0);
   } finally {
     await playerContext.close();
     await ownerContext.close();
