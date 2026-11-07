@@ -264,6 +264,9 @@ class CharacterService {
         sagatreeProfile: payload.sagatree_profile,
         appearance: payload.appearance,
         inventory: payload.inventory,
+        ...(payload.inventory_v2 !== undefined
+          ? { inventory_v2: payload.inventory_v2, inventory_schema_version: 2 }
+          : {}),
         abilities: payload.abilities,
       },
     });
@@ -293,6 +296,9 @@ class CharacterService {
         : {}),
       ...(payload.abilities !== undefined ? { abilities: payload.abilities } : {}),
       ...(payload.inventory !== undefined ? { inventory: payload.inventory } : {}),
+      ...(payload.inventory_v2 !== undefined
+        ? { inventory_v2: payload.inventory_v2, inventory_schema_version: 2 }
+        : {}),
       ...(payload.personality_traits !== undefined
         ? { personalityTraits: payload.personality_traits }
         : {}),
