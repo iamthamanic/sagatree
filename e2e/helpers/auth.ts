@@ -86,8 +86,9 @@ export async function ensureLoggedIn(
   const loginTab = page.getByRole('tab', { name: 'Login' });
   if (await loginTab.count()) {
     await loginTab.click();
-    await page.getByPlaceholder('admin oder deine@email.de').fill(user);
-    await page.getByPlaceholder('••••••••').fill(password);
+    // CUT-20 host-first uses placeholder `deine@email.de`; prefer accessible name.
+    await page.getByLabel('E-Mail').fill(user);
+    await page.getByLabel('Passwort', { exact: true }).fill(password);
     await page.getByRole('button', { name: 'Einloggen' }).click();
   }
 
