@@ -175,7 +175,7 @@
     },
     {
       "path": "src/infrastructure/host/host-session-http.ts",
-      "sha256": "763c2535c26f746b60ff3f68358fb7c37c20384bd9f4a9a5a7d9bf2710e0ab81"
+      "sha256": "39b5efefc00297d57c1c4f248953cbbed4d7053e51974cd25a2ed43e368a64eb"
     },
     {
       "path": "src/lib/authenticatedUser.ts",
@@ -1240,31 +1240,31 @@
       "name": "HostPlaySessionDto",
       "path": "src/infrastructure/host/host-session-http.ts",
       "line": 98,
-      "endLine": 118,
-      "text": "export type HostPlaySessionDto = {\n  readonly sessionId: string;\n  readonly projectId: string;\n  readonly publicId?: string;\n  readonly joinCode?: string | null;\n  readonly code?: string | null;\n  readonly status: string;\n  readonly sessionNumber?: number;\n  readonly name?: string | null;\n  readonly createdAt?: string;\n  readonly startedAt?: string | null;\n  readonly endedAt?: string | null;\n  readonly gmUserId?: string;\n  readonly players?: readonly {\n    readonly id?: string;\n    readonly userId?: string;\n    readonly characterId?: string | null;\n    readonly isOnline?: boolean;\n    readonly joinedAt?: string;\n  }[];\n};"
+      "endLine": 120,
+      "text": "export type HostPlaySessionDto = {\n  readonly sessionId: string;\n  readonly projectId: string;\n  readonly publicId?: string;\n  readonly joinCode?: string | null;\n  readonly code?: string | null;\n  readonly status: string;\n  readonly sessionNumber?: number;\n  readonly name?: string | null;\n  readonly createdAt?: string;\n  readonly startedAt?: string | null;\n  readonly endedAt?: string | null;\n  readonly gmUserId?: string;\n  /** Session Look override; null/omit = inherit project default. */\n  readonly lookProfileId?: string | null;\n  readonly players?: readonly {\n    readonly id?: string;\n    readonly userId?: string;\n    readonly characterId?: string | null;\n    readonly isOnline?: boolean;\n    readonly joinedAt?: string;\n  }[];\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "HostSessionRecapGenerateResult",
       "path": "src/infrastructure/host/host-session-http.ts",
-      "line": 389,
-      "endLine": 398,
+      "line": 391,
+      "endLine": 400,
       "text": "export type HostSessionRecapGenerateResult =\n  | {\n      readonly status: 'ok';\n      readonly summaryText: string;\n      readonly summaryStatus: string;\n      readonly provider: string;\n      readonly model: string;\n    }\n  | { readonly status: 'not-configured'; readonly message: string }\n  | { readonly status: 'error'; readonly message: string };"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "HostSessionMediaTokenResult",
       "path": "src/infrastructure/host/host-session-http.ts",
-      "line": 434,
-      "endLine": 452,
+      "line": 436,
+      "endLine": 454,
       "text": "export type HostSessionMediaTokenResult =\n  | {\n      readonly ok: true;\n      readonly token: string;\n      readonly url: string;\n      readonly roomId: string;\n      readonly expiresAt: string;\n      readonly ttlSeconds: number;\n    }\n  | {\n      readonly ok: false;\n      readonly degraded: true;\n      readonly reason:\n        | 'media_service_unavailable'\n        | 'forbidden'\n        | 'unauthorized'\n        | 'bad_request';\n      readonly message: string;\n    };"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "HostPromoteOutcomeDto",
       "path": "src/infrastructure/host/host-session-http.ts",
-      "line": 601,
-      "endLine": 607,
+      "line": 603,
+      "endLine": 609,
       "text": "export type HostPromoteOutcomeDto = {\n  readonly ok?: boolean;\n  readonly idempotent?: boolean;\n  readonly targetKind?: string;\n  readonly targetRef?: string;\n  readonly messageDe?: string;\n};"
     },
     {

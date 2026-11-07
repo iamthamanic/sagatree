@@ -134,7 +134,7 @@ Die finalen Datenbank-Constraints der beteiligten Relationen sind pro RPC in inv
 
 ### src/infrastructure/project/project-service.ts:1
 
-AST-Auflösung: `host-transport-cut-20`; SHA-256 `365e2248522fcbc8f830ea3f28e0ae9f8b4d71cf3aaa2ffe931772297c364a78`.
+AST-Auflösung: `host-transport-cut-20`; SHA-256 `29846df2ae25287b68cba443a9c85f2f9952fa9cc1afd3faf762a78eb57a6fa6`.
 
 Der vollständige aufrufende Funktionskörper enthält Parameterumformung, RPC-Aufruf, Response-Prüfung, Fehlerumwandlung und gegebenenfalls Fallback:
 
@@ -200,7 +200,8 @@ class ProjectService {
       started_at: row.startedAt ?? null,
       ended_at: row.endedAt ?? null,
       duration_minutes: null,
-      look_profile_id: null,
+      look_profile_id:
+        typeof row.lookProfileId === 'string' ? row.lookProfileId : null,
       created_at: createdAt,
       updated_at: updatedAt,
     };
@@ -253,10 +254,7 @@ class ProjectService {
       characterId: member.character_id,
       role: member.role,
       joinedAt: member.joined_at,
-      status: member.status,
-    }));
-
-    const mappedSessions: SessionVm[] = sessions.map(
+      status: member.sta
 ```
 
 ## Konkrete Abnahmekriterien
@@ -278,7 +276,7 @@ Die folgenden Hashes binden SQL-Kette, transitive Tabellen-/Trigger-/Policyquell
 
 | Quelle | SHA-256 |
 | --- | --- |
-| [src/infrastructure/project/project-service.ts](../../../src/infrastructure/project/project-service.ts) | `365e2248522fcbc8f830ea3f28e0ae9f8b4d71cf3aaa2ffe931772297c364a78` |
+| [src/infrastructure/project/project-service.ts](../../../src/infrastructure/project/project-service.ts) | `29846df2ae25287b68cba443a9c85f2f9952fa9cc1afd3faf762a78eb57a6fa6` |
 | [supabase/migrations/001_initial.sql](../../../supabase/migrations/001_initial.sql) | `e3325c56d68286a2e293ddff791736ef91346ff90ac018c045843a5d52afb8c8` |
 | [supabase/migrations/015_inventory_item_definitions.sql](../../../supabase/migrations/015_inventory_item_definitions.sql) | `aeedfd77bb79d7d38f4163a496b373d266027b39adbce82fe14aec768187e9e7` |
 | [supabase/migrations/039_public_resource_ids_and_session_numbers.sql](../../../supabase/migrations/039_public_resource_ids_and_session_numbers.sql) | `053f02aaea8e1f3af27bfa3f6c7e17caadd5d5434ef6298e11920d0891b55f96` |

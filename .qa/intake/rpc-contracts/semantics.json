@@ -4066,7 +4066,7 @@
     "reviewedSources": [
       {
         "path": "src/infrastructure/project/project-service.ts",
-        "sha256": "365e2248522fcbc8f830ea3f28e0ae9f8b4d71cf3aaa2ffe931772297c364a78"
+        "sha256": "29846df2ae25287b68cba443a9c85f2f9952fa9cc1afd3faf762a78eb57a6fa6"
       },
       {
         "path": "supabase/migrations/001_initial.sql",
@@ -4129,7 +4129,7 @@
         "sha256": "8e98ae8e52beb6ab57359338e7b30bdc2db322b7cdb44bdbf4059a41ab26e1bd"
       }
     ],
-    "reviewedBaselineSha": "2da1450e72d7c4a1a11a7ba590452de4ffdf1b3d3553d45bcf94a20c7e1deb9e"
+    "reviewedBaselineSha": "357172d24eb81f94a9234a2d3ee8a4fe54484e6567b035949d88cf9c777aad35"
   },
   "join_session_by_code": {
     "summary": "Tritt einer nicht abgeschlossenen Session bei und stellt Projektmitgliedschaft und Roster her.",
@@ -5746,7 +5746,7 @@
     "reviewedSources": [
       {
         "path": "src/infrastructure/project/project-service.ts",
-        "sha256": "365e2248522fcbc8f830ea3f28e0ae9f8b4d71cf3aaa2ffe931772297c364a78"
+        "sha256": "29846df2ae25287b68cba443a9c85f2f9952fa9cc1afd3faf762a78eb57a6fa6"
       },
       {
         "path": "supabase/migrations/001_initial.sql",
@@ -5921,7 +5921,7 @@
         "sha256": "84afa7b42fab766cf5114c65aefd433b856a173e1065f7e34f4fc10875ee784d"
       }
     ],
-    "reviewedBaselineSha": "95369ce319df3b95d6f1570bef3ccdc3a917d2344d8a512dc5518f192736ded1"
+    "reviewedBaselineSha": "69a6a1cc118ea68240155a5e3d3f54c9243d8f7e18cad3cd8b8c646fb5281d2c"
   },
   "join_project_by_code": {
     "summary": "Erzeugt die eigene aktive Player-Mitgliedschaft anhand eines Projektcodes.",

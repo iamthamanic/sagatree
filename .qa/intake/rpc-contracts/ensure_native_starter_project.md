@@ -192,7 +192,7 @@ Die finalen Datenbank-Constraints der beteiligten Relationen sind pro RPC in inv
 
 ### src/infrastructure/project/project-service.ts:1
 
-AST-Auflösung: `host-transport-cut-20`; SHA-256 `365e2248522fcbc8f830ea3f28e0ae9f8b4d71cf3aaa2ffe931772297c364a78`.
+AST-Auflösung: `host-transport-cut-20`; SHA-256 `29846df2ae25287b68cba443a9c85f2f9952fa9cc1afd3faf762a78eb57a6fa6`.
 
 Der vollständige aufrufende Funktionskörper enthält Parameterumformung, RPC-Aufruf, Response-Prüfung, Fehlerumwandlung und gegebenenfalls Fallback:
 
@@ -258,7 +258,8 @@ class ProjectService {
       started_at: row.startedAt ?? null,
       ended_at: row.endedAt ?? null,
       duration_minutes: null,
-      look_profile_id: null,
+      look_profile_id:
+        typeof row.lookProfileId === 'string' ? row.lookProfileId : null,
       created_at: createdAt,
       updated_at: updatedAt,
     };
@@ -311,10 +312,7 @@ class ProjectService {
       characterId: member.character_id,
       role: member.role,
       joinedAt: member.joined_at,
-      status: member.status,
-    }));
-
-    const mappedSessions: SessionVm[] = sessions.map(
+      status: member.sta
 ```
 
 ## Konkrete Abnahmekriterien
@@ -336,7 +334,7 @@ Die folgenden Hashes binden SQL-Kette, transitive Tabellen-/Trigger-/Policyquell
 
 | Quelle | SHA-256 |
 | --- | --- |
-| [src/infrastructure/project/project-service.ts](../../../src/infrastructure/project/project-service.ts) | `365e2248522fcbc8f830ea3f28e0ae9f8b4d71cf3aaa2ffe931772297c364a78` |
+| [src/infrastructure/project/project-service.ts](../../../src/infrastructure/project/project-service.ts) | `29846df2ae25287b68cba443a9c85f2f9952fa9cc1afd3faf762a78eb57a6fa6` |
 | [supabase/migrations/001_initial.sql](../../../supabase/migrations/001_initial.sql) | `e3325c56d68286a2e293ddff791736ef91346ff90ac018c045843a5d52afb8c8` |
 | [supabase/migrations/002_character_trait_arrays.sql](../../../supabase/migrations/002_character_trait_arrays.sql) | `74a7f112720d2572bbb8b7d8c32e0f5f5abf932c35268a34b45dc4bfedc2a02a` |
 | [supabase/migrations/005_character_ruleset_metadata.sql](../../../supabase/migrations/005_character_ruleset_metadata.sql) | `02874b854874e5d89ad6b697563d545f5d2b72735afe763d6927e574b2ba49ca` |

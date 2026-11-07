@@ -29886,7 +29886,7 @@
           },
           {
             "path": "src/infrastructure/character/character-service.ts",
-            "sha256": "e4c8a0c71904542d907d9e0bbc634a0636a77d2da5012b422d7c6c57c43c2ffe"
+            "sha256": "b7d4693f30ada0c021246425bbf3289cbc847a8e384c37213b8a86bfff6753cb"
           },
           {
             "path": "src/infrastructure/character/character.persistence.ts",
@@ -29990,7 +29990,7 @@
           },
           {
             "path": "src/infrastructure/host/host-session-http.ts",
-            "sha256": "763c2535c26f746b60ff3f68358fb7c37c20384bd9f4a9a5a7d9bf2710e0ab81"
+            "sha256": "39b5efefc00297d57c1c4f248953cbbed4d7053e51974cd25a2ed43e368a64eb"
           },
           {
             "path": "src/infrastructure/inventory/inventory-persistence.ts",
@@ -30106,7 +30106,7 @@
           },
           {
             "path": "src/infrastructure/project/project-service.ts",
-            "sha256": "365e2248522fcbc8f830ea3f28e0ae9f8b4d71cf3aaa2ffe931772297c364a78"
+            "sha256": "29846df2ae25287b68cba443a9c85f2f9952fa9cc1afd3faf762a78eb57a6fa6"
           },
           {
             "path": "src/infrastructure/session/media/livekit-media-plane-adapter.ts",
@@ -30162,7 +30162,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-character.json",
-      "sourceContractSha256": "ae06c4083c9af8b96c90e49e8dcc9ac06b30a9061537587c2062c992c9fe50c5",
+      "sourceContractSha256": "6333a9b3f728ffc7b3dab6930075e54aeb6a892271aec779ccca7596257e7081",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],
@@ -32112,55 +32112,55 @@
         {
           "path": "src/infrastructure/character/character-service.ts",
           "line": 241,
-          "endLine": 272,
+          "endLine": 275,
           "name": "createCharacter"
         },
         {
           "path": "src/infrastructure/character/character-service.ts",
-          "line": 274,
-          "endLine": 313,
+          "line": 277,
+          "endLine": 319,
           "name": "updateCharacter"
         },
         {
           "path": "src/infrastructure/character/character-service.ts",
-          "line": 315,
-          "endLine": 331,
+          "line": 321,
+          "endLine": 337,
           "name": "updateCharacterPersonalLook"
         },
         {
           "path": "src/infrastructure/character/character-service.ts",
-          "line": 378,
-          "endLine": 390,
+          "line": 384,
+          "endLine": 396,
           "name": "migrateCharacterInventoryToV2"
         },
         {
           "path": "src/infrastructure/character/character-service.ts",
-          "line": 392,
-          "endLine": 396,
+          "line": 398,
+          "endLine": 402,
           "name": "deleteCharacter"
         },
         {
           "path": "src/infrastructure/character/character-service.ts",
-          "line": 398,
-          "endLine": 434,
+          "line": 404,
+          "endLine": 440,
           "name": "duplicateCharacter"
         },
         {
           "path": "src/infrastructure/character/character-service.ts",
-          "line": 436,
-          "endLine": 444,
+          "line": 442,
+          "endLine": 450,
           "name": "searchCharacters"
         },
         {
           "path": "src/infrastructure/character/character-service.ts",
-          "line": 446,
-          "endLine": 453,
+          "line": 452,
+          "endLine": 459,
           "name": "uploadPortrait"
         },
         {
           "path": "src/infrastructure/character/character-service.ts",
-          "line": 455,
-          "endLine": 457,
+          "line": 461,
+          "endLine": 463,
           "name": "preparePortraitFile"
         },
         {
@@ -33166,7 +33166,7 @@
           },
           {
             "path": "src/infrastructure/host/host-session-http.ts",
-            "sha256": "763c2535c26f746b60ff3f68358fb7c37c20384bd9f4a9a5a7d9bf2710e0ab81"
+            "sha256": "39b5efefc00297d57c1c4f248953cbbed4d7053e51974cd25a2ed43e368a64eb"
           },
           {
             "path": "src/infrastructure/inventory/host-inventory-adapter.ts",
@@ -33254,7 +33254,7 @@
           },
           {
             "path": "src/infrastructure/project/project-service.ts",
-            "sha256": "365e2248522fcbc8f830ea3f28e0ae9f8b4d71cf3aaa2ffe931772297c364a78"
+            "sha256": "29846df2ae25287b68cba443a9c85f2f9952fa9cc1afd3faf762a78eb57a6fa6"
           },
           {
             "path": "src/lib/authenticatedUser.ts",
@@ -33282,7 +33282,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-inventory.json",
-      "sourceContractSha256": "4da92441fc10131400befc440ea3d2ce1cd7670923d492ce2361ff79aedd0a64",
+      "sourceContractSha256": "9796fd96177a956f9d05df0f89be899fbb66d40a2f0917649dc779cfe94de33c",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],
@@ -35000,7 +35000,7 @@
           },
           {
             "path": "src/infrastructure/host/host-session-http.ts",
-            "sha256": "763c2535c26f746b60ff3f68358fb7c37c20384bd9f4a9a5a7d9bf2710e0ab81"
+            "sha256": "39b5efefc00297d57c1c4f248953cbbed4d7053e51974cd25a2ed43e368a64eb"
           },
           {
             "path": "src/infrastructure/npc-creature/host-npc-creature-adapter.ts",
@@ -35048,7 +35048,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-npc-creature.json",
-      "sourceContractSha256": "49ba7d4ffd068e78c64e1ddde297dc18e04eba1a38c8f01aa36714f1c6bdab90",
+      "sourceContractSha256": "83f28f8fd367242005cc9e9a492f7f2c4e95dafd66fc982ecae7d2a568a54d66",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],
@@ -35459,7 +35459,7 @@
           },
           {
             "path": "src/infrastructure/host/host-session-http.ts",
-            "sha256": "763c2535c26f746b60ff3f68358fb7c37c20384bd9f4a9a5a7d9bf2710e0ab81"
+            "sha256": "39b5efefc00297d57c1c4f248953cbbed4d7053e51974cd25a2ed43e368a64eb"
           },
           {
             "path": "src/infrastructure/project/host-project-adapter.ts",
@@ -35475,7 +35475,7 @@
           },
           {
             "path": "src/infrastructure/project/project-service.ts",
-            "sha256": "365e2248522fcbc8f830ea3f28e0ae9f8b4d71cf3aaa2ffe931772297c364a78"
+            "sha256": "29846df2ae25287b68cba443a9c85f2f9952fa9cc1afd3faf762a78eb57a6fa6"
           },
           {
             "path": "src/infrastructure/project/saga-overview-service.ts",
@@ -35507,7 +35507,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-project.json",
-      "sourceContractSha256": "6dd712d5a51df5afa04e37a9f85ef84f2a639541604420fe7a15b16c50d2ccb0",
+      "sourceContractSha256": "448bf524412cbb1e9e82094b7c6bf50238f3c4d6d1d5e8b8f746c4673c188031",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],
@@ -35518,16 +35518,16 @@
           "kind": "auth-helper",
           "name": null,
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 365,
-          "endLine": 365,
+          "line": 366,
+          "endLine": 366,
           "resolution": "dynamic-expression",
           "expression": "getAuthenticatedUserId()",
           "chain": "getAuthenticatedUserId()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/project/project-service.ts",
-            "line": 363,
-            "endLine": 367,
+            "line": 364,
+            "endLine": 368,
             "text": "async leaveProject(projectId: string): Promise<void> {\n    assertHost();\n    const userId = await getAuthenticatedUserId();\n    await projectMemberService.leave(projectId, userId);\n  }"
           }
         }
@@ -35542,16 +35542,16 @@
           "kind": "auth-helper",
           "name": null,
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 365,
-          "endLine": 365,
+          "line": 366,
+          "endLine": 366,
           "resolution": "dynamic-expression",
           "expression": "getAuthenticatedUserId()",
           "chain": "getAuthenticatedUserId()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/project/project-service.ts",
-            "line": 363,
-            "endLine": 367,
+            "line": 364,
+            "endLine": 368,
             "text": "async leaveProject(projectId: string): Promise<void> {\n    assertHost();\n    const userId = await getAuthenticatedUserId();\n    await projectMemberService.leave(projectId, userId);\n  }"
           }
         }
@@ -35629,92 +35629,92 @@
         },
         {
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 216,
-          "endLine": 224,
+          "line": 217,
+          "endLine": 225,
           "name": "createProject"
         },
         {
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 229,
-          "endLine": 233,
+          "line": 230,
+          "endLine": 234,
           "name": "getUserProjectSummaries"
         },
         {
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 235,
-          "endLine": 239,
+          "line": 236,
+          "endLine": 240,
           "name": "getUserProjects"
         },
         {
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 244,
-          "endLine": 253,
+          "line": 245,
+          "endLine": 254,
           "name": "ensureNativeStarterProject"
         },
         {
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 258,
-          "endLine": 262,
+          "line": 259,
+          "endLine": 263,
           "name": "joinProject"
         },
         {
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 267,
-          "endLine": 273,
+          "line": 268,
+          "endLine": 274,
           "name": "getProjectById"
         },
         {
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 278,
-          "endLine": 305,
+          "line": 279,
+          "endLine": 306,
           "name": "updateProject"
         },
         {
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 307,
-          "endLine": 312,
+          "line": 308,
+          "endLine": 313,
           "name": "updateProjectWorldProfile"
         },
         {
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 314,
-          "endLine": 325,
+          "line": 315,
+          "endLine": 326,
           "name": "updateProjectLookSettings"
         },
         {
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 327,
-          "endLine": 356,
+          "line": 328,
+          "endLine": 357,
           "name": "updateSessionLookSettings"
         },
         {
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 358,
-          "endLine": 361,
+          "line": 359,
+          "endLine": 362,
           "name": "deleteProject"
         },
         {
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 363,
-          "endLine": 367,
+          "line": 364,
+          "endLine": 368,
           "name": "leaveProject"
         },
         {
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 369,
-          "endLine": 376,
+          "line": 370,
+          "endLine": 377,
           "name": "getProjectByPublicId"
         },
         {
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 378,
-          "endLine": 413,
+          "line": 379,
+          "endLine": 414,
           "name": "getSessionByPublicIds"
         },
         {
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 415,
-          "endLine": 448,
+          "line": 416,
+          "endLine": 449,
           "name": "createProjectSession"
         },
         {
@@ -35967,7 +35967,7 @@
           },
           {
             "path": "src/infrastructure/host/host-session-http.ts",
-            "sha256": "763c2535c26f746b60ff3f68358fb7c37c20384bd9f4a9a5a7d9bf2710e0ab81"
+            "sha256": "39b5efefc00297d57c1c4f248953cbbed4d7053e51974cd25a2ed43e368a64eb"
           },
           {
             "path": "src/infrastructure/saga/host-saga-adapter.ts",
@@ -35995,7 +35995,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-saga.json",
-      "sourceContractSha256": "0e802027da940980e7730121a40073b00547095ef3df1016ea6e6f9051ac3c5d",
+      "sourceContractSha256": "ff6f5d5a6d300d1443be01dec768a95604830c194794a63e0cdac76833db6f95",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],
@@ -36179,7 +36179,7 @@
           },
           {
             "path": "src/infrastructure/host/host-session-http.ts",
-            "sha256": "763c2535c26f746b60ff3f68358fb7c37c20384bd9f4a9a5a7d9bf2710e0ab81"
+            "sha256": "39b5efefc00297d57c1c4f248953cbbed4d7053e51974cd25a2ed43e368a64eb"
           },
           {
             "path": "src/infrastructure/session/host-session-adapter.ts",
@@ -36267,7 +36267,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-session.json",
-      "sourceContractSha256": "9f9a85fead3d2a16ac1e35f0f4e79a87e9456f0573daae8f7437da99a42ae07c",
+      "sourceContractSha256": "1fd1511e1fad8e7b2afe6acb230eff8e15c1387e3caf0408d2c88569d21e31f0",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],

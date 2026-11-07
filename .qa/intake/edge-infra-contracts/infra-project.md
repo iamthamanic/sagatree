@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-project.json](source-contracts/infra-project.json) (SHA-256 `6dd712d5a51df5afa04e37a9f85ef84f2a639541604420fe7a15b16c50d2ccb0`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-project.json](source-contracts/infra-project.json) (SHA-256 `448bf524412cbb1e9e82094b7c6bf50238f3c4d6d1d5e8b8f746c4673c188031`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -46,14 +46,14 @@ None in the reviewed source.
 
 ### auth-helper: session identity
 
-`src/infrastructure/project/project-service.ts:365` — dynamic-expression.
+`src/infrastructure/project/project-service.ts:366` — dynamic-expression.
 
 Exact call/query chain:
 ```ts
 getAuthenticatedUserId()
 ```
 
-Enclosing operation: `src/infrastructure/project/project-service.ts:363`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/project/project-service.ts:364`; complete request/default/result/error logic is in the declarations below and the snapshot.
 
 ## Complete public declarations and facade operation contracts
 
@@ -342,7 +342,7 @@ export const projectMemberService = {
 };
 ```
 
-### src/infrastructure/project/project-service.ts:451
+### src/infrastructure/project/project-service.ts:452
 
 ```ts
 export const projectService = new ProjectService();
@@ -472,7 +472,7 @@ export const sagaPermissionService = {
 
 ## Remaining backend helper operations
 
-### src/infrastructure/project/project-service.ts:363
+### src/infrastructure/project/project-service.ts:364
 
 ```ts
 async leaveProject(projectId: string): Promise<void> {
@@ -495,11 +495,11 @@ async leaveProject(projectId: string): Promise<void> {
 | `src/domains/session/contracts/session-lifecycle.ts` | `c70eb365aa31906dc8cd8f7a3cc2c5ed1141b5bab8489a1d56ced8a41c1ce5be` |
 | `src/infrastructure/host/host-library-http.ts` | `1d41f3b1eb3e71a3a8b12306993b605f2d05f2f41cd35f73b9c362b12f9c1cb6` |
 | `src/infrastructure/host/host-project-http.ts` | `b5a68f6452217b08d2217a983113a9a356ce70890693319227f35c82fbdcd818` |
-| `src/infrastructure/host/host-session-http.ts` | `763c2535c26f746b60ff3f68358fb7c37c20384bd9f4a9a5a7d9bf2710e0ab81` |
+| `src/infrastructure/host/host-session-http.ts` | `39b5efefc00297d57c1c4f248953cbbed4d7053e51974cd25a2ed43e368a64eb` |
 | `src/infrastructure/project/host-project-adapter.ts` | `41d162d05407e6f54f118a60a6aaf5f29bb1a61d28758c7d1c0698cdc3c35a70` |
 | `src/infrastructure/project/host-project-ports.contract.ts` | `4e9023655c95ed3e3ade8837af0c14c53c5541571a1591526aae760ffbbd9902` |
 | `src/infrastructure/project/project-member-service.ts` | `e67c3c5c9dd332d15d699a489dce4db743c183a5ce6aab09efc2deb89628236f` |
-| `src/infrastructure/project/project-service.ts` | `365e2248522fcbc8f830ea3f28e0ae9f8b4d71cf3aaa2ffe931772297c364a78` |
+| `src/infrastructure/project/project-service.ts` | `29846df2ae25287b68cba443a9c85f2f9952fa9cc1afd3faf762a78eb57a6fa6` |
 | `src/infrastructure/project/saga-overview-service.ts` | `29f68ebd797d4fc19e5aaede3860e9bd2984bc7123fb37e4557f4a5ea5407a28` |
 | `src/infrastructure/project/saga-permission-service.ts` | `e177bbfaa085cc5ab6a03f9ba437ba003766443da87b02cfaa2ae2348f9ec6e1` |
 | `src/lib/authenticatedUser.ts` | `5d9deef60efd85a3ecd56e9b55f67ecb2d03c2964c4f9217e6de6842d8e0b403` |

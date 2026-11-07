@@ -17,7 +17,7 @@
     },
     {
       "path": "src/infrastructure/project/project-service.ts",
-      "sha256": "365e2248522fcbc8f830ea3f28e0ae9f8b4d71cf3aaa2ffe931772297c364a78"
+      "sha256": "29846df2ae25287b68cba443a9c85f2f9952fa9cc1afd3faf762a78eb57a6fa6"
     },
     {
       "path": "src/infrastructure/project/saga-overview-service.ts",
@@ -63,7 +63,7 @@
     },
     {
       "path": "src/infrastructure/host/host-session-http.ts",
-      "sha256": "763c2535c26f746b60ff3f68358fb7c37c20384bd9f4a9a5a7d9bf2710e0ab81"
+      "sha256": "39b5efefc00297d57c1c4f248953cbbed4d7053e51974cd25a2ed43e368a64eb"
     },
     {
       "path": "src/lib/authenticatedUser.ts",
@@ -432,31 +432,31 @@
       "name": "HostPlaySessionDto",
       "path": "src/infrastructure/host/host-session-http.ts",
       "line": 98,
-      "endLine": 118,
-      "text": "export type HostPlaySessionDto = {\n  readonly sessionId: string;\n  readonly projectId: string;\n  readonly publicId?: string;\n  readonly joinCode?: string | null;\n  readonly code?: string | null;\n  readonly status: string;\n  readonly sessionNumber?: number;\n  readonly name?: string | null;\n  readonly createdAt?: string;\n  readonly startedAt?: string | null;\n  readonly endedAt?: string | null;\n  readonly gmUserId?: string;\n  readonly players?: readonly {\n    readonly id?: string;\n    readonly userId?: string;\n    readonly characterId?: string | null;\n    readonly isOnline?: boolean;\n    readonly joinedAt?: string;\n  }[];\n};"
+      "endLine": 120,
+      "text": "export type HostPlaySessionDto = {\n  readonly sessionId: string;\n  readonly projectId: string;\n  readonly publicId?: string;\n  readonly joinCode?: string | null;\n  readonly code?: string | null;\n  readonly status: string;\n  readonly sessionNumber?: number;\n  readonly name?: string | null;\n  readonly createdAt?: string;\n  readonly startedAt?: string | null;\n  readonly endedAt?: string | null;\n  readonly gmUserId?: string;\n  /** Session Look override; null/omit = inherit project default. */\n  readonly lookProfileId?: string | null;\n  readonly players?: readonly {\n    readonly id?: string;\n    readonly userId?: string;\n    readonly characterId?: string | null;\n    readonly isOnline?: boolean;\n    readonly joinedAt?: string;\n  }[];\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "HostSessionRecapGenerateResult",
       "path": "src/infrastructure/host/host-session-http.ts",
-      "line": 389,
-      "endLine": 398,
+      "line": 391,
+      "endLine": 400,
       "text": "export type HostSessionRecapGenerateResult =\n  | {\n      readonly status: 'ok';\n      readonly summaryText: string;\n      readonly summaryStatus: string;\n      readonly provider: string;\n      readonly model: string;\n    }\n  | { readonly status: 'not-configured'; readonly message: string }\n  | { readonly status: 'error'; readonly message: string };"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "HostSessionMediaTokenResult",
       "path": "src/infrastructure/host/host-session-http.ts",
-      "line": 434,
-      "endLine": 452,
+      "line": 436,
+      "endLine": 454,
       "text": "export type HostSessionMediaTokenResult =\n  | {\n      readonly ok: true;\n      readonly token: string;\n      readonly url: string;\n      readonly roomId: string;\n      readonly expiresAt: string;\n      readonly ttlSeconds: number;\n    }\n  | {\n      readonly ok: false;\n      readonly degraded: true;\n      readonly reason:\n        | 'media_service_unavailable'\n        | 'forbidden'\n        | 'unauthorized'\n        | 'bad_request';\n      readonly message: string;\n    };"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "HostPromoteOutcomeDto",
       "path": "src/infrastructure/host/host-session-http.ts",
-      "line": 601,
-      "endLine": 607,
+      "line": 603,
+      "endLine": 609,
       "text": "export type HostPromoteOutcomeDto = {\n  readonly ok?: boolean;\n  readonly idempotent?: boolean;\n  readonly targetKind?: string;\n  readonly targetRef?: string;\n  readonly messageDe?: string;\n};"
     },
     {
@@ -489,16 +489,16 @@
       "kind": "auth-helper",
       "name": null,
       "path": "src/infrastructure/project/project-service.ts",
-      "line": 365,
-      "endLine": 365,
+      "line": 366,
+      "endLine": 366,
       "resolution": "dynamic-expression",
       "expression": "getAuthenticatedUserId()",
       "chain": "getAuthenticatedUserId()",
       "arguments": [],
       "enclosingOperation": {
         "path": "src/infrastructure/project/project-service.ts",
-        "line": 363,
-        "endLine": 367,
+        "line": 364,
+        "endLine": 368,
         "text": "async leaveProject(projectId: string): Promise<void> {\n    assertHost();\n    const userId = await getAuthenticatedUserId();\n    await projectMemberService.leave(projectId, userId);\n  }"
       }
     }
@@ -594,8 +594,8 @@
     },
     {
       "path": "src/infrastructure/project/project-service.ts",
-      "line": 247,
-      "endLine": 247,
+      "line": 248,
+      "endLine": 248,
       "module": "../host/host-project-http",
       "resolvedPath": "src/infrastructure/host/host-project-http.ts",
       "expression": "import('../host/host-project-http')",
@@ -741,8 +741,8 @@
     },
     {
       "path": "src/infrastructure/project/project-service.ts",
-      "line": 451,
-      "endLine": 451,
+      "line": 452,
+      "endLine": 452,
       "text": "export const projectService = new ProjectService();"
     },
     {
@@ -933,197 +933,197 @@
     },
     {
       "path": "src/infrastructure/project/project-service.ts",
-      "line": 109,
-      "endLine": 116,
+      "line": 110,
+      "endLine": 117,
       "name": "callback",
       "text": "(member) => ({\n      id: member.id,\n      userId: member.user_id,\n      characterId: member.character_id,\n      role: member.role,\n      joinedAt: member.joined_at,\n      status: member.status,\n    })"
     },
     {
       "path": "src/infrastructure/project/project-service.ts",
-      "line": 118,
-      "endLine": 132,
+      "line": 119,
+      "endLine": 133,
       "name": "callback",
       "text": "(session) => ({\n      id: session.id,\n      publicId: typeof session.public_id === 'string' ? session.public_id : '',\n      projectId: session.project_id,\n      sessionNumber: session.session_number,\n      name: session.name,\n      notes: session.notes,\n      status: session.status,\n      startedAt: session.started_at,\n      endedAt: session.ended_at,\n      durationMinutes: session.duration_minutes ?? null,\n      lookProfileId:\n        typeof session.look_profile_id === 'string' ? session.look_profile_id : null,\n      createdAt: session.created_at,\n    })"
     },
     {
       "path": "src/infrastructure/project/project-service.ts",
-      "line": 134,
-      "endLine": 134,
+      "line": 135,
+      "endLine": 135,
       "name": "callback",
       "text": "(session) => session.ended_at"
     },
     {
       "path": "src/infrastructure/project/project-service.ts",
-      "line": 137,
-      "endLine": 138,
+      "line": 138,
+      "endLine": 139,
       "name": "callback",
       "text": "(left, right) =>\n            new Date(right.ended_at!).getTime() - new Date(left.ended_at!).getTime()"
-    },
-    {
-      "path": "src/infrastructure/project/project-service.ts",
-      "line": 176,
-      "endLine": 176,
-      "name": "callback",
-      "text": "(s) => s.projectId === projectDto.id"
     },
     {
       "path": "src/infrastructure/project/project-service.ts",
       "line": 177,
       "endLine": 177,
       "name": "callback",
-      "text": "(s) => this.mapHostPlaySessionToSessionDto(s)"
+      "text": "(s) => s.projectId === projectDto.id"
     },
     {
       "path": "src/infrastructure/project/project-service.ts",
       "line": 178,
       "endLine": 178,
       "name": "callback",
+      "text": "(s) => this.mapHostPlaySessionToSessionDto(s)"
+    },
+    {
+      "path": "src/infrastructure/project/project-service.ts",
+      "line": 179,
+      "endLine": 179,
+      "name": "callback",
       "text": "(a, b) => a.session_number - b.session_number"
     },
     {
       "path": "src/infrastructure/project/project-service.ts",
-      "line": 216,
-      "endLine": 224,
+      "line": 217,
+      "endLine": 225,
       "name": "createProject",
       "text": "async createProject(payload: CreateProjectDto): Promise<ProjectVm> {\n    assertHost();\n    const created = await createHostProject({\n      name: payload.name,\n      description: payload.description ?? null,\n      worldProfileId: payload.world_profile_id ?? payload.world_id ?? null,\n    });\n    return this.mergeHostSessions(created);\n  }"
     },
     {
       "path": "src/infrastructure/project/project-service.ts",
-      "line": 229,
-      "endLine": 233,
+      "line": 230,
+      "endLine": 234,
       "name": "getUserProjectSummaries",
       "text": "async getUserProjectSummaries(): Promise<ProjectSummaryVm[]> {\n    assertHost();\n    const rows = await fetchHostLibraryProjects();\n    return rows.map((row) => this.mapHostProjectSummary(row));\n  }"
     },
     {
       "path": "src/infrastructure/project/project-service.ts",
-      "line": 232,
-      "endLine": 232,
+      "line": 233,
+      "endLine": 233,
       "name": "callback",
       "text": "(row) => this.mapHostProjectSummary(row)"
     },
     {
       "path": "src/infrastructure/project/project-service.ts",
-      "line": 235,
-      "endLine": 239,
+      "line": 236,
+      "endLine": 240,
       "name": "getUserProjects",
       "text": "async getUserProjects(): Promise<ProjectVm[]> {\n    assertHost();\n    const rows = await fetchHostLibraryProjects();\n    return Promise.all(rows.map((row) => this.mergeHostSessions(row)));\n  }"
     },
     {
       "path": "src/infrastructure/project/project-service.ts",
-      "line": 238,
-      "endLine": 238,
+      "line": 239,
+      "endLine": 239,
       "name": "callback",
       "text": "(row) => this.mergeHostSessions(row)"
     },
     {
       "path": "src/infrastructure/project/project-service.ts",
-      "line": 244,
-      "endLine": 253,
+      "line": 245,
+      "endLine": 254,
       "name": "ensureNativeStarterProject",
       "text": "async ensureNativeStarterProject(slug = 'dornhain.whisper'): Promise<void> {\n    assertHost();\n    try {\n      const { ensureHostNativeStarterProject } = await import('../host/host-project-http');\n      await ensureHostNativeStarterProject(slug);\n    } catch (err) {\n      const message = err instanceof Error ? err.message : String(err);\n      console.warn('[project-service] ensure_native_starter_project (host):', message);\n    }\n  }"
     },
     {
       "path": "src/infrastructure/project/project-service.ts",
-      "line": 258,
-      "endLine": 262,
+      "line": 259,
+      "endLine": 263,
       "name": "joinProject",
       "text": "async joinProject(payload: JoinProjectDto): Promise<ProjectVm> {\n    assertHost();\n    const membership = await projectMemberService.joinByCode(payload);\n    return this.getProjectById(membership.project_id);\n  }"
     },
     {
       "path": "src/infrastructure/project/project-service.ts",
-      "line": 267,
-      "endLine": 273,
+      "line": 268,
+      "endLine": 274,
       "name": "getProjectById",
       "text": "async getProjectById(id: string): Promise<ProjectVm> {\n    assertHost();\n    const rows = await fetchHostLibraryProjects();\n    const row = rows.find((item) => item.id === id);\n    if (!row) throw new Error('Project not found');\n    return this.mergeHostSessions(row);\n  }"
     },
     {
       "path": "src/infrastructure/project/project-service.ts",
-      "line": 270,
-      "endLine": 270,
+      "line": 271,
+      "endLine": 271,
       "name": "callback",
       "text": "(item) => item.id === id"
     },
     {
       "path": "src/infrastructure/project/project-service.ts",
-      "line": 278,
-      "endLine": 305,
+      "line": 279,
+      "endLine": 306,
       "name": "updateProject",
       "text": "async updateProject(id: string, updates: Partial<ProjectDto>): Promise<ProjectVm> {\n    assertHost();\n    const updated = await updateHostProject(id, {\n      name: typeof updates.name === 'string' ? updates.name : undefined,\n      description:\n        updates.description === undefined\n          ? undefined\n          : updates.description === null\n            ? null\n            : String(updates.description),\n      status: typeof updates.status === 'string' ? updates.status : undefined,\n      worldProfileId:\n        updates.world_profile_id !== undefined\n          ? updates.world_profile_id\n          : updates.world_id !== undefined\n            ? updates.world_id\n            : undefined,\n      defaultLookProfileId:\n        updates.default_look_profile_id === undefined\n          ? undefined\n          : updates.default_look_profile_id,\n      allowPlayerCharacterLookOverride:\n        typeof updates.allow_player_character_look_override === 'boolean'\n          ? updates.allow_player_character_look_override\n          : undefined,\n    });\n    return this.mergeHostSessions(updated);\n  }"
     },
     {
       "path": "src/infrastructure/project/project-service.ts",
-      "line": 307,
-      "endLine": 312,
+      "line": 308,
+      "endLine": 313,
       "name": "updateProjectWorldProfile",
       "text": "async updateProjectWorldProfile(\n    projectId: string,\n    worldProfileId: string | null,\n  ): Promise<ProjectVm> {\n    return this.updateProject(projectId, { world_profile_id: worldProfileId });\n  }"
     },
     {
       "path": "src/infrastructure/project/project-service.ts",
-      "line": 314,
-      "endLine": 325,
+      "line": 315,
+      "endLine": 326,
       "name": "updateProjectLookSettings",
       "text": "async updateProjectLookSettings(\n    projectId: string,\n    settings: {\n      defaultLookProfileId: string | null;\n      allowPlayerCharacterLookOverride: boolean;\n    },\n  ): Promise<ProjectVm> {\n    return this.updateProject(projectId, {\n      default_look_profile_id: settings.defaultLookProfileId,\n      allow_player_character_look_override: settings.allowPlayerCharacterLookOverride,\n    });\n  }"
     },
     {
       "path": "src/infrastructure/project/project-service.ts",
-      "line": 327,
-      "endLine": 356,
+      "line": 328,
+      "endLine": 357,
       "name": "updateSessionLookSettings",
       "text": "async updateSessionLookSettings(\n    sessionId: string,\n    settings: { lookProfileId: string | null },\n  ): Promise<SessionVm> {\n    assertHost();\n    const updated = await updateHostSessionLook(sessionId, settings.lookProfileId);\n    return {\n      id: updated.id,\n      publicId: typeof updated.publicId === 'string' ? updated.publicId : '',\n      projectId: updated.projectId,\n      sessionNumber:\n        typeof updated.sessionNumber === 'number' ? updated.sessionNumber : 0,\n      name: updated.name ?? null,\n      notes: null,\n      status:\n        updated.status === 'scheduled' ||\n        updated.status === 'waiting' ||\n        updated.status === 'active' ||\n        updated.status === 'paused' ||\n        updated.status === 'completed' ||\n        updated.status === 'cancelled'\n          ? updated.status\n          : 'scheduled',\n      startedAt: null,\n      endedAt: null,\n      durationMinutes: null,\n      lookProfileId: updated.lookProfileId,\n      createdAt: new Date().toISOString(),\n    };\n  }"
     },
     {
       "path": "src/infrastructure/project/project-service.ts",
-      "line": 358,
-      "endLine": 361,
+      "line": 359,
+      "endLine": 362,
       "name": "deleteProject",
       "text": "async deleteProject(id: string): Promise<void> {\n    assertHost();\n    await deleteHostProject(id);\n  }"
     },
     {
       "path": "src/infrastructure/project/project-service.ts",
-      "line": 363,
-      "endLine": 367,
+      "line": 364,
+      "endLine": 368,
       "name": "leaveProject",
       "text": "async leaveProject(projectId: string): Promise<void> {\n    assertHost();\n    const userId = await getAuthenticatedUserId();\n    await projectMemberService.leave(projectId, userId);\n  }"
     },
     {
       "path": "src/infrastructure/project/project-service.ts",
-      "line": 369,
-      "endLine": 376,
+      "line": 370,
+      "endLine": 377,
       "name": "getProjectByPublicId",
       "text": "async getProjectByPublicId(publicId: string): Promise<ProjectVm> {\n    assertHost();\n    const wanted = publicId.trim().toUpperCase();\n    const rows = await fetchHostLibraryProjects();\n    const row = rows.find((p) => (p.publicId ?? '').trim().toUpperCase() === wanted);\n    if (!row) throw new Error('Project not found');\n    return this.mergeHostSessions(row);\n  }"
     },
     {
       "path": "src/infrastructure/project/project-service.ts",
-      "line": 373,
-      "endLine": 373,
+      "line": 374,
+      "endLine": 374,
       "name": "callback",
       "text": "(p) => (p.publicId ?? '').trim().toUpperCase() === wanted"
     },
     {
       "path": "src/infrastructure/project/project-service.ts",
-      "line": 378,
-      "endLine": 413,
+      "line": 379,
+      "endLine": 414,
       "name": "getSessionByPublicIds",
       "text": "async getSessionByPublicIds(\n    sagaPublicId: string,\n    sessionPublicId: string,\n  ): Promise<{ project: ProjectVm; session: SessionVm }> {\n    assertHost();\n    const project = await this.getProjectByPublicId(sagaPublicId);\n    const wanted = sessionPublicId.trim().toUpperCase();\n    let session = project.sessions.find((row) => row.publicId === wanted);\n    if (!session) {\n      const rows = await fetchHostSessions();\n      const match = rows.find(\n        (r) =>\n          r.projectId === project.id && (r.publicId ?? '').trim().toUpperCase() === wanted,\n      );\n      if (!match) {\n        throw new Error('Session not found in saga');\n      }\n      const dto = this.mapHostPlaySessionToSessionDto(match);\n      session = {\n        id: dto.id,\n        publicId: typeof dto.public_id === 'string' ? dto.public_id : '',\n        projectId: dto.project_id,\n        sessionNumber: dto.session_number,\n        name: dto.name,\n        notes: dto.notes,\n        status: dto.status,\n        startedAt: dto.started_at,\n        endedAt: dto.ended_at,\n        durationMinutes: dto.duration_minutes ?? null,\n        lookProfileId:\n          typeof dto.look_profile_id === 'string' ? dto.look_profile_id : null,\n        createdAt: dto.created_at,\n      };\n    }\n    return { project, session };\n  }"
     },
     {
       "path": "src/infrastructure/project/project-service.ts",
-      "line": 385,
-      "endLine": 385,
+      "line": 386,
+      "endLine": 386,
       "name": "callback",
       "text": "(row) => row.publicId === wanted"
     },
     {
       "path": "src/infrastructure/project/project-service.ts",
-      "line": 389,
-      "endLine": 390,
+      "line": 390,
+      "endLine": 391,
       "name": "callback",
       "text": "(r) =>\n          r.projectId === project.id && (r.publicId ?? '').trim().toUpperCase() === wanted"
     },
     {
       "path": "src/infrastructure/project/project-service.ts",
-      "line": 415,
-      "endLine": 448,
+      "line": 416,
+      "endLine": 449,
       "name": "createProjectSession",
       "text": "async createProjectSession(payload: {\n    projectId: string;\n    name?: string;\n    notes?: string;\n  }): Promise<SessionVm> {\n    assertHost();\n    const row = await createHostProjectSession(\n      payload.projectId,\n      payload.name ?? null,\n      payload.notes ?? null,\n    );\n    const status =\n      row.status === 'scheduled' ||\n      row.status === 'waiting' ||\n      row.status === 'active' ||\n      row.status === 'paused' ||\n      row.status === 'completed'\n        ? row.status\n        : 'scheduled';\n    return {\n      id: row.id,\n      publicId: typeof row.publicId === 'string' ? row.publicId : '',\n      projectId: row.projectId,\n      sessionNumber: typeof row.sessionNumber === 'number' ? row.sessionNumber : 0,\n      name: row.name ?? null,\n      notes: null,\n      status,\n      startedAt: null,\n      endedAt: null,\n      durationMinutes: null,\n      lookProfileId: null,\n      createdAt: new Date().toISOString(),\n    };\n  }"
     },

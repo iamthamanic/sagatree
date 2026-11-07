@@ -117,7 +117,7 @@
     },
     {
       "path": "src/infrastructure/character/character-service.ts",
-      "sha256": "e4c8a0c71904542d907d9e0bbc634a0636a77d2da5012b422d7c6c57c43c2ffe"
+      "sha256": "b7d4693f30ada0c021246425bbf3289cbc847a8e384c37213b8a86bfff6753cb"
     },
     {
       "path": "src/infrastructure/character/character.persistence.ts",
@@ -1031,7 +1031,7 @@
     },
     {
       "path": "src/infrastructure/host/host-session-http.ts",
-      "sha256": "763c2535c26f746b60ff3f68358fb7c37c20384bd9f4a9a5a7d9bf2710e0ab81"
+      "sha256": "39b5efefc00297d57c1c4f248953cbbed4d7053e51974cd25a2ed43e368a64eb"
     },
     {
       "path": "src/infrastructure/inventory/inventory-persistence.ts",
@@ -1147,7 +1147,7 @@
     },
     {
       "path": "src/infrastructure/project/project-service.ts",
-      "sha256": "365e2248522fcbc8f830ea3f28e0ae9f8b4d71cf3aaa2ffe931772297c364a78"
+      "sha256": "29846df2ae25287b68cba443a9c85f2f9952fa9cc1afd3faf762a78eb57a6fa6"
     },
     {
       "path": "src/infrastructure/session/media/livekit-media-plane-adapter.ts",
@@ -7572,31 +7572,31 @@
       "name": "HostPlaySessionDto",
       "path": "src/infrastructure/host/host-session-http.ts",
       "line": 98,
-      "endLine": 118,
-      "text": "export type HostPlaySessionDto = {\n  readonly sessionId: string;\n  readonly projectId: string;\n  readonly publicId?: string;\n  readonly joinCode?: string | null;\n  readonly code?: string | null;\n  readonly status: string;\n  readonly sessionNumber?: number;\n  readonly name?: string | null;\n  readonly createdAt?: string;\n  readonly startedAt?: string | null;\n  readonly endedAt?: string | null;\n  readonly gmUserId?: string;\n  readonly players?: readonly {\n    readonly id?: string;\n    readonly userId?: string;\n    readonly characterId?: string | null;\n    readonly isOnline?: boolean;\n    readonly joinedAt?: string;\n  }[];\n};"
+      "endLine": 120,
+      "text": "export type HostPlaySessionDto = {\n  readonly sessionId: string;\n  readonly projectId: string;\n  readonly publicId?: string;\n  readonly joinCode?: string | null;\n  readonly code?: string | null;\n  readonly status: string;\n  readonly sessionNumber?: number;\n  readonly name?: string | null;\n  readonly createdAt?: string;\n  readonly startedAt?: string | null;\n  readonly endedAt?: string | null;\n  readonly gmUserId?: string;\n  /** Session Look override; null/omit = inherit project default. */\n  readonly lookProfileId?: string | null;\n  readonly players?: readonly {\n    readonly id?: string;\n    readonly userId?: string;\n    readonly characterId?: string | null;\n    readonly isOnline?: boolean;\n    readonly joinedAt?: string;\n  }[];\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "HostSessionRecapGenerateResult",
       "path": "src/infrastructure/host/host-session-http.ts",
-      "line": 389,
-      "endLine": 398,
+      "line": 391,
+      "endLine": 400,
       "text": "export type HostSessionRecapGenerateResult =\n  | {\n      readonly status: 'ok';\n      readonly summaryText: string;\n      readonly summaryStatus: string;\n      readonly provider: string;\n      readonly model: string;\n    }\n  | { readonly status: 'not-configured'; readonly message: string }\n  | { readonly status: 'error'; readonly message: string };"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "HostSessionMediaTokenResult",
       "path": "src/infrastructure/host/host-session-http.ts",
-      "line": 434,
-      "endLine": 452,
+      "line": 436,
+      "endLine": 454,
       "text": "export type HostSessionMediaTokenResult =\n  | {\n      readonly ok: true;\n      readonly token: string;\n      readonly url: string;\n      readonly roomId: string;\n      readonly expiresAt: string;\n      readonly ttlSeconds: number;\n    }\n  | {\n      readonly ok: false;\n      readonly degraded: true;\n      readonly reason:\n        | 'media_service_unavailable'\n        | 'forbidden'\n        | 'unauthorized'\n        | 'bad_request';\n      readonly message: string;\n    };"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "HostPromoteOutcomeDto",
       "path": "src/infrastructure/host/host-session-http.ts",
-      "line": 601,
-      "endLine": 607,
+      "line": 603,
+      "endLine": 609,
       "text": "export type HostPromoteOutcomeDto = {\n  readonly ok?: boolean;\n  readonly idempotent?: boolean;\n  readonly targetKind?: string;\n  readonly targetRef?: string;\n  readonly messageDe?: string;\n};"
     },
     {
@@ -10598,8 +10598,8 @@
     },
     {
       "path": "src/infrastructure/character/character-service.ts",
-      "line": 460,
-      "endLine": 460,
+      "line": 466,
+      "endLine": 466,
       "text": "export const characterService = new CharacterService();"
     },
     {
@@ -13708,77 +13708,77 @@
     {
       "path": "src/infrastructure/character/character-service.ts",
       "line": 241,
-      "endLine": 272,
+      "endLine": 275,
       "name": "createCharacter",
-      "text": "async createCharacter(payload: CreateCharacterDto): Promise<CharacterVm> {\n    assertHost();\n    const row = await createHostLibraryCharacter({\n      name: payload.name,\n      description: payload.description,\n      class: payload.class,\n      race: payload.race,\n      level: payload.level ?? 1,\n      sheet_status: payload.sheet_status ?? 'draft',\n      notes: payload.notes,\n      attributes: payload.attributes,\n      skills: payload.skills,\n      sagatree_profile: payload.sagatree_profile,\n      appearance: payload.appearance,\n      inventory: payload.inventory,\n      sheet: {\n        class: payload.class,\n        race: payload.race,\n        classLabel: payload.class,\n        raceLabel: payload.race,\n        notes: payload.notes,\n        attributes: payload.attributes,\n        skills: payload.skills,\n        sagatreeProfile: payload.sagatree_profile,\n        appearance: payload.appearance,\n        inventory: payload.inventory,\n        abilities: payload.abilities,\n      },\n    });\n    invalidateCharacterListCaches();\n    return mapHostCharacterVm(row);\n  }"
+      "text": "async createCharacter(payload: CreateCharacterDto): Promise<CharacterVm> {\n    assertHost();\n    const row = await createHostLibraryCharacter({\n      name: payload.name,\n      description: payload.description,\n      class: payload.class,\n      race: payload.race,\n      level: payload.level ?? 1,\n      sheet_status: payload.sheet_status ?? 'draft',\n      notes: payload.notes,\n      attributes: payload.attributes,\n      skills: payload.skills,\n      sagatree_profile: payload.sagatree_profile,\n      appearance: payload.appearance,\n      inventory: payload.inventory,\n      sheet: {\n        class: payload.class,\n        race: payload.race,\n        classLabel: payload.class,\n        raceLabel: payload.race,\n        notes: payload.notes,\n        attributes: payload.attributes,\n        skills: payload.skills,\n        sagatreeProfile: payload.sagatree_profile,\n        appearance: payload.appearance,\n        inventory: payload.inventory,\n        ...(payload.inventory_v2 !== undefined\n          ? { inventory_v2: payload.inventory_v2, inventory_schema_version: 2 }\n          : {}),\n        abilities: payload.abilities,\n      },\n    });\n    invalidateCharacterListCaches();\n    return mapHostCharacterVm(row);\n  }"
     },
     {
       "path": "src/infrastructure/character/character-service.ts",
-      "line": 274,
-      "endLine": 313,
+      "line": 277,
+      "endLine": 319,
       "name": "updateCharacter",
-      "text": "async updateCharacter(id: string, payload: UpdateCharacterDto): Promise<CharacterVm> {\n    assertHost();\n    if (payload.appearance && 'personal_look_profile_id' in payload.appearance) {\n      await this.assertPersonalLookWriteGate(\n        id,\n        payload.appearance.personal_look_profile_id ?? null,\n      );\n    }\n    const current = await fetchHostLibraryCharacter(id);\n    const sheet: Record<string, unknown> = {\n      ...(current.sheet ?? {}),\n      ...(payload.class !== undefined ? { class: payload.class, classLabel: payload.class } : {}),\n      ...(payload.race !== undefined ? { race: payload.race, raceLabel: payload.race } : {}),\n      ...(payload.notes !== undefined ? { notes: payload.notes } : {}),\n      ...(payload.appearance !== undefined ? { appearance: payload.appearance } : {}),\n      ...(payload.attributes !== undefined ? { attributes: payload.attributes } : {}),\n      ...(payload.skills !== undefined ? { skills: payload.skills } : {}),\n      ...(payload.sagatree_profile !== undefined\n        ? { sagatreeProfile: payload.sagatree_profile }\n        : {}),\n      ...(payload.abilities !== undefined ? { abilities: payload.abilities } : {}),\n      ...(payload.inventory !== undefined ? { inventory: payload.inventory } : {}),\n      ...(payload.personality_traits !== undefined\n        ? { personalityTraits: payload.personality_traits }\n        : {}),\n      ...(payload.ideals !== undefined ? { ideals: payload.ideals } : {}),\n      ...(payload.bonds !== undefined ? { bonds: payload.bonds } : {}),\n      ...(payload.flaws !== undefined ? { flaws: payload.flaws } : {}),\n    };\n    const updated = await updateHostLibraryCharacter(id, {\n      name: payload.name,\n      description: payload.description,\n      level: payload.level,\n      sheet_status: payload.sheet_status,\n      sheet,\n      portrait_url: payload.portrait_url,\n    });\n    invalidateCharacterListCaches();\n    return mapHostCharacterVm(updated);\n  }"
+      "text": "async updateCharacter(id: string, payload: UpdateCharacterDto): Promise<CharacterVm> {\n    assertHost();\n    if (payload.appearance && 'personal_look_profile_id' in payload.appearance) {\n      await this.assertPersonalLookWriteGate(\n        id,\n        payload.appearance.personal_look_profile_id ?? null,\n      );\n    }\n    const current = await fetchHostLibraryCharacter(id);\n    const sheet: Record<string, unknown> = {\n      ...(current.sheet ?? {}),\n      ...(payload.class !== undefined ? { class: payload.class, classLabel: payload.class } : {}),\n      ...(payload.race !== undefined ? { race: payload.race, raceLabel: payload.race } : {}),\n      ...(payload.notes !== undefined ? { notes: payload.notes } : {}),\n      ...(payload.appearance !== undefined ? { appearance: payload.appearance } : {}),\n      ...(payload.attributes !== undefined ? { attributes: payload.attributes } : {}),\n      ...(payload.skills !== undefined ? { skills: payload.skills } : {}),\n      ...(payload.sagatree_profile !== undefined\n        ? { sagatreeProfile: payload.sagatree_profile }\n        : {}),\n      ...(payload.abilities !== undefined ? { abilities: payload.abilities } : {}),\n      ...(payload.inventory !== undefined ? { inventory: payload.inventory } : {}),\n      ...(payload.inventory_v2 !== undefined\n        ? { inventory_v2: payload.inventory_v2, inventory_schema_version: 2 }\n        : {}),\n      ...(payload.personality_traits !== undefined\n        ? { personalityTraits: payload.personality_traits }\n        : {}),\n      ...(payload.ideals !== undefined ? { ideals: payload.ideals } : {}),\n      ...(payload.bonds !== undefined ? { bonds: payload.bonds } : {}),\n      ...(payload.flaws !== undefined ? { flaws: payload.flaws } : {}),\n    };\n    const updated = await updateHostLibraryCharacter(id, {\n      name: payload.name,\n      description: payload.description,\n      level: payload.level,\n      sheet_status: payload.sheet_status,\n      sheet,\n      portrait_url: payload.portrait_url,\n    });\n    invalidateCharacterListCaches();\n    return mapHostCharacterVm(updated);\n  }"
     },
     {
       "path": "src/infrastructure/character/character-service.ts",
-      "line": 315,
-      "endLine": 331,
+      "line": 321,
+      "endLine": 337,
       "name": "updateCharacterPersonalLook",
       "text": "async updateCharacterPersonalLook(\n    characterId: string,\n    personalLookProfileId: string | null,\n  ): Promise<CharacterVm> {\n    await this.assertPersonalLookWriteGate(characterId, personalLookProfileId);\n    assertHost();\n    const current = await fetchHostLibraryCharacter(characterId);\n    const appearance = {\n      ...((current.sheet?.appearance as Record<string, unknown> | undefined) ?? {}),\n      personal_look_profile_id: personalLookProfileId,\n    };\n    const updated = await updateHostLibraryCharacter(characterId, {\n      sheet: { ...(current.sheet ?? {}), appearance },\n    });\n    invalidateCharacterListCaches();\n    return mapHostCharacterVm(updated);\n  }"
     },
     {
       "path": "src/infrastructure/character/character-service.ts",
-      "line": 345,
-      "endLine": 345,
+      "line": 351,
+      "endLine": 351,
       "name": "callback",
       "text": "(arc) => arc.status === 'active'"
     },
     {
       "path": "src/infrastructure/character/character-service.ts",
-      "line": 378,
-      "endLine": 390,
+      "line": 384,
+      "endLine": 396,
       "name": "migrateCharacterInventoryToV2",
       "text": "async migrateCharacterInventoryToV2(characterId: string): Promise<InventoryState> {\n    assertHost();\n    const row = await fetchHostLibraryCharacter(characterId);\n    const slice = hostSheetInventorySlice(row);\n    const read = readCharacterInventory(slice);\n    if (read.authoritativeV2) {\n      return read.state;\n    }\n    const migration = migrateLegacyInventory(slice.inventory as ItemDto[] | undefined);\n    const state = await persistMigratedInventory(characterId, migration);\n    invalidateCharacterListCaches();\n    return state;\n  }"
     },
     {
       "path": "src/infrastructure/character/character-service.ts",
-      "line": 392,
-      "endLine": 396,
+      "line": 398,
+      "endLine": 402,
       "name": "deleteCharacter",
       "text": "async deleteCharacter(id: string): Promise<void> {\n    assertHost();\n    await deleteHostLibraryCharacter(id);\n    invalidateCharacterListCaches();\n  }"
     },
     {
       "path": "src/infrastructure/character/character-service.ts",
-      "line": 398,
-      "endLine": 434,
+      "line": 404,
+      "endLine": 440,
       "name": "duplicateCharacter",
       "text": "async duplicateCharacter(id: string): Promise<CharacterVm> {\n    assertHost();\n    const source = await this.getCharacterById(id);\n    const suffix = ' (Kopie)';\n    const maxBase = Math.max(1, 255 - suffix.length);\n    const name = `${source.name.trim().slice(0, maxBase) || 'Charakter'}${suffix}`;\n    const created = await createHostLibraryCharacter({\n      name,\n      description: source.description,\n      class: source.class,\n      race: source.race,\n      level: source.level,\n      sheet_status: source.sheetStatus === 'complete' ? 'draft' : source.sheetStatus,\n      sheet: {\n        class: source.class,\n        race: source.race,\n        classLabel: source.class,\n        raceLabel: source.race,\n        notes: source.notes,\n        appearance: source.appearance,\n        attributes: source.attributes,\n        skills: source.skills,\n        sagatreeProfile: source.sagaTreeProfile,\n        abilities: source.abilities,\n        inventory: source.inventory,\n        personalityTraits: source.personalityTraits,\n        ideals: source.ideals,\n        bonds: source.bonds,\n        flaws: source.flaws,\n        ...(source.inventorySchemaVersion === 2\n          ? { inventory_v2: source.inventoryV2, inventory_schema_version: 2 as const }\n          : {}),\n      },\n    });\n    invalidateCharacterListCaches();\n    return mapHostCharacterVm(created);\n  }"
     },
     {
       "path": "src/infrastructure/character/character-service.ts",
-      "line": 436,
-      "endLine": 444,
+      "line": 442,
+      "endLine": 450,
       "name": "searchCharacters",
       "text": "async searchCharacters(query: string): Promise<CharacterVm[]> {\n    assertHost();\n    const rows = await fetchHostLibraryCharacters();\n    const q = query.trim().toLowerCase();\n    if (!q) return rows.map(mapHostCharacterVm);\n    return rows\n      .filter((row) => row.name.toLowerCase().includes(q))\n      .map(mapHostCharacterVm);\n  }"
     },
     {
       "path": "src/infrastructure/character/character-service.ts",
-      "line": 442,
-      "endLine": 442,
+      "line": 448,
+      "endLine": 448,
       "name": "callback",
       "text": "(row) => row.name.toLowerCase().includes(q)"
     },
     {
       "path": "src/infrastructure/character/character-service.ts",
-      "line": 446,
-      "endLine": 453,
+      "line": 452,
+      "endLine": 459,
       "name": "uploadPortrait",
       "text": "async uploadPortrait(file: File, options?: UploadPortraitOptions): Promise<string> {\n    assertHost();\n    const prepared = options?.alreadyOptimized\n      ? file\n      : await prepareCharacterPortraitFile(file, options?.signal);\n    const published = await publishHostAsset(prepared);\n    return published.url;\n  }"
     },
     {
       "path": "src/infrastructure/character/character-service.ts",
-      "line": 455,
-      "endLine": 457,
+      "line": 461,
+      "endLine": 463,
       "name": "preparePortraitFile",
       "text": "preparePortraitFile(file: File, signal?: AbortSignal): Promise<File> {\n    return prepareCharacterPortraitFile(file, signal);\n  }"
     },

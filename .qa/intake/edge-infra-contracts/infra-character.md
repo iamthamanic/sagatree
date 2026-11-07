@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-character.json](source-contracts/infra-character.json) (SHA-256 `ae06c4083c9af8b96c90e49e8dcc9ac06b30a9061537587c2062c992c9fe50c5`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-character.json](source-contracts/infra-character.json) (SHA-256 `6333a9b3f728ffc7b3dab6930075e54aeb6a892271aec779ccca7596257e7081`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -5908,7 +5908,7 @@ export async function prepareCharacterPortraitFile(
 }
 ```
 
-### src/infrastructure/character/character-service.ts:460
+### src/infrastructure/character/character-service.ts:466
 
 ```ts
 export const characterService = new CharacterService();
@@ -9951,7 +9951,7 @@ async function invokeHostCharacterLore(
 | `src/infrastructure/character/character-adventure-arc-service.ts` | `b26c41bca40e5198bf295e4d3a01ebb34dc37674c5f1f744cccaff3d6fa69f2b` |
 | `src/infrastructure/character/character-lore-service.ts` | `6f60bee2791fe2c313db260d72a66c9c1fe712732e5fe09c46807d1eba912880` |
 | `src/infrastructure/character/character-preset-service.ts` | `f69c938c0445cc39f8339649d88199ef562b7561f127a745a4cfd7d71fe810b2` |
-| `src/infrastructure/character/character-service.ts` | `e4c8a0c71904542d907d9e0bbc634a0636a77d2da5012b422d7c6c57c43c2ffe` |
+| `src/infrastructure/character/character-service.ts` | `b7d4693f30ada0c021246425bbf3289cbc847a8e384c37213b8a86bfff6753cb` |
 | `src/infrastructure/character/character.persistence.ts` | `5ed5f363555b9c4a3922507e01a227f74aee706764065641eb27ac9510024bd5` |
 | `src/infrastructure/character/host-character-adapter.ts` | `13f20441555da88736aa75337568f69c2e2d516ca2a1193f0fe3d4da83317fa8` |
 | `src/infrastructure/character/host-character-ports.contract.ts` | `a731a0dd97b4e55beee4c08600f69d50112efec738935d93aafab65c4c223dfc` |
@@ -9977,7 +9977,7 @@ async function invokeHostCharacterLore(
 | `src/infrastructure/character/liveact/vrm-liveact-avatar-output.ts` | `f5ef95d582ee0f3a2ec47748e8d958306f3833d45a5e8e1b250d1eecfba5d9a6` |
 | `src/infrastructure/host/host-library-http.ts` | `1d41f3b1eb3e71a3a8b12306993b605f2d05f2f41cd35f73b9c362b12f9c1cb6` |
 | `src/infrastructure/host/host-project-http.ts` | `b5a68f6452217b08d2217a983113a9a356ce70890693319227f35c82fbdcd818` |
-| `src/infrastructure/host/host-session-http.ts` | `763c2535c26f746b60ff3f68358fb7c37c20384bd9f4a9a5a7d9bf2710e0ab81` |
+| `src/infrastructure/host/host-session-http.ts` | `39b5efefc00297d57c1c4f248953cbbed4d7053e51974cd25a2ed43e368a64eb` |
 | `src/infrastructure/inventory/inventory-persistence.ts` | `f62a29cc17219f2c455155f3f0a0e3fe14ca6838ac3d43df7fa19f3578773357` |
 | `src/infrastructure/inventory/item-catalog-service.ts` | `adea9220e02d2dbb96e107743c2ad8dfb7eaa8a9f1b1314620f16d5bb2979175` |
 | `src/infrastructure/inventory/item-catalog.persistence.ts` | `a68903ba909af8030e81d28555a65798800c9a32a790a4281e96f52b1550c566` |
@@ -10006,7 +10006,7 @@ async function invokeHostCharacterLore(
 | `src/infrastructure/media/optimizer/index.ts` | `c1b162af47239195707de742a8991bea14d85f2238108968613c3bad3d91cf02` |
 | `src/infrastructure/media/optimizer/media-optimizer.ts` | `7d58424f12b7855ccb3c0153270628850e03afc15c285b1fc2b47218918255d9` |
 | `src/infrastructure/project/project-member-service.ts` | `e67c3c5c9dd332d15d699a489dce4db743c183a5ce6aab09efc2deb89628236f` |
-| `src/infrastructure/project/project-service.ts` | `365e2248522fcbc8f830ea3f28e0ae9f8b4d71cf3aaa2ffe931772297c364a78` |
+| `src/infrastructure/project/project-service.ts` | `29846df2ae25287b68cba443a9c85f2f9952fa9cc1afd3faf762a78eb57a6fa6` |
 | `src/infrastructure/session/media/livekit-media-plane-adapter.ts` | `ba41c95f3816b79818a9c312c056ec896ac75fd4633dba27954cdcdb797b381d` |
 | `src/infrastructure/session/media/media-plane-adapter.ts` | `1dbdf0f7c75c1edc435fb629d5029a1c04806a5a6cbcf9b037ad8a620dcc34cd` |
 | `src/infrastructure/session/media/media-token-client.ts` | `c554cc7bdddcf519de1aba83c9804ff8edf62e75f95c409aebb771fad023c7dd` |
