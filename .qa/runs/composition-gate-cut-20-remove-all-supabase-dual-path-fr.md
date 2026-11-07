@@ -1,6 +1,6 @@
 # Composition Gate — cut-20-remove-all-supabase-dual-path-fr (#1155)
 
-- HEAD_SHA: bc7a6023fb43ad4678721e77ad49ffa38f98482d
+- HEAD_SHA: d05bd6b4ebf212511e7f655c9d07f1be59f1578a
 - BASE_SHA: 45836838d25368565aaced3513e9ffdf4ebb6222
 - Date: 2026-11-07
 - Verdict: CLEAR
