@@ -190,52 +190,132 @@ Die finalen Datenbank-Constraints der beteiligten Relationen sind pro RPC in inv
 
 ## Caller: Request-Mapping, Response-Decoding und Fehler
 
-### src/infrastructure/project/project-service.ts:437
+### src/infrastructure/project/project-service.ts:1
 
-AST-Auflösung: `string-literal`; SHA-256 `07549fce108bd735bdd7d48b07bccbf39947e3547d0f26ab60fdd013ca94aeff`.
+AST-Auflösung: `host-transport-cut-20`; SHA-256 `365e2248522fcbc8f830ea3f28e0ae9f8b4d71cf3aaa2ffe931772297c364a78`.
 
 Der vollständige aufrufende Funktionskörper enthält Parameterumformung, RPC-Aufruf, Response-Prüfung, Fehlerumwandlung und gegebenenfalls Fallback:
 
 ```typescript
-async ensureNativeStarterProject(slug = 'dornhain.whisper'): Promise<void> {
-    if (isHostLibraryEnabled()) {
-      try {
-        const { ensureHostNativeStarterProject } = await import('../host/host-project-http');
-        await ensureHostNativeStarterProject(slug);
-      } catch (err) {
-        const message = err instanceof Error ? err.message : String(err);
-        console.warn('[project-service] ensure_native_starter_project (host):', message);
-      }
-      return;
-    }
-    const { error } = await supabase.rpc('ensure_native_starter_project', {
-      p_slug: slug,
-    });
-    if (error) {
-      console.warn('[project-service] ensure_native_starter_project:', error.message);
-    }
+/**
+ * project-service — Host HTTP adapter for projects/campaigns (CUT-20).
+ * Location: src/infrastructure/project/project-service.ts
+ *
+ * Product runtime uses host Library + project routes only — no Supabase client.
+ */
+import { getAuthenticatedUserId } from '../../lib/authenticatedUser';
+import {
+  fetchHostLibraryProjects,
+  isHostLibraryEnabled,
+  type HostLibraryProjectDto,
+} from '../host/host-library-http';
+import {
+  createHostProject,
+  createHostProjectSession,
+  deleteHostProject,
+  updateHostProject,
+  updateHostSessionLook,
+  type HostProjectWriteDto,
+} from '../host/host-project-http';
+import { fetchHostSessions, type HostPlaySessionDto } from '../host/host-session-http';
+import { projectMemberService } from './project-member-service';
+import type {
+  ProjectDto,
+  ProjectMemberDto,
+  ProjectSummaryVm,
+  ProjectVm,
+  CreateProjectDto,
+  JoinProjectDto,
+  SessionDto,
+  SessionVm,
+} from '../../domains/project/contracts/project.types';
+import { normalizePlaySessionStatus } from '../../domains/session/contracts/session-lifecycle';
+
+function assertHost(): void {
+  if (!isHostLibraryEnabled()) {
+    throw new Error('Host-Anmeldung nicht konfiguriert (VITE_SAGATREE_HOST_AUTH_URL fehlt).');
   }
+}
+
+function isProjectStatus(value: unknown): value is ProjectDto['status'] {
+  return value === 'active' || value === 'paused' || value === 'completed' || value === 'archived';
+}
+
+class ProjectService {
+  private mapHostPlaySessionToSessionDto(row: HostPlaySessionDto): SessionDto {
+    const status = normalizePlaySessionStatus(row.status);
+    const createdAt =
+      typeof row.createdAt === 'string' ? row.createdAt : new Date().toISOString();
+    const updatedAt = createdAt;
+    return {
+      id: row.sessionId,
+      public_id: typeof row.publicId === 'string' ? row.publicId : undefined,
+      project_id: row.projectId,
+      session_number: typeof row.sessionNumber === 'number' ? row.sessionNumber : 0,
+      name: row.name ?? null,
+      notes: null,
+      status,
+      started_at: row.startedAt ?? null,
+      ended_at: row.endedAt ?? null,
+      duration_minutes: null,
+      look_profile_id: null,
+      created_at: createdAt,
+      updated_at: updatedAt,
+    };
+  }
+
+  private hostProjectRowToProjectDto(row: HostProjectWriteDto | HostLibraryProjectDto): ProjectDto {
+    const statusRaw = row.status ?? 'active';
+    const status = isProjectStatus(statusRaw) ? statusRaw : 'active';
+    const createdAt =
+      'createdAt' in row && typeof row.createdAt === 'string'
+        ? row.createdAt
+        : new Date().toISOString();
+    const updatedAt =
+      'updatedAt' in row && typeof row.updatedAt === 'string' ? row.updatedAt : createdAt;
+    return {
+      id: row.id,
+      public_id: typeof row.publicId === 'string' ? row.publicId : undefined,
+      code: typeof row.code === 'string' ? row.code : '',
+      name: row.name,
+      description: row.description ?? null,
+      world_id: row.worldId ?? null,
+      world_profile_id: row.worldProfileId ?? row.worldId ?? null,
+      default_look_profile_id:
+        'defaultLookProfileId' in row && typeof row.defaultLookProfileId === 'string'
+          ? row.defaultLookProfileId
+          : null,
+      allow_player_character_look_override:
+        'allowPlayerCharacterLookOverride' in row &&
+        typeof row.allowPlayerCharacterLookOverride === 'boolean'
+          ? row.allowPlayerCharacterLookOverride
+          : true,
+      gm_user_id: row.gmUserId,
+      status,
+      created_at: createdAt,
+      updated_at: updatedAt,
+    };
+  }
+
+  /**
+   * Map DTO to View Model
+   */
+  private mapToViewModel(
+    project: ProjectDto,
+    members: ProjectMemberDto[],
+    sessions: SessionDto[],
+  ): ProjectVm {
+    const mappedMembers = members.map((member) => ({
+      id: member.id,
+      userId: member.user_id,
+      characterId: member.character_id,
+      role: member.role,
+      joinedAt: member.joined_at,
+      status: member.status,
+    }));
+
+    const mappedSessions: SessionVm[] = sessions.map(
 ```
-
-Direkt oder transitiv referenzierte lokale/importierte Mapper, Decoder und Vertrags-Typen sind zusätzlich mit vollständigem Source-Text in callers.json und inventory.json.callerContracts.supportingDeclarations gespeichert:
-
-| Symbol | Quelle | Zeile | SHA-256 |
-| --- | --- | --- | --- |
-| `EnvLike` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 11 | `b2343081ddce2e2edd73651b0622e8b4cc6d8583d746a863dbe3343e3a98f71a` |
-| `defaultEnv` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 16 | `b2343081ddce2e2edd73651b0622e8b4cc6d8583d746a863dbe3343e3a98f71a` |
-| `isHostLibraryExplicitlyDisabled` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 25 | `b2343081ddce2e2edd73651b0622e8b4cc6d8583d746a863dbe3343e3a98f71a` |
-| `isHostLibraryEnabled` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 30 | `b2343081ddce2e2edd73651b0622e8b4cc6d8583d746a863dbe3343e3a98f71a` |
-| `EnvLike` | [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | 31 | `30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a` |
-| `defaultEnv` | [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | 33 | `30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a` |
-| `getHostAuthBaseUrl` | [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | 53 | `30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a` |
-| `viteEnv` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 13 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
-| `configuredSupabaseUrl` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 15 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
-| `configuredSupabaseAnonKey` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 16 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
-| `hostAuthUrl` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 17 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
-| `hostFirst` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 18 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
-| `supabaseUrl` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 58 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
-| `supabaseAnonKey` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 59 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
-| `supabase` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 61 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
 
 ## Konkrete Abnahmekriterien
 
@@ -256,10 +336,7 @@ Die folgenden Hashes binden SQL-Kette, transitive Tabellen-/Trigger-/Policyquell
 
 | Quelle | SHA-256 |
 | --- | --- |
-| [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | `b2343081ddce2e2edd73651b0622e8b4cc6d8583d746a863dbe3343e3a98f71a` |
-| [src/infrastructure/project/project-service.ts](../../../src/infrastructure/project/project-service.ts) | `07549fce108bd735bdd7d48b07bccbf39947e3547d0f26ab60fdd013ca94aeff` |
-| [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | `30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a` |
-| [src/lib/supabase.ts](../../../src/lib/supabase.ts) | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
+| [src/infrastructure/project/project-service.ts](../../../src/infrastructure/project/project-service.ts) | `365e2248522fcbc8f830ea3f28e0ae9f8b4d71cf3aaa2ffe931772297c364a78` |
 | [supabase/migrations/001_initial.sql](../../../supabase/migrations/001_initial.sql) | `e3325c56d68286a2e293ddff791736ef91346ff90ac018c045843a5d52afb8c8` |
 | [supabase/migrations/002_character_trait_arrays.sql](../../../supabase/migrations/002_character_trait_arrays.sql) | `74a7f112720d2572bbb8b7d8c32e0f5f5abf932c35268a34b45dc4bfedc2a02a` |
 | [supabase/migrations/005_character_ruleset_metadata.sql](../../../supabase/migrations/005_character_ruleset_metadata.sql) | `02874b854874e5d89ad6b697563d545f5d2b72735afe763d6927e574b2ba49ca` |

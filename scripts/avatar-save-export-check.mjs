@@ -40,9 +40,10 @@ check(/export \{[\s\S]*buildAvatarSaveExportPayload/.test(index), 'barrel export
 check(/encodeAvatarExportGlb/.test(index), 'barrel exports encoder');
 
 check(/materializeAvatarSaveExport/.test(service), 'infra materialize service');
-check(/character-avatars/.test(service), 'uses character-avatars bucket');
-check(/character_avatar_export_assets/.test(service), 'writes export assets table');
-check(/is_active: true/.test(service), 'activates confirmed artifact');
+check(/publishHostAvatarModel/.test(service), 'uses host AssetPorts upload (CUT-20)');
+check(/isHostLibraryEnabled/.test(service), 'host library gate');
+check(!/character-avatars|supabase\.storage|\.from\(\s*['"]character-avatars['"]/.test(service), 'no Supabase storage bucket (CUT-20)');
+check(!/character_avatar_export_assets/.test(service), 'no direct export-assets table writes (CUT-20 host)');
 check(/buildAvatarSaveExportPayload/.test(service), 'service uses domain payload');
 check(/encodeAvatarExportGlb/.test(service), 'service encodes GLB');
 

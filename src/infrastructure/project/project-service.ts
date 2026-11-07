@@ -1,16 +1,10 @@
 /**
- * project-service — Supabase adapter for projects/campaigns.
+ * project-service — Host HTTP adapter for projects/campaigns (CUT-20).
  * Location: src/infrastructure/project/project-service.ts
  *
- * #569: Never select projects.adventure_runtime or sessions.world_state/notes —
- * those columns are revoked for authenticated; use projected session RPCs.
- *
- * Dual-path (MIG-308): Host Library lists + project create/update/delete + session look
- * when host-first (FE-HOST-12); legacy Supabase when `VITE_SAGATREE_HOST_LIBRARY=0`.
+ * Product runtime uses host Library + project routes only — no Supabase client.
  */
-import { supabase } from '../../lib/supabase';
 import { getAuthenticatedUserId } from '../../lib/authenticatedUser';
-import { raceWithTimeoutReject, SUPABASE_QUERY_TIMEOUT_MS } from '../../lib/networkTimeout';
 import {
   fetchHostLibraryProjects,
   isHostLibraryEnabled,
@@ -24,180 +18,84 @@ import {
   updateHostSessionLook,
   type HostProjectWriteDto,
 } from '../host/host-project-http';
-import { assertHostProductSurfaceAvailable } from '../host/host-product-deny';
+import { fetchHostSessions, type HostPlaySessionDto } from '../host/host-session-http';
 import { projectMemberService } from './project-member-service';
 import type {
   ProjectDto,
+  ProjectMemberDto,
+  ProjectSummaryVm,
   ProjectVm,
   CreateProjectDto,
   JoinProjectDto,
-  ProjectMemberDto,
-  ProjectMemberVm,
-  ProjectSummaryVm,
   SessionDto,
   SessionVm,
 } from '../../domains/project/contracts/project.types';
+import { normalizePlaySessionStatus } from '../../domains/session/contracts/session-lifecycle';
 
-/** Safe project columns for authenticated SELECT (#569/#603 — excludes adventure_runtime). */
-const PROJECT_SAFE_COLUMNS =
-  'id, public_id, code, name, description, world_id, world_profile_id, default_look_profile_id, allow_player_character_look_override, gm_user_id, status, saga_id, saga_version_id, created_at, updated_at';
-
-/** Safe session columns for authenticated SELECT (#569/#603 — excludes world_state, notes). */
-const SESSION_SAFE_COLUMNS =
-  'id, public_id, project_id, session_number, name, description, status, code, started_at, ended_at, look_profile_id, created_at, updated_at';
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null;
+function assertHost(): void {
+  if (!isHostLibraryEnabled()) {
+    throw new Error('Host-Anmeldung nicht konfiguriert (VITE_SAGATREE_HOST_AUTH_URL fehlt).');
+  }
 }
 
 function isProjectStatus(value: unknown): value is ProjectDto['status'] {
   return value === 'active' || value === 'paused' || value === 'completed' || value === 'archived';
 }
 
-function isProjectDto(value: unknown): value is ProjectDto {
-  if (!isRecord(value)) return false;
-  const publicIdOk =
-    typeof value.public_id === 'string'
-    || value.public_id === undefined
-    || value.public_id === null;
-  const worldProfileOk =
-    value.world_profile_id === undefined
-    || value.world_profile_id === null
-    || typeof value.world_profile_id === 'string';
-  const defaultLookOk =
-    value.default_look_profile_id === undefined
-    || value.default_look_profile_id === null
-    || typeof value.default_look_profile_id === 'string';
-  const allowOverrideOk =
-    value.allow_player_character_look_override === undefined
-    || typeof value.allow_player_character_look_override === 'boolean';
-  return (
-    typeof value.id === 'string' &&
-    publicIdOk &&
-    typeof value.code === 'string' &&
-    typeof value.name === 'string' &&
-    (typeof value.description === 'string' || value.description === null) &&
-    (typeof value.world_id === 'string' || value.world_id === null) &&
-    worldProfileOk &&
-    defaultLookOk &&
-    allowOverrideOk &&
-    typeof value.gm_user_id === 'string' &&
-    isProjectStatus(value.status) &&
-    typeof value.created_at === 'string' &&
-    typeof value.updated_at === 'string'
-  );
-}
-
-/**
- * Project Service
- * Handles all project-related API calls (campaigns/adventures)
- */
-function isProjectSummaryRow(
-  value: unknown,
-): value is Pick<
-  ProjectDto,
-  'id' | 'code' | 'name' | 'description' | 'gm_user_id' | 'status'
-> & {
-  public_id?: string | null;
-  world_id?: string | null;
-  world_profile_id?: string | null;
-} {
-  if (!isRecord(value)) return false;
-  const publicIdOk =
-    typeof value.public_id === 'string'
-    || value.public_id === undefined
-    || value.public_id === null;
-  const worldIdOk =
-    typeof value.world_id === 'string'
-    || value.world_id === undefined
-    || value.world_id === null;
-  const worldProfileIdOk =
-    typeof value.world_profile_id === 'string'
-    || value.world_profile_id === undefined
-    || value.world_profile_id === null;
-  return (
-    typeof value.id === 'string' &&
-    publicIdOk &&
-    worldIdOk &&
-    worldProfileIdOk &&
-    typeof value.code === 'string' &&
-    typeof value.name === 'string' &&
-    (typeof value.description === 'string' || value.description === null) &&
-    typeof value.gm_user_id === 'string' &&
-    isProjectStatus(value.status)
-  );
-}
-
-function isSessionStatus(value: unknown): value is SessionDto['status'] {
-  return (
-    value === 'scheduled'
-    || value === 'waiting'
-    || value === 'active'
-    || value === 'paused'
-    || value === 'completed'
-    || value === 'cancelled'
-  );
-}
-
-function isSessionDto(value: unknown): value is SessionDto {
-  if (!isRecord(value)) return false;
-  const durationOk =
-    value.duration_minutes === undefined
-    || typeof value.duration_minutes === 'number'
-    || value.duration_minutes === null;
-  const publicIdOk =
-    typeof value.public_id === 'string'
-    || value.public_id === undefined
-    || value.public_id === null;
-  const lookOk =
-    value.look_profile_id === undefined
-    || value.look_profile_id === null
-    || typeof value.look_profile_id === 'string';
-  const notesOk =
-    value.notes === undefined
-    || typeof value.notes === 'string'
-    || value.notes === null;
-  return (
-    typeof value.id === 'string'
-    && publicIdOk
-    && typeof value.project_id === 'string'
-    && typeof value.session_number === 'number'
-    && (typeof value.name === 'string' || value.name === null)
-    && notesOk
-    && isSessionStatus(value.status)
-    && (typeof value.started_at === 'string' || value.started_at === null)
-    && (typeof value.ended_at === 'string' || value.ended_at === null)
-    && durationOk
-    && lookOk
-    && typeof value.created_at === 'string'
-    && typeof value.updated_at === 'string'
-  );
-}
-
-function normalizeSessionDto(value: SessionDto): SessionDto {
-  return {
-    ...value,
-    // #569: notes column not selectable by authenticated — treat missing as null.
-    notes: value.notes ?? null,
-    duration_minutes: value.duration_minutes ?? null,
-  };
-}
-
 class ProjectService {
-  private readonly tableName = 'projects';
-  private readonly membersTableName = 'project_members';
-  private readonly sessionsTableName = 'sessions';
+  private mapHostPlaySessionToSessionDto(row: HostPlaySessionDto): SessionDto {
+    const status = normalizePlaySessionStatus(row.status);
+    const createdAt =
+      typeof row.createdAt === 'string' ? row.createdAt : new Date().toISOString();
+    const updatedAt = createdAt;
+    return {
+      id: row.sessionId,
+      public_id: typeof row.publicId === 'string' ? row.publicId : undefined,
+      project_id: row.projectId,
+      session_number: typeof row.sessionNumber === 'number' ? row.sessionNumber : 0,
+      name: row.name ?? null,
+      notes: null,
+      status,
+      started_at: row.startedAt ?? null,
+      ended_at: row.endedAt ?? null,
+      duration_minutes: null,
+      look_profile_id: null,
+      created_at: createdAt,
+      updated_at: updatedAt,
+    };
+  }
 
-  /**
-   * Generate random 6-digit join code
-   */
-  private generateProjectCode(): string {
-    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // Exclude ambiguous chars
-    let code = '';
-    for (let i = 0; i < 6; i++) {
-      code += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    return code;
+  private hostProjectRowToProjectDto(row: HostProjectWriteDto | HostLibraryProjectDto): ProjectDto {
+    const statusRaw = row.status ?? 'active';
+    const status = isProjectStatus(statusRaw) ? statusRaw : 'active';
+    const createdAt =
+      'createdAt' in row && typeof row.createdAt === 'string'
+        ? row.createdAt
+        : new Date().toISOString();
+    const updatedAt =
+      'updatedAt' in row && typeof row.updatedAt === 'string' ? row.updatedAt : createdAt;
+    return {
+      id: row.id,
+      public_id: typeof row.publicId === 'string' ? row.publicId : undefined,
+      code: typeof row.code === 'string' ? row.code : '',
+      name: row.name,
+      description: row.description ?? null,
+      world_id: row.worldId ?? null,
+      world_profile_id: row.worldProfileId ?? row.worldId ?? null,
+      default_look_profile_id:
+        'defaultLookProfileId' in row && typeof row.defaultLookProfileId === 'string'
+          ? row.defaultLookProfileId
+          : null,
+      allow_player_character_look_override:
+        'allowPlayerCharacterLookOverride' in row &&
+        typeof row.allowPlayerCharacterLookOverride === 'boolean'
+          ? row.allowPlayerCharacterLookOverride
+          : true,
+      gm_user_id: row.gmUserId,
+      status,
+      created_at: createdAt,
+      updated_at: updatedAt,
+    };
   }
 
   /**
@@ -206,9 +104,9 @@ class ProjectService {
   private mapToViewModel(
     project: ProjectDto,
     members: ProjectMemberDto[],
-    sessions: SessionDto[]
+    sessions: SessionDto[],
   ): ProjectVm {
-    const mappedMembers: ProjectMemberVm[] = members.map((member) => ({
+    const mappedMembers = members.map((member) => ({
       id: member.id,
       userId: member.user_id,
       characterId: member.character_id,
@@ -235,8 +133,9 @@ class ProjectService {
 
     const completedSessions = sessions.filter((session) => session.ended_at);
     const lastSessionDate = completedSessions.length
-      ? completedSessions.sort((left, right) =>
-          new Date(right.ended_at!).getTime() - new Date(left.ended_at!).getTime()
+      ? completedSessions.sort(
+          (left, right) =>
+            new Date(right.ended_at!).getTime() - new Date(left.ended_at!).getTime(),
         )[0].ended_at
       : null;
 
@@ -266,52 +165,18 @@ class ProjectService {
     };
   }
 
-  /**
-   * Create new project (as GM)
-   */
-  async createProject(payload: CreateProjectDto): Promise<ProjectVm> {
-    if (isHostLibraryEnabled()) {
-      const created = await createHostProject({
-        name: payload.name,
-        description: payload.description ?? null,
-        worldProfileId: payload.world_profile_id ?? payload.world_id ?? null,
-      });
-      return this.mapHostProjectWriteToVm(created);
-    }
-    assertHostProductSurfaceAvailable('Saga anlegen');
-    const userId = await getAuthenticatedUserId();
-
-    const code = this.generateProjectCode();
-
-    const projectData: Partial<ProjectDto> = {
-      code,
-      name: payload.name,
-      description: payload.description || null,
-      world_id: payload.world_id || null,
-      world_profile_id: payload.world_profile_id || null,
-      gm_user_id: userId,
-      status: 'active',
-    };
-
-    const { data, error } = await supabase
-      .from(this.tableName)
-      .insert(projectData)
-      .select(PROJECT_SAFE_COLUMNS)
-      .single();
-
-    if (error) {
-      throw new Error(`Failed to create project: ${error.message}`);
-    }
-
-    // The GM-controlled membership policy permits this bootstrap row.
-    await supabase.from(this.membersTableName).insert({
-      project_id: data.id,
-      user_id: userId,
-      role: 'gm',
-      status: 'active',
-    });
-
-    return this.mapToViewModel(data, [], []);
+  private async mergeHostSessions(row: HostLibraryProjectDto | HostProjectWriteDto): Promise<ProjectVm> {
+    assertHost();
+    const projectDto = this.hostProjectRowToProjectDto(row);
+    const [allSessions, members] = await Promise.all([
+      fetchHostSessions(),
+      projectMemberService.getMembers(projectDto.id),
+    ]);
+    const sessionDtos = allSessions
+      .filter((s) => s.projectId === projectDto.id)
+      .map((s) => this.mapHostPlaySessionToSessionDto(s))
+      .sort((a, b) => a.session_number - b.session_number);
+    return this.mapToViewModel(projectDto, members, sessionDtos);
   }
 
   private mapHostProjectSummary(row: HostLibraryProjectDto): ProjectSummaryVm {
@@ -345,301 +210,53 @@ class ProjectService {
     };
   }
 
-  private mapHostProjectWriteToVm(row: HostProjectWriteDto | HostLibraryProjectDto): ProjectVm {
-    const status =
-      row.status === 'paused' || row.status === 'completed' || row.status === 'archived'
-        ? row.status
-        : 'active';
-    const createdAt =
-      'createdAt' in row && typeof row.createdAt === 'string'
-        ? row.createdAt
-        : new Date().toISOString();
-    const updatedAt =
-      'updatedAt' in row && typeof row.updatedAt === 'string' ? row.updatedAt : createdAt;
-    return {
-      id: row.id,
-      publicId: typeof row.publicId === 'string' ? row.publicId : '',
-      code: typeof row.code === 'string' ? row.code : '',
-      name: row.name,
-      description: row.description ?? null,
-      worldId: row.worldId ?? null,
-      worldProfileId: row.worldProfileId ?? row.worldId ?? null,
-      defaultLookProfileId:
-        'defaultLookProfileId' in row && typeof row.defaultLookProfileId === 'string'
-          ? row.defaultLookProfileId
-          : null,
-      allowPlayerCharacterLookOverride:
-        'allowPlayerCharacterLookOverride' in row &&
-        typeof row.allowPlayerCharacterLookOverride === 'boolean'
-          ? row.allowPlayerCharacterLookOverride
-          : true,
-      gmUserId: row.gmUserId,
-      status,
-      createdAt,
-      updatedAt,
-      members: [],
-      sessions: [],
-      totalSessions: 0,
-      lastSessionDate: null,
-    };
+  /**
+   * Create new project (as GM)
+   */
+  async createProject(payload: CreateProjectDto): Promise<ProjectVm> {
+    assertHost();
+    const created = await createHostProject({
+      name: payload.name,
+      description: payload.description ?? null,
+      worldProfileId: payload.world_profile_id ?? payload.world_id ?? null,
+    });
+    return this.mergeHostSessions(created);
   }
 
   /**
    * Get user's projects (as GM or active player).
    */
   async getUserProjectSummaries(): Promise<ProjectSummaryVm[]> {
-    if (isHostLibraryEnabled()) {
-      const rows = await fetchHostLibraryProjects();
-      return rows.map((row) => this.mapHostProjectSummary(row));
-    }
-    return raceWithTimeoutReject(
-      this.fetchUserProjectSummaries(),
-      SUPABASE_QUERY_TIMEOUT_MS,
-      'Failed to fetch projects: request timed out',
-    );
+    assertHost();
+    const rows = await fetchHostLibraryProjects();
+    return rows.map((row) => this.mapHostProjectSummary(row));
   }
 
   async getUserProjects(): Promise<ProjectVm[]> {
-    if (isHostLibraryEnabled()) {
-      const rows = await fetchHostLibraryProjects();
-      return rows.map((row) => this.mapHostProjectWriteToVm(row));
-    }
-    return raceWithTimeoutReject(
-      this.fetchUserProjects(),
-      SUPABASE_QUERY_TIMEOUT_MS,
-      'Failed to fetch projects: request timed out',
-    );
-  }
-
-  private countByProjectId(rows: ReadonlyArray<{ project_id: string }>): Map<string, number> {
-    const counts = new Map<string, number>();
-    for (const row of rows) {
-      counts.set(row.project_id, (counts.get(row.project_id) ?? 0) + 1);
-    }
-    return counts;
+    assertHost();
+    const rows = await fetchHostLibraryProjects();
+    return Promise.all(rows.map((row) => this.mergeHostSessions(row)));
   }
 
   /**
    * Ensures the native Dornhain starter playthrough exists for the current GM.
-   * Soft-fails so list views still load if the definition/RPC is missing.
    */
   async ensureNativeStarterProject(slug = 'dornhain.whisper'): Promise<void> {
-    if (isHostLibraryEnabled()) {
-      try {
-        const { ensureHostNativeStarterProject } = await import('../host/host-project-http');
-        await ensureHostNativeStarterProject(slug);
-      } catch (err) {
-        const message = err instanceof Error ? err.message : String(err);
-        console.warn('[project-service] ensure_native_starter_project (host):', message);
-      }
-      return;
+    assertHost();
+    try {
+      const { ensureHostNativeStarterProject } = await import('../host/host-project-http');
+      await ensureHostNativeStarterProject(slug);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      console.warn('[project-service] ensure_native_starter_project (host):', message);
     }
-    const { error } = await supabase.rpc('ensure_native_starter_project', {
-      p_slug: slug,
-    });
-    if (error) {
-      console.warn('[project-service] ensure_native_starter_project:', error.message);
-    }
-  }
-
-  private async fetchUserProjectSummaries(): Promise<ProjectSummaryVm[]> {
-    const userId = await getAuthenticatedUserId();
-
-    // Bridge native saga_definitions → selectable GM project (SessionJoin / Library).
-    await this.ensureNativeStarterProject();
-
-    const projectSummarySelect =
-      'id, public_id, code, name, description, world_id, world_profile_id, gm_user_id, status, saga_id, saga_version_id, saga_definitions(title, origin, slug)';
-
-    const { data: gmProjects, error: gmError } = await supabase
-      .from(this.tableName)
-      .select(projectSummarySelect)
-      .eq('gm_user_id', userId)
-      .order('created_at', { ascending: false });
-
-    if (gmError) {
-      throw new Error(`Failed to fetch GM projects: ${gmError.message}`);
-    }
-
-    const { data: memberRecords, error: memberError } = await supabase
-      .from(this.membersTableName)
-      .select(`projects!inner(${projectSummarySelect})`)
-      .eq('user_id', userId)
-      .eq('status', 'active');
-
-    if (memberError) {
-      console.error('Failed to fetch player projects:', memberError);
-    }
-
-    type ProjectSummaryRow = Pick<
-      ProjectDto,
-      'id' | 'code' | 'name' | 'description' | 'gm_user_id' | 'status'
-    > & {
-      public_id?: string | null;
-      world_id?: string | null;
-      world_profile_id?: string | null;
-      saga_id?: string | null;
-      saga_version_id?: string | null;
-      saga_definitions?: { title?: string | null; origin?: string | null; slug?: string | null } | null;
-    };
-    const combined = new Map<string, ProjectSummaryRow>();
-
-    const normalizeSummaryRow = (raw: unknown): ProjectSummaryRow | null => {
-      if (!isProjectSummaryRow(raw)) return null;
-      const row = raw as ProjectSummaryRow & { saga_definitions?: unknown };
-      let def: ProjectSummaryRow['saga_definitions'] = null;
-      if (Array.isArray(row.saga_definitions)) {
-        const first = row.saga_definitions[0];
-        if (isRecord(first)) {
-          def = {
-            title: typeof first.title === 'string' ? first.title : null,
-            origin: typeof first.origin === 'string' ? first.origin : null,
-            slug: typeof first.slug === 'string' ? first.slug : null,
-          };
-        }
-      } else if (isRecord(row.saga_definitions)) {
-        def = {
-          title: typeof row.saga_definitions.title === 'string' ? row.saga_definitions.title : null,
-          origin: typeof row.saga_definitions.origin === 'string' ? row.saga_definitions.origin : null,
-          slug: typeof row.saga_definitions.slug === 'string' ? row.saga_definitions.slug : null,
-        };
-      }
-      return { ...row, saga_definitions: def };
-    };
-
-    for (const project of gmProjects ?? []) {
-      const normalized = normalizeSummaryRow(project);
-      if (!normalized) continue;
-      combined.set(normalized.id, normalized);
-    }
-
-    for (const record of memberRecords ?? []) {
-      if (!isRecord(record)) continue;
-      const normalized = normalizeSummaryRow(record.projects);
-      if (!normalized) continue;
-      combined.set(normalized.id, normalized);
-    }
-
-    const projectIds = [...combined.keys()];
-    if (projectIds.length === 0) return [];
-
-    const [{ data: memberRows, error: membersBatchError }, { data: sessionRows, error: sessionsBatchError }] =
-      await Promise.all([
-        supabase.from(this.membersTableName).select('project_id').in('project_id', projectIds),
-        supabase.from(this.sessionsTableName).select('project_id').in('project_id', projectIds),
-      ]);
-
-    if (membersBatchError) {
-      throw new Error(`Failed to fetch project members: ${membersBatchError.message}`);
-    }
-    if (sessionsBatchError) {
-      throw new Error(`Failed to fetch project sessions: ${sessionsBatchError.message}`);
-    }
-
-    const memberCounts = this.countByProjectId((memberRows ?? []) as Array<{ project_id: string }>);
-    const sessionCounts = this.countByProjectId((sessionRows ?? []) as Array<{ project_id: string }>);
-
-    return projectIds.map((id) => {
-      const project = combined.get(id)!;
-      const def = project.saga_definitions;
-      const originRaw = def && typeof def.origin === 'string' ? def.origin : null;
-      const sagaOrigin =
-        originRaw === 'native' || originRaw === 'user' || originRaw === 'private_backfill'
-          ? originRaw
-          : null;
-      return {
-        id: project.id,
-        publicId: typeof project.public_id === 'string' ? project.public_id : '',
-        code: project.code,
-        name: project.name,
-        description: project.description,
-        worldId: typeof project.world_id === 'string' ? project.world_id : null,
-        worldProfileId:
-          typeof project.world_profile_id === 'string' ? project.world_profile_id : null,
-        sagaId: typeof project.saga_id === 'string' ? project.saga_id : null,
-        sagaVersionId: typeof project.saga_version_id === 'string' ? project.saga_version_id : null,
-        sagaTitle: def && typeof def.title === 'string' ? def.title : null,
-        sagaSlug: def && typeof def.slug === 'string' ? def.slug : null,
-        sagaOrigin,
-        gmUserId: project.gm_user_id,
-        status: project.status,
-        memberCount: memberCounts.get(id) ?? 0,
-        sessionCount: sessionCounts.get(id) ?? 0,
-      };
-    });
-  }
-
-  private async fetchUserProjects(): Promise<ProjectVm[]> {
-    const userId = await getAuthenticatedUserId();
-
-    const { data: gmProjects, error: gmError } = await supabase
-      .from(this.tableName)
-      .select(PROJECT_SAFE_COLUMNS)
-      .eq('gm_user_id', userId)
-      .order('created_at', { ascending: false });
-
-    if (gmError) {
-      throw new Error(`Failed to fetch GM projects: ${gmError.message}`);
-    }
-
-    const { data: memberRecords, error: memberError } = await supabase
-      .from(this.membersTableName)
-      .select(`*, projects!inner(${PROJECT_SAFE_COLUMNS})`)
-      .eq('user_id', userId)
-      .eq('status', 'active');
-
-    if (memberError) {
-      console.error('Failed to fetch player projects:', memberError);
-    }
-
-    const playerProjects: ProjectDto[] = [];
-    for (const record of memberRecords || []) {
-      if (!isRecord(record)) continue;
-      const project = record.projects;
-      if (isProjectDto(project)) playerProjects.push(project);
-    }
-
-    const allProjectIds = new Set<string>();
-    const combinedProjects: ProjectDto[] = [];
-    for (const project of [...(gmProjects || []), ...playerProjects]) {
-      if (!isProjectDto(project) || allProjectIds.has(project.id)) continue;
-      allProjectIds.add(project.id);
-      combinedProjects.push(project);
-    }
-
-    return Promise.all(
-      combinedProjects.map(async (project) => {
-        const { data: members } = await supabase
-          .from(this.membersTableName)
-          .select('*')
-          .eq('project_id', project.id);
-
-        const { data: sessions } = await supabase
-          .from(this.sessionsTableName)
-          .select(SESSION_SAFE_COLUMNS)
-          .eq('project_id', project.id)
-          .order('session_number', { ascending: true });
-
-        const sessionRows: SessionDto[] = [];
-        for (const row of sessions || []) {
-          if (!isSessionDto(row)) continue;
-          sessionRows.push(
-            normalizeSessionDto({
-              ...row,
-              notes: row.notes ?? null,
-            }),
-          );
-        }
-        return this.mapToViewModel(project, members || [], sessionRows);
-      })
-    );
   }
 
   /**
-   * Join project by secret code. The SECURITY DEFINER RPC owns membership identity,
-   * role and status, so the browser cannot mint or reactivate an authorization grant.
+   * Join project by secret code.
    */
   async joinProject(payload: JoinProjectDto): Promise<ProjectVm> {
+    assertHost();
     const membership = await projectMemberService.joinByCode(payload);
     return this.getProjectById(membership.project_id);
   }
@@ -648,93 +265,45 @@ class ProjectService {
    * Get project by ID
    */
   async getProjectById(id: string): Promise<ProjectVm> {
-    if (isHostLibraryEnabled()) {
-      const rows = await fetchHostLibraryProjects();
-      const row = rows.find((item) => item.id === id);
-      if (!row) throw new Error('Project not found');
-      return this.mapHostProjectWriteToVm(row);
-    }
-    const { data: project, error: projectError } = await supabase
-      .from(this.tableName)
-      .select(PROJECT_SAFE_COLUMNS)
-      .eq('id', id)
-      .single();
-
-    if (projectError || !project || !isProjectDto(project)) {
-      throw new Error('Project not found');
-    }
-
-    const { data: members } = await supabase
-      .from(this.membersTableName)
-      .select('*')
-      .eq('project_id', id);
-
-    const { data: sessions } = await supabase
-      .from(this.sessionsTableName)
-      .select(SESSION_SAFE_COLUMNS)
-      .eq('project_id', id)
-      .order('session_number', { ascending: true });
-
-    const sessionRows: SessionDto[] = [];
-    for (const row of sessions || []) {
-      if (!isSessionDto(row)) continue;
-      sessionRows.push(
-        normalizeSessionDto({
-          ...row,
-          notes: row.notes ?? null,
-        }),
-      );
-    }
-    return this.mapToViewModel(project, members || [], sessionRows);
+    assertHost();
+    const rows = await fetchHostLibraryProjects();
+    const row = rows.find((item) => item.id === id);
+    if (!row) throw new Error('Project not found');
+    return this.mergeHostSessions(row);
   }
 
   /**
    * Update project
    */
   async updateProject(id: string, updates: Partial<ProjectDto>): Promise<ProjectVm> {
-    if (isHostLibraryEnabled()) {
-      const updated = await updateHostProject(id, {
-        name: typeof updates.name === 'string' ? updates.name : undefined,
-        description:
-          updates.description === undefined
-            ? undefined
-            : updates.description === null
-              ? null
-              : String(updates.description),
-        status: typeof updates.status === 'string' ? updates.status : undefined,
-        worldProfileId:
-          updates.world_profile_id !== undefined
-            ? updates.world_profile_id
-            : updates.world_id !== undefined
-              ? updates.world_id
-              : undefined,
-        defaultLookProfileId:
-          updates.default_look_profile_id === undefined
-            ? undefined
-            : updates.default_look_profile_id,
-        allowPlayerCharacterLookOverride:
-          typeof updates.allow_player_character_look_override === 'boolean'
-            ? updates.allow_player_character_look_override
+    assertHost();
+    const updated = await updateHostProject(id, {
+      name: typeof updates.name === 'string' ? updates.name : undefined,
+      description:
+        updates.description === undefined
+          ? undefined
+          : updates.description === null
+            ? null
+            : String(updates.description),
+      status: typeof updates.status === 'string' ? updates.status : undefined,
+      worldProfileId:
+        updates.world_profile_id !== undefined
+          ? updates.world_profile_id
+          : updates.world_id !== undefined
+            ? updates.world_id
             : undefined,
-      });
-      return this.mapHostProjectWriteToVm(updated);
-    }
-    assertHostProductSurfaceAvailable('Saga bearbeiten');
-    const { error } = await supabase
-      .from(this.tableName)
-      .update(updates)
-      .eq('id', id);
-
-    if (error) {
-      throw new Error(`Failed to update project: ${error.message}`);
-    }
-
-    return this.getProjectById(id);
+      defaultLookProfileId:
+        updates.default_look_profile_id === undefined
+          ? undefined
+          : updates.default_look_profile_id,
+      allowPlayerCharacterLookOverride:
+        typeof updates.allow_player_character_look_override === 'boolean'
+          ? updates.allow_player_character_look_override
+          : undefined,
+    });
+    return this.mergeHostSessions(updated);
   }
 
-  /**
-   * Bind or clear the adventure's world profile (GM; ownership enforced by DB trigger).
-   */
   async updateProjectWorldProfile(
     projectId: string,
     worldProfileId: string | null,
@@ -742,9 +311,6 @@ class ProjectService {
     return this.updateProject(projectId, { world_profile_id: worldProfileId });
   }
 
-  /**
-   * Saga Look settings (#348). GM-only via projects RLS; look ownership via DB trigger.
-   */
   async updateProjectLookSettings(
     projectId: string,
     settings: {
@@ -758,227 +324,126 @@ class ProjectService {
     });
   }
 
-  /**
-   * Session Look override (#349). Null clears override → inherit saga default.
-   * GM-only + look ownership via DB trigger on sessions.look_profile_id.
-   */
   async updateSessionLookSettings(
     sessionId: string,
     settings: { lookProfileId: string | null },
   ): Promise<SessionVm> {
-    if (isHostLibraryEnabled()) {
-      const updated = await updateHostSessionLook(sessionId, settings.lookProfileId);
-      return {
-        id: updated.id,
-        publicId: typeof updated.publicId === 'string' ? updated.publicId : '',
-        projectId: updated.projectId,
-        sessionNumber:
-          typeof updated.sessionNumber === 'number' ? updated.sessionNumber : 0,
-        name: updated.name ?? null,
-        notes: null,
-        status:
-          updated.status === 'scheduled' ||
-          updated.status === 'waiting' ||
-          updated.status === 'active' ||
-          updated.status === 'paused' ||
-          updated.status === 'completed' ||
-          updated.status === 'cancelled'
-            ? updated.status
-            : 'scheduled',
-        startedAt: null,
-        endedAt: null,
-        durationMinutes: null,
-        lookProfileId: updated.lookProfileId,
-        createdAt: new Date().toISOString(),
-      };
-    }
-    assertHostProductSurfaceAvailable('Session-Look');
-    const { data, error } = await supabase
-      .from(this.sessionsTableName)
-      .update({ look_profile_id: settings.lookProfileId })
-      .eq('id', sessionId)
-      .select(SESSION_SAFE_COLUMNS)
-      .single();
-
-    if (error) {
-      throw new Error(`Failed to update session look: ${error.message}`);
-    }
-    if (!isSessionDto(data)) {
-      throw new Error('Failed to update session look: invalid response');
-    }
-    const normalized = normalizeSessionDto(data);
+    assertHost();
+    const updated = await updateHostSessionLook(sessionId, settings.lookProfileId);
     return {
-      id: normalized.id,
-      publicId: typeof normalized.public_id === 'string' ? normalized.public_id : '',
-      projectId: normalized.project_id,
-      sessionNumber: normalized.session_number,
-      name: normalized.name,
-      notes: normalized.notes,
-      status: normalized.status,
-      startedAt: normalized.started_at,
-      endedAt: normalized.ended_at,
-      durationMinutes: normalized.duration_minutes,
-      lookProfileId:
-        typeof normalized.look_profile_id === 'string' ? normalized.look_profile_id : null,
-      createdAt: normalized.created_at,
+      id: updated.id,
+      publicId: typeof updated.publicId === 'string' ? updated.publicId : '',
+      projectId: updated.projectId,
+      sessionNumber:
+        typeof updated.sessionNumber === 'number' ? updated.sessionNumber : 0,
+      name: updated.name ?? null,
+      notes: null,
+      status:
+        updated.status === 'scheduled' ||
+        updated.status === 'waiting' ||
+        updated.status === 'active' ||
+        updated.status === 'paused' ||
+        updated.status === 'completed' ||
+        updated.status === 'cancelled'
+          ? updated.status
+          : 'scheduled',
+      startedAt: null,
+      endedAt: null,
+      durationMinutes: null,
+      lookProfileId: updated.lookProfileId,
+      createdAt: new Date().toISOString(),
     };
   }
 
-  /**
-   * Delete project
-   */
   async deleteProject(id: string): Promise<void> {
-    if (isHostLibraryEnabled()) {
-      await deleteHostProject(id);
-      return;
-    }
-    assertHostProductSurfaceAvailable('Saga löschen');
-    const { error } = await supabase
-      .from(this.tableName)
-      .delete()
-      .eq('id', id);
-
-    if (error) {
-      throw new Error(`Failed to delete project: ${error.message}`);
-    }
+    assertHost();
+    await deleteHostProject(id);
   }
 
-  /**
-   * Leave project (as player). Kicked rows stay server/GM-controlled denial records.
-   */
   async leaveProject(projectId: string): Promise<void> {
+    assertHost();
     const userId = await getAuthenticatedUserId();
     await projectMemberService.leave(projectId, userId);
   }
 
-  /**
-   * Resolve saga by public id (SA-XXXXX). Auth/RLS still gate the row.
-   */
   async getProjectByPublicId(publicId: string): Promise<ProjectVm> {
-    const { data: project, error } = await supabase
-      .from(this.tableName)
-      .select(PROJECT_SAFE_COLUMNS)
-      .eq('public_id', publicId.trim().toUpperCase())
-      .single();
-
-    if (error || !project || !isProjectDto(project)) {
-      throw new Error('Project not found');
-    }
-
-    return this.getProjectById(project.id);
+    assertHost();
+    const wanted = publicId.trim().toUpperCase();
+    const rows = await fetchHostLibraryProjects();
+    const row = rows.find((p) => (p.publicId ?? '').trim().toUpperCase() === wanted);
+    if (!row) throw new Error('Project not found');
+    return this.mergeHostSessions(row);
   }
 
-  /**
-   * Resolve session by public id, scoped to saga public id (cross-saga → not found).
-   */
   async getSessionByPublicIds(
     sagaPublicId: string,
     sessionPublicId: string,
   ): Promise<{ project: ProjectVm; session: SessionVm }> {
+    assertHost();
     const project = await this.getProjectByPublicId(sagaPublicId);
     const wanted = sessionPublicId.trim().toUpperCase();
     let session = project.sessions.find((row) => row.publicId === wanted);
     if (!session) {
-      // Direct lookup — avoids dropping rows when status filters/mapping lag behind create.
-      const { data: row, error } = await supabase
-        .from(this.sessionsTableName)
-        .select(SESSION_SAFE_COLUMNS)
-        .eq('project_id', project.id)
-        .eq('public_id', wanted)
-        .maybeSingle();
-      if (error || !row || !isSessionDto(row)) {
+      const rows = await fetchHostSessions();
+      const match = rows.find(
+        (r) =>
+          r.projectId === project.id && (r.publicId ?? '').trim().toUpperCase() === wanted,
+      );
+      if (!match) {
         throw new Error('Session not found in saga');
       }
-      const normalized = normalizeSessionDto({
-        ...row,
-        notes: row.notes ?? null,
-      });
+      const dto = this.mapHostPlaySessionToSessionDto(match);
       session = {
-        id: normalized.id,
-        publicId: typeof normalized.public_id === 'string' ? normalized.public_id : '',
-        projectId: normalized.project_id,
-        sessionNumber: normalized.session_number,
-        name: normalized.name,
-        notes: normalized.notes,
-        status: normalized.status,
-        startedAt: normalized.started_at,
-        endedAt: normalized.ended_at,
-        durationMinutes: normalized.duration_minutes ?? null,
+        id: dto.id,
+        publicId: typeof dto.public_id === 'string' ? dto.public_id : '',
+        projectId: dto.project_id,
+        sessionNumber: dto.session_number,
+        name: dto.name,
+        notes: dto.notes,
+        status: dto.status,
+        startedAt: dto.started_at,
+        endedAt: dto.ended_at,
+        durationMinutes: dto.duration_minutes ?? null,
         lookProfileId:
-          typeof normalized.look_profile_id === 'string' ? normalized.look_profile_id : null,
-        createdAt: normalized.created_at,
+          typeof dto.look_profile_id === 'string' ? dto.look_profile_id : null,
+        createdAt: dto.created_at,
       };
     }
     return { project, session };
   }
 
-  /**
-   * Create a project session with concurrency-safe session_number allocation (DB RPC).
-   */
   async createProjectSession(payload: {
     projectId: string;
     name?: string;
     notes?: string;
   }): Promise<SessionVm> {
-    if (isHostLibraryEnabled()) {
-      const row = await createHostProjectSession(
-        payload.projectId,
-        payload.name ?? null,
-        payload.notes ?? null,
-      );
-      const status =
-        row.status === 'scheduled' ||
-        row.status === 'waiting' ||
-        row.status === 'active' ||
-        row.status === 'paused' ||
-        row.status === 'completed'
-          ? row.status
-          : 'scheduled';
-      return {
-        id: row.id,
-        publicId: typeof row.publicId === 'string' ? row.publicId : '',
-        projectId: row.projectId,
-        sessionNumber: typeof row.sessionNumber === 'number' ? row.sessionNumber : 0,
-        name: row.name ?? null,
-        notes: null,
-        status,
-        startedAt: null,
-        endedAt: null,
-        durationMinutes: null,
-        lookProfileId: null,
-        createdAt: new Date().toISOString(),
-      };
-    }
-
-    const { data, error } = await supabase.rpc('create_project_session', {
-      p_project_id: payload.projectId,
-      p_name: payload.name ?? null,
-      p_notes: payload.notes ?? null,
-    });
-
-    if (error) {
-      throw new Error(`Failed to create session: ${error.message}`);
-    }
-
-    if (!isSessionDto(data)) {
-      throw new Error('Failed to create session: invalid response');
-    }
-
-    const normalized = normalizeSessionDto(data);
+    assertHost();
+    const row = await createHostProjectSession(
+      payload.projectId,
+      payload.name ?? null,
+      payload.notes ?? null,
+    );
+    const status =
+      row.status === 'scheduled' ||
+      row.status === 'waiting' ||
+      row.status === 'active' ||
+      row.status === 'paused' ||
+      row.status === 'completed'
+        ? row.status
+        : 'scheduled';
     return {
-      id: normalized.id,
-      publicId: typeof normalized.public_id === 'string' ? normalized.public_id : '',
-      projectId: normalized.project_id,
-      sessionNumber: normalized.session_number,
-      name: normalized.name,
-      notes: normalized.notes,
-      status: normalized.status,
-      startedAt: normalized.started_at,
-      endedAt: normalized.ended_at,
-      durationMinutes: normalized.duration_minutes,
-      lookProfileId:
-        typeof normalized.look_profile_id === 'string' ? normalized.look_profile_id : null,
-      createdAt: normalized.created_at,
+      id: row.id,
+      publicId: typeof row.publicId === 'string' ? row.publicId : '',
+      projectId: row.projectId,
+      sessionNumber: typeof row.sessionNumber === 'number' ? row.sessionNumber : 0,
+      name: row.name ?? null,
+      notes: null,
+      status,
+      startedAt: null,
+      endedAt: null,
+      durationMinutes: null,
+      lookProfileId: null,
+      createdAt: new Date().toISOString(),
     };
   }
 }

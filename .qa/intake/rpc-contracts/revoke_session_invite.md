@@ -96,55 +96,139 @@ Die finalen Datenbank-Constraints der beteiligten Relationen sind pro RPC in inv
 
 ## Caller: Request-Mapping, Response-Decoding und Fehler
 
-### src/infrastructure/session/session-service.ts:491
+### src/infrastructure/session/session-service.ts:1
 
-AST-Auflösung: `string-literal`; SHA-256 `9109e84fb2c7625aae96928d15b3c0e44ea4598cded3a9e0601d6e4031e8db2d`.
+AST-Auflösung: `host-transport-cut-20`; SHA-256 `674d30a083283997b85b3f5397276675403bceb5de34832009ee1d1355ffa40a`.
 
 Der vollständige aufrufende Funktionskörper enthält Parameterumformung, RPC-Aufruf, Response-Prüfung, Fehlerumwandlung und gegebenenfalls Fallback:
 
 ```typescript
-async revokeSessionInvite(token: string): Promise<void> {
-    const normalized = normalizeInviteToken(token);
-    if (!normalized) {
-      throw new Error('Token fehlt');
-    }
-    if (isHostLibraryEnabled()) {
-      await revokeHostSessionInvite(normalized);
-      return;
-    }
-    await this.requireAuthUser();
-    const { error } = await supabase.rpc('revoke_session_invite', {
-      p_token: normalized,
-    });
-    if (error) {
-      throw new Error(`Einladung konnte nicht widerrufen werden: ${error.message}`);
-    }
+/**
+ * session-service — Host HTTP for play sessions (CUT-20).
+ * Location: src/infrastructure/session/session-service.ts
+ */
+import type {
+  SessionVm,
+  CreateSessionDto,
+  JoinSessionDto,
+  PlaySessionStatus,
+} from '../../domains/session/contracts/session.types';
+import {
+  assertPlaySessionStatusTransition,
+  normalizePlaySessionStatus,
+  normalizeSessionJoinCode,
+} from '../../domains/session/contracts/session-lifecycle';
+import {
+  mapInviteCreatePayload,
+  mapInviteResolvePayload,
+  normalizeInviteToken,
+  type SessionInviteCreateResult,
+  type SessionInviteResolveResult,
+} from '../../domains/session/contracts/session-invite';
+import {
+  createHostPlaySession,
+  createHostSessionInvite,
+  fetchHostSession,
+  fetchHostSessions,
+  isHostLibraryEnabled,
+  joinHostSessionByCode,
+  leaveHostPlaySession,
+  deleteHostPlaySession,
+  resolveHostSessionInvite,
+  revokeHostSessionInvite,
+  setHostSessionStatus,
+  type HostPlaySessionDto,
+} from '../host/host-session-http';
+
+function assertHost(): void {
+  if (!isHostLibraryEnabled()) {
+    throw new Error('Host-Anmeldung nicht konfiguriert (VITE_SAGATREE_HOST_AUTH_URL fehlt).');
   }
+}
+
+function mapHostPlaySessionToVm(row: HostPlaySessionDto): SessionVm {
+  const createdAt = row.createdAt ? new Date(row.createdAt) : new Date();
+  const code = row.joinCode ?? row.code ?? '';
+  return {
+    id: row.sessionId,
+    code: typeof code === 'string' ? code : '',
+    name: row.name ?? '',
+    adventureId: row.projectId,
+    projectId: row.projectId,
+    publicId: row.publicId ?? null,
+    gmUserId: row.gmUserId ?? '',
+    status: normalizePlaySessionStatus(row.status),
+    createdAt,
+    updatedAt: createdAt,
+    startedAt: row.startedAt ? new Date(row.startedAt) : null,
+    endedAt: row.endedAt ? new Date(row.endedAt) : null,
+    players: (row.players ?? []).map((p, index) => ({
+      id: p.id ?? `${row.sessionId}-${p.userId ?? index}`,
+      sessionId: row.sessionId,
+      userId: p.userId ?? '',
+      characterId: p.characterId ?? null,
+      isOnline: p.isOnline === true,
+      joinedAt: p.joinedAt ? new Date(p.joinedAt) : createdAt,
+    })),
+  };
+}
+
+class SessionService {
+  async createSession(payload: CreateSessionDto): Promise<SessionVm> {
+    assertHost();
+    const projectId = payload.project_id || payload.adventure_id;
+    if (!projectId) {
+      throw new Error('project_id ist erforderlich, um eine Session zu erstellen');
+    }
+    const row = await createHostPlaySession(projectId, payload.name ?? null);
+    return mapHostPlaySessionToVm(row);
+  }
+
+  async joinSession(payload: JoinSessionDto): Promise<SessionVm> {
+    assertHost();
+    const code = normalizeSessionJoinCode(payload.code);
+    const row = await joinHostSessionByCode(code, payload.character_id ?? null);
+    return mapHostPlaySessionToVm(row);
+  }
+
+  async getSessionById(id: string): Promise<SessionVm> {
+    assertHost();
+    const row = await fetchHostSession(id);
+    return mapHostPlaySessionToVm(row);
+  }
+
+  async getUserSessions(): Promise<SessionVm[]> {
+    assertHost();
+    const rows = await fetchHostSessions();
+    return rows.map(mapHostPlaySessionToVm);
+  }
+
+  async updateSessionStatus(id: string, status: PlaySessionStatus): Promise<SessionVm> {
+    assertHost();
+    const current = await this.getSessionById(id);
+    assertPlaySessionStatusTransition(current.status, status);
+    const row = await setHostSessionStatus(id, status);
+    return mapHostPlaySessionToVm(row);
+  }
+
+  async leaveSession(sessionId: string): Promise<void> {
+    assertHost();
+    await leaveHostPlaySession(sessionId);
+  }
+
+  async deleteSession(sessionId: string): Promise<void> {
+    assertHost();
+    const id = sessionId.trim();
+    if (!id) {
+      throw new Error('Session-ID fehlt');
+    }
+    try {
+      await deleteHostPlaySession(id);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      if (/42501|forbidden|not[_-]?authorized/i.test(message)) {
+        throw new Error('Nur de
 ```
-
-Direkt oder transitiv referenzierte lokale/importierte Mapper, Decoder und Vertrags-Typen sind zusätzlich mit vollständigem Source-Text in callers.json und inventory.json.callerContracts.supportingDeclarations gespeichert:
-
-| Symbol | Quelle | Zeile | SHA-256 |
-| --- | --- | --- | --- |
-| `normalizeInviteToken` | [src/domains/session/contracts/session-invite.ts](../../../src/domains/session/contracts/session-invite.ts) | 64 | `dac4795822314800fb59ff5e11b56ab8ce808071c43185e99711a92b66c0d4dc` |
-| `EnvLike` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 11 | `b2343081ddce2e2edd73651b0622e8b4cc6d8583d746a863dbe3343e3a98f71a` |
-| `defaultEnv` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 16 | `b2343081ddce2e2edd73651b0622e8b4cc6d8583d746a863dbe3343e3a98f71a` |
-| `isHostLibraryExplicitlyDisabled` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 25 | `b2343081ddce2e2edd73651b0622e8b4cc6d8583d746a863dbe3343e3a98f71a` |
-| `EnvLike` | [src/infrastructure/host/host-session-http.ts](../../../src/infrastructure/host/host-session-http.ts) | 12 | `763c2535c26f746b60ff3f68358fb7c37c20384bd9f4a9a5a7d9bf2710e0ab81` |
-| `defaultEnv` | [src/infrastructure/host/host-session-http.ts](../../../src/infrastructure/host/host-session-http.ts) | 17 | `763c2535c26f746b60ff3f68358fb7c37c20384bd9f4a9a5a7d9bf2710e0ab81` |
-| `hostMutateJson` | [src/infrastructure/host/host-session-http.ts](../../../src/infrastructure/host/host-session-http.ts) | 58 | `763c2535c26f746b60ff3f68358fb7c37c20384bd9f4a9a5a7d9bf2710e0ab81` |
-| `revokeHostSessionInvite` | [src/infrastructure/host/host-session-http.ts](../../../src/infrastructure/host/host-session-http.ts) | 338 | `763c2535c26f746b60ff3f68358fb7c37c20384bd9f4a9a5a7d9bf2710e0ab81` |
-| `EnvLike` | [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | 31 | `30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a` |
-| `defaultEnv` | [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | 33 | `30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a` |
-| `getHostAuthBaseUrl` | [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | 53 | `30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a` |
-| `viteEnv` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 13 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
-| `configuredSupabaseUrl` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 15 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
-| `configuredSupabaseAnonKey` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 16 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
-| `hostAuthUrl` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 17 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
-| `hostFirst` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 18 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
-| `supabaseUrl` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 58 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
-| `supabaseAnonKey` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 59 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
-| `supabase` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 61 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
 
 ## Konkrete Abnahmekriterien
 
@@ -165,12 +249,7 @@ Die folgenden Hashes binden SQL-Kette, transitive Tabellen-/Trigger-/Policyquell
 
 | Quelle | SHA-256 |
 | --- | --- |
-| [src/domains/session/contracts/session-invite.ts](../../../src/domains/session/contracts/session-invite.ts) | `dac4795822314800fb59ff5e11b56ab8ce808071c43185e99711a92b66c0d4dc` |
-| [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | `b2343081ddce2e2edd73651b0622e8b4cc6d8583d746a863dbe3343e3a98f71a` |
-| [src/infrastructure/host/host-session-http.ts](../../../src/infrastructure/host/host-session-http.ts) | `763c2535c26f746b60ff3f68358fb7c37c20384bd9f4a9a5a7d9bf2710e0ab81` |
-| [src/infrastructure/session/session-service.ts](../../../src/infrastructure/session/session-service.ts) | `9109e84fb2c7625aae96928d15b3c0e44ea4598cded3a9e0601d6e4031e8db2d` |
-| [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | `30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a` |
-| [src/lib/supabase.ts](../../../src/lib/supabase.ts) | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
+| [src/infrastructure/session/session-service.ts](../../../src/infrastructure/session/session-service.ts) | `674d30a083283997b85b3f5397276675403bceb5de34832009ee1d1355ffa40a` |
 | [supabase/migrations/001_initial.sql](../../../supabase/migrations/001_initial.sql) | `e3325c56d68286a2e293ddff791736ef91346ff90ac018c045843a5d52afb8c8` |
 | [supabase/migrations/015_inventory_item_definitions.sql](../../../supabase/migrations/015_inventory_item_definitions.sql) | `aeedfd77bb79d7d38f4163a496b373d266027b39adbce82fe14aec768187e9e7` |
 | [supabase/migrations/039_public_resource_ids_and_session_numbers.sql](../../../supabase/migrations/039_public_resource_ids_and_session_numbers.sql) | `053f02aaea8e1f3af27bfa3f6c7e17caadd5d5434ef6298e11920d0891b55f96` |

@@ -33,21 +33,22 @@ mustInclude('supabase/migrations/105_atlas_worldbuilder_player_projection.sql', 
   'parentMapId',
 ]);
 mustInclude('src/infrastructure/world/world-atlas-service.ts', [
-  'p_saga_public_id',
-  'p_player_view',
-  'assertSupabaseJwtSession',
+  'sagaPublicId',
+  'playerView',
+  'assertHost',
   'createSignedUrl',
+  'listHostWorldAtlasMaps',
 ]);
 
 const svc = readFileSync(join(root, 'src/infrastructure/world/world-atlas-service.ts'), 'utf8');
 if (/['"`]service_role['"`]/.test(svc)) fail('world-atlas-service must not use service_role');
 
-// createSignedUrl must assert JWT (not anonymous signed URL minting)
+// createSignedUrl must gate on host auth (PARITY_MISSING may Soft-DENY).
 const signedIdx = svc.indexOf('async createSignedUrl');
 if (signedIdx < 0) fail('missing createSignedUrl');
-const signedSlice = svc.slice(signedIdx, signedIdx + 280);
-if (!signedSlice.includes('assertSupabaseJwtSession')) {
-  fail('createSignedUrl must call assertSupabaseJwtSession');
+const signedSlice = svc.slice(signedIdx, signedIdx + 320);
+if (!signedSlice.includes('assertHost')) {
+  fail('createSignedUrl must call assertHost (CUT-20)');
 }
 
 const gate = readFileSync(join(root, 'scripts/test-gate.mjs'), 'utf8');

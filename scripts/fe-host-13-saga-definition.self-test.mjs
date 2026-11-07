@@ -78,9 +78,11 @@ const svc = readFileSync(
   join(root, 'src/infrastructure/saga/saga-definition-service.ts'),
   'utf8',
 );
-assert(/isHostLibraryEnabled/.test(svc), 'FE dual-path isHostLibraryEnabled');
-assert(/getHostSagaDefinitionEditor/.test(svc), 'FE dual-path getHostSagaDefinitionEditor');
-assert(/saveHostSagaDefinitionDraft/.test(svc), 'FE dual-path saveHostSagaDefinitionDraft');
+assert(/isHostLibraryEnabled/.test(svc), 'FE host-only isHostLibraryEnabled');
+assert(/getHostSagaDefinitionEditor/.test(svc), 'FE host-only getHostSagaDefinitionEditor');
+assert(/saveHostSagaDefinitionDraft/.test(svc), 'FE host-only saveHostSagaDefinitionDraft');
+const svcCode = svc.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*$/gm, '');
+assert(!/supabase\.(from|rpc)|from ['"].*supabase['"]/.test(svcCode), 'saga-definition no supabase');
 
 const createApp = readFileSync(join(root, 'server/src/api/create-app.ts'), 'utf8');
 assert(/mountSagaDefinitionHttpRoutes/.test(createApp), 'HTTP mount wired');

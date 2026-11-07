@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-rulesets.json](source-contracts/infra-rulesets.json) (SHA-256 `13927c4eff636feccb6729d45c52bc1d808baea3bee9a5d80aac8f5564b6d946`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-rulesets.json](source-contracts/infra-rulesets.json) (SHA-256 `64e4bb2751f89b2444201610b15359a867eede78ebc9ccee48e7e43c28242984`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -18,7 +18,7 @@ The adapter establishes request/filter behavior. Server permission and rollback 
 
 RPCs (0): none.
 
-Tables (1): `rulesets`.
+Tables (0): none.
 
 Storage buckets (0): none.
 
@@ -30,8 +30,7 @@ Realtime call sites: 0. Direct fetch sites: 0. Explicit auth/helper sites: 0.
 
 | Kind | Contract dependency | Implementation issue | Additional policy/group |
 |---|---|---|---|
-| table | `rulesets` | #791 | Policy #792 |
-| auth | `authenticated account/session transport` | #793 |  |
+
 
 ## Acceptance and negative tests (required, not executed)
 
@@ -44,180 +43,42 @@ None in the reviewed source.
 
 ## All backend calls, arguments, filters and result handling
 
-### table: rulesets
-
-`src/infrastructure/rulesets/ruleset-service.ts:23` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase
-      .from('rulesets')
-      .select('*')
-      .order('is_official', { ascending: false })
-      .order('name')
-```
-
-Enclosing operation: `src/infrastructure/rulesets/ruleset-service.ts:19`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: rulesets
-
-`src/infrastructure/rulesets/ruleset-service.ts:37` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase
-      .from('rulesets')
-      .select('*')
-      .eq('is_official', true)
-      .order('name')
-```
-
-Enclosing operation: `src/infrastructure/rulesets/ruleset-service.ts:33`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: rulesets
-
-`src/infrastructure/rulesets/ruleset-service.ts:51` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase.from('rulesets').select('*').eq('id', id).single()
-```
-
-Enclosing operation: `src/infrastructure/rulesets/ruleset-service.ts:47`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: rulesets
-
-`src/infrastructure/rulesets/ruleset-service.ts:61` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase
-      .from('rulesets')
-      .insert({
-        ...dto,
-        is_official: false,
-        is_marketplace_item: false,
-      })
-      .select()
-      .single()
-```
-
-Enclosing operation: `src/infrastructure/rulesets/ruleset-service.ts:57`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: rulesets
-
-`src/infrastructure/rulesets/ruleset-service.ts:80` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase
-      .from('rulesets')
-      .update({
-        ...updates,
-        updated_at: new Date().toISOString(),
-      })
-      .eq('id', id)
-      .select()
-      .single()
-```
-
-Enclosing operation: `src/infrastructure/rulesets/ruleset-service.ts:75`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: rulesets
-
-`src/infrastructure/rulesets/ruleset-service.ts:99` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase.from('rulesets').delete().eq('id', id)
-```
-
-Enclosing operation: `src/infrastructure/rulesets/ruleset-service.ts:94`; complete request/default/result/error logic is in the declarations below and the snapshot.
+This area has no RPC, Edge, table, storage, realtime, fetch or auth calls. Its public browser processing/worker API is retained in the complete public declarations.
 
 ## Complete public declarations and facade operation contracts
 
-### src/infrastructure/rulesets/ruleset-service.ts:18
+### src/infrastructure/rulesets/ruleset-service.ts:21
 
 ```ts
 export const rulesetService = {
   async getAll(): Promise<Ruleset[]> {
-    if (isHostLibraryEnabled()) {
-      return fetchHostRulesets(false);
-    }
-    const { data, error } = await supabase
-      .from('rulesets')
-      .select('*')
-      .order('is_official', { ascending: false })
-      .order('name');
-
-    if (error) throw error;
-    return data || [];
+    assertHost();
+    return fetchHostRulesets(false);
   },
 
   async getOfficial(): Promise<Ruleset[]> {
-    if (isHostLibraryEnabled()) {
-      return fetchHostRulesets(true);
-    }
-    const { data, error } = await supabase
-      .from('rulesets')
-      .select('*')
-      .eq('is_official', true)
-      .order('name');
-
-    if (error) throw error;
-    return data || [];
+    assertHost();
+    return fetchHostRulesets(true);
   },
 
   async getById(id: string): Promise<Ruleset | null> {
-    if (isHostLibraryEnabled()) {
-      return fetchHostRuleset(id);
-    }
-    const { data, error } = await supabase.from('rulesets').select('*').eq('id', id).single();
-
-    if (error) throw error;
-    return data;
+    assertHost();
+    return fetchHostRuleset(id);
   },
 
   async create(dto: CreateRulesetDTO): Promise<Ruleset> {
-    if (isHostLibraryEnabled()) {
-      return createHostRuleset(dto);
-    }
-    const { data, error } = await supabase
-      .from('rulesets')
-      .insert({
-        ...dto,
-        is_official: false,
-        is_marketplace_item: false,
-      })
-      .select()
-      .single();
-
-    if (error) throw error;
-    return data;
+    assertHost();
+    return createHostRuleset(dto);
   },
 
   async update(dto: UpdateRulesetDTO): Promise<Ruleset> {
-    if (isHostLibraryEnabled()) {
-      return updateHostRuleset(dto);
-    }
-    const { id, ...updates } = dto;
-    const { data, error } = await supabase
-      .from('rulesets')
-      .update({
-        ...updates,
-        updated_at: new Date().toISOString(),
-      })
-      .eq('id', id)
-      .select()
-      .single();
-
-    if (error) throw error;
-    return data;
+    assertHost();
+    return updateHostRuleset(dto);
   },
 
   async delete(id: string): Promise<void> {
-    if (isHostLibraryEnabled()) {
-      await deleteHostRuleset(id);
-      return;
-    }
-    const { error } = await supabase.from('rulesets').delete().eq('id', id);
-
-    if (error) throw error;
+    assertHost();
+    await deleteHostRuleset(id);
   },
 };
 ```
@@ -238,8 +99,7 @@ All backend operations are included in the public declarations above.
 | `src/domains/user-profile/display-name.ts` | `87cfc4858f198e56ea2857c505162f112efd5edacde4dbb1f7fcd995b4535516` |
 | `src/domains/user-profile/index.ts` | `d094d245ff9356298ef20c48635ca3e7adcc0e1ccf180554586949e0b496c496` |
 | `src/infrastructure/host/host-catalog-http.ts` | `9049245360683a74e7e2602d35126d815d64344d384c6684e4c2c3d41aa626d3` |
-| `src/infrastructure/host/host-library-http.ts` | `b2343081ddce2e2edd73651b0622e8b4cc6d8583d746a863dbe3343e3a98f71a` |
-| `src/infrastructure/rulesets/ruleset-service.ts` | `bab6988a93fe3d917d9014a02b832dd8c4b803f81e9cfb36f107411f0e763542` |
+| `src/infrastructure/host/host-library-http.ts` | `1d41f3b1eb3e71a3a8b12306993b605f2d05f2f41cd35f73b9c362b12f9c1cb6` |
+| `src/infrastructure/rulesets/ruleset-service.ts` | `63ee20191f274a6c5f788e4824a098dc9761273ec0681af0341c2576dd92bb2d` |
 | `src/lib/hostAuthBridge.ts` | `30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a` |
-| `src/lib/supabase.ts` | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
 

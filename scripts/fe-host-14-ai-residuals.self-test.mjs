@@ -79,13 +79,13 @@ assert(
   /saveHostSessionRecapSummary/.test(
     readFileSync(join(root, 'src/infrastructure/session/session-recap-ai-service.ts'), 'utf8'),
   ),
-  'recap save dual-path',
+  'recap save host HTTP',
 );
 assert(
   /fetchHostProfilesByUserIds/.test(
     readFileSync(join(root, 'src/infrastructure/user-profile/user-profile-service.ts'), 'utf8'),
   ),
-  'peer profiles dual-path',
+  'peer profiles host HTTP',
 );
 assert(
   /isHostLibraryEnabled\(env\)/.test(

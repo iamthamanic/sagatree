@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * mig-308-project-adapter.self-test — Project host ports + dual-path seam (#807).
+ * mig-308-project-adapter.self-test — Project host ports + host-only FE (#807 / CUT-20).
  * Location: scripts/mig-308-project-adapter.self-test.mjs
  *
  * Acceptance tier: isolated-contract. Supabase facades stay live (no cutover).
@@ -295,7 +295,7 @@ try {
   );
   assert(!missing.ok && missing.error === '42501', 'missing actor DENY');
 
-  // Dual-path adapter seam
+  // Host adapter seam
   const bound = createHostProjectAdapter({
     createProjectSession: async (actorId, pid, name, notes) =>
       infra.createProjectSession(actor(actorId), pid, name, notes),
@@ -341,7 +341,7 @@ try {
     rmSync(hostWork, { recursive: true, force: true });
   }
 
-  // Client dual-path seam remains; FE-HOST-04/#1096 flips VITE host library flag onto HTTP.
+  // Client host-only wiring (CUT-20); project facades use host HTTP clients.
   const serviceFiles = [
     'project-member-service.ts',
     'project-service.ts',
@@ -350,16 +350,11 @@ try {
   ];
   for (const name of serviceFiles) {
     const src = readFileSync(join(root, 'src/infrastructure/project', name), 'utf8');
-    assert(
-      /Dual-path \(MIG-308\)/.test(src) || /Dual-path \(FE-HOST-04\)/.test(src),
-      `dual-path note on ${name}`,
-    );
-    assert(
-      /from ['"].*supabase['"]/.test(src) ||
-        /supabase\.rpc|supabase\n/.test(src) ||
-        /supabase\./.test(src),
-      `${name} uses supabase`,
-    );
+    const code = src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*$/gm, '');
+    assert(/isHostLibraryEnabled/.test(src), `${name} host library gate`);
+    assert(/\.\.\/host\/host-/.test(src), `${name} imports host HTTP client`);
+    assert(!/from ['"].*supabase['"]/.test(code), `${name} no supabase import`);
+    assert(!/supabase\.(from|rpc|functions)/.test(code), `${name} no supabase client calls`);
   }
   const adapterSrc = readFileSync(
     join(root, 'src/infrastructure/project/host-project-adapter.ts'),

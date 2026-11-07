@@ -38,8 +38,6 @@ const library = read('src/app/library/Library.tsx');
 const dashboard = read('src/app/dashboard/Dashboard.tsx');
 const characterTypes = read('src/domains/character/domain/sagatree-profile.entity.ts');
 const characterNormalize = read('src/domains/character/use-cases/normalize-character.ts');
-const characterRepository = read('src/infrastructure/character/supabase-character.repository.ts');
-
 requireMatch(migration, /CREATE TABLE IF NOT EXISTS public\.character_presets/, 'character_presets table');
 requireMatch(migration, /owner_user_id = auth\.uid\(\)/, 'owner RLS on character_presets');
 requireMatch(migration, /ON DELETE SET NULL/, 'source character set-null on delete');

@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-marketplace.json](source-contracts/infra-marketplace.json) (SHA-256 `dfb5e393ad3f6e4a158e543e5d56b209976b15fecec22c7555268610392b0d59`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-marketplace.json](source-contracts/infra-marketplace.json) (SHA-256 `50023cdaa4d315de793415a93c2cc83fc33152c57fbb6d3cf05e6962567e9f00`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -16,30 +16,27 @@ The adapter establishes request/filter behavior. Server permission and rollback 
 
 ## Complete backend inventory
 
-RPCs (1): `increment_marketplace_downloads`.
+RPCs (0): none.
 
-Tables (1): `marketplace_items`.
+Tables (0): none.
 
 Storage buckets (0): none.
 
 Edge invokes (0): none.
 
-Realtime call sites: 0. Direct fetch sites: 0. Explicit auth/helper sites: 3.
+Realtime call sites: 0. Direct fetch sites: 0. Explicit auth/helper sites: 0.
 
 ## Complete implementation dependencies
 
 | Kind | Contract dependency | Implementation issue | Additional policy/group |
 |---|---|---|---|
-| rpc | `increment_marketplace_downloads` | #816 | RPC-MARKETPLACE-COUNT |
-| table | `marketplace_items` | #791 | Policy #792 |
-| auth | `authenticated account/session transport` | #793 |  |
+
 
 ## Acceptance and negative tests (required, not executed)
 
 - List filters, sort defaults, single-read errors and featured fallback retain exact request/result behavior.
 - RPC increment succeeds atomically when installed; unavailable/denied RPC exercises read+update fallback and explicitly reports race, RLS and swallowed-error behavior.
 - Create cannot use a client author_id; update/delete foreign-author attempts are denied by effective server policy; delete returnsfalse on its documented failures.
-- Contract fixture for increment_marketplace_downloads: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
 
 ## Observed source defects and explicit successor decisions
 
@@ -48,161 +45,7 @@ Realtime call sites: 0. Direct fetch sites: 0. Explicit auth/helper sites: 3.
 
 ## All backend calls, arguments, filters and result handling
 
-### table: marketplace_items
-
-`src/infrastructure/marketplace/marketplace-service.ts:44` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase
-      .from('marketplace_items')
-      .select('*')
-```
-
-Enclosing operation: `src/infrastructure/marketplace/marketplace-service.ts:37`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: marketplace_items
-
-`src/infrastructure/marketplace/marketplace-service.ts:94` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase
-      .from('marketplace_items')
-      .select('*')
-      .eq('id', id)
-      .single()
-```
-
-Enclosing operation: `src/infrastructure/marketplace/marketplace-service.ts:89`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: marketplace_items
-
-`src/infrastructure/marketplace/marketplace-service.ts:122` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase
-      .from('marketplace_items')
-      .select('*')
-      .order('downloads', { ascending: false })
-      .limit(6)
-```
-
-Enclosing operation: `src/infrastructure/marketplace/marketplace-service.ts:117`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### auth-helper: session identity
-
-`src/infrastructure/marketplace/marketplace-service.ts:150` — dynamic-expression.
-
-Exact call/query chain:
-```ts
-getAuthenticatedUserId()
-```
-
-Enclosing operation: `src/infrastructure/marketplace/marketplace-service.ts:143`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: marketplace_items
-
-`src/infrastructure/marketplace/marketplace-service.ts:153` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase
-      .from('marketplace_items')
-      .insert({
-        type: safe.type,
-        title: safe.title,
-        description: safe.description || null,
-        author_id: userId,
-        data: safe.data,
-        price: safe.price || 0,
-        image_url: safe.image_url || null,
-        tags: safe.tags || [],
-        rating: 0,
-        downloads: 0,
-      })
-      .select()
-      .single()
-```
-
-Enclosing operation: `src/infrastructure/marketplace/marketplace-service.ts:143`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### auth-helper: session identity
-
-`src/infrastructure/marketplace/marketplace-service.ts:197` — dynamic-expression.
-
-Exact call/query chain:
-```ts
-getAuthenticatedUserId()
-```
-
-Enclosing operation: `src/infrastructure/marketplace/marketplace-service.ts:185`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: marketplace_items
-
-`src/infrastructure/marketplace/marketplace-service.ts:203` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase
-      .from('marketplace_items')
-      .update({
-        ...patch,
-        updated_at: new Date().toISOString(),
-      })
-      .eq('id', id)
-      .eq('author_id', userId)
-      .select()
-      .maybeSingle()
-```
-
-Enclosing operation: `src/infrastructure/marketplace/marketplace-service.ts:185`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### auth-helper: session identity
-
-`src/infrastructure/marketplace/marketplace-service.ts:245` — dynamic-expression.
-
-Exact call/query chain:
-```ts
-getAuthenticatedUserId()
-```
-
-Enclosing operation: `src/infrastructure/marketplace/marketplace-service.ts:235`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: marketplace_items
-
-`src/infrastructure/marketplace/marketplace-service.ts:247` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase
-      .from('marketplace_items')
-      .delete()
-      .eq('id', id)
-      .eq('author_id', userId)
-      .select('id')
-```
-
-Enclosing operation: `src/infrastructure/marketplace/marketplace-service.ts:235`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### rpc: increment_marketplace_downloads
-
-`src/infrastructure/marketplace/marketplace-service.ts:289` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase.rpc('increment_marketplace_downloads', {
-      item_id: id,
-    })
-```
-
-Enclosing operation: `src/infrastructure/marketplace/marketplace-service.ts:276`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: marketplace_items
-
-`src/infrastructure/marketplace/marketplace-service.ts:309` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase
-      .from('marketplace_items')
-      .select('*')
-      .eq('author_id', authorId)
-      .order('created_at', { ascending: false })
-```
-
-Enclosing operation: `src/infrastructure/marketplace/marketplace-service.ts:307`; complete request/default/result/error logic is in the declarations below and the snapshot.
+This area has no RPC, Edge, table, storage, realtime, fetch or auth calls. Its public browser processing/worker API is retained in the complete public declarations.
 
 ## Complete public declarations and facade operation contracts
 
@@ -377,301 +220,101 @@ export const HOST_MARKETPLACE_OPS = [
 export type HostMarketplaceOp = (typeof HOST_MARKETPLACE_OPS)[number];
 ```
 
-### src/infrastructure/marketplace/marketplace-service.ts:37
+### src/infrastructure/marketplace/marketplace-service.ts:38
 
 ```ts
 export async function getMarketplaceItems(
   filters?: MarketplaceFilters
 ): Promise<MarketplaceItem[]> {
-  if (isHostLibraryEnabled()) {
-    return fetchHostMarketplaceItems(filters);
-  }
-  try {
-    let query = supabase
-      .from('marketplace_items')
-      .select('*');
-
-    // Apply filters
-    if (filters?.type && filters.type !== 'all') {
-      query = query.eq('type', filters.type);
-    }
-
-    if (filters?.searchQuery) {
-      query = query.or(
-        `title.ilike.%${filters.searchQuery}%,description.ilike.%${filters.searchQuery}%`
-      );
-    }
-
-    if (filters?.minRating !== undefined) {
-      query = query.gte('rating', filters.minRating);
-    }
-
-    if (filters?.maxPrice !== undefined) {
-      query = query.lte('price', filters.maxPrice);
-    }
-
-    // Sorting
-    const sortBy = filters?.sortBy || 'downloads';
-    const sortOrder = filters?.sortOrder || 'desc';
-    query = query.order(sortBy, { ascending: sortOrder === 'asc' });
-
-    const { data, error } = await query;
-
-    if (error) {
-      console.error('Error fetching marketplace items:', error);
-      throw new Error(`Failed to fetch marketplace items: ${error.message}`);
-    }
-
-    return data || [];
-  } catch (error) {
-    console.error('Error in getMarketplaceItems:', error);
-    throw error;
-  }
+  assertHost();
+  return fetchHostMarketplaceItems(filters);
 }
 ```
 
-### src/infrastructure/marketplace/marketplace-service.ts:89
+### src/infrastructure/marketplace/marketplace-service.ts:48
 
 ```ts
 export async function getMarketplaceItemById(id: string): Promise<MarketplaceItem | null> {
-  if (isHostLibraryEnabled()) {
-    return fetchHostMarketplaceItem(id);
-  }
-  try {
-    const { data, error } = await supabase
-      .from('marketplace_items')
-      .select('*')
-      .eq('id', id)
-      .single();
-
-    if (error) {
-      console.error('Error fetching marketplace item:', error);
-      throw new Error(`Failed to fetch marketplace item: ${error.message}`);
-    }
-
-    return data;
-  } catch (error) {
-    console.error('Error in getMarketplaceItemById:', error);
-    throw error;
-  }
+  assertHost();
+  return fetchHostMarketplaceItem(id);
 }
 ```
 
-### src/infrastructure/marketplace/marketplace-service.ts:117
+### src/infrastructure/marketplace/marketplace-service.ts:56
 
 ```ts
 export async function getFeaturedItems(): Promise<MarketplaceItem[]> {
-  if (isHostLibraryEnabled()) {
-    return fetchHostFeaturedMarketplaceItems();
-  }
-  try {
-    const { data, error } = await supabase
-      .from('marketplace_items')
-      .select('*')
-      .order('downloads', { ascending: false })
-      .limit(6);
-
-    if (error) {
-      console.error('Error fetching featured items:', error);
-      throw new Error(`Failed to fetch featured items: ${error.message}`);
-    }
-
-    return data || [];
-  } catch (error) {
-    console.error('Error in getFeaturedItems:', error);
-    throw error;
-  }
+  assertHost();
+  return fetchHostFeaturedMarketplaceItems();
 }
 ```
 
-### src/infrastructure/marketplace/marketplace-service.ts:143
+### src/infrastructure/marketplace/marketplace-service.ts:64
 
 ```ts
 export async function createMarketplaceItem(
   dto: CreateMarketplaceItemDTO
 ): Promise<MarketplaceItem> {
-  if (isHostLibraryEnabled()) {
-    return createHostMarketplaceItem(whitelistMarketplaceCreateDto(dto));
-  }
-  try {
-    const userId = await getAuthenticatedUserId();
-    const safe = whitelistMarketplaceCreateDto(dto);
-
-    const { data, error } = await supabase
-      .from('marketplace_items')
-      .insert({
-        type: safe.type,
-        title: safe.title,
-        description: safe.description || null,
-        author_id: userId,
-        data: safe.data,
-        price: safe.price || 0,
-        image_url: safe.image_url || null,
-        tags: safe.tags || [],
-        rating: 0,
-        downloads: 0,
-      })
-      .select()
-      .single();
-
-    if (error) {
-      console.error('Error creating marketplace item:', error);
-      throw new Error(`Failed to create marketplace item: ${error.message}`);
-    }
-
-    return data;
-  } catch (error) {
-    console.error('Error in createMarketplaceItem:', error);
-    throw error;
-  }
+  assertHost();
+  return createHostMarketplaceItem(whitelistMarketplaceCreateDto(dto));
 }
 ```
 
-### src/infrastructure/marketplace/marketplace-service.ts:185
+### src/infrastructure/marketplace/marketplace-service.ts:74
 
 ```ts
 export async function updateMarketplaceItem(
   id: string,
   dto: UpdateMarketplaceItemDTO
 ): Promise<MarketplaceItem> {
-  if (isHostLibraryEnabled()) {
-    const patch = whitelistMarketplaceUpdatePatch(dto);
-    if (Object.keys(patch).length === 0) {
-      throw new Error('Keine erlaubten Update-Felder');
-    }
-    return updateHostMarketplaceItem(id, patch);
+  assertHost();
+  const patch = whitelistMarketplaceUpdatePatch(dto);
+  if (Object.keys(patch).length === 0) {
+    throw new Error('Keine erlaubten Update-Felder');
   }
-  try {
-    const userId = await getAuthenticatedUserId();
-    const patch = whitelistMarketplaceUpdatePatch(dto);
-    if (Object.keys(patch).length === 0) {
-      throw new Error('Keine erlaubten Update-Felder');
-    }
-
-    const { data, error } = await supabase
-      .from('marketplace_items')
-      .update({
-        ...patch,
-        updated_at: new Date().toISOString(),
-      })
-      .eq('id', id)
-      .eq('author_id', userId)
-      .select()
-      .maybeSingle();
-
-    if (error) {
-      console.error('Error updating marketplace item:', error);
-      throw new Error(`Failed to update marketplace item: ${error.message}`);
-    }
-
-    if (!data) {
-      throw new Error(
-        'Marketplace-Eintrag nicht gefunden oder fremder Autor — Update verweigert',
-      );
-    }
-
-    return data;
-  } catch (error) {
-    console.error('Error in updateMarketplaceItem:', error);
-    throw error;
-  }
+  return updateHostMarketplaceItem(id, patch);
 }
 ```
 
-### src/infrastructure/marketplace/marketplace-service.ts:235
+### src/infrastructure/marketplace/marketplace-service.ts:89
 
 ```ts
 export async function deleteMarketplaceItem(id: string): Promise<boolean> {
-  if (isHostLibraryEnabled()) {
-    try {
-      await deleteHostMarketplaceItem(id);
-      return true;
-    } catch {
-      return false;
-    }
-  }
+  assertHost();
   try {
-    const userId = await getAuthenticatedUserId();
-
-    const { data, error } = await supabase
-      .from('marketplace_items')
-      .delete()
-      .eq('id', id)
-      .eq('author_id', userId)
-      .select('id');
-
-    if (error) {
-      console.error('Error deleting marketplace item:', error);
-      throw new Error(`Failed to delete marketplace item: ${error.message}`);
-    }
-
-    if (!data || data.length === 0) {
-      throw new Error(
-        'Marketplace-Eintrag nicht gefunden oder fremder Autor — Delete verweigert',
-      );
-    }
-
+    await deleteHostMarketplaceItem(id);
     return true;
-  } catch (error) {
-    console.error('Error in deleteMarketplaceItem:', error);
+  } catch {
     return false;
   }
 }
 ```
 
-### src/infrastructure/marketplace/marketplace-service.ts:276
+### src/infrastructure/marketplace/marketplace-service.ts:103
 
 ```ts
 export async function incrementDownloads(id: string): Promise<void> {
-  if (isHostLibraryEnabled()) {
-    try {
-      await incrementHostMarketplaceDownloads(id);
-    } catch (error) {
-      console.error(
-        'incrementHostMarketplaceDownloads failed (no client counter write):',
-        error instanceof Error ? error.message : error,
-      );
-    }
-    return;
-  }
+  assertHost();
   try {
-    const { error } = await supabase.rpc('increment_marketplace_downloads', {
-      item_id: id,
-    });
-
-    if (error) {
-      console.error(
-        'increment_marketplace_downloads RPC failed (no client counter write):',
-        error.message,
-      );
-    }
+    await incrementHostMarketplaceDownloads(id);
   } catch (error) {
-    console.error('Error incrementing downloads:', error);
+    console.error(
+      'incrementHostMarketplaceDownloads failed (no client counter write):',
+      error instanceof Error ? error.message : error,
+    );
   }
 }
 ```
 
-### src/infrastructure/marketplace/marketplace-service.ts:307
+### src/infrastructure/marketplace/marketplace-service.ts:118
 
 ```ts
 export async function getItemsByAuthor(authorId: string): Promise<MarketplaceItem[]> {
-  try {
-    const { data, error } = await supabase
-      .from('marketplace_items')
-      .select('*')
-      .eq('author_id', authorId)
-      .order('created_at', { ascending: false });
-
-    if (error) {
-      console.error('Error fetching author items:', error);
-      throw new Error(`Failed to fetch author items: ${error.message}`);
-    }
-
-    return data || [];
-  } catch (error) {
-    console.error('Error in getItemsByAuthor:', error);
-    throw error;
-  }
+  assertHost();
+  const items = await fetchHostMarketplaceItems();
+  return items
+    .filter((item) => item.author_id === authorId)
+    .sort((a, b) => (b.created_at ?? '').localeCompare(a.created_at ?? ''));
 }
 ```
 
@@ -692,14 +335,10 @@ All backend operations are included in the public declarations above.
 | `src/domains/user-profile/display-name.ts` | `87cfc4858f198e56ea2857c505162f112efd5edacde4dbb1f7fcd995b4535516` |
 | `src/domains/user-profile/index.ts` | `d094d245ff9356298ef20c48635ca3e7adcc0e1ccf180554586949e0b496c496` |
 | `src/infrastructure/host/host-catalog-http.ts` | `9049245360683a74e7e2602d35126d815d64344d384c6684e4c2c3d41aa626d3` |
-| `src/infrastructure/host/host-library-http.ts` | `b2343081ddce2e2edd73651b0622e8b4cc6d8583d746a863dbe3343e3a98f71a` |
+| `src/infrastructure/host/host-library-http.ts` | `1d41f3b1eb3e71a3a8b12306993b605f2d05f2f41cd35f73b9c362b12f9c1cb6` |
 | `src/infrastructure/marketplace/host-marketplace-adapter.ts` | `26df96d9df6c7ae0cebd69e90e85a77075fbbc1138c86b505f8dee97e7e072e0` |
 | `src/infrastructure/marketplace/host-marketplace-ports.contract.ts` | `f77e7aee8352e2155253cddead1f51d9de10170ca250db27405f7f1f336fcf1b` |
 | `src/infrastructure/marketplace/index.ts` | `15e40b95148db8d15546f5c1815b51f7846c343e5fc334406548c64858162542` |
-| `src/infrastructure/marketplace/marketplace-service.ts` | `52c856bd8d5be2885897e155ade57bfdfed1b8eb7e48fe6fb1376b8e1a5284e8` |
-| `src/lib/authenticatedUser.ts` | `d4cbf3a004f8375982ca03d474fb7b61559fc2ec58ad6fe7b1f8834d26abf10c` |
+| `src/infrastructure/marketplace/marketplace-service.ts` | `d2135007e96a4775dea0a8b238312a72539a0541c9095024323c128b15a8afe1` |
 | `src/lib/hostAuthBridge.ts` | `30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a` |
-| `src/lib/localAdmin.ts` | `3a28dec23e85f25ed3e70682bc6e7f8c6b55e81dbbefdd1f6a837f68ac80d6b5` |
-| `src/lib/networkTimeout.ts` | `835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851` |
-| `src/lib/supabase.ts` | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
 

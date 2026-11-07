@@ -48,7 +48,11 @@ requireMatch(hook, /highlightsSource/i, 'highlights source flag');
 requireMatch(hook, /persisted/i, 'persisted path');
 
 const service = read('src/infrastructure/session/session-recap-service.ts');
-requireMatch(service, /get_session_recap/i, 'service RPC');
+requireMatch(service, /fetchHostSessionRecap/i, 'service host HTTP (CUT-20)');
+requireMatch(service, /isHostLibraryEnabled/i, 'service host library gate');
+if (/get_session_recap|\.rpc\s*\(|supabase/.test(service)) {
+  fail('service must not call legacy get_session_recap RPC (CUT-20)');
+}
 if (/\bas any\b|eslint-disable|@ts-ignore/.test(service + domain)) {
   fail('type escape hatch');
 }

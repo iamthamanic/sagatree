@@ -125,8 +125,8 @@ section('1 · structure & purity');
   check(service.includes('loadWorldProfileNpcCreatureCatalog'), 'service world catalog load');
   check(service.includes('loadWorldNpcCreatureAvailability'), 'service availability compose');
 
-  const repo = read('src/infrastructure/npc-creature/supabase-npc-creature.repository.ts');
-  check(repo.includes('loadWorldProfileModules'), 'repo loads world modules');
+  check(service.includes('getNpcCreatureCatalogModuleConfig'), 'service reads npc catalog module config');
+  check(service.includes('fetchHostLibraryNpcCreatures'), 'service loads npc defs via host HTTP');
 
   for (const file of [
     'src/domains/npc-creature/world-catalog.ts',

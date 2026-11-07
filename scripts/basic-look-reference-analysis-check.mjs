@@ -72,7 +72,10 @@ section('3 · edge + infra wiring');
   check(/LOOK_AI_API_KEY|CHARACTER_AI_API_KEY/.test(provider), 'server secrets only in provider');
   check(/normalizeLookReferenceAnalysisPayload/.test(service), 'client re-normalizes');
   check(/createLookProfileFromReferenceAnalysis/.test(lookService), 'gated persist helper');
-  check(/look-reference-analysis/.test(service), 'invokes edge function');
+  check(
+    /\/api\/v1\/ai\/look-reference-analysis/.test(service) && !/functions\.invoke/.test(service),
+    'invokes host look-reference-analysis API (CUT-20)',
+  );
 }
 
 section('4 · domain smoke');

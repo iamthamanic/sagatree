@@ -154,92 +154,7 @@ CORS_OPTS: CorsOptions = {
 
 ## All adapter call sites
 
-### src/infrastructure/session/media/media-token-client.ts:50
-
-
-```ts
-export async function fetchSessionMediaToken(input: {
-  sessionId: string;
-}): Promise<MediaTokenResult> {
-  const sessionId = input.sessionId.trim();
-  if (!sessionId) {
-    return {
-      ok: false,
-      degraded: true,
-      reason: 'bad_request',
-      message: 'sessionId fehlt.',
-    };
-  }
-
-  if (isHostLibraryEnabled()) {
-    return fetchHostSessionMediaToken(sessionId);
-  }
-
-  try {
-    const { data, error } = await supabase.functions.invoke('session-media-token', {
-      body: { sessionId },
-    });
-    if (error) {
-      return {
-        ok: false,
-        degraded: true,
-        reason: 'media_service_unavailable',
-        message: error.message || 'Media-Token-Dienst nicht erreichbar.',
-      };
-    }
-    const record = data as Record<string, unknown> | null;
-    if (!record || typeof record !== 'object') {
-      return {
-        ok: false,
-        degraded: true,
-        reason: 'media_service_unavailable',
-        message: 'Leere Media-Token-Antwort.',
-      };
-    }
-    if (record.degraded === true || record.ok === false) {
-      const reason =
-        record.reason === 'forbidden' ||
-        record.reason === 'unauthorized' ||
-        record.reason === 'bad_request'
-          ? record.reason
-          : 'media_service_unavailable';
-      return {
-        ok: false,
-        degraded: true,
-        reason,
-        message:
-          typeof record.message === 'string'
-            ? record.message
-            : 'Media plane degraded.',
-      };
-    }
-    const token = typeof record.token === 'string' ? record.token : '';
-    const url = typeof record.url === 'string' ? record.url : '';
-    const roomId = typeof record.roomId === 'string' ? record.roomId : '';
-    const expiresAt =
-      typeof record.expiresAt === 'string' ? record.expiresAt : '';
-    const ttlSeconds =
-      typeof record.ttlSeconds === 'number' ? record.ttlSeconds : 0;
-    if (!token || !url || !roomId) {
-      return {
-        ok: false,
-        degraded: true,
-        reason: 'media_service_unavailable',
-        message: 'Media-Token unvollständig.',
-      };
-    }
-    return { ok: true, token, url, roomId, expiresAt, ttlSeconds };
-  } catch (error) {
-    return {
-      ok: false,
-      degraded: true,
-      reason: 'media_service_unavailable',
-      message: error instanceof Error ? error.message : 'Media-Token-Fehler.',
-    };
-  }
-}
-```
-
+No src/infrastructure caller in the reviewed branch. This does not authorize adding a public mount.
 
 ## Exact ordered operations
 
@@ -564,7 +479,6 @@ MAX_TTL_SECONDS = 300
 
 | Path | SHA-256 |
 |---|---|
-| `src/infrastructure/session/media/media-token-client.ts` | `870b4220178bcd0f10ef961a6f6f0bbf307c8c31370b9360507f3a23d28fa84a` |
 | `supabase/functions/_shared/client-trust-body.ts` | `33c68553dbd89d9c7899520b0ebfa35c4f245ed8ab8ebd242c6f79e9852add95` |
 | `supabase/functions/_shared/cors.ts` | `f8286c91d79fa5fc5cfea2fa47081916523fa7a440f234aecd9a47c6a8cf5b38` |
 | `supabase/functions/_shared/edge-dispatcher-allowlist.ts` | `6d1ae7bde0ba9e41fcaa7b61247732168a62699e7811fb8574cef266cfad3a27` |

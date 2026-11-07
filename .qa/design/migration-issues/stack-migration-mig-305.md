@@ -23,7 +23,7 @@ src/infrastructure/marketplace: bestehende Aufrufer über den freigegebenen Host
 
 - Epic: #773; historische Baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`; keine Produktionszustandsbehauptung.
 - Verbindliche Architektur: `docs/architecture/migration-owner-decisions-2026-10-23.md`.
-- Quellpfade und bestehende Adapter: `src/domains/marketplace/client-trust.ts`, `src/domains/marketplace/contracts/marketplace.types.ts`, `src/domains/rules/ruleset-catalog/index.ts`, `src/domains/rules/ruleset-catalog/types.ts`, `src/domains/user-profile/contracts/user-profile.types.ts`, `src/domains/user-profile/display-name.ts`, `src/domains/user-profile/index.ts`, `src/infrastructure/host/host-catalog-http.ts`, `src/infrastructure/host/host-library-http.ts`, `src/infrastructure/marketplace/host-marketplace-adapter.ts`, `src/infrastructure/marketplace/host-marketplace-ports.contract.ts`, `src/infrastructure/marketplace/index.ts`, `src/infrastructure/marketplace/marketplace-service.ts`, `src/lib/authenticatedUser.ts`, `src/lib/hostAuthBridge.ts`, `src/lib/localAdmin.ts`, `src/lib/networkTimeout.ts`, `src/lib/supabase.ts`.
+- Quellpfade und bestehende Adapter: `src/domains/marketplace/client-trust.ts`, `src/domains/marketplace/contracts/marketplace.types.ts`, `src/domains/rules/ruleset-catalog/index.ts`, `src/domains/rules/ruleset-catalog/types.ts`, `src/domains/user-profile/contracts/user-profile.types.ts`, `src/domains/user-profile/display-name.ts`, `src/domains/user-profile/index.ts`, `src/infrastructure/host/host-catalog-http.ts`, `src/infrastructure/host/host-library-http.ts`, `src/infrastructure/marketplace/host-marketplace-adapter.ts`, `src/infrastructure/marketplace/host-marketplace-ports.contract.ts`, `src/infrastructure/marketplace/index.ts`, `src/infrastructure/marketplace/marketplace-service.ts`, `src/lib/hostAuthBridge.ts`.
 - Source Contracts: `.qa/intake/edge-infra-contracts/infra-marketplace.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-marketplace.json`.
 - Zielverhalten: Binding product decisions: docs/architecture/migration-owner-decisions-2026-10-23.md; GATE-01 Drizzle+Policy, GATE-02 Cookie-A, GATE-03 Hono+Colyseus, GATE-04 SQLite single-writer. GATE-05 Tauri+sidecar selected; platform release pending..
 
@@ -90,19 +90,12 @@ UI-Parität, soweit betroffen: `src/THEME_GUIDE.md`, `docs/ui-styleguide.md`, `d
 
 ### Fall 4
 
-- Gegeben: Der eingefrorene Quellvertrag für marketplace und isolierte positive/negative Fixtures
-- Wenn: Der Nachfolger den dokumentierten Fall für marketplace ausführt
-- Dann: Contract fixture for increment_marketplace_downloads: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
-- Quelle: `.qa/intake/edge-infra-contracts/infra-marketplace.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-marketplace.json`
-
-### Fall 5
-
 - Gegeben: Der eingefrorene Legacy-Defekt aus dem Quellinventar
 - Wenn: Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt
 - Dann: Verpflichtende Legacy-Regression: incrementDownloads uses non-atomic direct-table fallback for every RPC error and ignores fallback write results; fulfilled Promise<void> does not prove a stored increment.
 - Quelle: `.qa/intake/edge-infra-contracts/infra-marketplace.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-marketplace.json`
 
-### Fall 6
+### Fall 5
 
 - Gegeben: Der eingefrorene Legacy-Defekt aus dem Quellinventar
 - Wenn: Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt
@@ -116,14 +109,13 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 1. List filters, sort defaults, single-read errors and featured fallback retain exact request/result behavior.
 2. RPC increment succeeds atomically when installed; unavailable/denied RPC exercises read+update fallback and explicitly reports race, RLS and swallowed-error behavior.
 3. Create cannot use a client author_id; update/delete foreign-author attempts are denied by effective server policy; delete returnsfalse on its documented failures.
-4. Contract fixture for increment_marketplace_downloads: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
-5. Verpflichtende Legacy-Regression: incrementDownloads uses non-atomic direct-table fallback for every RPC error and ignores fallback write results; fulfilled Promise<void> does not prove a stored increment.
-6. Verpflichtende Legacy-Regression: Search string is interpolated into PostgREST or expression; successor parser/escaping behavior must be decided and tested.
-7. Touched files: zero type escape hatches (typed-strict / Boy Scout).
+4. Verpflichtende Legacy-Regression: incrementDownloads uses non-atomic direct-table fallback for every RPC error and ignores fallback write results; fulfilled Promise<void> does not prove a stored increment.
+5. Verpflichtende Legacy-Regression: Search string is interpolated into PostgREST or expression; successor parser/escaping behavior must be decided and tested.
+6. Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
 ## Acceptance
 
-- [ ] Alle 6 quellenabgeleiteten Given/When/Then-Fälle unter Edge Cases und Required Tests müssen im echten zuständigen Test-Stack nachweislich PASS sein; keine RequiredTests aus dem Inventar verlieren.
+- [ ] Alle 5 quellenabgeleiteten Given/When/Then-Fälle unter Edge Cases und Required Tests müssen im echten zuständigen Test-Stack nachweislich PASS sein; keine RequiredTests aus dem Inventar verlieren.
 - [ ] Jeder negative Berechtigungs-, Schema-, State- und Retry-Test ist einzeln ausgeführt und mit Commit/Fixture und Logs belegbar; ein Legacy-Defekt wird nicht als sichere Parität akzeptiert.
 - [ ] Alle Signaturen, Owner-/GM-/Membership- und Persistenz-Nebenwirkungen werden mit dem bestehenden Quellvertrag verglichen; ungetestete Pfade bleiben NOT RUN.
 - [ ] Touched files: zero type escape hatches (typed-strict / Boy Scout).
@@ -143,8 +135,6 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 - Depends on #791 (MIG-012)
 - Depends on #792 (MIG-013)
 - Depends on #795 (MIG-020)
-- Depends on #878 (RPC-MARKETPLACE-COUNT)
-- Depends on #793 (MIG-014)
 
 Status: **done**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance.
 

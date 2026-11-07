@@ -1,14 +1,10 @@
 /**
- * Resolves the current user id for service-layer calls.
- * Local-admin sessions short-circuit when the stack is unreachable.
+ * Resolves the current actor id for service-layer calls (CUT-20).
  * Location: src/lib/authenticatedUser.ts
  *
- * FE-HOST-09: under host library, actor comes from Better Auth whoami (cookie).
- * World/Atlas PostgREST still requires a GoTrue JWT when host library is off —
- * use `assertSupabaseJwtSession` before those legacy RLS paths.
+ * Product runtime uses Better Auth cookies via `probeHostActor` — no Supabase JWT.
  */
 
-import { supabase } from './supabase';
 import { isLocalAdminSession, LOCAL_ADMIN_USER_ID } from './localAdmin';
 import { probeHostActor } from './hostAuthBridge';
 import { isHostLibraryEnabled } from '../infrastructure/host/host-library-http';
@@ -16,69 +12,41 @@ import {
   AUTH_SESSION_TIMEOUT_MS,
   isTimedOut,
   raceWithTimeoutOrSymbol,
-  raceWithTimeoutReject,
-  SUPABASE_QUERY_TIMEOUT_MS,
 } from './networkTimeout';
 
-/** Shown when UI is signed in offline but PostgREST would run as anon. */
+/** Shown when host session is missing but world/atlas surfaces expect API auth. */
 export const API_AUTH_REQUIRED_DE =
-  'API-Anmeldung fehlt. Local Admin braucht ein GoTrue-JWT für Welt und Atlas — bitte „API verbinden“ oder erneut einloggen.';
-
-const JWT_WAIT_MS = 4_000;
-const JWT_POLL_MS = 200;
+  'API-Anmeldung fehlt. Bitte mit dem Host anmelden (VITE_SAGATREE_HOST_AUTH_URL) oder erneut einloggen.';
 
 export async function getAuthenticatedUserId(): Promise<string> {
-  if (isHostLibraryEnabled()) {
-    const actor = await probeHostActor();
-    if (actor?.actorId) return actor.actorId;
-    throw new Error('User not authenticated');
+  if (!isHostLibraryEnabled()) {
+    if (isLocalAdminSession()) return LOCAL_ADMIN_USER_ID;
+    throw new Error('Host-Anmeldung nicht konfiguriert');
   }
-
-  if (isLocalAdminSession()) {
-    const sessionResult = await raceWithTimeoutOrSymbol(
-      supabase.auth.getSession(),
-      AUTH_SESSION_TIMEOUT_MS,
-    );
-    if (!isTimedOut(sessionResult) && sessionResult.data.session?.user) {
-      return sessionResult.data.session.user.id;
-    }
-    return LOCAL_ADMIN_USER_ID;
-  }
-
-  const { data, error } = await raceWithTimeoutReject(
-    supabase.auth.getUser(),
-    SUPABASE_QUERY_TIMEOUT_MS,
-    'Authentication request timed out',
+  const sessionResult = await raceWithTimeoutOrSymbol(
+    probeHostActor(),
+    AUTH_SESSION_TIMEOUT_MS,
   );
-  if (error) throw error;
-  if (data.user) return data.user.id;
+  if (!isTimedOut(sessionResult) && sessionResult.actorId) {
+    return sessionResult.actorId;
+  }
   throw new Error('User not authenticated');
 }
 
 /**
- * Ensures the Supabase client holds an access token (PostgREST `authenticated`).
- * Polls briefly so a late Local Admin GoTrue upgrade can land before failing.
- * Host-first callers must branch on `isHostLibraryEnabled()` before invoking this —
- * a Better Auth actor is not a GoTrue JWT (FE-HOST-09).
- * @returns authenticated user id from the JWT session
+ * Ensures a host actor session exists for world/atlas-style surfaces.
+ * Replaces legacy GoTrue JWT assertion (CUT-20).
  */
 export async function assertSupabaseJwtSession(): Promise<string> {
-  const deadline = Date.now() + JWT_WAIT_MS;
-  while (Date.now() <= deadline) {
-    const sessionResult = await raceWithTimeoutOrSymbol(
-      supabase.auth.getSession(),
-      AUTH_SESSION_TIMEOUT_MS,
-    );
-    if (!isTimedOut(sessionResult)) {
-      const session = sessionResult.data.session;
-      const userId = session?.user?.id?.trim();
-      if (session?.access_token && userId) {
-        return userId;
-      }
-    }
-    await new Promise<void>((resolve) => {
-      window.setTimeout(resolve, JWT_POLL_MS);
-    });
+  if (!isHostLibraryEnabled()) {
+    throw new Error(API_AUTH_REQUIRED_DE);
+  }
+  const sessionResult = await raceWithTimeoutOrSymbol(
+    probeHostActor(),
+    AUTH_SESSION_TIMEOUT_MS,
+  );
+  if (!isTimedOut(sessionResult) && sessionResult.actorId) {
+    return sessionResult.actorId;
   }
   throw new Error(API_AUTH_REQUIRED_DE);
 }

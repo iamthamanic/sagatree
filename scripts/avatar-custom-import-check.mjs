@@ -37,10 +37,12 @@ check(!/from ['"]react['"]/.test(domain), 'domain import has no React');
 check(/export \{[\s\S]*validateAvatarImportBytes/.test(index), 'barrel exports validator');
 
 check(/validateAvatarImportBytes/.test(service), 'service re-validates before upload');
-check(/character-avatars/.test(service), 'uses character-avatars bucket');
-check(/rig_analysis_status: 'pending'/.test(service), 'import always pending for #6');
-check(/is_active: false/.test(service), 'draft inactive until Original behalten');
+check(/publishHostAvatarModel/.test(service), 'uses host AssetPorts upload (CUT-20)');
+check(/isHostLibraryEnabled/.test(service), 'host library gate');
+check(/rigAnalysisStatus: 'pending'/.test(service), 'import always pending for #6');
 check(/keepOriginalImportedAvatar/.test(service), 'keep activates import');
+check(/activateAvatarArtifact/.test(service), 'draft inactive until Original behalten (host activate)');
+check(!/character-avatars|supabase\.storage|\.from\(\s*['"]character-avatars['"]/.test(service), 'no Supabase storage bucket (CUT-20)');
 check(!/capabilities\s*:/.test(service), 'no client capability write in service');
 
 check(/3D-Modell importieren/.test(panel), 'CTA label');

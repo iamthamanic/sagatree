@@ -100,66 +100,126 @@ Die finalen Datenbank-Constraints der beteiligten Relationen sind pro RPC in inv
 
 ## Caller: Request-Mapping, Response-Decoding und Fehler
 
-### src/infrastructure/world/world-atlas-service.ts:59
+### src/infrastructure/world/world-atlas-service.ts:1
 
-AST-Auflösung: `string-literal`; SHA-256 `6f39628cc7b8448dd100850a7e2fce652cf87bca68d134c2d8cc766b7ee90b27`.
+AST-Auflösung: `host-transport-cut-20`; SHA-256 `0026d650758d59a05aa1697f5ce8d07c751fd9e0cb9c992c742c008858cba273`.
 
 Der vollständige aufrufende Funktionskörper enthält Parameterumformung, RPC-Aufruf, Response-Prüfung, Fehlerumwandlung und gegebenenfalls Fallback:
 
 ```typescript
-async listMaps(
+/**
+ * world-atlas-service — Host HTTP for world atlas maps (CUT-20).
+ * Location: src/infrastructure/world/world-atlas-service.ts
+ */
+import {
+  parseWorldAtlasMapList,
+  parseWorldAtlasMapVm,
+  type WorldAtlasFeatureCollection,
+  type WorldAtlasMapKind,
+  type WorldAtlasMapSummary,
+  type WorldAtlasMapVm,
+  type WorldAtlasBounds,
+} from '../../domains/world/atlas';
+import {
+  ensureHostWorldAtlasRoot,
+  fetchHostWorldAtlasMap,
+  isHostLibraryEnabled,
+  listHostWorldAtlasMaps,
+  upsertHostWorldAtlasMap,
+} from '../host/host-world-http';
+
+function assertHost(): void {
+  if (!isHostLibraryEnabled()) {
+    throw new Error('Host-Anmeldung nicht konfiguriert (VITE_SAGATREE_HOST_AUTH_URL fehlt).');
+  }
+}
+
+export type UpsertWorldAtlasMapInput = {
+  readonly worldProfileId: string;
+  readonly mapId?: string | null;
+  readonly parentMapId?: string | null;
+  readonly kind: WorldAtlasMapKind;
+  readonly title: string;
+  readonly sortOrder?: number;
+  readonly bounds: WorldAtlasBounds;
+  readonly layers: WorldAtlasFeatureCollection;
+  readonly basemapStoragePath?: string | null;
+  readonly azgaarMapStoragePath?: string | null;
+  readonly generatorMeta?: Readonly<Record<string, unknown>>;
+  readonly expectedRevision?: number | null;
+};
+
+class WorldAtlasService {
+  async listMaps(
     worldProfileId: string,
     options: { readonly playerView?: boolean; readonly sagaPublicId?: string | null } = {},
   ): Promise<WorldAtlasMapSummary[]> {
+    assertHost();
     const id = worldProfileId.trim();
     if (!id) throw new Error('Weltprofil fehlt');
-    if (isHostLibraryEnabled()) {
-      const data = await listHostWorldAtlasMaps(id, options);
-      return parseWorldAtlasMapList(data);
-    }
-    await assertSupabaseJwtSession();
-    const { data, error } = await supabase.rpc('list_world_atlas_maps', {
-      p_world_profile_id: id,
-      p_player_view: options.playerView === true,
-      p_saga_public_id: options.sagaPublicId?.trim() || null,
-    });
-    if (error) throw new Error(`Atlas-Liste fehlgeschlagen: ${error.message}`);
+    const data = await listHostWorldAtlasMaps(id, options);
     return parseWorldAtlasMapList(data);
   }
+
+  async ensureRoot(worldProfileId: string): Promise<WorldAtlasMapSummary[]> {
+    assertHost();
+    const id = worldProfileId.trim();
+    if (!id) throw new Error('Weltprofil fehlt');
+    const data = await ensureHostWorldAtlasRoot(id);
+    return parseWorldAtlasMapList(data);
+  }
+
+  async getMap(
+    mapId: string,
+    playerView = false,
+    sagaPublicId?: string | null,
+  ): Promise<WorldAtlasMapVm> {
+    assertHost();
+    const id = mapId.trim();
+    if (!id) throw new Error('Karten-ID fehlt');
+    const data = await fetchHostWorldAtlasMap(id, playerView, sagaPublicId);
+    return parseWorldAtlasMapVm(data);
+  }
+
+  async upsertMap(input: UpsertWorldAtlasMapInput): Promise<WorldAtlasMapVm> {
+    assertHost();
+    const data = await upsertHostWorldAtlasMap({
+      worldProfileId: input.worldProfileId.trim(),
+      mapId: input.mapId ?? null,
+      parentMapId: input.parentMapId ?? null,
+      kind: input.kind,
+      title: input.title,
+      sortOrder: input.sortOrder ?? 0,
+      bounds: input.bounds,
+      layers: input.layers,
+      basemapStoragePath: input.basemapStoragePath ?? null,
+      azgaarMapStoragePath: input.azgaarMapStoragePath ?? null,
+      generatorMeta: input.generatorMeta ?? {},
+      expectedRevision: input.expectedRevision ?? null,
+    });
+    return parseWorldAtlasMapVm(data);
+  }
+
+  /** PARITY_MISSING (#1161): Azgaar upload via host assets. */
+  async uploadAzgaarMapFile(_worldProfileId: string, _file: File): Promise<string> {
+    void _worldProfileId;
+    void _file;
+    assertHost();
+    throw new Error('Azgaar-Upload über Host-Speicher ist noch nicht verfügbar.');
+  }
+
+  /** PARITY_MISSING (#1161): signed URLs via host assets. */
+  async createSignedUrl(_storagePath: string, _expiresSec = 3600): Promise<string> {
+    void _storagePath;
+    void _expiresSec;
+    assertHost();
+    throw new Error('Atlas-Download-URLs über Host-Speicher sind noch nicht verfügbar.');
+  }
+}
+
+export const worldAtlasService = new WorldAtlasService();
+
 ```
-
-Direkt oder transitiv referenzierte lokale/importierte Mapper, Decoder und Vertrags-Typen sind zusätzlich mit vollständigem Source-Text in callers.json und inventory.json.callerContracts.supportingDeclarations gespeichert:
-
-| Symbol | Quelle | Zeile | SHA-256 |
-| --- | --- | --- | --- |
-| `EnvLike` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 11 | `b2343081ddce2e2edd73651b0622e8b4cc6d8583d746a863dbe3343e3a98f71a` |
-| `defaultEnv` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 16 | `b2343081ddce2e2edd73651b0622e8b4cc6d8583d746a863dbe3343e3a98f71a` |
-| `isHostLibraryExplicitlyDisabled` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 25 | `b2343081ddce2e2edd73651b0622e8b4cc6d8583d746a863dbe3343e3a98f71a` |
-| `EnvLike` | [src/infrastructure/host/host-world-http.ts](../../../src/infrastructure/host/host-world-http.ts) | 12 | `bfb69f91e69543a66ee96cab4ad21273c86a2b167e4c21211c42c7e6ccb3c072` |
-| `defaultEnv` | [src/infrastructure/host/host-world-http.ts](../../../src/infrastructure/host/host-world-http.ts) | 17 | `bfb69f91e69543a66ee96cab4ad21273c86a2b167e4c21211c42c7e6ccb3c072` |
-| `qs` | [src/infrastructure/host/host-world-http.ts](../../../src/infrastructure/host/host-world-http.ts) | 25 | `bfb69f91e69543a66ee96cab4ad21273c86a2b167e4c21211c42c7e6ccb3c072` |
-| `hostGetJson` | [src/infrastructure/host/host-world-http.ts](../../../src/infrastructure/host/host-world-http.ts) | 35 | `bfb69f91e69543a66ee96cab4ad21273c86a2b167e4c21211c42c7e6ccb3c072` |
-| `listHostWorldAtlasMaps` | [src/infrastructure/host/host-world-http.ts](../../../src/infrastructure/host/host-world-http.ts) | 136 | `bfb69f91e69543a66ee96cab4ad21273c86a2b167e4c21211c42c7e6ccb3c072` |
-| `API_AUTH_REQUIRED_DE` | [src/lib/authenticatedUser.ts](../../../src/lib/authenticatedUser.ts) | 24 | `d4cbf3a004f8375982ca03d474fb7b61559fc2ec58ad6fe7b1f8834d26abf10c` |
-| `JWT_WAIT_MS` | [src/lib/authenticatedUser.ts](../../../src/lib/authenticatedUser.ts) | 27 | `d4cbf3a004f8375982ca03d474fb7b61559fc2ec58ad6fe7b1f8834d26abf10c` |
-| `JWT_POLL_MS` | [src/lib/authenticatedUser.ts](../../../src/lib/authenticatedUser.ts) | 28 | `d4cbf3a004f8375982ca03d474fb7b61559fc2ec58ad6fe7b1f8834d26abf10c` |
-| `assertSupabaseJwtSession` | [src/lib/authenticatedUser.ts](../../../src/lib/authenticatedUser.ts) | 65 | `d4cbf3a004f8375982ca03d474fb7b61559fc2ec58ad6fe7b1f8834d26abf10c` |
-| `EnvLike` | [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | 31 | `30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a` |
-| `defaultEnv` | [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | 33 | `30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a` |
-| `getHostAuthBaseUrl` | [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | 53 | `30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a` |
-| `AUTH_SESSION_TIMEOUT_MS` | [src/lib/networkTimeout.ts](../../../src/lib/networkTimeout.ts) | 7 | `835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851` |
-| `TIMED_OUT` | [src/lib/networkTimeout.ts](../../../src/lib/networkTimeout.ts) | 10 | `835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851` |
-| `TimedOut` | [src/lib/networkTimeout.ts](../../../src/lib/networkTimeout.ts) | 12 | `835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851` |
-| `isTimedOut` | [src/lib/networkTimeout.ts](../../../src/lib/networkTimeout.ts) | 14 | `835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851` |
-| `raceWithTimeoutOrSymbol` | [src/lib/networkTimeout.ts](../../../src/lib/networkTimeout.ts) | 27 | `835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851` |
-| `viteEnv` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 13 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
-| `configuredSupabaseUrl` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 15 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
-| `configuredSupabaseAnonKey` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 16 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
-| `hostAuthUrl` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 17 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
-| `hostFirst` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 18 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
-| `supabaseUrl` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 58 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
-| `supabaseAnonKey` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 59 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
-| `supabase` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 61 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
 
 ## Beobachteter isolierter HTTP-Transport
 
@@ -205,13 +265,7 @@ Die folgenden Hashes binden SQL-Kette, transitive Tabellen-/Trigger-/Policyquell
 
 | Quelle | SHA-256 |
 | --- | --- |
-| [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | `b2343081ddce2e2edd73651b0622e8b4cc6d8583d746a863dbe3343e3a98f71a` |
-| [src/infrastructure/host/host-world-http.ts](../../../src/infrastructure/host/host-world-http.ts) | `bfb69f91e69543a66ee96cab4ad21273c86a2b167e4c21211c42c7e6ccb3c072` |
-| [src/infrastructure/world/world-atlas-service.ts](../../../src/infrastructure/world/world-atlas-service.ts) | `6f39628cc7b8448dd100850a7e2fce652cf87bca68d134c2d8cc766b7ee90b27` |
-| [src/lib/authenticatedUser.ts](../../../src/lib/authenticatedUser.ts) | `d4cbf3a004f8375982ca03d474fb7b61559fc2ec58ad6fe7b1f8834d26abf10c` |
-| [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | `30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a` |
-| [src/lib/networkTimeout.ts](../../../src/lib/networkTimeout.ts) | `835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851` |
-| [src/lib/supabase.ts](../../../src/lib/supabase.ts) | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
+| [src/infrastructure/world/world-atlas-service.ts](../../../src/infrastructure/world/world-atlas-service.ts) | `0026d650758d59a05aa1697f5ce8d07c751fd9e0cb9c992c742c008858cba273` |
 | [supabase/migrations/001_initial.sql](../../../supabase/migrations/001_initial.sql) | `e3325c56d68286a2e293ddff791736ef91346ff90ac018c045843a5d52afb8c8` |
 | [supabase/migrations/004_project_membership_security.sql](../../../supabase/migrations/004_project_membership_security.sql) | `c1eccbda2dae95cd177ba6313dfd51ef269e0740a13805a5d07a223c6bf489cd` |
 | [supabase/migrations/008_world_profiles.sql](../../../supabase/migrations/008_world_profiles.sql) | `94d2db4e86205d09d54b63e322af6b69b93a7e07d13f3795bc1d841a46961b1a` |

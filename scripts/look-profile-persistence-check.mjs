@@ -5,7 +5,7 @@
  * Location: scripts/look-profile-persistence-check.mjs
  */
 import { execFileSync } from 'node:child_process';
-import { mkdirSync, readFileSync, readdirSync, statSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import process from 'node:process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -220,23 +220,27 @@ const profile = look.parseLookProfile({
 });
 check(profile !== null, 'profile parses with owner');
 
-mustInclude(
-  'src/infrastructure/look/supabase-look.repository.ts',
-  [
-    'normalizeLookProfileWriteDraft',
-    'appendVersion',
-    'duplicateProfile',
-    'getAuthenticatedUserId',
-    'current_version',
-    'append-only',
-  ],
-  'repository guards',
+check(
+  !existsSync(join(root, 'src/infrastructure/look/supabase-look.repository.ts')),
+  'CUT-20 removed supabase look repository',
 );
 
 mustInclude(
-  'src/infrastructure/look/supabase-look.repository.ts',
-  ['eq(\'current_version\'', 'Konflikt'],
-  'optimistic concurrency on version bump',
+  'src/infrastructure/look/look-service.ts',
+  [
+    'appendLookProfileVersion',
+    'duplicateLookProfile',
+    'appendHostLibraryLookVersion',
+    'createHostLibraryLook',
+    'assertHost',
+  ],
+  'look-service host facade',
+);
+
+mustInclude(
+  'src/domains/look/write-draft.ts',
+  ['normalizeLookProfileWriteDraft'],
+  'write draft normalization in domain',
 );
 
 if (failures > 0) {

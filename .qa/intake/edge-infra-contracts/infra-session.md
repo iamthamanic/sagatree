@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-session.json](source-contracts/infra-session.json) (SHA-256 `663ac7f45df327725c9be48d4b72db77e58f2e893fe94e8969fb47bc25afdcd8`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-session.json](source-contracts/infra-session.json) (SHA-256 `9f9a85fead3d2a16ac1e35f0f4e79a87e9456f0573daae8f7437da99a42ae07c`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -16,38 +16,20 @@ The adapter establishes request/filter behavior. Server permission and rollback 
 
 ## Complete backend inventory
 
-RPCs (12): `apply_session_runtime_command`, `create_play_session`, `create_session_invite`, `get_session_recap`, `get_session_runtime_snapshot`, `join_session_by_code`, `leave_play_session`, `resolve_session_invite`, `revoke_session_invite`, `save_session_recap_summary`, `set_session_player_presence`, `set_session_status`.
+RPCs (0): none.
 
-Tables (3): `projects`, `session_players`, `sessions`.
+Tables (0): none.
 
 Storage buckets (0): none.
 
-Edge invokes (2): `session-media-token`, `session-recap`.
+Edge invokes (0): none.
 
-Realtime call sites: 11. Direct fetch sites: 0. Explicit auth/helper sites: 3.
+Realtime call sites: 0. Direct fetch sites: 0. Explicit auth/helper sites: 1.
 
 ## Complete implementation dependencies
 
 | Kind | Contract dependency | Implementation issue | Additional policy/group |
 |---|---|---|---|
-| rpc | `apply_session_runtime_command` | #814 | RPC-SESSION-RUNTIME |
-| rpc | `create_play_session` | #814 | RPC-SESSION-LIFECYCLE |
-| rpc | `create_session_invite` | #814 | RPC-SESSION-ACCESS |
-| rpc | `get_session_recap` | #814 | RPC-SESSION-RECAP |
-| rpc | `get_session_runtime_snapshot` | #814 | RPC-SESSION-RUNTIME |
-| rpc | `join_session_by_code` | #814 | RPC-SESSION-ACCESS |
-| rpc | `leave_play_session` | #814 | RPC-SESSION-ACCESS |
-| rpc | `resolve_session_invite` | #814 | RPC-SESSION-ACCESS |
-| rpc | `revoke_session_invite` | #814 | RPC-SESSION-ACCESS |
-| rpc | `save_session_recap_summary` | #814 | RPC-SESSION-RECAP |
-| rpc | `set_session_player_presence` | #814 | RPC-SESSION-RUNTIME |
-| rpc | `set_session_status` | #814 | RPC-SESSION-LIFECYCLE |
-| edge | `session-media-token` | #836 |  |
-| edge | `session-recap` | #837 |  |
-| table | `projects` | #791 | Policy #792 |
-| table | `session_players` | #791 | Policy #792 |
-| table | `sessions` | #791 | Policy #792 |
-| realtime | `postgres_changes channels and cleanup` | #796 |  |
 | auth | `authenticated account/session transport` | #793 |  |
 
 ## Acceptance and negative tests (required, not executed)
@@ -56,18 +38,6 @@ Realtime call sites: 11. Direct fetch sites: 0. Explicit auth/helper sites: 3.
 - Runtime event subscriptions use exact table/event/session filters and removeChannel on unsubscribe; explicit resync reloads authoritative state. Snapshot-before-subscribe gap and overlapping fetch ordering require an explicit successor consistency fixture.
 - Lobby ready is ephemeral broadcast with exacttopic/event/payload; spoofed ready userId cannot authorize gameplay.
 - Media missing factory/token/server becomes degraded without blocking gameplay; viewer publication denied by media-plane access; local-only presence and reliable:false data behavior remain explicit.
-- Contract fixture for apply_session_runtime_command: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
-- Contract fixture for create_play_session: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
-- Contract fixture for create_session_invite: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
-- Contract fixture for get_session_recap: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
-- Contract fixture for get_session_runtime_snapshot: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
-- Contract fixture for join_session_by_code: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
-- Contract fixture for leave_play_session: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
-- Contract fixture for resolve_session_invite: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
-- Contract fixture for revoke_session_invite: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
-- Contract fixture for save_session_recap_summary: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
-- Contract fixture for set_session_player_presence: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
-- Contract fixture for set_session_status: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
 
 ## Observed source defects and explicit successor decisions
 
@@ -180,575 +150,6 @@ this.room.off('dataReceived', this.dataListener)
 ```
 
 Enclosing operation: `src/infrastructure/session/media/livekit-media-plane-adapter.ts:184`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### edge: session-media-token
-
-`src/infrastructure/session/media/media-token-client.ts:50` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase.functions.invoke('session-media-token', {
-      body: { sessionId },
-    })
-```
-
-Enclosing operation: `src/infrastructure/session/media/media-token-client.ts:32`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### realtime-subscription: broadcast
-
-`src/infrastructure/session/session-lobby-channel.ts:49` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase
-    .channel(topic)
-    .on('broadcast', { event: 'ready' }, ({ payload }) => {
-      if (disposed) return;
-      const userId = typeof payload?.userId === 'string' ? payload.userId : null;
-      if (!userId) return;
-      onReady({ userId, ready: payload?.ready === true });
-    })
-```
-
-Enclosing operation: `src/infrastructure/session/session-lobby-channel.ts:27`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### channel: topic
-
-`src/infrastructure/session/session-lobby-channel.ts:49` — dynamic-expression.
-
-Exact call/query chain:
-```ts
-supabase
-    .channel(topic)
-    .on('broadcast', { event: 'ready' }, ({ payload }) => {
-      if (disposed) return;
-      const userId = typeof payload?.userId === 'string' ? payload.userId : null;
-      if (!userId) return;
-      onReady({ userId, ready: payload?.ready === true });
-    })
-```
-
-Enclosing operation: `src/infrastructure/session/session-lobby-channel.ts:27`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### realtime-subscribe: (status) => {
-      if (status === 'SUBSCRIBED') resolve();
-      if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
-        reject(new Error(`Lobby-Kanal: ${status}`));
-      }
-    }
-
-`src/infrastructure/session/session-lobby-channel.ts:63` — dynamic-expression.
-
-Exact call/query chain:
-```ts
-channel.subscribe((status) => {
-      if (status === 'SUBSCRIBED') resolve();
-      if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
-        reject(new Error(`Lobby-Kanal: ${status}`));
-      }
-    })
-```
-
-Enclosing operation: `src/infrastructure/session/session-lobby-channel.ts:58`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### realtime-send: {
-        type: 'broadcast',
-        event: 'ready',
-        payload: { userId: payload.userId, ready: payload.ready === true },
-      }
-
-`src/infrastructure/session/session-lobby-channel.ts:74` — dynamic-expression.
-
-Exact call/query chain:
-```ts
-channel.send({
-        type: 'broadcast',
-        event: 'ready',
-        payload: { userId: payload.userId, ready: payload.ready === true },
-      })
-```
-
-Enclosing operation: `src/infrastructure/session/session-lobby-channel.ts:72`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### realtime-cleanup: channel
-
-`src/infrastructure/session/session-lobby-channel.ts:83` — dynamic-expression.
-
-Exact call/query chain:
-```ts
-supabase.removeChannel(channel)
-```
-
-Enclosing operation: `src/infrastructure/session/session-lobby-channel.ts:80`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### edge: session-recap
-
-`src/infrastructure/session/session-recap-ai-service.ts:97` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase.functions.invoke('session-recap', {
-      body: { sessionId },
-    })
-```
-
-Enclosing operation: `src/infrastructure/session/session-recap-ai-service.ts:84`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### rpc: save_session_recap_summary
-
-`src/infrastructure/session/session-recap-ai-service.ts:138` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase.rpc('save_session_recap_summary', {
-        p_session_id: sessionId,
-        p_summary_text: summaryText,
-        p_status: status,
-      })
-```
-
-Enclosing operation: `src/infrastructure/session/session-recap-ai-service.ts:119`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### rpc: get_session_recap
-
-`src/infrastructure/session/session-recap-service.ts:48` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase.rpc('get_session_recap', { p_session_id: sessionId })
-```
-
-Enclosing operation: `src/infrastructure/session/session-recap-service.ts:28`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### realtime-subscription: postgres_changes
-
-`src/infrastructure/session/session-runtime-channel.ts:75` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase
-    .channel(topic)
-    .on(
-      'postgres_changes',
-      { event: '*', schema: 'public', table: 'sessions', filter: `id=eq.${sessionId}` },
-      () => {
-        void refresh();
-      },
-    )
-    .on(
-      'postgres_changes',
-      {
-        event: '*',
-        schema: 'public',
-        table: 'session_players',
-        filter: `session_id=eq.${sessionId}`,
-      },
-      () => {
-        void refresh();
-      },
-    )
-    .on(
-      'postgres_changes',
-      {
-        event: 'INSERT',
-        schema: 'public',
-        table: 'session_events',
-        filter: `session_id=eq.${sessionId}`,
-      },
-      () => {
-        void refresh();
-      },
-    )
-```
-
-Enclosing operation: `src/infrastructure/session/session-runtime-channel.ts:31`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### realtime-subscription: postgres_changes
-
-`src/infrastructure/session/session-runtime-channel.ts:75` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase
-    .channel(topic)
-    .on(
-      'postgres_changes',
-      { event: '*', schema: 'public', table: 'sessions', filter: `id=eq.${sessionId}` },
-      () => {
-        void refresh();
-      },
-    )
-    .on(
-      'postgres_changes',
-      {
-        event: '*',
-        schema: 'public',
-        table: 'session_players',
-        filter: `session_id=eq.${sessionId}`,
-      },
-      () => {
-        void refresh();
-      },
-    )
-    .on(
-      'postgres_changes',
-      {
-        event: 'INSERT',
-        schema: 'public',
-        table: 'session_events',
-        filter: `session_id=eq.${sessionId}`,
-      },
-      () => {
-        void refresh();
-      },
-    )
-```
-
-Enclosing operation: `src/infrastructure/session/session-runtime-channel.ts:31`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### realtime-subscription: postgres_changes
-
-`src/infrastructure/session/session-runtime-channel.ts:75` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase
-    .channel(topic)
-    .on(
-      'postgres_changes',
-      { event: '*', schema: 'public', table: 'sessions', filter: `id=eq.${sessionId}` },
-      () => {
-        void refresh();
-      },
-    )
-    .on(
-      'postgres_changes',
-      {
-        event: '*',
-        schema: 'public',
-        table: 'session_players',
-        filter: `session_id=eq.${sessionId}`,
-      },
-      () => {
-        void refresh();
-      },
-    )
-    .on(
-      'postgres_changes',
-      {
-        event: 'INSERT',
-        schema: 'public',
-        table: 'session_events',
-        filter: `session_id=eq.${sessionId}`,
-      },
-      () => {
-        void refresh();
-      },
-    )
-```
-
-Enclosing operation: `src/infrastructure/session/session-runtime-channel.ts:31`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### channel: topic
-
-`src/infrastructure/session/session-runtime-channel.ts:75` — dynamic-expression.
-
-Exact call/query chain:
-```ts
-supabase
-    .channel(topic)
-    .on(
-      'postgres_changes',
-      { event: '*', schema: 'public', table: 'sessions', filter: `id=eq.${sessionId}` },
-      () => {
-        void refresh();
-      },
-    )
-    .on(
-      'postgres_changes',
-      {
-        event: '*',
-        schema: 'public',
-        table: 'session_players',
-        filter: `session_id=eq.${sessionId}`,
-      },
-      () => {
-        void refresh();
-      },
-    )
-    .on(
-      'postgres_changes',
-      {
-        event: 'INSERT',
-        schema: 'public',
-        table: 'session_events',
-        filter: `session_id=eq.${sessionId}`,
-      },
-      () => {
-        void refresh();
-      },
-    )
-```
-
-Enclosing operation: `src/infrastructure/session/session-runtime-channel.ts:31`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### realtime-subscribe: (status) => {
-      if (status === 'SUBSCRIBED') resolve();
-      if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
-        reject(new Error(`Realtime-Subscribe fehlgeschlagen: ${status}`));
-      }
-    }
-
-`src/infrastructure/session/session-runtime-channel.ts:114` — dynamic-expression.
-
-Exact call/query chain:
-```ts
-channel.subscribe((status) => {
-      if (status === 'SUBSCRIBED') resolve();
-      if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
-        reject(new Error(`Realtime-Subscribe fehlgeschlagen: ${status}`));
-      }
-    })
-```
-
-Enclosing operation: `src/infrastructure/session/session-runtime-channel.ts:109`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### realtime-cleanup: channel
-
-`src/infrastructure/session/session-runtime-channel.ts:128` — dynamic-expression.
-
-Exact call/query chain:
-```ts
-supabase.removeChannel(channel)
-```
-
-Enclosing operation: `src/infrastructure/session/session-runtime-channel.ts:125`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### rpc: get_session_runtime_snapshot
-
-`src/infrastructure/session/session-runtime-service.ts:100` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase.rpc('get_session_runtime_snapshot', {
-      p_session_id: sessionId,
-    })
-```
-
-Enclosing operation: `src/infrastructure/session/session-runtime-service.ts:95`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### rpc: apply_session_runtime_command
-
-`src/infrastructure/session/session-runtime-service.ts:136` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase.rpc('apply_session_runtime_command', {
-      p_session_id: input.sessionId,
-      p_expected_revision: input.expectedRevision,
-      p_kind: kind,
-      p_payload: input.payload ?? {},
-      p_idempotency_key: input.idempotencyKey ?? null,
-    })
-```
-
-Enclosing operation: `src/infrastructure/session/session-runtime-service.ts:109`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### rpc: set_session_player_presence
-
-`src/infrastructure/session/session-runtime-service.ts:175` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase.rpc('set_session_player_presence', {
-      p_session_id: sessionId,
-      p_is_online: isOnline,
-      p_expected_revision: expectedRevision ?? null,
-    })
-```
-
-Enclosing operation: `src/infrastructure/session/session-runtime-service.ts:157`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### auth: session identity
-
-`src/infrastructure/session/session-service.ts:108` — dynamic-expression.
-
-Exact call/query chain:
-```ts
-supabase.auth.getSession()
-```
-
-Enclosing operation: `src/infrastructure/session/session-service.ts:105`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### auth: session identity
-
-`src/infrastructure/session/session-service.ts:113` — dynamic-expression.
-
-Exact call/query chain:
-```ts
-supabase.auth.getUser()
-```
-
-Enclosing operation: `src/infrastructure/session/session-service.ts:105`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: projects
-
-`src/infrastructure/session/session-service.ts:125` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase
-      .from('projects')
-      .select('gm_user_id')
-      .eq('id', projectId)
-      .maybeSingle()
-```
-
-Enclosing operation: `src/infrastructure/session/session-service.ts:123`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: session_players
-
-`src/infrastructure/session/session-service.ts:183` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase
-      .from(this.playersTableName)
-      .select('*')
-      .eq('session_id', sessionId)
-```
-
-Enclosing operation: `src/infrastructure/session/session-service.ts:182`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### rpc: create_play_session
-
-`src/infrastructure/session/session-service.ts:210` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase.rpc('create_play_session', {
-      p_project_id: projectId,
-      p_name: payload.name,
-    })
-```
-
-Enclosing operation: `src/infrastructure/session/session-service.ts:195`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### rpc: join_session_by_code
-
-`src/infrastructure/session/session-service.ts:233` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase.rpc('join_session_by_code', {
-      p_code: code,
-      p_character_id: payload.character_id ?? null,
-    })
-```
-
-Enclosing operation: `src/infrastructure/session/session-service.ts:223`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: sessions
-
-`src/infrastructure/session/session-service.ts:253` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase
-      .from(this.tableName)
-      .select(SESSION_SAFE_COLUMNS)
-      .eq('id', id)
-      .single()
-```
-
-Enclosing operation: `src/infrastructure/session/session-service.ts:247`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: projects
-
-`src/infrastructure/session/session-service.ts:276` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase
-      .from('projects')
-      .select('id')
-      .eq('gm_user_id', user.id)
-```
-
-Enclosing operation: `src/infrastructure/session/session-service.ts:268`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: sessions
-
-`src/infrastructure/session/session-service.ts:289` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase
-        .from(this.tableName)
-        .select(SESSION_SAFE_COLUMNS)
-        .in('project_id', gmProjectIds)
-        .neq('status', 'completed')
-        .order('created_at', { ascending: false })
-```
-
-Enclosing operation: `src/infrastructure/session/session-service.ts:268`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: session_players
-
-`src/infrastructure/session/session-service.ts:301` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase
-      .from(this.playersTableName)
-      .select(`*, sessions!inner(${SESSION_SAFE_COLUMNS})`)
-      .eq('user_id', user.id)
-```
-
-Enclosing operation: `src/infrastructure/session/session-service.ts:268`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### rpc: set_session_status
-
-`src/infrastructure/session/session-service.ts:346` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase.rpc('set_session_status', {
-      p_session_id: id,
-      p_status: status,
-    })
-```
-
-Enclosing operation: `src/infrastructure/session/session-service.ts:334`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### rpc: leave_play_session
-
-`src/infrastructure/session/session-service.ts:368` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase.rpc('leave_play_session', {
-      p_session_id: sessionId,
-    })
-```
-
-Enclosing operation: `src/infrastructure/session/session-service.ts:360`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: sessions
-
-`src/infrastructure/session/session-service.ts:405` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase.from(this.tableName).delete().eq('id', id)
-```
-
-Enclosing operation: `src/infrastructure/session/session-service.ts:380`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### rpc: create_session_invite
-
-`src/infrastructure/session/session-service.ts:429` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase.rpc('create_session_invite', {
-      p_session_id: sessionId,
-    })
-```
-
-Enclosing operation: `src/infrastructure/session/session-service.ts:419`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### rpc: resolve_session_invite
-
-`src/infrastructure/session/session-service.ts:472` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase.rpc('resolve_session_invite', {
-      p_token: normalized,
-    })
-```
-
-Enclosing operation: `src/infrastructure/session/session-service.ts:445`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### rpc: revoke_session_invite
-
-`src/infrastructure/session/session-service.ts:491` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase.rpc('revoke_session_invite', {
-      p_token: normalized,
-    })
-```
-
-Enclosing operation: `src/infrastructure/session/session-service.ts:481`; complete request/default/result/error logic is in the declarations below and the snapshot.
 
 ## Complete public declarations and facade operation contracts
 
@@ -1220,7 +621,7 @@ export type MediaPlaneAdapter = {
 };
 ```
 
-### src/infrastructure/session/media/media-token-client.ts:14
+### src/infrastructure/session/media/media-token-client.ts:10
 
 ```ts
 export type MediaTokenSuccess = {
@@ -1233,7 +634,7 @@ export type MediaTokenSuccess = {
 };
 ```
 
-### src/infrastructure/session/media/media-token-client.ts:23
+### src/infrastructure/session/media/media-token-client.ts:19
 
 ```ts
 export type MediaTokenDegraded = {
@@ -1244,13 +645,13 @@ export type MediaTokenDegraded = {
 };
 ```
 
-### src/infrastructure/session/media/media-token-client.ts:30
+### src/infrastructure/session/media/media-token-client.ts:26
 
 ```ts
 export type MediaTokenResult = MediaTokenSuccess | MediaTokenDegraded;
 ```
 
-### src/infrastructure/session/media/media-token-client.ts:32
+### src/infrastructure/session/media/media-token-client.ts:28
 
 ```ts
 export async function fetchSessionMediaToken(input: {
@@ -1265,73 +666,15 @@ export async function fetchSessionMediaToken(input: {
       message: 'sessionId fehlt.',
     };
   }
-
-  if (isHostLibraryEnabled()) {
-    return fetchHostSessionMediaToken(sessionId);
-  }
-
-  try {
-    const { data, error } = await supabase.functions.invoke('session-media-token', {
-      body: { sessionId },
-    });
-    if (error) {
-      return {
-        ok: false,
-        degraded: true,
-        reason: 'media_service_unavailable',
-        message: error.message || 'Media-Token-Dienst nicht erreichbar.',
-      };
-    }
-    const record = data as Record<string, unknown> | null;
-    if (!record || typeof record !== 'object') {
-      return {
-        ok: false,
-        degraded: true,
-        reason: 'media_service_unavailable',
-        message: 'Leere Media-Token-Antwort.',
-      };
-    }
-    if (record.degraded === true || record.ok === false) {
-      const reason =
-        record.reason === 'forbidden' ||
-        record.reason === 'unauthorized' ||
-        record.reason === 'bad_request'
-          ? record.reason
-          : 'media_service_unavailable';
-      return {
-        ok: false,
-        degraded: true,
-        reason,
-        message:
-          typeof record.message === 'string'
-            ? record.message
-            : 'Media plane degraded.',
-      };
-    }
-    const token = typeof record.token === 'string' ? record.token : '';
-    const url = typeof record.url === 'string' ? record.url : '';
-    const roomId = typeof record.roomId === 'string' ? record.roomId : '';
-    const expiresAt =
-      typeof record.expiresAt === 'string' ? record.expiresAt : '';
-    const ttlSeconds =
-      typeof record.ttlSeconds === 'number' ? record.ttlSeconds : 0;
-    if (!token || !url || !roomId) {
-      return {
-        ok: false,
-        degraded: true,
-        reason: 'media_service_unavailable',
-        message: 'Media-Token unvollständig.',
-      };
-    }
-    return { ok: true, token, url, roomId, expiresAt, ttlSeconds };
-  } catch (error) {
+  if (!isHostLibraryEnabled()) {
     return {
       ok: false,
       degraded: true,
       reason: 'media_service_unavailable',
-      message: error instanceof Error ? error.message : 'Media-Token-Fehler.',
+      message: 'Medien-Dienst nicht erreichbar.',
     };
   }
+  return fetchHostSessionMediaToken(sessionId);
 }
 ```
 
@@ -1673,7 +1016,7 @@ export class SessionMediaPlane {
 }
 ```
 
-### src/infrastructure/session/session-lobby-channel.ts:11
+### src/infrastructure/session/session-lobby-channel.ts:9
 
 ```ts
 export type LobbyReadyPayload = {
@@ -1682,13 +1025,13 @@ export type LobbyReadyPayload = {
 };
 ```
 
-### src/infrastructure/session/session-lobby-channel.ts:16
+### src/infrastructure/session/session-lobby-channel.ts:14
 
 ```ts
 export type LobbyReadyListener = (payload: LobbyReadyPayload) => void;
 ```
 
-### src/infrastructure/session/session-lobby-channel.ts:18
+### src/infrastructure/session/session-lobby-channel.ts:16
 
 ```ts
 export type SessionLobbySubscription = {
@@ -1704,73 +1047,28 @@ export async function subscribeSessionLobbyReady(
   sessionId: string,
   onReady: LobbyReadyListener,
 ): Promise<SessionLobbySubscription> {
-  if (isHostLibraryEnabled()) {
-    void sessionId;
-    let disposed = false;
-    return {
-      sendReady: async (payload) => {
-        if (disposed) return;
-        onReady({ userId: payload.userId, ready: payload.ready === true });
-      },
-      unsubscribe: async () => {
-        disposed = true;
-      },
-    };
-  }
-
-  let channel: RealtimeChannel | null = null;
+  assertHost();
+  void sessionId;
   let disposed = false;
-
-  const topic = `session-lobby:${sessionId}`;
-  channel = supabase
-    .channel(topic)
-    .on('broadcast', { event: 'ready' }, ({ payload }) => {
-      if (disposed) return;
-      const userId = typeof payload?.userId === 'string' ? payload.userId : null;
-      if (!userId) return;
-      onReady({ userId, ready: payload?.ready === true });
-    });
-
-  await new Promise<void>((resolve, reject) => {
-    if (!channel) {
-      reject(new Error('Lobby-Kanal fehlt'));
-      return;
-    }
-    channel.subscribe((status) => {
-      if (status === 'SUBSCRIBED') resolve();
-      if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
-        reject(new Error(`Lobby-Kanal: ${status}`));
-      }
-    });
-  });
-
   return {
     sendReady: async (payload) => {
-      if (!channel || disposed) return;
-      await channel.send({
-        type: 'broadcast',
-        event: 'ready',
-        payload: { userId: payload.userId, ready: payload.ready === true },
-      });
+      if (disposed) return;
+      onReady({ userId: payload.userId, ready: payload.ready === true });
     },
     unsubscribe: async () => {
       disposed = true;
-      if (channel) {
-        await supabase.removeChannel(channel);
-        channel = null;
-      }
     },
   };
 }
 ```
 
-### src/infrastructure/session/session-recap-ai-service.ts:17
+### src/infrastructure/session/session-recap-ai-service.ts:12
 
 ```ts
 export type EpisodeSummaryStatus = 'none' | 'draft' | 'approved';
 ```
 
-### src/infrastructure/session/session-recap-ai-service.ts:19
+### src/infrastructure/session/session-recap-ai-service.ts:14
 
 ```ts
 export type SessionRecapAiGenerateResult = {
@@ -1781,19 +1079,18 @@ export type SessionRecapAiGenerateResult = {
 };
 ```
 
-### src/infrastructure/session/session-recap-ai-service.ts:164
+### src/infrastructure/session/session-recap-ai-service.ts:54
 
 ```ts
 export const sessionRecapAiService = new SessionRecapAiService();
 ```
 
-### src/infrastructure/session/session-recap-service.ts:13
+### src/infrastructure/session/session-recap-service.ts:11
 
 ```ts
 export type SessionRecapDto = {
   readonly sessionId: string;
   readonly summaryText: string | null;
-  /** #573 — none|draft|approved (players only receive approved text). */
   readonly summaryStatus: 'none' | 'draft' | 'approved';
   readonly highlights: readonly RecapHighlightLine[];
   readonly createdAt: string | null;
@@ -1801,68 +1098,51 @@ export type SessionRecapDto = {
 };
 ```
 
-### src/infrastructure/session/session-recap-service.ts:73
+### src/infrastructure/session/session-recap-service.ts:52
 
 ```ts
 export const sessionRecapService = new SessionRecapService();
 ```
 
-### src/infrastructure/session/session-runtime-channel.ts:12
+### src/infrastructure/session/session-runtime-channel.ts:9
 
 ```ts
 export type SessionRuntimeListener = (state: SessionRuntimeState) => void;
 ```
 
-### src/infrastructure/session/session-runtime-channel.ts:14
+### src/infrastructure/session/session-runtime-channel.ts:11
 
 ```ts
 export interface SessionRuntimeSubscription {
-  /** Latest authoritative snapshot after connect or resync. */
   getState: () => SessionRuntimeState | null;
-  /** Force snapshot reload + keep channel (reconnect path). */
   resync: () => Promise<SessionRuntimeState>;
   unsubscribe: () => Promise<void>;
 }
 ```
 
-### src/infrastructure/session/session-runtime-channel.ts:31
+### src/infrastructure/session/session-runtime-channel.ts:28
 
 ```ts
 export async function subscribeSessionRuntime(
   sessionId: string,
   onChange: SessionRuntimeListener,
 ): Promise<SessionRuntimeSubscription> {
+  assertHost();
   let current: SessionRuntimeState | null = await sessionRuntimeService.getSnapshot(sessionId);
   onChange(current);
 
-  let channel: RealtimeChannel | null = null;
   let disposed = false;
-  let pollTimer: ReturnType<typeof setInterval> | null = null;
-
-  if (isHostLibraryEnabled()) {
-    const refresh = async (): Promise<SessionRuntimeState> => {
-      const next = await sessionRuntimeService.getSnapshot(sessionId);
-      current = next;
-      if (!disposed) onChange(next);
-      return next;
-    };
-    pollTimer = setInterval(() => {
-      void refresh().catch(() => {
+  const pollTimer = setInterval(() => {
+    void sessionRuntimeService
+      .getSnapshot(sessionId)
+      .then((next) => {
+        current = next;
+        if (!disposed) onChange(next);
+      })
+      .catch(() => {
         /* keep last good snapshot */
       });
-    }, HOST_RUNTIME_POLL_MS);
-    return {
-      getState: () => current,
-      resync: refresh,
-      unsubscribe: async () => {
-        disposed = true;
-        if (pollTimer) {
-          clearInterval(pollTimer);
-          pollTimer = null;
-        }
-      },
-    };
-  }
+  }, HOST_RUNTIME_POLL_MS);
 
   const refresh = async (): Promise<SessionRuntimeState> => {
     const next = await sessionRuntimeService.getSnapshot(sessionId);
@@ -1871,69 +1151,18 @@ export async function subscribeSessionRuntime(
     return next;
   };
 
-  const topic = `session-runtime:${sessionId}`;
-  channel = supabase
-    .channel(topic)
-    .on(
-      'postgres_changes',
-      { event: '*', schema: 'public', table: 'sessions', filter: `id=eq.${sessionId}` },
-      () => {
-        void refresh();
-      },
-    )
-    .on(
-      'postgres_changes',
-      {
-        event: '*',
-        schema: 'public',
-        table: 'session_players',
-        filter: `session_id=eq.${sessionId}`,
-      },
-      () => {
-        void refresh();
-      },
-    )
-    .on(
-      'postgres_changes',
-      {
-        event: 'INSERT',
-        schema: 'public',
-        table: 'session_events',
-        filter: `session_id=eq.${sessionId}`,
-      },
-      () => {
-        void refresh();
-      },
-    );
-
-  await new Promise<void>((resolve, reject) => {
-    if (!channel) {
-      reject(new Error('Realtime-Kanal konnte nicht erstellt werden'));
-      return;
-    }
-    channel.subscribe((status) => {
-      if (status === 'SUBSCRIBED') resolve();
-      if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
-        reject(new Error(`Realtime-Subscribe fehlgeschlagen: ${status}`));
-      }
-    });
-  });
-
   return {
     getState: () => current,
     resync: refresh,
     unsubscribe: async () => {
       disposed = true;
-      if (channel) {
-        await supabase.removeChannel(channel);
-        channel = null;
-      }
+      clearInterval(pollTimer);
     },
   };
 }
 ```
 
-### src/infrastructure/session/session-runtime-service.ts:70
+### src/infrastructure/session/session-runtime-service.ts:72
 
 ```ts
 export function mapSnapshotJson(data: SnapshotJson): SessionRuntimeState {
@@ -1956,13 +1185,13 @@ export function mapSnapshotJson(data: SnapshotJson): SessionRuntimeState {
 }
 ```
 
-### src/infrastructure/session/session-runtime-service.ts:194
+### src/infrastructure/session/session-runtime-service.ts:151
 
 ```ts
 export const sessionRuntimeService = new SessionRuntimeService();
 ```
 
-### src/infrastructure/session/session-service.ts:500
+### src/infrastructure/session/session-service.ts:181
 
 ```ts
 export const sessionService = new SessionService();
@@ -1971,640 +1200,7 @@ export const sessionService = new SessionService();
 
 ## Remaining backend helper operations
 
-### src/infrastructure/session/session-recap-ai-service.ts:84
-
-```ts
-async generateDraft(sessionId: string): Promise<SessionRecapAiGenerateResult> {
-    if (isHostLibraryEnabled()) {
-      const response = await generateHostSessionRecapDraft(sessionId);
-      if (response.status !== 'ok') {
-        throw new Error(response.message);
-      }
-      return {
-        summaryText: response.summaryText,
-        summaryStatus: response.summaryStatus === 'approved' ? 'approved' : 'draft',
-        provider: response.provider,
-        model: response.model,
-      };
-    }
-    const { data, error } = await supabase.functions.invoke('session-recap', {
-      body: { sessionId },
-    });
-    if (error) {
-      const serverMessage = await getFunctionErrorMessage(error);
-      throw new Error(
-        serverMessage ??
-          'Zusammenfassung konnte nicht generiert werden. Bitte manuell schreiben.',
-      );
-    }
-    const response = parseFunctionResponse(data);
-    if (response.status !== 'ok') {
-      throw new Error(response.message);
-    }
-    return {
-      summaryText: response.summaryText,
-      summaryStatus: response.summaryStatus === 'approved' ? 'approved' : 'draft',
-      provider: response.provider,
-      model: response.model,
-    };
-  }
-```
-
-### src/infrastructure/session/session-recap-ai-service.ts:119
-
-```ts
-async saveSummary(
-    sessionId: string,
-    summaryText: string,
-    status: 'draft' | 'approved',
-  ): Promise<{ summaryText: string | null; summaryStatus: EpisodeSummaryStatus }> {
-    if (isHostLibraryEnabled()) {
-      const saved = await saveHostSessionRecapSummary(sessionId, summaryText, status);
-      return {
-        summaryText:
-          typeof saved.summaryText === 'string' ? saved.summaryText : summaryText,
-        summaryStatus:
-          saved.summaryStatus === 'approved'
-            ? 'approved'
-            : saved.summaryStatus === 'draft'
-              ? 'draft'
-              : status,
-      };
-    }
-    const { data, error } = await raceWithTimeoutReject(
-      supabase.rpc('save_session_recap_summary', {
-        p_session_id: sessionId,
-        p_summary_text: summaryText,
-        p_status: status,
-      }),
-      SUPABASE_QUERY_TIMEOUT_MS,
-      'Speichern Zeitüberschreitung',
-    );
-    if (error) {
-      throw new Error(error.message || 'Zusammenfassung konnte nicht gespeichert werden');
-    }
-    if (!isRecord(data)) {
-      return { summaryText, summaryStatus: status };
-    }
-    return {
-      summaryText: typeof data.summaryText === 'string' ? data.summaryText : summaryText,
-      summaryStatus:
-        data.summaryStatus === 'approved'
-          ? 'approved'
-          : data.summaryStatus === 'draft'
-            ? 'draft'
-            : 'none',
-    };
-  }
-```
-
-### src/infrastructure/session/session-recap-service.ts:28
-
-```ts
-async getBySessionId(sessionId: string): Promise<SessionRecapDto | null> {
-    if (isHostLibraryEnabled()) {
-      const data = await fetchHostSessionRecap(sessionId);
-      if (data == null) return null;
-      if (!isRecord(data)) {
-        throw new Error('Ungültige Recap-Antwort');
-      }
-      const statusRaw = typeof data.summaryStatus === 'string' ? data.summaryStatus : 'none';
-      const summaryStatus =
-        statusRaw === 'approved' || statusRaw === 'draft' ? statusRaw : 'none';
-      return {
-        sessionId: typeof data.sessionId === 'string' ? data.sessionId : sessionId,
-        summaryText: typeof data.summaryText === 'string' ? data.summaryText : null,
-        summaryStatus,
-        highlights: parsePersistedRecapHighlightLines(data.highlightLines),
-        createdAt: typeof data.createdAt === 'string' ? data.createdAt : null,
-        updatedAt: typeof data.updatedAt === 'string' ? data.updatedAt : null,
-      };
-    }
-    const { data, error } = await raceWithTimeoutReject(
-      supabase.rpc('get_session_recap', { p_session_id: sessionId }),
-      SUPABASE_QUERY_TIMEOUT_MS,
-      'Recap Zeitüberschreitung',
-    );
-    if (error) {
-      throw new Error(error.message || 'Recap konnte nicht geladen werden');
-    }
-    if (data == null) return null;
-    if (!isRecord(data)) {
-      throw new Error('Ungültige Recap-Antwort');
-    }
-    const statusRaw = typeof data.summaryStatus === 'string' ? data.summaryStatus : 'none';
-    const summaryStatus =
-      statusRaw === 'approved' || statusRaw === 'draft' ? statusRaw : 'none';
-    return {
-      sessionId: typeof data.sessionId === 'string' ? data.sessionId : sessionId,
-      summaryText: typeof data.summaryText === 'string' ? data.summaryText : null,
-      summaryStatus,
-      highlights: parsePersistedRecapHighlightLines(data.highlightLines),
-      createdAt: typeof data.createdAt === 'string' ? data.createdAt : null,
-      updatedAt: typeof data.updatedAt === 'string' ? data.updatedAt : null,
-    };
-  }
-```
-
-### src/infrastructure/session/session-runtime-service.ts:95
-
-```ts
-async getSnapshot(sessionId: string): Promise<SessionRuntimeState> {
-    if (isHostLibraryEnabled()) {
-      const data = await fetchHostSessionRuntime(sessionId);
-      return mapSnapshotJson(data as SnapshotJson);
-    }
-    const { data, error } = await supabase.rpc('get_session_runtime_snapshot', {
-      p_session_id: sessionId,
-    });
-    if (error || !data) {
-      throw new Error(error?.message ?? 'Runtime-Snapshot fehlgeschlagen');
-    }
-    return mapSnapshotJson(data as SnapshotJson);
-  }
-```
-
-### src/infrastructure/session/session-runtime-service.ts:109
-
-```ts
-async applyCommand(input: {
-    sessionId: string;
-    expectedRevision: number;
-    kind: SessionEventKind | string;
-    payload?: Record<string, unknown>;
-    idempotencyKey?: string | null;
-  }): Promise<SessionRuntimeState> {
-    const kind = assertSessionEventKind(input.kind);
-    if (isHostLibraryEnabled()) {
-      try {
-        const data = await applyHostSessionRuntimeCommand({
-          sessionId: input.sessionId,
-          expectedRevision: input.expectedRevision,
-          kind,
-          payload: input.payload ?? {},
-          idempotencyKey: input.idempotencyKey ?? null,
-        });
-        return mapSnapshotJson(data as SnapshotJson);
-      } catch (err) {
-        const message = err instanceof Error ? err.message : String(err);
-        if (isStaleRpcError(message) || /STALE_REVISION/i.test(message)) {
-          const snap = await this.getSnapshot(input.sessionId);
-          throw new StaleRuntimeRevisionError(input.expectedRevision, snap.revision);
-        }
-        throw err instanceof Error ? err : new Error(message);
-      }
-    }
-    const { data, error } = await supabase.rpc('apply_session_runtime_command', {
-      p_session_id: input.sessionId,
-      p_expected_revision: input.expectedRevision,
-      p_kind: kind,
-      p_payload: input.payload ?? {},
-      p_idempotency_key: input.idempotencyKey ?? null,
-    });
-
-    if (error) {
-      if (isStaleRpcError(error.message)) {
-        const snap = await this.getSnapshot(input.sessionId);
-        throw new StaleRuntimeRevisionError(input.expectedRevision, snap.revision);
-      }
-      throw new Error(error.message);
-    }
-    if (!data) {
-      throw new Error('Runtime-Befehl lieferte kein Ergebnis');
-    }
-    return mapSnapshotJson(data as SnapshotJson);
-  }
-```
-
-### src/infrastructure/session/session-runtime-service.ts:157
-
-```ts
-async setPresence(
-    sessionId: string,
-    isOnline: boolean,
-    expectedRevision?: number | null,
-  ): Promise<SessionRuntimeState> {
-    if (isHostLibraryEnabled()) {
-      try {
-        const data = await setHostSessionPresence(sessionId, isOnline, expectedRevision);
-        return mapSnapshotJson(data as SnapshotJson);
-      } catch (err) {
-        const message = err instanceof Error ? err.message : String(err);
-        if (isStaleRpcError(message) || /STALE_REVISION/i.test(message)) {
-          const snap = await this.getSnapshot(sessionId);
-          throw new StaleRuntimeRevisionError(expectedRevision ?? -1, snap.revision);
-        }
-        throw err instanceof Error ? err : new Error(message);
-      }
-    }
-    const { data, error } = await supabase.rpc('set_session_player_presence', {
-      p_session_id: sessionId,
-      p_is_online: isOnline,
-      p_expected_revision: expectedRevision ?? null,
-    });
-    if (error) {
-      if (isStaleRpcError(error.message)) {
-        const snap = await this.getSnapshot(sessionId);
-        throw new StaleRuntimeRevisionError(expectedRevision ?? -1, snap.revision);
-      }
-      throw new Error(error.message);
-    }
-    if (!data) {
-      throw new Error('Presence-Update fehlgeschlagen');
-    }
-    return mapSnapshotJson(data as SnapshotJson);
-  }
-```
-
-### src/infrastructure/session/session-service.ts:105
-
-```ts
-private async requireAuthUser(): Promise<{ id: string }> {
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
-    if (session?.user?.id) return session.user;
-
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (user?.id) return user;
-
-    if (isLocalAdminSession()) {
-      return { id: LOCAL_ADMIN_USER_ID };
-    }
-
-    throw new Error('User not authenticated');
-  }
-```
-
-### src/infrastructure/session/session-service.ts:123
-
-```ts
-private async resolveGmUserId(projectId: string | null): Promise<string> {
-    if (!projectId) return '';
-    const { data, error } = await supabase
-      .from('projects')
-      .select('gm_user_id')
-      .eq('id', projectId)
-      .maybeSingle();
-    if (error || !data) return '';
-    return typeof data.gm_user_id === 'string' ? data.gm_user_id : '';
-  }
-```
-
-### src/infrastructure/session/session-service.ts:182
-
-```ts
-private async loadPlayers(sessionId: string): Promise<SessionPlayerDto[]> {
-    const { data, error } = await supabase
-      .from(this.playersTableName)
-      .select('*')
-      .eq('session_id', sessionId);
-
-    if (error) {
-      console.error('Failed to load session players:', error);
-      return [];
-    }
-    return (data ?? []) as SessionPlayerDto[];
-  }
-```
-
-### src/infrastructure/session/session-service.ts:195
-
-```ts
-async createSession(payload: CreateSessionDto): Promise<SessionVm> {
-    const projectId = payload.project_id || payload.adventure_id;
-    if (!projectId) {
-      throw new Error('project_id ist erforderlich, um eine Session zu erstellen');
-    }
-
-    // Dual-path (MIG-311 / FE-HOST-02): host authenticates its own cookie — do not
-    // require a Supabase JWT first (Better Auth cookie-only deployments).
-    if (isHostLibraryEnabled()) {
-      const row = await createHostPlaySession(projectId, payload.name ?? null);
-      return mapHostPlaySessionToVm(row);
-    }
-
-    await this.requireAuthUser();
-
-    const { data, error } = await supabase.rpc('create_play_session', {
-      p_project_id: projectId,
-      p_name: payload.name,
-    });
-
-    if (error || !data) {
-      throw new Error(`Failed to create session: ${error?.message ?? 'unknown'}`);
-    }
-
-    const dto = await this.mapRowToDto(data as SessionRow);
-    return this.mapToViewModel(dto, []);
-  }
-```
-
-### src/infrastructure/session/session-service.ts:223
-
-```ts
-async joinSession(payload: JoinSessionDto): Promise<SessionVm> {
-    const code = normalizeSessionJoinCode(payload.code);
-
-    if (isHostLibraryEnabled()) {
-      const row = await joinHostSessionByCode(code, payload.character_id ?? null);
-      return mapHostPlaySessionToVm(row);
-    }
-
-    await this.requireAuthUser();
-
-    const { data, error } = await supabase.rpc('join_session_by_code', {
-      p_code: code,
-      p_character_id: payload.character_id ?? null,
-    });
-
-    if (error || !data) {
-      throw new Error(error?.message || 'Session nicht gefunden');
-    }
-
-    const dto = await this.mapRowToDto(data as SessionRow);
-    const players = await this.loadPlayers(dto.id);
-    return this.mapToViewModel(dto, players);
-  }
-```
-
-### src/infrastructure/session/session-service.ts:247
-
-```ts
-async getSessionById(id: string): Promise<SessionVm> {
-    if (isHostLibraryEnabled()) {
-      const row = await fetchHostSession(id);
-      return mapHostPlaySessionToVm(row);
-    }
-
-    const { data: session, error: sessionError } = await supabase
-      .from(this.tableName)
-      .select(SESSION_SAFE_COLUMNS)
-      .eq('id', id)
-      .single();
-
-    if (sessionError || !session) {
-      throw new Error('Session not found');
-    }
-
-    const dto = await this.mapRowToDto(session as unknown as SessionRow);
-    const players = await this.loadPlayers(id);
-    return this.mapToViewModel(dto, players);
-  }
-```
-
-### src/infrastructure/session/session-service.ts:268
-
-```ts
-async getUserSessions(): Promise<SessionVm[]> {
-    if (isHostLibraryEnabled()) {
-      const rows = await fetchHostSessions();
-      return rows.map(mapHostPlaySessionToVm);
-    }
-
-    const user = await this.requireAuthUser();
-
-    const { data: gmProjects, error: gmProjectsError } = await supabase
-      .from('projects')
-      .select('id')
-      .eq('gm_user_id', user.id);
-
-    if (gmProjectsError) {
-      throw new Error(`Failed to fetch GM projects: ${gmProjectsError.message}`);
-    }
-
-    const gmProjectIds = (gmProjects ?? []).map((p) => p.id as string);
-
-    let gmSessions: SessionRow[] = [];
-    if (gmProjectIds.length > 0) {
-      const { data, error } = await supabase
-        .from(this.tableName)
-        .select(SESSION_SAFE_COLUMNS)
-        .in('project_id', gmProjectIds)
-        .neq('status', 'completed')
-        .order('created_at', { ascending: false });
-      if (error) {
-        throw new Error(`Failed to fetch GM sessions: ${error.message}`);
-      }
-      gmSessions = (data ?? []) as unknown as SessionRow[];
-    }
-
-    const { data: playerRecords, error: playerError } = await supabase
-      .from(this.playersTableName)
-      .select(`*, sessions!inner(${SESSION_SAFE_COLUMNS})`)
-      .eq('user_id', user.id);
-
-    if (playerError) {
-      console.error('Failed to fetch player sessions:', playerError);
-    }
-
-    type PlayerSessionJoinRow = { sessions: SessionRow | SessionRow[] | null };
-    const playerSessions = ((playerRecords || []) as PlayerSessionJoinRow[])
-      .map((record) => record.sessions)
-      .flatMap((session) => (Array.isArray(session) ? session : session ? [session] : []))
-      .filter((session) => session.status !== 'completed');
-
-    const allSessionIds = new Set<string>();
-    const combined: SessionRow[] = [];
-    [...gmSessions, ...playerSessions].forEach((session) => {
-      if (!allSessionIds.has(session.id)) {
-        allSessionIds.add(session.id);
-        combined.push(session);
-      }
-    });
-
-    return Promise.all(
-      combined.map(async (session) => {
-        const dto = await this.mapRowToDto(session);
-        const players = await this.loadPlayers(session.id);
-        return this.mapToViewModel(dto, players);
-      }),
-    );
-  }
-```
-
-### src/infrastructure/session/session-service.ts:334
-
-```ts
-async updateSessionStatus(
-    id: string,
-    status: PlaySessionStatus,
-  ): Promise<SessionVm> {
-    const current = await this.getSessionById(id);
-    assertPlaySessionStatusTransition(current.status, status);
-
-    if (isHostLibraryEnabled()) {
-      const row = await setHostSessionStatus(id, status);
-      return mapHostPlaySessionToVm(row);
-    }
-
-    const { data, error } = await supabase.rpc('set_session_status', {
-      p_session_id: id,
-      p_status: status,
-    });
-
-    if (error || !data) {
-      throw new Error(`Failed to update session: ${error?.message ?? 'unknown'}`);
-    }
-
-    const dto = await this.mapRowToDto(data as SessionRow);
-    const players = await this.loadPlayers(id);
-    return this.mapToViewModel(dto, players);
-  }
-```
-
-### src/infrastructure/session/session-service.ts:360
-
-```ts
-async leaveSession(sessionId: string): Promise<void> {
-    if (isHostLibraryEnabled()) {
-      await leaveHostPlaySession(sessionId);
-      return;
-    }
-
-    await this.requireAuthUser();
-
-    const { error } = await supabase.rpc('leave_play_session', {
-      p_session_id: sessionId,
-    });
-
-    if (error) {
-      throw new Error(`Failed to leave session: ${error.message}`);
-    }
-  }
-```
-
-### src/infrastructure/session/session-service.ts:380
-
-```ts
-async deleteSession(sessionId: string): Promise<void> {
-    const id = sessionId.trim();
-    if (!id) {
-      throw new Error('Session-ID fehlt');
-    }
-    // Host-first: Better Auth cookie path — never require Supabase session first.
-    if (isHostLibraryEnabled()) {
-      try {
-        await deleteHostPlaySession(id);
-      } catch (error) {
-        const message = error instanceof Error ? error.message : String(error);
-        if (/42501|forbidden|not[_-]?authorized/i.test(message)) {
-          throw new Error('Nur der Gamemaster kann Sessions löschen.');
-        }
-        throw new Error(
-          message.includes('Host-Session löschen fehlgeschlagen')
-            ? message
-            : `Session konnte nicht gelöscht werden: ${message}`,
-        );
-      }
-      return;
-    }
-
-    await this.requireAuthUser();
-
-    const { error } = await supabase.from(this.tableName).delete().eq('id', id);
-
-    if (error) {
-      throw new Error(
-        error.message.includes('row-level security')
-          ? 'Nur der Gamemaster kann Sessions löschen.'
-          : `Session konnte nicht gelöscht werden: ${error.message}`,
-      );
-    }
-  }
-```
-
-### src/infrastructure/session/session-service.ts:419
-
-```ts
-async createSessionInvite(sessionId: string): Promise<SessionInviteCreateResult> {
-    if (isHostLibraryEnabled()) {
-      const invite = await createHostSessionInvite(sessionId);
-      const mapped = mapInviteCreatePayload(invite);
-      if (!mapped) {
-        throw new Error('Einladung konnte nicht erstellt werden: ungültige Server-Antwort');
-      }
-      return mapped;
-    }
-    await this.requireAuthUser();
-    const { data, error } = await supabase.rpc('create_session_invite', {
-      p_session_id: sessionId,
-    });
-    if (error) {
-      throw new Error(`Einladung konnte nicht erstellt werden: ${error.message}`);
-    }
-    const mapped = mapInviteCreatePayload(data);
-    if (!mapped) {
-      throw new Error('Einladung konnte nicht erstellt werden: ungültige Server-Antwort');
-    }
-    return mapped;
-  }
-```
-
-### src/infrastructure/session/session-service.ts:445
-
-```ts
-async resolveSessionInvite(token: string): Promise<SessionInviteResolveResult> {
-    const normalized = normalizeInviteToken(token);
-    if (!normalized) {
-      return { ok: false, errorCode: 'missing_token' };
-    }
-    if (isHostLibraryEnabled()) {
-      try {
-        const invite = await resolveHostSessionInvite(normalized);
-        return mapInviteResolvePayload(invite);
-      } catch (err) {
-        const message = err instanceof Error ? err.message : String(err);
-        const mapped = mapInviteResolvePayload({
-          ok: false,
-          error_code: message.includes('expired')
-            ? 'expired'
-            : message.includes('revoked')
-              ? 'revoked'
-              : message.includes('completed')
-                ? 'session_completed'
-                : message.includes('missing') || message.includes('P0002')
-                  ? 'not_found'
-                  : 'not_found',
-        });
-        return mapped;
-      }
-    }
-    await this.requireAuthUser();
-    const { data, error } = await supabase.rpc('resolve_session_invite', {
-      p_token: normalized,
-    });
-    if (error) {
-      throw new Error(`Einladung konnte nicht gelesen werden: ${error.message}`);
-    }
-    return mapInviteResolvePayload(data);
-  }
-```
-
-### src/infrastructure/session/session-service.ts:481
-
-```ts
-async revokeSessionInvite(token: string): Promise<void> {
-    const normalized = normalizeInviteToken(token);
-    if (!normalized) {
-      throw new Error('Token fehlt');
-    }
-    if (isHostLibraryEnabled()) {
-      await revokeHostSessionInvite(normalized);
-      return;
-    }
-    await this.requireAuthUser();
-    const { error } = await supabase.rpc('revoke_session_invite', {
-      p_token: normalized,
-    });
-    if (error) {
-      throw new Error(`Einladung konnte nicht widerrufen werden: ${error.message}`);
-    }
-  }
-```
-
+All backend operations are included in the public declarations above.
 
 ## Verification source manifest
 
@@ -2618,7 +1214,7 @@ async revokeSessionInvite(token: string): Promise<void> {
 | `src/domains/session/contracts/session-runtime.ts` | `c928a253185cf9aa6fac10b380807033d86c0df4120fdc80b223800c626b84e2` |
 | `src/domains/session/contracts/session.types.ts` | `3f2056b6b4cb4ef86dbffd4271482131a3bf4714c3329b8827a067acfde29a04` |
 | `src/domains/session/media/media-plane-contract.ts` | `7cba204291a86a1159b961048280899541f95c102abad8e2c8f61e7662ba8c1b` |
-| `src/infrastructure/host/host-library-http.ts` | `b2343081ddce2e2edd73651b0622e8b4cc6d8583d746a863dbe3343e3a98f71a` |
+| `src/infrastructure/host/host-library-http.ts` | `1d41f3b1eb3e71a3a8b12306993b605f2d05f2f41cd35f73b9c362b12f9c1cb6` |
 | `src/infrastructure/host/host-session-http.ts` | `763c2535c26f746b60ff3f68358fb7c37c20384bd9f4a9a5a7d9bf2710e0ab81` |
 | `src/infrastructure/session/host-session-adapter.ts` | `57c52ff948f0e5169f302c2de0a58e4eabffa35668fb121605533bcddbb3d4fb` |
 | `src/infrastructure/session/host-session-ports.contract.ts` | `b7d49eee90da55c7a0acadd765ddb202527fc003789f855ae910425e073f928f` |
@@ -2626,19 +1222,18 @@ async revokeSessionInvite(token: string): Promise<void> {
 | `src/infrastructure/session/media/index.ts` | `ba6906bf57e04303b283786671d0ae7e0024949e512d59b3b783289e6ba19155` |
 | `src/infrastructure/session/media/livekit-media-plane-adapter.ts` | `ba41c95f3816b79818a9c312c056ec896ac75fd4633dba27954cdcdb797b381d` |
 | `src/infrastructure/session/media/media-plane-adapter.ts` | `1dbdf0f7c75c1edc435fb629d5029a1c04806a5a6cbcf9b037ad8a620dcc34cd` |
-| `src/infrastructure/session/media/media-token-client.ts` | `870b4220178bcd0f10ef961a6f6f0bbf307c8c31370b9360507f3a23d28fa84a` |
+| `src/infrastructure/session/media/media-token-client.ts` | `c554cc7bdddcf519de1aba83c9804ff8edf62e75f95c409aebb771fad023c7dd` |
 | `src/infrastructure/session/media/memory-media-plane-adapter.ts` | `31fc7cee75c49c1e3af09b784e4a8dad3446bbe5ae5ddd6f7b2c9aee142dc5be` |
 | `src/infrastructure/session/media/memory-media-plane-bus.ts` | `1616d229067f513a12c67319aec28649e3a0afdf77779f9071b595dc024ff193` |
 | `src/infrastructure/session/media/session-media-plane.ts` | `ce8d3ec690f83745646400443d7870cd96383e341628a2d8f017e2d391fbb225` |
-| `src/infrastructure/session/session-lobby-channel.ts` | `ee5e6dd9c12b03ec7a1868c435b46b1226d4bc9415ef2be652eaa1498a2d7252` |
-| `src/infrastructure/session/session-recap-ai-service.ts` | `549ecbd3c5d57a6c8e3f1b64430f24c2d198c62b4df610d2e124d07caddf8c0e` |
-| `src/infrastructure/session/session-recap-service.ts` | `e98ca57169a56a5ce0943018e33b0d7c863754e4787eace8bf0e2bbc2930fca5` |
-| `src/infrastructure/session/session-runtime-channel.ts` | `248a264d97d01d522e05baa27132799d08bc092e661a72cca6ed501d7f48cdf5` |
-| `src/infrastructure/session/session-runtime-service.ts` | `67026e83dc5320ff5f2274d5ee4f65c95f97e3d1d6828dcfeb5d5652feddbe79` |
-| `src/infrastructure/session/session-service.ts` | `9109e84fb2c7625aae96928d15b3c0e44ea4598cded3a9e0601d6e4031e8db2d` |
-| `src/lib/authenticatedUser.ts` | `d4cbf3a004f8375982ca03d474fb7b61559fc2ec58ad6fe7b1f8834d26abf10c` |
+| `src/infrastructure/session/session-lobby-channel.ts` | `3747d80942a4ea3cc19c9add12dd8167f3642895cc57d57f0df494c095f4e5e5` |
+| `src/infrastructure/session/session-recap-ai-service.ts` | `b0161e496d5de5ecc1a850a5eb908611396b03b69860fd6e9d93be2f92822960` |
+| `src/infrastructure/session/session-recap-service.ts` | `0fb9b8f81980a70e42c578ed1274ad43b6098f2cac6c6cf89cbba5bd0ab934fc` |
+| `src/infrastructure/session/session-runtime-channel.ts` | `07b49ed37f61a3e737f58e42b5fea1dd8151c66430014ce1f8fb04e1a85fa69a` |
+| `src/infrastructure/session/session-runtime-service.ts` | `49c9781729542abf9ca36d23d26ddf7206bd1247b6f5fe6b7e964f5942cf2961` |
+| `src/infrastructure/session/session-service.ts` | `674d30a083283997b85b3f5397276675403bceb5de34832009ee1d1355ffa40a` |
+| `src/lib/authenticatedUser.ts` | `5d9deef60efd85a3ecd56e9b55f67ecb2d03c2964c4f9217e6de6842d8e0b403` |
 | `src/lib/hostAuthBridge.ts` | `30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a` |
-| `src/lib/localAdmin.ts` | `3a28dec23e85f25ed3e70682bc6e7f8c6b55e81dbbefdd1f6a837f68ac80d6b5` |
+| `src/lib/localAdmin.ts` | `103feaea892b0582022557ff81cef61105f3d9ed4eb421a20d8b0b415c2de498` |
 | `src/lib/networkTimeout.ts` | `835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851` |
-| `src/lib/supabase.ts` | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
 

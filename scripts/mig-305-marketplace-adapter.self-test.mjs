@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * mig-305-marketplace-adapter.self-test — Marketplace host ports + dual-path seam (#804).
+ * mig-305-marketplace-adapter.self-test — Marketplace host ports + host-only FE (#804 / CUT-20).
  * Location: scripts/mig-305-marketplace-adapter.self-test.mjs
  */
 import { mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";

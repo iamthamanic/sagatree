@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-user-profile.json](source-contracts/infra-user-profile.json) (SHA-256 `22a2bab848221b1cc8181e95b2c96b32dd76461ab7f669fd4a8a988a0213059a`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-user-profile.json](source-contracts/infra-user-profile.json) (SHA-256 `33cb2d5e10ce658fc95d384a17005197e970e999ef76690ad669989f34bdf94a`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -18,21 +18,18 @@ The adapter establishes request/filter behavior. Server permission and rollback 
 
 RPCs (0): none.
 
-Tables (1): `user_profiles`.
+Tables (0): none.
 
-Storage buckets (1): `user-avatars`.
+Storage buckets (0): none.
 
 Edge invokes (0): none.
 
-Realtime call sites: 0. Direct fetch sites: 0. Explicit auth/helper sites: 3.
+Realtime call sites: 0. Direct fetch sites: 0. Explicit auth/helper sites: 0.
 
 ## Complete implementation dependencies
 
 | Kind | Contract dependency | Implementation issue | Additional policy/group |
 |---|---|---|---|
-| table | `user_profiles` | #791 | Policy #792 |
-| storage | `user-avatars` | #841 |  |
-| auth | `authenticated account/session transport` | #793 |  |
 | infra | `media` | #805 |  |
 
 ## Acceptance and negative tests (required, not executed)
@@ -47,163 +44,7 @@ Realtime call sites: 0. Direct fetch sites: 0. Explicit auth/helper sites: 3.
 
 ## All backend calls, arguments, filters and result handling
 
-### storage: user-avatars
-
-`src/infrastructure/user-profile/supabase-user-profile.repository.ts:61` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase.storage
-    .from(USER_AVATARS_BUCKET)
-    .createSignedUrl(path, USER_AVATAR_SIGNED_SECONDS)
-```
-
-Enclosing operation: `src/infrastructure/user-profile/supabase-user-profile.repository.ts:59`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### auth-helper: session identity
-
-`src/infrastructure/user-profile/supabase-user-profile.repository.ts:92` — dynamic-expression.
-
-Exact call/query chain:
-```ts
-getAuthenticatedUserId()
-```
-
-Enclosing operation: `src/infrastructure/user-profile/supabase-user-profile.repository.ts:91`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: user_profiles
-
-`src/infrastructure/user-profile/supabase-user-profile.repository.ts:93` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase
-      .from('user_profiles')
-      .select('id')
-      .eq('id', userId)
-      .maybeSingle()
-```
-
-Enclosing operation: `src/infrastructure/user-profile/supabase-user-profile.repository.ts:91`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: user_profiles
-
-`src/infrastructure/user-profile/supabase-user-profile.repository.ts:103` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase.from('user_profiles').insert({ id: userId })
-```
-
-Enclosing operation: `src/infrastructure/user-profile/supabase-user-profile.repository.ts:91`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### auth-helper: session identity
-
-`src/infrastructure/user-profile/supabase-user-profile.repository.ts:111` — dynamic-expression.
-
-Exact call/query chain:
-```ts
-getAuthenticatedUserId()
-```
-
-Enclosing operation: `src/infrastructure/user-profile/supabase-user-profile.repository.ts:110`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: user_profiles
-
-`src/infrastructure/user-profile/supabase-user-profile.repository.ts:113` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase
-      .from('user_profiles')
-      .select('id, display_name, avatar_path, updated_at')
-      .eq('id', userId)
-      .maybeSingle()
-```
-
-Enclosing operation: `src/infrastructure/user-profile/supabase-user-profile.repository.ts:110`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: user_profiles
-
-`src/infrastructure/user-profile/supabase-user-profile.repository.ts:134` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase
-      .from('user_profiles')
-      .select('id, display_name, avatar_path, updated_at')
-      .in('id', ids)
-```
-
-Enclosing operation: `src/infrastructure/user-profile/supabase-user-profile.repository.ts:131`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### auth-helper: session identity
-
-`src/infrastructure/user-profile/supabase-user-profile.repository.ts:149` — dynamic-expression.
-
-Exact call/query chain:
-```ts
-getAuthenticatedUserId()
-```
-
-Enclosing operation: `src/infrastructure/user-profile/supabase-user-profile.repository.ts:148`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### storage: user-avatars
-
-`src/infrastructure/user-profile/supabase-user-profile.repository.ts:165` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase.storage
-      .from(USER_AVATARS_BUCKET)
-      .upload(filePath, file, {
-        contentType: sniffed,
-        upsert: false,
-      })
-```
-
-Enclosing operation: `src/infrastructure/user-profile/supabase-user-profile.repository.ts:148`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: user_profiles
-
-`src/infrastructure/user-profile/supabase-user-profile.repository.ts:175` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase
-      .from('user_profiles')
-      .select('avatar_path')
-      .eq('id', userId)
-      .maybeSingle()
-```
-
-Enclosing operation: `src/infrastructure/user-profile/supabase-user-profile.repository.ts:148`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: user_profiles
-
-`src/infrastructure/user-profile/supabase-user-profile.repository.ts:185` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase
-      .from('user_profiles')
-      .update({ avatar_path: filePath })
-      .eq('id', userId)
-      .select('id, display_name, avatar_path, updated_at')
-      .single()
-```
-
-Enclosing operation: `src/infrastructure/user-profile/supabase-user-profile.repository.ts:148`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### storage: user-avatars
-
-`src/infrastructure/user-profile/supabase-user-profile.repository.ts:193` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase.storage.from(USER_AVATARS_BUCKET).remove([filePath])
-```
-
-Enclosing operation: `src/infrastructure/user-profile/supabase-user-profile.repository.ts:148`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### storage: user-avatars
-
-`src/infrastructure/user-profile/supabase-user-profile.repository.ts:202` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase.storage.from(USER_AVATARS_BUCKET).remove([previousPath])
-```
-
-Enclosing operation: `src/infrastructure/user-profile/supabase-user-profile.repository.ts:148`; complete request/default/result/error logic is in the declarations below and the snapshot.
+This area has no RPC, Edge, table, storage, realtime, fetch or auth calls. Its public browser processing/worker API is retained in the complete public declarations.
 
 ## Complete public declarations and facade operation contracts
 
@@ -421,26 +262,20 @@ export const HOST_USER_PROFILE_OPS = [
 export type HostUserProfileOp = (typeof HOST_USER_PROFILE_OPS)[number];
 ```
 
-### src/infrastructure/user-profile/supabase-user-profile.repository.ts:211
-
-```ts
-export const supabaseUserProfileRepository = new SupabaseUserProfileRepository();
-```
-
-### src/infrastructure/user-profile/user-profile-service.ts:17
+### src/infrastructure/user-profile/user-profile-service.ts:15
 
 ```ts
 export type UploadUserAvatarOptions = {
   /**
    * When true, skip client optimize (caller already ran user-avatar intake).
-   * Storage MIME/magic-byte/owner checks still run in the repository.
+   * Storage MIME/magic-byte/owner checks still run on the host.
    */
   readonly alreadyOptimized?: boolean;
   readonly signal?: AbortSignal;
 };
 ```
 
-### src/infrastructure/user-profile/user-profile-service.ts:30
+### src/infrastructure/user-profile/user-profile-service.ts:34
 
 ```ts
 export async function prepareUserAvatarFile(
@@ -486,32 +321,26 @@ export async function prepareUserAvatarFile(
 }
 ```
 
-### src/infrastructure/user-profile/user-profile-service.ts:72
+### src/infrastructure/user-profile/user-profile-service.ts:76
 
 ```ts
 export const userProfileService = {
   async getOwnProfile(): Promise<UserProfileVm | null> {
-    if (isHostLibraryEnabled()) {
-      return fetchHostOwnUserProfile();
-    }
-    return supabaseUserProfileRepository.getOwnProfile();
+    assertHost();
+    return fetchHostOwnUserProfile();
   },
 
   async getProfilesByUserIds(userIds: readonly string[]): Promise<UserProfileVm[]> {
-    if (isHostLibraryEnabled()) {
-      return fetchHostProfilesByUserIds(userIds);
-    }
-    return supabaseUserProfileRepository.getProfilesByUserIds(userIds);
+    assertHost();
+    return fetchHostProfilesByUserIds(userIds);
   },
 
   async uploadAvatar(file: File, options?: UploadUserAvatarOptions): Promise<UserProfileVm> {
+    assertHost();
     const prepared = options?.alreadyOptimized
       ? file
       : await prepareUserAvatarFile(file, options?.signal);
-    if (isHostLibraryEnabled()) {
-      return uploadHostUserAvatar(prepared);
-    }
-    return supabaseUserProfileRepository.uploadAvatar(prepared);
+    return uploadHostUserAvatar(prepared);
   },
 
   prepareAvatarFile: prepareUserAvatarFile,
@@ -521,150 +350,7 @@ export const userProfileService = {
 
 ## Remaining backend helper operations
 
-### src/infrastructure/user-profile/supabase-user-profile.repository.ts:59
-
-```ts
-async function signedUrlForPath(path: string | null): Promise<string | null> {
-  if (!path) return null;
-  const { data, error } = await supabase.storage
-    .from(USER_AVATARS_BUCKET)
-    .createSignedUrl(path, USER_AVATAR_SIGNED_SECONDS);
-  if (error || !data?.signedUrl) return null;
-  return data.signedUrl;
-}
-```
-
-### src/infrastructure/user-profile/supabase-user-profile.repository.ts:91
-
-```ts
-async ensureOwnProfileRow(): Promise<void> {
-    const userId = await getAuthenticatedUserId();
-    const { data, error: selectError } = await supabase
-      .from('user_profiles')
-      .select('id')
-      .eq('id', userId)
-      .maybeSingle();
-    if (selectError) {
-      throw new Error(`Profil konnte nicht geladen werden: ${formatSupabaseError(selectError)}`);
-    }
-    if (data) return;
-
-    const { error: insertError } = await supabase.from('user_profiles').insert({ id: userId });
-    if (!insertError) return;
-    // Concurrent ensure / signup trigger already created the row.
-    if (insertError.code === '23505') return;
-    throw new Error(`Profil konnte nicht angelegt werden: ${formatSupabaseError(insertError)}`);
-  }
-```
-
-### src/infrastructure/user-profile/supabase-user-profile.repository.ts:110
-
-```ts
-async getOwnProfile(): Promise<UserProfileVm | null> {
-    const userId = await getAuthenticatedUserId();
-    await this.ensureOwnProfileRow();
-    const { data, error } = await supabase
-      .from('user_profiles')
-      .select('id, display_name, avatar_path, updated_at')
-      .eq('id', userId)
-      .maybeSingle();
-    if (error) {
-      throw new Error(`Profil konnte nicht geladen werden: ${formatSupabaseError(error)}`);
-    }
-    if (!data) return null;
-    const row = data as UserProfileRow;
-    const avatarUrl = await signedUrlForPath(row.avatar_path);
-    return mapRow(row, avatarUrl);
-  }
-```
-
-### src/infrastructure/user-profile/supabase-user-profile.repository.ts:131
-
-```ts
-async getProfilesByUserIds(userIds: readonly string[]): Promise<UserProfileVm[]> {
-    const ids = [...new Set(userIds.map((id) => id.trim()).filter(Boolean))];
-    if (ids.length === 0) return [];
-    const { data, error } = await supabase
-      .from('user_profiles')
-      .select('id, display_name, avatar_path, updated_at')
-      .in('id', ids);
-    if (error) {
-      throw new Error(`Profile konnten nicht geladen werden: ${formatSupabaseError(error)}`);
-    }
-    const rows = (data ?? []) as UserProfileRow[];
-    const mapped = await Promise.all(
-      rows.map(async (row) => mapRow(row, await signedUrlForPath(row.avatar_path))),
-    );
-    return mapped;
-  }
-```
-
-### src/infrastructure/user-profile/supabase-user-profile.repository.ts:148
-
-```ts
-async uploadAvatar(file: File): Promise<UserProfileVm> {
-    const userId = await getAuthenticatedUserId();
-    await this.ensureOwnProfileRow();
-
-    const sniffed = await sniffUserAvatarMime(file);
-    if (!sniffed) {
-      throw new Error('Ungültiger Dateityp. Nur PNG, JPEG und WEBP sind erlaubt.');
-    }
-    if (file.type && file.type !== sniffed) {
-      throw new Error('Deklarierter Bildtyp stimmt nicht mit dem Dateiinhalt überein.');
-    }
-    if (file.size > USER_AVATAR_MAX_BYTES) {
-      throw new Error('Datei zu groß. Maximum ist 5MB.');
-    }
-
-    const extension = USER_AVATAR_MIME_EXTENSIONS[sniffed];
-    const filePath = `${userId}/${crypto.randomUUID()}.${extension}`;
-    const { error: uploadError } = await supabase.storage
-      .from(USER_AVATARS_BUCKET)
-      .upload(filePath, file, {
-        contentType: sniffed,
-        upsert: false,
-      });
-    if (uploadError) {
-      throw new Error(`Avatar-Upload fehlgeschlagen: ${formatSupabaseError(uploadError)}`);
-    }
-
-    const { data: previous } = await supabase
-      .from('user_profiles')
-      .select('avatar_path')
-      .eq('id', userId)
-      .maybeSingle();
-    const previousPath =
-      previous && typeof (previous as { avatar_path?: unknown }).avatar_path === 'string'
-        ? (previous as { avatar_path: string }).avatar_path
-        : null;
-
-    const { data: updated, error: updateError } = await supabase
-      .from('user_profiles')
-      .update({ avatar_path: filePath })
-      .eq('id', userId)
-      .select('id, display_name, avatar_path, updated_at')
-      .single();
-    if (updateError || !updated) {
-      // Best-effort cleanup of orphan object; keep prior avatar_path on row.
-      await supabase.storage.from(USER_AVATARS_BUCKET).remove([filePath]);
-      throw new Error(
-        updateError
-          ? `Avatar konnte nicht gespeichert werden: ${formatSupabaseError(updateError)}`
-          : 'Avatar konnte nicht gespeichert werden',
-      );
-    }
-
-    if (previousPath && previousPath !== filePath) {
-      void supabase.storage.from(USER_AVATARS_BUCKET).remove([previousPath]);
-    }
-
-    const row = updated as UserProfileRow;
-    const avatarUrl = await signedUrlForPath(row.avatar_path);
-    return mapRow(row, avatarUrl);
-  }
-```
-
+All backend operations are included in the public declarations above.
 
 ## Verification source manifest
 
@@ -680,7 +366,7 @@ async uploadAvatar(file: File): Promise<UserProfileVm> {
 | `src/domains/user-profile/display-name.ts` | `87cfc4858f198e56ea2857c505162f112efd5edacde4dbb1f7fcd995b4535516` |
 | `src/domains/user-profile/index.ts` | `d094d245ff9356298ef20c48635ca3e7adcc0e1ccf180554586949e0b496c496` |
 | `src/infrastructure/host/host-catalog-http.ts` | `9049245360683a74e7e2602d35126d815d64344d384c6684e4c2c3d41aa626d3` |
-| `src/infrastructure/host/host-library-http.ts` | `b2343081ddce2e2edd73651b0622e8b4cc6d8583d746a863dbe3343e3a98f71a` |
+| `src/infrastructure/host/host-library-http.ts` | `1d41f3b1eb3e71a3a8b12306993b605f2d05f2f41cd35f73b9c362b12f9c1cb6` |
 | `src/infrastructure/media/optimizer/engines/audio/index.ts` | `7585190a705085692bff0896e08b4d78f791895b47e24d57deeaaa10bb669d4e` |
 | `src/infrastructure/media/optimizer/engines/image/image.worker.ts` | `d34793b4de682556d9306194cfbcd05fdafdf215da25393f955d2669c7499276` |
 | `src/infrastructure/media/optimizer/engines/image/index.ts` | `4944001b7e0f7784d487da2e60d06d845aa564e9ddd7516ff50633af1591a322` |
@@ -698,12 +384,7 @@ async uploadAvatar(file: File): Promise<UserProfileVm> {
 | `src/infrastructure/user-profile/account-avatar-store.ts` | `ca478b00af6f5b52a531dcb244e8a2d5f92e4765bde69d1d52afa80e1542dbdb` |
 | `src/infrastructure/user-profile/host-user-profile-adapter.ts` | `c9625210b18534d7340c84a3f4202e3f775a933dbefed8de66b489c1bba9f604` |
 | `src/infrastructure/user-profile/host-user-profile-ports.contract.ts` | `7f4aaaa098bd0a8625e916074ae7c4a0e2d34b99d4effd1ccb0a890148f01511` |
-| `src/infrastructure/user-profile/index.ts` | `5f2fbf0152a79c17b98a666612a79bfbef708482587e665604fa71cd16016e7a` |
-| `src/infrastructure/user-profile/supabase-user-profile.repository.ts` | `21c6318bd3941ea565a1160598a9ad6203c75d9a4d74a2ec10be33fe990dd076` |
-| `src/infrastructure/user-profile/user-profile-service.ts` | `202170498fc10c6bcfadeaede6790eb5abc6da07fb4538f19a4b0f84dc39f65a` |
-| `src/lib/authenticatedUser.ts` | `d4cbf3a004f8375982ca03d474fb7b61559fc2ec58ad6fe7b1f8834d26abf10c` |
+| `src/infrastructure/user-profile/index.ts` | `174c73d885fbc9316dbdfb8b0b09b1060821d40b36030a61c672150e61fecb20` |
+| `src/infrastructure/user-profile/user-profile-service.ts` | `013cd52d0e1f39653a7f50689c50e83fd9eb27339a53d1207033bf40b0cb6e4c` |
 | `src/lib/hostAuthBridge.ts` | `30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a` |
-| `src/lib/localAdmin.ts` | `3a28dec23e85f25ed3e70682bc6e7f8c6b55e81dbbefdd1f6a837f68ac80d6b5` |
-| `src/lib/networkTimeout.ts` | `835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851` |
-| `src/lib/supabase.ts` | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
 

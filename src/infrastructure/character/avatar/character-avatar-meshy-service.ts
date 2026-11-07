@@ -1,12 +1,10 @@
 /**
  * character-avatar-meshy-service — client facade for avatar 3D generation (Meshy adapter today).
- * CUT-18: host-first via POST `/api/v1/ai/character-avatar-meshy` when host library is on.
- * Legacy Edge remains until dual-path removal (CUT-20). Never embeds provider secrets.
+ * CUT-20: host-only via POST `/api/v1/ai/character-avatar-meshy`. Never embeds provider secrets.
  * Location: src/infrastructure/character/avatar/character-avatar-meshy-service.ts
  */
 
 import { getHostAuthBaseUrl } from '../../../lib/hostAuthBridge';
-import { rewriteBrowserStorageUrl, supabase } from '../../../lib/supabase';
 import { isHostLibraryEnabled } from '../../host/host-library-http';
 import {
   MESHY_AVATAR_IMAGE_MAX_BYTES,
@@ -50,10 +48,9 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null;
 }
 
-/** Edge signs with internal Kong host — rewrite so the browser can fetch the GLB. */
 function browserModelUrl(value: unknown): string | undefined {
   if (typeof value !== 'string' || !value.trim()) return undefined;
-  return rewriteBrowserStorageUrl(value.trim());
+  return value.trim();
 }
 
 function parseResponse(value: unknown): FunctionResponse {
@@ -90,6 +87,9 @@ function mapJob(raw: Record<string, unknown>, modelUrl?: string): MeshyAvatarJob
 }
 
 async function invokeHost(body: Record<string, unknown>): Promise<FunctionResponse> {
+  if (!isHostLibraryEnabled()) {
+    return { status: 'error', message: 'Avatar-3D-Dienst nicht erreichbar.' };
+  }
   const base = getHostAuthBaseUrl()?.replace(/\/$/, '') ?? '';
   if (!base) {
     return { status: 'error', message: 'Avatar-3D-Dienst nicht erreichbar.' };
@@ -115,14 +115,7 @@ async function invokeHost(body: Record<string, unknown>): Promise<FunctionRespon
 }
 
 async function invoke(body: Record<string, unknown>): Promise<FunctionResponse> {
-  if (isHostLibraryEnabled()) {
-    return invokeHost(body);
-  }
-  const { data, error } = await supabase.functions.invoke('character-avatar-meshy', { body });
-  if (error) {
-    return { status: 'error', message: error.message || 'Edge Function fehlgeschlagen.' };
-  }
-  return parseResponse(data);
+  return invokeHost(body);
 }
 
 export async function fetchMeshyAvatarConfig(): Promise<MeshyAvatarConfig> {

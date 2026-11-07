@@ -343,30 +343,15 @@ section('5 · persistence + security static contract');
   requireMatch(persistence, /payloadVersion/, 'payloadVersion field written');
   requireMatch(persistence, /from '\.\.\/\.\.\/domains\/items'/, 'persistence uses domains/items');
 
-  const repository = read('src/infrastructure/inventory/supabase-item-catalog.repository.ts');
-  requireMatch(repository, /buildForkedItemDefinitionDraft/, 'fork uses domains/items');
-  requireMatch(repository, /validateItemDefinitionMetadata/, 'write validates taxonomy');
-  requireMatch(repository, /Core-Definitionen sind schreibgeschützt/, 'core mutations rejected');
-  requireMatch(repository, /assertPersistedMutableId/, 'mutable-id guard');
-  requireMatch(
-    repository,
-    /\.eq\('owner_user_id', userId\)/,
-    'personal update/archive filters by session owner',
-  );
-  requireMatch(
-    repository,
-    /\.eq\('world_profile_id', assertUuid/,
-    'world update/archive binds world_profile_id',
-  );
-  requireMatch(repository, /canMutateDefinition/, 'repository uses mutation policy');
-  requireMatch(repository, /forkDefinition/, 'fork operation exists');
-  requireMatch(
-    repository,
-    /Derived from the authenticated session, never from client input/,
-    'owner from auth session',
-  );
+  const facade = read('src/infrastructure/inventory/item-catalog-service.ts');
+  requireMatch(facade, /buildForkedItemDefinitionDraft/, 'fork uses domains/items');
+  requireMatch(facade, /parseItemDefinition/, 'host rows validated via domain parse');
+  requireMatch(facade, /getCoreItemDefinition/, 'core fork resolves from in-memory catalog');
+  requireMatch(facade, /forkDefinition/, 'fork operation exists');
+  requireMatch(facade, /createHostCatalogDefinition/, 'writes go through host library HTTP');
+  requireMatch(facade, /assertHost\(\)/, 'host-only item catalog facade');
   rejectMatch(
-    repository,
+    facade,
     /draft\.ownerUserId|draft\.owner_user_id|draft\.worldProfileId|draft\.world_profile_id/,
     'draft must not supply owner/world identity',
   );

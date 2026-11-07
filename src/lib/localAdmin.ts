@@ -57,3 +57,13 @@ export function setLocalAdminSession(active: boolean): void {
     window.localStorage.removeItem(LEGACY_LOCAL_ADMIN_STORAGE_KEY);
   }
 }
+
+/** DEV-only: `admin` / `admin@sagatree.local` + LOCAL_ADMIN_PASSWORD matches seeded Better Auth user. */
+export function isLocalAdminShortcut(identifier: string, password: string): boolean {
+  if (!isLocalAdminEnabled()) return false;
+  const normalized = identifier.trim().toLowerCase();
+  return (
+    (normalized === LOCAL_ADMIN_USERNAME || normalized === LOCAL_ADMIN_EMAIL) &&
+    password === LOCAL_ADMIN_PASSWORD
+  );
+}

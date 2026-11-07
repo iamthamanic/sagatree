@@ -5,7 +5,7 @@
   "sourceFiles": [
     {
       "path": "src/infrastructure/rulesets/ruleset-service.ts",
-      "sha256": "bab6988a93fe3d917d9014a02b832dd8c4b803f81e9cfb36f107411f0e763542"
+      "sha256": "63ee20191f274a6c5f788e4824a098dc9761273ec0681af0341c2576dd92bb2d"
     }
   ],
   "supportingSourceFiles": [
@@ -39,15 +39,11 @@
     },
     {
       "path": "src/infrastructure/host/host-library-http.ts",
-      "sha256": "b2343081ddce2e2edd73651b0622e8b4cc6d8583d746a863dbe3343e3a98f71a"
+      "sha256": "1d41f3b1eb3e71a3a8b12306993b605f2d05f2f41cd35f73b9c362b12f9c1cb6"
     },
     {
       "path": "src/lib/hostAuthBridge.ts",
       "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
-    },
-    {
-      "path": "src/lib/supabase.ts",
-      "sha256": "267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c"
     }
   ],
   "importedTypeDeclarations": [
@@ -143,56 +139,56 @@
       "kind": "TypeAliasDeclaration",
       "name": "EnvLike",
       "path": "src/infrastructure/host/host-library-http.ts",
-      "line": 11,
-      "endLine": 14,
-      "text": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
+      "line": 10,
+      "endLine": 12,
+      "text": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "HostLibraryCharacterDto",
       "path": "src/infrastructure/host/host-library-http.ts",
-      "line": 68,
-      "endLine": 81,
+      "line": 59,
+      "endLine": 72,
       "text": "export type HostLibraryCharacterDto = {\n  readonly id: string;\n  readonly publicId?: string;\n  readonly name: string;\n  readonly description?: string;\n  readonly class?: string;\n  readonly race?: string;\n  readonly level?: number;\n  readonly sheetStatus?: string;\n  readonly portraitUrl?: string | null;\n  readonly sheet?: Readonly<Record<string, unknown>>;\n  readonly createdAt?: string;\n  readonly updatedAt?: string;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "HostLibraryProjectDto",
       "path": "src/infrastructure/host/host-library-http.ts",
-      "line": 96,
-      "endLine": 117,
+      "line": 87,
+      "endLine": 108,
       "text": "export type HostLibraryProjectDto = {\n  readonly id: string;\n  readonly publicId?: string;\n  readonly code?: string;\n  readonly name: string;\n  readonly description?: string | null;\n  readonly worldId?: string | null;\n  readonly worldProfileId?: string | null;\n  readonly defaultLookProfileId?: string | null;\n  readonly allowPlayerCharacterLookOverride?: boolean;\n  readonly sagaId?: string | null;\n  readonly sagaVersionId?: string | null;\n  readonly sagaTitle?: string | null;\n  readonly sagaSlug?: string | null;\n  readonly sagaOrigin?: string | null;\n  readonly gmUserId: string;\n  readonly status?: string;\n  readonly memberCount?: number;\n  readonly sessionCount?: number;\n  readonly createdAt?: string;\n  readonly updatedAt?: string;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "HostLibraryWorldDto",
       "path": "src/infrastructure/host/host-library-http.ts",
-      "line": 132,
-      "endLine": 138,
+      "line": 123,
+      "endLine": 129,
       "text": "export type HostLibraryWorldDto = {\n  readonly id: string;\n  readonly title: string;\n  readonly createdAt: string;\n  /** CUT-10 — WO-XXXXX when present. */\n  readonly publicId?: string | null;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "HostNpcControllerAssignmentDto",
       "path": "src/infrastructure/host/host-library-http.ts",
-      "line": 954,
-      "endLine": 960,
+      "line": 945,
+      "endLine": 951,
       "text": "export type HostNpcControllerAssignmentDto = {\n  readonly projectId: string;\n  readonly definitionId: string;\n  readonly controllerUserId: string | null;\n  readonly assignedBy?: string;\n  readonly updatedAt?: string;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "HostNpcInstanceDto",
       "path": "src/infrastructure/host/host-library-http.ts",
-      "line": 1013,
-      "endLine": 1026,
+      "line": 1004,
+      "endLine": 1017,
       "text": "export type HostNpcInstanceDto = {\n  readonly id: string;\n  readonly projectId: string;\n  readonly sessionId: string | null;\n  readonly definitionId: string;\n  readonly displayName: string;\n  readonly instanceKind: string;\n  readonly sequenceNumber: number;\n  readonly snapshot: Record<string, unknown>;\n  readonly runtime: Record<string, unknown>;\n  readonly createdBy?: string;\n  readonly createdAt?: string;\n  readonly updatedAt?: string;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "HostPublishedAssetDto",
       "path": "src/infrastructure/host/host-library-http.ts",
-      "line": 1135,
-      "endLine": 1142,
+      "line": 1126,
+      "endLine": 1133,
       "text": "export type HostPublishedAssetDto = {\n  readonly assetId: string;\n  readonly contentType: string;\n  readonly byteSize: number;\n  readonly checksumSha256: string;\n  readonly url: string;\n  readonly storagePath: string;\n};"
     },
     {
@@ -212,143 +208,20 @@
       "text": "type EnvLike = { readonly VITE_SAGATREE_HOST_AUTH_URL?: string };"
     }
   ],
-  "calls": [
-    {
-      "kind": "table",
-      "name": "rulesets",
-      "path": "src/infrastructure/rulesets/ruleset-service.ts",
-      "line": 23,
-      "endLine": 24,
-      "resolution": "literal-or-constant",
-      "expression": "supabase\n      .from('rulesets')",
-      "chain": "supabase\n      .from('rulesets')\n      .select('*')\n      .order('is_official', { ascending: false })\n      .order('name')",
-      "arguments": [
-        "'rulesets'"
-      ],
-      "enclosingOperation": {
-        "path": "src/infrastructure/rulesets/ruleset-service.ts",
-        "line": 19,
-        "endLine": 31,
-        "text": "async getAll(): Promise<Ruleset[]> {\n    if (isHostLibraryEnabled()) {\n      return fetchHostRulesets(false);\n    }\n    const { data, error } = await supabase\n      .from('rulesets')\n      .select('*')\n      .order('is_official', { ascending: false })\n      .order('name');\n\n    if (error) throw error;\n    return data || [];\n  }"
-      }
-    },
-    {
-      "kind": "table",
-      "name": "rulesets",
-      "path": "src/infrastructure/rulesets/ruleset-service.ts",
-      "line": 37,
-      "endLine": 38,
-      "resolution": "literal-or-constant",
-      "expression": "supabase\n      .from('rulesets')",
-      "chain": "supabase\n      .from('rulesets')\n      .select('*')\n      .eq('is_official', true)\n      .order('name')",
-      "arguments": [
-        "'rulesets'"
-      ],
-      "enclosingOperation": {
-        "path": "src/infrastructure/rulesets/ruleset-service.ts",
-        "line": 33,
-        "endLine": 45,
-        "text": "async getOfficial(): Promise<Ruleset[]> {\n    if (isHostLibraryEnabled()) {\n      return fetchHostRulesets(true);\n    }\n    const { data, error } = await supabase\n      .from('rulesets')\n      .select('*')\n      .eq('is_official', true)\n      .order('name');\n\n    if (error) throw error;\n    return data || [];\n  }"
-      }
-    },
-    {
-      "kind": "table",
-      "name": "rulesets",
-      "path": "src/infrastructure/rulesets/ruleset-service.ts",
-      "line": 51,
-      "endLine": 51,
-      "resolution": "literal-or-constant",
-      "expression": "supabase.from('rulesets')",
-      "chain": "supabase.from('rulesets').select('*').eq('id', id).single()",
-      "arguments": [
-        "'rulesets'"
-      ],
-      "enclosingOperation": {
-        "path": "src/infrastructure/rulesets/ruleset-service.ts",
-        "line": 47,
-        "endLine": 55,
-        "text": "async getById(id: string): Promise<Ruleset | null> {\n    if (isHostLibraryEnabled()) {\n      return fetchHostRuleset(id);\n    }\n    const { data, error } = await supabase.from('rulesets').select('*').eq('id', id).single();\n\n    if (error) throw error;\n    return data;\n  }"
-      }
-    },
-    {
-      "kind": "table",
-      "name": "rulesets",
-      "path": "src/infrastructure/rulesets/ruleset-service.ts",
-      "line": 61,
-      "endLine": 62,
-      "resolution": "literal-or-constant",
-      "expression": "supabase\n      .from('rulesets')",
-      "chain": "supabase\n      .from('rulesets')\n      .insert({\n        ...dto,\n        is_official: false,\n        is_marketplace_item: false,\n      })\n      .select()\n      .single()",
-      "arguments": [
-        "'rulesets'"
-      ],
-      "enclosingOperation": {
-        "path": "src/infrastructure/rulesets/ruleset-service.ts",
-        "line": 57,
-        "endLine": 73,
-        "text": "async create(dto: CreateRulesetDTO): Promise<Ruleset> {\n    if (isHostLibraryEnabled()) {\n      return createHostRuleset(dto);\n    }\n    const { data, error } = await supabase\n      .from('rulesets')\n      .insert({\n        ...dto,\n        is_official: false,\n        is_marketplace_item: false,\n      })\n      .select()\n      .single();\n\n    if (error) throw error;\n    return data;\n  }"
-      }
-    },
-    {
-      "kind": "table",
-      "name": "rulesets",
-      "path": "src/infrastructure/rulesets/ruleset-service.ts",
-      "line": 80,
-      "endLine": 81,
-      "resolution": "literal-or-constant",
-      "expression": "supabase\n      .from('rulesets')",
-      "chain": "supabase\n      .from('rulesets')\n      .update({\n        ...updates,\n        updated_at: new Date().toISOString(),\n      })\n      .eq('id', id)\n      .select()\n      .single()",
-      "arguments": [
-        "'rulesets'"
-      ],
-      "enclosingOperation": {
-        "path": "src/infrastructure/rulesets/ruleset-service.ts",
-        "line": 75,
-        "endLine": 92,
-        "text": "async update(dto: UpdateRulesetDTO): Promise<Ruleset> {\n    if (isHostLibraryEnabled()) {\n      return updateHostRuleset(dto);\n    }\n    const { id, ...updates } = dto;\n    const { data, error } = await supabase\n      .from('rulesets')\n      .update({\n        ...updates,\n        updated_at: new Date().toISOString(),\n      })\n      .eq('id', id)\n      .select()\n      .single();\n\n    if (error) throw error;\n    return data;\n  }"
-      }
-    },
-    {
-      "kind": "table",
-      "name": "rulesets",
-      "path": "src/infrastructure/rulesets/ruleset-service.ts",
-      "line": 99,
-      "endLine": 99,
-      "resolution": "literal-or-constant",
-      "expression": "supabase.from('rulesets')",
-      "chain": "supabase.from('rulesets').delete().eq('id', id)",
-      "arguments": [
-        "'rulesets'"
-      ],
-      "enclosingOperation": {
-        "path": "src/infrastructure/rulesets/ruleset-service.ts",
-        "line": 94,
-        "endLine": 102,
-        "text": "async delete(id: string): Promise<void> {\n    if (isHostLibraryEnabled()) {\n      await deleteHostRuleset(id);\n      return;\n    }\n    const { error } = await supabase.from('rulesets').delete().eq('id', id);\n\n    if (error) throw error;\n  }"
-      }
-    }
-  ],
+  "calls": [],
   "imports": [
     {
       "path": "src/infrastructure/rulesets/ruleset-service.ts",
-      "line": 7,
-      "endLine": 7,
-      "module": "../../lib/supabase",
-      "resolvedPath": "src/lib/supabase.ts",
-      "expression": "import { supabase } from '../../lib/supabase';"
-    },
-    {
-      "path": "src/infrastructure/rulesets/ruleset-service.ts",
-      "line": 8,
-      "endLine": 8,
+      "line": 5,
+      "endLine": 5,
       "module": "../../domains/rules/ruleset-catalog",
       "resolvedPath": "src/domains/rules/ruleset-catalog/index.ts",
       "expression": "import type { CreateRulesetDTO, Ruleset, UpdateRulesetDTO } from '../../domains/rules/ruleset-catalog';"
     },
     {
       "path": "src/infrastructure/rulesets/ruleset-service.ts",
-      "line": 9,
-      "endLine": 16,
+      "line": 6,
+      "endLine": 13,
       "module": "../host/host-catalog-http",
       "resolvedPath": "src/infrastructure/host/host-catalog-http.ts",
       "expression": "import {\n  createHostRuleset,\n  deleteHostRuleset,\n  fetchHostRuleset,\n  fetchHostRulesets,\n  isHostLibraryEnabled,\n  updateHostRuleset,\n} from '../host/host-catalog-http';"
@@ -357,53 +230,60 @@
   "publicDeclarations": [
     {
       "path": "src/infrastructure/rulesets/ruleset-service.ts",
-      "line": 18,
-      "endLine": 103,
-      "text": "export const rulesetService = {\n  async getAll(): Promise<Ruleset[]> {\n    if (isHostLibraryEnabled()) {\n      return fetchHostRulesets(false);\n    }\n    const { data, error } = await supabase\n      .from('rulesets')\n      .select('*')\n      .order('is_official', { ascending: false })\n      .order('name');\n\n    if (error) throw error;\n    return data || [];\n  },\n\n  async getOfficial(): Promise<Ruleset[]> {\n    if (isHostLibraryEnabled()) {\n      return fetchHostRulesets(true);\n    }\n    const { data, error } = await supabase\n      .from('rulesets')\n      .select('*')\n      .eq('is_official', true)\n      .order('name');\n\n    if (error) throw error;\n    return data || [];\n  },\n\n  async getById(id: string): Promise<Ruleset | null> {\n    if (isHostLibraryEnabled()) {\n      return fetchHostRuleset(id);\n    }\n    const { data, error } = await supabase.from('rulesets').select('*').eq('id', id).single();\n\n    if (error) throw error;\n    return data;\n  },\n\n  async create(dto: CreateRulesetDTO): Promise<Ruleset> {\n    if (isHostLibraryEnabled()) {\n      return createHostRuleset(dto);\n    }\n    const { data, error } = await supabase\n      .from('rulesets')\n      .insert({\n        ...dto,\n        is_official: false,\n        is_marketplace_item: false,\n      })\n      .select()\n      .single();\n\n    if (error) throw error;\n    return data;\n  },\n\n  async update(dto: UpdateRulesetDTO): Promise<Ruleset> {\n    if (isHostLibraryEnabled()) {\n      return updateHostRuleset(dto);\n    }\n    const { id, ...updates } = dto;\n    const { data, error } = await supabase\n      .from('rulesets')\n      .update({\n        ...updates,\n        updated_at: new Date().toISOString(),\n      })\n      .eq('id', id)\n      .select()\n      .single();\n\n    if (error) throw error;\n    return data;\n  },\n\n  async delete(id: string): Promise<void> {\n    if (isHostLibraryEnabled()) {\n      await deleteHostRuleset(id);\n      return;\n    }\n    const { error } = await supabase.from('rulesets').delete().eq('id', id);\n\n    if (error) throw error;\n  },\n};"
+      "line": 21,
+      "endLine": 51,
+      "text": "export const rulesetService = {\n  async getAll(): Promise<Ruleset[]> {\n    assertHost();\n    return fetchHostRulesets(false);\n  },\n\n  async getOfficial(): Promise<Ruleset[]> {\n    assertHost();\n    return fetchHostRulesets(true);\n  },\n\n  async getById(id: string): Promise<Ruleset | null> {\n    assertHost();\n    return fetchHostRuleset(id);\n  },\n\n  async create(dto: CreateRulesetDTO): Promise<Ruleset> {\n    assertHost();\n    return createHostRuleset(dto);\n  },\n\n  async update(dto: UpdateRulesetDTO): Promise<Ruleset> {\n    assertHost();\n    return updateHostRuleset(dto);\n  },\n\n  async delete(id: string): Promise<void> {\n    assertHost();\n    await deleteHostRuleset(id);\n  },\n};"
     }
   ],
   "operationDeclarations": [
     {
       "path": "src/infrastructure/rulesets/ruleset-service.ts",
-      "line": 19,
-      "endLine": 31,
-      "name": "getAll",
-      "text": "async getAll(): Promise<Ruleset[]> {\n    if (isHostLibraryEnabled()) {\n      return fetchHostRulesets(false);\n    }\n    const { data, error } = await supabase\n      .from('rulesets')\n      .select('*')\n      .order('is_official', { ascending: false })\n      .order('name');\n\n    if (error) throw error;\n    return data || [];\n  }"
+      "line": 15,
+      "endLine": 19,
+      "name": "assertHost",
+      "text": "function assertHost(): void {\n  if (!isHostLibraryEnabled()) {\n    throw new Error('Host-Anmeldung nicht konfiguriert (VITE_SAGATREE_HOST_AUTH_URL fehlt).');\n  }\n}"
     },
     {
       "path": "src/infrastructure/rulesets/ruleset-service.ts",
-      "line": 33,
-      "endLine": 45,
+      "line": 22,
+      "endLine": 25,
+      "name": "getAll",
+      "text": "async getAll(): Promise<Ruleset[]> {\n    assertHost();\n    return fetchHostRulesets(false);\n  }"
+    },
+    {
+      "path": "src/infrastructure/rulesets/ruleset-service.ts",
+      "line": 27,
+      "endLine": 30,
       "name": "getOfficial",
-      "text": "async getOfficial(): Promise<Ruleset[]> {\n    if (isHostLibraryEnabled()) {\n      return fetchHostRulesets(true);\n    }\n    const { data, error } = await supabase\n      .from('rulesets')\n      .select('*')\n      .eq('is_official', true)\n      .order('name');\n\n    if (error) throw error;\n    return data || [];\n  }"
+      "text": "async getOfficial(): Promise<Ruleset[]> {\n    assertHost();\n    return fetchHostRulesets(true);\n  }"
+    },
+    {
+      "path": "src/infrastructure/rulesets/ruleset-service.ts",
+      "line": 32,
+      "endLine": 35,
+      "name": "getById",
+      "text": "async getById(id: string): Promise<Ruleset | null> {\n    assertHost();\n    return fetchHostRuleset(id);\n  }"
+    },
+    {
+      "path": "src/infrastructure/rulesets/ruleset-service.ts",
+      "line": 37,
+      "endLine": 40,
+      "name": "create",
+      "text": "async create(dto: CreateRulesetDTO): Promise<Ruleset> {\n    assertHost();\n    return createHostRuleset(dto);\n  }"
+    },
+    {
+      "path": "src/infrastructure/rulesets/ruleset-service.ts",
+      "line": 42,
+      "endLine": 45,
+      "name": "update",
+      "text": "async update(dto: UpdateRulesetDTO): Promise<Ruleset> {\n    assertHost();\n    return updateHostRuleset(dto);\n  }"
     },
     {
       "path": "src/infrastructure/rulesets/ruleset-service.ts",
       "line": 47,
-      "endLine": 55,
-      "name": "getById",
-      "text": "async getById(id: string): Promise<Ruleset | null> {\n    if (isHostLibraryEnabled()) {\n      return fetchHostRuleset(id);\n    }\n    const { data, error } = await supabase.from('rulesets').select('*').eq('id', id).single();\n\n    if (error) throw error;\n    return data;\n  }"
-    },
-    {
-      "path": "src/infrastructure/rulesets/ruleset-service.ts",
-      "line": 57,
-      "endLine": 73,
-      "name": "create",
-      "text": "async create(dto: CreateRulesetDTO): Promise<Ruleset> {\n    if (isHostLibraryEnabled()) {\n      return createHostRuleset(dto);\n    }\n    const { data, error } = await supabase\n      .from('rulesets')\n      .insert({\n        ...dto,\n        is_official: false,\n        is_marketplace_item: false,\n      })\n      .select()\n      .single();\n\n    if (error) throw error;\n    return data;\n  }"
-    },
-    {
-      "path": "src/infrastructure/rulesets/ruleset-service.ts",
-      "line": 75,
-      "endLine": 92,
-      "name": "update",
-      "text": "async update(dto: UpdateRulesetDTO): Promise<Ruleset> {\n    if (isHostLibraryEnabled()) {\n      return updateHostRuleset(dto);\n    }\n    const { id, ...updates } = dto;\n    const { data, error } = await supabase\n      .from('rulesets')\n      .update({\n        ...updates,\n        updated_at: new Date().toISOString(),\n      })\n      .eq('id', id)\n      .select()\n      .single();\n\n    if (error) throw error;\n    return data;\n  }"
-    },
-    {
-      "path": "src/infrastructure/rulesets/ruleset-service.ts",
-      "line": 94,
-      "endLine": 102,
+      "endLine": 50,
       "name": "delete",
-      "text": "async delete(id: string): Promise<void> {\n    if (isHostLibraryEnabled()) {\n      await deleteHostRuleset(id);\n      return;\n    }\n    const { error } = await supabase.from('rulesets').delete().eq('id', id);\n\n    if (error) throw error;\n  }"
+      "text": "async delete(id: string): Promise<void> {\n    assertHost();\n    await deleteHostRuleset(id);\n  }"
     }
   ]
 }

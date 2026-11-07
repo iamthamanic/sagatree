@@ -6,7 +6,16 @@
  * Fail-closed: unsupported classification, missing issueRef on PARITY_MISSING,
  * unassigned ownership vs CUT tickets, and injected fake reachable gaps.
  */
-import { copyFileSync, mkdtempSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
+import {
+  copyFileSync,
+  existsSync,
+  mkdtempSync,
+  readdirSync,
+  readFileSync,
+  rmSync,
+  statSync,
+  writeFileSync,
+} from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join, relative } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -187,13 +196,8 @@ function selfTestLegacyUnusedNeverActivated() {
 const SOURCE_SIGNAL =
   /supabase\.(from|rpc|storage|functions|auth)|functions\.invoke|assertHostProductSurfaceAvailable|Host-Modus noch nicht|auf dem Host noch nicht verfügbar|isHostLibraryEnabled/;
 
-/** Pure adapters / helpers covered by parent service rows or dual-path host HTTP. */
+/** Pure adapters / helpers covered by parent service rows or host HTTP facades. */
 const SOURCE_COVERAGE_ALLOWLIST = new Set([
-  'src/infrastructure/character/supabase-character.repository.ts',
-  'src/infrastructure/inventory/supabase-item-catalog.repository.ts',
-  'src/infrastructure/look/supabase-look.repository.ts',
-  'src/infrastructure/npc-creature/supabase-npc-creature.repository.ts',
-  'src/infrastructure/user-profile/supabase-user-profile.repository.ts',
   'src/infrastructure/host/host-catalog-http.ts',
   'src/infrastructure/host/host-library-http.ts',
   'src/infrastructure/host/host-product-deny.ts',
@@ -249,6 +253,21 @@ function assertSourceCoverage(matrix) {
  * After a CUT successor removes the DENY, the matrix row must flip to HOST_VERIFIED
  * (or leave PARITY_MISSING) before this gate stops asserting the string.
  */
+/** CUT-20 (#1155): client Supabase product repositories must not return. */
+const CUT20_REMOVED_SUPABASE_REPOS = [
+  'src/infrastructure/character/supabase-character.repository.ts',
+  'src/infrastructure/inventory/supabase-item-catalog.repository.ts',
+  'src/infrastructure/look/supabase-look.repository.ts',
+  'src/infrastructure/npc-creature/supabase-npc-creature.repository.ts',
+  'src/infrastructure/user-profile/supabase-user-profile.repository.ts',
+];
+
+function assertCut20SupabaseReposRemoved() {
+  for (const rel of CUT20_REMOVED_SUPABASE_REPOS) {
+    assert(!existsSync(join(root, rel)), `CUT-20 removed dual-path repo must not exist: ${rel}`);
+  }
+}
+
 function assertConditionalDenyFingerprints(matrix) {
   const byKey = new Map(matrix.rows.map((r) => [r.stableKey, r]));
   /** @type {Array<{ keys: string[], file: string, needle: string }>} */
@@ -262,11 +281,6 @@ function assertConditionalDenyFingerprints(matrix) {
       keys: ['look.append-version'],
       file: 'src/infrastructure/look/look-service.ts',
       needle: 'Look-Version anhängen ist auf dem Host noch nicht verfügbar.',
-    },
-    {
-      keys: ['session.delete-session'],
-      file: 'src/infrastructure/session/session-service.ts',
-      needle: 'Session-Löschen ist im Host-Modus noch nicht verfügbar',
     },
     {
       keys: ['session-outcome.promote-to-saga', 'session-outcome.promote-to-world'],
@@ -283,6 +297,7 @@ function assertConditionalDenyFingerprints(matrix) {
 }
 
 // --- main ---
+assertCut20SupabaseReposRemoved();
 assert(readFileSync(baselinePath, 'utf8').includes('54b6ee7c6'), 'baseline.md must cite freeze SHA');
 const matrix = loadMatrix(matrixPath);
 validateMatrix(matrix);

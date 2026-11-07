@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * mig-311-session-adapter.self-test — Session host ports + dual-path (#810).
+ * mig-311-session-adapter.self-test — Session host ports + host-only FE (#810 / CUT-20).
  * Location: scripts/mig-311-session-adapter.self-test.mjs
  *
  * Acceptance tier: isolated-contract. Supabase facades stay live (no cutover).
@@ -273,18 +273,20 @@ try {
     `revoke_session_invite typed got ${JSON.stringify(revoked)}`,
   );
 
-  // --- Lobby ready is non-authoritative (legacy defect preserved) ---
+  // --- Lobby ready: CUT-20 local echo until host broadcast (#1159) ---
   const lobbySrc = readFileSync(
     join(root, 'src/infrastructure/session/session-lobby-channel.ts'),
     'utf8',
   );
-  assert(lobbySrc.includes('session-lobby:'), 'lobby topic shape');
-  assert(lobbySrc.includes("event: 'ready'"), 'lobby ready event');
+  const lobbyCode = lobbySrc.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*$/gm, '');
+  assert(lobbySrc.includes('isHostLibraryEnabled'), 'lobby host library gate');
+  assert(lobbySrc.includes('subscribeSessionLobbyReady'), 'lobby subscription API');
+  assert(lobbySrc.includes('sendReady'), 'lobby sendReady');
   assert(
-    lobbySrc.includes('Ready is not gameplay authorization') ||
-      lobbySrc.includes('not gameplay authorization'),
-    'lobby ready non-authoritative documented',
+    lobbySrc.includes('#1159') || lobbySrc.includes('local echo'),
+    'lobby documents deferred host broadcast',
   );
+  assert(!/supabase|realtime|session-lobby:/i.test(lobbyCode), 'lobby no Supabase realtime topic');
 
   // --- Media degraded shapes retained client-side ---
   for (const rel of [
@@ -296,7 +298,7 @@ try {
     assert(existsSync(join(root, rel)), `client shape: ${rel}`);
   }
 
-  // --- Dual-path: flat sessionInfra bridge → HostSessionAdapter ---
+  // --- Host adapter: flat sessionInfra bridge → HostSessionAdapter ---
   const infra = createSessionInfraPorts(session);
   assert(infra.moduleId === 'session-infra', 'sessionInfra moduleId');
   const bound = createHostSessionAdapter({
@@ -329,7 +331,7 @@ try {
       viaSnap.value.snapshot === undefined,
     `adapter snapshot flat RPC shape got keys=${viaSnap.ok ? Object.keys(viaSnap.value).join(',') : ''}`,
   );
-  // Fresh invite via adapter so createSessionInvite + resolve share the dual-path.
+  // Fresh invite via adapter so createSessionInvite + resolve share host ports.
   const adapterInvite = await bound.createSessionInvite(GM.actorId, sessionId);
   assert(adapterInvite.ok, `adapter invite create: ${adapterInvite.ok ? '' : adapterInvite.error}`);
   const adapterToken =

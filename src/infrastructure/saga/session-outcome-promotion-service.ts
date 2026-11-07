@@ -1,11 +1,9 @@
 /**
- * session-outcome-promotion-service — RPC / host wrappers for #582 promote.
+ * session-outcome-promotion-service — Host HTTP for #582 promote.
  * Location: src/infrastructure/saga/session-outcome-promotion-service.ts
  *
- * Dual-path (MIG-310): host-first uses promote HTTP over SagaInfraPorts (CUT-05);
- * legacy remains Supabase RPCs via typed callPromote.
+ * CUT-20: host session HTTP only — no Supabase RPC.
  */
-import { supabase } from '../../lib/supabase';
 import { isHostLibraryEnabled } from '../host/host-library-http';
 import {
   promoteHostSessionOutcomeToSaga,
@@ -17,7 +15,6 @@ import {
 } from '../../domains/session/contracts/session-outcome-promotion';
 
 function hostErrorToResult(message: string): PromoteRpcResult {
-  // Strip SQLSTATE / P-code prefixes when present ("42501:Nur …").
   const colon = message.indexOf(':');
   const messageDe =
     colon > 0 && /^[A-Z0-9]+$/i.test(message.slice(0, colon).trim())
@@ -30,43 +27,34 @@ function hostErrorToResult(message: string): PromoteRpcResult {
 }
 
 async function callPromote(
-  rpc: 'promote_session_outcome_to_saga' | 'promote_session_outcome_to_world',
+  kind: 'saga' | 'world',
   sessionId: string,
   consequenceId: string,
 ): Promise<PromoteRpcResult> {
-  if (isHostLibraryEnabled()) {
-    try {
-      const dto =
-        rpc === 'promote_session_outcome_to_saga'
-          ? await promoteHostSessionOutcomeToSaga(sessionId, consequenceId)
-          : await promoteHostSessionOutcomeToWorld(sessionId, consequenceId);
-      return parsePromoteRpcResult(dto);
-    } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      // hostMutateJson prefixes unreachableMessage — peel trailing detail.
-      const detailMatch = message.match(/: (.+)$/);
-      return hostErrorToResult(detailMatch ? detailMatch[1] : message);
-    }
-  }
-  const { data, error } = await supabase.rpc(rpc, {
-    p_session_id: sessionId,
-    p_consequence_id: consequenceId,
-  });
-  if (error) {
-    console.error(`[session-outcome-promotion] ${rpc} failed`, error);
+  if (!isHostLibraryEnabled()) {
     return {
       ok: false,
-      messageDe: error.message || 'Übernehmen fehlgeschlagen',
+      messageDe: 'Host-Anmeldung nicht konfiguriert (VITE_SAGATREE_HOST_AUTH_URL fehlt).',
     };
   }
-  return parsePromoteRpcResult(data);
+  try {
+    const dto =
+      kind === 'saga'
+        ? await promoteHostSessionOutcomeToSaga(sessionId, consequenceId)
+        : await promoteHostSessionOutcomeToWorld(sessionId, consequenceId);
+    return parsePromoteRpcResult(dto);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    const detailMatch = message.match(/: (.+)$/);
+    return hostErrorToResult(detailMatch ? detailMatch[1] : message);
+  }
 }
 
 export const sessionOutcomePromotionService = {
   promoteToSaga(sessionId: string, consequenceId: string): Promise<PromoteRpcResult> {
-    return callPromote('promote_session_outcome_to_saga', sessionId, consequenceId);
+    return callPromote('saga', sessionId, consequenceId);
   },
   promoteToWorld(sessionId: string, consequenceId: string): Promise<PromoteRpcResult> {
-    return callPromote('promote_session_outcome_to_world', sessionId, consequenceId);
+    return callPromote('world', sessionId, consequenceId);
   },
 };

@@ -219,9 +219,14 @@ mustInclude(
   'editor persists abstractResources',
 );
 mustInclude(
-  'src/infrastructure/character/supabase-character.repository.ts',
+  'src/domains/rules/sagatree/items/resource-affordability.ts',
   'serializeCharacterAbstractResources',
-  'repo serializes resources JSONB',
+  'domain serializes abstract resources',
+);
+mustInclude(
+  'src/infrastructure/character/character-service.ts',
+  'abstractResources',
+  'character facade carries abstractResources',
 );
 mustInclude(
   'e2e/validate-gear-resources-load.spec.ts',

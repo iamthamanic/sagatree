@@ -50,7 +50,9 @@ check(/export \{[\s\S]*validateMeshyAvatarPrompt/.test(index), 'barrel exports v
 check(/validateMeshyAvatarImageDataUri/.test(index), 'barrel exports image validator');
 check(/assertNoCapabilityFromProviderStatus/.test(index), 'barrel exports capability guard');
 
-check(/character-avatar-meshy/.test(service), 'invokes edge function');
+check(/character-avatar-meshy/.test(service), 'invokes host AI character-avatar-meshy (CUT-20)');
+check(/isHostLibraryEnabled/.test(service), 'host library gate');
+check(!/functions\.invoke|supabase\.functions/.test(service), 'no Edge functions.invoke (CUT-20)');
 check(!/MESHY_API_KEY/.test(service), 'no meshy key in client service');
 check(/assertNoCapabilityFromProviderStatus/.test(service), 'service forces pending caps');
 check(/generationMode/.test(service), 'client sends generationMode');
@@ -123,8 +125,8 @@ check(/SPIRAL_RADIUS_PX\s*=\s*100/.test(read('src/app/character/avatar/AvatarMes
 check(/avatar-meshy-spiral-style-v2/.test(read('src/app/character/avatar/AvatarMeshyGeneratingOverlay.tsx')), 'spiral style bump for radius');
 check(/aiProviderCredentialsService[\s\S]*refresh/.test(read('src/app/character/avatar/AvatarMeshyPanel.tsx')), 'live credits refresh');
 check(/refreshProviderCredits/.test(read('src/app/character/avatar/AvatarMeshyPanel.tsx')), 'credits refresh helper');
-check(/rewriteBrowserStorageUrl/.test(service), 'rewrites kong-signed model URLs for browser');
 check(/browserModelUrl/.test(service), 'poll/retry map browser-safe modelUrl');
+check(!/rewriteBrowserStorageUrl/.test(service), 'no Kong storage URL rewrite (CUT-20 host URLs)');
 check(/isMeshyAvatarJobBusy/.test(domain), 'domain busy helper');
 
 check(/downloadMeshyGlbBytes/.test(edge), 'SSRF-safe download');

@@ -81,7 +81,10 @@ section('3 · no Meshy secrets in client / Vite env');
     check(!/MESHY_API_KEY\s*=\s*['"][^'"]+['"]/.test(content), `${file} must not hardcode MESHY_API_KEY`);
   }
   const service = read('src/infrastructure/inventory/item-model3d-service.ts');
-  check(/functions\.invoke\(['"]item-model3d['"]/.test(service), 'client invokes item-model3d edge function');
+  check(
+    /\/api\/v1\/items\/model3d/.test(service) && !/functions\.invoke/.test(service),
+    'client invokes item-model3d host API (CUT-20)',
+  );
   check(!/api\.meshy\.ai/.test(service), 'client must not call Meshy directly');
 }
 

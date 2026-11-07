@@ -1,23 +1,11 @@
 /**
- * AuthProvider — Supabase session + Local Admin shortcut with attempt generations.
+ * AuthProvider — Better Auth (host) session for the product runtime (CUT-20 / FE-HOST-07).
  * Location: src/lib/auth-context.tsx
  *
- * Local Admin GoTrue login is bounded by AUTH_SESSION_TIMEOUT_MS. Timed-out
- * attempts fall back to offline UI, but a late GoTrue success for the same live
- * Local Admin intent upgrades to a real JWT (needed for PostgREST/RLS). After
- * logout or a newer non-admin user, late admin JWTs are still discarded.
- * signInWithPassword has no AbortSignal — stale results use generation + scrub.
- *
- * Durable intent = `isLocalAdminSession()` storage flag (see localAdminAuthPolicy).
- * Generation refs alone are cleared on HMR / Strict remount and must not scrub a
- * wanted Local Admin JWT (that race left the UI stuck on the login screen).
- *
- * MIG-014 host cookie bridge (GATE-02 Variant A): opt-in via
- * `VITE_SAGATREE_HOST_AUTH_URL` — see `hostAuthBridge.ts`.
- * FE-HOST-07: when `VITE_SAGATREE_HOST_LIBRARY=1`, product sign-in/out uses
- * host Better Auth cookies; GoTrue JWT is not required for Library/Session/World.
+ * Legacy GoTrue/Supabase auth paths were removed with dual-path CUT-20. When
+ * `VITE_SAGATREE_HOST_AUTH_URL` is unset, host auth is disabled — see
+ * `isHostAuthBridgeEnabled` / `getHostAuthBaseUrl`.
  */
-
 import {
   createContext,
   useCallback,
@@ -27,32 +15,18 @@ import {
   useState,
   type ReactNode,
 } from 'react';
-import { supabase } from './supabase';
 import {
   isLocalAdminEnabled,
-  isLocalAdminSession,
-  setLocalAdminSession,
+  isLocalAdminShortcut,
   LOCAL_ADMIN_EMAIL,
   LOCAL_ADMIN_PASSWORD,
-  LOCAL_ADMIN_USER_ID,
-  LOCAL_ADMIN_USERNAME,
+  setLocalAdminSession,
 } from './localAdmin';
 import {
   isLocalPlayerShortcut,
   LOCAL_PLAYER_EMAIL,
   LOCAL_PLAYER_PASSWORD,
 } from './localPlayer';
-import {
-  AUTH_SESSION_TIMEOUT_MS,
-  isTimedOut,
-  raceWithTimeout,
-  raceWithTimeoutOrSymbol,
-} from './networkTimeout';
-import {
-  decideLocalAdminJwt,
-  mayDiscardLocalAdminJwt,
-} from './localAdminAuthPolicy';
-import type { AuthTokenResponsePassword, User } from '@supabase/supabase-js';
 import { projectService } from '../infrastructure/project/project-service';
 import {
   isHostAuthBridgeEnabled,
@@ -75,25 +49,25 @@ export {
   HOST_AUTH_SESSION_BEARER_KEYS,
 };
 
+/** Minimal user shape for `useAuth()` (no `@supabase/supabase-js` after CUT-20). */
+export type AuthUser = {
+  readonly id: string;
+  readonly email?: string;
+  readonly app_metadata?: Readonly<Record<string, unknown>>;
+  readonly user_metadata?: Readonly<Record<string, unknown>>;
+};
+
 interface AuthContextType {
-  user: User | null;
+  user: AuthUser | null;
   isLoading: boolean;
-  /**
-   * True when product API auth is ready: GoTrue JWT and/or host Better Auth
-   * cookie session (FE-HOST-07 under host library flag).
-   */
+  /** True when a host Better Auth session is active. */
   hasJwtSession: boolean;
-  /**
-   * Ensure product API auth: host cookie when library flag, else GoTrue JWT
-   * (Local Admin). Used by Welt/Atlas reconnect when offline fallback blocked API.
-   */
   ensureJwtSession: () => Promise<boolean>;
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
 }
 
-/** Soft-provision Dornhain defaults after GoTrue auth (idempotent RPC + DB trigger). */
 function provisionDornhainDefaultForSession(): void {
   void projectService.ensureNativeStarterProject().catch((error: unknown) => {
     console.warn('[auth] dornhain default provision:', error);
@@ -102,39 +76,12 @@ function provisionDornhainDefaultForSession(): void {
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
-function createLocalAdminUser(): User {
-  return {
-    id: LOCAL_ADMIN_USER_ID,
-    aud: 'authenticated',
-    role: 'authenticated',
-    email: LOCAL_ADMIN_EMAIL,
-    app_metadata: {
-      provider: 'local-admin',
-      providers: ['local-admin'],
-    },
-    user_metadata: {
-      username: LOCAL_ADMIN_USERNAME,
-      display_name: 'Admin',
-    },
-    identities: [],
-    created_at: new Date().toISOString(),
-    is_anonymous: false,
-  } as User;
-}
-
-function getStoredLocalAdminUser(): User | null {
-  return isLocalAdminSession() ? createLocalAdminUser() : null;
-}
-
-/** Minimal User shape for host Better Auth actors (no GoTrue JWT). */
 function createHostSessionUser(actor: {
   readonly actorId: string;
   readonly email: string | null;
-}): User {
+}): AuthUser {
   return {
     id: actor.actorId,
-    aud: 'authenticated',
-    role: 'authenticated',
     email: actor.email ?? undefined,
     app_metadata: {
       provider: 'host-better-auth',
@@ -143,577 +90,148 @@ function createHostSessionUser(actor: {
     user_metadata: {
       display_name: actor.email ?? 'Host',
     },
-    identities: [],
-    created_at: new Date().toISOString(),
-    is_anonymous: false,
-  } as User;
-}
-
-function isLocalAdminShortcut(identifier: string, password: string): boolean {
-  if (!isLocalAdminEnabled()) return false;
-  const normalized = identifier.trim().toLowerCase();
-  return (
-    (normalized === LOCAL_ADMIN_USERNAME || normalized === LOCAL_ADMIN_EMAIL) &&
-    password === LOCAL_ADMIN_PASSWORD
-  );
-}
-
-function isLocalAdminFallbackUser(user: User | null | undefined): boolean {
-  return Boolean(
-    user &&
-      user.id === LOCAL_ADMIN_USER_ID &&
-      user.app_metadata?.provider === 'local-admin',
-  );
-}
-
-function isSeededLocalAdminUser(user: User | null | undefined): boolean {
-  if (!user) return false;
-  return user.id === LOCAL_ADMIN_USER_ID || user.email === LOCAL_ADMIN_EMAIL;
+  };
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [hasJwtSession, setHasJwtSession] = useState(false);
-  /** Monotonic generation: only the live generation may apply Auth UI state. */
   const authGenerationRef = useRef(0);
-  const userRef = useRef<User | null>(null);
-  /** Live generations that intentionally use Local Admin fallback (not GoTrue JWT). */
-  const fallbackGenerationsRef = useRef<Set<number>>(new Set());
-  /**
-   * Live generation that still expects GoTrue Local Admin success (not timed out).
-   * Allows in-flight SIGNED_IN before applyUser; cleared on timeout/bump/success.
-   */
-  const expectingGoTrueLocalAdminRef = useRef<number | null>(null);
-  /** Ignore onAuthStateChange while discarding a stale Local Admin GoTrue session. */
-  const suppressAuthListenerRef = useRef(false);
+  const userRef = useRef<AuthUser | null>(null);
 
   const bumpAuthGeneration = (): number => {
     authGenerationRef.current += 1;
-    fallbackGenerationsRef.current.clear();
-    expectingGoTrueLocalAdminRef.current = null;
     return authGenerationRef.current;
   };
 
   const isLiveGeneration = (generation: number): boolean =>
     generation === authGenerationRef.current;
 
-  const applyUser = (next: User | null, generation: number) => {
+  const applyUser = (next: AuthUser | null, generation: number) => {
     if (!isLiveGeneration(generation)) return;
     userRef.current = next;
     setUser(next);
   };
 
-  /**
-   * Discard a GoTrue session produced by a timed-out / superseded Local Admin attempt.
-   * No-ops while Local Admin is still wanted (storage flag) — scrubbing then causes
-   * the login hang (JWT written, then deleted ~10ms later on SIGNED_IN race).
-   * No-ops when the current session is a different (non-admin) user.
-   * Suppresses listener updates so cleanup signOut cannot clear a valid newer UI user.
-   */
-  const discardStaleLocalAdminSession = async () => {
-    if (!mayDiscardLocalAdminJwt(isLocalAdminSession())) return;
-    suppressAuthListenerRef.current = true;
-    try {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      if (session?.user && isSeededLocalAdminUser(session.user)) {
-        await supabase.auth.signOut({ scope: 'local' });
-      }
-      // Fake/partial GoTrue payloads may leave auth-token crumbs that getSession
-      // does not surface — clear only seeded Local Admin identities.
-      try {
-        for (let i = window.localStorage.length - 1; i >= 0; i -= 1) {
-          const key = window.localStorage.key(i);
-          if (!key || !key.includes('auth-token')) continue;
-          const raw = window.localStorage.getItem(key);
-          if (!raw) continue;
-          try {
-            const parsed = JSON.parse(raw) as { user?: { id?: string; email?: string } };
-            if (
-              parsed?.user?.email === LOCAL_ADMIN_EMAIL ||
-              parsed?.user?.id === LOCAL_ADMIN_USER_ID
-            ) {
-              window.localStorage.removeItem(key);
-            }
-          } catch {
-            /* ignore malformed */
-          }
+  useEffect(() => {
+    if (!isHostLibraryEnabled()) {
+      setIsLoading(false);
+      setHasJwtSession(false);
+      setUser(null);
+      userRef.current = null;
+      return;
+    }
+    let cancelled = false;
+    const generation = bumpAuthGeneration();
+
+    void probeHostActor()
+      .then((actor) => {
+        if (cancelled || !isLiveGeneration(generation)) return;
+        if (actor) {
+          applyUser(createHostSessionUser(actor), generation);
+          setHasJwtSession(true);
+        } else {
+          applyUser(null, generation);
+          setHasJwtSession(false);
         }
-      } catch {
-        /* ignore storage access */
-      }
-    } catch (error) {
-      console.warn('[auth] stale Local Admin session cleanup failed:', error);
-    } finally {
-      suppressAuthListenerRef.current = false;
-    }
-  };
-
-  /** Apply seeded Local Admin GoTrue user to UI (JWT path). */
-  const adoptLocalAdminJwt = (
-    generation: number,
-    next: User,
-    accessTokenPresent: boolean,
-  ) => {
-    fallbackGenerationsRef.current.delete(generation);
-    if (expectingGoTrueLocalAdminRef.current === generation) {
-      expectingGoTrueLocalAdminRef.current = null;
-    }
-    applyUser(next, generation);
-    setHasJwtSession(accessTokenPresent);
-    provisionDornhainDefaultForSession();
-  };
-
-  const currentUserIsOtherNonAdmin = (current: User | null | undefined): boolean =>
-    Boolean(current && !isSeededLocalAdminUser(current) && !isLocalAdminFallbackUser(current));
-
-  /**
-   * Promote offline Local Admin UI to a real GoTrue JWT when the user still wants
-   * Local Admin. Returns true when the JWT was adopted (do not discard).
-   */
-  const tryUpgradeLocalAdminFallback = (generation: number, next: User): boolean => {
-    if (!isLiveGeneration(generation)) return false;
-    if (!isLocalAdminSession()) return false;
-    if (!isSeededLocalAdminUser(next)) return false;
-    const current = userRef.current;
-    if (current && !isLocalAdminFallbackUser(current) && !isSeededLocalAdminUser(current)) {
-      return false;
-    }
-    fallbackGenerationsRef.current.delete(generation);
-    applyUser(next, generation);
-    setHasJwtSession(true);
-    provisionDornhainDefaultForSession();
-    return true;
-  };
-
-  const watchStaleLocalAdminPasswordLogin = (
-    generation: number,
-    loginPromise: PromiseLike<AuthTokenResponsePassword>,
-  ) => {
-    void Promise.resolve(loginPromise)
-      .then(async (result) => {
-        if (result.error || !result.data?.user) return;
-        const next = result.data.user;
-        // Live + still on intentional Local Admin fallback → keep JWT for API/RLS.
-        if (tryUpgradeLocalAdminFallback(generation, next)) return;
-        const liveSuccess =
-          isLiveGeneration(generation) && !fallbackGenerationsRef.current.has(generation);
-        if (liveSuccess) return;
-        const decision = decideLocalAdminJwt({
-          localAdminSessionActive: isLocalAdminSession(),
-          sessionUserIsSeededAdmin: isSeededLocalAdminUser(next),
-          currentUserIsOther: currentUserIsOtherNonAdmin(userRef.current),
-        });
-        // Wanted Local Admin (possibly new generation after remount) — leave JWT;
-        // live listener / bootstrap will adopt.
-        if (decision === 'adopt') return;
-        if (decision !== 'discard') return;
-        // Logged out / other user — scrub persisted admin JWT (anti-resurrection).
-        await discardStaleLocalAdminSession();
-        await new Promise((resolve) => setTimeout(resolve, 50));
-        await discardStaleLocalAdminSession();
+        setIsLoading(false);
       })
       .catch(() => {
-        /* ignore */
+        if (!cancelled && isLiveGeneration(generation)) {
+          applyUser(null, generation);
+          setHasJwtSession(false);
+          setIsLoading(false);
+        }
       });
-  };
-
-  useEffect(() => {
-    let cancelled = false;
-    const bootstrapGeneration = bumpAuthGeneration();
-    const SESSION_TIMEOUT_MS = AUTH_SESSION_TIMEOUT_MS;
-
-    const finish = (nextUser: User | null, withJwt: boolean) => {
-      if (cancelled) return;
-      applyUser(nextUser, bootstrapGeneration);
-      setHasJwtSession(Boolean(nextUser && withJwt && !isLocalAdminFallbackUser(nextUser)));
-      setIsLoading(false);
-    };
-
-    // FE-HOST-07: host library mode prefers Better Auth cookie over GoTrue bootstrap.
-    if (isHostLibraryEnabled()) {
-      void probeHostActor()
-        .then((actor) => {
-          if (cancelled) return;
-          if (actor) {
-            finish(createHostSessionUser(actor), true);
-            return;
-          }
-          finish(null, false);
-        })
-        .catch(() => {
-          if (!cancelled) finish(null, false);
-        });
-      return () => {
-        cancelled = true;
-        bumpAuthGeneration();
-      };
-    }
-
-    const storedLocalAdmin = isLocalAdminSession();
-    if (storedLocalAdmin) {
-      raceWithTimeoutOrSymbol(supabase.auth.getSession(), SESSION_TIMEOUT_MS)
-        .then(async (sessionResult) => {
-          if (isTimedOut(sessionResult)) {
-            fallbackGenerationsRef.current.add(bootstrapGeneration);
-            finish(getStoredLocalAdminUser(), false);
-            return;
-          }
-
-          const {
-            data: { session },
-          } = sessionResult;
-          if (session?.user && session.access_token) {
-            finish(session.user, true);
-            return;
-          }
-
-          try {
-            expectingGoTrueLocalAdminRef.current = bootstrapGeneration;
-            const loginPromise = supabase.auth.signInWithPassword({
-              email: LOCAL_ADMIN_EMAIL,
-              password: LOCAL_ADMIN_PASSWORD,
-            });
-            const loginResult = await raceWithTimeoutOrSymbol(loginPromise, SESSION_TIMEOUT_MS);
-            if (isTimedOut(loginResult)) {
-              if (expectingGoTrueLocalAdminRef.current === bootstrapGeneration) {
-                expectingGoTrueLocalAdminRef.current = null;
-              }
-              fallbackGenerationsRef.current.add(bootstrapGeneration);
-              watchStaleLocalAdminPasswordLogin(bootstrapGeneration, loginPromise);
-              throw new Error('local re-login timeout');
-            }
-            if (expectingGoTrueLocalAdminRef.current === bootstrapGeneration) {
-              expectingGoTrueLocalAdminRef.current = null;
-            }
-            const { data, error } = loginResult;
-            if (error || !data.user) throw error ?? new Error('local re-login failed');
-            finish(data.user, Boolean(data.session?.access_token));
-          } catch {
-            fallbackGenerationsRef.current.add(bootstrapGeneration);
-            finish(getStoredLocalAdminUser(), false);
-          }
-        })
-        .catch(() => {
-          fallbackGenerationsRef.current.add(bootstrapGeneration);
-          finish(getStoredLocalAdminUser(), false);
-        });
-    } else {
-      raceWithTimeout(
-        supabase.auth.getSession(),
-        { data: { session: null }, error: null },
-        SESSION_TIMEOUT_MS,
-      )
-        .then(({ data: { session } }) => {
-          finish(session?.user ?? null, Boolean(session?.access_token));
-        })
-        .catch(() => {
-          finish(null, false);
-        });
-    }
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
-      if (cancelled) return;
-      if (suppressAuthListenerRef.current) return;
-      const generation = authGenerationRef.current;
-      const current = userRef.current;
-      const onFallback =
-        isLocalAdminFallbackUser(current) || fallbackGenerationsRef.current.has(generation);
-
-      if (event === 'SIGNED_IN' && session?.user && isSeededLocalAdminUser(session.user)) {
-        const decision = decideLocalAdminJwt({
-          localAdminSessionActive: isLocalAdminSession(),
-          sessionUserIsSeededAdmin: true,
-          currentUserIsOther: currentUserIsOtherNonAdmin(current),
-        });
-
-        if (decision === 'discard') {
-          void (async () => {
-            await discardStaleLocalAdminSession();
-            await new Promise((resolve) => setTimeout(resolve, 50));
-            await discardStaleLocalAdminSession();
-          })();
-          return;
-        }
-
-        if (decision === 'adopt') {
-          // Storage flag says Local Admin is wanted — always keep the JWT.
-          // Covers fallback upgrade, first login, and HMR/Strict remount races
-          // where expectingGoTrue was cleared mid-flight.
-          if (onFallback && tryUpgradeLocalAdminFallback(generation, session.user)) {
-            return;
-          }
-          adoptLocalAdminJwt(generation, session.user, Boolean(session.access_token));
-          return;
-        }
-      }
-
-      if (event === 'SIGNED_OUT') {
-        // Cleanup for stale admin must not clear fallback UI or a newer non-admin user.
-        if (onFallback) return;
-        if (current && !isSeededLocalAdminUser(current)) return;
-        if (current === null) return;
-        // Local Admin still wanted (flag set) → never bounce to LoginScreen after
-        // a spurious scrub signOut; keep offline fallback until JWT re-upgrade.
-        if (isLocalAdminSession()) {
-          if (!isLocalAdminFallbackUser(current)) {
-            applyUser(createLocalAdminUser(), generation);
-            setHasJwtSession(false);
-          }
-          return;
-        }
-        applyUser(null, generation);
-        setHasJwtSession(false);
-        return;
-      }
-
-      // INITIAL_SESSION / other events with no Supabase session must not wipe
-      // intentional Local Admin fallback (storage-backed offline UI).
-      if (!session?.user) {
-        if (onFallback || isLocalAdminFallbackUser(current) || isLocalAdminSession()) {
-          return;
-        }
-        applyUser(null, generation);
-        setHasJwtSession(false);
-        return;
-      }
-
-      applyUser(session.user, generation);
-      setHasJwtSession(Boolean(session.access_token));
-      if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
-        provisionDornhainDefaultForSession();
-      }
-    });
 
     return () => {
       cancelled = true;
       bumpAuthGeneration();
-      subscription.unsubscribe();
     };
   }, []);
 
   const signIn = async (email: string, password: string) => {
-    if (isHostLibraryEnabled()) {
-      const generation = bumpAuthGeneration();
-      setLocalAdminSession(false);
-      // Better Auth requires an email address — map DEV shortcuts (admin/player1)
-      // to the same seeded local emails used by the GoTrue path.
-      let hostEmail = email.trim();
-      let hostPassword = password;
-      if (isLocalAdminShortcut(email, password)) {
-        hostEmail = LOCAL_ADMIN_EMAIL;
-        hostPassword = LOCAL_ADMIN_PASSWORD;
-      } else if (isLocalPlayerShortcut(email, password)) {
-        hostEmail = LOCAL_PLAYER_EMAIL;
-        hostPassword = LOCAL_PLAYER_PASSWORD;
-      } else if (!hostEmail.includes('@')) {
-        throw new Error(
-          'Bitte eine E-Mail eingeben (z. B. name@example.com). DEV: admin oder player1 / 1234.',
-        );
-      }
-      try {
-        const actor = await signInHostEmail(hostEmail, hostPassword);
-        if (!isLiveGeneration(generation)) return;
-        applyUser(createHostSessionUser(actor), generation);
-        setHasJwtSession(true);
-        // Solo Dornhain seed is under host-identity; link runs inside signInHostEmail.
-        // Still ensure starter project for this remote actor when native defs exist.
-        provisionDornhainDefaultForSession();
-        return;
-      } catch (err) {
-        // First host boot: provision DEV demo accounts when missing (sign-up then sign-in).
-        const isDemo =
-          isLocalAdminShortcut(email, password) || isLocalPlayerShortcut(email, password);
-        if (!isDemo || !import.meta.env.DEV) throw err;
-        try {
-          await signUpHostEmail(hostEmail, hostPassword);
-        } catch {
-          /* already exists or race — fall through to sign-in */
-        }
-        const actor = await signInHostEmail(hostEmail, hostPassword);
-        if (!isLiveGeneration(generation)) return;
-        applyUser(createHostSessionUser(actor), generation);
-        setHasJwtSession(true);
-        provisionDornhainDefaultForSession();
-        return;
-      }
+    if (!isHostLibraryEnabled()) {
+      throw new Error('Host-Anmeldung nicht konfiguriert (VITE_SAGATREE_HOST_AUTH_URL fehlt).');
     }
-
-    if (isLocalAdminShortcut(email, password)) {
-      const generation = bumpAuthGeneration();
-      expectingGoTrueLocalAdminRef.current = generation;
-      setLocalAdminSession(true);
-      const loginPromise = supabase.auth.signInWithPassword({
-        email: LOCAL_ADMIN_EMAIL,
-        password: LOCAL_ADMIN_PASSWORD,
-      });
-      try {
-        const loginResult = await raceWithTimeoutOrSymbol(loginPromise, AUTH_SESSION_TIMEOUT_MS);
-        if (isTimedOut(loginResult)) {
-          if (expectingGoTrueLocalAdminRef.current === generation) {
-            expectingGoTrueLocalAdminRef.current = null;
-          }
-          fallbackGenerationsRef.current.add(generation);
-          watchStaleLocalAdminPasswordLogin(generation, loginPromise);
-          throw new Error('local GoTrue login timeout');
-        }
-        const { data, error } = loginResult;
-        if (error) throw error;
-        if (data.user) {
-          if (!isLiveGeneration(generation)) {
-            if (expectingGoTrueLocalAdminRef.current === generation) {
-              expectingGoTrueLocalAdminRef.current = null;
-            }
-            // Remount superseded this attempt. Keep JWT when Local Admin is still
-            // wanted — the live provider adopts via SIGNED_IN / bootstrap.
-            // Never scrub here (that was the login-screen hang).
-            return;
-          }
-          adoptLocalAdminJwt(generation, data.user, Boolean(data.session?.access_token));
-          return;
-        }
-      } catch (error) {
-        if (expectingGoTrueLocalAdminRef.current === generation) {
-          expectingGoTrueLocalAdminRef.current = null;
-        }
-        if (!isLiveGeneration(generation)) {
-          watchStaleLocalAdminPasswordLogin(generation, loginPromise);
-          return;
-        }
-        console.warn('[auth] local GoTrue login unavailable, using app-level admin session:', error);
-        fallbackGenerationsRef.current.add(generation);
-        watchStaleLocalAdminPasswordLogin(generation, loginPromise);
-        applyUser(createLocalAdminUser(), generation);
-        setHasJwtSession(false);
-        return;
-      }
-      if (expectingGoTrueLocalAdminRef.current === generation) {
-        expectingGoTrueLocalAdminRef.current = null;
-      }
-      if (!isLiveGeneration(generation)) return;
-      fallbackGenerationsRef.current.add(generation);
-      watchStaleLocalAdminPasswordLogin(generation, loginPromise);
-      applyUser(createLocalAdminUser(), generation);
-      setHasJwtSession(false);
-      return;
-    }
-
     const generation = bumpAuthGeneration();
     setLocalAdminSession(false);
-    // Resolve local demo shortcuts to seeded GoTrue emails (admin handled above).
-    const resolvedEmail = isLocalPlayerShortcut(email, password)
-      ? LOCAL_PLAYER_EMAIL
-      : email.trim();
-    const resolvedPassword = isLocalPlayerShortcut(email, password)
-      ? LOCAL_PLAYER_PASSWORD
-      : password;
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: resolvedEmail,
-      password: resolvedPassword,
-    });
-    if (error) throw error;
-    if (!isLiveGeneration(generation)) return;
-    if (data.user) {
-      applyUser(data.user, generation);
-      setHasJwtSession(Boolean(data.session?.access_token));
+    let hostEmail = email.trim();
+    let hostPassword = password;
+    if (isLocalAdminEnabled() && isLocalAdminShortcut(email, password)) {
+      hostEmail = LOCAL_ADMIN_EMAIL;
+      hostPassword = LOCAL_ADMIN_PASSWORD;
+    } else if (isLocalPlayerShortcut(email, password)) {
+      hostEmail = LOCAL_PLAYER_EMAIL;
+      hostPassword = LOCAL_PLAYER_PASSWORD;
+    } else if (!hostEmail.includes('@')) {
+      throw new Error(
+        'Bitte eine E-Mail eingeben (z. B. name@example.com). DEV: admin oder player1 / 1234.',
+      );
+    }
+    try {
+      const actor = await signInHostEmail(hostEmail, hostPassword);
+      if (!isLiveGeneration(generation)) return;
+      applyUser(createHostSessionUser(actor), generation);
+      setHasJwtSession(true);
+      provisionDornhainDefaultForSession();
+    } catch (err) {
+      const isDemo =
+        isLocalAdminShortcut(email, password) || isLocalPlayerShortcut(email, password);
+      if (!isDemo || !import.meta.env.DEV) throw err;
+      try {
+        await signUpHostEmail(hostEmail, hostPassword);
+      } catch {
+        /* already exists */
+      }
+      const actor = await signInHostEmail(hostEmail, hostPassword);
+      if (!isLiveGeneration(generation)) return;
+      applyUser(createHostSessionUser(actor), generation);
+      setHasJwtSession(true);
       provisionDornhainDefaultForSession();
     }
   };
 
   const ensureJwtSession = useCallback(async (): Promise<boolean> => {
-    if (isHostLibraryEnabled()) {
-      const actor = await probeHostActor();
-      if (!actor) {
-        setHasJwtSession(false);
-        return false;
-      }
-      const generation = authGenerationRef.current;
-      if (isLiveGeneration(generation)) {
-        applyUser(createHostSessionUser(actor), generation);
-        setHasJwtSession(true);
-      }
-      return true;
+    if (!isHostLibraryEnabled()) {
+      setHasJwtSession(false);
+      return false;
     }
-    const existing = await supabase.auth.getSession();
-    if (existing.data.session?.access_token && existing.data.session.user) {
-      if (isLiveGeneration(authGenerationRef.current)) {
-        applyUser(existing.data.session.user, authGenerationRef.current);
-        setHasJwtSession(true);
-      }
-      return true;
-    }
-    if (!isLocalAdminSession()) {
+    const actor = await probeHostActor();
+    if (!actor) {
       setHasJwtSession(false);
       return false;
     }
     const generation = authGenerationRef.current;
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: LOCAL_ADMIN_EMAIL,
-      password: LOCAL_ADMIN_PASSWORD,
-    });
-    if (error || !data.user || !data.session?.access_token) {
-      setHasJwtSession(false);
-      return false;
+    if (isLiveGeneration(generation)) {
+      applyUser(createHostSessionUser(actor), generation);
+      setHasJwtSession(true);
     }
-    if (!isLiveGeneration(generation)) return Boolean(data.session?.access_token);
-    fallbackGenerationsRef.current.delete(generation);
-    applyUser(data.user, generation);
-    setHasJwtSession(true);
-    provisionDornhainDefaultForSession();
     return true;
   }, []);
 
   const signUp = async (email: string, password: string) => {
-    if (isHostLibraryEnabled()) {
-      const signedUp = await signUpHostEmail(email.trim(), password);
-      // Auto-login when Better Auth returns a session cookie — same post-auth
-      // init as sign-in (solo link for operator + Dornhain ensure-starter).
-      const actor = signedUp ?? (await probeHostActor());
-      if (actor) {
-        const generation = bumpAuthGeneration();
-        applyUser(createHostSessionUser(actor), generation);
-        setHasJwtSession(true);
-        provisionDornhainDefaultForSession();
-      }
-      return;
+    if (!isHostLibraryEnabled()) {
+      throw new Error('Host-Registrierung nicht konfiguriert (VITE_SAGATREE_HOST_AUTH_URL fehlt).');
     }
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-    });
-    if (error) throw error;
-    // DB trigger provisions on auth.users INSERT; client ensure covers session-present signups.
-    if (data.session?.user) {
+    const signedUp = await signUpHostEmail(email.trim(), password);
+    const actor = signedUp ?? (await probeHostActor());
+    if (actor) {
+      const generation = bumpAuthGeneration();
+      applyUser(createHostSessionUser(actor), generation);
+      setHasJwtSession(true);
       provisionDornhainDefaultForSession();
     }
   };
 
   const signOut = async () => {
-    // FE-HOST-07: clear HttpOnly cookie before dropping UI session — failed
-    // host sign-out must not leave a sticky cookie that re-auths on reload.
-    if (isHostLibraryEnabled()) {
-      await signOutHost();
-      bumpAuthGeneration();
-      setLocalAdminSession(false);
-      userRef.current = null;
-      setUser(null);
-      setHasJwtSession(false);
-      return;
-    }
+    await signOutHost();
     bumpAuthGeneration();
     setLocalAdminSession(false);
     userRef.current = null;
     setUser(null);
     setHasJwtSession(false);
-    try {
-      await supabase.auth.signOut();
-    } catch (error) {
-      console.warn('[auth] signOut cleanup:', error);
-    }
   };
 
   return (

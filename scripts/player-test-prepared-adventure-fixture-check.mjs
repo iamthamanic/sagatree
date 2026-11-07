@@ -65,8 +65,8 @@ mustInclude(
 
 mustInclude(
   'src/infrastructure/project/project-service.ts',
-  ['world_profile_id: payload.world_profile_id', 'updateProjectWorldProfile'],
-  'project create writes world_profile_id',
+  ['worldProfileId: payload.world_profile_id', 'createHostProject', 'updateProjectWorldProfile'],
+  'project create writes world_profile_id (CUT-20 host)',
 );
 
 mustInclude(

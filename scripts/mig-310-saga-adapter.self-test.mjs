@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * mig-310-saga-adapter.self-test — Saga host ports + dual-path seam (#809).
+ * mig-310-saga-adapter.self-test — Saga host ports + host-only FE (#809 / CUT-20).
  * Location: scripts/mig-310-saga-adapter.self-test.mjs
  *
  * Acceptance tier: isolated-contract. Supabase facades stay live (no cutover).
@@ -290,7 +290,7 @@ try {
   );
   assert(!missing.ok && missing.error === '42501', 'missing actor DENY');
 
-  // Dual-path adapter seam
+  // Host adapter seam
   const bound = createHostSagaAdapter({
     copyNativeSagaDefinition: async (actorId, sourceSagaId) =>
       infra.copyNativeSagaDefinition(actor(actorId), sourceSagaId),
@@ -350,25 +350,24 @@ try {
     rmSync(hostWork, { recursive: true, force: true });
   }
 
-  // Client dual-path wiring: saga-definition uses host HTTP under host-first (FE-HOST-13);
-  // session-outcome promote uses host HTTP under host-first (CUT-05).
+  // Client host-only wiring (CUT-20 / FE-HOST-13 saga definition + CUT-05 promote).
   const sagaDefSrc = readFileSync(
     join(root, 'src/infrastructure/saga/saga-definition-service.ts'),
     'utf8',
   );
-  assert(/Dual-path \(MIG-310/.test(sagaDefSrc), 'dual-path note on saga-definition-service');
-  assert(/isHostLibraryEnabled/.test(sagaDefSrc), 'saga-definition host-first dual-path');
-  assert(/host-saga-definition-http/.test(sagaDefSrc), 'saga-definition host HTTP client');
-  assert(/supabase\.rpc|from ['"].*supabase['"]/.test(sagaDefSrc), 'saga-definition keeps legacy rpc');
+  const sagaDefCode = sagaDefSrc.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*$/gm, '');
+  assert(/isHostLibraryEnabled/.test(sagaDefSrc), 'saga-definition host library gate');
+  assert(/host-saga-definition-http|getHostSagaDefinitionEditor/.test(sagaDefSrc), 'saga-definition host HTTP client');
+  assert(!/supabase\.(from|rpc)|from ['"].*supabase['"]/.test(sagaDefCode), 'saga-definition no supabase');
 
   const promoteSrc = readFileSync(
     join(root, 'src/infrastructure/saga/session-outcome-promotion-service.ts'),
     'utf8',
   );
-  assert(/Dual-path \(MIG-310\)/.test(promoteSrc), 'dual-path note on promote service');
-  assert(/supabase\.rpc|from ['"].*supabase['"]/.test(promoteSrc), 'promote uses supabase');
+  assert(/CUT-20/.test(promoteSrc), 'promote CUT-20 host note');
+  assert(/isHostLibraryEnabled/.test(promoteSrc), 'promote host library gate');
   const promoteCode = promoteSrc.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*$/gm, '');
-  assert(!/VITE_SAGATREE_HOST/i.test(promoteCode), 'promote: flags do not redirect facade');
+  assert(!/supabase\.(from|rpc)|from ['"].*supabase['"]/.test(promoteCode), 'promote no supabase');
   const adapterSrc = readFileSync(
     join(root, 'src/infrastructure/saga/host-saga-adapter.ts'),
     'utf8',

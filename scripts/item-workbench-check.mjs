@@ -94,10 +94,9 @@ section('4 · persistence via catalog service');
 section('5 · catalog service exposes getItemDefinitionById + builtin fork');
 {
   const service = read('src/infrastructure/inventory/item-catalog-service.ts');
-  const repo = read('src/infrastructure/inventory/supabase-item-catalog.repository.ts');
   check(/getItemDefinitionById/.test(service), 'service exports getItemDefinitionById');
-  check(/getDefinitionById/.test(repo), 'repository getDefinitionById');
-  check(/getBuiltinStandardDefinition/.test(repo), 'builtin fork/load resolution');
+  check(/fetchHostLibraryItem/.test(service), 'service loads persisted defs via host HTTP');
+  check(/getBuiltinStandardDefinition/.test(service), 'builtin fork/load resolution');
 }
 
 section('6 · UX contract strings / a11y hooks');

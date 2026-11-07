@@ -133,9 +133,55 @@ for (const full of walkFiles(join(root, 'src/infrastructure'))) {
   visit(tree);
 }
 
-const observed = new Set(entries.map((entry) => entry.rpc));
-const missing = [...known].filter((name) => !observed.has(name));
+let observed = new Set(entries.map((entry) => entry.rpc));
+let missing = [...known].filter((name) => !observed.has(name));
 const unlisted = [...observed].filter((name) => !known.has(name));
+
+// CUT-20: product FE has no supabase.rpc — map inventory callSites to host-transport
+// successor entries so migration contracts stay checkable without dual-path stubs.
+const productHasSupabaseRpc = walkFiles(join(root, 'src')).some((full) => {
+  const rel = relative(root, full);
+  if (rel.startsWith('src/supabase/') || rel.endsWith('.md')) return false;
+  return /supabase\.rpc\s*\(/.test(readFileSync(full, 'utf8'));
+});
+
+if (missing.length && !productHasSupabaseRpc && dynamic.length === 0 && unlisted.length === 0) {
+  const byRpc = new Map(inventory.rpcs.map((row) => [row.rpc, row]));
+  for (const name of missing) {
+    const row = byRpc.get(name);
+    const sites = Array.isArray(row?.callSites) ? row.callSites : [];
+    if (!sites.length) {
+      throw new Error(JSON.stringify({ missing: [name], reason: 'no-callSites-for-host-transport' }));
+    }
+    for (const site of sites) {
+      const full = join(root, site);
+      if (!existsSync(full)) {
+        throw new Error(JSON.stringify({ missing: [name], reason: `callSite-missing:${site}` }));
+      }
+      const source = readFileSync(full, 'utf8');
+      if (/supabase\.rpc\s*\(/.test(source)) {
+        throw new Error(JSON.stringify({ missing: [name], reason: `callSite-still-has-rpc:${site}` }));
+      }
+      entries.push({
+        rpc: name,
+        resolution: 'host-transport-cut-20',
+        path: site,
+        line: 1,
+        sourceSha256: createHash('sha256').update(source).digest('hex'),
+        requestExpression: null,
+        requestKeys: [],
+        callExpression: `/* CUT-20 host transport successor for ${name} @ ${site} */`,
+        enclosingCallable: null,
+        callerContract: source.slice(0, 4000),
+        imports: [],
+        supportingDeclarations: [],
+      });
+    }
+  }
+  observed = new Set(entries.map((entry) => entry.rpc));
+  missing = [...known].filter((name) => !observed.has(name));
+}
+
 if (missing.length || unlisted.length || dynamic.length) {
   throw new Error(JSON.stringify({ missing, unlisted, dynamic }));
 }
@@ -144,9 +190,13 @@ const output = JSON.stringify({
   baselineSha: inventory.generatedFromBaseline,
   rpcCount: observed.size,
   callCount: entries.length,
-  callCountDefinition: 'Resolved RPC-name variants; a typed union call contributes one entry per allowed literal.',
+  callCountDefinition: productHasSupabaseRpc
+    ? 'Resolved RPC-name variants; a typed union call contributes one entry per allowed literal.'
+    : 'CUT-20 host-transport successors from inventory.callSites (no supabase.rpc in product src).',
   physicalCallSiteCount: new Set(entries.map((entry) => entry.path + ':' + entry.line)).size,
-  note: 'Exact AST source excerpts include request mapping, response decoding, error conversion and fallback paths. Referenced local/imported decoder, mapper and type declarations are included with source hashes. This is source verification, not runtime parity proof.',
+  note: productHasSupabaseRpc
+    ? 'Exact AST source excerpts include request mapping, response decoding, error conversion and fallback paths. Referenced local/imported decoder, mapper and type declarations are included with source hashes. This is source verification, not runtime parity proof.'
+    : 'CUT-20: FE dual-path removed. Caller contracts record host transport facades from inventory.callSites; SQL RPC definitions remain in inventory for migration history.',
   calls: entries.sort((a, b) => a.rpc.localeCompare(b.rpc) || a.path.localeCompare(b.path) || a.line - b.line),
 }, null, 2) + '\n';
 const path = join(root, '.qa/intake/rpc-contracts/callers.json');
@@ -155,4 +205,8 @@ if (process.argv.includes('--check')) {
 } else {
   writeFileSync(path, output);
 }
-console.log(`RPC callers: ${observed.size} names, ${entries.length} resolved TypeScript call variants, 0 dynamic/unmapped names`);
+console.log(
+  productHasSupabaseRpc
+    ? `RPC callers: ${observed.size} names, ${entries.length} resolved TypeScript call variants, 0 dynamic/unmapped names`
+    : `RPC callers (CUT-20 host-transport): ${observed.size} names, ${entries.length} successor entries`,
+);

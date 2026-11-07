@@ -5,26 +5,26 @@
   "result": "PASS",
   "githubClosed": true,
   "mergeRef": "PR #860 → main (after #782)",
-  "note": "Inventories refreshed after CUT-19 session-media-token activation.",
+  "note": "Inventories refreshed after CUT-20 dual-path removal + world-profile host delete mapping.",
   "checks": [
     {
       "command": "legacy inventory matrix",
       "result": "PASS",
       "evidenceFile": ".qa/evidence/stack-migration-prep/legacy-target-matrix.md",
-      "sha256": "50013c40da09bf535968d0ac852252e3627ce851deaa3c6f374934cd16d1f0ce"
+      "sha256": "a78e6ae253bbf3d73a82ee6be88fdcee7fd63531e390142d54e183d8609c9bd7"
     },
     {
       "command": "rpc inventory 57",
       "result": "PASS",
       "evidenceFile": ".qa/intake/rpc-contracts/inventory.json",
-      "sha256": "480025b86bf5ad3a55e39509d1dd013fb24b1a19e0fe558af995434e6b65507b"
+      "sha256": "19d48808b21c5ca522dcb5d837a752efdafb93456b39b3b1f29d2aea83003b17"
     },
     {
       "command": "edge/infra inventory 25+13",
       "result": "PASS",
       "evidenceFile": ".qa/intake/edge-infra-contracts/inventory.json",
-      "sha256": "9cfe1b980d021830091ae7aa481a3470cc7bb7588c0f88bad9ed43b7430bfec9"
+      "sha256": "b596a7bef5ac19dedbd4937351901649495c3022cb026fa3358a64b819a4680b"
     }
   ],
-  "testedCommit": "271c3232457e3a641566ef60e3d27323cbf8aed2"
+  "testedCommit": "45836838d25368565aaced3513e9ffdf4ebb6222"
 }

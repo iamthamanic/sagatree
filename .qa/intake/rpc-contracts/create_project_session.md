@@ -132,112 +132,132 @@ Die finalen Datenbank-Constraints der beteiligten Relationen sind pro RPC in inv
 
 ## Caller: Request-Mapping, Response-Decoding und Fehler
 
-### src/infrastructure/project/project-service.ts:953
+### src/infrastructure/project/project-service.ts:1
 
-AST-Auflösung: `string-literal`; SHA-256 `07549fce108bd735bdd7d48b07bccbf39947e3547d0f26ab60fdd013ca94aeff`.
+AST-Auflösung: `host-transport-cut-20`; SHA-256 `365e2248522fcbc8f830ea3f28e0ae9f8b4d71cf3aaa2ffe931772297c364a78`.
 
 Der vollständige aufrufende Funktionskörper enthält Parameterumformung, RPC-Aufruf, Response-Prüfung, Fehlerumwandlung und gegebenenfalls Fallback:
 
 ```typescript
-async createProjectSession(payload: {
-    projectId: string;
-    name?: string;
-    notes?: string;
-  }): Promise<SessionVm> {
-    if (isHostLibraryEnabled()) {
-      const row = await createHostProjectSession(
-        payload.projectId,
-        payload.name ?? null,
-        payload.notes ?? null,
-      );
-      const status =
-        row.status === 'scheduled' ||
-        row.status === 'waiting' ||
-        row.status === 'active' ||
-        row.status === 'paused' ||
-        row.status === 'completed'
-          ? row.status
-          : 'scheduled';
-      return {
-        id: row.id,
-        publicId: typeof row.publicId === 'string' ? row.publicId : '',
-        projectId: row.projectId,
-        sessionNumber: typeof row.sessionNumber === 'number' ? row.sessionNumber : 0,
-        name: row.name ?? null,
-        notes: null,
-        status,
-        startedAt: null,
-        endedAt: null,
-        durationMinutes: null,
-        lookProfileId: null,
-        createdAt: new Date().toISOString(),
-      };
-    }
+/**
+ * project-service — Host HTTP adapter for projects/campaigns (CUT-20).
+ * Location: src/infrastructure/project/project-service.ts
+ *
+ * Product runtime uses host Library + project routes only — no Supabase client.
+ */
+import { getAuthenticatedUserId } from '../../lib/authenticatedUser';
+import {
+  fetchHostLibraryProjects,
+  isHostLibraryEnabled,
+  type HostLibraryProjectDto,
+} from '../host/host-library-http';
+import {
+  createHostProject,
+  createHostProjectSession,
+  deleteHostProject,
+  updateHostProject,
+  updateHostSessionLook,
+  type HostProjectWriteDto,
+} from '../host/host-project-http';
+import { fetchHostSessions, type HostPlaySessionDto } from '../host/host-session-http';
+import { projectMemberService } from './project-member-service';
+import type {
+  ProjectDto,
+  ProjectMemberDto,
+  ProjectSummaryVm,
+  ProjectVm,
+  CreateProjectDto,
+  JoinProjectDto,
+  SessionDto,
+  SessionVm,
+} from '../../domains/project/contracts/project.types';
+import { normalizePlaySessionStatus } from '../../domains/session/contracts/session-lifecycle';
 
-    const { data, error } = await supabase.rpc('create_project_session', {
-      p_project_id: payload.projectId,
-      p_name: payload.name ?? null,
-      p_notes: payload.notes ?? null,
-    });
+function assertHost(): void {
+  if (!isHostLibraryEnabled()) {
+    throw new Error('Host-Anmeldung nicht konfiguriert (VITE_SAGATREE_HOST_AUTH_URL fehlt).');
+  }
+}
 
-    if (error) {
-      throw new Error(`Failed to create session: ${error.message}`);
-    }
+function isProjectStatus(value: unknown): value is ProjectDto['status'] {
+  return value === 'active' || value === 'paused' || value === 'completed' || value === 'archived';
+}
 
-    if (!isSessionDto(data)) {
-      throw new Error('Failed to create session: invalid response');
-    }
-
-    const normalized = normalizeSessionDto(data);
+class ProjectService {
+  private mapHostPlaySessionToSessionDto(row: HostPlaySessionDto): SessionDto {
+    const status = normalizePlaySessionStatus(row.status);
+    const createdAt =
+      typeof row.createdAt === 'string' ? row.createdAt : new Date().toISOString();
+    const updatedAt = createdAt;
     return {
-      id: normalized.id,
-      publicId: typeof normalized.public_id === 'string' ? normalized.public_id : '',
-      projectId: normalized.project_id,
-      sessionNumber: normalized.session_number,
-      name: normalized.name,
-      notes: normalized.notes,
-      status: normalized.status,
-      startedAt: normalized.started_at,
-      endedAt: normalized.ended_at,
-      durationMinutes: normalized.duration_minutes,
-      lookProfileId:
-        typeof normalized.look_profile_id === 'string' ? normalized.look_profile_id : null,
-      createdAt: normalized.created_at,
+      id: row.sessionId,
+      public_id: typeof row.publicId === 'string' ? row.publicId : undefined,
+      project_id: row.projectId,
+      session_number: typeof row.sessionNumber === 'number' ? row.sessionNumber : 0,
+      name: row.name ?? null,
+      notes: null,
+      status,
+      started_at: row.startedAt ?? null,
+      ended_at: row.endedAt ?? null,
+      duration_minutes: null,
+      look_profile_id: null,
+      created_at: createdAt,
+      updated_at: updatedAt,
     };
   }
+
+  private hostProjectRowToProjectDto(row: HostProjectWriteDto | HostLibraryProjectDto): ProjectDto {
+    const statusRaw = row.status ?? 'active';
+    const status = isProjectStatus(statusRaw) ? statusRaw : 'active';
+    const createdAt =
+      'createdAt' in row && typeof row.createdAt === 'string'
+        ? row.createdAt
+        : new Date().toISOString();
+    const updatedAt =
+      'updatedAt' in row && typeof row.updatedAt === 'string' ? row.updatedAt : createdAt;
+    return {
+      id: row.id,
+      public_id: typeof row.publicId === 'string' ? row.publicId : undefined,
+      code: typeof row.code === 'string' ? row.code : '',
+      name: row.name,
+      description: row.description ?? null,
+      world_id: row.worldId ?? null,
+      world_profile_id: row.worldProfileId ?? row.worldId ?? null,
+      default_look_profile_id:
+        'defaultLookProfileId' in row && typeof row.defaultLookProfileId === 'string'
+          ? row.defaultLookProfileId
+          : null,
+      allow_player_character_look_override:
+        'allowPlayerCharacterLookOverride' in row &&
+        typeof row.allowPlayerCharacterLookOverride === 'boolean'
+          ? row.allowPlayerCharacterLookOverride
+          : true,
+      gm_user_id: row.gmUserId,
+      status,
+      created_at: createdAt,
+      updated_at: updatedAt,
+    };
+  }
+
+  /**
+   * Map DTO to View Model
+   */
+  private mapToViewModel(
+    project: ProjectDto,
+    members: ProjectMemberDto[],
+    sessions: SessionDto[],
+  ): ProjectVm {
+    const mappedMembers = members.map((member) => ({
+      id: member.id,
+      userId: member.user_id,
+      characterId: member.character_id,
+      role: member.role,
+      joinedAt: member.joined_at,
+      status: member.status,
+    }));
+
+    const mappedSessions: SessionVm[] = sessions.map(
 ```
-
-Direkt oder transitiv referenzierte lokale/importierte Mapper, Decoder und Vertrags-Typen sind zusätzlich mit vollständigem Source-Text in callers.json und inventory.json.callerContracts.supportingDeclarations gespeichert:
-
-| Symbol | Quelle | Zeile | SHA-256 |
-| --- | --- | --- | --- |
-| `ProjectSessionStatus` | [src/domains/project/contracts/project.types.ts](../../../src/domains/project/contracts/project.types.ts) | 40 | `1777f75b3bd865b09e3fba61324b7331439f5846c98dea1230e27b6f976a0ca8` |
-| `SessionDto` | [src/domains/project/contracts/project.types.ts](../../../src/domains/project/contracts/project.types.ts) | 48 | `1777f75b3bd865b09e3fba61324b7331439f5846c98dea1230e27b6f976a0ca8` |
-| `SessionVm` | [src/domains/project/contracts/project.types.ts](../../../src/domains/project/contracts/project.types.ts) | 80 | `1777f75b3bd865b09e3fba61324b7331439f5846c98dea1230e27b6f976a0ca8` |
-| `EnvLike` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 11 | `b2343081ddce2e2edd73651b0622e8b4cc6d8583d746a863dbe3343e3a98f71a` |
-| `defaultEnv` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 16 | `b2343081ddce2e2edd73651b0622e8b4cc6d8583d746a863dbe3343e3a98f71a` |
-| `isHostLibraryExplicitlyDisabled` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 25 | `b2343081ddce2e2edd73651b0622e8b4cc6d8583d746a863dbe3343e3a98f71a` |
-| `isHostLibraryEnabled` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 30 | `b2343081ddce2e2edd73651b0622e8b4cc6d8583d746a863dbe3343e3a98f71a` |
-| `EnvLike` | [src/infrastructure/host/host-project-http.ts](../../../src/infrastructure/host/host-project-http.ts) | 12 | `b5a68f6452217b08d2217a983113a9a356ce70890693319227f35c82fbdcd818` |
-| `defaultEnv` | [src/infrastructure/host/host-project-http.ts](../../../src/infrastructure/host/host-project-http.ts) | 17 | `b5a68f6452217b08d2217a983113a9a356ce70890693319227f35c82fbdcd818` |
-| `hostMutateJson` | [src/infrastructure/host/host-project-http.ts](../../../src/infrastructure/host/host-project-http.ts) | 74 | `b5a68f6452217b08d2217a983113a9a356ce70890693319227f35c82fbdcd818` |
-| `HostProjectSessionDto` | [src/infrastructure/host/host-project-http.ts](../../../src/infrastructure/host/host-project-http.ts) | 123 | `b5a68f6452217b08d2217a983113a9a356ce70890693319227f35c82fbdcd818` |
-| `createHostProjectSession` | [src/infrastructure/host/host-project-http.ts](../../../src/infrastructure/host/host-project-http.ts) | 133 | `b5a68f6452217b08d2217a983113a9a356ce70890693319227f35c82fbdcd818` |
-| `isRecord` | [src/infrastructure/project/project-service.ts](../../../src/infrastructure/project/project-service.ts) | 49 | `07549fce108bd735bdd7d48b07bccbf39947e3547d0f26ab60fdd013ca94aeff` |
-| `isSessionStatus` | [src/infrastructure/project/project-service.ts](../../../src/infrastructure/project/project-service.ts) | 131 | `07549fce108bd735bdd7d48b07bccbf39947e3547d0f26ab60fdd013ca94aeff` |
-| `isSessionDto` | [src/infrastructure/project/project-service.ts](../../../src/infrastructure/project/project-service.ts) | 142 | `07549fce108bd735bdd7d48b07bccbf39947e3547d0f26ab60fdd013ca94aeff` |
-| `normalizeSessionDto` | [src/infrastructure/project/project-service.ts](../../../src/infrastructure/project/project-service.ts) | 177 | `07549fce108bd735bdd7d48b07bccbf39947e3547d0f26ab60fdd013ca94aeff` |
-| `EnvLike` | [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | 31 | `30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a` |
-| `defaultEnv` | [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | 33 | `30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a` |
-| `getHostAuthBaseUrl` | [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | 53 | `30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a` |
-| `viteEnv` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 13 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
-| `configuredSupabaseUrl` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 15 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
-| `configuredSupabaseAnonKey` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 16 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
-| `hostAuthUrl` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 17 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
-| `hostFirst` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 18 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
-| `supabaseUrl` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 58 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
-| `supabaseAnonKey` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 59 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
-| `supabase` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 61 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
 
 ## Konkrete Abnahmekriterien
 
@@ -258,12 +278,7 @@ Die folgenden Hashes binden SQL-Kette, transitive Tabellen-/Trigger-/Policyquell
 
 | Quelle | SHA-256 |
 | --- | --- |
-| [src/domains/project/contracts/project.types.ts](../../../src/domains/project/contracts/project.types.ts) | `1777f75b3bd865b09e3fba61324b7331439f5846c98dea1230e27b6f976a0ca8` |
-| [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | `b2343081ddce2e2edd73651b0622e8b4cc6d8583d746a863dbe3343e3a98f71a` |
-| [src/infrastructure/host/host-project-http.ts](../../../src/infrastructure/host/host-project-http.ts) | `b5a68f6452217b08d2217a983113a9a356ce70890693319227f35c82fbdcd818` |
-| [src/infrastructure/project/project-service.ts](../../../src/infrastructure/project/project-service.ts) | `07549fce108bd735bdd7d48b07bccbf39947e3547d0f26ab60fdd013ca94aeff` |
-| [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | `30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a` |
-| [src/lib/supabase.ts](../../../src/lib/supabase.ts) | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
+| [src/infrastructure/project/project-service.ts](../../../src/infrastructure/project/project-service.ts) | `365e2248522fcbc8f830ea3f28e0ae9f8b4d71cf3aaa2ffe931772297c364a78` |
 | [supabase/migrations/001_initial.sql](../../../supabase/migrations/001_initial.sql) | `e3325c56d68286a2e293ddff791736ef91346ff90ac018c045843a5d52afb8c8` |
 | [supabase/migrations/015_inventory_item_definitions.sql](../../../supabase/migrations/015_inventory_item_definitions.sql) | `aeedfd77bb79d7d38f4163a496b373d266027b39adbce82fe14aec768187e9e7` |
 | [supabase/migrations/039_public_resource_ids_and_session_numbers.sql](../../../supabase/migrations/039_public_resource_ids_and_session_numbers.sql) | `053f02aaea8e1f3af27bfa3f6c7e17caadd5d5434ef6298e11920d0891b55f96` |

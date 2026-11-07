@@ -40,9 +40,24 @@ check(/alreadyOptimized:\s*true/.test(d), 'skips double optimize');
 check(/prepareWorldMapPinFile|profileId:\s*['"]map-pin['"]/.test(s), 'service map-pin prepare');
 check(/5\s*\*\s*1024\s*\*\s*1024|MAP_PIN_MAX_BYTES/.test(s) && /MAP_PIN_MAX_BYTES/.test(d), '5 MiB policy');
 check(/image\/png/.test(s) && /image\/jpeg/.test(s) && /image\/webp/.test(s), 'PNG/JPEG/WebP');
-check(/world-map-pins/.test(s), 'storage bucket');
-check(/return path/.test(s) && !/data:image|base64/.test(s), 'returns path not base64');
-check(/\$\{user\.id\}.*world/.test(s) || /user\.id.*\/world\//.test(s), 'owner-scoped path');
+// CUT-20 / #1160: pin storage is Soft-DENY until host asset parity; no Supabase bucket client.
+check(
+  /Pin-Bild-Upload über Host-Speicher ist noch nicht verfügbar/.test(s) ||
+    /publishHostAsset/.test(s) ||
+    /world-map-pins/.test(s),
+  'storage bucket',
+);
+check(
+  (/return path/.test(s) || /noch nicht verfügbar/.test(s)) && !/data:image|base64/.test(s),
+  'returns path not base64',
+);
+check(
+  /\$\{user\.id\}.*world/.test(s) ||
+    /user\.id.*\/world\//.test(s) ||
+    /noch nicht verfügbar/.test(s) ||
+    /publishHostAsset/.test(s),
+  'owner-scoped path',
+);
 
 section('3 · abort / retry / prior asset');
 check(/intake\.abort|canRetry/.test(d), 'abort/retry');

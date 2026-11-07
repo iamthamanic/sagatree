@@ -70,20 +70,20 @@ async function signIn(baseURL, email, password) {
 
 // --- Static FE wiring ---
 const hostLibSrc = readFileSync(join(root, 'src/infrastructure/host/host-library-http.ts'), 'utf8');
-assert(/isHostLibraryExplicitlyDisabled/.test(hostLibSrc), 'explicit opt-out helper');
 assert(/getHostAuthBaseUrl\(env\) !== null/.test(hostLibSrc), 'auth URL enables host-first');
-assert(/flag === '0'/.test(hostLibSrc), 'LIBRARY=0 opt-out');
 assert(
-  /if \(isHostLibraryExplicitlyDisabled\(env\)\) return false;\s*return getHostAuthBaseUrl\(env\) !== null;/s.test(
-    hostLibSrc,
-  ),
-  'host-first: auth URL on unless explicitly disabled',
+  /return getHostAuthBaseUrl\(env\) !== null/.test(hostLibSrc),
+  'host-first: auth URL is sole routing signal',
 );
+assert(
+  !/isHostLibraryExplicitlyDisabled/.test(hostLibSrc),
+  'CUT-20: no host-library opt-out helper',
+);
+assert(!/VITE_SAGATREE_HOST_LIBRARY\s*===\s*['"]0['"]/.test(hostLibSrc), 'no LIBRARY=0 opt-out');
 
 const supabaseSrc = readFileSync(join(root, 'src/lib/supabase.ts'), 'utf8');
-assert(/hostFirst/.test(supabaseSrc), 'supabase host-first branch');
-assert(/persistSession: !hostFirst/.test(supabaseSrc), 'GoTrue session off under host-first');
-assert(/isHostLibraryExplicitlyDisabled/.test(supabaseSrc), 'supabase respects opt-out');
+assert(/persistSession:\s*false/.test(supabaseSrc), 'inert GoTrue session off');
+assert(!/isHostLibraryExplicitlyDisabled/.test(supabaseSrc), 'supabase stub has no opt-out');
 
 const authUserSrc = readFileSync(join(root, 'src/lib/authenticatedUser.ts'), 'utf8');
 assert(/probeHostActor/.test(authUserSrc), 'authenticatedUser host actor');
@@ -100,7 +100,10 @@ assert(/Residual allowlist/.test(residualDoc), 'residual allowlist doc');
 
 const envExample = readFileSync(join(root, '.env.example'), 'utf8');
 assert(/FE-HOST-09 host-first/.test(envExample), '.env.example host-first');
-assert(/VITE_SAGATREE_HOST_LIBRARY=0/.test(envExample), '.env.example opt-out');
+assert(
+  !/VITE_SAGATREE_HOST_LIBRARY=0/.test(envExample),
+  'CUT-20: no LIBRARY=0 opt-out in env example',
+);
 
 // CUT-16/17/18: item-thumbnail + item-model3d + avatar-meshy Soft-DENY removed — host dual-path.
 {
@@ -144,11 +147,11 @@ assert(/VITE_SAGATREE_HOST_LIBRARY=0/.test(envExample), '.env.example opt-out');
 }
 
 for (const [file, needle] of [
-  ['src/infrastructure/saga/saga-definition-service.ts', 'assertHostProductSurfaceAvailable'],
+  ['src/infrastructure/saga/saga-definition-service.ts', 'assertHost'],
   ['src/infrastructure/ai/host-ai-invoke.ts', 'isHostLibraryEnabled'],
-  ['src/infrastructure/project/project-service.ts', 'assertHostProductSurfaceAvailable'],
+  ['src/infrastructure/project/project-service.ts', 'assertHost'],
   ['src/infrastructure/project/project-service.ts', 'createHostProjectSession'],
-  ['src/lib/authenticatedUser.ts', 'branch on `isHostLibraryEnabled()`'],
+  ['src/lib/authenticatedUser.ts', 'isHostLibraryEnabled'],
 ]) {
   const src = readFileSync(join(root, file), 'utf8');
   assert(src.includes(needle), `residual gate in ${file}`);

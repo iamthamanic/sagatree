@@ -2,10 +2,7 @@
  * look-service — app-facing facade for LookProfile persistence (#340).
  * App slices must not query look_* tables directly.
  * Location: src/infrastructure/look/look-service.ts
- *
- * Dual-path (MIG-304): Host Library when `VITE_SAGATREE_HOST_LIBRARY=1`.
  */
-
 import type {
   AppendLookProfileVersionInput,
   CreateLookProfileInput,
@@ -29,7 +26,12 @@ import {
   analyzeLookReferences,
   type LookReferenceAnalysisRequest,
 } from './look-reference-analysis-service';
-import { supabaseLookProfileRepository } from './supabase-look.repository';
+
+function assertHost(): void {
+  if (!isHostLibraryEnabled()) {
+    throw new Error('Host-Anmeldung nicht konfiguriert (VITE_SAGATREE_HOST_AUTH_URL fehlt).');
+  }
+}
 
 function asLookRecord(value: unknown): LookProfileRecord | null {
   if (!value || typeof value !== 'object') return null;
@@ -41,75 +43,63 @@ function asLookRecord(value: unknown): LookProfileRecord | null {
 export async function listLookProfiles(options?: {
   includeArchived?: boolean;
 }): Promise<LookProfileRecord[]> {
-  if (isHostLibraryEnabled()) {
-    const rows = await fetchHostLibraryLooks();
-    return rows
-      .map(asLookRecord)
-      .filter((row): row is LookProfileRecord => row !== null)
-      .filter((row) => options?.includeArchived === true || row.status === 'active');
-  }
-  return supabaseLookProfileRepository.listProfiles(options);
+  assertHost();
+  const rows = await fetchHostLibraryLooks();
+  return rows
+    .map(asLookRecord)
+    .filter((row): row is LookProfileRecord => row !== null)
+    .filter((row) => options?.includeArchived === true || row.status === 'active');
 }
 
 export async function getLookProfile(
   profileId: string,
 ): Promise<LookProfileRecord | null> {
-  if (isHostLibraryEnabled()) {
-    const rows = await listLookProfiles({ includeArchived: true });
-    return rows.find((row) => row.profile.id === profileId) ?? null;
-  }
-  return supabaseLookProfileRepository.getProfileById(profileId);
+  assertHost();
+  const rows = await listLookProfiles({ includeArchived: true });
+  return rows.find((row) => row.profile.id === profileId) ?? null;
 }
 
 export async function createLookProfile(
   input: CreateLookProfileInput,
 ): Promise<LookProfileRecord> {
-  if (isHostLibraryEnabled()) {
-    const created = await createHostLibraryLook(input.draft);
-    const record = asLookRecord(created);
-    if (!record) throw new Error('Host-Look anlegen: ungültige Antwort');
-    return record;
-  }
-  return supabaseLookProfileRepository.createProfile(input);
+  assertHost();
+  const created = await createHostLibraryLook(input.draft);
+  const record = asLookRecord(created);
+  if (!record) throw new Error('Host-Look anlegen: ungültige Antwort');
+  return record;
 }
 
 export async function appendLookProfileVersion(
   input: AppendLookProfileVersionInput,
 ): Promise<LookProfileRecord> {
-  if (isHostLibraryEnabled()) {
-    const appended = await appendHostLibraryLookVersion(input.profileId, input.draft);
-    const record = asLookRecord(appended);
-    if (!record) throw new Error('Host-Look-Version anhängen: ungültige Antwort');
-    return record;
-  }
-  return supabaseLookProfileRepository.appendVersion(input);
+  assertHost();
+  const appended = await appendHostLibraryLookVersion(input.profileId, input.draft);
+  const record = asLookRecord(appended);
+  if (!record) throw new Error('Host-Look-Version anhängen: ungültige Antwort');
+  return record;
 }
 
 export async function archiveLookProfile(
   profileId: string,
 ): Promise<LookProfileRecord> {
-  if (isHostLibraryEnabled()) {
-    const archived = await archiveHostLibraryLook(profileId);
-    const record = asLookRecord(archived);
-    if (!record) throw new Error('Host-Look archivieren: ungültige Antwort');
-    return record;
-  }
-  return supabaseLookProfileRepository.archiveProfile(profileId);
+  assertHost();
+  const archived = await archiveHostLibraryLook(profileId);
+  const record = asLookRecord(archived);
+  if (!record) throw new Error('Host-Look archivieren: ungültige Antwort');
+  return record;
 }
 
 export async function duplicateLookProfile(
   input: DuplicateLookProfileInput,
 ): Promise<LookProfileRecord> {
-  if (isHostLibraryEnabled()) {
-    const duplicated = await duplicateHostLibraryLook(
-      input.sourceProfileId,
-      input.displayName,
-    );
-    const record = asLookRecord(duplicated);
-    if (!record) throw new Error('Host-Look duplizieren: ungültige Antwort');
-    return record;
-  }
-  return supabaseLookProfileRepository.duplicateProfile(input);
+  assertHost();
+  const duplicated = await duplicateHostLibraryLook(
+    input.sourceProfileId,
+    input.displayName,
+  );
+  const record = asLookRecord(duplicated);
+  if (!record) throw new Error('Host-Look duplizieren: ungültige Antwort');
+  return record;
 }
 
 function asLookVersion(value: unknown): LookProfileVersion | null {
@@ -129,14 +119,12 @@ function asLookVersion(value: unknown): LookProfileVersion | null {
 export async function listLookProfileVersions(
   profileId: string,
 ): Promise<LookProfileVersion[]> {
-  if (isHostLibraryEnabled()) {
-    const rows = await fetchHostLibraryLookVersions(profileId);
-    return rows
-      .map(asLookVersion)
-      .filter((row): row is LookProfileVersion => row !== null)
-      .sort((a, b) => a.version - b.version);
-  }
-  return supabaseLookProfileRepository.listVersions(profileId);
+  assertHost();
+  const rows = await fetchHostLibraryLookVersions(profileId);
+  return rows
+    .map(asLookVersion)
+    .filter((row): row is LookProfileVersion => row !== null)
+    .sort((a, b) => a.version - b.version);
 }
 
 /** Provider-neutral analysis — does not persist. */

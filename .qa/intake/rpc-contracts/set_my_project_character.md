@@ -84,72 +84,105 @@ Die finalen Datenbank-Constraints der beteiligten Relationen sind pro RPC in inv
 
 ## Caller: Request-Mapping, Response-Decoding und Fehler
 
-### src/infrastructure/project/project-member-service.ts:111
+### src/infrastructure/project/project-member-service.ts:1
 
-AST-Auflösung: `string-literal`; SHA-256 `bc15c872ef4979b1f6c67c9dc01838e8a7ee45083f225121d688d60b442bbb26`.
+AST-Auflösung: `host-transport-cut-20`; SHA-256 `e67c3c5c9dd332d15d699a489dce4db743c183a5ce6aab09efc2deb89628236f`.
 
 Der vollständige aufrufende Funktionskörper enthält Parameterumformung, RPC-Aufruf, Response-Prüfung, Fehlerumwandlung und gegebenenfalls Fallback:
 
 ```typescript
-async updateCharacter(projectId: string, characterId: string): Promise<ProjectMemberDto> {
-    if (isHostLibraryEnabled()) {
-      const updated = await setHostMyProjectCharacter(projectId, characterId);
-      const memberId = requireUuid(updated.memberId, 'set_my_project_character');
-      const userId = requireUuid(updated.userId, 'set_my_project_character.userId');
-      return {
-        id: memberId,
-        project_id: projectId,
-        user_id: userId,
-        role: 'player',
-        status: 'active',
-        character_id: characterId,
-        joined_at: new Date().toISOString(),
-      } as ProjectMemberDto;
-    }
-    const { data: memberId, error: updateError } = await supabase.rpc('set_my_project_character', {
-      p_project_id: projectId,
-      p_character_id: characterId,
-    });
+/**
+ * project-member-service — Host HTTP adapter for project membership (CUT-20).
+ * Location: src/infrastructure/project/project-member-service.ts
+ */
+import type { ProjectMemberDto, JoinProjectDto } from '../../domains/project/contracts/project.types';
+import {
+  isHostLibraryEnabled,
+  joinHostProjectByCode,
+  listHostProjectMembers,
+  setHostMyProjectCharacter,
+} from '../host/host-project-http';
 
-    if (updateError) throw new Error(`Charakter konnte nicht aktualisiert werden: ${updateError.message}`);
-    const updatedMemberId = requireUuid(memberId, 'set_my_project_character');
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
-    const { data, error } = await supabase
-      .from('project_members')
-      .select('*')
-      .eq('id', updatedMemberId)
-      .single();
-
-    if (error) throw error;
-    return data;
+function requireUuid(value: unknown, operation: string): string {
+  if (typeof value !== 'string' || !UUID_PATTERN.test(value)) {
+    throw new Error(`${operation} returned an invalid identifier`);
   }
+  return value;
+}
+
+function assertHost(): void {
+  if (!isHostLibraryEnabled()) {
+    throw new Error('Host-Anmeldung nicht konfiguriert (VITE_SAGATREE_HOST_AUTH_URL fehlt).');
+  }
+}
+
+export const projectMemberService = {
+  async getMembers(projectId: string): Promise<ProjectMemberDto[]> {
+    assertHost();
+    const rows = await listHostProjectMembers(projectId);
+    return rows.map((row) => ({
+      id: row.id,
+      project_id: row.projectId,
+      user_id: row.userId,
+      character_id: row.characterId,
+      role: row.role,
+      status: row.status === 'active' ? 'active' : 'inactive',
+      joined_at: row.joinedAt ?? new Date(0).toISOString(),
+    }));
+  },
+
+  async joinByCode(dto: JoinProjectDto): Promise<ProjectMemberDto> {
+    assertHost();
+    const joined = await joinHostProjectByCode(dto.code.toUpperCase(), dto.character_id || null);
+    const projectId = requireUuid(joined.projectId, 'join_project_by_code');
+    const userId = requireUuid(joined.userId, 'join_project_by_code.userId');
+    return {
+      id: projectId,
+      project_id: projectId,
+      user_id: userId,
+      role: 'player',
+      status: 'active',
+      character_id: dto.character_id || null,
+      joined_at: new Date().toISOString(),
+    } as ProjectMemberDto;
+  },
+
+  async updateCharacter(projectId: string, characterId: string): Promise<ProjectMemberDto> {
+    assertHost();
+    const updated = await setHostMyProjectCharacter(projectId, characterId);
+    const memberId = requireUuid(updated.memberId, 'set_my_project_character');
+    const userId = requireUuid(updated.userId, 'set_my_project_character.userId');
+    return {
+      id: memberId,
+      project_id: projectId,
+      user_id: userId,
+      role: 'player',
+      status: 'active',
+      character_id: characterId,
+      joined_at: new Date().toISOString(),
+    } as ProjectMemberDto;
+  },
+
+  /**
+   * Leave saga membership — PARITY_MISSING (#1159): no host route yet; Soft-DENY.
+   */
+  async leave(projectId: string, _userId: string): Promise<void> {
+    void projectId;
+    void _userId;
+    assertHost();
+    throw new Error('Saga-Mitgliedschaft verlassen ist im Host-Modus noch nicht verfügbar.');
+  },
+
+  /** Unused in product after CUT-20 — retained for contract stability. */
+  async getMyProjects(_userId: string): Promise<ProjectMemberDto[]> {
+    void _userId;
+    return [];
+  },
+};
+
 ```
-
-Direkt oder transitiv referenzierte lokale/importierte Mapper, Decoder und Vertrags-Typen sind zusätzlich mit vollständigem Source-Text in callers.json und inventory.json.callerContracts.supportingDeclarations gespeichert:
-
-| Symbol | Quelle | Zeile | SHA-256 |
-| --- | --- | --- | --- |
-| `ProjectMemberDto` | [src/domains/project/contracts/project.types.ts](../../../src/domains/project/contracts/project.types.ts) | 30 | `1777f75b3bd865b09e3fba61324b7331439f5846c98dea1230e27b6f976a0ca8` |
-| `EnvLike` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 11 | `b2343081ddce2e2edd73651b0622e8b4cc6d8583d746a863dbe3343e3a98f71a` |
-| `defaultEnv` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 16 | `b2343081ddce2e2edd73651b0622e8b4cc6d8583d746a863dbe3343e3a98f71a` |
-| `isHostLibraryExplicitlyDisabled` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 25 | `b2343081ddce2e2edd73651b0622e8b4cc6d8583d746a863dbe3343e3a98f71a` |
-| `EnvLike` | [src/infrastructure/host/host-project-http.ts](../../../src/infrastructure/host/host-project-http.ts) | 12 | `b5a68f6452217b08d2217a983113a9a356ce70890693319227f35c82fbdcd818` |
-| `defaultEnv` | [src/infrastructure/host/host-project-http.ts](../../../src/infrastructure/host/host-project-http.ts) | 17 | `b5a68f6452217b08d2217a983113a9a356ce70890693319227f35c82fbdcd818` |
-| `hostMutateJson` | [src/infrastructure/host/host-project-http.ts](../../../src/infrastructure/host/host-project-http.ts) | 74 | `b5a68f6452217b08d2217a983113a9a356ce70890693319227f35c82fbdcd818` |
-| `setHostMyProjectCharacter` | [src/infrastructure/host/host-project-http.ts](../../../src/infrastructure/host/host-project-http.ts) | 162 | `b5a68f6452217b08d2217a983113a9a356ce70890693319227f35c82fbdcd818` |
-| `UUID_PATTERN` | [src/infrastructure/project/project-member-service.ts](../../../src/infrastructure/project/project-member-service.ts) | 18 | `bc15c872ef4979b1f6c67c9dc01838e8a7ee45083f225121d688d60b442bbb26` |
-| `requireUuid` | [src/infrastructure/project/project-member-service.ts](../../../src/infrastructure/project/project-member-service.ts) | 20 | `bc15c872ef4979b1f6c67c9dc01838e8a7ee45083f225121d688d60b442bbb26` |
-| `EnvLike` | [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | 31 | `30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a` |
-| `defaultEnv` | [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | 33 | `30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a` |
-| `getHostAuthBaseUrl` | [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | 53 | `30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a` |
-| `viteEnv` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 13 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
-| `configuredSupabaseUrl` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 15 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
-| `configuredSupabaseAnonKey` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 16 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
-| `hostAuthUrl` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 17 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
-| `hostFirst` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 18 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
-| `supabaseUrl` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 58 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
-| `supabaseAnonKey` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 59 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
-| `supabase` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 61 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
 
 ## Konkrete Abnahmekriterien
 
@@ -170,12 +203,7 @@ Die folgenden Hashes binden SQL-Kette, transitive Tabellen-/Trigger-/Policyquell
 
 | Quelle | SHA-256 |
 | --- | --- |
-| [src/domains/project/contracts/project.types.ts](../../../src/domains/project/contracts/project.types.ts) | `1777f75b3bd865b09e3fba61324b7331439f5846c98dea1230e27b6f976a0ca8` |
-| [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | `b2343081ddce2e2edd73651b0622e8b4cc6d8583d746a863dbe3343e3a98f71a` |
-| [src/infrastructure/host/host-project-http.ts](../../../src/infrastructure/host/host-project-http.ts) | `b5a68f6452217b08d2217a983113a9a356ce70890693319227f35c82fbdcd818` |
-| [src/infrastructure/project/project-member-service.ts](../../../src/infrastructure/project/project-member-service.ts) | `bc15c872ef4979b1f6c67c9dc01838e8a7ee45083f225121d688d60b442bbb26` |
-| [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | `30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a` |
-| [src/lib/supabase.ts](../../../src/lib/supabase.ts) | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
+| [src/infrastructure/project/project-member-service.ts](../../../src/infrastructure/project/project-member-service.ts) | `e67c3c5c9dd332d15d699a489dce4db743c183a5ce6aab09efc2deb89628236f` |
 | [supabase/migrations/001_initial.sql](../../../supabase/migrations/001_initial.sql) | `e3325c56d68286a2e293ddff791736ef91346ff90ac018c045843a5d52afb8c8` |
 | [supabase/migrations/002_character_trait_arrays.sql](../../../supabase/migrations/002_character_trait_arrays.sql) | `74a7f112720d2572bbb8b7d8c32e0f5f5abf932c35268a34b45dc4bfedc2a02a` |
 | [supabase/migrations/004_project_membership_security.sql](../../../supabase/migrations/004_project_membership_security.sql) | `c1eccbda2dae95cd177ba6313dfd51ef269e0740a13805a5d07a223c6bf489cd` |

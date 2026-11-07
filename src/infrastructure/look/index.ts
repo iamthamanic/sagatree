@@ -30,8 +30,6 @@ export {
   toPersistedVersionInsert,
 } from './look.persistence';
 
-export { supabaseLookProfileRepository } from './supabase-look.repository';
-
 export {
   createHostLookAdapter,
   type HostLookAdapter,
