@@ -1,10 +1,11 @@
 # Composition Gate — cut-04b-session-lobby-ready-host (#1162)
 
-- HEAD_SHA: e17c83cdfe59cf0306fc05a922f346cc3de42e09
+- HEAD_SHA: d6fa4de446a102881872a2dfe9f7c0060d732097
 - BASE_SHA: 45f681e20a84671b13b81afd98b641320279785e
+- Date: 2026-11-08
 - Verdict: CLEAR
 - Acceptance tier: feature-integration
-- Deferred integration: none (ephemeral lobby ready via host SSE; Colyseus product rooms remain MIG-602)
+- Deferred integration: Colyseus product rooms remain MIG-602; lobby ready is ephemeral in-process SSE
 
 ## Event
 
@@ -25,14 +26,17 @@ membership via `getPlaySession`. Soft local-echo removed. Server stamps `userId`
 
 | Case | Intended | Composed | Result |
 |------|----------|----------|--------|
-| Two actors | A ready visible to B | SSE fan-out | pass |
+| N-actors | A ready visible to B | SSE fan-out | pass |
+| Invalid/missing | Unauth / stranger session | 401 / 403 | pass |
+| Two consumers / crash | Two lobby UIs observe same ready map | Shared hub subscribers | pass |
 | Spoof userId | Client claim ignored | Server stamps actor | pass |
-| Stranger | Stream/publish DENY | 403/404 | pass |
-| Unauth | DENY | 401/403 | pass |
-| Soft-echo | Removed | Host SSE only | pass |
 
 ## Flags
 
 | Tag | Severity | Hops | Why local review missed it | Fix |
 |-----|----------|------|----------------------------|-----|
 | (none) | — | — | — | — |
+
+## Evidence
+
+- `scripts/cut-04b-session-lobby-ready.self-test.mjs`
