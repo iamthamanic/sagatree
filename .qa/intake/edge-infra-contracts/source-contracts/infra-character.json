@@ -1023,7 +1023,7 @@
     },
     {
       "path": "src/infrastructure/host/host-library-http.ts",
-      "sha256": "39abb17777de0e744ebe2932789443b9722135bfefc7ae0596f93ec7ef6df8dd"
+      "sha256": "c56b88c60d6c9491fc7b6e6e1143ac4985ffdab5dff16afef8a54bce79629a07"
     },
     {
       "path": "src/infrastructure/host/host-project-http.ts",
@@ -1039,7 +1039,7 @@
     },
     {
       "path": "src/infrastructure/inventory/item-catalog-service.ts",
-      "sha256": "adea9220e02d2dbb96e107743c2ad8dfb7eaa8a9f1b1314620f16d5bb2979175"
+      "sha256": "d4dd71a5bad8a8599c7f239d6f84bce2d52f795b8ca30073f6d69a69d1bef9a5"
     },
     {
       "path": "src/infrastructure/inventory/item-catalog.persistence.ts",
@@ -7493,26 +7493,34 @@
     },
     {
       "kind": "TypeAliasDeclaration",
+      "name": "FetchHostLibraryItemsOptions",
+      "path": "src/infrastructure/host/host-library-http.ts",
+      "line": 748,
+      "endLine": 753,
+      "text": "export type FetchHostLibraryItemsOptions = {\n  readonly worldProfileId?: string | null;\n  readonly query?: string;\n  readonly includeArchived?: boolean;\n  readonly origins?: readonly ('standard' | 'personal' | 'world')[];\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
       "name": "HostNpcControllerAssignmentDto",
       "path": "src/infrastructure/host/host-library-http.ts",
-      "line": 992,
-      "endLine": 998,
+      "line": 1039,
+      "endLine": 1045,
       "text": "export type HostNpcControllerAssignmentDto = {\n  readonly projectId: string;\n  readonly definitionId: string;\n  readonly controllerUserId: string | null;\n  readonly assignedBy?: string;\n  readonly updatedAt?: string;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "HostNpcInstanceDto",
       "path": "src/infrastructure/host/host-library-http.ts",
-      "line": 1051,
-      "endLine": 1064,
+      "line": 1098,
+      "endLine": 1111,
       "text": "export type HostNpcInstanceDto = {\n  readonly id: string;\n  readonly projectId: string;\n  readonly sessionId: string | null;\n  readonly definitionId: string;\n  readonly displayName: string;\n  readonly instanceKind: string;\n  readonly sequenceNumber: number;\n  readonly snapshot: Record<string, unknown>;\n  readonly runtime: Record<string, unknown>;\n  readonly createdBy?: string;\n  readonly createdAt?: string;\n  readonly updatedAt?: string;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "HostPublishedAssetDto",
       "path": "src/infrastructure/host/host-library-http.ts",
-      "line": 1173,
-      "endLine": 1180,
+      "line": 1220,
+      "endLine": 1227,
       "text": "export type HostPublishedAssetDto = {\n  readonly assetId: string;\n  readonly contentType: string;\n  readonly byteSize: number;\n  readonly checksumSha256: string;\n  readonly url: string;\n  readonly storagePath: string;\n};"
     },
     {
@@ -7623,16 +7631,16 @@
       "kind": "InterfaceDeclaration",
       "name": "CharacterItemCatalog",
       "path": "src/infrastructure/inventory/item-catalog-service.ts",
-      "line": 161,
-      "endLine": 166,
+      "line": 170,
+      "endLine": 175,
       "text": "export interface CharacterItemCatalog {\n  effectiveWorldProfileId: string | null;\n  addable: ItemDefinition[];\n  lookup: ItemDefinitionLookup;\n  records: CatalogDefinitionRecord[];\n}"
     },
     {
       "kind": "InterfaceDeclaration",
       "name": "LibraryItemCatalog",
       "path": "src/infrastructure/inventory/item-catalog-service.ts",
-      "line": 168,
-      "endLine": 171,
+      "line": 177,
+      "endLine": 180,
       "text": "export interface LibraryItemCatalog {\n  definitions: ItemDefinition[];\n  persistedRecords: CatalogDefinitionRecord[];\n}"
     },
     {

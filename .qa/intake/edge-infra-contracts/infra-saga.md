@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-saga.json](source-contracts/infra-saga.json) (SHA-256 `f3e71c492697a169e1111163a9d9b2c6daafc7292a8f45871d9026188a344d75`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-saga.json](source-contracts/infra-saga.json) (SHA-256 `e6b1213d09dd8e8e82ef64116cb4e65dd210eda305f74e0754b4dd66821d3fc8`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -298,7 +298,7 @@ All backend operations are included in the public declarations above.
 |---|---|
 | `src/domains/saga/contracts/saga-definition.ts` | `69b8fab72a158942d4f807e8b9fabcdae815506fb18e4e82434a71d0cdb9ee05` |
 | `src/domains/session/contracts/session-outcome-promotion.ts` | `d3c26e886f5f1da3b617723feaad5510218d486413ea7953bbc382593578bedd` |
-| `src/infrastructure/host/host-library-http.ts` | `39abb17777de0e744ebe2932789443b9722135bfefc7ae0596f93ec7ef6df8dd` |
+| `src/infrastructure/host/host-library-http.ts` | `c56b88c60d6c9491fc7b6e6e1143ac4985ffdab5dff16afef8a54bce79629a07` |
 | `src/infrastructure/host/host-saga-definition-http.ts` | `3bf857114def303681691297c71f09a9b6278658e51cad659f0d7e51e0a819f1` |
 | `src/infrastructure/host/host-session-http.ts` | `39b5efefc00297d57c1c4f248953cbbed4d7053e51974cd25a2ed43e368a64eb` |
 | `src/infrastructure/saga/host-saga-adapter.ts` | `7f0c52eaafcd6ee4f0deec9e5e4a5a282dc1d2ded67bd3a0e00a65636097aa62` |
