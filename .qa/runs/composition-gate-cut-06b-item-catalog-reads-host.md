@@ -1,8 +1,17 @@
 # Composition Gate — cut-06b-item-catalog-reads-host (#1160)
 
-- HEAD_SHA: 5e66f4e44115c981bcd05af8bc1faae4ab2516a4
-- Verdict: CLEAR
+- HEAD_SHA: 29962e1809b415fc3dfb07ac1e3ce68fd3eeeb80
+- BASE_SHA: 45f681e20a84671b13b81afd98b641320279785e
 - Date: 2026-11-08
+- Verdict: CLEAR
+- Acceptance tier: feature-integration
+- Deferred integration: world `modules` JSON for character catalog composition remains defaults until broader world-modules parity
+
+## Event
+
+Character and world item catalog reads use host `GET /api/v1/library/items` with
+server-side `worldProfileId` / `includeArchived` / `origin` filters via `InventoryPorts.listCatalog`.
+No Soft-DENY empty success; ACL fail-closed.
 
 ## Hop chain
 
@@ -13,18 +22,21 @@
 5. → domain `composeCharacterInventoryAddCatalog` + Core/builtin local composition
 6. → `InventoryCatalogDialog`
 
-1. `WorldItemCatalogSection` → `loadWorldProfileItemCatalog(worldProfileId)`
-2. → `GET /api/v1/library/items?worldProfileId=&includeArchived=1&origin=world`
-3. → `InventoryPorts.listCatalog` (world-only + archived; ACL fail-closed)
-4. → UI filter / archive / restore (CUT-06 mutations unchanged)
+World authoring: `WorldItemCatalogSection` → same list route with `includeArchived=1&origin=world`.
 
 ## Simulations
 
-| Simulation | Result | Notes |
-| --- | --- | --- |
-| N-actors | pass | Stranger worldProfileId → 403; personal rows owner-scoped |
-| Invalid / missing | pass | Missing ports → 503; unauth → 401; empty world id → [] |
-| Two consumers / crash | pass | Character add-catalog vs world authoring use distinct query shapes; no Soft-DENY empty list |
+| Case | Intended | Composed | Result |
+|------|----------|----------|--------|
+| N-actors | Stranger worldProfileId denied | Port ACL → 403 | pass |
+| Invalid/missing | Missing ports / unauth / empty world | 503 / 401 / [] | pass |
+| Two consumers / crash | Character add-catalog vs world authoring | Distinct query shapes; no Soft-DENY | pass |
+
+## Flags
+
+| Tag | Severity | Hops | Why local review missed it | Fix |
+|-----|----------|------|----------------------------|-----|
+| (none) | — | — | — | — |
 
 ## Evidence
 
