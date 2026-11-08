@@ -67,7 +67,7 @@ npm ci
 npm run host:dev
 ```
 
-Frontend (separate terminal): set `VITE_SAGATREE_HOST_AUTH_URL=http://127.0.0.1:8787` and `npm run dev`.
+Frontend (separate terminal): keep `VITE_SAGATREE_HOST_AUTH_URL=same-origin` (Vite `/api` proxy) and `npm run dev`.
 
 ## Environment
 
