@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-project.json](source-contracts/infra-project.json) (SHA-256 `a3e9e80fe6fe16d7e55fb05e7d200b1e6f354e40ad6eeebb3aafe7ab7d5078ed`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-project.json](source-contracts/infra-project.json) (SHA-256 `73e8cb53c17509bb51f308177e111747d967a4846042f132261ae02b2d62e872`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -86,6 +86,8 @@ export function createHostProjectAdapter(ports: HostProjectPorts): HostProjectAd
     getSagaOverview: (actorId, publicId) => ports.getSagaOverview(actorId, publicId),
     joinProjectByCode: (actorId, code, characterId) =>
       ports.joinProjectByCode(actorId, code, characterId),
+    leaveProjectMembership: (actorId, projectId) =>
+      ports.leaveProjectMembership(actorId, projectId),
     listSagaBindings: (actorId, publicId, assetKind) =>
       ports.listSagaBindings(actorId, publicId, assetKind),
     listSagaMemberPermissionState: (actorId, publicId) =>
@@ -197,6 +199,10 @@ export type HostProjectPorts = {
     code: string,
     characterId?: string | null,
   ) => Promise<HostProjectResult<{ readonly projectId: string }>>;
+  readonly leaveProjectMembership: (
+    actorId: string,
+    projectId: string,
+  ) => Promise<HostProjectResult<{ readonly ok: true }>>;
   readonly listSagaBindings: (
     actorId: string,
     publicId: string,
@@ -226,7 +232,7 @@ export type HostProjectPorts = {
 };
 ```
 
-### src/infrastructure/project/host-project-ports.contract.ts:103
+### src/infrastructure/project/host-project-ports.contract.ts:107
 
 ```ts
 export const HOST_PROJECT_RPC_NAMES = [
@@ -236,6 +242,7 @@ export const HOST_PROJECT_RPC_NAMES = [
   'get_saga_lore_timeline',
   'get_saga_overview',
   'join_project_by_code',
+  'leave_project_membership',
   'list_saga_bindings',
   'list_saga_member_permission_state',
   'set_my_project_character',
@@ -244,13 +251,13 @@ export const HOST_PROJECT_RPC_NAMES = [
 ] as const;
 ```
 
-### src/infrastructure/project/host-project-ports.contract.ts:117
+### src/infrastructure/project/host-project-ports.contract.ts:122
 
 ```ts
 export type HostProjectRpcName = (typeof HOST_PROJECT_RPC_NAMES)[number];
 ```
 
-### src/infrastructure/project/host-project-ports.contract.ts:120
+### src/infrastructure/project/host-project-ports.contract.ts:125
 
 ```ts
 export const HOST_PROJECT_OPS = [
@@ -260,6 +267,7 @@ export const HOST_PROJECT_OPS = [
   'getSagaLoreTimeline',
   'getSagaOverview',
   'joinProjectByCode',
+  'leaveProjectMembership',
   'listSagaBindings',
   'listSagaMemberPermissionState',
   'setMyProjectCharacter',
@@ -268,13 +276,13 @@ export const HOST_PROJECT_OPS = [
 ] as const;
 ```
 
-### src/infrastructure/project/host-project-ports.contract.ts:134
+### src/infrastructure/project/host-project-ports.contract.ts:140
 
 ```ts
 export type HostProjectOp = (typeof HOST_PROJECT_OPS)[number];
 ```
 
-### src/infrastructure/project/project-member-service.ts:28
+### src/infrastructure/project/project-member-service.ts:29
 
 ```ts
 export const projectMemberService = {
@@ -324,14 +332,11 @@ export const projectMemberService = {
     } as ProjectMemberDto;
   },
 
-  /**
-   * Leave saga membership — PARITY_MISSING (#1159): no host route yet; Soft-DENY.
-   */
+  /** Leave saga membership — host POST /api/v1/projects/:id/leave (CUT-23). */
   async leave(projectId: string, _userId: string): Promise<void> {
-    void projectId;
     void _userId;
     assertHost();
-    throw new Error('Saga-Mitgliedschaft verlassen ist im Host-Modus noch nicht verfügbar.');
+    await leaveHostProject(projectId);
   },
 
   /** Unused in product after CUT-20 — retained for contract stability. */
@@ -494,11 +499,11 @@ async leaveProject(projectId: string): Promise<void> {
 | `src/domains/saga/permissions/lore-timeline.ts` | `f245a4b02ce971d772808ddcdb70944992ba7f8cb0fbc1d012e5f6c93e11b48b` |
 | `src/domains/session/contracts/session-lifecycle.ts` | `c70eb365aa31906dc8cd8f7a3cc2c5ed1141b5bab8489a1d56ced8a41c1ce5be` |
 | `src/infrastructure/host/host-library-http.ts` | `c56b88c60d6c9491fc7b6e6e1143ac4985ffdab5dff16afef8a54bce79629a07` |
-| `src/infrastructure/host/host-project-http.ts` | `b5a68f6452217b08d2217a983113a9a356ce70890693319227f35c82fbdcd818` |
+| `src/infrastructure/host/host-project-http.ts` | `287a426fb8645638e263a7b2d612d071eec4bf054cc778193b82f6b8252a0f92` |
 | `src/infrastructure/host/host-session-http.ts` | `f0e603ecf93151669c7b809cb63aea3d0a98ed2ca17ae8f2768a5444bb9cab56` |
-| `src/infrastructure/project/host-project-adapter.ts` | `41d162d05407e6f54f118a60a6aaf5f29bb1a61d28758c7d1c0698cdc3c35a70` |
-| `src/infrastructure/project/host-project-ports.contract.ts` | `4e9023655c95ed3e3ade8837af0c14c53c5541571a1591526aae760ffbbd9902` |
-| `src/infrastructure/project/project-member-service.ts` | `e67c3c5c9dd332d15d699a489dce4db743c183a5ce6aab09efc2deb89628236f` |
+| `src/infrastructure/project/host-project-adapter.ts` | `f8137115741c452c865883275c6d95529faf29ca28620c5adc92eedc30002e90` |
+| `src/infrastructure/project/host-project-ports.contract.ts` | `96d05101ba2cbe8364ae30bbcde48235a1058a65a43f733d03433d7f26a8236f` |
+| `src/infrastructure/project/project-member-service.ts` | `40fc648e091c11dcdcf4535747d9db0cd6dc5da9e475663c3ff60dff9a53e594` |
 | `src/infrastructure/project/project-service.ts` | `29846df2ae25287b68cba443a9c85f2f9952fa9cc1afd3faf762a78eb57a6fa6` |
 | `src/infrastructure/project/saga-overview-service.ts` | `29f68ebd797d4fc19e5aaede3860e9bd2984bc7123fb37e4557f4a5ea5407a28` |
 | `src/infrastructure/project/saga-permission-service.ts` | `e177bbfaa085cc5ab6a03f9ba437ba003766443da87b02cfaa2ae2348f9ec6e1` |

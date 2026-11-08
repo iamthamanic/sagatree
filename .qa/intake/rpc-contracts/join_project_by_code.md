@@ -88,7 +88,7 @@ Die finalen Datenbank-Constraints der beteiligten Relationen sind pro RPC in inv
 
 ### src/infrastructure/project/project-member-service.ts:1
 
-AST-Auflösung: `host-transport-cut-20`; SHA-256 `e67c3c5c9dd332d15d699a489dce4db743c183a5ce6aab09efc2deb89628236f`.
+AST-Auflösung: `host-transport-cut-20`; SHA-256 `40fc648e091c11dcdcf4535747d9db0cd6dc5da9e475663c3ff60dff9a53e594`.
 
 Der vollständige aufrufende Funktionskörper enthält Parameterumformung, RPC-Aufruf, Response-Prüfung, Fehlerumwandlung und gegebenenfalls Fallback:
 
@@ -101,6 +101,7 @@ import type { ProjectMemberDto, JoinProjectDto } from '../../domains/project/con
 import {
   isHostLibraryEnabled,
   joinHostProjectByCode,
+  leaveHostProject,
   listHostProjectMembers,
   setHostMyProjectCharacter,
 } from '../host/host-project-http';
@@ -167,14 +168,11 @@ export const projectMemberService = {
     } as ProjectMemberDto;
   },
 
-  /**
-   * Leave saga membership — PARITY_MISSING (#1159): no host route yet; Soft-DENY.
-   */
+  /** Leave saga membership — host POST /api/v1/projects/:id/leave (CUT-23). */
   async leave(projectId: string, _userId: string): Promise<void> {
-    void projectId;
     void _userId;
     assertHost();
-    throw new Error('Saga-Mitgliedschaft verlassen ist im Host-Modus noch nicht verfügbar.');
+    await leaveHostProject(projectId);
   },
 
   /** Unused in product after CUT-20 — retained for contract stability. */
@@ -226,4 +224,4 @@ Die folgenden Hashes binden SQL-Kette, transitive Tabellen-/Trigger-/Policyquell
 | [archive/supabase-legacy/supabase/migrations/079_drop_sagadrive_aliases.sql](../../../archive/supabase-legacy/supabase/migrations/079_drop_sagadrive_aliases.sql) | `bb8d1160118231cb724d0e01fbe5b66ba20dde397b67e052e03d8a1a9f2e6dd0` |
 | [archive/supabase-legacy/supabase/migrations/089_gm_presence_character_type.sql](../../../archive/supabase-legacy/supabase/migrations/089_gm_presence_character_type.sql) | `f66c1286947dd3119ac4cfac01736a3948e1cb35648f61837e6a79fd9c519560` |
 | [archive/supabase-legacy/supabase/migrations/092_fix_projects_rls_recursion.sql](../../../archive/supabase-legacy/supabase/migrations/092_fix_projects_rls_recursion.sql) | `8e98ae8e52beb6ab57359338e7b30bdc2db322b7cdb44bdbf4059a41ab26e1bd` |
-| [src/infrastructure/project/project-member-service.ts](../../../src/infrastructure/project/project-member-service.ts) | `e67c3c5c9dd332d15d699a489dce4db743c183a5ce6aab09efc2deb89628236f` |
+| [src/infrastructure/project/project-member-service.ts](../../../src/infrastructure/project/project-member-service.ts) | `40fc648e091c11dcdcf4535747d9db0cd6dc5da9e475663c3ff60dff9a53e594` |

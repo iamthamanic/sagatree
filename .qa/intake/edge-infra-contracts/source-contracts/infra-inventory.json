@@ -247,7 +247,7 @@
     },
     {
       "path": "src/infrastructure/host/host-project-http.ts",
-      "sha256": "b5a68f6452217b08d2217a983113a9a356ce70890693319227f35c82fbdcd818"
+      "sha256": "287a426fb8645638e263a7b2d612d071eec4bf054cc778193b82f6b8252a0f92"
     },
     {
       "path": "src/infrastructure/host/host-session-http.ts",
@@ -307,7 +307,7 @@
     },
     {
       "path": "src/infrastructure/project/project-member-service.ts",
-      "sha256": "e67c3c5c9dd332d15d699a489dce4db743c183a5ce6aab09efc2deb89628236f"
+      "sha256": "40fc648e091c11dcdcf4535747d9db0cd6dc5da9e475663c3ff60dff9a53e594"
     },
     {
       "path": "src/infrastructure/project/project-service.ts",
@@ -1955,24 +1955,24 @@
       "kind": "TypeAliasDeclaration",
       "name": "HostProjectMemberDto",
       "path": "src/infrastructure/host/host-project-http.ts",
-      "line": 239,
-      "endLine": 247,
+      "line": 248,
+      "endLine": 256,
       "text": "export type HostProjectMemberDto = {\n  readonly id: string;\n  readonly projectId: string;\n  readonly userId: string;\n  readonly characterId: string | null;\n  readonly role: 'gm' | 'player';\n  readonly status: 'active' | 'inactive';\n  readonly joinedAt: string | null;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "HostProjectWriteDto",
       "path": "src/infrastructure/host/host-project-http.ts",
-      "line": 263,
-      "endLine": 277,
+      "line": 272,
+      "endLine": 286,
       "text": "export type HostProjectWriteDto = {\n  readonly id: string;\n  readonly publicId: string;\n  readonly code: string;\n  readonly name: string;\n  readonly description: string | null;\n  readonly worldId: string;\n  readonly worldProfileId: string;\n  readonly defaultLookProfileId: string | null;\n  readonly allowPlayerCharacterLookOverride: boolean;\n  readonly gmUserId: string;\n  readonly status: string;\n  readonly createdAt: string;\n  readonly updatedAt: string;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "HostSessionLookDto",
       "path": "src/infrastructure/host/host-project-http.ts",
-      "line": 332,
-      "endLine": 340,
+      "line": 341,
+      "endLine": 349,
       "text": "export type HostSessionLookDto = {\n  readonly id: string;\n  readonly projectId: string;\n  readonly lookProfileId: string | null;\n  readonly publicId?: string;\n  readonly status?: string;\n  readonly sessionNumber?: number | null;\n  readonly name?: string | null;\n};"
     },
     {
