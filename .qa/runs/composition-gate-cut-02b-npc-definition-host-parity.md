@@ -1,11 +1,11 @@
 # Composition Gate — cut-02b-npc-definition-host-parity (#1159)
 
-- HEAD_SHA: 3969c62000dac71df56e013fac2eb98d27b05afd
+- HEAD_SHA: 49e264abbcb4ee72e59ab37d6702df2e53db21df
 - BASE_SHA: 45f681e20a84671b13b81afd98b641320279785e
 - Date: 2026-11-08
 - Verdict: CLEAR
 - Acceptance tier: feature-integration
-- Deferred: world payload `modules` authoring UI (defaults only)
+- Deferred integration: world payload `modules` authoring UI remains defaults-only (no new product surface)
 
 ## Event
 
@@ -28,10 +28,10 @@ Cardinality: one definition row per id; duplicate inserts a new personal row.
 
 | Case | Intended | Composed | Result |
 |------|----------|----------|--------|
-| Foreign owner | Stranger cannot duplicate/restore/promote | Port mutable/readable ACL → 403 | pass |
-| Unauth | No cookie → 401 | resolveLibraryActor | pass |
-| Catalog archived | includeArchived=1 returns archived | listDefinitions filter | pass |
-| Soft-DENY | Must not succeed as empty/throw soft message | restore uses host route | pass |
+| N-actors | Two owners cannot mutate each other's personal defs | Port mutable ACL → 403 | pass |
+| Invalid/missing | Unauth / bad id | 401 / 404 from library actor + ports | pass |
+| Two consumers / crash | Library browser + world catalog both list after restore | Shared host list filter | pass |
+| Soft-DENY | Must not succeed as soft unavailable | restore uses host route | pass |
 
 ## Flags
 
