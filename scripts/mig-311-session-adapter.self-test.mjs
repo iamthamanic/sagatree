@@ -273,7 +273,7 @@ try {
     `revoke_session_invite typed got ${JSON.stringify(revoked)}`,
   );
 
-  // --- Lobby ready: CUT-20 local echo until host broadcast (#1159) ---
+  // --- Lobby ready: CUT-04b host SSE fan-out (#1162) ---
   const lobbySrc = readFileSync(
     join(root, 'src/infrastructure/session/session-lobby-channel.ts'),
     'utf8',
@@ -283,10 +283,11 @@ try {
   assert(lobbySrc.includes('subscribeSessionLobbyReady'), 'lobby subscription API');
   assert(lobbySrc.includes('sendReady'), 'lobby sendReady');
   assert(
-    lobbySrc.includes('#1159') || lobbySrc.includes('local echo'),
-    'lobby documents deferred host broadcast',
+    lobbySrc.includes('lobby/ready/stream') || lobbySrc.includes('publishHostSessionLobbyReady'),
+    'lobby uses host ready stream/publish',
   );
-  assert(!/supabase|realtime|session-lobby:/i.test(lobbyCode), 'lobby no Supabase realtime topic');
+  assert(!/local echo|local-echo/i.test(lobbySrc), 'lobby Soft local-echo removed');
+  assert(!/supabase\.channel|session-lobby:/i.test(lobbyCode), 'lobby no Supabase realtime topic');
 
   // --- Media degraded shapes retained client-side ---
   for (const rel of [

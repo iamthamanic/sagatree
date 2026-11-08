@@ -160,7 +160,11 @@ import {
   createSessionPorts,
   createSessionProjectLookup,
 } from '../modules/session/index.ts';
-import { createRealtimeSessionRooms, type RealtimeFanoutMessage } from '../realtime/index.ts';
+import {
+  createLobbyReadyHub,
+  createRealtimeSessionRooms,
+  type RealtimeFanoutMessage,
+} from '../realtime/index.ts';
 import { createRouteHandler, sendJson } from '../http/route-registry.ts';
 import {
   bootstrapHostPersistence,
@@ -688,6 +692,8 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
     realtimeRooms = sessionPorts
       ? createRealtimeSessionRooms({ session: sessionPorts, onFanout })
       : undefined;
+    /** CUT-04b — ephemeral lobby ready (host realtime fan-out; not durable). */
+    const lobbyReadyHub = createLobbyReadyHub();
     const sessionInfraPorts = sessionPorts ? createSessionInfraPorts(sessionPorts) : null;
 
     const projectInfra: ProjectInfraPorts =
@@ -953,6 +959,7 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
       identity,
       transport,
       realtime: realtimeRooms,
+      lobbyReady: lobbyReadyHub,
       hostMode: config.mode,
       trustedOrigins: config.auth?.trustedOrigins ?? [],
       recordPing,

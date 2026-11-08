@@ -45,7 +45,7 @@ import type { AssetPorts } from '../assets/index.ts';
 import type { MarketplacePorts } from '../modules/marketplace/index.ts';
 import type { RulesetPorts } from '../modules/rulesets/index.ts';
 import type { UserProfilePorts } from '../modules/user-profile/index.ts';
-import type { RealtimeSessionRooms } from '../realtime/index.ts';
+import type { LobbyReadyHub, RealtimeSessionRooms } from '../realtime/index.ts';
 import type { NodeAuthHandler } from '../auth/wrap-auth-handler.ts';
 import { createHostApi } from '../api/index.ts';
 import {
@@ -61,6 +61,8 @@ export type RouteRegistryDeps = {
   readonly identity: IdentityPorts;
   readonly transport: TransportUseCase;
   readonly realtime?: RealtimeSessionRooms;
+  /** CUT-04b ephemeral lobby ready fan-out. */
+  readonly lobbyReady?: LobbyReadyHub | null;
   /** Solo vs remote — solo-only mutation shortcuts are refused in remote mode. */
   readonly hostMode?: 'solo' | 'remote';
   /** Normalized trusted origins for credentialed CORS (empty → no CORS echo). */
@@ -172,6 +174,7 @@ export function createRouteHandler(deps: RouteRegistryDeps) {
     identity: deps.identity,
     transport: deps.transport,
     realtime: deps.realtime,
+    lobbyReady: deps.lobbyReady,
     hostMode,
     recordPing: deps.recordPing,
     tryAuthorizedProjectTouch: deps.tryAuthorizedProjectTouch,
