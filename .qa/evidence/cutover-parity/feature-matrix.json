@@ -163,7 +163,8 @@
       "host-product-deny.unavailable-result",
       "inventory-persistence.persist-migrated"
     ],
-    "1156": [
+    "1156": [],
+    "1157": [
       "lib.supabase-client-invoke"
     ],
     "1159": [
@@ -1959,9 +1960,6 @@
     "PARITY_MISSING": 0
   },
   "followUpIssues": {
-    "1159": "CUT-02b NPC definition duplicate/restore/world-catalog/promote",
-    "1160": "CUT-06b item catalog character/world reads",
-    "1161": "CUT-10b world map/atlas assets",
-    "1162": "CUT-04b session lobby ready realtime"
+    "1158": "CUT-23 final host-only parity closer"
   }
 }
