@@ -1,5 +1,7 @@
 # Composition Gate — cut-04b-session-lobby-ready-host (#1162)
 
+- HEAD_SHA: e17c83cdfe59cf0306fc05a922f346cc3de42e09
+- BASE_SHA: 45f681e20a84671b13b81afd98b641320279785e
 - Verdict: CLEAR
 - Acceptance tier: feature-integration
 - Deferred integration: none (ephemeral lobby ready via host SSE; Colyseus product rooms remain MIG-602)
