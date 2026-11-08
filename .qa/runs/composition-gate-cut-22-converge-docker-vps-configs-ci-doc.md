@@ -1,6 +1,6 @@
 # Composition Gate — cut-22-converge-docker-vps-configs-ci-doc (#1157)
 
-- HEAD_SHA: f05fe728664051ddebd718abd41a9c3cf25b0545
+- HEAD_SHA: 8c7285af011a5ed81467d481060ba22294864533
 - BASE_SHA: c5111c786ddcc6e78e95f3b2e649db59099f6d7c
 - Date: 2026-11-08
 - Verdict: CLEAR
