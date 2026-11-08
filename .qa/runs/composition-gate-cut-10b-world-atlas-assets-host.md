@@ -1,6 +1,6 @@
 # Composition Gate — cut-10b-world-atlas-assets-host (#1161)
 
-- HEAD_SHA: 9769a40a21089fe4354d4c4e0b98488237ccf1a6
+- HEAD_SHA: ecc17b84ef07b9ec25e52b85b0eacaa513ac07ea
 - BASE_SHA: 45f681e20a84671b13b81afd98b641320279785e
 - Date: 2026-11-08
 - Verdict: CLEAR
