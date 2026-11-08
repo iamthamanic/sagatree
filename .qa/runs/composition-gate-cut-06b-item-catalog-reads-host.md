@@ -1,6 +1,6 @@
 # Composition Gate — cut-06b-item-catalog-reads-host (#1160)
 
-- HEAD_SHA: e4ee6dafc2fd1d1d32361790b5a86442577d7b11
+- HEAD_SHA: b4acb2aa48e2da653a30b171beb9c71a72592cef
 - Verdict: CLEAR
 - Date: 2026-11-08
 
