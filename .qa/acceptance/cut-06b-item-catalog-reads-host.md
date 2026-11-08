@@ -64,7 +64,7 @@ Roadmap: Epic #1135 browser-host cutover — CUT-06b follow-up after CUT-06/#114
 
 ## Composition Gate
 
-- HEAD_SHA: pending (set at commit)
+- HEAD_SHA: e4ee6dafc2fd1d1d32361790b5a86442577d7b11
 - Verdict: CLEAR
 - Proof: `.qa/runs/composition-gate-cut-06b-item-catalog-reads-host.md`
 - Skip reason: n/a

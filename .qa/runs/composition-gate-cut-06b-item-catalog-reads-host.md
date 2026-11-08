@@ -1,6 +1,6 @@
 # Composition Gate — cut-06b-item-catalog-reads-host (#1160)
 
-- HEAD_SHA: pending (filled at verify)
+- HEAD_SHA: e4ee6dafc2fd1d1d32361790b5a86442577d7b11
 - Verdict: CLEAR
 - Date: 2026-11-08
 
