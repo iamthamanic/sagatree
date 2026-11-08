@@ -29,7 +29,7 @@
     },
     {
       "path": "src/infrastructure/session/media/media-token-client.ts",
-      "sha256": "870b4220178bcd0f10ef961a6f6f0bbf307c8c31370b9360507f3a23d28fa84a"
+      "sha256": "c554cc7bdddcf519de1aba83c9804ff8edf62e75f95c409aebb771fad023c7dd"
     },
     {
       "path": "src/infrastructure/session/media/memory-media-plane-adapter.ts",
@@ -45,27 +45,27 @@
     },
     {
       "path": "src/infrastructure/session/session-lobby-channel.ts",
-      "sha256": "ee5e6dd9c12b03ec7a1868c435b46b1226d4bc9415ef2be652eaa1498a2d7252"
+      "sha256": "3747d80942a4ea3cc19c9add12dd8167f3642895cc57d57f0df494c095f4e5e5"
     },
     {
       "path": "src/infrastructure/session/session-recap-ai-service.ts",
-      "sha256": "549ecbd3c5d57a6c8e3f1b64430f24c2d198c62b4df610d2e124d07caddf8c0e"
+      "sha256": "b0161e496d5de5ecc1a850a5eb908611396b03b69860fd6e9d93be2f92822960"
     },
     {
       "path": "src/infrastructure/session/session-recap-service.ts",
-      "sha256": "e98ca57169a56a5ce0943018e33b0d7c863754e4787eace8bf0e2bbc2930fca5"
+      "sha256": "0fb9b8f81980a70e42c578ed1274ad43b6098f2cac6c6cf89cbba5bd0ab934fc"
     },
     {
       "path": "src/infrastructure/session/session-runtime-channel.ts",
-      "sha256": "248a264d97d01d522e05baa27132799d08bc092e661a72cca6ed501d7f48cdf5"
+      "sha256": "07b49ed37f61a3e737f58e42b5fea1dd8151c66430014ce1f8fb04e1a85fa69a"
     },
     {
       "path": "src/infrastructure/session/session-runtime-service.ts",
-      "sha256": "67026e83dc5320ff5f2274d5ee4f65c95f97e3d1d6828dcfeb5d5652feddbe79"
+      "sha256": "49c9781729542abf9ca36d23d26ddf7206bd1247b6f5fe6b7e964f5942cf2961"
     },
     {
       "path": "src/infrastructure/session/session-service.ts",
-      "sha256": "9109e84fb2c7625aae96928d15b3c0e44ea4598cded3a9e0601d6e4031e8db2d"
+      "sha256": "674d30a083283997b85b3f5397276675403bceb5de34832009ee1d1355ffa40a"
     }
   ],
   "supportingSourceFiles": [
@@ -103,15 +103,15 @@
     },
     {
       "path": "src/infrastructure/host/host-library-http.ts",
-      "sha256": "b2343081ddce2e2edd73651b0622e8b4cc6d8583d746a863dbe3343e3a98f71a"
+      "sha256": "1d41f3b1eb3e71a3a8b12306993b605f2d05f2f41cd35f73b9c362b12f9c1cb6"
     },
     {
       "path": "src/infrastructure/host/host-session-http.ts",
-      "sha256": "763c2535c26f746b60ff3f68358fb7c37c20384bd9f4a9a5a7d9bf2710e0ab81"
+      "sha256": "39b5efefc00297d57c1c4f248953cbbed4d7053e51974cd25a2ed43e368a64eb"
     },
     {
       "path": "src/lib/authenticatedUser.ts",
-      "sha256": "d4cbf3a004f8375982ca03d474fb7b61559fc2ec58ad6fe7b1f8834d26abf10c"
+      "sha256": "5d9deef60efd85a3ecd56e9b55f67ecb2d03c2964c4f9217e6de6842d8e0b403"
     },
     {
       "path": "src/lib/hostAuthBridge.ts",
@@ -119,15 +119,11 @@
     },
     {
       "path": "src/lib/localAdmin.ts",
-      "sha256": "3a28dec23e85f25ed3e70682bc6e7f8c6b55e81dbbefdd1f6a837f68ac80d6b5"
+      "sha256": "103feaea892b0582022557ff81cef61105f3d9ed4eb421a20d8b0b415c2de498"
     },
     {
       "path": "src/lib/networkTimeout.ts",
       "sha256": "835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851"
-    },
-    {
-      "path": "src/lib/supabase.ts",
-      "sha256": "267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c"
     }
   ],
   "importedTypeDeclarations": [
@@ -479,56 +475,56 @@
       "kind": "TypeAliasDeclaration",
       "name": "EnvLike",
       "path": "src/infrastructure/host/host-library-http.ts",
-      "line": 11,
-      "endLine": 14,
-      "text": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
+      "line": 10,
+      "endLine": 12,
+      "text": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "HostLibraryCharacterDto",
       "path": "src/infrastructure/host/host-library-http.ts",
-      "line": 68,
-      "endLine": 81,
+      "line": 59,
+      "endLine": 72,
       "text": "export type HostLibraryCharacterDto = {\n  readonly id: string;\n  readonly publicId?: string;\n  readonly name: string;\n  readonly description?: string;\n  readonly class?: string;\n  readonly race?: string;\n  readonly level?: number;\n  readonly sheetStatus?: string;\n  readonly portraitUrl?: string | null;\n  readonly sheet?: Readonly<Record<string, unknown>>;\n  readonly createdAt?: string;\n  readonly updatedAt?: string;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "HostLibraryProjectDto",
       "path": "src/infrastructure/host/host-library-http.ts",
-      "line": 96,
-      "endLine": 117,
+      "line": 87,
+      "endLine": 108,
       "text": "export type HostLibraryProjectDto = {\n  readonly id: string;\n  readonly publicId?: string;\n  readonly code?: string;\n  readonly name: string;\n  readonly description?: string | null;\n  readonly worldId?: string | null;\n  readonly worldProfileId?: string | null;\n  readonly defaultLookProfileId?: string | null;\n  readonly allowPlayerCharacterLookOverride?: boolean;\n  readonly sagaId?: string | null;\n  readonly sagaVersionId?: string | null;\n  readonly sagaTitle?: string | null;\n  readonly sagaSlug?: string | null;\n  readonly sagaOrigin?: string | null;\n  readonly gmUserId: string;\n  readonly status?: string;\n  readonly memberCount?: number;\n  readonly sessionCount?: number;\n  readonly createdAt?: string;\n  readonly updatedAt?: string;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "HostLibraryWorldDto",
       "path": "src/infrastructure/host/host-library-http.ts",
-      "line": 132,
-      "endLine": 138,
+      "line": 123,
+      "endLine": 129,
       "text": "export type HostLibraryWorldDto = {\n  readonly id: string;\n  readonly title: string;\n  readonly createdAt: string;\n  /** CUT-10 — WO-XXXXX when present. */\n  readonly publicId?: string | null;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "HostNpcControllerAssignmentDto",
       "path": "src/infrastructure/host/host-library-http.ts",
-      "line": 954,
-      "endLine": 960,
+      "line": 945,
+      "endLine": 951,
       "text": "export type HostNpcControllerAssignmentDto = {\n  readonly projectId: string;\n  readonly definitionId: string;\n  readonly controllerUserId: string | null;\n  readonly assignedBy?: string;\n  readonly updatedAt?: string;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "HostNpcInstanceDto",
       "path": "src/infrastructure/host/host-library-http.ts",
-      "line": 1013,
-      "endLine": 1026,
+      "line": 1004,
+      "endLine": 1017,
       "text": "export type HostNpcInstanceDto = {\n  readonly id: string;\n  readonly projectId: string;\n  readonly sessionId: string | null;\n  readonly definitionId: string;\n  readonly displayName: string;\n  readonly instanceKind: string;\n  readonly sequenceNumber: number;\n  readonly snapshot: Record<string, unknown>;\n  readonly runtime: Record<string, unknown>;\n  readonly createdBy?: string;\n  readonly createdAt?: string;\n  readonly updatedAt?: string;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "HostPublishedAssetDto",
       "path": "src/infrastructure/host/host-library-http.ts",
-      "line": 1135,
-      "endLine": 1142,
+      "line": 1126,
+      "endLine": 1133,
       "text": "export type HostPublishedAssetDto = {\n  readonly assetId: string;\n  readonly contentType: string;\n  readonly byteSize: number;\n  readonly checksumSha256: string;\n  readonly url: string;\n  readonly storagePath: string;\n};"
     },
     {
@@ -544,31 +540,31 @@
       "name": "HostPlaySessionDto",
       "path": "src/infrastructure/host/host-session-http.ts",
       "line": 98,
-      "endLine": 118,
-      "text": "export type HostPlaySessionDto = {\n  readonly sessionId: string;\n  readonly projectId: string;\n  readonly publicId?: string;\n  readonly joinCode?: string | null;\n  readonly code?: string | null;\n  readonly status: string;\n  readonly sessionNumber?: number;\n  readonly name?: string | null;\n  readonly createdAt?: string;\n  readonly startedAt?: string | null;\n  readonly endedAt?: string | null;\n  readonly gmUserId?: string;\n  readonly players?: readonly {\n    readonly id?: string;\n    readonly userId?: string;\n    readonly characterId?: string | null;\n    readonly isOnline?: boolean;\n    readonly joinedAt?: string;\n  }[];\n};"
+      "endLine": 120,
+      "text": "export type HostPlaySessionDto = {\n  readonly sessionId: string;\n  readonly projectId: string;\n  readonly publicId?: string;\n  readonly joinCode?: string | null;\n  readonly code?: string | null;\n  readonly status: string;\n  readonly sessionNumber?: number;\n  readonly name?: string | null;\n  readonly createdAt?: string;\n  readonly startedAt?: string | null;\n  readonly endedAt?: string | null;\n  readonly gmUserId?: string;\n  /** Session Look override; null/omit = inherit project default. */\n  readonly lookProfileId?: string | null;\n  readonly players?: readonly {\n    readonly id?: string;\n    readonly userId?: string;\n    readonly characterId?: string | null;\n    readonly isOnline?: boolean;\n    readonly joinedAt?: string;\n  }[];\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "HostSessionRecapGenerateResult",
       "path": "src/infrastructure/host/host-session-http.ts",
-      "line": 389,
-      "endLine": 398,
+      "line": 391,
+      "endLine": 400,
       "text": "export type HostSessionRecapGenerateResult =\n  | {\n      readonly status: 'ok';\n      readonly summaryText: string;\n      readonly summaryStatus: string;\n      readonly provider: string;\n      readonly model: string;\n    }\n  | { readonly status: 'not-configured'; readonly message: string }\n  | { readonly status: 'error'; readonly message: string };"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "HostSessionMediaTokenResult",
       "path": "src/infrastructure/host/host-session-http.ts",
-      "line": 434,
-      "endLine": 452,
+      "line": 436,
+      "endLine": 454,
       "text": "export type HostSessionMediaTokenResult =\n  | {\n      readonly ok: true;\n      readonly token: string;\n      readonly url: string;\n      readonly roomId: string;\n      readonly expiresAt: string;\n      readonly ttlSeconds: number;\n    }\n  | {\n      readonly ok: false;\n      readonly degraded: true;\n      readonly reason:\n        | 'media_service_unavailable'\n        | 'forbidden'\n        | 'unauthorized'\n        | 'bad_request';\n      readonly message: string;\n    };"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "HostPromoteOutcomeDto",
       "path": "src/infrastructure/host/host-session-http.ts",
-      "line": 601,
-      "endLine": 607,
+      "line": 603,
+      "endLine": 609,
       "text": "export type HostPromoteOutcomeDto = {\n  readonly ok?: boolean;\n  readonly idempotent?: boolean;\n  readonly targetKind?: string;\n  readonly targetRef?: string;\n  readonly messageDe?: string;\n};"
     },
     {
@@ -786,670 +782,6 @@
         "endLine": 189,
         "text": "private detachDataListener(): void {\n    if (this.room?.off && this.dataListener) {\n      this.room.off('dataReceived', this.dataListener);\n    }\n    this.dataListener = null;\n  }"
       }
-    },
-    {
-      "kind": "edge",
-      "name": "session-media-token",
-      "path": "src/infrastructure/session/media/media-token-client.ts",
-      "line": 50,
-      "endLine": 52,
-      "resolution": "literal-or-constant",
-      "expression": "supabase.functions.invoke('session-media-token', {\n      body: { sessionId },\n    })",
-      "chain": "supabase.functions.invoke('session-media-token', {\n      body: { sessionId },\n    })",
-      "arguments": [
-        "'session-media-token'",
-        "{\n      body: { sessionId },\n    }"
-      ],
-      "enclosingOperation": {
-        "path": "src/infrastructure/session/media/media-token-client.ts",
-        "line": 32,
-        "endLine": 111,
-        "text": "export async function fetchSessionMediaToken(input: {\n  sessionId: string;\n}): Promise<MediaTokenResult> {\n  const sessionId = input.sessionId.trim();\n  if (!sessionId) {\n    return {\n      ok: false,\n      degraded: true,\n      reason: 'bad_request',\n      message: 'sessionId fehlt.',\n    };\n  }\n\n  if (isHostLibraryEnabled()) {\n    return fetchHostSessionMediaToken(sessionId);\n  }\n\n  try {\n    const { data, error } = await supabase.functions.invoke('session-media-token', {\n      body: { sessionId },\n    });\n    if (error) {\n      return {\n        ok: false,\n        degraded: true,\n        reason: 'media_service_unavailable',\n        message: error.message || 'Media-Token-Dienst nicht erreichbar.',\n      };\n    }\n    const record = data as Record<string, unknown> | null;\n    if (!record || typeof record !== 'object') {\n      return {\n        ok: false,\n        degraded: true,\n        reason: 'media_service_unavailable',\n        message: 'Leere Media-Token-Antwort.',\n      };\n    }\n    if (record.degraded === true || record.ok === false) {\n      const reason =\n        record.reason === 'forbidden' ||\n        record.reason === 'unauthorized' ||\n        record.reason === 'bad_request'\n          ? record.reason\n          : 'media_service_unavailable';\n      return {\n        ok: false,\n        degraded: true,\n        reason,\n        message:\n          typeof record.message === 'string'\n            ? record.message\n            : 'Media plane degraded.',\n      };\n    }\n    const token = typeof record.token === 'string' ? record.token : '';\n    const url = typeof record.url === 'string' ? record.url : '';\n    const roomId = typeof record.roomId === 'string' ? record.roomId : '';\n    const expiresAt =\n      typeof record.expiresAt === 'string' ? record.expiresAt : '';\n    const ttlSeconds =\n      typeof record.ttlSeconds === 'number' ? record.ttlSeconds : 0;\n    if (!token || !url || !roomId) {\n      return {\n        ok: false,\n        degraded: true,\n        reason: 'media_service_unavailable',\n        message: 'Media-Token unvollständig.',\n      };\n    }\n    return { ok: true, token, url, roomId, expiresAt, ttlSeconds };\n  } catch (error) {\n    return {\n      ok: false,\n      degraded: true,\n      reason: 'media_service_unavailable',\n      message: error instanceof Error ? error.message : 'Media-Token-Fehler.',\n    };\n  }\n}"
-      }
-    },
-    {
-      "kind": "realtime-subscription",
-      "name": "broadcast",
-      "path": "src/infrastructure/session/session-lobby-channel.ts",
-      "line": 49,
-      "endLine": 56,
-      "resolution": "literal-or-constant",
-      "expression": "supabase\n    .channel(topic)\n    .on('broadcast', { event: 'ready' }, ({ payload }) => {\n      if (disposed) return;\n      const userId = typeof payload?.userId === 'string' ? payload.userId : null;\n      if (!userId) return;\n      onReady({ userId, ready: payload?.ready === true });\n    })",
-      "chain": "supabase\n    .channel(topic)\n    .on('broadcast', { event: 'ready' }, ({ payload }) => {\n      if (disposed) return;\n      const userId = typeof payload?.userId === 'string' ? payload.userId : null;\n      if (!userId) return;\n      onReady({ userId, ready: payload?.ready === true });\n    })",
-      "arguments": [
-        "'broadcast'",
-        "{ event: 'ready' }",
-        "({ payload }) => {\n      if (disposed) return;\n      const userId = typeof payload?.userId === 'string' ? payload.userId : null;\n      if (!userId) return;\n      onReady({ userId, ready: payload?.ready === true });\n    }"
-      ],
-      "enclosingOperation": {
-        "path": "src/infrastructure/session/session-lobby-channel.ts",
-        "line": 27,
-        "endLine": 88,
-        "text": "export async function subscribeSessionLobbyReady(\n  sessionId: string,\n  onReady: LobbyReadyListener,\n): Promise<SessionLobbySubscription> {\n  if (isHostLibraryEnabled()) {\n    void sessionId;\n    let disposed = false;\n    return {\n      sendReady: async (payload) => {\n        if (disposed) return;\n        onReady({ userId: payload.userId, ready: payload.ready === true });\n      },\n      unsubscribe: async () => {\n        disposed = true;\n      },\n    };\n  }\n\n  let channel: RealtimeChannel | null = null;\n  let disposed = false;\n\n  const topic = `session-lobby:${sessionId}`;\n  channel = supabase\n    .channel(topic)\n    .on('broadcast', { event: 'ready' }, ({ payload }) => {\n      if (disposed) return;\n      const userId = typeof payload?.userId === 'string' ? payload.userId : null;\n      if (!userId) return;\n      onReady({ userId, ready: payload?.ready === true });\n    });\n\n  await new Promise<void>((resolve, reject) => {\n    if (!channel) {\n      reject(new Error('Lobby-Kanal fehlt'));\n      return;\n    }\n    channel.subscribe((status) => {\n      if (status === 'SUBSCRIBED') resolve();\n      if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {\n        reject(new Error(`Lobby-Kanal: ${status}`));\n      }\n    });\n  });\n\n  return {\n    sendReady: async (payload) => {\n      if (!channel || disposed) return;\n      await channel.send({\n        type: 'broadcast',\n        event: 'ready',\n        payload: { userId: payload.userId, ready: payload.ready === true },\n      });\n    },\n    unsubscribe: async () => {\n      disposed = true;\n      if (channel) {\n        await supabase.removeChannel(channel);\n        channel = null;\n      }\n    },\n  };\n}"
-      }
-    },
-    {
-      "kind": "channel",
-      "name": null,
-      "path": "src/infrastructure/session/session-lobby-channel.ts",
-      "line": 49,
-      "endLine": 50,
-      "resolution": "dynamic-expression",
-      "expression": "supabase\n    .channel(topic)",
-      "chain": "supabase\n    .channel(topic)\n    .on('broadcast', { event: 'ready' }, ({ payload }) => {\n      if (disposed) return;\n      const userId = typeof payload?.userId === 'string' ? payload.userId : null;\n      if (!userId) return;\n      onReady({ userId, ready: payload?.ready === true });\n    })",
-      "arguments": [
-        "topic"
-      ],
-      "enclosingOperation": {
-        "path": "src/infrastructure/session/session-lobby-channel.ts",
-        "line": 27,
-        "endLine": 88,
-        "text": "export async function subscribeSessionLobbyReady(\n  sessionId: string,\n  onReady: LobbyReadyListener,\n): Promise<SessionLobbySubscription> {\n  if (isHostLibraryEnabled()) {\n    void sessionId;\n    let disposed = false;\n    return {\n      sendReady: async (payload) => {\n        if (disposed) return;\n        onReady({ userId: payload.userId, ready: payload.ready === true });\n      },\n      unsubscribe: async () => {\n        disposed = true;\n      },\n    };\n  }\n\n  let channel: RealtimeChannel | null = null;\n  let disposed = false;\n\n  const topic = `session-lobby:${sessionId}`;\n  channel = supabase\n    .channel(topic)\n    .on('broadcast', { event: 'ready' }, ({ payload }) => {\n      if (disposed) return;\n      const userId = typeof payload?.userId === 'string' ? payload.userId : null;\n      if (!userId) return;\n      onReady({ userId, ready: payload?.ready === true });\n    });\n\n  await new Promise<void>((resolve, reject) => {\n    if (!channel) {\n      reject(new Error('Lobby-Kanal fehlt'));\n      return;\n    }\n    channel.subscribe((status) => {\n      if (status === 'SUBSCRIBED') resolve();\n      if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {\n        reject(new Error(`Lobby-Kanal: ${status}`));\n      }\n    });\n  });\n\n  return {\n    sendReady: async (payload) => {\n      if (!channel || disposed) return;\n      await channel.send({\n        type: 'broadcast',\n        event: 'ready',\n        payload: { userId: payload.userId, ready: payload.ready === true },\n      });\n    },\n    unsubscribe: async () => {\n      disposed = true;\n      if (channel) {\n        await supabase.removeChannel(channel);\n        channel = null;\n      }\n    },\n  };\n}"
-      }
-    },
-    {
-      "kind": "realtime-subscribe",
-      "name": null,
-      "path": "src/infrastructure/session/session-lobby-channel.ts",
-      "line": 63,
-      "endLine": 68,
-      "resolution": "dynamic-expression",
-      "expression": "channel.subscribe((status) => {\n      if (status === 'SUBSCRIBED') resolve();\n      if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {\n        reject(new Error(`Lobby-Kanal: ${status}`));\n      }\n    })",
-      "chain": "channel.subscribe((status) => {\n      if (status === 'SUBSCRIBED') resolve();\n      if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {\n        reject(new Error(`Lobby-Kanal: ${status}`));\n      }\n    })",
-      "arguments": [
-        "(status) => {\n      if (status === 'SUBSCRIBED') resolve();\n      if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {\n        reject(new Error(`Lobby-Kanal: ${status}`));\n      }\n    }"
-      ],
-      "enclosingOperation": {
-        "path": "src/infrastructure/session/session-lobby-channel.ts",
-        "line": 58,
-        "endLine": 69,
-        "text": "(resolve, reject) => {\n    if (!channel) {\n      reject(new Error('Lobby-Kanal fehlt'));\n      return;\n    }\n    channel.subscribe((status) => {\n      if (status === 'SUBSCRIBED') resolve();\n      if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {\n        reject(new Error(`Lobby-Kanal: ${status}`));\n      }\n    });\n  }"
-      }
-    },
-    {
-      "kind": "realtime-send",
-      "name": null,
-      "path": "src/infrastructure/session/session-lobby-channel.ts",
-      "line": 74,
-      "endLine": 78,
-      "resolution": "dynamic-expression",
-      "expression": "channel.send({\n        type: 'broadcast',\n        event: 'ready',\n        payload: { userId: payload.userId, ready: payload.ready === true },\n      })",
-      "chain": "channel.send({\n        type: 'broadcast',\n        event: 'ready',\n        payload: { userId: payload.userId, ready: payload.ready === true },\n      })",
-      "arguments": [
-        "{\n        type: 'broadcast',\n        event: 'ready',\n        payload: { userId: payload.userId, ready: payload.ready === true },\n      }"
-      ],
-      "enclosingOperation": {
-        "path": "src/infrastructure/session/session-lobby-channel.ts",
-        "line": 72,
-        "endLine": 79,
-        "text": "async (payload) => {\n      if (!channel || disposed) return;\n      await channel.send({\n        type: 'broadcast',\n        event: 'ready',\n        payload: { userId: payload.userId, ready: payload.ready === true },\n      });\n    }"
-      }
-    },
-    {
-      "kind": "realtime-cleanup",
-      "name": null,
-      "path": "src/infrastructure/session/session-lobby-channel.ts",
-      "line": 83,
-      "endLine": 83,
-      "resolution": "dynamic-expression",
-      "expression": "supabase.removeChannel(channel)",
-      "chain": "supabase.removeChannel(channel)",
-      "arguments": [
-        "channel"
-      ],
-      "enclosingOperation": {
-        "path": "src/infrastructure/session/session-lobby-channel.ts",
-        "line": 80,
-        "endLine": 86,
-        "text": "async () => {\n      disposed = true;\n      if (channel) {\n        await supabase.removeChannel(channel);\n        channel = null;\n      }\n    }"
-      }
-    },
-    {
-      "kind": "edge",
-      "name": "session-recap",
-      "path": "src/infrastructure/session/session-recap-ai-service.ts",
-      "line": 97,
-      "endLine": 99,
-      "resolution": "literal-or-constant",
-      "expression": "supabase.functions.invoke('session-recap', {\n      body: { sessionId },\n    })",
-      "chain": "supabase.functions.invoke('session-recap', {\n      body: { sessionId },\n    })",
-      "arguments": [
-        "'session-recap'",
-        "{\n      body: { sessionId },\n    }"
-      ],
-      "enclosingOperation": {
-        "path": "src/infrastructure/session/session-recap-ai-service.ts",
-        "line": 84,
-        "endLine": 117,
-        "text": "async generateDraft(sessionId: string): Promise<SessionRecapAiGenerateResult> {\n    if (isHostLibraryEnabled()) {\n      const response = await generateHostSessionRecapDraft(sessionId);\n      if (response.status !== 'ok') {\n        throw new Error(response.message);\n      }\n      return {\n        summaryText: response.summaryText,\n        summaryStatus: response.summaryStatus === 'approved' ? 'approved' : 'draft',\n        provider: response.provider,\n        model: response.model,\n      };\n    }\n    const { data, error } = await supabase.functions.invoke('session-recap', {\n      body: { sessionId },\n    });\n    if (error) {\n      const serverMessage = await getFunctionErrorMessage(error);\n      throw new Error(\n        serverMessage ??\n          'Zusammenfassung konnte nicht generiert werden. Bitte manuell schreiben.',\n      );\n    }\n    const response = parseFunctionResponse(data);\n    if (response.status !== 'ok') {\n      throw new Error(response.message);\n    }\n    return {\n      summaryText: response.summaryText,\n      summaryStatus: response.summaryStatus === 'approved' ? 'approved' : 'draft',\n      provider: response.provider,\n      model: response.model,\n    };\n  }"
-      }
-    },
-    {
-      "kind": "rpc",
-      "name": "save_session_recap_summary",
-      "path": "src/infrastructure/session/session-recap-ai-service.ts",
-      "line": 138,
-      "endLine": 142,
-      "resolution": "literal-or-constant",
-      "expression": "supabase.rpc('save_session_recap_summary', {\n        p_session_id: sessionId,\n        p_summary_text: summaryText,\n        p_status: status,\n      })",
-      "chain": "supabase.rpc('save_session_recap_summary', {\n        p_session_id: sessionId,\n        p_summary_text: summaryText,\n        p_status: status,\n      })",
-      "arguments": [
-        "'save_session_recap_summary'",
-        "{\n        p_session_id: sessionId,\n        p_summary_text: summaryText,\n        p_status: status,\n      }"
-      ],
-      "enclosingOperation": {
-        "path": "src/infrastructure/session/session-recap-ai-service.ts",
-        "line": 119,
-        "endLine": 161,
-        "text": "async saveSummary(\n    sessionId: string,\n    summaryText: string,\n    status: 'draft' | 'approved',\n  ): Promise<{ summaryText: string | null; summaryStatus: EpisodeSummaryStatus }> {\n    if (isHostLibraryEnabled()) {\n      const saved = await saveHostSessionRecapSummary(sessionId, summaryText, status);\n      return {\n        summaryText:\n          typeof saved.summaryText === 'string' ? saved.summaryText : summaryText,\n        summaryStatus:\n          saved.summaryStatus === 'approved'\n            ? 'approved'\n            : saved.summaryStatus === 'draft'\n              ? 'draft'\n              : status,\n      };\n    }\n    const { data, error } = await raceWithTimeoutReject(\n      supabase.rpc('save_session_recap_summary', {\n        p_session_id: sessionId,\n        p_summary_text: summaryText,\n        p_status: status,\n      }),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'Speichern Zeitüberschreitung',\n    );\n    if (error) {\n      throw new Error(error.message || 'Zusammenfassung konnte nicht gespeichert werden');\n    }\n    if (!isRecord(data)) {\n      return { summaryText, summaryStatus: status };\n    }\n    return {\n      summaryText: typeof data.summaryText === 'string' ? data.summaryText : summaryText,\n      summaryStatus:\n        data.summaryStatus === 'approved'\n          ? 'approved'\n          : data.summaryStatus === 'draft'\n            ? 'draft'\n            : 'none',\n    };\n  }"
-      }
-    },
-    {
-      "kind": "rpc",
-      "name": "get_session_recap",
-      "path": "src/infrastructure/session/session-recap-service.ts",
-      "line": 48,
-      "endLine": 48,
-      "resolution": "literal-or-constant",
-      "expression": "supabase.rpc('get_session_recap', { p_session_id: sessionId })",
-      "chain": "supabase.rpc('get_session_recap', { p_session_id: sessionId })",
-      "arguments": [
-        "'get_session_recap'",
-        "{ p_session_id: sessionId }"
-      ],
-      "enclosingOperation": {
-        "path": "src/infrastructure/session/session-recap-service.ts",
-        "line": 28,
-        "endLine": 70,
-        "text": "async getBySessionId(sessionId: string): Promise<SessionRecapDto | null> {\n    if (isHostLibraryEnabled()) {\n      const data = await fetchHostSessionRecap(sessionId);\n      if (data == null) return null;\n      if (!isRecord(data)) {\n        throw new Error('Ungültige Recap-Antwort');\n      }\n      const statusRaw = typeof data.summaryStatus === 'string' ? data.summaryStatus : 'none';\n      const summaryStatus =\n        statusRaw === 'approved' || statusRaw === 'draft' ? statusRaw : 'none';\n      return {\n        sessionId: typeof data.sessionId === 'string' ? data.sessionId : sessionId,\n        summaryText: typeof data.summaryText === 'string' ? data.summaryText : null,\n        summaryStatus,\n        highlights: parsePersistedRecapHighlightLines(data.highlightLines),\n        createdAt: typeof data.createdAt === 'string' ? data.createdAt : null,\n        updatedAt: typeof data.updatedAt === 'string' ? data.updatedAt : null,\n      };\n    }\n    const { data, error } = await raceWithTimeoutReject(\n      supabase.rpc('get_session_recap', { p_session_id: sessionId }),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'Recap Zeitüberschreitung',\n    );\n    if (error) {\n      throw new Error(error.message || 'Recap konnte nicht geladen werden');\n    }\n    if (data == null) return null;\n    if (!isRecord(data)) {\n      throw new Error('Ungültige Recap-Antwort');\n    }\n    const statusRaw = typeof data.summaryStatus === 'string' ? data.summaryStatus : 'none';\n    const summaryStatus =\n      statusRaw === 'approved' || statusRaw === 'draft' ? statusRaw : 'none';\n    return {\n      sessionId: typeof data.sessionId === 'string' ? data.sessionId : sessionId,\n      summaryText: typeof data.summaryText === 'string' ? data.summaryText : null,\n      summaryStatus,\n      highlights: parsePersistedRecapHighlightLines(data.highlightLines),\n      createdAt: typeof data.createdAt === 'string' ? data.createdAt : null,\n      updatedAt: typeof data.updatedAt === 'string' ? data.updatedAt : null,\n    };\n  }"
-      }
-    },
-    {
-      "kind": "realtime-subscription",
-      "name": "postgres_changes",
-      "path": "src/infrastructure/session/session-runtime-channel.ts",
-      "line": 75,
-      "endLine": 107,
-      "resolution": "literal-or-constant",
-      "expression": "supabase\n    .channel(topic)\n    .on(\n      'postgres_changes',\n      { event: '*', schema: 'public', table: 'sessions', filter: `id=eq.${sessionId}` },\n      () => {\n        void refresh();\n      },\n    )\n    .on(\n      'postgres_changes',\n      {\n        event: '*',\n        schema: 'public',\n        table: 'session_players',\n        filter: `session_id=eq.${sessionId}`,\n      },\n      () => {\n        void refresh();\n      },\n    )\n    .on(\n      'postgres_changes',\n      {\n        event: 'INSERT',\n        schema: 'public',\n        table: 'session_events',\n        filter: `session_id=eq.${sessionId}`,\n      },\n      () => {\n        void refresh();\n      },\n    )",
-      "chain": "supabase\n    .channel(topic)\n    .on(\n      'postgres_changes',\n      { event: '*', schema: 'public', table: 'sessions', filter: `id=eq.${sessionId}` },\n      () => {\n        void refresh();\n      },\n    )\n    .on(\n      'postgres_changes',\n      {\n        event: '*',\n        schema: 'public',\n        table: 'session_players',\n        filter: `session_id=eq.${sessionId}`,\n      },\n      () => {\n        void refresh();\n      },\n    )\n    .on(\n      'postgres_changes',\n      {\n        event: 'INSERT',\n        schema: 'public',\n        table: 'session_events',\n        filter: `session_id=eq.${sessionId}`,\n      },\n      () => {\n        void refresh();\n      },\n    )",
-      "arguments": [
-        "'postgres_changes'",
-        "{\n        event: 'INSERT',\n        schema: 'public',\n        table: 'session_events',\n        filter: `session_id=eq.${sessionId}`,\n      }",
-        "() => {\n        void refresh();\n      }"
-      ],
-      "enclosingOperation": {
-        "path": "src/infrastructure/session/session-runtime-channel.ts",
-        "line": 31,
-        "endLine": 133,
-        "text": "export async function subscribeSessionRuntime(\n  sessionId: string,\n  onChange: SessionRuntimeListener,\n): Promise<SessionRuntimeSubscription> {\n  let current: SessionRuntimeState | null = await sessionRuntimeService.getSnapshot(sessionId);\n  onChange(current);\n\n  let channel: RealtimeChannel | null = null;\n  let disposed = false;\n  let pollTimer: ReturnType<typeof setInterval> | null = null;\n\n  if (isHostLibraryEnabled()) {\n    const refresh = async (): Promise<SessionRuntimeState> => {\n      const next = await sessionRuntimeService.getSnapshot(sessionId);\n      current = next;\n      if (!disposed) onChange(next);\n      return next;\n    };\n    pollTimer = setInterval(() => {\n      void refresh().catch(() => {\n        /* keep last good snapshot */\n      });\n    }, HOST_RUNTIME_POLL_MS);\n    return {\n      getState: () => current,\n      resync: refresh,\n      unsubscribe: async () => {\n        disposed = true;\n        if (pollTimer) {\n          clearInterval(pollTimer);\n          pollTimer = null;\n        }\n      },\n    };\n  }\n\n  const refresh = async (): Promise<SessionRuntimeState> => {\n    const next = await sessionRuntimeService.getSnapshot(sessionId);\n    current = next;\n    if (!disposed) onChange(next);\n    return next;\n  };\n\n  const topic = `session-runtime:${sessionId}`;\n  channel = supabase\n    .channel(topic)\n    .on(\n      'postgres_changes',\n      { event: '*', schema: 'public', table: 'sessions', filter: `id=eq.${sessionId}` },\n      () => {\n        void refresh();\n      },\n    )\n    .on(\n      'postgres_changes',\n      {\n        event: '*',\n        schema: 'public',\n        table: 'session_players',\n        filter: `session_id=eq.${sessionId}`,\n      },\n      () => {\n        void refresh();\n      },\n    )\n    .on(\n      'postgres_changes',\n      {\n        event: 'INSERT',\n        schema: 'public',\n        table: 'session_events',\n        filter: `session_id=eq.${sessionId}`,\n      },\n      () => {\n        void refresh();\n      },\n    );\n\n  await new Promise<void>((resolve, reject) => {\n    if (!channel) {\n      reject(new Error('Realtime-Kanal konnte nicht erstellt werden'));\n      return;\n    }\n    channel.subscribe((status) => {\n      if (status === 'SUBSCRIBED') resolve();\n      if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {\n        reject(new Error(`Realtime-Subscribe fehlgeschlagen: ${status}`));\n      }\n    });\n  });\n\n  return {\n    getState: () => current,\n    resync: refresh,\n    unsubscribe: async () => {\n      disposed = true;\n      if (channel) {\n        await supabase.removeChannel(channel);\n        channel = null;\n      }\n    },\n  };\n}"
-      }
-    },
-    {
-      "kind": "realtime-subscription",
-      "name": "postgres_changes",
-      "path": "src/infrastructure/session/session-runtime-channel.ts",
-      "line": 75,
-      "endLine": 95,
-      "resolution": "literal-or-constant",
-      "expression": "supabase\n    .channel(topic)\n    .on(\n      'postgres_changes',\n      { event: '*', schema: 'public', table: 'sessions', filter: `id=eq.${sessionId}` },\n      () => {\n        void refresh();\n      },\n    )\n    .on(\n      'postgres_changes',\n      {\n        event: '*',\n        schema: 'public',\n        table: 'session_players',\n        filter: `session_id=eq.${sessionId}`,\n      },\n      () => {\n        void refresh();\n      },\n    )",
-      "chain": "supabase\n    .channel(topic)\n    .on(\n      'postgres_changes',\n      { event: '*', schema: 'public', table: 'sessions', filter: `id=eq.${sessionId}` },\n      () => {\n        void refresh();\n      },\n    )\n    .on(\n      'postgres_changes',\n      {\n        event: '*',\n        schema: 'public',\n        table: 'session_players',\n        filter: `session_id=eq.${sessionId}`,\n      },\n      () => {\n        void refresh();\n      },\n    )\n    .on(\n      'postgres_changes',\n      {\n        event: 'INSERT',\n        schema: 'public',\n        table: 'session_events',\n        filter: `session_id=eq.${sessionId}`,\n      },\n      () => {\n        void refresh();\n      },\n    )",
-      "arguments": [
-        "'postgres_changes'",
-        "{\n        event: '*',\n        schema: 'public',\n        table: 'session_players',\n        filter: `session_id=eq.${sessionId}`,\n      }",
-        "() => {\n        void refresh();\n      }"
-      ],
-      "enclosingOperation": {
-        "path": "src/infrastructure/session/session-runtime-channel.ts",
-        "line": 31,
-        "endLine": 133,
-        "text": "export async function subscribeSessionRuntime(\n  sessionId: string,\n  onChange: SessionRuntimeListener,\n): Promise<SessionRuntimeSubscription> {\n  let current: SessionRuntimeState | null = await sessionRuntimeService.getSnapshot(sessionId);\n  onChange(current);\n\n  let channel: RealtimeChannel | null = null;\n  let disposed = false;\n  let pollTimer: ReturnType<typeof setInterval> | null = null;\n\n  if (isHostLibraryEnabled()) {\n    const refresh = async (): Promise<SessionRuntimeState> => {\n      const next = await sessionRuntimeService.getSnapshot(sessionId);\n      current = next;\n      if (!disposed) onChange(next);\n      return next;\n    };\n    pollTimer = setInterval(() => {\n      void refresh().catch(() => {\n        /* keep last good snapshot */\n      });\n    }, HOST_RUNTIME_POLL_MS);\n    return {\n      getState: () => current,\n      resync: refresh,\n      unsubscribe: async () => {\n        disposed = true;\n        if (pollTimer) {\n          clearInterval(pollTimer);\n          pollTimer = null;\n        }\n      },\n    };\n  }\n\n  const refresh = async (): Promise<SessionRuntimeState> => {\n    const next = await sessionRuntimeService.getSnapshot(sessionId);\n    current = next;\n    if (!disposed) onChange(next);\n    return next;\n  };\n\n  const topic = `session-runtime:${sessionId}`;\n  channel = supabase\n    .channel(topic)\n    .on(\n      'postgres_changes',\n      { event: '*', schema: 'public', table: 'sessions', filter: `id=eq.${sessionId}` },\n      () => {\n        void refresh();\n      },\n    )\n    .on(\n      'postgres_changes',\n      {\n        event: '*',\n        schema: 'public',\n        table: 'session_players',\n        filter: `session_id=eq.${sessionId}`,\n      },\n      () => {\n        void refresh();\n      },\n    )\n    .on(\n      'postgres_changes',\n      {\n        event: 'INSERT',\n        schema: 'public',\n        table: 'session_events',\n        filter: `session_id=eq.${sessionId}`,\n      },\n      () => {\n        void refresh();\n      },\n    );\n\n  await new Promise<void>((resolve, reject) => {\n    if (!channel) {\n      reject(new Error('Realtime-Kanal konnte nicht erstellt werden'));\n      return;\n    }\n    channel.subscribe((status) => {\n      if (status === 'SUBSCRIBED') resolve();\n      if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {\n        reject(new Error(`Realtime-Subscribe fehlgeschlagen: ${status}`));\n      }\n    });\n  });\n\n  return {\n    getState: () => current,\n    resync: refresh,\n    unsubscribe: async () => {\n      disposed = true;\n      if (channel) {\n        await supabase.removeChannel(channel);\n        channel = null;\n      }\n    },\n  };\n}"
-      }
-    },
-    {
-      "kind": "realtime-subscription",
-      "name": "postgres_changes",
-      "path": "src/infrastructure/session/session-runtime-channel.ts",
-      "line": 75,
-      "endLine": 83,
-      "resolution": "literal-or-constant",
-      "expression": "supabase\n    .channel(topic)\n    .on(\n      'postgres_changes',\n      { event: '*', schema: 'public', table: 'sessions', filter: `id=eq.${sessionId}` },\n      () => {\n        void refresh();\n      },\n    )",
-      "chain": "supabase\n    .channel(topic)\n    .on(\n      'postgres_changes',\n      { event: '*', schema: 'public', table: 'sessions', filter: `id=eq.${sessionId}` },\n      () => {\n        void refresh();\n      },\n    )\n    .on(\n      'postgres_changes',\n      {\n        event: '*',\n        schema: 'public',\n        table: 'session_players',\n        filter: `session_id=eq.${sessionId}`,\n      },\n      () => {\n        void refresh();\n      },\n    )\n    .on(\n      'postgres_changes',\n      {\n        event: 'INSERT',\n        schema: 'public',\n        table: 'session_events',\n        filter: `session_id=eq.${sessionId}`,\n      },\n      () => {\n        void refresh();\n      },\n    )",
-      "arguments": [
-        "'postgres_changes'",
-        "{ event: '*', schema: 'public', table: 'sessions', filter: `id=eq.${sessionId}` }",
-        "() => {\n        void refresh();\n      }"
-      ],
-      "enclosingOperation": {
-        "path": "src/infrastructure/session/session-runtime-channel.ts",
-        "line": 31,
-        "endLine": 133,
-        "text": "export async function subscribeSessionRuntime(\n  sessionId: string,\n  onChange: SessionRuntimeListener,\n): Promise<SessionRuntimeSubscription> {\n  let current: SessionRuntimeState | null = await sessionRuntimeService.getSnapshot(sessionId);\n  onChange(current);\n\n  let channel: RealtimeChannel | null = null;\n  let disposed = false;\n  let pollTimer: ReturnType<typeof setInterval> | null = null;\n\n  if (isHostLibraryEnabled()) {\n    const refresh = async (): Promise<SessionRuntimeState> => {\n      const next = await sessionRuntimeService.getSnapshot(sessionId);\n      current = next;\n      if (!disposed) onChange(next);\n      return next;\n    };\n    pollTimer = setInterval(() => {\n      void refresh().catch(() => {\n        /* keep last good snapshot */\n      });\n    }, HOST_RUNTIME_POLL_MS);\n    return {\n      getState: () => current,\n      resync: refresh,\n      unsubscribe: async () => {\n        disposed = true;\n        if (pollTimer) {\n          clearInterval(pollTimer);\n          pollTimer = null;\n        }\n      },\n    };\n  }\n\n  const refresh = async (): Promise<SessionRuntimeState> => {\n    const next = await sessionRuntimeService.getSnapshot(sessionId);\n    current = next;\n    if (!disposed) onChange(next);\n    return next;\n  };\n\n  const topic = `session-runtime:${sessionId}`;\n  channel = supabase\n    .channel(topic)\n    .on(\n      'postgres_changes',\n      { event: '*', schema: 'public', table: 'sessions', filter: `id=eq.${sessionId}` },\n      () => {\n        void refresh();\n      },\n    )\n    .on(\n      'postgres_changes',\n      {\n        event: '*',\n        schema: 'public',\n        table: 'session_players',\n        filter: `session_id=eq.${sessionId}`,\n      },\n      () => {\n        void refresh();\n      },\n    )\n    .on(\n      'postgres_changes',\n      {\n        event: 'INSERT',\n        schema: 'public',\n        table: 'session_events',\n        filter: `session_id=eq.${sessionId}`,\n      },\n      () => {\n        void refresh();\n      },\n    );\n\n  await new Promise<void>((resolve, reject) => {\n    if (!channel) {\n      reject(new Error('Realtime-Kanal konnte nicht erstellt werden'));\n      return;\n    }\n    channel.subscribe((status) => {\n      if (status === 'SUBSCRIBED') resolve();\n      if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {\n        reject(new Error(`Realtime-Subscribe fehlgeschlagen: ${status}`));\n      }\n    });\n  });\n\n  return {\n    getState: () => current,\n    resync: refresh,\n    unsubscribe: async () => {\n      disposed = true;\n      if (channel) {\n        await supabase.removeChannel(channel);\n        channel = null;\n      }\n    },\n  };\n}"
-      }
-    },
-    {
-      "kind": "channel",
-      "name": null,
-      "path": "src/infrastructure/session/session-runtime-channel.ts",
-      "line": 75,
-      "endLine": 76,
-      "resolution": "dynamic-expression",
-      "expression": "supabase\n    .channel(topic)",
-      "chain": "supabase\n    .channel(topic)\n    .on(\n      'postgres_changes',\n      { event: '*', schema: 'public', table: 'sessions', filter: `id=eq.${sessionId}` },\n      () => {\n        void refresh();\n      },\n    )\n    .on(\n      'postgres_changes',\n      {\n        event: '*',\n        schema: 'public',\n        table: 'session_players',\n        filter: `session_id=eq.${sessionId}`,\n      },\n      () => {\n        void refresh();\n      },\n    )\n    .on(\n      'postgres_changes',\n      {\n        event: 'INSERT',\n        schema: 'public',\n        table: 'session_events',\n        filter: `session_id=eq.${sessionId}`,\n      },\n      () => {\n        void refresh();\n      },\n    )",
-      "arguments": [
-        "topic"
-      ],
-      "enclosingOperation": {
-        "path": "src/infrastructure/session/session-runtime-channel.ts",
-        "line": 31,
-        "endLine": 133,
-        "text": "export async function subscribeSessionRuntime(\n  sessionId: string,\n  onChange: SessionRuntimeListener,\n): Promise<SessionRuntimeSubscription> {\n  let current: SessionRuntimeState | null = await sessionRuntimeService.getSnapshot(sessionId);\n  onChange(current);\n\n  let channel: RealtimeChannel | null = null;\n  let disposed = false;\n  let pollTimer: ReturnType<typeof setInterval> | null = null;\n\n  if (isHostLibraryEnabled()) {\n    const refresh = async (): Promise<SessionRuntimeState> => {\n      const next = await sessionRuntimeService.getSnapshot(sessionId);\n      current = next;\n      if (!disposed) onChange(next);\n      return next;\n    };\n    pollTimer = setInterval(() => {\n      void refresh().catch(() => {\n        /* keep last good snapshot */\n      });\n    }, HOST_RUNTIME_POLL_MS);\n    return {\n      getState: () => current,\n      resync: refresh,\n      unsubscribe: async () => {\n        disposed = true;\n        if (pollTimer) {\n          clearInterval(pollTimer);\n          pollTimer = null;\n        }\n      },\n    };\n  }\n\n  const refresh = async (): Promise<SessionRuntimeState> => {\n    const next = await sessionRuntimeService.getSnapshot(sessionId);\n    current = next;\n    if (!disposed) onChange(next);\n    return next;\n  };\n\n  const topic = `session-runtime:${sessionId}`;\n  channel = supabase\n    .channel(topic)\n    .on(\n      'postgres_changes',\n      { event: '*', schema: 'public', table: 'sessions', filter: `id=eq.${sessionId}` },\n      () => {\n        void refresh();\n      },\n    )\n    .on(\n      'postgres_changes',\n      {\n        event: '*',\n        schema: 'public',\n        table: 'session_players',\n        filter: `session_id=eq.${sessionId}`,\n      },\n      () => {\n        void refresh();\n      },\n    )\n    .on(\n      'postgres_changes',\n      {\n        event: 'INSERT',\n        schema: 'public',\n        table: 'session_events',\n        filter: `session_id=eq.${sessionId}`,\n      },\n      () => {\n        void refresh();\n      },\n    );\n\n  await new Promise<void>((resolve, reject) => {\n    if (!channel) {\n      reject(new Error('Realtime-Kanal konnte nicht erstellt werden'));\n      return;\n    }\n    channel.subscribe((status) => {\n      if (status === 'SUBSCRIBED') resolve();\n      if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {\n        reject(new Error(`Realtime-Subscribe fehlgeschlagen: ${status}`));\n      }\n    });\n  });\n\n  return {\n    getState: () => current,\n    resync: refresh,\n    unsubscribe: async () => {\n      disposed = true;\n      if (channel) {\n        await supabase.removeChannel(channel);\n        channel = null;\n      }\n    },\n  };\n}"
-      }
-    },
-    {
-      "kind": "realtime-subscribe",
-      "name": null,
-      "path": "src/infrastructure/session/session-runtime-channel.ts",
-      "line": 114,
-      "endLine": 119,
-      "resolution": "dynamic-expression",
-      "expression": "channel.subscribe((status) => {\n      if (status === 'SUBSCRIBED') resolve();\n      if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {\n        reject(new Error(`Realtime-Subscribe fehlgeschlagen: ${status}`));\n      }\n    })",
-      "chain": "channel.subscribe((status) => {\n      if (status === 'SUBSCRIBED') resolve();\n      if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {\n        reject(new Error(`Realtime-Subscribe fehlgeschlagen: ${status}`));\n      }\n    })",
-      "arguments": [
-        "(status) => {\n      if (status === 'SUBSCRIBED') resolve();\n      if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {\n        reject(new Error(`Realtime-Subscribe fehlgeschlagen: ${status}`));\n      }\n    }"
-      ],
-      "enclosingOperation": {
-        "path": "src/infrastructure/session/session-runtime-channel.ts",
-        "line": 109,
-        "endLine": 120,
-        "text": "(resolve, reject) => {\n    if (!channel) {\n      reject(new Error('Realtime-Kanal konnte nicht erstellt werden'));\n      return;\n    }\n    channel.subscribe((status) => {\n      if (status === 'SUBSCRIBED') resolve();\n      if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {\n        reject(new Error(`Realtime-Subscribe fehlgeschlagen: ${status}`));\n      }\n    });\n  }"
-      }
-    },
-    {
-      "kind": "realtime-cleanup",
-      "name": null,
-      "path": "src/infrastructure/session/session-runtime-channel.ts",
-      "line": 128,
-      "endLine": 128,
-      "resolution": "dynamic-expression",
-      "expression": "supabase.removeChannel(channel)",
-      "chain": "supabase.removeChannel(channel)",
-      "arguments": [
-        "channel"
-      ],
-      "enclosingOperation": {
-        "path": "src/infrastructure/session/session-runtime-channel.ts",
-        "line": 125,
-        "endLine": 131,
-        "text": "async () => {\n      disposed = true;\n      if (channel) {\n        await supabase.removeChannel(channel);\n        channel = null;\n      }\n    }"
-      }
-    },
-    {
-      "kind": "rpc",
-      "name": "get_session_runtime_snapshot",
-      "path": "src/infrastructure/session/session-runtime-service.ts",
-      "line": 100,
-      "endLine": 102,
-      "resolution": "literal-or-constant",
-      "expression": "supabase.rpc('get_session_runtime_snapshot', {\n      p_session_id: sessionId,\n    })",
-      "chain": "supabase.rpc('get_session_runtime_snapshot', {\n      p_session_id: sessionId,\n    })",
-      "arguments": [
-        "'get_session_runtime_snapshot'",
-        "{\n      p_session_id: sessionId,\n    }"
-      ],
-      "enclosingOperation": {
-        "path": "src/infrastructure/session/session-runtime-service.ts",
-        "line": 95,
-        "endLine": 107,
-        "text": "async getSnapshot(sessionId: string): Promise<SessionRuntimeState> {\n    if (isHostLibraryEnabled()) {\n      const data = await fetchHostSessionRuntime(sessionId);\n      return mapSnapshotJson(data as SnapshotJson);\n    }\n    const { data, error } = await supabase.rpc('get_session_runtime_snapshot', {\n      p_session_id: sessionId,\n    });\n    if (error || !data) {\n      throw new Error(error?.message ?? 'Runtime-Snapshot fehlgeschlagen');\n    }\n    return mapSnapshotJson(data as SnapshotJson);\n  }"
-      }
-    },
-    {
-      "kind": "rpc",
-      "name": "apply_session_runtime_command",
-      "path": "src/infrastructure/session/session-runtime-service.ts",
-      "line": 136,
-      "endLine": 142,
-      "resolution": "literal-or-constant",
-      "expression": "supabase.rpc('apply_session_runtime_command', {\n      p_session_id: input.sessionId,\n      p_expected_revision: input.expectedRevision,\n      p_kind: kind,\n      p_payload: input.payload ?? {},\n      p_idempotency_key: input.idempotencyKey ?? null,\n    })",
-      "chain": "supabase.rpc('apply_session_runtime_command', {\n      p_session_id: input.sessionId,\n      p_expected_revision: input.expectedRevision,\n      p_kind: kind,\n      p_payload: input.payload ?? {},\n      p_idempotency_key: input.idempotencyKey ?? null,\n    })",
-      "arguments": [
-        "'apply_session_runtime_command'",
-        "{\n      p_session_id: input.sessionId,\n      p_expected_revision: input.expectedRevision,\n      p_kind: kind,\n      p_payload: input.payload ?? {},\n      p_idempotency_key: input.idempotencyKey ?? null,\n    }"
-      ],
-      "enclosingOperation": {
-        "path": "src/infrastructure/session/session-runtime-service.ts",
-        "line": 109,
-        "endLine": 155,
-        "text": "async applyCommand(input: {\n    sessionId: string;\n    expectedRevision: number;\n    kind: SessionEventKind | string;\n    payload?: Record<string, unknown>;\n    idempotencyKey?: string | null;\n  }): Promise<SessionRuntimeState> {\n    const kind = assertSessionEventKind(input.kind);\n    if (isHostLibraryEnabled()) {\n      try {\n        const data = await applyHostSessionRuntimeCommand({\n          sessionId: input.sessionId,\n          expectedRevision: input.expectedRevision,\n          kind,\n          payload: input.payload ?? {},\n          idempotencyKey: input.idempotencyKey ?? null,\n        });\n        return mapSnapshotJson(data as SnapshotJson);\n      } catch (err) {\n        const message = err instanceof Error ? err.message : String(err);\n        if (isStaleRpcError(message) || /STALE_REVISION/i.test(message)) {\n          const snap = await this.getSnapshot(input.sessionId);\n          throw new StaleRuntimeRevisionError(input.expectedRevision, snap.revision);\n        }\n        throw err instanceof Error ? err : new Error(message);\n      }\n    }\n    const { data, error } = await supabase.rpc('apply_session_runtime_command', {\n      p_session_id: input.sessionId,\n      p_expected_revision: input.expectedRevision,\n      p_kind: kind,\n      p_payload: input.payload ?? {},\n      p_idempotency_key: input.idempotencyKey ?? null,\n    });\n\n    if (error) {\n      if (isStaleRpcError(error.message)) {\n        const snap = await this.getSnapshot(input.sessionId);\n        throw new StaleRuntimeRevisionError(input.expectedRevision, snap.revision);\n      }\n      throw new Error(error.message);\n    }\n    if (!data) {\n      throw new Error('Runtime-Befehl lieferte kein Ergebnis');\n    }\n    return mapSnapshotJson(data as SnapshotJson);\n  }"
-      }
-    },
-    {
-      "kind": "rpc",
-      "name": "set_session_player_presence",
-      "path": "src/infrastructure/session/session-runtime-service.ts",
-      "line": 175,
-      "endLine": 179,
-      "resolution": "literal-or-constant",
-      "expression": "supabase.rpc('set_session_player_presence', {\n      p_session_id: sessionId,\n      p_is_online: isOnline,\n      p_expected_revision: expectedRevision ?? null,\n    })",
-      "chain": "supabase.rpc('set_session_player_presence', {\n      p_session_id: sessionId,\n      p_is_online: isOnline,\n      p_expected_revision: expectedRevision ?? null,\n    })",
-      "arguments": [
-        "'set_session_player_presence'",
-        "{\n      p_session_id: sessionId,\n      p_is_online: isOnline,\n      p_expected_revision: expectedRevision ?? null,\n    }"
-      ],
-      "enclosingOperation": {
-        "path": "src/infrastructure/session/session-runtime-service.ts",
-        "line": 157,
-        "endLine": 191,
-        "text": "async setPresence(\n    sessionId: string,\n    isOnline: boolean,\n    expectedRevision?: number | null,\n  ): Promise<SessionRuntimeState> {\n    if (isHostLibraryEnabled()) {\n      try {\n        const data = await setHostSessionPresence(sessionId, isOnline, expectedRevision);\n        return mapSnapshotJson(data as SnapshotJson);\n      } catch (err) {\n        const message = err instanceof Error ? err.message : String(err);\n        if (isStaleRpcError(message) || /STALE_REVISION/i.test(message)) {\n          const snap = await this.getSnapshot(sessionId);\n          throw new StaleRuntimeRevisionError(expectedRevision ?? -1, snap.revision);\n        }\n        throw err instanceof Error ? err : new Error(message);\n      }\n    }\n    const { data, error } = await supabase.rpc('set_session_player_presence', {\n      p_session_id: sessionId,\n      p_is_online: isOnline,\n      p_expected_revision: expectedRevision ?? null,\n    });\n    if (error) {\n      if (isStaleRpcError(error.message)) {\n        const snap = await this.getSnapshot(sessionId);\n        throw new StaleRuntimeRevisionError(expectedRevision ?? -1, snap.revision);\n      }\n      throw new Error(error.message);\n    }\n    if (!data) {\n      throw new Error('Presence-Update fehlgeschlagen');\n    }\n    return mapSnapshotJson(data as SnapshotJson);\n  }"
-      }
-    },
-    {
-      "kind": "auth",
-      "name": null,
-      "path": "src/infrastructure/session/session-service.ts",
-      "line": 108,
-      "endLine": 108,
-      "resolution": "dynamic-expression",
-      "expression": "supabase.auth.getSession()",
-      "chain": "supabase.auth.getSession()",
-      "arguments": [],
-      "enclosingOperation": {
-        "path": "src/infrastructure/session/session-service.ts",
-        "line": 105,
-        "endLine": 121,
-        "text": "private async requireAuthUser(): Promise<{ id: string }> {\n    const {\n      data: { session },\n    } = await supabase.auth.getSession();\n    if (session?.user?.id) return session.user;\n\n    const {\n      data: { user },\n    } = await supabase.auth.getUser();\n    if (user?.id) return user;\n\n    if (isLocalAdminSession()) {\n      return { id: LOCAL_ADMIN_USER_ID };\n    }\n\n    throw new Error('User not authenticated');\n  }"
-      }
-    },
-    {
-      "kind": "auth",
-      "name": null,
-      "path": "src/infrastructure/session/session-service.ts",
-      "line": 113,
-      "endLine": 113,
-      "resolution": "dynamic-expression",
-      "expression": "supabase.auth.getUser()",
-      "chain": "supabase.auth.getUser()",
-      "arguments": [],
-      "enclosingOperation": {
-        "path": "src/infrastructure/session/session-service.ts",
-        "line": 105,
-        "endLine": 121,
-        "text": "private async requireAuthUser(): Promise<{ id: string }> {\n    const {\n      data: { session },\n    } = await supabase.auth.getSession();\n    if (session?.user?.id) return session.user;\n\n    const {\n      data: { user },\n    } = await supabase.auth.getUser();\n    if (user?.id) return user;\n\n    if (isLocalAdminSession()) {\n      return { id: LOCAL_ADMIN_USER_ID };\n    }\n\n    throw new Error('User not authenticated');\n  }"
-      }
-    },
-    {
-      "kind": "table",
-      "name": "projects",
-      "path": "src/infrastructure/session/session-service.ts",
-      "line": 125,
-      "endLine": 126,
-      "resolution": "literal-or-constant",
-      "expression": "supabase\n      .from('projects')",
-      "chain": "supabase\n      .from('projects')\n      .select('gm_user_id')\n      .eq('id', projectId)\n      .maybeSingle()",
-      "arguments": [
-        "'projects'"
-      ],
-      "enclosingOperation": {
-        "path": "src/infrastructure/session/session-service.ts",
-        "line": 123,
-        "endLine": 132,
-        "text": "private async resolveGmUserId(projectId: string | null): Promise<string> {\n    if (!projectId) return '';\n    const { data, error } = await supabase\n      .from('projects')\n      .select('gm_user_id')\n      .eq('id', projectId)\n      .maybeSingle();\n    if (error || !data) return '';\n    return typeof data.gm_user_id === 'string' ? data.gm_user_id : '';\n  }"
-      }
-    },
-    {
-      "kind": "table",
-      "name": "session_players",
-      "path": "src/infrastructure/session/session-service.ts",
-      "line": 183,
-      "endLine": 184,
-      "resolution": "literal-or-constant",
-      "expression": "supabase\n      .from(this.playersTableName)",
-      "chain": "supabase\n      .from(this.playersTableName)\n      .select('*')\n      .eq('session_id', sessionId)",
-      "arguments": [
-        "this.playersTableName"
-      ],
-      "enclosingOperation": {
-        "path": "src/infrastructure/session/session-service.ts",
-        "line": 182,
-        "endLine": 193,
-        "text": "private async loadPlayers(sessionId: string): Promise<SessionPlayerDto[]> {\n    const { data, error } = await supabase\n      .from(this.playersTableName)\n      .select('*')\n      .eq('session_id', sessionId);\n\n    if (error) {\n      console.error('Failed to load session players:', error);\n      return [];\n    }\n    return (data ?? []) as SessionPlayerDto[];\n  }"
-      }
-    },
-    {
-      "kind": "rpc",
-      "name": "create_play_session",
-      "path": "src/infrastructure/session/session-service.ts",
-      "line": 210,
-      "endLine": 213,
-      "resolution": "literal-or-constant",
-      "expression": "supabase.rpc('create_play_session', {\n      p_project_id: projectId,\n      p_name: payload.name,\n    })",
-      "chain": "supabase.rpc('create_play_session', {\n      p_project_id: projectId,\n      p_name: payload.name,\n    })",
-      "arguments": [
-        "'create_play_session'",
-        "{\n      p_project_id: projectId,\n      p_name: payload.name,\n    }"
-      ],
-      "enclosingOperation": {
-        "path": "src/infrastructure/session/session-service.ts",
-        "line": 195,
-        "endLine": 221,
-        "text": "async createSession(payload: CreateSessionDto): Promise<SessionVm> {\n    const projectId = payload.project_id || payload.adventure_id;\n    if (!projectId) {\n      throw new Error('project_id ist erforderlich, um eine Session zu erstellen');\n    }\n\n    // Dual-path (MIG-311 / FE-HOST-02): host authenticates its own cookie — do not\n    // require a Supabase JWT first (Better Auth cookie-only deployments).\n    if (isHostLibraryEnabled()) {\n      const row = await createHostPlaySession(projectId, payload.name ?? null);\n      return mapHostPlaySessionToVm(row);\n    }\n\n    await this.requireAuthUser();\n\n    const { data, error } = await supabase.rpc('create_play_session', {\n      p_project_id: projectId,\n      p_name: payload.name,\n    });\n\n    if (error || !data) {\n      throw new Error(`Failed to create session: ${error?.message ?? 'unknown'}`);\n    }\n\n    const dto = await this.mapRowToDto(data as SessionRow);\n    return this.mapToViewModel(dto, []);\n  }"
-      }
-    },
-    {
-      "kind": "rpc",
-      "name": "join_session_by_code",
-      "path": "src/infrastructure/session/session-service.ts",
-      "line": 233,
-      "endLine": 236,
-      "resolution": "literal-or-constant",
-      "expression": "supabase.rpc('join_session_by_code', {\n      p_code: code,\n      p_character_id: payload.character_id ?? null,\n    })",
-      "chain": "supabase.rpc('join_session_by_code', {\n      p_code: code,\n      p_character_id: payload.character_id ?? null,\n    })",
-      "arguments": [
-        "'join_session_by_code'",
-        "{\n      p_code: code,\n      p_character_id: payload.character_id ?? null,\n    }"
-      ],
-      "enclosingOperation": {
-        "path": "src/infrastructure/session/session-service.ts",
-        "line": 223,
-        "endLine": 245,
-        "text": "async joinSession(payload: JoinSessionDto): Promise<SessionVm> {\n    const code = normalizeSessionJoinCode(payload.code);\n\n    if (isHostLibraryEnabled()) {\n      const row = await joinHostSessionByCode(code, payload.character_id ?? null);\n      return mapHostPlaySessionToVm(row);\n    }\n\n    await this.requireAuthUser();\n\n    const { data, error } = await supabase.rpc('join_session_by_code', {\n      p_code: code,\n      p_character_id: payload.character_id ?? null,\n    });\n\n    if (error || !data) {\n      throw new Error(error?.message || 'Session nicht gefunden');\n    }\n\n    const dto = await this.mapRowToDto(data as SessionRow);\n    const players = await this.loadPlayers(dto.id);\n    return this.mapToViewModel(dto, players);\n  }"
-      }
-    },
-    {
-      "kind": "table",
-      "name": "sessions",
-      "path": "src/infrastructure/session/session-service.ts",
-      "line": 253,
-      "endLine": 254,
-      "resolution": "literal-or-constant",
-      "expression": "supabase\n      .from(this.tableName)",
-      "chain": "supabase\n      .from(this.tableName)\n      .select(SESSION_SAFE_COLUMNS)\n      .eq('id', id)\n      .single()",
-      "arguments": [
-        "this.tableName"
-      ],
-      "enclosingOperation": {
-        "path": "src/infrastructure/session/session-service.ts",
-        "line": 247,
-        "endLine": 266,
-        "text": "async getSessionById(id: string): Promise<SessionVm> {\n    if (isHostLibraryEnabled()) {\n      const row = await fetchHostSession(id);\n      return mapHostPlaySessionToVm(row);\n    }\n\n    const { data: session, error: sessionError } = await supabase\n      .from(this.tableName)\n      .select(SESSION_SAFE_COLUMNS)\n      .eq('id', id)\n      .single();\n\n    if (sessionError || !session) {\n      throw new Error('Session not found');\n    }\n\n    const dto = await this.mapRowToDto(session as unknown as SessionRow);\n    const players = await this.loadPlayers(id);\n    return this.mapToViewModel(dto, players);\n  }"
-      }
-    },
-    {
-      "kind": "table",
-      "name": "projects",
-      "path": "src/infrastructure/session/session-service.ts",
-      "line": 276,
-      "endLine": 277,
-      "resolution": "literal-or-constant",
-      "expression": "supabase\n      .from('projects')",
-      "chain": "supabase\n      .from('projects')\n      .select('id')\n      .eq('gm_user_id', user.id)",
-      "arguments": [
-        "'projects'"
-      ],
-      "enclosingOperation": {
-        "path": "src/infrastructure/session/session-service.ts",
-        "line": 268,
-        "endLine": 332,
-        "text": "async getUserSessions(): Promise<SessionVm[]> {\n    if (isHostLibraryEnabled()) {\n      const rows = await fetchHostSessions();\n      return rows.map(mapHostPlaySessionToVm);\n    }\n\n    const user = await this.requireAuthUser();\n\n    const { data: gmProjects, error: gmProjectsError } = await supabase\n      .from('projects')\n      .select('id')\n      .eq('gm_user_id', user.id);\n\n    if (gmProjectsError) {\n      throw new Error(`Failed to fetch GM projects: ${gmProjectsError.message}`);\n    }\n\n    const gmProjectIds = (gmProjects ?? []).map((p) => p.id as string);\n\n    let gmSessions: SessionRow[] = [];\n    if (gmProjectIds.length > 0) {\n      const { data, error } = await supabase\n        .from(this.tableName)\n        .select(SESSION_SAFE_COLUMNS)\n        .in('project_id', gmProjectIds)\n        .neq('status', 'completed')\n        .order('created_at', { ascending: false });\n      if (error) {\n        throw new Error(`Failed to fetch GM sessions: ${error.message}`);\n      }\n      gmSessions = (data ?? []) as unknown as SessionRow[];\n    }\n\n    const { data: playerRecords, error: playerError } = await supabase\n      .from(this.playersTableName)\n      .select(`*, sessions!inner(${SESSION_SAFE_COLUMNS})`)\n      .eq('user_id', user.id);\n\n    if (playerError) {\n      console.error('Failed to fetch player sessions:', playerError);\n    }\n\n    type PlayerSessionJoinRow = { sessions: SessionRow | SessionRow[] | null };\n    const playerSessions = ((playerRecords || []) as PlayerSessionJoinRow[])\n      .map((record) => record.sessions)\n      .flatMap((session) => (Array.isArray(session) ? session : session ? [session] : []))\n      .filter((session) => session.status !== 'completed');\n\n    const allSessionIds = new Set<string>();\n    const combined: SessionRow[] = [];\n    [...gmSessions, ...playerSessions].forEach((session) => {\n      if (!allSessionIds.has(session.id)) {\n        allSessionIds.add(session.id);\n        combined.push(session);\n      }\n    });\n\n    return Promise.all(\n      combined.map(async (session) => {\n        const dto = await this.mapRowToDto(session);\n        const players = await this.loadPlayers(session.id);\n        return this.mapToViewModel(dto, players);\n      }),\n    );\n  }"
-      }
-    },
-    {
-      "kind": "table",
-      "name": "sessions",
-      "path": "src/infrastructure/session/session-service.ts",
-      "line": 289,
-      "endLine": 290,
-      "resolution": "literal-or-constant",
-      "expression": "supabase\n        .from(this.tableName)",
-      "chain": "supabase\n        .from(this.tableName)\n        .select(SESSION_SAFE_COLUMNS)\n        .in('project_id', gmProjectIds)\n        .neq('status', 'completed')\n        .order('created_at', { ascending: false })",
-      "arguments": [
-        "this.tableName"
-      ],
-      "enclosingOperation": {
-        "path": "src/infrastructure/session/session-service.ts",
-        "line": 268,
-        "endLine": 332,
-        "text": "async getUserSessions(): Promise<SessionVm[]> {\n    if (isHostLibraryEnabled()) {\n      const rows = await fetchHostSessions();\n      return rows.map(mapHostPlaySessionToVm);\n    }\n\n    const user = await this.requireAuthUser();\n\n    const { data: gmProjects, error: gmProjectsError } = await supabase\n      .from('projects')\n      .select('id')\n      .eq('gm_user_id', user.id);\n\n    if (gmProjectsError) {\n      throw new Error(`Failed to fetch GM projects: ${gmProjectsError.message}`);\n    }\n\n    const gmProjectIds = (gmProjects ?? []).map((p) => p.id as string);\n\n    let gmSessions: SessionRow[] = [];\n    if (gmProjectIds.length > 0) {\n      const { data, error } = await supabase\n        .from(this.tableName)\n        .select(SESSION_SAFE_COLUMNS)\n        .in('project_id', gmProjectIds)\n        .neq('status', 'completed')\n        .order('created_at', { ascending: false });\n      if (error) {\n        throw new Error(`Failed to fetch GM sessions: ${error.message}`);\n      }\n      gmSessions = (data ?? []) as unknown as SessionRow[];\n    }\n\n    const { data: playerRecords, error: playerError } = await supabase\n      .from(this.playersTableName)\n      .select(`*, sessions!inner(${SESSION_SAFE_COLUMNS})`)\n      .eq('user_id', user.id);\n\n    if (playerError) {\n      console.error('Failed to fetch player sessions:', playerError);\n    }\n\n    type PlayerSessionJoinRow = { sessions: SessionRow | SessionRow[] | null };\n    const playerSessions = ((playerRecords || []) as PlayerSessionJoinRow[])\n      .map((record) => record.sessions)\n      .flatMap((session) => (Array.isArray(session) ? session : session ? [session] : []))\n      .filter((session) => session.status !== 'completed');\n\n    const allSessionIds = new Set<string>();\n    const combined: SessionRow[] = [];\n    [...gmSessions, ...playerSessions].forEach((session) => {\n      if (!allSessionIds.has(session.id)) {\n        allSessionIds.add(session.id);\n        combined.push(session);\n      }\n    });\n\n    return Promise.all(\n      combined.map(async (session) => {\n        const dto = await this.mapRowToDto(session);\n        const players = await this.loadPlayers(session.id);\n        return this.mapToViewModel(dto, players);\n      }),\n    );\n  }"
-      }
-    },
-    {
-      "kind": "table",
-      "name": "session_players",
-      "path": "src/infrastructure/session/session-service.ts",
-      "line": 301,
-      "endLine": 302,
-      "resolution": "literal-or-constant",
-      "expression": "supabase\n      .from(this.playersTableName)",
-      "chain": "supabase\n      .from(this.playersTableName)\n      .select(`*, sessions!inner(${SESSION_SAFE_COLUMNS})`)\n      .eq('user_id', user.id)",
-      "arguments": [
-        "this.playersTableName"
-      ],
-      "enclosingOperation": {
-        "path": "src/infrastructure/session/session-service.ts",
-        "line": 268,
-        "endLine": 332,
-        "text": "async getUserSessions(): Promise<SessionVm[]> {\n    if (isHostLibraryEnabled()) {\n      const rows = await fetchHostSessions();\n      return rows.map(mapHostPlaySessionToVm);\n    }\n\n    const user = await this.requireAuthUser();\n\n    const { data: gmProjects, error: gmProjectsError } = await supabase\n      .from('projects')\n      .select('id')\n      .eq('gm_user_id', user.id);\n\n    if (gmProjectsError) {\n      throw new Error(`Failed to fetch GM projects: ${gmProjectsError.message}`);\n    }\n\n    const gmProjectIds = (gmProjects ?? []).map((p) => p.id as string);\n\n    let gmSessions: SessionRow[] = [];\n    if (gmProjectIds.length > 0) {\n      const { data, error } = await supabase\n        .from(this.tableName)\n        .select(SESSION_SAFE_COLUMNS)\n        .in('project_id', gmProjectIds)\n        .neq('status', 'completed')\n        .order('created_at', { ascending: false });\n      if (error) {\n        throw new Error(`Failed to fetch GM sessions: ${error.message}`);\n      }\n      gmSessions = (data ?? []) as unknown as SessionRow[];\n    }\n\n    const { data: playerRecords, error: playerError } = await supabase\n      .from(this.playersTableName)\n      .select(`*, sessions!inner(${SESSION_SAFE_COLUMNS})`)\n      .eq('user_id', user.id);\n\n    if (playerError) {\n      console.error('Failed to fetch player sessions:', playerError);\n    }\n\n    type PlayerSessionJoinRow = { sessions: SessionRow | SessionRow[] | null };\n    const playerSessions = ((playerRecords || []) as PlayerSessionJoinRow[])\n      .map((record) => record.sessions)\n      .flatMap((session) => (Array.isArray(session) ? session : session ? [session] : []))\n      .filter((session) => session.status !== 'completed');\n\n    const allSessionIds = new Set<string>();\n    const combined: SessionRow[] = [];\n    [...gmSessions, ...playerSessions].forEach((session) => {\n      if (!allSessionIds.has(session.id)) {\n        allSessionIds.add(session.id);\n        combined.push(session);\n      }\n    });\n\n    return Promise.all(\n      combined.map(async (session) => {\n        const dto = await this.mapRowToDto(session);\n        const players = await this.loadPlayers(session.id);\n        return this.mapToViewModel(dto, players);\n      }),\n    );\n  }"
-      }
-    },
-    {
-      "kind": "rpc",
-      "name": "set_session_status",
-      "path": "src/infrastructure/session/session-service.ts",
-      "line": 346,
-      "endLine": 349,
-      "resolution": "literal-or-constant",
-      "expression": "supabase.rpc('set_session_status', {\n      p_session_id: id,\n      p_status: status,\n    })",
-      "chain": "supabase.rpc('set_session_status', {\n      p_session_id: id,\n      p_status: status,\n    })",
-      "arguments": [
-        "'set_session_status'",
-        "{\n      p_session_id: id,\n      p_status: status,\n    }"
-      ],
-      "enclosingOperation": {
-        "path": "src/infrastructure/session/session-service.ts",
-        "line": 334,
-        "endLine": 358,
-        "text": "async updateSessionStatus(\n    id: string,\n    status: PlaySessionStatus,\n  ): Promise<SessionVm> {\n    const current = await this.getSessionById(id);\n    assertPlaySessionStatusTransition(current.status, status);\n\n    if (isHostLibraryEnabled()) {\n      const row = await setHostSessionStatus(id, status);\n      return mapHostPlaySessionToVm(row);\n    }\n\n    const { data, error } = await supabase.rpc('set_session_status', {\n      p_session_id: id,\n      p_status: status,\n    });\n\n    if (error || !data) {\n      throw new Error(`Failed to update session: ${error?.message ?? 'unknown'}`);\n    }\n\n    const dto = await this.mapRowToDto(data as SessionRow);\n    const players = await this.loadPlayers(id);\n    return this.mapToViewModel(dto, players);\n  }"
-      }
-    },
-    {
-      "kind": "rpc",
-      "name": "leave_play_session",
-      "path": "src/infrastructure/session/session-service.ts",
-      "line": 368,
-      "endLine": 370,
-      "resolution": "literal-or-constant",
-      "expression": "supabase.rpc('leave_play_session', {\n      p_session_id: sessionId,\n    })",
-      "chain": "supabase.rpc('leave_play_session', {\n      p_session_id: sessionId,\n    })",
-      "arguments": [
-        "'leave_play_session'",
-        "{\n      p_session_id: sessionId,\n    }"
-      ],
-      "enclosingOperation": {
-        "path": "src/infrastructure/session/session-service.ts",
-        "line": 360,
-        "endLine": 375,
-        "text": "async leaveSession(sessionId: string): Promise<void> {\n    if (isHostLibraryEnabled()) {\n      await leaveHostPlaySession(sessionId);\n      return;\n    }\n\n    await this.requireAuthUser();\n\n    const { error } = await supabase.rpc('leave_play_session', {\n      p_session_id: sessionId,\n    });\n\n    if (error) {\n      throw new Error(`Failed to leave session: ${error.message}`);\n    }\n  }"
-      }
-    },
-    {
-      "kind": "table",
-      "name": "sessions",
-      "path": "src/infrastructure/session/session-service.ts",
-      "line": 405,
-      "endLine": 405,
-      "resolution": "literal-or-constant",
-      "expression": "supabase.from(this.tableName)",
-      "chain": "supabase.from(this.tableName).delete().eq('id', id)",
-      "arguments": [
-        "this.tableName"
-      ],
-      "enclosingOperation": {
-        "path": "src/infrastructure/session/session-service.ts",
-        "line": 380,
-        "endLine": 414,
-        "text": "async deleteSession(sessionId: string): Promise<void> {\n    const id = sessionId.trim();\n    if (!id) {\n      throw new Error('Session-ID fehlt');\n    }\n    // Host-first: Better Auth cookie path — never require Supabase session first.\n    if (isHostLibraryEnabled()) {\n      try {\n        await deleteHostPlaySession(id);\n      } catch (error) {\n        const message = error instanceof Error ? error.message : String(error);\n        if (/42501|forbidden|not[_-]?authorized/i.test(message)) {\n          throw new Error('Nur der Gamemaster kann Sessions löschen.');\n        }\n        throw new Error(\n          message.includes('Host-Session löschen fehlgeschlagen')\n            ? message\n            : `Session konnte nicht gelöscht werden: ${message}`,\n        );\n      }\n      return;\n    }\n\n    await this.requireAuthUser();\n\n    const { error } = await supabase.from(this.tableName).delete().eq('id', id);\n\n    if (error) {\n      throw new Error(\n        error.message.includes('row-level security')\n          ? 'Nur der Gamemaster kann Sessions löschen.'\n          : `Session konnte nicht gelöscht werden: ${error.message}`,\n      );\n    }\n  }"
-      }
-    },
-    {
-      "kind": "rpc",
-      "name": "create_session_invite",
-      "path": "src/infrastructure/session/session-service.ts",
-      "line": 429,
-      "endLine": 431,
-      "resolution": "literal-or-constant",
-      "expression": "supabase.rpc('create_session_invite', {\n      p_session_id: sessionId,\n    })",
-      "chain": "supabase.rpc('create_session_invite', {\n      p_session_id: sessionId,\n    })",
-      "arguments": [
-        "'create_session_invite'",
-        "{\n      p_session_id: sessionId,\n    }"
-      ],
-      "enclosingOperation": {
-        "path": "src/infrastructure/session/session-service.ts",
-        "line": 419,
-        "endLine": 440,
-        "text": "async createSessionInvite(sessionId: string): Promise<SessionInviteCreateResult> {\n    if (isHostLibraryEnabled()) {\n      const invite = await createHostSessionInvite(sessionId);\n      const mapped = mapInviteCreatePayload(invite);\n      if (!mapped) {\n        throw new Error('Einladung konnte nicht erstellt werden: ungültige Server-Antwort');\n      }\n      return mapped;\n    }\n    await this.requireAuthUser();\n    const { data, error } = await supabase.rpc('create_session_invite', {\n      p_session_id: sessionId,\n    });\n    if (error) {\n      throw new Error(`Einladung konnte nicht erstellt werden: ${error.message}`);\n    }\n    const mapped = mapInviteCreatePayload(data);\n    if (!mapped) {\n      throw new Error('Einladung konnte nicht erstellt werden: ungültige Server-Antwort');\n    }\n    return mapped;\n  }"
-      }
-    },
-    {
-      "kind": "rpc",
-      "name": "resolve_session_invite",
-      "path": "src/infrastructure/session/session-service.ts",
-      "line": 472,
-      "endLine": 474,
-      "resolution": "literal-or-constant",
-      "expression": "supabase.rpc('resolve_session_invite', {\n      p_token: normalized,\n    })",
-      "chain": "supabase.rpc('resolve_session_invite', {\n      p_token: normalized,\n    })",
-      "arguments": [
-        "'resolve_session_invite'",
-        "{\n      p_token: normalized,\n    }"
-      ],
-      "enclosingOperation": {
-        "path": "src/infrastructure/session/session-service.ts",
-        "line": 445,
-        "endLine": 479,
-        "text": "async resolveSessionInvite(token: string): Promise<SessionInviteResolveResult> {\n    const normalized = normalizeInviteToken(token);\n    if (!normalized) {\n      return { ok: false, errorCode: 'missing_token' };\n    }\n    if (isHostLibraryEnabled()) {\n      try {\n        const invite = await resolveHostSessionInvite(normalized);\n        return mapInviteResolvePayload(invite);\n      } catch (err) {\n        const message = err instanceof Error ? err.message : String(err);\n        const mapped = mapInviteResolvePayload({\n          ok: false,\n          error_code: message.includes('expired')\n            ? 'expired'\n            : message.includes('revoked')\n              ? 'revoked'\n              : message.includes('completed')\n                ? 'session_completed'\n                : message.includes('missing') || message.includes('P0002')\n                  ? 'not_found'\n                  : 'not_found',\n        });\n        return mapped;\n      }\n    }\n    await this.requireAuthUser();\n    const { data, error } = await supabase.rpc('resolve_session_invite', {\n      p_token: normalized,\n    });\n    if (error) {\n      throw new Error(`Einladung konnte nicht gelesen werden: ${error.message}`);\n    }\n    return mapInviteResolvePayload(data);\n  }"
-      }
-    },
-    {
-      "kind": "rpc",
-      "name": "revoke_session_invite",
-      "path": "src/infrastructure/session/session-service.ts",
-      "line": 491,
-      "endLine": 493,
-      "resolution": "literal-or-constant",
-      "expression": "supabase.rpc('revoke_session_invite', {\n      p_token: normalized,\n    })",
-      "chain": "supabase.rpc('revoke_session_invite', {\n      p_token: normalized,\n    })",
-      "arguments": [
-        "'revoke_session_invite'",
-        "{\n      p_token: normalized,\n    }"
-      ],
-      "enclosingOperation": {
-        "path": "src/infrastructure/session/session-service.ts",
-        "line": 481,
-        "endLine": 497,
-        "text": "async revokeSessionInvite(token: string): Promise<void> {\n    const normalized = normalizeInviteToken(token);\n    if (!normalized) {\n      throw new Error('Token fehlt');\n    }\n    if (isHostLibraryEnabled()) {\n      await revokeHostSessionInvite(normalized);\n      return;\n    }\n    await this.requireAuthUser();\n    const { error } = await supabase.rpc('revoke_session_invite', {\n      p_token: normalized,\n    });\n    if (error) {\n      throw new Error(`Einladung konnte nicht widerrufen werden: ${error.message}`);\n    }\n  }"
-      }
     }
   ],
   "imports": [
@@ -1519,19 +851,19 @@
     },
     {
       "path": "src/infrastructure/session/media/media-token-client.ts",
-      "line": 8,
-      "endLine": 8,
-      "module": "../../../lib/supabase",
-      "resolvedPath": "src/lib/supabase.ts",
-      "expression": "import { supabase } from '../../../lib/supabase';"
+      "line": 7,
+      "endLine": 7,
+      "module": "../../host/host-session-http",
+      "resolvedPath": "src/infrastructure/host/host-session-http.ts",
+      "expression": "import { fetchHostSessionMediaToken } from '../../host/host-session-http';"
     },
     {
       "path": "src/infrastructure/session/media/media-token-client.ts",
-      "line": 9,
-      "endLine": 12,
-      "module": "../../host/host-session-http",
-      "resolvedPath": "src/infrastructure/host/host-session-http.ts",
-      "expression": "import {\n  fetchHostSessionMediaToken,\n  isHostLibraryEnabled,\n} from '../../host/host-session-http';"
+      "line": 8,
+      "endLine": 8,
+      "module": "../../host/host-library-http",
+      "resolvedPath": "src/infrastructure/host/host-library-http.ts",
+      "expression": "import { isHostLibraryEnabled } from '../../host/host-library-http';"
     },
     {
       "path": "src/infrastructure/session/media/memory-media-plane-adapter.ts",
@@ -1617,198 +949,110 @@
       "path": "src/infrastructure/session/session-lobby-channel.ts",
       "line": 7,
       "endLine": 7,
-      "module": "@supabase/supabase-js",
-      "resolvedPath": null,
-      "expression": "import type { RealtimeChannel } from '@supabase/supabase-js';"
-    },
-    {
-      "path": "src/infrastructure/session/session-lobby-channel.ts",
-      "line": 8,
-      "endLine": 8,
-      "module": "../../lib/supabase",
-      "resolvedPath": "src/lib/supabase.ts",
-      "expression": "import { supabase } from '../../lib/supabase';"
-    },
-    {
-      "path": "src/infrastructure/session/session-lobby-channel.ts",
-      "line": 9,
-      "endLine": 9,
       "module": "../host/host-session-http",
       "resolvedPath": "src/infrastructure/host/host-session-http.ts",
       "expression": "import { isHostLibraryEnabled } from '../host/host-session-http';"
     },
     {
       "path": "src/infrastructure/session/session-recap-ai-service.ts",
-      "line": 9,
-      "endLine": 9,
-      "module": "../../lib/supabase",
-      "resolvedPath": "src/lib/supabase.ts",
-      "expression": "import { supabase } from '../../lib/supabase';"
-    },
-    {
-      "path": "src/infrastructure/session/session-recap-ai-service.ts",
-      "line": 10,
+      "line": 7,
       "endLine": 10,
-      "module": "../../lib/networkTimeout",
-      "resolvedPath": "src/lib/networkTimeout.ts",
-      "expression": "import { raceWithTimeoutReject, SUPABASE_QUERY_TIMEOUT_MS } from '../../lib/networkTimeout';"
-    },
-    {
-      "path": "src/infrastructure/session/session-recap-ai-service.ts",
-      "line": 11,
-      "endLine": 15,
       "module": "../host/host-session-http",
       "resolvedPath": "src/infrastructure/host/host-session-http.ts",
-      "expression": "import {\n  generateHostSessionRecapDraft,\n  isHostLibraryEnabled,\n  saveHostSessionRecapSummary,\n} from '../host/host-session-http';"
+      "expression": "import {\n  generateHostSessionRecapDraft,\n  saveHostSessionRecapSummary,\n} from '../host/host-session-http';"
     },
     {
       "path": "src/infrastructure/session/session-recap-service.ts",
       "line": 5,
-      "endLine": 5,
-      "module": "../../lib/supabase",
-      "resolvedPath": "src/lib/supabase.ts",
-      "expression": "import { supabase } from '../../lib/supabase';"
-    },
-    {
-      "path": "src/infrastructure/session/session-recap-service.ts",
-      "line": 6,
-      "endLine": 6,
-      "module": "../../lib/networkTimeout",
-      "resolvedPath": "src/lib/networkTimeout.ts",
-      "expression": "import { raceWithTimeoutReject, SUPABASE_QUERY_TIMEOUT_MS } from '../../lib/networkTimeout';"
-    },
-    {
-      "path": "src/infrastructure/session/session-recap-service.ts",
-      "line": 7,
-      "endLine": 10,
+      "endLine": 8,
       "module": "../../domains/session/contracts/session-prepare-recap",
       "resolvedPath": "src/domains/session/contracts/session-prepare-recap.ts",
       "expression": "import {\n  parsePersistedRecapHighlightLines,\n  type RecapHighlightLine,\n} from '../../domains/session/contracts/session-prepare-recap';"
     },
     {
       "path": "src/infrastructure/session/session-recap-service.ts",
-      "line": 11,
-      "endLine": 11,
+      "line": 9,
+      "endLine": 9,
       "module": "../host/host-session-http",
       "resolvedPath": "src/infrastructure/host/host-session-http.ts",
       "expression": "import { fetchHostSessionRecap, isHostLibraryEnabled } from '../host/host-session-http';"
     },
     {
       "path": "src/infrastructure/session/session-runtime-channel.ts",
-      "line": 6,
-      "endLine": 6,
-      "module": "@supabase/supabase-js",
-      "resolvedPath": null,
-      "expression": "import type { RealtimeChannel } from '@supabase/supabase-js';"
-    },
-    {
-      "path": "src/infrastructure/session/session-runtime-channel.ts",
-      "line": 7,
-      "endLine": 7,
-      "module": "../../lib/supabase",
-      "resolvedPath": "src/lib/supabase.ts",
-      "expression": "import { supabase } from '../../lib/supabase';"
-    },
-    {
-      "path": "src/infrastructure/session/session-runtime-channel.ts",
-      "line": 8,
-      "endLine": 8,
+      "line": 5,
+      "endLine": 5,
       "module": "../../domains/session/contracts/session-runtime",
       "resolvedPath": "src/domains/session/contracts/session-runtime.ts",
       "expression": "import type { SessionRuntimeState } from '../../domains/session/contracts/session-runtime';"
     },
     {
       "path": "src/infrastructure/session/session-runtime-channel.ts",
-      "line": 9,
-      "endLine": 9,
+      "line": 6,
+      "endLine": 6,
       "module": "../host/host-session-http",
       "resolvedPath": "src/infrastructure/host/host-session-http.ts",
       "expression": "import { isHostLibraryEnabled } from '../host/host-session-http';"
     },
     {
       "path": "src/infrastructure/session/session-runtime-channel.ts",
-      "line": 10,
-      "endLine": 10,
+      "line": 7,
+      "endLine": 7,
       "module": "./session-runtime-service",
       "resolvedPath": "src/infrastructure/session/session-runtime-service.ts",
       "expression": "import { sessionRuntimeService } from './session-runtime-service';"
     },
     {
       "path": "src/infrastructure/session/session-runtime-service.ts",
-      "line": 6,
-      "endLine": 6,
-      "module": "../../lib/supabase",
-      "resolvedPath": "src/lib/supabase.ts",
-      "expression": "import { supabase } from '../../lib/supabase';"
-    },
-    {
-      "path": "src/infrastructure/session/session-runtime-service.ts",
-      "line": 7,
-      "endLine": 12,
+      "line": 5,
+      "endLine": 8,
       "module": "../../domains/session/contracts/session-runtime",
       "resolvedPath": "src/domains/session/contracts/session-runtime.ts",
-      "expression": "import type {\n  SessionEventKind,\n  SessionGameplayState,\n  SessionPresenceEntry,\n  SessionRuntimeState,\n} from '../../domains/session/contracts/session-runtime';"
+      "expression": "import type {\n  SessionEventKind,\n  SessionRuntimeState,\n} from '../../domains/session/contracts/session-runtime';"
     },
     {
       "path": "src/infrastructure/session/session-runtime-service.ts",
-      "line": 13,
-      "endLine": 18,
+      "line": 9,
+      "endLine": 14,
       "module": "../../domains/session/contracts/session-runtime",
       "resolvedPath": "src/domains/session/contracts/session-runtime.ts",
       "expression": "import {\n  StaleRuntimeRevisionError,\n  assertSessionEventKind,\n  emptyGameplayState,\n  normalizeRuntimeStatus,\n} from '../../domains/session/contracts/session-runtime';"
     },
     {
       "path": "src/infrastructure/session/session-runtime-service.ts",
-      "line": 19,
-      "endLine": 24,
+      "line": 15,
+      "endLine": 20,
       "module": "../host/host-session-http",
       "resolvedPath": "src/infrastructure/host/host-session-http.ts",
       "expression": "import {\n  applyHostSessionRuntimeCommand,\n  fetchHostSessionRuntime,\n  isHostLibraryEnabled,\n  setHostSessionPresence,\n} from '../host/host-session-http';"
     },
     {
       "path": "src/infrastructure/session/session-service.ts",
-      "line": 10,
+      "line": 5,
       "endLine": 10,
-      "module": "../../lib/supabase",
-      "resolvedPath": "src/lib/supabase.ts",
-      "expression": "import { supabase } from '../../lib/supabase';"
+      "module": "../../domains/session/contracts/session.types",
+      "resolvedPath": "src/domains/session/contracts/session.types.ts",
+      "expression": "import type {\n  SessionVm,\n  CreateSessionDto,\n  JoinSessionDto,\n  PlaySessionStatus,\n} from '../../domains/session/contracts/session.types';"
     },
     {
       "path": "src/infrastructure/session/session-service.ts",
       "line": 11,
-      "endLine": 14,
-      "module": "../../lib/localAdmin",
-      "resolvedPath": "src/lib/localAdmin.ts",
-      "expression": "import {\n  isLocalAdminSession,\n  LOCAL_ADMIN_USER_ID,\n} from '../../lib/localAdmin';"
-    },
-    {
-      "path": "src/infrastructure/session/session-service.ts",
-      "line": 15,
-      "endLine": 23,
-      "module": "../../domains/session/contracts/session.types",
-      "resolvedPath": "src/domains/session/contracts/session.types.ts",
-      "expression": "import type {\n  SessionDto,\n  SessionVm,\n  CreateSessionDto,\n  JoinSessionDto,\n  SessionPlayerDto,\n  SessionPlayerVm,\n  PlaySessionStatus,\n} from '../../domains/session/contracts/session.types';"
-    },
-    {
-      "path": "src/infrastructure/session/session-service.ts",
-      "line": 24,
-      "endLine": 28,
+      "endLine": 15,
       "module": "../../domains/session/contracts/session-lifecycle",
       "resolvedPath": "src/domains/session/contracts/session-lifecycle.ts",
       "expression": "import {\n  assertPlaySessionStatusTransition,\n  normalizePlaySessionStatus,\n  normalizeSessionJoinCode,\n} from '../../domains/session/contracts/session-lifecycle';"
     },
     {
       "path": "src/infrastructure/session/session-service.ts",
-      "line": 29,
-      "endLine": 35,
+      "line": 16,
+      "endLine": 22,
       "module": "../../domains/session/contracts/session-invite",
       "resolvedPath": "src/domains/session/contracts/session-invite.ts",
       "expression": "import {\n  mapInviteCreatePayload,\n  mapInviteResolvePayload,\n  normalizeInviteToken,\n  type SessionInviteCreateResult,\n  type SessionInviteResolveResult,\n} from '../../domains/session/contracts/session-invite';"
     },
     {
       "path": "src/infrastructure/session/session-service.ts",
-      "line": 36,
-      "endLine": 49,
+      "line": 23,
+      "endLine": 36,
       "module": "../host/host-session-http",
       "resolvedPath": "src/infrastructure/host/host-session-http.ts",
       "expression": "import {\n  createHostPlaySession,\n  createHostSessionInvite,\n  fetchHostSession,\n  fetchHostSessions,\n  isHostLibraryEnabled,\n  joinHostSessionByCode,\n  leaveHostPlaySession,\n  deleteHostPlaySession,\n  resolveHostSessionInvite,\n  revokeHostSessionInvite,\n  setHostSessionStatus,\n  type HostPlaySessionDto,\n} from '../host/host-session-http';"
@@ -1949,27 +1193,27 @@
     },
     {
       "path": "src/infrastructure/session/media/media-token-client.ts",
-      "line": 14,
-      "endLine": 21,
+      "line": 10,
+      "endLine": 17,
       "text": "export type MediaTokenSuccess = {\n  readonly ok: true;\n  readonly token: string;\n  readonly url: string;\n  readonly roomId: string;\n  readonly expiresAt: string;\n  readonly ttlSeconds: number;\n};"
     },
     {
       "path": "src/infrastructure/session/media/media-token-client.ts",
-      "line": 23,
-      "endLine": 28,
+      "line": 19,
+      "endLine": 24,
       "text": "export type MediaTokenDegraded = {\n  readonly ok: false;\n  readonly degraded: true;\n  readonly reason: 'media_service_unavailable' | 'forbidden' | 'unauthorized' | 'bad_request';\n  readonly message: string;\n};"
     },
     {
       "path": "src/infrastructure/session/media/media-token-client.ts",
-      "line": 30,
-      "endLine": 30,
+      "line": 26,
+      "endLine": 26,
       "text": "export type MediaTokenResult = MediaTokenSuccess | MediaTokenDegraded;"
     },
     {
       "path": "src/infrastructure/session/media/media-token-client.ts",
-      "line": 32,
-      "endLine": 111,
-      "text": "export async function fetchSessionMediaToken(input: {\n  sessionId: string;\n}): Promise<MediaTokenResult> {\n  const sessionId = input.sessionId.trim();\n  if (!sessionId) {\n    return {\n      ok: false,\n      degraded: true,\n      reason: 'bad_request',\n      message: 'sessionId fehlt.',\n    };\n  }\n\n  if (isHostLibraryEnabled()) {\n    return fetchHostSessionMediaToken(sessionId);\n  }\n\n  try {\n    const { data, error } = await supabase.functions.invoke('session-media-token', {\n      body: { sessionId },\n    });\n    if (error) {\n      return {\n        ok: false,\n        degraded: true,\n        reason: 'media_service_unavailable',\n        message: error.message || 'Media-Token-Dienst nicht erreichbar.',\n      };\n    }\n    const record = data as Record<string, unknown> | null;\n    if (!record || typeof record !== 'object') {\n      return {\n        ok: false,\n        degraded: true,\n        reason: 'media_service_unavailable',\n        message: 'Leere Media-Token-Antwort.',\n      };\n    }\n    if (record.degraded === true || record.ok === false) {\n      const reason =\n        record.reason === 'forbidden' ||\n        record.reason === 'unauthorized' ||\n        record.reason === 'bad_request'\n          ? record.reason\n          : 'media_service_unavailable';\n      return {\n        ok: false,\n        degraded: true,\n        reason,\n        message:\n          typeof record.message === 'string'\n            ? record.message\n            : 'Media plane degraded.',\n      };\n    }\n    const token = typeof record.token === 'string' ? record.token : '';\n    const url = typeof record.url === 'string' ? record.url : '';\n    const roomId = typeof record.roomId === 'string' ? record.roomId : '';\n    const expiresAt =\n      typeof record.expiresAt === 'string' ? record.expiresAt : '';\n    const ttlSeconds =\n      typeof record.ttlSeconds === 'number' ? record.ttlSeconds : 0;\n    if (!token || !url || !roomId) {\n      return {\n        ok: false,\n        degraded: true,\n        reason: 'media_service_unavailable',\n        message: 'Media-Token unvollständig.',\n      };\n    }\n    return { ok: true, token, url, roomId, expiresAt, ttlSeconds };\n  } catch (error) {\n    return {\n      ok: false,\n      degraded: true,\n      reason: 'media_service_unavailable',\n      message: error instanceof Error ? error.message : 'Media-Token-Fehler.',\n    };\n  }\n}"
+      "line": 28,
+      "endLine": 49,
+      "text": "export async function fetchSessionMediaToken(input: {\n  sessionId: string;\n}): Promise<MediaTokenResult> {\n  const sessionId = input.sessionId.trim();\n  if (!sessionId) {\n    return {\n      ok: false,\n      degraded: true,\n      reason: 'bad_request',\n      message: 'sessionId fehlt.',\n    };\n  }\n  if (!isHostLibraryEnabled()) {\n    return {\n      ok: false,\n      degraded: true,\n      reason: 'media_service_unavailable',\n      message: 'Medien-Dienst nicht erreichbar.',\n    };\n  }\n  return fetchHostSessionMediaToken(sessionId);\n}"
     },
     {
       "path": "src/infrastructure/session/media/memory-media-plane-adapter.ts",
@@ -2003,92 +1247,92 @@
     },
     {
       "path": "src/infrastructure/session/session-lobby-channel.ts",
-      "line": 11,
-      "endLine": 14,
+      "line": 9,
+      "endLine": 12,
       "text": "export type LobbyReadyPayload = {\n  readonly userId: string;\n  readonly ready: boolean;\n};"
     },
     {
       "path": "src/infrastructure/session/session-lobby-channel.ts",
-      "line": 16,
-      "endLine": 16,
+      "line": 14,
+      "endLine": 14,
       "text": "export type LobbyReadyListener = (payload: LobbyReadyPayload) => void;"
     },
     {
       "path": "src/infrastructure/session/session-lobby-channel.ts",
-      "line": 18,
-      "endLine": 21,
+      "line": 16,
+      "endLine": 19,
       "text": "export type SessionLobbySubscription = {\n  sendReady: (payload: LobbyReadyPayload) => Promise<void>;\n  unsubscribe: () => Promise<void>;\n};"
     },
     {
       "path": "src/infrastructure/session/session-lobby-channel.ts",
       "line": 27,
-      "endLine": 88,
-      "text": "export async function subscribeSessionLobbyReady(\n  sessionId: string,\n  onReady: LobbyReadyListener,\n): Promise<SessionLobbySubscription> {\n  if (isHostLibraryEnabled()) {\n    void sessionId;\n    let disposed = false;\n    return {\n      sendReady: async (payload) => {\n        if (disposed) return;\n        onReady({ userId: payload.userId, ready: payload.ready === true });\n      },\n      unsubscribe: async () => {\n        disposed = true;\n      },\n    };\n  }\n\n  let channel: RealtimeChannel | null = null;\n  let disposed = false;\n\n  const topic = `session-lobby:${sessionId}`;\n  channel = supabase\n    .channel(topic)\n    .on('broadcast', { event: 'ready' }, ({ payload }) => {\n      if (disposed) return;\n      const userId = typeof payload?.userId === 'string' ? payload.userId : null;\n      if (!userId) return;\n      onReady({ userId, ready: payload?.ready === true });\n    });\n\n  await new Promise<void>((resolve, reject) => {\n    if (!channel) {\n      reject(new Error('Lobby-Kanal fehlt'));\n      return;\n    }\n    channel.subscribe((status) => {\n      if (status === 'SUBSCRIBED') resolve();\n      if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {\n        reject(new Error(`Lobby-Kanal: ${status}`));\n      }\n    });\n  });\n\n  return {\n    sendReady: async (payload) => {\n      if (!channel || disposed) return;\n      await channel.send({\n        type: 'broadcast',\n        event: 'ready',\n        payload: { userId: payload.userId, ready: payload.ready === true },\n      });\n    },\n    unsubscribe: async () => {\n      disposed = true;\n      if (channel) {\n        await supabase.removeChannel(channel);\n        channel = null;\n      }\n    },\n  };\n}"
+      "endLine": 43,
+      "text": "export async function subscribeSessionLobbyReady(\n  sessionId: string,\n  onReady: LobbyReadyListener,\n): Promise<SessionLobbySubscription> {\n  assertHost();\n  void sessionId;\n  let disposed = false;\n  return {\n    sendReady: async (payload) => {\n      if (disposed) return;\n      onReady({ userId: payload.userId, ready: payload.ready === true });\n    },\n    unsubscribe: async () => {\n      disposed = true;\n    },\n  };\n}"
     },
     {
       "path": "src/infrastructure/session/session-recap-ai-service.ts",
-      "line": 17,
-      "endLine": 17,
+      "line": 12,
+      "endLine": 12,
       "text": "export type EpisodeSummaryStatus = 'none' | 'draft' | 'approved';"
     },
     {
       "path": "src/infrastructure/session/session-recap-ai-service.ts",
-      "line": 19,
-      "endLine": 24,
+      "line": 14,
+      "endLine": 19,
       "text": "export type SessionRecapAiGenerateResult = {\n  readonly summaryText: string;\n  readonly summaryStatus: EpisodeSummaryStatus;\n  readonly provider: string;\n  readonly model: string;\n};"
     },
     {
       "path": "src/infrastructure/session/session-recap-ai-service.ts",
-      "line": 164,
-      "endLine": 164,
+      "line": 54,
+      "endLine": 54,
       "text": "export const sessionRecapAiService = new SessionRecapAiService();"
     },
     {
       "path": "src/infrastructure/session/session-recap-service.ts",
-      "line": 13,
-      "endLine": 21,
-      "text": "export type SessionRecapDto = {\n  readonly sessionId: string;\n  readonly summaryText: string | null;\n  /** #573 — none|draft|approved (players only receive approved text). */\n  readonly summaryStatus: 'none' | 'draft' | 'approved';\n  readonly highlights: readonly RecapHighlightLine[];\n  readonly createdAt: string | null;\n  readonly updatedAt: string | null;\n};"
+      "line": 11,
+      "endLine": 18,
+      "text": "export type SessionRecapDto = {\n  readonly sessionId: string;\n  readonly summaryText: string | null;\n  readonly summaryStatus: 'none' | 'draft' | 'approved';\n  readonly highlights: readonly RecapHighlightLine[];\n  readonly createdAt: string | null;\n  readonly updatedAt: string | null;\n};"
     },
     {
       "path": "src/infrastructure/session/session-recap-service.ts",
-      "line": 73,
-      "endLine": 73,
+      "line": 52,
+      "endLine": 52,
       "text": "export const sessionRecapService = new SessionRecapService();"
     },
     {
       "path": "src/infrastructure/session/session-runtime-channel.ts",
-      "line": 12,
-      "endLine": 12,
+      "line": 9,
+      "endLine": 9,
       "text": "export type SessionRuntimeListener = (state: SessionRuntimeState) => void;"
     },
     {
       "path": "src/infrastructure/session/session-runtime-channel.ts",
-      "line": 14,
-      "endLine": 20,
-      "text": "export interface SessionRuntimeSubscription {\n  /** Latest authoritative snapshot after connect or resync. */\n  getState: () => SessionRuntimeState | null;\n  /** Force snapshot reload + keep channel (reconnect path). */\n  resync: () => Promise<SessionRuntimeState>;\n  unsubscribe: () => Promise<void>;\n}"
+      "line": 11,
+      "endLine": 15,
+      "text": "export interface SessionRuntimeSubscription {\n  getState: () => SessionRuntimeState | null;\n  resync: () => Promise<SessionRuntimeState>;\n  unsubscribe: () => Promise<void>;\n}"
     },
     {
       "path": "src/infrastructure/session/session-runtime-channel.ts",
-      "line": 31,
-      "endLine": 133,
-      "text": "export async function subscribeSessionRuntime(\n  sessionId: string,\n  onChange: SessionRuntimeListener,\n): Promise<SessionRuntimeSubscription> {\n  let current: SessionRuntimeState | null = await sessionRuntimeService.getSnapshot(sessionId);\n  onChange(current);\n\n  let channel: RealtimeChannel | null = null;\n  let disposed = false;\n  let pollTimer: ReturnType<typeof setInterval> | null = null;\n\n  if (isHostLibraryEnabled()) {\n    const refresh = async (): Promise<SessionRuntimeState> => {\n      const next = await sessionRuntimeService.getSnapshot(sessionId);\n      current = next;\n      if (!disposed) onChange(next);\n      return next;\n    };\n    pollTimer = setInterval(() => {\n      void refresh().catch(() => {\n        /* keep last good snapshot */\n      });\n    }, HOST_RUNTIME_POLL_MS);\n    return {\n      getState: () => current,\n      resync: refresh,\n      unsubscribe: async () => {\n        disposed = true;\n        if (pollTimer) {\n          clearInterval(pollTimer);\n          pollTimer = null;\n        }\n      },\n    };\n  }\n\n  const refresh = async (): Promise<SessionRuntimeState> => {\n    const next = await sessionRuntimeService.getSnapshot(sessionId);\n    current = next;\n    if (!disposed) onChange(next);\n    return next;\n  };\n\n  const topic = `session-runtime:${sessionId}`;\n  channel = supabase\n    .channel(topic)\n    .on(\n      'postgres_changes',\n      { event: '*', schema: 'public', table: 'sessions', filter: `id=eq.${sessionId}` },\n      () => {\n        void refresh();\n      },\n    )\n    .on(\n      'postgres_changes',\n      {\n        event: '*',\n        schema: 'public',\n        table: 'session_players',\n        filter: `session_id=eq.${sessionId}`,\n      },\n      () => {\n        void refresh();\n      },\n    )\n    .on(\n      'postgres_changes',\n      {\n        event: 'INSERT',\n        schema: 'public',\n        table: 'session_events',\n        filter: `session_id=eq.${sessionId}`,\n      },\n      () => {\n        void refresh();\n      },\n    );\n\n  await new Promise<void>((resolve, reject) => {\n    if (!channel) {\n      reject(new Error('Realtime-Kanal konnte nicht erstellt werden'));\n      return;\n    }\n    channel.subscribe((status) => {\n      if (status === 'SUBSCRIBED') resolve();\n      if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {\n        reject(new Error(`Realtime-Subscribe fehlgeschlagen: ${status}`));\n      }\n    });\n  });\n\n  return {\n    getState: () => current,\n    resync: refresh,\n    unsubscribe: async () => {\n      disposed = true;\n      if (channel) {\n        await supabase.removeChannel(channel);\n        channel = null;\n      }\n    },\n  };\n}"
+      "line": 28,
+      "endLine": 64,
+      "text": "export async function subscribeSessionRuntime(\n  sessionId: string,\n  onChange: SessionRuntimeListener,\n): Promise<SessionRuntimeSubscription> {\n  assertHost();\n  let current: SessionRuntimeState | null = await sessionRuntimeService.getSnapshot(sessionId);\n  onChange(current);\n\n  let disposed = false;\n  const pollTimer = setInterval(() => {\n    void sessionRuntimeService\n      .getSnapshot(sessionId)\n      .then((next) => {\n        current = next;\n        if (!disposed) onChange(next);\n      })\n      .catch(() => {\n        /* keep last good snapshot */\n      });\n  }, HOST_RUNTIME_POLL_MS);\n\n  const refresh = async (): Promise<SessionRuntimeState> => {\n    const next = await sessionRuntimeService.getSnapshot(sessionId);\n    current = next;\n    if (!disposed) onChange(next);\n    return next;\n  };\n\n  return {\n    getState: () => current,\n    resync: refresh,\n    unsubscribe: async () => {\n      disposed = true;\n      clearInterval(pollTimer);\n    },\n  };\n}"
     },
     {
       "path": "src/infrastructure/session/session-runtime-service.ts",
-      "line": 70,
-      "endLine": 87,
+      "line": 72,
+      "endLine": 89,
       "text": "export function mapSnapshotJson(data: SnapshotJson): SessionRuntimeState {\n  const sessionId = typeof data.sessionId === 'string' ? data.sessionId : '';\n  if (!sessionId) {\n    throw new Error('Runtime-Snapshot ohne sessionId');\n  }\n  const revision = typeof data.revision === 'number' ? data.revision : Number(data.revision ?? 0);\n  if (!Number.isFinite(revision)) {\n    throw new Error('Runtime-Snapshot ohne gültige Revision');\n  }\n  return {\n    sessionId,\n    revision,\n    status: normalizeRuntimeStatus(typeof data.status === 'string' ? data.status : 'waiting'),\n    roster: mapRoster(data.roster),\n    gameplay: mapGameplay(data.gameplay),\n    updatedAt: typeof data.updatedAt === 'string' ? data.updatedAt : new Date().toISOString(),\n  };\n}"
     },
     {
       "path": "src/infrastructure/session/session-runtime-service.ts",
-      "line": 194,
-      "endLine": 194,
+      "line": 151,
+      "endLine": 151,
       "text": "export const sessionRuntimeService = new SessionRuntimeService();"
     },
     {
       "path": "src/infrastructure/session/session-service.ts",
-      "line": 500,
-      "endLine": 500,
+      "line": 181,
+      "endLine": 181,
       "text": "export const sessionService = new SessionService();"
     }
   ],
@@ -2284,10 +1528,10 @@
     },
     {
       "path": "src/infrastructure/session/media/media-token-client.ts",
-      "line": 32,
-      "endLine": 111,
+      "line": 28,
+      "endLine": 49,
       "name": "fetchSessionMediaToken",
-      "text": "export async function fetchSessionMediaToken(input: {\n  sessionId: string;\n}): Promise<MediaTokenResult> {\n  const sessionId = input.sessionId.trim();\n  if (!sessionId) {\n    return {\n      ok: false,\n      degraded: true,\n      reason: 'bad_request',\n      message: 'sessionId fehlt.',\n    };\n  }\n\n  if (isHostLibraryEnabled()) {\n    return fetchHostSessionMediaToken(sessionId);\n  }\n\n  try {\n    const { data, error } = await supabase.functions.invoke('session-media-token', {\n      body: { sessionId },\n    });\n    if (error) {\n      return {\n        ok: false,\n        degraded: true,\n        reason: 'media_service_unavailable',\n        message: error.message || 'Media-Token-Dienst nicht erreichbar.',\n      };\n    }\n    const record = data as Record<string, unknown> | null;\n    if (!record || typeof record !== 'object') {\n      return {\n        ok: false,\n        degraded: true,\n        reason: 'media_service_unavailable',\n        message: 'Leere Media-Token-Antwort.',\n      };\n    }\n    if (record.degraded === true || record.ok === false) {\n      const reason =\n        record.reason === 'forbidden' ||\n        record.reason === 'unauthorized' ||\n        record.reason === 'bad_request'\n          ? record.reason\n          : 'media_service_unavailable';\n      return {\n        ok: false,\n        degraded: true,\n        reason,\n        message:\n          typeof record.message === 'string'\n            ? record.message\n            : 'Media plane degraded.',\n      };\n    }\n    const token = typeof record.token === 'string' ? record.token : '';\n    const url = typeof record.url === 'string' ? record.url : '';\n    const roomId = typeof record.roomId === 'string' ? record.roomId : '';\n    const expiresAt =\n      typeof record.expiresAt === 'string' ? record.expiresAt : '';\n    const ttlSeconds =\n      typeof record.ttlSeconds === 'number' ? record.ttlSeconds : 0;\n    if (!token || !url || !roomId) {\n      return {\n        ok: false,\n        degraded: true,\n        reason: 'media_service_unavailable',\n        message: 'Media-Token unvollständig.',\n      };\n    }\n    return { ok: true, token, url, roomId, expiresAt, ttlSeconds };\n  } catch (error) {\n    return {\n      ok: false,\n      degraded: true,\n      reason: 'media_service_unavailable',\n      message: error instanceof Error ? error.message : 'Media-Token-Fehler.',\n    };\n  }\n}"
+      "text": "export async function fetchSessionMediaToken(input: {\n  sessionId: string;\n}): Promise<MediaTokenResult> {\n  const sessionId = input.sessionId.trim();\n  if (!sessionId) {\n    return {\n      ok: false,\n      degraded: true,\n      reason: 'bad_request',\n      message: 'sessionId fehlt.',\n    };\n  }\n  if (!isHostLibraryEnabled()) {\n    return {\n      ok: false,\n      degraded: true,\n      reason: 'media_service_unavailable',\n      message: 'Medien-Dienst nicht erreichbar.',\n    };\n  }\n  return fetchHostSessionMediaToken(sessionId);\n}"
     },
     {
       "path": "src/infrastructure/session/media/memory-media-plane-adapter.ts",
@@ -2480,395 +1724,269 @@
     },
     {
       "path": "src/infrastructure/session/session-lobby-channel.ts",
+      "line": 21,
+      "endLine": 25,
+      "name": "assertHost",
+      "text": "function assertHost(): void {\n  if (!isHostLibraryEnabled()) {\n    throw new Error('Host-Anmeldung nicht konfiguriert (VITE_SAGATREE_HOST_AUTH_URL fehlt).');\n  }\n}"
+    },
+    {
+      "path": "src/infrastructure/session/session-lobby-channel.ts",
       "line": 27,
-      "endLine": 88,
+      "endLine": 43,
       "name": "subscribeSessionLobbyReady",
-      "text": "export async function subscribeSessionLobbyReady(\n  sessionId: string,\n  onReady: LobbyReadyListener,\n): Promise<SessionLobbySubscription> {\n  if (isHostLibraryEnabled()) {\n    void sessionId;\n    let disposed = false;\n    return {\n      sendReady: async (payload) => {\n        if (disposed) return;\n        onReady({ userId: payload.userId, ready: payload.ready === true });\n      },\n      unsubscribe: async () => {\n        disposed = true;\n      },\n    };\n  }\n\n  let channel: RealtimeChannel | null = null;\n  let disposed = false;\n\n  const topic = `session-lobby:${sessionId}`;\n  channel = supabase\n    .channel(topic)\n    .on('broadcast', { event: 'ready' }, ({ payload }) => {\n      if (disposed) return;\n      const userId = typeof payload?.userId === 'string' ? payload.userId : null;\n      if (!userId) return;\n      onReady({ userId, ready: payload?.ready === true });\n    });\n\n  await new Promise<void>((resolve, reject) => {\n    if (!channel) {\n      reject(new Error('Lobby-Kanal fehlt'));\n      return;\n    }\n    channel.subscribe((status) => {\n      if (status === 'SUBSCRIBED') resolve();\n      if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {\n        reject(new Error(`Lobby-Kanal: ${status}`));\n      }\n    });\n  });\n\n  return {\n    sendReady: async (payload) => {\n      if (!channel || disposed) return;\n      await channel.send({\n        type: 'broadcast',\n        event: 'ready',\n        payload: { userId: payload.userId, ready: payload.ready === true },\n      });\n    },\n    unsubscribe: async () => {\n      disposed = true;\n      if (channel) {\n        await supabase.removeChannel(channel);\n        channel = null;\n      }\n    },\n  };\n}"
+      "text": "export async function subscribeSessionLobbyReady(\n  sessionId: string,\n  onReady: LobbyReadyListener,\n): Promise<SessionLobbySubscription> {\n  assertHost();\n  void sessionId;\n  let disposed = false;\n  return {\n    sendReady: async (payload) => {\n      if (disposed) return;\n      onReady({ userId: payload.userId, ready: payload.ready === true });\n    },\n    unsubscribe: async () => {\n      disposed = true;\n    },\n  };\n}"
     },
     {
       "path": "src/infrastructure/session/session-lobby-channel.ts",
       "line": 35,
       "endLine": 38,
       "name": "callback",
-      "text": "async (payload) => {\n        if (disposed) return;\n        onReady({ userId: payload.userId, ready: payload.ready === true });\n      }"
+      "text": "async (payload) => {\n      if (disposed) return;\n      onReady({ userId: payload.userId, ready: payload.ready === true });\n    }"
     },
     {
       "path": "src/infrastructure/session/session-lobby-channel.ts",
       "line": 39,
       "endLine": 41,
       "name": "callback",
-      "text": "async () => {\n        disposed = true;\n      }"
-    },
-    {
-      "path": "src/infrastructure/session/session-lobby-channel.ts",
-      "line": 51,
-      "endLine": 56,
-      "name": "callback",
-      "text": "({ payload }) => {\n      if (disposed) return;\n      const userId = typeof payload?.userId === 'string' ? payload.userId : null;\n      if (!userId) return;\n      onReady({ userId, ready: payload?.ready === true });\n    }"
-    },
-    {
-      "path": "src/infrastructure/session/session-lobby-channel.ts",
-      "line": 58,
-      "endLine": 69,
-      "name": "callback",
-      "text": "(resolve, reject) => {\n    if (!channel) {\n      reject(new Error('Lobby-Kanal fehlt'));\n      return;\n    }\n    channel.subscribe((status) => {\n      if (status === 'SUBSCRIBED') resolve();\n      if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {\n        reject(new Error(`Lobby-Kanal: ${status}`));\n      }\n    });\n  }"
-    },
-    {
-      "path": "src/infrastructure/session/session-lobby-channel.ts",
-      "line": 63,
-      "endLine": 68,
-      "name": "callback",
-      "text": "(status) => {\n      if (status === 'SUBSCRIBED') resolve();\n      if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {\n        reject(new Error(`Lobby-Kanal: ${status}`));\n      }\n    }"
-    },
-    {
-      "path": "src/infrastructure/session/session-lobby-channel.ts",
-      "line": 72,
-      "endLine": 79,
-      "name": "callback",
-      "text": "async (payload) => {\n      if (!channel || disposed) return;\n      await channel.send({\n        type: 'broadcast',\n        event: 'ready',\n        payload: { userId: payload.userId, ready: payload.ready === true },\n      });\n    }"
-    },
-    {
-      "path": "src/infrastructure/session/session-lobby-channel.ts",
-      "line": 80,
-      "endLine": 86,
-      "name": "callback",
-      "text": "async () => {\n      disposed = true;\n      if (channel) {\n        await supabase.removeChannel(channel);\n        channel = null;\n      }\n    }"
+      "text": "async () => {\n      disposed = true;\n    }"
     },
     {
       "path": "src/infrastructure/session/session-recap-ai-service.ts",
-      "line": 37,
-      "endLine": 39,
-      "name": "isRecord",
-      "text": "function isRecord(value: unknown): value is Record<string, unknown> {\n  return typeof value === 'object' && value !== null;\n}"
-    },
-    {
-      "path": "src/infrastructure/session/session-recap-ai-service.ts",
-      "line": 41,
-      "endLine": 66,
-      "name": "parseFunctionResponse",
-      "text": "function parseFunctionResponse(value: unknown): FunctionResponse {\n  if (!isRecord(value) || typeof value.status !== 'string') {\n    return { status: 'error', message: 'Die KI-Antwort hatte ein ungültiges Format.' };\n  }\n  if (\n    value.status === 'ok' &&\n    typeof value.summaryText === 'string' &&\n    typeof value.provider === 'string' &&\n    typeof value.model === 'string'\n  ) {\n    return {\n      status: 'ok',\n      summaryText: value.summaryText,\n      summaryStatus: typeof value.summaryStatus === 'string' ? value.summaryStatus : 'draft',\n      provider: value.provider,\n      model: value.model,\n    };\n  }\n  if (\n    (value.status === 'not-configured' || value.status === 'error') &&\n    typeof value.message === 'string'\n  ) {\n    return { status: value.status, message: value.message };\n  }\n  return { status: 'error', message: 'Die KI-Antwort hatte ein ungültiges Format.' };\n}"
-    },
-    {
-      "path": "src/infrastructure/session/session-recap-ai-service.ts",
-      "line": 68,
-      "endLine": 70,
-      "name": "hasResponseContext",
-      "text": "function hasResponseContext(error: unknown): error is { context: Response } {\n  return isRecord(error) && error.context instanceof Response;\n}"
-    },
-    {
-      "path": "src/infrastructure/session/session-recap-ai-service.ts",
-      "line": 72,
-      "endLine": 81,
-      "name": "getFunctionErrorMessage",
-      "text": "async function getFunctionErrorMessage(error: unknown): Promise<string | undefined> {\n  if (!hasResponseContext(error)) return undefined;\n  try {\n    const responseBody: unknown = await error.context.clone().json();\n    const parsed = parseFunctionResponse(responseBody);\n    return parsed.status === 'ok' ? undefined : parsed.message;\n  } catch {\n    return undefined;\n  }\n}"
-    },
-    {
-      "path": "src/infrastructure/session/session-recap-ai-service.ts",
-      "line": 84,
-      "endLine": 117,
+      "line": 22,
+      "endLine": 33,
       "name": "generateDraft",
-      "text": "async generateDraft(sessionId: string): Promise<SessionRecapAiGenerateResult> {\n    if (isHostLibraryEnabled()) {\n      const response = await generateHostSessionRecapDraft(sessionId);\n      if (response.status !== 'ok') {\n        throw new Error(response.message);\n      }\n      return {\n        summaryText: response.summaryText,\n        summaryStatus: response.summaryStatus === 'approved' ? 'approved' : 'draft',\n        provider: response.provider,\n        model: response.model,\n      };\n    }\n    const { data, error } = await supabase.functions.invoke('session-recap', {\n      body: { sessionId },\n    });\n    if (error) {\n      const serverMessage = await getFunctionErrorMessage(error);\n      throw new Error(\n        serverMessage ??\n          'Zusammenfassung konnte nicht generiert werden. Bitte manuell schreiben.',\n      );\n    }\n    const response = parseFunctionResponse(data);\n    if (response.status !== 'ok') {\n      throw new Error(response.message);\n    }\n    return {\n      summaryText: response.summaryText,\n      summaryStatus: response.summaryStatus === 'approved' ? 'approved' : 'draft',\n      provider: response.provider,\n      model: response.model,\n    };\n  }"
+      "text": "async generateDraft(sessionId: string): Promise<SessionRecapAiGenerateResult> {\n    const response = await generateHostSessionRecapDraft(sessionId);\n    if (response.status !== 'ok') {\n      throw new Error(response.message);\n    }\n    return {\n      summaryText: response.summaryText,\n      summaryStatus: response.summaryStatus === 'approved' ? 'approved' : 'draft',\n      provider: response.provider,\n      model: response.model,\n    };\n  }"
     },
     {
       "path": "src/infrastructure/session/session-recap-ai-service.ts",
-      "line": 119,
-      "endLine": 161,
+      "line": 35,
+      "endLine": 51,
       "name": "saveSummary",
-      "text": "async saveSummary(\n    sessionId: string,\n    summaryText: string,\n    status: 'draft' | 'approved',\n  ): Promise<{ summaryText: string | null; summaryStatus: EpisodeSummaryStatus }> {\n    if (isHostLibraryEnabled()) {\n      const saved = await saveHostSessionRecapSummary(sessionId, summaryText, status);\n      return {\n        summaryText:\n          typeof saved.summaryText === 'string' ? saved.summaryText : summaryText,\n        summaryStatus:\n          saved.summaryStatus === 'approved'\n            ? 'approved'\n            : saved.summaryStatus === 'draft'\n              ? 'draft'\n              : status,\n      };\n    }\n    const { data, error } = await raceWithTimeoutReject(\n      supabase.rpc('save_session_recap_summary', {\n        p_session_id: sessionId,\n        p_summary_text: summaryText,\n        p_status: status,\n      }),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'Speichern Zeitüberschreitung',\n    );\n    if (error) {\n      throw new Error(error.message || 'Zusammenfassung konnte nicht gespeichert werden');\n    }\n    if (!isRecord(data)) {\n      return { summaryText, summaryStatus: status };\n    }\n    return {\n      summaryText: typeof data.summaryText === 'string' ? data.summaryText : summaryText,\n      summaryStatus:\n        data.summaryStatus === 'approved'\n          ? 'approved'\n          : data.summaryStatus === 'draft'\n            ? 'draft'\n            : 'none',\n    };\n  }"
+      "text": "async saveSummary(\n    sessionId: string,\n    summaryText: string,\n    status: 'draft' | 'approved',\n  ): Promise<{ summaryText: string | null; summaryStatus: EpisodeSummaryStatus }> {\n    const saved = await saveHostSessionRecapSummary(sessionId, summaryText, status);\n    return {\n      summaryText:\n        typeof saved.summaryText === 'string' ? saved.summaryText : summaryText,\n      summaryStatus:\n        saved.summaryStatus === 'approved'\n          ? 'approved'\n          : saved.summaryStatus === 'draft'\n            ? 'draft'\n            : status,\n    };\n  }"
     },
     {
       "path": "src/infrastructure/session/session-recap-service.ts",
-      "line": 23,
-      "endLine": 25,
+      "line": 20,
+      "endLine": 22,
       "name": "isRecord",
       "text": "function isRecord(value: unknown): value is Record<string, unknown> {\n  return typeof value === 'object' && value !== null && !Array.isArray(value);\n}"
     },
     {
       "path": "src/infrastructure/session/session-recap-service.ts",
-      "line": 28,
-      "endLine": 70,
-      "name": "getBySessionId",
-      "text": "async getBySessionId(sessionId: string): Promise<SessionRecapDto | null> {\n    if (isHostLibraryEnabled()) {\n      const data = await fetchHostSessionRecap(sessionId);\n      if (data == null) return null;\n      if (!isRecord(data)) {\n        throw new Error('Ungültige Recap-Antwort');\n      }\n      const statusRaw = typeof data.summaryStatus === 'string' ? data.summaryStatus : 'none';\n      const summaryStatus =\n        statusRaw === 'approved' || statusRaw === 'draft' ? statusRaw : 'none';\n      return {\n        sessionId: typeof data.sessionId === 'string' ? data.sessionId : sessionId,\n        summaryText: typeof data.summaryText === 'string' ? data.summaryText : null,\n        summaryStatus,\n        highlights: parsePersistedRecapHighlightLines(data.highlightLines),\n        createdAt: typeof data.createdAt === 'string' ? data.createdAt : null,\n        updatedAt: typeof data.updatedAt === 'string' ? data.updatedAt : null,\n      };\n    }\n    const { data, error } = await raceWithTimeoutReject(\n      supabase.rpc('get_session_recap', { p_session_id: sessionId }),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'Recap Zeitüberschreitung',\n    );\n    if (error) {\n      throw new Error(error.message || 'Recap konnte nicht geladen werden');\n    }\n    if (data == null) return null;\n    if (!isRecord(data)) {\n      throw new Error('Ungültige Recap-Antwort');\n    }\n    const statusRaw = typeof data.summaryStatus === 'string' ? data.summaryStatus : 'none';\n    const summaryStatus =\n      statusRaw === 'approved' || statusRaw === 'draft' ? statusRaw : 'none';\n    return {\n      sessionId: typeof data.sessionId === 'string' ? data.sessionId : sessionId,\n      summaryText: typeof data.summaryText === 'string' ? data.summaryText : null,\n      summaryStatus,\n      highlights: parsePersistedRecapHighlightLines(data.highlightLines),\n      createdAt: typeof data.createdAt === 'string' ? data.createdAt : null,\n      updatedAt: typeof data.updatedAt === 'string' ? data.updatedAt : null,\n    };\n  }"
+      "line": 24,
+      "endLine": 28,
+      "name": "assertHost",
+      "text": "function assertHost(): void {\n  if (!isHostLibraryEnabled()) {\n    throw new Error('Host-Anmeldung nicht konfiguriert (VITE_SAGATREE_HOST_AUTH_URL fehlt).');\n  }\n}"
     },
     {
-      "path": "src/infrastructure/session/session-runtime-channel.ts",
+      "path": "src/infrastructure/session/session-recap-service.ts",
       "line": 31,
-      "endLine": 133,
+      "endLine": 49,
+      "name": "getBySessionId",
+      "text": "async getBySessionId(sessionId: string): Promise<SessionRecapDto | null> {\n    assertHost();\n    const data = await fetchHostSessionRecap(sessionId);\n    if (data == null) return null;\n    if (!isRecord(data)) {\n      throw new Error('Ungültige Recap-Antwort');\n    }\n    const statusRaw = typeof data.summaryStatus === 'string' ? data.summaryStatus : 'none';\n    const summaryStatus =\n      statusRaw === 'approved' || statusRaw === 'draft' ? statusRaw : 'none';\n    return {\n      sessionId: typeof data.sessionId === 'string' ? data.sessionId : sessionId,\n      summaryText: typeof data.summaryText === 'string' ? data.summaryText : null,\n      summaryStatus,\n      highlights: parsePersistedRecapHighlightLines(data.highlightLines),\n      createdAt: typeof data.createdAt === 'string' ? data.createdAt : null,\n      updatedAt: typeof data.updatedAt === 'string' ? data.updatedAt : null,\n    };\n  }"
+    },
+    {
+      "path": "src/infrastructure/session/session-runtime-channel.ts",
+      "line": 19,
+      "endLine": 23,
+      "name": "assertHost",
+      "text": "function assertHost(): void {\n  if (!isHostLibraryEnabled()) {\n    throw new Error('Host-Anmeldung nicht konfiguriert (VITE_SAGATREE_HOST_AUTH_URL fehlt).');\n  }\n}"
+    },
+    {
+      "path": "src/infrastructure/session/session-runtime-channel.ts",
+      "line": 28,
+      "endLine": 64,
       "name": "subscribeSessionRuntime",
-      "text": "export async function subscribeSessionRuntime(\n  sessionId: string,\n  onChange: SessionRuntimeListener,\n): Promise<SessionRuntimeSubscription> {\n  let current: SessionRuntimeState | null = await sessionRuntimeService.getSnapshot(sessionId);\n  onChange(current);\n\n  let channel: RealtimeChannel | null = null;\n  let disposed = false;\n  let pollTimer: ReturnType<typeof setInterval> | null = null;\n\n  if (isHostLibraryEnabled()) {\n    const refresh = async (): Promise<SessionRuntimeState> => {\n      const next = await sessionRuntimeService.getSnapshot(sessionId);\n      current = next;\n      if (!disposed) onChange(next);\n      return next;\n    };\n    pollTimer = setInterval(() => {\n      void refresh().catch(() => {\n        /* keep last good snapshot */\n      });\n    }, HOST_RUNTIME_POLL_MS);\n    return {\n      getState: () => current,\n      resync: refresh,\n      unsubscribe: async () => {\n        disposed = true;\n        if (pollTimer) {\n          clearInterval(pollTimer);\n          pollTimer = null;\n        }\n      },\n    };\n  }\n\n  const refresh = async (): Promise<SessionRuntimeState> => {\n    const next = await sessionRuntimeService.getSnapshot(sessionId);\n    current = next;\n    if (!disposed) onChange(next);\n    return next;\n  };\n\n  const topic = `session-runtime:${sessionId}`;\n  channel = supabase\n    .channel(topic)\n    .on(\n      'postgres_changes',\n      { event: '*', schema: 'public', table: 'sessions', filter: `id=eq.${sessionId}` },\n      () => {\n        void refresh();\n      },\n    )\n    .on(\n      'postgres_changes',\n      {\n        event: '*',\n        schema: 'public',\n        table: 'session_players',\n        filter: `session_id=eq.${sessionId}`,\n      },\n      () => {\n        void refresh();\n      },\n    )\n    .on(\n      'postgres_changes',\n      {\n        event: 'INSERT',\n        schema: 'public',\n        table: 'session_events',\n        filter: `session_id=eq.${sessionId}`,\n      },\n      () => {\n        void refresh();\n      },\n    );\n\n  await new Promise<void>((resolve, reject) => {\n    if (!channel) {\n      reject(new Error('Realtime-Kanal konnte nicht erstellt werden'));\n      return;\n    }\n    channel.subscribe((status) => {\n      if (status === 'SUBSCRIBED') resolve();\n      if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {\n        reject(new Error(`Realtime-Subscribe fehlgeschlagen: ${status}`));\n      }\n    });\n  });\n\n  return {\n    getState: () => current,\n    resync: refresh,\n    unsubscribe: async () => {\n      disposed = true;\n      if (channel) {\n        await supabase.removeChannel(channel);\n        channel = null;\n      }\n    },\n  };\n}"
+      "text": "export async function subscribeSessionRuntime(\n  sessionId: string,\n  onChange: SessionRuntimeListener,\n): Promise<SessionRuntimeSubscription> {\n  assertHost();\n  let current: SessionRuntimeState | null = await sessionRuntimeService.getSnapshot(sessionId);\n  onChange(current);\n\n  let disposed = false;\n  const pollTimer = setInterval(() => {\n    void sessionRuntimeService\n      .getSnapshot(sessionId)\n      .then((next) => {\n        current = next;\n        if (!disposed) onChange(next);\n      })\n      .catch(() => {\n        /* keep last good snapshot */\n      });\n  }, HOST_RUNTIME_POLL_MS);\n\n  const refresh = async (): Promise<SessionRuntimeState> => {\n    const next = await sessionRuntimeService.getSnapshot(sessionId);\n    current = next;\n    if (!disposed) onChange(next);\n    return next;\n  };\n\n  return {\n    getState: () => current,\n    resync: refresh,\n    unsubscribe: async () => {\n      disposed = true;\n      clearInterval(pollTimer);\n    },\n  };\n}"
     },
     {
       "path": "src/infrastructure/session/session-runtime-channel.ts",
-      "line": 43,
-      "endLine": 48,
-      "name": "refresh",
-      "text": "async (): Promise<SessionRuntimeState> => {\n      const next = await sessionRuntimeService.getSnapshot(sessionId);\n      current = next;\n      if (!disposed) onChange(next);\n      return next;\n    }"
-    },
-    {
-      "path": "src/infrastructure/session/session-runtime-channel.ts",
-      "line": 49,
-      "endLine": 53,
+      "line": 37,
+      "endLine": 47,
       "name": "callback",
-      "text": "() => {\n      void refresh().catch(() => {\n        /* keep last good snapshot */\n      });\n    }"
+      "text": "() => {\n    void sessionRuntimeService\n      .getSnapshot(sessionId)\n      .then((next) => {\n        current = next;\n        if (!disposed) onChange(next);\n      })\n      .catch(() => {\n        /* keep last good snapshot */\n      });\n  }"
     },
     {
       "path": "src/infrastructure/session/session-runtime-channel.ts",
-      "line": 50,
-      "endLine": 52,
+      "line": 40,
+      "endLine": 43,
+      "name": "callback",
+      "text": "(next) => {\n        current = next;\n        if (!disposed) onChange(next);\n      }"
+    },
+    {
+      "path": "src/infrastructure/session/session-runtime-channel.ts",
+      "line": 44,
+      "endLine": 46,
       "name": "callback",
       "text": "() => {\n        /* keep last good snapshot */\n      }"
     },
     {
       "path": "src/infrastructure/session/session-runtime-channel.ts",
-      "line": 55,
-      "endLine": 55,
-      "name": "callback",
-      "text": "() => current"
-    },
-    {
-      "path": "src/infrastructure/session/session-runtime-channel.ts",
-      "line": 57,
-      "endLine": 63,
-      "name": "callback",
-      "text": "async () => {\n        disposed = true;\n        if (pollTimer) {\n          clearInterval(pollTimer);\n          pollTimer = null;\n        }\n      }"
-    },
-    {
-      "path": "src/infrastructure/session/session-runtime-channel.ts",
-      "line": 67,
-      "endLine": 72,
+      "line": 49,
+      "endLine": 54,
       "name": "refresh",
       "text": "async (): Promise<SessionRuntimeState> => {\n    const next = await sessionRuntimeService.getSnapshot(sessionId);\n    current = next;\n    if (!disposed) onChange(next);\n    return next;\n  }"
     },
     {
       "path": "src/infrastructure/session/session-runtime-channel.ts",
-      "line": 80,
-      "endLine": 82,
-      "name": "callback",
-      "text": "() => {\n        void refresh();\n      }"
-    },
-    {
-      "path": "src/infrastructure/session/session-runtime-channel.ts",
-      "line": 92,
-      "endLine": 94,
-      "name": "callback",
-      "text": "() => {\n        void refresh();\n      }"
-    },
-    {
-      "path": "src/infrastructure/session/session-runtime-channel.ts",
-      "line": 104,
-      "endLine": 106,
-      "name": "callback",
-      "text": "() => {\n        void refresh();\n      }"
-    },
-    {
-      "path": "src/infrastructure/session/session-runtime-channel.ts",
-      "line": 109,
-      "endLine": 120,
-      "name": "callback",
-      "text": "(resolve, reject) => {\n    if (!channel) {\n      reject(new Error('Realtime-Kanal konnte nicht erstellt werden'));\n      return;\n    }\n    channel.subscribe((status) => {\n      if (status === 'SUBSCRIBED') resolve();\n      if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {\n        reject(new Error(`Realtime-Subscribe fehlgeschlagen: ${status}`));\n      }\n    });\n  }"
-    },
-    {
-      "path": "src/infrastructure/session/session-runtime-channel.ts",
-      "line": 114,
-      "endLine": 119,
-      "name": "callback",
-      "text": "(status) => {\n      if (status === 'SUBSCRIBED') resolve();\n      if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {\n        reject(new Error(`Realtime-Subscribe fehlgeschlagen: ${status}`));\n      }\n    }"
-    },
-    {
-      "path": "src/infrastructure/session/session-runtime-channel.ts",
-      "line": 123,
-      "endLine": 123,
+      "line": 57,
+      "endLine": 57,
       "name": "callback",
       "text": "() => current"
     },
     {
       "path": "src/infrastructure/session/session-runtime-channel.ts",
-      "line": 125,
-      "endLine": 131,
+      "line": 59,
+      "endLine": 62,
       "name": "callback",
-      "text": "async () => {\n      disposed = true;\n      if (channel) {\n        await supabase.removeChannel(channel);\n        channel = null;\n      }\n    }"
+      "text": "async () => {\n      disposed = true;\n      clearInterval(pollTimer);\n    }"
     },
     {
       "path": "src/infrastructure/session/session-runtime-service.ts",
-      "line": 37,
-      "endLine": 53,
+      "line": 33,
+      "endLine": 37,
+      "name": "assertHost",
+      "text": "function assertHost(): void {\n  if (!isHostLibraryEnabled()) {\n    throw new Error('Host-Anmeldung nicht konfiguriert (VITE_SAGATREE_HOST_AUTH_URL fehlt).');\n  }\n}"
+    },
+    {
+      "path": "src/infrastructure/session/session-runtime-service.ts",
+      "line": 39,
+      "endLine": 55,
       "name": "mapRoster",
-      "text": "function mapRoster(raw: unknown): SessionPresenceEntry[] {\n  if (!Array.isArray(raw)) return [];\n  const out: SessionPresenceEntry[] = [];\n  for (const item of raw) {\n    if (!item || typeof item !== 'object') continue;\n    const row = item as Record<string, unknown>;\n    const userId = typeof row.userId === 'string' ? row.userId : null;\n    if (!userId) continue;\n    out.push({\n      userId,\n      characterId: typeof row.characterId === 'string' ? row.characterId : null,\n      isOnline: row.isOnline === true,\n      joinedAt: typeof row.joinedAt === 'string' ? row.joinedAt : new Date(0).toISOString(),\n    });\n  }\n  return out;\n}"
+      "text": "function mapRoster(raw: unknown): import('../../domains/session/contracts/session-runtime').SessionPresenceEntry[] {\n  if (!Array.isArray(raw)) return [];\n  const out: import('../../domains/session/contracts/session-runtime').SessionPresenceEntry[] = [];\n  for (const item of raw) {\n    if (!item || typeof item !== 'object') continue;\n    const row = item as Record<string, unknown>;\n    const userId = typeof row.userId === 'string' ? row.userId : null;\n    if (!userId) continue;\n    out.push({\n      userId,\n      characterId: typeof row.characterId === 'string' ? row.characterId : null,\n      isOnline: row.isOnline === true,\n      joinedAt: typeof row.joinedAt === 'string' ? row.joinedAt : new Date(0).toISOString(),\n    });\n  }\n  return out;\n}"
     },
     {
       "path": "src/infrastructure/session/session-runtime-service.ts",
-      "line": 55,
-      "endLine": 68,
+      "line": 57,
+      "endLine": 70,
       "name": "mapGameplay",
-      "text": "function mapGameplay(raw: unknown): SessionGameplayState {\n  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) {\n    return emptyGameplayState();\n  }\n  const row = raw as Record<string, unknown>;\n  const sceneId = typeof row.sceneId === 'string' && row.sceneId.trim() !== '' ? row.sceneId : null;\n  const combatActive = row.combatActive === true;\n  const sharedRaw = row.shared;\n  const shared =\n    sharedRaw && typeof sharedRaw === 'object' && !Array.isArray(sharedRaw)\n      ? (sharedRaw as Record<string, unknown>)\n      : {};\n  return { sceneId, combatActive, shared };\n}"
+      "text": "function mapGameplay(raw: unknown): import('../../domains/session/contracts/session-runtime').SessionGameplayState {\n  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) {\n    return emptyGameplayState();\n  }\n  const row = raw as Record<string, unknown>;\n  const sceneId = typeof row.sceneId === 'string' && row.sceneId.trim() !== '' ? row.sceneId : null;\n  const combatActive = row.combatActive === true;\n  const sharedRaw = row.shared;\n  const shared =\n    sharedRaw && typeof sharedRaw === 'object' && !Array.isArray(sharedRaw)\n      ? (sharedRaw as Record<string, unknown>)\n      : {};\n  return { sceneId, combatActive, shared };\n}"
     },
     {
       "path": "src/infrastructure/session/session-runtime-service.ts",
-      "line": 70,
-      "endLine": 87,
+      "line": 72,
+      "endLine": 89,
       "name": "mapSnapshotJson",
       "text": "export function mapSnapshotJson(data: SnapshotJson): SessionRuntimeState {\n  const sessionId = typeof data.sessionId === 'string' ? data.sessionId : '';\n  if (!sessionId) {\n    throw new Error('Runtime-Snapshot ohne sessionId');\n  }\n  const revision = typeof data.revision === 'number' ? data.revision : Number(data.revision ?? 0);\n  if (!Number.isFinite(revision)) {\n    throw new Error('Runtime-Snapshot ohne gültige Revision');\n  }\n  return {\n    sessionId,\n    revision,\n    status: normalizeRuntimeStatus(typeof data.status === 'string' ? data.status : 'waiting'),\n    roster: mapRoster(data.roster),\n    gameplay: mapGameplay(data.gameplay),\n    updatedAt: typeof data.updatedAt === 'string' ? data.updatedAt : new Date().toISOString(),\n  };\n}"
     },
     {
       "path": "src/infrastructure/session/session-runtime-service.ts",
-      "line": 89,
-      "endLine": 92,
+      "line": 91,
+      "endLine": 94,
       "name": "isStaleRpcError",
       "text": "function isStaleRpcError(message: string): boolean {\n  const lower = message.toLowerCase();\n  return lower.includes('stale revision') || lower.includes('40001');\n}"
     },
     {
       "path": "src/infrastructure/session/session-runtime-service.ts",
-      "line": 95,
-      "endLine": 107,
+      "line": 97,
+      "endLine": 101,
       "name": "getSnapshot",
-      "text": "async getSnapshot(sessionId: string): Promise<SessionRuntimeState> {\n    if (isHostLibraryEnabled()) {\n      const data = await fetchHostSessionRuntime(sessionId);\n      return mapSnapshotJson(data as SnapshotJson);\n    }\n    const { data, error } = await supabase.rpc('get_session_runtime_snapshot', {\n      p_session_id: sessionId,\n    });\n    if (error || !data) {\n      throw new Error(error?.message ?? 'Runtime-Snapshot fehlgeschlagen');\n    }\n    return mapSnapshotJson(data as SnapshotJson);\n  }"
+      "text": "async getSnapshot(sessionId: string): Promise<SessionRuntimeState> {\n    assertHost();\n    const data = await fetchHostSessionRuntime(sessionId);\n    return mapSnapshotJson(data as SnapshotJson);\n  }"
     },
     {
       "path": "src/infrastructure/session/session-runtime-service.ts",
-      "line": 109,
-      "endLine": 155,
+      "line": 103,
+      "endLine": 129,
       "name": "applyCommand",
-      "text": "async applyCommand(input: {\n    sessionId: string;\n    expectedRevision: number;\n    kind: SessionEventKind | string;\n    payload?: Record<string, unknown>;\n    idempotencyKey?: string | null;\n  }): Promise<SessionRuntimeState> {\n    const kind = assertSessionEventKind(input.kind);\n    if (isHostLibraryEnabled()) {\n      try {\n        const data = await applyHostSessionRuntimeCommand({\n          sessionId: input.sessionId,\n          expectedRevision: input.expectedRevision,\n          kind,\n          payload: input.payload ?? {},\n          idempotencyKey: input.idempotencyKey ?? null,\n        });\n        return mapSnapshotJson(data as SnapshotJson);\n      } catch (err) {\n        const message = err instanceof Error ? err.message : String(err);\n        if (isStaleRpcError(message) || /STALE_REVISION/i.test(message)) {\n          const snap = await this.getSnapshot(input.sessionId);\n          throw new StaleRuntimeRevisionError(input.expectedRevision, snap.revision);\n        }\n        throw err instanceof Error ? err : new Error(message);\n      }\n    }\n    const { data, error } = await supabase.rpc('apply_session_runtime_command', {\n      p_session_id: input.sessionId,\n      p_expected_revision: input.expectedRevision,\n      p_kind: kind,\n      p_payload: input.payload ?? {},\n      p_idempotency_key: input.idempotencyKey ?? null,\n    });\n\n    if (error) {\n      if (isStaleRpcError(error.message)) {\n        const snap = await this.getSnapshot(input.sessionId);\n        throw new StaleRuntimeRevisionError(input.expectedRevision, snap.revision);\n      }\n      throw new Error(error.message);\n    }\n    if (!data) {\n      throw new Error('Runtime-Befehl lieferte kein Ergebnis');\n    }\n    return mapSnapshotJson(data as SnapshotJson);\n  }"
+      "text": "async applyCommand(input: {\n    sessionId: string;\n    expectedRevision: number;\n    kind: SessionEventKind | string;\n    payload?: Record<string, unknown>;\n    idempotencyKey?: string | null;\n  }): Promise<SessionRuntimeState> {\n    assertHost();\n    const kind = assertSessionEventKind(input.kind);\n    try {\n      const data = await applyHostSessionRuntimeCommand({\n        sessionId: input.sessionId,\n        expectedRevision: input.expectedRevision,\n        kind,\n        payload: input.payload ?? {},\n        idempotencyKey: input.idempotencyKey ?? null,\n      });\n      return mapSnapshotJson(data as SnapshotJson);\n    } catch (err) {\n      const message = err instanceof Error ? err.message : String(err);\n      if (isStaleRpcError(message) || /STALE_REVISION/i.test(message)) {\n        const snap = await this.getSnapshot(input.sessionId);\n        throw new StaleRuntimeRevisionError(input.expectedRevision, snap.revision);\n      }\n      throw err instanceof Error ? err : new Error(message);\n    }\n  }"
     },
     {
       "path": "src/infrastructure/session/session-runtime-service.ts",
-      "line": 157,
-      "endLine": 191,
+      "line": 131,
+      "endLine": 148,
       "name": "setPresence",
-      "text": "async setPresence(\n    sessionId: string,\n    isOnline: boolean,\n    expectedRevision?: number | null,\n  ): Promise<SessionRuntimeState> {\n    if (isHostLibraryEnabled()) {\n      try {\n        const data = await setHostSessionPresence(sessionId, isOnline, expectedRevision);\n        return mapSnapshotJson(data as SnapshotJson);\n      } catch (err) {\n        const message = err instanceof Error ? err.message : String(err);\n        if (isStaleRpcError(message) || /STALE_REVISION/i.test(message)) {\n          const snap = await this.getSnapshot(sessionId);\n          throw new StaleRuntimeRevisionError(expectedRevision ?? -1, snap.revision);\n        }\n        throw err instanceof Error ? err : new Error(message);\n      }\n    }\n    const { data, error } = await supabase.rpc('set_session_player_presence', {\n      p_session_id: sessionId,\n      p_is_online: isOnline,\n      p_expected_revision: expectedRevision ?? null,\n    });\n    if (error) {\n      if (isStaleRpcError(error.message)) {\n        const snap = await this.getSnapshot(sessionId);\n        throw new StaleRuntimeRevisionError(expectedRevision ?? -1, snap.revision);\n      }\n      throw new Error(error.message);\n    }\n    if (!data) {\n      throw new Error('Presence-Update fehlgeschlagen');\n    }\n    return mapSnapshotJson(data as SnapshotJson);\n  }"
+      "text": "async setPresence(\n    sessionId: string,\n    isOnline: boolean,\n    expectedRevision?: number | null,\n  ): Promise<SessionRuntimeState> {\n    assertHost();\n    try {\n      const data = await setHostSessionPresence(sessionId, isOnline, expectedRevision);\n      return mapSnapshotJson(data as SnapshotJson);\n    } catch (err) {\n      const message = err instanceof Error ? err.message : String(err);\n      if (isStaleRpcError(message) || /STALE_REVISION/i.test(message)) {\n        const snap = await this.getSnapshot(sessionId);\n        throw new StaleRuntimeRevisionError(expectedRevision ?? -1, snap.revision);\n      }\n      throw err instanceof Error ? err : new Error(message);\n    }\n  }"
     },
     {
       "path": "src/infrastructure/session/session-service.ts",
-      "line": 55,
-      "endLine": 80,
+      "line": 38,
+      "endLine": 42,
+      "name": "assertHost",
+      "text": "function assertHost(): void {\n  if (!isHostLibraryEnabled()) {\n    throw new Error('Host-Anmeldung nicht konfiguriert (VITE_SAGATREE_HOST_AUTH_URL fehlt).');\n  }\n}"
+    },
+    {
+      "path": "src/infrastructure/session/session-service.ts",
+      "line": 44,
+      "endLine": 69,
       "name": "mapHostPlaySessionToVm",
       "text": "function mapHostPlaySessionToVm(row: HostPlaySessionDto): SessionVm {\n  const createdAt = row.createdAt ? new Date(row.createdAt) : new Date();\n  const code = row.joinCode ?? row.code ?? '';\n  return {\n    id: row.sessionId,\n    code: typeof code === 'string' ? code : '',\n    name: row.name ?? '',\n    adventureId: row.projectId,\n    projectId: row.projectId,\n    publicId: row.publicId ?? null,\n    gmUserId: row.gmUserId ?? '',\n    status: normalizePlaySessionStatus(row.status),\n    createdAt,\n    updatedAt: createdAt,\n    startedAt: row.startedAt ? new Date(row.startedAt) : null,\n    endedAt: row.endedAt ? new Date(row.endedAt) : null,\n    players: (row.players ?? []).map((p, index) => ({\n      id: p.id ?? `${row.sessionId}-${p.userId ?? index}`,\n      sessionId: row.sessionId,\n      userId: p.userId ?? '',\n      characterId: p.characterId ?? null,\n      isOnline: p.isOnline === true,\n      joinedAt: p.joinedAt ? new Date(p.joinedAt) : createdAt,\n    })),\n  };\n}"
     },
     {
       "path": "src/infrastructure/session/session-service.ts",
-      "line": 71,
-      "endLine": 78,
+      "line": 60,
+      "endLine": 67,
       "name": "callback",
       "text": "(p, index) => ({\n      id: p.id ?? `${row.sessionId}-${p.userId ?? index}`,\n      sessionId: row.sessionId,\n      userId: p.userId ?? '',\n      characterId: p.characterId ?? null,\n      isOnline: p.isOnline === true,\n      joinedAt: p.joinedAt ? new Date(p.joinedAt) : createdAt,\n    })"
     },
     {
       "path": "src/infrastructure/session/session-service.ts",
-      "line": 167,
-      "endLine": 167,
-      "name": "callback",
-      "text": "(p) => this.mapPlayerToViewModel(p)"
-    },
-    {
-      "path": "src/infrastructure/session/session-service.ts",
-      "line": 195,
-      "endLine": 221,
+      "line": 72,
+      "endLine": 80,
       "name": "createSession",
-      "text": "async createSession(payload: CreateSessionDto): Promise<SessionVm> {\n    const projectId = payload.project_id || payload.adventure_id;\n    if (!projectId) {\n      throw new Error('project_id ist erforderlich, um eine Session zu erstellen');\n    }\n\n    // Dual-path (MIG-311 / FE-HOST-02): host authenticates its own cookie — do not\n    // require a Supabase JWT first (Better Auth cookie-only deployments).\n    if (isHostLibraryEnabled()) {\n      const row = await createHostPlaySession(projectId, payload.name ?? null);\n      return mapHostPlaySessionToVm(row);\n    }\n\n    await this.requireAuthUser();\n\n    const { data, error } = await supabase.rpc('create_play_session', {\n      p_project_id: projectId,\n      p_name: payload.name,\n    });\n\n    if (error || !data) {\n      throw new Error(`Failed to create session: ${error?.message ?? 'unknown'}`);\n    }\n\n    const dto = await this.mapRowToDto(data as SessionRow);\n    return this.mapToViewModel(dto, []);\n  }"
+      "text": "async createSession(payload: CreateSessionDto): Promise<SessionVm> {\n    assertHost();\n    const projectId = payload.project_id || payload.adventure_id;\n    if (!projectId) {\n      throw new Error('project_id ist erforderlich, um eine Session zu erstellen');\n    }\n    const row = await createHostPlaySession(projectId, payload.name ?? null);\n    return mapHostPlaySessionToVm(row);\n  }"
     },
     {
       "path": "src/infrastructure/session/session-service.ts",
-      "line": 223,
-      "endLine": 245,
+      "line": 82,
+      "endLine": 87,
       "name": "joinSession",
-      "text": "async joinSession(payload: JoinSessionDto): Promise<SessionVm> {\n    const code = normalizeSessionJoinCode(payload.code);\n\n    if (isHostLibraryEnabled()) {\n      const row = await joinHostSessionByCode(code, payload.character_id ?? null);\n      return mapHostPlaySessionToVm(row);\n    }\n\n    await this.requireAuthUser();\n\n    const { data, error } = await supabase.rpc('join_session_by_code', {\n      p_code: code,\n      p_character_id: payload.character_id ?? null,\n    });\n\n    if (error || !data) {\n      throw new Error(error?.message || 'Session nicht gefunden');\n    }\n\n    const dto = await this.mapRowToDto(data as SessionRow);\n    const players = await this.loadPlayers(dto.id);\n    return this.mapToViewModel(dto, players);\n  }"
+      "text": "async joinSession(payload: JoinSessionDto): Promise<SessionVm> {\n    assertHost();\n    const code = normalizeSessionJoinCode(payload.code);\n    const row = await joinHostSessionByCode(code, payload.character_id ?? null);\n    return mapHostPlaySessionToVm(row);\n  }"
     },
     {
       "path": "src/infrastructure/session/session-service.ts",
-      "line": 247,
-      "endLine": 266,
+      "line": 89,
+      "endLine": 93,
       "name": "getSessionById",
-      "text": "async getSessionById(id: string): Promise<SessionVm> {\n    if (isHostLibraryEnabled()) {\n      const row = await fetchHostSession(id);\n      return mapHostPlaySessionToVm(row);\n    }\n\n    const { data: session, error: sessionError } = await supabase\n      .from(this.tableName)\n      .select(SESSION_SAFE_COLUMNS)\n      .eq('id', id)\n      .single();\n\n    if (sessionError || !session) {\n      throw new Error('Session not found');\n    }\n\n    const dto = await this.mapRowToDto(session as unknown as SessionRow);\n    const players = await this.loadPlayers(id);\n    return this.mapToViewModel(dto, players);\n  }"
+      "text": "async getSessionById(id: string): Promise<SessionVm> {\n    assertHost();\n    const row = await fetchHostSession(id);\n    return mapHostPlaySessionToVm(row);\n  }"
     },
     {
       "path": "src/infrastructure/session/session-service.ts",
-      "line": 268,
-      "endLine": 332,
+      "line": 95,
+      "endLine": 99,
       "name": "getUserSessions",
-      "text": "async getUserSessions(): Promise<SessionVm[]> {\n    if (isHostLibraryEnabled()) {\n      const rows = await fetchHostSessions();\n      return rows.map(mapHostPlaySessionToVm);\n    }\n\n    const user = await this.requireAuthUser();\n\n    const { data: gmProjects, error: gmProjectsError } = await supabase\n      .from('projects')\n      .select('id')\n      .eq('gm_user_id', user.id);\n\n    if (gmProjectsError) {\n      throw new Error(`Failed to fetch GM projects: ${gmProjectsError.message}`);\n    }\n\n    const gmProjectIds = (gmProjects ?? []).map((p) => p.id as string);\n\n    let gmSessions: SessionRow[] = [];\n    if (gmProjectIds.length > 0) {\n      const { data, error } = await supabase\n        .from(this.tableName)\n        .select(SESSION_SAFE_COLUMNS)\n        .in('project_id', gmProjectIds)\n        .neq('status', 'completed')\n        .order('created_at', { ascending: false });\n      if (error) {\n        throw new Error(`Failed to fetch GM sessions: ${error.message}`);\n      }\n      gmSessions = (data ?? []) as unknown as SessionRow[];\n    }\n\n    const { data: playerRecords, error: playerError } = await supabase\n      .from(this.playersTableName)\n      .select(`*, sessions!inner(${SESSION_SAFE_COLUMNS})`)\n      .eq('user_id', user.id);\n\n    if (playerError) {\n      console.error('Failed to fetch player sessions:', playerError);\n    }\n\n    type PlayerSessionJoinRow = { sessions: SessionRow | SessionRow[] | null };\n    const playerSessions = ((playerRecords || []) as PlayerSessionJoinRow[])\n      .map((record) => record.sessions)\n      .flatMap((session) => (Array.isArray(session) ? session : session ? [session] : []))\n      .filter((session) => session.status !== 'completed');\n\n    const allSessionIds = new Set<string>();\n    const combined: SessionRow[] = [];\n    [...gmSessions, ...playerSessions].forEach((session) => {\n      if (!allSessionIds.has(session.id)) {\n        allSessionIds.add(session.id);\n        combined.push(session);\n      }\n    });\n\n    return Promise.all(\n      combined.map(async (session) => {\n        const dto = await this.mapRowToDto(session);\n        const players = await this.loadPlayers(session.id);\n        return this.mapToViewModel(dto, players);\n      }),\n    );\n  }"
+      "text": "async getUserSessions(): Promise<SessionVm[]> {\n    assertHost();\n    const rows = await fetchHostSessions();\n    return rows.map(mapHostPlaySessionToVm);\n  }"
     },
     {
       "path": "src/infrastructure/session/session-service.ts",
-      "line": 285,
-      "endLine": 285,
-      "name": "callback",
-      "text": "(p) => p.id as string"
-    },
-    {
-      "path": "src/infrastructure/session/session-service.ts",
-      "line": 312,
-      "endLine": 312,
-      "name": "callback",
-      "text": "(record) => record.sessions"
-    },
-    {
-      "path": "src/infrastructure/session/session-service.ts",
-      "line": 313,
-      "endLine": 313,
-      "name": "callback",
-      "text": "(session) => (Array.isArray(session) ? session : session ? [session] : [])"
-    },
-    {
-      "path": "src/infrastructure/session/session-service.ts",
-      "line": 314,
-      "endLine": 314,
-      "name": "callback",
-      "text": "(session) => session.status !== 'completed'"
-    },
-    {
-      "path": "src/infrastructure/session/session-service.ts",
-      "line": 318,
-      "endLine": 323,
-      "name": "callback",
-      "text": "(session) => {\n      if (!allSessionIds.has(session.id)) {\n        allSessionIds.add(session.id);\n        combined.push(session);\n      }\n    }"
-    },
-    {
-      "path": "src/infrastructure/session/session-service.ts",
-      "line": 326,
-      "endLine": 330,
-      "name": "callback",
-      "text": "async (session) => {\n        const dto = await this.mapRowToDto(session);\n        const players = await this.loadPlayers(session.id);\n        return this.mapToViewModel(dto, players);\n      }"
-    },
-    {
-      "path": "src/infrastructure/session/session-service.ts",
-      "line": 334,
-      "endLine": 358,
+      "line": 101,
+      "endLine": 107,
       "name": "updateSessionStatus",
-      "text": "async updateSessionStatus(\n    id: string,\n    status: PlaySessionStatus,\n  ): Promise<SessionVm> {\n    const current = await this.getSessionById(id);\n    assertPlaySessionStatusTransition(current.status, status);\n\n    if (isHostLibraryEnabled()) {\n      const row = await setHostSessionStatus(id, status);\n      return mapHostPlaySessionToVm(row);\n    }\n\n    const { data, error } = await supabase.rpc('set_session_status', {\n      p_session_id: id,\n      p_status: status,\n    });\n\n    if (error || !data) {\n      throw new Error(`Failed to update session: ${error?.message ?? 'unknown'}`);\n    }\n\n    const dto = await this.mapRowToDto(data as SessionRow);\n    const players = await this.loadPlayers(id);\n    return this.mapToViewModel(dto, players);\n  }"
+      "text": "async updateSessionStatus(id: string, status: PlaySessionStatus): Promise<SessionVm> {\n    assertHost();\n    const current = await this.getSessionById(id);\n    assertPlaySessionStatusTransition(current.status, status);\n    const row = await setHostSessionStatus(id, status);\n    return mapHostPlaySessionToVm(row);\n  }"
     },
     {
       "path": "src/infrastructure/session/session-service.ts",
-      "line": 360,
-      "endLine": 375,
+      "line": 109,
+      "endLine": 112,
       "name": "leaveSession",
-      "text": "async leaveSession(sessionId: string): Promise<void> {\n    if (isHostLibraryEnabled()) {\n      await leaveHostPlaySession(sessionId);\n      return;\n    }\n\n    await this.requireAuthUser();\n\n    const { error } = await supabase.rpc('leave_play_session', {\n      p_session_id: sessionId,\n    });\n\n    if (error) {\n      throw new Error(`Failed to leave session: ${error.message}`);\n    }\n  }"
+      "text": "async leaveSession(sessionId: string): Promise<void> {\n    assertHost();\n    await leaveHostPlaySession(sessionId);\n  }"
     },
     {
       "path": "src/infrastructure/session/session-service.ts",
-      "line": 380,
-      "endLine": 414,
+      "line": 114,
+      "endLine": 133,
       "name": "deleteSession",
-      "text": "async deleteSession(sessionId: string): Promise<void> {\n    const id = sessionId.trim();\n    if (!id) {\n      throw new Error('Session-ID fehlt');\n    }\n    // Host-first: Better Auth cookie path — never require Supabase session first.\n    if (isHostLibraryEnabled()) {\n      try {\n        await deleteHostPlaySession(id);\n      } catch (error) {\n        const message = error instanceof Error ? error.message : String(error);\n        if (/42501|forbidden|not[_-]?authorized/i.test(message)) {\n          throw new Error('Nur der Gamemaster kann Sessions löschen.');\n        }\n        throw new Error(\n          message.includes('Host-Session löschen fehlgeschlagen')\n            ? message\n            : `Session konnte nicht gelöscht werden: ${message}`,\n        );\n      }\n      return;\n    }\n\n    await this.requireAuthUser();\n\n    const { error } = await supabase.from(this.tableName).delete().eq('id', id);\n\n    if (error) {\n      throw new Error(\n        error.message.includes('row-level security')\n          ? 'Nur der Gamemaster kann Sessions löschen.'\n          : `Session konnte nicht gelöscht werden: ${error.message}`,\n      );\n    }\n  }"
+      "text": "async deleteSession(sessionId: string): Promise<void> {\n    assertHost();\n    const id = sessionId.trim();\n    if (!id) {\n      throw new Error('Session-ID fehlt');\n    }\n    try {\n      await deleteHostPlaySession(id);\n    } catch (error) {\n      const message = error instanceof Error ? error.message : String(error);\n      if (/42501|forbidden|not[_-]?authorized/i.test(message)) {\n        throw new Error('Nur der Gamemaster kann Sessions löschen.');\n      }\n      throw new Error(\n        message.includes('Host-Session löschen fehlgeschlagen')\n          ? message\n          : `Session konnte nicht gelöscht werden: ${message}`,\n      );\n    }\n  }"
     },
     {
       "path": "src/infrastructure/session/session-service.ts",
-      "line": 419,
-      "endLine": 440,
+      "line": 135,
+      "endLine": 143,
       "name": "createSessionInvite",
-      "text": "async createSessionInvite(sessionId: string): Promise<SessionInviteCreateResult> {\n    if (isHostLibraryEnabled()) {\n      const invite = await createHostSessionInvite(sessionId);\n      const mapped = mapInviteCreatePayload(invite);\n      if (!mapped) {\n        throw new Error('Einladung konnte nicht erstellt werden: ungültige Server-Antwort');\n      }\n      return mapped;\n    }\n    await this.requireAuthUser();\n    const { data, error } = await supabase.rpc('create_session_invite', {\n      p_session_id: sessionId,\n    });\n    if (error) {\n      throw new Error(`Einladung konnte nicht erstellt werden: ${error.message}`);\n    }\n    const mapped = mapInviteCreatePayload(data);\n    if (!mapped) {\n      throw new Error('Einladung konnte nicht erstellt werden: ungültige Server-Antwort');\n    }\n    return mapped;\n  }"
+      "text": "async createSessionInvite(sessionId: string): Promise<SessionInviteCreateResult> {\n    assertHost();\n    const invite = await createHostSessionInvite(sessionId);\n    const mapped = mapInviteCreatePayload(invite);\n    if (!mapped) {\n      throw new Error('Einladung konnte nicht erstellt werden: ungültige Server-Antwort');\n    }\n    return mapped;\n  }"
     },
     {
       "path": "src/infrastructure/session/session-service.ts",
-      "line": 445,
-      "endLine": 479,
+      "line": 145,
+      "endLine": 169,
       "name": "resolveSessionInvite",
-      "text": "async resolveSessionInvite(token: string): Promise<SessionInviteResolveResult> {\n    const normalized = normalizeInviteToken(token);\n    if (!normalized) {\n      return { ok: false, errorCode: 'missing_token' };\n    }\n    if (isHostLibraryEnabled()) {\n      try {\n        const invite = await resolveHostSessionInvite(normalized);\n        return mapInviteResolvePayload(invite);\n      } catch (err) {\n        const message = err instanceof Error ? err.message : String(err);\n        const mapped = mapInviteResolvePayload({\n          ok: false,\n          error_code: message.includes('expired')\n            ? 'expired'\n            : message.includes('revoked')\n              ? 'revoked'\n              : message.includes('completed')\n                ? 'session_completed'\n                : message.includes('missing') || message.includes('P0002')\n                  ? 'not_found'\n                  : 'not_found',\n        });\n        return mapped;\n      }\n    }\n    await this.requireAuthUser();\n    const { data, error } = await supabase.rpc('resolve_session_invite', {\n      p_token: normalized,\n    });\n    if (error) {\n      throw new Error(`Einladung konnte nicht gelesen werden: ${error.message}`);\n    }\n    return mapInviteResolvePayload(data);\n  }"
+      "text": "async resolveSessionInvite(token: string): Promise<SessionInviteResolveResult> {\n    assertHost();\n    const normalized = normalizeInviteToken(token);\n    if (!normalized) {\n      return { ok: false, errorCode: 'missing_token' };\n    }\n    try {\n      const invite = await resolveHostSessionInvite(normalized);\n      return mapInviteResolvePayload(invite);\n    } catch (err) {\n      const message = err instanceof Error ? err.message : String(err);\n      return mapInviteResolvePayload({\n        ok: false,\n        error_code: message.includes('expired')\n          ? 'expired'\n          : message.includes('revoked')\n            ? 'revoked'\n            : message.includes('completed')\n              ? 'session_completed'\n              : message.includes('missing') || message.includes('P0002')\n                ? 'not_found'\n                : 'not_found',\n      });\n    }\n  }"
     },
     {
       "path": "src/infrastructure/session/session-service.ts",
-      "line": 481,
-      "endLine": 497,
+      "line": 171,
+      "endLine": 178,
       "name": "revokeSessionInvite",
-      "text": "async revokeSessionInvite(token: string): Promise<void> {\n    const normalized = normalizeInviteToken(token);\n    if (!normalized) {\n      throw new Error('Token fehlt');\n    }\n    if (isHostLibraryEnabled()) {\n      await revokeHostSessionInvite(normalized);\n      return;\n    }\n    await this.requireAuthUser();\n    const { error } = await supabase.rpc('revoke_session_invite', {\n      p_token: normalized,\n    });\n    if (error) {\n      throw new Error(`Einladung konnte nicht widerrufen werden: ${error.message}`);\n    }\n  }"
+      "text": "async revokeSessionInvite(token: string): Promise<void> {\n    assertHost();\n    const normalized = normalizeInviteToken(token);\n    if (!normalized) {\n      throw new Error('Token fehlt');\n    }\n    await revokeHostSessionInvite(normalized);\n  }"
     }
   ]
 }

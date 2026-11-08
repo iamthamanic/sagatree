@@ -55,6 +55,13 @@ test.beforeAll(() => {
 });
 
 test.describe('#32 validate-gear-resources-load', () => {
+  test.beforeEach(() => {
+    test.skip(
+      true,
+      'CUT-20 Soft-DENY #1160: gear/catalog affordability path disabled without host item catalog parity',
+    );
+  });
+
   test('resources default, load summary, affordability when catalog available', async ({
     page,
   }) => {

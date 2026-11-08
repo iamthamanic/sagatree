@@ -33,6 +33,10 @@ test.beforeAll(() => {
 });
 
 test('world item-catalog module toggles packs and shows live count', async ({ page }) => {
+  test.skip(
+    true,
+    'CUT-20 Soft-DENY #1160: world item-catalog module still mocked via PostgREST world_profiles',
+  );
   test.setTimeout(60_000);
   const worlds: StoredWorld[] = [];
 

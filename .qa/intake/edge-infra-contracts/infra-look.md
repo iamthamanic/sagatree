@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-look.json](source-contracts/infra-look.json) (SHA-256 `64299eef830bdd2631c1240f6f6c11d631ac19a97affe066bb735f0b9b9e6845`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-look.json](source-contracts/infra-look.json) (SHA-256 `925a76a3f68a866e5921032ab9d952fa837cca47926d44d40eed2461e7ede56e`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -18,22 +18,18 @@ The adapter establishes request/filter behavior. Server permission and rollback 
 
 RPCs (0): none.
 
-Tables (2): `look_profile_versions`, `look_profiles`.
+Tables (0): none.
 
 Storage buckets (0): none.
 
-Edge invokes (1): `look-reference-analysis`.
+Edge invokes (0): none.
 
-Realtime call sites: 0. Direct fetch sites: 1. Explicit auth/helper sites: 7.
+Realtime call sites: 0. Direct fetch sites: 1. Explicit auth/helper sites: 0.
 
 ## Complete implementation dependencies
 
 | Kind | Contract dependency | Implementation issue | Additional policy/group |
 |---|---|---|---|
-| edge | `look-reference-analysis` | #828 |  |
-| table | `look_profile_versions` | #791 | Policy #792 |
-| table | `look_profiles` | #791 | Policy #792 |
-| auth | `authenticated account/session transport` | #793 |  |
 | infra | `character` | #801 |  |
 
 ## Acceptance and negative tests (required, not executed)
@@ -50,7 +46,7 @@ None in the reviewed source.
 
 ### fetch: requestUrl
 
-`src/infrastructure/look/look-reference-analysis-service.ts:131` — dynamic-expression.
+`src/infrastructure/look/look-reference-analysis-service.ts:130` — dynamic-expression.
 
 Exact call/query chain:
 ```ts
@@ -62,204 +58,7 @@ fetch(requestUrl, {
     })
 ```
 
-Enclosing operation: `src/infrastructure/look/look-reference-analysis-service.ts:115`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### edge: look-reference-analysis
-
-`src/infrastructure/look/look-reference-analysis-service.ts:204` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase.functions.invoke(
-    'look-reference-analysis',
-    { body },
-  )
-```
-
-Enclosing operation: `src/infrastructure/look/look-reference-analysis-service.ts:160`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### auth-helper: session identity
-
-`src/infrastructure/look/supabase-look.repository.ts:62` — dynamic-expression.
-
-Exact call/query chain:
-```ts
-getAuthenticatedUserId()
-```
-
-Enclosing operation: `src/infrastructure/look/supabase-look.repository.ts:59`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: look_profiles
-
-`src/infrastructure/look/supabase-look.repository.ts:63` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase.from(PROFILES).select(LOOK_PROFILE_COLUMNS)
-```
-
-Enclosing operation: `src/infrastructure/look/supabase-look.repository.ts:59`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### auth-helper: session identity
-
-`src/infrastructure/look/supabase-look.repository.ts:85` — dynamic-expression.
-
-Exact call/query chain:
-```ts
-getAuthenticatedUserId()
-```
-
-Enclosing operation: `src/infrastructure/look/supabase-look.repository.ts:84`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### auth-helper: session identity
-
-`src/infrastructure/look/supabase-look.repository.ts:90` — dynamic-expression.
-
-Exact call/query chain:
-```ts
-getAuthenticatedUserId()
-```
-
-Enclosing operation: `src/infrastructure/look/supabase-look.repository.ts:89`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: look_profiles
-
-`src/infrastructure/look/supabase-look.repository.ts:97` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase.from(PROFILES).insert({
-        id: profileId,
-        owner_user_id: userId,
-        owner_scope: ownerScope,
-        current_version: 1,
-        status: 'active',
-      })
-```
-
-Enclosing operation: `src/infrastructure/look/supabase-look.repository.ts:89`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: look_profile_versions
-
-`src/infrastructure/look/supabase-look.repository.ts:113` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase.from(VERSIONS).insert(versionInsert)
-```
-
-Enclosing operation: `src/infrastructure/look/supabase-look.repository.ts:89`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### auth-helper: session identity
-
-`src/infrastructure/look/supabase-look.repository.ts:131` — dynamic-expression.
-
-Exact call/query chain:
-```ts
-getAuthenticatedUserId()
-```
-
-Enclosing operation: `src/infrastructure/look/supabase-look.repository.ts:130`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: look_profile_versions
-
-`src/infrastructure/look/supabase-look.repository.ts:150` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase.from(VERSIONS).insert(versionInsert)
-```
-
-Enclosing operation: `src/infrastructure/look/supabase-look.repository.ts:130`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: look_profiles
-
-`src/infrastructure/look/supabase-look.repository.ts:164` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase
-        .from(PROFILES)
-        .update({ current_version: nextVersion })
-        .eq('id', profileId)
-        .eq('owner_user_id', userId)
-        .eq('current_version', existing.profile.currentVersion)
-```
-
-Enclosing operation: `src/infrastructure/look/supabase-look.repository.ts:130`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### auth-helper: session identity
-
-`src/infrastructure/look/supabase-look.repository.ts:187` — dynamic-expression.
-
-Exact call/query chain:
-```ts
-getAuthenticatedUserId()
-```
-
-Enclosing operation: `src/infrastructure/look/supabase-look.repository.ts:186`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: look_profiles
-
-`src/infrastructure/look/supabase-look.repository.ts:190` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase
-        .from(PROFILES)
-        .update({ status: 'archived' })
-        .eq('id', id)
-        .eq('owner_user_id', userId)
-```
-
-Enclosing operation: `src/infrastructure/look/supabase-look.repository.ts:186`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### auth-helper: session identity
-
-`src/infrastructure/look/supabase-look.repository.ts:209` — dynamic-expression.
-
-Exact call/query chain:
-```ts
-getAuthenticatedUserId()
-```
-
-Enclosing operation: `src/infrastructure/look/supabase-look.repository.ts:208`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### auth-helper: session identity
-
-`src/infrastructure/look/supabase-look.repository.ts:237` — dynamic-expression.
-
-Exact call/query chain:
-```ts
-getAuthenticatedUserId()
-```
-
-Enclosing operation: `src/infrastructure/look/supabase-look.repository.ts:236`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: look_profile_versions
-
-`src/infrastructure/look/supabase-look.repository.ts:240` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase
-        .from(VERSIONS)
-        .select(LOOK_PROFILE_VERSION_COLUMNS)
-        .eq('profile_id', id)
-        .order('version', { ascending: true })
-```
-
-Enclosing operation: `src/infrastructure/look/supabase-look.repository.ts:236`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: look_profiles
-
-`src/infrastructure/look/supabase-look.repository.ts:258` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase.from(PROFILES).select(LOOK_PROFILE_COLUMNS).eq('id', profileId).maybeSingle()
-```
-
-Enclosing operation: `src/infrastructure/look/supabase-look.repository.ts:256`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: look_profile_versions
-
-`src/infrastructure/look/supabase-look.repository.ts:269` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase
-        .from(VERSIONS)
-        .select(LOOK_PROFILE_VERSION_COLUMNS)
-        .eq('profile_id', profileId)
-        .eq('version', profileRow.current_version)
-        .maybeSingle()
-```
-
-Enclosing operation: `src/infrastructure/look/supabase-look.repository.ts:256`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/look/look-reference-analysis-service.ts:114`; complete request/default/result/error logic is in the declarations below and the snapshot.
 
 ## Complete public declarations and facade operation contracts
 
@@ -534,7 +333,7 @@ export function isTintableLookMaterialRole(role: LookMaterialRole): boolean {
 }
 ```
 
-### src/infrastructure/look/look-reference-analysis-service.ts:18
+### src/infrastructure/look/look-reference-analysis-service.ts:17
 
 ```ts
 export type LookReferenceAnalysisRequestImage = LookReferenceAnalysisImageInput & {
@@ -545,7 +344,7 @@ export type LookReferenceAnalysisRequestImage = LookReferenceAnalysisImageInput 
 };
 ```
 
-### src/infrastructure/look/look-reference-analysis-service.ts:25
+### src/infrastructure/look/look-reference-analysis-service.ts:24
 
 ```ts
 export type LookReferenceAnalysisRequest = {
@@ -554,7 +353,7 @@ export type LookReferenceAnalysisRequest = {
 };
 ```
 
-### src/infrastructure/look/look-reference-analysis-service.ts:160
+### src/infrastructure/look/look-reference-analysis-service.ts:159
 
 ```ts
 export async function analyzeLookReferences(
@@ -585,39 +384,7 @@ export async function analyzeLookReferences(
 
   const body = buildRequestBody(request);
 
-  if (isHostLibraryEnabled()) {
-    const edge = await invokeHostLookReferenceAnalysis(body);
-    if (edge.status !== 'ok') {
-      return {
-        ok: false,
-        code: edge.status,
-        messageDe: edge.message,
-      };
-    }
-    return normalizeLookReferenceAnalysisPayload(edge.payload, {
-      references: domainInputs,
-      displayNameHint: request.displayNameHint,
-      analyzedAtIso: edge.analyzedAtIso,
-    });
-  }
-
-  const { data, error } = await supabase.functions.invoke(
-    'look-reference-analysis',
-    { body },
-  );
-
-  if (error) {
-    const serverMessage = await getFunctionErrorMessage(error);
-    return {
-      ok: false,
-      code: 'edge-error',
-      messageDe:
-        serverMessage ??
-        'Look-Referenzanalyse fehlgeschlagen. Bitte erneut versuchen.',
-    };
-  }
-
-  const edge = parseEdgeResponse(data);
+  const edge = await invokeHostLookReferenceAnalysis(body);
   if (edge.status !== 'ok') {
     return {
       ok: false,
@@ -625,7 +392,6 @@ export async function analyzeLookReferences(
       messageDe: edge.message,
     };
   }
-
   return normalizeLookReferenceAnalysisPayload(edge.payload, {
     references: domainInputs,
     displayNameHint: request.displayNameHint,
@@ -634,7 +400,7 @@ export async function analyzeLookReferences(
 }
 ```
 
-### src/infrastructure/look/look-reference-analysis-service.ts:237
+### src/infrastructure/look/look-reference-analysis-service.ts:203
 
 ```ts
 export function createEdgeLookReferenceAnalyzer(): LookReferenceAnalyzer {
@@ -832,20 +598,18 @@ export function createLookRuntime(options?: LookRuntimeOptions): LookRuntime {
 }
 ```
 
-### src/infrastructure/look/look-service.ts:41
+### src/infrastructure/look/look-service.ts:43
 
 ```ts
 export async function listLookProfiles(options?: {
   includeArchived?: boolean;
 }): Promise<LookProfileRecord[]> {
-  if (isHostLibraryEnabled()) {
-    const rows = await fetchHostLibraryLooks();
-    return rows
-      .map(asLookRecord)
-      .filter((row): row is LookProfileRecord => row !== null)
-      .filter((row) => options?.includeArchived === true || row.status === 'active');
-  }
-  return supabaseLookProfileRepository.listProfiles(options);
+  assertHost();
+  const rows = await fetchHostLibraryLooks();
+  return rows
+    .map(asLookRecord)
+    .filter((row): row is LookProfileRecord => row !== null)
+    .filter((row) => options?.includeArchived === true || row.status === 'active');
 }
 ```
 
@@ -855,99 +619,87 @@ export async function listLookProfiles(options?: {
 export async function getLookProfile(
   profileId: string,
 ): Promise<LookProfileRecord | null> {
-  if (isHostLibraryEnabled()) {
-    const rows = await listLookProfiles({ includeArchived: true });
-    return rows.find((row) => row.profile.id === profileId) ?? null;
-  }
-  return supabaseLookProfileRepository.getProfileById(profileId);
+  assertHost();
+  const rows = await listLookProfiles({ includeArchived: true });
+  return rows.find((row) => row.profile.id === profileId) ?? null;
 }
 ```
 
-### src/infrastructure/look/look-service.ts:64
+### src/infrastructure/look/look-service.ts:62
 
 ```ts
 export async function createLookProfile(
   input: CreateLookProfileInput,
 ): Promise<LookProfileRecord> {
-  if (isHostLibraryEnabled()) {
-    const created = await createHostLibraryLook(input.draft);
-    const record = asLookRecord(created);
-    if (!record) throw new Error('Host-Look anlegen: ungültige Antwort');
-    return record;
-  }
-  return supabaseLookProfileRepository.createProfile(input);
+  assertHost();
+  const created = await createHostLibraryLook(input.draft);
+  const record = asLookRecord(created);
+  if (!record) throw new Error('Host-Look anlegen: ungültige Antwort');
+  return record;
 }
 ```
 
-### src/infrastructure/look/look-service.ts:76
+### src/infrastructure/look/look-service.ts:72
 
 ```ts
 export async function appendLookProfileVersion(
   input: AppendLookProfileVersionInput,
 ): Promise<LookProfileRecord> {
-  if (isHostLibraryEnabled()) {
-    const appended = await appendHostLibraryLookVersion(input.profileId, input.draft);
-    const record = asLookRecord(appended);
-    if (!record) throw new Error('Host-Look-Version anhängen: ungültige Antwort');
-    return record;
-  }
-  return supabaseLookProfileRepository.appendVersion(input);
+  assertHost();
+  const appended = await appendHostLibraryLookVersion(input.profileId, input.draft);
+  const record = asLookRecord(appended);
+  if (!record) throw new Error('Host-Look-Version anhängen: ungültige Antwort');
+  return record;
 }
 ```
 
-### src/infrastructure/look/look-service.ts:88
+### src/infrastructure/look/look-service.ts:82
 
 ```ts
 export async function archiveLookProfile(
   profileId: string,
 ): Promise<LookProfileRecord> {
-  if (isHostLibraryEnabled()) {
-    const archived = await archiveHostLibraryLook(profileId);
-    const record = asLookRecord(archived);
-    if (!record) throw new Error('Host-Look archivieren: ungültige Antwort');
-    return record;
-  }
-  return supabaseLookProfileRepository.archiveProfile(profileId);
+  assertHost();
+  const archived = await archiveHostLibraryLook(profileId);
+  const record = asLookRecord(archived);
+  if (!record) throw new Error('Host-Look archivieren: ungültige Antwort');
+  return record;
 }
 ```
 
-### src/infrastructure/look/look-service.ts:100
+### src/infrastructure/look/look-service.ts:92
 
 ```ts
 export async function duplicateLookProfile(
   input: DuplicateLookProfileInput,
 ): Promise<LookProfileRecord> {
-  if (isHostLibraryEnabled()) {
-    const duplicated = await duplicateHostLibraryLook(
-      input.sourceProfileId,
-      input.displayName,
-    );
-    const record = asLookRecord(duplicated);
-    if (!record) throw new Error('Host-Look duplizieren: ungültige Antwort');
-    return record;
-  }
-  return supabaseLookProfileRepository.duplicateProfile(input);
+  assertHost();
+  const duplicated = await duplicateHostLibraryLook(
+    input.sourceProfileId,
+    input.displayName,
+  );
+  const record = asLookRecord(duplicated);
+  if (!record) throw new Error('Host-Look duplizieren: ungültige Antwort');
+  return record;
 }
 ```
 
-### src/infrastructure/look/look-service.ts:129
+### src/infrastructure/look/look-service.ts:119
 
 ```ts
 export async function listLookProfileVersions(
   profileId: string,
 ): Promise<LookProfileVersion[]> {
-  if (isHostLibraryEnabled()) {
-    const rows = await fetchHostLibraryLookVersions(profileId);
-    return rows
-      .map(asLookVersion)
-      .filter((row): row is LookProfileVersion => row !== null)
-      .sort((a, b) => a.version - b.version);
-  }
-  return supabaseLookProfileRepository.listVersions(profileId);
+  assertHost();
+  const rows = await fetchHostLibraryLookVersions(profileId);
+  return rows
+    .map(asLookVersion)
+    .filter((row): row is LookProfileVersion => row !== null)
+    .sort((a, b) => a.version - b.version);
 }
 ```
 
-### src/infrastructure/look/look-service.ts:143
+### src/infrastructure/look/look-service.ts:131
 
 ```ts
 export async function analyzeLookReferencesForDraft(
@@ -957,7 +709,7 @@ export async function analyzeLookReferencesForDraft(
 }
 ```
 
-### src/infrastructure/look/look-service.ts:153
+### src/infrastructure/look/look-service.ts:141
 
 ```ts
 export async function createLookProfileFromReferenceAnalysis(
@@ -1139,250 +891,10 @@ export function assertParsedReferences(value: unknown) {
 }
 ```
 
-### src/infrastructure/look/supabase-look.repository.ts:58
-
-```ts
-export class SupabaseLookProfileRepository implements LookProfileRepository {
-  async listProfiles(options?: {
-    includeArchived?: boolean;
-  }): Promise<LookProfileRecord[]> {
-    await getAuthenticatedUserId();
-    let query = supabase.from(PROFILES).select(LOOK_PROFILE_COLUMNS);
-    if (!options?.includeArchived) {
-      query = query.eq('status', 'active');
-    }
-    const { data, error } = await raceWithTimeoutReject(
-      query.order('updated_at', { ascending: false }),
-      SUPABASE_QUERY_TIMEOUT_MS,
-      'LookProfiles konnten nicht geladen werden (Zeitüberschreitung).',
-    );
-    if (error) {
-      throw new Error(`LookProfiles konnten nicht geladen werden: ${error.message}`);
-    }
-    const rows = (data ?? []) as LookProfileDto[];
-    const out: LookProfileRecord[] = [];
-    for (const row of rows) {
-      const record = await this.loadRecord(row.id);
-      if (record) out.push(record);
-    }
-    return out;
-  }
-
-  async getProfileById(profileId: string): Promise<LookProfileRecord | null> {
-    await getAuthenticatedUserId();
-    return this.loadRecord(assertProfileId(profileId));
-  }
-
-  async createProfile(input: CreateLookProfileInput): Promise<LookProfileRecord> {
-    const userId = await getAuthenticatedUserId();
-    const draft = requireDraft(input.draft);
-    const profileId = newLookProfileId();
-    const ownerScope = resolveOwnerScope(draft);
-    const createdAt = new Date().toISOString();
-
-    const { error: profileError } = await raceWithTimeoutReject(
-      supabase.from(PROFILES).insert({
-        id: profileId,
-        owner_user_id: userId,
-        owner_scope: ownerScope,
-        current_version: 1,
-        status: 'active',
-      }),
-      SUPABASE_QUERY_TIMEOUT_MS,
-      'LookProfile konnte nicht angelegt werden (Zeitüberschreitung).',
-    );
-    if (profileError) {
-      throw new Error(`LookProfile konnte nicht angelegt werden: ${profileError.message}`);
-    }
-
-    const versionInsert = toPersistedVersionInsert(profileId, 1, draft, createdAt);
-    const { error: versionError } = await raceWithTimeoutReject(
-      supabase.from(VERSIONS).insert(versionInsert),
-      SUPABASE_QUERY_TIMEOUT_MS,
-      'LookProfile-Version konnte nicht angelegt werden (Zeitüberschreitung).',
-    );
-    if (versionError) {
-      throw new Error(
-        `LookProfile-Version konnte nicht angelegt werden: ${versionError.message}`,
-      );
-    }
-
-    const record = await this.loadRecord(profileId);
-    if (!record) {
-      throw new Error('LookProfile nach Create nicht lesbar.');
-    }
-    return record;
-  }
-
-  async appendVersion(input: AppendLookProfileVersionInput): Promise<LookProfileRecord> {
-    const userId = await getAuthenticatedUserId();
-    const profileId = assertProfileId(input.profileId);
-    const draft = requireDraft(input.draft);
-    const existing = await this.loadRecord(profileId);
-    if (!existing) {
-      throw new Error('LookProfile nicht gefunden.');
-    }
-    if (existing.profile.ownerId !== userId) {
-      throw new Error('Keine Berechtigung für dieses LookProfile.');
-    }
-    if (existing.status === 'archived') {
-      throw new Error('Archivierte Looks können nicht versioniert werden. Bitte duplizieren.');
-    }
-
-    const nextVersion = existing.profile.currentVersion + 1;
-    const createdAt = new Date().toISOString();
-    const versionInsert = toPersistedVersionInsert(profileId, nextVersion, draft, createdAt);
-
-    const { error: versionError } = await raceWithTimeoutReject(
-      supabase.from(VERSIONS).insert(versionInsert),
-      SUPABASE_QUERY_TIMEOUT_MS,
-      'Neue Look-Version konnte nicht geschrieben werden (Zeitüberschreitung).',
-    );
-    if (versionError) {
-      if (/duplicate|unique|conflict/i.test(versionError.message)) {
-        throw new Error(
-          'Konflikt: diese Look-Version existiert bereits (gleichzeitiges Update). Bitte erneut versuchen.',
-        );
-      }
-      throw new Error(`Neue Look-Version fehlgeschlagen: ${versionError.message}`);
-    }
-
-    const { error: bumpError } = await raceWithTimeoutReject(
-      supabase
-        .from(PROFILES)
-        .update({ current_version: nextVersion })
-        .eq('id', profileId)
-        .eq('owner_user_id', userId)
-        .eq('current_version', existing.profile.currentVersion),
-      SUPABASE_QUERY_TIMEOUT_MS,
-      'LookProfile-Versionzeiger konnte nicht aktualisiert werden (Zeitüberschreitung).',
-    );
-    if (bumpError) {
-      throw new Error(`LookProfile-Versionzeiger fehlgeschlagen: ${bumpError.message}`);
-    }
-
-    const record = await this.loadRecord(profileId);
-    if (!record || record.profile.currentVersion !== nextVersion) {
-      throw new Error(
-        'Konflikt: LookProfile wurde parallel aktualisiert. Bitte erneut versuchen.',
-      );
-    }
-    return record;
-  }
-
-  async archiveProfile(profileId: string): Promise<LookProfileRecord> {
-    const userId = await getAuthenticatedUserId();
-    const id = assertProfileId(profileId);
-    const { error } = await raceWithTimeoutReject(
-      supabase
-        .from(PROFILES)
-        .update({ status: 'archived' })
-        .eq('id', id)
-        .eq('owner_user_id', userId),
-      SUPABASE_QUERY_TIMEOUT_MS,
-      'LookProfile konnte nicht archiviert werden (Zeitüberschreitung).',
-    );
-    if (error) {
-      throw new Error(`LookProfile konnte nicht archiviert werden: ${error.message}`);
-    }
-    const record = await this.loadRecord(id);
-    if (!record) {
-      throw new Error('LookProfile nach Archivierung nicht lesbar.');
-    }
-    return record;
-  }
-
-  async duplicateProfile(input: DuplicateLookProfileInput): Promise<LookProfileRecord> {
-    const userId = await getAuthenticatedUserId();
-    const sourceId = assertProfileId(input.sourceProfileId);
-    const source = await this.loadRecord(sourceId);
-    if (!source) {
-      throw new Error('Quell-LookProfile nicht gefunden.');
-    }
-    if (source.profile.ownerId !== userId) {
-      throw new Error('Keine Berechtigung zum Duplizieren dieses Looks.');
-    }
-
-    const displayName =
-      typeof input.displayName === 'string' && input.displayName.trim().length > 0
-        ? input.displayName.trim()
-        : `${source.current.displayName} (Kopie)`;
-
-    return this.createProfile({
-      draft: {
-        displayName,
-        source: source.current.source,
-        references: source.current.references,
-        capabilities: source.current.capabilities,
-        executionModes: source.current.executionModes,
-        ownerScope: source.profile.ownerScope,
-      },
-    });
-  }
-
-  async listVersions(profileId: string): Promise<LookProfileVersion[]> {
-    await getAuthenticatedUserId();
-    const id = assertProfileId(profileId);
-    const { data, error } = await raceWithTimeoutReject(
-      supabase
-        .from(VERSIONS)
-        .select(LOOK_PROFILE_VERSION_COLUMNS)
-        .eq('profile_id', id)
-        .order('version', { ascending: true }),
-      SUPABASE_QUERY_TIMEOUT_MS,
-      'Look-Versionen konnten nicht geladen werden (Zeitüberschreitung).',
-    );
-    if (error) {
-      throw new Error(`Look-Versionen konnten nicht geladen werden: ${error.message}`);
-    }
-    return ((data ?? []) as LookProfileVersionDto[])
-      .map(mapLookProfileVersionRow)
-      .filter((row): row is LookProfileVersion => row !== null);
-  }
-
-  private async loadRecord(profileId: string): Promise<LookProfileRecord | null> {
-    const { data: profileData, error: profileError } = await raceWithTimeoutReject(
-      supabase.from(PROFILES).select(LOOK_PROFILE_COLUMNS).eq('id', profileId).maybeSingle(),
-      SUPABASE_QUERY_TIMEOUT_MS,
-      'LookProfile konnte nicht geladen werden (Zeitüberschreitung).',
-    );
-    if (profileError) {
-      throw new Error(`LookProfile konnte nicht geladen werden: ${profileError.message}`);
-    }
-    if (!profileData) return null;
-    const profileRow = profileData as LookProfileDto;
-
-    const { data: versionData, error: versionError } = await raceWithTimeoutReject(
-      supabase
-        .from(VERSIONS)
-        .select(LOOK_PROFILE_VERSION_COLUMNS)
-        .eq('profile_id', profileId)
-        .eq('version', profileRow.current_version)
-        .maybeSingle(),
-      SUPABASE_QUERY_TIMEOUT_MS,
-      'LookProfile-Version konnte nicht geladen werden (Zeitüberschreitung).',
-    );
-    if (versionError) {
-      throw new Error(
-        `LookProfile-Version konnte nicht geladen werden: ${versionError.message}`,
-      );
-    }
-    if (!versionData) return null;
-    return mapLookProfileRecord(profileRow, versionData as LookProfileVersionDto);
-  }
-}
-```
-
-### src/infrastructure/look/supabase-look.repository.ts:288
-
-```ts
-export const supabaseLookProfileRepository = new SupabaseLookProfileRepository();
-```
-
 
 ## Remaining backend helper operations
 
-### src/infrastructure/look/look-reference-analysis-service.ts:115
+### src/infrastructure/look/look-reference-analysis-service.ts:114
 
 ```ts
 async function invokeHostLookReferenceAnalysis(
@@ -1449,22 +961,18 @@ async function invokeHostLookReferenceAnalysis(
 | `src/domains/look/write-draft.ts` | `7c8b04b229269b73a26b64d68f0656dc5ada2048e75cd29d5a53887fc6f29e58` |
 | `src/infrastructure/character/avatar/mtoon-style-applier.ts` | `1c9fc4fdb30546c0b34ccb222035c74d78251985e575f8a79da86f3f6cd762be` |
 | `src/infrastructure/character/avatar/toonlab-compatibility-spike.ts` | `e896927b2a2fa4c4ad74550b0909a681596d41bdc356980a31afd42b493f5d30` |
-| `src/infrastructure/host/host-library-http.ts` | `b2343081ddce2e2edd73651b0622e8b4cc6d8583d746a863dbe3343e3a98f71a` |
+| `src/infrastructure/host/host-library-http.ts` | `1d41f3b1eb3e71a3a8b12306993b605f2d05f2f41cd35f73b9c362b12f9c1cb6` |
 | `src/infrastructure/look/adapters/host-mtoon-look-adapter.ts` | `19b2f7008ffa27b5bd6c951019a55bde20d82f195ff9f798aa91b4d0a729e3a5` |
 | `src/infrastructure/look/adapters/toonlab-look-adapter.ts` | `4edeab261bda3b114a4a9c9d7dcdb16a1cc73c24df0db23539480aa3a0834acb` |
 | `src/infrastructure/look/host-look-adapter.ts` | `f1c8129f9ff83fb5e586da01b59cf26e3d6e54385f20e631ee353d0802c409c1` |
 | `src/infrastructure/look/host-look-ports.contract.ts` | `f815bac34628b904e1c813d4929872b688d6dc140bebdf2a17a586c11556cf0f` |
-| `src/infrastructure/look/index.ts` | `c51fc97d92ac25e40f1427086c846cb000990dd7556f2f1aab7deb14a9ccccd0` |
+| `src/infrastructure/look/index.ts` | `9459251bdf2ae00dab0a11fdd0d77cc113264577367b61273e3a04c658aec47f` |
 | `src/infrastructure/look/look-material-roles.ts` | `2e8161b18a046bb073664a586bb645dc1428c5796d04ade0b625c9339f8cfcdb` |
-| `src/infrastructure/look/look-reference-analysis-service.ts` | `75972e6d9b049942cf205e82e0330d26f878c855b7f3ebf8484e7e1ed651dffd` |
+| `src/infrastructure/look/look-reference-analysis-service.ts` | `2642af08c083b7ee828d620e50aca15cb41917ec9676729f60bb7e2f2be08281` |
 | `src/infrastructure/look/look-runtime-types.ts` | `c31d27eaf600ed47e69f16120e584b06a985f29618923118a4c08570f276b2c6` |
 | `src/infrastructure/look/look-runtime.ts` | `64487d02f2831514e86b721d41b0964ac8e99b37faf1a33b8771b4fa7b955d23` |
-| `src/infrastructure/look/look-service.ts` | `d1a1a1d5e0747b492b21258c981547abddc6bc7b763a7a3914f6aadb65ec8eed` |
+| `src/infrastructure/look/look-service.ts` | `3cfd97ccbc21d072865088cf1a0fe5f61e0a43e574f895d869ac80451cc25188` |
 | `src/infrastructure/look/look.persistence.ts` | `ed0a97cba6560930610fc032bd7679b5a7e4b49f837e401cd5a872974598f482` |
-| `src/infrastructure/look/supabase-look.repository.ts` | `4dc795897a12bf3319998860b855b0b9b55425e2be7e4c9b0844e7b2ec647121` |
-| `src/lib/authenticatedUser.ts` | `d4cbf3a004f8375982ca03d474fb7b61559fc2ec58ad6fe7b1f8834d26abf10c` |
 | `src/lib/hostAuthBridge.ts` | `30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a` |
-| `src/lib/localAdmin.ts` | `3a28dec23e85f25ed3e70682bc6e7f8c6b55e81dbbefdd1f6a837f68ac80d6b5` |
-| `src/lib/networkTimeout.ts` | `835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851` |
-| `src/lib/supabase.ts` | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
+| `src/lib/supabase.ts` | `a385b96048d1e73f8dd1a78ee00a5c1a4e6cbb5f50e1f705ae527e2493f9f373` |
 

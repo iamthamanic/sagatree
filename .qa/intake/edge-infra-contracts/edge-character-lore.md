@@ -400,52 +400,7 @@ CORS_OPTS: CorsOptions = {
 
 ## All adapter call sites
 
-### src/infrastructure/character/character-lore-service.ts:148
-
-
-```ts
-async generateBackground(
-    request: CharacterLoreGenerationRequest,
-  ): Promise<CharacterLoreGenerationResult> {
-    const body = buildRequestBody(request);
-
-    if (isHostLibraryEnabled()) {
-      const response = await invokeHostCharacterLore(body);
-      if (response.status !== 'ok') {
-        throw new Error(response.message);
-      }
-      return {
-        story: response.story,
-        provider: response.provider,
-        model: response.model,
-      };
-    }
-
-    const { data, error } = await supabase.functions.invoke('character-lore', {
-      body,
-    });
-
-    if (error) {
-      const serverMessage = await getFunctionErrorMessage(error);
-      throw new Error(
-        serverMessage ??
-          'Hintergrundgeschichte konnte nicht generiert werden. Bitte versuche es erneut.',
-      );
-    }
-
-    const response = parseFunctionResponse(data);
-    if (response.status !== 'ok') {
-      throw new Error(response.message);
-    }
-
-    return {
-      story: response.story,
-      provider: response.provider,
-      model: response.model,
-    };
-  }
-```
-
+No src/infrastructure caller in the reviewed branch. This does not authorize adding a public mount.
 
 ## Exact ordered operations
 
@@ -1260,7 +1215,6 @@ function parseWorldRow(value: unknown): WorldRow | null {
 
 | Path | SHA-256 |
 |---|---|
-| `src/infrastructure/character/character-lore-service.ts` | `081f130c10cb49b371d534b6686c9d8339a97e53f5cd134921b47f40018f3921` |
 | `supabase/functions/_shared/ai-provider-crypto.ts` | `45e60f76f744077e8d9b243719dcdba5d58a047d36a1c141df830afa2de16532` |
 | `supabase/functions/_shared/character-lore-access.ts` | `922adb04eb27314f8194a7f189b1b143970945d82ab0219480ea08d44181c70f` |
 | `supabase/functions/_shared/character-lore-prompt.ts` | `54fffb4ba316515dff7add1998b2d6f02280ddc336c30e48d2a4ee045a60f818` |

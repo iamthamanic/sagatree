@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-character.json](source-contracts/infra-character.json) (SHA-256 `c4de5206fa3c4bbeb053912df5640f7c19b70e7b6b421935cf363a0903caabbd`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-character.json](source-contracts/infra-character.json) (SHA-256 `6333a9b3f728ffc7b3dab6930075e54aeb6a892271aec779ccca7596257e7081`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -18,32 +18,18 @@ The adapter establishes request/filter behavior. Server permission and rollback 
 
 RPCs (0): none.
 
-Tables (9): `character_adventure_arcs`, `character_avatar_artifacts`, `character_avatar_export_assets`, `character_avatar_import_assets`, `character_presets`, `characters`, `project_members`, `projects`, `sessions`.
+Tables (0): none.
 
-Storage buckets (2): `character-avatars`, `character-portraits`.
+Storage buckets (0): none.
 
-Edge invokes (2): `character-avatar-meshy`, `character-lore`.
+Edge invokes (0): none.
 
-Realtime call sites: 0. Direct fetch sites: 5. Explicit auth/helper sites: 30.
+Realtime call sites: 0. Direct fetch sites: 5. Explicit auth/helper sites: 0.
 
 ## Complete implementation dependencies
 
 | Kind | Contract dependency | Implementation issue | Additional policy/group |
 |---|---|---|---|
-| edge | `character-avatar-meshy` | #820 |  |
-| edge | `character-lore` | #821 |  |
-| table | `character_adventure_arcs` | #791 | Policy #792 |
-| table | `character_avatar_artifacts` | #791 | Policy #792 |
-| table | `character_avatar_export_assets` | #791 | Policy #792 |
-| table | `character_avatar_import_assets` | #791 | Policy #792 |
-| table | `character_presets` | #791 | Policy #792 |
-| table | `characters` | #791 | Policy #792 |
-| table | `project_members` | #791 | Policy #792 |
-| table | `projects` | #791 | Policy #792 |
-| table | `sessions` | #791 | Policy #792 |
-| storage | `character-avatars` | #841 |  |
-| storage | `character-portraits` | #841 |  |
-| auth | `authenticated account/session transport` | #793 |  |
 | infra | `inventory` | #802 |  |
 | infra | `look` | #803 |  |
 | infra | `media` | #805 |  |
@@ -62,213 +48,9 @@ None in the reviewed source.
 
 ## All backend calls, arguments, filters and result handling
 
-### auth: session identity
-
-`src/infrastructure/character/avatar/character-avatar-artifact-service.ts:57` — dynamic-expression.
-
-Exact call/query chain:
-```ts
-supabase.auth.getUser()
-```
-
-Enclosing operation: `src/infrastructure/character/avatar/character-avatar-artifact-service.ts:56`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### auth-helper: session identity
-
-`src/infrastructure/character/avatar/character-avatar-artifact-service.ts:186` — dynamic-expression.
-
-Exact call/query chain:
-```ts
-getAuthenticatedUserId()
-```
-
-Enclosing operation: `src/infrastructure/character/avatar/character-avatar-artifact-service.ts:177`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: character_avatar_artifacts
-
-`src/infrastructure/character/avatar/character-avatar-artifact-service.ts:202` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase
-    .from('character_avatar_artifacts')
-    .insert(artifactToInsert(artifact))
-    .select('*')
-    .single()
-```
-
-Enclosing operation: `src/infrastructure/character/avatar/character-avatar-artifact-service.ts:177`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### auth-helper: session identity
-
-`src/infrastructure/character/avatar/character-avatar-artifact-service.ts:229` — dynamic-expression.
-
-Exact call/query chain:
-```ts
-getAuthenticatedUserId()
-```
-
-Enclosing operation: `src/infrastructure/character/avatar/character-avatar-artifact-service.ts:222`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: character_avatar_artifacts
-
-`src/infrastructure/character/avatar/character-avatar-artifact-service.ts:230` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase
-    .from('character_avatar_artifacts')
-    .select('*')
-    .eq('id', artifactId)
-    .eq('owner_user_id', ownerUserId)
-    .is('deleted_at', null)
-    .maybeSingle()
-```
-
-Enclosing operation: `src/infrastructure/character/avatar/character-avatar-artifact-service.ts:222`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: character_avatar_artifacts
-
-`src/infrastructure/character/avatar/character-avatar-artifact-service.ts:259` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase
-    .from('character_avatar_artifacts')
-    .select('*')
-    .eq('owner_user_id', ownerUserId)
-    .eq('idempotency_key', idempotencyKey)
-    .is('deleted_at', null)
-    .maybeSingle()
-```
-
-Enclosing operation: `src/infrastructure/character/avatar/character-avatar-artifact-service.ts:245`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### auth-helper: session identity
-
-`src/infrastructure/character/avatar/character-avatar-artifact-service.ts:283` — dynamic-expression.
-
-Exact call/query chain:
-```ts
-getAuthenticatedUserId()
-```
-
-Enclosing operation: `src/infrastructure/character/avatar/character-avatar-artifact-service.ts:274`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: character_avatar_artifacts
-
-`src/infrastructure/character/avatar/character-avatar-artifact-service.ts:284` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase
-    .from('character_avatar_artifacts')
-    .select('*')
-    .eq('owner_user_id', ownerUserId)
-    .is('deleted_at', null)
-    .order('created_at', { ascending: false })
-```
-
-Enclosing operation: `src/infrastructure/character/avatar/character-avatar-artifact-service.ts:274`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### auth-helper: session identity
-
-`src/infrastructure/character/avatar/character-avatar-artifact-service.ts:318` — dynamic-expression.
-
-Exact call/query chain:
-```ts
-getAuthenticatedUserId()
-```
-
-Enclosing operation: `src/infrastructure/character/avatar/character-avatar-artifact-service.ts:308`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: character_avatar_artifacts
-
-`src/infrastructure/character/avatar/character-avatar-artifact-service.ts:327` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase
-      .from('character_avatar_artifacts')
-      .update({ is_active: false })
-      .eq('owner_user_id', ownerUserId)
-      .eq('character_id', current.characterId)
-      .eq('is_active', true)
-      .is('deleted_at', null)
-```
-
-Enclosing operation: `src/infrastructure/character/avatar/character-avatar-artifact-service.ts:308`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: character_avatar_artifacts
-
-`src/infrastructure/character/avatar/character-avatar-artifact-service.ts:342` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase
-    .from('character_avatar_artifacts')
-    .update({ is_active: true })
-    .eq('id', artifactId)
-    .eq('owner_user_id', ownerUserId)
-    .eq('materialization_status', 'materialized')
-    .neq('analysis_status', 'failed')
-    .is('deleted_at', null)
-    .select('*')
-    .maybeSingle()
-```
-
-Enclosing operation: `src/infrastructure/character/avatar/character-avatar-artifact-service.ts:308`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### auth-helper: session identity
-
-`src/infrastructure/character/avatar/character-avatar-artifact-service.ts:386` — dynamic-expression.
-
-Exact call/query chain:
-```ts
-getAuthenticatedUserId()
-```
-
-Enclosing operation: `src/infrastructure/character/avatar/character-avatar-artifact-service.ts:364`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### auth-helper: session identity
-
-`src/infrastructure/character/avatar/character-avatar-artifact-service.ts:419` — dynamic-expression.
-
-Exact call/query chain:
-```ts
-getAuthenticatedUserId()
-```
-
-Enclosing operation: `src/infrastructure/character/avatar/character-avatar-artifact-service.ts:400`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### auth-helper: session identity
-
-`src/infrastructure/character/avatar/character-avatar-artifact-service.ts:452` — dynamic-expression.
-
-Exact call/query chain:
-```ts
-getAuthenticatedUserId()
-```
-
-Enclosing operation: `src/infrastructure/character/avatar/character-avatar-artifact-service.ts:433`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### auth-helper: session identity
-
-`src/infrastructure/character/avatar/character-avatar-artifact-service.ts:483` — dynamic-expression.
-
-Exact call/query chain:
-```ts
-getAuthenticatedUserId()
-```
-
-Enclosing operation: `src/infrastructure/character/avatar/character-avatar-artifact-service.ts:469`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: character_avatar_artifacts
-
-`src/infrastructure/character/avatar/character-avatar-artifact-service.ts:493` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase
-    .from('character_avatar_artifacts')
-    .update({
-      analysis_status: analysisStatus,
-      analysis_result: input.result,
-    })
-    .eq('id', input.artifactId)
-    .eq('owner_user_id', ownerUserId)
-    .is('deleted_at', null)
-```
-
-Enclosing operation: `src/infrastructure/character/avatar/character-avatar-artifact-service.ts:469`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### fetch: url
 
-`src/infrastructure/character/avatar/character-avatar-export-service.ts:55` — dynamic-expression.
+`src/infrastructure/character/avatar/character-avatar-export-service.ts:48` — dynamic-expression.
 
 Exact call/query chain:
 ```ts
@@ -277,207 +59,7 @@ fetch(url, {
     })
 ```
 
-Enclosing operation: `src/infrastructure/character/avatar/character-avatar-export-service.ts:52`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### auth-helper: session identity
-
-`src/infrastructure/character/avatar/character-avatar-export-service.ts:140` — dynamic-expression.
-
-Exact call/query chain:
-```ts
-getAuthenticatedUserId()
-```
-
-Enclosing operation: `src/infrastructure/character/avatar/character-avatar-export-service.ts:70`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### storage: character-avatars
-
-`src/infrastructure/character/avatar/character-avatar-export-service.ts:144` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase.storage.from(BUCKET).upload(storagePath, blob, {
-    contentType: 'model/gltf-binary',
-    upsert: false,
-  })
-```
-
-Enclosing operation: `src/infrastructure/character/avatar/character-avatar-export-service.ts:70`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: character_avatar_export_assets
-
-`src/infrastructure/character/avatar/character-avatar-export-service.ts:157` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase
-      .from('character_avatar_export_assets')
-      .update({ is_active: false })
-      .eq('owner_user_id', ownerUserId)
-      .eq('character_id', input.characterId)
-      .eq('is_active', true)
-```
-
-Enclosing operation: `src/infrastructure/character/avatar/character-avatar-export-service.ts:70`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: character_avatar_export_assets
-
-`src/infrastructure/character/avatar/character-avatar-export-service.ts:165` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase.from('character_avatar_export_assets').insert({
-    id: artifactId,
-    owner_user_id: ownerUserId,
-    character_id: input.characterId ?? null,
-    format: 'glb',
-    mime: 'model/gltf-binary',
-    byte_size: bytes.byteLength,
-    storage_path: storagePath,
-    export_contract_version: AVATAR_SAVE_EXPORT_VERSION,
-    morph_contract_version: MORPH_CONTRACT_VERSION,
-    embeds_source_mesh: embedsSourceMesh,
-    is_active: true,
-  })
-```
-
-Enclosing operation: `src/infrastructure/character/avatar/character-avatar-export-service.ts:70`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### storage: character-avatars
-
-`src/infrastructure/character/avatar/character-avatar-export-service.ts:179` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase.storage.from(BUCKET).remove([storagePath])
-```
-
-Enclosing operation: `src/infrastructure/character/avatar/character-avatar-export-service.ts:70`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### storage: character-avatars
-
-`src/infrastructure/character/avatar/character-avatar-export-service.ts:184` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase.storage
-    .from(BUCKET)
-    .createSignedUrl(storagePath, SIGNED_URL_SECONDS)
-```
-
-Enclosing operation: `src/infrastructure/character/avatar/character-avatar-export-service.ts:70`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: character_avatar_export_assets
-
-`src/infrastructure/character/avatar/character-avatar-export-service.ts:189` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase
-      .from('character_avatar_export_assets')
-      .update({ is_active: false })
-      .eq('id', artifactId)
-      .eq('owner_user_id', ownerUserId)
-```
-
-Enclosing operation: `src/infrastructure/character/avatar/character-avatar-export-service.ts:70`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### auth-helper: session identity
-
-`src/infrastructure/character/avatar/character-avatar-import-service.ts:213` — dynamic-expression.
-
-Exact call/query chain:
-```ts
-getAuthenticatedUserId()
-```
-
-Enclosing operation: `src/infrastructure/character/avatar/character-avatar-import-service.ts:202`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### storage: character-avatars
-
-`src/infrastructure/character/avatar/character-avatar-import-service.ts:222` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase.storage.from(BUCKET).upload(storagePath, blob, {
-    contentType: mime,
-    upsert: false,
-  })
-```
-
-Enclosing operation: `src/infrastructure/character/avatar/character-avatar-import-service.ts:202`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: character_avatar_import_assets
-
-`src/infrastructure/character/avatar/character-avatar-import-service.ts:232` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase.from('character_avatar_import_assets').insert({
-    id: importAssetId,
-    owner_user_id: ownerUserId,
-    character_id: options.characterId ?? null,
-    format,
-    mime,
-    byte_size: bytes.byteLength,
-    storage_path: storagePath,
-    rig_analysis_status: 'pending',
-    is_active: false,
-  })
-```
-
-Enclosing operation: `src/infrastructure/character/avatar/character-avatar-import-service.ts:202`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### storage: character-avatars
-
-`src/infrastructure/character/avatar/character-avatar-import-service.ts:244` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase.storage.from(BUCKET).remove([storagePath])
-```
-
-Enclosing operation: `src/infrastructure/character/avatar/character-avatar-import-service.ts:202`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### storage: character-avatars
-
-`src/infrastructure/character/avatar/character-avatar-import-service.ts:266` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase.storage
-    .from(BUCKET)
-    .createSignedUrl(storagePath, SIGNED_URL_SECONDS)
-```
-
-Enclosing operation: `src/infrastructure/character/avatar/character-avatar-import-service.ts:202`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### auth-helper: session identity
-
-`src/infrastructure/character/avatar/character-avatar-import-service.ts:370` — dynamic-expression.
-
-Exact call/query chain:
-```ts
-getAuthenticatedUserId()
-```
-
-Enclosing operation: `src/infrastructure/character/avatar/character-avatar-import-service.ts:348`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: character_avatar_import_assets
-
-`src/infrastructure/character/avatar/character-avatar-import-service.ts:373` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase
-      .from('character_avatar_import_assets')
-      .update({ is_active: false })
-      .eq('owner_user_id', ownerUserId)
-      .eq('character_id', input.characterId)
-      .eq('is_active', true)
-```
-
-Enclosing operation: `src/infrastructure/character/avatar/character-avatar-import-service.ts:348`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: character_avatar_import_assets
-
-`src/infrastructure/character/avatar/character-avatar-import-service.ts:381` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase
-    .from('character_avatar_import_assets')
-    .update({ is_active: true })
-    .eq('id', input.draft.importAssetId)
-    .eq('owner_user_id', ownerUserId)
-```
-
-Enclosing operation: `src/infrastructure/character/avatar/character-avatar-import-service.ts:348`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/character/avatar/character-avatar-export-service.ts:45`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### fetch: `${base}/api/v1/ai/character-avatar-meshy`
 
 `src/infrastructure/character/avatar/character-avatar-meshy-service.ts:99` — dynamic-expression.
@@ -492,17 +74,7 @@ fetch(`${base}/api/v1/ai/character-avatar-meshy`, {
     })
 ```
 
-Enclosing operation: `src/infrastructure/character/avatar/character-avatar-meshy-service.ts:92`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### edge: character-avatar-meshy
-
-`src/infrastructure/character/avatar/character-avatar-meshy-service.ts:121` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase.functions.invoke('character-avatar-meshy', { body })
-```
-
-Enclosing operation: `src/infrastructure/character/avatar/character-avatar-meshy-service.ts:117`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/character/avatar/character-avatar-meshy-service.ts:89`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### fetch: safeUrl
 
 `src/infrastructure/character/avatar/character-studio-manifest.ts:113` — dynamic-expression.
@@ -527,146 +99,9 @@ fetch(manifestUrl)
 ```
 
 Enclosing operation: `src/infrastructure/character/avatar/character-studio-runtime.ts:1349`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: project_members
-
-`src/infrastructure/character/character-adventure-arc-service.ts:124` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase
-      .from('project_members')
-      .select('project_id, joined_at, status')
-      .eq('character_id', trimmedId)
-```
-
-Enclosing operation: `src/infrastructure/character/character-adventure-arc-service.ts:113`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: character_adventure_arcs
-
-`src/infrastructure/character/character-adventure-arc-service.ts:135` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase
-      .from(TABLE)
-      .select('*')
-      .eq('character_id', trimmedId)
-      .order('started_at', { ascending: false })
-```
-
-Enclosing operation: `src/infrastructure/character/character-adventure-arc-service.ts:113`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: character_adventure_arcs
-
-`src/infrastructure/character/character-adventure-arc-service.ts:153` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase
-        .from(TABLE)
-        .insert({
-          character_id: trimmedId,
-          project_id: projectId,
-          status: 'active',
-          started_at: membership.joined_at ?? new Date().toISOString(),
-          developments: [],
-        })
-        .select('*')
-        .single()
-```
-
-Enclosing operation: `src/infrastructure/character/character-adventure-arc-service.ts:113`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: character_adventure_arcs
-
-`src/infrastructure/character/character-adventure-arc-service.ts:174` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase
-      .from(TABLE)
-      .select('*')
-      .eq('character_id', trimmedId)
-      .order('started_at', { ascending: false })
-```
-
-Enclosing operation: `src/infrastructure/character/character-adventure-arc-service.ts:113`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: projects
-
-`src/infrastructure/character/character-adventure-arc-service.ts:190` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase.from('projects').select('id, name, status').in('id', projectIds)
-```
-
-Enclosing operation: `src/infrastructure/character/character-adventure-arc-service.ts:113`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: sessions
-
-`src/infrastructure/character/character-adventure-arc-service.ts:191` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase.from('sessions').select('project_id').in('project_id', projectIds)
-```
-
-Enclosing operation: `src/infrastructure/character/character-adventure-arc-service.ts:113`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: character_adventure_arcs
-
-`src/infrastructure/character/character-adventure-arc-service.ts:248` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase
-      .from(TABLE)
-      .select('*')
-      .eq('id', arcId)
-      .single()
-```
-
-Enclosing operation: `src/infrastructure/character/character-adventure-arc-service.ts:228`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: character_adventure_arcs
-
-`src/infrastructure/character/character-adventure-arc-service.ts:272` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase
-      .from(TABLE)
-      .update({ developments: nextDevelopments })
-      .eq('id', arcId)
-      .select('*')
-      .single()
-```
-
-Enclosing operation: `src/infrastructure/character/character-adventure-arc-service.ts:228`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: projects
-
-`src/infrastructure/character/character-adventure-arc-service.ts:283` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase
-      .from('projects')
-      .select('name, status')
-      .eq('id', (updated as CharacterAdventureArcDto).project_id)
-      .maybeSingle()
-```
-
-Enclosing operation: `src/infrastructure/character/character-adventure-arc-service.ts:228`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: sessions
-
-`src/infrastructure/character/character-adventure-arc-service.ts:289` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase
-      .from('sessions')
-      .select('id', { count: 'exact', head: true })
-      .eq('project_id', (updated as CharacterAdventureArcDto).project_id)
-```
-
-Enclosing operation: `src/infrastructure/character/character-adventure-arc-service.ts:228`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### fetch: requestUrl
 
-`src/infrastructure/character/character-lore-service.ts:104` — dynamic-expression.
+`src/infrastructure/character/character-lore-service.ts:92` — dynamic-expression.
 
 Exact call/query chain:
 ```ts
@@ -678,489 +113,7 @@ fetch(requestUrl, {
     })
 ```
 
-Enclosing operation: `src/infrastructure/character/character-lore-service.ts:89`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### edge: character-lore
-
-`src/infrastructure/character/character-lore-service.ts:148` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase.functions.invoke('character-lore', {
-      body,
-    })
-```
-
-Enclosing operation: `src/infrastructure/character/character-lore-service.ts:131`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### auth-helper: session identity
-
-`src/infrastructure/character/character-preset-service.ts:242` — dynamic-expression.
-
-Exact call/query chain:
-```ts
-getAuthenticatedUserId()
-```
-
-Enclosing operation: `src/infrastructure/character/character-preset-service.ts:235`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: character_presets
-
-`src/infrastructure/character/character-preset-service.ts:244` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase
-        .from(TABLE)
-        .select('*')
-        .eq('owner_user_id', userId)
-        .eq('origin', 'user')
-        .order('created_at', { ascending: false })
-```
-
-Enclosing operation: `src/infrastructure/character/character-preset-service.ts:235`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: characters
-
-`src/infrastructure/character/character-preset-service.ts:259` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase
-        .from('characters')
-        .select('id')
-        .eq('owner_user_id', userId)
-        .in('id', sourceIds)
-```
-
-Enclosing operation: `src/infrastructure/character/character-preset-service.ts:235`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### auth-helper: session identity
-
-`src/infrastructure/character/character-preset-service.ts:284` — dynamic-expression.
-
-Exact call/query chain:
-```ts
-getAuthenticatedUserId()
-```
-
-Enclosing operation: `src/infrastructure/character/character-preset-service.ts:279`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: character_presets
-
-`src/infrastructure/character/character-preset-service.ts:285` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase
-      .from(TABLE)
-      .select('*')
-      .eq('owner_user_id', userId)
-      .eq('source_character_id', characterId)
-      .eq('origin', 'user')
-      .maybeSingle()
-```
-
-Enclosing operation: `src/infrastructure/character/character-preset-service.ts:279`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### auth-helper: session identity
-
-`src/infrastructure/character/character-preset-service.ts:316` — dynamic-expression.
-
-Exact call/query chain:
-```ts
-getAuthenticatedUserId()
-```
-
-Enclosing operation: `src/infrastructure/character/character-preset-service.ts:297`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: character_presets
-
-`src/infrastructure/character/character-preset-service.ts:327` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase
-      .from(TABLE)
-      .insert({
-        owner_user_id: userId,
-        display_name: input.displayName.trim() || `${snapshot.name.trim()} Preset`,
-        ruleset_key: 'sagatree-core',
-        origin: 'user',
-        source_character_id: input.sourceCharacterId,
-        published: false,
-        versions: [version],
-      })
-      .select()
-      .single()
-```
-
-Enclosing operation: `src/infrastructure/character/character-preset-service.ts:297`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### auth-helper: session identity
-
-`src/infrastructure/character/character-preset-service.ts:355` — dynamic-expression.
-
-Exact call/query chain:
-```ts
-getAuthenticatedUserId()
-```
-
-Enclosing operation: `src/infrastructure/character/character-preset-service.ts:344`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: character_presets
-
-`src/infrastructure/character/character-preset-service.ts:356` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase
-      .from(TABLE)
-      .select('*')
-      .eq('id', input.presetId)
-      .eq('owner_user_id', userId)
-      .single()
-```
-
-Enclosing operation: `src/infrastructure/character/character-preset-service.ts:344`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: character_presets
-
-`src/infrastructure/character/character-preset-service.ts:381` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase
-      .from(TABLE)
-      .update({ versions: nextVersions, published: false, updated_at: new Date().toISOString() })
-      .eq('id', input.presetId)
-      .eq('owner_user_id', userId)
-      .select()
-      .single()
-```
-
-Enclosing operation: `src/infrastructure/character/character-preset-service.ts:344`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### auth-helper: session identity
-
-`src/infrastructure/character/character-preset-service.ts:403` — dynamic-expression.
-
-Exact call/query chain:
-```ts
-getAuthenticatedUserId()
-```
-
-Enclosing operation: `src/infrastructure/character/character-preset-service.ts:392`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: character_presets
-
-`src/infrastructure/character/character-preset-service.ts:404` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase
-      .from(TABLE)
-      .update({ display_name: trimmed, published: false, updated_at: new Date().toISOString() })
-      .eq('id', presetId)
-      .eq('owner_user_id', userId)
-      .select()
-      .single()
-```
-
-Enclosing operation: `src/infrastructure/character/character-preset-service.ts:392`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### auth-helper: session identity
-
-`src/infrastructure/character/character-preset-service.ts:423` — dynamic-expression.
-
-Exact call/query chain:
-```ts
-getAuthenticatedUserId()
-```
-
-Enclosing operation: `src/infrastructure/character/character-preset-service.ts:415`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: character_presets
-
-`src/infrastructure/character/character-preset-service.ts:424` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase
-      .from(TABLE)
-      .select('*')
-      .eq('id', presetId)
-      .eq('owner_user_id', userId)
-      .single()
-```
-
-Enclosing operation: `src/infrastructure/character/character-preset-service.ts:415`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: character_presets
-
-`src/infrastructure/character/character-preset-service.ts:435` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase
-      .from(TABLE)
-      .insert({
-        owner_user_id: userId,
-        display_name: `${dto.display_name} (Kopie)`,
-        ruleset_key: dto.ruleset_key,
-        origin: 'user',
-        source_character_id: null,
-        published: false,
-        versions,
-      })
-      .select()
-      .single()
-```
-
-Enclosing operation: `src/infrastructure/character/character-preset-service.ts:415`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### auth-helper: session identity
-
-`src/infrastructure/character/character-preset-service.ts:457` — dynamic-expression.
-
-Exact call/query chain:
-```ts
-getAuthenticatedUserId()
-```
-
-Enclosing operation: `src/infrastructure/character/character-preset-service.ts:452`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: character_presets
-
-`src/infrastructure/character/character-preset-service.ts:458` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase.from(TABLE).delete().eq('id', presetId).eq('owner_user_id', userId)
-```
-
-Enclosing operation: `src/infrastructure/character/character-preset-service.ts:452`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### auth-helper: session identity
-
-`src/infrastructure/character/character-service.ts:353` — dynamic-expression.
-
-Exact call/query chain:
-```ts
-getAuthenticatedUserId()
-```
-
-Enclosing operation: `src/infrastructure/character/character-service.ts:341`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### auth-helper: session identity
-
-`src/infrastructure/character/supabase-character.repository.ts:112` — dynamic-expression.
-
-Exact call/query chain:
-```ts
-getAuthenticatedUserId()
-```
-
-Enclosing operation: `src/infrastructure/character/supabase-character.repository.ts:111`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: characters
-
-`src/infrastructure/character/supabase-character.repository.ts:114` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase
-        .from(this.tableName)
-        .select('id, public_id, name, class, race, level, portrait_url, sheet_status')
-        .eq('owner_user_id', userId)
-        .eq('character_type', 'pc')
-        .order('created_at', { ascending: false })
-```
-
-Enclosing operation: `src/infrastructure/character/supabase-character.repository.ts:111`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### auth-helper: session identity
-
-`src/infrastructure/character/supabase-character.repository.ts:137` — dynamic-expression.
-
-Exact call/query chain:
-```ts
-getAuthenticatedUserId()
-```
-
-Enclosing operation: `src/infrastructure/character/supabase-character.repository.ts:136`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: characters
-
-`src/infrastructure/character/supabase-character.repository.ts:139` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase.from(this.tableName).select('*').eq('owner_user_id', userId).eq('character_type', 'pc').order('created_at', { ascending: false })
-```
-
-Enclosing operation: `src/infrastructure/character/supabase-character.repository.ts:136`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### auth-helper: session identity
-
-`src/infrastructure/character/supabase-character.repository.ts:148` — dynamic-expression.
-
-Exact call/query chain:
-```ts
-getAuthenticatedUserId()
-```
-
-Enclosing operation: `src/infrastructure/character/supabase-character.repository.ts:147`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: characters
-
-`src/infrastructure/character/supabase-character.repository.ts:149` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase.from(this.tableName).select('*').eq('id', id).eq('owner_user_id', userId).single()
-```
-
-Enclosing operation: `src/infrastructure/character/supabase-character.repository.ts:147`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### auth-helper: session identity
-
-`src/infrastructure/character/supabase-character.repository.ts:162` — dynamic-expression.
-
-Exact call/query chain:
-```ts
-getAuthenticatedUserId()
-```
-
-Enclosing operation: `src/infrastructure/character/supabase-character.repository.ts:159`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: characters
-
-`src/infrastructure/character/supabase-character.repository.ts:164` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase
-        .from(this.tableName)
-        .select('id, public_id, name, portrait_url, level, class, race, sagatree_profile')
-        .eq('owner_user_id', userId)
-        .in('id', unique)
-```
-
-Enclosing operation: `src/infrastructure/character/supabase-character.repository.ts:159`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### auth-helper: session identity
-
-`src/infrastructure/character/supabase-character.repository.ts:202` — dynamic-expression.
-
-Exact call/query chain:
-```ts
-getAuthenticatedUserId()
-```
-
-Enclosing operation: `src/infrastructure/character/supabase-character.repository.ts:201`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: characters
-
-`src/infrastructure/character/supabase-character.repository.ts:203` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase
-      .from(this.tableName)
-      .select('*')
-      .eq('public_id', publicId.trim().toUpperCase())
-      .eq('owner_user_id', userId)
-      .single()
-```
-
-Enclosing operation: `src/infrastructure/character/supabase-character.repository.ts:201`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### auth-helper: session identity
-
-`src/infrastructure/character/supabase-character.repository.ts:215` — dynamic-expression.
-
-Exact call/query chain:
-```ts
-getAuthenticatedUserId()
-```
-
-Enclosing operation: `src/infrastructure/character/supabase-character.repository.ts:214`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: characters
-
-`src/infrastructure/character/supabase-character.repository.ts:263` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase.from(this.tableName).insert(characterData).select().single()
-```
-
-Enclosing operation: `src/infrastructure/character/supabase-character.repository.ts:214`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### auth-helper: session identity
-
-`src/infrastructure/character/supabase-character.repository.ts:269` — dynamic-expression.
-
-Exact call/query chain:
-```ts
-getAuthenticatedUserId()
-```
-
-Enclosing operation: `src/infrastructure/character/supabase-character.repository.ts:268`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: characters
-
-`src/infrastructure/character/supabase-character.repository.ts:333` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase.from(this.tableName).update(updatePayload).eq('id', id).eq('owner_user_id', userId).select().single()
-```
-
-Enclosing operation: `src/infrastructure/character/supabase-character.repository.ts:268`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### auth-helper: session identity
-
-`src/infrastructure/character/supabase-character.repository.ts:339` — dynamic-expression.
-
-Exact call/query chain:
-```ts
-getAuthenticatedUserId()
-```
-
-Enclosing operation: `src/infrastructure/character/supabase-character.repository.ts:338`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: characters
-
-`src/infrastructure/character/supabase-character.repository.ts:340` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase.from(this.tableName).delete().eq('id', id).eq('owner_user_id', userId)
-```
-
-Enclosing operation: `src/infrastructure/character/supabase-character.repository.ts:338`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### auth-helper: session identity
-
-`src/infrastructure/character/supabase-character.repository.ts:345` — dynamic-expression.
-
-Exact call/query chain:
-```ts
-getAuthenticatedUserId()
-```
-
-Enclosing operation: `src/infrastructure/character/supabase-character.repository.ts:344`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: characters
-
-`src/infrastructure/character/supabase-character.repository.ts:346` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase.from(this.tableName).select('*').eq('owner_user_id', userId).eq('character_type', 'pc').ilike('name', `%${query}%`).order('created_at', { ascending: false })
-```
-
-Enclosing operation: `src/infrastructure/character/supabase-character.repository.ts:344`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### auth-helper: session identity
-
-`src/infrastructure/character/supabase-character.repository.ts:352` — dynamic-expression.
-
-Exact call/query chain:
-```ts
-getAuthenticatedUserId()
-```
-
-Enclosing operation: `src/infrastructure/character/supabase-character.repository.ts:351`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### storage: character-portraits
-
-`src/infrastructure/character/supabase-character.repository.ts:363` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase.storage.from(CHARACTER_PORTRAIT_BUCKET).upload(filePath, file, {
-      contentType: sniffed,
-      upsert: false,
-    })
-```
-
-Enclosing operation: `src/infrastructure/character/supabase-character.repository.ts:351`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### storage: character-portraits
-
-`src/infrastructure/character/supabase-character.repository.ts:368` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase.storage
-      .from(CHARACTER_PORTRAIT_BUCKET)
-      .createSignedUrl(filePath, CHARACTER_PORTRAIT_SIGNED_SECONDS)
-```
-
-Enclosing operation: `src/infrastructure/character/supabase-character.repository.ts:351`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/character/character-lore-service.ts:71`; complete request/default/result/error logic is in the declarations below and the snapshot.
 
 ## Complete public declarations and facade operation contracts
 
@@ -3070,210 +2023,81 @@ export function resolveFamilyCompatibilityFromAnalysis(
 }
 ```
 
-### src/infrastructure/character/avatar/character-avatar-artifact-service.ts:177
+### src/infrastructure/character/avatar/character-avatar-artifact-service.ts:96
 
 ```ts
 export async function createAvatarArtifact(
   artifact: AvatarArtifactV2,
 ): Promise<AvatarArtifactV2> {
-  if (isHostLibraryEnabled()) {
-    if (artifact.isActive) {
-      throw new Error('Neues Artefakt darf nicht direkt aktiv sein — activate verwenden.');
-    }
-    return parseHostArtifact(await createHostLibraryAvatarArtifact(artifact));
-  }
-  const ownerUserId = await getAuthenticatedUserId();
-  if (artifact.ownerUserId !== ownerUserId) {
-    throw new Error('Artefakt-Owner stimmt nicht mit der Session überein.');
-  }
+  assertHost();
   if (artifact.isActive) {
     throw new Error('Neues Artefakt darf nicht direkt aktiv sein — activate verwenden.');
   }
-
-  if (artifact.idempotencyKey) {
-    const existing = await findAvatarArtifactByIdempotencyKey(
-      ownerUserId,
-      artifact.idempotencyKey,
-    );
-    if (existing) return existing;
-  }
-
-  const { data, error } = await supabase
-    .from('character_avatar_artifacts')
-    .insert(artifactToInsert(artifact))
-    .select('*')
-    .single();
-
-  if (error) {
-    if (artifact.idempotencyKey && /duplicate|unique/i.test(error.message)) {
-      const again = await findAvatarArtifactByIdempotencyKey(
-        ownerUserId,
-        artifact.idempotencyKey,
-      );
-      if (again) return again;
-    }
-    throw new Error(`Avatar-Artefakt konnte nicht gespeichert werden: ${error.message}`);
-  }
-
-  return rowToArtifact(data as ArtifactRow);
+  return parseHostArtifact(await createHostLibraryAvatarArtifact(artifact));
 }
 ```
 
-### src/infrastructure/character/avatar/character-avatar-artifact-service.ts:222
+### src/infrastructure/character/avatar/character-avatar-artifact-service.ts:106
 
 ```ts
 export async function getAvatarArtifactById(
   artifactId: string,
 ): Promise<AvatarArtifactV2 | null> {
-  if (isHostLibraryEnabled()) {
-    const raw = await fetchHostLibraryAvatarArtifactById(artifactId);
-    return raw ? parseHostArtifact(raw) : null;
-  }
-  const ownerUserId = await getAuthenticatedUserId();
-  const { data, error } = await supabase
-    .from('character_avatar_artifacts')
-    .select('*')
-    .eq('id', artifactId)
-    .eq('owner_user_id', ownerUserId)
-    .is('deleted_at', null)
-    .maybeSingle();
-
-  if (error) {
-    throw new Error(`Avatar-Artefakt lesen fehlgeschlagen: ${error.message}`);
-  }
-  if (!data) return null;
-  return rowToArtifact(data as ArtifactRow);
+  assertHost();
+  const raw = await fetchHostLibraryAvatarArtifactById(artifactId);
+  return raw ? parseHostArtifact(raw) : null;
 }
 ```
 
-### src/infrastructure/character/avatar/character-avatar-artifact-service.ts:245
+### src/infrastructure/character/avatar/character-avatar-artifact-service.ts:114
 
 ```ts
 export async function findAvatarArtifactByIdempotencyKey(
   ownerUserId: string,
   idempotencyKey: string,
 ): Promise<AvatarArtifactV2 | null> {
-  if (isHostLibraryEnabled()) {
-    const listed = await fetchHostLibraryAvatarArtifacts();
-    for (const raw of listed) {
-      const artifact = parseHostArtifact(raw);
-      if (artifact.ownerUserId === ownerUserId && artifact.idempotencyKey === idempotencyKey) {
-        return artifact;
-      }
+  assertHost();
+  const listed = await fetchHostLibraryAvatarArtifacts();
+  for (const raw of listed) {
+    const artifact = parseHostArtifact(raw);
+    if (artifact.ownerUserId === ownerUserId && artifact.idempotencyKey === idempotencyKey) {
+      return artifact;
     }
-    return null;
   }
-  const { data, error } = await supabase
-    .from('character_avatar_artifacts')
-    .select('*')
-    .eq('owner_user_id', ownerUserId)
-    .eq('idempotency_key', idempotencyKey)
-    .is('deleted_at', null)
-    .maybeSingle();
-
-  if (error) {
-    throw new Error(`Idempotency-Lookup fehlgeschlagen: ${error.message}`);
-  }
-  if (!data) return null;
-  return rowToArtifact(data as ArtifactRow);
+  return null;
 }
 ```
 
-### src/infrastructure/character/avatar/character-avatar-artifact-service.ts:274
+### src/infrastructure/character/avatar/character-avatar-artifact-service.ts:129
 
 ```ts
 export async function listAvatarArtifacts(options: {
   characterId?: string | null;
 } = {}): Promise<readonly AvatarArtifactV2[]> {
-  if (isHostLibraryEnabled()) {
-    const listed = await fetchHostLibraryAvatarArtifacts({
-      characterId: options.characterId,
-    });
-    return listed.map(parseHostArtifact);
-  }
-  const ownerUserId = await getAuthenticatedUserId();
-  let query = supabase
-    .from('character_avatar_artifacts')
-    .select('*')
-    .eq('owner_user_id', ownerUserId)
-    .is('deleted_at', null)
-    .order('created_at', { ascending: false });
-
-  if (options.characterId !== undefined) {
-    query =
-      options.characterId === null
-        ? query.is('character_id', null)
-        : query.eq('character_id', options.characterId);
-  }
-
-  const { data, error } = await query;
-  if (error) {
-    throw new Error(`Avatar-Artefakte listen fehlgeschlagen: ${error.message}`);
-  }
-  return (data as ArtifactRow[]).map(rowToArtifact);
+  assertHost();
+  const listed = await fetchHostLibraryAvatarArtifacts({
+    characterId: options.characterId,
+  });
+  return listed.map(parseHostArtifact);
 }
 ```
 
-### src/infrastructure/character/avatar/character-avatar-artifact-service.ts:308
+### src/infrastructure/character/avatar/character-avatar-artifact-service.ts:142
 
 ```ts
 export async function activateAvatarArtifact(
   artifactId: string,
 ): Promise<AvatarArtifactActivateResult> {
-  if (isHostLibraryEnabled()) {
-    const result = await activateHostLibraryAvatarArtifact(artifactId);
-    if (result.ok === false) {
-      return { ok: false, reasonDe: result.reasonDe };
-    }
-    return { ok: true, artifact: parseHostArtifact(result.artifact) };
+  assertHost();
+  const result = await activateHostLibraryAvatarArtifact(artifactId);
+  if (result.ok === false) {
+    return { ok: false, reasonDe: result.reasonDe };
   }
-  const ownerUserId = await getAuthenticatedUserId();
-  const current = await getAvatarArtifactById(artifactId);
-  if (!current) {
-    return { ok: false, reasonDe: 'Artefakt nicht gefunden oder fremder Owner.' };
-  }
-  const gate = assertCanActivateAvatarArtifact(current);
-  if (!gate.ok) return gate;
-
-  if (current.characterId) {
-    const { error: deactivateError } = await supabase
-      .from('character_avatar_artifacts')
-      .update({ is_active: false })
-      .eq('owner_user_id', ownerUserId)
-      .eq('character_id', current.characterId)
-      .eq('is_active', true)
-      .is('deleted_at', null);
-    if (deactivateError) {
-      return {
-        ok: false,
-        reasonDe: `Vorheriges Artefakt konnte nicht deaktiviert werden: ${deactivateError.message}`,
-      };
-    }
-  }
-
-  const { data, error } = await supabase
-    .from('character_avatar_artifacts')
-    .update({ is_active: true })
-    .eq('id', artifactId)
-    .eq('owner_user_id', ownerUserId)
-    .eq('materialization_status', 'materialized')
-    .neq('analysis_status', 'failed')
-    .is('deleted_at', null)
-    .select('*')
-    .maybeSingle();
-
-  if (error || !data) {
-    return {
-      ok: false,
-      reasonDe: error?.message ?? 'Aktivierung fehlgeschlagen.',
-    };
-  }
-
-  return { ok: true, artifact: rowToArtifact(data as ArtifactRow) };
+  return { ok: true, artifact: parseHostArtifact(result.artifact) };
 }
 ```
 
-### src/infrastructure/character/avatar/character-avatar-artifact-service.ts:364
+### src/infrastructure/character/avatar/character-avatar-artifact-service.ts:154
 
 ```ts
 export async function materializeArtifactFromImportAsset(input: {
@@ -3282,27 +2106,15 @@ export async function materializeArtifactFromImportAsset(input: {
   storagePath: string;
   format: 'vrm' | 'glb';
 }): Promise<AvatarArtifactV2> {
-  if (isHostLibraryEnabled()) {
-    const ownerFromPath = input.storagePath.split('/')[0] ?? '';
-    if (!ownerFromPath) {
-      throw new Error('Storage-Pfad muss owner-scoped sein.');
-    }
-    const draft = materializeAvatarArtifact(
-      mapImportAssetToArtifactInput({
-        importAssetId: input.importAssetId,
-        ownerUserId: ownerFromPath,
-        characterId: input.characterId,
-        storagePath: input.storagePath,
-        format: input.format,
-      }),
-    );
-    return createAvatarArtifact(draft);
+  assertHost();
+  const ownerFromPath = input.storagePath.split('/')[0] ?? '';
+  if (!ownerFromPath) {
+    throw new Error('Storage-Pfad muss owner-scoped sein.');
   }
-  const ownerUserId = await getAuthenticatedUserId();
   const draft = materializeAvatarArtifact(
     mapImportAssetToArtifactInput({
       importAssetId: input.importAssetId,
-      ownerUserId,
+      ownerUserId: ownerFromPath,
       characterId: input.characterId,
       storagePath: input.storagePath,
       format: input.format,
@@ -3312,7 +2124,7 @@ export async function materializeArtifactFromImportAsset(input: {
 }
 ```
 
-### src/infrastructure/character/avatar/character-avatar-artifact-service.ts:400
+### src/infrastructure/character/avatar/character-avatar-artifact-service.ts:178
 
 ```ts
 export async function materializeArtifactFromGenerateJob(input: {
@@ -3321,24 +2133,12 @@ export async function materializeArtifactFromGenerateJob(input: {
   storagePath: string;
   providerId?: string;
 }): Promise<AvatarArtifactV2> {
-  if (isHostLibraryEnabled()) {
-    const ownerFromPath = input.storagePath.split('/')[0] ?? '';
-    const draft = materializeAvatarArtifact(
-      mapGenerateJobToArtifactInput({
-        generateJobId: input.generateJobId,
-        ownerUserId: ownerFromPath || 'host-pending',
-        characterId: input.characterId,
-        storagePath: input.storagePath,
-        providerId: input.providerId,
-      }),
-    );
-    return createAvatarArtifact(draft);
-  }
-  const ownerUserId = await getAuthenticatedUserId();
+  assertHost();
+  const ownerFromPath = input.storagePath.split('/')[0] ?? '';
   const draft = materializeAvatarArtifact(
     mapGenerateJobToArtifactInput({
       generateJobId: input.generateJobId,
-      ownerUserId,
+      ownerUserId: ownerFromPath || 'host-pending',
       characterId: input.characterId,
       storagePath: input.storagePath,
       providerId: input.providerId,
@@ -3348,7 +2148,7 @@ export async function materializeArtifactFromGenerateJob(input: {
 }
 ```
 
-### src/infrastructure/character/avatar/character-avatar-artifact-service.ts:433
+### src/infrastructure/character/avatar/character-avatar-artifact-service.ts:199
 
 ```ts
 export async function materializeArtifactFromTemplate(input: {
@@ -3357,24 +2157,12 @@ export async function materializeArtifactFromTemplate(input: {
   characterId?: string | null;
   storagePath: string;
 }): Promise<AvatarArtifactV2> {
-  if (isHostLibraryEnabled()) {
-    const ownerFromPath = input.storagePath.split('/')[0] ?? '';
-    const draft = materializeAvatarArtifact(
-      mapTemplateToArtifactInput({
-        artifactId: input.artifactId,
-        ownerUserId: ownerFromPath || 'host-pending',
-        characterId: input.characterId,
-        templateId: input.templateId,
-        storagePath: input.storagePath,
-      }),
-    );
-    return createAvatarArtifact(draft);
-  }
-  const ownerUserId = await getAuthenticatedUserId();
+  assertHost();
+  const ownerFromPath = input.storagePath.split('/')[0] ?? '';
   const draft = materializeAvatarArtifact(
     mapTemplateToArtifactInput({
       artifactId: input.artifactId,
-      ownerUserId,
+      ownerUserId: ownerFromPath || 'host-pending',
       characterId: input.characterId,
       templateId: input.templateId,
       storagePath: input.storagePath,
@@ -3384,50 +2172,22 @@ export async function materializeArtifactFromTemplate(input: {
 }
 ```
 
-### src/infrastructure/character/avatar/character-avatar-artifact-service.ts:469
+### src/infrastructure/character/avatar/character-avatar-artifact-service.ts:223
 
 ```ts
 export async function persistAuthoritativeArtifactAnalysis(input: {
   artifactId: string;
   result: AvatarStructureAnalysisResultV2;
 }): Promise<void> {
-  if (isHostLibraryEnabled()) {
-    // Host parity with Postgres RLS: browser sessions cannot escalate trusted analysis.
-    // In-process CharacterPorts remain available for host analyzer workers/self-tests.
-    throw new Error(
-      'Autoritative Avatar-Analyse ist im Host-Modus nur serverseitig verfügbar.',
-    );
-  }
-  if (!input.result.authoritative) {
-    throw new Error('Nur autoritative Analyse-Ergebnisse dürfen persistiert werden.');
-  }
-  const ownerUserId = await getAuthenticatedUserId();
-  const analysisStatus =
-    input.result.status === 'ready'
-      ? 'ready'
-      : input.result.status === 'limited'
-        ? 'limited'
-        : input.result.status === 'unsupported'
-          ? 'unsupported'
-          : 'failed';
-
-  const { error } = await supabase
-    .from('character_avatar_artifacts')
-    .update({
-      analysis_status: analysisStatus,
-      analysis_result: input.result,
-    })
-    .eq('id', input.artifactId)
-    .eq('owner_user_id', ownerUserId)
-    .is('deleted_at', null);
-
-  if (error) {
-    throw new Error(`Analyse-Persistenz fehlgeschlagen: ${error.message}`);
-  }
+  void input;
+  assertHost();
+  throw new Error(
+    'Autoritative Avatar-Analyse ist im Host-Modus nur serverseitig verfügbar.',
+  );
 }
 ```
 
-### src/infrastructure/character/avatar/character-avatar-export-service.ts:35
+### src/infrastructure/character/avatar/character-avatar-export-service.ts:22
 
 ```ts
 export interface AvatarSaveExportProgress {
@@ -3437,7 +2197,7 @@ export interface AvatarSaveExportProgress {
 }
 ```
 
-### src/infrastructure/character/avatar/character-avatar-export-service.ts:70
+### src/infrastructure/character/avatar/character-avatar-export-service.ts:63
 
 ```ts
 export async function materializeAvatarSaveExport(
@@ -3449,6 +2209,7 @@ export async function materializeAvatarSaveExport(
     onProgress?: (progress: AvatarSaveExportProgress) => void;
   },
 ): Promise<AvatarSaveExportArtifact> {
+  assertHost();
   const report = (
     status: AvatarSaveExportUiStatus,
     message: string,
@@ -3478,111 +2239,39 @@ export async function materializeAvatarSaveExport(
   report('uploading', 'Avatar-Artefakt wird gespeichert …');
   const artifactId = crypto.randomUUID();
 
-  if (isHostLibraryEnabled()) {
-    if (bytes.byteLength > HOST_AVATAR_MODEL_MAX_BYTES) {
-      report('error', 'Avatar-Export zu groß für den Host-Speicher.');
-      throw new Error(
-        `Avatar-Export zu groß für den Host-Speicher (max. ${HOST_AVATAR_MODEL_MAX_BYTES} Bytes).`,
-      );
-    }
-    const blob = new File([new Uint8Array(bytes)], `avatar-export-${artifactId}.glb`, {
-      type: 'model/gltf-binary',
-    });
-    let published;
-    try {
-      published = await publishHostAvatarModel(blob, { assetId: artifactId });
-    } catch (error) {
-      report('error', 'Avatar-Export fehlgeschlagen. Bitte erneut speichern.');
-      throw new Error(
-        error instanceof Error ? error.message : 'Avatar-Export-Upload fehlgeschlagen',
-      );
-    }
-    report('activating', 'Export wird aktiviert …');
-    const artifact: AvatarSaveExportArtifact = {
-      artifactId,
-      storagePath: published.storagePath,
-      modelUrl: published.url,
-      byteSize: bytes.byteLength,
-      format: 'glb',
-      payload,
-    };
-    report('success', 'Avatar-Export materialisiert.', artifact);
-    return artifact;
+  if (bytes.byteLength > HOST_AVATAR_MODEL_MAX_BYTES) {
+    report('error', 'Avatar-Export zu groß für den Host-Speicher.');
+    throw new Error(
+      `Avatar-Export zu groß für den Host-Speicher (max. ${HOST_AVATAR_MODEL_MAX_BYTES} Bytes).`,
+    );
   }
-
-  const ownerUserId = await getAuthenticatedUserId();
-  const storagePath = buildAvatarExportStoragePath({ ownerUserId, artifactId });
-
-  const blob = new Blob([new Uint8Array(bytes)], { type: 'model/gltf-binary' });
-  const { error: uploadError } = await supabase.storage.from(BUCKET).upload(storagePath, blob, {
-    contentType: 'model/gltf-binary',
-    upsert: false,
+  const blob = new File([new Uint8Array(bytes)], `avatar-export-${artifactId}.glb`, {
+    type: 'model/gltf-binary',
   });
-  if (uploadError) {
+  let published;
+  try {
+    published = await publishHostAvatarModel(blob, { assetId: artifactId });
+  } catch (error) {
     report('error', 'Avatar-Export fehlgeschlagen. Bitte erneut speichern.');
-    throw new Error(`Avatar-Export-Upload fehlgeschlagen: ${uploadError.message}`);
+    throw new Error(
+      error instanceof Error ? error.message : 'Avatar-Export-Upload fehlgeschlagen',
+    );
   }
-
   report('activating', 'Export wird aktiviert …');
-
-  // Deactivate previous active export for this character (exactly-one active).
-  if (input.characterId) {
-    await supabase
-      .from('character_avatar_export_assets')
-      .update({ is_active: false })
-      .eq('owner_user_id', ownerUserId)
-      .eq('character_id', input.characterId)
-      .eq('is_active', true);
-  }
-
-  const { error: insertError } = await supabase.from('character_avatar_export_assets').insert({
-    id: artifactId,
-    owner_user_id: ownerUserId,
-    character_id: input.characterId ?? null,
-    format: 'glb',
-    mime: 'model/gltf-binary',
-    byte_size: bytes.byteLength,
-    storage_path: storagePath,
-    export_contract_version: AVATAR_SAVE_EXPORT_VERSION,
-    morph_contract_version: MORPH_CONTRACT_VERSION,
-    embeds_source_mesh: embedsSourceMesh,
-    is_active: true,
-  });
-  if (insertError) {
-    await supabase.storage.from(BUCKET).remove([storagePath]);
-    report('error', 'Avatar-Export konnte nicht bestätigt werden.');
-    throw new Error(`Avatar-Export-Artefakt konnte nicht gespeichert werden: ${insertError.message}`);
-  }
-
-  const { data: signed, error: signedError } = await supabase.storage
-    .from(BUCKET)
-    .createSignedUrl(storagePath, SIGNED_URL_SECONDS);
-  if (signedError || !signed?.signedUrl) {
-    // Roll back active flag so previous artifact remains the only active one.
-    await supabase
-      .from('character_avatar_export_assets')
-      .update({ is_active: false })
-      .eq('id', artifactId)
-      .eq('owner_user_id', ownerUserId);
-    report('error', 'Export-URL konnte nicht erzeugt werden.');
-    throw new Error(signedError?.message ?? 'Signed URL fehlt');
-  }
-
   const artifact: AvatarSaveExportArtifact = {
     artifactId,
-    storagePath,
-    modelUrl: signed.signedUrl,
+    storagePath: published.storagePath,
+    modelUrl: published.url,
     byteSize: bytes.byteLength,
     format: 'glb',
     payload,
   };
-
   report('success', 'Avatar-Export materialisiert.', artifact);
   return artifact;
 }
 ```
 
-### src/infrastructure/character/avatar/character-avatar-import-service.ts:46
+### src/infrastructure/character/avatar/character-avatar-import-service.ts:40
 
 ```ts
 export interface AvatarImportProgress {
@@ -3593,7 +2282,7 @@ export interface AvatarImportProgress {
 }
 ```
 
-### src/infrastructure/character/avatar/character-avatar-import-service.ts:53
+### src/infrastructure/character/avatar/character-avatar-import-service.ts:47
 
 ```ts
 export interface AvatarImportDraftV2 {
@@ -3609,7 +2298,7 @@ export interface AvatarImportDraftV2 {
 }
 ```
 
-### src/infrastructure/character/avatar/character-avatar-import-service.ts:291
+### src/infrastructure/character/avatar/character-avatar-import-service.ts:200
 
 ```ts
 export async function uploadAndAnalyzeCharacterAvatarModel(
@@ -3619,12 +2308,13 @@ export async function uploadAndAnalyzeCharacterAvatarModel(
     onProgress?: (progress: AvatarImportProgress) => void;
   } = {},
 ): Promise<AvatarImportDraftV2> {
+  assertHost();
   const report: ProgressReporter = (status, message, extra) => {
     options.onProgress?.({ status, message, artifact: extra?.artifact, summary: extra?.summary });
   };
 
   report('validating', 'Datei wird geprüft …');
-  if (isHostLibraryEnabled() && file.size > HOST_AVATAR_MODEL_MAX_BYTES) {
+  if (file.size > HOST_AVATAR_MODEL_MAX_BYTES) {
     const message = `Datei zu groß für den Host-Import (max. ${HOST_AVATAR_MODEL_MAX_BYTES} Bytes).`;
     report('failed', message);
     throw new Error(message);
@@ -3652,85 +2342,41 @@ export async function uploadAndAnalyzeCharacterAvatarModel(
     throw new Error(message);
   }
 
-  if (isHostLibraryEnabled()) {
-    return uploadAndAnalyzeHost(file, bytes, format, mime, {
-      characterId: options.characterId,
-      report,
-    });
-  }
-
-  return uploadAndAnalyzeLegacy(file, bytes, format, mime, {
+  return uploadAndAnalyzeHost(file, bytes, format, mime, {
     characterId: options.characterId,
     report,
   });
 }
 ```
 
-### src/infrastructure/character/avatar/character-avatar-import-service.ts:348
+### src/infrastructure/character/avatar/character-avatar-import-service.ts:251
 
 ```ts
 export async function keepOriginalImportedAvatar(input: {
   draft: AvatarImportDraftV2;
   characterId?: string | null;
 }): Promise<ImportOriginalKeepSeedV1> {
+  assertHost();
+  void input.characterId;
   if (!input.draft.summary.canKeepOriginal || input.draft.summary.flowStatus === 'failed') {
     throw new Error('Original behalten ist für dieses Analyseergebnis nicht verfügbar.');
-  }
-
-  if (isHostLibraryEnabled()) {
-    try {
-      const activated = await activateAvatarArtifact(input.draft.artifactId);
-      if (activated.ok === false) {
-        throw new Error(activated.reasonDe);
-      }
-    } catch (error) {
-      const message =
-        error instanceof Error ? error.message : 'Import konnte nicht aktiviert werden.';
-      throw new Error(message);
-    }
-    return input.draft.keepSeed;
-  }
-
-  const ownerUserId = await getAuthenticatedUserId();
-
-  if (input.characterId) {
-    await supabase
-      .from('character_avatar_import_assets')
-      .update({ is_active: false })
-      .eq('owner_user_id', ownerUserId)
-      .eq('character_id', input.characterId)
-      .eq('is_active', true);
-  }
-
-  const { error: activateImportError } = await supabase
-    .from('character_avatar_import_assets')
-    .update({ is_active: true })
-    .eq('id', input.draft.importAssetId)
-    .eq('owner_user_id', ownerUserId);
-
-  if (activateImportError) {
-    throw new Error(
-      `Import konnte nicht aktiviert werden: ${activateImportError.message}`,
-    );
   }
 
   try {
     const activated = await activateAvatarArtifact(input.draft.artifactId);
     if (activated.ok === false) {
-      console.warn('[avatar-import] V2 artifact activate:', activated.reasonDe);
+      throw new Error(activated.reasonDe);
     }
   } catch (error) {
-    console.warn(
-      '[avatar-import] V2 artifact activate skipped:',
-      error instanceof Error ? error.message : error,
-    );
+    const message =
+      error instanceof Error ? error.message : 'Import konnte nicht aktiviert werden.';
+    throw new Error(message);
   }
-
   return input.draft.keepSeed;
 }
 ```
 
-### src/infrastructure/character/avatar/character-avatar-import-service.ts:412
+### src/infrastructure/character/avatar/character-avatar-import-service.ts:278
 
 ```ts
 export async function importCharacterAvatarModel(
@@ -3772,7 +2418,7 @@ export async function importCharacterAvatarModel(
 }
 ```
 
-### src/infrastructure/character/avatar/character-avatar-import-service.ts:450
+### src/infrastructure/character/avatar/character-avatar-import-service.ts:316
 
 ```ts
 export function avatarImportLimits() {
@@ -3783,7 +2429,7 @@ export function avatarImportLimits() {
 }
 ```
 
-### src/infrastructure/character/avatar/character-avatar-meshy-service.ts:30
+### src/infrastructure/character/avatar/character-avatar-meshy-service.ts:28
 
 ```ts
 export interface MeshyAvatarConfig {
@@ -3801,7 +2447,7 @@ export interface MeshyAvatarConfig {
 }
 ```
 
-### src/infrastructure/character/avatar/character-avatar-meshy-service.ts:128
+### src/infrastructure/character/avatar/character-avatar-meshy-service.ts:121
 
 ```ts
 export async function fetchMeshyAvatarConfig(): Promise<MeshyAvatarConfig> {
@@ -3851,7 +2497,7 @@ export async function fetchMeshyAvatarConfig(): Promise<MeshyAvatarConfig> {
 }
 ```
 
-### src/infrastructure/character/avatar/character-avatar-meshy-service.ts:174
+### src/infrastructure/character/avatar/character-avatar-meshy-service.ts:167
 
 ```ts
 export async function startMeshyAvatarJob(input: {
@@ -3919,7 +2565,7 @@ export async function startMeshyAvatarJob(input: {
 }
 ```
 
-### src/infrastructure/character/avatar/character-avatar-meshy-service.ts:238
+### src/infrastructure/character/avatar/character-avatar-meshy-service.ts:231
 
 ```ts
 export async function pollMeshyAvatarJob(jobId: string): Promise<MeshyAvatarJobSnapshot> {
@@ -3932,7 +2578,7 @@ export async function pollMeshyAvatarJob(jobId: string): Promise<MeshyAvatarJobS
 }
 ```
 
-### src/infrastructure/character/avatar/character-avatar-meshy-service.ts:247
+### src/infrastructure/character/avatar/character-avatar-meshy-service.ts:240
 
 ```ts
 export async function retryMeshyAvatarJob(jobId: string): Promise<MeshyAvatarJobSnapshot> {
@@ -7135,19 +5781,19 @@ export function toCharacterTraitManifest(input: {
 }
 ```
 
-### src/infrastructure/character/character-adventure-arc-service.ts:303
+### src/infrastructure/character/character-adventure-arc-service.ts:137
 
 ```ts
 export const characterAdventureArcService = new CharacterAdventureArcService();
 ```
 
-### src/infrastructure/character/character-lore-service.ts:173
+### src/infrastructure/character/character-lore-service.ts:136
 
 ```ts
 export const characterLoreService = new CharacterLoreService();
 ```
 
-### src/infrastructure/character/character-preset-service.ts:71
+### src/infrastructure/character/character-preset-service.ts:72
 
 ```ts
 export function assertValidSnapshot(snapshot: CharacterPresetSnapshot): void {
@@ -7199,33 +5845,28 @@ export function assertValidSnapshot(snapshot: CharacterPresetSnapshot): void {
 }
 ```
 
-### src/infrastructure/character/character-preset-service.ts:486
+### src/infrastructure/character/character-preset-service.ts:339
 
 ```ts
 export const characterPresetService = new CharacterPresetService();
 ```
 
-### src/infrastructure/character/character-service.ts:109
+### src/infrastructure/character/character-service.ts:143
 
 ```ts
 export type UploadPortraitOptions = {
-  /**
-   * When true, skip client optimize (caller already ran character-portrait intake).
-   * Storage MIME/magic-byte/owner checks still run in the repository.
-   */
   readonly alreadyOptimized?: boolean;
   readonly signal?: AbortSignal;
 };
 ```
 
-### src/infrastructure/character/character-service.ts:122
+### src/infrastructure/character/character-service.ts:148
 
 ```ts
 export async function prepareCharacterPortraitFile(
   file: File,
   signal?: AbortSignal,
 ): Promise<File> {
-  // Lazy import keeps the WebP Worker out of the service module graph until prepare runs.
   const { optimizeMedia } = await import('../media/optimizer');
   let optimizedBytes: Uint8Array | undefined;
   const result = await optimizeMedia({
@@ -7267,7 +5908,7 @@ export async function prepareCharacterPortraitFile(
 }
 ```
 
-### src/infrastructure/character/character-service.ts:527
+### src/infrastructure/character/character-service.ts:466
 
 ```ts
 export const characterService = new CharacterService();
@@ -10971,338 +9612,10 @@ export class VrmLiveActAvatarOutput implements LiveActAvatarOutput {
 }
 ```
 
-### src/infrastructure/character/supabase-character.repository.ts:72
-
-```ts
-export class SupabaseCharacterRepository {
-  private readonly tableName = 'characters';
-
-  mapToViewModel(dto: CharacterDto): CharacterVm {
-    const rulesetKey = dto.ruleset_key === 'dnd-5.5e' ? 'dnd-5.5e' : 'sagatree-core';
-    const inventoryRead = readCharacterInventory(dto);
-    return {
-      id: dto.id,
-      publicId: typeof dto.public_id === 'string' ? dto.public_id : undefined,
-      name: dto.name,
-      description: dto.description,
-      class: dto.class,
-      race: dto.race,
-      rulesetKey,
-      dndBackground: rulesetKey === 'dnd-5.5e' && typeof dto.dnd_background === 'string' ? dto.dnd_background : undefined,
-      level: dto.level,
-      sheetStatus: normalizeSheetStatus(dto.sheet_status),
-      backgroundStory: dto.background_story,
-      notes: typeof dto.notes === 'string' ? dto.notes : '',
-      personalityTraits: normalizeTextBlocks(dto.personality_traits),
-      ideals: normalizeTextBlocks(dto.ideals),
-      bonds: normalizeTextBlocks(dto.bonds),
-      flaws: normalizeTextBlocks(dto.flaws),
-      appearance: normalizeCharacterAppearance(dto.appearance),
-      attributes: normalizeAttributes(dto.attributes),
-      skills: normalizeSkills(dto.skills),
-      sagaTreeProfile: normalizeSagaTreeProfile(dto.sagatree_profile),
-      abilities: dto.abilities || [],
-      inventory: normalizeInventory(dto.inventory),
-      inventoryV2: inventoryRead.state,
-      inventorySchemaVersion: inventoryRead.authoritativeV2 ? 2 : 1,
-      abstractResources: parseCharacterAbstractResources(dto.resources),
-      emotionProfiles: dto.emotion_profiles || [],
-      portraitUrl: dto.portrait_url || undefined,
-      createdAt: new Date(dto.created_at),
-      updatedAt: new Date(dto.updated_at),
-    };
-  }
-
-  async getUserCharacterSummaries(): Promise<CharacterSummaryVm[]> {
-    const userId = await getAuthenticatedUserId();
-    const { data, error } = await raceWithTimeoutReject(
-      supabase
-        .from(this.tableName)
-        .select('id, public_id, name, class, race, level, portrait_url, sheet_status')
-        .eq('owner_user_id', userId)
-        .eq('character_type', 'pc')
-        .order('created_at', { ascending: false }),
-      SUPABASE_QUERY_TIMEOUT_MS,
-      'Failed to fetch characters: request timed out',
-    );
-    if (error) throw new Error(`Failed to fetch characters: ${error.message}`);
-    return (data ?? []).map((row) => ({
-      id: row.id as string,
-      publicId: typeof row.public_id === 'string' ? row.public_id : undefined,
-      name: typeof row.name === 'string' ? row.name : '',
-      class: typeof row.class === 'string' ? row.class : '',
-      race: typeof row.race === 'string' ? row.race : '',
-      level: typeof row.level === 'number' ? row.level : 1,
-      sheetStatus: normalizeSheetStatus(row.sheet_status),
-      portraitUrl: typeof row.portrait_url === 'string' ? row.portrait_url : undefined,
-    }));
-  }
-
-  async getUserCharacters(): Promise<CharacterVm[]> {
-    const userId = await getAuthenticatedUserId();
-    const { data, error } = await raceWithTimeoutReject(
-      supabase.from(this.tableName).select('*').eq('owner_user_id', userId).eq('character_type', 'pc').order('created_at', { ascending: false }),
-      SUPABASE_QUERY_TIMEOUT_MS,
-      'Failed to fetch characters: request timed out',
-    );
-    if (error) throw new Error(`Failed to fetch characters: ${error.message}`);
-    return (data || []).map((character) => this.mapToViewModel(character as CharacterDto));
-  }
-
-  async getCharacterById(id: string): Promise<CharacterVm> {
-    const userId = await getAuthenticatedUserId();
-    const { data, error } = await supabase.from(this.tableName).select('*').eq('id', id).eq('owner_user_id', userId).single();
-    if (error) throw new Error(`Failed to fetch character: ${error.message}`);
-    if (!data) throw new Error('Character not found');
-    return this.mapToViewModel(data as CharacterDto);
-  }
-
-  /**
-   * Batch roster meta for lobby — one `in(id)` select, owner-scoped, no full sheet JSONB.
-   * Missing / non-owned ids are omitted (caller applies fallbacks).
-   */
-  async getCharacterRosterMetaByIds(ids: readonly string[]): Promise<CharacterRosterMetaVm[]> {
-    const unique = [...new Set(ids.filter((id) => typeof id === 'string' && id.length > 0))];
-    if (unique.length === 0) return [];
-    const userId = await getAuthenticatedUserId();
-    const { data, error } = await raceWithTimeoutReject(
-      supabase
-        .from(this.tableName)
-        .select('id, public_id, name, portrait_url, level, class, race, sagatree_profile')
-        .eq('owner_user_id', userId)
-        .in('id', unique),
-      SUPABASE_QUERY_TIMEOUT_MS,
-      'Failed to fetch character roster meta: request timed out',
-    );
-    if (error) throw new Error(`Failed to fetch character roster meta: ${error.message}`);
-    return (data ?? []).map((row) => {
-      const profile =
-        row.sagatree_profile && typeof row.sagatree_profile === 'object'
-          ? (row.sagatree_profile as Record<string, unknown>)
-          : null;
-      const essenceRaw = profile && typeof profile.essence === 'string' ? profile.essence : null;
-      const archetypeRaw =
-        profile && typeof profile.archetype === 'string' ? profile.archetype : null;
-      return {
-        id: row.id as string,
-        publicId: typeof row.public_id === 'string' ? row.public_id : null,
-        name: typeof row.name === 'string' && row.name.length > 0 ? row.name : 'Charakter',
-        portraitUrl: typeof row.portrait_url === 'string' && row.portrait_url.length > 0
-          ? row.portrait_url
-          : null,
-        level: typeof row.level === 'number' && Number.isFinite(row.level) ? row.level : null,
-        classLabel: typeof row.class === 'string' && row.class.trim().length > 0
-          ? row.class.trim()
-          : null,
-        raceKey: typeof row.race === 'string' && row.race.trim().length > 0
-          ? row.race.trim()
-          : null,
-        essenceKey: essenceRaw,
-        archetypeKey: archetypeRaw,
-      };
-    });
-  }
-
-  async getCharacterByPublicId(publicId: string): Promise<CharacterVm> {
-    const userId = await getAuthenticatedUserId();
-    const { data, error } = await supabase
-      .from(this.tableName)
-      .select('*')
-      .eq('public_id', publicId.trim().toUpperCase())
-      .eq('owner_user_id', userId)
-      .single();
-    if (error) throw new Error(`Failed to fetch character: ${error.message}`);
-    if (!data) throw new Error('Character not found');
-    return this.mapToViewModel(data as CharacterDto);
-  }
-
-  async createCharacter(payload: CreateCharacterDto): Promise<CharacterVm> {
-    const userId = await getAuthenticatedUserId();
-    const rulesetKey = payload.ruleset_key ?? 'sagatree-core';
-    const attributes = normalizeAttributes(payload.attributes);
-    const level = payload.level || 1;
-    const sagatreeProfile = rulesetKey === 'sagatree-core'
-      ? normalizeSagaTreeProfile(payload.sagatree_profile)
-      : null;
-    const skills = normalizeSkills(payload.skills);
-    const sheetStatus = normalizeSheetStatus(payload.sheet_status);
-    // Incomplete drafts skip full build asserts; complete sheets stay strict.
-    if (sagatreeProfile && sheetStatus === 'complete') {
-      assertValidSagaTreeCharacterPersistence(attributes, skills, sagatreeProfile, level);
-    }
-    const inventoryV2 = payload.inventory_v2
-      ? await assertWritableInventoryV2(payload.inventory_v2, null)
-      : undefined;
-    const characterData: Partial<CharacterDto> = {
-      owner_user_id: userId,
-      character_type: 'pc',
-      name: payload.name,
-      description: payload.description,
-      class: payload.class,
-      race: payload.race,
-      ruleset_key: rulesetKey,
-      dnd_background: rulesetKey === 'dnd-5.5e' ? payload.dnd_background ?? null : null,
-      level,
-      sheet_status: sheetStatus,
-      background_story: payload.background_story,
-      notes: payload.notes?.trim() || null,
-      personality_traits: payload.personality_traits,
-      ideals: payload.ideals,
-      bonds: payload.bonds,
-      flaws: payload.flaws,
-      appearance: normalizeCharacterAppearance(payload.appearance),
-      attributes,
-      skills: normalizeSkills(payload.skills),
-      sagatree_profile: sagatreeProfile,
-      abilities: payload.abilities ?? [],
-      inventory: normalizeInventory(payload.inventory),
-      ...(inventoryV2
-        ? { inventory_v2: inventoryV2, inventory_schema_version: 2 as const }
-        : { inventory_schema_version: 1 as const }),
-      resources: serializeCharacterAbstractResources(
-        payload.abstractResources ?? createDefaultAbstractResources(),
-      ),
-      emotion_profiles: [],
-      portrait_url: payload.portrait_url || undefined,
-    };
-    const { data, error } = await supabase.from(this.tableName).insert(characterData).select().single();
-    if (error) throw new Error(`Failed to create character: ${error.message}`);
-    return this.mapToViewModel(data as CharacterDto);
-  }
-
-  async updateCharacter(id: string, payload: UpdateCharacterDto): Promise<CharacterVm> {
-    const userId = await getAuthenticatedUserId();
-    const rulesetPatch = payload.ruleset_key
-      ? { ruleset_key: payload.ruleset_key, dnd_background: payload.ruleset_key === 'dnd-5.5e' ? payload.dnd_background ?? null : null }
-      : {};
-    const attributes = payload.attributes ? normalizeAttributes(payload.attributes) : undefined;
-    const profilePatch = payload.sagatree_profile;
-    const sagatreeProfile = profilePatch ? normalizeSagaTreeProfile(profilePatch) : undefined;
-    // Any SagaTree-relevant field in the patch triggers validation of the full
-    // effective future state (patch values merged over the stored character).
-    const touchesSagaTreeState = Boolean(
-      payload.attributes
-        || payload.skills
-        || payload.sagatree_profile
-        || typeof payload.level === 'number'
-        || payload.ruleset_key
-        || payload.sheet_status,
-    );
-    if (touchesSagaTreeState) {
-      // Loaded exactly once; owner-scoped, so foreign characters stay unreachable.
-      const existing = await this.getCharacterById(id);
-      const effectiveRuleset = payload.ruleset_key ?? existing.rulesetKey;
-      const effectiveSheetStatus = payload.sheet_status
-        ? normalizeSheetStatus(payload.sheet_status)
-        : existing.sheetStatus;
-      if (effectiveRuleset === 'sagatree-core' && effectiveSheetStatus === 'complete') {
-        assertValidSagaTreeCharacterPersistence(
-          attributes ?? existing.attributes,
-          payload.skills ? normalizeSkills(payload.skills) : existing.skills,
-          sagatreeProfile ?? existing.sagaTreeProfile,
-          typeof payload.level === 'number' ? payload.level : existing.level,
-        );
-      }
-    }
-    const {
-      inventory_v2: inventoryV2Patch,
-      inventory: inventoryPatch,
-      abstractResources: abstractResourcesPatch,
-      // Callers must not flip the marker without a validated inventory_v2 write.
-      inventory_schema_version: _ignoredSchemaVersion,
-      ...safePayload
-    } = payload as UpdateCharacterDto & { inventory_schema_version?: 1 | 2 };
-
-    const inventoryV2 = inventoryV2Patch
-      ? await assertWritableInventoryV2(inventoryV2Patch, id)
-      : undefined;
-
-    const updatePayload = {
-      ...safePayload,
-      ...rulesetPatch,
-      ...(payload.sheet_status ? { sheet_status: normalizeSheetStatus(payload.sheet_status) } : {}),
-      ...(payload.appearance ? { appearance: normalizeCharacterAppearance(payload.appearance) } : {}),
-      ...(attributes ? { attributes } : {}),
-      ...(payload.skills ? { skills: normalizeSkills(payload.skills) } : {}),
-      ...(sagatreeProfile ? { sagatree_profile: sagatreeProfile } : {}),
-      ...(inventoryPatch ? { inventory: normalizeInventory(inventoryPatch) } : {}),
-      ...(inventoryV2
-        ? { inventory_v2: inventoryV2, inventory_schema_version: 2 as const }
-        : {}),
-      ...(abstractResourcesPatch
-        ? { resources: serializeCharacterAbstractResources(abstractResourcesPatch) }
-        : {}),
-      ...(typeof payload.notes === 'string' ? { notes: payload.notes.trim() || null } : {}),
-      updated_at: new Date().toISOString(),
-    };
-    const { data, error } = await supabase.from(this.tableName).update(updatePayload).eq('id', id).eq('owner_user_id', userId).select().single();
-    if (error) throw new Error(`Failed to update character: ${error.message}`);
-    return this.mapToViewModel(data as CharacterDto);
-  }
-
-  async deleteCharacter(id: string): Promise<void> {
-    const userId = await getAuthenticatedUserId();
-    const { error } = await supabase.from(this.tableName).delete().eq('id', id).eq('owner_user_id', userId);
-    if (error) throw new Error(`Failed to delete character: ${error.message}`);
-  }
-
-  async searchCharacters(query: string): Promise<CharacterVm[]> {
-    const userId = await getAuthenticatedUserId();
-    const { data, error } = await supabase.from(this.tableName).select('*').eq('owner_user_id', userId).eq('character_type', 'pc').ilike('name', `%${query}%`).order('created_at', { ascending: false });
-    if (error) throw new Error(`Failed to search characters: ${error.message}`);
-    return (data || []).map((character) => this.mapToViewModel(character as CharacterDto));
-  }
-
-  async uploadPortrait(file: File): Promise<string> {
-    const userId = await getAuthenticatedUserId();
-    const sniffed = await sniffPortraitMime(file);
-    if (!sniffed) {
-      throw new Error('Invalid file type. Only PNG, JPEG, WEBP and GIF images are allowed.');
-    }
-    if (file.type && file.type !== sniffed) {
-      throw new Error('Declared image type does not match file contents.');
-    }
-    const extension = CHARACTER_PORTRAIT_MIME_EXTENSIONS[sniffed];
-    if (file.size > CHARACTER_PORTRAIT_MAX_BYTES) throw new Error('File too large. Maximum size is 5MB.');
-    const filePath = `${userId}/${crypto.randomUUID()}.${extension}`;
-    const { error: uploadError } = await supabase.storage.from(CHARACTER_PORTRAIT_BUCKET).upload(filePath, file, {
-      contentType: sniffed,
-      upsert: false,
-    });
-    if (uploadError) throw new Error(`Failed to upload portrait: ${uploadError.message}`);
-    const { data: signedUrlData, error: signedUrlError } = await supabase.storage
-      .from(CHARACTER_PORTRAIT_BUCKET)
-      .createSignedUrl(filePath, CHARACTER_PORTRAIT_SIGNED_SECONDS);
-    if (signedUrlError || !signedUrlData?.signedUrl) {
-      throw new Error(signedUrlError ? `Failed to create portrait URL: ${signedUrlError.message}` : 'Failed to create portrait URL');
-    }
-    return signedUrlData.signedUrl;
-  }
-}
-```
-
-### src/infrastructure/character/supabase-character.repository.ts:378
-
-```ts
-export const supabaseCharacterRepository = new SupabaseCharacterRepository();
-```
-
 
 ## Remaining backend helper operations
 
-### src/infrastructure/character/avatar/character-avatar-artifact-service.ts:56
-
-```ts
-async function getAuthenticatedUserId(): Promise<string> {
-  const { data, error } = await supabase.auth.getUser();
-  if (error || !data.user?.id) {
-    throw new Error('Anmeldung erforderlich für Avatar-Artefakte.');
-  }
-  return data.user.id;
-}
-```
-
-### src/infrastructure/character/avatar/character-avatar-export-service.ts:52
+### src/infrastructure/character/avatar/character-avatar-export-service.ts:45
 
 ```ts
 async function tryFetchSourceMeshBytes(url: string | undefined): Promise<Uint8Array | undefined> {
@@ -11320,99 +9633,13 @@ async function tryFetchSourceMeshBytes(url: string | undefined): Promise<Uint8Ar
 }
 ```
 
-### src/infrastructure/character/avatar/character-avatar-import-service.ts:202
-
-```ts
-async function uploadAndAnalyzeLegacy(
-  file: File,
-  bytes: Uint8Array,
-  format: AvatarImportArtifact['format'],
-  mime: string,
-  options: {
-    characterId?: string | null;
-    report: ProgressReporter;
-  },
-): Promise<AvatarImportDraftV2> {
-  options.report('uploading', 'Modell wird hochgeladen …');
-  const ownerUserId = await getAuthenticatedUserId();
-  const importAssetId = crypto.randomUUID();
-  const storagePath = buildAvatarImportStoragePath({
-    ownerUserId,
-    artifactId: importAssetId,
-    format,
-  });
-
-  const blob = new Blob([new Uint8Array(bytes)], { type: mime });
-  const { error: uploadError } = await supabase.storage.from(BUCKET).upload(storagePath, blob, {
-    contentType: mime,
-    upsert: false,
-  });
-  if (uploadError) {
-    options.report('failed', 'Upload fehlgeschlagen. Bitte erneut versuchen.');
-    throw new Error(`Avatar-Upload fehlgeschlagen: ${uploadError.message}`);
-  }
-
-  // Draft row — inactive so a failed analysis never replaces the active avatar.
-  const { error: insertError } = await supabase.from('character_avatar_import_assets').insert({
-    id: importAssetId,
-    owner_user_id: ownerUserId,
-    character_id: options.characterId ?? null,
-    format,
-    mime,
-    byte_size: bytes.byteLength,
-    storage_path: storagePath,
-    rig_analysis_status: 'pending',
-    is_active: false,
-  });
-  if (insertError) {
-    await supabase.storage.from(BUCKET).remove([storagePath]);
-    options.report('failed', 'Import konnte nicht bestätigt werden.');
-    throw new Error(`Avatar-Artefakt konnte nicht gespeichert werden: ${insertError.message}`);
-  }
-
-  let v2ArtifactId: string = importAssetId;
-  try {
-    const artifact = await materializeArtifactFromImportAsset({
-      importAssetId,
-      characterId: options.characterId,
-      storagePath,
-      format,
-    });
-    v2ArtifactId = artifact.artifactId;
-  } catch (error) {
-    // Artifact table may be unavailable in older envs — keep import draft usable.
-    console.warn(
-      '[avatar-import] V2 artifact materialize skipped:',
-      error instanceof Error ? error.message : error,
-    );
-  }
-
-  const { data: signed, error: signedError } = await supabase.storage
-    .from(BUCKET)
-    .createSignedUrl(storagePath, SIGNED_URL_SECONDS);
-  if (signedError || !signed?.signedUrl) {
-    options.report('failed', 'Vorschau-URL konnte nicht erzeugt werden.');
-    throw new Error(signedError?.message ?? 'Signed URL fehlt');
-  }
-
-  const summary = await analyzeImportBytes(bytes, options.report);
-  return finishDraft({
-    importAssetId,
-    artifactId: v2ArtifactId,
-    format,
-    byteSize: bytes.byteLength,
-    storagePath,
-    modelUrl: signed.signedUrl,
-    summary,
-    report: options.report,
-  });
-}
-```
-
-### src/infrastructure/character/avatar/character-avatar-meshy-service.ts:92
+### src/infrastructure/character/avatar/character-avatar-meshy-service.ts:89
 
 ```ts
 async function invokeHost(body: Record<string, unknown>): Promise<FunctionResponse> {
+  if (!isHostLibraryEnabled()) {
+    return { status: 'error', message: 'Avatar-3D-Dienst nicht erreichbar.' };
+  }
   const base = getHostAuthBaseUrl()?.replace(/\/$/, '') ?? '';
   if (!base) {
     return { status: 'error', message: 'Avatar-3D-Dienst nicht erreichbar.' };
@@ -11438,224 +9665,19 @@ async function invokeHost(body: Record<string, unknown>): Promise<FunctionRespon
 }
 ```
 
-### src/infrastructure/character/avatar/character-avatar-meshy-service.ts:117
-
-```ts
-async function invoke(body: Record<string, unknown>): Promise<FunctionResponse> {
-  if (isHostLibraryEnabled()) {
-    return invokeHost(body);
-  }
-  const { data, error } = await supabase.functions.invoke('character-avatar-meshy', { body });
-  if (error) {
-    return { status: 'error', message: error.message || 'Edge Function fehlgeschlagen.' };
-  }
-  return parseResponse(data);
-}
-```
-
-### src/infrastructure/character/character-adventure-arc-service.ts:113
-
-```ts
-async listArcsForCharacter(characterId: string): Promise<CharacterAdventureArcVm[]> {
-    const trimmedId = characterId.trim();
-    if (!trimmedId) throw new Error('Character id is required.');
-
-    if (isHostLibraryEnabled()) {
-      const rows = await fetchHostLibraryAdventureArcs(trimmedId);
-      return rows
-        .map(mapHostArc)
-        .filter((row): row is CharacterAdventureArcVm => row !== null);
-    }
-
-    const { data: memberships, error: membershipError } = await supabase
-      .from('project_members')
-      .select('project_id, joined_at, status')
-      .eq('character_id', trimmedId);
-
-    if (membershipError) {
-      throw new Error(`Abenteuer-Mitgliedschaften konnten nicht geladen werden: ${membershipError.message}`);
-    }
-
-    const activeMemberships = (memberships ?? []).filter((row) => row.status === 'active');
-
-    const { data: existingArcs, error: arcsError } = await supabase
-      .from(TABLE)
-      .select('*')
-      .eq('character_id', trimmedId)
-      .order('started_at', { ascending: false });
-
-    if (arcsError) {
-      throw new Error(`Abenteuer-Statistik konnte nicht geladen werden: ${arcsError.message}`);
-    }
-
-    const arcsByProject = new Map(
-      ((existingArcs ?? []) as CharacterAdventureArcDto[]).map((arc) => [arc.project_id, arc]),
-    );
-
-    for (const membership of activeMemberships) {
-      const projectId = membership.project_id as string;
-      if (arcsByProject.has(projectId)) continue;
-
-      const { data: inserted, error: insertError } = await supabase
-        .from(TABLE)
-        .insert({
-          character_id: trimmedId,
-          project_id: projectId,
-          status: 'active',
-          started_at: membership.joined_at ?? new Date().toISOString(),
-          developments: [],
-        })
-        .select('*')
-        .single();
-
-      if (insertError) {
-        // Concurrent upsert / unique race: reload later in this pass.
-        if (insertError.code === '23505') continue;
-        throw new Error(`Abenteuer-Bogen konnte nicht angelegt werden: ${insertError.message}`);
-      }
-
-      arcsByProject.set(projectId, inserted as CharacterAdventureArcDto);
-    }
-
-    const { data: refreshed, error: refreshError } = await supabase
-      .from(TABLE)
-      .select('*')
-      .eq('character_id', trimmedId)
-      .order('started_at', { ascending: false });
-
-    if (refreshError) {
-      throw new Error(`Abenteuer-Statistik konnte nicht aktualisiert werden: ${refreshError.message}`);
-    }
-
-    const arcs = (refreshed ?? []) as CharacterAdventureArcDto[];
-    if (arcs.length === 0) return [];
-
-    const projectIds = [...new Set(arcs.map((arc) => arc.project_id))];
-
-    const [{ data: projects, error: projectsError }, { data: sessions, error: sessionsError }] = await Promise.all([
-      supabase.from('projects').select('id, name, status').in('id', projectIds),
-      supabase.from('sessions').select('project_id').in('project_id', projectIds),
-    ]);
-
-    if (projectsError) {
-      throw new Error(`Projekte zur Statistik konnten nicht geladen werden: ${projectsError.message}`);
-    }
-    if (sessionsError) {
-      throw new Error(`Sessions zur Statistik konnten nicht geladen werden: ${sessionsError.message}`);
-    }
-
-    const projectMeta = new Map(
-      (projects ?? []).map((project) => [
-        project.id as string,
-        {
-          name: typeof project.name === 'string' ? project.name : 'Unbenanntes Abenteuer',
-          status: typeof project.status === 'string' ? project.status : null,
-        },
-      ]),
-    );
-
-    const sessionCounts = new Map<string, number>();
-    for (const session of sessions ?? []) {
-      const projectId = session.project_id as string;
-      sessionCounts.set(projectId, (sessionCounts.get(projectId) ?? 0) + 1);
-    }
-
-    return arcs.map((arc) => {
-      const meta = projectMeta.get(arc.project_id);
-      return mapArc(
-        arc,
-        meta?.name ?? 'Unbekanntes Abenteuer',
-        meta?.status ?? null,
-        sessionCounts.get(arc.project_id) ?? 0,
-      );
-    });
-  }
-```
-
-### src/infrastructure/character/character-adventure-arc-service.ts:228
-
-```ts
-async appendDevelopment(
-    arcId: string,
-    input: AppendAdventureDevelopmentInput,
-  ): Promise<CharacterAdventureArcVm> {
-    const title = input.title.trim();
-    if (!title) throw new Error('Titel der Entwicklung ist erforderlich.');
-    if (!isDevelopmentKind(input.kind)) throw new Error('Ungültige Entwicklungsart.');
-
-    if (isHostLibraryEnabled()) {
-      const updated = await appendHostLibraryAdventureDevelopment(arcId, {
-        kind: input.kind,
-        title,
-        detail: input.detail,
-        meta: input.meta,
-      });
-      const mapped = mapHostArc(updated);
-      if (!mapped) throw new Error('Host-Abenteuer-Entwicklung: ungültige Antwort');
-      return mapped;
-    }
-
-    const { data: current, error: loadError } = await supabase
-      .from(TABLE)
-      .select('*')
-      .eq('id', arcId)
-      .single();
-
-    if (loadError || !current) {
-      throw new Error(`Abenteuer-Bogen nicht gefunden: ${loadError?.message ?? 'missing'}`);
-    }
-
-    const dto = current as CharacterAdventureArcDto;
-    const developments = normalizeDevelopments(dto.developments);
-    const nextEntry: CharacterAdventureDevelopmentDto = {
-      id: createDevelopmentId(),
-      at: new Date().toISOString(),
-      kind: input.kind,
-      title,
-    };
-    const detail = input.detail?.trim();
-    if (detail) nextEntry.detail = detail;
-    if (input.meta && Object.keys(input.meta).length > 0) nextEntry.meta = input.meta;
-
-    const nextDevelopments = [...developments, nextEntry];
-
-    const { data: updated, error: updateError } = await supabase
-      .from(TABLE)
-      .update({ developments: nextDevelopments })
-      .eq('id', arcId)
-      .select('*')
-      .single();
-
-    if (updateError || !updated) {
-      throw new Error(`Entwicklung konnte nicht gespeichert werden: ${updateError?.message ?? 'missing'}`);
-    }
-
-    const { data: project } = await supabase
-      .from('projects')
-      .select('name, status')
-      .eq('id', (updated as CharacterAdventureArcDto).project_id)
-      .maybeSingle();
-
-    const { count } = await supabase
-      .from('sessions')
-      .select('id', { count: 'exact', head: true })
-      .eq('project_id', (updated as CharacterAdventureArcDto).project_id);
-
-    return mapArc(
-      updated as CharacterAdventureArcDto,
-      typeof project?.name === 'string' ? project.name : 'Unbenanntes Abenteuer',
-      typeof project?.status === 'string' ? project.status : null,
-      count ?? 0,
-    );
-  }
-```
-
-### src/infrastructure/character/character-lore-service.ts:89
+### src/infrastructure/character/character-lore-service.ts:71
 
 ```ts
 async function invokeHostCharacterLore(
   body: Record<string, unknown>,
 ): Promise<CharacterLoreFunctionResponse> {
+  if (!isHostLibraryEnabled()) {
+    return {
+      status: 'error',
+      message:
+        'Hintergrundgeschichte konnte nicht generiert werden. Host-Anmeldung fehlt (VITE_SAGATREE_HOST_AUTH_URL).',
+    };
+  }
   const base = getHostAuthBaseUrl();
   if (base === null) {
     return {
@@ -11664,7 +9686,6 @@ async function invokeHostCharacterLore(
         'Hintergrundgeschichte konnte nicht generiert werden. Bitte versuche es erneut.',
     };
   }
-  // same-origin: base === '' → relative `/api/v1/ai/character-lore`
   const requestUrl = base === '' ? '/api/v1/ai/character-lore' : `${base}/api/v1/ai/character-lore`;
   let response: Response;
   try {
@@ -11693,366 +9714,6 @@ async function invokeHostCharacterLore(
   }
   return parseFunctionResponse(data);
 }
-```
-
-### src/infrastructure/character/character-lore-service.ts:131
-
-```ts
-async generateBackground(
-    request: CharacterLoreGenerationRequest,
-  ): Promise<CharacterLoreGenerationResult> {
-    const body = buildRequestBody(request);
-
-    if (isHostLibraryEnabled()) {
-      const response = await invokeHostCharacterLore(body);
-      if (response.status !== 'ok') {
-        throw new Error(response.message);
-      }
-      return {
-        story: response.story,
-        provider: response.provider,
-        model: response.model,
-      };
-    }
-
-    const { data, error } = await supabase.functions.invoke('character-lore', {
-      body,
-    });
-
-    if (error) {
-      const serverMessage = await getFunctionErrorMessage(error);
-      throw new Error(
-        serverMessage ??
-          'Hintergrundgeschichte konnte nicht generiert werden. Bitte versuche es erneut.',
-      );
-    }
-
-    const response = parseFunctionResponse(data);
-    if (response.status !== 'ok') {
-      throw new Error(response.message);
-    }
-
-    return {
-      story: response.story,
-      provider: response.provider,
-      model: response.model,
-    };
-  }
-```
-
-### src/infrastructure/character/character-preset-service.ts:235
-
-```ts
-async listUserPresets(): Promise<CharacterPresetVm[]> {
-    if (isHostLibraryEnabled()) {
-      const rows = await fetchHostLibraryCharacterPresets();
-      return rows
-        .map(mapHostPresetRow)
-        .filter((row): row is CharacterPresetVm => row !== null);
-    }
-    const userId = await getAuthenticatedUserId();
-    const { data, error } = await raceWithTimeoutReject(
-      supabase
-        .from(TABLE)
-        .select('*')
-        .eq('owner_user_id', userId)
-        .eq('origin', 'user')
-        .order('created_at', { ascending: false }),
-      SUPABASE_QUERY_TIMEOUT_MS,
-      'Presets konnten nicht geladen werden: Zeitüberschreitung',
-    );
-    if (error) throw new Error(`Presets konnten nicht geladen werden: ${error.message}`);
-
-    const rows = (data ?? []) as CharacterPresetDto[];
-    const sourceIds = Array.from(new Set(rows.map((row) => row.source_character_id).filter((id): id is string => Boolean(id))));
-    const existingSourceIds = new Set<string>();
-    if (sourceIds.length > 0) {
-      const { data: characters, error: charactersError } = await supabase
-        .from('characters')
-        .select('id')
-        .eq('owner_user_id', userId)
-        .in('id', sourceIds);
-      if (charactersError) {
-        console.error('Preset source character lookup failed:', charactersError.message);
-      } else {
-        for (const row of characters ?? []) {
-          if (typeof row.id === 'string') existingSourceIds.add(row.id);
-        }
-      }
-    }
-
-    return rows.map((row) => {
-      const missing = Boolean(row.source_character_id) && !existingSourceIds.has(row.source_character_id as string);
-      return mapToViewModel(row, missing);
-    });
-  }
-```
-
-### src/infrastructure/character/character-preset-service.ts:279
-
-```ts
-async getPresetForCharacter(characterId: string): Promise<CharacterPresetVm | null> {
-    if (isHostLibraryEnabled()) {
-      const row = await fetchHostLibraryCharacterPresetForCharacter(characterId);
-      return row ? mapHostPresetRow(row) : null;
-    }
-    const userId = await getAuthenticatedUserId();
-    const { data, error } = await supabase
-      .from(TABLE)
-      .select('*')
-      .eq('owner_user_id', userId)
-      .eq('source_character_id', characterId)
-      .eq('origin', 'user')
-      .maybeSingle();
-    if (error) throw new Error(`Preset konnte nicht geladen werden: ${error.message}`);
-    if (!data) return null;
-    return mapToViewModel(data as CharacterPresetDto, false);
-  }
-```
-
-### src/infrastructure/character/character-preset-service.ts:297
-
-```ts
-async createPresetFromCharacter(input: CreateCharacterPresetInput): Promise<CharacterPresetVm> {
-    if (input.rulesetKey !== 'sagatree-core') {
-      throw new Error('Presets sind derzeit nur für SagaTree Core verfügbar.');
-    }
-    const snapshot = withSafePortraitUrl(input.snapshot);
-    assertValidSnapshot(snapshot);
-
-    if (isHostLibraryEnabled()) {
-      const created = await createHostLibraryCharacterPreset({
-        displayName: input.displayName.trim() || `${snapshot.name.trim()} Preset`,
-        rulesetKey: 'sagatree-core',
-        sourceCharacterId: input.sourceCharacterId,
-        snapshot,
-      });
-      const mapped = mapHostPresetRow(created);
-      if (!mapped) throw new Error('Host-Charakter-Preset anlegen: ungültige Antwort');
-      return mapped;
-    }
-
-    const userId = await getAuthenticatedUserId();
-    const existing = await this.getPresetForCharacter(input.sourceCharacterId);
-    if (existing) {
-      throw new Error('Für diesen Charakter existiert bereits ein Preset. Nutze „Version freigeben“.');
-    }
-
-    const version: CharacterPresetVersionDto = {
-      level: snapshot.level,
-      snapshot,
-      created_at: new Date().toISOString(),
-    };
-    const { data, error } = await supabase
-      .from(TABLE)
-      .insert({
-        owner_user_id: userId,
-        display_name: input.displayName.trim() || `${snapshot.name.trim()} Preset`,
-        ruleset_key: 'sagatree-core',
-        origin: 'user',
-        source_character_id: input.sourceCharacterId,
-        published: false,
-        versions: [version],
-      })
-      .select()
-      .single();
-    if (error) throw new Error(`Preset konnte nicht gespeichert werden: ${error.message}`);
-    return mapToViewModel(data as CharacterPresetDto, false);
-  }
-```
-
-### src/infrastructure/character/character-preset-service.ts:344
-
-```ts
-async releaseVersion(input: ReleaseCharacterPresetVersionInput): Promise<CharacterPresetVm> {
-    const snapshot = withSafePortraitUrl(input.snapshot);
-    assertValidSnapshot(snapshot);
-
-    if (isHostLibraryEnabled()) {
-      const released = await releaseHostLibraryCharacterPresetVersion(input.presetId, snapshot);
-      const mapped = mapHostPresetRow(released);
-      if (!mapped) throw new Error('Host-Charakter-Preset-Version: ungültige Antwort');
-      return mapped;
-    }
-
-    const userId = await getAuthenticatedUserId();
-    const { data: existing, error: loadError } = await supabase
-      .from(TABLE)
-      .select('*')
-      .eq('id', input.presetId)
-      .eq('owner_user_id', userId)
-      .single();
-    if (loadError || !existing) {
-      throw new Error(loadError ? `Preset nicht gefunden: ${loadError.message}` : 'Preset nicht gefunden.');
-    }
-
-    const dto = existing as CharacterPresetDto;
-    const versions = normalizeVersions(dto.versions);
-    if (versions.some((version) => version.level === snapshot.level)) {
-      throw new Error(`Für Level ${snapshot.level} existiert bereits eine Preset-Version.`);
-    }
-
-    const nextVersions = [
-      ...versions,
-      {
-        level: snapshot.level,
-        snapshot,
-        created_at: new Date().toISOString(),
-      },
-    ].sort((a, b) => a.level - b.level || a.created_at.localeCompare(b.created_at));
-
-    const { data, error } = await supabase
-      .from(TABLE)
-      .update({ versions: nextVersions, published: false, updated_at: new Date().toISOString() })
-      .eq('id', input.presetId)
-      .eq('owner_user_id', userId)
-      .select()
-      .single();
-    if (error) throw new Error(`Version konnte nicht freigegeben werden: ${error.message}`);
-    return mapToViewModel(data as CharacterPresetDto, false);
-  }
-```
-
-### src/infrastructure/character/character-preset-service.ts:392
-
-```ts
-async renamePreset(presetId: string, displayName: string): Promise<CharacterPresetVm> {
-    const trimmed = displayName.trim();
-    if (!trimmed) throw new Error('Preset-Name darf nicht leer sein.');
-
-    if (isHostLibraryEnabled()) {
-      const renamed = await renameHostLibraryCharacterPreset(presetId, trimmed);
-      const mapped = mapHostPresetRow(renamed);
-      if (!mapped) throw new Error('Host-Charakter-Preset umbenennen: ungültige Antwort');
-      return mapped;
-    }
-
-    const userId = await getAuthenticatedUserId();
-    const { data, error } = await supabase
-      .from(TABLE)
-      .update({ display_name: trimmed, published: false, updated_at: new Date().toISOString() })
-      .eq('id', presetId)
-      .eq('owner_user_id', userId)
-      .select()
-      .single();
-    if (error) throw new Error(`Preset konnte nicht umbenannt werden: ${error.message}`);
-    return mapToViewModel(data as CharacterPresetDto, false);
-  }
-```
-
-### src/infrastructure/character/character-preset-service.ts:415
-
-```ts
-async duplicatePreset(presetId: string): Promise<CharacterPresetVm> {
-    if (isHostLibraryEnabled()) {
-      const duplicated = await duplicateHostLibraryCharacterPreset(presetId);
-      const mapped = mapHostPresetRow(duplicated);
-      if (!mapped) throw new Error('Host-Charakter-Preset duplizieren: ungültige Antwort');
-      return mapped;
-    }
-
-    const userId = await getAuthenticatedUserId();
-    const { data: existing, error: loadError } = await supabase
-      .from(TABLE)
-      .select('*')
-      .eq('id', presetId)
-      .eq('owner_user_id', userId)
-      .single();
-    if (loadError || !existing) {
-      throw new Error(loadError ? `Preset nicht gefunden: ${loadError.message}` : 'Preset nicht gefunden.');
-    }
-    const dto = existing as CharacterPresetDto;
-    const versions = normalizeVersions(dto.versions);
-    const { data, error } = await supabase
-      .from(TABLE)
-      .insert({
-        owner_user_id: userId,
-        display_name: `${dto.display_name} (Kopie)`,
-        ruleset_key: dto.ruleset_key,
-        origin: 'user',
-        source_character_id: null,
-        published: false,
-        versions,
-      })
-      .select()
-      .single();
-    if (error) throw new Error(`Preset konnte nicht dupliziert werden: ${error.message}`);
-    return mapToViewModel(data as CharacterPresetDto, false);
-  }
-```
-
-### src/infrastructure/character/character-preset-service.ts:452
-
-```ts
-async deletePreset(presetId: string): Promise<void> {
-    if (isHostLibraryEnabled()) {
-      await deleteHostLibraryCharacterPreset(presetId);
-      return;
-    }
-    const userId = await getAuthenticatedUserId();
-    const { error } = await supabase.from(TABLE).delete().eq('id', presetId).eq('owner_user_id', userId);
-    if (error) throw new Error(`Preset konnte nicht gelöscht werden: ${error.message}`);
-  }
-```
-
-### src/infrastructure/character/character-service.ts:341
-
-```ts
-private async assertPersonalLookWriteGate(
-    characterId: string,
-    personalLookProfileId: string | null,
-  ): Promise<void> {
-    const hostMode = isHostLibraryEnabled();
-    let actorUserId: string;
-    if (hostMode) {
-      // Owner-scoped host fetch — proves the actor can access this character.
-      await fetchHostLibraryCharacter(characterId);
-      const who = await probeHostActor();
-      actorUserId = who?.actorId ?? 'solo';
-    } else {
-      actorUserId = await getAuthenticatedUserId();
-      // Owner-scoped fetch — proves the actor can access this character.
-      await supabaseCharacterRepository.getCharacterById(characterId);
-    }
-
-    let sagaAllows = true;
-    if (!hostMode) {
-      try {
-        const arcs = await characterAdventureArcService.listArcsForCharacter(characterId);
-        const activeArcs = arcs.filter((arc) => arc.status === 'active');
-        for (const arc of activeArcs) {
-          const project = await projectService.getProjectById(arc.projectId);
-          if (!project.allowPlayerCharacterLookOverride) {
-            sagaAllows = false;
-            break;
-          }
-        }
-      } catch {
-        sagaAllows = true;
-      }
-    }
-
-    let lookOwnerUserId: string | null = null;
-    let lookStatus: string | null = null;
-    if (personalLookProfileId) {
-      const record = await getLookProfile(personalLookProfileId);
-      lookOwnerUserId = record?.profile.ownerId ?? null;
-      lookStatus = record?.status ?? null;
-    }
-
-    const gate = assertPersonalLookOverrideWrite({
-      // Successful owner-scoped fetch implies actor owns the character.
-      characterOwnerUserId: actorUserId,
-      actorUserId,
-      personalLookProfileId,
-      lookOwnerUserId,
-      lookStatus,
-      sagaAllowsPlayerOverrides: sagaAllows,
-    });
-    if (gate.ok === false) {
-      throw new Error(gate.messageDe);
-    }
-  }
 ```
 
 
@@ -12240,6 +9901,10 @@ private async assertPersonalLookWriteGate(
 | `src/domains/media/optimization-contract.ts` | `ba9216dab79a9c03f66a16b77dedf1c26d4d00d6ae2693cc5a68919d1647846d` |
 | `src/domains/media/optimization-policy.ts` | `6145574bc08d1eb94f54d488ebc1f8bc030c2a956e3e3fd24cb15a7c8e50c5ec` |
 | `src/domains/project/contracts/project.types.ts` | `1777f75b3bd865b09e3fba61324b7331439f5846c98dea1230e27b6f976a0ca8` |
+| `src/domains/resource-id/index.ts` | `0ba8da924c8d9d62250e0428d4acfed48b0055205d3e256808a3f6ac4d045c0b` |
+| `src/domains/resource-id/public-resource-id.ts` | `6df4fbe9cc3c7c1705ab88c1fba8baea8e7daef9b3869b96dcef8ce1e547a9ca` |
+| `src/domains/resource-id/screen-vs-modal.ts` | `3a4b3a3cbfba83eccd410cb08fdbe73c02c9b911effb3ff7918fdf703816ecb1` |
+| `src/domains/resource-id/session-routing.ts` | `8a471af964126b08e663785fec8c260762629d673747ec8b72cec0369b963400` |
 | `src/domains/rules/sagatree/attribute-progression/index.ts` | `1f7ef073a45fd01150c4a90c7b711953f9e0c9efe4ba235bb2cf93e5b6523ae3` |
 | `src/domains/rules/sagatree/background-templates/index.ts` | `4f912284953deae8f0b241899e77c02a5e6c33d5b3b9003cab3e702d4e69fa96` |
 | `src/domains/rules/sagatree/character-creation/index.ts` | `9e032fe110c4665ec6744e0750d07c57a5d6b083fb292b2bd6441e21db7cdb07` |
@@ -12256,6 +9921,7 @@ private async assertPersonalLookWriteGate(
 | `src/domains/rules/sagatree/starting-templates/types.ts` | `c9c79a2284ea49966c4756ca3a2954a9861222fc0a49c59b6e8a371ce192bc6a` |
 | `src/domains/rules/sagatree/starting-templates/validate.ts` | `bb03a23dffac39b6228690dc721caec61e4b0a881e261ca43e4e943e2dac9f4b` |
 | `src/domains/session/contracts/live-session-access.ts` | `5c5fea67625237d0ae703e54e07dceb52d1694df8fe7bab6248b13810f4df411` |
+| `src/domains/session/contracts/session-lifecycle.ts` | `c70eb365aa31906dc8cd8f7a3cc2c5ed1141b5bab8489a1d56ced8a41c1ce5be` |
 | `src/domains/session/media/media-plane-contract.ts` | `7cba204291a86a1159b961048280899541f95c102abad8e2c8f61e7662ba8c1b` |
 | `src/infrastructure/character/avatar/avatar-animation-runtime.ts` | `ebce0a65ab12fafec9b68864de7a79f0d0e595d78ec369d7dfab42bb16c85334` |
 | `src/infrastructure/character/avatar/avatar-asset-manifests.ts` | `2f10a4976588ac2224a57422b6088cc2c827bcd4828fcbd489d89ad29b8072e9` |
@@ -12266,10 +9932,10 @@ private async assertPersonalLookWriteGate(
 | `src/infrastructure/character/avatar/avatar-structure-scanner.ts` | `9b824439400cd99d35ecca9cabb9f1b945870a7b28feaf1d999f9ea85c41d6c1` |
 | `src/infrastructure/character/avatar/base-body-catalog.ts` | `b2ddcc05a3b83c54312ea0eb669deff02b0f058a41b5c1f6b833c48475f9f499` |
 | `src/infrastructure/character/avatar/body-profile-metrics.ts` | `327e1d33b62844c3819cbfdb6985ab2a4093842c596c633f086de6a4357e2e3a` |
-| `src/infrastructure/character/avatar/character-avatar-artifact-service.ts` | `8b4ca91f419497ed1fe31b7b63cdaf4a9d451a0a3e0b0d4e44ba290207ce2089` |
-| `src/infrastructure/character/avatar/character-avatar-export-service.ts` | `a818a81ca45e11bf194a0de002b8c3e0f4c633d5a5a49e2d05166a3ada01d767` |
-| `src/infrastructure/character/avatar/character-avatar-import-service.ts` | `ecaf625caea200469c08fc76a56d44e33e79b36ff7a18a7aa37d66f3c409cd88` |
-| `src/infrastructure/character/avatar/character-avatar-meshy-service.ts` | `a7f47abccf1f21e7c64a23f70e260bb5247166f8a3b032710994bb9717bf35e2` |
+| `src/infrastructure/character/avatar/character-avatar-artifact-service.ts` | `ff032c7a696b3e59715ff1e82c44f24ea65e6167a94cc79c08aa9fc87eca7e12` |
+| `src/infrastructure/character/avatar/character-avatar-export-service.ts` | `d62fbbc1856d319a3d21ac786652634a081610bc207533f3da8b90f7df1ed591` |
+| `src/infrastructure/character/avatar/character-avatar-import-service.ts` | `4710e74cf60e361730d8e5da3f8b9a3345603303ba06fffb2c43397b9c4ebaed` |
+| `src/infrastructure/character/avatar/character-avatar-meshy-service.ts` | `512bc38f16d2815218a36901738a02bea9c38c9746c603ebffc418d0d1900064` |
 | `src/infrastructure/character/avatar/character-studio-manifest.ts` | `af5409910fb6f8a18ea2f5928dca2366b7574c19b7087aa2230add5989dfe77f` |
 | `src/infrastructure/character/avatar/character-studio-runtime.ts` | `1849e8b5418159d2dad700523888ac2a70ea9c99bc4cf240cfae568de042b325` |
 | `src/infrastructure/character/avatar/face-anchor-runtime.ts` | `1cf63b090e45babe137a93244a2d3653afb7c723940487235e77b728c72575b0` |
@@ -12282,10 +9948,10 @@ private async assertPersonalLookWriteGate(
 | `src/infrastructure/character/avatar/toonlab-compatibility-spike.ts` | `e896927b2a2fa4c4ad74550b0909a681596d41bdc356980a31afd42b493f5d30` |
 | `src/infrastructure/character/avatar/trait-asset-allowlist.ts` | `9aa2ecef7d49f63909420f2df21b66a62167e844fd6c97202f49c28058feec57` |
 | `src/infrastructure/character/avatar/trait-lifecycle-three-adapter.ts` | `e02df093e7e626eb3d46d2f8fce8bb133d0a8e7546b89980aee5ae0469072303` |
-| `src/infrastructure/character/character-adventure-arc-service.ts` | `fb4481775a7c53b3e194ec5885fa84af90adc259cfbcdf3dd475645ad6c6fea6` |
-| `src/infrastructure/character/character-lore-service.ts` | `081f130c10cb49b371d534b6686c9d8339a97e53f5cd134921b47f40018f3921` |
-| `src/infrastructure/character/character-preset-service.ts` | `26902a435cfb08e53c4e13ec588fc02527fd58fe81f64b7e83f74509590dac0e` |
-| `src/infrastructure/character/character-service.ts` | `9eb0f8385a4d8d2cec29013dc99df9420bcde14a7ba37461f5e6b7d47cac0172` |
+| `src/infrastructure/character/character-adventure-arc-service.ts` | `b26c41bca40e5198bf295e4d3a01ebb34dc37674c5f1f744cccaff3d6fa69f2b` |
+| `src/infrastructure/character/character-lore-service.ts` | `6f60bee2791fe2c313db260d72a66c9c1fe712732e5fe09c46807d1eba912880` |
+| `src/infrastructure/character/character-preset-service.ts` | `f69c938c0445cc39f8339649d88199ef562b7561f127a745a4cfd7d71fe810b2` |
+| `src/infrastructure/character/character-service.ts` | `b7d4693f30ada0c021246425bbf3289cbc847a8e384c37213b8a86bfff6753cb` |
 | `src/infrastructure/character/character.persistence.ts` | `5ed5f363555b9c4a3922507e01a227f74aee706764065641eb27ac9510024bd5` |
 | `src/infrastructure/character/host-character-adapter.ts` | `13f20441555da88736aa75337568f69c2e2d516ca2a1193f0fe3d4da83317fa8` |
 | `src/infrastructure/character/host-character-ports.contract.ts` | `a731a0dd97b4e55beee4c08600f69d50112efec738935d93aafab65c4c223dfc` |
@@ -12309,26 +9975,23 @@ private async assertPersonalLookWriteGate(
 | `src/infrastructure/character/liveact/mediapipe-iris-geometry-v1.ts` | `5c097d026beeb882e78bbd2fb277555a6b47553ac7e0c41a665647e0421772df` |
 | `src/infrastructure/character/liveact/mediapipe-sagatree-face-anchor-map-v1.ts` | `b092e31c50b885b9dbeb396ef2bdbfa39a953df717da7e0042e081849c173d9a` |
 | `src/infrastructure/character/liveact/vrm-liveact-avatar-output.ts` | `f5ef95d582ee0f3a2ec47748e8d958306f3833d45a5e8e1b250d1eecfba5d9a6` |
-| `src/infrastructure/character/supabase-character.repository.ts` | `ae0034e06c55c384124c933bc8093c3926b7ece34a5222213913d1fdc03a9878` |
-| `src/infrastructure/host/host-library-http.ts` | `b2343081ddce2e2edd73651b0622e8b4cc6d8583d746a863dbe3343e3a98f71a` |
-| `src/infrastructure/host/host-product-deny.ts` | `69b148debc95006bb31daa7a94caf4e1507ac3089fdf399952102c4effa3759c` |
+| `src/infrastructure/host/host-library-http.ts` | `1d41f3b1eb3e71a3a8b12306993b605f2d05f2f41cd35f73b9c362b12f9c1cb6` |
 | `src/infrastructure/host/host-project-http.ts` | `b5a68f6452217b08d2217a983113a9a356ce70890693319227f35c82fbdcd818` |
-| `src/infrastructure/host/host-session-http.ts` | `763c2535c26f746b60ff3f68358fb7c37c20384bd9f4a9a5a7d9bf2710e0ab81` |
-| `src/infrastructure/inventory/inventory-persistence.ts` | `79aaa09053ecd72a0bec8f8f0610b31ab0c9b34779f4a4c87f19f0d2ef7e4ac2` |
+| `src/infrastructure/host/host-session-http.ts` | `39b5efefc00297d57c1c4f248953cbbed4d7053e51974cd25a2ed43e368a64eb` |
+| `src/infrastructure/inventory/inventory-persistence.ts` | `f62a29cc17219f2c455155f3f0a0e3fe14ca6838ac3d43df7fa19f3578773357` |
+| `src/infrastructure/inventory/item-catalog-service.ts` | `adea9220e02d2dbb96e107743c2ad8dfb7eaa8a9f1b1314620f16d5bb2979175` |
 | `src/infrastructure/inventory/item-catalog.persistence.ts` | `a68903ba909af8030e81d28555a65798800c9a32a790a4281e96f52b1550c566` |
-| `src/infrastructure/inventory/supabase-item-catalog.repository.ts` | `1ea1b14afc3d01c117c13e96af516a8cc0a315edfb170a6f1f11c6903ab366eb` |
 | `src/infrastructure/look/adapters/host-mtoon-look-adapter.ts` | `19b2f7008ffa27b5bd6c951019a55bde20d82f195ff9f798aa91b4d0a729e3a5` |
 | `src/infrastructure/look/adapters/toonlab-look-adapter.ts` | `4edeab261bda3b114a4a9c9d7dcdb16a1cc73c24df0db23539480aa3a0834acb` |
 | `src/infrastructure/look/host-look-adapter.ts` | `f1c8129f9ff83fb5e586da01b59cf26e3d6e54385f20e631ee353d0802c409c1` |
 | `src/infrastructure/look/host-look-ports.contract.ts` | `f815bac34628b904e1c813d4929872b688d6dc140bebdf2a17a586c11556cf0f` |
-| `src/infrastructure/look/index.ts` | `c51fc97d92ac25e40f1427086c846cb000990dd7556f2f1aab7deb14a9ccccd0` |
+| `src/infrastructure/look/index.ts` | `9459251bdf2ae00dab0a11fdd0d77cc113264577367b61273e3a04c658aec47f` |
 | `src/infrastructure/look/look-material-roles.ts` | `2e8161b18a046bb073664a586bb645dc1428c5796d04ade0b625c9339f8cfcdb` |
-| `src/infrastructure/look/look-reference-analysis-service.ts` | `75972e6d9b049942cf205e82e0330d26f878c855b7f3ebf8484e7e1ed651dffd` |
+| `src/infrastructure/look/look-reference-analysis-service.ts` | `2642af08c083b7ee828d620e50aca15cb41917ec9676729f60bb7e2f2be08281` |
 | `src/infrastructure/look/look-runtime-types.ts` | `c31d27eaf600ed47e69f16120e584b06a985f29618923118a4c08570f276b2c6` |
 | `src/infrastructure/look/look-runtime.ts` | `64487d02f2831514e86b721d41b0964ac8e99b37faf1a33b8771b4fa7b955d23` |
-| `src/infrastructure/look/look-service.ts` | `d1a1a1d5e0747b492b21258c981547abddc6bc7b763a7a3914f6aadb65ec8eed` |
+| `src/infrastructure/look/look-service.ts` | `3cfd97ccbc21d072865088cf1a0fe5f61e0a43e574f895d869ac80451cc25188` |
 | `src/infrastructure/look/look.persistence.ts` | `ed0a97cba6560930610fc032bd7679b5a7e4b49f837e401cd5a872974598f482` |
-| `src/infrastructure/look/supabase-look.repository.ts` | `4dc795897a12bf3319998860b855b0b9b55425e2be7e4c9b0844e7b2ec647121` |
 | `src/infrastructure/media/optimizer/engines/audio/index.ts` | `7585190a705085692bff0896e08b4d78f791895b47e24d57deeaaa10bb669d4e` |
 | `src/infrastructure/media/optimizer/engines/image/image.worker.ts` | `d34793b4de682556d9306194cfbcd05fdafdf215da25393f955d2669c7499276` |
 | `src/infrastructure/media/optimizer/engines/image/index.ts` | `4944001b7e0f7784d487da2e60d06d845aa564e9ddd7516ff50633af1591a322` |
@@ -12342,18 +10005,18 @@ private async assertPersonalLookWriteGate(
 | `src/infrastructure/media/optimizer/engines/video/index.ts` | `d8c6aaaabb2ad762d4c15f9ef4aa9bc016f5968b2512cfe52f71cb09655dd842` |
 | `src/infrastructure/media/optimizer/index.ts` | `c1b162af47239195707de742a8991bea14d85f2238108968613c3bad3d91cf02` |
 | `src/infrastructure/media/optimizer/media-optimizer.ts` | `7d58424f12b7855ccb3c0153270628850e03afc15c285b1fc2b47218918255d9` |
-| `src/infrastructure/project/project-member-service.ts` | `bc15c872ef4979b1f6c67c9dc01838e8a7ee45083f225121d688d60b442bbb26` |
-| `src/infrastructure/project/project-service.ts` | `07549fce108bd735bdd7d48b07bccbf39947e3547d0f26ab60fdd013ca94aeff` |
+| `src/infrastructure/project/project-member-service.ts` | `e67c3c5c9dd332d15d699a489dce4db743c183a5ce6aab09efc2deb89628236f` |
+| `src/infrastructure/project/project-service.ts` | `29846df2ae25287b68cba443a9c85f2f9952fa9cc1afd3faf762a78eb57a6fa6` |
 | `src/infrastructure/session/media/livekit-media-plane-adapter.ts` | `ba41c95f3816b79818a9c312c056ec896ac75fd4633dba27954cdcdb797b381d` |
 | `src/infrastructure/session/media/media-plane-adapter.ts` | `1dbdf0f7c75c1edc435fb629d5029a1c04806a5a6cbcf9b037ad8a620dcc34cd` |
-| `src/infrastructure/session/media/media-token-client.ts` | `870b4220178bcd0f10ef961a6f6f0bbf307c8c31370b9360507f3a23d28fa84a` |
+| `src/infrastructure/session/media/media-token-client.ts` | `c554cc7bdddcf519de1aba83c9804ff8edf62e75f95c409aebb771fad023c7dd` |
 | `src/infrastructure/session/media/memory-media-plane-adapter.ts` | `31fc7cee75c49c1e3af09b784e4a8dad3446bbe5ae5ddd6f7b2c9aee142dc5be` |
 | `src/infrastructure/session/media/memory-media-plane-bus.ts` | `1616d229067f513a12c67319aec28649e3a0afdf77779f9071b595dc024ff193` |
 | `src/infrastructure/session/media/session-media-plane.ts` | `ce8d3ec690f83745646400443d7870cd96383e341628a2d8f017e2d391fbb225` |
-| `src/lib/authenticatedUser.ts` | `d4cbf3a004f8375982ca03d474fb7b61559fc2ec58ad6fe7b1f8834d26abf10c` |
+| `src/lib/authenticatedUser.ts` | `5d9deef60efd85a3ecd56e9b55f67ecb2d03c2964c4f9217e6de6842d8e0b403` |
 | `src/lib/entityCache.ts` | `02b7a3d41ae651c6562d4523a1c94a395608aa13785f0849cfc9acd834aecd61` |
 | `src/lib/hostAuthBridge.ts` | `30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a` |
-| `src/lib/localAdmin.ts` | `3a28dec23e85f25ed3e70682bc6e7f8c6b55e81dbbefdd1f6a837f68ac80d6b5` |
+| `src/lib/localAdmin.ts` | `103feaea892b0582022557ff81cef61105f3d9ed4eb421a20d8b0b415c2de498` |
 | `src/lib/networkTimeout.ts` | `835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851` |
-| `src/lib/supabase.ts` | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
+| `src/lib/supabase.ts` | `a385b96048d1e73f8dd1a78ee00a5c1a4e6cbb5f50e1f705ae527e2493f9f373` |
 

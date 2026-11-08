@@ -51,12 +51,13 @@ mustInclude(
 mustInclude(
   'src/infrastructure/session/session-service.ts',
   [
-    "rpc('create_play_session'",
-    "rpc('join_session_by_code'",
-    "rpc('set_session_status'",
-    "rpc('leave_play_session'",
+    'createHostPlaySession',
+    'joinHostSessionByCode',
+    'setHostSessionStatus',
+    'leaveHostPlaySession',
+    'host-session-http',
   ],
-  'session-service RPCs',
+  'session-service host HTTP (CUT-20)',
 );
 
 mustNotInclude(

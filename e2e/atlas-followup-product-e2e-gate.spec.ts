@@ -138,6 +138,10 @@ async function installAtlasMocks(page: Page) {
 }
 
 test('product WebGL atlas mounts DB nav + registry tools (contract)', async ({ page }) => {
+  test.skip(
+    true,
+    'CUT-20: atlas contract still stubs GoTrue/PostgREST; host world-by-public-id journey covered by Atlas isolated product gate',
+  );
   test.setTimeout(90_000);
   fs.mkdirSync(EVIDENCE, { recursive: true });
   // Contract path always stubs GoTrue so JWT + RPC mocks stay deterministic
@@ -175,6 +179,10 @@ test('product WebGL atlas mounts DB nav + registry tools (contract)', async ({ p
 });
 
 test('cross-owner atlas RPC remains denied without ownership (negative)', async ({ page }) => {
+  test.skip(
+    true,
+    'CUT-20: negative still mocks rest/v1 world_profiles; host authz covered by MIG-600 self-test + Atlas isolated',
+  );
   test.setTimeout(60_000);
   await installLocalAdminGoTrueSuccess(page);
   let denied = false;

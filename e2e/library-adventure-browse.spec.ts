@@ -1,80 +1,10 @@
-import { test, expect, type Page, type Route } from '@playwright/test';
+import { test, expect } from '@playwright/test';
 import fs from 'node:fs';
 import path from 'node:path';
 import { ensureLoggedIn } from './helpers/auth';
+import { MOCK_ADVENTURE_PROJECTS, mockHostLibraryProjects } from './helpers/host-route-mocks';
 
 const EVIDENCE_DIR = '.qa/evidence/library-entity-browser';
-
-type StoredProject = {
-  id: string;
-  public_id?: string;
-  code: string;
-  name: string;
-  description: string | null;
-  world_id?: string | null;
-  gm_user_id: string;
-  status: 'active' | 'paused' | 'completed' | 'archived';
-  created_at: string;
-  updated_at: string;
-};
-
-type StoredMember = {
-  id: string;
-  project_id: string;
-  user_id: string;
-  character_id: string | null;
-  role: 'gm' | 'player';
-  status: 'active';
-  joined_at: string;
-};
-
-const USER_ID = '00000000-0000-4000-8000-000000000001';
-
-const MOCK_PROJECTS: StoredProject[] = [
-  {
-    id: 'proj-1',
-    public_id: 'SA-K7M4Q',
-    code: 'ABCD12',
-    name: 'Das vergessene Königreich',
-    description: 'Eine Kampagne um einen versunkenen Thron.',
-    world_id: null,
-    gm_user_id: USER_ID,
-    status: 'active',
-    created_at: '2026-08-28T10:00:00.000Z',
-    updated_at: '2026-08-28T10:00:00.000Z',
-  },
-  {
-    id: 'proj-2',
-    public_id: 'SA-X8D4Q',
-    code: 'EFGH34',
-    name: 'Schatten über Nehren',
-    description: null,
-    world_id: null,
-    gm_user_id: 'other-user',
-    status: 'paused',
-    created_at: '2026-08-28T09:00:00.000Z',
-    updated_at: '2026-08-28T09:00:00.000Z',
-  },
-];
-
-const MOCK_MEMBERS: Record<string, StoredMember[]> = {
-  'proj-1': [
-    { id: 'm-1', project_id: 'proj-1', user_id: USER_ID, character_id: null, role: 'gm', status: 'active', joined_at: '2026-08-28T10:00:00.000Z' },
-    { id: 'm-2', project_id: 'proj-1', user_id: 'player-1', character_id: 'char-1', role: 'player', status: 'active', joined_at: '2026-08-28T10:05:00.000Z' },
-  ],
-  'proj-2': [
-    { id: 'm-3', project_id: 'proj-2', user_id: 'player-1', character_id: 'char-1', role: 'player', status: 'active', joined_at: '2026-08-28T09:05:00.000Z' },
-  ],
-};
-
-
-function json(route: Route, value: unknown, status = 200) {
-  return route.fulfill({
-    status,
-    contentType: 'application/json',
-    body: JSON.stringify(value),
-  });
-}
 
 test.beforeAll(() => {
   fs.mkdirSync(EVIDENCE_DIR, { recursive: true });
@@ -83,29 +13,7 @@ test.beforeAll(() => {
 test('library adventures tab lists real projects with meta chips', async ({ page }) => {
   test.setTimeout(60_000);
 
-  await page.route('**/rest/v1/projects*', async (route) => {
-    if (route.request().method() !== 'GET') {
-      await route.fallback();
-      return;
-    }
-    await json(route, MOCK_PROJECTS);
-  });
-
-  await page.route('**/rest/v1/project_members*', async (route) => {
-    if (route.request().method() !== 'GET') {
-      await route.fallback();
-      return;
-    }
-    await json(route, Object.values(MOCK_MEMBERS).flat());
-  });
-
-  await page.route('**/rest/v1/sessions*', async (route) => {
-    if (route.request().method() !== 'GET') {
-      await route.fallback();
-      return;
-    }
-    await json(route, []);
-  });
+  await mockHostLibraryProjects(page, MOCK_ADVENTURE_PROJECTS);
 
   await page.setViewportSize({ width: 1440, height: 900 });
   await ensureLoggedIn(page);
@@ -127,29 +35,7 @@ test('library adventures tab lists real projects with meta chips', async ({ page
 test('library adventures empty state offers join CTA', async ({ page }) => {
   test.setTimeout(60_000);
 
-  await page.route('**/rest/v1/projects*', async (route) => {
-    if (route.request().method() !== 'GET') {
-      await route.fallback();
-      return;
-    }
-    await json(route, []);
-  });
-
-  await page.route('**/rest/v1/project_members*', async (route) => {
-    if (route.request().method() !== 'GET') {
-      await route.fallback();
-      return;
-    }
-    await json(route, []);
-  });
-
-  await page.route('**/rest/v1/sessions*', async (route) => {
-    if (route.request().method() !== 'GET') {
-      await route.fallback();
-      return;
-    }
-    await json(route, []);
-  });
+  await mockHostLibraryProjects(page, []);
 
   await page.setViewportSize({ width: 1440, height: 900 });
   await ensureLoggedIn(page);

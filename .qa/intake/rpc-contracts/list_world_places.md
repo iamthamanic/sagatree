@@ -97,67 +97,141 @@ Die finalen Datenbank-Constraints der beteiligten Relationen sind pro RPC in inv
 
 ## Caller: Request-Mapping, Response-Decoding und Fehler
 
-### src/infrastructure/world/world-place-service.ts:61
+### src/infrastructure/world/world-place-service.ts:1
 
-AST-Auflösung: `string-literal`; SHA-256 `c8b48bc3e5ecdf33ecfe6db705115f17b423a7fbf5e504aa89d815cdf27551b4`.
+AST-Auflösung: `host-transport-cut-20`; SHA-256 `5fe2e68dd3949fb193547aa9ee498c15fc0e3f368bf546156a39086e805312bb`.
 
 Der vollständige aufrufende Funktionskörper enthält Parameterumformung, RPC-Aufruf, Response-Prüfung, Fehlerumwandlung und gegebenenfalls Fallback:
 
 ```typescript
-async listPlaces(
+/**
+ * world-place-service — Host HTTP for world_places + map links (CUT-20).
+ * Location: src/infrastructure/world/world-place-service.ts
+ */
+import {
+  isWorldPlaceMapUsage,
+  parseWorldPlaceList,
+  parseWorldPlaceMapLinkList,
+  parseWorldPlaceMapLinkVm,
+  parseWorldPlaceVm,
+  type UpsertWorldPlaceInput,
+  type WorldPlaceMapLinkVm,
+  type WorldPlaceMapUsage,
+  type WorldPlaceVm,
+} from '../../domains/world/places';
+import type { WorldNodeKind, WorldNodeSubtype } from '../../domains/world/hierarchy';
+import {
+  archiveHostWorldNodeSubtree,
+  createHostWorldNodeWithMaps,
+  deleteHostWorldNode,
+  duplicateHostWorldNode,
+  isHostLibraryEnabled,
+  listHostWorldPlaceMapLinks,
+  listHostWorldPlaces,
+  previewHostWorldNodeConsequences,
+  renameHostWorldNode,
+  reparentHostWorldNode,
+  upsertHostWorldPlace,
+  upsertHostWorldPlaceMapLink,
+} from '../host/host-world-http';
+
+export type ListWorldPlacesOptions = {
+  readonly playerView?: boolean;
+  readonly sagaPublicId?: string | null;
+};
+
+export type LinkWorldPlaceMapInput = {
+  readonly worldProfileId: string;
+  readonly placeId: string;
+  readonly mapId: string;
+  readonly usage: WorldPlaceMapUsage;
+  readonly featureId?: string | null;
+  readonly anchor?: Readonly<Record<string, unknown>>;
+};
+
+function assertHost(): void {
+  if (!isHostLibraryEnabled()) {
+    throw new Error('Host-Anmeldung nicht konfiguriert (VITE_SAGATREE_HOST_AUTH_URL fehlt).');
+  }
+}
+
+class WorldPlaceService {
+  async listPlaces(
     worldProfileId: string,
     options: ListWorldPlacesOptions = {},
   ): Promise<WorldPlaceVm[]> {
+    assertHost();
     const id = worldProfileId.trim();
     if (!id) throw new Error('Weltprofil fehlt');
-    if (isHostLibraryEnabled()) {
-      const data = await listHostWorldPlaces(id, options);
-      return parseWorldPlaceList(data);
-    }
-    await assertSupabaseJwtSession();
-    const { data, error } = await supabase.rpc('list_world_places', {
-      p_world_profile_id: id,
-      p_player_view: options.playerView === true,
-      p_saga_public_id: options.sagaPublicId?.trim() || null,
-    });
-    if (error) throw new Error(`Orte konnten nicht geladen werden: ${error.message}`);
+    const data = await listHostWorldPlaces(id, options);
     return parseWorldPlaceList(data);
   }
+
+  async listMapLinks(
+    worldProfileId: string,
+    options: ListWorldPlacesOptions = {},
+  ): Promise<WorldPlaceMapLinkVm[]> {
+    assertHost();
+    const id = worldProfileId.trim();
+    if (!id) throw new Error('Weltprofil fehlt');
+    const data = await listHostWorldPlaceMapLinks(id, options);
+    return parseWorldPlaceMapLinkList(data);
+  }
+
+  async upsertPlace(input: UpsertWorldPlaceInput): Promise<WorldPlaceVm> {
+    assertHost();
+    const data = await upsertHostWorldPlace({
+      worldProfileId: input.worldProfileId.trim(),
+      placeId: input.placeId ?? null,
+      parentPlaceId: input.parentPlaceId ?? null,
+      kind: input.kind,
+      name: input.name,
+      description: input.description ?? null,
+      status: input.status ?? 'draft',
+      seedKey: input.seedKey ?? null,
+      sortOrder: input.sortOrder ?? 0,
+    });
+    const parsed = parseWorldPlaceVm(data);
+    if (!parsed) throw new Error('Ort speichern: ungültige Antwort');
+    return parsed;
+  }
+
+  async createNodeWithMaps(input: {
+    readonly worldProfileId: string;
+    readonly kind: WorldNodeKind;
+    readonly name: string;
+    readonly idempotencyKey: string;
+    readonly subtype?: WorldNodeSubtype | null;
+    readonly parentPlaceId?: string | null;
+    readonly description?: string | null;
+  }): Promise<Readonly<Record<string, unknown>>> {
+    assertHost();
+    const data = await createHostWorldNodeWithMaps({
+      worldProfileId: input.worldProfileId.trim(),
+      kind: input.kind,
+      name: input.name,
+      idempotencyKey: input.idempotencyKey.trim(),
+      subtype: input.subtype ?? null,
+      parentPlaceId: input.parentPlaceId ?? null,
+      description: input.description ?? null,
+    });
+    if (!data || typeof data !== 'object') {
+      throw new Error('Weltknoten anlegen: ungültige Antwort');
+    }
+    return data as Readonly<Record<string, unknown>>;
+  }
+
+  async previewNodeConsequences(input: {
+    readonly worldProfileId: string;
+    readonly placeId: string;
+  }): Promise<Readonly<Record<string, unknown>>> {
+    assertHost();
+    const data = await previewHostWorldNodeConsequences({
+      worldProfileId: input.worldProfileId.trim(),
+      placeId: input.placeId.trim(),
+    });
+    if (!data ||
 ```
-
-Direkt oder transitiv referenzierte lokale/importierte Mapper, Decoder und Vertrags-Typen sind zusätzlich mit vollständigem Source-Text in callers.json und inventory.json.callerContracts.supportingDeclarations gespeichert:
-
-| Symbol | Quelle | Zeile | SHA-256 |
-| --- | --- | --- | --- |
-| `EnvLike` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 11 | `b2343081ddce2e2edd73651b0622e8b4cc6d8583d746a863dbe3343e3a98f71a` |
-| `defaultEnv` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 16 | `b2343081ddce2e2edd73651b0622e8b4cc6d8583d746a863dbe3343e3a98f71a` |
-| `isHostLibraryExplicitlyDisabled` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 25 | `b2343081ddce2e2edd73651b0622e8b4cc6d8583d746a863dbe3343e3a98f71a` |
-| `EnvLike` | [src/infrastructure/host/host-world-http.ts](../../../src/infrastructure/host/host-world-http.ts) | 12 | `bfb69f91e69543a66ee96cab4ad21273c86a2b167e4c21211c42c7e6ccb3c072` |
-| `defaultEnv` | [src/infrastructure/host/host-world-http.ts](../../../src/infrastructure/host/host-world-http.ts) | 17 | `bfb69f91e69543a66ee96cab4ad21273c86a2b167e4c21211c42c7e6ccb3c072` |
-| `qs` | [src/infrastructure/host/host-world-http.ts](../../../src/infrastructure/host/host-world-http.ts) | 25 | `bfb69f91e69543a66ee96cab4ad21273c86a2b167e4c21211c42c7e6ccb3c072` |
-| `hostGetJson` | [src/infrastructure/host/host-world-http.ts](../../../src/infrastructure/host/host-world-http.ts) | 35 | `bfb69f91e69543a66ee96cab4ad21273c86a2b167e4c21211c42c7e6ccb3c072` |
-| `listHostWorldPlaces` | [src/infrastructure/host/host-world-http.ts](../../../src/infrastructure/host/host-world-http.ts) | 206 | `bfb69f91e69543a66ee96cab4ad21273c86a2b167e4c21211c42c7e6ccb3c072` |
-| `ListWorldPlacesOptions` | [src/infrastructure/world/world-place-service.ts](../../../src/infrastructure/world/world-place-service.ts) | 35 | `c8b48bc3e5ecdf33ecfe6db705115f17b423a7fbf5e504aa89d815cdf27551b4` |
-| `API_AUTH_REQUIRED_DE` | [src/lib/authenticatedUser.ts](../../../src/lib/authenticatedUser.ts) | 24 | `d4cbf3a004f8375982ca03d474fb7b61559fc2ec58ad6fe7b1f8834d26abf10c` |
-| `JWT_WAIT_MS` | [src/lib/authenticatedUser.ts](../../../src/lib/authenticatedUser.ts) | 27 | `d4cbf3a004f8375982ca03d474fb7b61559fc2ec58ad6fe7b1f8834d26abf10c` |
-| `JWT_POLL_MS` | [src/lib/authenticatedUser.ts](../../../src/lib/authenticatedUser.ts) | 28 | `d4cbf3a004f8375982ca03d474fb7b61559fc2ec58ad6fe7b1f8834d26abf10c` |
-| `assertSupabaseJwtSession` | [src/lib/authenticatedUser.ts](../../../src/lib/authenticatedUser.ts) | 65 | `d4cbf3a004f8375982ca03d474fb7b61559fc2ec58ad6fe7b1f8834d26abf10c` |
-| `EnvLike` | [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | 31 | `30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a` |
-| `defaultEnv` | [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | 33 | `30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a` |
-| `getHostAuthBaseUrl` | [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | 53 | `30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a` |
-| `AUTH_SESSION_TIMEOUT_MS` | [src/lib/networkTimeout.ts](../../../src/lib/networkTimeout.ts) | 7 | `835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851` |
-| `TIMED_OUT` | [src/lib/networkTimeout.ts](../../../src/lib/networkTimeout.ts) | 10 | `835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851` |
-| `TimedOut` | [src/lib/networkTimeout.ts](../../../src/lib/networkTimeout.ts) | 12 | `835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851` |
-| `isTimedOut` | [src/lib/networkTimeout.ts](../../../src/lib/networkTimeout.ts) | 14 | `835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851` |
-| `raceWithTimeoutOrSymbol` | [src/lib/networkTimeout.ts](../../../src/lib/networkTimeout.ts) | 27 | `835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851` |
-| `viteEnv` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 13 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
-| `configuredSupabaseUrl` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 15 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
-| `configuredSupabaseAnonKey` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 16 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
-| `hostAuthUrl` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 17 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
-| `hostFirst` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 18 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
-| `supabaseUrl` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 58 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
-| `supabaseAnonKey` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 59 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
-| `supabase` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 61 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
 
 ## Konkrete Abnahmekriterien
 
@@ -188,13 +262,7 @@ Die folgenden Hashes binden SQL-Kette, transitive Tabellen-/Trigger-/Policyquell
 
 | Quelle | SHA-256 |
 | --- | --- |
-| [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | `b2343081ddce2e2edd73651b0622e8b4cc6d8583d746a863dbe3343e3a98f71a` |
-| [src/infrastructure/host/host-world-http.ts](../../../src/infrastructure/host/host-world-http.ts) | `bfb69f91e69543a66ee96cab4ad21273c86a2b167e4c21211c42c7e6ccb3c072` |
-| [src/infrastructure/world/world-place-service.ts](../../../src/infrastructure/world/world-place-service.ts) | `c8b48bc3e5ecdf33ecfe6db705115f17b423a7fbf5e504aa89d815cdf27551b4` |
-| [src/lib/authenticatedUser.ts](../../../src/lib/authenticatedUser.ts) | `d4cbf3a004f8375982ca03d474fb7b61559fc2ec58ad6fe7b1f8834d26abf10c` |
-| [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | `30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a` |
-| [src/lib/networkTimeout.ts](../../../src/lib/networkTimeout.ts) | `835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851` |
-| [src/lib/supabase.ts](../../../src/lib/supabase.ts) | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
+| [src/infrastructure/world/world-place-service.ts](../../../src/infrastructure/world/world-place-service.ts) | `5fe2e68dd3949fb193547aa9ee498c15fc0e3f368bf546156a39086e805312bb` |
 | [supabase/migrations/001_initial.sql](../../../supabase/migrations/001_initial.sql) | `e3325c56d68286a2e293ddff791736ef91346ff90ac018c045843a5d52afb8c8` |
 | [supabase/migrations/004_project_membership_security.sql](../../../supabase/migrations/004_project_membership_security.sql) | `c1eccbda2dae95cd177ba6313dfd51ef269e0740a13805a5d07a223c6bf489cd` |
 | [supabase/migrations/008_world_profiles.sql](../../../supabase/migrations/008_world_profiles.sql) | `94d2db4e86205d09d54b63e322af6b69b93a7e07d13f3795bc1d841a46961b1a` |

@@ -81,8 +81,15 @@ section('2 · static wiring / German UI / migration security');
     /clearNpcCreatureInstanceTempControllersForSession/.test(service),
     'service clear session temp controllers',
   );
-  check(/planNpcCreatureInstanceSpawn/.test(service), 'domain plan before RPC');
-  check(/spawn_npc_creature_instance/.test(service), 'RPC spawn name');
+  check(/planNpcCreatureInstanceSpawn/.test(service), 'domain plan before host spawn');
+  check(/spawnHostNpcInstance/.test(service), 'host spawn (CUT-20)');
+  check(/isHostLibraryEnabled/.test(service), 'host library gate');
+  check(
+    !/spawn_npc_creature_instance|update_npc_creature_instance_runtime|remove_npc_creature_instance|\.rpc\s*\(/.test(
+      service,
+    ),
+    'no legacy NPC instance RPC (CUT-20)',
+  );
 
   const index = read('src/domains/npc-creature/index.ts');
   check(/planNpcCreatureInstanceSpawn/.test(index), 'barrel exports spawn');

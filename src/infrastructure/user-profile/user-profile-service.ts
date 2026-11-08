@@ -2,11 +2,9 @@
  * User profile service — optimize + upload account avatars (#682).
  * Location: src/infrastructure/user-profile/user-profile-service.ts
  *
- * Dual-path (FE-HOST-08): Host HTTP when `VITE_SAGATREE_HOST_LIBRARY=1`.
- * Host ports also via `createHostUserProfileAdapter` for tests.
+ * Host HTTP only (CUT-20). Host ports also via `createHostUserProfileAdapter` for tests.
  */
 import type { UserProfileVm } from '../../domains/user-profile';
-import { supabaseUserProfileRepository } from './supabase-user-profile.repository';
 import {
   fetchHostOwnUserProfile,
   fetchHostProfilesByUserIds,
@@ -17,11 +15,17 @@ import {
 export type UploadUserAvatarOptions = {
   /**
    * When true, skip client optimize (caller already ran user-avatar intake).
-   * Storage MIME/magic-byte/owner checks still run in the repository.
+   * Storage MIME/magic-byte/owner checks still run on the host.
    */
   readonly alreadyOptimized?: boolean;
   readonly signal?: AbortSignal;
 };
+
+function assertHost(): void {
+  if (!isHostLibraryEnabled()) {
+    throw new Error('Host-Anmeldung nicht konfiguriert (VITE_SAGATREE_HOST_AUTH_URL fehlt).');
+  }
+}
 
 /**
  * Run the user-avatar media optimizer. Never returns the original after a
@@ -71,27 +75,21 @@ export async function prepareUserAvatarFile(
 
 export const userProfileService = {
   async getOwnProfile(): Promise<UserProfileVm | null> {
-    if (isHostLibraryEnabled()) {
-      return fetchHostOwnUserProfile();
-    }
-    return supabaseUserProfileRepository.getOwnProfile();
+    assertHost();
+    return fetchHostOwnUserProfile();
   },
 
   async getProfilesByUserIds(userIds: readonly string[]): Promise<UserProfileVm[]> {
-    if (isHostLibraryEnabled()) {
-      return fetchHostProfilesByUserIds(userIds);
-    }
-    return supabaseUserProfileRepository.getProfilesByUserIds(userIds);
+    assertHost();
+    return fetchHostProfilesByUserIds(userIds);
   },
 
   async uploadAvatar(file: File, options?: UploadUserAvatarOptions): Promise<UserProfileVm> {
+    assertHost();
     const prepared = options?.alreadyOptimized
       ? file
       : await prepareUserAvatarFile(file, options?.signal);
-    if (isHostLibraryEnabled()) {
-      return uploadHostUserAvatar(prepared);
-    }
-    return supabaseUserProfileRepository.uploadAvatar(prepared);
+    return uploadHostUserAvatar(prepared);
   },
 
   prepareAvatarFile: prepareUserAvatarFile,

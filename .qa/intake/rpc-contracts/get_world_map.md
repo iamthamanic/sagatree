@@ -94,56 +94,141 @@ Die finalen Datenbank-Constraints der beteiligten Relationen sind pro RPC in inv
 
 ## Caller: Request-Mapping, Response-Decoding und Fehler
 
-### src/infrastructure/world/world-map-service.ts:88
+### src/infrastructure/world/world-map-service.ts:1
 
-AST-Auflösung: `string-literal`; SHA-256 `ec49afd5715b21860c05dba3fb92eb1ba90a3a8009277c6ac14b637463ab2a27`.
+AST-Auflösung: `host-transport-cut-20`; SHA-256 `c86e0c9b3d7242d33d5fb30f7496ba99bb7ccaa4b22abaa73c5edb072c50a828`.
 
 Der vollständige aufrufende Funktionskörper enthält Parameterumformung, RPC-Aufruf, Response-Prüfung, Fehlerumwandlung und gegebenenfalls Fallback:
 
 ```typescript
-async getMap(worldProfileId: string, playerView = false): Promise<WorldMapVm> {
+/**
+ * world-map-service — Host HTTP for world maps (CUT-20).
+ * Location: src/infrastructure/world/world-map-service.ts
+ */
+import {
+  parseWorldMapVm,
+  type WorldMapData,
+  type WorldMapVm,
+} from '../../domains/world/map';
+import { fetchHostWorldMap, isHostLibraryEnabled, saveHostWorldMap } from '../host/host-world-http';
+
+const MAP_PIN_MAX_BYTES = 5 * 1024 * 1024;
+const MAP_PIN_ALLOWED_MIME = new Set(['image/png', 'image/jpeg', 'image/webp']);
+
+export type UploadPinImageOptions = {
+  readonly alreadyOptimized?: boolean;
+  readonly signal?: AbortSignal;
+};
+
+function assertHost(): void {
+  if (!isHostLibraryEnabled()) {
+    throw new Error('Host-Anmeldung nicht konfiguriert (VITE_SAGATREE_HOST_AUTH_URL fehlt).');
+  }
+}
+
+/** Prepare pin image via map-pin optimizer. Never silent-fallback to original on failure. */
+export async function prepareWorldMapPinFile(
+  file: File,
+  signal?: AbortSignal,
+): Promise<File> {
+  if (file.size > MAP_PIN_MAX_BYTES) {
+    throw new Error('Bild ist zu groß. Maximum 5 MB');
+  }
+  if (!MAP_PIN_ALLOWED_MIME.has(file.type)) {
+    throw new Error('Nur PNG, JPEG oder WebP sind als Pin-Bild erlaubt.');
+  }
+  const { optimizeMedia } = await import('../media/optimizer');
+  let optimizedBytes: Uint8Array | undefined;
+  const result = await optimizeMedia({
+    kind: 'image',
+    profileId: 'map-pin',
+    mimeType: file.type || 'application/octet-stream',
+    byteSize: file.size,
+    bytes: file,
+    signal,
+    onOptimizedBytes: (bytes) => {
+      optimizedBytes = bytes;
+    },
+  });
+
+  if (result.status === 'unchanged') {
+    return file;
+  }
+
+  if (result.status === 'optimized') {
+    if (!optimizedBytes || optimizedBytes.byteLength === 0) {
+      throw new Error('Pin-Bild-Optimierung lieferte keine Bytes (kein stilles Original).');
+    }
+    if (!MAP_PIN_ALLOWED_MIME.has(result.outputMimeType)) {
+      throw new Error(`Optimiertes MIME ${result.outputMimeType} ist nicht erlaubt.`);
+    }
+    const copy = new Uint8Array(optimizedBytes.byteLength);
+    copy.set(optimizedBytes);
+    const base = file.name.replace(/\.[^.]+$/, '') || 'pin';
+    const ext =
+      result.outputMimeType === 'image/webp'
+        ? 'webp'
+        : result.outputMimeType === 'image/png'
+          ? 'png'
+          : 'jpg';
+    return new File([copy], `${base}.${ext}`, { type: result.outputMimeType });
+  }
+
+  if (result.status === 'aborted') {
+    throw new Error(result.message || 'Pin-Bild-Optimierung abgebrochen.');
+  }
+
+  const message =
+    'message' in result && typeof result.message === 'string'
+      ? result.message
+      : 'Pin-Bild-Optimierung fehlgeschlagen.';
+  throw new Error(message);
+}
+
+class WorldMapService {
+  async getMap(worldProfileId: string, playerView = false): Promise<WorldMapVm> {
+    assertHost();
     const id = worldProfileId.trim();
     if (!id) throw new Error('Weltprofil fehlt');
-    if (isHostLibraryEnabled()) {
-      const data = await fetchHostWorldMap(id, playerView);
-      const vm = parseWorldMapVm(data);
-      if (!vm) throw new Error('Ungültige Kartenantwort');
-      return vm;
-    }
-    const { data, error } = await supabase.rpc('get_world_map', {
-      p_world_profile_id: id,
-      p_player_view: playerView,
-    });
-    if (error) throw new Error(`Karte konnte nicht geladen werden: ${error.message}`);
+    const data = await fetchHostWorldMap(id, playerView);
     const vm = parseWorldMapVm(data);
     if (!vm) throw new Error('Ungültige Kartenantwort');
     return vm;
   }
+
+  async saveMap(
+    worldProfileId: string,
+    expectedRevision: number,
+    mapData: WorldMapData,
+  ): Promise<WorldMapVm> {
+    assertHost();
+    const id = worldProfileId.trim();
+    if (!id) throw new Error('Weltprofil fehlt');
+    const data = await saveHostWorldMap(id, expectedRevision, mapData);
+    const vm = parseWorldMapVm(data);
+    if (!vm) throw new Error('Ungültige Speicherantwort');
+    return vm;
+  }
+
+  /**
+   * PARITY_MISSING (#1160): pin uploads use host asset flow in a later cutover.
+   */
+  async uploadPinImage(
+    _worldProfileId: string,
+    _file: File,
+    _options?: UploadPinImageOptions,
+  ): Promise<string> {
+    void _worldProfileId;
+    void _file;
+    void _options;
+    assertHost();
+    throw new Error('Pin-Bild-Upload über Host-Speicher ist noch nicht verfügbar.');
+  }
+}
+
+export const worldMapService = new WorldMapService();
+
 ```
-
-Direkt oder transitiv referenzierte lokale/importierte Mapper, Decoder und Vertrags-Typen sind zusätzlich mit vollständigem Source-Text in callers.json und inventory.json.callerContracts.supportingDeclarations gespeichert:
-
-| Symbol | Quelle | Zeile | SHA-256 |
-| --- | --- | --- | --- |
-| `EnvLike` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 11 | `b2343081ddce2e2edd73651b0622e8b4cc6d8583d746a863dbe3343e3a98f71a` |
-| `defaultEnv` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 16 | `b2343081ddce2e2edd73651b0622e8b4cc6d8583d746a863dbe3343e3a98f71a` |
-| `isHostLibraryExplicitlyDisabled` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 25 | `b2343081ddce2e2edd73651b0622e8b4cc6d8583d746a863dbe3343e3a98f71a` |
-| `EnvLike` | [src/infrastructure/host/host-world-http.ts](../../../src/infrastructure/host/host-world-http.ts) | 12 | `bfb69f91e69543a66ee96cab4ad21273c86a2b167e4c21211c42c7e6ccb3c072` |
-| `defaultEnv` | [src/infrastructure/host/host-world-http.ts](../../../src/infrastructure/host/host-world-http.ts) | 17 | `bfb69f91e69543a66ee96cab4ad21273c86a2b167e4c21211c42c7e6ccb3c072` |
-| `qs` | [src/infrastructure/host/host-world-http.ts](../../../src/infrastructure/host/host-world-http.ts) | 25 | `bfb69f91e69543a66ee96cab4ad21273c86a2b167e4c21211c42c7e6ccb3c072` |
-| `hostGetJson` | [src/infrastructure/host/host-world-http.ts](../../../src/infrastructure/host/host-world-http.ts) | 35 | `bfb69f91e69543a66ee96cab4ad21273c86a2b167e4c21211c42c7e6ccb3c072` |
-| `fetchHostWorldMap` | [src/infrastructure/host/host-world-http.ts](../../../src/infrastructure/host/host-world-http.ts) | 113 | `bfb69f91e69543a66ee96cab4ad21273c86a2b167e4c21211c42c7e6ccb3c072` |
-| `EnvLike` | [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | 31 | `30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a` |
-| `defaultEnv` | [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | 33 | `30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a` |
-| `getHostAuthBaseUrl` | [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | 53 | `30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a` |
-| `viteEnv` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 13 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
-| `configuredSupabaseUrl` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 15 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
-| `configuredSupabaseAnonKey` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 16 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
-| `hostAuthUrl` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 17 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
-| `hostFirst` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 18 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
-| `supabaseUrl` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 58 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
-| `supabaseAnonKey` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 59 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
-| `supabase` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 61 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
 
 ## Konkrete Abnahmekriterien
 
@@ -172,11 +257,7 @@ Die folgenden Hashes binden SQL-Kette, transitive Tabellen-/Trigger-/Policyquell
 
 | Quelle | SHA-256 |
 | --- | --- |
-| [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | `b2343081ddce2e2edd73651b0622e8b4cc6d8583d746a863dbe3343e3a98f71a` |
-| [src/infrastructure/host/host-world-http.ts](../../../src/infrastructure/host/host-world-http.ts) | `bfb69f91e69543a66ee96cab4ad21273c86a2b167e4c21211c42c7e6ccb3c072` |
-| [src/infrastructure/world/world-map-service.ts](../../../src/infrastructure/world/world-map-service.ts) | `ec49afd5715b21860c05dba3fb92eb1ba90a3a8009277c6ac14b637463ab2a27` |
-| [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | `30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a` |
-| [src/lib/supabase.ts](../../../src/lib/supabase.ts) | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
+| [src/infrastructure/world/world-map-service.ts](../../../src/infrastructure/world/world-map-service.ts) | `c86e0c9b3d7242d33d5fb30f7496ba99bb7ccaa4b22abaa73c5edb072c50a828` |
 | [supabase/migrations/001_initial.sql](../../../supabase/migrations/001_initial.sql) | `e3325c56d68286a2e293ddff791736ef91346ff90ac018c045843a5d52afb8c8` |
 | [supabase/migrations/004_project_membership_security.sql](../../../supabase/migrations/004_project_membership_security.sql) | `c1eccbda2dae95cd177ba6313dfd51ef269e0740a13805a5d07a223c6bf489cd` |
 | [supabase/migrations/008_world_profiles.sql](../../../supabase/migrations/008_world_profiles.sql) | `94d2db4e86205d09d54b63e322af6b69b93a7e07d13f3795bc1d841a46961b1a` |

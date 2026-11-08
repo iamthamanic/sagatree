@@ -61,9 +61,17 @@ requireMatch(routes, /pathForSagaDefinitionEdit/i, 'path helper');
 requireMatch(routes, /\/story-definitions\//i, 'story-definitions path');
 
 const service = read('src/infrastructure/saga/saga-definition-service.ts');
-requireMatch(service, /save_saga_definition_draft/i, 'service save');
-requireMatch(service, /publish_saga_definition_version/i, 'service publish');
-requireMatch(service, /copy_native_saga_definition/i, 'service copy');
+requireMatch(service, /saveHostSagaDefinitionDraft/i, 'service save host HTTP (CUT-20)');
+requireMatch(service, /publishHostSagaDefinitionVersion/i, 'service publish host HTTP (CUT-20)');
+requireMatch(service, /copyHostNativeSagaDefinition/i, 'service copy host HTTP (CUT-20)');
+requireMatch(service, /isHostLibraryEnabled/i, 'service host library gate');
+if (
+  /save_saga_definition_draft|publish_saga_definition_version|copy_native_saga_definition|\.rpc\s*\(|supabase/.test(
+    service,
+  )
+) {
+  fail('service must not call legacy saga-editor RPCs (CUT-20)');
+}
 
 const domain = read('src/domains/saga/contracts/saga-definition.ts');
 requireMatch(domain, /SagaDefinitionDraft/i, 'draft type');

@@ -3,11 +3,8 @@
  * Location: src/infrastructure/character/character-preset-service.ts
  *
  * CUT-08: host-first via `/api/v1/library/character-presets/*` when library host is enabled;
- * legacy Supabase path remains for non-host sessions only.
+ * Host Library HTTP only (CUT-20).
  */
-import { supabase } from '../../lib/supabase';
-import { getAuthenticatedUserId } from '../../lib/authenticatedUser';
-import { raceWithTimeoutReject, SUPABASE_QUERY_TIMEOUT_MS } from '../../lib/networkTimeout';
 import { normalizeCharacterAppearance, normalizeSafeUrl } from '../../domains/character/use-cases/avatar-presets';
 import { assertValidSagaTreeCharacterPersistence } from '../../domains/character';
 import {
@@ -41,7 +38,11 @@ import {
   renameHostLibraryCharacterPreset,
 } from '../host/host-library-http';
 
-const TABLE = 'character_presets';
+function assertHost(): void {
+  if (!isHostLibraryEnabled()) {
+    throw new Error('Host-Anmeldung nicht konfiguriert (VITE_SAGATREE_HOST_AUTH_URL fehlt).');
+  }
+}
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -233,65 +234,17 @@ function mapHostPresetRow(value: unknown): CharacterPresetVm | null {
 
 class CharacterPresetService {
   async listUserPresets(): Promise<CharacterPresetVm[]> {
-    if (isHostLibraryEnabled()) {
-      const rows = await fetchHostLibraryCharacterPresets();
-      return rows
-        .map(mapHostPresetRow)
-        .filter((row): row is CharacterPresetVm => row !== null);
-    }
-    const userId = await getAuthenticatedUserId();
-    const { data, error } = await raceWithTimeoutReject(
-      supabase
-        .from(TABLE)
-        .select('*')
-        .eq('owner_user_id', userId)
-        .eq('origin', 'user')
-        .order('created_at', { ascending: false }),
-      SUPABASE_QUERY_TIMEOUT_MS,
-      'Presets konnten nicht geladen werden: Zeitüberschreitung',
-    );
-    if (error) throw new Error(`Presets konnten nicht geladen werden: ${error.message}`);
-
-    const rows = (data ?? []) as CharacterPresetDto[];
-    const sourceIds = Array.from(new Set(rows.map((row) => row.source_character_id).filter((id): id is string => Boolean(id))));
-    const existingSourceIds = new Set<string>();
-    if (sourceIds.length > 0) {
-      const { data: characters, error: charactersError } = await supabase
-        .from('characters')
-        .select('id')
-        .eq('owner_user_id', userId)
-        .in('id', sourceIds);
-      if (charactersError) {
-        console.error('Preset source character lookup failed:', charactersError.message);
-      } else {
-        for (const row of characters ?? []) {
-          if (typeof row.id === 'string') existingSourceIds.add(row.id);
-        }
-      }
-    }
-
-    return rows.map((row) => {
-      const missing = Boolean(row.source_character_id) && !existingSourceIds.has(row.source_character_id as string);
-      return mapToViewModel(row, missing);
-    });
+    assertHost();
+    const rows = await fetchHostLibraryCharacterPresets();
+    return rows
+      .map(mapHostPresetRow)
+      .filter((row): row is CharacterPresetVm => row !== null);
   }
 
   async getPresetForCharacter(characterId: string): Promise<CharacterPresetVm | null> {
-    if (isHostLibraryEnabled()) {
-      const row = await fetchHostLibraryCharacterPresetForCharacter(characterId);
-      return row ? mapHostPresetRow(row) : null;
-    }
-    const userId = await getAuthenticatedUserId();
-    const { data, error } = await supabase
-      .from(TABLE)
-      .select('*')
-      .eq('owner_user_id', userId)
-      .eq('source_character_id', characterId)
-      .eq('origin', 'user')
-      .maybeSingle();
-    if (error) throw new Error(`Preset konnte nicht geladen werden: ${error.message}`);
-    if (!data) return null;
-    return mapToViewModel(data as CharacterPresetDto, false);
+    assertHost();
+    const row = await fetchHostLibraryCharacterPresetForCharacter(characterId);
+    return row ? mapHostPresetRow(row) : null;
   }
 
   async createPresetFromCharacter(input: CreateCharacterPresetInput): Promise<CharacterPresetVm> {
@@ -301,162 +254,62 @@ class CharacterPresetService {
     const snapshot = withSafePortraitUrl(input.snapshot);
     assertValidSnapshot(snapshot);
 
-    if (isHostLibraryEnabled()) {
-      const created = await createHostLibraryCharacterPreset({
-        displayName: input.displayName.trim() || `${snapshot.name.trim()} Preset`,
-        rulesetKey: 'sagatree-core',
-        sourceCharacterId: input.sourceCharacterId,
-        snapshot,
-      });
-      const mapped = mapHostPresetRow(created);
-      if (!mapped) throw new Error('Host-Charakter-Preset anlegen: ungültige Antwort');
-      return mapped;
-    }
-
-    const userId = await getAuthenticatedUserId();
-    const existing = await this.getPresetForCharacter(input.sourceCharacterId);
-    if (existing) {
-      throw new Error('Für diesen Charakter existiert bereits ein Preset. Nutze „Version freigeben“.');
-    }
-
-    const version: CharacterPresetVersionDto = {
-      level: snapshot.level,
+    assertHost();
+    const created = await createHostLibraryCharacterPreset({
+      displayName: input.displayName.trim() || `${snapshot.name.trim()} Preset`,
+      rulesetKey: 'sagatree-core',
+      sourceCharacterId: input.sourceCharacterId,
       snapshot,
-      created_at: new Date().toISOString(),
-    };
-    const { data, error } = await supabase
-      .from(TABLE)
-      .insert({
-        owner_user_id: userId,
-        display_name: input.displayName.trim() || `${snapshot.name.trim()} Preset`,
-        ruleset_key: 'sagatree-core',
-        origin: 'user',
-        source_character_id: input.sourceCharacterId,
-        published: false,
-        versions: [version],
-      })
-      .select()
-      .single();
-    if (error) throw new Error(`Preset konnte nicht gespeichert werden: ${error.message}`);
-    return mapToViewModel(data as CharacterPresetDto, false);
+    });
+    const mapped = mapHostPresetRow(created);
+    if (!mapped) throw new Error('Host-Charakter-Preset anlegen: ungültige Antwort');
+    return mapped;
   }
 
   async releaseVersion(input: ReleaseCharacterPresetVersionInput): Promise<CharacterPresetVm> {
     const snapshot = withSafePortraitUrl(input.snapshot);
     assertValidSnapshot(snapshot);
 
-    if (isHostLibraryEnabled()) {
-      const released = await releaseHostLibraryCharacterPresetVersion(input.presetId, snapshot);
-      const mapped = mapHostPresetRow(released);
-      if (!mapped) throw new Error('Host-Charakter-Preset-Version: ungültige Antwort');
-      return mapped;
-    }
-
-    const userId = await getAuthenticatedUserId();
-    const { data: existing, error: loadError } = await supabase
-      .from(TABLE)
-      .select('*')
-      .eq('id', input.presetId)
-      .eq('owner_user_id', userId)
-      .single();
-    if (loadError || !existing) {
-      throw new Error(loadError ? `Preset nicht gefunden: ${loadError.message}` : 'Preset nicht gefunden.');
-    }
-
-    const dto = existing as CharacterPresetDto;
-    const versions = normalizeVersions(dto.versions);
-    if (versions.some((version) => version.level === snapshot.level)) {
+    assertHost();
+    const existingRows = await fetchHostLibraryCharacterPresets();
+    const existing = existingRows
+      .map(mapHostPresetRow)
+      .find((row): row is CharacterPresetVm => row !== null && row.id === input.presetId);
+    if (
+      existing &&
+      existing.versions.some((version) => version.level === snapshot.level)
+    ) {
       throw new Error(`Für Level ${snapshot.level} existiert bereits eine Preset-Version.`);
     }
-
-    const nextVersions = [
-      ...versions,
-      {
-        level: snapshot.level,
-        snapshot,
-        created_at: new Date().toISOString(),
-      },
-    ].sort((a, b) => a.level - b.level || a.created_at.localeCompare(b.created_at));
-
-    const { data, error } = await supabase
-      .from(TABLE)
-      .update({ versions: nextVersions, published: false, updated_at: new Date().toISOString() })
-      .eq('id', input.presetId)
-      .eq('owner_user_id', userId)
-      .select()
-      .single();
-    if (error) throw new Error(`Version konnte nicht freigegeben werden: ${error.message}`);
-    return mapToViewModel(data as CharacterPresetDto, false);
+    const released = await releaseHostLibraryCharacterPresetVersion(input.presetId, snapshot);
+    const mapped = mapHostPresetRow(released);
+    if (!mapped) throw new Error('Host-Charakter-Preset-Version: ungültige Antwort');
+    return mapped;
   }
 
   async renamePreset(presetId: string, displayName: string): Promise<CharacterPresetVm> {
     const trimmed = displayName.trim();
     if (!trimmed) throw new Error('Preset-Name darf nicht leer sein.');
 
-    if (isHostLibraryEnabled()) {
-      const renamed = await renameHostLibraryCharacterPreset(presetId, trimmed);
-      const mapped = mapHostPresetRow(renamed);
-      if (!mapped) throw new Error('Host-Charakter-Preset umbenennen: ungültige Antwort');
-      return mapped;
-    }
-
-    const userId = await getAuthenticatedUserId();
-    const { data, error } = await supabase
-      .from(TABLE)
-      .update({ display_name: trimmed, published: false, updated_at: new Date().toISOString() })
-      .eq('id', presetId)
-      .eq('owner_user_id', userId)
-      .select()
-      .single();
-    if (error) throw new Error(`Preset konnte nicht umbenannt werden: ${error.message}`);
-    return mapToViewModel(data as CharacterPresetDto, false);
+    assertHost();
+    const renamed = await renameHostLibraryCharacterPreset(presetId, trimmed);
+    const mapped = mapHostPresetRow(renamed);
+    if (!mapped) throw new Error('Host-Charakter-Preset umbenennen: ungültige Antwort');
+    return mapped;
   }
 
   async duplicatePreset(presetId: string): Promise<CharacterPresetVm> {
-    if (isHostLibraryEnabled()) {
-      const duplicated = await duplicateHostLibraryCharacterPreset(presetId);
-      const mapped = mapHostPresetRow(duplicated);
-      if (!mapped) throw new Error('Host-Charakter-Preset duplizieren: ungültige Antwort');
-      return mapped;
-    }
-
-    const userId = await getAuthenticatedUserId();
-    const { data: existing, error: loadError } = await supabase
-      .from(TABLE)
-      .select('*')
-      .eq('id', presetId)
-      .eq('owner_user_id', userId)
-      .single();
-    if (loadError || !existing) {
-      throw new Error(loadError ? `Preset nicht gefunden: ${loadError.message}` : 'Preset nicht gefunden.');
-    }
-    const dto = existing as CharacterPresetDto;
-    const versions = normalizeVersions(dto.versions);
-    const { data, error } = await supabase
-      .from(TABLE)
-      .insert({
-        owner_user_id: userId,
-        display_name: `${dto.display_name} (Kopie)`,
-        ruleset_key: dto.ruleset_key,
-        origin: 'user',
-        source_character_id: null,
-        published: false,
-        versions,
-      })
-      .select()
-      .single();
-    if (error) throw new Error(`Preset konnte nicht dupliziert werden: ${error.message}`);
-    return mapToViewModel(data as CharacterPresetDto, false);
+    assertHost();
+    const duplicated = await duplicateHostLibraryCharacterPreset(presetId);
+    const mapped = mapHostPresetRow(duplicated);
+    if (!mapped) throw new Error('Host-Charakter-Preset duplizieren: ungültige Antwort');
+    if (mapped.displayName.includes('(Kopie)')) return mapped;
+    return this.renamePreset(mapped.id, `${mapped.displayName} (Kopie)`);
   }
 
   async deletePreset(presetId: string): Promise<void> {
-    if (isHostLibraryEnabled()) {
-      await deleteHostLibraryCharacterPreset(presetId);
-      return;
-    }
-    const userId = await getAuthenticatedUserId();
-    const { error } = await supabase.from(TABLE).delete().eq('id', presetId).eq('owner_user_id', userId);
-    if (error) throw new Error(`Preset konnte nicht gelöscht werden: ${error.message}`);
+    assertHost();
+    await deleteHostLibraryCharacterPreset(presetId);
   }
 
   /**

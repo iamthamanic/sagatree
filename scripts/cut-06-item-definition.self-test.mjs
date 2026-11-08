@@ -269,8 +269,11 @@ try {
   );
   await host2.stop();
 
-  // FE dual-path wiring (static)
+  // FE host-only wiring (CUT-20, static)
   const service = readFileSync(join(root, 'src/infrastructure/inventory/item-catalog-service.ts'), 'utf8');
+  const serviceCode = service.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*$/gm, '');
+  assert(/isHostLibraryEnabled/.test(service), 'item catalog host gate');
+  assert(!/supabase\.(from|rpc)|functions\.invoke/.test(serviceCode), 'item catalog no supabase');
   assert(/updateHostLibraryItem/.test(service), 'FE wires updateHostLibraryItem');
   assert(/archiveHostLibraryItem/.test(service), 'FE wires archiveHostLibraryItem');
   assert(/restoreHostLibraryItem/.test(service), 'FE wires restoreHostLibraryItem');

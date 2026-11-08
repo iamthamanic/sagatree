@@ -3,8 +3,8 @@
  * mig-301-ai-adapter.self-test — infrastructure/ai host transport (#800).
  * Location: scripts/mig-301-ai-adapter.self-test.mjs
  *
- * Proves BYOK + Ollama Organize via host HTTP adapters. Client dual-path is
- * source-checked (Vite extensionless imports). Edge stays allowlisted (no cutover).
+ * Proves BYOK + Ollama Organize via host HTTP adapters. Product FE is host-only
+ * (CUT-20). Edge dispatcher allowlist remains for non-product callers.
  * Uses Hono app.request (offline-first; no loopback server).
  */
 import { mkdtempSync, mkdirSync, readFileSync, rmSync } from 'node:fs';
@@ -262,18 +262,24 @@ try {
     session.current = actor('owner-o');
   }
 
-  // Client dual-path source wiring (no production cutover — Edge fallback remains)
+  // Client host-only source wiring (CUT-20)
   const credSrc = readFileSync(
     join(root, 'src/infrastructure/ai/ai-provider-credentials-service.ts'),
     'utf8',
   );
   const ollamaSrc = readFileSync(join(root, 'src/infrastructure/ai/ollama-settings-service.ts'), 'utf8');
   const invokeSrc = readFileSync(join(root, 'src/infrastructure/ai/host-ai-invoke.ts'), 'utf8');
+  const invokeCode = invokeSrc.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*$/gm, '');
   assert(/host-ai-invoke/.test(credSrc), 'credentials service uses host-ai-invoke');
   assert(/host-ai-invoke/.test(ollamaSrc), 'ollama service uses host-ai-invoke');
-  assert(/VITE_SAGATREE_HOST_AUTH_URL/.test(invokeSrc), 'host URL gate');
-  assert(/VITE_SAGATREE_HOST_AI/.test(invokeSrc), 'explicit AI host opt-in');
-  assert(/ai-provider-credentials/.test(invokeSrc) && /ollama-settings/.test(invokeSrc), 'Edge fallback');
+  assert(/getHostAuthBaseUrl/.test(invokeSrc), 'host URL gate');
+  assert(/isHostLibraryEnabled/.test(invokeSrc), 'host library gate on AI invoke');
+  assert(/\/api\/v1\/ai\//.test(invokeSrc), 'host AI HTTP path');
+  assert(
+    /provider-credentials/.test(invokeSrc) && /ollama-settings/.test(invokeSrc),
+    'AI invoke host paths',
+  );
+  assert(!invokeCode.includes('functions.invoke'), 'no Edge functions.invoke in product AI invoke');
   assert(/credentials:\s*'include'/.test(invokeSrc), 'cookie credentials');
   const routesSrc = readFileSync(join(root, 'server/src/api/ai-routes.ts'), 'utf8');
   assert(/AUTH_NOT_CONFIGURED/.test(routesSrc), 'solo fallback gated');

@@ -96,40 +96,46 @@ Die finalen Datenbank-Constraints der beteiligten Relationen sind pro RPC in inv
 
 ## Caller: Request-Mapping, Response-Decoding und Fehler
 
-### src/infrastructure/session/session-recap-service.ts:48
+### src/infrastructure/session/session-recap-service.ts:1
 
-AST-Auflösung: `string-literal`; SHA-256 `e98ca57169a56a5ce0943018e33b0d7c863754e4787eace8bf0e2bbc2930fca5`.
+AST-Auflösung: `host-transport-cut-20`; SHA-256 `0fb9b8f81980a70e42c578ed1274ad43b6098f2cac6c6cf89cbba5bd0ab934fc`.
 
 Der vollständige aufrufende Funktionskörper enthält Parameterumformung, RPC-Aufruf, Response-Prüfung, Fehlerumwandlung und gegebenenfalls Fallback:
 
 ```typescript
-async getBySessionId(sessionId: string): Promise<SessionRecapDto | null> {
-    if (isHostLibraryEnabled()) {
-      const data = await fetchHostSessionRecap(sessionId);
-      if (data == null) return null;
-      if (!isRecord(data)) {
-        throw new Error('Ungültige Recap-Antwort');
-      }
-      const statusRaw = typeof data.summaryStatus === 'string' ? data.summaryStatus : 'none';
-      const summaryStatus =
-        statusRaw === 'approved' || statusRaw === 'draft' ? statusRaw : 'none';
-      return {
-        sessionId: typeof data.sessionId === 'string' ? data.sessionId : sessionId,
-        summaryText: typeof data.summaryText === 'string' ? data.summaryText : null,
-        summaryStatus,
-        highlights: parsePersistedRecapHighlightLines(data.highlightLines),
-        createdAt: typeof data.createdAt === 'string' ? data.createdAt : null,
-        updatedAt: typeof data.updatedAt === 'string' ? data.updatedAt : null,
-      };
-    }
-    const { data, error } = await raceWithTimeoutReject(
-      supabase.rpc('get_session_recap', { p_session_id: sessionId }),
-      SUPABASE_QUERY_TIMEOUT_MS,
-      'Recap Zeitüberschreitung',
-    );
-    if (error) {
-      throw new Error(error.message || 'Recap konnte nicht geladen werden');
-    }
+/**
+ * session-recap-service — Load persisted episode recaps (CUT-20).
+ * Location: src/infrastructure/session/session-recap-service.ts
+ */
+import {
+  parsePersistedRecapHighlightLines,
+  type RecapHighlightLine,
+} from '../../domains/session/contracts/session-prepare-recap';
+import { fetchHostSessionRecap, isHostLibraryEnabled } from '../host/host-session-http';
+
+export type SessionRecapDto = {
+  readonly sessionId: string;
+  readonly summaryText: string | null;
+  readonly summaryStatus: 'none' | 'draft' | 'approved';
+  readonly highlights: readonly RecapHighlightLine[];
+  readonly createdAt: string | null;
+  readonly updatedAt: string | null;
+};
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function assertHost(): void {
+  if (!isHostLibraryEnabled()) {
+    throw new Error('Host-Anmeldung nicht konfiguriert (VITE_SAGATREE_HOST_AUTH_URL fehlt).');
+  }
+}
+
+class SessionRecapService {
+  async getBySessionId(sessionId: string): Promise<SessionRecapDto | null> {
+    assertHost();
+    const data = await fetchHostSessionRecap(sessionId);
     if (data == null) return null;
     if (!isRecord(data)) {
       throw new Error('Ungültige Recap-Antwort');
@@ -146,38 +152,11 @@ async getBySessionId(sessionId: string): Promise<SessionRecapDto | null> {
       updatedAt: typeof data.updatedAt === 'string' ? data.updatedAt : null,
     };
   }
+}
+
+export const sessionRecapService = new SessionRecapService();
+
 ```
-
-Direkt oder transitiv referenzierte lokale/importierte Mapper, Decoder und Vertrags-Typen sind zusätzlich mit vollständigem Source-Text in callers.json und inventory.json.callerContracts.supportingDeclarations gespeichert:
-
-| Symbol | Quelle | Zeile | SHA-256 |
-| --- | --- | --- | --- |
-| `RecapHighlightLine` | [src/domains/session/contracts/session-prepare-recap.ts](../../../src/domains/session/contracts/session-prepare-recap.ts) | 31 | `14a939d627bc1b7393a8e32c1a9bf9f2b74aab0058416bd6e73a9a59cbcc7c7f` |
-| `RecapConsequenceInput` | [src/domains/session/contracts/session-prepare-recap.ts](../../../src/domains/session/contracts/session-prepare-recap.ts) | 107 | `14a939d627bc1b7393a8e32c1a9bf9f2b74aab0058416bd6e73a9a59cbcc7c7f` |
-| `buildRecapHighlightLines` | [src/domains/session/contracts/session-prepare-recap.ts](../../../src/domains/session/contracts/session-prepare-recap.ts) | 119 | `14a939d627bc1b7393a8e32c1a9bf9f2b74aab0058416bd6e73a9a59cbcc7c7f` |
-| `parsePersistedRecapHighlightLines` | [src/domains/session/contracts/session-prepare-recap.ts](../../../src/domains/session/contracts/session-prepare-recap.ts) | 170 | `14a939d627bc1b7393a8e32c1a9bf9f2b74aab0058416bd6e73a9a59cbcc7c7f` |
-| `EnvLike` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 11 | `b2343081ddce2e2edd73651b0622e8b4cc6d8583d746a863dbe3343e3a98f71a` |
-| `defaultEnv` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 16 | `b2343081ddce2e2edd73651b0622e8b4cc6d8583d746a863dbe3343e3a98f71a` |
-| `isHostLibraryExplicitlyDisabled` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 25 | `b2343081ddce2e2edd73651b0622e8b4cc6d8583d746a863dbe3343e3a98f71a` |
-| `EnvLike` | [src/infrastructure/host/host-session-http.ts](../../../src/infrastructure/host/host-session-http.ts) | 12 | `763c2535c26f746b60ff3f68358fb7c37c20384bd9f4a9a5a7d9bf2710e0ab81` |
-| `defaultEnv` | [src/infrastructure/host/host-session-http.ts](../../../src/infrastructure/host/host-session-http.ts) | 17 | `763c2535c26f746b60ff3f68358fb7c37c20384bd9f4a9a5a7d9bf2710e0ab81` |
-| `hostGetJson` | [src/infrastructure/host/host-session-http.ts](../../../src/infrastructure/host/host-session-http.ts) | 25 | `763c2535c26f746b60ff3f68358fb7c37c20384bd9f4a9a5a7d9bf2710e0ab81` |
-| `fetchHostSessionRecap` | [src/infrastructure/host/host-session-http.ts](../../../src/infrastructure/host/host-session-http.ts) | 353 | `763c2535c26f746b60ff3f68358fb7c37c20384bd9f4a9a5a7d9bf2710e0ab81` |
-| `SessionRecapDto` | [src/infrastructure/session/session-recap-service.ts](../../../src/infrastructure/session/session-recap-service.ts) | 13 | `e98ca57169a56a5ce0943018e33b0d7c863754e4787eace8bf0e2bbc2930fca5` |
-| `isRecord` | [src/infrastructure/session/session-recap-service.ts](../../../src/infrastructure/session/session-recap-service.ts) | 23 | `e98ca57169a56a5ce0943018e33b0d7c863754e4787eace8bf0e2bbc2930fca5` |
-| `EnvLike` | [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | 31 | `30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a` |
-| `defaultEnv` | [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | 33 | `30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a` |
-| `getHostAuthBaseUrl` | [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | 53 | `30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a` |
-| `SUPABASE_QUERY_TIMEOUT_MS` | [src/lib/networkTimeout.ts](../../../src/lib/networkTimeout.ts) | 8 | `835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851` |
-| `raceWithTimeoutReject` | [src/lib/networkTimeout.ts](../../../src/lib/networkTimeout.ts) | 36 | `835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851` |
-| `viteEnv` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 13 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
-| `configuredSupabaseUrl` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 15 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
-| `configuredSupabaseAnonKey` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 16 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
-| `hostAuthUrl` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 17 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
-| `hostFirst` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 18 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
-| `supabaseUrl` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 58 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
-| `supabaseAnonKey` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 59 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
-| `supabase` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 61 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
 
 ## Konkrete Abnahmekriterien
 
@@ -198,13 +177,7 @@ Die folgenden Hashes binden SQL-Kette, transitive Tabellen-/Trigger-/Policyquell
 
 | Quelle | SHA-256 |
 | --- | --- |
-| [src/domains/session/contracts/session-prepare-recap.ts](../../../src/domains/session/contracts/session-prepare-recap.ts) | `14a939d627bc1b7393a8e32c1a9bf9f2b74aab0058416bd6e73a9a59cbcc7c7f` |
-| [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | `b2343081ddce2e2edd73651b0622e8b4cc6d8583d746a863dbe3343e3a98f71a` |
-| [src/infrastructure/host/host-session-http.ts](../../../src/infrastructure/host/host-session-http.ts) | `763c2535c26f746b60ff3f68358fb7c37c20384bd9f4a9a5a7d9bf2710e0ab81` |
-| [src/infrastructure/session/session-recap-service.ts](../../../src/infrastructure/session/session-recap-service.ts) | `e98ca57169a56a5ce0943018e33b0d7c863754e4787eace8bf0e2bbc2930fca5` |
-| [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | `30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a` |
-| [src/lib/networkTimeout.ts](../../../src/lib/networkTimeout.ts) | `835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851` |
-| [src/lib/supabase.ts](../../../src/lib/supabase.ts) | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
+| [src/infrastructure/session/session-recap-service.ts](../../../src/infrastructure/session/session-recap-service.ts) | `0fb9b8f81980a70e42c578ed1274ad43b6098f2cac6c6cf89cbba5bd0ab934fc` |
 | [supabase/migrations/001_initial.sql](../../../supabase/migrations/001_initial.sql) | `e3325c56d68286a2e293ddff791736ef91346ff90ac018c045843a5d52afb8c8` |
 | [supabase/migrations/015_inventory_item_definitions.sql](../../../supabase/migrations/015_inventory_item_definitions.sql) | `aeedfd77bb79d7d38f4163a496b373d266027b39adbce82fe14aec768187e9e7` |
 | [supabase/migrations/039_public_resource_ids_and_session_numbers.sql](../../../supabase/migrations/039_public_resource_ids_and_session_numbers.sql) | `053f02aaea8e1f3af27bfa3f6c7e17caadd5d5434ef6298e11920d0891b55f96` |

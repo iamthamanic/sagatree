@@ -280,20 +280,11 @@ section('4 · migration + RLS static contract');
 }
 
 // ===========================================================================
-section('5 · infrastructure repository security contract');
+section('5 · infrastructure facade security contract');
 {
-  const repo = read('src/infrastructure/npc-creature/supabase-npc-creature.repository.ts');
-  requireMatch(repo, /Derived from the authenticated session, never from client input/, 'owner from session');
-  requireMatch(repo, /\.eq\('owner_user_id', userId\)/, 'personal writes filter owner');
-  requireMatch(repo, /\.eq\('world_profile_id', assertUuid/, 'world writes bind world id');
-  requireMatch(repo, /canMutateNpcCreatureDefinition/, 'uses mutation policy');
-  requireMatch(repo, /canCreateNpcCreatureDefinition/, 'uses create policy');
-  requireMatch(repo, /validateNpcCreatureDefinition/, 'validates before write');
-  rejectMatch(
-    repo,
-    /draft\.ownerUserId|draft\.owner_user_id|draft\.worldProfileId|draft\.world_profile_id|input\.owner/,
-    'draft must not supply owner/world identity',
-  );
+  const policy = read('src/domains/npc-creature/policy.ts');
+  requireMatch(policy, /canMutateNpcCreatureDefinition/, 'mutation policy in domain');
+  requireMatch(policy, /canCreateNpcCreatureDefinition/, 'create policy in domain');
 
   const persistence = read('src/infrastructure/npc-creature/npc-creature.persistence.ts');
   requireMatch(persistence, /npc_creature_definitions/, 'maps npc_creature_definitions');
@@ -302,7 +293,16 @@ section('5 · infrastructure repository security contract');
   const service = read('src/infrastructure/npc-creature/npc-creature-service.ts');
   requireMatch(service, /createNpcCreatureDefinition/, 'service create');
   requireMatch(service, /archiveNpcCreatureDefinition/, 'service archive');
+  requireMatch(service, /parseNpcCreatureDefinition/, 'validates before map');
+  requireMatch(service, /createHostLibraryNpcCreature/, 'writes via host library HTTP');
+  requireMatch(service, /assertHost\(\)/, 'host-only npc facade');
+  requireMatch(service, /getAuthenticatedUserId/, 'actor resolved from session where needed');
   rejectMatch(service, /ownerUserId:/, 'service facade takes no foreign owner');
+  rejectMatch(
+    service,
+    /draft\.ownerUserId|draft\.owner_user_id|draft\.worldProfileId|draft\.world_profile_id|input\.owner/,
+    'draft must not supply owner/world identity',
+  );
 
   // Legacy paths must remain untouched as SoT.
   const legacyNpcs = read('supabase/functions/npcs/index.ts');

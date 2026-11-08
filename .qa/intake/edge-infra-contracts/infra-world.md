@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-world.json](source-contracts/infra-world.json) (SHA-256 `afe5fa331b715cb27ad9cd3ddb3e3837e48b433b0a2ce684aa4b5061a2557107`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-world.json](source-contracts/infra-world.json) (SHA-256 `f7b0020df3a3262ae8b083e1b0b1a25c989a61249171e564d7ba1d50d874911b`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -16,43 +16,20 @@ The adapter establishes request/filter behavior. Server permission and rollback 
 
 ## Complete backend inventory
 
-RPCs (17): `archive_world_node_subtree`, `create_world_node_with_maps`, `delete_world_node`, `duplicate_world_node`, `ensure_world_atlas_root`, `get_world_atlas_map`, `get_world_map`, `list_world_atlas_maps`, `list_world_place_map_links`, `list_world_places`, `preview_world_node_consequences`, `rename_world_node`, `reparent_world_node`, `save_world_map`, `upsert_world_atlas_map`, `upsert_world_place`, `upsert_world_place_map_link`.
+RPCs (0): none.
 
-Tables (3): `inventory_item_definitions`, `npc_creature_definitions`, `world_profiles`.
+Tables (0): none.
 
-Storage buckets (2): `world-atlas`, `world-map-pins`.
+Storage buckets (0): none.
 
 Edge invokes (0): none.
 
-Realtime call sites: 0. Direct fetch sites: 0. Explicit auth/helper sites: 2.
+Realtime call sites: 0. Direct fetch sites: 0. Explicit auth/helper sites: 0.
 
 ## Complete implementation dependencies
 
 | Kind | Contract dependency | Implementation issue | Additional policy/group |
 |---|---|---|---|
-| rpc | `archive_world_node_subtree` | #813 | RPC-WORLD-DESTRUCTIVE |
-| rpc | `create_world_node_with_maps` | #813 | RPC-WORLD-CREATE |
-| rpc | `delete_world_node` | #813 | RPC-WORLD-DESTRUCTIVE |
-| rpc | `duplicate_world_node` | #813 | RPC-WORLD-RESTRUCTURE |
-| rpc | `ensure_world_atlas_root` | #813 | RPC-ATLAS-MAPS |
-| rpc | `get_world_atlas_map` | #813 | RPC-ATLAS-MAPS |
-| rpc | `get_world_map` | #813 | RPC-WORLD-MAP |
-| rpc | `list_world_atlas_maps` | #813 | RPC-ATLAS-MAPS |
-| rpc | `list_world_place_map_links` | #813 | RPC-WORLD-PLACES |
-| rpc | `list_world_places` | #813 | RPC-WORLD-PLACES |
-| rpc | `preview_world_node_consequences` | #813 | RPC-WORLD-DESTRUCTIVE |
-| rpc | `rename_world_node` | #813 | RPC-WORLD-CREATE |
-| rpc | `reparent_world_node` | #813 | RPC-WORLD-RESTRUCTURE |
-| rpc | `save_world_map` | #813 | RPC-WORLD-MAP |
-| rpc | `upsert_world_atlas_map` | #813 | RPC-ATLAS-MAPS |
-| rpc | `upsert_world_place` | #813 | RPC-WORLD-PLACES |
-| rpc | `upsert_world_place_map_link` | #813 | RPC-WORLD-PLACES |
-| table | `inventory_item_definitions` | #791 | Policy #792 |
-| table | `npc_creature_definitions` | #791 | Policy #792 |
-| table | `world_profiles` | #791 | Policy #792 |
-| storage | `world-atlas` | #841 |  |
-| storage | `world-map-pins` | #841 |  |
-| auth | `authenticated account/session transport` | #793 |  |
 | infra | `media` | #805 |  |
 
 ## Acceptance and negative tests (required, not executed)
@@ -60,23 +37,6 @@ Realtime call sites: 0. Direct fetch sites: 0. Explicit auth/helper sites: 2.
 - Create world/node/maps; edit/rename/reparent/duplicate/archive/delete with consequence preview and reload into DB-backed tree.
 - Player sees only explicitly revealed map/place projection for the selected saga; owner without GM privileges follows actual per-RPC policy.
 - Map pin upload uses storage bucket (not a table); every17 RPC dependency and profile CRUD transport ready before facade cutover.
-- Contract fixture for archive_world_node_subtree: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
-- Contract fixture for create_world_node_with_maps: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
-- Contract fixture for delete_world_node: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
-- Contract fixture for duplicate_world_node: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
-- Contract fixture for ensure_world_atlas_root: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
-- Contract fixture for get_world_atlas_map: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
-- Contract fixture for get_world_map: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
-- Contract fixture for list_world_atlas_maps: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
-- Contract fixture for list_world_place_map_links: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
-- Contract fixture for list_world_places: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
-- Contract fixture for preview_world_node_consequences: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
-- Contract fixture for rename_world_node: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
-- Contract fixture for reparent_world_node: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
-- Contract fixture for save_world_map: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
-- Contract fixture for upsert_world_atlas_map: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
-- Contract fixture for upsert_world_place: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
-- Contract fixture for upsert_world_place_map_link: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
 
 ## Observed source defects and explicit successor decisions
 
@@ -84,434 +44,7 @@ None in the reviewed source.
 
 ## All backend calls, arguments, filters and result handling
 
-### rpc: list_world_atlas_maps
-
-`src/infrastructure/world/world-atlas-service.ts:59` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase.rpc('list_world_atlas_maps', {
-      p_world_profile_id: id,
-      p_player_view: options.playerView === true,
-      p_saga_public_id: options.sagaPublicId?.trim() || null,
-    })
-```
-
-Enclosing operation: `src/infrastructure/world/world-atlas-service.ts:48`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### rpc: ensure_world_atlas_root
-
-`src/infrastructure/world/world-atlas-service.ts:76` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase.rpc('ensure_world_atlas_root', {
-      p_world_profile_id: id,
-    })
-```
-
-Enclosing operation: `src/infrastructure/world/world-atlas-service.ts:68`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### rpc: get_world_atlas_map
-
-`src/infrastructure/world/world-atlas-service.ts:95` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase.rpc('get_world_atlas_map', {
-      p_map_id: id,
-      p_player_view: playerView,
-      p_saga_public_id: sagaPublicId?.trim() || null,
-    })
-```
-
-Enclosing operation: `src/infrastructure/world/world-atlas-service.ts:83`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### rpc: upsert_world_atlas_map
-
-`src/infrastructure/world/world-atlas-service.ts:123` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase.rpc('upsert_world_atlas_map', {
-      p_world_profile_id: input.worldProfileId.trim(),
-      p_map_id: input.mapId ?? null,
-      p_parent_map_id: input.parentMapId ?? null,
-      p_kind: input.kind,
-      p_title: input.title,
-      p_sort_order: input.sortOrder ?? 0,
-      p_bounds: input.bounds,
-      p_layers: input.layers,
-      p_basemap_storage_path: input.basemapStoragePath ?? null,
-      p_azgaar_map_storage_path: input.azgaarMapStoragePath ?? null,
-      p_generator_meta: input.generatorMeta ?? {},
-      p_expected_revision: input.expectedRevision ?? null,
-    })
-```
-
-Enclosing operation: `src/infrastructure/world/world-atlas-service.ts:104`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### auth-helper: session identity
-
-`src/infrastructure/world/world-atlas-service.ts:156` — dynamic-expression.
-
-Exact call/query chain:
-```ts
-getAuthenticatedUserId()
-```
-
-Enclosing operation: `src/infrastructure/world/world-atlas-service.ts:149`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### storage: world-atlas
-
-`src/infrastructure/world/world-atlas-service.ts:162` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase.storage.from(ATLAS_BUCKET).upload(path, file, {
-      upsert: false,
-      contentType: file.type || 'application/octet-stream',
-    })
-```
-
-Enclosing operation: `src/infrastructure/world/world-atlas-service.ts:149`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### storage: world-atlas
-
-`src/infrastructure/world/world-atlas-service.ts:179` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase.storage
-      .from(ATLAS_BUCKET)
-      .createSignedUrl(path, expiresSec)
-```
-
-Enclosing operation: `src/infrastructure/world/world-atlas-service.ts:170`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### rpc: get_world_map
-
-`src/infrastructure/world/world-map-service.ts:88` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase.rpc('get_world_map', {
-      p_world_profile_id: id,
-      p_player_view: playerView,
-    })
-```
-
-Enclosing operation: `src/infrastructure/world/world-map-service.ts:79`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### rpc: save_world_map
-
-`src/infrastructure/world/world-map-service.ts:111` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase.rpc('save_world_map', {
-      p_world_profile_id: id,
-      p_expected_revision: expectedRevision,
-      p_map_data: mapData,
-    })
-```
-
-Enclosing operation: `src/infrastructure/world/world-map-service.ts:98`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### auth: session identity
-
-`src/infrastructure/world/world-map-service.ts:139` — dynamic-expression.
-
-Exact call/query chain:
-```ts
-supabase.auth.getUser()
-```
-
-Enclosing operation: `src/infrastructure/world/world-map-service.ts:126`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### storage: world-map-pins
-
-`src/infrastructure/world/world-map-service.ts:156` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase.storage.from('world-map-pins').upload(path, prepared, {
-      upsert: false,
-      contentType: prepared.type || 'image/jpeg',
-    })
-```
-
-Enclosing operation: `src/infrastructure/world/world-map-service.ts:126`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### rpc: list_world_places
-
-`src/infrastructure/world/world-place-service.ts:61` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase.rpc('list_world_places', {
-      p_world_profile_id: id,
-      p_player_view: options.playerView === true,
-      p_saga_public_id: options.sagaPublicId?.trim() || null,
-    })
-```
-
-Enclosing operation: `src/infrastructure/world/world-place-service.ts:50`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### rpc: list_world_place_map_links
-
-`src/infrastructure/world/world-place-service.ts:81` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase.rpc('list_world_place_map_links', {
-      p_world_profile_id: id,
-      p_player_view: options.playerView === true,
-      p_saga_public_id: options.sagaPublicId?.trim() || null,
-    })
-```
-
-Enclosing operation: `src/infrastructure/world/world-place-service.ts:70`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### rpc: upsert_world_place
-
-`src/infrastructure/world/world-place-service.ts:108` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase.rpc('upsert_world_place', {
-      p_world_profile_id: input.worldProfileId.trim(),
-      p_place_id: input.placeId ?? null,
-      p_parent_place_id: input.parentPlaceId ?? null,
-      p_kind: input.kind,
-      p_name: input.name,
-      p_description: input.description ?? null,
-      p_status: input.status ?? 'draft',
-      p_seed_key: input.seedKey ?? null,
-      p_sort_order: input.sortOrder ?? 0,
-    })
-```
-
-Enclosing operation: `src/infrastructure/world/world-place-service.ts:90`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### rpc: create_world_node_with_maps
-
-`src/infrastructure/world/world-place-service.ts:154` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase.rpc('create_world_node_with_maps', {
-      p_world_profile_id: input.worldProfileId.trim(),
-      p_kind: input.kind,
-      p_name: input.name,
-      p_idempotency_key: input.idempotencyKey.trim(),
-      p_subtype: input.subtype ?? null,
-      p_parent_place_id: input.parentPlaceId ?? null,
-      p_description: input.description ?? null,
-    })
-```
-
-Enclosing operation: `src/infrastructure/world/world-place-service.ts:129`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### rpc: preview_world_node_consequences
-
-`src/infrastructure/world/world-place-service.ts:184` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase.rpc('preview_world_node_consequences', {
-      p_world_profile_id: input.worldProfileId.trim(),
-      p_place_id: input.placeId.trim(),
-    })
-```
-
-Enclosing operation: `src/infrastructure/world/world-place-service.ts:171`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### rpc: rename_world_node
-
-`src/infrastructure/world/world-place-service.ts:209` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase.rpc('rename_world_node', {
-      p_world_profile_id: input.worldProfileId.trim(),
-      p_place_id: input.placeId.trim(),
-      p_name: input.name,
-    })
-```
-
-Enclosing operation: `src/infrastructure/world/world-place-service.ts:193`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### rpc: reparent_world_node
-
-`src/infrastructure/world/world-place-service.ts:237` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase.rpc('reparent_world_node', {
-      p_world_profile_id: input.worldProfileId.trim(),
-      p_place_id: input.placeId.trim(),
-      p_new_parent_place_id: input.newParentPlaceId,
-      p_confirm_relocate: input.confirmRelocate,
-    })
-```
-
-Enclosing operation: `src/infrastructure/world/world-place-service.ts:220`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### rpc: duplicate_world_node
-
-`src/infrastructure/world/world-place-service.ts:263` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase.rpc('duplicate_world_node', {
-      p_world_profile_id: input.worldProfileId.trim(),
-      p_place_id: input.placeId.trim(),
-      p_deep: input.deep === true,
-    })
-```
-
-Enclosing operation: `src/infrastructure/world/world-place-service.ts:248`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### rpc: archive_world_node_subtree
-
-`src/infrastructure/world/world-place-service.ts:288` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase.rpc('archive_world_node_subtree', {
-      p_world_profile_id: input.worldProfileId.trim(),
-      p_place_id: input.placeId.trim(),
-      p_confirm: input.confirm,
-    })
-```
-
-Enclosing operation: `src/infrastructure/world/world-place-service.ts:273`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### rpc: delete_world_node
-
-`src/infrastructure/world/world-place-service.ts:313` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase.rpc('delete_world_node', {
-      p_world_profile_id: input.worldProfileId.trim(),
-      p_place_id: input.placeId.trim(),
-      p_confirm: input.confirm,
-    })
-```
-
-Enclosing operation: `src/infrastructure/world/world-place-service.ts:298`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### rpc: upsert_world_place_map_link
-
-`src/infrastructure/world/world-place-service.ts:341` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase.rpc('upsert_world_place_map_link', {
-      p_world_profile_id: input.worldProfileId.trim(),
-      p_place_id: input.placeId.trim(),
-      p_map_id: input.mapId.trim(),
-      p_usage: input.usage,
-      p_feature_id: input.featureId ?? null,
-      p_anchor: input.anchor ?? {},
-    })
-```
-
-Enclosing operation: `src/infrastructure/world/world-place-service.ts:323`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: world_profiles
-
-`src/infrastructure/world/world-profile-service.ts:85` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase
-      .from(this.tableName)
-      .select(WORLD_SELECT)
-      .eq('owner_user_id', jwtUserId)
-      .order('created_at', { ascending: false })
-```
-
-Enclosing operation: `src/infrastructure/world/world-profile-service.ts:78`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: world_profiles
-
-`src/infrastructure/world/world-profile-service.ts:104` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase
-      .from(this.tableName)
-      .select(WORLD_SELECT)
-      .eq('id', id)
-      .eq('owner_user_id', jwtUserId)
-      .single()
-```
-
-Enclosing operation: `src/infrastructure/world/world-profile-service.ts:95`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: world_profiles
-
-`src/infrastructure/world/world-profile-service.ts:125` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase
-      .from(this.tableName)
-      .select(WORLD_SELECT)
-      .eq('public_id', publicId)
-      .maybeSingle()
-```
-
-Enclosing operation: `src/infrastructure/world/world-profile-service.ts:116`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: world_profiles
-
-`src/infrastructure/world/world-profile-service.ts:157` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase
-      .from(this.tableName)
-      .insert(insertPayload)
-      .select(WORLD_SELECT)
-      .single()
-```
-
-Enclosing operation: `src/infrastructure/world/world-profile-service.ts:135`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: world_profiles
-
-`src/infrastructure/world/world-profile-service.ts:206` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase
-      .from(this.tableName)
-      .update(updatePayload)
-      .eq('id', id)
-      .eq('owner_user_id', jwtUserId)
-      .select(WORLD_SELECT)
-      .single()
-```
-
-Enclosing operation: `src/infrastructure/world/world-profile-service.ts:177`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: inventory_item_definitions
-
-`src/infrastructure/world/world-profile-service.ts:229` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase
-      .from('inventory_item_definitions')
-      .select('id', { count: 'exact', head: true })
-      .eq('world_profile_id', id)
-```
-
-Enclosing operation: `src/infrastructure/world/world-profile-service.ts:218`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: npc_creature_definitions
-
-`src/infrastructure/world/world-profile-service.ts:242` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase
-      .from('npc_creature_definitions')
-      .select('id', { count: 'exact', head: true })
-      .eq('world_profile_id', id)
-```
-
-Enclosing operation: `src/infrastructure/world/world-profile-service.ts:218`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: world_profiles
-
-`src/infrastructure/world/world-profile-service.ts:255` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase
-      .from(this.tableName)
-      .delete()
-      .eq('id', id)
-      .eq('owner_user_id', jwtUserId)
-```
-
-Enclosing operation: `src/infrastructure/world/world-profile-service.ts:218`; complete request/default/result/error logic is in the declarations below and the snapshot.
+This area has no RPC, Edge, table, storage, realtime, fetch or auth calls. Its public browser processing/worker API is retained in the complete public declarations.
 
 ## Complete public declarations and facade operation contracts
 
@@ -923,7 +456,7 @@ export type HostWorldReadPort = {
 };
 ```
 
-### src/infrastructure/world/world-atlas-service.ts:32
+### src/infrastructure/world/world-atlas-service.ts:28
 
 ```ts
 export type UpsertWorldAtlasMapInput = {
@@ -942,13 +475,13 @@ export type UpsertWorldAtlasMapInput = {
 };
 ```
 
-### src/infrastructure/world/world-atlas-service.ts:189
+### src/infrastructure/world/world-atlas-service.ts:111
 
 ```ts
 export const worldAtlasService = new WorldAtlasService();
 ```
 
-### src/infrastructure/world/world-map-service.ts:22
+### src/infrastructure/world/world-map-service.ts:15
 
 ```ts
 export type UploadPinImageOptions = {
@@ -957,7 +490,7 @@ export type UploadPinImageOptions = {
 };
 ```
 
-### src/infrastructure/world/world-map-service.ts:28
+### src/infrastructure/world/world-map-service.ts:27
 
 ```ts
 export async function prepareWorldMapPinFile(
@@ -966,6 +499,9 @@ export async function prepareWorldMapPinFile(
 ): Promise<File> {
   if (file.size > MAP_PIN_MAX_BYTES) {
     throw new Error('Bild ist zu groß. Maximum 5 MB');
+  }
+  if (!MAP_PIN_ALLOWED_MIME.has(file.type)) {
+    throw new Error('Nur PNG, JPEG oder WebP sind als Pin-Bild erlaubt.');
   }
   const { optimizeMedia } = await import('../media/optimizer');
   let optimizedBytes: Uint8Array | undefined;
@@ -982,9 +518,6 @@ export async function prepareWorldMapPinFile(
   });
 
   if (result.status === 'unchanged') {
-    if (!MAP_PIN_ALLOWED_MIME.has(file.type)) {
-      throw new Error('Nur PNG, JPEG oder WebP erlaubt.');
-    }
     return file;
   }
 
@@ -992,10 +525,18 @@ export async function prepareWorldMapPinFile(
     if (!optimizedBytes || optimizedBytes.byteLength === 0) {
       throw new Error('Pin-Bild-Optimierung lieferte keine Bytes (kein stilles Original).');
     }
+    if (!MAP_PIN_ALLOWED_MIME.has(result.outputMimeType)) {
+      throw new Error(`Optimiertes MIME ${result.outputMimeType} ist nicht erlaubt.`);
+    }
     const copy = new Uint8Array(optimizedBytes.byteLength);
     copy.set(optimizedBytes);
     const base = file.name.replace(/\.[^.]+$/, '') || 'pin';
-    const ext = result.outputMimeType === 'image/webp' ? 'webp' : 'bin';
+    const ext =
+      result.outputMimeType === 'image/webp'
+        ? 'webp'
+        : result.outputMimeType === 'image/png'
+          ? 'png'
+          : 'jpg';
     return new File([copy], `${base}.${ext}`, { type: result.outputMimeType });
   }
 
@@ -1011,13 +552,13 @@ export async function prepareWorldMapPinFile(
 }
 ```
 
-### src/infrastructure/world/world-map-service.ts:165
+### src/infrastructure/world/world-map-service.ts:126
 
 ```ts
 export const worldMapService = new WorldMapService();
 ```
 
-### src/infrastructure/world/world-place-service.ts:35
+### src/infrastructure/world/world-place-service.ts:32
 
 ```ts
 export type ListWorldPlacesOptions = {
@@ -1026,7 +567,7 @@ export type ListWorldPlacesOptions = {
 };
 ```
 
-### src/infrastructure/world/world-place-service.ts:40
+### src/infrastructure/world/world-place-service.ts:37
 
 ```ts
 export type LinkWorldPlaceMapInput = {
@@ -1039,13 +580,13 @@ export type LinkWorldPlaceMapInput = {
 };
 ```
 
-### src/infrastructure/world/world-place-service.ts:356
+### src/infrastructure/world/world-place-service.ts:228
 
 ```ts
 export const worldPlaceService = new WorldPlaceService();
 ```
 
-### src/infrastructure/world/world-profile-service.ts:265
+### src/infrastructure/world/world-profile-service.ts:150
 
 ```ts
 export const worldProfileService = new WorldProfileService();
@@ -1054,805 +595,7 @@ export const worldProfileService = new WorldProfileService();
 
 ## Remaining backend helper operations
 
-### src/infrastructure/world/world-atlas-service.ts:48
-
-```ts
-async listMaps(
-    worldProfileId: string,
-    options: { readonly playerView?: boolean; readonly sagaPublicId?: string | null } = {},
-  ): Promise<WorldAtlasMapSummary[]> {
-    const id = worldProfileId.trim();
-    if (!id) throw new Error('Weltprofil fehlt');
-    if (isHostLibraryEnabled()) {
-      const data = await listHostWorldAtlasMaps(id, options);
-      return parseWorldAtlasMapList(data);
-    }
-    await assertSupabaseJwtSession();
-    const { data, error } = await supabase.rpc('list_world_atlas_maps', {
-      p_world_profile_id: id,
-      p_player_view: options.playerView === true,
-      p_saga_public_id: options.sagaPublicId?.trim() || null,
-    });
-    if (error) throw new Error(`Atlas-Liste fehlgeschlagen: ${error.message}`);
-    return parseWorldAtlasMapList(data);
-  }
-```
-
-### src/infrastructure/world/world-atlas-service.ts:68
-
-```ts
-async ensureRoot(worldProfileId: string): Promise<WorldAtlasMapSummary[]> {
-    const id = worldProfileId.trim();
-    if (!id) throw new Error('Weltprofil fehlt');
-    if (isHostLibraryEnabled()) {
-      const data = await ensureHostWorldAtlasRoot(id);
-      return parseWorldAtlasMapList(data);
-    }
-    await assertSupabaseJwtSession();
-    const { data, error } = await supabase.rpc('ensure_world_atlas_root', {
-      p_world_profile_id: id,
-    });
-    if (error) throw new Error(`Atlas-Root fehlgeschlagen: ${error.message}`);
-    return parseWorldAtlasMapList(data);
-  }
-```
-
-### src/infrastructure/world/world-atlas-service.ts:83
-
-```ts
-async getMap(
-    mapId: string,
-    playerView = false,
-    sagaPublicId?: string | null,
-  ): Promise<WorldAtlasMapVm> {
-    const id = mapId.trim();
-    if (!id) throw new Error('Karten-ID fehlt');
-    if (isHostLibraryEnabled()) {
-      const data = await fetchHostWorldAtlasMap(id, playerView, sagaPublicId);
-      return parseWorldAtlasMapVm(data);
-    }
-    await assertSupabaseJwtSession();
-    const { data, error } = await supabase.rpc('get_world_atlas_map', {
-      p_map_id: id,
-      p_player_view: playerView,
-      p_saga_public_id: sagaPublicId?.trim() || null,
-    });
-    if (error) throw new Error(`Atlas-Karte konnte nicht geladen werden: ${error.message}`);
-    return parseWorldAtlasMapVm(data);
-  }
-```
-
-### src/infrastructure/world/world-atlas-service.ts:104
-
-```ts
-async upsertMap(input: UpsertWorldAtlasMapInput): Promise<WorldAtlasMapVm> {
-    if (isHostLibraryEnabled()) {
-      const data = await upsertHostWorldAtlasMap({
-        worldProfileId: input.worldProfileId.trim(),
-        mapId: input.mapId ?? null,
-        parentMapId: input.parentMapId ?? null,
-        kind: input.kind,
-        title: input.title,
-        sortOrder: input.sortOrder ?? 0,
-        bounds: input.bounds,
-        layers: input.layers,
-        basemapStoragePath: input.basemapStoragePath ?? null,
-        azgaarMapStoragePath: input.azgaarMapStoragePath ?? null,
-        generatorMeta: input.generatorMeta ?? {},
-        expectedRevision: input.expectedRevision ?? null,
-      });
-      return parseWorldAtlasMapVm(data);
-    }
-    await assertSupabaseJwtSession();
-    const { data, error } = await supabase.rpc('upsert_world_atlas_map', {
-      p_world_profile_id: input.worldProfileId.trim(),
-      p_map_id: input.mapId ?? null,
-      p_parent_map_id: input.parentMapId ?? null,
-      p_kind: input.kind,
-      p_title: input.title,
-      p_sort_order: input.sortOrder ?? 0,
-      p_bounds: input.bounds,
-      p_layers: input.layers,
-      p_basemap_storage_path: input.basemapStoragePath ?? null,
-      p_azgaar_map_storage_path: input.azgaarMapStoragePath ?? null,
-      p_generator_meta: input.generatorMeta ?? {},
-      p_expected_revision: input.expectedRevision ?? null,
-    });
-    if (error) {
-      if (error.code === '40001' || /revision conflict/i.test(error.message)) {
-        throw new Error(
-          'Die Karte wurde inzwischen geändert. Bitte neu laden und erneut speichern.',
-        );
-      }
-      throw new Error(`Atlas speichern fehlgeschlagen: ${error.message}`);
-    }
-    return parseWorldAtlasMapVm(data);
-  }
-```
-
-### src/infrastructure/world/world-atlas-service.ts:149
-
-```ts
-async uploadAzgaarMapFile(worldProfileId: string, file: File): Promise<string> {
-    if (isHostLibraryEnabled()) {
-      throw new Error(
-        'Azgaar-Upload über Host-Speicher folgt in einem späteren Cutover.',
-      );
-    }
-    await assertSupabaseJwtSession();
-    const userId = await getAuthenticatedUserId();
-    if (file.size > AZGAAR_MAX_BYTES) {
-      throw new Error('Azgaar-Datei ist zu groß (max. 40 MB).');
-    }
-    const safeName = file.name.replace(/[^\w.\-]+/g, '_').slice(0, 80) || 'world.map';
-    const path = `${userId}/${worldProfileId.trim()}/azgaar/${Date.now()}-${safeName}`;
-    const { error } = await supabase.storage.from(ATLAS_BUCKET).upload(path, file, {
-      upsert: false,
-      contentType: file.type || 'application/octet-stream',
-    });
-    if (error) throw new Error(`Azgaar-Upload fehlgeschlagen: ${error.message}`);
-    return path;
-  }
-```
-
-### src/infrastructure/world/world-atlas-service.ts:170
-
-```ts
-async createSignedUrl(storagePath: string, expiresSec = 3600): Promise<string> {
-    if (isHostLibraryEnabled()) {
-      throw new Error(
-        'Atlas-Download-URLs über Host-Speicher folgen in einem späteren Cutover.',
-      );
-    }
-    await assertSupabaseJwtSession();
-    const path = storagePath.trim();
-    if (!path) throw new Error('Storage-Pfad fehlt');
-    const { data, error } = await supabase.storage
-      .from(ATLAS_BUCKET)
-      .createSignedUrl(path, expiresSec);
-    if (error || !data?.signedUrl) {
-      throw new Error(error?.message || 'Download-URL fehlgeschlagen.');
-    }
-    return data.signedUrl;
-  }
-```
-
-### src/infrastructure/world/world-map-service.ts:79
-
-```ts
-async getMap(worldProfileId: string, playerView = false): Promise<WorldMapVm> {
-    const id = worldProfileId.trim();
-    if (!id) throw new Error('Weltprofil fehlt');
-    if (isHostLibraryEnabled()) {
-      const data = await fetchHostWorldMap(id, playerView);
-      const vm = parseWorldMapVm(data);
-      if (!vm) throw new Error('Ungültige Kartenantwort');
-      return vm;
-    }
-    const { data, error } = await supabase.rpc('get_world_map', {
-      p_world_profile_id: id,
-      p_player_view: playerView,
-    });
-    if (error) throw new Error(`Karte konnte nicht geladen werden: ${error.message}`);
-    const vm = parseWorldMapVm(data);
-    if (!vm) throw new Error('Ungültige Kartenantwort');
-    return vm;
-  }
-```
-
-### src/infrastructure/world/world-map-service.ts:98
-
-```ts
-async saveMap(
-    worldProfileId: string,
-    expectedRevision: number,
-    mapData: WorldMapData,
-  ): Promise<WorldMapVm> {
-    const id = worldProfileId.trim();
-    if (!id) throw new Error('Weltprofil fehlt');
-    if (isHostLibraryEnabled()) {
-      const data = await saveHostWorldMap(id, expectedRevision, mapData);
-      const vm = parseWorldMapVm(data);
-      if (!vm) throw new Error('Ungültige Speicherantwort');
-      return vm;
-    }
-    const { data, error } = await supabase.rpc('save_world_map', {
-      p_world_profile_id: id,
-      p_expected_revision: expectedRevision,
-      p_map_data: mapData,
-    });
-    if (error) throw new Error(`Karte konnte nicht gespeichert werden: ${error.message}`);
-    const vm = parseWorldMapVm(data);
-    if (!vm) throw new Error('Ungültige Speicherantwort');
-    return vm;
-  }
-```
-
-### src/infrastructure/world/world-map-service.ts:126
-
-```ts
-async uploadPinImage(
-    worldProfileId: string,
-    file: File,
-    options?: UploadPinImageOptions,
-  ): Promise<string> {
-    if (isHostLibraryEnabled()) {
-      throw new Error(
-        'Pin-Bild-Upload über Host-Speicher folgt in einem späteren Cutover.',
-      );
-    }
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
-    if (authError || !user) throw new Error('Anmeldung erforderlich');
-
-    const prepared = options?.alreadyOptimized
-      ? file
-      : await prepareWorldMapPinFile(file, options?.signal);
-
-    if (prepared.size > MAP_PIN_MAX_BYTES) {
-      throw new Error('Bild ist zu groß. Maximum 5 MB');
-    }
-    if (prepared.type && !MAP_PIN_ALLOWED_MIME.has(prepared.type)) {
-      throw new Error('Nur PNG, JPEG oder WebP erlaubt.');
-    }
-
-    const ext =
-      prepared.type === 'image/png' ? 'png' : prepared.type === 'image/webp' ? 'webp' : 'jpg';
-    const path = `${user.id}/world/${worldProfileId}/pins/${Date.now().toString(36)}.${ext}`;
-    const { error } = await supabase.storage.from('world-map-pins').upload(path, prepared, {
-      upsert: false,
-      contentType: prepared.type || 'image/jpeg',
-    });
-    if (error) throw new Error(`Pin-Bild Upload fehlgeschlagen: ${error.message}`);
-    return path;
-  }
-```
-
-### src/infrastructure/world/world-place-service.ts:50
-
-```ts
-async listPlaces(
-    worldProfileId: string,
-    options: ListWorldPlacesOptions = {},
-  ): Promise<WorldPlaceVm[]> {
-    const id = worldProfileId.trim();
-    if (!id) throw new Error('Weltprofil fehlt');
-    if (isHostLibraryEnabled()) {
-      const data = await listHostWorldPlaces(id, options);
-      return parseWorldPlaceList(data);
-    }
-    await assertSupabaseJwtSession();
-    const { data, error } = await supabase.rpc('list_world_places', {
-      p_world_profile_id: id,
-      p_player_view: options.playerView === true,
-      p_saga_public_id: options.sagaPublicId?.trim() || null,
-    });
-    if (error) throw new Error(`Orte konnten nicht geladen werden: ${error.message}`);
-    return parseWorldPlaceList(data);
-  }
-```
-
-### src/infrastructure/world/world-place-service.ts:70
-
-```ts
-async listMapLinks(
-    worldProfileId: string,
-    options: ListWorldPlacesOptions = {},
-  ): Promise<WorldPlaceMapLinkVm[]> {
-    const id = worldProfileId.trim();
-    if (!id) throw new Error('Weltprofil fehlt');
-    if (isHostLibraryEnabled()) {
-      const data = await listHostWorldPlaceMapLinks(id, options);
-      return parseWorldPlaceMapLinkList(data);
-    }
-    await assertSupabaseJwtSession();
-    const { data, error } = await supabase.rpc('list_world_place_map_links', {
-      p_world_profile_id: id,
-      p_player_view: options.playerView === true,
-      p_saga_public_id: options.sagaPublicId?.trim() || null,
-    });
-    if (error) throw new Error(`Kartenverknüpfungen fehlgeschlagen: ${error.message}`);
-    return parseWorldPlaceMapLinkList(data);
-  }
-```
-
-### src/infrastructure/world/world-place-service.ts:90
-
-```ts
-async upsertPlace(input: UpsertWorldPlaceInput): Promise<WorldPlaceVm> {
-    if (isHostLibraryEnabled()) {
-      const data = await upsertHostWorldPlace({
-        worldProfileId: input.worldProfileId.trim(),
-        placeId: input.placeId ?? null,
-        parentPlaceId: input.parentPlaceId ?? null,
-        kind: input.kind,
-        name: input.name,
-        description: input.description ?? null,
-        status: input.status ?? 'draft',
-        seedKey: input.seedKey ?? null,
-        sortOrder: input.sortOrder ?? 0,
-      });
-      const parsed = parseWorldPlaceVm(data);
-      if (!parsed) throw new Error('Ort speichern: ungültige Antwort');
-      return parsed;
-    }
-    await assertSupabaseJwtSession();
-    const { data, error } = await supabase.rpc('upsert_world_place', {
-      p_world_profile_id: input.worldProfileId.trim(),
-      p_place_id: input.placeId ?? null,
-      p_parent_place_id: input.parentPlaceId ?? null,
-      p_kind: input.kind,
-      p_name: input.name,
-      p_description: input.description ?? null,
-      p_status: input.status ?? 'draft',
-      p_seed_key: input.seedKey ?? null,
-      p_sort_order: input.sortOrder ?? 0,
-    });
-    if (error) throw new Error(`Ort speichern fehlgeschlagen: ${error.message}`);
-    const parsed = parseWorldPlaceVm(data);
-    if (!parsed) throw new Error('Ort speichern: ungültige Antwort');
-    return parsed;
-  }
-```
-
-### src/infrastructure/world/world-place-service.ts:129
-
-```ts
-async createNodeWithMaps(input: {
-    readonly worldProfileId: string;
-    readonly kind: WorldNodeKind;
-    readonly name: string;
-    readonly idempotencyKey: string;
-    readonly subtype?: WorldNodeSubtype | null;
-    readonly parentPlaceId?: string | null;
-    readonly description?: string | null;
-  }): Promise<Readonly<Record<string, unknown>>> {
-    if (isHostLibraryEnabled()) {
-      const data = await createHostWorldNodeWithMaps({
-        worldProfileId: input.worldProfileId.trim(),
-        kind: input.kind,
-        name: input.name,
-        idempotencyKey: input.idempotencyKey.trim(),
-        subtype: input.subtype ?? null,
-        parentPlaceId: input.parentPlaceId ?? null,
-        description: input.description ?? null,
-      });
-      if (!data || typeof data !== 'object') {
-        throw new Error('Weltknoten anlegen: ungültige Antwort');
-      }
-      return data as Readonly<Record<string, unknown>>;
-    }
-    await assertSupabaseJwtSession();
-    const { data, error } = await supabase.rpc('create_world_node_with_maps', {
-      p_world_profile_id: input.worldProfileId.trim(),
-      p_kind: input.kind,
-      p_name: input.name,
-      p_idempotency_key: input.idempotencyKey.trim(),
-      p_subtype: input.subtype ?? null,
-      p_parent_place_id: input.parentPlaceId ?? null,
-      p_description: input.description ?? null,
-    });
-    if (error) throw new Error(`Weltknoten anlegen fehlgeschlagen: ${error.message}`);
-    if (!data || typeof data !== 'object') {
-      throw new Error('Weltknoten anlegen: ungültige Antwort');
-    }
-    return data as Readonly<Record<string, unknown>>;
-  }
-```
-
-### src/infrastructure/world/world-place-service.ts:171
-
-```ts
-async previewNodeConsequences(input: {
-    readonly worldProfileId: string;
-    readonly placeId: string;
-  }): Promise<Readonly<Record<string, unknown>>> {
-    if (isHostLibraryEnabled()) {
-      const data = await previewHostWorldNodeConsequences({
-        worldProfileId: input.worldProfileId.trim(),
-        placeId: input.placeId.trim(),
-      });
-      if (!data || typeof data !== 'object') throw new Error('Folgenabschätzung: ungültige Antwort');
-      return data as Readonly<Record<string, unknown>>;
-    }
-    await assertSupabaseJwtSession();
-    const { data, error } = await supabase.rpc('preview_world_node_consequences', {
-      p_world_profile_id: input.worldProfileId.trim(),
-      p_place_id: input.placeId.trim(),
-    });
-    if (error) throw new Error(`Folgenabschätzung fehlgeschlagen: ${error.message}`);
-    if (!data || typeof data !== 'object') throw new Error('Folgenabschätzung: ungültige Antwort');
-    return data as Readonly<Record<string, unknown>>;
-  }
-```
-
-### src/infrastructure/world/world-place-service.ts:193
-
-```ts
-async renameNode(input: {
-    readonly worldProfileId: string;
-    readonly placeId: string;
-    readonly name: string;
-  }): Promise<WorldPlaceVm> {
-    if (isHostLibraryEnabled()) {
-      const data = await renameHostWorldNode({
-        worldProfileId: input.worldProfileId.trim(),
-        placeId: input.placeId.trim(),
-        name: input.name,
-      });
-      const parsed = parseWorldPlaceVm(data);
-      if (!parsed) throw new Error('Umbenennen: ungültige Antwort');
-      return parsed;
-    }
-    await assertSupabaseJwtSession();
-    const { data, error } = await supabase.rpc('rename_world_node', {
-      p_world_profile_id: input.worldProfileId.trim(),
-      p_place_id: input.placeId.trim(),
-      p_name: input.name,
-    });
-    if (error) throw new Error(`Umbenennen fehlgeschlagen: ${error.message}`);
-    const parsed = parseWorldPlaceVm(data);
-    if (!parsed) throw new Error('Umbenennen: ungültige Antwort');
-    return parsed;
-  }
-```
-
-### src/infrastructure/world/world-place-service.ts:220
-
-```ts
-async reparentNode(input: {
-    readonly worldProfileId: string;
-    readonly placeId: string;
-    readonly newParentPlaceId: string | null;
-    readonly confirmRelocate: boolean;
-  }): Promise<Readonly<Record<string, unknown>>> {
-    if (isHostLibraryEnabled()) {
-      const data = await reparentHostWorldNode({
-        worldProfileId: input.worldProfileId.trim(),
-        placeId: input.placeId.trim(),
-        newParentPlaceId: input.newParentPlaceId,
-        confirmRelocate: input.confirmRelocate,
-      });
-      if (!data || typeof data !== 'object') throw new Error('Verschieben: ungültige Antwort');
-      return data as Readonly<Record<string, unknown>>;
-    }
-    await assertSupabaseJwtSession();
-    const { data, error } = await supabase.rpc('reparent_world_node', {
-      p_world_profile_id: input.worldProfileId.trim(),
-      p_place_id: input.placeId.trim(),
-      p_new_parent_place_id: input.newParentPlaceId,
-      p_confirm_relocate: input.confirmRelocate,
-    });
-    if (error) throw new Error(`Verschieben fehlgeschlagen: ${error.message}`);
-    if (!data || typeof data !== 'object') throw new Error('Verschieben: ungültige Antwort');
-    return data as Readonly<Record<string, unknown>>;
-  }
-```
-
-### src/infrastructure/world/world-place-service.ts:248
-
-```ts
-async duplicateNode(input: {
-    readonly worldProfileId: string;
-    readonly placeId: string;
-    readonly deep?: boolean;
-  }): Promise<Readonly<Record<string, unknown>>> {
-    if (isHostLibraryEnabled()) {
-      const data = await duplicateHostWorldNode({
-        worldProfileId: input.worldProfileId.trim(),
-        placeId: input.placeId.trim(),
-        deep: input.deep === true,
-      });
-      if (!data || typeof data !== 'object') throw new Error('Duplizieren: ungültige Antwort');
-      return data as Readonly<Record<string, unknown>>;
-    }
-    await assertSupabaseJwtSession();
-    const { data, error } = await supabase.rpc('duplicate_world_node', {
-      p_world_profile_id: input.worldProfileId.trim(),
-      p_place_id: input.placeId.trim(),
-      p_deep: input.deep === true,
-    });
-    if (error) throw new Error(`Duplizieren fehlgeschlagen: ${error.message}`);
-    if (!data || typeof data !== 'object') throw new Error('Duplizieren: ungültige Antwort');
-    return data as Readonly<Record<string, unknown>>;
-  }
-```
-
-### src/infrastructure/world/world-place-service.ts:273
-
-```ts
-async archiveNodeSubtree(input: {
-    readonly worldProfileId: string;
-    readonly placeId: string;
-    readonly confirm: boolean;
-  }): Promise<Readonly<Record<string, unknown>>> {
-    if (isHostLibraryEnabled()) {
-      const data = await archiveHostWorldNodeSubtree({
-        worldProfileId: input.worldProfileId.trim(),
-        placeId: input.placeId.trim(),
-        confirm: input.confirm,
-      });
-      if (!data || typeof data !== 'object') throw new Error('Archivieren: ungültige Antwort');
-      return data as Readonly<Record<string, unknown>>;
-    }
-    await assertSupabaseJwtSession();
-    const { data, error } = await supabase.rpc('archive_world_node_subtree', {
-      p_world_profile_id: input.worldProfileId.trim(),
-      p_place_id: input.placeId.trim(),
-      p_confirm: input.confirm,
-    });
-    if (error) throw new Error(`Archivieren fehlgeschlagen: ${error.message}`);
-    if (!data || typeof data !== 'object') throw new Error('Archivieren: ungültige Antwort');
-    return data as Readonly<Record<string, unknown>>;
-  }
-```
-
-### src/infrastructure/world/world-place-service.ts:298
-
-```ts
-async deleteNode(input: {
-    readonly worldProfileId: string;
-    readonly placeId: string;
-    readonly confirm: boolean;
-  }): Promise<Readonly<Record<string, unknown>>> {
-    if (isHostLibraryEnabled()) {
-      const data = await deleteHostWorldNode({
-        worldProfileId: input.worldProfileId.trim(),
-        placeId: input.placeId.trim(),
-        confirm: input.confirm,
-      });
-      if (!data || typeof data !== 'object') throw new Error('Löschen: ungültige Antwort');
-      return data as Readonly<Record<string, unknown>>;
-    }
-    await assertSupabaseJwtSession();
-    const { data, error } = await supabase.rpc('delete_world_node', {
-      p_world_profile_id: input.worldProfileId.trim(),
-      p_place_id: input.placeId.trim(),
-      p_confirm: input.confirm,
-    });
-    if (error) throw new Error(`Löschen fehlgeschlagen: ${error.message}`);
-    if (!data || typeof data !== 'object') throw new Error('Löschen: ungültige Antwort');
-    return data as Readonly<Record<string, unknown>>;
-  }
-```
-
-### src/infrastructure/world/world-place-service.ts:323
-
-```ts
-async linkMap(input: LinkWorldPlaceMapInput): Promise<WorldPlaceMapLinkVm> {
-    if (!isWorldPlaceMapUsage(input.usage)) {
-      throw new Error(`Ungültige Kartenverwendung: ${input.usage}`);
-    }
-    if (isHostLibraryEnabled()) {
-      const data = await upsertHostWorldPlaceMapLink({
-        worldProfileId: input.worldProfileId.trim(),
-        placeId: input.placeId.trim(),
-        mapId: input.mapId.trim(),
-        usage: input.usage,
-        featureId: input.featureId ?? null,
-        anchor: input.anchor ?? {},
-      });
-      const parsed = parseWorldPlaceMapLinkVm(data);
-      if (!parsed) throw new Error('Kartenverknüpfung: ungültige Antwort');
-      return parsed;
-    }
-    await assertSupabaseJwtSession();
-    const { data, error } = await supabase.rpc('upsert_world_place_map_link', {
-      p_world_profile_id: input.worldProfileId.trim(),
-      p_place_id: input.placeId.trim(),
-      p_map_id: input.mapId.trim(),
-      p_usage: input.usage,
-      p_feature_id: input.featureId ?? null,
-      p_anchor: input.anchor ?? {},
-    });
-    if (error) throw new Error(`Kartenverknüpfung fehlgeschlagen: ${error.message}`);
-    const parsed = parseWorldPlaceMapLinkVm(data);
-    if (!parsed) throw new Error('Kartenverknüpfung: ungültige Antwort');
-    return parsed;
-  }
-```
-
-### src/infrastructure/world/world-profile-service.ts:78
-
-```ts
-async getUserWorldProfiles(ownerUserId: string): Promise<WorldProfileVm[]> {
-    if (!ownerUserId) throw new Error('User not authenticated');
-    if (isHostLibraryEnabled()) {
-      const rows = await fetchHostLibraryWorlds();
-      return rows.map(mapHostWorld);
-    }
-    const jwtUserId = await assertSupabaseJwtSession();
-    const { data, error } = await supabase
-      .from(this.tableName)
-      .select(WORLD_SELECT)
-      .eq('owner_user_id', jwtUserId)
-      .order('created_at', { ascending: false });
-
-    if (error) throw new Error(`Welten konnten nicht geladen werden: ${error.message}`);
-    return (data ?? []).map((entry) => this.mapToViewModel(entry as WorldProfileDto));
-  }
-```
-
-### src/infrastructure/world/world-profile-service.ts:95
-
-```ts
-async getWorldProfile(ownerUserId: string, id: string): Promise<WorldProfileVm> {
-    if (!ownerUserId) throw new Error('User not authenticated');
-    if (isHostLibraryEnabled()) {
-      const rows = await fetchHostLibraryWorlds();
-      const match = rows.find((row) => row.id === id);
-      if (!match) throw new Error('Welt konnte nicht geladen werden');
-      return mapHostWorld(match);
-    }
-    const jwtUserId = await assertSupabaseJwtSession();
-    const { data, error } = await supabase
-      .from(this.tableName)
-      .select(WORLD_SELECT)
-      .eq('id', id)
-      .eq('owner_user_id', jwtUserId)
-      .single();
-
-    if (error) throw new Error(`Welt konnte nicht geladen werden: ${error.message}`);
-    return this.mapToViewModel(data as WorldProfileDto);
-  }
-```
-
-### src/infrastructure/world/world-profile-service.ts:116
-
-```ts
-async getByPublicId(worldPublicId: string): Promise<WorldProfileVm | null> {
-    const publicId = worldPublicId.trim().toUpperCase();
-    if (!publicId) return null;
-    if (isHostLibraryEnabled()) {
-      const row = await fetchHostLibraryWorldByPublicId(publicId);
-      if (!row) return null;
-      return mapHostWorld(row);
-    }
-    await assertSupabaseJwtSession();
-    const { data, error } = await supabase
-      .from(this.tableName)
-      .select(WORLD_SELECT)
-      .eq('public_id', publicId)
-      .maybeSingle();
-    if (error) throw new Error(`Welt konnte nicht geladen werden: ${error.message}`);
-    if (!data) return null;
-    return this.mapToViewModel(data as WorldProfileDto);
-  }
-```
-
-### src/infrastructure/world/world-profile-service.ts:135
-
-```ts
-async createWorldProfile(ownerUserId: string, payload: CreateWorldProfileDto): Promise<WorldProfileVm> {
-    if (!ownerUserId) throw new Error('User not authenticated');
-    if (isHostLibraryEnabled()) {
-      if (
-        (typeof payload.description === 'string' && payload.description.trim()) ||
-        (payload.modules && Object.keys(payload.modules).length > 0)
-      ) {
-        throw new Error(
-          'Host-Welten speichern derzeit nur den Namen. Beschreibung und Module folgen im nächsten Cutover-Schritt.',
-        );
-      }
-      const created = await createHostLibraryWorld({ name: normalizeName(payload.name) });
-      return mapHostWorld(created);
-    }
-    const jwtUserId = await assertSupabaseJwtSession();
-    const insertPayload = {
-      owner_user_id: jwtUserId,
-      name: normalizeName(payload.name),
-      description: normalizeDescription(payload.description),
-      modules: normalizeWorldModuleConfigMap(payload.modules),
-    };
-
-    const { data, error } = await supabase
-      .from(this.tableName)
-      .insert(insertPayload)
-      .select(WORLD_SELECT)
-      .single();
-
-    if (error) throw new Error(`Welt konnte nicht erstellt werden: ${error.message}`);
-    return this.mapToViewModel(data as WorldProfileDto);
-  }
-```
-
-### src/infrastructure/world/world-profile-service.ts:177
-
-```ts
-async updateWorldProfile(
-    ownerUserId: string,
-    id: string,
-    payload: UpdateWorldProfileDto,
-  ): Promise<WorldProfileVm> {
-    if (!ownerUserId) throw new Error('User not authenticated');
-    if (isHostLibraryEnabled()) {
-      if (
-        (typeof payload.description === 'string' && payload.description.trim()) ||
-        (payload.modules && Object.keys(payload.modules).length > 0)
-      ) {
-        throw new Error(
-          'Host-Welten speichern derzeit nur den Namen. Beschreibung und Module folgen im nächsten Cutover-Schritt.',
-        );
-      }
-      if (typeof payload.name !== 'string') {
-        return this.getWorldProfile(ownerUserId, id);
-      }
-      const updated = await updateHostLibraryWorld(id, { name: normalizeName(payload.name) });
-      return mapHostWorld(updated);
-    }
-    const jwtUserId = await assertSupabaseJwtSession();
-    const updatePayload = {
-      ...(typeof payload.name === 'string' ? { name: normalizeName(payload.name) } : {}),
-      ...(typeof payload.description === 'string' ? { description: normalizeDescription(payload.description) } : {}),
-      ...(payload.modules ? { modules: normalizeWorldModuleConfigMap(payload.modules) } : {}),
-      updated_at: new Date().toISOString(),
-    };
-
-    const { data, error } = await supabase
-      .from(this.tableName)
-      .update(updatePayload)
-      .eq('id', id)
-      .eq('owner_user_id', jwtUserId)
-      .select(WORLD_SELECT)
-      .single();
-
-    if (error) throw new Error(`Welt konnte nicht gespeichert werden: ${error.message}`);
-    return this.mapToViewModel(data as WorldProfileDto);
-  }
-```
-
-### src/infrastructure/world/world-profile-service.ts:218
-
-```ts
-async deleteWorldProfile(ownerUserId: string, id: string): Promise<void> {
-    if (!ownerUserId) throw new Error('User not authenticated');
-    if (isHostLibraryEnabled()) {
-      await deleteHostLibraryWorld(id);
-      return;
-    }
-    const jwtUserId = await assertSupabaseJwtSession();
-
-    // World item definitions reference this profile with ON DELETE RESTRICT so
-    // owned instances never become permanently unresolvable. Refuse early with
-    // a German message instead of surfacing the Postgres FK error.
-    const { count, error: catalogError } = await supabase
-      .from('inventory_item_definitions')
-      .select('id', { count: 'exact', head: true })
-      .eq('world_profile_id', id);
-    if (catalogError) {
-      throw new Error(`Welt konnte nicht gelöscht werden: ${catalogError.message}`);
-    }
-    if ((count ?? 0) > 0) {
-      throw new Error(
-        'Welt kann nicht gelöscht werden, solange Gegenstand-Definitionen darauf verweisen. Archivieren Sie die Definitionen zuerst — Löschen würde bestehende Inventare unauflösbar machen.',
-      );
-    }
-
-    const { count: npcCount, error: npcError } = await supabase
-      .from('npc_creature_definitions')
-      .select('id', { count: 'exact', head: true })
-      .eq('world_profile_id', id);
-    if (npcError) {
-      throw new Error(`Welt konnte nicht gelöscht werden: ${npcError.message}`);
-    }
-    if ((npcCount ?? 0) > 0) {
-      throw new Error(
-        'Welt kann nicht gelöscht werden, solange NPC-/Kreatur-Definitionen darauf verweisen.',
-      );
-    }
-
-    const { error } = await supabase
-      .from(this.tableName)
-      .delete()
-      .eq('id', id)
-      .eq('owner_user_id', jwtUserId);
-
-    if (error) throw new Error(`Welt konnte nicht gelöscht werden: ${error.message}`);
-  }
-```
-
+All backend operations are included in the public declarations above.
 
 ## Verification source manifest
 
@@ -1930,7 +673,7 @@ async deleteWorldProfile(ownerUserId: string, id: string): Promise<void> {
 | `src/domains/world/places/settlement-presets.ts` | `b2b5b95f43524fda6c7a76eeb332150202f9750c47db5d7a6518fee98b796199` |
 | `src/domains/world/places/world-place.types.ts` | `32081a2c16516c68393e879ebc4e888441ca4e5009b20404158c6b25d09f4ef0` |
 | `src/domains/world/worldModuleRegistry.ts` | `9683d27ea65c7a22456245c0e2e706168285f61e229f6ea181e0fb6a65064cc0` |
-| `src/infrastructure/host/host-library-http.ts` | `b2343081ddce2e2edd73651b0622e8b4cc6d8583d746a863dbe3343e3a98f71a` |
+| `src/infrastructure/host/host-library-http.ts` | `1d41f3b1eb3e71a3a8b12306993b605f2d05f2f41cd35f73b9c362b12f9c1cb6` |
 | `src/infrastructure/host/host-world-http.ts` | `bfb69f91e69543a66ee96cab4ad21273c86a2b167e4c21211c42c7e6ccb3c072` |
 | `src/infrastructure/media/optimizer/engines/audio/index.ts` | `7585190a705085692bff0896e08b4d78f791895b47e24d57deeaaa10bb669d4e` |
 | `src/infrastructure/media/optimizer/engines/image/image.worker.ts` | `d34793b4de682556d9306194cfbcd05fdafdf215da25393f955d2669c7499276` |
@@ -1948,13 +691,9 @@ async deleteWorldProfile(ownerUserId: string, id: string): Promise<void> {
 | `src/infrastructure/world/host-world-adapter.ts` | `fa229c2ceb37648d38d91f85699817ae584ae85f9195b45ea0ebe594aba786da` |
 | `src/infrastructure/world/host-world-ports.contract.ts` | `406d77c65527f6869c558a7b4c98c901766134f8e8d7dc6afc5271d6ba1a7f8e` |
 | `src/infrastructure/world/host-world-read.contract.ts` | `271a052d5f621ddf7f3344eaa55e3a58579c5cf629fe76a4827393d0d1c7a05c` |
-| `src/infrastructure/world/world-atlas-service.ts` | `6f39628cc7b8448dd100850a7e2fce652cf87bca68d134c2d8cc766b7ee90b27` |
-| `src/infrastructure/world/world-map-service.ts` | `ec49afd5715b21860c05dba3fb92eb1ba90a3a8009277c6ac14b637463ab2a27` |
-| `src/infrastructure/world/world-place-service.ts` | `c8b48bc3e5ecdf33ecfe6db705115f17b423a7fbf5e504aa89d815cdf27551b4` |
-| `src/infrastructure/world/world-profile-service.ts` | `d8846780836ca065c8c14ad5d411b3ad235583c4002481365ce20fa8963a34c0` |
-| `src/lib/authenticatedUser.ts` | `d4cbf3a004f8375982ca03d474fb7b61559fc2ec58ad6fe7b1f8834d26abf10c` |
+| `src/infrastructure/world/world-atlas-service.ts` | `0026d650758d59a05aa1697f5ce8d07c751fd9e0cb9c992c742c008858cba273` |
+| `src/infrastructure/world/world-map-service.ts` | `c86e0c9b3d7242d33d5fb30f7496ba99bb7ccaa4b22abaa73c5edb072c50a828` |
+| `src/infrastructure/world/world-place-service.ts` | `5fe2e68dd3949fb193547aa9ee498c15fc0e3f368bf546156a39086e805312bb` |
+| `src/infrastructure/world/world-profile-service.ts` | `10935d830086c8f9972b9f9f982e7ba8203609facd408020c634df4400032610` |
 | `src/lib/hostAuthBridge.ts` | `30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a` |
-| `src/lib/localAdmin.ts` | `3a28dec23e85f25ed3e70682bc6e7f8c6b55e81dbbefdd1f6a837f68ac80d6b5` |
-| `src/lib/networkTimeout.ts` | `835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851` |
-| `src/lib/supabase.ts` | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
 

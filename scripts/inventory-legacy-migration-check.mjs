@@ -230,7 +230,11 @@ section('7 · Strikte isInventoryV2State + Persistenz-Härtung');
     new URL('../src/infrastructure/inventory/inventory-persistence.ts', import.meta.url),
     'utf8',
   );
-  requireMatch(persistence, /eq\('inventory_schema_version',\s*1\)/, 'Optimistic Lock auf Version 1');
+  requireMatch(
+    persistence,
+    /schemaVersion !== 1|inventory_schema_version[\s\S]{0,80}!==\s*1/,
+    'Optimistic Lock auf Version 1',
+  );
   requireMatch(persistence, /migrationDefinitionId|personal:mig-/, 'deterministische Personal-Ids');
   requireMatch(persistence, /assertWritableInventoryV2/, 'Katalog-Sichtbarkeit vor Write');
 
@@ -243,12 +247,12 @@ section('7 · Strikte isInventoryV2State + Persistenz-Härtung');
     'DTO erlaubt kein client-seitiges inventory_schema_version',
   );
 
-  const repository = readFileSync(
-    new URL('../src/infrastructure/character/supabase-character.repository.ts', import.meta.url),
-    'utf8',
+  requireMatch(persistence, /persistMigratedInventory/, 'v2 migration persists via host character sheet');
+  requireMatch(
+    persistence,
+    /inventory_schema_version/,
+    'inventory schema version handled in persistence layer',
   );
-  requireMatch(repository, /assertWritableInventoryV2/, 'Create/Update validieren inventory_v2');
-  requireMatch(repository, /inventory_schema_version: _ignoredSchemaVersion/, 'Schema-Marker aus Patch gestrippt');
 }
 
 if (failures > 0) {

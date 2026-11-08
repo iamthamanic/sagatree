@@ -329,7 +329,7 @@ try {
   });
   assert(deleted.res.status === 200 && deleted.json?.ok === true, `delete ${deleted.res.status}`);
 
-  // FE dual-path / stub wiring present
+  // FE host-only catalog / profile wiring (CUT-20)
   const marketplaceSrc = readFileSync(
     join(root, 'src/infrastructure/marketplace/marketplace-service.ts'),
     'utf8',
@@ -339,6 +339,7 @@ try {
     join(root, 'src/infrastructure/user-profile/user-profile-service.ts'),
     'utf8',
   );
+  const stripCode = (src) => src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*$/gm, '');
   const loreSrc = readFileSync(
     join(root, 'src/infrastructure/character/character-lore-service.ts'),
     'utf8',
@@ -347,12 +348,20 @@ try {
     join(root, 'src/infrastructure/session/session-recap-ai-service.ts'),
     'utf8',
   );
-  assert(/isHostLibraryEnabled/.test(marketplaceSrc), 'marketplace dual-path');
-  assert(/isHostLibraryEnabled/.test(rulesetSrc), 'ruleset dual-path');
-  assert(/isHostLibraryEnabled/.test(profileSrc), 'profile dual-path');
-  assert(/\/api\/v1\/ai\/character-lore/.test(loreSrc), 'CUT-13 lore host dual-path');
+  assert(/isHostLibraryEnabled/.test(marketplaceSrc), 'marketplace host gate');
+  assert(/isHostLibraryEnabled/.test(rulesetSrc), 'ruleset host gate');
+  assert(/isHostLibraryEnabled/.test(profileSrc), 'profile host gate');
+  for (const [label, src] of [
+    ['marketplace', marketplaceSrc],
+    ['ruleset', rulesetSrc],
+    ['profile', profileSrc],
+  ]) {
+    const code = stripCode(src);
+    assert(!/supabase\.(from|rpc)|functions\.invoke/.test(code), `${label} no supabase in facade`);
+  }
+  assert(/\/api\/v1\/ai\/character-lore/.test(loreSrc), 'CUT-13 lore host HTTP');
   assert(!/Host-Modus noch nicht verfügbar/.test(loreSrc), 'lore Soft-DENY removed');
-  assert(/generateHostSessionRecapDraft/.test(recapAiSrc), 'CUT-14 recap host dual-path');
+  assert(/generateHostSessionRecapDraft/.test(recapAiSrc), 'CUT-14 recap host HTTP');
   assert(!/Host-Modus noch nicht verfügbar/.test(recapAiSrc), 'recap Soft-DENY removed');
   assert(
     /mountCatalogHttpRoutes/.test(readFileSync(join(root, 'server/src/api/create-app.ts'), 'utf8')),

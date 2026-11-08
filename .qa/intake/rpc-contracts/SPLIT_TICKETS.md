@@ -1060,7 +1060,7 @@ NPC-Instanzen und Controller-Zuordnung
 - [src/infrastructure/npc-creature/npc-creature-instance.persistence.ts](../../../src/infrastructure/npc-creature/npc-creature-instance.persistence.ts)
 - [src/infrastructure/npc-creature/npc-creature-service.ts](../../../src/infrastructure/npc-creature/npc-creature-service.ts)
 - [src/infrastructure/npc-creature/npc-creature.persistence.ts](../../../src/infrastructure/npc-creature/npc-creature.persistence.ts)
-- [src/infrastructure/npc-creature/supabase-npc-creature.repository.ts](../../../src/infrastructure/npc-creature/supabase-npc-creature.repository.ts)
+- [src/infrastructure/npc-creature/npc-creature-service.ts](../../../src/infrastructure/npc-creature/npc-creature-service.ts)
 - [src/lib/authenticatedUser.ts](../../../src/lib/authenticatedUser.ts)
 - [src/lib/localAdmin.ts](../../../src/lib/localAdmin.ts)
 - [src/lib/networkTimeout.ts](../../../src/lib/networkTimeout.ts)

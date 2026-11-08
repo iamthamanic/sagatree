@@ -70,23 +70,24 @@ mustNotInclude(
 mustInclude(
   'src/infrastructure/session/session-runtime-service.ts',
   [
-    "rpc('get_session_runtime_snapshot'",
-    "rpc('apply_session_runtime_command'",
-    "rpc('set_session_player_presence'",
+    'fetchHostSessionRuntime',
+    'applyHostSessionRuntimeCommand',
+    'setHostSessionPresence',
     'StaleRuntimeRevisionError',
+    'host-session-http',
   ],
-  'runtime service RPCs',
+  'runtime service host HTTP (CUT-20)',
 );
 
 mustInclude(
   'src/infrastructure/session/session-runtime-channel.ts',
   [
     'subscribeSessionRuntime',
-    'postgres_changes',
+    'HOST_RUNTIME_POLL_MS',
     'getSnapshot',
-    'session-runtime:',
+    'sessionRuntimeService',
   ],
-  'realtime channel adapter',
+  'runtime channel polling adapter (CUT-20)',
 );
 
 mustInclude(

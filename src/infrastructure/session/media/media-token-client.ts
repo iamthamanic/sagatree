@@ -2,14 +2,10 @@
  * Session media token client — short-lived membership-derived tokens (#363).
  * Location: src/infrastructure/session/media/media-token-client.ts
  *
- * CUT-19: host-first via POST `/api/v1/sessions/:id/media-token` when host library is on.
- * Legacy Edge `session-media-token` remains until dual-path removal (CUT-20).
+ * CUT-20: host-only via POST `/api/v1/sessions/:id/media-token` (no Edge dual-path).
  */
-import { supabase } from '../../../lib/supabase';
-import {
-  fetchHostSessionMediaToken,
-  isHostLibraryEnabled,
-} from '../../host/host-session-http';
+import { fetchHostSessionMediaToken } from '../../host/host-session-http';
+import { isHostLibraryEnabled } from '../../host/host-library-http';
 
 export type MediaTokenSuccess = {
   readonly ok: true;
@@ -41,71 +37,13 @@ export async function fetchSessionMediaToken(input: {
       message: 'sessionId fehlt.',
     };
   }
-
-  if (isHostLibraryEnabled()) {
-    return fetchHostSessionMediaToken(sessionId);
-  }
-
-  try {
-    const { data, error } = await supabase.functions.invoke('session-media-token', {
-      body: { sessionId },
-    });
-    if (error) {
-      return {
-        ok: false,
-        degraded: true,
-        reason: 'media_service_unavailable',
-        message: error.message || 'Media-Token-Dienst nicht erreichbar.',
-      };
-    }
-    const record = data as Record<string, unknown> | null;
-    if (!record || typeof record !== 'object') {
-      return {
-        ok: false,
-        degraded: true,
-        reason: 'media_service_unavailable',
-        message: 'Leere Media-Token-Antwort.',
-      };
-    }
-    if (record.degraded === true || record.ok === false) {
-      const reason =
-        record.reason === 'forbidden' ||
-        record.reason === 'unauthorized' ||
-        record.reason === 'bad_request'
-          ? record.reason
-          : 'media_service_unavailable';
-      return {
-        ok: false,
-        degraded: true,
-        reason,
-        message:
-          typeof record.message === 'string'
-            ? record.message
-            : 'Media plane degraded.',
-      };
-    }
-    const token = typeof record.token === 'string' ? record.token : '';
-    const url = typeof record.url === 'string' ? record.url : '';
-    const roomId = typeof record.roomId === 'string' ? record.roomId : '';
-    const expiresAt =
-      typeof record.expiresAt === 'string' ? record.expiresAt : '';
-    const ttlSeconds =
-      typeof record.ttlSeconds === 'number' ? record.ttlSeconds : 0;
-    if (!token || !url || !roomId) {
-      return {
-        ok: false,
-        degraded: true,
-        reason: 'media_service_unavailable',
-        message: 'Media-Token unvollständig.',
-      };
-    }
-    return { ok: true, token, url, roomId, expiresAt, ttlSeconds };
-  } catch (error) {
+  if (!isHostLibraryEnabled()) {
     return {
       ok: false,
       degraded: true,
       reason: 'media_service_unavailable',
-      message: error instanceof Error ? error.message : 'Media-Token-Fehler.',
+      message: 'Medien-Dienst nicht erreichbar.',
     };
   }
+  return fetchHostSessionMediaToken(sessionId);
 }

@@ -171,8 +171,9 @@ mustInclude('src/infrastructure/session/media/session-media-plane.ts', [
   'filterPublishIntentsForAccess',
 ]);
 mustInclude('src/infrastructure/session/media/media-token-client.ts', [
-  'session-media-token',
+  'fetchHostSessionMediaToken',
   'degraded',
+  '/api/v1/sessions/:id/media-token',
 ]);
 
 section('6 · edge helpers');

@@ -1,12 +1,9 @@
 /**
- * host-ai-invoke — dual-path transport for infrastructure/ai (MIG-301 / #800 / FE-HOST-14).
+ * host-ai-invoke — Host HTTP transport for infrastructure/ai (CUT-20).
  * Location: src/infrastructure/ai/host-ai-invoke.ts
  *
- * Prefer host HTTP when `VITE_SAGATREE_HOST_AUTH_URL` is set and either
- * `VITE_SAGATREE_HOST_AI=1` or host-first library (`isHostLibraryEnabled`) is on.
- * Otherwise keep Edge `supabase.functions.invoke` (legacy opt-out path).
+ * Product runtime: POST `/api/v1/ai/*` on the host — no Edge `functions.invoke`.
  */
-import { supabase } from '../../lib/supabase';
 import { getHostAuthBaseUrl } from '../../lib/hostAuthBridge';
 import { isHostLibraryEnabled } from '../host/host-library-http';
 
@@ -17,9 +14,6 @@ export type AiInvokeFn = (
 
 type EnvLike = {
   readonly VITE_SAGATREE_HOST_AUTH_URL?: string;
-  readonly VITE_SAGATREE_HOST_LIBRARY?: string;
-  /** Explicit opt-in for host AI adapters (`1` / `true`). Auth URL alone is not enough. */
-  readonly VITE_SAGATREE_HOST_AI?: string;
 };
 
 type HostAiStatus = 'ok' | 'error' | 'not-configured';
@@ -34,45 +28,12 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null;
 }
 
-function isHostAiEnabled(env: EnvLike): boolean {
-  const flag = env.VITE_SAGATREE_HOST_AI?.trim().toLowerCase();
-  return flag === '1' || flag === 'true' || flag === 'yes';
-}
-
 function parseHostAiEnvelope(value: unknown): HostAiEnvelope | null {
   if (!isRecord(value) || typeof value.status !== 'string') return null;
   if (value.status !== 'ok' && value.status !== 'error' && value.status !== 'not-configured') {
     return null;
   }
   return value as HostAiEnvelope;
-}
-
-function hasResponseContext(error: unknown): error is { context: Response } {
-  return isRecord(error) && error.context instanceof Response;
-}
-
-async function edgeErrorMessage(error: unknown): Promise<string | undefined> {
-  if (!hasResponseContext(error)) return undefined;
-  try {
-    const body: unknown = await error.context.clone().json();
-    if (isRecord(body) && typeof body.message === 'string') return body.message;
-  } catch {
-    return undefined;
-  }
-  return undefined;
-}
-
-async function invokeEdge(
-  functionName: 'ai-provider-credentials' | 'ollama-settings',
-  body: Record<string, unknown>,
-  unreachableMessage: string,
-): Promise<unknown> {
-  const { data, error } = await supabase.functions.invoke(functionName, { body });
-  if (error) {
-    const serverMessage = await edgeErrorMessage(error);
-    throw new Error(serverMessage ?? unreachableMessage);
-  }
-  return data;
 }
 
 async function invokeHost(
@@ -83,10 +44,13 @@ async function invokeHost(
   env: EnvLike,
 ): Promise<unknown> {
   const base = getHostAuthBaseUrl(env);
-  if (!base) throw new Error(unreachableMessage);
+  if (base === null || !isHostLibraryEnabled(env)) {
+    throw new Error(unreachableMessage);
+  }
   let response: Response;
   try {
-    response = await fetchImpl(`${base}/api/v1/ai/${path}`, {
+    const url = base === '' ? `/api/v1/ai/${path}` : `${base}/api/v1/ai/${path}`;
+    response = await fetchImpl(url, {
       method: 'POST',
       credentials: 'include',
       headers: { Accept: 'application/json', 'content-type': 'application/json' },
@@ -104,49 +68,31 @@ async function invokeHost(
   const envelope = parseHostAiEnvelope(data);
   if (!envelope) throw new Error(unreachableMessage);
   if (!response.ok) {
-    // Preserve Edge-shaped error objects for client parsers (status/error/not-configured).
     return envelope;
   }
   return envelope;
 }
 
 /**
- * Build the dual-path invoke used by BYOK + Ollama Organize client facades.
+ * Host-only invoke used by BYOK + Ollama Organize client facades.
  * Inject `fetchImpl` / `env` in self-tests; production uses defaults.
  */
 export function createAiInvoke(options?: {
   readonly fetchImpl?: typeof fetch;
   readonly env?: EnvLike;
-  /** Force Edge even when host AI opt-in is set (tests). */
-  readonly forceEdge?: boolean;
 }): AiInvokeFn {
   const fetchImpl = options?.fetchImpl ?? fetch;
   const env = options?.env ?? ((import.meta as ImportMeta & { env?: EnvLike }).env ?? {});
-  const forceEdge = options?.forceEdge === true;
 
   return async (path, body) => {
-    // FE-HOST-14: host-first library runtime uses mounted /api/v1/ai/* (same as HOST_AI=1).
-    const preferHost =
-      !forceEdge &&
-      getHostAuthBaseUrl(env) !== null &&
-      (isHostAiEnabled(env) || isHostLibraryEnabled(env));
-    if (preferHost) {
-      return invokeHost(
-        path,
-        body,
-        path === 'ollama-settings'
-          ? 'Ollama-Einstellungen nicht erreichbar.'
-          : 'AI-Provider-Dienst nicht erreichbar.',
-        fetchImpl,
-        env,
-      );
-    }
-    return invokeEdge(
-      path === 'ollama-settings' ? 'ollama-settings' : 'ai-provider-credentials',
+    return invokeHost(
+      path,
       body,
       path === 'ollama-settings'
         ? 'Ollama-Einstellungen nicht erreichbar.'
         : 'AI-Provider-Dienst nicht erreichbar.',
+      fetchImpl,
+      env,
     );
   };
 }

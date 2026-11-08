@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 /**
- * mig-304-look-adapter.self-test — LookProfile host ports + dual-path seam (#803).
+ * mig-304-look-adapter.self-test — LookProfile host ports + host-only FE (#803 / CUT-20).
  * Location: scripts/mig-304-look-adapter.self-test.mjs
  *
- * Acceptance tier: isolated-contract. Supabase facades stay live (no cutover).
+ * Acceptance tier: isolated-contract. Product look facade is host HTTP only.
  * Ref-analysis quarantine remains MIG-412; runtime style adapters stay local.
  */
 import { mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
@@ -224,7 +224,7 @@ try {
   const linkedGet = look.getProfileById(linkedRemote, soloOwned.value.profile.id);
   assert(linkedGet.ok && linkedGet.value?.profile.id === soloOwned.value.profile.id, 'linked get');
 
-  // Dual-path adapter seam: bind host ports through FE contract
+  // Host adapter seam: bind host ports through FE contract
   const bound = createHostLookAdapter({
     listProfiles: async (actorId, options) =>
       look.listProfiles(actor(actorId), options),
@@ -313,17 +313,20 @@ try {
   assert(!/supabase|look_profiles/.test(hostMtoon), 'host-mtoon no persistence');
   assert(!/supabase|look_profiles/.test(toonlab), 'toonlab no persistence');
 
-  // Client dual-path wiring + Supabase default remains
+  // Client host-only wiring (CUT-20)
   const serviceSrc = readFileSync(join(root, 'src/infrastructure/look/look-service.ts'), 'utf8');
   const indexSrc = readFileSync(join(root, 'src/infrastructure/look/index.ts'), 'utf8');
   const adapterSrc = readFileSync(
     join(root, 'src/infrastructure/look/host-look-adapter.ts'),
     'utf8',
   );
-  assert(/supabaseLookProfileRepository/.test(serviceSrc), 'service default remains Supabase');
+  const serviceCode = serviceSrc.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*$/gm, '');
+  assert(/isHostLibraryEnabled/.test(serviceSrc), 'look service host library gate');
+  assert(/fetchHostLibraryLooks/.test(serviceSrc), 'look service host HTTP reads');
+  assert(!/supabaseLookProfileRepository/.test(serviceSrc), 'supabase look repo removed');
+  assert(!/supabase\.(from|rpc)|functions\.invoke/.test(serviceCode), 'look service no supabase invoke');
   assert(/createHostLookAdapter/.test(indexSrc), 'barrel exports host adapter');
   assert(/transport: 'host'/.test(adapterSrc), 'adapter marks host transport');
-  assert(!/VITE_SAGATREE_HOST_LOOK/.test(serviceSrc), 'no accidental env cutover in service');
 
   const createApp = readFileSync(join(root, 'server/src/api/create-app.ts'), 'utf8');
   assert(!/look-profiles|lookProfiles|mountLook/i.test(createApp), 'no LookProfile HTTP mount yet');

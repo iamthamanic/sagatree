@@ -1,13 +1,9 @@
 /**
- * session-runtime-service — Snapshot + revisioned mutating commands for SessionRuntimeState.
+ * session-runtime-service — Snapshot + revisioned mutating commands for SessionRuntimeState (CUT-20).
  * Location: src/infrastructure/session/session-runtime-service.ts
- * Hides: Supabase RPC transport; maps JSON → domain SessionRuntimeState.
  */
-import { supabase } from '../../lib/supabase';
 import type {
   SessionEventKind,
-  SessionGameplayState,
-  SessionPresenceEntry,
   SessionRuntimeState,
 } from '../../domains/session/contracts/session-runtime';
 import {
@@ -34,9 +30,15 @@ type SnapshotJson = {
   eventId?: string;
 };
 
-function mapRoster(raw: unknown): SessionPresenceEntry[] {
+function assertHost(): void {
+  if (!isHostLibraryEnabled()) {
+    throw new Error('Host-Anmeldung nicht konfiguriert (VITE_SAGATREE_HOST_AUTH_URL fehlt).');
+  }
+}
+
+function mapRoster(raw: unknown): import('../../domains/session/contracts/session-runtime').SessionPresenceEntry[] {
   if (!Array.isArray(raw)) return [];
-  const out: SessionPresenceEntry[] = [];
+  const out: import('../../domains/session/contracts/session-runtime').SessionPresenceEntry[] = [];
   for (const item of raw) {
     if (!item || typeof item !== 'object') continue;
     const row = item as Record<string, unknown>;
@@ -52,7 +54,7 @@ function mapRoster(raw: unknown): SessionPresenceEntry[] {
   return out;
 }
 
-function mapGameplay(raw: unknown): SessionGameplayState {
+function mapGameplay(raw: unknown): import('../../domains/session/contracts/session-runtime').SessionGameplayState {
   if (!raw || typeof raw !== 'object' || Array.isArray(raw)) {
     return emptyGameplayState();
   }
@@ -93,16 +95,8 @@ function isStaleRpcError(message: string): boolean {
 
 class SessionRuntimeService {
   async getSnapshot(sessionId: string): Promise<SessionRuntimeState> {
-    if (isHostLibraryEnabled()) {
-      const data = await fetchHostSessionRuntime(sessionId);
-      return mapSnapshotJson(data as SnapshotJson);
-    }
-    const { data, error } = await supabase.rpc('get_session_runtime_snapshot', {
-      p_session_id: sessionId,
-    });
-    if (error || !data) {
-      throw new Error(error?.message ?? 'Runtime-Snapshot fehlgeschlagen');
-    }
+    assertHost();
+    const data = await fetchHostSessionRuntime(sessionId);
     return mapSnapshotJson(data as SnapshotJson);
   }
 
@@ -113,45 +107,25 @@ class SessionRuntimeService {
     payload?: Record<string, unknown>;
     idempotencyKey?: string | null;
   }): Promise<SessionRuntimeState> {
+    assertHost();
     const kind = assertSessionEventKind(input.kind);
-    if (isHostLibraryEnabled()) {
-      try {
-        const data = await applyHostSessionRuntimeCommand({
-          sessionId: input.sessionId,
-          expectedRevision: input.expectedRevision,
-          kind,
-          payload: input.payload ?? {},
-          idempotencyKey: input.idempotencyKey ?? null,
-        });
-        return mapSnapshotJson(data as SnapshotJson);
-      } catch (err) {
-        const message = err instanceof Error ? err.message : String(err);
-        if (isStaleRpcError(message) || /STALE_REVISION/i.test(message)) {
-          const snap = await this.getSnapshot(input.sessionId);
-          throw new StaleRuntimeRevisionError(input.expectedRevision, snap.revision);
-        }
-        throw err instanceof Error ? err : new Error(message);
-      }
-    }
-    const { data, error } = await supabase.rpc('apply_session_runtime_command', {
-      p_session_id: input.sessionId,
-      p_expected_revision: input.expectedRevision,
-      p_kind: kind,
-      p_payload: input.payload ?? {},
-      p_idempotency_key: input.idempotencyKey ?? null,
-    });
-
-    if (error) {
-      if (isStaleRpcError(error.message)) {
+    try {
+      const data = await applyHostSessionRuntimeCommand({
+        sessionId: input.sessionId,
+        expectedRevision: input.expectedRevision,
+        kind,
+        payload: input.payload ?? {},
+        idempotencyKey: input.idempotencyKey ?? null,
+      });
+      return mapSnapshotJson(data as SnapshotJson);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      if (isStaleRpcError(message) || /STALE_REVISION/i.test(message)) {
         const snap = await this.getSnapshot(input.sessionId);
         throw new StaleRuntimeRevisionError(input.expectedRevision, snap.revision);
       }
-      throw new Error(error.message);
+      throw err instanceof Error ? err : new Error(message);
     }
-    if (!data) {
-      throw new Error('Runtime-Befehl lieferte kein Ergebnis');
-    }
-    return mapSnapshotJson(data as SnapshotJson);
   }
 
   async setPresence(
@@ -159,35 +133,18 @@ class SessionRuntimeService {
     isOnline: boolean,
     expectedRevision?: number | null,
   ): Promise<SessionRuntimeState> {
-    if (isHostLibraryEnabled()) {
-      try {
-        const data = await setHostSessionPresence(sessionId, isOnline, expectedRevision);
-        return mapSnapshotJson(data as SnapshotJson);
-      } catch (err) {
-        const message = err instanceof Error ? err.message : String(err);
-        if (isStaleRpcError(message) || /STALE_REVISION/i.test(message)) {
-          const snap = await this.getSnapshot(sessionId);
-          throw new StaleRuntimeRevisionError(expectedRevision ?? -1, snap.revision);
-        }
-        throw err instanceof Error ? err : new Error(message);
-      }
-    }
-    const { data, error } = await supabase.rpc('set_session_player_presence', {
-      p_session_id: sessionId,
-      p_is_online: isOnline,
-      p_expected_revision: expectedRevision ?? null,
-    });
-    if (error) {
-      if (isStaleRpcError(error.message)) {
+    assertHost();
+    try {
+      const data = await setHostSessionPresence(sessionId, isOnline, expectedRevision);
+      return mapSnapshotJson(data as SnapshotJson);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      if (isStaleRpcError(message) || /STALE_REVISION/i.test(message)) {
         const snap = await this.getSnapshot(sessionId);
         throw new StaleRuntimeRevisionError(expectedRevision ?? -1, snap.revision);
       }
-      throw new Error(error.message);
+      throw err instanceof Error ? err : new Error(message);
     }
-    if (!data) {
-      throw new Error('Presence-Update fehlgeschlagen');
-    }
-    return mapSnapshotJson(data as SnapshotJson);
   }
 }
 

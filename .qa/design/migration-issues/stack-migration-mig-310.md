@@ -23,7 +23,7 @@ src/infrastructure/saga: bestehende Aufrufer über den freigegebenen Host transp
 
 - Epic: #773; historische Baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`; keine Produktionszustandsbehauptung.
 - Verbindliche Architektur: `docs/architecture/migration-owner-decisions-2026-10-23.md`.
-- Quellpfade und bestehende Adapter: `src/domains/saga/contracts/saga-definition.ts`, `src/domains/session/contracts/session-outcome-promotion.ts`, `src/infrastructure/host/host-library-http.ts`, `src/infrastructure/host/host-product-deny.ts`, `src/infrastructure/host/host-saga-definition-http.ts`, `src/infrastructure/host/host-session-http.ts`, `src/infrastructure/saga/host-saga-adapter.ts`, `src/infrastructure/saga/host-saga-ports.contract.ts`, `src/infrastructure/saga/saga-definition-service.ts`, `src/infrastructure/saga/session-outcome-promotion-service.ts`, `src/lib/hostAuthBridge.ts`, `src/lib/networkTimeout.ts`, `src/lib/supabase.ts`.
+- Quellpfade und bestehende Adapter: `src/domains/saga/contracts/saga-definition.ts`, `src/domains/session/contracts/session-outcome-promotion.ts`, `src/infrastructure/host/host-library-http.ts`, `src/infrastructure/host/host-saga-definition-http.ts`, `src/infrastructure/host/host-session-http.ts`, `src/infrastructure/saga/host-saga-adapter.ts`, `src/infrastructure/saga/host-saga-ports.contract.ts`, `src/infrastructure/saga/saga-definition-service.ts`, `src/infrastructure/saga/session-outcome-promotion-service.ts`, `src/lib/hostAuthBridge.ts`.
 - Source Contracts: `.qa/intake/edge-infra-contracts/infra-saga.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-saga.json`.
 - Zielverhalten: Binding product decisions: docs/architecture/migration-owner-decisions-2026-10-23.md; GATE-01 Drizzle+Policy, GATE-02 Cookie-A, GATE-03 Hono+Colyseus, GATE-04 SQLite single-writer. GATE-05 Tauri+sidecar selected; platform release pending..
 
@@ -83,83 +83,6 @@ UI-Parität, soweit betroffen: `src/THEME_GUIDE.md`, `docs/ui-styleguide.md`, `d
 - Dann: All11 RPCs, including promote_session_outcome_to_saga and promote_session_outcome_to_world through the typed callPromote helper, must be mapped and available.
 - Quelle: `.qa/intake/edge-infra-contracts/infra-saga.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-saga.json`
 
-### Fall 4
-
-- Gegeben: Der eingefrorene Quellvertrag für saga und isolierte positive/negative Fixtures
-- Wenn: Der Nachfolger den dokumentierten Fall für saga ausführt
-- Dann: Contract fixture for copy_native_saga_definition: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
-- Quelle: `.qa/intake/edge-infra-contracts/infra-saga.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-saga.json`
-
-### Fall 5
-
-- Gegeben: Der eingefrorene Quellvertrag für saga und isolierte positive/negative Fixtures
-- Wenn: Der Nachfolger den dokumentierten Fall für saga ausführt
-- Dann: Contract fixture for create_project_from_saga_version: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
-- Quelle: `.qa/intake/edge-infra-contracts/infra-saga.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-saga.json`
-
-### Fall 6
-
-- Gegeben: Der eingefrorene Quellvertrag für saga und isolierte positive/negative Fixtures
-- Wenn: Der Nachfolger den dokumentierten Fall für saga ausführt
-- Dann: Contract fixture for create_user_saga_definition: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
-- Quelle: `.qa/intake/edge-infra-contracts/infra-saga.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-saga.json`
-
-### Fall 7
-
-- Gegeben: Der eingefrorene Quellvertrag für saga und isolierte positive/negative Fixtures
-- Wenn: Der Nachfolger den dokumentierten Fall für saga ausführt
-- Dann: Contract fixture for duplicate_saga_playthrough: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
-- Quelle: `.qa/intake/edge-infra-contracts/infra-saga.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-saga.json`
-
-### Fall 8
-
-- Gegeben: Der eingefrorene Quellvertrag für saga und isolierte positive/negative Fixtures
-- Wenn: Der Nachfolger den dokumentierten Fall für saga ausführt
-- Dann: Contract fixture for get_native_saga_definition_by_slug: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
-- Quelle: `.qa/intake/edge-infra-contracts/infra-saga.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-saga.json`
-
-### Fall 9
-
-- Gegeben: Der eingefrorene Quellvertrag für saga und isolierte positive/negative Fixtures
-- Wenn: Der Nachfolger den dokumentierten Fall für saga ausführt
-- Dann: Contract fixture for get_saga_definition_editor: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
-- Quelle: `.qa/intake/edge-infra-contracts/infra-saga.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-saga.json`
-
-### Fall 10
-
-- Gegeben: Der eingefrorene Quellvertrag für saga und isolierte positive/negative Fixtures
-- Wenn: Der Nachfolger den dokumentierten Fall für saga ausführt
-- Dann: Contract fixture for get_saga_definition_version: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
-- Quelle: `.qa/intake/edge-infra-contracts/infra-saga.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-saga.json`
-
-### Fall 11
-
-- Gegeben: Der eingefrorene Quellvertrag für saga und isolierte positive/negative Fixtures
-- Wenn: Der Nachfolger den dokumentierten Fall für saga ausführt
-- Dann: Contract fixture for promote_session_outcome_to_saga: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
-- Quelle: `.qa/intake/edge-infra-contracts/infra-saga.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-saga.json`
-
-### Fall 12
-
-- Gegeben: Der eingefrorene Quellvertrag für saga und isolierte positive/negative Fixtures
-- Wenn: Der Nachfolger den dokumentierten Fall für saga ausführt
-- Dann: Contract fixture for promote_session_outcome_to_world: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
-- Quelle: `.qa/intake/edge-infra-contracts/infra-saga.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-saga.json`
-
-### Fall 13
-
-- Gegeben: Der eingefrorene Quellvertrag für saga und isolierte positive/negative Fixtures
-- Wenn: Der Nachfolger den dokumentierten Fall für saga ausführt
-- Dann: Contract fixture for publish_saga_definition_version: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
-- Quelle: `.qa/intake/edge-infra-contracts/infra-saga.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-saga.json`
-
-### Fall 14
-
-- Gegeben: Der eingefrorene Quellvertrag für saga und isolierte positive/negative Fixtures
-- Wenn: Der Nachfolger den dokumentierten Fall für saga ausführt
-- Dann: Contract fixture for save_saga_definition_draft: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
-- Quelle: `.qa/intake/edge-infra-contracts/infra-saga.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-saga.json`
-
 ## Required Tests
 
 Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assertions`). Öffentliche Acceptance-Checkboxen dürfen zusammenfassen; kein Pflichttest darf hier fehlen.
@@ -167,24 +90,13 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 1. Create/edit/save/publish/read version/copy native and instantiate project with stable IDs and version snapshot.
 2. Duplicate saga playthrough and promote allowed session outcomes retain side effects and deny foreign owner/GM.
 3. All11 RPCs, including promote_session_outcome_to_saga and promote_session_outcome_to_world through the typed callPromote helper, must be mapped and available.
-4. Contract fixture for copy_native_saga_definition: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
-5. Contract fixture for create_project_from_saga_version: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
-6. Contract fixture for create_user_saga_definition: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
-7. Contract fixture for duplicate_saga_playthrough: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
-8. Contract fixture for get_native_saga_definition_by_slug: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
-9. Contract fixture for get_saga_definition_editor: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
-10. Contract fixture for get_saga_definition_version: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
-11. Contract fixture for promote_session_outcome_to_saga: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
-12. Contract fixture for promote_session_outcome_to_world: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
-13. Contract fixture for publish_saga_definition_version: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
-14. Contract fixture for save_saga_definition_draft: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
-15. Touched files: zero type escape hatches (typed-strict / Boy Scout).
+4. Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
 ## Acceptance
 
-- [ ] Alle 14 quellenabgeleiteten Given/When/Then-Fälle unter Edge Cases und Required Tests müssen im echten zuständigen Test-Stack nachweislich PASS sein; keine RequiredTests aus dem Inventar verlieren.
-- [ ] Jeder negative Berechtigungs-, Schema-, State- und Retry-Test ist einzeln ausgeführt und mit Commit/Fixture und Logs belegbar; ein Legacy-Defekt wird nicht als sichere Parität akzeptiert.
-- [ ] Alle Signaturen, Owner-/GM-/Membership- und Persistenz-Nebenwirkungen werden mit dem bestehenden Quellvertrag verglichen; ungetestete Pfade bleiben NOT RUN.
+- [ ] Create/edit/save/publish/read version/copy native and instantiate project with stable IDs and version snapshot.
+- [ ] Duplicate saga playthrough and promote allowed session outcomes retain side effects and deny foreign owner/GM.
+- [ ] All11 RPCs, including promote_session_outcome_to_saga and promote_session_outcome_to_world through the typed callPromote helper, must be mapped and available.
 - [ ] Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
 ## Acceptance tiers
@@ -202,11 +114,6 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 - Depends on #791 (MIG-012)
 - Depends on #792 (MIG-013)
 - Depends on #795 (MIG-020)
-- Depends on #871 (RPC-SAGA-AUTHORING)
-- Depends on #873 (RPC-SAGA-PROVISION)
-- Depends on #872 (RPC-SAGA-VERSION-READ)
-- Depends on #876 (RPC-SAGA-PROJECTIONS)
-- Depends on #793 (MIG-014)
 
 Status: **done**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance.
 

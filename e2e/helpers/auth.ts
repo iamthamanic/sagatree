@@ -2,16 +2,14 @@
  * Shared E2E auth helper — single Login readiness contract for Browser E2E.
  * Location: e2e/helpers/auth.ts
  *
- * Prefer this over local ensureLoggedIn copies. Local Admin (admin/1234) must reach
- * Dashboard via product Local-Admin fallback within AUTH_SESSION_TIMEOUT_MS when
- * GoTrue is slow — do not paper over hangs with longer waits alone.
+ * Prefer this over local ensureLoggedIn copies. CUT-20: product login is Host
+ * Better Auth (`admin`/`1234` → seeded `admin@sagatree.local`). CI runs via
+ * `scripts/browser-e2e-with-host.mjs` (Vite `/api` proxy → ephemeral host).
  *
- * When CI uses an inert Supabase URL (no repo secrets), call
- * `installLocalAdminGoTrueSuccess` before login for tests that need a persisted
- * JWT (REST mocks / scrub regression). Timeout/fallback specs install their own
- * GoTrue routes and must not use that helper.
+ * `installLocalAdminGoTrueSuccess` is a no-op legacy helper kept for older
+ * specs that still call it; Host cookie sessions do not use GoTrue token routes.
  */
-import { expect, type Page, type Route } from '@playwright/test';
+import { expect, type Page } from '@playwright/test';
 import { isInertSupabaseEnv } from './supabase-env';
 
 export const E2E_LOCAL_ADMIN_USER = 'admin';
@@ -42,22 +40,11 @@ export function buildLocalAdminGoTrueSession() {
 }
 
 /**
- * Fulfill password-grant so Local Admin gets a persisted auth-token.
- * Use on inert CI backends; do not combine with hang/abort GoTrue routes.
- * Auth-token URL only — a catch-all route plus continue would bypass REST mocks.
+ * Legacy GoTrue mock — no-op under CUT-20 host Better Auth.
+ * Kept so older specs that still call it compile without installing dead routes.
  */
-export async function installLocalAdminGoTrueSuccess(page: Page): Promise<void> {
-  await page.route('**/auth/v1/token**', async (route: Route) => {
-    if (route.request().method() !== 'POST') {
-      await route.fallback();
-      return;
-    }
-    await route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify(buildLocalAdminGoTrueSession()),
-    });
-  });
+export async function installLocalAdminGoTrueSuccess(_page: Page): Promise<void> {
+  /* Host cookie session; GoTrue /auth/v1/token is not on the product path. */
 }
 
 export { isInertSupabaseEnv };
@@ -99,8 +86,9 @@ export async function ensureLoggedIn(
   const loginTab = page.getByRole('tab', { name: 'Login' });
   if (await loginTab.count()) {
     await loginTab.click();
-    await page.getByPlaceholder('admin oder deine@email.de').fill(user);
-    await page.getByPlaceholder('••••••••').fill(password);
+    // CUT-20 host-first LoginScreen ids (placeholders differ from GoTrue-era copy).
+    await page.locator('#login-identifier').fill(user);
+    await page.locator('#login-password').fill(password);
     await page.getByRole('button', { name: 'Einloggen' }).click();
   }
 

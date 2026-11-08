@@ -45,9 +45,8 @@ mustInclude('src/app/world/atlas/WorldAtlasWorkbench.tsx', [
   'persistStatus === \'conflict\'',
 ]);
 mustInclude('src/infrastructure/world/world-atlas-service.ts', [
-  'revision conflict',
-  '40001',
-  'p_expected_revision',
+  'expectedRevision',
+  'upsertHostWorldAtlasMap',
 ]);
 
 const outDir = join(root, '.qa/tmp');

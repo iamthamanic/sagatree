@@ -1,6 +1,6 @@
 # RPC-Quellverträge für Epic #773 / PREP-04 #777
 
-**57 RPC-Namen vollständig erfasst:** die ursprünglichen 55 Literal-Aufrufe plus zwei über eine TypeScript-Literal-Union aufgerufene Outcome-Promotions. Die AST-Inventur enthält 57 aufgelöste Namensvarianten an 56 physischen Aufrufstellen.
+**57 RPC-Namen vollständig erfasst:** die ursprünglichen 55 Literal-Aufrufe plus zwei über eine TypeScript-Literal-Union aufgerufene Outcome-Promotions. Die AST-Inventur enthält 57 aufgelöste Namensvarianten an 15 physischen Aufrufstellen.
 
 **56 RPC-Namen / 57 wirksame Overloads** sind Teil der vollständig eingespielten Repository-Migrationskette. **Ein weiterer RPC-Name mit einer Signatur** ist ausschließlich in zwei optionalen Marketplace-Installationsskripten belegt. Bei save_session_recap_summary sind Zweierwrapper und Dreierfunktion beide vorhanden (get_session_recap selbst hat nur einen Overload); der Zweier-Atlas-Wrapper wurde dagegen durch Migration106 entfernt.
 

@@ -1,12 +1,5 @@
 /**
- * item-catalog-service — application-facing facade for the Inventory v2 catalog
- * (#107 / #136 / #138 / #143). This is the boundary the character UI and Library
- * Items browser consume; app slices must not query `inventory_item_definitions`
- * themselves. Lifecycle ops adapt the `domains/items` write/fork API onto the
- * existing catalog table. Character add-catalog composes via world item-catalog
- * resolver; Library browse stays an independent global catalog.
- * Dual-path (FE-HOST-05): Host Library creates Personal/World rows via
- * `/api/v1/library/items` when the host library flag is on.
+ * item-catalog-service — Inventory v2 catalog via host Library HTTP (CUT-20).
  * Location: src/infrastructure/inventory/item-catalog-service.ts
  */
 import {
@@ -15,12 +8,15 @@ import {
   isDefinitionVisible,
   listCoreItemDefinitions,
   parseItemDefinition,
+  resolveEffectiveWorldProfileId as resolveEffectiveWorldProfileIdFromBinding,
 } from '../../domains/character/inventory-v2';
 import type {
   CatalogDefinitionRecord,
+  InventoryState,
   ItemDefinition,
   ItemDefinitionLookup,
 } from '../../domains/character/inventory-v2';
+import { isInventoryV2State } from '../../domains/character/inventory-v2';
 import {
   buildForkedItemDefinitionDraft,
   compareLibraryItemDefinitions,
@@ -29,11 +25,15 @@ import {
   getItemCatalogModuleConfig,
   listBuiltinStandardDefinitions,
   normalizeItemDefinition,
+  type ItemDefinitionWriteDraft,
 } from '../../domains/items';
 import { deriveStablePublicResourceId } from '../../domains/resource-id';
+import { getAuthenticatedUserId } from '../../lib/authenticatedUser';
 import {
   archiveHostLibraryItem,
   createHostLibraryItem,
+  fetchHostLibraryAdventureArcs,
+  fetchHostLibraryCharacter,
   fetchHostLibraryItem,
   fetchHostLibraryItems,
   forkHostLibraryItem,
@@ -41,16 +41,28 @@ import {
   restoreHostLibraryItem,
   updateHostLibraryItem,
 } from '../host/host-library-http';
+import { projectService } from '../project/project-service';
 import { toDefinitionPayload } from './item-catalog.persistence';
-import {
-  supabaseItemCatalogRepository,
-} from './supabase-item-catalog.repository';
-import type {
-  ForkDefinitionTarget,
-  ItemDefinitionDraft,
-} from './supabase-item-catalog.repository';
 
-/** Map host `/api/v1/library/items` rows into catalog records (skip standard — Core packs cover those). */
+/** Target for fork — Personal or World (world requires profile id). */
+export type ForkDefinitionTarget =
+  | { scope: 'personal' }
+  | { scope: 'world'; worldProfileId: string };
+
+/** Draft for creating or updating a persisted definition (host payload). */
+export type ItemDefinitionDraft = ItemDefinitionWriteDraft;
+
+function assertHost(): void {
+  if (!isHostLibraryEnabled()) {
+    throw new Error('Host-Anmeldung nicht konfiguriert (VITE_SAGATREE_HOST_AUTH_URL fehlt).');
+  }
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+/** Map host `/api/v1/library/items` rows into catalog records. */
 function mapHostLibraryItemRecord(raw: unknown): CatalogDefinitionRecord | null {
   if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null;
   const row = raw as Record<string, unknown>;
@@ -70,19 +82,18 @@ function mapHostLibraryItemRecord(raw: unknown): CatalogDefinitionRecord | null 
       ? row.publicId.trim().toUpperCase()
       : null;
   const status = row.status === 'archived' ? 'archived' : 'active';
-  // Assign ownership via property write — facade must not invent owners in literals.
   const record: CatalogDefinitionRecord = {
     definition: publicId ? { ...definition, publicId } : definition,
     status,
     publicId,
     worldProfileId: typeof row.worldProfileId === 'string' ? row.worldProfileId : null,
   };
-  const ownerFromHost = row['ownerUserId'];
+  const ownerFromHost = row.ownerUserId;
   record.ownerUserId = typeof ownerFromHost === 'string' ? ownerFromHost : null;
   return record;
 }
 
-/** Core / builtin catalog rows have no DB trigger — stamp a stable IT- id for Library UX. */
+/** Core / builtin: stable IT- public id for Library UX. */
 function withCatalogPublicId(definition: ItemDefinition): ItemDefinition {
   if (definition.publicId) return definition;
   if (definition.scope !== 'core') return definition;
@@ -92,46 +103,84 @@ function withCatalogPublicId(definition: ItemDefinition): ItemDefinition {
   };
 }
 
-/** Everything a character screen needs to render and extend its inventory. */
-export interface CharacterItemCatalog {
-  effectiveWorldProfileId: string | null;
-  /** Active definitions offered by Add/Catalog surfaces, already ordered. */
-  addable: ItemDefinition[];
-  /** Resolves owned instances, including archived definitions. */
-  lookup: ItemDefinitionLookup;
-  /** Raw records, for callers that need status or ownership. */
-  records: CatalogDefinitionRecord[];
-}
-
-/** Library Items browser catalog (#138): Core + builtin-standard + persisted. */
-export interface LibraryItemCatalog {
-  /** Active definitions visible in the Library Items tab, already ordered. */
-  definitions: ItemDefinition[];
-  /** Raw persisted records (Personal/World), including archived. */
-  persistedRecords: CatalogDefinitionRecord[];
+async function fetchAllHostItemRecords(): Promise<CatalogDefinitionRecord[]> {
+  const hostItems = await fetchHostLibraryItems();
+  return hostItems
+    .map(mapHostLibraryItemRecord)
+    .filter((record): record is CatalogDefinitionRecord => record !== null);
 }
 
 /**
- * Load the catalog for a character (#143).
- *
- * Addable: always 36 Core; with effective world apply `item-catalog` module via
- * {@link composeCharacterInventoryAddCatalog}; null world → Core + Personal only.
- * Lookup also resolves builtin-standard ids so owned pack instances stay renderable
- * after exclude/archive from the add surface.
+ * Effective world profile: adventure project binding wins over character sheet binding (#143).
+ * Host: character sheet + active adventure arcs → project `worldProfileId`.
  */
+export async function resolveEffectiveWorldProfileId(characterId: string): Promise<string | null> {
+  assertHost();
+  const trimmed = characterId.trim();
+  if (!trimmed) return null;
+
+  const row = await fetchHostLibraryCharacter(trimmed);
+  const sheet = isRecord(row.sheet) ? row.sheet : {};
+  const characterWorldRaw =
+    (typeof sheet.world_profile_id === 'string' ? sheet.world_profile_id : null) ??
+    (typeof sheet.worldProfileId === 'string' ? sheet.worldProfileId : null);
+
+  let adventureWorldProfileId: string | null = null;
+  const arcs = await fetchHostLibraryAdventureArcs(trimmed);
+  for (const arc of arcs) {
+    if (!isRecord(arc)) continue;
+    if (arc.status !== 'active' && arc.status !== undefined) continue;
+    const projectId = typeof arc.project_id === 'string' ? arc.project_id : '';
+    if (!projectId) continue;
+    try {
+      const project = await projectService.getProjectById(projectId);
+      if (project.worldProfileId) {
+        adventureWorldProfileId = project.worldProfileId;
+        break;
+      }
+    } catch {
+      /* ignore missing project */
+    }
+  }
+
+  return resolveEffectiveWorldProfileIdFromBinding({
+    adventureWorldProfileId,
+    characterWorldProfileId: typeof characterWorldRaw === 'string' ? characterWorldRaw : null,
+  });
+}
+
+async function listCatalogRecordsForEffectiveWorld(
+  effectiveWorldProfileId: string | null,
+  userId: string,
+): Promise<CatalogDefinitionRecord[]> {
+  const all = await fetchAllHostItemRecords();
+  const context = { userId, effectiveWorldProfileId };
+  return all.filter((record) => isDefinitionVisible(record, context));
+}
+
+export interface CharacterItemCatalog {
+  effectiveWorldProfileId: string | null;
+  addable: ItemDefinition[];
+  lookup: ItemDefinitionLookup;
+  records: CatalogDefinitionRecord[];
+}
+
+export interface LibraryItemCatalog {
+  definitions: ItemDefinition[];
+  persistedRecords: CatalogDefinitionRecord[];
+}
+
 export async function loadCharacterItemCatalog(
   characterId: string | null,
   userId: string,
 ): Promise<CharacterItemCatalog> {
-  const effectiveWorldProfileId = characterId
-    ? await supabaseItemCatalogRepository.resolveEffectiveWorldProfileId(characterId)
-    : null;
-  const records = await supabaseItemCatalogRepository.listCatalogRecords(effectiveWorldProfileId);
+  assertHost();
+  const effectiveWorldProfileId = characterId ? await resolveEffectiveWorldProfileId(characterId) : null;
+  const records = await listCatalogRecordsForEffectiveWorld(effectiveWorldProfileId, userId);
   const context = { userId, effectiveWorldProfileId };
 
-  const modules = effectiveWorldProfileId
-    ? await supabaseItemCatalogRepository.loadWorldProfileModules(effectiveWorldProfileId)
-    : null;
+  // Host world `modules` parity (#1159): defaults until host exposes modules JSON.
+  const modules = null;
   const { config } = getItemCatalogModuleConfig(modules);
 
   const worldDefinitions = records
@@ -182,23 +231,9 @@ export async function loadCharacterItemCatalog(
   };
 }
 
-/**
- * Load the Library Items catalog: local Core + builtin-standard packs plus
- * Personal/World rows RLS already returns. Filter is UX-only; visibility is
- * server-side (#136). Archived persisted rows are omitted from `definitions`.
- */
 export async function loadLibraryItemCatalog(): Promise<LibraryItemCatalog> {
-  let persistedRecords: Awaited<
-    ReturnType<typeof supabaseItemCatalogRepository.listLibraryPersistedRecords>
-  > = [];
-  if (isHostLibraryEnabled()) {
-    const hostItems = await fetchHostLibraryItems();
-    persistedRecords = hostItems
-      .map(mapHostLibraryItemRecord)
-      .filter((record): record is CatalogDefinitionRecord => record !== null);
-  } else {
-    persistedRecords = await supabaseItemCatalogRepository.listLibraryPersistedRecords();
-  }
+  assertHost();
+  const persistedRecords = await fetchAllHostItemRecords();
   const byId = new Map<string, ItemDefinition>();
 
   for (const definition of listCoreItemDefinitions()) {
@@ -220,38 +255,30 @@ export async function loadLibraryItemCatalog(): Promise<LibraryItemCatalog> {
   return { definitions, persistedRecords };
 }
 
-/**
- * Load World-scoped catalog records for a single world profile (active + archived).
- * Used by World-profile item authoring (#112); not a character Add catalog.
- */
 export async function loadWorldProfileItemCatalog(
   worldProfileId: string,
 ): Promise<CatalogDefinitionRecord[]> {
-  const records = await supabaseItemCatalogRepository.listCatalogRecords(worldProfileId);
-  return records.filter(
-    (r) => r.definition.scope === 'world' && r.worldProfileId === worldProfileId,
+  assertHost();
+  const all = await fetchAllHostItemRecords();
+  const wid = worldProfileId.trim();
+  return all.filter(
+    (r) => r.definition.scope === 'world' && r.worldProfileId === wid && r.worldProfileId !== null,
   );
 }
 
-/**
- * Load one definition for the Item Workbench (#139).
- * Core/builtin resolve locally; Personal/World via RLS. Returns null when missing.
- */
 export async function getItemDefinitionById(definitionId: string): Promise<{
   definition: ItemDefinition;
   record: CatalogDefinitionRecord | null;
 } | null> {
-  if (isHostLibraryEnabled()) {
-    const hostItem = await fetchHostLibraryItem(definitionId);
-    const record = mapHostLibraryItemRecord(hostItem);
-    if (record) return { definition: record.definition, record };
-    const core = getCoreItemDefinition(definitionId);
-    if (core) return { definition: withCatalogPublicId(core), record: null };
-    const builtin = getBuiltinStandardDefinition(definitionId);
-    if (builtin) return { definition: withCatalogPublicId(builtin), record: null };
-    return null;
-  }
-  return supabaseItemCatalogRepository.getDefinitionById(definitionId);
+  assertHost();
+  const hostItem = await fetchHostLibraryItem(definitionId);
+  const record = mapHostLibraryItemRecord(hostItem);
+  if (record) return { definition: record.definition, record };
+  const core = getCoreItemDefinition(definitionId);
+  if (core) return { definition: withCatalogPublicId(core), record: null };
+  const builtin = getBuiltinStandardDefinition(definitionId);
+  if (builtin) return { definition: withCatalogPublicId(builtin), record: null };
+  return null;
 }
 
 async function createHostCatalogDefinition(
@@ -275,99 +302,108 @@ async function createHostCatalogDefinition(
 export async function createPersonalDefinition(
   draft: ItemDefinitionDraft,
 ): Promise<CatalogDefinitionRecord> {
-  if (isHostLibraryEnabled()) {
-    return createHostCatalogDefinition('personal', draft, null);
-  }
-  return supabaseItemCatalogRepository.createPersonalDefinition(draft);
+  assertHost();
+  return createHostCatalogDefinition('personal', draft, null);
 }
 
 export async function createWorldDefinition(
   worldProfileId: string,
   draft: ItemDefinitionDraft,
 ): Promise<CatalogDefinitionRecord> {
-  if (isHostLibraryEnabled()) {
-    return createHostCatalogDefinition('world', draft, worldProfileId);
-  }
-  return supabaseItemCatalogRepository.createWorldDefinition(worldProfileId, draft);
+  assertHost();
+  return createHostCatalogDefinition('world', draft, worldProfileId);
 }
 
 export async function updateDefinition(
   definitionId: string,
   draft: ItemDefinitionDraft,
 ): Promise<CatalogDefinitionRecord> {
-  if (isHostLibraryEnabled()) {
-    // Scope is a column on the host; payload builder strips id/scope — use personal as a
-    // typed placeholder so Draft→payload matches createHostCatalogDefinition.
-    const payload = toDefinitionPayload({
-      ...draft,
-      id: definitionId,
-      scope: 'personal',
-    });
-    const updated = await updateHostLibraryItem(definitionId, {
-      name: draft.name,
-      payload,
-    });
-    const record = mapHostLibraryItemRecord(updated);
-    if (!record) throw new Error('Host-Item speichern: ungültige Antwort');
-    return record;
-  }
-  return supabaseItemCatalogRepository.updateDefinition(definitionId, draft);
+  assertHost();
+  const payload = toDefinitionPayload({
+    ...draft,
+    id: definitionId,
+    scope: 'personal',
+  });
+  const updated = await updateHostLibraryItem(definitionId, {
+    name: draft.name,
+    payload,
+  });
+  const record = mapHostLibraryItemRecord(updated);
+  if (!record) throw new Error('Host-Item speichern: ungültige Antwort');
+  return record;
 }
 
-/** Archiving is the only removal path; owned instances keep resolving afterwards. */
-export async function archiveDefinition(
-  definitionId: string,
-): Promise<CatalogDefinitionRecord> {
-  if (isHostLibraryEnabled()) {
-    const archived = await archiveHostLibraryItem(definitionId);
-    const record = mapHostLibraryItemRecord(archived);
-    if (!record) throw new Error('Host-Item archivieren: ungültige Antwort');
-    return record;
-  }
-  return supabaseItemCatalogRepository.setDefinitionStatus(definitionId, 'archived');
+export async function archiveDefinition(definitionId: string): Promise<CatalogDefinitionRecord> {
+  assertHost();
+  const archived = await archiveHostLibraryItem(definitionId);
+  const record = mapHostLibraryItemRecord(archived);
+  if (!record) throw new Error('Host-Item archivieren: ungültige Antwort');
+  return record;
 }
 
-export async function restoreDefinition(
-  definitionId: string,
-): Promise<CatalogDefinitionRecord> {
-  if (isHostLibraryEnabled()) {
-    const restored = await restoreHostLibraryItem(definitionId);
-    const record = mapHostLibraryItemRecord(restored);
-    if (!record) throw new Error('Host-Item wiederherstellen: ungültige Antwort');
-    return record;
-  }
-  return supabaseItemCatalogRepository.setDefinitionStatus(definitionId, 'active');
+export async function restoreDefinition(definitionId: string): Promise<CatalogDefinitionRecord> {
+  assertHost();
+  const restored = await restoreHostLibraryItem(definitionId);
+  const record = mapHostLibraryItemRecord(restored);
+  if (!record) throw new Error('Host-Item wiederherstellen: ungültige Antwort');
+  return record;
 }
 
-/**
- * Fork Core/World/Personal into a new Personal or World definition.
- * Always a new id with provenance; never overwrites the source.
- * Dual-path (CUT-06): host-first uses `/api/v1/library/items/:id/fork`.
- */
 export async function forkDefinition(
   sourceDefinitionId: string,
   target: ForkDefinitionTarget,
 ): Promise<CatalogDefinitionRecord> {
-  if (isHostLibraryEnabled()) {
-    const origin = target.scope === 'world' ? 'world' : 'personal';
-    const worldProfileId = target.scope === 'world' ? target.worldProfileId : null;
-    // Core/builtin packs are local (not SQLite rows) — fork by creating a new host definition.
-    const localSource =
-      getCoreItemDefinition(sourceDefinitionId) ??
-      getBuiltinStandardDefinition(sourceDefinitionId);
-    if (localSource) {
-      const draft = buildForkedItemDefinitionDraft(localSource, origin);
-      return createHostCatalogDefinition(origin, draft, worldProfileId);
-    }
-    const forked = await forkHostLibraryItem(sourceDefinitionId, {
-      origin,
-      worldProfileId,
-    });
-    const record = mapHostLibraryItemRecord(forked);
-    if (!record) throw new Error('Host-Item forken: ungültige Antwort');
-    return record;
+  assertHost();
+  const origin = target.scope === 'world' ? 'world' : 'personal';
+  const worldProfileId = target.scope === 'world' ? target.worldProfileId : null;
+  const localSource =
+    getCoreItemDefinition(sourceDefinitionId) ?? getBuiltinStandardDefinition(sourceDefinitionId);
+  if (localSource) {
+    const draft = buildForkedItemDefinitionDraft(localSource, origin);
+    return createHostCatalogDefinition(origin, draft, worldProfileId);
   }
-  return supabaseItemCatalogRepository.forkDefinition(sourceDefinitionId, target);
+  const forked = await forkHostLibraryItem(sourceDefinitionId, {
+    origin,
+    worldProfileId,
+  });
+  const record = mapHostLibraryItemRecord(forked);
+  if (!record) throw new Error('Host-Item forken: ungültige Antwort');
+  return record;
 }
 
-export type { ForkDefinitionTarget, ItemDefinitionDraft };
+/**
+ * Ensure every definitionId in a writable inventory is catalog-visible or a
+ * builtin standard (#137/#143). Host-only (CUT-20).
+ */
+export async function assertWritableInventoryV2(
+  state: unknown,
+  characterId: string | null,
+): Promise<InventoryState> {
+  assertHost();
+  if (!isInventoryV2State(state)) {
+    throw new Error('Inventar-Zustand ist ungültig.');
+  }
+  const definitionIds = new Set(
+    Object.values(state.instances).map((instance) => instance.definitionId),
+  );
+  if (definitionIds.size === 0) return state;
+
+  const userId = await getAuthenticatedUserId();
+  const effectiveWorldProfileId = characterId
+    ? await resolveEffectiveWorldProfileId(characterId)
+    : null;
+  const catalog = await listCatalogRecordsForEffectiveWorld(effectiveWorldProfileId, userId);
+  const visible = new Set(catalog.map((record) => record.definition.id));
+  // Builtin-standard ids resolve locally (#137/#143). Owned pack instances must
+  // remain writable after the world excludes them from the add-catalog.
+  const missing = [...definitionIds].filter((id) => {
+    if (visible.has(id)) return false;
+    return getBuiltinStandardDefinition(id) === undefined;
+  });
+  if (missing.length > 0) {
+    throw new Error(
+      `Unbekannte oder nicht sichtbare Gegenstandsdefinitionen: ${missing.slice(0, 5).join(', ')}`,
+    );
+  }
+  return state;
+}

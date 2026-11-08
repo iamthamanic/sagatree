@@ -117,16 +117,16 @@ Vollständige Abhängigkeiten einschließlich dynamischer Imports, SDK-Aufrufe u
 
 | Bereich | Beleg | Nachfolger-Ticket | Quellabhängigkeiten |
 | --- | --- | --- | --- |
-| ai | [Quellvertrag](../../intake/edge-infra-contracts/infra-ai.md) | #800 | 0 RPC / 0 Tabellen / 2 Edge-Aufrufe |
-| character | [Quellvertrag](../../intake/edge-infra-contracts/infra-character.md) | #801 | 0 RPC / 9 Tabellen / 2 Edge-Aufrufe |
-| inventory | [Quellvertrag](../../intake/edge-infra-contracts/infra-inventory.md) | #802 | 0 RPC / 5 Tabellen / 2 Edge-Aufrufe |
-| look | [Quellvertrag](../../intake/edge-infra-contracts/infra-look.md) | #803 | 0 RPC / 2 Tabellen / 1 Edge-Aufrufe |
-| marketplace | [Quellvertrag](../../intake/edge-infra-contracts/infra-marketplace.md) | #804 | 1 RPC / 1 Tabellen / 0 Edge-Aufrufe |
+| ai | [Quellvertrag](../../intake/edge-infra-contracts/infra-ai.md) | #800 | 0 RPC / 0 Tabellen / 0 Edge-Aufrufe |
+| character | [Quellvertrag](../../intake/edge-infra-contracts/infra-character.md) | #801 | 0 RPC / 0 Tabellen / 0 Edge-Aufrufe |
+| inventory | [Quellvertrag](../../intake/edge-infra-contracts/infra-inventory.md) | #802 | 0 RPC / 0 Tabellen / 0 Edge-Aufrufe |
+| look | [Quellvertrag](../../intake/edge-infra-contracts/infra-look.md) | #803 | 0 RPC / 0 Tabellen / 0 Edge-Aufrufe |
+| marketplace | [Quellvertrag](../../intake/edge-infra-contracts/infra-marketplace.md) | #804 | 0 RPC / 0 Tabellen / 0 Edge-Aufrufe |
 | media | [Quellvertrag](../../intake/edge-infra-contracts/infra-media.md) | #805 | 0 RPC / 0 Tabellen / 0 Edge-Aufrufe |
-| npc-creature | [Quellvertrag](../../intake/edge-infra-contracts/infra-npc-creature.md) | #806 | 5 RPC / 4 Tabellen / 0 Edge-Aufrufe |
-| project | [Quellvertrag](../../intake/edge-infra-contracts/infra-project.md) | #807 | 11 RPC / 3 Tabellen / 0 Edge-Aufrufe |
-| rulesets | [Quellvertrag](../../intake/edge-infra-contracts/infra-rulesets.md) | #808 | 0 RPC / 1 Tabellen / 0 Edge-Aufrufe |
-| saga | [Quellvertrag](../../intake/edge-infra-contracts/infra-saga.md) | #809 | 11 RPC / 0 Tabellen / 0 Edge-Aufrufe |
-| session | [Quellvertrag](../../intake/edge-infra-contracts/infra-session.md) | #810 | 12 RPC / 3 Tabellen / 2 Edge-Aufrufe |
-| user-profile | [Quellvertrag](../../intake/edge-infra-contracts/infra-user-profile.md) | #811 | 0 RPC / 1 Tabellen / 0 Edge-Aufrufe |
-| world | [Quellvertrag](../../intake/edge-infra-contracts/infra-world.md) | #812 | 17 RPC / 3 Tabellen / 0 Edge-Aufrufe |
+| npc-creature | [Quellvertrag](../../intake/edge-infra-contracts/infra-npc-creature.md) | #806 | 0 RPC / 0 Tabellen / 0 Edge-Aufrufe |
+| project | [Quellvertrag](../../intake/edge-infra-contracts/infra-project.md) | #807 | 0 RPC / 0 Tabellen / 0 Edge-Aufrufe |
+| rulesets | [Quellvertrag](../../intake/edge-infra-contracts/infra-rulesets.md) | #808 | 0 RPC / 0 Tabellen / 0 Edge-Aufrufe |
+| saga | [Quellvertrag](../../intake/edge-infra-contracts/infra-saga.md) | #809 | 0 RPC / 0 Tabellen / 0 Edge-Aufrufe |
+| session | [Quellvertrag](../../intake/edge-infra-contracts/infra-session.md) | #810 | 0 RPC / 0 Tabellen / 0 Edge-Aufrufe |
+| user-profile | [Quellvertrag](../../intake/edge-infra-contracts/infra-user-profile.md) | #811 | 0 RPC / 0 Tabellen / 0 Edge-Aufrufe |
+| world | [Quellvertrag](../../intake/edge-infra-contracts/infra-world.md) | #812 | 0 RPC / 0 Tabellen / 0 Edge-Aufrufe |

@@ -18,7 +18,7 @@ const characterEntityTypes = read('src/domains/character/domain/character.entity
 const characterPersistenceTypes = read('src/infrastructure/character/character.persistence.ts');
 const characterNormalize = read('src/domains/character/use-cases/normalize-character.ts');
 const characterAssert = read('src/domains/character/use-cases/assert-character-persistence.ts');
-const characterRepository = read('src/infrastructure/character/supabase-character.repository.ts');
+const characterService = read('src/infrastructure/character/character-service.ts');
 const characterCreation = read('src/domains/rules/sagatree/character-creation/index.ts');
 const inventorySummary = read('src/app/character/inventory/InventorySummaryBar.tsx');
 const inventoryLabels = read('src/app/character/inventory/inventory-ui-labels.ts');
@@ -202,13 +202,13 @@ requireMatch(characterNormalize, /normalizeOptionalBaseAttributes/, 'baseAttribu
 requireMatch(characterNormalize, /normalizeSagaTreeAttributeAdvances/, 'attributeAdvances normalization on profile read');
 requireMatch(characterAssert, /assertValidSagaTreeAttributePersistence/, 'server-side SagaTree attribute build validation');
 requireMatch(characterNormalize, /isValidSagaTreeAttributeBuild/, 'server validates attribute build with Core helper');
-requireMatch(characterRepository, /sagatree_profile:/, 'SagaTree profile persistence');
+requireMatch(characterService, /sagatree_profile:/, 'SagaTree profile persistence');
 requireMatch(characterNormalize, /normalizeBackgroundTemplateId/, 'background template backward compatibility');
 requireMatch(characterNormalize, /normalizeSpeciesTraitInstances/, 'canonical species trait instance normalization');
 requireMatch(characterNormalize, /normalizeLegacySpeciesTraitInstances/, 'legacy species trait migration on read');
 requireMatch(characterNormalize, /legacyDetail/, 'unmapped legacy species trait detail preservation');
 requireMatch(characterNormalize, /normalizeSpeciesProfile/, 'Alien species profile normalization');
-requireMatch(characterRepository, /notes:\s*payload\.notes\?\.trim\(\) \|\| null/, 'notes persistence');
+requireMatch(characterService, /notes: payload\.notes/, 'notes persistence');
 requireMatch(characterNormalize, /value\?\.constitution/, 'legacy constitution attribute read fallback');
 requireMatch(characterNormalize, /value\?\.intelligence/, 'legacy intelligence attribute read fallback');
 requireMatch(characterNormalize, /value\?\.wisdom/, 'legacy wisdom attribute read fallback');
@@ -228,7 +228,7 @@ requireMatch(sagatreeEradicateMigration, /CHECK \(ruleset_key = ANY \(ARRAY\['sa
 const abilitiesMigration = read('supabase/migrations/014_character_abilities_emotion_profiles.sql');
 requireMatch(abilitiesMigration, /ADD COLUMN IF NOT EXISTS abilities JSONB/, 'abilities column migration');
 requireMatch(abilitiesMigration, /ADD COLUMN IF NOT EXISTS emotion_profiles JSONB/, 'emotion_profiles column migration');
-requireMatch(characterRepository, /abilities:\s*payload\.abilities \?\? \[\]/, 'abilities persisted on create');
+requireMatch(characterService, /abilities: payload\.abilities/, 'abilities persisted on create');
 requireMatch(read('src/infrastructure/character/character-service.ts'), /invalidate\(ENTITY_CACHE_KEYS\.characterSummaries\)/, 'character list cache invalidation after writes');
 if (existsSync(new URL('../src/modules/characters', import.meta.url))) {
   console.error('Character editor regression check failed: src/modules/characters still exists.');
@@ -241,17 +241,21 @@ requireMatch(read('src/app/library/Library.tsx'), /setCharacterEditorBootstrap/,
 requireMatch(read('src/app/character/edit/CharacterEditor.tsx'), /hydrateEditorFromPersistedCharacter/, 'editor hydrate from persisted character');
 requireMatch(read('src/app/library/Library.tsx'), /refreshCharacters\(\{\s*force:\s*true\s*\}\)/, 'library force-refreshes character summaries');
 
-requireMatch(characterRepository, /supabase\.storage[\s\S]*?\.from\(CHARACTER_PORTRAIT_BUCKET\)[\s\S]*?\.upload\(filePath, file/, 'portrait upload through configured Supabase Storage client');
-requireMatch(characterRepository, /createSignedUrl\(filePath, CHARACTER_PORTRAIT_SIGNED_SECONDS\)/, 'private portrait signed URL creation');
-requireMatch(characterRepository, /CHARACTER_PORTRAIT_SIGNED_SECONDS = 60 \* 60 \* 24 \* 7/, 'portrait signed URL uses 7-day TTL');
-requireMatch(characterRepository, /sniffPortraitMime/, 'portrait magic-byte sniff before upload');
-rejectMatch(characterRepository, /https:\/\/\$\{projectId\}\.supabase\.co|make-server-9f6fb44c\/characters\/upload-portrait/, 'portrait upload still uses the fixed hosted make-server endpoint');
+requireMatch(characterService, /prepareCharacterPortraitFile/, 'portrait optimize before host upload');
+requireMatch(characterService, /publishHostAsset/, 'portrait upload through host asset publish');
+requireMatch(characterService, /profileId:\s*['"]character-portrait['"]/, 'portrait optimizer profile');
+rejectMatch(characterService, /supabase\.storage|make-server-9f6fb44c\/characters\/upload-portrait/, 'portrait upload must not use legacy Supabase/make-server endpoints');
 requireMatch(portraitStorageMigration, /INSERT INTO storage\.buckets[\s\S]*?VALUES\s*\(\s*'character-portraits',\s*'character-portraits',\s*false,\s*5242880,/, 'private portrait storage bucket with 5MB limit');
 requireMatch(portraitStorageMigration, /storage\.foldername\(name\)\)\[1\] = auth\.uid\(\)::text/, 'owner-scoped portrait storage policies');
-requireMatch(loreService, /error\.context\.clone\(\)\.json\(\)/, 'structured Edge Function HTTP error parsing');
-requireMatch(loreService, /serverMessage \?\?\s*'Hintergrundgeschichte konnte nicht generiert werden\. Bitte versuche es erneut\.'/,
-  'generic lore fallback only after server message lookup');
-rejectMatch(loreService, /if \(error\)[\s\S]{0,220}?Prüfe die Character-AI-Konfiguration/, 'lore HTTP errors are collapsed into a configuration message');
+requireMatch(loreService, /\/api\/v1\/ai\/character-lore/, 'host character-lore AI path');
+requireMatch(loreService, /response\.json\(\)/, 'structured host HTTP JSON error parsing');
+requireMatch(
+  loreService,
+  /Hintergrundgeschichte konnte nicht generiert werden\. Bitte versuche es erneut\./,
+  'generic lore fallback after host response parse',
+);
+rejectMatch(loreService, /functions\.invoke|error\.context\.clone/, 'lore must not use Edge Function error parsing');
+rejectMatch(loreService, /Prüfe die Character-AI-Konfiguration/, 'lore HTTP errors are collapsed into a configuration message');
 requireMatch(projectTypes, /status: 'active' \| 'paused' \| 'completed' \| 'archived'/, 'legacy archived project status in DTO/view-model types');
 requireMatch(projectService, /value === 'active' \|\| value === 'paused' \|\| value === 'completed' \|\| value === 'archived'/, 'legacy archived project runtime validation');
 

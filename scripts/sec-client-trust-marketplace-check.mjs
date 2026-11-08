@@ -30,8 +30,11 @@ const schemaSql = readFileSync(join(root, 'src/supabase/schema.sql'), 'utf8');
 
 assert.match(service, /whitelistMarketplaceUpdatePatch/);
 assert.match(service, /whitelistMarketplaceCreateDto/);
-assert.match(service, /\.eq\('author_id',\s*userId\)/);
-assert.match(service, /getAuthenticatedUserId/);
+assert.match(service, /createHostMarketplaceItem/);
+assert.match(service, /updateHostMarketplaceItem/);
+assert.match(service, /incrementHostMarketplaceDownloads/);
+// CUT-20: author scope is host/server authority (Better Auth cookie), not PostgREST .eq
+assert.doesNotMatch(service, /supabase\.from|supabase\.rpc/);
 assert.doesNotMatch(service, /\.\.\.dto/);
 assert.doesNotMatch(
   service,

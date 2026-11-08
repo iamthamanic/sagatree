@@ -142,7 +142,8 @@ test('item workbench create landing, type picker, editor, and core readonly fork
   await expect(forge.getByText('SagaTree-Regeln')).toBeVisible();
 
   await page.getByRole('button', { name: 'Speichern' }).click();
-  await expect(page).toHaveURL(/\/items\/personal(%3A|:)/, { timeout: 20_000 });
+  // CUT-20 host createDefinition mints a UUID id (not personal:mig-* client probe).
+  await expect(page).toHaveURL(/\/items\/[0-9a-f-]{36}$/i, { timeout: 20_000 });
   await expect(page.locator('[data-item-workbench="edit"]')).toBeVisible({
     timeout: 20_000,
   });

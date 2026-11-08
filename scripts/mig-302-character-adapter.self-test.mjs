@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * mig-302-character-adapter.self-test — Character sheet host ports + dual-path (#801).
+ * mig-302-character-adapter.self-test — Character sheet host ports + host-only FE (#801 / CUT-20).
  * Location: scripts/mig-302-character-adapter.self-test.mjs
  *
  * Acceptance tier: isolated-contract. Supabase facades stay live (no cutover).
@@ -331,7 +331,7 @@ try {
     'npc parent artifact resolve DENY',
   );
 
-  // Dual-path adapter seam
+  // Host adapter seam
   const bound = createHostCharacterAdapter({
     listOwnedCharacters: async (actorId) => character.listOwnedCharacters(actorId),
     getOwnedCharacter: async (actorId, id) => character.getOwnedCharacter(actorId, id),

@@ -119,75 +119,75 @@ Die finalen Datenbank-Constraints der beteiligten Relationen sind pro RPC in inv
 
 ## Caller: Request-Mapping, Response-Decoding und Fehler
 
-### src/infrastructure/saga/session-outcome-promotion-service.ts:51
+### src/infrastructure/saga/session-outcome-promotion-service.ts:1
 
-AST-Auflösung: `literal-union-parameter`; SHA-256 `7fa7783c3570ffe91db7627dfc2d5211c5f64127f3fd2281c54b370fefcaab49`.
+AST-Auflösung: `host-transport-cut-20`; SHA-256 `b998cb8c4294c8933e3aaf2622f747a9461f18815af77a5cdd58314a94bd107f`.
 
 Der vollständige aufrufende Funktionskörper enthält Parameterumformung, RPC-Aufruf, Response-Prüfung, Fehlerumwandlung und gegebenenfalls Fallback:
 
 ```typescript
+/**
+ * session-outcome-promotion-service — Host HTTP for #582 promote.
+ * Location: src/infrastructure/saga/session-outcome-promotion-service.ts
+ *
+ * CUT-20: host session HTTP only — no Supabase RPC.
+ */
+import { isHostLibraryEnabled } from '../host/host-library-http';
+import {
+  promoteHostSessionOutcomeToSaga,
+  promoteHostSessionOutcomeToWorld,
+} from '../host/host-session-http';
+import {
+  parsePromoteRpcResult,
+  type PromoteRpcResult,
+} from '../../domains/session/contracts/session-outcome-promotion';
+
+function hostErrorToResult(message: string): PromoteRpcResult {
+  const colon = message.indexOf(':');
+  const messageDe =
+    colon > 0 && /^[A-Z0-9]+$/i.test(message.slice(0, colon).trim())
+      ? message.slice(colon + 1).trim() || message
+      : message;
+  return {
+    ok: false,
+    messageDe: messageDe || 'Übernehmen fehlgeschlagen',
+  };
+}
+
 async function callPromote(
-  rpc: 'promote_session_outcome_to_saga' | 'promote_session_outcome_to_world',
+  kind: 'saga' | 'world',
   sessionId: string,
   consequenceId: string,
 ): Promise<PromoteRpcResult> {
-  if (isHostLibraryEnabled()) {
-    try {
-      const dto =
-        rpc === 'promote_session_outcome_to_saga'
-          ? await promoteHostSessionOutcomeToSaga(sessionId, consequenceId)
-          : await promoteHostSessionOutcomeToWorld(sessionId, consequenceId);
-      return parsePromoteRpcResult(dto);
-    } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      // hostMutateJson prefixes unreachableMessage — peel trailing detail.
-      const detailMatch = message.match(/: (.+)$/);
-      return hostErrorToResult(detailMatch ? detailMatch[1] : message);
-    }
-  }
-  const { data, error } = await supabase.rpc(rpc, {
-    p_session_id: sessionId,
-    p_consequence_id: consequenceId,
-  });
-  if (error) {
-    console.error(`[session-outcome-promotion] ${rpc} failed`, error);
+  if (!isHostLibraryEnabled()) {
     return {
       ok: false,
-      messageDe: error.message || 'Übernehmen fehlgeschlagen',
+      messageDe: 'Host-Anmeldung nicht konfiguriert (VITE_SAGATREE_HOST_AUTH_URL fehlt).',
     };
   }
-  return parsePromoteRpcResult(data);
+  try {
+    const dto =
+      kind === 'saga'
+        ? await promoteHostSessionOutcomeToSaga(sessionId, consequenceId)
+        : await promoteHostSessionOutcomeToWorld(sessionId, consequenceId);
+    return parsePromoteRpcResult(dto);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    const detailMatch = message.match(/: (.+)$/);
+    return hostErrorToResult(detailMatch ? detailMatch[1] : message);
+  }
 }
+
+export const sessionOutcomePromotionService = {
+  promoteToSaga(sessionId: string, consequenceId: string): Promise<PromoteRpcResult> {
+    return callPromote('saga', sessionId, consequenceId);
+  },
+  promoteToWorld(sessionId: string, consequenceId: string): Promise<PromoteRpcResult> {
+    return callPromote('world', sessionId, consequenceId);
+  },
+};
+
 ```
-
-Direkt oder transitiv referenzierte lokale/importierte Mapper, Decoder und Vertrags-Typen sind zusätzlich mit vollständigem Source-Text in callers.json und inventory.json.callerContracts.supportingDeclarations gespeichert:
-
-| Symbol | Quelle | Zeile | SHA-256 |
-| --- | --- | --- | --- |
-| `PromoteRpcResult` | [src/domains/session/contracts/session-outcome-promotion.ts](../../../src/domains/session/contracts/session-outcome-promotion.ts) | 56 | `d3c26e886f5f1da3b617723feaad5510218d486413ea7953bbc382593578bedd` |
-| `parsePromoteRpcResult` | [src/domains/session/contracts/session-outcome-promotion.ts](../../../src/domains/session/contracts/session-outcome-promotion.ts) | 64 | `d3c26e886f5f1da3b617723feaad5510218d486413ea7953bbc382593578bedd` |
-| `EnvLike` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 11 | `b2343081ddce2e2edd73651b0622e8b4cc6d8583d746a863dbe3343e3a98f71a` |
-| `defaultEnv` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 16 | `b2343081ddce2e2edd73651b0622e8b4cc6d8583d746a863dbe3343e3a98f71a` |
-| `isHostLibraryExplicitlyDisabled` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 25 | `b2343081ddce2e2edd73651b0622e8b4cc6d8583d746a863dbe3343e3a98f71a` |
-| `isHostLibraryEnabled` | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | 30 | `b2343081ddce2e2edd73651b0622e8b4cc6d8583d746a863dbe3343e3a98f71a` |
-| `EnvLike` | [src/infrastructure/host/host-session-http.ts](../../../src/infrastructure/host/host-session-http.ts) | 12 | `763c2535c26f746b60ff3f68358fb7c37c20384bd9f4a9a5a7d9bf2710e0ab81` |
-| `defaultEnv` | [src/infrastructure/host/host-session-http.ts](../../../src/infrastructure/host/host-session-http.ts) | 17 | `763c2535c26f746b60ff3f68358fb7c37c20384bd9f4a9a5a7d9bf2710e0ab81` |
-| `hostMutateJson` | [src/infrastructure/host/host-session-http.ts](../../../src/infrastructure/host/host-session-http.ts) | 58 | `763c2535c26f746b60ff3f68358fb7c37c20384bd9f4a9a5a7d9bf2710e0ab81` |
-| `HostPromoteOutcomeDto` | [src/infrastructure/host/host-session-http.ts](../../../src/infrastructure/host/host-session-http.ts) | 601 | `763c2535c26f746b60ff3f68358fb7c37c20384bd9f4a9a5a7d9bf2710e0ab81` |
-| `promoteHostSessionOutcomeToSaga` | [src/infrastructure/host/host-session-http.ts](../../../src/infrastructure/host/host-session-http.ts) | 610 | `763c2535c26f746b60ff3f68358fb7c37c20384bd9f4a9a5a7d9bf2710e0ab81` |
-| `promoteHostSessionOutcomeToWorld` | [src/infrastructure/host/host-session-http.ts](../../../src/infrastructure/host/host-session-http.ts) | 627 | `763c2535c26f746b60ff3f68358fb7c37c20384bd9f4a9a5a7d9bf2710e0ab81` |
-| `hostErrorToResult` | [src/infrastructure/saga/session-outcome-promotion-service.ts](../../../src/infrastructure/saga/session-outcome-promotion-service.ts) | 19 | `7fa7783c3570ffe91db7627dfc2d5211c5f64127f3fd2281c54b370fefcaab49` |
-| `EnvLike` | [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | 31 | `30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a` |
-| `defaultEnv` | [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | 33 | `30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a` |
-| `getHostAuthBaseUrl` | [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | 53 | `30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a` |
-| `viteEnv` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 13 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
-| `configuredSupabaseUrl` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 15 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
-| `configuredSupabaseAnonKey` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 16 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
-| `hostAuthUrl` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 17 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
-| `hostFirst` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 18 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
-| `supabaseUrl` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 58 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
-| `supabaseAnonKey` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 59 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
-| `supabase` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 61 | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
 
 ## Konkrete Abnahmekriterien
 
@@ -217,12 +217,7 @@ Die folgenden Hashes binden SQL-Kette, transitive Tabellen-/Trigger-/Policyquell
 
 | Quelle | SHA-256 |
 | --- | --- |
-| [src/domains/session/contracts/session-outcome-promotion.ts](../../../src/domains/session/contracts/session-outcome-promotion.ts) | `d3c26e886f5f1da3b617723feaad5510218d486413ea7953bbc382593578bedd` |
-| [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | `b2343081ddce2e2edd73651b0622e8b4cc6d8583d746a863dbe3343e3a98f71a` |
-| [src/infrastructure/host/host-session-http.ts](../../../src/infrastructure/host/host-session-http.ts) | `763c2535c26f746b60ff3f68358fb7c37c20384bd9f4a9a5a7d9bf2710e0ab81` |
-| [src/infrastructure/saga/session-outcome-promotion-service.ts](../../../src/infrastructure/saga/session-outcome-promotion-service.ts) | `7fa7783c3570ffe91db7627dfc2d5211c5f64127f3fd2281c54b370fefcaab49` |
-| [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | `30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a` |
-| [src/lib/supabase.ts](../../../src/lib/supabase.ts) | `267e73d6f3f4e24da8b048adbc620ee10e182ed5b6e6ab2afc1a352c7a58987c` |
+| [src/infrastructure/saga/session-outcome-promotion-service.ts](../../../src/infrastructure/saga/session-outcome-promotion-service.ts) | `b998cb8c4294c8933e3aaf2622f747a9461f18815af77a5cdd58314a94bd107f` |
 | [supabase/migrations/001_initial.sql](../../../supabase/migrations/001_initial.sql) | `e3325c56d68286a2e293ddff791736ef91346ff90ac018c045843a5d52afb8c8` |
 | [supabase/migrations/015_inventory_item_definitions.sql](../../../supabase/migrations/015_inventory_item_definitions.sql) | `aeedfd77bb79d7d38f4163a496b373d266027b39adbce82fe14aec768187e9e7` |
 | [supabase/migrations/039_public_resource_ids_and_session_numbers.sql](../../../supabase/migrations/039_public_resource_ids_and_session_numbers.sql) | `053f02aaea8e1f3af27bfa3f6c7e17caadd5d5434ef6298e11920d0891b55f96` |

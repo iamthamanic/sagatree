@@ -108,6 +108,8 @@ export type HostPlaySessionDto = {
   readonly startedAt?: string | null;
   readonly endedAt?: string | null;
   readonly gmUserId?: string;
+  /** Session Look override; null/omit = inherit project default. */
+  readonly lookProfileId?: string | null;
   readonly players?: readonly {
     readonly id?: string;
     readonly userId?: string;

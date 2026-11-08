@@ -4,7 +4,6 @@
  */
 
 export { userProfileService, prepareUserAvatarFile, type UploadUserAvatarOptions } from './user-profile-service';
-export { supabaseUserProfileRepository } from './supabase-user-profile.repository';
 export {
   createHostUserProfileAdapter,
   type HostUserProfileAdapter,

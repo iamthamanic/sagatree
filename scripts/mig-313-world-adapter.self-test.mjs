@@ -119,15 +119,22 @@ try {
     'world-profile-service.ts',
   ]) {
     const body = readFileSync(join(root, 'src/infrastructure/world', file), 'utf8');
-    assert(/from ['"].*supabase['"]|supabase\./.test(body), `${file} still Supabase-backed`);
+    assert(
+      /isHostLibraryEnabled|host-world-http|assertHost/.test(body) &&
+        !/from ['"].*supabase['"]|supabase\.(from|rpc|storage)/.test(body),
+      `${file} host-only (CUT-20)`,
+    );
   }
   const mapService = readFileSync(
     join(root, 'src/infrastructure/world/world-map-service.ts'),
     'utf8',
   );
+  // CUT-20 / #1160: pin upload Soft-DENY until host asset parity (no Supabase storage client).
   assert(
-    /storage\.from\(['"]world-map-pins['"]\)/.test(mapService),
-    'map pin upload remains storage bucket (not a table)',
+    /Pin-Bild-Upload über Host-Speicher ist noch nicht verfügbar|publishHostAsset|world-map-pins/.test(
+      mapService,
+    ),
+    'map pin upload Soft-DENY or host asset (not Supabase storage client)',
   );
 
   const boot = bootstrapHostPersistence({

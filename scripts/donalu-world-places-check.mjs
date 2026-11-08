@@ -91,8 +91,8 @@ mustInclude(
 
 mustInclude(
   'src/infrastructure/world/world-place-service.ts',
-  ['assertSupabaseJwtSession', 'list_world_places', 'linkMap', 'upsert_world_place_map_link'],
-  'place service',
+  ['assertHost', 'listHostWorldPlaces', 'linkMap', 'upsertHostWorldPlaceMapLink'],
+  'place service (CUT-20 host HTTP)',
 );
 
 mustInclude(

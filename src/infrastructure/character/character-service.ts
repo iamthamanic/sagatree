@@ -1,10 +1,6 @@
 /**
- * character-service — Application facade over character persistence.
+ * character-service — Application facade over character persistence (CUT-20 host Library HTTP).
  * Location: src/infrastructure/character/character-service.ts
- *
- * Dual-path (MIG-302): when `VITE_SAGATREE_HOST_LIBRARY=1` + host auth URL,
- * Library list/read/create/update/delete use host Library HTTP; other character
- * flows keep Supabase until later FE-HOST slices.
  */
 import type { CreateCharacterDto, UpdateCharacterDto } from '../../domains/character/contracts/character.commands';
 import type {
@@ -13,8 +9,12 @@ import type {
   CharacterSummaryVm,
   CharacterVm,
 } from '../../domains/character/contracts/character.views';
-import { createEmptyInventory, migrateLegacyInventory } from '../../domains/character/inventory-v2';
+import {
+  createEmptyInventory,
+  migrateLegacyInventory,
+} from '../../domains/character/inventory-v2';
 import type { InventoryState } from '../../domains/character/inventory-v2';
+import type { ItemDto } from '../../domains/character/domain/character.entity';
 import { assertPersonalLookOverrideWrite } from '../../domains/look';
 import { createDefaultAbstractResources } from '../../domains/rules/sagatree/items';
 import {
@@ -26,9 +26,7 @@ import {
 } from '../../domains/character/use-cases/normalize-character';
 import { normalizeCharacterAppearance } from '../../domains/character/use-cases/avatar-presets';
 import { ENTITY_CACHE_KEYS, entityCache } from '../../lib/entityCache';
-import { getAuthenticatedUserId } from '../../lib/authenticatedUser';
 import { probeHostActor } from '../../lib/hostAuthBridge';
-import { persistMigratedInventory } from '../inventory/inventory-persistence';
 import { getLookProfile } from '../look';
 import { projectService } from '../project/project-service';
 import {
@@ -42,7 +40,14 @@ import {
   type HostLibraryCharacterDto,
 } from '../host/host-library-http';
 import { characterAdventureArcService } from './character-adventure-arc-service';
-import { supabaseCharacterRepository } from './supabase-character.repository';
+import type { CharacterDto } from './character.persistence';
+import { readCharacterInventory, persistMigratedInventory } from '../inventory/inventory-persistence';
+
+function assertHost(): void {
+  if (!isHostLibraryEnabled()) {
+    throw new Error('Host-Anmeldung nicht konfiguriert (VITE_SAGATREE_HOST_AUTH_URL fehlt).');
+  }
+}
 
 function mapHostCharacterSummary(row: HostLibraryCharacterDto): CharacterSummaryVm {
   const sheetStatus: CharacterSheetStatus =
@@ -62,11 +67,40 @@ function mapHostCharacterSummary(row: HostLibraryCharacterDto): CharacterSummary
   };
 }
 
+function readSheetNumber(
+  sheet: Record<string, unknown>,
+  snake: string,
+  camel: string,
+): number | undefined {
+  const snakeVal = sheet[snake];
+  if (typeof snakeVal === 'number') return snakeVal;
+  const camelVal = sheet[camel];
+  if (typeof camelVal === 'number') return camelVal;
+  return undefined;
+}
+
+function hostSheetInventorySlice(
+  row: HostLibraryCharacterDto,
+): Pick<CharacterDto, 'inventory' | 'inventory_v2' | 'inventory_schema_version'> {
+  const sheet = (row.sheet ?? {}) as Record<string, unknown>;
+  const schemaRaw = readSheetNumber(sheet, 'inventory_schema_version', 'inventorySchemaVersion');
+  const schema: 1 | 2 = schemaRaw === 2 ? 2 : 1;
+  const invV2 =
+    sheet.inventory_v2 !== undefined ? sheet.inventory_v2 : sheet.inventoryV2;
+  return {
+    inventory: Array.isArray(sheet.inventory) ? (sheet.inventory as ItemDto[]) : [],
+    inventory_v2: invV2,
+    inventory_schema_version: schema,
+  };
+}
+
 function mapHostCharacterVm(row: HostLibraryCharacterDto): CharacterVm {
   const sheet = row.sheet ?? {};
   const summary = mapHostCharacterSummary(row);
   const createdAt = row.createdAt ? new Date(row.createdAt) : new Date();
   const updatedAt = row.updatedAt ? new Date(row.updatedAt) : createdAt;
+  const invRead = readCharacterInventory(hostSheetInventorySlice(row));
+  const schemaVersion: 1 | 2 = invRead.authoritativeV2 ? 2 : 1;
   return {
     id: summary.id,
     publicId: summary.publicId,
@@ -90,8 +124,8 @@ function mapHostCharacterVm(row: HostLibraryCharacterDto): CharacterVm {
     inventory: normalizeInventory(
       Array.isArray(sheet.inventory) ? (sheet.inventory as Parameters<typeof normalizeInventory>[0]) : undefined,
     ),
-    inventoryV2: createEmptyInventory(),
-    inventorySchemaVersion: 1,
+    inventoryV2: invRead.state,
+    inventorySchemaVersion: schemaVersion,
     abstractResources: createDefaultAbstractResources(),
     emotionProfiles: Array.isArray(sheet.emotionProfiles)
       ? (sheet.emotionProfiles as CharacterVm['emotionProfiles'])
@@ -107,23 +141,14 @@ function invalidateCharacterListCaches(): void {
 }
 
 export type UploadPortraitOptions = {
-  /**
-   * When true, skip client optimize (caller already ran character-portrait intake).
-   * Storage MIME/magic-byte/owner checks still run in the repository.
-   */
   readonly alreadyOptimized?: boolean;
   readonly signal?: AbortSignal;
 };
 
-/**
- * Run the character-portrait media optimizer. Never returns the original after a
- * required optimize failure (no silent fallback upload).
- */
 export async function prepareCharacterPortraitFile(
   file: File,
   signal?: AbortSignal,
 ): Promise<File> {
-  // Lazy import keeps the WebP Worker out of the service module graph until prepare runs.
   const { optimizeMedia } = await import('../media/optimizer');
   let optimizedBytes: Uint8Array | undefined;
   const result = await optimizeMedia({
@@ -166,210 +191,173 @@ export async function prepareCharacterPortraitFile(
 
 class CharacterService {
   async getUserCharacterSummaries(): Promise<CharacterSummaryVm[]> {
-    if (isHostLibraryEnabled()) {
-      const rows = await fetchHostLibraryCharacters();
-      return rows.map(mapHostCharacterSummary);
-    }
-    return supabaseCharacterRepository.getUserCharacterSummaries();
+    assertHost();
+    const rows = await fetchHostLibraryCharacters();
+    return rows.map(mapHostCharacterSummary);
   }
 
   async getUserCharacters(): Promise<CharacterVm[]> {
-    if (isHostLibraryEnabled()) {
-      const rows = await fetchHostLibraryCharacters();
-      return rows.map(mapHostCharacterVm);
-    }
-    return supabaseCharacterRepository.getUserCharacters();
+    assertHost();
+    const rows = await fetchHostLibraryCharacters();
+    return rows.map(mapHostCharacterVm);
   }
 
   async getCharacterById(id: string): Promise<CharacterVm> {
-    if (isHostLibraryEnabled()) {
-      const row = await fetchHostLibraryCharacter(id);
-      return mapHostCharacterVm(row);
-    }
-    return supabaseCharacterRepository.getCharacterById(id);
+    assertHost();
+    const row = await fetchHostLibraryCharacter(id);
+    return mapHostCharacterVm(row);
   }
 
-  /** Batch lobby roster names — avoids N× getCharacterById(select('*')). */
   async getCharacterRosterMetaByIds(ids: readonly string[]): Promise<CharacterRosterMetaVm[]> {
-    if (isHostLibraryEnabled()) {
-      const rows = await fetchHostLibraryCharacters();
-      const wanted = new Set(ids);
-      return rows
-        .filter((row) => wanted.has(row.id))
-        .map((row) => {
-          const summary = mapHostCharacterSummary(row);
-          return {
-            id: summary.id,
-            publicId: summary.publicId ?? null,
-            name: summary.name,
-            portraitUrl: summary.portraitUrl ?? null,
-            level: summary.level,
-            classLabel: summary.class || null,
-            raceKey: summary.race || null,
-            essenceKey: null,
-            archetypeKey: null,
-          } satisfies CharacterRosterMetaVm;
-        });
-    }
-    return supabaseCharacterRepository.getCharacterRosterMetaByIds(ids);
+    assertHost();
+    const rows = await fetchHostLibraryCharacters();
+    const wanted = new Set(ids);
+    return rows
+      .filter((row) => wanted.has(row.id))
+      .map((row) => {
+        const summary = mapHostCharacterSummary(row);
+        return {
+          id: summary.id,
+          publicId: summary.publicId ?? null,
+          name: summary.name,
+          portraitUrl: summary.portraitUrl ?? null,
+          level: summary.level,
+          classLabel: summary.class || null,
+          raceKey: summary.race || null,
+          essenceKey: null,
+          archetypeKey: null,
+        } satisfies CharacterRosterMetaVm;
+      });
   }
 
   async getCharacterByPublicId(publicId: string): Promise<CharacterVm> {
-    if (isHostLibraryEnabled()) {
-      const rows = await fetchHostLibraryCharacters();
-      const match = rows.find((row) => row.publicId === publicId);
-      if (!match) throw new Error('Charakter nicht gefunden');
-      return mapHostCharacterVm(match);
-    }
-    return supabaseCharacterRepository.getCharacterByPublicId(publicId);
+    assertHost();
+    const rows = await fetchHostLibraryCharacters();
+    const match = rows.find((row) => row.publicId === publicId);
+    if (!match) throw new Error('Charakter nicht gefunden');
+    return mapHostCharacterVm(match);
   }
 
   async createCharacter(payload: CreateCharacterDto): Promise<CharacterVm> {
-    if (isHostLibraryEnabled()) {
-      const row = await createHostLibraryCharacter({
-        name: payload.name,
-        description: payload.description,
+    assertHost();
+    const row = await createHostLibraryCharacter({
+      name: payload.name,
+      description: payload.description,
+      class: payload.class,
+      race: payload.race,
+      level: payload.level ?? 1,
+      sheet_status: payload.sheet_status ?? 'draft',
+      notes: payload.notes,
+      attributes: payload.attributes,
+      skills: payload.skills,
+      sagatree_profile: payload.sagatree_profile,
+      appearance: payload.appearance,
+      inventory: payload.inventory,
+      sheet: {
         class: payload.class,
         race: payload.race,
-        level: payload.level ?? 1,
-        sheet_status: payload.sheet_status ?? 'draft',
+        classLabel: payload.class,
+        raceLabel: payload.race,
         notes: payload.notes,
         attributes: payload.attributes,
         skills: payload.skills,
-        sagatree_profile: payload.sagatree_profile,
+        sagatreeProfile: payload.sagatree_profile,
         appearance: payload.appearance,
         inventory: payload.inventory,
-        sheet: {
-          class: payload.class,
-          race: payload.race,
-          classLabel: payload.class,
-          raceLabel: payload.race,
-          notes: payload.notes,
-          attributes: payload.attributes,
-          skills: payload.skills,
-          sagatreeProfile: payload.sagatree_profile,
-          appearance: payload.appearance,
-          inventory: payload.inventory,
-          abilities: payload.abilities,
-        },
-      });
-      invalidateCharacterListCaches();
-      return mapHostCharacterVm(row);
-    }
-    const created = await supabaseCharacterRepository.createCharacter(payload);
+        ...(payload.inventory_v2 !== undefined
+          ? { inventory_v2: payload.inventory_v2, inventory_schema_version: 2 }
+          : {}),
+        abilities: payload.abilities,
+      },
+    });
     invalidateCharacterListCaches();
-    return created;
+    return mapHostCharacterVm(row);
   }
 
   async updateCharacter(id: string, payload: UpdateCharacterDto): Promise<CharacterVm> {
+    assertHost();
     if (payload.appearance && 'personal_look_profile_id' in payload.appearance) {
       await this.assertPersonalLookWriteGate(
         id,
         payload.appearance.personal_look_profile_id ?? null,
       );
     }
-    if (isHostLibraryEnabled()) {
-      const current = await fetchHostLibraryCharacter(id);
-      const sheet: Record<string, unknown> = {
-        ...(current.sheet ?? {}),
-        ...(payload.class !== undefined ? { class: payload.class, classLabel: payload.class } : {}),
-        ...(payload.race !== undefined ? { race: payload.race, raceLabel: payload.race } : {}),
-        ...(payload.notes !== undefined ? { notes: payload.notes } : {}),
-        ...(payload.appearance !== undefined ? { appearance: payload.appearance } : {}),
-        ...(payload.attributes !== undefined ? { attributes: payload.attributes } : {}),
-        ...(payload.skills !== undefined ? { skills: payload.skills } : {}),
-        ...(payload.sagatree_profile !== undefined
-          ? { sagatreeProfile: payload.sagatree_profile }
-          : {}),
-        ...(payload.abilities !== undefined ? { abilities: payload.abilities } : {}),
-        ...(payload.inventory !== undefined ? { inventory: payload.inventory } : {}),
-        ...(payload.personality_traits !== undefined
-          ? { personalityTraits: payload.personality_traits }
-          : {}),
-        ...(payload.ideals !== undefined ? { ideals: payload.ideals } : {}),
-        ...(payload.bonds !== undefined ? { bonds: payload.bonds } : {}),
-        ...(payload.flaws !== undefined ? { flaws: payload.flaws } : {}),
-      };
-      const updated = await updateHostLibraryCharacter(id, {
-        name: payload.name,
-        description: payload.description,
-        level: payload.level,
-        sheet_status: payload.sheet_status,
-        sheet,
-        portrait_url: payload.portrait_url,
-      });
-      invalidateCharacterListCaches();
-      return mapHostCharacterVm(updated);
-    }
-    const updated = await supabaseCharacterRepository.updateCharacter(id, payload);
+    const current = await fetchHostLibraryCharacter(id);
+    const sheet: Record<string, unknown> = {
+      ...(current.sheet ?? {}),
+      ...(payload.class !== undefined ? { class: payload.class, classLabel: payload.class } : {}),
+      ...(payload.race !== undefined ? { race: payload.race, raceLabel: payload.race } : {}),
+      ...(payload.notes !== undefined ? { notes: payload.notes } : {}),
+      ...(payload.appearance !== undefined ? { appearance: payload.appearance } : {}),
+      ...(payload.attributes !== undefined ? { attributes: payload.attributes } : {}),
+      ...(payload.skills !== undefined ? { skills: payload.skills } : {}),
+      ...(payload.sagatree_profile !== undefined
+        ? { sagatreeProfile: payload.sagatree_profile }
+        : {}),
+      ...(payload.abilities !== undefined ? { abilities: payload.abilities } : {}),
+      ...(payload.inventory !== undefined ? { inventory: payload.inventory } : {}),
+      ...(payload.inventory_v2 !== undefined
+        ? { inventory_v2: payload.inventory_v2, inventory_schema_version: 2 }
+        : {}),
+      ...(payload.personality_traits !== undefined
+        ? { personalityTraits: payload.personality_traits }
+        : {}),
+      ...(payload.ideals !== undefined ? { ideals: payload.ideals } : {}),
+      ...(payload.bonds !== undefined ? { bonds: payload.bonds } : {}),
+      ...(payload.flaws !== undefined ? { flaws: payload.flaws } : {}),
+    };
+    const updated = await updateHostLibraryCharacter(id, {
+      name: payload.name,
+      description: payload.description,
+      level: payload.level,
+      sheet_status: payload.sheet_status,
+      sheet,
+      portrait_url: payload.portrait_url,
+    });
     invalidateCharacterListCaches();
-    return updated;
+    return mapHostCharacterVm(updated);
   }
 
-  /**
-   * Persist personal Look override only (#351). Null clears override (inherit world/saga).
-   * DB trigger re-checks; this is the client fail-closed preflight.
-   */
   async updateCharacterPersonalLook(
     characterId: string,
     personalLookProfileId: string | null,
   ): Promise<CharacterVm> {
     await this.assertPersonalLookWriteGate(characterId, personalLookProfileId);
-    if (isHostLibraryEnabled()) {
-      const current = await fetchHostLibraryCharacter(characterId);
-      const appearance = {
-        ...((current.sheet?.appearance as Record<string, unknown> | undefined) ?? {}),
-        personal_look_profile_id: personalLookProfileId,
-      };
-      const updated = await updateHostLibraryCharacter(characterId, {
-        sheet: { ...(current.sheet ?? {}), appearance },
-      });
-      invalidateCharacterListCaches();
-      return mapHostCharacterVm(updated);
-    }
-    const current = await supabaseCharacterRepository.getCharacterById(characterId);
-    const updated = await supabaseCharacterRepository.updateCharacter(characterId, {
-      appearance: {
-        ...current.appearance,
-        personal_look_profile_id: personalLookProfileId,
-      },
+    assertHost();
+    const current = await fetchHostLibraryCharacter(characterId);
+    const appearance = {
+      ...((current.sheet?.appearance as Record<string, unknown> | undefined) ?? {}),
+      personal_look_profile_id: personalLookProfileId,
+    };
+    const updated = await updateHostLibraryCharacter(characterId, {
+      sheet: { ...(current.sheet ?? {}), appearance },
     });
     invalidateCharacterListCaches();
-    return updated;
+    return mapHostCharacterVm(updated);
   }
 
   private async assertPersonalLookWriteGate(
     characterId: string,
     personalLookProfileId: string | null,
   ): Promise<void> {
-    const hostMode = isHostLibraryEnabled();
-    let actorUserId: string;
-    if (hostMode) {
-      // Owner-scoped host fetch — proves the actor can access this character.
-      await fetchHostLibraryCharacter(characterId);
-      const who = await probeHostActor();
-      actorUserId = who?.actorId ?? 'solo';
-    } else {
-      actorUserId = await getAuthenticatedUserId();
-      // Owner-scoped fetch — proves the actor can access this character.
-      await supabaseCharacterRepository.getCharacterById(characterId);
-    }
+    assertHost();
+    await fetchHostLibraryCharacter(characterId);
+    const who = await probeHostActor();
+    const actorUserId = who?.actorId ?? 'solo';
 
     let sagaAllows = true;
-    if (!hostMode) {
-      try {
-        const arcs = await characterAdventureArcService.listArcsForCharacter(characterId);
-        const activeArcs = arcs.filter((arc) => arc.status === 'active');
-        for (const arc of activeArcs) {
-          const project = await projectService.getProjectById(arc.projectId);
-          if (!project.allowPlayerCharacterLookOverride) {
-            sagaAllows = false;
-            break;
-          }
+    try {
+      const arcs = await characterAdventureArcService.listArcsForCharacter(characterId);
+      const activeArcs = arcs.filter((arc) => arc.status === 'active');
+      for (const arc of activeArcs) {
+        const project = await projectService.getProjectById(arc.projectId);
+        if (!project.allowPlayerCharacterLookOverride) {
+          sagaAllows = false;
+          break;
         }
-      } catch {
-        sagaAllows = true;
       }
+    } catch {
+      sagaAllows = true;
     }
 
     let lookOwnerUserId: string | null = null;
@@ -381,7 +369,6 @@ class CharacterService {
     }
 
     const gate = assertPersonalLookOverrideWrite({
-      // Successful owner-scoped fetch implies actor owns the character.
       characterOwnerUserId: actorUserId,
       actorUserId,
       personalLookProfileId,
@@ -394,129 +381,81 @@ class CharacterService {
     }
   }
 
-  /**
-   * One-shot migration of a character's legacy ItemDto[] into Inventory v2.
-   * Creates Personal definitions first, then persists inventory_v2 and flips
-   * inventory_schema_version to 2. Idempotent when already on schema 2.
-   */
   async migrateCharacterInventoryToV2(characterId: string): Promise<InventoryState> {
-    if (isHostLibraryEnabled()) {
-      const character = await this.getCharacterById(characterId);
-      return character.inventoryV2;
+    assertHost();
+    const row = await fetchHostLibraryCharacter(characterId);
+    const slice = hostSheetInventorySlice(row);
+    const read = readCharacterInventory(slice);
+    if (read.authoritativeV2) {
+      return read.state;
     }
-    const character = await supabaseCharacterRepository.getCharacterById(characterId);
-    if (character.inventorySchemaVersion === 2) {
-      return character.inventoryV2;
-    }
-    const migration = migrateLegacyInventory(character.inventory);
+    const migration = migrateLegacyInventory(slice.inventory as ItemDto[] | undefined);
     const state = await persistMigratedInventory(characterId, migration);
     invalidateCharacterListCaches();
     return state;
   }
 
   async deleteCharacter(id: string): Promise<void> {
-    if (isHostLibraryEnabled()) {
-      await deleteHostLibraryCharacter(id);
-      invalidateCharacterListCaches();
-      return;
-    }
-    await supabaseCharacterRepository.deleteCharacter(id);
+    assertHost();
+    await deleteHostLibraryCharacter(id);
     invalidateCharacterListCaches();
   }
 
-  /** Owner-scoped clone with a fresh public id (DB trigger) and “(Kopie)” name. */
   async duplicateCharacter(id: string): Promise<CharacterVm> {
+    assertHost();
     const source = await this.getCharacterById(id);
     const suffix = ' (Kopie)';
     const maxBase = Math.max(1, 255 - suffix.length);
     const name = `${source.name.trim().slice(0, maxBase) || 'Charakter'}${suffix}`;
-    if (isHostLibraryEnabled()) {
-      const created = await createHostLibraryCharacter({
-        name,
-        description: source.description,
-        class: source.class,
-        race: source.race,
-        level: source.level,
-        sheet_status: source.sheetStatus === 'complete' ? 'draft' : source.sheetStatus,
-        sheet: {
-          class: source.class,
-          race: source.race,
-          classLabel: source.class,
-          raceLabel: source.race,
-          notes: source.notes,
-          appearance: source.appearance,
-          attributes: source.attributes,
-          skills: source.skills,
-          sagatreeProfile: source.sagaTreeProfile,
-          abilities: source.abilities,
-          inventory: source.inventory,
-          personalityTraits: source.personalityTraits,
-          ideals: source.ideals,
-          bonds: source.bonds,
-          flaws: source.flaws,
-        },
-      });
-      invalidateCharacterListCaches();
-      return mapHostCharacterVm(created);
-    }
-    const created = await supabaseCharacterRepository.createCharacter({
+    const created = await createHostLibraryCharacter({
       name,
       description: source.description,
       class: source.class,
       race: source.race,
-      ruleset_key: source.rulesetKey,
-      dnd_background: source.dndBackground ?? null,
       level: source.level,
-      sheet_status: source.sheetStatus,
-      background_story: source.backgroundStory,
-      notes: source.notes,
-      personality_traits: source.personalityTraits,
-      ideals: source.ideals,
-      bonds: source.bonds,
-      flaws: source.flaws,
-      appearance: source.appearance,
-      attributes: source.attributes,
-      skills: source.skills,
-      sagatree_profile: source.sagaTreeProfile,
-      abilities: source.abilities,
-      inventory: source.inventory,
-      // Only copy v2 when already on schema 2 — avoid re-migrating legacy bags.
-      ...(source.inventorySchemaVersion === 2
-        ? { inventory_v2: source.inventoryV2 }
-        : {}),
-      abstractResources: source.abstractResources,
-      portrait_url: source.portraitUrl,
+      sheet_status: source.sheetStatus === 'complete' ? 'draft' : source.sheetStatus,
+      sheet: {
+        class: source.class,
+        race: source.race,
+        classLabel: source.class,
+        raceLabel: source.race,
+        notes: source.notes,
+        appearance: source.appearance,
+        attributes: source.attributes,
+        skills: source.skills,
+        sagatreeProfile: source.sagaTreeProfile,
+        abilities: source.abilities,
+        inventory: source.inventory,
+        personalityTraits: source.personalityTraits,
+        ideals: source.ideals,
+        bonds: source.bonds,
+        flaws: source.flaws,
+        ...(source.inventorySchemaVersion === 2
+          ? { inventory_v2: source.inventoryV2, inventory_schema_version: 2 as const }
+          : {}),
+      },
     });
     invalidateCharacterListCaches();
-    return created;
+    return mapHostCharacterVm(created);
   }
 
   async searchCharacters(query: string): Promise<CharacterVm[]> {
-    if (isHostLibraryEnabled()) {
-      const rows = await fetchHostLibraryCharacters();
-      const q = query.trim().toLowerCase();
-      if (!q) return rows.map(mapHostCharacterVm);
-      return rows
-        .filter((row) => row.name.toLowerCase().includes(q))
-        .map(mapHostCharacterVm);
-    }
-    return supabaseCharacterRepository.searchCharacters(query);
+    assertHost();
+    const rows = await fetchHostLibraryCharacters();
+    const q = query.trim().toLowerCase();
+    if (!q) return rows.map(mapHostCharacterVm);
+    return rows
+      .filter((row) => row.name.toLowerCase().includes(q))
+      .map(mapHostCharacterVm);
   }
 
-  /**
-   * Prepare (unless alreadyOptimized) then upload to owner-scoped Storage / host assets.
-   * On failure the previous portrait URL is unchanged (caller keeps local state).
-   * Host path (FE-HOST-06): publish via `/api/v1/assets`, return credentialed display URL.
-   */
   async uploadPortrait(file: File, options?: UploadPortraitOptions): Promise<string> {
+    assertHost();
     const prepared = options?.alreadyOptimized
       ? file
       : await prepareCharacterPortraitFile(file, options?.signal);
-    if (isHostLibraryEnabled()) {
-      const published = await publishHostAsset(prepared);
-      return published.url;
-    }
-    return supabaseCharacterRepository.uploadPortrait(prepared);
+    const published = await publishHostAsset(prepared);
+    return published.url;
   }
 
   preparePortraitFile(file: File, signal?: AbortSignal): Promise<File> {
