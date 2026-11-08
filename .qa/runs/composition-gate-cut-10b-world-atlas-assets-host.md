@@ -1,11 +1,11 @@
 # Composition Gate — cut-10b-world-atlas-assets-host (#1161)
 
-- HEAD_SHA: ecc17b84ef07b9ec25e52b85b0eacaa513ac07ea
+- HEAD_SHA: fcaf7ead98fcf4d068ee0622b12f67fb6addfe58
 - BASE_SHA: 45f681e20a84671b13b81afd98b641320279785e
 - Date: 2026-11-08
 - Verdict: CLEAR
 - Acceptance tier: feature-integration
-- Deferred integration: none (CUT-10b closes world map/atlas asset Soft-DENYs)
+- Deferred integration: none (CUT-10b closes world map/atlas asset Soft-DENYs; cookie media replaces time-limited signed tokens)
 
 ## Event
 
@@ -29,8 +29,8 @@ removed. No Supabase Storage.
 |------|----------|----------|--------|
 | N-actors | Stranger cannot publish/read | Fail-closed 403/404 | pass |
 | Invalid/missing | Bad pin/azgaar MIME | 400 | pass |
+| Two consumers / crash | Upload path + signed URL resolve | Shared AssetPorts | pass |
 | Soft-DENY | Removed from FE facades | Host path only | pass |
-| Two consumers | Upload path + signed URL resolve | Shared AssetPorts | pass |
 
 ## Flags
 
