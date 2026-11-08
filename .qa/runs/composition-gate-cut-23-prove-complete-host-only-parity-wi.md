@@ -1,6 +1,6 @@
 # Composition Gate — cut-23-prove-complete-host-only-parity-wi (#1158)
 
-- HEAD_SHA: PLACEHOLDER_REPLACE_ON_TIP
+- HEAD_SHA: 1947c2553e182a2a7905a5be5457bd4b2df6ef97
 - BASE_SHA: 8f48a1532371374a237c31f600a7768123eeed77
 - Date: 2026-11-08
 - Verdict: CLEAR
