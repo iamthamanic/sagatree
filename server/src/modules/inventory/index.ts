@@ -76,7 +76,12 @@ export type InventoryPorts = {
   ) => InventoryResult<InventoryStateRecord>;
   readonly listCatalog: (
     actorIdOrIds: string | readonly string[],
-    options?: { readonly worldProfileId?: string | null; readonly query?: string },
+    options?: {
+      readonly worldProfileId?: string | null;
+      readonly query?: string;
+      readonly includeArchived?: boolean;
+      readonly origins?: readonly ('standard' | 'personal' | 'world')[];
+    },
   ) => InventoryResult<readonly InventoryDefinitionRecord[]>;
   readonly createDefinition: (
     actorId: string,

@@ -47,7 +47,12 @@ export type HostInventoryPorts = {
   ) => Promise<HostInventoryResult<HostInventoryStateRecord>>;
   readonly listCatalog: (
     actorId: string,
-    options?: { readonly worldProfileId?: string | null; readonly query?: string },
+    options?: {
+      readonly worldProfileId?: string | null;
+      readonly query?: string;
+      readonly includeArchived?: boolean;
+      readonly origins?: readonly ('standard' | 'personal' | 'world')[];
+    },
   ) => Promise<HostInventoryResult<readonly HostInventoryDefinitionRecord[]>>;
   readonly createDefinition: (
     actorId: string,

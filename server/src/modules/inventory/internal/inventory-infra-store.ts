@@ -131,6 +131,21 @@ function normalizeActorIds(
   );
 }
 
+const CATALOG_ORIGINS = ['standard', 'personal', 'world'] as const;
+type CatalogOrigin = (typeof CATALOG_ORIGINS)[number];
+
+/** CUT-06b — default all origins; ignore unknown tokens. */
+function normalizeCatalogOrigins(
+  raw: readonly ('standard' | 'personal' | 'world')[] | undefined,
+): ReadonlySet<CatalogOrigin> {
+  if (!raw || raw.length === 0) return new Set(CATALOG_ORIGINS);
+  const next = new Set<CatalogOrigin>();
+  for (const token of raw) {
+    if (token === 'standard' || token === 'personal' || token === 'world') next.add(token);
+  }
+  return next;
+}
+
 /** Host mirror of FE InventoryItemType — keep aligned with domains/character/inventory-v2. */
 const HOST_ITEM_TYPES = new Set([
   'weapon',
@@ -310,11 +325,16 @@ export class InventoryInfraStore {
 
   listCatalog(
     actorIdOrIds: string | readonly string[],
-    options?: { readonly worldProfileId?: string | null; readonly query?: string },
+    options?: {
+      readonly worldProfileId?: string | null;
+      readonly query?: string;
+      /** CUT-06b — include archived rows (world authoring). */
+      readonly includeArchived?: boolean;
+      /** CUT-06b — restrict origins; default all three. */
+      readonly origins?: readonly ('standard' | 'personal' | 'world')[];
+    },
   ): InventoryResult<readonly InventoryDefinitionRecord[]> {
-    const actorIds = (
-      typeof actorIdOrIds === 'string' ? [actorIdOrIds] : [...actorIdOrIds]
-    ).filter((id) => typeof id === 'string' && id.length > 0);
+    const actorIds = normalizeActorIds(actorIdOrIds);
     if (actorIds.length === 0) return { ok: false, error: 'missing-actor' };
     const worldProfileId =
       typeof options?.worldProfileId === 'string' && options.worldProfileId.trim()
@@ -323,45 +343,57 @@ export class InventoryInfraStore {
     if (worldProfileId && !this.#world.canReadWorldProfile(actorIds, worldProfileId)) {
       return { ok: false, error: 'not-authorized' };
     }
+    const includeArchived = options?.includeArchived === true;
+    const origins = normalizeCatalogOrigins(options?.origins);
+    if (origins.size === 0) return { ok: true, value: [] };
+
     const qRaw =
       typeof options?.query === 'string' && options.query.trim()
         ? options.query.trim().toLowerCase()
         : null;
     const q = qRaw ? `%${escapeLikePattern(qRaw)}%` : null;
     const ownerPlaceholders = actorIds.map(() => '?').join(', ');
+    const statusSql = includeArchived
+      ? `status IN ('active', 'archived')`
+      : `status = 'active'`;
+
+    const originSqlParts: string[] = [];
+    const originParams: unknown[] = [];
+    if (origins.has('standard')) {
+      originSqlParts.push(`origin = 'standard'`);
+    }
+    if (origins.has('personal')) {
+      originSqlParts.push(`(origin = 'personal' AND owner_user_id IN (${ownerPlaceholders}))`);
+      originParams.push(...actorIds);
+    }
+    if (origins.has('world')) {
+      if (worldProfileId) {
+        originSqlParts.push(
+          `(origin = 'world' AND world_profile_id IS NOT NULL AND world_profile_id = ?)`,
+        );
+        originParams.push(worldProfileId);
+      } else {
+        originSqlParts.push(`(origin = 'world' AND world_profile_id IS NOT NULL)`);
+      }
+    }
+    if (originSqlParts.length === 0) return { ok: true, value: [] };
+
     const rows = this.#db
       .prepare(
-        worldProfileId
-          ? `SELECT * FROM inventory_item_definitions
-         WHERE status = 'active'
-           AND (
-             origin = 'standard'
-             OR (origin = 'personal' AND owner_user_id IN (${ownerPlaceholders}))
-             OR (origin = 'world' AND world_profile_id IS NOT NULL AND world_profile_id = ?)
-           )
-           AND (? IS NULL OR lower(name) LIKE ? ESCAPE '\\')
-         ORDER BY name ASC
-         LIMIT ?`
-          : `SELECT * FROM inventory_item_definitions
-         WHERE status = 'active'
-           AND (
-             origin = 'standard'
-             OR (origin = 'personal' AND owner_user_id IN (${ownerPlaceholders}))
-             OR (origin = 'world' AND world_profile_id IS NOT NULL)
-           )
+        `SELECT * FROM inventory_item_definitions
+         WHERE ${statusSql}
+           AND (${originSqlParts.join(' OR ')})
            AND (? IS NULL OR lower(name) LIKE ? ESCAPE '\\')
          ORDER BY name ASC
          LIMIT ?`,
       )
-      .all(
-        ...(worldProfileId
-          ? [...actorIds, worldProfileId, q, q, INVENTORY_CATALOG_LIST_LIMIT]
-          : [...actorIds, q, q, INVENTORY_CATALOG_LIST_LIMIT]),
-      ) as DefinitionRow[];
+      .all(...originParams, q, q, INVENTORY_CATALOG_LIST_LIMIT) as DefinitionRow[];
     const mapped: InventoryDefinitionRecord[] = [];
     for (const row of rows) {
       const def = mapDefinition(row);
-      if (!def || def.status !== 'active') continue;
+      if (!def) continue;
+      if (!includeArchived && def.status !== 'active') continue;
+      if (includeArchived && def.status !== 'active' && def.status !== 'archived') continue;
       if (
         def.origin === 'world' &&
         def.worldProfileId &&

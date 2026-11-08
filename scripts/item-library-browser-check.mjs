@@ -109,7 +109,7 @@ section('6 · catalog service merges Core + builtin + persisted');
   check(/loadLibraryItemCatalog/.test(service), 'loadLibraryItemCatalog exported');
   check(/listBuiltinStandardDefinitions/.test(service), 'merges builtin standards');
   check(/listCoreItemDefinitions/.test(service), 'merges core definitions');
-  check(/fetchAllHostItemRecords/.test(service), 'host library list for persisted rows');
+  check(/fetchHostItemRecords|fetchHostLibraryItems/.test(service), 'host library list for persisted rows');
 }
 
 section('7 · pure filter domain behaviour');

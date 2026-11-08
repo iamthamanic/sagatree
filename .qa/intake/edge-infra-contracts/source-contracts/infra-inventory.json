@@ -9,7 +9,7 @@
     },
     {
       "path": "src/infrastructure/inventory/host-inventory-ports.contract.ts",
-      "sha256": "115502542d1d6c8a94292ca0f15a683ebc78cf2997aa3c5a130b682cccc448d2"
+      "sha256": "cca3f64ca3e2aead63b30f1c4b62aeae27cdf9dbd41f6f7791294f8d722cb915"
     },
     {
       "path": "src/infrastructure/inventory/inventory-persistence.ts",
@@ -17,7 +17,7 @@
     },
     {
       "path": "src/infrastructure/inventory/item-catalog-service.ts",
-      "sha256": "adea9220e02d2dbb96e107743c2ad8dfb7eaa8a9f1b1314620f16d5bb2979175"
+      "sha256": "d4dd71a5bad8a8599c7f239d6f84bce2d52f795b8ca30073f6d69a69d1bef9a5"
     },
     {
       "path": "src/infrastructure/inventory/item-catalog.persistence.ts",
@@ -243,7 +243,7 @@
     },
     {
       "path": "src/infrastructure/host/host-library-http.ts",
-      "sha256": "39abb17777de0e744ebe2932789443b9722135bfefc7ae0596f93ec7ef6df8dd"
+      "sha256": "c56b88c60d6c9491fc7b6e6e1143ac4985ffdab5dff16afef8a54bce79629a07"
     },
     {
       "path": "src/infrastructure/host/host-project-http.ts",
@@ -1905,26 +1905,34 @@
     },
     {
       "kind": "TypeAliasDeclaration",
+      "name": "FetchHostLibraryItemsOptions",
+      "path": "src/infrastructure/host/host-library-http.ts",
+      "line": 748,
+      "endLine": 753,
+      "text": "export type FetchHostLibraryItemsOptions = {\n  readonly worldProfileId?: string | null;\n  readonly query?: string;\n  readonly includeArchived?: boolean;\n  readonly origins?: readonly ('standard' | 'personal' | 'world')[];\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
       "name": "HostNpcControllerAssignmentDto",
       "path": "src/infrastructure/host/host-library-http.ts",
-      "line": 992,
-      "endLine": 998,
+      "line": 1039,
+      "endLine": 1045,
       "text": "export type HostNpcControllerAssignmentDto = {\n  readonly projectId: string;\n  readonly definitionId: string;\n  readonly controllerUserId: string | null;\n  readonly assignedBy?: string;\n  readonly updatedAt?: string;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "HostNpcInstanceDto",
       "path": "src/infrastructure/host/host-library-http.ts",
-      "line": 1051,
-      "endLine": 1064,
+      "line": 1098,
+      "endLine": 1111,
       "text": "export type HostNpcInstanceDto = {\n  readonly id: string;\n  readonly projectId: string;\n  readonly sessionId: string | null;\n  readonly definitionId: string;\n  readonly displayName: string;\n  readonly instanceKind: string;\n  readonly sequenceNumber: number;\n  readonly snapshot: Record<string, unknown>;\n  readonly runtime: Record<string, unknown>;\n  readonly createdBy?: string;\n  readonly createdAt?: string;\n  readonly updatedAt?: string;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "HostPublishedAssetDto",
       "path": "src/infrastructure/host/host-library-http.ts",
-      "line": 1173,
-      "endLine": 1180,
+      "line": 1220,
+      "endLine": 1227,
       "text": "export type HostPublishedAssetDto = {\n  readonly assetId: string;\n  readonly contentType: string;\n  readonly byteSize: number;\n  readonly checksumSha256: string;\n  readonly url: string;\n  readonly storagePath: string;\n};"
     },
     {
@@ -2190,16 +2198,16 @@
       "kind": "auth-helper",
       "name": null,
       "path": "src/infrastructure/inventory/item-catalog-service.ts",
-      "line": 391,
-      "endLine": 391,
+      "line": 403,
+      "endLine": 403,
       "resolution": "dynamic-expression",
       "expression": "getAuthenticatedUserId()",
       "chain": "getAuthenticatedUserId()",
       "arguments": [],
       "enclosingOperation": {
         "path": "src/infrastructure/inventory/item-catalog-service.ts",
-        "line": 378,
-        "endLine": 409,
+        "line": 390,
+        "endLine": 421,
         "text": "export async function assertWritableInventoryV2(\n  state: unknown,\n  characterId: string | null,\n): Promise<InventoryState> {\n  assertHost();\n  if (!isInventoryV2State(state)) {\n    throw new Error('Inventar-Zustand ist ungültig.');\n  }\n  const definitionIds = new Set(\n    Object.values(state.instances).map((instance) => instance.definitionId),\n  );\n  if (definitionIds.size === 0) return state;\n\n  const userId = await getAuthenticatedUserId();\n  const effectiveWorldProfileId = characterId\n    ? await resolveEffectiveWorldProfileId(characterId)\n    : null;\n  const catalog = await listCatalogRecordsForEffectiveWorld(effectiveWorldProfileId, userId);\n  const visible = new Set(catalog.map((record) => record.definition.id));\n  // Builtin-standard ids resolve locally (#137/#143). Owned pack instances must\n  // remain writable after the world excludes them from the add-catalog.\n  const missing = [...definitionIds].filter((id) => {\n    if (visible.has(id)) return false;\n    return getBuiltinStandardDefinition(id) === undefined;\n  });\n  if (missing.length > 0) {\n    throw new Error(\n      `Unbekannte oder nicht sichtbare Gegenstandsdefinitionen: ${missing.slice(0, 5).join(', ')}`,\n    );\n  }\n  return state;\n}"
       }
     },
@@ -2543,13 +2551,13 @@
     {
       "path": "src/infrastructure/inventory/host-inventory-ports.contract.ts",
       "line": 38,
-      "endLine": 56,
-      "text": "export type HostInventoryPorts = {\n  readonly getOwnedInventory: (\n    actorId: string,\n    characterId: string,\n  ) => Promise<HostInventoryResult<HostInventoryStateRecord | null>>;\n  readonly putOwnedInventory: (\n    actorId: string,\n    characterId: string,\n    inventory: unknown,\n  ) => Promise<HostInventoryResult<HostInventoryStateRecord>>;\n  readonly listCatalog: (\n    actorId: string,\n    options?: { readonly worldProfileId?: string | null; readonly query?: string },\n  ) => Promise<HostInventoryResult<readonly HostInventoryDefinitionRecord[]>>;\n  readonly createDefinition: (\n    actorId: string,\n    draft: HostInventoryDefinitionDraft,\n  ) => Promise<HostInventoryResult<HostInventoryDefinitionRecord>>;\n};"
+      "endLine": 61,
+      "text": "export type HostInventoryPorts = {\n  readonly getOwnedInventory: (\n    actorId: string,\n    characterId: string,\n  ) => Promise<HostInventoryResult<HostInventoryStateRecord | null>>;\n  readonly putOwnedInventory: (\n    actorId: string,\n    characterId: string,\n    inventory: unknown,\n  ) => Promise<HostInventoryResult<HostInventoryStateRecord>>;\n  readonly listCatalog: (\n    actorId: string,\n    options?: {\n      readonly worldProfileId?: string | null;\n      readonly query?: string;\n      readonly includeArchived?: boolean;\n      readonly origins?: readonly ('standard' | 'personal' | 'world')[];\n    },\n  ) => Promise<HostInventoryResult<readonly HostInventoryDefinitionRecord[]>>;\n  readonly createDefinition: (\n    actorId: string,\n    draft: HostInventoryDefinitionDraft,\n  ) => Promise<HostInventoryResult<HostInventoryDefinitionRecord>>;\n};"
     },
     {
       "path": "src/infrastructure/inventory/host-inventory-ports.contract.ts",
-      "line": 58,
-      "endLine": 63,
+      "line": 63,
+      "endLine": 68,
       "text": "export const HOST_INVENTORY_OPS = [\n  'getOwnedInventory',\n  'putOwnedInventory',\n  'listCatalog',\n  'createDefinition',\n] as const;"
     },
     {
@@ -2596,86 +2604,86 @@
     },
     {
       "path": "src/infrastructure/inventory/item-catalog-service.ts",
-      "line": 117,
-      "endLine": 150,
+      "line": 123,
+      "endLine": 156,
       "text": "export async function resolveEffectiveWorldProfileId(characterId: string): Promise<string | null> {\n  assertHost();\n  const trimmed = characterId.trim();\n  if (!trimmed) return null;\n\n  const row = await fetchHostLibraryCharacter(trimmed);\n  const sheet = isRecord(row.sheet) ? row.sheet : {};\n  const characterWorldRaw =\n    (typeof sheet.world_profile_id === 'string' ? sheet.world_profile_id : null) ??\n    (typeof sheet.worldProfileId === 'string' ? sheet.worldProfileId : null);\n\n  let adventureWorldProfileId: string | null = null;\n  const arcs = await fetchHostLibraryAdventureArcs(trimmed);\n  for (const arc of arcs) {\n    if (!isRecord(arc)) continue;\n    if (arc.status !== 'active' && arc.status !== undefined) continue;\n    const projectId = typeof arc.project_id === 'string' ? arc.project_id : '';\n    if (!projectId) continue;\n    try {\n      const project = await projectService.getProjectById(projectId);\n      if (project.worldProfileId) {\n        adventureWorldProfileId = project.worldProfileId;\n        break;\n      }\n    } catch {\n      /* ignore missing project */\n    }\n  }\n\n  return resolveEffectiveWorldProfileIdFromBinding({\n    adventureWorldProfileId,\n    characterWorldProfileId: typeof characterWorldRaw === 'string' ? characterWorldRaw : null,\n  });\n}"
     },
     {
       "path": "src/infrastructure/inventory/item-catalog-service.ts",
-      "line": 161,
-      "endLine": 166,
+      "line": 170,
+      "endLine": 175,
       "text": "export interface CharacterItemCatalog {\n  effectiveWorldProfileId: string | null;\n  addable: ItemDefinition[];\n  lookup: ItemDefinitionLookup;\n  records: CatalogDefinitionRecord[];\n}"
     },
     {
       "path": "src/infrastructure/inventory/item-catalog-service.ts",
-      "line": 168,
-      "endLine": 171,
+      "line": 177,
+      "endLine": 180,
       "text": "export interface LibraryItemCatalog {\n  definitions: ItemDefinition[];\n  persistedRecords: CatalogDefinitionRecord[];\n}"
     },
     {
       "path": "src/infrastructure/inventory/item-catalog-service.ts",
-      "line": 173,
-      "endLine": 232,
+      "line": 182,
+      "endLine": 241,
       "text": "export async function loadCharacterItemCatalog(\n  characterId: string | null,\n  userId: string,\n): Promise<CharacterItemCatalog> {\n  assertHost();\n  const effectiveWorldProfileId = characterId ? await resolveEffectiveWorldProfileId(characterId) : null;\n  const records = await listCatalogRecordsForEffectiveWorld(effectiveWorldProfileId, userId);\n  const context = { userId, effectiveWorldProfileId };\n\n  // Host world `modules` parity (#1159): defaults until host exposes modules JSON.\n  const modules = null;\n  const { config } = getItemCatalogModuleConfig(modules);\n\n  const worldDefinitions = records\n    .filter(\n      (record) =>\n        record.status === 'active' &&\n        record.definition.scope === 'world' &&\n        isDefinitionVisible(record, context),\n    )\n    .map((record) => record.definition);\n\n  const personalDefinitions = records\n    .filter(\n      (record) =>\n        record.status === 'active' &&\n        record.definition.scope === 'personal' &&\n        isDefinitionVisible(record, context),\n    )\n    .map((record) => record.definition);\n\n  const resolveDefinition = (definitionId: string): ItemDefinition | undefined => {\n    const builtin = getBuiltinStandardDefinition(definitionId);\n    if (builtin) return builtin;\n    const core = getCoreItemDefinition(definitionId);\n    if (core) return core;\n    const match = records.find((record) => record.definition.id === definitionId);\n    return match?.definition;\n  };\n\n  const composed = composeCharacterInventoryAddCatalog({\n    effectiveWorldProfileId,\n    config,\n    coreDefinitions: listCoreItemDefinitions(),\n    resolveDefinition,\n    worldDefinitions,\n    personalDefinitions,\n  });\n\n  const baseLookup = createDefinitionLookup(records, context);\n  const lookup: ItemDefinitionLookup = (definitionId) =>\n    baseLookup(definitionId) ?? getBuiltinStandardDefinition(definitionId);\n\n  return {\n    effectiveWorldProfileId,\n    addable: [...composed.definitions],\n    lookup,\n    records,\n  };\n}"
     },
     {
       "path": "src/infrastructure/inventory/item-catalog-service.ts",
-      "line": 234,
-      "endLine": 256,
-      "text": "export async function loadLibraryItemCatalog(): Promise<LibraryItemCatalog> {\n  assertHost();\n  const persistedRecords = await fetchAllHostItemRecords();\n  const byId = new Map<string, ItemDefinition>();\n\n  for (const definition of listCoreItemDefinitions()) {\n    byId.set(definition.id, withCatalogPublicId(normalizeItemDefinition(definition)));\n  }\n  for (const definition of listBuiltinStandardDefinitions()) {\n    byId.set(definition.id, withCatalogPublicId(normalizeItemDefinition(definition)));\n  }\n  for (const record of persistedRecords) {\n    if (record.status !== 'active') continue;\n    const normalized = normalizeItemDefinition(record.definition);\n    byId.set(\n      record.definition.id,\n      record.publicId ? { ...normalized, publicId: record.publicId } : normalized,\n    );\n  }\n\n  const definitions = [...byId.values()].sort(compareLibraryItemDefinitions);\n  return { definitions, persistedRecords };\n}"
+      "line": 243,
+      "endLine": 265,
+      "text": "export async function loadLibraryItemCatalog(): Promise<LibraryItemCatalog> {\n  assertHost();\n  const persistedRecords = await fetchHostItemRecords();\n  const byId = new Map<string, ItemDefinition>();\n\n  for (const definition of listCoreItemDefinitions()) {\n    byId.set(definition.id, withCatalogPublicId(normalizeItemDefinition(definition)));\n  }\n  for (const definition of listBuiltinStandardDefinitions()) {\n    byId.set(definition.id, withCatalogPublicId(normalizeItemDefinition(definition)));\n  }\n  for (const record of persistedRecords) {\n    if (record.status !== 'active') continue;\n    const normalized = normalizeItemDefinition(record.definition);\n    byId.set(\n      record.definition.id,\n      record.publicId ? { ...normalized, publicId: record.publicId } : normalized,\n    );\n  }\n\n  const definitions = [...byId.values()].sort(compareLibraryItemDefinitions);\n  return { definitions, persistedRecords };\n}"
     },
     {
       "path": "src/infrastructure/inventory/item-catalog-service.ts",
-      "line": 258,
-      "endLine": 267,
-      "text": "export async function loadWorldProfileItemCatalog(\n  worldProfileId: string,\n): Promise<CatalogDefinitionRecord[]> {\n  assertHost();\n  const all = await fetchAllHostItemRecords();\n  const wid = worldProfileId.trim();\n  return all.filter(\n    (r) => r.definition.scope === 'world' && r.worldProfileId === wid && r.worldProfileId !== null,\n  );\n}"
+      "line": 267,
+      "endLine": 279,
+      "text": "export async function loadWorldProfileItemCatalog(\n  worldProfileId: string,\n): Promise<CatalogDefinitionRecord[]> {\n  assertHost();\n  const wid = worldProfileId.trim();\n  if (!wid) return [];\n  // CUT-06b: host world-scoped list including archived; ACL fail-closed (403).\n  return fetchHostItemRecords({\n    worldProfileId: wid,\n    includeArchived: true,\n    origins: ['world'],\n  });\n}"
     },
     {
       "path": "src/infrastructure/inventory/item-catalog-service.ts",
-      "line": 269,
-      "endLine": 282,
+      "line": 281,
+      "endLine": 294,
       "text": "export async function getItemDefinitionById(definitionId: string): Promise<{\n  definition: ItemDefinition;\n  record: CatalogDefinitionRecord | null;\n} | null> {\n  assertHost();\n  const hostItem = await fetchHostLibraryItem(definitionId);\n  const record = mapHostLibraryItemRecord(hostItem);\n  if (record) return { definition: record.definition, record };\n  const core = getCoreItemDefinition(definitionId);\n  if (core) return { definition: withCatalogPublicId(core), record: null };\n  const builtin = getBuiltinStandardDefinition(definitionId);\n  if (builtin) return { definition: withCatalogPublicId(builtin), record: null };\n  return null;\n}"
     },
     {
       "path": "src/infrastructure/inventory/item-catalog-service.ts",
-      "line": 302,
-      "endLine": 307,
+      "line": 314,
+      "endLine": 319,
       "text": "export async function createPersonalDefinition(\n  draft: ItemDefinitionDraft,\n): Promise<CatalogDefinitionRecord> {\n  assertHost();\n  return createHostCatalogDefinition('personal', draft, null);\n}"
     },
     {
       "path": "src/infrastructure/inventory/item-catalog-service.ts",
-      "line": 309,
-      "endLine": 315,
+      "line": 321,
+      "endLine": 327,
       "text": "export async function createWorldDefinition(\n  worldProfileId: string,\n  draft: ItemDefinitionDraft,\n): Promise<CatalogDefinitionRecord> {\n  assertHost();\n  return createHostCatalogDefinition('world', draft, worldProfileId);\n}"
     },
     {
       "path": "src/infrastructure/inventory/item-catalog-service.ts",
-      "line": 317,
-      "endLine": 334,
+      "line": 329,
+      "endLine": 346,
       "text": "export async function updateDefinition(\n  definitionId: string,\n  draft: ItemDefinitionDraft,\n): Promise<CatalogDefinitionRecord> {\n  assertHost();\n  const payload = toDefinitionPayload({\n    ...draft,\n    id: definitionId,\n    scope: 'personal',\n  });\n  const updated = await updateHostLibraryItem(definitionId, {\n    name: draft.name,\n    payload,\n  });\n  const record = mapHostLibraryItemRecord(updated);\n  if (!record) throw new Error('Host-Item speichern: ungültige Antwort');\n  return record;\n}"
     },
     {
       "path": "src/infrastructure/inventory/item-catalog-service.ts",
-      "line": 336,
-      "endLine": 342,
+      "line": 348,
+      "endLine": 354,
       "text": "export async function archiveDefinition(definitionId: string): Promise<CatalogDefinitionRecord> {\n  assertHost();\n  const archived = await archiveHostLibraryItem(definitionId);\n  const record = mapHostLibraryItemRecord(archived);\n  if (!record) throw new Error('Host-Item archivieren: ungültige Antwort');\n  return record;\n}"
     },
     {
       "path": "src/infrastructure/inventory/item-catalog-service.ts",
-      "line": 344,
-      "endLine": 350,
+      "line": 356,
+      "endLine": 362,
       "text": "export async function restoreDefinition(definitionId: string): Promise<CatalogDefinitionRecord> {\n  assertHost();\n  const restored = await restoreHostLibraryItem(definitionId);\n  const record = mapHostLibraryItemRecord(restored);\n  if (!record) throw new Error('Host-Item wiederherstellen: ungültige Antwort');\n  return record;\n}"
     },
     {
       "path": "src/infrastructure/inventory/item-catalog-service.ts",
-      "line": 352,
-      "endLine": 372,
+      "line": 364,
+      "endLine": 384,
       "text": "export async function forkDefinition(\n  sourceDefinitionId: string,\n  target: ForkDefinitionTarget,\n): Promise<CatalogDefinitionRecord> {\n  assertHost();\n  const origin = target.scope === 'world' ? 'world' : 'personal';\n  const worldProfileId = target.scope === 'world' ? target.worldProfileId : null;\n  const localSource =\n    getCoreItemDefinition(sourceDefinitionId) ?? getBuiltinStandardDefinition(sourceDefinitionId);\n  if (localSource) {\n    const draft = buildForkedItemDefinitionDraft(localSource, origin);\n    return createHostCatalogDefinition(origin, draft, worldProfileId);\n  }\n  const forked = await forkHostLibraryItem(sourceDefinitionId, {\n    origin,\n    worldProfileId,\n  });\n  const record = mapHostLibraryItemRecord(forked);\n  if (!record) throw new Error('Host-Item forken: ungültige Antwort');\n  return record;\n}"
     },
     {
       "path": "src/infrastructure/inventory/item-catalog-service.ts",
-      "line": 378,
-      "endLine": 409,
+      "line": 390,
+      "endLine": 421,
       "text": "export async function assertWritableInventoryV2(\n  state: unknown,\n  characterId: string | null,\n): Promise<InventoryState> {\n  assertHost();\n  if (!isInventoryV2State(state)) {\n    throw new Error('Inventar-Zustand ist ungültig.');\n  }\n  const definitionIds = new Set(\n    Object.values(state.instances).map((instance) => instance.definitionId),\n  );\n  if (definitionIds.size === 0) return state;\n\n  const userId = await getAuthenticatedUserId();\n  const effectiveWorldProfileId = characterId\n    ? await resolveEffectiveWorldProfileId(characterId)\n    : null;\n  const catalog = await listCatalogRecordsForEffectiveWorld(effectiveWorldProfileId, userId);\n  const visible = new Set(catalog.map((record) => record.definition.id));\n  // Builtin-standard ids resolve locally (#137/#143). Owned pack instances must\n  // remain writable after the world excludes them from the add-catalog.\n  const missing = [...definitionIds].filter((id) => {\n    if (visible.has(id)) return false;\n    return getBuiltinStandardDefinition(id) === undefined;\n  });\n  if (missing.length > 0) {\n    throw new Error(\n      `Unbekannte oder nicht sichtbare Gegenstandsdefinitionen: ${missing.slice(0, 5).join(', ')}`,\n    );\n  }\n  return state;\n}"
     },
     {
@@ -2909,65 +2917,51 @@
     {
       "path": "src/infrastructure/inventory/item-catalog-service.ts",
       "line": 106,
-      "endLine": 111,
-      "name": "fetchAllHostItemRecords",
-      "text": "async function fetchAllHostItemRecords(): Promise<CatalogDefinitionRecord[]> {\n  const hostItems = await fetchHostLibraryItems();\n  return hostItems\n    .map(mapHostLibraryItemRecord)\n    .filter((record): record is CatalogDefinitionRecord => record !== null);\n}"
+      "endLine": 117,
+      "name": "fetchHostItemRecords",
+      "text": "async function fetchHostItemRecords(\n  options: {\n    readonly worldProfileId?: string | null;\n    readonly includeArchived?: boolean;\n    readonly origins?: readonly ('standard' | 'personal' | 'world')[];\n  } = {},\n): Promise<CatalogDefinitionRecord[]> {\n  const hostItems = await fetchHostLibraryItems(options);\n  return hostItems\n    .map(mapHostLibraryItemRecord)\n    .filter((record): record is CatalogDefinitionRecord => record !== null);\n}"
     },
     {
       "path": "src/infrastructure/inventory/item-catalog-service.ts",
-      "line": 110,
-      "endLine": 110,
+      "line": 116,
+      "endLine": 116,
       "name": "callback",
       "text": "(record): record is CatalogDefinitionRecord => record !== null"
     },
     {
       "path": "src/infrastructure/inventory/item-catalog-service.ts",
-      "line": 117,
-      "endLine": 150,
+      "line": 123,
+      "endLine": 156,
       "name": "resolveEffectiveWorldProfileId",
       "text": "export async function resolveEffectiveWorldProfileId(characterId: string): Promise<string | null> {\n  assertHost();\n  const trimmed = characterId.trim();\n  if (!trimmed) return null;\n\n  const row = await fetchHostLibraryCharacter(trimmed);\n  const sheet = isRecord(row.sheet) ? row.sheet : {};\n  const characterWorldRaw =\n    (typeof sheet.world_profile_id === 'string' ? sheet.world_profile_id : null) ??\n    (typeof sheet.worldProfileId === 'string' ? sheet.worldProfileId : null);\n\n  let adventureWorldProfileId: string | null = null;\n  const arcs = await fetchHostLibraryAdventureArcs(trimmed);\n  for (const arc of arcs) {\n    if (!isRecord(arc)) continue;\n    if (arc.status !== 'active' && arc.status !== undefined) continue;\n    const projectId = typeof arc.project_id === 'string' ? arc.project_id : '';\n    if (!projectId) continue;\n    try {\n      const project = await projectService.getProjectById(projectId);\n      if (project.worldProfileId) {\n        adventureWorldProfileId = project.worldProfileId;\n        break;\n      }\n    } catch {\n      /* ignore missing project */\n    }\n  }\n\n  return resolveEffectiveWorldProfileIdFromBinding({\n    adventureWorldProfileId,\n    characterWorldProfileId: typeof characterWorldRaw === 'string' ? characterWorldRaw : null,\n  });\n}"
     },
     {
       "path": "src/infrastructure/inventory/item-catalog-service.ts",
-      "line": 152,
-      "endLine": 159,
+      "line": 158,
+      "endLine": 168,
       "name": "listCatalogRecordsForEffectiveWorld",
-      "text": "async function listCatalogRecordsForEffectiveWorld(\n  effectiveWorldProfileId: string | null,\n  userId: string,\n): Promise<CatalogDefinitionRecord[]> {\n  const all = await fetchAllHostItemRecords();\n  const context = { userId, effectiveWorldProfileId };\n  return all.filter((record) => isDefinitionVisible(record, context));\n}"
+      "text": "async function listCatalogRecordsForEffectiveWorld(\n  effectiveWorldProfileId: string | null,\n  userId: string,\n): Promise<CatalogDefinitionRecord[]> {\n  // CUT-06b: host filters by worldProfileId + ACL (403 when unauthorized).\n  const all = await fetchHostItemRecords({\n    worldProfileId: effectiveWorldProfileId,\n  });\n  const context = { userId, effectiveWorldProfileId };\n  return all.filter((record) => isDefinitionVisible(record, context));\n}"
     },
     {
       "path": "src/infrastructure/inventory/item-catalog-service.ts",
-      "line": 158,
-      "endLine": 158,
+      "line": 167,
+      "endLine": 167,
       "name": "callback",
       "text": "(record) => isDefinitionVisible(record, context)"
     },
     {
       "path": "src/infrastructure/inventory/item-catalog-service.ts",
-      "line": 173,
-      "endLine": 232,
+      "line": 182,
+      "endLine": 241,
       "name": "loadCharacterItemCatalog",
       "text": "export async function loadCharacterItemCatalog(\n  characterId: string | null,\n  userId: string,\n): Promise<CharacterItemCatalog> {\n  assertHost();\n  const effectiveWorldProfileId = characterId ? await resolveEffectiveWorldProfileId(characterId) : null;\n  const records = await listCatalogRecordsForEffectiveWorld(effectiveWorldProfileId, userId);\n  const context = { userId, effectiveWorldProfileId };\n\n  // Host world `modules` parity (#1159): defaults until host exposes modules JSON.\n  const modules = null;\n  const { config } = getItemCatalogModuleConfig(modules);\n\n  const worldDefinitions = records\n    .filter(\n      (record) =>\n        record.status === 'active' &&\n        record.definition.scope === 'world' &&\n        isDefinitionVisible(record, context),\n    )\n    .map((record) => record.definition);\n\n  const personalDefinitions = records\n    .filter(\n      (record) =>\n        record.status === 'active' &&\n        record.definition.scope === 'personal' &&\n        isDefinitionVisible(record, context),\n    )\n    .map((record) => record.definition);\n\n  const resolveDefinition = (definitionId: string): ItemDefinition | undefined => {\n    const builtin = getBuiltinStandardDefinition(definitionId);\n    if (builtin) return builtin;\n    const core = getCoreItemDefinition(definitionId);\n    if (core) return core;\n    const match = records.find((record) => record.definition.id === definitionId);\n    return match?.definition;\n  };\n\n  const composed = composeCharacterInventoryAddCatalog({\n    effectiveWorldProfileId,\n    config,\n    coreDefinitions: listCoreItemDefinitions(),\n    resolveDefinition,\n    worldDefinitions,\n    personalDefinitions,\n  });\n\n  const baseLookup = createDefinitionLookup(records, context);\n  const lookup: ItemDefinitionLookup = (definitionId) =>\n    baseLookup(definitionId) ?? getBuiltinStandardDefinition(definitionId);\n\n  return {\n    effectiveWorldProfileId,\n    addable: [...composed.definitions],\n    lookup,\n    records,\n  };\n}"
-    },
-    {
-      "path": "src/infrastructure/inventory/item-catalog-service.ts",
-      "line": 188,
-      "endLine": 191,
-      "name": "callback",
-      "text": "(record) =>\n        record.status === 'active' &&\n        record.definition.scope === 'world' &&\n        isDefinitionVisible(record, context)"
-    },
-    {
-      "path": "src/infrastructure/inventory/item-catalog-service.ts",
-      "line": 193,
-      "endLine": 193,
-      "name": "callback",
-      "text": "(record) => record.definition"
     },
     {
       "path": "src/infrastructure/inventory/item-catalog-service.ts",
       "line": 197,
       "endLine": 200,
       "name": "callback",
-      "text": "(record) =>\n        record.status === 'active' &&\n        record.definition.scope === 'personal' &&\n        isDefinitionVisible(record, context)"
+      "text": "(record) =>\n        record.status === 'active' &&\n        record.definition.scope === 'world' &&\n        isDefinitionVisible(record, context)"
     },
     {
       "path": "src/infrastructure/inventory/item-catalog-service.ts",
@@ -2978,127 +2972,134 @@
     },
     {
       "path": "src/infrastructure/inventory/item-catalog-service.ts",
-      "line": 204,
+      "line": 206,
+      "endLine": 209,
+      "name": "callback",
+      "text": "(record) =>\n        record.status === 'active' &&\n        record.definition.scope === 'personal' &&\n        isDefinitionVisible(record, context)"
+    },
+    {
+      "path": "src/infrastructure/inventory/item-catalog-service.ts",
+      "line": 211,
       "endLine": 211,
+      "name": "callback",
+      "text": "(record) => record.definition"
+    },
+    {
+      "path": "src/infrastructure/inventory/item-catalog-service.ts",
+      "line": 213,
+      "endLine": 220,
       "name": "resolveDefinition",
       "text": "(definitionId: string): ItemDefinition | undefined => {\n    const builtin = getBuiltinStandardDefinition(definitionId);\n    if (builtin) return builtin;\n    const core = getCoreItemDefinition(definitionId);\n    if (core) return core;\n    const match = records.find((record) => record.definition.id === definitionId);\n    return match?.definition;\n  }"
     },
     {
       "path": "src/infrastructure/inventory/item-catalog-service.ts",
-      "line": 209,
-      "endLine": 209,
+      "line": 218,
+      "endLine": 218,
       "name": "callback",
       "text": "(record) => record.definition.id === definitionId"
     },
     {
       "path": "src/infrastructure/inventory/item-catalog-service.ts",
-      "line": 223,
-      "endLine": 224,
+      "line": 232,
+      "endLine": 233,
       "name": "lookup",
       "text": "(definitionId) =>\n    baseLookup(definitionId) ?? getBuiltinStandardDefinition(definitionId)"
     },
     {
       "path": "src/infrastructure/inventory/item-catalog-service.ts",
-      "line": 234,
-      "endLine": 256,
-      "name": "loadLibraryItemCatalog",
-      "text": "export async function loadLibraryItemCatalog(): Promise<LibraryItemCatalog> {\n  assertHost();\n  const persistedRecords = await fetchAllHostItemRecords();\n  const byId = new Map<string, ItemDefinition>();\n\n  for (const definition of listCoreItemDefinitions()) {\n    byId.set(definition.id, withCatalogPublicId(normalizeItemDefinition(definition)));\n  }\n  for (const definition of listBuiltinStandardDefinitions()) {\n    byId.set(definition.id, withCatalogPublicId(normalizeItemDefinition(definition)));\n  }\n  for (const record of persistedRecords) {\n    if (record.status !== 'active') continue;\n    const normalized = normalizeItemDefinition(record.definition);\n    byId.set(\n      record.definition.id,\n      record.publicId ? { ...normalized, publicId: record.publicId } : normalized,\n    );\n  }\n\n  const definitions = [...byId.values()].sort(compareLibraryItemDefinitions);\n  return { definitions, persistedRecords };\n}"
-    },
-    {
-      "path": "src/infrastructure/inventory/item-catalog-service.ts",
-      "line": 258,
-      "endLine": 267,
-      "name": "loadWorldProfileItemCatalog",
-      "text": "export async function loadWorldProfileItemCatalog(\n  worldProfileId: string,\n): Promise<CatalogDefinitionRecord[]> {\n  assertHost();\n  const all = await fetchAllHostItemRecords();\n  const wid = worldProfileId.trim();\n  return all.filter(\n    (r) => r.definition.scope === 'world' && r.worldProfileId === wid && r.worldProfileId !== null,\n  );\n}"
-    },
-    {
-      "path": "src/infrastructure/inventory/item-catalog-service.ts",
-      "line": 265,
+      "line": 243,
       "endLine": 265,
-      "name": "callback",
-      "text": "(r) => r.definition.scope === 'world' && r.worldProfileId === wid && r.worldProfileId !== null"
+      "name": "loadLibraryItemCatalog",
+      "text": "export async function loadLibraryItemCatalog(): Promise<LibraryItemCatalog> {\n  assertHost();\n  const persistedRecords = await fetchHostItemRecords();\n  const byId = new Map<string, ItemDefinition>();\n\n  for (const definition of listCoreItemDefinitions()) {\n    byId.set(definition.id, withCatalogPublicId(normalizeItemDefinition(definition)));\n  }\n  for (const definition of listBuiltinStandardDefinitions()) {\n    byId.set(definition.id, withCatalogPublicId(normalizeItemDefinition(definition)));\n  }\n  for (const record of persistedRecords) {\n    if (record.status !== 'active') continue;\n    const normalized = normalizeItemDefinition(record.definition);\n    byId.set(\n      record.definition.id,\n      record.publicId ? { ...normalized, publicId: record.publicId } : normalized,\n    );\n  }\n\n  const definitions = [...byId.values()].sort(compareLibraryItemDefinitions);\n  return { definitions, persistedRecords };\n}"
     },
     {
       "path": "src/infrastructure/inventory/item-catalog-service.ts",
-      "line": 269,
-      "endLine": 282,
+      "line": 267,
+      "endLine": 279,
+      "name": "loadWorldProfileItemCatalog",
+      "text": "export async function loadWorldProfileItemCatalog(\n  worldProfileId: string,\n): Promise<CatalogDefinitionRecord[]> {\n  assertHost();\n  const wid = worldProfileId.trim();\n  if (!wid) return [];\n  // CUT-06b: host world-scoped list including archived; ACL fail-closed (403).\n  return fetchHostItemRecords({\n    worldProfileId: wid,\n    includeArchived: true,\n    origins: ['world'],\n  });\n}"
+    },
+    {
+      "path": "src/infrastructure/inventory/item-catalog-service.ts",
+      "line": 281,
+      "endLine": 294,
       "name": "getItemDefinitionById",
       "text": "export async function getItemDefinitionById(definitionId: string): Promise<{\n  definition: ItemDefinition;\n  record: CatalogDefinitionRecord | null;\n} | null> {\n  assertHost();\n  const hostItem = await fetchHostLibraryItem(definitionId);\n  const record = mapHostLibraryItemRecord(hostItem);\n  if (record) return { definition: record.definition, record };\n  const core = getCoreItemDefinition(definitionId);\n  if (core) return { definition: withCatalogPublicId(core), record: null };\n  const builtin = getBuiltinStandardDefinition(definitionId);\n  if (builtin) return { definition: withCatalogPublicId(builtin), record: null };\n  return null;\n}"
     },
     {
       "path": "src/infrastructure/inventory/item-catalog-service.ts",
-      "line": 284,
-      "endLine": 300,
+      "line": 296,
+      "endLine": 312,
       "name": "createHostCatalogDefinition",
       "text": "async function createHostCatalogDefinition(\n  origin: 'personal' | 'world',\n  draft: ItemDefinitionDraft,\n  worldProfileId: string | null,\n): Promise<CatalogDefinitionRecord> {\n  const tempId = `${origin}:pending`;\n  const payload = toDefinitionPayload({ ...draft, id: tempId, scope: origin });\n  const created = await createHostLibraryItem({\n    name: draft.name,\n    origin,\n    worldProfileId,\n    payload,\n  });\n  const record = mapHostLibraryItemRecord(created);\n  if (!record) throw new Error('Host-Item anlegen: ungültige Antwort');\n  return record;\n}"
     },
     {
       "path": "src/infrastructure/inventory/item-catalog-service.ts",
-      "line": 302,
-      "endLine": 307,
+      "line": 314,
+      "endLine": 319,
       "name": "createPersonalDefinition",
       "text": "export async function createPersonalDefinition(\n  draft: ItemDefinitionDraft,\n): Promise<CatalogDefinitionRecord> {\n  assertHost();\n  return createHostCatalogDefinition('personal', draft, null);\n}"
     },
     {
       "path": "src/infrastructure/inventory/item-catalog-service.ts",
-      "line": 309,
-      "endLine": 315,
+      "line": 321,
+      "endLine": 327,
       "name": "createWorldDefinition",
       "text": "export async function createWorldDefinition(\n  worldProfileId: string,\n  draft: ItemDefinitionDraft,\n): Promise<CatalogDefinitionRecord> {\n  assertHost();\n  return createHostCatalogDefinition('world', draft, worldProfileId);\n}"
     },
     {
       "path": "src/infrastructure/inventory/item-catalog-service.ts",
-      "line": 317,
-      "endLine": 334,
+      "line": 329,
+      "endLine": 346,
       "name": "updateDefinition",
       "text": "export async function updateDefinition(\n  definitionId: string,\n  draft: ItemDefinitionDraft,\n): Promise<CatalogDefinitionRecord> {\n  assertHost();\n  const payload = toDefinitionPayload({\n    ...draft,\n    id: definitionId,\n    scope: 'personal',\n  });\n  const updated = await updateHostLibraryItem(definitionId, {\n    name: draft.name,\n    payload,\n  });\n  const record = mapHostLibraryItemRecord(updated);\n  if (!record) throw new Error('Host-Item speichern: ungültige Antwort');\n  return record;\n}"
     },
     {
       "path": "src/infrastructure/inventory/item-catalog-service.ts",
-      "line": 336,
-      "endLine": 342,
+      "line": 348,
+      "endLine": 354,
       "name": "archiveDefinition",
       "text": "export async function archiveDefinition(definitionId: string): Promise<CatalogDefinitionRecord> {\n  assertHost();\n  const archived = await archiveHostLibraryItem(definitionId);\n  const record = mapHostLibraryItemRecord(archived);\n  if (!record) throw new Error('Host-Item archivieren: ungültige Antwort');\n  return record;\n}"
     },
     {
       "path": "src/infrastructure/inventory/item-catalog-service.ts",
-      "line": 344,
-      "endLine": 350,
+      "line": 356,
+      "endLine": 362,
       "name": "restoreDefinition",
       "text": "export async function restoreDefinition(definitionId: string): Promise<CatalogDefinitionRecord> {\n  assertHost();\n  const restored = await restoreHostLibraryItem(definitionId);\n  const record = mapHostLibraryItemRecord(restored);\n  if (!record) throw new Error('Host-Item wiederherstellen: ungültige Antwort');\n  return record;\n}"
     },
     {
       "path": "src/infrastructure/inventory/item-catalog-service.ts",
-      "line": 352,
-      "endLine": 372,
+      "line": 364,
+      "endLine": 384,
       "name": "forkDefinition",
       "text": "export async function forkDefinition(\n  sourceDefinitionId: string,\n  target: ForkDefinitionTarget,\n): Promise<CatalogDefinitionRecord> {\n  assertHost();\n  const origin = target.scope === 'world' ? 'world' : 'personal';\n  const worldProfileId = target.scope === 'world' ? target.worldProfileId : null;\n  const localSource =\n    getCoreItemDefinition(sourceDefinitionId) ?? getBuiltinStandardDefinition(sourceDefinitionId);\n  if (localSource) {\n    const draft = buildForkedItemDefinitionDraft(localSource, origin);\n    return createHostCatalogDefinition(origin, draft, worldProfileId);\n  }\n  const forked = await forkHostLibraryItem(sourceDefinitionId, {\n    origin,\n    worldProfileId,\n  });\n  const record = mapHostLibraryItemRecord(forked);\n  if (!record) throw new Error('Host-Item forken: ungültige Antwort');\n  return record;\n}"
     },
     {
       "path": "src/infrastructure/inventory/item-catalog-service.ts",
-      "line": 378,
-      "endLine": 409,
+      "line": 390,
+      "endLine": 421,
       "name": "assertWritableInventoryV2",
       "text": "export async function assertWritableInventoryV2(\n  state: unknown,\n  characterId: string | null,\n): Promise<InventoryState> {\n  assertHost();\n  if (!isInventoryV2State(state)) {\n    throw new Error('Inventar-Zustand ist ungültig.');\n  }\n  const definitionIds = new Set(\n    Object.values(state.instances).map((instance) => instance.definitionId),\n  );\n  if (definitionIds.size === 0) return state;\n\n  const userId = await getAuthenticatedUserId();\n  const effectiveWorldProfileId = characterId\n    ? await resolveEffectiveWorldProfileId(characterId)\n    : null;\n  const catalog = await listCatalogRecordsForEffectiveWorld(effectiveWorldProfileId, userId);\n  const visible = new Set(catalog.map((record) => record.definition.id));\n  // Builtin-standard ids resolve locally (#137/#143). Owned pack instances must\n  // remain writable after the world excludes them from the add-catalog.\n  const missing = [...definitionIds].filter((id) => {\n    if (visible.has(id)) return false;\n    return getBuiltinStandardDefinition(id) === undefined;\n  });\n  if (missing.length > 0) {\n    throw new Error(\n      `Unbekannte oder nicht sichtbare Gegenstandsdefinitionen: ${missing.slice(0, 5).join(', ')}`,\n    );\n  }\n  return state;\n}"
     },
     {
       "path": "src/infrastructure/inventory/item-catalog-service.ts",
-      "line": 387,
-      "endLine": 387,
+      "line": 399,
+      "endLine": 399,
       "name": "callback",
       "text": "(instance) => instance.definitionId"
     },
     {
       "path": "src/infrastructure/inventory/item-catalog-service.ts",
-      "line": 396,
-      "endLine": 396,
+      "line": 408,
+      "endLine": 408,
       "name": "callback",
       "text": "(record) => record.definition.id"
     },
     {
       "path": "src/infrastructure/inventory/item-catalog-service.ts",
-      "line": 399,
-      "endLine": 402,
+      "line": 411,
+      "endLine": 414,
       "name": "callback",
       "text": "(id) => {\n    if (visible.has(id)) return false;\n    return getBuiltinStandardDefinition(id) === undefined;\n  }"
     },

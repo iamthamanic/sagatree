@@ -28722,7 +28722,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "39abb17777de0e744ebe2932789443b9722135bfefc7ae0596f93ec7ef6df8dd"
+            "sha256": "c56b88c60d6c9491fc7b6e6e1143ac4985ffdab5dff16afef8a54bce79629a07"
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
@@ -28734,7 +28734,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-ai.json",
-      "sourceContractSha256": "d3378e3f29cb6e62b696c47b97dbfc1f36927b76cfc0ef0ab5ce6911e67c6bbb",
+      "sourceContractSha256": "91159075120712f8943fffab474f10f7654f4a2fde7bdbd6bab5025a9856a098",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],
@@ -29982,7 +29982,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "39abb17777de0e744ebe2932789443b9722135bfefc7ae0596f93ec7ef6df8dd"
+            "sha256": "c56b88c60d6c9491fc7b6e6e1143ac4985ffdab5dff16afef8a54bce79629a07"
           },
           {
             "path": "src/infrastructure/host/host-project-http.ts",
@@ -29998,7 +29998,7 @@
           },
           {
             "path": "src/infrastructure/inventory/item-catalog-service.ts",
-            "sha256": "adea9220e02d2dbb96e107743c2ad8dfb7eaa8a9f1b1314620f16d5bb2979175"
+            "sha256": "d4dd71a5bad8a8599c7f239d6f84bce2d52f795b8ca30073f6d69a69d1bef9a5"
           },
           {
             "path": "src/infrastructure/inventory/item-catalog.persistence.ts",
@@ -30158,7 +30158,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-character.json",
-      "sourceContractSha256": "946c6a5d51606b1e3ae42943e2af0055329cdb7ed88ecaa63e89d0f57cff4ff0",
+      "sourceContractSha256": "a69c8f7b7dcbf61cf1a680eaf8128a61e4283a7bf93031b09572a870cac6eb36",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],
@@ -33154,7 +33154,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "39abb17777de0e744ebe2932789443b9722135bfefc7ae0596f93ec7ef6df8dd"
+            "sha256": "c56b88c60d6c9491fc7b6e6e1143ac4985ffdab5dff16afef8a54bce79629a07"
           },
           {
             "path": "src/infrastructure/host/host-project-http.ts",
@@ -33170,7 +33170,7 @@
           },
           {
             "path": "src/infrastructure/inventory/host-inventory-ports.contract.ts",
-            "sha256": "115502542d1d6c8a94292ca0f15a683ebc78cf2997aa3c5a130b682cccc448d2"
+            "sha256": "cca3f64ca3e2aead63b30f1c4b62aeae27cdf9dbd41f6f7791294f8d722cb915"
           },
           {
             "path": "src/infrastructure/inventory/inventory-persistence.ts",
@@ -33178,7 +33178,7 @@
           },
           {
             "path": "src/infrastructure/inventory/item-catalog-service.ts",
-            "sha256": "adea9220e02d2dbb96e107743c2ad8dfb7eaa8a9f1b1314620f16d5bb2979175"
+            "sha256": "d4dd71a5bad8a8599c7f239d6f84bce2d52f795b8ca30073f6d69a69d1bef9a5"
           },
           {
             "path": "src/infrastructure/inventory/item-catalog.persistence.ts",
@@ -33278,7 +33278,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-inventory.json",
-      "sourceContractSha256": "bf75f6319615276b1f8f011e162d57b1a24f9d0197abaaf4d555935ab6d85d5d",
+      "sourceContractSha256": "115fa5c5f90a59a908f711375addeaf417dbd06f714ee9fcc376ac1878efce93",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],
@@ -33306,16 +33306,16 @@
           "kind": "auth-helper",
           "name": null,
           "path": "src/infrastructure/inventory/item-catalog-service.ts",
-          "line": 391,
-          "endLine": 391,
+          "line": 403,
+          "endLine": 403,
           "resolution": "dynamic-expression",
           "expression": "getAuthenticatedUserId()",
           "chain": "getAuthenticatedUserId()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/inventory/item-catalog-service.ts",
-            "line": 378,
-            "endLine": 409,
+            "line": 390,
+            "endLine": 421,
             "text": "export async function assertWritableInventoryV2(\n  state: unknown,\n  characterId: string | null,\n): Promise<InventoryState> {\n  assertHost();\n  if (!isInventoryV2State(state)) {\n    throw new Error('Inventar-Zustand ist ungültig.');\n  }\n  const definitionIds = new Set(\n    Object.values(state.instances).map((instance) => instance.definitionId),\n  );\n  if (definitionIds.size === 0) return state;\n\n  const userId = await getAuthenticatedUserId();\n  const effectiveWorldProfileId = characterId\n    ? await resolveEffectiveWorldProfileId(characterId)\n    : null;\n  const catalog = await listCatalogRecordsForEffectiveWorld(effectiveWorldProfileId, userId);\n  const visible = new Set(catalog.map((record) => record.definition.id));\n  // Builtin-standard ids resolve locally (#137/#143). Owned pack instances must\n  // remain writable after the world excludes them from the add-catalog.\n  const missing = [...definitionIds].filter((id) => {\n    if (visible.has(id)) return false;\n    return getBuiltinStandardDefinition(id) === undefined;\n  });\n  if (missing.length > 0) {\n    throw new Error(\n      `Unbekannte oder nicht sichtbare Gegenstandsdefinitionen: ${missing.slice(0, 5).join(', ')}`,\n    );\n  }\n  return state;\n}"
           }
         }
@@ -33391,16 +33391,16 @@
           "kind": "auth-helper",
           "name": null,
           "path": "src/infrastructure/inventory/item-catalog-service.ts",
-          "line": 391,
-          "endLine": 391,
+          "line": 403,
+          "endLine": 403,
           "resolution": "dynamic-expression",
           "expression": "getAuthenticatedUserId()",
           "chain": "getAuthenticatedUserId()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/inventory/item-catalog-service.ts",
-            "line": 378,
-            "endLine": 409,
+            "line": 390,
+            "endLine": 421,
             "text": "export async function assertWritableInventoryV2(\n  state: unknown,\n  characterId: string | null,\n): Promise<InventoryState> {\n  assertHost();\n  if (!isInventoryV2State(state)) {\n    throw new Error('Inventar-Zustand ist ungültig.');\n  }\n  const definitionIds = new Set(\n    Object.values(state.instances).map((instance) => instance.definitionId),\n  );\n  if (definitionIds.size === 0) return state;\n\n  const userId = await getAuthenticatedUserId();\n  const effectiveWorldProfileId = characterId\n    ? await resolveEffectiveWorldProfileId(characterId)\n    : null;\n  const catalog = await listCatalogRecordsForEffectiveWorld(effectiveWorldProfileId, userId);\n  const visible = new Set(catalog.map((record) => record.definition.id));\n  // Builtin-standard ids resolve locally (#137/#143). Owned pack instances must\n  // remain writable after the world excludes them from the add-catalog.\n  const missing = [...definitionIds].filter((id) => {\n    if (visible.has(id)) return false;\n    return getBuiltinStandardDefinition(id) === undefined;\n  });\n  if (missing.length > 0) {\n    throw new Error(\n      `Unbekannte oder nicht sichtbare Gegenstandsdefinitionen: ${missing.slice(0, 5).join(', ')}`,\n    );\n  }\n  return state;\n}"
           }
         },
@@ -33546,103 +33546,103 @@
         {
           "path": "src/infrastructure/inventory/item-catalog-service.ts",
           "line": 106,
-          "endLine": 111,
-          "name": "fetchAllHostItemRecords"
+          "endLine": 117,
+          "name": "fetchHostItemRecords"
         },
         {
           "path": "src/infrastructure/inventory/item-catalog-service.ts",
-          "line": 117,
-          "endLine": 150,
+          "line": 123,
+          "endLine": 156,
           "name": "resolveEffectiveWorldProfileId"
         },
         {
           "path": "src/infrastructure/inventory/item-catalog-service.ts",
-          "line": 152,
-          "endLine": 159,
+          "line": 158,
+          "endLine": 168,
           "name": "listCatalogRecordsForEffectiveWorld"
         },
         {
           "path": "src/infrastructure/inventory/item-catalog-service.ts",
-          "line": 173,
-          "endLine": 232,
+          "line": 182,
+          "endLine": 241,
           "name": "loadCharacterItemCatalog"
         },
         {
           "path": "src/infrastructure/inventory/item-catalog-service.ts",
-          "line": 204,
-          "endLine": 211,
+          "line": 213,
+          "endLine": 220,
           "name": "resolveDefinition"
         },
         {
           "path": "src/infrastructure/inventory/item-catalog-service.ts",
-          "line": 223,
-          "endLine": 224,
+          "line": 232,
+          "endLine": 233,
           "name": "lookup"
         },
         {
           "path": "src/infrastructure/inventory/item-catalog-service.ts",
-          "line": 234,
-          "endLine": 256,
+          "line": 243,
+          "endLine": 265,
           "name": "loadLibraryItemCatalog"
         },
         {
           "path": "src/infrastructure/inventory/item-catalog-service.ts",
-          "line": 258,
-          "endLine": 267,
+          "line": 267,
+          "endLine": 279,
           "name": "loadWorldProfileItemCatalog"
         },
         {
           "path": "src/infrastructure/inventory/item-catalog-service.ts",
-          "line": 269,
-          "endLine": 282,
+          "line": 281,
+          "endLine": 294,
           "name": "getItemDefinitionById"
         },
         {
           "path": "src/infrastructure/inventory/item-catalog-service.ts",
-          "line": 284,
-          "endLine": 300,
+          "line": 296,
+          "endLine": 312,
           "name": "createHostCatalogDefinition"
         },
         {
           "path": "src/infrastructure/inventory/item-catalog-service.ts",
-          "line": 302,
-          "endLine": 307,
+          "line": 314,
+          "endLine": 319,
           "name": "createPersonalDefinition"
         },
         {
           "path": "src/infrastructure/inventory/item-catalog-service.ts",
-          "line": 309,
-          "endLine": 315,
+          "line": 321,
+          "endLine": 327,
           "name": "createWorldDefinition"
         },
         {
           "path": "src/infrastructure/inventory/item-catalog-service.ts",
-          "line": 317,
-          "endLine": 334,
+          "line": 329,
+          "endLine": 346,
           "name": "updateDefinition"
         },
         {
           "path": "src/infrastructure/inventory/item-catalog-service.ts",
-          "line": 336,
-          "endLine": 342,
+          "line": 348,
+          "endLine": 354,
           "name": "archiveDefinition"
         },
         {
           "path": "src/infrastructure/inventory/item-catalog-service.ts",
-          "line": 344,
-          "endLine": 350,
+          "line": 356,
+          "endLine": 362,
           "name": "restoreDefinition"
         },
         {
           "path": "src/infrastructure/inventory/item-catalog-service.ts",
-          "line": 352,
-          "endLine": 372,
+          "line": 364,
+          "endLine": 384,
           "name": "forkDefinition"
         },
         {
           "path": "src/infrastructure/inventory/item-catalog-service.ts",
-          "line": 378,
-          "endLine": 409,
+          "line": 390,
+          "endLine": 421,
           "name": "assertWritableInventoryV2"
         },
         {
@@ -33956,7 +33956,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "39abb17777de0e744ebe2932789443b9722135bfefc7ae0596f93ec7ef6df8dd"
+            "sha256": "c56b88c60d6c9491fc7b6e6e1143ac4985ffdab5dff16afef8a54bce79629a07"
           },
           {
             "path": "src/infrastructure/look/adapters/host-mtoon-look-adapter.ts",
@@ -34012,7 +34012,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-look.json",
-      "sourceContractSha256": "65fe16b91fbd3ee49d023f830c8044bb5ebfd04720d3245ae9e4309d329d90e0",
+      "sourceContractSha256": "70682e2a08172cca17706e898b48c6715e69f3dcf1c7be242df94872de235566",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],
@@ -34421,7 +34421,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "39abb17777de0e744ebe2932789443b9722135bfefc7ae0596f93ec7ef6df8dd"
+            "sha256": "c56b88c60d6c9491fc7b6e6e1143ac4985ffdab5dff16afef8a54bce79629a07"
           },
           {
             "path": "src/infrastructure/marketplace/host-marketplace-adapter.ts",
@@ -34449,7 +34449,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-marketplace.json",
-      "sourceContractSha256": "3d2ea4f868f415d7a3638162a49c2315f1799012ea1b0f9c8771b61c0371ae63",
+      "sourceContractSha256": "393c10aeeb4c5efe101f587e5f0b0c8d668997ad7f7132472203abc25730f5fa",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],
@@ -34988,7 +34988,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "39abb17777de0e744ebe2932789443b9722135bfefc7ae0596f93ec7ef6df8dd"
+            "sha256": "c56b88c60d6c9491fc7b6e6e1143ac4985ffdab5dff16afef8a54bce79629a07"
           },
           {
             "path": "src/infrastructure/host/host-session-http.ts",
@@ -35040,7 +35040,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-npc-creature.json",
-      "sourceContractSha256": "2f4522d6009dcfe3739ad7dc65a37fda1be7ec7756b5310a473fe95b541d0263",
+      "sourceContractSha256": "a6b842bce7ae88ca103477fef76d1505c3c0e885f33bae9ba87c06b32ba70a1c",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],
@@ -35443,7 +35443,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "39abb17777de0e744ebe2932789443b9722135bfefc7ae0596f93ec7ef6df8dd"
+            "sha256": "c56b88c60d6c9491fc7b6e6e1143ac4985ffdab5dff16afef8a54bce79629a07"
           },
           {
             "path": "src/infrastructure/host/host-project-http.ts",
@@ -35499,7 +35499,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-project.json",
-      "sourceContractSha256": "73c525f2ef242eb92a1c45a9965dd759b62a31b541bc0d58b175977741017783",
+      "sourceContractSha256": "84168b85c3d9842e9586954f2679c2b1b1454c4245f5544719f6b84c2458a55c",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],
@@ -35840,7 +35840,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "39abb17777de0e744ebe2932789443b9722135bfefc7ae0596f93ec7ef6df8dd"
+            "sha256": "c56b88c60d6c9491fc7b6e6e1143ac4985ffdab5dff16afef8a54bce79629a07"
           },
           {
             "path": "src/infrastructure/rulesets/ruleset-service.ts",
@@ -35856,7 +35856,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-rulesets.json",
-      "sourceContractSha256": "e038806425b917a0064fe33a8646ae34b55c5b0d1dc95d5d6b5ad8d7dc083290",
+      "sourceContractSha256": "094ebd803519cac89f9a02c4639106f41c21f805c2623cdf413663f3dbffb898",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],
@@ -35951,7 +35951,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "39abb17777de0e744ebe2932789443b9722135bfefc7ae0596f93ec7ef6df8dd"
+            "sha256": "c56b88c60d6c9491fc7b6e6e1143ac4985ffdab5dff16afef8a54bce79629a07"
           },
           {
             "path": "src/infrastructure/host/host-saga-definition-http.ts",
@@ -35987,7 +35987,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-saga.json",
-      "sourceContractSha256": "f3e71c492697a169e1111163a9d9b2c6daafc7292a8f45871d9026188a344d75",
+      "sourceContractSha256": "e6b1213d09dd8e8e82ef64116cb4e65dd210eda305f74e0754b4dd66821d3fc8",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],
@@ -36167,7 +36167,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "39abb17777de0e744ebe2932789443b9722135bfefc7ae0596f93ec7ef6df8dd"
+            "sha256": "c56b88c60d6c9491fc7b6e6e1143ac4985ffdab5dff16afef8a54bce79629a07"
           },
           {
             "path": "src/infrastructure/host/host-session-http.ts",
@@ -36259,7 +36259,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-session.json",
-      "sourceContractSha256": "478ae17bd801fdccf66a043e07ded7b536341ba63660021a6f3e30b360fec9aa",
+      "sourceContractSha256": "2c2de86e5e8ca0d324b7c2e9f67c72f2870d3dca14de03e0a1a831c9494ee594",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],
@@ -37119,7 +37119,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "39abb17777de0e744ebe2932789443b9722135bfefc7ae0596f93ec7ef6df8dd"
+            "sha256": "c56b88c60d6c9491fc7b6e6e1143ac4985ffdab5dff16afef8a54bce79629a07"
           },
           {
             "path": "src/infrastructure/media/optimizer/engines/audio/index.ts",
@@ -37207,7 +37207,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-user-profile.json",
-      "sourceContractSha256": "8d2aebed9b35168bec66d9b963018d946303d26bfc2f859cfbfdbdad6fa023da",
+      "sourceContractSha256": "6a523c7e9097f63faf6e1bc3ad971416b643d9cdeafc6ce78df020eed66747b0",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],
@@ -37637,7 +37637,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "39abb17777de0e744ebe2932789443b9722135bfefc7ae0596f93ec7ef6df8dd"
+            "sha256": "c56b88c60d6c9491fc7b6e6e1143ac4985ffdab5dff16afef8a54bce79629a07"
           },
           {
             "path": "src/infrastructure/host/host-world-http.ts",
@@ -37733,7 +37733,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-world.json",
-      "sourceContractSha256": "6c0fb173ec70f7ff7dfb2463bc28ecd459433ca67b59be038ba48dcc47a47379",
+      "sourceContractSha256": "ee8c5129100febf83d929c74a6a834de1c6a8cfd727b1fd95b21e3068bbeee82",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],

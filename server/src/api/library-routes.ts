@@ -1848,11 +1848,44 @@ export function mountLibraryHttpRoutes(app: Hono, deps: LibraryHttpDeps): void {
       return c.json({ error: actorResult.error }, actorResult.status);
     }
     if (!deps.inventory?.listCatalog) {
-      return c.json({ items: [] }, 200);
+      return c.json({ error: 'store-unavailable' }, 503);
     }
-    const listed = deps.inventory.listCatalog(libraryActorIds(actorResult.actor), {});
+    const worldProfileIdRaw = c.req.query('worldProfileId');
+    const worldProfileId =
+      typeof worldProfileIdRaw === 'string' && worldProfileIdRaw.trim()
+        ? worldProfileIdRaw.trim()
+        : null;
+    const queryRaw = c.req.query('query') ?? c.req.query('q');
+    const query =
+      typeof queryRaw === 'string' && queryRaw.trim() ? queryRaw.trim() : undefined;
+    const includeArchived =
+      c.req.query('includeArchived') === '1' ||
+      c.req.query('includeArchived') === 'true';
+    const originRaw = c.req.query('origin') ?? c.req.query('origins');
+    const origins =
+      typeof originRaw === 'string' && originRaw.trim()
+        ? originRaw
+            .split(',')
+            .map((token) => token.trim())
+            .filter(
+              (token): token is 'standard' | 'personal' | 'world' =>
+                token === 'standard' || token === 'personal' || token === 'world',
+            )
+        : undefined;
+    const listed = deps.inventory.listCatalog(libraryActorIds(actorResult.actor), {
+      worldProfileId,
+      query,
+      includeArchived: includeArchived || undefined,
+      origins: origins && origins.length > 0 ? origins : undefined,
+    });
     if (!listed.ok) {
-      return c.json({ error: listed.error }, 503);
+      const status =
+        listed.error === 'not-authorized'
+          ? 403
+          : listed.error === 'missing-actor'
+            ? 401
+            : 503;
+      return c.json({ error: listed.error }, status);
     }
     return c.json({ items: listed.value }, 200);
   });

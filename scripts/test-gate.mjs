@@ -1531,6 +1531,19 @@ function checkCut06ItemDefinition() {
   console.log('OK: cut-06-item-definition.self-test');
 }
 
+function checkCut06bItemCatalogReads() {
+  console.log('CUT-06b item catalog character/world reads (#1160)...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/cut-06b-item-catalog-reads.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+  console.log('OK: cut-06b-item-catalog-reads.self-test');
+}
+
 function checkCut07LookVersions() {
   console.log('CUT-07 look profile append/list versions (#1142)...');
   execFileSync(
@@ -3925,6 +3938,7 @@ checkCut03NpcInstance();
 checkCut04SessionDelete();
 checkCut05OutcomePromotion();
 checkCut06ItemDefinition();
+checkCut06bItemCatalogReads();
 checkCut07LookVersions();
 checkCut08CharacterPresets();
 checkCut09CharacterArcs();

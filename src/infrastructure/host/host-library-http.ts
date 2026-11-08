@@ -745,16 +745,63 @@ export async function fetchHostLibraryNpcCreatureById(
   return body.definition ?? null;
 }
 
+export type FetchHostLibraryItemsOptions = {
+  readonly worldProfileId?: string | null;
+  readonly query?: string;
+  readonly includeArchived?: boolean;
+  readonly origins?: readonly ('standard' | 'personal' | 'world')[];
+};
+
+/** CUT-06b — GET `/api/v1/library/items` with optional world/authz filters. */
 export async function fetchHostLibraryItems(
+  options: FetchHostLibraryItemsOptions = {},
   env: EnvLike = defaultEnv(),
   fetchImpl: typeof fetch = fetch,
 ): Promise<readonly unknown[]> {
-  const body = await hostGetJson<{ items?: unknown[] }>(
-    '/api/v1/library/items',
-    'Host-Itemkatalog nicht erreichbar',
-    env,
-    fetchImpl,
-  );
+  const qs = new URLSearchParams();
+  if (typeof options.worldProfileId === 'string' && options.worldProfileId.trim()) {
+    qs.set('worldProfileId', options.worldProfileId.trim());
+  }
+  if (typeof options.query === 'string' && options.query.trim()) {
+    qs.set('query', options.query.trim());
+  }
+  if (options.includeArchived === true) qs.set('includeArchived', '1');
+  if (options.origins && options.origins.length > 0) {
+    qs.set('origin', options.origins.join(','));
+  }
+  const path =
+    qs.size > 0 ? `/api/v1/library/items?${qs.toString()}` : '/api/v1/library/items';
+
+  const base = getHostAuthBaseUrl(env);
+  if (!base) throw new Error('Host-Itemkatalog nicht erreichbar');
+  let response: Response;
+  try {
+    response = await fetchImpl(`${base}${path}`, {
+      method: 'GET',
+      credentials: 'include',
+      headers: { Accept: 'application/json' },
+    });
+  } catch {
+    throw new Error('Host-Itemkatalog nicht erreichbar');
+  }
+  if (!response.ok) {
+    let detail = '';
+    try {
+      const body: unknown = await response.json();
+      if (body && typeof body === 'object' && 'error' in body) {
+        detail = String((body as { error: unknown }).error);
+      }
+    } catch {
+      /* ignore */
+    }
+    if (response.status === 403 || detail === 'not-authorized') {
+      throw new Error('Kein Zugriff auf diesen Gegenstandskatalog.');
+    }
+    throw new Error(
+      detail ? `Host-Itemkatalog nicht erreichbar: ${detail}` : 'Host-Itemkatalog nicht erreichbar',
+    );
+  }
+  const body = (await response.json()) as { items?: unknown[] };
   return Array.isArray(body.items) ? body.items : [];
 }
 
