@@ -2,7 +2,7 @@
  * Ephemeral session-lobby ready fan-out (CUT-04b / #1162).
  * Location: server/src/realtime/lobby-ready.ts
  *
- * In-process host realtime hub — membership is enforced at the HTTP adapter.
+ * In-process host realtime hub (CUT-04b) — membership is enforced at the HTTP adapter.
  * Ready is never gameplay authorization; actor identity is stamped server-side.
  */
 export type LobbyReadyEvent = {
