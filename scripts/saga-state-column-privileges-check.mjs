@@ -26,7 +26,7 @@ function rejectMatch(content, pattern, label) {
   if (pattern.test(content)) fail(label);
 }
 
-const migrationPath = 'supabase/migrations/059_saga_state_column_privileges.sql';
+const migrationPath = 'archive/supabase-legacy/supabase/migrations/059_saga_state_column_privileges.sql';
 if (!existsSync(join(root, migrationPath))) {
   fail(`missing ${migrationPath}`);
 }
@@ -73,7 +73,7 @@ requireMatch(
   'service_role grant on sessions',
 );
 
-const snapshotMigration = read('supabase/migrations/050_session_adventure_runtime.sql');
+const snapshotMigration = read('archive/supabase-legacy/supabase/migrations/050_session_adventure_runtime.sql');
 requireMatch(
   snapshotMigration,
   /GRANT EXECUTE ON FUNCTION public\.get_session_runtime_snapshot\(UUID\) TO authenticated/i,
@@ -92,7 +92,7 @@ requireMatch(
   'apply-migrations lists 071',
 );
 
-const restoreWrites = 'supabase/migrations/071_restore_authenticated_project_session_writes.sql';
+const restoreWrites = 'archive/supabase-legacy/supabase/migrations/071_restore_authenticated_project_session_writes.sql';
 if (!existsSync(join(root, restoreWrites))) fail(`missing ${restoreWrites}`);
 const restoreMig = read(restoreWrites);
 requireMatch(

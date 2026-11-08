@@ -4,11 +4,11 @@
   "evidenceKind": "exact-typescript-ast-source",
   "sourceFiles": [
     {
-      "path": "supabase/functions/_shared/cors.ts",
+      "path": "archive/supabase-legacy/supabase/functions/_shared/cors.ts",
       "sha256": "f8286c91d79fa5fc5cfea2fa47081916523fa7a440f234aecd9a47c6a8cf5b38"
     },
     {
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "sha256": "d0bc500a2531caecce486391fdf03f4b3bbbaf8b9e71a9c5c7b650aa2c41ef5e"
     }
   ],
@@ -16,13 +16,13 @@
     {
       "id": "sessions:1",
       "condition": "req.method === \"GET\" && path === \"/health\"",
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 553,
       "endLine": 561,
       "requestReads": [],
       "returns": [
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 554,
           "endLine": 560,
           "expression": "new Response(JSON.stringify({\n        status: 'ok',\n        timestamp: new Date().toISOString(),\n        features: ['session-management', 'players', 'chat', 'world-state', 'save-load', 'export-import'],\n      }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
@@ -30,7 +30,7 @@
       ],
       "calls": [
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 554,
           "endLine": 558,
           "expression": "JSON.stringify",
@@ -39,7 +39,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 556,
           "endLine": 556,
           "expression": "new Date().toISOString",
@@ -51,13 +51,13 @@
     {
       "id": "sessions:2",
       "condition": "req.method === \"GET\" && path === \"/sessions\"",
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 564,
       "endLine": 571,
       "requestReads": [],
       "returns": [
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 568,
           "endLine": 570,
           "expression": "new Response(JSON.stringify(sessionsList), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
@@ -65,7 +65,7 @@
       ],
       "calls": [
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 565,
           "endLine": 565,
           "expression": "url.searchParams.get",
@@ -74,7 +74,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 566,
           "endLine": 566,
           "expression": "listSessions",
@@ -83,7 +83,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 568,
           "endLine": 568,
           "expression": "JSON.stringify",
@@ -97,13 +97,13 @@
     {
       "id": "sessions:3",
       "condition": "req.method === \"POST\" && path === \"/sessions\"",
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 574,
       "endLine": 582,
       "requestReads": [],
       "returns": [
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 578,
           "endLine": 581,
           "expression": "new Response(JSON.stringify(session), {\n        status: 201,\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
@@ -111,14 +111,14 @@
       ],
       "calls": [
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 575,
           "endLine": 575,
           "expression": "req.json",
           "arguments": []
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 576,
           "endLine": 576,
           "expression": "createSession",
@@ -127,7 +127,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 578,
           "endLine": 578,
           "expression": "JSON.stringify",
@@ -141,19 +141,19 @@
     {
       "id": "sessions:4",
       "condition": "req.method === \"GET\" && path.match(/^\\/sessions\\/[\\w-]+$/)",
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 585,
       "endLine": 607,
       "requestReads": [],
       "returns": [
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 590,
           "endLine": 593,
           "expression": "new Response(JSON.stringify({ error: \"Session not found\" }), {\n          status: 404,\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })"
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 600,
           "endLine": 606,
           "expression": "new Response(JSON.stringify({\n        ...session,\n        players,\n        recentMessages: messages,\n      }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
@@ -161,7 +161,7 @@
       ],
       "calls": [
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 586,
           "endLine": 586,
           "expression": "path.split",
@@ -170,7 +170,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 587,
           "endLine": 587,
           "expression": "getSession",
@@ -179,7 +179,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 590,
           "endLine": 590,
           "expression": "JSON.stringify",
@@ -188,7 +188,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 597,
           "endLine": 597,
           "expression": "getSessionPlayers",
@@ -197,7 +197,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 598,
           "endLine": 598,
           "expression": "getChatHistory",
@@ -207,7 +207,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 600,
           "endLine": 604,
           "expression": "JSON.stringify",
@@ -221,13 +221,13 @@
     {
       "id": "sessions:5",
       "condition": "req.method === \"PUT\" && path.match(/^\\/sessions\\/[\\w-]+$/)",
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 610,
       "endLine": 618,
       "requestReads": [],
       "returns": [
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 615,
           "endLine": 617,
           "expression": "new Response(JSON.stringify(session), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
@@ -235,7 +235,7 @@
       ],
       "calls": [
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 611,
           "endLine": 611,
           "expression": "path.split",
@@ -244,14 +244,14 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 612,
           "endLine": 612,
           "expression": "req.json",
           "arguments": []
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 613,
           "endLine": 613,
           "expression": "updateSession",
@@ -261,7 +261,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 615,
           "endLine": 615,
           "expression": "JSON.stringify",
@@ -275,13 +275,13 @@
     {
       "id": "sessions:6",
       "condition": "req.method === \"DELETE\" && path.match(/^\\/sessions\\/[\\w-]+$/)",
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 621,
       "endLine": 628,
       "requestReads": [],
       "returns": [
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 625,
           "endLine": 627,
           "expression": "new Response(JSON.stringify({ success: true }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
@@ -289,7 +289,7 @@
       ],
       "calls": [
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 622,
           "endLine": 622,
           "expression": "path.split",
@@ -298,7 +298,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 623,
           "endLine": 623,
           "expression": "deleteSession",
@@ -307,7 +307,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 625,
           "endLine": 625,
           "expression": "JSON.stringify",
@@ -321,13 +321,13 @@
     {
       "id": "sessions:7",
       "condition": "req.method === \"POST\" && path.match(/^\\/sessions\\/[\\w-]+\\/start$/)",
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 631,
       "endLine": 638,
       "requestReads": [],
       "returns": [
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 635,
           "endLine": 637,
           "expression": "new Response(JSON.stringify(session), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
@@ -335,7 +335,7 @@
       ],
       "calls": [
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 632,
           "endLine": 632,
           "expression": "path.split",
@@ -344,7 +344,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 633,
           "endLine": 633,
           "expression": "startSession",
@@ -353,7 +353,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 635,
           "endLine": 635,
           "expression": "JSON.stringify",
@@ -367,13 +367,13 @@
     {
       "id": "sessions:8",
       "condition": "req.method === \"POST\" && path.match(/^\\/sessions\\/[\\w-]+\\/pause$/)",
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 641,
       "endLine": 648,
       "requestReads": [],
       "returns": [
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 645,
           "endLine": 647,
           "expression": "new Response(JSON.stringify(session), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
@@ -381,7 +381,7 @@
       ],
       "calls": [
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 642,
           "endLine": 642,
           "expression": "path.split",
@@ -390,7 +390,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 643,
           "endLine": 643,
           "expression": "pauseSession",
@@ -399,7 +399,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 645,
           "endLine": 645,
           "expression": "JSON.stringify",
@@ -413,13 +413,13 @@
     {
       "id": "sessions:9",
       "condition": "req.method === \"POST\" && path.match(/^\\/sessions\\/[\\w-]+\\/end$/)",
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 651,
       "endLine": 658,
       "requestReads": [],
       "returns": [
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 655,
           "endLine": 657,
           "expression": "new Response(JSON.stringify(session), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
@@ -427,7 +427,7 @@
       ],
       "calls": [
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 652,
           "endLine": 652,
           "expression": "path.split",
@@ -436,7 +436,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 653,
           "endLine": 653,
           "expression": "endSession",
@@ -445,7 +445,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 655,
           "endLine": 655,
           "expression": "JSON.stringify",
@@ -459,13 +459,13 @@
     {
       "id": "sessions:10",
       "condition": "req.method === \"POST\" && path.match(/^\\/sessions\\/[\\w-]+\\/join$/)",
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 661,
       "endLine": 669,
       "requestReads": [],
       "returns": [
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 666,
           "endLine": 668,
           "expression": "new Response(JSON.stringify(player), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
@@ -473,7 +473,7 @@
       ],
       "calls": [
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 662,
           "endLine": 662,
           "expression": "path.split",
@@ -482,14 +482,14 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 663,
           "endLine": 663,
           "expression": "req.json",
           "arguments": []
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 664,
           "endLine": 664,
           "expression": "joinSession",
@@ -499,7 +499,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 666,
           "endLine": 666,
           "expression": "JSON.stringify",
@@ -513,7 +513,7 @@
     {
       "id": "sessions:11",
       "condition": "req.method === \"POST\" && path.match(/^\\/sessions\\/[\\w-]+\\/leave$/)",
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 672,
       "endLine": 680,
       "requestReads": [
@@ -521,7 +521,7 @@
       ],
       "returns": [
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 677,
           "endLine": 679,
           "expression": "new Response(JSON.stringify({ success: true }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
@@ -529,7 +529,7 @@
       ],
       "calls": [
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 673,
           "endLine": 673,
           "expression": "path.split",
@@ -538,14 +538,14 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 674,
           "endLine": 674,
           "expression": "req.json",
           "arguments": []
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 675,
           "endLine": 675,
           "expression": "leaveSession",
@@ -555,7 +555,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 677,
           "endLine": 677,
           "expression": "JSON.stringify",
@@ -569,13 +569,13 @@
     {
       "id": "sessions:12",
       "condition": "req.method === \"GET\" && path.match(/^\\/sessions\\/[\\w-]+\\/players$/)",
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 683,
       "endLine": 690,
       "requestReads": [],
       "returns": [
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 687,
           "endLine": 689,
           "expression": "new Response(JSON.stringify(players), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
@@ -583,7 +583,7 @@
       ],
       "calls": [
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 684,
           "endLine": 684,
           "expression": "path.split",
@@ -592,7 +592,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 685,
           "endLine": 685,
           "expression": "getSessionPlayers",
@@ -601,7 +601,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 687,
           "endLine": 687,
           "expression": "JSON.stringify",
@@ -615,13 +615,13 @@
     {
       "id": "sessions:13",
       "condition": "req.method === \"POST\" && path.match(/^\\/sessions\\/[\\w-]+\\/chat$/)",
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 693,
       "endLine": 701,
       "requestReads": [],
       "returns": [
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 698,
           "endLine": 700,
           "expression": "new Response(JSON.stringify(message), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
@@ -629,7 +629,7 @@
       ],
       "calls": [
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 694,
           "endLine": 694,
           "expression": "path.split",
@@ -638,14 +638,14 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 695,
           "endLine": 695,
           "expression": "req.json",
           "arguments": []
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 696,
           "endLine": 696,
           "expression": "sendChatMessage",
@@ -655,7 +655,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 698,
           "endLine": 698,
           "expression": "JSON.stringify",
@@ -669,13 +669,13 @@
     {
       "id": "sessions:14",
       "condition": "req.method === \"GET\" && path.match(/^\\/sessions\\/[\\w-]+\\/chat$/)",
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 704,
       "endLine": 712,
       "requestReads": [],
       "returns": [
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 709,
           "endLine": 711,
           "expression": "new Response(JSON.stringify(messages), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
@@ -683,7 +683,7 @@
       ],
       "calls": [
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 705,
           "endLine": 705,
           "expression": "path.split",
@@ -692,7 +692,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 706,
           "endLine": 706,
           "expression": "parseInt",
@@ -701,7 +701,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 706,
           "endLine": 706,
           "expression": "url.searchParams.get",
@@ -710,7 +710,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 707,
           "endLine": 707,
           "expression": "getChatHistory",
@@ -720,7 +720,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 709,
           "endLine": 709,
           "expression": "JSON.stringify",
@@ -734,13 +734,13 @@
     {
       "id": "sessions:15",
       "condition": "req.method === \"DELETE\" && path.match(/^\\/sessions\\/[\\w-]+\\/chat\\/[\\w-]+$/)",
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 715,
       "endLine": 723,
       "requestReads": [],
       "returns": [
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 720,
           "endLine": 722,
           "expression": "new Response(JSON.stringify({ success: true }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
@@ -748,7 +748,7 @@
       ],
       "calls": [
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 716,
           "endLine": 716,
           "expression": "path.split",
@@ -757,7 +757,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 717,
           "endLine": 717,
           "expression": "path.split",
@@ -766,7 +766,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 718,
           "endLine": 718,
           "expression": "deleteChatMessage",
@@ -776,7 +776,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 720,
           "endLine": 720,
           "expression": "JSON.stringify",
@@ -790,13 +790,13 @@
     {
       "id": "sessions:16",
       "condition": "req.method === \"GET\" && path.match(/^\\/sessions\\/[\\w-]+\\/world-state$/)",
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 726,
       "endLine": 733,
       "requestReads": [],
       "returns": [
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 730,
           "endLine": 732,
           "expression": "new Response(JSON.stringify(worldState), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
@@ -804,7 +804,7 @@
       ],
       "calls": [
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 727,
           "endLine": 727,
           "expression": "path.split",
@@ -813,7 +813,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 728,
           "endLine": 728,
           "expression": "getWorldState",
@@ -822,7 +822,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 730,
           "endLine": 730,
           "expression": "JSON.stringify",
@@ -836,13 +836,13 @@
     {
       "id": "sessions:17",
       "condition": "req.method === \"PUT\" && path.match(/^\\/sessions\\/[\\w-]+\\/world-state$/)",
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 736,
       "endLine": 744,
       "requestReads": [],
       "returns": [
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 741,
           "endLine": 743,
           "expression": "new Response(JSON.stringify(worldState), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
@@ -850,7 +850,7 @@
       ],
       "calls": [
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 737,
           "endLine": 737,
           "expression": "path.split",
@@ -859,14 +859,14 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 738,
           "endLine": 738,
           "expression": "req.json",
           "arguments": []
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 739,
           "endLine": 739,
           "expression": "updateWorldState",
@@ -876,7 +876,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 741,
           "endLine": 741,
           "expression": "JSON.stringify",
@@ -890,13 +890,13 @@
     {
       "id": "sessions:18",
       "condition": "req.method === \"POST\" && path.match(/^\\/sessions\\/[\\w-]+\\/save$/)",
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 747,
       "endLine": 755,
       "requestReads": [],
       "returns": [
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 752,
           "endLine": 754,
           "expression": "new Response(JSON.stringify(savePoint), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
@@ -904,7 +904,7 @@
       ],
       "calls": [
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 748,
           "endLine": 748,
           "expression": "path.split",
@@ -913,14 +913,14 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 749,
           "endLine": 749,
           "expression": "req.json",
           "arguments": []
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 750,
           "endLine": 750,
           "expression": "createSavePoint",
@@ -930,7 +930,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 752,
           "endLine": 752,
           "expression": "JSON.stringify",
@@ -944,13 +944,13 @@
     {
       "id": "sessions:19",
       "condition": "req.method === \"POST\" && path.match(/^\\/sessions\\/[\\w-]+\\/load\\/[\\w-]+$/)",
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 758,
       "endLine": 766,
       "requestReads": [],
       "returns": [
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 763,
           "endLine": 765,
           "expression": "new Response(JSON.stringify(data), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
@@ -958,7 +958,7 @@
       ],
       "calls": [
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 759,
           "endLine": 759,
           "expression": "path.split",
@@ -967,7 +967,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 760,
           "endLine": 760,
           "expression": "path.split",
@@ -976,7 +976,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 761,
           "endLine": 761,
           "expression": "loadSavePoint",
@@ -986,7 +986,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 763,
           "endLine": 763,
           "expression": "JSON.stringify",
@@ -1000,13 +1000,13 @@
     {
       "id": "sessions:20",
       "condition": "req.method === \"GET\" && path.match(/^\\/sessions\\/[\\w-]+\\/saves$/)",
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 769,
       "endLine": 776,
       "requestReads": [],
       "returns": [
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 773,
           "endLine": 775,
           "expression": "new Response(JSON.stringify(savePoints), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
@@ -1014,7 +1014,7 @@
       ],
       "calls": [
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 770,
           "endLine": 770,
           "expression": "path.split",
@@ -1023,7 +1023,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 771,
           "endLine": 771,
           "expression": "listSavePoints",
@@ -1032,7 +1032,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 773,
           "endLine": 773,
           "expression": "JSON.stringify",
@@ -1046,13 +1046,13 @@
     {
       "id": "sessions:21",
       "condition": "req.method === \"DELETE\" && path.match(/^\\/sessions\\/[\\w-]+\\/save\\/[\\w-]+$/)",
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 779,
       "endLine": 787,
       "requestReads": [],
       "returns": [
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 784,
           "endLine": 786,
           "expression": "new Response(JSON.stringify({ success: true }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
@@ -1060,7 +1060,7 @@
       ],
       "calls": [
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 780,
           "endLine": 780,
           "expression": "path.split",
@@ -1069,7 +1069,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 781,
           "endLine": 781,
           "expression": "path.split",
@@ -1078,7 +1078,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 782,
           "endLine": 782,
           "expression": "deleteSavePoint",
@@ -1088,7 +1088,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 784,
           "endLine": 784,
           "expression": "JSON.stringify",
@@ -1102,13 +1102,13 @@
     {
       "id": "sessions:22",
       "condition": "req.method === \"GET\" && path.match(/^\\/sessions\\/[\\w-]+\\/logs$/)",
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 790,
       "endLine": 798,
       "requestReads": [],
       "returns": [
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 795,
           "endLine": 797,
           "expression": "new Response(JSON.stringify(logs), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
@@ -1116,7 +1116,7 @@
       ],
       "calls": [
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 791,
           "endLine": 791,
           "expression": "path.split",
@@ -1125,7 +1125,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 792,
           "endLine": 792,
           "expression": "parseInt",
@@ -1134,7 +1134,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 792,
           "endLine": 792,
           "expression": "url.searchParams.get",
@@ -1143,7 +1143,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 793,
           "endLine": 793,
           "expression": "getSessionLogs",
@@ -1153,7 +1153,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 795,
           "endLine": 795,
           "expression": "JSON.stringify",
@@ -1167,13 +1167,13 @@
     {
       "id": "sessions:23",
       "condition": "req.method === \"POST\" && path.match(/^\\/sessions\\/[\\w-]+\\/logs$/)",
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 801,
       "endLine": 809,
       "requestReads": [],
       "returns": [
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 806,
           "endLine": 808,
           "expression": "new Response(JSON.stringify(log), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
@@ -1181,7 +1181,7 @@
       ],
       "calls": [
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 802,
           "endLine": 802,
           "expression": "path.split",
@@ -1190,14 +1190,14 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 803,
           "endLine": 803,
           "expression": "req.json",
           "arguments": []
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 804,
           "endLine": 804,
           "expression": "addSessionLog",
@@ -1207,7 +1207,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 806,
           "endLine": 806,
           "expression": "JSON.stringify",
@@ -1221,13 +1221,13 @@
     {
       "id": "sessions:24",
       "condition": "req.method === \"GET\" && path.match(/^\\/sessions\\/[\\w-]+\\/export$/)",
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 812,
       "endLine": 819,
       "requestReads": [],
       "returns": [
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 816,
           "endLine": 818,
           "expression": "new Response(JSON.stringify(data), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
@@ -1235,7 +1235,7 @@
       ],
       "calls": [
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 813,
           "endLine": 813,
           "expression": "path.split",
@@ -1244,7 +1244,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 814,
           "endLine": 814,
           "expression": "exportSession",
@@ -1253,7 +1253,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 816,
           "endLine": 816,
           "expression": "JSON.stringify",
@@ -1267,13 +1267,13 @@
     {
       "id": "sessions:25",
       "condition": "req.method === \"POST\" && path === \"/sessions/import\"",
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 822,
       "endLine": 829,
       "requestReads": [],
       "returns": [
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 826,
           "endLine": 828,
           "expression": "new Response(JSON.stringify(session), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
@@ -1281,14 +1281,14 @@
       ],
       "calls": [
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 823,
           "endLine": 823,
           "expression": "req.json",
           "arguments": []
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 824,
           "endLine": 824,
           "expression": "importSession",
@@ -1297,7 +1297,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 826,
           "endLine": 826,
           "expression": "JSON.stringify",
@@ -1311,169 +1311,169 @@
   ],
   "responseSites": [
     {
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 554,
       "endLine": 560,
       "expression": "new Response(JSON.stringify({\n        status: 'ok',\n        timestamp: new Date().toISOString(),\n        features: ['session-management', 'players', 'chat', 'world-state', 'save-load', 'export-import'],\n      }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
     },
     {
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 568,
       "endLine": 570,
       "expression": "new Response(JSON.stringify(sessionsList), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
     },
     {
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 578,
       "endLine": 581,
       "expression": "new Response(JSON.stringify(session), {\n        status: 201,\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
     },
     {
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 590,
       "endLine": 593,
       "expression": "new Response(JSON.stringify({ error: \"Session not found\" }), {\n          status: 404,\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })"
     },
     {
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 600,
       "endLine": 606,
       "expression": "new Response(JSON.stringify({\n        ...session,\n        players,\n        recentMessages: messages,\n      }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
     },
     {
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 615,
       "endLine": 617,
       "expression": "new Response(JSON.stringify(session), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
     },
     {
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 625,
       "endLine": 627,
       "expression": "new Response(JSON.stringify({ success: true }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
     },
     {
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 635,
       "endLine": 637,
       "expression": "new Response(JSON.stringify(session), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
     },
     {
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 645,
       "endLine": 647,
       "expression": "new Response(JSON.stringify(session), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
     },
     {
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 655,
       "endLine": 657,
       "expression": "new Response(JSON.stringify(session), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
     },
     {
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 666,
       "endLine": 668,
       "expression": "new Response(JSON.stringify(player), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
     },
     {
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 677,
       "endLine": 679,
       "expression": "new Response(JSON.stringify({ success: true }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
     },
     {
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 687,
       "endLine": 689,
       "expression": "new Response(JSON.stringify(players), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
     },
     {
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 698,
       "endLine": 700,
       "expression": "new Response(JSON.stringify(message), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
     },
     {
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 709,
       "endLine": 711,
       "expression": "new Response(JSON.stringify(messages), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
     },
     {
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 720,
       "endLine": 722,
       "expression": "new Response(JSON.stringify({ success: true }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
     },
     {
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 730,
       "endLine": 732,
       "expression": "new Response(JSON.stringify(worldState), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
     },
     {
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 741,
       "endLine": 743,
       "expression": "new Response(JSON.stringify(worldState), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
     },
     {
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 752,
       "endLine": 754,
       "expression": "new Response(JSON.stringify(savePoint), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
     },
     {
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 763,
       "endLine": 765,
       "expression": "new Response(JSON.stringify(data), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
     },
     {
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 773,
       "endLine": 775,
       "expression": "new Response(JSON.stringify(savePoints), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
     },
     {
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 784,
       "endLine": 786,
       "expression": "new Response(JSON.stringify({ success: true }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
     },
     {
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 795,
       "endLine": 797,
       "expression": "new Response(JSON.stringify(logs), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
     },
     {
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 806,
       "endLine": 808,
       "expression": "new Response(JSON.stringify(log), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
     },
     {
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 816,
       "endLine": 818,
       "expression": "new Response(JSON.stringify(data), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
     },
     {
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 826,
       "endLine": 828,
       "expression": "new Response(JSON.stringify(session), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
     },
     {
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 832,
       "endLine": 835,
       "expression": "new Response(JSON.stringify({ error: \"Not found\" }), {\n      status: 404,\n      headers: { ...headers, \"Content-Type\": \"application/json\" },\n    })"
     },
     {
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 838,
       "endLine": 844,
       "expression": "new Response(JSON.stringify({\n      error: \"Internal server error\",\n      message: (error instanceof Error ? error.message : String(error)),\n    }), {\n      status: 500,\n      headers: { ...headers, \"Content-Type\": \"application/json\" },\n    })"
@@ -1485,163 +1485,163 @@
   "timeoutSites": [],
   "effectSites": [
     {
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 179,
       "endLine": 179,
       "expression": "sessions.set(id, session)"
     },
     {
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 180,
       "endLine": 180,
       "expression": "sessionPlayers.set(id, [])"
     },
     {
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 181,
       "endLine": 181,
       "expression": "chatMessages.set(id, [])"
     },
     {
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 182,
       "endLine": 182,
       "expression": "sessionLogs.set(id, [])"
     },
     {
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 201,
       "endLine": 201,
       "expression": "sessions.set(sessionId, updated)"
     },
     {
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 206,
       "endLine": 206,
       "expression": "sessions.delete(sessionId)"
     },
     {
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 207,
       "endLine": 207,
       "expression": "sessionPlayers.delete(sessionId)"
     },
     {
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 208,
       "endLine": 208,
       "expression": "chatMessages.delete(sessionId)"
     },
     {
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 209,
       "endLine": 209,
       "expression": "sessionLogs.delete(sessionId)"
     },
     {
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 242,
       "endLine": 242,
       "expression": "sessions.set(sessionId, session)"
     },
     {
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 253,
       "endLine": 253,
       "expression": "sessions.set(sessionId, session)"
     },
     {
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 275,
       "endLine": 275,
       "expression": "sessions.set(sessionId, session)"
     },
     {
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 294,
       "endLine": 294,
       "expression": "sessionPlayers.set(sessionId, players)"
     },
     {
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 309,
       "endLine": 309,
       "expression": "sessionPlayers.set(sessionId, players)"
     },
     {
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 323,
       "endLine": 323,
       "expression": "sessionPlayers.set(sessionId, players)"
     },
     {
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 336,
       "endLine": 336,
       "expression": "sessionPlayers.set(sessionId, players)"
     },
     {
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 367,
       "endLine": 367,
       "expression": "chatMessages.set(sessionId, messages)"
     },
     {
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 380,
       "endLine": 380,
       "expression": "chatMessages.set(sessionId, filtered)"
     },
     {
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 397,
       "endLine": 397,
       "expression": "sessions.set(sessionId, session)"
     },
     {
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 430,
       "endLine": 430,
       "expression": "sessions.set(sessionId, session)"
     },
     {
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 449,
       "endLine": 449,
       "expression": "sessions.set(sessionId, session)"
     },
     {
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 469,
       "endLine": 469,
       "expression": "sessions.set(sessionId, session)"
     },
     {
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 487,
       "endLine": 487,
       "expression": "sessionLogs.set(sessionId, logs)"
     },
     {
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 530,
       "endLine": 530,
       "expression": "sessions.set(data.session.id, data.session)"
     },
     {
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 531,
       "endLine": 531,
       "expression": "sessionPlayers.set(data.session.id, data.players || [])"
     },
     {
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 532,
       "endLine": 532,
       "expression": "chatMessages.set(data.session.id, data.messages || [])"
     },
     {
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 533,
       "endLine": 533,
       "expression": "sessionLogs.set(data.session.id, data.logs || [])"
@@ -1649,7 +1649,7 @@
   ],
   "handler": [
     {
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 542,
       "endLine": 846,
       "text": "serve(async (req: Request) => {\n  const headers = corsHeaders(req, CORS_OPTS)\n  \n  const optionsResponse = handleOptions(req, CORS_OPTS)\n  if (optionsResponse) return optionsResponse\n  \n  const url = new URL(req.url)\n  const path = url.pathname.replace(\"/functions/v1/sessions\", \"\")\n  \n  try {\n    // GET /health\n    if (req.method === \"GET\" && path === \"/health\") {\n      return new Response(JSON.stringify({\n        status: 'ok',\n        timestamp: new Date().toISOString(),\n        features: ['session-management', 'players', 'chat', 'world-state', 'save-load', 'export-import'],\n      }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // GET /sessions - List all sessions\n    if (req.method === \"GET\" && path === \"/sessions\") {\n      const projectId = url.searchParams.get('projectId') || undefined\n      const sessionsList = await listSessions(projectId)\n      \n      return new Response(JSON.stringify(sessionsList), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /sessions - Create session\n    if (req.method === \"POST\" && path === \"/sessions\") {\n      const body = await req.json()\n      const session = await createSession(body)\n      \n      return new Response(JSON.stringify(session), {\n        status: 201,\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // GET /sessions/:id - Get session\n    if (req.method === \"GET\" && path.match(/^\\/sessions\\/[\\w-]+$/)) {\n      const sessionId = path.split(\"/\")[2]\n      const session = await getSession(sessionId)\n      \n      if (!session) {\n        return new Response(JSON.stringify({ error: \"Session not found\" }), {\n          status: 404,\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })\n      }\n      \n      // Include players and recent messages\n      const players = await getSessionPlayers(sessionId)\n      const messages = await getChatHistory(sessionId, 50)\n      \n      return new Response(JSON.stringify({\n        ...session,\n        players,\n        recentMessages: messages,\n      }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // PUT /sessions/:id - Update session\n    if (req.method === \"PUT\" && path.match(/^\\/sessions\\/[\\w-]+$/)) {\n      const sessionId = path.split(\"/\")[2]\n      const body = await req.json()\n      const session = await updateSession(sessionId, body)\n      \n      return new Response(JSON.stringify(session), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // DELETE /sessions/:id - Delete session\n    if (req.method === \"DELETE\" && path.match(/^\\/sessions\\/[\\w-]+$/)) {\n      const sessionId = path.split(\"/\")[2]\n      await deleteSession(sessionId)\n      \n      return new Response(JSON.stringify({ success: true }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /sessions/:id/start - Start session\n    if (req.method === \"POST\" && path.match(/^\\/sessions\\/[\\w-]+\\/start$/)) {\n      const sessionId = path.split(\"/\")[2]\n      const session = await startSession(sessionId)\n      \n      return new Response(JSON.stringify(session), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /sessions/:id/pause - Pause session\n    if (req.method === \"POST\" && path.match(/^\\/sessions\\/[\\w-]+\\/pause$/)) {\n      const sessionId = path.split(\"/\")[2]\n      const session = await pauseSession(sessionId)\n      \n      return new Response(JSON.stringify(session), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /sessions/:id/end - End session\n    if (req.method === \"POST\" && path.match(/^\\/sessions\\/[\\w-]+\\/end$/)) {\n      const sessionId = path.split(\"/\")[2]\n      const session = await endSession(sessionId)\n      \n      return new Response(JSON.stringify(session), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /sessions/:id/join - Join session\n    if (req.method === \"POST\" && path.match(/^\\/sessions\\/[\\w-]+\\/join$/)) {\n      const sessionId = path.split(\"/\")[2]\n      const body = await req.json()\n      const player = await joinSession(sessionId, body)\n      \n      return new Response(JSON.stringify(player), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /sessions/:id/leave - Leave session\n    if (req.method === \"POST\" && path.match(/^\\/sessions\\/[\\w-]+\\/leave$/)) {\n      const sessionId = path.split(\"/\")[2]\n      const body = await req.json()\n      await leaveSession(sessionId, body.userId)\n      \n      return new Response(JSON.stringify({ success: true }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // GET /sessions/:id/players - Get session players\n    if (req.method === \"GET\" && path.match(/^\\/sessions\\/[\\w-]+\\/players$/)) {\n      const sessionId = path.split(\"/\")[2]\n      const players = await getSessionPlayers(sessionId)\n      \n      return new Response(JSON.stringify(players), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /sessions/:id/chat - Send chat message\n    if (req.method === \"POST\" && path.match(/^\\/sessions\\/[\\w-]+\\/chat$/)) {\n      const sessionId = path.split(\"/\")[2]\n      const body = await req.json()\n      const message = await sendChatMessage(sessionId, body)\n      \n      return new Response(JSON.stringify(message), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // GET /sessions/:id/chat - Get chat history\n    if (req.method === \"GET\" && path.match(/^\\/sessions\\/[\\w-]+\\/chat$/)) {\n      const sessionId = path.split(\"/\")[2]\n      const limit = parseInt(url.searchParams.get('limit') || '100')\n      const messages = await getChatHistory(sessionId, limit)\n      \n      return new Response(JSON.stringify(messages), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // DELETE /sessions/:id/chat/:messageId - Delete chat message\n    if (req.method === \"DELETE\" && path.match(/^\\/sessions\\/[\\w-]+\\/chat\\/[\\w-]+$/)) {\n      const sessionId = path.split(\"/\")[2]\n      const messageId = path.split(\"/\")[4]\n      await deleteChatMessage(sessionId, messageId)\n      \n      return new Response(JSON.stringify({ success: true }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // GET /sessions/:id/world-state - Get world state\n    if (req.method === \"GET\" && path.match(/^\\/sessions\\/[\\w-]+\\/world-state$/)) {\n      const sessionId = path.split(\"/\")[2]\n      const worldState = await getWorldState(sessionId)\n      \n      return new Response(JSON.stringify(worldState), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // PUT /sessions/:id/world-state - Update world state\n    if (req.method === \"PUT\" && path.match(/^\\/sessions\\/[\\w-]+\\/world-state$/)) {\n      const sessionId = path.split(\"/\")[2]\n      const body = await req.json()\n      const worldState = await updateWorldState(sessionId, body)\n      \n      return new Response(JSON.stringify(worldState), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /sessions/:id/save - Create save point\n    if (req.method === \"POST\" && path.match(/^\\/sessions\\/[\\w-]+\\/save$/)) {\n      const sessionId = path.split(\"/\")[2]\n      const body = await req.json()\n      const savePoint = await createSavePoint(sessionId, body)\n      \n      return new Response(JSON.stringify(savePoint), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /sessions/:id/load/:savePointId - Load save point\n    if (req.method === \"POST\" && path.match(/^\\/sessions\\/[\\w-]+\\/load\\/[\\w-]+$/)) {\n      const sessionId = path.split(\"/\")[2]\n      const savePointId = path.split(\"/\")[4]\n      const data = await loadSavePoint(sessionId, savePointId)\n      \n      return new Response(JSON.stringify(data), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // GET /sessions/:id/saves - List save points\n    if (req.method === \"GET\" && path.match(/^\\/sessions\\/[\\w-]+\\/saves$/)) {\n      const sessionId = path.split(\"/\")[2]\n      const savePoints = await listSavePoints(sessionId)\n      \n      return new Response(JSON.stringify(savePoints), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // DELETE /sessions/:id/save/:savePointId - Delete save point\n    if (req.method === \"DELETE\" && path.match(/^\\/sessions\\/[\\w-]+\\/save\\/[\\w-]+$/)) {\n      const sessionId = path.split(\"/\")[2]\n      const savePointId = path.split(\"/\")[4]\n      await deleteSavePoint(sessionId, savePointId)\n      \n      return new Response(JSON.stringify({ success: true }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // GET /sessions/:id/logs - Get session logs\n    if (req.method === \"GET\" && path.match(/^\\/sessions\\/[\\w-]+\\/logs$/)) {\n      const sessionId = path.split(\"/\")[2]\n      const limit = parseInt(url.searchParams.get('limit') || '100')\n      const logs = await getSessionLogs(sessionId, limit)\n      \n      return new Response(JSON.stringify(logs), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /sessions/:id/logs - Add session log\n    if (req.method === \"POST\" && path.match(/^\\/sessions\\/[\\w-]+\\/logs$/)) {\n      const sessionId = path.split(\"/\")[2]\n      const body = await req.json()\n      const log = await addSessionLog(sessionId, body)\n      \n      return new Response(JSON.stringify(log), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // GET /sessions/:id/export - Export session\n    if (req.method === \"GET\" && path.match(/^\\/sessions\\/[\\w-]+\\/export$/)) {\n      const sessionId = path.split(\"/\")[2]\n      const data = await exportSession(sessionId)\n      \n      return new Response(JSON.stringify(data), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /sessions/import - Import session\n    if (req.method === \"POST\" && path === \"/sessions/import\") {\n      const body = await req.json()\n      const session = await importSession(body)\n      \n      return new Response(JSON.stringify(session), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // Not found\n    return new Response(JSON.stringify({ error: \"Not found\" }), {\n      status: 404,\n      headers: { ...headers, \"Content-Type\": \"application/json\" },\n    })\n    \n  } catch (error: unknown) {\n    return new Response(JSON.stringify({\n      error: \"Internal server error\",\n      message: (error instanceof Error ? error.message : String(error)),\n    }), {\n      status: 500,\n      headers: { ...headers, \"Content-Type\": \"application/json\" },\n    })\n  }\n})",
@@ -1658,175 +1658,175 @@
       ],
       "returns": [
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 546,
           "endLine": 546,
           "expression": "optionsResponse"
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 554,
           "endLine": 560,
           "expression": "new Response(JSON.stringify({\n        status: 'ok',\n        timestamp: new Date().toISOString(),\n        features: ['session-management', 'players', 'chat', 'world-state', 'save-load', 'export-import'],\n      }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 568,
           "endLine": 570,
           "expression": "new Response(JSON.stringify(sessionsList), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 578,
           "endLine": 581,
           "expression": "new Response(JSON.stringify(session), {\n        status: 201,\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 590,
           "endLine": 593,
           "expression": "new Response(JSON.stringify({ error: \"Session not found\" }), {\n          status: 404,\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })"
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 600,
           "endLine": 606,
           "expression": "new Response(JSON.stringify({\n        ...session,\n        players,\n        recentMessages: messages,\n      }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 615,
           "endLine": 617,
           "expression": "new Response(JSON.stringify(session), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 625,
           "endLine": 627,
           "expression": "new Response(JSON.stringify({ success: true }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 635,
           "endLine": 637,
           "expression": "new Response(JSON.stringify(session), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 645,
           "endLine": 647,
           "expression": "new Response(JSON.stringify(session), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 655,
           "endLine": 657,
           "expression": "new Response(JSON.stringify(session), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 666,
           "endLine": 668,
           "expression": "new Response(JSON.stringify(player), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 677,
           "endLine": 679,
           "expression": "new Response(JSON.stringify({ success: true }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 687,
           "endLine": 689,
           "expression": "new Response(JSON.stringify(players), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 698,
           "endLine": 700,
           "expression": "new Response(JSON.stringify(message), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 709,
           "endLine": 711,
           "expression": "new Response(JSON.stringify(messages), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 720,
           "endLine": 722,
           "expression": "new Response(JSON.stringify({ success: true }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 730,
           "endLine": 732,
           "expression": "new Response(JSON.stringify(worldState), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 741,
           "endLine": 743,
           "expression": "new Response(JSON.stringify(worldState), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 752,
           "endLine": 754,
           "expression": "new Response(JSON.stringify(savePoint), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 763,
           "endLine": 765,
           "expression": "new Response(JSON.stringify(data), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 773,
           "endLine": 775,
           "expression": "new Response(JSON.stringify(savePoints), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 784,
           "endLine": 786,
           "expression": "new Response(JSON.stringify({ success: true }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 795,
           "endLine": 797,
           "expression": "new Response(JSON.stringify(logs), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 806,
           "endLine": 808,
           "expression": "new Response(JSON.stringify(log), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 816,
           "endLine": 818,
           "expression": "new Response(JSON.stringify(data), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 826,
           "endLine": 828,
           "expression": "new Response(JSON.stringify(session), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 832,
           "endLine": 835,
           "expression": "new Response(JSON.stringify({ error: \"Not found\" }), {\n      status: 404,\n      headers: { ...headers, \"Content-Type\": \"application/json\" },\n    })"
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 838,
           "endLine": 844,
           "expression": "new Response(JSON.stringify({\n      error: \"Internal server error\",\n      message: (error instanceof Error ? error.message : String(error)),\n    }), {\n      status: 500,\n      headers: { ...headers, \"Content-Type\": \"application/json\" },\n    })"
@@ -1834,7 +1834,7 @@
       ],
       "calls": [
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 542,
           "endLine": 846,
           "expression": "serve",
@@ -1843,7 +1843,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 543,
           "endLine": 543,
           "expression": "corsHeaders",
@@ -1853,7 +1853,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 545,
           "endLine": 545,
           "expression": "handleOptions",
@@ -1863,7 +1863,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 549,
           "endLine": 549,
           "expression": "url.pathname.replace",
@@ -1873,7 +1873,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 554,
           "endLine": 558,
           "expression": "JSON.stringify",
@@ -1882,14 +1882,14 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 556,
           "endLine": 556,
           "expression": "new Date().toISOString",
           "arguments": []
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 565,
           "endLine": 565,
           "expression": "url.searchParams.get",
@@ -1898,7 +1898,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 566,
           "endLine": 566,
           "expression": "listSessions",
@@ -1907,7 +1907,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 568,
           "endLine": 568,
           "expression": "JSON.stringify",
@@ -1916,14 +1916,14 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 575,
           "endLine": 575,
           "expression": "req.json",
           "arguments": []
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 576,
           "endLine": 576,
           "expression": "createSession",
@@ -1932,7 +1932,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 578,
           "endLine": 578,
           "expression": "JSON.stringify",
@@ -1941,7 +1941,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 585,
           "endLine": 585,
           "expression": "path.match",
@@ -1950,7 +1950,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 586,
           "endLine": 586,
           "expression": "path.split",
@@ -1959,7 +1959,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 587,
           "endLine": 587,
           "expression": "getSession",
@@ -1968,7 +1968,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 590,
           "endLine": 590,
           "expression": "JSON.stringify",
@@ -1977,7 +1977,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 597,
           "endLine": 597,
           "expression": "getSessionPlayers",
@@ -1986,7 +1986,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 598,
           "endLine": 598,
           "expression": "getChatHistory",
@@ -1996,7 +1996,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 600,
           "endLine": 604,
           "expression": "JSON.stringify",
@@ -2005,7 +2005,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 610,
           "endLine": 610,
           "expression": "path.match",
@@ -2014,7 +2014,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 611,
           "endLine": 611,
           "expression": "path.split",
@@ -2023,14 +2023,14 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 612,
           "endLine": 612,
           "expression": "req.json",
           "arguments": []
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 613,
           "endLine": 613,
           "expression": "updateSession",
@@ -2040,7 +2040,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 615,
           "endLine": 615,
           "expression": "JSON.stringify",
@@ -2049,7 +2049,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 621,
           "endLine": 621,
           "expression": "path.match",
@@ -2058,7 +2058,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 622,
           "endLine": 622,
           "expression": "path.split",
@@ -2067,7 +2067,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 623,
           "endLine": 623,
           "expression": "deleteSession",
@@ -2076,7 +2076,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 625,
           "endLine": 625,
           "expression": "JSON.stringify",
@@ -2085,7 +2085,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 631,
           "endLine": 631,
           "expression": "path.match",
@@ -2094,7 +2094,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 632,
           "endLine": 632,
           "expression": "path.split",
@@ -2103,7 +2103,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 633,
           "endLine": 633,
           "expression": "startSession",
@@ -2112,7 +2112,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 635,
           "endLine": 635,
           "expression": "JSON.stringify",
@@ -2121,7 +2121,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 641,
           "endLine": 641,
           "expression": "path.match",
@@ -2130,7 +2130,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 642,
           "endLine": 642,
           "expression": "path.split",
@@ -2139,7 +2139,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 643,
           "endLine": 643,
           "expression": "pauseSession",
@@ -2148,7 +2148,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 645,
           "endLine": 645,
           "expression": "JSON.stringify",
@@ -2157,7 +2157,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 651,
           "endLine": 651,
           "expression": "path.match",
@@ -2166,7 +2166,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 652,
           "endLine": 652,
           "expression": "path.split",
@@ -2175,7 +2175,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 653,
           "endLine": 653,
           "expression": "endSession",
@@ -2184,7 +2184,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 655,
           "endLine": 655,
           "expression": "JSON.stringify",
@@ -2193,7 +2193,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 661,
           "endLine": 661,
           "expression": "path.match",
@@ -2202,7 +2202,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 662,
           "endLine": 662,
           "expression": "path.split",
@@ -2211,14 +2211,14 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 663,
           "endLine": 663,
           "expression": "req.json",
           "arguments": []
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 664,
           "endLine": 664,
           "expression": "joinSession",
@@ -2228,7 +2228,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 666,
           "endLine": 666,
           "expression": "JSON.stringify",
@@ -2237,7 +2237,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 672,
           "endLine": 672,
           "expression": "path.match",
@@ -2246,7 +2246,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 673,
           "endLine": 673,
           "expression": "path.split",
@@ -2255,14 +2255,14 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 674,
           "endLine": 674,
           "expression": "req.json",
           "arguments": []
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 675,
           "endLine": 675,
           "expression": "leaveSession",
@@ -2272,7 +2272,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 677,
           "endLine": 677,
           "expression": "JSON.stringify",
@@ -2281,7 +2281,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 683,
           "endLine": 683,
           "expression": "path.match",
@@ -2290,7 +2290,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 684,
           "endLine": 684,
           "expression": "path.split",
@@ -2299,7 +2299,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 685,
           "endLine": 685,
           "expression": "getSessionPlayers",
@@ -2308,7 +2308,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 687,
           "endLine": 687,
           "expression": "JSON.stringify",
@@ -2317,7 +2317,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 693,
           "endLine": 693,
           "expression": "path.match",
@@ -2326,7 +2326,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 694,
           "endLine": 694,
           "expression": "path.split",
@@ -2335,14 +2335,14 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 695,
           "endLine": 695,
           "expression": "req.json",
           "arguments": []
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 696,
           "endLine": 696,
           "expression": "sendChatMessage",
@@ -2352,7 +2352,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 698,
           "endLine": 698,
           "expression": "JSON.stringify",
@@ -2361,7 +2361,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 704,
           "endLine": 704,
           "expression": "path.match",
@@ -2370,7 +2370,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 705,
           "endLine": 705,
           "expression": "path.split",
@@ -2379,7 +2379,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 706,
           "endLine": 706,
           "expression": "parseInt",
@@ -2388,7 +2388,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 706,
           "endLine": 706,
           "expression": "url.searchParams.get",
@@ -2397,7 +2397,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 707,
           "endLine": 707,
           "expression": "getChatHistory",
@@ -2407,7 +2407,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 709,
           "endLine": 709,
           "expression": "JSON.stringify",
@@ -2416,7 +2416,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 715,
           "endLine": 715,
           "expression": "path.match",
@@ -2425,7 +2425,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 716,
           "endLine": 716,
           "expression": "path.split",
@@ -2434,7 +2434,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 717,
           "endLine": 717,
           "expression": "path.split",
@@ -2443,7 +2443,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 718,
           "endLine": 718,
           "expression": "deleteChatMessage",
@@ -2453,7 +2453,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 720,
           "endLine": 720,
           "expression": "JSON.stringify",
@@ -2462,7 +2462,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 726,
           "endLine": 726,
           "expression": "path.match",
@@ -2471,7 +2471,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 727,
           "endLine": 727,
           "expression": "path.split",
@@ -2480,7 +2480,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 728,
           "endLine": 728,
           "expression": "getWorldState",
@@ -2489,7 +2489,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 730,
           "endLine": 730,
           "expression": "JSON.stringify",
@@ -2498,7 +2498,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 736,
           "endLine": 736,
           "expression": "path.match",
@@ -2507,7 +2507,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 737,
           "endLine": 737,
           "expression": "path.split",
@@ -2516,14 +2516,14 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 738,
           "endLine": 738,
           "expression": "req.json",
           "arguments": []
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 739,
           "endLine": 739,
           "expression": "updateWorldState",
@@ -2533,7 +2533,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 741,
           "endLine": 741,
           "expression": "JSON.stringify",
@@ -2542,7 +2542,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 747,
           "endLine": 747,
           "expression": "path.match",
@@ -2551,7 +2551,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 748,
           "endLine": 748,
           "expression": "path.split",
@@ -2560,14 +2560,14 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 749,
           "endLine": 749,
           "expression": "req.json",
           "arguments": []
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 750,
           "endLine": 750,
           "expression": "createSavePoint",
@@ -2577,7 +2577,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 752,
           "endLine": 752,
           "expression": "JSON.stringify",
@@ -2586,7 +2586,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 758,
           "endLine": 758,
           "expression": "path.match",
@@ -2595,7 +2595,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 759,
           "endLine": 759,
           "expression": "path.split",
@@ -2604,7 +2604,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 760,
           "endLine": 760,
           "expression": "path.split",
@@ -2613,7 +2613,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 761,
           "endLine": 761,
           "expression": "loadSavePoint",
@@ -2623,7 +2623,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 763,
           "endLine": 763,
           "expression": "JSON.stringify",
@@ -2632,7 +2632,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 769,
           "endLine": 769,
           "expression": "path.match",
@@ -2641,7 +2641,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 770,
           "endLine": 770,
           "expression": "path.split",
@@ -2650,7 +2650,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 771,
           "endLine": 771,
           "expression": "listSavePoints",
@@ -2659,7 +2659,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 773,
           "endLine": 773,
           "expression": "JSON.stringify",
@@ -2668,7 +2668,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 779,
           "endLine": 779,
           "expression": "path.match",
@@ -2677,7 +2677,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 780,
           "endLine": 780,
           "expression": "path.split",
@@ -2686,7 +2686,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 781,
           "endLine": 781,
           "expression": "path.split",
@@ -2695,7 +2695,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 782,
           "endLine": 782,
           "expression": "deleteSavePoint",
@@ -2705,7 +2705,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 784,
           "endLine": 784,
           "expression": "JSON.stringify",
@@ -2714,7 +2714,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 790,
           "endLine": 790,
           "expression": "path.match",
@@ -2723,7 +2723,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 791,
           "endLine": 791,
           "expression": "path.split",
@@ -2732,7 +2732,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 792,
           "endLine": 792,
           "expression": "parseInt",
@@ -2741,7 +2741,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 792,
           "endLine": 792,
           "expression": "url.searchParams.get",
@@ -2750,7 +2750,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 793,
           "endLine": 793,
           "expression": "getSessionLogs",
@@ -2760,7 +2760,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 795,
           "endLine": 795,
           "expression": "JSON.stringify",
@@ -2769,7 +2769,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 801,
           "endLine": 801,
           "expression": "path.match",
@@ -2778,7 +2778,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 802,
           "endLine": 802,
           "expression": "path.split",
@@ -2787,14 +2787,14 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 803,
           "endLine": 803,
           "expression": "req.json",
           "arguments": []
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 804,
           "endLine": 804,
           "expression": "addSessionLog",
@@ -2804,7 +2804,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 806,
           "endLine": 806,
           "expression": "JSON.stringify",
@@ -2813,7 +2813,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 812,
           "endLine": 812,
           "expression": "path.match",
@@ -2822,7 +2822,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 813,
           "endLine": 813,
           "expression": "path.split",
@@ -2831,7 +2831,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 814,
           "endLine": 814,
           "expression": "exportSession",
@@ -2840,7 +2840,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 816,
           "endLine": 816,
           "expression": "JSON.stringify",
@@ -2849,14 +2849,14 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 823,
           "endLine": 823,
           "expression": "req.json",
           "arguments": []
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 824,
           "endLine": 824,
           "expression": "importSession",
@@ -2865,7 +2865,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 826,
           "endLine": 826,
           "expression": "JSON.stringify",
@@ -2874,7 +2874,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 832,
           "endLine": 832,
           "expression": "JSON.stringify",
@@ -2883,7 +2883,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 838,
           "endLine": 841,
           "expression": "JSON.stringify",
@@ -2892,7 +2892,7 @@
           ]
         },
         {
-          "path": "supabase/functions/sessions/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
           "line": 840,
           "endLine": 840,
           "expression": "String",
@@ -2907,7 +2907,7 @@
     {
       "kind": "VariableDeclaration",
       "name": "DEFAULT_CORS_METHODS",
-      "path": "supabase/functions/_shared/cors.ts",
+      "path": "archive/supabase-legacy/supabase/functions/_shared/cors.ts",
       "line": 9,
       "endLine": 9,
       "text": "DEFAULT_CORS_METHODS = 'GET, POST, PUT, DELETE, OPTIONS'"
@@ -2915,7 +2915,7 @@
     {
       "kind": "VariableDeclaration",
       "name": "DEFAULT_CORS_ALLOW_HEADERS",
-      "path": "supabase/functions/_shared/cors.ts",
+      "path": "archive/supabase-legacy/supabase/functions/_shared/cors.ts",
       "line": 10,
       "endLine": 11,
       "text": "DEFAULT_CORS_ALLOW_HEADERS =\n  'authorization, x-client-info, apikey, content-type'"
@@ -2923,7 +2923,7 @@
     {
       "kind": "TypeAliasDeclaration",
       "name": "CorsOptions",
-      "path": "supabase/functions/_shared/cors.ts",
+      "path": "archive/supabase-legacy/supabase/functions/_shared/cors.ts",
       "line": 13,
       "endLine": 32,
       "text": "export type CorsOptions = {\n  /** Override Allow-Methods (e.g. \"POST, OPTIONS\" for POST-only functions). */\n  methods?: string;\n  allowHeaders?: string;\n  /**\n   * Env keys tried in order for the allowlist CSV (or explicit `*`).\n   * Default: CHARACTER_AI_ALLOWED_ORIGIN\n   */\n  envKeys?: string[];\n  /** When true (default), include Content-Type: application/json on CORS header bags. */\n  includeJsonContentType?: boolean;\n  /**\n   * When origin does not match allowlist/localhost:\n   * - omit (default): do not set Access-Control-Allow-Origin (fail-closed)\n   * - configured-or-star: set configured value or `*` (legacy meshy fallback)\n   */\n  missingOriginPolicy?: 'omit' | 'configured-or-star';\n  /** When true, echo localhost even if an allowlist env is set (legacy meshy). */\n  allowLocalhostWhenConfigured?: boolean;\n};"
@@ -2931,7 +2931,7 @@
     {
       "kind": "FunctionDeclaration",
       "name": "readConfiguredOrigin",
-      "path": "supabase/functions/_shared/cors.ts",
+      "path": "archive/supabase-legacy/supabase/functions/_shared/cors.ts",
       "line": 34,
       "endLine": 40,
       "text": "function readConfiguredOrigin(envKeys: string[]): string {\n  for (const key of envKeys) {\n    const value = Deno.env.get(key)?.trim() ?? '';\n    if (value) return value;\n  }\n  return '';\n}"
@@ -2939,7 +2939,7 @@
     {
       "kind": "FunctionDeclaration",
       "name": "isLocalDevOrigin",
-      "path": "supabase/functions/_shared/cors.ts",
+      "path": "archive/supabase-legacy/supabase/functions/_shared/cors.ts",
       "line": 42,
       "endLine": 44,
       "text": "export function isLocalDevOrigin(origin: string): boolean {\n  return /^https?:\\/\\/(localhost|127\\.0\\.0\\.1)(:\\d+)?$/i.test(origin);\n}"
@@ -2947,7 +2947,7 @@
     {
       "kind": "FunctionDeclaration",
       "name": "corsHeaders",
-      "path": "supabase/functions/_shared/cors.ts",
+      "path": "archive/supabase-legacy/supabase/functions/_shared/cors.ts",
       "line": 46,
       "endLine": 96,
       "text": "export function corsHeaders(\n  request: Request,\n  opts: CorsOptions = {},\n): Record<string, string> {\n  const envKeys = opts.envKeys?.length\n    ? opts.envKeys\n    : ['CHARACTER_AI_ALLOWED_ORIGIN'];\n  const configured = readConfiguredOrigin(envKeys);\n  const requestOrigin = request.headers.get('Origin');\n  const headers: Record<string, string> = {\n    'Access-Control-Allow-Methods': opts.methods ?? DEFAULT_CORS_METHODS,\n    'Access-Control-Allow-Headers':\n      opts.allowHeaders ?? DEFAULT_CORS_ALLOW_HEADERS,\n    Vary: 'Origin',\n  };\n\n  if (opts.includeJsonContentType !== false) {\n    headers['Content-Type'] = 'application/json';\n  }\n\n  if (configured === '*') {\n    headers['Access-Control-Allow-Origin'] = '*';\n    return headers;\n  }\n\n  const allowlist = configured\n    .split(',')\n    .map((entry) => entry.trim())\n    .filter(Boolean);\n\n  if (requestOrigin && allowlist.includes(requestOrigin)) {\n    headers['Access-Control-Allow-Origin'] = requestOrigin;\n    return headers;\n  }\n\n  const localhostOk =\n    Boolean(requestOrigin) &&\n    isLocalDevOrigin(requestOrigin!) &&\n    (!configured || opts.allowLocalhostWhenConfigured === true);\n\n  if (localhostOk && requestOrigin) {\n    headers['Access-Control-Allow-Origin'] = requestOrigin;\n    return headers;\n  }\n\n  if (opts.missingOriginPolicy === 'configured-or-star') {\n    headers['Access-Control-Allow-Origin'] = configured || '*';\n  }\n\n  return headers;\n}"
@@ -2955,7 +2955,7 @@
     {
       "kind": "FunctionDeclaration",
       "name": "handleOptions",
-      "path": "supabase/functions/_shared/cors.ts",
+      "path": "archive/supabase-legacy/supabase/functions/_shared/cors.ts",
       "line": 99,
       "endLine": 108,
       "text": "export function handleOptions(\n  request: Request,\n  opts?: CorsOptions,\n): Response | null {\n  if (request.method !== 'OPTIONS') return null;\n  return new Response(null, {\n    status: 204,\n    headers: corsHeaders(request, opts),\n  });\n}"
@@ -2963,7 +2963,7 @@
     {
       "kind": "FunctionDeclaration",
       "name": "jsonResponse",
-      "path": "supabase/functions/_shared/cors.ts",
+      "path": "archive/supabase-legacy/supabase/functions/_shared/cors.ts",
       "line": 110,
       "endLine": 120,
       "text": "export function jsonResponse(\n  request: Request,\n  body: unknown,\n  status = 200,\n  opts?: CorsOptions,\n): Response {\n  return new Response(JSON.stringify(body), {\n    status,\n    headers: corsHeaders(request, opts),\n  });\n}"
@@ -2971,7 +2971,7 @@
     {
       "kind": "VariableDeclaration",
       "name": "CORS_OPTS",
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 7,
       "endLine": 9,
       "text": "CORS_OPTS: CorsOptions = {\n  missingOriginPolicy: 'configured-or-star',\n}"
@@ -2979,7 +2979,7 @@
     {
       "kind": "InterfaceDeclaration",
       "name": "Session",
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 21,
       "endLine": 35,
       "text": "interface Session {\n  id: string\n  projectId: string\n  sessionNumber: number\n  name: string\n  description?: string\n  status: 'scheduled' | 'active' | 'paused' | 'completed'\n  startedAt?: string\n  endedAt?: string\n  worldState: WorldState\n  savePoints: SavePoint[]\n  notes?: string\n  createdAt: string\n  updatedAt: string\n}"
@@ -2987,7 +2987,7 @@
     {
       "kind": "InterfaceDeclaration",
       "name": "WorldState",
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 37,
       "endLine": 47,
       "text": "interface WorldState {\n  location: string\n  time: string\n  weather?: string\n  date?: string\n  activeQuests: string[]\n  exploredLocations: string[]\n  npcs: Record<string, NPCState>\n  flags: Record<string, boolean | string | number>\n  inventory: string[]\n}"
@@ -2995,7 +2995,7 @@
     {
       "kind": "InterfaceDeclaration",
       "name": "NPCState",
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 49,
       "endLine": 56,
       "text": "interface NPCState {\n  id: string\n  name: string\n  disposition: 'friendly' | 'neutral' | 'hostile' | 'unknown'\n  location: string\n  memories: string[]\n  relationships: Record<string, string>\n}"
@@ -3003,7 +3003,7 @@
     {
       "kind": "InterfaceDeclaration",
       "name": "SavePoint",
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 58,
       "endLine": 65,
       "text": "interface SavePoint {\n  id: string\n  name: string\n  description?: string\n  worldState: WorldState\n  playerStates: PlayerState[]\n  createdAt: string\n}"
@@ -3011,7 +3011,7 @@
     {
       "kind": "InterfaceDeclaration",
       "name": "PlayerState",
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 67,
       "endLine": 78,
       "text": "interface PlayerState {\n  userId: string\n  characterId: string\n  characterName: string\n  hp: number\n  maxHp: number\n  spellSlots: Record<string, number>\n  conditions: string[]\n  inventory: string[]\n  experience: number\n  notes?: string\n}"
@@ -3019,7 +3019,7 @@
     {
       "kind": "InterfaceDeclaration",
       "name": "SessionPlayer",
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 80,
       "endLine": 89,
       "text": "interface SessionPlayer {\n  id: string\n  sessionId: string\n  userId: string\n  characterId?: string\n  isOnline: boolean\n  joinedAt: string\n  leftAt?: string\n  lastActivity: string\n}"
@@ -3027,7 +3027,7 @@
     {
       "kind": "InterfaceDeclaration",
       "name": "ChatMessage",
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 91,
       "endLine": 101,
       "text": "interface ChatMessage {\n  id: string\n  sessionId: string\n  userId: string\n  characterId?: string\n  characterName?: string\n  message: string\n  type: 'player' | 'dm' | 'system' | 'npc'\n  metadata?: Record<string, any>\n  timestamp: string\n}"
@@ -3035,7 +3035,7 @@
     {
       "kind": "InterfaceDeclaration",
       "name": "SessionLog",
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 103,
       "endLine": 110,
       "text": "interface SessionLog {\n  id: string\n  sessionId: string\n  type: 'action' | 'combat' | 'dialogue' | 'exploration' | 'rest' | 'level-up'\n  description: string\n  details?: Record<string, any>\n  timestamp: string\n}"
@@ -3043,7 +3043,7 @@
     {
       "kind": "VariableDeclaration",
       "name": "sessions",
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 116,
       "endLine": 116,
       "text": "sessions = new Map<string, Session>()"
@@ -3051,7 +3051,7 @@
     {
       "kind": "VariableDeclaration",
       "name": "sessionPlayers",
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 117,
       "endLine": 117,
       "text": "sessionPlayers = new Map<string, SessionPlayer[]>()"
@@ -3059,7 +3059,7 @@
     {
       "kind": "VariableDeclaration",
       "name": "chatMessages",
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 118,
       "endLine": 118,
       "text": "chatMessages = new Map<string, ChatMessage[]>()"
@@ -3067,7 +3067,7 @@
     {
       "kind": "VariableDeclaration",
       "name": "sessionLogs",
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 119,
       "endLine": 119,
       "text": "sessionLogs = new Map<string, SessionLog[]>()"
@@ -3075,7 +3075,7 @@
     {
       "kind": "FunctionDeclaration",
       "name": "generateId",
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 125,
       "endLine": 127,
       "text": "function generateId(): string {\n  return crypto.randomUUID()\n}"
@@ -3083,7 +3083,7 @@
     {
       "kind": "FunctionDeclaration",
       "name": "validateSessionData",
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 129,
       "endLine": 133,
       "text": "function validateSessionData(data: Partial<Session>): { valid: boolean; error?: string } {\n  if (!data.projectId) return { valid: false, error: \"Missing projectId\" }\n  if (!data.name) return { valid: false, error: \"Missing name\" }\n  return { valid: true }\n}"
@@ -3091,7 +3091,7 @@
     {
       "kind": "FunctionDeclaration",
       "name": "createSession",
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 139,
       "endLine": 185,
       "text": "async function createSession(data: {\n  projectId: string\n  name: string\n  description?: string\n  worldState?: Partial<WorldState>\n}): Promise<Session> {\n  const id = generateId()\n  const now = new Date().toISOString()\n  \n  // Get next session number for project\n  let sessionNumber = 1\n  for (const [, session] of sessions) {\n    if (session.projectId === data.projectId) {\n      sessionNumber = Math.max(sessionNumber, session.sessionNumber + 1)\n    }\n  }\n  \n  const session: Session = {\n    id,\n    projectId: data.projectId,\n    sessionNumber,\n    name: data.name,\n    description: data.description,\n    status: 'scheduled',\n    worldState: {\n      location: data.worldState?.location || 'Unknown',\n      time: data.worldState?.time || 'Morning',\n      weather: data.worldState?.weather,\n      date: data.worldState?.date,\n      activeQuests: data.worldState?.activeQuests || [],\n      exploredLocations: data.worldState?.exploredLocations || [],\n      npcs: data.worldState?.npcs || {},\n      flags: data.worldState?.flags || {},\n      inventory: data.worldState?.inventory || [],\n    },\n    savePoints: [],\n    createdAt: now,\n    updatedAt: now,\n  }\n  \n  sessions.set(id, session)\n  sessionPlayers.set(id, [])\n  chatMessages.set(id, [])\n  sessionLogs.set(id, [])\n  \n  return session\n}"
@@ -3099,7 +3099,7 @@
     {
       "kind": "FunctionDeclaration",
       "name": "getSession",
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 187,
       "endLine": 189,
       "text": "async function getSession(sessionId: string): Promise<Session | null> {\n  return sessions.get(sessionId) || null\n}"
@@ -3107,7 +3107,7 @@
     {
       "kind": "FunctionDeclaration",
       "name": "updateSession",
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 191,
       "endLine": 203,
       "text": "async function updateSession(sessionId: string, data: Partial<Session>): Promise<Session> {\n  const session = sessions.get(sessionId)\n  if (!session) throw new Error(\"Session not found\")\n  \n  const updated: Session = {\n    ...session,\n    ...data,\n    updatedAt: new Date().toISOString(),\n  }\n  \n  sessions.set(sessionId, updated)\n  return updated\n}"
@@ -3115,7 +3115,7 @@
     {
       "kind": "FunctionDeclaration",
       "name": "deleteSession",
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 205,
       "endLine": 210,
       "text": "async function deleteSession(sessionId: string): Promise<void> {\n  sessions.delete(sessionId)\n  sessionPlayers.delete(sessionId)\n  chatMessages.delete(sessionId)\n  sessionLogs.delete(sessionId)\n}"
@@ -3123,7 +3123,7 @@
     {
       "kind": "FunctionDeclaration",
       "name": "listSessions",
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 212,
       "endLine": 218,
       "text": "async function listSessions(projectId?: string): Promise<Session[]> {\n  const all = Array.from(sessions.values())\n  if (projectId) {\n    return all.filter(s => s.projectId === projectId)\n  }\n  return all\n}"
@@ -3131,7 +3131,7 @@
     {
       "kind": "FunctionDeclaration",
       "name": "startSession",
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 224,
       "endLine": 244,
       "text": "async function startSession(sessionId: string): Promise<Session> {\n  const session = sessions.get(sessionId)\n  if (!session) throw new Error(\"Session not found\")\n  \n  session.status = 'active'\n  session.startedAt = new Date().toISOString()\n  session.updatedAt = new Date().toISOString()\n  \n  // Log session start\n  const log: SessionLog = {\n    id: generateId(),\n    sessionId,\n    type: 'action',\n    description: `Session ${session.sessionNumber} started: ${session.name}`,\n    timestamp: new Date().toISOString(),\n  }\n  sessionLogs.get(sessionId)?.push(log)\n  \n  sessions.set(sessionId, session)\n  return session\n}"
@@ -3139,7 +3139,7 @@
     {
       "kind": "FunctionDeclaration",
       "name": "pauseSession",
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 246,
       "endLine": 255,
       "text": "async function pauseSession(sessionId: string): Promise<Session> {\n  const session = sessions.get(sessionId)\n  if (!session) throw new Error(\"Session not found\")\n  \n  session.status = 'paused'\n  session.updatedAt = new Date().toISOString()\n  \n  sessions.set(sessionId, session)\n  return session\n}"
@@ -3147,7 +3147,7 @@
     {
       "kind": "FunctionDeclaration",
       "name": "endSession",
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 257,
       "endLine": 277,
       "text": "async function endSession(sessionId: string): Promise<Session> {\n  const session = sessions.get(sessionId)\n  if (!session) throw new Error(\"Session not found\")\n  \n  session.status = 'completed'\n  session.endedAt = new Date().toISOString()\n  session.updatedAt = new Date().toISOString()\n  \n  // Log session end\n  const log: SessionLog = {\n    id: generateId(),\n    sessionId,\n    type: 'action',\n    description: `Session ${session.sessionNumber} ended`,\n    timestamp: new Date().toISOString(),\n  }\n  sessionLogs.get(sessionId)?.push(log)\n  \n  sessions.set(sessionId, session)\n  return session\n}"
@@ -3155,7 +3155,7 @@
     {
       "kind": "FunctionDeclaration",
       "name": "joinSession",
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 283,
       "endLine": 312,
       "text": "async function joinSession(sessionId: string, data: {\n  userId: string\n  characterId?: string\n}): Promise<SessionPlayer> {\n  const players = sessionPlayers.get(sessionId) || []\n  \n  // Check if already joined\n  const existing = players.find(p => p.userId === data.userId)\n  if (existing) {\n    existing.isOnline = true\n    existing.lastActivity = new Date().toISOString()\n    sessionPlayers.set(sessionId, players)\n    return existing\n  }\n  \n  const player: SessionPlayer = {\n    id: generateId(),\n    sessionId,\n    userId: data.userId,\n    characterId: data.characterId,\n    isOnline: true,\n    joinedAt: new Date().toISOString(),\n    lastActivity: new Date().toISOString(),\n  }\n  \n  players.push(player)\n  sessionPlayers.set(sessionId, players)\n  \n  return player\n}"
@@ -3163,7 +3163,7 @@
     {
       "kind": "FunctionDeclaration",
       "name": "leaveSession",
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 314,
       "endLine": 324,
       "text": "async function leaveSession(sessionId: string, userId: string): Promise<void> {\n  const players = sessionPlayers.get(sessionId) || []\n  const player = players.find(p => p.userId === userId)\n  \n  if (player) {\n    player.isOnline = false\n    player.leftAt = new Date().toISOString()\n  }\n  \n  sessionPlayers.set(sessionId, players)\n}"
@@ -3171,7 +3171,7 @@
     {
       "kind": "FunctionDeclaration",
       "name": "getSessionPlayers",
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 326,
       "endLine": 328,
       "text": "async function getSessionPlayers(sessionId: string): Promise<SessionPlayer[]> {\n  return sessionPlayers.get(sessionId) || []\n}"
@@ -3179,7 +3179,7 @@
     {
       "kind": "FunctionDeclaration",
       "name": "updatePlayerActivity",
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 330,
       "endLine": 338,
       "text": "async function updatePlayerActivity(sessionId: string, userId: string): Promise<void> {\n  const players = sessionPlayers.get(sessionId) || []\n  const player = players.find(p => p.userId === userId)\n  \n  if (player) {\n    player.lastActivity = new Date().toISOString()\n    sessionPlayers.set(sessionId, players)\n  }\n}"
@@ -3187,7 +3187,7 @@
     {
       "kind": "FunctionDeclaration",
       "name": "sendChatMessage",
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 344,
       "endLine": 370,
       "text": "async function sendChatMessage(sessionId: string, data: {\n  userId: string\n  characterId?: string\n  characterName?: string\n  message: string\n  type: 'player' | 'dm' | 'system' | 'npc'\n  metadata?: Record<string, any>\n}): Promise<ChatMessage> {\n  const messages = chatMessages.get(sessionId) || []\n  \n  const msg: ChatMessage = {\n    id: generateId(),\n    sessionId,\n    userId: data.userId,\n    characterId: data.characterId,\n    characterName: data.characterName,\n    message: data.message,\n    type: data.type,\n    metadata: data.metadata,\n    timestamp: new Date().toISOString(),\n  }\n  \n  messages.push(msg)\n  chatMessages.set(sessionId, messages)\n  \n  return msg\n}"
@@ -3195,7 +3195,7 @@
     {
       "kind": "FunctionDeclaration",
       "name": "getChatHistory",
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 372,
       "endLine": 375,
       "text": "async function getChatHistory(sessionId: string, limit: number = 100): Promise<ChatMessage[]> {\n  const messages = chatMessages.get(sessionId) || []\n  return messages.slice(-limit)\n}"
@@ -3203,7 +3203,7 @@
     {
       "kind": "FunctionDeclaration",
       "name": "deleteChatMessage",
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 377,
       "endLine": 381,
       "text": "async function deleteChatMessage(sessionId: string, messageId: string): Promise<void> {\n  const messages = chatMessages.get(sessionId) || []\n  const filtered = messages.filter(m => m.id !== messageId)\n  chatMessages.set(sessionId, filtered)\n}"
@@ -3211,7 +3211,7 @@
     {
       "kind": "FunctionDeclaration",
       "name": "updateWorldState",
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 387,
       "endLine": 399,
       "text": "async function updateWorldState(sessionId: string, worldState: Partial<WorldState>): Promise<WorldState> {\n  const session = sessions.get(sessionId)\n  if (!session) throw new Error(\"Session not found\")\n  \n  session.worldState = {\n    ...session.worldState,\n    ...worldState,\n  }\n  session.updatedAt = new Date().toISOString()\n  \n  sessions.set(sessionId, session)\n  return session.worldState\n}"
@@ -3219,7 +3219,7 @@
     {
       "kind": "FunctionDeclaration",
       "name": "getWorldState",
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 401,
       "endLine": 406,
       "text": "async function getWorldState(sessionId: string): Promise<WorldState> {\n  const session = sessions.get(sessionId)\n  if (!session) throw new Error(\"Session not found\")\n  \n  return session.worldState\n}"
@@ -3227,7 +3227,7 @@
     {
       "kind": "FunctionDeclaration",
       "name": "createSavePoint",
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 412,
       "endLine": 433,
       "text": "async function createSavePoint(sessionId: string, data: {\n  name: string\n  description?: string\n  playerStates: PlayerState[]\n}): Promise<SavePoint> {\n  const session = sessions.get(sessionId)\n  if (!session) throw new Error(\"Session not found\")\n  \n  const savePoint: SavePoint = {\n    id: generateId(),\n    name: data.name,\n    description: data.description,\n    worldState: JSON.parse(JSON.stringify(session.worldState)),\n    playerStates: data.playerStates,\n    createdAt: new Date().toISOString(),\n  }\n  \n  session.savePoints.push(savePoint)\n  sessions.set(sessionId, session)\n  \n  return savePoint\n}"
@@ -3235,7 +3235,7 @@
     {
       "kind": "FunctionDeclaration",
       "name": "loadSavePoint",
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 435,
       "endLine": 455,
       "text": "async function loadSavePoint(sessionId: string, savePointId: string): Promise<{\n  worldState: WorldState\n  playerStates: PlayerState[]\n}> {\n  const session = sessions.get(sessionId)\n  if (!session) throw new Error(\"Session not found\")\n  \n  const savePoint = session.savePoints.find(sp => sp.id === savePointId)\n  if (!savePoint) throw new Error(\"Save point not found\")\n  \n  // Restore world state\n  session.worldState = JSON.parse(JSON.stringify(savePoint.worldState))\n  session.updatedAt = new Date().toISOString()\n  \n  sessions.set(sessionId, session)\n  \n  return {\n    worldState: savePoint.worldState,\n    playerStates: savePoint.playerStates,\n  }\n}"
@@ -3243,7 +3243,7 @@
     {
       "kind": "FunctionDeclaration",
       "name": "listSavePoints",
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 457,
       "endLine": 462,
       "text": "async function listSavePoints(sessionId: string): Promise<SavePoint[]> {\n  const session = sessions.get(sessionId)\n  if (!session) throw new Error(\"Session not found\")\n  \n  return session.savePoints\n}"
@@ -3251,7 +3251,7 @@
     {
       "kind": "FunctionDeclaration",
       "name": "deleteSavePoint",
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 464,
       "endLine": 470,
       "text": "async function deleteSavePoint(sessionId: string, savePointId: string): Promise<void> {\n  const session = sessions.get(sessionId)\n  if (!session) throw new Error(\"Session not found\")\n  \n  session.savePoints = session.savePoints.filter(sp => sp.id !== savePointId)\n  sessions.set(sessionId, session)\n}"
@@ -3259,7 +3259,7 @@
     {
       "kind": "FunctionDeclaration",
       "name": "addSessionLog",
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 476,
       "endLine": 490,
       "text": "async function addSessionLog(sessionId: string, log: Omit<SessionLog, 'id' | 'sessionId' | 'timestamp'>): Promise<SessionLog> {\n  const logs = sessionLogs.get(sessionId) || []\n  \n  const entry: SessionLog = {\n    id: generateId(),\n    sessionId,\n    ...log,\n    timestamp: new Date().toISOString(),\n  }\n  \n  logs.push(entry)\n  sessionLogs.set(sessionId, logs)\n  \n  return entry\n}"
@@ -3267,7 +3267,7 @@
     {
       "kind": "FunctionDeclaration",
       "name": "getSessionLogs",
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 492,
       "endLine": 495,
       "text": "async function getSessionLogs(sessionId: string, limit: number = 100): Promise<SessionLog[]> {\n  const logs = sessionLogs.get(sessionId) || []\n  return logs.slice(-limit)\n}"
@@ -3275,7 +3275,7 @@
     {
       "kind": "FunctionDeclaration",
       "name": "exportSession",
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 501,
       "endLine": 516,
       "text": "async function exportSession(sessionId: string): Promise<{\n  session: Session\n  players: SessionPlayer[]\n  messages: ChatMessage[]\n  logs: SessionLog[]\n}> {\n  const session = sessions.get(sessionId)\n  if (!session) throw new Error(\"Session not found\")\n  \n  return {\n    session,\n    players: sessionPlayers.get(sessionId) || [],\n    messages: chatMessages.get(sessionId) || [],\n    logs: sessionLogs.get(sessionId) || [],\n  }\n}"
@@ -3283,7 +3283,7 @@
     {
       "kind": "FunctionDeclaration",
       "name": "importSession",
-      "path": "supabase/functions/sessions/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/sessions/index.ts",
       "line": 518,
       "endLine": 536,
       "text": "async function importSession(data: {\n  session: Session\n  players: SessionPlayer[]\n  messages: ChatMessage[]\n  logs: SessionLog[]\n}): Promise<Session> {\n  // Validate\n  if (!data.session || !data.session.id) {\n    throw new Error(\"Invalid session data\")\n  }\n  \n  // Import\n  sessions.set(data.session.id, data.session)\n  sessionPlayers.set(data.session.id, data.players || [])\n  chatMessages.set(data.session.id, data.messages || [])\n  sessionLogs.set(data.session.id, data.logs || [])\n  \n  return data.session\n}"

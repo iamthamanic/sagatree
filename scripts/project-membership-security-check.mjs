@@ -19,12 +19,12 @@ function rejectMatch(content, pattern, label) {
   }
 }
 
-const canonicalRls = read('src/supabase/schema_v3_rls.sql');
-const migration = read('supabase/migrations/004_project_membership_security.sql');
+const canonicalRls = read('archive/supabase-legacy/src-supabase/schema_v3_rls.sql');
+const migration = read('archive/supabase-legacy/supabase/migrations/004_project_membership_security.sql');
 const projectService = read('src/infrastructure/project/project-service.ts');
 const memberService = read('src/infrastructure/project/project-member-service.ts');
-const loreFunction = read('supabase/functions/character-lore/index.ts');
-const loreAccess = read('supabase/functions/_shared/character-lore-access.ts');
+const loreFunction = read('archive/supabase-legacy/supabase/functions/character-lore/index.ts');
+const loreAccess = read('archive/supabase-legacy/supabase/functions/_shared/character-lore-access.ts');
 
 for (const [label, pattern] of [
   ['client join INSERT policy', /CREATE POLICY\s+"Users can join projects"/i],
@@ -60,7 +60,7 @@ requireMatch(
   'character-only membership update RPC',
 );
 
-const incompleteGate = read('supabase/migrations/032_incomplete_sheet_blocks_adventure_join.sql');
+const incompleteGate = read('archive/supabase-legacy/supabase/migrations/032_incomplete_sheet_blocks_adventure_join.sql');
 requireMatch(
   incompleteGate,
   /Unvollständige Charakterbögen können keinem Abenteuer beitreten/,
@@ -177,7 +177,7 @@ requireMatch(
   'project listing via host library (server-scoped memberships, CUT-20)',
 );
 
-const sheetGate = read('supabase/migrations/035_guard_sheet_status_complete.sql');
+const sheetGate = read('archive/supabase-legacy/supabase/migrations/035_guard_sheet_status_complete.sql');
 requireMatch(
   sheetGate,
   /enforce_character_sheet_status_complete/,

@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [edge-quests.json](source-contracts/edge-quests.json) (SHA-256 `3978d6144cc6de5a5973458e56c517e807c87a891cb20b2aa9998d173bfca714`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [edge-quests.json](source-contracts/edge-quests.json) (SHA-256 `3093decf37896714842ee3041b74a70fd41b8823625f0a08ae93410d1d301f4d`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Exposure and purpose
 
@@ -53,7 +53,7 @@ None in the reviewed source.
 
 ### DEFAULT_CORS_METHODS
 
-`supabase/functions/_shared/cors.ts:9`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:9`
 
 ```ts
 DEFAULT_CORS_METHODS = 'GET, POST, PUT, DELETE, OPTIONS'
@@ -61,7 +61,7 @@ DEFAULT_CORS_METHODS = 'GET, POST, PUT, DELETE, OPTIONS'
 
 ### DEFAULT_CORS_ALLOW_HEADERS
 
-`supabase/functions/_shared/cors.ts:10`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:10`
 
 ```ts
 DEFAULT_CORS_ALLOW_HEADERS =
@@ -70,7 +70,7 @@ DEFAULT_CORS_ALLOW_HEADERS =
 
 ### readConfiguredOrigin
 
-`supabase/functions/_shared/cors.ts:34`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:34`
 
 ```ts
 function readConfiguredOrigin(envKeys: string[]): string {
@@ -84,7 +84,7 @@ function readConfiguredOrigin(envKeys: string[]): string {
 
 ### CORS_OPTS
 
-`supabase/functions/quests/index.ts:7`
+`archive/supabase-legacy/supabase/functions/quests/index.ts:7`
 
 ```ts
 CORS_OPTS: CorsOptions = {
@@ -128,7 +128,7 @@ No src/infrastructure caller in the reviewed branch. This does not authorize add
 
 ### quests:1
 
-Predicate: `req.method === "GET" && path === "/health"`. Source: `supabase/functions/quests/index.ts:35`.
+Predicate: `req.method === "GET" && path === "/health"`. Source: `archive/supabase-legacy/supabase/functions/quests/index.ts:35`.
 
 
 ```ts
@@ -137,7 +137,7 @@ return new Response(JSON.stringify({ status: 'ok', features: ['quests', 'objecti
 
 ### quests:2
 
-Predicate: `req.method === "POST" && path === "/quests"`. Source: `supabase/functions/quests/index.ts:36`.
+Predicate: `req.method === "POST" && path === "/quests"`. Source: `archive/supabase-legacy/supabase/functions/quests/index.ts:36`.
 
 
 ```ts
@@ -146,7 +146,7 @@ Predicate: `req.method === "POST" && path === "/quests"`. Source: `supabase/func
 
 ### quests:3
 
-Predicate: `req.method === "GET" && path === "/quests"`. Source: `supabase/functions/quests/index.ts:37`.
+Predicate: `req.method === "GET" && path === "/quests"`. Source: `archive/supabase-legacy/supabase/functions/quests/index.ts:37`.
 
 
 ```ts
@@ -155,7 +155,7 @@ Predicate: `req.method === "GET" && path === "/quests"`. Source: `supabase/funct
 
 ### quests:4
 
-Predicate: `req.method === "GET" && path.match(/^\/quests\/[\w-]+$/)`. Source: `supabase/functions/quests/index.ts:38`.
+Predicate: `req.method === "GET" && path.match(/^\/quests\/[\w-]+$/)`. Source: `archive/supabase-legacy/supabase/functions/quests/index.ts:38`.
 
 
 ```ts
@@ -164,7 +164,7 @@ Predicate: `req.method === "GET" && path.match(/^\/quests\/[\w-]+$/)`. Source: `
 
 ### quests:5
 
-Predicate: `req.method === "PUT" && path.match(/^\/quests\/[\w-]+$/)`. Source: `supabase/functions/quests/index.ts:39`.
+Predicate: `req.method === "PUT" && path.match(/^\/quests\/[\w-]+$/)`. Source: `archive/supabase-legacy/supabase/functions/quests/index.ts:39`.
 
 
 ```ts
@@ -173,7 +173,7 @@ Predicate: `req.method === "PUT" && path.match(/^\/quests\/[\w-]+$/)`. Source: `
 
 ### quests:6
 
-Predicate: `req.method === "POST" && path.match(/^\/quests\/[\w-]+\/complete\/[\w-]+$/)`. Source: `supabase/functions/quests/index.ts:40`.
+Predicate: `req.method === "POST" && path.match(/^\/quests\/[\w-]+\/complete\/[\w-]+$/)`. Source: `archive/supabase-legacy/supabase/functions/quests/index.ts:40`.
 
 
 ```ts
@@ -182,7 +182,7 @@ Predicate: `req.method === "POST" && path.match(/^\/quests\/[\w-]+\/complete\/[\
 
 ### quests:7
 
-Predicate: `req.method === "POST" && path === "/quests/generate"`. Source: `supabase/functions/quests/index.ts:41`.
+Predicate: `req.method === "POST" && path === "/quests/generate"`. Source: `archive/supabase-legacy/supabase/functions/quests/index.ts:41`.
 
 
 ```ts
@@ -194,7 +194,7 @@ Predicate: `req.method === "POST" && path === "/quests/generate"`. Source: `supa
 
 ### CorsOptions
 
-`supabase/functions/_shared/cors.ts:13`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:13`
 
 ```ts
 export type CorsOptions = {
@@ -221,7 +221,7 @@ export type CorsOptions = {
 
 ### Quest
 
-`supabase/functions/quests/index.ts:13`
+`archive/supabase-legacy/supabase/functions/quests/index.ts:13`
 
 ```ts
 interface Quest { id: string; projectId: string; name: string; description: string; type: 'main' | 'side' | 'personal'; status: 'available' | 'active' | 'completed' | 'failed'; objectives: Objective[]; rewards: Reward[]; giver?: string; location?: string; prerequisites: string[]; createdAt: string; updatedAt: string }
@@ -229,7 +229,7 @@ interface Quest { id: string; projectId: string; name: string; description: stri
 
 ### Objective
 
-`supabase/functions/quests/index.ts:14`
+`archive/supabase-legacy/supabase/functions/quests/index.ts:14`
 
 ```ts
 interface Objective { id: string; description: string; completed: boolean; target?: string; count?: number; current?: number }
@@ -237,7 +237,7 @@ interface Objective { id: string; description: string; completed: boolean; targe
 
 ### Reward
 
-`supabase/functions/quests/index.ts:15`
+`archive/supabase-legacy/supabase/functions/quests/index.ts:15`
 
 ```ts
 interface Reward { type: 'xp' | 'gold' | 'item' | 'reputation'; amount: number; item?: string }
@@ -248,7 +248,7 @@ interface Reward { type: 'xp' | 'gold' | 'item' | 'reputation'; amount: number; 
 
 ### generateId
 
-`supabase/functions/quests/index.ts:19`
+`archive/supabase-legacy/supabase/functions/quests/index.ts:19`
 
 ```ts
 function generateId(): string { return crypto.randomUUID() }
@@ -256,7 +256,7 @@ function generateId(): string { return crypto.randomUUID() }
 
 ### createQuest
 
-`supabase/functions/quests/index.ts:21`
+`archive/supabase-legacy/supabase/functions/quests/index.ts:21`
 
 ```ts
 async function createQuest(data: Partial<Quest>): Promise<Quest> { const id = generateId(); const now = new Date().toISOString(); const quest: Quest = { id, projectId: data.projectId || '', name: data.name || 'Unknown Quest', description: data.description || '', type: data.type || 'side', status: data.status || 'available', objectives: data.objectives || [], rewards: data.rewards || [], giver: data.giver, location: data.location, prerequisites: data.prerequisites || [], createdAt: now, updatedAt: now }; quests.set(id, quest); return quest }
@@ -264,7 +264,7 @@ async function createQuest(data: Partial<Quest>): Promise<Quest> { const id = ge
 
 ### getQuest
 
-`supabase/functions/quests/index.ts:22`
+`archive/supabase-legacy/supabase/functions/quests/index.ts:22`
 
 ```ts
 async function getQuest(id: string): Promise<Quest | null> { return quests.get(id) || null }
@@ -272,7 +272,7 @@ async function getQuest(id: string): Promise<Quest | null> { return quests.get(i
 
 ### listQuests
 
-`supabase/functions/quests/index.ts:23`
+`archive/supabase-legacy/supabase/functions/quests/index.ts:23`
 
 ```ts
 async function listQuests(projectId?: string, status?: string): Promise<Quest[]> { let all = Array.from(quests.values()); if (projectId) all = all.filter(q => q.projectId === projectId); if (status) all = all.filter(q => q.status === status); return all }
@@ -280,7 +280,7 @@ async function listQuests(projectId?: string, status?: string): Promise<Quest[]>
 
 ### updateQuest
 
-`supabase/functions/quests/index.ts:24`
+`archive/supabase-legacy/supabase/functions/quests/index.ts:24`
 
 ```ts
 async function updateQuest(id: string, data: Partial<Quest>): Promise<Quest> { const quest = quests.get(id); if (!quest) throw new Error("Quest not found"); const updated: Quest = { ...quest, ...data, id, updatedAt: new Date().toISOString() }; quests.set(id, updated); return updated }
@@ -288,7 +288,7 @@ async function updateQuest(id: string, data: Partial<Quest>): Promise<Quest> { c
 
 ### completeObjective
 
-`supabase/functions/quests/index.ts:25`
+`archive/supabase-legacy/supabase/functions/quests/index.ts:25`
 
 ```ts
 async function completeObjective(questId: string, objectiveId: string): Promise<Quest> { const quest = quests.get(questId); if (!quest) throw new Error("Quest not found"); const obj = quest.objectives.find(o => o.id === objectiveId); if (obj) { obj.completed = true; quest.updatedAt = new Date().toISOString(); if (quest.objectives.every(o => o.completed)) quest.status = 'completed' } quests.set(questId, quest); return quest }
@@ -296,7 +296,7 @@ async function completeObjective(questId: string, objectiveId: string): Promise<
 
 ### generateQuest
 
-`supabase/functions/quests/index.ts:26`
+`archive/supabase-legacy/supabase/functions/quests/index.ts:26`
 
 ```ts
 async function generateQuest(type: 'main' | 'side' | 'personal', level: number): Promise<Quest> { const templates = { main: [{ name: 'The Dragon\'s Hoard', description: 'Defeat the ancient dragon and reclaim the stolen treasure.', objectives: ['Travel to Dragon\'s Lair', 'Defeat the Dragon', 'Retrieve the Treasure'] }, { name: 'The Dark Lord\'s Return', description: 'Stop the Dark Lord from rising again.', objectives: ['Gather Information', 'Find the Ritual Site', 'Disrupt the Ritual'] }], side: [{ name: 'Lost Heirloom', description: 'A villager has lost a precious family heirloom.', objectives: ['Search the Woods', 'Find the Heirloom', 'Return to Owner'] }, { name: 'Monster Bounty', description: 'A dangerous monster is terrorizing the countryside.', objectives: ['Track the Monster', 'Defeat the Monster', 'Collect the Bounty'] }], personal: [{ name: 'Training Exercise', description: 'Practice your skills to become stronger.', objectives: ['Complete 3 Encounters', 'Reach Level ' + (level + 1) ] }, { name: 'Ancient Knowledge', description: 'Seek out ancient texts to expand your knowledge.', objectives: ['Visit the Library', 'Find the Tome', 'Study the Tome'] }] }; const template = templates[type][Math.floor(Math.random() * templates[type].length)]; return createQuest({ name: template.name, description: template.description, type, objectives: template.objectives.map((desc, i) => ({ id: `obj-${i}`, description: desc, completed: false })), rewards: [{ type: 'xp', amount: level * 100 }, { type: 'gold', amount: level * 10 }] }) }
@@ -307,9 +307,9 @@ async function generateQuest(type: 'main' | 'side' | 'personal', level: number):
 
 | Path | SHA-256 |
 |---|---|
-| `supabase/functions/_shared/cors.ts` | `f8286c91d79fa5fc5cfea2fa47081916523fa7a440f234aecd9a47c6a8cf5b38` |
-| `supabase/functions/_shared/edge-dispatcher-allowlist.ts` | `6d1ae7bde0ba9e41fcaa7b61247732168a62699e7811fb8574cef266cfad3a27` |
-| `supabase/functions/_shared/edge-jwt-gate.ts` | `14a871697b051b7fcbee09dbce1dee8bc8ed5ea6a6eca0bec7b2e771b32d0f0c` |
-| `supabase/functions/main/index.ts` | `92f3bf56bf3c776e01595d980246079c4a9f8775e417959abea9d7da003bc53e` |
-| `supabase/functions/quests/index.ts` | `1826d17278205f9122b70c1c6e88892d41418335bc9167a25edf21f6eb236bb2` |
+| `archive/supabase-legacy/supabase/functions/_shared/cors.ts` | `f8286c91d79fa5fc5cfea2fa47081916523fa7a440f234aecd9a47c6a8cf5b38` |
+| `archive/supabase-legacy/supabase/functions/_shared/edge-dispatcher-allowlist.ts` | `6d1ae7bde0ba9e41fcaa7b61247732168a62699e7811fb8574cef266cfad3a27` |
+| `archive/supabase-legacy/supabase/functions/_shared/edge-jwt-gate.ts` | `14a871697b051b7fcbee09dbce1dee8bc8ed5ea6a6eca0bec7b2e771b32d0f0c` |
+| `archive/supabase-legacy/supabase/functions/main/index.ts` | `92f3bf56bf3c776e01595d980246079c4a9f8775e417959abea9d7da003bc53e` |
+| `archive/supabase-legacy/supabase/functions/quests/index.ts` | `1826d17278205f9122b70c1c6e88892d41418335bc9167a25edf21f6eb236bb2` |
 

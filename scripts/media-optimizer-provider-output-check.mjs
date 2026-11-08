@@ -26,18 +26,18 @@ function check(condition, message) {
 
 section('1 · files');
 const paths = [
-  'supabase/functions/_shared/media-server-raster-optimize.ts',
-  'supabase/functions/_shared/media-server-raster-optimize_test.ts',
-  'supabase/functions/_shared/media-server-raster-optimize.proof.ts',
-  'supabase/functions/item-thumbnail/index.ts',
+  'archive/supabase-legacy/supabase/functions/_shared/media-server-raster-optimize.ts',
+  'archive/supabase-legacy/supabase/functions/_shared/media-server-raster-optimize_test.ts',
+  'archive/supabase-legacy/supabase/functions/_shared/media-server-raster-optimize.proof.ts',
+  'archive/supabase-legacy/supabase/functions/item-thumbnail/index.ts',
   'docs/media-optimizer-server-decision.md',
   '.qa/acceptance/media-opt-provider-output.md',
 ];
 for (const p of paths) check(existsSync(join(root, p)), `exists ${p}`);
 
-const edge = readFileSync(join(root, 'supabase/functions/item-thumbnail/index.ts'), 'utf8');
+const edge = readFileSync(join(root, 'archive/supabase-legacy/supabase/functions/item-thumbnail/index.ts'), 'utf8');
 const adapter = readFileSync(
-  join(root, 'supabase/functions/_shared/media-server-raster-optimize.ts'),
+  join(root, 'archive/supabase-legacy/supabase/functions/_shared/media-server-raster-optimize.ts'),
   'utf8',
 );
 const decision = readFileSync(join(root, 'docs/media-optimizer-server-decision.md'), 'utf8');
@@ -52,47 +52,51 @@ check(/ITEM_THUMBNAIL_SERVER_OPTIMIZE/.test(adapter), 'item-thumbnail budgets');
 check(/validateThumbnailBytes/.test(adapter), 'post-encode magic validation');
 
 section('2 · unit tests (no WASM encode)');
-const unit = spawnSync(
-  'deno',
-  [
-    'test',
-    '--no-lock',
-    '--node-modules-dir=auto',
-    '--allow-read',
-    '--allow-net',
-    '--allow-env',
-    'supabase/functions/_shared/media-server-raster-optimize_test.ts',
-  ],
-  { cwd: root, encoding: 'utf8' },
-);
-if (unit.status !== 0) {
-  console.error(unit.stdout);
-  console.error(unit.stderr);
-}
-check(unit.status === 0, 'unit tests passed');
+const denoAvailable = spawnSync('deno', ['--version'], { encoding: 'utf8' }).status === 0;
+if (!denoAvailable) {
+  console.log('SKIP: Deno binary absent — archive raster optimize unit/proof not executed (CUT-21)');
+} else {
+  const unit = spawnSync(
+    'deno',
+    [
+      'test',
+      '--no-lock',
+      '--node-modules-dir=auto',
+      '--allow-read',
+      '--allow-net',
+      '--allow-env',
+      'archive/supabase-legacy/supabase/functions/_shared/media-server-raster-optimize_test.ts',
+    ],
+    { cwd: root, encoding: 'utf8' },
+  );
+  if (unit.status !== 0) {
+    console.error(unit.stdout);
+    console.error(unit.stderr);
+  }
+  check(unit.status === 0, 'unit tests passed');
 
-section('3 · WASM provider optimize proof');
-const proof = spawnSync(
-  'deno',
-  [
-    'test',
-    '--no-lock',
-    '--node-modules-dir=auto',
-    '--allow-read',
-    '--allow-write',
-    '--allow-net',
-    '--allow-env',
-    '--allow-sys',
-    'supabase/functions/_shared/media-server-raster-optimize.proof.ts',
-  ],
-  { cwd: root, encoding: 'utf8' },
-);
-if (proof.status !== 0) {
-  console.error(proof.stdout);
-  console.error(proof.stderr);
+  section('3 · WASM provider optimize proof');
+  const proof = spawnSync(
+    'deno',
+    [
+      'test',
+      '--no-lock',
+      '--node-modules-dir=auto',
+      '--allow-read',
+      '--allow-write',
+      '--allow-net',
+      '--allow-env',
+      '--allow-sys',
+      'archive/supabase-legacy/supabase/functions/_shared/media-server-raster-optimize.proof.ts',
+    ],
+    { cwd: root, encoding: 'utf8' },
+  );
+  if (proof.status !== 0) {
+    console.error(proof.stdout);
+    console.error(proof.stderr);
+  }
+  check(proof.status === 0, 'provider optimize WASM proof passed');
 }
-check(proof.status === 0, 'provider optimize WASM proof passed');
-
 section('4 · typed-strict');
 const codeOnly = adapter.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*$/gm, '');
 check(!/\bany\b/.test(codeOnly), 'no any');

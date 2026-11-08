@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [edge-dm-tools.json](source-contracts/edge-dm-tools.json) (SHA-256 `f92496156d6fcfd5183522dc438520b2d707002ef0edc4da606e650883a11be2`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [edge-dm-tools.json](source-contracts/edge-dm-tools.json) (SHA-256 `64c0faeb8acf42e04c5a124ba568ee7bbb2135789e23d65ae0ae30b9ef1849d3`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Exposure and purpose
 
@@ -57,7 +57,7 @@ None in the reviewed source.
 
 ### DEFAULT_CORS_METHODS
 
-`supabase/functions/_shared/cors.ts:9`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:9`
 
 ```ts
 DEFAULT_CORS_METHODS = 'GET, POST, PUT, DELETE, OPTIONS'
@@ -65,7 +65,7 @@ DEFAULT_CORS_METHODS = 'GET, POST, PUT, DELETE, OPTIONS'
 
 ### DEFAULT_CORS_ALLOW_HEADERS
 
-`supabase/functions/_shared/cors.ts:10`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:10`
 
 ```ts
 DEFAULT_CORS_ALLOW_HEADERS =
@@ -74,7 +74,7 @@ DEFAULT_CORS_ALLOW_HEADERS =
 
 ### readConfiguredOrigin
 
-`supabase/functions/_shared/cors.ts:34`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:34`
 
 ```ts
 function readConfiguredOrigin(envKeys: string[]): string {
@@ -88,7 +88,7 @@ function readConfiguredOrigin(envKeys: string[]): string {
 
 ### CORS_OPTS
 
-`supabase/functions/dm-tools/index.ts:7`
+`archive/supabase-legacy/supabase/functions/dm-tools/index.ts:7`
 
 ```ts
 CORS_OPTS: CorsOptions = {
@@ -98,7 +98,7 @@ CORS_OPTS: CorsOptions = {
 
 ### REDIS_URL
 
-`supabase/functions/dm-tools/index.ts:120`
+`archive/supabase-legacy/supabase/functions/dm-tools/index.ts:120`
 
 ```ts
 REDIS_URL = Deno.env.get("REDIS_URL") || "redis://localhost:6379"
@@ -140,7 +140,7 @@ No src/infrastructure caller in the reviewed branch. This does not authorize add
 
 ### dm-tools:1
 
-Predicate: `req.method === "GET" && path === "/health"`. Source: `supabase/functions/dm-tools/index.ts:649`.
+Predicate: `req.method === "GET" && path === "/health"`. Source: `archive/supabase-legacy/supabase/functions/dm-tools/index.ts:649`.
 
 
 ```ts
@@ -157,7 +157,7 @@ Predicate: `req.method === "GET" && path === "/health"`. Source: `supabase/funct
 
 ### dm-tools:2
 
-Predicate: `req.method === "POST" && path === "/dice"`. Source: `supabase/functions/dm-tools/index.ts:660`.
+Predicate: `req.method === "POST" && path === "/dice"`. Source: `archive/supabase-legacy/supabase/functions/dm-tools/index.ts:660`.
 
 
 ```ts
@@ -175,7 +175,7 @@ Predicate: `req.method === "POST" && path === "/dice"`. Source: `supabase/functi
 
 ### dm-tools:3
 
-Predicate: `req.method === "POST" && path === "/dice/multiple"`. Source: `supabase/functions/dm-tools/index.ts:672`.
+Predicate: `req.method === "POST" && path === "/dice/multiple"`. Source: `archive/supabase-legacy/supabase/functions/dm-tools/index.ts:672`.
 
 
 ```ts
@@ -191,7 +191,7 @@ Predicate: `req.method === "POST" && path === "/dice/multiple"`. Source: `supaba
 
 ### dm-tools:4
 
-Predicate: `req.method === "POST" && path === "/combat/init"`. Source: `supabase/functions/dm-tools/index.ts:682`.
+Predicate: `req.method === "POST" && path === "/combat/init"`. Source: `archive/supabase-legacy/supabase/functions/dm-tools/index.ts:682`.
 
 
 ```ts
@@ -207,7 +207,7 @@ Predicate: `req.method === "POST" && path === "/combat/init"`. Source: `supabase
 
 ### dm-tools:5
 
-Predicate: `req.method === "GET" && path.match(/^\/combat\/[\w-]+$/)`. Source: `supabase/functions/dm-tools/index.ts:692`.
+Predicate: `req.method === "GET" && path.match(/^\/combat\/[\w-]+$/)`. Source: `archive/supabase-legacy/supabase/functions/dm-tools/index.ts:692`.
 
 
 ```ts
@@ -230,7 +230,7 @@ Predicate: `req.method === "GET" && path.match(/^\/combat\/[\w-]+$/)`. Source: `
 
 ### dm-tools:6
 
-Predicate: `req.method === "GET" && path.match(/^\/combat\/session\/[\w-]+$/)`. Source: `supabase/functions/dm-tools/index.ts:709`.
+Predicate: `req.method === "GET" && path.match(/^\/combat\/session\/[\w-]+$/)`. Source: `archive/supabase-legacy/supabase/functions/dm-tools/index.ts:709`.
 
 
 ```ts
@@ -253,7 +253,7 @@ Predicate: `req.method === "GET" && path.match(/^\/combat\/session\/[\w-]+$/)`. 
 
 ### dm-tools:7
 
-Predicate: `req.method === "POST" && path.match(/^\/combat\/[\w-]+\/next$/)`. Source: `supabase/functions/dm-tools/index.ts:726`.
+Predicate: `req.method === "POST" && path.match(/^\/combat\/[\w-]+\/next$/)`. Source: `archive/supabase-legacy/supabase/functions/dm-tools/index.ts:726`.
 
 
 ```ts
@@ -269,7 +269,7 @@ Predicate: `req.method === "POST" && path.match(/^\/combat\/[\w-]+\/next$/)`. So
 
 ### dm-tools:8
 
-Predicate: `req.method === "POST" && path.match(/^\/combat\/[\w-]+\/damage$/)`. Source: `supabase/functions/dm-tools/index.ts:736`.
+Predicate: `req.method === "POST" && path.match(/^\/combat\/[\w-]+\/damage$/)`. Source: `archive/supabase-legacy/supabase/functions/dm-tools/index.ts:736`.
 
 
 ```ts
@@ -286,7 +286,7 @@ Predicate: `req.method === "POST" && path.match(/^\/combat\/[\w-]+\/damage$/)`. 
 
 ### dm-tools:9
 
-Predicate: `req.method === "POST" && path.match(/^\/combat\/[\w-]+\/heal$/)`. Source: `supabase/functions/dm-tools/index.ts:747`.
+Predicate: `req.method === "POST" && path.match(/^\/combat\/[\w-]+\/heal$/)`. Source: `archive/supabase-legacy/supabase/functions/dm-tools/index.ts:747`.
 
 
 ```ts
@@ -303,7 +303,7 @@ Predicate: `req.method === "POST" && path.match(/^\/combat\/[\w-]+\/heal$/)`. So
 
 ### dm-tools:10
 
-Predicate: `req.method === "POST" && path.match(/^\/combat\/[\w-]+\/condition$/)`. Source: `supabase/functions/dm-tools/index.ts:758`.
+Predicate: `req.method === "POST" && path.match(/^\/combat\/[\w-]+\/condition$/)`. Source: `archive/supabase-legacy/supabase/functions/dm-tools/index.ts:758`.
 
 
 ```ts
@@ -320,7 +320,7 @@ Predicate: `req.method === "POST" && path.match(/^\/combat\/[\w-]+\/condition$/)
 
 ### dm-tools:11
 
-Predicate: `req.method === "DELETE" && path.match(/^\/combat\/[\w-]+\/condition$/)`. Source: `supabase/functions/dm-tools/index.ts:769`.
+Predicate: `req.method === "DELETE" && path.match(/^\/combat\/[\w-]+\/condition$/)`. Source: `archive/supabase-legacy/supabase/functions/dm-tools/index.ts:769`.
 
 
 ```ts
@@ -337,7 +337,7 @@ Predicate: `req.method === "DELETE" && path.match(/^\/combat\/[\w-]+\/condition$
 
 ### dm-tools:12
 
-Predicate: `req.method === "POST" && path.match(/^\/combat\/[\w-]+\/end$/)`. Source: `supabase/functions/dm-tools/index.ts:780`.
+Predicate: `req.method === "POST" && path.match(/^\/combat\/[\w-]+\/end$/)`. Source: `archive/supabase-legacy/supabase/functions/dm-tools/index.ts:780`.
 
 
 ```ts
@@ -353,7 +353,7 @@ Predicate: `req.method === "POST" && path.match(/^\/combat\/[\w-]+\/end$/)`. Sou
 
 ### dm-tools:13
 
-Predicate: `req.method === "POST" && path === "/check"`. Source: `supabase/functions/dm-tools/index.ts:790`.
+Predicate: `req.method === "POST" && path === "/check"`. Source: `archive/supabase-legacy/supabase/functions/dm-tools/index.ts:790`.
 
 
 ```ts
@@ -369,7 +369,7 @@ Predicate: `req.method === "POST" && path === "/check"`. Source: `supabase/funct
 
 ### dm-tools:14
 
-Predicate: `req.method === "GET" && path === "/conditions"`. Source: `supabase/functions/dm-tools/index.ts:800`.
+Predicate: `req.method === "GET" && path === "/conditions"`. Source: `archive/supabase-legacy/supabase/functions/dm-tools/index.ts:800`.
 
 
 ```ts
@@ -382,7 +382,7 @@ Predicate: `req.method === "GET" && path === "/conditions"`. Source: `supabase/f
 
 ### dm-tools:15
 
-Predicate: `req.method === "GET" && path.match(/^\/conditions\/[\w-]+$/)`. Source: `supabase/functions/dm-tools/index.ts:807`.
+Predicate: `req.method === "GET" && path.match(/^\/conditions\/[\w-]+$/)`. Source: `archive/supabase-legacy/supabase/functions/dm-tools/index.ts:807`.
 
 
 ```ts
@@ -405,7 +405,7 @@ Predicate: `req.method === "GET" && path.match(/^\/conditions\/[\w-]+$/)`. Sourc
 
 ### dm-tools:16
 
-Predicate: `req.method === "GET" && path === "/rulesets"`. Source: `supabase/functions/dm-tools/index.ts:824`.
+Predicate: `req.method === "GET" && path === "/rulesets"`. Source: `archive/supabase-legacy/supabase/functions/dm-tools/index.ts:824`.
 
 
 ```ts
@@ -418,7 +418,7 @@ Predicate: `req.method === "GET" && path === "/rulesets"`. Source: `supabase/fun
 
 ### dm-tools:17
 
-Predicate: `req.method === "GET" && path.match(/^\/rulesets\/[\w-]+$/)`. Source: `supabase/functions/dm-tools/index.ts:831`.
+Predicate: `req.method === "GET" && path.match(/^\/rulesets\/[\w-]+$/)`. Source: `archive/supabase-legacy/supabase/functions/dm-tools/index.ts:831`.
 
 
 ```ts
@@ -444,7 +444,7 @@ Predicate: `req.method === "GET" && path.match(/^\/rulesets\/[\w-]+$/)`. Source:
 
 ### CorsOptions
 
-`supabase/functions/_shared/cors.ts:13`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:13`
 
 ```ts
 export type CorsOptions = {
@@ -471,7 +471,7 @@ export type CorsOptions = {
 
 ### DiceRoll
 
-`supabase/functions/dm-tools/index.ts:21`
+`archive/supabase-legacy/supabase/functions/dm-tools/index.ts:21`
 
 ```ts
 interface DiceRoll {
@@ -487,7 +487,7 @@ interface DiceRoll {
 
 ### DiceResult
 
-`supabase/functions/dm-tools/index.ts:31`
+`archive/supabase-legacy/supabase/functions/dm-tools/index.ts:31`
 
 ```ts
 interface DiceResult {
@@ -504,7 +504,7 @@ interface DiceResult {
 
 ### CombatParticipant
 
-`supabase/functions/dm-tools/index.ts:42`
+`archive/supabase-legacy/supabase/functions/dm-tools/index.ts:42`
 
 ```ts
 interface CombatParticipant {
@@ -523,7 +523,7 @@ interface CombatParticipant {
 
 ### CombatState
 
-`supabase/functions/dm-tools/index.ts:55`
+`archive/supabase-legacy/supabase/functions/dm-tools/index.ts:55`
 
 ```ts
 interface CombatState {
@@ -541,7 +541,7 @@ interface CombatState {
 
 ### CombatLogEntry
 
-`supabase/functions/dm-tools/index.ts:67`
+`archive/supabase-legacy/supabase/functions/dm-tools/index.ts:67`
 
 ```ts
 interface CombatLogEntry {
@@ -562,7 +562,7 @@ interface CombatLogEntry {
 
 ### Condition
 
-`supabase/functions/dm-tools/index.ts:82`
+`archive/supabase-legacy/supabase/functions/dm-tools/index.ts:82`
 
 ```ts
 interface Condition {
@@ -575,7 +575,7 @@ interface Condition {
 
 ### Spell
 
-`supabase/functions/dm-tools/index.ts:89`
+`archive/supabase-legacy/supabase/functions/dm-tools/index.ts:89`
 
 ```ts
 interface Spell {
@@ -595,7 +595,7 @@ interface Spell {
 
 ### AbilityCheckRequest
 
-`supabase/functions/dm-tools/index.ts:103`
+`archive/supabase-legacy/supabase/functions/dm-tools/index.ts:103`
 
 ```ts
 interface AbilityCheckRequest {
@@ -617,7 +617,7 @@ interface AbilityCheckRequest {
 
 ### parseDiceNotation
 
-`supabase/functions/dm-tools/index.ts:205`
+`archive/supabase-legacy/supabase/functions/dm-tools/index.ts:205`
 
 ```ts
 function parseDiceNotation(notation: string): DiceRoll {
@@ -641,7 +641,7 @@ function parseDiceNotation(notation: string): DiceRoll {
 
 ### rollSingle
 
-`supabase/functions/dm-tools/index.ts:223`
+`archive/supabase-legacy/supabase/functions/dm-tools/index.ts:223`
 
 ```ts
 function rollSingle(sides: number): number {
@@ -651,7 +651,7 @@ function rollSingle(sides: number): number {
 
 ### rollDice
 
-`supabase/functions/dm-tools/index.ts:227`
+`archive/supabase-legacy/supabase/functions/dm-tools/index.ts:227`
 
 ```ts
 function rollDice(
@@ -707,7 +707,7 @@ function rollDice(
 
 ### rollMultiple
 
-`supabase/functions/dm-tools/index.ts:277`
+`archive/supabase-legacy/supabase/functions/dm-tools/index.ts:277`
 
 ```ts
 function rollMultiple(rolls: Array<{ notation: string; modifier?: number; advantage?: 'adv' | 'dis' }>): DiceResult[] {
@@ -717,7 +717,7 @@ function rollMultiple(rolls: Array<{ notation: string; modifier?: number; advant
 
 ### createCombatId
 
-`supabase/functions/dm-tools/index.ts:288`
+`archive/supabase-legacy/supabase/functions/dm-tools/index.ts:288`
 
 ```ts
 function createCombatId(): string {
@@ -727,7 +727,7 @@ function createCombatId(): string {
 
 ### initCombat
 
-`supabase/functions/dm-tools/index.ts:292`
+`archive/supabase-legacy/supabase/functions/dm-tools/index.ts:292`
 
 ```ts
 async function initCombat(
@@ -770,7 +770,7 @@ async function initCombat(
 
 ### getCombatState
 
-`supabase/functions/dm-tools/index.ts:329`
+`archive/supabase-legacy/supabase/functions/dm-tools/index.ts:329`
 
 ```ts
 async function getCombatState(combatId: string): Promise<CombatState | null> {
@@ -780,7 +780,7 @@ async function getCombatState(combatId: string): Promise<CombatState | null> {
 
 ### getCombatBySession
 
-`supabase/functions/dm-tools/index.ts:333`
+`archive/supabase-legacy/supabase/functions/dm-tools/index.ts:333`
 
 ```ts
 async function getCombatBySession(sessionId: string): Promise<CombatState | null> {
@@ -795,7 +795,7 @@ async function getCombatBySession(sessionId: string): Promise<CombatState | null
 
 ### nextTurn
 
-`supabase/functions/dm-tools/index.ts:342`
+`archive/supabase-legacy/supabase/functions/dm-tools/index.ts:342`
 
 ```ts
 async function nextTurn(combatId: string): Promise<CombatState> {
@@ -840,7 +840,7 @@ async function nextTurn(combatId: string): Promise<CombatState> {
 
 ### applyDamage
 
-`supabase/functions/dm-tools/index.ts:381`
+`archive/supabase-legacy/supabase/functions/dm-tools/index.ts:381`
 
 ```ts
 async function applyDamage(combatId: string, targetId: string, damage: number): Promise<CombatState> {
@@ -889,7 +889,7 @@ async function applyDamage(combatId: string, targetId: string, damage: number): 
 
 ### applyHealing
 
-`supabase/functions/dm-tools/index.ts:424`
+`archive/supabase-legacy/supabase/functions/dm-tools/index.ts:424`
 
 ```ts
 async function applyHealing(combatId: string, targetId: string, healing: number): Promise<CombatState> {
@@ -928,7 +928,7 @@ async function applyHealing(combatId: string, targetId: string, healing: number)
 
 ### applyCondition
 
-`supabase/functions/dm-tools/index.ts:457`
+`archive/supabase-legacy/supabase/functions/dm-tools/index.ts:457`
 
 ```ts
 async function applyCondition(
@@ -962,7 +962,7 @@ async function applyCondition(
 
 ### removeCondition
 
-`supabase/functions/dm-tools/index.ts:485`
+`archive/supabase-legacy/supabase/functions/dm-tools/index.ts:485`
 
 ```ts
 async function removeCondition(
@@ -994,7 +994,7 @@ async function removeCondition(
 
 ### endCombat
 
-`supabase/functions/dm-tools/index.ts:511`
+`archive/supabase-legacy/supabase/functions/dm-tools/index.ts:511`
 
 ```ts
 async function endCombat(combatId: string): Promise<CombatState> {
@@ -1017,7 +1017,7 @@ async function endCombat(combatId: string): Promise<CombatState> {
 
 ### performAbilityCheck
 
-`supabase/functions/dm-tools/index.ts:532`
+`archive/supabase-legacy/supabase/functions/dm-tools/index.ts:532`
 
 ```ts
 async function performAbilityCheck(request: AbilityCheckRequest): Promise<{
@@ -1067,9 +1067,9 @@ async function performAbilityCheck(request: AbilityCheckRequest): Promise<{
 
 | Path | SHA-256 |
 |---|---|
-| `supabase/functions/_shared/cors.ts` | `f8286c91d79fa5fc5cfea2fa47081916523fa7a440f234aecd9a47c6a8cf5b38` |
-| `supabase/functions/_shared/edge-dispatcher-allowlist.ts` | `6d1ae7bde0ba9e41fcaa7b61247732168a62699e7811fb8574cef266cfad3a27` |
-| `supabase/functions/_shared/edge-jwt-gate.ts` | `14a871697b051b7fcbee09dbce1dee8bc8ed5ea6a6eca0bec7b2e771b32d0f0c` |
-| `supabase/functions/dm-tools/index.ts` | `66d72e2b61594814ad11b9e2eeede2b17d1ee8169058dcdc89702adcad2e0a6f` |
-| `supabase/functions/main/index.ts` | `92f3bf56bf3c776e01595d980246079c4a9f8775e417959abea9d7da003bc53e` |
+| `archive/supabase-legacy/supabase/functions/_shared/cors.ts` | `f8286c91d79fa5fc5cfea2fa47081916523fa7a440f234aecd9a47c6a8cf5b38` |
+| `archive/supabase-legacy/supabase/functions/_shared/edge-dispatcher-allowlist.ts` | `6d1ae7bde0ba9e41fcaa7b61247732168a62699e7811fb8574cef266cfad3a27` |
+| `archive/supabase-legacy/supabase/functions/_shared/edge-jwt-gate.ts` | `14a871697b051b7fcbee09dbce1dee8bc8ed5ea6a6eca0bec7b2e771b32d0f0c` |
+| `archive/supabase-legacy/supabase/functions/dm-tools/index.ts` | `66d72e2b61594814ad11b9e2eeede2b17d1ee8169058dcdc89702adcad2e0a6f` |
+| `archive/supabase-legacy/supabase/functions/main/index.ts` | `92f3bf56bf3c776e01595d980246079c4a9f8775e417959abea9d7da003bc53e` |
 

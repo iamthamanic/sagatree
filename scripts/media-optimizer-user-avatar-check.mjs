@@ -34,7 +34,7 @@ const paths = [
   'src/infrastructure/user-profile/user-profile-service.ts',
   'src/infrastructure/user-profile/account-avatar-store.ts',
   'src/domains/user-profile/display-name.ts',
-  'supabase/migrations/081_user_profiles_and_avatars.sql',
+  'archive/supabase-legacy/supabase/migrations/081_user_profiles_and_avatars.sql',
 ];
 for (const p of paths) {
   check(existsSync(join(root, p)), `exists ${p}`);
@@ -63,7 +63,7 @@ const avatarStore = readFileSync(
 );
 const profileBarrel = readFileSync(join(root, 'src/app/profile/index.ts'), 'utf8');
 const migration = readFileSync(
-  join(root, 'supabase/migrations/081_user_profiles_and_avatars.sql'),
+  join(root, 'archive/supabase-legacy/supabase/migrations/081_user_profiles_and_avatars.sql'),
   'utf8',
 );
 

@@ -23,8 +23,8 @@ RLS-/SECURITY-DEFINER-Regeln als explizite Policy-Service-Operationen des permis
 
 - Epic: #773; historische Baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`; keine Produktionszustandsbehauptung.
 - Verbindliche Architektur: `docs/architecture/migration-owner-decisions-2026-10-23.md`.
-- Quellpfade und bestehende Adapter: `supabase/migrations/015_inventory_item_definitions.sql`, `supabase/migrations`, `docs/ops/negative-authz-suite.md`, `docs/architecture/host-modular-monolith.md`.
-- Source Contracts: `supabase/migrations/015_inventory_item_definitions.sql`, `supabase/migrations`, `docs/ops/negative-authz-suite.md`, `docs/architecture/host-modular-monolith.md`.
+- Quellpfade und bestehende Adapter: `archive/supabase-legacy/supabase/migrations/015_inventory_item_definitions.sql`, `archive/supabase-legacy/supabase/migrations`, `docs/ops/negative-authz-suite.md`, `docs/architecture/host-modular-monolith.md`.
+- Source Contracts: `archive/supabase-legacy/supabase/migrations/015_inventory_item_definitions.sql`, `archive/supabase-legacy/supabase/migrations`, `docs/ops/negative-authz-suite.md`, `docs/architecture/host-modular-monolith.md`.
 - Zielverhalten: Binding product decisions: docs/architecture/migration-owner-decisions-2026-10-23.md; GATE-01 Drizzle+Policy, GATE-02 Cookie-A, GATE-03 Hono+Colyseus, GATE-04 SQLite single-writer. GATE-05 Tauri+sidecar selected; platform release pending..
 
 ## Scope
@@ -68,28 +68,28 @@ UI-Parität, soweit betroffen: `src/THEME_GUIDE.md`, `docs/ui-styleguide.md`, `d
 - Gegeben: O besitzt eine Welt, G verwaltet ein Projekt dieser Welt und P1/P2 sind Mitglieder
 - Wenn: die Policy-Matrix Weltbearbeitung, Session-GM und Spielerlesen prüft
 - Dann: Owner-only Weltoperationen erlauben O und verweigern G; GM-only Sessionoperationen erlauben G und verweigern O ohne GM-Rolle; Spieler sehen ausschließlich ihre erlaubte Projektion.
-- Quelle: `supabase/migrations/015_inventory_item_definitions.sql`, `supabase/migrations`, `docs/ops/negative-authz-suite.md`, `docs/architecture/host-modular-monolith.md`
+- Quelle: `archive/supabase-legacy/supabase/migrations/015_inventory_item_definitions.sql`, `archive/supabase-legacy/supabase/migrations`, `docs/ops/negative-authz-suite.md`, `docs/architecture/host-modular-monolith.md`
 
 ### Fall 2
 
 - Gegeben: Unbekannte Operation, fehlender Actor, inaktive Membership und fremder Tenant
 - Wenn: jeder Fall denselben zentralen Policy-Einstieg aufruft
 - Dann: Alle vier Fälle werden ohne Mutation und ohne Offenlegung privater Ressourcendaten abgewiesen.
-- Quelle: `supabase/migrations/015_inventory_item_definitions.sql`, `supabase/migrations`, `docs/ops/negative-authz-suite.md`, `docs/architecture/host-modular-monolith.md`
+- Quelle: `archive/supabase-legacy/supabase/migrations/015_inventory_item_definitions.sql`, `archive/supabase-legacy/supabase/migrations`, `docs/ops/negative-authz-suite.md`, `docs/architecture/host-modular-monolith.md`
 
 ### Fall 3
 
 - Gegeben: HTTP, WebSocket, Job-Worker und interner Adapter
 - Wenn: sie eine geschützte Anwendungsmutation aufrufen
 - Dann: Jeder Einstieg erfordert denselben geprüften Actor und dieselbe Policy; ein Callsite-Scan und ein direkter Bypass-Negativtest weisen keinen offenen Alternativpfad aus.
-- Quelle: `supabase/migrations/015_inventory_item_definitions.sql`, `supabase/migrations`, `docs/ops/negative-authz-suite.md`, `docs/architecture/host-modular-monolith.md`
+- Quelle: `archive/supabase-legacy/supabase/migrations/015_inventory_item_definitions.sql`, `archive/supabase-legacy/supabase/migrations`, `docs/ops/negative-authz-suite.md`, `docs/architecture/host-modular-monolith.md`
 
 ### Fall 4
 
 - Gegeben: Ein Domänenmodul oder Use-Case
 - Wenn: eine geschützte Mutation ausführt
 - Dann: Der Aufruf geht über modules/permissions public API; ORM-/SQL-Bypässe in persistence bleiben zusätzliche High-Findings bis Import-Boundary-CI greift und ersetzen keine Modul-Boundary-Prüfung.
-- Quelle: `supabase/migrations/015_inventory_item_definitions.sql`, `supabase/migrations`, `docs/ops/negative-authz-suite.md`, `docs/architecture/host-modular-monolith.md`
+- Quelle: `archive/supabase-legacy/supabase/migrations/015_inventory_item_definitions.sql`, `archive/supabase-legacy/supabase/migrations`, `docs/ops/negative-authz-suite.md`, `docs/architecture/host-modular-monolith.md`
 
 ## Required Tests
 

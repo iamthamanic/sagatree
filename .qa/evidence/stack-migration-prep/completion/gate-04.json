@@ -5,14 +5,14 @@
   "result": "PASS",
   "testedCommit": "00b07b787e50c86e67652ed20cc7dccc2de99fea",
   "githubClosed": true,
-  "mergeRef": "PR #886 → main; human APPROVED on #787",
-  "note": "Completion requires merge SHA + hashed check artifacts; architecture freigabe or source fingerprint alone is insufficient.",
+  "mergeRef": "PR #886 \u2192 main; human APPROVED on #787",
+  "note": "GATE-04 evidence refreshed after CUT-21 archive path move (deterministic report rewrite).",
   "checks": [
     {
       "command": "PoC report PASS",
       "result": "PASS",
       "evidenceFile": ".qa/evidence/stack-migration-prep/pocs/gate-04/report.json",
-      "sha256": "5bbd05128a73f5cd2c7ac147e44e97734b81681cb87c11abb832162ba43efb1d"
+      "sha256": "789e20dcf276f722df2e916b4ed0f2d56081507de0af612debb3ad3ccdd8f1f4"
     },
     {
       "command": "ADR-ST-08",

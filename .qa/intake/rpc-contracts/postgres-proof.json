@@ -294,431 +294,431 @@
   ],
   "migrationSources": [
     {
-      "path": "supabase/migrations/001_initial.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/001_initial.sql",
       "sha256": "e3325c56d68286a2e293ddff791736ef91346ff90ac018c045843a5d52afb8c8"
     },
     {
-      "path": "supabase/migrations/002_character_trait_arrays.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/002_character_trait_arrays.sql",
       "sha256": "74a7f112720d2572bbb8b7d8c32e0f5f5abf932c35268a34b45dc4bfedc2a02a"
     },
     {
-      "path": "supabase/migrations/003_character_lore_rate_limits.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/003_character_lore_rate_limits.sql",
       "sha256": "2dd19137edfcfd0987a340b7ade98288eee990bca21252dfcda7900eb5f7a77a"
     },
     {
-      "path": "supabase/migrations/004_project_membership_security.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/004_project_membership_security.sql",
       "sha256": "c1eccbda2dae95cd177ba6313dfd51ef269e0740a13805a5d07a223c6bf489cd"
     },
     {
-      "path": "supabase/migrations/005_character_ruleset_metadata.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/005_character_ruleset_metadata.sql",
       "sha256": "02874b854874e5d89ad6b697563d545f5d2b72735afe763d6927e574b2ba49ca"
     },
     {
-      "path": "supabase/migrations/006_character_portrait_storage.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/006_character_portrait_storage.sql",
       "sha256": "da223b2583b2b985b8773337458307f4c6d6d2dfa36067c127e086cb2f690a41"
     },
     {
-      "path": "supabase/migrations/007_sagadrive_character_profile.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/007_sagadrive_character_profile.sql",
       "sha256": "c64e0659f2a2006fed326a55f4521a8be21de8dffd44d0b46bd057475b5b9dff"
     },
     {
-      "path": "supabase/migrations/008_world_profiles.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/008_world_profiles.sql",
       "sha256": "94d2db4e86205d09d54b63e322af6b69b93a7e07d13f3795bc1d841a46961b1a"
     },
     {
-      "path": "supabase/migrations/009_character_adventure_arcs.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/009_character_adventure_arcs.sql",
       "sha256": "c961a5f58d73ea0c554e4ad939af2353510d63585c514e9b04428ede22a89f2d"
     },
     {
-      "path": "supabase/migrations/010_characters_v3_columns.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/010_characters_v3_columns.sql",
       "sha256": "b1e054d6ba6678f1974c82f5a660ab6b01e34a64f9ac0f62f00f10b42f9cfc8c"
     },
     {
-      "path": "supabase/migrations/011_seed_local_admin.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/011_seed_local_admin.sql",
       "sha256": "87dae7ffeddce109a3373bafac5c4209d55e18cd02fd387a4ef8cf0416531251"
     },
     {
-      "path": "supabase/migrations/012_character_presets.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/012_character_presets.sql",
       "sha256": "d87c2ecc96d814244e35c5c63d1ccc43d872ac406f57db06af6b3df83aeb2625"
     },
     {
-      "path": "supabase/migrations/013_character_presets_rls_hardening.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/013_character_presets_rls_hardening.sql",
       "sha256": "63c0ed69f1f8a20b3061118ac3bac38e3dc8086b4e28f0b1b8150fb00a590dad"
     },
     {
-      "path": "supabase/migrations/014_character_abilities_emotion_profiles.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/014_character_abilities_emotion_profiles.sql",
       "sha256": "e34e71c2edb5ec44dd665cbd32927c3d69fa56d2cf0bdf4bf72e5b65bbd08e87"
     },
     {
-      "path": "supabase/migrations/015_inventory_item_definitions.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/015_inventory_item_definitions.sql",
       "sha256": "aeedfd77bb79d7d38f4163a496b373d266027b39adbce82fe14aec768187e9e7"
     },
     {
-      "path": "supabase/migrations/016_character_inventory_v2.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/016_character_inventory_v2.sql",
       "sha256": "22eba40df1a0e9f4033e32a2c74a316ebafbc551d46748edba2b3e260b18778f"
     },
     {
-      "path": "supabase/migrations/017_item_thumbnail_assets.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/017_item_thumbnail_assets.sql",
       "sha256": "b1cb83b8e57a645a15103dd18ba79027e35a6839017407c9da782f84d035e6ef"
     },
     {
-      "path": "supabase/migrations/018_item_model3d_assets.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/018_item_model3d_assets.sql",
       "sha256": "0dc6b638154fa475cf83570365ffc0748b9674e29598384e4cf6691fea3b6596"
     },
     {
-      "path": "supabase/migrations/019_world_profiles_read_for_adventure.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/019_world_profiles_read_for_adventure.sql",
       "sha256": "fb3f7956d105413e1c779b891317eb8f6c199968f6eb23d8e2b72d7dc7b1bb10"
     },
     {
-      "path": "supabase/migrations/020_user_ai_provider_credentials.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/020_user_ai_provider_credentials.sql",
       "sha256": "5d5a30f45cd7b84dbff95878c16cad1817b5aa9c03c75745e632a273eb1306e9"
     },
     {
-      "path": "supabase/migrations/021_npc_creature_definitions.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/021_npc_creature_definitions.sql",
       "sha256": "a1442859d0aadfd61af053c4799f8fa1ee147933b988be7c54a6515a0e5783fc"
     },
     {
-      "path": "supabase/migrations/022_npc_creature_controller_assignments.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/022_npc_creature_controller_assignments.sql",
       "sha256": "cc020b1d34e84b53bfd26fd2256963d3f2602eabfe369672b67c01b865966da8"
     },
     {
-      "path": "supabase/migrations/023_npc_creature_instances.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/023_npc_creature_instances.sql",
       "sha256": "36720ac8bf2973fae37ef3ab2fd5d8be7397d48ca1cb133b9a6e09a0d1b48008"
     },
     {
-      "path": "supabase/migrations/024_character_avatar_import.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/024_character_avatar_import.sql",
       "sha256": "6e929de2bb0074d96b6374c5b32ba3d1bb7ece49fb2650f8bea36f27be817055"
     },
     {
-      "path": "supabase/migrations/025_character_avatar_export.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/025_character_avatar_export.sql",
       "sha256": "a540ceeb82180e2b23063f67e4d694743d25854de5560d23768fb997ca67de6a"
     },
     {
-      "path": "supabase/migrations/026_character_avatar_meshy_jobs.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/026_character_avatar_meshy_jobs.sql",
       "sha256": "905ea6c9b961fa0d1e48964f24ae4d26b156825979a4e70dd62868848bf1b2da"
     },
     {
-      "path": "supabase/migrations/027_character_avatar_meshy_generation_mode.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/027_character_avatar_meshy_generation_mode.sql",
       "sha256": "71ab0ddb245f76499a52aa4bac7ca964475501ab6899e6fe6c78dc4ab85c24b5"
     },
     {
-      "path": "supabase/migrations/028_character_avatar_meshy_glb_budget.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/028_character_avatar_meshy_glb_budget.sql",
       "sha256": "a264c8e797d1b14c94755711ae61f7c153c5b856fe93421420d806cd82e9d3aa"
     },
     {
-      "path": "supabase/migrations/029_character_sheet_status.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/029_character_sheet_status.sql",
       "sha256": "faa2b4446d078e83ed00d5894ef297e5fb7322c65481873fc6fa85983fa5ccf8"
     },
     {
-      "path": "supabase/migrations/030_character_avatar_meshy_rig_task.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/030_character_avatar_meshy_rig_task.sql",
       "sha256": "c4a345f7ad35115fea97d361665373e701936e64c62a3afbf31b8bdb70994385"
     },
     {
-      "path": "supabase/migrations/031_character_avatar_meshy_jobs_no_client_write.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/031_character_avatar_meshy_jobs_no_client_write.sql",
       "sha256": "fa8aa4a7ebf58566e271dbca0445e682cac38aa913ad03c115f9ae380afd3941"
     },
     {
-      "path": "supabase/migrations/032_incomplete_sheet_blocks_adventure_join.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/032_incomplete_sheet_blocks_adventure_join.sql",
       "sha256": "fd866217f4b6ebcd23cff6a8b346b0937ba6b3d8a472b440876c914e6154fc28"
     },
     {
-      "path": "supabase/migrations/033_character_avatar_generation_settings.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/033_character_avatar_generation_settings.sql",
       "sha256": "ee9eeb92bfe4a816d34633ad74bca277a4b9850d4eb38611801b3f799174bc5f"
     },
     {
-      "path": "supabase/migrations/034_character_avatars_150mb.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/034_character_avatars_150mb.sql",
       "sha256": "f8ba395f3b894e7a5a4d8fde455336922177445af307de8e541ec476f5e31b96"
     },
     {
-      "path": "supabase/migrations/035_guard_sheet_status_complete.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/035_guard_sheet_status_complete.sql",
       "sha256": "83fb25c63ed30121f2748c3c4fb270df60b9770fe4e5731c9065eb4991c7e5e2"
     },
     {
-      "path": "supabase/migrations/036_character_avatar_artifacts.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/036_character_avatar_artifacts.sql",
       "sha256": "962b05845594226610d2df7fc499f701eec089cc3f0f899a70fc2987d41a6f3e"
     },
     {
-      "path": "supabase/migrations/037_character_avatar_analysis_result.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/037_character_avatar_analysis_result.sql",
       "sha256": "0e35ede3ec08935f6fa2e95da1eca334b233bb0e3e682b3fbd1857551d4dbaac"
     },
     {
-      "path": "supabase/migrations/038_character_avatar_body_profile.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/038_character_avatar_body_profile.sql",
       "sha256": "707afde6916007741d25cef45251bc65355c70fe84ba4006c05e22444c665efe"
     },
     {
-      "path": "supabase/migrations/039_public_resource_ids_and_session_numbers.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/039_public_resource_ids_and_session_numbers.sql",
       "sha256": "053f02aaea8e1f3af27bfa3f6c7e17caadd5d5434ef6298e11920d0891b55f96"
     },
     {
-      "path": "supabase/migrations/040_session_join_code_security.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/040_session_join_code_security.sql",
       "sha256": "0f925ad01130c34b55bdc7304b2248e83f26c7e9f12bf75622fdfc22e87d6389"
     },
     {
-      "path": "supabase/migrations/041_session_runtime_state.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/041_session_runtime_state.sql",
       "sha256": "620b4a236e944c1c77b4eb15ae310dca4c6a6cd2011e42047f445ad94d787cb6"
     },
     {
-      "path": "supabase/migrations/042_session_shared_rolls.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/042_session_shared_rolls.sql",
       "sha256": "ba87cf0ed1b75250d07333cfe3b5a26a54db069bd96dc5835e9f4069128ca906"
     },
     {
-      "path": "supabase/migrations/043_session_shared_scene_presentation.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/043_session_shared_scene_presentation.sql",
       "sha256": "0e96dece1e2e76bfdc15ca674c57f39c02d3132ae82d2d46f97087b264c605fc"
     },
     {
-      "path": "supabase/migrations/044_session_combat_encounter.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/044_session_combat_encounter.sql",
       "sha256": "e1168e2c35a90d3de3c9be1f796026dc289c21803e9590951e72391576505c35"
     },
     {
-      "path": "supabase/migrations/045_character_avatar_meshy_pending_glb.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/045_character_avatar_meshy_pending_glb.sql",
       "sha256": "a4b1c7108a66f677a33f2ed93c45393f67e28732946d5a1c1585b71d6a61d55b"
     },
     {
-      "path": "supabase/migrations/046_look_profiles.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/046_look_profiles.sql",
       "sha256": "fd88d270538c2e6839540de7a8542e63410463ea1b081a670850134c2979aa2d"
     },
     {
-      "path": "supabase/migrations/047_session_program_presentation.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/047_session_program_presentation.sql",
       "sha256": "98fd05e6d1ae794db77b46eb910fadacffdc760246cda412404c1246eaf0110e"
     },
     {
-      "path": "supabase/migrations/048_session_knowledge_reveals.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/048_session_knowledge_reveals.sql",
       "sha256": "d2cc67aea9ea3751ca52d09392c0777529019e4700b80a63fdbbd4dc4fcec8b7"
     },
     {
-      "path": "supabase/migrations/049_session_death_lifecycle.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/049_session_death_lifecycle.sql",
       "sha256": "4bd6e5dcde665d7a6c5f08034662a9e1646cff7a5acd6a6328f11d4226456be2"
     },
     {
-      "path": "supabase/migrations/050_session_adventure_runtime.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/050_session_adventure_runtime.sql",
       "sha256": "51fae34e30f92395dc8437f8194af45c422f67c91c403e00f747807b09fa75fc"
     },
     {
-      "path": "supabase/migrations/051_session_director_runtime.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/051_session_director_runtime.sql",
       "sha256": "7b483670555f06c5dec8dd3347e9b8b9336c17b143a6ada8f0c90709b479c010"
     },
     {
-      "path": "supabase/migrations/052_projects_look_settings.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/052_projects_look_settings.sql",
       "sha256": "fd581588589e5d27c50bc8c97ab5478aa7b12d4d3ba081f367e752543fdb2488"
     },
     {
-      "path": "supabase/migrations/053_sessions_look_override.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/053_sessions_look_override.sql",
       "sha256": "1ff74aba67dc024b7f7c080933e5cbb684c139f8532bf7d10bf13669c9e5647b"
     },
     {
-      "path": "supabase/migrations/054_characters_personal_look_override.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/054_characters_personal_look_override.sql",
       "sha256": "6c1d6292c25753b03f235fe68719f8cd9e32be53af846466fa8c221097a3bceb"
     },
     {
-      "path": "supabase/migrations/055_session_invites.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/055_session_invites.sql",
       "sha256": "a1fd37ae48b1fdf84ef179902575a579603f0f3df6b9848785795e4a59d13e61"
     },
     {
-      "path": "supabase/migrations/059_saga_state_column_privileges.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/059_saga_state_column_privileges.sql",
       "sha256": "218a09c923cc8880384355c8cefad15fb4a31d7b39cbd11d5531f5a433c58866"
     },
     {
-      "path": "supabase/migrations/060_saga_overview.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/060_saga_overview.sql",
       "sha256": "426d83d2aa74cb7538f2e6a71f0b654c423f31cf9dfafcf4f66c62908f9966b3"
     },
     {
-      "path": "supabase/migrations/061_session_recaps_and_handover.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/061_session_recaps_and_handover.sql",
       "sha256": "be5ec785052294d9722fb0789032fbd62d845695d1c2bddeca7c60fe9e951921"
     },
     {
-      "path": "supabase/migrations/062_session_recap_ai_summary.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/062_session_recap_ai_summary.sql",
       "sha256": "d02f115b12a959b1186539c310726de5791314380cc010ca337014f3045d079a"
     },
     {
-      "path": "supabase/migrations/063_saga_definitions.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/063_saga_definitions.sql",
       "sha256": "09e02b7347ee1f64bcac0e1ff18b2293fc169269e01264e9cdbf8c412fa53c89"
     },
     {
-      "path": "supabase/migrations/064_saga_editor_v1.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/064_saga_editor_v1.sql",
       "sha256": "a2bc1eed25dcd62ebcf06a444a4fcef963552bada5e1b0427fedc2b01dbe4bfd"
     },
     {
-      "path": "supabase/migrations/065_saga_simulation_ops.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/065_saga_simulation_ops.sql",
       "sha256": "a7fa13ff4d2868abd79f26593690f8907d2e2982e54023a027ec6f8f29f97ba9"
     },
     {
-      "path": "supabase/migrations/066_saga_between_sessions_bote.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/066_saga_between_sessions_bote.sql",
       "sha256": "c55f1f4ab96ba5b53c89c7cb620d86f476a1c35217a0c9976a7d5b83caed73f8"
     },
     {
-      "path": "supabase/migrations/067_ensure_native_starter_project.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/067_ensure_native_starter_project.sql",
       "sha256": "c53b69e574c607775767513a80bf0badf52aeee31582ff2ee0887ff16039ced3"
     },
     {
-      "path": "supabase/migrations/068_world_maps.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/068_world_maps.sql",
       "sha256": "5898195600f2fc10330b1444cb288da5d58c59b5373058fa7a5923dfb123fe43"
     },
     {
-      "path": "supabase/migrations/069_party_location_overview.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/069_party_location_overview.sql",
       "sha256": "568558d8d8776bb2a3ef38a78f870ff3df8d28db274fe35a6b4d5aa85da019a6"
     },
     {
-      "path": "supabase/migrations/070_saga_promote_session_outcomes.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/070_saga_promote_session_outcomes.sql",
       "sha256": "1b9498004ab77efbc59a5ff7bbd1676275da6d44b30d7afe6861b68a4f4fdcb7"
     },
     {
-      "path": "supabase/migrations/071_restore_authenticated_project_session_writes.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/071_restore_authenticated_project_session_writes.sql",
       "sha256": "707ede7d50dfa1d27992f7951422b87bc7f5abcc6ece2930a8a224161f470861"
     },
     {
-      "path": "supabase/migrations/072_dornhain_seed_and_character_rls.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/072_dornhain_seed_and_character_rls.sql",
       "sha256": "29174c7ab1b49e3ff1cb9040a8d539ffa7aa1b559730bef57c260b9898a5840a"
     },
     {
-      "path": "supabase/migrations/073_sagatree_schema_rename_compat.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/073_sagatree_schema_rename_compat.sql",
       "sha256": "f1892766c1b12e6877e009355fcbd7a4e0c9abe264d36c0880a018802094b608"
     },
     {
-      "path": "supabase/migrations/074_seed_local_player.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/074_seed_local_player.sql",
       "sha256": "cdc502ef8319552f89c9826bb84b70d6b31193e1498e77ac46e5411c35a92e33"
     },
     {
-      "path": "supabase/migrations/075_saga_permission_grants.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/075_saga_permission_grants.sql",
       "sha256": "1352ed1aa5bba73e5f25d4fffc1798789b689240874b18ebd856042455aeb632"
     },
     {
-      "path": "supabase/migrations/076_dornhain_full_catalog_seed.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/076_dornhain_full_catalog_seed.sql",
       "sha256": "90378ec8d1f8d0b2d81619289609b952898a8db9bd9975d8deb9c1d007e0c418"
     },
     {
-      "path": "supabase/migrations/077_dornhain_default_all_accounts.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/077_dornhain_default_all_accounts.sql",
       "sha256": "abfe499679448a551c28815144519c5cfc14e47211c7aaddd5b40bc1baa17e15"
     },
     {
-      "path": "supabase/migrations/079_drop_sagadrive_aliases.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/079_drop_sagadrive_aliases.sql",
       "sha256": "bb8d1160118231cb724d0e01fbe5b66ba20dde397b67e052e03d8a1a9f2e6dd0"
     },
     {
-      "path": "supabase/migrations/080_item_thumbnail_webp.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/080_item_thumbnail_webp.sql",
       "sha256": "b1ac258e8d6a6953face6e0a7350882b2a82e11d2dde918c0137feeaa31a8c42"
     },
     {
-      "path": "supabase/migrations/080_rename_local_auth_emails_sagatree.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/080_rename_local_auth_emails_sagatree.sql",
       "sha256": "4a736639cb74cc53b8b9de94b108a72a0b23145c3620a89f595bcabbb4870c76"
     },
     {
-      "path": "supabase/migrations/081_user_profiles_and_avatars.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/081_user_profiles_and_avatars.sql",
       "sha256": "61a8b00923e26af7fbb3be9638cd6644ab0483fed33793da70075d70582a61eb"
     },
     {
-      "path": "supabase/migrations/082_dornhain_pregen_full_sheets.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/082_dornhain_pregen_full_sheets.sql",
       "sha256": "93237176f65a3945291b5cc96cf7bd748b690fc5f8c78eeed1f00d4175cbab99"
     },
     {
-      "path": "supabase/migrations/082_duplicate_saga_playthrough.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/082_duplicate_saga_playthrough.sql",
       "sha256": "fcab51b99d8c672e0d77372a037446602613905e44634e8dd788bf76c7e79f28"
     },
     {
-      "path": "supabase/migrations/083_world_profiles_public_id.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/083_world_profiles_public_id.sql",
       "sha256": "38b33710dcf628e7b834810e7dfd4dfacc97a0d23cc8673d76d96e2330bf6081"
     },
     {
-      "path": "supabase/migrations/084_look_profiles_public_id.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/084_look_profiles_public_id.sql",
       "sha256": "1dcc8707454b4968ae783f102ae45aeb2300ee8ebb5e25e3559c003d5802b396"
     },
     {
-      "path": "supabase/migrations/085_fix_function_bodies_sagatree.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/085_fix_function_bodies_sagatree.sql",
       "sha256": "36d9065b9abba7236230995842dfcd48487a428240a5d85426faf4515d1bcaa3"
     },
     {
-      "path": "supabase/migrations/086_rls_rulesets_world_graphs.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/086_rls_rulesets_world_graphs.sql",
       "sha256": "6f42605e57134b2bd11622383e41c59112442bace5ef8fb8f4b9733a1674511b"
     },
     {
-      "path": "supabase/migrations/087_ai_gm_rate_limits.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/087_ai_gm_rate_limits.sql",
       "sha256": "0a9a24a5cf27178775b9270b7c9ad4d2e355d49d837006490200ac6ec8ba30ed"
     },
     {
-      "path": "supabase/migrations/088_gm_earthspirit_presence_character.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/088_gm_earthspirit_presence_character.sql",
       "sha256": "3fe397289929cb1a16b0cfb203a93ebd3f0fba652319d684d02922cec04c2f6a"
     },
     {
-      "path": "supabase/migrations/089_gm_presence_character_type.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/089_gm_presence_character_type.sql",
       "sha256": "f66c1286947dd3119ac4cfac01736a3948e1cb35648f61837e6a79fd9c519560"
     },
     {
-      "path": "supabase/migrations/090_dornhain_basic_world_map.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/090_dornhain_basic_world_map.sql",
       "sha256": "ebcda6b58bfd7629b868cd80ac018fbc8a9f3ab8a36d4c141f1344d9b7ead741"
     },
     {
-      "path": "supabase/migrations/091_saga_overview_world_profile_id.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/091_saga_overview_world_profile_id.sql",
       "sha256": "9cbda2bc6b50e312ecd4d848bd52d85e93bc34e5b2571ed97219c145056d3c10"
     },
     {
-      "path": "supabase/migrations/092_fix_projects_rls_recursion.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/092_fix_projects_rls_recursion.sql",
       "sha256": "8e98ae8e52beb6ab57359338e7b30bdc2db322b7cdb44bdbf4059a41ab26e1bd"
     },
     {
-      "path": "supabase/migrations/093_fix_saga_overview_shared_adventure.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/093_fix_saga_overview_shared_adventure.sql",
       "sha256": "ee626a51f06984449a2fa4abd98db18d83626f0d432f46c7b63b32b401c57904"
     },
     {
-      "path": "supabase/migrations/094_world_atlas.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/094_world_atlas.sql",
       "sha256": "1a329c3ee211351e2630d810ff94ad23ef9ae7424bec0f58ab0acefdbb19b058"
     },
     {
-      "path": "supabase/migrations/095_donalu_world_places.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/095_donalu_world_places.sql",
       "sha256": "797acda3420a38b709aeeffb289ef8dfee980ba9241f44c168c157cc5c85390f"
     },
     {
-      "path": "supabase/migrations/096_donalu_place_map_link_rpc.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/096_donalu_place_map_link_rpc.sql",
       "sha256": "612ff70eba98246ee09fe90f8c80f0e6dbeab570b866ab4041cf01bb43286db6"
     },
     {
-      "path": "supabase/migrations/097_donalu_player_place_projection.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/097_donalu_player_place_projection.sql",
       "sha256": "e454cfc056a397eeb5ba13b13be6f6cf7a229efa241b27867b5d2e2ad0fd9c9f"
     },
     {
-      "path": "supabase/migrations/098_dornhain_unified_atlas_starter.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/098_dornhain_unified_atlas_starter.sql",
       "sha256": "e3da9995b29bf7491030dd9943d612bb3366f13bf7123d0efbc5ceecbc387407"
     },
     {
-      "path": "supabase/migrations/099_dornhain_unified_world_map_v2.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/099_dornhain_unified_world_map_v2.sql",
       "sha256": "82fed4ae77a47abf9c180c71c5c690c69a85178b0c60c479cea311d4e5aae785"
     },
     {
-      "path": "supabase/migrations/100_dornhain_unified_ocean_blank_v3.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/100_dornhain_unified_ocean_blank_v3.sql",
       "sha256": "6511fd19f98d221c2844cda88569ce278db562fd3e7974e61174e7b845d0e481"
     },
     {
-      "path": "supabase/migrations/101_world_places_select_editor_only.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/101_world_places_select_editor_only.sql",
       "sha256": "9c64d983108e36ea19d6acef12723ca006ca31a663fd15a3a34db893cfa0abf0"
     },
     {
-      "path": "supabase/migrations/102_world_atlas_player_redaction_force.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/102_world_atlas_player_redaction_force.sql",
       "sha256": "a1add570f090c4b8cae03170cf5b73bc7eba6ccc2a0f785d3d1910d0a3178bb3"
     },
     {
-      "path": "supabase/migrations/103_atlas_worldbuilder_create_with_maps.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/103_atlas_worldbuilder_create_with_maps.sql",
       "sha256": "84afa7b42fab766cf5114c65aefd433b856a173e1065f7e34f4fc10875ee784d"
     },
     {
-      "path": "supabase/migrations/104_atlas_worldbuilder_mutations.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/104_atlas_worldbuilder_mutations.sql",
       "sha256": "faefcc47bcddd1647c38971b4efbdb5a3cd064c76cbaca5f02a644ebe9e31f90"
     },
     {
-      "path": "supabase/migrations/105_atlas_worldbuilder_player_projection.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/105_atlas_worldbuilder_player_projection.sql",
       "sha256": "8ab33d4d6ace74d129350524607e5e3e9ceab4a4c1d06c9d59b867be4899eacf"
     },
     {
-      "path": "supabase/migrations/106_atlas_get_map_overload_fix.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/106_atlas_get_map_overload_fix.sql",
       "sha256": "7710abc048b018cb9505fad8767792baa659f49943ae1ee38b85222f69449a2d"
     },
     {
-      "path": "supabase/migrations/107_atlas_worldbuilder_migration_gate.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/107_atlas_worldbuilder_migration_gate.sql",
       "sha256": "cf753cc7ac7f6d7ee221c3ca47b46c81e9b6fa0270d4b5438e372cd0d7e592b0"
     },
     {
-      "path": "supabase/migrations/108_atlas_worldbuilder_migration_apply.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/108_atlas_worldbuilder_migration_apply.sql",
       "sha256": "e0d35e8a469efa708da70b3a2c27c08e1b3988ec1ebacdd761fb8629c9001726"
     },
     {
-      "path": "supabase/migrations/109_baseline_security_trust_boundaries.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/109_baseline_security_trust_boundaries.sql",
       "sha256": "4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b"
     }
   ],

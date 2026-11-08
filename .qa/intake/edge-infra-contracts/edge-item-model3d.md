@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [edge-item-model3d.json](source-contracts/edge-item-model3d.json) (SHA-256 `4cb07b8566d6eca05054ba5519ded9bd79b620674bace9d748eb9a5babb783d9`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [edge-item-model3d.json](source-contracts/edge-item-model3d.json) (SHA-256 `97aa523d8f83b1dcd77274ff5ce5aa3c1fea0411ba411b5e9638614aaae55911`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Exposure and purpose
 
@@ -86,26 +86,26 @@ Auth10s, BYOK lookup10s, service20s, quota10s; storage GLB upload60s, stored thu
 
 Explicit abort call sites (dynamic values resolve in the linked helper declaration):
 
-- `supabase/functions/_shared/ai-provider-resolve-meshy.ts:45` — `AbortSignal.timeout(10_000)`
-- `supabase/functions/_shared/ai-provider-resolve-meshy.ts:99` — `AbortSignal.timeout(10_000)`
-- `supabase/functions/_shared/item-model3d-glb.ts:122` — `AbortSignal.timeout(timeoutMs)`
-- `supabase/functions/_shared/item-model3d-glb.ts:211` — `AbortSignal.timeout(timeoutMs)`
-- `supabase/functions/_shared/item-model3d-meshy.ts:183` — `AbortSignal.timeout(30_000)`
-- `supabase/functions/_shared/item-model3d-meshy.ts:203` — `AbortSignal.timeout(20_000)`
-- `supabase/functions/_shared/item-model3d-rate-limit.ts:50` — `AbortSignal.timeout(10_000)`
-- `supabase/functions/_shared/item-thumbnail-image.ts:138` — `AbortSignal.timeout(20_000)`
-- `supabase/functions/item-model3d/index.ts:118` — `AbortSignal.timeout(10_000)`
-- `supabase/functions/item-model3d/index.ts:139` — `AbortSignal.timeout(20_000)`
-- `supabase/functions/item-model3d/index.ts:228` — `AbortSignal.timeout(60_000)`
-- `supabase/functions/item-model3d/index.ts:247` — `AbortSignal.timeout(30_000)`
-- `supabase/functions/item-model3d/index.ts:266` — `AbortSignal.timeout(10_000)`
-- `supabase/functions/item-model3d/index.ts:288` — `AbortSignal.timeout(10_000)`
+- `archive/supabase-legacy/supabase/functions/_shared/ai-provider-resolve-meshy.ts:45` — `AbortSignal.timeout(10_000)`
+- `archive/supabase-legacy/supabase/functions/_shared/ai-provider-resolve-meshy.ts:99` — `AbortSignal.timeout(10_000)`
+- `archive/supabase-legacy/supabase/functions/_shared/item-model3d-glb.ts:122` — `AbortSignal.timeout(timeoutMs)`
+- `archive/supabase-legacy/supabase/functions/_shared/item-model3d-glb.ts:211` — `AbortSignal.timeout(timeoutMs)`
+- `archive/supabase-legacy/supabase/functions/_shared/item-model3d-meshy.ts:183` — `AbortSignal.timeout(30_000)`
+- `archive/supabase-legacy/supabase/functions/_shared/item-model3d-meshy.ts:203` — `AbortSignal.timeout(20_000)`
+- `archive/supabase-legacy/supabase/functions/_shared/item-model3d-rate-limit.ts:50` — `AbortSignal.timeout(10_000)`
+- `archive/supabase-legacy/supabase/functions/_shared/item-thumbnail-image.ts:138` — `AbortSignal.timeout(20_000)`
+- `archive/supabase-legacy/supabase/functions/item-model3d/index.ts:118` — `AbortSignal.timeout(10_000)`
+- `archive/supabase-legacy/supabase/functions/item-model3d/index.ts:139` — `AbortSignal.timeout(20_000)`
+- `archive/supabase-legacy/supabase/functions/item-model3d/index.ts:228` — `AbortSignal.timeout(60_000)`
+- `archive/supabase-legacy/supabase/functions/item-model3d/index.ts:247` — `AbortSignal.timeout(30_000)`
+- `archive/supabase-legacy/supabase/functions/item-model3d/index.ts:266` — `AbortSignal.timeout(10_000)`
+- `archive/supabase-legacy/supabase/functions/item-model3d/index.ts:288` — `AbortSignal.timeout(10_000)`
 
 ## Exact environment defaults and configuration resolution
 
 ### hostAiProviderKeysAllowed
 
-`supabase/functions/_shared/ai-provider-resolve-meshy.ts:19`
+`archive/supabase-legacy/supabase/functions/_shared/ai-provider-resolve-meshy.ts:19`
 
 ```ts
 export function hostAiProviderKeysAllowed(
@@ -117,7 +117,7 @@ export function hostAiProviderKeysAllowed(
 
 ### resolveHostMeshyApiKey
 
-`supabase/functions/_shared/ai-provider-resolve-meshy.ts:25`
+`archive/supabase-legacy/supabase/functions/_shared/ai-provider-resolve-meshy.ts:25`
 
 ```ts
 export function resolveHostMeshyApiKey(
@@ -131,7 +131,7 @@ export function resolveHostMeshyApiKey(
 
 ### resolveMeshyApiKeyForUser
 
-`supabase/functions/_shared/ai-provider-resolve-meshy.ts:57`
+`archive/supabase-legacy/supabase/functions/_shared/ai-provider-resolve-meshy.ts:57`
 
 ```ts
 export async function resolveMeshyApiKeyForUser(
@@ -161,7 +161,7 @@ export async function resolveMeshyApiKeyForUser(
 
 ### isMeshyConfiguredForUser
 
-`supabase/functions/_shared/ai-provider-resolve-meshy.ts:82`
+`archive/supabase-legacy/supabase/functions/_shared/ai-provider-resolve-meshy.ts:82`
 
 ```ts
 export async function isMeshyConfiguredForUser(
@@ -195,7 +195,7 @@ export async function isMeshyConfiguredForUser(
 
 ### DEFAULT_CORS_METHODS
 
-`supabase/functions/_shared/cors.ts:9`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:9`
 
 ```ts
 DEFAULT_CORS_METHODS = 'GET, POST, PUT, DELETE, OPTIONS'
@@ -203,7 +203,7 @@ DEFAULT_CORS_METHODS = 'GET, POST, PUT, DELETE, OPTIONS'
 
 ### DEFAULT_CORS_ALLOW_HEADERS
 
-`supabase/functions/_shared/cors.ts:10`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:10`
 
 ```ts
 DEFAULT_CORS_ALLOW_HEADERS =
@@ -212,7 +212,7 @@ DEFAULT_CORS_ALLOW_HEADERS =
 
 ### readConfiguredOrigin
 
-`supabase/functions/_shared/cors.ts:34`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:34`
 
 ```ts
 function readConfiguredOrigin(envKeys: string[]): string {
@@ -226,7 +226,7 @@ function readConfiguredOrigin(envKeys: string[]): string {
 
 ### DEFAULT_BASE
 
-`supabase/functions/_shared/item-model3d-meshy.ts:52`
+`archive/supabase-legacy/supabase/functions/_shared/item-model3d-meshy.ts:52`
 
 ```ts
 DEFAULT_BASE = 'https://api.meshy.ai/openapi/v1'
@@ -234,7 +234,7 @@ DEFAULT_BASE = 'https://api.meshy.ai/openapi/v1'
 
 ### DEFAULT_MODEL
 
-`supabase/functions/_shared/item-model3d-meshy.ts:53`
+`archive/supabase-legacy/supabase/functions/_shared/item-model3d-meshy.ts:53`
 
 ```ts
 DEFAULT_MODEL = 'latest'
@@ -242,7 +242,7 @@ DEFAULT_MODEL = 'latest'
 
 ### resolveMeshyImageTo3dConfig
 
-`supabase/functions/_shared/item-model3d-meshy.ts:60`
+`archive/supabase-legacy/supabase/functions/_shared/item-model3d-meshy.ts:60`
 
 ```ts
 export function resolveMeshyImageTo3dConfig(
@@ -263,7 +263,7 @@ export function resolveMeshyImageTo3dConfig(
 
 ### CORS_OPTS
 
-`supabase/functions/item-model3d/index.ts:40`
+`archive/supabase-legacy/supabase/functions/item-model3d/index.ts:40`
 
 ```ts
 CORS_OPTS: CorsOptions = {
@@ -278,7 +278,7 @@ CORS_OPTS: CorsOptions = {
 
 ### DEFAULT_RATE_LIMIT
 
-`supabase/functions/item-model3d/index.ts:68`
+`archive/supabase-legacy/supabase/functions/item-model3d/index.ts:68`
 
 ```ts
 DEFAULT_RATE_LIMIT = 2
@@ -286,7 +286,7 @@ DEFAULT_RATE_LIMIT = 2
 
 ### getSupabaseConfig
 
-`supabase/functions/item-model3d/index.ts:84`
+`archive/supabase-legacy/supabase/functions/item-model3d/index.ts:84`
 
 ```ts
 function getSupabaseConfig(): SupabaseConfig | null {
@@ -300,7 +300,7 @@ function getSupabaseConfig(): SupabaseConfig | null {
 
 ### getRateLimit
 
-`supabase/functions/item-model3d/index.ts:92`
+`archive/supabase-legacy/supabase/functions/item-model3d/index.ts:92`
 
 ```ts
 function getRateLimit(): number {
@@ -311,7 +311,7 @@ function getRateLimit(): number {
 
 ### resolveProvider
 
-`supabase/functions/item-model3d/index.ts:97`
+`archive/supabase-legacy/supabase/functions/item-model3d/index.ts:97`
 
 ```ts
 async function resolveProvider(
@@ -388,7 +388,7 @@ No src/infrastructure caller in the reviewed branch. This does not authorize add
 
 ### item-model3d:1
 
-Predicate: `action === 'config'`. Source: `supabase/functions/item-model3d/index.ts:438`.
+Predicate: `action === 'config'`. Source: `archive/supabase-legacy/supabase/functions/item-model3d/index.ts:438`.
 
 
 ```ts
@@ -408,7 +408,7 @@ Predicate: `action === 'config'`. Source: `supabase/functions/item-model3d/index
 
 ### item-model3d:2
 
-Predicate: `action === 'upload'`. Source: `supabase/functions/item-model3d/index.ts:451`.
+Predicate: `action === 'upload'`. Source: `archive/supabase-legacy/supabase/functions/item-model3d/index.ts:451`.
 
 
 ```ts
@@ -465,7 +465,7 @@ Predicate: `action === 'upload'`. Source: `supabase/functions/item-model3d/index
 
 ### item-model3d:3
 
-Predicate: `action === 'generate'`. Source: `supabase/functions/item-model3d/index.ts:501`.
+Predicate: `action === 'generate'`. Source: `archive/supabase-legacy/supabase/functions/item-model3d/index.ts:501`.
 
 
 ```ts
@@ -568,7 +568,7 @@ Predicate: `action === 'generate'`. Source: `supabase/functions/item-model3d/ind
 
 ### item-model3d:4
 
-Predicate: `action === 'status'`. Source: `supabase/functions/item-model3d/index.ts:597`.
+Predicate: `action === 'status'`. Source: `archive/supabase-legacy/supabase/functions/item-model3d/index.ts:597`.
 
 
 ```ts
@@ -753,7 +753,7 @@ Predicate: `action === 'status'`. Source: `supabase/functions/item-model3d/index
 
 ### item-model3d:5
 
-Predicate: `action === 'resolve'`. Source: `supabase/functions/item-model3d/index.ts:775`.
+Predicate: `action === 'resolve'`. Source: `archive/supabase-legacy/supabase/functions/item-model3d/index.ts:775`.
 
 
 ```ts
@@ -790,7 +790,7 @@ Predicate: `action === 'resolve'`. Source: `supabase/functions/item-model3d/inde
 
 ### item-model3d:6
 
-Predicate: `action === 'remove'`. Source: `supabase/functions/item-model3d/index.ts:805`.
+Predicate: `action === 'remove'`. Source: `archive/supabase-legacy/supabase/functions/item-model3d/index.ts:805`.
 
 
 ```ts
@@ -841,7 +841,7 @@ Predicate: `action === 'remove'`. Source: `supabase/functions/item-model3d/index
 
 ### item-model3d:7
 
-Predicate: `action === 'latest-job'`. Source: `supabase/functions/item-model3d/index.ts:849`.
+Predicate: `action === 'latest-job'`. Source: `archive/supabase-legacy/supabase/functions/item-model3d/index.ts:849`.
 
 
 ```ts
@@ -879,7 +879,7 @@ Predicate: `action === 'latest-job'`. Source: `supabase/functions/item-model3d/i
 
 ### SupabaseServiceConfig
 
-`supabase/functions/_shared/ai-provider-resolve-meshy.ts:10`
+`archive/supabase-legacy/supabase/functions/_shared/ai-provider-resolve-meshy.ts:10`
 
 ```ts
 export interface SupabaseServiceConfig {
@@ -890,7 +890,7 @@ export interface SupabaseServiceConfig {
 
 ### PrivilegedClientBodyKey
 
-`supabase/functions/_shared/client-trust-body.ts:20`
+`archive/supabase-legacy/supabase/functions/_shared/client-trust-body.ts:20`
 
 ```ts
 export type PrivilegedClientBodyKey = (typeof PRIVILEGED_CLIENT_BODY_KEYS)[number];
@@ -898,7 +898,7 @@ export type PrivilegedClientBodyKey = (typeof PRIVILEGED_CLIENT_BODY_KEYS)[numbe
 
 ### CorsOptions
 
-`supabase/functions/_shared/cors.ts:13`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:13`
 
 ```ts
 export type CorsOptions = {
@@ -925,7 +925,7 @@ export type CorsOptions = {
 
 ### ItemModel3dMime
 
-`supabase/functions/_shared/item-model3d-glb.ts:17`
+`archive/supabase-legacy/supabase/functions/_shared/item-model3d-glb.ts:17`
 
 ```ts
 export type ItemModel3dMime = typeof ITEM_MODEL3D_MIME;
@@ -933,7 +933,7 @@ export type ItemModel3dMime = typeof ITEM_MODEL3D_MIME;
 
 ### MeshyTaskStatus
 
-`supabase/functions/_shared/item-model3d-meshy.ts:7`
+`archive/supabase-legacy/supabase/functions/_shared/item-model3d-meshy.ts:7`
 
 ```ts
 export type MeshyTaskStatus = 'PENDING' | 'IN_PROGRESS' | 'SUCCEEDED' | 'FAILED' | 'CANCELED';
@@ -941,7 +941,7 @@ export type MeshyTaskStatus = 'PENDING' | 'IN_PROGRESS' | 'SUCCEEDED' | 'FAILED'
 
 ### MeshyImageTo3dTask
 
-`supabase/functions/_shared/item-model3d-meshy.ts:9`
+`archive/supabase-legacy/supabase/functions/_shared/item-model3d-meshy.ts:9`
 
 ```ts
 export interface MeshyImageTo3dTask {
@@ -955,7 +955,7 @@ export interface MeshyImageTo3dTask {
 
 ### MeshyImageTo3dProviderConfig
 
-`supabase/functions/_shared/item-model3d-meshy.ts:17`
+`archive/supabase-legacy/supabase/functions/_shared/item-model3d-meshy.ts:17`
 
 ```ts
 export interface MeshyImageTo3dProviderConfig {
@@ -967,7 +967,7 @@ export interface MeshyImageTo3dProviderConfig {
 
 ### MeshyImageTo3dCreateOptions
 
-`supabase/functions/_shared/item-model3d-meshy.ts:24`
+`archive/supabase-legacy/supabase/functions/_shared/item-model3d-meshy.ts:24`
 
 ```ts
 export interface MeshyImageTo3dCreateOptions {
@@ -989,7 +989,7 @@ export interface MeshyImageTo3dCreateOptions {
 
 ### MeshyImageTo3dCreateInput
 
-`supabase/functions/_shared/item-model3d-meshy.ts:41`
+`archive/supabase-legacy/supabase/functions/_shared/item-model3d-meshy.ts:41`
 
 ```ts
 export type MeshyImageTo3dCreateInput =
@@ -999,7 +999,7 @@ export type MeshyImageTo3dCreateInput =
 
 ### MeshyImageTo3dProvider
 
-`supabase/functions/_shared/item-model3d-meshy.ts:45`
+`archive/supabase-legacy/supabase/functions/_shared/item-model3d-meshy.ts:45`
 
 ```ts
 export interface MeshyImageTo3dProvider {
@@ -1010,7 +1010,7 @@ export interface MeshyImageTo3dProvider {
 
 ### FetchLike
 
-`supabase/functions/_shared/item-model3d-meshy.ts:50`
+`archive/supabase-legacy/supabase/functions/_shared/item-model3d-meshy.ts:50`
 
 ```ts
 type FetchLike = typeof fetch;
@@ -1018,7 +1018,7 @@ type FetchLike = typeof fetch;
 
 ### ItemModel3dRateLimitConfig
 
-`supabase/functions/_shared/item-model3d-rate-limit.ts:6`
+`archive/supabase-legacy/supabase/functions/_shared/item-model3d-rate-limit.ts:6`
 
 ```ts
 export interface ItemModel3dRateLimitConfig {
@@ -1031,7 +1031,7 @@ export interface ItemModel3dRateLimitConfig {
 
 ### FetchLike
 
-`supabase/functions/_shared/item-model3d-rate-limit.ts:13`
+`archive/supabase-legacy/supabase/functions/_shared/item-model3d-rate-limit.ts:13`
 
 ```ts
 type FetchLike = (
@@ -1042,7 +1042,7 @@ type FetchLike = (
 
 ### ItemThumbnailMime
 
-`supabase/functions/_shared/item-thumbnail-image.ts:8`
+`archive/supabase-legacy/supabase/functions/_shared/item-thumbnail-image.ts:8`
 
 ```ts
 export type ItemThumbnailMime = (typeof ITEM_THUMBNAIL_ALLOWED_MIME)[number];
@@ -1050,7 +1050,7 @@ export type ItemThumbnailMime = (typeof ITEM_THUMBNAIL_ALLOWED_MIME)[number];
 
 ### JsonRecord
 
-`supabase/functions/item-model3d/index.ts:38`
+`archive/supabase-legacy/supabase/functions/item-model3d/index.ts:38`
 
 ```ts
 type JsonRecord = Record<string, unknown>;
@@ -1058,7 +1058,7 @@ type JsonRecord = Record<string, unknown>;
 
 ### SupabaseConfig
 
-`supabase/functions/item-model3d/index.ts:49`
+`archive/supabase-legacy/supabase/functions/item-model3d/index.ts:49`
 
 ```ts
 interface SupabaseConfig {
@@ -1070,7 +1070,7 @@ interface SupabaseConfig {
 
 ### DefinitionRow
 
-`supabase/functions/item-model3d/index.ts:55`
+`archive/supabase-legacy/supabase/functions/item-model3d/index.ts:55`
 
 ```ts
 interface DefinitionRow {
@@ -1088,7 +1088,7 @@ interface DefinitionRow {
 
 ### parseCredentialsEncryptionKey
 
-`supabase/functions/_shared/ai-provider-crypto.ts:25`
+`archive/supabase-legacy/supabase/functions/_shared/ai-provider-crypto.ts:25`
 
 ```ts
 export function parseCredentialsEncryptionKey(
@@ -1129,7 +1129,7 @@ export function parseCredentialsEncryptionKey(
 
 ### DEFAULT_CORS_METHODS
 
-`supabase/functions/_shared/cors.ts:9`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:9`
 
 ```ts
 DEFAULT_CORS_METHODS = 'GET, POST, PUT, DELETE, OPTIONS'
@@ -1137,7 +1137,7 @@ DEFAULT_CORS_METHODS = 'GET, POST, PUT, DELETE, OPTIONS'
 
 ### DEFAULT_CORS_ALLOW_HEADERS
 
-`supabase/functions/_shared/cors.ts:10`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:10`
 
 ```ts
 DEFAULT_CORS_ALLOW_HEADERS =
@@ -1146,7 +1146,7 @@ DEFAULT_CORS_ALLOW_HEADERS =
 
 ### buildItemModel3dStoragePath
 
-`supabase/functions/_shared/item-model3d-glb.ts:37`
+`archive/supabase-legacy/supabase/functions/_shared/item-model3d-glb.ts:37`
 
 ```ts
 export function buildItemModel3dStoragePath(options: {
@@ -1164,7 +1164,7 @@ export function buildItemModel3dStoragePath(options: {
 
 ### buildItemModel3dAssetKey
 
-`supabase/functions/_shared/item-model3d-glb.ts:49`
+`archive/supabase-legacy/supabase/functions/_shared/item-model3d-glb.ts:49`
 
 ```ts
 export function buildItemModel3dAssetKey(assetId: string): string {
@@ -1174,7 +1174,7 @@ export function buildItemModel3dAssetKey(assetId: string): string {
 
 ### validateGlbBytes
 
-`supabase/functions/_shared/item-model3d-glb.ts:70`
+`archive/supabase-legacy/supabase/functions/_shared/item-model3d-glb.ts:70`
 
 ```ts
 export function validateGlbBytes(
@@ -1198,7 +1198,7 @@ export function validateGlbBytes(
 
 ### DEFAULT_BASE
 
-`supabase/functions/_shared/item-model3d-meshy.ts:52`
+`archive/supabase-legacy/supabase/functions/_shared/item-model3d-meshy.ts:52`
 
 ```ts
 DEFAULT_BASE = 'https://api.meshy.ai/openapi/v1'
@@ -1206,7 +1206,7 @@ DEFAULT_BASE = 'https://api.meshy.ai/openapi/v1'
 
 ### DEFAULT_MODEL
 
-`supabase/functions/_shared/item-model3d-meshy.ts:53`
+`archive/supabase-legacy/supabase/functions/_shared/item-model3d-meshy.ts:53`
 
 ```ts
 DEFAULT_MODEL = 'latest'
@@ -1214,7 +1214,7 @@ DEFAULT_MODEL = 'latest'
 
 ### parseCreateResponse
 
-`supabase/functions/_shared/item-model3d-meshy.ts:79`
+`archive/supabase-legacy/supabase/functions/_shared/item-model3d-meshy.ts:79`
 
 ```ts
 function parseCreateResponse(body: unknown): string {
@@ -1227,7 +1227,7 @@ function parseCreateResponse(body: unknown): string {
 
 ### parseTask
 
-`supabase/functions/_shared/item-model3d-meshy.ts:86`
+`archive/supabase-legacy/supabase/functions/_shared/item-model3d-meshy.ts:86`
 
 ```ts
 function parseTask(body: unknown): MeshyImageTo3dTask {
@@ -1259,7 +1259,7 @@ function parseTask(body: unknown): MeshyImageTo3dTask {
 
 ### RATE_LIMIT_RPC
 
-`supabase/functions/_shared/item-model3d-rate-limit.ts:18`
+`archive/supabase-legacy/supabase/functions/_shared/item-model3d-rate-limit.ts:18`
 
 ```ts
 RATE_LIMIT_RPC = '/rest/v1/rpc/consume_item_model3d_rate_limit'
@@ -1267,7 +1267,7 @@ RATE_LIMIT_RPC = '/rest/v1/rpc/consume_item_model3d_rate_limit'
 
 ### buildItemThumbnailStoragePath
 
-`supabase/functions/_shared/item-thumbnail-image.ts:61`
+`archive/supabase-legacy/supabase/functions/_shared/item-thumbnail-image.ts:61`
 
 ```ts
 export function buildItemThumbnailStoragePath(options: {
@@ -1287,7 +1287,7 @@ export function buildItemThumbnailStoragePath(options: {
 
 ### buildItemThumbnailAssetKey
 
-`supabase/functions/_shared/item-thumbnail-image.ts:75`
+`archive/supabase-legacy/supabase/functions/_shared/item-thumbnail-image.ts:75`
 
 ```ts
 export function buildItemThumbnailAssetKey(assetId: string): string {
@@ -1297,7 +1297,7 @@ export function buildItemThumbnailAssetKey(assetId: string): string {
 
 ### validateThumbnailBytes
 
-`supabase/functions/_shared/item-thumbnail-image.ts:93`
+`archive/supabase-legacy/supabase/functions/_shared/item-thumbnail-image.ts:93`
 
 ```ts
 export function validateThumbnailBytes(
@@ -1317,7 +1317,7 @@ export function validateThumbnailBytes(
 
 ### CORS_OPTS
 
-`supabase/functions/item-model3d/index.ts:40`
+`archive/supabase-legacy/supabase/functions/item-model3d/index.ts:40`
 
 ```ts
 CORS_OPTS: CorsOptions = {
@@ -1332,7 +1332,7 @@ CORS_OPTS: CorsOptions = {
 
 ### MAX_REQUEST_BYTES
 
-`supabase/functions/item-model3d/index.ts:66`
+`archive/supabase-legacy/supabase/functions/item-model3d/index.ts:66`
 
 ```ts
 MAX_REQUEST_BYTES = 70 * 1024 * 1024
@@ -1340,7 +1340,7 @@ MAX_REQUEST_BYTES = 70 * 1024 * 1024
 
 ### RATE_LIMIT_WINDOW_SECONDS
 
-`supabase/functions/item-model3d/index.ts:67`
+`archive/supabase-legacy/supabase/functions/item-model3d/index.ts:67`
 
 ```ts
 RATE_LIMIT_WINDOW_SECONDS = 60
@@ -1348,7 +1348,7 @@ RATE_LIMIT_WINDOW_SECONDS = 60
 
 ### DEFAULT_RATE_LIMIT
 
-`supabase/functions/item-model3d/index.ts:68`
+`archive/supabase-legacy/supabase/functions/item-model3d/index.ts:68`
 
 ```ts
 DEFAULT_RATE_LIMIT = 2
@@ -1356,7 +1356,7 @@ DEFAULT_RATE_LIMIT = 2
 
 ### SIGNED_URL_SECONDS
 
-`supabase/functions/item-model3d/index.ts:69`
+`archive/supabase-legacy/supabase/functions/item-model3d/index.ts:69`
 
 ```ts
 SIGNED_URL_SECONDS = 60 * 60 * 24 * 7
@@ -1367,16 +1367,16 @@ SIGNED_URL_SECONDS = 60 * 60 * 24 * 7
 
 | Path | SHA-256 |
 |---|---|
-| `supabase/functions/_shared/ai-provider-crypto.ts` | `45e60f76f744077e8d9b243719dcdba5d58a047d36a1c141df830afa2de16532` |
-| `supabase/functions/_shared/ai-provider-resolve-meshy.ts` | `b65f8aa91c02871a2661e1ca697c6115f3c7c4ec07c683d1e7ed19c39287a842` |
-| `supabase/functions/_shared/client-trust-body.ts` | `33c68553dbd89d9c7899520b0ebfa35c4f245ed8ab8ebd242c6f79e9852add95` |
-| `supabase/functions/_shared/cors.ts` | `f8286c91d79fa5fc5cfea2fa47081916523fa7a440f234aecd9a47c6a8cf5b38` |
-| `supabase/functions/_shared/edge-dispatcher-allowlist.ts` | `6d1ae7bde0ba9e41fcaa7b61247732168a62699e7811fb8574cef266cfad3a27` |
-| `supabase/functions/_shared/edge-jwt-gate.ts` | `14a871697b051b7fcbee09dbce1dee8bc8ed5ea6a6eca0bec7b2e771b32d0f0c` |
-| `supabase/functions/_shared/item-model3d-glb.ts` | `f227056ed5d1041def2009c37224c8df1139098bb3be8859bba984845fb7410e` |
-| `supabase/functions/_shared/item-model3d-meshy.ts` | `8b194b23304884c8ca3d2c0935e8b67e27decfaca3e1e2657b1901dfb69d8355` |
-| `supabase/functions/_shared/item-model3d-rate-limit.ts` | `2fdf5ca32dccf1cca8eac0de1d86d6926a671a9be9e0d1887e1fe607e9670a9d` |
-| `supabase/functions/_shared/item-thumbnail-image.ts` | `caf768022788be451fdfc5dfeadf837fd48e2edecc26a68d14794f6a21853713` |
-| `supabase/functions/item-model3d/index.ts` | `edeeb59c996bbb11fd6ca32a1dcf749a574ab2b233b2eb8888c1ab7ef6c304ae` |
-| `supabase/functions/main/index.ts` | `92f3bf56bf3c776e01595d980246079c4a9f8775e417959abea9d7da003bc53e` |
+| `archive/supabase-legacy/supabase/functions/_shared/ai-provider-crypto.ts` | `45e60f76f744077e8d9b243719dcdba5d58a047d36a1c141df830afa2de16532` |
+| `archive/supabase-legacy/supabase/functions/_shared/ai-provider-resolve-meshy.ts` | `b65f8aa91c02871a2661e1ca697c6115f3c7c4ec07c683d1e7ed19c39287a842` |
+| `archive/supabase-legacy/supabase/functions/_shared/client-trust-body.ts` | `33c68553dbd89d9c7899520b0ebfa35c4f245ed8ab8ebd242c6f79e9852add95` |
+| `archive/supabase-legacy/supabase/functions/_shared/cors.ts` | `f8286c91d79fa5fc5cfea2fa47081916523fa7a440f234aecd9a47c6a8cf5b38` |
+| `archive/supabase-legacy/supabase/functions/_shared/edge-dispatcher-allowlist.ts` | `6d1ae7bde0ba9e41fcaa7b61247732168a62699e7811fb8574cef266cfad3a27` |
+| `archive/supabase-legacy/supabase/functions/_shared/edge-jwt-gate.ts` | `14a871697b051b7fcbee09dbce1dee8bc8ed5ea6a6eca0bec7b2e771b32d0f0c` |
+| `archive/supabase-legacy/supabase/functions/_shared/item-model3d-glb.ts` | `f227056ed5d1041def2009c37224c8df1139098bb3be8859bba984845fb7410e` |
+| `archive/supabase-legacy/supabase/functions/_shared/item-model3d-meshy.ts` | `8b194b23304884c8ca3d2c0935e8b67e27decfaca3e1e2657b1901dfb69d8355` |
+| `archive/supabase-legacy/supabase/functions/_shared/item-model3d-rate-limit.ts` | `2fdf5ca32dccf1cca8eac0de1d86d6926a671a9be9e0d1887e1fe607e9670a9d` |
+| `archive/supabase-legacy/supabase/functions/_shared/item-thumbnail-image.ts` | `caf768022788be451fdfc5dfeadf837fd48e2edecc26a68d14794f6a21853713` |
+| `archive/supabase-legacy/supabase/functions/item-model3d/index.ts` | `edeeb59c996bbb11fd6ca32a1dcf749a574ab2b233b2eb8888c1ab7ef6c304ae` |
+| `archive/supabase-legacy/supabase/functions/main/index.ts` | `92f3bf56bf3c776e01595d980246079c4a9f8775e417959abea9d7da003bc53e` |
 

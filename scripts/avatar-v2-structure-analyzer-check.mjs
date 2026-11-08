@@ -25,7 +25,7 @@ function check(cond, msg) {
 const domain = read('src/domains/character/avatar/avatar-structure-analyzer-v2.ts');
 const index = read('src/domains/character/avatar/index.ts');
 const scanner = read('src/infrastructure/character/avatar/avatar-structure-scanner.ts');
-const migration = read('supabase/migrations/037_character_avatar_analysis_result.sql');
+const migration = read('archive/supabase-legacy/supabase/migrations/037_character_avatar_analysis_result.sql');
 const pkg = JSON.parse(read('package.json'));
 
 check(/AVATAR_STRUCTURE_ANALYZER_CONTRACT_VERSION/.test(domain), 'contract version');

@@ -103,3 +103,6 @@ __pycache__/
 # Host Compose local secrets / backup mount (MIG-601)
 deployment/.env.host
 deployment/backups/
+
+# CUT-21: Deno eradicated; historical lock under archive/supabase-legacy/
+deno.lock

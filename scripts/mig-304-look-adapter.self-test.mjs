@@ -332,7 +332,7 @@ try {
   assert(!/look-profiles|lookProfiles|mountLook/i.test(createApp), 'no LookProfile HTTP mount yet');
 
   const allow = readFileSync(
-    join(root, 'supabase/functions/_shared/edge-dispatcher-allowlist.ts'),
+    join(root, 'archive/supabase-legacy/supabase/functions/_shared/edge-dispatcher-allowlist.ts'),
     'utf8',
   );
   assert(/look-reference-analysis/.test(allow), 'Edge look-reference-analysis still allowlisted');

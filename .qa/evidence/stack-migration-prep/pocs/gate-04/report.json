@@ -375,7 +375,7 @@
   "sources": [
     {
       "path": "scripts/stack-migration-pocs/gate-04/check.mjs",
-      "sha256": "620c1a2276279a58a56afee64820677683e70cb9232d4b01272f786c7e8fb7f1"
+      "sha256": "87075c9b358191872c5ee12f9b9bc8e949329f7badcf82e7dfad0b4b36053512"
     },
     {
       "path": "scripts/stack-migration-pocs/gate-04/store.mjs",
@@ -394,7 +394,7 @@
       "sha256": "e4383815a92b52afea8295113c8201a39ebce7aa6fcba070fbad91294b9f61a9"
     },
     {
-      "path": "supabase/migrations/051_session_director_runtime.sql",
+      "path": "archive/supabase-legacy/supabase/migrations/051_session_director_runtime.sql",
       "sha256": "7b483670555f06c5dec8dd3347e9b8b9336c17b143a6ada8f0c90709b479c010"
     },
     {

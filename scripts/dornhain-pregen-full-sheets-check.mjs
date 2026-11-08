@@ -47,7 +47,7 @@ mustInclude(
 );
 
 mustInclude(
-  'supabase/migrations/082_dornhain_pregen_full_sheets.sql',
+  'archive/supabase-legacy/supabase/migrations/082_dornhain_pregen_full_sheets.sql',
   [
     'nativeStarterSheetVersion',
     "'dwarf'",

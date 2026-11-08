@@ -26,7 +26,7 @@ function stripComments(src) {
   return src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*$/gm, '');
 }
 
-const migration = read('supabase/migrations/020_user_ai_provider_credentials.sql');
+const migration = read('archive/supabase-legacy/supabase/migrations/020_user_ai_provider_credentials.sql');
 check(migration.includes('user_ai_provider_credentials'), 'migration creates credentials table');
 check(migration.includes('service_role'), 'migration grants service_role only');
 check(migration.includes('consume_ai_provider_credential_rate_limit'), 'migration rate-limit RPC');
@@ -39,21 +39,21 @@ check(
   'self-host apply-migrations.sh registers 020',
 );
 
-const edge = read('supabase/functions/ai-provider-credentials/index.ts');
+const edge = read('archive/supabase-legacy/supabase/functions/ai-provider-credentials/index.ts');
 check(edge.includes("action === 'upsert'"), 'edge upsert action');
 check(edge.includes('validateMeshyApiKey') || edge.includes('validateProviderApiKey'), 'edge validates key');
 check(edge.includes('encryptProviderSecret'), 'edge encrypts secret');
 check(!edge.includes('VITE_'), 'edge has no VITE_ secrets');
 
-const resolve = read('supabase/functions/_shared/ai-provider-resolve-meshy.ts');
+const resolve = read('archive/supabase-legacy/supabase/functions/_shared/ai-provider-resolve-meshy.ts');
 check(resolve.includes('AI_PROVIDER_ALLOW_HOST_KEYS'), 'host keys gated by allow flag');
 check(resolve.includes('resolveMeshyApiKeyForUser'), 'user key resolver exists');
 
-const model3d = read('supabase/functions/item-model3d/index.ts');
+const model3d = read('archive/supabase-legacy/supabase/functions/item-model3d/index.ts');
 check(model3d.includes('resolveMeshyApiKeyForUser'), 'item-model3d uses user key resolver');
 check(model3d.includes('isMeshyConfiguredForUser'), 'item-model3d config uses user configuration');
 
-const thumb = read('supabase/functions/item-thumbnail/index.ts');
+const thumb = read('archive/supabase-legacy/supabase/functions/item-thumbnail/index.ts');
 check(thumb.includes('resolveMeshyApiKeyForUser'), 'item-thumbnail uses user key resolver');
 
 const clientSvc = read('src/infrastructure/ai/ai-provider-credentials-service.ts');

@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [edge-marketplace.json](source-contracts/edge-marketplace.json) (SHA-256 `9fb16426ad1a3c07b841e4c4520453e6629fcd571dee48fda2080d229c528bfb`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [edge-marketplace.json](source-contracts/edge-marketplace.json) (SHA-256 `3df2f4d4e52873b478025cd5d9e112b2077512eaa4dd3b47b9a1466352543ec2`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Exposure and purpose
 
@@ -53,7 +53,7 @@ None in the reviewed source.
 
 ### DEFAULT_CORS_METHODS
 
-`supabase/functions/_shared/cors.ts:9`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:9`
 
 ```ts
 DEFAULT_CORS_METHODS = 'GET, POST, PUT, DELETE, OPTIONS'
@@ -61,7 +61,7 @@ DEFAULT_CORS_METHODS = 'GET, POST, PUT, DELETE, OPTIONS'
 
 ### DEFAULT_CORS_ALLOW_HEADERS
 
-`supabase/functions/_shared/cors.ts:10`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:10`
 
 ```ts
 DEFAULT_CORS_ALLOW_HEADERS =
@@ -70,7 +70,7 @@ DEFAULT_CORS_ALLOW_HEADERS =
 
 ### readConfiguredOrigin
 
-`supabase/functions/_shared/cors.ts:34`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:34`
 
 ```ts
 function readConfiguredOrigin(envKeys: string[]): string {
@@ -84,7 +84,7 @@ function readConfiguredOrigin(envKeys: string[]): string {
 
 ### CORS_OPTS
 
-`supabase/functions/marketplace/index.ts:7`
+`archive/supabase-legacy/supabase/functions/marketplace/index.ts:7`
 
 ```ts
 CORS_OPTS: CorsOptions = {
@@ -128,7 +128,7 @@ No src/infrastructure caller in the reviewed branch. This does not authorize add
 
 ### marketplace:1
 
-Predicate: `req.method === "GET" && path === "/health"`. Source: `supabase/functions/marketplace/index.ts:43`.
+Predicate: `req.method === "GET" && path === "/health"`. Source: `archive/supabase-legacy/supabase/functions/marketplace/index.ts:43`.
 
 
 ```ts
@@ -137,7 +137,7 @@ return new Response(JSON.stringify({ status: 'ok', features: ['templates', 'sear
 
 ### marketplace:2
 
-Predicate: `req.method === "GET" && path === "/templates"`. Source: `supabase/functions/marketplace/index.ts:44`.
+Predicate: `req.method === "GET" && path === "/templates"`. Source: `archive/supabase-legacy/supabase/functions/marketplace/index.ts:44`.
 
 
 ```ts
@@ -146,7 +146,7 @@ Predicate: `req.method === "GET" && path === "/templates"`. Source: `supabase/fu
 
 ### marketplace:3
 
-Predicate: `req.method === "GET" && path.match(/^\/templates\/[\w-]+$/)`. Source: `supabase/functions/marketplace/index.ts:45`.
+Predicate: `req.method === "GET" && path.match(/^\/templates\/[\w-]+$/)`. Source: `archive/supabase-legacy/supabase/functions/marketplace/index.ts:45`.
 
 
 ```ts
@@ -155,7 +155,7 @@ Predicate: `req.method === "GET" && path.match(/^\/templates\/[\w-]+$/)`. Source
 
 ### marketplace:4
 
-Predicate: `req.method === "POST" && path === "/templates"`. Source: `supabase/functions/marketplace/index.ts:46`.
+Predicate: `req.method === "POST" && path === "/templates"`. Source: `archive/supabase-legacy/supabase/functions/marketplace/index.ts:46`.
 
 
 ```ts
@@ -164,7 +164,7 @@ Predicate: `req.method === "POST" && path === "/templates"`. Source: `supabase/f
 
 ### marketplace:5
 
-Predicate: `req.method === "POST" && path.match(/^\/templates\/[\w-]+\/download$/)`. Source: `supabase/functions/marketplace/index.ts:47`.
+Predicate: `req.method === "POST" && path.match(/^\/templates\/[\w-]+\/download$/)`. Source: `archive/supabase-legacy/supabase/functions/marketplace/index.ts:47`.
 
 
 ```ts
@@ -173,7 +173,7 @@ Predicate: `req.method === "POST" && path.match(/^\/templates\/[\w-]+\/download$
 
 ### marketplace:6
 
-Predicate: `req.method === "POST" && path.match(/^\/templates\/[\w-]+\/rate$/)`. Source: `supabase/functions/marketplace/index.ts:48`.
+Predicate: `req.method === "POST" && path.match(/^\/templates\/[\w-]+\/rate$/)`. Source: `archive/supabase-legacy/supabase/functions/marketplace/index.ts:48`.
 
 
 ```ts
@@ -182,7 +182,7 @@ Predicate: `req.method === "POST" && path.match(/^\/templates\/[\w-]+\/rate$/)`.
 
 ### marketplace:7
 
-Predicate: `req.method === "GET" && path === "/search"`. Source: `supabase/functions/marketplace/index.ts:49`.
+Predicate: `req.method === "GET" && path === "/search"`. Source: `archive/supabase-legacy/supabase/functions/marketplace/index.ts:49`.
 
 
 ```ts
@@ -194,7 +194,7 @@ Predicate: `req.method === "GET" && path === "/search"`. Source: `supabase/funct
 
 ### CorsOptions
 
-`supabase/functions/_shared/cors.ts:13`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:13`
 
 ```ts
 export type CorsOptions = {
@@ -221,7 +221,7 @@ export type CorsOptions = {
 
 ### Template
 
-`supabase/functions/marketplace/index.ts:13`
+`archive/supabase-legacy/supabase/functions/marketplace/index.ts:13`
 
 ```ts
 interface Template { id: string; name: string; type: 'ruleset' | 'character' | 'world' | 'quest' | 'npc'; author: string; description: string; data: Record<string,any>; tags: string[]; downloads: number; rating: number; createdAt: string }
@@ -232,7 +232,7 @@ interface Template { id: string; name: string; type: 'ruleset' | 'character' | '
 
 ### generateId
 
-`supabase/functions/marketplace/index.ts:27`
+`archive/supabase-legacy/supabase/functions/marketplace/index.ts:27`
 
 ```ts
 function generateId(): string { return crypto.randomUUID() }
@@ -240,7 +240,7 @@ function generateId(): string { return crypto.randomUUID() }
 
 ### listTemplates
 
-`supabase/functions/marketplace/index.ts:29`
+`archive/supabase-legacy/supabase/functions/marketplace/index.ts:29`
 
 ```ts
 async function listTemplates(type?: string, tag?: string): Promise<Template[]> { let all = Array.from(templates.values()); if (type) all = all.filter(t => t.type === type); if (tag) all = all.filter(t => t.tags.includes(tag)); return all.sort((a, b) => b.downloads - a.downloads) }
@@ -248,7 +248,7 @@ async function listTemplates(type?: string, tag?: string): Promise<Template[]> {
 
 ### getTemplate
 
-`supabase/functions/marketplace/index.ts:30`
+`archive/supabase-legacy/supabase/functions/marketplace/index.ts:30`
 
 ```ts
 async function getTemplate(id: string): Promise<Template | null> { return templates.get(id) || null }
@@ -256,7 +256,7 @@ async function getTemplate(id: string): Promise<Template | null> { return templa
 
 ### createTemplate
 
-`supabase/functions/marketplace/index.ts:31`
+`archive/supabase-legacy/supabase/functions/marketplace/index.ts:31`
 
 ```ts
 async function createTemplate(data: Partial<Template>): Promise<Template> { const id = generateId(); const template: Template = { id, name: data.name || 'Untitled', type: data.type || 'ruleset', author: data.author || 'Anonymous', description: data.description || '', data: data.data || {}, tags: data.tags || [], downloads: 0, rating: 0, createdAt: new Date().toISOString() }; templates.set(id, template); return template }
@@ -264,7 +264,7 @@ async function createTemplate(data: Partial<Template>): Promise<Template> { cons
 
 ### downloadTemplate
 
-`supabase/functions/marketplace/index.ts:32`
+`archive/supabase-legacy/supabase/functions/marketplace/index.ts:32`
 
 ```ts
 async function downloadTemplate(id: string): Promise<Template | null> { const template = templates.get(id); if (!template) return null; template.downloads++; templates.set(id, template); return template }
@@ -272,7 +272,7 @@ async function downloadTemplate(id: string): Promise<Template | null> { const te
 
 ### rateTemplate
 
-`supabase/functions/marketplace/index.ts:33`
+`archive/supabase-legacy/supabase/functions/marketplace/index.ts:33`
 
 ```ts
 async function rateTemplate(id: string, rating: number): Promise<Template | null> { const template = templates.get(id); if (!template) return null; const count = template.downloads || 1; template.rating = ((template.rating * count) + rating) / (count + 1); templates.set(id, template); return template }
@@ -280,7 +280,7 @@ async function rateTemplate(id: string, rating: number): Promise<Template | null
 
 ### searchTemplates
 
-`supabase/functions/marketplace/index.ts:34`
+`archive/supabase-legacy/supabase/functions/marketplace/index.ts:34`
 
 ```ts
 async function searchTemplates(query: string): Promise<Template[]> { const lowerQuery = query.toLowerCase(); return Array.from(templates.values()).filter(t => t.name.toLowerCase().includes(lowerQuery) || t.description.toLowerCase().includes(lowerQuery) || t.tags.some(tag => tag.toLowerCase().includes(lowerQuery))) }
@@ -291,9 +291,9 @@ async function searchTemplates(query: string): Promise<Template[]> { const lower
 
 | Path | SHA-256 |
 |---|---|
-| `supabase/functions/_shared/cors.ts` | `f8286c91d79fa5fc5cfea2fa47081916523fa7a440f234aecd9a47c6a8cf5b38` |
-| `supabase/functions/_shared/edge-dispatcher-allowlist.ts` | `6d1ae7bde0ba9e41fcaa7b61247732168a62699e7811fb8574cef266cfad3a27` |
-| `supabase/functions/_shared/edge-jwt-gate.ts` | `14a871697b051b7fcbee09dbce1dee8bc8ed5ea6a6eca0bec7b2e771b32d0f0c` |
-| `supabase/functions/main/index.ts` | `92f3bf56bf3c776e01595d980246079c4a9f8775e417959abea9d7da003bc53e` |
-| `supabase/functions/marketplace/index.ts` | `ed4343db87d2b2004b8e6981a89946ae5bb70da607ebfcade9d8c9edfa76d3fe` |
+| `archive/supabase-legacy/supabase/functions/_shared/cors.ts` | `f8286c91d79fa5fc5cfea2fa47081916523fa7a440f234aecd9a47c6a8cf5b38` |
+| `archive/supabase-legacy/supabase/functions/_shared/edge-dispatcher-allowlist.ts` | `6d1ae7bde0ba9e41fcaa7b61247732168a62699e7811fb8574cef266cfad3a27` |
+| `archive/supabase-legacy/supabase/functions/_shared/edge-jwt-gate.ts` | `14a871697b051b7fcbee09dbce1dee8bc8ed5ea6a6eca0bec7b2e771b32d0f0c` |
+| `archive/supabase-legacy/supabase/functions/main/index.ts` | `92f3bf56bf3c776e01595d980246079c4a9f8775e417959abea9d7da003bc53e` |
+| `archive/supabase-legacy/supabase/functions/marketplace/index.ts` | `ed4343db87d2b2004b8e6981a89946ae5bb70da607ebfcade9d8c9edfa76d3fe` |
 

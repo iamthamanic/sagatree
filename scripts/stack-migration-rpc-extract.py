@@ -276,7 +276,7 @@ def parse_body(fn):
 def compile_catalog():
     catalog, history, tables, triggers, policies, files = {}, defaultdict(list), {}, {}, {}, {}
     dropped = []
-    migrations = sorted((ROOT / "supabase/migrations").glob("*.sql"))
+    migrations = sorted((ROOT / "archive/supabase-legacy/supabase/migrations").glob("*.sql"))
 
     def rename_helpers(ref, delete_twin):
         for key in list(catalog):
@@ -388,7 +388,7 @@ def compile_catalog():
     # Optional marketplace SQL is intentionally not replayed into the migration
     # chain. Record each independent script's ACL and identical implementation.
     optional = []
-    for path in ("src/supabase/add_marketplace_rpc.sql", "src/supabase/deploy_marketplace.sql"):
+    for path in ("archive/supabase-legacy/src-supabase/add_marketplace_rpc.sql", "archive/supabase-legacy/src-supabase/deploy_marketplace.sql"):
         full = (ROOT / path).read_text()
         files[path] = digest(full)
         candidate = None

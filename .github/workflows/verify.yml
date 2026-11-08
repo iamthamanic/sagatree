@@ -36,10 +36,8 @@ jobs:
           node-version: 22
           cache: npm
 
-      - name: Setup Deno
-        uses: denoland/setup-deno@v2
-        with:
-          deno-version: lts
+      # CUT-21 (#1156): Deno Edge runtime eradicated from the product stack.
+      # Archived Edge proofs skip Deno when the binary is absent.
 
       - name: Install dependencies
         run: npm ci

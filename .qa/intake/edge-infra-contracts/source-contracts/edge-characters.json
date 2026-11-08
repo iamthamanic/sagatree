@@ -4,11 +4,11 @@
   "evidenceKind": "exact-typescript-ast-source",
   "sourceFiles": [
     {
-      "path": "supabase/functions/_shared/cors.ts",
+      "path": "archive/supabase-legacy/supabase/functions/_shared/cors.ts",
       "sha256": "f8286c91d79fa5fc5cfea2fa47081916523fa7a440f234aecd9a47c6a8cf5b38"
     },
     {
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "sha256": "59359af748b2d2ff6c777ed1aa6a48f0cc16cdf8eb9bc8e2816ef2751fee8fe7"
     }
   ],
@@ -16,13 +16,13 @@
     {
       "id": "characters:1",
       "condition": "req.method === \"GET\" && path === \"/health\"",
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 622,
       "endLine": 630,
       "requestReads": [],
       "returns": [
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 623,
           "endLine": 629,
           "expression": "new Response(JSON.stringify({\n        status: 'ok',\n        timestamp: new Date().toISOString(),\n        features: ['characters', 'leveling', 'equipment', 'spell-slots', 'hp-management', 'export-import'],\n      }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
@@ -30,7 +30,7 @@
       ],
       "calls": [
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 623,
           "endLine": 627,
           "expression": "JSON.stringify",
@@ -39,7 +39,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 625,
           "endLine": 625,
           "expression": "new Date().toISOString",
@@ -51,13 +51,13 @@
     {
       "id": "characters:2",
       "condition": "req.method === \"GET\" && path === \"/characters\"",
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 633,
       "endLine": 641,
       "requestReads": [],
       "returns": [
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 638,
           "endLine": 640,
           "expression": "new Response(JSON.stringify(charactersList), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
@@ -65,7 +65,7 @@
       ],
       "calls": [
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 634,
           "endLine": 634,
           "expression": "url.searchParams.get",
@@ -74,7 +74,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 635,
           "endLine": 635,
           "expression": "url.searchParams.get",
@@ -83,7 +83,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 636,
           "endLine": 636,
           "expression": "listCharacters",
@@ -93,7 +93,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 638,
           "endLine": 638,
           "expression": "JSON.stringify",
@@ -107,13 +107,13 @@
     {
       "id": "characters:3",
       "condition": "req.method === \"POST\" && path === \"/characters\"",
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 644,
       "endLine": 652,
       "requestReads": [],
       "returns": [
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 648,
           "endLine": 651,
           "expression": "new Response(JSON.stringify(character), {\n        status: 201,\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
@@ -121,14 +121,14 @@
       ],
       "calls": [
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 645,
           "endLine": 645,
           "expression": "req.json",
           "arguments": []
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 646,
           "endLine": 646,
           "expression": "createCharacter",
@@ -137,7 +137,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 648,
           "endLine": 648,
           "expression": "JSON.stringify",
@@ -151,19 +151,19 @@
     {
       "id": "characters:4",
       "condition": "req.method === \"GET\" && path.match(/^\\/characters\\/[\\w-]+$/)",
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 655,
       "endLine": 669,
       "requestReads": [],
       "returns": [
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 660,
           "endLine": 663,
           "expression": "new Response(JSON.stringify({ error: \"Character not found\" }), {\n          status: 404,\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })"
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 666,
           "endLine": 668,
           "expression": "new Response(JSON.stringify(character), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
@@ -171,7 +171,7 @@
       ],
       "calls": [
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 656,
           "endLine": 656,
           "expression": "path.split",
@@ -180,7 +180,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 657,
           "endLine": 657,
           "expression": "getCharacter",
@@ -189,7 +189,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 660,
           "endLine": 660,
           "expression": "JSON.stringify",
@@ -198,7 +198,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 666,
           "endLine": 666,
           "expression": "JSON.stringify",
@@ -212,13 +212,13 @@
     {
       "id": "characters:5",
       "condition": "req.method === \"PUT\" && path.match(/^\\/characters\\/[\\w-]+$/)",
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 672,
       "endLine": 680,
       "requestReads": [],
       "returns": [
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 677,
           "endLine": 679,
           "expression": "new Response(JSON.stringify(character), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
@@ -226,7 +226,7 @@
       ],
       "calls": [
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 673,
           "endLine": 673,
           "expression": "path.split",
@@ -235,14 +235,14 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 674,
           "endLine": 674,
           "expression": "req.json",
           "arguments": []
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 675,
           "endLine": 675,
           "expression": "updateCharacter",
@@ -252,7 +252,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 677,
           "endLine": 677,
           "expression": "JSON.stringify",
@@ -266,13 +266,13 @@
     {
       "id": "characters:6",
       "condition": "req.method === \"DELETE\" && path.match(/^\\/characters\\/[\\w-]+$/)",
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 683,
       "endLine": 690,
       "requestReads": [],
       "returns": [
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 687,
           "endLine": 689,
           "expression": "new Response(JSON.stringify({ success: true }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
@@ -280,7 +280,7 @@
       ],
       "calls": [
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 684,
           "endLine": 684,
           "expression": "path.split",
@@ -289,7 +289,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 685,
           "endLine": 685,
           "expression": "deleteCharacter",
@@ -298,7 +298,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 687,
           "endLine": 687,
           "expression": "JSON.stringify",
@@ -312,7 +312,7 @@
     {
       "id": "characters:7",
       "condition": "req.method === \"POST\" && path.match(/^\\/characters\\/[\\w-]+\\/experience$/)",
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 693,
       "endLine": 701,
       "requestReads": [
@@ -320,7 +320,7 @@
       ],
       "returns": [
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 698,
           "endLine": 700,
           "expression": "new Response(JSON.stringify(result), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
@@ -328,7 +328,7 @@
       ],
       "calls": [
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 694,
           "endLine": 694,
           "expression": "path.split",
@@ -337,14 +337,14 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 695,
           "endLine": 695,
           "expression": "req.json",
           "arguments": []
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 696,
           "endLine": 696,
           "expression": "addExperience",
@@ -354,7 +354,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 698,
           "endLine": 698,
           "expression": "JSON.stringify",
@@ -368,13 +368,13 @@
     {
       "id": "characters:8",
       "condition": "req.method === \"POST\" && path.match(/^\\/characters\\/[\\w-]+\\/level-up$/)",
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 704,
       "endLine": 711,
       "requestReads": [],
       "returns": [
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 708,
           "endLine": 710,
           "expression": "new Response(JSON.stringify(character), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
@@ -382,14 +382,14 @@
       ],
       "calls": [
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 705,
           "endLine": 705,
           "expression": "req.json",
           "arguments": []
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 706,
           "endLine": 706,
           "expression": "levelUp",
@@ -398,7 +398,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 708,
           "endLine": 708,
           "expression": "JSON.stringify",
@@ -412,13 +412,13 @@
     {
       "id": "characters:9",
       "condition": "req.method === \"POST\" && path.match(/^\\/characters\\/[\\w-]+\\/equipment$/)",
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 714,
       "endLine": 722,
       "requestReads": [],
       "returns": [
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 719,
           "endLine": 721,
           "expression": "new Response(JSON.stringify(equipment), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
@@ -426,7 +426,7 @@
       ],
       "calls": [
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 715,
           "endLine": 715,
           "expression": "path.split",
@@ -435,14 +435,14 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 716,
           "endLine": 716,
           "expression": "req.json",
           "arguments": []
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 717,
           "endLine": 717,
           "expression": "addEquipment",
@@ -452,7 +452,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 719,
           "endLine": 719,
           "expression": "JSON.stringify",
@@ -466,13 +466,13 @@
     {
       "id": "characters:10",
       "condition": "req.method === \"DELETE\" && path.match(/^\\/characters\\/[\\w-]+\\/equipment\\/[\\w-]+$/)",
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 725,
       "endLine": 733,
       "requestReads": [],
       "returns": [
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 730,
           "endLine": 732,
           "expression": "new Response(JSON.stringify({ success: true }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
@@ -480,7 +480,7 @@
       ],
       "calls": [
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 726,
           "endLine": 726,
           "expression": "path.split",
@@ -489,7 +489,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 727,
           "endLine": 727,
           "expression": "path.split",
@@ -498,7 +498,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 728,
           "endLine": 728,
           "expression": "removeEquipment",
@@ -508,7 +508,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 730,
           "endLine": 730,
           "expression": "JSON.stringify",
@@ -522,13 +522,13 @@
     {
       "id": "characters:11",
       "condition": "req.method === \"POST\" && path.match(/^\\/characters\\/[\\w-]+\\/equip\\/[\\w-]+$/)",
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 736,
       "endLine": 744,
       "requestReads": [],
       "returns": [
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 741,
           "endLine": 743,
           "expression": "new Response(JSON.stringify(character), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
@@ -536,7 +536,7 @@
       ],
       "calls": [
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 737,
           "endLine": 737,
           "expression": "path.split",
@@ -545,7 +545,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 738,
           "endLine": 738,
           "expression": "path.split",
@@ -554,7 +554,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 739,
           "endLine": 739,
           "expression": "equipItem",
@@ -564,7 +564,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 741,
           "endLine": 741,
           "expression": "JSON.stringify",
@@ -578,13 +578,13 @@
     {
       "id": "characters:12",
       "condition": "req.method === \"POST\" && path.match(/^\\/characters\\/[\\w-]+\\/unequip\\/[\\w-]+$/)",
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 747,
       "endLine": 755,
       "requestReads": [],
       "returns": [
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 752,
           "endLine": 754,
           "expression": "new Response(JSON.stringify(character), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
@@ -592,7 +592,7 @@
       ],
       "calls": [
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 748,
           "endLine": 748,
           "expression": "path.split",
@@ -601,7 +601,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 749,
           "endLine": 749,
           "expression": "path.split",
@@ -610,7 +610,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 750,
           "endLine": 750,
           "expression": "unequipItem",
@@ -620,7 +620,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 752,
           "endLine": 752,
           "expression": "JSON.stringify",
@@ -634,13 +634,13 @@
     {
       "id": "characters:13",
       "condition": "req.method === \"POST\" && path.match(/^\\/characters\\/[\\w-]+\\/spell-slots\\/\\d\\/use$/)",
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 758,
       "endLine": 766,
       "requestReads": [],
       "returns": [
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 763,
           "endLine": 765,
           "expression": "new Response(JSON.stringify(result), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
@@ -648,7 +648,7 @@
       ],
       "calls": [
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 759,
           "endLine": 759,
           "expression": "path.split",
@@ -657,7 +657,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 760,
           "endLine": 760,
           "expression": "parseInt",
@@ -666,7 +666,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 760,
           "endLine": 760,
           "expression": "path.split",
@@ -675,7 +675,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 761,
           "endLine": 761,
           "expression": "useSpellSlot",
@@ -685,7 +685,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 763,
           "endLine": 763,
           "expression": "JSON.stringify",
@@ -699,13 +699,13 @@
     {
       "id": "characters:14",
       "condition": "req.method === \"POST\" && path.match(/^\\/characters\\/[\\w-]+\\/spell-slots\\/restore$/)",
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 769,
       "endLine": 776,
       "requestReads": [],
       "returns": [
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 773,
           "endLine": 775,
           "expression": "new Response(JSON.stringify({ success: true }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
@@ -713,7 +713,7 @@
       ],
       "calls": [
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 770,
           "endLine": 770,
           "expression": "path.split",
@@ -722,7 +722,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 771,
           "endLine": 771,
           "expression": "restoreSpellSlots",
@@ -731,7 +731,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 773,
           "endLine": 773,
           "expression": "JSON.stringify",
@@ -745,7 +745,7 @@
     {
       "id": "characters:15",
       "condition": "req.method === \"POST\" && path.match(/^\\/characters\\/[\\w-]+\\/damage$/)",
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 779,
       "endLine": 787,
       "requestReads": [
@@ -753,7 +753,7 @@
       ],
       "returns": [
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 784,
           "endLine": 786,
           "expression": "new Response(JSON.stringify(character), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
@@ -761,7 +761,7 @@
       ],
       "calls": [
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 780,
           "endLine": 780,
           "expression": "path.split",
@@ -770,14 +770,14 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 781,
           "endLine": 781,
           "expression": "req.json",
           "arguments": []
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 782,
           "endLine": 782,
           "expression": "takeDamage",
@@ -787,7 +787,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 784,
           "endLine": 784,
           "expression": "JSON.stringify",
@@ -801,7 +801,7 @@
     {
       "id": "characters:16",
       "condition": "req.method === \"POST\" && path.match(/^\\/characters\\/[\\w-]+\\/heal$/)",
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 790,
       "endLine": 798,
       "requestReads": [
@@ -809,7 +809,7 @@
       ],
       "returns": [
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 795,
           "endLine": 797,
           "expression": "new Response(JSON.stringify(character), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
@@ -817,7 +817,7 @@
       ],
       "calls": [
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 791,
           "endLine": 791,
           "expression": "path.split",
@@ -826,14 +826,14 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 792,
           "endLine": 792,
           "expression": "req.json",
           "arguments": []
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 793,
           "endLine": 793,
           "expression": "healCharacter",
@@ -843,7 +843,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 795,
           "endLine": 795,
           "expression": "JSON.stringify",
@@ -857,7 +857,7 @@
     {
       "id": "characters:17",
       "condition": "req.method === \"POST\" && path.match(/^\\/characters\\/[\\w-]+\\/temp-hp$/)",
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 801,
       "endLine": 809,
       "requestReads": [
@@ -865,7 +865,7 @@
       ],
       "returns": [
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 806,
           "endLine": 808,
           "expression": "new Response(JSON.stringify(character), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
@@ -873,7 +873,7 @@
       ],
       "calls": [
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 802,
           "endLine": 802,
           "expression": "path.split",
@@ -882,14 +882,14 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 803,
           "endLine": 803,
           "expression": "req.json",
           "arguments": []
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 804,
           "endLine": 804,
           "expression": "addTempHP",
@@ -899,7 +899,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 806,
           "endLine": 806,
           "expression": "JSON.stringify",
@@ -913,13 +913,13 @@
     {
       "id": "characters:18",
       "condition": "req.method === \"GET\" && path.match(/^\\/characters\\/[\\w-]+\\/export$/)",
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 812,
       "endLine": 819,
       "requestReads": [],
       "returns": [
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 816,
           "endLine": 818,
           "expression": "new Response(JSON.stringify(character), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
@@ -927,7 +927,7 @@
       ],
       "calls": [
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 813,
           "endLine": 813,
           "expression": "path.split",
@@ -936,7 +936,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 814,
           "endLine": 814,
           "expression": "exportCharacter",
@@ -945,7 +945,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 816,
           "endLine": 816,
           "expression": "JSON.stringify",
@@ -959,13 +959,13 @@
     {
       "id": "characters:19",
       "condition": "req.method === \"POST\" && path === \"/characters/import\"",
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 822,
       "endLine": 829,
       "requestReads": [],
       "returns": [
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 826,
           "endLine": 828,
           "expression": "new Response(JSON.stringify(character), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
@@ -973,14 +973,14 @@
       ],
       "calls": [
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 823,
           "endLine": 823,
           "expression": "req.json",
           "arguments": []
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 824,
           "endLine": 824,
           "expression": "importCharacter",
@@ -989,7 +989,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 826,
           "endLine": 826,
           "expression": "JSON.stringify",
@@ -1003,133 +1003,133 @@
   ],
   "responseSites": [
     {
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 623,
       "endLine": 629,
       "expression": "new Response(JSON.stringify({\n        status: 'ok',\n        timestamp: new Date().toISOString(),\n        features: ['characters', 'leveling', 'equipment', 'spell-slots', 'hp-management', 'export-import'],\n      }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
     },
     {
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 638,
       "endLine": 640,
       "expression": "new Response(JSON.stringify(charactersList), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
     },
     {
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 648,
       "endLine": 651,
       "expression": "new Response(JSON.stringify(character), {\n        status: 201,\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
     },
     {
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 660,
       "endLine": 663,
       "expression": "new Response(JSON.stringify({ error: \"Character not found\" }), {\n          status: 404,\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })"
     },
     {
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 666,
       "endLine": 668,
       "expression": "new Response(JSON.stringify(character), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
     },
     {
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 677,
       "endLine": 679,
       "expression": "new Response(JSON.stringify(character), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
     },
     {
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 687,
       "endLine": 689,
       "expression": "new Response(JSON.stringify({ success: true }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
     },
     {
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 698,
       "endLine": 700,
       "expression": "new Response(JSON.stringify(result), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
     },
     {
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 708,
       "endLine": 710,
       "expression": "new Response(JSON.stringify(character), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
     },
     {
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 719,
       "endLine": 721,
       "expression": "new Response(JSON.stringify(equipment), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
     },
     {
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 730,
       "endLine": 732,
       "expression": "new Response(JSON.stringify({ success: true }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
     },
     {
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 741,
       "endLine": 743,
       "expression": "new Response(JSON.stringify(character), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
     },
     {
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 752,
       "endLine": 754,
       "expression": "new Response(JSON.stringify(character), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
     },
     {
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 763,
       "endLine": 765,
       "expression": "new Response(JSON.stringify(result), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
     },
     {
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 773,
       "endLine": 775,
       "expression": "new Response(JSON.stringify({ success: true }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
     },
     {
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 784,
       "endLine": 786,
       "expression": "new Response(JSON.stringify(character), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
     },
     {
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 795,
       "endLine": 797,
       "expression": "new Response(JSON.stringify(character), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
     },
     {
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 806,
       "endLine": 808,
       "expression": "new Response(JSON.stringify(character), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
     },
     {
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 816,
       "endLine": 818,
       "expression": "new Response(JSON.stringify(character), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
     },
     {
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 826,
       "endLine": 828,
       "expression": "new Response(JSON.stringify(character), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
     },
     {
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 832,
       "endLine": 835,
       "expression": "new Response(JSON.stringify({ error: \"Not found\" }), {\n      status: 404,\n      headers: { ...headers, \"Content-Type\": \"application/json\" },\n    })"
     },
     {
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 838,
       "endLine": 844,
       "expression": "new Response(JSON.stringify({\n      error: \"Internal server error\",\n      message: (error instanceof Error ? error.message : String(error)),\n    }), {\n      status: 500,\n      headers: { ...headers, \"Content-Type\": \"application/json\" },\n    })"
@@ -1141,91 +1141,91 @@
   "timeoutSites": [],
   "effectSites": [
     {
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 290,
       "endLine": 290,
       "expression": "characters.set(id, character)"
     },
     {
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 309,
       "endLine": 309,
       "expression": "characters.set(characterId, updated)"
     },
     {
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 314,
       "endLine": 314,
       "expression": "characters.delete(characterId)"
     },
     {
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 364,
       "endLine": 364,
       "expression": "characters.set(characterId, character)"
     },
     {
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 410,
       "endLine": 410,
       "expression": "characters.set(data.characterId, character)"
     },
     {
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 431,
       "endLine": 431,
       "expression": "characters.set(characterId, character)"
     },
     {
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 442,
       "endLine": 442,
       "expression": "characters.set(characterId, character)"
     },
     {
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 465,
       "endLine": 465,
       "expression": "characters.set(characterId, character)"
     },
     {
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 479,
       "endLine": 479,
       "expression": "characters.set(characterId, character)"
     },
     {
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 518,
       "endLine": 518,
       "expression": "characters.set(characterId, character)"
     },
     {
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 533,
       "endLine": 533,
       "expression": "characters.set(characterId, character)"
     },
     {
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 555,
       "endLine": 555,
       "expression": "characters.set(characterId, character)"
     },
     {
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 566,
       "endLine": 566,
       "expression": "characters.set(characterId, character)"
     },
     {
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 577,
       "endLine": 577,
       "expression": "characters.set(characterId, character)"
     },
     {
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 603,
       "endLine": 603,
       "expression": "characters.set(id, character)"
@@ -1233,7 +1233,7 @@
   ],
   "handler": [
     {
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 611,
       "endLine": 846,
       "text": "serve(async (req: Request) => {\n  const headers = corsHeaders(req, CORS_OPTS)\n  \n  const optionsResponse = handleOptions(req, CORS_OPTS)\n  if (optionsResponse) return optionsResponse\n  \n  const url = new URL(req.url)\n  const path = url.pathname.replace(\"/functions/v1/characters\", \"\")\n  \n  try {\n    // GET /health\n    if (req.method === \"GET\" && path === \"/health\") {\n      return new Response(JSON.stringify({\n        status: 'ok',\n        timestamp: new Date().toISOString(),\n        features: ['characters', 'leveling', 'equipment', 'spell-slots', 'hp-management', 'export-import'],\n      }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // GET /characters - List characters\n    if (req.method === \"GET\" && path === \"/characters\") {\n      const ownerId = url.searchParams.get('ownerId') || undefined\n      const projectId = url.searchParams.get('projectId') || undefined\n      const charactersList = await listCharacters(ownerId, projectId)\n      \n      return new Response(JSON.stringify(charactersList), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /characters - Create character\n    if (req.method === \"POST\" && path === \"/characters\") {\n      const body = await req.json()\n      const character = await createCharacter(body)\n      \n      return new Response(JSON.stringify(character), {\n        status: 201,\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // GET /characters/:id - Get character\n    if (req.method === \"GET\" && path.match(/^\\/characters\\/[\\w-]+$/)) {\n      const characterId = path.split(\"/\")[2]\n      const character = await getCharacter(characterId)\n      \n      if (!character) {\n        return new Response(JSON.stringify({ error: \"Character not found\" }), {\n          status: 404,\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })\n      }\n      \n      return new Response(JSON.stringify(character), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // PUT /characters/:id - Update character\n    if (req.method === \"PUT\" && path.match(/^\\/characters\\/[\\w-]+$/)) {\n      const characterId = path.split(\"/\")[2]\n      const body = await req.json()\n      const character = await updateCharacter(characterId, body)\n      \n      return new Response(JSON.stringify(character), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // DELETE /characters/:id - Delete character\n    if (req.method === \"DELETE\" && path.match(/^\\/characters\\/[\\w-]+$/)) {\n      const characterId = path.split(\"/\")[2]\n      await deleteCharacter(characterId)\n      \n      return new Response(JSON.stringify({ success: true }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /characters/:id/experience - Add experience\n    if (req.method === \"POST\" && path.match(/^\\/characters\\/[\\w-]+\\/experience$/)) {\n      const characterId = path.split(\"/\")[2]\n      const body = await req.json()\n      const result = await addExperience(characterId, body.xp)\n      \n      return new Response(JSON.stringify(result), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /characters/:id/level-up - Level up\n    if (req.method === \"POST\" && path.match(/^\\/characters\\/[\\w-]+\\/level-up$/)) {\n      const body = await req.json()\n      const character = await levelUp(body)\n      \n      return new Response(JSON.stringify(character), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /characters/:id/equipment - Add equipment\n    if (req.method === \"POST\" && path.match(/^\\/characters\\/[\\w-]+\\/equipment$/)) {\n      const characterId = path.split(\"/\")[2]\n      const body = await req.json()\n      const equipment = await addEquipment(characterId, body)\n      \n      return new Response(JSON.stringify(equipment), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // DELETE /characters/:id/equipment/:equipmentId - Remove equipment\n    if (req.method === \"DELETE\" && path.match(/^\\/characters\\/[\\w-]+\\/equipment\\/[\\w-]+$/)) {\n      const characterId = path.split(\"/\")[2]\n      const equipmentId = path.split(\"/\")[4]\n      await removeEquipment(characterId, equipmentId)\n      \n      return new Response(JSON.stringify({ success: true }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /characters/:id/equip/:equipmentId - Equip item\n    if (req.method === \"POST\" && path.match(/^\\/characters\\/[\\w-]+\\/equip\\/[\\w-]+$/)) {\n      const characterId = path.split(\"/\")[2]\n      const equipmentId = path.split(\"/\")[4]\n      const character = await equipItem(characterId, equipmentId)\n      \n      return new Response(JSON.stringify(character), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /characters/:id/unequip/:equipmentId - Unequip item\n    if (req.method === \"POST\" && path.match(/^\\/characters\\/[\\w-]+\\/unequip\\/[\\w-]+$/)) {\n      const characterId = path.split(\"/\")[2]\n      const equipmentId = path.split(\"/\")[4]\n      const character = await unequipItem(characterId, equipmentId)\n      \n      return new Response(JSON.stringify(character), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /characters/:id/spell-slots/:level/use - Use spell slot\n    if (req.method === \"POST\" && path.match(/^\\/characters\\/[\\w-]+\\/spell-slots\\/\\d\\/use$/)) {\n      const characterId = path.split(\"/\")[2]\n      const level = parseInt(path.split(\"/\")[4])\n      const result = await useSpellSlot(characterId, level)\n      \n      return new Response(JSON.stringify(result), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /characters/:id/spell-slots/restore - Restore all spell slots\n    if (req.method === \"POST\" && path.match(/^\\/characters\\/[\\w-]+\\/spell-slots\\/restore$/)) {\n      const characterId = path.split(\"/\")[2]\n      await restoreSpellSlots(characterId)\n      \n      return new Response(JSON.stringify({ success: true }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /characters/:id/damage - Take damage\n    if (req.method === \"POST\" && path.match(/^\\/characters\\/[\\w-]+\\/damage$/)) {\n      const characterId = path.split(\"/\")[2]\n      const body = await req.json()\n      const character = await takeDamage(characterId, body.damage)\n      \n      return new Response(JSON.stringify(character), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /characters/:id/heal - Heal character\n    if (req.method === \"POST\" && path.match(/^\\/characters\\/[\\w-]+\\/heal$/)) {\n      const characterId = path.split(\"/\")[2]\n      const body = await req.json()\n      const character = await healCharacter(characterId, body.healing)\n      \n      return new Response(JSON.stringify(character), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /characters/:id/temp-hp - Add temporary HP\n    if (req.method === \"POST\" && path.match(/^\\/characters\\/[\\w-]+\\/temp-hp$/)) {\n      const characterId = path.split(\"/\")[2]\n      const body = await req.json()\n      const character = await addTempHP(characterId, body.tempHP)\n      \n      return new Response(JSON.stringify(character), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // GET /characters/:id/export - Export character\n    if (req.method === \"GET\" && path.match(/^\\/characters\\/[\\w-]+\\/export$/)) {\n      const characterId = path.split(\"/\")[2]\n      const character = await exportCharacter(characterId)\n      \n      return new Response(JSON.stringify(character), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /characters/import - Import character\n    if (req.method === \"POST\" && path === \"/characters/import\") {\n      const body = await req.json()\n      const character = await importCharacter(body)\n      \n      return new Response(JSON.stringify(character), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // Not found\n    return new Response(JSON.stringify({ error: \"Not found\" }), {\n      status: 404,\n      headers: { ...headers, \"Content-Type\": \"application/json\" },\n    })\n    \n  } catch (error: unknown) {\n    return new Response(JSON.stringify({\n      error: \"Internal server error\",\n      message: (error instanceof Error ? error.message : String(error)),\n    }), {\n      status: 500,\n      headers: { ...headers, \"Content-Type\": \"application/json\" },\n    })\n  }\n})",
@@ -1245,139 +1245,139 @@
       ],
       "returns": [
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 615,
           "endLine": 615,
           "expression": "optionsResponse"
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 623,
           "endLine": 629,
           "expression": "new Response(JSON.stringify({\n        status: 'ok',\n        timestamp: new Date().toISOString(),\n        features: ['characters', 'leveling', 'equipment', 'spell-slots', 'hp-management', 'export-import'],\n      }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 638,
           "endLine": 640,
           "expression": "new Response(JSON.stringify(charactersList), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 648,
           "endLine": 651,
           "expression": "new Response(JSON.stringify(character), {\n        status: 201,\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 660,
           "endLine": 663,
           "expression": "new Response(JSON.stringify({ error: \"Character not found\" }), {\n          status: 404,\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })"
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 666,
           "endLine": 668,
           "expression": "new Response(JSON.stringify(character), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 677,
           "endLine": 679,
           "expression": "new Response(JSON.stringify(character), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 687,
           "endLine": 689,
           "expression": "new Response(JSON.stringify({ success: true }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 698,
           "endLine": 700,
           "expression": "new Response(JSON.stringify(result), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 708,
           "endLine": 710,
           "expression": "new Response(JSON.stringify(character), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 719,
           "endLine": 721,
           "expression": "new Response(JSON.stringify(equipment), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 730,
           "endLine": 732,
           "expression": "new Response(JSON.stringify({ success: true }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 741,
           "endLine": 743,
           "expression": "new Response(JSON.stringify(character), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 752,
           "endLine": 754,
           "expression": "new Response(JSON.stringify(character), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 763,
           "endLine": 765,
           "expression": "new Response(JSON.stringify(result), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 773,
           "endLine": 775,
           "expression": "new Response(JSON.stringify({ success: true }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 784,
           "endLine": 786,
           "expression": "new Response(JSON.stringify(character), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 795,
           "endLine": 797,
           "expression": "new Response(JSON.stringify(character), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 806,
           "endLine": 808,
           "expression": "new Response(JSON.stringify(character), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 816,
           "endLine": 818,
           "expression": "new Response(JSON.stringify(character), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 826,
           "endLine": 828,
           "expression": "new Response(JSON.stringify(character), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 832,
           "endLine": 835,
           "expression": "new Response(JSON.stringify({ error: \"Not found\" }), {\n      status: 404,\n      headers: { ...headers, \"Content-Type\": \"application/json\" },\n    })"
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 838,
           "endLine": 844,
           "expression": "new Response(JSON.stringify({\n      error: \"Internal server error\",\n      message: (error instanceof Error ? error.message : String(error)),\n    }), {\n      status: 500,\n      headers: { ...headers, \"Content-Type\": \"application/json\" },\n    })"
@@ -1385,7 +1385,7 @@
       ],
       "calls": [
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 611,
           "endLine": 846,
           "expression": "serve",
@@ -1394,7 +1394,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 612,
           "endLine": 612,
           "expression": "corsHeaders",
@@ -1404,7 +1404,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 614,
           "endLine": 614,
           "expression": "handleOptions",
@@ -1414,7 +1414,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 618,
           "endLine": 618,
           "expression": "url.pathname.replace",
@@ -1424,7 +1424,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 623,
           "endLine": 627,
           "expression": "JSON.stringify",
@@ -1433,14 +1433,14 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 625,
           "endLine": 625,
           "expression": "new Date().toISOString",
           "arguments": []
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 634,
           "endLine": 634,
           "expression": "url.searchParams.get",
@@ -1449,7 +1449,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 635,
           "endLine": 635,
           "expression": "url.searchParams.get",
@@ -1458,7 +1458,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 636,
           "endLine": 636,
           "expression": "listCharacters",
@@ -1468,7 +1468,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 638,
           "endLine": 638,
           "expression": "JSON.stringify",
@@ -1477,14 +1477,14 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 645,
           "endLine": 645,
           "expression": "req.json",
           "arguments": []
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 646,
           "endLine": 646,
           "expression": "createCharacter",
@@ -1493,7 +1493,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 648,
           "endLine": 648,
           "expression": "JSON.stringify",
@@ -1502,7 +1502,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 655,
           "endLine": 655,
           "expression": "path.match",
@@ -1511,7 +1511,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 656,
           "endLine": 656,
           "expression": "path.split",
@@ -1520,7 +1520,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 657,
           "endLine": 657,
           "expression": "getCharacter",
@@ -1529,7 +1529,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 660,
           "endLine": 660,
           "expression": "JSON.stringify",
@@ -1538,7 +1538,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 666,
           "endLine": 666,
           "expression": "JSON.stringify",
@@ -1547,7 +1547,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 672,
           "endLine": 672,
           "expression": "path.match",
@@ -1556,7 +1556,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 673,
           "endLine": 673,
           "expression": "path.split",
@@ -1565,14 +1565,14 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 674,
           "endLine": 674,
           "expression": "req.json",
           "arguments": []
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 675,
           "endLine": 675,
           "expression": "updateCharacter",
@@ -1582,7 +1582,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 677,
           "endLine": 677,
           "expression": "JSON.stringify",
@@ -1591,7 +1591,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 683,
           "endLine": 683,
           "expression": "path.match",
@@ -1600,7 +1600,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 684,
           "endLine": 684,
           "expression": "path.split",
@@ -1609,7 +1609,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 685,
           "endLine": 685,
           "expression": "deleteCharacter",
@@ -1618,7 +1618,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 687,
           "endLine": 687,
           "expression": "JSON.stringify",
@@ -1627,7 +1627,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 693,
           "endLine": 693,
           "expression": "path.match",
@@ -1636,7 +1636,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 694,
           "endLine": 694,
           "expression": "path.split",
@@ -1645,14 +1645,14 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 695,
           "endLine": 695,
           "expression": "req.json",
           "arguments": []
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 696,
           "endLine": 696,
           "expression": "addExperience",
@@ -1662,7 +1662,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 698,
           "endLine": 698,
           "expression": "JSON.stringify",
@@ -1671,7 +1671,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 704,
           "endLine": 704,
           "expression": "path.match",
@@ -1680,14 +1680,14 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 705,
           "endLine": 705,
           "expression": "req.json",
           "arguments": []
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 706,
           "endLine": 706,
           "expression": "levelUp",
@@ -1696,7 +1696,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 708,
           "endLine": 708,
           "expression": "JSON.stringify",
@@ -1705,7 +1705,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 714,
           "endLine": 714,
           "expression": "path.match",
@@ -1714,7 +1714,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 715,
           "endLine": 715,
           "expression": "path.split",
@@ -1723,14 +1723,14 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 716,
           "endLine": 716,
           "expression": "req.json",
           "arguments": []
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 717,
           "endLine": 717,
           "expression": "addEquipment",
@@ -1740,7 +1740,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 719,
           "endLine": 719,
           "expression": "JSON.stringify",
@@ -1749,7 +1749,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 725,
           "endLine": 725,
           "expression": "path.match",
@@ -1758,7 +1758,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 726,
           "endLine": 726,
           "expression": "path.split",
@@ -1767,7 +1767,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 727,
           "endLine": 727,
           "expression": "path.split",
@@ -1776,7 +1776,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 728,
           "endLine": 728,
           "expression": "removeEquipment",
@@ -1786,7 +1786,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 730,
           "endLine": 730,
           "expression": "JSON.stringify",
@@ -1795,7 +1795,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 736,
           "endLine": 736,
           "expression": "path.match",
@@ -1804,7 +1804,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 737,
           "endLine": 737,
           "expression": "path.split",
@@ -1813,7 +1813,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 738,
           "endLine": 738,
           "expression": "path.split",
@@ -1822,7 +1822,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 739,
           "endLine": 739,
           "expression": "equipItem",
@@ -1832,7 +1832,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 741,
           "endLine": 741,
           "expression": "JSON.stringify",
@@ -1841,7 +1841,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 747,
           "endLine": 747,
           "expression": "path.match",
@@ -1850,7 +1850,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 748,
           "endLine": 748,
           "expression": "path.split",
@@ -1859,7 +1859,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 749,
           "endLine": 749,
           "expression": "path.split",
@@ -1868,7 +1868,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 750,
           "endLine": 750,
           "expression": "unequipItem",
@@ -1878,7 +1878,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 752,
           "endLine": 752,
           "expression": "JSON.stringify",
@@ -1887,7 +1887,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 758,
           "endLine": 758,
           "expression": "path.match",
@@ -1896,7 +1896,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 759,
           "endLine": 759,
           "expression": "path.split",
@@ -1905,7 +1905,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 760,
           "endLine": 760,
           "expression": "parseInt",
@@ -1914,7 +1914,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 760,
           "endLine": 760,
           "expression": "path.split",
@@ -1923,7 +1923,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 761,
           "endLine": 761,
           "expression": "useSpellSlot",
@@ -1933,7 +1933,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 763,
           "endLine": 763,
           "expression": "JSON.stringify",
@@ -1942,7 +1942,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 769,
           "endLine": 769,
           "expression": "path.match",
@@ -1951,7 +1951,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 770,
           "endLine": 770,
           "expression": "path.split",
@@ -1960,7 +1960,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 771,
           "endLine": 771,
           "expression": "restoreSpellSlots",
@@ -1969,7 +1969,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 773,
           "endLine": 773,
           "expression": "JSON.stringify",
@@ -1978,7 +1978,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 779,
           "endLine": 779,
           "expression": "path.match",
@@ -1987,7 +1987,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 780,
           "endLine": 780,
           "expression": "path.split",
@@ -1996,14 +1996,14 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 781,
           "endLine": 781,
           "expression": "req.json",
           "arguments": []
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 782,
           "endLine": 782,
           "expression": "takeDamage",
@@ -2013,7 +2013,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 784,
           "endLine": 784,
           "expression": "JSON.stringify",
@@ -2022,7 +2022,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 790,
           "endLine": 790,
           "expression": "path.match",
@@ -2031,7 +2031,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 791,
           "endLine": 791,
           "expression": "path.split",
@@ -2040,14 +2040,14 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 792,
           "endLine": 792,
           "expression": "req.json",
           "arguments": []
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 793,
           "endLine": 793,
           "expression": "healCharacter",
@@ -2057,7 +2057,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 795,
           "endLine": 795,
           "expression": "JSON.stringify",
@@ -2066,7 +2066,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 801,
           "endLine": 801,
           "expression": "path.match",
@@ -2075,7 +2075,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 802,
           "endLine": 802,
           "expression": "path.split",
@@ -2084,14 +2084,14 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 803,
           "endLine": 803,
           "expression": "req.json",
           "arguments": []
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 804,
           "endLine": 804,
           "expression": "addTempHP",
@@ -2101,7 +2101,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 806,
           "endLine": 806,
           "expression": "JSON.stringify",
@@ -2110,7 +2110,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 812,
           "endLine": 812,
           "expression": "path.match",
@@ -2119,7 +2119,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 813,
           "endLine": 813,
           "expression": "path.split",
@@ -2128,7 +2128,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 814,
           "endLine": 814,
           "expression": "exportCharacter",
@@ -2137,7 +2137,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 816,
           "endLine": 816,
           "expression": "JSON.stringify",
@@ -2146,14 +2146,14 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 823,
           "endLine": 823,
           "expression": "req.json",
           "arguments": []
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 824,
           "endLine": 824,
           "expression": "importCharacter",
@@ -2162,7 +2162,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 826,
           "endLine": 826,
           "expression": "JSON.stringify",
@@ -2171,7 +2171,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 832,
           "endLine": 832,
           "expression": "JSON.stringify",
@@ -2180,7 +2180,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 838,
           "endLine": 841,
           "expression": "JSON.stringify",
@@ -2189,7 +2189,7 @@
           ]
         },
         {
-          "path": "supabase/functions/characters/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
           "line": 840,
           "endLine": 840,
           "expression": "String",
@@ -2204,7 +2204,7 @@
     {
       "kind": "VariableDeclaration",
       "name": "DEFAULT_CORS_METHODS",
-      "path": "supabase/functions/_shared/cors.ts",
+      "path": "archive/supabase-legacy/supabase/functions/_shared/cors.ts",
       "line": 9,
       "endLine": 9,
       "text": "DEFAULT_CORS_METHODS = 'GET, POST, PUT, DELETE, OPTIONS'"
@@ -2212,7 +2212,7 @@
     {
       "kind": "VariableDeclaration",
       "name": "DEFAULT_CORS_ALLOW_HEADERS",
-      "path": "supabase/functions/_shared/cors.ts",
+      "path": "archive/supabase-legacy/supabase/functions/_shared/cors.ts",
       "line": 10,
       "endLine": 11,
       "text": "DEFAULT_CORS_ALLOW_HEADERS =\n  'authorization, x-client-info, apikey, content-type'"
@@ -2220,7 +2220,7 @@
     {
       "kind": "TypeAliasDeclaration",
       "name": "CorsOptions",
-      "path": "supabase/functions/_shared/cors.ts",
+      "path": "archive/supabase-legacy/supabase/functions/_shared/cors.ts",
       "line": 13,
       "endLine": 32,
       "text": "export type CorsOptions = {\n  /** Override Allow-Methods (e.g. \"POST, OPTIONS\" for POST-only functions). */\n  methods?: string;\n  allowHeaders?: string;\n  /**\n   * Env keys tried in order for the allowlist CSV (or explicit `*`).\n   * Default: CHARACTER_AI_ALLOWED_ORIGIN\n   */\n  envKeys?: string[];\n  /** When true (default), include Content-Type: application/json on CORS header bags. */\n  includeJsonContentType?: boolean;\n  /**\n   * When origin does not match allowlist/localhost:\n   * - omit (default): do not set Access-Control-Allow-Origin (fail-closed)\n   * - configured-or-star: set configured value or `*` (legacy meshy fallback)\n   */\n  missingOriginPolicy?: 'omit' | 'configured-or-star';\n  /** When true, echo localhost even if an allowlist env is set (legacy meshy). */\n  allowLocalhostWhenConfigured?: boolean;\n};"
@@ -2228,7 +2228,7 @@
     {
       "kind": "FunctionDeclaration",
       "name": "readConfiguredOrigin",
-      "path": "supabase/functions/_shared/cors.ts",
+      "path": "archive/supabase-legacy/supabase/functions/_shared/cors.ts",
       "line": 34,
       "endLine": 40,
       "text": "function readConfiguredOrigin(envKeys: string[]): string {\n  for (const key of envKeys) {\n    const value = Deno.env.get(key)?.trim() ?? '';\n    if (value) return value;\n  }\n  return '';\n}"
@@ -2236,7 +2236,7 @@
     {
       "kind": "FunctionDeclaration",
       "name": "isLocalDevOrigin",
-      "path": "supabase/functions/_shared/cors.ts",
+      "path": "archive/supabase-legacy/supabase/functions/_shared/cors.ts",
       "line": 42,
       "endLine": 44,
       "text": "export function isLocalDevOrigin(origin: string): boolean {\n  return /^https?:\\/\\/(localhost|127\\.0\\.0\\.1)(:\\d+)?$/i.test(origin);\n}"
@@ -2244,7 +2244,7 @@
     {
       "kind": "FunctionDeclaration",
       "name": "corsHeaders",
-      "path": "supabase/functions/_shared/cors.ts",
+      "path": "archive/supabase-legacy/supabase/functions/_shared/cors.ts",
       "line": 46,
       "endLine": 96,
       "text": "export function corsHeaders(\n  request: Request,\n  opts: CorsOptions = {},\n): Record<string, string> {\n  const envKeys = opts.envKeys?.length\n    ? opts.envKeys\n    : ['CHARACTER_AI_ALLOWED_ORIGIN'];\n  const configured = readConfiguredOrigin(envKeys);\n  const requestOrigin = request.headers.get('Origin');\n  const headers: Record<string, string> = {\n    'Access-Control-Allow-Methods': opts.methods ?? DEFAULT_CORS_METHODS,\n    'Access-Control-Allow-Headers':\n      opts.allowHeaders ?? DEFAULT_CORS_ALLOW_HEADERS,\n    Vary: 'Origin',\n  };\n\n  if (opts.includeJsonContentType !== false) {\n    headers['Content-Type'] = 'application/json';\n  }\n\n  if (configured === '*') {\n    headers['Access-Control-Allow-Origin'] = '*';\n    return headers;\n  }\n\n  const allowlist = configured\n    .split(',')\n    .map((entry) => entry.trim())\n    .filter(Boolean);\n\n  if (requestOrigin && allowlist.includes(requestOrigin)) {\n    headers['Access-Control-Allow-Origin'] = requestOrigin;\n    return headers;\n  }\n\n  const localhostOk =\n    Boolean(requestOrigin) &&\n    isLocalDevOrigin(requestOrigin!) &&\n    (!configured || opts.allowLocalhostWhenConfigured === true);\n\n  if (localhostOk && requestOrigin) {\n    headers['Access-Control-Allow-Origin'] = requestOrigin;\n    return headers;\n  }\n\n  if (opts.missingOriginPolicy === 'configured-or-star') {\n    headers['Access-Control-Allow-Origin'] = configured || '*';\n  }\n\n  return headers;\n}"
@@ -2252,7 +2252,7 @@
     {
       "kind": "FunctionDeclaration",
       "name": "handleOptions",
-      "path": "supabase/functions/_shared/cors.ts",
+      "path": "archive/supabase-legacy/supabase/functions/_shared/cors.ts",
       "line": 99,
       "endLine": 108,
       "text": "export function handleOptions(\n  request: Request,\n  opts?: CorsOptions,\n): Response | null {\n  if (request.method !== 'OPTIONS') return null;\n  return new Response(null, {\n    status: 204,\n    headers: corsHeaders(request, opts),\n  });\n}"
@@ -2260,7 +2260,7 @@
     {
       "kind": "FunctionDeclaration",
       "name": "jsonResponse",
-      "path": "supabase/functions/_shared/cors.ts",
+      "path": "archive/supabase-legacy/supabase/functions/_shared/cors.ts",
       "line": 110,
       "endLine": 120,
       "text": "export function jsonResponse(\n  request: Request,\n  body: unknown,\n  status = 200,\n  opts?: CorsOptions,\n): Response {\n  return new Response(JSON.stringify(body), {\n    status,\n    headers: corsHeaders(request, opts),\n  });\n}"
@@ -2268,7 +2268,7 @@
     {
       "kind": "VariableDeclaration",
       "name": "CORS_OPTS",
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 7,
       "endLine": 9,
       "text": "CORS_OPTS: CorsOptions = {\n  missingOriginPolicy: 'configured-or-star',\n}"
@@ -2276,7 +2276,7 @@
     {
       "kind": "InterfaceDeclaration",
       "name": "Character",
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 21,
       "endLine": 53,
       "text": "interface Character {\n  id: string\n  ownerId: string\n  projectId?: string\n  name: string\n  race: string\n  class: string\n  level: number\n  background?: string\n  alignment?: string\n  experience: number\n  proficiencyBonus: number\n  attributes: Attributes\n  skills: Record<string, number>\n  savingThrows: Record<string, boolean>\n  hp: HP\n  armorClass: number\n  speed: number\n  initiative: number\n  spellSlots?: SpellSlots\n  features: Feature[]\n  proficiencies: Proficiencies\n  equipment: Equipment[]\n  traits: string[]\n  ideals?: string\n  bonds?: string\n  flaws?: string\n  backstory?: string\n  portraitUrl?: string\n  isPublic: boolean\n  createdAt: string\n  updatedAt: string\n}"
@@ -2284,7 +2284,7 @@
     {
       "kind": "InterfaceDeclaration",
       "name": "Attributes",
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 55,
       "endLine": 62,
       "text": "interface Attributes {\n  strength: number\n  dexterity: number\n  constitution: number\n  intelligence: number\n  wisdom: number\n  charisma: number\n}"
@@ -2292,7 +2292,7 @@
     {
       "kind": "InterfaceDeclaration",
       "name": "HP",
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 64,
       "endLine": 68,
       "text": "interface HP {\n  current: number\n  max: number\n  temp: number\n}"
@@ -2300,7 +2300,7 @@
     {
       "kind": "InterfaceDeclaration",
       "name": "SpellSlots",
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 70,
       "endLine": 80,
       "text": "interface SpellSlots {\n  level1: { max: number; used: number }\n  level2: { max: number; used: number }\n  level3: { max: number; used: number }\n  level4: { max: number; used: number }\n  level5: { max: number; used: number }\n  level6: { max: number; used: number }\n  level7: { max: number; used: number }\n  level8: { max: number; used: number }\n  level9: { max: number; used: number }\n}"
@@ -2308,7 +2308,7 @@
     {
       "kind": "InterfaceDeclaration",
       "name": "Feature",
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 82,
       "endLine": 88,
       "text": "interface Feature {\n  name: string\n  description: string\n  source: string // class, race, feat\n  level: number\n  uses?: { max: number; current: number }\n}"
@@ -2316,7 +2316,7 @@
     {
       "kind": "InterfaceDeclaration",
       "name": "Proficiencies",
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 90,
       "endLine": 95,
       "text": "interface Proficiencies {\n  armor: string[]\n  weapons: string[]\n  tools: string[]\n  languages: string[]\n}"
@@ -2324,7 +2324,7 @@
     {
       "kind": "InterfaceDeclaration",
       "name": "Equipment",
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 97,
       "endLine": 107,
       "text": "interface Equipment {\n  id: string\n  name: string\n  type: 'weapon' | 'armor' | 'shield' | 'potion' | 'scroll' | 'wondrous' | 'other'\n  quantity: number\n  equipped: boolean\n  attuned?: boolean\n  weight?: number\n  description?: string\n  properties?: Record<string, any>\n}"
@@ -2332,7 +2332,7 @@
     {
       "kind": "InterfaceDeclaration",
       "name": "CreateCharacterRequest",
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 109,
       "endLine": 123,
       "text": "interface CreateCharacterRequest {\n  ownerId: string\n  projectId?: string\n  name: string\n  race: string\n  class: string\n  background?: string\n  alignment?: string\n  attributes?: Partial<Attributes>\n  proficiencies?: Partial<Proficiencies>\n  equipment?: Omit<Equipment, 'id'>[]\n  backstory?: string\n  portraitUrl?: string\n  isPublic?: boolean\n}"
@@ -2340,7 +2340,7 @@
     {
       "kind": "InterfaceDeclaration",
       "name": "LevelUpRequest",
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 125,
       "endLine": 133,
       "text": "interface LevelUpRequest {\n  characterId: string\n  choice?: {\n    hpIncrease: 'average' | 'roll' | number\n    abilityScoreImprovement?: Partial<Attributes>\n    feat?: string\n    skillProficiency?: string\n  }\n}"
@@ -2348,7 +2348,7 @@
     {
       "kind": "VariableDeclaration",
       "name": "characters",
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 139,
       "endLine": 139,
       "text": "characters = new Map<string, Character>()"
@@ -2356,7 +2356,7 @@
     {
       "kind": "FunctionDeclaration",
       "name": "generateId",
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 145,
       "endLine": 147,
       "text": "function generateId(): string {\n  return crypto.randomUUID()\n}"
@@ -2364,7 +2364,7 @@
     {
       "kind": "FunctionDeclaration",
       "name": "calculateModifier",
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 149,
       "endLine": 151,
       "text": "function calculateModifier(score: number): number {\n  return Math.floor((score - 10) / 2)\n}"
@@ -2372,7 +2372,7 @@
     {
       "kind": "FunctionDeclaration",
       "name": "calculateProficiencyBonus",
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 153,
       "endLine": 155,
       "text": "function calculateProficiencyBonus(level: number): number {\n  return Math.ceil(level / 4) + 1\n}"
@@ -2380,7 +2380,7 @@
     {
       "kind": "FunctionDeclaration",
       "name": "getDefaultAttributes",
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 157,
       "endLine": 166,
       "text": "function getDefaultAttributes(): Attributes {\n  return {\n    strength: 10,\n    dexterity: 10,\n    constitution: 10,\n    intelligence: 10,\n    wisdom: 10,\n    charisma: 10,\n  }\n}"
@@ -2388,7 +2388,7 @@
     {
       "kind": "FunctionDeclaration",
       "name": "getDefaultHP",
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 168,
       "endLine": 175,
       "text": "function getDefaultHP(constitution: number, hitDie: number): HP {\n  const conMod = calculateModifier(constitution)\n  return {\n    current: hitDie + conMod,\n    max: hitDie + conMod,\n    temp: 0,\n  }\n}"
@@ -2396,7 +2396,7 @@
     {
       "kind": "FunctionDeclaration",
       "name": "getDefaultSpellSlots",
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 177,
       "endLine": 189,
       "text": "function getDefaultSpellSlots(): SpellSlots {\n  return {\n    level1: { max: 0, used: 0 },\n    level2: { max: 0, used: 0 },\n    level3: { max: 0, used: 0 },\n    level4: { max: 0, used: 0 },\n    level5: { max: 0, used: 0 },\n    level6: { max: 0, used: 0 },\n    level7: { max: 0, used: 0 },\n    level8: { max: 0, used: 0 },\n    level9: { max: 0, used: 0 },\n  }\n}"
@@ -2404,7 +2404,7 @@
     {
       "kind": "FunctionDeclaration",
       "name": "getHitDieByClass",
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 191,
       "endLine": 207,
       "text": "function getHitDieByClass(className: string): number {\n  const hitDice: Record<string, number> = {\n    'barbarian': 12,\n    'fighter': 10,\n    'paladin': 10,\n    'ranger': 10,\n    'bard': 8,\n    'cleric': 8,\n    'druid': 8,\n    'monk': 8,\n    'rogue': 8,\n    'warlock': 8,\n    'sorcerer': 6,\n    'wizard': 6,\n  }\n  return hitDice[className.toLowerCase()] || 8\n}"
@@ -2412,7 +2412,7 @@
     {
       "kind": "FunctionDeclaration",
       "name": "getSkillAbility",
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 209,
       "endLine": 231,
       "text": "function getSkillAbility(skill: string): string {\n  const skillAbilities: Record<string, string> = {\n    'acrobatics': 'dexterity',\n    'animal handling': 'wisdom',\n    'arcana': 'intelligence',\n    'athletics': 'strength',\n    'deception': 'charisma',\n    'history': 'intelligence',\n    'insight': 'wisdom',\n    'intimidation': 'charisma',\n    'investigation': 'intelligence',\n    'medicine': 'wisdom',\n    'nature': 'intelligence',\n    'perception': 'wisdom',\n    'performance': 'charisma',\n    'persuasion': 'charisma',\n    'religion': 'intelligence',\n    'sleight of hand': 'dexterity',\n    'stealth': 'dexterity',\n    'survival': 'wisdom',\n  }\n  return skillAbilities[skill.toLowerCase()] || 'intelligence'\n}"
@@ -2420,7 +2420,7 @@
     {
       "kind": "FunctionDeclaration",
       "name": "createCharacter",
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 237,
       "endLine": 292,
       "text": "async function createCharacter(data: CreateCharacterRequest): Promise<Character> {\n  const id = generateId()\n  const now = new Date().toISOString()\n  const attributes = { ...getDefaultAttributes(), ...data.attributes }\n  const hitDie = getHitDieByClass(data.class)\n  \n  const character: Character = {\n    id,\n    ownerId: data.ownerId,\n    projectId: data.projectId,\n    name: data.name,\n    race: data.race,\n    class: data.class,\n    level: 1,\n    background: data.background,\n    alignment: data.alignment,\n    experience: 0,\n    proficiencyBonus: 2,\n    attributes,\n    skills: {},\n    savingThrows: {\n      strength: false,\n      dexterity: false,\n      constitution: false,\n      intelligence: false,\n      wisdom: false,\n      charisma: false,\n    },\n    hp: getDefaultHP(attributes.constitution, hitDie),\n    armorClass: 10 + calculateModifier(attributes.dexterity),\n    speed: 30,\n    initiative: calculateModifier(attributes.dexterity),\n    spellSlots: getDefaultSpellSlots(),\n    features: [],\n    proficiencies: {\n      armor: [],\n      weapons: [],\n      tools: [],\n      languages: ['Common'],\n      ...data.proficiencies,\n    },\n    equipment: (data.equipment || []).map(e => ({\n      id: generateId(),\n      ...e,\n    })),\n    traits: [],\n    backstory: data.backstory,\n    portraitUrl: data.portraitUrl,\n    isPublic: data.isPublic || false,\n    createdAt: now,\n    updatedAt: now,\n  }\n  \n  characters.set(id, character)\n  return character\n}"
@@ -2428,7 +2428,7 @@
     {
       "kind": "FunctionDeclaration",
       "name": "getCharacter",
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 294,
       "endLine": 296,
       "text": "async function getCharacter(characterId: string): Promise<Character | null> {\n  return characters.get(characterId) || null\n}"
@@ -2436,7 +2436,7 @@
     {
       "kind": "FunctionDeclaration",
       "name": "updateCharacter",
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 298,
       "endLine": 311,
       "text": "async function updateCharacter(characterId: string, data: Partial<Character>): Promise<Character> {\n  const character = characters.get(characterId)\n  if (!character) throw new Error(\"Character not found\")\n  \n  const updated: Character = {\n    ...character,\n    ...data,\n    id: characterId,\n    updatedAt: new Date().toISOString(),\n  }\n  \n  characters.set(characterId, updated)\n  return updated\n}"
@@ -2444,7 +2444,7 @@
     {
       "kind": "FunctionDeclaration",
       "name": "deleteCharacter",
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 313,
       "endLine": 315,
       "text": "async function deleteCharacter(characterId: string): Promise<void> {\n  characters.delete(characterId)\n}"
@@ -2452,7 +2452,7 @@
     {
       "kind": "FunctionDeclaration",
       "name": "listCharacters",
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 317,
       "endLine": 329,
       "text": "async function listCharacters(ownerId?: string, projectId?: string): Promise<Character[]> {\n  let all = Array.from(characters.values())\n  \n  if (ownerId) {\n    all = all.filter(c => c.ownerId === ownerId)\n  }\n  \n  if (projectId) {\n    all = all.filter(c => c.projectId === projectId)\n  }\n  \n  return all\n}"
@@ -2460,7 +2460,7 @@
     {
       "kind": "FunctionDeclaration",
       "name": "getXPThreshold",
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 335,
       "endLine": 343,
       "text": "function getXPThreshold(level: number): number {\n  const thresholds = [\n    0, 300, 900, 2700, 6500,  // 1-5\n    14000, 23000, 34000, 48000, 64000,  // 6-10\n    85000, 100000, 120000, 140000, 165000,  // 11-15\n    195000, 225000, 265000, 305000, 355000,  // 16-20\n  ]\n  return thresholds[level - 1] || 0\n}"
@@ -2468,7 +2468,7 @@
     {
       "kind": "FunctionDeclaration",
       "name": "addExperience",
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 345,
       "endLine": 367,
       "text": "async function addExperience(characterId: string, xp: number): Promise<{ character: Character; leveledUp: boolean }> {\n  const character = characters.get(characterId)\n  if (!character) throw new Error(\"Character not found\")\n  \n  character.experience += xp\n  \n  // Check for level up\n  const nextLevel = character.level + 1\n  const nextThreshold = getXPThreshold(nextLevel)\n  \n  let leveledUp = false\n  \n  while (character.experience >= nextThreshold && nextLevel <= 20) {\n    character.level = nextLevel\n    character.proficiencyBonus = calculateProficiencyBonus(character.level)\n    leveledUp = true\n  }\n  \n  character.updatedAt = new Date().toISOString()\n  characters.set(characterId, character)\n  \n  return { character, leveledUp }\n}"
@@ -2476,7 +2476,7 @@
     {
       "kind": "FunctionDeclaration",
       "name": "levelUp",
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 369,
       "endLine": 413,
       "text": "async function levelUp(data: LevelUpRequest): Promise<Character> {\n  const character = characters.get(data.characterId)\n  if (!character) throw new Error(\"Character not found\")\n  \n  if (character.level >= 20) {\n    throw new Error(\"Character is already at max level\")\n  }\n  \n  const hitDie = getHitDieByClass(character.class)\n  const conMod = calculateModifier(character.attributes.constitution)\n  \n  // HP increase\n  let hpIncrease: number\n  if (data.choice?.hpIncrease === 'average') {\n    hpIncrease = Math.ceil(hitDie / 2) + conMod\n  } else if (typeof data.choice?.hpIncrease === 'number') {\n    hpIncrease = data.choice.hpIncrease + conMod\n  } else {\n    // Roll\n    hpIncrease = Math.floor(Math.random() * hitDie) + 1 + conMod\n  }\n  \n  character.hp.max += hpIncrease\n  character.hp.current += hpIncrease\n  character.level++\n  character.proficiencyBonus = calculateProficiencyBonus(character.level)\n  \n  // Ability score improvement\n  if (data.choice?.abilityScoreImprovement) {\n    for (const [ability, increase] of Object.entries(data.choice.abilityScoreImprovement)) {\n      if (character.attributes[ability as keyof Attributes] !== undefined) {\n        character.attributes[ability as keyof Attributes] += increase as number\n      }\n    }\n  }\n  \n  // Update derived stats\n  character.armorClass = 10 + calculateModifier(character.attributes.dexterity)\n  character.initiative = calculateModifier(character.attributes.dexterity)\n  \n  character.updatedAt = new Date().toISOString()\n  characters.set(data.characterId, character)\n  \n  return character\n}"
@@ -2484,7 +2484,7 @@
     {
       "kind": "FunctionDeclaration",
       "name": "addEquipment",
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 419,
       "endLine": 433,
       "text": "async function addEquipment(characterId: string, equipment: Omit<Equipment, 'id'>): Promise<Equipment> {\n  const character = characters.get(characterId)\n  if (!character) throw new Error(\"Character not found\")\n  \n  const newEquipment: Equipment = {\n    id: generateId(),\n    ...equipment,\n  }\n  \n  character.equipment.push(newEquipment)\n  character.updatedAt = new Date().toISOString()\n  \n  characters.set(characterId, character)\n  return newEquipment\n}"
@@ -2492,7 +2492,7 @@
     {
       "kind": "FunctionDeclaration",
       "name": "removeEquipment",
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 435,
       "endLine": 443,
       "text": "async function removeEquipment(characterId: string, equipmentId: string): Promise<void> {\n  const character = characters.get(characterId)\n  if (!character) throw new Error(\"Character not found\")\n  \n  character.equipment = character.equipment.filter(e => e.id !== equipmentId)\n  character.updatedAt = new Date().toISOString()\n  \n  characters.set(characterId, character)\n}"
@@ -2500,7 +2500,7 @@
     {
       "kind": "FunctionDeclaration",
       "name": "equipItem",
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 445,
       "endLine": 467,
       "text": "async function equipItem(characterId: string, equipmentId: string): Promise<Character> {\n  const character = characters.get(characterId)\n  if (!character) throw new Error(\"Character not found\")\n  \n  const equipment = character.equipment.find(e => e.id === equipmentId)\n  if (!equipment) throw new Error(\"Equipment not found\")\n  \n  // Unequip same type items first\n  if (equipment.type === 'armor') {\n    character.equipment.forEach(e => {\n      if (e.type === 'armor') e.equipped = false\n    })\n  }\n  \n  equipment.equipped = true\n  character.updatedAt = new Date().toISOString()\n  \n  // Recalculate AC\n  // (This is simplified - real implementation would need armor calculations)\n  \n  characters.set(characterId, character)\n  return character\n}"
@@ -2508,7 +2508,7 @@
     {
       "kind": "FunctionDeclaration",
       "name": "unequipItem",
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 469,
       "endLine": 481,
       "text": "async function unequipItem(characterId: string, equipmentId: string): Promise<Character> {\n  const character = characters.get(characterId)\n  if (!character) throw new Error(\"Character not found\")\n  \n  const equipment = character.equipment.find(e => e.id === equipmentId)\n  if (!equipment) throw new Error(\"Equipment not found\")\n  \n  equipment.equipped = false\n  character.updatedAt = new Date().toISOString()\n  \n  characters.set(characterId, character)\n  return character\n}"
@@ -2516,7 +2516,7 @@
     {
       "kind": "FunctionDeclaration",
       "name": "getSpellSlotsByLevel",
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 487,
       "endLine": 498,
       "text": "function getSpellSlotsByLevel(characterClass: string, level: number): SpellSlots {\n  // Simplified spell slot progression\n  const slotsByLevel: Record<number, SpellSlots> = {\n    1: { level1: { max: 2, used: 0 }, level2: { max: 0, used: 0 }, level3: { max: 0, used: 0 }, level4: { max: 0, used: 0 }, level5: { max: 0, used: 0 }, level6: { max: 0, used: 0 }, level7: { max: 0, used: 0 }, level8: { max: 0, used: 0 }, level9: { max: 0, used: 0 } },\n    2: { level1: { max: 3, used: 0 }, level2: { max: 0, used: 0 }, level3: { max: 0, used: 0 }, level4: { max: 0, used: 0 }, level5: { max: 0, used: 0 }, level6: { max: 0, used: 0 }, level7: { max: 0, used: 0 }, level8: { max: 0, used: 0 }, level9: { max: 0, used: 0 } },\n    3: { level1: { max: 4, used: 0 }, level2: { max: 2, used: 0 }, level3: { max: 0, used: 0 }, level4: { max: 0, used: 0 }, level5: { max: 0, used: 0 }, level6: { max: 0, used: 0 }, level7: { max: 0, used: 0 }, level8: { max: 0, used: 0 }, level9: { max: 0, used: 0 } },\n    4: { level1: { max: 4, used: 0 }, level2: { max: 3, used: 0 }, level3: { max: 0, used: 0 }, level4: { max: 0, used: 0 }, level5: { max: 0, used: 0 }, level6: { max: 0, used: 0 }, level7: { max: 0, used: 0 }, level8: { max: 0, used: 0 }, level9: { max: 0, used: 0 } },\n    5: { level1: { max: 4, used: 0 }, level2: { max: 3, used: 0 }, level3: { max: 2, used: 0 }, level4: { max: 0, used: 0 }, level5: { max: 0, used: 0 }, level6: { max: 0, used: 0 }, level7: { max: 0, used: 0 }, level8: { max: 0, used: 0 }, level9: { max: 0, used: 0 } },\n  }\n  \n  return slotsByLevel[level] || slotsByLevel[1]\n}"
@@ -2524,7 +2524,7 @@
     {
       "kind": "FunctionDeclaration",
       "name": "useSpellSlot",
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 500,
       "endLine": 520,
       "text": "async function useSpellSlot(characterId: string, level: number): Promise<{ success: boolean; remaining: number }> {\n  const character = characters.get(characterId)\n  if (!character) throw new Error(\"Character not found\")\n  \n  if (!character.spellSlots) {\n    throw new Error(\"Character has no spell slots\")\n  }\n  \n  const slotKey = `level${level}` as keyof SpellSlots\n  const slots = character.spellSlots[slotKey]\n  \n  if (slots.used >= slots.max) {\n    return { success: false, remaining: 0 }\n  }\n  \n  slots.used++\n  character.updatedAt = new Date().toISOString()\n  \n  characters.set(characterId, character)\n  return { success: true, remaining: slots.max - slots.used }\n}"
@@ -2532,7 +2532,7 @@
     {
       "kind": "FunctionDeclaration",
       "name": "restoreSpellSlots",
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 522,
       "endLine": 534,
       "text": "async function restoreSpellSlots(characterId: string): Promise<void> {\n  const character = characters.get(characterId)\n  if (!character) throw new Error(\"Character not found\")\n  \n  if (!character.spellSlots) return\n  \n  for (const key of Object.keys(character.spellSlots) as Array<keyof SpellSlots>) {\n    character.spellSlots[key].used = 0\n  }\n  \n  character.updatedAt = new Date().toISOString()\n  characters.set(characterId, character)\n}"
@@ -2540,7 +2540,7 @@
     {
       "kind": "FunctionDeclaration",
       "name": "takeDamage",
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 540,
       "endLine": 557,
       "text": "async function takeDamage(characterId: string, damage: number): Promise<Character> {\n  const character = characters.get(characterId)\n  if (!character) throw new Error(\"Character not found\")\n  \n  // Apply to temp HP first\n  if (character.hp.temp > 0) {\n    const tempDamage = Math.min(character.hp.temp, damage)\n    character.hp.temp -= tempDamage\n    damage -= tempDamage\n  }\n  \n  // Then to current HP\n  character.hp.current = Math.max(0, character.hp.current - damage)\n  character.updatedAt = new Date().toISOString()\n  \n  characters.set(characterId, character)\n  return character\n}"
@@ -2548,7 +2548,7 @@
     {
       "kind": "FunctionDeclaration",
       "name": "healCharacter",
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 559,
       "endLine": 568,
       "text": "async function healCharacter(characterId: string, healing: number): Promise<Character> {\n  const character = characters.get(characterId)\n  if (!character) throw new Error(\"Character not found\")\n  \n  character.hp.current = Math.min(character.hp.max, character.hp.current + healing)\n  character.updatedAt = new Date().toISOString()\n  \n  characters.set(characterId, character)\n  return character\n}"
@@ -2556,7 +2556,7 @@
     {
       "kind": "FunctionDeclaration",
       "name": "addTempHP",
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 570,
       "endLine": 579,
       "text": "async function addTempHP(characterId: string, tempHP: number): Promise<Character> {\n  const character = characters.get(characterId)\n  if (!character) throw new Error(\"Character not found\")\n  \n  character.hp.temp = Math.max(character.hp.temp, tempHP)\n  character.updatedAt = new Date().toISOString()\n  \n  characters.set(characterId, character)\n  return character\n}"
@@ -2564,7 +2564,7 @@
     {
       "kind": "FunctionDeclaration",
       "name": "exportCharacter",
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 585,
       "endLine": 590,
       "text": "async function exportCharacter(characterId: string): Promise<Character> {\n  const character = characters.get(characterId)\n  if (!character) throw new Error(\"Character not found\")\n  \n  return JSON.parse(JSON.stringify(character))\n}"
@@ -2572,7 +2572,7 @@
     {
       "kind": "FunctionDeclaration",
       "name": "importCharacter",
-      "path": "supabase/functions/characters/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/characters/index.ts",
       "line": 592,
       "endLine": 605,
       "text": "async function importCharacter(data: Character): Promise<Character> {\n  const id = generateId()\n  const now = new Date().toISOString()\n  \n  const character: Character = {\n    ...data,\n    id,\n    createdAt: now,\n    updatedAt: now,\n  }\n  \n  characters.set(id, character)\n  return character\n}"

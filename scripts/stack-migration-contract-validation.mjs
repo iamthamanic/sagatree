@@ -317,7 +317,7 @@ export function validateMigrationPlan({ intake, issueMap, dependencyPlan, regist
   const rpcRows = rpcInventory?.rpcs;
   const edgeRows = edgeInventory?.edges;
   const infraRows = edgeInventory?.infrastructure;
-  // Edge count tracks live supabase/functions/* (includes #879 ollama-settings → 25).
+  // Edge count tracks live archive/supabase-legacy/supabase/functions/* (includes #879 ollama-settings → 25).
   for (const [kind, rows, count, name] of [['RPC', rpcRows, 57, 'rpc'], ['Edge', edgeRows, 25, 'function'], ['Infrastructure', infraRows, 13, 'area']]) {
     if (!Array.isArray(rows) || rows.length !== count || new Set((rows ?? []).map((row) => row[name])).size !== count) { error(`${kind}: inventory coverage must be exactly ${count} distinct entries`); continue; }
     for (const row of rows) {

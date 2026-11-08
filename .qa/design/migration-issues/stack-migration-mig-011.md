@@ -23,8 +23,8 @@ Den freigegebenen SQLite-Schemakatalog mit atomarem Migrationsjournal und Fremds
 
 - Epic: #773; historische Baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`; keine Produktionszustandsbehauptung.
 - Verbindliche Architektur: `docs/architecture/migration-owner-decisions-2026-10-23.md`.
-- Quellpfade und bestehende Adapter: `supabase/migrations`, `scripts/apply-migrations.sh`, `docs/architecture/host-modular-monolith.md`.
-- Source Contracts: `supabase/migrations`, `scripts/apply-migrations.sh`, `docs/architecture/host-modular-monolith.md`.
+- Quellpfade und bestehende Adapter: `archive/supabase-legacy/supabase/migrations`, `scripts/apply-migrations.sh`, `docs/architecture/host-modular-monolith.md`.
+- Source Contracts: `archive/supabase-legacy/supabase/migrations`, `scripts/apply-migrations.sh`, `docs/architecture/host-modular-monolith.md`.
 - Zielverhalten: Binding product decisions: docs/architecture/migration-owner-decisions-2026-10-23.md; GATE-01 Drizzle+Policy, GATE-02 Cookie-A, GATE-03 Hono+Colyseus, GATE-04 SQLite single-writer. GATE-05 Tauri+sidecar selected; platform release pending..
 
 ## Scope
@@ -69,28 +69,28 @@ UI-Parität, soweit betroffen: `src/THEME_GUIDE.md`, `docs/ui-styleguide.md`, `d
 - Gegeben: Leere Datenbank und ein freigegebener geordneter Schema-Stand
 - Wenn: der Migrationsrunner zweimal startet
 - Dann: Tabellen, Indizes, Constraints und Journal entstehen genau einmal; foreign_keys ist für jede Verbindung aktiviert und schema_version bleibt beim zweiten Lauf unverändert.
-- Quelle: `supabase/migrations`, `scripts/apply-migrations.sh`, `docs/architecture/host-modular-monolith.md`
+- Quelle: `archive/supabase-legacy/supabase/migrations`, `scripts/apply-migrations.sh`, `docs/architecture/host-modular-monolith.md`
 
 ### Fall 2
 
 - Gegeben: Ein absichtlich fehlerhafter Migrationsschritt
 - Wenn: das Upgrade abbricht
 - Dann: Schema und Journal rollen gemeinsam zurück; der nächste Start meldet denselben fehlgeschlagenen Schritt statt ein teilweise migriertes Schema als bereit auszugeben.
-- Quelle: `supabase/migrations`, `scripts/apply-migrations.sh`, `docs/architecture/host-modular-monolith.md`
+- Quelle: `archive/supabase-legacy/supabase/migrations`, `scripts/apply-migrations.sh`, `docs/architecture/host-modular-monolith.md`
 
 ### Fall 3
 
 - Gegeben: Ein Datenbestand mit UUIDs, Zeitstempeln, JSON und Membership-FKs
 - Wenn: der Integritätscheck läuft
 - Dann: Die dokumentierten Postgres→SQLite-Abbildungen erhalten Identitäten und Null-Semantik; orphaned Memberships und ungültige Fremdschlüssel lassen das Gate scheitern.
-- Quelle: `supabase/migrations`, `scripts/apply-migrations.sh`, `docs/architecture/host-modular-monolith.md`
+- Quelle: `archive/supabase-legacy/supabase/migrations`, `scripts/apply-migrations.sh`, `docs/architecture/host-modular-monolith.md`
 
 ### Fall 4
 
 - Gegeben: Zwei Domänenmodule mit getrennten Tabellenfamilien
 - Wenn: Persistenzcode landet unter server/
 - Dann: Jede Tabelle gehört genau einem Modul laut host-modular-monolith; fremde Module importieren keine privaten persistence-Pfade und schreiben nicht über Roh-SQL in fremde Aggregate.
-- Quelle: `supabase/migrations`, `scripts/apply-migrations.sh`, `docs/architecture/host-modular-monolith.md`
+- Quelle: `archive/supabase-legacy/supabase/migrations`, `scripts/apply-migrations.sh`, `docs/architecture/host-modular-monolith.md`
 
 ## Required Tests
 

@@ -5,6 +5,10 @@ Owner note (cutover milestone): with `VITE_SAGATREE_HOST_AUTH_URL` set and
 **host-first**. Covered journeys use host HTTP + Better Auth cookies. The
 Supabase JS client stays inert (no GoTrue session) unless the operator opts out.
 
+## Status (CUT-21)
+
+Supabase SDK + `supabase/` + `src/supabase/` product trees are **archived** under `archive/supabase-legacy/` (#1156). Residual dual-path notes below are historical.
+
 ## Residual allowlist (DENY / degraded under host-first)
 
 These FE facades still contain `supabase.from` / `rpc` / `storage` /
@@ -28,8 +32,8 @@ German UX, or throw unavailable — never hang on PostgREST/Edge.
 | Session recap AI generate | `session-recap-ai-service.ts` `generateDraft` | Info | Soft German unavailable; manual save is host |
 | Avatar Meshy Edge | `character-avatar-meshy-service.ts` | Info | DONE (CUT-18) — host `/api/v1/ai/character-avatar-meshy` + AssetPorts; dual-path Edge until CUT-20 |
 | Avatar import/export/artifacts storage | `character-avatar-*-service.ts` | Info | Optional artifacts; portrait publish host (FE-HOST-06) |
-| Historical `supabase/migrations` SQL | `supabase/migrations/**` | Info | Archive; not product runtime |
-| Edge Functions tree | `supabase/functions/**` | Info | Archive / optional stack; dispatcher allowlists unchanged |
+| Historical `archive/supabase-legacy/supabase/migrations` SQL | `archive/supabase-legacy/supabase/migrations/**` | Info | Archive; not product runtime |
+| Edge Functions tree | `archive/supabase-legacy/supabase/functions/**` | Info | Archive / optional stack; dispatcher allowlists unchanged |
 
 ## Opt-out
 

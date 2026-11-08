@@ -52,8 +52,8 @@ for (const f of [
   'src/infrastructure/session/media/livekit-media-plane-adapter.ts',
   'src/infrastructure/session/media/media-token-client.ts',
   'src/app/session/media/useSessionMediaPlane.ts',
-  'supabase/functions/session-media-token/index.ts',
-  'supabase/functions/_shared/session-media-token.ts',
+  'archive/supabase-legacy/supabase/functions/session-media-token/index.ts',
+  'archive/supabase-legacy/supabase/functions/_shared/session-media-token.ts',
 ]) {
   check(existsSync(join(root, f)), f);
 }
@@ -67,7 +67,7 @@ mustNotInclude('src/app/session/media/useSessionMediaPlane.ts', ['livekit-client
 mustInclude('src/infrastructure/session/media/livekit-media-plane-adapter.ts', [
   'LiveKitMediaPlaneAdapter',
 ]);
-mustInclude('supabase/functions/session-media-token/index.ts', [
+mustInclude('archive/supabase-legacy/supabase/functions/session-media-token/index.ts', [
   'corsHeaders',
   'LIVEKIT_API_SECRET',
   'degraded',
@@ -177,7 +177,7 @@ mustInclude('src/infrastructure/session/media/media-token-client.ts', [
 ]);
 
 section('6 · edge helpers');
-mustInclude('supabase/functions/_shared/session-media-token.ts', [
+mustInclude('archive/supabase-legacy/supabase/functions/_shared/session-media-token.ts', [
   'mintLiveKitAccessToken',
   'resolveEdgeMediaGrant',
 ]);

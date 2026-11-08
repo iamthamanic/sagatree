@@ -133,7 +133,7 @@ function writeStatus(summary, inventory) {
       'Owner attestation for Raccoovaclaw / agent Git identities (docs/licensing/OWNER_ATTESTATIONS.md § A)',
       'Owner attestation for Figma Make import (OWNER_ATTESTATIONS.md § B)',
       'Owner license declaration for first-party media currently owner_pending (OWNER_ATTESTATIONS.md § C)',
-      'Separate review of embedded SRD/OGL-shaped data and Open5e usage in supabase/functions/rulesets/index.ts',
+      'Separate review of embedded SRD/OGL-shaped data and Open5e usage in archive/supabase-legacy/supabase/functions/rulesets/index.ts',
     ],
     evidence: [
       'docs/licensing/contributor-provenance.md',

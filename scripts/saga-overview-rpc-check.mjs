@@ -38,7 +38,7 @@ function mustInclude(file, needles, label) {
   }
 }
 
-const migrationPath = 'supabase/migrations/060_saga_overview.sql';
+const migrationPath = 'archive/supabase-legacy/supabase/migrations/060_saga_overview.sql';
 if (!existsSync(join(root, migrationPath))) fail(`missing ${migrationPath}`);
 
 const migration = read(migrationPath);

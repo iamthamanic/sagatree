@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [edge-character-lore.json](source-contracts/edge-character-lore.json) (SHA-256 `ce84b66865b1e1efe2075d0d1d82bb8fd0db642c5d90429d99d11a26e06c6a7e`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [edge-character-lore.json](source-contracts/edge-character-lore.json) (SHA-256 `3f4c5ed857a1ff7fdedf8d1a6c2929c034e54a83d71515eddac4eaedca922edf`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Exposure and purpose
 
@@ -74,18 +74,18 @@ Auth and service reads10s; provider60s. OpenAI-compatible POST /chat/completions
 
 Explicit abort call sites (dynamic values resolve in the linked helper declaration):
 
-- `supabase/functions/_shared/character-lore-provider.ts:82` — `AbortSignal.timeout(60_000)`
-- `supabase/functions/_shared/character-lore-provider.ts:111` — `AbortSignal.timeout(60_000)`
-- `supabase/functions/_shared/character-lore-rate-limit.ts:45` — `AbortSignal.timeout(10_000)`
-- `supabase/functions/_shared/ollama-llm-resolve.ts:134` — `AbortSignal.timeout(10_000)`
-- `supabase/functions/character-lore/index.ts:245` — `AbortSignal.timeout(10_000)`
-- `supabase/functions/character-lore/index.ts:261` — `AbortSignal.timeout(10_000)`
+- `archive/supabase-legacy/supabase/functions/_shared/character-lore-provider.ts:82` — `AbortSignal.timeout(60_000)`
+- `archive/supabase-legacy/supabase/functions/_shared/character-lore-provider.ts:111` — `AbortSignal.timeout(60_000)`
+- `archive/supabase-legacy/supabase/functions/_shared/character-lore-rate-limit.ts:45` — `AbortSignal.timeout(10_000)`
+- `archive/supabase-legacy/supabase/functions/_shared/ollama-llm-resolve.ts:134` — `AbortSignal.timeout(10_000)`
+- `archive/supabase-legacy/supabase/functions/character-lore/index.ts:245` — `AbortSignal.timeout(10_000)`
+- `archive/supabase-legacy/supabase/functions/character-lore/index.ts:261` — `AbortSignal.timeout(10_000)`
 
 ## Exact environment defaults and configuration resolution
 
 ### resolveCharacterLoreProviderConfig
 
-`supabase/functions/_shared/character-lore-provider.ts:16`
+`archive/supabase-legacy/supabase/functions/_shared/character-lore-provider.ts:16`
 
 ```ts
 export function resolveCharacterLoreProviderConfig(): CharacterLoreProviderConfig | null {
@@ -123,7 +123,7 @@ export function resolveCharacterLoreProviderConfig(): CharacterLoreProviderConfi
 
 ### DEFAULT_CORS_METHODS
 
-`supabase/functions/_shared/cors.ts:9`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:9`
 
 ```ts
 DEFAULT_CORS_METHODS = 'GET, POST, PUT, DELETE, OPTIONS'
@@ -131,7 +131,7 @@ DEFAULT_CORS_METHODS = 'GET, POST, PUT, DELETE, OPTIONS'
 
 ### DEFAULT_CORS_ALLOW_HEADERS
 
-`supabase/functions/_shared/cors.ts:10`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:10`
 
 ```ts
 DEFAULT_CORS_ALLOW_HEADERS =
@@ -140,7 +140,7 @@ DEFAULT_CORS_ALLOW_HEADERS =
 
 ### readConfiguredOrigin
 
-`supabase/functions/_shared/cors.ts:34`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:34`
 
 ```ts
 function readConfiguredOrigin(envKeys: string[]): string {
@@ -154,7 +154,7 @@ function readConfiguredOrigin(envKeys: string[]): string {
 
 ### envDefaultModel
 
-`supabase/functions/_shared/ollama-llm-resolve.ts:58`
+`archive/supabase-legacy/supabase/functions/_shared/ollama-llm-resolve.ts:58`
 
 ```ts
 export function envDefaultModel(
@@ -166,7 +166,7 @@ export function envDefaultModel(
 
 ### buildEnvSettingsView
 
-`supabase/functions/_shared/ollama-llm-resolve.ts:64`
+`archive/supabase-legacy/supabase/functions/_shared/ollama-llm-resolve.ts:64`
 
 ```ts
 export function buildEnvSettingsView(
@@ -194,7 +194,7 @@ export function buildEnvSettingsView(
 
 ### loadOllamaSettingsForUser
 
-`supabase/functions/_shared/ollama-llm-resolve.ts:117`
+`archive/supabase-legacy/supabase/functions/_shared/ollama-llm-resolve.ts:117`
 
 ```ts
 export async function loadOllamaSettingsForUser(
@@ -269,7 +269,7 @@ export async function loadOllamaSettingsForUser(
 
 ### toSettingsView
 
-`supabase/functions/_shared/ollama-llm-resolve.ts:186`
+`archive/supabase-legacy/supabase/functions/_shared/ollama-llm-resolve.ts:186`
 
 ```ts
 export function toSettingsView(
@@ -295,7 +295,7 @@ export function toSettingsView(
 
 ### defaultLocalOllamaBase
 
-`supabase/functions/_shared/ollama-url-policy.ts:127`
+`archive/supabase-legacy/supabase/functions/_shared/ollama-url-policy.ts:127`
 
 ```ts
 export function defaultLocalOllamaBase(
@@ -313,7 +313,7 @@ export function defaultLocalOllamaBase(
 
 ### CORS_OPTS
 
-`supabase/functions/character-lore/index.ts:23`
+`archive/supabase-legacy/supabase/functions/character-lore/index.ts:23`
 
 ```ts
 CORS_OPTS: CorsOptions = {
@@ -324,7 +324,7 @@ CORS_OPTS: CorsOptions = {
 
 ### DEFAULT_RATE_LIMIT
 
-`supabase/functions/character-lore/index.ts:59`
+`archive/supabase-legacy/supabase/functions/character-lore/index.ts:59`
 
 ```ts
 DEFAULT_RATE_LIMIT = 6
@@ -332,7 +332,7 @@ DEFAULT_RATE_LIMIT = 6
 
 ### getRateLimit
 
-`supabase/functions/character-lore/index.ts:220`
+`archive/supabase-legacy/supabase/functions/character-lore/index.ts:220`
 
 ```ts
 function getRateLimit(): number {
@@ -343,7 +343,7 @@ function getRateLimit(): number {
 
 ### getSupabaseConfig
 
-`supabase/functions/character-lore/index.ts:225`
+`archive/supabase-legacy/supabase/functions/character-lore/index.ts:225`
 
 ```ts
 function getSupabaseConfig(): SupabaseConfig | null {
@@ -406,7 +406,7 @@ No src/infrastructure caller in the reviewed branch. This does not authorize add
 
 ### character-lore:handler
 
-Predicate: `Complete handler with ordered method/auth/body guards`. Source: `supabase/functions/character-lore/index.ts:374`.
+Predicate: `Complete handler with ordered method/auth/body guards`. Source: `archive/supabase-legacy/supabase/functions/character-lore/index.ts:374`.
 
 
 ```ts
@@ -542,7 +542,7 @@ serve(async (request: Request) => {
 
 ### CharacterLoreWorldGrant
 
-`supabase/functions/_shared/character-lore-access.ts:1`
+`archive/supabase-legacy/supabase/functions/_shared/character-lore-access.ts:1`
 
 ```ts
 export interface CharacterLoreWorldGrant {
@@ -553,7 +553,7 @@ export interface CharacterLoreWorldGrant {
 
 ### CharacterLoreRuleset
 
-`supabase/functions/_shared/character-lore-prompt.ts:1`
+`archive/supabase-legacy/supabase/functions/_shared/character-lore-prompt.ts:1`
 
 ```ts
 export type CharacterLoreRuleset = 'sagatree-core' | 'dnd-5.5e';
@@ -561,7 +561,7 @@ export type CharacterLoreRuleset = 'sagatree-core' | 'dnd-5.5e';
 
 ### CharacterLorePromptContext
 
-`supabase/functions/_shared/character-lore-prompt.ts:3`
+`archive/supabase-legacy/supabase/functions/_shared/character-lore-prompt.ts:3`
 
 ```ts
 export interface CharacterLorePromptContext {
@@ -616,7 +616,7 @@ export interface CharacterLorePromptContext {
 
 ### CharacterLoreReferenceContext
 
-`supabase/functions/_shared/character-lore-prompt.ts:52`
+`archive/supabase-legacy/supabase/functions/_shared/character-lore-prompt.ts:52`
 
 ```ts
 export interface CharacterLoreReferenceContext {
@@ -630,7 +630,7 @@ export interface CharacterLoreReferenceContext {
 
 ### CharacterLorePrompt
 
-`supabase/functions/_shared/character-lore-prompt.ts:60`
+`archive/supabase-legacy/supabase/functions/_shared/character-lore-prompt.ts:60`
 
 ```ts
 export interface CharacterLorePrompt {
@@ -642,7 +642,7 @@ export interface CharacterLorePrompt {
 
 ### CharacterLoreProviderName
 
-`supabase/functions/_shared/character-lore-provider.ts:3`
+`archive/supabase-legacy/supabase/functions/_shared/character-lore-provider.ts:3`
 
 ```ts
 export type CharacterLoreProviderName = 'openai-compatible' | 'ollama';
@@ -650,7 +650,7 @@ export type CharacterLoreProviderName = 'openai-compatible' | 'ollama';
 
 ### CharacterLoreProviderConfig
 
-`supabase/functions/_shared/character-lore-provider.ts:5`
+`archive/supabase-legacy/supabase/functions/_shared/character-lore-provider.ts:5`
 
 ```ts
 export interface CharacterLoreProviderConfig {
@@ -663,7 +663,7 @@ export interface CharacterLoreProviderConfig {
 
 ### CharacterLoreRateLimitConfig
 
-`supabase/functions/_shared/character-lore-rate-limit.ts:1`
+`archive/supabase-legacy/supabase/functions/_shared/character-lore-rate-limit.ts:1`
 
 ```ts
 export interface CharacterLoreRateLimitConfig {
@@ -676,7 +676,7 @@ export interface CharacterLoreRateLimitConfig {
 
 ### FetchLike
 
-`supabase/functions/_shared/character-lore-rate-limit.ts:8`
+`archive/supabase-legacy/supabase/functions/_shared/character-lore-rate-limit.ts:8`
 
 ```ts
 type FetchLike = (
@@ -687,7 +687,7 @@ type FetchLike = (
 
 ### PrivilegedClientBodyKey
 
-`supabase/functions/_shared/client-trust-body.ts:20`
+`archive/supabase-legacy/supabase/functions/_shared/client-trust-body.ts:20`
 
 ```ts
 export type PrivilegedClientBodyKey = (typeof PRIVILEGED_CLIENT_BODY_KEYS)[number];
@@ -695,7 +695,7 @@ export type PrivilegedClientBodyKey = (typeof PRIVILEGED_CLIENT_BODY_KEYS)[numbe
 
 ### CorsOptions
 
-`supabase/functions/_shared/cors.ts:13`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:13`
 
 ```ts
 export type CorsOptions = {
@@ -722,7 +722,7 @@ export type CorsOptions = {
 
 ### OllamaSettingsView
 
-`supabase/functions/_shared/ollama-llm-resolve.ts:21`
+`archive/supabase-legacy/supabase/functions/_shared/ollama-llm-resolve.ts:21`
 
 ```ts
 export interface OllamaSettingsView {
@@ -741,7 +741,7 @@ export interface OllamaSettingsView {
 
 ### OllamaSettingsStored
 
-`supabase/functions/_shared/ollama-llm-resolve.ts:34`
+`archive/supabase-legacy/supabase/functions/_shared/ollama-llm-resolve.ts:34`
 
 ```ts
 export interface OllamaSettingsStored {
@@ -758,7 +758,7 @@ export interface OllamaSettingsStored {
 
 ### SupabaseServiceConfig
 
-`supabase/functions/_shared/ollama-llm-resolve.ts:45`
+`archive/supabase-legacy/supabase/functions/_shared/ollama-llm-resolve.ts:45`
 
 ```ts
 export interface SupabaseServiceConfig {
@@ -769,7 +769,7 @@ export interface SupabaseServiceConfig {
 
 ### SafeUrlResult
 
-`supabase/functions/_shared/ollama-url-policy.ts:68`
+`archive/supabase-legacy/supabase/functions/_shared/ollama-url-policy.ts:68`
 
 ```ts
 export type SafeUrlResult =
@@ -779,7 +779,7 @@ export type SafeUrlResult =
 
 ### JsonRecord
 
-`supabase/functions/character-lore/index.ts:21`
+`archive/supabase-legacy/supabase/functions/character-lore/index.ts:21`
 
 ```ts
 type JsonRecord = Record<string, unknown>;
@@ -787,7 +787,7 @@ type JsonRecord = Record<string, unknown>;
 
 ### ParsedRequest
 
-`supabase/functions/character-lore/index.ts:28`
+`archive/supabase-legacy/supabase/functions/character-lore/index.ts:28`
 
 ```ts
 interface ParsedRequest {
@@ -800,7 +800,7 @@ interface ParsedRequest {
 
 ### ProjectRow
 
-`supabase/functions/character-lore/index.ts:35`
+`archive/supabase-legacy/supabase/functions/character-lore/index.ts:35`
 
 ```ts
 interface ProjectRow {
@@ -814,7 +814,7 @@ interface ProjectRow {
 
 ### WorldRow
 
-`supabase/functions/character-lore/index.ts:43`
+`archive/supabase-legacy/supabase/functions/character-lore/index.ts:43`
 
 ```ts
 interface WorldRow {
@@ -829,7 +829,7 @@ interface WorldRow {
 
 ### SupabaseConfig
 
-`supabase/functions/character-lore/index.ts:52`
+`archive/supabase-legacy/supabase/functions/character-lore/index.ts:52`
 
 ```ts
 interface SupabaseConfig {
@@ -844,7 +844,7 @@ interface SupabaseConfig {
 
 ### parseCredentialsEncryptionKey
 
-`supabase/functions/_shared/ai-provider-crypto.ts:25`
+`archive/supabase-legacy/supabase/functions/_shared/ai-provider-crypto.ts:25`
 
 ```ts
 export function parseCredentialsEncryptionKey(
@@ -885,7 +885,7 @@ export function parseCredentialsEncryptionKey(
 
 ### buildCharacterLorePrompt
 
-`supabase/functions/_shared/character-lore-prompt.ts:83`
+`archive/supabase-legacy/supabase/functions/_shared/character-lore-prompt.ts:83`
 
 ```ts
 export function buildCharacterLorePrompt(
@@ -934,7 +934,7 @@ export function buildCharacterLorePrompt(
 
 ### RATE_LIMIT_RPC
 
-`supabase/functions/_shared/character-lore-rate-limit.ts:13`
+`archive/supabase-legacy/supabase/functions/_shared/character-lore-rate-limit.ts:13`
 
 ```ts
 RATE_LIMIT_RPC = '/rest/v1/rpc/consume_character_lore_rate_limit'
@@ -942,7 +942,7 @@ RATE_LIMIT_RPC = '/rest/v1/rpc/consume_character_lore_rate_limit'
 
 ### DEFAULT_CORS_METHODS
 
-`supabase/functions/_shared/cors.ts:9`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:9`
 
 ```ts
 DEFAULT_CORS_METHODS = 'GET, POST, PUT, DELETE, OPTIONS'
@@ -950,7 +950,7 @@ DEFAULT_CORS_METHODS = 'GET, POST, PUT, DELETE, OPTIONS'
 
 ### DEFAULT_CORS_ALLOW_HEADERS
 
-`supabase/functions/_shared/cors.ts:10`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:10`
 
 ```ts
 DEFAULT_CORS_ALLOW_HEADERS =
@@ -959,7 +959,7 @@ DEFAULT_CORS_ALLOW_HEADERS =
 
 ### parseIpv4
 
-`supabase/functions/_shared/ollama-url-policy.ts:25`
+`archive/supabase-legacy/supabase/functions/_shared/ollama-url-policy.ts:25`
 
 ```ts
 function parseIpv4(host: string): [number, number, number, number] | null {
@@ -974,7 +974,7 @@ function parseIpv4(host: string): [number, number, number, number] | null {
 
 ### CORS_OPTS
 
-`supabase/functions/character-lore/index.ts:23`
+`archive/supabase-legacy/supabase/functions/character-lore/index.ts:23`
 
 ```ts
 CORS_OPTS: CorsOptions = {
@@ -985,7 +985,7 @@ CORS_OPTS: CorsOptions = {
 
 ### RATE_LIMIT_WINDOW_SECONDS
 
-`supabase/functions/character-lore/index.ts:58`
+`archive/supabase-legacy/supabase/functions/character-lore/index.ts:58`
 
 ```ts
 RATE_LIMIT_WINDOW_SECONDS = 60
@@ -993,7 +993,7 @@ RATE_LIMIT_WINDOW_SECONDS = 60
 
 ### DEFAULT_RATE_LIMIT
 
-`supabase/functions/character-lore/index.ts:59`
+`archive/supabase-legacy/supabase/functions/character-lore/index.ts:59`
 
 ```ts
 DEFAULT_RATE_LIMIT = 6
@@ -1001,7 +1001,7 @@ DEFAULT_RATE_LIMIT = 6
 
 ### MAX_STORY_LENGTH
 
-`supabase/functions/character-lore/index.ts:60`
+`archive/supabase-legacy/supabase/functions/character-lore/index.ts:60`
 
 ```ts
 MAX_STORY_LENGTH = 12_000
@@ -1009,7 +1009,7 @@ MAX_STORY_LENGTH = 12_000
 
 ### MAX_REQUEST_BYTES
 
-`supabase/functions/character-lore/index.ts:61`
+`archive/supabase-legacy/supabase/functions/character-lore/index.ts:61`
 
 ```ts
 MAX_REQUEST_BYTES = 128_000
@@ -1017,7 +1017,7 @@ MAX_REQUEST_BYTES = 128_000
 
 ### parseAttributes
 
-`supabase/functions/character-lore/index.ts:109`
+`archive/supabase-legacy/supabase/functions/character-lore/index.ts:109`
 
 ```ts
 function parseAttributes(value: unknown): CharacterLorePromptContext['attributes'] | null {
@@ -1035,7 +1035,7 @@ function parseAttributes(value: unknown): CharacterLorePromptContext['attributes
 
 ### parseAppearance
 
-`supabase/functions/character-lore/index.ts:121`
+`archive/supabase-legacy/supabase/functions/character-lore/index.ts:121`
 
 ```ts
 function parseAppearance(value: unknown): CharacterLorePromptContext['appearance'] | null {
@@ -1055,7 +1055,7 @@ function parseAppearance(value: unknown): CharacterLorePromptContext['appearance
 
 ### parseTraits
 
-`supabase/functions/character-lore/index.ts:135`
+`archive/supabase-legacy/supabase/functions/character-lore/index.ts:135`
 
 ```ts
 function parseTraits(value: unknown): CharacterLorePromptContext['traits'] | null {
@@ -1071,7 +1071,7 @@ function parseTraits(value: unknown): CharacterLorePromptContext['traits'] | nul
 
 ### parseAbilities
 
-`supabase/functions/character-lore/index.ts:145`
+`archive/supabase-legacy/supabase/functions/character-lore/index.ts:145`
 
 ```ts
 function parseAbilities(value: unknown): CharacterLorePromptContext['abilities'] {
@@ -1095,7 +1095,7 @@ function parseAbilities(value: unknown): CharacterLorePromptContext['abilities']
 
 ### parseInventory
 
-`supabase/functions/character-lore/index.ts:163`
+`archive/supabase-legacy/supabase/functions/character-lore/index.ts:163`
 
 ```ts
 function parseInventory(value: unknown): CharacterLorePromptContext['inventory'] {
@@ -1118,7 +1118,7 @@ function parseInventory(value: unknown): CharacterLorePromptContext['inventory']
 
 ### parseRequestBody
 
-`supabase/functions/character-lore/index.ts:180`
+`archive/supabase-legacy/supabase/functions/character-lore/index.ts:180`
 
 ```ts
 function parseRequestBody(value: unknown): ParsedRequest | null {
@@ -1164,7 +1164,7 @@ function parseRequestBody(value: unknown): ParsedRequest | null {
 
 ### parseProjectRow
 
-`supabase/functions/character-lore/index.ts:269`
+`archive/supabase-legacy/supabase/functions/character-lore/index.ts:269`
 
 ```ts
 function parseProjectRow(value: unknown): ProjectRow | null {
@@ -1187,7 +1187,7 @@ function parseProjectRow(value: unknown): ProjectRow | null {
 
 ### parseWorldRow
 
-`supabase/functions/character-lore/index.ts:286`
+`archive/supabase-legacy/supabase/functions/character-lore/index.ts:286`
 
 ```ts
 function parseWorldRow(value: unknown): WorldRow | null {
@@ -1215,17 +1215,17 @@ function parseWorldRow(value: unknown): WorldRow | null {
 
 | Path | SHA-256 |
 |---|---|
-| `supabase/functions/_shared/ai-provider-crypto.ts` | `45e60f76f744077e8d9b243719dcdba5d58a047d36a1c141df830afa2de16532` |
-| `supabase/functions/_shared/character-lore-access.ts` | `922adb04eb27314f8194a7f189b1b143970945d82ab0219480ea08d44181c70f` |
-| `supabase/functions/_shared/character-lore-prompt.ts` | `54fffb4ba316515dff7add1998b2d6f02280ddc336c30e48d2a4ee045a60f818` |
-| `supabase/functions/_shared/character-lore-provider.ts` | `355c8635d417fd31f9f2afb93e2ae4fe9f26ddeadaf6c2986a74f0201fb5479e` |
-| `supabase/functions/_shared/character-lore-rate-limit.ts` | `639be61b3eed8b028b6047786faa319122b072cc2967195ec733236d7f6d162a` |
-| `supabase/functions/_shared/client-trust-body.ts` | `33c68553dbd89d9c7899520b0ebfa35c4f245ed8ab8ebd242c6f79e9852add95` |
-| `supabase/functions/_shared/cors.ts` | `f8286c91d79fa5fc5cfea2fa47081916523fa7a440f234aecd9a47c6a8cf5b38` |
-| `supabase/functions/_shared/edge-dispatcher-allowlist.ts` | `6d1ae7bde0ba9e41fcaa7b61247732168a62699e7811fb8574cef266cfad3a27` |
-| `supabase/functions/_shared/edge-jwt-gate.ts` | `14a871697b051b7fcbee09dbce1dee8bc8ed5ea6a6eca0bec7b2e771b32d0f0c` |
-| `supabase/functions/_shared/ollama-llm-resolve.ts` | `e2874b05f38eac54d99abfca1b239138b4f95fece2011224f359bcfda9be99b3` |
-| `supabase/functions/_shared/ollama-url-policy.ts` | `864eddb8138fabb9964a92dd948746829d8b09de5f741642b61fb2eb792c4fc1` |
-| `supabase/functions/character-lore/index.ts` | `22a7a50f227b0c7088f97d0eca3d4dc3c957b78c24ab12de25e1d3356bab8320` |
-| `supabase/functions/main/index.ts` | `92f3bf56bf3c776e01595d980246079c4a9f8775e417959abea9d7da003bc53e` |
+| `archive/supabase-legacy/supabase/functions/_shared/ai-provider-crypto.ts` | `45e60f76f744077e8d9b243719dcdba5d58a047d36a1c141df830afa2de16532` |
+| `archive/supabase-legacy/supabase/functions/_shared/character-lore-access.ts` | `922adb04eb27314f8194a7f189b1b143970945d82ab0219480ea08d44181c70f` |
+| `archive/supabase-legacy/supabase/functions/_shared/character-lore-prompt.ts` | `54fffb4ba316515dff7add1998b2d6f02280ddc336c30e48d2a4ee045a60f818` |
+| `archive/supabase-legacy/supabase/functions/_shared/character-lore-provider.ts` | `355c8635d417fd31f9f2afb93e2ae4fe9f26ddeadaf6c2986a74f0201fb5479e` |
+| `archive/supabase-legacy/supabase/functions/_shared/character-lore-rate-limit.ts` | `639be61b3eed8b028b6047786faa319122b072cc2967195ec733236d7f6d162a` |
+| `archive/supabase-legacy/supabase/functions/_shared/client-trust-body.ts` | `33c68553dbd89d9c7899520b0ebfa35c4f245ed8ab8ebd242c6f79e9852add95` |
+| `archive/supabase-legacy/supabase/functions/_shared/cors.ts` | `f8286c91d79fa5fc5cfea2fa47081916523fa7a440f234aecd9a47c6a8cf5b38` |
+| `archive/supabase-legacy/supabase/functions/_shared/edge-dispatcher-allowlist.ts` | `6d1ae7bde0ba9e41fcaa7b61247732168a62699e7811fb8574cef266cfad3a27` |
+| `archive/supabase-legacy/supabase/functions/_shared/edge-jwt-gate.ts` | `14a871697b051b7fcbee09dbce1dee8bc8ed5ea6a6eca0bec7b2e771b32d0f0c` |
+| `archive/supabase-legacy/supabase/functions/_shared/ollama-llm-resolve.ts` | `e2874b05f38eac54d99abfca1b239138b4f95fece2011224f359bcfda9be99b3` |
+| `archive/supabase-legacy/supabase/functions/_shared/ollama-url-policy.ts` | `864eddb8138fabb9964a92dd948746829d8b09de5f741642b61fb2eb792c4fc1` |
+| `archive/supabase-legacy/supabase/functions/character-lore/index.ts` | `22a7a50f227b0c7088f97d0eca3d4dc3c957b78c24ab12de25e1d3356bab8320` |
+| `archive/supabase-legacy/supabase/functions/main/index.ts` | `92f3bf56bf3c776e01595d980246079c4a9f8775e417959abea9d7da003bc53e` |
 

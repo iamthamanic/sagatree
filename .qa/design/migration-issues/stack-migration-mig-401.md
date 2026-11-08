@@ -23,7 +23,7 @@ ai-gm: Den nicht eingebundenen Legacy-Worker erfassen; der produktive Host behä
 
 - Epic: #773; historische Baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`; keine Produktionszustandsbehauptung.
 - Verbindliche Architektur: `docs/architecture/migration-owner-decisions-2026-10-23.md`.
-- Quellpfade und bestehende Adapter: `supabase/functions/_shared/ai-gm-rate-limit.ts`, `supabase/functions/_shared/ai-provider-crypto.ts`, `supabase/functions/_shared/character-lore-prompt.ts`, `supabase/functions/_shared/character-lore-provider.ts`, `supabase/functions/_shared/cors.ts`, `supabase/functions/_shared/edge-dispatcher-allowlist.ts`, `supabase/functions/_shared/edge-jwt-gate.ts`, `supabase/functions/_shared/ollama-llm-resolve.ts`, `supabase/functions/_shared/ollama-url-policy.ts`, `supabase/functions/_shared/session-membership-gate.ts`, `supabase/functions/ai-gm/index.ts`, `supabase/functions/main/index.ts`.
+- Quellpfade und bestehende Adapter: `archive/supabase-legacy/supabase/functions/_shared/ai-gm-rate-limit.ts`, `archive/supabase-legacy/supabase/functions/_shared/ai-provider-crypto.ts`, `archive/supabase-legacy/supabase/functions/_shared/character-lore-prompt.ts`, `archive/supabase-legacy/supabase/functions/_shared/character-lore-provider.ts`, `archive/supabase-legacy/supabase/functions/_shared/cors.ts`, `archive/supabase-legacy/supabase/functions/_shared/edge-dispatcher-allowlist.ts`, `archive/supabase-legacy/supabase/functions/_shared/edge-jwt-gate.ts`, `archive/supabase-legacy/supabase/functions/_shared/ollama-llm-resolve.ts`, `archive/supabase-legacy/supabase/functions/_shared/ollama-url-policy.ts`, `archive/supabase-legacy/supabase/functions/_shared/session-membership-gate.ts`, `archive/supabase-legacy/supabase/functions/ai-gm/index.ts`, `archive/supabase-legacy/supabase/functions/main/index.ts`.
 - Source Contracts: `.qa/intake/edge-infra-contracts/edge-ai-gm.md`, `.qa/intake/edge-infra-contracts/source-contracts/edge-ai-gm.json`.
 - Zielverhalten: Binding product decisions: docs/architecture/migration-owner-decisions-2026-10-23.md; GATE-01 Drizzle+Policy, GATE-02 Cookie-A, GATE-03 Hono+Colyseus, GATE-04 SQLite single-writer. GATE-05 Tauri+sidecar selected; platform release pending..
 
@@ -123,7 +123,7 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 
 | Tier | Owner / meaning |
 | --- | --- |
-| **SLICE DONE** | Isolated deliverable under `supabase/functions/_shared/ai-gm-rate-limit.ts`, `supabase/functions/_shared/ai-provider-crypto.ts`, `supabase/functions/_shared/character-lore-prompt.ts` with Required Tests / Edge Cases PASS at this issue's acceptance tier. |
+| **SLICE DONE** | Isolated deliverable under `archive/supabase-legacy/supabase/functions/_shared/ai-gm-rate-limit.ts`, `archive/supabase-legacy/supabase/functions/_shared/ai-provider-crypto.ts`, `archive/supabase-legacy/supabase/functions/_shared/character-lore-prompt.ts` with Required Tests / Edge Cases PASS at this issue's acceptance tier. |
 | **Acceptance tier** | `isolated-contract` — do not claim a higher tier from lower-tier evidence. |
 | **Deferred integration** | authorized host routes + MIG-600 |
 | **FEATURE VERIFIED** | MIG-600/#845 + MIG-602/#847 |

@@ -24,7 +24,7 @@ const SKIP_DIR = new Set([
 
 /** Paths that may still mention sagadrive (history or this gate). */
 function isAllowed(rel) {
-  if (rel.startsWith('supabase/migrations/')) return true;
+  if (rel.startsWith('archive/supabase-legacy/supabase/migrations/')) return true;
   if (rel === 'scripts/sagatree-name-ban-check.mjs') return true;
   if (rel === 'scripts/character-editor-regression-check.mjs') return true;
   // Historical 007 filename + legacy docker container name until local compose rename.
@@ -56,7 +56,7 @@ const SCAN_ROOTS = [
   'e2e',
   'public',
   'scripts',
-  'supabase/functions',
+  'archive/supabase-legacy/supabase/functions',
   'AGENTS.md',
   'README.md',
   'README_SELFHOST.md',
@@ -126,7 +126,7 @@ for (const scan of SCAN_ROOTS) {
 }
 
 // Filename ban outside migrations / .qa
-for (const scan of ['src', 'docs', 'e2e', 'public', 'scripts', 'supabase/functions', '.cursor']) {
+for (const scan of ['src', 'docs', 'e2e', 'public', 'scripts', 'archive/supabase-legacy/supabase/functions', '.cursor']) {
   const full = join(root, scan);
   try {
     statSync(full);

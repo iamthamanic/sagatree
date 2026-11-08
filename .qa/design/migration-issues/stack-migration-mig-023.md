@@ -23,8 +23,8 @@ Einladungen und Join-Codes mit serverseitiger Rolle und widerrufbarer Mitgliedsc
 
 - Epic: #773; historische Baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`; keine Produktionszustandsbehauptung.
 - Verbindliche Architektur: `docs/architecture/migration-owner-decisions-2026-10-23.md`.
-- Quellpfade und bestehende Adapter: `supabase/migrations/055_session_invites.sql`, `src/infrastructure/session`.
-- Source Contracts: `supabase/migrations/055_session_invites.sql`, `src/infrastructure/session`.
+- Quellpfade und bestehende Adapter: `archive/supabase-legacy/supabase/migrations/055_session_invites.sql`, `src/infrastructure/session`.
+- Source Contracts: `archive/supabase-legacy/supabase/migrations/055_session_invites.sql`, `src/infrastructure/session`.
 - Zielverhalten: Binding product decisions: docs/architecture/migration-owner-decisions-2026-10-23.md; GATE-01 Drizzle+Policy, GATE-02 Cookie-A, GATE-03 Hono+Colyseus, GATE-04 SQLite single-writer. GATE-05 Tauri+sidecar selected; platform release pending..
 
 ## Scope
@@ -67,21 +67,21 @@ UI-Parität, soweit betroffen: `src/THEME_GUIDE.md`, `docs/ui-styleguide.md`, `d
 - Gegeben: Ein gültiger Invite für Projekt A und ein angemeldeter Spieler
 - Wenn: der Spieler den Code einlöst
 - Dann: Die Membership entsteht ausschließlich im Zielprojekt mit der serverseitig vorgegebenen Spielerrolle; Wiederholung erstellt keinen zweiten Eintrag.
-- Quelle: `supabase/migrations/055_session_invites.sql`, `src/infrastructure/session`
+- Quelle: `archive/supabase-legacy/supabase/migrations/055_session_invites.sql`, `src/infrastructure/session`
 
 ### Fall 2
 
 - Gegeben: Abgelaufener, widerrufener oder projektfremder Code
 - Wenn: der Join versucht wird
 - Dann: Der Join wird ohne neue Membership und ohne Session-Zustandsänderung abgewiesen.
-- Quelle: `supabase/migrations/055_session_invites.sql`, `src/infrastructure/session`
+- Quelle: `archive/supabase-legacy/supabase/migrations/055_session_invites.sql`, `src/infrastructure/session`
 
 ### Fall 3
 
 - Gegeben: Zwei gleichzeitige Einlösungen und manipuliertes role=gm
 - Wenn: der Einlösepfad unter Konkurrenz läuft
 - Dann: Einmaligkeits-/Nutzungslimits bleiben atomar und der Request kann keine GM- oder Owner-Rechte vergeben.
-- Quelle: `supabase/migrations/055_session_invites.sql`, `src/infrastructure/session`
+- Quelle: `archive/supabase-legacy/supabase/migrations/055_session_invites.sql`, `src/infrastructure/session`
 
 ## Required Tests
 

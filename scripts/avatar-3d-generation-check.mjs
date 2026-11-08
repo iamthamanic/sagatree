@@ -22,12 +22,12 @@ const meshy = read('src/domains/character/avatar/generation/meshy-adapter.ts');
 const resolve = read('src/domains/character/avatar/generation/resolve-settings.ts');
 const barrel = read('src/domains/character/avatar/generation/index.ts');
 const avatarIndex = read('src/domains/character/avatar/index.ts');
-const edgeShared = read('supabase/functions/_shared/avatar-3d-generation.ts');
-const edge = read('supabase/functions/character-avatar-meshy/index.ts');
-const imageProvider = read('supabase/functions/_shared/item-model3d-meshy.ts');
+const edgeShared = read('archive/supabase-legacy/supabase/functions/_shared/avatar-3d-generation.ts');
+const edge = read('archive/supabase-legacy/supabase/functions/character-avatar-meshy/index.ts');
+const imageProvider = read('archive/supabase-legacy/supabase/functions/_shared/item-model3d-meshy.ts');
 const panel = read('src/app/character/avatar/AvatarMeshyPanel.tsx');
 const advanced = read('src/app/character/avatar/AvatarGenerationAdvancedSettings.tsx');
-const migration = read('supabase/migrations/033_character_avatar_generation_settings.sql');
+const migration = read('archive/supabase-legacy/supabase/migrations/033_character_avatar_generation_settings.sql');
 const applyMigrations = read('scripts/apply-migrations.sh');
 const service = read('src/infrastructure/character/avatar/character-avatar-meshy-service.ts');
 

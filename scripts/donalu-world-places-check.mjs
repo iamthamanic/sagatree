@@ -29,7 +29,7 @@ function mustInclude(rel, needles, label) {
 }
 
 mustInclude(
-  'supabase/migrations/095_donalu_world_places.sql',
+  'archive/supabase-legacy/supabase/migrations/095_donalu_world_places.sql',
   [
     "public_id = 'WO-9FFK6'",
     'Donalu',
@@ -45,19 +45,19 @@ mustInclude(
 );
 
 mustInclude(
-  'supabase/migrations/096_donalu_place_map_link_rpc.sql',
+  'archive/supabase-legacy/supabase/migrations/096_donalu_place_map_link_rpc.sql',
   ['upsert_world_place_map_link', 'worldPlaceId', 'list_saga_bindings'],
   '096 link rpc',
 );
 
 mustInclude(
-  'supabase/migrations/097_donalu_player_place_projection.sql',
+  'archive/supabase-legacy/supabase/migrations/097_donalu_player_place_projection.sql',
   ['v_party_only', 'list_world_place_map_links', 'p_player_view', "'engine'"],
   '097 player projection',
 );
 
 mustInclude(
-  'supabase/migrations/101_world_places_select_editor_only.sql',
+  'archive/supabase-legacy/supabase/migrations/101_world_places_select_editor_only.sql',
   [
     'world_places_select',
     'world_place_map_links_select',
@@ -67,7 +67,7 @@ mustInclude(
 );
 
 mustInclude(
-  'supabase/migrations/102_world_atlas_player_redaction_force.sql',
+  'archive/supabase-legacy/supabase/migrations/102_world_atlas_player_redaction_force.sql',
   [
     'world_atlas_maps_select',
     'v_party_only',

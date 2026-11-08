@@ -35,7 +35,7 @@ function mustExist(relPath) {
 
 section('1 · files');
 [
-  'supabase/migrations/053_sessions_look_override.sql',
+  'archive/supabase-legacy/supabase/migrations/053_sessions_look_override.sql',
   'src/app/session/SessionLookSettings.tsx',
   'src/app/session/GamemasterLiveScreen.tsx',
   'src/domains/look/system-default.ts',
@@ -44,7 +44,7 @@ section('1 · files');
 
 section('2 · migration');
 {
-  const mig = read('supabase/migrations/053_sessions_look_override.sql');
+  const mig = read('archive/supabase-legacy/supabase/migrations/053_sessions_look_override.sql');
   check(/look_profile_id/.test(mig), 'look_profile_id column');
   check(/REFERENCES public\.look_profiles/.test(mig), 'FK to look_profiles');
   check(/enforce_session_look_profile_binding/.test(mig), 'ownership trigger');

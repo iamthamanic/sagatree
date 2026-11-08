@@ -21,8 +21,8 @@ function read(rel) {
   return readFileSync(join(root, rel), 'utf8');
 }
 
-const mainTs = 'supabase/functions/main/index.ts';
-const gateTs = 'supabase/functions/_shared/edge-jwt-gate.ts';
+const mainTs = 'archive/supabase-legacy/supabase/functions/main/index.ts';
+const gateTs = 'archive/supabase-legacy/supabase/functions/_shared/edge-jwt-gate.ts';
 const liveScript = 'scripts/negative-authz-suite.mjs';
 const acceptance = '.qa/acceptance/negative-authz-suite.md';
 const reportRel = '.qa/runs/negative-authz-suite/report.json';
@@ -102,7 +102,7 @@ for (const needle of [
   if (!liveSrc.includes(needle)) fail(`live suite missing check ${needle}`);
 }
 
-const rlsMigration = 'supabase/migrations/086_rls_rulesets_world_graphs.sql';
+const rlsMigration = 'archive/supabase-legacy/supabase/migrations/086_rls_rulesets_world_graphs.sql';
 if (!existsSync(join(root, rlsMigration))) fail(`missing ${rlsMigration}`);
 const rlsSql = read(rlsMigration);
 if (!/ALTER TABLE public\.rulesets ENABLE ROW LEVEL SECURITY/.test(rlsSql)) {

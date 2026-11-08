@@ -35,7 +35,7 @@ function mustNotInclude(file, needles, label) {
 }
 
 mustInclude(
-  'supabase/migrations/040_session_join_code_security.sql',
+  'archive/supabase-legacy/supabase/migrations/040_session_join_code_security.sql',
   [
     'generate_unique_session_code',
     'create_play_session',
@@ -66,7 +66,7 @@ mustNotInclude(
     'Math.random()',
     'make-server-9f6fb44c',
     'publicAnonKey',
-    'utils/supabase/info',
+    'archive/supabase-legacy/src-utils-supabase/info',
     '.supabase.co/functions',
   ],
   'no hosted join / client code gen',

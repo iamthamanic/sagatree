@@ -25,7 +25,7 @@ function requireMatch(content, pattern, label) {
   if (!pattern.test(content)) fail(`missing ${label}`);
 }
 
-const migration = 'supabase/migrations/068_world_maps.sql';
+const migration = 'archive/supabase-legacy/supabase/migrations/068_world_maps.sql';
 if (!existsSync(join(root, migration))) fail(`missing ${migration}`);
 const mig = read(migration);
 requireMatch(mig, /world_maps/i, 'world_maps table');

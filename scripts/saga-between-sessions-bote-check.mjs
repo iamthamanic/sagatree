@@ -25,7 +25,7 @@ function requireMatch(content, pattern, label) {
   if (!pattern.test(content)) fail(`missing ${label}`);
 }
 
-const migrationPath = 'supabase/migrations/066_saga_between_sessions_bote.sql';
+const migrationPath = 'archive/supabase-legacy/supabase/migrations/066_saga_between_sessions_bote.sql';
 if (!existsSync(join(root, migrationPath))) fail(`missing ${migrationPath}`);
 const migration = read(migrationPath);
 requireMatch(migration, /openDeadlines/i, 'openDeadlines in overview');

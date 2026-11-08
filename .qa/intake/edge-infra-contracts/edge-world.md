@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [edge-world.json](source-contracts/edge-world.json) (SHA-256 `43bf453902e52d096fbd3f4e72090252c7a2eee509984749dc4c35e2ac7c0112`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [edge-world.json](source-contracts/edge-world.json) (SHA-256 `fbac78517863492e52873b88452bd9049458bafdbc6d22e7a9e27ee8d021f58c`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Exposure and purpose
 
@@ -54,7 +54,7 @@ None in the reviewed source.
 
 ### DEFAULT_CORS_METHODS
 
-`supabase/functions/_shared/cors.ts:9`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:9`
 
 ```ts
 DEFAULT_CORS_METHODS = 'GET, POST, PUT, DELETE, OPTIONS'
@@ -62,7 +62,7 @@ DEFAULT_CORS_METHODS = 'GET, POST, PUT, DELETE, OPTIONS'
 
 ### DEFAULT_CORS_ALLOW_HEADERS
 
-`supabase/functions/_shared/cors.ts:10`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:10`
 
 ```ts
 DEFAULT_CORS_ALLOW_HEADERS =
@@ -71,7 +71,7 @@ DEFAULT_CORS_ALLOW_HEADERS =
 
 ### readConfiguredOrigin
 
-`supabase/functions/_shared/cors.ts:34`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:34`
 
 ```ts
 function readConfiguredOrigin(envKeys: string[]): string {
@@ -85,7 +85,7 @@ function readConfiguredOrigin(envKeys: string[]): string {
 
 ### CORS_OPTS
 
-`supabase/functions/world/index.ts:7`
+`archive/supabase-legacy/supabase/functions/world/index.ts:7`
 
 ```ts
 CORS_OPTS: CorsOptions = {
@@ -129,7 +129,7 @@ No src/infrastructure caller in the reviewed branch. This does not authorize add
 
 ### world:1
 
-Predicate: `req.method === "GET" && path === "/health"`. Source: `supabase/functions/world/index.ts:389`.
+Predicate: `req.method === "GET" && path === "/health"`. Source: `archive/supabase-legacy/supabase/functions/world/index.ts:389`.
 
 
 ```ts
@@ -146,7 +146,7 @@ Predicate: `req.method === "GET" && path === "/health"`. Source: `supabase/funct
 
 ### world:2
 
-Predicate: `req.method === "POST" && path === "/worlds"`. Source: `supabase/functions/world/index.ts:400`.
+Predicate: `req.method === "POST" && path === "/worlds"`. Source: `archive/supabase-legacy/supabase/functions/world/index.ts:400`.
 
 
 ```ts
@@ -162,7 +162,7 @@ Predicate: `req.method === "POST" && path === "/worlds"`. Source: `supabase/func
 
 ### world:3
 
-Predicate: `req.method === "GET" && path.match(/^\/worlds\/[\w-]+$/)`. Source: `supabase/functions/world/index.ts:410`.
+Predicate: `req.method === "GET" && path.match(/^\/worlds\/[\w-]+$/)`. Source: `archive/supabase-legacy/supabase/functions/world/index.ts:410`.
 
 
 ```ts
@@ -185,7 +185,7 @@ Predicate: `req.method === "GET" && path.match(/^\/worlds\/[\w-]+$/)`. Source: `
 
 ### world:4
 
-Predicate: `req.method === "GET" && path.match(/^\/worlds\/project\/[\w-]+$/)`. Source: `supabase/functions/world/index.ts:427`.
+Predicate: `req.method === "GET" && path.match(/^\/worlds\/project\/[\w-]+$/)`. Source: `archive/supabase-legacy/supabase/functions/world/index.ts:427`.
 
 
 ```ts
@@ -208,7 +208,7 @@ Predicate: `req.method === "GET" && path.match(/^\/worlds\/project\/[\w-]+$/)`. 
 
 ### world:5
 
-Predicate: `req.method === "PUT" && path.match(/^\/worlds\/[\w-]+$/)`. Source: `supabase/functions/world/index.ts:444`.
+Predicate: `req.method === "PUT" && path.match(/^\/worlds\/[\w-]+$/)`. Source: `archive/supabase-legacy/supabase/functions/world/index.ts:444`.
 
 
 ```ts
@@ -225,7 +225,7 @@ Predicate: `req.method === "PUT" && path.match(/^\/worlds\/[\w-]+$/)`. Source: `
 
 ### world:6
 
-Predicate: `req.method === "POST" && path.match(/^\/worlds\/[\w-]+\/locations$/)`. Source: `supabase/functions/world/index.ts:455`.
+Predicate: `req.method === "POST" && path.match(/^\/worlds\/[\w-]+\/locations$/)`. Source: `archive/supabase-legacy/supabase/functions/world/index.ts:455`.
 
 
 ```ts
@@ -242,7 +242,7 @@ Predicate: `req.method === "POST" && path.match(/^\/worlds\/[\w-]+\/locations$/)
 
 ### world:7
 
-Predicate: `req.method === "PUT" && path.match(/^\/worlds\/[\w-]+\/locations\/[\w-]+$/)`. Source: `supabase/functions/world/index.ts:466`.
+Predicate: `req.method === "PUT" && path.match(/^\/worlds\/[\w-]+\/locations\/[\w-]+$/)`. Source: `archive/supabase-legacy/supabase/functions/world/index.ts:466`.
 
 
 ```ts
@@ -260,7 +260,7 @@ Predicate: `req.method === "PUT" && path.match(/^\/worlds\/[\w-]+\/locations\/[\
 
 ### world:8
 
-Predicate: `req.method === "POST" && path.match(/^\/worlds\/[\w-]+\/locations\/[\w-]+\/discover$/)`. Source: `supabase/functions/world/index.ts:478`.
+Predicate: `req.method === "POST" && path.match(/^\/worlds\/[\w-]+\/locations\/[\w-]+\/discover$/)`. Source: `archive/supabase-legacy/supabase/functions/world/index.ts:478`.
 
 
 ```ts
@@ -277,7 +277,7 @@ Predicate: `req.method === "POST" && path.match(/^\/worlds\/[\w-]+\/locations\/[
 
 ### world:9
 
-Predicate: `req.method === "POST" && path.match(/^\/worlds\/[\w-]+\/events$/)`. Source: `supabase/functions/world/index.ts:489`.
+Predicate: `req.method === "POST" && path.match(/^\/worlds\/[\w-]+\/events$/)`. Source: `archive/supabase-legacy/supabase/functions/world/index.ts:489`.
 
 
 ```ts
@@ -294,7 +294,7 @@ Predicate: `req.method === "POST" && path.match(/^\/worlds\/[\w-]+\/events$/)`. 
 
 ### world:10
 
-Predicate: `req.method === "GET" && path.match(/^\/worlds\/[\w-]+\/events$/)`. Source: `supabase/functions/world/index.ts:500`.
+Predicate: `req.method === "GET" && path.match(/^\/worlds\/[\w-]+\/events$/)`. Source: `archive/supabase-legacy/supabase/functions/world/index.ts:500`.
 
 
 ```ts
@@ -311,7 +311,7 @@ Predicate: `req.method === "GET" && path.match(/^\/worlds\/[\w-]+\/events$/)`. S
 
 ### world:11
 
-Predicate: `req.method === "POST" && path.match(/^\/worlds\/[\w-]+\/factions$/)`. Source: `supabase/functions/world/index.ts:511`.
+Predicate: `req.method === "POST" && path.match(/^\/worlds\/[\w-]+\/factions$/)`. Source: `archive/supabase-legacy/supabase/functions/world/index.ts:511`.
 
 
 ```ts
@@ -328,7 +328,7 @@ Predicate: `req.method === "POST" && path.match(/^\/worlds\/[\w-]+\/factions$/)`
 
 ### world:12
 
-Predicate: `req.method === "PUT" && path.match(/^\/worlds\/[\w-]+\/factions\/[\w-]+\/relationship$/)`. Source: `supabase/functions/world/index.ts:522`.
+Predicate: `req.method === "PUT" && path.match(/^\/worlds\/[\w-]+\/factions\/[\w-]+\/relationship$/)`. Source: `archive/supabase-legacy/supabase/functions/world/index.ts:522`.
 
 
 ```ts
@@ -346,7 +346,7 @@ Predicate: `req.method === "PUT" && path.match(/^\/worlds\/[\w-]+\/factions\/[\w
 
 ### world:13
 
-Predicate: `req.method === "POST" && path.match(/^\/worlds\/[\w-]+\/time\/advance$/)`. Source: `supabase/functions/world/index.ts:534`.
+Predicate: `req.method === "POST" && path.match(/^\/worlds\/[\w-]+\/time\/advance$/)`. Source: `archive/supabase-legacy/supabase/functions/world/index.ts:534`.
 
 
 ```ts
@@ -363,7 +363,7 @@ Predicate: `req.method === "POST" && path.match(/^\/worlds\/[\w-]+\/time\/advanc
 
 ### world:14
 
-Predicate: `req.method === "PUT" && path.match(/^\/worlds\/[\w-]+\/weather$/)`. Source: `supabase/functions/world/index.ts:545`.
+Predicate: `req.method === "PUT" && path.match(/^\/worlds\/[\w-]+\/weather$/)`. Source: `archive/supabase-legacy/supabase/functions/world/index.ts:545`.
 
 
 ```ts
@@ -380,7 +380,7 @@ Predicate: `req.method === "PUT" && path.match(/^\/worlds\/[\w-]+\/weather$/)`. 
 
 ### world:15
 
-Predicate: `req.method === "POST" && path.match(/^\/worlds\/[\w-]+\/weather\/random$/)`. Source: `supabase/functions/world/index.ts:556`.
+Predicate: `req.method === "POST" && path.match(/^\/worlds\/[\w-]+\/weather\/random$/)`. Source: `archive/supabase-legacy/supabase/functions/world/index.ts:556`.
 
 
 ```ts
@@ -399,7 +399,7 @@ Predicate: `req.method === "POST" && path.match(/^\/worlds\/[\w-]+\/weather\/ran
 
 ### CorsOptions
 
-`supabase/functions/_shared/cors.ts:13`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:13`
 
 ```ts
 export type CorsOptions = {
@@ -426,7 +426,7 @@ export type CorsOptions = {
 
 ### World
 
-`supabase/functions/world/index.ts:21`
+`archive/supabase-legacy/supabase/functions/world/index.ts:21`
 
 ```ts
 interface World {
@@ -448,7 +448,7 @@ interface World {
 
 ### WorldSettings
 
-`supabase/functions/world/index.ts:37`
+`archive/supabase-legacy/supabase/functions/world/index.ts:37`
 
 ```ts
 interface WorldSettings {
@@ -463,7 +463,7 @@ interface WorldSettings {
 
 ### Location
 
-`supabase/functions/world/index.ts:46`
+`archive/supabase-legacy/supabase/functions/world/index.ts:46`
 
 ```ts
 interface Location {
@@ -482,7 +482,7 @@ interface Location {
 
 ### WorldEvent
 
-`supabase/functions/world/index.ts:59`
+`archive/supabase-legacy/supabase/functions/world/index.ts:59`
 
 ```ts
 interface WorldEvent {
@@ -499,7 +499,7 @@ interface WorldEvent {
 
 ### Faction
 
-`supabase/functions/world/index.ts:70`
+`archive/supabase-legacy/supabase/functions/world/index.ts:70`
 
 ```ts
 interface Faction {
@@ -516,7 +516,7 @@ interface Faction {
 
 ### WorldTime
 
-`supabase/functions/world/index.ts:81`
+`archive/supabase-legacy/supabase/functions/world/index.ts:81`
 
 ```ts
 interface WorldTime {
@@ -533,7 +533,7 @@ interface WorldTime {
 
 ### Weather
 
-`supabase/functions/world/index.ts:92`
+`archive/supabase-legacy/supabase/functions/world/index.ts:92`
 
 ```ts
 interface Weather {
@@ -550,7 +550,7 @@ interface Weather {
 
 ### generateId
 
-`supabase/functions/world/index.ts:110`
+`archive/supabase-legacy/supabase/functions/world/index.ts:110`
 
 ```ts
 function generateId(): string {
@@ -560,7 +560,7 @@ function generateId(): string {
 
 ### createWorld
 
-`supabase/functions/world/index.ts:118`
+`archive/supabase-legacy/supabase/functions/world/index.ts:118`
 
 ```ts
 async function createWorld(data: {
@@ -617,7 +617,7 @@ async function createWorld(data: {
 
 ### getWorld
 
-`supabase/functions/world/index.ts:169`
+`archive/supabase-legacy/supabase/functions/world/index.ts:169`
 
 ```ts
 async function getWorld(worldId: string): Promise<World | null> {
@@ -627,7 +627,7 @@ async function getWorld(worldId: string): Promise<World | null> {
 
 ### getWorldByProject
 
-`supabase/functions/world/index.ts:173`
+`archive/supabase-legacy/supabase/functions/world/index.ts:173`
 
 ```ts
 async function getWorldByProject(projectId: string): Promise<World | null> {
@@ -642,7 +642,7 @@ async function getWorldByProject(projectId: string): Promise<World | null> {
 
 ### updateWorld
 
-`supabase/functions/world/index.ts:182`
+`archive/supabase-legacy/supabase/functions/world/index.ts:182`
 
 ```ts
 async function updateWorld(worldId: string, data: Partial<World>): Promise<World> {
@@ -663,7 +663,7 @@ async function updateWorld(worldId: string, data: Partial<World>): Promise<World
 
 ### addLocation
 
-`supabase/functions/world/index.ts:201`
+`archive/supabase-legacy/supabase/functions/world/index.ts:201`
 
 ```ts
 async function addLocation(worldId: string, data: Omit<Location, 'id'> & { discovered?: boolean }): Promise<Location> {
@@ -686,7 +686,7 @@ async function addLocation(worldId: string, data: Omit<Location, 'id'> & { disco
 
 ### updateLocation
 
-`supabase/functions/world/index.ts:218`
+`archive/supabase-legacy/supabase/functions/world/index.ts:218`
 
 ```ts
 async function updateLocation(worldId: string, locationId: string, data: Partial<Location>): Promise<Location> {
@@ -710,7 +710,7 @@ async function updateLocation(worldId: string, locationId: string, data: Partial
 
 ### discoverLocation
 
-`supabase/functions/world/index.ts:236`
+`archive/supabase-legacy/supabase/functions/world/index.ts:236`
 
 ```ts
 async function discoverLocation(worldId: string, locationId: string): Promise<Location> {
@@ -720,7 +720,7 @@ async function discoverLocation(worldId: string, locationId: string): Promise<Lo
 
 ### addEvent
 
-`supabase/functions/world/index.ts:244`
+`archive/supabase-legacy/supabase/functions/world/index.ts:244`
 
 ```ts
 async function addEvent(worldId: string, data: Omit<WorldEvent, 'id'>): Promise<WorldEvent> {
@@ -742,7 +742,7 @@ async function addEvent(worldId: string, data: Omit<WorldEvent, 'id'>): Promise<
 
 ### getEvents
 
-`supabase/functions/world/index.ts:260`
+`archive/supabase-legacy/supabase/functions/world/index.ts:260`
 
 ```ts
 async function getEvents(worldId: string, type?: WorldEvent['type']): Promise<WorldEvent[]> {
@@ -759,7 +759,7 @@ async function getEvents(worldId: string, type?: WorldEvent['type']): Promise<Wo
 
 ### addFaction
 
-`supabase/functions/world/index.ts:275`
+`archive/supabase-legacy/supabase/functions/world/index.ts:275`
 
 ```ts
 async function addFaction(worldId: string, data: Omit<Faction, 'id'>): Promise<Faction> {
@@ -781,7 +781,7 @@ async function addFaction(worldId: string, data: Omit<Faction, 'id'>): Promise<F
 
 ### updateFactionRelationship
 
-`supabase/functions/world/index.ts:291`
+`archive/supabase-legacy/supabase/functions/world/index.ts:291`
 
 ```ts
 async function updateFactionRelationship(worldId: string, factionId: string, targetId: string, status: 'allied' | 'neutral' | 'hostile'): Promise<Faction> {
@@ -802,7 +802,7 @@ async function updateFactionRelationship(worldId: string, factionId: string, tar
 
 ### advanceTime
 
-`supabase/functions/world/index.ts:310`
+`archive/supabase-legacy/supabase/functions/world/index.ts:310`
 
 ```ts
 async function advanceTime(worldId: string, hours: number): Promise<WorldTime> {
@@ -838,7 +838,7 @@ async function advanceTime(worldId: string, hours: number): Promise<WorldTime> {
 
 ### setWeather
 
-`supabase/functions/world/index.ts:344`
+`archive/supabase-legacy/supabase/functions/world/index.ts:344`
 
 ```ts
 async function setWeather(worldId: string, weather: Partial<Weather>): Promise<Weather> {
@@ -859,7 +859,7 @@ async function setWeather(worldId: string, weather: Partial<Weather>): Promise<W
 
 ### randomWeather
 
-`supabase/functions/world/index.ts:359`
+`archive/supabase-legacy/supabase/functions/world/index.ts:359`
 
 ```ts
 async function randomWeather(worldId: string): Promise<Weather> {
@@ -883,9 +883,9 @@ async function randomWeather(worldId: string): Promise<Weather> {
 
 | Path | SHA-256 |
 |---|---|
-| `supabase/functions/_shared/cors.ts` | `f8286c91d79fa5fc5cfea2fa47081916523fa7a440f234aecd9a47c6a8cf5b38` |
-| `supabase/functions/_shared/edge-dispatcher-allowlist.ts` | `6d1ae7bde0ba9e41fcaa7b61247732168a62699e7811fb8574cef266cfad3a27` |
-| `supabase/functions/_shared/edge-jwt-gate.ts` | `14a871697b051b7fcbee09dbce1dee8bc8ed5ea6a6eca0bec7b2e771b32d0f0c` |
-| `supabase/functions/main/index.ts` | `92f3bf56bf3c776e01595d980246079c4a9f8775e417959abea9d7da003bc53e` |
-| `supabase/functions/world/index.ts` | `02fad42841f086b02d8ee553105e34231ce957d882980fc9c73aa8709da7cb45` |
+| `archive/supabase-legacy/supabase/functions/_shared/cors.ts` | `f8286c91d79fa5fc5cfea2fa47081916523fa7a440f234aecd9a47c6a8cf5b38` |
+| `archive/supabase-legacy/supabase/functions/_shared/edge-dispatcher-allowlist.ts` | `6d1ae7bde0ba9e41fcaa7b61247732168a62699e7811fb8574cef266cfad3a27` |
+| `archive/supabase-legacy/supabase/functions/_shared/edge-jwt-gate.ts` | `14a871697b051b7fcbee09dbce1dee8bc8ed5ea6a6eca0bec7b2e771b32d0f0c` |
+| `archive/supabase-legacy/supabase/functions/main/index.ts` | `92f3bf56bf3c776e01595d980246079c4a9f8775e417959abea9d7da003bc53e` |
+| `archive/supabase-legacy/supabase/functions/world/index.ts` | `02fad42841f086b02d8ee553105e34231ce957d882980fc9c73aa8709da7cb45` |
 

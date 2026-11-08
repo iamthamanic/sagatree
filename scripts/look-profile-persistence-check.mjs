@@ -70,7 +70,7 @@ function walkFiles(dir, acc = []) {
 section('1 · migration & RLS');
 
 mustInclude(
-  'supabase/migrations/046_look_profiles.sql',
+  'archive/supabase-legacy/supabase/migrations/046_look_profiles.sql',
   [
     'look_profiles',
     'look_profile_versions',
@@ -84,12 +84,12 @@ mustInclude(
 );
 
 mustNotInclude(
-  'supabase/migrations/046_look_profiles.sql',
+  'archive/supabase-legacy/supabase/migrations/046_look_profiles.sql',
   ['GRANT ALL ON TABLE public.look_profiles TO anon', 'GRANT DELETE ON TABLE public.look_profile_versions'],
   'no anon all / no version delete grant',
 );
 
-const migration = readFileSync(join(root, 'supabase/migrations/046_look_profiles.sql'), 'utf8');
+const migration = readFileSync(join(root, 'archive/supabase-legacy/supabase/migrations/046_look_profiles.sql'), 'utf8');
 check(
   !/CREATE POLICY[\s\S]{0,200}look_profile_versions[\s\S]{0,80}FOR UPDATE/i.test(migration),
   'versions have no UPDATE policy',

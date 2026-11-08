@@ -30,7 +30,7 @@ Die Signaturen, Defaults und Funktionskörper der Repository-Migrationskette wur
 
 **RETURNS:** `void`.
 
-**Wirksame Definition:** [src/supabase/add_marketplace_rpc.sql](../../../src/supabase/add_marketplace_rpc.sql) (Zeilen 1–17, SHA-256 `450d3ba94e44b796ce64bf8c5e2a7a82f53f37b23574f5b1a8dfd1ef1550c670`).
+**Wirksame Definition:** [archive/supabase-legacy/src-supabase/add_marketplace_rpc.sql](../../../archive/supabase-legacy/src-supabase/add_marketplace_rpc.sql) (Zeilen 1–17, SHA-256 `450d3ba94e44b796ce64bf8c5e2a7a82f53f37b23574f5b1a8dfd1ef1550c670`).
 
 **Vollständiger abgeleiteter SQL-Text:** [.qa/intake/rpc-contracts/effective-sql/increment_marketplace_downloads-1.sql](effective-sql/increment_marketplace_downloads-1.sql); SHA-256 `c5b091e339730043782c23ee4508607ae630090963006afc9a9ffb598df12d44`.
 
@@ -75,15 +75,15 @@ Diese Relationen stammen aus PostgreSQL-AST-RangeVars und DML-Zielen, einschlie�
 
 Dies sind unabhängige Skriptvarianten derselben Signatur, keine nebeneinander wirksamen Overloads.
 
-### src/supabase/add_marketplace_rpc.sql
+### archive/supabase-legacy/src-supabase/add_marketplace_rpc.sql
 
-[src/supabase/add_marketplace_rpc.sql](../../../src/supabase/add_marketplace_rpc.sql) (Zeilen 1–17, SHA-256 `450d3ba94e44b796ce64bf8c5e2a7a82f53f37b23574f5b1a8dfd1ef1550c670`)
+[archive/supabase-legacy/src-supabase/add_marketplace_rpc.sql](../../../archive/supabase-legacy/src-supabase/add_marketplace_rpc.sql) (Zeilen 1–17, SHA-256 `450d3ba94e44b796ce64bf8c5e2a7a82f53f37b23574f5b1a8dfd1ef1550c670`)
 
 **Deklarierte EXECUTE-Rollen:** PUBLIC, authenticated.
 
-### src/supabase/deploy_marketplace.sql
+### archive/supabase-legacy/src-supabase/deploy_marketplace.sql
 
-[src/supabase/deploy_marketplace.sql](../../../src/supabase/deploy_marketplace.sql) (Zeilen 146–160, SHA-256 `fcd99e2ea5dc98bd3b5284e8c2a69f532071be45ccdb66abf58ebfc31c57c38b`)
+[archive/supabase-legacy/src-supabase/deploy_marketplace.sql](../../../archive/supabase-legacy/src-supabase/deploy_marketplace.sql) (Zeilen 146–160, SHA-256 `fcd99e2ea5dc98bd3b5284e8c2a69f532071be45ccdb66abf58ebfc31c57c38b`)
 
 **Deklarierte EXECUTE-Rollen:** PUBLIC, anon, authenticated.
 
@@ -262,7 +262,7 @@ Diese Punkte sind verpflichtende Tests für den Nachfolger. Ihre Auflistung beha
 
 Die Funktion existiert nur in optionalen src/supabase-Installationsskripten und fehlt in der vollständig eingespielten Repository-Migrationskette.
 
-**Beleg:** src/supabase/add_marketplace_rpc.sql und src/supabase/deploy_marketplace.sql; isolierter pg_proc-Katalog enthält keine increment_marketplace_downloads.
+**Beleg:** archive/supabase-legacy/src-supabase/add_marketplace_rpc.sql und archive/supabase-legacy/src-supabase/deploy_marketplace.sql; isolierter pg_proc-Katalog enthält keine increment_marketplace_downloads.
 
 **Erforderliche Nachfolger-Abnahme:** Eindeutige Installations-/Nachfolgerentscheidung; Counter nur über installierte RPC oder Host-Nachfolger — kein Client-Write-Fallback.
 
@@ -280,6 +280,6 @@ Die folgenden Hashes binden SQL-Kette, transitive Tabellen-/Trigger-/Policyquell
 
 | Quelle | SHA-256 |
 | --- | --- |
+| [archive/supabase-legacy/src-supabase/add_marketplace_rpc.sql](../../../archive/supabase-legacy/src-supabase/add_marketplace_rpc.sql) | `450d3ba94e44b796ce64bf8c5e2a7a82f53f37b23574f5b1a8dfd1ef1550c670` |
+| [archive/supabase-legacy/src-supabase/deploy_marketplace.sql](../../../archive/supabase-legacy/src-supabase/deploy_marketplace.sql) | `fcd99e2ea5dc98bd3b5284e8c2a69f532071be45ccdb66abf58ebfc31c57c38b` |
 | [src/infrastructure/marketplace/marketplace-service.ts](../../../src/infrastructure/marketplace/marketplace-service.ts) | `d2135007e96a4775dea0a8b238312a72539a0541c9095024323c128b15a8afe1` |
-| [src/supabase/add_marketplace_rpc.sql](../../../src/supabase/add_marketplace_rpc.sql) | `450d3ba94e44b796ce64bf8c5e2a7a82f53f37b23574f5b1a8dfd1ef1550c670` |
-| [src/supabase/deploy_marketplace.sql](../../../src/supabase/deploy_marketplace.sql) | `fcd99e2ea5dc98bd3b5284e8c2a69f532071be45ccdb66abf58ebfc31c57c38b` |

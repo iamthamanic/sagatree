@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [edge-export.json](source-contracts/edge-export.json) (SHA-256 `1fecf4111e0790b4caabcebecc5c1fa566909e7cf3b9a716b6a48149b9560aa7`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [edge-export.json](source-contracts/edge-export.json) (SHA-256 `3d6d0656384ba74b83744bb54af176d420b815b69259bd05807ae3eebbb3782d`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Exposure and purpose
 
@@ -54,7 +54,7 @@ None in the reviewed source.
 
 ### DEFAULT_CORS_METHODS
 
-`supabase/functions/_shared/cors.ts:9`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:9`
 
 ```ts
 DEFAULT_CORS_METHODS = 'GET, POST, PUT, DELETE, OPTIONS'
@@ -62,7 +62,7 @@ DEFAULT_CORS_METHODS = 'GET, POST, PUT, DELETE, OPTIONS'
 
 ### DEFAULT_CORS_ALLOW_HEADERS
 
-`supabase/functions/_shared/cors.ts:10`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:10`
 
 ```ts
 DEFAULT_CORS_ALLOW_HEADERS =
@@ -71,7 +71,7 @@ DEFAULT_CORS_ALLOW_HEADERS =
 
 ### readConfiguredOrigin
 
-`supabase/functions/_shared/cors.ts:34`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:34`
 
 ```ts
 function readConfiguredOrigin(envKeys: string[]): string {
@@ -85,7 +85,7 @@ function readConfiguredOrigin(envKeys: string[]): string {
 
 ### CORS_OPTS
 
-`supabase/functions/export/index.ts:7`
+`archive/supabase-legacy/supabase/functions/export/index.ts:7`
 
 ```ts
 CORS_OPTS: CorsOptions = {
@@ -131,7 +131,7 @@ No src/infrastructure caller in the reviewed branch. This does not authorize add
 
 ### export:1
 
-Predicate: `req.method === "GET" && path === "/health"`. Source: `supabase/functions/export/index.ts:27`.
+Predicate: `req.method === "GET" && path === "/health"`. Source: `archive/supabase-legacy/supabase/functions/export/index.ts:27`.
 
 
 ```ts
@@ -140,7 +140,7 @@ return new Response(JSON.stringify({ status: 'ok', features: ['json', 'pdf', 'ma
 
 ### export:2
 
-Predicate: `req.method === "POST" && path === "/export"`. Source: `supabase/functions/export/index.ts:28`.
+Predicate: `req.method === "POST" && path === "/export"`. Source: `archive/supabase-legacy/supabase/functions/export/index.ts:28`.
 
 
 ```ts
@@ -149,7 +149,7 @@ Predicate: `req.method === "POST" && path === "/export"`. Source: `supabase/func
 
 ### export:3
 
-Predicate: `req.method === "POST" && path === "/import"`. Source: `supabase/functions/export/index.ts:29`.
+Predicate: `req.method === "POST" && path === "/import"`. Source: `archive/supabase-legacy/supabase/functions/export/index.ts:29`.
 
 
 ```ts
@@ -161,7 +161,7 @@ Predicate: `req.method === "POST" && path === "/import"`. Source: `supabase/func
 
 ### CorsOptions
 
-`supabase/functions/_shared/cors.ts:13`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:13`
 
 ```ts
 export type CorsOptions = {
@@ -188,7 +188,7 @@ export type CorsOptions = {
 
 ### ExportRequest
 
-`supabase/functions/export/index.ts:14`
+`archive/supabase-legacy/supabase/functions/export/index.ts:14`
 
 ```ts
 interface ExportRequest { type: 'character' | 'session' | 'world' | 'campaign'; id: string; format: 'json' | 'pdf' | 'markdown'; data: Record<string,any> }
@@ -199,7 +199,7 @@ interface ExportRequest { type: 'character' | 'session' | 'world' | 'campaign'; 
 
 ### exportJSON
 
-`supabase/functions/export/index.ts:16`
+`archive/supabase-legacy/supabase/functions/export/index.ts:16`
 
 ```ts
 async function exportJSON(data: Record<string,any>): Promise<string> { return JSON.stringify(data, null, 2) }
@@ -207,7 +207,7 @@ async function exportJSON(data: Record<string,any>): Promise<string> { return JS
 
 ### exportMarkdown
 
-`supabase/functions/export/index.ts:17`
+`archive/supabase-legacy/supabase/functions/export/index.ts:17`
 
 ```ts
 async function exportMarkdown(data: Record<string,any>, type: string): Promise<string> { let md = ''; if (type === 'character') { md = `# ${data.name || 'Character'}\n\n`; md += `**Race:** ${data.race || 'Unknown'}\n\n`; md += `**Class:** ${data.class || 'Unknown'}\n\n`; md += `**Level:** ${data.level || 1}\n\n`; md += `## Attributes\n\n`; if (data.attributes) { for (const [key, value] of Object.entries(data.attributes)) { md += `- **${key}:** ${value}\n` } } md += `\n## Equipment\n\n`; if (data.equipment) { for (const item of data.equipment) { md += `- ${item.name}${item.equipped ? ' (equipped)' : ''}\n` } } } else if (type === 'session') { md = `# Session: ${data.name || 'Unknown'}\n\n`; md += `**Date:** ${data.createdAt || 'Unknown'}\n\n`; md += `## Players\n\n`; if (data.players) { for (const player of data.players) { md += `- ${player.name}\n` } } } else { md = `# ${data.name || 'Export'}\n\n\`\`\`json\n${JSON.stringify(data, null, 2)}\n\`\`\`` } return md }
@@ -215,7 +215,7 @@ async function exportMarkdown(data: Record<string,any>, type: string): Promise<s
 
 ### exportPDF
 
-`supabase/functions/export/index.ts:18`
+`archive/supabase-legacy/supabase/functions/export/index.ts:18`
 
 ```ts
 async function exportPDF(data: Record<string,any>, type: string): Promise<Uint8Array> { const markdown = await exportMarkdown(data, type); const pdfContent = `%PDF-1.4\n1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >>\nendobj\n4 0 obj\n<< /Length ${markdown.length} >>\nstream\nBT\n/F1 12 Tf\n50 700 Td\n(${markdown.replace(/\n/g, ') Tj\n0 -12 Td\n(')}) Tj\nET\nendstream\nendobj\n5 0 obj\n<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>\nendobj\nxref\n0 6\n0000000000 65535 f\n0000000009 00000 n\n0000000058 00000 n\n0000000115 00000 n\n0000000266 00000 n\n0000000${markdown.length + 300} 00000 n\ntrailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n${markdown.length + 400}\n%%EOF`; return new TextEncoder().encode(pdfContent) }
@@ -226,9 +226,9 @@ async function exportPDF(data: Record<string,any>, type: string): Promise<Uint8A
 
 | Path | SHA-256 |
 |---|---|
-| `supabase/functions/_shared/cors.ts` | `f8286c91d79fa5fc5cfea2fa47081916523fa7a440f234aecd9a47c6a8cf5b38` |
-| `supabase/functions/_shared/edge-dispatcher-allowlist.ts` | `6d1ae7bde0ba9e41fcaa7b61247732168a62699e7811fb8574cef266cfad3a27` |
-| `supabase/functions/_shared/edge-jwt-gate.ts` | `14a871697b051b7fcbee09dbce1dee8bc8ed5ea6a6eca0bec7b2e771b32d0f0c` |
-| `supabase/functions/export/index.ts` | `ca279bd257feaf74969fbd3c8cbec28b240fe4ffdd3de5fdddc7067570eee1e8` |
-| `supabase/functions/main/index.ts` | `92f3bf56bf3c776e01595d980246079c4a9f8775e417959abea9d7da003bc53e` |
+| `archive/supabase-legacy/supabase/functions/_shared/cors.ts` | `f8286c91d79fa5fc5cfea2fa47081916523fa7a440f234aecd9a47c6a8cf5b38` |
+| `archive/supabase-legacy/supabase/functions/_shared/edge-dispatcher-allowlist.ts` | `6d1ae7bde0ba9e41fcaa7b61247732168a62699e7811fb8574cef266cfad3a27` |
+| `archive/supabase-legacy/supabase/functions/_shared/edge-jwt-gate.ts` | `14a871697b051b7fcbee09dbce1dee8bc8ed5ea6a6eca0bec7b2e771b32d0f0c` |
+| `archive/supabase-legacy/supabase/functions/export/index.ts` | `ca279bd257feaf74969fbd3c8cbec28b240fe4ffdd3de5fdddc7067570eee1e8` |
+| `archive/supabase-legacy/supabase/functions/main/index.ts` | `92f3bf56bf3c776e01595d980246079c4a9f8775e417959abea9d7da003bc53e` |
 

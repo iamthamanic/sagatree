@@ -23,8 +23,8 @@ Alle produktiven Supabase-Aufrufstellen mit einer überprüften Quelloperation u
 
 - Epic: #773; historische Baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`; keine Produktionszustandsbehauptung.
 - Verbindliche Architektur: `docs/architecture/migration-owner-decisions-2026-10-23.md`.
-- Quellpfade und bestehende Adapter: `src/infrastructure`, `supabase/functions`, `supabase/migrations`, `src/supabase`.
-- Source Contracts: `src/infrastructure`, `supabase/functions`, `supabase/migrations`, `src/supabase`.
+- Quellpfade und bestehende Adapter: `src/infrastructure`, `archive/supabase-legacy/supabase/functions`, `archive/supabase-legacy/supabase/migrations`, `archive/supabase-legacy/src-supabase`.
+- Source Contracts: `src/infrastructure`, `archive/supabase-legacy/supabase/functions`, `archive/supabase-legacy/supabase/migrations`, `archive/supabase-legacy/src-supabase`.
 - Zielverhalten: Binding product decisions: docs/architecture/migration-owner-decisions-2026-10-23.md; GATE-01 Drizzle+Policy, GATE-02 Cookie-A, GATE-03 Hono+Colyseus, GATE-04 SQLite single-writer. GATE-05 Tauri+sidecar selected; platform release pending..
 
 ## Scope
@@ -60,21 +60,21 @@ Out:
 - Gegeben: Direkte RPC-Literale und typisierte Wrapper-Argumente im TypeScript-AST
 - Wenn: das Inventar wird aus dem eingefrorenen Quellbaum regeneriert
 - Dann: Alle 57 Frontend-RPC-Namen einschließlich promote_session_outcome_to_saga und promote_session_outcome_to_world sind mit Aufrufstelle und genau einem Primärverantwortlichen erfasst.
-- Quelle: `src/infrastructure`, `supabase/functions`, `supabase/migrations`, `src/supabase`
+- Quelle: `src/infrastructure`, `archive/supabase-legacy/supabase/functions`, `archive/supabase-legacy/supabase/migrations`, `archive/supabase-legacy/src-supabase`
 
 ### Fall 2
 
 - Gegeben: 25 Edge-Verzeichnisse und 13 Infrastruktur-Bereiche (nach #879 inkl. ollama-settings)
 - Wenn: Source-Snapshots und Dispatcher werden ausgewertet
 - Dann: 25 Edge-Verträge und 13 Adapter-Verträge sind vollständig zugeordnet; neun erreichbare Worker, 15 nicht eingebundene Worker und main als Dispatcher werden getrennt gezählt; ollama-settings ist vorläufig MIG-402/#818 mitgebunden.
-- Quelle: `src/infrastructure`, `supabase/functions`, `supabase/migrations`, `src/supabase`
+- Quelle: `src/infrastructure`, `archive/supabase-legacy/supabase/functions`, `archive/supabase-legacy/supabase/migrations`, `archive/supabase-legacy/src-supabase`
 
 ### Fall 3
 
 - Gegeben: Ein Vertrag mit einer geänderten SQL-/TypeScript-Quelldatei
 - Wenn: der Fingerprint-Prüfer läuft
 - Dann: Die Prüfung meldet den veralteten Vertragsnachweis mit Dateipfad; unaufgelöste Laufzeitaufrufe und nicht im Bootstrap enthaltene SQL-Dateien erscheinen ausdrücklich als offene Abdeckung.
-- Quelle: `src/infrastructure`, `supabase/functions`, `supabase/migrations`, `src/supabase`
+- Quelle: `src/infrastructure`, `archive/supabase-legacy/supabase/functions`, `archive/supabase-legacy/supabase/migrations`, `archive/supabase-legacy/src-supabase`
 
 ## Required Tests
 

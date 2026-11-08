@@ -28,10 +28,10 @@ const skillsPanel = read('src/app/character/progression/CharacterSkillsPanel.tsx
 const attributeSkillNode = read('src/app/character/progression/AttributeSkillNode.tsx');
 const attributeSkillsCarousel = read('src/app/character/progression/AttributeSkillsCarousel.tsx');
 const loreService = read('src/infrastructure/character/character-lore-service.ts');
-const rulesetMigration = read('supabase/migrations/005_character_ruleset_metadata.sql');
-const portraitStorageMigration = read('supabase/migrations/006_character_portrait_storage.sql');
+const rulesetMigration = read('archive/supabase-legacy/supabase/migrations/005_character_ruleset_metadata.sql');
+const portraitStorageMigration = read('archive/supabase-legacy/supabase/migrations/006_character_portrait_storage.sql');
 // Historical filename kept (007); column renamed in 073/079 — do not rename this file.
-const sagaTreeProfileMigration = read('supabase/migrations/007_sagadrive_character_profile.sql');
+const sagaTreeProfileMigration = read('archive/supabase-legacy/supabase/migrations/007_sagadrive_character_profile.sql');
 const projectTypes = read('src/domains/project/contracts/project.types.ts');
 const projectService = read('src/infrastructure/project/project-service.ts');
 
@@ -217,15 +217,15 @@ requireMatch(rulesetMigration, /ADD COLUMN IF NOT EXISTS ruleset_key TEXT NOT NU
 requireMatch(rulesetMigration, /CHECK \(ruleset_key IN \('sagadrive-core', 'dnd-5\.5e'\)\)/, 'ruleset key database constraint (historical)');
 requireMatch(sagaTreeProfileMigration, /ADD COLUMN IF NOT EXISTS sagadrive_profile JSONB/, 'profile column migration (historical 007)');
 requireMatch(sagaTreeProfileMigration, /ADD COLUMN IF NOT EXISTS notes TEXT/, 'character notes migration');
-const sagatreeRenameMigration = read('supabase/migrations/073_sagatree_schema_rename_compat.sql');
+const sagatreeRenameMigration = read('archive/supabase-legacy/supabase/migrations/073_sagatree_schema_rename_compat.sql');
 requireMatch(sagatreeRenameMigration, /ADD COLUMN IF NOT EXISTS sagatree_profile JSONB/, '073 sagatree_profile column');
 requireMatch(sagatreeRenameMigration, /'sagatree-core'/, '073 sagatree-core ruleset');
 requireMatch(sagatreeRenameMigration, /generate_sagatree_public_id/, '073 public id rename');
-const sagatreeEradicateMigration = read('supabase/migrations/079_drop_sagadrive_aliases.sql');
+const sagatreeEradicateMigration = read('archive/supabase-legacy/supabase/migrations/079_drop_sagadrive_aliases.sql');
 requireMatch(sagatreeEradicateMigration, /DROP COLUMN IF EXISTS sagadrive_profile/, '079 drops sagadrive_profile');
 requireMatch(sagatreeEradicateMigration, /DROP FUNCTION IF EXISTS public\.generate_sagadrive_public_id/, '079 drops legacy public id wrapper');
 requireMatch(sagatreeEradicateMigration, /CHECK \(ruleset_key = ANY \(ARRAY\['sagatree-core'::text, 'dnd-5\.5e'::text\]\)\)/, '079 ruleset check without sagadrive-core');
-const abilitiesMigration = read('supabase/migrations/014_character_abilities_emotion_profiles.sql');
+const abilitiesMigration = read('archive/supabase-legacy/supabase/migrations/014_character_abilities_emotion_profiles.sql');
 requireMatch(abilitiesMigration, /ADD COLUMN IF NOT EXISTS abilities JSONB/, 'abilities column migration');
 requireMatch(abilitiesMigration, /ADD COLUMN IF NOT EXISTS emotion_profiles JSONB/, 'emotion_profiles column migration');
 requireMatch(characterService, /abilities: payload\.abilities/, 'abilities persisted on create');
@@ -259,7 +259,7 @@ rejectMatch(loreService, /Prüfe die Character-AI-Konfiguration/, 'lore HTTP err
 requireMatch(projectTypes, /status: 'active' \| 'paused' \| 'completed' \| 'archived'/, 'legacy archived project status in DTO/view-model types');
 requireMatch(projectService, /value === 'active' \|\| value === 'paused' \|\| value === 'completed' \|\| value === 'archived'/, 'legacy archived project runtime validation');
 
-const adventureArcMigration = read('supabase/migrations/009_character_adventure_arcs.sql');
+const adventureArcMigration = read('archive/supabase-legacy/supabase/migrations/009_character_adventure_arcs.sql');
 const adventureArcTypes = read('src/domains/character/contracts/character-adventure-arc.types.ts');
 const adventureArcService = read('src/infrastructure/character/character-adventure-arc-service.ts');
 const notesSection = read('src/app/character/progression/CharacterNotesSection.tsx');

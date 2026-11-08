@@ -2,8 +2,7 @@
  * look-reference-analysis-service — Look reference analysis facade (#352 / CUT-15).
  * Location: src/infrastructure/look/look-reference-analysis-service.ts
  *
- * CUT-15: host-first via POST `/api/v1/ai/look-reference-analysis` when host library is on.
- * Legacy Edge `look-reference-analysis` remains until dual-path removal (CUT-20).
+ * CUT-15/CUT-21: host-only via POST `/api/v1/ai/look-reference-analysis`.
  */
 import {
   normalizeLookReferenceAnalysisPayload,
@@ -12,7 +11,6 @@ import {
   type LookReferenceAnalyzer,
 } from '../../domains/look';
 import { getHostAuthBaseUrl } from '../../lib/hostAuthBridge';
-import { supabase } from '../../lib/supabase';
 
 export type LookReferenceAnalysisRequestImage = LookReferenceAnalysisImageInput & {
   /** Inline image for vision call. */

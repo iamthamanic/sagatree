@@ -66,8 +66,8 @@ try {
   );
   assert(MARKETPLACE_PUBLIC_ACTIVATION_AUTHORIZED === false, 'quarantine stays unmounted');
 
-  const addSql = readFileSync(join(root, 'src/supabase/add_marketplace_rpc.sql'), 'utf8');
-  const deploySql = readFileSync(join(root, 'src/supabase/deploy_marketplace.sql'), 'utf8');
+  const addSql = readFileSync(join(root, 'archive/supabase-legacy/src-supabase/add_marketplace_rpc.sql'), 'utf8');
+  const deploySql = readFileSync(join(root, 'archive/supabase-legacy/src-supabase/deploy_marketplace.sql'), 'utf8');
   assert(addSql.includes('increment_marketplace_downloads'), 'add script has RPC');
   assert(deploySql.includes('increment_marketplace_downloads'), 'deploy script has RPC');
   // Optional scripts are outside server/migrations — documented dual install sources

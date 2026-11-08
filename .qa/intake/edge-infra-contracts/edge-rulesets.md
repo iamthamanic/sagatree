@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [edge-rulesets.json](source-contracts/edge-rulesets.json) (SHA-256 `8c482bf31152b6eda6bd77e2ecd44a5799d0e8d58dd0030792faa6835cdc1de8`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [edge-rulesets.json](source-contracts/edge-rulesets.json) (SHA-256 `2b40924d4a93a909092696f5e75e38d98ba739df7ead2c03351ed5438ba0a671`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Exposure and purpose
 
@@ -53,7 +53,7 @@ None in the reviewed source.
 
 ### DEFAULT_CORS_METHODS
 
-`supabase/functions/_shared/cors.ts:9`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:9`
 
 ```ts
 DEFAULT_CORS_METHODS = 'GET, POST, PUT, DELETE, OPTIONS'
@@ -61,7 +61,7 @@ DEFAULT_CORS_METHODS = 'GET, POST, PUT, DELETE, OPTIONS'
 
 ### DEFAULT_CORS_ALLOW_HEADERS
 
-`supabase/functions/_shared/cors.ts:10`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:10`
 
 ```ts
 DEFAULT_CORS_ALLOW_HEADERS =
@@ -70,7 +70,7 @@ DEFAULT_CORS_ALLOW_HEADERS =
 
 ### readConfiguredOrigin
 
-`supabase/functions/_shared/cors.ts:34`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:34`
 
 ```ts
 function readConfiguredOrigin(envKeys: string[]): string {
@@ -84,7 +84,7 @@ function readConfiguredOrigin(envKeys: string[]): string {
 
 ### CORS_OPTS
 
-`supabase/functions/rulesets/index.ts:7`
+`archive/supabase-legacy/supabase/functions/rulesets/index.ts:7`
 
 ```ts
 CORS_OPTS: CorsOptions = {
@@ -128,7 +128,7 @@ No src/infrastructure caller in the reviewed branch. This does not authorize add
 
 ### rulesets:1
 
-Predicate: `req.method === "GET" && path === "/health"`. Source: `supabase/functions/rulesets/index.ts:577`.
+Predicate: `req.method === "GET" && path === "/health"`. Source: `archive/supabase-legacy/supabase/functions/rulesets/index.ts:577`.
 
 
 ```ts
@@ -146,7 +146,7 @@ Predicate: `req.method === "GET" && path === "/health"`. Source: `supabase/funct
 
 ### rulesets:2
 
-Predicate: `req.method === "GET" && path === "/rulesets"`. Source: `supabase/functions/rulesets/index.ts:589`.
+Predicate: `req.method === "GET" && path === "/rulesets"`. Source: `archive/supabase-legacy/supabase/functions/rulesets/index.ts:589`.
 
 
 ```ts
@@ -160,7 +160,7 @@ Predicate: `req.method === "GET" && path === "/rulesets"`. Source: `supabase/fun
 
 ### rulesets:3
 
-Predicate: `req.method === "POST" && path === "/rulesets"`. Source: `supabase/functions/rulesets/index.ts:597`.
+Predicate: `req.method === "POST" && path === "/rulesets"`. Source: `archive/supabase-legacy/supabase/functions/rulesets/index.ts:597`.
 
 
 ```ts
@@ -175,7 +175,7 @@ Predicate: `req.method === "POST" && path === "/rulesets"`. Source: `supabase/fu
 
 ### rulesets:4
 
-Predicate: `req.method === "GET" && path.match(/^\/rulesets\/[\w-]+$/)`. Source: `supabase/functions/rulesets/index.ts:606`.
+Predicate: `req.method === "GET" && path.match(/^\/rulesets\/[\w-]+$/)`. Source: `archive/supabase-legacy/supabase/functions/rulesets/index.ts:606`.
 
 
 ```ts
@@ -199,7 +199,7 @@ Predicate: `req.method === "GET" && path.match(/^\/rulesets\/[\w-]+$/)`. Source:
 
 ### rulesets:5
 
-Predicate: `req.method === "GET" && path.match(/^\/rulesets\/[\w-]+\/spells$/)`. Source: `supabase/functions/rulesets/index.ts:624`.
+Predicate: `req.method === "GET" && path.match(/^\/rulesets\/[\w-]+\/spells$/)`. Source: `archive/supabase-legacy/supabase/functions/rulesets/index.ts:624`.
 
 
 ```ts
@@ -219,7 +219,7 @@ Predicate: `req.method === "GET" && path.match(/^\/rulesets\/[\w-]+\/spells$/)`.
 
 ### rulesets:6
 
-Predicate: `req.method === "GET" && path.match(/^\/rulesets\/[\w-]+\/monsters$/)`. Source: `supabase/functions/rulesets/index.ts:638`.
+Predicate: `req.method === "GET" && path.match(/^\/rulesets\/[\w-]+\/monsters$/)`. Source: `archive/supabase-legacy/supabase/functions/rulesets/index.ts:638`.
 
 
 ```ts
@@ -238,7 +238,7 @@ Predicate: `req.method === "GET" && path.match(/^\/rulesets\/[\w-]+\/monsters$/)
 
 ### rulesets:7
 
-Predicate: `req.method === "GET" && path.match(/^\/rulesets\/[\w-]+\/items$/)`. Source: `supabase/functions/rulesets/index.ts:651`.
+Predicate: `req.method === "GET" && path.match(/^\/rulesets\/[\w-]+\/items$/)`. Source: `archive/supabase-legacy/supabase/functions/rulesets/index.ts:651`.
 
 
 ```ts
@@ -256,7 +256,7 @@ Predicate: `req.method === "GET" && path.match(/^\/rulesets\/[\w-]+\/items$/)`. 
 
 ### rulesets:8
 
-Predicate: `req.method === "GET" && path.match(/^\/rulesets\/[\w-]+\/skills$/)`. Source: `supabase/functions/rulesets/index.ts:663`.
+Predicate: `req.method === "GET" && path.match(/^\/rulesets\/[\w-]+\/skills$/)`. Source: `archive/supabase-legacy/supabase/functions/rulesets/index.ts:663`.
 
 
 ```ts
@@ -271,7 +271,7 @@ Predicate: `req.method === "GET" && path.match(/^\/rulesets\/[\w-]+\/skills$/)`.
 
 ### rulesets:9
 
-Predicate: `req.method === "GET" && path.match(/^\/rulesets\/[\w-]+\/conditions$/)`. Source: `supabase/functions/rulesets/index.ts:672`.
+Predicate: `req.method === "GET" && path.match(/^\/rulesets\/[\w-]+\/conditions$/)`. Source: `archive/supabase-legacy/supabase/functions/rulesets/index.ts:672`.
 
 
 ```ts
@@ -286,7 +286,7 @@ Predicate: `req.method === "GET" && path.match(/^\/rulesets\/[\w-]+\/conditions$
 
 ### rulesets:10
 
-Predicate: `req.method === "GET" && path.match(/^\/rulesets\/[\w-]+\/classes$/)`. Source: `supabase/functions/rulesets/index.ts:681`.
+Predicate: `req.method === "GET" && path.match(/^\/rulesets\/[\w-]+\/classes$/)`. Source: `archive/supabase-legacy/supabase/functions/rulesets/index.ts:681`.
 
 
 ```ts
@@ -301,7 +301,7 @@ Predicate: `req.method === "GET" && path.match(/^\/rulesets\/[\w-]+\/classes$/)`
 
 ### rulesets:11
 
-Predicate: `req.method === "GET" && path.match(/^\/rulesets\/[\w-]+\/races$/)`. Source: `supabase/functions/rulesets/index.ts:690`.
+Predicate: `req.method === "GET" && path.match(/^\/rulesets\/[\w-]+\/races$/)`. Source: `archive/supabase-legacy/supabase/functions/rulesets/index.ts:690`.
 
 
 ```ts
@@ -319,7 +319,7 @@ Predicate: `req.method === "GET" && path.match(/^\/rulesets\/[\w-]+\/races$/)`. 
 
 ### CorsOptions
 
-`supabase/functions/_shared/cors.ts:13`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:13`
 
 ```ts
 export type CorsOptions = {
@@ -346,7 +346,7 @@ export type CorsOptions = {
 
 ### Ruleset
 
-`supabase/functions/rulesets/index.ts:21`
+`archive/supabase-legacy/supabase/functions/rulesets/index.ts:21`
 
 ```ts
 interface Ruleset {
@@ -372,7 +372,7 @@ interface Ruleset {
 
 ### ClassInfo
 
-`supabase/functions/rulesets/index.ts:41`
+`archive/supabase-legacy/supabase/functions/rulesets/index.ts:41`
 
 ```ts
 interface ClassInfo {
@@ -391,7 +391,7 @@ interface ClassInfo {
 
 ### RaceInfo
 
-`supabase/functions/rulesets/index.ts:54`
+`archive/supabase-legacy/supabase/functions/rulesets/index.ts:54`
 
 ```ts
 interface RaceInfo {
@@ -405,7 +405,7 @@ interface RaceInfo {
 
 ### FeatureInfo
 
-`supabase/functions/rulesets/index.ts:62`
+`archive/supabase-legacy/supabase/functions/rulesets/index.ts:62`
 
 ```ts
 interface FeatureInfo {
@@ -418,7 +418,7 @@ interface FeatureInfo {
 
 ### Spell
 
-`supabase/functions/rulesets/index.ts:69`
+`archive/supabase-legacy/supabase/functions/rulesets/index.ts:69`
 
 ```ts
 interface Spell {
@@ -439,7 +439,7 @@ interface Spell {
 
 ### Monster
 
-`supabase/functions/rulesets/index.ts:84`
+`archive/supabase-legacy/supabase/functions/rulesets/index.ts:84`
 
 ```ts
 interface Monster {
@@ -464,7 +464,7 @@ interface Monster {
 
 ### Item
 
-`supabase/functions/rulesets/index.ts:103`
+`archive/supabase-legacy/supabase/functions/rulesets/index.ts:103`
 
 ```ts
 interface Item {
@@ -484,7 +484,7 @@ interface Item {
 
 ### fetchOpen5eSpells
 
-`supabase/functions/rulesets/index.ts:370`
+`archive/supabase-legacy/supabase/functions/rulesets/index.ts:370`
 
 ```ts
 async function fetchOpen5eSpells(): Promise<Spell[]> {
@@ -515,7 +515,7 @@ async function fetchOpen5eSpells(): Promise<Spell[]> {
 
 ### fetchOpen5eMonsters
 
-`supabase/functions/rulesets/index.ts:395`
+`archive/supabase-legacy/supabase/functions/rulesets/index.ts:395`
 
 ```ts
 async function fetchOpen5eMonsters(): Promise<Monster[]> {
@@ -550,7 +550,7 @@ async function fetchOpen5eMonsters(): Promise<Monster[]> {
 
 ### fetchOpen5eItems
 
-`supabase/functions/rulesets/index.ts:424`
+`archive/supabase-legacy/supabase/functions/rulesets/index.ts:424`
 
 ```ts
 async function fetchOpen5eItems(): Promise<Item[]> {
@@ -577,7 +577,7 @@ async function fetchOpen5eItems(): Promise<Item[]> {
 
 ### enrichRulesetWithOpen5e
 
-`supabase/functions/rulesets/index.ts:446`
+`archive/supabase-legacy/supabase/functions/rulesets/index.ts:446`
 
 ```ts
 async function enrichRulesetWithOpen5e(rulesetId: string): Promise<Ruleset | null> {
@@ -608,7 +608,7 @@ async function enrichRulesetWithOpen5e(rulesetId: string): Promise<Ruleset | nul
 
 ### listRulesets
 
-`supabase/functions/rulesets/index.ts:475`
+`archive/supabase-legacy/supabase/functions/rulesets/index.ts:475`
 
 ```ts
 async function listRulesets(): Promise<Ruleset[]> {
@@ -618,7 +618,7 @@ async function listRulesets(): Promise<Ruleset[]> {
 
 ### getRuleset
 
-`supabase/functions/rulesets/index.ts:479`
+`archive/supabase-legacy/supabase/functions/rulesets/index.ts:479`
 
 ```ts
 async function getRuleset(id: string, enrich: boolean = false): Promise<Ruleset | null> {
@@ -635,7 +635,7 @@ async function getRuleset(id: string, enrich: boolean = false): Promise<Ruleset 
 
 ### createRuleset
 
-`supabase/functions/rulesets/index.ts:490`
+`archive/supabase-legacy/supabase/functions/rulesets/index.ts:490`
 
 ```ts
 async function createRuleset(data: Partial<Ruleset>): Promise<Ruleset> {
@@ -665,7 +665,7 @@ async function createRuleset(data: Partial<Ruleset>): Promise<Ruleset> {
 
 ### getSpells
 
-`supabase/functions/rulesets/index.ts:514`
+`archive/supabase-legacy/supabase/functions/rulesets/index.ts:514`
 
 ```ts
 async function getSpells(rulesetId: string, filter?: { level?: number; school?: string; class?: string }): Promise<Spell[]> {
@@ -690,7 +690,7 @@ async function getSpells(rulesetId: string, filter?: { level?: number; school?: 
 
 ### getMonsters
 
-`supabase/functions/rulesets/index.ts:533`
+`archive/supabase-legacy/supabase/functions/rulesets/index.ts:533`
 
 ```ts
 async function getMonsters(rulesetId: string, filter?: { type?: string; cr?: number }): Promise<Monster[]> {
@@ -712,7 +712,7 @@ async function getMonsters(rulesetId: string, filter?: { type?: string; cr?: num
 
 ### getItems
 
-`supabase/functions/rulesets/index.ts:549`
+`archive/supabase-legacy/supabase/functions/rulesets/index.ts:549`
 
 ```ts
 async function getItems(rulesetId: string, filter?: { type?: string }): Promise<Item[]> {
@@ -734,9 +734,9 @@ async function getItems(rulesetId: string, filter?: { type?: string }): Promise<
 
 | Path | SHA-256 |
 |---|---|
-| `supabase/functions/_shared/cors.ts` | `f8286c91d79fa5fc5cfea2fa47081916523fa7a440f234aecd9a47c6a8cf5b38` |
-| `supabase/functions/_shared/edge-dispatcher-allowlist.ts` | `6d1ae7bde0ba9e41fcaa7b61247732168a62699e7811fb8574cef266cfad3a27` |
-| `supabase/functions/_shared/edge-jwt-gate.ts` | `14a871697b051b7fcbee09dbce1dee8bc8ed5ea6a6eca0bec7b2e771b32d0f0c` |
-| `supabase/functions/main/index.ts` | `92f3bf56bf3c776e01595d980246079c4a9f8775e417959abea9d7da003bc53e` |
-| `supabase/functions/rulesets/index.ts` | `4b753ed274bf0abe01b36c7cce304d6c7b474260c28e30bf7f01465b380d4661` |
+| `archive/supabase-legacy/supabase/functions/_shared/cors.ts` | `f8286c91d79fa5fc5cfea2fa47081916523fa7a440f234aecd9a47c6a8cf5b38` |
+| `archive/supabase-legacy/supabase/functions/_shared/edge-dispatcher-allowlist.ts` | `6d1ae7bde0ba9e41fcaa7b61247732168a62699e7811fb8574cef266cfad3a27` |
+| `archive/supabase-legacy/supabase/functions/_shared/edge-jwt-gate.ts` | `14a871697b051b7fcbee09dbce1dee8bc8ed5ea6a6eca0bec7b2e771b32d0f0c` |
+| `archive/supabase-legacy/supabase/functions/main/index.ts` | `92f3bf56bf3c776e01595d980246079c4a9f8775e417959abea9d7da003bc53e` |
+| `archive/supabase-legacy/supabase/functions/rulesets/index.ts` | `4b753ed274bf0abe01b36c7cce304d6c7b474260c28e30bf7f01465b380d4661` |
 

@@ -34,7 +34,7 @@ function mustInclude(file, needles, label) {
   }
 }
 
-const migrationPath = 'supabase/migrations/075_saga_permission_grants.sql';
+const migrationPath = 'archive/supabase-legacy/supabase/migrations/075_saga_permission_grants.sql';
 if (!existsSync(join(root, migrationPath))) fail(`missing ${migrationPath}`);
 
 const migration = read(migrationPath);

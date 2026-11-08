@@ -4,7 +4,7 @@ const contract = (intent, sources, targets, security, checks, dependsOn) => ({ i
 export const planContracts = {
   'MIG-001': contract(
     'Eine unveränderliche SQL-/Frontend-Baseline und reproduzierbare synthetische Testdaten für den Alt/Neu-Vergleich festhalten.',
-    ['AGENTS.md', '.qa/project.yaml', 'supabase/migrations', 'scripts/apply-migrations.sh'],
+    ['AGENTS.md', '.qa/project.yaml', 'archive/supabase-legacy/supabase/migrations', 'scripts/apply-migrations.sh'],
     ['.qa/evidence/stack-migration-prep/baseline.md', 'scripts/stack-migration-db'],
     'Nur eine isolierte lokale Datenbank mit synthetischen Identitäten verwenden; Produktiv-Verbindungsdaten sind kein Default. Source-Baseline, angewendete Migrationen und tatsächlich beobachtete Datenbank-ACL getrennt ausweisen.',
     [
@@ -14,7 +14,7 @@ export const planContracts = {
     ], []),
   'MIG-002': contract(
     'Alle produktiven Supabase-Aufrufstellen mit einer überprüften Quelloperation und einem verantwortlichen Migrationsticket verbinden.',
-    ['src/infrastructure', 'supabase/functions', 'supabase/migrations', 'src/supabase'],
+    ['src/infrastructure', 'archive/supabase-legacy/supabase/functions', 'archive/supabase-legacy/supabase/migrations', 'archive/supabase-legacy/src-supabase'],
     ['.qa/intake/rpc-contracts', '.qa/intake/edge-infra-contracts', '.qa/evidence/stack-migration-prep/legacy-target-matrix.md'],
     'SECURITY DEFINER, effektive EXECUTE-Rechte und Dispatcher-Erreichbarkeit getrennt prüfen. Unsichere Legacy-Semantik wird als Defekt erfasst und darf keine gewollte Nachfolger-Berechtigung werden.',
     [
@@ -24,7 +24,7 @@ export const planContracts = {
     ], ['MIG-001']),
   'GATE-01': contract(
     'Drizzle mit zentralem Policy Service und ZenStack 3 anhand derselben SQLite-Berechtigungsfälle bewerten.',
-    ['.qa/design/gates/GATE-01-drizzle-vs-zenstack.md', 'supabase/migrations/015_inventory_item_definitions.sql'],
+    ['.qa/design/gates/GATE-01-drizzle-vs-zenstack.md', 'archive/supabase-legacy/supabase/migrations/015_inventory_item_definitions.sql'],
     ['.qa/evidence/stack-migration-prep/pocs/gate-01', '.qa/design/gates/GATE-01-drizzle-vs-zenstack.md'],
     'Welteigentum und Projekt-GM sind verschiedene Rollen. Ein GM erhält durch seine Sitzung keine Welt-Editierrechte; ein Weltbesitzer verliert diese nicht, wenn er kein GM ist.',
     [
@@ -93,7 +93,7 @@ export const planContracts = {
     ], ['MIG-001', 'MIG-002', 'GATE-01']),
   'MIG-011': contract(
     'Den freigegebenen SQLite-Schemakatalog mit atomarem Migrationsjournal und Fremdschlüsselprüfung im Host-Persistenzmodul aufbauen.',
-    ['supabase/migrations', 'scripts/apply-migrations.sh', 'docs/architecture/host-modular-monolith.md'],
+    ['archive/supabase-legacy/supabase/migrations', 'scripts/apply-migrations.sh', 'docs/architecture/host-modular-monolith.md'],
     ['server/src/persistence', 'server/migrations', 'server/src/modules'],
     'Schema-Upgrades dürfen keine Owner-/Membership-Zuordnung verlieren. Dateirechte und DB-Lock verhindern konkurrierende nicht koordinierte Upgrades. Tabellenfamilien bleiben dem owning module aus dem Host-Modulvertrag zugeordnet.',
     [
@@ -115,7 +115,7 @@ export const planContracts = {
     ], ['MIG-011', 'MIG-013']),
   'MIG-013': contract(
     'RLS-/SECURITY-DEFINER-Regeln als explizite Policy-Service-Operationen des permissions-Moduls mit deny-by-default abbilden.',
-    ['supabase/migrations/015_inventory_item_definitions.sql', 'supabase/migrations', 'docs/ops/negative-authz-suite.md', 'docs/architecture/host-modular-monolith.md'],
+    ['archive/supabase-legacy/supabase/migrations/015_inventory_item_definitions.sql', 'archive/supabase-legacy/supabase/migrations', 'docs/ops/negative-authz-suite.md', 'docs/architecture/host-modular-monolith.md'],
     ['server/src/modules/permissions', 'server/src/permissions'],
     'Identität, Welt-Owner, Projekt-GM und aktive Membership werden unabhängig geprüft. Legacy-Berechtigungsdefekte bekommen eine explizite sichere Abweichung und keinen Paritätsbonus. permissions ist der einzige Policy-Einstieg für Host-Mutationen.',
     [
@@ -171,7 +171,7 @@ export const planContracts = {
     ], ['MIG-011', 'MIG-013', 'MIG-014', 'GATE-04']),
   'MIG-023': contract(
     'Einladungen und Join-Codes mit serverseitiger Rolle und widerrufbarer Mitgliedschaft portieren.',
-    ['supabase/migrations/055_session_invites.sql', 'src/infrastructure/session'], ['server/src/application/session/invites'],
+    ['archive/supabase-legacy/supabase/migrations/055_session_invites.sql', 'src/infrastructure/session'], ['server/src/application/session/invites'],
     'Ein Code ist kein GM-Nachweis. Ablauf, Zielprojekt, Zielsession und Widerruf gelten atomar mit dem Mitgliedschaftseintrag.',
     [
       ['Ein gültiger Invite für Projekt A und ein angemeldeter Spieler', 'der Spieler den Code einlöst', 'Die Membership entsteht ausschließlich im Zielprojekt mit der serverseitig vorgegebenen Spielerrolle; Wiederholung erstellt keinen zweiten Eintrag.'],
@@ -180,7 +180,7 @@ export const planContracts = {
     ], ['MIG-020', 'MIG-022', 'GATE-02']),
   'MIG-024': contract(
     'Serverseitige GM-/Spieler-/Beobachterprojektionen für Snapshot, Query und Ereignis vereinheitlichen.',
-    ['supabase/migrations/105_atlas_worldbuilder_player_projection.sql', 'src/infrastructure/session', 'src/infrastructure/world/world-atlas-service.ts'], ['server/src/projections'],
+    ['archive/supabase-legacy/supabase/migrations/105_atlas_worldbuilder_player_projection.sql', 'src/infrastructure/session', 'src/infrastructure/world/world-atlas-service.ts'], ['server/src/projections'],
     'Verborgene NPCs, gm_only-Texte und nicht freigegebene Karten werden vor Serialization entfernt; Client-Filter gelten nicht als Berechtigung.',
     [
       ['GM, P1, P2 und Beobachter in derselben Sitzung mit verschiedenem Reveal-Stand', 'Snapshot und Delta derselben Revision gelesen werden', 'Jeder Actor erhält ausschließlich seine freigegebenen Objekte; GM-only Inhalte fehlen rekursiv auch in verschachtelten JSON-Feldern.'],
@@ -189,7 +189,7 @@ export const planContracts = {
     ], ['MIG-013', 'MIG-022', 'GATE-01']),
   'MIG-500': contract(
     'Geschützte lokale Assets mit atomarem Publish und metadata-basierter Autorisierung bereitstellen.',
-    ['supabase/functions/media', 'src/infrastructure/media', 'supabase/migrations'], ['server/src/assets'],
+    ['archive/supabase-legacy/supabase/functions/media', 'src/infrastructure/media', 'archive/supabase-legacy/supabase/migrations'], ['server/src/assets'],
     'Weder Dateipfad noch URL ist ein Berechtigungsnachweis; Traversal, Symlinks und fremde Owner-Referenzen werden vor Dateizugriff abgewiesen.',
     [
       ['Ein autorisierter Upload und validierte Dateibytes', 'validate→publish→metadata commit ausgeführt wird', 'Erst nach vollständiger Validierung wird das Asset sichtbar; DB-Metadaten und Dateiprüfsumme passen auch nach Host-Neustart zusammen.'],
@@ -198,7 +198,7 @@ export const planContracts = {
     ], ['MIG-011', 'MIG-013']),
   'MIG-501': contract(
     'Optionalen fortsetzbaren Großdatei-Upload an denselben Asset-Publish-Pfad anschließen.',
-    ['src/infrastructure/media', 'supabase/functions/media'], ['server/src/assets/uploads'],
+    ['src/infrastructure/media', 'archive/supabase-legacy/supabase/functions/media'], ['server/src/assets/uploads'],
     'Upload-IDs sind an Actor und Ziel gebunden; jeder Chunk prüft Rechte, Gesamtlänge und Limits erneut.',
     [
       ['Ein teilweise hochgeladener großer Asset-Stream', 'Netzunterbrechung und Resume am bestätigten Offset folgen', 'Der Upload setzt korrekt fort und publiziert genau ein Asset mit der erwarteten Prüfsumme über MIG-500.'],
@@ -207,7 +207,7 @@ export const planContracts = {
     ], ['MIG-500', 'MIG-020']),
   'MIG-502': contract(
     'Versionierte Welt-/Saga-Exportbündel mit validiertem Import und überprüfbarem Restore bereitstellen.',
-    ['supabase/functions/export', 'src/infrastructure/world', 'src/infrastructure/saga'], ['server/src/migration/bundles'],
+    ['archive/supabase-legacy/supabase/functions/export', 'src/infrastructure/world', 'src/infrastructure/saga'], ['server/src/migration/bundles'],
     'Importpfade, Owner-Zuordnung und Referenzen werden validiert; ein fremdes Bundle darf keine existierenden fremden Daten überschreiben.',
     [
       ['Ein Bundle mit Karten, NPCs, Inventar, IDs und Asset-Manifest', 'Export→Import in einen leeren Fixture-Host läuft', 'Fachliche IDs, public IDs, Beziehungen und Asset-Hashes bleiben erhalten; fehlende Atlas-Geometrie wird als fehlend gemeldet und nicht erfunden.'],
@@ -216,7 +216,7 @@ export const planContracts = {
     ], ['MIG-500', 'MIG-503', 'MIG-020']),
   'MIG-503': contract(
     'Postgres→SQLite-Transfer zuerst als idempotenten trockenen Fixture-Lauf mit Integritätsbericht bauen.',
-    ['supabase/migrations', '.qa/intake/rpc-contracts/inventory.json'], ['server/src/migration/postgres'],
+    ['archive/supabase-legacy/supabase/migrations', '.qa/intake/rpc-contracts/inventory.json'], ['server/src/migration/postgres'],
     'Defaults verbinden sich nur mit expliziten isolierten Testdaten. Owner, Memberships und geheime Sichtbarkeiten werden nicht vereinfacht.',
     [
       ['Ein eingefrorener Postgres-Fixture-Snapshot mit vollständigem Schema', 'der Transfer auf eine leere SQLite-Datei läuft', 'Der Bericht nennt je Tabelle Zeilenanzahl, kanonische Prüfsumme, Typabbildung und FK-Fehler; jede nicht abgebildete Tabelle blockiert den Lauf ausdrücklich.'],

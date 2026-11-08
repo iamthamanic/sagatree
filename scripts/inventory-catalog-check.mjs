@@ -275,7 +275,7 @@ section('4 · Core-Katalog ist universell und unveränderlich');
 
   // The runtime repository cannot write Core: the table excludes the scope and
   // the id prefix constraint makes a core: row structurally unreachable.
-  const migration = read('supabase/migrations/015_inventory_item_definitions.sql');
+  const migration = read('archive/supabase-legacy/supabase/migrations/015_inventory_item_definitions.sql');
   requireMatch(migration, /CHECK \(scope IN \('world', 'personal'\)\)/, 'Scope-Check ohne core');
   requireMatch(migration, /CHECK \(id LIKE scope \|\| ':%'\)/, 'Id-Präfix bindet die Id an den Scope');
   const catalogFacade = read('src/infrastructure/inventory/item-catalog-service.ts');
@@ -317,7 +317,7 @@ section('5 · Archivierung ohne Auflösungsverlust');
   check(foreignLookup('world:archived') === undefined, 'archivierter fremder Welt-Eintrag bleibt unsichtbar');
 
   // Hard deletion is not part of the product: no DELETE policy on the table.
-  const migration = read('supabase/migrations/015_inventory_item_definitions.sql');
+  const migration = read('archive/supabase-legacy/supabase/migrations/015_inventory_item_definitions.sql');
   rejectMatch(
     migration,
     /FOR DELETE[\s\S]{0,120}inventory_item_definitions|ON public\.inventory_item_definitions[\s\S]{0,120}FOR DELETE/,
@@ -335,7 +335,7 @@ section('5 · Archivierung ohne Auflösungsverlust');
 // ===========================================================================
 section('6 · Welt-Autorisierung für Schreibzugriffe');
 {
-  const migration = read('supabase/migrations/015_inventory_item_definitions.sql');
+  const migration = read('archive/supabase-legacy/supabase/migrations/015_inventory_item_definitions.sql');
   requireMatch(
     migration,
     /CREATE OR REPLACE FUNCTION public\.current_user_can_edit_world_profile/,
@@ -523,7 +523,7 @@ section('8 · Persistiertes Payload wird nicht blind vertraut');
 // ===========================================================================
 section('9 · Persistenz- und Sicherheitsvertrag');
 {
-  const migration = read('supabase/migrations/015_inventory_item_definitions.sql');
+  const migration = read('archive/supabase-legacy/supabase/migrations/015_inventory_item_definitions.sql');
   requireMatch(migration, /CREATE TABLE IF NOT EXISTS public\.inventory_item_definitions/, 'Katalogtabelle');
   requireMatch(migration, /ALTER TABLE public\.inventory_item_definitions ENABLE ROW LEVEL SECURITY/, 'RLS aktiviert');
   requireMatch(

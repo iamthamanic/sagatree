@@ -25,7 +25,7 @@ function requireMatch(content, pattern, label) {
   if (!pattern.test(content)) fail(`missing ${label}`);
 }
 
-const migrationPath = 'supabase/migrations/061_session_recaps_and_handover.sql';
+const migrationPath = 'archive/supabase-legacy/supabase/migrations/061_session_recaps_and_handover.sql';
 if (!existsSync(join(root, migrationPath))) fail(`missing ${migrationPath}`);
 
 const migration = read(migrationPath);

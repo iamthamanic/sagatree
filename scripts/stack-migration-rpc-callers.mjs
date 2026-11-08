@@ -141,7 +141,7 @@ const unlisted = [...observed].filter((name) => !known.has(name));
 // successor entries so migration contracts stay checkable without dual-path stubs.
 const productHasSupabaseRpc = walkFiles(join(root, 'src')).some((full) => {
   const rel = relative(root, full);
-  if (rel.startsWith('src/supabase/') || rel.endsWith('.md')) return false;
+  if (rel.startsWith('archive/supabase-legacy/src-supabase/') || rel.endsWith('.md')) return false;
   return /supabase\.rpc\s*\(/.test(readFileSync(full, 'utf8'));
 });
 

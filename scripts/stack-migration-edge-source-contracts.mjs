@@ -120,7 +120,7 @@ function expressions(node, s) {
 }
 
 function edgeEvidence(name) {
-  const path = `supabase/functions/${name}/index.ts`;
+  const path = `archive/supabase-legacy/supabase/functions/${name}/index.ts`;
   const s = source(path); const paths = closure([path]);
   const operations = []; const responseSites = []; const environment = new Set();
   const timeoutSites = []; const effectSites = [];
@@ -234,8 +234,8 @@ function infraEvidence(area) {
     calls, imports, publicDeclarations, operationDeclarations };
 }
 
-const names = readdirSync(join(root, 'supabase/functions'), { withFileTypes: true })
-  .filter((e) => e.isDirectory() && existsSync(join(root, 'supabase/functions', e.name, 'index.ts')))
+const names = readdirSync(join(root, 'archive/supabase-legacy/supabase/functions'), { withFileTypes: true })
+  .filter((e) => e.isDirectory() && existsSync(join(root, 'archive/supabase-legacy/supabase/functions', e.name, 'index.ts')))
   .map((e) => e.name).sort();
 // Successor host HTTP adapters are not legacy Supabase infra MIG areas.
 const LEGACY_INFRA_AREA_EXCLUDE = new Set(['host']);

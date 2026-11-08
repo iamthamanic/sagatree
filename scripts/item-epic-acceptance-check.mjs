@@ -207,12 +207,12 @@ for (const envPath of envExamples) {
 
 // Positive: edge functions still read server-side key
 requireMatch(
-  read('supabase/functions/_shared/item-thumbnail-meshy.ts'),
+  read('archive/supabase-legacy/supabase/functions/_shared/item-thumbnail-meshy.ts'),
   /MESHY_API_KEY/,
   'thumbnail meshy adapter reads MESHY_API_KEY server-side',
 );
 requireMatch(
-  read('supabase/functions/_shared/item-model3d-meshy.ts'),
+  read('archive/supabase-legacy/supabase/functions/_shared/item-model3d-meshy.ts'),
   /MESHY_API_KEY/,
   'model3d meshy adapter reads MESHY_API_KEY server-side',
 );

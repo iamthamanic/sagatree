@@ -11,7 +11,7 @@ import { join } from 'node:path';
 import process from 'node:process';
 
 const root = process.cwd();
-const functionsRoot = join(root, 'supabase/functions');
+const functionsRoot = join(root, 'archive/supabase-legacy/supabase/functions');
 const sharedCorsPath = join(functionsRoot, '_shared/cors.ts');
 
 /** Dispatcher only — no browser CORS surface. */
@@ -23,7 +23,7 @@ function fail(message) {
 }
 
 function listFunctionDirs() {
-  if (!existsSync(functionsRoot)) fail('supabase/functions missing');
+  if (!existsSync(functionsRoot)) fail('archive/supabase-legacy/supabase/functions missing');
   return readdirSync(functionsRoot)
     .filter((name) => name !== '_shared' && !name.startsWith('.'))
     .filter((name) => {
@@ -38,7 +38,7 @@ function listFunctionDirs() {
 }
 
 if (!existsSync(sharedCorsPath)) {
-  fail('supabase/functions/_shared/cors.ts is required');
+  fail('archive/supabase-legacy/supabase/functions/_shared/cors.ts is required');
 }
 
 const sharedSrc = readFileSync(sharedCorsPath, 'utf8');

@@ -23,7 +23,7 @@ function mustInclude(rel, needles) {
 }
 
 mustInclude('.qa/acceptance/atlas-worldbuilder-player-projection.md', ['#717', 'fail-closed']);
-mustInclude('supabase/migrations/105_atlas_worldbuilder_player_projection.sql', [
+mustInclude('archive/supabase-legacy/supabase/migrations/105_atlas_worldbuilder_player_projection.sql', [
   'list_world_atlas_maps',
   'p_saga_public_id',
   'atlas_wb_party_revealed_map_ids',

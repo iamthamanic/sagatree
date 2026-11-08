@@ -39,7 +39,7 @@ section('1 · files exist');
   'src/domains/npc-creature/controller-assignment.ts',
   'src/infrastructure/npc-creature/npc-creature-controller.persistence.ts',
   'src/app/library/npc-creatures/NpcCreatureAssignControllerDialog.tsx',
-  'supabase/migrations/022_npc_creature_controller_assignments.sql',
+  'archive/supabase-legacy/supabase/migrations/022_npc_creature_controller_assignments.sql',
   '.qa/acceptance/npc-creature-promotion-controller.md',
   '.qa/runs/composition-gate-npc-creature-promotion-controller.md',
   'e2e/npc-creature-promotion-controller.spec.ts',
@@ -86,7 +86,7 @@ section('2 · static wiring / German UI strings');
   check(/assignNpcCreatureController/.test(service), 'service assign');
   check(/getNpcCreatureControllerAssignment/.test(service), 'service get assignment');
 
-  const migration = read('supabase/migrations/022_npc_creature_controller_assignments.sql');
+  const migration = read('archive/supabase-legacy/supabase/migrations/022_npc_creature_controller_assignments.sql');
   check(/assign_npc_creature_controller/.test(migration), 'RPC name');
   check(/SECURITY DEFINER/.test(migration), 'SECURITY DEFINER RPC');
   check(/npc_creature_controller_assignments/.test(migration), 'assignments table');

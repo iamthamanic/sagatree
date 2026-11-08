@@ -31,7 +31,7 @@ mustInclude('.qa/acceptance/atlas-followup-donalu-backfill.md', [
   'atlas_wb_migration_apply',
 ]);
 
-mustInclude('supabase/migrations/108_atlas_worldbuilder_migration_apply.sql', [
+mustInclude('archive/supabase-legacy/supabase/migrations/108_atlas_worldbuilder_migration_apply.sql', [
   'atlas_wb_migration_apply',
   'atlas_wb_migration_identity_snapshot',
   'atlas_wb_migration_rollback_batch',

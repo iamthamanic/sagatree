@@ -19,15 +19,15 @@ function read(rel) {
   return readFileSync(join(root, rel), 'utf8');
 }
 
-const migration = 'supabase/migrations/087_ai_gm_rate_limits.sql';
-const shared = 'supabase/functions/_shared/ai-gm-rate-limit.ts';
-const sharedTest = 'supabase/functions/_shared/ai-gm-rate-limit_test.ts';
-const aiGm = 'supabase/functions/ai-gm/index.ts';
-const kong = 'supabase/config/kong.yml';
+const migration = 'archive/supabase-legacy/supabase/migrations/087_ai_gm_rate_limits.sql';
+const shared = 'archive/supabase-legacy/supabase/functions/_shared/ai-gm-rate-limit.ts';
+const sharedTest = 'archive/supabase-legacy/supabase/functions/_shared/ai-gm-rate-limit_test.ts';
+const aiGm = 'archive/supabase-legacy/supabase/functions/ai-gm/index.ts';
+const kong = 'archive/supabase-legacy/supabase/config/kong.yml';
 const compose = 'docker-compose.yml';
 const login = 'src/app/shell/auth/LoginScreen.tsx';
 const docs = 'docs/ops/auth-ai-gm-rate-limits.md';
-const allowlist = 'supabase/functions/_shared/edge-dispatcher-allowlist.ts';
+const allowlist = 'archive/supabase-legacy/supabase/functions/_shared/edge-dispatcher-allowlist.ts';
 
 for (const rel of [migration, shared, sharedTest, aiGm, kong, compose, login, docs]) {
   if (!existsSync(join(root, rel))) fail(`missing ${rel}`);

@@ -25,7 +25,7 @@ function requireMatch(content, pattern, label) {
   if (!pattern.test(content)) fail(`missing ${label}`);
 }
 
-const migration = 'supabase/migrations/070_saga_promote_session_outcomes.sql';
+const migration = 'archive/supabase-legacy/supabase/migrations/070_saga_promote_session_outcomes.sql';
 if (!existsSync(join(root, migration))) fail(`missing ${migration}`);
 const mig = read(migration);
 requireMatch(mig, /session_outcome_promotions/i, 'ledger table');

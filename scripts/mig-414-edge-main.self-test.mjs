@@ -38,7 +38,7 @@ const [dispatcher, app, allow] = await Promise.all([
   import(pathToFileURL(join(root, 'server/src/application/edge-main/index.ts')).href),
   import(
     pathToFileURL(
-      join(root, 'supabase/functions/_shared/edge-dispatcher-allowlist.ts'),
+      join(root, 'archive/supabase-legacy/supabase/functions/_shared/edge-dispatcher-allowlist.ts'),
     ).href
   ),
 ]);

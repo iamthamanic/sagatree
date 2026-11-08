@@ -27,7 +27,7 @@ check(!/VERIFY_JWT:\s*"false"/.test(compose), 'no hard-coded VERIFY_JWT false');
 check(/rate-limiting/.test(compose), 'Kong plugins include rate-limiting (#670)');
 check(/GOTRUE_RATE_LIMIT_EMAIL_SENT/.test(compose), 'GoTrue email rate limit env (#670)');
 
-const kong = readFileSync(join(root, 'supabase/config/kong.yml'), 'utf8');
+const kong = readFileSync(join(root, 'archive/supabase-legacy/supabase/config/kong.yml'), 'utf8');
 const routeBlocks = kong.split(/^\s*-\s*name:/m).slice(1);
 const keyAuthOnRoutes = routeBlocks.some(
   (b) => /plugins:[\s\S]*key-auth/.test(b) && !/consumers:/.test(b),

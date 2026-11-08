@@ -25,7 +25,7 @@ function mustInclude(rel, needles) {
 }
 
 mustInclude('.qa/acceptance/atlas-worldbuilder-transaction.md', ['#715', 'create_world_node_with_maps']);
-mustInclude('supabase/migrations/103_atlas_worldbuilder_create_with_maps.sql', [
+mustInclude('archive/supabase-legacy/supabase/migrations/103_atlas_worldbuilder_create_with_maps.sql', [
   'create_world_node_with_maps',
   'world_node_create_idempotency',
   'usage = \'primary\'',

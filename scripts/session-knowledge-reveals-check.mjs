@@ -35,7 +35,7 @@ function mustNotInclude(file, needles, label) {
 }
 
 mustInclude(
-  'supabase/migrations/048_session_knowledge_reveals.sql',
+  'archive/supabase-legacy/supabase/migrations/048_session_knowledge_reveals.sql',
   [
     'sagadrive_apply_knowledge_reveal',
     'sagadrive_project_shared_knowledge',

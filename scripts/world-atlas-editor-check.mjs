@@ -22,7 +22,7 @@ function mustInclude(rel, needles, label) {
 }
 
 mustInclude(
-  'supabase/migrations/094_world_atlas.sql',
+  'archive/supabase-legacy/supabase/migrations/094_world_atlas.sql',
   ['world_atlas_maps', 'list_world_atlas_maps', 'get_world_atlas_map', 'upsert_world_atlas_map', 'legacy_tiles'],
   'atlas migration',
 );

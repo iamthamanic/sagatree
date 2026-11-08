@@ -35,7 +35,7 @@ function mustNotInclude(file, needles, label) {
 }
 
 mustInclude(
-  'supabase/migrations/043_session_shared_scene_presentation.sql',
+  'archive/supabase-legacy/supabase/migrations/043_session_shared_scene_presentation.sql',
   [
     'sagadrive_build_scene_presentation',
     'sagadrive_is_http_url',
@@ -99,7 +99,7 @@ mustInclude(
 );
 
 // Regression: scene path must not wipe shared via full replace on presentation publish
-const migration = read('supabase/migrations/043_session_shared_scene_presentation.sql');
+const migration = read('archive/supabase-legacy/supabase/migrations/043_session_shared_scene_presentation.sql');
 if (!migration.includes("jsonb_set(v_world, '{shared,scenePresentation}'")) {
   throw new Error('scene presentation must merge into shared.scenePresentation');
 }

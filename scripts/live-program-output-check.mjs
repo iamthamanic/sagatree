@@ -35,7 +35,7 @@ function mustNotInclude(file, needles, label) {
 }
 
 mustInclude(
-  'supabase/migrations/047_session_program_presentation.sql',
+  'archive/supabase-legacy/supabase/migrations/047_session_program_presentation.sql',
   [
     'sagadrive_build_program_presentation',
     'programPresentation',
@@ -119,7 +119,7 @@ mustInclude(
   'program GM UI',
 );
 
-const migration = read('supabase/migrations/047_session_program_presentation.sql');
+const migration = read('archive/supabase-legacy/supabase/migrations/047_session_program_presentation.sql');
 if (!migration.includes("jsonb_set(v_world, '{shared,programPresentation}'")) {
   throw new Error('program must merge into shared.programPresentation');
 }

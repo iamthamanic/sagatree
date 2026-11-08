@@ -27,7 +27,7 @@ const appUrl = pathToFileURL(
   join(root, 'server/src/application/character-lore/index.ts'),
 ).href;
 const allowUrl = pathToFileURL(
-  join(root, 'supabase/functions/_shared/edge-dispatcher-allowlist.ts'),
+  join(root, 'archive/supabase-legacy/supabase/functions/_shared/edge-dispatcher-allowlist.ts'),
 ).href;
 
 const [mod, app, allow] = await Promise.all([

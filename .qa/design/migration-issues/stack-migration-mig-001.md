@@ -23,8 +23,8 @@ Eine unveränderliche SQL-/Frontend-Baseline und reproduzierbare synthetische Te
 
 - Epic: #773; historische Baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`; keine Produktionszustandsbehauptung.
 - Verbindliche Architektur: `docs/architecture/migration-owner-decisions-2026-10-23.md`.
-- Quellpfade und bestehende Adapter: `AGENTS.md`, `.qa/project.yaml`, `supabase/migrations`, `scripts/apply-migrations.sh`.
-- Source Contracts: `AGENTS.md`, `.qa/project.yaml`, `supabase/migrations`, `scripts/apply-migrations.sh`.
+- Quellpfade und bestehende Adapter: `AGENTS.md`, `.qa/project.yaml`, `archive/supabase-legacy/supabase/migrations`, `scripts/apply-migrations.sh`.
+- Source Contracts: `AGENTS.md`, `.qa/project.yaml`, `archive/supabase-legacy/supabase/migrations`, `scripts/apply-migrations.sh`.
 - Zielverhalten: Binding product decisions: docs/architecture/migration-owner-decisions-2026-10-23.md; GATE-01 Drizzle+Policy, GATE-02 Cookie-A, GATE-03 Hono+Colyseus, GATE-04 SQLite single-writer. GATE-05 Tauri+sidecar selected; platform release pending..
 
 ## Scope
@@ -59,21 +59,21 @@ Out:
 - Gegeben: Ein festgehaltener main-Commit und die unveränderten Repository-Migrationen
 - Wenn: der Baseline-Lauf baut eine leere PostgreSQL-Instanz auf
 - Dann: Der Bericht enthält Commit, SHA-256 je SQL-Datei, angewendete Reihenfolge und pg_proc-Signaturen; Abweichungen zu scripts/apply-migrations.sh werden einzeln ausgewiesen.
-- Quelle: `AGENTS.md`, `.qa/project.yaml`, `supabase/migrations`, `scripts/apply-migrations.sh`
+- Quelle: `AGENTS.md`, `.qa/project.yaml`, `archive/supabase-legacy/supabase/migrations`, `scripts/apply-migrations.sh`
 
 ### Fall 2
 
 - Gegeben: Weltbesitzer O, eigenständiger Projekt-GM G, P1, P2 und Fremdbesitzer X
 - Wenn: die Seed-Datei wird zweimal auf einer frischen Instanz ausgeführt
 - Dann: Die synthetischen Fixtures enthalten Memberships, offene/geheime Atlas-Daten, Runtime, Inventar und feste IDs; beide Aufbauten liefern identische fachliche Prüfsummen.
-- Quelle: `AGENTS.md`, `.qa/project.yaml`, `supabase/migrations`, `scripts/apply-migrations.sh`
+- Quelle: `AGENTS.md`, `.qa/project.yaml`, `archive/supabase-legacy/supabase/migrations`, `scripts/apply-migrations.sh`
 
 ### Fall 3
 
 - Gegeben: Ein Baseline-Commit und eine spätere Arbeitskopie
 - Wenn: Tests werden protokolliert
 - Dann: Jeder PASS nennt den tatsächlich geprüften Commit oder WORKTREE-Hash; ein vorhandener CI-PASS wird nicht als Ausführung der neuen DB-/Browser-Tests ausgegeben.
-- Quelle: `AGENTS.md`, `.qa/project.yaml`, `supabase/migrations`, `scripts/apply-migrations.sh`
+- Quelle: `AGENTS.md`, `.qa/project.yaml`, `archive/supabase-legacy/supabase/migrations`, `scripts/apply-migrations.sh`
 
 ## Required Tests
 

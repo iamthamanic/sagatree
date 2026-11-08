@@ -45,9 +45,9 @@ if (playerEmail !== 'player@sagatree.local') {
   fail(`LOCAL_PLAYER_EMAIL must be player@sagatree.local (got ${playerEmail})`);
 }
 
-const mig011 = 'supabase/migrations/011_seed_local_admin.sql';
-const mig074 = 'supabase/migrations/074_seed_local_player.sql';
-const mig080 = 'supabase/migrations/080_rename_local_auth_emails_sagatree.sql';
+const mig011 = 'archive/supabase-legacy/supabase/migrations/011_seed_local_admin.sql';
+const mig074 = 'archive/supabase-legacy/supabase/migrations/074_seed_local_player.sql';
+const mig080 = 'archive/supabase-legacy/supabase/migrations/080_rename_local_auth_emails_sagatree.sql';
 for (const p of [mig011, mig074, mig080]) {
   if (!existsSync(join(root, p))) fail(`missing ${p}`);
 }

@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [edge-item-thumbnail.json](source-contracts/edge-item-thumbnail.json) (SHA-256 `40e3c215c2b548aa2a42c7f349b0c479eb056d72a519893724c5831cd4e94561`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [edge-item-thumbnail.json](source-contracts/edge-item-thumbnail.json) (SHA-256 `aa9aea20a1754d5e0fbb7ce8d42d6a0461512d3e083ee45b841e5518fd4f855d`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Exposure and purpose
 
@@ -85,23 +85,23 @@ Auth10s,BYOK lookup10s,service20s,quota10s,storage upload30s,signing/cleanup10s;
 
 Explicit abort call sites (dynamic values resolve in the linked helper declaration):
 
-- `supabase/functions/_shared/ai-provider-resolve-meshy.ts:45` — `AbortSignal.timeout(10_000)`
-- `supabase/functions/_shared/ai-provider-resolve-meshy.ts:99` — `AbortSignal.timeout(10_000)`
-- `supabase/functions/_shared/item-thumbnail-image.ts:138` — `AbortSignal.timeout(20_000)`
-- `supabase/functions/_shared/item-thumbnail-meshy.ts:98` — `AbortSignal.timeout(30_000)`
-- `supabase/functions/_shared/item-thumbnail-meshy.ts:116` — `AbortSignal.timeout(20_000)`
-- `supabase/functions/_shared/item-thumbnail-rate-limit.ts:50` — `AbortSignal.timeout(10_000)`
-- `supabase/functions/item-thumbnail/index.ts:120` — `AbortSignal.timeout(10_000)`
-- `supabase/functions/item-thumbnail/index.ts:141` — `AbortSignal.timeout(20_000)`
-- `supabase/functions/item-thumbnail/index.ts:230` — `AbortSignal.timeout(30_000)`
-- `supabase/functions/item-thumbnail/index.ts:246` — `AbortSignal.timeout(10_000)`
-- `supabase/functions/item-thumbnail/index.ts:268` — `AbortSignal.timeout(10_000)`
+- `archive/supabase-legacy/supabase/functions/_shared/ai-provider-resolve-meshy.ts:45` — `AbortSignal.timeout(10_000)`
+- `archive/supabase-legacy/supabase/functions/_shared/ai-provider-resolve-meshy.ts:99` — `AbortSignal.timeout(10_000)`
+- `archive/supabase-legacy/supabase/functions/_shared/item-thumbnail-image.ts:138` — `AbortSignal.timeout(20_000)`
+- `archive/supabase-legacy/supabase/functions/_shared/item-thumbnail-meshy.ts:98` — `AbortSignal.timeout(30_000)`
+- `archive/supabase-legacy/supabase/functions/_shared/item-thumbnail-meshy.ts:116` — `AbortSignal.timeout(20_000)`
+- `archive/supabase-legacy/supabase/functions/_shared/item-thumbnail-rate-limit.ts:50` — `AbortSignal.timeout(10_000)`
+- `archive/supabase-legacy/supabase/functions/item-thumbnail/index.ts:120` — `AbortSignal.timeout(10_000)`
+- `archive/supabase-legacy/supabase/functions/item-thumbnail/index.ts:141` — `AbortSignal.timeout(20_000)`
+- `archive/supabase-legacy/supabase/functions/item-thumbnail/index.ts:230` — `AbortSignal.timeout(30_000)`
+- `archive/supabase-legacy/supabase/functions/item-thumbnail/index.ts:246` — `AbortSignal.timeout(10_000)`
+- `archive/supabase-legacy/supabase/functions/item-thumbnail/index.ts:268` — `AbortSignal.timeout(10_000)`
 
 ## Exact environment defaults and configuration resolution
 
 ### hostAiProviderKeysAllowed
 
-`supabase/functions/_shared/ai-provider-resolve-meshy.ts:19`
+`archive/supabase-legacy/supabase/functions/_shared/ai-provider-resolve-meshy.ts:19`
 
 ```ts
 export function hostAiProviderKeysAllowed(
@@ -113,7 +113,7 @@ export function hostAiProviderKeysAllowed(
 
 ### resolveHostMeshyApiKey
 
-`supabase/functions/_shared/ai-provider-resolve-meshy.ts:25`
+`archive/supabase-legacy/supabase/functions/_shared/ai-provider-resolve-meshy.ts:25`
 
 ```ts
 export function resolveHostMeshyApiKey(
@@ -127,7 +127,7 @@ export function resolveHostMeshyApiKey(
 
 ### resolveMeshyApiKeyForUser
 
-`supabase/functions/_shared/ai-provider-resolve-meshy.ts:57`
+`archive/supabase-legacy/supabase/functions/_shared/ai-provider-resolve-meshy.ts:57`
 
 ```ts
 export async function resolveMeshyApiKeyForUser(
@@ -157,7 +157,7 @@ export async function resolveMeshyApiKeyForUser(
 
 ### isMeshyConfiguredForUser
 
-`supabase/functions/_shared/ai-provider-resolve-meshy.ts:82`
+`archive/supabase-legacy/supabase/functions/_shared/ai-provider-resolve-meshy.ts:82`
 
 ```ts
 export async function isMeshyConfiguredForUser(
@@ -191,7 +191,7 @@ export async function isMeshyConfiguredForUser(
 
 ### DEFAULT_CORS_METHODS
 
-`supabase/functions/_shared/cors.ts:9`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:9`
 
 ```ts
 DEFAULT_CORS_METHODS = 'GET, POST, PUT, DELETE, OPTIONS'
@@ -199,7 +199,7 @@ DEFAULT_CORS_METHODS = 'GET, POST, PUT, DELETE, OPTIONS'
 
 ### DEFAULT_CORS_ALLOW_HEADERS
 
-`supabase/functions/_shared/cors.ts:10`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:10`
 
 ```ts
 DEFAULT_CORS_ALLOW_HEADERS =
@@ -208,7 +208,7 @@ DEFAULT_CORS_ALLOW_HEADERS =
 
 ### readConfiguredOrigin
 
-`supabase/functions/_shared/cors.ts:34`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:34`
 
 ```ts
 function readConfiguredOrigin(envKeys: string[]): string {
@@ -222,7 +222,7 @@ function readConfiguredOrigin(envKeys: string[]): string {
 
 ### DEFAULT_BASE
 
-`supabase/functions/_shared/item-thumbnail-meshy.ts:30`
+`archive/supabase-legacy/supabase/functions/_shared/item-thumbnail-meshy.ts:30`
 
 ```ts
 DEFAULT_BASE = 'https://api.meshy.ai/openapi/v1'
@@ -230,7 +230,7 @@ DEFAULT_BASE = 'https://api.meshy.ai/openapi/v1'
 
 ### DEFAULT_MODEL
 
-`supabase/functions/_shared/item-thumbnail-meshy.ts:31`
+`archive/supabase-legacy/supabase/functions/_shared/item-thumbnail-meshy.ts:31`
 
 ```ts
 DEFAULT_MODEL = 'nano-banana'
@@ -238,7 +238,7 @@ DEFAULT_MODEL = 'nano-banana'
 
 ### resolveMeshyProviderConfig
 
-`supabase/functions/_shared/item-thumbnail-meshy.ts:38`
+`archive/supabase-legacy/supabase/functions/_shared/item-thumbnail-meshy.ts:38`
 
 ```ts
 export function resolveMeshyProviderConfig(
@@ -259,7 +259,7 @@ export function resolveMeshyProviderConfig(
 
 ### CORS_OPTS
 
-`supabase/functions/item-thumbnail/index.ts:45`
+`archive/supabase-legacy/supabase/functions/item-thumbnail/index.ts:45`
 
 ```ts
 CORS_OPTS: CorsOptions = {
@@ -273,7 +273,7 @@ CORS_OPTS: CorsOptions = {
 
 ### DEFAULT_RATE_LIMIT
 
-`supabase/functions/item-thumbnail/index.ts:71`
+`archive/supabase-legacy/supabase/functions/item-thumbnail/index.ts:71`
 
 ```ts
 DEFAULT_RATE_LIMIT = 4
@@ -281,7 +281,7 @@ DEFAULT_RATE_LIMIT = 4
 
 ### getSupabaseConfig
 
-`supabase/functions/item-thumbnail/index.ts:86`
+`archive/supabase-legacy/supabase/functions/item-thumbnail/index.ts:86`
 
 ```ts
 function getSupabaseConfig(): SupabaseConfig | null {
@@ -295,7 +295,7 @@ function getSupabaseConfig(): SupabaseConfig | null {
 
 ### getRateLimit
 
-`supabase/functions/item-thumbnail/index.ts:94`
+`archive/supabase-legacy/supabase/functions/item-thumbnail/index.ts:94`
 
 ```ts
 function getRateLimit(): number {
@@ -306,7 +306,7 @@ function getRateLimit(): number {
 
 ### resolveProvider
 
-`supabase/functions/item-thumbnail/index.ts:99`
+`archive/supabase-legacy/supabase/functions/item-thumbnail/index.ts:99`
 
 ```ts
 async function resolveProvider(
@@ -379,7 +379,7 @@ No src/infrastructure caller in the reviewed branch. This does not authorize add
 
 ### item-thumbnail:1
 
-Predicate: `action === 'config'`. Source: `supabase/functions/item-thumbnail/index.ts:368`.
+Predicate: `action === 'config'`. Source: `archive/supabase-legacy/supabase/functions/item-thumbnail/index.ts:368`.
 
 
 ```ts
@@ -399,7 +399,7 @@ Predicate: `action === 'config'`. Source: `supabase/functions/item-thumbnail/ind
 
 ### item-thumbnail:2
 
-Predicate: `action === 'upload'`. Source: `supabase/functions/item-thumbnail/index.ts:381`.
+Predicate: `action === 'upload'`. Source: `archive/supabase-legacy/supabase/functions/item-thumbnail/index.ts:381`.
 
 
 ```ts
@@ -457,7 +457,7 @@ Predicate: `action === 'upload'`. Source: `supabase/functions/item-thumbnail/ind
 
 ### item-thumbnail:3
 
-Predicate: `action === 'generate'`. Source: `supabase/functions/item-thumbnail/index.ts:432`.
+Predicate: `action === 'generate'`. Source: `archive/supabase-legacy/supabase/functions/item-thumbnail/index.ts:432`.
 
 
 ```ts
@@ -563,7 +563,7 @@ Predicate: `action === 'generate'`. Source: `supabase/functions/item-thumbnail/i
 
 ### item-thumbnail:4
 
-Predicate: `action === 'status'`. Source: `supabase/functions/item-thumbnail/index.ts:531`.
+Predicate: `action === 'status'`. Source: `archive/supabase-legacy/supabase/functions/item-thumbnail/index.ts:531`.
 
 
 ```ts
@@ -776,7 +776,7 @@ Predicate: `action === 'status'`. Source: `supabase/functions/item-thumbnail/ind
 
 ### item-thumbnail:5
 
-Predicate: `action === 'resolve'`. Source: `supabase/functions/item-thumbnail/index.ts:737`.
+Predicate: `action === 'resolve'`. Source: `archive/supabase-legacy/supabase/functions/item-thumbnail/index.ts:737`.
 
 
 ```ts
@@ -813,7 +813,7 @@ Predicate: `action === 'resolve'`. Source: `supabase/functions/item-thumbnail/in
 
 ### item-thumbnail:6
 
-Predicate: `action === 'remove'`. Source: `supabase/functions/item-thumbnail/index.ts:767`.
+Predicate: `action === 'remove'`. Source: `archive/supabase-legacy/supabase/functions/item-thumbnail/index.ts:767`.
 
 
 ```ts
@@ -864,7 +864,7 @@ Predicate: `action === 'remove'`. Source: `supabase/functions/item-thumbnail/ind
 
 ### item-thumbnail:7
 
-Predicate: `action === 'latest-job'`. Source: `supabase/functions/item-thumbnail/index.ts:811`.
+Predicate: `action === 'latest-job'`. Source: `archive/supabase-legacy/supabase/functions/item-thumbnail/index.ts:811`.
 
 
 ```ts
@@ -902,7 +902,7 @@ Predicate: `action === 'latest-job'`. Source: `supabase/functions/item-thumbnail
 
 ### SupabaseServiceConfig
 
-`supabase/functions/_shared/ai-provider-resolve-meshy.ts:10`
+`archive/supabase-legacy/supabase/functions/_shared/ai-provider-resolve-meshy.ts:10`
 
 ```ts
 export interface SupabaseServiceConfig {
@@ -913,7 +913,7 @@ export interface SupabaseServiceConfig {
 
 ### PrivilegedClientBodyKey
 
-`supabase/functions/_shared/client-trust-body.ts:20`
+`archive/supabase-legacy/supabase/functions/_shared/client-trust-body.ts:20`
 
 ```ts
 export type PrivilegedClientBodyKey = (typeof PRIVILEGED_CLIENT_BODY_KEYS)[number];
@@ -921,7 +921,7 @@ export type PrivilegedClientBodyKey = (typeof PRIVILEGED_CLIENT_BODY_KEYS)[numbe
 
 ### CorsOptions
 
-`supabase/functions/_shared/cors.ts:13`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:13`
 
 ```ts
 export type CorsOptions = {
@@ -948,7 +948,7 @@ export type CorsOptions = {
 
 ### ItemThumbnailMime
 
-`supabase/functions/_shared/item-thumbnail-image.ts:8`
+`archive/supabase-legacy/supabase/functions/_shared/item-thumbnail-image.ts:8`
 
 ```ts
 export type ItemThumbnailMime = (typeof ITEM_THUMBNAIL_ALLOWED_MIME)[number];
@@ -956,7 +956,7 @@ export type ItemThumbnailMime = (typeof ITEM_THUMBNAIL_ALLOWED_MIME)[number];
 
 ### MeshyTaskStatus
 
-`supabase/functions/_shared/item-thumbnail-meshy.ts:7`
+`archive/supabase-legacy/supabase/functions/_shared/item-thumbnail-meshy.ts:7`
 
 ```ts
 export type MeshyTaskStatus = 'PENDING' | 'IN_PROGRESS' | 'SUCCEEDED' | 'FAILED' | 'CANCELED';
@@ -964,7 +964,7 @@ export type MeshyTaskStatus = 'PENDING' | 'IN_PROGRESS' | 'SUCCEEDED' | 'FAILED'
 
 ### MeshyTextToImageTask
 
-`supabase/functions/_shared/item-thumbnail-meshy.ts:9`
+`archive/supabase-legacy/supabase/functions/_shared/item-thumbnail-meshy.ts:9`
 
 ```ts
 export interface MeshyTextToImageTask {
@@ -978,7 +978,7 @@ export interface MeshyTextToImageTask {
 
 ### MeshyProviderConfig
 
-`supabase/functions/_shared/item-thumbnail-meshy.ts:17`
+`archive/supabase-legacy/supabase/functions/_shared/item-thumbnail-meshy.ts:17`
 
 ```ts
 export interface MeshyProviderConfig {
@@ -990,7 +990,7 @@ export interface MeshyProviderConfig {
 
 ### MeshyTextToImageProvider
 
-`supabase/functions/_shared/item-thumbnail-meshy.ts:23`
+`archive/supabase-legacy/supabase/functions/_shared/item-thumbnail-meshy.ts:23`
 
 ```ts
 export interface MeshyTextToImageProvider {
@@ -1001,7 +1001,7 @@ export interface MeshyTextToImageProvider {
 
 ### FetchLike
 
-`supabase/functions/_shared/item-thumbnail-meshy.ts:28`
+`archive/supabase-legacy/supabase/functions/_shared/item-thumbnail-meshy.ts:28`
 
 ```ts
 type FetchLike = typeof fetch;
@@ -1009,7 +1009,7 @@ type FetchLike = typeof fetch;
 
 ### ItemThumbnailPromptInput
 
-`supabase/functions/_shared/item-thumbnail-prompt.ts:7`
+`archive/supabase-legacy/supabase/functions/_shared/item-thumbnail-prompt.ts:7`
 
 ```ts
 export interface ItemThumbnailPromptInput {
@@ -1023,7 +1023,7 @@ export interface ItemThumbnailPromptInput {
 
 ### ItemThumbnailRateLimitConfig
 
-`supabase/functions/_shared/item-thumbnail-rate-limit.ts:6`
+`archive/supabase-legacy/supabase/functions/_shared/item-thumbnail-rate-limit.ts:6`
 
 ```ts
 export interface ItemThumbnailRateLimitConfig {
@@ -1036,7 +1036,7 @@ export interface ItemThumbnailRateLimitConfig {
 
 ### FetchLike
 
-`supabase/functions/_shared/item-thumbnail-rate-limit.ts:13`
+`archive/supabase-legacy/supabase/functions/_shared/item-thumbnail-rate-limit.ts:13`
 
 ```ts
 type FetchLike = (
@@ -1047,7 +1047,7 @@ type FetchLike = (
 
 ### ServerProofStatus
 
-`supabase/functions/_shared/media-server-optimize-proof.ts:22`
+`archive/supabase-legacy/supabase/functions/_shared/media-server-optimize-proof.ts:22`
 
 ```ts
 export type ServerProofStatus =
@@ -1060,7 +1060,7 @@ export type ServerProofStatus =
 
 ### ServerProofMetrics
 
-`supabase/functions/_shared/media-server-optimize-proof.ts:29`
+`archive/supabase-legacy/supabase/functions/_shared/media-server-optimize-proof.ts:29`
 
 ```ts
 export type ServerProofMetrics = {
@@ -1080,7 +1080,7 @@ export type ServerProofMetrics = {
 
 ### ServerProofResult
 
-`supabase/functions/_shared/media-server-optimize-proof.ts:43`
+`archive/supabase-legacy/supabase/functions/_shared/media-server-optimize-proof.ts:43`
 
 ```ts
 export type ServerProofResult = {
@@ -1093,7 +1093,7 @@ export type ServerProofResult = {
 
 ### ServerProofOptions
 
-`supabase/functions/_shared/media-server-optimize-proof.ts:50`
+`archive/supabase-legacy/supabase/functions/_shared/media-server-optimize-proof.ts:50`
 
 ```ts
 export type ServerProofOptions = {
@@ -1104,7 +1104,7 @@ export type ServerProofOptions = {
 
 ### Raster
 
-`supabase/functions/_shared/media-server-optimize-proof.ts:55`
+`archive/supabase-legacy/supabase/functions/_shared/media-server-optimize-proof.ts:55`
 
 ```ts
 type Raster = {
@@ -1116,7 +1116,7 @@ type Raster = {
 
 ### ProviderThumbnailOptimizeOk
 
-`supabase/functions/_shared/media-server-raster-optimize.ts:29`
+`archive/supabase-legacy/supabase/functions/_shared/media-server-raster-optimize.ts:29`
 
 ```ts
 export type ProviderThumbnailOptimizeOk = {
@@ -1130,7 +1130,7 @@ export type ProviderThumbnailOptimizeOk = {
 
 ### ProviderThumbnailOptimizeErr
 
-`supabase/functions/_shared/media-server-raster-optimize.ts:37`
+`archive/supabase-legacy/supabase/functions/_shared/media-server-raster-optimize.ts:37`
 
 ```ts
 export type ProviderThumbnailOptimizeErr = {
@@ -1143,7 +1143,7 @@ export type ProviderThumbnailOptimizeErr = {
 
 ### ProviderThumbnailOptimizeResult
 
-`supabase/functions/_shared/media-server-raster-optimize.ts:44`
+`archive/supabase-legacy/supabase/functions/_shared/media-server-raster-optimize.ts:44`
 
 ```ts
 export type ProviderThumbnailOptimizeResult =
@@ -1153,7 +1153,7 @@ export type ProviderThumbnailOptimizeResult =
 
 ### JsonRecord
 
-`supabase/functions/item-thumbnail/index.ts:43`
+`archive/supabase-legacy/supabase/functions/item-thumbnail/index.ts:43`
 
 ```ts
 type JsonRecord = Record<string, unknown>;
@@ -1161,7 +1161,7 @@ type JsonRecord = Record<string, unknown>;
 
 ### SupabaseConfig
 
-`supabase/functions/item-thumbnail/index.ts:53`
+`archive/supabase-legacy/supabase/functions/item-thumbnail/index.ts:53`
 
 ```ts
 interface SupabaseConfig {
@@ -1173,7 +1173,7 @@ interface SupabaseConfig {
 
 ### DefinitionRow
 
-`supabase/functions/item-thumbnail/index.ts:59`
+`archive/supabase-legacy/supabase/functions/item-thumbnail/index.ts:59`
 
 ```ts
 interface DefinitionRow {
@@ -1191,7 +1191,7 @@ interface DefinitionRow {
 
 ### parseCredentialsEncryptionKey
 
-`supabase/functions/_shared/ai-provider-crypto.ts:25`
+`archive/supabase-legacy/supabase/functions/_shared/ai-provider-crypto.ts:25`
 
 ```ts
 export function parseCredentialsEncryptionKey(
@@ -1232,7 +1232,7 @@ export function parseCredentialsEncryptionKey(
 
 ### DEFAULT_CORS_METHODS
 
-`supabase/functions/_shared/cors.ts:9`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:9`
 
 ```ts
 DEFAULT_CORS_METHODS = 'GET, POST, PUT, DELETE, OPTIONS'
@@ -1240,7 +1240,7 @@ DEFAULT_CORS_METHODS = 'GET, POST, PUT, DELETE, OPTIONS'
 
 ### DEFAULT_CORS_ALLOW_HEADERS
 
-`supabase/functions/_shared/cors.ts:10`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:10`
 
 ```ts
 DEFAULT_CORS_ALLOW_HEADERS =
@@ -1249,7 +1249,7 @@ DEFAULT_CORS_ALLOW_HEADERS =
 
 ### buildItemThumbnailStoragePath
 
-`supabase/functions/_shared/item-thumbnail-image.ts:61`
+`archive/supabase-legacy/supabase/functions/_shared/item-thumbnail-image.ts:61`
 
 ```ts
 export function buildItemThumbnailStoragePath(options: {
@@ -1269,7 +1269,7 @@ export function buildItemThumbnailStoragePath(options: {
 
 ### buildItemThumbnailAssetKey
 
-`supabase/functions/_shared/item-thumbnail-image.ts:75`
+`archive/supabase-legacy/supabase/functions/_shared/item-thumbnail-image.ts:75`
 
 ```ts
 export function buildItemThumbnailAssetKey(assetId: string): string {
@@ -1279,7 +1279,7 @@ export function buildItemThumbnailAssetKey(assetId: string): string {
 
 ### validateThumbnailBytes
 
-`supabase/functions/_shared/item-thumbnail-image.ts:93`
+`archive/supabase-legacy/supabase/functions/_shared/item-thumbnail-image.ts:93`
 
 ```ts
 export function validateThumbnailBytes(
@@ -1299,7 +1299,7 @@ export function validateThumbnailBytes(
 
 ### DEFAULT_BASE
 
-`supabase/functions/_shared/item-thumbnail-meshy.ts:30`
+`archive/supabase-legacy/supabase/functions/_shared/item-thumbnail-meshy.ts:30`
 
 ```ts
 DEFAULT_BASE = 'https://api.meshy.ai/openapi/v1'
@@ -1307,7 +1307,7 @@ DEFAULT_BASE = 'https://api.meshy.ai/openapi/v1'
 
 ### DEFAULT_MODEL
 
-`supabase/functions/_shared/item-thumbnail-meshy.ts:31`
+`archive/supabase-legacy/supabase/functions/_shared/item-thumbnail-meshy.ts:31`
 
 ```ts
 DEFAULT_MODEL = 'nano-banana'
@@ -1315,7 +1315,7 @@ DEFAULT_MODEL = 'nano-banana'
 
 ### parseCreateResponse
 
-`supabase/functions/_shared/item-thumbnail-meshy.ts:57`
+`archive/supabase-legacy/supabase/functions/_shared/item-thumbnail-meshy.ts:57`
 
 ```ts
 function parseCreateResponse(body: unknown): string {
@@ -1328,7 +1328,7 @@ function parseCreateResponse(body: unknown): string {
 
 ### parseTask
 
-`supabase/functions/_shared/item-thumbnail-meshy.ts:64`
+`archive/supabase-legacy/supabase/functions/_shared/item-thumbnail-meshy.ts:64`
 
 ```ts
 function parseTask(body: unknown): MeshyTextToImageTask {
@@ -1351,7 +1351,7 @@ function parseTask(body: unknown): MeshyTextToImageTask {
 
 ### MAX_PROMPT
 
-`supabase/functions/_shared/item-thumbnail-prompt.ts:18`
+`archive/supabase-legacy/supabase/functions/_shared/item-thumbnail-prompt.ts:18`
 
 ```ts
 MAX_PROMPT = 600
@@ -1359,7 +1359,7 @@ MAX_PROMPT = 600
 
 ### MAX_USER_EXTRA
 
-`supabase/functions/_shared/item-thumbnail-prompt.ts:19`
+`archive/supabase-legacy/supabase/functions/_shared/item-thumbnail-prompt.ts:19`
 
 ```ts
 MAX_USER_EXTRA = 120
@@ -1367,7 +1367,7 @@ MAX_USER_EXTRA = 120
 
 ### buildItemThumbnailPrompt
 
-`supabase/functions/_shared/item-thumbnail-prompt.ts:29`
+`archive/supabase-legacy/supabase/functions/_shared/item-thumbnail-prompt.ts:29`
 
 ```ts
 export function buildItemThumbnailPrompt(input: ItemThumbnailPromptInput): string {
@@ -1392,7 +1392,7 @@ export function buildItemThumbnailPrompt(input: ItemThumbnailPromptInput): strin
 
 ### assertSafeUserExtra
 
-`supabase/functions/_shared/item-thumbnail-prompt.ts:48`
+`archive/supabase-legacy/supabase/functions/_shared/item-thumbnail-prompt.ts:48`
 
 ```ts
 export function assertSafeUserExtra(raw: unknown): string {
@@ -1406,7 +1406,7 @@ export function assertSafeUserExtra(raw: unknown): string {
 
 ### RATE_LIMIT_RPC
 
-`supabase/functions/_shared/item-thumbnail-rate-limit.ts:18`
+`archive/supabase-legacy/supabase/functions/_shared/item-thumbnail-rate-limit.ts:18`
 
 ```ts
 RATE_LIMIT_RPC = '/rest/v1/rpc/consume_item_thumbnail_rate_limit'
@@ -1414,7 +1414,7 @@ RATE_LIMIT_RPC = '/rest/v1/rpc/consume_item_thumbnail_rate_limit'
 
 ### CORS_OPTS
 
-`supabase/functions/item-thumbnail/index.ts:45`
+`archive/supabase-legacy/supabase/functions/item-thumbnail/index.ts:45`
 
 ```ts
 CORS_OPTS: CorsOptions = {
@@ -1428,7 +1428,7 @@ CORS_OPTS: CorsOptions = {
 
 ### MAX_REQUEST_BYTES
 
-`supabase/functions/item-thumbnail/index.ts:69`
+`archive/supabase-legacy/supabase/functions/item-thumbnail/index.ts:69`
 
 ```ts
 MAX_REQUEST_BYTES = 14 * 1024 * 1024
@@ -1436,7 +1436,7 @@ MAX_REQUEST_BYTES = 14 * 1024 * 1024
 
 ### RATE_LIMIT_WINDOW_SECONDS
 
-`supabase/functions/item-thumbnail/index.ts:70`
+`archive/supabase-legacy/supabase/functions/item-thumbnail/index.ts:70`
 
 ```ts
 RATE_LIMIT_WINDOW_SECONDS = 60
@@ -1444,7 +1444,7 @@ RATE_LIMIT_WINDOW_SECONDS = 60
 
 ### DEFAULT_RATE_LIMIT
 
-`supabase/functions/item-thumbnail/index.ts:71`
+`archive/supabase-legacy/supabase/functions/item-thumbnail/index.ts:71`
 
 ```ts
 DEFAULT_RATE_LIMIT = 4
@@ -1452,7 +1452,7 @@ DEFAULT_RATE_LIMIT = 4
 
 ### SIGNED_URL_SECONDS
 
-`supabase/functions/item-thumbnail/index.ts:72`
+`archive/supabase-legacy/supabase/functions/item-thumbnail/index.ts:72`
 
 ```ts
 SIGNED_URL_SECONDS = 60 * 60 * 24 * 7
@@ -1463,18 +1463,18 @@ SIGNED_URL_SECONDS = 60 * 60 * 24 * 7
 
 | Path | SHA-256 |
 |---|---|
-| `supabase/functions/_shared/ai-provider-crypto.ts` | `45e60f76f744077e8d9b243719dcdba5d58a047d36a1c141df830afa2de16532` |
-| `supabase/functions/_shared/ai-provider-resolve-meshy.ts` | `b65f8aa91c02871a2661e1ca697c6115f3c7c4ec07c683d1e7ed19c39287a842` |
-| `supabase/functions/_shared/client-trust-body.ts` | `33c68553dbd89d9c7899520b0ebfa35c4f245ed8ab8ebd242c6f79e9852add95` |
-| `supabase/functions/_shared/cors.ts` | `f8286c91d79fa5fc5cfea2fa47081916523fa7a440f234aecd9a47c6a8cf5b38` |
-| `supabase/functions/_shared/edge-dispatcher-allowlist.ts` | `6d1ae7bde0ba9e41fcaa7b61247732168a62699e7811fb8574cef266cfad3a27` |
-| `supabase/functions/_shared/edge-jwt-gate.ts` | `14a871697b051b7fcbee09dbce1dee8bc8ed5ea6a6eca0bec7b2e771b32d0f0c` |
-| `supabase/functions/_shared/item-thumbnail-image.ts` | `caf768022788be451fdfc5dfeadf837fd48e2edecc26a68d14794f6a21853713` |
-| `supabase/functions/_shared/item-thumbnail-meshy.ts` | `8e80c58ee736dd9cb1a2215891508568adff06d1164e46722d4c6aa423f6ca26` |
-| `supabase/functions/_shared/item-thumbnail-prompt.ts` | `0d3e793d0b39fd9c92b6ae4a93800ae3e275cea3a98c579f6076148fd8531bc1` |
-| `supabase/functions/_shared/item-thumbnail-rate-limit.ts` | `6257e780baaadca84ddd39d1513a09c15927224556fbf102b403b354671dd18d` |
-| `supabase/functions/_shared/media-server-optimize-proof.ts` | `0067485123768db375458332d2e666db2e45c4bb36a0235f628787b675f9982c` |
-| `supabase/functions/_shared/media-server-raster-optimize.ts` | `68c99248a6598460cb4a6359ad60009e67b6d5e5ff73b4125549eb26947259b7` |
-| `supabase/functions/item-thumbnail/index.ts` | `ac437475c5b4f2cbe4f23d5e3597a4e7ac2e29a85c75037565da0ea09af46959` |
-| `supabase/functions/main/index.ts` | `92f3bf56bf3c776e01595d980246079c4a9f8775e417959abea9d7da003bc53e` |
+| `archive/supabase-legacy/supabase/functions/_shared/ai-provider-crypto.ts` | `45e60f76f744077e8d9b243719dcdba5d58a047d36a1c141df830afa2de16532` |
+| `archive/supabase-legacy/supabase/functions/_shared/ai-provider-resolve-meshy.ts` | `b65f8aa91c02871a2661e1ca697c6115f3c7c4ec07c683d1e7ed19c39287a842` |
+| `archive/supabase-legacy/supabase/functions/_shared/client-trust-body.ts` | `33c68553dbd89d9c7899520b0ebfa35c4f245ed8ab8ebd242c6f79e9852add95` |
+| `archive/supabase-legacy/supabase/functions/_shared/cors.ts` | `f8286c91d79fa5fc5cfea2fa47081916523fa7a440f234aecd9a47c6a8cf5b38` |
+| `archive/supabase-legacy/supabase/functions/_shared/edge-dispatcher-allowlist.ts` | `6d1ae7bde0ba9e41fcaa7b61247732168a62699e7811fb8574cef266cfad3a27` |
+| `archive/supabase-legacy/supabase/functions/_shared/edge-jwt-gate.ts` | `14a871697b051b7fcbee09dbce1dee8bc8ed5ea6a6eca0bec7b2e771b32d0f0c` |
+| `archive/supabase-legacy/supabase/functions/_shared/item-thumbnail-image.ts` | `caf768022788be451fdfc5dfeadf837fd48e2edecc26a68d14794f6a21853713` |
+| `archive/supabase-legacy/supabase/functions/_shared/item-thumbnail-meshy.ts` | `8e80c58ee736dd9cb1a2215891508568adff06d1164e46722d4c6aa423f6ca26` |
+| `archive/supabase-legacy/supabase/functions/_shared/item-thumbnail-prompt.ts` | `0d3e793d0b39fd9c92b6ae4a93800ae3e275cea3a98c579f6076148fd8531bc1` |
+| `archive/supabase-legacy/supabase/functions/_shared/item-thumbnail-rate-limit.ts` | `6257e780baaadca84ddd39d1513a09c15927224556fbf102b403b354671dd18d` |
+| `archive/supabase-legacy/supabase/functions/_shared/media-server-optimize-proof.ts` | `0067485123768db375458332d2e666db2e45c4bb36a0235f628787b675f9982c` |
+| `archive/supabase-legacy/supabase/functions/_shared/media-server-raster-optimize.ts` | `68c99248a6598460cb4a6359ad60009e67b6d5e5ff73b4125549eb26947259b7` |
+| `archive/supabase-legacy/supabase/functions/item-thumbnail/index.ts` | `ac437475c5b4f2cbe4f23d5e3597a4e7ac2e29a85c75037565da0ea09af46959` |
+| `archive/supabase-legacy/supabase/functions/main/index.ts` | `92f3bf56bf3c776e01595d980246079c4a9f8775e417959abea9d7da003bc53e` |
 

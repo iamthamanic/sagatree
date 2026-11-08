@@ -82,7 +82,12 @@ assert(
 assert(!/VITE_SAGATREE_HOST_LIBRARY\s*===\s*['"]0['"]/.test(hostLibSrc), 'no LIBRARY=0 opt-out');
 
 const supabaseSrc = readFileSync(join(root, 'src/lib/supabase.ts'), 'utf8');
-assert(/persistSession:\s*false/.test(supabaseSrc), 'inert GoTrue session off');
+assert(
+  !/^\s*import\s+.*@supabase\/supabase-js/m.test(supabaseSrc),
+  'CUT-21: supabase.ts SDK-free (no createClient import)',
+);
+assert(!/\bcreateClient\s*\(/.test(supabaseSrc), 'CUT-21: no Supabase client construction');
+assert(/rewriteBrowserStorageUrl/.test(supabaseSrc), 'storage URL helper retained');
 assert(!/isHostLibraryExplicitlyDisabled/.test(supabaseSrc), 'supabase stub has no opt-out');
 
 const authUserSrc = readFileSync(join(root, 'src/lib/authenticatedUser.ts'), 'utf8');
