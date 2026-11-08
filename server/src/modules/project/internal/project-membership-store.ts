@@ -140,6 +140,28 @@ export class ProjectMembershipStore {
           )
           .get(projectId, input.actorId) as { id: string | null } | undefined;
         if (!row) return { ok: false, error: 'P0002' };
+        // Cascade governance rows (no FK on member_id) so rejoin cannot revive grants.
+        const memberId = typeof row.id === 'string' ? row.id.trim() : '';
+        if (memberId) {
+          this.#db
+            .prepare(`DELETE FROM project_member_saga_grants WHERE member_id = ?`)
+            .run(memberId);
+          this.#db
+            .prepare(`DELETE FROM project_member_saga_bundles WHERE member_id = ?`)
+            .run(memberId);
+        }
+        this.#db
+          .prepare(
+            `DELETE FROM project_member_saga_grants
+             WHERE project_id = ? AND user_id = ?`,
+          )
+          .run(projectId, input.actorId);
+        this.#db
+          .prepare(
+            `DELETE FROM project_member_saga_bundles
+             WHERE project_id = ? AND user_id = ?`,
+          )
+          .run(projectId, input.actorId);
         this.#db
           .prepare(
             `DELETE FROM project_members

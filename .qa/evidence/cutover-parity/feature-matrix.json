@@ -1628,9 +1628,9 @@
       "risk": "medium",
       "classification": "HOST_VERIFIED",
       "issueRef": 1158,
-      "evidenceTest": "cut-23-final-parity.self-test.mjs",
+      "evidenceTest": "mig-308-project-adapter.self-test.mjs",
       "featureAvailableBeforeCutover": true,
-      "notes": "CUT-23 leave Soft-DENY removed; POST /api/v1/projects/:id/leave"
+      "notes": "CUT-23 leave Soft-DENY removed; leave+rejoin exercised in mig-308; POST /api/v1/projects/:id/leave"
     },
     {
       "stableKey": "saga-overview.get",

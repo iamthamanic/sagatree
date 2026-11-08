@@ -176,6 +176,21 @@ try {
   assert(setChar.ok, `set character: ${setChar.ok ? '' : setChar.error}`);
   assert(typeof setChar.value.memberId === 'string', 'memberId');
 
+  // CUT-23 leave + rejoin: grants must not revive; stranger DENY.
+  const left = infra.leaveProjectMembership(Player, projectId);
+  assert(left.ok, `leave: ${left.ok ? '' : left.error}`);
+  assert(project.getMemberForTests(projectId, Player.actorId) == null, 'leave removes membership');
+  assert(
+    !infra.leaveProjectMembership(Player, projectId).ok,
+    'second leave DENY',
+  );
+  assert(
+    !infra.leaveProjectMembership(Stranger, projectId).ok,
+    'stranger leave DENY',
+  );
+  const rejoined = infra.joinProjectByCode(Player, 'mig308j1', pc.id);
+  assert(rejoined.ok, `rejoin after leave: ${rejoined.ok ? '' : rejoined.error}`);
+
   const sess = infra.createProjectSession(Player, projectId, 'Abend 1', null);
   assert(sess.ok, `create session: ${sess.ok ? '' : sess.error}`);
   assert(sess.value.projectId === projectId, 'session projectId');

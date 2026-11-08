@@ -114,6 +114,30 @@ if (status === 'APPROVED') {
 const cut22 = join(root, 'scripts/cut-22-host-runtime-contracts.self-test.mjs');
 assert(existsSync(cut22), 'CUT-22 self-test must exist (depends on #1157)');
 
+const leaveStore = readFileSync(
+  join(root, 'server/src/modules/project/internal/project-membership-store.ts'),
+  'utf8',
+);
+assert(/leave\(input:/.test(leaveStore), 'membership store exposes leave()');
+assert(
+  /DELETE FROM project_member_saga_grants/.test(leaveStore),
+  'leave must clear saga grants',
+);
+assert(
+  /DELETE FROM project_member_saga_bundles/.test(leaveStore),
+  'leave must clear saga bundles',
+);
+const routes = readFileSync(join(root, 'server/src/api/project-routes.ts'), 'utf8');
+assert(
+  /\/api\/v1\/projects\/:projectId\/leave/.test(routes),
+  'HTTP leave route mounted',
+);
+const feLeave = readFileSync(
+  join(root, 'src/infrastructure/project/project-member-service.ts'),
+  'utf8',
+);
+assert(/leaveHostProject\(projectId\)/.test(feLeave), 'FE leave calls host HTTP');
+
 if (failures > 0) {
   console.error(`\ncut-23-final-parity.self-test: ${failures} failure(s)`);
   process.exit(1);
