@@ -1,6 +1,6 @@
 # Composition Gate — cut-21-eradicate-supabase-runtime-deno-ed (#1156)
 
-- HEAD_SHA: 9c854d8f3e9530ee3f537f9ee5b98654536e5193
+- HEAD_SHA: 35861cd0b70148c9cc227e7e4236a3832e9525fd
 - BASE_SHA: 755b89e58edd6c9792d81cd4b6f5bfb70cedf611
 - Date: 2026-11-08
 - Verdict: CLEAR
