@@ -70,11 +70,11 @@ const [{ createHostProjectAdapter }, { HOST_PROJECT_OPS, HOST_PROJECT_RPC_NAMES 
   ]);
 assert(typeof createHostProjectAdapter === 'function', 'createHostProjectAdapter loaded');
 assert(
-  Array.isArray(HOST_PROJECT_OPS) && HOST_PROJECT_OPS.length === 11,
+  Array.isArray(HOST_PROJECT_OPS) && HOST_PROJECT_OPS.length === 12,
   'HOST_PROJECT_OPS count',
 );
 assert(
-  Array.isArray(HOST_PROJECT_RPC_NAMES) && HOST_PROJECT_RPC_NAMES.length === 11,
+  Array.isArray(HOST_PROJECT_RPC_NAMES) && HOST_PROJECT_RPC_NAMES.length === 12,
   'HOST_PROJECT_RPC_NAMES count',
 );
 
@@ -308,6 +308,8 @@ try {
     getSagaOverview: async (actorId, pid) => infra.getSagaOverview(actor(actorId), pid),
     joinProjectByCode: async (actorId, code, characterId) =>
       infra.joinProjectByCode(actor(actorId), code, characterId),
+    leaveProjectMembership: async (actorId, pid) =>
+      infra.leaveProjectMembership(actor(actorId), pid),
     listSagaBindings: async (actorId, pid, kind) =>
       infra.listSagaBindings(actor(actorId), pid, kind),
     listSagaMemberPermissionState: async (actorId, pid) =>
@@ -320,7 +322,7 @@ try {
       infra.setSagaMemberBundle(actor(actorId), pid, memberId, bundleId),
   });
   assert(bound.transport === 'host', 'adapter transport');
-  assert(bound.rpcNames.length === 11, 'adapter rpcNames');
+  assert(bound.rpcNames.length === 12, 'adapter rpcNames');
   const viaAdapter = await bound.getMySagaPermissions(GM.actorId, publicId);
   assert(viaAdapter.ok && viaAdapter.value.isGm === true, 'adapter getMySagaPermissions');
   const viaOverview = await bound.getSagaOverview(Player.actorId, publicId);

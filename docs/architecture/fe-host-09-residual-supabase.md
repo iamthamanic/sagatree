@@ -5,9 +5,12 @@ Owner note (cutover milestone): with `VITE_SAGATREE_HOST_AUTH_URL` set and
 **host-first**. Covered journeys use host HTTP + Better Auth cookies. The
 Supabase JS client stays inert (no GoTrue session) unless the operator opts out.
 
-## Status (CUT-21)
+## Status (CUT-21 → CUT-23)
 
-Supabase SDK + `supabase/` + `src/supabase/` product trees are **archived** under `archive/supabase-legacy/` (#1156). Residual dual-path notes below are historical.
+Supabase SDK + `supabase/` + `src/supabase/` product trees are **archived** under `archive/supabase-legacy/` (#1156).
+CUT-22 made host Compose the product default; CUT-23 closes the parity matrix (`PARITY_MISSING=0`)
+and clears Soft-DENY product fingerprints (shared `host-product-deny` helper only).
+Residual dual-path notes below are historical.
 
 ## Residual allowlist (DENY / degraded under host-first)
 

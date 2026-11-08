@@ -71,6 +71,10 @@ export type HostProjectPorts = {
     code: string,
     characterId?: string | null,
   ) => Promise<HostProjectResult<{ readonly projectId: string }>>;
+  readonly leaveProjectMembership: (
+    actorId: string,
+    projectId: string,
+  ) => Promise<HostProjectResult<{ readonly ok: true }>>;
   readonly listSagaBindings: (
     actorId: string,
     publicId: string,
@@ -107,6 +111,7 @@ export const HOST_PROJECT_RPC_NAMES = [
   'get_saga_lore_timeline',
   'get_saga_overview',
   'join_project_by_code',
+  'leave_project_membership',
   'list_saga_bindings',
   'list_saga_member_permission_state',
   'set_my_project_character',
@@ -124,6 +129,7 @@ export const HOST_PROJECT_OPS = [
   'getSagaLoreTimeline',
   'getSagaOverview',
   'joinProjectByCode',
+  'leaveProjectMembership',
   'listSagaBindings',
   'listSagaMemberPermissionState',
   'setMyProjectCharacter',

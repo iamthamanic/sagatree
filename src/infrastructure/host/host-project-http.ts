@@ -171,6 +171,15 @@ export async function setHostMyProjectCharacter(
   );
 }
 
+export async function leaveHostProject(projectId: string): Promise<void> {
+  await hostMutateJson(
+    `/api/v1/projects/${encodeURIComponent(projectId)}/leave`,
+    'POST',
+    {},
+    'Saga-Mitgliedschaft verlassen fehlgeschlagen',
+  );
+}
+
 export async function fetchHostSagaOverview(publicId: string): Promise<unknown> {
   return hostGetJson(
     `/api/v1/sagas/${encodeURIComponent(publicId)}/overview`,

@@ -119,6 +119,40 @@ export class ProjectMembershipStore {
     }
   }
 
+  /**
+   * Voluntary leave — Postgres parity: DELETE active membership for auth.uid().
+   * Project `gm_user_id` ownership is unchanged (GM remains owner without a player row).
+   */
+  leave(input: {
+    readonly actorId: string;
+    readonly projectId: string;
+  }): { readonly ok: true } | { readonly ok: false; readonly error: string } {
+    if (!input.actorId) return { ok: false, error: '42501' };
+    const projectId = typeof input.projectId === 'string' ? input.projectId.trim() : '';
+    if (!projectId) return { ok: false, error: '22023' };
+
+    try {
+      return this.#withImmediateTx(() => {
+        const row = this.#db
+          .prepare(
+            `SELECT id FROM project_members
+             WHERE project_id = ? AND user_id = ? AND active = 1`,
+          )
+          .get(projectId, input.actorId) as { id: string | null } | undefined;
+        if (!row) return { ok: false, error: 'P0002' };
+        this.#db
+          .prepare(
+            `DELETE FROM project_members
+             WHERE project_id = ? AND user_id = ? AND active = 1`,
+          )
+          .run(projectId, input.actorId);
+        return { ok: true };
+      });
+    } catch {
+      return { ok: false, error: 'P0001' };
+    }
+  }
+
   setMyCharacter(input: {
     readonly actorId: string;
     readonly projectId: string;

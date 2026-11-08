@@ -1409,6 +1409,12 @@ function checkCut20LegacyClientBan() {
     stdio: 'inherit',
   });
   console.log('OK: cut-22-host-runtime-contracts.self-test');
+  console.log('CUT-23 final host-only parity (#1158)...');
+  execFileSync(process.execPath, ['scripts/cut-23-final-parity.self-test.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
+  console.log('OK: cut-23-final-parity.self-test');
 }
 
 function checkFeHost12ProjectWrites() {
