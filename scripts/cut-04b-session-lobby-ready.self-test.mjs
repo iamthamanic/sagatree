@@ -292,6 +292,34 @@ try {
     `unauth publish DENY ${unauthPublish.res.status}`,
   );
 
+  // --- Late subscriber snapshot (Codex P1) ---
+  const earlyGm = await openReadyStream(baseURL, sessionId, gmCookie);
+  await new Promise((r) => setTimeout(r, 50));
+  const earlyReady = await httpJson(
+    baseURL,
+    `/api/v1/sessions/${encodeURIComponent(sessionId)}/lobby/ready`,
+    {
+      method: 'POST',
+      cookie: gmCookie,
+      headers: { Origin: baseURL },
+      body: { ready: true },
+    },
+  );
+  assert(earlyReady.res.status === 200, `early GM ready ${earlyReady.res.status}`);
+  await waitFor(
+    () => earlyGm.events.some((e) => e.userId === gmActorId && e.ready === true),
+    3000,
+    'early GM sees own ready',
+  );
+  const latePlayer = await openReadyStream(baseURL, sessionId, playerCookie);
+  await waitFor(
+    () => latePlayer.events.some((e) => e.userId === gmActorId && e.ready === true),
+    3000,
+    'late player receives GM ready snapshot',
+  );
+  await earlyGm.close();
+  await latePlayer.close();
+
   // --- Two-actor observe ---
   const gmStream = await openReadyStream(baseURL, sessionId, gmCookie);
   const playerStream = await openReadyStream(baseURL, sessionId, playerCookie);

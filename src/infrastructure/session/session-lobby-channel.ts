@@ -57,6 +57,33 @@ function parseSseReadyChunk(
   return rest;
 }
 
+async function openLobbyReadyStream(
+  streamUrl: string,
+  signal: AbortSignal,
+): Promise<Response> {
+  const response = await fetch(streamUrl, {
+    method: 'GET',
+    credentials: 'include',
+    headers: { Accept: 'text/event-stream' },
+    signal,
+  });
+  if (!response.ok || !response.body) {
+    let detail = '';
+    try {
+      const body: unknown = await response.json();
+      if (body && typeof body === 'object' && 'error' in body) {
+        detail = String((body as { error: unknown }).error);
+      }
+    } catch {
+      /* ignore */
+    }
+    throw new Error(
+      detail ? `Lobby-Kanal: ${detail}` : `Lobby-Kanal: HTTP ${response.status}`,
+    );
+  }
+  return response;
+}
+
 /**
  * Subscribe to multiplayer lobby ready via host SSE + POST publish.
  * Server stamps actor identity; client userId on send is ignored for auth.
@@ -76,50 +103,71 @@ export async function subscribeSessionLobbyReady(
 
   const abort = new AbortController();
   const streamUrl = `${base}/api/v1/sessions/${encodeURIComponent(sessionId)}/lobby/ready/stream`;
-  let response: Response;
-  try {
-    response = await fetch(streamUrl, {
-      method: 'GET',
-      credentials: 'include',
-      headers: { Accept: 'text/event-stream' },
-      signal: abort.signal,
-    });
-  } catch (err) {
-    if (abort.signal.aborted) {
-      return {
-        sendReady: async () => undefined,
-        unsubscribe: async () => undefined,
-      };
+
+  let disposed = false;
+  let reader: ReadableStreamDefaultReader<Uint8Array> | null = null;
+
+  const pump = async () => {
+    let delayMs = 500;
+    while (!disposed && !abort.signal.aborted) {
+      try {
+        const response = await openLobbyReadyStream(streamUrl, abort.signal);
+        reader = response.body!.getReader();
+        const decoder = new TextDecoder();
+        let pending = '';
+        delayMs = 500;
+        while (!disposed) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          pending += decoder.decode(value, { stream: true });
+          pending = parseSseReadyChunk(pending, (payload) => {
+            if (!disposed) onReady(payload);
+          });
+        }
+      } catch (err) {
+        if (disposed || abort.signal.aborted) return;
+        /* transient drop — retry with cancellation-aware backoff */
+      } finally {
+        try {
+          await reader?.cancel();
+        } catch {
+          /* ignore */
+        }
+        reader = null;
+      }
+      if (disposed || abort.signal.aborted) return;
+      await new Promise<void>((resolve) => {
+        const timer = setTimeout(resolve, delayMs);
+        abort.signal.addEventListener(
+          'abort',
+          () => {
+            clearTimeout(timer);
+            resolve();
+          },
+          { once: true },
+        );
+      });
+      delayMs = Math.min(delayMs * 2, 8_000);
     }
+  };
+
+  // Establish first connection before returning so early failures surface.
+  try {
+    const response = await openLobbyReadyStream(streamUrl, abort.signal);
+    reader = response.body!.getReader();
+  } catch (err) {
+    abort.abort();
     throw err instanceof Error
       ? err
       : new Error('Lobby-Kanal konnte nicht geöffnet werden');
   }
 
-  if (!response.ok || !response.body) {
-    abort.abort();
-    let detail = '';
-    try {
-      const body: unknown = await response.json();
-      if (body && typeof body === 'object' && 'error' in body) {
-        detail = String((body as { error: unknown }).error);
-      }
-    } catch {
-      /* ignore */
-    }
-    throw new Error(
-      detail ? `Lobby-Kanal: ${detail}` : `Lobby-Kanal: HTTP ${response.status}`,
-    );
-  }
-
-  let disposed = false;
-  const reader = response.body.getReader();
-  const decoder = new TextDecoder();
-  let pending = '';
-
   void (async () => {
+    // Continue the already-opened reader, then reconnect loop on drop.
     try {
-      while (!disposed) {
+      const decoder = new TextDecoder();
+      let pending = '';
+      while (!disposed && reader) {
         const { done, value } = await reader.read();
         if (done) break;
         pending += decoder.decode(value, { stream: true });
@@ -128,8 +176,16 @@ export async function subscribeSessionLobbyReady(
         });
       }
     } catch {
-      /* aborted or network drop — lobby remains usable without sync */
+      /* fall through to reconnect loop */
+    } finally {
+      try {
+        await reader?.cancel();
+      } catch {
+        /* ignore */
+      }
+      reader = null;
     }
+    if (!disposed) await pump();
   })();
 
   return {
@@ -142,7 +198,7 @@ export async function subscribeSessionLobbyReady(
       disposed = true;
       abort.abort();
       try {
-        await reader.cancel();
+        await reader?.cancel();
       } catch {
         /* ignore */
       }

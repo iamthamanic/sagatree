@@ -448,6 +448,16 @@ export function mountSessionHttpRoutes(app: Hono, deps: SessionHttpDeps): void {
           }
         };
         write(': connected\n\n');
+        // Replay current readiness so late joiners see peers already ready.
+        for (const event of deps.lobbyReady!.snapshot(sessionId)) {
+          write(
+            `data: ${JSON.stringify({
+              type: 'ready',
+              userId: event.userId,
+              ready: event.ready,
+            })}\n\n`,
+          );
+        }
         unsubscribe = deps.lobbyReady!.subscribe(sessionId, (event) => {
           write(
             `data: ${JSON.stringify({

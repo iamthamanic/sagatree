@@ -350,11 +350,17 @@ export function useSessionLobby(input: UseSessionLobbyInput): UseSessionLobbyRes
   const setReady = useCallback(
     (ready: boolean) => {
       if (!user) return;
-      setReadyMap((prev) => mergeLobbyReadyMap(prev, user.id, ready));
+      let previous = false;
+      setReadyMap((prev) => {
+        previous = prev[user.id] === true;
+        return mergeLobbyReadyMap(prev, user.id, ready);
+      });
       const sub = subRef.current;
-      if (sub) {
-        void sub.sendReady({ userId: user.id, ready });
-      }
+      if (!sub) return;
+      void sub.sendReady({ userId: user.id, ready }).catch(() => {
+        // Reconcile optimistic UI when host publish fails.
+        setReadyMap((prev) => mergeLobbyReadyMap(prev, user.id, previous));
+      });
     },
     [user],
   );

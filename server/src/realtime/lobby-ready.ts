@@ -16,11 +16,14 @@ export type LobbyReadyListener = (event: LobbyReadyEvent) => void;
 export type LobbyReadyHub = {
   readonly subscribe: (sessionId: string, listener: LobbyReadyListener) => () => void;
   readonly publish: (sessionId: string, userId: string, ready: boolean) => LobbyReadyEvent;
+  readonly snapshot: (sessionId: string) => readonly LobbyReadyEvent[];
   readonly subscriberCount: (sessionId: string) => number;
 };
 
 type RoomState = {
   readonly listeners: Set<LobbyReadyListener>;
+  /** Latest readiness per user — replayed to late subscribers. */
+  readonly readyByUserId: Map<string, LobbyReadyEvent>;
 };
 
 export function createLobbyReadyHub(): LobbyReadyHub {
@@ -29,7 +32,7 @@ export function createLobbyReadyHub(): LobbyReadyHub {
   function ensureRoom(sessionId: string): RoomState {
     let room = rooms.get(sessionId);
     if (!room) {
-      room = { listeners: new Set() };
+      room = { listeners: new Set(), readyByUserId: new Map() };
       rooms.set(sessionId, room);
     }
     return room;
@@ -44,7 +47,11 @@ export function createLobbyReadyHub(): LobbyReadyHub {
       room.listeners.add(listener);
       return () => {
         room.listeners.delete(listener);
-        if (room.listeners.size === 0) rooms.delete(sessionId);
+        // Keep readyByUserId after the last listener leaves so reconnect /
+        // late subscribers still receive the last known lobby snapshot.
+        if (room.listeners.size === 0 && room.readyByUserId.size === 0) {
+          rooms.delete(sessionId);
+        }
       };
     },
 
@@ -55,8 +62,8 @@ export function createLobbyReadyHub(): LobbyReadyHub {
         at: new Date().toISOString(),
       };
       if (!sessionId || !userId) return event;
-      const room = rooms.get(sessionId);
-      if (!room) return event;
+      const room = ensureRoom(sessionId);
+      room.readyByUserId.set(userId, event);
       for (const listener of [...room.listeners]) {
         try {
           listener(event);
@@ -65,6 +72,12 @@ export function createLobbyReadyHub(): LobbyReadyHub {
         }
       }
       return event;
+    },
+
+    snapshot(sessionId) {
+      const room = rooms.get(sessionId);
+      if (!room) return [];
+      return [...room.readyByUserId.values()];
     },
 
     subscriberCount(sessionId) {
