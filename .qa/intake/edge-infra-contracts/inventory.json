@@ -29990,7 +29990,7 @@
           },
           {
             "path": "src/infrastructure/host/host-session-http.ts",
-            "sha256": "39b5efefc00297d57c1c4f248953cbbed4d7053e51974cd25a2ed43e368a64eb"
+            "sha256": "f0e603ecf93151669c7b809cb63aea3d0a98ed2ca17ae8f2768a5444bb9cab56"
           },
           {
             "path": "src/infrastructure/inventory/inventory-persistence.ts",
@@ -30158,7 +30158,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-character.json",
-      "sourceContractSha256": "a69c8f7b7dcbf61cf1a680eaf8128a61e4283a7bf93031b09572a870cac6eb36",
+      "sourceContractSha256": "eb73256794504c589baa004c08f1b4d9aa8dd3a54a209a07cc9e8a393e9b260b",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],
@@ -33162,7 +33162,7 @@
           },
           {
             "path": "src/infrastructure/host/host-session-http.ts",
-            "sha256": "39b5efefc00297d57c1c4f248953cbbed4d7053e51974cd25a2ed43e368a64eb"
+            "sha256": "f0e603ecf93151669c7b809cb63aea3d0a98ed2ca17ae8f2768a5444bb9cab56"
           },
           {
             "path": "src/infrastructure/inventory/host-inventory-adapter.ts",
@@ -33278,7 +33278,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-inventory.json",
-      "sourceContractSha256": "115fa5c5f90a59a908f711375addeaf417dbd06f714ee9fcc376ac1878efce93",
+      "sourceContractSha256": "76fd1b99b21ef6cda4756298ed2abd3b7e45892eb0827cdd9dfe0166185bb97f",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],
@@ -34992,7 +34992,7 @@
           },
           {
             "path": "src/infrastructure/host/host-session-http.ts",
-            "sha256": "39b5efefc00297d57c1c4f248953cbbed4d7053e51974cd25a2ed43e368a64eb"
+            "sha256": "f0e603ecf93151669c7b809cb63aea3d0a98ed2ca17ae8f2768a5444bb9cab56"
           },
           {
             "path": "src/infrastructure/npc-creature/host-npc-creature-adapter.ts",
@@ -35040,7 +35040,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-npc-creature.json",
-      "sourceContractSha256": "a6b842bce7ae88ca103477fef76d1505c3c0e885f33bae9ba87c06b32ba70a1c",
+      "sourceContractSha256": "d66cd71c8ca412dedb894856d7a84f3425d84c01adf52f973d9a2ad0f617206c",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],
@@ -35451,7 +35451,7 @@
           },
           {
             "path": "src/infrastructure/host/host-session-http.ts",
-            "sha256": "39b5efefc00297d57c1c4f248953cbbed4d7053e51974cd25a2ed43e368a64eb"
+            "sha256": "f0e603ecf93151669c7b809cb63aea3d0a98ed2ca17ae8f2768a5444bb9cab56"
           },
           {
             "path": "src/infrastructure/project/host-project-adapter.ts",
@@ -35499,7 +35499,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-project.json",
-      "sourceContractSha256": "84168b85c3d9842e9586954f2679c2b1b1454c4245f5544719f6b84c2458a55c",
+      "sourceContractSha256": "a3e9e80fe6fe16d7e55fb05e7d200b1e6f354e40ad6eeebb3aafe7ab7d5078ed",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],
@@ -35959,7 +35959,7 @@
           },
           {
             "path": "src/infrastructure/host/host-session-http.ts",
-            "sha256": "39b5efefc00297d57c1c4f248953cbbed4d7053e51974cd25a2ed43e368a64eb"
+            "sha256": "f0e603ecf93151669c7b809cb63aea3d0a98ed2ca17ae8f2768a5444bb9cab56"
           },
           {
             "path": "src/infrastructure/saga/host-saga-adapter.ts",
@@ -35987,7 +35987,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-saga.json",
-      "sourceContractSha256": "e6b1213d09dd8e8e82ef64116cb4e65dd210eda305f74e0754b4dd66821d3fc8",
+      "sourceContractSha256": "cfd908766d52d75677d85e9caf9a5bf13a5fd291b66f05f9e41d74bfc49107e4",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],
@@ -36171,7 +36171,7 @@
           },
           {
             "path": "src/infrastructure/host/host-session-http.ts",
-            "sha256": "39b5efefc00297d57c1c4f248953cbbed4d7053e51974cd25a2ed43e368a64eb"
+            "sha256": "f0e603ecf93151669c7b809cb63aea3d0a98ed2ca17ae8f2768a5444bb9cab56"
           },
           {
             "path": "src/infrastructure/session/host-session-adapter.ts",
@@ -36215,7 +36215,7 @@
           },
           {
             "path": "src/infrastructure/session/session-lobby-channel.ts",
-            "sha256": "3747d80942a4ea3cc19c9add12dd8167f3642895cc57d57f0df494c095f4e5e5"
+            "sha256": "1dec5e7d1f3eb0a53a91b28c458db30bf2f3e4200c27aeafa811139fbf1890ed"
           },
           {
             "path": "src/infrastructure/session/session-recap-ai-service.ts",
@@ -36259,7 +36259,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-session.json",
-      "sourceContractSha256": "2c2de86e5e8ca0d324b7c2e9f67c72f2870d3dca14de03e0a1a831c9494ee594",
+      "sourceContractSha256": "ed6136b6128429a12b726e70b440a2d8123f10aa794bc7efe66d3e40ada72fdf",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],
@@ -36284,7 +36284,28 @@
           }
         }
       ],
-      "externalFetches": [],
+      "externalFetches": [
+        {
+          "kind": "fetch",
+          "name": null,
+          "path": "src/infrastructure/session/session-lobby-channel.ts",
+          "line": 64,
+          "endLine": 69,
+          "resolution": "dynamic-expression",
+          "expression": "fetch(streamUrl, {\n    method: 'GET',\n    credentials: 'include',\n    headers: { Accept: 'text/event-stream' },\n    signal,\n  })",
+          "chain": "fetch(streamUrl, {\n    method: 'GET',\n    credentials: 'include',\n    headers: { Accept: 'text/event-stream' },\n    signal,\n  })",
+          "arguments": [
+            "streamUrl",
+            "{\n    method: 'GET',\n    credentials: 'include',\n    headers: { Accept: 'text/event-stream' },\n    signal,\n  }"
+          ],
+          "enclosingOperation": {
+            "path": "src/infrastructure/session/session-lobby-channel.ts",
+            "line": 60,
+            "endLine": 85,
+            "text": "async function openLobbyReadyStream(\n  streamUrl: string,\n  signal: AbortSignal,\n): Promise<Response> {\n  const response = await fetch(streamUrl, {\n    method: 'GET',\n    credentials: 'include',\n    headers: { Accept: 'text/event-stream' },\n    signal,\n  });\n  if (!response.ok || !response.body) {\n    let detail = '';\n    try {\n      const body: unknown = await response.json();\n      if (body && typeof body === 'object' && 'error' in body) {\n        detail = String((body as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    throw new Error(\n      detail ? `Lobby-Kanal: ${detail}` : `Lobby-Kanal: HTTP ${response.status}`,\n    );\n  }\n  return response;\n}"
+          }
+        }
+      ],
       "importedInfrastructure": [
         "host"
       ],
@@ -36653,6 +36674,26 @@
             "endLine": 189,
             "text": "private detachDataListener(): void {\n    if (this.room?.off && this.dataListener) {\n      this.room.off('dataReceived', this.dataListener);\n    }\n    this.dataListener = null;\n  }"
           }
+        },
+        {
+          "kind": "fetch",
+          "name": null,
+          "path": "src/infrastructure/session/session-lobby-channel.ts",
+          "line": 64,
+          "endLine": 69,
+          "resolution": "dynamic-expression",
+          "expression": "fetch(streamUrl, {\n    method: 'GET',\n    credentials: 'include',\n    headers: { Accept: 'text/event-stream' },\n    signal,\n  })",
+          "chain": "fetch(streamUrl, {\n    method: 'GET',\n    credentials: 'include',\n    headers: { Accept: 'text/event-stream' },\n    signal,\n  })",
+          "arguments": [
+            "streamUrl",
+            "{\n    method: 'GET',\n    credentials: 'include',\n    headers: { Accept: 'text/event-stream' },\n    signal,\n  }"
+          ],
+          "enclosingOperation": {
+            "path": "src/infrastructure/session/session-lobby-channel.ts",
+            "line": 60,
+            "endLine": 85,
+            "text": "async function openLobbyReadyStream(\n  streamUrl: string,\n  signal: AbortSignal,\n): Promise<Response> {\n  const response = await fetch(streamUrl, {\n    method: 'GET',\n    credentials: 'include',\n    headers: { Accept: 'text/event-stream' },\n    signal,\n  });\n  if (!response.ok || !response.body) {\n    let detail = '';\n    try {\n      const body: unknown = await response.json();\n      if (body && typeof body === 'object' && 'error' in body) {\n        detail = String((body as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    throw new Error(\n      detail ? `Lobby-Kanal: ${detail}` : `Lobby-Kanal: HTTP ${response.status}`,\n    );\n  }\n  return response;\n}"
+          }
         }
       ],
       "dependencies": [
@@ -36870,15 +36911,33 @@
         },
         {
           "path": "src/infrastructure/session/session-lobby-channel.ts",
-          "line": 21,
-          "endLine": 25,
+          "line": 25,
+          "endLine": 29,
           "name": "assertHost"
         },
         {
           "path": "src/infrastructure/session/session-lobby-channel.ts",
-          "line": 27,
-          "endLine": 43,
+          "line": 31,
+          "endLine": 58,
+          "name": "parseSseReadyChunk"
+        },
+        {
+          "path": "src/infrastructure/session/session-lobby-channel.ts",
+          "line": 60,
+          "endLine": 85,
+          "name": "openLobbyReadyStream"
+        },
+        {
+          "path": "src/infrastructure/session/session-lobby-channel.ts",
+          "line": 91,
+          "endLine": 207,
           "name": "subscribeSessionLobbyReady"
+        },
+        {
+          "path": "src/infrastructure/session/session-lobby-channel.ts",
+          "line": 110,
+          "endLine": 152,
+          "name": "pump"
         },
         {
           "path": "src/infrastructure/session/session-recap-ai-service.ts",
