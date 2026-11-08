@@ -213,8 +213,25 @@ function sniffAzgaarMime(bytes: Uint8Array): string | null {
   while (i < bytes.length && (bytes[i] === 0x20 || bytes[i] === 0x09 || bytes[i] === 0x0a || bytes[i] === 0x0d)) {
     i += 1;
   }
-  if (i < bytes.length && (bytes[i] === 0x7b || bytes[i] === 0x5b)) {
+  if (i >= bytes.length) return null;
+  // JSON export
+  if (bytes[i] === 0x7b || bytes[i] === 0x5b) {
     return 'application/json';
+  }
+  // Native Azgaar Fantasy Map Generator `.map` is plain text (often a version
+  // line first, not `{`/`[`). Accept printable UTF-8/ASCII text payloads.
+  const sampleEnd = Math.min(bytes.length, i + 512);
+  let printable = 0;
+  let checked = 0;
+  for (let j = i; j < sampleEnd; j += 1) {
+    const b = bytes[j]!;
+    checked += 1;
+    if (b === 0x09 || b === 0x0a || b === 0x0d || (b >= 0x20 && b <= 0x7e) || b >= 0x80) {
+      printable += 1;
+    }
+  }
+  if (checked > 0 && printable / checked >= 0.95) {
+    return 'text/plain';
   }
   return null;
 }

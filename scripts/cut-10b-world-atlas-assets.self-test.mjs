@@ -210,6 +210,23 @@ try {
   assert(downloaded.includes('cut-10b'), 'azgaar bytes round-trip');
   assert(typeof signedPath === 'string' && signedPath.startsWith(`${ownerId}/`), 'azgaar path');
 
+  // --- native Azgaar .map (text/plain, version line first — Codex P1) ---
+  const nativeMap = new TextEncoder().encode('1.97\n# cut-10b native azgaar map\nname|demo\n');
+  const nativeAzgaar = await publishWorldAsset(
+    baseURL,
+    ownerCookie,
+    worldId,
+    nativeMap,
+    'azgaar',
+    'text/plain',
+    'native.map',
+  );
+  assert(
+    nativeAzgaar.res.status === 201,
+    `native azgaar publish ${nativeAzgaar.res.status} ${nativeAzgaar.text}`,
+  );
+  assert(nativeAzgaar.json?.contentType === 'text/plain', 'native azgaar sniffed text/plain');
+
   // --- foreign owner denied on publish ---
   const foreignPin = await publishWorldAsset(
     baseURL,
