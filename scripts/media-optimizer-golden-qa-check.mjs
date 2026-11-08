@@ -202,21 +202,25 @@ for (const script of [
 }
 
 section('7 · Deno provider proof still green');
-const deno = spawnSync(
-  'deno',
-  [
-    'test',
-    '--no-lock',
-    '--node-modules-dir=auto',
-    '--allow-read',
-    '--allow-net',
-    '--allow-env',
-    'archive/supabase-legacy/supabase/functions/_shared/media-server-raster-optimize_test.ts',
-  ],
-  { cwd: root, encoding: 'utf8' },
-);
-check(deno.status === 0, 'provider optimize unit tests');
-
+const denoAvailable = spawnSync('deno', ['--version'], { encoding: 'utf8' }).status === 0;
+if (!denoAvailable) {
+  console.log('SKIP: Deno binary absent — archive provider unit tests not executed (CUT-21)');
+} else {
+  const deno = spawnSync(
+    'deno',
+    [
+      'test',
+      '--no-lock',
+      '--node-modules-dir=auto',
+      '--allow-read',
+      '--allow-net',
+      '--allow-env',
+      'archive/supabase-legacy/supabase/functions/_shared/media-server-raster-optimize_test.ts',
+    ],
+    { cwd: root, encoding: 'utf8' },
+  );
+  check(deno.status === 0, 'provider optimize unit tests');
+}
 if (failures > 0) {
   console.error(`\nmedia-optimizer-golden-qa-check: ${failures} failure(s)`);
   process.exit(1);

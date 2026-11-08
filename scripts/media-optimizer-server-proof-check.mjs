@@ -45,27 +45,33 @@ check(!/from ['"].*storage|from ['"].*auth/i.test(proof), 'no Storage/Auth impor
 
 section('2 · Deno proof tests');
 mkdirSync(join(root, '.qa/runs'), { recursive: true });
-const deno = spawnSync(
-  'deno',
-  [
-    'test',
-    '--no-lock',
-    '--node-modules-dir=auto',
-    '--allow-read',
-    '--allow-write',
-    '--allow-net',
-    '--allow-env',
-    '--allow-sys',
-    'archive/supabase-legacy/supabase/functions/_shared/media-server-optimize-proof.proof.ts',
-  ],
-  { cwd: root, encoding: 'utf8' },
-);
-if (deno.status !== 0) {
-  console.error(deno.stdout);
-  console.error(deno.stderr);
+const denoAvailable = spawnSync('deno', ['--version'], { encoding: 'utf8' }).status === 0;
+let deno = { status: null, stdout: '', stderr: '' };
+if (!denoAvailable) {
+  // CUT-21: Deno is not a product runtime; archived Edge proofs are evidence-only.
+  console.log('SKIP: Deno binary absent — archive media-server-optimize proof not executed (CUT-21)');
+} else {
+  deno = spawnSync(
+    'deno',
+    [
+      'test',
+      '--no-lock',
+      '--node-modules-dir=auto',
+      '--allow-read',
+      '--allow-write',
+      '--allow-net',
+      '--allow-env',
+      '--allow-sys',
+      'archive/supabase-legacy/supabase/functions/_shared/media-server-optimize-proof.proof.ts',
+    ],
+    { cwd: root, encoding: 'utf8' },
+  );
+  if (deno.status !== 0) {
+    console.error(deno.stdout);
+    console.error(deno.stderr);
+  }
+  check(deno.status === 0, 'deno server optimize proof tests passed');
 }
-check(deno.status === 0, 'deno server optimize proof tests passed');
-
 section('3 · decision + metrics snapshot');
 // Parse decision from docs (authoritative after human/CI review of proof run).
 const decisionMatch = decisionDoc.match(
@@ -81,11 +87,13 @@ check(
 const metricsPath = join(root, '.qa/runs/media-opt-server-proof-metrics.json');
 const metrics = {
   decision,
-  runtime: 'deno',
+  runtime: denoAvailable ? 'deno' : 'archive-skip-cut-21',
   generatedAt: new Date().toISOString(),
   notesDe: [
     'Produktive Storage-/Auth-Services wurden in diesem Proof nicht verändert.',
-    'Metriken stammen aus dem Deno-Testlauf (stdout summary + decision doc).',
+    denoAvailable
+      ? 'Metriken stammen aus dem Deno-Testlauf (stdout summary + decision doc).'
+      : 'CUT-21: Deno nicht vorhanden — Decision-Doc bleibt autoritativ; Edge-Proof nur Archiv.',
   ],
   denoExitCode: deno.status,
 };

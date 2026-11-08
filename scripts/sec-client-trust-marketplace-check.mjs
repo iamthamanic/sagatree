@@ -111,11 +111,17 @@ assert.deepEqual(findPriv({ title: 'x', author_id: 'a', rating: 5 }), [
 ]);
 assert.deepEqual(findPriv({ title: 'ok', price: 1 }), []);
 
-const deno = spawnSync(
-  'deno',
-  ['test', 'archive/supabase-legacy/supabase/functions/_shared/client-trust-body_test.ts'],
-  { cwd: root, encoding: 'utf8' },
-);
-assert.equal(deno.status, 0, deno.stderr || deno.stdout);
+const denoAvailable = spawnSync('deno', ['--version'], { encoding: 'utf8' }).status === 0;
+if (!denoAvailable) {
+  // CUT-21: Deno eradicated from product runtime; Node asserts above remain authoritative.
+  console.log('SKIP: Deno binary absent — archive client-trust-body_test not executed (CUT-21)');
+} else {
+  const deno = spawnSync(
+    'deno',
+    ['test', 'archive/supabase-legacy/supabase/functions/_shared/client-trust-body_test.ts'],
+    { cwd: root, encoding: 'utf8' },
+  );
+  assert.equal(deno.status, 0, deno.stderr || deno.stdout);
+}
 
 console.log('sec-client-trust-marketplace-check: PASS');
