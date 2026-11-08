@@ -17,13 +17,13 @@
       "command": "rpc inventory 57",
       "result": "PASS",
       "evidenceFile": ".qa/intake/rpc-contracts/inventory.json",
-      "sha256": "328563f66bbc0a84d968a70eaff14ff581fb5a8bc432dbc053c31ed03c1dcaee"
+      "sha256": "4c718ab91a573185247a905c6915701c49fef876b3aefe435e46dd2f2057d9bf"
     },
     {
       "command": "edge/infra inventory 25+13",
       "result": "PASS",
       "evidenceFile": ".qa/intake/edge-infra-contracts/inventory.json",
-      "sha256": "0194e42e03dd64dc27534ffe8f23de47ca604c93f94e8e5a2001c1ef35826ddc"
+      "sha256": "b4dc0135c65297fd44344ce67092aaebdad6981aaa6d7b7ab2db9d11f8057044"
     }
   ],
   "testedCommit": "cec6b3c0ab4218cd51c6f75ad77c0e6660183116"

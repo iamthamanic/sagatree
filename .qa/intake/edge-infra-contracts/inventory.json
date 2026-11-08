@@ -37641,7 +37641,7 @@
           },
           {
             "path": "src/infrastructure/host/host-world-http.ts",
-            "sha256": "bfb69f91e69543a66ee96cab4ad21273c86a2b167e4c21211c42c7e6ccb3c072"
+            "sha256": "3e46295203990e7fa58d2638726d152627fefef512f76d689ccaff504927dbae"
           },
           {
             "path": "src/infrastructure/media/optimizer/engines/audio/index.ts",
@@ -37709,11 +37709,11 @@
           },
           {
             "path": "src/infrastructure/world/world-atlas-service.ts",
-            "sha256": "0026d650758d59a05aa1697f5ce8d07c751fd9e0cb9c992c742c008858cba273"
+            "sha256": "ace9c6ff13acad2aefa17f25784225461551b5bf6a79e807c9a24786619a552b"
           },
           {
             "path": "src/infrastructure/world/world-map-service.ts",
-            "sha256": "c86e0c9b3d7242d33d5fb30f7496ba99bb7ccaa4b22abaa73c5edb072c50a828"
+            "sha256": "d99faed233ee5c66d96d08397c0e292113a44e43efb51f4b30b7cc6a21a91103"
           },
           {
             "path": "src/infrastructure/world/world-place-service.ts",
@@ -37733,7 +37733,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-world.json",
-      "sourceContractSha256": "ee8c5129100febf83d929c74a6a834de1c6a8cfd727b1fd95b21e3068bbeee82",
+      "sourceContractSha256": "d21c6f030d5b98668db3eeeb9f3f95598937e15e1ba8d753af8ead8bd3f1e4f1",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],
@@ -37766,74 +37766,74 @@
         },
         {
           "path": "src/infrastructure/world/world-atlas-service.ts",
-          "line": 22,
-          "endLine": 26,
+          "line": 27,
+          "endLine": 31,
           "name": "assertHost"
         },
         {
           "path": "src/infrastructure/world/world-atlas-service.ts",
-          "line": 44,
-          "endLine": 53,
+          "line": 49,
+          "endLine": 58,
           "name": "listMaps"
         },
         {
           "path": "src/infrastructure/world/world-atlas-service.ts",
-          "line": 55,
-          "endLine": 61,
+          "line": 60,
+          "endLine": 66,
           "name": "ensureRoot"
         },
         {
           "path": "src/infrastructure/world/world-atlas-service.ts",
-          "line": 63,
-          "endLine": 73,
+          "line": 68,
+          "endLine": 78,
           "name": "getMap"
         },
         {
           "path": "src/infrastructure/world/world-atlas-service.ts",
-          "line": 75,
-          "endLine": 92,
+          "line": 80,
+          "endLine": 97,
           "name": "upsertMap"
         },
         {
           "path": "src/infrastructure/world/world-atlas-service.ts",
-          "line": 95,
-          "endLine": 100,
+          "line": 103,
+          "endLine": 113,
           "name": "uploadAzgaarMapFile"
         },
         {
           "path": "src/infrastructure/world/world-atlas-service.ts",
-          "line": 103,
-          "endLine": 108,
+          "line": 119,
+          "endLine": 123,
           "name": "createSignedUrl"
         },
         {
           "path": "src/infrastructure/world/world-map-service.ts",
-          "line": 20,
-          "endLine": 24,
+          "line": 25,
+          "endLine": 29,
           "name": "assertHost"
         },
         {
           "path": "src/infrastructure/world/world-map-service.ts",
-          "line": 27,
-          "endLine": 83,
+          "line": 32,
+          "endLine": 88,
           "name": "prepareWorldMapPinFile"
         },
         {
           "path": "src/infrastructure/world/world-map-service.ts",
-          "line": 86,
-          "endLine": 94,
+          "line": 91,
+          "endLine": 99,
           "name": "getMap"
         },
         {
           "path": "src/infrastructure/world/world-map-service.ts",
-          "line": 96,
-          "endLine": 108,
+          "line": 101,
+          "endLine": 113,
           "name": "saveMap"
         },
         {
           "path": "src/infrastructure/world/world-map-service.ts",
-          "line": 113,
-          "endLine": 123,
+          "line": 119,
+          "endLine": 138,
           "name": "uploadPinImage"
         },
         {

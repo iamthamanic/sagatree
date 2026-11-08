@@ -17,11 +17,11 @@
     },
     {
       "path": "src/infrastructure/world/world-atlas-service.ts",
-      "sha256": "0026d650758d59a05aa1697f5ce8d07c751fd9e0cb9c992c742c008858cba273"
+      "sha256": "ace9c6ff13acad2aefa17f25784225461551b5bf6a79e807c9a24786619a552b"
     },
     {
       "path": "src/infrastructure/world/world-map-service.ts",
-      "sha256": "c86e0c9b3d7242d33d5fb30f7496ba99bb7ccaa4b22abaa73c5edb072c50a828"
+      "sha256": "d99faed233ee5c66d96d08397c0e292113a44e43efb51f4b30b7cc6a21a91103"
     },
     {
       "path": "src/infrastructure/world/world-place-service.ts",
@@ -327,7 +327,7 @@
     },
     {
       "path": "src/infrastructure/host/host-world-http.ts",
-      "sha256": "bfb69f91e69543a66ee96cab4ad21273c86a2b167e4c21211c42c7e6ccb3c072"
+      "sha256": "3e46295203990e7fa58d2638726d152627fefef512f76d689ccaff504927dbae"
     },
     {
       "path": "src/infrastructure/media/optimizer/engines/audio/index.ts",
@@ -2093,6 +2093,14 @@
     },
     {
       "kind": "TypeAliasDeclaration",
+      "name": "HostWorldPublishedAssetDto",
+      "path": "src/infrastructure/host/host-world-http.ts",
+      "line": 387,
+      "endLine": 396,
+      "text": "export type HostWorldPublishedAssetDto = {\n  readonly assetId: string;\n  readonly contentType: string;\n  readonly byteSize: number;\n  readonly checksumSha256: string;\n  readonly url: string;\n  readonly storagePath: string;\n  readonly purpose: 'map-pin' | 'azgaar';\n  readonly worldProfileId: string;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
       "name": "AudioEngineRequest",
       "path": "src/infrastructure/media/optimizer/engines/audio/index.ts",
       "line": 14,
@@ -2281,10 +2289,10 @@
     {
       "path": "src/infrastructure/world/world-atlas-service.ts",
       "line": 14,
-      "endLine": 20,
+      "endLine": 22,
       "module": "../host/host-world-http",
       "resolvedPath": "src/infrastructure/host/host-world-http.ts",
-      "expression": "import {\n  ensureHostWorldAtlasRoot,\n  fetchHostWorldAtlasMap,\n  isHostLibraryEnabled,\n  listHostWorldAtlasMaps,\n  upsertHostWorldAtlasMap,\n} from '../host/host-world-http';"
+      "expression": "import {\n  ensureHostWorldAtlasRoot,\n  fetchHostWorldAtlasMap,\n  isHostLibraryEnabled,\n  listHostWorldAtlasMaps,\n  publishHostWorldAsset,\n  resolveHostWorldAssetUrl,\n  upsertHostWorldAtlasMap,\n} from '../host/host-world-http';"
     },
     {
       "path": "src/infrastructure/world/world-map-service.ts",
@@ -2297,15 +2305,15 @@
     {
       "path": "src/infrastructure/world/world-map-service.ts",
       "line": 10,
-      "endLine": 10,
+      "endLine": 15,
       "module": "../host/host-world-http",
       "resolvedPath": "src/infrastructure/host/host-world-http.ts",
-      "expression": "import { fetchHostWorldMap, isHostLibraryEnabled, saveHostWorldMap } from '../host/host-world-http';"
+      "expression": "import {\n  fetchHostWorldMap,\n  isHostLibraryEnabled,\n  publishHostWorldAsset,\n  saveHostWorldMap,\n} from '../host/host-world-http';"
     },
     {
       "path": "src/infrastructure/world/world-map-service.ts",
-      "line": 37,
-      "endLine": 37,
+      "line": 42,
+      "endLine": 42,
       "module": "../media/optimizer",
       "resolvedPath": "src/infrastructure/media/optimizer/index.ts",
       "expression": "import('../media/optimizer')",
@@ -2519,32 +2527,32 @@
     },
     {
       "path": "src/infrastructure/world/world-atlas-service.ts",
-      "line": 28,
-      "endLine": 41,
+      "line": 33,
+      "endLine": 46,
       "text": "export type UpsertWorldAtlasMapInput = {\n  readonly worldProfileId: string;\n  readonly mapId?: string | null;\n  readonly parentMapId?: string | null;\n  readonly kind: WorldAtlasMapKind;\n  readonly title: string;\n  readonly sortOrder?: number;\n  readonly bounds: WorldAtlasBounds;\n  readonly layers: WorldAtlasFeatureCollection;\n  readonly basemapStoragePath?: string | null;\n  readonly azgaarMapStoragePath?: string | null;\n  readonly generatorMeta?: Readonly<Record<string, unknown>>;\n  readonly expectedRevision?: number | null;\n};"
     },
     {
       "path": "src/infrastructure/world/world-atlas-service.ts",
-      "line": 111,
-      "endLine": 111,
+      "line": 126,
+      "endLine": 126,
       "text": "export const worldAtlasService = new WorldAtlasService();"
     },
     {
       "path": "src/infrastructure/world/world-map-service.ts",
-      "line": 15,
-      "endLine": 18,
+      "line": 20,
+      "endLine": 23,
       "text": "export type UploadPinImageOptions = {\n  readonly alreadyOptimized?: boolean;\n  readonly signal?: AbortSignal;\n};"
     },
     {
       "path": "src/infrastructure/world/world-map-service.ts",
-      "line": 27,
-      "endLine": 83,
+      "line": 32,
+      "endLine": 88,
       "text": "export async function prepareWorldMapPinFile(\n  file: File,\n  signal?: AbortSignal,\n): Promise<File> {\n  if (file.size > MAP_PIN_MAX_BYTES) {\n    throw new Error('Bild ist zu groß. Maximum 5 MB');\n  }\n  if (!MAP_PIN_ALLOWED_MIME.has(file.type)) {\n    throw new Error('Nur PNG, JPEG oder WebP sind als Pin-Bild erlaubt.');\n  }\n  const { optimizeMedia } = await import('../media/optimizer');\n  let optimizedBytes: Uint8Array | undefined;\n  const result = await optimizeMedia({\n    kind: 'image',\n    profileId: 'map-pin',\n    mimeType: file.type || 'application/octet-stream',\n    byteSize: file.size,\n    bytes: file,\n    signal,\n    onOptimizedBytes: (bytes) => {\n      optimizedBytes = bytes;\n    },\n  });\n\n  if (result.status === 'unchanged') {\n    return file;\n  }\n\n  if (result.status === 'optimized') {\n    if (!optimizedBytes || optimizedBytes.byteLength === 0) {\n      throw new Error('Pin-Bild-Optimierung lieferte keine Bytes (kein stilles Original).');\n    }\n    if (!MAP_PIN_ALLOWED_MIME.has(result.outputMimeType)) {\n      throw new Error(`Optimiertes MIME ${result.outputMimeType} ist nicht erlaubt.`);\n    }\n    const copy = new Uint8Array(optimizedBytes.byteLength);\n    copy.set(optimizedBytes);\n    const base = file.name.replace(/\\.[^.]+$/, '') || 'pin';\n    const ext =\n      result.outputMimeType === 'image/webp'\n        ? 'webp'\n        : result.outputMimeType === 'image/png'\n          ? 'png'\n          : 'jpg';\n    return new File([copy], `${base}.${ext}`, { type: result.outputMimeType });\n  }\n\n  if (result.status === 'aborted') {\n    throw new Error(result.message || 'Pin-Bild-Optimierung abgebrochen.');\n  }\n\n  const message =\n    'message' in result && typeof result.message === 'string'\n      ? result.message\n      : 'Pin-Bild-Optimierung fehlgeschlagen.';\n  throw new Error(message);\n}"
     },
     {
       "path": "src/infrastructure/world/world-map-service.ts",
-      "line": 126,
-      "endLine": 126,
+      "line": 141,
+      "endLine": 141,
       "text": "export const worldMapService = new WorldMapService();"
     },
     {
@@ -2743,94 +2751,94 @@
     },
     {
       "path": "src/infrastructure/world/world-atlas-service.ts",
-      "line": 22,
-      "endLine": 26,
+      "line": 27,
+      "endLine": 31,
       "name": "assertHost",
       "text": "function assertHost(): void {\n  if (!isHostLibraryEnabled()) {\n    throw new Error('Host-Anmeldung nicht konfiguriert (VITE_SAGATREE_HOST_AUTH_URL fehlt).');\n  }\n}"
     },
     {
       "path": "src/infrastructure/world/world-atlas-service.ts",
-      "line": 44,
-      "endLine": 53,
+      "line": 49,
+      "endLine": 58,
       "name": "listMaps",
       "text": "async listMaps(\n    worldProfileId: string,\n    options: { readonly playerView?: boolean; readonly sagaPublicId?: string | null } = {},\n  ): Promise<WorldAtlasMapSummary[]> {\n    assertHost();\n    const id = worldProfileId.trim();\n    if (!id) throw new Error('Weltprofil fehlt');\n    const data = await listHostWorldAtlasMaps(id, options);\n    return parseWorldAtlasMapList(data);\n  }"
     },
     {
       "path": "src/infrastructure/world/world-atlas-service.ts",
-      "line": 55,
-      "endLine": 61,
+      "line": 60,
+      "endLine": 66,
       "name": "ensureRoot",
       "text": "async ensureRoot(worldProfileId: string): Promise<WorldAtlasMapSummary[]> {\n    assertHost();\n    const id = worldProfileId.trim();\n    if (!id) throw new Error('Weltprofil fehlt');\n    const data = await ensureHostWorldAtlasRoot(id);\n    return parseWorldAtlasMapList(data);\n  }"
     },
     {
       "path": "src/infrastructure/world/world-atlas-service.ts",
-      "line": 63,
-      "endLine": 73,
+      "line": 68,
+      "endLine": 78,
       "name": "getMap",
       "text": "async getMap(\n    mapId: string,\n    playerView = false,\n    sagaPublicId?: string | null,\n  ): Promise<WorldAtlasMapVm> {\n    assertHost();\n    const id = mapId.trim();\n    if (!id) throw new Error('Karten-ID fehlt');\n    const data = await fetchHostWorldAtlasMap(id, playerView, sagaPublicId);\n    return parseWorldAtlasMapVm(data);\n  }"
     },
     {
       "path": "src/infrastructure/world/world-atlas-service.ts",
-      "line": 75,
-      "endLine": 92,
+      "line": 80,
+      "endLine": 97,
       "name": "upsertMap",
       "text": "async upsertMap(input: UpsertWorldAtlasMapInput): Promise<WorldAtlasMapVm> {\n    assertHost();\n    const data = await upsertHostWorldAtlasMap({\n      worldProfileId: input.worldProfileId.trim(),\n      mapId: input.mapId ?? null,\n      parentMapId: input.parentMapId ?? null,\n      kind: input.kind,\n      title: input.title,\n      sortOrder: input.sortOrder ?? 0,\n      bounds: input.bounds,\n      layers: input.layers,\n      basemapStoragePath: input.basemapStoragePath ?? null,\n      azgaarMapStoragePath: input.azgaarMapStoragePath ?? null,\n      generatorMeta: input.generatorMeta ?? {},\n      expectedRevision: input.expectedRevision ?? null,\n    });\n    return parseWorldAtlasMapVm(data);\n  }"
     },
     {
       "path": "src/infrastructure/world/world-atlas-service.ts",
-      "line": 95,
-      "endLine": 100,
+      "line": 103,
+      "endLine": 113,
       "name": "uploadAzgaarMapFile",
-      "text": "async uploadAzgaarMapFile(_worldProfileId: string, _file: File): Promise<string> {\n    void _worldProfileId;\n    void _file;\n    assertHost();\n    throw new Error('Azgaar-Upload über Host-Speicher ist noch nicht verfügbar.');\n  }"
+      "text": "async uploadAzgaarMapFile(worldProfileId: string, file: File): Promise<string> {\n    assertHost();\n    const id = worldProfileId.trim();\n    if (!id) throw new Error('Weltprofil fehlt');\n    if (file.size <= 0) throw new Error('Azgaar-Datei ist leer.');\n    if (file.size > AZGAAR_MAX_BYTES) {\n      throw new Error('Azgaar-Datei ist zu groß. Maximum 16 MB');\n    }\n    const published = await publishHostWorldAsset(id, file, 'azgaar');\n    return published.storagePath;\n  }"
     },
     {
       "path": "src/infrastructure/world/world-atlas-service.ts",
-      "line": 103,
-      "endLine": 108,
+      "line": 119,
+      "endLine": 123,
       "name": "createSignedUrl",
-      "text": "async createSignedUrl(_storagePath: string, _expiresSec = 3600): Promise<string> {\n    void _storagePath;\n    void _expiresSec;\n    assertHost();\n    throw new Error('Atlas-Download-URLs über Host-Speicher sind noch nicht verfügbar.');\n  }"
+      "text": "async createSignedUrl(storagePath: string, expiresSec = 3600): Promise<string> {\n    void expiresSec;\n    assertHost();\n    return resolveHostWorldAssetUrl(storagePath);\n  }"
     },
     {
       "path": "src/infrastructure/world/world-map-service.ts",
-      "line": 20,
-      "endLine": 24,
+      "line": 25,
+      "endLine": 29,
       "name": "assertHost",
       "text": "function assertHost(): void {\n  if (!isHostLibraryEnabled()) {\n    throw new Error('Host-Anmeldung nicht konfiguriert (VITE_SAGATREE_HOST_AUTH_URL fehlt).');\n  }\n}"
     },
     {
       "path": "src/infrastructure/world/world-map-service.ts",
-      "line": 27,
-      "endLine": 83,
+      "line": 32,
+      "endLine": 88,
       "name": "prepareWorldMapPinFile",
       "text": "export async function prepareWorldMapPinFile(\n  file: File,\n  signal?: AbortSignal,\n): Promise<File> {\n  if (file.size > MAP_PIN_MAX_BYTES) {\n    throw new Error('Bild ist zu groß. Maximum 5 MB');\n  }\n  if (!MAP_PIN_ALLOWED_MIME.has(file.type)) {\n    throw new Error('Nur PNG, JPEG oder WebP sind als Pin-Bild erlaubt.');\n  }\n  const { optimizeMedia } = await import('../media/optimizer');\n  let optimizedBytes: Uint8Array | undefined;\n  const result = await optimizeMedia({\n    kind: 'image',\n    profileId: 'map-pin',\n    mimeType: file.type || 'application/octet-stream',\n    byteSize: file.size,\n    bytes: file,\n    signal,\n    onOptimizedBytes: (bytes) => {\n      optimizedBytes = bytes;\n    },\n  });\n\n  if (result.status === 'unchanged') {\n    return file;\n  }\n\n  if (result.status === 'optimized') {\n    if (!optimizedBytes || optimizedBytes.byteLength === 0) {\n      throw new Error('Pin-Bild-Optimierung lieferte keine Bytes (kein stilles Original).');\n    }\n    if (!MAP_PIN_ALLOWED_MIME.has(result.outputMimeType)) {\n      throw new Error(`Optimiertes MIME ${result.outputMimeType} ist nicht erlaubt.`);\n    }\n    const copy = new Uint8Array(optimizedBytes.byteLength);\n    copy.set(optimizedBytes);\n    const base = file.name.replace(/\\.[^.]+$/, '') || 'pin';\n    const ext =\n      result.outputMimeType === 'image/webp'\n        ? 'webp'\n        : result.outputMimeType === 'image/png'\n          ? 'png'\n          : 'jpg';\n    return new File([copy], `${base}.${ext}`, { type: result.outputMimeType });\n  }\n\n  if (result.status === 'aborted') {\n    throw new Error(result.message || 'Pin-Bild-Optimierung abgebrochen.');\n  }\n\n  const message =\n    'message' in result && typeof result.message === 'string'\n      ? result.message\n      : 'Pin-Bild-Optimierung fehlgeschlagen.';\n  throw new Error(message);\n}"
     },
     {
       "path": "src/infrastructure/world/world-map-service.ts",
-      "line": 46,
-      "endLine": 48,
+      "line": 51,
+      "endLine": 53,
       "name": "callback",
       "text": "(bytes) => {\n      optimizedBytes = bytes;\n    }"
     },
     {
       "path": "src/infrastructure/world/world-map-service.ts",
-      "line": 86,
-      "endLine": 94,
+      "line": 91,
+      "endLine": 99,
       "name": "getMap",
       "text": "async getMap(worldProfileId: string, playerView = false): Promise<WorldMapVm> {\n    assertHost();\n    const id = worldProfileId.trim();\n    if (!id) throw new Error('Weltprofil fehlt');\n    const data = await fetchHostWorldMap(id, playerView);\n    const vm = parseWorldMapVm(data);\n    if (!vm) throw new Error('Ungültige Kartenantwort');\n    return vm;\n  }"
     },
     {
       "path": "src/infrastructure/world/world-map-service.ts",
-      "line": 96,
-      "endLine": 108,
+      "line": 101,
+      "endLine": 113,
       "name": "saveMap",
       "text": "async saveMap(\n    worldProfileId: string,\n    expectedRevision: number,\n    mapData: WorldMapData,\n  ): Promise<WorldMapVm> {\n    assertHost();\n    const id = worldProfileId.trim();\n    if (!id) throw new Error('Weltprofil fehlt');\n    const data = await saveHostWorldMap(id, expectedRevision, mapData);\n    const vm = parseWorldMapVm(data);\n    if (!vm) throw new Error('Ungültige Speicherantwort');\n    return vm;\n  }"
     },
     {
       "path": "src/infrastructure/world/world-map-service.ts",
-      "line": 113,
-      "endLine": 123,
+      "line": 119,
+      "endLine": 138,
       "name": "uploadPinImage",
-      "text": "async uploadPinImage(\n    _worldProfileId: string,\n    _file: File,\n    _options?: UploadPinImageOptions,\n  ): Promise<string> {\n    void _worldProfileId;\n    void _file;\n    void _options;\n    assertHost();\n    throw new Error('Pin-Bild-Upload über Host-Speicher ist noch nicht verfügbar.');\n  }"
+      "text": "async uploadPinImage(\n    worldProfileId: string,\n    file: File,\n    options?: UploadPinImageOptions,\n  ): Promise<string> {\n    assertHost();\n    const id = worldProfileId.trim();\n    if (!id) throw new Error('Weltprofil fehlt');\n    const prepared = options?.alreadyOptimized\n      ? file\n      : await prepareWorldMapPinFile(file, options?.signal);\n    if (prepared.size > MAP_PIN_MAX_BYTES) {\n      throw new Error('Bild ist zu groß. Maximum 5 MB');\n    }\n    if (!MAP_PIN_ALLOWED_MIME.has(prepared.type)) {\n      throw new Error('Nur PNG, JPEG oder WebP sind als Pin-Bild erlaubt.');\n    }\n    const published = await publishHostWorldAsset(id, prepared, 'map-pin');\n    return published.storagePath;\n  }"
     },
     {
       "path": "src/infrastructure/world/world-place-service.ts",

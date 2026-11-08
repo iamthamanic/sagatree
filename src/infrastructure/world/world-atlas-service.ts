@@ -16,8 +16,13 @@ import {
   fetchHostWorldAtlasMap,
   isHostLibraryEnabled,
   listHostWorldAtlasMaps,
+  publishHostWorldAsset,
+  resolveHostWorldAssetUrl,
   upsertHostWorldAtlasMap,
 } from '../host/host-world-http';
+
+/** Azgaar .map / zip ceiling — aligned with host DEFAULT_ASSET_MAX_BYTES. */
+const AZGAAR_MAX_BYTES = 16 * 1024 * 1024;
 
 function assertHost(): void {
   if (!isHostLibraryEnabled()) {
@@ -91,20 +96,30 @@ class WorldAtlasService {
     return parseWorldAtlasMapVm(data);
   }
 
-  /** PARITY_MISSING (#1161): Azgaar upload via host assets. */
-  async uploadAzgaarMapFile(_worldProfileId: string, _file: File): Promise<string> {
-    void _worldProfileId;
-    void _file;
+  /**
+   * CUT-10b (#1161): Azgaar .map/.zip via world-scoped host assets (world.edit).
+   * Returns owner-scoped storagePath for azgaarMapStoragePath persistence.
+   */
+  async uploadAzgaarMapFile(worldProfileId: string, file: File): Promise<string> {
     assertHost();
-    throw new Error('Azgaar-Upload über Host-Speicher ist noch nicht verfügbar.');
+    const id = worldProfileId.trim();
+    if (!id) throw new Error('Weltprofil fehlt');
+    if (file.size <= 0) throw new Error('Azgaar-Datei ist leer.');
+    if (file.size > AZGAAR_MAX_BYTES) {
+      throw new Error('Azgaar-Datei ist zu groß. Maximum 16 MB');
+    }
+    const published = await publishHostWorldAsset(id, file, 'azgaar');
+    return published.storagePath;
   }
 
-  /** PARITY_MISSING (#1161): signed URLs via host assets. */
-  async createSignedUrl(_storagePath: string, _expiresSec = 3600): Promise<string> {
-    void _storagePath;
-    void _expiresSec;
+  /**
+   * CUT-10b (#1161): credentialed host asset URL successor of Storage signed URL.
+   * Cookie media GET on /api/v1/assets/:id — expiresSec retained for API parity only.
+   */
+  async createSignedUrl(storagePath: string, expiresSec = 3600): Promise<string> {
+    void expiresSec;
     assertHost();
-    throw new Error('Atlas-Download-URLs über Host-Speicher sind noch nicht verfügbar.');
+    return resolveHostWorldAssetUrl(storagePath);
   }
 }
 

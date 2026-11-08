@@ -129,9 +129,9 @@ try {
     join(root, 'src/infrastructure/world/world-map-service.ts'),
     'utf8',
   );
-  // CUT-20 / #1160: pin upload Soft-DENY until host asset parity (no Supabase storage client).
+  // CUT-10b (#1161): world.edit-gated host publish (no Supabase storage client).
   assert(
-    /Pin-Bild-Upload über Host-Speicher ist noch nicht verfügbar|publishHostAsset|world-map-pins/.test(
+    /Pin-Bild-Upload über Host-Speicher ist noch nicht verfügbar|publishHostWorldAsset|publishHostAsset|world-map-pins/.test(
       mapService,
     ),
     'map pin upload Soft-DENY or host asset (not Supabase storage client)',

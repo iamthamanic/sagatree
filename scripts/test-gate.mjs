@@ -1596,6 +1596,19 @@ function checkCut10WorldPublicId() {
   console.log('OK: cut-10-world-public-id.self-test');
 }
 
+function checkCut10bWorldAtlasAssets() {
+  console.log('CUT-10b world map/atlas assets (#1161)...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/cut-10b-world-atlas-assets.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+  console.log('OK: cut-10b-world-atlas-assets.self-test');
+}
+
 function checkCut11AvatarArtifacts() {
   console.log('CUT-11 avatar artifacts (#1146): host CRUD / authz...');
   execFileSync(
@@ -3943,6 +3956,7 @@ checkCut07LookVersions();
 checkCut08CharacterPresets();
 checkCut09CharacterArcs();
 checkCut10WorldPublicId();
+checkCut10bWorldAtlasAssets();
 checkCut11AvatarArtifacts();
 checkCut12AvatarTransfer();
 checkCut13CharacterLore();

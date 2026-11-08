@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-world.json](source-contracts/infra-world.json) (SHA-256 `ee8c5129100febf83d929c74a6a834de1c6a8cfd727b1fd95b21e3068bbeee82`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-world.json](source-contracts/infra-world.json) (SHA-256 `d21c6f030d5b98668db3eeeb9f3f95598937e15e1ba8d753af8ead8bd3f1e4f1`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -456,7 +456,7 @@ export type HostWorldReadPort = {
 };
 ```
 
-### src/infrastructure/world/world-atlas-service.ts:28
+### src/infrastructure/world/world-atlas-service.ts:33
 
 ```ts
 export type UpsertWorldAtlasMapInput = {
@@ -475,13 +475,13 @@ export type UpsertWorldAtlasMapInput = {
 };
 ```
 
-### src/infrastructure/world/world-atlas-service.ts:111
+### src/infrastructure/world/world-atlas-service.ts:126
 
 ```ts
 export const worldAtlasService = new WorldAtlasService();
 ```
 
-### src/infrastructure/world/world-map-service.ts:15
+### src/infrastructure/world/world-map-service.ts:20
 
 ```ts
 export type UploadPinImageOptions = {
@@ -490,7 +490,7 @@ export type UploadPinImageOptions = {
 };
 ```
 
-### src/infrastructure/world/world-map-service.ts:27
+### src/infrastructure/world/world-map-service.ts:32
 
 ```ts
 export async function prepareWorldMapPinFile(
@@ -552,7 +552,7 @@ export async function prepareWorldMapPinFile(
 }
 ```
 
-### src/infrastructure/world/world-map-service.ts:126
+### src/infrastructure/world/world-map-service.ts:141
 
 ```ts
 export const worldMapService = new WorldMapService();
@@ -674,7 +674,7 @@ All backend operations are included in the public declarations above.
 | `src/domains/world/places/world-place.types.ts` | `32081a2c16516c68393e879ebc4e888441ca4e5009b20404158c6b25d09f4ef0` |
 | `src/domains/world/worldModuleRegistry.ts` | `9683d27ea65c7a22456245c0e2e706168285f61e229f6ea181e0fb6a65064cc0` |
 | `src/infrastructure/host/host-library-http.ts` | `c56b88c60d6c9491fc7b6e6e1143ac4985ffdab5dff16afef8a54bce79629a07` |
-| `src/infrastructure/host/host-world-http.ts` | `bfb69f91e69543a66ee96cab4ad21273c86a2b167e4c21211c42c7e6ccb3c072` |
+| `src/infrastructure/host/host-world-http.ts` | `3e46295203990e7fa58d2638726d152627fefef512f76d689ccaff504927dbae` |
 | `src/infrastructure/media/optimizer/engines/audio/index.ts` | `7585190a705085692bff0896e08b4d78f791895b47e24d57deeaaa10bb669d4e` |
 | `src/infrastructure/media/optimizer/engines/image/image.worker.ts` | `d34793b4de682556d9306194cfbcd05fdafdf215da25393f955d2669c7499276` |
 | `src/infrastructure/media/optimizer/engines/image/index.ts` | `4944001b7e0f7784d487da2e60d06d845aa564e9ddd7516ff50633af1591a322` |
@@ -691,8 +691,8 @@ All backend operations are included in the public declarations above.
 | `src/infrastructure/world/host-world-adapter.ts` | `fa229c2ceb37648d38d91f85699817ae584ae85f9195b45ea0ebe594aba786da` |
 | `src/infrastructure/world/host-world-ports.contract.ts` | `406d77c65527f6869c558a7b4c98c901766134f8e8d7dc6afc5271d6ba1a7f8e` |
 | `src/infrastructure/world/host-world-read.contract.ts` | `271a052d5f621ddf7f3344eaa55e3a58579c5cf629fe76a4827393d0d1c7a05c` |
-| `src/infrastructure/world/world-atlas-service.ts` | `0026d650758d59a05aa1697f5ce8d07c751fd9e0cb9c992c742c008858cba273` |
-| `src/infrastructure/world/world-map-service.ts` | `c86e0c9b3d7242d33d5fb30f7496ba99bb7ccaa4b22abaa73c5edb072c50a828` |
+| `src/infrastructure/world/world-atlas-service.ts` | `ace9c6ff13acad2aefa17f25784225461551b5bf6a79e807c9a24786619a552b` |
+| `src/infrastructure/world/world-map-service.ts` | `d99faed233ee5c66d96d08397c0e292113a44e43efb51f4b30b7cc6a21a91103` |
 | `src/infrastructure/world/world-place-service.ts` | `5fe2e68dd3949fb193547aa9ee498c15fc0e3f368bf546156a39086e805312bb` |
 | `src/infrastructure/world/world-profile-service.ts` | `10935d830086c8f9972b9f9f982e7ba8203609facd408020c634df4400032610` |
 | `src/lib/hostAuthBridge.ts` | `30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a` |
