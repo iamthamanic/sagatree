@@ -3,8 +3,7 @@
  * Location: src/infrastructure/npc-creature/host-npc-creature-ports.contract.ts
  *
  * Transport-free DTO mirror of `server/src/modules/npc-creature` ports.
- * Supabase facades remain live until cutover; this documents the host shape
- * for parity checks without importing the Node host package.
+ * Documents the host shape for parity checks without importing the Node host package.
  */
 
 export type HostNpcCreatureResult<T> =

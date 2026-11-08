@@ -2,8 +2,8 @@
  * host-npc-creature-adapter — Binds infra HostNpcCreaturePorts to an injected host impl (MIG-307).
  * Location: src/infrastructure/npc-creature/host-npc-creature-adapter.ts
  *
- * Production UI still calls Supabase npc-creature-service facades. This adapter is the
- * typed dual-path seam: tests and future host transport inject HostNpcCreaturePorts.
+ * Production UI uses host-library-http via npc-creature-service (CUT-02b).
+ * This adapter remains the typed port seam for tests / injected host impls.
  * No server/ imports; no client role elevation.
  */
 import type { HostNpcCreaturePorts } from './host-npc-creature-ports.contract';

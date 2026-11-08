@@ -1269,6 +1269,10 @@ export function mountLibraryHttpRoutes(app: Hono, deps: LibraryHttpDeps): void {
     return c.json({ ok: true }, 200);
   });
 
+  /**
+   * CUT-02b — list definitions with optional filters.
+   * Query: scope, worldProfileId, includeArchived=1 (world catalog restore UI).
+   */
   app.get('/api/v1/library/npc-creatures', async (c) => {
     const actorResult = await resolveLibraryActor(deps, c.req.raw.headers);
     if (!actorResult.ok) {
@@ -1277,7 +1281,25 @@ export function mountLibraryHttpRoutes(app: Hono, deps: LibraryHttpDeps): void {
     if (!deps.npcCreature?.listDefinitions) {
       return c.json({ definitions: [] }, 200);
     }
-    const listed = deps.npcCreature.listDefinitions(actorResult.actor, {});
+    const scopeRaw = c.req.query('scope')?.trim() ?? '';
+    const scope =
+      scopeRaw === 'personal' ||
+      scopeRaw === 'world' ||
+      scopeRaw === 'core' ||
+      scopeRaw === 'builtin'
+        ? scopeRaw
+        : undefined;
+    const worldProfileIdRaw = c.req.query('worldProfileId');
+    const worldProfileId =
+      worldProfileIdRaw === undefined || worldProfileIdRaw === ''
+        ? undefined
+        : worldProfileIdRaw;
+    const includeArchived = c.req.query('includeArchived') === '1';
+    const listed = deps.npcCreature.listDefinitions(actorResult.actor, {
+      ...(scope ? { scope } : {}),
+      ...(worldProfileId !== undefined ? { worldProfileId } : {}),
+      includeArchived,
+    });
     if (!listed.ok) {
       return c.json({ error: listed.error }, 503);
     }
@@ -1533,6 +1555,63 @@ export function mountLibraryHttpRoutes(app: Hono, deps: LibraryHttpDeps): void {
       );
     }
     return c.json({ definition: archived.value }, 200);
+  });
+
+  /** CUT-02b — restore archived definition (owner / world-edit ACL). */
+  app.post('/api/v1/library/npc-creatures/:id/restore', async (c) => {
+    const actorResult = await resolveLibraryActor(deps, c.req.raw.headers);
+    if (!actorResult.ok) {
+      return c.json({ error: actorResult.error }, actorResult.status);
+    }
+    if (!deps.npcCreature?.restoreDefinition) {
+      return c.json({ error: 'store-unavailable' }, 503);
+    }
+    const restored = deps.npcCreature.restoreDefinition(
+      actorResult.actor,
+      c.req.param('id'),
+    );
+    if (!restored.ok) {
+      return c.json(
+        { error: restored.error },
+        restored.error === 'not-authorized'
+          ? 403
+          : restored.error === 'not-found'
+            ? 404
+            : 400,
+      );
+    }
+    return c.json({ definition: restored.value }, 200);
+  });
+
+  /**
+   * CUT-02b — duplicate readable definition into a new personal row.
+   * Core/builtin packs without a DB row stay FE create-path; this route is for persisted defs.
+   */
+  app.post('/api/v1/library/npc-creatures/:id/duplicate', async (c) => {
+    const actorResult = await resolveLibraryActor(deps, c.req.raw.headers);
+    if (!actorResult.ok) {
+      return c.json({ error: actorResult.error }, actorResult.status);
+    }
+    if (!deps.npcCreature?.duplicateDefinition) {
+      return c.json({ error: 'store-unavailable' }, 503);
+    }
+    const duplicated = deps.npcCreature.duplicateDefinition(
+      actorResult.actor,
+      c.req.param('id'),
+    );
+    if (!duplicated.ok) {
+      return c.json(
+        { error: duplicated.error },
+        duplicated.error === 'not-authorized'
+          ? 403
+          : duplicated.error === 'not-found'
+            ? 404
+            : duplicated.error === 'P0001:invalid definition id'
+              ? 422
+              : 400,
+      );
+    }
+    return c.json({ definition: duplicated.value }, 201);
   });
 
   /** CUT-02 — load controller assignment for a campaign + definition. */

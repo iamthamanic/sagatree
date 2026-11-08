@@ -1802,70 +1802,70 @@
       "historicalCaller": "src/infrastructure/npc-creature/npc-creature-service.ts:duplicateNpcCreatureDefinition",
       "uiJourney": "NpcCreatureLibraryBrowser",
       "previousBehavior": "always supabase create",
-      "hostSuccessor": "NpcCreaturePorts.duplicateDefinition unbound",
+      "hostSuccessor": "POST /api/v1/library/npc-creatures/:id/duplicate",
       "dataOwner": "npc-creature",
       "risk": "medium",
-      "classification": "PARITY_MISSING",
+      "classification": "HOST_VERIFIED",
       "issueRef": 1159,
-      "evidenceTest": "pending CUT follow-up #1159",
+      "evidenceTest": "scripts/cut-02b-npc-definition.self-test.mjs",
       "featureAvailableBeforeCutover": true,
-      "notes": "CUT-01 audit: no pre-planned CUT-02..19 ownership"
+      "notes": "CUT-02b; packs without DB row still host-create personal copy"
     },
     {
       "stableKey": "npc-creature.restore-definition",
       "historicalCaller": "src/infrastructure/npc-creature/npc-creature-service.ts:restoreNpcCreatureDefinition",
       "uiJourney": "WorldNpcCreatureCatalogSection",
       "previousBehavior": "always supabase restore",
-      "hostSuccessor": "port unbound",
+      "hostSuccessor": "POST /api/v1/library/npc-creatures/:id/restore",
       "dataOwner": "npc-creature",
       "risk": "medium",
-      "classification": "PARITY_MISSING",
+      "classification": "HOST_VERIFIED",
       "issueRef": 1159,
-      "evidenceTest": "pending CUT follow-up #1159",
+      "evidenceTest": "scripts/cut-02b-npc-definition.self-test.mjs",
       "featureAvailableBeforeCutover": true,
-      "notes": "CUT-01 audit: no pre-planned CUT-02..19 ownership"
+      "notes": "CUT-02b; owner / world-edit ACL"
     },
     {
       "stableKey": "npc-creature.load-world-profile-catalog",
       "historicalCaller": "src/infrastructure/npc-creature/npc-creature-service.ts:loadWorldProfileNpcCreatureCatalog",
       "uiJourney": "World NPC catalog",
       "previousBehavior": "always supabase list",
-      "hostSuccessor": "library list filter unbound",
+      "hostSuccessor": "GET /api/v1/library/npc-creatures?scope=world&worldProfileId=&includeArchived=1",
       "dataOwner": "npc-creature",
       "risk": "medium",
-      "classification": "PARITY_MISSING",
+      "classification": "HOST_VERIFIED",
       "issueRef": 1159,
-      "evidenceTest": "pending CUT follow-up #1159",
+      "evidenceTest": "scripts/cut-02b-npc-definition.self-test.mjs",
       "featureAvailableBeforeCutover": true,
-      "notes": "CUT-01 audit: no pre-planned CUT-02..19 ownership"
+      "notes": "CUT-02b; server-side list filters"
     },
     {
       "stableKey": "npc-creature.promote-compact-to-full",
       "historicalCaller": "src/infrastructure/npc-creature/npc-creature-service.ts:promoteNpcCreatureCompactToFull",
       "uiJourney": "CharacterEditor NPC promote",
       "previousBehavior": "always supabase get+update",
-      "hostSuccessor": "could use host updateDefinition",
+      "hostSuccessor": "GET+PATCH /api/v1/library/npc-creatures/:id (updateDefinition)",
       "dataOwner": "npc-creature",
       "risk": "medium",
-      "classification": "PARITY_MISSING",
+      "classification": "HOST_VERIFIED",
       "issueRef": 1159,
-      "evidenceTest": "pending CUT follow-up #1159",
+      "evidenceTest": "scripts/cut-02b-npc-definition.self-test.mjs",
       "featureAvailableBeforeCutover": true,
-      "notes": "CUT-01 audit: no pre-planned CUT-02..19 ownership"
+      "notes": "CUT-02b; domain draft then host update"
     },
     {
       "stableKey": "npc-creature.load-world-availability",
       "historicalCaller": "src/infrastructure/npc-creature/npc-creature-service.ts:loadWorldNpcCreatureAvailability",
       "uiJourney": "NONE",
       "previousBehavior": "supabase modules+lists",
-      "hostSuccessor": "PORT_MISSING",
+      "hostSuccessor": "filtered GET library npc-creatures + domain module defaults",
       "dataOwner": "npc-creature",
       "risk": "low",
-      "classification": "LEGACY_UNUSED",
+      "classification": "HOST_VERIFIED",
       "issueRef": 1159,
-      "evidenceTest": "pending CUT follow-up #1159",
+      "evidenceTest": "scripts/cut-02b-npc-definition.self-test.mjs",
       "featureAvailableBeforeCutover": false,
-      "notes": "no src/app caller; residual export"
+      "notes": "CUT-02b residual export; no Soft-DENY; modules JSON defaults until world-modules surface"
     },
     {
       "stableKey": "item-catalog.load-character-catalog",
@@ -1954,9 +1954,9 @@
   ],
   "counts": {
     "total": 126,
-    "HOST_VERIFIED": 111,
-    "LEGACY_UNUSED": 4,
-    "PARITY_MISSING": 11
+    "HOST_VERIFIED": 116,
+    "LEGACY_UNUSED": 3,
+    "PARITY_MISSING": 7
   },
   "followUpIssues": {
     "1159": "CUT-02b NPC definition duplicate/restore/world-catalog/promote",

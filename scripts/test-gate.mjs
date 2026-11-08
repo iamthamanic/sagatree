@@ -1466,6 +1466,19 @@ function checkCut02NpcController() {
   console.log('OK: cut-02-npc-controller.self-test');
 }
 
+function checkCut02bNpcDefinition() {
+  console.log('CUT-02b NPC definition duplicate/restore/catalog/promote (#1159)...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/cut-02b-npc-definition.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+  console.log('OK: cut-02b-npc-definition.self-test');
+}
+
 function checkCut03NpcInstance() {
   console.log('CUT-03 NPC session-instance lifecycle host HTTP (#1138)...');
   execFileSync(
@@ -3907,6 +3920,7 @@ checkFeHost13SagaDefinition();
 checkFeHost14AiResiduals();
 checkCutoverParityInventory();
 checkCut02NpcController();
+checkCut02bNpcDefinition();
 checkCut03NpcInstance();
 checkCut04SessionDelete();
 checkCut05OutcomePromotion();
