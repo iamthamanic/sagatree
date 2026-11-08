@@ -383,3 +383,109 @@ export async function deleteHostWorldNode(input: {
     'Löschen fehlgeschlagen',
   );
 }
+
+export type HostWorldPublishedAssetDto = {
+  readonly assetId: string;
+  readonly contentType: string;
+  readonly byteSize: number;
+  readonly checksumSha256: string;
+  readonly url: string;
+  readonly storagePath: string;
+  readonly purpose: 'map-pin' | 'azgaar';
+  readonly worldProfileId: string;
+};
+
+/**
+ * CUT-10b — publish map-pin / azgaar bytes under world.edit (not actor-only /api/v1/assets).
+ */
+export async function publishHostWorldAsset(
+  worldProfileId: string,
+  file: File,
+  purpose: 'map-pin' | 'azgaar',
+  env: EnvLike = defaultEnv(),
+  fetchImpl: typeof fetch = fetch,
+): Promise<HostWorldPublishedAssetDto> {
+  const base = getHostAuthBaseUrl(env);
+  if (base === null) throw new Error('Host-Welt-Asset-Upload nicht erreichbar');
+  const id = worldProfileId.trim();
+  if (!id) throw new Error('Weltprofil fehlt');
+
+  const form = new FormData();
+  form.append('file', file, file.name || (purpose === 'azgaar' ? 'map.map' : 'pin.bin'));
+  form.append('purpose', purpose);
+  if (file.type) form.append('contentType', file.type);
+
+  let response: Response;
+  try {
+    response = await fetchImpl(`${base}/api/v1/worlds/${encodeURIComponent(id)}/assets`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: { Accept: 'application/json' },
+      body: form,
+    });
+  } catch {
+    throw new Error('Host-Welt-Asset-Upload nicht erreichbar');
+  }
+
+  if (!response.ok) {
+    let detail = '';
+    try {
+      const body: unknown = await response.json();
+      if (body && typeof body === 'object' && 'error' in body) {
+        detail = String((body as { error: unknown }).error);
+      }
+    } catch {
+      /* ignore */
+    }
+    if (response.status === 413) {
+      throw new Error('Datei zu groß für den Host-Welt-Speicher.');
+    }
+    if (response.status === 403) {
+      throw new Error(detail || 'Keine Berechtigung für Welt-Assets.');
+    }
+    throw new Error(detail || 'Host-Welt-Asset-Upload fehlgeschlagen');
+  }
+
+  const body = (await response.json()) as Partial<HostWorldPublishedAssetDto>;
+  if (typeof body.assetId !== 'string' || typeof body.storagePath !== 'string') {
+    throw new Error('Host-Welt-Asset-Upload: leere Antwort');
+  }
+  return {
+    assetId: body.assetId,
+    contentType: typeof body.contentType === 'string' ? body.contentType : file.type || '',
+    byteSize: typeof body.byteSize === 'number' ? body.byteSize : file.size,
+    checksumSha256: typeof body.checksumSha256 === 'string' ? body.checksumSha256 : '',
+    url: typeof body.url === 'string' ? body.url : '',
+    storagePath: body.storagePath,
+    purpose,
+    worldProfileId: id,
+  };
+}
+
+/** Expand owner-scoped storage path (or asset://) to credentialed host asset URL. */
+export function resolveHostWorldAssetUrl(
+  storagePath: string,
+  env: EnvLike = defaultEnv(),
+): string {
+  const raw = storagePath.trim();
+  if (!raw) throw new Error('Speicherpfad fehlt');
+  if (/^https?:\/\//i.test(raw)) return raw;
+  if (raw.startsWith('/api/v1/assets/')) {
+    const base = getHostAuthBaseUrl(env);
+    if (base === null) throw new Error('Host-Asset-URL nicht konfiguriert');
+    return `${base}${raw}`;
+  }
+  let assetId = '';
+  if (raw.startsWith('asset://')) {
+    assetId = raw.slice('asset://'.length).trim();
+  } else {
+    const slash = raw.indexOf('/');
+    assetId = slash >= 0 ? raw.slice(slash + 1) : raw;
+  }
+  if (!assetId || assetId.includes('/') || assetId.includes('..')) {
+    throw new Error('Ungültiger Atlas-Speicherpfad.');
+  }
+  const base = getHostAuthBaseUrl(env);
+  if (base === null) throw new Error('Host-Asset-URL nicht konfiguriert');
+  return `${base}/api/v1/assets/${encodeURIComponent(assetId)}`;
+}

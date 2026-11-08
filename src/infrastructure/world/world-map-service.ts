@@ -7,7 +7,12 @@ import {
   type WorldMapData,
   type WorldMapVm,
 } from '../../domains/world/map';
-import { fetchHostWorldMap, isHostLibraryEnabled, saveHostWorldMap } from '../host/host-world-http';
+import {
+  fetchHostWorldMap,
+  isHostLibraryEnabled,
+  publishHostWorldAsset,
+  saveHostWorldMap,
+} from '../host/host-world-http';
 
 const MAP_PIN_MAX_BYTES = 5 * 1024 * 1024;
 const MAP_PIN_ALLOWED_MIME = new Set(['image/png', 'image/jpeg', 'image/webp']);
@@ -108,18 +113,28 @@ class WorldMapService {
   }
 
   /**
-   * PARITY_MISSING (#1160): pin uploads use host asset flow in a later cutover.
+   * CUT-10b (#1161): owner/GM world.edit → host AssetPorts via world-scoped publish.
+   * Returns owner-scoped storagePath (not a display URL).
    */
   async uploadPinImage(
-    _worldProfileId: string,
-    _file: File,
-    _options?: UploadPinImageOptions,
+    worldProfileId: string,
+    file: File,
+    options?: UploadPinImageOptions,
   ): Promise<string> {
-    void _worldProfileId;
-    void _file;
-    void _options;
     assertHost();
-    throw new Error('Pin-Bild-Upload über Host-Speicher ist noch nicht verfügbar.');
+    const id = worldProfileId.trim();
+    if (!id) throw new Error('Weltprofil fehlt');
+    const prepared = options?.alreadyOptimized
+      ? file
+      : await prepareWorldMapPinFile(file, options?.signal);
+    if (prepared.size > MAP_PIN_MAX_BYTES) {
+      throw new Error('Bild ist zu groß. Maximum 5 MB');
+    }
+    if (!MAP_PIN_ALLOWED_MIME.has(prepared.type)) {
+      throw new Error('Nur PNG, JPEG oder WebP sind als Pin-Bild erlaubt.');
+    }
+    const published = await publishHostWorldAsset(id, prepared, 'map-pin');
+    return published.storagePath;
   }
 }
 

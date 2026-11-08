@@ -512,6 +512,8 @@ export function createHostApi(deps: HostApiDeps): Hono {
     identity: deps.identity,
     hostMode: deps.hostMode,
     world: deps.world,
+    permissions: deps.permissions,
+    assets: deps.assets,
   });
 
   mountProjectHttpRoutes(app, {

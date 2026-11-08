@@ -1900,42 +1900,42 @@
       "historicalCaller": "src/infrastructure/world/world-map-service.ts:uploadPinImage",
       "uiJourney": "WorldMapPinDialogs",
       "previousBehavior": "soft DENY; Storage world-map-pins",
-      "hostSuccessor": "PORT_MISSING /api/v1/assets",
+      "hostSuccessor": "POST /api/v1/worlds/:worldId/assets purpose=map-pin + AssetPorts",
       "dataOwner": "world",
       "risk": "medium",
-      "classification": "PARITY_MISSING",
+      "classification": "HOST_VERIFIED",
       "issueRef": 1161,
-      "evidenceTest": "pending CUT follow-up #1161",
+      "evidenceTest": "scripts/cut-10b-world-atlas-assets.self-test.mjs",
       "featureAvailableBeforeCutover": true,
-      "notes": "CUT-01 audit: no pre-planned CUT-02..19 ownership"
+      "notes": "CUT-10b: world.edit before publish; owner-scoped storagePath"
     },
     {
       "stableKey": "world-atlas.upload-azgaar",
       "historicalCaller": "src/infrastructure/world/world-atlas-service.ts:uploadAzgaarMapFile",
       "uiJourney": "useWorldAtlasEditor",
       "previousBehavior": "soft DENY; Storage atlas",
-      "hostSuccessor": "PORT_MISSING",
+      "hostSuccessor": "POST /api/v1/worlds/:worldId/assets purpose=azgaar + AssetPorts",
       "dataOwner": "world",
       "risk": "medium",
-      "classification": "PARITY_MISSING",
+      "classification": "HOST_VERIFIED",
       "issueRef": 1161,
-      "evidenceTest": "pending CUT follow-up #1161",
+      "evidenceTest": "scripts/cut-10b-world-atlas-assets.self-test.mjs",
       "featureAvailableBeforeCutover": true,
-      "notes": "CUT-01 audit: no pre-planned CUT-02..19 ownership"
+      "notes": "CUT-10b: JSON/ZIP sniff; world.edit gate"
     },
     {
       "stableKey": "world-atlas.create-signed-url",
       "historicalCaller": "src/infrastructure/world/world-atlas-service.ts:createSignedUrl",
       "uiJourney": "WorldAtlasWorkbench download",
       "previousBehavior": "soft DENY; storage signed URL",
-      "hostSuccessor": "PORT_MISSING",
+      "hostSuccessor": "GET /api/v1/assets/:assetId cookie media (resolveHostWorldAssetUrl)",
       "dataOwner": "world",
       "risk": "medium",
-      "classification": "PARITY_MISSING",
+      "classification": "HOST_VERIFIED",
       "issueRef": 1161,
-      "evidenceTest": "pending CUT follow-up #1161",
+      "evidenceTest": "scripts/cut-10b-world-atlas-assets.self-test.mjs",
       "featureAvailableBeforeCutover": true,
-      "notes": "CUT-01 audit: no pre-planned CUT-02..19 ownership"
+      "notes": "CUT-10b: Storage signed URL \u2192 credentialed host asset URL"
     },
     {
       "stableKey": "session-lobby.subscribe-ready",
@@ -1954,9 +1954,9 @@
   ],
   "counts": {
     "total": 126,
-    "HOST_VERIFIED": 118,
+    "HOST_VERIFIED": 121,
     "LEGACY_UNUSED": 3,
-    "PARITY_MISSING": 5
+    "PARITY_MISSING": 2
   },
   "followUpIssues": {
     "1159": "CUT-02b NPC definition duplicate/restore/world-catalog/promote",
