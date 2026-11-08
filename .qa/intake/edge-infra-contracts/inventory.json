@@ -28722,7 +28722,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "1d41f3b1eb3e71a3a8b12306993b605f2d05f2f41cd35f73b9c362b12f9c1cb6"
+            "sha256": "39abb17777de0e744ebe2932789443b9722135bfefc7ae0596f93ec7ef6df8dd"
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
@@ -28734,7 +28734,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-ai.json",
-      "sourceContractSha256": "ae716626043a35a546d45cfaea6c1e37b3de12304785823888e16d8124530de5",
+      "sourceContractSha256": "d3378e3f29cb6e62b696c47b97dbfc1f36927b76cfc0ef0ab5ce6911e67c6bbb",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],
@@ -29982,7 +29982,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "1d41f3b1eb3e71a3a8b12306993b605f2d05f2f41cd35f73b9c362b12f9c1cb6"
+            "sha256": "39abb17777de0e744ebe2932789443b9722135bfefc7ae0596f93ec7ef6df8dd"
           },
           {
             "path": "src/infrastructure/host/host-project-http.ts",
@@ -30158,7 +30158,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-character.json",
-      "sourceContractSha256": "e09603a2a8ddf2b1715b2af681988190a6a96d4ce020761e70b455207f4b65db",
+      "sourceContractSha256": "946c6a5d51606b1e3ae42943e2af0055329cdb7ed88ecaa63e89d0f57cff4ff0",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],
@@ -33154,7 +33154,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "1d41f3b1eb3e71a3a8b12306993b605f2d05f2f41cd35f73b9c362b12f9c1cb6"
+            "sha256": "39abb17777de0e744ebe2932789443b9722135bfefc7ae0596f93ec7ef6df8dd"
           },
           {
             "path": "src/infrastructure/host/host-project-http.ts",
@@ -33278,7 +33278,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-inventory.json",
-      "sourceContractSha256": "90d15364e8792396cb55c166a7472bb5b8a69f0afaaa7d91d5e2e519fdf0d7fa",
+      "sourceContractSha256": "bf75f6319615276b1f8f011e162d57b1a24f9d0197abaaf4d555935ab6d85d5d",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],
@@ -33956,7 +33956,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "1d41f3b1eb3e71a3a8b12306993b605f2d05f2f41cd35f73b9c362b12f9c1cb6"
+            "sha256": "39abb17777de0e744ebe2932789443b9722135bfefc7ae0596f93ec7ef6df8dd"
           },
           {
             "path": "src/infrastructure/look/adapters/host-mtoon-look-adapter.ts",
@@ -34012,7 +34012,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-look.json",
-      "sourceContractSha256": "8871a5926746d5e6b398771ed2a4d2e4ffe4d6413d461cfa78b3ceccbe7a51a2",
+      "sourceContractSha256": "65fe16b91fbd3ee49d023f830c8044bb5ebfd04720d3245ae9e4309d329d90e0",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],
@@ -34421,7 +34421,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "1d41f3b1eb3e71a3a8b12306993b605f2d05f2f41cd35f73b9c362b12f9c1cb6"
+            "sha256": "39abb17777de0e744ebe2932789443b9722135bfefc7ae0596f93ec7ef6df8dd"
           },
           {
             "path": "src/infrastructure/marketplace/host-marketplace-adapter.ts",
@@ -34449,7 +34449,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-marketplace.json",
-      "sourceContractSha256": "50023cdaa4d315de793415a93c2cc83fc33152c57fbb6d3cf05e6962567e9f00",
+      "sourceContractSha256": "3d2ea4f868f415d7a3638162a49c2315f1799012ea1b0f9c8771b61c0371ae63",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],
@@ -34988,7 +34988,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "1d41f3b1eb3e71a3a8b12306993b605f2d05f2f41cd35f73b9c362b12f9c1cb6"
+            "sha256": "39abb17777de0e744ebe2932789443b9722135bfefc7ae0596f93ec7ef6df8dd"
           },
           {
             "path": "src/infrastructure/host/host-session-http.ts",
@@ -34996,11 +34996,11 @@
           },
           {
             "path": "src/infrastructure/npc-creature/host-npc-creature-adapter.ts",
-            "sha256": "4b4ae65a357290dee9c5f197bf4357d121052388e76fbc5547f8452be3681958"
+            "sha256": "1f3bd51bb9b9f05b4a04d27c5107fd4ee78189f96d67323694c42cea2606470a"
           },
           {
             "path": "src/infrastructure/npc-creature/host-npc-creature-ports.contract.ts",
-            "sha256": "2bedeec0ce3be8ebca034fc07a0d5ca3ce9a46e6f8fb95e903103bca7c8f96f9"
+            "sha256": "5115ac6e4829356cee014436c464e361c2486d928caa2d8121dd6a896bf7996b"
           },
           {
             "path": "src/infrastructure/npc-creature/npc-creature-controller.persistence.ts",
@@ -35012,7 +35012,7 @@
           },
           {
             "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-            "sha256": "78bf416e2f51d54911af52ca86ec33e09ad934e0f311fbbce19ec175bfbbe30d"
+            "sha256": "f85a652361f7d0943b139693473f103ca55aaaefd6393b293bd67fd6a4496c4c"
           },
           {
             "path": "src/infrastructure/npc-creature/npc-creature.persistence.ts",
@@ -35040,7 +35040,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-npc-creature.json",
-      "sourceContractSha256": "83f28f8fd367242005cc9e9a492f7f2c4e95dafd66fc982ecae7d2a568a54d66",
+      "sourceContractSha256": "2f4522d6009dcfe3739ad7dc65a37fda1be7ec7756b5310a473fe95b541d0263",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],
@@ -35051,16 +35051,16 @@
           "kind": "auth-helper",
           "name": null,
           "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-          "line": 366,
-          "endLine": 366,
+          "line": 361,
+          "endLine": 361,
           "resolution": "dynamic-expression",
           "expression": "getAuthenticatedUserId()",
           "chain": "getAuthenticatedUserId()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-            "line": 360,
-            "endLine": 396,
+            "line": 355,
+            "endLine": 391,
             "text": "export async function assignNpcCreatureController(input: {\n  projectId: string;\n  definitionId: string;\n  controllerUserId: string | null;\n  activeMemberUserIds: readonly string[];\n}): Promise<NpcControllerAssignment> {\n  const actorUserId = await getAuthenticatedUserId();\n  const record = await getNpcCreatureDefinition(input.definitionId);\n  if (!record) {\n    throw new Error('Figur wurde nicht gefunden.');\n  }\n\n  const planned = planNpcControllerAssignment(\n    record.definition,\n    {\n      projectId: input.projectId,\n      definitionId: input.definitionId,\n      controllerUserId: input.controllerUserId,\n    },\n    {\n      actorUserId,\n      actorRole: 'gm',\n      activeMemberUserIds: input.activeMemberUserIds,\n    },\n  );\n  if (planned.ok === false) {\n    throw new Error(planned.message);\n  }\n\n  assertHost();\n  const assignment = await assignHostNpcCreatureController({\n    projectId: planned.assignment.projectId,\n    definitionId: planned.assignment.definitionId,\n    controllerUserId: planned.assignment.controllerUserId,\n  });\n  return mapHostControllerAssignment(assignment);\n}"
           }
         },
@@ -35068,16 +35068,16 @@
           "kind": "auth-helper",
           "name": null,
           "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-          "line": 452,
-          "endLine": 452,
+          "line": 447,
+          "endLine": 447,
           "resolution": "dynamic-expression",
           "expression": "getAuthenticatedUserId()",
           "chain": "getAuthenticatedUserId()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-            "line": 444,
-            "endLine": 496,
+            "line": 439,
+            "endLine": 491,
             "text": "export async function spawnNpcCreatureInstance(input: {\n  projectId: string;\n  sessionId?: string | null;\n  definitionId: string;\n  instanceKind: NpcCreatureInstanceKind;\n  displayName?: string | null;\n  activeMemberUserIds: readonly string[];\n}): Promise<NpcCreatureInstance> {\n  const actorUserId = await getAuthenticatedUserId();\n  const definition = await resolveDefinitionForInstance(input.definitionId);\n  if (!definition) {\n    throw new Error('Figuren-Vorlage wurde nicht gefunden.');\n  }\n\n  const existing = await listNpcCreatureInstances(input.projectId);\n  const definitionReadable =\n    isBuiltinOrCoreDefinitionId(definition.id) ||\n    Boolean(await getNpcCreatureDefinition(definition.id));\n\n  const planned = planNpcCreatureInstanceSpawn(\n    definition,\n    {\n      projectId: input.projectId,\n      sessionId: input.sessionId ?? null,\n      definitionId: input.definitionId,\n      instanceKind: input.instanceKind,\n      displayName: input.displayName ?? null,\n    },\n    {\n      actorUserId,\n      actorRole: 'gm',\n      activeMemberUserIds: input.activeMemberUserIds,\n      existingInstances: existing,\n      definitionReadable,\n    },\n  );\n  if (planned.ok === false) {\n    throw new Error(planned.message);\n  }\n\n  assertHost();\n  const instance = await spawnHostNpcInstance({\n    projectId: planned.instance.projectId,\n    definitionId: planned.instance.definitionId,\n    instanceKind: planned.instance.instanceKind,\n    snapshot: toInstanceSnapshotPayload(planned.instance.snapshot),\n    runtime: toInstanceRuntimePayload(planned.instance.runtime),\n    displayName: planned.instance.displayName,\n    sequenceNumber: planned.instance.sequenceNumber,\n    sessionId: planned.instance.sessionId,\n  });\n  return mapHostInstanceDto(instance);\n}"
           }
         },
@@ -35085,16 +35085,16 @@
           "kind": "auth-helper",
           "name": null,
           "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-          "line": 504,
-          "endLine": 504,
+          "line": 499,
+          "endLine": 499,
           "resolution": "dynamic-expression",
           "expression": "getAuthenticatedUserId()",
           "chain": "getAuthenticatedUserId()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-            "line": 499,
-            "endLine": 524,
+            "line": 494,
+            "endLine": 519,
             "text": "export async function updateNpcCreatureInstanceRuntime(input: {\n  instance: NpcCreatureInstance;\n  patch: NpcCreatureInstanceRuntimeUpdate;\n  activeMemberUserIds: readonly string[];\n}): Promise<NpcCreatureInstance> {\n  const actorUserId = await getAuthenticatedUserId();\n  const planned = planNpcCreatureInstanceRuntimeUpdate(\n    input.instance,\n    input.patch,\n    {\n      actorUserId,\n      actorRole: 'gm',\n      activeMemberUserIds: input.activeMemberUserIds,\n    },\n  );\n  if (planned.ok === false) {\n    throw new Error(planned.message);\n  }\n\n  assertHost();\n  const instance = await updateHostNpcInstanceRuntime(\n    planned.instance.id!,\n    toInstanceRuntimePayload(planned.instance.runtime),\n  );\n  return mapHostInstanceDto(instance);\n}"
           }
         }
@@ -35109,16 +35109,16 @@
           "kind": "auth-helper",
           "name": null,
           "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-          "line": 366,
-          "endLine": 366,
+          "line": 361,
+          "endLine": 361,
           "resolution": "dynamic-expression",
           "expression": "getAuthenticatedUserId()",
           "chain": "getAuthenticatedUserId()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-            "line": 360,
-            "endLine": 396,
+            "line": 355,
+            "endLine": 391,
             "text": "export async function assignNpcCreatureController(input: {\n  projectId: string;\n  definitionId: string;\n  controllerUserId: string | null;\n  activeMemberUserIds: readonly string[];\n}): Promise<NpcControllerAssignment> {\n  const actorUserId = await getAuthenticatedUserId();\n  const record = await getNpcCreatureDefinition(input.definitionId);\n  if (!record) {\n    throw new Error('Figur wurde nicht gefunden.');\n  }\n\n  const planned = planNpcControllerAssignment(\n    record.definition,\n    {\n      projectId: input.projectId,\n      definitionId: input.definitionId,\n      controllerUserId: input.controllerUserId,\n    },\n    {\n      actorUserId,\n      actorRole: 'gm',\n      activeMemberUserIds: input.activeMemberUserIds,\n    },\n  );\n  if (planned.ok === false) {\n    throw new Error(planned.message);\n  }\n\n  assertHost();\n  const assignment = await assignHostNpcCreatureController({\n    projectId: planned.assignment.projectId,\n    definitionId: planned.assignment.definitionId,\n    controllerUserId: planned.assignment.controllerUserId,\n  });\n  return mapHostControllerAssignment(assignment);\n}"
           }
         },
@@ -35126,16 +35126,16 @@
           "kind": "auth-helper",
           "name": null,
           "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-          "line": 452,
-          "endLine": 452,
+          "line": 447,
+          "endLine": 447,
           "resolution": "dynamic-expression",
           "expression": "getAuthenticatedUserId()",
           "chain": "getAuthenticatedUserId()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-            "line": 444,
-            "endLine": 496,
+            "line": 439,
+            "endLine": 491,
             "text": "export async function spawnNpcCreatureInstance(input: {\n  projectId: string;\n  sessionId?: string | null;\n  definitionId: string;\n  instanceKind: NpcCreatureInstanceKind;\n  displayName?: string | null;\n  activeMemberUserIds: readonly string[];\n}): Promise<NpcCreatureInstance> {\n  const actorUserId = await getAuthenticatedUserId();\n  const definition = await resolveDefinitionForInstance(input.definitionId);\n  if (!definition) {\n    throw new Error('Figuren-Vorlage wurde nicht gefunden.');\n  }\n\n  const existing = await listNpcCreatureInstances(input.projectId);\n  const definitionReadable =\n    isBuiltinOrCoreDefinitionId(definition.id) ||\n    Boolean(await getNpcCreatureDefinition(definition.id));\n\n  const planned = planNpcCreatureInstanceSpawn(\n    definition,\n    {\n      projectId: input.projectId,\n      sessionId: input.sessionId ?? null,\n      definitionId: input.definitionId,\n      instanceKind: input.instanceKind,\n      displayName: input.displayName ?? null,\n    },\n    {\n      actorUserId,\n      actorRole: 'gm',\n      activeMemberUserIds: input.activeMemberUserIds,\n      existingInstances: existing,\n      definitionReadable,\n    },\n  );\n  if (planned.ok === false) {\n    throw new Error(planned.message);\n  }\n\n  assertHost();\n  const instance = await spawnHostNpcInstance({\n    projectId: planned.instance.projectId,\n    definitionId: planned.instance.definitionId,\n    instanceKind: planned.instance.instanceKind,\n    snapshot: toInstanceSnapshotPayload(planned.instance.snapshot),\n    runtime: toInstanceRuntimePayload(planned.instance.runtime),\n    displayName: planned.instance.displayName,\n    sequenceNumber: planned.instance.sequenceNumber,\n    sessionId: planned.instance.sessionId,\n  });\n  return mapHostInstanceDto(instance);\n}"
           }
         },
@@ -35143,16 +35143,16 @@
           "kind": "auth-helper",
           "name": null,
           "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-          "line": 504,
-          "endLine": 504,
+          "line": 499,
+          "endLine": 499,
           "resolution": "dynamic-expression",
           "expression": "getAuthenticatedUserId()",
           "chain": "getAuthenticatedUserId()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-            "line": 499,
-            "endLine": 524,
+            "line": 494,
+            "endLine": 519,
             "text": "export async function updateNpcCreatureInstanceRuntime(input: {\n  instance: NpcCreatureInstance;\n  patch: NpcCreatureInstanceRuntimeUpdate;\n  activeMemberUserIds: readonly string[];\n}): Promise<NpcCreatureInstance> {\n  const actorUserId = await getAuthenticatedUserId();\n  const planned = planNpcCreatureInstanceRuntimeUpdate(\n    input.instance,\n    input.patch,\n    {\n      actorUserId,\n      actorRole: 'gm',\n      activeMemberUserIds: input.activeMemberUserIds,\n    },\n  );\n  if (planned.ok === false) {\n    throw new Error(planned.message);\n  }\n\n  assertHost();\n  const instance = await updateHostNpcInstanceRuntime(\n    planned.instance.id!,\n    toInstanceRuntimePayload(planned.instance.runtime),\n  );\n  return mapHostInstanceDto(instance);\n}"
           }
         }
@@ -35218,164 +35218,164 @@
         },
         {
           "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-          "line": 61,
-          "endLine": 65,
+          "line": 63,
+          "endLine": 67,
           "name": "assertHost"
         },
         {
           "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-          "line": 67,
-          "endLine": 98,
+          "line": 69,
+          "endLine": 100,
           "name": "mapHostLibraryNpcRecord"
         },
         {
           "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-          "line": 100,
-          "endLine": 122,
+          "line": 102,
+          "endLine": 116,
           "name": "listNpcCreatureDefinitions"
         },
         {
           "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-          "line": 124,
-          "endLine": 143,
+          "line": 118,
+          "endLine": 137,
           "name": "getNpcCreatureDefinition"
         },
         {
           "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-          "line": 145,
-          "endLine": 149,
+          "line": 139,
+          "endLine": 143,
           "name": "requireHostNpcRecord"
         },
         {
           "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-          "line": 151,
-          "endLine": 162,
+          "line": 145,
+          "endLine": 156,
           "name": "createNpcCreatureDefinition"
         },
         {
           "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-          "line": 164,
-          "endLine": 173,
+          "line": 158,
+          "endLine": 167,
           "name": "updateNpcCreatureDefinition"
         },
         {
           "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-          "line": 175,
-          "endLine": 181,
+          "line": 169,
+          "endLine": 175,
           "name": "archiveNpcCreatureDefinition"
         },
         {
           "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-          "line": 183,
-          "endLine": 187,
+          "line": 177,
+          "endLine": 181,
           "name": "personalCopyName"
         },
         {
           "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-          "line": 193,
-          "endLine": 211,
+          "line": 188,
+          "endLine": 207,
           "name": "duplicateNpcCreatureDefinition"
         },
         {
           "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-          "line": 216,
-          "endLine": 222,
+          "line": 210,
+          "endLine": 216,
           "name": "restoreNpcCreatureDefinition"
         },
         {
           "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-          "line": 225,
-          "endLine": 238,
+          "line": 219,
+          "endLine": 232,
           "name": "toNpcCreatureDefinitionSummaries"
         },
         {
           "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-          "line": 244,
-          "endLine": 252,
+          "line": 238,
+          "endLine": 246,
           "name": "loadWorldProfileNpcCreatureCatalog"
         },
         {
           "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-          "line": 264,
-          "endLine": 304,
+          "line": 259,
+          "endLine": 298,
           "name": "loadWorldNpcCreatureAvailability"
         },
         {
           "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-          "line": 283,
-          "endLine": 293,
+          "line": 277,
+          "endLine": 287,
           "name": "resolveDefinition"
         },
         {
           "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-          "line": 309,
-          "endLine": 333,
+          "line": 304,
+          "endLine": 328,
           "name": "promoteNpcCreatureCompactToFull"
         },
         {
           "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-          "line": 335,
-          "endLine": 343,
+          "line": 330,
+          "endLine": 338,
           "name": "mapHostControllerAssignment"
         },
         {
           "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-          "line": 346,
-          "endLine": 353,
+          "line": 341,
+          "endLine": 348,
           "name": "getNpcCreatureControllerAssignment"
         },
         {
           "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-          "line": 360,
-          "endLine": 396,
+          "line": 355,
+          "endLine": 391,
           "name": "assignNpcCreatureController"
         },
         {
           "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-          "line": 398,
-          "endLine": 407,
+          "line": 393,
+          "endLine": 402,
           "name": "resolveDefinitionForInstance"
         },
         {
           "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-          "line": 409,
-          "endLine": 424,
+          "line": 404,
+          "endLine": 419,
           "name": "mapHostInstanceDto"
         },
         {
           "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-          "line": 426,
-          "endLine": 429,
+          "line": 421,
+          "endLine": 424,
           "name": "isBuiltinOrCoreDefinitionId"
         },
         {
           "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-          "line": 432,
-          "endLine": 438,
+          "line": 427,
+          "endLine": 433,
           "name": "listNpcCreatureInstances"
         },
         {
           "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-          "line": 444,
-          "endLine": 496,
+          "line": 439,
+          "endLine": 491,
           "name": "spawnNpcCreatureInstance"
         },
         {
           "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-          "line": 499,
-          "endLine": 524,
+          "line": 494,
+          "endLine": 519,
           "name": "updateNpcCreatureInstanceRuntime"
         },
         {
           "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-          "line": 527,
-          "endLine": 530,
+          "line": 522,
+          "endLine": 525,
           "name": "removeNpcCreatureInstance"
         },
         {
           "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-          "line": 536,
-          "endLine": 541,
+          "line": 531,
+          "endLine": 536,
           "name": "clearNpcCreatureInstanceTempControllersForSession"
         },
         {
@@ -35443,7 +35443,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "1d41f3b1eb3e71a3a8b12306993b605f2d05f2f41cd35f73b9c362b12f9c1cb6"
+            "sha256": "39abb17777de0e744ebe2932789443b9722135bfefc7ae0596f93ec7ef6df8dd"
           },
           {
             "path": "src/infrastructure/host/host-project-http.ts",
@@ -35499,7 +35499,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-project.json",
-      "sourceContractSha256": "448bf524412cbb1e9e82094b7c6bf50238f3c4d6d1d5e8b8f746c4673c188031",
+      "sourceContractSha256": "73c525f2ef242eb92a1c45a9965dd759b62a31b541bc0d58b175977741017783",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],
@@ -35840,7 +35840,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "1d41f3b1eb3e71a3a8b12306993b605f2d05f2f41cd35f73b9c362b12f9c1cb6"
+            "sha256": "39abb17777de0e744ebe2932789443b9722135bfefc7ae0596f93ec7ef6df8dd"
           },
           {
             "path": "src/infrastructure/rulesets/ruleset-service.ts",
@@ -35856,7 +35856,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-rulesets.json",
-      "sourceContractSha256": "64e4bb2751f89b2444201610b15359a867eede78ebc9ccee48e7e43c28242984",
+      "sourceContractSha256": "e038806425b917a0064fe33a8646ae34b55c5b0d1dc95d5d6b5ad8d7dc083290",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],
@@ -35951,7 +35951,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "1d41f3b1eb3e71a3a8b12306993b605f2d05f2f41cd35f73b9c362b12f9c1cb6"
+            "sha256": "39abb17777de0e744ebe2932789443b9722135bfefc7ae0596f93ec7ef6df8dd"
           },
           {
             "path": "src/infrastructure/host/host-saga-definition-http.ts",
@@ -35987,7 +35987,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-saga.json",
-      "sourceContractSha256": "ff6f5d5a6d300d1443be01dec768a95604830c194794a63e0cdac76833db6f95",
+      "sourceContractSha256": "f3e71c492697a169e1111163a9d9b2c6daafc7292a8f45871d9026188a344d75",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],
@@ -36167,7 +36167,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "1d41f3b1eb3e71a3a8b12306993b605f2d05f2f41cd35f73b9c362b12f9c1cb6"
+            "sha256": "39abb17777de0e744ebe2932789443b9722135bfefc7ae0596f93ec7ef6df8dd"
           },
           {
             "path": "src/infrastructure/host/host-session-http.ts",
@@ -36259,7 +36259,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-session.json",
-      "sourceContractSha256": "1fd1511e1fad8e7b2afe6acb230eff8e15c1387e3caf0408d2c88569d21e31f0",
+      "sourceContractSha256": "478ae17bd801fdccf66a043e07ded7b536341ba63660021a6f3e30b360fec9aa",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],
@@ -37119,7 +37119,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "1d41f3b1eb3e71a3a8b12306993b605f2d05f2f41cd35f73b9c362b12f9c1cb6"
+            "sha256": "39abb17777de0e744ebe2932789443b9722135bfefc7ae0596f93ec7ef6df8dd"
           },
           {
             "path": "src/infrastructure/media/optimizer/engines/audio/index.ts",
@@ -37207,7 +37207,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-user-profile.json",
-      "sourceContractSha256": "33cb2d5e10ce658fc95d384a17005197e970e999ef76690ad669989f34bdf94a",
+      "sourceContractSha256": "8d2aebed9b35168bec66d9b963018d946303d26bfc2f859cfbfdbdad6fa023da",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],
@@ -37637,7 +37637,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "1d41f3b1eb3e71a3a8b12306993b605f2d05f2f41cd35f73b9c362b12f9c1cb6"
+            "sha256": "39abb17777de0e744ebe2932789443b9722135bfefc7ae0596f93ec7ef6df8dd"
           },
           {
             "path": "src/infrastructure/host/host-world-http.ts",
@@ -37733,7 +37733,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-world.json",
-      "sourceContractSha256": "f7b0020df3a3262ae8b083e1b0b1a25c989a61249171e564d7ba1d50d874911b",
+      "sourceContractSha256": "6c0fb173ec70f7ff7dfb2463bc28ecd459433ca67b59be038ba48dcc47a47379",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],

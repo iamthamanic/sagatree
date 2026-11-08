@@ -39,12 +39,14 @@ import {
   archiveHostLibraryNpcCreature,
   assignHostNpcCreatureController,
   createHostLibraryNpcCreature,
+  duplicateHostLibraryNpcCreature,
   fetchHostLibraryNpcCreatureById,
   fetchHostLibraryNpcCreatures,
   fetchHostNpcCreatureControllerAssignment,
   fetchHostNpcInstances,
   isHostLibraryEnabled,
   removeHostNpcInstance,
+  restoreHostLibraryNpcCreature,
   spawnHostNpcInstance,
   updateHostLibraryNpcCreature,
   updateHostNpcInstanceRuntime,
@@ -103,22 +105,14 @@ export async function listNpcCreatureDefinitions(options?: {
   includeArchived?: boolean;
 }): Promise<NpcCreatureCatalogRecord[]> {
   assertHost();
-  const rows = await fetchHostLibraryNpcCreatures();
+  const rows = await fetchHostLibraryNpcCreatures({
+    scope: options?.scope,
+    worldProfileId: options?.worldProfileId,
+    includeArchived: options?.includeArchived === true,
+  });
   return rows
     .map(mapHostLibraryNpcRecord)
-    .filter((record): record is NpcCreatureCatalogRecord => record !== null)
-    .filter((record) => {
-      if (options?.includeArchived) return true;
-      return record.status === 'active';
-    })
-    .filter((record) => {
-      if (!options?.scope) return true;
-      return record.definition.scope === options.scope;
-    })
-    .filter((record) => {
-      if (!options?.worldProfileId) return true;
-      return record.worldProfileId === options.worldProfileId;
-    });
+    .filter((record): record is NpcCreatureCatalogRecord => record !== null);
 }
 
 export async function getNpcCreatureDefinition(
@@ -188,37 +182,37 @@ function personalCopyName(sourceName: string): string {
 
 /**
  * Clone any library definition into a new personal row with “(Kopie)” name.
- * Core/builtin sources are accepted from the in-memory catalog record (no DB row).
+ * Persisted defs → host `duplicateDefinition` port.
+ * Core/builtin packs (no DB row) → host create with personal copy draft.
  */
 export async function duplicateNpcCreatureDefinition(
   definitionId: string,
   sourceDefinition?: NpcCreatureDefinition,
 ): Promise<NpcCreatureCatalogRecord> {
   assertHost();
-  let definition = sourceDefinition ?? null;
-  if (!definition) {
-    const existing = await getNpcCreatureDefinition(definitionId);
-    if (!existing) {
-      throw new Error('Definition nicht gefunden.');
-    }
-    definition = existing.definition;
+  // Packs are core-scoped (builtins live under core packs — no `builtin` scope).
+  const pack =
+    getCoreNpcCreatureDefinition(definitionId) ??
+    getBuiltinNpcCreatureDefinition(definitionId) ??
+    (sourceDefinition?.scope === 'core' ? sourceDefinition : null);
+  if (pack) {
+    const { id: _id, scope: _scope, ...rest } = pack;
+    return createNpcCreatureDefinition({
+      target: { scope: 'personal' },
+      draft: { ...rest, name: personalCopyName(rest.name) },
+    });
   }
-  const { id: _id, scope: _scope, ...rest } = definition;
-  return createNpcCreatureDefinition({
-    target: { scope: 'personal' },
-    draft: { ...rest, name: personalCopyName(rest.name) },
-  });
+  const duplicated = await duplicateHostLibraryNpcCreature(definitionId);
+  return requireHostNpcRecord(duplicated, 'Host-NPC duplizieren: ungültige Antwort');
 }
 
-/**
- * Restore archived definition — PARITY_MISSING (#1159): no host route yet; Soft-DENY.
- */
+/** Restore archived definition via host `restoreDefinition` port (#1159 / CUT-02b). */
 export async function restoreNpcCreatureDefinition(
   definitionId: string,
 ): Promise<NpcCreatureCatalogRecord> {
-  void definitionId;
   assertHost();
-  throw new Error('NPC-Katalog wiederherstellen ist im Host-Modus noch nicht verfügbar.');
+  const restored = await restoreHostLibraryNpcCreature(definitionId);
+  return requireHostNpcRecord(restored, 'Host-NPC wiederherstellen: ungültige Antwort');
 }
 
 /** Library-ready summaries with derived Machtgrad labels. */
@@ -258,14 +252,14 @@ export interface WorldNpcCreatureAvailability {
 }
 
 /**
- * Compose effective NPC/creature availability for a world profile (#199).
- * Includes the caller's active personal definitions when the module allows them.
+ * Compose effective NPC/creature availability for a world profile (#199 / CUT-02b).
+ * Host-first: filtered library list HTTP; module config uses domain defaults
+ * (world payload modules not yet a product surface for NPC catalog).
  */
 export async function loadWorldNpcCreatureAvailability(
   worldProfileId: string,
 ): Promise<WorldNpcCreatureAvailability> {
   assertHost();
-  // Host world `modules` parity (#1159): defaults until host exposes modules JSON.
   const modules = null;
   const [worldRecords, personalRecords] = await Promise.all([
     loadWorldProfileNpcCreatureCatalog(worldProfileId),
@@ -304,7 +298,8 @@ export async function loadWorldNpcCreatureAvailability(
 }
 
 /**
- * Compact → Full (#200): flip sheetMode on the same definition id after a legal CharacterEditor save.
+ * Compact → Full (#200 / CUT-02b): host get + updateDefinition (same id).
+ * No Soft-DENY; owner ACL enforced by host update port.
  */
 export async function promoteNpcCreatureCompactToFull(input: {
   definitionId: string;

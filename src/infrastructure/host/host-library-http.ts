@@ -683,12 +683,23 @@ export async function activateHostLibraryAvatarArtifact(
   };
 }
 
+/** CUT-02b — list NPC definitions; optional scope / worldProfileId / includeArchived. */
 export async function fetchHostLibraryNpcCreatures(
+  options: {
+    readonly scope?: 'personal' | 'world' | 'core' | 'builtin';
+    readonly worldProfileId?: string | null;
+    readonly includeArchived?: boolean;
+  } = {},
   env: EnvLike = defaultEnv(),
   fetchImpl: typeof fetch = fetch,
 ): Promise<readonly unknown[]> {
+  const qs = new URLSearchParams();
+  if (options.scope) qs.set('scope', options.scope);
+  if (options.worldProfileId) qs.set('worldProfileId', options.worldProfileId);
+  if (options.includeArchived) qs.set('includeArchived', '1');
+  const query = qs.toString();
   const body = await hostGetJson<{ definitions?: unknown[] }>(
-    '/api/v1/library/npc-creatures',
+    `/api/v1/library/npc-creatures${query ? `?${query}` : ''}`,
     'Host-NPC-Katalog nicht erreichbar',
     env,
     fetchImpl,
@@ -939,6 +950,42 @@ export async function archiveHostLibraryNpcCreature(
     fetchImpl,
   );
   if (!body.definition) throw new Error('Host-NPC archivieren: leere Antwort');
+  return body.definition;
+}
+
+/** CUT-02b — restore archived NPC definition via host port. */
+export async function restoreHostLibraryNpcCreature(
+  definitionId: string,
+  env: EnvLike = defaultEnv(),
+  fetchImpl: typeof fetch = fetch,
+): Promise<unknown> {
+  const body = await hostMutateJson<{ definition?: unknown }>(
+    `/api/v1/library/npc-creatures/${encodeURIComponent(definitionId)}/restore`,
+    'POST',
+    'Host-NPC wiederherstellen fehlgeschlagen',
+    {},
+    env,
+    fetchImpl,
+  );
+  if (!body.definition) throw new Error('Host-NPC wiederherstellen: leere Antwort');
+  return body.definition;
+}
+
+/** CUT-02b — duplicate persisted NPC into a new personal row via host port. */
+export async function duplicateHostLibraryNpcCreature(
+  definitionId: string,
+  env: EnvLike = defaultEnv(),
+  fetchImpl: typeof fetch = fetch,
+): Promise<unknown> {
+  const body = await hostMutateJson<{ definition?: unknown }>(
+    `/api/v1/library/npc-creatures/${encodeURIComponent(definitionId)}/duplicate`,
+    'POST',
+    'Host-NPC duplizieren fehlgeschlagen',
+    {},
+    env,
+    fetchImpl,
+  );
+  if (!body.definition) throw new Error('Host-NPC duplizieren: leere Antwort');
   return body.definition;
 }
 
