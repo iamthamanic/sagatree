@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-npc-creature.json](source-contracts/infra-npc-creature.json) (SHA-256 `83f28f8fd367242005cc9e9a492f7f2c4e95dafd66fc982ecae7d2a568a54d66`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-npc-creature.json](source-contracts/infra-npc-creature.json) (SHA-256 `2f4522d6009dcfe3739ad7dc65a37fda1be7ec7756b5310a473fe95b541d0263`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -45,34 +45,34 @@ None in the reviewed source.
 
 ### auth-helper: session identity
 
-`src/infrastructure/npc-creature/npc-creature-service.ts:366` — dynamic-expression.
+`src/infrastructure/npc-creature/npc-creature-service.ts:361` — dynamic-expression.
 
 Exact call/query chain:
 ```ts
 getAuthenticatedUserId()
 ```
 
-Enclosing operation: `src/infrastructure/npc-creature/npc-creature-service.ts:360`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/npc-creature/npc-creature-service.ts:355`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### auth-helper: session identity
 
-`src/infrastructure/npc-creature/npc-creature-service.ts:452` — dynamic-expression.
+`src/infrastructure/npc-creature/npc-creature-service.ts:447` — dynamic-expression.
 
 Exact call/query chain:
 ```ts
 getAuthenticatedUserId()
 ```
 
-Enclosing operation: `src/infrastructure/npc-creature/npc-creature-service.ts:444`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/npc-creature/npc-creature-service.ts:439`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### auth-helper: session identity
 
-`src/infrastructure/npc-creature/npc-creature-service.ts:504` — dynamic-expression.
+`src/infrastructure/npc-creature/npc-creature-service.ts:499` — dynamic-expression.
 
 Exact call/query chain:
 ```ts
 getAuthenticatedUserId()
 ```
 
-Enclosing operation: `src/infrastructure/npc-creature/npc-creature-service.ts:499`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/npc-creature/npc-creature-service.ts:494`; complete request/default/result/error logic is in the declarations below and the snapshot.
 
 ## Complete public declarations and facade operation contracts
 
@@ -120,7 +120,7 @@ export function createHostNpcCreatureAdapter(
 }
 ```
 
-### src/infrastructure/npc-creature/host-npc-creature-ports.contract.ts:10
+### src/infrastructure/npc-creature/host-npc-creature-ports.contract.ts:9
 
 ```ts
 export type HostNpcCreatureResult<T> =
@@ -128,7 +128,7 @@ export type HostNpcCreatureResult<T> =
   | { readonly ok: false; readonly error: string };
 ```
 
-### src/infrastructure/npc-creature/host-npc-creature-ports.contract.ts:14
+### src/infrastructure/npc-creature/host-npc-creature-ports.contract.ts:13
 
 ```ts
 export type HostNpcDefinitionRecord = {
@@ -145,7 +145,7 @@ export type HostNpcDefinitionRecord = {
 };
 ```
 
-### src/infrastructure/npc-creature/host-npc-creature-ports.contract.ts:27
+### src/infrastructure/npc-creature/host-npc-creature-ports.contract.ts:26
 
 ```ts
 export type HostNpcInstanceRow = {
@@ -164,7 +164,7 @@ export type HostNpcInstanceRow = {
 };
 ```
 
-### src/infrastructure/npc-creature/host-npc-creature-ports.contract.ts:42
+### src/infrastructure/npc-creature/host-npc-creature-ports.contract.ts:41
 
 ```ts
 export type HostNpcControllerAssignmentRow = {
@@ -176,7 +176,7 @@ export type HostNpcControllerAssignmentRow = {
 };
 ```
 
-### src/infrastructure/npc-creature/host-npc-creature-ports.contract.ts:54
+### src/infrastructure/npc-creature/host-npc-creature-ports.contract.ts:53
 
 ```ts
 export type HostNpcCreaturePorts = {
@@ -261,7 +261,7 @@ export type HostNpcCreaturePorts = {
 };
 ```
 
-### src/infrastructure/npc-creature/host-npc-creature-ports.contract.ts:136
+### src/infrastructure/npc-creature/host-npc-creature-ports.contract.ts:135
 
 ```ts
 export const HOST_NPC_CREATURE_OPS = [
@@ -282,7 +282,7 @@ export const HOST_NPC_CREATURE_OPS = [
 ] as const;
 ```
 
-### src/infrastructure/npc-creature/host-npc-creature-ports.contract.ts:153
+### src/infrastructure/npc-creature/host-npc-creature-ports.contract.ts:152
 
 ```ts
 export type HostNpcCreatureOp = (typeof HOST_NPC_CREATURE_OPS)[number];
@@ -391,7 +391,7 @@ export function toInstanceSnapshotPayload(
 }
 ```
 
-### src/infrastructure/npc-creature/npc-creature-service.ts:100
+### src/infrastructure/npc-creature/npc-creature-service.ts:102
 
 ```ts
 export async function listNpcCreatureDefinitions(options?: {
@@ -400,26 +400,18 @@ export async function listNpcCreatureDefinitions(options?: {
   includeArchived?: boolean;
 }): Promise<NpcCreatureCatalogRecord[]> {
   assertHost();
-  const rows = await fetchHostLibraryNpcCreatures();
+  const rows = await fetchHostLibraryNpcCreatures({
+    scope: options?.scope,
+    worldProfileId: options?.worldProfileId,
+    includeArchived: options?.includeArchived === true,
+  });
   return rows
     .map(mapHostLibraryNpcRecord)
-    .filter((record): record is NpcCreatureCatalogRecord => record !== null)
-    .filter((record) => {
-      if (options?.includeArchived) return true;
-      return record.status === 'active';
-    })
-    .filter((record) => {
-      if (!options?.scope) return true;
-      return record.definition.scope === options.scope;
-    })
-    .filter((record) => {
-      if (!options?.worldProfileId) return true;
-      return record.worldProfileId === options.worldProfileId;
-    });
+    .filter((record): record is NpcCreatureCatalogRecord => record !== null);
 }
 ```
 
-### src/infrastructure/npc-creature/npc-creature-service.ts:124
+### src/infrastructure/npc-creature/npc-creature-service.ts:118
 
 ```ts
 export async function getNpcCreatureDefinition(
@@ -444,7 +436,7 @@ export async function getNpcCreatureDefinition(
 }
 ```
 
-### src/infrastructure/npc-creature/npc-creature-service.ts:151
+### src/infrastructure/npc-creature/npc-creature-service.ts:145
 
 ```ts
 export async function createNpcCreatureDefinition(
@@ -461,7 +453,7 @@ export async function createNpcCreatureDefinition(
 }
 ```
 
-### src/infrastructure/npc-creature/npc-creature-service.ts:164
+### src/infrastructure/npc-creature/npc-creature-service.ts:158
 
 ```ts
 export async function updateNpcCreatureDefinition(
@@ -476,7 +468,7 @@ export async function updateNpcCreatureDefinition(
 }
 ```
 
-### src/infrastructure/npc-creature/npc-creature-service.ts:175
+### src/infrastructure/npc-creature/npc-creature-service.ts:169
 
 ```ts
 export async function archiveNpcCreatureDefinition(
@@ -488,7 +480,7 @@ export async function archiveNpcCreatureDefinition(
 }
 ```
 
-### src/infrastructure/npc-creature/npc-creature-service.ts:193
+### src/infrastructure/npc-creature/npc-creature-service.ts:188
 
 ```ts
 export async function duplicateNpcCreatureDefinition(
@@ -496,35 +488,36 @@ export async function duplicateNpcCreatureDefinition(
   sourceDefinition?: NpcCreatureDefinition,
 ): Promise<NpcCreatureCatalogRecord> {
   assertHost();
-  let definition = sourceDefinition ?? null;
-  if (!definition) {
-    const existing = await getNpcCreatureDefinition(definitionId);
-    if (!existing) {
-      throw new Error('Definition nicht gefunden.');
-    }
-    definition = existing.definition;
+  // Packs are core-scoped (builtins live under core packs — no `builtin` scope).
+  const pack =
+    getCoreNpcCreatureDefinition(definitionId) ??
+    getBuiltinNpcCreatureDefinition(definitionId) ??
+    (sourceDefinition?.scope === 'core' ? sourceDefinition : null);
+  if (pack) {
+    const { id: _id, scope: _scope, ...rest } = pack;
+    return createNpcCreatureDefinition({
+      target: { scope: 'personal' },
+      draft: { ...rest, name: personalCopyName(rest.name) },
+    });
   }
-  const { id: _id, scope: _scope, ...rest } = definition;
-  return createNpcCreatureDefinition({
-    target: { scope: 'personal' },
-    draft: { ...rest, name: personalCopyName(rest.name) },
-  });
+  const duplicated = await duplicateHostLibraryNpcCreature(definitionId);
+  return requireHostNpcRecord(duplicated, 'Host-NPC duplizieren: ungültige Antwort');
 }
 ```
 
-### src/infrastructure/npc-creature/npc-creature-service.ts:216
+### src/infrastructure/npc-creature/npc-creature-service.ts:210
 
 ```ts
 export async function restoreNpcCreatureDefinition(
   definitionId: string,
 ): Promise<NpcCreatureCatalogRecord> {
-  void definitionId;
   assertHost();
-  throw new Error('NPC-Katalog wiederherstellen ist im Host-Modus noch nicht verfügbar.');
+  const restored = await restoreHostLibraryNpcCreature(definitionId);
+  return requireHostNpcRecord(restored, 'Host-NPC wiederherstellen: ungültige Antwort');
 }
 ```
 
-### src/infrastructure/npc-creature/npc-creature-service.ts:225
+### src/infrastructure/npc-creature/npc-creature-service.ts:219
 
 ```ts
 export function toNpcCreatureDefinitionSummaries(
@@ -543,7 +536,7 @@ export function toNpcCreatureDefinitionSummaries(
 }
 ```
 
-### src/infrastructure/npc-creature/npc-creature-service.ts:244
+### src/infrastructure/npc-creature/npc-creature-service.ts:238
 
 ```ts
 export async function loadWorldProfileNpcCreatureCatalog(
@@ -557,7 +550,7 @@ export async function loadWorldProfileNpcCreatureCatalog(
 }
 ```
 
-### src/infrastructure/npc-creature/npc-creature-service.ts:254
+### src/infrastructure/npc-creature/npc-creature-service.ts:248
 
 ```ts
 export interface WorldNpcCreatureAvailability {
@@ -567,14 +560,13 @@ export interface WorldNpcCreatureAvailability {
 }
 ```
 
-### src/infrastructure/npc-creature/npc-creature-service.ts:264
+### src/infrastructure/npc-creature/npc-creature-service.ts:259
 
 ```ts
 export async function loadWorldNpcCreatureAvailability(
   worldProfileId: string,
 ): Promise<WorldNpcCreatureAvailability> {
   assertHost();
-  // Host world `modules` parity (#1159): defaults until host exposes modules JSON.
   const modules = null;
   const [worldRecords, personalRecords] = await Promise.all([
     loadWorldProfileNpcCreatureCatalog(worldProfileId),
@@ -613,7 +605,7 @@ export async function loadWorldNpcCreatureAvailability(
 }
 ```
 
-### src/infrastructure/npc-creature/npc-creature-service.ts:309
+### src/infrastructure/npc-creature/npc-creature-service.ts:304
 
 ```ts
 export async function promoteNpcCreatureCompactToFull(input: {
@@ -643,7 +635,7 @@ export async function promoteNpcCreatureCompactToFull(input: {
 }
 ```
 
-### src/infrastructure/npc-creature/npc-creature-service.ts:346
+### src/infrastructure/npc-creature/npc-creature-service.ts:341
 
 ```ts
 export async function getNpcCreatureControllerAssignment(
@@ -656,7 +648,7 @@ export async function getNpcCreatureControllerAssignment(
 }
 ```
 
-### src/infrastructure/npc-creature/npc-creature-service.ts:360
+### src/infrastructure/npc-creature/npc-creature-service.ts:355
 
 ```ts
 export async function assignNpcCreatureController(input: {
@@ -698,7 +690,7 @@ export async function assignNpcCreatureController(input: {
 }
 ```
 
-### src/infrastructure/npc-creature/npc-creature-service.ts:432
+### src/infrastructure/npc-creature/npc-creature-service.ts:427
 
 ```ts
 export async function listNpcCreatureInstances(
@@ -710,7 +702,7 @@ export async function listNpcCreatureInstances(
 }
 ```
 
-### src/infrastructure/npc-creature/npc-creature-service.ts:444
+### src/infrastructure/npc-creature/npc-creature-service.ts:439
 
 ```ts
 export async function spawnNpcCreatureInstance(input: {
@@ -768,7 +760,7 @@ export async function spawnNpcCreatureInstance(input: {
 }
 ```
 
-### src/infrastructure/npc-creature/npc-creature-service.ts:499
+### src/infrastructure/npc-creature/npc-creature-service.ts:494
 
 ```ts
 export async function updateNpcCreatureInstanceRuntime(input: {
@@ -799,7 +791,7 @@ export async function updateNpcCreatureInstanceRuntime(input: {
 }
 ```
 
-### src/infrastructure/npc-creature/npc-creature-service.ts:527
+### src/infrastructure/npc-creature/npc-creature-service.ts:522
 
 ```ts
 export async function removeNpcCreatureInstance(instanceId: string): Promise<void> {
@@ -808,7 +800,7 @@ export async function removeNpcCreatureInstance(instanceId: string): Promise<voi
 }
 ```
 
-### src/infrastructure/npc-creature/npc-creature-service.ts:536
+### src/infrastructure/npc-creature/npc-creature-service.ts:531
 
 ```ts
 export async function clearNpcCreatureInstanceTempControllersForSession(
@@ -928,13 +920,13 @@ All backend operations are included in the public declarations above.
 | `src/domains/rules/sagatree/npc-creature-power/machtgrad.ts` | `19d4daafb9580b890ed2337feccffed19122a01dfb23c2eeb2dadd2523778f7a` |
 | `src/domains/rules/sagatree/npc-creature-power/profiles.ts` | `aa3d450842ddce7548f6e8e826225cdbdeae6de7660e09798fe43663dc9ce1fa` |
 | `src/domains/rules/sagatree/npc-creature-power/types.ts` | `de25ba46549bab20e0e55a513fb0745e722449d8f1b61bb51887d986653c4eab` |
-| `src/infrastructure/host/host-library-http.ts` | `1d41f3b1eb3e71a3a8b12306993b605f2d05f2f41cd35f73b9c362b12f9c1cb6` |
+| `src/infrastructure/host/host-library-http.ts` | `39abb17777de0e744ebe2932789443b9722135bfefc7ae0596f93ec7ef6df8dd` |
 | `src/infrastructure/host/host-session-http.ts` | `39b5efefc00297d57c1c4f248953cbbed4d7053e51974cd25a2ed43e368a64eb` |
-| `src/infrastructure/npc-creature/host-npc-creature-adapter.ts` | `4b4ae65a357290dee9c5f197bf4357d121052388e76fbc5547f8452be3681958` |
-| `src/infrastructure/npc-creature/host-npc-creature-ports.contract.ts` | `2bedeec0ce3be8ebca034fc07a0d5ca3ce9a46e6f8fb95e903103bca7c8f96f9` |
+| `src/infrastructure/npc-creature/host-npc-creature-adapter.ts` | `1f3bd51bb9b9f05b4a04d27c5107fd4ee78189f96d67323694c42cea2606470a` |
+| `src/infrastructure/npc-creature/host-npc-creature-ports.contract.ts` | `5115ac6e4829356cee014436c464e361c2486d928caa2d8121dd6a896bf7996b` |
 | `src/infrastructure/npc-creature/npc-creature-controller.persistence.ts` | `9832d02675fdfc5a7d9520ff68c60a3636e25de2ed497e523218e7c8985fe530` |
 | `src/infrastructure/npc-creature/npc-creature-instance.persistence.ts` | `00aaa3e07b5cdc72305da5381e0c8e0754b2a159df623a4a6355748cb269776f` |
-| `src/infrastructure/npc-creature/npc-creature-service.ts` | `78bf416e2f51d54911af52ca86ec33e09ad934e0f311fbbce19ec175bfbbe30d` |
+| `src/infrastructure/npc-creature/npc-creature-service.ts` | `f85a652361f7d0943b139693473f103ca55aaaefd6393b293bd67fd6a4496c4c` |
 | `src/infrastructure/npc-creature/npc-creature.persistence.ts` | `2823d44f52887026e5e5bac5120bb7d2def738e29e1354686d06f670e0d33420` |
 | `src/lib/authenticatedUser.ts` | `5d9deef60efd85a3ecd56e9b55f67ecb2d03c2964c4f9217e6de6842d8e0b403` |
 | `src/lib/hostAuthBridge.ts` | `30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a` |

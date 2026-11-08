@@ -190,13 +190,11 @@ export async function duplicateNpcCreatureDefinition(
   sourceDefinition?: NpcCreatureDefinition,
 ): Promise<NpcCreatureCatalogRecord> {
   assertHost();
+  // Packs are core-scoped (builtins live under core packs — no `builtin` scope).
   const pack =
     getCoreNpcCreatureDefinition(definitionId) ??
     getBuiltinNpcCreatureDefinition(definitionId) ??
-    (sourceDefinition &&
-    (sourceDefinition.scope === 'core' || sourceDefinition.scope === 'builtin')
-      ? sourceDefinition
-      : null);
+    (sourceDefinition?.scope === 'core' ? sourceDefinition : null);
   if (pack) {
     const { id: _id, scope: _scope, ...rest } = pack;
     return createNpcCreatureDefinition({

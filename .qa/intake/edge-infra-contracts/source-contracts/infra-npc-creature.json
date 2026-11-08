@@ -5,11 +5,11 @@
   "sourceFiles": [
     {
       "path": "src/infrastructure/npc-creature/host-npc-creature-adapter.ts",
-      "sha256": "4b4ae65a357290dee9c5f197bf4357d121052388e76fbc5547f8452be3681958"
+      "sha256": "1f3bd51bb9b9f05b4a04d27c5107fd4ee78189f96d67323694c42cea2606470a"
     },
     {
       "path": "src/infrastructure/npc-creature/host-npc-creature-ports.contract.ts",
-      "sha256": "2bedeec0ce3be8ebca034fc07a0d5ca3ce9a46e6f8fb95e903103bca7c8f96f9"
+      "sha256": "5115ac6e4829356cee014436c464e361c2486d928caa2d8121dd6a896bf7996b"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-controller.persistence.ts",
@@ -21,7 +21,7 @@
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "sha256": "78bf416e2f51d54911af52ca86ec33e09ad934e0f311fbbce19ec175bfbbe30d"
+      "sha256": "f85a652361f7d0943b139693473f103ca55aaaefd6393b293bd67fd6a4496c4c"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature.persistence.ts",
@@ -171,7 +171,7 @@
     },
     {
       "path": "src/infrastructure/host/host-library-http.ts",
-      "sha256": "1d41f3b1eb3e71a3a8b12306993b605f2d05f2f41cd35f73b9c362b12f9c1cb6"
+      "sha256": "39abb17777de0e744ebe2932789443b9722135bfefc7ae0596f93ec7ef6df8dd"
     },
     {
       "path": "src/infrastructure/host/host-session-http.ts",
@@ -1207,24 +1207,24 @@
       "kind": "TypeAliasDeclaration",
       "name": "HostNpcControllerAssignmentDto",
       "path": "src/infrastructure/host/host-library-http.ts",
-      "line": 945,
-      "endLine": 951,
+      "line": 992,
+      "endLine": 998,
       "text": "export type HostNpcControllerAssignmentDto = {\n  readonly projectId: string;\n  readonly definitionId: string;\n  readonly controllerUserId: string | null;\n  readonly assignedBy?: string;\n  readonly updatedAt?: string;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "HostNpcInstanceDto",
       "path": "src/infrastructure/host/host-library-http.ts",
-      "line": 1004,
-      "endLine": 1017,
+      "line": 1051,
+      "endLine": 1064,
       "text": "export type HostNpcInstanceDto = {\n  readonly id: string;\n  readonly projectId: string;\n  readonly sessionId: string | null;\n  readonly definitionId: string;\n  readonly displayName: string;\n  readonly instanceKind: string;\n  readonly sequenceNumber: number;\n  readonly snapshot: Record<string, unknown>;\n  readonly runtime: Record<string, unknown>;\n  readonly createdBy?: string;\n  readonly createdAt?: string;\n  readonly updatedAt?: string;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "HostPublishedAssetDto",
       "path": "src/infrastructure/host/host-library-http.ts",
-      "line": 1126,
-      "endLine": 1133,
+      "line": 1173,
+      "endLine": 1180,
       "text": "export type HostPublishedAssetDto = {\n  readonly assetId: string;\n  readonly contentType: string;\n  readonly byteSize: number;\n  readonly checksumSha256: string;\n  readonly url: string;\n  readonly storagePath: string;\n};"
     },
     {
@@ -1297,16 +1297,16 @@
       "kind": "auth-helper",
       "name": null,
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 366,
-      "endLine": 366,
+      "line": 361,
+      "endLine": 361,
       "resolution": "dynamic-expression",
       "expression": "getAuthenticatedUserId()",
       "chain": "getAuthenticatedUserId()",
       "arguments": [],
       "enclosingOperation": {
         "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-        "line": 360,
-        "endLine": 396,
+        "line": 355,
+        "endLine": 391,
         "text": "export async function assignNpcCreatureController(input: {\n  projectId: string;\n  definitionId: string;\n  controllerUserId: string | null;\n  activeMemberUserIds: readonly string[];\n}): Promise<NpcControllerAssignment> {\n  const actorUserId = await getAuthenticatedUserId();\n  const record = await getNpcCreatureDefinition(input.definitionId);\n  if (!record) {\n    throw new Error('Figur wurde nicht gefunden.');\n  }\n\n  const planned = planNpcControllerAssignment(\n    record.definition,\n    {\n      projectId: input.projectId,\n      definitionId: input.definitionId,\n      controllerUserId: input.controllerUserId,\n    },\n    {\n      actorUserId,\n      actorRole: 'gm',\n      activeMemberUserIds: input.activeMemberUserIds,\n    },\n  );\n  if (planned.ok === false) {\n    throw new Error(planned.message);\n  }\n\n  assertHost();\n  const assignment = await assignHostNpcCreatureController({\n    projectId: planned.assignment.projectId,\n    definitionId: planned.assignment.definitionId,\n    controllerUserId: planned.assignment.controllerUserId,\n  });\n  return mapHostControllerAssignment(assignment);\n}"
       }
     },
@@ -1314,16 +1314,16 @@
       "kind": "auth-helper",
       "name": null,
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 452,
-      "endLine": 452,
+      "line": 447,
+      "endLine": 447,
       "resolution": "dynamic-expression",
       "expression": "getAuthenticatedUserId()",
       "chain": "getAuthenticatedUserId()",
       "arguments": [],
       "enclosingOperation": {
         "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-        "line": 444,
-        "endLine": 496,
+        "line": 439,
+        "endLine": 491,
         "text": "export async function spawnNpcCreatureInstance(input: {\n  projectId: string;\n  sessionId?: string | null;\n  definitionId: string;\n  instanceKind: NpcCreatureInstanceKind;\n  displayName?: string | null;\n  activeMemberUserIds: readonly string[];\n}): Promise<NpcCreatureInstance> {\n  const actorUserId = await getAuthenticatedUserId();\n  const definition = await resolveDefinitionForInstance(input.definitionId);\n  if (!definition) {\n    throw new Error('Figuren-Vorlage wurde nicht gefunden.');\n  }\n\n  const existing = await listNpcCreatureInstances(input.projectId);\n  const definitionReadable =\n    isBuiltinOrCoreDefinitionId(definition.id) ||\n    Boolean(await getNpcCreatureDefinition(definition.id));\n\n  const planned = planNpcCreatureInstanceSpawn(\n    definition,\n    {\n      projectId: input.projectId,\n      sessionId: input.sessionId ?? null,\n      definitionId: input.definitionId,\n      instanceKind: input.instanceKind,\n      displayName: input.displayName ?? null,\n    },\n    {\n      actorUserId,\n      actorRole: 'gm',\n      activeMemberUserIds: input.activeMemberUserIds,\n      existingInstances: existing,\n      definitionReadable,\n    },\n  );\n  if (planned.ok === false) {\n    throw new Error(planned.message);\n  }\n\n  assertHost();\n  const instance = await spawnHostNpcInstance({\n    projectId: planned.instance.projectId,\n    definitionId: planned.instance.definitionId,\n    instanceKind: planned.instance.instanceKind,\n    snapshot: toInstanceSnapshotPayload(planned.instance.snapshot),\n    runtime: toInstanceRuntimePayload(planned.instance.runtime),\n    displayName: planned.instance.displayName,\n    sequenceNumber: planned.instance.sequenceNumber,\n    sessionId: planned.instance.sessionId,\n  });\n  return mapHostInstanceDto(instance);\n}"
       }
     },
@@ -1331,16 +1331,16 @@
       "kind": "auth-helper",
       "name": null,
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 504,
-      "endLine": 504,
+      "line": 499,
+      "endLine": 499,
       "resolution": "dynamic-expression",
       "expression": "getAuthenticatedUserId()",
       "chain": "getAuthenticatedUserId()",
       "arguments": [],
       "enclosingOperation": {
         "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-        "line": 499,
-        "endLine": 524,
+        "line": 494,
+        "endLine": 519,
         "text": "export async function updateNpcCreatureInstanceRuntime(input: {\n  instance: NpcCreatureInstance;\n  patch: NpcCreatureInstanceRuntimeUpdate;\n  activeMemberUserIds: readonly string[];\n}): Promise<NpcCreatureInstance> {\n  const actorUserId = await getAuthenticatedUserId();\n  const planned = planNpcCreatureInstanceRuntimeUpdate(\n    input.instance,\n    input.patch,\n    {\n      actorUserId,\n      actorRole: 'gm',\n      activeMemberUserIds: input.activeMemberUserIds,\n    },\n  );\n  if (planned.ok === false) {\n    throw new Error(planned.message);\n  }\n\n  assertHost();\n  const instance = await updateHostNpcInstanceRuntime(\n    planned.instance.id!,\n    toInstanceRuntimePayload(planned.instance.runtime),\n  );\n  return mapHostInstanceDto(instance);\n}"
       }
     }
@@ -1397,23 +1397,23 @@
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
       "line": 38,
-      "endLine": 53,
+      "endLine": 55,
       "module": "../host/host-library-http",
       "resolvedPath": "src/infrastructure/host/host-library-http.ts",
-      "expression": "import {\n  archiveHostLibraryNpcCreature,\n  assignHostNpcCreatureController,\n  createHostLibraryNpcCreature,\n  fetchHostLibraryNpcCreatureById,\n  fetchHostLibraryNpcCreatures,\n  fetchHostNpcCreatureControllerAssignment,\n  fetchHostNpcInstances,\n  isHostLibraryEnabled,\n  removeHostNpcInstance,\n  spawnHostNpcInstance,\n  updateHostLibraryNpcCreature,\n  updateHostNpcInstanceRuntime,\n  type HostNpcControllerAssignmentDto,\n  type HostNpcInstanceDto,\n} from '../host/host-library-http';"
+      "expression": "import {\n  archiveHostLibraryNpcCreature,\n  assignHostNpcCreatureController,\n  createHostLibraryNpcCreature,\n  duplicateHostLibraryNpcCreature,\n  fetchHostLibraryNpcCreatureById,\n  fetchHostLibraryNpcCreatures,\n  fetchHostNpcCreatureControllerAssignment,\n  fetchHostNpcInstances,\n  isHostLibraryEnabled,\n  removeHostNpcInstance,\n  restoreHostLibraryNpcCreature,\n  spawnHostNpcInstance,\n  updateHostLibraryNpcCreature,\n  updateHostNpcInstanceRuntime,\n  type HostNpcControllerAssignmentDto,\n  type HostNpcInstanceDto,\n} from '../host/host-library-http';"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 54,
-      "endLine": 54,
+      "line": 56,
+      "endLine": 56,
       "module": "../host/host-session-http",
       "resolvedPath": "src/infrastructure/host/host-session-http.ts",
       "expression": "import { clearHostNpcTempControllersForSession } from '../host/host-session-http';"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 55,
-      "endLine": 59,
+      "line": 57,
+      "endLine": 61,
       "module": "./npc-creature-instance.persistence",
       "resolvedPath": "src/infrastructure/npc-creature/npc-creature-instance.persistence.ts",
       "expression": "import {\n  toInstanceRuntimePayload,\n  toInstanceSnapshotPayload,\n  toNpcCreatureInstance,\n} from './npc-creature-instance.persistence';"
@@ -1450,44 +1450,44 @@
     },
     {
       "path": "src/infrastructure/npc-creature/host-npc-creature-ports.contract.ts",
-      "line": 10,
-      "endLine": 12,
+      "line": 9,
+      "endLine": 11,
       "text": "export type HostNpcCreatureResult<T> =\n  | { readonly ok: true; readonly value: T }\n  | { readonly ok: false; readonly error: string };"
     },
     {
       "path": "src/infrastructure/npc-creature/host-npc-creature-ports.contract.ts",
-      "line": 14,
-      "endLine": 25,
+      "line": 13,
+      "endLine": 24,
       "text": "export type HostNpcDefinitionRecord = {\n  readonly id: string;\n  readonly publicId: string;\n  readonly scope: 'personal' | 'world' | 'core' | 'builtin';\n  readonly worldProfileId: string | null;\n  readonly ownerUserId: string | null;\n  readonly status: 'active' | 'archived';\n  readonly payload: Readonly<Record<string, unknown>>;\n  readonly payloadVersion: number;\n  readonly createdAt: string;\n  readonly updatedAt: string;\n};"
     },
     {
       "path": "src/infrastructure/npc-creature/host-npc-creature-ports.contract.ts",
-      "line": 27,
-      "endLine": 40,
+      "line": 26,
+      "endLine": 39,
       "text": "export type HostNpcInstanceRow = {\n  readonly id: string;\n  readonly projectId: string;\n  readonly sessionId: string | null;\n  readonly definitionId: string;\n  readonly displayName: string;\n  readonly instanceKind: string;\n  readonly sequenceNumber: number;\n  readonly snapshot: Readonly<Record<string, unknown>>;\n  readonly runtime: Readonly<Record<string, unknown>>;\n  readonly createdBy: string;\n  readonly createdAt: string;\n  readonly updatedAt: string;\n};"
     },
     {
       "path": "src/infrastructure/npc-creature/host-npc-creature-ports.contract.ts",
-      "line": 42,
-      "endLine": 48,
+      "line": 41,
+      "endLine": 47,
       "text": "export type HostNpcControllerAssignmentRow = {\n  readonly projectId: string;\n  readonly definitionId: string;\n  readonly controllerUserId: string | null;\n  readonly assignedBy: string;\n  readonly updatedAt: string;\n};"
     },
     {
       "path": "src/infrastructure/npc-creature/host-npc-creature-ports.contract.ts",
-      "line": 54,
-      "endLine": 133,
+      "line": 53,
+      "endLine": 132,
       "text": "export type HostNpcCreaturePorts = {\n  readonly listDefinitions: (\n    actorId: string,\n    options?: {\n      readonly scope?: 'personal' | 'world' | 'core' | 'builtin';\n      readonly worldProfileId?: string | null;\n      readonly includeArchived?: boolean;\n    },\n  ) => Promise<HostNpcCreatureResult<readonly HostNpcDefinitionRecord[]>>;\n  readonly getDefinition: (\n    actorId: string,\n    definitionId: string,\n  ) => Promise<HostNpcCreatureResult<HostNpcDefinitionRecord | null>>;\n  readonly createDefinition: (\n    actorId: string,\n    input: {\n      readonly scope: 'personal' | 'world';\n      readonly worldProfileId?: string | null;\n      readonly draft: unknown;\n    },\n  ) => Promise<HostNpcCreatureResult<HostNpcDefinitionRecord>>;\n  readonly updateDefinition: (\n    actorId: string,\n    definitionId: string,\n    draft: unknown,\n  ) => Promise<HostNpcCreatureResult<HostNpcDefinitionRecord>>;\n  readonly archiveDefinition: (\n    actorId: string,\n    definitionId: string,\n  ) => Promise<HostNpcCreatureResult<HostNpcDefinitionRecord>>;\n  readonly restoreDefinition: (\n    actorId: string,\n    definitionId: string,\n  ) => Promise<HostNpcCreatureResult<HostNpcDefinitionRecord>>;\n  readonly duplicateDefinition: (\n    actorId: string,\n    sourceDefinitionId: string,\n  ) => Promise<HostNpcCreatureResult<HostNpcDefinitionRecord>>;\n  readonly getControllerAssignment: (\n    actorId: string,\n    projectId: string,\n    definitionId: string,\n  ) => Promise<HostNpcCreatureResult<HostNpcControllerAssignmentRow | null>>;\n  readonly assignController: (\n    actorId: string,\n    projectId: string,\n    definitionId: string,\n    controllerUserId: string | null,\n  ) => Promise<HostNpcCreatureResult<HostNpcControllerAssignmentRow>>;\n  readonly listInstances: (\n    actorId: string,\n    projectId: string,\n  ) => Promise<HostNpcCreatureResult<readonly HostNpcInstanceRow[]>>;\n  readonly spawnInstance: (\n    actorId: string,\n    input: {\n      readonly projectId: string;\n      readonly definitionId: string;\n      readonly instanceKind: string;\n      readonly snapshot: unknown;\n      readonly runtime: unknown;\n      readonly displayName: string;\n      readonly sequenceNumber: number;\n      readonly sessionId?: string | null;\n    },\n  ) => Promise<HostNpcCreatureResult<HostNpcInstanceRow>>;\n  readonly updateRuntime: (\n    actorId: string,\n    instanceId: string,\n    runtime: unknown,\n  ) => Promise<HostNpcCreatureResult<HostNpcInstanceRow>>;\n  readonly removeInstance: (\n    actorId: string,\n    instanceId: string,\n  ) => Promise<HostNpcCreatureResult<{ readonly id: string }>>;\n  readonly clearTempControllersForSession: (\n    actorId: string,\n    sessionId: string,\n  ) => Promise<HostNpcCreatureResult<{ readonly cleared: number }>>;\n};"
     },
     {
       "path": "src/infrastructure/npc-creature/host-npc-creature-ports.contract.ts",
-      "line": 136,
-      "endLine": 151,
+      "line": 135,
+      "endLine": 150,
       "text": "export const HOST_NPC_CREATURE_OPS = [\n  'listDefinitions',\n  'getDefinition',\n  'createDefinition',\n  'updateDefinition',\n  'archiveDefinition',\n  'restoreDefinition',\n  'duplicateDefinition',\n  'getControllerAssignment',\n  'assignController',\n  'listInstances',\n  'spawnInstance',\n  'updateRuntime',\n  'removeInstance',\n  'clearTempControllersForSession',\n] as const;"
     },
     {
       "path": "src/infrastructure/npc-creature/host-npc-creature-ports.contract.ts",
-      "line": 153,
-      "endLine": 153,
+      "line": 152,
+      "endLine": 152,
       "text": "export type HostNpcCreatureOp = (typeof HOST_NPC_CREATURE_OPS)[number];"
     },
     {
@@ -1528,116 +1528,116 @@
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 100,
-      "endLine": 122,
-      "text": "export async function listNpcCreatureDefinitions(options?: {\n  scope?: NpcCreatureScope;\n  worldProfileId?: string | null;\n  includeArchived?: boolean;\n}): Promise<NpcCreatureCatalogRecord[]> {\n  assertHost();\n  const rows = await fetchHostLibraryNpcCreatures();\n  return rows\n    .map(mapHostLibraryNpcRecord)\n    .filter((record): record is NpcCreatureCatalogRecord => record !== null)\n    .filter((record) => {\n      if (options?.includeArchived) return true;\n      return record.status === 'active';\n    })\n    .filter((record) => {\n      if (!options?.scope) return true;\n      return record.definition.scope === options.scope;\n    })\n    .filter((record) => {\n      if (!options?.worldProfileId) return true;\n      return record.worldProfileId === options.worldProfileId;\n    });\n}"
+      "line": 102,
+      "endLine": 116,
+      "text": "export async function listNpcCreatureDefinitions(options?: {\n  scope?: NpcCreatureScope;\n  worldProfileId?: string | null;\n  includeArchived?: boolean;\n}): Promise<NpcCreatureCatalogRecord[]> {\n  assertHost();\n  const rows = await fetchHostLibraryNpcCreatures({\n    scope: options?.scope,\n    worldProfileId: options?.worldProfileId,\n    includeArchived: options?.includeArchived === true,\n  });\n  return rows\n    .map(mapHostLibraryNpcRecord)\n    .filter((record): record is NpcCreatureCatalogRecord => record !== null);\n}"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 124,
-      "endLine": 143,
+      "line": 118,
+      "endLine": 137,
       "text": "export async function getNpcCreatureDefinition(\n  definitionId: string,\n): Promise<NpcCreatureCatalogRecord | null> {\n  const pack =\n    getCoreNpcCreatureDefinition(definitionId) ??\n    getBuiltinNpcCreatureDefinition(definitionId);\n  if (pack) {\n    const record = {\n      definition: pack,\n      status: 'active' as const,\n      worldProfileId: null,\n      publicId: null,\n    } as NpcCreatureCatalogRecord;\n    record.ownerUserId = '';\n    return record;\n  }\n  assertHost();\n  const raw = await fetchHostLibraryNpcCreatureById(definitionId);\n  return raw ? mapHostLibraryNpcRecord(raw) : null;\n}"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 151,
-      "endLine": 162,
+      "line": 145,
+      "endLine": 156,
       "text": "export async function createNpcCreatureDefinition(\n  input: CreateNpcCreatureDefinitionInput,\n): Promise<NpcCreatureCatalogRecord> {\n  assertHost();\n  const created = await createHostLibraryNpcCreature({\n    scope: input.target.scope,\n    worldProfileId:\n      input.target.scope === 'world' ? input.target.worldProfileId : null,\n    draft: input.draft,\n  });\n  return requireHostNpcRecord(created, 'Host-NPC anlegen: ungültige Antwort');\n}"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 164,
-      "endLine": 173,
+      "line": 158,
+      "endLine": 167,
       "text": "export async function updateNpcCreatureDefinition(\n  input: UpdateNpcCreatureDefinitionInput,\n): Promise<NpcCreatureCatalogRecord> {\n  assertHost();\n  const updated = await updateHostLibraryNpcCreature(\n    input.definitionId,\n    input.draft,\n  );\n  return requireHostNpcRecord(updated, 'Host-NPC speichern: ungültige Antwort');\n}"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 175,
-      "endLine": 181,
+      "line": 169,
+      "endLine": 175,
       "text": "export async function archiveNpcCreatureDefinition(\n  definitionId: string,\n): Promise<NpcCreatureCatalogRecord> {\n  assertHost();\n  const archived = await archiveHostLibraryNpcCreature(definitionId);\n  return requireHostNpcRecord(archived, 'Host-NPC archivieren: ungültige Antwort');\n}"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 193,
-      "endLine": 211,
-      "text": "export async function duplicateNpcCreatureDefinition(\n  definitionId: string,\n  sourceDefinition?: NpcCreatureDefinition,\n): Promise<NpcCreatureCatalogRecord> {\n  assertHost();\n  let definition = sourceDefinition ?? null;\n  if (!definition) {\n    const existing = await getNpcCreatureDefinition(definitionId);\n    if (!existing) {\n      throw new Error('Definition nicht gefunden.');\n    }\n    definition = existing.definition;\n  }\n  const { id: _id, scope: _scope, ...rest } = definition;\n  return createNpcCreatureDefinition({\n    target: { scope: 'personal' },\n    draft: { ...rest, name: personalCopyName(rest.name) },\n  });\n}"
+      "line": 188,
+      "endLine": 207,
+      "text": "export async function duplicateNpcCreatureDefinition(\n  definitionId: string,\n  sourceDefinition?: NpcCreatureDefinition,\n): Promise<NpcCreatureCatalogRecord> {\n  assertHost();\n  // Packs are core-scoped (builtins live under core packs — no `builtin` scope).\n  const pack =\n    getCoreNpcCreatureDefinition(definitionId) ??\n    getBuiltinNpcCreatureDefinition(definitionId) ??\n    (sourceDefinition?.scope === 'core' ? sourceDefinition : null);\n  if (pack) {\n    const { id: _id, scope: _scope, ...rest } = pack;\n    return createNpcCreatureDefinition({\n      target: { scope: 'personal' },\n      draft: { ...rest, name: personalCopyName(rest.name) },\n    });\n  }\n  const duplicated = await duplicateHostLibraryNpcCreature(definitionId);\n  return requireHostNpcRecord(duplicated, 'Host-NPC duplizieren: ungültige Antwort');\n}"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 216,
-      "endLine": 222,
-      "text": "export async function restoreNpcCreatureDefinition(\n  definitionId: string,\n): Promise<NpcCreatureCatalogRecord> {\n  void definitionId;\n  assertHost();\n  throw new Error('NPC-Katalog wiederherstellen ist im Host-Modus noch nicht verfügbar.');\n}"
+      "line": 210,
+      "endLine": 216,
+      "text": "export async function restoreNpcCreatureDefinition(\n  definitionId: string,\n): Promise<NpcCreatureCatalogRecord> {\n  assertHost();\n  const restored = await restoreHostLibraryNpcCreature(definitionId);\n  return requireHostNpcRecord(restored, 'Host-NPC wiederherstellen: ungültige Antwort');\n}"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 225,
-      "endLine": 238,
+      "line": 219,
+      "endLine": 232,
       "text": "export function toNpcCreatureDefinitionSummaries(\n  records: readonly NpcCreatureCatalogRecord[],\n): NpcCreatureDefinitionSummary[] {\n  return records.map((record) => {\n    const derived = deriveNpcCreaturePower(record.definition);\n    return {\n      definition: record.definition,\n      machtgradLabel: derived.machtgradLabel,\n      status: record.status,\n      scope: record.definition.scope,\n      worldProfileId: record.worldProfileId,\n    };\n  });\n}"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 244,
-      "endLine": 252,
+      "line": 238,
+      "endLine": 246,
       "text": "export async function loadWorldProfileNpcCreatureCatalog(\n  worldProfileId: string,\n): Promise<NpcCreatureCatalogRecord[]> {\n  return listNpcCreatureDefinitions({\n    scope: 'world',\n    worldProfileId,\n    includeArchived: true,\n  });\n}"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 254,
-      "endLine": 258,
+      "line": 248,
+      "endLine": 252,
       "text": "export interface WorldNpcCreatureAvailability {\n  config: NpcCreatureCatalogModuleConfig;\n  resolved: ResolvedWorldNpcCreatureCatalog;\n  worldRecords: NpcCreatureCatalogRecord[];\n}"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 264,
-      "endLine": 304,
-      "text": "export async function loadWorldNpcCreatureAvailability(\n  worldProfileId: string,\n): Promise<WorldNpcCreatureAvailability> {\n  assertHost();\n  // Host world `modules` parity (#1159): defaults until host exposes modules JSON.\n  const modules = null;\n  const [worldRecords, personalRecords] = await Promise.all([\n    loadWorldProfileNpcCreatureCatalog(worldProfileId),\n    listNpcCreatureDefinitions({\n      scope: 'personal',\n      includeArchived: false,\n    }),\n  ]);\n  const { config } = getNpcCreatureCatalogModuleConfig(modules);\n  const worldDefinitions = worldRecords\n    .filter((record) => record.status === 'active')\n    .map((record) => record.definition);\n  const personalDefinitions = personalRecords.map((record) => record.definition);\n\n  const resolveDefinition = (\n    definitionId: string,\n  ): NpcCreatureDefinition | undefined => {\n    const builtin = getBuiltinNpcCreatureDefinition(definitionId);\n    if (builtin) return builtin;\n    const core = getCoreNpcCreatureDefinition(definitionId);\n    if (core) return core;\n    const world = worldDefinitions.find((entry) => entry.id === definitionId);\n    if (world) return world;\n    return personalDefinitions.find((entry) => entry.id === definitionId);\n  };\n\n  const resolved = resolveWorldNpcCreatureCatalog({\n    config,\n    coreDefinitions: listCoreNpcCreatureDefinitions(),\n    resolveDefinition,\n    worldDefinitions,\n    personalDefinitions,\n  });\n\n  return { config, resolved, worldRecords };\n}"
+      "line": 259,
+      "endLine": 298,
+      "text": "export async function loadWorldNpcCreatureAvailability(\n  worldProfileId: string,\n): Promise<WorldNpcCreatureAvailability> {\n  assertHost();\n  const modules = null;\n  const [worldRecords, personalRecords] = await Promise.all([\n    loadWorldProfileNpcCreatureCatalog(worldProfileId),\n    listNpcCreatureDefinitions({\n      scope: 'personal',\n      includeArchived: false,\n    }),\n  ]);\n  const { config } = getNpcCreatureCatalogModuleConfig(modules);\n  const worldDefinitions = worldRecords\n    .filter((record) => record.status === 'active')\n    .map((record) => record.definition);\n  const personalDefinitions = personalRecords.map((record) => record.definition);\n\n  const resolveDefinition = (\n    definitionId: string,\n  ): NpcCreatureDefinition | undefined => {\n    const builtin = getBuiltinNpcCreatureDefinition(definitionId);\n    if (builtin) return builtin;\n    const core = getCoreNpcCreatureDefinition(definitionId);\n    if (core) return core;\n    const world = worldDefinitions.find((entry) => entry.id === definitionId);\n    if (world) return world;\n    return personalDefinitions.find((entry) => entry.id === definitionId);\n  };\n\n  const resolved = resolveWorldNpcCreatureCatalog({\n    config,\n    coreDefinitions: listCoreNpcCreatureDefinitions(),\n    resolveDefinition,\n    worldDefinitions,\n    personalDefinitions,\n  });\n\n  return { config, resolved, worldRecords };\n}"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 309,
-      "endLine": 333,
+      "line": 304,
+      "endLine": 328,
       "text": "export async function promoteNpcCreatureCompactToFull(input: {\n  definitionId: string;\n  fullSheet: Readonly<Record<string, unknown>>;\n}): Promise<NpcCreatureCatalogRecord> {\n  const attrsCheck = assertFullSheetHasNoSilentIllegalAttributes(input.fullSheet);\n  if (attrsCheck.ok === false) {\n    throw new Error(attrsCheck.message);\n  }\n\n  assertHost();\n  const existing = await getNpcCreatureDefinition(input.definitionId);\n  if (!existing) {\n    throw new Error('Figur wurde nicht gefunden.');\n  }\n\n  const draft = buildCompactToFullWriteDraft(existing.definition, input.fullSheet);\n  if (!draft) {\n    throw new Error('Compact→Full-Entwurf ungültig — Full Sheet fehlt oder ist leer.');\n  }\n\n  return updateNpcCreatureDefinition({\n    definitionId: input.definitionId,\n    draft,\n  });\n}"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 346,
-      "endLine": 353,
+      "line": 341,
+      "endLine": 348,
       "text": "export async function getNpcCreatureControllerAssignment(\n  projectId: string,\n  definitionId: string,\n): Promise<NpcControllerAssignment | null> {\n  assertHost();\n  const assignment = await fetchHostNpcCreatureControllerAssignment(projectId, definitionId);\n  return assignment ? mapHostControllerAssignment(assignment) : null;\n}"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 360,
-      "endLine": 396,
+      "line": 355,
+      "endLine": 391,
       "text": "export async function assignNpcCreatureController(input: {\n  projectId: string;\n  definitionId: string;\n  controllerUserId: string | null;\n  activeMemberUserIds: readonly string[];\n}): Promise<NpcControllerAssignment> {\n  const actorUserId = await getAuthenticatedUserId();\n  const record = await getNpcCreatureDefinition(input.definitionId);\n  if (!record) {\n    throw new Error('Figur wurde nicht gefunden.');\n  }\n\n  const planned = planNpcControllerAssignment(\n    record.definition,\n    {\n      projectId: input.projectId,\n      definitionId: input.definitionId,\n      controllerUserId: input.controllerUserId,\n    },\n    {\n      actorUserId,\n      actorRole: 'gm',\n      activeMemberUserIds: input.activeMemberUserIds,\n    },\n  );\n  if (planned.ok === false) {\n    throw new Error(planned.message);\n  }\n\n  assertHost();\n  const assignment = await assignHostNpcCreatureController({\n    projectId: planned.assignment.projectId,\n    definitionId: planned.assignment.definitionId,\n    controllerUserId: planned.assignment.controllerUserId,\n  });\n  return mapHostControllerAssignment(assignment);\n}"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 432,
-      "endLine": 438,
+      "line": 427,
+      "endLine": 433,
       "text": "export async function listNpcCreatureInstances(\n  projectId: string,\n): Promise<NpcCreatureInstance[]> {\n  assertHost();\n  const rows = await fetchHostNpcInstances(projectId);\n  return rows.map(mapHostInstanceDto);\n}"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 444,
-      "endLine": 496,
+      "line": 439,
+      "endLine": 491,
       "text": "export async function spawnNpcCreatureInstance(input: {\n  projectId: string;\n  sessionId?: string | null;\n  definitionId: string;\n  instanceKind: NpcCreatureInstanceKind;\n  displayName?: string | null;\n  activeMemberUserIds: readonly string[];\n}): Promise<NpcCreatureInstance> {\n  const actorUserId = await getAuthenticatedUserId();\n  const definition = await resolveDefinitionForInstance(input.definitionId);\n  if (!definition) {\n    throw new Error('Figuren-Vorlage wurde nicht gefunden.');\n  }\n\n  const existing = await listNpcCreatureInstances(input.projectId);\n  const definitionReadable =\n    isBuiltinOrCoreDefinitionId(definition.id) ||\n    Boolean(await getNpcCreatureDefinition(definition.id));\n\n  const planned = planNpcCreatureInstanceSpawn(\n    definition,\n    {\n      projectId: input.projectId,\n      sessionId: input.sessionId ?? null,\n      definitionId: input.definitionId,\n      instanceKind: input.instanceKind,\n      displayName: input.displayName ?? null,\n    },\n    {\n      actorUserId,\n      actorRole: 'gm',\n      activeMemberUserIds: input.activeMemberUserIds,\n      existingInstances: existing,\n      definitionReadable,\n    },\n  );\n  if (planned.ok === false) {\n    throw new Error(planned.message);\n  }\n\n  assertHost();\n  const instance = await spawnHostNpcInstance({\n    projectId: planned.instance.projectId,\n    definitionId: planned.instance.definitionId,\n    instanceKind: planned.instance.instanceKind,\n    snapshot: toInstanceSnapshotPayload(planned.instance.snapshot),\n    runtime: toInstanceRuntimePayload(planned.instance.runtime),\n    displayName: planned.instance.displayName,\n    sequenceNumber: planned.instance.sequenceNumber,\n    sessionId: planned.instance.sessionId,\n  });\n  return mapHostInstanceDto(instance);\n}"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 499,
-      "endLine": 524,
+      "line": 494,
+      "endLine": 519,
       "text": "export async function updateNpcCreatureInstanceRuntime(input: {\n  instance: NpcCreatureInstance;\n  patch: NpcCreatureInstanceRuntimeUpdate;\n  activeMemberUserIds: readonly string[];\n}): Promise<NpcCreatureInstance> {\n  const actorUserId = await getAuthenticatedUserId();\n  const planned = planNpcCreatureInstanceRuntimeUpdate(\n    input.instance,\n    input.patch,\n    {\n      actorUserId,\n      actorRole: 'gm',\n      activeMemberUserIds: input.activeMemberUserIds,\n    },\n  );\n  if (planned.ok === false) {\n    throw new Error(planned.message);\n  }\n\n  assertHost();\n  const instance = await updateHostNpcInstanceRuntime(\n    planned.instance.id!,\n    toInstanceRuntimePayload(planned.instance.runtime),\n  );\n  return mapHostInstanceDto(instance);\n}"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 527,
-      "endLine": 530,
+      "line": 522,
+      "endLine": 525,
       "text": "export async function removeNpcCreatureInstance(instanceId: string): Promise<void> {\n  assertHost();\n  await removeHostNpcInstance(instanceId);\n}"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 536,
-      "endLine": 541,
+      "line": 531,
+      "endLine": 536,
       "text": "export async function clearNpcCreatureInstanceTempControllersForSession(\n  sessionId: string,\n): Promise<number> {\n  assertHost();\n  return clearHostNpcTempControllersForSession(sessionId);\n}"
     },
     {
@@ -1835,260 +1835,239 @@
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 61,
-      "endLine": 65,
+      "line": 63,
+      "endLine": 67,
       "name": "assertHost",
       "text": "function assertHost(): void {\n  if (!isHostLibraryEnabled()) {\n    throw new Error('Host-Anmeldung nicht konfiguriert (VITE_SAGATREE_HOST_AUTH_URL fehlt).');\n  }\n}"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 67,
-      "endLine": 98,
+      "line": 69,
+      "endLine": 100,
       "name": "mapHostLibraryNpcRecord",
       "text": "function mapHostLibraryNpcRecord(raw: unknown): NpcCreatureCatalogRecord | null {\n  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null;\n  const row = raw as Record<string, unknown>;\n  const id = typeof row.id === 'string' ? row.id : null;\n  if (!id) return null;\n  const scopeRaw = row.scope;\n  const scope =\n    scopeRaw === 'personal' || scopeRaw === 'world' || scopeRaw === 'core' || scopeRaw === 'builtin'\n      ? scopeRaw\n      : null;\n  if (!scope || scope === 'core' || scope === 'builtin') return null;\n  const payload =\n    row.payload && typeof row.payload === 'object' && !Array.isArray(row.payload)\n      ? row.payload\n      : {};\n  const definition = parseNpcCreatureDefinition(id, scope, payload);\n  if (!definition) return null;\n  const publicId =\n    typeof row.publicId === 'string' && row.publicId.trim()\n      ? row.publicId.trim().toUpperCase()\n      : null;\n  // Assign ownership via property write — facade must not invent owners in literals.\n  const record = {\n    definition,\n    status: (row.status === 'archived' ? 'archived' : 'active') as NpcCreatureCatalogRecord['status'],\n    worldProfileId: typeof row.worldProfileId === 'string' ? row.worldProfileId : null,\n    publicId,\n  } as NpcCreatureCatalogRecord;\n  const ownerFromHost = row['ownerUserId'];\n  record.ownerUserId = typeof ownerFromHost === 'string' ? ownerFromHost : '';\n  return record;\n}"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 100,
-      "endLine": 122,
+      "line": 102,
+      "endLine": 116,
       "name": "listNpcCreatureDefinitions",
-      "text": "export async function listNpcCreatureDefinitions(options?: {\n  scope?: NpcCreatureScope;\n  worldProfileId?: string | null;\n  includeArchived?: boolean;\n}): Promise<NpcCreatureCatalogRecord[]> {\n  assertHost();\n  const rows = await fetchHostLibraryNpcCreatures();\n  return rows\n    .map(mapHostLibraryNpcRecord)\n    .filter((record): record is NpcCreatureCatalogRecord => record !== null)\n    .filter((record) => {\n      if (options?.includeArchived) return true;\n      return record.status === 'active';\n    })\n    .filter((record) => {\n      if (!options?.scope) return true;\n      return record.definition.scope === options.scope;\n    })\n    .filter((record) => {\n      if (!options?.worldProfileId) return true;\n      return record.worldProfileId === options.worldProfileId;\n    });\n}"
+      "text": "export async function listNpcCreatureDefinitions(options?: {\n  scope?: NpcCreatureScope;\n  worldProfileId?: string | null;\n  includeArchived?: boolean;\n}): Promise<NpcCreatureCatalogRecord[]> {\n  assertHost();\n  const rows = await fetchHostLibraryNpcCreatures({\n    scope: options?.scope,\n    worldProfileId: options?.worldProfileId,\n    includeArchived: options?.includeArchived === true,\n  });\n  return rows\n    .map(mapHostLibraryNpcRecord)\n    .filter((record): record is NpcCreatureCatalogRecord => record !== null);\n}"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 109,
-      "endLine": 109,
+      "line": 115,
+      "endLine": 115,
       "name": "callback",
       "text": "(record): record is NpcCreatureCatalogRecord => record !== null"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 110,
-      "endLine": 113,
-      "name": "callback",
-      "text": "(record) => {\n      if (options?.includeArchived) return true;\n      return record.status === 'active';\n    }"
-    },
-    {
-      "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 114,
-      "endLine": 117,
-      "name": "callback",
-      "text": "(record) => {\n      if (!options?.scope) return true;\n      return record.definition.scope === options.scope;\n    }"
-    },
-    {
-      "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
       "line": 118,
-      "endLine": 121,
-      "name": "callback",
-      "text": "(record) => {\n      if (!options?.worldProfileId) return true;\n      return record.worldProfileId === options.worldProfileId;\n    }"
-    },
-    {
-      "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 124,
-      "endLine": 143,
+      "endLine": 137,
       "name": "getNpcCreatureDefinition",
       "text": "export async function getNpcCreatureDefinition(\n  definitionId: string,\n): Promise<NpcCreatureCatalogRecord | null> {\n  const pack =\n    getCoreNpcCreatureDefinition(definitionId) ??\n    getBuiltinNpcCreatureDefinition(definitionId);\n  if (pack) {\n    const record = {\n      definition: pack,\n      status: 'active' as const,\n      worldProfileId: null,\n      publicId: null,\n    } as NpcCreatureCatalogRecord;\n    record.ownerUserId = '';\n    return record;\n  }\n  assertHost();\n  const raw = await fetchHostLibraryNpcCreatureById(definitionId);\n  return raw ? mapHostLibraryNpcRecord(raw) : null;\n}"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 145,
-      "endLine": 149,
+      "line": 139,
+      "endLine": 143,
       "name": "requireHostNpcRecord",
       "text": "function requireHostNpcRecord(raw: unknown, message: string): NpcCreatureCatalogRecord {\n  const record = mapHostLibraryNpcRecord(raw);\n  if (!record) throw new Error(message);\n  return record;\n}"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 151,
-      "endLine": 162,
+      "line": 145,
+      "endLine": 156,
       "name": "createNpcCreatureDefinition",
       "text": "export async function createNpcCreatureDefinition(\n  input: CreateNpcCreatureDefinitionInput,\n): Promise<NpcCreatureCatalogRecord> {\n  assertHost();\n  const created = await createHostLibraryNpcCreature({\n    scope: input.target.scope,\n    worldProfileId:\n      input.target.scope === 'world' ? input.target.worldProfileId : null,\n    draft: input.draft,\n  });\n  return requireHostNpcRecord(created, 'Host-NPC anlegen: ungültige Antwort');\n}"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 164,
-      "endLine": 173,
+      "line": 158,
+      "endLine": 167,
       "name": "updateNpcCreatureDefinition",
       "text": "export async function updateNpcCreatureDefinition(\n  input: UpdateNpcCreatureDefinitionInput,\n): Promise<NpcCreatureCatalogRecord> {\n  assertHost();\n  const updated = await updateHostLibraryNpcCreature(\n    input.definitionId,\n    input.draft,\n  );\n  return requireHostNpcRecord(updated, 'Host-NPC speichern: ungültige Antwort');\n}"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 175,
-      "endLine": 181,
+      "line": 169,
+      "endLine": 175,
       "name": "archiveNpcCreatureDefinition",
       "text": "export async function archiveNpcCreatureDefinition(\n  definitionId: string,\n): Promise<NpcCreatureCatalogRecord> {\n  assertHost();\n  const archived = await archiveHostLibraryNpcCreature(definitionId);\n  return requireHostNpcRecord(archived, 'Host-NPC archivieren: ungültige Antwort');\n}"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 183,
-      "endLine": 187,
+      "line": 177,
+      "endLine": 181,
       "name": "personalCopyName",
       "text": "function personalCopyName(sourceName: string): string {\n  const suffix = ' (Kopie)';\n  const maxBase = Math.max(1, 255 - suffix.length);\n  return `${sourceName.trim().slice(0, maxBase) || 'NPC'}${suffix}`;\n}"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 193,
-      "endLine": 211,
+      "line": 188,
+      "endLine": 207,
       "name": "duplicateNpcCreatureDefinition",
-      "text": "export async function duplicateNpcCreatureDefinition(\n  definitionId: string,\n  sourceDefinition?: NpcCreatureDefinition,\n): Promise<NpcCreatureCatalogRecord> {\n  assertHost();\n  let definition = sourceDefinition ?? null;\n  if (!definition) {\n    const existing = await getNpcCreatureDefinition(definitionId);\n    if (!existing) {\n      throw new Error('Definition nicht gefunden.');\n    }\n    definition = existing.definition;\n  }\n  const { id: _id, scope: _scope, ...rest } = definition;\n  return createNpcCreatureDefinition({\n    target: { scope: 'personal' },\n    draft: { ...rest, name: personalCopyName(rest.name) },\n  });\n}"
+      "text": "export async function duplicateNpcCreatureDefinition(\n  definitionId: string,\n  sourceDefinition?: NpcCreatureDefinition,\n): Promise<NpcCreatureCatalogRecord> {\n  assertHost();\n  // Packs are core-scoped (builtins live under core packs — no `builtin` scope).\n  const pack =\n    getCoreNpcCreatureDefinition(definitionId) ??\n    getBuiltinNpcCreatureDefinition(definitionId) ??\n    (sourceDefinition?.scope === 'core' ? sourceDefinition : null);\n  if (pack) {\n    const { id: _id, scope: _scope, ...rest } = pack;\n    return createNpcCreatureDefinition({\n      target: { scope: 'personal' },\n      draft: { ...rest, name: personalCopyName(rest.name) },\n    });\n  }\n  const duplicated = await duplicateHostLibraryNpcCreature(definitionId);\n  return requireHostNpcRecord(duplicated, 'Host-NPC duplizieren: ungültige Antwort');\n}"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 216,
-      "endLine": 222,
+      "line": 210,
+      "endLine": 216,
       "name": "restoreNpcCreatureDefinition",
-      "text": "export async function restoreNpcCreatureDefinition(\n  definitionId: string,\n): Promise<NpcCreatureCatalogRecord> {\n  void definitionId;\n  assertHost();\n  throw new Error('NPC-Katalog wiederherstellen ist im Host-Modus noch nicht verfügbar.');\n}"
+      "text": "export async function restoreNpcCreatureDefinition(\n  definitionId: string,\n): Promise<NpcCreatureCatalogRecord> {\n  assertHost();\n  const restored = await restoreHostLibraryNpcCreature(definitionId);\n  return requireHostNpcRecord(restored, 'Host-NPC wiederherstellen: ungültige Antwort');\n}"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 225,
-      "endLine": 238,
+      "line": 219,
+      "endLine": 232,
       "name": "toNpcCreatureDefinitionSummaries",
       "text": "export function toNpcCreatureDefinitionSummaries(\n  records: readonly NpcCreatureCatalogRecord[],\n): NpcCreatureDefinitionSummary[] {\n  return records.map((record) => {\n    const derived = deriveNpcCreaturePower(record.definition);\n    return {\n      definition: record.definition,\n      machtgradLabel: derived.machtgradLabel,\n      status: record.status,\n      scope: record.definition.scope,\n      worldProfileId: record.worldProfileId,\n    };\n  });\n}"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 228,
-      "endLine": 237,
+      "line": 222,
+      "endLine": 231,
       "name": "callback",
       "text": "(record) => {\n    const derived = deriveNpcCreaturePower(record.definition);\n    return {\n      definition: record.definition,\n      machtgradLabel: derived.machtgradLabel,\n      status: record.status,\n      scope: record.definition.scope,\n      worldProfileId: record.worldProfileId,\n    };\n  }"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 244,
-      "endLine": 252,
+      "line": 238,
+      "endLine": 246,
       "name": "loadWorldProfileNpcCreatureCatalog",
       "text": "export async function loadWorldProfileNpcCreatureCatalog(\n  worldProfileId: string,\n): Promise<NpcCreatureCatalogRecord[]> {\n  return listNpcCreatureDefinitions({\n    scope: 'world',\n    worldProfileId,\n    includeArchived: true,\n  });\n}"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 264,
-      "endLine": 304,
+      "line": 259,
+      "endLine": 298,
       "name": "loadWorldNpcCreatureAvailability",
-      "text": "export async function loadWorldNpcCreatureAvailability(\n  worldProfileId: string,\n): Promise<WorldNpcCreatureAvailability> {\n  assertHost();\n  // Host world `modules` parity (#1159): defaults until host exposes modules JSON.\n  const modules = null;\n  const [worldRecords, personalRecords] = await Promise.all([\n    loadWorldProfileNpcCreatureCatalog(worldProfileId),\n    listNpcCreatureDefinitions({\n      scope: 'personal',\n      includeArchived: false,\n    }),\n  ]);\n  const { config } = getNpcCreatureCatalogModuleConfig(modules);\n  const worldDefinitions = worldRecords\n    .filter((record) => record.status === 'active')\n    .map((record) => record.definition);\n  const personalDefinitions = personalRecords.map((record) => record.definition);\n\n  const resolveDefinition = (\n    definitionId: string,\n  ): NpcCreatureDefinition | undefined => {\n    const builtin = getBuiltinNpcCreatureDefinition(definitionId);\n    if (builtin) return builtin;\n    const core = getCoreNpcCreatureDefinition(definitionId);\n    if (core) return core;\n    const world = worldDefinitions.find((entry) => entry.id === definitionId);\n    if (world) return world;\n    return personalDefinitions.find((entry) => entry.id === definitionId);\n  };\n\n  const resolved = resolveWorldNpcCreatureCatalog({\n    config,\n    coreDefinitions: listCoreNpcCreatureDefinitions(),\n    resolveDefinition,\n    worldDefinitions,\n    personalDefinitions,\n  });\n\n  return { config, resolved, worldRecords };\n}"
+      "text": "export async function loadWorldNpcCreatureAvailability(\n  worldProfileId: string,\n): Promise<WorldNpcCreatureAvailability> {\n  assertHost();\n  const modules = null;\n  const [worldRecords, personalRecords] = await Promise.all([\n    loadWorldProfileNpcCreatureCatalog(worldProfileId),\n    listNpcCreatureDefinitions({\n      scope: 'personal',\n      includeArchived: false,\n    }),\n  ]);\n  const { config } = getNpcCreatureCatalogModuleConfig(modules);\n  const worldDefinitions = worldRecords\n    .filter((record) => record.status === 'active')\n    .map((record) => record.definition);\n  const personalDefinitions = personalRecords.map((record) => record.definition);\n\n  const resolveDefinition = (\n    definitionId: string,\n  ): NpcCreatureDefinition | undefined => {\n    const builtin = getBuiltinNpcCreatureDefinition(definitionId);\n    if (builtin) return builtin;\n    const core = getCoreNpcCreatureDefinition(definitionId);\n    if (core) return core;\n    const world = worldDefinitions.find((entry) => entry.id === definitionId);\n    if (world) return world;\n    return personalDefinitions.find((entry) => entry.id === definitionId);\n  };\n\n  const resolved = resolveWorldNpcCreatureCatalog({\n    config,\n    coreDefinitions: listCoreNpcCreatureDefinitions(),\n    resolveDefinition,\n    worldDefinitions,\n    personalDefinitions,\n  });\n\n  return { config, resolved, worldRecords };\n}"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 279,
-      "endLine": 279,
+      "line": 273,
+      "endLine": 273,
       "name": "callback",
       "text": "(record) => record.status === 'active'"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 280,
-      "endLine": 280,
+      "line": 274,
+      "endLine": 274,
       "name": "callback",
       "text": "(record) => record.definition"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 281,
-      "endLine": 281,
+      "line": 275,
+      "endLine": 275,
       "name": "callback",
       "text": "(record) => record.definition"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 283,
-      "endLine": 293,
+      "line": 277,
+      "endLine": 287,
       "name": "resolveDefinition",
       "text": "(\n    definitionId: string,\n  ): NpcCreatureDefinition | undefined => {\n    const builtin = getBuiltinNpcCreatureDefinition(definitionId);\n    if (builtin) return builtin;\n    const core = getCoreNpcCreatureDefinition(definitionId);\n    if (core) return core;\n    const world = worldDefinitions.find((entry) => entry.id === definitionId);\n    if (world) return world;\n    return personalDefinitions.find((entry) => entry.id === definitionId);\n  }"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 290,
-      "endLine": 290,
+      "line": 284,
+      "endLine": 284,
       "name": "callback",
       "text": "(entry) => entry.id === definitionId"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 292,
-      "endLine": 292,
+      "line": 286,
+      "endLine": 286,
       "name": "callback",
       "text": "(entry) => entry.id === definitionId"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 309,
-      "endLine": 333,
+      "line": 304,
+      "endLine": 328,
       "name": "promoteNpcCreatureCompactToFull",
       "text": "export async function promoteNpcCreatureCompactToFull(input: {\n  definitionId: string;\n  fullSheet: Readonly<Record<string, unknown>>;\n}): Promise<NpcCreatureCatalogRecord> {\n  const attrsCheck = assertFullSheetHasNoSilentIllegalAttributes(input.fullSheet);\n  if (attrsCheck.ok === false) {\n    throw new Error(attrsCheck.message);\n  }\n\n  assertHost();\n  const existing = await getNpcCreatureDefinition(input.definitionId);\n  if (!existing) {\n    throw new Error('Figur wurde nicht gefunden.');\n  }\n\n  const draft = buildCompactToFullWriteDraft(existing.definition, input.fullSheet);\n  if (!draft) {\n    throw new Error('Compact→Full-Entwurf ungültig — Full Sheet fehlt oder ist leer.');\n  }\n\n  return updateNpcCreatureDefinition({\n    definitionId: input.definitionId,\n    draft,\n  });\n}"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 335,
-      "endLine": 343,
+      "line": 330,
+      "endLine": 338,
       "name": "mapHostControllerAssignment",
       "text": "function mapHostControllerAssignment(\n  dto: HostNpcControllerAssignmentDto,\n): NpcControllerAssignment {\n  return {\n    projectId: dto.projectId,\n    definitionId: dto.definitionId,\n    controllerUserId: dto.controllerUserId,\n  };\n}"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 346,
-      "endLine": 353,
+      "line": 341,
+      "endLine": 348,
       "name": "getNpcCreatureControllerAssignment",
       "text": "export async function getNpcCreatureControllerAssignment(\n  projectId: string,\n  definitionId: string,\n): Promise<NpcControllerAssignment | null> {\n  assertHost();\n  const assignment = await fetchHostNpcCreatureControllerAssignment(projectId, definitionId);\n  return assignment ? mapHostControllerAssignment(assignment) : null;\n}"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 360,
-      "endLine": 396,
+      "line": 355,
+      "endLine": 391,
       "name": "assignNpcCreatureController",
       "text": "export async function assignNpcCreatureController(input: {\n  projectId: string;\n  definitionId: string;\n  controllerUserId: string | null;\n  activeMemberUserIds: readonly string[];\n}): Promise<NpcControllerAssignment> {\n  const actorUserId = await getAuthenticatedUserId();\n  const record = await getNpcCreatureDefinition(input.definitionId);\n  if (!record) {\n    throw new Error('Figur wurde nicht gefunden.');\n  }\n\n  const planned = planNpcControllerAssignment(\n    record.definition,\n    {\n      projectId: input.projectId,\n      definitionId: input.definitionId,\n      controllerUserId: input.controllerUserId,\n    },\n    {\n      actorUserId,\n      actorRole: 'gm',\n      activeMemberUserIds: input.activeMemberUserIds,\n    },\n  );\n  if (planned.ok === false) {\n    throw new Error(planned.message);\n  }\n\n  assertHost();\n  const assignment = await assignHostNpcCreatureController({\n    projectId: planned.assignment.projectId,\n    definitionId: planned.assignment.definitionId,\n    controllerUserId: planned.assignment.controllerUserId,\n  });\n  return mapHostControllerAssignment(assignment);\n}"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 398,
-      "endLine": 407,
+      "line": 393,
+      "endLine": 402,
       "name": "resolveDefinitionForInstance",
       "text": "async function resolveDefinitionForInstance(\n  definitionId: string,\n): Promise<NpcCreatureDefinition | null> {\n  const builtin = getBuiltinNpcCreatureDefinition(definitionId);\n  if (builtin) return builtin;\n  const core = getCoreNpcCreatureDefinition(definitionId);\n  if (core) return core;\n  const record = await getNpcCreatureDefinition(definitionId);\n  return record?.definition ?? null;\n}"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 409,
-      "endLine": 424,
+      "line": 404,
+      "endLine": 419,
       "name": "mapHostInstanceDto",
       "text": "function mapHostInstanceDto(dto: HostNpcInstanceDto): NpcCreatureInstance {\n  return toNpcCreatureInstance({\n    id: dto.id,\n    project_id: dto.projectId,\n    session_id: dto.sessionId,\n    definition_id: dto.definitionId,\n    display_name: dto.displayName,\n    instance_kind: dto.instanceKind,\n    sequence_number: dto.sequenceNumber,\n    snapshot: dto.snapshot,\n    runtime: dto.runtime,\n    created_by: dto.createdBy,\n    created_at: dto.createdAt,\n    updated_at: dto.updatedAt,\n  });\n}"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 426,
-      "endLine": 429,
+      "line": 421,
+      "endLine": 424,
       "name": "isBuiltinOrCoreDefinitionId",
       "text": "function isBuiltinOrCoreDefinitionId(definitionId: string): boolean {\n  if (isCoreNpcCreatureDefinitionId(definitionId)) return true;\n  return Boolean(getBuiltinNpcCreatureDefinition(definitionId));\n}"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 432,
-      "endLine": 438,
+      "line": 427,
+      "endLine": 433,
       "name": "listNpcCreatureInstances",
       "text": "export async function listNpcCreatureInstances(\n  projectId: string,\n): Promise<NpcCreatureInstance[]> {\n  assertHost();\n  const rows = await fetchHostNpcInstances(projectId);\n  return rows.map(mapHostInstanceDto);\n}"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 444,
-      "endLine": 496,
+      "line": 439,
+      "endLine": 491,
       "name": "spawnNpcCreatureInstance",
       "text": "export async function spawnNpcCreatureInstance(input: {\n  projectId: string;\n  sessionId?: string | null;\n  definitionId: string;\n  instanceKind: NpcCreatureInstanceKind;\n  displayName?: string | null;\n  activeMemberUserIds: readonly string[];\n}): Promise<NpcCreatureInstance> {\n  const actorUserId = await getAuthenticatedUserId();\n  const definition = await resolveDefinitionForInstance(input.definitionId);\n  if (!definition) {\n    throw new Error('Figuren-Vorlage wurde nicht gefunden.');\n  }\n\n  const existing = await listNpcCreatureInstances(input.projectId);\n  const definitionReadable =\n    isBuiltinOrCoreDefinitionId(definition.id) ||\n    Boolean(await getNpcCreatureDefinition(definition.id));\n\n  const planned = planNpcCreatureInstanceSpawn(\n    definition,\n    {\n      projectId: input.projectId,\n      sessionId: input.sessionId ?? null,\n      definitionId: input.definitionId,\n      instanceKind: input.instanceKind,\n      displayName: input.displayName ?? null,\n    },\n    {\n      actorUserId,\n      actorRole: 'gm',\n      activeMemberUserIds: input.activeMemberUserIds,\n      existingInstances: existing,\n      definitionReadable,\n    },\n  );\n  if (planned.ok === false) {\n    throw new Error(planned.message);\n  }\n\n  assertHost();\n  const instance = await spawnHostNpcInstance({\n    projectId: planned.instance.projectId,\n    definitionId: planned.instance.definitionId,\n    instanceKind: planned.instance.instanceKind,\n    snapshot: toInstanceSnapshotPayload(planned.instance.snapshot),\n    runtime: toInstanceRuntimePayload(planned.instance.runtime),\n    displayName: planned.instance.displayName,\n    sequenceNumber: planned.instance.sequenceNumber,\n    sessionId: planned.instance.sessionId,\n  });\n  return mapHostInstanceDto(instance);\n}"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 499,
-      "endLine": 524,
+      "line": 494,
+      "endLine": 519,
       "name": "updateNpcCreatureInstanceRuntime",
       "text": "export async function updateNpcCreatureInstanceRuntime(input: {\n  instance: NpcCreatureInstance;\n  patch: NpcCreatureInstanceRuntimeUpdate;\n  activeMemberUserIds: readonly string[];\n}): Promise<NpcCreatureInstance> {\n  const actorUserId = await getAuthenticatedUserId();\n  const planned = planNpcCreatureInstanceRuntimeUpdate(\n    input.instance,\n    input.patch,\n    {\n      actorUserId,\n      actorRole: 'gm',\n      activeMemberUserIds: input.activeMemberUserIds,\n    },\n  );\n  if (planned.ok === false) {\n    throw new Error(planned.message);\n  }\n\n  assertHost();\n  const instance = await updateHostNpcInstanceRuntime(\n    planned.instance.id!,\n    toInstanceRuntimePayload(planned.instance.runtime),\n  );\n  return mapHostInstanceDto(instance);\n}"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 527,
-      "endLine": 530,
+      "line": 522,
+      "endLine": 525,
       "name": "removeNpcCreatureInstance",
       "text": "export async function removeNpcCreatureInstance(instanceId: string): Promise<void> {\n  assertHost();\n  await removeHostNpcInstance(instanceId);\n}"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 536,
-      "endLine": 541,
+      "line": 531,
+      "endLine": 536,
       "name": "clearNpcCreatureInstanceTempControllersForSession",
       "text": "export async function clearNpcCreatureInstanceTempControllersForSession(\n  sessionId: string,\n): Promise<number> {\n  assertHost();\n  return clearHostNpcTempControllersForSession(sessionId);\n}"
     },

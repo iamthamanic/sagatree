@@ -100,7 +100,7 @@ Die finalen Datenbank-Constraints der beteiligten Relationen sind pro RPC in inv
 
 ### src/infrastructure/npc-creature/npc-creature-service.ts:1
 
-AST-Auflösung: `host-transport-cut-20`; SHA-256 `78bf416e2f51d54911af52ca86ec33e09ad934e0f311fbbce19ec175bfbbe30d`.
+AST-Auflösung: `host-transport-cut-20`; SHA-256 `f85a652361f7d0943b139693473f103ca55aaaefd6393b293bd67fd6a4496c4c`.
 
 Der vollständige aufrufende Funktionskörper enthält Parameterumformung, RPC-Aufruf, Response-Prüfung, Fehlerumwandlung und gegebenenfalls Fallback:
 
@@ -146,12 +146,14 @@ import {
   archiveHostLibraryNpcCreature,
   assignHostNpcCreatureController,
   createHostLibraryNpcCreature,
+  duplicateHostLibraryNpcCreature,
   fetchHostLibraryNpcCreatureById,
   fetchHostLibraryNpcCreatures,
   fetchHostNpcCreatureControllerAssignment,
   fetchHostNpcInstances,
   isHostLibraryEnabled,
   removeHostNpcInstance,
+  restoreHostLibraryNpcCreature,
   spawnHostNpcInstance,
   updateHostLibraryNpcCreature,
   updateHostNpcInstanceRuntime,
@@ -210,10 +212,8 @@ export async function listNpcCreatureDefinitions(options?: {
   includeArchived?: boolean;
 }): Promise<NpcCreatureCatalogRecord[]> {
   assertHost();
-  const rows = await fetchHostLibraryNpcCreatures();
-  return rows
-    .map(mapHostLibraryNpcRecord)
-    .filter((record): record is NpcCreatureCa
+  const rows = await fetchHostLibraryNpcCreatures({
+    scope: options?.scope,
 ```
 
 ## Konkrete Abnahmekriterien
@@ -249,4 +249,4 @@ Die folgenden Hashes binden SQL-Kette, transitive Tabellen-/Trigger-/Policyquell
 | [archive/supabase-legacy/supabase/migrations/061_session_recaps_and_handover.sql](../../../archive/supabase-legacy/supabase/migrations/061_session_recaps_and_handover.sql) | `be5ec785052294d9722fb0789032fbd62d845695d1c2bddeca7c60fe9e951921` |
 | [archive/supabase-legacy/supabase/migrations/063_saga_definitions.sql](../../../archive/supabase-legacy/supabase/migrations/063_saga_definitions.sql) | `09e02b7347ee1f64bcac0e1ff18b2293fc169269e01264e9cdbf8c412fa53c89` |
 | [archive/supabase-legacy/supabase/migrations/092_fix_projects_rls_recursion.sql](../../../archive/supabase-legacy/supabase/migrations/092_fix_projects_rls_recursion.sql) | `8e98ae8e52beb6ab57359338e7b30bdc2db322b7cdb44bdbf4059a41ab26e1bd` |
-| [src/infrastructure/npc-creature/npc-creature-service.ts](../../../src/infrastructure/npc-creature/npc-creature-service.ts) | `78bf416e2f51d54911af52ca86ec33e09ad934e0f311fbbce19ec175bfbbe30d` |
+| [src/infrastructure/npc-creature/npc-creature-service.ts](../../../src/infrastructure/npc-creature/npc-creature-service.ts) | `f85a652361f7d0943b139693473f103ca55aaaefd6393b293bd67fd6a4496c4c` |
