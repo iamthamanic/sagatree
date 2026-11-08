@@ -45,7 +45,7 @@
     },
     {
       "path": "src/infrastructure/session/session-lobby-channel.ts",
-      "sha256": "3747d80942a4ea3cc19c9add12dd8167f3642895cc57d57f0df494c095f4e5e5"
+      "sha256": "f050dc7ee1e4db8275c3d474c3cc06f1f0af904efaae4131f97561d843c0cbb7"
     },
     {
       "path": "src/infrastructure/session/session-recap-ai-service.ts",
@@ -107,7 +107,7 @@
     },
     {
       "path": "src/infrastructure/host/host-session-http.ts",
-      "sha256": "39b5efefc00297d57c1c4f248953cbbed4d7053e51974cd25a2ed43e368a64eb"
+      "sha256": "f0e603ecf93151669c7b809cb63aea3d0a98ed2ca17ae8f2768a5444bb9cab56"
     },
     {
       "path": "src/lib/authenticatedUser.ts",
@@ -790,6 +790,26 @@
         "endLine": 189,
         "text": "private detachDataListener(): void {\n    if (this.room?.off && this.dataListener) {\n      this.room.off('dataReceived', this.dataListener);\n    }\n    this.dataListener = null;\n  }"
       }
+    },
+    {
+      "kind": "fetch",
+      "name": null,
+      "path": "src/infrastructure/session/session-lobby-channel.ts",
+      "line": 81,
+      "endLine": 86,
+      "resolution": "dynamic-expression",
+      "expression": "fetch(streamUrl, {\n      method: 'GET',\n      credentials: 'include',\n      headers: { Accept: 'text/event-stream' },\n      signal: abort.signal,\n    })",
+      "chain": "fetch(streamUrl, {\n      method: 'GET',\n      credentials: 'include',\n      headers: { Accept: 'text/event-stream' },\n      signal: abort.signal,\n    })",
+      "arguments": [
+        "streamUrl",
+        "{\n      method: 'GET',\n      credentials: 'include',\n      headers: { Accept: 'text/event-stream' },\n      signal: abort.signal,\n    }"
+      ],
+      "enclosingOperation": {
+        "path": "src/infrastructure/session/session-lobby-channel.ts",
+        "line": 64,
+        "endLine": 151,
+        "text": "export async function subscribeSessionLobbyReady(\n  sessionId: string,\n  onReady: LobbyReadyListener,\n): Promise<SessionLobbySubscription> {\n  assertHost();\n  const base = getHostAuthBaseUrl();\n  if (base === null) {\n    throw new Error('Host-Anmeldung nicht konfiguriert (VITE_SAGATREE_HOST_AUTH_URL fehlt).');\n  }\n  if (!sessionId.trim()) {\n    throw new Error('Lobby-Kanal: Session fehlt');\n  }\n\n  const abort = new AbortController();\n  const streamUrl = `${base}/api/v1/sessions/${encodeURIComponent(sessionId)}/lobby/ready/stream`;\n  let response: Response;\n  try {\n    response = await fetch(streamUrl, {\n      method: 'GET',\n      credentials: 'include',\n      headers: { Accept: 'text/event-stream' },\n      signal: abort.signal,\n    });\n  } catch (err) {\n    if (abort.signal.aborted) {\n      return {\n        sendReady: async () => undefined,\n        unsubscribe: async () => undefined,\n      };\n    }\n    throw err instanceof Error\n      ? err\n      : new Error('Lobby-Kanal konnte nicht geöffnet werden');\n  }\n\n  if (!response.ok || !response.body) {\n    abort.abort();\n    let detail = '';\n    try {\n      const body: unknown = await response.json();\n      if (body && typeof body === 'object' && 'error' in body) {\n        detail = String((body as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    throw new Error(\n      detail ? `Lobby-Kanal: ${detail}` : `Lobby-Kanal: HTTP ${response.status}`,\n    );\n  }\n\n  let disposed = false;\n  const reader = response.body.getReader();\n  const decoder = new TextDecoder();\n  let pending = '';\n\n  void (async () => {\n    try {\n      while (!disposed) {\n        const { done, value } = await reader.read();\n        if (done) break;\n        pending += decoder.decode(value, { stream: true });\n        pending = parseSseReadyChunk(pending, (payload) => {\n          if (!disposed) onReady(payload);\n        });\n      }\n    } catch {\n      /* aborted or network drop — lobby remains usable without sync */\n    }\n  })();\n\n  return {\n    sendReady: async (payload) => {\n      if (disposed) return;\n      // Server stamps actorId; ignore client-claimed userId for identity.\n      await publishHostSessionLobbyReady(sessionId, payload.ready === true);\n    },\n    unsubscribe: async () => {\n      disposed = true;\n      abort.abort();\n      try {\n        await reader.cancel();\n      } catch {\n        /* ignore */\n      }\n    },\n  };\n}"
+      }
     }
   ],
   "imports": [
@@ -957,9 +977,17 @@
       "path": "src/infrastructure/session/session-lobby-channel.ts",
       "line": 7,
       "endLine": 7,
+      "module": "../../lib/hostAuthBridge",
+      "resolvedPath": "src/lib/hostAuthBridge.ts",
+      "expression": "import { getHostAuthBaseUrl } from '../../lib/hostAuthBridge';"
+    },
+    {
+      "path": "src/infrastructure/session/session-lobby-channel.ts",
+      "line": 8,
+      "endLine": 11,
       "module": "../host/host-session-http",
       "resolvedPath": "src/infrastructure/host/host-session-http.ts",
-      "expression": "import { isHostLibraryEnabled } from '../host/host-session-http';"
+      "expression": "import {\n  isHostLibraryEnabled,\n  publishHostSessionLobbyReady,\n} from '../host/host-session-http';"
     },
     {
       "path": "src/infrastructure/session/session-recap-ai-service.ts",
@@ -1255,27 +1283,27 @@
     },
     {
       "path": "src/infrastructure/session/session-lobby-channel.ts",
-      "line": 9,
-      "endLine": 12,
+      "line": 13,
+      "endLine": 16,
       "text": "export type LobbyReadyPayload = {\n  readonly userId: string;\n  readonly ready: boolean;\n};"
     },
     {
       "path": "src/infrastructure/session/session-lobby-channel.ts",
-      "line": 14,
-      "endLine": 14,
+      "line": 18,
+      "endLine": 18,
       "text": "export type LobbyReadyListener = (payload: LobbyReadyPayload) => void;"
     },
     {
       "path": "src/infrastructure/session/session-lobby-channel.ts",
-      "line": 16,
-      "endLine": 19,
+      "line": 20,
+      "endLine": 23,
       "text": "export type SessionLobbySubscription = {\n  sendReady: (payload: LobbyReadyPayload) => Promise<void>;\n  unsubscribe: () => Promise<void>;\n};"
     },
     {
       "path": "src/infrastructure/session/session-lobby-channel.ts",
-      "line": 27,
-      "endLine": 43,
-      "text": "export async function subscribeSessionLobbyReady(\n  sessionId: string,\n  onReady: LobbyReadyListener,\n): Promise<SessionLobbySubscription> {\n  assertHost();\n  void sessionId;\n  let disposed = false;\n  return {\n    sendReady: async (payload) => {\n      if (disposed) return;\n      onReady({ userId: payload.userId, ready: payload.ready === true });\n    },\n    unsubscribe: async () => {\n      disposed = true;\n    },\n  };\n}"
+      "line": 64,
+      "endLine": 151,
+      "text": "export async function subscribeSessionLobbyReady(\n  sessionId: string,\n  onReady: LobbyReadyListener,\n): Promise<SessionLobbySubscription> {\n  assertHost();\n  const base = getHostAuthBaseUrl();\n  if (base === null) {\n    throw new Error('Host-Anmeldung nicht konfiguriert (VITE_SAGATREE_HOST_AUTH_URL fehlt).');\n  }\n  if (!sessionId.trim()) {\n    throw new Error('Lobby-Kanal: Session fehlt');\n  }\n\n  const abort = new AbortController();\n  const streamUrl = `${base}/api/v1/sessions/${encodeURIComponent(sessionId)}/lobby/ready/stream`;\n  let response: Response;\n  try {\n    response = await fetch(streamUrl, {\n      method: 'GET',\n      credentials: 'include',\n      headers: { Accept: 'text/event-stream' },\n      signal: abort.signal,\n    });\n  } catch (err) {\n    if (abort.signal.aborted) {\n      return {\n        sendReady: async () => undefined,\n        unsubscribe: async () => undefined,\n      };\n    }\n    throw err instanceof Error\n      ? err\n      : new Error('Lobby-Kanal konnte nicht geöffnet werden');\n  }\n\n  if (!response.ok || !response.body) {\n    abort.abort();\n    let detail = '';\n    try {\n      const body: unknown = await response.json();\n      if (body && typeof body === 'object' && 'error' in body) {\n        detail = String((body as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    throw new Error(\n      detail ? `Lobby-Kanal: ${detail}` : `Lobby-Kanal: HTTP ${response.status}`,\n    );\n  }\n\n  let disposed = false;\n  const reader = response.body.getReader();\n  const decoder = new TextDecoder();\n  let pending = '';\n\n  void (async () => {\n    try {\n      while (!disposed) {\n        const { done, value } = await reader.read();\n        if (done) break;\n        pending += decoder.decode(value, { stream: true });\n        pending = parseSseReadyChunk(pending, (payload) => {\n          if (!disposed) onReady(payload);\n        });\n      }\n    } catch {\n      /* aborted or network drop — lobby remains usable without sync */\n    }\n  })();\n\n  return {\n    sendReady: async (payload) => {\n      if (disposed) return;\n      // Server stamps actorId; ignore client-claimed userId for identity.\n      await publishHostSessionLobbyReady(sessionId, payload.ready === true);\n    },\n    unsubscribe: async () => {\n      disposed = true;\n      abort.abort();\n      try {\n        await reader.cancel();\n      } catch {\n        /* ignore */\n      }\n    },\n  };\n}"
     },
     {
       "path": "src/infrastructure/session/session-recap-ai-service.ts",
@@ -1732,31 +1760,66 @@
     },
     {
       "path": "src/infrastructure/session/session-lobby-channel.ts",
-      "line": 21,
-      "endLine": 25,
+      "line": 25,
+      "endLine": 29,
       "name": "assertHost",
       "text": "function assertHost(): void {\n  if (!isHostLibraryEnabled()) {\n    throw new Error('Host-Anmeldung nicht konfiguriert (VITE_SAGATREE_HOST_AUTH_URL fehlt).');\n  }\n}"
     },
     {
       "path": "src/infrastructure/session/session-lobby-channel.ts",
-      "line": 27,
-      "endLine": 43,
+      "line": 31,
+      "endLine": 58,
+      "name": "parseSseReadyChunk",
+      "text": "function parseSseReadyChunk(\n  buffer: string,\n  onReady: LobbyReadyListener,\n): string {\n  const parts = buffer.split('\\n\\n');\n  const rest = parts.pop() ?? '';\n  for (const block of parts) {\n    const dataLines: string[] = [];\n    for (const line of block.split('\\n')) {\n      if (line.startsWith('data:')) {\n        dataLines.push(line.slice(5).trim());\n      }\n    }\n    if (dataLines.length === 0) continue;\n    try {\n      const parsed: unknown = JSON.parse(dataLines.join('\\n'));\n      if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) continue;\n      const record = parsed as Record<string, unknown>;\n      if (record.type !== 'ready') continue;\n      const userId = typeof record.userId === 'string' ? record.userId : null;\n      if (!userId) continue;\n      onReady({ userId, ready: record.ready === true });\n    } catch {\n      /* ignore malformed frames */\n    }\n  }\n  return rest;\n}"
+    },
+    {
+      "path": "src/infrastructure/session/session-lobby-channel.ts",
+      "line": 64,
+      "endLine": 151,
       "name": "subscribeSessionLobbyReady",
-      "text": "export async function subscribeSessionLobbyReady(\n  sessionId: string,\n  onReady: LobbyReadyListener,\n): Promise<SessionLobbySubscription> {\n  assertHost();\n  void sessionId;\n  let disposed = false;\n  return {\n    sendReady: async (payload) => {\n      if (disposed) return;\n      onReady({ userId: payload.userId, ready: payload.ready === true });\n    },\n    unsubscribe: async () => {\n      disposed = true;\n    },\n  };\n}"
+      "text": "export async function subscribeSessionLobbyReady(\n  sessionId: string,\n  onReady: LobbyReadyListener,\n): Promise<SessionLobbySubscription> {\n  assertHost();\n  const base = getHostAuthBaseUrl();\n  if (base === null) {\n    throw new Error('Host-Anmeldung nicht konfiguriert (VITE_SAGATREE_HOST_AUTH_URL fehlt).');\n  }\n  if (!sessionId.trim()) {\n    throw new Error('Lobby-Kanal: Session fehlt');\n  }\n\n  const abort = new AbortController();\n  const streamUrl = `${base}/api/v1/sessions/${encodeURIComponent(sessionId)}/lobby/ready/stream`;\n  let response: Response;\n  try {\n    response = await fetch(streamUrl, {\n      method: 'GET',\n      credentials: 'include',\n      headers: { Accept: 'text/event-stream' },\n      signal: abort.signal,\n    });\n  } catch (err) {\n    if (abort.signal.aborted) {\n      return {\n        sendReady: async () => undefined,\n        unsubscribe: async () => undefined,\n      };\n    }\n    throw err instanceof Error\n      ? err\n      : new Error('Lobby-Kanal konnte nicht geöffnet werden');\n  }\n\n  if (!response.ok || !response.body) {\n    abort.abort();\n    let detail = '';\n    try {\n      const body: unknown = await response.json();\n      if (body && typeof body === 'object' && 'error' in body) {\n        detail = String((body as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    throw new Error(\n      detail ? `Lobby-Kanal: ${detail}` : `Lobby-Kanal: HTTP ${response.status}`,\n    );\n  }\n\n  let disposed = false;\n  const reader = response.body.getReader();\n  const decoder = new TextDecoder();\n  let pending = '';\n\n  void (async () => {\n    try {\n      while (!disposed) {\n        const { done, value } = await reader.read();\n        if (done) break;\n        pending += decoder.decode(value, { stream: true });\n        pending = parseSseReadyChunk(pending, (payload) => {\n          if (!disposed) onReady(payload);\n        });\n      }\n    } catch {\n      /* aborted or network drop — lobby remains usable without sync */\n    }\n  })();\n\n  return {\n    sendReady: async (payload) => {\n      if (disposed) return;\n      // Server stamps actorId; ignore client-claimed userId for identity.\n      await publishHostSessionLobbyReady(sessionId, payload.ready === true);\n    },\n    unsubscribe: async () => {\n      disposed = true;\n      abort.abort();\n      try {\n        await reader.cancel();\n      } catch {\n        /* ignore */\n      }\n    },\n  };\n}"
     },
     {
       "path": "src/infrastructure/session/session-lobby-channel.ts",
-      "line": 35,
-      "endLine": 38,
+      "line": 90,
+      "endLine": 90,
       "name": "callback",
-      "text": "async (payload) => {\n      if (disposed) return;\n      onReady({ userId: payload.userId, ready: payload.ready === true });\n    }"
+      "text": "async () => undefined"
     },
     {
       "path": "src/infrastructure/session/session-lobby-channel.ts",
-      "line": 39,
-      "endLine": 41,
+      "line": 91,
+      "endLine": 91,
       "name": "callback",
-      "text": "async () => {\n      disposed = true;\n    }"
+      "text": "async () => undefined"
+    },
+    {
+      "path": "src/infrastructure/session/session-lobby-channel.ts",
+      "line": 120,
+      "endLine": 133,
+      "name": "callback",
+      "text": "async () => {\n    try {\n      while (!disposed) {\n        const { done, value } = await reader.read();\n        if (done) break;\n        pending += decoder.decode(value, { stream: true });\n        pending = parseSseReadyChunk(pending, (payload) => {\n          if (!disposed) onReady(payload);\n        });\n      }\n    } catch {\n      /* aborted or network drop — lobby remains usable without sync */\n    }\n  }"
+    },
+    {
+      "path": "src/infrastructure/session/session-lobby-channel.ts",
+      "line": 126,
+      "endLine": 128,
+      "name": "callback",
+      "text": "(payload) => {\n          if (!disposed) onReady(payload);\n        }"
+    },
+    {
+      "path": "src/infrastructure/session/session-lobby-channel.ts",
+      "line": 136,
+      "endLine": 140,
+      "name": "callback",
+      "text": "async (payload) => {\n      if (disposed) return;\n      // Server stamps actorId; ignore client-claimed userId for identity.\n      await publishHostSessionLobbyReady(sessionId, payload.ready === true);\n    }"
+    },
+    {
+      "path": "src/infrastructure/session/session-lobby-channel.ts",
+      "line": 141,
+      "endLine": 149,
+      "name": "callback",
+      "text": "async () => {\n      disposed = true;\n      abort.abort();\n      try {\n        await reader.cancel();\n      } catch {\n        /* ignore */\n      }\n    }"
     },
     {
       "path": "src/infrastructure/session/session-recap-ai-service.ts",
