@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-session.json](source-contracts/infra-session.json) (SHA-256 `2c2de86e5e8ca0d324b7c2e9f67c72f2870d3dca14de03e0a1a831c9494ee594`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-session.json](source-contracts/infra-session.json) (SHA-256 `ed6136b6128429a12b726e70b440a2d8123f10aa794bc7efe66d3e40ada72fdf`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -24,7 +24,7 @@ Storage buckets (0): none.
 
 Edge invokes (0): none.
 
-Realtime call sites: 0. Direct fetch sites: 0. Explicit auth/helper sites: 1.
+Realtime call sites: 0. Direct fetch sites: 1. Explicit auth/helper sites: 1.
 
 ## Complete implementation dependencies
 
@@ -150,6 +150,21 @@ this.room.off('dataReceived', this.dataListener)
 ```
 
 Enclosing operation: `src/infrastructure/session/media/livekit-media-plane-adapter.ts:184`; complete request/default/result/error logic is in the declarations below and the snapshot.
+### fetch: streamUrl
+
+`src/infrastructure/session/session-lobby-channel.ts:64` — dynamic-expression.
+
+Exact call/query chain:
+```ts
+fetch(streamUrl, {
+    method: 'GET',
+    credentials: 'include',
+    headers: { Accept: 'text/event-stream' },
+    signal,
+  })
+```
+
+Enclosing operation: `src/infrastructure/session/session-lobby-channel.ts:60`; complete request/default/result/error logic is in the declarations below and the snapshot.
 
 ## Complete public declarations and facade operation contracts
 
@@ -1016,7 +1031,7 @@ export class SessionMediaPlane {
 }
 ```
 
-### src/infrastructure/session/session-lobby-channel.ts:9
+### src/infrastructure/session/session-lobby-channel.ts:13
 
 ```ts
 export type LobbyReadyPayload = {
@@ -1025,13 +1040,13 @@ export type LobbyReadyPayload = {
 };
 ```
 
-### src/infrastructure/session/session-lobby-channel.ts:14
+### src/infrastructure/session/session-lobby-channel.ts:18
 
 ```ts
 export type LobbyReadyListener = (payload: LobbyReadyPayload) => void;
 ```
 
-### src/infrastructure/session/session-lobby-channel.ts:16
+### src/infrastructure/session/session-lobby-channel.ts:20
 
 ```ts
 export type SessionLobbySubscription = {
@@ -1040,7 +1055,7 @@ export type SessionLobbySubscription = {
 };
 ```
 
-### src/infrastructure/session/session-lobby-channel.ts:27
+### src/infrastructure/session/session-lobby-channel.ts:91
 
 ```ts
 export async function subscribeSessionLobbyReady(
@@ -1048,15 +1063,115 @@ export async function subscribeSessionLobbyReady(
   onReady: LobbyReadyListener,
 ): Promise<SessionLobbySubscription> {
   assertHost();
-  void sessionId;
+  const base = getHostAuthBaseUrl();
+  if (base === null) {
+    throw new Error('Host-Anmeldung nicht konfiguriert (VITE_SAGATREE_HOST_AUTH_URL fehlt).');
+  }
+  if (!sessionId.trim()) {
+    throw new Error('Lobby-Kanal: Session fehlt');
+  }
+
+  const abort = new AbortController();
+  const streamUrl = `${base}/api/v1/sessions/${encodeURIComponent(sessionId)}/lobby/ready/stream`;
+
   let disposed = false;
+  let reader: ReadableStreamDefaultReader<Uint8Array> | null = null;
+
+  const pump = async () => {
+    let delayMs = 500;
+    while (!disposed && !abort.signal.aborted) {
+      try {
+        const response = await openLobbyReadyStream(streamUrl, abort.signal);
+        reader = response.body!.getReader();
+        const decoder = new TextDecoder();
+        let pending = '';
+        delayMs = 500;
+        while (!disposed) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          pending += decoder.decode(value, { stream: true });
+          pending = parseSseReadyChunk(pending, (payload) => {
+            if (!disposed) onReady(payload);
+          });
+        }
+      } catch (err) {
+        if (disposed || abort.signal.aborted) return;
+        /* transient drop — retry with cancellation-aware backoff */
+      } finally {
+        try {
+          await reader?.cancel();
+        } catch {
+          /* ignore */
+        }
+        reader = null;
+      }
+      if (disposed || abort.signal.aborted) return;
+      await new Promise<void>((resolve) => {
+        const timer = setTimeout(resolve, delayMs);
+        abort.signal.addEventListener(
+          'abort',
+          () => {
+            clearTimeout(timer);
+            resolve();
+          },
+          { once: true },
+        );
+      });
+      delayMs = Math.min(delayMs * 2, 8_000);
+    }
+  };
+
+  // Establish first connection before returning so early failures surface.
+  try {
+    const response = await openLobbyReadyStream(streamUrl, abort.signal);
+    reader = response.body!.getReader();
+  } catch (err) {
+    abort.abort();
+    throw err instanceof Error
+      ? err
+      : new Error('Lobby-Kanal konnte nicht geöffnet werden');
+  }
+
+  void (async () => {
+    // Continue the already-opened reader, then reconnect loop on drop.
+    try {
+      const decoder = new TextDecoder();
+      let pending = '';
+      while (!disposed && reader) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        pending += decoder.decode(value, { stream: true });
+        pending = parseSseReadyChunk(pending, (payload) => {
+          if (!disposed) onReady(payload);
+        });
+      }
+    } catch {
+      /* fall through to reconnect loop */
+    } finally {
+      try {
+        await reader?.cancel();
+      } catch {
+        /* ignore */
+      }
+      reader = null;
+    }
+    if (!disposed) await pump();
+  })();
+
   return {
     sendReady: async (payload) => {
       if (disposed) return;
-      onReady({ userId: payload.userId, ready: payload.ready === true });
+      // Server stamps actorId; ignore client-claimed userId for identity.
+      await publishHostSessionLobbyReady(sessionId, payload.ready === true);
     },
     unsubscribe: async () => {
       disposed = true;
+      abort.abort();
+      try {
+        await reader?.cancel();
+      } catch {
+        /* ignore */
+      }
     },
   };
 }
@@ -1200,7 +1315,37 @@ export const sessionService = new SessionService();
 
 ## Remaining backend helper operations
 
-All backend operations are included in the public declarations above.
+### src/infrastructure/session/session-lobby-channel.ts:60
+
+```ts
+async function openLobbyReadyStream(
+  streamUrl: string,
+  signal: AbortSignal,
+): Promise<Response> {
+  const response = await fetch(streamUrl, {
+    method: 'GET',
+    credentials: 'include',
+    headers: { Accept: 'text/event-stream' },
+    signal,
+  });
+  if (!response.ok || !response.body) {
+    let detail = '';
+    try {
+      const body: unknown = await response.json();
+      if (body && typeof body === 'object' && 'error' in body) {
+        detail = String((body as { error: unknown }).error);
+      }
+    } catch {
+      /* ignore */
+    }
+    throw new Error(
+      detail ? `Lobby-Kanal: ${detail}` : `Lobby-Kanal: HTTP ${response.status}`,
+    );
+  }
+  return response;
+}
+```
+
 
 ## Verification source manifest
 
@@ -1215,7 +1360,7 @@ All backend operations are included in the public declarations above.
 | `src/domains/session/contracts/session.types.ts` | `3f2056b6b4cb4ef86dbffd4271482131a3bf4714c3329b8827a067acfde29a04` |
 | `src/domains/session/media/media-plane-contract.ts` | `7cba204291a86a1159b961048280899541f95c102abad8e2c8f61e7662ba8c1b` |
 | `src/infrastructure/host/host-library-http.ts` | `c56b88c60d6c9491fc7b6e6e1143ac4985ffdab5dff16afef8a54bce79629a07` |
-| `src/infrastructure/host/host-session-http.ts` | `39b5efefc00297d57c1c4f248953cbbed4d7053e51974cd25a2ed43e368a64eb` |
+| `src/infrastructure/host/host-session-http.ts` | `f0e603ecf93151669c7b809cb63aea3d0a98ed2ca17ae8f2768a5444bb9cab56` |
 | `src/infrastructure/session/host-session-adapter.ts` | `57c52ff948f0e5169f302c2de0a58e4eabffa35668fb121605533bcddbb3d4fb` |
 | `src/infrastructure/session/host-session-ports.contract.ts` | `b7d49eee90da55c7a0acadd765ddb202527fc003789f855ae910425e073f928f` |
 | `src/infrastructure/session/live-session-access.resolver.ts` | `88276a0afb9522e2dbb75f98959562ace873f33662ec2dea668428f91a762b9a` |
@@ -1226,7 +1371,7 @@ All backend operations are included in the public declarations above.
 | `src/infrastructure/session/media/memory-media-plane-adapter.ts` | `31fc7cee75c49c1e3af09b784e4a8dad3446bbe5ae5ddd6f7b2c9aee142dc5be` |
 | `src/infrastructure/session/media/memory-media-plane-bus.ts` | `1616d229067f513a12c67319aec28649e3a0afdf77779f9071b595dc024ff193` |
 | `src/infrastructure/session/media/session-media-plane.ts` | `ce8d3ec690f83745646400443d7870cd96383e341628a2d8f017e2d391fbb225` |
-| `src/infrastructure/session/session-lobby-channel.ts` | `3747d80942a4ea3cc19c9add12dd8167f3642895cc57d57f0df494c095f4e5e5` |
+| `src/infrastructure/session/session-lobby-channel.ts` | `1dec5e7d1f3eb0a53a91b28c458db30bf2f3e4200c27aeafa811139fbf1890ed` |
 | `src/infrastructure/session/session-recap-ai-service.ts` | `b0161e496d5de5ecc1a850a5eb908611396b03b69860fd6e9d93be2f92822960` |
 | `src/infrastructure/session/session-recap-service.ts` | `0fb9b8f81980a70e42c578ed1274ad43b6098f2cac6c6cf89cbba5bd0ab934fc` |
 | `src/infrastructure/session/session-runtime-channel.ts` | `07b49ed37f61a3e737f58e42b5fea1dd8151c66430014ce1f8fb04e1a85fa69a` |

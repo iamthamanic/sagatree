@@ -20,6 +20,13 @@ import {
   type SessionProjection,
 } from '../projections/index.ts';
 
+export {
+  createLobbyReadyHub,
+  type LobbyReadyEvent,
+  type LobbyReadyHub,
+  type LobbyReadyListener,
+} from './lobby-ready.ts';
+
 export type RealtimeJoinInput = {
   readonly sessionId: string;
   readonly roomId?: string;

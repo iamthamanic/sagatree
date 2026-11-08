@@ -175,7 +175,7 @@
     },
     {
       "path": "src/infrastructure/host/host-session-http.ts",
-      "sha256": "39b5efefc00297d57c1c4f248953cbbed4d7053e51974cd25a2ed43e368a64eb"
+      "sha256": "f0e603ecf93151669c7b809cb63aea3d0a98ed2ca17ae8f2768a5444bb9cab56"
     },
     {
       "path": "src/lib/authenticatedUser.ts",

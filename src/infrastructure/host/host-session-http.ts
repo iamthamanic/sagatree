@@ -641,3 +641,28 @@ export async function promoteHostSessionOutcomeToWorld(
     fetchImpl,
   );
 }
+
+/** CUT-04b — publish ephemeral lobby ready via host realtime (actor stamped server-side). */
+export async function publishHostSessionLobbyReady(
+  sessionId: string,
+  ready: boolean,
+  env: EnvLike = defaultEnv(),
+  fetchImpl: typeof fetch = fetch,
+): Promise<{ readonly ok: true; readonly userId: string; readonly ready: boolean }> {
+  const body = await hostMutateJson<{
+    ok?: boolean;
+    userId?: string;
+    ready?: boolean;
+  }>(
+    `/api/v1/sessions/${encodeURIComponent(sessionId)}/lobby/ready`,
+    'POST',
+    { ready: ready === true },
+    'Lobby-Bereitschaft konnte nicht gesendet werden',
+    env,
+    fetchImpl,
+  );
+  if (body.ok !== true || typeof body.userId !== 'string') {
+    throw new Error('Lobby-Bereitschaft konnte nicht gesendet werden');
+  }
+  return { ok: true, userId: body.userId, ready: body.ready === true };
+}

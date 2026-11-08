@@ -24,7 +24,7 @@ import type { SessionInfraPorts } from '../modules/session/index.ts';
 import type { ProjectInfraPorts } from '../application/project-infra/index.ts';
 import type { SagaInfraPorts } from '../application/saga-infra/index.ts';
 import type { AssetPorts } from '../assets/index.ts';
-import type { RealtimeSessionRooms } from '../realtime/index.ts';
+import type { LobbyReadyHub, RealtimeSessionRooms } from '../realtime/index.ts';
 import { actorToWhoamiDto } from '../auth/session.ts';
 import { authDenyStatus, transportStatus } from './errors.ts';
 import { mountAiHttpRoutes } from './ai-routes.ts';
@@ -49,6 +49,8 @@ export type HostApiDeps = {
   readonly transport: TransportUseCase;
   /** MIG-021 authorized session rooms (join/resync). */
   readonly realtime?: RealtimeSessionRooms;
+  /** CUT-04b ephemeral lobby ready fan-out. */
+  readonly lobbyReady?: LobbyReadyHub | null;
   /** Solo vs remote — solo-only mutation shortcuts are refused in remote mode. */
   readonly hostMode?: 'solo' | 'remote';
   readonly recordPing: () => { ok: true } | { ok: false; status: number; error: string };
@@ -506,6 +508,7 @@ export function createHostApi(deps: HostApiDeps): Hono {
     sagaInfra: deps.sagaInfra,
     sessionRecapGenerate: deps.sessionRecapGenerate,
     sessionMediaToken: deps.sessionMediaToken,
+    lobbyReady: deps.lobbyReady,
   });
 
   mountWorldAtlasHttpRoutes(app, {

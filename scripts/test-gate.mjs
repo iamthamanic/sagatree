@@ -1505,6 +1505,19 @@ function checkCut04SessionDelete() {
   console.log('OK: cut-04-session-delete.self-test');
 }
 
+function checkCut04bSessionLobbyReady() {
+  console.log('CUT-04b session lobby ready host realtime (#1162)...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/cut-04b-session-lobby-ready.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+  console.log('OK: cut-04b-session-lobby-ready.self-test');
+}
+
 function checkCut05OutcomePromotion() {
   console.log('CUT-05 session outcome promote host HTTP (#1140)...');
   execFileSync(
@@ -3949,6 +3962,7 @@ checkCut02NpcController();
 checkCut02bNpcDefinition();
 checkCut03NpcInstance();
 checkCut04SessionDelete();
+checkCut04bSessionLobbyReady();
 checkCut05OutcomePromotion();
 checkCut06ItemDefinition();
 checkCut06bItemCatalogReads();

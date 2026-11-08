@@ -10,6 +10,7 @@ import type { Actor, IdentityPorts } from '../modules/identity/index.ts';
 import type { SessionInfraPorts } from '../modules/session/index.ts';
 import type { SessionRecapGenerateUseCases } from '../application/session-recap/index.ts';
 import type { SessionMediaTokenUseCases } from '../application/session-media-token/index.ts';
+import type { LobbyReadyHub } from '../realtime/lobby-ready.ts';
 import {
   SESSION_RECAP_MAX_REQUEST_BYTES,
   checkSessionRecapBodySize,
@@ -30,6 +31,8 @@ export type SessionHttpDeps = {
   readonly sessionRecapGenerate?: SessionRecapGenerateUseCases | null;
   /** CUT-19 — LiveKit session media token. */
   readonly sessionMediaToken?: SessionMediaTokenUseCases | null;
+  /** CUT-04b — ephemeral lobby ready fan-out (host realtime). */
+  readonly lobbyReady?: LobbyReadyHub | null;
 };
 
 function contentTypeIsJson(c: {
@@ -412,6 +415,118 @@ export function mountSessionHttpRoutes(app: Hono, deps: SessionHttpDeps): void {
       return c.json({ error: left.error }, infraStatus(left.error));
     }
     return c.json(left.value, 200);
+  });
+
+  /**
+   * CUT-04b — subscribe to ephemeral lobby ready (SSE). Membership via getPlaySession.
+   * Client-claimed userId is never trusted; events stamp the publishing actor.
+   */
+  app.get('/api/v1/sessions/:sessionId/lobby/ready/stream', async (c) => {
+    if (!deps.lobbyReady) {
+      return c.json({ error: 'lobby-ready-unavailable' }, 503);
+    }
+    const sessionId = c.req.param('sessionId');
+    const actorResult = await resolveSessionActor(deps, c.req.raw.headers, true);
+    if (!actorResult.ok) {
+      return c.json({ error: actorResult.error }, actorResult.status);
+    }
+    const access = infra.getPlaySession(actorResult.actor.actorId, sessionId);
+    if (!access.ok) {
+      return c.json({ error: access.error }, infraStatus(access.error));
+    }
+
+    const encoder = new TextEncoder();
+    let unsubscribe: (() => void) | null = null;
+    let ping: ReturnType<typeof setInterval> | null = null;
+    const stream = new ReadableStream<Uint8Array>({
+      start(controller) {
+        const write = (chunk: string) => {
+          try {
+            controller.enqueue(encoder.encode(chunk));
+          } catch {
+            /* closed */
+          }
+        };
+        write(': connected\n\n');
+        // Replay current readiness so late joiners see peers already ready.
+        for (const event of deps.lobbyReady!.snapshot(sessionId)) {
+          write(
+            `data: ${JSON.stringify({
+              type: 'ready',
+              userId: event.userId,
+              ready: event.ready,
+            })}\n\n`,
+          );
+        }
+        unsubscribe = deps.lobbyReady!.subscribe(sessionId, (event) => {
+          write(
+            `data: ${JSON.stringify({
+              type: 'ready',
+              userId: event.userId,
+              ready: event.ready,
+            })}\n\n`,
+          );
+        });
+        ping = setInterval(() => write(': ping\n\n'), 15_000);
+        const abort = () => {
+          if (ping) clearInterval(ping);
+          ping = null;
+          unsubscribe?.();
+          unsubscribe = null;
+          try {
+            controller.close();
+          } catch {
+            /* already closed */
+          }
+        };
+        c.req.raw.signal.addEventListener('abort', abort, { once: true });
+      },
+      cancel() {
+        if (ping) clearInterval(ping);
+        ping = null;
+        unsubscribe?.();
+        unsubscribe = null;
+      },
+    });
+
+    return new Response(stream, {
+      status: 200,
+      headers: {
+        'Content-Type': 'text/event-stream; charset=utf-8',
+        'Cache-Control': 'no-cache, no-transform',
+        Connection: 'keep-alive',
+      },
+    });
+  });
+
+  /**
+   * CUT-04b — publish lobby ready. Actor identity stamped server-side (ignore body.userId).
+   */
+  app.post('/api/v1/sessions/:sessionId/lobby/ready', async (c) => {
+    if (!deps.lobbyReady) {
+      return c.json({ error: 'lobby-ready-unavailable' }, 503);
+    }
+    const sessionId = c.req.param('sessionId');
+    const parsed = await readJsonSafe(c);
+    if (!parsed.ok) return c.json({ error: 'INVALID_PAYLOAD' }, 422);
+    const body = asRecord(parsed.body);
+    const actorResult = await resolveSessionActor(deps, c.req.raw.headers, false, parsed.body);
+    if (!actorResult.ok) {
+      return c.json({ error: actorResult.error }, actorResult.status);
+    }
+    const access = infra.getPlaySession(actorResult.actor.actorId, sessionId);
+    if (!access.ok) {
+      return c.json({ error: access.error }, infraStatus(access.error));
+    }
+    if (!('ready' in body) || typeof body.ready !== 'boolean') {
+      return c.json({ error: 'INVALID_PAYLOAD' }, 422);
+    }
+    const event = deps.lobbyReady.publish(
+      sessionId,
+      actorResult.actor.actorId,
+      body.ready === true,
+    );
+    return c.json({ ok: true, userId: event.userId, ready: event.ready }, 200);
   });
 
   app.get('/api/v1/sessions/:sessionId/runtime', async (c) => {
