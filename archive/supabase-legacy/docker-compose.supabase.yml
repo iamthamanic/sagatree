@@ -1,0 +1,359 @@
+version: '3.8'
+
+# ===========================================
+# SagaTree Self-Host Stack
+# Default (`docker compose up -d`): core only
+#   Postgres · Auth · Rest · Realtime · Storage · Kong · Edge · Redis
+# Optional profiles (add with --profile …; `full` enables all):
+#   ai-local  — local Ollama container
+#   graph     — Neo4j (Lorekeeper)
+#   dev-tools — Studio + postgres-meta
+#   full      — ai-local + graph + dev-tools
+# Slim target: ~8 GB VPS (e.g. Hostinger KVM 2) + cloud LLM
+# See docs/ops/compose-profiles.md
+# ===========================================
+
+x-supabase-env: &supabase-env
+  SUPABASE_URL: http://supabase-kong:8000
+  SUPABASE_ANON_KEY: ${SUPABASE_ANON_KEY}
+  SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY}
+
+services:
+  # ===========================================
+  # SUPABASE STACK
+  # ===========================================
+  
+  # PostgreSQL Database
+  supabase-db:
+    image: supabase/postgres:15.1.0.147
+    container_name: sagatree-db
+    healthcheck:
+      test: pg_isready -U postgres -h localhost
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-your-super-secret-password}
+      POSTGRES_USER: postgres
+      POSTGRES_DB: postgres
+    volumes:
+      - supabase-db-data:/var/lib/postgresql/data
+      # Migrations are applied explicitly (see scripts/apply-migrations.sh).
+      # Do not mount them over /docker-entrypoint-initdb.d — that replaces the
+      # image role bootstrap and breaks first boot (supabase_admin missing).
+      - ./supabase/migrations:/migrations:ro
+    # Loopback only — never publish Postgres on 0.0.0.0 (#605)
+    ports:
+      - "127.0.0.1:5432:5432"
+    networks:
+      - sagatree-network
+
+  # Kong API Gateway
+  supabase-kong:
+    image: kong:2.8.1
+    container_name: sagatree-kong
+    environment:
+      KONG_DATABASE: "off"
+      KONG_DECLARATIVE_CONFIG: /home/kong/kong.yml
+      KONG_DNS_ORDER: last,A,CNAME
+      # rate-limiting: auth login/signup abuse control (#670)
+      KONG_PLUGINS: request-transformer,cors,key-auth,acl,basic-auth,rate-limiting
+      KONG_NGINX_PROXY_INCLUDE: /etc/kong/nginx-proxy.template
+      # Default 1 worker (~99 MiB); set KONG_NGINX_WORKER_PROCESSES=2 + recreate for ~175 MiB (#605)
+      KONG_NGINX_WORKER_PROCESSES: ${KONG_NGINX_WORKER_PROCESSES:-1}
+    volumes:
+      - ./supabase/config/kong.yml:/home/kong/kong.yml:ro
+      - ./supabase/config/nginx-proxy.template:/etc/kong/nginx-proxy.template:ro
+    ports:
+      - "8000:8000"
+      - "8443:8443"
+    depends_on:
+      supabase-auth:
+        condition: service_healthy
+    networks:
+      - sagatree-network
+
+  # GoTrue Auth Service
+  supabase-auth:
+    image: supabase/gotrue:v2.143.0
+    container_name: sagatree-auth
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:9999/health
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    environment:
+      GOTRUE_API_HOST: 0.0.0.0
+      GOTRUE_API_PORT: 9999
+      API_EXTERNAL_URL: ${API_EXTERNAL_URL:-http://localhost:8000}
+      GOTRUE_DB_DRIVER: postgres
+      GOTRUE_DB_DATABASE_URL: postgres://postgres:${POSTGRES_PASSWORD:-your-super-secret-password}@supabase-db:5432/postgres?search_path=auth
+      GOTRUE_SITE_URL: ${SITE_URL:-http://localhost:3000}
+      GOTRUE_URI_ALLOW_LIST: ${ADDITIONAL_REDIRECT_URLS:-}
+      GOTRUE_JWT_SECRET: ${JWT_SECRET:-your-jwt-secret}
+      GOTRUE_JWT_EXP: 3600
+      GOTRUE_JWT_DEFAULT_GROUP_NAME: authenticated
+      GOTRUE_SMTP_HOST: ${SMTP_HOST:-}
+      GOTRUE_SMTP_PORT: ${SMTP_PORT:-1025}
+      GOTRUE_SMTP_USER: ${SMTP_USER:-}
+      GOTRUE_SMTP_PASS: ${SMTP_PASS:-}
+      GOTRUE_SMTP_ADMIN_EMAIL: ${SMTP_ADMIN_EMAIL:-}
+      GOTRUE_MAILER_AUTOCONFIRM: ${MAILER_AUTOCONFIRM:-true}
+      GOTRUE_DISABLE_SIGNUP: ${DISABLE_SIGNUP:-false}
+      # Auth abuse ceilings (#670) — GoTrue returns 429 when exceeded
+      GOTRUE_RATE_LIMIT_EMAIL_SENT: ${GOTRUE_RATE_LIMIT_EMAIL_SENT:-10}
+      GOTRUE_RATE_LIMIT_SMS_SENT: ${GOTRUE_RATE_LIMIT_SMS_SENT:-10}
+      GOTRUE_RATE_LIMIT_VERIFY: ${GOTRUE_RATE_LIMIT_VERIFY:-30}
+      GOTRUE_RATE_LIMIT_TOKEN_REFRESH: ${GOTRUE_RATE_LIMIT_TOKEN_REFRESH:-150}
+      GOTRUE_RATE_LIMIT_OTP: ${GOTRUE_RATE_LIMIT_OTP:-30}
+    depends_on:
+      supabase-db:
+        condition: service_healthy
+    networks:
+      - sagatree-network
+
+  # PostgREST API
+  supabase-rest:
+    image: postgrest/postgrest:v12.0.1
+    container_name: sagatree-rest
+    environment:
+      PGRST_DB_URI: postgres://postgres:${POSTGRES_PASSWORD:-your-super-secret-password}@supabase-db:5432/postgres
+      PGRST_DB_SCHEMA: public
+      PGRST_DB_ANON_ROLE: anon
+      PGRST_JWT_SECRET: ${JWT_SECRET:-your-jwt-secret}
+    depends_on:
+      supabase-db:
+        condition: service_healthy
+    networks:
+      - sagatree-network
+
+  # Realtime WebSocket (Phoenix) — requires SECRET_KEY_BASE / DB_ENC_KEY (#604)
+  supabase-realtime:
+    image: supabase/realtime:v2.25.15
+    container_name: sagatree-realtime
+    restart: unless-stopped
+    environment:
+      DB_HOST: supabase-db
+      DB_PORT: 5432
+      DB_NAME: postgres
+      DB_USER: postgres
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-your-super-secret-password}
+      DB_SSL: "off"
+      DB_IP_VERSION: IPv4
+      PORT: 4000
+      JWT_SECRET: ${JWT_SECRET:-your-jwt-secret}
+      API_JWT_SECRET: ${API_JWT_SECRET:-your-jwt-secret}
+      SECRET_KEY_BASE: ${SECRET_KEY_BASE:?set SECRET_KEY_BASE — openssl rand -base64 64}
+      DB_ENC_KEY: ${DB_ENC_KEY:?set DB_ENC_KEY — openssl rand -hex 8}
+      APP_NAME: ${FLY_APP_NAME:-sagatree}
+      FLY_APP_NAME: ${FLY_APP_NAME:-sagatree}
+      # Must be a known Realtime region atom (nil crashes Nodes.region_nodes/1).
+      FLY_REGION: ${FLY_REGION:-us-east-1}
+      REGION: ${FLY_REGION:-us-east-1}
+      REPLICATION_MODE: RLS
+      REPLICATION_POLL_INTERVAL: 100
+      SECURE_CHANNELS: "true"
+      SEED_SELF_HOST: ${REALTIME_SEED_SELF_HOST:-true}
+      # Host header for local Kong is `localhost` — tenant external_id must match.
+      SELF_HOST_TENANT_NAME: ${REALTIME_SELF_HOST_TENANT:-localhost}
+      ERL_AFLAGS: "-proto_dist inet_tcp"
+      DNS_NODES: "''"
+    depends_on:
+      supabase-db:
+        condition: service_healthy
+    networks:
+      - sagatree-network
+
+  # Storage API
+  supabase-storage:
+    image: supabase/storage-api:v0.40.4
+    container_name: sagatree-storage
+    environment:
+      ANON_KEY: ${SUPABASE_ANON_KEY}
+      SERVICE_KEY: ${SUPABASE_SERVICE_ROLE_KEY}
+      POSTGREST_URL: http://supabase-rest:3000
+      PGRST_JWT_SECRET: ${JWT_SECRET:-your-jwt-secret}
+      DATABASE_URL: postgres://postgres:${POSTGRES_PASSWORD:-your-super-secret-password}@supabase-db:5432/postgres
+      FILE_SIZE_LIMIT: 157286400
+      STORAGE_BACKEND: file
+      FILE_STORAGE_BACKEND_PATH: /var/lib/storage
+      TENANT_ID: stub
+      REGION: stub
+      GLOBAL_S3_BUCKET: stub
+    volumes:
+      - supabase-storage-data:/var/lib/storage
+    depends_on:
+      supabase-db:
+        condition: service_healthy
+      supabase-rest:
+        condition: service_started
+    networks:
+      - sagatree-network
+
+  # Meta API (for Studio) — profile: dev-tools | full
+  supabase-meta:
+    image: supabase/postgres-meta:v0.75.0
+    container_name: sagatree-meta
+    profiles: ["dev-tools", "full"]
+    mem_limit: ${META_MEM_LIMIT:-256m}
+    environment:
+      PG_META_PORT: 8080
+      PG_META_DB_HOST: supabase-db
+      PG_META_DB_PORT: 5432
+      PG_META_DB_NAME: postgres
+      PG_META_DB_USER: postgres
+      PG_META_DB_PASSWORD: ${POSTGRES_PASSWORD:-your-super-secret-password}
+    depends_on:
+      supabase-db:
+        condition: service_healthy
+    networks:
+      - sagatree-network
+
+  # Edge Runtime (Functions) — main dispatcher routes /<fn> to each function folder
+  supabase-edge:
+    image: supabase/edge-runtime:v1.29.0
+    container_name: sagatree-edge
+    restart: unless-stopped
+    command: ["start", "--main-service", "/home/deno/functions/main", "--import-map", "/home/deno/import_map.json", "--port", "9998"]
+    environment:
+      <<: *supabase-env
+      JWT_SECRET: ${JWT_SECRET:-your-jwt-secret}
+      # Prod-safe default; local opt-out: VERIFY_JWT=false (#605)
+      VERIFY_JWT: ${VERIFY_JWT:-true}
+      # Local Ollama: enable profile ai-local and leave defaults.
+      # Cloud / remote: set CHARACTER_AI_PROVIDER=openai-compatible + BASE_URL/API_KEY
+      #   or point OLLAMA_HOST at a remote Ollama API (no ai-local profile needed).
+      OLLAMA_HOST: ${OLLAMA_HOST:-http://ollama:11434}
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-llama3.2}
+      CHARACTER_AI_PROVIDER: ${CHARACTER_AI_PROVIDER:-ollama}
+      CHARACTER_AI_MODEL: ${CHARACTER_AI_MODEL:-}
+      CHARACTER_AI_BASE_URL: ${CHARACTER_AI_BASE_URL:-}
+      CHARACTER_AI_API_KEY: ${CHARACTER_AI_API_KEY:-}
+      CHARACTER_AI_RATE_LIMIT_PER_MINUTE: ${CHARACTER_AI_RATE_LIMIT_PER_MINUTE:-6}
+      CHARACTER_AI_ALLOWED_ORIGIN: ${CHARACTER_AI_ALLOWED_ORIGIN:-http://localhost:3004}
+      MESHY_API_KEY: ${MESHY_API_KEY:-}
+      MESHY_API_BASE_URL: ${MESHY_API_BASE_URL:-https://api.meshy.ai/openapi/v1}
+      MESHY_TEXT_TO_IMAGE_MODEL: ${MESHY_TEXT_TO_IMAGE_MODEL:-nano-banana}
+      MESHY_IMAGE_TO_3D_MODEL: ${MESHY_IMAGE_TO_3D_MODEL:-latest}
+      ITEM_THUMBNAIL_RATE_LIMIT_PER_MINUTE: ${ITEM_THUMBNAIL_RATE_LIMIT_PER_MINUTE:-4}
+      ITEM_THUMBNAIL_ALLOWED_ORIGIN: ${ITEM_THUMBNAIL_ALLOWED_ORIGIN:-http://localhost:3004}
+      ITEM_THUMBNAIL_MESHY_MOCK: ${ITEM_THUMBNAIL_MESHY_MOCK:-}
+      ITEM_MODEL3D_RATE_LIMIT_PER_MINUTE: ${ITEM_MODEL3D_RATE_LIMIT_PER_MINUTE:-2}
+      ITEM_MODEL3D_ALLOWED_ORIGIN: ${ITEM_MODEL3D_ALLOWED_ORIGIN:-http://localhost:3004}
+      ITEM_MODEL3D_MESHY_MOCK: ${ITEM_MODEL3D_MESHY_MOCK:-}
+      CREDENTIALS_ENCRYPTION_KEY: ${CREDENTIALS_ENCRYPTION_KEY:-}
+      AI_PROVIDER_ALLOW_HOST_KEYS: ${AI_PROVIDER_ALLOW_HOST_KEYS:-}
+      AI_PROVIDER_CREDENTIAL_RATE_LIMIT_PER_MINUTE: ${AI_PROVIDER_CREDENTIAL_RATE_LIMIT_PER_MINUTE:-8}
+      AI_PROVIDER_ALLOWED_ORIGIN: ${AI_PROVIDER_ALLOWED_ORIGIN:-http://localhost:3004}
+    volumes:
+      - ./supabase/functions:/home/deno/functions:ro
+      - ./supabase/config/import_map.json:/home/deno/import_map.json:ro
+    # Loopback only — Edge is reached via Kong /functions/v1 (#605)
+    ports:
+      - "127.0.0.1:9998:9998"
+    depends_on:
+      supabase-auth:
+        condition: service_healthy
+      supabase-db:
+        condition: service_healthy
+    networks:
+      - sagatree-network
+
+  # Studio Dashboard — profile: dev-tools | full
+  supabase-studio:
+    image: supabase/studio:20240318-6cf0f6f
+    container_name: sagatree-studio
+    profiles: ["dev-tools", "full"]
+    mem_limit: ${STUDIO_MEM_LIMIT:-512m}
+    environment:
+      STUDIO_PG_META_URL: http://supabase-meta:8080
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-your-super-secret-password}
+      SUPABASE_URL: http://supabase-kong:8000
+      SUPABASE_ANON_KEY: ${SUPABASE_ANON_KEY}
+      SUPABASE_SERVICE_KEY: ${SUPABASE_SERVICE_ROLE_KEY}
+      AUTH_JWT_SECRET: ${JWT_SECRET:-your-jwt-secret}
+    ports:
+      - "127.0.0.1:3000:3000"
+    depends_on:
+      supabase-db:
+        condition: service_healthy
+      supabase-meta:
+        condition: service_started
+      supabase-edge:
+        condition: service_started
+    networks:
+      - sagatree-network
+
+  # ===========================================
+  # OPTIONAL SERVICES (profiles)
+  # ===========================================
+
+  # Local Ollama — profile: ai-local | full
+  # Prefer cloud / remote LLM on small VPS (no this profile).
+  ollama:
+    image: ollama/ollama:latest
+    container_name: sagatree-ollama
+    profiles: ["ai-local", "full"]
+    mem_limit: ${OLLAMA_MEM_LIMIT:-4g}
+    ports:
+      - "127.0.0.1:11434:11434"
+    volumes:
+      - ollama-data:/root/.ollama
+    environment:
+      OLLAMA_HOST: 0.0.0.0:11434
+    networks:
+      - sagatree-network
+    # Optional: GPU Support
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: 1
+    #           capabilities: [gpu]
+
+  # Neo4j (Lorekeeper) — profile: graph | full
+  # Defaults tuned for ~8 GB hosts; raise NEO4J_HEAP_* on larger machines.
+  neo4j:
+    image: neo4j:5.13.0
+    container_name: sagatree-neo4j
+    profiles: ["graph", "full"]
+    mem_limit: ${NEO4J_MEM_LIMIT:-768m}
+    ports:
+      - "127.0.0.1:7474:7474"  # HTTP
+      - "127.0.0.1:7687:7687"  # Bolt
+    environment:
+      NEO4J_AUTH: neo4j/${NEO4J_PASSWORD:-password}
+      NEO4J_PLUGINS: '["apoc"]'
+      NEO4J_dbms_memory_heap_initial__size: ${NEO4J_HEAP_INITIAL:-256m}
+      NEO4J_dbms_memory_heap_max__size: ${NEO4J_HEAP_MAX:-512m}
+    volumes:
+      - neo4j-data:/data
+      - neo4j-logs:/logs
+    networks:
+      - sagatree-network
+
+  # Redis (Session Cache for DM Tools) — always on (small footprint)
+  redis:
+    image: redis:7-alpine
+    container_name: sagatree-redis
+    mem_limit: ${REDIS_MEM_LIMIT:-128m}
+    ports:
+      - "127.0.0.1:6379:6379"
+    volumes:
+      - redis-data:/data
+    command: redis-server --appendonly yes --maxmemory ${REDIS_MAXMEMORY:-96mb} --maxmemory-policy allkeys-lru
+    networks:
+      - sagatree-network
+
+volumes:
+  supabase-db-data:
+  supabase-storage-data:
+  ollama-data:
+  neo4j-data:
+  neo4j-logs:
+  redis-data:
+
+networks:
+  sagatree-network:
+    driver: bridge

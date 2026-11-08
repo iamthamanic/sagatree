@@ -1403,6 +1403,12 @@ function checkCut20LegacyClientBan() {
     stdio: 'inherit',
   });
   console.log('OK: cut-21-eradicate-supabase.self-test');
+  console.log('CUT-22 host runtime contracts (#1157)...');
+  execFileSync(process.execPath, ['scripts/cut-22-host-runtime-contracts.self-test.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
+  console.log('OK: cut-22-host-runtime-contracts.self-test');
 }
 
 function checkFeHost12ProjectWrites() {

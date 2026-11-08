@@ -40,11 +40,11 @@ Secrets: no Kodus/API keys in the repository. Auth is via the installed GitHub A
 - **Branch:** `main` (aktiver Entwicklungsbranch; Feature-Branches von `main` abzweigen)
 - **Tech Stack:**
   - **Frontend:** React + Vite + TypeScript + Tailwind CSS + Radix UI
-  - **Backend:** Supabase Edge Functions (Deno)
-  - **Database:** PostgreSQL (Supabase Self-Host)
-  - **AI:** Ollama (LLM)
-  - **Knowledge Graph:** Neo4j
-  - **Cache:** Redis
+  - **Backend:** Node host (Hono) — Better Auth, Policy Service, domain modules
+  - **Database:** SQLite (host `SAGATREE_DATA_DIR`) — not Supabase Postgres
+  - **Assets:** Local host asset store (credentialed HTTP)
+  - **AI / Media:** Optional external providers (Ollama/BYOK, LiveKit, Meshy)
+  - **Legacy:** Supabase/Edge/Deno archived under `archive/supabase-legacy/` (CUT-21/22)
 
 ## Architecture
 
@@ -53,25 +53,23 @@ Secrets: no Kodus/API keys in the repository. Auth is via the installed GitHub A
 │                     SagaTree Frontend                          │
 │                    (React + Vite + TypeScript)                   │
 └───────────────────────────┬─────────────────────────────────────┘
-                            │
+                            │ cookie / JSON
                     ┌───────▼───────┐
-                    │   Supabase    │
-                    │   (Self-Host) │
-                    │   - Auth      │
-                    │   - Database  │
-                    │   - Storage    │
-                    │   - Realtime  │
+                    │ SagaTree Host │
+                    │ Hono + Better │
+                    │ Auth + SQLite │
                     └───────┬───────┘
                             │
         ┌───────────────────┼───────────────────┐
         │                   │                   │
         ▼                   ▼                   ▼
 ┌───────────────┐  ┌───────────────┐  ┌───────────────┐
-│ Edge Function │  │ Edge Function │  │ Edge Function │
-│   ai-gm       │  │   lorekeeper   │  │   dm-tools    │
-│   (Ollama)    │  │   (Neo4j)      │  │   (Redis)     │
+│ SQLite + WAL  │  │ Local assets  │  │ Optional AI / │
+│ domain repos  │  │ /data/assets  │  │ LiveKit/Meshy │
 └───────────────┘  └───────────────┘  └───────────────┘
 ```
+
+Default Docker path: root `docker compose` → `deployment/docker-compose.host.yml` (CUT-22).
 
 ## Module Structure
 

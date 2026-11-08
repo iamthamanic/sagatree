@@ -1760,14 +1760,14 @@
       "historicalCaller": "src/lib/supabase-client.ts",
       "uiJourney": "Edge wrappers",
       "previousBehavior": "functions.invoke helpers",
-      "hostSuccessor": "eradicate",
+      "hostSuccessor": "eradicated stub (SDK-free re-export)",
       "dataOwner": "platform",
       "risk": "medium",
-      "classification": "PARITY_MISSING",
-      "issueRef": 1156,
-      "evidenceTest": "pending CUT-21",
+      "classification": "HOST_VERIFIED",
+      "issueRef": 1157,
+      "evidenceTest": "scripts/cut-22-host-runtime-contracts.self-test.mjs",
       "featureAvailableBeforeCutover": true,
-      "notes": ""
+      "notes": "CUT-22: Edge functions.invoke path removed; file is SDK-free shim"
     },
     {
       "stableKey": "host-product-deny.unavailable-result",
@@ -1954,9 +1954,9 @@
   ],
   "counts": {
     "total": 126,
-    "HOST_VERIFIED": 122,
+    "HOST_VERIFIED": 123,
     "LEGACY_UNUSED": 3,
-    "PARITY_MISSING": 1
+    "PARITY_MISSING": 0
   },
   "followUpIssues": {
     "1159": "CUT-02b NPC definition duplicate/restore/world-catalog/promote",

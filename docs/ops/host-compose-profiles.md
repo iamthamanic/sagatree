@@ -1,8 +1,11 @@
 # Host Compose profiles (MIG-601)
 
-Node-host Compose lives under `deployment/` — separate from the legacy Supabase
-stack in the repo-root `docker-compose.yml`. Never delete volumes
-(`docker compose down -v`).
+Node-host Compose is the **product default** (CUT-22 / #1157). Root
+`docker-compose.yml` `include`s `deployment/docker-compose.host.yml`, so
+`docker compose --env-file deployment/.env.host up -d --build` from the repo
+root starts the host only. Legacy Supabase Compose is archived at
+`archive/supabase-legacy/docker-compose.supabase.yml` and is not required for
+product. Never delete volumes (`docker compose down -v`).
 
 ## Paths (reproducible)
 
