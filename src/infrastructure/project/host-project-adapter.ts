@@ -35,6 +35,8 @@ export function createHostProjectAdapter(ports: HostProjectPorts): HostProjectAd
     getSagaOverview: (actorId, publicId) => ports.getSagaOverview(actorId, publicId),
     joinProjectByCode: (actorId, code, characterId) =>
       ports.joinProjectByCode(actorId, code, characterId),
+    leaveProjectMembership: (actorId, projectId) =>
+      ports.leaveProjectMembership(actorId, projectId),
     listSagaBindings: (actorId, publicId, assetKind) =>
       ports.listSagaBindings(actorId, publicId, assetKind),
     listSagaMemberPermissionState: (actorId, publicId) =>

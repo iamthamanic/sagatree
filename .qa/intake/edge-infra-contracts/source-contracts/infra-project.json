@@ -5,15 +5,15 @@
   "sourceFiles": [
     {
       "path": "src/infrastructure/project/host-project-adapter.ts",
-      "sha256": "41d162d05407e6f54f118a60a6aaf5f29bb1a61d28758c7d1c0698cdc3c35a70"
+      "sha256": "f8137115741c452c865883275c6d95529faf29ca28620c5adc92eedc30002e90"
     },
     {
       "path": "src/infrastructure/project/host-project-ports.contract.ts",
-      "sha256": "4e9023655c95ed3e3ade8837af0c14c53c5541571a1591526aae760ffbbd9902"
+      "sha256": "96d05101ba2cbe8364ae30bbcde48235a1058a65a43f733d03433d7f26a8236f"
     },
     {
       "path": "src/infrastructure/project/project-member-service.ts",
-      "sha256": "e67c3c5c9dd332d15d699a489dce4db743c183a5ce6aab09efc2deb89628236f"
+      "sha256": "40fc648e091c11dcdcf4535747d9db0cd6dc5da9e475663c3ff60dff9a53e594"
     },
     {
       "path": "src/infrastructure/project/project-service.ts",
@@ -59,7 +59,7 @@
     },
     {
       "path": "src/infrastructure/host/host-project-http.ts",
-      "sha256": "b5a68f6452217b08d2217a983113a9a356ce70890693319227f35c82fbdcd818"
+      "sha256": "287a426fb8645638e263a7b2d612d071eec4bf054cc778193b82f6b8252a0f92"
     },
     {
       "path": "src/infrastructure/host/host-session-http.ts",
@@ -407,24 +407,24 @@
       "kind": "TypeAliasDeclaration",
       "name": "HostProjectMemberDto",
       "path": "src/infrastructure/host/host-project-http.ts",
-      "line": 239,
-      "endLine": 247,
+      "line": 248,
+      "endLine": 256,
       "text": "export type HostProjectMemberDto = {\n  readonly id: string;\n  readonly projectId: string;\n  readonly userId: string;\n  readonly characterId: string | null;\n  readonly role: 'gm' | 'player';\n  readonly status: 'active' | 'inactive';\n  readonly joinedAt: string | null;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "HostProjectWriteDto",
       "path": "src/infrastructure/host/host-project-http.ts",
-      "line": 263,
-      "endLine": 277,
+      "line": 272,
+      "endLine": 286,
       "text": "export type HostProjectWriteDto = {\n  readonly id: string;\n  readonly publicId: string;\n  readonly code: string;\n  readonly name: string;\n  readonly description: string | null;\n  readonly worldId: string;\n  readonly worldProfileId: string;\n  readonly defaultLookProfileId: string | null;\n  readonly allowPlayerCharacterLookOverride: boolean;\n  readonly gmUserId: string;\n  readonly status: string;\n  readonly createdAt: string;\n  readonly updatedAt: string;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "HostSessionLookDto",
       "path": "src/infrastructure/host/host-project-http.ts",
-      "line": 332,
-      "endLine": 340,
+      "line": 341,
+      "endLine": 349,
       "text": "export type HostSessionLookDto = {\n  readonly id: string;\n  readonly projectId: string;\n  readonly lookProfileId: string | null;\n  readonly publicId?: string;\n  readonly status?: string;\n  readonly sessionNumber?: number | null;\n  readonly name?: string | null;\n};"
     },
     {
@@ -539,10 +539,10 @@
     {
       "path": "src/infrastructure/project/project-member-service.ts",
       "line": 6,
-      "endLine": 11,
+      "endLine": 12,
       "module": "../host/host-project-http",
       "resolvedPath": "src/infrastructure/host/host-project-http.ts",
-      "expression": "import {\n  isHostLibraryEnabled,\n  joinHostProjectByCode,\n  listHostProjectMembers,\n  setHostMyProjectCharacter,\n} from '../host/host-project-http';"
+      "expression": "import {\n  isHostLibraryEnabled,\n  joinHostProjectByCode,\n  leaveHostProject,\n  listHostProjectMembers,\n  setHostMyProjectCharacter,\n} from '../host/host-project-http';"
     },
     {
       "path": "src/infrastructure/project/project-service.ts",
@@ -660,8 +660,8 @@
     {
       "path": "src/infrastructure/project/host-project-adapter.ts",
       "line": 22,
-      "endLine": 49,
-      "text": "export function createHostProjectAdapter(ports: HostProjectPorts): HostProjectAdapter {\n  return {\n    transport: 'host',\n    ops: HOST_PROJECT_OPS,\n    rpcNames: HOST_PROJECT_RPC_NAMES,\n    createProjectSession: (actorId, projectId, name, notes) =>\n      ports.createProjectSession(actorId, projectId, name, notes),\n    ensureNativeStarterProject: (actorId, slug) =>\n      ports.ensureNativeStarterProject(actorId, slug),\n    getMySagaPermissions: (actorId, publicId) =>\n      ports.getMySagaPermissions(actorId, publicId),\n    getSagaLoreTimeline: (actorId, publicId) =>\n      ports.getSagaLoreTimeline(actorId, publicId),\n    getSagaOverview: (actorId, publicId) => ports.getSagaOverview(actorId, publicId),\n    joinProjectByCode: (actorId, code, characterId) =>\n      ports.joinProjectByCode(actorId, code, characterId),\n    listSagaBindings: (actorId, publicId, assetKind) =>\n      ports.listSagaBindings(actorId, publicId, assetKind),\n    listSagaMemberPermissionState: (actorId, publicId) =>\n      ports.listSagaMemberPermissionState(actorId, publicId),\n    setMyProjectCharacter: (actorId, projectId, characterId) =>\n      ports.setMyProjectCharacter(actorId, projectId, characterId),\n    setSagaBindingReveal: (actorId, projectId, bindingId, reveal) =>\n      ports.setSagaBindingReveal(actorId, projectId, bindingId, reveal),\n    setSagaMemberBundle: (actorId, projectId, memberId, bundleId) =>\n      ports.setSagaMemberBundle(actorId, projectId, memberId, bundleId),\n  };\n}"
+      "endLine": 51,
+      "text": "export function createHostProjectAdapter(ports: HostProjectPorts): HostProjectAdapter {\n  return {\n    transport: 'host',\n    ops: HOST_PROJECT_OPS,\n    rpcNames: HOST_PROJECT_RPC_NAMES,\n    createProjectSession: (actorId, projectId, name, notes) =>\n      ports.createProjectSession(actorId, projectId, name, notes),\n    ensureNativeStarterProject: (actorId, slug) =>\n      ports.ensureNativeStarterProject(actorId, slug),\n    getMySagaPermissions: (actorId, publicId) =>\n      ports.getMySagaPermissions(actorId, publicId),\n    getSagaLoreTimeline: (actorId, publicId) =>\n      ports.getSagaLoreTimeline(actorId, publicId),\n    getSagaOverview: (actorId, publicId) => ports.getSagaOverview(actorId, publicId),\n    joinProjectByCode: (actorId, code, characterId) =>\n      ports.joinProjectByCode(actorId, code, characterId),\n    leaveProjectMembership: (actorId, projectId) =>\n      ports.leaveProjectMembership(actorId, projectId),\n    listSagaBindings: (actorId, publicId, assetKind) =>\n      ports.listSagaBindings(actorId, publicId, assetKind),\n    listSagaMemberPermissionState: (actorId, publicId) =>\n      ports.listSagaMemberPermissionState(actorId, publicId),\n    setMyProjectCharacter: (actorId, projectId, characterId) =>\n      ports.setMyProjectCharacter(actorId, projectId, characterId),\n    setSagaBindingReveal: (actorId, projectId, bindingId, reveal) =>\n      ports.setSagaBindingReveal(actorId, projectId, bindingId, reveal),\n    setSagaMemberBundle: (actorId, projectId, memberId, bundleId) =>\n      ports.setSagaMemberBundle(actorId, projectId, memberId, bundleId),\n  };\n}"
     },
     {
       "path": "src/infrastructure/project/host-project-ports.contract.ts",
@@ -714,38 +714,38 @@
     {
       "path": "src/infrastructure/project/host-project-ports.contract.ts",
       "line": 46,
-      "endLine": 100,
-      "text": "export type HostProjectPorts = {\n  readonly createProjectSession: (\n    actorId: string,\n    projectId: string,\n    name?: string | null,\n    notes?: string | null,\n  ) => Promise<HostProjectResult<HostProjectSessionVm>>;\n  readonly ensureNativeStarterProject: (\n    actorId: string,\n    slug?: string | null,\n  ) => Promise<HostProjectResult<HostStarterProjectVm>>;\n  readonly getMySagaPermissions: (\n    actorId: string,\n    publicId: string,\n  ) => Promise<HostProjectResult<HostSagaPermissionsVm>>;\n  readonly getSagaLoreTimeline: (\n    actorId: string,\n    publicId: string,\n  ) => Promise<HostProjectResult<HostSagaLoreTimelineVm>>;\n  readonly getSagaOverview: (\n    actorId: string,\n    publicId: string,\n  ) => Promise<HostProjectResult<HostSagaOverviewVm>>;\n  readonly joinProjectByCode: (\n    actorId: string,\n    code: string,\n    characterId?: string | null,\n  ) => Promise<HostProjectResult<{ readonly projectId: string }>>;\n  readonly listSagaBindings: (\n    actorId: string,\n    publicId: string,\n    assetKind?: string | null,\n  ) => Promise<HostProjectResult<readonly HostSagaBindingVm[]>>;\n  readonly listSagaMemberPermissionState: (\n    actorId: string,\n    publicId: string,\n  ) => Promise<HostProjectResult<readonly HostSagaMemberPermissionStateVm[]>>;\n  readonly setMyProjectCharacter: (\n    actorId: string,\n    projectId: string,\n    characterId?: string | null,\n  ) => Promise<HostProjectResult<{ readonly memberId: string }>>;\n  readonly setSagaBindingReveal: (\n    actorId: string,\n    projectId: string,\n    bindingId: string,\n    reveal: string,\n  ) => Promise<HostProjectResult<HostSagaBindingVm>>;\n  readonly setSagaMemberBundle: (\n    actorId: string,\n    projectId: string,\n    memberId: string,\n    bundleId: string,\n  ) => Promise<HostProjectResult<Readonly<Record<string, unknown>>>>;\n};"
+      "endLine": 104,
+      "text": "export type HostProjectPorts = {\n  readonly createProjectSession: (\n    actorId: string,\n    projectId: string,\n    name?: string | null,\n    notes?: string | null,\n  ) => Promise<HostProjectResult<HostProjectSessionVm>>;\n  readonly ensureNativeStarterProject: (\n    actorId: string,\n    slug?: string | null,\n  ) => Promise<HostProjectResult<HostStarterProjectVm>>;\n  readonly getMySagaPermissions: (\n    actorId: string,\n    publicId: string,\n  ) => Promise<HostProjectResult<HostSagaPermissionsVm>>;\n  readonly getSagaLoreTimeline: (\n    actorId: string,\n    publicId: string,\n  ) => Promise<HostProjectResult<HostSagaLoreTimelineVm>>;\n  readonly getSagaOverview: (\n    actorId: string,\n    publicId: string,\n  ) => Promise<HostProjectResult<HostSagaOverviewVm>>;\n  readonly joinProjectByCode: (\n    actorId: string,\n    code: string,\n    characterId?: string | null,\n  ) => Promise<HostProjectResult<{ readonly projectId: string }>>;\n  readonly leaveProjectMembership: (\n    actorId: string,\n    projectId: string,\n  ) => Promise<HostProjectResult<{ readonly ok: true }>>;\n  readonly listSagaBindings: (\n    actorId: string,\n    publicId: string,\n    assetKind?: string | null,\n  ) => Promise<HostProjectResult<readonly HostSagaBindingVm[]>>;\n  readonly listSagaMemberPermissionState: (\n    actorId: string,\n    publicId: string,\n  ) => Promise<HostProjectResult<readonly HostSagaMemberPermissionStateVm[]>>;\n  readonly setMyProjectCharacter: (\n    actorId: string,\n    projectId: string,\n    characterId?: string | null,\n  ) => Promise<HostProjectResult<{ readonly memberId: string }>>;\n  readonly setSagaBindingReveal: (\n    actorId: string,\n    projectId: string,\n    bindingId: string,\n    reveal: string,\n  ) => Promise<HostProjectResult<HostSagaBindingVm>>;\n  readonly setSagaMemberBundle: (\n    actorId: string,\n    projectId: string,\n    memberId: string,\n    bundleId: string,\n  ) => Promise<HostProjectResult<Readonly<Record<string, unknown>>>>;\n};"
     },
     {
       "path": "src/infrastructure/project/host-project-ports.contract.ts",
-      "line": 103,
-      "endLine": 115,
-      "text": "export const HOST_PROJECT_RPC_NAMES = [\n  'create_project_session',\n  'ensure_native_starter_project',\n  'get_my_saga_permissions',\n  'get_saga_lore_timeline',\n  'get_saga_overview',\n  'join_project_by_code',\n  'list_saga_bindings',\n  'list_saga_member_permission_state',\n  'set_my_project_character',\n  'set_saga_binding_reveal',\n  'set_saga_member_bundle',\n] as const;"
+      "line": 107,
+      "endLine": 120,
+      "text": "export const HOST_PROJECT_RPC_NAMES = [\n  'create_project_session',\n  'ensure_native_starter_project',\n  'get_my_saga_permissions',\n  'get_saga_lore_timeline',\n  'get_saga_overview',\n  'join_project_by_code',\n  'leave_project_membership',\n  'list_saga_bindings',\n  'list_saga_member_permission_state',\n  'set_my_project_character',\n  'set_saga_binding_reveal',\n  'set_saga_member_bundle',\n] as const;"
     },
     {
       "path": "src/infrastructure/project/host-project-ports.contract.ts",
-      "line": 117,
-      "endLine": 117,
+      "line": 122,
+      "endLine": 122,
       "text": "export type HostProjectRpcName = (typeof HOST_PROJECT_RPC_NAMES)[number];"
     },
     {
       "path": "src/infrastructure/project/host-project-ports.contract.ts",
-      "line": 120,
-      "endLine": 132,
-      "text": "export const HOST_PROJECT_OPS = [\n  'createProjectSession',\n  'ensureNativeStarterProject',\n  'getMySagaPermissions',\n  'getSagaLoreTimeline',\n  'getSagaOverview',\n  'joinProjectByCode',\n  'listSagaBindings',\n  'listSagaMemberPermissionState',\n  'setMyProjectCharacter',\n  'setSagaBindingReveal',\n  'setSagaMemberBundle',\n] as const;"
+      "line": 125,
+      "endLine": 138,
+      "text": "export const HOST_PROJECT_OPS = [\n  'createProjectSession',\n  'ensureNativeStarterProject',\n  'getMySagaPermissions',\n  'getSagaLoreTimeline',\n  'getSagaOverview',\n  'joinProjectByCode',\n  'leaveProjectMembership',\n  'listSagaBindings',\n  'listSagaMemberPermissionState',\n  'setMyProjectCharacter',\n  'setSagaBindingReveal',\n  'setSagaMemberBundle',\n] as const;"
     },
     {
       "path": "src/infrastructure/project/host-project-ports.contract.ts",
-      "line": 134,
-      "endLine": 134,
+      "line": 140,
+      "endLine": 140,
       "text": "export type HostProjectOp = (typeof HOST_PROJECT_OPS)[number];"
     },
     {
       "path": "src/infrastructure/project/project-member-service.ts",
-      "line": 28,
-      "endLine": 90,
-      "text": "export const projectMemberService = {\n  async getMembers(projectId: string): Promise<ProjectMemberDto[]> {\n    assertHost();\n    const rows = await listHostProjectMembers(projectId);\n    return rows.map((row) => ({\n      id: row.id,\n      project_id: row.projectId,\n      user_id: row.userId,\n      character_id: row.characterId,\n      role: row.role,\n      status: row.status === 'active' ? 'active' : 'inactive',\n      joined_at: row.joinedAt ?? new Date(0).toISOString(),\n    }));\n  },\n\n  async joinByCode(dto: JoinProjectDto): Promise<ProjectMemberDto> {\n    assertHost();\n    const joined = await joinHostProjectByCode(dto.code.toUpperCase(), dto.character_id || null);\n    const projectId = requireUuid(joined.projectId, 'join_project_by_code');\n    const userId = requireUuid(joined.userId, 'join_project_by_code.userId');\n    return {\n      id: projectId,\n      project_id: projectId,\n      user_id: userId,\n      role: 'player',\n      status: 'active',\n      character_id: dto.character_id || null,\n      joined_at: new Date().toISOString(),\n    } as ProjectMemberDto;\n  },\n\n  async updateCharacter(projectId: string, characterId: string): Promise<ProjectMemberDto> {\n    assertHost();\n    const updated = await setHostMyProjectCharacter(projectId, characterId);\n    const memberId = requireUuid(updated.memberId, 'set_my_project_character');\n    const userId = requireUuid(updated.userId, 'set_my_project_character.userId');\n    return {\n      id: memberId,\n      project_id: projectId,\n      user_id: userId,\n      role: 'player',\n      status: 'active',\n      character_id: characterId,\n      joined_at: new Date().toISOString(),\n    } as ProjectMemberDto;\n  },\n\n  /**\n   * Leave saga membership — PARITY_MISSING (#1159): no host route yet; Soft-DENY.\n   */\n  async leave(projectId: string, _userId: string): Promise<void> {\n    void projectId;\n    void _userId;\n    assertHost();\n    throw new Error('Saga-Mitgliedschaft verlassen ist im Host-Modus noch nicht verfügbar.');\n  },\n\n  /** Unused in product after CUT-20 — retained for contract stability. */\n  async getMyProjects(_userId: string): Promise<ProjectMemberDto[]> {\n    void _userId;\n    return [];\n  },\n};"
+      "line": 29,
+      "endLine": 88,
+      "text": "export const projectMemberService = {\n  async getMembers(projectId: string): Promise<ProjectMemberDto[]> {\n    assertHost();\n    const rows = await listHostProjectMembers(projectId);\n    return rows.map((row) => ({\n      id: row.id,\n      project_id: row.projectId,\n      user_id: row.userId,\n      character_id: row.characterId,\n      role: row.role,\n      status: row.status === 'active' ? 'active' : 'inactive',\n      joined_at: row.joinedAt ?? new Date(0).toISOString(),\n    }));\n  },\n\n  async joinByCode(dto: JoinProjectDto): Promise<ProjectMemberDto> {\n    assertHost();\n    const joined = await joinHostProjectByCode(dto.code.toUpperCase(), dto.character_id || null);\n    const projectId = requireUuid(joined.projectId, 'join_project_by_code');\n    const userId = requireUuid(joined.userId, 'join_project_by_code.userId');\n    return {\n      id: projectId,\n      project_id: projectId,\n      user_id: userId,\n      role: 'player',\n      status: 'active',\n      character_id: dto.character_id || null,\n      joined_at: new Date().toISOString(),\n    } as ProjectMemberDto;\n  },\n\n  async updateCharacter(projectId: string, characterId: string): Promise<ProjectMemberDto> {\n    assertHost();\n    const updated = await setHostMyProjectCharacter(projectId, characterId);\n    const memberId = requireUuid(updated.memberId, 'set_my_project_character');\n    const userId = requireUuid(updated.userId, 'set_my_project_character.userId');\n    return {\n      id: memberId,\n      project_id: projectId,\n      user_id: userId,\n      role: 'player',\n      status: 'active',\n      character_id: characterId,\n      joined_at: new Date().toISOString(),\n    } as ProjectMemberDto;\n  },\n\n  /** Leave saga membership — host POST /api/v1/projects/:id/leave (CUT-23). */\n  async leave(projectId: string, _userId: string): Promise<void> {\n    void _userId;\n    assertHost();\n    await leaveHostProject(projectId);\n  },\n\n  /** Unused in product after CUT-20 — retained for contract stability. */\n  async getMyProjects(_userId: string): Promise<ProjectMemberDto[]> {\n    void _userId;\n    return [];\n  },\n};"
     },
     {
       "path": "src/infrastructure/project/project-service.ts",
@@ -788,9 +788,9 @@
     {
       "path": "src/infrastructure/project/host-project-adapter.ts",
       "line": 22,
-      "endLine": 49,
+      "endLine": 51,
       "name": "createHostProjectAdapter",
-      "text": "export function createHostProjectAdapter(ports: HostProjectPorts): HostProjectAdapter {\n  return {\n    transport: 'host',\n    ops: HOST_PROJECT_OPS,\n    rpcNames: HOST_PROJECT_RPC_NAMES,\n    createProjectSession: (actorId, projectId, name, notes) =>\n      ports.createProjectSession(actorId, projectId, name, notes),\n    ensureNativeStarterProject: (actorId, slug) =>\n      ports.ensureNativeStarterProject(actorId, slug),\n    getMySagaPermissions: (actorId, publicId) =>\n      ports.getMySagaPermissions(actorId, publicId),\n    getSagaLoreTimeline: (actorId, publicId) =>\n      ports.getSagaLoreTimeline(actorId, publicId),\n    getSagaOverview: (actorId, publicId) => ports.getSagaOverview(actorId, publicId),\n    joinProjectByCode: (actorId, code, characterId) =>\n      ports.joinProjectByCode(actorId, code, characterId),\n    listSagaBindings: (actorId, publicId, assetKind) =>\n      ports.listSagaBindings(actorId, publicId, assetKind),\n    listSagaMemberPermissionState: (actorId, publicId) =>\n      ports.listSagaMemberPermissionState(actorId, publicId),\n    setMyProjectCharacter: (actorId, projectId, characterId) =>\n      ports.setMyProjectCharacter(actorId, projectId, characterId),\n    setSagaBindingReveal: (actorId, projectId, bindingId, reveal) =>\n      ports.setSagaBindingReveal(actorId, projectId, bindingId, reveal),\n    setSagaMemberBundle: (actorId, projectId, memberId, bundleId) =>\n      ports.setSagaMemberBundle(actorId, projectId, memberId, bundleId),\n  };\n}"
+      "text": "export function createHostProjectAdapter(ports: HostProjectPorts): HostProjectAdapter {\n  return {\n    transport: 'host',\n    ops: HOST_PROJECT_OPS,\n    rpcNames: HOST_PROJECT_RPC_NAMES,\n    createProjectSession: (actorId, projectId, name, notes) =>\n      ports.createProjectSession(actorId, projectId, name, notes),\n    ensureNativeStarterProject: (actorId, slug) =>\n      ports.ensureNativeStarterProject(actorId, slug),\n    getMySagaPermissions: (actorId, publicId) =>\n      ports.getMySagaPermissions(actorId, publicId),\n    getSagaLoreTimeline: (actorId, publicId) =>\n      ports.getSagaLoreTimeline(actorId, publicId),\n    getSagaOverview: (actorId, publicId) => ports.getSagaOverview(actorId, publicId),\n    joinProjectByCode: (actorId, code, characterId) =>\n      ports.joinProjectByCode(actorId, code, characterId),\n    leaveProjectMembership: (actorId, projectId) =>\n      ports.leaveProjectMembership(actorId, projectId),\n    listSagaBindings: (actorId, publicId, assetKind) =>\n      ports.listSagaBindings(actorId, publicId, assetKind),\n    listSagaMemberPermissionState: (actorId, publicId) =>\n      ports.listSagaMemberPermissionState(actorId, publicId),\n    setMyProjectCharacter: (actorId, projectId, characterId) =>\n      ports.setMyProjectCharacter(actorId, projectId, characterId),\n    setSagaBindingReveal: (actorId, projectId, bindingId, reveal) =>\n      ports.setSagaBindingReveal(actorId, projectId, bindingId, reveal),\n    setSagaMemberBundle: (actorId, projectId, memberId, bundleId) =>\n      ports.setSagaMemberBundle(actorId, projectId, memberId, bundleId),\n  };\n}"
     },
     {
       "path": "src/infrastructure/project/host-project-adapter.ts",
@@ -839,89 +839,96 @@
       "line": 38,
       "endLine": 39,
       "name": "callback",
-      "text": "(actorId, publicId, assetKind) =>\n      ports.listSagaBindings(actorId, publicId, assetKind)"
+      "text": "(actorId, projectId) =>\n      ports.leaveProjectMembership(actorId, projectId)"
     },
     {
       "path": "src/infrastructure/project/host-project-adapter.ts",
       "line": 40,
       "endLine": 41,
       "name": "callback",
-      "text": "(actorId, publicId) =>\n      ports.listSagaMemberPermissionState(actorId, publicId)"
+      "text": "(actorId, publicId, assetKind) =>\n      ports.listSagaBindings(actorId, publicId, assetKind)"
     },
     {
       "path": "src/infrastructure/project/host-project-adapter.ts",
       "line": 42,
       "endLine": 43,
       "name": "callback",
-      "text": "(actorId, projectId, characterId) =>\n      ports.setMyProjectCharacter(actorId, projectId, characterId)"
+      "text": "(actorId, publicId) =>\n      ports.listSagaMemberPermissionState(actorId, publicId)"
     },
     {
       "path": "src/infrastructure/project/host-project-adapter.ts",
       "line": 44,
       "endLine": 45,
       "name": "callback",
-      "text": "(actorId, projectId, bindingId, reveal) =>\n      ports.setSagaBindingReveal(actorId, projectId, bindingId, reveal)"
+      "text": "(actorId, projectId, characterId) =>\n      ports.setMyProjectCharacter(actorId, projectId, characterId)"
     },
     {
       "path": "src/infrastructure/project/host-project-adapter.ts",
       "line": 46,
       "endLine": 47,
       "name": "callback",
+      "text": "(actorId, projectId, bindingId, reveal) =>\n      ports.setSagaBindingReveal(actorId, projectId, bindingId, reveal)"
+    },
+    {
+      "path": "src/infrastructure/project/host-project-adapter.ts",
+      "line": 48,
+      "endLine": 49,
+      "name": "callback",
       "text": "(actorId, projectId, memberId, bundleId) =>\n      ports.setSagaMemberBundle(actorId, projectId, memberId, bundleId)"
     },
     {
       "path": "src/infrastructure/project/project-member-service.ts",
-      "line": 15,
-      "endLine": 20,
+      "line": 16,
+      "endLine": 21,
       "name": "requireUuid",
       "text": "function requireUuid(value: unknown, operation: string): string {\n  if (typeof value !== 'string' || !UUID_PATTERN.test(value)) {\n    throw new Error(`${operation} returned an invalid identifier`);\n  }\n  return value;\n}"
     },
     {
       "path": "src/infrastructure/project/project-member-service.ts",
-      "line": 22,
-      "endLine": 26,
+      "line": 23,
+      "endLine": 27,
       "name": "assertHost",
       "text": "function assertHost(): void {\n  if (!isHostLibraryEnabled()) {\n    throw new Error('Host-Anmeldung nicht konfiguriert (VITE_SAGATREE_HOST_AUTH_URL fehlt).');\n  }\n}"
     },
     {
       "path": "src/infrastructure/project/project-member-service.ts",
-      "line": 29,
-      "endLine": 41,
+      "line": 30,
+      "endLine": 42,
       "name": "getMembers",
       "text": "async getMembers(projectId: string): Promise<ProjectMemberDto[]> {\n    assertHost();\n    const rows = await listHostProjectMembers(projectId);\n    return rows.map((row) => ({\n      id: row.id,\n      project_id: row.projectId,\n      user_id: row.userId,\n      character_id: row.characterId,\n      role: row.role,\n      status: row.status === 'active' ? 'active' : 'inactive',\n      joined_at: row.joinedAt ?? new Date(0).toISOString(),\n    }));\n  }"
     },
     {
       "path": "src/infrastructure/project/project-member-service.ts",
-      "line": 32,
-      "endLine": 40,
+      "line": 33,
+      "endLine": 41,
       "name": "callback",
       "text": "(row) => ({\n      id: row.id,\n      project_id: row.projectId,\n      user_id: row.userId,\n      character_id: row.characterId,\n      role: row.role,\n      status: row.status === 'active' ? 'active' : 'inactive',\n      joined_at: row.joinedAt ?? new Date(0).toISOString(),\n    })"
     },
     {
       "path": "src/infrastructure/project/project-member-service.ts",
-      "line": 43,
-      "endLine": 57,
+      "line": 44,
+      "endLine": 58,
       "name": "joinByCode",
       "text": "async joinByCode(dto: JoinProjectDto): Promise<ProjectMemberDto> {\n    assertHost();\n    const joined = await joinHostProjectByCode(dto.code.toUpperCase(), dto.character_id || null);\n    const projectId = requireUuid(joined.projectId, 'join_project_by_code');\n    const userId = requireUuid(joined.userId, 'join_project_by_code.userId');\n    return {\n      id: projectId,\n      project_id: projectId,\n      user_id: userId,\n      role: 'player',\n      status: 'active',\n      character_id: dto.character_id || null,\n      joined_at: new Date().toISOString(),\n    } as ProjectMemberDto;\n  }"
     },
     {
       "path": "src/infrastructure/project/project-member-service.ts",
-      "line": 59,
-      "endLine": 73,
+      "line": 60,
+      "endLine": 74,
       "name": "updateCharacter",
       "text": "async updateCharacter(projectId: string, characterId: string): Promise<ProjectMemberDto> {\n    assertHost();\n    const updated = await setHostMyProjectCharacter(projectId, characterId);\n    const memberId = requireUuid(updated.memberId, 'set_my_project_character');\n    const userId = requireUuid(updated.userId, 'set_my_project_character.userId');\n    return {\n      id: memberId,\n      project_id: projectId,\n      user_id: userId,\n      role: 'player',\n      status: 'active',\n      character_id: characterId,\n      joined_at: new Date().toISOString(),\n    } as ProjectMemberDto;\n  }"
     },
     {
       "path": "src/infrastructure/project/project-member-service.ts",
-      "line": 78,
-      "endLine": 83,
+      "line": 77,
+      "endLine": 81,
       "name": "leave",
-      "text": "async leave(projectId: string, _userId: string): Promise<void> {\n    void projectId;\n    void _userId;\n    assertHost();\n    throw new Error('Saga-Mitgliedschaft verlassen ist im Host-Modus noch nicht verfügbar.');\n  }"
+      "text": "async leave(projectId: string, _userId: string): Promise<void> {\n    void _userId;\n    assertHost();\n    await leaveHostProject(projectId);\n  }"
     },
     {
       "path": "src/infrastructure/project/project-member-service.ts",
-      "line": 86,
-      "endLine": 89,
+      "line": 84,
+      "endLine": 87,
       "name": "getMyProjects",
       "text": "async getMyProjects(_userId: string): Promise<ProjectMemberDto[]> {\n    void _userId;\n    return [];\n  }"
     },

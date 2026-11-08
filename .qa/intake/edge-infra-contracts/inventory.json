@@ -29986,7 +29986,7 @@
           },
           {
             "path": "src/infrastructure/host/host-project-http.ts",
-            "sha256": "b5a68f6452217b08d2217a983113a9a356ce70890693319227f35c82fbdcd818"
+            "sha256": "287a426fb8645638e263a7b2d612d071eec4bf054cc778193b82f6b8252a0f92"
           },
           {
             "path": "src/infrastructure/host/host-session-http.ts",
@@ -30102,7 +30102,7 @@
           },
           {
             "path": "src/infrastructure/project/project-member-service.ts",
-            "sha256": "e67c3c5c9dd332d15d699a489dce4db743c183a5ce6aab09efc2deb89628236f"
+            "sha256": "40fc648e091c11dcdcf4535747d9db0cd6dc5da9e475663c3ff60dff9a53e594"
           },
           {
             "path": "src/infrastructure/project/project-service.ts",
@@ -30158,7 +30158,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-character.json",
-      "sourceContractSha256": "eb73256794504c589baa004c08f1b4d9aa8dd3a54a209a07cc9e8a393e9b260b",
+      "sourceContractSha256": "107a9c9083032e953a0b408576154ce7ea5fffc054b6ad1c5c324afb2e71016f",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],
@@ -33158,7 +33158,7 @@
           },
           {
             "path": "src/infrastructure/host/host-project-http.ts",
-            "sha256": "b5a68f6452217b08d2217a983113a9a356ce70890693319227f35c82fbdcd818"
+            "sha256": "287a426fb8645638e263a7b2d612d071eec4bf054cc778193b82f6b8252a0f92"
           },
           {
             "path": "src/infrastructure/host/host-session-http.ts",
@@ -33246,7 +33246,7 @@
           },
           {
             "path": "src/infrastructure/project/project-member-service.ts",
-            "sha256": "e67c3c5c9dd332d15d699a489dce4db743c183a5ce6aab09efc2deb89628236f"
+            "sha256": "40fc648e091c11dcdcf4535747d9db0cd6dc5da9e475663c3ff60dff9a53e594"
           },
           {
             "path": "src/infrastructure/project/project-service.ts",
@@ -33278,7 +33278,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-inventory.json",
-      "sourceContractSha256": "76fd1b99b21ef6cda4756298ed2abd3b7e45892eb0827cdd9dfe0166185bb97f",
+      "sourceContractSha256": "12741259448d42f2fa7bc81e1b691a4f8be9a841462a4663c07b520d1170b599",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],
@@ -35447,7 +35447,7 @@
           },
           {
             "path": "src/infrastructure/host/host-project-http.ts",
-            "sha256": "b5a68f6452217b08d2217a983113a9a356ce70890693319227f35c82fbdcd818"
+            "sha256": "287a426fb8645638e263a7b2d612d071eec4bf054cc778193b82f6b8252a0f92"
           },
           {
             "path": "src/infrastructure/host/host-session-http.ts",
@@ -35455,15 +35455,15 @@
           },
           {
             "path": "src/infrastructure/project/host-project-adapter.ts",
-            "sha256": "41d162d05407e6f54f118a60a6aaf5f29bb1a61d28758c7d1c0698cdc3c35a70"
+            "sha256": "f8137115741c452c865883275c6d95529faf29ca28620c5adc92eedc30002e90"
           },
           {
             "path": "src/infrastructure/project/host-project-ports.contract.ts",
-            "sha256": "4e9023655c95ed3e3ade8837af0c14c53c5541571a1591526aae760ffbbd9902"
+            "sha256": "96d05101ba2cbe8364ae30bbcde48235a1058a65a43f733d03433d7f26a8236f"
           },
           {
             "path": "src/infrastructure/project/project-member-service.ts",
-            "sha256": "e67c3c5c9dd332d15d699a489dce4db743c183a5ce6aab09efc2deb89628236f"
+            "sha256": "40fc648e091c11dcdcf4535747d9db0cd6dc5da9e475663c3ff60dff9a53e594"
           },
           {
             "path": "src/infrastructure/project/project-service.ts",
@@ -35499,7 +35499,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-project.json",
-      "sourceContractSha256": "a3e9e80fe6fe16d7e55fb05e7d200b1e6f354e40ad6eeebb3aafe7ab7d5078ed",
+      "sourceContractSha256": "73e8cb53c17509bb51f308177e111747d967a4846042f132261ae02b2d62e872",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],
@@ -35562,49 +35562,49 @@
         {
           "path": "src/infrastructure/project/host-project-adapter.ts",
           "line": 22,
-          "endLine": 49,
+          "endLine": 51,
           "name": "createHostProjectAdapter"
         },
         {
           "path": "src/infrastructure/project/project-member-service.ts",
-          "line": 15,
-          "endLine": 20,
+          "line": 16,
+          "endLine": 21,
           "name": "requireUuid"
         },
         {
           "path": "src/infrastructure/project/project-member-service.ts",
-          "line": 22,
-          "endLine": 26,
+          "line": 23,
+          "endLine": 27,
           "name": "assertHost"
         },
         {
           "path": "src/infrastructure/project/project-member-service.ts",
-          "line": 29,
-          "endLine": 41,
+          "line": 30,
+          "endLine": 42,
           "name": "getMembers"
         },
         {
           "path": "src/infrastructure/project/project-member-service.ts",
-          "line": 43,
-          "endLine": 57,
+          "line": 44,
+          "endLine": 58,
           "name": "joinByCode"
         },
         {
           "path": "src/infrastructure/project/project-member-service.ts",
-          "line": 59,
-          "endLine": 73,
+          "line": 60,
+          "endLine": 74,
           "name": "updateCharacter"
         },
         {
           "path": "src/infrastructure/project/project-member-service.ts",
-          "line": 78,
-          "endLine": 83,
+          "line": 77,
+          "endLine": 81,
           "name": "leave"
         },
         {
           "path": "src/infrastructure/project/project-member-service.ts",
-          "line": 86,
-          "endLine": 89,
+          "line": 84,
+          "endLine": 87,
           "name": "getMyProjects"
         },
         {

@@ -6035,7 +6035,7 @@
       },
       {
         "path": "src/infrastructure/project/project-member-service.ts",
-        "sha256": "e67c3c5c9dd332d15d699a489dce4db743c183a5ce6aab09efc2deb89628236f"
+        "sha256": "40fc648e091c11dcdcf4535747d9db0cd6dc5da9e475663c3ff60dff9a53e594"
       }
     ],
     "reviewedBaselineSha": "9614aba660eb462b7e61057c380974ea2e6a9d55b92c4341c9bc00c0d65bfa85"
@@ -6136,7 +6136,7 @@
       },
       {
         "path": "src/infrastructure/project/project-member-service.ts",
-        "sha256": "e67c3c5c9dd332d15d699a489dce4db743c183a5ce6aab09efc2deb89628236f"
+        "sha256": "40fc648e091c11dcdcf4535747d9db0cd6dc5da9e475663c3ff60dff9a53e594"
       }
     ],
     "reviewedBaselineSha": "7f4a92e54cd02e80b2eeb1e1fc5b6c94703a9ea1fc22e3db8f76f90e0a8c10bb"

@@ -1,5 +1,5 @@
 /**
- * project-infra ports — composed host surface for all 11 infra-project RPCs (MIG-308 / #807).
+ * project-infra ports — composed host surface for infra-project RPCs (MIG-308 / #807 + CUT-23 leave).
  * Location: server/src/application/project-infra/index.ts
  *
  * Application-layer binder over predecessor use-cases. No HTTP mount in this slice.
@@ -18,6 +18,7 @@ import { get_my_saga_permissions } from '../commands/get_my_saga_permissions.ts'
 import { get_saga_lore_timeline } from '../commands/get_saga_lore_timeline.ts';
 import { get_saga_overview } from '../commands/get_saga_overview.ts';
 import { join_project_by_code } from '../commands/join_project_by_code.ts';
+import { leave_project_membership } from '../commands/leave_project_membership.ts';
 import { list_saga_bindings } from '../commands/list_saga_bindings.ts';
 import { list_saga_member_permission_state } from '../commands/list_saga_member_permission_state.ts';
 import { set_my_project_character } from '../commands/set_my_project_character.ts';
@@ -65,6 +66,10 @@ export type ProjectInfraPorts = {
     code: string,
     characterId?: string | null,
   ) => ProjectInfraResult<{ readonly projectId: string }>;
+  readonly leaveProjectMembership: (
+    actor: Actor,
+    projectId: string,
+  ) => ProjectInfraResult<{ readonly ok: true }>;
   readonly listSagaBindings: (
     actor: Actor,
     publicId: string,
@@ -179,6 +184,7 @@ export function createProjectInfraPorts(deps: {
     project: deps.project,
     character: deps.character,
   });
+  const leaveMembership = leave_project_membership({ project: deps.project });
   const listBindings = list_saga_bindings({ permissions: deps.permissions });
   const listMembers = list_saga_member_permission_state({ permissions: deps.permissions });
   const setCharacter = set_my_project_character({
@@ -220,6 +226,11 @@ export function createProjectInfraPorts(deps: {
     getSagaOverview: (actor, publicId) => mapOkValue(getOverview(actor, publicId)),
     joinProjectByCode: (actor, code, characterId) =>
       mapJoin(joinByCode(actor, code, characterId)),
+    leaveProjectMembership: (actor, projectId) => {
+      const result = leaveMembership(actor, projectId);
+      if (!result.ok) return { ok: false, error: result.error };
+      return { ok: true, value: { ok: true } };
+    },
     listSagaBindings: (actor, publicId, assetKind) =>
       mapOkValue(listBindings(actor, publicId, assetKind)),
     listSagaMemberPermissionState: (actor, publicId) =>
@@ -246,6 +257,7 @@ export function createProjectInfraPortsStub(): ProjectInfraPorts {
     getSagaLoreTimeline: fail,
     getSagaOverview: fail,
     joinProjectByCode: fail,
+    leaveProjectMembership: fail,
     listSagaBindings: fail,
     listSagaMemberPermissionState: fail,
     setMyProjectCharacter: fail,

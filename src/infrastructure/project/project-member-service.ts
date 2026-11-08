@@ -6,6 +6,7 @@ import type { ProjectMemberDto, JoinProjectDto } from '../../domains/project/con
 import {
   isHostLibraryEnabled,
   joinHostProjectByCode,
+  leaveHostProject,
   listHostProjectMembers,
   setHostMyProjectCharacter,
 } from '../host/host-project-http';
@@ -72,14 +73,11 @@ export const projectMemberService = {
     } as ProjectMemberDto;
   },
 
-  /**
-   * Leave saga membership — PARITY_MISSING (#1159): no host route yet; Soft-DENY.
-   */
+  /** Leave saga membership — host POST /api/v1/projects/:id/leave (CUT-23). */
   async leave(projectId: string, _userId: string): Promise<void> {
-    void projectId;
     void _userId;
     assertHost();
-    throw new Error('Saga-Mitgliedschaft verlassen ist im Host-Modus noch nicht verfügbar.');
+    await leaveHostProject(projectId);
   },
 
   /** Unused in product after CUT-20 — retained for contract stability. */

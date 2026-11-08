@@ -451,6 +451,16 @@ export function mountProjectHttpRoutes(app: Hono, deps: ProjectHttpDeps): void {
     return c.json({ session: result.value }, 201);
   });
 
+  app.post('/api/v1/projects/:projectId/leave', async (c) => {
+    const actorResult = await resolveProjectActor(deps, c.req.raw.headers, false);
+    if (!actorResult.ok) {
+      return c.json({ error: actorResult.error }, actorResult.status);
+    }
+    const result = infra.leaveProjectMembership(actorResult.actor, c.req.param('projectId'));
+    if (!result.ok) return c.json({ error: result.error }, infraStatus(result.error));
+    return c.json({ ok: true }, 200);
+  });
+
   app.post('/api/v1/projects/:projectId/my-character', async (c) => {
     const parsed = await readJsonSafe(c);
     if (!parsed.ok) return c.json({ error: 'INVALID_PAYLOAD' }, 422);

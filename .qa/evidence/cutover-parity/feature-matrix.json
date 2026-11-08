@@ -150,7 +150,6 @@
       "world-atlas.maps-crud",
       "world-place.crud",
       "project.crud",
-      "project-member.crud",
       "saga-overview.get",
       "saga-permission.surface",
       "saga-definition.surface",
@@ -166,6 +165,9 @@
     "1156": [],
     "1157": [
       "lib.supabase-client-invoke"
+    ],
+    "1158": [
+      "project-member.crud"
     ],
     "1159": [
       "npc-creature.duplicate-definition",
@@ -1621,14 +1623,14 @@
       "historicalCaller": "src/infrastructure/project/project-member-service.ts",
       "uiJourney": "Join / NPC dialogs",
       "previousBehavior": "dual host",
-      "hostSuccessor": "/api/v1/projects/join + my-character",
+      "hostSuccessor": "/api/v1/projects/join + my-character + leave",
       "dataOwner": "project",
       "risk": "medium",
       "classification": "HOST_VERIFIED",
-      "issueRef": 1155,
-      "evidenceTest": "fe-host-09-host-first.self-test.mjs",
+      "issueRef": 1158,
+      "evidenceTest": "mig-308-project-adapter.self-test.mjs",
       "featureAvailableBeforeCutover": true,
-      "notes": ""
+      "notes": "CUT-23 leave Soft-DENY removed; leave+rejoin exercised in mig-308; POST /api/v1/projects/:id/leave"
     },
     {
       "stableKey": "saga-overview.get",

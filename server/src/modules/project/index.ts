@@ -76,6 +76,11 @@ export type ProjectPorts = {
     readonly projectId: string;
     readonly characterId: string | null;
   }) => SetMyCharacterResult;
+  /** Voluntary leave — delete active membership row (Postgres leave parity). */
+  readonly leaveMembership: (input: {
+    readonly actorId: string;
+    readonly projectId: string;
+  }) => { readonly ok: true } | { readonly ok: false; readonly error: string };
   /** Test helper: force a known join code on an existing project. */
   readonly setProjectCodeForTests: (projectId: string, code: string) => void;
   readonly getMemberForTests: (
@@ -153,6 +158,7 @@ export function createProjectPorts(db?: HostDatabase): ProjectPorts {
       findActiveGmProjectForSaga: () => ({ ok: false, error: 'P0002' }),
       joinByCode: () => ({ ok: false, error: 'store-unavailable' }),
       setMyCharacter: () => ({ ok: false, error: 'store-unavailable' }),
+      leaveMembership: () => ({ ok: false, error: 'store-unavailable' }),
       setProjectCodeForTests: () => undefined,
       getMemberForTests: () => null,
       resolveByPublicId: () => null,
@@ -193,6 +199,7 @@ export function createProjectPorts(db?: HostDatabase): ProjectPorts {
     },
     joinByCode: (input) => projectMembership.joinByCode(input),
     setMyCharacter: (input) => projectMembership.setMyCharacter(input),
+    leaveMembership: (input) => projectMembership.leave(input),
     setProjectCodeForTests: (projectId, code) =>
       projectMembership.setProjectCodeForTests(projectId, code),
     getMemberForTests: (projectId, userId) =>

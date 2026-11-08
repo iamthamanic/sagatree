@@ -70,11 +70,11 @@ const [{ createHostProjectAdapter }, { HOST_PROJECT_OPS, HOST_PROJECT_RPC_NAMES 
   ]);
 assert(typeof createHostProjectAdapter === 'function', 'createHostProjectAdapter loaded');
 assert(
-  Array.isArray(HOST_PROJECT_OPS) && HOST_PROJECT_OPS.length === 11,
+  Array.isArray(HOST_PROJECT_OPS) && HOST_PROJECT_OPS.length === 12,
   'HOST_PROJECT_OPS count',
 );
 assert(
-  Array.isArray(HOST_PROJECT_RPC_NAMES) && HOST_PROJECT_RPC_NAMES.length === 11,
+  Array.isArray(HOST_PROJECT_RPC_NAMES) && HOST_PROJECT_RPC_NAMES.length === 12,
   'HOST_PROJECT_RPC_NAMES count',
 );
 
@@ -175,6 +175,21 @@ try {
   const setChar = infra.setMyProjectCharacter(Player, projectId, pc.id);
   assert(setChar.ok, `set character: ${setChar.ok ? '' : setChar.error}`);
   assert(typeof setChar.value.memberId === 'string', 'memberId');
+
+  // CUT-23 leave + rejoin: grants must not revive; stranger DENY.
+  const left = infra.leaveProjectMembership(Player, projectId);
+  assert(left.ok, `leave: ${left.ok ? '' : left.error}`);
+  assert(project.getMemberForTests(projectId, Player.actorId) == null, 'leave removes membership');
+  assert(
+    !infra.leaveProjectMembership(Player, projectId).ok,
+    'second leave DENY',
+  );
+  assert(
+    !infra.leaveProjectMembership(Stranger, projectId).ok,
+    'stranger leave DENY',
+  );
+  const rejoined = infra.joinProjectByCode(Player, 'mig308j1', pc.id);
+  assert(rejoined.ok, `rejoin after leave: ${rejoined.ok ? '' : rejoined.error}`);
 
   const sess = infra.createProjectSession(Player, projectId, 'Abend 1', null);
   assert(sess.ok, `create session: ${sess.ok ? '' : sess.error}`);
@@ -308,6 +323,8 @@ try {
     getSagaOverview: async (actorId, pid) => infra.getSagaOverview(actor(actorId), pid),
     joinProjectByCode: async (actorId, code, characterId) =>
       infra.joinProjectByCode(actor(actorId), code, characterId),
+    leaveProjectMembership: async (actorId, pid) =>
+      infra.leaveProjectMembership(actor(actorId), pid),
     listSagaBindings: async (actorId, pid, kind) =>
       infra.listSagaBindings(actor(actorId), pid, kind),
     listSagaMemberPermissionState: async (actorId, pid) =>
@@ -320,7 +337,7 @@ try {
       infra.setSagaMemberBundle(actor(actorId), pid, memberId, bundleId),
   });
   assert(bound.transport === 'host', 'adapter transport');
-  assert(bound.rpcNames.length === 11, 'adapter rpcNames');
+  assert(bound.rpcNames.length === 12, 'adapter rpcNames');
   const viaAdapter = await bound.getMySagaPermissions(GM.actorId, publicId);
   assert(viaAdapter.ok && viaAdapter.value.isGm === true, 'adapter getMySagaPermissions');
   const viaOverview = await bound.getSagaOverview(Player.actorId, publicId);
