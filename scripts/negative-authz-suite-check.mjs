@@ -28,8 +28,8 @@ const acceptance = '.qa/acceptance/negative-authz-suite.md';
 const reportRel = '.qa/runs/negative-authz-suite/report.json';
 const localAdmin = 'src/lib/localAdmin.ts';
 const authCtx = 'src/lib/auth-context.tsx';
-const compose = 'docker-compose.yml';
-const envEx = '.env.example';
+const compose = 'archive/supabase-legacy/docker-compose.supabase.yml';
+const envEx = 'archive/supabase-legacy/.env.supabase.example';
 const docs = 'docs/ops/negative-authz-suite.md';
 
 for (const rel of [mainTs, gateTs, liveScript, acceptance, localAdmin, authCtx, compose, envEx, docs]) {
