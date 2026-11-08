@@ -96,7 +96,7 @@ Die finalen Datenbank-Constraints der beteiligten Relationen sind pro RPC in inv
 
 ### src/infrastructure/world/world-map-service.ts:1
 
-AST-Auflösung: `host-transport-cut-20`; SHA-256 `c86e0c9b3d7242d33d5fb30f7496ba99bb7ccaa4b22abaa73c5edb072c50a828`.
+AST-Auflösung: `host-transport-cut-20`; SHA-256 `d99faed233ee5c66d96d08397c0e292113a44e43efb51f4b30b7cc6a21a91103`.
 
 Der vollständige aufrufende Funktionskörper enthält Parameterumformung, RPC-Aufruf, Response-Prüfung, Fehlerumwandlung und gegebenenfalls Fallback:
 
@@ -110,7 +110,12 @@ import {
   type WorldMapData,
   type WorldMapVm,
 } from '../../domains/world/map';
-import { fetchHostWorldMap, isHostLibraryEnabled, saveHostWorldMap } from '../host/host-world-http';
+import {
+  fetchHostWorldMap,
+  isHostLibraryEnabled,
+  publishHostWorldAsset,
+  saveHostWorldMap,
+} from '../host/host-world-http';
 
 const MAP_PIN_MAX_BYTES = 5 * 1024 * 1024;
 const MAP_PIN_ALLOWED_MIME = new Set(['image/png', 'image/jpeg', 'image/webp']);
@@ -211,23 +216,20 @@ class WorldMapService {
   }
 
   /**
-   * PARITY_MISSING (#1160): pin uploads use host asset flow in a later cutover.
+   * CUT-10b (#1161): owner/GM world.edit → host AssetPorts via world-scoped publish.
+   * Returns owner-scoped storagePath (not a display URL).
    */
   async uploadPinImage(
-    _worldProfileId: string,
-    _file: File,
-    _options?: UploadPinImageOptions,
+    worldProfileId: string,
+    file: File,
+    options?: UploadPinImageOptions,
   ): Promise<string> {
-    void _worldProfileId;
-    void _file;
-    void _options;
     assertHost();
-    throw new Error('Pin-Bild-Upload über Host-Speicher ist noch nicht verfügbar.');
-  }
-}
-
-export const worldMapService = new WorldMapService();
-
+    const id = worldProfileId.trim();
+    if (!id) throw new Error('Weltprofil fehlt');
+    const prepared = options?.alreadyOptimized
+      ? file
+      : await prepareWorldMapPinFile(file, options?.signal);
 ```
 
 ## Konkrete Abnahmekriterien
@@ -271,4 +273,4 @@ Die folgenden Hashes binden SQL-Kette, transitive Tabellen-/Trigger-/Policyquell
 | [archive/supabase-legacy/supabase/migrations/083_world_profiles_public_id.sql](../../../archive/supabase-legacy/supabase/migrations/083_world_profiles_public_id.sql) | `38b33710dcf628e7b834810e7dfd4dfacc97a0d23cc8673d76d96e2330bf6081` |
 | [archive/supabase-legacy/supabase/migrations/092_fix_projects_rls_recursion.sql](../../../archive/supabase-legacy/supabase/migrations/092_fix_projects_rls_recursion.sql) | `8e98ae8e52beb6ab57359338e7b30bdc2db322b7cdb44bdbf4059a41ab26e1bd` |
 | [archive/supabase-legacy/supabase/migrations/109_baseline_security_trust_boundaries.sql](../../../archive/supabase-legacy/supabase/migrations/109_baseline_security_trust_boundaries.sql) | `4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b` |
-| [src/infrastructure/world/world-map-service.ts](../../../src/infrastructure/world/world-map-service.ts) | `c86e0c9b3d7242d33d5fb30f7496ba99bb7ccaa4b22abaa73c5edb072c50a828` |
+| [src/infrastructure/world/world-map-service.ts](../../../src/infrastructure/world/world-map-service.ts) | `d99faed233ee5c66d96d08397c0e292113a44e43efb51f4b30b7cc6a21a91103` |

@@ -7160,7 +7160,7 @@
       },
       {
         "path": "src/infrastructure/world/world-map-service.ts",
-        "sha256": "c86e0c9b3d7242d33d5fb30f7496ba99bb7ccaa4b22abaa73c5edb072c50a828"
+        "sha256": "d99faed233ee5c66d96d08397c0e292113a44e43efb51f4b30b7cc6a21a91103"
       }
     ],
     "reviewedBaselineSha": "7997977ea77b6309a214f50d520fa15f15772c0d9a6e9291504e850a0df7ac85"
@@ -7214,7 +7214,7 @@
       },
       {
         "path": "src/infrastructure/world/world-map-service.ts",
-        "sha256": "c86e0c9b3d7242d33d5fb30f7496ba99bb7ccaa4b22abaa73c5edb072c50a828"
+        "sha256": "d99faed233ee5c66d96d08397c0e292113a44e43efb51f4b30b7cc6a21a91103"
       }
     ],
     "reviewedBaselineSha": "5b64a8d68a19caf9b786f3a8cb94befbc206bfc5498f2e51cd2c0499c57fd7b3"
@@ -7332,7 +7332,7 @@
       },
       {
         "path": "src/infrastructure/world/world-atlas-service.ts",
-        "sha256": "0026d650758d59a05aa1697f5ce8d07c751fd9e0cb9c992c742c008858cba273"
+        "sha256": "ace9c6ff13acad2aefa17f25784225461551b5bf6a79e807c9a24786619a552b"
       }
     ],
     "reviewedBaselineSha": "d771925542dda2df4f8796ca5de1a7d02045f212727b8db5901fc54b83b04df6"
@@ -7490,7 +7490,7 @@
       },
       {
         "path": "src/infrastructure/world/world-atlas-service.ts",
-        "sha256": "0026d650758d59a05aa1697f5ce8d07c751fd9e0cb9c992c742c008858cba273"
+        "sha256": "ace9c6ff13acad2aefa17f25784225461551b5bf6a79e807c9a24786619a552b"
       }
     ],
     "reviewedBaselineSha": "9f2c4c5725c0781a87e543cb6036e45154a230ea930193c365397079e6a6dab9"
@@ -7653,7 +7653,7 @@
       },
       {
         "path": "src/infrastructure/world/world-atlas-service.ts",
-        "sha256": "0026d650758d59a05aa1697f5ce8d07c751fd9e0cb9c992c742c008858cba273"
+        "sha256": "ace9c6ff13acad2aefa17f25784225461551b5bf6a79e807c9a24786619a552b"
       }
     ],
     "reviewedBaselineSha": "f82aefffe99d979b40aa9076e73b7bd7519cf6e05b7e07c8dd0f70e23974f16e"
@@ -7774,7 +7774,7 @@
       },
       {
         "path": "src/infrastructure/world/world-atlas-service.ts",
-        "sha256": "0026d650758d59a05aa1697f5ce8d07c751fd9e0cb9c992c742c008858cba273"
+        "sha256": "ace9c6ff13acad2aefa17f25784225461551b5bf6a79e807c9a24786619a552b"
       }
     ],
     "reviewedBaselineSha": "f82aefffe99d979b40aa9076e73b7bd7519cf6e05b7e07c8dd0f70e23974f16e"
