@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * compose-harden-defaults-check — static #605 compose security defaults.
+ * compose-harden-defaults-check — static #605 security defaults on archived Supabase compose (CUT-22).
  * Location: scripts/compose-harden-defaults-check.mjs
  */
 import { readFileSync } from 'node:fs';
@@ -15,7 +15,7 @@ function check(ok, msg) {
   } else console.log(`ok: ${msg}`);
 }
 
-const compose = readFileSync(join(root, 'docker-compose.yml'), 'utf8');
+const compose = readFileSync(join(root, 'archive/supabase-legacy/docker-compose.supabase.yml'), 'utf8');
 check(
   /KONG_NGINX_WORKER_PROCESSES:\s*\$\{KONG_NGINX_WORKER_PROCESSES:-1\}/.test(compose),
   'Kong workers default 1',
@@ -36,9 +36,9 @@ check(!keyAuthOnRoutes, 'no key-auth plugin on Kong routes');
 check(/name:\s*rate-limiting/.test(kong), 'Kong auth-v1 rate-limiting plugin (#670)');
 check(/fault_tolerant:\s*false/.test(kong), 'Kong rate-limiting fail-closed (#670)');
 
-const envEx = readFileSync(join(root, '.env.example'), 'utf8');
-check(/KONG_NGINX_WORKER_PROCESSES|VERIFY_JWT/.test(envEx), '.env.example documents Kong/JWT knobs');
-check(/DEV-only|local opt-out|Local Admin/i.test(envEx), '.env.example notes Local Admin DEV-only');
+const envEx = readFileSync(join(root, 'archive/supabase-legacy/.env.supabase.example'), 'utf8');
+check(/KONG_NGINX_WORKER_PROCESSES|VERIFY_JWT/.test(envEx), 'archived .env.supabase.example documents Kong/JWT knobs');
+check(/DEV-only|local opt-out|Local Admin/i.test(envEx), 'archived .env.supabase.example notes Local Admin DEV-only');
 
 const docs = readFileSync(join(root, 'docs/ops/compose-harden-defaults.md'), 'utf8');
 check(/Never delete volumes|down -v/i.test(docs), 'docs forbid volume wipe');

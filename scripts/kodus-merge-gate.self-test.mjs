@@ -144,6 +144,34 @@ assert(
   'credits exhausted + trusted marker = PASS (kodus-skipped-credits)',
 );
 assert(
+  evaluateKodusHeadEvidence(null, {
+    headSha: 'abc',
+    issueComments: [
+      {
+        user: { login: 'kody-ai' },
+        body: 'Die Prüfung schlug fehl… out of credits … HTTP 429 … openai_compatible',
+      },
+      {
+        body: '<!-- ecc-kodus-skipped-credits: ollama credits exhausted -->',
+        author_association: 'OWNER',
+      },
+    ],
+  }).reason === 'kodus-skipped-credits',
+  'missing check-run + Kody credits issue card + OWNER skip = PASS',
+);
+assert(
+  evaluateKodusHeadEvidence(null, {
+    headSha: 'abc',
+    issueComments: [
+      {
+        body: '<!-- ecc-kodus-skipped-credits: ollama credits exhausted -->',
+        author_association: 'OWNER',
+      },
+    ],
+  }).ok === false,
+  'OWNER skip alone does not waive missing Kody without credits evidence',
+);
+assert(
   evaluateKodusHeadEvidence(
     {
       name: KODY_CHECK_NAME,

@@ -149,6 +149,19 @@ export function hasTrustedKodusCreditsSkip(comments) {
 }
 
 /**
+ * True when a Kody issue comment on the PR shows provider credits/billing exhaustion
+ * (Kody may abort before creating a check-run — then only the issue card exists).
+ */
+export function kodyIssueCommentsIndicateCreditsExhausted(comments) {
+  const list = Array.isArray(comments) ? comments : [];
+  return list.some((c) => {
+    const login = c.user?.login ?? c.author?.login ?? '';
+    if (!isKodyBotLogin(login)) return false;
+    return KODUS_CREDITS_EXHAUSTED_RE.test(c.body ?? '');
+  });
+}
+
+/**
  * Classify the Kody Code Review check-run for a commit.
  * @param {object|null} checkRun
  */
@@ -361,8 +374,8 @@ export function evaluateKodusHeadEvidence(
         'Kody skipped: provider (Ollama/openai_compatible) credits exhausted; trusted ecc-kodus-skipped-credits marker present',
     };
   }
-  // Missing check-run: only APPROVED unlocks (COMMENTED alone is not a verdict —
-  // Kody may abort before posting a check). Observed PR #1004: APPROVED without check.
+  // Missing check-run: APPROVED unlocks; credits abort (issue card + OWNER skip) also unlocks.
+  // Observed: Kody posts credits-exhausted issue comment and never creates a check-run.
   if (!checkRun) {
     const approved = findKodusApprovedReviewForHead(reviews, headSha);
     if (approved) {
@@ -370,6 +383,17 @@ export function evaluateKodusHeadEvidence(
         ok: true,
         reason: 'kodus-complete',
         detail: `Kody APPROVED review on HEAD (no check-run; id=${approved.id})`,
+      };
+    }
+    if (
+      hasTrustedKodusCreditsSkip(issueComments) &&
+      kodyIssueCommentsIndicateCreditsExhausted(issueComments)
+    ) {
+      return {
+        ok: true,
+        reason: 'kodus-skipped-credits',
+        detail:
+          'Kody missing check-run; issue comment shows credits exhausted; trusted ecc-kodus-skipped-credits marker present',
       };
     }
     return fromCheck;

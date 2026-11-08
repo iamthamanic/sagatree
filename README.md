@@ -12,7 +12,7 @@ Charaktere · Sessions · Welten — für Gamemaster und Spieler
   <a href="#tech-stack"><img src="https://img.shields.io/badge/React_18-0891B2?style=flat-square" alt="React" /></a>
   <a href="#tech-stack"><img src="https://img.shields.io/badge/Vite_6-E8A641?style=flat-square" alt="Vite" /></a>
   <a href="#tech-stack"><img src="https://img.shields.io/badge/TypeScript-0891B2?style=flat-square" alt="TypeScript" /></a>
-  <a href="#backend--self-host"><img src="https://img.shields.io/badge/Supabase-3ECF8E?style=flat-square" alt="Supabase" /></a>
+  <a href="#backend--self-host"><img src="https://img.shields.io/badge/Node_Host-0891B2?style=flat-square" alt="Node Host" /></a>
   <a href="#design--uiux"><img src="https://img.shields.io/badge/Tailwind_4-06B6D4?style=flat-square" alt="Tailwind" /></a>
 </p>
 
@@ -209,37 +209,13 @@ CORS und fehlende Provider-Keys sind fail-closed (kein Default `*`). Rate-Limits
 
 ## Backend & Self-Host
 
-Kern-Services für den Produktbetrieb:
+Produkt-Runtime (CUT-22): **Node Host · Better Auth · SQLite · lokale Assets**  
+(`docker compose --env-file deployment/.env.host up -d --build` vom Repo-Root).
 
-**Postgres · Auth · PostgREST · Storage · Realtime · Kong · Edge · Redis**  
-(`docker compose up -d` = dieses Core-Profil; gut für ~8 GB-VPS + Cloud-LLM.)  
-Ollama / Neo4j / Studio sind **Compose-Profile** (`ai-local` / `graph` / `dev-tools` / `full`) — siehe [`docs/ops/compose-profiles.md`](docs/ops/compose-profiles.md). Meshy bleibt optional (BYOK).
+Optional: `--profile ai` (Ollama), externe LiveKit/Meshy-Keys — Core bleibt ohne sie nutzbar.  
+Runbook: [`docs/ops/host-compose-profiles.md`](docs/ops/host-compose-profiles.md) · Self-Host: [`README_SELFHOST.md`](README_SELFHOST.md)
 
-Relevante Character-/Asset-Migrationen (Reihenfolge):
-
-```text
-002_character_trait_arrays.sql
-003_character_lore_rate_limits.sql
-004_project_membership_security.sql
-005_character_ruleset_metadata.sql
-006_character_portrait_storage.sql
-007_sagatree_character_profile.sql
-008_world_profiles.sql
-009_character_adventure_arcs.sql
-010_characters_v3_columns.sql
-011_seed_local_admin.sql
-012_character_presets.sql
-013_character_presets_rls_hardening.sql
-014_character_abilities_emotion_profiles.sql
-015_inventory_item_definitions.sql
-016_character_inventory_v2.sql
-017_item_thumbnail_assets.sql
-018_item_model3d_assets.sql
-020_user_ai_provider_credentials.sql
-```
-
-Bei Schema V3 zuerst die kanonischen RLS-Policies aus `src/supabase/schema_v3_rls.sql` anwenden, danach die Migrationen oben.  
-Self-Host: [`README_SELFHOST.md`](README_SELFHOST.md) · Deploy: [`src/supabase/DEPLOY_V3.md`](src/supabase/DEPLOY_V3.md)
+Archivierter Supabase-Stack (nicht Produkt): `archive/supabase-legacy/docker-compose.supabase.yml`
 
 ---
 

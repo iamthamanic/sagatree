@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * realtime-compose-boot-contract-check — static #604 wiring (no Docker required).
+ * realtime-compose-boot-contract-check — static #604 wiring against archived Supabase compose (CUT-22 host-default).
  * Location: scripts/realtime-compose-boot-contract-check.mjs
  */
 import { readFileSync } from 'node:fs';
@@ -17,17 +17,17 @@ function check(ok, msg) {
   }
 }
 
-const compose = readFileSync(join(root, 'docker-compose.yml'), 'utf8');
+const compose = readFileSync(join(root, 'archive/supabase-legacy/docker-compose.supabase.yml'), 'utf8');
 check(compose.includes('SECRET_KEY_BASE'), 'compose wires SECRET_KEY_BASE');
 check(compose.includes('DB_ENC_KEY'), 'compose wires DB_ENC_KEY');
 check(compose.includes('FLY_APP_NAME'), 'compose wires FLY_APP_NAME');
 check(compose.includes('SEED_SELF_HOST'), 'compose wires SEED_SELF_HOST');
 check(/SELF_HOST_TENANT_NAME:.*localhost/.test(compose), 'compose default tenant localhost');
 
-const envEx = readFileSync(join(root, '.env.example'), 'utf8');
-check(envEx.includes('SECRET_KEY_BASE='), '.env.example documents SECRET_KEY_BASE');
-check(envEx.includes('DB_ENC_KEY='), '.env.example documents DB_ENC_KEY');
-check(envEx.includes('REALTIME_SELF_HOST_TENANT=localhost'), '.env.example tenant localhost');
+const envEx = readFileSync(join(root, 'archive/supabase-legacy/.env.supabase.example'), 'utf8');
+check(envEx.includes('SECRET_KEY_BASE='), 'archived .env.supabase.example documents SECRET_KEY_BASE');
+check(envEx.includes('DB_ENC_KEY='), 'archived .env.supabase.example documents DB_ENC_KEY');
+check(envEx.includes('REALTIME_SELF_HOST_TENANT=localhost'), 'archived env tenant localhost');
 
 const kong = readFileSync(join(root, 'archive/supabase-legacy/supabase/config/kong.yml'), 'utf8');
 check(kong.includes('supabase-realtime:4000/socket'), 'kong upstream /socket');

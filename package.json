@@ -78,6 +78,7 @@
   },
   "scripts": {
     "dev": "vite",
+    "host:dev": "npm --prefix server run start",
     "prebuild": "node scripts/vendor-mediapipe-face-landmarker.mjs",
     "build": "vite build",
     "postinstall": "node scripts/vendor-mediapipe-face-landmarker.mjs",
