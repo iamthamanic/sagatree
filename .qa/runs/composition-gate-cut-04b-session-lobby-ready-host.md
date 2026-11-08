@@ -1,7 +1,7 @@
 # Composition Gate — cut-04b-session-lobby-ready-host (#1162)
 
-- HEAD_SHA: 64a8f37e1f576b8e1b47401e5f906add5e6b6b64
-- BASE_SHA: 45f681e20a84671b13b81afd98b641320279785e
+- HEAD_SHA: 6fb41ff7899fac38685f756f1480b50ca0d9eafb
+- BASE_SHA: aaacc19ace5f43e9be6ac1e9f10b01293d3f5bb4
 - Date: 2026-11-08
 - Verdict: CLEAR
 - Acceptance tier: feature-integration
