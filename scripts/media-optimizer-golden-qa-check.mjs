@@ -57,7 +57,7 @@ const surfaces = [
   },
   {
     name: 'provider-output',
-    path: 'supabase/functions/item-thumbnail/index.ts',
+    path: 'archive/supabase-legacy/supabase/functions/item-thumbnail/index.ts',
     re: /optimizeProviderThumbnailBytes/,
   },
 ];
@@ -211,7 +211,7 @@ const deno = spawnSync(
     '--allow-read',
     '--allow-net',
     '--allow-env',
-    'supabase/functions/_shared/media-server-raster-optimize_test.ts',
+    'archive/supabase-legacy/supabase/functions/_shared/media-server-raster-optimize_test.ts',
   ],
   { cwd: root, encoding: 'utf8' },
 );

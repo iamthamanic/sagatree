@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [edge-npcs.json](source-contracts/edge-npcs.json) (SHA-256 `320d3e249deed8dad0eeb6d3c10e9a6a6a2cf14365ee7899b212788a188af6e3`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [edge-npcs.json](source-contracts/edge-npcs.json) (SHA-256 `fa815af674dd4587deb253b0907f1a938f912221b37bcd2dcbecc7880fcf8cdc`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Exposure and purpose
 
@@ -55,7 +55,7 @@ None in the reviewed source.
 
 ### DEFAULT_CORS_METHODS
 
-`supabase/functions/_shared/cors.ts:9`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:9`
 
 ```ts
 DEFAULT_CORS_METHODS = 'GET, POST, PUT, DELETE, OPTIONS'
@@ -63,7 +63,7 @@ DEFAULT_CORS_METHODS = 'GET, POST, PUT, DELETE, OPTIONS'
 
 ### DEFAULT_CORS_ALLOW_HEADERS
 
-`supabase/functions/_shared/cors.ts:10`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:10`
 
 ```ts
 DEFAULT_CORS_ALLOW_HEADERS =
@@ -72,7 +72,7 @@ DEFAULT_CORS_ALLOW_HEADERS =
 
 ### readConfiguredOrigin
 
-`supabase/functions/_shared/cors.ts:34`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:34`
 
 ```ts
 function readConfiguredOrigin(envKeys: string[]): string {
@@ -86,7 +86,7 @@ function readConfiguredOrigin(envKeys: string[]): string {
 
 ### CORS_OPTS
 
-`supabase/functions/npcs/index.ts:7`
+`archive/supabase-legacy/supabase/functions/npcs/index.ts:7`
 
 ```ts
 CORS_OPTS: CorsOptions = {
@@ -130,7 +130,7 @@ No src/infrastructure caller in the reviewed branch. This does not authorize add
 
 ### npcs:1
 
-Predicate: `req.method === "GET" && path === "/health"`. Source: `supabase/functions/npcs/index.ts:438`.
+Predicate: `req.method === "GET" && path === "/health"`. Source: `archive/supabase-legacy/supabase/functions/npcs/index.ts:438`.
 
 
 ```ts
@@ -147,7 +147,7 @@ Predicate: `req.method === "GET" && path === "/health"`. Source: `supabase/funct
 
 ### npcs:2
 
-Predicate: `req.method === "POST" && path === "/npcs"`. Source: `supabase/functions/npcs/index.ts:449`.
+Predicate: `req.method === "POST" && path === "/npcs"`. Source: `archive/supabase-legacy/supabase/functions/npcs/index.ts:449`.
 
 
 ```ts
@@ -163,7 +163,7 @@ Predicate: `req.method === "POST" && path === "/npcs"`. Source: `supabase/functi
 
 ### npcs:3
 
-Predicate: `req.method === "GET" && path === "/npcs"`. Source: `supabase/functions/npcs/index.ts:459`.
+Predicate: `req.method === "GET" && path === "/npcs"`. Source: `archive/supabase-legacy/supabase/functions/npcs/index.ts:459`.
 
 
 ```ts
@@ -183,7 +183,7 @@ Predicate: `req.method === "GET" && path === "/npcs"`. Source: `supabase/functio
 
 ### npcs:4
 
-Predicate: `req.method === "GET" && path.match(/^\/npcs\/[\w-]+$/)`. Source: `supabase/functions/npcs/index.ts:473`.
+Predicate: `req.method === "GET" && path.match(/^\/npcs\/[\w-]+$/)`. Source: `archive/supabase-legacy/supabase/functions/npcs/index.ts:473`.
 
 
 ```ts
@@ -206,7 +206,7 @@ Predicate: `req.method === "GET" && path.match(/^\/npcs\/[\w-]+$/)`. Source: `su
 
 ### npcs:5
 
-Predicate: `req.method === "PUT" && path.match(/^\/npcs\/[\w-]+$/)`. Source: `supabase/functions/npcs/index.ts:490`.
+Predicate: `req.method === "PUT" && path.match(/^\/npcs\/[\w-]+$/)`. Source: `archive/supabase-legacy/supabase/functions/npcs/index.ts:490`.
 
 
 ```ts
@@ -223,7 +223,7 @@ Predicate: `req.method === "PUT" && path.match(/^\/npcs\/[\w-]+$/)`. Source: `su
 
 ### npcs:6
 
-Predicate: `req.method === "DELETE" && path.match(/^\/npcs\/[\w-]+$/)`. Source: `supabase/functions/npcs/index.ts:501`.
+Predicate: `req.method === "DELETE" && path.match(/^\/npcs\/[\w-]+$/)`. Source: `archive/supabase-legacy/supabase/functions/npcs/index.ts:501`.
 
 
 ```ts
@@ -239,7 +239,7 @@ Predicate: `req.method === "DELETE" && path.match(/^\/npcs\/[\w-]+$/)`. Source: 
 
 ### npcs:7
 
-Predicate: `req.method === "POST" && path === "/npcs/generate"`. Source: `supabase/functions/npcs/index.ts:511`.
+Predicate: `req.method === "POST" && path === "/npcs/generate"`. Source: `archive/supabase-legacy/supabase/functions/npcs/index.ts:511`.
 
 
 ```ts
@@ -255,7 +255,7 @@ Predicate: `req.method === "POST" && path === "/npcs/generate"`. Source: `supaba
 
 ### npcs:8
 
-Predicate: `req.method === "POST" && path.match(/^\/npcs\/[\w-]+\/memory$/)`. Source: `supabase/functions/npcs/index.ts:521`.
+Predicate: `req.method === "POST" && path.match(/^\/npcs\/[\w-]+\/memory$/)`. Source: `archive/supabase-legacy/supabase/functions/npcs/index.ts:521`.
 
 
 ```ts
@@ -272,7 +272,7 @@ Predicate: `req.method === "POST" && path.match(/^\/npcs\/[\w-]+\/memory$/)`. So
 
 ### npcs:9
 
-Predicate: `req.method === "GET" && path.match(/^\/npcs\/[\w-]+\/memories$/)`. Source: `supabase/functions/npcs/index.ts:532`.
+Predicate: `req.method === "GET" && path.match(/^\/npcs\/[\w-]+\/memories$/)`. Source: `archive/supabase-legacy/supabase/functions/npcs/index.ts:532`.
 
 
 ```ts
@@ -289,7 +289,7 @@ Predicate: `req.method === "GET" && path.match(/^\/npcs\/[\w-]+\/memories$/)`. S
 
 ### npcs:10
 
-Predicate: `req.method === "POST" && path.match(/^\/npcs\/[\w-]+\/relationship$/)`. Source: `supabase/functions/npcs/index.ts:543`.
+Predicate: `req.method === "POST" && path.match(/^\/npcs\/[\w-]+\/relationship$/)`. Source: `archive/supabase-legacy/supabase/functions/npcs/index.ts:543`.
 
 
 ```ts
@@ -306,7 +306,7 @@ Predicate: `req.method === "POST" && path.match(/^\/npcs\/[\w-]+\/relationship$/
 
 ### npcs:11
 
-Predicate: `req.method === "GET" && path.match(/^\/npcs\/[\w-]+\/relationships$/)`. Source: `supabase/functions/npcs/index.ts:554`.
+Predicate: `req.method === "GET" && path.match(/^\/npcs\/[\w-]+\/relationships$/)`. Source: `archive/supabase-legacy/supabase/functions/npcs/index.ts:554`.
 
 
 ```ts
@@ -322,7 +322,7 @@ Predicate: `req.method === "GET" && path.match(/^\/npcs\/[\w-]+\/relationships$/
 
 ### npcs:12
 
-Predicate: `req.method === "POST" && path.match(/^\/npcs\/[\w-]+\/dialogue$/)`. Source: `supabase/functions/npcs/index.ts:564`.
+Predicate: `req.method === "POST" && path.match(/^\/npcs\/[\w-]+\/dialogue$/)`. Source: `archive/supabase-legacy/supabase/functions/npcs/index.ts:564`.
 
 
 ```ts
@@ -339,7 +339,7 @@ Predicate: `req.method === "POST" && path.match(/^\/npcs\/[\w-]+\/dialogue$/)`. 
 
 ### npcs:13
 
-Predicate: `req.method === "GET" && path.match(/^\/npcs\/[\w-]+\/dialogues$/)`. Source: `supabase/functions/npcs/index.ts:575`.
+Predicate: `req.method === "GET" && path.match(/^\/npcs\/[\w-]+\/dialogues$/)`. Source: `archive/supabase-legacy/supabase/functions/npcs/index.ts:575`.
 
 
 ```ts
@@ -355,7 +355,7 @@ Predicate: `req.method === "GET" && path.match(/^\/npcs\/[\w-]+\/dialogues$/)`. 
 
 ### npcs:14
 
-Predicate: `req.method === "GET" && path.match(/^\/npcs\/[\w-]+\/export$/)`. Source: `supabase/functions/npcs/index.ts:585`.
+Predicate: `req.method === "GET" && path.match(/^\/npcs\/[\w-]+\/export$/)`. Source: `archive/supabase-legacy/supabase/functions/npcs/index.ts:585`.
 
 
 ```ts
@@ -371,7 +371,7 @@ Predicate: `req.method === "GET" && path.match(/^\/npcs\/[\w-]+\/export$/)`. Sou
 
 ### npcs:15
 
-Predicate: `req.method === "POST" && path === "/npcs/import"`. Source: `supabase/functions/npcs/index.ts:595`.
+Predicate: `req.method === "POST" && path === "/npcs/import"`. Source: `archive/supabase-legacy/supabase/functions/npcs/index.ts:595`.
 
 
 ```ts
@@ -390,7 +390,7 @@ Predicate: `req.method === "POST" && path === "/npcs/import"`. Source: `supabase
 
 ### CorsOptions
 
-`supabase/functions/_shared/cors.ts:13`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:13`
 
 ```ts
 export type CorsOptions = {
@@ -417,7 +417,7 @@ export type CorsOptions = {
 
 ### NPC
 
-`supabase/functions/npcs/index.ts:21`
+`archive/supabase-legacy/supabase/functions/npcs/index.ts:21`
 
 ```ts
 interface NPC {
@@ -450,7 +450,7 @@ interface NPC {
 
 ### NPCStats
 
-`supabase/functions/npcs/index.ts:48`
+`archive/supabase-legacy/supabase/functions/npcs/index.ts:48`
 
 ```ts
 interface NPCStats {
@@ -465,7 +465,7 @@ interface NPCStats {
 
 ### DialogueLine
 
-`supabase/functions/npcs/index.ts:57`
+`archive/supabase-legacy/supabase/functions/npcs/index.ts:57`
 
 ```ts
 interface DialogueLine {
@@ -481,7 +481,7 @@ interface DialogueLine {
 
 ### DialogueResponse
 
-`supabase/functions/npcs/index.ts:67`
+`archive/supabase-legacy/supabase/functions/npcs/index.ts:67`
 
 ```ts
 interface DialogueResponse {
@@ -493,7 +493,7 @@ interface DialogueResponse {
 
 ### NPCGenerator
 
-`supabase/functions/npcs/index.ts:73`
+`archive/supabase-legacy/supabase/functions/npcs/index.ts:73`
 
 ```ts
 interface NPCGenerator {
@@ -512,7 +512,7 @@ interface NPCGenerator {
 
 ### generateId
 
-`supabase/functions/npcs/index.ts:137`
+`archive/supabase-legacy/supabase/functions/npcs/index.ts:137`
 
 ```ts
 function generateId(): string {
@@ -522,7 +522,7 @@ function generateId(): string {
 
 ### randomFrom
 
-`supabase/functions/npcs/index.ts:141`
+`archive/supabase-legacy/supabase/functions/npcs/index.ts:141`
 
 ```ts
 function randomFrom<T>(arr: T[]): T {
@@ -532,7 +532,7 @@ function randomFrom<T>(arr: T[]): T {
 
 ### generateName
 
-`supabase/functions/npcs/index.ts:145`
+`archive/supabase-legacy/supabase/functions/npcs/index.ts:145`
 
 ```ts
 function generateName(race: string = 'human', gender: 'male' | 'female' = 'male'): string {
@@ -543,7 +543,7 @@ function generateName(race: string = 'human', gender: 'male' | 'female' = 'male'
 
 ### generateStats
 
-`supabase/functions/npcs/index.ts:150`
+`archive/supabase-legacy/supabase/functions/npcs/index.ts:150`
 
 ```ts
 function generateStats(): NPCStats {
@@ -560,7 +560,7 @@ function generateStats(): NPCStats {
 
 ### generateDescription
 
-`supabase/functions/npcs/index.ts:161`
+`archive/supabase-legacy/supabase/functions/npcs/index.ts:161`
 
 ```ts
 function generateDescription(npc: Partial<NPC>): string {
@@ -579,7 +579,7 @@ function generateDescription(npc: Partial<NPC>): string {
 
 ### createNPC
 
-`supabase/functions/npcs/index.ts:178`
+`archive/supabase-legacy/supabase/functions/npcs/index.ts:178`
 
 ```ts
 async function createNPC(data: Partial<NPC>): Promise<NPC> {
@@ -624,7 +624,7 @@ async function createNPC(data: Partial<NPC>): Promise<NPC> {
 
 ### getNPC
 
-`supabase/functions/npcs/index.ts:217`
+`archive/supabase-legacy/supabase/functions/npcs/index.ts:217`
 
 ```ts
 async function getNPC(id: string): Promise<NPC | null> {
@@ -634,7 +634,7 @@ async function getNPC(id: string): Promise<NPC | null> {
 
 ### updateNPC
 
-`supabase/functions/npcs/index.ts:221`
+`archive/supabase-legacy/supabase/functions/npcs/index.ts:221`
 
 ```ts
 async function updateNPC(id: string, data: Partial<NPC>): Promise<NPC> {
@@ -655,7 +655,7 @@ async function updateNPC(id: string, data: Partial<NPC>): Promise<NPC> {
 
 ### deleteNPC
 
-`supabase/functions/npcs/index.ts:236`
+`archive/supabase-legacy/supabase/functions/npcs/index.ts:236`
 
 ```ts
 async function deleteNPC(id: string): Promise<void> {
@@ -666,7 +666,7 @@ async function deleteNPC(id: string): Promise<void> {
 
 ### listNPCs
 
-`supabase/functions/npcs/index.ts:241`
+`archive/supabase-legacy/supabase/functions/npcs/index.ts:241`
 
 ```ts
 async function listNPCs(filter?: { type?: string; location?: string; disposition?: string }): Promise<NPC[]> {
@@ -688,7 +688,7 @@ async function listNPCs(filter?: { type?: string; location?: string; disposition
 
 ### generateNPC
 
-`supabase/functions/npcs/index.ts:261`
+`archive/supabase-legacy/supabase/functions/npcs/index.ts:261`
 
 ```ts
 async function generateNPC(options: {
@@ -738,7 +738,7 @@ async function generateNPC(options: {
 
 ### addMemory
 
-`supabase/functions/npcs/index.ts:309`
+`archive/supabase-legacy/supabase/functions/npcs/index.ts:309`
 
 ```ts
 async function addMemory(npcId: string, memory: string): Promise<NPC> {
@@ -755,7 +755,7 @@ async function addMemory(npcId: string, memory: string): Promise<NPC> {
 
 ### getMemories
 
-`supabase/functions/npcs/index.ts:320`
+`archive/supabase-legacy/supabase/functions/npcs/index.ts:320`
 
 ```ts
 async function getMemories(npcId: string, limit?: number): Promise<string[]> {
@@ -769,7 +769,7 @@ async function getMemories(npcId: string, limit?: number): Promise<string[]> {
 
 ### setRelationship
 
-`supabase/functions/npcs/index.ts:332`
+`archive/supabase-legacy/supabase/functions/npcs/index.ts:332`
 
 ```ts
 async function setRelationship(npcId: string, targetId: string, relationship: string): Promise<NPC> {
@@ -786,7 +786,7 @@ async function setRelationship(npcId: string, targetId: string, relationship: st
 
 ### getRelationships
 
-`supabase/functions/npcs/index.ts:343`
+`archive/supabase-legacy/supabase/functions/npcs/index.ts:343`
 
 ```ts
 async function getRelationships(npcId: string): Promise<Record<string, string>> {
@@ -799,7 +799,7 @@ async function getRelationships(npcId: string): Promise<Record<string, string>> 
 
 ### addDialogue
 
-`supabase/functions/npcs/index.ts:354`
+`archive/supabase-legacy/supabase/functions/npcs/index.ts:354`
 
 ```ts
 async function addDialogue(npcId: string, dialogue: Omit<DialogueLine, 'id' | 'npcId'>): Promise<DialogueLine> {
@@ -820,7 +820,7 @@ async function addDialogue(npcId: string, dialogue: Omit<DialogueLine, 'id' | 'n
 
 ### getDialogues
 
-`supabase/functions/npcs/index.ts:369`
+`archive/supabase-legacy/supabase/functions/npcs/index.ts:369`
 
 ```ts
 async function getDialogues(npcId: string): Promise<DialogueLine[]> {
@@ -830,7 +830,7 @@ async function getDialogues(npcId: string): Promise<DialogueLine[]> {
 
 ### getDialogueByTrigger
 
-`supabase/functions/npcs/index.ts:373`
+`archive/supabase-legacy/supabase/functions/npcs/index.ts:373`
 
 ```ts
 async function getDialogueByTrigger(npcId: string, trigger: string): Promise<DialogueLine | null> {
@@ -841,7 +841,7 @@ async function getDialogueByTrigger(npcId: string, trigger: string): Promise<Dia
 
 ### exportNPC
 
-`supabase/functions/npcs/index.ts:382`
+`archive/supabase-legacy/supabase/functions/npcs/index.ts:382`
 
 ```ts
 async function exportNPC(npcId: string): Promise<NPC> {
@@ -853,7 +853,7 @@ async function exportNPC(npcId: string): Promise<NPC> {
 
 ### importNPC
 
-`supabase/functions/npcs/index.ts:388`
+`archive/supabase-legacy/supabase/functions/npcs/index.ts:388`
 
 ```ts
 async function importNPC(data: Partial<NPC>): Promise<NPC> {
@@ -897,9 +897,9 @@ async function importNPC(data: Partial<NPC>): Promise<NPC> {
 
 | Path | SHA-256 |
 |---|---|
-| `supabase/functions/_shared/cors.ts` | `f8286c91d79fa5fc5cfea2fa47081916523fa7a440f234aecd9a47c6a8cf5b38` |
-| `supabase/functions/_shared/edge-dispatcher-allowlist.ts` | `6d1ae7bde0ba9e41fcaa7b61247732168a62699e7811fb8574cef266cfad3a27` |
-| `supabase/functions/_shared/edge-jwt-gate.ts` | `14a871697b051b7fcbee09dbce1dee8bc8ed5ea6a6eca0bec7b2e771b32d0f0c` |
-| `supabase/functions/main/index.ts` | `92f3bf56bf3c776e01595d980246079c4a9f8775e417959abea9d7da003bc53e` |
-| `supabase/functions/npcs/index.ts` | `b6977fface56851f37ad76d698f6a8167d62a42e1286181bd6e359ad06e8a70c` |
+| `archive/supabase-legacy/supabase/functions/_shared/cors.ts` | `f8286c91d79fa5fc5cfea2fa47081916523fa7a440f234aecd9a47c6a8cf5b38` |
+| `archive/supabase-legacy/supabase/functions/_shared/edge-dispatcher-allowlist.ts` | `6d1ae7bde0ba9e41fcaa7b61247732168a62699e7811fb8574cef266cfad3a27` |
+| `archive/supabase-legacy/supabase/functions/_shared/edge-jwt-gate.ts` | `14a871697b051b7fcbee09dbce1dee8bc8ed5ea6a6eca0bec7b2e771b32d0f0c` |
+| `archive/supabase-legacy/supabase/functions/main/index.ts` | `92f3bf56bf3c776e01595d980246079c4a9f8775e417959abea9d7da003bc53e` |
+| `archive/supabase-legacy/supabase/functions/npcs/index.ts` | `b6977fface56851f37ad76d698f6a8167d62a42e1286181bd6e359ad06e8a70c` |
 

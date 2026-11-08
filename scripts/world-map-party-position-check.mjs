@@ -25,7 +25,7 @@ function requireMatch(content, pattern, label) {
   if (!pattern.test(content)) fail(`missing ${label}`);
 }
 
-const migration = 'supabase/migrations/069_party_location_overview.sql';
+const migration = 'archive/supabase-legacy/supabase/migrations/069_party_location_overview.sql';
 if (!existsSync(join(root, migration))) fail(`missing ${migration}`);
 const mig = read(migration);
 requireMatch(mig, /partyLocationRef/i, 'partyLocationRef in overview');
@@ -71,7 +71,7 @@ requireMatch(between, /SagaPartyLocationGmPanel/i, 'between-sessions party panel
 requireMatch(read('scripts/apply-migrations.sh'), /069_party_location_overview\.sql/, 'apply-migrations');
 requireMatch(read('scripts/test-gate.mjs'), /world-map-party-position-check\.mjs/, 'test-gate');
 
-const ops = read('supabase/migrations/065_saga_simulation_ops.sql');
+const ops = read('archive/supabase-legacy/supabase/migrations/065_saga_simulation_ops.sql');
 requireMatch(ops, /set_party_location/i, 'op exists from #577');
 
 const touched = [

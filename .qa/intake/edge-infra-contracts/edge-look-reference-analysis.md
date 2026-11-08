@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [edge-look-reference-analysis.json](source-contracts/edge-look-reference-analysis.json) (SHA-256 `6ffa849ec73c8443c6141dd9aceaa36b8a61e14964e5c3fe3861c2fd3c8cfc82`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [edge-look-reference-analysis.json](source-contracts/edge-look-reference-analysis.json) (SHA-256 `d4f4d7c5a1a3862a029c45a0491234ae33e48f4930c281f6350cbeff0022c66f`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Exposure and purpose
 
@@ -69,15 +69,15 @@ Auth10s, storage30s, vision90s. POST baseUrl/chat/completions with temperature0.
 
 Explicit abort call sites (dynamic values resolve in the linked helper declaration):
 
-- `supabase/functions/_shared/look-reference-analysis-provider.ts:148` — `AbortSignal.timeout(90_000)`
-- `supabase/functions/look-reference-analysis/index.ts:94` — `AbortSignal.timeout(10_000)`
-- `supabase/functions/look-reference-analysis/index.ts:121` — `AbortSignal.timeout(30_000)`
+- `archive/supabase-legacy/supabase/functions/_shared/look-reference-analysis-provider.ts:148` — `AbortSignal.timeout(90_000)`
+- `archive/supabase-legacy/supabase/functions/look-reference-analysis/index.ts:94` — `AbortSignal.timeout(10_000)`
+- `archive/supabase-legacy/supabase/functions/look-reference-analysis/index.ts:121` — `AbortSignal.timeout(30_000)`
 
 ## Exact environment defaults and configuration resolution
 
 ### DEFAULT_CORS_METHODS
 
-`supabase/functions/_shared/cors.ts:9`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:9`
 
 ```ts
 DEFAULT_CORS_METHODS = 'GET, POST, PUT, DELETE, OPTIONS'
@@ -85,7 +85,7 @@ DEFAULT_CORS_METHODS = 'GET, POST, PUT, DELETE, OPTIONS'
 
 ### DEFAULT_CORS_ALLOW_HEADERS
 
-`supabase/functions/_shared/cors.ts:10`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:10`
 
 ```ts
 DEFAULT_CORS_ALLOW_HEADERS =
@@ -94,7 +94,7 @@ DEFAULT_CORS_ALLOW_HEADERS =
 
 ### readConfiguredOrigin
 
-`supabase/functions/_shared/cors.ts:34`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:34`
 
 ```ts
 function readConfiguredOrigin(envKeys: string[]): string {
@@ -108,7 +108,7 @@ function readConfiguredOrigin(envKeys: string[]): string {
 
 ### resolveLookRefVisionProviderConfig
 
-`supabase/functions/_shared/look-reference-analysis-provider.ts:26`
+`archive/supabase-legacy/supabase/functions/_shared/look-reference-analysis-provider.ts:26`
 
 ```ts
 export function resolveLookRefVisionProviderConfig(): LookRefVisionProviderConfig | null {
@@ -138,7 +138,7 @@ export function resolveLookRefVisionProviderConfig(): LookRefVisionProviderConfi
 
 ### CORS_OPTS
 
-`supabase/functions/look-reference-analysis/index.ts:36`
+`archive/supabase-legacy/supabase/functions/look-reference-analysis/index.ts:36`
 
 ```ts
 CORS_OPTS: CorsOptions = {
@@ -149,7 +149,7 @@ CORS_OPTS: CorsOptions = {
 
 ### DEFAULT_RATE_LIMIT
 
-`supabase/functions/look-reference-analysis/index.ts:44`
+`archive/supabase-legacy/supabase/functions/look-reference-analysis/index.ts:44`
 
 ```ts
 DEFAULT_RATE_LIMIT = 4
@@ -157,7 +157,7 @@ DEFAULT_RATE_LIMIT = 4
 
 ### LOOK_MEDIA_BUCKET
 
-`supabase/functions/look-reference-analysis/index.ts:46`
+`archive/supabase-legacy/supabase/functions/look-reference-analysis/index.ts:46`
 
 ```ts
 LOOK_MEDIA_BUCKET =
@@ -166,7 +166,7 @@ LOOK_MEDIA_BUCKET =
 
 ### getRateLimit
 
-`supabase/functions/look-reference-analysis/index.ts:57`
+`archive/supabase-legacy/supabase/functions/look-reference-analysis/index.ts:57`
 
 ```ts
 function getRateLimit(): number {
@@ -182,7 +182,7 @@ function getRateLimit(): number {
 
 ### getSupabaseConfig
 
-`supabase/functions/look-reference-analysis/index.ts:67`
+`archive/supabase-legacy/supabase/functions/look-reference-analysis/index.ts:67`
 
 ```ts
 function getSupabaseConfig(): {
@@ -244,7 +244,7 @@ No src/infrastructure caller in the reviewed branch. This does not authorize add
 
 ### look-reference-analysis:handler
 
-Predicate: `Complete handler with ordered method/auth/body guards`. Source: `supabase/functions/look-reference-analysis/index.ts:194`.
+Predicate: `Complete handler with ordered method/auth/body guards`. Source: `archive/supabase-legacy/supabase/functions/look-reference-analysis/index.ts:194`.
 
 
 ```ts
@@ -394,7 +394,7 @@ serve(async (request) => {
 
 ### PrivilegedClientBodyKey
 
-`supabase/functions/_shared/client-trust-body.ts:20`
+`archive/supabase-legacy/supabase/functions/_shared/client-trust-body.ts:20`
 
 ```ts
 export type PrivilegedClientBodyKey = (typeof PRIVILEGED_CLIENT_BODY_KEYS)[number];
@@ -402,7 +402,7 @@ export type PrivilegedClientBodyKey = (typeof PRIVILEGED_CLIENT_BODY_KEYS)[numbe
 
 ### CorsOptions
 
-`supabase/functions/_shared/cors.ts:13`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:13`
 
 ```ts
 export type CorsOptions = {
@@ -429,7 +429,7 @@ export type CorsOptions = {
 
 ### LookRefAnalysisMime
 
-`supabase/functions/_shared/look-reference-analysis-image.ts:13`
+`archive/supabase-legacy/supabase/functions/_shared/look-reference-analysis-image.ts:13`
 
 ```ts
 export type LookRefAnalysisMime = (typeof LOOK_REF_ANALYSIS_ALLOWED_MIME)[number];
@@ -437,7 +437,7 @@ export type LookRefAnalysisMime = (typeof LOOK_REF_ANALYSIS_ALLOWED_MIME)[number
 
 ### LookRefVisionProviderConfig
 
-`supabase/functions/_shared/look-reference-analysis-provider.ts:8`
+`archive/supabase-legacy/supabase/functions/_shared/look-reference-analysis-provider.ts:8`
 
 ```ts
 export type LookRefVisionProviderConfig = {
@@ -449,7 +449,7 @@ export type LookRefVisionProviderConfig = {
 
 ### LookRefVisionImagePart
 
-`supabase/functions/_shared/look-reference-analysis-provider.ts:14`
+`archive/supabase-legacy/supabase/functions/_shared/look-reference-analysis-provider.ts:14`
 
 ```ts
 export type LookRefVisionImagePart = {
@@ -463,7 +463,7 @@ export type LookRefVisionImagePart = {
 
 ### JsonRecord
 
-`supabase/functions/look-reference-analysis/index.ts:34`
+`archive/supabase-legacy/supabase/functions/look-reference-analysis/index.ts:34`
 
 ```ts
 type JsonRecord = Record<string, unknown>;
@@ -471,7 +471,7 @@ type JsonRecord = Record<string, unknown>;
 
 ### ParsedRef
 
-`supabase/functions/look-reference-analysis/index.ts:133`
+`archive/supabase-legacy/supabase/functions/look-reference-analysis/index.ts:133`
 
 ```ts
 type ParsedRef = {
@@ -491,7 +491,7 @@ type ParsedRef = {
 
 ### DEFAULT_CORS_METHODS
 
-`supabase/functions/_shared/cors.ts:9`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:9`
 
 ```ts
 DEFAULT_CORS_METHODS = 'GET, POST, PUT, DELETE, OPTIONS'
@@ -499,7 +499,7 @@ DEFAULT_CORS_METHODS = 'GET, POST, PUT, DELETE, OPTIONS'
 
 ### DEFAULT_CORS_ALLOW_HEADERS
 
-`supabase/functions/_shared/cors.ts:10`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:10`
 
 ```ts
 DEFAULT_CORS_ALLOW_HEADERS =
@@ -508,7 +508,7 @@ DEFAULT_CORS_ALLOW_HEADERS =
 
 ### validateLookRefImageBytes
 
-`supabase/functions/_shared/look-reference-analysis-image.ts:73`
+`archive/supabase-legacy/supabase/functions/_shared/look-reference-analysis-image.ts:73`
 
 ```ts
 export function validateLookRefImageBytes(
@@ -529,7 +529,7 @@ export function validateLookRefImageBytes(
 
 ### buildSystemPrompt
 
-`supabase/functions/_shared/look-reference-analysis-provider.ts:79`
+`archive/supabase-legacy/supabase/functions/_shared/look-reference-analysis-provider.ts:79`
 
 ```ts
 function buildSystemPrompt(): string {
@@ -549,7 +549,7 @@ function buildSystemPrompt(): string {
 
 ### CORS_OPTS
 
-`supabase/functions/look-reference-analysis/index.ts:36`
+`archive/supabase-legacy/supabase/functions/look-reference-analysis/index.ts:36`
 
 ```ts
 CORS_OPTS: CorsOptions = {
@@ -560,7 +560,7 @@ CORS_OPTS: CorsOptions = {
 
 ### MAX_REQUEST_BYTES
 
-`supabase/functions/look-reference-analysis/index.ts:41`
+`archive/supabase-legacy/supabase/functions/look-reference-analysis/index.ts:41`
 
 ```ts
 MAX_REQUEST_BYTES = 12 * 1024 * 1024
@@ -568,7 +568,7 @@ MAX_REQUEST_BYTES = 12 * 1024 * 1024
 
 ### MAX_IMAGES
 
-`supabase/functions/look-reference-analysis/index.ts:43`
+`archive/supabase-legacy/supabase/functions/look-reference-analysis/index.ts:43`
 
 ```ts
 MAX_IMAGES = 10
@@ -576,7 +576,7 @@ MAX_IMAGES = 10
 
 ### DEFAULT_RATE_LIMIT
 
-`supabase/functions/look-reference-analysis/index.ts:44`
+`archive/supabase-legacy/supabase/functions/look-reference-analysis/index.ts:44`
 
 ```ts
 DEFAULT_RATE_LIMIT = 4
@@ -584,7 +584,7 @@ DEFAULT_RATE_LIMIT = 4
 
 ### RATE_LIMIT_WINDOW_SECONDS
 
-`supabase/functions/look-reference-analysis/index.ts:45`
+`archive/supabase-legacy/supabase/functions/look-reference-analysis/index.ts:45`
 
 ```ts
 RATE_LIMIT_WINDOW_SECONDS = 60
@@ -592,7 +592,7 @@ RATE_LIMIT_WINDOW_SECONDS = 60
 
 ### parseReferences
 
-`supabase/functions/look-reference-analysis/index.ts:144`
+`archive/supabase-legacy/supabase/functions/look-reference-analysis/index.ts:144`
 
 ```ts
 function parseReferences(value: unknown): ParsedRef[] {
@@ -651,13 +651,13 @@ function parseReferences(value: unknown): ParsedRef[] {
 
 | Path | SHA-256 |
 |---|---|
-| `supabase/functions/_shared/client-trust-body.ts` | `33c68553dbd89d9c7899520b0ebfa35c4f245ed8ab8ebd242c6f79e9852add95` |
-| `supabase/functions/_shared/cors.ts` | `f8286c91d79fa5fc5cfea2fa47081916523fa7a440f234aecd9a47c6a8cf5b38` |
-| `supabase/functions/_shared/edge-dispatcher-allowlist.ts` | `6d1ae7bde0ba9e41fcaa7b61247732168a62699e7811fb8574cef266cfad3a27` |
-| `supabase/functions/_shared/edge-jwt-gate.ts` | `14a871697b051b7fcbee09dbce1dee8bc8ed5ea6a6eca0bec7b2e771b32d0f0c` |
-| `supabase/functions/_shared/look-reference-analysis-image.ts` | `30aadc256afc844ea12b0cd73aa461c810ebfbbf1185006c7881a433976c2357` |
-| `supabase/functions/_shared/look-reference-analysis-provider.ts` | `04e4290f93d9c47e76a77c816c8934d19774a6a7e9682885fdcff493c69714bb` |
-| `supabase/functions/_shared/look-reference-analysis-rate-limit.ts` | `31d18e8f0041595b5212945b65cbf63f08dd7d84a47d938ef296da84ae082834` |
-| `supabase/functions/look-reference-analysis/index.ts` | `9f0da17201e85b482eab07a956dcfbd6b7aa411bec9b04e35580db7f37716874` |
-| `supabase/functions/main/index.ts` | `92f3bf56bf3c776e01595d980246079c4a9f8775e417959abea9d7da003bc53e` |
+| `archive/supabase-legacy/supabase/functions/_shared/client-trust-body.ts` | `33c68553dbd89d9c7899520b0ebfa35c4f245ed8ab8ebd242c6f79e9852add95` |
+| `archive/supabase-legacy/supabase/functions/_shared/cors.ts` | `f8286c91d79fa5fc5cfea2fa47081916523fa7a440f234aecd9a47c6a8cf5b38` |
+| `archive/supabase-legacy/supabase/functions/_shared/edge-dispatcher-allowlist.ts` | `6d1ae7bde0ba9e41fcaa7b61247732168a62699e7811fb8574cef266cfad3a27` |
+| `archive/supabase-legacy/supabase/functions/_shared/edge-jwt-gate.ts` | `14a871697b051b7fcbee09dbce1dee8bc8ed5ea6a6eca0bec7b2e771b32d0f0c` |
+| `archive/supabase-legacy/supabase/functions/_shared/look-reference-analysis-image.ts` | `30aadc256afc844ea12b0cd73aa461c810ebfbbf1185006c7881a433976c2357` |
+| `archive/supabase-legacy/supabase/functions/_shared/look-reference-analysis-provider.ts` | `04e4290f93d9c47e76a77c816c8934d19774a6a7e9682885fdcff493c69714bb` |
+| `archive/supabase-legacy/supabase/functions/_shared/look-reference-analysis-rate-limit.ts` | `31d18e8f0041595b5212945b65cbf63f08dd7d84a47d938ef296da84ae082834` |
+| `archive/supabase-legacy/supabase/functions/look-reference-analysis/index.ts` | `9f0da17201e85b482eab07a956dcfbd6b7aa411bec9b04e35580db7f37716874` |
+| `archive/supabase-legacy/supabase/functions/main/index.ts` | `92f3bf56bf3c776e01595d980246079c4a9f8775e417959abea9d7da003bc53e` |
 

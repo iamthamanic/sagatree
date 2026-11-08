@@ -32,7 +32,7 @@ function mustInclude(file, needles, label) {
   }
 }
 
-const migrationPath = 'supabase/migrations/076_dornhain_full_catalog_seed.sql';
+const migrationPath = 'archive/supabase-legacy/supabase/migrations/076_dornhain_full_catalog_seed.sql';
 if (!existsSync(join(root, migrationPath))) fail(`missing ${migrationPath}`);
 
 const migration = read(migrationPath);

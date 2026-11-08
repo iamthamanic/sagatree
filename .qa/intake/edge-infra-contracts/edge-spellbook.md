@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [edge-spellbook.json](source-contracts/edge-spellbook.json) (SHA-256 `d9f004a79762cc5514d7e6621eaa4635978a11feb897100035d3bb77d42cf217`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [edge-spellbook.json](source-contracts/edge-spellbook.json) (SHA-256 `897c81d6bfb19da2bda2721d25b667c5840e007f949b35cd36f199665535a5ac`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Exposure and purpose
 
@@ -54,7 +54,7 @@ None in the reviewed source.
 
 ### DEFAULT_CORS_METHODS
 
-`supabase/functions/_shared/cors.ts:9`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:9`
 
 ```ts
 DEFAULT_CORS_METHODS = 'GET, POST, PUT, DELETE, OPTIONS'
@@ -62,7 +62,7 @@ DEFAULT_CORS_METHODS = 'GET, POST, PUT, DELETE, OPTIONS'
 
 ### DEFAULT_CORS_ALLOW_HEADERS
 
-`supabase/functions/_shared/cors.ts:10`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:10`
 
 ```ts
 DEFAULT_CORS_ALLOW_HEADERS =
@@ -71,7 +71,7 @@ DEFAULT_CORS_ALLOW_HEADERS =
 
 ### readConfiguredOrigin
 
-`supabase/functions/_shared/cors.ts:34`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:34`
 
 ```ts
 function readConfiguredOrigin(envKeys: string[]): string {
@@ -85,7 +85,7 @@ function readConfiguredOrigin(envKeys: string[]): string {
 
 ### CORS_OPTS
 
-`supabase/functions/spellbook/index.ts:7`
+`archive/supabase-legacy/supabase/functions/spellbook/index.ts:7`
 
 ```ts
 CORS_OPTS: CorsOptions = {
@@ -129,7 +129,7 @@ No src/infrastructure caller in the reviewed branch. This does not authorize add
 
 ### spellbook:1
 
-Predicate: `req.method === "GET" && path === "/health"`. Source: `supabase/functions/spellbook/index.ts:57`.
+Predicate: `req.method === "GET" && path === "/health"`. Source: `archive/supabase-legacy/supabase/functions/spellbook/index.ts:57`.
 
 
 ```ts
@@ -138,7 +138,7 @@ return new Response(JSON.stringify({ status: 'ok', features: ['spells', 'spellbo
 
 ### spellbook:2
 
-Predicate: `req.method === "GET" && path === "/spells"`. Source: `supabase/functions/spellbook/index.ts:58`.
+Predicate: `req.method === "GET" && path === "/spells"`. Source: `archive/supabase-legacy/supabase/functions/spellbook/index.ts:58`.
 
 
 ```ts
@@ -147,7 +147,7 @@ Predicate: `req.method === "GET" && path === "/spells"`. Source: `supabase/funct
 
 ### spellbook:3
 
-Predicate: `req.method === "GET" && path.match(/^\/spells\/[\w-]+$/)`. Source: `supabase/functions/spellbook/index.ts:59`.
+Predicate: `req.method === "GET" && path.match(/^\/spells\/[\w-]+$/)`. Source: `archive/supabase-legacy/supabase/functions/spellbook/index.ts:59`.
 
 
 ```ts
@@ -156,7 +156,7 @@ Predicate: `req.method === "GET" && path.match(/^\/spells\/[\w-]+$/)`. Source: `
 
 ### spellbook:4
 
-Predicate: `req.method === "POST" && path === "/spells"`. Source: `supabase/functions/spellbook/index.ts:60`.
+Predicate: `req.method === "POST" && path === "/spells"`. Source: `archive/supabase-legacy/supabase/functions/spellbook/index.ts:60`.
 
 
 ```ts
@@ -165,7 +165,7 @@ Predicate: `req.method === "POST" && path === "/spells"`. Source: `supabase/func
 
 ### spellbook:5
 
-Predicate: `req.method === "GET" && path.match(/^\/spellbook\/[\w-]+$/)`. Source: `supabase/functions/spellbook/index.ts:61`.
+Predicate: `req.method === "GET" && path.match(/^\/spellbook\/[\w-]+$/)`. Source: `archive/supabase-legacy/supabase/functions/spellbook/index.ts:61`.
 
 
 ```ts
@@ -174,7 +174,7 @@ Predicate: `req.method === "GET" && path.match(/^\/spellbook\/[\w-]+$/)`. Source
 
 ### spellbook:6
 
-Predicate: `req.method === "POST" && path.match(/^\/spellbook\/[\w-]+\/learn$/)`. Source: `supabase/functions/spellbook/index.ts:62`.
+Predicate: `req.method === "POST" && path.match(/^\/spellbook\/[\w-]+\/learn$/)`. Source: `archive/supabase-legacy/supabase/functions/spellbook/index.ts:62`.
 
 
 ```ts
@@ -183,7 +183,7 @@ Predicate: `req.method === "POST" && path.match(/^\/spellbook\/[\w-]+\/learn$/)`
 
 ### spellbook:7
 
-Predicate: `req.method === "POST" && path.match(/^\/spellbook\/[\w-]+\/prepare$/)`. Source: `supabase/functions/spellbook/index.ts:63`.
+Predicate: `req.method === "POST" && path.match(/^\/spellbook\/[\w-]+\/prepare$/)`. Source: `archive/supabase-legacy/supabase/functions/spellbook/index.ts:63`.
 
 
 ```ts
@@ -192,7 +192,7 @@ Predicate: `req.method === "POST" && path.match(/^\/spellbook\/[\w-]+\/prepare$/
 
 ### spellbook:8
 
-Predicate: `req.method === "POST" && path.match(/^\/spellbook\/[\w-]+\/unprepare$/)`. Source: `supabase/functions/spellbook/index.ts:64`.
+Predicate: `req.method === "POST" && path.match(/^\/spellbook\/[\w-]+\/unprepare$/)`. Source: `archive/supabase-legacy/supabase/functions/spellbook/index.ts:64`.
 
 
 ```ts
@@ -201,7 +201,7 @@ Predicate: `req.method === "POST" && path.match(/^\/spellbook\/[\w-]+\/unprepare
 
 ### spellbook:9
 
-Predicate: `req.method === "POST" && path.match(/^\/spellbook\/[\w-]+\/cast$/)`. Source: `supabase/functions/spellbook/index.ts:65`.
+Predicate: `req.method === "POST" && path.match(/^\/spellbook\/[\w-]+\/cast$/)`. Source: `archive/supabase-legacy/supabase/functions/spellbook/index.ts:65`.
 
 
 ```ts
@@ -210,7 +210,7 @@ Predicate: `req.method === "POST" && path.match(/^\/spellbook\/[\w-]+\/cast$/)`.
 
 ### spellbook:10
 
-Predicate: `req.method === "POST" && path.match(/^\/spellbook\/[\w-]+\/restore$/)`. Source: `supabase/functions/spellbook/index.ts:66`.
+Predicate: `req.method === "POST" && path.match(/^\/spellbook\/[\w-]+\/restore$/)`. Source: `archive/supabase-legacy/supabase/functions/spellbook/index.ts:66`.
 
 
 ```ts
@@ -222,7 +222,7 @@ Predicate: `req.method === "POST" && path.match(/^\/spellbook\/[\w-]+\/restore$/
 
 ### CorsOptions
 
-`supabase/functions/_shared/cors.ts:13`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:13`
 
 ```ts
 export type CorsOptions = {
@@ -249,7 +249,7 @@ export type CorsOptions = {
 
 ### Spell
 
-`supabase/functions/spellbook/index.ts:13`
+`archive/supabase-legacy/supabase/functions/spellbook/index.ts:13`
 
 ```ts
 interface Spell { id: string; name: string; level: number; school: 'abjuration' | 'conjuration' | 'divination' | 'enchantment' | 'evocation' | 'illusion' | 'necromancy' | 'transmutation'; castingTime: string; range: string; components: string[]; duration: string; description: string; higherLevels?: string; classes: string[]; source: string }
@@ -257,7 +257,7 @@ interface Spell { id: string; name: string; level: number; school: 'abjuration' 
 
 ### KnownSpell
 
-`supabase/functions/spellbook/index.ts:15`
+`archive/supabase-legacy/supabase/functions/spellbook/index.ts:15`
 
 ```ts
 interface KnownSpell { spellId: string; known: boolean; prepared: boolean }
@@ -265,7 +265,7 @@ interface KnownSpell { spellId: string; known: boolean; prepared: boolean }
 
 ### CharacterSpellbook
 
-`supabase/functions/spellbook/index.ts:17`
+`archive/supabase-legacy/supabase/functions/spellbook/index.ts:17`
 
 ```ts
 interface CharacterSpellbook { characterId: string; spells: KnownSpell[]; slotsUsed: Record<string, number> }
@@ -276,7 +276,7 @@ interface CharacterSpellbook { characterId: string; spells: KnownSpell[]; slotsU
 
 ### generateId
 
-`supabase/functions/spellbook/index.ts:38`
+`archive/supabase-legacy/supabase/functions/spellbook/index.ts:38`
 
 ```ts
 function generateId(): string { return crypto.randomUUID() }
@@ -284,7 +284,7 @@ function generateId(): string { return crypto.randomUUID() }
 
 ### listSpells
 
-`supabase/functions/spellbook/index.ts:40`
+`archive/supabase-legacy/supabase/functions/spellbook/index.ts:40`
 
 ```ts
 async function listSpells(level?: number, school?: string, classFilter?: string): Promise<Spell[]> { let all = Array.from(spells.values()); if (level !== undefined) all = all.filter(s => s.level === level); if (school) all = all.filter(s => s.school === school); if (classFilter) all = all.filter(s => s.classes.includes(classFilter.toLowerCase())); return all }
@@ -292,7 +292,7 @@ async function listSpells(level?: number, school?: string, classFilter?: string)
 
 ### getSpell
 
-`supabase/functions/spellbook/index.ts:41`
+`archive/supabase-legacy/supabase/functions/spellbook/index.ts:41`
 
 ```ts
 async function getSpell(id: string): Promise<Spell | null> { return spells.get(id) || null }
@@ -300,7 +300,7 @@ async function getSpell(id: string): Promise<Spell | null> { return spells.get(i
 
 ### createSpell
 
-`supabase/functions/spellbook/index.ts:42`
+`archive/supabase-legacy/supabase/functions/spellbook/index.ts:42`
 
 ```ts
 async function createSpell(data: Partial<Spell>): Promise<Spell> { const id = generateId(); const spell: Spell = { id, name: data.name || 'Unknown', level: data.level || 0, school: data.school || 'evocation', castingTime: data.castingTime || '1 action', range: data.range || '60 feet', components: data.components || ['V', 'S'], duration: data.duration || 'Instantaneous', description: data.description || '', higherLevels: data.higherLevels, classes: data.classes || [], source: data.source || 'custom' }; spells.set(id, spell); return spell }
@@ -308,7 +308,7 @@ async function createSpell(data: Partial<Spell>): Promise<Spell> { const id = ge
 
 ### getSpellbook
 
-`supabase/functions/spellbook/index.ts:43`
+`archive/supabase-legacy/supabase/functions/spellbook/index.ts:43`
 
 ```ts
 async function getSpellbook(characterId: string): Promise<CharacterSpellbook> { let book = spellbooks.get(characterId); if (!book) { book = { characterId, spells: [], slotsUsed: {} }; spellbooks.set(characterId, book) } return book }
@@ -316,7 +316,7 @@ async function getSpellbook(characterId: string): Promise<CharacterSpellbook> { 
 
 ### learnSpell
 
-`supabase/functions/spellbook/index.ts:44`
+`archive/supabase-legacy/supabase/functions/spellbook/index.ts:44`
 
 ```ts
 async function learnSpell(characterId: string, spellId: string): Promise<CharacterSpellbook> { const book = await getSpellbook(characterId); const existing = book.spells.find(s => s.spellId === spellId); if (!existing) book.spells.push({ spellId, known: true, prepared: false }); spellbooks.set(characterId, book); return book }
@@ -324,7 +324,7 @@ async function learnSpell(characterId: string, spellId: string): Promise<Charact
 
 ### prepareSpell
 
-`supabase/functions/spellbook/index.ts:45`
+`archive/supabase-legacy/supabase/functions/spellbook/index.ts:45`
 
 ```ts
 async function prepareSpell(characterId: string, spellId: string): Promise<CharacterSpellbook> { const book = await getSpellbook(characterId); const spell = book.spells.find(s => s.spellId === spellId); if (spell) spell.prepared = true; spellbooks.set(characterId, book); return book }
@@ -332,7 +332,7 @@ async function prepareSpell(characterId: string, spellId: string): Promise<Chara
 
 ### unprepareSpell
 
-`supabase/functions/spellbook/index.ts:46`
+`archive/supabase-legacy/supabase/functions/spellbook/index.ts:46`
 
 ```ts
 async function unprepareSpell(characterId: string, spellId: string): Promise<CharacterSpellbook> { const book = await getSpellbook(characterId); const spell = book.spells.find(s => s.spellId === spellId); if (spell) spell.prepared = false; spellbooks.set(characterId, book); return book }
@@ -340,7 +340,7 @@ async function unprepareSpell(characterId: string, spellId: string): Promise<Cha
 
 ### castSpell
 
-`supabase/functions/spellbook/index.ts:47`
+`archive/supabase-legacy/supabase/functions/spellbook/index.ts:47`
 
 ```ts
 async function castSpell(characterId: string, spellId: string, level: number): Promise<{ success: boolean; remaining: number }> { const book = await getSpellbook(characterId); const slotKey = `level${level}`; const maxSlots = { level1: 4, level2: 3, level3: 3, level4: 3, level5: 2, level6: 1, level7: 1, level8: 1, level9: 1 }; const max = maxSlots[slotKey as keyof typeof maxSlots] || 0; const used = book.slotsUsed[slotKey] || 0; if (used >= max) return { success: false, remaining: 0 }; book.slotsUsed[slotKey] = used + 1; spellbooks.set(characterId, book); return { success: true, remaining: max - book.slotsUsed[slotKey] } }
@@ -348,7 +348,7 @@ async function castSpell(characterId: string, spellId: string, level: number): P
 
 ### restoreSpellSlots
 
-`supabase/functions/spellbook/index.ts:48`
+`archive/supabase-legacy/supabase/functions/spellbook/index.ts:48`
 
 ```ts
 async function restoreSpellSlots(characterId: string): Promise<void> { const book = await getSpellbook(characterId); book.slotsUsed = {}; spellbooks.set(characterId, book) }
@@ -359,9 +359,9 @@ async function restoreSpellSlots(characterId: string): Promise<void> { const boo
 
 | Path | SHA-256 |
 |---|---|
-| `supabase/functions/_shared/cors.ts` | `f8286c91d79fa5fc5cfea2fa47081916523fa7a440f234aecd9a47c6a8cf5b38` |
-| `supabase/functions/_shared/edge-dispatcher-allowlist.ts` | `6d1ae7bde0ba9e41fcaa7b61247732168a62699e7811fb8574cef266cfad3a27` |
-| `supabase/functions/_shared/edge-jwt-gate.ts` | `14a871697b051b7fcbee09dbce1dee8bc8ed5ea6a6eca0bec7b2e771b32d0f0c` |
-| `supabase/functions/main/index.ts` | `92f3bf56bf3c776e01595d980246079c4a9f8775e417959abea9d7da003bc53e` |
-| `supabase/functions/spellbook/index.ts` | `e2a3937922f24ee8f4d966cd1a80e1270ba0647e728f890ca7e67b1ff4e59d9a` |
+| `archive/supabase-legacy/supabase/functions/_shared/cors.ts` | `f8286c91d79fa5fc5cfea2fa47081916523fa7a440f234aecd9a47c6a8cf5b38` |
+| `archive/supabase-legacy/supabase/functions/_shared/edge-dispatcher-allowlist.ts` | `6d1ae7bde0ba9e41fcaa7b61247732168a62699e7811fb8574cef266cfad3a27` |
+| `archive/supabase-legacy/supabase/functions/_shared/edge-jwt-gate.ts` | `14a871697b051b7fcbee09dbce1dee8bc8ed5ea6a6eca0bec7b2e771b32d0f0c` |
+| `archive/supabase-legacy/supabase/functions/main/index.ts` | `92f3bf56bf3c776e01595d980246079c4a9f8775e417959abea9d7da003bc53e` |
+| `archive/supabase-legacy/supabase/functions/spellbook/index.ts` | `e2a3937922f24ee8f4d966cd1a80e1270ba0647e728f890ca7e67b1ff4e59d9a` |
 

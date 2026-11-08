@@ -23,7 +23,7 @@ function check(cond, msg) {
 const domain = read('src/domains/character/avatar/body-profile-contract-v1.ts');
 const index = read('src/domains/character/avatar/index.ts');
 const infra = read('src/infrastructure/character/avatar/body-profile-metrics.ts');
-const migration = read('supabase/migrations/038_character_avatar_body_profile.sql');
+const migration = read('archive/supabase-legacy/supabase/migrations/038_character_avatar_body_profile.sql');
 
 check(/BODY_PROFILE_CONTRACT_VERSION/.test(domain), 'version');
 check(/BODY_FAMILY_REFERENCE_PROFILES_V1/.test(domain), 'refs');

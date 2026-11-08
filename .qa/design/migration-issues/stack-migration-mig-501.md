@@ -23,8 +23,8 @@ Optionalen fortsetzbaren Großdatei-Upload an denselben Asset-Publish-Pfad ansch
 
 - Epic: #773; historische Baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`; keine Produktionszustandsbehauptung.
 - Verbindliche Architektur: `docs/architecture/migration-owner-decisions-2026-10-23.md`.
-- Quellpfade und bestehende Adapter: `src/infrastructure/media`, `supabase/functions/media`.
-- Source Contracts: `src/infrastructure/media`, `supabase/functions/media`.
+- Quellpfade und bestehende Adapter: `src/infrastructure/media`, `archive/supabase-legacy/supabase/functions/media`.
+- Source Contracts: `src/infrastructure/media`, `archive/supabase-legacy/supabase/functions/media`.
 - Zielverhalten: Binding product decisions: docs/architecture/migration-owner-decisions-2026-10-23.md; GATE-01 Drizzle+Policy, GATE-02 Cookie-A, GATE-03 Hono+Colyseus, GATE-04 SQLite single-writer. GATE-05 Tauri+sidecar selected; platform release pending..
 
 ## Scope
@@ -58,21 +58,21 @@ Out:
 - Gegeben: Ein teilweise hochgeladener großer Asset-Stream
 - Wenn: Netzunterbrechung und Resume am bestätigten Offset folgen
 - Dann: Der Upload setzt korrekt fort und publiziert genau ein Asset mit der erwarteten Prüfsumme über MIG-500.
-- Quelle: `src/infrastructure/media`, `supabase/functions/media`
+- Quelle: `src/infrastructure/media`, `archive/supabase-legacy/supabase/functions/media`
 
 ### Fall 2
 
 - Gegeben: Falscher Offset, überschrittenes Byte-Limit oder fremder Actor
 - Wenn: der nächste Chunk gesendet wird
 - Dann: Der Server verweigert den Chunk und veröffentlicht keine unvollständigen oder fremden Bytes.
-- Quelle: `src/infrastructure/media`, `supabase/functions/media`
+- Quelle: `src/infrastructure/media`, `archive/supabase-legacy/supabase/functions/media`
 
 ### Fall 3
 
 - Gegeben: Ein Host ohne aktiviertes Großupload-Modul
 - Wenn: ein normaler kleiner Upload erfolgt
 - Dann: Der Host unterstützt den kleinen Upload weiterhin; ein großer Upload erhält einen erklärten Capability-Fehler statt eines hängenden Requests.
-- Quelle: `src/infrastructure/media`, `supabase/functions/media`
+- Quelle: `src/infrastructure/media`, `archive/supabase-legacy/supabase/functions/media`
 
 ## Required Tests
 

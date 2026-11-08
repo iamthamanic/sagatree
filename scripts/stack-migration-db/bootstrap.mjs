@@ -36,16 +36,16 @@ export async function bootstrapSupabase(client, report) {
 }
 
 export async function applyRepositoryMigrations(client, report) {
-  const directory = join(repository, 'supabase/migrations');
+  const directory = join(repository, 'archive/supabase-legacy/supabase/migrations');
   const files = (await readdir(directory)).filter((name) => /^\d+.*\.sql$/.test(name)).sort();
   const applyScript = await readFile(join(repository, 'scripts/apply-migrations.sh'), 'utf8');
   const scripted = [...applyScript.matchAll(/^\s+(\d+[^\s]+\.sql)\s*$/gm)].map((match) => match[1]);
-  report.migrationOrder = 'All supabase/migrations/*.sql in lexicographic filename order';
+  report.migrationOrder = 'All archive/supabase-legacy/supabase/migrations/*.sql in lexicographic filename order';
   report.migrationsMissingFromApplyScript = files.filter((name) => !scripted.includes(name));
   report.migrations = [];
   for (const name of files) {
     const sql = await readFile(join(directory, name), 'utf8');
-    const row = { path: `supabase/migrations/${name}`, sha256: sha256(sql), status: 'running' };
+    const row = { path: `archive/supabase-legacy/supabase/migrations/${name}`, sha256: sha256(sql), status: 'running' };
     report.migrations.push(row);
     try {
       await client.query('BEGIN');

@@ -38,7 +38,7 @@ mustInclude('src/app/world/atlas/unified/prototype3d/atlas-prototype-runtime.mjs
   'seedState',
   'persist({bootstrap:true})',
 ]);
-mustInclude('supabase/migrations/106_atlas_get_map_overload_fix.sql', [
+mustInclude('archive/supabase-legacy/supabase/migrations/106_atlas_get_map_overload_fix.sql', [
   'DROP FUNCTION IF EXISTS public.get_world_atlas_map(UUID, BOOLEAN)',
   '#721',
 ]);

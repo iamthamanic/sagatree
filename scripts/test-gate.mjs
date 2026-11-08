@@ -48,7 +48,7 @@ function changedDenoFunctionFiles() {
     '--diff-filter=ACMR',
     `${base}..HEAD`,
     '--',
-    'supabase/functions',
+    'archive/supabase-legacy/supabase/functions',
   ]);
 
   return output
@@ -57,7 +57,7 @@ function changedDenoFunctionFiles() {
 }
 
 function trackedDenoTestFiles() {
-  const output = git(['ls-files', 'supabase/functions']);
+  const output = git(['ls-files', 'archive/supabase-legacy/supabase/functions']);
   return output
     ? output.split('\n').filter((path) => path.endsWith('_test.ts'))
     : [];
@@ -82,25 +82,9 @@ function runDeno(args, label) {
 }
 
 function checkChangedDenoFunctions() {
-  const files = changedDenoFunctionFiles();
-  if (files.length === 0) {
-    console.log('Deno Edge Function check skipped (no changed TypeScript files).');
-    return;
-  }
-
-  console.log(`Deno Edge Function check: ${files.length} changed TypeScript file(s).`);
-  runDeno(['check', ...files], 'Deno Edge Function check');
-  console.log('Deno Edge Function check passed.');
-
-  const testFiles = trackedDenoTestFiles();
-  if (testFiles.length === 0) {
-    console.log('Deno Edge Function tests skipped (no tracked *_test.ts files).');
-    return;
-  }
-
-  console.log(`Deno Edge Function tests: ${testFiles.length} test file(s).`);
-  runDeno(['test', ...testFiles], 'Deno Edge Function tests');
-  console.log('Deno Edge Function tests passed.');
+  // CUT-21 (#1156): Deno Edge runtime eradicated from the active stack.
+  // Historical sources live under archive/supabase-legacy/ and are not executed.
+  console.log('Deno Edge Function check skipped (CUT-21: no Deno product runtime).');
 }
 
 
@@ -1414,6 +1398,11 @@ function checkCut20LegacyClientBan() {
     stdio: 'inherit',
   });
   console.log('OK: cut-20-legacy-client-ban.self-test');
+  execFileSync(process.execPath, ['scripts/cut-21-eradicate-supabase.self-test.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
+  console.log('OK: cut-21-eradicate-supabase.self-test');
 }
 
 function checkFeHost12ProjectWrites() {

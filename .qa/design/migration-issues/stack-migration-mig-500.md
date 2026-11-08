@@ -23,8 +23,8 @@ Geschützte lokale Assets mit atomarem Publish und metadata-basierter Autorisier
 
 - Epic: #773; historische Baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`; keine Produktionszustandsbehauptung.
 - Verbindliche Architektur: `docs/architecture/migration-owner-decisions-2026-10-23.md`.
-- Quellpfade und bestehende Adapter: `supabase/functions/media`, `src/infrastructure/media`, `supabase/migrations`.
-- Source Contracts: `supabase/functions/media`, `src/infrastructure/media`, `supabase/migrations`.
+- Quellpfade und bestehende Adapter: `archive/supabase-legacy/supabase/functions/media`, `src/infrastructure/media`, `archive/supabase-legacy/supabase/migrations`.
+- Source Contracts: `archive/supabase-legacy/supabase/functions/media`, `src/infrastructure/media`, `archive/supabase-legacy/supabase/migrations`.
 - Zielverhalten: Binding product decisions: docs/architecture/migration-owner-decisions-2026-10-23.md; GATE-01 Drizzle+Policy, GATE-02 Cookie-A, GATE-03 Hono+Colyseus, GATE-04 SQLite single-writer. GATE-05 Tauri+sidecar selected; platform release pending..
 
 ## Scope
@@ -58,21 +58,21 @@ Out:
 - Gegeben: Ein autorisierter Upload und validierte Dateibytes
 - Wenn: validate→publish→metadata commit ausgeführt wird
 - Dann: Erst nach vollständiger Validierung wird das Asset sichtbar; DB-Metadaten und Dateiprüfsumme passen auch nach Host-Neustart zusammen.
-- Quelle: `supabase/functions/media`, `src/infrastructure/media`, `supabase/migrations`
+- Quelle: `archive/supabase-legacy/supabase/functions/media`, `src/infrastructure/media`, `archive/supabase-legacy/supabase/migrations`
 
 ### Fall 2
 
 - Gegeben: X kennt eine fremde Asset-ID oder sendet ../ bzw. einen Symlinkpfad
 - Wenn: Download oder Upload versucht wird
 - Dann: Der Zugriff endet mit 401/403 bzw. Validierungsfehler; keine Datei außerhalb des Asset-Roots wird gelesen oder überschrieben.
-- Quelle: `supabase/functions/media`, `src/infrastructure/media`, `supabase/migrations`
+- Quelle: `archive/supabase-legacy/supabase/functions/media`, `src/infrastructure/media`, `archive/supabase-legacy/supabase/migrations`
 
 ### Fall 3
 
 - Gegeben: Abbruch nach temporärer Datei und vor Metadaten-Commit
 - Wenn: Recovery und Cleanup laufen
 - Dann: Kein unvollständiges Asset gilt als veröffentlicht; temporäre Dateien werden nachvollziehbar bereinigt und bestätigte Dateien bleiben erhalten.
-- Quelle: `supabase/functions/media`, `src/infrastructure/media`, `supabase/migrations`
+- Quelle: `archive/supabase-legacy/supabase/functions/media`, `src/infrastructure/media`, `archive/supabase-legacy/supabase/migrations`
 
 ## Required Tests
 

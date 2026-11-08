@@ -57,7 +57,7 @@ mustInclude(
 );
 
 mustInclude(
-  'supabase/migrations/051_session_director_runtime.sql',
+  'archive/supabase-legacy/supabase/migrations/051_session_director_runtime.sql',
   [
     'sagadrive_resolve_cue_command',
     "'cue'",

@@ -25,7 +25,7 @@ function requireMatch(content, pattern, label) {
   if (!pattern.test(content)) fail(`missing ${label}`);
 }
 
-const migrationPath = 'supabase/migrations/062_session_recap_ai_summary.sql';
+const migrationPath = 'archive/supabase-legacy/supabase/migrations/062_session_recap_ai_summary.sql';
 if (!existsSync(join(root, migrationPath))) fail(`missing ${migrationPath}`);
 const migration = read(migrationPath);
 requireMatch(migration, /summary_status/i, 'summary_status column');
@@ -33,14 +33,14 @@ requireMatch(migration, /consume_session_recap_rate_limit/i, 'rate limit RPC');
 requireMatch(migration, /REVOKE ALL ON TABLE public\.session_recaps FROM anon, authenticated/i, 'revoke table SELECT');
 requireMatch(migration, /v_status IS DISTINCT FROM 'approved'/i, 'draft hidden from non-GM');
 
-const edge = read('supabase/functions/session-recap/index.ts');
+const edge = read('archive/supabase-legacy/supabase/functions/session-recap/index.ts');
 requireMatch(edge, /corsHeaders|handleOptions/i, 'shared CORS');
 requireMatch(edge, /consumePersistentSessionRecapRateLimit/i, 'rate limit consume');
 requireMatch(edge, /Client-Prompt-Payload/i, 'reject client prompt payload');
 requireMatch(edge, /buildSessionRecapPrompt/i, 'server prompt build');
 requireMatch(edge, /summary_status:\s*'draft'/i, 'persist draft');
 
-const sharedPrompt = read('supabase/functions/_shared/session-recap-prompt.ts');
+const sharedPrompt = read('archive/supabase-legacy/supabase/functions/_shared/session-recap-prompt.ts');
 requireMatch(sharedPrompt, /gm_only/i, 'spoiler filter');
 
 const domain = read('src/domains/session/contracts/episode-summary-prompt.ts');

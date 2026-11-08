@@ -23,7 +23,7 @@ main: Nur die aktuell eingebundenen Worker über den zentralen Dispatcher erreic
 
 - Epic: #773; historische Baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`; keine Produktionszustandsbehauptung.
 - Verbindliche Architektur: `docs/architecture/migration-owner-decisions-2026-10-23.md`.
-- Quellpfade und bestehende Adapter: `supabase/functions/_shared/edge-dispatcher-allowlist.ts`, `supabase/functions/_shared/edge-jwt-gate.ts`, `supabase/functions/main/index.ts`.
+- Quellpfade und bestehende Adapter: `archive/supabase-legacy/supabase/functions/_shared/edge-dispatcher-allowlist.ts`, `archive/supabase-legacy/supabase/functions/_shared/edge-jwt-gate.ts`, `archive/supabase-legacy/supabase/functions/main/index.ts`.
 - Source Contracts: `.qa/intake/edge-infra-contracts/edge-main.md`, `.qa/intake/edge-infra-contracts/source-contracts/edge-main.json`.
 - Zielverhalten: Binding product decisions: docs/architecture/migration-owner-decisions-2026-10-23.md; GATE-01 Drizzle+Policy, GATE-02 Cookie-A, GATE-03 Hono+Colyseus, GATE-04 SQLite single-writer. GATE-05 Tauri+sidecar selected; platform release pending..
 

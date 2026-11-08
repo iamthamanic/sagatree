@@ -12,7 +12,7 @@ import { fileURLToPath } from 'node:url';
 import process from 'node:process';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
-const migrationRel = 'supabase/migrations/086_rls_rulesets_world_graphs.sql';
+const migrationRel = 'archive/supabase-legacy/supabase/migrations/086_rls_rulesets_world_graphs.sql';
 
 function fail(msg) {
   console.error(`rls-open-tables-check failed: ${msg}`);

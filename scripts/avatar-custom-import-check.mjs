@@ -25,7 +25,7 @@ const editor = [
   read('src/app/character/edit/CharacterEditor.tsx'),
   read('src/app/character/edit/useCharacterAvatarEditor.ts'),
 ].join('\n');
-const migration = read('supabase/migrations/024_character_avatar_import.sql');
+const migration = read('archive/supabase-legacy/supabase/migrations/024_character_avatar_import.sql');
 
 check(/validateAvatarImportBytes/.test(domain), 'authoritative byte validator');
 check(/sniffGlbContainer/.test(domain), 'glTF magic sniff');
@@ -58,7 +58,7 @@ check(/modelUrl: importedModelUrl/.test(editor), 'passes model url into avatar d
 check(/AVATAR_IMPORT_MAX_BYTES = 150/.test(domain), 'import ceiling 150MB');
 check(/max\. 150 MB/.test(domain), 'import oversize message 150MB');
 check(/max\. 150 MB/.test(panel), 'panel copy 150MB');
-check(/157286400/.test(read('supabase/migrations/034_character_avatars_150mb.sql')), '034 raises bucket to 150MB');
+check(/157286400/.test(read('archive/supabase-legacy/supabase/migrations/034_character_avatars_150mb.sql')), '034 raises bucket to 150MB');
 check(/034_character_avatars_150mb\.sql/.test(read('scripts/apply-migrations.sh')), 'apply-migrations lists 034');
 
 check(/character-avatars/.test(migration), 'bucket migration');

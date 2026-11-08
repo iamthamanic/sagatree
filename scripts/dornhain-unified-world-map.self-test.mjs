@@ -30,7 +30,7 @@ assert(src.includes("isSettlementLodId"), 'settlement LOD helper');
 assert(src.includes("shouldUpgradeDornhainUnifiedToWorld"), 'upgrade detector');
 assert(src.includes("dornhain.unified.v2"), 'upgrade path includes v2');
 
-const mig = path.join(root, 'supabase/migrations/100_dornhain_unified_ocean_blank_v3.sql');
+const mig = path.join(root, 'archive/supabase-legacy/supabase/migrations/100_dornhain_unified_ocean_blank_v3.sql');
 assert(fs.existsSync(mig), 'migration 100 exists');
 const migSrc = fs.readFileSync(mig, 'utf8');
 assert(migSrc.includes('dornhain.unified.v3'), 'migration seeds v3');

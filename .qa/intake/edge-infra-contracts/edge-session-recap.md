@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [edge-session-recap.json](source-contracts/edge-session-recap.json) (SHA-256 `ce55d2d0b769febe24d6e6e5697ce22892b7161896e4555780a041e50bb78543`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [edge-session-recap.json](source-contracts/edge-session-recap.json) (SHA-256 `d86d23468cacd2f85cc8883aca368db89bd694fe120ae859ee0598b2dc477104`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Exposure and purpose
 
@@ -76,18 +76,18 @@ Auth10s, service fetch15s, quota10s, provider60s. SESSION_RECAP_AI_* overrides C
 
 Explicit abort call sites (dynamic values resolve in the linked helper declaration):
 
-- `supabase/functions/_shared/character-lore-provider.ts:82` — `AbortSignal.timeout(60_000)`
-- `supabase/functions/_shared/character-lore-provider.ts:111` — `AbortSignal.timeout(60_000)`
-- `supabase/functions/_shared/ollama-llm-resolve.ts:134` — `AbortSignal.timeout(10_000)`
-- `supabase/functions/_shared/session-recap-rate-limit.ts:50` — `AbortSignal.timeout(10_000)`
-- `supabase/functions/session-recap/index.ts:101` — `AbortSignal.timeout(10_000)`
-- `supabase/functions/session-recap/index.ts:124` — `AbortSignal.timeout(15_000)`
+- `archive/supabase-legacy/supabase/functions/_shared/character-lore-provider.ts:82` — `AbortSignal.timeout(60_000)`
+- `archive/supabase-legacy/supabase/functions/_shared/character-lore-provider.ts:111` — `AbortSignal.timeout(60_000)`
+- `archive/supabase-legacy/supabase/functions/_shared/ollama-llm-resolve.ts:134` — `AbortSignal.timeout(10_000)`
+- `archive/supabase-legacy/supabase/functions/_shared/session-recap-rate-limit.ts:50` — `AbortSignal.timeout(10_000)`
+- `archive/supabase-legacy/supabase/functions/session-recap/index.ts:101` — `AbortSignal.timeout(10_000)`
+- `archive/supabase-legacy/supabase/functions/session-recap/index.ts:124` — `AbortSignal.timeout(15_000)`
 
 ## Exact environment defaults and configuration resolution
 
 ### resolveCharacterLoreProviderConfig
 
-`supabase/functions/_shared/character-lore-provider.ts:16`
+`archive/supabase-legacy/supabase/functions/_shared/character-lore-provider.ts:16`
 
 ```ts
 export function resolveCharacterLoreProviderConfig(): CharacterLoreProviderConfig | null {
@@ -125,7 +125,7 @@ export function resolveCharacterLoreProviderConfig(): CharacterLoreProviderConfi
 
 ### DEFAULT_CORS_METHODS
 
-`supabase/functions/_shared/cors.ts:9`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:9`
 
 ```ts
 DEFAULT_CORS_METHODS = 'GET, POST, PUT, DELETE, OPTIONS'
@@ -133,7 +133,7 @@ DEFAULT_CORS_METHODS = 'GET, POST, PUT, DELETE, OPTIONS'
 
 ### DEFAULT_CORS_ALLOW_HEADERS
 
-`supabase/functions/_shared/cors.ts:10`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:10`
 
 ```ts
 DEFAULT_CORS_ALLOW_HEADERS =
@@ -142,7 +142,7 @@ DEFAULT_CORS_ALLOW_HEADERS =
 
 ### readConfiguredOrigin
 
-`supabase/functions/_shared/cors.ts:34`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:34`
 
 ```ts
 function readConfiguredOrigin(envKeys: string[]): string {
@@ -156,7 +156,7 @@ function readConfiguredOrigin(envKeys: string[]): string {
 
 ### envDefaultModel
 
-`supabase/functions/_shared/ollama-llm-resolve.ts:58`
+`archive/supabase-legacy/supabase/functions/_shared/ollama-llm-resolve.ts:58`
 
 ```ts
 export function envDefaultModel(
@@ -168,7 +168,7 @@ export function envDefaultModel(
 
 ### buildEnvSettingsView
 
-`supabase/functions/_shared/ollama-llm-resolve.ts:64`
+`archive/supabase-legacy/supabase/functions/_shared/ollama-llm-resolve.ts:64`
 
 ```ts
 export function buildEnvSettingsView(
@@ -196,7 +196,7 @@ export function buildEnvSettingsView(
 
 ### loadOllamaSettingsForUser
 
-`supabase/functions/_shared/ollama-llm-resolve.ts:117`
+`archive/supabase-legacy/supabase/functions/_shared/ollama-llm-resolve.ts:117`
 
 ```ts
 export async function loadOllamaSettingsForUser(
@@ -271,7 +271,7 @@ export async function loadOllamaSettingsForUser(
 
 ### toSettingsView
 
-`supabase/functions/_shared/ollama-llm-resolve.ts:186`
+`archive/supabase-legacy/supabase/functions/_shared/ollama-llm-resolve.ts:186`
 
 ```ts
 export function toSettingsView(
@@ -297,7 +297,7 @@ export function toSettingsView(
 
 ### defaultLocalOllamaBase
 
-`supabase/functions/_shared/ollama-url-policy.ts:127`
+`archive/supabase-legacy/supabase/functions/_shared/ollama-url-policy.ts:127`
 
 ```ts
 export function defaultLocalOllamaBase(
@@ -315,7 +315,7 @@ export function defaultLocalOllamaBase(
 
 ### resolveSessionRecapProviderConfig
 
-`supabase/functions/_shared/session-recap-provider.ts:17`
+`archive/supabase-legacy/supabase/functions/_shared/session-recap-provider.ts:17`
 
 ```ts
 export function resolveSessionRecapProviderConfig(): CharacterLoreProviderConfig | null {
@@ -371,7 +371,7 @@ export function resolveSessionRecapProviderConfig(): CharacterLoreProviderConfig
 
 ### CORS_OPTS
 
-`supabase/functions/session-recap/index.ts:32`
+`archive/supabase-legacy/supabase/functions/session-recap/index.ts:32`
 
 ```ts
 CORS_OPTS: CorsOptions = {
@@ -382,7 +382,7 @@ CORS_OPTS: CorsOptions = {
 
 ### DEFAULT_RATE_LIMIT
 
-`supabase/functions/session-recap/index.ts:38`
+`archive/supabase-legacy/supabase/functions/session-recap/index.ts:38`
 
 ```ts
 DEFAULT_RATE_LIMIT = 6
@@ -390,7 +390,7 @@ DEFAULT_RATE_LIMIT = 6
 
 ### getRateLimit
 
-`supabase/functions/session-recap/index.ts:66`
+`archive/supabase-legacy/supabase/functions/session-recap/index.ts:66`
 
 ```ts
 function getRateLimit(): number {
@@ -408,7 +408,7 @@ function getRateLimit(): number {
 
 ### getSupabaseConfig
 
-`supabase/functions/session-recap/index.ts:78`
+`archive/supabase-legacy/supabase/functions/session-recap/index.ts:78`
 
 ```ts
 function getSupabaseConfig(): SupabaseConfig | null {
@@ -472,7 +472,7 @@ No src/infrastructure caller in the reviewed branch. This does not authorize add
 
 ### session-recap:handler
 
-Predicate: `Complete handler with ordered method/auth/body guards`. Source: `supabase/functions/session-recap/index.ts:145`.
+Predicate: `Complete handler with ordered method/auth/body guards`. Source: `archive/supabase-legacy/supabase/functions/session-recap/index.ts:145`.
 
 
 ```ts
@@ -746,7 +746,7 @@ serve(async (request: Request) => {
 
 ### CharacterLoreRuleset
 
-`supabase/functions/_shared/character-lore-prompt.ts:1`
+`archive/supabase-legacy/supabase/functions/_shared/character-lore-prompt.ts:1`
 
 ```ts
 export type CharacterLoreRuleset = 'sagatree-core' | 'dnd-5.5e';
@@ -754,7 +754,7 @@ export type CharacterLoreRuleset = 'sagatree-core' | 'dnd-5.5e';
 
 ### CharacterLorePromptContext
 
-`supabase/functions/_shared/character-lore-prompt.ts:3`
+`archive/supabase-legacy/supabase/functions/_shared/character-lore-prompt.ts:3`
 
 ```ts
 export interface CharacterLorePromptContext {
@@ -809,7 +809,7 @@ export interface CharacterLorePromptContext {
 
 ### CharacterLoreReferenceContext
 
-`supabase/functions/_shared/character-lore-prompt.ts:52`
+`archive/supabase-legacy/supabase/functions/_shared/character-lore-prompt.ts:52`
 
 ```ts
 export interface CharacterLoreReferenceContext {
@@ -823,7 +823,7 @@ export interface CharacterLoreReferenceContext {
 
 ### CharacterLorePrompt
 
-`supabase/functions/_shared/character-lore-prompt.ts:60`
+`archive/supabase-legacy/supabase/functions/_shared/character-lore-prompt.ts:60`
 
 ```ts
 export interface CharacterLorePrompt {
@@ -835,7 +835,7 @@ export interface CharacterLorePrompt {
 
 ### CharacterLoreProviderName
 
-`supabase/functions/_shared/character-lore-provider.ts:3`
+`archive/supabase-legacy/supabase/functions/_shared/character-lore-provider.ts:3`
 
 ```ts
 export type CharacterLoreProviderName = 'openai-compatible' | 'ollama';
@@ -843,7 +843,7 @@ export type CharacterLoreProviderName = 'openai-compatible' | 'ollama';
 
 ### CharacterLoreProviderConfig
 
-`supabase/functions/_shared/character-lore-provider.ts:5`
+`archive/supabase-legacy/supabase/functions/_shared/character-lore-provider.ts:5`
 
 ```ts
 export interface CharacterLoreProviderConfig {
@@ -856,7 +856,7 @@ export interface CharacterLoreProviderConfig {
 
 ### PrivilegedClientBodyKey
 
-`supabase/functions/_shared/client-trust-body.ts:20`
+`archive/supabase-legacy/supabase/functions/_shared/client-trust-body.ts:20`
 
 ```ts
 export type PrivilegedClientBodyKey = (typeof PRIVILEGED_CLIENT_BODY_KEYS)[number];
@@ -864,7 +864,7 @@ export type PrivilegedClientBodyKey = (typeof PRIVILEGED_CLIENT_BODY_KEYS)[numbe
 
 ### CorsOptions
 
-`supabase/functions/_shared/cors.ts:13`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:13`
 
 ```ts
 export type CorsOptions = {
@@ -891,7 +891,7 @@ export type CorsOptions = {
 
 ### OllamaSettingsView
 
-`supabase/functions/_shared/ollama-llm-resolve.ts:21`
+`archive/supabase-legacy/supabase/functions/_shared/ollama-llm-resolve.ts:21`
 
 ```ts
 export interface OllamaSettingsView {
@@ -910,7 +910,7 @@ export interface OllamaSettingsView {
 
 ### OllamaSettingsStored
 
-`supabase/functions/_shared/ollama-llm-resolve.ts:34`
+`archive/supabase-legacy/supabase/functions/_shared/ollama-llm-resolve.ts:34`
 
 ```ts
 export interface OllamaSettingsStored {
@@ -927,7 +927,7 @@ export interface OllamaSettingsStored {
 
 ### SupabaseServiceConfig
 
-`supabase/functions/_shared/ollama-llm-resolve.ts:45`
+`archive/supabase-legacy/supabase/functions/_shared/ollama-llm-resolve.ts:45`
 
 ```ts
 export interface SupabaseServiceConfig {
@@ -938,7 +938,7 @@ export interface SupabaseServiceConfig {
 
 ### SafeUrlResult
 
-`supabase/functions/_shared/ollama-url-policy.ts:68`
+`archive/supabase-legacy/supabase/functions/_shared/ollama-url-policy.ts:68`
 
 ```ts
 export type SafeUrlResult =
@@ -948,7 +948,7 @@ export type SafeUrlResult =
 
 ### SessionRecapPromptLine
 
-`supabase/functions/_shared/session-recap-prompt.ts:6`
+`archive/supabase-legacy/supabase/functions/_shared/session-recap-prompt.ts:6`
 
 ```ts
 export type SessionRecapPromptLine = {
@@ -961,7 +961,7 @@ export type SessionRecapPromptLine = {
 
 ### SessionRecapPrompt
 
-`supabase/functions/_shared/session-recap-prompt.ts:13`
+`archive/supabase-legacy/supabase/functions/_shared/session-recap-prompt.ts:13`
 
 ```ts
 export type SessionRecapPrompt = {
@@ -974,7 +974,7 @@ export type SessionRecapPrompt = {
 
 ### SessionRecapRateLimitConfig
 
-`supabase/functions/_shared/session-recap-rate-limit.ts:6`
+`archive/supabase-legacy/supabase/functions/_shared/session-recap-rate-limit.ts:6`
 
 ```ts
 export interface SessionRecapRateLimitConfig {
@@ -987,7 +987,7 @@ export interface SessionRecapRateLimitConfig {
 
 ### FetchLike
 
-`supabase/functions/_shared/session-recap-rate-limit.ts:13`
+`archive/supabase-legacy/supabase/functions/_shared/session-recap-rate-limit.ts:13`
 
 ```ts
 type FetchLike = (
@@ -998,7 +998,7 @@ type FetchLike = (
 
 ### JsonRecord
 
-`supabase/functions/session-recap/index.ts:30`
+`archive/supabase-legacy/supabase/functions/session-recap/index.ts:30`
 
 ```ts
 type JsonRecord = Record<string, unknown>;
@@ -1006,7 +1006,7 @@ type JsonRecord = Record<string, unknown>;
 
 ### SupabaseConfig
 
-`supabase/functions/session-recap/index.ts:42`
+`archive/supabase-legacy/supabase/functions/session-recap/index.ts:42`
 
 ```ts
 interface SupabaseConfig {
@@ -1021,7 +1021,7 @@ interface SupabaseConfig {
 
 ### parseCredentialsEncryptionKey
 
-`supabase/functions/_shared/ai-provider-crypto.ts:25`
+`archive/supabase-legacy/supabase/functions/_shared/ai-provider-crypto.ts:25`
 
 ```ts
 export function parseCredentialsEncryptionKey(
@@ -1062,7 +1062,7 @@ export function parseCredentialsEncryptionKey(
 
 ### buildCharacterLorePrompt
 
-`supabase/functions/_shared/character-lore-prompt.ts:83`
+`archive/supabase-legacy/supabase/functions/_shared/character-lore-prompt.ts:83`
 
 ```ts
 export function buildCharacterLorePrompt(
@@ -1111,7 +1111,7 @@ export function buildCharacterLorePrompt(
 
 ### DEFAULT_CORS_METHODS
 
-`supabase/functions/_shared/cors.ts:9`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:9`
 
 ```ts
 DEFAULT_CORS_METHODS = 'GET, POST, PUT, DELETE, OPTIONS'
@@ -1119,7 +1119,7 @@ DEFAULT_CORS_METHODS = 'GET, POST, PUT, DELETE, OPTIONS'
 
 ### DEFAULT_CORS_ALLOW_HEADERS
 
-`supabase/functions/_shared/cors.ts:10`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:10`
 
 ```ts
 DEFAULT_CORS_ALLOW_HEADERS =
@@ -1128,7 +1128,7 @@ DEFAULT_CORS_ALLOW_HEADERS =
 
 ### parseIpv4
 
-`supabase/functions/_shared/ollama-url-policy.ts:25`
+`archive/supabase-legacy/supabase/functions/_shared/ollama-url-policy.ts:25`
 
 ```ts
 function parseIpv4(host: string): [number, number, number, number] | null {
@@ -1143,7 +1143,7 @@ function parseIpv4(host: string): [number, number, number, number] | null {
 
 ### buildSessionRecapPrompt
 
-`supabase/functions/_shared/session-recap-prompt.ts:33`
+`archive/supabase-legacy/supabase/functions/_shared/session-recap-prompt.ts:33`
 
 ```ts
 export function buildSessionRecapPrompt(input: {
@@ -1173,7 +1173,7 @@ export function buildSessionRecapPrompt(input: {
 
 ### RATE_LIMIT_RPC
 
-`supabase/functions/_shared/session-recap-rate-limit.ts:18`
+`archive/supabase-legacy/supabase/functions/_shared/session-recap-rate-limit.ts:18`
 
 ```ts
 RATE_LIMIT_RPC = '/rest/v1/rpc/consume_session_recap_rate_limit'
@@ -1181,7 +1181,7 @@ RATE_LIMIT_RPC = '/rest/v1/rpc/consume_session_recap_rate_limit'
 
 ### CORS_OPTS
 
-`supabase/functions/session-recap/index.ts:32`
+`archive/supabase-legacy/supabase/functions/session-recap/index.ts:32`
 
 ```ts
 CORS_OPTS: CorsOptions = {
@@ -1192,7 +1192,7 @@ CORS_OPTS: CorsOptions = {
 
 ### RATE_LIMIT_WINDOW_SECONDS
 
-`supabase/functions/session-recap/index.ts:37`
+`archive/supabase-legacy/supabase/functions/session-recap/index.ts:37`
 
 ```ts
 RATE_LIMIT_WINDOW_SECONDS = 60
@@ -1200,7 +1200,7 @@ RATE_LIMIT_WINDOW_SECONDS = 60
 
 ### DEFAULT_RATE_LIMIT
 
-`supabase/functions/session-recap/index.ts:38`
+`archive/supabase-legacy/supabase/functions/session-recap/index.ts:38`
 
 ```ts
 DEFAULT_RATE_LIMIT = 6
@@ -1208,7 +1208,7 @@ DEFAULT_RATE_LIMIT = 6
 
 ### MAX_SUMMARY_LENGTH
 
-`supabase/functions/session-recap/index.ts:39`
+`archive/supabase-legacy/supabase/functions/session-recap/index.ts:39`
 
 ```ts
 MAX_SUMMARY_LENGTH = 4_000
@@ -1216,7 +1216,7 @@ MAX_SUMMARY_LENGTH = 4_000
 
 ### MAX_REQUEST_BYTES
 
-`supabase/functions/session-recap/index.ts:40`
+`archive/supabase-legacy/supabase/functions/session-recap/index.ts:40`
 
 ```ts
 MAX_REQUEST_BYTES = 8_000
@@ -1224,7 +1224,7 @@ MAX_REQUEST_BYTES = 8_000
 
 ### parseHighlightLines
 
-`supabase/functions/session-recap/index.ts:128`
+`archive/supabase-legacy/supabase/functions/session-recap/index.ts:128`
 
 ```ts
 function parseHighlightLines(raw: unknown): SessionRecapPromptLine[] {
@@ -1250,18 +1250,18 @@ function parseHighlightLines(raw: unknown): SessionRecapPromptLine[] {
 
 | Path | SHA-256 |
 |---|---|
-| `supabase/functions/_shared/ai-provider-crypto.ts` | `45e60f76f744077e8d9b243719dcdba5d58a047d36a1c141df830afa2de16532` |
-| `supabase/functions/_shared/character-lore-prompt.ts` | `54fffb4ba316515dff7add1998b2d6f02280ddc336c30e48d2a4ee045a60f818` |
-| `supabase/functions/_shared/character-lore-provider.ts` | `355c8635d417fd31f9f2afb93e2ae4fe9f26ddeadaf6c2986a74f0201fb5479e` |
-| `supabase/functions/_shared/client-trust-body.ts` | `33c68553dbd89d9c7899520b0ebfa35c4f245ed8ab8ebd242c6f79e9852add95` |
-| `supabase/functions/_shared/cors.ts` | `f8286c91d79fa5fc5cfea2fa47081916523fa7a440f234aecd9a47c6a8cf5b38` |
-| `supabase/functions/_shared/edge-dispatcher-allowlist.ts` | `6d1ae7bde0ba9e41fcaa7b61247732168a62699e7811fb8574cef266cfad3a27` |
-| `supabase/functions/_shared/edge-jwt-gate.ts` | `14a871697b051b7fcbee09dbce1dee8bc8ed5ea6a6eca0bec7b2e771b32d0f0c` |
-| `supabase/functions/_shared/ollama-llm-resolve.ts` | `e2874b05f38eac54d99abfca1b239138b4f95fece2011224f359bcfda9be99b3` |
-| `supabase/functions/_shared/ollama-url-policy.ts` | `864eddb8138fabb9964a92dd948746829d8b09de5f741642b61fb2eb792c4fc1` |
-| `supabase/functions/_shared/session-recap-prompt.ts` | `47a57972e45abe456517d714b0e128288167fdeffb6a98c22f258507249dd00d` |
-| `supabase/functions/_shared/session-recap-provider.ts` | `01f140b2bc6a9f13fa53681a16304c38fe71e74d8167d7ce8487fc31e6a32d80` |
-| `supabase/functions/_shared/session-recap-rate-limit.ts` | `bd67b9f9969d139c784b1febee3d59cac29b029c0df010764f60779ba443501b` |
-| `supabase/functions/main/index.ts` | `92f3bf56bf3c776e01595d980246079c4a9f8775e417959abea9d7da003bc53e` |
-| `supabase/functions/session-recap/index.ts` | `cf8e7b651789373626e5175890c46e22cd887805a916cb3d6205872ccaac6a19` |
+| `archive/supabase-legacy/supabase/functions/_shared/ai-provider-crypto.ts` | `45e60f76f744077e8d9b243719dcdba5d58a047d36a1c141df830afa2de16532` |
+| `archive/supabase-legacy/supabase/functions/_shared/character-lore-prompt.ts` | `54fffb4ba316515dff7add1998b2d6f02280ddc336c30e48d2a4ee045a60f818` |
+| `archive/supabase-legacy/supabase/functions/_shared/character-lore-provider.ts` | `355c8635d417fd31f9f2afb93e2ae4fe9f26ddeadaf6c2986a74f0201fb5479e` |
+| `archive/supabase-legacy/supabase/functions/_shared/client-trust-body.ts` | `33c68553dbd89d9c7899520b0ebfa35c4f245ed8ab8ebd242c6f79e9852add95` |
+| `archive/supabase-legacy/supabase/functions/_shared/cors.ts` | `f8286c91d79fa5fc5cfea2fa47081916523fa7a440f234aecd9a47c6a8cf5b38` |
+| `archive/supabase-legacy/supabase/functions/_shared/edge-dispatcher-allowlist.ts` | `6d1ae7bde0ba9e41fcaa7b61247732168a62699e7811fb8574cef266cfad3a27` |
+| `archive/supabase-legacy/supabase/functions/_shared/edge-jwt-gate.ts` | `14a871697b051b7fcbee09dbce1dee8bc8ed5ea6a6eca0bec7b2e771b32d0f0c` |
+| `archive/supabase-legacy/supabase/functions/_shared/ollama-llm-resolve.ts` | `e2874b05f38eac54d99abfca1b239138b4f95fece2011224f359bcfda9be99b3` |
+| `archive/supabase-legacy/supabase/functions/_shared/ollama-url-policy.ts` | `864eddb8138fabb9964a92dd948746829d8b09de5f741642b61fb2eb792c4fc1` |
+| `archive/supabase-legacy/supabase/functions/_shared/session-recap-prompt.ts` | `47a57972e45abe456517d714b0e128288167fdeffb6a98c22f258507249dd00d` |
+| `archive/supabase-legacy/supabase/functions/_shared/session-recap-provider.ts` | `01f140b2bc6a9f13fa53681a16304c38fe71e74d8167d7ce8487fc31e6a32d80` |
+| `archive/supabase-legacy/supabase/functions/_shared/session-recap-rate-limit.ts` | `bd67b9f9969d139c784b1febee3d59cac29b029c0df010764f60779ba443501b` |
+| `archive/supabase-legacy/supabase/functions/main/index.ts` | `92f3bf56bf3c776e01595d980246079c4a9f8775e417959abea9d7da003bc53e` |
+| `archive/supabase-legacy/supabase/functions/session-recap/index.ts` | `cf8e7b651789373626e5175890c46e22cd887805a916cb3d6205872ccaac6a19` |
 

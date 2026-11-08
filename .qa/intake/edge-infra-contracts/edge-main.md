@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [edge-main.json](source-contracts/edge-main.json) (SHA-256 `7610848e701b2406f9bb5b044ad87511df514653dce15e55f24a1793d57d5e2b`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [edge-main.json](source-contracts/edge-main.json) (SHA-256 `61be4cb04183db69f867852e21f42aab1b386e549a649e1cc1f1daab03666180`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Exposure and purpose
 
@@ -55,7 +55,7 @@ None in the reviewed source.
 
 ### isJwtVerificationEnabled
 
-`supabase/functions/_shared/edge-jwt-gate.ts:25`
+`archive/supabase-legacy/supabase/functions/_shared/edge-jwt-gate.ts:25`
 
 ```ts
 export function isJwtVerificationEnabled(
@@ -70,7 +70,7 @@ export function isJwtVerificationEnabled(
 
 ### gateEdgeRequestJwt
 
-`supabase/functions/_shared/edge-jwt-gate.ts:92`
+`archive/supabase-legacy/supabase/functions/_shared/edge-jwt-gate.ts:92`
 
 ```ts
 export async function gateEdgeRequestJwt(
@@ -140,7 +140,7 @@ No src/infrastructure caller in the reviewed branch. This does not authorize add
 
 ### main:handler
 
-Predicate: `Complete handler with ordered method/auth/body guards`. Source: `supabase/functions/main/index.ts:56`.
+Predicate: `Complete handler with ordered method/auth/body guards`. Source: `archive/supabase-legacy/supabase/functions/main/index.ts:56`.
 
 
 ```ts
@@ -201,7 +201,7 @@ serve(async (req: Request) => {
 
 ### EdgeDispatcherAllowedName
 
-`supabase/functions/_shared/edge-dispatcher-allowlist.ts:22`
+`archive/supabase-legacy/supabase/functions/_shared/edge-dispatcher-allowlist.ts:22`
 
 ```ts
 export type EdgeDispatcherAllowedName = (typeof EDGE_DISPATCHER_ALLOWLIST)[number];
@@ -216,7 +216,7 @@ All inline guards are in the ordered handler; remaining imported helpers are com
 
 | Path | SHA-256 |
 |---|---|
-| `supabase/functions/_shared/edge-dispatcher-allowlist.ts` | `6d1ae7bde0ba9e41fcaa7b61247732168a62699e7811fb8574cef266cfad3a27` |
-| `supabase/functions/_shared/edge-jwt-gate.ts` | `14a871697b051b7fcbee09dbce1dee8bc8ed5ea6a6eca0bec7b2e771b32d0f0c` |
-| `supabase/functions/main/index.ts` | `92f3bf56bf3c776e01595d980246079c4a9f8775e417959abea9d7da003bc53e` |
+| `archive/supabase-legacy/supabase/functions/_shared/edge-dispatcher-allowlist.ts` | `6d1ae7bde0ba9e41fcaa7b61247732168a62699e7811fb8574cef266cfad3a27` |
+| `archive/supabase-legacy/supabase/functions/_shared/edge-jwt-gate.ts` | `14a871697b051b7fcbee09dbce1dee8bc8ed5ea6a6eca0bec7b2e771b32d0f0c` |
+| `archive/supabase-legacy/supabase/functions/main/index.ts` | `92f3bf56bf3c776e01595d980246079c4a9f8775e417959abea9d7da003bc53e` |
 

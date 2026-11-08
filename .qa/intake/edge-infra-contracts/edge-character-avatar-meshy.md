@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [edge-character-avatar-meshy.json](source-contracts/edge-character-avatar-meshy.json) (SHA-256 `3f3753720d2a1dc0c75ab8719db4de505bb0b358aaa8ad603e4d8734968c88e8`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [edge-character-avatar-meshy.json](source-contracts/edge-character-avatar-meshy.json) (SHA-256 `9a68af8c5b689d2462419c5fb5c172de6bb50e777d93754982e737d1a96bcda6`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Exposure and purpose
 
@@ -71,25 +71,25 @@ Auth10s and BYOK lookup10s. Meshy create/remesh/rig create30s, task polls20s; GL
 
 Explicit abort call sites (dynamic values resolve in the linked helper declaration):
 
-- `supabase/functions/_shared/ai-provider-resolve-meshy.ts:45` — `AbortSignal.timeout(10_000)`
-- `supabase/functions/_shared/ai-provider-resolve-meshy.ts:99` — `AbortSignal.timeout(10_000)`
-- `supabase/functions/_shared/avatar-meshy-remesh.ts:98` — `AbortSignal.timeout(30_000)`
-- `supabase/functions/_shared/avatar-meshy-remesh.ts:116` — `AbortSignal.timeout(20_000)`
-- `supabase/functions/_shared/avatar-meshy-rigging.ts:117` — `AbortSignal.timeout(30_000)`
-- `supabase/functions/_shared/avatar-meshy-rigging.ts:135` — `AbortSignal.timeout(20_000)`
-- `supabase/functions/_shared/avatar-meshy-text-to-3d.ts:121` — `AbortSignal.timeout(30_000)`
-- `supabase/functions/_shared/avatar-meshy-text-to-3d.ts:139` — `AbortSignal.timeout(20_000)`
-- `supabase/functions/_shared/item-model3d-glb.ts:122` — `AbortSignal.timeout(timeoutMs)`
-- `supabase/functions/_shared/item-model3d-glb.ts:211` — `AbortSignal.timeout(timeoutMs)`
-- `supabase/functions/_shared/item-model3d-meshy.ts:183` — `AbortSignal.timeout(30_000)`
-- `supabase/functions/_shared/item-model3d-meshy.ts:203` — `AbortSignal.timeout(20_000)`
-- `supabase/functions/character-avatar-meshy/index.ts:256` — `AbortSignal.timeout(10_000)`
+- `archive/supabase-legacy/supabase/functions/_shared/ai-provider-resolve-meshy.ts:45` — `AbortSignal.timeout(10_000)`
+- `archive/supabase-legacy/supabase/functions/_shared/ai-provider-resolve-meshy.ts:99` — `AbortSignal.timeout(10_000)`
+- `archive/supabase-legacy/supabase/functions/_shared/avatar-meshy-remesh.ts:98` — `AbortSignal.timeout(30_000)`
+- `archive/supabase-legacy/supabase/functions/_shared/avatar-meshy-remesh.ts:116` — `AbortSignal.timeout(20_000)`
+- `archive/supabase-legacy/supabase/functions/_shared/avatar-meshy-rigging.ts:117` — `AbortSignal.timeout(30_000)`
+- `archive/supabase-legacy/supabase/functions/_shared/avatar-meshy-rigging.ts:135` — `AbortSignal.timeout(20_000)`
+- `archive/supabase-legacy/supabase/functions/_shared/avatar-meshy-text-to-3d.ts:121` — `AbortSignal.timeout(30_000)`
+- `archive/supabase-legacy/supabase/functions/_shared/avatar-meshy-text-to-3d.ts:139` — `AbortSignal.timeout(20_000)`
+- `archive/supabase-legacy/supabase/functions/_shared/item-model3d-glb.ts:122` — `AbortSignal.timeout(timeoutMs)`
+- `archive/supabase-legacy/supabase/functions/_shared/item-model3d-glb.ts:211` — `AbortSignal.timeout(timeoutMs)`
+- `archive/supabase-legacy/supabase/functions/_shared/item-model3d-meshy.ts:183` — `AbortSignal.timeout(30_000)`
+- `archive/supabase-legacy/supabase/functions/_shared/item-model3d-meshy.ts:203` — `AbortSignal.timeout(20_000)`
+- `archive/supabase-legacy/supabase/functions/character-avatar-meshy/index.ts:256` — `AbortSignal.timeout(10_000)`
 
 ## Exact environment defaults and configuration resolution
 
 ### hostAiProviderKeysAllowed
 
-`supabase/functions/_shared/ai-provider-resolve-meshy.ts:19`
+`archive/supabase-legacy/supabase/functions/_shared/ai-provider-resolve-meshy.ts:19`
 
 ```ts
 export function hostAiProviderKeysAllowed(
@@ -101,7 +101,7 @@ export function hostAiProviderKeysAllowed(
 
 ### resolveHostMeshyApiKey
 
-`supabase/functions/_shared/ai-provider-resolve-meshy.ts:25`
+`archive/supabase-legacy/supabase/functions/_shared/ai-provider-resolve-meshy.ts:25`
 
 ```ts
 export function resolveHostMeshyApiKey(
@@ -115,7 +115,7 @@ export function resolveHostMeshyApiKey(
 
 ### resolveMeshyApiKeyForUser
 
-`supabase/functions/_shared/ai-provider-resolve-meshy.ts:57`
+`archive/supabase-legacy/supabase/functions/_shared/ai-provider-resolve-meshy.ts:57`
 
 ```ts
 export async function resolveMeshyApiKeyForUser(
@@ -145,7 +145,7 @@ export async function resolveMeshyApiKeyForUser(
 
 ### isMeshyConfiguredForUser
 
-`supabase/functions/_shared/ai-provider-resolve-meshy.ts:82`
+`archive/supabase-legacy/supabase/functions/_shared/ai-provider-resolve-meshy.ts:82`
 
 ```ts
 export async function isMeshyConfiguredForUser(
@@ -179,7 +179,7 @@ export async function isMeshyConfiguredForUser(
 
 ### DEFAULT_RECOMMENDED_SETTINGS
 
-`supabase/functions/_shared/avatar-3d-generation.ts:46`
+`archive/supabase-legacy/supabase/functions/_shared/avatar-3d-generation.ts:46`
 
 ```ts
 DEFAULT_RECOMMENDED_SETTINGS: Avatar3dGenerationSettings = {
@@ -200,7 +200,7 @@ DEFAULT_RECOMMENDED_SETTINGS: Avatar3dGenerationSettings = {
 
 ### DEFAULT_REMESH_BASE
 
-`supabase/functions/_shared/avatar-meshy-remesh.ts:64`
+`archive/supabase-legacy/supabase/functions/_shared/avatar-meshy-remesh.ts:64`
 
 ```ts
 DEFAULT_REMESH_BASE = 'https://api.meshy.ai/openapi/v1'
@@ -208,7 +208,7 @@ DEFAULT_REMESH_BASE = 'https://api.meshy.ai/openapi/v1'
 
 ### DEFAULT_RIGGING_BASE
 
-`supabase/functions/_shared/avatar-meshy-rigging.ts:75`
+`archive/supabase-legacy/supabase/functions/_shared/avatar-meshy-rigging.ts:75`
 
 ```ts
 DEFAULT_RIGGING_BASE = 'https://api.meshy.ai/openapi/v1'
@@ -216,7 +216,7 @@ DEFAULT_RIGGING_BASE = 'https://api.meshy.ai/openapi/v1'
 
 ### DEFAULT_BASE
 
-`supabase/functions/_shared/avatar-meshy-text-to-3d.ts:34`
+`archive/supabase-legacy/supabase/functions/_shared/avatar-meshy-text-to-3d.ts:34`
 
 ```ts
 DEFAULT_BASE = 'https://api.meshy.ai/openapi/v2'
@@ -224,7 +224,7 @@ DEFAULT_BASE = 'https://api.meshy.ai/openapi/v2'
 
 ### resolveMeshyTextTo3dConfig
 
-`supabase/functions/_shared/avatar-meshy-text-to-3d.ts:54`
+`archive/supabase-legacy/supabase/functions/_shared/avatar-meshy-text-to-3d.ts:54`
 
 ```ts
 export function resolveMeshyTextTo3dConfig(
@@ -245,7 +245,7 @@ export function resolveMeshyTextTo3dConfig(
 
 ### DEFAULT_CORS_METHODS
 
-`supabase/functions/_shared/cors.ts:9`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:9`
 
 ```ts
 DEFAULT_CORS_METHODS = 'GET, POST, PUT, DELETE, OPTIONS'
@@ -253,7 +253,7 @@ DEFAULT_CORS_METHODS = 'GET, POST, PUT, DELETE, OPTIONS'
 
 ### DEFAULT_CORS_ALLOW_HEADERS
 
-`supabase/functions/_shared/cors.ts:10`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:10`
 
 ```ts
 DEFAULT_CORS_ALLOW_HEADERS =
@@ -262,7 +262,7 @@ DEFAULT_CORS_ALLOW_HEADERS =
 
 ### readConfiguredOrigin
 
-`supabase/functions/_shared/cors.ts:34`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:34`
 
 ```ts
 function readConfiguredOrigin(envKeys: string[]): string {
@@ -276,7 +276,7 @@ function readConfiguredOrigin(envKeys: string[]): string {
 
 ### DEFAULT_BASE
 
-`supabase/functions/_shared/item-model3d-meshy.ts:52`
+`archive/supabase-legacy/supabase/functions/_shared/item-model3d-meshy.ts:52`
 
 ```ts
 DEFAULT_BASE = 'https://api.meshy.ai/openapi/v1'
@@ -284,7 +284,7 @@ DEFAULT_BASE = 'https://api.meshy.ai/openapi/v1'
 
 ### DEFAULT_MODEL
 
-`supabase/functions/_shared/item-model3d-meshy.ts:53`
+`archive/supabase-legacy/supabase/functions/_shared/item-model3d-meshy.ts:53`
 
 ```ts
 DEFAULT_MODEL = 'latest'
@@ -292,7 +292,7 @@ DEFAULT_MODEL = 'latest'
 
 ### resolveMeshyImageTo3dConfig
 
-`supabase/functions/_shared/item-model3d-meshy.ts:60`
+`archive/supabase-legacy/supabase/functions/_shared/item-model3d-meshy.ts:60`
 
 ```ts
 export function resolveMeshyImageTo3dConfig(
@@ -313,7 +313,7 @@ export function resolveMeshyImageTo3dConfig(
 
 ### CORS_OPTS
 
-`supabase/functions/character-avatar-meshy/index.ts:66`
+`archive/supabase-legacy/supabase/functions/character-avatar-meshy/index.ts:66`
 
 ```ts
 CORS_OPTS: CorsOptions = {
@@ -326,7 +326,7 @@ CORS_OPTS: CorsOptions = {
 
 ### resolveTextProvider
 
-`supabase/functions/character-avatar-meshy/index.ts:264`
+`archive/supabase-legacy/supabase/functions/character-avatar-meshy/index.ts:264`
 
 ```ts
 function resolveTextProvider(apiKey: string | null): MeshyTextTo3dProvider | null {
@@ -341,7 +341,7 @@ function resolveTextProvider(apiKey: string | null): MeshyTextTo3dProvider | nul
 
 ### resolveImageProvider
 
-`supabase/functions/character-avatar-meshy/index.ts:273`
+`archive/supabase-legacy/supabase/functions/character-avatar-meshy/index.ts:273`
 
 ```ts
 function resolveImageProvider(apiKey: string | null): MeshyImageTo3dProvider | null {
@@ -356,7 +356,7 @@ function resolveImageProvider(apiKey: string | null): MeshyImageTo3dProvider | n
 
 ### resolveRemeshProvider
 
-`supabase/functions/character-avatar-meshy/index.ts:282`
+`archive/supabase-legacy/supabase/functions/character-avatar-meshy/index.ts:282`
 
 ```ts
 function resolveRemeshProvider(apiKey: string | null): MeshyRemeshProvider | null {
@@ -372,7 +372,7 @@ function resolveRemeshProvider(apiKey: string | null): MeshyRemeshProvider | nul
 
 ### resolveRiggingProvider
 
-`supabase/functions/character-avatar-meshy/index.ts:292`
+`archive/supabase-legacy/supabase/functions/character-avatar-meshy/index.ts:292`
 
 ```ts
 function resolveRiggingProvider(apiKey: string | null): MeshyRiggingProvider | null {
@@ -434,7 +434,7 @@ No src/infrastructure caller in the reviewed branch. This does not authorize add
 
 ### character-avatar-meshy:1
 
-Predicate: `action === 'config'`. Source: `supabase/functions/character-avatar-meshy/index.ts:367`.
+Predicate: `action === 'config'`. Source: `archive/supabase-legacy/supabase/functions/character-avatar-meshy/index.ts:367`.
 
 
 ```ts
@@ -462,7 +462,7 @@ Predicate: `action === 'config'`. Source: `supabase/functions/character-avatar-m
 
 ### character-avatar-meshy:2
 
-Predicate: `action === 'start'`. Source: `supabase/functions/character-avatar-meshy/index.ts:388`.
+Predicate: `action === 'start'`. Source: `archive/supabase-legacy/supabase/functions/character-avatar-meshy/index.ts:388`.
 
 
 ```ts
@@ -657,7 +657,7 @@ Predicate: `action === 'start'`. Source: `supabase/functions/character-avatar-me
 
 ### character-avatar-meshy:3
 
-Predicate: `action === 'poll' \|\| action === 'retry'`. Source: `supabase/functions/character-avatar-meshy/index.ts:576`.
+Predicate: `action === 'poll' \|\| action === 'retry'`. Source: `archive/supabase-legacy/supabase/functions/character-avatar-meshy/index.ts:576`.
 
 
 ```ts
@@ -1548,7 +1548,7 @@ Predicate: `action === 'poll' \|\| action === 'retry'`. Source: `supabase/functi
 
 ### character-avatar-meshy:4
 
-Predicate: `action === 'retry'`. Source: `supabase/functions/character-avatar-meshy/index.ts:593`.
+Predicate: `action === 'retry'`. Source: `archive/supabase-legacy/supabase/functions/character-avatar-meshy/index.ts:593`.
 
 
 ```ts
@@ -1618,7 +1618,7 @@ Predicate: `action === 'retry'`. Source: `supabase/functions/character-avatar-me
 
 ### SupabaseServiceConfig
 
-`supabase/functions/_shared/ai-provider-resolve-meshy.ts:10`
+`archive/supabase-legacy/supabase/functions/_shared/ai-provider-resolve-meshy.ts:10`
 
 ```ts
 export interface SupabaseServiceConfig {
@@ -1629,7 +1629,7 @@ export interface SupabaseServiceConfig {
 
 ### GeometryQuality
 
-`supabase/functions/_shared/avatar-3d-generation.ts:9`
+`archive/supabase-legacy/supabase/functions/_shared/avatar-3d-generation.ts:9`
 
 ```ts
 export type GeometryQuality = 'low' | 'standard' | 'high' | 'maximum' | 'smart-topology';
@@ -1637,7 +1637,7 @@ export type GeometryQuality = 'low' | 'standard' | 'high' | 'maximum' | 'smart-t
 
 ### TextureQuality
 
-`supabase/functions/_shared/avatar-3d-generation.ts:10`
+`archive/supabase-legacy/supabase/functions/_shared/avatar-3d-generation.ts:10`
 
 ```ts
 export type TextureQuality = 'standard' | '2k' | '4k' | '8k';
@@ -1645,7 +1645,7 @@ export type TextureQuality = 'standard' | '2k' | '4k' | '8k';
 
 ### PoseMode
 
-`supabase/functions/_shared/avatar-3d-generation.ts:11`
+`archive/supabase-legacy/supabase/functions/_shared/avatar-3d-generation.ts:11`
 
 ```ts
 export type PoseMode = 'a-pose' | 't-pose' | 'none';
@@ -1653,7 +1653,7 @@ export type PoseMode = 'a-pose' | 't-pose' | 'none';
 
 ### TopologyMode
 
-`supabase/functions/_shared/avatar-3d-generation.ts:12`
+`archive/supabase-legacy/supabase/functions/_shared/avatar-3d-generation.ts:12`
 
 ```ts
 export type TopologyMode = 'triangle' | 'quad';
@@ -1661,7 +1661,7 @@ export type TopologyMode = 'triangle' | 'quad';
 
 ### Avatar3dGenerationSettings
 
-`supabase/functions/_shared/avatar-3d-generation.ts:14`
+`archive/supabase-legacy/supabase/functions/_shared/avatar-3d-generation.ts:14`
 
 ```ts
 export interface Avatar3dGenerationSettings {
@@ -1683,7 +1683,7 @@ export interface Avatar3dGenerationSettings {
 
 ### MeshyImageTo3dMappedParams
 
-`supabase/functions/_shared/avatar-3d-generation.ts:30`
+`archive/supabase-legacy/supabase/functions/_shared/avatar-3d-generation.ts:30`
 
 ```ts
 export interface MeshyImageTo3dMappedParams {
@@ -1705,7 +1705,7 @@ export interface MeshyImageTo3dMappedParams {
 
 ### FetchLike
 
-`supabase/functions/_shared/avatar-meshy-remesh.ts:6`
+`archive/supabase-legacy/supabase/functions/_shared/avatar-meshy-remesh.ts:6`
 
 ```ts
 type FetchLike = typeof fetch;
@@ -1713,7 +1713,7 @@ type FetchLike = typeof fetch;
 
 ### MeshyRemeshTask
 
-`supabase/functions/_shared/avatar-meshy-remesh.ts:8`
+`archive/supabase-legacy/supabase/functions/_shared/avatar-meshy-remesh.ts:8`
 
 ```ts
 export interface MeshyRemeshTask {
@@ -1727,7 +1727,7 @@ export interface MeshyRemeshTask {
 
 ### MeshyRemeshProvider
 
-`supabase/functions/_shared/avatar-meshy-remesh.ts:16`
+`archive/supabase-legacy/supabase/functions/_shared/avatar-meshy-remesh.ts:16`
 
 ```ts
 export interface MeshyRemeshProvider {
@@ -1741,7 +1741,7 @@ export interface MeshyRemeshProvider {
 
 ### FetchLike
 
-`supabase/functions/_shared/avatar-meshy-rigging.ts:9`
+`archive/supabase-legacy/supabase/functions/_shared/avatar-meshy-rigging.ts:9`
 
 ```ts
 type FetchLike = typeof fetch;
@@ -1749,7 +1749,7 @@ type FetchLike = typeof fetch;
 
 ### MeshyRiggingTask
 
-`supabase/functions/_shared/avatar-meshy-rigging.ts:11`
+`archive/supabase-legacy/supabase/functions/_shared/avatar-meshy-rigging.ts:11`
 
 ```ts
 export interface MeshyRiggingTask {
@@ -1764,7 +1764,7 @@ export interface MeshyRiggingTask {
 
 ### MeshyRiggingCreateInput
 
-`supabase/functions/_shared/avatar-meshy-rigging.ts:20`
+`archive/supabase-legacy/supabase/functions/_shared/avatar-meshy-rigging.ts:20`
 
 ```ts
 export interface MeshyRiggingCreateInput {
@@ -1778,7 +1778,7 @@ export interface MeshyRiggingCreateInput {
 
 ### MeshyRiggingProvider
 
-`supabase/functions/_shared/avatar-meshy-rigging.ts:28`
+`archive/supabase-legacy/supabase/functions/_shared/avatar-meshy-rigging.ts:28`
 
 ```ts
 export interface MeshyRiggingProvider {
@@ -1789,7 +1789,7 @@ export interface MeshyRiggingProvider {
 
 ### MeshyTextTo3dTaskStatus
 
-`supabase/functions/_shared/avatar-meshy-text-to-3d.ts:7`
+`archive/supabase-legacy/supabase/functions/_shared/avatar-meshy-text-to-3d.ts:7`
 
 ```ts
 export type MeshyTextTo3dTaskStatus =
@@ -1802,7 +1802,7 @@ export type MeshyTextTo3dTaskStatus =
 
 ### MeshyTextTo3dTask
 
-`supabase/functions/_shared/avatar-meshy-text-to-3d.ts:14`
+`archive/supabase-legacy/supabase/functions/_shared/avatar-meshy-text-to-3d.ts:14`
 
 ```ts
 export interface MeshyTextTo3dTask {
@@ -1816,7 +1816,7 @@ export interface MeshyTextTo3dTask {
 
 ### MeshyTextTo3dProviderConfig
 
-`supabase/functions/_shared/avatar-meshy-text-to-3d.ts:22`
+`archive/supabase-legacy/supabase/functions/_shared/avatar-meshy-text-to-3d.ts:22`
 
 ```ts
 export interface MeshyTextTo3dProviderConfig {
@@ -1827,7 +1827,7 @@ export interface MeshyTextTo3dProviderConfig {
 
 ### MeshyTextTo3dProvider
 
-`supabase/functions/_shared/avatar-meshy-text-to-3d.ts:27`
+`archive/supabase-legacy/supabase/functions/_shared/avatar-meshy-text-to-3d.ts:27`
 
 ```ts
 export interface MeshyTextTo3dProvider {
@@ -1838,7 +1838,7 @@ export interface MeshyTextTo3dProvider {
 
 ### FetchLike
 
-`supabase/functions/_shared/avatar-meshy-text-to-3d.ts:32`
+`archive/supabase-legacy/supabase/functions/_shared/avatar-meshy-text-to-3d.ts:32`
 
 ```ts
 type FetchLike = typeof fetch;
@@ -1846,7 +1846,7 @@ type FetchLike = typeof fetch;
 
 ### PrivilegedClientBodyKey
 
-`supabase/functions/_shared/client-trust-body.ts:20`
+`archive/supabase-legacy/supabase/functions/_shared/client-trust-body.ts:20`
 
 ```ts
 export type PrivilegedClientBodyKey = (typeof PRIVILEGED_CLIENT_BODY_KEYS)[number];
@@ -1854,7 +1854,7 @@ export type PrivilegedClientBodyKey = (typeof PRIVILEGED_CLIENT_BODY_KEYS)[numbe
 
 ### CorsOptions
 
-`supabase/functions/_shared/cors.ts:13`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:13`
 
 ```ts
 export type CorsOptions = {
@@ -1881,7 +1881,7 @@ export type CorsOptions = {
 
 ### ItemModel3dMime
 
-`supabase/functions/_shared/item-model3d-glb.ts:17`
+`archive/supabase-legacy/supabase/functions/_shared/item-model3d-glb.ts:17`
 
 ```ts
 export type ItemModel3dMime = typeof ITEM_MODEL3D_MIME;
@@ -1889,7 +1889,7 @@ export type ItemModel3dMime = typeof ITEM_MODEL3D_MIME;
 
 ### MeshyTaskStatus
 
-`supabase/functions/_shared/item-model3d-meshy.ts:7`
+`archive/supabase-legacy/supabase/functions/_shared/item-model3d-meshy.ts:7`
 
 ```ts
 export type MeshyTaskStatus = 'PENDING' | 'IN_PROGRESS' | 'SUCCEEDED' | 'FAILED' | 'CANCELED';
@@ -1897,7 +1897,7 @@ export type MeshyTaskStatus = 'PENDING' | 'IN_PROGRESS' | 'SUCCEEDED' | 'FAILED'
 
 ### MeshyImageTo3dTask
 
-`supabase/functions/_shared/item-model3d-meshy.ts:9`
+`archive/supabase-legacy/supabase/functions/_shared/item-model3d-meshy.ts:9`
 
 ```ts
 export interface MeshyImageTo3dTask {
@@ -1911,7 +1911,7 @@ export interface MeshyImageTo3dTask {
 
 ### MeshyImageTo3dProviderConfig
 
-`supabase/functions/_shared/item-model3d-meshy.ts:17`
+`archive/supabase-legacy/supabase/functions/_shared/item-model3d-meshy.ts:17`
 
 ```ts
 export interface MeshyImageTo3dProviderConfig {
@@ -1923,7 +1923,7 @@ export interface MeshyImageTo3dProviderConfig {
 
 ### MeshyImageTo3dCreateOptions
 
-`supabase/functions/_shared/item-model3d-meshy.ts:24`
+`archive/supabase-legacy/supabase/functions/_shared/item-model3d-meshy.ts:24`
 
 ```ts
 export interface MeshyImageTo3dCreateOptions {
@@ -1945,7 +1945,7 @@ export interface MeshyImageTo3dCreateOptions {
 
 ### MeshyImageTo3dCreateInput
 
-`supabase/functions/_shared/item-model3d-meshy.ts:41`
+`archive/supabase-legacy/supabase/functions/_shared/item-model3d-meshy.ts:41`
 
 ```ts
 export type MeshyImageTo3dCreateInput =
@@ -1955,7 +1955,7 @@ export type MeshyImageTo3dCreateInput =
 
 ### MeshyImageTo3dProvider
 
-`supabase/functions/_shared/item-model3d-meshy.ts:45`
+`archive/supabase-legacy/supabase/functions/_shared/item-model3d-meshy.ts:45`
 
 ```ts
 export interface MeshyImageTo3dProvider {
@@ -1966,7 +1966,7 @@ export interface MeshyImageTo3dProvider {
 
 ### FetchLike
 
-`supabase/functions/_shared/item-model3d-meshy.ts:50`
+`archive/supabase-legacy/supabase/functions/_shared/item-model3d-meshy.ts:50`
 
 ```ts
 type FetchLike = typeof fetch;
@@ -1974,7 +1974,7 @@ type FetchLike = typeof fetch;
 
 ### JsonRecord
 
-`supabase/functions/character-avatar-meshy/index.ts:63`
+`archive/supabase-legacy/supabase/functions/character-avatar-meshy/index.ts:63`
 
 ```ts
 type JsonRecord = Record<string, unknown>;
@@ -1982,7 +1982,7 @@ type JsonRecord = Record<string, unknown>;
 
 ### GenerationMode
 
-`supabase/functions/character-avatar-meshy/index.ts:64`
+`archive/supabase-legacy/supabase/functions/character-avatar-meshy/index.ts:64`
 
 ```ts
 type GenerationMode = 'text' | 'image';
@@ -1990,7 +1990,7 @@ type GenerationMode = 'text' | 'image';
 
 ### PublicMeshyFailure
 
-`supabase/functions/character-avatar-meshy/index.ts:82`
+`archive/supabase-legacy/supabase/functions/character-avatar-meshy/index.ts:82`
 
 ```ts
 type PublicMeshyFailure =
@@ -2006,7 +2006,7 @@ type PublicMeshyFailure =
 
 ### AvatarMeshyTask
 
-`supabase/functions/character-avatar-meshy/index.ts:130`
+`archive/supabase-legacy/supabase/functions/character-avatar-meshy/index.ts:130`
 
 ```ts
 type AvatarMeshyTask = {
@@ -2022,7 +2022,7 @@ type AvatarMeshyTask = {
 
 ### parseCredentialsEncryptionKey
 
-`supabase/functions/_shared/ai-provider-crypto.ts:25`
+`archive/supabase-legacy/supabase/functions/_shared/ai-provider-crypto.ts:25`
 
 ```ts
 export function parseCredentialsEncryptionKey(
@@ -2063,7 +2063,7 @@ export function parseCredentialsEncryptionKey(
 
 ### DEFAULT_RECOMMENDED_SETTINGS
 
-`supabase/functions/_shared/avatar-3d-generation.ts:46`
+`archive/supabase-legacy/supabase/functions/_shared/avatar-3d-generation.ts:46`
 
 ```ts
 DEFAULT_RECOMMENDED_SETTINGS: Avatar3dGenerationSettings = {
@@ -2084,7 +2084,7 @@ DEFAULT_RECOMMENDED_SETTINGS: Avatar3dGenerationSettings = {
 
 ### GEOMETRY
 
-`supabase/functions/_shared/avatar-3d-generation.ts:61`
+`archive/supabase-legacy/supabase/functions/_shared/avatar-3d-generation.ts:61`
 
 ```ts
 GEOMETRY = new Set(['low', 'standard', 'high', 'maximum', 'smart-topology'])
@@ -2092,7 +2092,7 @@ GEOMETRY = new Set(['low', 'standard', 'high', 'maximum', 'smart-topology'])
 
 ### TEXTURE
 
-`supabase/functions/_shared/avatar-3d-generation.ts:62`
+`archive/supabase-legacy/supabase/functions/_shared/avatar-3d-generation.ts:62`
 
 ```ts
 TEXTURE = new Set(['standard', '2k', '4k', '8k'])
@@ -2100,7 +2100,7 @@ TEXTURE = new Set(['standard', '2k', '4k', '8k'])
 
 ### POSE
 
-`supabase/functions/_shared/avatar-3d-generation.ts:63`
+`archive/supabase-legacy/supabase/functions/_shared/avatar-3d-generation.ts:63`
 
 ```ts
 POSE = new Set(['a-pose', 't-pose', 'none'])
@@ -2108,7 +2108,7 @@ POSE = new Set(['a-pose', 't-pose', 'none'])
 
 ### TOPOLOGY
 
-`supabase/functions/_shared/avatar-3d-generation.ts:64`
+`archive/supabase-legacy/supabase/functions/_shared/avatar-3d-generation.ts:64`
 
 ```ts
 TOPOLOGY = new Set(['triangle', 'quad'])
@@ -2116,7 +2116,7 @@ TOPOLOGY = new Set(['triangle', 'quad'])
 
 ### PRESET_IDS
 
-`supabase/functions/_shared/avatar-3d-generation.ts:65`
+`archive/supabase-legacy/supabase/functions/_shared/avatar-3d-generation.ts:65`
 
 ```ts
 PRESET_IDS = new Set(['fast', 'recommended', 'maximum', 'custom'])
@@ -2124,7 +2124,7 @@ PRESET_IDS = new Set(['fast', 'recommended', 'maximum', 'custom'])
 
 ### MESHY_MODEL_IDS
 
-`supabase/functions/_shared/avatar-3d-generation.ts:67`
+`archive/supabase-legacy/supabase/functions/_shared/avatar-3d-generation.ts:67`
 
 ```ts
 MESHY_MODEL_IDS = new Set(['latest', 'meshy-5', 'meshy-6', 'meshy-7', 'meshy-t1', 'meshy-t2'])
@@ -2132,7 +2132,7 @@ MESHY_MODEL_IDS = new Set(['latest', 'meshy-5', 'meshy-6', 'meshy-7', 'meshy-t1'
 
 ### validateGenerationSettings
 
-`supabase/functions/_shared/avatar-3d-generation.ts:73`
+`archive/supabase-legacy/supabase/functions/_shared/avatar-3d-generation.ts:73`
 
 ```ts
 export function validateGenerationSettings(
@@ -2193,7 +2193,7 @@ export function validateGenerationSettings(
 
 ### parseProviderId
 
-`supabase/functions/_shared/avatar-3d-generation.ts:128`
+`archive/supabase-legacy/supabase/functions/_shared/avatar-3d-generation.ts:128`
 
 ```ts
 export function parseProviderId(value: unknown): 'meshy' | null {
@@ -2203,7 +2203,7 @@ export function parseProviderId(value: unknown): 'meshy' | null {
 
 ### parsePresetMeta
 
-`supabase/functions/_shared/avatar-3d-generation.ts:132`
+`archive/supabase-legacy/supabase/functions/_shared/avatar-3d-generation.ts:132`
 
 ```ts
 export function parsePresetMeta(payload: Record<string, unknown>): {
@@ -2226,7 +2226,7 @@ export function parsePresetMeta(payload: Record<string, unknown>): {
 
 ### parseCreateResponse
 
-`supabase/functions/_shared/avatar-meshy-remesh.ts:28`
+`archive/supabase-legacy/supabase/functions/_shared/avatar-meshy-remesh.ts:28`
 
 ```ts
 function parseCreateResponse(body: unknown): string {
@@ -2239,7 +2239,7 @@ function parseCreateResponse(body: unknown): string {
 
 ### parseTask
 
-`supabase/functions/_shared/avatar-meshy-remesh.ts:35`
+`archive/supabase-legacy/supabase/functions/_shared/avatar-meshy-remesh.ts:35`
 
 ```ts
 function parseTask(body: unknown): MeshyRemeshTask {
@@ -2271,7 +2271,7 @@ function parseTask(body: unknown): MeshyRemeshTask {
 
 ### DEFAULT_REMESH_BASE
 
-`supabase/functions/_shared/avatar-meshy-remesh.ts:64`
+`archive/supabase-legacy/supabase/functions/_shared/avatar-meshy-remesh.ts:64`
 
 ```ts
 DEFAULT_REMESH_BASE = 'https://api.meshy.ai/openapi/v1'
@@ -2279,7 +2279,7 @@ DEFAULT_REMESH_BASE = 'https://api.meshy.ai/openapi/v1'
 
 ### parseCreateResponse
 
-`supabase/functions/_shared/avatar-meshy-rigging.ts:37`
+`archive/supabase-legacy/supabase/functions/_shared/avatar-meshy-rigging.ts:37`
 
 ```ts
 function parseCreateResponse(body: unknown): string {
@@ -2292,7 +2292,7 @@ function parseCreateResponse(body: unknown): string {
 
 ### parseHttpsUrl
 
-`supabase/functions/_shared/avatar-meshy-rigging.ts:44`
+`archive/supabase-legacy/supabase/functions/_shared/avatar-meshy-rigging.ts:44`
 
 ```ts
 function parseHttpsUrl(value: unknown): string | undefined {
@@ -2302,7 +2302,7 @@ function parseHttpsUrl(value: unknown): string | undefined {
 
 ### parseMeshyRiggingTask
 
-`supabase/functions/_shared/avatar-meshy-rigging.ts:48`
+`archive/supabase-legacy/supabase/functions/_shared/avatar-meshy-rigging.ts:48`
 
 ```ts
 export function parseMeshyRiggingTask(body: unknown): MeshyRiggingTask {
@@ -2335,7 +2335,7 @@ export function parseMeshyRiggingTask(body: unknown): MeshyRiggingTask {
 
 ### DEFAULT_RIGGING_BASE
 
-`supabase/functions/_shared/avatar-meshy-rigging.ts:75`
+`archive/supabase-legacy/supabase/functions/_shared/avatar-meshy-rigging.ts:75`
 
 ```ts
 DEFAULT_RIGGING_BASE = 'https://api.meshy.ai/openapi/v1'
@@ -2343,7 +2343,7 @@ DEFAULT_RIGGING_BASE = 'https://api.meshy.ai/openapi/v1'
 
 ### DEFAULT_BASE
 
-`supabase/functions/_shared/avatar-meshy-text-to-3d.ts:34`
+`archive/supabase-legacy/supabase/functions/_shared/avatar-meshy-text-to-3d.ts:34`
 
 ```ts
 DEFAULT_BASE = 'https://api.meshy.ai/openapi/v2'
@@ -2351,7 +2351,7 @@ DEFAULT_BASE = 'https://api.meshy.ai/openapi/v2'
 
 ### parseCreateResponse
 
-`supabase/functions/_shared/avatar-meshy-text-to-3d.ts:69`
+`archive/supabase-legacy/supabase/functions/_shared/avatar-meshy-text-to-3d.ts:69`
 
 ```ts
 function parseCreateResponse(body: unknown): string {
@@ -2364,7 +2364,7 @@ function parseCreateResponse(body: unknown): string {
 
 ### parseTask
 
-`supabase/functions/_shared/avatar-meshy-text-to-3d.ts:76`
+`archive/supabase-legacy/supabase/functions/_shared/avatar-meshy-text-to-3d.ts:76`
 
 ```ts
 function parseTask(body: unknown): MeshyTextTo3dTask {
@@ -2396,7 +2396,7 @@ function parseTask(body: unknown): MeshyTextTo3dTask {
 
 ### DEFAULT_CORS_METHODS
 
-`supabase/functions/_shared/cors.ts:9`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:9`
 
 ```ts
 DEFAULT_CORS_METHODS = 'GET, POST, PUT, DELETE, OPTIONS'
@@ -2404,7 +2404,7 @@ DEFAULT_CORS_METHODS = 'GET, POST, PUT, DELETE, OPTIONS'
 
 ### DEFAULT_CORS_ALLOW_HEADERS
 
-`supabase/functions/_shared/cors.ts:10`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:10`
 
 ```ts
 DEFAULT_CORS_ALLOW_HEADERS =
@@ -2413,7 +2413,7 @@ DEFAULT_CORS_ALLOW_HEADERS =
 
 ### buildItemModel3dStoragePath
 
-`supabase/functions/_shared/item-model3d-glb.ts:37`
+`archive/supabase-legacy/supabase/functions/_shared/item-model3d-glb.ts:37`
 
 ```ts
 export function buildItemModel3dStoragePath(options: {
@@ -2431,7 +2431,7 @@ export function buildItemModel3dStoragePath(options: {
 
 ### buildItemModel3dAssetKey
 
-`supabase/functions/_shared/item-model3d-glb.ts:49`
+`archive/supabase-legacy/supabase/functions/_shared/item-model3d-glb.ts:49`
 
 ```ts
 export function buildItemModel3dAssetKey(assetId: string): string {
@@ -2441,7 +2441,7 @@ export function buildItemModel3dAssetKey(assetId: string): string {
 
 ### validateGlbBytes
 
-`supabase/functions/_shared/item-model3d-glb.ts:70`
+`archive/supabase-legacy/supabase/functions/_shared/item-model3d-glb.ts:70`
 
 ```ts
 export function validateGlbBytes(
@@ -2465,7 +2465,7 @@ export function validateGlbBytes(
 
 ### DEFAULT_BASE
 
-`supabase/functions/_shared/item-model3d-meshy.ts:52`
+`archive/supabase-legacy/supabase/functions/_shared/item-model3d-meshy.ts:52`
 
 ```ts
 DEFAULT_BASE = 'https://api.meshy.ai/openapi/v1'
@@ -2473,7 +2473,7 @@ DEFAULT_BASE = 'https://api.meshy.ai/openapi/v1'
 
 ### DEFAULT_MODEL
 
-`supabase/functions/_shared/item-model3d-meshy.ts:53`
+`archive/supabase-legacy/supabase/functions/_shared/item-model3d-meshy.ts:53`
 
 ```ts
 DEFAULT_MODEL = 'latest'
@@ -2481,7 +2481,7 @@ DEFAULT_MODEL = 'latest'
 
 ### parseCreateResponse
 
-`supabase/functions/_shared/item-model3d-meshy.ts:79`
+`archive/supabase-legacy/supabase/functions/_shared/item-model3d-meshy.ts:79`
 
 ```ts
 function parseCreateResponse(body: unknown): string {
@@ -2494,7 +2494,7 @@ function parseCreateResponse(body: unknown): string {
 
 ### parseTask
 
-`supabase/functions/_shared/item-model3d-meshy.ts:86`
+`archive/supabase-legacy/supabase/functions/_shared/item-model3d-meshy.ts:86`
 
 ```ts
 function parseTask(body: unknown): MeshyImageTo3dTask {
@@ -2526,7 +2526,7 @@ function parseTask(body: unknown): MeshyImageTo3dTask {
 
 ### CORS_OPTS
 
-`supabase/functions/character-avatar-meshy/index.ts:66`
+`archive/supabase-legacy/supabase/functions/character-avatar-meshy/index.ts:66`
 
 ```ts
 CORS_OPTS: CorsOptions = {
@@ -2539,7 +2539,7 @@ CORS_OPTS: CorsOptions = {
 
 ### RATE_LIMIT
 
-`supabase/functions/character-avatar-meshy/index.ts:74`
+`archive/supabase-legacy/supabase/functions/character-avatar-meshy/index.ts:74`
 
 ```ts
 RATE_LIMIT = 2
@@ -2547,7 +2547,7 @@ RATE_LIMIT = 2
 
 ### RATE_WINDOW_SECONDS
 
-`supabase/functions/character-avatar-meshy/index.ts:75`
+`archive/supabase-legacy/supabase/functions/character-avatar-meshy/index.ts:75`
 
 ```ts
 RATE_WINDOW_SECONDS = 60
@@ -2555,7 +2555,7 @@ RATE_WINDOW_SECONDS = 60
 
 ### SIGNED_URL_SECONDS
 
-`supabase/functions/character-avatar-meshy/index.ts:77`
+`archive/supabase-legacy/supabase/functions/character-avatar-meshy/index.ts:77`
 
 ```ts
 SIGNED_URL_SECONDS = 60 * 60 * 24 * 7
@@ -2563,7 +2563,7 @@ SIGNED_URL_SECONDS = 60 * 60 * 24 * 7
 
 ### IMAGE_PLACEHOLDER_PROMPT
 
-`supabase/functions/character-avatar-meshy/index.ts:78`
+`archive/supabase-legacy/supabase/functions/character-avatar-meshy/index.ts:78`
 
 ```ts
 IMAGE_PLACEHOLDER_PROMPT = 'Image-to-3D reference'
@@ -2571,7 +2571,7 @@ IMAGE_PLACEHOLDER_PROMPT = 'Image-to-3D reference'
 
 ### IMAGE_MAX_BYTES
 
-`supabase/functions/character-avatar-meshy/index.ts:79`
+`archive/supabase-legacy/supabase/functions/character-avatar-meshy/index.ts:79`
 
 ```ts
 IMAGE_MAX_BYTES = 4 * 1024 * 1024
@@ -2579,7 +2579,7 @@ IMAGE_MAX_BYTES = 4 * 1024 * 1024
 
 ### validatePrompt
 
-`supabase/functions/character-avatar-meshy/index.ts:167`
+`archive/supabase-legacy/supabase/functions/character-avatar-meshy/index.ts:167`
 
 ```ts
 function validatePrompt(prompt: unknown): { ok: true; prompt: string } | { ok: false; message: string } {
@@ -2593,7 +2593,7 @@ function validatePrompt(prompt: unknown): { ok: true; prompt: string } | { ok: f
 
 ### validateOptionalTexturePrompt
 
-`supabase/functions/character-avatar-meshy/index.ts:175`
+`archive/supabase-legacy/supabase/functions/character-avatar-meshy/index.ts:175`
 
 ```ts
 function validateOptionalTexturePrompt(
@@ -2611,7 +2611,7 @@ function validateOptionalTexturePrompt(
 
 ### validateImageDataUri
 
-`supabase/functions/character-avatar-meshy/index.ts:187`
+`archive/supabase-legacy/supabase/functions/character-avatar-meshy/index.ts:187`
 
 ```ts
 function validateImageDataUri(
@@ -2633,7 +2633,7 @@ function validateImageDataUri(
 
 ### parseGenerationMode
 
-`supabase/functions/character-avatar-meshy/index.ts:243`
+`archive/supabase-legacy/supabase/functions/character-avatar-meshy/index.ts:243`
 
 ```ts
 function parseGenerationMode(value: unknown): GenerationMode {
@@ -2646,19 +2646,19 @@ function parseGenerationMode(value: unknown): GenerationMode {
 
 | Path | SHA-256 |
 |---|---|
-| `supabase/functions/_shared/ai-provider-crypto.ts` | `45e60f76f744077e8d9b243719dcdba5d58a047d36a1c141df830afa2de16532` |
-| `supabase/functions/_shared/ai-provider-resolve-meshy.ts` | `b65f8aa91c02871a2661e1ca697c6115f3c7c4ec07c683d1e7ed19c39287a842` |
-| `supabase/functions/_shared/avatar-3d-generation.ts` | `59f0507973e94af6aff505622204a8f580a2b1594e6167943c888b4c7b0e250d` |
-| `supabase/functions/_shared/avatar-meshy-rate-limit.ts` | `e2eeddfa2628c9e7e64cb386bb7e0f9933632df8240b1906a80c1970f2e3eb68` |
-| `supabase/functions/_shared/avatar-meshy-remesh.ts` | `cb2133152780c8d8ffb9b69e5358c676c672a41eb1e103b98c29c9dc16fe31e0` |
-| `supabase/functions/_shared/avatar-meshy-rigging.ts` | `2d1686c1b38dfdeea5299565756adbbc72db600bec8e98dfe73ce9ba55abca6b` |
-| `supabase/functions/_shared/avatar-meshy-text-to-3d.ts` | `247fbcf43b0b9425f147b4b87337f13bfca52199c575bbf27cbd25b8c55be2ca` |
-| `supabase/functions/_shared/client-trust-body.ts` | `33c68553dbd89d9c7899520b0ebfa35c4f245ed8ab8ebd242c6f79e9852add95` |
-| `supabase/functions/_shared/cors.ts` | `f8286c91d79fa5fc5cfea2fa47081916523fa7a440f234aecd9a47c6a8cf5b38` |
-| `supabase/functions/_shared/edge-dispatcher-allowlist.ts` | `6d1ae7bde0ba9e41fcaa7b61247732168a62699e7811fb8574cef266cfad3a27` |
-| `supabase/functions/_shared/edge-jwt-gate.ts` | `14a871697b051b7fcbee09dbce1dee8bc8ed5ea6a6eca0bec7b2e771b32d0f0c` |
-| `supabase/functions/_shared/item-model3d-glb.ts` | `f227056ed5d1041def2009c37224c8df1139098bb3be8859bba984845fb7410e` |
-| `supabase/functions/_shared/item-model3d-meshy.ts` | `8b194b23304884c8ca3d2c0935e8b67e27decfaca3e1e2657b1901dfb69d8355` |
-| `supabase/functions/character-avatar-meshy/index.ts` | `c29eca334121056bf317025aecd3d2c9eb91bac9a16cea94bebbeae8f4148200` |
-| `supabase/functions/main/index.ts` | `92f3bf56bf3c776e01595d980246079c4a9f8775e417959abea9d7da003bc53e` |
+| `archive/supabase-legacy/supabase/functions/_shared/ai-provider-crypto.ts` | `45e60f76f744077e8d9b243719dcdba5d58a047d36a1c141df830afa2de16532` |
+| `archive/supabase-legacy/supabase/functions/_shared/ai-provider-resolve-meshy.ts` | `b65f8aa91c02871a2661e1ca697c6115f3c7c4ec07c683d1e7ed19c39287a842` |
+| `archive/supabase-legacy/supabase/functions/_shared/avatar-3d-generation.ts` | `59f0507973e94af6aff505622204a8f580a2b1594e6167943c888b4c7b0e250d` |
+| `archive/supabase-legacy/supabase/functions/_shared/avatar-meshy-rate-limit.ts` | `e2eeddfa2628c9e7e64cb386bb7e0f9933632df8240b1906a80c1970f2e3eb68` |
+| `archive/supabase-legacy/supabase/functions/_shared/avatar-meshy-remesh.ts` | `cb2133152780c8d8ffb9b69e5358c676c672a41eb1e103b98c29c9dc16fe31e0` |
+| `archive/supabase-legacy/supabase/functions/_shared/avatar-meshy-rigging.ts` | `2d1686c1b38dfdeea5299565756adbbc72db600bec8e98dfe73ce9ba55abca6b` |
+| `archive/supabase-legacy/supabase/functions/_shared/avatar-meshy-text-to-3d.ts` | `247fbcf43b0b9425f147b4b87337f13bfca52199c575bbf27cbd25b8c55be2ca` |
+| `archive/supabase-legacy/supabase/functions/_shared/client-trust-body.ts` | `33c68553dbd89d9c7899520b0ebfa35c4f245ed8ab8ebd242c6f79e9852add95` |
+| `archive/supabase-legacy/supabase/functions/_shared/cors.ts` | `f8286c91d79fa5fc5cfea2fa47081916523fa7a440f234aecd9a47c6a8cf5b38` |
+| `archive/supabase-legacy/supabase/functions/_shared/edge-dispatcher-allowlist.ts` | `6d1ae7bde0ba9e41fcaa7b61247732168a62699e7811fb8574cef266cfad3a27` |
+| `archive/supabase-legacy/supabase/functions/_shared/edge-jwt-gate.ts` | `14a871697b051b7fcbee09dbce1dee8bc8ed5ea6a6eca0bec7b2e771b32d0f0c` |
+| `archive/supabase-legacy/supabase/functions/_shared/item-model3d-glb.ts` | `f227056ed5d1041def2009c37224c8df1139098bb3be8859bba984845fb7410e` |
+| `archive/supabase-legacy/supabase/functions/_shared/item-model3d-meshy.ts` | `8b194b23304884c8ca3d2c0935e8b67e27decfaca3e1e2657b1901dfb69d8355` |
+| `archive/supabase-legacy/supabase/functions/character-avatar-meshy/index.ts` | `c29eca334121056bf317025aecd3d2c9eb91bac9a16cea94bebbeae8f4148200` |
+| `archive/supabase-legacy/supabase/functions/main/index.ts` | `92f3bf56bf3c776e01595d980246079c4a9f8775e417959abea9d7da003bc53e` |
 

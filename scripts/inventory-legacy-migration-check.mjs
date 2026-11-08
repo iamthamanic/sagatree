@@ -196,7 +196,7 @@ section('5 · Pending-Ids an stabile Personal-Ids binden');
 section('6 · Persistenzvertrag (Migration 016)');
 {
   const migration = readFileSync(
-    new URL('../supabase/migrations/016_character_inventory_v2.sql', import.meta.url),
+    new URL('../archive/supabase-legacy/supabase/migrations/016_character_inventory_v2.sql', import.meta.url),
     'utf8',
   );
   requireMatch(migration, /inventory_schema_version/, 'Versionsmarker-Spalte');

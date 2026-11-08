@@ -4,11 +4,11 @@
   "evidenceKind": "exact-typescript-ast-source",
   "sourceFiles": [
     {
-      "path": "supabase/functions/_shared/cors.ts",
+      "path": "archive/supabase-legacy/supabase/functions/_shared/cors.ts",
       "sha256": "f8286c91d79fa5fc5cfea2fa47081916523fa7a440f234aecd9a47c6a8cf5b38"
     },
     {
-      "path": "supabase/functions/quests/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
       "sha256": "1826d17278205f9122b70c1c6e88892d41418335bc9167a25edf21f6eb236bb2"
     }
   ],
@@ -16,13 +16,13 @@
     {
       "id": "quests:1",
       "condition": "req.method === \"GET\" && path === \"/health\"",
-      "path": "supabase/functions/quests/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
       "line": 35,
       "endLine": 35,
       "requestReads": [],
       "returns": [
         {
-          "path": "supabase/functions/quests/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
           "line": 35,
           "endLine": 35,
           "expression": "new Response(JSON.stringify({ status: 'ok', features: ['quests', 'objectives', 'rewards', 'generation'] }), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
@@ -30,7 +30,7 @@
       ],
       "calls": [
         {
-          "path": "supabase/functions/quests/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
           "line": 35,
           "endLine": 35,
           "expression": "JSON.stringify",
@@ -44,13 +44,13 @@
     {
       "id": "quests:2",
       "condition": "req.method === \"POST\" && path === \"/quests\"",
-      "path": "supabase/functions/quests/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
       "line": 36,
       "endLine": 36,
       "requestReads": [],
       "returns": [
         {
-          "path": "supabase/functions/quests/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
           "line": 36,
           "endLine": 36,
           "expression": "new Response(JSON.stringify(quest), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
@@ -58,14 +58,14 @@
       ],
       "calls": [
         {
-          "path": "supabase/functions/quests/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
           "line": 36,
           "endLine": 36,
           "expression": "req.json",
           "arguments": []
         },
         {
-          "path": "supabase/functions/quests/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
           "line": 36,
           "endLine": 36,
           "expression": "createQuest",
@@ -74,7 +74,7 @@
           ]
         },
         {
-          "path": "supabase/functions/quests/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
           "line": 36,
           "endLine": 36,
           "expression": "JSON.stringify",
@@ -88,13 +88,13 @@
     {
       "id": "quests:3",
       "condition": "req.method === \"GET\" && path === \"/quests\"",
-      "path": "supabase/functions/quests/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
       "line": 37,
       "endLine": 37,
       "requestReads": [],
       "returns": [
         {
-          "path": "supabase/functions/quests/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
           "line": 37,
           "endLine": 37,
           "expression": "new Response(JSON.stringify(list), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
@@ -102,7 +102,7 @@
       ],
       "calls": [
         {
-          "path": "supabase/functions/quests/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
           "line": 37,
           "endLine": 37,
           "expression": "url.searchParams.get",
@@ -111,7 +111,7 @@
           ]
         },
         {
-          "path": "supabase/functions/quests/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
           "line": 37,
           "endLine": 37,
           "expression": "url.searchParams.get",
@@ -120,7 +120,7 @@
           ]
         },
         {
-          "path": "supabase/functions/quests/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
           "line": 37,
           "endLine": 37,
           "expression": "listQuests",
@@ -130,7 +130,7 @@
           ]
         },
         {
-          "path": "supabase/functions/quests/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
           "line": 37,
           "endLine": 37,
           "expression": "JSON.stringify",
@@ -144,19 +144,19 @@
     {
       "id": "quests:4",
       "condition": "req.method === \"GET\" && path.match(/^\\/quests\\/[\\w-]+$/)",
-      "path": "supabase/functions/quests/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
       "line": 38,
       "endLine": 38,
       "requestReads": [],
       "returns": [
         {
-          "path": "supabase/functions/quests/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
           "line": 38,
           "endLine": 38,
           "expression": "new Response(JSON.stringify({ error: \"Quest not found\" }), { status: 404, headers: { ...headers, \"Content-Type\": \"application/json\" } })"
         },
         {
-          "path": "supabase/functions/quests/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
           "line": 38,
           "endLine": 38,
           "expression": "new Response(JSON.stringify(quest), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
@@ -164,7 +164,7 @@
       ],
       "calls": [
         {
-          "path": "supabase/functions/quests/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
           "line": 38,
           "endLine": 38,
           "expression": "path.split",
@@ -173,7 +173,7 @@
           ]
         },
         {
-          "path": "supabase/functions/quests/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
           "line": 38,
           "endLine": 38,
           "expression": "getQuest",
@@ -182,7 +182,7 @@
           ]
         },
         {
-          "path": "supabase/functions/quests/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
           "line": 38,
           "endLine": 38,
           "expression": "JSON.stringify",
@@ -191,7 +191,7 @@
           ]
         },
         {
-          "path": "supabase/functions/quests/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
           "line": 38,
           "endLine": 38,
           "expression": "JSON.stringify",
@@ -205,13 +205,13 @@
     {
       "id": "quests:5",
       "condition": "req.method === \"PUT\" && path.match(/^\\/quests\\/[\\w-]+$/)",
-      "path": "supabase/functions/quests/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
       "line": 39,
       "endLine": 39,
       "requestReads": [],
       "returns": [
         {
-          "path": "supabase/functions/quests/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
           "line": 39,
           "endLine": 39,
           "expression": "new Response(JSON.stringify(quest), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
@@ -219,7 +219,7 @@
       ],
       "calls": [
         {
-          "path": "supabase/functions/quests/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
           "line": 39,
           "endLine": 39,
           "expression": "path.split",
@@ -228,14 +228,14 @@
           ]
         },
         {
-          "path": "supabase/functions/quests/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
           "line": 39,
           "endLine": 39,
           "expression": "req.json",
           "arguments": []
         },
         {
-          "path": "supabase/functions/quests/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
           "line": 39,
           "endLine": 39,
           "expression": "updateQuest",
@@ -245,7 +245,7 @@
           ]
         },
         {
-          "path": "supabase/functions/quests/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
           "line": 39,
           "endLine": 39,
           "expression": "JSON.stringify",
@@ -259,13 +259,13 @@
     {
       "id": "quests:6",
       "condition": "req.method === \"POST\" && path.match(/^\\/quests\\/[\\w-]+\\/complete\\/[\\w-]+$/)",
-      "path": "supabase/functions/quests/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
       "line": 40,
       "endLine": 40,
       "requestReads": [],
       "returns": [
         {
-          "path": "supabase/functions/quests/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
           "line": 40,
           "endLine": 40,
           "expression": "new Response(JSON.stringify(quest), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
@@ -273,7 +273,7 @@
       ],
       "calls": [
         {
-          "path": "supabase/functions/quests/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
           "line": 40,
           "endLine": 40,
           "expression": "path.split",
@@ -282,7 +282,7 @@
           ]
         },
         {
-          "path": "supabase/functions/quests/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
           "line": 40,
           "endLine": 40,
           "expression": "path.split",
@@ -291,7 +291,7 @@
           ]
         },
         {
-          "path": "supabase/functions/quests/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
           "line": 40,
           "endLine": 40,
           "expression": "completeObjective",
@@ -301,7 +301,7 @@
           ]
         },
         {
-          "path": "supabase/functions/quests/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
           "line": 40,
           "endLine": 40,
           "expression": "JSON.stringify",
@@ -315,7 +315,7 @@
     {
       "id": "quests:7",
       "condition": "req.method === \"POST\" && path === \"/quests/generate\"",
-      "path": "supabase/functions/quests/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
       "line": 41,
       "endLine": 41,
       "requestReads": [
@@ -324,7 +324,7 @@
       ],
       "returns": [
         {
-          "path": "supabase/functions/quests/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
           "line": 41,
           "endLine": 41,
           "expression": "new Response(JSON.stringify(quest), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
@@ -332,14 +332,14 @@
       ],
       "calls": [
         {
-          "path": "supabase/functions/quests/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
           "line": 41,
           "endLine": 41,
           "expression": "req.json",
           "arguments": []
         },
         {
-          "path": "supabase/functions/quests/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
           "line": 41,
           "endLine": 41,
           "expression": "generateQuest",
@@ -349,7 +349,7 @@
           ]
         },
         {
-          "path": "supabase/functions/quests/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
           "line": 41,
           "endLine": 41,
           "expression": "JSON.stringify",
@@ -363,61 +363,61 @@
   ],
   "responseSites": [
     {
-      "path": "supabase/functions/quests/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
       "line": 35,
       "endLine": 35,
       "expression": "new Response(JSON.stringify({ status: 'ok', features: ['quests', 'objectives', 'rewards', 'generation'] }), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
     },
     {
-      "path": "supabase/functions/quests/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
       "line": 36,
       "endLine": 36,
       "expression": "new Response(JSON.stringify(quest), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
     },
     {
-      "path": "supabase/functions/quests/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
       "line": 37,
       "endLine": 37,
       "expression": "new Response(JSON.stringify(list), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
     },
     {
-      "path": "supabase/functions/quests/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
       "line": 38,
       "endLine": 38,
       "expression": "new Response(JSON.stringify({ error: \"Quest not found\" }), { status: 404, headers: { ...headers, \"Content-Type\": \"application/json\" } })"
     },
     {
-      "path": "supabase/functions/quests/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
       "line": 38,
       "endLine": 38,
       "expression": "new Response(JSON.stringify(quest), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
     },
     {
-      "path": "supabase/functions/quests/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
       "line": 39,
       "endLine": 39,
       "expression": "new Response(JSON.stringify(quest), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
     },
     {
-      "path": "supabase/functions/quests/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
       "line": 40,
       "endLine": 40,
       "expression": "new Response(JSON.stringify(quest), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
     },
     {
-      "path": "supabase/functions/quests/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
       "line": 41,
       "endLine": 41,
       "expression": "new Response(JSON.stringify(quest), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
     },
     {
-      "path": "supabase/functions/quests/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
       "line": 42,
       "endLine": 42,
       "expression": "new Response(JSON.stringify({ error: \"Not found\" }), { status: 404, headers: { ...headers, \"Content-Type\": \"application/json\" } })"
     },
     {
-      "path": "supabase/functions/quests/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
       "line": 43,
       "endLine": 43,
       "expression": "new Response(JSON.stringify({ error: \"Internal server error\", message: (error instanceof Error ? error.message : String(error)) }), { status: 500, headers: { ...headers, \"Content-Type\": \"application/json\" } })"
@@ -429,19 +429,19 @@
   "timeoutSites": [],
   "effectSites": [
     {
-      "path": "supabase/functions/quests/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
       "line": 21,
       "endLine": 21,
       "expression": "quests.set(id, quest)"
     },
     {
-      "path": "supabase/functions/quests/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
       "line": 24,
       "endLine": 24,
       "expression": "quests.set(id, updated)"
     },
     {
-      "path": "supabase/functions/quests/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
       "line": 25,
       "endLine": 25,
       "expression": "quests.set(questId, quest)"
@@ -449,7 +449,7 @@
   ],
   "handler": [
     {
-      "path": "supabase/functions/quests/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
       "line": 28,
       "endLine": 44,
       "text": "serve(async (req: Request) => {\n  const headers = corsHeaders(req, CORS_OPTS)\n  const optionsResponse = handleOptions(req, CORS_OPTS);\n  if (optionsResponse) return optionsResponse\n  const url = new URL(req.url)\n  const path = url.pathname.replace(\"/functions/v1/quests\", \"\")\n  try {\n    if (req.method === \"GET\" && path === \"/health\") return new Response(JSON.stringify({ status: 'ok', features: ['quests', 'objectives', 'rewards', 'generation'] }), { headers: { ...headers, \"Content-Type\": \"application/json\" } })\n    if (req.method === \"POST\" && path === \"/quests\") { const body = await req.json(); const quest = await createQuest(body); return new Response(JSON.stringify(quest), { headers: { ...headers, \"Content-Type\": \"application/json\" } }) }\n    if (req.method === \"GET\" && path === \"/quests\") { const projectId = url.searchParams.get('projectId') || undefined; const status = url.searchParams.get('status') || undefined; const list = await listQuests(projectId, status); return new Response(JSON.stringify(list), { headers: { ...headers, \"Content-Type\": \"application/json\" } }) }\n    if (req.method === \"GET\" && path.match(/^\\/quests\\/[\\w-]+$/)) { const id = path.split(\"/\")[2]; const quest = await getQuest(id); if (!quest) return new Response(JSON.stringify({ error: \"Quest not found\" }), { status: 404, headers: { ...headers, \"Content-Type\": \"application/json\" } }); return new Response(JSON.stringify(quest), { headers: { ...headers, \"Content-Type\": \"application/json\" } }) }\n    if (req.method === \"PUT\" && path.match(/^\\/quests\\/[\\w-]+$/)) { const id = path.split(\"/\")[2]; const body = await req.json(); const quest = await updateQuest(id, body); return new Response(JSON.stringify(quest), { headers: { ...headers, \"Content-Type\": \"application/json\" } }) }\n    if (req.method === \"POST\" && path.match(/^\\/quests\\/[\\w-]+\\/complete\\/[\\w-]+$/)) { const questId = path.split(\"/\")[2]; const objectiveId = path.split(\"/\")[4]; const quest = await completeObjective(questId, objectiveId); return new Response(JSON.stringify(quest), { headers: { ...headers, \"Content-Type\": \"application/json\" } }) }\n    if (req.method === \"POST\" && path === \"/quests/generate\") { const body = await req.json(); const quest = await generateQuest(body.type || 'side', body.level || 1); return new Response(JSON.stringify(quest), { headers: { ...headers, \"Content-Type\": \"application/json\" } }) }\n    return new Response(JSON.stringify({ error: \"Not found\" }), { status: 404, headers: { ...headers, \"Content-Type\": \"application/json\" } })\n  } catch (error: unknown) { return new Response(JSON.stringify({ error: \"Internal server error\", message: (error instanceof Error ? error.message : String(error)) }), { status: 500, headers: { ...headers, \"Content-Type\": \"application/json\" } }) }\n})",
@@ -459,67 +459,67 @@
       ],
       "returns": [
         {
-          "path": "supabase/functions/quests/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
           "line": 31,
           "endLine": 31,
           "expression": "optionsResponse"
         },
         {
-          "path": "supabase/functions/quests/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
           "line": 35,
           "endLine": 35,
           "expression": "new Response(JSON.stringify({ status: 'ok', features: ['quests', 'objectives', 'rewards', 'generation'] }), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
         },
         {
-          "path": "supabase/functions/quests/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
           "line": 36,
           "endLine": 36,
           "expression": "new Response(JSON.stringify(quest), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
         },
         {
-          "path": "supabase/functions/quests/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
           "line": 37,
           "endLine": 37,
           "expression": "new Response(JSON.stringify(list), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
         },
         {
-          "path": "supabase/functions/quests/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
           "line": 38,
           "endLine": 38,
           "expression": "new Response(JSON.stringify({ error: \"Quest not found\" }), { status: 404, headers: { ...headers, \"Content-Type\": \"application/json\" } })"
         },
         {
-          "path": "supabase/functions/quests/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
           "line": 38,
           "endLine": 38,
           "expression": "new Response(JSON.stringify(quest), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
         },
         {
-          "path": "supabase/functions/quests/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
           "line": 39,
           "endLine": 39,
           "expression": "new Response(JSON.stringify(quest), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
         },
         {
-          "path": "supabase/functions/quests/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
           "line": 40,
           "endLine": 40,
           "expression": "new Response(JSON.stringify(quest), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
         },
         {
-          "path": "supabase/functions/quests/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
           "line": 41,
           "endLine": 41,
           "expression": "new Response(JSON.stringify(quest), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
         },
         {
-          "path": "supabase/functions/quests/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
           "line": 42,
           "endLine": 42,
           "expression": "new Response(JSON.stringify({ error: \"Not found\" }), { status: 404, headers: { ...headers, \"Content-Type\": \"application/json\" } })"
         },
         {
-          "path": "supabase/functions/quests/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
           "line": 43,
           "endLine": 43,
           "expression": "new Response(JSON.stringify({ error: \"Internal server error\", message: (error instanceof Error ? error.message : String(error)) }), { status: 500, headers: { ...headers, \"Content-Type\": \"application/json\" } })"
@@ -527,7 +527,7 @@
       ],
       "calls": [
         {
-          "path": "supabase/functions/quests/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
           "line": 28,
           "endLine": 44,
           "expression": "serve",
@@ -536,7 +536,7 @@
           ]
         },
         {
-          "path": "supabase/functions/quests/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
           "line": 29,
           "endLine": 29,
           "expression": "corsHeaders",
@@ -546,7 +546,7 @@
           ]
         },
         {
-          "path": "supabase/functions/quests/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
           "line": 30,
           "endLine": 30,
           "expression": "handleOptions",
@@ -556,7 +556,7 @@
           ]
         },
         {
-          "path": "supabase/functions/quests/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
           "line": 33,
           "endLine": 33,
           "expression": "url.pathname.replace",
@@ -566,7 +566,7 @@
           ]
         },
         {
-          "path": "supabase/functions/quests/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
           "line": 35,
           "endLine": 35,
           "expression": "JSON.stringify",
@@ -575,14 +575,14 @@
           ]
         },
         {
-          "path": "supabase/functions/quests/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
           "line": 36,
           "endLine": 36,
           "expression": "req.json",
           "arguments": []
         },
         {
-          "path": "supabase/functions/quests/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
           "line": 36,
           "endLine": 36,
           "expression": "createQuest",
@@ -591,7 +591,7 @@
           ]
         },
         {
-          "path": "supabase/functions/quests/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
           "line": 36,
           "endLine": 36,
           "expression": "JSON.stringify",
@@ -600,7 +600,7 @@
           ]
         },
         {
-          "path": "supabase/functions/quests/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
           "line": 37,
           "endLine": 37,
           "expression": "url.searchParams.get",
@@ -609,7 +609,7 @@
           ]
         },
         {
-          "path": "supabase/functions/quests/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
           "line": 37,
           "endLine": 37,
           "expression": "url.searchParams.get",
@@ -618,7 +618,7 @@
           ]
         },
         {
-          "path": "supabase/functions/quests/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
           "line": 37,
           "endLine": 37,
           "expression": "listQuests",
@@ -628,7 +628,7 @@
           ]
         },
         {
-          "path": "supabase/functions/quests/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
           "line": 37,
           "endLine": 37,
           "expression": "JSON.stringify",
@@ -637,7 +637,7 @@
           ]
         },
         {
-          "path": "supabase/functions/quests/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
           "line": 38,
           "endLine": 38,
           "expression": "path.match",
@@ -646,7 +646,7 @@
           ]
         },
         {
-          "path": "supabase/functions/quests/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
           "line": 38,
           "endLine": 38,
           "expression": "path.split",
@@ -655,7 +655,7 @@
           ]
         },
         {
-          "path": "supabase/functions/quests/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
           "line": 38,
           "endLine": 38,
           "expression": "getQuest",
@@ -664,7 +664,7 @@
           ]
         },
         {
-          "path": "supabase/functions/quests/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
           "line": 38,
           "endLine": 38,
           "expression": "JSON.stringify",
@@ -673,7 +673,7 @@
           ]
         },
         {
-          "path": "supabase/functions/quests/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
           "line": 38,
           "endLine": 38,
           "expression": "JSON.stringify",
@@ -682,7 +682,7 @@
           ]
         },
         {
-          "path": "supabase/functions/quests/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
           "line": 39,
           "endLine": 39,
           "expression": "path.match",
@@ -691,7 +691,7 @@
           ]
         },
         {
-          "path": "supabase/functions/quests/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
           "line": 39,
           "endLine": 39,
           "expression": "path.split",
@@ -700,14 +700,14 @@
           ]
         },
         {
-          "path": "supabase/functions/quests/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
           "line": 39,
           "endLine": 39,
           "expression": "req.json",
           "arguments": []
         },
         {
-          "path": "supabase/functions/quests/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
           "line": 39,
           "endLine": 39,
           "expression": "updateQuest",
@@ -717,7 +717,7 @@
           ]
         },
         {
-          "path": "supabase/functions/quests/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
           "line": 39,
           "endLine": 39,
           "expression": "JSON.stringify",
@@ -726,7 +726,7 @@
           ]
         },
         {
-          "path": "supabase/functions/quests/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
           "line": 40,
           "endLine": 40,
           "expression": "path.match",
@@ -735,7 +735,7 @@
           ]
         },
         {
-          "path": "supabase/functions/quests/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
           "line": 40,
           "endLine": 40,
           "expression": "path.split",
@@ -744,7 +744,7 @@
           ]
         },
         {
-          "path": "supabase/functions/quests/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
           "line": 40,
           "endLine": 40,
           "expression": "path.split",
@@ -753,7 +753,7 @@
           ]
         },
         {
-          "path": "supabase/functions/quests/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
           "line": 40,
           "endLine": 40,
           "expression": "completeObjective",
@@ -763,7 +763,7 @@
           ]
         },
         {
-          "path": "supabase/functions/quests/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
           "line": 40,
           "endLine": 40,
           "expression": "JSON.stringify",
@@ -772,14 +772,14 @@
           ]
         },
         {
-          "path": "supabase/functions/quests/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
           "line": 41,
           "endLine": 41,
           "expression": "req.json",
           "arguments": []
         },
         {
-          "path": "supabase/functions/quests/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
           "line": 41,
           "endLine": 41,
           "expression": "generateQuest",
@@ -789,7 +789,7 @@
           ]
         },
         {
-          "path": "supabase/functions/quests/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
           "line": 41,
           "endLine": 41,
           "expression": "JSON.stringify",
@@ -798,7 +798,7 @@
           ]
         },
         {
-          "path": "supabase/functions/quests/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
           "line": 42,
           "endLine": 42,
           "expression": "JSON.stringify",
@@ -807,7 +807,7 @@
           ]
         },
         {
-          "path": "supabase/functions/quests/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
           "line": 43,
           "endLine": 43,
           "expression": "JSON.stringify",
@@ -816,7 +816,7 @@
           ]
         },
         {
-          "path": "supabase/functions/quests/index.ts",
+          "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
           "line": 43,
           "endLine": 43,
           "expression": "String",
@@ -831,7 +831,7 @@
     {
       "kind": "VariableDeclaration",
       "name": "DEFAULT_CORS_METHODS",
-      "path": "supabase/functions/_shared/cors.ts",
+      "path": "archive/supabase-legacy/supabase/functions/_shared/cors.ts",
       "line": 9,
       "endLine": 9,
       "text": "DEFAULT_CORS_METHODS = 'GET, POST, PUT, DELETE, OPTIONS'"
@@ -839,7 +839,7 @@
     {
       "kind": "VariableDeclaration",
       "name": "DEFAULT_CORS_ALLOW_HEADERS",
-      "path": "supabase/functions/_shared/cors.ts",
+      "path": "archive/supabase-legacy/supabase/functions/_shared/cors.ts",
       "line": 10,
       "endLine": 11,
       "text": "DEFAULT_CORS_ALLOW_HEADERS =\n  'authorization, x-client-info, apikey, content-type'"
@@ -847,7 +847,7 @@
     {
       "kind": "TypeAliasDeclaration",
       "name": "CorsOptions",
-      "path": "supabase/functions/_shared/cors.ts",
+      "path": "archive/supabase-legacy/supabase/functions/_shared/cors.ts",
       "line": 13,
       "endLine": 32,
       "text": "export type CorsOptions = {\n  /** Override Allow-Methods (e.g. \"POST, OPTIONS\" for POST-only functions). */\n  methods?: string;\n  allowHeaders?: string;\n  /**\n   * Env keys tried in order for the allowlist CSV (or explicit `*`).\n   * Default: CHARACTER_AI_ALLOWED_ORIGIN\n   */\n  envKeys?: string[];\n  /** When true (default), include Content-Type: application/json on CORS header bags. */\n  includeJsonContentType?: boolean;\n  /**\n   * When origin does not match allowlist/localhost:\n   * - omit (default): do not set Access-Control-Allow-Origin (fail-closed)\n   * - configured-or-star: set configured value or `*` (legacy meshy fallback)\n   */\n  missingOriginPolicy?: 'omit' | 'configured-or-star';\n  /** When true, echo localhost even if an allowlist env is set (legacy meshy). */\n  allowLocalhostWhenConfigured?: boolean;\n};"
@@ -855,7 +855,7 @@
     {
       "kind": "FunctionDeclaration",
       "name": "readConfiguredOrigin",
-      "path": "supabase/functions/_shared/cors.ts",
+      "path": "archive/supabase-legacy/supabase/functions/_shared/cors.ts",
       "line": 34,
       "endLine": 40,
       "text": "function readConfiguredOrigin(envKeys: string[]): string {\n  for (const key of envKeys) {\n    const value = Deno.env.get(key)?.trim() ?? '';\n    if (value) return value;\n  }\n  return '';\n}"
@@ -863,7 +863,7 @@
     {
       "kind": "FunctionDeclaration",
       "name": "isLocalDevOrigin",
-      "path": "supabase/functions/_shared/cors.ts",
+      "path": "archive/supabase-legacy/supabase/functions/_shared/cors.ts",
       "line": 42,
       "endLine": 44,
       "text": "export function isLocalDevOrigin(origin: string): boolean {\n  return /^https?:\\/\\/(localhost|127\\.0\\.0\\.1)(:\\d+)?$/i.test(origin);\n}"
@@ -871,7 +871,7 @@
     {
       "kind": "FunctionDeclaration",
       "name": "corsHeaders",
-      "path": "supabase/functions/_shared/cors.ts",
+      "path": "archive/supabase-legacy/supabase/functions/_shared/cors.ts",
       "line": 46,
       "endLine": 96,
       "text": "export function corsHeaders(\n  request: Request,\n  opts: CorsOptions = {},\n): Record<string, string> {\n  const envKeys = opts.envKeys?.length\n    ? opts.envKeys\n    : ['CHARACTER_AI_ALLOWED_ORIGIN'];\n  const configured = readConfiguredOrigin(envKeys);\n  const requestOrigin = request.headers.get('Origin');\n  const headers: Record<string, string> = {\n    'Access-Control-Allow-Methods': opts.methods ?? DEFAULT_CORS_METHODS,\n    'Access-Control-Allow-Headers':\n      opts.allowHeaders ?? DEFAULT_CORS_ALLOW_HEADERS,\n    Vary: 'Origin',\n  };\n\n  if (opts.includeJsonContentType !== false) {\n    headers['Content-Type'] = 'application/json';\n  }\n\n  if (configured === '*') {\n    headers['Access-Control-Allow-Origin'] = '*';\n    return headers;\n  }\n\n  const allowlist = configured\n    .split(',')\n    .map((entry) => entry.trim())\n    .filter(Boolean);\n\n  if (requestOrigin && allowlist.includes(requestOrigin)) {\n    headers['Access-Control-Allow-Origin'] = requestOrigin;\n    return headers;\n  }\n\n  const localhostOk =\n    Boolean(requestOrigin) &&\n    isLocalDevOrigin(requestOrigin!) &&\n    (!configured || opts.allowLocalhostWhenConfigured === true);\n\n  if (localhostOk && requestOrigin) {\n    headers['Access-Control-Allow-Origin'] = requestOrigin;\n    return headers;\n  }\n\n  if (opts.missingOriginPolicy === 'configured-or-star') {\n    headers['Access-Control-Allow-Origin'] = configured || '*';\n  }\n\n  return headers;\n}"
@@ -879,7 +879,7 @@
     {
       "kind": "FunctionDeclaration",
       "name": "handleOptions",
-      "path": "supabase/functions/_shared/cors.ts",
+      "path": "archive/supabase-legacy/supabase/functions/_shared/cors.ts",
       "line": 99,
       "endLine": 108,
       "text": "export function handleOptions(\n  request: Request,\n  opts?: CorsOptions,\n): Response | null {\n  if (request.method !== 'OPTIONS') return null;\n  return new Response(null, {\n    status: 204,\n    headers: corsHeaders(request, opts),\n  });\n}"
@@ -887,7 +887,7 @@
     {
       "kind": "FunctionDeclaration",
       "name": "jsonResponse",
-      "path": "supabase/functions/_shared/cors.ts",
+      "path": "archive/supabase-legacy/supabase/functions/_shared/cors.ts",
       "line": 110,
       "endLine": 120,
       "text": "export function jsonResponse(\n  request: Request,\n  body: unknown,\n  status = 200,\n  opts?: CorsOptions,\n): Response {\n  return new Response(JSON.stringify(body), {\n    status,\n    headers: corsHeaders(request, opts),\n  });\n}"
@@ -895,7 +895,7 @@
     {
       "kind": "VariableDeclaration",
       "name": "CORS_OPTS",
-      "path": "supabase/functions/quests/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
       "line": 7,
       "endLine": 9,
       "text": "CORS_OPTS: CorsOptions = {\n  missingOriginPolicy: 'configured-or-star',\n}"
@@ -903,7 +903,7 @@
     {
       "kind": "InterfaceDeclaration",
       "name": "Quest",
-      "path": "supabase/functions/quests/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
       "line": 13,
       "endLine": 13,
       "text": "interface Quest { id: string; projectId: string; name: string; description: string; type: 'main' | 'side' | 'personal'; status: 'available' | 'active' | 'completed' | 'failed'; objectives: Objective[]; rewards: Reward[]; giver?: string; location?: string; prerequisites: string[]; createdAt: string; updatedAt: string }"
@@ -911,7 +911,7 @@
     {
       "kind": "InterfaceDeclaration",
       "name": "Objective",
-      "path": "supabase/functions/quests/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
       "line": 14,
       "endLine": 14,
       "text": "interface Objective { id: string; description: string; completed: boolean; target?: string; count?: number; current?: number }"
@@ -919,7 +919,7 @@
     {
       "kind": "InterfaceDeclaration",
       "name": "Reward",
-      "path": "supabase/functions/quests/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
       "line": 15,
       "endLine": 15,
       "text": "interface Reward { type: 'xp' | 'gold' | 'item' | 'reputation'; amount: number; item?: string }"
@@ -927,7 +927,7 @@
     {
       "kind": "VariableDeclaration",
       "name": "quests",
-      "path": "supabase/functions/quests/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
       "line": 17,
       "endLine": 17,
       "text": "quests = new Map<string, Quest>()"
@@ -935,7 +935,7 @@
     {
       "kind": "FunctionDeclaration",
       "name": "generateId",
-      "path": "supabase/functions/quests/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
       "line": 19,
       "endLine": 19,
       "text": "function generateId(): string { return crypto.randomUUID() }"
@@ -943,7 +943,7 @@
     {
       "kind": "FunctionDeclaration",
       "name": "createQuest",
-      "path": "supabase/functions/quests/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
       "line": 21,
       "endLine": 21,
       "text": "async function createQuest(data: Partial<Quest>): Promise<Quest> { const id = generateId(); const now = new Date().toISOString(); const quest: Quest = { id, projectId: data.projectId || '', name: data.name || 'Unknown Quest', description: data.description || '', type: data.type || 'side', status: data.status || 'available', objectives: data.objectives || [], rewards: data.rewards || [], giver: data.giver, location: data.location, prerequisites: data.prerequisites || [], createdAt: now, updatedAt: now }; quests.set(id, quest); return quest }"
@@ -951,7 +951,7 @@
     {
       "kind": "FunctionDeclaration",
       "name": "getQuest",
-      "path": "supabase/functions/quests/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
       "line": 22,
       "endLine": 22,
       "text": "async function getQuest(id: string): Promise<Quest | null> { return quests.get(id) || null }"
@@ -959,7 +959,7 @@
     {
       "kind": "FunctionDeclaration",
       "name": "listQuests",
-      "path": "supabase/functions/quests/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
       "line": 23,
       "endLine": 23,
       "text": "async function listQuests(projectId?: string, status?: string): Promise<Quest[]> { let all = Array.from(quests.values()); if (projectId) all = all.filter(q => q.projectId === projectId); if (status) all = all.filter(q => q.status === status); return all }"
@@ -967,7 +967,7 @@
     {
       "kind": "FunctionDeclaration",
       "name": "updateQuest",
-      "path": "supabase/functions/quests/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
       "line": 24,
       "endLine": 24,
       "text": "async function updateQuest(id: string, data: Partial<Quest>): Promise<Quest> { const quest = quests.get(id); if (!quest) throw new Error(\"Quest not found\"); const updated: Quest = { ...quest, ...data, id, updatedAt: new Date().toISOString() }; quests.set(id, updated); return updated }"
@@ -975,7 +975,7 @@
     {
       "kind": "FunctionDeclaration",
       "name": "completeObjective",
-      "path": "supabase/functions/quests/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
       "line": 25,
       "endLine": 25,
       "text": "async function completeObjective(questId: string, objectiveId: string): Promise<Quest> { const quest = quests.get(questId); if (!quest) throw new Error(\"Quest not found\"); const obj = quest.objectives.find(o => o.id === objectiveId); if (obj) { obj.completed = true; quest.updatedAt = new Date().toISOString(); if (quest.objectives.every(o => o.completed)) quest.status = 'completed' } quests.set(questId, quest); return quest }"
@@ -983,7 +983,7 @@
     {
       "kind": "FunctionDeclaration",
       "name": "generateQuest",
-      "path": "supabase/functions/quests/index.ts",
+      "path": "archive/supabase-legacy/supabase/functions/quests/index.ts",
       "line": 26,
       "endLine": 26,
       "text": "async function generateQuest(type: 'main' | 'side' | 'personal', level: number): Promise<Quest> { const templates = { main: [{ name: 'The Dragon\\'s Hoard', description: 'Defeat the ancient dragon and reclaim the stolen treasure.', objectives: ['Travel to Dragon\\'s Lair', 'Defeat the Dragon', 'Retrieve the Treasure'] }, { name: 'The Dark Lord\\'s Return', description: 'Stop the Dark Lord from rising again.', objectives: ['Gather Information', 'Find the Ritual Site', 'Disrupt the Ritual'] }], side: [{ name: 'Lost Heirloom', description: 'A villager has lost a precious family heirloom.', objectives: ['Search the Woods', 'Find the Heirloom', 'Return to Owner'] }, { name: 'Monster Bounty', description: 'A dangerous monster is terrorizing the countryside.', objectives: ['Track the Monster', 'Defeat the Monster', 'Collect the Bounty'] }], personal: [{ name: 'Training Exercise', description: 'Practice your skills to become stronger.', objectives: ['Complete 3 Encounters', 'Reach Level ' + (level + 1) ] }, { name: 'Ancient Knowledge', description: 'Seek out ancient texts to expand your knowledge.', objectives: ['Visit the Library', 'Find the Tome', 'Study the Tome'] }] }; const template = templates[type][Math.floor(Math.random() * templates[type].length)]; return createQuest({ name: template.name, description: template.description, type, objectives: template.objectives.map((desc, i) => ({ id: `obj-${i}`, description: desc, completed: false })), rewards: [{ type: 'xp', amount: level * 100 }, { type: 'gold', amount: level * 10 }] }) }"

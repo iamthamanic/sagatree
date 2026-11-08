@@ -27,7 +27,7 @@ const index = read('src/domains/character/avatar/index.ts');
 const service = read(
   'src/infrastructure/character/avatar/character-avatar-artifact-service.ts',
 );
-const migration = read('supabase/migrations/036_character_avatar_artifacts.sql');
+const migration = read('archive/supabase-legacy/supabase/migrations/036_character_avatar_artifacts.sql');
 
 check(/AVATAR_ARTIFACT_CONTRACT_VERSION/.test(domain), 'contract version');
 check(/materializeAvatarArtifact/.test(domain), 'materialize');
@@ -48,8 +48,8 @@ check(/idx_character_avatar_artifacts_one_active/.test(migration), 'exactly-one-
 check(/guard_character_avatar_artifact_escalation/.test(migration), 'escalation guard');
 check(/analysis_status = 'pending'/.test(migration), 'insert pending only');
 check(/avatar-asset:/.test(migration), 'logical asset key constraint');
-check(existsSync(join(root, 'supabase/migrations/024_character_avatar_import.sql')), 'legacy import kept');
-check(existsSync(join(root, 'supabase/migrations/026_character_avatar_meshy_jobs.sql')), 'legacy generate kept');
+check(existsSync(join(root, 'archive/supabase-legacy/supabase/migrations/024_character_avatar_import.sql')), 'legacy import kept');
+check(existsSync(join(root, 'archive/supabase-legacy/supabase/migrations/026_character_avatar_meshy_jobs.sql')), 'legacy generate kept');
 
 const outDir = join(root, 'node_modules/.cache/avatar-v2-artifact-pipeline-check');
 mkdirSync(outDir, { recursive: true });

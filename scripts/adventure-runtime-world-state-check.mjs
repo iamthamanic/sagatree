@@ -68,7 +68,7 @@ mustInclude(
 );
 
 mustInclude(
-  'supabase/migrations/050_session_adventure_runtime.sql',
+  'archive/supabase-legacy/supabase/migrations/050_session_adventure_runtime.sql',
   [
     'sagadrive_resolve_adventure_command',
     'adventure_runtime',

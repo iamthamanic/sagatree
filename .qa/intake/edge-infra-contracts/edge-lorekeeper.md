@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [edge-lorekeeper.json](source-contracts/edge-lorekeeper.json) (SHA-256 `87e48d99d50fbf3a6ec76e64ecb742716456f52d828c2b91d055f17da6388cf2`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [edge-lorekeeper.json](source-contracts/edge-lorekeeper.json) (SHA-256 `6f3d47f1559d9480d4328048b390d80270c497c6866f29a9e6ba2e9000f883c2`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Exposure and purpose
 
@@ -55,7 +55,7 @@ None in the reviewed source.
 
 ### DEFAULT_CORS_METHODS
 
-`supabase/functions/_shared/cors.ts:9`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:9`
 
 ```ts
 DEFAULT_CORS_METHODS = 'GET, POST, PUT, DELETE, OPTIONS'
@@ -63,7 +63,7 @@ DEFAULT_CORS_METHODS = 'GET, POST, PUT, DELETE, OPTIONS'
 
 ### DEFAULT_CORS_ALLOW_HEADERS
 
-`supabase/functions/_shared/cors.ts:10`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:10`
 
 ```ts
 DEFAULT_CORS_ALLOW_HEADERS =
@@ -72,7 +72,7 @@ DEFAULT_CORS_ALLOW_HEADERS =
 
 ### readConfiguredOrigin
 
-`supabase/functions/_shared/cors.ts:34`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:34`
 
 ```ts
 function readConfiguredOrigin(envKeys: string[]): string {
@@ -86,7 +86,7 @@ function readConfiguredOrigin(envKeys: string[]): string {
 
 ### CORS_OPTS
 
-`supabase/functions/lorekeeper/index.ts:7`
+`archive/supabase-legacy/supabase/functions/lorekeeper/index.ts:7`
 
 ```ts
 CORS_OPTS: CorsOptions = {
@@ -130,7 +130,7 @@ No src/infrastructure caller in the reviewed branch. This does not authorize add
 
 ### lorekeeper:1
 
-Predicate: `req.method === "GET" && path === "/health"`. Source: `supabase/functions/lorekeeper/index.ts:423`.
+Predicate: `req.method === "GET" && path === "/health"`. Source: `archive/supabase-legacy/supabase/functions/lorekeeper/index.ts:423`.
 
 
 ```ts
@@ -147,7 +147,7 @@ Predicate: `req.method === "GET" && path === "/health"`. Source: `supabase/funct
 
 ### lorekeeper:2
 
-Predicate: `req.method === "POST" && path === "/graph"`. Source: `supabase/functions/lorekeeper/index.ts:434`.
+Predicate: `req.method === "POST" && path === "/graph"`. Source: `archive/supabase-legacy/supabase/functions/lorekeeper/index.ts:434`.
 
 
 ```ts
@@ -163,7 +163,7 @@ Predicate: `req.method === "POST" && path === "/graph"`. Source: `supabase/funct
 
 ### lorekeeper:3
 
-Predicate: `req.method === "GET" && path.match(/^\/graph\/[\w-]+$/)`. Source: `supabase/functions/lorekeeper/index.ts:444`.
+Predicate: `req.method === "GET" && path.match(/^\/graph\/[\w-]+$/)`. Source: `archive/supabase-legacy/supabase/functions/lorekeeper/index.ts:444`.
 
 
 ```ts
@@ -179,7 +179,7 @@ Predicate: `req.method === "GET" && path.match(/^\/graph\/[\w-]+$/)`. Source: `s
 
 ### lorekeeper:4
 
-Predicate: `req.method === "POST" && path === "/node"`. Source: `supabase/functions/lorekeeper/index.ts:454`.
+Predicate: `req.method === "POST" && path === "/node"`. Source: `archive/supabase-legacy/supabase/functions/lorekeeper/index.ts:454`.
 
 
 ```ts
@@ -195,7 +195,7 @@ Predicate: `req.method === "POST" && path === "/node"`. Source: `supabase/functi
 
 ### lorekeeper:5
 
-Predicate: `req.method === "GET" && path.match(/^\/node\/[\w-]+$/)`. Source: `supabase/functions/lorekeeper/index.ts:464`.
+Predicate: `req.method === "GET" && path.match(/^\/node\/[\w-]+$/)`. Source: `archive/supabase-legacy/supabase/functions/lorekeeper/index.ts:464`.
 
 
 ```ts
@@ -218,7 +218,7 @@ Predicate: `req.method === "GET" && path.match(/^\/node\/[\w-]+$/)`. Source: `su
 
 ### lorekeeper:6
 
-Predicate: `req.method === "PUT" && path.match(/^\/node\/[\w-]+$/)`. Source: `supabase/functions/lorekeeper/index.ts:481`.
+Predicate: `req.method === "PUT" && path.match(/^\/node\/[\w-]+$/)`. Source: `archive/supabase-legacy/supabase/functions/lorekeeper/index.ts:481`.
 
 
 ```ts
@@ -235,7 +235,7 @@ Predicate: `req.method === "PUT" && path.match(/^\/node\/[\w-]+$/)`. Source: `su
 
 ### lorekeeper:7
 
-Predicate: `req.method === "DELETE" && path.match(/^\/node\/[\w-]+$/)`. Source: `supabase/functions/lorekeeper/index.ts:492`.
+Predicate: `req.method === "DELETE" && path.match(/^\/node\/[\w-]+$/)`. Source: `archive/supabase-legacy/supabase/functions/lorekeeper/index.ts:492`.
 
 
 ```ts
@@ -251,7 +251,7 @@ Predicate: `req.method === "DELETE" && path.match(/^\/node\/[\w-]+$/)`. Source: 
 
 ### lorekeeper:8
 
-Predicate: `req.method === "POST" && path === "/relationship"`. Source: `supabase/functions/lorekeeper/index.ts:502`.
+Predicate: `req.method === "POST" && path === "/relationship"`. Source: `archive/supabase-legacy/supabase/functions/lorekeeper/index.ts:502`.
 
 
 ```ts
@@ -267,7 +267,7 @@ Predicate: `req.method === "POST" && path === "/relationship"`. Source: `supabas
 
 ### lorekeeper:9
 
-Predicate: `req.method === "GET" && path.match(/^\/relationships\/[\w-]+$/)`. Source: `supabase/functions/lorekeeper/index.ts:512`.
+Predicate: `req.method === "GET" && path.match(/^\/relationships\/[\w-]+$/)`. Source: `archive/supabase-legacy/supabase/functions/lorekeeper/index.ts:512`.
 
 
 ```ts
@@ -283,7 +283,7 @@ Predicate: `req.method === "GET" && path.match(/^\/relationships\/[\w-]+$/)`. So
 
 ### lorekeeper:10
 
-Predicate: `req.method === "POST" && path === "/memory"`. Source: `supabase/functions/lorekeeper/index.ts:522`.
+Predicate: `req.method === "POST" && path === "/memory"`. Source: `archive/supabase-legacy/supabase/functions/lorekeeper/index.ts:522`.
 
 
 ```ts
@@ -299,7 +299,7 @@ Predicate: `req.method === "POST" && path === "/memory"`. Source: `supabase/func
 
 ### lorekeeper:11
 
-Predicate: `req.method === "GET" && path.match(/^\/memories\/[\w-]+$/)`. Source: `supabase/functions/lorekeeper/index.ts:532`.
+Predicate: `req.method === "GET" && path.match(/^\/memories\/[\w-]+$/)`. Source: `archive/supabase-legacy/supabase/functions/lorekeeper/index.ts:532`.
 
 
 ```ts
@@ -316,7 +316,7 @@ Predicate: `req.method === "GET" && path.match(/^\/memories\/[\w-]+$/)`. Source:
 
 ### lorekeeper:12
 
-Predicate: `req.method === "GET" && path.match(/^\/context\/[\w-]+$/)`. Source: `supabase/functions/lorekeeper/index.ts:543`.
+Predicate: `req.method === "GET" && path.match(/^\/context\/[\w-]+$/)`. Source: `archive/supabase-legacy/supabase/functions/lorekeeper/index.ts:543`.
 
 
 ```ts
@@ -332,7 +332,7 @@ Predicate: `req.method === "GET" && path.match(/^\/context\/[\w-]+$/)`. Source: 
 
 ### lorekeeper:13
 
-Predicate: `req.method === "GET" && path.match(/^\/npc\/[\w-]+$/)`. Source: `supabase/functions/lorekeeper/index.ts:553`.
+Predicate: `req.method === "GET" && path.match(/^\/npc\/[\w-]+$/)`. Source: `archive/supabase-legacy/supabase/functions/lorekeeper/index.ts:553`.
 
 
 ```ts
@@ -348,7 +348,7 @@ Predicate: `req.method === "GET" && path.match(/^\/npc\/[\w-]+$/)`. Source: `sup
 
 ### lorekeeper:14
 
-Predicate: `req.method === "POST" && path.match(/^\/consistency\/[\w-]+$/)`. Source: `supabase/functions/lorekeeper/index.ts:563`.
+Predicate: `req.method === "POST" && path.match(/^\/consistency\/[\w-]+$/)`. Source: `archive/supabase-legacy/supabase/functions/lorekeeper/index.ts:563`.
 
 
 ```ts
@@ -367,7 +367,7 @@ Predicate: `req.method === "POST" && path.match(/^\/consistency\/[\w-]+$/)`. Sou
 
 ### CorsOptions
 
-`supabase/functions/_shared/cors.ts:13`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:13`
 
 ```ts
 export type CorsOptions = {
@@ -394,7 +394,7 @@ export type CorsOptions = {
 
 ### WorldNode
 
-`supabase/functions/lorekeeper/index.ts:21`
+`archive/supabase-legacy/supabase/functions/lorekeeper/index.ts:21`
 
 ```ts
 interface WorldNode {
@@ -410,7 +410,7 @@ interface WorldNode {
 
 ### Edge
 
-`supabase/functions/lorekeeper/index.ts:31`
+`archive/supabase-legacy/supabase/functions/lorekeeper/index.ts:31`
 
 ```ts
 interface Edge {
@@ -425,7 +425,7 @@ interface Edge {
 
 ### Memory
 
-`supabase/functions/lorekeeper/index.ts:40`
+`archive/supabase-legacy/supabase/functions/lorekeeper/index.ts:40`
 
 ```ts
 interface Memory {
@@ -441,7 +441,7 @@ interface Memory {
 
 ### ConsistencyCheck
 
-`supabase/functions/lorekeeper/index.ts:50`
+`archive/supabase-legacy/supabase/functions/lorekeeper/index.ts:50`
 
 ```ts
 interface ConsistencyCheck {
@@ -452,7 +452,7 @@ interface ConsistencyCheck {
 
 ### ConsistencyIssue
 
-`supabase/functions/lorekeeper/index.ts:55`
+`archive/supabase-legacy/supabase/functions/lorekeeper/index.ts:55`
 
 ```ts
 interface ConsistencyIssue {
@@ -469,7 +469,7 @@ interface ConsistencyIssue {
 
 ### createWorldGraph
 
-`supabase/functions/lorekeeper/index.ts:76`
+`archive/supabase-legacy/supabase/functions/lorekeeper/index.ts:76`
 
 ```ts
 async function createWorldGraph(data: { projectId: string; name: string; description?: string }): Promise<WorldNode> {
@@ -497,7 +497,7 @@ async function createWorldGraph(data: { projectId: string; name: string; descrip
 
 ### getWorldGraph
 
-`supabase/functions/lorekeeper/index.ts:98`
+`archive/supabase-legacy/supabase/functions/lorekeeper/index.ts:98`
 
 ```ts
 async function getWorldGraph(projectId: string): Promise<{
@@ -543,7 +543,7 @@ async function getWorldGraph(projectId: string): Promise<{
 
 ### createNode
 
-`supabase/functions/lorekeeper/index.ts:142`
+`archive/supabase-legacy/supabase/functions/lorekeeper/index.ts:142`
 
 ```ts
 async function createNode(data: {
@@ -586,7 +586,7 @@ async function createNode(data: {
 
 ### getNode
 
-`supabase/functions/lorekeeper/index.ts:179`
+`archive/supabase-legacy/supabase/functions/lorekeeper/index.ts:179`
 
 ```ts
 async function getNode(nodeId: string): Promise<WorldNode | null> {
@@ -596,7 +596,7 @@ async function getNode(nodeId: string): Promise<WorldNode | null> {
 
 ### updateNode
 
-`supabase/functions/lorekeeper/index.ts:183`
+`archive/supabase-legacy/supabase/functions/lorekeeper/index.ts:183`
 
 ```ts
 async function updateNode(nodeId: string, data: Partial<WorldNode>): Promise<WorldNode> {
@@ -617,7 +617,7 @@ async function updateNode(nodeId: string, data: Partial<WorldNode>): Promise<Wor
 
 ### deleteNode
 
-`supabase/functions/lorekeeper/index.ts:198`
+`archive/supabase-legacy/supabase/functions/lorekeeper/index.ts:198`
 
 ```ts
 async function deleteNode(nodeId: string): Promise<void> {
@@ -634,7 +634,7 @@ async function deleteNode(nodeId: string): Promise<void> {
 
 ### createRelationship
 
-`supabase/functions/lorekeeper/index.ts:213`
+`archive/supabase-legacy/supabase/functions/lorekeeper/index.ts:213`
 
 ```ts
 async function createRelationship(data: {
@@ -666,7 +666,7 @@ async function createRelationship(data: {
 
 ### getRelationships
 
-`supabase/functions/lorekeeper/index.ts:239`
+`archive/supabase-legacy/supabase/functions/lorekeeper/index.ts:239`
 
 ```ts
 async function getRelationships(nodeId: string): Promise<Edge[]> {
@@ -684,7 +684,7 @@ async function getRelationships(nodeId: string): Promise<Edge[]> {
 
 ### addMemory
 
-`supabase/functions/lorekeeper/index.ts:255`
+`archive/supabase-legacy/supabase/functions/lorekeeper/index.ts:255`
 
 ```ts
 async function addMemory(data: {
@@ -713,7 +713,7 @@ async function addMemory(data: {
 
 ### getMemories
 
-`supabase/functions/lorekeeper/index.ts:278`
+`archive/supabase-legacy/supabase/functions/lorekeeper/index.ts:278`
 
 ```ts
 async function getMemories(npcId: string, limit?: number): Promise<Memory[]> {
@@ -739,7 +739,7 @@ async function getMemories(npcId: string, limit?: number): Promise<Memory[]> {
 
 ### getNPCContext
 
-`supabase/functions/lorekeeper/index.ts:298`
+`archive/supabase-legacy/supabase/functions/lorekeeper/index.ts:298`
 
 ```ts
 async function getNPCContext(npcId: string, sessionId?: string): Promise<{
@@ -757,7 +757,7 @@ async function getNPCContext(npcId: string, sessionId?: string): Promise<{
 
 ### checkConsistency
 
-`supabase/functions/lorekeeper/index.ts:314`
+`archive/supabase-legacy/supabase/functions/lorekeeper/index.ts:314`
 
 ```ts
 async function checkConsistency(worldId: string): Promise<ConsistencyCheck> {
@@ -827,7 +827,7 @@ async function checkConsistency(worldId: string): Promise<ConsistencyCheck> {
 
 ### getSessionContext
 
-`supabase/functions/lorekeeper/index.ts:382`
+`archive/supabase-legacy/supabase/functions/lorekeeper/index.ts:382`
 
 ```ts
 async function getSessionContext(sessionId: string): Promise<{
@@ -851,7 +851,7 @@ async function getSessionContext(sessionId: string): Promise<{
 
 ### generateId
 
-`supabase/functions/lorekeeper/index.ts:404`
+`archive/supabase-legacy/supabase/functions/lorekeeper/index.ts:404`
 
 ```ts
 function generateId(): string {
@@ -864,9 +864,9 @@ function generateId(): string {
 
 | Path | SHA-256 |
 |---|---|
-| `supabase/functions/_shared/cors.ts` | `f8286c91d79fa5fc5cfea2fa47081916523fa7a440f234aecd9a47c6a8cf5b38` |
-| `supabase/functions/_shared/edge-dispatcher-allowlist.ts` | `6d1ae7bde0ba9e41fcaa7b61247732168a62699e7811fb8574cef266cfad3a27` |
-| `supabase/functions/_shared/edge-jwt-gate.ts` | `14a871697b051b7fcbee09dbce1dee8bc8ed5ea6a6eca0bec7b2e771b32d0f0c` |
-| `supabase/functions/lorekeeper/index.ts` | `cbf6e3b03b9f411d623609117cd7a60a9bd249f8cd11cc9889c70763fa8baf5f` |
-| `supabase/functions/main/index.ts` | `92f3bf56bf3c776e01595d980246079c4a9f8775e417959abea9d7da003bc53e` |
+| `archive/supabase-legacy/supabase/functions/_shared/cors.ts` | `f8286c91d79fa5fc5cfea2fa47081916523fa7a440f234aecd9a47c6a8cf5b38` |
+| `archive/supabase-legacy/supabase/functions/_shared/edge-dispatcher-allowlist.ts` | `6d1ae7bde0ba9e41fcaa7b61247732168a62699e7811fb8574cef266cfad3a27` |
+| `archive/supabase-legacy/supabase/functions/_shared/edge-jwt-gate.ts` | `14a871697b051b7fcbee09dbce1dee8bc8ed5ea6a6eca0bec7b2e771b32d0f0c` |
+| `archive/supabase-legacy/supabase/functions/lorekeeper/index.ts` | `cbf6e3b03b9f411d623609117cd7a60a9bd249f8cd11cc9889c70763fa8baf5f` |
+| `archive/supabase-legacy/supabase/functions/main/index.ts` | `92f3bf56bf3c776e01595d980246079c4a9f8775e417959abea9d7da003bc53e` |
 

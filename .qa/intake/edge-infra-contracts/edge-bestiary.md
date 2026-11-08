@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [edge-bestiary.json](source-contracts/edge-bestiary.json) (SHA-256 `fc7814bc55918b3f311db1569a4842e914069068b444f0a861437ef3fae3f435`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [edge-bestiary.json](source-contracts/edge-bestiary.json) (SHA-256 `bedb5d34eb46e7849c18b9627c3746c9be93dda7f71b050813637a1b99eea237`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Exposure and purpose
 
@@ -55,7 +55,7 @@ None in the reviewed source.
 
 ### DEFAULT_CORS_METHODS
 
-`supabase/functions/_shared/cors.ts:9`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:9`
 
 ```ts
 DEFAULT_CORS_METHODS = 'GET, POST, PUT, DELETE, OPTIONS'
@@ -63,7 +63,7 @@ DEFAULT_CORS_METHODS = 'GET, POST, PUT, DELETE, OPTIONS'
 
 ### DEFAULT_CORS_ALLOW_HEADERS
 
-`supabase/functions/_shared/cors.ts:10`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:10`
 
 ```ts
 DEFAULT_CORS_ALLOW_HEADERS =
@@ -72,7 +72,7 @@ DEFAULT_CORS_ALLOW_HEADERS =
 
 ### readConfiguredOrigin
 
-`supabase/functions/_shared/cors.ts:34`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:34`
 
 ```ts
 function readConfiguredOrigin(envKeys: string[]): string {
@@ -86,7 +86,7 @@ function readConfiguredOrigin(envKeys: string[]): string {
 
 ### CORS_OPTS
 
-`supabase/functions/bestiary/index.ts:7`
+`archive/supabase-legacy/supabase/functions/bestiary/index.ts:7`
 
 ```ts
 CORS_OPTS: CorsOptions = {
@@ -130,7 +130,7 @@ No src/infrastructure caller in the reviewed branch. This does not authorize add
 
 ### bestiary:1
 
-Predicate: `req.method === "GET" && path === "/health"`. Source: `supabase/functions/bestiary/index.ts:548`.
+Predicate: `req.method === "GET" && path === "/health"`. Source: `archive/supabase-legacy/supabase/functions/bestiary/index.ts:548`.
 
 
 ```ts
@@ -148,7 +148,7 @@ Predicate: `req.method === "GET" && path === "/health"`. Source: `supabase/funct
 
 ### bestiary:2
 
-Predicate: `req.method === "GET" && path === "/monsters"`. Source: `supabase/functions/bestiary/index.ts:560`.
+Predicate: `req.method === "GET" && path === "/monsters"`. Source: `archive/supabase-legacy/supabase/functions/bestiary/index.ts:560`.
 
 
 ```ts
@@ -168,7 +168,7 @@ Predicate: `req.method === "GET" && path === "/monsters"`. Source: `supabase/fun
 
 ### bestiary:3
 
-Predicate: `req.method === "GET" && path === "/monsters/search"`. Source: `supabase/functions/bestiary/index.ts:574`.
+Predicate: `req.method === "GET" && path === "/monsters/search"`. Source: `archive/supabase-legacy/supabase/functions/bestiary/index.ts:574`.
 
 
 ```ts
@@ -184,7 +184,7 @@ Predicate: `req.method === "GET" && path === "/monsters/search"`. Source: `supab
 
 ### bestiary:4
 
-Predicate: `req.method === "GET" && path.match(/^\/monsters\/[\w-]+$/)`. Source: `supabase/functions/bestiary/index.ts:584`.
+Predicate: `req.method === "GET" && path.match(/^\/monsters\/[\w-]+$/)`. Source: `archive/supabase-legacy/supabase/functions/bestiary/index.ts:584`.
 
 
 ```ts
@@ -207,7 +207,7 @@ Predicate: `req.method === "GET" && path.match(/^\/monsters\/[\w-]+$/)`. Source:
 
 ### bestiary:5
 
-Predicate: `req.method === "POST" && path === "/monsters"`. Source: `supabase/functions/bestiary/index.ts:601`.
+Predicate: `req.method === "POST" && path === "/monsters"`. Source: `archive/supabase-legacy/supabase/functions/bestiary/index.ts:601`.
 
 
 ```ts
@@ -223,7 +223,7 @@ Predicate: `req.method === "POST" && path === "/monsters"`. Source: `supabase/fu
 
 ### bestiary:6
 
-Predicate: `req.method === "POST" && path === "/encounters"`. Source: `supabase/functions/bestiary/index.ts:611`.
+Predicate: `req.method === "POST" && path === "/encounters"`. Source: `archive/supabase-legacy/supabase/functions/bestiary/index.ts:611`.
 
 
 ```ts
@@ -239,7 +239,7 @@ Predicate: `req.method === "POST" && path === "/encounters"`. Source: `supabase/
 
 ### bestiary:7
 
-Predicate: `req.method === "GET" && path.match(/^\/encounters\/[\w-]+$/)`. Source: `supabase/functions/bestiary/index.ts:621`.
+Predicate: `req.method === "GET" && path.match(/^\/encounters\/[\w-]+$/)`. Source: `archive/supabase-legacy/supabase/functions/bestiary/index.ts:621`.
 
 
 ```ts
@@ -262,7 +262,7 @@ Predicate: `req.method === "GET" && path.match(/^\/encounters\/[\w-]+$/)`. Sourc
 
 ### bestiary:8
 
-Predicate: `req.method === "GET" && path === "/encounters"`. Source: `supabase/functions/bestiary/index.ts:638`.
+Predicate: `req.method === "GET" && path === "/encounters"`. Source: `archive/supabase-legacy/supabase/functions/bestiary/index.ts:638`.
 
 
 ```ts
@@ -278,7 +278,7 @@ Predicate: `req.method === "GET" && path === "/encounters"`. Source: `supabase/f
 
 ### bestiary:9
 
-Predicate: `req.method === "POST" && path === "/encounters/generate"`. Source: `supabase/functions/bestiary/index.ts:648`.
+Predicate: `req.method === "POST" && path === "/encounters/generate"`. Source: `archive/supabase-legacy/supabase/functions/bestiary/index.ts:648`.
 
 
 ```ts
@@ -302,7 +302,7 @@ Predicate: `req.method === "POST" && path === "/encounters/generate"`. Source: `
 
 ### CorsOptions
 
-`supabase/functions/_shared/cors.ts:13`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:13`
 
 ```ts
 export type CorsOptions = {
@@ -329,7 +329,7 @@ export type CorsOptions = {
 
 ### Monster
 
-`supabase/functions/bestiary/index.ts:21`
+`archive/supabase-legacy/supabase/functions/bestiary/index.ts:21`
 
 ```ts
 interface Monster {
@@ -371,7 +371,7 @@ interface Monster {
 
 ### MonsterAction
 
-`supabase/functions/bestiary/index.ts:57`
+`archive/supabase-legacy/supabase/functions/bestiary/index.ts:57`
 
 ```ts
 interface MonsterAction {
@@ -387,7 +387,7 @@ interface MonsterAction {
 
 ### Encounter
 
-`supabase/functions/bestiary/index.ts:67`
+`archive/supabase-legacy/supabase/functions/bestiary/index.ts:67`
 
 ```ts
 interface Encounter {
@@ -415,7 +415,7 @@ interface Encounter {
 
 ### generateId
 
-`supabase/functions/bestiary/index.ts:296`
+`archive/supabase-legacy/supabase/functions/bestiary/index.ts:296`
 
 ```ts
 function generateId(): string {
@@ -425,7 +425,7 @@ function generateId(): string {
 
 ### calculateXP
 
-`supabase/functions/bestiary/index.ts:300`
+`archive/supabase-legacy/supabase/functions/bestiary/index.ts:300`
 
 ```ts
 function calculateXP(cr: number): number {
@@ -444,7 +444,7 @@ function calculateXP(cr: number): number {
 
 ### calculateDifficulty
 
-`supabase/functions/bestiary/index.ts:313`
+`archive/supabase-legacy/supabase/functions/bestiary/index.ts:313`
 
 ```ts
 function calculateDifficulty(xp: number, partySize: number, partyLevel: number): 'easy' | 'medium' | 'hard' | 'deadly' {
@@ -464,7 +464,7 @@ function calculateDifficulty(xp: number, partySize: number, partyLevel: number):
 
 ### listMonsters
 
-`supabase/functions/bestiary/index.ts:331`
+`archive/supabase-legacy/supabase/functions/bestiary/index.ts:331`
 
 ```ts
 async function listMonsters(filters?: { type?: string; cr?: number; size?: string }): Promise<Monster[]> {
@@ -486,7 +486,7 @@ async function listMonsters(filters?: { type?: string; cr?: number; size?: strin
 
 ### getMonster
 
-`supabase/functions/bestiary/index.ts:347`
+`archive/supabase-legacy/supabase/functions/bestiary/index.ts:347`
 
 ```ts
 async function getMonster(id: string): Promise<Monster | null> {
@@ -496,7 +496,7 @@ async function getMonster(id: string): Promise<Monster | null> {
 
 ### createMonster
 
-`supabase/functions/bestiary/index.ts:351`
+`archive/supabase-legacy/supabase/functions/bestiary/index.ts:351`
 
 ```ts
 async function createMonster(data: Partial<Monster>): Promise<Monster> {
@@ -545,7 +545,7 @@ async function createMonster(data: Partial<Monster>): Promise<Monster> {
 
 ### searchMonsters
 
-`supabase/functions/bestiary/index.ts:394`
+`archive/supabase-legacy/supabase/functions/bestiary/index.ts:394`
 
 ```ts
 async function searchMonsters(query: string): Promise<Monster[]> {
@@ -561,7 +561,7 @@ async function searchMonsters(query: string): Promise<Monster[]> {
 
 ### createEncounter
 
-`supabase/functions/bestiary/index.ts:408`
+`archive/supabase-legacy/supabase/functions/bestiary/index.ts:408`
 
 ```ts
 async function createEncounter(data: {
@@ -625,7 +625,7 @@ async function createEncounter(data: {
 
 ### getEncounter
 
-`supabase/functions/bestiary/index.ts:466`
+`archive/supabase-legacy/supabase/functions/bestiary/index.ts:466`
 
 ```ts
 async function getEncounter(id: string): Promise<Encounter | null> {
@@ -635,7 +635,7 @@ async function getEncounter(id: string): Promise<Encounter | null> {
 
 ### listEncounters
 
-`supabase/functions/bestiary/index.ts:470`
+`archive/supabase-legacy/supabase/functions/bestiary/index.ts:470`
 
 ```ts
 async function listEncounters(difficulty?: string): Promise<Encounter[]> {
@@ -651,7 +651,7 @@ async function listEncounters(difficulty?: string): Promise<Encounter[]> {
 
 ### generateEncounter
 
-`supabase/functions/bestiary/index.ts:480`
+`archive/supabase-legacy/supabase/functions/bestiary/index.ts:480`
 
 ```ts
 async function generateEncounter(params: {
@@ -713,9 +713,9 @@ async function generateEncounter(params: {
 
 | Path | SHA-256 |
 |---|---|
-| `supabase/functions/_shared/cors.ts` | `f8286c91d79fa5fc5cfea2fa47081916523fa7a440f234aecd9a47c6a8cf5b38` |
-| `supabase/functions/_shared/edge-dispatcher-allowlist.ts` | `6d1ae7bde0ba9e41fcaa7b61247732168a62699e7811fb8574cef266cfad3a27` |
-| `supabase/functions/_shared/edge-jwt-gate.ts` | `14a871697b051b7fcbee09dbce1dee8bc8ed5ea6a6eca0bec7b2e771b32d0f0c` |
-| `supabase/functions/bestiary/index.ts` | `b1c116175dd85d93685972b1188eb2499153ac581e65cb1c30ac25f2ea8fe444` |
-| `supabase/functions/main/index.ts` | `92f3bf56bf3c776e01595d980246079c4a9f8775e417959abea9d7da003bc53e` |
+| `archive/supabase-legacy/supabase/functions/_shared/cors.ts` | `f8286c91d79fa5fc5cfea2fa47081916523fa7a440f234aecd9a47c6a8cf5b38` |
+| `archive/supabase-legacy/supabase/functions/_shared/edge-dispatcher-allowlist.ts` | `6d1ae7bde0ba9e41fcaa7b61247732168a62699e7811fb8574cef266cfad3a27` |
+| `archive/supabase-legacy/supabase/functions/_shared/edge-jwt-gate.ts` | `14a871697b051b7fcbee09dbce1dee8bc8ed5ea6a6eca0bec7b2e771b32d0f0c` |
+| `archive/supabase-legacy/supabase/functions/bestiary/index.ts` | `b1c116175dd85d93685972b1188eb2499153ac581e65cb1c30ac25f2ea8fe444` |
+| `archive/supabase-legacy/supabase/functions/main/index.ts` | `92f3bf56bf3c776e01595d980246079c4a9f8775e417959abea9d7da003bc53e` |
 

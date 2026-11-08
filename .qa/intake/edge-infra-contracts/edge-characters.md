@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [edge-characters.json](source-contracts/edge-characters.json) (SHA-256 `c5bf9f4be2e6fbdb1e86a93b7901fbcc3c270bc39bbd8718dfa8a677d1d6eb4b`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [edge-characters.json](source-contracts/edge-characters.json) (SHA-256 `3e6f8183be8316b47fa4a10e1f8c1c761437dabe5fec19f024c204e9350881fb`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Exposure and purpose
 
@@ -56,7 +56,7 @@ None in the reviewed source.
 
 ### DEFAULT_CORS_METHODS
 
-`supabase/functions/_shared/cors.ts:9`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:9`
 
 ```ts
 DEFAULT_CORS_METHODS = 'GET, POST, PUT, DELETE, OPTIONS'
@@ -64,7 +64,7 @@ DEFAULT_CORS_METHODS = 'GET, POST, PUT, DELETE, OPTIONS'
 
 ### DEFAULT_CORS_ALLOW_HEADERS
 
-`supabase/functions/_shared/cors.ts:10`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:10`
 
 ```ts
 DEFAULT_CORS_ALLOW_HEADERS =
@@ -73,7 +73,7 @@ DEFAULT_CORS_ALLOW_HEADERS =
 
 ### readConfiguredOrigin
 
-`supabase/functions/_shared/cors.ts:34`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:34`
 
 ```ts
 function readConfiguredOrigin(envKeys: string[]): string {
@@ -87,7 +87,7 @@ function readConfiguredOrigin(envKeys: string[]): string {
 
 ### CORS_OPTS
 
-`supabase/functions/characters/index.ts:7`
+`archive/supabase-legacy/supabase/functions/characters/index.ts:7`
 
 ```ts
 CORS_OPTS: CorsOptions = {
@@ -132,7 +132,7 @@ No src/infrastructure caller in the reviewed branch. This does not authorize add
 
 ### characters:1
 
-Predicate: `req.method === "GET" && path === "/health"`. Source: `supabase/functions/characters/index.ts:622`.
+Predicate: `req.method === "GET" && path === "/health"`. Source: `archive/supabase-legacy/supabase/functions/characters/index.ts:622`.
 
 
 ```ts
@@ -149,7 +149,7 @@ Predicate: `req.method === "GET" && path === "/health"`. Source: `supabase/funct
 
 ### characters:2
 
-Predicate: `req.method === "GET" && path === "/characters"`. Source: `supabase/functions/characters/index.ts:633`.
+Predicate: `req.method === "GET" && path === "/characters"`. Source: `archive/supabase-legacy/supabase/functions/characters/index.ts:633`.
 
 
 ```ts
@@ -166,7 +166,7 @@ Predicate: `req.method === "GET" && path === "/characters"`. Source: `supabase/f
 
 ### characters:3
 
-Predicate: `req.method === "POST" && path === "/characters"`. Source: `supabase/functions/characters/index.ts:644`.
+Predicate: `req.method === "POST" && path === "/characters"`. Source: `archive/supabase-legacy/supabase/functions/characters/index.ts:644`.
 
 
 ```ts
@@ -183,7 +183,7 @@ Predicate: `req.method === "POST" && path === "/characters"`. Source: `supabase/
 
 ### characters:4
 
-Predicate: `req.method === "GET" && path.match(/^\/characters\/[\w-]+$/)`. Source: `supabase/functions/characters/index.ts:655`.
+Predicate: `req.method === "GET" && path.match(/^\/characters\/[\w-]+$/)`. Source: `archive/supabase-legacy/supabase/functions/characters/index.ts:655`.
 
 
 ```ts
@@ -206,7 +206,7 @@ Predicate: `req.method === "GET" && path.match(/^\/characters\/[\w-]+$/)`. Sourc
 
 ### characters:5
 
-Predicate: `req.method === "PUT" && path.match(/^\/characters\/[\w-]+$/)`. Source: `supabase/functions/characters/index.ts:672`.
+Predicate: `req.method === "PUT" && path.match(/^\/characters\/[\w-]+$/)`. Source: `archive/supabase-legacy/supabase/functions/characters/index.ts:672`.
 
 
 ```ts
@@ -223,7 +223,7 @@ Predicate: `req.method === "PUT" && path.match(/^\/characters\/[\w-]+$/)`. Sourc
 
 ### characters:6
 
-Predicate: `req.method === "DELETE" && path.match(/^\/characters\/[\w-]+$/)`. Source: `supabase/functions/characters/index.ts:683`.
+Predicate: `req.method === "DELETE" && path.match(/^\/characters\/[\w-]+$/)`. Source: `archive/supabase-legacy/supabase/functions/characters/index.ts:683`.
 
 
 ```ts
@@ -239,7 +239,7 @@ Predicate: `req.method === "DELETE" && path.match(/^\/characters\/[\w-]+$/)`. So
 
 ### characters:7
 
-Predicate: `req.method === "POST" && path.match(/^\/characters\/[\w-]+\/experience$/)`. Source: `supabase/functions/characters/index.ts:693`.
+Predicate: `req.method === "POST" && path.match(/^\/characters\/[\w-]+\/experience$/)`. Source: `archive/supabase-legacy/supabase/functions/characters/index.ts:693`.
 
 
 ```ts
@@ -256,7 +256,7 @@ Predicate: `req.method === "POST" && path.match(/^\/characters\/[\w-]+\/experien
 
 ### characters:8
 
-Predicate: `req.method === "POST" && path.match(/^\/characters\/[\w-]+\/level-up$/)`. Source: `supabase/functions/characters/index.ts:704`.
+Predicate: `req.method === "POST" && path.match(/^\/characters\/[\w-]+\/level-up$/)`. Source: `archive/supabase-legacy/supabase/functions/characters/index.ts:704`.
 
 
 ```ts
@@ -272,7 +272,7 @@ Predicate: `req.method === "POST" && path.match(/^\/characters\/[\w-]+\/level-up
 
 ### characters:9
 
-Predicate: `req.method === "POST" && path.match(/^\/characters\/[\w-]+\/equipment$/)`. Source: `supabase/functions/characters/index.ts:714`.
+Predicate: `req.method === "POST" && path.match(/^\/characters\/[\w-]+\/equipment$/)`. Source: `archive/supabase-legacy/supabase/functions/characters/index.ts:714`.
 
 
 ```ts
@@ -289,7 +289,7 @@ Predicate: `req.method === "POST" && path.match(/^\/characters\/[\w-]+\/equipmen
 
 ### characters:10
 
-Predicate: `req.method === "DELETE" && path.match(/^\/characters\/[\w-]+\/equipment\/[\w-]+$/)`. Source: `supabase/functions/characters/index.ts:725`.
+Predicate: `req.method === "DELETE" && path.match(/^\/characters\/[\w-]+\/equipment\/[\w-]+$/)`. Source: `archive/supabase-legacy/supabase/functions/characters/index.ts:725`.
 
 
 ```ts
@@ -306,7 +306,7 @@ Predicate: `req.method === "DELETE" && path.match(/^\/characters\/[\w-]+\/equipm
 
 ### characters:11
 
-Predicate: `req.method === "POST" && path.match(/^\/characters\/[\w-]+\/equip\/[\w-]+$/)`. Source: `supabase/functions/characters/index.ts:736`.
+Predicate: `req.method === "POST" && path.match(/^\/characters\/[\w-]+\/equip\/[\w-]+$/)`. Source: `archive/supabase-legacy/supabase/functions/characters/index.ts:736`.
 
 
 ```ts
@@ -323,7 +323,7 @@ Predicate: `req.method === "POST" && path.match(/^\/characters\/[\w-]+\/equip\/[
 
 ### characters:12
 
-Predicate: `req.method === "POST" && path.match(/^\/characters\/[\w-]+\/unequip\/[\w-]+$/)`. Source: `supabase/functions/characters/index.ts:747`.
+Predicate: `req.method === "POST" && path.match(/^\/characters\/[\w-]+\/unequip\/[\w-]+$/)`. Source: `archive/supabase-legacy/supabase/functions/characters/index.ts:747`.
 
 
 ```ts
@@ -340,7 +340,7 @@ Predicate: `req.method === "POST" && path.match(/^\/characters\/[\w-]+\/unequip\
 
 ### characters:13
 
-Predicate: `req.method === "POST" && path.match(/^\/characters\/[\w-]+\/spell-slots\/\d\/use$/)`. Source: `supabase/functions/characters/index.ts:758`.
+Predicate: `req.method === "POST" && path.match(/^\/characters\/[\w-]+\/spell-slots\/\d\/use$/)`. Source: `archive/supabase-legacy/supabase/functions/characters/index.ts:758`.
 
 
 ```ts
@@ -357,7 +357,7 @@ Predicate: `req.method === "POST" && path.match(/^\/characters\/[\w-]+\/spell-sl
 
 ### characters:14
 
-Predicate: `req.method === "POST" && path.match(/^\/characters\/[\w-]+\/spell-slots\/restore$/)`. Source: `supabase/functions/characters/index.ts:769`.
+Predicate: `req.method === "POST" && path.match(/^\/characters\/[\w-]+\/spell-slots\/restore$/)`. Source: `archive/supabase-legacy/supabase/functions/characters/index.ts:769`.
 
 
 ```ts
@@ -373,7 +373,7 @@ Predicate: `req.method === "POST" && path.match(/^\/characters\/[\w-]+\/spell-sl
 
 ### characters:15
 
-Predicate: `req.method === "POST" && path.match(/^\/characters\/[\w-]+\/damage$/)`. Source: `supabase/functions/characters/index.ts:779`.
+Predicate: `req.method === "POST" && path.match(/^\/characters\/[\w-]+\/damage$/)`. Source: `archive/supabase-legacy/supabase/functions/characters/index.ts:779`.
 
 
 ```ts
@@ -390,7 +390,7 @@ Predicate: `req.method === "POST" && path.match(/^\/characters\/[\w-]+\/damage$/
 
 ### characters:16
 
-Predicate: `req.method === "POST" && path.match(/^\/characters\/[\w-]+\/heal$/)`. Source: `supabase/functions/characters/index.ts:790`.
+Predicate: `req.method === "POST" && path.match(/^\/characters\/[\w-]+\/heal$/)`. Source: `archive/supabase-legacy/supabase/functions/characters/index.ts:790`.
 
 
 ```ts
@@ -407,7 +407,7 @@ Predicate: `req.method === "POST" && path.match(/^\/characters\/[\w-]+\/heal$/)`
 
 ### characters:17
 
-Predicate: `req.method === "POST" && path.match(/^\/characters\/[\w-]+\/temp-hp$/)`. Source: `supabase/functions/characters/index.ts:801`.
+Predicate: `req.method === "POST" && path.match(/^\/characters\/[\w-]+\/temp-hp$/)`. Source: `archive/supabase-legacy/supabase/functions/characters/index.ts:801`.
 
 
 ```ts
@@ -424,7 +424,7 @@ Predicate: `req.method === "POST" && path.match(/^\/characters\/[\w-]+\/temp-hp$
 
 ### characters:18
 
-Predicate: `req.method === "GET" && path.match(/^\/characters\/[\w-]+\/export$/)`. Source: `supabase/functions/characters/index.ts:812`.
+Predicate: `req.method === "GET" && path.match(/^\/characters\/[\w-]+\/export$/)`. Source: `archive/supabase-legacy/supabase/functions/characters/index.ts:812`.
 
 
 ```ts
@@ -440,7 +440,7 @@ Predicate: `req.method === "GET" && path.match(/^\/characters\/[\w-]+\/export$/)
 
 ### characters:19
 
-Predicate: `req.method === "POST" && path === "/characters/import"`. Source: `supabase/functions/characters/index.ts:822`.
+Predicate: `req.method === "POST" && path === "/characters/import"`. Source: `archive/supabase-legacy/supabase/functions/characters/index.ts:822`.
 
 
 ```ts
@@ -459,7 +459,7 @@ Predicate: `req.method === "POST" && path === "/characters/import"`. Source: `su
 
 ### CorsOptions
 
-`supabase/functions/_shared/cors.ts:13`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:13`
 
 ```ts
 export type CorsOptions = {
@@ -486,7 +486,7 @@ export type CorsOptions = {
 
 ### Character
 
-`supabase/functions/characters/index.ts:21`
+`archive/supabase-legacy/supabase/functions/characters/index.ts:21`
 
 ```ts
 interface Character {
@@ -526,7 +526,7 @@ interface Character {
 
 ### Attributes
 
-`supabase/functions/characters/index.ts:55`
+`archive/supabase-legacy/supabase/functions/characters/index.ts:55`
 
 ```ts
 interface Attributes {
@@ -541,7 +541,7 @@ interface Attributes {
 
 ### HP
 
-`supabase/functions/characters/index.ts:64`
+`archive/supabase-legacy/supabase/functions/characters/index.ts:64`
 
 ```ts
 interface HP {
@@ -553,7 +553,7 @@ interface HP {
 
 ### SpellSlots
 
-`supabase/functions/characters/index.ts:70`
+`archive/supabase-legacy/supabase/functions/characters/index.ts:70`
 
 ```ts
 interface SpellSlots {
@@ -571,7 +571,7 @@ interface SpellSlots {
 
 ### Feature
 
-`supabase/functions/characters/index.ts:82`
+`archive/supabase-legacy/supabase/functions/characters/index.ts:82`
 
 ```ts
 interface Feature {
@@ -585,7 +585,7 @@ interface Feature {
 
 ### Proficiencies
 
-`supabase/functions/characters/index.ts:90`
+`archive/supabase-legacy/supabase/functions/characters/index.ts:90`
 
 ```ts
 interface Proficiencies {
@@ -598,7 +598,7 @@ interface Proficiencies {
 
 ### Equipment
 
-`supabase/functions/characters/index.ts:97`
+`archive/supabase-legacy/supabase/functions/characters/index.ts:97`
 
 ```ts
 interface Equipment {
@@ -616,7 +616,7 @@ interface Equipment {
 
 ### CreateCharacterRequest
 
-`supabase/functions/characters/index.ts:109`
+`archive/supabase-legacy/supabase/functions/characters/index.ts:109`
 
 ```ts
 interface CreateCharacterRequest {
@@ -638,7 +638,7 @@ interface CreateCharacterRequest {
 
 ### LevelUpRequest
 
-`supabase/functions/characters/index.ts:125`
+`archive/supabase-legacy/supabase/functions/characters/index.ts:125`
 
 ```ts
 interface LevelUpRequest {
@@ -657,7 +657,7 @@ interface LevelUpRequest {
 
 ### generateId
 
-`supabase/functions/characters/index.ts:145`
+`archive/supabase-legacy/supabase/functions/characters/index.ts:145`
 
 ```ts
 function generateId(): string {
@@ -667,7 +667,7 @@ function generateId(): string {
 
 ### calculateModifier
 
-`supabase/functions/characters/index.ts:149`
+`archive/supabase-legacy/supabase/functions/characters/index.ts:149`
 
 ```ts
 function calculateModifier(score: number): number {
@@ -677,7 +677,7 @@ function calculateModifier(score: number): number {
 
 ### calculateProficiencyBonus
 
-`supabase/functions/characters/index.ts:153`
+`archive/supabase-legacy/supabase/functions/characters/index.ts:153`
 
 ```ts
 function calculateProficiencyBonus(level: number): number {
@@ -687,7 +687,7 @@ function calculateProficiencyBonus(level: number): number {
 
 ### getDefaultAttributes
 
-`supabase/functions/characters/index.ts:157`
+`archive/supabase-legacy/supabase/functions/characters/index.ts:157`
 
 ```ts
 function getDefaultAttributes(): Attributes {
@@ -704,7 +704,7 @@ function getDefaultAttributes(): Attributes {
 
 ### getDefaultHP
 
-`supabase/functions/characters/index.ts:168`
+`archive/supabase-legacy/supabase/functions/characters/index.ts:168`
 
 ```ts
 function getDefaultHP(constitution: number, hitDie: number): HP {
@@ -719,7 +719,7 @@ function getDefaultHP(constitution: number, hitDie: number): HP {
 
 ### getDefaultSpellSlots
 
-`supabase/functions/characters/index.ts:177`
+`archive/supabase-legacy/supabase/functions/characters/index.ts:177`
 
 ```ts
 function getDefaultSpellSlots(): SpellSlots {
@@ -739,7 +739,7 @@ function getDefaultSpellSlots(): SpellSlots {
 
 ### getHitDieByClass
 
-`supabase/functions/characters/index.ts:191`
+`archive/supabase-legacy/supabase/functions/characters/index.ts:191`
 
 ```ts
 function getHitDieByClass(className: string): number {
@@ -763,7 +763,7 @@ function getHitDieByClass(className: string): number {
 
 ### getSkillAbility
 
-`supabase/functions/characters/index.ts:209`
+`archive/supabase-legacy/supabase/functions/characters/index.ts:209`
 
 ```ts
 function getSkillAbility(skill: string): string {
@@ -793,7 +793,7 @@ function getSkillAbility(skill: string): string {
 
 ### createCharacter
 
-`supabase/functions/characters/index.ts:237`
+`archive/supabase-legacy/supabase/functions/characters/index.ts:237`
 
 ```ts
 async function createCharacter(data: CreateCharacterRequest): Promise<Character> {
@@ -856,7 +856,7 @@ async function createCharacter(data: CreateCharacterRequest): Promise<Character>
 
 ### getCharacter
 
-`supabase/functions/characters/index.ts:294`
+`archive/supabase-legacy/supabase/functions/characters/index.ts:294`
 
 ```ts
 async function getCharacter(characterId: string): Promise<Character | null> {
@@ -866,7 +866,7 @@ async function getCharacter(characterId: string): Promise<Character | null> {
 
 ### updateCharacter
 
-`supabase/functions/characters/index.ts:298`
+`archive/supabase-legacy/supabase/functions/characters/index.ts:298`
 
 ```ts
 async function updateCharacter(characterId: string, data: Partial<Character>): Promise<Character> {
@@ -887,7 +887,7 @@ async function updateCharacter(characterId: string, data: Partial<Character>): P
 
 ### deleteCharacter
 
-`supabase/functions/characters/index.ts:313`
+`archive/supabase-legacy/supabase/functions/characters/index.ts:313`
 
 ```ts
 async function deleteCharacter(characterId: string): Promise<void> {
@@ -897,7 +897,7 @@ async function deleteCharacter(characterId: string): Promise<void> {
 
 ### listCharacters
 
-`supabase/functions/characters/index.ts:317`
+`archive/supabase-legacy/supabase/functions/characters/index.ts:317`
 
 ```ts
 async function listCharacters(ownerId?: string, projectId?: string): Promise<Character[]> {
@@ -917,7 +917,7 @@ async function listCharacters(ownerId?: string, projectId?: string): Promise<Cha
 
 ### getXPThreshold
 
-`supabase/functions/characters/index.ts:335`
+`archive/supabase-legacy/supabase/functions/characters/index.ts:335`
 
 ```ts
 function getXPThreshold(level: number): number {
@@ -933,7 +933,7 @@ function getXPThreshold(level: number): number {
 
 ### addExperience
 
-`supabase/functions/characters/index.ts:345`
+`archive/supabase-legacy/supabase/functions/characters/index.ts:345`
 
 ```ts
 async function addExperience(characterId: string, xp: number): Promise<{ character: Character; leveledUp: boolean }> {
@@ -963,7 +963,7 @@ async function addExperience(characterId: string, xp: number): Promise<{ charact
 
 ### levelUp
 
-`supabase/functions/characters/index.ts:369`
+`archive/supabase-legacy/supabase/functions/characters/index.ts:369`
 
 ```ts
 async function levelUp(data: LevelUpRequest): Promise<Character> {
@@ -1015,7 +1015,7 @@ async function levelUp(data: LevelUpRequest): Promise<Character> {
 
 ### addEquipment
 
-`supabase/functions/characters/index.ts:419`
+`archive/supabase-legacy/supabase/functions/characters/index.ts:419`
 
 ```ts
 async function addEquipment(characterId: string, equipment: Omit<Equipment, 'id'>): Promise<Equipment> {
@@ -1037,7 +1037,7 @@ async function addEquipment(characterId: string, equipment: Omit<Equipment, 'id'
 
 ### removeEquipment
 
-`supabase/functions/characters/index.ts:435`
+`archive/supabase-legacy/supabase/functions/characters/index.ts:435`
 
 ```ts
 async function removeEquipment(characterId: string, equipmentId: string): Promise<void> {
@@ -1053,7 +1053,7 @@ async function removeEquipment(characterId: string, equipmentId: string): Promis
 
 ### equipItem
 
-`supabase/functions/characters/index.ts:445`
+`archive/supabase-legacy/supabase/functions/characters/index.ts:445`
 
 ```ts
 async function equipItem(characterId: string, equipmentId: string): Promise<Character> {
@@ -1083,7 +1083,7 @@ async function equipItem(characterId: string, equipmentId: string): Promise<Char
 
 ### unequipItem
 
-`supabase/functions/characters/index.ts:469`
+`archive/supabase-legacy/supabase/functions/characters/index.ts:469`
 
 ```ts
 async function unequipItem(characterId: string, equipmentId: string): Promise<Character> {
@@ -1103,7 +1103,7 @@ async function unequipItem(characterId: string, equipmentId: string): Promise<Ch
 
 ### getSpellSlotsByLevel
 
-`supabase/functions/characters/index.ts:487`
+`archive/supabase-legacy/supabase/functions/characters/index.ts:487`
 
 ```ts
 function getSpellSlotsByLevel(characterClass: string, level: number): SpellSlots {
@@ -1122,7 +1122,7 @@ function getSpellSlotsByLevel(characterClass: string, level: number): SpellSlots
 
 ### useSpellSlot
 
-`supabase/functions/characters/index.ts:500`
+`archive/supabase-legacy/supabase/functions/characters/index.ts:500`
 
 ```ts
 async function useSpellSlot(characterId: string, level: number): Promise<{ success: boolean; remaining: number }> {
@@ -1150,7 +1150,7 @@ async function useSpellSlot(characterId: string, level: number): Promise<{ succe
 
 ### restoreSpellSlots
 
-`supabase/functions/characters/index.ts:522`
+`archive/supabase-legacy/supabase/functions/characters/index.ts:522`
 
 ```ts
 async function restoreSpellSlots(characterId: string): Promise<void> {
@@ -1170,7 +1170,7 @@ async function restoreSpellSlots(characterId: string): Promise<void> {
 
 ### takeDamage
 
-`supabase/functions/characters/index.ts:540`
+`archive/supabase-legacy/supabase/functions/characters/index.ts:540`
 
 ```ts
 async function takeDamage(characterId: string, damage: number): Promise<Character> {
@@ -1195,7 +1195,7 @@ async function takeDamage(characterId: string, damage: number): Promise<Characte
 
 ### healCharacter
 
-`supabase/functions/characters/index.ts:559`
+`archive/supabase-legacy/supabase/functions/characters/index.ts:559`
 
 ```ts
 async function healCharacter(characterId: string, healing: number): Promise<Character> {
@@ -1212,7 +1212,7 @@ async function healCharacter(characterId: string, healing: number): Promise<Char
 
 ### addTempHP
 
-`supabase/functions/characters/index.ts:570`
+`archive/supabase-legacy/supabase/functions/characters/index.ts:570`
 
 ```ts
 async function addTempHP(characterId: string, tempHP: number): Promise<Character> {
@@ -1229,7 +1229,7 @@ async function addTempHP(characterId: string, tempHP: number): Promise<Character
 
 ### exportCharacter
 
-`supabase/functions/characters/index.ts:585`
+`archive/supabase-legacy/supabase/functions/characters/index.ts:585`
 
 ```ts
 async function exportCharacter(characterId: string): Promise<Character> {
@@ -1242,7 +1242,7 @@ async function exportCharacter(characterId: string): Promise<Character> {
 
 ### importCharacter
 
-`supabase/functions/characters/index.ts:592`
+`archive/supabase-legacy/supabase/functions/characters/index.ts:592`
 
 ```ts
 async function importCharacter(data: Character): Promise<Character> {
@@ -1266,9 +1266,9 @@ async function importCharacter(data: Character): Promise<Character> {
 
 | Path | SHA-256 |
 |---|---|
-| `supabase/functions/_shared/cors.ts` | `f8286c91d79fa5fc5cfea2fa47081916523fa7a440f234aecd9a47c6a8cf5b38` |
-| `supabase/functions/_shared/edge-dispatcher-allowlist.ts` | `6d1ae7bde0ba9e41fcaa7b61247732168a62699e7811fb8574cef266cfad3a27` |
-| `supabase/functions/_shared/edge-jwt-gate.ts` | `14a871697b051b7fcbee09dbce1dee8bc8ed5ea6a6eca0bec7b2e771b32d0f0c` |
-| `supabase/functions/characters/index.ts` | `59359af748b2d2ff6c777ed1aa6a48f0cc16cdf8eb9bc8e2816ef2751fee8fe7` |
-| `supabase/functions/main/index.ts` | `92f3bf56bf3c776e01595d980246079c4a9f8775e417959abea9d7da003bc53e` |
+| `archive/supabase-legacy/supabase/functions/_shared/cors.ts` | `f8286c91d79fa5fc5cfea2fa47081916523fa7a440f234aecd9a47c6a8cf5b38` |
+| `archive/supabase-legacy/supabase/functions/_shared/edge-dispatcher-allowlist.ts` | `6d1ae7bde0ba9e41fcaa7b61247732168a62699e7811fb8574cef266cfad3a27` |
+| `archive/supabase-legacy/supabase/functions/_shared/edge-jwt-gate.ts` | `14a871697b051b7fcbee09dbce1dee8bc8ed5ea6a6eca0bec7b2e771b32d0f0c` |
+| `archive/supabase-legacy/supabase/functions/characters/index.ts` | `59359af748b2d2ff6c777ed1aa6a48f0cc16cdf8eb9bc8e2816ef2751fee8fe7` |
+| `archive/supabase-legacy/supabase/functions/main/index.ts` | `92f3bf56bf3c776e01595d980246079c4a9f8775e417959abea9d7da003bc53e` |
 

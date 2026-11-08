@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-look.json](source-contracts/infra-look.json) (SHA-256 `925a76a3f68a866e5921032ab9d952fa837cca47926d44d40eed2461e7ede56e`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-look.json](source-contracts/infra-look.json) (SHA-256 `8871a5926746d5e6b398771ed2a4d2e4ffe4d6413d461cfa78b3ceccbe7a51a2`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -46,7 +46,7 @@ None in the reviewed source.
 
 ### fetch: requestUrl
 
-`src/infrastructure/look/look-reference-analysis-service.ts:130` — dynamic-expression.
+`src/infrastructure/look/look-reference-analysis-service.ts:128` — dynamic-expression.
 
 Exact call/query chain:
 ```ts
@@ -58,7 +58,7 @@ fetch(requestUrl, {
     })
 ```
 
-Enclosing operation: `src/infrastructure/look/look-reference-analysis-service.ts:114`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/look/look-reference-analysis-service.ts:112`; complete request/default/result/error logic is in the declarations below and the snapshot.
 
 ## Complete public declarations and facade operation contracts
 
@@ -333,7 +333,7 @@ export function isTintableLookMaterialRole(role: LookMaterialRole): boolean {
 }
 ```
 
-### src/infrastructure/look/look-reference-analysis-service.ts:17
+### src/infrastructure/look/look-reference-analysis-service.ts:15
 
 ```ts
 export type LookReferenceAnalysisRequestImage = LookReferenceAnalysisImageInput & {
@@ -344,7 +344,7 @@ export type LookReferenceAnalysisRequestImage = LookReferenceAnalysisImageInput 
 };
 ```
 
-### src/infrastructure/look/look-reference-analysis-service.ts:24
+### src/infrastructure/look/look-reference-analysis-service.ts:22
 
 ```ts
 export type LookReferenceAnalysisRequest = {
@@ -353,7 +353,7 @@ export type LookReferenceAnalysisRequest = {
 };
 ```
 
-### src/infrastructure/look/look-reference-analysis-service.ts:159
+### src/infrastructure/look/look-reference-analysis-service.ts:157
 
 ```ts
 export async function analyzeLookReferences(
@@ -400,7 +400,7 @@ export async function analyzeLookReferences(
 }
 ```
 
-### src/infrastructure/look/look-reference-analysis-service.ts:203
+### src/infrastructure/look/look-reference-analysis-service.ts:201
 
 ```ts
 export function createEdgeLookReferenceAnalyzer(): LookReferenceAnalyzer {
@@ -894,7 +894,7 @@ export function assertParsedReferences(value: unknown) {
 
 ## Remaining backend helper operations
 
-### src/infrastructure/look/look-reference-analysis-service.ts:114
+### src/infrastructure/look/look-reference-analysis-service.ts:112
 
 ```ts
 async function invokeHostLookReferenceAnalysis(
@@ -968,11 +968,10 @@ async function invokeHostLookReferenceAnalysis(
 | `src/infrastructure/look/host-look-ports.contract.ts` | `f815bac34628b904e1c813d4929872b688d6dc140bebdf2a17a586c11556cf0f` |
 | `src/infrastructure/look/index.ts` | `9459251bdf2ae00dab0a11fdd0d77cc113264577367b61273e3a04c658aec47f` |
 | `src/infrastructure/look/look-material-roles.ts` | `2e8161b18a046bb073664a586bb645dc1428c5796d04ade0b625c9339f8cfcdb` |
-| `src/infrastructure/look/look-reference-analysis-service.ts` | `2642af08c083b7ee828d620e50aca15cb41917ec9676729f60bb7e2f2be08281` |
+| `src/infrastructure/look/look-reference-analysis-service.ts` | `6d7aa8c45fd62cd4448f273eb642f681279613a88c2216b95a2f3fa74a8599fd` |
 | `src/infrastructure/look/look-runtime-types.ts` | `c31d27eaf600ed47e69f16120e584b06a985f29618923118a4c08570f276b2c6` |
 | `src/infrastructure/look/look-runtime.ts` | `64487d02f2831514e86b721d41b0964ac8e99b37faf1a33b8771b4fa7b955d23` |
 | `src/infrastructure/look/look-service.ts` | `3cfd97ccbc21d072865088cf1a0fe5f61e0a43e574f895d869ac80451cc25188` |
 | `src/infrastructure/look/look.persistence.ts` | `ed0a97cba6560930610fc032bd7679b5a7e4b49f837e401cd5a872974598f482` |
 | `src/lib/hostAuthBridge.ts` | `30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a` |
-| `src/lib/supabase.ts` | `a385b96048d1e73f8dd1a78ee00a5c1a4e6cbb5f50e1f705ae527e2493f9f373` |
 

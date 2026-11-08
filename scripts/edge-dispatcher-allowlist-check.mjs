@@ -21,9 +21,9 @@ function read(rel) {
   return readFileSync(join(root, rel), 'utf8');
 }
 
-const allowlistTs = 'supabase/functions/_shared/edge-dispatcher-allowlist.ts';
-const allowlistTest = 'supabase/functions/_shared/edge-dispatcher-allowlist_test.ts';
-const mainTs = 'supabase/functions/main/index.ts';
+const allowlistTs = 'archive/supabase-legacy/supabase/functions/_shared/edge-dispatcher-allowlist.ts';
+const allowlistTest = 'archive/supabase-legacy/supabase/functions/_shared/edge-dispatcher-allowlist_test.ts';
+const mainTs = 'archive/supabase-legacy/supabase/functions/main/index.ts';
 
 for (const rel of [allowlistTs, allowlistTest, mainTs]) {
   if (!existsSync(join(root, rel))) fail(`missing ${rel}`);

@@ -39,7 +39,7 @@ section('1 · files exist');
   'src/infrastructure/npc-creature/npc-creature-instance.persistence.ts',
   'src/app/library/npc-creatures/NpcCreatureSpawnInstanceDialog.tsx',
   'src/app/session/AdventureNpcCreatureInstancesPanel.tsx',
-  'supabase/migrations/023_npc_creature_instances.sql',
+  'archive/supabase-legacy/supabase/migrations/023_npc_creature_instances.sql',
   '.qa/acceptance/npc-creature-session-instances.md',
   '.qa/runs/composition-gate-npc-creature-session-instances.md',
   'e2e/npc-creature-session-instances.spec.ts',
@@ -96,7 +96,7 @@ section('2 · static wiring / German UI / migration security');
   check(/resolveInstanceAfterDefinitionChange/.test(index), 'barrel exports isolation');
   check(/clearTemporaryControllersForSession/.test(index), 'barrel exports session clear');
 
-  const migration = read('supabase/migrations/023_npc_creature_instances.sql');
+  const migration = read('archive/supabase-legacy/supabase/migrations/023_npc_creature_instances.sql');
   check(/npc_creature_instances/.test(migration), 'instances table');
   check(/spawn_npc_creature_instance/.test(migration), 'spawn RPC');
   check(/update_npc_creature_instance_runtime/.test(migration), 'update runtime RPC');

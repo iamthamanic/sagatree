@@ -46,7 +46,7 @@ mustInclude(
   'screen vs modal',
 );
 mustInclude(
-  'supabase/migrations/039_public_resource_ids_and_session_numbers.sql',
+  'archive/supabase-legacy/supabase/migrations/039_public_resource_ids_and_session_numbers.sql',
   [
     'generate_sagadrive_public_id',
     'allocate_next_session_number',
@@ -57,12 +57,12 @@ mustInclude(
   'migration',
 );
 mustInclude(
-  'supabase/migrations/083_world_profiles_public_id.sql',
+  'archive/supabase-legacy/supabase/migrations/083_world_profiles_public_id.sql',
   ['world_profiles', 'WO', 'generate_sagatree_public_id', 'ensure_public_id'],
   'world public id migration',
 );
 mustInclude(
-  'supabase/migrations/084_look_profiles_public_id.sql',
+  'archive/supabase-legacy/supabase/migrations/084_look_profiles_public_id.sql',
   ['look_profiles', 'LK', 'generate_sagatree_public_id', 'ensure_public_id'],
   'look public id migration',
 );

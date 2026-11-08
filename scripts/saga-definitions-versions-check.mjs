@@ -25,7 +25,7 @@ function requireMatch(content, pattern, label) {
   if (!pattern.test(content)) fail(`missing ${label}`);
 }
 
-const migrationPath = 'supabase/migrations/063_saga_definitions.sql';
+const migrationPath = 'archive/supabase-legacy/supabase/migrations/063_saga_definitions.sql';
 if (!existsSync(join(root, migrationPath))) fail(`missing ${migrationPath}`);
 const migration = read(migrationPath);
 requireMatch(migration, /CREATE TABLE IF NOT EXISTS public\.saga_definitions/i, 'saga_definitions');

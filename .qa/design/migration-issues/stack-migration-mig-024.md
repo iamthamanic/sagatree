@@ -23,8 +23,8 @@ Serverseitige GM-/Spieler-/Beobachterprojektionen für Snapshot, Query und Ereig
 
 - Epic: #773; historische Baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`; keine Produktionszustandsbehauptung.
 - Verbindliche Architektur: `docs/architecture/migration-owner-decisions-2026-10-23.md`.
-- Quellpfade und bestehende Adapter: `supabase/migrations/105_atlas_worldbuilder_player_projection.sql`, `src/infrastructure/session`, `src/infrastructure/world/world-atlas-service.ts`.
-- Source Contracts: `supabase/migrations/105_atlas_worldbuilder_player_projection.sql`, `src/infrastructure/session`, `src/infrastructure/world/world-atlas-service.ts`.
+- Quellpfade und bestehende Adapter: `archive/supabase-legacy/supabase/migrations/105_atlas_worldbuilder_player_projection.sql`, `src/infrastructure/session`, `src/infrastructure/world/world-atlas-service.ts`.
+- Source Contracts: `archive/supabase-legacy/supabase/migrations/105_atlas_worldbuilder_player_projection.sql`, `src/infrastructure/session`, `src/infrastructure/world/world-atlas-service.ts`.
 - Zielverhalten: Binding product decisions: docs/architecture/migration-owner-decisions-2026-10-23.md; GATE-01 Drizzle+Policy, GATE-02 Cookie-A, GATE-03 Hono+Colyseus, GATE-04 SQLite single-writer. GATE-05 Tauri+sidecar selected; platform release pending..
 
 ## Scope
@@ -67,21 +67,21 @@ UI-Parität, soweit betroffen: `src/THEME_GUIDE.md`, `docs/ui-styleguide.md`, `d
 - Gegeben: GM, P1, P2 und Beobachter in derselben Sitzung mit verschiedenem Reveal-Stand
 - Wenn: Snapshot und Delta derselben Revision gelesen werden
 - Dann: Jeder Actor erhält ausschließlich seine freigegebenen Objekte; GM-only Inhalte fehlen rekursiv auch in verschachtelten JSON-Feldern.
-- Quelle: `supabase/migrations/105_atlas_worldbuilder_player_projection.sql`, `src/infrastructure/session`, `src/infrastructure/world/world-atlas-service.ts`
+- Quelle: `archive/supabase-legacy/supabase/migrations/105_atlas_worldbuilder_player_projection.sql`, `src/infrastructure/session`, `src/infrastructure/world/world-atlas-service.ts`
 
 ### Fall 2
 
 - Gegeben: P1 verliert eine Freigabe oder Membership
 - Wenn: er Reconnect oder ältere Revision anfordert
 - Dann: Die neue Projektion entfernt zuvor sichtbare geheime Inhalte und gibt keine alten ungefilterten Events aus.
-- Quelle: `supabase/migrations/105_atlas_worldbuilder_player_projection.sql`, `src/infrastructure/session`, `src/infrastructure/world/world-atlas-service.ts`
+- Quelle: `archive/supabase-legacy/supabase/migrations/105_atlas_worldbuilder_player_projection.sql`, `src/infrastructure/session`, `src/infrastructure/world/world-atlas-service.ts`
 
 ### Fall 3
 
 - Gegeben: Ein absichtlich deaktivierter serverseitiger Secret-Filter
 - Wenn: die Negativsuite läuft
 - Dann: Die Canary-Probe wird rot, weil ein konkretes geheimes Markerfeld in einer Spielerantwort auftaucht.
-- Quelle: `supabase/migrations/105_atlas_worldbuilder_player_projection.sql`, `src/infrastructure/session`, `src/infrastructure/world/world-atlas-service.ts`
+- Quelle: `archive/supabase-legacy/supabase/migrations/105_atlas_worldbuilder_player_projection.sql`, `src/infrastructure/session`, `src/infrastructure/world/world-atlas-service.ts`
 
 ## Required Tests
 

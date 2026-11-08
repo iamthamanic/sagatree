@@ -1071,7 +1071,7 @@
     },
     {
       "path": "src/infrastructure/look/look-reference-analysis-service.ts",
-      "sha256": "2642af08c083b7ee828d620e50aca15cb41917ec9676729f60bb7e2f2be08281"
+      "sha256": "6d7aa8c45fd62cd4448f273eb642f681279613a88c2216b95a2f3fa74a8599fd"
     },
     {
       "path": "src/infrastructure/look/look-runtime-types.ts",
@@ -1192,10 +1192,6 @@
     {
       "path": "src/lib/networkTimeout.ts",
       "sha256": "835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851"
-    },
-    {
-      "path": "src/lib/supabase.ts",
-      "sha256": "a385b96048d1e73f8dd1a78ee00a5c1a4e6cbb5f50e1f705ae527e2493f9f373"
     }
   ],
   "importedTypeDeclarations": [
@@ -7723,32 +7719,32 @@
       "kind": "TypeAliasDeclaration",
       "name": "LookReferenceAnalysisRequestImage",
       "path": "src/infrastructure/look/look-reference-analysis-service.ts",
-      "line": 17,
-      "endLine": 22,
+      "line": 15,
+      "endLine": 20,
       "text": "export type LookReferenceAnalysisRequestImage = LookReferenceAnalysisImageInput & {\n  /** Inline image for vision call. */\n  readonly contentBase64?: string;\n  /** Owner-scoped storage path alternative to contentBase64. */\n  readonly storagePath?: string;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "LookReferenceAnalysisRequest",
       "path": "src/infrastructure/look/look-reference-analysis-service.ts",
-      "line": 24,
-      "endLine": 27,
+      "line": 22,
+      "endLine": 25,
       "text": "export type LookReferenceAnalysisRequest = {\n  readonly references: readonly LookReferenceAnalysisRequestImage[];\n  readonly displayNameHint?: string;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "EdgeOk",
       "path": "src/infrastructure/look/look-reference-analysis-service.ts",
-      "line": 29,
-      "endLine": 33,
+      "line": 27,
+      "endLine": 31,
       "text": "type EdgeOk = {\n  status: 'ok';\n  payload: Record<string, unknown>;\n  analyzedAtIso: string;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "EdgeFail",
       "path": "src/infrastructure/look/look-reference-analysis-service.ts",
-      "line": 35,
-      "endLine": 38,
+      "line": 33,
+      "endLine": 36,
       "text": "type EdgeFail = {\n  status: 'not-configured' | 'error';\n  message: string;\n};"
     },
     {

@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [edge-session-media-token.json](source-contracts/edge-session-media-token.json) (SHA-256 `148e5e6ada86bd0b1be9c73e43ed3ec4ce4841506ca100239c401de2d0ede961`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [edge-session-media-token.json](source-contracts/edge-session-media-token.json) (SHA-256 `cef773505bdd84694fbb4ac7937e0625369515187e2a901f4ca0634297074a52`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Exposure and purpose
 
@@ -60,7 +60,7 @@ None in the reviewed source.
 
 ### DEFAULT_CORS_METHODS
 
-`supabase/functions/_shared/cors.ts:9`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:9`
 
 ```ts
 DEFAULT_CORS_METHODS = 'GET, POST, PUT, DELETE, OPTIONS'
@@ -68,7 +68,7 @@ DEFAULT_CORS_METHODS = 'GET, POST, PUT, DELETE, OPTIONS'
 
 ### DEFAULT_CORS_ALLOW_HEADERS
 
-`supabase/functions/_shared/cors.ts:10`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:10`
 
 ```ts
 DEFAULT_CORS_ALLOW_HEADERS =
@@ -77,7 +77,7 @@ DEFAULT_CORS_ALLOW_HEADERS =
 
 ### readConfiguredOrigin
 
-`supabase/functions/_shared/cors.ts:34`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:34`
 
 ```ts
 function readConfiguredOrigin(envKeys: string[]): string {
@@ -91,7 +91,7 @@ function readConfiguredOrigin(envKeys: string[]): string {
 
 ### CORS_OPTS
 
-`supabase/functions/session-media-token/index.ts:21`
+`archive/supabase-legacy/supabase/functions/session-media-token/index.ts:21`
 
 ```ts
 CORS_OPTS: CorsOptions = {
@@ -102,7 +102,7 @@ CORS_OPTS: CorsOptions = {
 
 ### DEFAULT_TTL_SECONDS
 
-`supabase/functions/session-media-token/index.ts:26`
+`archive/supabase-legacy/supabase/functions/session-media-token/index.ts:26`
 
 ```ts
 DEFAULT_TTL_SECONDS = 120
@@ -110,7 +110,7 @@ DEFAULT_TTL_SECONDS = 120
 
 ### readEnv
 
-`supabase/functions/session-media-token/index.ts:41`
+`archive/supabase-legacy/supabase/functions/session-media-token/index.ts:41`
 
 ```ts
 function readEnv(name: string): string {
@@ -160,7 +160,7 @@ No src/infrastructure caller in the reviewed branch. This does not authorize add
 
 ### session-media-token:handler
 
-Predicate: `Complete handler with ordered method/auth/body guards`. Source: `supabase/functions/session-media-token/index.ts:112`.
+Predicate: `Complete handler with ordered method/auth/body guards`. Source: `archive/supabase-legacy/supabase/functions/session-media-token/index.ts:112`.
 
 
 ```ts
@@ -352,7 +352,7 @@ serve(async (req: Request) => {
 
 ### PrivilegedClientBodyKey
 
-`supabase/functions/_shared/client-trust-body.ts:20`
+`archive/supabase-legacy/supabase/functions/_shared/client-trust-body.ts:20`
 
 ```ts
 export type PrivilegedClientBodyKey = (typeof PRIVILEGED_CLIENT_BODY_KEYS)[number];
@@ -360,7 +360,7 @@ export type PrivilegedClientBodyKey = (typeof PRIVILEGED_CLIENT_BODY_KEYS)[numbe
 
 ### CorsOptions
 
-`supabase/functions/_shared/cors.ts:13`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:13`
 
 ```ts
 export type CorsOptions = {
@@ -387,7 +387,7 @@ export type CorsOptions = {
 
 ### EdgeSessionRole
 
-`supabase/functions/_shared/session-media-token.ts:9`
+`archive/supabase-legacy/supabase/functions/_shared/session-media-token.ts:9`
 
 ```ts
 export type EdgeSessionRole = 'player' | 'gamemaster' | 'viewer';
@@ -395,7 +395,7 @@ export type EdgeSessionRole = 'player' | 'gamemaster' | 'viewer';
 
 ### EdgeMediaGrant
 
-`supabase/functions/_shared/session-media-token.ts:11`
+`archive/supabase-legacy/supabase/functions/_shared/session-media-token.ts:11`
 
 ```ts
 export type EdgeMediaGrant = {
@@ -408,7 +408,7 @@ export type EdgeMediaGrant = {
 
 ### JsonRecord
 
-`supabase/functions/session-media-token/index.ts:29`
+`archive/supabase-legacy/supabase/functions/session-media-token/index.ts:29`
 
 ```ts
 type JsonRecord = Record<string, unknown>;
@@ -416,7 +416,7 @@ type JsonRecord = Record<string, unknown>;
 
 ### MembershipRow
 
-`supabase/functions/session-media-token/index.ts:60`
+`archive/supabase-legacy/supabase/functions/session-media-token/index.ts:60`
 
 ```ts
 type MembershipRow = {
@@ -432,7 +432,7 @@ type MembershipRow = {
 
 ### DEFAULT_CORS_METHODS
 
-`supabase/functions/_shared/cors.ts:9`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:9`
 
 ```ts
 DEFAULT_CORS_METHODS = 'GET, POST, PUT, DELETE, OPTIONS'
@@ -440,7 +440,7 @@ DEFAULT_CORS_METHODS = 'GET, POST, PUT, DELETE, OPTIONS'
 
 ### DEFAULT_CORS_ALLOW_HEADERS
 
-`supabase/functions/_shared/cors.ts:10`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:10`
 
 ```ts
 DEFAULT_CORS_ALLOW_HEADERS =
@@ -449,7 +449,7 @@ DEFAULT_CORS_ALLOW_HEADERS =
 
 ### CORS_OPTS
 
-`supabase/functions/session-media-token/index.ts:21`
+`archive/supabase-legacy/supabase/functions/session-media-token/index.ts:21`
 
 ```ts
 CORS_OPTS: CorsOptions = {
@@ -460,7 +460,7 @@ CORS_OPTS: CorsOptions = {
 
 ### DEFAULT_TTL_SECONDS
 
-`supabase/functions/session-media-token/index.ts:26`
+`archive/supabase-legacy/supabase/functions/session-media-token/index.ts:26`
 
 ```ts
 DEFAULT_TTL_SECONDS = 120
@@ -468,7 +468,7 @@ DEFAULT_TTL_SECONDS = 120
 
 ### MAX_TTL_SECONDS
 
-`supabase/functions/session-media-token/index.ts:27`
+`archive/supabase-legacy/supabase/functions/session-media-token/index.ts:27`
 
 ```ts
 MAX_TTL_SECONDS = 300
@@ -479,11 +479,11 @@ MAX_TTL_SECONDS = 300
 
 | Path | SHA-256 |
 |---|---|
-| `supabase/functions/_shared/client-trust-body.ts` | `33c68553dbd89d9c7899520b0ebfa35c4f245ed8ab8ebd242c6f79e9852add95` |
-| `supabase/functions/_shared/cors.ts` | `f8286c91d79fa5fc5cfea2fa47081916523fa7a440f234aecd9a47c6a8cf5b38` |
-| `supabase/functions/_shared/edge-dispatcher-allowlist.ts` | `6d1ae7bde0ba9e41fcaa7b61247732168a62699e7811fb8574cef266cfad3a27` |
-| `supabase/functions/_shared/edge-jwt-gate.ts` | `14a871697b051b7fcbee09dbce1dee8bc8ed5ea6a6eca0bec7b2e771b32d0f0c` |
-| `supabase/functions/_shared/session-media-token.ts` | `4300bfa0eed6594041bf78d336df005eb2281e3c964adc43edc2c10ca37ffdf4` |
-| `supabase/functions/main/index.ts` | `92f3bf56bf3c776e01595d980246079c4a9f8775e417959abea9d7da003bc53e` |
-| `supabase/functions/session-media-token/index.ts` | `2f245776867cef57a038cc1658b9771e607d529f240bc814aae5b83f59117b1c` |
+| `archive/supabase-legacy/supabase/functions/_shared/client-trust-body.ts` | `33c68553dbd89d9c7899520b0ebfa35c4f245ed8ab8ebd242c6f79e9852add95` |
+| `archive/supabase-legacy/supabase/functions/_shared/cors.ts` | `f8286c91d79fa5fc5cfea2fa47081916523fa7a440f234aecd9a47c6a8cf5b38` |
+| `archive/supabase-legacy/supabase/functions/_shared/edge-dispatcher-allowlist.ts` | `6d1ae7bde0ba9e41fcaa7b61247732168a62699e7811fb8574cef266cfad3a27` |
+| `archive/supabase-legacy/supabase/functions/_shared/edge-jwt-gate.ts` | `14a871697b051b7fcbee09dbce1dee8bc8ed5ea6a6eca0bec7b2e771b32d0f0c` |
+| `archive/supabase-legacy/supabase/functions/_shared/session-media-token.ts` | `4300bfa0eed6594041bf78d336df005eb2281e3c964adc43edc2c10ca37ffdf4` |
+| `archive/supabase-legacy/supabase/functions/main/index.ts` | `92f3bf56bf3c776e01595d980246079c4a9f8775e417959abea9d7da003bc53e` |
+| `archive/supabase-legacy/supabase/functions/session-media-token/index.ts` | `2f245776867cef57a038cc1658b9771e607d529f240bc814aae5b83f59117b1c` |
 

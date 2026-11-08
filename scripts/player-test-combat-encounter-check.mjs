@@ -35,7 +35,7 @@ function mustNotInclude(file, needles, label) {
 }
 
 mustInclude(
-  'supabase/migrations/044_session_combat_encounter.sql',
+  'archive/supabase-legacy/supabase/migrations/044_session_combat_encounter.sql',
   [
     'sagadrive_resolve_combat_command',
     'sagadrive_resolve_damage_command',

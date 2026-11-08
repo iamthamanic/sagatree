@@ -35,7 +35,7 @@ function mustNotInclude(file, needles, label) {
 }
 
 mustInclude(
-  'supabase/migrations/042_session_shared_rolls.sql',
+  'archive/supabase-legacy/supabase/migrations/042_session_shared_rolls.sql',
   [
     'sagadrive_resolve_session_check',
     'sagadrive_strip_forged_roll_keys',

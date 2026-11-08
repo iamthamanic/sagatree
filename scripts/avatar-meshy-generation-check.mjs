@@ -25,14 +25,14 @@ const editor = [
   read('src/app/character/edit/CharacterEditor.tsx'),
   read('src/app/character/edit/useCharacterAvatarEditor.ts'),
 ].join('\n');
-const edge = read('supabase/functions/character-avatar-meshy/index.ts');
-const provider = read('supabase/functions/_shared/avatar-meshy-text-to-3d.ts');
-const migration = read('supabase/migrations/026_character_avatar_meshy_jobs.sql');
-const migrationMode = read('supabase/migrations/027_character_avatar_meshy_generation_mode.sql');
-const migrationNoClientWrite = read('supabase/migrations/031_character_avatar_meshy_jobs_no_client_write.sql');
+const edge = read('archive/supabase-legacy/supabase/functions/character-avatar-meshy/index.ts');
+const provider = read('archive/supabase-legacy/supabase/functions/_shared/avatar-meshy-text-to-3d.ts');
+const migration = read('archive/supabase-legacy/supabase/migrations/026_character_avatar_meshy_jobs.sql');
+const migrationMode = read('archive/supabase-legacy/supabase/migrations/027_character_avatar_meshy_generation_mode.sql');
+const migrationNoClientWrite = read('archive/supabase-legacy/supabase/migrations/031_character_avatar_meshy_jobs_no_client_write.sql');
 const applyMigrations = read('scripts/apply-migrations.sh');
-const imageProvider = read('supabase/functions/_shared/item-model3d-meshy.ts');
-const glb = read('supabase/functions/_shared/item-model3d-glb.ts');
+const imageProvider = read('archive/supabase-legacy/supabase/functions/_shared/item-model3d-meshy.ts');
+const glb = read('archive/supabase-legacy/supabase/functions/_shared/item-model3d-glb.ts');
 const agents = read('AGENTS.md');
 
 check(/MESHY_AVATAR_JOB_CONTRACT_VERSION/.test(domain), 'job contract version');
@@ -200,24 +200,24 @@ check(resolveJobPrompt('text', 'elf warrior hero', '') === 'elf warrior hero', '
 check(resolveJobPrompt('image', '', '') === 'Image-to-3D reference', 'image mode placeholder without texture');
 check(resolveJobPrompt('image', '', 'matte leather armor look') === 'matte leather armor look', 'image mode stores texture as job prompt');
 
-check(/AVATAR_MESHY_GLB_MAX_BYTES = 200/.test(read('supabase/functions/_shared/item-model3d-glb.ts')), 'avatar download ceiling 200MB');
-check(/AVATAR_MESHY_GLB_SOFT_BYTES/.test(read('supabase/functions/_shared/item-model3d-glb.ts')), 'soft remesh threshold');
-check(/probeMeshyGlbContentLength/.test(read('supabase/functions/_shared/item-model3d-glb.ts')), 'HEAD size probe');
+check(/AVATAR_MESHY_GLB_MAX_BYTES = 200/.test(read('archive/supabase-legacy/supabase/functions/_shared/item-model3d-glb.ts')), 'avatar download ceiling 200MB');
+check(/AVATAR_MESHY_GLB_SOFT_BYTES/.test(read('archive/supabase-legacy/supabase/functions/_shared/item-model3d-glb.ts')), 'soft remesh threshold');
+check(/probeMeshyGlbContentLength/.test(read('archive/supabase-legacy/supabase/functions/_shared/item-model3d-glb.ts')), 'HEAD size probe');
 check(/avatar-meshy-remesh/.test(edge), 'remesh adapter wired');
 check(/shouldRemesh: meshyMapped\.should_remesh/.test(edge), 'image-to-3d remesh from mapped settings');
 check(/remesh_task_id/.test(edge), 'poll tracks remesh_task_id');
 check(/pending_glb_url/.test(edge), 'poll persists pending_glb_url before download');
 check(/remeshAcked/.test(edge), 'poll splits remesh success from Auto-Rig create');
 check(/045_character_avatar_meshy_pending_glb\.sql/.test(applyMigrations), 'apply-migrations registers 045');
-check(/pending_glb_url/.test(read('supabase/migrations/045_character_avatar_meshy_pending_glb.sql')), '045 pending_glb_url column');
+check(/pending_glb_url/.test(read('archive/supabase-legacy/supabase/migrations/045_character_avatar_meshy_pending_glb.sql')), '045 pending_glb_url column');
 check(/KI-Worker unterbrochen/.test(read('src/app/character/avatar/AvatarMeshyGeneratingOverlay.tsx')), 'offline copy distinguishes worker interrupt');
 check(/Modell wird gespeichert/.test(editor), 'rigging 99% storage label');
-check(/normalizeMeshyRemeshBaseUrl/.test(read('supabase/functions/_shared/avatar-meshy-remesh.ts')), 'remesh base forces v1');
+check(/normalizeMeshyRemeshBaseUrl/.test(read('archive/supabase-legacy/supabase/functions/_shared/avatar-meshy-remesh.ts')), 'remesh base forces v1');
 check(/028_character_avatar_meshy_glb_budget\.sql/.test(applyMigrations), 'apply-migrations registers 028');
-check(/AVATAR_MESHY_GLB_STORE_MAX_BYTES = 150/.test(read('supabase/functions/_shared/item-model3d-glb.ts')), 'avatar store ceiling 150MB');
-check(/157286400/.test(read('supabase/migrations/034_character_avatars_150mb.sql')), '034 bucket 150MB');
+check(/AVATAR_MESHY_GLB_STORE_MAX_BYTES = 150/.test(read('archive/supabase-legacy/supabase/functions/_shared/item-model3d-glb.ts')), 'avatar store ceiling 150MB');
+check(/157286400/.test(read('archive/supabase-legacy/supabase/migrations/034_character_avatars_150mb.sql')), '034 bucket 150MB');
 check(/034_character_avatars_150mb\.sql/.test(applyMigrations), 'apply-migrations registers 034');
-check(/104857600/.test(read('supabase/migrations/028_character_avatar_meshy_glb_budget.sql')), 'bucket 100MB');
+check(/104857600/.test(read('archive/supabase-legacy/supabase/migrations/028_character_avatar_meshy_glb_budget.sql')), 'bucket 100MB');
 check(/GLB budget \(028\)/.test(read('.qa/acceptance/meshy-avatar-image-to-3d.md')), 'image-to-3d acceptance notes budget');
 
 // Local Meshy signed URLs are http://localhost — must not fall back to skinnie VRM.

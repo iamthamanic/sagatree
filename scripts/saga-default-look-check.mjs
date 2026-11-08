@@ -35,7 +35,7 @@ function mustExist(relPath) {
 
 section('1 · files');
 [
-  'supabase/migrations/052_projects_look_settings.sql',
+  'archive/supabase-legacy/supabase/migrations/052_projects_look_settings.sql',
   'src/domains/look/system-default.ts',
   'src/app/project/SagaVisualStyleSettings.tsx',
   'src/app/project/SagaResourceScreen.tsx',
@@ -44,7 +44,7 @@ section('1 · files');
 
 section('2 · migration binding');
 {
-  const mig = read('supabase/migrations/052_projects_look_settings.sql');
+  const mig = read('archive/supabase-legacy/supabase/migrations/052_projects_look_settings.sql');
   check(/default_look_profile_id/.test(mig), 'default_look_profile_id column');
   check(/allow_player_character_look_override/.test(mig), 'allow override column');
   check(/REFERENCES public\.look_profiles/.test(mig), 'FK to look_profiles');

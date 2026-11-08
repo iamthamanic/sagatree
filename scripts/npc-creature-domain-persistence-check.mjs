@@ -263,7 +263,7 @@ section('3 · cross-owner / cross-world mutation rejection');
 // ===========================================================================
 section('4 · migration + RLS static contract');
 {
-  const migration = read('supabase/migrations/021_npc_creature_definitions.sql');
+  const migration = read('archive/supabase-legacy/supabase/migrations/021_npc_creature_definitions.sql');
   requireMatch(migration, /CREATE TABLE IF NOT EXISTS public\.npc_creature_definitions/, 'creates table');
   requireMatch(migration, /ENABLE ROW LEVEL SECURITY/, 'RLS enabled');
   requireMatch(migration, /REVOKE ALL ON TABLE public\.npc_creature_definitions FROM anon/, 'revokes anon');
@@ -305,7 +305,7 @@ section('5 · infrastructure facade security contract');
   );
 
   // Legacy paths must remain untouched as SoT.
-  const legacyNpcs = read('supabase/functions/npcs/index.ts');
+  const legacyNpcs = read('archive/supabase-legacy/supabase/functions/npcs/index.ts');
   rejectMatch(
     legacyNpcs,
     /npc_creature_definitions|NpcCreatureDefinition/,

@@ -130,7 +130,7 @@ const edges = edgeSnapshots.map(({ data: s, path, sha256: snapshotSha }) => {
   for (const table of tablesTouched) deps.push(commonDependency('table', table, issue('MIG-012'), { policyIssueNumber: issue('MIG-013') }));
   for (const bucket of storageBuckets) deps.push(commonDependency('storage', bucket, issue('MIG-500')));
   return {
-    function: name, implementationIssue: edgeIssue.get(name), files: [`supabase/functions/${name}/index.ts`],
+    function: name, implementationIssue: edgeIssue.get(name), files: [`archive/supabase-legacy/supabase/functions/${name}/index.ts`],
     verification: verification([...s.sourceFiles, ...main.sourceFiles, ...callerPaths.map((p) => ({ path: p, sha256: sha256(readFileSync(p)) }))]),
     sourceContract: path, sourceContractSha256: snapshotSha, exposure, methods,
     hasAuthSignals: exposure.kind !== 'legacy-unmounted' || name === 'ai-gm', usesSharedCors: name !== 'main',
@@ -200,7 +200,7 @@ const inventory = { schemaVersion: 2, prepIssue: 778, epicIssue: 773, edgeCount:
   evidenceMeaning: 'Exact current-branch source and adapter contracts. No live backend, successor implementation, security remediation, PoC or architecture approval is claimed.',
   sourceCheckCommand: 'node scripts/stack-migration-edge-source-contracts.mjs', renderCheckCommand: 'node scripts/stack-migration-edge-contracts.mjs',
   bindingSource: '.qa/intake/rpc-contracts/split-groups.json',
-  sharedModules: readdirSync('supabase/functions/_shared').filter((x) => x.endsWith('.ts')).sort(),
+  sharedModules: readdirSync('archive/supabase-legacy/supabase/functions/_shared').filter((x) => x.endsWith('.ts')).sort(),
   dispatcher: { allowedWorkers: allowed, unmountedWorkers: edges.filter((e) => e.exposure.kind === 'legacy-unmounted').map((e) => e.function), dispatcher: 'main' },
   edges, infrastructure,
   notes: ['There are 8 allowlisted workers, 15 unmounted workers and one dispatcher.',
@@ -243,7 +243,7 @@ for (const e of edges) {
   const schemas = s.declarations.filter((x) => ['InterfaceDeclaration', 'TypeAliasDeclaration', 'EnumDeclaration'].includes(x.kind));
   md += section('Exact type declarations', schemas.map((x) => `### ${x.name}\n\n\`${x.path}:${x.line}\`\n${fence(x.text)}`).join('\n') || 'Handler uses inline JSON records; full expressions are above.');
   const helpers = s.declarations.filter((x) => e.exposure.kind === 'legacy-unmounted'
-    ? x.path === `supabase/functions/${e.function}/index.ts` && x.kind === 'FunctionDeclaration'
+    ? x.path === `archive/supabase-legacy/supabase/functions/${e.function}/index.ts` && x.kind === 'FunctionDeclaration'
     : /^(?:parse|validate|build.*(?:Prompt|StoragePath|AssetKey)|assertSafeUserExtra|getDefault|DEFAULT_|RATE_|MAX_|IMAGE_|MESHY_MODEL_IDS|GEOMETRY|TEXTURE|POSE|TOPOLOGY|PRESET_IDS|SIGNED_URL|CORS_OPTS)/.test(x.name));
   md += section('Exact validation, defaults and helper behavior', helpers.map((x) => `### ${x.name}\n\n\`${x.path}:${x.line}\`\n${fence(x.text)}`).join('\n') || 'All inline guards are in the ordered handler; remaining imported helpers are complete in the AST snapshot.');
   md += section('Verification source manifest', sourceTable(e.verification));

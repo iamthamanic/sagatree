@@ -19,14 +19,14 @@ const domain = readFileSync(
   'utf8',
 );
 const edgeHelper = readFileSync(
-  join(root, 'supabase/functions/_shared/client-trust-body.ts'),
+  join(root, 'archive/supabase-legacy/supabase/functions/_shared/client-trust-body.ts'),
   'utf8',
 );
 const deploySql = readFileSync(
-  join(root, 'src/supabase/deploy_marketplace.sql'),
+  join(root, 'archive/supabase-legacy/src-supabase/deploy_marketplace.sql'),
   'utf8',
 );
-const schemaSql = readFileSync(join(root, 'src/supabase/schema.sql'), 'utf8');
+const schemaSql = readFileSync(join(root, 'archive/supabase-legacy/src-supabase/schema.sql'), 'utf8');
 
 assert.match(service, /whitelistMarketplaceUpdatePatch/);
 assert.match(service, /whitelistMarketplaceCreateDto/);
@@ -77,7 +77,7 @@ const allowlisted = [
 
 for (const name of allowlisted) {
   const src = readFileSync(
-    join(root, `supabase/functions/${name}/index.ts`),
+    join(root, `archive/supabase-legacy/supabase/functions/${name}/index.ts`),
     'utf8',
   );
   assert.match(
@@ -113,7 +113,7 @@ assert.deepEqual(findPriv({ title: 'ok', price: 1 }), []);
 
 const deno = spawnSync(
   'deno',
-  ['test', 'supabase/functions/_shared/client-trust-body_test.ts'],
+  ['test', 'archive/supabase-legacy/supabase/functions/_shared/client-trust-body_test.ts'],
   { cwd: root, encoding: 'utf8' },
 );
 assert.equal(deno.status, 0, deno.stderr || deno.stdout);

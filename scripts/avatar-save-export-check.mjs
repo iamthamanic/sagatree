@@ -24,7 +24,7 @@ const editor = [
   read('src/app/character/edit/CharacterEditor.tsx'),
   read('src/app/character/edit/useCharacterAvatarEditor.ts'),
 ].join('\n');
-const migration = read('supabase/migrations/025_character_avatar_export.sql');
+const migration = read('archive/supabase-legacy/supabase/migrations/025_character_avatar_export.sql');
 const traitLayers = read('src/domains/character/avatar/trait-layers.ts');
 
 check(/AVATAR_SAVE_EXPORT_VERSION/.test(domain), 'export contract version');

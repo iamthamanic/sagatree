@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [edge-ai-gm.json](source-contracts/edge-ai-gm.json) (SHA-256 `df1b52d58f8829e11f1051565443b4034f4addc5f92ebc1f2312e9d544ae1f57`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [edge-ai-gm.json](source-contracts/edge-ai-gm.json) (SHA-256 `8e44df68845868967bde28470c6ac505e2d45aa8a23605bc795539c42f0c711d`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Exposure and purpose
 
@@ -69,17 +69,17 @@ Provider and internal service requests lack universal explicit timeouts; streami
 
 Explicit abort call sites (dynamic values resolve in the linked helper declaration):
 
-- `supabase/functions/_shared/ai-gm-rate-limit.ts:52` — `AbortSignal.timeout(10_000)`
-- `supabase/functions/_shared/character-lore-provider.ts:82` — `AbortSignal.timeout(60_000)`
-- `supabase/functions/_shared/character-lore-provider.ts:111` — `AbortSignal.timeout(60_000)`
-- `supabase/functions/_shared/ollama-llm-resolve.ts:134` — `AbortSignal.timeout(10_000)`
-- `supabase/functions/ai-gm/index.ts:134` — `AbortSignal.timeout(10_000)`
+- `archive/supabase-legacy/supabase/functions/_shared/ai-gm-rate-limit.ts:52` — `AbortSignal.timeout(10_000)`
+- `archive/supabase-legacy/supabase/functions/_shared/character-lore-provider.ts:82` — `AbortSignal.timeout(60_000)`
+- `archive/supabase-legacy/supabase/functions/_shared/character-lore-provider.ts:111` — `AbortSignal.timeout(60_000)`
+- `archive/supabase-legacy/supabase/functions/_shared/ollama-llm-resolve.ts:134` — `AbortSignal.timeout(10_000)`
+- `archive/supabase-legacy/supabase/functions/ai-gm/index.ts:134` — `AbortSignal.timeout(10_000)`
 
 ## Exact environment defaults and configuration resolution
 
 ### resolveCharacterLoreProviderConfig
 
-`supabase/functions/_shared/character-lore-provider.ts:16`
+`archive/supabase-legacy/supabase/functions/_shared/character-lore-provider.ts:16`
 
 ```ts
 export function resolveCharacterLoreProviderConfig(): CharacterLoreProviderConfig | null {
@@ -117,7 +117,7 @@ export function resolveCharacterLoreProviderConfig(): CharacterLoreProviderConfi
 
 ### DEFAULT_CORS_METHODS
 
-`supabase/functions/_shared/cors.ts:9`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:9`
 
 ```ts
 DEFAULT_CORS_METHODS = 'GET, POST, PUT, DELETE, OPTIONS'
@@ -125,7 +125,7 @@ DEFAULT_CORS_METHODS = 'GET, POST, PUT, DELETE, OPTIONS'
 
 ### DEFAULT_CORS_ALLOW_HEADERS
 
-`supabase/functions/_shared/cors.ts:10`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:10`
 
 ```ts
 DEFAULT_CORS_ALLOW_HEADERS =
@@ -134,7 +134,7 @@ DEFAULT_CORS_ALLOW_HEADERS =
 
 ### readConfiguredOrigin
 
-`supabase/functions/_shared/cors.ts:34`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:34`
 
 ```ts
 function readConfiguredOrigin(envKeys: string[]): string {
@@ -148,7 +148,7 @@ function readConfiguredOrigin(envKeys: string[]): string {
 
 ### envDefaultModel
 
-`supabase/functions/_shared/ollama-llm-resolve.ts:58`
+`archive/supabase-legacy/supabase/functions/_shared/ollama-llm-resolve.ts:58`
 
 ```ts
 export function envDefaultModel(
@@ -160,7 +160,7 @@ export function envDefaultModel(
 
 ### buildEnvSettingsView
 
-`supabase/functions/_shared/ollama-llm-resolve.ts:64`
+`archive/supabase-legacy/supabase/functions/_shared/ollama-llm-resolve.ts:64`
 
 ```ts
 export function buildEnvSettingsView(
@@ -188,7 +188,7 @@ export function buildEnvSettingsView(
 
 ### loadOllamaSettingsForUser
 
-`supabase/functions/_shared/ollama-llm-resolve.ts:117`
+`archive/supabase-legacy/supabase/functions/_shared/ollama-llm-resolve.ts:117`
 
 ```ts
 export async function loadOllamaSettingsForUser(
@@ -263,7 +263,7 @@ export async function loadOllamaSettingsForUser(
 
 ### toSettingsView
 
-`supabase/functions/_shared/ollama-llm-resolve.ts:186`
+`archive/supabase-legacy/supabase/functions/_shared/ollama-llm-resolve.ts:186`
 
 ```ts
 export function toSettingsView(
@@ -289,7 +289,7 @@ export function toSettingsView(
 
 ### defaultLocalOllamaBase
 
-`supabase/functions/_shared/ollama-url-policy.ts:127`
+`archive/supabase-legacy/supabase/functions/_shared/ollama-url-policy.ts:127`
 
 ```ts
 export function defaultLocalOllamaBase(
@@ -307,7 +307,7 @@ export function defaultLocalOllamaBase(
 
 ### restBase
 
-`supabase/functions/_shared/session-membership-gate.ts:9`
+`archive/supabase-legacy/supabase/functions/_shared/session-membership-gate.ts:9`
 
 ```ts
 function restBase(
@@ -323,7 +323,7 @@ function restBase(
 
 ### anonKey
 
-`supabase/functions/_shared/session-membership-gate.ts:19`
+`archive/supabase-legacy/supabase/functions/_shared/session-membership-gate.ts:19`
 
 ```ts
 function anonKey(env: { get(key: string): string | undefined } = Deno.env): string {
@@ -333,7 +333,7 @@ function anonKey(env: { get(key: string): string | undefined } = Deno.env): stri
 
 ### CORS_OPTS
 
-`supabase/functions/ai-gm/index.ts:11`
+`archive/supabase-legacy/supabase/functions/ai-gm/index.ts:11`
 
 ```ts
 CORS_OPTS: CorsOptions = {
@@ -345,7 +345,7 @@ CORS_OPTS: CorsOptions = {
 
 ### OLLAMA_HOST
 
-`supabase/functions/ai-gm/index.ts:89`
+`archive/supabase-legacy/supabase/functions/ai-gm/index.ts:89`
 
 ```ts
 OLLAMA_HOST = Deno.env.get("OLLAMA_HOST") || "http://ollama:11434"
@@ -353,7 +353,7 @@ OLLAMA_HOST = Deno.env.get("OLLAMA_HOST") || "http://ollama:11434"
 
 ### OLLAMA_MODEL
 
-`supabase/functions/ai-gm/index.ts:90`
+`archive/supabase-legacy/supabase/functions/ai-gm/index.ts:90`
 
 ```ts
 OLLAMA_MODEL = Deno.env.get("OLLAMA_MODEL") || "llama3.2"
@@ -361,7 +361,7 @@ OLLAMA_MODEL = Deno.env.get("OLLAMA_MODEL") || "llama3.2"
 
 ### DEFAULT_AI_GM_RATE_LIMIT
 
-`supabase/functions/ai-gm/index.ts:93`
+`archive/supabase-legacy/supabase/functions/ai-gm/index.ts:93`
 
 ```ts
 DEFAULT_AI_GM_RATE_LIMIT = 12
@@ -369,7 +369,7 @@ DEFAULT_AI_GM_RATE_LIMIT = 12
 
 ### AI_PROVIDER
 
-`supabase/functions/ai-gm/index.ts:95`
+`archive/supabase-legacy/supabase/functions/ai-gm/index.ts:95`
 
 ```ts
 AI_PROVIDER = (Deno.env.get("CHARACTER_AI_PROVIDER") || "ollama").trim()
@@ -377,7 +377,7 @@ AI_PROVIDER = (Deno.env.get("CHARACTER_AI_PROVIDER") || "ollama").trim()
 
 ### AI_MODEL
 
-`supabase/functions/ai-gm/index.ts:96`
+`archive/supabase-legacy/supabase/functions/ai-gm/index.ts:96`
 
 ```ts
 AI_MODEL = (
@@ -389,7 +389,7 @@ AI_MODEL = (
 
 ### AI_BASE_URL
 
-`supabase/functions/ai-gm/index.ts:101`
+`archive/supabase-legacy/supabase/functions/ai-gm/index.ts:101`
 
 ```ts
 AI_BASE_URL = (
@@ -401,7 +401,7 @@ AI_BASE_URL = (
 
 ### AI_API_KEY
 
-`supabase/functions/ai-gm/index.ts:106`
+`archive/supabase-legacy/supabase/functions/ai-gm/index.ts:106`
 
 ```ts
 AI_API_KEY = (Deno.env.get("CHARACTER_AI_API_KEY") || "").trim()
@@ -409,7 +409,7 @@ AI_API_KEY = (Deno.env.get("CHARACTER_AI_API_KEY") || "").trim()
 
 ### LOREKEEPER_URL
 
-`supabase/functions/ai-gm/index.ts:107`
+`archive/supabase-legacy/supabase/functions/ai-gm/index.ts:107`
 
 ```ts
 LOREKEEPER_URL = Deno.env.get("LOREKEEPER_URL") || "http://localhost:9998/functions/v1/lorekeeper"
@@ -417,7 +417,7 @@ LOREKEEPER_URL = Deno.env.get("LOREKEEPER_URL") || "http://localhost:9998/functi
 
 ### SESSIONS_URL
 
-`supabase/functions/ai-gm/index.ts:108`
+`archive/supabase-legacy/supabase/functions/ai-gm/index.ts:108`
 
 ```ts
 SESSIONS_URL = Deno.env.get("SESSIONS_URL") || "http://localhost:9998/functions/v1/sessions"
@@ -425,7 +425,7 @@ SESSIONS_URL = Deno.env.get("SESSIONS_URL") || "http://localhost:9998/functions/
 
 ### resolveOptionalUserId
 
-`supabase/functions/ai-gm/index.ts:126`
+`archive/supabase-legacy/supabase/functions/ai-gm/index.ts:126`
 
 ```ts
 async function resolveOptionalUserId(req: Request): Promise<string | null> {
@@ -451,7 +451,7 @@ async function resolveOptionalUserId(req: Request): Promise<string | null> {
 
 ### resolveGmProvider
 
-`supabase/functions/ai-gm/index.ts:146`
+`archive/supabase-legacy/supabase/functions/ai-gm/index.ts:146`
 
 ```ts
 async function resolveGmProvider(req: Request): Promise<CharacterLoreProviderConfig> {
@@ -470,7 +470,7 @@ async function resolveGmProvider(req: Request): Promise<CharacterLoreProviderCon
 
 ### getAiGmRateLimit
 
-`supabase/functions/ai-gm/index.ts:171`
+`archive/supabase-legacy/supabase/functions/ai-gm/index.ts:171`
 
 ```ts
 function getAiGmRateLimit(): number {
@@ -482,7 +482,7 @@ function getAiGmRateLimit(): number {
 
 ### getSupabaseServiceConfig
 
-`supabase/functions/ai-gm/index.ts:177`
+`archive/supabase-legacy/supabase/functions/ai-gm/index.ts:177`
 
 ```ts
 function getSupabaseServiceConfig(): { url: string; serviceRoleKey: string; anonKey: string } | null {
@@ -542,7 +542,7 @@ No src/infrastructure caller in the reviewed branch. This does not authorize add
 
 ### ai-gm:1
 
-Predicate: `req.method === "GET" && req.url.endsWith('/health')`. Source: `supabase/functions/ai-gm/index.ts:661`.
+Predicate: `req.method === "GET" && req.url.endsWith('/health')`. Source: `archive/supabase-legacy/supabase/functions/ai-gm/index.ts:661`.
 
 
 ```ts
@@ -560,7 +560,7 @@ Predicate: `req.method === "GET" && req.url.endsWith('/health')`. Source: `supab
 
 ### ai-gm:2
 
-Predicate: `req.method === "POST"`. Source: `supabase/functions/ai-gm/index.ts:673`.
+Predicate: `req.method === "POST"`. Source: `archive/supabase-legacy/supabase/functions/ai-gm/index.ts:673`.
 
 
 ```ts
@@ -711,7 +711,7 @@ Predicate: `req.method === "POST"`. Source: `supabase/functions/ai-gm/index.ts:6
 
 ### AiGmRateLimitConfig
 
-`supabase/functions/_shared/ai-gm-rate-limit.ts:8`
+`archive/supabase-legacy/supabase/functions/_shared/ai-gm-rate-limit.ts:8`
 
 ```ts
 export interface AiGmRateLimitConfig {
@@ -724,7 +724,7 @@ export interface AiGmRateLimitConfig {
 
 ### FetchLike
 
-`supabase/functions/_shared/ai-gm-rate-limit.ts:15`
+`archive/supabase-legacy/supabase/functions/_shared/ai-gm-rate-limit.ts:15`
 
 ```ts
 type FetchLike = (
@@ -735,7 +735,7 @@ type FetchLike = (
 
 ### CharacterLoreRuleset
 
-`supabase/functions/_shared/character-lore-prompt.ts:1`
+`archive/supabase-legacy/supabase/functions/_shared/character-lore-prompt.ts:1`
 
 ```ts
 export type CharacterLoreRuleset = 'sagatree-core' | 'dnd-5.5e';
@@ -743,7 +743,7 @@ export type CharacterLoreRuleset = 'sagatree-core' | 'dnd-5.5e';
 
 ### CharacterLorePromptContext
 
-`supabase/functions/_shared/character-lore-prompt.ts:3`
+`archive/supabase-legacy/supabase/functions/_shared/character-lore-prompt.ts:3`
 
 ```ts
 export interface CharacterLorePromptContext {
@@ -798,7 +798,7 @@ export interface CharacterLorePromptContext {
 
 ### CharacterLoreReferenceContext
 
-`supabase/functions/_shared/character-lore-prompt.ts:52`
+`archive/supabase-legacy/supabase/functions/_shared/character-lore-prompt.ts:52`
 
 ```ts
 export interface CharacterLoreReferenceContext {
@@ -812,7 +812,7 @@ export interface CharacterLoreReferenceContext {
 
 ### CharacterLorePrompt
 
-`supabase/functions/_shared/character-lore-prompt.ts:60`
+`archive/supabase-legacy/supabase/functions/_shared/character-lore-prompt.ts:60`
 
 ```ts
 export interface CharacterLorePrompt {
@@ -824,7 +824,7 @@ export interface CharacterLorePrompt {
 
 ### CharacterLoreProviderName
 
-`supabase/functions/_shared/character-lore-provider.ts:3`
+`archive/supabase-legacy/supabase/functions/_shared/character-lore-provider.ts:3`
 
 ```ts
 export type CharacterLoreProviderName = 'openai-compatible' | 'ollama';
@@ -832,7 +832,7 @@ export type CharacterLoreProviderName = 'openai-compatible' | 'ollama';
 
 ### CharacterLoreProviderConfig
 
-`supabase/functions/_shared/character-lore-provider.ts:5`
+`archive/supabase-legacy/supabase/functions/_shared/character-lore-provider.ts:5`
 
 ```ts
 export interface CharacterLoreProviderConfig {
@@ -845,7 +845,7 @@ export interface CharacterLoreProviderConfig {
 
 ### CorsOptions
 
-`supabase/functions/_shared/cors.ts:13`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:13`
 
 ```ts
 export type CorsOptions = {
@@ -872,7 +872,7 @@ export type CorsOptions = {
 
 ### OllamaSettingsView
 
-`supabase/functions/_shared/ollama-llm-resolve.ts:21`
+`archive/supabase-legacy/supabase/functions/_shared/ollama-llm-resolve.ts:21`
 
 ```ts
 export interface OllamaSettingsView {
@@ -891,7 +891,7 @@ export interface OllamaSettingsView {
 
 ### OllamaSettingsStored
 
-`supabase/functions/_shared/ollama-llm-resolve.ts:34`
+`archive/supabase-legacy/supabase/functions/_shared/ollama-llm-resolve.ts:34`
 
 ```ts
 export interface OllamaSettingsStored {
@@ -908,7 +908,7 @@ export interface OllamaSettingsStored {
 
 ### SupabaseServiceConfig
 
-`supabase/functions/_shared/ollama-llm-resolve.ts:45`
+`archive/supabase-legacy/supabase/functions/_shared/ollama-llm-resolve.ts:45`
 
 ```ts
 export interface SupabaseServiceConfig {
@@ -919,7 +919,7 @@ export interface SupabaseServiceConfig {
 
 ### SafeUrlResult
 
-`supabase/functions/_shared/ollama-url-policy.ts:68`
+`archive/supabase-legacy/supabase/functions/_shared/ollama-url-policy.ts:68`
 
 ```ts
 export type SafeUrlResult =
@@ -929,7 +929,7 @@ export type SafeUrlResult =
 
 ### Character
 
-`supabase/functions/ai-gm/index.ts:27`
+`archive/supabase-legacy/supabase/functions/ai-gm/index.ts:27`
 
 ```ts
 interface Character {
@@ -948,7 +948,7 @@ interface Character {
 
 ### NPC
 
-`supabase/functions/ai-gm/index.ts:40`
+`archive/supabase-legacy/supabase/functions/ai-gm/index.ts:40`
 
 ```ts
 interface NPC {
@@ -963,7 +963,7 @@ interface NPC {
 
 ### WorldState
 
-`supabase/functions/ai-gm/index.ts:49`
+`archive/supabase-legacy/supabase/functions/ai-gm/index.ts:49`
 
 ```ts
 interface WorldState {
@@ -978,7 +978,7 @@ interface WorldState {
 
 ### SessionContext
 
-`supabase/functions/ai-gm/index.ts:58`
+`archive/supabase-legacy/supabase/functions/ai-gm/index.ts:58`
 
 ```ts
 interface SessionContext {
@@ -994,7 +994,7 @@ interface SessionContext {
 
 ### GMRequest
 
-`supabase/functions/ai-gm/index.ts:68`
+`archive/supabase-legacy/supabase/functions/ai-gm/index.ts:68`
 
 ```ts
 interface GMRequest {
@@ -1009,7 +1009,7 @@ interface GMRequest {
 
 ### GMResponse
 
-`supabase/functions/ai-gm/index.ts:77`
+`archive/supabase-legacy/supabase/functions/ai-gm/index.ts:77`
 
 ```ts
 interface GMResponse {
@@ -1026,7 +1026,7 @@ interface GMResponse {
 
 ### envFallbackProvider
 
-`supabase/functions/ai-gm/index.ts:110`
+`archive/supabase-legacy/supabase/functions/ai-gm/index.ts:110`
 
 ```ts
 function envFallbackProvider(): CharacterLoreProviderConfig {
@@ -1048,7 +1048,7 @@ function envFallbackProvider(): CharacterLoreProviderConfig {
 
 ### resolveOptionalUserId
 
-`supabase/functions/ai-gm/index.ts:126`
+`archive/supabase-legacy/supabase/functions/ai-gm/index.ts:126`
 
 ```ts
 async function resolveOptionalUserId(req: Request): Promise<string | null> {
@@ -1074,7 +1074,7 @@ async function resolveOptionalUserId(req: Request): Promise<string | null> {
 
 ### resolveGmProvider
 
-`supabase/functions/ai-gm/index.ts:146`
+`archive/supabase-legacy/supabase/functions/ai-gm/index.ts:146`
 
 ```ts
 async function resolveGmProvider(req: Request): Promise<CharacterLoreProviderConfig> {
@@ -1093,7 +1093,7 @@ async function resolveGmProvider(req: Request): Promise<CharacterLoreProviderCon
 
 ### getAiGmRateLimit
 
-`supabase/functions/ai-gm/index.ts:171`
+`archive/supabase-legacy/supabase/functions/ai-gm/index.ts:171`
 
 ```ts
 function getAiGmRateLimit(): number {
@@ -1105,7 +1105,7 @@ function getAiGmRateLimit(): number {
 
 ### getSupabaseServiceConfig
 
-`supabase/functions/ai-gm/index.ts:177`
+`archive/supabase-legacy/supabase/functions/ai-gm/index.ts:177`
 
 ```ts
 function getSupabaseServiceConfig(): { url: string; serviceRoleKey: string; anonKey: string } | null {
@@ -1123,7 +1123,7 @@ function getSupabaseServiceConfig(): { url: string; serviceRoleKey: string; anon
 
 ### resolveCallerUserId
 
-`supabase/functions/ai-gm/index.ts:190`
+`archive/supabase-legacy/supabase/functions/ai-gm/index.ts:190`
 
 ```ts
 async function resolveCallerUserId(req: Request): Promise<string | null> {
@@ -1146,7 +1146,7 @@ async function resolveCallerUserId(req: Request): Promise<string | null> {
 
 ### enforceAiGmRateLimit
 
-`supabase/functions/ai-gm/index.ts:207`
+`archive/supabase-legacy/supabase/functions/ai-gm/index.ts:207`
 
 ```ts
 async function enforceAiGmRateLimit(req: Request, headers: HeadersInit): Promise<Response | null> {
@@ -1206,7 +1206,7 @@ async function enforceAiGmRateLimit(req: Request, headers: HeadersInit): Promise
 
 ### validateRequest
 
-`supabase/functions/ai-gm/index.ts:261`
+`archive/supabase-legacy/supabase/functions/ai-gm/index.ts:261`
 
 ```ts
 function validateRequest(body: unknown): { valid: boolean; error?: string } {
@@ -1234,7 +1234,7 @@ function validateRequest(body: unknown): { valid: boolean; error?: string } {
 
 ### buildCharacterSection
 
-`supabase/functions/ai-gm/index.ts:283`
+`archive/supabase-legacy/supabase/functions/ai-gm/index.ts:283`
 
 ```ts
 function buildCharacterSection(characters: Character[]): string {
@@ -1253,7 +1253,7 @@ function buildCharacterSection(characters: Character[]): string {
 
 ### buildNPCSection
 
-`supabase/functions/ai-gm/index.ts:296`
+`archive/supabase-legacy/supabase/functions/ai-gm/index.ts:296`
 
 ```ts
 function buildNPCSection(npcs: NPC[]): string {
@@ -1273,7 +1273,7 @@ function buildNPCSection(npcs: NPC[]): string {
 
 ### buildWorldSection
 
-`supabase/functions/ai-gm/index.ts:310`
+`archive/supabase-legacy/supabase/functions/ai-gm/index.ts:310`
 
 ```ts
 function buildWorldSection(worldState: WorldState): string {
@@ -1297,7 +1297,7 @@ function buildWorldSection(worldState: WorldState): string {
 
 ### buildRecentEventsSection
 
-`supabase/functions/ai-gm/index.ts:328`
+`archive/supabase-legacy/supabase/functions/ai-gm/index.ts:328`
 
 ```ts
 function buildRecentEventsSection(events: string[]): string {
@@ -1309,7 +1309,7 @@ function buildRecentEventsSection(events: string[]): string {
 
 ### buildPrompt
 
-`supabase/functions/ai-gm/index.ts:334`
+`archive/supabase-legacy/supabase/functions/ai-gm/index.ts:334`
 
 ```ts
 function buildPrompt(request: GMRequest): string {
@@ -1363,7 +1363,7 @@ ${request.action}
 
 ### getNPCContext
 
-`supabase/functions/ai-gm/index.ts:386`
+`archive/supabase-legacy/supabase/functions/ai-gm/index.ts:386`
 
 ```ts
 async function getNPCContext(npcId: string): Promise<NPC | null> {
@@ -1385,7 +1385,7 @@ async function getNPCContext(npcId: string): Promise<NPC | null> {
 
 ### updateNPCMemory
 
-`supabase/functions/ai-gm/index.ts:402`
+`archive/supabase-legacy/supabase/functions/ai-gm/index.ts:402`
 
 ```ts
 async function updateNPCMemory(npcId: string, memory: string): Promise<void> {
@@ -1403,7 +1403,7 @@ async function updateNPCMemory(npcId: string, memory: string): Promise<void> {
 
 ### updateSessionWorldState
 
-`supabase/functions/ai-gm/index.ts:418`
+`archive/supabase-legacy/supabase/functions/ai-gm/index.ts:418`
 
 ```ts
 async function updateSessionWorldState(sessionId: string, worldState: Partial<WorldState>): Promise<void> {
@@ -1421,7 +1421,7 @@ async function updateSessionWorldState(sessionId: string, worldState: Partial<Wo
 
 ### generateOpenAiCompatibleNarrative
 
-`supabase/functions/ai-gm/index.ts:434`
+`archive/supabase-legacy/supabase/functions/ai-gm/index.ts:434`
 
 ```ts
 async function* generateOpenAiCompatibleNarrative(
@@ -1508,7 +1508,7 @@ async function* generateOpenAiCompatibleNarrative(
 
 ### generateNarrative
 
-`supabase/functions/ai-gm/index.ts:515`
+`archive/supabase-legacy/supabase/functions/ai-gm/index.ts:515`
 
 ```ts
 async function* generateNarrative(
@@ -1578,7 +1578,7 @@ async function* generateNarrative(
 
 ### extractWorldStateUpdates
 
-`supabase/functions/ai-gm/index.ts:583`
+`archive/supabase-legacy/supabase/functions/ai-gm/index.ts:583`
 
 ```ts
 function extractWorldStateUpdates(narrative: string): Partial<WorldState> | null {
@@ -1602,7 +1602,7 @@ function extractWorldStateUpdates(narrative: string): Partial<WorldState> | null
 
 ### extractDiceRollRequests
 
-`supabase/functions/ai-gm/index.ts:601`
+`archive/supabase-legacy/supabase/functions/ai-gm/index.ts:601`
 
 ```ts
 function extractDiceRollRequests(narrative: string): Array<{ type: string; dc?: number; description: string }> {
@@ -1643,7 +1643,7 @@ function extractDiceRollRequests(narrative: string): Array<{ type: string; dc?: 
 
 ### extractCombatInitiated
 
-`supabase/functions/ai-gm/index.ts:636`
+`archive/supabase-legacy/supabase/functions/ai-gm/index.ts:636`
 
 ```ts
 function extractCombatInitiated(narrative: string): boolean {
@@ -1665,16 +1665,16 @@ function extractCombatInitiated(narrative: string): boolean {
 
 | Path | SHA-256 |
 |---|---|
-| `supabase/functions/_shared/ai-gm-rate-limit.ts` | `050346396b229912655843940ecde2fbc2111a571ddc85d12b2149e3d2bc9f61` |
-| `supabase/functions/_shared/ai-provider-crypto.ts` | `45e60f76f744077e8d9b243719dcdba5d58a047d36a1c141df830afa2de16532` |
-| `supabase/functions/_shared/character-lore-prompt.ts` | `54fffb4ba316515dff7add1998b2d6f02280ddc336c30e48d2a4ee045a60f818` |
-| `supabase/functions/_shared/character-lore-provider.ts` | `355c8635d417fd31f9f2afb93e2ae4fe9f26ddeadaf6c2986a74f0201fb5479e` |
-| `supabase/functions/_shared/cors.ts` | `f8286c91d79fa5fc5cfea2fa47081916523fa7a440f234aecd9a47c6a8cf5b38` |
-| `supabase/functions/_shared/edge-dispatcher-allowlist.ts` | `6d1ae7bde0ba9e41fcaa7b61247732168a62699e7811fb8574cef266cfad3a27` |
-| `supabase/functions/_shared/edge-jwt-gate.ts` | `14a871697b051b7fcbee09dbce1dee8bc8ed5ea6a6eca0bec7b2e771b32d0f0c` |
-| `supabase/functions/_shared/ollama-llm-resolve.ts` | `e2874b05f38eac54d99abfca1b239138b4f95fece2011224f359bcfda9be99b3` |
-| `supabase/functions/_shared/ollama-url-policy.ts` | `864eddb8138fabb9964a92dd948746829d8b09de5f741642b61fb2eb792c4fc1` |
-| `supabase/functions/_shared/session-membership-gate.ts` | `53e3c57da9e037c49582d6f5781b52198a74a2c0aabf758467caa7bc2aee7cac` |
-| `supabase/functions/ai-gm/index.ts` | `74d6b822589478b537e300b9364bc2668e795655e95a292f2494689265c22880` |
-| `supabase/functions/main/index.ts` | `92f3bf56bf3c776e01595d980246079c4a9f8775e417959abea9d7da003bc53e` |
+| `archive/supabase-legacy/supabase/functions/_shared/ai-gm-rate-limit.ts` | `050346396b229912655843940ecde2fbc2111a571ddc85d12b2149e3d2bc9f61` |
+| `archive/supabase-legacy/supabase/functions/_shared/ai-provider-crypto.ts` | `45e60f76f744077e8d9b243719dcdba5d58a047d36a1c141df830afa2de16532` |
+| `archive/supabase-legacy/supabase/functions/_shared/character-lore-prompt.ts` | `54fffb4ba316515dff7add1998b2d6f02280ddc336c30e48d2a4ee045a60f818` |
+| `archive/supabase-legacy/supabase/functions/_shared/character-lore-provider.ts` | `355c8635d417fd31f9f2afb93e2ae4fe9f26ddeadaf6c2986a74f0201fb5479e` |
+| `archive/supabase-legacy/supabase/functions/_shared/cors.ts` | `f8286c91d79fa5fc5cfea2fa47081916523fa7a440f234aecd9a47c6a8cf5b38` |
+| `archive/supabase-legacy/supabase/functions/_shared/edge-dispatcher-allowlist.ts` | `6d1ae7bde0ba9e41fcaa7b61247732168a62699e7811fb8574cef266cfad3a27` |
+| `archive/supabase-legacy/supabase/functions/_shared/edge-jwt-gate.ts` | `14a871697b051b7fcbee09dbce1dee8bc8ed5ea6a6eca0bec7b2e771b32d0f0c` |
+| `archive/supabase-legacy/supabase/functions/_shared/ollama-llm-resolve.ts` | `e2874b05f38eac54d99abfca1b239138b4f95fece2011224f359bcfda9be99b3` |
+| `archive/supabase-legacy/supabase/functions/_shared/ollama-url-policy.ts` | `864eddb8138fabb9964a92dd948746829d8b09de5f741642b61fb2eb792c4fc1` |
+| `archive/supabase-legacy/supabase/functions/_shared/session-membership-gate.ts` | `53e3c57da9e037c49582d6f5781b52198a74a2c0aabf758467caa7bc2aee7cac` |
+| `archive/supabase-legacy/supabase/functions/ai-gm/index.ts` | `74d6b822589478b537e300b9364bc2668e795655e95a292f2494689265c22880` |
+| `archive/supabase-legacy/supabase/functions/main/index.ts` | `92f3bf56bf3c776e01595d980246079c4a9f8775e417959abea9d7da003bc53e` |
 

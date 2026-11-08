@@ -22,7 +22,7 @@ const [mod, app, allow] = await Promise.all([
   import(pathToFileURL(join(root, 'server/src/modules/inventory/item-model3d.ts')).href),
   import(pathToFileURL(join(root, 'server/src/application/item-model3d/index.ts')).href),
   import(
-    pathToFileURL(join(root, 'supabase/functions/_shared/edge-dispatcher-allowlist.ts')).href,
+    pathToFileURL(join(root, 'archive/supabase-legacy/supabase/functions/_shared/edge-dispatcher-allowlist.ts')).href,
   ),
 ]);
 

@@ -30,9 +30,9 @@ const requiredResultIds = [
   'SEQUENTIAL_100_WRITES',
 ].sort();
 const upstreamFiles = [
-  'supabase/migrations/015_inventory_item_definitions.sql', 'supabase/migrations/040_session_join_code_security.sql',
-  'supabase/migrations/094_world_atlas.sql', 'supabase/migrations/104_atlas_worldbuilder_mutations.sql',
-  'supabase/migrations/105_atlas_worldbuilder_player_projection.sql', '.qa/design/gates/GATE-01-drizzle-vs-zenstack.md',
+  'archive/supabase-legacy/supabase/migrations/015_inventory_item_definitions.sql', 'archive/supabase-legacy/supabase/migrations/040_session_join_code_security.sql',
+  'archive/supabase-legacy/supabase/migrations/094_world_atlas.sql', 'archive/supabase-legacy/supabase/migrations/104_atlas_worldbuilder_mutations.sql',
+  'archive/supabase-legacy/supabase/migrations/105_atlas_worldbuilder_player_projection.sql', '.qa/design/gates/GATE-01-drizzle-vs-zenstack.md',
 ];
 const imports = [
   ["import { drizzle } from 'drizzle-orm/better-sqlite3';", 'drizzle-orm/better-sqlite3'],

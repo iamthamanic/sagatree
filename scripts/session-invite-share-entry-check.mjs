@@ -35,7 +35,7 @@ function mustNotInclude(file, needles, label) {
 }
 
 mustInclude(
-  'supabase/migrations/055_session_invites.sql',
+  'archive/supabase-legacy/supabase/migrations/055_session_invites.sql',
   [
     'create_session_invite',
     'resolve_session_invite',

@@ -82,7 +82,7 @@ def main():
             'catalogExportSha256': hashlib.sha256(args.catalog.read_bytes()).hexdigest(),
             'reportExportSha256': hashlib.sha256(args.report.read_bytes()).hexdigest(),
             'platformSources': report['platformSources'],
-            'migrationSources': [{'path': p, 'sha256': h} for p, h in sorted(files.items()) if p.startswith('supabase/migrations/')],
+            'migrationSources': [{'path': p, 'sha256': h} for p, h in sorted(files.items()) if p.startswith('archive/supabase-legacy/supabase/migrations/')],
             'liveDatabaseVerified': False,
             'deployedDatabaseVerified': False,
             'productRuntimeVerified': False,

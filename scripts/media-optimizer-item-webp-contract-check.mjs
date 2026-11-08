@@ -28,22 +28,22 @@ const paths = [
   'src/domains/items/assets.ts',
   'src/domains/media/optimization-policy.ts',
   'src/infrastructure/inventory/item-thumbnail-service.ts',
-  'supabase/functions/_shared/item-thumbnail-image.ts',
-  'supabase/functions/_shared/item-model3d-glb.ts',
-  'supabase/functions/item-thumbnail/index.ts',
-  'supabase/functions/item-model3d/index.ts',
-  'supabase/migrations/080_item_thumbnail_webp.sql',
+  'archive/supabase-legacy/supabase/functions/_shared/item-thumbnail-image.ts',
+  'archive/supabase-legacy/supabase/functions/_shared/item-model3d-glb.ts',
+  'archive/supabase-legacy/supabase/functions/item-thumbnail/index.ts',
+  'archive/supabase-legacy/supabase/functions/item-model3d/index.ts',
+  'archive/supabase-legacy/supabase/migrations/080_item_thumbnail_webp.sql',
   'src/app/items/workbench/ItemVisualsPanel.tsx',
 ];
 for (const p of paths) check(existsSync(join(root, p)), `exists ${p}`);
 
 const domain = readFileSync(join(root, 'src/domains/items/assets.ts'), 'utf8');
 const policy = readFileSync(join(root, 'src/domains/media/optimization-policy.ts'), 'utf8');
-const edge = readFileSync(join(root, 'supabase/functions/_shared/item-thumbnail-image.ts'), 'utf8');
-const thumbFn = readFileSync(join(root, 'supabase/functions/item-thumbnail/index.ts'), 'utf8');
-const modelFn = readFileSync(join(root, 'supabase/functions/item-model3d/index.ts'), 'utf8');
-const glb = readFileSync(join(root, 'supabase/functions/_shared/item-model3d-glb.ts'), 'utf8');
-const mig = readFileSync(join(root, 'supabase/migrations/080_item_thumbnail_webp.sql'), 'utf8');
+const edge = readFileSync(join(root, 'archive/supabase-legacy/supabase/functions/_shared/item-thumbnail-image.ts'), 'utf8');
+const thumbFn = readFileSync(join(root, 'archive/supabase-legacy/supabase/functions/item-thumbnail/index.ts'), 'utf8');
+const modelFn = readFileSync(join(root, 'archive/supabase-legacy/supabase/functions/item-model3d/index.ts'), 'utf8');
+const glb = readFileSync(join(root, 'archive/supabase-legacy/supabase/functions/_shared/item-model3d-glb.ts'), 'utf8');
+const mig = readFileSync(join(root, 'archive/supabase-legacy/supabase/migrations/080_item_thumbnail_webp.sql'), 'utf8');
 const ui = readFileSync(join(root, 'src/app/items/workbench/ItemVisualsPanel.tsx'), 'utf8');
 const client = readFileSync(
   join(root, 'src/infrastructure/inventory/item-thumbnail-service.ts'),

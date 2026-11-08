@@ -123,7 +123,7 @@ if (health && health !== 'healthy' && health !== '<no value>') {
 mkdirSync(outDir, { recursive: true });
 
 // Ensure migration SQL applied (idempotent CREATE OR REPLACE).
-const migrationPath = join(root, 'supabase/migrations/108_atlas_worldbuilder_migration_apply.sql');
+const migrationPath = join(root, 'archive/supabase-legacy/supabase/migrations/108_atlas_worldbuilder_migration_apply.sql');
 if (!existsSync(migrationPath)) fail('missing 108_atlas_worldbuilder_migration_apply.sql');
 const mig = spawnSync(
   'docker',

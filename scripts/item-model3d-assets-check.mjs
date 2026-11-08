@@ -39,12 +39,12 @@ section('1 · slice files exist');
   'src/app/items/workbench/ItemVisualsPanel.tsx',
   'src/app/items/workbench/ItemModelPreview.tsx',
   'src/app/items/workbench/ItemModelPreviewRuntime.ts',
-  'supabase/migrations/018_item_model3d_assets.sql',
-  'supabase/functions/item-model3d/index.ts',
-  'supabase/functions/_shared/item-model3d-glb.ts',
-  'supabase/functions/_shared/item-model3d-meshy.ts',
-  'supabase/functions/_shared/item-model3d-rate-limit.ts',
-  'supabase/functions/_shared/item-model3d_test.ts',
+  'archive/supabase-legacy/supabase/migrations/018_item_model3d_assets.sql',
+  'archive/supabase-legacy/supabase/functions/item-model3d/index.ts',
+  'archive/supabase-legacy/supabase/functions/_shared/item-model3d-glb.ts',
+  'archive/supabase-legacy/supabase/functions/_shared/item-model3d-meshy.ts',
+  'archive/supabase-legacy/supabase/functions/_shared/item-model3d-rate-limit.ts',
+  'archive/supabase-legacy/supabase/functions/_shared/item-model3d_test.ts',
   '.qa/acceptance/item-3d-meshy-assets.md',
 ].forEach(mustExist);
 
@@ -90,9 +90,9 @@ section('3 · no Meshy secrets in client / Vite env');
 
 section('4 · Edge Function fail-closed + security');
 {
-  const edge = read('supabase/functions/item-model3d/index.ts');
-  const meshy = read('supabase/functions/_shared/item-model3d-meshy.ts');
-  const glb = read('supabase/functions/_shared/item-model3d-glb.ts');
+  const edge = read('archive/supabase-legacy/supabase/functions/item-model3d/index.ts');
+  const meshy = read('archive/supabase-legacy/supabase/functions/_shared/item-model3d-meshy.ts');
+  const glb = read('archive/supabase-legacy/supabase/functions/_shared/item-model3d-glb.ts');
   check(/resolveMeshyImageTo3dConfig/.test(edge), 'uses Meshy image-to-3d config resolver');
   check(/not-configured/.test(edge), 'returns not-configured when Meshy missing');
   check(/MESHY_API_KEY/.test(meshy), 'reads MESHY_API_KEY server-side');
@@ -155,7 +155,7 @@ section('6 · Library/Inventory must not mount 3D');
 
 section('7 · migration storage + rate limit');
 {
-  const migration = read('supabase/migrations/018_item_model3d_assets.sql');
+  const migration = read('archive/supabase-legacy/supabase/migrations/018_item_model3d_assets.sql');
   check(/item-models/.test(migration), 'storage bucket item-models');
   check(/52428800/.test(migration), '50 MB bucket limit');
   check(/model\/gltf-binary/.test(migration), 'GLB mime only');

@@ -30,7 +30,7 @@ const {
 } = await import(modUrl);
 
 const allowUrl = pathToFileURL(
-  join(root, 'supabase/functions/_shared/edge-dispatcher-allowlist.ts'),
+  join(root, 'archive/supabase-legacy/supabase/functions/_shared/edge-dispatcher-allowlist.ts'),
 ).href;
 const { isEdgeDispatcherAllowed, EDGE_DISPATCHER_ALLOWLIST } = await import(allowUrl);
 
@@ -153,7 +153,7 @@ const defect = describeNonAdvancingXpLoopDefect();
 assert(defect.nextLevelAdvances === false && defect.nextThresholdAdvances === false, 'const never advance');
 assert(defect.canLoopIndefinitelyAtThreshold === true, 'indefinite loop at threshold');
 
-const legacySrc = readFileSync(join(root, 'supabase/functions/characters/index.ts'), 'utf8');
+const legacySrc = readFileSync(join(root, 'archive/supabase-legacy/supabase/functions/characters/index.ts'), 'utf8');
 const addExpFn = legacySrc.slice(
   legacySrc.indexOf('async function addExperience'),
   legacySrc.indexOf('async function levelUp'),

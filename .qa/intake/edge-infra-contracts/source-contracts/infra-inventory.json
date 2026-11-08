@@ -331,7 +331,7 @@
     },
     {
       "path": "src/lib/supabase.ts",
-      "sha256": "a385b96048d1e73f8dd1a78ee00a5c1a4e6cbb5f50e1f705ae527e2493f9f373"
+      "sha256": "839e17a14a542d976711340a32179c445c0ac170df628b6adbd21e1e289e195d"
     }
   ],
   "importedTypeDeclarations": [

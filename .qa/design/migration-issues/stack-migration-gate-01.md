@@ -23,8 +23,8 @@ Drizzle mit zentralem Policy Service und ZenStack 3 anhand derselben SQLite-Bere
 
 - Epic: #773; historische Baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`; keine Produktionszustandsbehauptung.
 - Verbindliche Architektur: `docs/architecture/migration-owner-decisions-2026-10-23.md`.
-- Quellpfade und bestehende Adapter: `.qa/design/gates/GATE-01-drizzle-vs-zenstack.md`, `supabase/migrations/015_inventory_item_definitions.sql`.
-- Source Contracts: `.qa/design/gates/GATE-01-drizzle-vs-zenstack.md`, `supabase/migrations/015_inventory_item_definitions.sql`.
+- Quellpfade und bestehende Adapter: `.qa/design/gates/GATE-01-drizzle-vs-zenstack.md`, `archive/supabase-legacy/supabase/migrations/015_inventory_item_definitions.sql`.
+- Source Contracts: `.qa/design/gates/GATE-01-drizzle-vs-zenstack.md`, `archive/supabase-legacy/supabase/migrations/015_inventory_item_definitions.sql`.
 - Zielverhalten: Binding product decisions: docs/architecture/migration-owner-decisions-2026-10-23.md; GATE-01 Drizzle+Policy, GATE-02 Cookie-A, GATE-03 Hono+Colyseus, GATE-04 SQLite single-writer. GATE-05 Tauri+sidecar selected; platform release pending..
 
 ## Scope
@@ -59,21 +59,21 @@ Out:
 - Gegeben: O besitzt W1, G ist nur GM des Projekts zu W1, P1/P2 sind aktive Spieler
 - Wenn: beide ORM-Kandidaten führen die identische Suite aus
 - Dann: O darf updateMapTitle ausführen, G/P1/P2/X nicht; G darf die GM-Sitzungsoperation ausführen, O ohne GM-Rolle nicht; versteckte Karten fehlen in Spielerprojektionen.
-- Quelle: `.qa/design/gates/GATE-01-drizzle-vs-zenstack.md`, `supabase/migrations/015_inventory_item_definitions.sql`
+- Quelle: `.qa/design/gates/GATE-01-drizzle-vs-zenstack.md`, `archive/supabase-legacy/supabase/migrations/015_inventory_item_definitions.sql`
 
 ### Fall 2
 
 - Gegeben: Ein autorisierter O und eine veraltete expectedRevision
 - Wenn: O ändert denselben Kartentitel erneut
 - Dann: Die Mutation liefert einen Konflikt ohne Revisionserhöhung; ein unautorisierter Actor erhält einen Berechtigungsfehler und keinen Konflikt als Existenzsignal.
-- Quelle: `.qa/design/gates/GATE-01-drizzle-vs-zenstack.md`, `supabase/migrations/015_inventory_item_definitions.sql`
+- Quelle: `.qa/design/gates/GATE-01-drizzle-vs-zenstack.md`, `archive/supabase-legacy/supabase/migrations/015_inventory_item_definitions.sql`
 
 ### Fall 3
 
 - Gegeben: Reproduzierbare Kandidaten-Ergebnisse und verbleibende Plattform-/Migrationstests
 - Wenn: das Entscheidungsprotokoll wird erstellt
 - Dann: Die Tabelle nennt PASS/FAIL/NOT RUN je Kriterium und Version; abhängige Issues bleiben bis zur verlinkten menschlichen APPROVED-Entscheidung gesperrt.
-- Quelle: `.qa/design/gates/GATE-01-drizzle-vs-zenstack.md`, `supabase/migrations/015_inventory_item_definitions.sql`
+- Quelle: `.qa/design/gates/GATE-01-drizzle-vs-zenstack.md`, `archive/supabase-legacy/supabase/migrations/015_inventory_item_definitions.sql`
 
 ## Required Tests
 

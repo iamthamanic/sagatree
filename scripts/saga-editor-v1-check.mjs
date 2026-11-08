@@ -25,7 +25,7 @@ function requireMatch(content, pattern, label) {
   if (!pattern.test(content)) fail(`missing ${label}`);
 }
 
-const migrationPath = 'supabase/migrations/064_saga_editor_v1.sql';
+const migrationPath = 'archive/supabase-legacy/supabase/migrations/064_saga_editor_v1.sql';
 if (!existsSync(join(root, migrationPath))) fail(`missing ${migrationPath}`);
 const migration = read(migrationPath);
 requireMatch(migration, /draft_revision/i, 'draft_revision');

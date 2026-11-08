@@ -25,7 +25,7 @@ function mustInclude(rel, needles) {
 }
 
 mustInclude('.qa/acceptance/atlas-worldbuilder-mutations.md', ['#716', 'rename_world_node']);
-mustInclude('supabase/migrations/104_atlas_worldbuilder_mutations.sql', [
+mustInclude('archive/supabase-legacy/supabase/migrations/104_atlas_worldbuilder_mutations.sql', [
   'rename_world_node',
   'reparent_world_node',
   'duplicate_world_node',

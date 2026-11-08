@@ -25,7 +25,7 @@ function requireMatch(content, pattern, label) {
   if (!pattern.test(content)) fail(`missing ${label}`);
 }
 
-const migrationPath = 'supabase/migrations/065_saga_simulation_ops.sql';
+const migrationPath = 'archive/supabase-legacy/supabase/migrations/065_saga_simulation_ops.sql';
 if (!existsSync(join(root, migrationPath))) fail(`missing ${migrationPath}`);
 const migration = read(migrationPath);
 requireMatch(migration, /apply_simulation_batch/i, 'apply_simulation_batch');

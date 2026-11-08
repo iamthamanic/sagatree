@@ -35,7 +35,7 @@ mustInclude('src/domains/world/hierarchy/world-scoped-inventory.ts', [
   'buildWorldScopedInventory',
   'buildScopedMigrationDryRun',
 ]);
-mustInclude('supabase/migrations/107_atlas_worldbuilder_migration_gate.sql', [
+mustInclude('archive/supabase-legacy/supabase/migrations/107_atlas_worldbuilder_migration_gate.sql', [
   'atlas_wb_migration_gates',
   'DEFAULT false',
   'atlas_wb_migration_inventory',

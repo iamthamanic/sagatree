@@ -2,11 +2,11 @@
  * Edge `main` dispatcher boundary (MIG-414 / #830) — isolated-contract host port.
  * Location: server/src/http/edge-main-dispatcher.ts
  *
- * Ports resolve/allowlist/JWT gate semantics from supabase/functions/main +
+ * Ports resolve/allowlist/JWT gate semantics from archive/supabase-legacy/supabase/functions/main +
  * _shared/edge-jwt-gate. Does not start Deno userWorkers; public activation stays false
  * until an authorized cutover ticket. Live Edge `main` remains the production mount.
  *
- * Allowlist must stay byte-equal to supabase/functions/_shared/edge-dispatcher-allowlist.ts
+ * Allowlist must stay byte-equal to archive/supabase-legacy/supabase/functions/_shared/edge-dispatcher-allowlist.ts
  * (enforced by scripts/mig-414-edge-main.self-test.mjs).
  *
  * JWT gate uses `jose` with explicit HS256 allowlist. Issuer/audience are NOT required by
@@ -19,7 +19,7 @@ import { z } from 'zod';
 /** Explicit product decision: no automatic host/public activation of the dispatcher. */
 export const EDGE_MAIN_PUBLIC_ACTIVATION_AUTHORIZED = false as const;
 
-/** Matches EdgeRuntime.userWorkers.create memoryLimitMb in supabase/functions/main. */
+/** Matches EdgeRuntime.userWorkers.create memoryLimitMb in archive/supabase-legacy/supabase/functions/main. */
 export const EDGE_MAIN_WORKER_MEMORY_LIMIT_MB = 512 as const;
 
 /** Matches EdgeRuntime.userWorkers.create workerTimeoutMs (5 * 60 * 1000). */

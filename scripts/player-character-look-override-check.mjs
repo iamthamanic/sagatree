@@ -35,7 +35,7 @@ function mustExist(relPath) {
 
 section('1 · files');
 [
-  'supabase/migrations/054_characters_personal_look_override.sql',
+  'archive/supabase-legacy/supabase/migrations/054_characters_personal_look_override.sql',
   'src/domains/look/personal-look-override.ts',
   'src/infrastructure/character/character-service.ts',
   'src/app/look/CharacterLookSelector.tsx',
@@ -44,7 +44,7 @@ section('1 · files');
 
 section('2 · migration');
 {
-  const mig = read('supabase/migrations/054_characters_personal_look_override.sql');
+  const mig = read('archive/supabase-legacy/supabase/migrations/054_characters_personal_look_override.sql');
   check(/enforce_personal_look_profile_binding/.test(mig), 'trigger function');
   check(/personal_look_profile_id/.test(mig), 'JSON field check');
   check(/allow_player_character_look_override IS FALSE/.test(mig), 'saga forbid');

@@ -65,7 +65,7 @@ section('1 · structure & wiring');
     'writable inventory accepts builtins',
   );
 
-  const migration = read('supabase/migrations/019_world_profiles_read_for_adventure.sql');
+  const migration = read('archive/supabase-legacy/supabase/migrations/019_world_profiles_read_for_adventure.sql');
   check(migration.includes('current_user_can_read_world_profile'), 'RLS uses read helper');
   check(migration.includes('Users can view readable world profiles'), 'new SELECT policy');
 

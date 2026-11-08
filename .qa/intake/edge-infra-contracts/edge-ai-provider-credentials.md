@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [edge-ai-provider-credentials.json](source-contracts/edge-ai-provider-credentials.json) (SHA-256 `819aa095908e71b0c9e48f61074c29c74e0c4c53065912fd3066e1a59237b07e`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [edge-ai-provider-credentials.json](source-contracts/edge-ai-provider-credentials.json) (SHA-256 `22754bbbfc4da10fd62b14d3c5fb812db17a821785d674441f13852a16590a63`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Exposure and purpose
 
@@ -76,15 +76,15 @@ Auth10s, service20s, Meshy GET /balance15s. No automatic retry. Meshy keys requi
 
 Explicit abort call sites (dynamic values resolve in the linked helper declaration):
 
-- `supabase/functions/_shared/ai-provider-meshy.ts:56` — `AbortSignal.timeout(15_000)`
-- `supabase/functions/ai-provider-credentials/index.ts:94` — `AbortSignal.timeout(10_000)`
-- `supabase/functions/ai-provider-credentials/index.ts:116` — `AbortSignal.timeout(20_000)`
+- `archive/supabase-legacy/supabase/functions/_shared/ai-provider-meshy.ts:56` — `AbortSignal.timeout(15_000)`
+- `archive/supabase-legacy/supabase/functions/ai-provider-credentials/index.ts:94` — `AbortSignal.timeout(10_000)`
+- `archive/supabase-legacy/supabase/functions/ai-provider-credentials/index.ts:116` — `AbortSignal.timeout(20_000)`
 
 ## Exact environment defaults and configuration resolution
 
 ### DEFAULT_BASE
 
-`supabase/functions/_shared/ai-provider-meshy.ts:19`
+`archive/supabase-legacy/supabase/functions/_shared/ai-provider-meshy.ts:19`
 
 ```ts
 DEFAULT_BASE = 'https://api.meshy.ai/openapi/v1'
@@ -92,7 +92,7 @@ DEFAULT_BASE = 'https://api.meshy.ai/openapi/v1'
 
 ### DEFAULT_CORS_METHODS
 
-`supabase/functions/_shared/cors.ts:9`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:9`
 
 ```ts
 DEFAULT_CORS_METHODS = 'GET, POST, PUT, DELETE, OPTIONS'
@@ -100,7 +100,7 @@ DEFAULT_CORS_METHODS = 'GET, POST, PUT, DELETE, OPTIONS'
 
 ### DEFAULT_CORS_ALLOW_HEADERS
 
-`supabase/functions/_shared/cors.ts:10`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:10`
 
 ```ts
 DEFAULT_CORS_ALLOW_HEADERS =
@@ -109,7 +109,7 @@ DEFAULT_CORS_ALLOW_HEADERS =
 
 ### readConfiguredOrigin
 
-`supabase/functions/_shared/cors.ts:34`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:34`
 
 ```ts
 function readConfiguredOrigin(envKeys: string[]): string {
@@ -123,7 +123,7 @@ function readConfiguredOrigin(envKeys: string[]): string {
 
 ### CORS_OPTS
 
-`supabase/functions/ai-provider-credentials/index.ts:30`
+`archive/supabase-legacy/supabase/functions/ai-provider-credentials/index.ts:30`
 
 ```ts
 CORS_OPTS: CorsOptions = {
@@ -139,7 +139,7 @@ CORS_OPTS: CorsOptions = {
 
 ### DEFAULT_RATE_LIMIT
 
-`supabase/functions/ai-provider-credentials/index.ts:56`
+`archive/supabase-legacy/supabase/functions/ai-provider-credentials/index.ts:56`
 
 ```ts
 DEFAULT_RATE_LIMIT = 8
@@ -147,7 +147,7 @@ DEFAULT_RATE_LIMIT = 8
 
 ### getSupabaseConfig
 
-`supabase/functions/ai-provider-credentials/index.ts:71`
+`archive/supabase-legacy/supabase/functions/ai-provider-credentials/index.ts:71`
 
 ```ts
 function getSupabaseConfig(): SupabaseConfig | null {
@@ -161,7 +161,7 @@ function getSupabaseConfig(): SupabaseConfig | null {
 
 ### getRateLimit
 
-`supabase/functions/ai-provider-credentials/index.ts:79`
+`archive/supabase-legacy/supabase/functions/ai-provider-credentials/index.ts:79`
 
 ```ts
 function getRateLimit(): number {
@@ -177,7 +177,7 @@ function getRateLimit(): number {
 
 ### validateProviderApiKey
 
-`supabase/functions/ai-provider-credentials/index.ts:223`
+`archive/supabase-legacy/supabase/functions/ai-provider-credentials/index.ts:223`
 
 ```ts
 async function validateProviderApiKey(
@@ -241,7 +241,7 @@ No src/infrastructure caller in the reviewed branch. This does not authorize add
 
 ### ai-provider-credentials:1
 
-Predicate: `action === 'list'`. Source: `supabase/functions/ai-provider-credentials/index.ts:270`.
+Predicate: `action === 'list'`. Source: `archive/supabase-legacy/supabase/functions/ai-provider-credentials/index.ts:270`.
 
 
 ```ts
@@ -287,7 +287,7 @@ Predicate: `action === 'list'`. Source: `supabase/functions/ai-provider-credenti
 
 ### ai-provider-credentials:2
 
-Predicate: `action === 'upsert'`. Source: `supabase/functions/ai-provider-credentials/index.ts:309`.
+Predicate: `action === 'upsert'`. Source: `archive/supabase-legacy/supabase/functions/ai-provider-credentials/index.ts:309`.
 
 
 ```ts
@@ -411,7 +411,7 @@ Predicate: `action === 'upsert'`. Source: `supabase/functions/ai-provider-creden
 
 ### ai-provider-credentials:3
 
-Predicate: `action === 'refresh'`. Source: `supabase/functions/ai-provider-credentials/index.ts:426`.
+Predicate: `action === 'refresh'`. Source: `archive/supabase-legacy/supabase/functions/ai-provider-credentials/index.ts:426`.
 
 
 ```ts
@@ -521,7 +521,7 @@ Predicate: `action === 'refresh'`. Source: `supabase/functions/ai-provider-crede
 
 ### ai-provider-credentials:4
 
-Predicate: `action === 'delete'`. Source: `supabase/functions/ai-provider-credentials/index.ts:529`.
+Predicate: `action === 'delete'`. Source: `archive/supabase-legacy/supabase/functions/ai-provider-credentials/index.ts:529`.
 
 
 ```ts
@@ -554,7 +554,7 @@ Predicate: `action === 'delete'`. Source: `supabase/functions/ai-provider-creden
 
 ### MeshyValidateResult
 
-`supabase/functions/_shared/ai-provider-meshy.ts:6`
+`archive/supabase-legacy/supabase/functions/_shared/ai-provider-meshy.ts:6`
 
 ```ts
 export type MeshyValidateResult =
@@ -571,7 +571,7 @@ export type MeshyValidateResult =
 
 ### FetchLike
 
-`supabase/functions/_shared/ai-provider-meshy.ts:17`
+`archive/supabase-legacy/supabase/functions/_shared/ai-provider-meshy.ts:17`
 
 ```ts
 type FetchLike = typeof fetch;
@@ -579,7 +579,7 @@ type FetchLike = typeof fetch;
 
 ### AiModality
 
-`supabase/functions/_shared/ai-provider-registry.ts:6`
+`archive/supabase-legacy/supabase/functions/_shared/ai-provider-registry.ts:6`
 
 ```ts
 export type AiModality = 'image' | '3d' | 'video' | 'audio';
@@ -587,7 +587,7 @@ export type AiModality = 'image' | '3d' | 'video' | 'audio';
 
 ### AiProviderAuthKind
 
-`supabase/functions/_shared/ai-provider-registry.ts:8`
+`archive/supabase-legacy/supabase/functions/_shared/ai-provider-registry.ts:8`
 
 ```ts
 export type AiProviderAuthKind = 'api_key';
@@ -595,7 +595,7 @@ export type AiProviderAuthKind = 'api_key';
 
 ### AiProviderDefinition
 
-`supabase/functions/_shared/ai-provider-registry.ts:10`
+`archive/supabase-legacy/supabase/functions/_shared/ai-provider-registry.ts:10`
 
 ```ts
 export interface AiProviderDefinition {
@@ -609,7 +609,7 @@ export interface AiProviderDefinition {
 
 ### PrivilegedClientBodyKey
 
-`supabase/functions/_shared/client-trust-body.ts:20`
+`archive/supabase-legacy/supabase/functions/_shared/client-trust-body.ts:20`
 
 ```ts
 export type PrivilegedClientBodyKey = (typeof PRIVILEGED_CLIENT_BODY_KEYS)[number];
@@ -617,7 +617,7 @@ export type PrivilegedClientBodyKey = (typeof PRIVILEGED_CLIENT_BODY_KEYS)[numbe
 
 ### CorsOptions
 
-`supabase/functions/_shared/cors.ts:13`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:13`
 
 ```ts
 export type CorsOptions = {
@@ -644,7 +644,7 @@ export type CorsOptions = {
 
 ### JsonRecord
 
-`supabase/functions/ai-provider-credentials/index.ts:28`
+`archive/supabase-legacy/supabase/functions/ai-provider-credentials/index.ts:28`
 
 ```ts
 type JsonRecord = Record<string, unknown>;
@@ -652,7 +652,7 @@ type JsonRecord = Record<string, unknown>;
 
 ### SupabaseConfig
 
-`supabase/functions/ai-provider-credentials/index.ts:40`
+`archive/supabase-legacy/supabase/functions/ai-provider-credentials/index.ts:40`
 
 ```ts
 interface SupabaseConfig {
@@ -664,7 +664,7 @@ interface SupabaseConfig {
 
 ### CredentialRow
 
-`supabase/functions/ai-provider-credentials/index.ts:46`
+`archive/supabase-legacy/supabase/functions/ai-provider-credentials/index.ts:46`
 
 ```ts
 interface CredentialRow {
@@ -683,7 +683,7 @@ interface CredentialRow {
 
 ### parseCredentialsEncryptionKey
 
-`supabase/functions/_shared/ai-provider-crypto.ts:25`
+`archive/supabase-legacy/supabase/functions/_shared/ai-provider-crypto.ts:25`
 
 ```ts
 export function parseCredentialsEncryptionKey(
@@ -724,7 +724,7 @@ export function parseCredentialsEncryptionKey(
 
 ### DEFAULT_BASE
 
-`supabase/functions/_shared/ai-provider-meshy.ts:19`
+`archive/supabase-legacy/supabase/functions/_shared/ai-provider-meshy.ts:19`
 
 ```ts
 DEFAULT_BASE = 'https://api.meshy.ai/openapi/v1'
@@ -732,7 +732,7 @@ DEFAULT_BASE = 'https://api.meshy.ai/openapi/v1'
 
 ### validateMeshyApiKey
 
-`supabase/functions/_shared/ai-provider-meshy.ts:30`
+`archive/supabase-legacy/supabase/functions/_shared/ai-provider-meshy.ts:30`
 
 ```ts
 export async function validateMeshyApiKey(
@@ -801,7 +801,7 @@ export async function validateMeshyApiKey(
 
 ### DEFAULT_CORS_METHODS
 
-`supabase/functions/_shared/cors.ts:9`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:9`
 
 ```ts
 DEFAULT_CORS_METHODS = 'GET, POST, PUT, DELETE, OPTIONS'
@@ -809,7 +809,7 @@ DEFAULT_CORS_METHODS = 'GET, POST, PUT, DELETE, OPTIONS'
 
 ### DEFAULT_CORS_ALLOW_HEADERS
 
-`supabase/functions/_shared/cors.ts:10`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:10`
 
 ```ts
 DEFAULT_CORS_ALLOW_HEADERS =
@@ -818,7 +818,7 @@ DEFAULT_CORS_ALLOW_HEADERS =
 
 ### CORS_OPTS
 
-`supabase/functions/ai-provider-credentials/index.ts:30`
+`archive/supabase-legacy/supabase/functions/ai-provider-credentials/index.ts:30`
 
 ```ts
 CORS_OPTS: CorsOptions = {
@@ -834,7 +834,7 @@ CORS_OPTS: CorsOptions = {
 
 ### DEFAULT_RATE_LIMIT
 
-`supabase/functions/ai-provider-credentials/index.ts:56`
+`archive/supabase-legacy/supabase/functions/ai-provider-credentials/index.ts:56`
 
 ```ts
 DEFAULT_RATE_LIMIT = 8
@@ -842,7 +842,7 @@ DEFAULT_RATE_LIMIT = 8
 
 ### RATE_WINDOW_SECONDS
 
-`supabase/functions/ai-provider-credentials/index.ts:57`
+`archive/supabase-legacy/supabase/functions/ai-provider-credentials/index.ts:57`
 
 ```ts
 RATE_WINDOW_SECONDS = 60
@@ -850,7 +850,7 @@ RATE_WINDOW_SECONDS = 60
 
 ### validateProviderApiKey
 
-`supabase/functions/ai-provider-credentials/index.ts:223`
+`archive/supabase-legacy/supabase/functions/ai-provider-credentials/index.ts:223`
 
 ```ts
 async function validateProviderApiKey(
@@ -872,13 +872,13 @@ async function validateProviderApiKey(
 
 | Path | SHA-256 |
 |---|---|
-| `supabase/functions/_shared/ai-provider-crypto.ts` | `45e60f76f744077e8d9b243719dcdba5d58a047d36a1c141df830afa2de16532` |
-| `supabase/functions/_shared/ai-provider-meshy.ts` | `8cfcb3698217a8352e91ddd46986bb5e3232caf843dc6d2b7a64585f920cc9a7` |
-| `supabase/functions/_shared/ai-provider-registry.ts` | `3c0f5266905d025d4174f7ff58dec37efa2036571c2bdbf518640bd0282fb478` |
-| `supabase/functions/_shared/client-trust-body.ts` | `33c68553dbd89d9c7899520b0ebfa35c4f245ed8ab8ebd242c6f79e9852add95` |
-| `supabase/functions/_shared/cors.ts` | `f8286c91d79fa5fc5cfea2fa47081916523fa7a440f234aecd9a47c6a8cf5b38` |
-| `supabase/functions/_shared/edge-dispatcher-allowlist.ts` | `6d1ae7bde0ba9e41fcaa7b61247732168a62699e7811fb8574cef266cfad3a27` |
-| `supabase/functions/_shared/edge-jwt-gate.ts` | `14a871697b051b7fcbee09dbce1dee8bc8ed5ea6a6eca0bec7b2e771b32d0f0c` |
-| `supabase/functions/ai-provider-credentials/index.ts` | `89ae569f9a5a4d208fc8f176659b2a69f1cbbc85c5d40529d1087a99e38ed8d3` |
-| `supabase/functions/main/index.ts` | `92f3bf56bf3c776e01595d980246079c4a9f8775e417959abea9d7da003bc53e` |
+| `archive/supabase-legacy/supabase/functions/_shared/ai-provider-crypto.ts` | `45e60f76f744077e8d9b243719dcdba5d58a047d36a1c141df830afa2de16532` |
+| `archive/supabase-legacy/supabase/functions/_shared/ai-provider-meshy.ts` | `8cfcb3698217a8352e91ddd46986bb5e3232caf843dc6d2b7a64585f920cc9a7` |
+| `archive/supabase-legacy/supabase/functions/_shared/ai-provider-registry.ts` | `3c0f5266905d025d4174f7ff58dec37efa2036571c2bdbf518640bd0282fb478` |
+| `archive/supabase-legacy/supabase/functions/_shared/client-trust-body.ts` | `33c68553dbd89d9c7899520b0ebfa35c4f245ed8ab8ebd242c6f79e9852add95` |
+| `archive/supabase-legacy/supabase/functions/_shared/cors.ts` | `f8286c91d79fa5fc5cfea2fa47081916523fa7a440f234aecd9a47c6a8cf5b38` |
+| `archive/supabase-legacy/supabase/functions/_shared/edge-dispatcher-allowlist.ts` | `6d1ae7bde0ba9e41fcaa7b61247732168a62699e7811fb8574cef266cfad3a27` |
+| `archive/supabase-legacy/supabase/functions/_shared/edge-jwt-gate.ts` | `14a871697b051b7fcbee09dbce1dee8bc8ed5ea6a6eca0bec7b2e771b32d0f0c` |
+| `archive/supabase-legacy/supabase/functions/ai-provider-credentials/index.ts` | `89ae569f9a5a4d208fc8f176659b2a69f1cbbc85c5d40529d1087a99e38ed8d3` |
+| `archive/supabase-legacy/supabase/functions/main/index.ts` | `92f3bf56bf3c776e01595d980246079c4a9f8775e417959abea9d7da003bc53e` |
 

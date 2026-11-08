@@ -26,18 +26,18 @@ function check(condition, message) {
 
 section('1 · files');
 const paths = [
-  'supabase/functions/_shared/media-server-raster-optimize.ts',
-  'supabase/functions/_shared/media-server-raster-optimize_test.ts',
-  'supabase/functions/_shared/media-server-raster-optimize.proof.ts',
-  'supabase/functions/item-thumbnail/index.ts',
+  'archive/supabase-legacy/supabase/functions/_shared/media-server-raster-optimize.ts',
+  'archive/supabase-legacy/supabase/functions/_shared/media-server-raster-optimize_test.ts',
+  'archive/supabase-legacy/supabase/functions/_shared/media-server-raster-optimize.proof.ts',
+  'archive/supabase-legacy/supabase/functions/item-thumbnail/index.ts',
   'docs/media-optimizer-server-decision.md',
   '.qa/acceptance/media-opt-provider-output.md',
 ];
 for (const p of paths) check(existsSync(join(root, p)), `exists ${p}`);
 
-const edge = readFileSync(join(root, 'supabase/functions/item-thumbnail/index.ts'), 'utf8');
+const edge = readFileSync(join(root, 'archive/supabase-legacy/supabase/functions/item-thumbnail/index.ts'), 'utf8');
 const adapter = readFileSync(
-  join(root, 'supabase/functions/_shared/media-server-raster-optimize.ts'),
+  join(root, 'archive/supabase-legacy/supabase/functions/_shared/media-server-raster-optimize.ts'),
   'utf8',
 );
 const decision = readFileSync(join(root, 'docs/media-optimizer-server-decision.md'), 'utf8');
@@ -61,7 +61,7 @@ const unit = spawnSync(
     '--allow-read',
     '--allow-net',
     '--allow-env',
-    'supabase/functions/_shared/media-server-raster-optimize_test.ts',
+    'archive/supabase-legacy/supabase/functions/_shared/media-server-raster-optimize_test.ts',
   ],
   { cwd: root, encoding: 'utf8' },
 );
@@ -83,7 +83,7 @@ const proof = spawnSync(
     '--allow-net',
     '--allow-env',
     '--allow-sys',
-    'supabase/functions/_shared/media-server-raster-optimize.proof.ts',
+    'archive/supabase-legacy/supabase/functions/_shared/media-server-raster-optimize.proof.ts',
   ],
   { cwd: root, encoding: 'utf8' },
 );

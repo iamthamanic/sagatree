@@ -38,10 +38,10 @@ section('1 · files');
   'src/domains/look/reference-analysis.ts',
   'src/infrastructure/look/look-reference-analysis-service.ts',
   'src/infrastructure/look/look-service.ts',
-  'supabase/functions/look-reference-analysis/index.ts',
-  'supabase/functions/_shared/look-reference-analysis-provider.ts',
-  'supabase/functions/_shared/look-reference-analysis-image.ts',
-  'supabase/functions/_shared/look-reference-analysis-rate-limit.ts',
+  'archive/supabase-legacy/supabase/functions/look-reference-analysis/index.ts',
+  'archive/supabase-legacy/supabase/functions/_shared/look-reference-analysis-provider.ts',
+  'archive/supabase-legacy/supabase/functions/_shared/look-reference-analysis-image.ts',
+  'archive/supabase-legacy/supabase/functions/_shared/look-reference-analysis-rate-limit.ts',
   '.qa/acceptance/basic-look-reference-analysis.md',
 ].forEach(mustExist);
 
@@ -61,8 +61,8 @@ section('2 · domain has no provider leak');
 
 section('3 · edge + infra wiring');
 {
-  const edge = read('supabase/functions/look-reference-analysis/index.ts');
-  const provider = read('supabase/functions/_shared/look-reference-analysis-provider.ts');
+  const edge = read('archive/supabase-legacy/supabase/functions/look-reference-analysis/index.ts');
+  const provider = read('archive/supabase-legacy/supabase/functions/_shared/look-reference-analysis-provider.ts');
   const service = read('src/infrastructure/look/look-reference-analysis-service.ts');
   const lookService = read('src/infrastructure/look/look-service.ts');
   check(/authenticate/.test(edge), 'edge auth');

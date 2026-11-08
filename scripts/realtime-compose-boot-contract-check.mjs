@@ -29,11 +29,11 @@ check(envEx.includes('SECRET_KEY_BASE='), '.env.example documents SECRET_KEY_BAS
 check(envEx.includes('DB_ENC_KEY='), '.env.example documents DB_ENC_KEY');
 check(envEx.includes('REALTIME_SELF_HOST_TENANT=localhost'), '.env.example tenant localhost');
 
-const kong = readFileSync(join(root, 'supabase/config/kong.yml'), 'utf8');
+const kong = readFileSync(join(root, 'archive/supabase-legacy/supabase/config/kong.yml'), 'utf8');
 check(kong.includes('supabase-realtime:4000/socket'), 'kong upstream /socket');
 check(/strip_path:\s*true/.test(kong) && kong.includes('/realtime/v1/'), 'kong strip /realtime/v1/');
 
-const nginx = readFileSync(join(root, 'supabase/config/nginx-proxy.template'), 'utf8');
+const nginx = readFileSync(join(root, 'archive/supabase-legacy/supabase/config/nginx-proxy.template'), 'utf8');
 check(nginx.includes('location /realtime/v1/'), 'nginx realtime location');
 check(nginx.includes('/socket/'), 'nginx proxies to /socket/');
 

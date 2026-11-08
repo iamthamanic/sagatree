@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [edge-sessions.json](source-contracts/edge-sessions.json) (SHA-256 `210b68f609dc9528700c2bb2f5625d8bf6390933b211495d7a9ab9622b1b8233`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [edge-sessions.json](source-contracts/edge-sessions.json) (SHA-256 `0c1a6440219d3f551be7c2200edb713f202587b7268360d1b89b472de69579d6`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Exposure and purpose
 
@@ -56,7 +56,7 @@ None in the reviewed source.
 
 ### DEFAULT_CORS_METHODS
 
-`supabase/functions/_shared/cors.ts:9`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:9`
 
 ```ts
 DEFAULT_CORS_METHODS = 'GET, POST, PUT, DELETE, OPTIONS'
@@ -64,7 +64,7 @@ DEFAULT_CORS_METHODS = 'GET, POST, PUT, DELETE, OPTIONS'
 
 ### DEFAULT_CORS_ALLOW_HEADERS
 
-`supabase/functions/_shared/cors.ts:10`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:10`
 
 ```ts
 DEFAULT_CORS_ALLOW_HEADERS =
@@ -73,7 +73,7 @@ DEFAULT_CORS_ALLOW_HEADERS =
 
 ### readConfiguredOrigin
 
-`supabase/functions/_shared/cors.ts:34`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:34`
 
 ```ts
 function readConfiguredOrigin(envKeys: string[]): string {
@@ -87,7 +87,7 @@ function readConfiguredOrigin(envKeys: string[]): string {
 
 ### CORS_OPTS
 
-`supabase/functions/sessions/index.ts:7`
+`archive/supabase-legacy/supabase/functions/sessions/index.ts:7`
 
 ```ts
 CORS_OPTS: CorsOptions = {
@@ -131,7 +131,7 @@ No src/infrastructure caller in the reviewed branch. This does not authorize add
 
 ### sessions:1
 
-Predicate: `req.method === "GET" && path === "/health"`. Source: `supabase/functions/sessions/index.ts:553`.
+Predicate: `req.method === "GET" && path === "/health"`. Source: `archive/supabase-legacy/supabase/functions/sessions/index.ts:553`.
 
 
 ```ts
@@ -148,7 +148,7 @@ Predicate: `req.method === "GET" && path === "/health"`. Source: `supabase/funct
 
 ### sessions:2
 
-Predicate: `req.method === "GET" && path === "/sessions"`. Source: `supabase/functions/sessions/index.ts:564`.
+Predicate: `req.method === "GET" && path === "/sessions"`. Source: `archive/supabase-legacy/supabase/functions/sessions/index.ts:564`.
 
 
 ```ts
@@ -164,7 +164,7 @@ Predicate: `req.method === "GET" && path === "/sessions"`. Source: `supabase/fun
 
 ### sessions:3
 
-Predicate: `req.method === "POST" && path === "/sessions"`. Source: `supabase/functions/sessions/index.ts:574`.
+Predicate: `req.method === "POST" && path === "/sessions"`. Source: `archive/supabase-legacy/supabase/functions/sessions/index.ts:574`.
 
 
 ```ts
@@ -181,7 +181,7 @@ Predicate: `req.method === "POST" && path === "/sessions"`. Source: `supabase/fu
 
 ### sessions:4
 
-Predicate: `req.method === "GET" && path.match(/^\/sessions\/[\w-]+$/)`. Source: `supabase/functions/sessions/index.ts:585`.
+Predicate: `req.method === "GET" && path.match(/^\/sessions\/[\w-]+$/)`. Source: `archive/supabase-legacy/supabase/functions/sessions/index.ts:585`.
 
 
 ```ts
@@ -212,7 +212,7 @@ Predicate: `req.method === "GET" && path.match(/^\/sessions\/[\w-]+$/)`. Source:
 
 ### sessions:5
 
-Predicate: `req.method === "PUT" && path.match(/^\/sessions\/[\w-]+$/)`. Source: `supabase/functions/sessions/index.ts:610`.
+Predicate: `req.method === "PUT" && path.match(/^\/sessions\/[\w-]+$/)`. Source: `archive/supabase-legacy/supabase/functions/sessions/index.ts:610`.
 
 
 ```ts
@@ -229,7 +229,7 @@ Predicate: `req.method === "PUT" && path.match(/^\/sessions\/[\w-]+$/)`. Source:
 
 ### sessions:6
 
-Predicate: `req.method === "DELETE" && path.match(/^\/sessions\/[\w-]+$/)`. Source: `supabase/functions/sessions/index.ts:621`.
+Predicate: `req.method === "DELETE" && path.match(/^\/sessions\/[\w-]+$/)`. Source: `archive/supabase-legacy/supabase/functions/sessions/index.ts:621`.
 
 
 ```ts
@@ -245,7 +245,7 @@ Predicate: `req.method === "DELETE" && path.match(/^\/sessions\/[\w-]+$/)`. Sour
 
 ### sessions:7
 
-Predicate: `req.method === "POST" && path.match(/^\/sessions\/[\w-]+\/start$/)`. Source: `supabase/functions/sessions/index.ts:631`.
+Predicate: `req.method === "POST" && path.match(/^\/sessions\/[\w-]+\/start$/)`. Source: `archive/supabase-legacy/supabase/functions/sessions/index.ts:631`.
 
 
 ```ts
@@ -261,7 +261,7 @@ Predicate: `req.method === "POST" && path.match(/^\/sessions\/[\w-]+\/start$/)`.
 
 ### sessions:8
 
-Predicate: `req.method === "POST" && path.match(/^\/sessions\/[\w-]+\/pause$/)`. Source: `supabase/functions/sessions/index.ts:641`.
+Predicate: `req.method === "POST" && path.match(/^\/sessions\/[\w-]+\/pause$/)`. Source: `archive/supabase-legacy/supabase/functions/sessions/index.ts:641`.
 
 
 ```ts
@@ -277,7 +277,7 @@ Predicate: `req.method === "POST" && path.match(/^\/sessions\/[\w-]+\/pause$/)`.
 
 ### sessions:9
 
-Predicate: `req.method === "POST" && path.match(/^\/sessions\/[\w-]+\/end$/)`. Source: `supabase/functions/sessions/index.ts:651`.
+Predicate: `req.method === "POST" && path.match(/^\/sessions\/[\w-]+\/end$/)`. Source: `archive/supabase-legacy/supabase/functions/sessions/index.ts:651`.
 
 
 ```ts
@@ -293,7 +293,7 @@ Predicate: `req.method === "POST" && path.match(/^\/sessions\/[\w-]+\/end$/)`. S
 
 ### sessions:10
 
-Predicate: `req.method === "POST" && path.match(/^\/sessions\/[\w-]+\/join$/)`. Source: `supabase/functions/sessions/index.ts:661`.
+Predicate: `req.method === "POST" && path.match(/^\/sessions\/[\w-]+\/join$/)`. Source: `archive/supabase-legacy/supabase/functions/sessions/index.ts:661`.
 
 
 ```ts
@@ -310,7 +310,7 @@ Predicate: `req.method === "POST" && path.match(/^\/sessions\/[\w-]+\/join$/)`. 
 
 ### sessions:11
 
-Predicate: `req.method === "POST" && path.match(/^\/sessions\/[\w-]+\/leave$/)`. Source: `supabase/functions/sessions/index.ts:672`.
+Predicate: `req.method === "POST" && path.match(/^\/sessions\/[\w-]+\/leave$/)`. Source: `archive/supabase-legacy/supabase/functions/sessions/index.ts:672`.
 
 
 ```ts
@@ -327,7 +327,7 @@ Predicate: `req.method === "POST" && path.match(/^\/sessions\/[\w-]+\/leave$/)`.
 
 ### sessions:12
 
-Predicate: `req.method === "GET" && path.match(/^\/sessions\/[\w-]+\/players$/)`. Source: `supabase/functions/sessions/index.ts:683`.
+Predicate: `req.method === "GET" && path.match(/^\/sessions\/[\w-]+\/players$/)`. Source: `archive/supabase-legacy/supabase/functions/sessions/index.ts:683`.
 
 
 ```ts
@@ -343,7 +343,7 @@ Predicate: `req.method === "GET" && path.match(/^\/sessions\/[\w-]+\/players$/)`
 
 ### sessions:13
 
-Predicate: `req.method === "POST" && path.match(/^\/sessions\/[\w-]+\/chat$/)`. Source: `supabase/functions/sessions/index.ts:693`.
+Predicate: `req.method === "POST" && path.match(/^\/sessions\/[\w-]+\/chat$/)`. Source: `archive/supabase-legacy/supabase/functions/sessions/index.ts:693`.
 
 
 ```ts
@@ -360,7 +360,7 @@ Predicate: `req.method === "POST" && path.match(/^\/sessions\/[\w-]+\/chat$/)`. 
 
 ### sessions:14
 
-Predicate: `req.method === "GET" && path.match(/^\/sessions\/[\w-]+\/chat$/)`. Source: `supabase/functions/sessions/index.ts:704`.
+Predicate: `req.method === "GET" && path.match(/^\/sessions\/[\w-]+\/chat$/)`. Source: `archive/supabase-legacy/supabase/functions/sessions/index.ts:704`.
 
 
 ```ts
@@ -377,7 +377,7 @@ Predicate: `req.method === "GET" && path.match(/^\/sessions\/[\w-]+\/chat$/)`. S
 
 ### sessions:15
 
-Predicate: `req.method === "DELETE" && path.match(/^\/sessions\/[\w-]+\/chat\/[\w-]+$/)`. Source: `supabase/functions/sessions/index.ts:715`.
+Predicate: `req.method === "DELETE" && path.match(/^\/sessions\/[\w-]+\/chat\/[\w-]+$/)`. Source: `archive/supabase-legacy/supabase/functions/sessions/index.ts:715`.
 
 
 ```ts
@@ -394,7 +394,7 @@ Predicate: `req.method === "DELETE" && path.match(/^\/sessions\/[\w-]+\/chat\/[\
 
 ### sessions:16
 
-Predicate: `req.method === "GET" && path.match(/^\/sessions\/[\w-]+\/world-state$/)`. Source: `supabase/functions/sessions/index.ts:726`.
+Predicate: `req.method === "GET" && path.match(/^\/sessions\/[\w-]+\/world-state$/)`. Source: `archive/supabase-legacy/supabase/functions/sessions/index.ts:726`.
 
 
 ```ts
@@ -410,7 +410,7 @@ Predicate: `req.method === "GET" && path.match(/^\/sessions\/[\w-]+\/world-state
 
 ### sessions:17
 
-Predicate: `req.method === "PUT" && path.match(/^\/sessions\/[\w-]+\/world-state$/)`. Source: `supabase/functions/sessions/index.ts:736`.
+Predicate: `req.method === "PUT" && path.match(/^\/sessions\/[\w-]+\/world-state$/)`. Source: `archive/supabase-legacy/supabase/functions/sessions/index.ts:736`.
 
 
 ```ts
@@ -427,7 +427,7 @@ Predicate: `req.method === "PUT" && path.match(/^\/sessions\/[\w-]+\/world-state
 
 ### sessions:18
 
-Predicate: `req.method === "POST" && path.match(/^\/sessions\/[\w-]+\/save$/)`. Source: `supabase/functions/sessions/index.ts:747`.
+Predicate: `req.method === "POST" && path.match(/^\/sessions\/[\w-]+\/save$/)`. Source: `archive/supabase-legacy/supabase/functions/sessions/index.ts:747`.
 
 
 ```ts
@@ -444,7 +444,7 @@ Predicate: `req.method === "POST" && path.match(/^\/sessions\/[\w-]+\/save$/)`. 
 
 ### sessions:19
 
-Predicate: `req.method === "POST" && path.match(/^\/sessions\/[\w-]+\/load\/[\w-]+$/)`. Source: `supabase/functions/sessions/index.ts:758`.
+Predicate: `req.method === "POST" && path.match(/^\/sessions\/[\w-]+\/load\/[\w-]+$/)`. Source: `archive/supabase-legacy/supabase/functions/sessions/index.ts:758`.
 
 
 ```ts
@@ -461,7 +461,7 @@ Predicate: `req.method === "POST" && path.match(/^\/sessions\/[\w-]+\/load\/[\w-
 
 ### sessions:20
 
-Predicate: `req.method === "GET" && path.match(/^\/sessions\/[\w-]+\/saves$/)`. Source: `supabase/functions/sessions/index.ts:769`.
+Predicate: `req.method === "GET" && path.match(/^\/sessions\/[\w-]+\/saves$/)`. Source: `archive/supabase-legacy/supabase/functions/sessions/index.ts:769`.
 
 
 ```ts
@@ -477,7 +477,7 @@ Predicate: `req.method === "GET" && path.match(/^\/sessions\/[\w-]+\/saves$/)`. 
 
 ### sessions:21
 
-Predicate: `req.method === "DELETE" && path.match(/^\/sessions\/[\w-]+\/save\/[\w-]+$/)`. Source: `supabase/functions/sessions/index.ts:779`.
+Predicate: `req.method === "DELETE" && path.match(/^\/sessions\/[\w-]+\/save\/[\w-]+$/)`. Source: `archive/supabase-legacy/supabase/functions/sessions/index.ts:779`.
 
 
 ```ts
@@ -494,7 +494,7 @@ Predicate: `req.method === "DELETE" && path.match(/^\/sessions\/[\w-]+\/save\/[\
 
 ### sessions:22
 
-Predicate: `req.method === "GET" && path.match(/^\/sessions\/[\w-]+\/logs$/)`. Source: `supabase/functions/sessions/index.ts:790`.
+Predicate: `req.method === "GET" && path.match(/^\/sessions\/[\w-]+\/logs$/)`. Source: `archive/supabase-legacy/supabase/functions/sessions/index.ts:790`.
 
 
 ```ts
@@ -511,7 +511,7 @@ Predicate: `req.method === "GET" && path.match(/^\/sessions\/[\w-]+\/logs$/)`. S
 
 ### sessions:23
 
-Predicate: `req.method === "POST" && path.match(/^\/sessions\/[\w-]+\/logs$/)`. Source: `supabase/functions/sessions/index.ts:801`.
+Predicate: `req.method === "POST" && path.match(/^\/sessions\/[\w-]+\/logs$/)`. Source: `archive/supabase-legacy/supabase/functions/sessions/index.ts:801`.
 
 
 ```ts
@@ -528,7 +528,7 @@ Predicate: `req.method === "POST" && path.match(/^\/sessions\/[\w-]+\/logs$/)`. 
 
 ### sessions:24
 
-Predicate: `req.method === "GET" && path.match(/^\/sessions\/[\w-]+\/export$/)`. Source: `supabase/functions/sessions/index.ts:812`.
+Predicate: `req.method === "GET" && path.match(/^\/sessions\/[\w-]+\/export$/)`. Source: `archive/supabase-legacy/supabase/functions/sessions/index.ts:812`.
 
 
 ```ts
@@ -544,7 +544,7 @@ Predicate: `req.method === "GET" && path.match(/^\/sessions\/[\w-]+\/export$/)`.
 
 ### sessions:25
 
-Predicate: `req.method === "POST" && path === "/sessions/import"`. Source: `supabase/functions/sessions/index.ts:822`.
+Predicate: `req.method === "POST" && path === "/sessions/import"`. Source: `archive/supabase-legacy/supabase/functions/sessions/index.ts:822`.
 
 
 ```ts
@@ -563,7 +563,7 @@ Predicate: `req.method === "POST" && path === "/sessions/import"`. Source: `supa
 
 ### CorsOptions
 
-`supabase/functions/_shared/cors.ts:13`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:13`
 
 ```ts
 export type CorsOptions = {
@@ -590,7 +590,7 @@ export type CorsOptions = {
 
 ### Session
 
-`supabase/functions/sessions/index.ts:21`
+`archive/supabase-legacy/supabase/functions/sessions/index.ts:21`
 
 ```ts
 interface Session {
@@ -612,7 +612,7 @@ interface Session {
 
 ### WorldState
 
-`supabase/functions/sessions/index.ts:37`
+`archive/supabase-legacy/supabase/functions/sessions/index.ts:37`
 
 ```ts
 interface WorldState {
@@ -630,7 +630,7 @@ interface WorldState {
 
 ### NPCState
 
-`supabase/functions/sessions/index.ts:49`
+`archive/supabase-legacy/supabase/functions/sessions/index.ts:49`
 
 ```ts
 interface NPCState {
@@ -645,7 +645,7 @@ interface NPCState {
 
 ### SavePoint
 
-`supabase/functions/sessions/index.ts:58`
+`archive/supabase-legacy/supabase/functions/sessions/index.ts:58`
 
 ```ts
 interface SavePoint {
@@ -660,7 +660,7 @@ interface SavePoint {
 
 ### PlayerState
 
-`supabase/functions/sessions/index.ts:67`
+`archive/supabase-legacy/supabase/functions/sessions/index.ts:67`
 
 ```ts
 interface PlayerState {
@@ -679,7 +679,7 @@ interface PlayerState {
 
 ### SessionPlayer
 
-`supabase/functions/sessions/index.ts:80`
+`archive/supabase-legacy/supabase/functions/sessions/index.ts:80`
 
 ```ts
 interface SessionPlayer {
@@ -696,7 +696,7 @@ interface SessionPlayer {
 
 ### ChatMessage
 
-`supabase/functions/sessions/index.ts:91`
+`archive/supabase-legacy/supabase/functions/sessions/index.ts:91`
 
 ```ts
 interface ChatMessage {
@@ -714,7 +714,7 @@ interface ChatMessage {
 
 ### SessionLog
 
-`supabase/functions/sessions/index.ts:103`
+`archive/supabase-legacy/supabase/functions/sessions/index.ts:103`
 
 ```ts
 interface SessionLog {
@@ -732,7 +732,7 @@ interface SessionLog {
 
 ### generateId
 
-`supabase/functions/sessions/index.ts:125`
+`archive/supabase-legacy/supabase/functions/sessions/index.ts:125`
 
 ```ts
 function generateId(): string {
@@ -742,7 +742,7 @@ function generateId(): string {
 
 ### validateSessionData
 
-`supabase/functions/sessions/index.ts:129`
+`archive/supabase-legacy/supabase/functions/sessions/index.ts:129`
 
 ```ts
 function validateSessionData(data: Partial<Session>): { valid: boolean; error?: string } {
@@ -754,7 +754,7 @@ function validateSessionData(data: Partial<Session>): { valid: boolean; error?: 
 
 ### createSession
 
-`supabase/functions/sessions/index.ts:139`
+`archive/supabase-legacy/supabase/functions/sessions/index.ts:139`
 
 ```ts
 async function createSession(data: {
@@ -808,7 +808,7 @@ async function createSession(data: {
 
 ### getSession
 
-`supabase/functions/sessions/index.ts:187`
+`archive/supabase-legacy/supabase/functions/sessions/index.ts:187`
 
 ```ts
 async function getSession(sessionId: string): Promise<Session | null> {
@@ -818,7 +818,7 @@ async function getSession(sessionId: string): Promise<Session | null> {
 
 ### updateSession
 
-`supabase/functions/sessions/index.ts:191`
+`archive/supabase-legacy/supabase/functions/sessions/index.ts:191`
 
 ```ts
 async function updateSession(sessionId: string, data: Partial<Session>): Promise<Session> {
@@ -838,7 +838,7 @@ async function updateSession(sessionId: string, data: Partial<Session>): Promise
 
 ### deleteSession
 
-`supabase/functions/sessions/index.ts:205`
+`archive/supabase-legacy/supabase/functions/sessions/index.ts:205`
 
 ```ts
 async function deleteSession(sessionId: string): Promise<void> {
@@ -851,7 +851,7 @@ async function deleteSession(sessionId: string): Promise<void> {
 
 ### listSessions
 
-`supabase/functions/sessions/index.ts:212`
+`archive/supabase-legacy/supabase/functions/sessions/index.ts:212`
 
 ```ts
 async function listSessions(projectId?: string): Promise<Session[]> {
@@ -865,7 +865,7 @@ async function listSessions(projectId?: string): Promise<Session[]> {
 
 ### startSession
 
-`supabase/functions/sessions/index.ts:224`
+`archive/supabase-legacy/supabase/functions/sessions/index.ts:224`
 
 ```ts
 async function startSession(sessionId: string): Promise<Session> {
@@ -893,7 +893,7 @@ async function startSession(sessionId: string): Promise<Session> {
 
 ### pauseSession
 
-`supabase/functions/sessions/index.ts:246`
+`archive/supabase-legacy/supabase/functions/sessions/index.ts:246`
 
 ```ts
 async function pauseSession(sessionId: string): Promise<Session> {
@@ -910,7 +910,7 @@ async function pauseSession(sessionId: string): Promise<Session> {
 
 ### endSession
 
-`supabase/functions/sessions/index.ts:257`
+`archive/supabase-legacy/supabase/functions/sessions/index.ts:257`
 
 ```ts
 async function endSession(sessionId: string): Promise<Session> {
@@ -938,7 +938,7 @@ async function endSession(sessionId: string): Promise<Session> {
 
 ### joinSession
 
-`supabase/functions/sessions/index.ts:283`
+`archive/supabase-legacy/supabase/functions/sessions/index.ts:283`
 
 ```ts
 async function joinSession(sessionId: string, data: {
@@ -975,7 +975,7 @@ async function joinSession(sessionId: string, data: {
 
 ### leaveSession
 
-`supabase/functions/sessions/index.ts:314`
+`archive/supabase-legacy/supabase/functions/sessions/index.ts:314`
 
 ```ts
 async function leaveSession(sessionId: string, userId: string): Promise<void> {
@@ -993,7 +993,7 @@ async function leaveSession(sessionId: string, userId: string): Promise<void> {
 
 ### getSessionPlayers
 
-`supabase/functions/sessions/index.ts:326`
+`archive/supabase-legacy/supabase/functions/sessions/index.ts:326`
 
 ```ts
 async function getSessionPlayers(sessionId: string): Promise<SessionPlayer[]> {
@@ -1003,7 +1003,7 @@ async function getSessionPlayers(sessionId: string): Promise<SessionPlayer[]> {
 
 ### updatePlayerActivity
 
-`supabase/functions/sessions/index.ts:330`
+`archive/supabase-legacy/supabase/functions/sessions/index.ts:330`
 
 ```ts
 async function updatePlayerActivity(sessionId: string, userId: string): Promise<void> {
@@ -1019,7 +1019,7 @@ async function updatePlayerActivity(sessionId: string, userId: string): Promise<
 
 ### sendChatMessage
 
-`supabase/functions/sessions/index.ts:344`
+`archive/supabase-legacy/supabase/functions/sessions/index.ts:344`
 
 ```ts
 async function sendChatMessage(sessionId: string, data: {
@@ -1053,7 +1053,7 @@ async function sendChatMessage(sessionId: string, data: {
 
 ### getChatHistory
 
-`supabase/functions/sessions/index.ts:372`
+`archive/supabase-legacy/supabase/functions/sessions/index.ts:372`
 
 ```ts
 async function getChatHistory(sessionId: string, limit: number = 100): Promise<ChatMessage[]> {
@@ -1064,7 +1064,7 @@ async function getChatHistory(sessionId: string, limit: number = 100): Promise<C
 
 ### deleteChatMessage
 
-`supabase/functions/sessions/index.ts:377`
+`archive/supabase-legacy/supabase/functions/sessions/index.ts:377`
 
 ```ts
 async function deleteChatMessage(sessionId: string, messageId: string): Promise<void> {
@@ -1076,7 +1076,7 @@ async function deleteChatMessage(sessionId: string, messageId: string): Promise<
 
 ### updateWorldState
 
-`supabase/functions/sessions/index.ts:387`
+`archive/supabase-legacy/supabase/functions/sessions/index.ts:387`
 
 ```ts
 async function updateWorldState(sessionId: string, worldState: Partial<WorldState>): Promise<WorldState> {
@@ -1096,7 +1096,7 @@ async function updateWorldState(sessionId: string, worldState: Partial<WorldStat
 
 ### getWorldState
 
-`supabase/functions/sessions/index.ts:401`
+`archive/supabase-legacy/supabase/functions/sessions/index.ts:401`
 
 ```ts
 async function getWorldState(sessionId: string): Promise<WorldState> {
@@ -1109,7 +1109,7 @@ async function getWorldState(sessionId: string): Promise<WorldState> {
 
 ### createSavePoint
 
-`supabase/functions/sessions/index.ts:412`
+`archive/supabase-legacy/supabase/functions/sessions/index.ts:412`
 
 ```ts
 async function createSavePoint(sessionId: string, data: {
@@ -1138,7 +1138,7 @@ async function createSavePoint(sessionId: string, data: {
 
 ### loadSavePoint
 
-`supabase/functions/sessions/index.ts:435`
+`archive/supabase-legacy/supabase/functions/sessions/index.ts:435`
 
 ```ts
 async function loadSavePoint(sessionId: string, savePointId: string): Promise<{
@@ -1166,7 +1166,7 @@ async function loadSavePoint(sessionId: string, savePointId: string): Promise<{
 
 ### listSavePoints
 
-`supabase/functions/sessions/index.ts:457`
+`archive/supabase-legacy/supabase/functions/sessions/index.ts:457`
 
 ```ts
 async function listSavePoints(sessionId: string): Promise<SavePoint[]> {
@@ -1179,7 +1179,7 @@ async function listSavePoints(sessionId: string): Promise<SavePoint[]> {
 
 ### deleteSavePoint
 
-`supabase/functions/sessions/index.ts:464`
+`archive/supabase-legacy/supabase/functions/sessions/index.ts:464`
 
 ```ts
 async function deleteSavePoint(sessionId: string, savePointId: string): Promise<void> {
@@ -1193,7 +1193,7 @@ async function deleteSavePoint(sessionId: string, savePointId: string): Promise<
 
 ### addSessionLog
 
-`supabase/functions/sessions/index.ts:476`
+`archive/supabase-legacy/supabase/functions/sessions/index.ts:476`
 
 ```ts
 async function addSessionLog(sessionId: string, log: Omit<SessionLog, 'id' | 'sessionId' | 'timestamp'>): Promise<SessionLog> {
@@ -1215,7 +1215,7 @@ async function addSessionLog(sessionId: string, log: Omit<SessionLog, 'id' | 'se
 
 ### getSessionLogs
 
-`supabase/functions/sessions/index.ts:492`
+`archive/supabase-legacy/supabase/functions/sessions/index.ts:492`
 
 ```ts
 async function getSessionLogs(sessionId: string, limit: number = 100): Promise<SessionLog[]> {
@@ -1226,7 +1226,7 @@ async function getSessionLogs(sessionId: string, limit: number = 100): Promise<S
 
 ### exportSession
 
-`supabase/functions/sessions/index.ts:501`
+`archive/supabase-legacy/supabase/functions/sessions/index.ts:501`
 
 ```ts
 async function exportSession(sessionId: string): Promise<{
@@ -1249,7 +1249,7 @@ async function exportSession(sessionId: string): Promise<{
 
 ### importSession
 
-`supabase/functions/sessions/index.ts:518`
+`archive/supabase-legacy/supabase/functions/sessions/index.ts:518`
 
 ```ts
 async function importSession(data: {
@@ -1278,9 +1278,9 @@ async function importSession(data: {
 
 | Path | SHA-256 |
 |---|---|
-| `supabase/functions/_shared/cors.ts` | `f8286c91d79fa5fc5cfea2fa47081916523fa7a440f234aecd9a47c6a8cf5b38` |
-| `supabase/functions/_shared/edge-dispatcher-allowlist.ts` | `6d1ae7bde0ba9e41fcaa7b61247732168a62699e7811fb8574cef266cfad3a27` |
-| `supabase/functions/_shared/edge-jwt-gate.ts` | `14a871697b051b7fcbee09dbce1dee8bc8ed5ea6a6eca0bec7b2e771b32d0f0c` |
-| `supabase/functions/main/index.ts` | `92f3bf56bf3c776e01595d980246079c4a9f8775e417959abea9d7da003bc53e` |
-| `supabase/functions/sessions/index.ts` | `d0bc500a2531caecce486391fdf03f4b3bbbaf8b9e71a9c5c7b650aa2c41ef5e` |
+| `archive/supabase-legacy/supabase/functions/_shared/cors.ts` | `f8286c91d79fa5fc5cfea2fa47081916523fa7a440f234aecd9a47c6a8cf5b38` |
+| `archive/supabase-legacy/supabase/functions/_shared/edge-dispatcher-allowlist.ts` | `6d1ae7bde0ba9e41fcaa7b61247732168a62699e7811fb8574cef266cfad3a27` |
+| `archive/supabase-legacy/supabase/functions/_shared/edge-jwt-gate.ts` | `14a871697b051b7fcbee09dbce1dee8bc8ed5ea6a6eca0bec7b2e771b32d0f0c` |
+| `archive/supabase-legacy/supabase/functions/main/index.ts` | `92f3bf56bf3c776e01595d980246079c4a9f8775e417959abea9d7da003bc53e` |
+| `archive/supabase-legacy/supabase/functions/sessions/index.ts` | `d0bc500a2531caecce486391fdf03f4b3bbbaf8b9e71a9c5c7b650aa2c41ef5e` |
 

@@ -4,19 +4,13 @@
  * Location: scripts/cut-20-legacy-client-ban.self-test.mjs
  *
  * Fail-closed AST/regex scan of productive frontend sources. Historical
- * supabase/functions + migrations remain until CUT-21 and are out of scope.
+ * Edge/SQL lives under archive/supabase-legacy/ (CUT-21) and is out of scope.
  */
 import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
 
 const root = new URL('..', import.meta.url).pathname;
 const srcRoot = join(root, 'src');
-
-/** Product files may keep an inert client factory only. */
-const ALLOWED_SUPABASE_IMPORT_FILES = new Set([
-  'src/lib/supabase.ts',
-  'src/lib/supabase-client.ts',
-]);
 
 const BANNED = [
   { id: 'functions.invoke', re: /supabase\.functions\.invoke\s*\(/ },
@@ -31,14 +25,13 @@ const BANNED = [
   {
     id: 'supabase-js-import',
     re: /from\s+['"]@supabase\/supabase-js['"]/,
-    allowListed: true,
   },
 ];
 
 function walk(dir, out = []) {
   for (const name of readdirSync(dir)) {
     if (name === 'node_modules' || name.startsWith('.')) continue;
-    /** Edge function sources under `src/supabase/` — CUT-21 archive; out of product scan. */
+    /** Edge function sources under `archive/supabase-legacy/src-supabase/` — CUT-21 archive; out of product scan. */
     if (name === 'supabase') continue;
     const full = join(dir, name);
     const st = statSync(full);
@@ -63,7 +56,6 @@ for (const full of files) {
   const text = readFileSync(full, 'utf8');
   for (const ban of BANNED) {
     if (!ban.re.test(text)) continue;
-    if (ban.allowListed && ALLOWED_SUPABASE_IMPORT_FILES.has(rel)) continue;
     if (ban.id === 'host-library-opt-out' && rel === 'src/infrastructure/host/host-library-http.ts') {
       // Gate helper may still mention the env key only while documenting removal —
       // ban any opt-out branch instead.

@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [edge-ollama-settings.json](source-contracts/edge-ollama-settings.json) (SHA-256 `c5c49453f891015770a95d2eda13426e52d1a186b1a5107582b968a6e7c87b93`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [edge-ollama-settings.json](source-contracts/edge-ollama-settings.json) (SHA-256 `77c03f23eda297883b18b7e121619a0b1c30bd9bedfacb6d9482fafec1bd3519`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Exposure and purpose
 
@@ -78,18 +78,18 @@ Auth 10s, service 20s, Ollama tags 20s. Shared CORS opts with AI provider origin
 
 Explicit abort call sites (dynamic values resolve in the linked helper declaration):
 
-- `supabase/functions/_shared/character-lore-provider.ts:82` — `AbortSignal.timeout(60_000)`
-- `supabase/functions/_shared/character-lore-provider.ts:111` — `AbortSignal.timeout(60_000)`
-- `supabase/functions/_shared/ollama-llm-resolve.ts:134` — `AbortSignal.timeout(10_000)`
-- `supabase/functions/ollama-settings/index.ts:87` — `AbortSignal.timeout(10_000)`
-- `supabase/functions/ollama-settings/index.ts:109` — `AbortSignal.timeout(20_000)`
-- `supabase/functions/ollama-settings/index.ts:176` — `AbortSignal.timeout(20_000)`
+- `archive/supabase-legacy/supabase/functions/_shared/character-lore-provider.ts:82` — `AbortSignal.timeout(60_000)`
+- `archive/supabase-legacy/supabase/functions/_shared/character-lore-provider.ts:111` — `AbortSignal.timeout(60_000)`
+- `archive/supabase-legacy/supabase/functions/_shared/ollama-llm-resolve.ts:134` — `AbortSignal.timeout(10_000)`
+- `archive/supabase-legacy/supabase/functions/ollama-settings/index.ts:87` — `AbortSignal.timeout(10_000)`
+- `archive/supabase-legacy/supabase/functions/ollama-settings/index.ts:109` — `AbortSignal.timeout(20_000)`
+- `archive/supabase-legacy/supabase/functions/ollama-settings/index.ts:176` — `AbortSignal.timeout(20_000)`
 
 ## Exact environment defaults and configuration resolution
 
 ### resolveCharacterLoreProviderConfig
 
-`supabase/functions/_shared/character-lore-provider.ts:16`
+`archive/supabase-legacy/supabase/functions/_shared/character-lore-provider.ts:16`
 
 ```ts
 export function resolveCharacterLoreProviderConfig(): CharacterLoreProviderConfig | null {
@@ -127,7 +127,7 @@ export function resolveCharacterLoreProviderConfig(): CharacterLoreProviderConfi
 
 ### DEFAULT_CORS_METHODS
 
-`supabase/functions/_shared/cors.ts:9`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:9`
 
 ```ts
 DEFAULT_CORS_METHODS = 'GET, POST, PUT, DELETE, OPTIONS'
@@ -135,7 +135,7 @@ DEFAULT_CORS_METHODS = 'GET, POST, PUT, DELETE, OPTIONS'
 
 ### DEFAULT_CORS_ALLOW_HEADERS
 
-`supabase/functions/_shared/cors.ts:10`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:10`
 
 ```ts
 DEFAULT_CORS_ALLOW_HEADERS =
@@ -144,7 +144,7 @@ DEFAULT_CORS_ALLOW_HEADERS =
 
 ### readConfiguredOrigin
 
-`supabase/functions/_shared/cors.ts:34`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:34`
 
 ```ts
 function readConfiguredOrigin(envKeys: string[]): string {
@@ -158,7 +158,7 @@ function readConfiguredOrigin(envKeys: string[]): string {
 
 ### envDefaultModel
 
-`supabase/functions/_shared/ollama-llm-resolve.ts:58`
+`archive/supabase-legacy/supabase/functions/_shared/ollama-llm-resolve.ts:58`
 
 ```ts
 export function envDefaultModel(
@@ -170,7 +170,7 @@ export function envDefaultModel(
 
 ### buildEnvSettingsView
 
-`supabase/functions/_shared/ollama-llm-resolve.ts:64`
+`archive/supabase-legacy/supabase/functions/_shared/ollama-llm-resolve.ts:64`
 
 ```ts
 export function buildEnvSettingsView(
@@ -198,7 +198,7 @@ export function buildEnvSettingsView(
 
 ### loadOllamaSettingsForUser
 
-`supabase/functions/_shared/ollama-llm-resolve.ts:117`
+`archive/supabase-legacy/supabase/functions/_shared/ollama-llm-resolve.ts:117`
 
 ```ts
 export async function loadOllamaSettingsForUser(
@@ -273,7 +273,7 @@ export async function loadOllamaSettingsForUser(
 
 ### toSettingsView
 
-`supabase/functions/_shared/ollama-llm-resolve.ts:186`
+`archive/supabase-legacy/supabase/functions/_shared/ollama-llm-resolve.ts:186`
 
 ```ts
 export function toSettingsView(
@@ -299,7 +299,7 @@ export function toSettingsView(
 
 ### defaultLocalOllamaBase
 
-`supabase/functions/_shared/ollama-url-policy.ts:127`
+`archive/supabase-legacy/supabase/functions/_shared/ollama-url-policy.ts:127`
 
 ```ts
 export function defaultLocalOllamaBase(
@@ -317,7 +317,7 @@ export function defaultLocalOllamaBase(
 
 ### CORS_OPTS
 
-`supabase/functions/ollama-settings/index.ts:36`
+`archive/supabase-legacy/supabase/functions/ollama-settings/index.ts:36`
 
 ```ts
 CORS_OPTS: CorsOptions = {
@@ -332,7 +332,7 @@ CORS_OPTS: CorsOptions = {
 
 ### DEFAULT_RATE_LIMIT
 
-`supabase/functions/ollama-settings/index.ts:51`
+`archive/supabase-legacy/supabase/functions/ollama-settings/index.ts:51`
 
 ```ts
 DEFAULT_RATE_LIMIT = 8
@@ -340,7 +340,7 @@ DEFAULT_RATE_LIMIT = 8
 
 ### getSupabaseConfig
 
-`supabase/functions/ollama-settings/index.ts:64`
+`archive/supabase-legacy/supabase/functions/ollama-settings/index.ts:64`
 
 ```ts
 function getSupabaseConfig(): SupabaseConfig | null {
@@ -354,7 +354,7 @@ function getSupabaseConfig(): SupabaseConfig | null {
 
 ### getRateLimit
 
-`supabase/functions/ollama-settings/index.ts:72`
+`archive/supabase-legacy/supabase/functions/ollama-settings/index.ts:72`
 
 ```ts
 function getRateLimit(): number {
@@ -414,7 +414,7 @@ No src/infrastructure caller in the reviewed branch. This does not authorize add
 
 ### ollama-settings:1
 
-Predicate: `action === 'get'`. Source: `supabase/functions/ollama-settings/index.ts:240`.
+Predicate: `action === 'get'`. Source: `archive/supabase-legacy/supabase/functions/ollama-settings/index.ts:240`.
 
 
 ```ts
@@ -450,7 +450,7 @@ Predicate: `action === 'get'`. Source: `supabase/functions/ollama-settings/index
 
 ### ollama-settings:2
 
-Predicate: `action === 'upsert' \|\| action === 'test' \|\| action === 'listModels'`. Source: `supabase/functions/ollama-settings/index.ts:269`.
+Predicate: `action === 'upsert' \|\| action === 'test' \|\| action === 'listModels'`. Source: `archive/supabase-legacy/supabase/functions/ollama-settings/index.ts:269`.
 
 
 ```ts
@@ -472,7 +472,7 @@ Predicate: `action === 'upsert' \|\| action === 'test' \|\| action === 'listMode
 
 ### ollama-settings:3
 
-Predicate: `action === 'upsert'`. Source: `supabase/functions/ollama-settings/index.ts:284`.
+Predicate: `action === 'upsert'`. Source: `archive/supabase-legacy/supabase/functions/ollama-settings/index.ts:284`.
 
 
 ```ts
@@ -595,7 +595,7 @@ Predicate: `action === 'upsert'`. Source: `supabase/functions/ollama-settings/in
 
 ### ollama-settings:4
 
-Predicate: `action === 'test' \|\| action === 'listModels'`. Source: `supabase/functions/ollama-settings/index.ts:400`.
+Predicate: `action === 'test' \|\| action === 'listModels'`. Source: `archive/supabase-legacy/supabase/functions/ollama-settings/index.ts:400`.
 
 
 ```ts
@@ -680,7 +680,7 @@ Predicate: `action === 'test' \|\| action === 'listModels'`. Source: `supabase/f
 
 ### ollama-settings:5
 
-Predicate: `action === 'test'`. Source: `supabase/functions/ollama-settings/index.ts:430`.
+Predicate: `action === 'test'`. Source: `archive/supabase-legacy/supabase/functions/ollama-settings/index.ts:430`.
 
 
 ```ts
@@ -705,7 +705,7 @@ Predicate: `action === 'test'`. Source: `supabase/functions/ollama-settings/inde
 
 ### ollama-settings:6
 
-Predicate: `action === 'test'`. Source: `supabase/functions/ollama-settings/index.ts:453`.
+Predicate: `action === 'test'`. Source: `archive/supabase-legacy/supabase/functions/ollama-settings/index.ts:453`.
 
 
 ```ts
@@ -731,7 +731,7 @@ Predicate: `action === 'test'`. Source: `supabase/functions/ollama-settings/inde
 
 ### ollama-settings:7
 
-Predicate: `action === 'clear'`. Source: `supabase/functions/ollama-settings/index.ts:478`.
+Predicate: `action === 'clear'`. Source: `archive/supabase-legacy/supabase/functions/ollama-settings/index.ts:478`.
 
 
 ```ts
@@ -771,7 +771,7 @@ Predicate: `action === 'clear'`. Source: `supabase/functions/ollama-settings/ind
 
 ### CharacterLoreRuleset
 
-`supabase/functions/_shared/character-lore-prompt.ts:1`
+`archive/supabase-legacy/supabase/functions/_shared/character-lore-prompt.ts:1`
 
 ```ts
 export type CharacterLoreRuleset = 'sagatree-core' | 'dnd-5.5e';
@@ -779,7 +779,7 @@ export type CharacterLoreRuleset = 'sagatree-core' | 'dnd-5.5e';
 
 ### CharacterLorePromptContext
 
-`supabase/functions/_shared/character-lore-prompt.ts:3`
+`archive/supabase-legacy/supabase/functions/_shared/character-lore-prompt.ts:3`
 
 ```ts
 export interface CharacterLorePromptContext {
@@ -834,7 +834,7 @@ export interface CharacterLorePromptContext {
 
 ### CharacterLoreReferenceContext
 
-`supabase/functions/_shared/character-lore-prompt.ts:52`
+`archive/supabase-legacy/supabase/functions/_shared/character-lore-prompt.ts:52`
 
 ```ts
 export interface CharacterLoreReferenceContext {
@@ -848,7 +848,7 @@ export interface CharacterLoreReferenceContext {
 
 ### CharacterLorePrompt
 
-`supabase/functions/_shared/character-lore-prompt.ts:60`
+`archive/supabase-legacy/supabase/functions/_shared/character-lore-prompt.ts:60`
 
 ```ts
 export interface CharacterLorePrompt {
@@ -860,7 +860,7 @@ export interface CharacterLorePrompt {
 
 ### CharacterLoreProviderName
 
-`supabase/functions/_shared/character-lore-provider.ts:3`
+`archive/supabase-legacy/supabase/functions/_shared/character-lore-provider.ts:3`
 
 ```ts
 export type CharacterLoreProviderName = 'openai-compatible' | 'ollama';
@@ -868,7 +868,7 @@ export type CharacterLoreProviderName = 'openai-compatible' | 'ollama';
 
 ### CharacterLoreProviderConfig
 
-`supabase/functions/_shared/character-lore-provider.ts:5`
+`archive/supabase-legacy/supabase/functions/_shared/character-lore-provider.ts:5`
 
 ```ts
 export interface CharacterLoreProviderConfig {
@@ -881,7 +881,7 @@ export interface CharacterLoreProviderConfig {
 
 ### PrivilegedClientBodyKey
 
-`supabase/functions/_shared/client-trust-body.ts:20`
+`archive/supabase-legacy/supabase/functions/_shared/client-trust-body.ts:20`
 
 ```ts
 export type PrivilegedClientBodyKey = (typeof PRIVILEGED_CLIENT_BODY_KEYS)[number];
@@ -889,7 +889,7 @@ export type PrivilegedClientBodyKey = (typeof PRIVILEGED_CLIENT_BODY_KEYS)[numbe
 
 ### CorsOptions
 
-`supabase/functions/_shared/cors.ts:13`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:13`
 
 ```ts
 export type CorsOptions = {
@@ -916,7 +916,7 @@ export type CorsOptions = {
 
 ### OllamaSettingsView
 
-`supabase/functions/_shared/ollama-llm-resolve.ts:21`
+`archive/supabase-legacy/supabase/functions/_shared/ollama-llm-resolve.ts:21`
 
 ```ts
 export interface OllamaSettingsView {
@@ -935,7 +935,7 @@ export interface OllamaSettingsView {
 
 ### OllamaSettingsStored
 
-`supabase/functions/_shared/ollama-llm-resolve.ts:34`
+`archive/supabase-legacy/supabase/functions/_shared/ollama-llm-resolve.ts:34`
 
 ```ts
 export interface OllamaSettingsStored {
@@ -952,7 +952,7 @@ export interface OllamaSettingsStored {
 
 ### SupabaseServiceConfig
 
-`supabase/functions/_shared/ollama-llm-resolve.ts:45`
+`archive/supabase-legacy/supabase/functions/_shared/ollama-llm-resolve.ts:45`
 
 ```ts
 export interface SupabaseServiceConfig {
@@ -963,7 +963,7 @@ export interface SupabaseServiceConfig {
 
 ### SafeUrlResult
 
-`supabase/functions/_shared/ollama-url-policy.ts:68`
+`archive/supabase-legacy/supabase/functions/_shared/ollama-url-policy.ts:68`
 
 ```ts
 export type SafeUrlResult =
@@ -973,7 +973,7 @@ export type SafeUrlResult =
 
 ### JsonRecord
 
-`supabase/functions/ollama-settings/index.ts:34`
+`archive/supabase-legacy/supabase/functions/ollama-settings/index.ts:34`
 
 ```ts
 type JsonRecord = Record<string, unknown>;
@@ -981,7 +981,7 @@ type JsonRecord = Record<string, unknown>;
 
 ### SupabaseConfig
 
-`supabase/functions/ollama-settings/index.ts:45`
+`archive/supabase-legacy/supabase/functions/ollama-settings/index.ts:45`
 
 ```ts
 interface SupabaseConfig {
@@ -996,7 +996,7 @@ interface SupabaseConfig {
 
 ### parseCredentialsEncryptionKey
 
-`supabase/functions/_shared/ai-provider-crypto.ts:25`
+`archive/supabase-legacy/supabase/functions/_shared/ai-provider-crypto.ts:25`
 
 ```ts
 export function parseCredentialsEncryptionKey(
@@ -1037,7 +1037,7 @@ export function parseCredentialsEncryptionKey(
 
 ### buildCharacterLorePrompt
 
-`supabase/functions/_shared/character-lore-prompt.ts:83`
+`archive/supabase-legacy/supabase/functions/_shared/character-lore-prompt.ts:83`
 
 ```ts
 export function buildCharacterLorePrompt(
@@ -1086,7 +1086,7 @@ export function buildCharacterLorePrompt(
 
 ### DEFAULT_CORS_METHODS
 
-`supabase/functions/_shared/cors.ts:9`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:9`
 
 ```ts
 DEFAULT_CORS_METHODS = 'GET, POST, PUT, DELETE, OPTIONS'
@@ -1094,7 +1094,7 @@ DEFAULT_CORS_METHODS = 'GET, POST, PUT, DELETE, OPTIONS'
 
 ### DEFAULT_CORS_ALLOW_HEADERS
 
-`supabase/functions/_shared/cors.ts:10`
+`archive/supabase-legacy/supabase/functions/_shared/cors.ts:10`
 
 ```ts
 DEFAULT_CORS_ALLOW_HEADERS =
@@ -1103,7 +1103,7 @@ DEFAULT_CORS_ALLOW_HEADERS =
 
 ### parseIpv4
 
-`supabase/functions/_shared/ollama-url-policy.ts:25`
+`archive/supabase-legacy/supabase/functions/_shared/ollama-url-policy.ts:25`
 
 ```ts
 function parseIpv4(host: string): [number, number, number, number] | null {
@@ -1118,7 +1118,7 @@ function parseIpv4(host: string): [number, number, number, number] | null {
 
 ### CORS_OPTS
 
-`supabase/functions/ollama-settings/index.ts:36`
+`archive/supabase-legacy/supabase/functions/ollama-settings/index.ts:36`
 
 ```ts
 CORS_OPTS: CorsOptions = {
@@ -1133,7 +1133,7 @@ CORS_OPTS: CorsOptions = {
 
 ### DEFAULT_RATE_LIMIT
 
-`supabase/functions/ollama-settings/index.ts:51`
+`archive/supabase-legacy/supabase/functions/ollama-settings/index.ts:51`
 
 ```ts
 DEFAULT_RATE_LIMIT = 8
@@ -1141,7 +1141,7 @@ DEFAULT_RATE_LIMIT = 8
 
 ### RATE_WINDOW_SECONDS
 
-`supabase/functions/ollama-settings/index.ts:52`
+`archive/supabase-legacy/supabase/functions/ollama-settings/index.ts:52`
 
 ```ts
 RATE_WINDOW_SECONDS = 60
@@ -1149,7 +1149,7 @@ RATE_WINDOW_SECONDS = 60
 
 ### MAX_MODEL_ID_LEN
 
-`supabase/functions/ollama-settings/index.ts:53`
+`archive/supabase-legacy/supabase/functions/ollama-settings/index.ts:53`
 
 ```ts
 MAX_MODEL_ID_LEN = 128
@@ -1157,7 +1157,7 @@ MAX_MODEL_ID_LEN = 128
 
 ### MAX_API_KEY_LEN
 
-`supabase/functions/ollama-settings/index.ts:54`
+`archive/supabase-legacy/supabase/functions/ollama-settings/index.ts:54`
 
 ```ts
 MAX_API_KEY_LEN = 512
@@ -1165,7 +1165,7 @@ MAX_API_KEY_LEN = 512
 
 ### parseModelNames
 
-`supabase/functions/ollama-settings/index.ts:149`
+`archive/supabase-legacy/supabase/functions/ollama-settings/index.ts:149`
 
 ```ts
 function parseModelNames(body: unknown): string[] {
@@ -1185,15 +1185,15 @@ function parseModelNames(body: unknown): string[] {
 
 | Path | SHA-256 |
 |---|---|
-| `supabase/functions/_shared/ai-provider-crypto.ts` | `45e60f76f744077e8d9b243719dcdba5d58a047d36a1c141df830afa2de16532` |
-| `supabase/functions/_shared/character-lore-prompt.ts` | `54fffb4ba316515dff7add1998b2d6f02280ddc336c30e48d2a4ee045a60f818` |
-| `supabase/functions/_shared/character-lore-provider.ts` | `355c8635d417fd31f9f2afb93e2ae4fe9f26ddeadaf6c2986a74f0201fb5479e` |
-| `supabase/functions/_shared/client-trust-body.ts` | `33c68553dbd89d9c7899520b0ebfa35c4f245ed8ab8ebd242c6f79e9852add95` |
-| `supabase/functions/_shared/cors.ts` | `f8286c91d79fa5fc5cfea2fa47081916523fa7a440f234aecd9a47c6a8cf5b38` |
-| `supabase/functions/_shared/edge-dispatcher-allowlist.ts` | `6d1ae7bde0ba9e41fcaa7b61247732168a62699e7811fb8574cef266cfad3a27` |
-| `supabase/functions/_shared/edge-jwt-gate.ts` | `14a871697b051b7fcbee09dbce1dee8bc8ed5ea6a6eca0bec7b2e771b32d0f0c` |
-| `supabase/functions/_shared/ollama-llm-resolve.ts` | `e2874b05f38eac54d99abfca1b239138b4f95fece2011224f359bcfda9be99b3` |
-| `supabase/functions/_shared/ollama-url-policy.ts` | `864eddb8138fabb9964a92dd948746829d8b09de5f741642b61fb2eb792c4fc1` |
-| `supabase/functions/main/index.ts` | `92f3bf56bf3c776e01595d980246079c4a9f8775e417959abea9d7da003bc53e` |
-| `supabase/functions/ollama-settings/index.ts` | `ea0d189eab8b466f775c92ed280bbb01e3d69d16d6496fdc4381ff73c62f87bf` |
+| `archive/supabase-legacy/supabase/functions/_shared/ai-provider-crypto.ts` | `45e60f76f744077e8d9b243719dcdba5d58a047d36a1c141df830afa2de16532` |
+| `archive/supabase-legacy/supabase/functions/_shared/character-lore-prompt.ts` | `54fffb4ba316515dff7add1998b2d6f02280ddc336c30e48d2a4ee045a60f818` |
+| `archive/supabase-legacy/supabase/functions/_shared/character-lore-provider.ts` | `355c8635d417fd31f9f2afb93e2ae4fe9f26ddeadaf6c2986a74f0201fb5479e` |
+| `archive/supabase-legacy/supabase/functions/_shared/client-trust-body.ts` | `33c68553dbd89d9c7899520b0ebfa35c4f245ed8ab8ebd242c6f79e9852add95` |
+| `archive/supabase-legacy/supabase/functions/_shared/cors.ts` | `f8286c91d79fa5fc5cfea2fa47081916523fa7a440f234aecd9a47c6a8cf5b38` |
+| `archive/supabase-legacy/supabase/functions/_shared/edge-dispatcher-allowlist.ts` | `6d1ae7bde0ba9e41fcaa7b61247732168a62699e7811fb8574cef266cfad3a27` |
+| `archive/supabase-legacy/supabase/functions/_shared/edge-jwt-gate.ts` | `14a871697b051b7fcbee09dbce1dee8bc8ed5ea6a6eca0bec7b2e771b32d0f0c` |
+| `archive/supabase-legacy/supabase/functions/_shared/ollama-llm-resolve.ts` | `e2874b05f38eac54d99abfca1b239138b4f95fece2011224f359bcfda9be99b3` |
+| `archive/supabase-legacy/supabase/functions/_shared/ollama-url-policy.ts` | `864eddb8138fabb9964a92dd948746829d8b09de5f741642b61fb2eb792c4fc1` |
+| `archive/supabase-legacy/supabase/functions/main/index.ts` | `92f3bf56bf3c776e01595d980246079c4a9f8775e417959abea9d7da003bc53e` |
+| `archive/supabase-legacy/supabase/functions/ollama-settings/index.ts` | `ea0d189eab8b466f775c92ed280bbb01e3d69d16d6496fdc4381ff73c62f87bf` |
 

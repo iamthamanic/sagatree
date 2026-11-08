@@ -26,14 +26,14 @@ function check(condition, message) {
 
 section('1 · files');
 const paths = [
-  'supabase/functions/_shared/media-server-optimize-proof.ts',
-  'supabase/functions/_shared/media-server-optimize-proof.proof.ts',
+  'archive/supabase-legacy/supabase/functions/_shared/media-server-optimize-proof.ts',
+  'archive/supabase-legacy/supabase/functions/_shared/media-server-optimize-proof.proof.ts',
   'docs/media-optimizer-server-decision.md',
   'docs/media-optimizer-server-proof.md',
 ];
 for (const p of paths) check(existsSync(join(root, p)), `exists ${p}`);
 
-const proof = readFileSync(join(root, 'supabase/functions/_shared/media-server-optimize-proof.ts'), 'utf8');
+const proof = readFileSync(join(root, 'archive/supabase-legacy/supabase/functions/_shared/media-server-optimize-proof.ts'), 'utf8');
 const decisionDoc = readFileSync(join(root, 'docs/media-optimizer-server-decision.md'), 'utf8');
 check(
   /Deno Edge runtime|#645|#647|quality ladder/i.test(proof),
@@ -56,7 +56,7 @@ const deno = spawnSync(
     '--allow-net',
     '--allow-env',
     '--allow-sys',
-    'supabase/functions/_shared/media-server-optimize-proof.proof.ts',
+    'archive/supabase-legacy/supabase/functions/_shared/media-server-optimize-proof.proof.ts',
   ],
   { cwd: root, encoding: 'utf8' },
 );

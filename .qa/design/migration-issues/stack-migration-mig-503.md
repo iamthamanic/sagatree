@@ -23,8 +23,8 @@ Postgres→SQLite-Transfer zuerst als idempotenten trockenen Fixture-Lauf mit In
 
 - Epic: #773; historische Baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`; keine Produktionszustandsbehauptung.
 - Verbindliche Architektur: `docs/architecture/migration-owner-decisions-2026-10-23.md`.
-- Quellpfade und bestehende Adapter: `supabase/migrations`, `.qa/intake/rpc-contracts/inventory.json`.
-- Source Contracts: `supabase/migrations`, `.qa/intake/rpc-contracts/inventory.json`.
+- Quellpfade und bestehende Adapter: `archive/supabase-legacy/supabase/migrations`, `.qa/intake/rpc-contracts/inventory.json`.
+- Source Contracts: `archive/supabase-legacy/supabase/migrations`, `.qa/intake/rpc-contracts/inventory.json`.
 - Zielverhalten: Binding product decisions: docs/architecture/migration-owner-decisions-2026-10-23.md; GATE-01 Drizzle+Policy, GATE-02 Cookie-A, GATE-03 Hono+Colyseus, GATE-04 SQLite single-writer. GATE-05 Tauri+sidecar selected; platform release pending..
 
 ## Scope
@@ -58,21 +58,21 @@ Out:
 - Gegeben: Ein eingefrorener Postgres-Fixture-Snapshot mit vollständigem Schema
 - Wenn: der Transfer auf eine leere SQLite-Datei läuft
 - Dann: Der Bericht nennt je Tabelle Zeilenanzahl, kanonische Prüfsumme, Typabbildung und FK-Fehler; jede nicht abgebildete Tabelle blockiert den Lauf ausdrücklich.
-- Quelle: `supabase/migrations`, `.qa/intake/rpc-contracts/inventory.json`
+- Quelle: `archive/supabase-legacy/supabase/migrations`, `.qa/intake/rpc-contracts/inventory.json`
 
 ### Fall 2
 
 - Gegeben: Abbruch mitten im Transfer und anschließender Wiederholungslauf
 - Wenn: dieselbe Snapshot-ID erneut übertragen wird
 - Dann: Der Zielstand ist vollständig zurückgerollt oder als unvollständig isoliert; ein erfolgreicher Wiederholungslauf erzeugt keine doppelten fachlichen IDs.
-- Quelle: `supabase/migrations`, `.qa/intake/rpc-contracts/inventory.json`
+- Quelle: `archive/supabase-legacy/supabase/migrations`, `.qa/intake/rpc-contracts/inventory.json`
 
 ### Fall 3
 
 - Gegeben: Synthetische Owner-/GM-/Spieler- und Secret-Daten
 - Wenn: die Nachtransfer-Projektionen geprüft werden
 - Dann: Owner-Beziehungen und Sichtbarkeiten stimmen mit dem festgelegten sicheren Vertrag überein; ein bekannter Legacy-Berechtigungsdefekt wird als Abweichung erfasst.
-- Quelle: `supabase/migrations`, `.qa/intake/rpc-contracts/inventory.json`
+- Quelle: `archive/supabase-legacy/supabase/migrations`, `.qa/intake/rpc-contracts/inventory.json`
 
 ## Required Tests
 

@@ -46,7 +46,7 @@ for (const gate of PRIOR_GATES) {
 }
 
 mustInclude(
-  'supabase/migrations/041_session_runtime_state.sql',
+  'archive/supabase-legacy/supabase/migrations/041_session_runtime_state.sql',
   [
     'is_session_participant',
     'stale revision',
@@ -59,7 +59,7 @@ mustInclude(
 );
 
 mustInclude(
-  'supabase/migrations/040_session_join_code_security.sql',
+  'archive/supabase-legacy/supabase/migrations/040_session_join_code_security.sql',
   ['create_play_session', 'join_session_by_code', 'set_session_status', 'SECURITY DEFINER'],
   'session lifecycle SQL',
 );

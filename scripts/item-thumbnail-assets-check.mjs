@@ -38,13 +38,13 @@ section('1 · slice files exist');
   'src/app/items/visuals/useItemAssets.ts',
   'src/app/items/workbench/ItemVisualsPanel.tsx',
   'src/app/items/useItemThumbnailSrc.ts',
-  'supabase/migrations/017_item_thumbnail_assets.sql',
-  'supabase/functions/item-thumbnail/index.ts',
-  'supabase/functions/_shared/item-thumbnail-prompt.ts',
-  'supabase/functions/_shared/item-thumbnail-image.ts',
-  'supabase/functions/_shared/item-thumbnail-meshy.ts',
-  'supabase/functions/_shared/item-thumbnail-rate-limit.ts',
-  'supabase/functions/_shared/item-thumbnail_test.ts',
+  'archive/supabase-legacy/supabase/migrations/017_item_thumbnail_assets.sql',
+  'archive/supabase-legacy/supabase/functions/item-thumbnail/index.ts',
+  'archive/supabase-legacy/supabase/functions/_shared/item-thumbnail-prompt.ts',
+  'archive/supabase-legacy/supabase/functions/_shared/item-thumbnail-image.ts',
+  'archive/supabase-legacy/supabase/functions/_shared/item-thumbnail-meshy.ts',
+  'archive/supabase-legacy/supabase/functions/_shared/item-thumbnail-rate-limit.ts',
+  'archive/supabase-legacy/supabase/functions/_shared/item-thumbnail_test.ts',
   '.qa/acceptance/item-thumbnail-assets.md',
 ].forEach(mustExist);
 
@@ -84,9 +84,9 @@ section('3 · no Meshy secrets in client / Vite env');
 
 section('4 · Edge Function fail-closed + security');
 {
-  const edge = read('supabase/functions/item-thumbnail/index.ts');
-  const meshy = read('supabase/functions/_shared/item-thumbnail-meshy.ts');
-  const image = read('supabase/functions/_shared/item-thumbnail-image.ts');
+  const edge = read('archive/supabase-legacy/supabase/functions/item-thumbnail/index.ts');
+  const meshy = read('archive/supabase-legacy/supabase/functions/_shared/item-thumbnail-meshy.ts');
+  const image = read('archive/supabase-legacy/supabase/functions/_shared/item-thumbnail-image.ts');
   check(/resolveMeshyProviderConfig/.test(edge), 'uses Meshy config resolver');
   check(/not-configured/.test(edge), 'returns not-configured when Meshy missing');
   check(/MESHY_API_KEY/.test(meshy), 'reads MESHY_API_KEY server-side');
@@ -135,7 +135,7 @@ section('6 · Thumb resolver chain assetKey → iconKey → type');
 
 section('7 · migration storage + rate limit');
 {
-  const migration = read('supabase/migrations/017_item_thumbnail_assets.sql');
+  const migration = read('archive/supabase-legacy/supabase/migrations/017_item_thumbnail_assets.sql');
   check(/item-thumbnails/.test(migration), 'storage bucket item-thumbnails');
   check(/10485760/.test(migration), '10 MB bucket limit');
   check(/image\/png/.test(migration) && /image\/jpeg/.test(migration), 'PNG/JPEG only');

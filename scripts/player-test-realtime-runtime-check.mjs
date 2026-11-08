@@ -35,7 +35,7 @@ function mustNotInclude(file, needles, label) {
 }
 
 mustInclude(
-  'supabase/migrations/041_session_runtime_state.sql',
+  'archive/supabase-legacy/supabase/migrations/041_session_runtime_state.sql',
   [
     'runtime_revision',
     'session_events',

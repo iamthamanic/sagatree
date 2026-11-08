@@ -468,7 +468,7 @@ try {
     'scripts/stack-migration-pocs/gate-04/writer.mjs',
     '.qa/design/gates/GATE-04-sqlite-revision-idempotency.md',
     '.qa/design/player-test-realtime-runtime-state.md',
-    'supabase/migrations/051_session_director_runtime.sql',
+    'archive/supabase-legacy/supabase/migrations/051_session_director_runtime.sql',
     'src/domains/session/contracts/session-runtime.ts',
   ];
   const sources = await Promise.all(sourcePaths.map(async (path) => ({ path, sha256: digest(await readFile(join(repo, path), 'utf8')) })));

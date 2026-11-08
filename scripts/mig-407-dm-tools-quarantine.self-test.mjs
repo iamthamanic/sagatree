@@ -32,7 +32,7 @@ const {
 } = await import(modUrl);
 
 const allowUrl = pathToFileURL(
-  join(root, 'supabase/functions/_shared/edge-dispatcher-allowlist.ts'),
+  join(root, 'archive/supabase-legacy/supabase/functions/_shared/edge-dispatcher-allowlist.ts'),
 ).href;
 const { isEdgeDispatcherAllowed, EDGE_DISPATCHER_ALLOWLIST } = await import(allowUrl);
 const { createRouteHandler } = await import(
@@ -178,7 +178,7 @@ assert(auth.authenticated === false, 'no auth');
 const huge = parseDiceNotation('9999d6');
 assert(huge.count === 9999, 'unbounded dice-count accepted by parser');
 
-const legacySrc = readFileSync(join(root, 'supabase/functions/dm-tools/index.ts'), 'utf8');
+const legacySrc = readFileSync(join(root, 'archive/supabase-legacy/supabase/functions/dm-tools/index.ts'), 'utf8');
 assert(/REDIS_URL/.test(legacySrc) && !/createClient|ioredis|new Redis/.test(legacySrc), 'REDIS_URL unused');
 assert(DM_TOOLS_PUBLIC_ACTIVATION_AUTHORIZED === false, 'unsuitable for activation');
 
