@@ -103,8 +103,14 @@ function withCatalogPublicId(definition: ItemDefinition): ItemDefinition {
   };
 }
 
-async function fetchAllHostItemRecords(): Promise<CatalogDefinitionRecord[]> {
-  const hostItems = await fetchHostLibraryItems();
+async function fetchHostItemRecords(
+  options: {
+    readonly worldProfileId?: string | null;
+    readonly includeArchived?: boolean;
+    readonly origins?: readonly ('standard' | 'personal' | 'world')[];
+  } = {},
+): Promise<CatalogDefinitionRecord[]> {
+  const hostItems = await fetchHostLibraryItems(options);
   return hostItems
     .map(mapHostLibraryItemRecord)
     .filter((record): record is CatalogDefinitionRecord => record !== null);
@@ -153,7 +159,10 @@ async function listCatalogRecordsForEffectiveWorld(
   effectiveWorldProfileId: string | null,
   userId: string,
 ): Promise<CatalogDefinitionRecord[]> {
-  const all = await fetchAllHostItemRecords();
+  // CUT-06b: host filters by worldProfileId + ACL (403 when unauthorized).
+  const all = await fetchHostItemRecords({
+    worldProfileId: effectiveWorldProfileId,
+  });
   const context = { userId, effectiveWorldProfileId };
   return all.filter((record) => isDefinitionVisible(record, context));
 }
@@ -233,7 +242,7 @@ export async function loadCharacterItemCatalog(
 
 export async function loadLibraryItemCatalog(): Promise<LibraryItemCatalog> {
   assertHost();
-  const persistedRecords = await fetchAllHostItemRecords();
+  const persistedRecords = await fetchHostItemRecords();
   const byId = new Map<string, ItemDefinition>();
 
   for (const definition of listCoreItemDefinitions()) {
@@ -259,11 +268,14 @@ export async function loadWorldProfileItemCatalog(
   worldProfileId: string,
 ): Promise<CatalogDefinitionRecord[]> {
   assertHost();
-  const all = await fetchAllHostItemRecords();
   const wid = worldProfileId.trim();
-  return all.filter(
-    (r) => r.definition.scope === 'world' && r.worldProfileId === wid && r.worldProfileId !== null,
-  );
+  if (!wid) return [];
+  // CUT-06b: host world-scoped list including archived; ACL fail-closed (403).
+  return fetchHostItemRecords({
+    worldProfileId: wid,
+    includeArchived: true,
+    origins: ['world'],
+  });
 }
 
 export async function getItemDefinitionById(definitionId: string): Promise<{

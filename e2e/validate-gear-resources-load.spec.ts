@@ -58,7 +58,7 @@ test.describe('#32 validate-gear-resources-load', () => {
   test.beforeEach(() => {
     test.skip(
       true,
-      'CUT-20 Soft-DENY #1160: gear/catalog affordability path disabled without host item catalog parity',
+      'Gear affordability e2e still fixture-gated; host catalog reads covered by cut-06b (#1160)',
     );
   });
 

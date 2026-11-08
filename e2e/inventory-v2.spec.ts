@@ -50,7 +50,7 @@ test('Inventory v2: Core catalog shell + occupancy summary (Scenario A smoke)', 
   await expect(page.getByRole('tab', { name: /^Eigene$/i })).toBeVisible();
   await expect(page.getByRole('tab', { name: /^Welt$/i })).toHaveCount(0);
 
-  // Live Core list needs host catalog (#1160 Soft-DENY may leave rows empty/disabled).
+  // Core list is local; world/personal rows need host catalog (#1160 HOST_VERIFIED).
   const addButtons = catalog.getByRole('button', { name: /^Hinzufügen$/i });
   const firstAdd = addButtons.first();
   if ((await addButtons.count()) > 0 && (await firstAdd.isEnabled().catch(() => false))) {
@@ -66,7 +66,7 @@ test('Inventory v2: Core catalog shell + occupancy summary (Scenario A smoke)', 
     test.info().annotations.push({
       type: 'note',
       description:
-        'Core catalog add disabled/empty under host Soft-DENY (#1160). Shell + tabs asserted; domain covered by inventory-*-check.',
+        'Core catalog add unavailable in this fixture; shell + tabs asserted; host catalog covered by cut-06b self-test.',
     });
   }
 
