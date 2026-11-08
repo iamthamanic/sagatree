@@ -1,6 +1,6 @@
 # Composition Gate — cut-02b-npc-definition-host-parity (#1159)
 
-- HEAD_SHA: 43a6df1c3bbc3fa9d15b05b01b787b1513319be9
+- HEAD_SHA: b4707733010c309a052f0b85fd20208b765e131e
 - BASE_SHA: 45f681e20a84671b13b81afd98b641320279785e
 - Date: 2026-11-08
 - Verdict: CLEAR
