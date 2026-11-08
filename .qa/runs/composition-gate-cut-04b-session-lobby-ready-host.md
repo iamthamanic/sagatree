@@ -40,3 +40,7 @@ membership via `getPlaySession`. Soft local-echo removed. Server stamps `userId`
 ## Evidence
 
 - `scripts/cut-04b-session-lobby-ready.self-test.mjs`
+
+## CI retrigger
+
+- At: 2026-11-08T16:51:28Z
