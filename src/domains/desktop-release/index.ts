@@ -86,12 +86,13 @@ export function classifyDesktopAssetName(name: string): DesktopPlatform | null {
   return null;
 }
 
-/** Prefer universal/dmg over raw bundles when several mac assets exist, etc. */
+/** Prefer universal installers, then generic dmg/msi/appimage over arch-specific. */
 function assetRank(platform: DesktopPlatform, name: string): number {
   const n = name.toLowerCase();
   if (platform === 'macos') {
+    if (n.includes('universal') && n.endsWith('.dmg')) return 40;
+    if (n.includes('universal')) return 35;
     if (n.endsWith('.dmg')) return 30;
-    if (n.includes('universal')) return 25;
     if (n.endsWith('.pkg')) return 20;
     return 10;
   }
@@ -133,11 +134,16 @@ export function pickDesktopAssetsByPlatform(
   return best;
 }
 
-export function guessClientOs(userAgent: string): ClientOsGuess {
+export function guessClientOs(
+  userAgent: string,
+  options?: { maxTouchPoints?: number },
+): ClientOsGuess {
   const ua = userAgent.toLowerCase();
   if (/windows|win32|win64/.test(ua)) return 'windows';
   if (/android/.test(ua)) return 'unknown';
   if (/iphone|ipad|ipod/.test(ua)) return 'unknown';
+  // iPadOS desktop-mode UA masquerades as Macintosh; callers pass maxTouchPoints.
+  if (/mac os x|macintosh/.test(ua) && (options?.maxTouchPoints ?? 0) > 1) return 'unknown';
   if (/mac os x|macintosh/.test(ua)) return 'macos';
   if (/linux|cros/.test(ua)) return 'linux';
   return 'unknown';

@@ -36,7 +36,11 @@ const picked = pickDesktopAssetsByPlatform([
   },
   {
     name: 'SagaTree_0.2.0_aarch64.dmg',
-    browserDownloadUrl: 'https://example.test/dmg',
+    browserDownloadUrl: 'https://example.test/dmg-arm',
+  },
+  {
+    name: 'SagaTree_0.2.0_universal.dmg',
+    browserDownloadUrl: 'https://example.test/dmg-universal',
   },
   {
     name: 'SagaTree_0.2.0_amd64.AppImage',
@@ -49,7 +53,7 @@ const picked = pickDesktopAssetsByPlatform([
 ]);
 
 assert.equal(picked.windows?.browserDownloadUrl, 'https://example.test/msi');
-assert.equal(picked.macos?.browserDownloadUrl, 'https://example.test/dmg');
+assert.equal(picked.macos?.browserDownloadUrl, 'https://example.test/dmg-universal');
 assert.equal(picked.linux?.browserDownloadUrl, 'https://example.test/appimage');
 
 assert.equal(isPublicDownloadPath('/download'), true);
@@ -59,9 +63,14 @@ assert.equal(isPublicDownloadPath('/library'), false);
 assert.equal(pathForDownload(), '/download');
 
 assert.equal(guessClientOs('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)'), 'macos');
+assert.equal(
+  guessClientOs('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)', { maxTouchPoints: 5 }),
+  'unknown',
+);
 assert.equal(guessClientOs('Mozilla/5.0 (Windows NT 10.0; Win64; x64)'), 'windows');
 assert.equal(guessClientOs('Mozilla/5.0 (X11; Linux x86_64)'), 'linux');
 assert.equal(guessClientOs('Mozilla/5.0 (iPhone; CPU iPhone OS 17_0)'), 'unknown');
+assert.equal(guessClientOs('Mozilla/5.0 (iPad; CPU OS 17_0 like Mac OS X)'), 'unknown');
 
 // Infrastructure parse is Vite-bundled; assert the source contract instead of
 // directory-importing TS under plain Node.

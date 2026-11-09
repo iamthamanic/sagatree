@@ -59,7 +59,10 @@ function goLogin() {
 export function DownloadScreen() {
   const [state, setState] = useState<LoadState>({ status: 'loading' });
   const clientOs = useMemo(
-    () => guessClientOs(typeof navigator !== 'undefined' ? navigator.userAgent : ''),
+    () =>
+      guessClientOs(typeof navigator !== 'undefined' ? navigator.userAgent : '', {
+        maxTouchPoints: typeof navigator !== 'undefined' ? navigator.maxTouchPoints : 0,
+      }),
     [],
   );
   const releasesPage = desktopReleasesPageUrl();
@@ -76,7 +79,7 @@ export function DownloadScreen() {
     void (async () => {
       const result = await fetchLatestDesktopRelease({ signal: ac.signal });
       if (ac.signal.aborted) return;
-      if (!result.ok) {
+      if (result.ok === false) {
         setState({ status: 'unavailable', reason: result.reason });
         return;
       }
