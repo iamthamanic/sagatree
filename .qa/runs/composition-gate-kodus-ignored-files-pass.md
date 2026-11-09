@@ -1,7 +1,7 @@
 # Composition Gate — kodus-ignored-files-pass
 
-- HEAD_SHA: 60c47b7b078f5dc8714ba86ec955c171db1f8d2c
-- BASE_SHA: 7045b9162a2f8d7db38604514960ba022b8c0130
+- HEAD_SHA: 9a2edfa81a35eb92b8300a021e48ec891ade3b8e
+- BASE_SHA: dc15f483f9dbf03d2636580f2d9999f7bfbf0e8f
 - Date: 2026-11-09
 - Verdict: CLEAR
 - Acceptance tier: tool-only
