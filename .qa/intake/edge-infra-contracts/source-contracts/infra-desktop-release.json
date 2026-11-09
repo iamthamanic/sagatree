@@ -1,0 +1,194 @@
+{
+  "schemaVersion": 1,
+  "area": "desktop-release",
+  "evidenceKind": "exact-typescript-ast-source",
+  "sourceFiles": [
+    {
+      "path": "src/infrastructure/desktop-release/github-desktop-releases.ts",
+      "sha256": "0f00849ebca4ede21c0b52e37f297c88485e6c6d3ffa660e96052dfe88308db5"
+    }
+  ],
+  "supportingSourceFiles": [
+    {
+      "path": "src/domains/desktop-release/index.ts",
+      "sha256": "81ce76088caa1031351c35829ab39ba16f734f29f266e5f892fb8da372953ae7"
+    }
+  ],
+  "importedTypeDeclarations": [
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "DesktopPlatform",
+      "path": "src/domains/desktop-release/index.ts",
+      "line": 6,
+      "endLine": 6,
+      "text": "export type DesktopPlatform = 'macos' | 'windows' | 'linux';"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "DesktopReleaseAsset",
+      "path": "src/domains/desktop-release/index.ts",
+      "line": 8,
+      "endLine": 12,
+      "text": "export type DesktopReleaseAsset = {\n  name: string;\n  browserDownloadUrl: string;\n  sizeBytes?: number;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "DesktopReleaseSnapshot",
+      "path": "src/domains/desktop-release/index.ts",
+      "line": 14,
+      "endLine": 20,
+      "text": "export type DesktopReleaseSnapshot = {\n  tagName: string;\n  name: string;\n  htmlUrl: string;\n  publishedAt: string | null;\n  assetsByPlatform: Record<DesktopPlatform, DesktopReleaseAsset | null>;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "ClientOsGuess",
+      "path": "src/domains/desktop-release/index.ts",
+      "line": 22,
+      "endLine": 22,
+      "text": "export type ClientOsGuess = DesktopPlatform | 'unknown';"
+    }
+  ],
+  "calls": [
+    {
+      "kind": "fetch",
+      "name": null,
+      "path": "src/infrastructure/desktop-release/github-desktop-releases.ts",
+      "line": 152,
+      "endLine": 158,
+      "resolution": "dynamic-expression",
+      "expression": "fetch(url, {\n      signal,\n      headers: {\n        Accept: 'application/vnd.github+json',\n        'X-GitHub-Api-Version': '2022-11-28',\n      },\n    })",
+      "chain": "fetch(url, {\n      signal,\n      headers: {\n        Accept: 'application/vnd.github+json',\n        'X-GitHub-Api-Version': '2022-11-28',\n      },\n    })",
+      "arguments": [
+        "url",
+        "{\n      signal,\n      headers: {\n        Accept: 'application/vnd.github+json',\n        'X-GitHub-Api-Version': '2022-11-28',\n      },\n    }"
+      ],
+      "enclosingOperation": {
+        "path": "src/infrastructure/desktop-release/github-desktop-releases.ts",
+        "line": 130,
+        "endLine": 197,
+        "text": "export async function fetchLatestDesktopRelease(\n  init?: { signal?: AbortSignal; repo?: string; bypassCache?: boolean },\n): Promise<FetchDesktopReleaseResult> {\n  const repo = init?.repo ?? defaultRepo();\n  const now = Date.now();\n  if (\n    !init?.bypassCache\n    && memoryCache\n    && memoryCache.repo === repo\n    && now - memoryCache.at < CACHE_TTL_MS\n  ) {\n    return memoryCache.result;\n  }\n\n  const url = desktopReleasesLatestApiUrl(repo);\n  const timeout = new AbortController();\n  const timer = setTimeout(() => timeout.abort(), FETCH_TIMEOUT_MS);\n  const signal = init?.signal\n    ? mergeAbortSignals([init.signal, timeout.signal])\n    : timeout.signal;\n\n  try {\n    const response = await fetch(url, {\n      signal,\n      headers: {\n        Accept: 'application/vnd.github+json',\n        'X-GitHub-Api-Version': '2022-11-28',\n      },\n    });\n    if (response.status === 404) {\n      const result: FetchDesktopReleaseResult = { ok: false, reason: 'not-found' };\n      memoryCache = { at: now, repo, result };\n      return result;\n    }\n    if (response.status === 403 || response.status === 429) {\n      const result: FetchDesktopReleaseResult = {\n        ok: false,\n        reason: 'network',\n        detail: `HTTP ${response.status}`,\n      };\n      // Short negative cache so remounts don't burn the remaining rate limit.\n      memoryCache = { at: now, repo, result };\n      return result;\n    }\n    if (!response.ok) {\n      return {\n        ok: false,\n        reason: 'network',\n        detail: `HTTP ${response.status}`,\n      };\n    }\n    const payload: unknown = await response.json();\n    const result = parseGitHubLatestRelease(payload);\n    memoryCache = { at: now, repo, result };\n    return result;\n  } catch (err) {\n    if (err && typeof err === 'object' && 'name' in err && err.name === 'AbortError') {\n      return { ok: false, reason: 'network', detail: 'aborted' };\n    }\n    return {\n      ok: false,\n      reason: 'network',\n      detail: err instanceof Error ? err.message : 'fetch failed',\n    };\n  } finally {\n    clearTimeout(timer);\n  }\n}"
+      }
+    }
+  ],
+  "imports": [
+    {
+      "path": "src/infrastructure/desktop-release/github-desktop-releases.ts",
+      "line": 5,
+      "endLine": 9,
+      "module": "../../domains/desktop-release",
+      "resolvedPath": "src/domains/desktop-release/index.ts",
+      "expression": "import {\n  pickDesktopAssetsByPlatform,\n  type DesktopReleaseAsset,\n  type DesktopReleaseSnapshot,\n} from '../../domains/desktop-release';"
+    }
+  ],
+  "publicDeclarations": [
+    {
+      "path": "src/infrastructure/desktop-release/github-desktop-releases.ts",
+      "line": 11,
+      "endLine": 13,
+      "text": "export type FetchDesktopReleaseResult =\n  | { ok: true; release: DesktopReleaseSnapshot }\n  | { ok: false; reason: 'not-found' | 'empty' | 'network' | 'invalid'; detail?: string };"
+    },
+    {
+      "path": "src/infrastructure/desktop-release/github-desktop-releases.ts",
+      "line": 38,
+      "endLine": 40,
+      "text": "export function desktopReleasesLatestApiUrl(repo = defaultRepo()): string {\n  return `https://api.github.com/repos/${repo}/releases/latest`;\n}"
+    },
+    {
+      "path": "src/infrastructure/desktop-release/github-desktop-releases.ts",
+      "line": 42,
+      "endLine": 44,
+      "text": "export function desktopReleasesPageUrl(repo = defaultRepo()): string {\n  return `https://github.com/${repo}/releases`;\n}"
+    },
+    {
+      "path": "src/infrastructure/desktop-release/github-desktop-releases.ts",
+      "line": 75,
+      "endLine": 115,
+      "text": "export function parseGitHubLatestRelease(payload: unknown): FetchDesktopReleaseResult {\n  if (!payload || typeof payload !== 'object') {\n    return { ok: false, reason: 'invalid', detail: 'payload' };\n  }\n  const body = payload as GitHubReleaseJson;\n  const tagName = typeof body.tag_name === 'string' ? body.tag_name.trim() : '';\n  if (!tagName) {\n    return { ok: false, reason: 'invalid', detail: 'tag_name' };\n  }\n  const htmlUrl = typeof body.html_url === 'string' && body.html_url.trim()\n    ? body.html_url.trim()\n    : desktopReleasesPageUrl();\n  if (!isHttpsGithubDownloadUrl(htmlUrl) && !htmlUrl.startsWith('https://github.com/')) {\n    return { ok: false, reason: 'invalid', detail: 'html_url' };\n  }\n  const name = typeof body.name === 'string' && body.name.trim()\n    ? body.name.trim()\n    : tagName;\n  const publishedAt = typeof body.published_at === 'string' ? body.published_at : null;\n  const rawAssets = Array.isArray(body.assets) ? body.assets : [];\n  const assets = rawAssets\n    .map(asAsset)\n    .filter((a): a is DesktopReleaseAsset => Boolean(a));\n  const assetsByPlatform = pickDesktopAssetsByPlatform(assets);\n  const hasAny = Boolean(\n    assetsByPlatform.macos || assetsByPlatform.windows || assetsByPlatform.linux,\n  );\n  if (!hasAny) {\n    return { ok: false, reason: 'empty', detail: tagName };\n  }\n  return {\n    ok: true,\n    release: {\n      tagName,\n      name,\n      htmlUrl,\n      publishedAt,\n      assetsByPlatform,\n    },\n  };\n}"
+    },
+    {
+      "path": "src/infrastructure/desktop-release/github-desktop-releases.ts",
+      "line": 130,
+      "endLine": 197,
+      "text": "export async function fetchLatestDesktopRelease(\n  init?: { signal?: AbortSignal; repo?: string; bypassCache?: boolean },\n): Promise<FetchDesktopReleaseResult> {\n  const repo = init?.repo ?? defaultRepo();\n  const now = Date.now();\n  if (\n    !init?.bypassCache\n    && memoryCache\n    && memoryCache.repo === repo\n    && now - memoryCache.at < CACHE_TTL_MS\n  ) {\n    return memoryCache.result;\n  }\n\n  const url = desktopReleasesLatestApiUrl(repo);\n  const timeout = new AbortController();\n  const timer = setTimeout(() => timeout.abort(), FETCH_TIMEOUT_MS);\n  const signal = init?.signal\n    ? mergeAbortSignals([init.signal, timeout.signal])\n    : timeout.signal;\n\n  try {\n    const response = await fetch(url, {\n      signal,\n      headers: {\n        Accept: 'application/vnd.github+json',\n        'X-GitHub-Api-Version': '2022-11-28',\n      },\n    });\n    if (response.status === 404) {\n      const result: FetchDesktopReleaseResult = { ok: false, reason: 'not-found' };\n      memoryCache = { at: now, repo, result };\n      return result;\n    }\n    if (response.status === 403 || response.status === 429) {\n      const result: FetchDesktopReleaseResult = {\n        ok: false,\n        reason: 'network',\n        detail: `HTTP ${response.status}`,\n      };\n      // Short negative cache so remounts don't burn the remaining rate limit.\n      memoryCache = { at: now, repo, result };\n      return result;\n    }\n    if (!response.ok) {\n      return {\n        ok: false,\n        reason: 'network',\n        detail: `HTTP ${response.status}`,\n      };\n    }\n    const payload: unknown = await response.json();\n    const result = parseGitHubLatestRelease(payload);\n    memoryCache = { at: now, repo, result };\n    return result;\n  } catch (err) {\n    if (err && typeof err === 'object' && 'name' in err && err.name === 'AbortError') {\n      return { ok: false, reason: 'network', detail: 'aborted' };\n    }\n    return {\n      ok: false,\n      reason: 'network',\n      detail: err instanceof Error ? err.message : 'fetch failed',\n    };\n  } finally {\n    clearTimeout(timer);\n  }\n}"
+    }
+  ],
+  "operationDeclarations": [
+    {
+      "path": "src/infrastructure/desktop-release/github-desktop-releases.ts",
+      "line": 30,
+      "endLine": 36,
+      "name": "defaultRepo",
+      "text": "function defaultRepo(): string {\n  const fromEnv = import.meta.env.VITE_DESKTOP_RELEASES_REPO;\n  if (typeof fromEnv === 'string' && fromEnv.trim().includes('/')) {\n    return fromEnv.trim();\n  }\n  return 'iamthamanic/sagatree';\n}"
+    },
+    {
+      "path": "src/infrastructure/desktop-release/github-desktop-releases.ts",
+      "line": 38,
+      "endLine": 40,
+      "name": "desktopReleasesLatestApiUrl",
+      "text": "export function desktopReleasesLatestApiUrl(repo = defaultRepo()): string {\n  return `https://api.github.com/repos/${repo}/releases/latest`;\n}"
+    },
+    {
+      "path": "src/infrastructure/desktop-release/github-desktop-releases.ts",
+      "line": 42,
+      "endLine": 44,
+      "name": "desktopReleasesPageUrl",
+      "text": "export function desktopReleasesPageUrl(repo = defaultRepo()): string {\n  return `https://github.com/${repo}/releases`;\n}"
+    },
+    {
+      "path": "src/infrastructure/desktop-release/github-desktop-releases.ts",
+      "line": 46,
+      "endLine": 54,
+      "name": "isHttpsGithubDownloadUrl",
+      "text": "function isHttpsGithubDownloadUrl(url: string): boolean {\n  try {\n    const parsed = new URL(url);\n    return parsed.protocol === 'https:'\n      && (parsed.hostname === 'github.com' || parsed.hostname.endsWith('.githubusercontent.com'));\n  } catch {\n    return false;\n  }\n}"
+    },
+    {
+      "path": "src/infrastructure/desktop-release/github-desktop-releases.ts",
+      "line": 56,
+      "endLine": 73,
+      "name": "asAsset",
+      "text": "function asAsset(raw: unknown): DesktopReleaseAsset | null {\n  if (!raw || typeof raw !== 'object') return null;\n  const row = raw as { name?: unknown; browser_download_url?: unknown; size?: unknown };\n  if (typeof row.name !== 'string' || !row.name.trim()) return null;\n  if (typeof row.browser_download_url !== 'string' || !row.browser_download_url.trim()) {\n    return null;\n  }\n  const url = row.browser_download_url.trim();\n  if (!isHttpsGithubDownloadUrl(url)) return null;\n  const sizeBytes = typeof row.size === 'number' && Number.isFinite(row.size)\n    ? row.size\n    : undefined;\n  return {\n    name: row.name.trim(),\n    browserDownloadUrl: url,\n    sizeBytes,\n  };\n}"
+    },
+    {
+      "path": "src/infrastructure/desktop-release/github-desktop-releases.ts",
+      "line": 75,
+      "endLine": 115,
+      "name": "parseGitHubLatestRelease",
+      "text": "export function parseGitHubLatestRelease(payload: unknown): FetchDesktopReleaseResult {\n  if (!payload || typeof payload !== 'object') {\n    return { ok: false, reason: 'invalid', detail: 'payload' };\n  }\n  const body = payload as GitHubReleaseJson;\n  const tagName = typeof body.tag_name === 'string' ? body.tag_name.trim() : '';\n  if (!tagName) {\n    return { ok: false, reason: 'invalid', detail: 'tag_name' };\n  }\n  const htmlUrl = typeof body.html_url === 'string' && body.html_url.trim()\n    ? body.html_url.trim()\n    : desktopReleasesPageUrl();\n  if (!isHttpsGithubDownloadUrl(htmlUrl) && !htmlUrl.startsWith('https://github.com/')) {\n    return { ok: false, reason: 'invalid', detail: 'html_url' };\n  }\n  const name = typeof body.name === 'string' && body.name.trim()\n    ? body.name.trim()\n    : tagName;\n  const publishedAt = typeof body.published_at === 'string' ? body.published_at : null;\n  const rawAssets = Array.isArray(body.assets) ? body.assets : [];\n  const assets = rawAssets\n    .map(asAsset)\n    .filter((a): a is DesktopReleaseAsset => Boolean(a));\n  const assetsByPlatform = pickDesktopAssetsByPlatform(assets);\n  const hasAny = Boolean(\n    assetsByPlatform.macos || assetsByPlatform.windows || assetsByPlatform.linux,\n  );\n  if (!hasAny) {\n    return { ok: false, reason: 'empty', detail: tagName };\n  }\n  return {\n    ok: true,\n    release: {\n      tagName,\n      name,\n      htmlUrl,\n      publishedAt,\n      assetsByPlatform,\n    },\n  };\n}"
+    },
+    {
+      "path": "src/infrastructure/desktop-release/github-desktop-releases.ts",
+      "line": 97,
+      "endLine": 97,
+      "name": "callback",
+      "text": "(a): a is DesktopReleaseAsset => Boolean(a)"
+    },
+    {
+      "path": "src/infrastructure/desktop-release/github-desktop-releases.ts",
+      "line": 117,
+      "endLine": 128,
+      "name": "mergeAbortSignals",
+      "text": "function mergeAbortSignals(signals: AbortSignal[]): AbortSignal {\n  const controller = new AbortController();\n  const onAbort = () => controller.abort();\n  for (const signal of signals) {\n    if (signal.aborted) {\n      controller.abort();\n      break;\n    }\n    signal.addEventListener('abort', onAbort, { once: true });\n  }\n  return controller.signal;\n}"
+    },
+    {
+      "path": "src/infrastructure/desktop-release/github-desktop-releases.ts",
+      "line": 119,
+      "endLine": 119,
+      "name": "onAbort",
+      "text": "() => controller.abort()"
+    },
+    {
+      "path": "src/infrastructure/desktop-release/github-desktop-releases.ts",
+      "line": 130,
+      "endLine": 197,
+      "name": "fetchLatestDesktopRelease",
+      "text": "export async function fetchLatestDesktopRelease(\n  init?: { signal?: AbortSignal; repo?: string; bypassCache?: boolean },\n): Promise<FetchDesktopReleaseResult> {\n  const repo = init?.repo ?? defaultRepo();\n  const now = Date.now();\n  if (\n    !init?.bypassCache\n    && memoryCache\n    && memoryCache.repo === repo\n    && now - memoryCache.at < CACHE_TTL_MS\n  ) {\n    return memoryCache.result;\n  }\n\n  const url = desktopReleasesLatestApiUrl(repo);\n  const timeout = new AbortController();\n  const timer = setTimeout(() => timeout.abort(), FETCH_TIMEOUT_MS);\n  const signal = init?.signal\n    ? mergeAbortSignals([init.signal, timeout.signal])\n    : timeout.signal;\n\n  try {\n    const response = await fetch(url, {\n      signal,\n      headers: {\n        Accept: 'application/vnd.github+json',\n        'X-GitHub-Api-Version': '2022-11-28',\n      },\n    });\n    if (response.status === 404) {\n      const result: FetchDesktopReleaseResult = { ok: false, reason: 'not-found' };\n      memoryCache = { at: now, repo, result };\n      return result;\n    }\n    if (response.status === 403 || response.status === 429) {\n      const result: FetchDesktopReleaseResult = {\n        ok: false,\n        reason: 'network',\n        detail: `HTTP ${response.status}`,\n      };\n      // Short negative cache so remounts don't burn the remaining rate limit.\n      memoryCache = { at: now, repo, result };\n      return result;\n    }\n    if (!response.ok) {\n      return {\n        ok: false,\n        reason: 'network',\n        detail: `HTTP ${response.status}`,\n      };\n    }\n    const payload: unknown = await response.json();\n    const result = parseGitHubLatestRelease(payload);\n    memoryCache = { at: now, repo, result };\n    return result;\n  } catch (err) {\n    if (err && typeof err === 'object' && 'name' in err && err.name === 'AbortError') {\n      return { ok: false, reason: 'network', detail: 'aborted' };\n    }\n    return {\n      ok: false,\n      reason: 'network',\n      detail: err instanceof Error ? err.message : 'fetch failed',\n    };\n  } finally {\n    clearTimeout(timer);\n  }\n}"
+    },
+    {
+      "path": "src/infrastructure/desktop-release/github-desktop-releases.ts",
+      "line": 146,
+      "endLine": 146,
+      "name": "callback",
+      "text": "() => timeout.abort()"
+    }
+  ]
+}
