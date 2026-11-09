@@ -42,6 +42,17 @@ Epic acceptance skeleton. Child slices own detailed checklists; this file tracks
 
 - [ ] MCP uses same registry/policy; separate delegation
 
+## Adaptive UI + Conductor (Live / CE) — epic-level hard gates
+
+Shell-wide companion is classified Live/CE. Shipping slices must not green without these:
+
+- [ ] AU device bands (Phone/Tablet/Desktop) + AU-CONTENT-WIDTH (narrow main pane)
+- [ ] Safe areas respected; primary controls ≥44px touch targets
+- [ ] Keyboard focus order + visible Cyan focus ring; sheet/dock dismissible
+- [ ] Loading / error / reconnecting states observable (no silent hang)
+- [ ] CE Performance Mode: companion does not steal focus from live stage; CE-* gates cited in child acceptance
+- [ ] Offline / degraded host: TOC+search still usable without LLM
+
 ## Deferred / Non-goals
 
 - AI-GM, embeddings, free-float panel, FE `src/modules`
