@@ -174,7 +174,9 @@ export function isKodusIgnoredFilesSkip(checkRun) {
     checkRun.output?.summary ?? '',
     checkRun.output?.text ?? '',
   ].join('\n');
-  return /all files ignored|code review skipped/i.test(blob);
+  // Require the ignore-pattern wording — bare "Code Review Skipped" is used for
+  // other soft skips that still need APPROVED/COMMENTED fallback.
+  return /all files ignored/i.test(blob);
 }
 
 /**

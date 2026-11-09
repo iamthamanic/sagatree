@@ -119,9 +119,9 @@ assert(
     app: { slug: 'kody-ai' },
     status: 'completed',
     conclusion: 'skipped',
-    output: { title: 'Skipped', summary: 'workflow cancelled upstream' },
+    output: { title: 'Code Review Skipped', summary: 'No changed files in this pull request.' },
   }).reason === 'kodus-failed',
-  'generic skipped still FAIL',
+  'generic skipped without All Files Ignored still FAIL',
 );
 
 const creditsFailRun = {
