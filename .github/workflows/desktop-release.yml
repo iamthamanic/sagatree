@@ -1,0 +1,261 @@
+name: Desktop Release
+
+# Separate from Quality Gates (verify.yml). PR merges never build installers.
+# Ship path: tag v* or Actions → "Run workflow".
+#
+# Until MIG-703 adds product Tauri (src-tauri + deps), readiness is deferred:
+# - workflow_dispatch → green summary (pipeline wired)
+# - tag v* → fail-closed (no fake GitHub Release assets)
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Skip publish even if packaging is ready (probe + optional build)'
+        required: false
+        type: boolean
+        default: true
+
+# Least privilege: only the build/publish jobs need contents:write.
+permissions:
+  contents: read
+
+concurrency:
+  group: desktop-release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  readiness:
+    name: Desktop packaging readiness
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      ready: ${{ steps.probe.outputs.ready }}
+      version: ${{ steps.probe.outputs.version }}
+      blocker: ${{ steps.probe.outputs.blocker }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Probe packaging readiness
+        id: probe
+        run: node scripts/desktop-release-readiness.mjs
+
+      - name: Enforce tag matches package version
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          TAG: ${{ github.ref_name }}
+          VERSION: ${{ steps.probe.outputs.version }}
+        run: |
+          expected="v${VERSION}"
+          if [ "$TAG" != "$expected" ]; then
+            echo "::error::Tag '$TAG' does not match package.json version '$expected'."
+            exit 1
+          fi
+
+      - name: Summarize
+        env:
+          READY: ${{ steps.probe.outputs.ready }}
+          VERSION: ${{ steps.probe.outputs.version }}
+          BLOCKER: ${{ steps.probe.outputs.blocker }}
+          REF: ${{ github.ref }}
+        run: |
+          {
+            echo "## Desktop release readiness"
+            echo ""
+            echo "- ready: \`${READY}\`"
+            echo "- package.json version: \`${VERSION}\`"
+            echo "- ref: \`${REF}\`"
+            echo ""
+            if [ "$READY" != "true" ]; then
+              echo "### Blockers"
+              echo '```'
+              echo "$BLOCKER"
+              echo '```'
+              echo ""
+              echo "Unlock: MIG-703 product Tauri (\`src-tauri/\` + \`@tauri-apps/*\`). GATE-05 PoC is not enough."
+            else
+              echo "Packaging present — build matrix may run."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  deferred:
+    name: Deferred until product Tauri
+    needs: readiness
+    if: needs.readiness.outputs.ready != 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Explain and gate tags
+        env:
+          REF: ${{ github.ref }}
+          BLOCKER: ${{ needs.readiness.outputs.blocker }}
+        run: |
+          echo "Desktop Release pipeline is wired but packaging is not product-ready."
+          echo "$BLOCKER"
+          case "$REF" in
+            refs/tags/v*)
+              echo "::error::Refusing to publish tag $REF without product Tauri (MIG-703)."
+              exit 1
+              ;;
+            *)
+              echo "workflow_dispatch without packaging: OK (dry probe). Tag pushes will fail-closed until ready."
+              ;;
+          esac
+
+  # Quality preflight only when we are about to build/publish real artifacts.
+  preflight:
+    name: Release preflight (test-gate)
+    needs: readiness
+    if: |
+      needs.readiness.outputs.ready == 'true' &&
+      (startsWith(github.ref, 'refs/tags/v') ||
+       (github.event_name == 'workflow_dispatch' && inputs.dry_run == false))
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: lts
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Setup Python for PostgreSQL contract parsing
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: .qa/opcodes/rpc-contracts/parser-requirements.txt
+
+      - name: Install pinned PostgreSQL parser
+        run: python -m pip install -r .qa/opcodes/rpc-contracts/parser-requirements.txt
+
+      - name: npm audit (high+)
+        run: npm audit --audit-level=high
+
+      - name: Run Test Gate
+        run: npm run test-gate
+
+  # Tag pushes and dry_run=false dispatch build into a draft release.
+  # A final publish job undrafts only after every matrix leg succeeds (tags only).
+  build:
+    name: Build ${{ matrix.platform }}
+    needs: [readiness, preflight]
+    if: |
+      needs.readiness.outputs.ready == 'true' &&
+      (startsWith(github.ref, 'refs/tags/v') ||
+       (github.event_name == 'workflow_dispatch' && inputs.dry_run == false))
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: macos-latest
+            tauri_args: ''
+          - platform: ubuntu-22.04
+            tauri_args: ''
+          - platform: windows-latest
+            tauri_args: ''
+    runs-on: ${{ matrix.platform }}
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install Linux WebKit deps
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri -> target
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Signing secrets are optional until certificates are configured.
+      # Without them, builds remain unsigned (OK for internal drafts).
+      - name: Build Tauri (tauri-action)
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Populate when Apple/Windows signing is configured:
+          # APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          # APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          # APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+          # APPLE_ID: ${{ secrets.APPLE_ID }}
+          # APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+          # APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          # TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          # TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+        with:
+          # Always supply a tag so dispatch dry_run=false still creates a draft release.
+          tagName: ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || format('v{0}', needs.readiness.outputs.version) }}
+          releaseName: ${{ startsWith(github.ref, 'refs/tags/v') && format('SagaTree {0}', github.ref_name) || format('SagaTree v{0}', needs.readiness.outputs.version) }}
+          releaseBody: |
+            Desktop build from `${{ github.sha }}`.
+
+            Installers for macOS, Windows, and Linux are attached when packaging succeeded.
+            Auto-update (Tauri updater) lands after signed releases are configured — see docs/ops/desktop-release.md.
+          # Keep draft until every matrix leg succeeds; publish job undrafts tags.
+          releaseDraft: true
+          prerelease: ${{ contains(github.ref_name, '-') || contains(needs.readiness.outputs.version, '-') }}
+          args: ${{ matrix.tauri_args }}
+          includeUpdaterJson: true
+
+  publish:
+    name: Publish draft release
+    needs: [readiness, build]
+    if: |
+      always() &&
+      needs.readiness.outputs.ready == 'true' &&
+      needs.build.result == 'success' &&
+      startsWith(github.ref, 'refs/tags/v')
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Undraft tag release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ github.ref_name }}
+        run: gh release edit "$TAG" --draft=false --repo "$GITHUB_REPOSITORY"
