@@ -162,6 +162,22 @@ export function kodyIssueCommentsIndicateCreditsExhausted(comments) {
 }
 
 /**
+ * True when Kody intentionally skipped because every changed file matched its
+ * ignore patterns (common for Dependabot package.json / lockfile-only PRs).
+ * That is a completed review cycle with nothing to review — not a soft fail.
+ */
+export function isKodusIgnoredFilesSkip(checkRun) {
+  if (!checkRun || checkRun.status !== 'completed') return false;
+  if (String(checkRun.conclusion) !== 'skipped') return false;
+  const blob = [
+    checkRun.output?.title ?? '',
+    checkRun.output?.summary ?? '',
+    checkRun.output?.text ?? '',
+  ].join('\n');
+  return /all files ignored|code review skipped/i.test(blob);
+}
+
+/**
  * Classify the Kody Code Review check-run for a commit.
  * @param {object|null} checkRun
  */
@@ -203,8 +219,16 @@ export function evaluateKodusCheckRun(checkRun) {
     return { ok: false, reason: 'kodus-cancelled', detail: 'Kody check cancelled' };
   }
   // Only success counts — neutral/skipped/failure are fail-closed
-  // (credits-exhausted may be waived later via trusted PR marker).
+  // (credits-exhausted may be waived later via trusted PR marker;
+  // intentional "All Files Ignored" skip is a completed no-op review).
   if (checkRun.conclusion !== 'success') {
+    if (isKodusIgnoredFilesSkip(checkRun)) {
+      return {
+        ok: true,
+        reason: 'kodus-ignored-files',
+        detail: 'Kody skipped: all changed files matched ignore patterns',
+      };
+    }
     if (isKodusCreditsExhaustedFailure(checkRun)) {
       return {
         ok: false,

@@ -19,6 +19,7 @@ import {
   collectDismissedIssueCommentIds,
   extractDismissedFindingIds,
   isKodusCreditsExhaustedFailure,
+  isKodusIgnoredFilesSkip,
   hasTrustedKodusCreditsSkip,
 } from './kodus-merge-gate.mjs';
 import { evaluateMergeGate, findingSeverity } from './ecc-merge-gate-check.mjs';
@@ -94,6 +95,33 @@ assert(
     output: { title: 'Code Review Complete' },
   }).reason === 'kodus-failed',
   'neutral conclusion fails',
+);
+
+const ignoredFilesSkipRun = {
+  name: KODY_CHECK_NAME,
+  app: { slug: 'kody-ai' },
+  status: 'completed',
+  conclusion: 'skipped',
+  output: {
+    title: 'Code Review Skipped',
+    summary:
+      "All Files Ignored — Check your 'Ignored files' patterns in settings (Ignored: package-lock.json, package.json)",
+  },
+};
+assert(isKodusIgnoredFilesSkip(ignoredFilesSkipRun), 'detect ignored-files skip');
+assert(
+  evaluateKodusCheckRun(ignoredFilesSkipRun).reason === 'kodus-ignored-files',
+  'ignored-files skip is PASS',
+);
+assert(
+  evaluateKodusCheckRun({
+    name: KODY_CHECK_NAME,
+    app: { slug: 'kody-ai' },
+    status: 'completed',
+    conclusion: 'skipped',
+    output: { title: 'Skipped', summary: 'workflow cancelled upstream' },
+  }).reason === 'kodus-failed',
+  'generic skipped still FAIL',
 );
 
 const creditsFailRun = {
