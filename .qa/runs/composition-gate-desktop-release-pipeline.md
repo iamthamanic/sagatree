@@ -1,7 +1,7 @@
 # Composition Gate — desktop-release-pipeline
 
-- HEAD_SHA: eae7e0da8b8b3b7bd55653dda4ea443aa8e58cec
-- BASE_SHA: 89101a9109205583fbdceb2ccd5dafcd66f4584e
+- HEAD_SHA: c1ac92b886cba357caff0dac98fe4a9efd14e79a
+- BASE_SHA: ebab636f8388ac1c0ad8544f01360567cd22498e
 - Date: 2026-11-09
 - Verdict: CLEAR
 - Acceptance tier: tool-only
