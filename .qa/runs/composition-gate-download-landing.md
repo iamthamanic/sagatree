@@ -1,20 +1,32 @@
 # Composition Gate — download-landing
 
-**Status:** CLEAR  
-**HEAD:** (set at merge)  
-**Acceptance:** `.qa/acceptance/download-landing.md`
+- HEAD_SHA: 1a28b9a414d37abaed9033555e7d1666cd8f3e7b
+- BASE_SHA: 320551b1db5b989dd9342b25ba837fbf75e7f0b3
+- Date: 2026-11-09
+- Verdict: CLEAR
+- Acceptance tier: product
 
-## Touched surfaces
+## Event
 
-- Public Journey `/download` (+ `/get`)
-- Login → download CTA
-- Domain `desktop-release` + GitHub Releases infra adapter
+Public Journey `/download` (+ `/get`) lists Mac/Windows/Linux installers from
+GitHub Releases without login, and Login links into that Journey.
 
-## Cross-slice
+## Hop chain
 
-- No Character creation/progression private imports.
-- Shell consumed via public barrel (`SagaTreeLogo`).
+1. **Producer:** GitHub Releases adapter → classified installer assets
+2. **Gate:** domain desktop-release parse/classify (no updater sidecars)
+3. **Consumer:** DownloadScreen Journey + Login CTA + optional Pages hub
 
-## Notes
+## Simulations
 
-Installer availability depends on future GitHub Release assets; UI degrades closed.
+| Case | Intended | Composed | Result |
+|------|----------|----------|--------|
+| N-actors | no release assets | disabled „Bald verfügbar“ + GitHub link | pass |
+| Invalid/missing | API failure | unavailable copy; GitHub link works | pass |
+| Two consumers / crash | Login + /download | both use public domain barrel | pass |
+
+## Flags
+
+| Tag | Severity | Hops | Why local review missed it | Fix |
+|-----|----------|------|----------------------------|-----|
+| (none) | — | — | — | — |
