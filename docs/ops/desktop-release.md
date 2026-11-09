@@ -51,7 +51,7 @@ git push origin v0.2.0
 4. Watch **Desktop Release** on GitHub Actions.
 5. Confirm assets on the GitHub Release page.
 
-Or: Actions → **Desktop Release** → Run workflow → `dry_run=false` (draft-oriented; prefer tags for real ships).
+Or: Actions → **Desktop Release** → Run workflow → `dry_run=false` creates a **draft** GitHub Release tagged `v{package.json version}` with installers attached. Prefer a real `v*` tag push for public ships — the publish job undrafts only after every OS matrix leg succeeds, and the tag must match `package.json` version exactly (`v1.2.3` ↔ `1.2.3`).
 
 ## Bugfix / feature → users
 

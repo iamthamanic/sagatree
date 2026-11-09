@@ -16,7 +16,8 @@ const srcTauri = resolve(root, 'src-tauri');
 const confCandidates = [
   resolve(srcTauri, 'tauri.conf.json'),
   resolve(srcTauri, 'tauri.conf.json5'),
-  resolve(root, 'src-tauri', 'tauri.conf.toml'),
+  // Tauri v2 TOML format uses the case-sensitive filename Tauri.toml.
+  resolve(srcTauri, 'Tauri.toml'),
 ];
 
 function readPackageVersion() {
