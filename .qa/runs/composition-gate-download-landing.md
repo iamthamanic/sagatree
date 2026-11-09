@@ -1,6 +1,6 @@
 # Composition Gate — download-landing
 
-- HEAD_SHA: c13be5c319235673c3ea9ed274f2bc6a2133044d
+- HEAD_SHA: 7f41f41a4b34b797388a139bf55b816b56abf129
 - BASE_SHA: 320551b1db5b989dd9342b25ba837fbf75e7f0b3
 - Date: 2026-11-09
 - Verdict: CLEAR
