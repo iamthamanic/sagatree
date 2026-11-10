@@ -1,7 +1,7 @@
 # GATE-05 executed evidence
 
 **Fixture: PASS. Technology: APPROVED (2026-11-01).**  
-Product ship / store release: **not** approved by this gate — further RELEASE required.
+Product/store RELEASE: `DESKTOP-PRODUCT-STORE` **APPROVED** — product `src-tauri/` authorized; signing/externalBin remain ops follow-up.
 
 Entry point: `node scripts/stack-migration-pocs/gate-05/check.mjs --check`
 
@@ -13,5 +13,5 @@ Entry point: `node scripts/stack-migration-pocs/gate-05/check.mjs --check`
 | Cases PASS | 7 |
 | Cases NOT RUN | 2 |
 
-Variant A Tauri+Node sidecar is owner-APPROVED for MIG-703. Real three-OS
-packaging/signing remains deferred integration before any product ship.
+Variant A Tauri+Node sidecar is owner-APPROVED. Product shell lives under `src-tauri/`
+after DESKTOP-PRODUCT-STORE; three-OS signed store builds remain ops follow-up.

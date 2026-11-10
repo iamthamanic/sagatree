@@ -1152,6 +1152,14 @@ function checkMig703TauriIntegration() {
   );
 }
 
+function checkDesktopProductTauri() {
+  console.log('Desktop product Tauri: readiness ready=true + sidecar stand-in...');
+  execFileSync(process.execPath, ['scripts/desktop-product-tauri.self-test.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
+}
+
 function checkMig306MediaAdapter() {
   console.log('MIG-306 media adapter (#805): host policy ports + client optimizer stubs...');
   execFileSync(
@@ -4056,6 +4064,7 @@ checkGate05TauriSidecarPoc();
 checkMig701ParityWindow();
 checkMig702ShutdownReadiness();
 checkMig703TauriIntegration();
+checkDesktopProductTauri();
 checkMig503PgSqliteDryRun();
 checkSagaStateColumnPrivileges();
 checkSagatreeCoreWorkflowsContract();

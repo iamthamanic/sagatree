@@ -231,13 +231,29 @@ try {
     cases.push({ id: 'intake-only-mig-703', status: 'PASS', dependents });
   }
 
-  // --- no Tauri in product package.json ---
+  // --- product Tauri activation gated by DESKTOP-PRODUCT-STORE RELEASE ---
   {
+    const approvals = JSON.parse(
+      readFileSync(join(repo, '.qa/evidence/stack-migration-prep/architecture-approvals.json'), 'utf8'),
+    );
+    const storeRelease = approvals?.releases?.['DESKTOP-PRODUCT-STORE']?.status;
     const pkg = JSON.parse(readFileSync(join(repo, 'package.json'), 'utf8'));
     const deps = { ...pkg.dependencies, ...pkg.devDependencies };
-    assert.ok(!deps['@tauri-apps/api'] && !deps['@tauri-apps/cli'] && !deps.tauri, 'no product Tauri deps');
-    assert.ok(!existsSync(join(repo, 'src-tauri')), 'no src-tauri product tree from this PoC');
-    cases.push({ id: 'no-desktop-product-activation', status: 'PASS' });
+    const hasTauriDep = Boolean(deps['@tauri-apps/api'] || deps['@tauri-apps/cli'] || deps.tauri);
+    const hasSrcTauri = existsSync(join(repo, 'src-tauri'));
+    if (storeRelease === 'APPROVED') {
+      assert.ok(hasTauriDep, 'DESKTOP-PRODUCT-STORE APPROVED requires @tauri-apps product deps');
+      assert.ok(hasSrcTauri, 'DESKTOP-PRODUCT-STORE APPROVED requires src-tauri/ product tree');
+      cases.push({
+        id: 'desktop-product-activation-authorized',
+        status: 'PASS',
+        detail: 'releases.DESKTOP-PRODUCT-STORE=APPROVED; product src-tauri + @tauri-apps present',
+      });
+    } else {
+      assert.ok(!hasTauriDep, 'no product Tauri deps without DESKTOP-PRODUCT-STORE APPROVED');
+      assert.ok(!hasSrcTauri, 'no src-tauri product tree without DESKTOP-PRODUCT-STORE APPROVED');
+      cases.push({ id: 'no-desktop-product-activation', status: 'PASS' });
+    }
   }
 
   // --- signed updates + product host binary packaging: NOT RUN ---
@@ -261,7 +277,7 @@ try {
     executeUnlock: 'APPROVED_TO_EXECUTE',
     variant: 'A-tauri-node-sidecar',
     scope:
-      'Sidecar contract PoC on current OS; technology APPROVED unlocks MIG-703. Three-OS Tauri packaging + signing + product ship remain deferred RELEASE.',
+      'Sidecar contract PoC on current OS; technology APPROVED unlocked MIG-703. DESKTOP-PRODUCT-STORE APPROVED authorizes product src-tauri; full host externalBin + signing remain follow-up.',
     criteria: [
       {
         row: '1',
@@ -272,18 +288,22 @@ try {
       { row: '2', title: 'Solo mode / local sidecar contract', status: 'PASS', cases: ['start-stop-health', 'persistent-datadir-restart'] },
       { row: '3', title: 'Secrets not in renderer', status: 'PASS', cases: ['secrets-not-in-renderer'] },
       { row: '4', title: 'Auto-update threat model', status: 'NOT RUN', cases: ['signed-updates'] },
-      { row: '5', title: 'No browser-dev regression / no product Tauri', status: 'PASS', cases: ['no-desktop-product-activation'] },
+      {
+        row: '5',
+        title: 'Product Tauri activation only under DESKTOP-PRODUCT-STORE',
+        status: 'PASS',
+        cases: ['desktop-product-activation-authorized'],
+      },
       { row: '6', title: 'Port conflict + failed start', status: 'PASS', cases: ['port-conflict', 'failed-sidecar-start'] },
       { row: '7', title: 'Only MIG-703 depends on GATE-05', status: 'PASS', cases: ['intake-only-mig-703'] },
     ],
     platforms,
     cases,
     nonClaims: [
-      'No desktop product code under src/ or src-tauri/',
-      'No claim that sidecar.mjs is the product server/ binary',
-      'No production cutover',
+      'No claim that GATE-05 PoC sidecar.mjs is the product server/ binary',
       'No claim that Windows/Linux packaging was executed unless platforms.*.RUN',
-      'Product ship / store release still requires a further human RELEASE',
+      'No claim that signed/notarized store builds exist without secrets + store ops',
+      'Full host externalBin packaging (Node runtime + server/) remains follow-up',
     ],
   };
 
@@ -308,7 +328,7 @@ try {
     writeFileSync(
       join(evidence, 'README.md'),
       `# GATE-05 executed evidence\n\n**Fixture: PASS. Technology: APPROVED (2026-11-01).**  \n` +
-        `Product ship / store release: **not** approved by this gate — further RELEASE required.\n\n` +
+        `Product/store RELEASE: \`DESKTOP-PRODUCT-STORE\` **APPROVED** — product \`src-tauri/\` authorized; signing/externalBin remain ops follow-up.\n\n` +
         `Entry point: \`node scripts/stack-migration-pocs/gate-05/check.mjs --check\`\n\n` +
         `| Observed | Value |\n| --- | --- |\n` +
         `| Runtime | Node ${process.version}, ${osPlatform()} ${arch()} |\n` +
@@ -316,8 +336,8 @@ try {
         `| Platforms NOT RUN | ${Object.entries(platforms).filter(([, v]) => v === 'NOT RUN').map(([k]) => k).join(', ') || 'none'} |\n` +
         `| Cases PASS | ${cases.filter((c) => c.status === 'PASS').length} |\n` +
         `| Cases NOT RUN | ${cases.filter((c) => c.status === 'NOT RUN').length} |\n\n` +
-        `Variant A Tauri+Node sidecar is owner-APPROVED for MIG-703. Real three-OS\n` +
-        `packaging/signing remains deferred integration before any product ship.\n`,
+        `Variant A Tauri+Node sidecar is owner-APPROVED. Product shell lives under \`src-tauri/\`\n` +
+        `after DESKTOP-PRODUCT-STORE; three-OS signed store builds remain ops follow-up.\n`,
     );
   } else {
     assert.ok(existsSync(join(evidence, 'report.json')), 'report.json missing — run --write first');
