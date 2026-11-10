@@ -1,6 +1,6 @@
 # Desktop release (Mac / Windows / Linux)
 
-How SagaTree ships **installers** after product Tauri exists (MIG-703).  
+How SagaTree ships **installers** after product Tauri exists.  
 This is **separate** from Quality Gates (`verify.yml`) and from VPS/host deploys.
 
 ## Mental model
@@ -30,13 +30,15 @@ feature/fix → PR → verify + ECC → merge main
                 readiness → test-gate → matrix build → GitHub Release assets
 ```
 
-### Until MIG-703 (current)
+### Product packaging (current)
 
-- Product `src-tauri/` is **absent** (GATE-05 was PoC-only).
-- `workflow_dispatch` with default `dry_run=true` → readiness + deferred **succeeds** (pipeline wired).
-- Pushing a `v*` tag → **fail-closed** (no fake empty release).
+- Product `src-tauri/` + `@tauri-apps/*` are present (SPA shell + Node host sidecar).
+- `node scripts/desktop-release-readiness.mjs` → `ready=true`.
+- Local proofs: `npm run desktop:self-test`, `npm run desktop:dev` / `desktop:build`.
+- Unsigned internal drafts are OK until Apple/Windows signing secrets are configured.
+- Full host `externalBin` packaging (Node runtime + `server/` binary per OS) remains a follow-up; the shell falls back to a loopback health stand-in when `server/` is absent from the package.
 
-### After product Tauri
+### After ready=true
 
 1. Bump `package.json` / Tauri version as needed.
 2. Ensure `main` is green.
@@ -76,4 +78,5 @@ Unsigned internal drafts can ship before certificates exist; store / SmartScreen
 
 - Host update/rollback (server binary): [`host/update-rollback.md`](host/update-rollback.md)
 - GATE-05 PoC: `.qa/design/gates/GATE-05-tauri-packaging.md`
-- Product unlock: MIG-703
+- MIG-703 scaffold: [`desktop/README.md`](../../desktop/README.md)
+- Product unlock RELEASE: `docs/architecture/migration-owner-release-2026-11-01-desktop-product-store.md`

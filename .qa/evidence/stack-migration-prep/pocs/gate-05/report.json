@@ -5,7 +5,7 @@
   "approval": "APPROVED",
   "executeUnlock": "APPROVED_TO_EXECUTE",
   "variant": "A-tauri-node-sidecar",
-  "scope": "Sidecar contract PoC on current OS; technology APPROVED unlocks MIG-703. Three-OS Tauri packaging + signing + product ship remain deferred RELEASE.",
+  "scope": "Sidecar contract PoC on current OS; technology APPROVED unlocked MIG-703. DESKTOP-PRODUCT-STORE APPROVED authorizes product src-tauri; full host externalBin + signing remain follow-up.",
   "criteria": [
     {
       "row": "1",
@@ -42,10 +42,10 @@
     },
     {
       "row": "5",
-      "title": "No browser-dev regression / no product Tauri",
+      "title": "Product Tauri activation only under DESKTOP-PRODUCT-STORE",
       "status": "PASS",
       "cases": [
-        "no-desktop-product-activation"
+        "desktop-product-activation-authorized"
       ]
     },
     {
@@ -75,7 +75,7 @@
     {
       "id": "start-stop-health",
       "status": "PASS",
-      "port": 59927
+      "port": 52298
     },
     {
       "id": "secrets-not-in-renderer",
@@ -84,7 +84,7 @@
     {
       "id": "persistent-datadir-restart",
       "status": "PASS",
-      "port": 59930
+      "port": 52303
     },
     {
       "id": "port-conflict",
@@ -107,8 +107,9 @@
       ]
     },
     {
-      "id": "no-desktop-product-activation",
-      "status": "PASS"
+      "id": "desktop-product-activation-authorized",
+      "status": "PASS",
+      "detail": "releases.DESKTOP-PRODUCT-STORE=APPROVED; product src-tauri + @tauri-apps present"
     },
     {
       "id": "signed-updates",
@@ -122,10 +123,9 @@
     }
   ],
   "nonClaims": [
-    "No desktop product code under src/ or src-tauri/",
-    "No claim that sidecar.mjs is the product server/ binary",
-    "No production cutover",
+    "No claim that GATE-05 PoC sidecar.mjs is the product server/ binary",
     "No claim that Windows/Linux packaging was executed unless platforms.*.RUN",
-    "Product ship / store release still requires a further human RELEASE"
+    "No claim that signed/notarized store builds exist without secrets + store ops",
+    "Full host externalBin packaging (Node runtime + server/) remains follow-up"
   ]
 }
