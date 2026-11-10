@@ -9,6 +9,7 @@ import { lazy, Suspense, useEffect, useState, type ReactNode } from 'react';
 import { AuthProvider } from './lib/auth-context';
 import { ThemeProvider } from './lib/theme-provider';
 import { AuthGate, Layout, ViewLoadingFallback, useAppLocation } from './app/shell';
+import { DownloadScreen, PublicAppGate } from './app/download';
 import { Dashboard } from './app/dashboard';
 import { Toaster } from './shared/ui/sonner';
 import { NotFoundPlaceholder, ItemWorkbenchScreen } from './app/items';
@@ -429,6 +430,9 @@ function AppShell() {
             onNavigate={handleNavigate}
           />
         ) : null;
+      case 'download':
+        // Prefer PublicAppGate for unauthenticated visits; keep parity if routed in-shell.
+        return <DownloadScreen />;
       case 'not-found':
         return (
           <NotFoundPlaceholder
@@ -452,10 +456,12 @@ export default function App() {
   return (
     <AuthProvider>
       <ThemeProvider>
-        <AuthGate>
-          <AppShell />
-          <Toaster />
-        </AuthGate>
+        <PublicAppGate>
+          <AuthGate>
+            <AppShell />
+          </AuthGate>
+        </PublicAppGate>
+        <Toaster />
       </ThemeProvider>
     </AuthProvider>
   );

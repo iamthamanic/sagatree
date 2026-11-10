@@ -238,7 +238,8 @@ const names = readdirSync(join(root, 'archive/supabase-legacy/supabase/functions
   .filter((e) => e.isDirectory() && existsSync(join(root, 'archive/supabase-legacy/supabase/functions', e.name, 'index.ts')))
   .map((e) => e.name).sort();
 // Successor host HTTP adapters are not legacy Supabase infra MIG areas.
-const LEGACY_INFRA_AREA_EXCLUDE = new Set(['host']);
+// desktop-release is a public GitHub Releases client, not a legacy Supabase MIG area.
+const LEGACY_INFRA_AREA_EXCLUDE = new Set(['host', 'desktop-release']);
 const areas = readdirSync(join(root, 'src/infrastructure'), { withFileTypes: true })
   .filter((e) => e.isDirectory() && !LEGACY_INFRA_AREA_EXCLUDE.has(e.name))
   .map((e) => e.name).sort();
