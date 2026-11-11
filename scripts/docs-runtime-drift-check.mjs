@@ -59,8 +59,10 @@ export function assertActiveDocsConsistent(fsApi) {
 
   const readme = fsApi.read('README.md');
   const tech = sectionByHeading(readme, 'Tech Stack');
-  if (!/Node|Hono|Better Auth|SQLite/i.test(tech)) {
-    errors.push('README.md Tech Stack must name Node/Hono/Better Auth/SQLite product stack');
+  for (const token of ['Node', 'Hono', 'Better Auth', 'SQLite']) {
+    if (!new RegExp(token, 'i').test(tech)) {
+      errors.push(`README.md Tech Stack must mention ${token}`);
+    }
   }
   // Product backend row must not present GoTrue/PostgREST/Deno Edge as the live stack.
   if (/Backend[^\n]*GoTrue|Backend[^\n]*PostgREST|Backend[^\n]*Deno Edge/i.test(tech)) {
@@ -68,6 +70,12 @@ export function assertActiveDocsConsistent(fsApi) {
   }
   if (/selbst gehostetem Supabase-Stack/i.test(readme)) {
     errors.push('README.md must not describe self-hosted Supabase as the product stack');
+  }
+  if (!/SAGATREE_BETTER_AUTH_SECRET/.test(sectionByHeading(readme, 'Quick Start'))) {
+    errors.push('README.md Quick Start must export/set SAGATREE_BETTER_AUTH_SECRET for host:dev');
+  }
+  if (!/≥?\s*22\.13|>=\s*22\.13|Node\.js \*\*≥22\.13\*\*/i.test(readme)) {
+    errors.push('README.md must require Node ≥22.13 for host quick start');
   }
 
   const agents = fsApi.read('AGENTS.md');
@@ -83,8 +91,13 @@ export function assertActiveDocsConsistent(fsApi) {
   }
 
   const selfhost = fsApi.read('README_SELFHOST.md');
-  if (!/host-only|Node\/Hono|Better Auth|SQLite/i.test(selfhost)) {
-    errors.push('README_SELFHOST.md must describe host-only product runtime');
+  for (const token of ['host-only', 'Better Auth', 'SQLite']) {
+    if (!new RegExp(token, 'i').test(selfhost)) {
+      errors.push(`README_SELFHOST.md must mention ${token}`);
+    }
+  }
+  if (!/Node\/Hono|Hono/.test(selfhost)) {
+    errors.push('README_SELFHOST.md must mention Hono/Node host');
   }
   if (/docker compose up -d(?!.*env\.host)/s.test(selfhost) && !/env\.host/.test(selfhost)) {
     errors.push('README_SELFHOST.md default compose must use deployment/.env.host');
@@ -94,8 +107,10 @@ export function assertActiveDocsConsistent(fsApi) {
   if (/eigener Supabase-Backend-Stack/i.test(arch)) {
     errors.push('src/ARCHITECTURE.md must not claim Supabase backend as current stack');
   }
-  if (!/Node\/Hono|Better Auth|SQLite/i.test(arch)) {
-    errors.push('src/ARCHITECTURE.md must mention Node/Hono host stack in current framing');
+  for (const token of ['Node/Hono', 'Better Auth', 'SQLite']) {
+    if (!arch.includes(token)) {
+      errors.push(`src/ARCHITECTURE.md must mention ${token} in current framing`);
+    }
   }
 
   const sqliteDoc = fsApi.read('docs/architektur-sqlite-based.md');
@@ -156,7 +171,7 @@ function runSelfTest() {
     // Positive fixture — mirrors invariants (minimal).
     writeTree(dir, {
       'README.md':
-        '## Tech Stack\n\n| Backend (Produkt) | Node host · Hono · Better Auth · SQLite |\n| Archiv | Supabase under archive |\n\n## Other\n',
+        'Node.js **≥22.13**\n\n## Tech Stack\n\n| Backend (Produkt) | Node host · Hono · Better Auth · SQLite |\n| Archiv | Supabase under archive |\n\n## Quick Start\n\nexport SAGATREE_BETTER_AUTH_SECRET=...\nnpm run host:dev\n\n## Other\n',
       'AGENTS.md':
         'Stack: SQLite host. Legacy: archive/supabase-legacy/\n### Host modules\nserver/src/modules\n',
       'README_SELFHOST.md':

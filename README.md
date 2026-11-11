@@ -126,13 +126,16 @@ Frontend-Dev: **`http://localhost:3004`** · Host: **`http://127.0.0.1:8787`** (
 
 ## Quick Start
 
-**Voraussetzungen:** Node.js 20+ (Host-Paket: ≥22.13 laut `server/package.json`) · npm 10+
+**Voraussetzungen:** Node.js **≥22.13** (siehe `server/package.json` `engines`) · npm 10+
 
 ```bash
 npm install
-# Terminal 1 — Host (SQLite + Better Auth)
-cp .env.example .env   # SAGATREE_BETTER_AUTH_SECRET setzen
+# Terminal 1 — Host (SQLite + Better Auth). `host:dev` liest kein .env-File —
+# Variablen müssen in der Shell exportiert sein (wie README_SELFHOST solo).
+cp .env.example .env   # Vorlage / Notiz; optional
 export SAGATREE_DATA_DIR=./.sagatree-data
+export SAGATREE_BETTER_AUTH_SECRET="$(openssl rand -base64 48)"
+export SAGATREE_HOST_MODE=solo
 npm run host:dev
 # Terminal 2 — Frontend (Vite /api-Proxy → Host; VITE_SAGATREE_HOST_AUTH_URL=same-origin)
 npm run dev
