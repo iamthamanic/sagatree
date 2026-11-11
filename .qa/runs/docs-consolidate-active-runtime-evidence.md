@@ -41,4 +41,12 @@
 node scripts/docs-runtime-drift-check.mjs --self-test   # PASS
 node scripts/docs-runtime-drift-check.mjs               # PASS
 node scripts/cut-22-host-runtime-contracts.self-test.mjs # PASS
+node scripts/item-epic-acceptance-check.mjs             # PASS (README Meshy forbid restored)
+node scripts/ecc-merge-gate-check.mjs 1193              # PASS (kodus-skipped-credits)
 ```
+
+## Review follow-ups (PR #1193)
+
+- Codex P1/P2 fixed: Quick Start exports `SAGATREE_BETTER_AUTH_SECRET`; Node ≥22.13; drift tokens asserted independently.
+- OWNER posted trusted `<!-- ecc-kodus-skipped-credits: … -->` after Kody provider credits exhaustion.
+- Tip commit re-triggers a clean `pull_request` ECC check suite (cancelled concurrent suites left GitHub expecting the check).
