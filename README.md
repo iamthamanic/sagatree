@@ -279,6 +279,7 @@ SagaTree/                 # Repo (historisch auch sagatree/ lokal)
 
 ## Recent changes
 
+- **2026-11-11** — Atlas Golden Steps 1–6: echte Produktkarte 3D/Draufsicht, Küstenpolygone + Fläche, Ausschnitt verorten, Golden-Hierarchie-Seeds/Reset (Editor noch nicht vollständig E2E) ([#1195](https://github.com/iamthamanic/sagatree/pull/1195), `.qa/runs/atlas-golden-steps-gap-audit.md`)
 - **2026-10-22** — UI-Icons: Lucide → Phosphor (`@phosphor-icons/react`); Sidebar Cyan/Gold-Zustände; Dashboard-Karten ohne Duotone (`chore/phosphor-icon-migration`)
 - **2026-10-21** — Migrationsvorbereitung: geprüfte RPC-/Edge-Verträge, gesperrter 90-Ticket-Plan und echte isolierte SQL-/Atlas-Prüfungen mit offen ausgewiesenen Altfehlern ([#773](https://github.com/iamthamanic/sagatree/issues/773), [Prüfanleitung](docs/stack-migration-preparation.md))
 - **2026-10-18** — Atlas Karte: map-first Chrome (kein Ebenen-Flash), Map keep-alive über Welt-Untertabs, Kontinent-Gruppe unter Welt, dunklere Kategoriezeilen (`fix/atlas-nav-edit-label-box`)
@@ -288,8 +289,6 @@ SagaTree/                 # Repo (historisch auch sagatree/ lokal)
 - **2026-10-17** — Weltatlas: Unified Canvas (Multi-Scale-Zoom, Pinsel/Stempel, Demo Eldoria); Speichern in `generator_meta.unifiedCanvas` (`#702`)
 - **2026-10-15** — Session-Lobby: Cover-Meta + Meet-Device-Bar; Account-Avatar in Shell/Lobby; Settings-Routen `/settings/*`; Avatar-Upload mit Auto-Downscale
 - **2026-10-14** — Bibliothek: ⋮-Menüs (Copy Public-ID / Duplizieren), Liste·Grid·Karussell für alle Tabs, WO-/LK-Public-IDs, SagaTree-Native-Badge
-- **2026-10-13** — Bibliothek: Slash-Routen (`/library/player-characters`, `/library/sagas`, …); Karussell-Karten breiter + portrait-/cover-sichere Bildframes
-- **2026-10-12** — Saga-Workspace: Lobby direkt nach Create mit großem Join-Code; Bibliothek-Tab Sagas; Spieler-Charaktere + Lore; local `player` Demo-Login (`074`)
 
 ---
 
