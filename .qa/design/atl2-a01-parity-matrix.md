@@ -31,9 +31,9 @@
 |------|------------|----------|----------|-----------|
 | `UnifiedAtlasEditor.tsx` + Canvas2D Draufsicht | Primary 2D authoring surface | **Yes** | **Keep** — V2 primary editor | #1206–#1211 |
 | `AtlasNative3dEditor.tsx` → `atlas-prototype-runtime.mjs` | **Product custom WebGL** (`AtlasGL` / raw `webgl2` shaders — **not** Three.js) for `demoSeed:false` | **Yes** | **Keep / harden** — sole productive 3D engine today; do **not** swap renderers in this audit | #1212–#1218 |
-| `webgl-runtime-bridge.ts` | Lossless 2D↔3D canvas sync | **Yes** | **Keep** | #1201–#1205 |
+| `webgl-runtime-bridge.ts` | 2D↔3D canvas sync — **mesh `type` alone is lossy** (`stuhl`/`fass`/`teppich` → `crate`); Golden tips preserve doc stamp via `props[].stamp` for round-trip | **Yes** | **Keep / harden** stamp round-trip; do not call mesh-only sync “lossless” | #1201–#1205 |
 | `AtlasSpatialViewport.tsx` | **Three.js** viewport (`import * as THREE`) — Perspective, object pick/edit | Parallel / unused as product chrome | Inventory only here; **how** we converge to exactly one productive Three.js (or keep custom WebGL) is **#1212** — preserve functions/data; no rushed swap | #1212 → #1234 |
-| `WorldAtlasLeafletMap.tsx` + Geoman | Legacy GeoJSON `layers` editor | Legacy tiles / secondary | **Keep readable; no new features**; retire when unified canvas owns all authoring | #1203 / #1234 |
+| `WorldAtlasLeafletMap.tsx` + Geoman | Orphan Leaflet/Geoman module — **not imported** by product chrome | Dead / unused | **Do not treat as active path**; `legacy_tiles` uses `WorldMapEditorScreen` instead. Retire after confirming no dynamic entry | #1234 |
 | Eldoria `demoSeed:true` art inside `UnifiedAtlasEditor` | Demo LOD continents | Demo only | **Keep isolated**; never on product maps (#752) | — |
 | Azgaar import path | External `.map` storage | Optional | **Keep** as import; not second SoT | #1238 optional |
 
@@ -51,7 +51,7 @@
 | `generator_meta.webglRuntimeV3` | same | Camera/runtime chrome | Keep (presentation; must not invent geography) |
 | `generator_meta.dungeon` / dungeon meta | same | Dungeon Forge | Keep; integrate in #1224–#1228 |
 | `generator_meta.mapStatus` + `mapFrame.parentAnchor` | `map-frame.ts` | LOD / locate | Keep; finish 6-level seed in #1199 |
-| `layers` GeoJSON FeatureCollection | `world_atlas_maps.layers` | Leaflet / party projection | **Compatibility**; do not invent parallel SoT; migration plan in #1201–#1205 |
+| `layers` GeoJSON FeatureCollection | `world_atlas_maps.layers` | Party projection + legacy map screens (`WorldMapEditorScreen`); not via orphan `WorldAtlasLeafletMap` | **Compatibility**; do not invent parallel SoT; migration plan in #1201–#1205 |
 | `world_places` + `world_place_map_links` | Host SQLite | Hierarchy + pins | Keep; expand Golden hierarchy seed_keys |
 | Host `ensure-dornhain-default.ts` | Bootstrap | Golden root seed | Keep; **extend** for full 6-level cold bootstrap (#1199) |
 
@@ -65,7 +65,7 @@ Legend: **I** = implemented on #1195 tip · **P** = partial · **M** = missing �
 
 | # | Capability (V2 Soll) | Ist (#1195 tip) | I/P/M | T | Decision | Ticket |
 |---|----------------------|-----------------|-------|---|----------|--------|
-| 1 | Single shared canvas doc 2D↔3D | `unifiedCanvas` + bridge | I | T unit + browser paint | Keep | — |
+| 1 | Single shared canvas doc 2D↔3D | `unifiedCanvas` + bridge (stamp field on Golden tips; mesh-type alone lossy) | I/P | T unit + browser paint | Keep / harden stamp RT | #1201 |
 | 2 | Product map shows saved terrain (not demo) | Step 1 product paint | I | T browser | Keep | shipped #1195 |
 | 3 | Place pins + fly-to | `atlas-map-pins` | I | T browser | Keep | shipped |
 | 4 | Coast polygons + Fläche tool | `points` + `area` | I | T self-test + browser chrome | Keep; fix concave triangulation | #1198 |
@@ -82,7 +82,7 @@ Legend: **I** = implemented on #1195 tip · **P** = partial · **M** = missing �
 | 15 | Dungeon Forge in product path | `dungeon-generator.ts` exists | P | domain tests | Integrate UI + seed | #1224–#1228 |
 | 16 | GM/player secrecy on unifiedCanvas | projection incomplete (Codex P1) | P | — | Fix | #1198 / #1229 |
 | 17 | Adaptive AU-* / IV-* acceptance on UI tickets | often missing on Golden tickets | M | — | Enforce | every UI PR |
-| 18 | Leaflet Geoman as primary editor | still for `legacy_tiles` | I legacy | — | No new product work | #1234 |
+| 18 | Orphan Leaflet Geoman (`WorldAtlasLeafletMap`) | present as file; **no product import**; `legacy_tiles` → `WorldMapEditorScreen` | I dead | — | Inventory only; retire orphan | #1234 |
 | 19 | Parallel Three.js (`AtlasSpatialViewport`) vs product custom WebGL runtime | both present; product = WebGL | I unused Three.js | — | Inventory fix; converge decision in #1212 | #1212 / #1234 |
 | 20 | Session wipe on reset `everything` | honest DE note only | P | unit | Host API later | optional / Gate G |
 
@@ -93,7 +93,7 @@ Legend: **I** = implemented on #1195 tip · **P** = partial · **M** = missing �
 | Function class | Keep | Migrate | Remove (after parity) |
 |----------------|------|---------|------------------------|
 | Product 3D | custom WebGL `atlas-prototype-runtime.mjs` (Ist) | → single productive Three.js **only if #1212 decides** (preserve data/functions) | `AtlasSpatialViewport` as second product path |
-| Product 2D | Canvas Draufsicht in `UnifiedAtlasEditor` | Leaflet layers → canvas features where needed | Geoman as default product editor |
+| Product 2D | Canvas Draufsicht in `UnifiedAtlasEditor` | GeoJSON `layers` / `WorldMapEditorScreen` → canvas where needed | Orphan `WorldAtlasLeafletMap` / Geoman-as-default |
 | Document SoT | `unifiedCanvas` | GeoJSON layers → projected/compat only | Dual-write inventing facts |
 | Hierarchy | WorldNode + primary maps + parentAnchor | Flat Golden places → 6-level seed | Demo LOD inventing continents on product |
 | Tools | `atlas-tool-registry` + area/brush/… | Align 3D erase/select with 2D ops | Ad-hoc runtime-only tools without registry |
@@ -170,7 +170,8 @@ Contract chain: `world → continent → country → place → building → room
 
 ## 10. What this audit explicitly does **not** do
 
-- No deletion of Leaflet / SpatialViewport in this ticket  
+- No deletion of orphan Leaflet module / SpatialViewport in this ticket  
+
 - No new renderer and **no** product WebGL→Three.js swap (that decision lives in #1212)  
 - No claim that the cartography editor is finished  
 - No merge of #1194/#1195  
