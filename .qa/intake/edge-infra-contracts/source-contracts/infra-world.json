@@ -211,11 +211,11 @@
     },
     {
       "path": "src/domains/world/atlas/dornhain-golden-reset.ts",
-      "sha256": "43da469b3c85a794a49236774cafe87ad5b159c431c6d1271a67d5e42bb47841"
+      "sha256": "242b85a727062342a69f934a3b0cb64d3c5c726a71b87548043facd7e62f6c2f"
     },
     {
       "path": "src/domains/world/atlas/dornhain-unified-starter.ts",
-      "sha256": "d2dda00b73436e7a47c34d7c77b2454bb837767aecc15875ee457e5096a7b623"
+      "sha256": "5e9afab7ec94b7bef19535be6311b51a2f77c59b5f82b36fcd8b78007cc336f5"
     },
     {
       "path": "src/domains/world/atlas/dungeon-generator.ts",
@@ -223,7 +223,7 @@
     },
     {
       "path": "src/domains/world/atlas/index.ts",
-      "sha256": "ce7ce4dbe76ec3593395d3d3a70a971f6d0b2c53b19bc48365fc1756c28ded82"
+      "sha256": "418afdfdbdef3f21fa84b326df868b41587930b379633d9e0bafc0dce1fd34f4"
     },
     {
       "path": "src/domains/world/atlas/map-edit-ops.ts",
@@ -235,7 +235,7 @@
     },
     {
       "path": "src/domains/world/atlas/unified-canvas-doc.ts",
-      "sha256": "ff4bd3aa1982196c0541fcec56db2789afaa6c1200ee5614f19d07c3a84621f1"
+      "sha256": "2084b179633089aceaa47eb485ffeaad49ca73a59be11d83f702ea4b3139e4df"
     },
     {
       "path": "src/domains/world/atlas/validate-world-atlas.ts",
@@ -1247,24 +1247,24 @@
       "kind": "TypeAliasDeclaration",
       "name": "DornhainGoldenResetMode",
       "path": "src/domains/world/atlas/dornhain-golden-reset.ts",
-      "line": 13,
-      "endLine": 13,
+      "line": 17,
+      "endLine": 17,
       "text": "export type DornhainGoldenResetMode = 'atlas' | 'atlas_places' | 'everything';"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "DornhainGoldenPlaceSpec",
       "path": "src/domains/world/atlas/dornhain-golden-reset.ts",
-      "line": 15,
-      "endLine": 24,
+      "line": 19,
+      "endLine": 28,
       "text": "export type DornhainGoldenPlaceSpec = {\n  readonly seedKey: string;\n  readonly name: string;\n  readonly kind: WorldPlaceKind;\n  readonly description: string;\n  readonly sortOrder: number;\n  /** Parent Golden seed_key, or null for world root. */\n  readonly parentSeedKey: string | null;\n  readonly anchor: { readonly x: number; readonly y: number } | null;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "DornhainGoldenResetPlan",
       "path": "src/domains/world/atlas/dornhain-golden-reset.ts",
-      "line": 128,
-      "endLine": 137,
+      "line": 150,
+      "endLine": 159,
       "text": "export type DornhainGoldenResetPlan = {\n  readonly mode: DornhainGoldenResetMode;\n  readonly restoreCanvas: boolean;\n  /** World root + all Golden child map seeds. */\n  readonly goldenMapSeeds: readonly string[];\n  readonly restoreGoldenPlaces: boolean;\n  readonly clearSessionProgress: boolean;\n  /** German note when session wipe is requested but not available yet. */\n  readonly sessionProgressNoteDe: string | null;\n};"
     },
     {
@@ -1448,39 +1448,39 @@
       "name": "UnifiedCanvasObject",
       "path": "src/domains/world/atlas/unified-canvas-doc.ts",
       "line": 67,
-      "endLine": 78,
-      "text": "export type UnifiedCanvasObject = {\n  readonly id: string;\n  readonly type: UnifiedCanvasStampType;\n  readonly x: number;\n  readonly y: number;\n  /** Optional elevation for 3D/2.5D views (world units). */\n  readonly z?: number;\n  readonly size: number;\n  readonly angle?: number;\n  /** Optional extruded height for 3D building/prop representation. */\n  readonly height?: number;\n};"
+      "endLine": 80,
+      "text": "export type UnifiedCanvasObject = {\n  readonly id: string;\n  readonly type: UnifiedCanvasStampType;\n  readonly x: number;\n  readonly y: number;\n  /** Optional elevation for 3D/2.5D views (world units). */\n  readonly z?: number;\n  readonly size: number;\n  readonly angle?: number;\n  /** Optional extruded height for 3D building/prop representation. */\n  readonly height?: number;\n  /** GM-only; stripped from party/player projections. */\n  readonly secret?: boolean;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "UnifiedCanvasRoom",
       "path": "src/domains/world/atlas/unified-canvas-doc.ts",
-      "line": 80,
-      "endLine": 92,
-      "text": "export type UnifiedCanvasRoom = {\n  readonly id: string;\n  readonly x: number;\n  readonly y: number;\n  readonly w: number;\n  readonly h: number;\n  readonly material: UnifiedCanvasMaterial;\n  /**\n   * Optional closed coast / area polygon (≥3). When set, fill uses the polygon;\n   * `x/y/w/h` is the axis-aligned bounding box (compat + LOD).\n   */\n  readonly points?: readonly (readonly [number, number])[];\n};"
+      "line": 82,
+      "endLine": 96,
+      "text": "export type UnifiedCanvasRoom = {\n  readonly id: string;\n  readonly x: number;\n  readonly y: number;\n  readonly w: number;\n  readonly h: number;\n  readonly material: UnifiedCanvasMaterial;\n  /**\n   * Optional closed coast / area polygon (≥3). When set, fill uses the polygon;\n   * `x/y/w/h` is the axis-aligned bounding box (compat + LOD).\n   */\n  readonly points?: readonly (readonly [number, number])[];\n  /** GM-only; stripped from party/player projections. */\n  readonly secret?: boolean;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "UnifiedCanvasWall",
       "path": "src/domains/world/atlas/unified-canvas-doc.ts",
-      "line": 94,
-      "endLine": 101,
+      "line": 98,
+      "endLine": 105,
       "text": "export type UnifiedCanvasWall = {\n  readonly id: string;\n  readonly x1: number;\n  readonly y1: number;\n  readonly x2: number;\n  readonly y2: number;\n  readonly width: number;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "UnifiedCanvasLayersVisible",
       "path": "src/domains/world/atlas/unified-canvas-doc.ts",
-      "line": 103,
-      "endLine": 103,
+      "line": 107,
+      "endLine": 107,
       "text": "export type UnifiedCanvasLayersVisible = Readonly<Record<UnifiedCanvasLayerId, boolean>>;"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "UnifiedCanvasDoc",
       "path": "src/domains/world/atlas/unified-canvas-doc.ts",
-      "line": 105,
-      "endLine": 113,
+      "line": 109,
+      "endLine": 117,
       "text": "export type UnifiedCanvasDoc = {\n  readonly format: typeof UNIFIED_CANVAS_FORMAT;\n  readonly layers: UnifiedCanvasLayersVisible;\n  readonly strokes: readonly UnifiedCanvasStroke[];\n  readonly objects: readonly UnifiedCanvasObject[];\n  readonly rooms: readonly UnifiedCanvasRoom[];\n  readonly walls: readonly UnifiedCanvasWall[];\n  readonly demoSeed?: boolean;\n};"
     },
     {

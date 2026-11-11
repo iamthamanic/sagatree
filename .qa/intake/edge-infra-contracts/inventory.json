@@ -37584,11 +37584,11 @@
           },
           {
             "path": "src/domains/world/atlas/dornhain-golden-reset.ts",
-            "sha256": "43da469b3c85a794a49236774cafe87ad5b159c431c6d1271a67d5e42bb47841"
+            "sha256": "242b85a727062342a69f934a3b0cb64d3c5c726a71b87548043facd7e62f6c2f"
           },
           {
             "path": "src/domains/world/atlas/dornhain-unified-starter.ts",
-            "sha256": "d2dda00b73436e7a47c34d7c77b2454bb837767aecc15875ee457e5096a7b623"
+            "sha256": "5e9afab7ec94b7bef19535be6311b51a2f77c59b5f82b36fcd8b78007cc336f5"
           },
           {
             "path": "src/domains/world/atlas/dungeon-generator.ts",
@@ -37596,7 +37596,7 @@
           },
           {
             "path": "src/domains/world/atlas/index.ts",
-            "sha256": "ce7ce4dbe76ec3593395d3d3a70a971f6d0b2c53b19bc48365fc1756c28ded82"
+            "sha256": "418afdfdbdef3f21fa84b326df868b41587930b379633d9e0bafc0dce1fd34f4"
           },
           {
             "path": "src/domains/world/atlas/map-edit-ops.ts",
@@ -37608,7 +37608,7 @@
           },
           {
             "path": "src/domains/world/atlas/unified-canvas-doc.ts",
-            "sha256": "ff4bd3aa1982196c0541fcec56db2789afaa6c1200ee5614f19d07c3a84621f1"
+            "sha256": "2084b179633089aceaa47eb485ffeaad49ca73a59be11d83f702ea4b3139e4df"
           },
           {
             "path": "src/domains/world/atlas/validate-world-atlas.ts",
@@ -37808,7 +37808,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-world.json",
-      "sourceContractSha256": "c3029297f17d699cffc6756bad66ff1b4665d05ab5cbe4f336dc453a0bf0d7a2",
+      "sourceContractSha256": "a255f9238bbf83c67e412bcd7df9289a81175eb2d705d6668b48ccc20a2e068c",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],

@@ -107,6 +107,49 @@ const host = fs.readFileSync(
 );
 assert(host.includes('features.length > 0'), 'blank upgrade preserves authored layers');
 assert(host.includes('UPDATE world_places'), 'v4 bootstrap updates existing place parents');
+assert(host.includes('UPDATE world_place_map_links'), 'v4 bootstrap updates existing link anchors');
+
+const acceptance = fs.readFileSync(
+  path.join(root, '.qa/acceptance/dornhain-golden-atlas-v4.md'),
+  'utf8',
+);
+assert(acceptance.includes('AU-TOUCH-44'), 'acceptance AU-TOUCH-44');
+assert(acceptance.includes('AU-CONTENT-WIDTH'), 'acceptance AU-CONTENT-WIDTH');
+assert(acceptance.includes('IV-PROJECTION'), 'acceptance IV-PROJECTION');
+assert(acceptance.includes('IV-NO-FAKE-GEO'), 'acceptance IV-NO-FAKE-GEO');
+
+// Behavioral root-map guard (mirrors isDornhainGoldenRootMap)
+function isDornhainGoldenRootMap(input) {
+  if (input.parentMapId != null && String(input.parentMapId).trim() !== '') return false;
+  const meta = input.generatorMeta ?? {};
+  const seed = typeof meta.seed === 'string' ? meta.seed : '';
+  if (seed === 'dornhain.unified.v4') return true;
+  if (['dornhain.unified.v1', 'dornhain.unified.v2', 'dornhain.unified.v3'].includes(seed)) {
+    return true;
+  }
+  return meta.golden === true && meta.sagaSlug === 'dornhain.whisper';
+}
+assert(
+  isDornhainGoldenRootMap({
+    parentMapId: null,
+    generatorMeta: { seed: 'dornhain.unified.v4' },
+  }),
+  'v4 root eligible',
+);
+assert(
+  !isDornhainGoldenRootMap({
+    parentMapId: 'child-map',
+    generatorMeta: { seed: 'dornhain.unified.v4' },
+  }),
+  'child map not eligible',
+);
+assert(
+  !isDornhainGoldenRootMap({
+    parentMapId: null,
+    generatorMeta: { seed: 'other.world' },
+  }),
+  'foreign world not eligible',
+);
 
 void createRequire;
 console.log('dornhain-golden-reset self-test: PASS');

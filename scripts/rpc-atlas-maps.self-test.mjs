@@ -350,6 +350,63 @@ try {
   );
   assert(playerGetA.value.generatorMeta.editorSecret === undefined, 'party meta redacted');
 
+  // Secret unifiedCanvas entities must be stripped for party projection (Codex P1).
+  const cryptMeta = {
+    engine: 'unified_canvas',
+    editorSecret: true,
+    unifiedCanvas: {
+      format: 'sagatree-unified-atlas-v1',
+      layers: {
+        terrain: true,
+        roads: true,
+        region: true,
+        city: true,
+        interior: true,
+        drawings: true,
+        objects: true,
+        grid: false,
+      },
+      strokes: [],
+      objects: [
+        { id: 's.obj.crypt', type: 'fels', x: 1, y: 2, size: 1, secret: true },
+        { id: 's.obj.tavern', type: 'haus', x: 3, y: 4, size: 1 },
+      ],
+      rooms: [
+        { id: 's.crypt', material: 'stein', x: 0, y: 0, w: 1, h: 1, secret: true },
+        { id: 's.plaza', material: 'pflaster', x: 0, y: 0, w: 2, h: 2 },
+      ],
+      walls: [],
+      demoSeed: false,
+    },
+  };
+  db.prepare(`UPDATE world_atlas_maps SET generator_meta = ?, revision = revision + 1 WHERE id = ?`).run(
+    JSON.stringify(cryptMeta),
+    mapA,
+  );
+  const playerCrypt = getMap(PLAYER_A, mapA, true, sagaA);
+  assert(playerCrypt.ok, `player crypt get: ${playerCrypt.ok ? '' : playerCrypt.error}`);
+  const partyCanvas = playerCrypt.value.generatorMeta.unifiedCanvas;
+  assert(partyCanvas && typeof partyCanvas === 'object', 'party keeps unifiedCanvas shell');
+  assert(
+    Array.isArray(partyCanvas.objects) &&
+      partyCanvas.objects.every((o) => o?.id !== 's.obj.crypt') &&
+      partyCanvas.objects.some((o) => o?.id === 's.obj.tavern'),
+    'party strips secret crypt object, keeps tavern',
+  );
+  assert(
+    Array.isArray(partyCanvas.rooms) &&
+      partyCanvas.rooms.every((r) => r?.id !== 's.crypt') &&
+      partyCanvas.rooms.some((r) => r?.id === 's.plaza'),
+    'party strips secret crypt room, keeps plaza',
+  );
+  assert(playerCrypt.value.generatorMeta.editorSecret === undefined, 'party still drops editorSecret');
+  const editorCrypt = getMap(OWNER, mapA, false, null);
+  assert(
+    editorCrypt.ok &&
+      editorCrypt.value.generatorMeta.unifiedCanvas?.objects?.some((o) => o?.id === 's.obj.crypt'),
+    'editor still sees secret crypt',
+  );
+
   const editorList = listMaps(OWNER, worldId, false, null);
   assert(editorList.ok && editorList.value.length >= 2, 'editor sees all maps');
   const editorRow = editorList.value.find((m) => m.id === mapA);
