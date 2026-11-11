@@ -11,7 +11,7 @@ owner-scoped upsert + place-link paths. No new multi-actor hop chain.
 
 ## HEAD
 
-Stamped at commit time for Steps 3+4 on `feat/atlas-3d-product-terrain`.
+`582810dfcbe9f98133286a6b26ac027824e1eedb`
 
 ## Scope
 
