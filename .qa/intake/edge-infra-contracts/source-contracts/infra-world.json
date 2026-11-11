@@ -198,8 +198,12 @@
       "sha256": "9a6d6ef66b233ccb0a2fe82c5fea50406b7f3ef210ad3ef5280b7e79bd1acca4"
     },
     {
+      "path": "src/domains/world/atlas/dornhain-golden-reset.ts",
+      "sha256": "c57d8ff657ecdef5ec6ae97e123edbd03b71beac6fc3131249bf8cd9249932a9"
+    },
+    {
       "path": "src/domains/world/atlas/dornhain-unified-starter.ts",
-      "sha256": "db76bc80f477931d3ca5b63f0858e34ed73d40a993355db3aaed86c8002105eb"
+      "sha256": "6de2c1616179aba7b7e7f7c46911ad9d160c28eac7498f601dabbd613088702f"
     },
     {
       "path": "src/domains/world/atlas/dungeon-generator.ts",
@@ -207,7 +211,7 @@
     },
     {
       "path": "src/domains/world/atlas/index.ts",
-      "sha256": "d1579908b6226016f0c89e4f1f4d2882f2d0a9cca3a6b9e77b9b28c5758fc18d"
+      "sha256": "71e96ec8ef3904a2b9a1c29db37f40ce6e6a8b3f7e3e0574dd7393b568e51b4f"
     },
     {
       "path": "src/domains/world/atlas/map-edit-ops.ts",
@@ -215,7 +219,7 @@
     },
     {
       "path": "src/domains/world/atlas/map-frame.ts",
-      "sha256": "5d915a8a4560698655964645ee31fbb309288188200938130a1c67af530c185a"
+      "sha256": "f50e1cc016139b26435259e53455cff70e8438be8de004dc9538a222ab86198a"
     },
     {
       "path": "src/domains/world/atlas/unified-canvas-doc.ts",
@@ -1186,6 +1190,30 @@
       "line": 156,
       "endLine": 164,
       "text": "export type WebglToolChromeItem = {\n  readonly atlasId: AtlasToolId;\n  readonly runtimeId: WebglRuntimeToolId;\n  readonly labelDe: string;\n  readonly role: AtlasToolDef['role'];\n  readonly enabled: boolean;\n  readonly disabledReason: string | null;\n  readonly createsCanonicalNode: false;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "DornhainGoldenResetMode",
+      "path": "src/domains/world/atlas/dornhain-golden-reset.ts",
+      "line": 12,
+      "endLine": 12,
+      "text": "export type DornhainGoldenResetMode = 'atlas' | 'atlas_places' | 'everything';"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "DornhainGoldenPlaceSpec",
+      "path": "src/domains/world/atlas/dornhain-golden-reset.ts",
+      "line": 14,
+      "endLine": 23,
+      "text": "export type DornhainGoldenPlaceSpec = {\n  readonly seedKey: string;\n  readonly name: string;\n  readonly kind: WorldPlaceKind;\n  readonly description: string;\n  readonly sortOrder: number;\n  /** Parent Golden seed_key, or null for root. */\n  readonly parentSeedKey: string | null;\n  readonly anchor: { readonly x: number; readonly y: number } | null;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "DornhainGoldenResetPlan",
+      "path": "src/domains/world/atlas/dornhain-golden-reset.ts",
+      "line": 109,
+      "endLine": 116,
+      "text": "export type DornhainGoldenResetPlan = {\n  readonly mode: DornhainGoldenResetMode;\n  readonly restoreCanvas: boolean;\n  readonly restoreGoldenPlaces: boolean;\n  readonly clearSessionProgress: boolean;\n  /** German note when session wipe is requested but not available yet. */\n  readonly sessionProgressNoteDe: string | null;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
