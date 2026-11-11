@@ -72,6 +72,8 @@ export type UnifiedCanvasObject = {
   readonly angle?: number;
   /** Optional extruded height for 3D building/prop representation. */
   readonly height?: number;
+  /** GM-only; stripped from party/player projections. */
+  readonly secret?: boolean;
 };
 
 export type UnifiedCanvasRoom = {
@@ -81,6 +83,8 @@ export type UnifiedCanvasRoom = {
   readonly w: number;
   readonly h: number;
   readonly material: UnifiedCanvasMaterial;
+  /** GM-only; stripped from party/player projections. */
+  readonly secret?: boolean;
 };
 
 export type UnifiedCanvasWall = {
@@ -232,6 +236,7 @@ export function parseUnifiedCanvasDoc(raw: unknown): UnifiedCanvasDoc | null {
       angle: isFiniteNum(row.angle) ? row.angle : 0,
       ...(isFiniteNum(row.z) ? { z: row.z } : {}),
       ...(isFiniteNum(row.height) && row.height > 0 ? { height: row.height } : {}),
+      ...(row.secret === true ? { secret: true } : {}),
     });
   }
 
@@ -248,6 +253,7 @@ export function parseUnifiedCanvasDoc(raw: unknown): UnifiedCanvasDoc | null {
       w: row.w as number,
       h: row.h as number,
       material: row.material as UnifiedCanvasMaterial,
+      ...(row.secret === true ? { secret: true } : {}),
     });
   }
 
@@ -299,8 +305,17 @@ export function serializeUnifiedCanvasDoc(doc: UnifiedCanvasDoc): UnifiedCanvasD
       ...(typeof o.height === 'number' && Number.isFinite(o.height) && o.height > 0
         ? { height: o.height }
         : {}),
+      ...(o.secret === true ? { secret: true } : {}),
     })),
-    rooms: [...doc.rooms],
+    rooms: doc.rooms.map((r) => ({
+      id: r.id,
+      x: r.x,
+      y: r.y,
+      w: r.w,
+      h: r.h,
+      material: r.material,
+      ...(r.secret === true ? { secret: true } : {}),
+    })),
     walls: [...doc.walls],
     demoSeed: doc.demoSeed !== false,
   };

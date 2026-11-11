@@ -45,5 +45,7 @@ const hostSrc = fs.readFileSync(hostPath, 'utf8');
 assert(hostSrc.includes("dornhain.unified.v4"), 'host seeds v4');
 assert(hostSrc.includes('w.west-core'), 'host has continent');
 assert(hostSrc.includes('isBlankOceanUnifiedCanvas'), 'host blank upgrade');
+assert(hostSrc.includes('secret: true'), 'host crypt secret flag');
+assert(src.includes("secret: true") || src.includes(', true)'), 'FE crypt secret flag');
 
 console.log('dornhain-unified-world-map self-test: PASS');

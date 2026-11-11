@@ -16,6 +16,7 @@ import {
   extractUnifiedCanvasFromGeneratorMeta,
   independentPrimaryBounds,
   isAtlasRevisionConflictMessage,
+  isDornhainGoldenRootMap,
   mergeDungeonMetaIntoGeneratorMeta,
   mergeUnifiedCanvasIntoGeneratorMeta,
   normalizeDornhainWorldLayerTitle,
@@ -458,6 +459,17 @@ export function useWorldAtlasEditor({
     async (mode: DornhainGoldenResetMode): Promise<{ readonly noteDe: string | null }> => {
       if (!map || !canEdit) {
         throw new Error('Keine Bearbeitungsrechte für Reset auf Golden.');
+      }
+      if (
+        !isDornhainGoldenRootMap({
+          parentMapId: map.parentMapId,
+          kind: map.kind,
+          generatorMeta: map.generatorMeta,
+        })
+      ) {
+        throw new Error(
+          'Reset auf Golden ist nur für die Dornhain-Weltwurzelkarte verfügbar — nicht für Detailkarten oder andere Welten.',
+        );
       }
       const plan = planDornhainGoldenReset(mode, { sessionProgressResetAvailable: false });
       setSaving(true);

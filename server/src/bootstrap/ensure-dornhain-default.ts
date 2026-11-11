@@ -398,7 +398,7 @@ function dornhainUnifiedGeneratorMeta(): Record<string, unknown> {
         { id: 's.obj.tavern', type: 'haus', x: 328, y: 528, size: 0.55, height: 1.2 },
         { id: 's.obj.market', type: 'haus', x: 378, y: 488, size: 0.5, height: 1.1 },
         { id: 's.obj.woods', type: 'tanne', x: 410, y: 550, size: 0.65 },
-        { id: 's.obj.crypt', type: 'fels', x: 406, y: 462, size: 0.55 },
+        { id: 's.obj.crypt', type: 'fels', x: 406, y: 462, size: 0.55, secret: true },
         { id: 's.obj.tree-a', type: 'baum', x: 304, y: 460, size: 0.4 },
         { id: 's.obj.tree-b', type: 'tanne', x: 420, y: 500, size: 0.45 },
       ],
@@ -422,7 +422,7 @@ function dornhainUnifiedGeneratorMeta(): Record<string, unknown> {
         { id: 's.tavern', material: 'erde', x: 310, y: 510, w: 36, h: 36 },
         { id: 's.market', material: 'sand', x: 360, y: 470, w: 36, h: 36 },
         { id: 's.woods', material: 'holz', x: 390, y: 530, w: 40, h: 40 },
-        { id: 's.crypt', material: 'stein', x: 390, y: 446, w: 32, h: 32 },
+        { id: 's.crypt', material: 'stein', x: 390, y: 446, w: 32, h: 32, secret: true },
       ],
       walls: [],
       demoSeed: false,
@@ -499,6 +499,18 @@ function seedOwnedDornhainAtlas(
       (seed === 'dornhain.unified.v3' && isBlankOceanUnifiedCanvas(meta.unifiedCanvas)) ||
       (seed === DORHAIN_UNIFIED_SEED && statusMissing);
     if (needsGolden) {
+      // Preserve authored GeoJSON layers when upgrading a blank-v3 canvas —
+      // only replace layers when the existing FeatureCollection is empty.
+      let layersJson = JSON.stringify(layers);
+      try {
+        const existingLayers = row?.layers ? (JSON.parse(row.layers) as Record<string, unknown>) : null;
+        const features = Array.isArray(existingLayers?.features) ? existingLayers.features : [];
+        if (features.length > 0) {
+          layersJson = row!.layers;
+        }
+      } catch {
+        /* keep Golden seed layers */
+      }
       // Bump revision so an editor still holding the pre-upgrade map gets a
       // conflict instead of silently saving over the Golden canvas.
       db.prepare(
@@ -508,7 +520,7 @@ function seedOwnedDornhainAtlas(
       ).run(
         DORHAIN_WORLD_LAYER_TITLE,
         generatorMeta,
-        JSON.stringify(layers),
+        layersJson,
         now,
         mapId,
         worldId,
@@ -539,6 +551,23 @@ function seedOwnedDornhainAtlas(
       now,
       now,
     );
+    // INSERT OR IGNORE skips existing v3 rows — refresh parent + identity fields.
+    db.prepare(
+      `UPDATE world_places
+       SET parent_place_id = ?, kind = ?, name = ?, description = ?,
+           status = 'canonical', sort_order = ?, updated_at = ?
+       WHERE id = ? AND world_profile_id = ? AND seed_key = ?`,
+    ).run(
+      parentId,
+      place.kind,
+      place.name,
+      place.description,
+      index,
+      now,
+      placeId,
+      worldId,
+      place.seedKey,
+    );
 
     const linkId = scopedCatalogId(ownerUserId, `${place.stableId}-link`);
     // Root-map anchors are overview (containing world map), never place-owned primary.
@@ -561,6 +590,18 @@ function seedOwnedDornhainAtlas(
       JSON.stringify(anchor),
       now,
       now,
+    );
+    db.prepare(
+      `UPDATE world_place_map_links
+       SET usage = ?, feature_id = ?, anchor = ?, updated_at = ?
+       WHERE id = ? AND world_profile_id = ?`,
+    ).run(
+      usage,
+      place.anchor ? placeId : null,
+      JSON.stringify(anchor),
+      now,
+      linkId,
+      worldId,
     );
   }
 }
