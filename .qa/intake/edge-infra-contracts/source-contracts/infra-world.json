@@ -199,11 +199,11 @@
     },
     {
       "path": "src/domains/world/atlas/dornhain-golden-reset.ts",
-      "sha256": "c57d8ff657ecdef5ec6ae97e123edbd03b71beac6fc3131249bf8cd9249932a9"
+      "sha256": "c03d3d698fbfa8925487d9b014d6f111bcf6e5ed97a37904491973218cb2afdd"
     },
     {
       "path": "src/domains/world/atlas/dornhain-unified-starter.ts",
-      "sha256": "6de2c1616179aba7b7e7f7c46911ad9d160c28eac7498f601dabbd613088702f"
+      "sha256": "0e4dc894cc877b4a45ce45a6c0de54d70b02a7828ec5d2f49a8de3a94f78e4b9"
     },
     {
       "path": "src/domains/world/atlas/dungeon-generator.ts",
@@ -211,7 +211,7 @@
     },
     {
       "path": "src/domains/world/atlas/index.ts",
-      "sha256": "71e96ec8ef3904a2b9a1c29db37f40ce6e6a8b3f7e3e0574dd7393b568e51b4f"
+      "sha256": "b6756ecb27cdc433d8a7ffec670db5a8a4447aff3269a8a7c231fa191662360c"
     },
     {
       "path": "src/domains/world/atlas/map-edit-ops.ts",
@@ -223,7 +223,7 @@
     },
     {
       "path": "src/domains/world/atlas/unified-canvas-doc.ts",
-      "sha256": "ba7ac1a1e76d31a7bac71221d2f06c8e9e44a1bd55a6a14b6d7f9c3f6b950753"
+      "sha256": "a40c4af3ada0ad92266f8f835d24b3b7967b129af09e9120d03594ddb9425889"
     },
     {
       "path": "src/domains/world/atlas/validate-world-atlas.ts",
@@ -1195,24 +1195,24 @@
       "kind": "TypeAliasDeclaration",
       "name": "DornhainGoldenResetMode",
       "path": "src/domains/world/atlas/dornhain-golden-reset.ts",
-      "line": 12,
-      "endLine": 12,
+      "line": 16,
+      "endLine": 16,
       "text": "export type DornhainGoldenResetMode = 'atlas' | 'atlas_places' | 'everything';"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "DornhainGoldenPlaceSpec",
       "path": "src/domains/world/atlas/dornhain-golden-reset.ts",
-      "line": 14,
-      "endLine": 23,
+      "line": 18,
+      "endLine": 27,
       "text": "export type DornhainGoldenPlaceSpec = {\n  readonly seedKey: string;\n  readonly name: string;\n  readonly kind: WorldPlaceKind;\n  readonly description: string;\n  readonly sortOrder: number;\n  /** Parent Golden seed_key, or null for root. */\n  readonly parentSeedKey: string | null;\n  readonly anchor: { readonly x: number; readonly y: number } | null;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "DornhainGoldenResetPlan",
       "path": "src/domains/world/atlas/dornhain-golden-reset.ts",
-      "line": 109,
-      "endLine": 116,
+      "line": 131,
+      "endLine": 138,
       "text": "export type DornhainGoldenResetPlan = {\n  readonly mode: DornhainGoldenResetMode;\n  readonly restoreCanvas: boolean;\n  readonly restoreGoldenPlaces: boolean;\n  readonly clearSessionProgress: boolean;\n  /** German note when session wipe is requested but not available yet. */\n  readonly sessionProgressNoteDe: string | null;\n};"
     },
     {
@@ -1396,39 +1396,39 @@
       "name": "UnifiedCanvasObject",
       "path": "src/domains/world/atlas/unified-canvas-doc.ts",
       "line": 64,
-      "endLine": 75,
-      "text": "export type UnifiedCanvasObject = {\n  readonly id: string;\n  readonly type: UnifiedCanvasStampType;\n  readonly x: number;\n  readonly y: number;\n  /** Optional elevation for 3D/2.5D views (world units). */\n  readonly z?: number;\n  readonly size: number;\n  readonly angle?: number;\n  /** Optional extruded height for 3D building/prop representation. */\n  readonly height?: number;\n};"
+      "endLine": 77,
+      "text": "export type UnifiedCanvasObject = {\n  readonly id: string;\n  readonly type: UnifiedCanvasStampType;\n  readonly x: number;\n  readonly y: number;\n  /** Optional elevation for 3D/2.5D views (world units). */\n  readonly z?: number;\n  readonly size: number;\n  readonly angle?: number;\n  /** Optional extruded height for 3D building/prop representation. */\n  readonly height?: number;\n  /** GM-only; stripped from party/player projections. */\n  readonly secret?: boolean;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "UnifiedCanvasRoom",
       "path": "src/domains/world/atlas/unified-canvas-doc.ts",
-      "line": 77,
-      "endLine": 84,
-      "text": "export type UnifiedCanvasRoom = {\n  readonly id: string;\n  readonly x: number;\n  readonly y: number;\n  readonly w: number;\n  readonly h: number;\n  readonly material: UnifiedCanvasMaterial;\n};"
+      "line": 79,
+      "endLine": 88,
+      "text": "export type UnifiedCanvasRoom = {\n  readonly id: string;\n  readonly x: number;\n  readonly y: number;\n  readonly w: number;\n  readonly h: number;\n  readonly material: UnifiedCanvasMaterial;\n  /** GM-only; stripped from party/player projections. */\n  readonly secret?: boolean;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "UnifiedCanvasWall",
       "path": "src/domains/world/atlas/unified-canvas-doc.ts",
-      "line": 86,
-      "endLine": 93,
+      "line": 90,
+      "endLine": 97,
       "text": "export type UnifiedCanvasWall = {\n  readonly id: string;\n  readonly x1: number;\n  readonly y1: number;\n  readonly x2: number;\n  readonly y2: number;\n  readonly width: number;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "UnifiedCanvasLayersVisible",
       "path": "src/domains/world/atlas/unified-canvas-doc.ts",
-      "line": 95,
-      "endLine": 95,
+      "line": 99,
+      "endLine": 99,
       "text": "export type UnifiedCanvasLayersVisible = Readonly<Record<UnifiedCanvasLayerId, boolean>>;"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "UnifiedCanvasDoc",
       "path": "src/domains/world/atlas/unified-canvas-doc.ts",
-      "line": 97,
-      "endLine": 105,
+      "line": 101,
+      "endLine": 109,
       "text": "export type UnifiedCanvasDoc = {\n  readonly format: typeof UNIFIED_CANVAS_FORMAT;\n  readonly layers: UnifiedCanvasLayersVisible;\n  readonly strokes: readonly UnifiedCanvasStroke[];\n  readonly objects: readonly UnifiedCanvasObject[];\n  readonly rooms: readonly UnifiedCanvasRoom[];\n  readonly walls: readonly UnifiedCanvasWall[];\n  readonly demoSeed?: boolean;\n};"
     },
     {
