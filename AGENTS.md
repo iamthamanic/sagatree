@@ -7,7 +7,7 @@
 
 ## Non-Negotiables
 - Security and code reviews **MUST list ALL severities**, including **Low / Info / tech-debt**. Never omit items as “below reporting threshold”, “optional hardening only”, or “not worth listing”. Optional hardening belongs in the findings table as **Severity: Low** (or Info); it may be non-blocking but must remain visible.
-- Owner-scoped data stays owner-scoped (RLS + service checks). Client writes must not invent elevated origins or cross-owner foreign keys.
+- Owner-scoped data stays owner-scoped (Policy Service + service checks; historical Postgres RLS is not the product path). Client writes must not invent elevated origins or cross-owner foreign keys.
 
 ## External AI Review Contract (Codex + Kodus)
 
@@ -77,11 +77,11 @@ Default Docker path: root `docker compose` → `deployment/docker-compose.host.y
 
 ```
 src/
-├── domains/           # Business rules & types — NO React, NO Supabase
+├── domains/           # Business rules & types — NO React, NO Host/ORM/HTTP SDKs
 │   ├── character/     # domain, contracts, use-cases
 │   └── rules/
 │       └── sagatree/  # UI-independent rules kernel slices
-├── infrastructure/    # Supabase adapters — NO UI
+├── infrastructure/    # Host HTTP / storage / Three adapters — NO UI
 ├── app/               # Vertical slices (user journeys)
 │   └── character/
 │       ├── edit/        # CharacterEditor composition root
@@ -89,39 +89,21 @@ src/
 │       ├── progression/ # skills, abilities, stats, inventory panels
 │       └── shared/      # slice-neutral presentation helpers (e.g. RuleHelp)
 ├── shared/ui/         # Presentation primitives (Radix kit + helpers)
-├── lib/               # App-wide helpers (auth context, theme, supabase client)
-└── utils/
-    └── supabase/
-        └── info.tsx   # Project credentials
+└── lib/               # Auth bridge (Better Auth cookies), theme, helpers
+server/                # Node/Hono host — bootstrap, modules, HTTP (not imported by FE)
 ```
 
-**#94 is the only architecture.** `src/modules/**` and `src/components/**` are eradicated (#164/#175). Recreating them fails `architecture-boundary-check` (wired into `npm run test-gate`). Historical freeze baseline: `.qa/architecture/legacy-freeze-baseline.json`.
+**#94 is the only frontend architecture.** `src/modules/**` and `src/components/**` are eradicated (#164/#175). Recreating them fails `architecture-boundary-check` (wired into `npm run test-gate`). Historical freeze baseline: `.qa/architecture/legacy-freeze-baseline.json`.
 
-**Host modular monolith (Epic #773):** top-level `server/` is a registered host package. Binding contract: `docs/architecture/host-modular-monolith.md` (vertical use-cases, domain modules, public APIs vs private persistence, central bootstrap). First technical enforcement: MIG-010/#789. ORM choice (GATE-01) does not replace module-boundary rules; Drizzle/client import bans are additional.
+**Host modular monolith (Epic #773):** top-level `server/` is a registered host package. Binding contract: `docs/architecture/host-modular-monolith.md` (vertical use-cases, domain modules, public APIs vs private persistence, central bootstrap). Product cutover: CUT-21/22/23. ORM choice (GATE-01 / Drizzle) does not replace module-boundary rules.
 
 **Boundary enforcement:** `scripts/architecture-boundary-check.mjs` — layer import rules + legacy eradication gate + registered `server/` host package / module-boundary checks.
 
-**Edge CORS:** Edge Functions MUST use `supabase/functions/_shared/cors.ts` (`corsHeaders` / `handleOptions`). Do not set `Access-Control-Allow-Origin` locally — `scripts/edge-cors-shared-check.mjs` (in `test-gate`) enforces this (dispatcher `main` exempt).
+**Archived Edge CORS (historical only):** Former Deno Edge sources live under `archive/supabase-legacy/supabase/functions/`. `scripts/edge-cors-shared-check.mjs` still validates that archive tree; it is **not** a product integration path.
 
-### Backend Functions
-```
-supabase/functions/
-├── ai-gm/              # AI Game Master
-├── dm-tools/           # Dice, Combat, Rules
-├── sessions/           # Session Management
-├── characters/          # Character CRUD
-├── lorekeeper/          # Knowledge Graph
-├── world/               # World Management
-├── npcs/                # NPC Management
-├── bestiary/            # Monster Database
-├── spellbook/           # Spell Management
-├── items/               # Item Database
-├── rulesets/            # Ruleset Configuration (PRIMARY)
-├── quests/              # Quest Management
-├── marketplace/          # Template Marketplace
-├── media/                # Media Upload
-└── export/               # Export/Import
-```
+### Host modules (product backend)
+
+Public surfaces under `server/src/modules/<id>/index.ts` (see host contract). Typical ids: `identity`, `permissions`, `project`, `session`, `character`, `inventory`, `world`, `look`, `media`, `npc-creature`, `marketplace`, `rulesets`, `ai`, `user-profile`, `ops`. HTTP composition: `server/src/bootstrap/` + `server/src/http/route-registry.ts`.
 
 ## UI/UX Rules
 
@@ -173,7 +155,7 @@ Canonical doc: [`docs/navigation-public-ids.md`](docs/navigation-public-ids.md).
 - **Public IDs** (`SA-`/`SE-`/`CH-`/`IT-`/`NPCC-` + reserved `SC-`/`QT-`) are immutable public identifiers — never authorization. Domain contract: `src/domains/resource-id/**`.
 - **Saga/Session deep links** live under `/sagas/:sagaPublicId/...` via History API routing (`src/app/shell/routing`). No React Router.
 - **`session_number`** = order inside a saga; **`SE-XXXXX`** = session identity. Allocate via DB (`create_project_session`).
-- **URL ≠ permission:** `/live/gamemaster` does not grant GM rights; membership/RLS/services do.
+- **URL ≠ permission:** `/live/gamemaster` does not grant GM rights; membership/Policy Service/services do.
 - **Screen vs Modal:** shareable / reload / identity / long task → route; ephemeral in-context action → modal.
 - Compatibility `/gamemaster` and `/adventure-editor` are not a second source of truth.   - Level, achievement, premium accents
 
@@ -308,74 +290,39 @@ Canonical visual rules: [`src/THEME_GUIDE.md`](src/THEME_GUIDE.md) § Iconograph
 
 ## Integration Rules
 
-### Frontend → Infrastructure (Supabase)
+### Frontend → Infrastructure (Host HTTP)
 
-**Direkte Supabase-Queries gehören in Infrastructure-Adapter — nicht in App-Slices oder Domains.**
+**Direkte Persistenz- und Host-Calls gehören in Infrastructure-Adapter — nicht in App-Slices oder Domains.** Produkt-Auth: Better Auth Cookie-Bridge (`src/lib/hostAuthBridge.ts`, `VITE_SAGATREE_HOST_AUTH_URL`). `src/lib/supabase.ts` ist ein SDK-freier Legacy-Stub (CUT-21) — kein `@supabase/supabase-js`.
 
-1. **Supabase Client** (nur in `src/lib/supabase.ts` + `src/infrastructure/**`)
+1. **Host Auth Bridge** (`src/lib/hostAuthBridge.ts` + `src/lib/auth-context.tsx`)
    ```typescript
-   // src/lib/supabase.ts — client factory; consumed by infrastructure adapters
-   import { createClient } from '@supabase/supabase-js';
-
-   const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'http://localhost:8000';
-   const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-
-   export const supabase = createClient(supabaseUrl, supabaseKey);
+   import { isHostAuthBridgeEnabled, getHostAuthBaseUrl } from './hostAuthBridge';
+   // VITE_SAGATREE_HOST_AUTH_URL=same-origin (Vite /api proxy) or absolute host origin
    ```
 
-2. **Repository / Adapter** (canonical pattern)
+2. **Host HTTP adapter** (canonical pattern)
    ```typescript
-   // src/infrastructure/character/supabase-character.repository.ts
-   import { supabase } from '../../lib/supabase';
-   import { getAuthenticatedUserId } from '../../lib/authenticatedUser';
-
-   const userId = await getAuthenticatedUserId();
-   const { data, error } = await supabase
-     .from('characters')
-     .select('*')
-     .eq('owner_user_id', userId);
+   // src/infrastructure/host/host-library-http.ts — credentials: 'include'
+   // Facades such as character-service / world-profile-service call these helpers
    ```
 
-3. **App slices** consume repositories via infrastructure facades — never import `supabase` directly.
+3. **App slices** consume infrastructure facades — never raw `fetch` to host internals or `server/**` imports.
    ```typescript
    // src/app/character/edit/CharacterEditor.tsx
    import { characterService } from '../../../infrastructure/character/character-service';
    ```
 
-4. **Edge Functions** (Deno backend — separate from frontend infrastructure)
-   ```typescript
-   const { data, error } = await supabase.functions.invoke('ai-gm', {
-     body: { sessionId, action, context },
-   });
-   ```
+4. **Do not** add new Supabase/GoTrue/Edge `functions.invoke` product paths. Historical Edge sources: `archive/supabase-legacy/`.
 
 ### Rulesets Integration
 
-**Primary:** SagaTree Rulesets (Custom)
-**Supplement:** Open5e API (D&D 5e SRD)
-
-```typescript
-// Use SagaTree ruleset as primary
-const { data: mmsRuleset } = await supabase
-  .from('rulesets')
-  .select('*')
-  .eq('id', 'sagatree-custom')
-  .single();
-
-// Enrich with Open5e data
-const open5eSpells = await fetch('https://api.open5e.com/spells/');
-
-// Merge in ruleset function
-const ruleset = {
-  ...mmsRuleset,
-  spells: [...mmsRuleset.spells, ...open5eSpells],
-};
-```
+**Primary:** SagaTree Rulesets (Custom) via host `rulesets` module / infrastructure facades.  
+**Supplement:** Open5e API (D&D 5e SRD) only where an existing adapter already merges SRD data — do not reintroduce PostgREST `.from('rulesets')` clients.
 
 ### State Management
 
-1. **React Query** for server state
-2. **Zustand** for client state
+1. **React Query** for server state (where used)
+2. **Zustand** for client state (where used)
 3. **React Hook Form** for forms
 
 ## Development Workflow
@@ -427,14 +374,14 @@ Neue Features folgen der **#94 Layered Architecture** — nicht dem legacy `src/
 
 1. **Fachliche Domain identifizieren** (character, project, session, …).
 2. **User Journey / Use Case** als Vertical Slice unter `src/app/<domain>/<slice>/`.
-3. **Pure Business-/Rules-Logik** nach `src/domains/**` (kein React, kein Supabase).
-4. **Supabase / Storage / Netzwerk** ausschließlich über `src/infrastructure/**`.
+3. **Pure Business-/Rules-Logik** nach `src/domains/**` (kein React, kein Host/ORM/HTTP).
+4. **Host-HTTP / Storage / Netzwerk** ausschließlich über `src/infrastructure/**` (u. a. `infrastructure/host/*`).
 5. **Generic UI** nach `src/shared/ui`.
 6. **Andere App-Areas** nur über deren **öffentliche Area-Barrels** (`src/app/<area>/index.ts`) konsumieren — keine privaten Nested-Imports (`hooks/`, `inventory/`, …), auch nicht via `@/app/<area>/…`. Area-`index.ts` darf nur **eigene** Internals re-exportieren. Composition Root (`App.tsx`) zusätzlich `app/<area>/root` für schwere Screens.
 7. **`src/modules/**` und `src/components/**` existieren nicht** (#175). Nicht neu anlegen; CI schlägt fehl. Auch keine neuen Feature-Dumping-Roots (`src/features`, `src/services`, …) und keine neuen Top-Level-Feature-Dateien unter `src/` (nur `App.tsx` / `main.tsx`) — nur die #94-Allowlist.
 8. **Keine neuen generischen** `services/`, `types/`, `utils/`-Dumping-Folder als Architekturstandard.
 9. **Keine Business Rules in React** — Rules-Kernel bleibt UI-frei.
-10. **Kein Supabase in Domain/Rules/App-Slices** — nur Infrastructure.
+10. **Kein Persistenz-/Auth-SDK in Domain/Rules/App-Slices** — nur Infrastructure; Frontend importiert nicht `server/**`.
 
 **Character-Slice-Regel:** `edit/` ist der Composition Root; konsumiert `creation/` + `progression/` nur über deren `index.ts`. Slice-`index.ts` darf nur **eigene** Slice-Internals (plus `shared/`) re-exportieren — keine privaten Cross-Slice-Pfade. `creation/` und `progression/` importieren einander nicht privat (öffentliche Barrel nur wo dokumentiert, z. B. `SkillSelectField` in Background).
 
@@ -446,16 +393,15 @@ Vor Commit: `npm run test-gate` (inkl. `architecture-boundary-check`).
 - Before shipping changes that touch `.cursor/`: `npx ecc-agentshield scan --path .cursor` (block on critical/high).
 
 ### When Integrating Backend
-1. Update Edge Functions first
-2. Update frontend services
-3. Update TypeScript types
-4. Test end-to-end
+1. Extend host module / application use-case under `server/src/` (public barrel + route registry)
+2. Update frontend infrastructure facades (`src/infrastructure/**`)
+3. Update TypeScript contracts in `src/domains/**` as needed
+4. Prove with focused self-tests / `npm run test-gate` as required
 
 ### When Adding Rulesets
-1. Primary: SagaTree custom rules
-2. Supplement: Open5e API data
-3. Merge in `rulesets` function
-4. No full replacement
+1. Primary: SagaTree custom rules (host `rulesets` + domain kernel)
+2. Supplement: Open5e API data only via existing merge adapters
+3. No full replacement of SagaTree Core contracts
 
 ## Testing Checklist
 
@@ -467,36 +413,22 @@ Vor Commit: `npm run test-gate` (inkl. `architecture-boundary-check`).
 - [ ] Keyboard navigation works
 - [ ] Screen reader compatible
 
-### Backend
-- [ ] All Edge Functions respond
-- [ ] Health endpoints work
-- [ ] CORS headers correct
-- [ ] Error handling works
+### Backend (Host)
+- [ ] `GET /health` ready after SQLite bootstrap
+- [ ] Better Auth sign-in / whoami cookie session
+- [ ] Policy-denied paths fail closed
+- [ ] Error handling / German user-facing errors where applicable
 - [ ] JSON responses valid
 
 ### Integration
-- [ ] Frontend connects to Edge Functions
-- [ ] Supabase client works
-- [ ] Auth flow works
-- [ ] Realtime subscriptions work
-- [ ] File uploads work
+- [ ] Frontend reaches host via `VITE_SAGATREE_HOST_AUTH_URL`
+- [ ] Auth flow works (no GoTrue dual-path)
+- [ ] Host realtime / session rooms where already wired
+- [ ] Asset upload/download via host asset store
 
-## Next Steps
+## Canonical ops entry
 
-### Priority 1: Frontend Integration
-1. Update `src/lib/supabase.ts` to point to self-host URL
-2. Update Edge Function URLs in services
-3. Test character creation flow
-4. Test session management
-
-### Priority 2: Rulesets Enhancement
-1. Add Open5e integration to `rulesets` function
-2. Create merge logic for custom + SRD data
-3. Update frontend ruleset service
-4. Test ruleset selection
-
-### Priority 3: UI/UX Polish
-1. Ensure consistent styling
-2. Add loading states
-3. Add error boundaries
-4. Add success/error toasts
+- Self-host: [`README_SELFHOST.md`](README_SELFHOST.md)
+- Compose: [`docs/ops/host-compose-profiles.md`](docs/ops/host-compose-profiles.md)
+- Host modules: [`docs/architecture/host-modular-monolith.md`](docs/architecture/host-modular-monolith.md)
+- Legacy Supabase: `archive/supabase-legacy/` only
