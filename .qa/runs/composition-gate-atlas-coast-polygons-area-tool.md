@@ -12,8 +12,7 @@ Persistence remains existing owner-scoped atlas upsert.
 
 ## HEAD
 
-Recorded at commit time for this feature branch tip (see git log for
-`feat(world): coast polygons + Fläche zeichnen tool`).
+`3e02e6f8fbfc9eb71be148f051c7165d91a29dab` (feat commit `a74be57a8` + fingerprint chore)
 
 ## Scope
 

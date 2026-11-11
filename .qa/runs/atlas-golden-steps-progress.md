@@ -9,7 +9,7 @@ Base Golden: `feat/dornhain-golden-atlas-v4` / PR [#1194](https://github.com/iam
 | Step | Status | Branch / PR | Notes |
 |------|--------|-------------|-------|
 | 1 · 3D/2D echte Karte + Pins | done | `feat/atlas-3d-product-terrain` | No open PR yet at last check |
-| 2 · Küstenpolygone + Fläche zeichnen | done (commit pending) | same branch → PR stacked on #1194 | test-gate PASS; browser OK |
+| 2 · Küstenpolygone + Fläche zeichnen | done | `a74be57a8` + `3e02e6f8f` → PR stacked on #1194 | test-gate PASS; browser OK |
 | 3+4 · Hierarchie + Ausschnitt verorten | pending | | |
 | 5+6 · Golden-Content + Reset-Kette | pending | | |
 | Gap-Audit | pending | | after 2–6 |
