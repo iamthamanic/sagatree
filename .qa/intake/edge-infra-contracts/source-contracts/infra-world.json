@@ -219,7 +219,7 @@
     },
     {
       "path": "src/domains/world/atlas/index.ts",
-      "sha256": "c83e3e6ca4ee845fbef64bc2e6633752d53c093334347737a9f8f4dd33ea27df"
+      "sha256": "3a9d33a44d032ebb6d92f4882be64bcd74eeff804960ef36e3d545405e9fc20a"
     },
     {
       "path": "src/domains/world/atlas/map-edit-ops.ts",
@@ -227,7 +227,7 @@
     },
     {
       "path": "src/domains/world/atlas/map-frame.ts",
-      "sha256": "f50e1cc016139b26435259e53455cff70e8438be8de004dc9538a222ab86198a"
+      "sha256": "9764fd49aa74482588fea5ba1e1888131b85f05bdbb202057cfed24d6e3e666f"
     },
     {
       "path": "src/domains/world/atlas/unified-canvas-doc.ts",
