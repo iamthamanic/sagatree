@@ -4,7 +4,8 @@
  *
  * Product maps must not use localStorage as world SoT. Runtime state is stored
  * under generator_meta.webglRuntimeV3 alongside UnifiedCanvasDoc.
- * Bidirectional projection: WebGL props/walls/strokes ↔ UnifiedCanvasDoc.
+ * Bidirectional projection: WebGL props/walls/strokes ↔ UnifiedCanvasDoc. The round trip
+ * doc → runtime → doc is lossless for stamp type, object elevation/height and materials.
  */
 import {
   extractUnifiedCanvasFromGeneratorMeta,
@@ -65,7 +66,7 @@ const MATERIAL_TO_WEBGL: Readonly<Record<UnifiedCanvasMaterial, string>> = {
   wasser: 'water',
   stein: 'stone',
   holz: 'wood',
-  pflaster: 'stone',
+  pflaster: 'paving',
 };
 
 const WEBGL_TO_MATERIAL: Readonly<Record<string, UnifiedCanvasMaterial>> = {
@@ -75,7 +76,12 @@ const WEBGL_TO_MATERIAL: Readonly<Record<string, UnifiedCanvasMaterial>> = {
   water: 'wasser',
   stone: 'stein',
   wood: 'holz',
+  paving: 'pflaster',
 };
+
+function isStampType(v: unknown): v is UnifiedCanvasStampType {
+  return typeof v === 'string' && Object.prototype.hasOwnProperty.call(STAMP_TO_PROP, v);
+}
 
 const DEFAULT_WEBGL_LAYERS: Readonly<Record<string, unknown>> = {
   world: true,
@@ -194,11 +200,21 @@ function projectPropsToObjects(props: readonly unknown[]): UnifiedCanvasObject[]
     if (!isRecord(raw)) continue;
     if (typeof raw.id !== 'string') continue;
     if (!isFiniteNum(raw.x) || !isFiniteNum(raw.z)) continue;
-    const stamp = PROP_TYPE_TO_STAMP[String(raw.type ?? '')];
+    // `stamp` carries the doc stamp type; the 3D mesh type alone is lossy (stuhl → crate).
+    const stamp = isStampType(raw.stamp) ? raw.stamp : PROP_TYPE_TO_STAMP[String(raw.type ?? '')];
     if (!stamp) continue;
     const size = isFiniteNum(raw.size) ? raw.size : 1;
     const angle = isFiniteNum(raw.rotation) ? raw.rotation : 0;
-    objects.push({ id: raw.id, type: stamp, x: raw.x, y: raw.z, size, angle });
+    objects.push({
+      id: raw.id,
+      type: stamp,
+      x: raw.x,
+      y: raw.z,
+      size,
+      angle,
+      ...(isFiniteNum(raw.elevation) ? { z: raw.elevation } : {}),
+      ...(isFiniteNum(raw.height) && raw.height > 0 ? { height: raw.height } : {}),
+    });
   }
   return objects;
 }
@@ -298,11 +314,14 @@ function objectsToProps(objects: readonly UnifiedCanvasObject[]): unknown[] {
     props.push({
       id: o.id,
       type,
+      stamp: o.type,
       x: o.x,
       z: o.y,
       size: o.size,
       rotation: typeof o.angle === 'number' && Number.isFinite(o.angle) ? o.angle : 0,
       level: 'world',
+      ...(isFiniteNum(o.z) ? { elevation: o.z } : {}),
+      ...(isFiniteNum(o.height) && o.height > 0 ? { height: o.height } : {}),
     });
   }
   return props;

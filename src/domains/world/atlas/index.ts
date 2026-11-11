@@ -168,6 +168,20 @@ export {
 } from './map-frame';
 
 export {
+  ATLAS_MAP_PIN_FOCUS_SPAN,
+  ATLAS_MAP_PIN_LIMIT,
+  atlasMapOwnerPlace,
+  atlasMapPinFocusSpan,
+  atlasMapPinVisible,
+  atlasMapScaleForKind,
+  atlasProductBrushWidth,
+  atlasProductStampSize,
+  buildAtlasMapPins,
+  type AtlasMapPin,
+  type AtlasMapScale,
+} from './atlas-map-pins';
+
+export {
   atlasPersistStatusLabelDe,
   isAtlasRevisionConflictMessage,
   reduceAtlasPersistStatus,

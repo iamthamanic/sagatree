@@ -45,7 +45,10 @@ import {
 } from '../../../domains/world/hierarchy';
 import {
   UNLOCATED_MAP_HINT_DE,
+  atlasMapOwnerPlace,
+  atlasMapScaleForKind,
   atlasPersistStatusLabelDe,
+  buildAtlasMapPins,
   extractMapFrameFromGeneratorMeta,
   type DornhainGoldenResetMode,
 } from '../../../domains/world/atlas';
@@ -115,6 +118,7 @@ export function WorldAtlasWorkbench({
   const [placeNavError, setPlaceNavError] = useState<string | undefined>(undefined);
   const [placeNavTick, setPlaceNavTick] = useState(0);
   const [activePlaceId, setActivePlaceId] = useState<string | null>(null);
+  const [atlasSurfaceMode, setAtlasSurfaceMode] = useState<'3d' | '2d'>('3d');
   const [webglCreateRequest, setWebglCreateRequest] = useState<WebglNavCreateRequest | null>(
     null,
   );
@@ -222,6 +226,25 @@ export function WorldAtlasWorkbench({
   useEffect(() => {
     void reloadPlaceNav();
   }, [reloadPlaceNav, placeNavTick, editor.map?.id]);
+
+  /** Place owning the active map via a primary link — null on the world root map. */
+  const activeMapOwner = useMemo(
+    () => atlasMapOwnerPlace(editor.activeMapId, worldPlaces, worldLinks),
+    [editor.activeMapId, worldPlaces, worldLinks],
+  );
+  /** Rendering scale follows the map itself, never the tree selection. */
+  const activeMapScale = atlasMapScaleForKind(
+    activeMapOwner ? tryNodeKindFromPlaceKind(activeMapOwner.kind) : null,
+  );
+  /** Tool palette follows the selected node, else the map owner (world root → null). */
+  const activeNodeKind = useMemo(() => {
+    const selected = activePlaceId ? worldPlaces.find((p) => p.id === activePlaceId) : null;
+    return tryNodeKindFromPlaceKind(selected?.kind ?? activeMapOwner?.kind ?? '');
+  }, [activePlaceId, worldPlaces, activeMapOwner]);
+  const activeMapPins = useMemo(
+    () => buildAtlasMapPins({ mapId: editor.activeMapId, places: worldPlaces, links: worldLinks }),
+    [editor.activeMapId, worldPlaces, worldLinks],
+  );
 
   // Keep WebGL nav highlight in sync with the active primary map.
   useEffect(() => {
@@ -360,6 +383,60 @@ export function WorldAtlasWorkbench({
       )}
     </ul>
   );
+
+  // 3D floats these over the canvas; the Draufsicht shows them in its surface bar (left rail).
+  const protoActions =
+    canEdit && showUnified && protoExact && !atlasBooting && !onBack ? (
+      <>
+        <Button
+          type="button"
+          variant="outline"
+          className="pointer-events-auto min-h-11 shadow-lg"
+          data-atlas-view-toggle
+          aria-pressed={gmPlayerPreview}
+          onClick={() => setGmPlayerPreview((v) => !v)}
+        >
+          {gmPlayerPreview ? (
+            <EyeSlash className="size-4" aria-hidden />
+          ) : (
+            <Eye className="size-4" aria-hidden />
+          )}
+          {gmPlayerPreview ? 'Spieleransicht' : 'Vollansicht'}
+        </Button>
+        <Button
+          type="button"
+          variant="outline"
+          className="pointer-events-auto min-h-11 shadow-lg"
+          data-atlas-golden-reset-open
+          disabled={editor.saving || !editor.map}
+          onClick={() => {
+            setGoldenResetNote(null);
+            setGoldenResetOpen(true);
+          }}
+        >
+          <ArrowCounterClockwise className="size-4" aria-hidden />
+          Golden
+        </Button>
+        {editor.map && editor.dirtyCanvas && editor.persistStatus !== 'conflict' ? (
+          <Button
+            type="button"
+            className="pointer-events-auto min-h-11 shadow-lg"
+            data-atlas-explicit-save
+            disabled={editor.saving}
+            onClick={() => {
+              void editor.saveCanvas();
+            }}
+          >
+            {editor.saving ? (
+              <CircleNotch className="size-4 animate-spin" aria-hidden />
+            ) : (
+              <FloppyDisk className="size-4" aria-hidden />
+            )}
+            Speichern
+          </Button>
+        ) : null}
+      </>
+    ) : null;
 
   const metaPanel = (
     <div className="space-y-4">
@@ -607,57 +684,9 @@ export function WorldAtlasWorkbench({
         </header>
       ) : null}
 
-      {canEdit && showUnified && protoExact && !atlasBooting && !onBack ? (
+      {protoActions && atlasSurfaceMode === '3d' ? (
         <div className="pointer-events-none absolute bottom-4 left-4 z-[4] flex max-w-[min(100%-2rem,28rem)] flex-wrap gap-2">
-          <Button
-            type="button"
-            variant="outline"
-            className="pointer-events-auto min-h-11 shadow-lg"
-            data-atlas-view-toggle
-            aria-pressed={gmPlayerPreview}
-            onClick={() => setGmPlayerPreview((v) => !v)}
-          >
-            {gmPlayerPreview ? (
-              <EyeSlash className="size-4" aria-hidden />
-            ) : (
-              <Eye className="size-4" aria-hidden />
-            )}
-            {gmPlayerPreview ? 'Spieleransicht' : 'Vollansicht'}
-          </Button>
-          <Button
-            type="button"
-            variant="outline"
-            className="pointer-events-auto min-h-11 shadow-lg"
-            data-atlas-golden-reset-open
-            disabled={editor.saving || !editor.map}
-            onClick={() => {
-              setGoldenResetNote(null);
-              setGoldenResetOpen(true);
-            }}
-          >
-            <ArrowCounterClockwise className="size-4" aria-hidden />
-            Golden
-          </Button>
-          {editor.map &&
-          editor.dirtyCanvas &&
-          editor.persistStatus !== 'conflict' ? (
-            <Button
-              type="button"
-              className="pointer-events-auto min-h-11 shadow-lg"
-              data-atlas-explicit-save
-              disabled={editor.saving}
-              onClick={() => {
-                void editor.saveCanvas();
-              }}
-            >
-              {editor.saving ? (
-                <CircleNotch className="size-4 animate-spin" aria-hidden />
-              ) : (
-                <FloppyDisk className="size-4" aria-hidden />
-              )}
-              Speichern
-            </Button>
-          ) : null}
+          {protoActions}
         </div>
       ) : null}
 
@@ -818,8 +847,8 @@ export function WorldAtlasWorkbench({
             </div>
           ) : showUnified && editor.map ? (
             <UnifiedAtlasEditor
-              key={`${editor.map.id}:${editor.map.revision}`}
-              mapKey={`${editor.map.id}:${editor.map.revision}`}
+              key={`${editor.map.id}:${editor.contentEpoch}`}
+              mapKey={`${editor.map.id}:${editor.contentEpoch}`}
               doc={editor.canvasDoc}
               canEdit={canEdit}
               onDocChange={editor.updateCanvasDoc}
@@ -927,13 +956,12 @@ export function WorldAtlasWorkbench({
                     }
                   : undefined
               }
-              activeNodeKind={
-                tryNodeKindFromPlaceKind(
-                  placeNav.find((p) => p.mapId === editor.activeMapId)?.kind ??
-                    worldPlaces.find((p) => p.id === activePlaceId)?.kind ??
-                    '',
-                )
-              }
+              activeNodeKind={activeNodeKind}
+              mapScale={activeMapScale}
+              mapPins={activeMapPins}
+              surfaceMode={atlasSurfaceMode}
+              onSurfaceModeChange={setAtlasSurfaceMode}
+              surfaceActions={atlasSurfaceMode === '2d' ? protoActions : null}
               canvasLeftRail={
                   <div
                     className="absolute left-3 top-3 z-[2] flex max-h-[min(75%,32rem)] flex-col gap-1 overflow-hidden rounded-lg border border-border bg-card/95 p-1 shadow"

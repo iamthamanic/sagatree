@@ -108,7 +108,7 @@ export function isAtlasToolAllowed(
 
 /**
  * WebGL runtime tool ids (prototype uses `paint` for registry `brush`).
- * `select` / `road` are listed for chrome but may be disabled until fully wired.
+ * Unsupported ids stay listed for chrome but disabled (see WEBGL_RUNTIME_SUPPORT).
  */
 export type WebglRuntimeToolId =
   | 'hand'
@@ -122,9 +122,9 @@ export type WebglRuntimeToolId =
 
 const WEBGL_RUNTIME_SUPPORT: Readonly<Record<AtlasToolId, boolean>> = {
   hand: true,
-  select: false,
+  select: true,
   brush: true,
-  road: false,
+  road: true,
   wall: true,
   room: true,
   stamp: true,

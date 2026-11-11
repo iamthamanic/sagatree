@@ -9,7 +9,7 @@
     {
       "atlasId": "select",
       "runtimeId": "select",
-      "enabled": false,
+      "enabled": true,
       "role": "navigate"
     },
     {
@@ -21,7 +21,7 @@
     {
       "atlasId": "road",
       "runtimeId": "road",
-      "enabled": false,
+      "enabled": true,
       "role": "border"
     },
     {
@@ -41,7 +41,7 @@
     {
       "atlasId": "select",
       "runtimeId": "select",
-      "enabled": false,
+      "enabled": true,
       "role": "navigate"
     },
     {

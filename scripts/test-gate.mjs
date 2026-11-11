@@ -2027,6 +2027,11 @@ function checkWorldAtlasEditor() {
     cwd: root,
     stdio: 'inherit',
   });
+  console.log('Atlas map pins + span tool sizes (2D/3D parity)...');
+  execFileSync(process.execPath, ['scripts/atlas-map-pins.self-test.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
   console.log('Atlas prototype 3D exact embed...');
   execFileSync(process.execPath, ['scripts/atlas-prototype-3d-embed.self-test.mjs'], {
     cwd: root,

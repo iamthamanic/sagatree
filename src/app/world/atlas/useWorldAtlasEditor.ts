@@ -74,6 +74,18 @@ export function useWorldAtlasEditor({
   const [webglRuntime, setWebglRuntime] = useState<WebglRuntimeState | null>(null);
   const [dirtyCanvas, setDirtyCanvas] = useState(false);
   const [dungeonMeta, setDungeonMeta] = useState<DungeonGeneratorMeta | null>(null);
+  /**
+   * Bumps only when map content is replaced from outside the editor (load, reload, reset,
+   * import). Own autosaves keep it stable so editors are not remounted mid-session.
+   */
+  const [contentEpoch, setContentEpoch] = useState(0);
+  const bumpContentEpoch = useCallback(() => setContentEpoch((n) => n + 1), []);
+  const canvasDocRef = useRef(canvasDoc);
+  canvasDocRef.current = canvasDoc;
+  const webglRuntimeRef = useRef(webglRuntime);
+  webglRuntimeRef.current = webglRuntime;
+  const dungeonMetaRef = useRef(dungeonMeta);
+  dungeonMetaRef.current = dungeonMeta;
   const saveInFlightRef = useRef(false);
   const persistStatusRef = useRef<AtlasPersistStatus>('clean');
   persistStatusRef.current = persistStatus;
@@ -194,6 +206,7 @@ export function useWorldAtlasEditor({
         setDirtyLayers(null);
         setWebglRuntime(extractWebglRuntimeFromGeneratorMeta(vm.generatorMeta));
         setDungeonMeta(extractDungeonMetaFromGeneratorMeta(vm.generatorMeta));
+        bumpContentEpoch();
       })
       .catch((err: unknown) => {
         if (cancelled) return;
@@ -206,7 +219,7 @@ export function useWorldAtlasEditor({
     return () => {
       cancelled = true;
     };
-  }, [activeMapId, playerView, sagaPublicId]);
+  }, [activeMapId, playerView, sagaPublicId, bumpContentEpoch]);
 
   const updateCanvasDoc = useCallback(
     (next: UnifiedCanvasDoc) => {
@@ -249,13 +262,14 @@ export function useWorldAtlasEditor({
       setDungeonMeta(extractDungeonMetaFromGeneratorMeta(next.generatorMeta));
       setDirtyCanvas(false);
       setDirtyLayers(null);
+      bumpContentEpoch();
       bumpPersist({ type: 'reload' });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Karte konnte nicht neu geladen werden.');
     } finally {
       setLoading(false);
     }
-  }, [activeMapId, playerView, sagaPublicId, bumpPersist]);
+  }, [activeMapId, playerView, sagaPublicId, bumpPersist, bumpContentEpoch]);
 
   const saveCanvas = useCallback(async () => {
     if (!map || !canEdit) return;
@@ -264,6 +278,9 @@ export function useWorldAtlasEditor({
     setSaving(true);
     setError(null);
     bumpPersist({ type: 'save_start' });
+    const sentDoc = canvasDoc;
+    const sentRuntime = webglRuntime;
+    const sentDungeon = dungeonMeta;
     try {
       let generatorMeta = mergeUnifiedCanvasIntoGeneratorMeta(map.generatorMeta, canvasDoc);
       if (webglRuntime) {
@@ -287,12 +304,20 @@ export function useWorldAtlasEditor({
         expectedRevision: map.revision,
       });
       setMap(next);
-      const parsed = extractUnifiedCanvasFromGeneratorMeta(next.generatorMeta);
-      setCanvasDoc(parsed ?? canvasDoc);
-      setWebglRuntime(extractWebglRuntimeFromGeneratorMeta(next.generatorMeta));
-      setDungeonMeta(extractDungeonMetaFromGeneratorMeta(next.generatorMeta));
-      setDirtyCanvas(false);
+      // Edits made while the request was in flight stay dirty for the next autosave.
+      const editedDuringSave =
+        canvasDocRef.current !== sentDoc ||
+        webglRuntimeRef.current !== sentRuntime ||
+        dungeonMetaRef.current !== sentDungeon;
+      if (!editedDuringSave) {
+        const parsed = extractUnifiedCanvasFromGeneratorMeta(next.generatorMeta);
+        setCanvasDoc(parsed ?? canvasDoc);
+        setWebglRuntime(extractWebglRuntimeFromGeneratorMeta(next.generatorMeta));
+        setDungeonMeta(extractDungeonMetaFromGeneratorMeta(next.generatorMeta));
+        setDirtyCanvas(false);
+      }
       bumpPersist({ type: 'save_ok' });
+      if (editedDuringSave) bumpPersist({ type: 'edit' });
       await reloadList();
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Speichern fehlgeschlagen.';
@@ -405,6 +430,7 @@ export function useWorldAtlasEditor({
         });
         setMap(next);
         setDirtyCanvas(false);
+        bumpContentEpoch();
         await reloadList();
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Azgaar-Import fehlgeschlagen.');
@@ -412,7 +438,7 @@ export function useWorldAtlasEditor({
         setSaving(false);
       }
     },
-    [map, canEdit, worldProfileId, dirtyLayers, canvasDoc, reloadList],
+    [map, canEdit, worldProfileId, dirtyLayers, canvasDoc, reloadList, bumpContentEpoch],
   );
 
   const breadcrumb = (() => {
@@ -490,6 +516,7 @@ export function useWorldAtlasEditor({
           setDungeonMeta(extractDungeonMetaFromGeneratorMeta(next.generatorMeta));
           setDirtyCanvas(false);
           setDirtyLayers(null);
+          bumpContentEpoch();
         }
 
         if (plan.restoreGoldenPlaces) {
@@ -545,7 +572,7 @@ export function useWorldAtlasEditor({
         setSaving(false);
       }
     },
-    [map, canEdit, sagaPublicId, reloadList, bumpPersist],
+    [map, canEdit, sagaPublicId, reloadList, bumpPersist, bumpContentEpoch],
   );
 
   return {
@@ -574,5 +601,6 @@ export function useWorldAtlasEditor({
     breadcrumb,
     reloadList,
     resetToGolden,
+    contentEpoch,
   };
 }
