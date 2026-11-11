@@ -13,7 +13,7 @@ chain (producer→consumer across actors).
 
 ## HEAD
 
-`62d0734a0cf0399578c20f62845e2404c9fea501`
+`e7ae83d86fee175f909af53b72fd762a5dfd596c`
 
 ## BASE
 
