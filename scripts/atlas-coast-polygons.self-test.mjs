@@ -58,7 +58,13 @@ mustInclude('src/app/world/atlas/unified/UnifiedAtlasEditor.tsx', [
 ]);
 mustInclude(
   'src/app/world/atlas/unified/prototype3d/atlas-prototype-runtime.mjs',
-  ['productAreaDraft', "tool==='area'", 'productPolyFill'],
+  [
+    'productAreaDraft',
+    "tool==='area'",
+    'productPolyFill',
+    // Codex P2 (#1195): concave coasts use ear-clip triangulation, not a centroid fan.
+    'productPolyTriangulate',
+  ],
 );
 mustInclude('server/src/bootstrap/ensure-dornhain-default.ts', [
   'points:',

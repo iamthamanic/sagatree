@@ -69,6 +69,16 @@ assert(!runtime.includes('id="camTilt"'), 'legacy pitch range removed');
 assert(runtime.includes('applyYawDegrees') && runtime.includes('syncYawDialUi'), 'yaw dial handlers');
 assert(skin.includes('.scale-yaw-dial'), 'skin styles yaw dial');
 assert(runtime.includes('SPAN_MAX=8000') && runtime.includes('syncOceanMesh'), 'endless ocean zoom range');
+// Product path is custom WebGL (AtlasGL), not Three.js — #1197 / #1212 inventory.
+assert(runtime.includes("getContext('webgl2'") || runtime.includes('getContext("webgl2"'), 'WebGL2 context');
+assert(runtime.includes('createProgram'), 'custom shader program');
+assert(!/\bfrom\s+['"]three['"]/.test(runtime) && !runtime.includes('THREE.'), 'no Three.js in product runtime');
+// Codex P2 (#1195): persisted elevation applied to stamp meshes; concave poly fill triangulates.
+assert(runtime.includes('productPolyTriangulate'), 'ear-clip poly triangulation');
+assert(
+  runtime.includes('elev=Number.isFinite(Number(p.elevation))?Number(p.elevation):0'),
+  'stamp meshes honor persisted elevation',
+);
 
 const editor = fs.readFileSync(
   path.join(root, 'src/app/world/atlas/unified/UnifiedAtlasEditor.tsx'),
@@ -76,6 +86,11 @@ const editor = fs.readFileSync(
 );
 assert(editor.includes('AtlasNative3dEditor'), 'editor uses native host');
 assert(!editor.includes('AtlasPrototype3dEmbed'), 'iframe embed removed');
+// Codex P2 (#1195): selection delete distinguishes rooms vs objects.
+assert(
+  editor.includes("op: isRoom ? 'remove_room' : 'remove_object'"),
+  'Löschen dispatches remove_room for selected rooms',
+);
 
 const embedGone = !fs.existsSync(
   path.join(root, 'src/app/world/atlas/unified/AtlasPrototype3dEmbed.tsx'),
