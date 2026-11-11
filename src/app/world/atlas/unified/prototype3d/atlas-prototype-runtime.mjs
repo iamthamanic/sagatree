@@ -721,11 +721,31 @@ export function mountAtlasPrototype3d(host, options = {}) {
       }
       return inside;
     }
+    function productPolyTriangulate(pts){
+      const n=pts.length;if(n<3)return[];if(n===3)return[[0,1,2]];
+      let area=0;for(let i=0;i<n;i++){const a=pts[i],c=pts[(i+1)%n];area+=a[0]*c[1]-c[0]*a[1];}
+      const ccw=area>=0,idx=[];for(let i=0;i<n;i++)idx.push(i);
+      const cross=(i0,i1,i2)=>{const a=pts[i0],b=pts[i1],c=pts[i2];return(b[0]-a[0])*(c[1]-a[1])-(b[1]-a[1])*(c[0]-a[0]);};
+      const inTri=(p,i0,i1,i2)=>{const a=pts[i0],b=pts[i1],c=pts[i2],x=p[0],y=p[1];
+        const d1=(x-b[0])*(a[1]-b[1])-(a[0]-b[0])*(y-b[1]);
+        const d2=(x-c[0])*(b[1]-c[1])-(b[0]-c[0])*(y-c[1]);
+        const d3=(x-a[0])*(c[1]-a[1])-(c[0]-a[0])*(y-a[1]);
+        const hasNeg=(d1<0)||(d2<0)||(d3<0),hasPos=(d1>0)||(d2>0)||(d3>0);return!(hasNeg&&hasPos);};
+      const tris=[];let guard=0;
+      while(idx.length>3&&guard++<n*n){let clipped=false;
+        for(let i=0;i<idx.length;i++){const i0=idx[(i+idx.length-1)%idx.length],i1=idx[i],i2=idx[(i+1)%idx.length];
+          const earOk=ccw?cross(i0,i1,i2)>1e-9:cross(i0,i1,i2)<-1e-9;if(!earOk)continue;
+          let blocked=false;for(const pi of idx){if(pi===i0||pi===i1||pi===i2)continue;if(inTri(pts[pi],i0,i1,i2)){blocked=true;break;}}
+          if(blocked)continue;tris.push([i0,i1,i2]);idx.splice(i,1);clipped=true;break;}
+        if(!clipped)break;}
+      if(idx.length===3){tris.push([idx[0],idx[1],idx[2]]);return tris;}
+      const fan=[];for(let i=1;i<n-1;i++)fan.push([0,i,i+1]);return fan;
+    }
     function productPolyFill(b,pts,y,color){
       if(!pts||pts.length<3)return;
-      let cx=0,cz=0;for(const p of pts){cx+=p[0];cz+=p[1];}cx/=pts.length;cz/=pts.length;
       const up=[0,1,0];
-      for(let i=0;i<pts.length;i++){const a=pts[i],c=pts[(i+1)%pts.length];b.tri([cx,y,cz],[a[0],y,a[1]],[c[0],y,c[1]],color,undefined,undefined,undefined,up);}
+      const tris=productPolyTriangulate(pts);
+      for(const [i0,i1,i2] of tris){const a=pts[i0],c=pts[i1],d=pts[i2];b.tri([a[0],y,a[1]],[c[0],y,c[1]],[d[0],y,d[1]],color,undefined,undefined,undefined,up);}
     }
     /** Flat area (2D parity): terrain patches on world/settlement maps, floor plans on interiors. */
     function productRoomInto(b,rm,y,dy){
@@ -774,20 +794,20 @@ export function mountAtlasPrototype3d(host, options = {}) {
     }
     /** Stamp footprints match the 2D Draufsicht (drawStamp draws 2D px × size); u = size. */
     function productPropInto(b,p){
-      const u=clamp(Number(p.size)||1,.01,40),H=Number(p.height)>0?clamp(Number(p.height),.1,10):1,x=Number(p.x)||0,z=Number(p.z)||0;
+      const u=clamp(Number(p.size)||1,.01,40),H=Number(p.height)>0?clamp(Number(p.height),.1,10):1,x=Number(p.x)||0,z=Number(p.z)||0,elev=Number.isFinite(Number(p.elevation))?Number(p.elevation):0;
       switch(productStampOf(p)){
-        case'baum':b.tree(x,z,62*u,'#527b55');break;
-        case'tanne':b.tree(x,z,58*u,'#376456');break;
-        case'fels':b.octa(x,14*u,z,30*u,'#82928a');break;
-        case'haus':b.house(x,z,80*u,60*u,55*u*H,'#d7c6a5','#794c3c');break;
-        case'turm':b.box(x,45*u*H,z,40*u,90*u*H,40*u,'#adb2a4');b.pyramid(x,90*u*H,z,52*u,30*u,52*u,'#6f4f45');break;
-        case'tisch':b.box(x,30*u,z,80*u,6*u,48*u,'#ae774c');for(const xx of[-34,34])for(const zz of[-18,18])b.box(x+xx*u,14*u,z+zz*u,6*u,28*u,6*u,'#6e422b');break;
-        case'stuhl':b.box(x,18*u,z,44*u,5*u,44*u,'#805336');b.box(x,36*u,z-19*u,44*u,36*u,6*u,'#6b432b');break;
-        case'fass':b.box(x,26*u,z,56*u,52*u,56*u,'#a97b49');b.box(x,52.5*u,z,50*u,u,50*u,'#7d5a35');break;
-        case'bett':b.box(x,12*u,z,80*u,24*u,60*u,'#5b3427');b.box(x,26*u,z-15*u,64*u,6*u,18*u,'#ddc7aa');b.box(x,25*u,z+8*u,76*u,4*u,40*u,'#8a5a45');break;
-        case'lampe':b.box(x,20*u,z,6*u,40*u,6*u,'#8a745b');b.octa(x,44*u,z,8*u,'#f6be6e');break;
-        case'teppich':b.box(x,u,z,80*u,2*u,48*u,'#854b42');break;
-        default:b.box(x,22*u,z,44*u,44*u,44*u,'#a07c58');
+        case'baum':b.box(x,elev+.12*62*u,z,.12*62*u,.24*62*u,.12*62*u,'#66584a');b.cone(x,elev+.20*62*u,z,.65*62*u,1.03*62*u,'#527b55',7);b.cone(x,elev+.63*62*u,z,.48*62*u,.92*62*u,'#527b55',7);break;
+        case'tanne':b.box(x,elev+.12*58*u,z,.12*58*u,.24*58*u,.12*58*u,'#66584a');b.cone(x,elev+.20*58*u,z,.65*58*u,1.03*58*u,'#376456',7);b.cone(x,elev+.63*58*u,z,.48*58*u,.92*58*u,'#376456',7);break;
+        case'fels':b.octa(x,elev+14*u,z,30*u,'#82928a');break;
+        case'haus':b.box(x,elev+55*u*H*.48+.06,z,80*u,55*u*H,60*u,'#d7c6a5');b.pyramid(x,elev+55*u*H+.06,z,80*u*1.2,55*u*H*.64,60*u*1.2,'#794c3c');break;
+        case'turm':b.box(x,elev+45*u*H,z,40*u,90*u*H,40*u,'#adb2a4');b.pyramid(x,elev+90*u*H,z,52*u,30*u,52*u,'#6f4f45');break;
+        case'tisch':b.box(x,elev+30*u,z,80*u,6*u,48*u,'#ae774c');for(const xx of[-34,34])for(const zz of[-18,18])b.box(x+xx*u,elev+14*u,z+zz*u,6*u,28*u,6*u,'#6e422b');break;
+        case'stuhl':b.box(x,elev+18*u,z,44*u,5*u,44*u,'#805336');b.box(x,elev+36*u,z-19*u,44*u,36*u,6*u,'#6b432b');break;
+        case'fass':b.box(x,elev+26*u,z,56*u,52*u,56*u,'#a97b49');b.box(x,elev+52.5*u,z,50*u,u,50*u,'#7d5a35');break;
+        case'bett':b.box(x,elev+12*u,z,80*u,24*u,60*u,'#5b3427');b.box(x,elev+26*u,z-15*u,64*u,6*u,18*u,'#ddc7aa');b.box(x,elev+25*u,z+8*u,76*u,4*u,40*u,'#8a5a45');break;
+        case'lampe':b.box(x,elev+20*u,z,6*u,40*u,6*u,'#8a745b');b.octa(x,elev+44*u,z,8*u,'#f6be6e');break;
+        case'teppich':b.box(x,elev+u,z,80*u,2*u,48*u,'#854b42');break;
+        default:b.box(x,elev+22*u,z,44*u,44*u,44*u,'#a07c58');
       }
     }
     function productSheetInto(b){if(mapScale==='world')return;b.plane(PRODUCT_FRAME.x,PRODUCT_FRAME.z,PRODUCT_FRAME.w,PRODUCT_FRAME.h,-.5,mapScale==='interior'?'#1d2529':'#2f4034');}

@@ -80,6 +80,33 @@ const starter = fs.readFileSync(
   'utf8',
 );
 assert(starter.includes('dornhain.unified.v4'), 'paired with v4 seed');
+assert(starter.includes("secret: true") || starter.includes(', true)'), 'crypt marked secret');
+
+const resetSrc = fs.readFileSync(srcPath, 'utf8');
+assert(resetSrc.includes('isDornhainGoldenRootMap'), 'root map guard export');
+assert(resetSrc.includes('parentMapId'), 'root requires null parent');
+
+const workbench = fs.readFileSync(
+  path.join(root, 'src/app/world/atlas/WorldAtlasWorkbench.tsx'),
+  'utf8',
+);
+assert(workbench.includes('editingAllowed'), 'preview forces read-only edit gate');
+assert(workbench.includes('showPlayerPreviewToggle'), 'preview toggle gated on saga');
+assert(workbench.includes('goldenRootEligible'), 'Golden chrome gated to root');
+
+const store = fs.readFileSync(
+  path.join(root, 'server/src/modules/world/internal/world-atlas-store.ts'),
+  'utf8',
+);
+assert(store.includes('redactUnifiedCanvasForParty'), 'party redacts unifiedCanvas');
+assert(store.includes('s.crypt'), 'crypt id redacted');
+
+const host = fs.readFileSync(
+  path.join(root, 'server/src/bootstrap/ensure-dornhain-default.ts'),
+  'utf8',
+);
+assert(host.includes('features.length > 0'), 'blank upgrade preserves authored layers');
+assert(host.includes('UPDATE world_places'), 'v4 bootstrap updates existing place parents');
 
 void createRequire;
 console.log('dornhain-golden-reset self-test: PASS');

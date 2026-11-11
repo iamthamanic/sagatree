@@ -75,6 +75,8 @@ export type UnifiedCanvasObject = {
   readonly angle?: number;
   /** Optional extruded height for 3D building/prop representation. */
   readonly height?: number;
+  /** GM-only; stripped from party/player projections. */
+  readonly secret?: boolean;
 };
 
 export type UnifiedCanvasRoom = {
@@ -89,6 +91,8 @@ export type UnifiedCanvasRoom = {
    * `x/y/w/h` is the axis-aligned bounding box (compat + LOD).
    */
   readonly points?: readonly (readonly [number, number])[];
+  /** GM-only; stripped from party/player projections. */
+  readonly secret?: boolean;
 };
 
 export type UnifiedCanvasWall = {
@@ -240,6 +244,7 @@ export function parseUnifiedCanvasDoc(raw: unknown): UnifiedCanvasDoc | null {
       angle: isFiniteNum(row.angle) ? row.angle : 0,
       ...(isFiniteNum(row.z) ? { z: row.z } : {}),
       ...(isFiniteNum(row.height) && row.height > 0 ? { height: row.height } : {}),
+      ...(row.secret === true ? { secret: true } : {}),
     });
   }
 
@@ -278,6 +283,7 @@ export function parseUnifiedCanvasDoc(raw: unknown): UnifiedCanvasDoc | null {
       w: row.w as number,
       h: row.h as number,
       material: row.material as UnifiedCanvasMaterial,
+      ...(row.secret === true ? { secret: true } : {}),
     });
   }
 
@@ -329,6 +335,7 @@ export function serializeUnifiedCanvasDoc(doc: UnifiedCanvasDoc): UnifiedCanvasD
       ...(typeof o.height === 'number' && Number.isFinite(o.height) && o.height > 0
         ? { height: o.height }
         : {}),
+      ...(o.secret === true ? { secret: true } : {}),
     })),
     rooms: doc.rooms.map((r) => ({
       id: r.id,
@@ -340,6 +347,7 @@ export function serializeUnifiedCanvasDoc(doc: UnifiedCanvasDoc): UnifiedCanvasD
       ...(r.points && r.points.length >= 3
         ? { points: r.points.map((p) => [p[0], p[1]] as const) }
         : {}),
+      ...(r.secret === true ? { secret: true } : {}),
     })),
     walls: [...doc.walls],
     demoSeed: doc.demoSeed !== false,

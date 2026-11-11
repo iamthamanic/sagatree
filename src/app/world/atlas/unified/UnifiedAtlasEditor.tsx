@@ -2071,7 +2071,14 @@ export function UnifiedAtlasEditor({
                 variant="destructive"
                 className="min-h-11"
                 onClick={() => {
-                  commit(applyMapEdit(workingDoc, { op: 'remove_object', id: selectedId }), true);
+                  const isRoom = workingDoc.rooms.some((r) => r.id === selectedId);
+                  commit(
+                    applyMapEdit(workingDoc, {
+                      op: isRoom ? 'remove_room' : 'remove_object',
+                      id: selectedId,
+                    }),
+                    true,
+                  );
                   setSelectedId(null);
                 }}
               >

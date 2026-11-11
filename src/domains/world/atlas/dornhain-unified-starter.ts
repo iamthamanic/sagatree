@@ -54,8 +54,9 @@ function land(
   y: number,
   w: number,
   h: number,
+  secret = false,
 ): UnifiedCanvasRoom {
-  return { id, material, x, y, w, h };
+  return secret ? { id, material, x, y, w, h, secret: true } : { id, material, x, y, w, h };
 }
 
 function landPoly(
@@ -86,10 +87,11 @@ function obj(
   y: number,
   size: number,
   height?: number,
+  secret = false,
 ): UnifiedCanvasObject {
-  return height === undefined
-    ? { id, type, x, y, size }
-    : { id, type, x, y, size, height };
+  const base =
+    height === undefined ? { id, type, x, y, size } : { id, type, x, y, size, height };
+  return secret ? { ...base, secret: true } : base;
 }
 
 /**
@@ -154,7 +156,7 @@ export function buildDornhainUnifiedCanvasDoc(): UnifiedCanvasDoc {
       obj('s.obj.tavern', 'haus', 328, 528, 0.55, 1.2),
       obj('s.obj.market', 'haus', 378, 488, 0.5, 1.1),
       obj('s.obj.woods', 'tanne', 410, 550, 0.65),
-      obj('s.obj.crypt', 'fels', 406, 462, 0.55),
+      obj('s.obj.crypt', 'fels', 406, 462, 0.55, undefined, true),
       obj('s.obj.tree-a', 'baum', 304, 460, 0.4),
       obj('s.obj.tree-b', 'tanne', 420, 500, 0.45),
     ],
@@ -261,7 +263,7 @@ export function buildDornhainUnifiedCanvasDoc(): UnifiedCanvasDoc {
       land('s.tavern', 'erde', 310, 510, 36, 36),
       land('s.market', 'sand', 360, 470, 36, 36),
       land('s.woods', 'holz', 390, 530, 40, 40),
-      land('s.crypt', 'stein', 390, 446, 32, 32),
+      land('s.crypt', 'stein', 390, 446, 32, 32, true),
     ],
     walls: [],
     demoSeed: false,

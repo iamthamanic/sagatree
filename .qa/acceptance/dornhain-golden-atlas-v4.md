@@ -10,11 +10,27 @@ Dornhain ships an editable **Golden** unified world canvas (land, pins, settleme
 - Host library auth enabled
 - Product path uses `demoSeed: false` (not Eldoria demo)
 
+## Experience classification
+- Surface class: **Workstation** (Atlas editor) with ephemeral **Overlay** (Golden reset dialog)
+- Mode: **SETUP** (authoring) + projection preview (not live Performance Mode)
+- Adaptive band: phone / tablet / desktop via existing Atlas chrome (`min-h-11` controls, sheet meta on narrow)
+
+## Adaptive UI gates (AU-*)
+- [ ] **AU-TOUCH-44:** Golden reset open, Voll/Spieleransicht toggle, Speichern — primary controls ≥44px (`min-h-11`)
+- [ ] **AU-CONTENT-WIDTH:** Reset dialog + chrome remain usable in narrow main pane (`@container` / sheet on phone)
+- [ ] **AU-STATE:** Loading (`atlasBooting`), conflict banner, preview read-only, and disabled Golden on non-root maps are distinguishable
+- [ ] **AU-SAFE-AREA:** Floating chrome (bottom-left preview/Golden) does not clip under device safe areas on phone
+
+## Visualization gates (IV-*)
+- [ ] **IV-IMAGINATION-FIRST:** Product path keeps `demoSeed: false`; Eldoria demo LOD never replaces Golden geography
+- [ ] **IV-NO-FAKE-GEO:** Reset / blank-v3 upgrade does not invent continents over authored GeoJSON `layers` or non-blank canvases
+- [ ] **IV-PROJECTION:** Spieleransicht redacts secret unifiedCanvas entities (crypt) and stays non-editable
+
 ## Happy Path
 - [ ] Fresh Dornhain root seed uses `dornhain.unified.v4` with ocean + continents + Dornhain pin + settlement LOD (`s.*`)
-- [ ] Blank v3 ocean-only roots auto-upgrade once to Golden v4; user-painted maps are not overwritten
-- [ ] GM can open Reset dialog and restore Atlas+Places (default) to Golden; reload shows land/pins
-- [ ] GM can toggle Voll / Spieleransicht in atlas chrome; players never see a toggle that reveals GM secrets
+- [ ] Blank v3 ocean-only roots auto-upgrade once to Golden v4; user-painted maps are not overwritten; authored `layers` features are preserved on upgrade
+- [ ] GM can open Reset dialog **only on Dornhain root** and restore Atlas+Places (default) to Golden; reload shows land/pins
+- [ ] GM can toggle Voll / Spieleransicht **when a saga is bound**; preview is read-only; players never see a toggle that reveals GM secrets
 - [ ] Domain self-test / unit checks for seed + reset modes pass
 
 ## Edge Cases

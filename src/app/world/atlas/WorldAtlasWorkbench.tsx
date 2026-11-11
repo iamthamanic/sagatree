@@ -50,6 +50,7 @@ import {
   atlasPersistStatusLabelDe,
   buildAtlasMapPins,
   extractMapFrameFromGeneratorMeta,
+  isDornhainGoldenRootMap,
   type DornhainGoldenResetMode,
 } from '../../../domains/world/atlas';
 import { WorldMapEditorScreen } from '../map';
@@ -99,10 +100,15 @@ export function WorldAtlasWorkbench({
 }: WorldAtlasWorkbenchProps) {
   /** GM-only Spieleransicht preview (8B/8b). Players never get this toggle. */
   const [gmPlayerPreview, setGmPlayerPreview] = useState(false);
-  const effectivePlayerView = canEdit ? gmPlayerPreview : playerView;
+  const sagaReady =
+    typeof sagaPublicId === 'string' && sagaPublicId.trim().length > 0;
+  /** Preview requires a saga — without it party projection returns empty/P0002. */
+  const effectivePlayerView = canEdit ? Boolean(gmPlayerPreview && sagaReady) : playerView;
+  /** Projected preview must stay read-only so redacted layers cannot be saved back. */
+  const editingAllowed = canEdit && !effectivePlayerView;
   const editor = useWorldAtlasEditor({
     worldProfileId,
-    canEdit,
+    canEdit: editingAllowed,
     playerView: effectivePlayerView,
     sagaPublicId,
   });
@@ -153,6 +159,15 @@ export function WorldAtlasWorkbench({
   const showUnified = Boolean(editor.map && !showLegacyTiles);
   /** Exact HTML 3D prototype mount (not flat Canvas2D). */
   const protoExact = showUnified && editor.canvasDoc.demoSeed === false;
+  const goldenRootEligible = Boolean(
+    editor.map &&
+      isDornhainGoldenRootMap({
+        parentMapId: editor.map.parentMapId,
+        kind: editor.map.kind,
+        generatorMeta: editor.map.generatorMeta,
+      }),
+  );
+  const showPlayerPreviewToggle = canEdit && sagaReady;
   const activeMapFrame = editor.map
     ? extractMapFrameFromGeneratorMeta(editor.map.generatorMeta)
     : null;
@@ -273,7 +288,7 @@ export function WorldAtlasWorkbench({
 
   // Debounced autosave for controlled WebGL / canvas dirty (#721 / #751).
   useEffect(() => {
-    if (!canEdit || !editor.map || !editor.dirtyCanvas || editor.saving) return;
+    if (!editingAllowed || !editor.map || !editor.dirtyCanvas || editor.saving) return;
     if (editor.persistStatus === 'conflict') return;
     const timer = window.setTimeout(() => {
       void editor.saveCanvas().catch(() => {
@@ -282,7 +297,7 @@ export function WorldAtlasWorkbench({
     }, 1400);
     return () => window.clearTimeout(timer);
   }, [
-    canEdit,
+    editingAllowed,
     editor.map,
     editor.dirtyCanvas,
     editor.saving,
@@ -294,17 +309,17 @@ export function WorldAtlasWorkbench({
 
   // Warn before discarding a dirty draft (browser close / refresh).
   useEffect(() => {
-    if (!canEdit || !editor.dirtyCanvas) return;
+    if (!editingAllowed || !editor.dirtyCanvas) return;
     const onBeforeUnload = (event: BeforeUnloadEvent) => {
       event.preventDefault();
       event.returnValue = '';
     };
     window.addEventListener('beforeunload', onBeforeUnload);
     return () => window.removeEventListener('beforeunload', onBeforeUnload);
-  }, [canEdit, editor.dirtyCanvas]);
+  }, [editingAllowed, editor.dirtyCanvas]);
 
   const handleCreateDetailMap = async (place: WorldPlaceVm) => {
-    if (!canEdit) return;
+    if (!editingAllowed) return;
     const created = await editor.createChildMap(`${place.name} (Detail)`, {
       kind: mapKindForPlace(place.kind),
       generatorMeta: {
@@ -333,7 +348,7 @@ export function WorldAtlasWorkbench({
     readonly x: number;
     readonly y: number;
   }) => {
-    if (!canEdit) return;
+    if (!editingAllowed) return;
     const place = await worldPlaceService.upsertPlace({
       worldProfileId,
       kind: input.placeKind,
@@ -392,39 +407,52 @@ export function WorldAtlasWorkbench({
   );
 
   // 3D floats these over the canvas; the Draufsicht shows them in its surface bar (left rail).
+  const showProtoSave =
+    editingAllowed &&
+    Boolean(editor.map) &&
+    editor.dirtyCanvas &&
+    editor.persistStatus !== 'conflict';
   const protoActions =
-    canEdit && showUnified && protoExact && !atlasBooting && !onBack ? (
+    showUnified &&
+    protoExact &&
+    !atlasBooting &&
+    !onBack &&
+    (showPlayerPreviewToggle || (editingAllowed && goldenRootEligible) || showProtoSave) ? (
       <>
-        <Button
-          type="button"
-          variant="outline"
-          className="pointer-events-auto min-h-11 shadow-lg"
-          data-atlas-view-toggle
-          aria-pressed={gmPlayerPreview}
-          onClick={() => setGmPlayerPreview((v) => !v)}
-        >
-          {gmPlayerPreview ? (
-            <EyeSlash className="size-4" aria-hidden />
-          ) : (
-            <Eye className="size-4" aria-hidden />
-          )}
-          {gmPlayerPreview ? 'Spieleransicht' : 'Vollansicht'}
-        </Button>
-        <Button
-          type="button"
-          variant="outline"
-          className="pointer-events-auto min-h-11 shadow-lg"
-          data-atlas-golden-reset-open
-          disabled={editor.saving || !editor.map}
-          onClick={() => {
-            setGoldenResetNote(null);
-            setGoldenResetOpen(true);
-          }}
-        >
-          <ArrowCounterClockwise className="size-4" aria-hidden />
-          Golden
-        </Button>
-        {editor.map && editor.dirtyCanvas && editor.persistStatus !== 'conflict' ? (
+        {showPlayerPreviewToggle ? (
+          <Button
+            type="button"
+            variant="outline"
+            className="pointer-events-auto min-h-11 shadow-lg"
+            data-atlas-view-toggle
+            aria-pressed={gmPlayerPreview}
+            onClick={() => setGmPlayerPreview((v) => !v)}
+          >
+            {gmPlayerPreview ? (
+              <EyeSlash className="size-4" aria-hidden />
+            ) : (
+              <Eye className="size-4" aria-hidden />
+            )}
+            {gmPlayerPreview ? 'Spieleransicht' : 'Vollansicht'}
+          </Button>
+        ) : null}
+        {editingAllowed && goldenRootEligible ? (
+          <Button
+            type="button"
+            variant="outline"
+            className="pointer-events-auto min-h-11 shadow-lg"
+            data-atlas-golden-reset-open
+            disabled={editor.saving || !editor.map}
+            onClick={() => {
+              setGoldenResetNote(null);
+              setGoldenResetOpen(true);
+            }}
+          >
+            <ArrowCounterClockwise className="size-4" aria-hidden />
+            Golden
+          </Button>
+        ) : null}
+        {showProtoSave ? (
           <Button
             type="button"
             className="pointer-events-auto min-h-11 shadow-lg"
@@ -471,7 +499,7 @@ export function WorldAtlasWorkbench({
         )}
       </div>
 
-      {canEdit ? (
+      {editingAllowed ? (
         <div className="space-y-2 border-t border-border pt-3">
           <Label htmlFor="atlas-child-title">Detailkarte anlegen</Label>
           <Input
@@ -493,7 +521,7 @@ export function WorldAtlasWorkbench({
         </div>
       ) : null}
 
-      {canEdit ? (
+      {editingAllowed ? (
         <div className="space-y-2 border-t border-border pt-3">
           <p className="text-sm font-medium">Azgaar Fantasy Map</p>
           <p className="text-xs text-muted-foreground">
@@ -612,7 +640,7 @@ export function WorldAtlasWorkbench({
               </SheetContent>
             </Sheet>
           ) : null}
-          {canEdit ? (
+          {showPlayerPreviewToggle ? (
             <Button
               type="button"
               variant="outline"
@@ -632,7 +660,7 @@ export function WorldAtlasWorkbench({
               {gmPlayerPreview ? 'Spieleransicht' : 'Vollansicht'}
             </Button>
           ) : null}
-          {canEdit && editor.map && showUnified ? (
+          {editingAllowed && editor.map && showUnified && goldenRootEligible ? (
             <Button
               type="button"
               variant="outline"
@@ -648,7 +676,7 @@ export function WorldAtlasWorkbench({
               Golden
             </Button>
           ) : null}
-          {canEdit && editor.map && showUnified && !protoExact ? (
+          {editingAllowed && editor.map && showUnified && !protoExact ? (
             <Button
               type="button"
               className="min-h-11"
@@ -665,7 +693,7 @@ export function WorldAtlasWorkbench({
               Speichern
             </Button>
           ) : null}
-          {canEdit &&
+          {editingAllowed &&
           editor.map &&
           showUnified &&
           protoExact &&
@@ -697,7 +725,7 @@ export function WorldAtlasWorkbench({
         </div>
       ) : null}
 
-      {canEdit && editor.persistStatus === 'conflict' && !atlasBooting ? (
+      {editingAllowed && editor.persistStatus === 'conflict' && !atlasBooting ? (
         <div
           className="absolute bottom-4 left-4 z-[5] max-w-md rounded-lg border border-amber-500/50 bg-card/95 p-3 shadow-lg"
           role="alert"
@@ -752,11 +780,11 @@ export function WorldAtlasWorkbench({
         >
           <span className="min-w-0 flex-1">
             {UNLOCATED_MAP_HINT_DE}
-            {canEdit
+            {editingAllowed
               ? ' — Verorte den Ausschnitt auf der Elternkarte, bevor Zoom dorthin wechselt.'
               : null}
           </span>
-          {canEdit && editor.map?.parentMapId ? (
+          {editingAllowed && editor.map?.parentMapId ? (
             <Button
               type="button"
               variant="outline"
@@ -870,7 +898,7 @@ export function WorldAtlasWorkbench({
                 Atlas die Karte „Weltkarte (Unified)“ in der Hierarchie wählen.
               </p>
               <div className="min-h-0 flex-1 overflow-auto">
-                {canEdit ? (
+                {editingAllowed ? (
                   <WorldMapEditorScreen worldProfileId={worldProfileId} embedded />
                 ) : (
                   <p className="text-sm text-muted-foreground">
@@ -884,7 +912,7 @@ export function WorldAtlasWorkbench({
               key={`${editor.map.id}:${editor.contentEpoch}`}
               mapKey={`${editor.map.id}:${editor.contentEpoch}`}
               doc={editor.canvasDoc}
-              canEdit={canEdit}
+              canEdit={editingAllowed}
               onDocChange={editor.updateCanvasDoc}
               webglRuntime={editor.webglRuntime}
               onWebglRuntimeChange={editor.updateWebglRuntime}
@@ -941,7 +969,7 @@ export function WorldAtlasWorkbench({
                 }
               }}
               onWebglNavRename={
-                canEdit
+                editingAllowed
                   ? async ({ placeId, label }) => {
                       try {
                         setWebglActionError(null);
@@ -961,7 +989,7 @@ export function WorldAtlasWorkbench({
                   : undefined
               }
               onWebglNavAdd={
-                canEdit
+                editingAllowed
                   ? ({ uiKind, parentId }) => {
                       const childKind = worldNodeKindFromWebglNavUiKind(uiKind);
                       if (!childKind) {
@@ -985,7 +1013,7 @@ export function WorldAtlasWorkbench({
                   : undefined
               }
               onWebglNavDuplicate={
-                canEdit
+                editingAllowed
                   ? ({ placeId }) => {
                       setWebglActionError(null);
                       void worldPlaceService
@@ -1010,7 +1038,7 @@ export function WorldAtlasWorkbench({
                   : undefined
               }
               onWebglNavArchive={
-                canEdit
+                editingAllowed
                   ? ({ placeId }) => {
                       setWebglActionError(null);
                       setWebglArchivePlaceId(placeId);
@@ -1018,7 +1046,7 @@ export function WorldAtlasWorkbench({
                   : undefined
               }
               onWebglNavReparent={
-                canEdit
+                editingAllowed
                   ? ({ placeId }) => {
                       setWebglActionError(null);
                       setWebglReparentPlaceId(placeId);
@@ -1139,7 +1167,7 @@ export function WorldAtlasWorkbench({
                   </div>
               }
               onCreatePlace={
-                canEdit
+                editingAllowed
                   ? async (input) => {
                       await handleCreatePlaceFromAtlas({
                         name: input.name,
@@ -1178,12 +1206,12 @@ export function WorldAtlasWorkbench({
           ) : null}
           <WorldPlacesPanel
             worldProfileId={worldProfileId}
-            canEdit={canEdit}
+            canEdit={editingAllowed}
             playerView={effectivePlayerView}
             sagaPublicId={sagaPublicId}
             activeMapId={editor.activeMapId}
             onOpenMap={(mapId) => editor.setActiveMapId(mapId)}
-            onCreateDetailMap={canEdit ? handleCreateDetailMap : undefined}
+            onCreateDetailMap={editingAllowed ? handleCreateDetailMap : undefined}
             onCreatedNode={(info) => {
               setPlaceNavTick((n) => n + 1);
               if (info.targetMapId) editor.setActiveMapId(info.targetMapId);
@@ -1205,12 +1233,12 @@ export function WorldAtlasWorkbench({
           <div className="mt-3 border-t border-border pt-2">
             <WorldPlacesPanel
               worldProfileId={worldProfileId}
-              canEdit={canEdit}
+              canEdit={editingAllowed}
               playerView={effectivePlayerView}
               sagaPublicId={sagaPublicId}
               activeMapId={editor.activeMapId}
               onOpenMap={(mapId) => editor.setActiveMapId(mapId)}
-              onCreateDetailMap={canEdit ? handleCreateDetailMap : undefined}
+              onCreateDetailMap={editingAllowed ? handleCreateDetailMap : undefined}
               onCreatedNode={(info) => {
                 setPlaceNavTick((n) => n + 1);
                 if (info.targetMapId) editor.setActiveMapId(info.targetMapId);
@@ -1232,7 +1260,7 @@ export function WorldAtlasWorkbench({
 
       <WebglNavTreeActionHost
         worldProfileId={worldProfileId}
-        canEdit={canEdit}
+        canEdit={editingAllowed}
         places={worldPlaces}
         createRequest={webglCreateRequest}
         onCloseCreate={() => setWebglCreateRequest(null)}
@@ -1253,7 +1281,7 @@ export function WorldAtlasWorkbench({
         onReparented={() => setPlaceNavTick((t) => t + 1)}
       />
 
-      {canEdit ? (
+      {editingAllowed && goldenRootEligible ? (
         <AtlasGoldenResetDialog
           open={goldenResetOpen}
           busy={editor.saving}

@@ -7,7 +7,11 @@
 
 import type { WorldPlaceKind } from '../places/world-place.types';
 import { DORNHAIN_GOLDEN_MAPS, DORNHAIN_WORLD_MAP_SEED } from './dornhain-golden-hierarchy';
-import { DORNHAIN_WORLD_ANCHOR } from './dornhain-unified-starter';
+import {
+  DORNHAIN_UNIFIED_LEGACY_SEEDS,
+  DORNHAIN_UNIFIED_SEED,
+  DORNHAIN_WORLD_ANCHOR,
+} from './dornhain-unified-starter';
 
 /** Reset dialog modes (grill 5B / 6C / 5c). */
 export type DornhainGoldenResetMode = 'atlas' | 'atlas_places' | 'everything';
@@ -93,6 +97,24 @@ export const DORNHAIN_GOLDEN_PLACES: readonly DornhainGoldenPlaceSpec[] = [
 export function isDornhainGoldenSeedKey(seedKey: string | null | undefined): boolean {
   if (!seedKey) return false;
   return DORNHAIN_GOLDEN_PLACES.some((p) => p.seedKey === seedKey);
+}
+
+/**
+ * Golden reset applies only to the Dornhain **root** world map — never to
+ * arbitrary library worlds or child/detail maps in the same workbench.
+ */
+export function isDornhainGoldenRootMap(input: {
+  readonly parentMapId: string | null | undefined;
+  readonly kind?: string | null;
+  readonly generatorMeta?: Readonly<Record<string, unknown>> | null;
+}): boolean {
+  if (input.parentMapId != null && String(input.parentMapId).trim() !== '') return false;
+  const meta = input.generatorMeta ?? {};
+  const seed = typeof meta.seed === 'string' ? meta.seed : '';
+  if (seed === DORNHAIN_UNIFIED_SEED) return true;
+  if ((DORNHAIN_UNIFIED_LEGACY_SEEDS as readonly string[]).includes(seed)) return true;
+  if (meta.golden === true && meta.sagaSlug === 'dornhain.whisper') return true;
+  return false;
 }
 
 export function dornhainGoldenResetModeLabelDe(mode: DornhainGoldenResetMode): string {

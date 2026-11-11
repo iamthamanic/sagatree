@@ -100,6 +100,7 @@ export {
   DORNHAIN_GOLDEN_PLACES,
   dornhainGoldenResetModeHintDe,
   dornhainGoldenResetModeLabelDe,
+  isDornhainGoldenRootMap,
   isDornhainGoldenSeedKey,
   planDornhainGoldenReset,
   type DornhainGoldenPlaceSpec,
