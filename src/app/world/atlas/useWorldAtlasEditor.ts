@@ -5,6 +5,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   DEFAULT_ATLAS_BOUNDS,
+  DORNHAIN_GOLDEN_PLACES,
   DORNHAIN_WORLD_LAYER_TITLE,
   buildDornhainUnifiedGeneratorMeta,
   emptyUnifiedCanvasDoc,
@@ -18,10 +19,12 @@ import {
   mergeDungeonMetaIntoGeneratorMeta,
   mergeUnifiedCanvasIntoGeneratorMeta,
   normalizeDornhainWorldLayerTitle,
+  planDornhainGoldenReset,
   reduceAtlasPersistStatus,
   shouldUpgradeDornhainUnifiedToWorld,
   unlocatedChildMapGeneratorMeta,
   type AtlasPersistStatus,
+  type DornhainGoldenResetMode,
   type DungeonGeneratorMeta,
   type UnifiedCanvasDoc,
   type WorldAtlasFeatureCollection,
@@ -33,6 +36,7 @@ import { useAuth } from '../../../lib/auth-context';
 import { API_AUTH_REQUIRED_DE } from '../../../lib/authenticatedUser';
 import { isHostLibraryEnabled } from '../../../infrastructure/host/host-library-http';
 import { worldAtlasService } from '../../../infrastructure/world/world-atlas-service';
+import { worldPlaceService } from '../../../infrastructure/world/world-place-service';
 
 export type UseWorldAtlasEditorOptions = {
   readonly worldProfileId: string | null;
@@ -450,6 +454,100 @@ export function useWorldAtlasEditor({
     [activeMapId, dirtyCanvas, bumpPersist],
   );
 
+  const resetToGolden = useCallback(
+    async (mode: DornhainGoldenResetMode): Promise<{ readonly noteDe: string | null }> => {
+      if (!map || !canEdit) {
+        throw new Error('Keine Bearbeitungsrechte für Reset auf Golden.');
+      }
+      const plan = planDornhainGoldenReset(mode, { sessionProgressResetAvailable: false });
+      setSaving(true);
+      setError(null);
+      bumpPersist({ type: 'save_start' });
+      try {
+        if (plan.restoreCanvas) {
+          const worldMeta = buildDornhainUnifiedGeneratorMeta();
+          const worldDoc =
+            extractUnifiedCanvasFromGeneratorMeta(worldMeta) ?? emptyUnifiedCanvasDoc(false);
+          const next = await worldAtlasService.upsertMap({
+            worldProfileId: map.worldProfileId,
+            mapId: map.id,
+            parentMapId: map.parentMapId,
+            kind: map.kind === 'legacy_tiles' ? 'world' : map.kind,
+            title: normalizeDornhainWorldLayerTitle(map.title) || DORNHAIN_WORLD_LAYER_TITLE,
+            sortOrder: map.sortOrder,
+            bounds: map.bounds,
+            layers: map.layers,
+            basemapStoragePath: map.basemapStoragePath,
+            azgaarMapStoragePath: map.azgaarMapStoragePath,
+            generatorMeta: { ...map.generatorMeta, ...worldMeta },
+            expectedRevision: map.revision,
+          });
+          setMap(next);
+          setCanvasDoc(
+            extractUnifiedCanvasFromGeneratorMeta(next.generatorMeta) ?? worldDoc,
+          );
+          setWebglRuntime(extractWebglRuntimeFromGeneratorMeta(next.generatorMeta));
+          setDungeonMeta(extractDungeonMetaFromGeneratorMeta(next.generatorMeta));
+          setDirtyCanvas(false);
+          setDirtyLayers(null);
+        }
+
+        if (plan.restoreGoldenPlaces) {
+          const existing = await worldPlaceService.listPlaces(map.worldProfileId, {
+            playerView: false,
+            sagaPublicId,
+          });
+          const bySeed = new Map(
+            existing
+              .filter((p) => typeof p.seedKey === 'string' && p.seedKey.length > 0)
+              .map((p) => [p.seedKey as string, p]),
+          );
+          for (const spec of DORNHAIN_GOLDEN_PLACES) {
+            const parentId = spec.parentSeedKey
+              ? (bySeed.get(spec.parentSeedKey)?.id ?? null)
+              : null;
+            const prev = bySeed.get(spec.seedKey);
+            const saved = await worldPlaceService.upsertPlace({
+              worldProfileId: map.worldProfileId,
+              placeId: prev?.id ?? null,
+              parentPlaceId: parentId,
+              kind: spec.kind,
+              name: spec.name,
+              description: spec.description,
+              status: 'canonical',
+              seedKey: spec.seedKey,
+              sortOrder: spec.sortOrder,
+            });
+            bySeed.set(spec.seedKey, saved);
+            if (spec.anchor) {
+              await worldPlaceService.linkMap({
+                worldProfileId: map.worldProfileId,
+                placeId: saved.id,
+                mapId: map.id,
+                usage: 'overview',
+                featureId: saved.id,
+                anchor: { x: spec.anchor.x, y: spec.anchor.y, source: 'dornhain.unified.v4' },
+              });
+            }
+          }
+        }
+
+        bumpPersist({ type: 'save_ok' });
+        await reloadList();
+        return { noteDe: plan.sessionProgressNoteDe };
+      } catch (err) {
+        const message = err instanceof Error ? err.message : 'Reset auf Golden fehlgeschlagen.';
+        const conflict = isAtlasRevisionConflictMessage(message);
+        setError(message);
+        bumpPersist({ type: 'save_fail', conflict });
+        throw err;
+      } finally {
+        setSaving(false);
+      }
+    },
+    [map, canEdit, sagaPublicId, reloadList, bumpPersist],
+  );
+
   return {
     summaries,
     activeMapId,
@@ -475,5 +573,6 @@ export function useWorldAtlasEditor({
     reloadActiveMap,
     breadcrumb,
     reloadList,
+    resetToGolden,
   };
 }

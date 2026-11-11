@@ -7,10 +7,13 @@
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
+  ArrowCounterClockwise,
   CaretDown,
   CaretRight,
   DownloadSimple,
   CircleNotch,
+  Eye,
+  EyeSlash,
   MapTrifold as MapIcon,
   Plus,
   FloppyDisk,
@@ -44,9 +47,11 @@ import {
   UNLOCATED_MAP_HINT_DE,
   atlasPersistStatusLabelDe,
   extractMapFrameFromGeneratorMeta,
+  type DornhainGoldenResetMode,
 } from '../../../domains/world/atlas';
 import { WorldMapEditorScreen } from '../map';
 import { WorldPlacesPanel } from '../places/WorldPlacesPanel';
+import { AtlasGoldenResetDialog } from './AtlasGoldenResetDialog';
 import { useWorldAtlasEditor } from './useWorldAtlasEditor';
 import { UnifiedAtlasEditor } from './unified';
 import {
@@ -89,10 +94,13 @@ export function WorldAtlasWorkbench({
   onBack,
   title = 'Weltatlas',
 }: WorldAtlasWorkbenchProps) {
+  /** GM-only Spieleransicht preview (8B/8b). Players never get this toggle. */
+  const [gmPlayerPreview, setGmPlayerPreview] = useState(false);
+  const effectivePlayerView = canEdit ? gmPlayerPreview : playerView;
   const editor = useWorldAtlasEditor({
     worldProfileId,
     canEdit,
-    playerView,
+    playerView: effectivePlayerView,
     sagaPublicId,
   });
   const fileRef = useRef<HTMLInputElement>(null);
@@ -113,6 +121,22 @@ export function WorldAtlasWorkbench({
   const [webglArchivePlaceId, setWebglArchivePlaceId] = useState<string | null>(null);
   const [webglReparentPlaceId, setWebglReparentPlaceId] = useState<string | null>(null);
   const [webglActionError, setWebglActionError] = useState<string | null>(null);
+  const [goldenResetOpen, setGoldenResetOpen] = useState(false);
+  const [goldenResetNote, setGoldenResetNote] = useState<string | null>(null);
+
+  const runGoldenReset = useCallback(
+    async (mode: DornhainGoldenResetMode) => {
+      try {
+        const result = await editor.resetToGolden(mode);
+        setGoldenResetNote(result.noteDe);
+        setGoldenResetOpen(false);
+        setPlaceNavTick((t) => t + 1);
+      } catch {
+        /* error already on editor.error */
+      }
+    },
+    [editor.resetToGolden],
+  );
 
   const showLegacyTiles = editor.map?.kind === 'legacy_tiles';
   const showUnified = Boolean(editor.map && !showLegacyTiles);
@@ -174,7 +198,7 @@ export function WorldAtlasWorkbench({
     setPlaceNavStatus('loading');
     setPlaceNavError(undefined);
     try {
-      const listOpts = { playerView, sagaPublicId };
+      const listOpts = { playerView: effectivePlayerView, sagaPublicId };
       const [places, links] = await Promise.all([
         worldPlaceService.listPlaces(id, listOpts),
         worldPlaceService.listMapLinks(id, listOpts),
@@ -193,7 +217,7 @@ export function WorldAtlasWorkbench({
         err instanceof Error ? err.message : 'Weltstruktur konnte nicht geladen werden.',
       );
     }
-  }, [worldProfileId, playerView, sagaPublicId]);
+  }, [worldProfileId, effectivePlayerView, sagaPublicId, placeNavTick]);
 
   useEffect(() => {
     void reloadPlaceNav();
@@ -504,6 +528,42 @@ export function WorldAtlasWorkbench({
               </SheetContent>
             </Sheet>
           ) : null}
+          {canEdit ? (
+            <Button
+              type="button"
+              variant="outline"
+              className="min-h-11"
+              data-atlas-view-toggle
+              aria-pressed={gmPlayerPreview}
+              aria-label={
+                gmPlayerPreview ? 'Vollansicht aktivieren' : 'Spieleransicht aktivieren'
+              }
+              onClick={() => setGmPlayerPreview((v) => !v)}
+            >
+              {gmPlayerPreview ? (
+                <EyeSlash className="size-4" aria-hidden />
+              ) : (
+                <Eye className="size-4" aria-hidden />
+              )}
+              {gmPlayerPreview ? 'Spieleransicht' : 'Vollansicht'}
+            </Button>
+          ) : null}
+          {canEdit && editor.map && showUnified ? (
+            <Button
+              type="button"
+              variant="outline"
+              className="min-h-11"
+              data-atlas-golden-reset-open
+              disabled={editor.saving}
+              onClick={() => {
+                setGoldenResetNote(null);
+                setGoldenResetOpen(true);
+              }}
+            >
+              <ArrowCounterClockwise className="size-4" aria-hidden />
+              Golden
+            </Button>
+          ) : null}
           {canEdit && editor.map && showUnified && !protoExact ? (
             <Button
               type="button"
@@ -547,31 +607,57 @@ export function WorldAtlasWorkbench({
         </header>
       ) : null}
 
-      {canEdit &&
-      editor.map &&
-      showUnified &&
-      protoExact &&
-      editor.dirtyCanvas &&
-      editor.persistStatus !== 'conflict' &&
-      !onBack &&
-      !atlasBooting ? (
-        <div className="pointer-events-none absolute bottom-4 left-4 z-[4]">
+      {canEdit && showUnified && protoExact && !atlasBooting && !onBack ? (
+        <div className="pointer-events-none absolute bottom-4 left-4 z-[4] flex max-w-[min(100%-2rem,28rem)] flex-wrap gap-2">
           <Button
             type="button"
+            variant="outline"
             className="pointer-events-auto min-h-11 shadow-lg"
-            data-atlas-explicit-save
-            disabled={editor.saving}
+            data-atlas-view-toggle
+            aria-pressed={gmPlayerPreview}
+            onClick={() => setGmPlayerPreview((v) => !v)}
+          >
+            {gmPlayerPreview ? (
+              <EyeSlash className="size-4" aria-hidden />
+            ) : (
+              <Eye className="size-4" aria-hidden />
+            )}
+            {gmPlayerPreview ? 'Spieleransicht' : 'Vollansicht'}
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            className="pointer-events-auto min-h-11 shadow-lg"
+            data-atlas-golden-reset-open
+            disabled={editor.saving || !editor.map}
             onClick={() => {
-              void editor.saveCanvas();
+              setGoldenResetNote(null);
+              setGoldenResetOpen(true);
             }}
           >
-            {editor.saving ? (
-              <CircleNotch className="size-4 animate-spin" aria-hidden />
-            ) : (
-              <FloppyDisk className="size-4" aria-hidden />
-            )}
-            Speichern
+            <ArrowCounterClockwise className="size-4" aria-hidden />
+            Golden
           </Button>
+          {editor.map &&
+          editor.dirtyCanvas &&
+          editor.persistStatus !== 'conflict' ? (
+            <Button
+              type="button"
+              className="pointer-events-auto min-h-11 shadow-lg"
+              data-atlas-explicit-save
+              disabled={editor.saving}
+              onClick={() => {
+                void editor.saveCanvas();
+              }}
+            >
+              {editor.saving ? (
+                <CircleNotch className="size-4 animate-spin" aria-hidden />
+              ) : (
+                <FloppyDisk className="size-4" aria-hidden />
+              )}
+              Speichern
+            </Button>
+          ) : null}
         </div>
       ) : null}
 
@@ -996,7 +1082,7 @@ export function WorldAtlasWorkbench({
           <WorldPlacesPanel
             worldProfileId={worldProfileId}
             canEdit={canEdit}
-            playerView={playerView}
+            playerView={effectivePlayerView}
             sagaPublicId={sagaPublicId}
             activeMapId={editor.activeMapId}
             onOpenMap={(mapId) => editor.setActiveMapId(mapId)}
@@ -1023,7 +1109,7 @@ export function WorldAtlasWorkbench({
             <WorldPlacesPanel
               worldProfileId={worldProfileId}
               canEdit={canEdit}
-              playerView={playerView}
+              playerView={effectivePlayerView}
               sagaPublicId={sagaPublicId}
               activeMapId={editor.activeMapId}
               onOpenMap={(mapId) => editor.setActiveMapId(mapId)}
@@ -1069,6 +1155,25 @@ export function WorldAtlasWorkbench({
         onCloseReparent={() => setWebglReparentPlaceId(null)}
         onReparented={() => setPlaceNavTick((t) => t + 1)}
       />
+
+      {canEdit ? (
+        <AtlasGoldenResetDialog
+          open={goldenResetOpen}
+          busy={editor.saving}
+          onOpenChange={setGoldenResetOpen}
+          onConfirm={runGoldenReset}
+        />
+      ) : null}
+
+      {goldenResetNote ? (
+        <p
+          className="mx-3 mb-2 rounded-md border border-amber-500/40 bg-card/95 px-3 py-2 text-sm text-foreground"
+          role="status"
+          data-atlas-golden-reset-note
+        >
+          {goldenResetNote}
+        </p>
+      ) : null}
     </div>
   );
 }

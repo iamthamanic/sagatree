@@ -241,7 +241,7 @@ function applyOwnedDornhainCatalog(
 const DORHAIN_ATLAS_ROOT_STABLE = 'dh-atlas-root';
 /** Matches FE `DORNHAIN_WORLD_LAYER_TITLE` / dornhain-unified-starter. */
 const DORHAIN_WORLD_LAYER_TITLE = 'Welt';
-const DORHAIN_UNIFIED_SEED = 'dornhain.unified.v3';
+const DORHAIN_UNIFIED_SEED = 'dornhain.unified.v4';
 /** Settlement overview anchor on the world canvas (FE DORNHAIN_WORLD_ANCHOR). */
 const DORHAIN_WORLD_ANCHOR = { x: 360, y: 510 } as const;
 
@@ -251,6 +251,7 @@ const DORHAIN_ATLAS_PLACES: readonly {
   readonly name: string;
   readonly kind: string;
   readonly description: string;
+  readonly parentSeedKey: string | null;
   readonly anchor: { readonly x: number; readonly y: number } | null;
 }[] = [
   {
@@ -259,6 +260,16 @@ const DORHAIN_ATLAS_PLACES: readonly {
     name: 'Marktplatz',
     kind: 'settlement',
     description: 'Dornhain Marktplatz — Startpunkt der Whisper-Road.',
+    parentSeedKey: null,
+    anchor: DORHAIN_WORLD_ANCHOR,
+  },
+  {
+    stableId: 'dh-place-dornhain',
+    seedKey: 'place.dornhain',
+    name: 'Dornhain',
+    kind: 'settlement',
+    description: 'Stadt in Donalu — Starterschauplatz.',
+    parentSeedKey: null,
     anchor: DORHAIN_WORLD_ANCHOR,
   },
   {
@@ -267,13 +278,48 @@ const DORHAIN_ATLAS_PLACES: readonly {
     name: 'Whisper Road',
     kind: 'region',
     description: 'Die Whisper Road führt hinaus aus Dornhain.',
-    anchor: null,
+    parentSeedKey: 'place.dornhain',
+    anchor: { x: 420, y: 480 },
+  },
+  {
+    stableId: 'dh-place-tavern',
+    seedKey: 'loc.tavern',
+    name: 'Taverne Zum Flüstern',
+    kind: 'building',
+    description: 'Treffpunkt der Helden.',
+    parentSeedKey: 'place.dornhain',
+    anchor: { x: 328, y: 528 },
+  },
+  {
+    stableId: 'dh-place-crypt',
+    seedKey: 'loc.crypt',
+    name: 'Krypta unter dem Hügel',
+    kind: 'building',
+    description: 'GM-Geheimnis — Reliktort unter Dornhain.',
+    parentSeedKey: 'place.dornhain',
+    anchor: { x: 406, y: 462 },
   },
 ];
 
+function isBlankOceanUnifiedCanvas(raw: unknown): boolean {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return false;
+  const doc = raw as Record<string, unknown>;
+  if (doc.demoSeed !== false) return false;
+  const strokes = doc.strokes;
+  const objects = doc.objects;
+  const walls = doc.walls;
+  const rooms = doc.rooms;
+  if (!Array.isArray(strokes) || strokes.length > 0) return false;
+  if (!Array.isArray(objects) || objects.length > 0) return false;
+  if (!Array.isArray(walls) || walls.length > 0) return false;
+  if (!Array.isArray(rooms) || rooms.length !== 1) return false;
+  const only = rooms[0] as Record<string, unknown>;
+  return only.id === 'w.ocean' && only.material === 'wasser';
+}
+
 /**
  * Host-side copy of FE `buildDornhainUnifiedGeneratorMeta` (no FE domain import).
- * `demoSeed: false` so UnifiedAtlasEditor does not fall back to Eldoria demo.
+ * Golden v4 — land + pins + settlement LOD; `demoSeed: false`.
  */
 function dornhainUnifiedGeneratorMeta(): Record<string, unknown> {
   return {
@@ -282,6 +328,7 @@ function dornhainUnifiedGeneratorMeta(): Record<string, unknown> {
     seed: DORHAIN_UNIFIED_SEED,
     scale: 'world',
     nativeTag: 'SagaTree Native',
+    golden: true,
     unifiedCanvas: {
       format: 'sagatree-unified-atlas-v1',
       layers: {
@@ -294,9 +341,88 @@ function dornhainUnifiedGeneratorMeta(): Record<string, unknown> {
         objects: true,
         grid: false,
       },
-      strokes: [],
-      objects: [],
-      rooms: [{ id: 'w.ocean', material: 'wasser', x: 0, y: 0, w: 1000, h: 1000 }],
+      strokes: [
+        {
+          id: 'w.river-w',
+          material: 'wasser',
+          width: 10,
+          points: [
+            [220, 120],
+            [240, 280],
+            [210, 420],
+            [250, 560],
+            [200, 720],
+          ],
+        },
+        {
+          id: 'w.river-e',
+          material: 'wasser',
+          width: 12,
+          points: [
+            [780, 80],
+            [760, 220],
+            [800, 400],
+            [740, 580],
+            [780, 760],
+          ],
+        },
+        {
+          id: 's.rd.plaza',
+          material: 'pflaster',
+          width: 9,
+          points: [
+            [330, 530],
+            [350, 510],
+            [370, 490],
+          ],
+        },
+        {
+          id: 'w.rd.whisper',
+          material: 'pflaster',
+          width: 8,
+          points: [
+            [360, 510],
+            [420, 480],
+            [520, 460],
+            [640, 440],
+          ],
+        },
+      ],
+      objects: [
+        { id: 'w.loc.dornhain', type: 'haus', x: 360, y: 510, size: 0.42, height: 1.2 },
+        { id: 'w.loc.northkeep', type: 'turm', x: 220, y: 160, size: 0.36, height: 1.4 },
+        { id: 'w.loc.eastport', type: 'haus', x: 820, y: 480, size: 0.38, height: 1.1 },
+        { id: 'w.loc.southmarsh', type: 'fels', x: 180, y: 720, size: 0.34 },
+        { id: 'w.loc.highpass', type: 'fels', x: 700, y: 120, size: 0.32 },
+        { id: 's.obj.tavern', type: 'haus', x: 328, y: 528, size: 0.55, height: 1.2 },
+        { id: 's.obj.market', type: 'haus', x: 378, y: 488, size: 0.5, height: 1.1 },
+        { id: 's.obj.woods', type: 'tanne', x: 410, y: 550, size: 0.65 },
+        { id: 's.obj.crypt', type: 'fels', x: 406, y: 462, size: 0.55 },
+        { id: 's.obj.tree-a', type: 'baum', x: 304, y: 460, size: 0.4 },
+        { id: 's.obj.tree-b', type: 'tanne', x: 420, y: 500, size: 0.45 },
+      ],
+      rooms: [
+        { id: 'w.ocean', material: 'wasser', x: 0, y: 0, w: 1000, h: 1000 },
+        { id: 'w.west-core', material: 'gras', x: 60, y: 180, w: 380, h: 520 },
+        { id: 'w.west-north', material: 'erde', x: 100, y: 90, w: 280, h: 160 },
+        { id: 'w.west-south', material: 'sand', x: 80, y: 640, w: 300, h: 180 },
+        { id: 'w.west-pen', material: 'gras', x: 300, y: 400, w: 140, h: 200 },
+        { id: 'w.east-core', material: 'gras', x: 520, y: 140, w: 400, h: 560 },
+        { id: 'w.east-north', material: 'stein', x: 580, y: 40, w: 300, h: 160 },
+        { id: 'w.east-south', material: 'erde', x: 560, y: 640, w: 320, h: 220 },
+        { id: 'w.east-bay', material: 'sand', x: 480, y: 360, w: 100, h: 140 },
+        { id: 'w.isle-n', material: 'holz', x: 420, y: 30, w: 120, h: 90 },
+        { id: 'w.isle-sw', material: 'gras', x: 40, y: 780, w: 100, h: 120 },
+        { id: 'w.isle-se', material: 'sand', x: 860, y: 820, w: 110, h: 100 },
+        { id: 'w.lake-w', material: 'wasser', x: 180, y: 320, w: 70, h: 50 },
+        { id: 'w.lake-e', material: 'wasser', x: 700, y: 280, w: 90, h: 60 },
+        { id: 's.ground', material: 'gras', x: 280, y: 430, w: 160, h: 160 },
+        { id: 's.plaza', material: 'pflaster', x: 320, y: 480, w: 70, h: 60 },
+        { id: 's.tavern', material: 'erde', x: 310, y: 510, w: 36, h: 36 },
+        { id: 's.market', material: 'sand', x: 360, y: 470, w: 36, h: 36 },
+        { id: 's.woods', material: 'holz', x: 390, y: 530, w: 40, h: 40 },
+        { id: 's.crypt', material: 'stein', x: 390, y: 446, w: 32, h: 32 },
+      ],
       walls: [],
       demoSeed: false,
     },
@@ -352,7 +478,7 @@ function seedOwnedDornhainAtlas(
       now,
     );
   } else {
-    // Reuse authored root — only fill missing product canvas meta / empty layers.
+    // Fill missing product canvas, or upgrade blank v3 ocean → Golden v4.
     const row = db
       .prepare(`SELECT generator_meta, layers FROM world_atlas_maps WHERE id = ?`)
       .get(mapId) as { generator_meta: string; layers: string } | undefined;
@@ -362,25 +488,44 @@ function seedOwnedDornhainAtlas(
     } catch {
       meta = {};
     }
-    if (meta.unifiedCanvas === undefined || meta.engine !== 'unified_canvas') {
+    const seed = typeof meta.seed === 'string' ? meta.seed : '';
+    const needsGolden =
+      meta.unifiedCanvas === undefined ||
+      meta.engine !== 'unified_canvas' ||
+      seed === 'dornhain.unified.v1' ||
+      seed === 'dornhain.unified.v2' ||
+      (seed === 'dornhain.unified.v3' && isBlankOceanUnifiedCanvas(meta.unifiedCanvas));
+    if (needsGolden) {
       db.prepare(
         `UPDATE world_atlas_maps
-         SET title = ?, generator_meta = ?, updated_at = ?
+         SET title = ?, generator_meta = ?, layers = ?, updated_at = ?
          WHERE id = ? AND world_profile_id = ?`,
-      ).run(DORHAIN_WORLD_LAYER_TITLE, generatorMeta, now, mapId, worldId);
+      ).run(
+        DORHAIN_WORLD_LAYER_TITLE,
+        generatorMeta,
+        JSON.stringify(layers),
+        now,
+        mapId,
+        worldId,
+      );
     }
   }
 
+  const placeIdBySeed = new Map<string, string>();
   for (const [index, place] of DORHAIN_ATLAS_PLACES.entries()) {
     const placeId = scopedCatalogId(ownerUserId, place.stableId);
+    placeIdBySeed.set(place.seedKey, placeId);
+    const parentId =
+      place.parentSeedKey !== null ? (placeIdBySeed.get(place.parentSeedKey) ?? null) : null;
     db.prepare(
       `INSERT OR IGNORE INTO world_places (
          id, world_profile_id, parent_place_id, kind, name, description,
          status, seed_key, sort_order, revision, created_at, updated_at
-       ) VALUES (?, ?, NULL, ?, ?, ?, 'canonical', ?, ?, 0, ?, ?)`,
+       ) VALUES (?, ?, ?, ?, ?, ?, 'canonical', ?, ?, 0, ?, ?)`,
     ).run(
       placeId,
       worldId,
+      parentId,
       place.kind,
       place.name,
       place.description,
@@ -393,7 +538,9 @@ function seedOwnedDornhainAtlas(
     const linkId = scopedCatalogId(ownerUserId, `${place.stableId}-link`);
     // Root-map anchors are overview (containing world map), never place-owned primary.
     const usage = 'overview';
-    const anchor = place.anchor ? { x: place.anchor.x, y: place.anchor.y } : {};
+    const anchor = place.anchor
+      ? { x: place.anchor.x, y: place.anchor.y, source: DORHAIN_UNIFIED_SEED }
+      : {};
     db.prepare(
       `INSERT OR IGNORE INTO world_place_map_links (
          id, world_profile_id, place_id, map_id, usage, feature_id, anchor,
