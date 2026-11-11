@@ -108,6 +108,19 @@ export {
 } from './dornhain-golden-reset';
 
 export {
+  DORNHAIN_GOLDEN_MAPS,
+  DORNHAIN_WORLD_MAP_SEED,
+  buildDornhainGoldenChildGeneratorMeta,
+  buildGoldenContinentCanvas,
+  buildGoldenCountryCanvas,
+  buildGoldenCryptCanvas,
+  buildGoldenDornhainCanvas,
+  buildGoldenTavernCanvas,
+  isDornhainGoldenMapSeed,
+  type DornhainGoldenMapSpec,
+} from './dornhain-golden-hierarchy';
+
+export {
   ATLAS_PROTOTYPE_HOTSPOTS,
   ATLAS_PROTOTYPE_LAYER_LABELS,
   ATLAS_PROTOTYPE_LEVELS,

@@ -2027,6 +2027,11 @@ function checkWorldAtlasEditor() {
     cwd: root,
     stdio: 'inherit',
   });
+  console.log('Atlas Golden hierarchy maps (Steps 5+6)...');
+  execFileSync(process.execPath, ['scripts/atlas-golden-hierarchy.self-test.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
   console.log('Dornhain Golden reset planner...');
   execFileSync(process.execPath, ['scripts/dornhain-golden-reset.self-test.mjs'], {
     cwd: root,

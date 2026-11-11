@@ -11,8 +11,8 @@ Base Golden: `feat/dornhain-golden-atlas-v4` / PR [#1194](https://github.com/iam
 | 1 · 3D/2D echte Karte + Pins | done | `feat/atlas-3d-product-terrain` | No open PR yet at last check |
 | 2 · Küstenpolygone + Fläche zeichnen | done | PR [#1195](https://github.com/iamthamanic/sagatree/pull/1195) stacked on #1194 | test-gate PASS; browser OK |
 | 3+4 · Hierarchie + Ausschnitt verorten | done | same PR #1195 | locate browser OK; test-gate PASS |
-| 5+6 · Golden-Content + Reset-Kette | pending | | |
-| Gap-Audit | pending | | after 2–6 |
+| 5+6 · Golden-Content + Reset-Kette | code done; editor E2E partial | same PR #1195 | domain+reset wired; browser reset not green yet |
+| Gap-Audit | done | `.qa/runs/atlas-golden-steps-gap-audit.md` | editor not claimed complete |
 
 ## Open PM decisions (do not block Step 2)
 
@@ -53,9 +53,18 @@ Base Golden: `feat/dornhain-golden-atlas-v4` / PR [#1194](https://github.com/iam
 - Implementation: `locateChildMapFrame` / `parentAnchorFromParentRect`; `editor.locateChildOnParent`; Draufsicht locate session; overview pin on parent; reuse CreateWorldNodeDialog / createChildMap for hierarchy
 - Browser (`SA-RR25A`): Detailkarte → unlocated hint + „Ausschnitt verorten“ → parent locate mode → drag rect → hint cleared, child returns
 - test-gate: PASS; stack-migration-prep-check PASS after fingerprint refresh
-- Commit/PR: pending push onto #1195
+- Commit/PR: pushed onto #1195
+
+### Steps 5+6
+
+- Acceptance: `.qa/acceptance/atlas-golden-hierarchy-reset.md`
+- Domain: `dornhain-golden-hierarchy.ts` (Westmark placeholders) + extended `planDornhainGoldenReset`
+- Editor: `resetToGolden` upserts Golden child maps + place hierarchy/links
+- Self-tests + test-gate: PASS
+- Browser: Golden reset dialog copy updated; **full reset E2E not confirmed** (dialog did not complete in live check) — tracked in gap audit
+- Gap audit: `.qa/runs/atlas-golden-steps-gap-audit.md`
 
 ## Blockers
 
 - Merge of #1194 still needed before stacking #1195 onto `main`.
-- Steps 5–6 (full Golden hierarchy content + reset chain) not started — cartography editor not claimed complete.
+- Steps 5–6 editor E2E for hierarchy reset/drill still open — cartography editor **not** claimed complete.

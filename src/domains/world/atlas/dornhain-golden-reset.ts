@@ -6,6 +6,7 @@
  */
 
 import type { WorldPlaceKind } from '../places/world-place.types';
+import { DORNHAIN_GOLDEN_MAPS, DORNHAIN_WORLD_MAP_SEED } from './dornhain-golden-hierarchy';
 import { DORNHAIN_WORLD_ANCHOR } from './dornhain-unified-starter';
 
 /** Reset dialog modes (grill 5B / 6C / 5c). */
@@ -17,7 +18,7 @@ export type DornhainGoldenPlaceSpec = {
   readonly kind: WorldPlaceKind;
   readonly description: string;
   readonly sortOrder: number;
-  /** Parent Golden seed_key, or null for root. */
+  /** Parent Golden seed_key, or null for world root. */
   readonly parentSeedKey: string | null;
   readonly anchor: { readonly x: number; readonly y: number } | null;
 };
@@ -25,13 +26,22 @@ export type DornhainGoldenPlaceSpec = {
 /** Places restored on `atlas_places` / `everything`. Marked via seed_key. */
 export const DORNHAIN_GOLDEN_PLACES: readonly DornhainGoldenPlaceSpec[] = [
   {
-    seedKey: 'dornhain.marktplatz',
-    name: 'Marktplatz',
-    kind: 'settlement',
-    description: 'Dornhain Marktplatz — Startpunkt der Whisper-Road.',
+    seedKey: 'continent.westmark',
+    name: 'Kontinent Westmark',
+    kind: 'continent',
+    description: 'Westlicher Kontinent Donalu (Golden-Platzhaltername).',
     sortOrder: 0,
     parentSeedKey: null,
-    anchor: DORNHAIN_WORLD_ANCHOR,
+    anchor: { x: 260, y: 420 },
+  },
+  {
+    seedKey: 'country.westmark',
+    name: 'Land Westmark',
+    kind: 'country',
+    description: 'Land auf dem Kontinent Westmark (Golden-Platzhaltername).',
+    sortOrder: 5,
+    parentSeedKey: 'continent.westmark',
+    anchor: { x: 430, y: 400 },
   },
   {
     seedKey: 'place.dornhain',
@@ -39,8 +49,17 @@ export const DORNHAIN_GOLDEN_PLACES: readonly DornhainGoldenPlaceSpec[] = [
     kind: 'settlement',
     description: 'Stadt in Donalu — Starterschauplatz.',
     sortOrder: 10,
-    parentSeedKey: null,
+    parentSeedKey: 'country.westmark',
     anchor: DORNHAIN_WORLD_ANCHOR,
+  },
+  {
+    seedKey: 'dornhain.marktplatz',
+    name: 'Marktplatz',
+    kind: 'settlement',
+    description: 'Dornhain Marktplatz — Startpunkt der Whisper-Road.',
+    sortOrder: 15,
+    parentSeedKey: 'place.dornhain',
+    anchor: { x: 378, y: 488 },
   },
   {
     seedKey: 'dornhain.whisper-road',
@@ -94,9 +113,9 @@ export function dornhainGoldenResetModeLabelDe(mode: DornhainGoldenResetMode): s
 export function dornhainGoldenResetModeHintDe(mode: DornhainGoldenResetMode): string {
   switch (mode) {
     case 'atlas':
-      return 'Stellt nur die Weltkarte auf Golden zurück. Orte und Session bleiben.';
+      return 'Stellt die gesamte Golden-Kartenhierarchie (Welt + Kindkarten) wieder her. Orte und Session bleiben.';
     case 'atlas_places':
-      return 'Stellt Weltkarte und Golden-Orte/Anker wieder her. Eigene Orte ohne Golden-Seed bleiben.';
+      return 'Stellt Golden-Kartenhierarchie und Golden-Orte/Anker wieder her. Eigene Orte ohne Golden-Seed bleiben.';
     case 'everything':
       return 'Wie Karte und Orte — plus Session-Reveals/Fortschritt, sofern verfügbar.';
     default: {
@@ -109,6 +128,8 @@ export function dornhainGoldenResetModeHintDe(mode: DornhainGoldenResetMode): st
 export type DornhainGoldenResetPlan = {
   readonly mode: DornhainGoldenResetMode;
   readonly restoreCanvas: boolean;
+  /** World root + all Golden child map seeds. */
+  readonly goldenMapSeeds: readonly string[];
   readonly restoreGoldenPlaces: boolean;
   readonly clearSessionProgress: boolean;
   /** German note when session wipe is requested but not available yet. */
@@ -136,6 +157,7 @@ export function planDornhainGoldenReset(
   return {
     mode,
     restoreCanvas,
+    goldenMapSeeds: [DORNHAIN_WORLD_MAP_SEED, ...DORNHAIN_GOLDEN_MAPS.map((m) => m.seedKey)],
     restoreGoldenPlaces,
     clearSessionProgress,
     sessionProgressNoteDe,
