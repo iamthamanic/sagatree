@@ -18,8 +18,8 @@
 | Ref | Role | vs `main` | CI / review blockers (as of audit) |
 |-----|------|-----------|-------------------------------------|
 | `main` | Integration base | — | Healthy tip (docs merge #1193) |
-| #1194 Golden v4 | Must merge **before** #1195 | Diverged (ahead of main) | ECC FAIL; Browser E2E FAIL; GATE-02/03 FAIL; **Kody FAIL** (API credits 429); Codex **P1×5 + P2×2** unresolved |
-| #1195 Steps 1–6 | Stacked product work | Ancestor = #1194 tip | ECC FAIL; **Kody SKIPPED**; Codex **P2×3** (concave fill, room delete, elevation); Test Gate / several stack gates green on last tip |
+| #1194 Golden v4 | Must merge **before** #1195 | Diverged (ahead of main) | Kodus: **PASS (`kodus-skipped-credits`)** — not the sole merge blocker; remaining ECC = unresolved Codex + required CI (Test Gate / fingerprints / Browser E2E / GATE-02/03 as of audit tip) |
+| #1195 Steps 1–6 | Stacked product work | Ancestor = #1194 tip | Re-check Kodus after each tip push; Codex **P2×3** (concave fill, room delete, elevation) + stack-migration fingerprints historically failing — not “Kodus-only” |
 
 **Stack rule (binding):** Merge order `#1194 → #1195 → main`. No competing PRs for the same functions. **No merges without explicit human approval.**
 
@@ -30,14 +30,16 @@
 | Path | Role today | Product? | Decision | Follow-up |
 |------|------------|----------|----------|-----------|
 | `UnifiedAtlasEditor.tsx` + Canvas2D Draufsicht | Primary 2D authoring surface | **Yes** | **Keep** — V2 primary editor | #1206–#1211 |
-| `AtlasNative3dEditor.tsx` → `atlas-prototype-runtime.mjs` | Product Three.js (import-free runtime) for `demoSeed:false` | **Yes** | **Keep / harden** — sole productive 3D engine | #1212–#1218 |
+| `AtlasNative3dEditor.tsx` → `atlas-prototype-runtime.mjs` | **Product custom WebGL** (`AtlasGL` / raw `webgl2` shaders — **not** Three.js) for `demoSeed:false` | **Yes** | **Keep / harden** — sole productive 3D engine today; do **not** swap renderers in this audit | #1212–#1218 |
 | `webgl-runtime-bridge.ts` | Lossless 2D↔3D canvas sync | **Yes** | **Keep** | #1201–#1205 |
-| `AtlasSpatialViewport.tsx` | Second Three.js viewport (Perspective, object pick/edit) | Parallel / unused as product chrome | **Migrate → Remove** after parity with prototype runtime | #1234 (after #1218) |
+| `AtlasSpatialViewport.tsx` | **Three.js** viewport (`import * as THREE`) — Perspective, object pick/edit | Parallel / unused as product chrome | Inventory only here; **how** we converge to exactly one productive Three.js (or keep custom WebGL) is **#1212** — preserve functions/data; no rushed swap | #1212 → #1234 |
 | `WorldAtlasLeafletMap.tsx` + Geoman | Legacy GeoJSON `layers` editor | Legacy tiles / secondary | **Keep readable; no new features**; retire when unified canvas owns all authoring | #1203 / #1234 |
 | Eldoria `demoSeed:true` art inside `UnifiedAtlasEditor` | Demo LOD continents | Demo only | **Keep isolated**; never on product maps (#752) | — |
 | Azgaar import path | External `.map` storage | Optional | **Keep** as import; not second SoT | #1238 optional |
 
-**Rule:** Exactly **one** productive 3D engine = `atlas-prototype-runtime.mjs` (via `AtlasNative3dEditor`). `AtlasSpatialViewport` must not become a second product path.
+**Rule (Ist):** Exactly **one** productive 3D path today = custom WebGL `atlas-prototype-runtime.mjs` (via `AtlasNative3dEditor`). `AtlasSpatialViewport` (Three.js) must not become a second product path.
+
+**Rule (Soll / #1212):** Renderer-audit decides how to reach **exactly one** productive Three.js renderer (or explicitly keep custom WebGL) **without** dropping existing functions or cartography data. This ATL2-A01 ticket only corrects the inventory — it does **not** perform a renderer exchange.
 
 ---
 
@@ -81,7 +83,7 @@ Legend: **I** = implemented on #1195 tip · **P** = partial · **M** = missing �
 | 16 | GM/player secrecy on unifiedCanvas | projection incomplete (Codex P1) | P | — | Fix | #1198 / #1229 |
 | 17 | Adaptive AU-* / IV-* acceptance on UI tickets | often missing on Golden tickets | M | — | Enforce | every UI PR |
 | 18 | Leaflet Geoman as primary editor | still for `legacy_tiles` | I legacy | — | No new product work | #1234 |
-| 19 | Second Three.js (`AtlasSpatialViewport`) | code present | I unused product | — | Remove after parity | #1234 |
+| 19 | Parallel Three.js (`AtlasSpatialViewport`) vs product custom WebGL runtime | both present; product = WebGL | I unused Three.js | — | Inventory fix; converge decision in #1212 | #1212 / #1234 |
 | 20 | Session wipe on reset `everything` | honest DE note only | P | unit | Host API later | optional / Gate G |
 
 ---
@@ -90,7 +92,7 @@ Legend: **I** = implemented on #1195 tip · **P** = partial · **M** = missing �
 
 | Function class | Keep | Migrate | Remove (after parity) |
 |----------------|------|---------|------------------------|
-| Product 3D | `atlas-prototype-runtime.mjs` | — | `AtlasSpatialViewport` product use |
+| Product 3D | custom WebGL `atlas-prototype-runtime.mjs` (Ist) | → single productive Three.js **only if #1212 decides** (preserve data/functions) | `AtlasSpatialViewport` as second product path |
 | Product 2D | Canvas Draufsicht in `UnifiedAtlasEditor` | Leaflet layers → canvas features where needed | Geoman as default product editor |
 | Document SoT | `unifiedCanvas` | GeoJSON layers → projected/compat only | Dual-write inventing facts |
 | Hierarchy | WorldNode + primary maps + parentAnchor | Flat Golden places → 6-level seed | Demo LOD inventing continents on product |
@@ -105,10 +107,10 @@ Legend: **I** = implemented on #1195 tip · **P** = partial · **M** = missing �
 
 | PR | Blocker | Severity | Owner ticket |
 |----|---------|----------|--------------|
-| #1194 | Kody Code Review **failed** (provider credits / 429) | Process High | #1198 / ops |
-| #1194 | ECC Merge Gate FAIL (depends on Kodus Complete) | Process High | #1198 |
-| #1194 | Browser E2E FAIL; GATE-02/03 FAIL | High | #1198 |
-| #1195 | Kody **SKIPPED** → ECC FAIL-closed | Process High | #1198 / ops |
+| #1194 | Kodus authorized **`kodus-skipped-credits`** → gate reports **Kodus PASS**; remaining ECC = Codex threads + other required checks | Process / triage | #1198 |
+| #1194 | ECC Merge Gate FAIL while Codex unresolved and/or required CI red | Process High | #1198 |
+| #1194 | Browser E2E FAIL; GATE-02/03 FAIL (as of audit tip — re-verify on current HEAD) | High | #1198 |
+| #1195 | Re-verify Kodus on **current** tip after pushes; do not assume credits-skip from #1194 | Process | #1198 / ops |
 | Both | No merge without explicit approval; order 1194→1195 | Policy | human |
 
 ### 6.2 Codex / product defects (confirmed or strongly evidenced)
@@ -169,6 +171,6 @@ Contract chain: `world → continent → country → place → building → room
 ## 10. What this audit explicitly does **not** do
 
 - No deletion of Leaflet / SpatialViewport in this ticket  
-- No new renderer  
+- No new renderer and **no** product WebGL→Three.js swap (that decision lives in #1212)  
 - No claim that the cartography editor is finished  
 - No merge of #1194/#1195  
