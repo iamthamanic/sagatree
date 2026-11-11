@@ -1,30 +1,42 @@
-# Composition Gate — atlas-golden-steps-2-6 (PR tip)
+# Composition Gate — atlas-golden-steps-2-6
 
-## Verdict
+- HEAD_SHA: 21219d19b1da59eaea69598300ea5aa5910b8d9e
+- BASE_SHA: fe727a4416df2590d35a0b5bda71dbd27813f649
+- Date: 2026-11-11
+- Verdict: SKIPPED
 
-**SKIPPED**
+## Skip reason
 
-## Reason
+Single-actor owner authoring for Golden Steps 1–6 (product terrain, coast polygons,
+Fläche, locate parentAnchor, Golden hierarchy seed/reset). Persistence remains
+existing owner-scoped atlas upsert + place links — no new multi-actor hop.
 
-Single-actor owner authoring across Steps 1–6 (render saved maps, coast polygons,
-Fläche tool, locate parentAnchor, Golden hierarchy seed/reset). Persistence stays
-existing owner-scoped atlas upsert + place-link paths. No new multi-actor hop
-chain (producer→consumer across actors).
+## Event
 
-## HEAD
+Stacked atlas work on `feat/atlas-3d-product-terrain` over Golden v4: 2D/3D product
+maps, coast polygons + area tool, Ausschnitt verorten, Golden child-map seeds and
+reset chain wiring.
 
-`d408938374024762b4f8bf2a43df014d5eeecf99`
+## Hop chain
 
-## BASE
+1. **Producer:** owner atlas editor / Golden reset (same actor)
+2. **Domain:** unified canvas + map-frame + golden hierarchy helpers
+3. **Persistence:** existing host atlas upsert / place-map-link
+4. **Consumer:** same owner editor surfaces (3D + Draufsicht)
 
-`fe727a4416df2590d35a0b5bda71dbd27813f649` (`feat/dornhain-golden-atlas-v4` tip at stack time)
+## Simulations
 
-## Scope
+| Case | Intended | Composed | Result |
+|------|----------|----------|--------|
+| N-actors | N/A | single editor | skip |
+| Invalid/missing | unlocated / bad rect | fail-closed locate + LOD | pass (self-tests) |
+| Two consumers / crash | remount mid-edit | contentEpoch + dirty save | pass |
 
-- Step 1: product terrain + pins 3D/Draufsicht
-- Step 2: `points` polygons + Fläche tool
-- Steps 3+4: locate session / parentAnchor
-- Steps 5+6: Golden hierarchy maps + reset planner/upsert
+## Flags
+
+| Tag | Severity | Hops | Why local review missed it | Fix |
+|-----|----------|------|----------------------------|-----|
+| (none) | — | — | — | — |
 
 ## Related proofs
 
