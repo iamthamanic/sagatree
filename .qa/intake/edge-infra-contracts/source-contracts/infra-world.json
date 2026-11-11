@@ -186,6 +186,10 @@
       "sha256": "de25ba46549bab20e0e55a513fb0745e722449d8f1b61bb51887d986653c4eab"
     },
     {
+      "path": "src/domains/world/atlas/atlas-map-pins.ts",
+      "sha256": "1421ca01edd55307c341adc3ac74f4c5a7cef87f60fadbbe0faaa141898b4791"
+    },
+    {
       "path": "src/domains/world/atlas/atlas-persist-state.ts",
       "sha256": "84ab0edbd0b525c95b5db85afeb683d335351884ba6c612e94f327719a6b60ca"
     },
@@ -195,7 +199,7 @@
     },
     {
       "path": "src/domains/world/atlas/atlas-tool-registry.ts",
-      "sha256": "9a6d6ef66b233ccb0a2fe82c5fea50406b7f3ef210ad3ef5280b7e79bd1acca4"
+      "sha256": "beee288eacf46d45fd865cdb2e5814a6ff0d4cadbae4af9065180a4b938c766d"
     },
     {
       "path": "src/domains/world/atlas/dornhain-golden-reset.ts",
@@ -211,7 +215,7 @@
     },
     {
       "path": "src/domains/world/atlas/index.ts",
-      "sha256": "71e96ec8ef3904a2b9a1c29db37f40ce6e6a8b3f7e3e0574dd7393b568e51b4f"
+      "sha256": "8ef73d1f5893340c478589d7da1108f8a2b183ee63bb3f6fa2c35e3457be6570"
     },
     {
       "path": "src/domains/world/atlas/map-edit-ops.ts",
@@ -231,7 +235,7 @@
     },
     {
       "path": "src/domains/world/atlas/webgl-runtime-bridge.ts",
-      "sha256": "cc8365f602313ed487faa185257ce6b12400241d2f70867b00ef40329809e9b8"
+      "sha256": "ea087c372e53668a3acd5c0ab3c395488ce3dc8c7ca76df22eb6144a92d4a73b"
     },
     {
       "path": "src/domains/world/atlas/world-atlas.types.ts",
@@ -1113,6 +1117,22 @@
     },
     {
       "kind": "TypeAliasDeclaration",
+      "name": "AtlasMapScale",
+      "path": "src/domains/world/atlas/atlas-map-pins.ts",
+      "line": 13,
+      "endLine": 13,
+      "text": "export type AtlasMapScale = 'world' | 'settlement' | 'interior';"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AtlasMapPin",
+      "path": "src/domains/world/atlas/atlas-map-pins.ts",
+      "line": 15,
+      "endLine": 22,
+      "text": "export type AtlasMapPin = {\n  readonly id: string;\n  readonly label: string;\n  /** Hierarchy kind (null when the legacy place kind has no canonical node kind). */\n  readonly kind: WorldNodeKind | null;\n  readonly x: number;\n  readonly y: number;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
       "name": "AtlasPersistStatus",
       "path": "src/domains/world/atlas/atlas-persist-state.ts",
       "line": 6,
@@ -1435,8 +1455,8 @@
       "kind": "TypeAliasDeclaration",
       "name": "WebglRuntimeState",
       "path": "src/domains/world/atlas/webgl-runtime-bridge.ts",
-      "line": 24,
-      "endLine": 31,
+      "line": 25,
+      "endLine": 32,
       "text": "export type WebglRuntimeState = {\n  readonly props: readonly unknown[];\n  readonly strokes: readonly unknown[];\n  readonly walls: readonly unknown[];\n  readonly rooms?: readonly unknown[];\n  readonly layers: Readonly<Record<string, unknown>>;\n  readonly [key: string]: unknown;\n};"
     },
     {

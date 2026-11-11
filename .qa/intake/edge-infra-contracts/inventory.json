@@ -37559,6 +37559,10 @@
             "sha256": "de25ba46549bab20e0e55a513fb0745e722449d8f1b61bb51887d986653c4eab"
           },
           {
+            "path": "src/domains/world/atlas/atlas-map-pins.ts",
+            "sha256": "1421ca01edd55307c341adc3ac74f4c5a7cef87f60fadbbe0faaa141898b4791"
+          },
+          {
             "path": "src/domains/world/atlas/atlas-persist-state.ts",
             "sha256": "84ab0edbd0b525c95b5db85afeb683d335351884ba6c612e94f327719a6b60ca"
           },
@@ -37568,7 +37572,7 @@
           },
           {
             "path": "src/domains/world/atlas/atlas-tool-registry.ts",
-            "sha256": "9a6d6ef66b233ccb0a2fe82c5fea50406b7f3ef210ad3ef5280b7e79bd1acca4"
+            "sha256": "beee288eacf46d45fd865cdb2e5814a6ff0d4cadbae4af9065180a4b938c766d"
           },
           {
             "path": "src/domains/world/atlas/dornhain-golden-reset.ts",
@@ -37584,7 +37588,7 @@
           },
           {
             "path": "src/domains/world/atlas/index.ts",
-            "sha256": "71e96ec8ef3904a2b9a1c29db37f40ce6e6a8b3f7e3e0574dd7393b568e51b4f"
+            "sha256": "8ef73d1f5893340c478589d7da1108f8a2b183ee63bb3f6fa2c35e3457be6570"
           },
           {
             "path": "src/domains/world/atlas/map-edit-ops.ts",
@@ -37604,7 +37608,7 @@
           },
           {
             "path": "src/domains/world/atlas/webgl-runtime-bridge.ts",
-            "sha256": "cc8365f602313ed487faa185257ce6b12400241d2f70867b00ef40329809e9b8"
+            "sha256": "ea087c372e53668a3acd5c0ab3c395488ce3dc8c7ca76df22eb6144a92d4a73b"
           },
           {
             "path": "src/domains/world/atlas/world-atlas.types.ts",
@@ -37796,7 +37800,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-world.json",
-      "sourceContractSha256": "ec67ff6a0dc290507f69c1c68394640fdf281ca3b05321d041197ebd4796a670",
+      "sourceContractSha256": "70ebfe96952d3ed4eac79e41cb41126f3df58d963ffed7cef580e58b91c5ecbb",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],
