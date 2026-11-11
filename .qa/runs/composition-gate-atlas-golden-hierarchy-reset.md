@@ -10,7 +10,7 @@ Owner-scoped Golden seed restore (maps + places). No new multi-actor hop.
 
 ## HEAD
 
-Stamped at Steps 5+6 commit tip on `feat/atlas-3d-product-terrain`.
+`f9d5e6d6fcecaf6214dbabfede027f3c7494d783`
 
 ## Scope
 
