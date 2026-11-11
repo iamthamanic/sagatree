@@ -204,7 +204,7 @@ Optionale Host-Use-Cases (keine produktive Abhängigkeit). Keys nie im Browser.
 | Item 3D | Host `item-model3d` · Meshy Image-to-3D | GLB-Limits hostseitig; Bibliothek zeigt Thumbnails |
 | Avatar-Katalog | Manifeste + optional `VITE_AVATAR_ASSET_BASE_URL` | Lizenzierte / gepinnte Assets — [`docs/avatar assets.md`](docs/avatar%20assets.md) |
 
-Server-Env (**nicht** im Vite-Bundle):
+Server-Env (**nicht** im Vite-Bundle). Keys liegen **nie** als `VITE_*MESHY` / `NEXT_PUBLIC_*` im Client:
 
 ```bash
 CHARACTER_AI_PROVIDER=ollama
