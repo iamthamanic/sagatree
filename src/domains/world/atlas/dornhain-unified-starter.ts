@@ -183,6 +183,7 @@ export function buildDornhainUnifiedGeneratorMeta(): Record<string, unknown> {
     sagaSlug: 'dornhain.whisper',
     seed: DORNHAIN_UNIFIED_SEED,
     scale: 'world',
+    mapStatus: 'ready',
     nativeTag: 'SagaTree Native',
     golden: true,
     unifiedCanvas: buildDornhainUnifiedCanvasDoc(),

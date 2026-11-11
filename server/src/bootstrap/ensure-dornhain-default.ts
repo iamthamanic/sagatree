@@ -327,6 +327,7 @@ function dornhainUnifiedGeneratorMeta(): Record<string, unknown> {
     sagaSlug: DORHAIN_SLUG,
     seed: DORHAIN_UNIFIED_SEED,
     scale: 'world',
+    mapStatus: 'ready',
     nativeTag: 'SagaTree Native',
     golden: true,
     unifiedCanvas: {
@@ -489,12 +490,14 @@ function seedOwnedDornhainAtlas(
       meta = {};
     }
     const seed = typeof meta.seed === 'string' ? meta.seed : '';
+    const statusMissing = meta.mapStatus !== 'ready' && meta.mapStatus !== 'unsketched';
     const needsGolden =
       meta.unifiedCanvas === undefined ||
       meta.engine !== 'unified_canvas' ||
       seed === 'dornhain.unified.v1' ||
       seed === 'dornhain.unified.v2' ||
-      (seed === 'dornhain.unified.v3' && isBlankOceanUnifiedCanvas(meta.unifiedCanvas));
+      (seed === 'dornhain.unified.v3' && isBlankOceanUnifiedCanvas(meta.unifiedCanvas)) ||
+      (seed === DORHAIN_UNIFIED_SEED && statusMissing);
     if (needsGolden) {
       db.prepare(
         `UPDATE world_atlas_maps

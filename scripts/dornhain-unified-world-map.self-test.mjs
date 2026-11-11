@@ -31,6 +31,7 @@ assert(src.includes('isBlankDornhainOceanDoc'), 'blank ocean detector');
 assert(src.includes('isSettlementLodId'), 'settlement LOD helper');
 assert(src.includes('shouldUpgradeDornhainUnifiedToWorld'), 'upgrade detector');
 assert(src.includes('dornhain.unified.v3'), 'upgrade path includes v3');
+assert(src.includes("mapStatus: 'ready'"), 'golden mapStatus ready');
 
 const resetPath = path.join(root, 'src/domains/world/atlas/dornhain-golden-reset.ts');
 assert(fs.existsSync(resetPath), 'golden reset module');
