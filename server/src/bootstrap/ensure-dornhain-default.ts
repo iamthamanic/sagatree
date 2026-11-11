@@ -499,9 +499,11 @@ function seedOwnedDornhainAtlas(
       (seed === 'dornhain.unified.v3' && isBlankOceanUnifiedCanvas(meta.unifiedCanvas)) ||
       (seed === DORHAIN_UNIFIED_SEED && statusMissing);
     if (needsGolden) {
+      // Bump revision so an editor still holding the pre-upgrade map gets a
+      // conflict instead of silently saving over the Golden canvas.
       db.prepare(
         `UPDATE world_atlas_maps
-         SET title = ?, generator_meta = ?, layers = ?, updated_at = ?
+         SET title = ?, generator_meta = ?, layers = ?, revision = revision + 1, updated_at = ?
          WHERE id = ? AND world_profile_id = ?`,
       ).run(
         DORHAIN_WORLD_LAYER_TITLE,
