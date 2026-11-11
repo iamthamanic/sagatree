@@ -206,8 +206,12 @@
       "sha256": "e605bf5a1c438aec4d77cae1879cf0575c565359b6e180b8b6cba95898b46ca4"
     },
     {
+      "path": "src/domains/world/atlas/dornhain-golden-hierarchy.ts",
+      "sha256": "1eaf1b81180fda6e36da7388121d64b1162c4c927bed67a405128cddea46e0b1"
+    },
+    {
       "path": "src/domains/world/atlas/dornhain-golden-reset.ts",
-      "sha256": "c57d8ff657ecdef5ec6ae97e123edbd03b71beac6fc3131249bf8cd9249932a9"
+      "sha256": "43da469b3c85a794a49236774cafe87ad5b159c431c6d1271a67d5e42bb47841"
     },
     {
       "path": "src/domains/world/atlas/dornhain-unified-starter.ts",
@@ -219,7 +223,7 @@
     },
     {
       "path": "src/domains/world/atlas/index.ts",
-      "sha256": "3a9d33a44d032ebb6d92f4882be64bcd74eeff804960ef36e3d545405e9fc20a"
+      "sha256": "ce7ce4dbe76ec3593395d3d3a70a971f6d0b2c53b19bc48365fc1756c28ded82"
     },
     {
       "path": "src/domains/world/atlas/map-edit-ops.ts",
@@ -1233,27 +1237,35 @@
     },
     {
       "kind": "TypeAliasDeclaration",
+      "name": "DornhainGoldenMapSpec",
+      "path": "src/domains/world/atlas/dornhain-golden-hierarchy.ts",
+      "line": 25,
+      "endLine": 36,
+      "text": "export type DornhainGoldenMapSpec = {\n  readonly seedKey: string;\n  readonly placeSeedKey: string;\n  readonly title: string;\n  readonly kind: WorldAtlasMapKind;\n  /** Parent Golden map seed; null = world root (`dornhain.unified.v4`). */\n  readonly parentMapSeedKey: string | null;\n  readonly parentAnchor: Omit<ParentSpatialAnchor, 'parentMapId' | 'metersPerUnit' | 'rotationRad'> & {\n    readonly rotationRad?: number;\n  };\n  readonly buildCanvas: () => UnifiedCanvasDoc;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
       "name": "DornhainGoldenResetMode",
       "path": "src/domains/world/atlas/dornhain-golden-reset.ts",
-      "line": 12,
-      "endLine": 12,
+      "line": 13,
+      "endLine": 13,
       "text": "export type DornhainGoldenResetMode = 'atlas' | 'atlas_places' | 'everything';"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "DornhainGoldenPlaceSpec",
       "path": "src/domains/world/atlas/dornhain-golden-reset.ts",
-      "line": 14,
-      "endLine": 23,
-      "text": "export type DornhainGoldenPlaceSpec = {\n  readonly seedKey: string;\n  readonly name: string;\n  readonly kind: WorldPlaceKind;\n  readonly description: string;\n  readonly sortOrder: number;\n  /** Parent Golden seed_key, or null for root. */\n  readonly parentSeedKey: string | null;\n  readonly anchor: { readonly x: number; readonly y: number } | null;\n};"
+      "line": 15,
+      "endLine": 24,
+      "text": "export type DornhainGoldenPlaceSpec = {\n  readonly seedKey: string;\n  readonly name: string;\n  readonly kind: WorldPlaceKind;\n  readonly description: string;\n  readonly sortOrder: number;\n  /** Parent Golden seed_key, or null for world root. */\n  readonly parentSeedKey: string | null;\n  readonly anchor: { readonly x: number; readonly y: number } | null;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "DornhainGoldenResetPlan",
       "path": "src/domains/world/atlas/dornhain-golden-reset.ts",
-      "line": 109,
-      "endLine": 116,
-      "text": "export type DornhainGoldenResetPlan = {\n  readonly mode: DornhainGoldenResetMode;\n  readonly restoreCanvas: boolean;\n  readonly restoreGoldenPlaces: boolean;\n  readonly clearSessionProgress: boolean;\n  /** German note when session wipe is requested but not available yet. */\n  readonly sessionProgressNoteDe: string | null;\n};"
+      "line": 128,
+      "endLine": 137,
+      "text": "export type DornhainGoldenResetPlan = {\n  readonly mode: DornhainGoldenResetMode;\n  readonly restoreCanvas: boolean;\n  /** World root + all Golden child map seeds. */\n  readonly goldenMapSeeds: readonly string[];\n  readonly restoreGoldenPlaces: boolean;\n  readonly clearSessionProgress: boolean;\n  /** German note when session wipe is requested but not available yet. */\n  readonly sessionProgressNoteDe: string | null;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",

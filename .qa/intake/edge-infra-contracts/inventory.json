@@ -37579,8 +37579,12 @@
             "sha256": "e605bf5a1c438aec4d77cae1879cf0575c565359b6e180b8b6cba95898b46ca4"
           },
           {
+            "path": "src/domains/world/atlas/dornhain-golden-hierarchy.ts",
+            "sha256": "1eaf1b81180fda6e36da7388121d64b1162c4c927bed67a405128cddea46e0b1"
+          },
+          {
             "path": "src/domains/world/atlas/dornhain-golden-reset.ts",
-            "sha256": "c57d8ff657ecdef5ec6ae97e123edbd03b71beac6fc3131249bf8cd9249932a9"
+            "sha256": "43da469b3c85a794a49236774cafe87ad5b159c431c6d1271a67d5e42bb47841"
           },
           {
             "path": "src/domains/world/atlas/dornhain-unified-starter.ts",
@@ -37592,7 +37596,7 @@
           },
           {
             "path": "src/domains/world/atlas/index.ts",
-            "sha256": "3a9d33a44d032ebb6d92f4882be64bcd74eeff804960ef36e3d545405e9fc20a"
+            "sha256": "ce7ce4dbe76ec3593395d3d3a70a971f6d0b2c53b19bc48365fc1756c28ded82"
           },
           {
             "path": "src/domains/world/atlas/map-edit-ops.ts",
@@ -37804,7 +37808,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-world.json",
-      "sourceContractSha256": "3d59fa0df529f59d38db6c5edf2d5fed8a5a5b980e8a084621d31c9fb5c7ae80",
+      "sourceContractSha256": "c3029297f17d699cffc6756bad66ff1b4665d05ab5cbe4f336dc453a0bf0d7a2",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],
