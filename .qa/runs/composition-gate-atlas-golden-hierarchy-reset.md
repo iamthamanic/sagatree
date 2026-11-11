@@ -10,7 +10,7 @@ Owner-scoped Golden seed restore (maps + places). No new multi-actor hop.
 
 ## HEAD
 
-`e7ae83d86fee175f909af53b72fd762a5dfd596c`
+`d408938374024762b4f8bf2a43df014d5eeecf99`
 
 ## Scope
 
