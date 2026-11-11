@@ -1,8 +1,9 @@
 # SagaTree – SQLite-basierte, local-first Architektur
 
-> **Status:** Architekturvorschlag / Migrationsziel, **keine** bereits implementierte Architektur.  
-> **Stand:** 19.10.2026 · **Zielpfad:** `docs/architektur-sqlite-based.md`  
-> **Referenz:** GitHub-`main` zum Zeitpunkt der Bestandsaufnahme. Lokale, nicht gepushte Änderungen können abweichen.  
+> **Status (Stand dieses Dokuments: 19.10.2026):** Historischer Architekturvorschlag / Entscheidungsbeleg.  
+> **Nicht** die aktuelle Betriebsanleitung und nicht der alleinige Ist-Nachweis für `main` nach CUT-21/22/23.  
+> **Aktueller Produkt-Einstieg:** [`README.md`](../README.md) · [`README_SELFHOST.md`](../README_SELFHOST.md) · [`docs/architecture/host-modular-monolith.md`](architecture/host-modular-monolith.md) · [`docs/ops/host-compose-profiles.md`](ops/host-compose-profiles.md).  
+> **Ist vs. damaliges Soll:** Node/Hono + Better Auth + SQLite + lokale Assets sind im Produktpfad **implementiert und über CUT-Verträge geprüft**; Abschnitte unten, die „noch nicht implementiert“ / Migrationsziel formulieren, beschreiben den **damaligen** Entwurf und bleiben als Entscheidungsgeschichte erhalten.  
 > **Prinzip:** Die Produktinvarianten gelten unabhängig von SQLite, PostgreSQL, PocketBase, Hono, Node.js, Desktop-Framework, Transport und KI-Anbieter.
 
 ## 1. Entscheidung und Nichtziele

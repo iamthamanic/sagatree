@@ -1427,6 +1427,12 @@ function checkCut20LegacyClientBan() {
     stdio: 'inherit',
   });
   console.log('OK: cut-23-final-parity.self-test');
+  console.log('Docs runtime drift (active entrypoints)...');
+  execFileSync(process.execPath, ['scripts/docs-runtime-drift-check.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
+  console.log('OK: docs-runtime-drift-check');
 }
 
 function checkFeHost12ProjectWrites() {

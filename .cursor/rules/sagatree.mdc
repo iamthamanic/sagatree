@@ -10,16 +10,18 @@ Read [AGENTS.md](../../AGENTS.md) before changing code.
 ## Stack
 
 - React + Vite + TypeScript + Tailwind + Radix
-- Supabase self-host (Auth, Postgres, Edge Functions, Storage)
+- Node/Hono host — Better Auth, Policy Service, SQLite, local assets (`server/`)
+- Optional AI/Media providers (Ollama/BYOK, LiveKit, Meshy); core runs without them
+- Legacy Supabase/Edge archived under `archive/supabase-legacy/` (not product)
 - UI/errors Deutsch; commits and PR text English
 - Quality gate: `npm run test-gate` (includes architecture-boundary-check)
 
 ## Architecture (#94)
 
-- `src/domains/**` — pure business/rules (no React, no Supabase)
-- `src/infrastructure/**` — Supabase / network adapters only
+- `src/domains/**` — pure business/rules (no React, no Host/ORM/HTTP SDKs)
+- `src/infrastructure/**` — Host HTTP / network adapters only
 - `src/app/<domain>/<slice>/` — vertical user journeys
-- `src/modules/**` — legacy barrels; no new business logic for migrated areas
+- `src/modules/**` / `src/components/**` eradicated — do not recreate
 - Character: `edit/` is composition root; consume `creation/` + `progression/` via public barrels only
 
 ## Workflow
@@ -32,6 +34,6 @@ Read [AGENTS.md](../../AGENTS.md) before changing code.
 
 ## Security
 
-- Owner-scoped data stays owner-scoped (RLS + service checks)
+- Owner-scoped data stays owner-scoped (Policy Service + service checks)
 - Client writes must not invent elevated origins or cross-owner FKs
 - Security reviews list **all** severities including Low/Info

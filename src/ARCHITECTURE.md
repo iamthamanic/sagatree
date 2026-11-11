@@ -1,6 +1,7 @@
 # SagaTree Frontend Architecture
 
-> Product/data vision below. For **code layout and import boundaries**, see [Layered Architecture](#layered-architecture-94).
+> **Aktuell (Produkt):** Frontend-Schichten und Importgrenzen (#94). Backend-Runtime ist der Node/Hono-Host — siehe [`docs/architecture/host-modular-monolith.md`](../docs/architecture/host-modular-monolith.md) und [`README_SELFHOST.md`](../README_SELFHOST.md).  
+> Abschnitte *Vision* / *Datenmodell* / *Key Features* unten sind Produkt-/Zielvision; sie sind **keine** Betriebsanleitung für den archivierten Supabase-Stack.
 
 ## Layered Architecture (#94)
 
@@ -8,10 +9,10 @@ SagaTree uses a **Modular Monolith** with explicit layers:
 
 | Layer | Path | May import | Must NOT import |
 |-------|------|------------|-----------------|
-| Rules kernel | `src/domains/rules/sagatree/*` | stdlib, sibling rule slices | React, UI, Supabase, `app/`, `infrastructure/` |
-| Character domain | `src/domains/character/*` | rules kernel (public API) | React, UI, Supabase, `shared/ui` |
-| Infrastructure | `src/infrastructure/*` | domains, `lib/supabase` | React, `shared/ui`, `components/`, `app/` |
-| App slices | `src/app/<area>/` | domains, infrastructure, `shared/ui`, other areas **only via `app/<area>` public barrel** | Supabase, other areas' **private** nested files |
+| Rules kernel | `src/domains/rules/sagatree/*` | stdlib, sibling rule slices | React, UI, Host/ORM/HTTP SDKs, `app/`, `infrastructure/` |
+| Character domain | `src/domains/character/*` | rules kernel (public API) | React, UI, Host/ORM/HTTP SDKs, `shared/ui` |
+| Infrastructure | `src/infrastructure/*` | domains, `lib/*` (auth bridge), host HTTP helpers | React, `shared/ui`, `components/`, `app/`, `server/**` |
+| App slices | `src/app/<area>/` | domains, infrastructure, `shared/ui`, other areas **only via `app/<area>` public barrel** | Persistenz/Auth-SDKs, other areas' **private** nested files |
 | Shared UI | `src/shared/ui/` | React, local utils | domain rules, infrastructure, app slices |
 
 **Character slice boundaries:**
@@ -37,13 +38,13 @@ SagaTree uses a **Modular Monolith** with explicit layers:
 | Path | Status |
 |------|--------|
 | `src/domains/**` | Pure domain / contracts / rules |
-| `src/infrastructure/**` | Adapters (Supabase, storage, Three runtime, …) |
+| `src/infrastructure/**` | Adapters (Host HTTP, storage, Three runtime, …) |
 | `src/app/**` | Vertical slices / user journeys |
 | `src/shared/ui/**` | Fachlich neutrale UI primitives |
 
 **Forbidden (eradicated):** `src/modules/**`, `src/components/**` — must not exist; recreating fails CI.
 
-**Allowed code-bearing `src/` roots:** `domains/`, `infrastructure/`, `app/`, `shared/`, `lib/`, `utils/`, `supabase/`, `assets/`, `styles/`. Any other directory that contains TypeScript/JS fails the architecture gate. Top-level source under `src/` is limited to composition roots `App.tsx` and `main.tsx` — no ad-hoc `src/FooService.ts`.
+**Allowed code-bearing `src/` roots:** `domains/`, `infrastructure/`, `app/`, `shared/`, `lib/`, `utils/`, `assets/`, `styles/` (plus any roots still allowlisted by `scripts/architecture-boundary-check.mjs`). Historical `src/supabase/` was archived under `archive/supabase-legacy/`. Top-level source under `src/` is limited to composition roots `App.tsx` and `main.tsx` — no ad-hoc `src/FooService.ts`.
 
 **Cross-area imports:** relative and `@/` alias paths are checked the same way. Area barrels (`app/<area>/index.ts`) may re-export own-area internals only; other areas still require that area's public barrel.
 
@@ -59,7 +60,7 @@ Design reference: `.qa/design/scalable-domain-vertical-slice-architecture.md`
 
 
 ## Vision
-**SagaTree** ist die selbst gehostete, werkzeugartige TTRPG-Oberfläche für Spielleitung und Spieler — Kampagnen, Charaktere (SagaTree Core), Live-Sessions — kein generisches Gaming-Dashboard. Flexibel für weitere Regelwerke, mit klarem Stack: React + Vite Frontend und eigener Supabase-Backend-Stack.
+**SagaTree** ist die selbst gehostete, werkzeugartige TTRPG-Oberfläche für Spielleitung und Spieler — Kampagnen, Charaktere (SagaTree Core), Live-Sessions — kein generisches Gaming-Dashboard. Flexibel für weitere Regelwerke, mit klarem Stack: React + Vite Frontend und Node/Hono-Host (Better Auth, Policy Service, SQLite, lokale Assets).
 
 ---
 
@@ -461,7 +462,9 @@ LIVE SESSION
 
 ---
 
-## 📝 Next Steps
+## 📝 Next Steps (historische Planung)
+
+> Die Liste unten stammt aus der frühen Vision und ist **kein** aktueller Sprint-Backlog. Aktuelle Arbeit folgt Issues auf `main` und dem Host-Modulvertrag.
 
 1. **Finalize Schema** (mit deinem Feedback)
 2. **Create Migration SQL**
@@ -471,7 +474,3 @@ LIVE SESSION
 6. **Add DSA/Pathfinder**
 7. **Marketplace**
 8. **AI Integration**
-
----
-
-Sollen wir weitermachen? 🚀

@@ -51,7 +51,8 @@ Charaktere · Sessions · Welten — für Gamemaster und Spieler
 
 Marke und Regelwerk: **SagaTree** / **SagaTree Core** (Ruleset-ID `sagatree-core`).
 
-Dieses Repo: **React + Vite**-Frontend mit **selbst gehostetem Supabase-Stack** (Auth, Postgres, Storage, Realtime, Edge) und Schichten `domains` → `infrastructure` → `app` · UI in `shared/ui`.
+Dieses Repo: **React + Vite**-Frontend und **Node/Hono-Host** (Better Auth, Policy Service, SQLite, lokale Assets) mit Schichten `domains` → `infrastructure` → `app` · UI in `shared/ui`.  
+Archivierter Supabase-/Edge-Stack: `archive/supabase-legacy/` (nicht Produktpfad; CUT-21/22/23).
 
 | Rolle | Nutzen |
 | --- | --- |
@@ -65,7 +66,7 @@ Dieses Repo: **React + Vite**-Frontend mit **selbst gehostetem Supabase-Stack** 
 
 | Bereich | Was drin ist |
 | --- | --- |
-| **Projekte & Mitgliedschaft** | Sagas anlegen, Join-by-Code, RLS-gesicherte Rollen (GM / Spieler) |
+| **Projekte & Mitgliedschaft** | Sagas anlegen, Join-by-Code, Policy-Service-Rollen (GM / Spieler) |
 | **SagaTree Core Editor** | Spezies · Parameter · Look · Inventar · Einstellungen / Presets |
 | **Live Sessions** | Lobby, GM- und Player-Panel, Realtime Session-Runtime |
 | **Bibliothek & Welten** | Abenteuer, World Profiles, Maps |
@@ -113,20 +114,27 @@ SagaTree folgt einer klaren Markenidentität aus dem Logo: **Teal für Auswahl &
 | Frontend | React 18 · Vite 6 · TypeScript · Tailwind CSS 4 |
 | UI | Radix UI · shadcn-basierte Primitives (`src/shared/ui`) |
 | 3D / Avatar | Three.js · `@pixiv/three-vrm` · MediaPipe Face Landmarker |
-| Backend | Self-hosted Supabase: Postgres · GoTrue · PostgREST · Storage · Realtime · Kong · Deno Edge |
+| Backend (Produkt) | Node host (`server/`) · Hono · Better Auth · Policy Service · SQLite · lokale Assets |
+| Optional | Ollama / BYOK AI · LiveKit · Meshy (externe Provider; Core bleibt ohne sie nutzbar) |
 | Qualität | Playwright · `test-gate` · `composition-gate` · Architecture Boundary Check |
-| Deploy | Docker Compose Self-Host (Vite-Build → `build/`) |
+| Deploy | Docker Compose Host (`deployment/docker-compose.host.yml`; Vite-Build → `build/`) |
+| Archiv | Supabase/GoTrue/PostgREST/Deno Edge unter `archive/supabase-legacy/` — nicht Produkt |
 
-Dev-Server: **`http://localhost:3004`** (`vite.config.ts` → `server.port = 3004`)
+Frontend-Dev: **`http://localhost:3004`** · Host: **`http://127.0.0.1:8787`** (`GET /health`)
 
 ---
 
 ## Quick Start
 
-**Voraussetzungen:** Node.js 20+ · npm 10+ · für Edge-Diffs im Gate: Deno LTS
+**Voraussetzungen:** Node.js 20+ (Host-Paket: ≥22.13 laut `server/package.json`) · npm 10+
 
 ```bash
 npm install
+# Terminal 1 — Host (SQLite + Better Auth)
+cp .env.example .env   # SAGATREE_BETTER_AUTH_SECRET setzen
+export SAGATREE_DATA_DIR=./.sagatree-data
+npm run host:dev
+# Terminal 2 — Frontend (Vite /api-Proxy → Host; VITE_SAGATREE_HOST_AUTH_URL=same-origin)
 npm run dev
 ```
 
@@ -136,10 +144,11 @@ Produktions-Build:
 npm run build   # Output: build/
 ```
 
-Umgebungsvariablen: siehe [`.env.example`](.env.example). Secrets nie mit `VITE_` / `NEXT_PUBLIC_` ins Client-Bundle legen.
+Umgebungsvariablen: [`.env.example`](.env.example) · Compose: [`deployment/.env.host.example`](deployment/.env.host.example).  
+Secrets nie mit `VITE_` / `NEXT_PUBLIC_` ins Client-Bundle legen.
 
-Self-Host-Stack (Docker): → **[`README_SELFHOST.md`](README_SELFHOST.md)**  
-Migrationen anwenden: `bash scripts/apply-migrations.sh <migration.sql>`
+Self-Host (Docker): → **[`README_SELFHOST.md`](README_SELFHOST.md)**  
+`docker compose --env-file deployment/.env.host up -d --build`
 
 ---
 
@@ -151,19 +160,20 @@ Modularer Monolith mit harten Importgrenzen (CI-enforced):
 src/
 ├── app/              # Vertikale Slices / User Journeys
 ├── domains/          # Reine Domain-Verträge & SagaTree-Core-Regeln
-├── infrastructure/   # Supabase-, Storage-, Three-/LiveAct-Adapter
+├── infrastructure/   # Host-HTTP-, Storage-, Three-/LiveAct-Adapter
 ├── shared/ui/        # Fachlich neutrale UI-Primitives
-├── lib/              # Auth, Supabase-Client, Querschnitt
+├── lib/              # Auth (Better Auth Bridge), Theme, Querschnitt
 └── styles/           # Theme-Tokens (globals.css)
+server/               # Node/Hono Host (Bootstrap, Module, HTTP)
 ```
 
 | Layer | Darf importieren | Darf nicht |
 | --- | --- | --- |
-| `domains/` | stdlib, sibling domains | React, UI, Supabase, `app/` |
-| `infrastructure/` | domains, `lib/supabase` | React, `shared/ui`, `app/` |
-| `app/<area>/` | domains, infrastructure, `shared/ui`, andere Areas nur über Public Barrel | direkte Supabase-Calls, fremde Private-Dateien |
+| `domains/` | stdlib, sibling domains | React, UI, Host-HTTP/SDK, `app/` |
+| `infrastructure/` | domains, `lib/*` (Auth-Bridge), Host-HTTP-Helfer | React, `shared/ui`, `app/`, `server/**` |
+| `app/<area>/` | domains, infrastructure, `shared/ui`, andere Areas nur über Public Barrel | direkte Persistenz/HTTP-Clients, fremde Private-Dateien |
 
-`src/modules/**` und `src/components/**` sind **entfernt** — Neu anlegen bricht den Architecture Gate. Details: [`src/ARCHITECTURE.md`](src/ARCHITECTURE.md).
+`src/modules/**` und `src/components/**` sind **entfernt** — Neu anlegen bricht den Architecture Gate. Details: [`src/ARCHITECTURE.md`](src/ARCHITECTURE.md) · Host: [`docs/architecture/host-modular-monolith.md`](docs/architecture/host-modular-monolith.md).
 
 ---
 
@@ -184,15 +194,17 @@ Regeln & Validierung: [`docs/sagatree core rules.md`](docs/sagatree%20core%20rul
 
 ## KI, Portraits & Meshy
 
-| Feature | Edge / Storage | Hinweis |
-| --- | --- | --- |
-| Character-Lore | `character-lore` | Provider: `ollama` / `openai-compatible`; Keys nie im Browser |
-| Portraits | Bucket `character-portraits` | Owner-scoped, signierte URLs |
-| Item 2D | Edge `item-thumbnail` · Meshy Text-to-Image → `item-thumbnails` | Prod: User-BYOK; ohne Key: `not-configured` (fail-closed) |
-| Item 3D | Edge `item-model3d` · Meshy Image-to-3D → `item-models` | GLB max. 50 MB; Bibliothek zeigt nur Thumbnails |
-| Avatar-Katalog | Manifeste + optional `VITE_AVATAR_ASSET_BASE_URL` | Lizenzierte / gepinnte Assets — siehe [`docs/avatar assets.md`](docs/avatar%20assets.md) |
+Optionale Host-Use-Cases (keine produktive Abhängigkeit). Keys nie im Browser.
 
-Wichtige Server-Env (Edge / Host — **nicht** im Vite-Bundle). Keys liegen **nie** als `VITE_*MESHY` / `NEXT_PUBLIC_*` im Client:
+| Feature | Host / Assets | Hinweis |
+| --- | --- | --- |
+| Character-Lore | Host application `character-lore` | Provider: `ollama` / `openai-compatible` |
+| Portraits / Assets | Lokaler Asset-Store unter `SAGATREE_DATA_DIR` | Owner-scoped; credentialed HTTP |
+| Item 2D | Host `item-thumbnail` · Meshy Text-to-Image | Prod: User-BYOK; ohne Key: `not-configured` (fail-closed) |
+| Item 3D | Host `item-model3d` · Meshy Image-to-3D | GLB-Limits hostseitig; Bibliothek zeigt Thumbnails |
+| Avatar-Katalog | Manifeste + optional `VITE_AVATAR_ASSET_BASE_URL` | Lizenzierte / gepinnte Assets — [`docs/avatar assets.md`](docs/avatar%20assets.md) |
+
+Server-Env (**nicht** im Vite-Bundle):
 
 ```bash
 CHARACTER_AI_PROVIDER=ollama
@@ -203,7 +215,7 @@ CREDENTIALS_ENCRYPTION_KEY=
 # AI_PROVIDER_ALLOW_HOST_KEYS=1
 ```
 
-CORS und fehlende Provider-Keys sind fail-closed (kein Default `*`). Rate-Limits laufen persistent über Postgres-RPCs.
+Fehlende Provider-Keys sind fail-closed. Compose-Profile: [`docs/ops/host-compose-profiles.md`](docs/ops/host-compose-profiles.md).
 
 ---
 
@@ -221,16 +233,15 @@ Archivierter Supabase-Stack (nicht Produkt): `archive/supabase-legacy/docker-com
 
 ## Quality Gates
 
-Auf Push / PR gegen `main`:
-
-Die Quellvertragsprüfung benötigt zusätzlich Python 3 und den exakt gepinnten PostgreSQL-Parser: `python3 -m pip install -r .qa/intake/rpc-contracts/parser-requirements.txt`. Einrichtung, isolierte Datenbank-/Browsertests und bekannte Grenzen: [Migrationsvorbereitung](docs/stack-migration-preparation.md).
+Auf Push / PR gegen `main` (siehe auch AGENTS.md „External AI Review Contract“):
 
 ```bash
-npm run test-gate          # Lint, Typecheck, Build, Deno, Contracts, Secrets-Scan, Architecture
+npm run test-gate          # u. a. Architecture, CUT-20..23 Host-Verträge, Secrets-Scan
 npm run composition-gate   # Semantische Multi-Hop-Proofs
 npm run test:e2e           # Playwright (Chromium)
-npm run check:stack-migration-prep  # RPC-/Edge-Quellen, 90 Issue-Verträge und Negativtests
 ```
+
+Historische Migrations-Quellverträge (nicht Produkt-Startweg): [`docs/stack-migration-preparation.md`](docs/stack-migration-preparation.md) / `npm run check:stack-migration-prep` (Python + gepinnter Postgres-Parser für Alt-RPC-Inventar).
 
 Lokal:
 
@@ -246,14 +257,15 @@ Agent-Konfiguration: [`.cursor/`](.cursor/) — vor Änderungen: `npx ecc-agents
 ## Projektstruktur
 
 ```text
-SagaTree/                 # Repo (historisch auch sagatree/ lokal)
-├── src/                 # Frontend (app · domains · infrastructure · shared · lib)
-├── supabase/            # migrations · functions · config
-├── public/              # Favicons, MediaPipe, Item-/NPC-Assets
-├── docs/                # Regeln, Styleguides, Brand, Concepts
-│   └── brand/           # SagaTree Logo & Mark für Doku / README
+SagaTree/
+├── src/                      # Frontend (app · domains · infrastructure · shared · lib)
+├── server/                   # Node/Hono Host (bootstrap · modules · http)
+├── deployment/               # Dockerfile.host · docker-compose.host.yml · .env.host.example
+├── archive/supabase-legacy/  # Historischer Supabase/Edge-Stack (nicht Produkt)
+├── public/                   # Favicons, MediaPipe, Item-/NPC-Assets
+├── docs/                     # Regeln, Styleguides, Brand, Concepts, Ops
 ├── e2e/ · scripts/ · assets/
-├── docker-compose*.yml
+├── docker-compose.yml        # include → deployment/docker-compose.host.yml
 ├── README.md
 └── README_SELFHOST.md
 ```
@@ -264,32 +276,25 @@ SagaTree/                 # Repo (historisch auch sagatree/ lokal)
 
 | Thema | Pfad |
 | --- | --- |
-| Self-Host | [`README_SELFHOST.md`](README_SELFHOST.md) |
-| Integration | [`INTEGRATION.md`](INTEGRATION.md) |
-| Feature-Vergleich | [`FEATURE_COMPARISON.md`](FEATURE_COMPARISON.md) |
-| Architektur | [`src/ARCHITECTURE.md`](src/ARCHITECTURE.md) |
-| Auth / Supabase Setup | [`src/AUTH_SETUP.md`](src/AUTH_SETUP.md) · [`src/SUPABASE_SETUP.md`](src/SUPABASE_SETUP.md) |
-| Items | [`docs/items.md`](docs/items.md) |
-| Inventory v2 | [`docs/inventory-v2.md`](docs/inventory-v2.md) |
+| Self-Host (aktuell) | [`README_SELFHOST.md`](README_SELFHOST.md) |
+| Host Compose | [`docs/ops/host-compose-profiles.md`](docs/ops/host-compose-profiles.md) |
+| Host-Modulvertrag | [`docs/architecture/host-modular-monolith.md`](docs/architecture/host-modular-monolith.md) |
+| Frontend-Architektur | [`src/ARCHITECTURE.md`](src/ARCHITECTURE.md) |
+| Agentenregeln | [`AGENTS.md`](AGENTS.md) |
+| Items / Inventory | [`docs/items.md`](docs/items.md) · [`docs/inventory-v2.md`](docs/inventory-v2.md) |
 | Avatar Assets | [`docs/avatar assets.md`](docs/avatar%20assets.md) |
 | World Profiles | [`docs/world profiles.md`](docs/world%20profiles.md) |
-| Deploy V3 | [`src/supabase/DEPLOY_V3.md`](src/supabase/DEPLOY_V3.md) |
+| Historisch (nicht Startweg) | [`INTEGRATION.md`](INTEGRATION.md) · [`src/AUTH_SETUP.md`](src/AUTH_SETUP.md) · [`src/SUPABASE_SETUP.md`](src/SUPABASE_SETUP.md) · [`docs/architektur-sqlite-based.md`](docs/architektur-sqlite-based.md) |
+
+Desktop-Installer: Pipeline skizziert in [`docs/ops/desktop-release.md`](docs/ops/desktop-release.md); Produkt-`src-tauri/` ist auf `main` **nicht** vorhanden (PoC/GATE-05; offene PRs ≠ gemergter Stand).
 
 ---
 
 ## Recent changes
 
-- **2026-10-22** — UI-Icons: Lucide → Phosphor (`@phosphor-icons/react`); Sidebar Cyan/Gold-Zustände; Dashboard-Karten ohne Duotone (`chore/phosphor-icon-migration`)
-- **2026-10-21** — Migrationsvorbereitung: geprüfte RPC-/Edge-Verträge, gesperrter 90-Ticket-Plan und echte isolierte SQL-/Atlas-Prüfungen mit offen ausgewiesenen Altfehlern ([#773](https://github.com/iamthamanic/sagatree/issues/773), [Prüfanleitung](docs/stack-migration-preparation.md))
-- **2026-10-18** — Atlas Karte: map-first Chrome (kein Ebenen-Flash), Map keep-alive über Welt-Untertabs, Kontinent-Gruppe unter Welt, dunklere Kategoriezeilen (`fix/atlas-nav-edit-label-box`)
-- **2026-10-18** — Weltatlas 3D: native Prototype-Mount, Länder-Hierarchie, Suche/Filter, editierbare/verschiebbare Kartenlabels (`feat/donalu-world-workspace`)
-- **2026-10-17** — Donalu-Weltworkspace: Places + Map-Links (`WO-9FFK6`), Orte-Panel, Dungeon Confirm/`manualDirty`, Player-Reveal-RPC; Hybrid 2D/3D Atlas
-- **2026-10-17** — Local Admin: Timeout-Fallback übernimmt späten GoTrue-JWT (PostgREST/RLS); Logout bleibt anti-Resurrection
-- **2026-10-17** — Weltatlas: Unified Canvas (Multi-Scale-Zoom, Pinsel/Stempel, Demo Eldoria); Speichern in `generator_meta.unifiedCanvas` (`#702`)
-- **2026-10-15** — Session-Lobby: Cover-Meta + Meet-Device-Bar; Account-Avatar in Shell/Lobby; Settings-Routen `/settings/*`; Avatar-Upload mit Auto-Downscale
-- **2026-10-14** — Bibliothek: ⋮-Menüs (Copy Public-ID / Duplizieren), Liste·Grid·Karussell für alle Tabs, WO-/LK-Public-IDs, SagaTree-Native-Badge
-- **2026-10-13** — Bibliothek: Slash-Routen (`/library/player-characters`, `/library/sagas`, …); Karussell-Karten breiter + portrait-/cover-sichere Bildframes
-- **2026-10-12** — Saga-Workspace: Lobby direkt nach Create mit großem Join-Code; Bibliothek-Tab Sagas; Spieler-Charaktere + Lore; local `player` Demo-Login (`074`)
+- **CUT-21 / #1156 · CUT-22 / #1157 · CUT-23 / #1158** — Produkt-Runtime host-only (Node/Hono · Better Auth · SQLite); Supabase/Edge archiviert
+- **2026-10-22** — UI-Icons: Lucide → Phosphor (`@phosphor-icons/react`); Sidebar Cyan/Gold-Zustände
+- Ältere Einträge (Atlas, Lobby, Bibliothek) bleiben in der Git-Historie / gemergten PRs; GoTrue/PostgREST-Hinweise dort beschreiben den **damaligen** Stack
 
 ---
 
