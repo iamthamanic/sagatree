@@ -9,8 +9,10 @@
 
 import {
   defaultUnifiedCanvasLayers,
+  roomFromPolygon,
   UNIFIED_CANVAS_FORMAT,
   type UnifiedCanvasDoc,
+  type UnifiedCanvasMaterial,
   type UnifiedCanvasObject,
   type UnifiedCanvasRoom,
   type UnifiedCanvasStroke,
@@ -54,6 +56,18 @@ function land(
   h: number,
 ): UnifiedCanvasRoom {
   return { id, material, x, y, w, h };
+}
+
+function landPoly(
+  id: string,
+  material: UnifiedCanvasMaterial,
+  points: readonly (readonly [number, number])[],
+): UnifiedCanvasRoom {
+  const room = roomFromPolygon(id, material, points);
+  if (!room) {
+    throw new Error(`Invalid Golden polygon room: ${id}`);
+  }
+  return room;
 }
 
 function stroke(
@@ -146,17 +160,100 @@ export function buildDornhainUnifiedCanvasDoc(): UnifiedCanvasDoc {
     ],
     rooms: [
       land('w.ocean', 'wasser', 0, 0, DORNHAIN_STARTER_CANVAS, DORNHAIN_STARTER_CANVAS),
-      land('w.west-core', 'gras', 60, 180, 380, 520),
-      land('w.west-north', 'erde', 100, 90, 280, 160),
-      land('w.west-south', 'sand', 80, 640, 300, 180),
-      land('w.west-pen', 'gras', 300, 400, 140, 200),
-      land('w.east-core', 'gras', 520, 140, 400, 560),
-      land('w.east-north', 'stein', 580, 40, 300, 160),
-      land('w.east-south', 'erde', 560, 640, 320, 220),
-      land('w.east-bay', 'sand', 480, 360, 100, 140),
-      land('w.isle-n', 'holz', 420, 30, 120, 90),
-      land('w.isle-sw', 'gras', 40, 780, 100, 120),
-      land('w.isle-se', 'sand', 860, 820, 110, 100),
+      // Main west / east coasts as polygons (Step 2) — bbox still used for LOD.
+      landPoly('w.west-core', 'gras', [
+        [70, 200],
+        [160, 110],
+        [310, 95],
+        [390, 180],
+        [430, 310],
+        [410, 450],
+        [440, 560],
+        [380, 680],
+        [280, 760],
+        [140, 740],
+        [70, 620],
+        [55, 420],
+        [90, 280],
+      ]),
+      landPoly('w.west-north', 'erde', [
+        [110, 100],
+        [220, 70],
+        [340, 90],
+        [360, 160],
+        [280, 210],
+        [150, 200],
+        [100, 150],
+      ]),
+      landPoly('w.west-south', 'sand', [
+        [90, 660],
+        [200, 640],
+        [330, 670],
+        [360, 760],
+        [250, 820],
+        [120, 800],
+        [70, 720],
+      ]),
+      landPoly('w.east-core', 'gras', [
+        [540, 160],
+        [680, 110],
+        [820, 140],
+        [900, 250],
+        [920, 420],
+        [880, 580],
+        [820, 700],
+        [700, 760],
+        [580, 700],
+        [520, 560],
+        [500, 400],
+        [520, 260],
+      ]),
+      landPoly('w.east-north', 'stein', [
+        [600, 40],
+        [740, 30],
+        [860, 70],
+        [880, 150],
+        [780, 190],
+        [640, 170],
+        [580, 100],
+      ]),
+      landPoly('w.east-south', 'erde', [
+        [580, 660],
+        [720, 640],
+        [860, 680],
+        [880, 800],
+        [760, 860],
+        [620, 840],
+        [560, 740],
+      ]),
+      landPoly('w.east-bay', 'sand', [
+        [480, 360],
+        [560, 340],
+        [580, 420],
+        [540, 500],
+        [480, 480],
+      ]),
+      landPoly('w.isle-n', 'holz', [
+        [430, 40],
+        [510, 25],
+        [540, 80],
+        [500, 120],
+        [430, 100],
+      ]),
+      landPoly('w.isle-sw', 'gras', [
+        [40, 800],
+        [110, 780],
+        [140, 860],
+        [90, 900],
+        [40, 860],
+      ]),
+      landPoly('w.isle-se', 'sand', [
+        [870, 830],
+        [950, 820],
+        [970, 900],
+        [910, 930],
+        [850, 890],
+      ]),
       land('w.lake-w', 'wasser', 180, 320, 70, 50),
       land('w.lake-e', 'wasser', 700, 280, 90, 60),
       land('s.ground', 'gras', 280, 430, 160, 160),

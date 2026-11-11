@@ -19,6 +19,7 @@ import {
   Cursor,
   PaintBrush,
   Path,
+  Polygon,
   Square,
   Stamp,
   Wrench,
@@ -46,7 +47,9 @@ import {
   emptyWebglRuntime,
   parseWebglRuntimeState,
   pickObjectAt,
+  pickRoomAt,
   readLegacyWebglLocalStorage,
+  roomFromPolygon,
   syncCanvasDocIntoWebglRuntime,
   syncWebglPropsIntoCanvasDoc,
   type DungeonGeneratorMeta,
@@ -183,6 +186,14 @@ type DragState =
     }
   | {
       readonly mode: 'move_object';
+      readonly id: string;
+      readonly ox: number;
+      readonly oy: number;
+      readonly sx: number;
+      readonly sy: number;
+    }
+  | {
+      readonly mode: 'move_room';
       readonly id: string;
       readonly ox: number;
       readonly oy: number;
@@ -399,7 +410,12 @@ export function UnifiedAtlasEditor({
     [onSurfaceModeChange],
   );
 
-  const [tool, setTool] = useState<UnifiedCanvasTool>('hand');  const [material, setMaterial] = useState<UnifiedCanvasMaterial>('gras');
+  const [tool, setTool] = useState<UnifiedCanvasTool>('hand');
+  const [material, setMaterial] = useState<UnifiedCanvasMaterial>('gras');
+  const [areaDraft, setAreaDraft] = useState<readonly (readonly [number, number])[]>([]);
+  const areaDraftRef = useRef(areaDraft);
+  areaDraftRef.current = areaDraft;
+  const [areaHint, setAreaHint] = useState<string | null>(null);
   const [stamp, setStamp] = useState<UnifiedCanvasStampType>('baum');
   const [brushSize, setBrushSize] = useState(45);
   const [objectSize, setObjectSize] = useState(1);
@@ -710,17 +726,59 @@ export function UnifiedAtlasEditor({
         ctx.fillStyle = isDemo
           ? (MATERIAL_COLORS[r.material] ?? MATERIAL_COLORS.holz)
           : productLandColor(r.material);
-        ctx.fillRect(r.x, r.y, r.w, r.h);
-        if (isDemo) {
-          ctx.strokeStyle = '#514a41';
-          ctx.lineWidth = Math.min(r.w, r.h) * 0.08;
-          ctx.strokeRect(r.x, r.y, r.w, r.h);
-        } else if (!isSettlementLodId(r.id) && r.material !== 'wasser') {
-          // Soft coast outline for land masses
-          ctx.strokeStyle = 'rgba(255,255,255,0.12)';
-          ctx.lineWidth = 3 / Math.max(0.2, scale);
-          ctx.strokeRect(r.x, r.y, r.w, r.h);
+        if (r.points && r.points.length >= 3) {
+          ctx.beginPath();
+          ctx.moveTo(r.points[0][0], r.points[0][1]);
+          for (let i = 1; i < r.points.length; i += 1) {
+            ctx.lineTo(r.points[i][0], r.points[i][1]);
+          }
+          ctx.closePath();
+          ctx.fill();
+          if (isDemo) {
+            ctx.strokeStyle = '#514a41';
+            ctx.lineWidth = Math.min(r.w, r.h) * 0.08;
+            ctx.stroke();
+          } else if (!isSettlementLodId(r.id) && r.material !== 'wasser') {
+            ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+            ctx.lineWidth = 3 / Math.max(0.2, scale);
+            ctx.stroke();
+          }
+        } else {
+          ctx.fillRect(r.x, r.y, r.w, r.h);
+          if (isDemo) {
+            ctx.strokeStyle = '#514a41';
+            ctx.lineWidth = Math.min(r.w, r.h) * 0.08;
+            ctx.strokeRect(r.x, r.y, r.w, r.h);
+          } else if (!isSettlementLodId(r.id) && r.material !== 'wasser') {
+            // Soft coast outline for land masses
+            ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+            ctx.lineWidth = 3 / Math.max(0.2, scale);
+            ctx.strokeRect(r.x, r.y, r.w, r.h);
+          }
         }
+      }
+      if (!isDemo && areaDraft.length > 0) {
+        ctx.save();
+        ctx.strokeStyle = 'rgba(6,182,212,0.95)';
+        ctx.fillStyle = 'rgba(6,182,212,0.18)';
+        ctx.lineWidth = 2 / Math.max(0.2, scale);
+        ctx.setLineDash([6 / scale, 4 / scale]);
+        ctx.beginPath();
+        ctx.moveTo(areaDraft[0][0], areaDraft[0][1]);
+        for (let i = 1; i < areaDraft.length; i += 1) {
+          ctx.lineTo(areaDraft[i][0], areaDraft[i][1]);
+        }
+        if (areaDraft.length >= 3) ctx.closePath();
+        if (areaDraft.length >= 3) ctx.fill();
+        ctx.stroke();
+        ctx.setLineDash([]);
+        for (const [ax, ay] of areaDraft) {
+          ctx.fillStyle = '#06b6d4';
+          ctx.beginPath();
+          ctx.arc(ax, ay, 4 / Math.max(0.2, scale), 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.restore();
       }
       for (const s of workingDoc.strokes) {
         if (s.points.length === 0) continue;
@@ -1049,25 +1107,76 @@ export function UnifiedAtlasEditor({
           },
           true,
         );
+        return;
       }
+      const roomHit = pickRoomAt(workingDoc, p.x, p.y);
+      if (roomHit && roomHit.id !== 'w.ocean') {
+        commit(
+          {
+            ...workingDoc,
+            demoSeed: false,
+            rooms: workingDoc.rooms.filter((r) => r.id !== roomHit.id),
+          },
+          true,
+        );
+      }
+      return;
+    }
+
+    if (tool === 'area') {
+      if (e.detail >= 2) {
+        const draft = areaDraftRef.current;
+        if (draft.length >= 3) {
+          const room = roomFromPolygon(uid(), material, draft);
+          if (room) {
+            commit({ ...workingDoc, demoSeed: false, rooms: [...workingDoc.rooms, room] }, true);
+            setAreaDraft([]);
+            setAreaHint(null);
+          } else {
+            setAreaHint('Fläche ungültig — mindestens 3 Punkte mit Fläche nötig.');
+          }
+        } else {
+          setAreaHint('Noch mindestens 3 Punkte setzen, dann Doppelklick zum Schließen.');
+        }
+        return;
+      }
+      setAreaDraft((prev) => [...prev, [p.x, p.y] as const]);
+      setAreaHint('Weiter klicken · Doppelklick / Enter schließt · Escape bricht ab');
+      refresh();
       return;
     }
 
     if (tool === 'select') {
       const hit = pickObjectAt(workingDoc, p.x, p.y);
-      setSelectedId(hit?.id ?? null);
-      if (hit && canEdit) {
+      if (hit) {
+        setSelectedId(hit.id);
+        if (canEdit) {
+          dragRef.current = {
+            mode: 'move_object',
+            id: hit.id,
+            ox: hit.x,
+            oy: hit.y,
+            sx: p.x,
+            sy: p.y,
+          };
+        }
+        return;
+      }
+      const roomHit = pickRoomAt(workingDoc, p.x, p.y);
+      if (roomHit && roomHit.id !== 'w.ocean' && canEdit) {
+        setSelectedId(roomHit.id);
         dragRef.current = {
-          mode: 'move_object',
-          id: hit.id,
-          ox: hit.x,
-          oy: hit.y,
+          mode: 'move_room',
+          id: roomHit.id,
+          ox: roomHit.x,
+          oy: roomHit.y,
           sx: p.x,
           sy: p.y,
         };
-      } else {
-        dragRef.current = { mode: 'pan', px: p.px, py: p.py, cam: camRef.current };
+        return;
       }
+      setSelectedId(null);
+      dragRef.current = { mode: 'pan', px: p.px, py: p.py, cam: camRef.current };
       return;
     }
 
@@ -1107,6 +1216,17 @@ export function UnifiedAtlasEditor({
     if (drag.mode === 'move_object') {
       const next = applyMapEdit(workingDoc, {
         op: 'move_object',
+        id: drag.id,
+        x: drag.ox + (p.x - drag.sx),
+        y: drag.oy + (p.y - drag.sy),
+      });
+      onDocChange(next);
+      refresh();
+      return;
+    }
+    if (drag.mode === 'move_room') {
+      const next = applyMapEdit(workingDoc, {
+        op: 'move_room',
         id: drag.id,
         x: drag.ox + (p.x - drag.sx),
         y: drag.oy + (p.y - drag.sy),
@@ -1238,6 +1358,7 @@ export function UnifiedAtlasEditor({
     hand: Hand,
     select: Cursor,
     brush: PaintBrush,
+    area: Polygon,
     road: Path,
     room: Square,
     wall: Wall,
@@ -1253,8 +1374,49 @@ export function UnifiedAtlasEditor({
   useEffect(() => {
     if (!isAtlasToolAllowed(tool, activeNodeKind ?? null)) {
       setTool('hand');
+      setAreaDraft([]);
+      setAreaHint(null);
     }
   }, [activeNodeKind, tool]);
+
+  useEffect(() => {
+    if (tool !== 'area') {
+      setAreaDraft([]);
+      setAreaHint(null);
+    }
+  }, [tool]);
+
+  useEffect(() => {
+    const onKey = (ev: KeyboardEvent) => {
+      if (tool !== 'area' || !canEdit) return;
+      if (ev.key === 'Escape') {
+        setAreaDraft([]);
+        setAreaHint(null);
+        refresh();
+        return;
+      }
+      if (ev.key === 'Enter') {
+        const draft = areaDraftRef.current;
+        if (draft.length < 3) {
+          setAreaHint('Noch mindestens 3 Punkte setzen, dann Enter zum Schließen.');
+          return;
+        }
+        const room = roomFromPolygon(uid(), material, draft);
+        if (!room) {
+          setAreaHint('Fläche ungültig — Punkte müssen eine Fläche bilden.');
+          return;
+        }
+        commit(
+          { ...docRef.current, demoSeed: false, rooms: [...docRef.current.rooms, room] },
+          true,
+        );
+        setAreaDraft([]);
+        setAreaHint(null);
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [tool, canEdit, material, commit, refresh]);
 
   const handleDefinePlace = async (req: AtlasDefinePlaceRequest) => {
     if (!onCreatePlace || !canEdit) return;
@@ -1773,17 +1935,26 @@ export function UnifiedAtlasEditor({
           <h2 className="font-heading text-xl font-bold">
             {tool === 'stamp'
               ? 'Objekte'
-              : tool === 'brush' || tool === 'road'
-                ? 'Welt gestalten'
-                : tool === 'room' || tool === 'wall'
-                  ? 'Geometrie'
-                  : selectedId
-                    ? 'Auswahl'
-                    : 'Weltkarte'}
+              : tool === 'area'
+                ? 'Fläche zeichnen'
+                : tool === 'brush' || tool === 'road'
+                  ? 'Welt gestalten'
+                  : tool === 'room' || tool === 'wall'
+                    ? 'Geometrie'
+                    : selectedId
+                      ? 'Auswahl'
+                      : 'Weltkarte'}
           </h2>
           <p className="text-sm text-muted-foreground">
-            Mausrad = zoomen. Land/Wasser mit Pinsel; Orte per Pin oder Rahmen anlegen.
+            {tool === 'area'
+              ? 'Klick setzt Küstenpunkte. Doppelklick oder Enter schließt die Fläche. Escape bricht ab.'
+              : 'Mausrad = zoomen. Land/Wasser mit Pinsel oder Fläche; Orte per Pin oder Rahmen anlegen.'}
           </p>
+          {areaHint ? (
+            <p className="text-xs text-primary" data-atlas-area-hint role="status">
+              {areaHint}
+            </p>
+          ) : null}
           {canEdit && onCreatePlace ? (
             <AtlasDefinePlacePanel
               busy={placeBusy}
@@ -1955,7 +2126,7 @@ export function UnifiedAtlasEditor({
                 }`}
                 onClick={() => {
                   setMaterial(id);
-                  setTool('brush');
+                  if (tool !== 'area' && tool !== 'room') setTool('brush');
                 }}
               >
                 <span

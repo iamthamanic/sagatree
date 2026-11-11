@@ -273,6 +273,37 @@ function projectRoomsToCanvas(rooms: readonly unknown[]): UnifiedCanvasRoom[] {
   for (const raw of rooms) {
     if (!isRecord(raw)) continue;
     if (typeof raw.id !== 'string') continue;
+    const materialKey = String(raw.material ?? 'stone');
+    const material = WEBGL_TO_MATERIAL[materialKey] ?? 'stein';
+    if (Array.isArray(raw.points) && raw.points.length >= 3) {
+      const points: [number, number][] = [];
+      for (const p of raw.points) {
+        const pt = readPoint2(p);
+        if (!pt) {
+          points.length = 0;
+          break;
+        }
+        points.push([pt[0], pt[1]]);
+      }
+      if (points.length >= 3) {
+        let minX = Infinity;
+        let minY = Infinity;
+        let maxX = -Infinity;
+        let maxY = -Infinity;
+        for (const [px, py] of points) {
+          minX = Math.min(minX, px);
+          minY = Math.min(minY, py);
+          maxX = Math.max(maxX, px);
+          maxY = Math.max(maxY, py);
+        }
+        const w = maxX - minX;
+        const h = maxY - minY;
+        if (w > 0 && h > 0) {
+          out.push({ id: raw.id, x: minX, y: minY, w, h, material, points });
+          continue;
+        }
+      }
+    }
     const start = readPoint2(raw.start);
     const end = readPoint2(raw.end);
     if (!start || !end) continue;
@@ -281,8 +312,6 @@ function projectRoomsToCanvas(rooms: readonly unknown[]): UnifiedCanvasRoom[] {
     const w = Math.abs(end[0] - start[0]);
     const h = Math.abs(end[1] - start[1]);
     if (!(w > 0) || !(h > 0)) continue;
-    const materialKey = String(raw.material ?? 'stone');
-    const material = WEBGL_TO_MATERIAL[materialKey] ?? 'stein';
     out.push({ id: raw.id, x, y, w, h, material });
   }
   return out;
@@ -354,6 +383,9 @@ function roomsToWebgl(rooms: readonly UnifiedCanvasRoom[]): unknown[] {
     start: [r.x, r.y],
     end: [r.x + r.w, r.y + r.h],
     material: MATERIAL_TO_WEBGL[r.material] ?? 'stone',
+    ...(r.points && r.points.length >= 3
+      ? { points: r.points.map((p) => [p[0], p[1]]) }
+      : {}),
   }));
 }
 

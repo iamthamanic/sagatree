@@ -6,6 +6,8 @@
  * Pure domain — no React / Supabase.
  */
 
+import { bboxFromPoints, sanitizePolygonPoints } from './canvas-polygon';
+
 export const UNIFIED_CANVAS_FORMAT = 'sagatree-unified-atlas-v1' as const;
 export const UNIFIED_CANVAS_META_KEY = 'unifiedCanvas' as const;
 /** Client soft cap before upsert (JSON text). RPC layers cap is separate. */
@@ -15,6 +17,7 @@ export type UnifiedCanvasTool =
   | 'hand'
   | 'select'
   | 'brush'
+  | 'area'
   | 'road'
   | 'room'
   | 'wall'
@@ -81,6 +84,11 @@ export type UnifiedCanvasRoom = {
   readonly w: number;
   readonly h: number;
   readonly material: UnifiedCanvasMaterial;
+  /**
+   * Optional closed coast / area polygon (≥3). When set, fill uses the polygon;
+   * `x/y/w/h` is the axis-aligned bounding box (compat + LOD).
+   */
+  readonly points?: readonly (readonly [number, number])[];
 };
 
 export type UnifiedCanvasWall = {
@@ -240,6 +248,28 @@ export function parseUnifiedCanvasDoc(raw: unknown): UnifiedCanvasDoc | null {
     if (!r || typeof r !== 'object') return null;
     const row = r as Record<string, unknown>;
     if (typeof row.id !== 'string' || !MATERIALS.has(String(row.material))) return null;
+    let points: readonly (readonly [number, number])[] | undefined;
+    if (row.points !== undefined) {
+      const rawPts = parsePoints(row.points);
+      if (!rawPts) return null;
+      const sanitized = sanitizePolygonPoints(rawPts);
+      if (!sanitized) return null;
+      points = sanitized;
+    }
+    if (points) {
+      const box = bboxFromPoints(points);
+      if (!box) return null;
+      rooms.push({
+        id: row.id,
+        x: box.x,
+        y: box.y,
+        w: box.w,
+        h: box.h,
+        material: row.material as UnifiedCanvasMaterial,
+        points,
+      });
+      continue;
+    }
     if (![row.x, row.y, row.w, row.h].every(isFiniteNum)) return null;
     rooms.push({
       id: row.id,
@@ -300,9 +330,40 @@ export function serializeUnifiedCanvasDoc(doc: UnifiedCanvasDoc): UnifiedCanvasD
         ? { height: o.height }
         : {}),
     })),
-    rooms: [...doc.rooms],
+    rooms: doc.rooms.map((r) => ({
+      id: r.id,
+      x: r.x,
+      y: r.y,
+      w: r.w,
+      h: r.h,
+      material: r.material,
+      ...(r.points && r.points.length >= 3
+        ? { points: r.points.map((p) => [p[0], p[1]] as const) }
+        : {}),
+    })),
     walls: [...doc.walls],
     demoSeed: doc.demoSeed !== false,
+  };
+}
+
+/** Build a room from a closed polygon (≥3). BBox is derived. */
+export function roomFromPolygon(
+  id: string,
+  material: UnifiedCanvasMaterial,
+  points: readonly (readonly [number, number])[],
+): UnifiedCanvasRoom | null {
+  const sanitized = sanitizePolygonPoints(points);
+  if (!sanitized) return null;
+  const box = bboxFromPoints(sanitized);
+  if (!box) return null;
+  return {
+    id,
+    material,
+    x: box.x,
+    y: box.y,
+    w: box.w,
+    h: box.h,
+    points: sanitized,
   };
 }
 

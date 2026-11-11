@@ -5,6 +5,7 @@
  * Renderer-agnostic: Canvas2D and Three.js both apply the same ops to UnifiedCanvasDoc.
  */
 
+import { pointInPolygon, translatePolygon } from './canvas-polygon';
 import type {
   UnifiedCanvasDoc,
   UnifiedCanvasObject,
@@ -90,7 +91,20 @@ export function applyMapEdit(doc: UnifiedCanvasDoc, edit: MapEditOperation): Uni
       if (!finite(edit.x) || !finite(edit.y)) return doc;
       return {
         ...doc,
-        rooms: doc.rooms.map((r) => (r.id === edit.id ? { ...r, x: edit.x, y: edit.y } : r)),
+        rooms: doc.rooms.map((r) => {
+          if (r.id !== edit.id) return r;
+          const dx = edit.x - r.x;
+          const dy = edit.y - r.y;
+          if (r.points && r.points.length >= 3) {
+            return {
+              ...r,
+              x: edit.x,
+              y: edit.y,
+              points: translatePolygon(r.points, dx, dy),
+            };
+          }
+          return { ...r, x: edit.x, y: edit.y };
+        }),
         demoSeed: false,
       };
     }
@@ -154,6 +168,10 @@ export function pickObjectAt(
 export function pickRoomAt(doc: UnifiedCanvasDoc, x: number, y: number): UnifiedCanvasRoom | null {
   for (let i = doc.rooms.length - 1; i >= 0; i -= 1) {
     const r = doc.rooms[i];
+    if (r.points && r.points.length >= 3) {
+      if (pointInPolygon(x, y, r.points)) return r;
+      continue;
+    }
     if (x >= r.x && x <= r.x + r.w && y >= r.y && y <= r.y + r.h) return r;
   }
   return null;

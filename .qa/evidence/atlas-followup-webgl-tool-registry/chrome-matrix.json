@@ -19,6 +19,12 @@
       "role": "terrain"
     },
     {
+      "atlasId": "area",
+      "runtimeId": "area",
+      "enabled": true,
+      "role": "terrain"
+    },
+    {
       "atlasId": "road",
       "runtimeId": "road",
       "enabled": true,

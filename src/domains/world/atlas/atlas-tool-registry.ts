@@ -48,6 +48,13 @@ const CONTENT_TOOLS: readonly AtlasToolDef[] = [
     createsCanonicalNode: false,
   },
   {
+    id: 'area',
+    labelDe: 'Fläche',
+    allowedKinds: ['continent', 'country'],
+    role: 'terrain',
+    createsCanonicalNode: false,
+  },
+  {
     id: 'road',
     labelDe: 'Weg / Grenze',
     allowedKinds: ['place', 'country'],
@@ -93,7 +100,12 @@ export const ATLAS_TOOL_REGISTRY: readonly AtlasToolDef[] = [...NAV_TOOLS, ...CO
 export function atlasToolsForKind(kind: WorldNodeKind | null): readonly AtlasToolDef[] {
   if (kind === null) {
     return ATLAS_TOOL_REGISTRY.filter(
-      (t) => t.id === 'hand' || t.id === 'select' || t.id === 'brush' || t.id === 'erase',
+      (t) =>
+        t.id === 'hand' ||
+        t.id === 'select' ||
+        t.id === 'brush' ||
+        t.id === 'area' ||
+        t.id === 'erase',
     );
   }
   return ATLAS_TOOL_REGISTRY.filter((t) => t.allowedKinds.includes(kind));
@@ -114,6 +126,7 @@ export type WebglRuntimeToolId =
   | 'hand'
   | 'select'
   | 'paint'
+  | 'area'
   | 'road'
   | 'stamp'
   | 'wall'
@@ -124,6 +137,7 @@ const WEBGL_RUNTIME_SUPPORT: Readonly<Record<AtlasToolId, boolean>> = {
   hand: true,
   select: true,
   brush: true,
+  area: true,
   road: true,
   wall: true,
   room: true,
@@ -144,6 +158,7 @@ export function webglRuntimeIdToAtlasTool(runtimeId: string): AtlasToolId | null
     'hand',
     'select',
     'brush',
+    'area',
     'road',
     'wall',
     'room',

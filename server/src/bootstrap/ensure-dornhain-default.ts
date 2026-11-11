@@ -403,26 +403,251 @@ function dornhainUnifiedGeneratorMeta(): Record<string, unknown> {
         { id: 's.obj.tree-b', type: 'tanne', x: 420, y: 500, size: 0.45 },
       ],
       rooms: [
-        { id: 'w.ocean', material: 'wasser', x: 0, y: 0, w: 1000, h: 1000 },
-        { id: 'w.west-core', material: 'gras', x: 60, y: 180, w: 380, h: 520 },
-        { id: 'w.west-north', material: 'erde', x: 100, y: 90, w: 280, h: 160 },
-        { id: 'w.west-south', material: 'sand', x: 80, y: 640, w: 300, h: 180 },
-        { id: 'w.west-pen', material: 'gras', x: 300, y: 400, w: 140, h: 200 },
-        { id: 'w.east-core', material: 'gras', x: 520, y: 140, w: 400, h: 560 },
-        { id: 'w.east-north', material: 'stein', x: 580, y: 40, w: 300, h: 160 },
-        { id: 'w.east-south', material: 'erde', x: 560, y: 640, w: 320, h: 220 },
-        { id: 'w.east-bay', material: 'sand', x: 480, y: 360, w: 100, h: 140 },
-        { id: 'w.isle-n', material: 'holz', x: 420, y: 30, w: 120, h: 90 },
-        { id: 'w.isle-sw', material: 'gras', x: 40, y: 780, w: 100, h: 120 },
-        { id: 'w.isle-se', material: 'sand', x: 860, y: 820, w: 110, h: 100 },
-        { id: 'w.lake-w', material: 'wasser', x: 180, y: 320, w: 70, h: 50 },
-        { id: 'w.lake-e', material: 'wasser', x: 700, y: 280, w: 90, h: 60 },
-        { id: 's.ground', material: 'gras', x: 280, y: 430, w: 160, h: 160 },
-        { id: 's.plaza', material: 'pflaster', x: 320, y: 480, w: 70, h: 60 },
-        { id: 's.tavern', material: 'erde', x: 310, y: 510, w: 36, h: 36 },
-        { id: 's.market', material: 'sand', x: 360, y: 470, w: 36, h: 36 },
-        { id: 's.woods', material: 'holz', x: 390, y: 530, w: 40, h: 40 },
-        { id: 's.crypt', material: 'stein', x: 390, y: 446, w: 32, h: 32 },
+        {
+          id: "w.ocean",
+          material: "wasser",
+          x: 0,
+          y: 0,
+          w: 1000,
+          h: 1000
+        },
+        {
+          id: "w.west-core",
+          material: "gras",
+          x: 55,
+          y: 95,
+          w: 385,
+          h: 665,
+          points: [
+            [70, 200],
+            [160, 110],
+            [310, 95],
+            [390, 180],
+            [430, 310],
+            [410, 450],
+            [440, 560],
+            [380, 680],
+            [280, 760],
+            [140, 740],
+            [70, 620],
+            [55, 420],
+            [90, 280]
+          ]
+        },
+        {
+          id: "w.west-north",
+          material: "erde",
+          x: 100,
+          y: 70,
+          w: 260,
+          h: 140,
+          points: [
+            [110, 100],
+            [220, 70],
+            [340, 90],
+            [360, 160],
+            [280, 210],
+            [150, 200],
+            [100, 150]
+          ]
+        },
+        {
+          id: "w.west-south",
+          material: "sand",
+          x: 70,
+          y: 640,
+          w: 290,
+          h: 180,
+          points: [
+            [90, 660],
+            [200, 640],
+            [330, 670],
+            [360, 760],
+            [250, 820],
+            [120, 800],
+            [70, 720]
+          ]
+        },
+        {
+          id: "w.east-core",
+          material: "gras",
+          x: 500,
+          y: 110,
+          w: 420,
+          h: 650,
+          points: [
+            [540, 160],
+            [680, 110],
+            [820, 140],
+            [900, 250],
+            [920, 420],
+            [880, 580],
+            [820, 700],
+            [700, 760],
+            [580, 700],
+            [520, 560],
+            [500, 400],
+            [520, 260]
+          ]
+        },
+        {
+          id: "w.east-north",
+          material: "stein",
+          x: 580,
+          y: 30,
+          w: 300,
+          h: 160,
+          points: [
+            [600, 40],
+            [740, 30],
+            [860, 70],
+            [880, 150],
+            [780, 190],
+            [640, 170],
+            [580, 100]
+          ]
+        },
+        {
+          id: "w.east-south",
+          material: "erde",
+          x: 560,
+          y: 640,
+          w: 320,
+          h: 220,
+          points: [
+            [580, 660],
+            [720, 640],
+            [860, 680],
+            [880, 800],
+            [760, 860],
+            [620, 840],
+            [560, 740]
+          ]
+        },
+        {
+          id: "w.east-bay",
+          material: "sand",
+          x: 480,
+          y: 340,
+          w: 100,
+          h: 160,
+          points: [
+            [480, 360],
+            [560, 340],
+            [580, 420],
+            [540, 500],
+            [480, 480]
+          ]
+        },
+        {
+          id: "w.isle-n",
+          material: "holz",
+          x: 430,
+          y: 25,
+          w: 110,
+          h: 95,
+          points: [
+            [430, 40],
+            [510, 25],
+            [540, 80],
+            [500, 120],
+            [430, 100]
+          ]
+        },
+        {
+          id: "w.isle-sw",
+          material: "gras",
+          x: 40,
+          y: 780,
+          w: 100,
+          h: 120,
+          points: [
+            [40, 800],
+            [110, 780],
+            [140, 860],
+            [90, 900],
+            [40, 860]
+          ]
+        },
+        {
+          id: "w.isle-se",
+          material: "sand",
+          x: 850,
+          y: 820,
+          w: 120,
+          h: 110,
+          points: [
+            [870, 830],
+            [950, 820],
+            [970, 900],
+            [910, 930],
+            [850, 890]
+          ]
+        },
+        {
+          id: "w.lake-w",
+          material: "wasser",
+          x: 180,
+          y: 320,
+          w: 70,
+          h: 50
+        },
+        {
+          id: "w.lake-e",
+          material: "wasser",
+          x: 700,
+          y: 280,
+          w: 90,
+          h: 60
+        },
+        {
+          id: "s.ground",
+          material: "gras",
+          x: 280,
+          y: 430,
+          w: 160,
+          h: 160
+        },
+        {
+          id: "s.plaza",
+          material: "pflaster",
+          x: 320,
+          y: 480,
+          w: 70,
+          h: 60
+        },
+        {
+          id: "s.tavern",
+          material: "erde",
+          x: 310,
+          y: 510,
+          w: 36,
+          h: 36
+        },
+        {
+          id: "s.market",
+          material: "sand",
+          x: 360,
+          y: 470,
+          w: 36,
+          h: 36
+        },
+        {
+          id: "s.woods",
+          material: "holz",
+          x: 390,
+          y: 530,
+          w: 40,
+          h: 40
+        },
+        {
+          id: "s.crypt",
+          material: "stein",
+          x: 390,
+          y: 446,
+          w: 32,
+          h: 32
+        }
       ],
       walls: [],
       demoSeed: false,

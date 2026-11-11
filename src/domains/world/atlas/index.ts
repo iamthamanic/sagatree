@@ -32,6 +32,7 @@ export {
   extractUnifiedCanvasFromGeneratorMeta,
   mergeUnifiedCanvasIntoGeneratorMeta,
   parseUnifiedCanvasDoc,
+  roomFromPolygon,
   serializeUnifiedCanvasDoc,
   unifiedCanvasDocByteLength,
   type UnifiedCanvasDoc,
@@ -44,6 +45,16 @@ export {
   type UnifiedCanvasTool,
   type UnifiedCanvasWall,
 } from './unified-canvas-doc';
+
+export {
+  bboxFromPoints,
+  pointInPolygon,
+  sanitizePolygonPoints,
+  translatePolygon,
+  triangulatePolygon,
+  type CanvasBBox,
+  type CanvasPoint,
+} from './canvas-polygon';
 
 export {
   applyMapEdit,

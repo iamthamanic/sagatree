@@ -2017,6 +2017,11 @@ function checkWorldAtlasEditor() {
     cwd: root,
     stdio: 'inherit',
   });
+  console.log('Atlas coast polygons + Fläche tool (Step 2)...');
+  execFileSync(process.execPath, ['scripts/atlas-coast-polygons.self-test.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
   console.log('Dornhain Golden reset planner...');
   execFileSync(process.execPath, ['scripts/dornhain-golden-reset.self-test.mjs'], {
     cwd: root,
