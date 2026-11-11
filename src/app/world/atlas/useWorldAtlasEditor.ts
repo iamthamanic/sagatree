@@ -16,7 +16,9 @@ import {
   extractUnifiedCanvasFromGeneratorMeta,
   independentPrimaryBounds,
   isAtlasRevisionConflictMessage,
+  locateChildMapFrame,
   mergeDungeonMetaIntoGeneratorMeta,
+  mergeMapFrameIntoGeneratorMeta,
   mergeUnifiedCanvasIntoGeneratorMeta,
   normalizeDornhainWorldLayerTitle,
   planDornhainGoldenReset,
@@ -403,6 +405,90 @@ export function useWorldAtlasEditor({
     [map, canEdit, worldProfileId, reloadList],
   );
 
+  /**
+   * Persist a parent-space locate rect onto a child primary map (#722 Steps 3+4).
+   * Call while the parent map is active; does not invent meters.
+   */
+  const locateChildOnParent = useCallback(
+    async (input: {
+      readonly childMapId: string;
+      readonly minX: number;
+      readonly minY: number;
+      readonly maxX: number;
+      readonly maxY: number;
+      /** When set, also upsert an overview pin on the parent map. */
+      readonly childPlaceId?: string | null;
+    }): Promise<{ readonly ok: true } | { readonly ok: false; readonly reason: string }> => {
+      if (!map || !canEdit || !worldProfileId) {
+        return { ok: false, reason: 'Keine Bearbeitungsrechte oder keine Elternkarte.' };
+      }
+      const childMapId = input.childMapId.trim();
+      if (!childMapId || childMapId === map.id) {
+        return { ok: false, reason: 'Kindkarte fehlt oder ist die aktuelle Karte.' };
+      }
+      const located = locateChildMapFrame({
+        parentMapId: map.id,
+        minX: input.minX,
+        minY: input.minY,
+        maxX: input.maxX,
+        maxY: input.maxY,
+      });
+      if (located.ok === false) {
+        setError(located.reason);
+        return { ok: false, reason: located.reason };
+      }
+      setSaving(true);
+      setError(null);
+      try {
+        const child = await worldAtlasService.getMap(childMapId, playerView, sagaPublicId);
+        if (child.parentMapId && child.parentMapId !== map.id) {
+          const reason = 'Kindkarte gehört nicht zur aktuellen Elternkarte.';
+          setError(reason);
+          return { ok: false, reason };
+        }
+        const generatorMeta = mergeMapFrameIntoGeneratorMeta(child.generatorMeta, located.frame);
+        await worldAtlasService.upsertMap({
+          worldProfileId: child.worldProfileId,
+          mapId: child.id,
+          parentMapId: child.parentMapId ?? map.id,
+          kind: child.kind === 'legacy_tiles' ? 'region' : child.kind,
+          title: child.title,
+          sortOrder: child.sortOrder,
+          bounds: child.bounds,
+          layers: child.layers,
+          basemapStoragePath: child.basemapStoragePath,
+          azgaarMapStoragePath: child.azgaarMapStoragePath,
+          generatorMeta,
+          expectedRevision: child.revision,
+        });
+        const placeId = input.childPlaceId?.trim();
+        if (placeId) {
+          await worldPlaceService.linkMap({
+            worldProfileId,
+            placeId,
+            mapId: map.id,
+            usage: 'overview',
+            anchor: {
+              x: located.anchor.centerX,
+              y: located.anchor.centerY,
+              extentX: located.anchor.extentX,
+              extentY: located.anchor.extentY,
+            },
+          });
+        }
+        await reloadList();
+        return { ok: true };
+      } catch (err) {
+        const reason = err instanceof Error ? err.message : 'Verorten fehlgeschlagen.';
+        setError(reason);
+        return { ok: false, reason };
+      } finally {
+        setSaving(false);
+      }
+    },
+    [map, canEdit, worldProfileId, playerView, sagaPublicId, reloadList],
+  );
+
   const importAzgaarMap = useCallback(
     async (file: File) => {
       if (!map || !canEdit || !worldProfileId) return;
@@ -596,6 +682,7 @@ export function useWorldAtlasEditor({
     saveCanvas,
     saveLayers,
     createChildMap,
+    locateChildOnParent,
     importAzgaarMap,
     reloadActiveMap,
     breadcrumb,

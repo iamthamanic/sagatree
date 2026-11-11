@@ -9,8 +9,8 @@ Base Golden: `feat/dornhain-golden-atlas-v4` / PR [#1194](https://github.com/iam
 | Step | Status | Branch / PR | Notes |
 |------|--------|-------------|-------|
 | 1 · 3D/2D echte Karte + Pins | done | `feat/atlas-3d-product-terrain` | No open PR yet at last check |
-| 2 · Küstenpolygone + Fläche zeichnen | done | `a74be57a8` + `3e02e6f8f` → PR stacked on #1194 | test-gate PASS; browser OK |
-| 3+4 · Hierarchie + Ausschnitt verorten | pending | | |
+| 2 · Küstenpolygone + Fläche zeichnen | done | PR [#1195](https://github.com/iamthamanic/sagatree/pull/1195) stacked on #1194 | test-gate PASS; browser OK |
+| 3+4 · Hierarchie + Ausschnitt verorten | done (commit pending) | same PR #1195 | locate browser OK; test-gate PASS |
 | 5+6 · Golden-Content + Reset-Kette | pending | | |
 | Gap-Audit | pending | | after 2–6 |
 
@@ -44,9 +44,18 @@ Base Golden: `feat/dornhain-golden-atlas-v4` / PR [#1194](https://github.com/iam
   - Note: `productAreaDraft` not externally inspectable; evidence = UI + self-tests
 - test-gate: PASS (`npm run test-gate`, 2026-11-11)
 - stack-migration-prep-check: PASS (fingerprints + MIG-002 hash)
-- Commit/PR: pending
+- Commit/PR: done → [#1195](https://github.com/iamthamanic/sagatree/pull/1195)
+
+### Steps 3+4
+
+- Acceptance: `.qa/acceptance/atlas-hierarchy-locate-tool.md`
+- Composition: `.qa/runs/composition-gate-atlas-hierarchy-locate-tool.md` (SKIPPED)
+- Implementation: `locateChildMapFrame` / `parentAnchorFromParentRect`; `editor.locateChildOnParent`; Draufsicht locate session; overview pin on parent; reuse CreateWorldNodeDialog / createChildMap for hierarchy
+- Browser (`SA-RR25A`): Detailkarte → unlocated hint + „Ausschnitt verorten“ → parent locate mode → drag rect → hint cleared, child returns
+- test-gate: PASS; stack-migration-prep-check PASS after fingerprint refresh
+- Commit/PR: pending push onto #1195
 
 ## Blockers
 
-- None for Step 2 domain/UI work.
-- Merge of #1194 still needed before stacking Step-1/2 PRs onto `main`; work continues on feature branch.
+- Merge of #1194 still needed before stacking #1195 onto `main`.
+- Steps 5–6 (full Golden hierarchy content + reset chain) not started — cartography editor not claimed complete.

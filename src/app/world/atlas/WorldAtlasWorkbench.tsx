@@ -127,6 +127,13 @@ export function WorldAtlasWorkbench({
   const [webglActionError, setWebglActionError] = useState<string | null>(null);
   const [goldenResetOpen, setGoldenResetOpen] = useState(false);
   const [goldenResetNote, setGoldenResetNote] = useState<string | null>(null);
+  /** Parent-map locate session for an unlocated child primary map (Steps 3+4). */
+  const [locateSession, setLocateSession] = useState<{
+    readonly childMapId: string;
+    readonly childPlaceId: string | null;
+    readonly childTitle: string;
+    readonly returnMapId: string;
+  } | null>(null);
 
   const runGoldenReset = useCallback(
     async (mode: DornhainGoldenResetMode) => {
@@ -737,14 +744,41 @@ export function WorldAtlasWorkbench({
         </div>
       ) : null}
 
-      {mapUnlocated && showUnified && !atlasBooting ? (
+      {mapUnlocated && showUnified && !atlasBooting && !locateSession ? (
         <div
-          className="rounded-lg border border-border bg-muted/40 px-3 py-2 text-sm text-muted-foreground"
+          className="flex flex-wrap items-center gap-2 rounded-lg border border-border bg-muted/40 px-3 py-2 text-sm text-muted-foreground"
           data-atlas-unlocated-hint
           role="status"
         >
-          {UNLOCATED_MAP_HINT_DE}
-          {canEdit ? ' — Verorte den Ausschnitt auf der Elternkarte, bevor Zoom dorthin wechselt.' : null}
+          <span className="min-w-0 flex-1">
+            {UNLOCATED_MAP_HINT_DE}
+            {canEdit
+              ? ' — Verorte den Ausschnitt auf der Elternkarte, bevor Zoom dorthin wechselt.'
+              : null}
+          </span>
+          {canEdit && editor.map?.parentMapId ? (
+            <Button
+              type="button"
+              variant="outline"
+              className="min-h-11"
+              data-atlas-locate-start
+              disabled={editor.saving}
+              onClick={() => {
+                const child = editor.map;
+                if (!child?.parentMapId) return;
+                setLocateSession({
+                  childMapId: child.id,
+                  childPlaceId: activeMapOwner?.id ?? null,
+                  childTitle: child.title.trim() || 'Detailkarte',
+                  returnMapId: child.id,
+                });
+                setAtlasSurfaceMode('2d');
+                editor.setActiveMapId(child.parentMapId);
+              }}
+            >
+              Ausschnitt verorten
+            </Button>
+          ) : null}
         </div>
       ) : null}
 
@@ -856,6 +890,41 @@ export function WorldAtlasWorkbench({
               onWebglRuntimeChange={editor.updateWebglRuntime}
               dungeonMeta={editor.dungeonMeta}
               onDungeonMetaChange={editor.updateDungeonMeta}
+              locateSession={
+                locateSession
+                  ? { childTitle: locateSession.childTitle }
+                  : null
+              }
+              onLocateCancel={
+                locateSession
+                  ? () => {
+                      const ret = locateSession.returnMapId;
+                      setLocateSession(null);
+                      editor.setActiveMapId(ret);
+                    }
+                  : undefined
+              }
+              onLocateCommit={
+                locateSession
+                  ? (rect) => {
+                      const session = locateSession;
+                      void (async () => {
+                        const result = await editor.locateChildOnParent({
+                          childMapId: session.childMapId,
+                          childPlaceId: session.childPlaceId,
+                          minX: rect.minX,
+                          minY: rect.minY,
+                          maxX: rect.maxX,
+                          maxY: rect.maxY,
+                        });
+                        if (!result.ok) return;
+                        setLocateSession(null);
+                        setPlaceNavTick((t) => t + 1);
+                        editor.setActiveMapId(session.returnMapId);
+                      })();
+                    }
+                  : undefined
+              }
               placeNav={placeNav}
               webglNavTree={protoExact ? webglNavTree : null}
               activePlaceId={activePlaceId}

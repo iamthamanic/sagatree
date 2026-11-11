@@ -171,10 +171,26 @@ export type UnifiedAtlasEditorProps = {
   /** Persisted WebGL runtime (generator_meta.webglRuntimeV3). */
   readonly webglRuntime?: WebglRuntimeState | null;
   readonly onWebglRuntimeChange?: (next: WebglRuntimeState) => void;
+  /**
+   * Parent-map locate session (Steps 3+4): drag a rect in Draufsicht to place the child frame.
+   * When set, paint tools yield to locate marquee until commit/cancel.
+   */
+  readonly locateSession?: { readonly childTitle: string } | null;
+  readonly onLocateCommit?: (rect: {
+    readonly minX: number;
+    readonly minY: number;
+    readonly maxX: number;
+    readonly maxY: number;
+  }) => void;
+  readonly onLocateCancel?: () => void;
 };
 
 type DragState =
   | { readonly mode: 'pan'; readonly px: number; readonly py: number; readonly cam: AtlasCamera }
+  | {
+      readonly mode: 'locate';
+      readonly start: { readonly x: number; readonly y: number };
+    }
   | {
       readonly mode: 'paint';
       readonly strokeId: string;
@@ -357,6 +373,9 @@ export function UnifiedAtlasEditor({
   mapKey = 'map',
   webglRuntime = null,
   onWebglRuntimeChange,
+  locateSession = null,
+  onLocateCommit,
+  onLocateCancel,
 }: UnifiedAtlasEditorProps) {
   const stageRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -1045,6 +1064,12 @@ export function UnifiedAtlasEditor({
     }
     stageRef.current?.setPointerCapture(e.pointerId);
 
+    if (locateSession) {
+      dragRef.current = { mode: 'locate', start: { x: p.x, y: p.y } };
+      setMarqueeLive({ x: p.x, y: p.y, w: 0, h: 0 });
+      return;
+    }
+
     if (pinArmedRef.current) {
       setPlacePin({ x: p.x, y: p.y });
       setPinArmed(false);
@@ -1252,7 +1277,7 @@ export function UnifiedAtlasEditor({
       refresh();
       return;
     }
-    if (drag.mode === 'marquee') {
+    if (drag.mode === 'locate' || drag.mode === 'marquee') {
       const x = Math.min(drag.start.x, p.x);
       const y = Math.min(drag.start.y, p.y);
       const w = Math.abs(p.x - drag.start.x);
@@ -1265,6 +1290,20 @@ export function UnifiedAtlasEditor({
   const onPointerUp = (e: React.PointerEvent) => {
     const drag = dragRef.current;
     const p = worldFromEvent(e);
+    if (drag?.mode === 'locate') {
+      const minX = Math.min(drag.start.x, p.x);
+      const minY = Math.min(drag.start.y, p.y);
+      const maxX = Math.max(drag.start.x, p.x);
+      const maxY = Math.max(drag.start.y, p.y);
+      const min = 4 / camRef.current.pixelsPerUnit;
+      dragRef.current = null;
+      setMarqueeLive(null);
+      if (maxX - minX > min && maxY - minY > min) {
+        onLocateCommit?.({ minX, minY, maxX, maxY });
+      }
+      refresh();
+      return;
+    }
     if (drag?.mode === 'marquee') {
       const x = Math.min(drag.start.x, p.x);
       const y = Math.min(drag.start.y, p.y);
@@ -1388,6 +1427,13 @@ export function UnifiedAtlasEditor({
 
   useEffect(() => {
     const onKey = (ev: KeyboardEvent) => {
+      if (locateSession && ev.key === 'Escape') {
+        setMarqueeLive(null);
+        dragRef.current = null;
+        onLocateCancel?.();
+        refresh();
+        return;
+      }
       if (tool !== 'area' || !canEdit) return;
       if (ev.key === 'Escape') {
         setAreaDraft([]);
@@ -1416,7 +1462,7 @@ export function UnifiedAtlasEditor({
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [tool, canEdit, material, commit, refresh]);
+  }, [tool, canEdit, material, commit, refresh, locateSession, onLocateCancel]);
 
   const handleDefinePlace = async (req: AtlasDefinePlaceRequest) => {
     if (!onCreatePlace || !canEdit) return;
@@ -1703,10 +1749,13 @@ export function UnifiedAtlasEditor({
           <div
             ref={stageRef}
             className={`relative min-h-[min(70vh,40rem)] flex-1 touch-none overflow-hidden rounded-lg border border-border bg-[#10212a] ${
-              pinArmed || marqueeArmed ? 'cursor-crosshair' : ''
+              locateSession || pinArmed || marqueeArmed ? 'cursor-crosshair' : ''
             }`}
             data-unified-atlas-viewport
-            data-tool={pinArmed ? 'pin' : marqueeArmed ? 'marquee' : tool}
+            data-tool={
+              locateSession ? 'locate' : pinArmed ? 'pin' : marqueeArmed ? 'marquee' : tool
+            }
+            data-atlas-locate-mode={locateSession ? 'true' : undefined}
             data-view-mode="2d"
             data-pin-armed={pinArmed ? 'true' : undefined}
             data-marquee-armed={marqueeArmed ? 'true' : undefined}
@@ -1946,10 +1995,38 @@ export function UnifiedAtlasEditor({
                       : 'Weltkarte'}
           </h2>
           <p className="text-sm text-muted-foreground">
-            {tool === 'area'
-              ? 'Klick setzt Küstenpunkte. Doppelklick oder Enter schließt die Fläche. Escape bricht ab.'
-              : 'Mausrad = zoomen. Land/Wasser mit Pinsel oder Fläche; Orte per Pin oder Rahmen anlegen.'}
+            {locateSession
+              ? `Ziehe den Ausschnitt für „${locateSession.childTitle}“ auf dieser Elternkarte. Escape bricht ab.`
+              : tool === 'area'
+                ? 'Klick setzt Küstenpunkte. Doppelklick oder Enter schließt die Fläche. Escape bricht ab.'
+                : 'Mausrad = zoomen. Land/Wasser mit Pinsel oder Fläche; Orte per Pin oder Rahmen anlegen.'}
           </p>
+          {locateSession ? (
+            <div
+              className="flex flex-wrap items-center gap-2 rounded-md border border-primary/40 bg-primary/10 px-2 py-1.5 text-xs text-foreground"
+              data-atlas-locate-session
+              role="status"
+            >
+              <span className="min-w-0 flex-1">
+                Verorten: Rechteck ziehen für „{locateSession.childTitle}“.
+              </span>
+              {onLocateCancel ? (
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="min-h-11"
+                  data-atlas-locate-cancel
+                  onClick={() => {
+                    setMarqueeLive(null);
+                    dragRef.current = null;
+                    onLocateCancel();
+                  }}
+                >
+                  Abbrechen
+                </Button>
+              ) : null}
+            </div>
+          ) : null}
           {areaHint ? (
             <p className="text-xs text-primary" data-atlas-area-hint role="status">
               {areaHint}

@@ -2022,6 +2022,11 @@ function checkWorldAtlasEditor() {
     cwd: root,
     stdio: 'inherit',
   });
+  console.log('Atlas hierarchy locate tool (Steps 3+4)...');
+  execFileSync(process.execPath, ['scripts/atlas-hierarchy-locate.self-test.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
   console.log('Dornhain Golden reset planner...');
   execFileSync(process.execPath, ['scripts/dornhain-golden-reset.self-test.mjs'], {
     cwd: root,

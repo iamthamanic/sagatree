@@ -193,3 +193,74 @@ export function atlasZoomCaption(percent: number, metersPerUnit: number | null):
 }
 
 export const UNLOCATED_MAP_HINT_DE = 'Ausschnitt noch nicht festgelegt';
+
+export const LOCATE_INVALID_RECT_DE =
+  'Ausschnitt ungültig — ziehe ein Rechteck mit positiver Breite und Höhe.';
+
+/**
+ * Build a parent-space anchor from an axis-aligned rectangle on the parent map
+ * (drag-to-locate). Extent is half-width / half-height in parent units.
+ */
+export function parentAnchorFromParentRect(input: {
+  readonly parentMapId: string;
+  readonly minX: number;
+  readonly minY: number;
+  readonly maxX: number;
+  readonly maxY: number;
+  readonly rotationRad?: number;
+  readonly metersPerUnit?: number | null;
+}):
+  | { readonly ok: true; readonly anchor: ParentSpatialAnchor }
+  | { readonly ok: false; readonly reason: string } {
+  const parentMapId = input.parentMapId.trim();
+  if (!parentMapId) {
+    return { ok: false, reason: 'Elternkarte fehlt' };
+  }
+  const minX = Number(input.minX);
+  const minY = Number(input.minY);
+  const maxX = Number(input.maxX);
+  const maxY = Number(input.maxY);
+  if (![minX, minY, maxX, maxY].every(Number.isFinite)) {
+    return { ok: false, reason: LOCATE_INVALID_RECT_DE };
+  }
+  const width = Math.abs(maxX - minX);
+  const height = Math.abs(maxY - minY);
+  if (width <= 0 || height <= 0) {
+    return { ok: false, reason: LOCATE_INVALID_RECT_DE };
+  }
+  const centerX = (minX + maxX) / 2;
+  const centerY = (minY + maxY) / 2;
+  return assertParentSpatialAnchor({
+    parentMapId,
+    centerX,
+    centerY,
+    extentX: width / 2,
+    extentY: height / 2,
+    rotationRad: input.rotationRad ?? 0,
+    metersPerUnit: input.metersPerUnit ?? null,
+  });
+}
+
+/**
+ * Child map becomes LOD-enterable after a valid parent rect.
+ * Empty child canvas → `unsketched` (honest until content exists).
+ */
+export function locateChildMapFrame(input: {
+  readonly parentMapId: string;
+  readonly minX: number;
+  readonly minY: number;
+  readonly maxX: number;
+  readonly maxY: number;
+}):
+  | { readonly ok: true; readonly frame: MapFrameMeta; readonly anchor: ParentSpatialAnchor }
+  | { readonly ok: false; readonly reason: string } {
+  const built = parentAnchorFromParentRect(input);
+  if (built.ok === false) {
+    return { ok: false, reason: built.reason };
+  }
+  return {
+    ok: true,
+    anchor: built.anchor,
+    frame: { status: 'unsketched', parentAnchor: built.anchor },
+  };
+}

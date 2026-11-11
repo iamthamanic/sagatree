@@ -158,6 +158,7 @@ export {
 
 export {
   ATLAS_FEATURE_OWNERS,
+  LOCATE_INVALID_RECT_DE,
   MAP_FRAME_META_KEY,
   MAP_STATUS_META_KEY,
   UNLOCATED_MAP_HINT_DE,
@@ -168,7 +169,9 @@ export {
   extractMapFrameFromGeneratorMeta,
   independentPrimaryBounds,
   isGroundedLinkAnchor,
+  locateChildMapFrame,
   mergeMapFrameIntoGeneratorMeta,
+  parentAnchorFromParentRect,
   parseMapSketchStatus,
   parseParentSpatialAnchor,
   unlocatedChildMapGeneratorMeta,
