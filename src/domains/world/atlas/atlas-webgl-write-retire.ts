@@ -106,8 +106,8 @@ function captureGeometryBackup(
 }
 
 /**
- * Prefer unifiedCanvas. When canvas has no geometry but webglRuntimeV3 does,
- * one-shot import into the canonical document (legacy read adapter).
+ * Prefer unifiedCanvas when the key is present (even if empty — intentional deletes).
+ * One-shot import from webglRuntimeV3 only when the canonical document is absent.
  */
 export function hydrateCanvasFromLegacyWebgl(
   meta: Readonly<Record<string, unknown>> | null | undefined,
@@ -120,8 +120,16 @@ export function hydrateCanvasFromLegacyWebgl(
 } {
   const runtime = extractWebglRuntimeFromGeneratorMeta(meta);
   const parsed = extractUnifiedCanvasFromGeneratorMeta(meta);
-  const canvas = parsed ?? emptyUnifiedCanvasDoc(fallbackDemoSeed);
-  if (canvasDocHasGeometry(canvas) || !webglRuntimeHasGeometry(runtime)) {
+  if (parsed != null) {
+    return {
+      canvas: parsed,
+      runtime,
+      migrated: false,
+      meta: { ...(meta ?? {}) },
+    };
+  }
+  const canvas = emptyUnifiedCanvasDoc(fallbackDemoSeed);
+  if (!webglRuntimeHasGeometry(runtime)) {
     return {
       canvas,
       runtime,
@@ -197,14 +205,16 @@ export function restoreWebglGeometryBackup(
   const base: Record<string, unknown> = { ...(meta ?? {}) };
   const backup = parseWebglGeometryBackup(base[WEBGL_GEOMETRY_BACKUP_META_KEY]);
   if (!backup) return null;
-  const restored: WebglRuntimeState = {
+  const current = extractWebglRuntimeFromGeneratorMeta(base);
+  // Merge geometry into existing extras (placeNames/worlds) — do not replace wholesale.
+  base[WEBGL_RUNTIME_META_KEY] = {
+    ...(current ?? { props: [], walls: [], strokes: [], rooms: [], layers: backup.layers }),
     props: backup.props,
     walls: backup.walls,
     strokes: backup.strokes,
     rooms: backup.rooms,
     layers: backup.layers,
   };
-  base[WEBGL_RUNTIME_META_KEY] = restored;
   delete base[WEBGL_GEOMETRY_BACKUP_META_KEY];
   return base;
 }

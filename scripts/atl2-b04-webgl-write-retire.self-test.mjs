@@ -90,7 +90,7 @@ assert.ok(rolled);
 assert.ok(bridge.extractWebglRuntimeFromGeneratorMeta(rolled).props.length >= 1);
 assert.equal(rolled.webglRuntimeV3GeometryBackup, undefined);
 
-// Legacy import: only webglRuntimeV3
+// Legacy import: only when unifiedCanvas key is absent
 const legacyOnly = {
   webglRuntimeV3: {
     props: [{ id: 'legacy-house', type: 'house', stamp: 'haus', x: 3, z: 4, size: 1, rotation: 0, level: 'world' }],
@@ -114,9 +114,36 @@ assert.ok(retire.persistedMetaHasNoWebglGeometryShadow(afterLegacySave));
 const kept = canvasMod.extractUnifiedCanvasFromGeneratorMeta(afterLegacySave);
 assert.equal(kept.objects[0].id, 'legacy-house');
 
+// Present empty canvas is authoritative — do not resurrect stale sidecar (Codex P1)
+const emptyAuthoritative = {
+  unifiedCanvas: canvasMod.serializeUnifiedCanvasDoc(empty),
+  webglRuntimeV3: legacyOnly.webglRuntimeV3,
+};
+const noResurrect = retire.hydrateCanvasFromLegacyWebgl(emptyAuthoritative, false);
+assert.equal(noResurrect.migrated, false);
+assert.equal(noResurrect.canvas.objects.length, 0, 'empty canvas wins over stale sidecar');
+
 // Empty stays empty
 const emptyHydrate = retire.hydrateCanvasFromLegacyWebgl({}, false);
 assert.equal(emptyHydrate.migrated, false);
 assert.equal(emptyHydrate.canvas.objects.length, 0);
+
+// Rollback preserves non-geometry extras (Codex P2)
+const withExtras = retire.mergeCanonicalAtlasGeometryForPersist(
+  {
+    ...priorMeta,
+    webglRuntimeV3: { ...priorMeta.webglRuntimeV3, placeNames: { keep: true } },
+  },
+  deletedDoc,
+  null,
+  { capturedAt: '2026-11-12T00:00:02.000Z' },
+);
+const rolledExtras = retire.restoreWebglGeometryBackup(withExtras);
+assert.ok(rolledExtras);
+assert.equal(
+  bridge.extractWebglRuntimeFromGeneratorMeta(rolledExtras).placeNames.keep,
+  true,
+  'placeNames survive restore',
+);
 
 console.log('atl2-b04-webgl-write-retire self-test: PASS');
