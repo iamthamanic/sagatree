@@ -196,6 +196,31 @@ export {
 } from './map-frame';
 
 export {
+  ATLAS_CANONICAL_CATALOG_VERSION,
+  ATLAS_DEFERRED_EDIT_OPS,
+  ATLAS_FEATURE_AUTHORITY,
+  ATLAS_MIGRATION_MATRIX,
+  ATLAS_REQUIRED_EDIT_OPS,
+  ATLAS_WIRE_FORMAT_DECISION,
+  DRAWN_ROOM_VS_WORLD_NODE,
+  assertAtlasFeatureId,
+  classificationRespectsLegacySafety,
+  classifyObject,
+  classifyRoom,
+  classifyRoomForMapScale,
+  classifyStroke,
+  classifyUnifiedCanvasDoc,
+  classifyWall,
+  isAtlasFeatureId,
+  type AtlasCanonicalDocClassification,
+  type AtlasCanonicalFeatureKind,
+  type AtlasCanonicalFeatureRef,
+  type AtlasFeatureAuthority,
+  type AtlasMigrationDisposition,
+  type AtlasMigrationMatrixRow,
+} from './atlas-canonical-features';
+
+export {
   ATLAS_MAP_PIN_FOCUS_SPAN,
   ATLAS_MAP_PIN_LIMIT,
   atlasMapOwnerPlace,
