@@ -73,15 +73,29 @@ export {
   DORNHAIN_SETTLEMENT_FOCUS,
   DORNHAIN_STARTER_CANVAS,
   DORNHAIN_STARTER_GRID,
+  DORNHAIN_UNIFIED_LEGACY_SEEDS,
   DORNHAIN_UNIFIED_SEED,
   DORNHAIN_WORLD_ANCHOR,
   DORNHAIN_WORLD_LAYER_TITLE,
   buildDornhainUnifiedCanvasDoc,
   buildDornhainUnifiedGeneratorMeta,
+  isBlankDornhainOceanDoc,
   isSettlementLodId,
   normalizeDornhainWorldLayerTitle,
   shouldUpgradeDornhainUnifiedToWorld,
 } from './dornhain-unified-starter';
+
+export {
+  DORNHAIN_GOLDEN_PLACES,
+  dornhainGoldenResetModeHintDe,
+  dornhainGoldenResetModeLabelDe,
+  isDornhainGoldenRootMap,
+  isDornhainGoldenSeedKey,
+  planDornhainGoldenReset,
+  type DornhainGoldenPlaceSpec,
+  type DornhainGoldenResetMode,
+  type DornhainGoldenResetPlan,
+} from './dornhain-golden-reset';
 
 export {
   ATLAS_PROTOTYPE_HOTSPOTS,

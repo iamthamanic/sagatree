@@ -88,7 +88,18 @@ export function parseMapSketchStatus(raw: unknown): MapSketchStatus {
 export function extractMapFrameFromGeneratorMeta(
   meta: Readonly<Record<string, unknown>> | null | undefined,
 ): MapFrameMeta {
-  const status = parseMapSketchStatus(meta?.[MAP_STATUS_META_KEY] ?? meta?.mapStatus);
+  const rawStatus = meta?.[MAP_STATUS_META_KEY] ?? meta?.mapStatus;
+  let status: MapSketchStatus;
+  if (rawStatus === 'ready' || rawStatus === 'unsketched' || rawStatus === 'unlocated') {
+    status = rawStatus;
+  } else {
+    // Missing status: world / Golden roots are playable; child sketches stay unlocated (#722).
+    const seed = typeof meta?.seed === 'string' ? meta.seed : '';
+    const scale = typeof meta?.scale === 'string' ? meta.scale : '';
+    const golden = meta?.golden === true;
+    status =
+      golden || scale === 'world' || seed.startsWith('dornhain.unified') ? 'ready' : 'unlocated';
+  }
   const frameRaw = meta?.[MAP_FRAME_META_KEY];
   const parentAnchor =
     frameRaw && typeof frameRaw === 'object'

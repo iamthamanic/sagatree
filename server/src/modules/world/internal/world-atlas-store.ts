@@ -141,11 +141,41 @@ function filterPartyLayers(layers: Record<string, unknown>): Record<string, unkn
   return { type: 'FeatureCollection', features: visible };
 }
 
+/** Golden crypt ids + any entity flagged `secret: true`. */
+const UNIFIED_SECRET_IDS = new Set(['s.crypt', 's.obj.crypt']);
+
+function entityIsSecret(row: Record<string, unknown>): boolean {
+  if (coercePgBoolean(row.secret, false) === true) return true;
+  return typeof row.id === 'string' && UNIFIED_SECRET_IDS.has(row.id);
+}
+
+function redactUnifiedCanvasForParty(raw: unknown): unknown {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return raw;
+  const doc = raw as Record<string, unknown>;
+  const filterList = (key: string): unknown => {
+    const list = doc[key];
+    if (!Array.isArray(list)) return list;
+    return list.filter((item) => {
+      if (!item || typeof item !== 'object' || Array.isArray(item)) return true;
+      return !entityIsSecret(item as Record<string, unknown>);
+    });
+  };
+  return {
+    ...doc,
+    objects: filterList('objects'),
+    rooms: filterList('rooms'),
+    strokes: filterList('strokes'),
+    walls: filterList('walls'),
+  };
+}
+
 function redactPartyMeta(meta: Record<string, unknown>): Record<string, unknown> {
   const out: Record<string, unknown> = {
     engine: typeof meta.engine === 'string' ? meta.engine : 'unified_canvas',
   };
-  if (meta.unifiedCanvas !== undefined) out.unifiedCanvas = meta.unifiedCanvas;
+  if (meta.unifiedCanvas !== undefined) {
+    out.unifiedCanvas = redactUnifiedCanvasForParty(meta.unifiedCanvas);
+  }
   if (meta.webglRuntime !== undefined) out.webglRuntime = meta.webglRuntime;
   if (meta.mapFrame !== undefined) out.mapFrame = meta.mapFrame;
   if (meta.dungeon !== undefined) out.dungeon = meta.dungeon;

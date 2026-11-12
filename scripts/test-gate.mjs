@@ -2018,8 +2018,13 @@ function checkWorldAtlasEditor() {
     cwd: root,
     stdio: 'inherit',
   });
-  console.log('Dornhain unified world map (ocean blank v3)...');
+  console.log('Dornhain unified world map (Golden v4)...');
   execFileSync(process.execPath, ['scripts/dornhain-unified-world-map.self-test.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
+  console.log('Dornhain Golden reset planner...');
+  execFileSync(process.execPath, ['scripts/dornhain-golden-reset.self-test.mjs'], {
     cwd: root,
     stdio: 'inherit',
   });

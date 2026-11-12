@@ -37571,8 +37571,12 @@
             "sha256": "9a6d6ef66b233ccb0a2fe82c5fea50406b7f3ef210ad3ef5280b7e79bd1acca4"
           },
           {
+            "path": "src/domains/world/atlas/dornhain-golden-reset.ts",
+            "sha256": "c03d3d698fbfa8925487d9b014d6f111bcf6e5ed97a37904491973218cb2afdd"
+          },
+          {
             "path": "src/domains/world/atlas/dornhain-unified-starter.ts",
-            "sha256": "db76bc80f477931d3ca5b63f0858e34ed73d40a993355db3aaed86c8002105eb"
+            "sha256": "0e4dc894cc877b4a45ce45a6c0de54d70b02a7828ec5d2f49a8de3a94f78e4b9"
           },
           {
             "path": "src/domains/world/atlas/dungeon-generator.ts",
@@ -37580,7 +37584,7 @@
           },
           {
             "path": "src/domains/world/atlas/index.ts",
-            "sha256": "d1579908b6226016f0c89e4f1f4d2882f2d0a9cca3a6b9e77b9b28c5758fc18d"
+            "sha256": "b6756ecb27cdc433d8a7ffec670db5a8a4447aff3269a8a7c231fa191662360c"
           },
           {
             "path": "src/domains/world/atlas/map-edit-ops.ts",
@@ -37588,11 +37592,11 @@
           },
           {
             "path": "src/domains/world/atlas/map-frame.ts",
-            "sha256": "5d915a8a4560698655964645ee31fbb309288188200938130a1c67af530c185a"
+            "sha256": "f50e1cc016139b26435259e53455cff70e8438be8de004dc9538a222ab86198a"
           },
           {
             "path": "src/domains/world/atlas/unified-canvas-doc.ts",
-            "sha256": "ba7ac1a1e76d31a7bac71221d2f06c8e9e44a1bd55a6a14b6d7f9c3f6b950753"
+            "sha256": "a40c4af3ada0ad92266f8f835d24b3b7967b129af09e9120d03594ddb9425889"
           },
           {
             "path": "src/domains/world/atlas/validate-world-atlas.ts",
@@ -37792,7 +37796,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-world.json",
-      "sourceContractSha256": "d21c6f030d5b98668db3eeeb9f3f95598937e15e1ba8d753af8ead8bd3f1e4f1",
+      "sourceContractSha256": "bed6e6a08c35cd3eb1b23bbbb8aa2717bf125169be97b936f70daadfc1609298",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],
