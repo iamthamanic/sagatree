@@ -190,6 +190,10 @@
       "sha256": "d1f751285f4aa2ecda0def4f411610d093863208e95cd51c5cedb1997d4d195b"
     },
     {
+      "path": "src/domains/world/atlas/atlas-map-doc-adapter.ts",
+      "sha256": "d85a2ed7b2e6cd9650c4d87664fb09e7b4621779f2a820ed65c421e353caf04a"
+    },
+    {
       "path": "src/domains/world/atlas/atlas-map-pins.ts",
       "sha256": "1421ca01edd55307c341adc3ac74f4c5a7cef87f60fadbbe0faaa141898b4791"
     },
@@ -227,7 +231,7 @@
     },
     {
       "path": "src/domains/world/atlas/index.ts",
-      "sha256": "c0b9cf1c0e536a0162afbf366adddb5b7f6218aa4c939f371b5d5a657472683f"
+      "sha256": "ab2b912983547cbff6f8677a21e3c0a81b3627db70bb9e6303f4f8567991448c"
     },
     {
       "path": "src/domains/world/atlas/map-edit-ops.ts",
@@ -239,7 +243,7 @@
     },
     {
       "path": "src/domains/world/atlas/unified-canvas-doc.ts",
-      "sha256": "2084b179633089aceaa47eb485ffeaad49ca73a59be11d83f702ea4b3139e4df"
+      "sha256": "0f3d126d42d2bd3f698109a60f714495a4e0c1aa803be4875bfad50c8c207e7a"
     },
     {
       "path": "src/domains/world/atlas/validate-world-atlas.ts",
@@ -1190,6 +1194,46 @@
       "line": 346,
       "endLine": 350,
       "text": "export type ClassifyUnifiedCanvasOptions = {\n  readonly scale?: 'world' | 'interior' | 'unknown';\n  /** When true, apply Golden stroke-id heuristics; never use material alone. */\n  readonly inferGoldenStrokeIds?: boolean;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AtlasMapDocScale",
+      "path": "src/domains/world/atlas/atlas-map-doc-adapter.ts",
+      "line": 35,
+      "endLine": 35,
+      "text": "export type AtlasMapDocScale = 'world' | 'interior' | 'unknown';"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AtlasStrokeHintMap",
+      "path": "src/domains/world/atlas/atlas-map-doc-adapter.ts",
+      "line": 37,
+      "endLine": 37,
+      "text": "export type AtlasStrokeHintMap = Readonly<Record<string, AtlasStrokeProvenance>>;"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AtlasMapDocV2",
+      "path": "src/domains/world/atlas/atlas-map-doc-adapter.ts",
+      "line": 39,
+      "endLine": 49,
+      "text": "export type AtlasMapDocV2 = {\n  readonly format: typeof ATLAS_MAP_DOC_V2_FORMAT;\n  readonly catalogVersion: typeof ATLAS_CANONICAL_CATALOG_VERSION;\n  readonly wireFormat: typeof UNIFIED_CANVAS_FORMAT;\n  readonly wireDecision: typeof ATLAS_WIRE_FORMAT_DECISION;\n  readonly scale: AtlasMapDocScale;\n  /** Explicit stroke provenance; never inferred from material alone. */\n  readonly strokeHints: AtlasStrokeHintMap;\n  readonly canvas: UnifiedCanvasDoc;\n  readonly classification: AtlasCanonicalDocClassification;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AtlasMapDocAdaptResult",
+      "path": "src/domains/world/atlas/atlas-map-doc-adapter.ts",
+      "line": 51,
+      "endLine": 57,
+      "text": "export type AtlasMapDocAdaptResult =\n  | { readonly ok: true; readonly doc: AtlasMapDocV2 }\n  | {\n      readonly ok: false;\n      readonly reason: 'missing_canvas' | 'invalid_canvas' | 'unsupported_format';\n      readonly detail: string;\n    };"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AtlasMapDocBackup",
+      "path": "src/domains/world/atlas/atlas-map-doc-adapter.ts",
+      "line": 59,
+      "endLine": 63,
+      "text": "export type AtlasMapDocBackup = {\n  readonly capturedAt: string;\n  readonly unifiedCanvas: UnifiedCanvasDoc;\n  readonly atlasMapDocV2: AtlasMapDocV2 | null;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",

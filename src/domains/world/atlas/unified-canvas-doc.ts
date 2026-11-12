@@ -272,6 +272,7 @@ export function parseUnifiedCanvasDoc(raw: unknown): UnifiedCanvasDoc | null {
         h: box.h,
         material: row.material as UnifiedCanvasMaterial,
         points,
+        ...(row.secret === true ? { secret: true } : {}),
       });
       continue;
     }
