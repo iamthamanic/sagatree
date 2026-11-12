@@ -2,7 +2,7 @@
 
 - Issue: #1200
 - Feature slug: atl2-a04-gate-a
-- HEAD_SHA: 6a9b98786363c5fd69341e927b6ff2b77bf59082
+- HEAD_SHA: 2cdf1b080b0c88f51207da1859a1a508b0eb910e
 - BASE_SHA: f351b8c3fea873977334a524cb3ad9fc9ef54793
 - Date: 2026-11-12
 - Verdict: SKIPPED
