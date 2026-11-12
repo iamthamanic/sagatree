@@ -103,6 +103,7 @@
     "test:e2e:live-session-golden": "playwright test e2e/live-session-golden-e2e-gate.spec.ts",
     "icons:vectorize": "node scripts/vectorize-item-icons.mjs",
     "icons:vectorize:npc": "node scripts/vectorize-npc-creature-icons.mjs",
-    "check:stack-migration-prep": "node scripts/stack-migration-prep-check.mjs"
+    "check:stack-migration-prep": "node scripts/stack-migration-prep-check.mjs",
+    "check:docs-runtime-drift": "node scripts/docs-runtime-drift-check.mjs"
   }
 }

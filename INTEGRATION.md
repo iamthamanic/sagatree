@@ -1,15 +1,19 @@
 # Self-Hosted Backend Integration
 
+> **HISTORISCH / ARCHIVIERT** — Dieses Dokument beschreibt den ehemaligen Supabase-/Edge-Integrationsweg.  
+> **Aktueller Produktpfad:** [`README_SELFHOST.md`](README_SELFHOST.md) · [`.env.example`](.env.example) · [`docs/ops/host-compose-profiles.md`](docs/ops/host-compose-profiles.md) (Node/Hono · Better Auth · SQLite).  
+> Die Beispiele unten (`VITE_SUPABASE_*`, Edge URLs, `src/modules/…`) sind **keine** gültige Startanleitung mehr.
+
 ## Environment Variables
 
 Create a `.env.local` file in the root directory:
 
 ```env
-# Self-Hosted Supabase
+# Self-Hosted Supabase (archived — not product)
 VITE_SUPABASE_URL=http://localhost:8000
 VITE_SUPABASE_ANON_KEY=your-anon-key-from-setup
 
-# Edge Functions
+# Edge Functions (archived)
 VITE_FUNCTIONS_URL=http://localhost:9998
 
 # Ollama

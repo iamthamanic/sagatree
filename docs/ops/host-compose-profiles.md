@@ -71,5 +71,6 @@ Do **not** bake `CHARACTER_AI_API_KEY`, `MESHY_API_KEY`, or
 
 - Host backup / restore / rollback: [`host/backup-restore.md`](host/backup-restore.md),
   [`host/update-rollback.md`](host/update-rollback.md)
-- Legacy Supabase slim profiles: [`compose-profiles.md`](compose-profiles.md)
-- Harden defaults (Kong / Edge): [`compose-harden-defaults.md`](compose-harden-defaults.md)
+- Legacy Supabase slim profiles (archived redirect only): [`compose-profiles.md`](compose-profiles.md)
+- Historical Kong/Edge harden notes (archive ops; not product start): [`compose-harden-defaults.md`](compose-harden-defaults.md)
+- Frontend/agent entry: [`../../README.md`](../../README.md) · [`../../AGENTS.md`](../../AGENTS.md)

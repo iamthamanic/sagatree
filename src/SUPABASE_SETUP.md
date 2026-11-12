@@ -1,5 +1,8 @@
 # Supabase Setup für SagaTree
 
+> **HISTORISCH / ARCHIVIERT** — Cloud-/Self-Host-Supabase-Setup ist nicht der Produktpfad (CUT-21/22).  
+> Archiv: `archive/supabase-legacy/`. Aktueller Start: [`README_SELFHOST.md`](../README_SELFHOST.md).
+
 ## 🚀 Quick Start
 
 ### 1. Datenbank-Schema erstellen
