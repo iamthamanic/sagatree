@@ -2,7 +2,7 @@
 
 **Verdict:** SKIPPED  
 **Feature slug:** `atl2-a03-cold-bootstrap`  
-**HEAD:** 4d9586f3a5d26db66fdac613966a80b1cfab9648  
+**HEAD:** 45994736e2015117fa217d0541723e8f93c4732c
 **Date:** 2026-11-12
 
 ## Reason
