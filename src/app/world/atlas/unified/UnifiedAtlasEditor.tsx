@@ -2356,7 +2356,7 @@ export function UnifiedAtlasEditor({
                     applyMapEdit(workingDoc, {
                       op: 'transform_object',
                       id: selectedId,
-                      patch: { angle: (obj.angle ?? 0) + Math.PI / 2 },
+                      patch: { angle: (obj.angle ?? 0) + 90 },
                     }),
                     true,
                   );

@@ -60,6 +60,46 @@ assert.deepEqual(snapped, [0, 0]);
 doc = ops.applyMapEdit(doc, { op: 'rotate_room', id: 'r1', angleRad: Math.PI / 2 });
 assert.ok(doc.rooms[0].points && doc.rooms[0].points.length === 4);
 
+// Polygon rooms preserve vertex count under rotate
+let polyDoc = canvas.emptyUnifiedCanvasDoc(false);
+polyDoc = ops.applyMapEdit(polyDoc, {
+  op: 'add_room',
+  room: {
+    id: 'rp',
+    x: 0,
+    y: 0,
+    w: 4,
+    h: 4,
+    material: 'stein',
+    points: [
+      [0, 0],
+      [4, 0],
+      [3, 4],
+      [1, 4],
+      [0, 2],
+    ],
+  },
+});
+polyDoc = ops.applyMapEdit(polyDoc, { op: 'rotate_room', id: 'rp', angleRad: Math.PI / 2 });
+assert.equal(polyDoc.rooms[0].points.length, 5);
+
+// WebGL wall sync prunes orphan doors
+const bridge = jiti(join(root, 'src/domains/world/atlas/webgl-runtime-bridge.ts'));
+const withDoor = {
+  ...canvas.emptyUnifiedCanvasDoc(false),
+  walls: [{ id: 'wX', x1: 0, y1: 0, x2: 5, y2: 0, width: 0.3 }],
+  doors: [{ id: 'dX', wallId: 'wX', t: 0.5, width: 1 }],
+};
+const synced = bridge.syncWebglPropsIntoCanvasDoc(withDoor, {
+  props: [],
+  walls: [],
+  strokes: [],
+  rooms: [],
+  layers: {},
+});
+assert.equal(synced.walls.length, 0);
+assert.equal(synced.doors.length, 0);
+
 doc = ops.applyMapEdit(doc, {
   op: 'add_object',
   object: { id: 'b1', type: 'haus', x: 20, y: 20, size: 2, angle: 0 },

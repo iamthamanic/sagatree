@@ -32,6 +32,7 @@ export {
   extractUnifiedCanvasFromGeneratorMeta,
   mergeUnifiedCanvasIntoGeneratorMeta,
   parseUnifiedCanvasDoc,
+  pruneOrphanDoors,
   roomFromPolygon,
   roomFromValidatedPolygon,
   rotateRoomRect,

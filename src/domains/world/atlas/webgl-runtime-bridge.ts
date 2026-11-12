@@ -325,7 +325,7 @@ export function syncWebglPropsIntoCanvasDoc(
   doc: UnifiedCanvasDoc,
   runtime: WebglRuntimeState,
 ): UnifiedCanvasDoc {
-  return {
+  const next: UnifiedCanvasDoc = {
     ...doc,
     objects: projectPropsToObjects(runtime.props),
     walls: projectWallsToCanvas(runtime.walls),
@@ -333,6 +333,10 @@ export function syncWebglPropsIntoCanvasDoc(
     rooms: projectRoomsToCanvas(runtime.rooms ?? []),
     demoSeed: false,
   };
+  // 3D erase may drop walls without knowing about doors — prune orphans (ATL2-C02).
+  const wallIds = new Set(next.walls.map((w) => w.id));
+  const doors = (doc.doors ?? []).filter((d) => wallIds.has(d.wallId));
+  return { ...next, doors };
 }
 
 function objectsToProps(objects: readonly UnifiedCanvasObject[]): unknown[] {

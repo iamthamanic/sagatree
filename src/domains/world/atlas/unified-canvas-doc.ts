@@ -404,23 +404,33 @@ export function wallPointAt(wall: UnifiedCanvasWall, t: number): readonly [numbe
   return [wall.x1 + (wall.x2 - wall.x1) * u, wall.y1 + (wall.y2 - wall.y1) * u];
 }
 
-/** Rotate an AABB room around its center into a polygon (ATL2-C02). */
+/** Rotate room geometry around its bbox center (ATL2-C02). Preserves polygon vertices. */
 export function rotateRoomRect(
   room: UnifiedCanvasRoom,
   angleRad: number,
 ): UnifiedCanvasRoom {
   const cx = room.x + room.w / 2;
   const cy = room.y + room.h / 2;
-  const hw = room.w / 2;
-  const hh = room.h / 2;
   const cos = Math.cos(angleRad);
   const sin = Math.sin(angleRad);
-  const corners: [number, number][] = [
-    [-hw, -hh],
-    [hw, -hh],
-    [hw, hh],
-    [-hw, hh],
-  ].map(([dx, dy]) => [cx + dx * cos - dy * sin, cy + dx * sin + dy * cos]);
+  const rotatePt = (x: number, y: number): [number, number] => {
+    const dx = x - cx;
+    const dy = y - cy;
+    return [cx + dx * cos - dy * sin, cy + dx * sin + dy * cos];
+  };
+  let corners: [number, number][];
+  if (room.points && room.points.length >= 3) {
+    corners = room.points.map((p) => rotatePt(p[0], p[1]));
+  } else {
+    const hw = room.w / 2;
+    const hh = room.h / 2;
+    corners = [
+      [-hw, -hh],
+      [hw, -hh],
+      [hw, hh],
+      [-hw, hh],
+    ].map(([dx, dy]) => [cx + dx * cos - dy * sin, cy + dx * sin + dy * cos]);
+  }
   const box = bboxFromPoints(corners);
   if (!box) return room;
   return {
@@ -431,6 +441,16 @@ export function rotateRoomRect(
     h: box.h,
     points: corners,
   };
+}
+
+/** Drop doors whose wallId is not in walls (3D erase / sync safety). */
+export function pruneOrphanDoors(doc: UnifiedCanvasDoc): UnifiedCanvasDoc {
+  const doors = doc.doors ?? [];
+  if (doors.length === 0) return doc.doors ? doc : { ...doc, doors: [] };
+  const wallIds = new Set(doc.walls.map((w) => w.id));
+  const next = doors.filter((d) => wallIds.has(d.wallId));
+  if (next.length === doors.length) return doc;
+  return { ...doc, doors: next };
 }
 
 /** Build a room from a closed polygon (≥3). BBox is derived. Does not reject self-intersections. */
