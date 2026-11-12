@@ -91,7 +91,7 @@ Imported AI images are **raster_reference** only — never auto-vectorized into 
 | Prop `z` / `height` | local extrusion; suggestive in 3D if missing |
 | Building stamp size | prop_object; not a WorldNode |
 | Heavy meshes / textures | host asset store + authorized URLs |
-| Dual WebGL props (`webgl-runtime-bridge`) | **compatibility mirror** — product SoT remains UnifiedCanvasDoc (B04 write-retire) |
+| Dual WebGL props (`webgl-runtime-bridge`) | **legacy read + ephemeral 3D seed** — product persist strips geometry from `webglRuntimeV3` (ATL2-B04 / #1204) |
 
 ---
 

@@ -37587,6 +37587,10 @@
             "sha256": "650f85e176c4e423f237d8d6162fd1342882a52b8b7bc20d81898d488d59ee83"
           },
           {
+            "path": "src/domains/world/atlas/atlas-webgl-write-retire.ts",
+            "sha256": "c769b6e2d84900aeee7bbbf44ced3f672b0d3f83353cf9e45d87dc6cec239a50"
+          },
+          {
             "path": "src/domains/world/atlas/canvas-polygon.ts",
             "sha256": "e605bf5a1c438aec4d77cae1879cf0575c565359b6e180b8b6cba95898b46ca4"
           },
@@ -37608,7 +37612,7 @@
           },
           {
             "path": "src/domains/world/atlas/index.ts",
-            "sha256": "0c1e306648bf0e2c44ff4b4fe2b1a24cfa64b77475491fbbf423e4f8a863c37c"
+            "sha256": "cb4fe61ba3c90ce87d90d216666a422de25a5ea6c58fe578f84537e6f5835370"
           },
           {
             "path": "src/domains/world/atlas/map-edit-ops.ts",
@@ -37628,7 +37632,7 @@
           },
           {
             "path": "src/domains/world/atlas/webgl-runtime-bridge.ts",
-            "sha256": "782ccd1203bd0aab5c0232ecb97366369088c214c14c3a3f8552b1124334ff26"
+            "sha256": "61c548331933a39d6f33af6e65e024f4e3c7c84f9e753d4f89ac53a9a2db760f"
           },
           {
             "path": "src/domains/world/atlas/world-atlas.types.ts",
@@ -37820,7 +37824,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-world.json",
-      "sourceContractSha256": "cb719a6f2a58e82737ae60b1212c30ac782a6ce7322655b661c80dedeb860543",
+      "sourceContractSha256": "2d5c0033a967f3997c0b328bdb176ff36fece736320cf61eaf3dafed118c67ef",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],

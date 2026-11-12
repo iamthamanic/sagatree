@@ -2047,6 +2047,26 @@ function checkWorldAtlasEditor() {
     cwd: root,
     stdio: 'inherit',
   });
+  console.log('ATL2-B01 canonical feature catalog...');
+  execFileSync(process.execPath, ['scripts/atl2-b01-canonical-features.self-test.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
+  console.log('ATL2-B02 V1/V2 map document adapter...');
+  execFileSync(process.execPath, ['scripts/atl2-b02-map-doc-adapter.self-test.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
+  console.log('ATL2-B03 atomic atlas map CAS revisions...');
+  execFileSync(process.execPath, ['scripts/atl2-b03-atomic-revisions.self-test.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
+  console.log('ATL2-B04 webglRuntimeV3 geometry write-retire...');
+  execFileSync(process.execPath, ['scripts/atl2-b04-webgl-write-retire.self-test.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
   console.log('Atlas prototype LOD layers (HTML v3 port)...');
   execFileSync(process.execPath, ['scripts/atlas-prototype-lod.self-test.mjs'], {
     cwd: root,

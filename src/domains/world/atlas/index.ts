@@ -171,6 +171,20 @@ export {
 } from './webgl-runtime-bridge';
 
 export {
+  WEBGL_GEOMETRY_BACKUP_META_KEY,
+  canvasDocHasGeometry,
+  geometryFreeWebglRuntime,
+  hydrateCanvasFromLegacyWebgl,
+  mergeCanonicalAtlasGeometryForPersist,
+  parseWebglGeometryBackup,
+  persistableWebglSidecar,
+  persistedMetaHasNoWebglGeometryShadow,
+  restoreWebglGeometryBackup,
+  webglRuntimeHasGeometry,
+  type WebglGeometryBackup,
+} from './atlas-webgl-write-retire';
+
+export {
   ATLAS_FEATURE_OWNERS,
   LOCATE_INVALID_RECT_DE,
   MAP_FRAME_META_KEY,

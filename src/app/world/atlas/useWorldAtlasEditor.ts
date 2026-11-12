@@ -13,14 +13,15 @@ import {
   buildDornhainUnifiedGeneratorMeta,
   emptyUnifiedCanvasDoc,
   extractWebglRuntimeFromGeneratorMeta,
-  mergeWebglRuntimeIntoGeneratorMeta,
   type WebglRuntimeState,
   extractDungeonMetaFromGeneratorMeta,
   extractUnifiedCanvasFromGeneratorMeta,
+  hydrateCanvasFromLegacyWebgl,
   independentPrimaryBounds,
   isAtlasRevisionConflictMessage,
   isDornhainGoldenRootMap,
   locateChildMapFrame,
+  mergeCanonicalAtlasGeometryForPersist,
   mergeDungeonMetaIntoGeneratorMeta,
   mergeMapFrameIntoGeneratorMeta,
   mergeUnifiedCanvasIntoGeneratorMeta,
@@ -191,18 +192,28 @@ export function useWorldAtlasEditor({
             extractUnifiedCanvasFromGeneratorMeta(worldMeta) ?? emptyUnifiedCanvasDoc(false);
           setMap({ ...vm, title: nextTitle, generatorMeta: { ...vm.generatorMeta, ...worldMeta } });
           setCanvasDoc(worldDoc);
+          setWebglRuntime(extractWebglRuntimeFromGeneratorMeta(worldMeta));
           setDirtyCanvas(true);
           setPersistStatus((prev) => reduceAtlasPersistStatus(prev, { type: 'edit' }));
         } else if (titleChanged) {
+          const hydrated = hydrateCanvasFromLegacyWebgl(vm.generatorMeta, true);
           setMap({ ...vm, title: nextTitle });
-          setCanvasDoc(parsed ?? emptyUnifiedCanvasDoc(true));
+          setCanvasDoc(hydrated.canvas);
+          setWebglRuntime(hydrated.runtime);
           setDirtyCanvas(true);
           setPersistStatus((prev) => reduceAtlasPersistStatus(prev, { type: 'edit' }));
         } else {
+          const hydrated = hydrateCanvasFromLegacyWebgl(vm.generatorMeta, true);
           setMap(vm);
-          setCanvasDoc(parsed ?? emptyUnifiedCanvasDoc(true));
-          setDirtyCanvas(false);
-          setPersistStatus((prev) => reduceAtlasPersistStatus(prev, { type: 'reload' }));
+          setCanvasDoc(hydrated.canvas);
+          setWebglRuntime(hydrated.runtime);
+          if (hydrated.migrated) {
+            setDirtyCanvas(true);
+            setPersistStatus((prev) => reduceAtlasPersistStatus(prev, { type: 'edit' }));
+          } else {
+            setDirtyCanvas(false);
+            setPersistStatus((prev) => reduceAtlasPersistStatus(prev, { type: 'reload' }));
+          }
         }
         if (upgrade || titleChanged) {
           setSummaries((prev) =>
@@ -210,7 +221,6 @@ export function useWorldAtlasEditor({
           );
         }
         setDirtyLayers(null);
-        setWebglRuntime(extractWebglRuntimeFromGeneratorMeta(vm.generatorMeta));
         setDungeonMeta(extractDungeonMetaFromGeneratorMeta(vm.generatorMeta));
         bumpContentEpoch();
       })
@@ -262,14 +272,14 @@ export function useWorldAtlasEditor({
     try {
       const next = await worldAtlasService.getMap(id, playerView, sagaPublicId);
       setMap(next);
-      const parsed = extractUnifiedCanvasFromGeneratorMeta(next.generatorMeta);
-      setCanvasDoc(parsed ?? emptyUnifiedCanvasDoc(false));
-      setWebglRuntime(extractWebglRuntimeFromGeneratorMeta(next.generatorMeta));
+      const hydrated = hydrateCanvasFromLegacyWebgl(next.generatorMeta, false);
+      setCanvasDoc(hydrated.canvas);
+      setWebglRuntime(hydrated.runtime);
       setDungeonMeta(extractDungeonMetaFromGeneratorMeta(next.generatorMeta));
-      setDirtyCanvas(false);
+      setDirtyCanvas(hydrated.migrated);
       setDirtyLayers(null);
       bumpContentEpoch();
-      bumpPersist({ type: 'reload' });
+      bumpPersist({ type: hydrated.migrated ? 'edit' : 'reload' });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Karte konnte nicht neu geladen werden.');
     } finally {
@@ -288,10 +298,12 @@ export function useWorldAtlasEditor({
     const sentRuntime = webglRuntime;
     const sentDungeon = dungeonMeta;
     try {
-      let generatorMeta = mergeUnifiedCanvasIntoGeneratorMeta(map.generatorMeta, canvasDoc);
-      if (webglRuntime) {
-        generatorMeta = mergeWebglRuntimeIntoGeneratorMeta(generatorMeta, webglRuntime);
-      }
+      // ATL2-B04: persist geometry only via unifiedCanvas; strip webglRuntimeV3 geometry shadow.
+      let generatorMeta = mergeCanonicalAtlasGeometryForPersist(
+        map.generatorMeta,
+        canvasDoc,
+        webglRuntime,
+      );
       if (dungeonMeta) {
         generatorMeta = mergeDungeonMetaIntoGeneratorMeta(generatorMeta, dungeonMeta);
       }
