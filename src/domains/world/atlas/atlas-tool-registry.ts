@@ -69,6 +69,13 @@ const CONTENT_TOOLS: readonly AtlasToolDef[] = [
     createsCanonicalNode: false,
   },
   {
+    id: 'door',
+    labelDe: 'Tür',
+    allowedKinds: ['building', 'room'],
+    role: 'structure',
+    createsCanonicalNode: false,
+  },
+  {
     id: 'room',
     labelDe: 'Raumumriss',
     allowedKinds: ['building', 'room'],
@@ -132,6 +139,7 @@ export type WebglRuntimeToolId =
   | 'road'
   | 'stamp'
   | 'wall'
+  | 'door'
   | 'room'
   | 'erase';
 
@@ -142,6 +150,7 @@ const WEBGL_RUNTIME_SUPPORT: Readonly<Record<AtlasToolId, boolean>> = {
   area: true,
   road: true,
   wall: true,
+  door: false,
   room: true,
   stamp: true,
   erase: true,
@@ -163,6 +172,7 @@ export function webglRuntimeIdToAtlasTool(runtimeId: string): AtlasToolId | null
     'area',
     'road',
     'wall',
+    'door',
     'room',
     'stamp',
     'erase',

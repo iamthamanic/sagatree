@@ -104,12 +104,12 @@ Present in `MapEditOperation` today:
 - walls: `add` / `move` / `remove`
 - `replace_scene` (dungeon commit)
 
-Deferred (C01/C02 — must not pretend complete):
+Deferred (later Atlas V2 slices — must not pretend complete):
 
-- dedicated river/road tools beyond stroke material
-- door entities
 - political-area tool distinct from terrain area
 - heightfield paint ops
+
+Shipped: C01 path tools; C02 door entities + room/wall/footprint edits.
 
 ---
 

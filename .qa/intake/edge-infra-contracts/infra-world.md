@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-world.json](source-contracts/infra-world.json) (SHA-256 `bd1a2811970e4314083e4d62f667f4f5c4e5193ee5ca61969efe1491249e7f88`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-world.json](source-contracts/infra-world.json) (SHA-256 `d34d0f4938a4bc7844ed5425a58ec369fe0f66193a578b513a9229f7285b7364`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -639,25 +639,25 @@ All backend operations are included in the public declarations above.
 | `src/domains/rules/sagatree/npc-creature-power/machtgrad.ts` | `19d4daafb9580b890ed2337feccffed19122a01dfb23c2eeb2dadd2523778f7a` |
 | `src/domains/rules/sagatree/npc-creature-power/profiles.ts` | `aa3d450842ddce7548f6e8e826225cdbdeae6de7660e09798fe43663dc9ce1fa` |
 | `src/domains/rules/sagatree/npc-creature-power/types.ts` | `de25ba46549bab20e0e55a513fb0745e722449d8f1b61bb51887d986653c4eab` |
-| `src/domains/world/atlas/atlas-canonical-features.ts` | `63fb0884881333a43a6faac44ba8a272b7b77cf84cc6aeca237adc23bae65339` |
+| `src/domains/world/atlas/atlas-canonical-features.ts` | `c1bdcbaf78d8db00dd897828214b69f0778c41b133169434faad2b681c6d2d09` |
 | `src/domains/world/atlas/atlas-map-doc-adapter.ts` | `d85a2ed7b2e6cd9650c4d87664fb09e7b4621779f2a820ed65c421e353caf04a` |
 | `src/domains/world/atlas/atlas-map-pins.ts` | `1421ca01edd55307c341adc3ac74f4c5a7cef87f60fadbbe0faaa141898b4791` |
 | `src/domains/world/atlas/atlas-persist-state.ts` | `84ab0edbd0b525c95b5db85afeb683d335351884ba6c612e94f327719a6b60ca` |
 | `src/domains/world/atlas/atlas-prototype-lod.ts` | `2fb7c706ad2210f7a3f389f22564f60e3f22aa615ec49af49695e388ae582256` |
 | `src/domains/world/atlas/atlas-revision-contract.ts` | `d01c356239143862f9aa8f3fd44fca79105e3ed390327c34b9be6ce1902c78d6` |
-| `src/domains/world/atlas/atlas-tool-registry.ts` | `e0c22017d5b053eb0b6d3035f9fb85464aff9f87f9a98676596979ec217a65a7` |
+| `src/domains/world/atlas/atlas-tool-registry.ts` | `e70f27b21aa744a40a7e30fd65fe6acdca4497e6c07be960dd59aacca4f376e0` |
 | `src/domains/world/atlas/atlas-webgl-write-retire.ts` | `c769b6e2d84900aeee7bbbf44ced3f672b0d3f83353cf9e45d87dc6cec239a50` |
 | `src/domains/world/atlas/canvas-polygon.ts` | `a1bf513b449cf21b8e7d449d291c1f7965303072916f0192a214328a90920cea` |
 | `src/domains/world/atlas/dornhain-golden-hierarchy.ts` | `1eaf1b81180fda6e36da7388121d64b1162c4c927bed67a405128cddea46e0b1` |
 | `src/domains/world/atlas/dornhain-golden-reset.ts` | `242b85a727062342a69f934a3b0cb64d3c5c726a71b87548043facd7e62f6c2f` |
 | `src/domains/world/atlas/dornhain-unified-starter.ts` | `5e9afab7ec94b7bef19535be6311b51a2f77c59b5f82b36fcd8b78007cc336f5` |
 | `src/domains/world/atlas/dungeon-generator.ts` | `2f65a7f1d96ef917a4973b52a3470e6bebbdc87eca53d41c0bbfe9bbe5cd81df` |
-| `src/domains/world/atlas/index.ts` | `e62a22d2e8c1c13d5a264fa7a9d5c140809ca3548711ae421b80fcc9a7b5ebff` |
-| `src/domains/world/atlas/map-edit-ops.ts` | `8f18af53bb253c2a488fe5481dc82cf1792d3f744e8aa363b726e8289649af3d` |
+| `src/domains/world/atlas/index.ts` | `25ac5e502148b8724f5e85b43757fad5812634a47e113bf568a35653e04c30b1` |
+| `src/domains/world/atlas/map-edit-ops.ts` | `4b5fce37520768ef5c2184a5a385c20d6f57dd01e5bc85dcb8aa8b47cfa614e0` |
 | `src/domains/world/atlas/map-frame.ts` | `9764fd49aa74482588fea5ba1e1888131b85f05bdbb202057cfed24d6e3e666f` |
-| `src/domains/world/atlas/unified-canvas-doc.ts` | `35d5e980d7d74b3e6f7d036e1cb8f49e729407b842504d0159c2ba16e6a2d878` |
+| `src/domains/world/atlas/unified-canvas-doc.ts` | `9bcc38bc46c881f5c4bbe3944c7ae9455898e8214ee0ee960ef00e3fa88dd9ac` |
 | `src/domains/world/atlas/validate-world-atlas.ts` | `3042c993e644808c908331970dd87367649889dbf9421c5507f88b7b415b009e` |
-| `src/domains/world/atlas/webgl-runtime-bridge.ts` | `61c548331933a39d6f33af6e65e024f4e3c7c84f9e753d4f89ac53a9a2db760f` |
+| `src/domains/world/atlas/webgl-runtime-bridge.ts` | `8f40a60b8f18d0c1a649d6d14604032fe5bfd4bb3594d3607bb58b8f1c8564ca` |
 | `src/domains/world/atlas/world-atlas.types.ts` | `094fa1a6f46a54063fe396c7d641c6c34d5b8907c3f6e0127a2ae9e6443dcee7` |
 | `src/domains/world/contracts/world.types.ts` | `ad676f8bf83b6d55627a568c28d5221bd8f4f616e33eae31fab502223c74f6fb` |
 | `src/domains/world/hierarchy/create-plan.ts` | `6fefab23a8f62fb9a6ebe716c3f44704fa7ab5466b8d5fe0de904920f5aee38e` |

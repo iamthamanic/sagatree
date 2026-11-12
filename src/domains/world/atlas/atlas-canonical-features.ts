@@ -113,6 +113,10 @@ export const ATLAS_REQUIRED_EDIT_OPS: readonly string[] = [
   'add_wall',
   'move_wall',
   'remove_wall',
+  'add_door',
+  'move_door',
+  'remove_door',
+  'rotate_room',
   'add_stroke',
   'append_stroke_point',
   'move_stroke_point',
@@ -121,7 +125,6 @@ export const ATLAS_REQUIRED_EDIT_OPS: readonly string[] = [
 ] as const;
 
 export const ATLAS_DEFERRED_EDIT_OPS: readonly string[] = [
-  'add_door',
   'add_political_area',
   'paint_heightfield',
   'link_geometry_to_world_node',
@@ -307,6 +310,18 @@ export function classifyWall(wall: UnifiedCanvasWall): AtlasCanonicalFeatureRef 
   };
 }
 
+export function classifyDoor(door: {
+  readonly id: string;
+}): AtlasCanonicalFeatureRef {
+  assertAtlasFeatureId(door.id);
+  return {
+    kind: 'door',
+    id: door.id,
+    authority: ATLAS_FEATURE_AUTHORITY.door,
+    v1Slot: 'wall',
+  };
+}
+
 export function classifyObject(object: UnifiedCanvasObject): AtlasCanonicalFeatureRef {
   assertAtlasFeatureId(object.id);
   const kind: AtlasCanonicalFeatureKind = BUILDING_STAMPS.has(object.type)
@@ -376,6 +391,7 @@ export function classifyUnifiedCanvasDoc(
   }
   for (const room of doc.rooms) features.push(classifyRoomForMapScale(room, scale));
   for (const wall of doc.walls) features.push(classifyWall(wall));
+  for (const door of doc.doors ?? []) features.push(classifyDoor(door));
   for (const object of doc.objects) features.push(classifyObject(object));
 
   for (const layerId of Object.keys(doc.layers)) {

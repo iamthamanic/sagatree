@@ -25,6 +25,7 @@ export type UnifiedCanvasTool =
   | 'road'
   | 'room'
   | 'wall'
+  | 'door'
   | 'stamp'
   | 'erase';
 
@@ -108,6 +109,17 @@ export type UnifiedCanvasWall = {
   readonly width: number;
 };
 
+/**
+ * Door opening on a wall (ATL2-C02). `t` is parametric [0,1] along the wall segment.
+ * Canvas geometry only — never auto-creates a WorldNode.
+ */
+export type UnifiedCanvasDoor = {
+  readonly id: string;
+  readonly wallId: string;
+  readonly t: number;
+  readonly width: number;
+};
+
 export type UnifiedCanvasLayersVisible = Readonly<Record<UnifiedCanvasLayerId, boolean>>;
 
 export type UnifiedCanvasDoc = {
@@ -117,6 +129,8 @@ export type UnifiedCanvasDoc = {
   readonly objects: readonly UnifiedCanvasObject[];
   readonly rooms: readonly UnifiedCanvasRoom[];
   readonly walls: readonly UnifiedCanvasWall[];
+  /** Optional for legacy docs; parsers default to []. */
+  readonly doors?: readonly UnifiedCanvasDoor[];
   readonly demoSeed?: boolean;
 };
 
@@ -166,6 +180,7 @@ export function emptyUnifiedCanvasDoc(demoSeed = true): UnifiedCanvasDoc {
     objects: [],
     rooms: [],
     walls: [],
+    doors: [],
     demoSeed,
   };
 }
@@ -308,6 +323,23 @@ export function parseUnifiedCanvasDoc(raw: unknown): UnifiedCanvasDoc | null {
     });
   }
 
+  const wallIds = new Set(walls.map((w) => w.id));
+  const doors: UnifiedCanvasDoor[] = [];
+  if (docRaw.doors !== undefined) {
+    if (!Array.isArray(docRaw.doors)) return null;
+    for (const d of docRaw.doors) {
+      if (!d || typeof d !== 'object') return null;
+      const row = d as Record<string, unknown>;
+      if (typeof row.id !== 'string' || typeof row.wallId !== 'string') return null;
+      if (!wallIds.has(row.wallId)) return null;
+      if (![row.t, row.width].every(isFiniteNum)) return null;
+      const t = row.t as number;
+      const width = row.width as number;
+      if (!(t >= 0 && t <= 1) || !(width > 0)) return null;
+      doors.push({ id: row.id, wallId: row.wallId, t, width });
+    }
+  }
+
   return {
     format: UNIFIED_CANVAS_FORMAT,
     layers,
@@ -315,6 +347,7 @@ export function parseUnifiedCanvasDoc(raw: unknown): UnifiedCanvasDoc | null {
     objects,
     rooms,
     walls,
+    doors,
     demoSeed: docRaw.demoSeed === false ? false : true,
   };
 }
@@ -355,8 +388,69 @@ export function serializeUnifiedCanvasDoc(doc: UnifiedCanvasDoc): UnifiedCanvasD
       ...(r.secret === true ? { secret: true } : {}),
     })),
     walls: [...doc.walls],
+    doors: (doc.doors ?? []).map((d) => ({
+      id: d.id,
+      wallId: d.wallId,
+      t: d.t,
+      width: d.width,
+    })),
     demoSeed: doc.demoSeed !== false,
   };
+}
+
+/** Point along a wall at parametric t ∈ [0,1]. */
+export function wallPointAt(wall: UnifiedCanvasWall, t: number): readonly [number, number] {
+  const u = Math.min(1, Math.max(0, t));
+  return [wall.x1 + (wall.x2 - wall.x1) * u, wall.y1 + (wall.y2 - wall.y1) * u];
+}
+
+/** Rotate room geometry around its bbox center (ATL2-C02). Preserves polygon vertices. */
+export function rotateRoomRect(
+  room: UnifiedCanvasRoom,
+  angleRad: number,
+): UnifiedCanvasRoom {
+  const cx = room.x + room.w / 2;
+  const cy = room.y + room.h / 2;
+  const cos = Math.cos(angleRad);
+  const sin = Math.sin(angleRad);
+  const rotatePt = (x: number, y: number): [number, number] => {
+    const dx = x - cx;
+    const dy = y - cy;
+    return [cx + dx * cos - dy * sin, cy + dx * sin + dy * cos];
+  };
+  let corners: [number, number][];
+  if (room.points && room.points.length >= 3) {
+    corners = room.points.map((p) => rotatePt(p[0], p[1]));
+  } else {
+    const hw = room.w / 2;
+    const hh = room.h / 2;
+    corners = [
+      [-hw, -hh],
+      [hw, -hh],
+      [hw, hh],
+      [-hw, hh],
+    ].map(([dx, dy]) => [cx + dx * cos - dy * sin, cy + dx * sin + dy * cos]);
+  }
+  const box = bboxFromPoints(corners);
+  if (!box) return room;
+  return {
+    ...room,
+    x: box.x,
+    y: box.y,
+    w: box.w,
+    h: box.h,
+    points: corners,
+  };
+}
+
+/** Drop doors whose wallId is not in walls (3D erase / sync safety). */
+export function pruneOrphanDoors(doc: UnifiedCanvasDoc): UnifiedCanvasDoc {
+  const doors = doc.doors ?? [];
+  if (doors.length === 0) return doc.doors ? doc : { ...doc, doors: [] };
+  const wallIds = new Set(doc.walls.map((w) => w.id));
+  const next = doors.filter((d) => wallIds.has(d.wallId));
+  if (next.length === doors.length) return doc;
+  return { ...doc, doors: next };
 }
 
 /** Build a room from a closed polygon (≥3). BBox is derived. Does not reject self-intersections. */

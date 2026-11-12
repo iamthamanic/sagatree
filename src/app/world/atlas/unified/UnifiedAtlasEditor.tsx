@@ -13,6 +13,7 @@ import {
 } from 'react';
 import {
   Wall,
+  Door,
   CaretDown,
   Eraser,
   Hand,
@@ -47,14 +48,20 @@ import {
   emptyWebglRuntime,
   parseWebglRuntimeState,
   clampAtlasBrushUi,
+  pickDoorAt,
   pickObjectAt,
   pickRoomAt,
   pickRoomVertexAt,
   pickStrokeAt,
+  pickWallAt,
+  pickWallEndpoint,
   readLegacyWebglLocalStorage,
   roomFromValidatedPolygon,
   snapPointToCandidates,
   snapPointToGrid,
+  snapStructurePoint,
+  wallParamAt,
+  wallPointAt,
   syncCanvasDocIntoWebglRuntime,
   syncWebglPropsIntoCanvasDoc,
   type DungeonGeneratorMeta,
@@ -230,6 +237,21 @@ type DragState =
       readonly mode: 'move_stroke_point';
       readonly id: string;
       readonly index: number;
+    }
+  | {
+      readonly mode: 'move_wall_endpoint';
+      readonly id: string;
+      readonly endpoint: 1 | 2;
+    }
+  | {
+      readonly mode: 'resize_room';
+      readonly id: string;
+      readonly ox: number;
+      readonly oy: number;
+      readonly ow: number;
+      readonly oh: number;
+      readonly sx: number;
+      readonly sy: number;
     }
   | {
       readonly mode: 'marquee';
@@ -847,6 +869,16 @@ export function UnifiedAtlasEditor({
         ctx.lineTo(w.x2, w.y2);
         ctx.stroke();
       }
+      for (const d of workingDoc.doors ?? []) {
+        if (protoLod && !protoLod.mapDungeon && !protoLod.mapCity) continue;
+        const wall = workingDoc.walls.find((w) => w.id === d.wallId);
+        if (!wall) continue;
+        const [dx, dy] = wallPointAt(wall, d.t);
+        ctx.fillStyle = selectedId === d.id ? '#06B6D4' : '#E8A641';
+        ctx.beginPath();
+        ctx.arc(dx, dy, Math.max(d.width * 0.45, 0.35), 0, Math.PI * 2);
+        ctx.fill();
+      }
     }
     if (layers.objects) {
       for (const o of workingDoc.objects) {
@@ -1107,16 +1139,34 @@ export function UnifiedAtlasEditor({
     }
 
     if (tool === 'stamp') {
-      const next = {
-        ...workingDoc,
-        demoSeed: false,
-        objects: [
-          ...workingDoc.objects,
-          { id: uid(), type: stamp, x: p.x, y: p.y, size: stampSizeNow(), angle: 0 },
-        ],
-      };
-      commit(next, true);
+      commit(
+        applyMapEdit(workingDoc, {
+          op: 'add_object',
+          object: { id: uid(), type: stamp, x: p.x, y: p.y, size: stampSizeNow(), angle: 0 },
+        }),
+        true,
+      );
       refresh();
+      return;
+    }
+
+    if (tool === 'door') {
+      const wall = pickWallAt(workingDoc, p.x, p.y, 14 / camRef.current.pixelsPerUnit);
+      if (wall) {
+        const t = wallParamAt(wall, p.x, p.y);
+        commit(
+          applyMapEdit(workingDoc, {
+            op: 'add_door',
+            door: {
+              id: uid(),
+              wallId: wall.id,
+              t,
+              width: Math.max(brushWidth() * 0.35, 0.6),
+            },
+          }),
+          true,
+        );
+      }
       return;
     }
 
@@ -1124,6 +1174,11 @@ export function UnifiedAtlasEditor({
       const hit = pickObjectAt(workingDoc, p.x, p.y);
       if (hit) {
         commit(applyMapEdit(workingDoc, { op: 'remove_object', id: hit.id }), true);
+        return;
+      }
+      const doorHit = pickDoorAt(workingDoc, p.x, p.y, 12 / camRef.current.pixelsPerUnit);
+      if (doorHit) {
+        commit(applyMapEdit(workingDoc, { op: 'remove_door', id: doorHit.id }), true);
         return;
       }
       const strokeHit = pickStrokeAt(
@@ -1134,6 +1189,11 @@ export function UnifiedAtlasEditor({
       );
       if (strokeHit) {
         commit(applyMapEdit(workingDoc, { op: 'remove_stroke', id: strokeHit.id }), true);
+        return;
+      }
+      const wallHit = pickWallAt(workingDoc, p.x, p.y, 12 / camRef.current.pixelsPerUnit);
+      if (wallHit) {
+        commit(applyMapEdit(workingDoc, { op: 'remove_wall', id: wallHit.id }), true);
         return;
       }
       const roomHit = pickRoomAt(workingDoc, p.x, p.y);
@@ -1232,9 +1292,48 @@ export function UnifiedAtlasEditor({
         };
         return;
       }
+      const doorHit = pickDoorAt(workingDoc, p.x, p.y, 12 / camRef.current.pixelsPerUnit);
+      if (doorHit) {
+        setSelectedId(doorHit.id);
+        return;
+      }
+      const wallHit = pickWallAt(workingDoc, p.x, p.y, 12 / camRef.current.pixelsPerUnit);
+      if (wallHit && canEdit) {
+        const ep = pickWallEndpoint(
+          wallHit,
+          p.x,
+          p.y,
+          14 / camRef.current.pixelsPerUnit,
+        );
+        setSelectedId(wallHit.id);
+        if (ep === 1 || ep === 2) {
+          dragRef.current = { mode: 'move_wall_endpoint', id: wallHit.id, endpoint: ep };
+        }
+        return;
+      }
       const roomHit = pickRoomAt(workingDoc, p.x, p.y);
       if (roomHit && roomHit.id !== 'w.ocean' && canEdit) {
         setSelectedId(roomHit.id);
+        // SE corner resize when near bottom-right of AABB room without polygon.
+        if (!roomHit.points) {
+          const cornerDist = Math.hypot(
+            roomHit.x + roomHit.w - p.x,
+            roomHit.y + roomHit.h - p.y,
+          );
+          if (cornerDist <= 14 / camRef.current.pixelsPerUnit) {
+            dragRef.current = {
+              mode: 'resize_room',
+              id: roomHit.id,
+              ox: roomHit.x,
+              oy: roomHit.y,
+              ow: roomHit.w,
+              oh: roomHit.h,
+              sx: p.x,
+              sy: p.y,
+            };
+            return;
+          }
+        }
         dragRef.current = {
           mode: 'move_room',
           id: roomHit.id,
@@ -1271,12 +1370,13 @@ export function UnifiedAtlasEditor({
     }
 
     if (tool === 'room' || tool === 'wall') {
+      const snapT = 12 / camRef.current.pixelsPerUnit;
+      const start = snapStructurePoint(workingDoc, [p.x, p.y], snapT);
       dragRef.current = {
         mode: 'shape',
-        start: { x: p.x, y: p.y },
+        start: { x: start[0], y: start[1] },
         kind: tool === 'room' ? 'room' : 'wall',
       };
-      pushHistory(docRef.current);
     }
   };
 
@@ -1331,6 +1431,39 @@ export function UnifiedAtlasEditor({
         index: drag.index,
         x: p.x,
         y: p.y,
+      });
+      onDocChange(next);
+      refresh();
+      return;
+    }
+    if (drag.mode === 'move_wall_endpoint') {
+      const wall = workingDoc.walls.find((w) => w.id === drag.id);
+      if (!wall) return;
+      const snapped = snapStructurePoint(
+        workingDoc,
+        [p.x, p.y],
+        12 / camRef.current.pixelsPerUnit,
+      );
+      const next = applyMapEdit(workingDoc, {
+        op: 'move_wall',
+        id: drag.id,
+        x1: drag.endpoint === 1 ? snapped[0] : wall.x1,
+        y1: drag.endpoint === 1 ? snapped[1] : wall.y1,
+        x2: drag.endpoint === 2 ? snapped[0] : wall.x2,
+        y2: drag.endpoint === 2 ? snapped[1] : wall.y2,
+      });
+      onDocChange(next);
+      refresh();
+      return;
+    }
+    if (drag.mode === 'resize_room') {
+      const w = Math.max(0.5, drag.ow + (p.x - drag.sx));
+      const h = Math.max(0.5, drag.oh + (p.y - drag.sy));
+      const next = applyMapEdit(workingDoc, {
+        op: 'resize_room',
+        id: drag.id,
+        w,
+        h,
       });
       onDocChange(next);
       refresh();
@@ -1413,35 +1546,39 @@ export function UnifiedAtlasEditor({
     }
     if (drag?.mode === 'shape') {
       const min = 9 / camRef.current.pixelsPerUnit;
+      const snapT = 12 / camRef.current.pixelsPerUnit;
       if (drag.kind === 'room') {
         const x = Math.min(drag.start.x, p.x);
         const y = Math.min(drag.start.y, p.y);
         const w = Math.abs(p.x - drag.start.x);
         const h = Math.abs(p.y - drag.start.y);
         if (w > min && h > min) {
-          onDocChange({
-            ...workingDoc,
-            demoSeed: false,
-            rooms: [...workingDoc.rooms, { id: uid(), x, y, w, h, material }],
-          });
+          commit(
+            applyMapEdit(workingDoc, {
+              op: 'add_room',
+              room: { id: uid(), x, y, w, h, material },
+            }),
+            true,
+          );
         }
       } else {
         if (Math.hypot(p.x - drag.start.x, p.y - drag.start.y) > min) {
-          onDocChange({
-            ...workingDoc,
-            demoSeed: false,
-            walls: [
-              ...workingDoc.walls,
-              {
+          const a = snapStructurePoint(workingDoc, [drag.start.x, drag.start.y], snapT);
+          const b = snapStructurePoint(workingDoc, [p.x, p.y], snapT);
+          commit(
+            applyMapEdit(workingDoc, {
+              op: 'add_wall',
+              wall: {
                 id: uid(),
-                x1: drag.start.x,
-                y1: drag.start.y,
-                x2: p.x,
-                y2: p.y,
+                x1: a[0],
+                y1: a[1],
+                x2: b[0],
+                y2: b[1],
                 width: brushWidth() * 0.18,
               },
-            ],
-          });
+            }),
+            true,
+          );
         }
       }
     }
@@ -1483,6 +1620,7 @@ export function UnifiedAtlasEditor({
     road: Path,
     room: Square,
     wall: Wall,
+    door: Door,
     stamp: Stamp,
     erase: Eraser,
   };
@@ -2071,8 +2209,8 @@ export function UnifiedAtlasEditor({
                 ? 'Fläche zeichnen'
                 : tool === 'brush' || tool === 'road'
                   ? 'Welt gestalten'
-                  : tool === 'room' || tool === 'wall'
-                    ? 'Geometrie'
+                  : tool === 'room' || tool === 'wall' || tool === 'door'
+                    ? 'Raum / Wand / Tür'
                     : selectedId
                       ? 'Auswahl'
                       : 'Weltkarte'}
@@ -2082,7 +2220,11 @@ export function UnifiedAtlasEditor({
               ? `Ziehe den Ausschnitt für „${locateSession.childTitle}“ auf dieser Elternkarte. Escape bricht ab.`
               : tool === 'area'
                 ? 'Klick setzt Küstenpunkte. Doppelklick oder Enter schließt die Fläche. Escape bricht ab.'
-                : 'Mausrad = zoomen. Land/Wasser mit Pinsel oder Fläche; Orte per Pin oder Rahmen anlegen.'}
+                : tool === 'door'
+                  ? 'Klick auf eine Wand setzt eine Türöffnung. Kein WorldNode wird erzeugt.'
+                  : tool === 'room' || tool === 'wall'
+                    ? 'Raum ziehen oder Wand-Endpunkte setzen (snappen). Geometrie ≠ WorldNode.'
+                    : 'Mausrad = zoomen. Land/Wasser mit Pinsel oder Fläche; Orte per Pin oder Rahmen anlegen.'}
           </p>
           {locateSession ? (
             <div
@@ -2156,13 +2298,19 @@ export function UnifiedAtlasEditor({
                 onClick={() => {
                   const isRoom = workingDoc.rooms.some((r) => r.id === selectedId);
                   const isStroke = workingDoc.strokes.some((s) => s.id === selectedId);
+                  const isWall = workingDoc.walls.some((w) => w.id === selectedId);
+                  const isDoor = (workingDoc.doors ?? []).some((d) => d.id === selectedId);
                   commit(
                     applyMapEdit(workingDoc, {
                       op: isRoom
                         ? 'remove_room'
                         : isStroke
                           ? 'remove_stroke'
-                          : 'remove_object',
+                          : isWall
+                            ? 'remove_wall'
+                            : isDoor
+                              ? 'remove_door'
+                              : 'remove_object',
                       id: selectedId,
                     }),
                     true,
@@ -2173,7 +2321,54 @@ export function UnifiedAtlasEditor({
                 Löschen
               </Button>
             ) : null}
+            {selectedId &&
+            canEdit &&
+            workingDoc.rooms.some((r) => r.id === selectedId && r.id !== 'w.ocean') ? (
+              <Button
+                type="button"
+                variant="outline"
+                className="min-h-11"
+                onClick={() => {
+                  commit(
+                    applyMapEdit(workingDoc, {
+                      op: 'rotate_room',
+                      id: selectedId,
+                      angleRad: Math.PI / 2,
+                    }),
+                    true,
+                  );
+                }}
+              >
+                Raum drehen 90°
+              </Button>
+            ) : null}
+            {selectedId &&
+            canEdit &&
+            workingDoc.objects.some((o) => o.id === selectedId) ? (
+              <Button
+                type="button"
+                variant="outline"
+                className="min-h-11"
+                onClick={() => {
+                  const obj = workingDoc.objects.find((o) => o.id === selectedId);
+                  if (!obj) return;
+                  commit(
+                    applyMapEdit(workingDoc, {
+                      op: 'transform_object',
+                      id: selectedId,
+                      patch: { angle: (obj.angle ?? 0) + 90 },
+                    }),
+                    true,
+                  );
+                }}
+              >
+                Footprint drehen 90°
+              </Button>
+            ) : null}
           </div>
+          <p className="text-[11px] text-muted-foreground">
+            Raum-/Wand-/Tür-Geometrie ist Kartenzeichnung — kein automatischer WorldNode.
+          </p>
           {canEdit ? (
             <div className="space-y-2 rounded-md border border-border p-2" data-atlas-dungeon-forge>
               <p className="text-xs font-semibold">Dungeon-Generator</p>
