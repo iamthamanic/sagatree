@@ -2,7 +2,7 @@
 
 - Issue: #1201
 - Feature slug: atl2-b01
-- HEAD_SHA: f54cd7abdb67a3e9a3ad0bf5caa31a55b97522d2
+- HEAD_SHA: 8f214665497adb54babc32c4c7cda91a27a87b79
 - BASE_SHA: aa850dfed3ee74adb44fd883512f407cacab8b2b
 - Date: 2026-11-12
 - Verdict: SKIPPED
@@ -26,7 +26,7 @@ rewriting stored maps.
 | Case | Intended | Composed | Result |
 |------|----------|----------|--------|
 | N-actors | N/A — no shared hop | catalog only | skip |
-| Invalid/missing | Ambiguous rooms stay unresolved | `legacy_area_ambiguous` | pass (self-test) |
+| Invalid/missing | Ambiguous rooms/strokes stay unresolved | legacy_*_ambiguous | pass (self-test) |
 | Two consumers / crash | Classifier idempotent | re-run self-test | pass |
 
 ## Flags
@@ -34,7 +34,3 @@ rewriting stored maps.
 | Tag | Severity | Hops | Why local review missed it | Fix |
 |-----|----------|------|----------------------------|-----|
 | (none) | — | — | — | — |
-
-## lineageFresh
-
-true — proof HEAD is feature tip; follow-up may only restamp this proof file.
