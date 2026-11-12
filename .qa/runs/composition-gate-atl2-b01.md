@@ -2,7 +2,7 @@
 
 - Issue: #1201
 - Feature slug: atl2-b01
-- HEAD_SHA: 104bc8b3f26e47d1a4a25ed2b7a532487e771c02
+- HEAD_SHA: f54cd7abdb67a3e9a3ad0bf5caa31a55b97522d2
 - BASE_SHA: aa850dfed3ee74adb44fd883512f407cacab8b2b
 - Date: 2026-11-12
 - Verdict: SKIPPED
@@ -37,4 +37,4 @@ rewriting stored maps.
 
 ## lineageFresh
 
-true — proof HEAD is feature commit; tip may only restamp this proof file.
+true — proof HEAD is feature tip; follow-up may only restamp this proof file.
