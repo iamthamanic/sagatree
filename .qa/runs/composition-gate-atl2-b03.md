@@ -2,8 +2,8 @@
 
 - Issue: #1203
 - Feature slug: atl2-b03
-- HEAD_SHA: PLACEHOLDER
-- BASE_SHA: PLACEHOLDER
+- HEAD_SHA: d2779eb6ca2c94d8af71a946a9520332b630e0e8
+- BASE_SHA: e9befeae4b433fbcc5cdf23345f7030601b30f61
 - Date: 2026-11-12
 - Verdict: SKIPPED
 
