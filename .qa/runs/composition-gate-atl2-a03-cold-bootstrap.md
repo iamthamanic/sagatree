@@ -1,19 +1,39 @@
 # Composition Gate — atl2-a03-cold-bootstrap
 
-**Verdict:** SKIPPED  
-**Feature slug:** `atl2-a03-cold-bootstrap`  
-**HEAD:** 45994736e2015117fa217d0541723e8f93c4732c
-**Date:** 2026-11-12
+- Issue: #1199
+- Feature slug: atl2-a03-cold-bootstrap
+- HEAD_SHA: PLACEHOLDER_FULL_SHA
+- BASE_SHA: d3e3f2b71db41e48f34d8ea17d49b5782efa7c84
+- Date: 2026-11-12
+- Verdict: SKIPPED
 
-## Reason
+## Skip reason
 
-Owner-scoped Dornhain catalog / atlas bootstrap and Golden reset. No new
-multi-actor hop; writes stay on the same owner world via host
-`ensureDornhainDefaultCatalog` + `seedDornhainGoldenHierarchy`.
+Owner-scoped Dornhain catalog / atlas cold bootstrap and Golden hierarchy seed.
+No new multi-actor hop; writes stay on the same owner world via host
+`ensureDornhainDefaultCatalog` → `seedDornhainGoldenHierarchy`.
 
-## Path (informational)
+## Event
+
+Fresh host / ensure-starter lands six-level Golden maps + places for the owner.
+
+## Hop chain
 
 Host boot / ensure-starter → `ensureDornhainDefaultCatalog` →
 `seedOwnedDornhainAtlas` → `seedDornhainGoldenHierarchy` → SQLite
 `world_atlas_maps` / `world_places` / `world_place_map_links` → FE
-`WorldAtlasWorkbench` list/drill/reset.
+`WorldAtlasWorkbench` list/drill (existing read path).
+
+## Simulations
+
+| Case | Intended | Composed | Result |
+|------|----------|----------|--------|
+| N-actors | Only owner world receives Golden seed | owner-scoped ids + world_profile_id | pass |
+| Invalid/missing | Re-ensure without parent throws; user maps survive | seedDornhainGoldenHierarchy + self-test | pass |
+| Two consumers / crash | Idempotent retry after partial ensure | INSERT OR IGNORE + UPDATE by seed | pass |
+
+## Flags
+
+| Tag | Severity | Hops | Why local review missed it | Fix |
+|-----|----------|------|----------------------------|-----|
+| (none) | — | — | — | — |
