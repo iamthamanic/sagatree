@@ -1,7 +1,7 @@
 # ATL2-B05 Gate B — Phase B acceptance
 
 - Issue: #1205
-- HEAD: `6ced4dd8087418d72604768946c8d889f3e2b388`
+- HEAD: `8ce2cab33c0260dabbcc69cd8897846fb04c77a2`
 - Verdict: **CLEAR**
 - Date: 2026-11-12
 
