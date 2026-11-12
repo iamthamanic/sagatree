@@ -2,7 +2,7 @@
 
 - Issue: #1207
 - Feature slug: atl2-c02
-- HEAD_SHA: ccea712b9aab26354d07e5998fed176d1ed00ac0
+- HEAD_SHA: 46c7f19750307e8c107e03d62541e8d5a3b44983
 - BASE_SHA: a79b7cfe594ddc8499f12951c1db9d3525bf6159
 - Date: 2026-11-12
 - Verdict: SKIPPED
