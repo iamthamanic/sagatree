@@ -1,23 +1,40 @@
 # Composition Gate — atl2-b01
 
-## Verdict
-
-SKIPPED
-
-## HEAD_SHA
-
-(filled at PR tip)
-
-## BASE_SHA
-
-origin/main
+- Issue: #1201
+- Feature slug: atl2-b01
+- HEAD_SHA: 104bc8b3f26e47d1a4a25ed2b7a532487e771c02
+- BASE_SHA: aa850dfed3ee74adb44fd883512f407cacab8b2b
+- Date: 2026-11-12
+- Verdict: SKIPPED
 
 ## Skip reason
 
-Domain catalog + design/acceptance docs only. No new producer→consumer hop,
-HTTP route, or UI composition path. Classification is pure in-memory over
-existing UnifiedCanvasDoc V1.
+Domain catalog + design/acceptance docs only. No new multi-actor product hop;
+classification is pure in-memory over existing UnifiedCanvasDoc V1.
+
+## Event
+
+Specify ATL2-B01 canonical feature kinds and classify Golden Dornhain without
+rewriting stored maps.
+
+## Hop chain
+
+(none — documentation + pure domain classifier; no producer→consumer I/O hop)
+
+## Simulations
+
+| Case | Intended | Composed | Result |
+|------|----------|----------|--------|
+| N-actors | N/A — no shared hop | catalog only | skip |
+| Invalid/missing | Ambiguous rooms stay unresolved | `legacy_area_ambiguous` | pass (self-test) |
+| Two consumers / crash | Classifier idempotent | re-run self-test | pass |
+
+## Flags
+
+| Tag | Severity | Hops | Why local review missed it | Fix |
+|-----|----------|------|----------------------------|-----|
+| (none) | — | — | — | — |
 
 ## lineageFresh
 
-true — branch cut from main after #1200 Gate A merge.
+true — proof HEAD is feature commit; tip may only restamp this proof file.
