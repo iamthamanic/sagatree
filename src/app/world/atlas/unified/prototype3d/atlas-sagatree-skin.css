@@ -1820,6 +1820,50 @@
   display: none !important;
 }
 
+/* Product maps: demo-only chrome stays out; DB place pins use product typography. */
+[data-atlas-native-3d] #atlas3d[data-atlas-product-map] [data-atlas-demo-only] {
+  display: none !important;
+}
+
+[data-atlas-native-3d] .map-label.is-place-pin {
+  font-family: 'Darker Grotesque', system-ui, sans-serif !important;
+  font-size: 0.95rem !important;
+  letter-spacing: 0.01em !important;
+  color: var(--foreground) !important;
+  background: color-mix(in srgb, var(--card) 88%, transparent) !important;
+  border-color: color-mix(in srgb, var(--border) 85%, transparent) !important;
+  text-shadow: none !important;
+  cursor: pointer !important;
+}
+
+[data-atlas-native-3d] .map-label.is-place-pin::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  width: 6px;
+  height: 6px;
+  margin: 1px 0 0 -3px;
+  border-radius: 999px;
+  background: var(--primary);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--card) 80%, transparent);
+}
+
+[data-atlas-native-3d] .map-label.is-place-pin.is-stacked::after {
+  display: none;
+}
+
+[data-atlas-native-3d] .map-label.is-place-pin:hover {
+  border-color: var(--accent) !important;
+  color: var(--accent) !important;
+}
+
+[data-atlas-native-3d] .map-label.is-place-pin.is-selected {
+  border-color: var(--primary) !important;
+  background: color-mix(in srgb, var(--primary) 28%, var(--card)) !important;
+  color: var(--primary-foreground) !important;
+}
+
 [data-atlas-native-3d] .hotspot {
   border: 1px solid color-mix(in srgb, var(--primary) 55%, transparent) !important;
   background: color-mix(in srgb, var(--card) 92%, transparent) !important;

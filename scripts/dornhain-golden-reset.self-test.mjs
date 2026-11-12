@@ -33,6 +33,14 @@ function planDornhainGoldenReset(mode, options = { sessionProgressResetAvailable
   return {
     mode,
     restoreCanvas,
+    goldenMapSeeds: [
+      'dornhain.unified.v4',
+      'dornhain.map.continent.westmark',
+      'dornhain.map.country.westmark',
+      'dornhain.map.place.dornhain',
+      'dornhain.map.loc.tavern',
+      'dornhain.map.loc.crypt',
+    ],
     restoreGoldenPlaces,
     clearSessionProgress,
     sessionProgressNoteDe,
@@ -43,6 +51,8 @@ const atlas = planDornhainGoldenReset('atlas');
 assert(atlas.restoreCanvas === true, 'atlas restores canvas');
 assert(atlas.restoreGoldenPlaces === false, 'atlas skips places');
 assert(atlas.clearSessionProgress === false, 'atlas skips session');
+assert(atlas.goldenMapSeeds.includes('dornhain.map.continent.westmark'), 'hierarchy map seeds');
+assert(atlas.goldenMapSeeds[0] === 'dornhain.unified.v4', 'world seed first');
 
 const places = planDornhainGoldenReset('atlas_places');
 assert(places.restoreGoldenPlaces === true, 'atlas_places restores places');

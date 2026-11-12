@@ -33,9 +33,11 @@ assert(!src.includes("label: 'Eldoria'"), 'no Eldoria as stage label');
 
 const editorPath = path.join(root, 'src/app/world/atlas/unified/UnifiedAtlasEditor.tsx');
 const editor = fs.readFileSync(editorPath, 'utf8');
-assert(editor.includes('ATLAS_PROTOTYPE_LEVELS'), 'editor uses prototype levels');
 assert(editor.includes('ATLAS_PROTOTYPE_LAYER_LABELS'), 'editor uses prototype layers');
-assert(editor.includes('data-atlas-hotspot'), 'hotspot chrome');
+// Product Draufsicht labels persisted places — no Dornhain-anchored demo stages / hotspots.
+assert(editor.includes('data-atlas-map-pin'), 'product pin chrome');
+assert(!editor.includes('ATLAS_PROTOTYPE_LEVELS'), 'no hard-coded stage list on product maps');
+assert(!editor.includes('ATLAS_PROTOTYPE_HOTSPOTS'), 'no demo hotspots on product maps');
 assert(editor.includes('Zur Weltkarte'), 'home action copy');
 
 const esbuildBin = path.join(root, 'node_modules/.bin/esbuild');

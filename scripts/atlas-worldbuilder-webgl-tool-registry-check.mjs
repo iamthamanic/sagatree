@@ -93,8 +93,13 @@ if (countryIds.includes('wall') || countryIds.includes('room')) {
   fail('country must not offer room/wall tools');
 }
 const road = country.find((t) => t.atlasId === 'road');
-if (!road || road.enabled !== false) fail('road must be listed disabled in WebGL chrome');
+if (!road || road.enabled !== true) fail('road must be enabled in WebGL chrome (3D road tool)');
 if (road.runtimeId !== 'road') fail('road runtime id');
+const select = country.find((t) => t.atlasId === 'select');
+if (!select || select.enabled !== true) fail('select must be enabled in WebGL chrome (3D select tool)');
+if (!countryIds.every((id) => country.find((t) => t.atlasId === id)?.enabled === true)) {
+  fail('every country tool must be wired in the 3D runtime');
+}
 
 const building = mod.webglToolChromeForKind('building');
 const buildingIds = building.map((t) => t.atlasId);

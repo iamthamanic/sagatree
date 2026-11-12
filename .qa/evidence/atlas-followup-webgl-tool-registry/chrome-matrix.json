@@ -9,7 +9,7 @@
     {
       "atlasId": "select",
       "runtimeId": "select",
-      "enabled": false,
+      "enabled": true,
       "role": "navigate"
     },
     {
@@ -19,9 +19,15 @@
       "role": "terrain"
     },
     {
+      "atlasId": "area",
+      "runtimeId": "area",
+      "enabled": true,
+      "role": "terrain"
+    },
+    {
       "atlasId": "road",
       "runtimeId": "road",
-      "enabled": false,
+      "enabled": true,
       "role": "border"
     },
     {
@@ -41,7 +47,7 @@
     {
       "atlasId": "select",
       "runtimeId": "select",
-      "enabled": false,
+      "enabled": true,
       "role": "navigate"
     },
     {

@@ -38,6 +38,18 @@ export type AtlasPrototypeToolChromeRow = {
   readonly role?: string;
 };
 
+/** How a product map renders its content (terrain patches vs interior floor plans). */
+export type AtlasPrototypeMapScale = 'world' | 'settlement' | 'interior';
+
+/** Place label anchored on the active map (doc coordinates). */
+export type AtlasPrototypeMapPin = {
+  readonly id: string;
+  readonly label: string;
+  readonly kind?: string | null;
+  readonly x: number;
+  readonly y: number;
+};
+
 export type AtlasPrototypeMount = {
   readonly dispose: () => void;
   readonly updateExternalNav: (tree: AtlasPrototypeExternalNav | null) => void;
@@ -45,6 +57,8 @@ export type AtlasPrototypeMount = {
   readonly setToolChrome: (rows: readonly AtlasPrototypeToolChromeRow[] | null) => void;
   readonly setCanEdit: (canEdit: boolean) => void;
   readonly setMapSketchStatus: (status: string | null) => void;
+  readonly setMapScale: (scale: AtlasPrototypeMapScale | null) => void;
+  readonly setMapPins: (pins: readonly AtlasPrototypeMapPin[] | null) => void;
 };
 
 export type AtlasPrototypeNavAddPayload = {
@@ -79,6 +93,10 @@ export type AtlasPrototypeMountOptions = {
   readonly canEdit?: boolean;
   /** Active map sketch status — unlocated suppresses demo geography (#752). */
   readonly mapSketchStatus?: 'unlocated' | 'unsketched' | 'ready' | null;
+  /** Product map scale; controlled mounts never render demo geography. */
+  readonly mapScale?: AtlasPrototypeMapScale;
+  /** DB place labels anchored on the active map. */
+  readonly mapPins?: readonly AtlasPrototypeMapPin[] | null;
 };
 
 export function mountAtlasPrototype3d(

@@ -10,6 +10,8 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import {
   webglToolChromeForKind,
+  type AtlasMapPin,
+  type AtlasMapScale,
   type WebglRuntimeState,
 } from '../../../../domains/world/atlas';
 import type { WorldNodeKind } from '../../../../domains/world/hierarchy';
@@ -32,6 +34,8 @@ type AtlasNativeMountHandle = {
   ) => void;
   readonly setCanEdit: (canEdit: boolean) => void;
   readonly setMapSketchStatus: (status: string | null) => void;
+  readonly setMapScale: (scale: AtlasMapScale | null) => void;
+  readonly setMapPins: (pins: readonly AtlasMapPin[] | null) => void;
 };
 
 export type AtlasNative3dEditorProps = {
@@ -58,6 +62,10 @@ export type AtlasNative3dEditorProps = {
   readonly canEdit?: boolean;
   /** Active map sketch status for honest empty / drill gates (#752). */
   readonly mapSketchStatus?: 'unlocated' | 'unsketched' | 'ready' | null;
+  /** Content scale of the active product map (terrain vs floor plan rendering). */
+  readonly mapScale?: AtlasMapScale;
+  /** Persisted place labels anchored on the active map. */
+  readonly mapPins?: readonly AtlasMapPin[] | null;
 };
 
 /** Rebrand leftover prototype copy to SagaTree product wording. */
@@ -285,6 +293,8 @@ export function AtlasNative3dEditor({
   activeNodeKind = null,
   canEdit = true,
   mapSketchStatus = null,
+  mapScale = 'world',
+  mapPins = null,
 }: AtlasNative3dEditorProps) {
   const hostRef = useRef<HTMLDivElement>(null);
   const mountRef = useRef<AtlasNativeMountHandle | null>(null);
@@ -312,6 +322,10 @@ export function AtlasNative3dEditor({
   canEditRef.current = canEdit;
   const mapSketchStatusRef = useRef(mapSketchStatus);
   mapSketchStatusRef.current = mapSketchStatus;
+  const mapScaleRef = useRef(mapScale);
+  mapScaleRef.current = mapScale;
+  const mapPinsRef = useRef(mapPins);
+  mapPinsRef.current = mapPins;
   const mapKeyRef = useRef(mapKey);
   const seedRef = useRef(seedState);
   if (mapKeyRef.current !== mapKey) {
@@ -367,6 +381,8 @@ export function AtlasNative3dEditor({
         toolChrome: [...webglToolChromeForKind(activeNodeKindRef.current ?? null)],
         canEdit: canEditRef.current !== false,
         mapSketchStatus: mapSketchStatusRef.current ?? null,
+        mapScale: mapScaleRef.current,
+        mapPins: mapPinsRef.current ? [...mapPinsRef.current] : null,
       });
       mountRef.current = mount;
       disposePanels = installCollapsiblePanels(host);
@@ -426,6 +442,18 @@ export function AtlasNative3dEditor({
     if (!mount) return;
     mount.setMapSketchStatus(mapSketchStatus ?? null);
   }, [mapSketchStatus]);
+
+  useEffect(() => {
+    const mount = mountRef.current;
+    if (!mount) return;
+    mount.setMapScale(mapScale);
+  }, [mapScale]);
+
+  useEffect(() => {
+    const mount = mountRef.current;
+    if (!mount) return;
+    mount.setMapPins(mapPins ?? null);
+  }, [mapPins]);
 
   return (
     <div

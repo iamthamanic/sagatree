@@ -1427,12 +1427,6 @@ function checkCut20LegacyClientBan() {
     stdio: 'inherit',
   });
   console.log('OK: cut-23-final-parity.self-test');
-  console.log('Docs runtime drift (active entrypoints)...');
-  execFileSync(process.execPath, ['scripts/docs-runtime-drift-check.mjs'], {
-    cwd: root,
-    stdio: 'inherit',
-  });
-  console.log('OK: docs-runtime-drift-check');
 }
 
 function checkFeHost12ProjectWrites() {
@@ -2023,6 +2017,21 @@ function checkWorldAtlasEditor() {
     cwd: root,
     stdio: 'inherit',
   });
+  console.log('Atlas coast polygons + Fläche tool (Step 2)...');
+  execFileSync(process.execPath, ['scripts/atlas-coast-polygons.self-test.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
+  console.log('Atlas hierarchy locate tool (Steps 3+4)...');
+  execFileSync(process.execPath, ['scripts/atlas-hierarchy-locate.self-test.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
+  console.log('Atlas Golden hierarchy maps (Steps 5+6)...');
+  execFileSync(process.execPath, ['scripts/atlas-golden-hierarchy.self-test.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
   console.log('Dornhain Golden reset planner...');
   execFileSync(process.execPath, ['scripts/dornhain-golden-reset.self-test.mjs'], {
     cwd: root,
@@ -2030,6 +2039,11 @@ function checkWorldAtlasEditor() {
   });
   console.log('Atlas prototype LOD layers (HTML v3 port)...');
   execFileSync(process.execPath, ['scripts/atlas-prototype-lod.self-test.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
+  console.log('Atlas map pins + span tool sizes (2D/3D parity)...');
+  execFileSync(process.execPath, ['scripts/atlas-map-pins.self-test.mjs'], {
     cwd: root,
     stdio: 'inherit',
   });

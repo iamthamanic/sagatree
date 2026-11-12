@@ -19,24 +19,21 @@ import {
   Cursor,
   PaintBrush,
   Path,
+  Polygon,
   Square,
   Stamp,
   Wrench,
   type IconProps
 } from '@phosphor-icons/react';
 import {
-  ATLAS_PROTOTYPE_HOTSPOTS,
   ATLAS_PROTOTYPE_LAYER_LABELS,
-  ATLAS_PROTOTYPE_LEVELS,
   applyMapEdit,
+  atlasMapPinFocusSpan,
+  atlasMapPinVisible,
+  atlasProductBrushWidth,
+  atlasProductStampSize,
   atlasPrototypeApplyLod,
-  atlasPrototypeBrushSize,
   atlasPrototypeContentVisible,
-  atlasPrototypeHotspotVisible,
-  atlasPrototypeLevelFromView,
-  atlasPrototypeLevelRect,
-  atlasPrototypeNextLevel,
-  atlasPrototypeStampSize,
   atlasSpanFromScale,
   atlasToolsForKind,
   buildDungeonGeneratorMeta,
@@ -50,10 +47,11 @@ import {
   emptyWebglRuntime,
   parseWebglRuntimeState,
   pickObjectAt,
+  pickRoomAt,
   readLegacyWebglLocalStorage,
+  roomFromPolygon,
   syncCanvasDocIntoWebglRuntime,
   syncWebglPropsIntoCanvasDoc,
-  type AtlasPrototypeLevelId,
   type DungeonGeneratorMeta,
   type UnifiedCanvasDoc,
   type UnifiedCanvasLayerId,
@@ -61,6 +59,8 @@ import {
   type UnifiedCanvasStampType,
   type UnifiedCanvasTool,
   type WebglRuntimeState,
+  type AtlasMapPin,
+  type AtlasMapScale,
 } from '../../../../domains/world/atlas';
 import type { WorldNodeKind } from '../../../../domains/world/hierarchy';
 import {
@@ -155,6 +155,15 @@ export type UnifiedAtlasEditorProps = {
   readonly activeNodeKind?: WorldNodeKind | null;
   /** Active map sketch status for WebGL empty/drill gates (#752). */
   readonly mapSketchStatus?: 'unlocated' | 'unsketched' | 'ready' | null;
+  /** Content scale of the active map (3D terrain vs floor-plan rendering). */
+  readonly mapScale?: AtlasMapScale;
+  /** Persisted place labels anchored on the active map (3D pins). */
+  readonly mapPins?: readonly AtlasMapPin[] | null;
+  /** Product surface (3D vs Draufsicht); pass it to keep the choice across map remounts. */
+  readonly surfaceMode?: '3d' | '2d';
+  readonly onSurfaceModeChange?: (mode: '3d' | '2d') => void;
+  /** Host actions shown in the Draufsicht surface bar (Golden, Voll/Spieleransicht, Speichern). */
+  readonly surfaceActions?: ReactNode;
   /** Optional floating chrome on the canvas (e.g. Karten hierarchy rail). */
   readonly canvasLeftRail?: ReactNode;
   /** Active map identity for controlled WebGL remount (#721). */
@@ -162,10 +171,26 @@ export type UnifiedAtlasEditorProps = {
   /** Persisted WebGL runtime (generator_meta.webglRuntimeV3). */
   readonly webglRuntime?: WebglRuntimeState | null;
   readonly onWebglRuntimeChange?: (next: WebglRuntimeState) => void;
+  /**
+   * Parent-map locate session (Steps 3+4): drag a rect in Draufsicht to place the child frame.
+   * When set, paint tools yield to locate marquee until commit/cancel.
+   */
+  readonly locateSession?: { readonly childTitle: string } | null;
+  readonly onLocateCommit?: (rect: {
+    readonly minX: number;
+    readonly minY: number;
+    readonly maxX: number;
+    readonly maxY: number;
+  }) => void;
+  readonly onLocateCancel?: () => void;
 };
 
 type DragState =
   | { readonly mode: 'pan'; readonly px: number; readonly py: number; readonly cam: AtlasCamera }
+  | {
+      readonly mode: 'locate';
+      readonly start: { readonly x: number; readonly y: number };
+    }
   | {
       readonly mode: 'paint';
       readonly strokeId: string;
@@ -184,6 +209,14 @@ type DragState =
       readonly sy: number;
     }
   | {
+      readonly mode: 'move_room';
+      readonly id: string;
+      readonly ox: number;
+      readonly oy: number;
+      readonly sx: number;
+      readonly sy: number;
+    }
+  | {
       readonly mode: 'marquee';
       readonly start: { x: number; y: number };
     }
@@ -195,6 +228,15 @@ const PRODUCT_WORLD_RECT: AtlasRect = {
   y: DEFAULT_ATLAS_BOUNDS.minY,
   width: DEFAULT_ATLAS_BOUNDS.maxX - DEFAULT_ATLAS_BOUNDS.minX,
   height: DEFAULT_ATLAS_BOUNDS.maxY - DEFAULT_ATLAS_BOUNDS.minY,
+};
+
+/** Level badge + fallback crumb per map scale (same wording as the 3D runtime). */
+const PRODUCT_SCALE_LABEL: Readonly<
+  Record<AtlasMapScale, { readonly tag: string; readonly crumb: string }>
+> = {
+  world: { tag: 'WELTKARTE', crumb: 'Weltkarte' },
+  settlement: { tag: 'ORTSKARTE', crumb: 'Ortskarte' },
+  interior: { tag: 'INNENRAUM', crumb: 'Innenraum' },
 };
 
 function uid(): string {
@@ -322,10 +364,18 @@ export function UnifiedAtlasEditor({
   onWebglNavReparent,
   activeNodeKind = null,
   mapSketchStatus = null,
+  mapScale = 'world',
+  mapPins = null,
+  surfaceMode: surfaceModeProp,
+  onSurfaceModeChange,
+  surfaceActions = null,
   canvasLeftRail = null,
   mapKey = 'map',
   webglRuntime = null,
   onWebglRuntimeChange,
+  locateSession = null,
+  onLocateCommit,
+  onLocateCancel,
 }: UnifiedAtlasEditorProps) {
   const stageRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -333,6 +383,13 @@ export function UnifiedAtlasEditor({
   const fitRef = useRef(1);
   const dragRef = useRef<DragState>(null);
   const animRef = useRef<number | null>(null);
+  // A pin click can switch maps (remount) while a camera flight is still running.
+  useEffect(
+    () => () => {
+      if (animRef.current != null) cancelAnimationFrame(animRef.current);
+    },
+    [],
+  );
   const docRef = useRef(doc);
   docRef.current = doc;
   const dungeonMetaRef = useRef(dungeonMeta);
@@ -362,9 +419,22 @@ export function UnifiedAtlasEditor({
     },
     [onDocChangeProp, onWebglRuntimeChange],
   );
-  const [surfaceMode, setSurfaceMode] = useState<'3d' | '2d'>('3d');
+  const [localSurfaceMode, setLocalSurfaceMode] = useState<'3d' | '2d'>('3d');
+  const surfaceMode = surfaceModeProp ?? localSurfaceMode;
+  const setSurfaceMode = useCallback(
+    (mode: '3d' | '2d') => {
+      setLocalSurfaceMode(mode);
+      onSurfaceModeChange?.(mode);
+    },
+    [onSurfaceModeChange],
+  );
 
-  const [tool, setTool] = useState<UnifiedCanvasTool>('hand');  const [material, setMaterial] = useState<UnifiedCanvasMaterial>('gras');
+  const [tool, setTool] = useState<UnifiedCanvasTool>('hand');
+  const [material, setMaterial] = useState<UnifiedCanvasMaterial>('gras');
+  const [areaDraft, setAreaDraft] = useState<readonly (readonly [number, number])[]>([]);
+  const areaDraftRef = useRef(areaDraft);
+  areaDraftRef.current = areaDraft;
+  const [areaHint, setAreaHint] = useState<string | null>(null);
   const [stamp, setStamp] = useState<UnifiedCanvasStampType>('baum');
   const [brushSize, setBrushSize] = useState(45);
   const [objectSize, setObjectSize] = useState(1);
@@ -389,9 +459,8 @@ export function UnifiedAtlasEditor({
   const [zoomPct, setZoomPct] = useState('100%');
   const [level, setLevel] = useState('WELT');
   const [crumb, setCrumb] = useState('Welt');
-  const [protoLevel, setProtoLevel] = useState<AtlasPrototypeLevelId>('world');
-  const [hotspotScreen, setHotspotScreen] = useState<
-    readonly { id: string; label: string; target: AtlasPrototypeLevelId; left: number; top: number }[]
+  const [pinScreen, setPinScreen] = useState<
+    readonly { id: string; label: string; left: number; top: number; selected: boolean }[]
   >([]);
   const [viewport, setViewport] = useState({ width: 800, height: 500 });
   const [history, setHistory] = useState<string[]>([]);
@@ -471,8 +540,9 @@ export function UnifiedAtlasEditor({
         t: performance.now(),
       };
       const dest = { x: rect.x + rect.width / 2, y: rect.y + rect.height / 2 };
+      const ms = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ? 0 : duration;
       const frame = (now: number) => {
-        const t = easing(Math.min(1, (now - start.t) / duration));
+        const t = ms > 0 ? easing(Math.min(1, (now - start.t) / ms)) : 1;
         camRef.current = {
           center: {
             x: start.x + (dest.x - start.x) * t,
@@ -492,6 +562,7 @@ export function UnifiedAtlasEditor({
   const mapWorldRect =
     workingDoc.demoSeed !== false ? WORLD_RECT : PRODUCT_WORLD_RECT;
 
+  // The stage only exists in the Draufsicht branch; re-attach when the surface flips.
   useEffect(() => {
     const el = stageRef.current;
     if (!el) return;
@@ -517,7 +588,7 @@ export function UnifiedAtlasEditor({
     });
     ro.observe(el);
     return () => ro.disconnect();
-  }, [refresh]);
+  }, [refresh, surfaceMode]);
 
   const productWorldFitDoneRef = useRef(false);
   useEffect(() => {
@@ -536,8 +607,6 @@ export function UnifiedAtlasEditor({
   }, [workingDoc.demoSeed, viewport.width, viewport.height, refresh]);
 
   useEffect(() => {
-    // Product maps mount the exact HTML 3D prototype — skip Canvas2D paint.
-    if (workingDoc.demoSeed === false) return;
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
@@ -552,8 +621,7 @@ export function UnifiedAtlasEditor({
     const cam = camRef.current;
     const scale = cam.pixelsPerUnit;
     const layers = workingDoc.layers;
-    // Narrowed: early-return above skipped product maps (demoSeed === false).
-    const isDemo = true;
+    const isDemo = workingDoc.demoSeed !== false;
 
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, width, height);
@@ -621,8 +689,9 @@ export function UnifiedAtlasEditor({
         ctx.restore();
       }
     } else if (layers.terrain) {
-      // Planetary ocean — product maps always start as blue world, lands drawn on top.
-      ctx.fillStyle = '#1a5f8a';
+      // World maps start as open ocean; settlement / interior maps sit on a plain sheet (3D parity).
+      ctx.fillStyle =
+        mapScale === 'world' ? '#1a5f8a' : mapScale === 'interior' ? '#1d2529' : '#2f4034';
       ctx.fillRect(
         PRODUCT_WORLD_RECT.x,
         PRODUCT_WORLD_RECT.y,
@@ -631,16 +700,21 @@ export function UnifiedAtlasEditor({
       );
     }
 
-    const protoLod = !isDemo
-      ? atlasPrototypeApplyLod(scale, height, {
-          terrain: layers.terrain,
-          region: layers.region,
-          city: layers.city,
-          interior: layers.interior,
-          objects: layers.objects,
-          grid: layers.grid,
-        })
-      : null;
+    // Zoom LOD only applies to world maps; settlement / interior maps show all of their content.
+    const protoLod =
+      !isDemo && mapScale === 'world'
+        ? atlasPrototypeApplyLod(scale, height, {
+            terrain: layers.terrain,
+            region: layers.region,
+            city: layers.city,
+            interior: layers.interior,
+            objects: layers.objects,
+            grid: layers.grid,
+          })
+        : null;
+    // World terrain (w.* areas and strokes) stays as the base layer when zoomed in, as in 3D.
+    const areaVisible = (id: string): boolean =>
+      !protoLod || id.startsWith('w.') || atlasPrototypeContentVisible(id, protoLod);
 
     const productLandColor = (material: string): string => {
       switch (material) {
@@ -665,27 +739,69 @@ export function UnifiedAtlasEditor({
 
     if (layers.drawings) {
       for (const r of workingDoc.rooms) {
-        if (protoLod && !atlasPrototypeContentVisible(r.id, protoLod)) continue;
+        if (!areaVisible(r.id)) continue;
         // Ocean base room is already painted as full-canvas fill.
         if (!isDemo && r.id === 'w.ocean') continue;
         ctx.fillStyle = isDemo
           ? (MATERIAL_COLORS[r.material] ?? MATERIAL_COLORS.holz)
           : productLandColor(r.material);
-        ctx.fillRect(r.x, r.y, r.w, r.h);
-        if (isDemo) {
-          ctx.strokeStyle = '#514a41';
-          ctx.lineWidth = Math.min(r.w, r.h) * 0.08;
-          ctx.strokeRect(r.x, r.y, r.w, r.h);
-        } else if (!isSettlementLodId(r.id) && r.material !== 'wasser') {
-          // Soft coast outline for land masses
-          ctx.strokeStyle = 'rgba(255,255,255,0.12)';
-          ctx.lineWidth = 3 / Math.max(0.2, scale);
-          ctx.strokeRect(r.x, r.y, r.w, r.h);
+        if (r.points && r.points.length >= 3) {
+          ctx.beginPath();
+          ctx.moveTo(r.points[0][0], r.points[0][1]);
+          for (let i = 1; i < r.points.length; i += 1) {
+            ctx.lineTo(r.points[i][0], r.points[i][1]);
+          }
+          ctx.closePath();
+          ctx.fill();
+          if (isDemo) {
+            ctx.strokeStyle = '#514a41';
+            ctx.lineWidth = Math.min(r.w, r.h) * 0.08;
+            ctx.stroke();
+          } else if (!isSettlementLodId(r.id) && r.material !== 'wasser') {
+            ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+            ctx.lineWidth = 3 / Math.max(0.2, scale);
+            ctx.stroke();
+          }
+        } else {
+          ctx.fillRect(r.x, r.y, r.w, r.h);
+          if (isDemo) {
+            ctx.strokeStyle = '#514a41';
+            ctx.lineWidth = Math.min(r.w, r.h) * 0.08;
+            ctx.strokeRect(r.x, r.y, r.w, r.h);
+          } else if (!isSettlementLodId(r.id) && r.material !== 'wasser') {
+            // Soft coast outline for land masses
+            ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+            ctx.lineWidth = 3 / Math.max(0.2, scale);
+            ctx.strokeRect(r.x, r.y, r.w, r.h);
+          }
         }
+      }
+      if (!isDemo && areaDraft.length > 0) {
+        ctx.save();
+        ctx.strokeStyle = 'rgba(6,182,212,0.95)';
+        ctx.fillStyle = 'rgba(6,182,212,0.18)';
+        ctx.lineWidth = 2 / Math.max(0.2, scale);
+        ctx.setLineDash([6 / scale, 4 / scale]);
+        ctx.beginPath();
+        ctx.moveTo(areaDraft[0][0], areaDraft[0][1]);
+        for (let i = 1; i < areaDraft.length; i += 1) {
+          ctx.lineTo(areaDraft[i][0], areaDraft[i][1]);
+        }
+        if (areaDraft.length >= 3) ctx.closePath();
+        if (areaDraft.length >= 3) ctx.fill();
+        ctx.stroke();
+        ctx.setLineDash([]);
+        for (const [ax, ay] of areaDraft) {
+          ctx.fillStyle = '#06b6d4';
+          ctx.beginPath();
+          ctx.arc(ax, ay, 4 / Math.max(0.2, scale), 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.restore();
       }
       for (const s of workingDoc.strokes) {
         if (s.points.length === 0) continue;
-        if (protoLod && !atlasPrototypeContentVisible(s.id, protoLod)) continue;
+        if (!areaVisible(s.id)) continue;
         ctx.save();
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
@@ -740,7 +856,7 @@ export function UnifiedAtlasEditor({
         drawStamp(ctx, o.type, o.x, o.y, o.size * 100, o.angle ?? 0);
       }
     }
-    if (!isDemo && protoLod?.grid) {
+    if (!isDemo && (protoLod ? protoLod.grid : layers.grid)) {
       ctx.save();
       ctx.globalAlpha = 0.35;
       ctx.strokeStyle = '#54665c';
@@ -827,43 +943,49 @@ export function UnifiedAtlasEditor({
     }
 
     if (!isDemo) {
-      const stageId = atlasPrototypeLevelFromView(cam.center, scale, height);
-      const stage = ATLAS_PROTOTYPE_LEVELS.find((l) => l.id === stageId) ?? ATLAS_PROTOTYPE_LEVELS[0]!;
-      setProtoLevel((prev) => (prev === stageId ? prev : stageId));
-      setLevel(stage.tag);
+      const scaleLabel = PRODUCT_SCALE_LABEL[mapScale];
+      setLevel(scaleLabel.tag);
       const placeLod = resolveAtlasLodFromPlaces(cam.center, scale, placeNavRef.current);
-      setCrumb(placeLod?.crumb && placeLod.level !== 'WELT' ? placeLod.crumb : stage.label);
+      setCrumb(placeLod?.crumb && placeLod.level !== 'WELT' ? placeLod.crumb : scaleLabel.crumb);
       const span = atlasSpanFromScale(scale, height);
-      const nextHotspots = ATLAS_PROTOTYPE_HOTSPOTS.filter((h) =>
-        atlasPrototypeHotspotVisible(h, scale, height),
-      ).map((h) => {
-        const sx = (h.x - cam.center.x) * scale + width / 2;
-        const sy = (h.y - cam.center.y) * scale + height / 2;
-        return {
-          id: h.id,
-          label: h.label,
-          target: h.targetLevel,
-          left: Math.round(sx),
-          top: Math.round(sy),
-        };
-      });
-      setHotspotScreen((prev) => {
-        if (
-          prev.length === nextHotspots.length &&
-          prev.every(
-            (p, i) =>
-              p.id === nextHotspots[i]?.id &&
-              p.left === nextHotspots[i]?.left &&
-              p.top === nextHotspots[i]?.top,
-          )
-        ) {
-          return prev;
-        }
-        return nextHotspots;
-      });
-      setZoomPct(atlasZoomCaption(Math.round((450 / Math.max(1, span)) * 100), null));
+      const stackAt = new Map<string, number>();
+      const nextPins: { id: string; label: string; left: number; top: number; selected: boolean }[] =
+        [];
+      for (const pin of mapPins ?? []) {
+        if (!atlasMapPinVisible(pin, mapScale, span)) continue;
+        const left = Math.round((pin.x - cam.center.x) * scale + width / 2);
+        const top = Math.round((pin.y - cam.center.y) * scale + height / 2);
+        if (left < -60 || top < -30 || left > width + 60 || top > height + 30) continue;
+        const key = `${Math.round(pin.x)}:${Math.round(pin.y)}`;
+        const stack = stackAt.get(key) ?? 0;
+        stackAt.set(key, stack + 1);
+        nextPins.push({
+          id: pin.id,
+          label: pin.label,
+          left,
+          top: top - stack * 28,
+          selected: pin.id === activePlaceId,
+        });
+      }
+      setPinScreen((prev) =>
+        prev.length === nextPins.length &&
+        prev.every((p, i) => {
+          const n = nextPins[i];
+          return (
+            !!n &&
+            p.id === n.id &&
+            p.label === n.label &&
+            p.left === n.left &&
+            p.top === n.top &&
+            p.selected === n.selected
+          );
+        })
+          ? prev
+          : nextPins,
+      );
+      setZoomPct(atlasZoomCaption(Math.round((scale / fitRef.current) * 100), null));
     } else {
-      setHotspotScreen((prev) => (prev.length === 0 ? prev : []));
+      setPinScreen((prev) => (prev.length === 0 ? prev : []));
       const lod = resolveAtlasLodFromPlaces(cam.center, scale, placeNavRef.current);
       if (lod) {
         setLevel(lod.level);
@@ -894,9 +1016,11 @@ export function UnifiedAtlasEditor({
   const worldFromEvent = (e: { clientX: number; clientY: number }) =>
     worldFromClient(e.clientX, e.clientY);
 
+  const currentSpan = () => atlasSpanFromScale(camRef.current.pixelsPerUnit, viewport.height);
+
   const brushWidth = () => {
     if (workingDoc.demoSeed === false) {
-      return atlasPrototypeBrushSize(protoLevel, brushSize);
+      return atlasProductBrushWidth(currentSpan(), brushSize);
     }
     const st = stageAt(camRef.current, camRef.current.pixelsPerUnit);
     return PAINT_HEIGHT[st] * (brushSize / 45);
@@ -904,21 +1028,30 @@ export function UnifiedAtlasEditor({
 
   const stampSizeNow = () => {
     if (workingDoc.demoSeed === false) {
-      return atlasPrototypeStampSize(protoLevel, objectSize);
+      return atlasProductStampSize(currentSpan(), objectSize);
     }
     const st = stageAt(camRef.current, camRef.current.pixelsPerUnit);
     const base = { world: 25, north: 11, region: 7, city: 3, inn: 0.95 }[st] ?? 5;
     return base * objectSize;
   };
 
-  const goToPrototypeLevel = useCallback(
-    (id: AtlasPrototypeLevelId) => {
-      const stage = ATLAS_PROTOTYPE_LEVELS.find((l) => l.id === id);
-      if (!stage) return;
-      goToRect(atlasPrototypeLevelRect(stage));
-    },
-    [goToRect],
-  );
+  /** Same as a 3D pin click: fly to the pin and select the place (opens its own map when it has one). */
+  const focusMapPin = (id: string) => {
+    const pin = mapPins?.find((p) => p.id === id);
+    if (!pin) return;
+    const span = atlasMapPinFocusSpan(pin, mapScale, currentSpan());
+    const halfW = span * (viewport.width / Math.max(1, viewport.height));
+    goToRect({ x: pin.x - halfW, y: pin.y - span, width: halfW * 2, height: span * 2 });
+    const node = webglNavTree?.nodes.find((n) => n.id === id) ?? null;
+    const mapId = node?.primaryMapId ?? null;
+    onWebglNavSelect?.({
+      placeId: id,
+      mapId,
+      worldRoot: false,
+      located: node?.located === true,
+      drillAllowed: !!mapId && node?.located === true,
+    });
+  };
 
   const onPointerDown = (e: React.PointerEvent) => {
     if (e.button !== 0) return;
@@ -930,6 +1063,12 @@ export function UnifiedAtlasEditor({
       animRef.current = null;
     }
     stageRef.current?.setPointerCapture(e.pointerId);
+
+    if (locateSession) {
+      dragRef.current = { mode: 'locate', start: { x: p.x, y: p.y } };
+      setMarqueeLive({ x: p.x, y: p.y, w: 0, h: 0 });
+      return;
+    }
 
     if (pinArmedRef.current) {
       setPlacePin({ x: p.x, y: p.y });
@@ -993,25 +1132,76 @@ export function UnifiedAtlasEditor({
           },
           true,
         );
+        return;
       }
+      const roomHit = pickRoomAt(workingDoc, p.x, p.y);
+      if (roomHit && roomHit.id !== 'w.ocean') {
+        commit(
+          {
+            ...workingDoc,
+            demoSeed: false,
+            rooms: workingDoc.rooms.filter((r) => r.id !== roomHit.id),
+          },
+          true,
+        );
+      }
+      return;
+    }
+
+    if (tool === 'area') {
+      if (e.detail >= 2) {
+        const draft = areaDraftRef.current;
+        if (draft.length >= 3) {
+          const room = roomFromPolygon(uid(), material, draft);
+          if (room) {
+            commit({ ...workingDoc, demoSeed: false, rooms: [...workingDoc.rooms, room] }, true);
+            setAreaDraft([]);
+            setAreaHint(null);
+          } else {
+            setAreaHint('Fläche ungültig — mindestens 3 Punkte mit Fläche nötig.');
+          }
+        } else {
+          setAreaHint('Noch mindestens 3 Punkte setzen, dann Doppelklick zum Schließen.');
+        }
+        return;
+      }
+      setAreaDraft((prev) => [...prev, [p.x, p.y] as const]);
+      setAreaHint('Weiter klicken · Doppelklick / Enter schließt · Escape bricht ab');
+      refresh();
       return;
     }
 
     if (tool === 'select') {
       const hit = pickObjectAt(workingDoc, p.x, p.y);
-      setSelectedId(hit?.id ?? null);
-      if (hit && canEdit) {
+      if (hit) {
+        setSelectedId(hit.id);
+        if (canEdit) {
+          dragRef.current = {
+            mode: 'move_object',
+            id: hit.id,
+            ox: hit.x,
+            oy: hit.y,
+            sx: p.x,
+            sy: p.y,
+          };
+        }
+        return;
+      }
+      const roomHit = pickRoomAt(workingDoc, p.x, p.y);
+      if (roomHit && roomHit.id !== 'w.ocean' && canEdit) {
+        setSelectedId(roomHit.id);
         dragRef.current = {
-          mode: 'move_object',
-          id: hit.id,
-          ox: hit.x,
-          oy: hit.y,
+          mode: 'move_room',
+          id: roomHit.id,
+          ox: roomHit.x,
+          oy: roomHit.y,
           sx: p.x,
           sy: p.y,
         };
-      } else {
-        dragRef.current = { mode: 'pan', px: p.px, py: p.py, cam: camRef.current };
+        return;
       }
+      setSelectedId(null);
+      dragRef.current = { mode: 'pan', px: p.px, py: p.py, cam: camRef.current };
       return;
     }
 
@@ -1059,6 +1249,17 @@ export function UnifiedAtlasEditor({
       refresh();
       return;
     }
+    if (drag.mode === 'move_room') {
+      const next = applyMapEdit(workingDoc, {
+        op: 'move_room',
+        id: drag.id,
+        x: drag.ox + (p.x - drag.sx),
+        y: drag.oy + (p.y - drag.sy),
+      });
+      onDocChange(next);
+      refresh();
+      return;
+    }
     if (drag.mode === 'paint') {
       const strokes = workingDoc.strokes.map((s) => {
         if (s.id !== drag.strokeId) return s;
@@ -1076,7 +1277,7 @@ export function UnifiedAtlasEditor({
       refresh();
       return;
     }
-    if (drag.mode === 'marquee') {
+    if (drag.mode === 'locate' || drag.mode === 'marquee') {
       const x = Math.min(drag.start.x, p.x);
       const y = Math.min(drag.start.y, p.y);
       const w = Math.abs(p.x - drag.start.x);
@@ -1089,6 +1290,20 @@ export function UnifiedAtlasEditor({
   const onPointerUp = (e: React.PointerEvent) => {
     const drag = dragRef.current;
     const p = worldFromEvent(e);
+    if (drag?.mode === 'locate') {
+      const minX = Math.min(drag.start.x, p.x);
+      const minY = Math.min(drag.start.y, p.y);
+      const maxX = Math.max(drag.start.x, p.x);
+      const maxY = Math.max(drag.start.y, p.y);
+      const min = 4 / camRef.current.pixelsPerUnit;
+      dragRef.current = null;
+      setMarqueeLive(null);
+      if (maxX - minX > min && maxY - minY > min) {
+        onLocateCommit?.({ minX, minY, maxX, maxY });
+      }
+      refresh();
+      return;
+    }
     if (drag?.mode === 'marquee') {
       const x = Math.min(drag.start.x, p.x);
       const y = Math.min(drag.start.y, p.y);
@@ -1182,6 +1397,7 @@ export function UnifiedAtlasEditor({
     hand: Hand,
     select: Cursor,
     brush: PaintBrush,
+    area: Polygon,
     road: Path,
     room: Square,
     wall: Wall,
@@ -1197,8 +1413,56 @@ export function UnifiedAtlasEditor({
   useEffect(() => {
     if (!isAtlasToolAllowed(tool, activeNodeKind ?? null)) {
       setTool('hand');
+      setAreaDraft([]);
+      setAreaHint(null);
     }
   }, [activeNodeKind, tool]);
+
+  useEffect(() => {
+    if (tool !== 'area') {
+      setAreaDraft([]);
+      setAreaHint(null);
+    }
+  }, [tool]);
+
+  useEffect(() => {
+    const onKey = (ev: KeyboardEvent) => {
+      if (locateSession && ev.key === 'Escape') {
+        setMarqueeLive(null);
+        dragRef.current = null;
+        onLocateCancel?.();
+        refresh();
+        return;
+      }
+      if (tool !== 'area' || !canEdit) return;
+      if (ev.key === 'Escape') {
+        setAreaDraft([]);
+        setAreaHint(null);
+        refresh();
+        return;
+      }
+      if (ev.key === 'Enter') {
+        const draft = areaDraftRef.current;
+        if (draft.length < 3) {
+          setAreaHint('Noch mindestens 3 Punkte setzen, dann Enter zum Schließen.');
+          return;
+        }
+        const room = roomFromPolygon(uid(), material, draft);
+        if (!room) {
+          setAreaHint('Fläche ungültig — Punkte müssen eine Fläche bilden.');
+          return;
+        }
+        commit(
+          { ...docRef.current, demoSeed: false, rooms: [...docRef.current.rooms, room] },
+          true,
+        );
+        setAreaDraft([]);
+        setAreaHint(null);
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [tool, canEdit, material, commit, refresh, locateSession, onLocateCancel]);
 
   const handleDefinePlace = async (req: AtlasDefinePlaceRequest) => {
     if (!onCreatePlace || !canEdit) return;
@@ -1248,7 +1512,6 @@ export function UnifiedAtlasEditor({
     }
   };
 
-  const hasDbPlaces = placeNav.length > 0;
   const isDemo = workingDoc.demoSeed !== false;
   const isWorldStarter = workingDoc.rooms.some((r) => r.id === 'w.ocean');
   /** Always re-project from current canvas doc so 2D deletes survive 3D remount (#749). */
@@ -1311,6 +1574,8 @@ export function UnifiedAtlasEditor({
           activeNodeKind={activeNodeKind ?? null}
           canEdit={canEdit}
           mapSketchStatus={mapSketchStatus ?? null}
+          mapScale={mapScale}
+          mapPins={mapPins}
           onNavSelect={onWebglNavSelect}
           onNavRename={canEdit ? onWebglNavRename : undefined}
           onNavAdd={canEdit ? onWebglNavAdd : undefined}
@@ -1345,6 +1610,11 @@ export function UnifiedAtlasEditor({
           <p className="text-xs text-muted-foreground">
             Draufsicht — dieselben Objekt-IDs wie in 3D (gespeicherter Edit-Store).
           </p>
+          {surfaceActions ? (
+            <div className="ml-auto flex flex-wrap items-center gap-2" data-atlas-surface-actions>
+              {surfaceActions}
+            </div>
+          ) : null}
         </div>
       ) : null}
       {isDemo && workingDoc.strokes.length === 0 ? (
@@ -1364,12 +1634,12 @@ export function UnifiedAtlasEditor({
           data-unified-chrome
         >
           <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-            {isDemo ? 'Zoom-Stufen · Demo' : 'Weltatlas · Stufen'}
+            {isDemo ? 'Zoom-Stufen · Demo' : 'Orte auf dieser Karte'}
           </p>
           <p className="text-[11px] text-muted-foreground">
             {isDemo
               ? 'Eldoria → Dornhain → Kupferlaterne.'
-              : 'Welt → Region → Stadt → Dungeon → Raum (eine Kamera).'}
+              : 'Klick zoomt zum Ort. Doppelklick auf die Karte zoomt hinein.'}
           </p>
           <nav className="space-y-1" aria-label="Kartenstruktur" data-atlas-zoom-stages>
             {isDemo ? (
@@ -1398,53 +1668,29 @@ export function UnifiedAtlasEditor({
                   </button>
                 ))}
               </>
-            ) : (
-              ATLAS_PROTOTYPE_LEVELS.map((n, i) => (
+            ) : mapPins && mapPins.length > 0 ? (
+              mapPins.map((pin) => (
                 <button
-                  key={n.id}
+                  key={pin.id}
                   type="button"
-                  data-atlas-proto-level={n.id}
-                  aria-current={protoLevel === n.id ? 'true' : undefined}
+                  data-atlas-pin-nav={pin.id}
+                  aria-current={pin.id === activePlaceId ? 'true' : undefined}
                   className={`flex min-h-11 w-full items-center gap-2 rounded-md px-2 text-left text-sm ${
-                    protoLevel === n.id
-                      ? 'bg-primary text-primary-foreground'
-                      : 'hover:bg-muted'
+                    pin.id === activePlaceId ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'
                   }`}
-                  style={{ paddingLeft: `${8 + i * 4}px` }}
-                  onClick={() => goToPrototypeLevel(n.id)}
+                  onClick={() => focusMapPin(pin.id)}
                 >
                   <span className="flex size-7 shrink-0 items-center justify-center rounded-md border border-border text-xs">
-                    {n.glyph}
+                    {pin.kind === 'place' || pin.kind === 'building' ? '⌂' : pin.kind === 'room' ? '▧' : '◇'}
                   </span>
-                  <span className="min-w-0 flex-1">
-                    <span className="block truncate font-medium">{n.label}</span>
-                    <span
-                      className={`block truncate text-[10px] ${
-                        protoLevel === n.id ? 'text-primary-foreground/80' : 'text-muted-foreground'
-                      }`}
-                    >
-                      {n.sub}
-                    </span>
-                  </span>
+                  <span className="min-w-0 flex-1 truncate font-medium">{pin.label}</span>
                 </button>
               ))
+            ) : (
+              <p className="px-2 text-xs text-muted-foreground">
+                Noch keine Orte auf dieser Karte verortet.
+              </p>
             )}
-            {!isDemo && hasDbPlaces
-              ? placeNav.map((n) => (
-                  <button
-                    key={n.placeId}
-                    type="button"
-                    className="flex min-h-11 w-full items-center gap-2 rounded-md px-2 text-left text-sm hover:bg-muted"
-                    data-atlas-place-nav={n.placeId}
-                    onClick={() => goToRect(n.focusRect)}
-                  >
-                    <span className="flex size-7 shrink-0 items-center justify-center rounded-md border border-border text-xs">
-                      {n.kind === 'settlement' || n.kind === 'building' ? '⌂' : '◇'}
-                    </span>
-                    <span className="min-w-0 flex-1 truncate font-medium">{n.name}</span>
-                  </button>
-                ))
-              : null}
           </nav>
           <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
             Sichtbare Ebenen
@@ -1476,9 +1722,9 @@ export function UnifiedAtlasEditor({
             type="button"
             variant="outline"
             className="min-h-11 w-full"
-            onClick={() => (isDemo ? goToRect(mapWorldRect) : goToPrototypeLevel('world'))}
+            onClick={() => goToRect(mapWorldRect)}
           >
-            Zur Weltkarte
+            {isDemo || mapScale === 'world' ? 'Zur Weltkarte' : 'Ganze Karte zeigen'}
           </Button>
         </aside>
 
@@ -1492,7 +1738,6 @@ export function UnifiedAtlasEditor({
               <span
                 className="rounded-full border border-primary/40 bg-primary/10 px-2.5 py-1 text-[10px] font-bold tracking-wide text-primary"
                 data-atlas-level={level}
-                data-atlas-proto-level={isDemo ? undefined : protoLevel}
               >
                 {level}
               </span>
@@ -1504,10 +1749,13 @@ export function UnifiedAtlasEditor({
           <div
             ref={stageRef}
             className={`relative min-h-[min(70vh,40rem)] flex-1 touch-none overflow-hidden rounded-lg border border-border bg-[#10212a] ${
-              pinArmed || marqueeArmed ? 'cursor-crosshair' : ''
+              locateSession || pinArmed || marqueeArmed ? 'cursor-crosshair' : ''
             }`}
             data-unified-atlas-viewport
-            data-tool={pinArmed ? 'pin' : marqueeArmed ? 'marquee' : tool}
+            data-tool={
+              locateSession ? 'locate' : pinArmed ? 'pin' : marqueeArmed ? 'marquee' : tool
+            }
+            data-atlas-locate-mode={locateSession ? 'true' : undefined}
             data-view-mode="2d"
             data-pin-armed={pinArmed ? 'true' : undefined}
             data-marquee-armed={marqueeArmed ? 'true' : undefined}
@@ -1519,28 +1767,17 @@ export function UnifiedAtlasEditor({
             onDoubleClick={(e) => {
               const p = worldFromEvent(e);
               if (!isDemo) {
-                const next = atlasPrototypeNextLevel(protoLevel);
-                if (next !== protoLevel) {
-                  goToPrototypeLevel(next);
-                  return;
-                }
-                if (placeNav.length > 0) {
-                  const hits = placeNav
-                    .filter(
-                      (n) =>
-                        n.located &&
-                        p.x >= n.focusRect.x &&
-                        p.x <= n.focusRect.x + n.focusRect.width &&
-                        p.y >= n.focusRect.y &&
-                        p.y <= n.focusRect.y + n.focusRect.height,
-                    )
-                    .sort((a, b) => a.focusRect.width - b.focusRect.width);
-                  if (hits[0]) {
-                    goToRect(hits[0].focusRect);
-                    return;
-                  }
-                }
-                goToPrototypeLevel('world');
+                // Like 3D: drawing tools keep double-click for themselves.
+                if (tool !== 'hand' && tool !== 'select') return;
+                camRef.current = atlasZoomAt(
+                  camRef.current,
+                  viewport,
+                  { x: p.px, y: p.py },
+                  camRef.current.pixelsPerUnit * 2,
+                  fitRef.current * 0.7,
+                  320,
+                );
+                refresh();
                 return;
               }
               if (placeNav.length > 0) {
@@ -1576,17 +1813,23 @@ export function UnifiedAtlasEditor({
             <canvas ref={canvasRef} className="block h-full w-full" aria-label="Interaktive Weltkarte" />
             {canvasLeftRail}
             {!isDemo
-              ? hotspotScreen.map((h) => (
+              ? pinScreen.map((pin) => (
                   <button
-                    key={h.id}
+                    key={pin.id}
                     type="button"
-                    className="absolute z-[5] -translate-x-1/2 -translate-y-1/2 rounded-full border border-amber-400/60 bg-[#193038de] px-2.5 py-1.5 text-[10px] font-bold text-[#fff4d3] shadow min-h-11"
-                    style={{ left: h.left, top: h.top }}
-                    data-atlas-hotspot={h.id}
+                    className={`absolute z-[5] min-h-11 -translate-x-1/2 -translate-y-full rounded-md border px-2.5 text-sm font-semibold shadow ${
+                      pin.selected
+                        ? 'border-primary bg-primary text-primary-foreground'
+                        : 'border-border bg-card/90 text-foreground hover:border-accent'
+                    }`}
+                    style={{ left: pin.left, top: pin.top }}
+                    data-atlas-map-pin={pin.id}
                     data-unified-chrome
-                    onClick={() => goToPrototypeLevel(h.target)}
+                    aria-label={`${pin.label} öffnen`}
+                    aria-pressed={pin.selected}
+                    onClick={() => focusMapPin(pin.id)}
                   >
-                    {h.label}
+                    {pin.label}
                   </button>
                 ))
               : null}
@@ -1741,17 +1984,54 @@ export function UnifiedAtlasEditor({
           <h2 className="font-heading text-xl font-bold">
             {tool === 'stamp'
               ? 'Objekte'
-              : tool === 'brush' || tool === 'road'
-                ? 'Welt gestalten'
-                : tool === 'room' || tool === 'wall'
-                  ? 'Geometrie'
-                  : selectedId
-                    ? 'Auswahl'
-                    : 'Weltkarte'}
+              : tool === 'area'
+                ? 'Fläche zeichnen'
+                : tool === 'brush' || tool === 'road'
+                  ? 'Welt gestalten'
+                  : tool === 'room' || tool === 'wall'
+                    ? 'Geometrie'
+                    : selectedId
+                      ? 'Auswahl'
+                      : 'Weltkarte'}
           </h2>
           <p className="text-sm text-muted-foreground">
-            Mausrad = zoomen. Land/Wasser mit Pinsel; Orte per Pin oder Rahmen anlegen.
+            {locateSession
+              ? `Ziehe den Ausschnitt für „${locateSession.childTitle}“ auf dieser Elternkarte. Escape bricht ab.`
+              : tool === 'area'
+                ? 'Klick setzt Küstenpunkte. Doppelklick oder Enter schließt die Fläche. Escape bricht ab.'
+                : 'Mausrad = zoomen. Land/Wasser mit Pinsel oder Fläche; Orte per Pin oder Rahmen anlegen.'}
           </p>
+          {locateSession ? (
+            <div
+              className="flex flex-wrap items-center gap-2 rounded-md border border-primary/40 bg-primary/10 px-2 py-1.5 text-xs text-foreground"
+              data-atlas-locate-session
+              role="status"
+            >
+              <span className="min-w-0 flex-1">
+                Verorten: Rechteck ziehen für „{locateSession.childTitle}“.
+              </span>
+              {onLocateCancel ? (
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="min-h-11"
+                  data-atlas-locate-cancel
+                  onClick={() => {
+                    setMarqueeLive(null);
+                    dragRef.current = null;
+                    onLocateCancel();
+                  }}
+                >
+                  Abbrechen
+                </Button>
+              ) : null}
+            </div>
+          ) : null}
+          {areaHint ? (
+            <p className="text-xs text-primary" data-atlas-area-hint role="status">
+              {areaHint}
+            </p>
+          ) : null}
           {canEdit && onCreatePlace ? (
             <AtlasDefinePlacePanel
               busy={placeBusy}
@@ -1791,7 +2071,14 @@ export function UnifiedAtlasEditor({
                 variant="destructive"
                 className="min-h-11"
                 onClick={() => {
-                  commit(applyMapEdit(workingDoc, { op: 'remove_object', id: selectedId }), true);
+                  const isRoom = workingDoc.rooms.some((r) => r.id === selectedId);
+                  commit(
+                    applyMapEdit(workingDoc, {
+                      op: isRoom ? 'remove_room' : 'remove_object',
+                      id: selectedId,
+                    }),
+                    true,
+                  );
                   setSelectedId(null);
                 }}
               >
@@ -1923,7 +2210,7 @@ export function UnifiedAtlasEditor({
                 }`}
                 onClick={() => {
                   setMaterial(id);
-                  setTool('brush');
+                  if (tool !== 'area' && tool !== 'room') setTool('brush');
                 }}
               >
                 <span

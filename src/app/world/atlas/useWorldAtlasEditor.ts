@@ -5,8 +5,11 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   DEFAULT_ATLAS_BOUNDS,
+  DORNHAIN_GOLDEN_MAPS,
   DORNHAIN_GOLDEN_PLACES,
   DORNHAIN_WORLD_LAYER_TITLE,
+  DORNHAIN_WORLD_MAP_SEED,
+  buildDornhainGoldenChildGeneratorMeta,
   buildDornhainUnifiedGeneratorMeta,
   emptyUnifiedCanvasDoc,
   extractWebglRuntimeFromGeneratorMeta,
@@ -17,7 +20,9 @@ import {
   independentPrimaryBounds,
   isAtlasRevisionConflictMessage,
   isDornhainGoldenRootMap,
+  locateChildMapFrame,
   mergeDungeonMetaIntoGeneratorMeta,
+  mergeMapFrameIntoGeneratorMeta,
   mergeUnifiedCanvasIntoGeneratorMeta,
   normalizeDornhainWorldLayerTitle,
   planDornhainGoldenReset,
@@ -75,6 +80,18 @@ export function useWorldAtlasEditor({
   const [webglRuntime, setWebglRuntime] = useState<WebglRuntimeState | null>(null);
   const [dirtyCanvas, setDirtyCanvas] = useState(false);
   const [dungeonMeta, setDungeonMeta] = useState<DungeonGeneratorMeta | null>(null);
+  /**
+   * Bumps only when map content is replaced from outside the editor (load, reload, reset,
+   * import). Own autosaves keep it stable so editors are not remounted mid-session.
+   */
+  const [contentEpoch, setContentEpoch] = useState(0);
+  const bumpContentEpoch = useCallback(() => setContentEpoch((n) => n + 1), []);
+  const canvasDocRef = useRef(canvasDoc);
+  canvasDocRef.current = canvasDoc;
+  const webglRuntimeRef = useRef(webglRuntime);
+  webglRuntimeRef.current = webglRuntime;
+  const dungeonMetaRef = useRef(dungeonMeta);
+  dungeonMetaRef.current = dungeonMeta;
   const saveInFlightRef = useRef(false);
   const persistStatusRef = useRef<AtlasPersistStatus>('clean');
   persistStatusRef.current = persistStatus;
@@ -195,6 +212,7 @@ export function useWorldAtlasEditor({
         setDirtyLayers(null);
         setWebglRuntime(extractWebglRuntimeFromGeneratorMeta(vm.generatorMeta));
         setDungeonMeta(extractDungeonMetaFromGeneratorMeta(vm.generatorMeta));
+        bumpContentEpoch();
       })
       .catch((err: unknown) => {
         if (cancelled) return;
@@ -207,7 +225,7 @@ export function useWorldAtlasEditor({
     return () => {
       cancelled = true;
     };
-  }, [activeMapId, playerView, sagaPublicId]);
+  }, [activeMapId, playerView, sagaPublicId, bumpContentEpoch]);
 
   const updateCanvasDoc = useCallback(
     (next: UnifiedCanvasDoc) => {
@@ -250,13 +268,14 @@ export function useWorldAtlasEditor({
       setDungeonMeta(extractDungeonMetaFromGeneratorMeta(next.generatorMeta));
       setDirtyCanvas(false);
       setDirtyLayers(null);
+      bumpContentEpoch();
       bumpPersist({ type: 'reload' });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Karte konnte nicht neu geladen werden.');
     } finally {
       setLoading(false);
     }
-  }, [activeMapId, playerView, sagaPublicId, bumpPersist]);
+  }, [activeMapId, playerView, sagaPublicId, bumpPersist, bumpContentEpoch]);
 
   const saveCanvas = useCallback(async () => {
     if (!map || !canEdit) return;
@@ -265,6 +284,9 @@ export function useWorldAtlasEditor({
     setSaving(true);
     setError(null);
     bumpPersist({ type: 'save_start' });
+    const sentDoc = canvasDoc;
+    const sentRuntime = webglRuntime;
+    const sentDungeon = dungeonMeta;
     try {
       let generatorMeta = mergeUnifiedCanvasIntoGeneratorMeta(map.generatorMeta, canvasDoc);
       if (webglRuntime) {
@@ -288,12 +310,20 @@ export function useWorldAtlasEditor({
         expectedRevision: map.revision,
       });
       setMap(next);
-      const parsed = extractUnifiedCanvasFromGeneratorMeta(next.generatorMeta);
-      setCanvasDoc(parsed ?? canvasDoc);
-      setWebglRuntime(extractWebglRuntimeFromGeneratorMeta(next.generatorMeta));
-      setDungeonMeta(extractDungeonMetaFromGeneratorMeta(next.generatorMeta));
-      setDirtyCanvas(false);
+      // Edits made while the request was in flight stay dirty for the next autosave.
+      const editedDuringSave =
+        canvasDocRef.current !== sentDoc ||
+        webglRuntimeRef.current !== sentRuntime ||
+        dungeonMetaRef.current !== sentDungeon;
+      if (!editedDuringSave) {
+        const parsed = extractUnifiedCanvasFromGeneratorMeta(next.generatorMeta);
+        setCanvasDoc(parsed ?? canvasDoc);
+        setWebglRuntime(extractWebglRuntimeFromGeneratorMeta(next.generatorMeta));
+        setDungeonMeta(extractDungeonMetaFromGeneratorMeta(next.generatorMeta));
+        setDirtyCanvas(false);
+      }
       bumpPersist({ type: 'save_ok' });
+      if (editedDuringSave) bumpPersist({ type: 'edit' });
       await reloadList();
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Speichern fehlgeschlagen.';
@@ -379,6 +409,90 @@ export function useWorldAtlasEditor({
     [map, canEdit, worldProfileId, reloadList],
   );
 
+  /**
+   * Persist a parent-space locate rect onto a child primary map (#722 Steps 3+4).
+   * Call while the parent map is active; does not invent meters.
+   */
+  const locateChildOnParent = useCallback(
+    async (input: {
+      readonly childMapId: string;
+      readonly minX: number;
+      readonly minY: number;
+      readonly maxX: number;
+      readonly maxY: number;
+      /** When set, also upsert an overview pin on the parent map. */
+      readonly childPlaceId?: string | null;
+    }): Promise<{ readonly ok: true } | { readonly ok: false; readonly reason: string }> => {
+      if (!map || !canEdit || !worldProfileId) {
+        return { ok: false, reason: 'Keine Bearbeitungsrechte oder keine Elternkarte.' };
+      }
+      const childMapId = input.childMapId.trim();
+      if (!childMapId || childMapId === map.id) {
+        return { ok: false, reason: 'Kindkarte fehlt oder ist die aktuelle Karte.' };
+      }
+      const located = locateChildMapFrame({
+        parentMapId: map.id,
+        minX: input.minX,
+        minY: input.minY,
+        maxX: input.maxX,
+        maxY: input.maxY,
+      });
+      if (located.ok === false) {
+        setError(located.reason);
+        return { ok: false, reason: located.reason };
+      }
+      setSaving(true);
+      setError(null);
+      try {
+        const child = await worldAtlasService.getMap(childMapId, playerView, sagaPublicId);
+        if (child.parentMapId && child.parentMapId !== map.id) {
+          const reason = 'Kindkarte gehört nicht zur aktuellen Elternkarte.';
+          setError(reason);
+          return { ok: false, reason };
+        }
+        const generatorMeta = mergeMapFrameIntoGeneratorMeta(child.generatorMeta, located.frame);
+        await worldAtlasService.upsertMap({
+          worldProfileId: child.worldProfileId,
+          mapId: child.id,
+          parentMapId: child.parentMapId ?? map.id,
+          kind: child.kind === 'legacy_tiles' ? 'region' : child.kind,
+          title: child.title,
+          sortOrder: child.sortOrder,
+          bounds: child.bounds,
+          layers: child.layers,
+          basemapStoragePath: child.basemapStoragePath,
+          azgaarMapStoragePath: child.azgaarMapStoragePath,
+          generatorMeta,
+          expectedRevision: child.revision,
+        });
+        const placeId = input.childPlaceId?.trim();
+        if (placeId) {
+          await worldPlaceService.linkMap({
+            worldProfileId,
+            placeId,
+            mapId: map.id,
+            usage: 'overview',
+            anchor: {
+              x: located.anchor.centerX,
+              y: located.anchor.centerY,
+              extentX: located.anchor.extentX,
+              extentY: located.anchor.extentY,
+            },
+          });
+        }
+        await reloadList();
+        return { ok: true };
+      } catch (err) {
+        const reason = err instanceof Error ? err.message : 'Verorten fehlgeschlagen.';
+        setError(reason);
+        return { ok: false, reason };
+      } finally {
+        setSaving(false);
+      }
+    },
+    [map, canEdit, worldProfileId, playerView, sagaPublicId, reloadList],
+  );
+
   const importAzgaarMap = useCallback(
     async (file: File) => {
       if (!map || !canEdit || !worldProfileId) return;
@@ -406,6 +520,7 @@ export function useWorldAtlasEditor({
         });
         setMap(next);
         setDirtyCanvas(false);
+        bumpContentEpoch();
         await reloadList();
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Azgaar-Import fehlgeschlagen.');
@@ -413,7 +528,7 @@ export function useWorldAtlasEditor({
         setSaving(false);
       }
     },
-    [map, canEdit, worldProfileId, dirtyLayers, canvasDoc, reloadList],
+    [map, canEdit, worldProfileId, dirtyLayers, canvasDoc, reloadList, bumpContentEpoch],
   );
 
   const breadcrumb = (() => {
@@ -476,32 +591,93 @@ export function useWorldAtlasEditor({
       setError(null);
       bumpPersist({ type: 'save_start' });
       try {
+        const worldRootId = map.parentMapId
+          ? (summaries.find((s) => s.kind === 'world')?.id ?? map.id)
+          : map.id;
+
         if (plan.restoreCanvas) {
           const worldMeta = buildDornhainUnifiedGeneratorMeta();
           const worldDoc =
             extractUnifiedCanvasFromGeneratorMeta(worldMeta) ?? emptyUnifiedCanvasDoc(false);
-          const next = await worldAtlasService.upsertMap({
-            worldProfileId: map.worldProfileId,
-            mapId: map.id,
-            parentMapId: map.parentMapId,
-            kind: map.kind === 'legacy_tiles' ? 'world' : map.kind,
-            title: normalizeDornhainWorldLayerTitle(map.title) || DORNHAIN_WORLD_LAYER_TITLE,
-            sortOrder: map.sortOrder,
-            bounds: map.bounds,
-            layers: map.layers,
-            basemapStoragePath: map.basemapStoragePath,
-            azgaarMapStoragePath: map.azgaarMapStoragePath,
-            generatorMeta: { ...map.generatorMeta, ...worldMeta },
-            expectedRevision: map.revision,
+          const rootSummary = summaries.find((s) => s.id === worldRootId) ?? null;
+          const rootVm =
+            map.id === worldRootId
+              ? map
+              : await worldAtlasService.getMap(worldRootId, false, sagaPublicId);
+          const nextRoot = await worldAtlasService.upsertMap({
+            worldProfileId: rootVm.worldProfileId,
+            mapId: rootVm.id,
+            parentMapId: rootVm.parentMapId,
+            kind: rootVm.kind === 'legacy_tiles' ? 'world' : rootVm.kind,
+            title:
+              normalizeDornhainWorldLayerTitle(rootVm.title) || DORNHAIN_WORLD_LAYER_TITLE,
+            sortOrder: rootVm.sortOrder,
+            bounds: rootVm.bounds,
+            layers: rootVm.layers,
+            basemapStoragePath: rootVm.basemapStoragePath,
+            azgaarMapStoragePath: rootVm.azgaarMapStoragePath,
+            generatorMeta: {
+              ...rootVm.generatorMeta,
+              ...worldMeta,
+              seed: DORNHAIN_WORLD_MAP_SEED,
+            },
+            expectedRevision: rootVm.revision,
           });
-          setMap(next);
-          setCanvasDoc(
-            extractUnifiedCanvasFromGeneratorMeta(next.generatorMeta) ?? worldDoc,
-          );
-          setWebglRuntime(extractWebglRuntimeFromGeneratorMeta(next.generatorMeta));
-          setDungeonMeta(extractDungeonMetaFromGeneratorMeta(next.generatorMeta));
+          void rootSummary;
+
+          const listed = await worldAtlasService.listMaps(map.worldProfileId, {
+            playerView: false,
+            sagaPublicId,
+          });
+          const mapsBySeed = new Map<string, Awaited<ReturnType<typeof worldAtlasService.getMap>>>();
+          mapsBySeed.set(DORNHAIN_WORLD_MAP_SEED, nextRoot);
+          for (const summary of listed) {
+            if (summary.id === nextRoot.id) continue;
+            const vm = await worldAtlasService.getMap(summary.id, false, sagaPublicId);
+            const seed = typeof vm.generatorMeta.seed === 'string' ? vm.generatorMeta.seed : null;
+            if (seed) mapsBySeed.set(seed, vm);
+          }
+
+          for (const childSpec of DORNHAIN_GOLDEN_MAPS) {
+            const parentSeed = childSpec.parentMapSeedKey ?? DORNHAIN_WORLD_MAP_SEED;
+            const parentVm = mapsBySeed.get(parentSeed);
+            if (!parentVm) {
+              throw new Error(`Golden-Elternkarte fehlt: ${parentSeed}`);
+            }
+            const generatorMeta = buildDornhainGoldenChildGeneratorMeta(childSpec, parentVm.id);
+            const prev = mapsBySeed.get(childSpec.seedKey) ?? null;
+            const saved = await worldAtlasService.upsertMap({
+              worldProfileId: map.worldProfileId,
+              mapId: prev?.id ?? null,
+              parentMapId: parentVm.id,
+              kind: childSpec.kind,
+              title: childSpec.title,
+              sortOrder: prev?.sortOrder ?? 0,
+              bounds: prev?.bounds ?? parentVm.bounds,
+              layers: prev?.layers ?? { type: 'FeatureCollection', features: [] },
+              basemapStoragePath: prev?.basemapStoragePath ?? null,
+              azgaarMapStoragePath: prev?.azgaarMapStoragePath ?? null,
+              generatorMeta: prev
+                ? { ...prev.generatorMeta, ...generatorMeta }
+                : generatorMeta,
+              expectedRevision: prev?.revision ?? null,
+            });
+            mapsBySeed.set(childSpec.seedKey, saved);
+          }
+
+          if (map.id === nextRoot.id) {
+            setMap(nextRoot);
+            setCanvasDoc(
+              extractUnifiedCanvasFromGeneratorMeta(nextRoot.generatorMeta) ?? worldDoc,
+            );
+            setWebglRuntime(extractWebglRuntimeFromGeneratorMeta(nextRoot.generatorMeta));
+            setDungeonMeta(extractDungeonMetaFromGeneratorMeta(nextRoot.generatorMeta));
+          } else {
+            await reloadActiveMap();
+          }
           setDirtyCanvas(false);
           setDirtyLayers(null);
+          bumpContentEpoch();
         }
 
         if (plan.restoreGoldenPlaces) {
@@ -514,6 +690,17 @@ export function useWorldAtlasEditor({
               .filter((p) => typeof p.seedKey === 'string' && p.seedKey.length > 0)
               .map((p) => [p.seedKey as string, p]),
           );
+          const listedAfter = await worldAtlasService.listMaps(map.worldProfileId, {
+            playerView: false,
+            sagaPublicId,
+          });
+          const mapsBySeed = new Map<string, string>();
+          mapsBySeed.set(DORNHAIN_WORLD_MAP_SEED, worldRootId);
+          for (const summary of listedAfter) {
+            const vm = await worldAtlasService.getMap(summary.id, false, sagaPublicId);
+            const seed = typeof vm.generatorMeta.seed === 'string' ? vm.generatorMeta.seed : null;
+            if (seed) mapsBySeed.set(seed, vm.id);
+          }
           for (const spec of DORNHAIN_GOLDEN_PLACES) {
             const parentId = spec.parentSeedKey
               ? (bySeed.get(spec.parentSeedKey)?.id ?? null)
@@ -531,14 +718,29 @@ export function useWorldAtlasEditor({
               sortOrder: spec.sortOrder,
             });
             bySeed.set(spec.seedKey, saved);
-            if (spec.anchor) {
+            const mapSpec = DORNHAIN_GOLDEN_MAPS.find((m) => m.placeSeedKey === spec.seedKey);
+            const childMapId = mapSpec ? mapsBySeed.get(mapSpec.seedKey) : null;
+            if (childMapId) {
               await worldPlaceService.linkMap({
                 worldProfileId: map.worldProfileId,
                 placeId: saved.id,
-                mapId: map.id,
+                mapId: childMapId,
+                usage: 'primary',
+                featureId: saved.id,
+                anchor: {},
+              });
+            }
+            if (spec.anchor) {
+              const parentMapId = mapSpec?.parentMapSeedKey
+                ? (mapsBySeed.get(mapSpec.parentMapSeedKey) ?? worldRootId)
+                : worldRootId;
+              await worldPlaceService.linkMap({
+                worldProfileId: map.worldProfileId,
+                placeId: saved.id,
+                mapId: parentMapId,
                 usage: 'overview',
                 featureId: saved.id,
-                anchor: { x: spec.anchor.x, y: spec.anchor.y, source: 'dornhain.unified.v4' },
+                anchor: { x: spec.anchor.x, y: spec.anchor.y, source: DORNHAIN_WORLD_MAP_SEED },
               });
             }
           }
@@ -557,7 +759,16 @@ export function useWorldAtlasEditor({
         setSaving(false);
       }
     },
-    [map, canEdit, sagaPublicId, reloadList, bumpPersist],
+    [
+      map,
+      canEdit,
+      sagaPublicId,
+      summaries,
+      reloadList,
+      reloadActiveMap,
+      bumpPersist,
+      bumpContentEpoch,
+    ],
   );
 
   return {
@@ -581,10 +792,12 @@ export function useWorldAtlasEditor({
     saveCanvas,
     saveLayers,
     createChildMap,
+    locateChildOnParent,
     importAzgaarMap,
     reloadActiveMap,
     breadcrumb,
     reloadList,
     resetToGolden,
+    contentEpoch,
   };
 }

@@ -32,6 +32,7 @@ export {
   extractUnifiedCanvasFromGeneratorMeta,
   mergeUnifiedCanvasIntoGeneratorMeta,
   parseUnifiedCanvasDoc,
+  roomFromPolygon,
   serializeUnifiedCanvasDoc,
   unifiedCanvasDocByteLength,
   type UnifiedCanvasDoc,
@@ -44,6 +45,16 @@ export {
   type UnifiedCanvasTool,
   type UnifiedCanvasWall,
 } from './unified-canvas-doc';
+
+export {
+  bboxFromPoints,
+  pointInPolygon,
+  sanitizePolygonPoints,
+  translatePolygon,
+  triangulatePolygon,
+  type CanvasBBox,
+  type CanvasPoint,
+} from './canvas-polygon';
 
 export {
   applyMapEdit,
@@ -98,6 +109,19 @@ export {
 } from './dornhain-golden-reset';
 
 export {
+  DORNHAIN_GOLDEN_MAPS,
+  DORNHAIN_WORLD_MAP_SEED,
+  buildDornhainGoldenChildGeneratorMeta,
+  buildGoldenContinentCanvas,
+  buildGoldenCountryCanvas,
+  buildGoldenCryptCanvas,
+  buildGoldenDornhainCanvas,
+  buildGoldenTavernCanvas,
+  isDornhainGoldenMapSeed,
+  type DornhainGoldenMapSpec,
+} from './dornhain-golden-hierarchy';
+
+export {
   ATLAS_PROTOTYPE_HOTSPOTS,
   ATLAS_PROTOTYPE_LAYER_LABELS,
   ATLAS_PROTOTYPE_LEVELS,
@@ -148,6 +172,7 @@ export {
 
 export {
   ATLAS_FEATURE_OWNERS,
+  LOCATE_INVALID_RECT_DE,
   MAP_FRAME_META_KEY,
   MAP_STATUS_META_KEY,
   UNLOCATED_MAP_HINT_DE,
@@ -158,7 +183,9 @@ export {
   extractMapFrameFromGeneratorMeta,
   independentPrimaryBounds,
   isGroundedLinkAnchor,
+  locateChildMapFrame,
   mergeMapFrameIntoGeneratorMeta,
+  parentAnchorFromParentRect,
   parseMapSketchStatus,
   parseParentSpatialAnchor,
   unlocatedChildMapGeneratorMeta,
@@ -167,6 +194,20 @@ export {
   type MapSketchStatus,
   type ParentSpatialAnchor,
 } from './map-frame';
+
+export {
+  ATLAS_MAP_PIN_FOCUS_SPAN,
+  ATLAS_MAP_PIN_LIMIT,
+  atlasMapOwnerPlace,
+  atlasMapPinFocusSpan,
+  atlasMapPinVisible,
+  atlasMapScaleForKind,
+  atlasProductBrushWidth,
+  atlasProductStampSize,
+  buildAtlasMapPins,
+  type AtlasMapPin,
+  type AtlasMapScale,
+} from './atlas-map-pins';
 
 export {
   atlasPersistStatusLabelDe,

@@ -4,8 +4,8 @@
   "localId": "MIG-002",
   "result": "PASS",
   "githubClosed": true,
-  "mergeRef": "PR #860 → main (after #782)",
-  "note": "Inventories refreshed after CUT-21 archive relocation (supabase → archive/supabase-legacy).",
+  "mergeRef": "PR #860 \u2192 main (after #782)",
+  "note": "Inventories refreshed after CUT-21 archive relocation (supabase \u2192 archive/supabase-legacy).",
   "checks": [
     {
       "command": "legacy inventory matrix",
@@ -23,7 +23,7 @@
       "command": "edge/infra inventory 25+13",
       "result": "PASS",
       "evidenceFile": ".qa/intake/edge-infra-contracts/inventory.json",
-      "sha256": "afdb8f092f6310f2da80f3fb80ce11f5191a2460a44d1a2e3b7e5d4ee3f5898d"
+      "sha256": "282c5972c04a6b1d239f66095d540186aad2cbcca74b8c7331cbe6d136484452"
     }
   ],
   "testedCommit": "cec6b3c0ab4218cd51c6f75ad77c0e6660183116"

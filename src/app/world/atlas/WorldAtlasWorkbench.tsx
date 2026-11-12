@@ -45,7 +45,10 @@ import {
 } from '../../../domains/world/hierarchy';
 import {
   UNLOCATED_MAP_HINT_DE,
+  atlasMapOwnerPlace,
+  atlasMapScaleForKind,
   atlasPersistStatusLabelDe,
+  buildAtlasMapPins,
   extractMapFrameFromGeneratorMeta,
   isDornhainGoldenRootMap,
   type DornhainGoldenResetMode,
@@ -121,6 +124,7 @@ export function WorldAtlasWorkbench({
   const [placeNavError, setPlaceNavError] = useState<string | undefined>(undefined);
   const [placeNavTick, setPlaceNavTick] = useState(0);
   const [activePlaceId, setActivePlaceId] = useState<string | null>(null);
+  const [atlasSurfaceMode, setAtlasSurfaceMode] = useState<'3d' | '2d'>('3d');
   const [webglCreateRequest, setWebglCreateRequest] = useState<WebglNavCreateRequest | null>(
     null,
   );
@@ -129,6 +133,13 @@ export function WorldAtlasWorkbench({
   const [webglActionError, setWebglActionError] = useState<string | null>(null);
   const [goldenResetOpen, setGoldenResetOpen] = useState(false);
   const [goldenResetNote, setGoldenResetNote] = useState<string | null>(null);
+  /** Parent-map locate session for an unlocated child primary map (Steps 3+4). */
+  const [locateSession, setLocateSession] = useState<{
+    readonly childMapId: string;
+    readonly childPlaceId: string | null;
+    readonly childTitle: string;
+    readonly returnMapId: string;
+  } | null>(null);
 
   const runGoldenReset = useCallback(
     async (mode: DornhainGoldenResetMode) => {
@@ -237,6 +248,25 @@ export function WorldAtlasWorkbench({
   useEffect(() => {
     void reloadPlaceNav();
   }, [reloadPlaceNav, placeNavTick, editor.map?.id]);
+
+  /** Place owning the active map via a primary link — null on the world root map. */
+  const activeMapOwner = useMemo(
+    () => atlasMapOwnerPlace(editor.activeMapId, worldPlaces, worldLinks),
+    [editor.activeMapId, worldPlaces, worldLinks],
+  );
+  /** Rendering scale follows the map itself, never the tree selection. */
+  const activeMapScale = atlasMapScaleForKind(
+    activeMapOwner ? tryNodeKindFromPlaceKind(activeMapOwner.kind) : null,
+  );
+  /** Tool palette follows the selected node, else the map owner (world root → null). */
+  const activeNodeKind = useMemo(() => {
+    const selected = activePlaceId ? worldPlaces.find((p) => p.id === activePlaceId) : null;
+    return tryNodeKindFromPlaceKind(selected?.kind ?? activeMapOwner?.kind ?? '');
+  }, [activePlaceId, worldPlaces, activeMapOwner]);
+  const activeMapPins = useMemo(
+    () => buildAtlasMapPins({ mapId: editor.activeMapId, places: worldPlaces, links: worldLinks }),
+    [editor.activeMapId, worldPlaces, worldLinks],
+  );
 
   // Keep WebGL nav highlight in sync with the active primary map.
   useEffect(() => {
@@ -375,6 +405,73 @@ export function WorldAtlasWorkbench({
       )}
     </ul>
   );
+
+  // 3D floats these over the canvas; the Draufsicht shows them in its surface bar (left rail).
+  const showProtoSave =
+    editingAllowed &&
+    Boolean(editor.map) &&
+    editor.dirtyCanvas &&
+    editor.persistStatus !== 'conflict';
+  const protoActions =
+    showUnified &&
+    protoExact &&
+    !atlasBooting &&
+    !onBack &&
+    (showPlayerPreviewToggle || (editingAllowed && goldenRootEligible) || showProtoSave) ? (
+      <>
+        {showPlayerPreviewToggle ? (
+          <Button
+            type="button"
+            variant="outline"
+            className="pointer-events-auto min-h-11 shadow-lg"
+            data-atlas-view-toggle
+            aria-pressed={gmPlayerPreview}
+            onClick={() => setGmPlayerPreview((v) => !v)}
+          >
+            {gmPlayerPreview ? (
+              <EyeSlash className="size-4" aria-hidden />
+            ) : (
+              <Eye className="size-4" aria-hidden />
+            )}
+            {gmPlayerPreview ? 'Spieleransicht' : 'Vollansicht'}
+          </Button>
+        ) : null}
+        {editingAllowed && goldenRootEligible ? (
+          <Button
+            type="button"
+            variant="outline"
+            className="pointer-events-auto min-h-11 shadow-lg"
+            data-atlas-golden-reset-open
+            disabled={editor.saving || !editor.map}
+            onClick={() => {
+              setGoldenResetNote(null);
+              setGoldenResetOpen(true);
+            }}
+          >
+            <ArrowCounterClockwise className="size-4" aria-hidden />
+            Golden
+          </Button>
+        ) : null}
+        {showProtoSave ? (
+          <Button
+            type="button"
+            className="pointer-events-auto min-h-11 shadow-lg"
+            data-atlas-explicit-save
+            disabled={editor.saving}
+            onClick={() => {
+              void editor.saveCanvas();
+            }}
+          >
+            {editor.saving ? (
+              <CircleNotch className="size-4 animate-spin" aria-hidden />
+            ) : (
+              <FloppyDisk className="size-4" aria-hidden />
+            )}
+            Speichern
+          </Button>
+        ) : null}
+      </>
+    ) : null;
 
   const metaPanel = (
     <div className="space-y-4">
@@ -622,65 +719,9 @@ export function WorldAtlasWorkbench({
         </header>
       ) : null}
 
-      {(showPlayerPreviewToggle || (editingAllowed && goldenRootEligible)) &&
-      showUnified &&
-      protoExact &&
-      !atlasBooting &&
-      !onBack ? (
+      {protoActions && atlasSurfaceMode === '3d' ? (
         <div className="pointer-events-none absolute bottom-4 left-4 z-[4] flex max-w-[min(100%-2rem,28rem)] flex-wrap gap-2">
-          {showPlayerPreviewToggle ? (
-            <Button
-              type="button"
-              variant="outline"
-              className="pointer-events-auto min-h-11 shadow-lg"
-              data-atlas-view-toggle
-              aria-pressed={gmPlayerPreview}
-              onClick={() => setGmPlayerPreview((v) => !v)}
-            >
-              {gmPlayerPreview ? (
-                <EyeSlash className="size-4" aria-hidden />
-              ) : (
-                <Eye className="size-4" aria-hidden />
-              )}
-              {gmPlayerPreview ? 'Spieleransicht' : 'Vollansicht'}
-            </Button>
-          ) : null}
-          {editingAllowed && goldenRootEligible ? (
-            <Button
-              type="button"
-              variant="outline"
-              className="pointer-events-auto min-h-11 shadow-lg"
-              data-atlas-golden-reset-open
-              disabled={editor.saving || !editor.map}
-              onClick={() => {
-                setGoldenResetNote(null);
-                setGoldenResetOpen(true);
-              }}
-            >
-              <ArrowCounterClockwise className="size-4" aria-hidden />
-              Golden
-            </Button>
-          ) : null}
-          {editor.map &&
-          editor.dirtyCanvas &&
-          editor.persistStatus !== 'conflict' ? (
-            <Button
-              type="button"
-              className="pointer-events-auto min-h-11 shadow-lg"
-              data-atlas-explicit-save
-              disabled={editor.saving}
-              onClick={() => {
-                void editor.saveCanvas();
-              }}
-            >
-              {editor.saving ? (
-                <CircleNotch className="size-4 animate-spin" aria-hidden />
-              ) : (
-                <FloppyDisk className="size-4" aria-hidden />
-              )}
-              Speichern
-            </Button>
-          ) : null}
+          {protoActions}
         </div>
       ) : null}
 
@@ -731,14 +772,41 @@ export function WorldAtlasWorkbench({
         </div>
       ) : null}
 
-      {mapUnlocated && showUnified && !atlasBooting ? (
+      {mapUnlocated && showUnified && !atlasBooting && !locateSession ? (
         <div
-          className="rounded-lg border border-border bg-muted/40 px-3 py-2 text-sm text-muted-foreground"
+          className="flex flex-wrap items-center gap-2 rounded-lg border border-border bg-muted/40 px-3 py-2 text-sm text-muted-foreground"
           data-atlas-unlocated-hint
           role="status"
         >
-          {UNLOCATED_MAP_HINT_DE}
-          {editingAllowed ? ' — Verorte den Ausschnitt auf der Elternkarte, bevor Zoom dorthin wechselt.' : null}
+          <span className="min-w-0 flex-1">
+            {UNLOCATED_MAP_HINT_DE}
+            {editingAllowed
+              ? ' — Verorte den Ausschnitt auf der Elternkarte, bevor Zoom dorthin wechselt.'
+              : null}
+          </span>
+          {editingAllowed && editor.map?.parentMapId ? (
+            <Button
+              type="button"
+              variant="outline"
+              className="min-h-11"
+              data-atlas-locate-start
+              disabled={editor.saving}
+              onClick={() => {
+                const child = editor.map;
+                if (!child?.parentMapId) return;
+                setLocateSession({
+                  childMapId: child.id,
+                  childPlaceId: activeMapOwner?.id ?? null,
+                  childTitle: child.title.trim() || 'Detailkarte',
+                  returnMapId: child.id,
+                });
+                setAtlasSurfaceMode('2d');
+                editor.setActiveMapId(child.parentMapId);
+              }}
+            >
+              Ausschnitt verorten
+            </Button>
+          ) : null}
         </div>
       ) : null}
 
@@ -841,8 +909,8 @@ export function WorldAtlasWorkbench({
             </div>
           ) : showUnified && editor.map ? (
             <UnifiedAtlasEditor
-              key={`${editor.map.id}:${editor.map.revision}`}
-              mapKey={`${editor.map.id}:${editor.map.revision}`}
+              key={`${editor.map.id}:${editor.contentEpoch}`}
+              mapKey={`${editor.map.id}:${editor.contentEpoch}`}
               doc={editor.canvasDoc}
               canEdit={editingAllowed}
               onDocChange={editor.updateCanvasDoc}
@@ -850,6 +918,41 @@ export function WorldAtlasWorkbench({
               onWebglRuntimeChange={editor.updateWebglRuntime}
               dungeonMeta={editor.dungeonMeta}
               onDungeonMetaChange={editor.updateDungeonMeta}
+              locateSession={
+                locateSession
+                  ? { childTitle: locateSession.childTitle }
+                  : null
+              }
+              onLocateCancel={
+                locateSession
+                  ? () => {
+                      const ret = locateSession.returnMapId;
+                      setLocateSession(null);
+                      editor.setActiveMapId(ret);
+                    }
+                  : undefined
+              }
+              onLocateCommit={
+                locateSession
+                  ? (rect) => {
+                      const session = locateSession;
+                      void (async () => {
+                        const result = await editor.locateChildOnParent({
+                          childMapId: session.childMapId,
+                          childPlaceId: session.childPlaceId,
+                          minX: rect.minX,
+                          minY: rect.minY,
+                          maxX: rect.maxX,
+                          maxY: rect.maxY,
+                        });
+                        if (!result.ok) return;
+                        setLocateSession(null);
+                        setPlaceNavTick((t) => t + 1);
+                        editor.setActiveMapId(session.returnMapId);
+                      })();
+                    }
+                  : undefined
+              }
               placeNav={placeNav}
               webglNavTree={protoExact ? webglNavTree : null}
               activePlaceId={activePlaceId}
@@ -950,13 +1053,12 @@ export function WorldAtlasWorkbench({
                     }
                   : undefined
               }
-              activeNodeKind={
-                tryNodeKindFromPlaceKind(
-                  placeNav.find((p) => p.mapId === editor.activeMapId)?.kind ??
-                    worldPlaces.find((p) => p.id === activePlaceId)?.kind ??
-                    '',
-                )
-              }
+              activeNodeKind={activeNodeKind}
+              mapScale={activeMapScale}
+              mapPins={activeMapPins}
+              surfaceMode={atlasSurfaceMode}
+              onSurfaceModeChange={setAtlasSurfaceMode}
+              surfaceActions={atlasSurfaceMode === '2d' ? protoActions : null}
               canvasLeftRail={
                   <div
                     className="absolute left-3 top-3 z-[2] flex max-h-[min(75%,32rem)] flex-col gap-1 overflow-hidden rounded-lg border border-border bg-card/95 p-1 shadow"
