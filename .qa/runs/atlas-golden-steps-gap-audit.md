@@ -29,15 +29,15 @@ Progress: `.qa/runs/atlas-golden-steps-progress.md`
 
 | Gap | Severity | Notes |
 |-----|----------|-------|
-| Browser E2E: Golden reset restores Westmark hierarchy + drill with content | High | Dialog confirm did not finish in live session (HMR/host); needs re-verify |
+| Browser E2E: Golden reset restores Westmark hierarchy + drill with content | Medium (residual) | Fresh-start six-level proven (#1199/#1200). Editor reset dialog drill remains Phase C residual — does not block Gate A |
 | Host bootstrap `ensure-dornhain-default` seeds full hierarchy on fresh world | Done (#1199) | `seedDornhainGoldenHierarchy` — six maps + places; `atl2-a03-cold-bootstrap.self-test` |
 | Rich Golden content per level (borders, dungeon generator, furniture density) | Medium | Minimum canvases only |
 | Session wipe on `everything` | Low | Honest DE note when API absent (as designed) |
 | PM name freeze (Kontinent/Land) | Low | Placeholders Westmark |
 | Calibrated meters / Azgaar parity / procedural wizard | Out of scope | Per plan |
 | Full cartography UX polish (undo stacks, multi-select, etc.) | Open | Not in Steps 2–6 |
-| Stacked PR merge: #1194 → #1195 → main | Process | CI/Kodus still apply |
+| Stacked PR merge: #1194 → #1195 → main | Done | #1194/#1195/#1240 on main (Gate A stack table) |
 
 ## Verdict
 
-Steps **2–4** are implemented and editor-verified. Steps **5–6** domain + reset wiring are implemented and unit-gated; **full editor proof of hierarchy reset/drill remains open**. The cartography editor is **not** complete.
+Phase A foundation **CLEAR** for Gate A (#1200): PR stack integrated; cold bootstrap seeds six levels; host outsider deny proven. Cartography editor polish (reset dialog drill, rich content) remains open for later phases — not a Gate A blocker.

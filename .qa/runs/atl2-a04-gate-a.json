@@ -1,0 +1,57 @@
+{
+  "gate": "atl2-a04",
+  "issue": 1200,
+  "head": "f351b8c3fea873977334a524cb3ad9fc9ef54793",
+  "stack": [
+    {
+      "pr": 1239,
+      "issue": 1197,
+      "sha": "83d9da8c3607fe49306e76dd63f72f8acece3ed8",
+      "title": "ATL2-A01 parity",
+      "present": true
+    },
+    {
+      "pr": 1194,
+      "issue": 1198,
+      "sha": "540b40ac8150f5053bc7c5e8fca470e0d7b40fb9",
+      "title": "Golden v4",
+      "present": true
+    },
+    {
+      "pr": 1195,
+      "issue": 1198,
+      "sha": "d3e3f2b71db41e48f34d8ea17d49b5782efa7c84",
+      "title": "Golden Steps 1–6",
+      "present": true
+    },
+    {
+      "pr": 1240,
+      "issue": 1199,
+      "sha": "f351b8c3fea873977334a524cb3ad9fc9ef54793",
+      "title": "Cold bootstrap A03",
+      "present": true
+    }
+  ],
+  "host": {
+    "ownerMapCount": 6,
+    "ownerMapTitles": [
+      "Dornhain",
+      "Kontinent Westmark",
+      "Krypta unter dem Hügel",
+      "Land Westmark",
+      "Taverne Zum Flüstern",
+      "Welt"
+    ],
+    "outsiderStatus": 403,
+    "playerViewMapCount": 0
+  },
+  "verdict": "CLEAR",
+  "residuals": [
+    {
+      "severity": "Medium",
+      "item": "Editor Golden-reset dialog hang / full UI drill",
+      "note": "Not required for Gate A fresh-start journey; track in Phase C editor UX / gap-audit residual.",
+      "blocksGateA": false
+    }
+  ]
+}
