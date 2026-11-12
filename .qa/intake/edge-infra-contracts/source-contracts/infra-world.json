@@ -191,7 +191,7 @@
     },
     {
       "path": "src/domains/world/atlas/atlas-map-doc-adapter.ts",
-      "sha256": "0295d326782c810da564411ef72accb5c343b01ae1845134ea74bc1d36e88702"
+      "sha256": "d85a2ed7b2e6cd9650c4d87664fb09e7b4621779f2a820ed65c421e353caf04a"
     },
     {
       "path": "src/domains/world/atlas/atlas-map-pins.ts",
@@ -243,7 +243,7 @@
     },
     {
       "path": "src/domains/world/atlas/unified-canvas-doc.ts",
-      "sha256": "2084b179633089aceaa47eb485ffeaad49ca73a59be11d83f702ea4b3139e4df"
+      "sha256": "0f3d126d42d2bd3f698109a60f714495a4e0c1aa803be4875bfad50c8c207e7a"
     },
     {
       "path": "src/domains/world/atlas/validate-world-atlas.ts",

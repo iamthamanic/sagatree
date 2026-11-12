@@ -236,8 +236,9 @@ export function mergeAtlasMapDocV2IntoGeneratorMeta(
   if (options?.writeBackup !== false) {
     const prior = extractUnifiedCanvasFromGeneratorMeta(existing);
     if (prior) {
+      // Keep prior scale/hints from stored sidecar — do not overwrite with the
+      // incoming doc.scale (backup must reflect the previous revision).
       const priorV2 = adaptGeneratorMetaToV2(existing, {
-        scale: doc.scale,
         preferStoredHints: true,
       });
       const backup: AtlasMapDocBackup = {

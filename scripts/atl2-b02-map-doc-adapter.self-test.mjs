@@ -91,6 +91,54 @@ const restored = adapter.restoreAtlasMapDocBackup(merged);
 assert.equal(restored.ok, true);
 assert.equal(adapter.unifiedCanvasRoundtripEqual(golden, restored.doc.canvas), true);
 
+// P1: polygon room secret survives parse/adapt.
+const secretPoly = {
+  format: 'sagatree-unified-atlas-v1',
+  layers: canvasMod.defaultUnifiedCanvasLayers(),
+  strokes: [],
+  objects: [],
+  walls: [],
+  rooms: [
+    {
+      id: 'secret.poly',
+      material: 'stein',
+      x: 0,
+      y: 0,
+      w: 10,
+      h: 10,
+      points: [
+        [0, 0],
+        [10, 0],
+        [10, 10],
+        [0, 10],
+      ],
+      secret: true,
+    },
+  ],
+  demoSeed: false,
+};
+const secretParsed = canvasMod.parseUnifiedCanvasDoc(secretPoly);
+assert.equal(secretParsed?.rooms[0]?.secret, true, 'polygon secret parse');
+const secretAdapt = adapter.adaptGeneratorMetaToV2({
+  unifiedCanvas: secretParsed,
+});
+assert.equal(secretAdapt.ok, true);
+assert.equal(secretAdapt.doc.canvas.rooms[0].secret, true, 'polygon secret adapt');
+
+// P2: backup retains prior scale when new save uses a different scale.
+const priorWorld = adapter.buildAtlasMapDocV2(golden, { scale: 'world', strokeHints: hints });
+const metaWorld = adapter.mergeAtlasMapDocV2IntoGeneratorMeta(
+  { unifiedCanvas: canvasMod.serializeUnifiedCanvasDoc(golden) },
+  priorWorld,
+  { writeBackup: false, nowIso: '2026-11-12T00:00:00.000Z' },
+);
+const nextInterior = adapter.buildAtlasMapDocV2(golden, { scale: 'interior', strokeHints: hints });
+const metaAfter = adapter.mergeAtlasMapDocV2IntoGeneratorMeta(metaWorld, nextInterior, {
+  writeBackup: true,
+  nowIso: '2026-11-12T00:01:00.000Z',
+});
+assert.equal(metaAfter.atlasMapDocBackup.atlasMapDocV2.scale, 'world', 'backup keeps prior scale');
+
 // Ambiguous: unhinted golden must not invent paths/terrain.
 const ambiguous = adapter.buildAtlasMapDocV2(golden, { scale: 'unknown', strokeHints: {} });
 assert.ok(ambiguous.classification.counts.legacy_stroke_ambiguous >= 1);
