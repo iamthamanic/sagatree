@@ -42,10 +42,20 @@ assert(resetSrc.includes('DORNHAIN_GOLDEN_PLACES'), 'golden places');
 
 const hostPath = path.join(root, 'server/src/bootstrap/ensure-dornhain-default.ts');
 const hostSrc = fs.readFileSync(hostPath, 'utf8');
-assert(hostSrc.includes("dornhain.unified.v4"), 'host seeds v4');
+const hierarchySeedPath = path.join(
+  root,
+  'server/src/bootstrap/dornhain-golden-hierarchy-seed.ts',
+);
+const hierarchySeedSrc = fs.readFileSync(hierarchySeedPath, 'utf8');
+assert(
+  hostSrc.includes('DORHAIN_UNIFIED_SEED') || hierarchySeedSrc.includes('dornhain.unified.v4'),
+  'host seeds v4',
+);
+assert(hierarchySeedSrc.includes('dornhain.unified.v4'), 'hierarchy seed constant v4');
 assert(hostSrc.includes('w.west-core'), 'host has continent');
 assert(hostSrc.includes('isBlankOceanUnifiedCanvas'), 'host blank upgrade');
 assert(hostSrc.includes('secret: true'), 'host crypt secret flag');
+assert(hostSrc.includes('seedDornhainGoldenHierarchy'), 'host cold-bootstraps hierarchy');
 assert(src.includes("secret: true") || src.includes(', true)'), 'FE crypt secret flag');
 
 console.log('dornhain-unified-world-map self-test: PASS');
