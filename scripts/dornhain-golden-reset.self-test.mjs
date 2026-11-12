@@ -106,8 +106,18 @@ const host = fs.readFileSync(
   'utf8',
 );
 assert(host.includes('features.length > 0'), 'blank upgrade preserves authored layers');
-assert(host.includes('UPDATE world_places'), 'v4 bootstrap updates existing place parents');
-assert(host.includes('UPDATE world_place_map_links'), 'v4 bootstrap updates existing link anchors');
+assert(host.includes('seedDornhainGoldenHierarchy'), 'cold bootstrap seeds six-level hierarchy');
+const hierarchySeed = fs.readFileSync(
+  path.join(root, 'server/src/bootstrap/dornhain-golden-hierarchy-seed.ts'),
+  'utf8',
+);
+assert(hierarchySeed.includes('UPDATE world_places'), 'v4 bootstrap updates existing place parents');
+assert(
+  hierarchySeed.includes('UPDATE world_place_map_links'),
+  'v4 bootstrap updates existing link anchors',
+);
+assert(hierarchySeed.includes('continent.westmark'), 'continent place seed');
+assert(hierarchySeed.includes('dornhain.map.loc.crypt'), 'crypt map seed');
 
 const acceptance = fs.readFileSync(
   path.join(root, '.qa/acceptance/dornhain-golden-atlas-v4.md'),

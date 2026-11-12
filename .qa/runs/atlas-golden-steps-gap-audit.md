@@ -30,7 +30,7 @@ Progress: `.qa/runs/atlas-golden-steps-progress.md`
 | Gap | Severity | Notes |
 |-----|----------|-------|
 | Browser E2E: Golden reset restores Westmark hierarchy + drill with content | High | Dialog confirm did not finish in live session (HMR/host); needs re-verify |
-| Host bootstrap `ensure-dornhain-default` seeds full hierarchy on fresh world | Medium | Reset path creates maps; cold bootstrap still world-root + flat places until reset |
+| Host bootstrap `ensure-dornhain-default` seeds full hierarchy on fresh world | Done (#1199) | `seedDornhainGoldenHierarchy` — six maps + places; `atl2-a03-cold-bootstrap.self-test` |
 | Rich Golden content per level (borders, dungeon generator, furniture density) | Medium | Minimum canvases only |
 | Session wipe on `everything` | Low | Honest DE note when API absent (as designed) |
 | PM name freeze (Kontinent/Land) | Low | Placeholders Westmark |
