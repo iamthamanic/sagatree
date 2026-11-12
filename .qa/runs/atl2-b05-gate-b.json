@@ -1,0 +1,55 @@
+{
+  "gate": "atl2-b05",
+  "issue": 1205,
+  "head": "7064fa3043cb17333e0799ae9400edcf1f787859",
+  "stack": [
+    {
+      "pr": 1242,
+      "issue": 1201,
+      "sha": "f5c893cd195aab425b90811344bae94fd3a6c9a7",
+      "title": "ATL2-B01 catalog",
+      "present": true
+    },
+    {
+      "pr": 1243,
+      "issue": 1202,
+      "sha": "e9befeae4b433fbcc5cdf23345f7030601b30f61",
+      "title": "ATL2-B02 adapter",
+      "present": true
+    },
+    {
+      "pr": 1244,
+      "issue": 1203,
+      "sha": "ea214ea9f9edb85365389c9dd65f10ce6c185987",
+      "title": "ATL2-B03 CAS",
+      "present": true
+    },
+    {
+      "pr": 1245,
+      "issue": 1204,
+      "sha": "7064fa3043cb17333e0799ae9400edcf1f787859",
+      "title": "ATL2-B04 write-retire",
+      "present": true
+    }
+  ],
+  "golden": {
+    "objects": 11,
+    "rooms": 19,
+    "walls": 0,
+    "strokes": 4
+  },
+  "host": {
+    "conflict": true,
+    "strangerDeny": true,
+    "soleWritePath": true
+  },
+  "verdict": "CLEAR",
+  "residuals": [
+    {
+      "severity": "Low",
+      "item": "Full browser Undo UX drill",
+      "note": "Domain changeset + CAS proven; interactive undo chrome deferred to Phase C editor tickets.",
+      "blocksGateB": false
+    }
+  ]
+}
