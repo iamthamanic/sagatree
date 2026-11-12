@@ -13,11 +13,13 @@ import {
 } from './canvas-polygon';
 import type {
   UnifiedCanvasDoc,
+  UnifiedCanvasDoor,
   UnifiedCanvasObject,
   UnifiedCanvasRoom,
   UnifiedCanvasStroke,
   UnifiedCanvasWall,
 } from './unified-canvas-doc';
+import { rotateRoomRect, wallPointAt } from './unified-canvas-doc';
 
 export type MapTransform = {
   readonly x: number;
@@ -40,6 +42,10 @@ export type MapEditOperation =
   | { readonly op: 'add_wall'; readonly wall: UnifiedCanvasWall }
   | { readonly op: 'move_wall'; readonly id: string; readonly x1: number; readonly y1: number; readonly x2: number; readonly y2: number }
   | { readonly op: 'remove_wall'; readonly id: string }
+  | { readonly op: 'add_door'; readonly door: UnifiedCanvasDoor }
+  | { readonly op: 'move_door'; readonly id: string; readonly t: number }
+  | { readonly op: 'remove_door'; readonly id: string }
+  | { readonly op: 'rotate_room'; readonly id: string; readonly angleRad: number }
   | { readonly op: 'add_stroke'; readonly stroke: UnifiedCanvasStroke }
   | {
       readonly op: 'append_stroke_point';
@@ -175,7 +181,44 @@ export function applyMapEdit(doc: UnifiedCanvasDoc, edit: MapEditOperation): Uni
       };
     }
     case 'remove_wall':
-      return { ...doc, walls: doc.walls.filter((w) => w.id !== edit.id), demoSeed: false };
+      return {
+        ...doc,
+        walls: doc.walls.filter((w) => w.id !== edit.id),
+        doors: (doc.doors ?? []).filter((d) => d.wallId !== edit.id),
+        demoSeed: false,
+      };
+    case 'add_door': {
+      const wallOk = doc.walls.some((w) => w.id === edit.door.wallId);
+      if (!wallOk) return doc;
+      if (!(edit.door.t >= 0 && edit.door.t <= 1) || !(edit.door.width > 0)) return doc;
+      return {
+        ...doc,
+        doors: [...(doc.doors ?? []), edit.door],
+        demoSeed: false,
+      };
+    }
+    case 'move_door': {
+      if (!(edit.t >= 0 && edit.t <= 1)) return doc;
+      return {
+        ...doc,
+        doors: (doc.doors ?? []).map((d) => (d.id === edit.id ? { ...d, t: edit.t } : d)),
+        demoSeed: false,
+      };
+    }
+    case 'remove_door':
+      return {
+        ...doc,
+        doors: (doc.doors ?? []).filter((d) => d.id !== edit.id),
+        demoSeed: false,
+      };
+    case 'rotate_room': {
+      if (!finite(edit.angleRad)) return doc;
+      return {
+        ...doc,
+        rooms: doc.rooms.map((r) => (r.id === edit.id ? rotateRoomRect(r, edit.angleRad) : r)),
+        demoSeed: false,
+      };
+    }
     case 'add_stroke':
       return { ...doc, strokes: [...doc.strokes, edit.stroke], demoSeed: false };
     case 'append_stroke_point': {
@@ -259,6 +302,8 @@ export function applyMapEdit(doc: UnifiedCanvasDoc, edit: MapEditOperation): Uni
         rooms: [...edit.rooms],
         walls: [...edit.walls],
         objects: edit.objects ? [...edit.objects] : doc.objects,
+        // Wall identity changes → drop dangling doors (ATL2-C02).
+        doors: [],
         demoSeed: false,
       };
     default:
@@ -363,4 +408,101 @@ export function pickRoomVertexAt(
     }
   }
   return best;
+}
+
+/** Hit-test walls by segment distance (ATL2-C02). */
+export function pickWallAt(
+  doc: UnifiedCanvasDoc,
+  x: number,
+  y: number,
+  minRadius = 0,
+): UnifiedCanvasWall | null {
+  for (let i = doc.walls.length - 1; i >= 0; i -= 1) {
+    const w = doc.walls[i];
+    const r = Math.max(w.width * 0.5, minRadius);
+    if (distPointToSegment2(x, y, [w.x1, w.y1], [w.x2, w.y2]) <= r * r) return w;
+  }
+  return null;
+}
+
+/** Parametric t of closest point on wall, clamped to [0,1]. */
+export function wallParamAt(wall: UnifiedCanvasWall, x: number, y: number): number {
+  const abx = wall.x2 - wall.x1;
+  const aby = wall.y2 - wall.y1;
+  const len2 = abx * abx + aby * aby;
+  if (!(len2 > 0)) return 0;
+  const t = ((x - wall.x1) * abx + (y - wall.y1) * aby) / len2;
+  if (t < 0) return 0;
+  if (t > 1) return 1;
+  return t;
+}
+
+export function pickDoorAt(
+  doc: UnifiedCanvasDoc,
+  x: number,
+  y: number,
+  minRadius = 0,
+): UnifiedCanvasDoor | null {
+  const doors = doc.doors ?? [];
+  for (let i = doors.length - 1; i >= 0; i -= 1) {
+    const d = doors[i];
+    const wall = doc.walls.find((w) => w.id === d.wallId);
+    if (!wall) continue;
+    const [px, py] = wallPointAt(wall, d.t);
+    const r = Math.max(d.width * 0.5, minRadius);
+    if ((px - x) ** 2 + (py - y) ** 2 <= r * r) return d;
+  }
+  return null;
+}
+
+/**
+ * Snap a free point to nearby wall endpoints or room corners (ATL2-C02).
+ */
+export function snapStructurePoint(
+  doc: UnifiedCanvasDoc,
+  point: readonly [number, number],
+  threshold: number,
+): readonly [number, number] {
+  if (!(threshold > 0)) return point;
+  const candidates: [number, number][] = [];
+  for (const w of doc.walls) {
+    candidates.push([w.x1, w.y1], [w.x2, w.y2]);
+  }
+  for (const r of doc.rooms) {
+    if (r.points && r.points.length >= 3) {
+      for (const p of r.points) candidates.push([p[0], p[1]]);
+    } else {
+      candidates.push(
+        [r.x, r.y],
+        [r.x + r.w, r.y],
+        [r.x + r.w, r.y + r.h],
+        [r.x, r.y + r.h],
+      );
+    }
+  }
+  let best = point;
+  let bestDist = threshold;
+  for (const c of candidates) {
+    const d = Math.hypot(point[0] - c[0], point[1] - c[1]);
+    if (d <= bestDist) {
+      bestDist = d;
+      best = c;
+    }
+  }
+  return best;
+}
+
+/** Which wall endpoint is near the point: 1, 2, or 0. */
+export function pickWallEndpoint(
+  wall: UnifiedCanvasWall,
+  x: number,
+  y: number,
+  threshold: number,
+): 0 | 1 | 2 {
+  if (!(threshold > 0)) return 0;
+  const d1 = Math.hypot(wall.x1 - x, wall.y1 - y);
+  const d2 = Math.hypot(wall.x2 - x, wall.y2 - y);
+  if (d1 <= threshold && d1 <= d2) return 1;
+  if (d2 <= threshold) return 2;
+  return 0;
 }

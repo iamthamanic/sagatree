@@ -5,7 +5,7 @@
   "result": "PASS",
   "githubClosed": true,
   "mergeRef": "PR #860 \u2192 main (after #782)",
-  "note": "Inventories refreshed after ATL2-C01 Codex P1/P2 pick/delete/area fixes.",
+  "note": "Inventories refreshed after ATL2-C02 room/wall/door footprint ops.",
   "checks": [
     {
       "command": "legacy inventory matrix",
@@ -23,7 +23,7 @@
       "command": "edge/infra inventory 25+13",
       "result": "PASS",
       "evidenceFile": ".qa/intake/edge-infra-contracts/inventory.json",
-      "sha256": "74b6690d9e51804ff50ccb446653ceb6fd37d4b648c4730100e22248ec61ad0c"
+      "sha256": "aa39c633535f142c8ca5a57fe57418fcf527f252600ff3072b185a6c9a01856b"
     }
   ],
   "testedCommit": "48593ac9de454bfab0a9ee8e5d505926e637b1bd"
