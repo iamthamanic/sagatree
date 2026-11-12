@@ -1,7 +1,7 @@
 # ATL2-A04 Gate A — Phase A acceptance
 
 - Issue: #1200
-- HEAD: `f351b8c3fea873977334a524cb3ad9fc9ef54793`
+- HEAD: `d3606661205570d57a949f5996d9534f2ac6f205`
 - Verdict: **CLEAR**
 - Date: 2026-11-12
 
