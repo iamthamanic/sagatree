@@ -1,7 +1,7 @@
 # ATL2-A04 Gate A — Phase A acceptance
 
 - Issue: #1200
-- HEAD: `d3606661205570d57a949f5996d9534f2ac6f205`
+- HEAD: `f751cfb5fa24e78ee93bd8ffbe418b5e0f0c7799`
 - Verdict: **CLEAR**
 - Date: 2026-11-12
 
@@ -19,7 +19,7 @@
 - Owner ensure-starter → Dornhain atlas maps: **6**
 - Titles include Westmark hierarchy + Taverne/Krypta: yes
 - Outsider atlas status: **403** (deny/empty)
-- Owner playerView list status: 200 (count=0)
+- Player-view crypt redaction: **yes**
 
 ## Residuals (non-blocking for Gate A)
 

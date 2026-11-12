@@ -6,7 +6,9 @@
  * Not a product feature — evidence lock for Epic #1196 Gate A.
  */
 import assert from 'node:assert/strict';
+import { randomUUID } from 'node:crypto';
 import { createServer } from 'node:net';
+import { DatabaseSync } from 'node:sqlite';
 import { mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
@@ -202,14 +204,75 @@ try {
   );
   evidence.host.outsiderStatus = denied.res.status;
 
-  // Player view still lists maps for owner but crypt secret redaction remains host-side
-  const playerMaps = await httpJson(
+  const sagaPublicId = ensure.json?.publicId;
+  assert.ok(typeof sagaPublicId === 'string' && sagaPublicId.startsWith('SA-'), 'saga public id');
+
+  const cryptSummary = (maps.json?.maps ?? []).find((m) => m.title === 'Krypta unter dem Hügel');
+  assert.ok(cryptSummary?.id, 'crypt map summary');
+  const cryptGm = await httpJson(hostUrl, `/api/v1/worlds/atlas/maps/${cryptSummary.id}`, {
+    headers: { Origin: hostUrl },
+    cookie: ownerCookie,
+  });
+  assert.equal(cryptGm.res.status, 200, cryptGm.text);
+  const gmCanvas = cryptGm.json?.generatorMeta?.unifiedCanvas ?? cryptGm.json?.map?.generatorMeta?.unifiedCanvas;
+  const gmMeta =
+    cryptGm.json?.generatorMeta ??
+    cryptGm.json?.map?.generatorMeta ??
+    cryptGm.json?.generator_meta ??
+    null;
+  const canvas = gmMeta?.unifiedCanvas ?? gmCanvas;
+  assert.ok(canvas, `crypt GM canvas missing: ${cryptGm.text.slice(0, 300)}`);
+  const gmSecretIds = [
+    ...(canvas.objects ?? []),
+    ...(canvas.rooms ?? []),
+  ]
+    .filter((row) => row && (row.secret === true || row.id === 'g.crypt.relic' || String(row.id || '').includes('crypt')))
+    .map((row) => row.id);
+  assert.ok(gmSecretIds.length >= 1, `GM crypt canvas should include secret/crypt entities, got ${JSON.stringify(canvas.objects)}`);
+
+  // Party-reveal the crypt place so playerView is nonempty, then assert redaction.
+  const places = await httpJson(hostUrl, `/api/v1/worlds/${dornhain.id}/places`, {
+    headers: { Origin: hostUrl },
+    cookie: ownerCookie,
+  });
+  const cryptPlace = (places.json?.places ?? []).find((p) => p.seedKey === 'loc.crypt' || p.name === 'Krypta unter dem Hügel');
+  assert.ok(cryptPlace?.id, 'crypt place');
+  const dbPath = join(dataDir, 'host.sqlite');
+  const db = new DatabaseSync(dbPath);
+  try {
+    db.prepare(
+      `INSERT INTO saga_asset_bindings
+         (id, project_id, asset_kind, asset_id, reveal, label, metadata, world_place_id, updated_at)
+       VALUES (?, ?, 'location', ?, 'party', 'Gate A crypt reveal', '{}', ?, ?)`,
+    ).run(
+      randomUUID(),
+      ensure.json.id,
+      cryptPlace.id,
+      cryptPlace.id,
+      new Date().toISOString(),
+    );
+  } finally {
+    db.close();
+  }
+
+  const cryptPlayer = await httpJson(
     hostUrl,
-    `/api/v1/worlds/${dornhain.id}/atlas/maps?playerView=1`,
+    `/api/v1/worlds/atlas/maps/${cryptSummary.id}?playerView=1&sagaPublicId=${encodeURIComponent(sagaPublicId)}`,
     { headers: { Origin: hostUrl }, cookie: ownerCookie },
   );
-  assert.equal(playerMaps.res.status, 200, playerMaps.text);
-  evidence.host.playerViewMapCount = playerMaps.json?.maps?.length ?? 0;
+  assert.equal(cryptPlayer.res.status, 200, cryptPlayer.text);
+  const playerMeta =
+    cryptPlayer.json?.generatorMeta ??
+    cryptPlayer.json?.map?.generatorMeta ??
+    null;
+  const playerCanvas = playerMeta?.unifiedCanvas;
+  assert.ok(playerCanvas, 'player crypt canvas');
+  const leaked = [...(playerCanvas.objects ?? []), ...(playerCanvas.rooms ?? [])].filter(
+    (row) => row && (row.secret === true || row.id === 's.obj.crypt' || row.id === 's.crypt'),
+  );
+  assert.equal(leaked.length, 0, `player view leaked secrets: ${JSON.stringify(leaked)}`);
+  evidence.host.playerViewRedaction = true;
+  evidence.host.playerViewMapCount = 1;
 
   evidence.verdict = 'CLEAR';
   evidence.residuals = [
@@ -231,7 +294,6 @@ try {
   rmSync(work, { recursive: true, force: true });
 }
 
-const reportPath = join(root, '.qa/runs/atl2-a04-gate-a.md');
 const report = `# ATL2-A04 Gate A — Phase A acceptance
 
 - Issue: #1200
@@ -252,7 +314,7 @@ ${evidence.stack
 - Owner ensure-starter → Dornhain atlas maps: **${evidence.host.ownerMapCount}**
 - Titles include Westmark hierarchy + Taverne/Krypta: yes
 - Outsider atlas status: **${evidence.host.outsiderStatus}** (deny/empty)
-- Owner playerView list status: 200 (count=${evidence.host.playerViewMapCount})
+- Player-view crypt redaction: **${evidence.host.playerViewRedaction ? 'yes' : 'no'}**
 
 ## Residuals (non-blocking for Gate A)
 
@@ -263,11 +325,20 @@ ${evidence.residuals.map((r) => `- **${r.severity}**: ${r.item} — ${r.note}`).
 Phase A foundation is **${evidence.verdict}**. Phase B (#1201+) may open.
 `;
 
+// P2: never rewrite committed evidence from test-gate. Optional explicit write only.
+const writeEvidence = process.env.ATL2_A04_WRITE_EVIDENCE === '1';
+const outDir = writeEvidence ? join(root, '.qa/runs') : mkdtempSync(join(tmpdir(), 'atl2-a04-out-'));
+const reportPath = join(outDir, 'atl2-a04-gate-a.md');
 writeFileSync(reportPath, report);
-writeFileSync(join(root, '.qa/runs/atl2-a04-gate-a.json'), JSON.stringify(evidence, null, 2));
+writeFileSync(join(outDir, 'atl2-a04-gate-a.json'), JSON.stringify(evidence, null, 2));
+
+const committed = readFileSync(join(root, '.qa/runs/atl2-a04-gate-a.md'), 'utf8');
+assert.match(committed, /Verdict: \*\*CLEAR\*\*/);
+assert.match(committed, /#1239/);
+assert.match(committed, /#1240/);
 
 assert.match(readFileSync(join(root, 'scripts/test-gate.mjs'), 'utf8'), /atl2-a04-gate-a\.self-test/);
 assert.match(readFileSync(join(root, '.qa/acceptance/atl2-a04-gate-a.md'), 'utf8'), /ATL2-A04/);
 
 console.log(`atl2-a04-gate-a self-test: PASS (${evidence.verdict})`);
-console.log(`report: ${reportPath}`);
+console.log(`report: ${reportPath}${writeEvidence ? '' : ' (transient)'}`);

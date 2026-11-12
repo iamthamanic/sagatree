@@ -1,7 +1,7 @@
 {
   "gate": "atl2-a04",
   "issue": 1200,
-  "head": "d3606661205570d57a949f5996d9534f2ac6f205",
+  "head": "f751cfb5fa24e78ee93bd8ffbe418b5e0f0c7799",
   "stack": [
     {
       "pr": 1239,
@@ -43,7 +43,8 @@
       "Welt"
     ],
     "outsiderStatus": 403,
-    "playerViewMapCount": 0
+    "playerViewRedaction": true,
+    "playerViewMapCount": 1
   },
   "verdict": "CLEAR",
   "residuals": [
