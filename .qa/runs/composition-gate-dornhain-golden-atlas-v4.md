@@ -2,9 +2,9 @@
 
 - Issue: #1194 / #1198
 - Feature slug: dornhain-golden-atlas-v4
-- HEAD_SHA: 19ebb726353a9eb1d8c24cadcd0f2c283c871566
-- BASE_SHA: e7f7981067c5c1b3a6fd2dd2b96aa15039ef7f48
-- Date: 2026-11-11
+- HEAD_SHA: 6bfafa5f84f09ae5d3d0396be5f61a3597b55c16
+- BASE_SHA: 83d9da8c3607fe49306e76dd63f72f8acece3ed8
+- Date: 2026-11-12
 - Verdict: SKIPPED
 
 ## Skip reason
