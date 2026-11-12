@@ -1,5 +1,8 @@
 # 🔐 Auth Setup - Fixed!
 
+> **HISTORISCH** — Frühes Supabase-/Anonymous-Auth-Notizblatt.  
+> **Aktuell:** Better Auth Cookie-Sessions über den Node-Host (`src/lib/auth-context.tsx`, `src/lib/hostAuthBridge.ts`, `VITE_SAGATREE_HOST_AUTH_URL`). Siehe [`README_SELFHOST.md`](../README_SELFHOST.md).
+
 ## ✅ Was wurde gefixt:
 
 ### Problem
