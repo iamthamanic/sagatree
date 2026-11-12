@@ -519,9 +519,27 @@ export function seedDornhainGoldenHierarchy(
     mapIdsBySeed.set(spec.seedKey, mapId);
   }
 
+  // Reuse existing place rows by seed_key (FE reset may have created UUID ids).
+  const existingPlaces = db
+    .prepare(
+      `SELECT id, seed_key FROM world_places
+       WHERE world_profile_id = ? AND seed_key IS NOT NULL`,
+    )
+    .all(worldId) as Array<{ id: string; seed_key: string }>;
   const placeIdsBySeed = new Map<string, string>();
+  for (const row of existingPlaces) {
+    if (row.seed_key) placeIdsBySeed.set(row.seed_key, row.id);
+  }
+
+  // Primary map id per place seed (filled as we create/link Golden maps).
+  const primaryMapByPlaceSeed = new Map<string, string>();
+  for (const spec of DORHAIN_GOLDEN_MAP_SEEDS) {
+    const mapId = mapIdsBySeed.get(spec.seedKey);
+    if (mapId) primaryMapByPlaceSeed.set(spec.placeSeedKey, mapId);
+  }
+
   for (const place of DORHAIN_GOLDEN_PLACE_SEEDS) {
-    const placeId = scopedId(ownerUserId, place.stableId);
+    const placeId = placeIdsBySeed.get(place.seedKey) ?? scopedId(ownerUserId, place.stableId);
     placeIdsBySeed.set(place.seedKey, placeId);
     const parentId =
       place.parentSeedKey !== null ? (placeIdsBySeed.get(place.parentSeedKey) ?? null) : null;
@@ -547,7 +565,7 @@ export function seedDornhainGoldenHierarchy(
       `UPDATE world_places
        SET parent_place_id = ?, kind = ?, name = ?, description = ?,
            status = 'canonical', sort_order = ?, updated_at = ?
-       WHERE id = ? AND world_profile_id = ? AND seed_key = ?`,
+       WHERE world_profile_id = ? AND seed_key = ?`,
     ).run(
       parentId,
       place.kind,
@@ -555,7 +573,6 @@ export function seedDornhainGoldenHierarchy(
       place.description,
       place.sortOrder,
       now,
-      placeId,
       worldId,
       place.seedKey,
     );
@@ -575,12 +592,21 @@ export function seedDornhainGoldenHierarchy(
          SET map_id = ?, usage = 'primary', feature_id = ?, updated_at = ?
          WHERE id = ? AND world_profile_id = ?`,
       ).run(childMapId, placeId, now, primaryLinkId, worldId);
+      primaryMapByPlaceSeed.set(place.seedKey, childMapId);
     }
 
     if (place.anchor) {
-      const overviewMapId = mapSpec?.parentMapSeedKey
-        ? (mapIdsBySeed.get(mapSpec.parentMapSeedKey) ?? worldRootMapId)
-        : worldRootMapId;
+      // Places with their own Golden map: overview on parent map.
+      // Mapless children (Marktplatz / Whisper Road): overview on parent place's primary map.
+      let overviewMapId: string = worldRootMapId;
+      if (mapSpec?.parentMapSeedKey) {
+        overviewMapId = mapIdsBySeed.get(mapSpec.parentMapSeedKey) ?? worldRootMapId;
+      } else if (mapSpec && !mapSpec.parentMapSeedKey) {
+        overviewMapId = worldRootMapId;
+      } else if (place.parentSeedKey) {
+        overviewMapId =
+          primaryMapByPlaceSeed.get(place.parentSeedKey) ?? worldRootMapId;
+      }
       const overviewLinkId = scopedId(ownerUserId, `${place.stableId}-link`);
       const anchor = {
         x: place.anchor.x,

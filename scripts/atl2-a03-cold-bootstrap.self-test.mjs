@@ -169,6 +169,36 @@ try {
     assert.ok(afterSecond.bySeed.has(seed), `still has ${seed}`);
   }
 
+  // P1 regression: existing UUID place for Golden seed must be reused (no FK blow-up)
+  const uuidPlaceId = randomUUID();
+  db.prepare(`DELETE FROM world_place_map_links WHERE world_profile_id = ?`).run(first.worldId);
+  db.prepare(`DELETE FROM world_places WHERE world_profile_id = ?`).run(first.worldId);
+  db.prepare(
+    `INSERT INTO world_places (
+       id, world_profile_id, parent_place_id, kind, name, description,
+       status, seed_key, sort_order, revision, created_at, updated_at
+     ) VALUES (?, ?, NULL, 'continent', 'Kontinent Westmark', 'x', 'canonical',
+               'continent.westmark', 0, 0, ?, ?)`,
+  ).run(uuidPlaceId, first.worldId, new Date().toISOString(), new Date().toISOString());
+  ensureDornhainDefaultCatalog(db, owner);
+  const reused = db
+    .prepare(
+      `SELECT id FROM world_places WHERE world_profile_id = ? AND seed_key = 'continent.westmark'`,
+    )
+    .get(first.worldId);
+  assert.equal(reused.id, uuidPlaceId, 'reuse existing UUID Golden place id');
+
+  // P2: mapless child overview anchors land on Dornhain settlement map, not only Welt
+  const dornhainMapId = mapsBySeed(first.worldId).bySeed.get('dornhain.map.place.dornhain').id;
+  const marktOverview = db
+    .prepare(
+      `SELECT l.map_id AS map_id FROM world_place_map_links l
+       JOIN world_places p ON p.id = l.place_id
+       WHERE p.world_profile_id = ? AND p.seed_key = 'dornhain.marktplatz' AND l.usage = 'overview'`,
+    )
+    .get(first.worldId);
+  assert.equal(marktOverview.map_id, dornhainMapId, 'marktplatz overview on Dornhain map');
+
   // Source contracts
   const ensureSrc = readFileSync(
     join(root, 'server/src/bootstrap/ensure-dornhain-default.ts'),

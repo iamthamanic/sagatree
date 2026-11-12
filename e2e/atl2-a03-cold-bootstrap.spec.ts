@@ -55,7 +55,7 @@ test.describe('ATL2-A03 cold bootstrap', () => {
     });
     expect(worlds.ok(), await worlds.text()).toBeTruthy();
     const body = (await worlds.json()) as {
-      worlds?: Array<{ id: string; public_id?: string; title?: string }>;
+      worlds?: Array<{ id: string; publicId?: string; public_id?: string; title?: string }>;
     };
     const dornhain = (body.worlds ?? []).find((w) => w.title === 'Dornhain');
     expect(dornhain?.id, JSON.stringify(body)).toBeTruthy();
@@ -79,8 +79,8 @@ test.describe('ATL2-A03 cold bootstrap', () => {
       ]),
     );
 
-    const publicId = dornhain!.public_id;
-    test.skip(!publicId, 'world public_id required for /library/worlds/:id/map');
+    const publicId = dornhain!.publicId ?? dornhain!.public_id;
+    test.skip(!publicId, 'world publicId required for /library/worlds/:id/map');
 
     await page.goto(`/library/worlds/${publicId}/map`);
     await expect(page.locator('[data-world-atlas-workbench]')).toBeVisible({ timeout: 45_000 });
