@@ -405,7 +405,7 @@ export function UnifiedAtlasEditor({
     legacySeedRef.current = webglRuntime ? null : readLegacyWebglLocalStorage();
   }
 
-  /** 2D doc mutations also refresh webglRuntime so 3D remount / save stay ghost-free (#749). */
+  /** 2D doc mutations refresh in-memory webglRuntime for 3D remount (#749); persist strips sidecar geometry (ATL2-B04). */
   const onDocChange = useCallback(
     (next: UnifiedCanvasDoc) => {
       onDocChangeProp(next);

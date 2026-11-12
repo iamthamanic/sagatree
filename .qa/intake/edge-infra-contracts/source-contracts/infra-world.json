@@ -214,6 +214,10 @@
       "sha256": "650f85e176c4e423f237d8d6162fd1342882a52b8b7bc20d81898d488d59ee83"
     },
     {
+      "path": "src/domains/world/atlas/atlas-webgl-write-retire.ts",
+      "sha256": "92b72f7e695333c9390191042f75c244e9e3f01d6f02f6715bcb6dc42ecb958e"
+    },
+    {
       "path": "src/domains/world/atlas/canvas-polygon.ts",
       "sha256": "e605bf5a1c438aec4d77cae1879cf0575c565359b6e180b8b6cba95898b46ca4"
     },
@@ -235,7 +239,7 @@
     },
     {
       "path": "src/domains/world/atlas/index.ts",
-      "sha256": "0c1e306648bf0e2c44ff4b4fe2b1a24cfa64b77475491fbbf423e4f8a863c37c"
+      "sha256": "cb4fe61ba3c90ce87d90d216666a422de25a5ea6c58fe578f84537e6f5835370"
     },
     {
       "path": "src/domains/world/atlas/map-edit-ops.ts",
@@ -255,7 +259,7 @@
     },
     {
       "path": "src/domains/world/atlas/webgl-runtime-bridge.ts",
-      "sha256": "782ccd1203bd0aab5c0232ecb97366369088c214c14c3a3f8552b1124334ff26"
+      "sha256": "61c548331933a39d6f33af6e65e024f4e3c7c84f9e753d4f89ac53a9a2db760f"
     },
     {
       "path": "src/domains/world/atlas/world-atlas.types.ts",
@@ -1350,6 +1354,14 @@
       "line": 171,
       "endLine": 179,
       "text": "export type WebglToolChromeItem = {\n  readonly atlasId: AtlasToolId;\n  readonly runtimeId: WebglRuntimeToolId;\n  readonly labelDe: string;\n  readonly role: AtlasToolDef['role'];\n  readonly enabled: boolean;\n  readonly disabledReason: string | null;\n  readonly createsCanonicalNode: false;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "WebglGeometryBackup",
+      "path": "src/domains/world/atlas/atlas-webgl-write-retire.ts",
+      "line": 27,
+      "endLine": 34,
+      "text": "export type WebglGeometryBackup = {\n  readonly capturedAt: string;\n  readonly props: readonly unknown[];\n  readonly walls: readonly unknown[];\n  readonly strokes: readonly unknown[];\n  readonly rooms: readonly unknown[];\n  readonly layers: Readonly<Record<string, unknown>>;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",

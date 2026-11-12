@@ -1,11 +1,11 @@
 /**
- * webgl-runtime-bridge — Sync WebGL prototype state via generator_meta (#721 / #749).
+ * webgl-runtime-bridge — Sync WebGL prototype state via generator_meta (#721 / #749 / #1204).
  * Location: src/domains/world/atlas/webgl-runtime-bridge.ts
  *
- * Product maps must not use localStorage as world SoT. Runtime state is stored
- * under generator_meta.webglRuntimeV3 alongside UnifiedCanvasDoc.
- * Bidirectional projection: WebGL props/walls/strokes ↔ UnifiedCanvasDoc. The round trip
- * doc → runtime → doc is lossless for stamp type, object elevation/height and materials.
+ * Product maps must not use localStorage as world SoT. UnifiedCanvasDoc is the
+ * persisted geometry SoT (ATL2-B04). webglRuntimeV3 is a legacy read adapter +
+ * ephemeral 3D seed; product saves must not dual-write geometry into that sidecar
+ * (see atlas-webgl-write-retire.ts). Bidirectional projection remains for mount/import.
  */
 import {
   extractUnifiedCanvasFromGeneratorMeta,

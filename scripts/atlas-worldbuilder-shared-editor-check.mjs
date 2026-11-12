@@ -31,6 +31,7 @@ mustInclude('src/domains/world/atlas/webgl-runtime-bridge.ts', [
   'parseWebglRuntimeState',
   'readLegacyWebglLocalStorage',
   'syncWebglPropsIntoCanvasDoc',
+  'mergeWebglRuntimeIntoGeneratorMeta',
 ]);
 mustInclude('src/app/world/atlas/unified/prototype3d/atlas-prototype-runtime.mjs', [
   'controlled',
@@ -56,7 +57,8 @@ mustInclude('src/app/world/atlas/unified/UnifiedAtlasEditor.tsx', [
 ]);
 mustInclude('src/app/world/atlas/useWorldAtlasEditor.ts', [
   'webglRuntime',
-  'mergeWebglRuntimeIntoGeneratorMeta',
+  'mergeCanonicalAtlasGeometryForPersist',
+  'hydrateCanvasFromLegacyWebgl',
   'extractWebglRuntimeFromGeneratorMeta',
 ]);
 mustInclude('src/app/world/atlas/WorldAtlasWorkbench.tsx', [
