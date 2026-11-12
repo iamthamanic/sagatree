@@ -27,8 +27,10 @@ B02 consumes this catalog for lossless round-trips. B04 retires dual WebGL write
 |---|---|---|---|
 | `terrain_area` | Landmass / biome fill (physical) | terrain | `rooms[]` + material ≠ political |
 | `political_area` | Realm / border polygon | political | *not* auto-inferred from V1 rooms |
-| `path_way` | Road / trail stroke | terrain (cartographic) | `strokes[]` material pflaster/erde/… |
-| `path_river` | River / watercourse | terrain | `strokes[]` material `wasser` |
+| `path_way` | Road / trail stroke | terrain (cartographic) | `strokes[]` **with provenance `road`** |
+| `path_river` | River / watercourse | terrain | `strokes[]` **with provenance `river`** |
+| `terrain_brush` | Freehand terrain paint | terrain | `strokes[]` with provenance `brush` |
+| `legacy_stroke_ambiguous` | Stroke without provenance | unresolved | shared brush/road array — no material-only coerce |
 | `building_footprint` | Building outline on map | room_geometry / terrain | stamp `haus`/`turm` or future polygon |
 | `floor_plan_room` | Drawn chamber / hall polygon or AABB on a map | room_geometry | `rooms[]` on building/room maps |
 | `wall` | Structural wall segment | room_geometry | `walls[]` |

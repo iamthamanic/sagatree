@@ -36,7 +36,10 @@ assert.ok(doc.rooms.length > 0, 'golden rooms');
 assert.ok(doc.strokes.length > 0, 'golden strokes');
 assert.ok(doc.objects.some((o) => o.secret === true), 'crypt secret stamp');
 
-const classified = catalog.classifyUnifiedCanvasDoc(doc, 'world');
+const classified = catalog.classifyUnifiedCanvasDoc(doc, {
+  scale: 'world',
+  inferGoldenStrokeIds: true,
+});
 assert.equal(classified.catalogVersion, 'atl2-b01-catalog-v1');
 assert.equal(classified.counts.political_area, 0, 'no invented political areas');
 assert.ok(classified.counts.terrain_area >= 1, 'terrain coasts/ocean');
@@ -50,6 +53,22 @@ assert.equal(
   true,
   'legacy safety',
 );
+
+const unhinted = catalog.classifyUnifiedCanvasDoc(doc);
+assert.equal(unhinted.counts.terrain_area, 0, 'default scale unknown — no terrain promotion');
+assert.ok(unhinted.counts.legacy_area_ambiguous >= 1, 'unhinted rooms ambiguous');
+assert.ok(unhinted.counts.legacy_stroke_ambiguous >= 1, 'unhinted strokes ambiguous');
+
+const brushStroke = catalog.classifyStroke(
+  { id: 'brush.1', material: 'gras', width: 4, points: [[0, 0], [1, 1]] },
+  null,
+);
+assert.equal(brushStroke.kind, 'legacy_stroke_ambiguous');
+const roadStroke = catalog.classifyStroke(
+  { id: 'road.1', material: 'gras', width: 4, points: [[0, 0], [1, 1]] },
+  'road',
+);
+assert.equal(roadStroke.kind, 'path_way');
 
 const secret = classified.features.find((f) => f.id === 's.obj.crypt');
 assert.ok(secret, 'crypt classified');

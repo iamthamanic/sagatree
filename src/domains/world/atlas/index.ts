@@ -211,6 +211,7 @@ export {
   classifyStroke,
   classifyUnifiedCanvasDoc,
   classifyWall,
+  inferGoldenStrokeProvenance,
   isAtlasFeatureId,
   type AtlasCanonicalDocClassification,
   type AtlasCanonicalFeatureKind,
@@ -218,6 +219,8 @@ export {
   type AtlasFeatureAuthority,
   type AtlasMigrationDisposition,
   type AtlasMigrationMatrixRow,
+  type AtlasStrokeProvenance,
+  type ClassifyUnifiedCanvasOptions,
 } from './atlas-canonical-features';
 
 export {

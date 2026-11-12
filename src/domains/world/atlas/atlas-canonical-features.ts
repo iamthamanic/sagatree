@@ -26,6 +26,7 @@ export type AtlasCanonicalFeatureKind =
   | 'political_area'
   | 'path_way'
   | 'path_river'
+  | 'terrain_brush'
   | 'building_footprint'
   | 'floor_plan_room'
   | 'wall'
@@ -35,7 +36,11 @@ export type AtlasCanonicalFeatureKind =
   | 'layer_toggle'
   | 'raster_reference'
   | 'world_node_ref'
-  | 'legacy_area_ambiguous';
+  | 'legacy_area_ambiguous'
+  | 'legacy_stroke_ambiguous';
+
+/** Optional provenance for V1 strokes (brush and road share `strokes[]`). */
+export type AtlasStrokeProvenance = 'road' | 'river' | 'brush';
 
 export type AtlasFeatureAuthority =
   | AtlasFeatureOwner
@@ -80,6 +85,7 @@ export const ATLAS_FEATURE_AUTHORITY: Readonly<
   political_area: 'political',
   path_way: 'terrain',
   path_river: 'terrain',
+  terrain_brush: 'terrain',
   building_footprint: 'terrain',
   floor_plan_room: 'room_geometry',
   wall: 'room_geometry',
@@ -90,6 +96,7 @@ export const ATLAS_FEATURE_AUTHORITY: Readonly<
   raster_reference: 'atmospheric',
   world_node_ref: 'hierarchy',
   legacy_area_ambiguous: 'unresolved',
+  legacy_stroke_ambiguous: 'unresolved',
 };
 
 export const ATLAS_REQUIRED_EDIT_OPS: readonly string[] = [
@@ -131,14 +138,14 @@ export const ATLAS_MIGRATION_MATRIX: readonly AtlasMigrationMatrixRow[] = [
     notes: 'legacy_area_ambiguous — never auto political_area',
   },
   {
-    source: 'stroke material wasser',
-    disposition: 'classify_only',
-    notes: 'path_river',
+    source: 'stroke without provenance hint',
+    disposition: 'review_queue',
+    notes: 'legacy_stroke_ambiguous — brush and road share strokes[]',
   },
   {
-    source: 'stroke other materials',
+    source: 'stroke provenance river / road / brush',
     disposition: 'classify_only',
-    notes: 'path_way',
+    notes: 'path_river / path_way / terrain_brush',
   },
   {
     source: 'walls[]',
@@ -206,17 +213,39 @@ export function assertAtlasFeatureId(id: string): void {
 
 /**
  * Classify a V1 stroke without mutating it.
+ * Material alone is insufficient: brush paint and roads share `strokes[]`.
  */
-export function classifyStroke(stroke: UnifiedCanvasStroke): AtlasCanonicalFeatureRef {
+export function classifyStroke(
+  stroke: UnifiedCanvasStroke,
+  provenance?: AtlasStrokeProvenance | null,
+): AtlasCanonicalFeatureRef {
   assertAtlasFeatureId(stroke.id);
-  const kind: AtlasCanonicalFeatureKind =
-    stroke.material === 'wasser' ? 'path_river' : 'path_way';
+  let kind: AtlasCanonicalFeatureKind;
+  if (provenance === 'river') {
+    kind = 'path_river';
+  } else if (provenance === 'road') {
+    kind = 'path_way';
+  } else if (provenance === 'brush') {
+    kind = 'terrain_brush';
+  } else {
+    kind = 'legacy_stroke_ambiguous';
+  }
   return {
     kind,
     id: stroke.id,
     authority: ATLAS_FEATURE_AUTHORITY[kind],
     v1Slot: 'stroke',
   };
+}
+
+/**
+ * Golden Dornhain stroke IDs encode provenance (`w.river-*`, `*.rd.*`).
+ * Unknown IDs stay ambiguous — never invent path semantics from material alone.
+ */
+export function inferGoldenStrokeProvenance(strokeId: string): AtlasStrokeProvenance | null {
+  if (strokeId.includes('.river') || strokeId.includes('river-')) return 'river';
+  if (strokeId.includes('.rd.') || strokeId.includes('road')) return 'road';
+  return null;
 }
 
 /**
@@ -299,6 +328,7 @@ function emptyCounts(): Record<AtlasCanonicalFeatureKind, number> {
     political_area: 0,
     path_way: 0,
     path_river: 0,
+    terrain_brush: 0,
     building_footprint: 0,
     floor_plan_room: 0,
     wall: 0,
@@ -309,20 +339,35 @@ function emptyCounts(): Record<AtlasCanonicalFeatureKind, number> {
     raster_reference: 0,
     world_node_ref: 0,
     legacy_area_ambiguous: 0,
+    legacy_stroke_ambiguous: 0,
   };
 }
 
+export type ClassifyUnifiedCanvasOptions = {
+  readonly scale?: 'world' | 'interior' | 'unknown';
+  /** When true, apply Golden stroke-id heuristics; never use material alone. */
+  readonly inferGoldenStrokeIds?: boolean;
+};
+
 /**
  * Classify an entire V1 document. Does not mutate `doc`.
- * `scale` defaults to `world` for Golden/coast-heavy docs; callers with interior
- * primary maps should pass `interior`.
+ * Default scale is `unknown` so unhinted rooms stay in the review queue.
+ * Golden / world callers must pass `scale: 'world'` explicitly.
  */
 export function classifyUnifiedCanvasDoc(
   doc: UnifiedCanvasDoc,
-  scale: 'world' | 'interior' | 'unknown' = 'world',
+  scaleOrOptions: 'world' | 'interior' | 'unknown' | ClassifyUnifiedCanvasOptions = 'unknown',
 ): AtlasCanonicalDocClassification {
+  const options: ClassifyUnifiedCanvasOptions =
+    typeof scaleOrOptions === 'string' ? { scale: scaleOrOptions } : scaleOrOptions;
+  const scale = options.scale ?? 'unknown';
   const features: AtlasCanonicalFeatureRef[] = [];
-  for (const stroke of doc.strokes) features.push(classifyStroke(stroke));
+  for (const stroke of doc.strokes) {
+    const provenance = options.inferGoldenStrokeIds
+      ? inferGoldenStrokeProvenance(stroke.id)
+      : null;
+    features.push(classifyStroke(stroke, provenance));
+  }
   for (const room of doc.rooms) features.push(classifyRoomForMapScale(room, scale));
   for (const wall of doc.walls) features.push(classifyWall(wall));
   for (const object of doc.objects) features.push(classifyObject(object));
