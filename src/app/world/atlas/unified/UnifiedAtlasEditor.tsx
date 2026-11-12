@@ -46,10 +46,15 @@ import {
   atlasZoomCaption,
   emptyWebglRuntime,
   parseWebglRuntimeState,
+  clampAtlasBrushUi,
   pickObjectAt,
   pickRoomAt,
+  pickRoomVertexAt,
+  pickStrokeAt,
   readLegacyWebglLocalStorage,
-  roomFromPolygon,
+  roomFromValidatedPolygon,
+  snapPointToCandidates,
+  snapPointToGrid,
   syncCanvasDocIntoWebglRuntime,
   syncWebglPropsIntoCanvasDoc,
   type DungeonGeneratorMeta,
@@ -215,6 +220,16 @@ type DragState =
       readonly oy: number;
       readonly sx: number;
       readonly sy: number;
+    }
+  | {
+      readonly mode: 'move_room_vertex';
+      readonly id: string;
+      readonly index: number;
+    }
+  | {
+      readonly mode: 'move_stroke_point';
+      readonly id: string;
+      readonly index: number;
     }
   | {
       readonly mode: 'marquee';
@@ -436,7 +451,7 @@ export function UnifiedAtlasEditor({
   areaDraftRef.current = areaDraft;
   const [areaHint, setAreaHint] = useState<string | null>(null);
   const [stamp, setStamp] = useState<UnifiedCanvasStampType>('baum');
-  const [brushSize, setBrushSize] = useState(45);
+  const [brushSize, setBrushSize] = useState(() => clampAtlasBrushUi(45));
   const [objectSize, setObjectSize] = useState(1);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [dungeonSeed, setDungeonSeed] = useState('4242');
@@ -1106,44 +1121,24 @@ export function UnifiedAtlasEditor({
     }
 
     if (tool === 'erase') {
-      const hit = workingDoc.objects.find(
-        (o) => (o.x - p.x) ** 2 + (o.y - p.y) ** 2 < (30 / camRef.current.pixelsPerUnit) ** 2,
-      );
+      const hit = pickObjectAt(workingDoc, p.x, p.y);
       if (hit) {
-        commit(
-          { ...workingDoc, demoSeed: false, objects: workingDoc.objects.filter((o) => o.id !== hit.id) },
-          true,
-        );
+        commit(applyMapEdit(workingDoc, { op: 'remove_object', id: hit.id }), true);
         return;
       }
-      const si = workingDoc.strokes.findIndex((s) =>
-        s.points.some(
-          (q) =>
-            (q[0] - p.x) ** 2 + (q[1] - p.y) ** 2
-            < (Math.max(s.width * 0.5, 15 / camRef.current.pixelsPerUnit)) ** 2,
-        ),
+      const strokeHit = pickStrokeAt(
+        workingDoc,
+        p.x,
+        p.y,
+        15 / camRef.current.pixelsPerUnit,
       );
-      if (si >= 0) {
-        commit(
-          {
-            ...workingDoc,
-            demoSeed: false,
-            strokes: workingDoc.strokes.filter((_, i) => i !== si),
-          },
-          true,
-        );
+      if (strokeHit) {
+        commit(applyMapEdit(workingDoc, { op: 'remove_stroke', id: strokeHit.id }), true);
         return;
       }
       const roomHit = pickRoomAt(workingDoc, p.x, p.y);
       if (roomHit && roomHit.id !== 'w.ocean') {
-        commit(
-          {
-            ...workingDoc,
-            demoSeed: false,
-            rooms: workingDoc.rooms.filter((r) => r.id !== roomHit.id),
-          },
-          true,
-        );
+        commit(applyMapEdit(workingDoc, { op: 'remove_room', id: roomHit.id }), true);
       }
       return;
     }
@@ -1152,20 +1147,34 @@ export function UnifiedAtlasEditor({
       if (e.detail >= 2) {
         const draft = areaDraftRef.current;
         if (draft.length >= 3) {
-          const room = roomFromPolygon(uid(), material, draft);
-          if (room) {
-            commit({ ...workingDoc, demoSeed: false, rooms: [...workingDoc.rooms, room] }, true);
+          const built = roomFromValidatedPolygon(uid(), material, draft);
+          if (built.ok === false) {
+            setAreaHint(
+              built.reason === 'self_intersecting'
+                ? 'Fläche ungültig — selbstschneidende Polygone sind nicht erlaubt.'
+                : 'Fläche ungültig — mindestens 3 Punkte mit Fläche nötig.',
+            );
+          } else {
+            commit(applyMapEdit(workingDoc, { op: 'add_room', room: built.room }), true);
             setAreaDraft([]);
             setAreaHint(null);
-          } else {
-            setAreaHint('Fläche ungültig — mindestens 3 Punkte mit Fläche nötig.');
           }
         } else {
           setAreaHint('Noch mindestens 3 Punkte setzen, dann Doppelklick zum Schließen.');
         }
         return;
       }
-      setAreaDraft((prev) => [...prev, [p.x, p.y] as const]);
+      const snapThreshold = 12 / camRef.current.pixelsPerUnit;
+      const candidates = [
+        ...areaDraftRef.current,
+        ...workingDoc.rooms.flatMap((r) => (r.points ? [...r.points] : [])),
+      ];
+      const snapped = snapPointToCandidates(
+        snapPointToGrid([p.x, p.y], Math.max(snapThreshold * 0.25, 0.5)),
+        candidates,
+        snapThreshold,
+      );
+      setAreaDraft((prev) => [...prev, snapped]);
       setAreaHint('Weiter klicken · Doppelklick / Enter schließt · Escape bricht ab');
       refresh();
       return;
@@ -1189,7 +1198,17 @@ export function UnifiedAtlasEditor({
       }
       const roomHit = pickRoomAt(workingDoc, p.x, p.y);
       if (roomHit && roomHit.id !== 'w.ocean' && canEdit) {
+        const vtx = pickRoomVertexAt(
+          roomHit,
+          p.x,
+          p.y,
+          14 / camRef.current.pixelsPerUnit,
+        );
         setSelectedId(roomHit.id);
+        if (vtx >= 0) {
+          dragRef.current = { mode: 'move_room_vertex', id: roomHit.id, index: vtx };
+          return;
+        }
         dragRef.current = {
           mode: 'move_room',
           id: roomHit.id,
@@ -1200,6 +1219,30 @@ export function UnifiedAtlasEditor({
         };
         return;
       }
+      const strokeHit = pickStrokeAt(
+        workingDoc,
+        p.x,
+        p.y,
+        12 / camRef.current.pixelsPerUnit,
+      );
+      if (strokeHit && canEdit) {
+        let bestIdx = 0;
+        let bestDist = Infinity;
+        for (let i = 0; i < strokeHit.points.length; i += 1) {
+          const d = Math.hypot(strokeHit.points[i][0] - p.x, strokeHit.points[i][1] - p.y);
+          if (d < bestDist) {
+            bestDist = d;
+            bestIdx = i;
+          }
+        }
+        setSelectedId(strokeHit.id);
+        dragRef.current = {
+          mode: 'move_stroke_point',
+          id: strokeHit.id,
+          index: bestIdx,
+        };
+        return;
+      }
       setSelectedId(null);
       dragRef.current = { mode: 'pan', px: p.px, py: p.py, cam: camRef.current };
       return;
@@ -1207,13 +1250,20 @@ export function UnifiedAtlasEditor({
 
     if (tool === 'brush' || tool === 'road') {
       const id = uid();
+      // Road + wasser material = Fluss; otherwise paved path (ATL2-C01).
+      const strokeMaterial =
+        tool === 'road'
+          ? material === 'wasser'
+            ? 'wasser'
+            : 'pflaster'
+          : material;
       const stroke = {
         id,
-        material: (tool === 'road' ? 'pflaster' : material) as UnifiedCanvasMaterial,
+        material: strokeMaterial as UnifiedCanvasMaterial,
         width: tool === 'road' ? brushWidth() * 0.62 : brushWidth(),
         points: [[p.x, p.y] as const],
       };
-      commit({ ...workingDoc, demoSeed: false, strokes: [...workingDoc.strokes, stroke] }, true);
+      commit(applyMapEdit(workingDoc, { op: 'add_stroke', stroke }), true);
       dragRef.current = { mode: 'paint', strokeId: id };
       return;
     }
@@ -1260,16 +1310,46 @@ export function UnifiedAtlasEditor({
       refresh();
       return;
     }
-    if (drag.mode === 'paint') {
-      const strokes = workingDoc.strokes.map((s) => {
-        if (s.id !== drag.strokeId) return s;
-        const last = s.points[s.points.length - 1];
-        if ((p.x - last[0]) ** 2 + (p.y - last[1]) ** 2 < (2 / camRef.current.pixelsPerUnit) ** 2) {
-          return s;
-        }
-        return { ...s, points: [...s.points, [p.x, p.y] as const] };
+    if (drag.mode === 'move_room_vertex') {
+      const next = applyMapEdit(workingDoc, {
+        op: 'move_room_vertex',
+        id: drag.id,
+        index: drag.index,
+        x: p.x,
+        y: p.y,
       });
-      onDocChange({ ...workingDoc, strokes, demoSeed: false });
+      onDocChange(next);
+      refresh();
+      return;
+    }
+    if (drag.mode === 'move_stroke_point') {
+      const next = applyMapEdit(workingDoc, {
+        op: 'move_stroke_point',
+        id: drag.id,
+        index: drag.index,
+        x: p.x,
+        y: p.y,
+      });
+      onDocChange(next);
+      refresh();
+      return;
+    }
+    if (drag.mode === 'paint') {
+      const stroke = workingDoc.strokes.find((s) => s.id === drag.strokeId);
+      const last = stroke?.points[stroke.points.length - 1];
+      if (
+        last &&
+        (p.x - last[0]) ** 2 + (p.y - last[1]) ** 2 < (2 / camRef.current.pixelsPerUnit) ** 2
+      ) {
+        return;
+      }
+      const next = applyMapEdit(workingDoc, {
+        op: 'append_stroke_point',
+        id: drag.strokeId,
+        x: p.x,
+        y: p.y,
+      });
+      onDocChange(next);
       refresh();
       return;
     }
@@ -1447,15 +1527,16 @@ export function UnifiedAtlasEditor({
           setAreaHint('Noch mindestens 3 Punkte setzen, dann Enter zum Schließen.');
           return;
         }
-        const room = roomFromPolygon(uid(), material, draft);
-        if (!room) {
-          setAreaHint('Fläche ungültig — Punkte müssen eine Fläche bilden.');
+        const built = roomFromValidatedPolygon(uid(), material, draft);
+        if (built.ok === false) {
+          setAreaHint(
+            built.reason === 'self_intersecting'
+              ? 'Fläche ungültig — selbstschneidende Polygone sind nicht erlaubt.'
+              : 'Fläche ungültig — Punkte müssen eine Fläche bilden.',
+          );
           return;
         }
-        commit(
-          { ...docRef.current, demoSeed: false, rooms: [...docRef.current.rooms, room] },
-          true,
-        );
+        commit(applyMapEdit(docRef.current, { op: 'add_room', room: built.room }), true);
         setAreaDraft([]);
         setAreaHint(null);
       }
@@ -2210,7 +2291,7 @@ export function UnifiedAtlasEditor({
                 }`}
                 onClick={() => {
                   setMaterial(id);
-                  if (tool !== 'area' && tool !== 'room') setTool('brush');
+                  if (tool !== 'area' && tool !== 'room' && tool !== 'road') setTool('brush');
                 }}
               >
                 <span
@@ -2230,7 +2311,7 @@ export function UnifiedAtlasEditor({
               max={120}
               value={brushSize}
               disabled={!canEdit}
-              onChange={(e) => setBrushSize(Number(e.target.value))}
+              onChange={(e) => setBrushSize(clampAtlasBrushUi(Number(e.target.value)))}
             />
           </label>
           <p className="text-xs font-semibold">Stempel</p>

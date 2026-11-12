@@ -177,3 +177,85 @@ export function translatePolygon(
 ): CanvasPoint[] {
   return points.map(([x, y]) => [x + dx, y + dy] as const);
 }
+
+function segmentsIntersect(
+  a: CanvasPoint,
+  b: CanvasPoint,
+  c: CanvasPoint,
+  d: CanvasPoint,
+): boolean {
+  const d1 = cross(c, d, a);
+  const d2 = cross(c, d, b);
+  const d3 = cross(a, b, c);
+  const d4 = cross(a, b, d);
+  if (((d1 > EPS && d2 < -EPS) || (d1 < -EPS && d2 > EPS)) &&
+      ((d3 > EPS && d4 < -EPS) || (d3 < -EPS && d4 > EPS))) {
+    return true;
+  }
+  return false;
+}
+
+/** True when non-adjacent edges cross (self-intersecting ring). */
+export function polygonSelfIntersects(points: readonly CanvasPoint[]): boolean {
+  const n = points.length;
+  if (n < 4) return false;
+  for (let i = 0; i < n; i += 1) {
+    const a = points[i];
+    const b = points[(i + 1) % n];
+    for (let j = i + 1; j < n; j += 1) {
+      const c = points[j];
+      const d = points[(j + 1) % n];
+      // Skip adjacent edges and the closing edge pair that shares vertices.
+      if (i === j) continue;
+      if ((j + 1) % n === i) continue;
+      if ((i + 1) % n === j) continue;
+      if (segmentsIntersect(a, b, c, d)) return true;
+    }
+  }
+  return false;
+}
+
+export type PolygonValidation =
+  | { readonly ok: true; readonly points: readonly CanvasPoint[] }
+  | { readonly ok: false; readonly reason: 'too_few' | 'degenerate' | 'self_intersecting' };
+
+/** Sanitize + reject empty / self-intersecting rings (ATL2-C01). */
+export function validateClosedPolygon(
+  raw: readonly CanvasPoint[],
+): PolygonValidation {
+  const sanitized = sanitizePolygonPoints(raw);
+  if (!sanitized) return { ok: false, reason: 'too_few' };
+  if (!bboxFromPoints(sanitized)) return { ok: false, reason: 'degenerate' };
+  if (polygonSelfIntersects(sanitized)) {
+    return { ok: false, reason: 'self_intersecting' };
+  }
+  return { ok: true, points: sanitized };
+}
+
+/** Snap world point to nearest candidate within threshold (world units). */
+export function snapPointToCandidates(
+  point: CanvasPoint,
+  candidates: readonly CanvasPoint[],
+  threshold: number,
+): CanvasPoint {
+  if (!(threshold > 0) || candidates.length === 0) return point;
+  let best = point;
+  let bestDist = threshold;
+  for (const c of candidates) {
+    const d = Math.hypot(point[0] - c[0], point[1] - c[1]);
+    if (d <= bestDist) {
+      bestDist = d;
+      best = c;
+    }
+  }
+  return best;
+}
+
+/** Snap to axis-aligned grid (world units). */
+export function snapPointToGrid(point: CanvasPoint, gridSize: number): CanvasPoint {
+  if (!(gridSize > 0)) return point;
+  return [
+    Math.round(point[0] / gridSize) * gridSize,
+    Math.round(point[1] / gridSize) * gridSize,
+  ] as const;
+}

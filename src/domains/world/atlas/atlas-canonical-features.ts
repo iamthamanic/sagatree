@@ -108,9 +108,15 @@ export const ATLAS_REQUIRED_EDIT_OPS: readonly string[] = [
   'move_room',
   'resize_room',
   'remove_room',
+  'set_room_points',
+  'move_room_vertex',
   'add_wall',
   'move_wall',
   'remove_wall',
+  'add_stroke',
+  'append_stroke_point',
+  'move_stroke_point',
+  'remove_stroke',
   'replace_scene',
 ] as const;
 

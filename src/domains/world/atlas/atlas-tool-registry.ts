@@ -43,22 +43,22 @@ const CONTENT_TOOLS: readonly AtlasToolDef[] = [
   {
     id: 'brush',
     labelDe: 'Gelände',
-    allowedKinds: ['continent', 'country'],
+    allowedKinds: ['continent', 'country', 'place'],
     role: 'terrain',
     createsCanonicalNode: false,
   },
   {
     id: 'area',
     labelDe: 'Fläche',
-    allowedKinds: ['continent', 'country'],
+    allowedKinds: ['continent', 'country', 'place'],
     role: 'terrain',
     createsCanonicalNode: false,
   },
   {
     id: 'road',
-    labelDe: 'Weg / Grenze',
-    allowedKinds: ['place', 'country'],
-    role: 'border',
+    labelDe: 'Weg / Fluss',
+    allowedKinds: ['continent', 'country', 'place'],
+    role: 'path',
     createsCanonicalNode: false,
   },
   {
@@ -99,12 +99,14 @@ export const ATLAS_TOOL_REGISTRY: readonly AtlasToolDef[] = [...NAV_TOOLS, ...CO
  */
 export function atlasToolsForKind(kind: WorldNodeKind | null): readonly AtlasToolDef[] {
   if (kind === null) {
+    // World root: terrain + path tools (ATL2-C01).
     return ATLAS_TOOL_REGISTRY.filter(
       (t) =>
         t.id === 'hand' ||
         t.id === 'select' ||
         t.id === 'brush' ||
         t.id === 'area' ||
+        t.id === 'road' ||
         t.id === 'erase',
     );
   }
