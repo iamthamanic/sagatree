@@ -196,6 +196,19 @@ export {
 } from './map-frame';
 
 export {
+  ATLAS_AUTOSAVE_DEBOUNCE_MS,
+  ATLAS_AUTOSAVE_MAX_PENDING_OPS,
+  ATLAS_REVISION_CONFLICT_DE,
+  ATLAS_REVISION_REQUIRED_DE,
+  applyAtlasEditChangeset,
+  atlasPersistAfterHostError,
+  decideAtlasAutosave,
+  resolveAtlasSaveRevisionRequirement,
+  type AtlasAutosaveDecision,
+  type AtlasSaveRevisionRequirement,
+} from './atlas-revision-contract';
+
+export {
   ATLAS_MAP_DOC_BACKUP_META_KEY,
   ATLAS_MAP_DOC_V2_FORMAT,
   ATLAS_MAP_DOC_V2_META_KEY,

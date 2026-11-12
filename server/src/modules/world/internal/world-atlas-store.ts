@@ -539,8 +539,13 @@ export class WorldAtlasStore {
         this.#db.exec('ROLLBACK');
         return { ok: false, error: '40001' };
       }
+      // ATL2-B03: updates require explicit CAS revision — null must not overwrite.
       const expected = input.expectedRevision;
-      if (expected !== null && expected !== undefined && existing.revision !== expected) {
+      if (typeof expected !== 'number' || !Number.isFinite(expected) || expected < 0) {
+        this.#db.exec('ROLLBACK');
+        return { ok: false, error: '22023' };
+      }
+      if (existing.revision !== expected) {
         this.#db.exec('ROLLBACK');
         return { ok: false, error: '40001' };
       }
@@ -558,7 +563,7 @@ export class WorldAtlasStore {
           ? existing.azgaar_map_storage_path
           : input.azgaarMapStoragePath;
 
-      this.#db
+      const update = this.#db
         .prepare(
           `UPDATE world_atlas_maps SET
              parent_map_id = ?,
@@ -572,7 +577,7 @@ export class WorldAtlasStore {
              generator_meta = ?,
              revision = revision + 1,
              updated_at = ?
-           WHERE id = ? AND world_profile_id = ?`,
+           WHERE id = ? AND world_profile_id = ? AND revision = ?`,
         )
         .run(
           parentMapId,
@@ -587,7 +592,12 @@ export class WorldAtlasStore {
           now,
           mapId,
           worldId,
+          expected,
         );
+      if (update.changes !== 1) {
+        this.#db.exec('ROLLBACK');
+        return { ok: false, error: '40001' };
+      }
       this.#db.exec('COMMIT');
       const updated = this.#loadRow(mapId);
       if (!updated) return { ok: false, error: 'P0002' };
