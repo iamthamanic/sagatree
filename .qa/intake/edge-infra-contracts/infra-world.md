@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-world.json](source-contracts/infra-world.json) (SHA-256 `5688094314be71cd4896c91e360b31569e57f50f2fd5f4594cdf12ded9ee72df`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-world.json](source-contracts/infra-world.json) (SHA-256 `d8f5451eb8f07f4bfa7e10449e8ac9273e7bf65aa90de7a3ac32daf4c21b456e`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -640,7 +640,7 @@ All backend operations are included in the public declarations above.
 | `src/domains/rules/sagatree/npc-creature-power/profiles.ts` | `aa3d450842ddce7548f6e8e826225cdbdeae6de7660e09798fe43663dc9ce1fa` |
 | `src/domains/rules/sagatree/npc-creature-power/types.ts` | `de25ba46549bab20e0e55a513fb0745e722449d8f1b61bb51887d986653c4eab` |
 | `src/domains/world/atlas/atlas-canonical-features.ts` | `d1f751285f4aa2ecda0def4f411610d093863208e95cd51c5cedb1997d4d195b` |
-| `src/domains/world/atlas/atlas-map-doc-adapter.ts` | `fab272c39d39c3dfdc9b8990c3eca32d2b309e973d376e3254ee16c3150be428` |
+| `src/domains/world/atlas/atlas-map-doc-adapter.ts` | `0295d326782c810da564411ef72accb5c343b01ae1845134ea74bc1d36e88702` |
 | `src/domains/world/atlas/atlas-map-pins.ts` | `1421ca01edd55307c341adc3ac74f4c5a7cef87f60fadbbe0faaa141898b4791` |
 | `src/domains/world/atlas/atlas-persist-state.ts` | `84ab0edbd0b525c95b5db85afeb683d335351884ba6c612e94f327719a6b60ca` |
 | `src/domains/world/atlas/atlas-prototype-lod.ts` | `2fb7c706ad2210f7a3f389f22564f60e3f22aa615ec49af49695e388ae582256` |

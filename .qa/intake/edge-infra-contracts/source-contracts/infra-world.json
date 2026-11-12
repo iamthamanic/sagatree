@@ -191,7 +191,7 @@
     },
     {
       "path": "src/domains/world/atlas/atlas-map-doc-adapter.ts",
-      "sha256": "fab272c39d39c3dfdc9b8990c3eca32d2b309e973d376e3254ee16c3150be428"
+      "sha256": "0295d326782c810da564411ef72accb5c343b01ae1845134ea74bc1d36e88702"
     },
     {
       "path": "src/domains/world/atlas/atlas-map-pins.ts",

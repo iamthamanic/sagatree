@@ -75,11 +75,30 @@ function parseStrokeHints(raw: unknown): AtlasStrokeHintMap {
   return out;
 }
 
-function emptyCountsFrom(
-  sample: AtlasCanonicalDocClassification,
+function tallyCounts(
+  features: readonly AtlasCanonicalFeatureRef[],
 ): AtlasCanonicalDocClassification['counts'] {
-  const counts = { ...sample.counts };
-  for (const key of Object.keys(counts) as (keyof typeof counts)[]) counts[key] = 0;
+  const counts: {
+    -readonly [K in keyof AtlasCanonicalDocClassification['counts']]: number;
+  } = {
+    terrain_area: 0,
+    political_area: 0,
+    path_way: 0,
+    path_river: 0,
+    terrain_brush: 0,
+    building_footprint: 0,
+    floor_plan_room: 0,
+    wall: 0,
+    door: 0,
+    prop_object: 0,
+    heightfield: 0,
+    layer_toggle: 0,
+    raster_reference: 0,
+    world_node_ref: 0,
+    legacy_area_ambiguous: 0,
+    legacy_stroke_ambiguous: 0,
+  };
+  for (const f of features) counts[f.kind] += 1;
   return counts;
 }
 
@@ -103,13 +122,11 @@ function classifyWithHints(
     const hint = strokeHints[f.id] ?? null;
     features.push(classifyStroke(stroke, hint));
   }
-  const counts = emptyCountsFrom(base);
-  for (const f of features) counts[f.kind] += 1;
   return {
     catalogVersion: base.catalogVersion,
     wireDecision: base.wireDecision,
     features,
-    counts,
+    counts: tallyCounts(features),
   };
 }
 
