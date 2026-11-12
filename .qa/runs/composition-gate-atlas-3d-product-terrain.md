@@ -1,6 +1,6 @@
 # Composition Gate — atlas-3d-product-terrain
 
-- HEAD_SHA: c0a94df4c43119bd73c6537b475b7a1b156cdf19
+- HEAD_SHA: 5a15d08e492d2452386b4d18c3bb2da9a484f94c
 - BASE_SHA: 540b40ac8150f5053bc7c5e8fca470e0d7b40fb9
 - Date: 2026-11-12
 - Verdict: SKIPPED
