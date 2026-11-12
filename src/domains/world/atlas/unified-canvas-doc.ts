@@ -6,7 +6,11 @@
  * Pure domain — no React / Supabase.
  */
 
-import { bboxFromPoints, sanitizePolygonPoints } from './canvas-polygon';
+import {
+  bboxFromPoints,
+  sanitizePolygonPoints,
+  validateClosedPolygon,
+} from './canvas-polygon';
 
 export const UNIFIED_CANVAS_FORMAT = 'sagatree-unified-atlas-v1' as const;
 export const UNIFIED_CANVAS_META_KEY = 'unifiedCanvas' as const;
@@ -355,7 +359,7 @@ export function serializeUnifiedCanvasDoc(doc: UnifiedCanvasDoc): UnifiedCanvasD
   };
 }
 
-/** Build a room from a closed polygon (≥3). BBox is derived. */
+/** Build a room from a closed polygon (≥3). BBox is derived. Does not reject self-intersections. */
 export function roomFromPolygon(
   id: string,
   material: UnifiedCanvasMaterial,
@@ -373,6 +377,37 @@ export function roomFromPolygon(
     w: box.w,
     h: box.h,
     points: sanitized,
+  };
+}
+
+/**
+ * Build a polygon room only when geometry is valid (ATL2-C01).
+ * Rejects self-intersecting / degenerate rings; caller shows DE reason.
+ */
+export function roomFromValidatedPolygon(
+  id: string,
+  material: UnifiedCanvasMaterial,
+  points: readonly (readonly [number, number])[],
+):
+  | { readonly ok: true; readonly room: UnifiedCanvasRoom }
+  | { readonly ok: false; readonly reason: 'too_few' | 'degenerate' | 'self_intersecting' } {
+  const validated = validateClosedPolygon(points);
+  if (validated.ok === false) {
+    return { ok: false, reason: validated.reason };
+  }
+  const box = bboxFromPoints(validated.points);
+  if (!box) return { ok: false, reason: 'degenerate' };
+  return {
+    ok: true,
+    room: {
+      id,
+      material,
+      x: box.x,
+      y: box.y,
+      w: box.w,
+      h: box.h,
+      points: validated.points,
+    },
   };
 }
 

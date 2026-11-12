@@ -33,6 +33,7 @@ export {
   mergeUnifiedCanvasIntoGeneratorMeta,
   parseUnifiedCanvasDoc,
   roomFromPolygon,
+  roomFromValidatedPolygon,
   serializeUnifiedCanvasDoc,
   unifiedCanvasDocByteLength,
   type UnifiedCanvasDoc,
@@ -49,18 +50,29 @@ export {
 export {
   bboxFromPoints,
   pointInPolygon,
+  polygonAbsoluteArea,
+  polygonSelfIntersects,
   sanitizePolygonPoints,
+  snapPointToCandidates,
+  snapPointToGrid,
   translatePolygon,
   triangulatePolygon,
+  validateClosedPolygon,
   type CanvasBBox,
   type CanvasPoint,
+  type PolygonValidation,
 } from './canvas-polygon';
 
 export {
+  ATLAS_BRUSH_UI_MAX,
+  ATLAS_BRUSH_UI_MIN,
   applyMapEdit,
   applyMapEdits,
+  clampAtlasBrushUi,
   pickObjectAt,
   pickRoomAt,
+  pickRoomVertexAt,
+  pickStrokeAt,
   type MapEditOperation,
   type MapTransform,
 } from './map-edit-ops';

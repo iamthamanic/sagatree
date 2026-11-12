@@ -52,9 +52,13 @@ mustInclude('src/domains/world/atlas/dornhain-unified-starter.ts', [
   'w.west-core',
 ]);
 mustInclude('src/app/world/atlas/unified/UnifiedAtlasEditor.tsx', [
-  'roomFromPolygon',
+  'roomFromValidatedPolygon',
   "tool === 'area'",
   'areaDraft',
+]);
+mustInclude('src/domains/world/atlas/unified-canvas-doc.ts', [
+  'roomFromValidatedPolygon',
+  'validateClosedPolygon',
 ]);
 mustInclude(
   'src/app/world/atlas/unified/prototype3d/atlas-prototype-runtime.mjs',

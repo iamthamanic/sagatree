@@ -88,8 +88,10 @@ assert(editor.includes('AtlasNative3dEditor'), 'editor uses native host');
 assert(!editor.includes('AtlasPrototype3dEmbed'), 'iframe embed removed');
 // Codex P2 (#1195): selection delete distinguishes rooms vs objects.
 assert(
-  editor.includes("op: isRoom ? 'remove_room' : 'remove_object'"),
-  'Löschen dispatches remove_room for selected rooms',
+  editor.includes("? 'remove_room'") &&
+    editor.includes("? 'remove_stroke'") &&
+    editor.includes("'remove_object'"),
+  'Löschen dispatches remove_room / remove_stroke / remove_object',
 );
 
 const embedGone = !fs.existsSync(
