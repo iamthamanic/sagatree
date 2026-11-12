@@ -50,6 +50,7 @@ export {
 export {
   bboxFromPoints,
   pointInPolygon,
+  polygonAbsoluteArea,
   polygonSelfIntersects,
   sanitizePolygonPoints,
   snapPointToCandidates,

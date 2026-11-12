@@ -55,7 +55,8 @@ const bowtie = [
 assert.equal(poly.polygonSelfIntersects(bowtie), true);
 const bad = poly.validateClosedPolygon(bowtie);
 assert.equal(bad.ok, false);
-assert.equal(bad.reason, 'self_intersecting');
+// Bowtie shoelace area is ~0 → may classify as degenerate before self_intersect.
+assert.ok(bad.reason === 'degenerate' || bad.reason === 'self_intersecting');
 const rejected = canvas.roomFromValidatedPolygon('r1', 'gras', bowtie);
 assert.equal(rejected.ok, false);
 
@@ -67,6 +68,15 @@ const square = [
 ];
 const good = canvas.roomFromValidatedPolygon('r2', 'gras', square);
 assert.equal(good.ok, true);
+
+// Collinear ring: positive bbox diagonal but zero area
+const collinear = poly.validateClosedPolygon([
+  [0, 0],
+  [5, 5],
+  [10, 10],
+]);
+assert.equal(collinear.ok, false);
+assert.equal(collinear.reason, 'degenerate');
 
 // Snap
 assert.deepEqual(poly.snapPointToGrid([3.2, 7.8], 1), [3, 8]);
@@ -94,6 +104,9 @@ doc = ops.applyMapEdit(doc, {
 });
 doc = ops.applyMapEdit(doc, { op: 'append_stroke_point', id: 's1', x: 10, y: 0 });
 assert.equal(doc.strokes[0].points.length, 3);
+// Mid-segment hit (not only vertices) on [0,0]–[5,0]
+const mid = ops.pickStrokeAt(doc, 2.5, 0, 0.5);
+assert.equal(mid?.id, 's1');
 doc = ops.applyMapEdit(doc, { op: 'move_stroke_point', id: 's1', index: 1, x: 5, y: 2 });
 assert.equal(doc.strokes[0].points[1][1], 2);
 doc = ops.applyMapEdit(doc, {

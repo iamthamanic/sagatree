@@ -219,6 +219,16 @@ export type PolygonValidation =
   | { readonly ok: true; readonly points: readonly CanvasPoint[] }
   | { readonly ok: false; readonly reason: 'too_few' | 'degenerate' | 'self_intersecting' };
 
+/** Absolute shoelace area (world units²). Collinear rings → ~0. */
+export function polygonAbsoluteArea(points: readonly CanvasPoint[]): number {
+  if (points.length < 3) return 0;
+  let sum = 0;
+  for (let i = 0, j = points.length - 1; i < points.length; j = i++) {
+    sum += points[j][0] * points[i][1] - points[i][0] * points[j][1];
+  }
+  return Math.abs(sum) * 0.5;
+}
+
 /** Sanitize + reject empty / self-intersecting rings (ATL2-C01). */
 export function validateClosedPolygon(
   raw: readonly CanvasPoint[],
@@ -226,6 +236,10 @@ export function validateClosedPolygon(
   const sanitized = sanitizePolygonPoints(raw);
   if (!sanitized) return { ok: false, reason: 'too_few' };
   if (!bboxFromPoints(sanitized)) return { ok: false, reason: 'degenerate' };
+  // Collinear rings can have a positive bbox but zero area (Codex P2).
+  if (polygonAbsoluteArea(sanitized) <= EPS) {
+    return { ok: false, reason: 'degenerate' };
+  }
   if (polygonSelfIntersects(sanitized)) {
     return { ok: false, reason: 'self_intersecting' };
   }

@@ -1196,28 +1196,17 @@ export function UnifiedAtlasEditor({
         }
         return;
       }
-      const roomHit = pickRoomAt(workingDoc, p.x, p.y);
-      if (roomHit && roomHit.id !== 'w.ocean' && canEdit) {
-        const vtx = pickRoomVertexAt(
-          roomHit,
-          p.x,
-          p.y,
-          14 / camRef.current.pixelsPerUnit,
-        );
-        setSelectedId(roomHit.id);
+      // Vertex first (explicit handle), then strokes over containing areas (Codex P1).
+      const vtxThreshold = 14 / camRef.current.pixelsPerUnit;
+      for (let ri = workingDoc.rooms.length - 1; ri >= 0; ri -= 1) {
+        const room = workingDoc.rooms[ri];
+        if (room.id === 'w.ocean' || !canEdit) continue;
+        const vtx = pickRoomVertexAt(room, p.x, p.y, vtxThreshold);
         if (vtx >= 0) {
-          dragRef.current = { mode: 'move_room_vertex', id: roomHit.id, index: vtx };
+          setSelectedId(room.id);
+          dragRef.current = { mode: 'move_room_vertex', id: room.id, index: vtx };
           return;
         }
-        dragRef.current = {
-          mode: 'move_room',
-          id: roomHit.id,
-          ox: roomHit.x,
-          oy: roomHit.y,
-          sx: p.x,
-          sy: p.y,
-        };
-        return;
       }
       const strokeHit = pickStrokeAt(
         workingDoc,
@@ -1240,6 +1229,19 @@ export function UnifiedAtlasEditor({
           mode: 'move_stroke_point',
           id: strokeHit.id,
           index: bestIdx,
+        };
+        return;
+      }
+      const roomHit = pickRoomAt(workingDoc, p.x, p.y);
+      if (roomHit && roomHit.id !== 'w.ocean' && canEdit) {
+        setSelectedId(roomHit.id);
+        dragRef.current = {
+          mode: 'move_room',
+          id: roomHit.id,
+          ox: roomHit.x,
+          oy: roomHit.y,
+          sx: p.x,
+          sy: p.y,
         };
         return;
       }
@@ -2153,9 +2155,14 @@ export function UnifiedAtlasEditor({
                 className="min-h-11"
                 onClick={() => {
                   const isRoom = workingDoc.rooms.some((r) => r.id === selectedId);
+                  const isStroke = workingDoc.strokes.some((s) => s.id === selectedId);
                   commit(
                     applyMapEdit(workingDoc, {
-                      op: isRoom ? 'remove_room' : 'remove_object',
+                      op: isRoom
+                        ? 'remove_room'
+                        : isStroke
+                          ? 'remove_stroke'
+                          : 'remove_object',
                       id: selectedId,
                     }),
                     true,

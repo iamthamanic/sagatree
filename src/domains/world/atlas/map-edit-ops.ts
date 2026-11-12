@@ -296,7 +296,31 @@ export function pickRoomAt(doc: UnifiedCanvasDoc, x: number, y: number): Unified
   return null;
 }
 
-/** Hit-test strokes by distance to polyline (uses half-width floor). */
+function distPointToSegment2(
+  x: number,
+  y: number,
+  a: readonly [number, number],
+  b: readonly [number, number],
+): number {
+  const abx = b[0] - a[0];
+  const aby = b[1] - a[1];
+  const len2 = abx * abx + aby * aby;
+  if (!(len2 > 0)) {
+    const dx = x - a[0];
+    const dy = y - a[1];
+    return dx * dx + dy * dy;
+  }
+  let t = ((x - a[0]) * abx + (y - a[1]) * aby) / len2;
+  if (t < 0) t = 0;
+  else if (t > 1) t = 1;
+  const px = a[0] + t * abx;
+  const py = a[1] + t * aby;
+  const dx = x - px;
+  const dy = y - py;
+  return dx * dx + dy * dy;
+}
+
+/** Hit-test strokes by distance to polyline segments (half-width floor). */
 export function pickStrokeAt(
   doc: UnifiedCanvasDoc,
   x: number,
@@ -307,8 +331,15 @@ export function pickStrokeAt(
     const s = doc.strokes[i];
     const r = Math.max(s.width * 0.5, minRadius);
     const r2 = r * r;
-    for (const q of s.points) {
+    const pts = s.points;
+    if (pts.length === 0) continue;
+    if (pts.length === 1) {
+      const q = pts[0];
       if ((q[0] - x) ** 2 + (q[1] - y) ** 2 <= r2) return s;
+      continue;
+    }
+    for (let j = 0; j < pts.length - 1; j += 1) {
+      if (distPointToSegment2(x, y, pts[j], pts[j + 1]) <= r2) return s;
     }
   }
   return null;
