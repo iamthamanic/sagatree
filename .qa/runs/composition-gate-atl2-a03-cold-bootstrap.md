@@ -2,7 +2,7 @@
 
 - Issue: #1199
 - Feature slug: atl2-a03-cold-bootstrap
-- HEAD_SHA: PLACEHOLDER_FULL_SHA
+- HEAD_SHA: 3c8c9476917ea97539f6f59f2f05b242357807f4
 - BASE_SHA: d3e3f2b71db41e48f34d8ea17d49b5782efa7c84
 - Date: 2026-11-12
 - Verdict: SKIPPED
