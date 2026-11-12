@@ -188,7 +188,7 @@ try {
     : Array.isArray(atlasMaps.json)
       ? atlasMaps.json.length
       : 0;
-  assert(mapCount >= 1, `Dornhain atlas maps ≥1 (got ${mapCount})`);
+  assert(mapCount >= 6, `Dornhain atlas maps ≥6 six-level Golden (got ${mapCount})`);
 
   const places = await httpJson(baseURL, `/api/v1/worlds/${dornhainWorld.id}/places`, {
     cookie,

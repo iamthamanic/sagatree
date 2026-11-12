@@ -16,6 +16,13 @@ import {
 import { generateSagaPublicId } from '../modules/project/internal/public-project-id.ts';
 import { generateProjectJoinCode } from '../modules/project/internal/project-membership-store.ts';
 import { generateWorldPublicId } from '../modules/world/internal/public-world-id.ts';
+import {
+  DORHAIN_GOLDEN_PLACE_SEEDS,
+  DORHAIN_UNIFIED_SEED,
+  DORHAIN_WORLD_ANCHOR,
+  DORHAIN_WORLD_LAYER_TITLE,
+  seedDornhainGoldenHierarchy,
+} from './dornhain-golden-hierarchy-seed.ts';
 
 export type EnsureDornhainResult = {
   readonly seeded: boolean;
@@ -239,67 +246,8 @@ function applyOwnedDornhainCatalog(
 }
 
 const DORHAIN_ATLAS_ROOT_STABLE = 'dh-atlas-root';
-/** Matches FE `DORNHAIN_WORLD_LAYER_TITLE` / dornhain-unified-starter. */
-const DORHAIN_WORLD_LAYER_TITLE = 'Welt';
-const DORHAIN_UNIFIED_SEED = 'dornhain.unified.v4';
-/** Settlement overview anchor on the world canvas (FE DORNHAIN_WORLD_ANCHOR). */
-const DORHAIN_WORLD_ANCHOR = { x: 360, y: 510 } as const;
-
-const DORHAIN_ATLAS_PLACES: readonly {
-  readonly stableId: string;
-  readonly seedKey: string;
-  readonly name: string;
-  readonly kind: string;
-  readonly description: string;
-  readonly parentSeedKey: string | null;
-  readonly anchor: { readonly x: number; readonly y: number } | null;
-}[] = [
-  {
-    stableId: 'dh-place-square',
-    seedKey: 'dornhain.marktplatz',
-    name: 'Marktplatz',
-    kind: 'settlement',
-    description: 'Dornhain Marktplatz — Startpunkt der Whisper-Road.',
-    parentSeedKey: null,
-    anchor: DORHAIN_WORLD_ANCHOR,
-  },
-  {
-    stableId: 'dh-place-dornhain',
-    seedKey: 'place.dornhain',
-    name: 'Dornhain',
-    kind: 'settlement',
-    description: 'Stadt in Donalu — Starterschauplatz.',
-    parentSeedKey: null,
-    anchor: DORHAIN_WORLD_ANCHOR,
-  },
-  {
-    stableId: 'dh-place-whisper',
-    seedKey: 'dornhain.whisper-road',
-    name: 'Whisper Road',
-    kind: 'region',
-    description: 'Die Whisper Road führt hinaus aus Dornhain.',
-    parentSeedKey: 'place.dornhain',
-    anchor: { x: 420, y: 480 },
-  },
-  {
-    stableId: 'dh-place-tavern',
-    seedKey: 'loc.tavern',
-    name: 'Taverne Zum Flüstern',
-    kind: 'building',
-    description: 'Treffpunkt der Helden.',
-    parentSeedKey: 'place.dornhain',
-    anchor: { x: 328, y: 528 },
-  },
-  {
-    stableId: 'dh-place-crypt',
-    seedKey: 'loc.crypt',
-    name: 'Krypta unter dem Hügel',
-    kind: 'building',
-    description: 'GM-Geheimnis — Reliktort unter Dornhain.',
-    parentSeedKey: 'place.dornhain',
-    anchor: { x: 406, y: 462 },
-  },
-];
+/** Alias for root GeoJSON pin features (full place rows come from Golden seeds). */
+const DORHAIN_ATLAS_PLACES = DORHAIN_GOLDEN_PLACE_SEEDS;
 
 function isBlankOceanUnifiedCanvas(raw: unknown): boolean {
   if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return false;
@@ -754,84 +702,9 @@ function seedOwnedDornhainAtlas(
     }
   }
 
-  const placeIdBySeed = new Map<string, string>();
-  for (const [index, place] of DORHAIN_ATLAS_PLACES.entries()) {
-    const placeId = scopedCatalogId(ownerUserId, place.stableId);
-    placeIdBySeed.set(place.seedKey, placeId);
-    const parentId =
-      place.parentSeedKey !== null ? (placeIdBySeed.get(place.parentSeedKey) ?? null) : null;
-    db.prepare(
-      `INSERT OR IGNORE INTO world_places (
-         id, world_profile_id, parent_place_id, kind, name, description,
-         status, seed_key, sort_order, revision, created_at, updated_at
-       ) VALUES (?, ?, ?, ?, ?, ?, 'canonical', ?, ?, 0, ?, ?)`,
-    ).run(
-      placeId,
-      worldId,
-      parentId,
-      place.kind,
-      place.name,
-      place.description,
-      place.seedKey,
-      index,
-      now,
-      now,
-    );
-    // INSERT OR IGNORE skips existing v3 rows — refresh parent + identity fields.
-    db.prepare(
-      `UPDATE world_places
-       SET parent_place_id = ?, kind = ?, name = ?, description = ?,
-           status = 'canonical', sort_order = ?, updated_at = ?
-       WHERE id = ? AND world_profile_id = ? AND seed_key = ?`,
-    ).run(
-      parentId,
-      place.kind,
-      place.name,
-      place.description,
-      index,
-      now,
-      placeId,
-      worldId,
-      place.seedKey,
-    );
-
-    const linkId = scopedCatalogId(ownerUserId, `${place.stableId}-link`);
-    // Root-map anchors are overview (containing world map), never place-owned primary.
-    const usage = 'overview';
-    const anchor = place.anchor
-      ? { x: place.anchor.x, y: place.anchor.y, source: DORHAIN_UNIFIED_SEED }
-      : {};
-    db.prepare(
-      `INSERT OR IGNORE INTO world_place_map_links (
-         id, world_profile_id, place_id, map_id, usage, feature_id, anchor,
-         created_at, updated_at
-       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-    ).run(
-      linkId,
-      worldId,
-      placeId,
-      mapId,
-      usage,
-      place.anchor ? placeId : null,
-      JSON.stringify(anchor),
-      now,
-      now,
-    );
-    db.prepare(
-      `UPDATE world_place_map_links
-       SET usage = ?, feature_id = ?, anchor = ?, updated_at = ?
-       WHERE id = ? AND world_profile_id = ?`,
-    ).run(
-      usage,
-      place.anchor ? placeId : null,
-      JSON.stringify(anchor),
-      now,
-      linkId,
-      worldId,
-    );
-  }
+  // Six-level Golden child maps + places + primary/overview links (ATL2-A03).
+  seedDornhainGoldenHierarchy(db, ownerUserId, worldId, mapId, now, scopedCatalogId);
 }
-
 function createDornhainProject(
   db: HostDatabase,
   ownerUserId: string,
