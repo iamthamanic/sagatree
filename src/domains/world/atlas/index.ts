@@ -196,6 +196,25 @@ export {
 } from './map-frame';
 
 export {
+  ATLAS_MAP_DOC_BACKUP_META_KEY,
+  ATLAS_MAP_DOC_V2_FORMAT,
+  ATLAS_MAP_DOC_V2_META_KEY,
+  adapterRespectsAmbiguity,
+  adaptGeneratorMetaToV2,
+  buildAtlasMapDocV2,
+  goldenStrokeHintsFromCanvas,
+  mergeAtlasMapDocV2IntoGeneratorMeta,
+  projectAtlasMapDocV2ToV1Wire,
+  restoreAtlasMapDocBackup,
+  unifiedCanvasRoundtripEqual,
+  type AtlasMapDocAdaptResult,
+  type AtlasMapDocBackup,
+  type AtlasMapDocScale,
+  type AtlasMapDocV2,
+  type AtlasStrokeHintMap,
+} from './atlas-map-doc-adapter';
+
+export {
   ATLAS_CANONICAL_CATALOG_VERSION,
   ATLAS_DEFERRED_EDIT_OPS,
   ATLAS_FEATURE_AUTHORITY,
