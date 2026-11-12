@@ -122,9 +122,14 @@ export type UnifiedCanvasDoor = {
 
 export type UnifiedCanvasLayersVisible = Readonly<Record<UnifiedCanvasLayerId, boolean>>;
 
+/** Per-layer edit lock (ATL2-C03). Missing keys = unlocked. */
+export type UnifiedCanvasLayerLocks = Readonly<Partial<Record<UnifiedCanvasLayerId, boolean>>>;
+
 export type UnifiedCanvasDoc = {
   readonly format: typeof UNIFIED_CANVAS_FORMAT;
   readonly layers: UnifiedCanvasLayersVisible;
+  /** Optional; parsers default to {}. Locked layers reject edit hits. */
+  readonly layerLocks?: UnifiedCanvasLayerLocks;
   readonly strokes: readonly UnifiedCanvasStroke[];
   readonly objects: readonly UnifiedCanvasObject[];
   readonly rooms: readonly UnifiedCanvasRoom[];
@@ -176,6 +181,7 @@ export function emptyUnifiedCanvasDoc(demoSeed = true): UnifiedCanvasDoc {
   return {
     format: UNIFIED_CANVAS_FORMAT,
     layers: defaultUnifiedCanvasLayers(),
+    layerLocks: {},
     strokes: [],
     objects: [],
     rooms: [],
@@ -231,6 +237,15 @@ export function parseUnifiedCanvasDoc(raw: unknown): UnifiedCanvasDoc | null {
     objects: typeof layersIn.objects === 'boolean' ? layersIn.objects : baseLayers.objects,
     grid: typeof layersIn.grid === 'boolean' ? layersIn.grid : baseLayers.grid,
   };
+
+  const layerLocksMut: Partial<Record<UnifiedCanvasLayerId, boolean>> = {};
+  if (docRaw.layerLocks != null && typeof docRaw.layerLocks === 'object') {
+    const rawLocks = docRaw.layerLocks as Record<string, unknown>;
+    for (const key of Object.keys(layers) as UnifiedCanvasLayerId[]) {
+      if (rawLocks[key] === true) layerLocksMut[key] = true;
+    }
+  }
+  const layerLocks: UnifiedCanvasLayerLocks = layerLocksMut;
 
   const strokes: UnifiedCanvasStroke[] = [];
   for (const s of docRaw.strokes) {
@@ -343,6 +358,7 @@ export function parseUnifiedCanvasDoc(raw: unknown): UnifiedCanvasDoc | null {
   return {
     format: UNIFIED_CANVAS_FORMAT,
     layers,
+    layerLocks,
     strokes,
     objects,
     rooms,
@@ -356,6 +372,7 @@ export function serializeUnifiedCanvasDoc(doc: UnifiedCanvasDoc): UnifiedCanvasD
   return {
     format: UNIFIED_CANVAS_FORMAT,
     layers: { ...doc.layers },
+    layerLocks: { ...(doc.layerLocks ?? {}) },
     strokes: doc.strokes.map((s) => ({
       id: s.id,
       material: s.material,
