@@ -1,8 +1,8 @@
 # Composition Gate — atlas-golden-steps-2-6
 
-- HEAD_SHA: 21219d19b1da59eaea69598300ea5aa5910b8d9e
-- BASE_SHA: fe727a4416df2590d35a0b5bda71dbd27813f649
-- Date: 2026-11-11
+- HEAD_SHA: c0a94df4c43119bd73c6537b475b7a1b156cdf19
+- BASE_SHA: 540b40ac8150f5053bc7c5e8fca470e0d7b40fb9
+- Date: 2026-11-12
 - Verdict: SKIPPED
 
 ## Skip reason
