@@ -186,6 +186,10 @@
       "sha256": "de25ba46549bab20e0e55a513fb0745e722449d8f1b61bb51887d986653c4eab"
     },
     {
+      "path": "src/domains/world/atlas/atlas-canonical-features.ts",
+      "sha256": "f8863c5adf5026a0a33a92992e3cf22410509b79e67d7b031fe26b52a954e54d"
+    },
+    {
       "path": "src/domains/world/atlas/atlas-map-pins.ts",
       "sha256": "1421ca01edd55307c341adc3ac74f4c5a7cef87f60fadbbe0faaa141898b4791"
     },
@@ -223,7 +227,7 @@
     },
     {
       "path": "src/domains/world/atlas/index.ts",
-      "sha256": "418afdfdbdef3f21fa84b326df868b41587930b379633d9e0bafc0dce1fd34f4"
+      "sha256": "3268dddb6ece499bb6f659da04fafbb90c061ee9b73c6542d1786d28e77a675c"
     },
     {
       "path": "src/domains/world/atlas/map-edit-ops.ts",
@@ -1122,6 +1126,54 @@
       "line": 84,
       "endLine": 113,
       "text": "export type SagaTreeCompactStatblockBenchmarks = {\n  level: SagaTreeNpcLevel;\n  machtgrad: SagaTreeMachtgrad;\n  machtgradLabel: string;\n  combatProfile: SagaTreeCombatProfile;\n  combatRole: SagaTreeCombatRole;\n  experienceBonus: number;\n  primarySkillRank: number;\n  primaryModifier: number;\n  defense: number;\n  resistances: SagaTreeResistanceSlots;\n  baseHealth: number;\n  health: number;\n  baseDamage: SagaTreeDamageStep;\n  primaryDamage: SagaTreeDamageStep;\n  attributeDefaults: readonly [number, number, number, number, number, number];\n  movementMeters: number;\n  threatUnitsSameLevel: number;\n  impulsesPerRound: number;\n  wendepunktPerCombat: number;\n  signatureAbilityBudget: number;\n  minImpulseOptions: number;\n  impulsesAllowed: boolean;\n  combatSignatureRequired: boolean;\n  requiresRangedPrimary: boolean;\n  primaryAttackDelta: number;\n  meleeAttackDelta: number;\n  rangedAttackDelta: number;\n  controlEffectDelta: number;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AtlasCanonicalFeatureKind",
+      "path": "src/domains/world/atlas/atlas-canonical-features.ts",
+      "line": 24,
+      "endLine": 38,
+      "text": "export type AtlasCanonicalFeatureKind =\n  | 'terrain_area'\n  | 'political_area'\n  | 'path_way'\n  | 'path_river'\n  | 'building_footprint'\n  | 'floor_plan_room'\n  | 'wall'\n  | 'door'\n  | 'prop_object'\n  | 'heightfield'\n  | 'layer_toggle'\n  | 'raster_reference'\n  | 'world_node_ref'\n  | 'legacy_area_ambiguous';"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AtlasFeatureAuthority",
+      "path": "src/domains/world/atlas/atlas-canonical-features.ts",
+      "line": 40,
+      "endLine": 45,
+      "text": "export type AtlasFeatureAuthority =\n  | AtlasFeatureOwner\n  | 'view'\n  | 'atmospheric'\n  | 'hierarchy'\n  | 'unresolved';"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AtlasCanonicalFeatureRef",
+      "path": "src/domains/world/atlas/atlas-canonical-features.ts",
+      "line": 47,
+      "endLine": 54,
+      "text": "export type AtlasCanonicalFeatureRef = {\n  readonly kind: AtlasCanonicalFeatureKind;\n  readonly id: string;\n  readonly authority: AtlasFeatureAuthority;\n  /** V1 storage slot this classification was derived from. */\n  readonly v1Slot: 'stroke' | 'room' | 'wall' | 'object' | 'layer' | 'meta' | 'hierarchy';\n  readonly secret?: boolean;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AtlasMigrationDisposition",
+      "path": "src/domains/world/atlas/atlas-canonical-features.ts",
+      "line": 56,
+      "endLine": 61,
+      "text": "export type AtlasMigrationDisposition =\n  | 'keep'\n  | 'classify_only'\n  | 'review_queue'\n  | 'reject_parse'\n  | 'deferred_ticket';"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AtlasMigrationMatrixRow",
+      "path": "src/domains/world/atlas/atlas-canonical-features.ts",
+      "line": 63,
+      "endLine": 67,
+      "text": "export type AtlasMigrationMatrixRow = {\n  readonly source: string;\n  readonly disposition: AtlasMigrationDisposition;\n  readonly notes: string;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AtlasCanonicalDocClassification",
+      "path": "src/domains/world/atlas/atlas-canonical-features.ts",
+      "line": 289,
+      "endLine": 294,
+      "text": "export type AtlasCanonicalDocClassification = {\n  readonly catalogVersion: typeof ATLAS_CANONICAL_CATALOG_VERSION;\n  readonly wireDecision: typeof ATLAS_WIRE_FORMAT_DECISION;\n  readonly features: readonly AtlasCanonicalFeatureRef[];\n  readonly counts: Readonly<Record<AtlasCanonicalFeatureKind, number>>;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
