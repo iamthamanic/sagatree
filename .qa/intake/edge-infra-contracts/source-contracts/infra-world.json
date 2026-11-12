@@ -215,7 +215,7 @@
     },
     {
       "path": "src/domains/world/atlas/atlas-webgl-write-retire.ts",
-      "sha256": "92b72f7e695333c9390191042f75c244e9e3f01d6f02f6715bcb6dc42ecb958e"
+      "sha256": "c769b6e2d84900aeee7bbbf44ced3f672b0d3f83353cf9e45d87dc6cec239a50"
     },
     {
       "path": "src/domains/world/atlas/canvas-polygon.ts",

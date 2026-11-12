@@ -37588,7 +37588,7 @@
           },
           {
             "path": "src/domains/world/atlas/atlas-webgl-write-retire.ts",
-            "sha256": "92b72f7e695333c9390191042f75c244e9e3f01d6f02f6715bcb6dc42ecb958e"
+            "sha256": "c769b6e2d84900aeee7bbbf44ced3f672b0d3f83353cf9e45d87dc6cec239a50"
           },
           {
             "path": "src/domains/world/atlas/canvas-polygon.ts",
@@ -37824,7 +37824,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-world.json",
-      "sourceContractSha256": "1fbd416e06c49c580dfbd0b26413f9c75d416e566f7b9e970fc77c1f2149cce3",
+      "sourceContractSha256": "2d5c0033a967f3997c0b328bdb176ff36fece736320cf61eaf3dafed118c67ef",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],

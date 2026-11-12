@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-world.json](source-contracts/infra-world.json) (SHA-256 `1fbd416e06c49c580dfbd0b26413f9c75d416e566f7b9e970fc77c1f2149cce3`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-world.json](source-contracts/infra-world.json) (SHA-256 `2d5c0033a967f3997c0b328bdb176ff36fece736320cf61eaf3dafed118c67ef`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -646,7 +646,7 @@ All backend operations are included in the public declarations above.
 | `src/domains/world/atlas/atlas-prototype-lod.ts` | `2fb7c706ad2210f7a3f389f22564f60e3f22aa615ec49af49695e388ae582256` |
 | `src/domains/world/atlas/atlas-revision-contract.ts` | `d01c356239143862f9aa8f3fd44fca79105e3ed390327c34b9be6ce1902c78d6` |
 | `src/domains/world/atlas/atlas-tool-registry.ts` | `650f85e176c4e423f237d8d6162fd1342882a52b8b7bc20d81898d488d59ee83` |
-| `src/domains/world/atlas/atlas-webgl-write-retire.ts` | `92b72f7e695333c9390191042f75c244e9e3f01d6f02f6715bcb6dc42ecb958e` |
+| `src/domains/world/atlas/atlas-webgl-write-retire.ts` | `c769b6e2d84900aeee7bbbf44ced3f672b0d3f83353cf9e45d87dc6cec239a50` |
 | `src/domains/world/atlas/canvas-polygon.ts` | `e605bf5a1c438aec4d77cae1879cf0575c565359b6e180b8b6cba95898b46ca4` |
 | `src/domains/world/atlas/dornhain-golden-hierarchy.ts` | `1eaf1b81180fda6e36da7388121d64b1162c4c927bed67a405128cddea46e0b1` |
 | `src/domains/world/atlas/dornhain-golden-reset.ts` | `242b85a727062342a69f934a3b0cb64d3c5c726a71b87548043facd7e62f6c2f` |

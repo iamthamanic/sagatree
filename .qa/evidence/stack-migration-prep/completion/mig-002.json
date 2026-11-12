@@ -5,7 +5,7 @@
   "result": "PASS",
   "githubClosed": true,
   "mergeRef": "PR #860 \u2192 main (after #782)",
-  "note": "Inventories refreshed after ATL2-B04 atlas-webgl-write-retire barrel + infra-world fingerprint.",
+  "note": "Inventories refreshed after ATL2-B04 Codex P1/P2 hydrate/restore fixes.",
   "checks": [
     {
       "command": "legacy inventory matrix",
@@ -23,8 +23,8 @@
       "command": "edge/infra inventory 25+13",
       "result": "PASS",
       "evidenceFile": ".qa/intake/edge-infra-contracts/inventory.json",
-      "sha256": "e0ad4adbbeaa1d11cef2c8c721d03fcf04ab5085cbcd14bdb61a537922f74b31"
+      "sha256": "8bb5652ab669ea03a692b2d720b1a93d24e44719e4e8c8bb8b773905b2166912"
     }
   ],
-  "testedCommit": "f97e7a8c7427a2a068b2e19dfdba1804de427108"
+  "testedCommit": "48593ac9de454bfab0a9ee8e5d505926e637b1bd"
 }
