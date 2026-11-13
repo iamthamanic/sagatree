@@ -1,7 +1,7 @@
 {
   "gate": "atl2-d01",
   "issue": 1212,
-  "head": "d191da96a88b30278e67856f09b6975caac0a81a",
+  "head": "2dd32e15dc65217bcfbfb2d1375ba296312275e3",
   "verdict": "CLEAR",
   "target": "custom-webgl-prototype-runtime",
   "golden": {
@@ -23,7 +23,7 @@
       "w.loc.southmarsh"
     ]
   },
-  "bridgeMs": 0.684,
+  "bridgeMs": 0.794,
   "presets": [
     "high",
     "balanced",

@@ -61,10 +61,21 @@ assert.equal(target.isProductAtlasRendererTarget('three-spatial-viewport'), fals
 assert.ok(editorSrc.includes('AtlasNative3dEditor'));
 assert.ok(!editorSrc.includes('AtlasSpatialViewport'));
 assert.ok(nativeSrc.includes('mountAtlasPrototype3d'));
+assert.ok(nativeSrc.includes('resolveAtlasGraphicsPreset'));
+assert.ok(nativeSrc.includes('graphicsPreset:'));
 assert.ok(runtimeSrc.includes('class AtlasGL'));
 assert.ok(runtimeSrc.includes('class AtlasLite3D'));
 assert.ok(runtimeSrc.includes('activate3D'));
+assert.ok(runtimeSrc.includes('graphicsPreset'));
+assert.ok(runtimeSrc.includes('data-atlas-graphics-preset'));
+assert.ok(runtimeSrc.includes('preferSoftwareFallback'));
 assert.ok(spatialSrc.includes("import * as THREE from 'three'"));
+assert.ok(acceptance.includes('IV-01'));
+assert.ok(acceptance.includes('IV-07'));
+assert.ok(acceptance.includes('IV-09'));
+assert.ok(acceptance.includes('IV-18'));
+assert.ok(nativeSrc.includes('controlled'));
+assert.ok(runtimeSrc.includes('productMap'));
 
 // Golden parity: canvas → webgl → canvas
 const golden = starter.buildDornhainUnifiedCanvasDoc();
@@ -155,9 +166,13 @@ const report = `# ATL2-D01 — Renderer decision
 
 ## Graphics presets
 
-| Preset | Locked |
-|--------|--------|
-${evidence.presets.map((id) => `| ${id} | yes |`).join('\n')}
+| Preset | Locked | Wired into Native3d mount |
+|--------|--------|---------------------------|
+${evidence.presets.map((id) => `| ${id} | yes | yes |`).join('\n')}
+
+## Imagination-First (IV)
+
+- IV-01 / IV-07 / IV-09 / IV-18: acceptance checklist + controlled productMap path asserted
 
 ## Historical PoC
 

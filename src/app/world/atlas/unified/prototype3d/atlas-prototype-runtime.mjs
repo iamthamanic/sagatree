@@ -256,6 +256,26 @@ export function mountAtlasPrototype3d(host, options = {}) {
   const productMap = controlled;
   let mapScale = normalizeAtlasMapScale(options.mapScale);
   let mapPins = normalizeAtlasMapPins(options.mapPins);
+  /** ATL2-D01 graphics preset (high|balanced|lite) — DPR / antialias / software prefer. */
+  const graphicsPresetRaw =
+    options && options.graphicsPreset && typeof options.graphicsPreset === 'object'
+      ? options.graphicsPreset
+      : null;
+  const graphicsPreset = {
+    id:
+      typeof graphicsPresetRaw?.id === 'string' && graphicsPresetRaw.id
+        ? graphicsPresetRaw.id
+        : 'balanced',
+    maxPixelRatio:
+      typeof graphicsPresetRaw?.maxPixelRatio === 'number' &&
+      Number.isFinite(graphicsPresetRaw.maxPixelRatio) &&
+      graphicsPresetRaw.maxPixelRatio > 0
+        ? graphicsPresetRaw.maxPixelRatio
+        : 1.5,
+    preferSoftwareFallback: graphicsPresetRaw?.preferSoftwareFallback === true,
+    antialias: graphicsPresetRaw?.antialias !== false,
+  };
+  host.setAttribute('data-atlas-graphics-preset', graphicsPreset.id);
   /** Keep fitting the whole map frame on resize until the user moves the camera. */
   let productFitPending = productMap;
   /** Select tool: selected prop id + active drag ({ id, dx, dz, moved }). */
@@ -538,7 +558,7 @@ export function mountAtlasPrototype3d(host, options = {}) {
     class AtlasGL {
       constructor(canvas){
         this.canvas=canvas;
-        const gl=canvas.getContext('webgl2',{alpha:false,antialias:true,depth:true,preserveDrawingBuffer:true,powerPreference:'high-performance'}) ||canvas.getContext('webgl',{alpha:false,antialias:true,depth:true,preserveDrawingBuffer:true});
+        const gl=canvas.getContext('webgl2',{alpha:false,antialias:graphicsPreset.antialias,depth:true,preserveDrawingBuffer:true,powerPreference:'high-performance'}) ||canvas.getContext('webgl',{alpha:false,antialias:graphicsPreset.antialias,depth:true,preserveDrawingBuffer:true});
         if(!gl) throw Error('WebGL nicht verfügbar');
         this.gl=gl;this.meshes=new Map();this.textures=new Map();
         const vertex=`attribute vec3 aPos;attribute vec3 aNormal;attribute vec3 aColor;attribute vec2 aUV;
@@ -557,7 +577,7 @@ export function mountAtlasPrototype3d(host, options = {}) {
       uploadTexture(name,canvas){const gl=this.gl;let t=this.textures.get(name);if(!t){t=gl.createTexture();this.textures.set(name,t);}gl.bindTexture(gl.TEXTURE_2D,t);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,canvas);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR_MIPMAP_LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);gl.generateMipmap(gl.TEXTURE_2D);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,false);}
       setMesh(name,builder,texture=null){const gl=this.gl;const previous=this.meshes.get(name);if(previous?.buffer)gl.deleteBuffer(previous.buffer);const data=new Float32Array(builder.a);const buffer=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,buffer);gl.bufferData(gl.ARRAY_BUFFER,data,gl.STATIC_DRAW);this.meshes.set(name,{buffer,count:data.length/11,texture});}
       delMesh(name){const gl=this.gl,m=this.meshes.get(name);if(m)gl.deleteBuffer(m.buffer);this.meshes.delete(name);}
-      resize(width,height){const w=Math.max(200,Math.round(width*Math.min(devicePixelRatio||1,1.8))),h=Math.max(180,Math.round(height*Math.min(devicePixelRatio||1,1.8)));if(this.canvas.width!==w||this.canvas.height!==h){this.canvas.width=w;this.canvas.height=h;}this.gl.viewport(0,0,w,h);}
+      resize(width,height){const w=Math.max(200,Math.round(width*Math.min(devicePixelRatio||1,graphicsPreset.maxPixelRatio))),h=Math.max(180,Math.round(height*Math.min(devicePixelRatio||1,graphicsPreset.maxPixelRatio)));if(this.canvas.width!==w||this.canvas.height!==h){this.canvas.width=w;this.canvas.height=h;}this.gl.viewport(0,0,w,h);}
       render(view,visibility={}){const gl=this.gl;gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);gl.useProgram(this.program);gl.uniformMatrix4fv(this.uniforms.uMatrix,false,view);gl.activeTexture(gl.TEXTURE0);gl.enable(gl.DEPTH_TEST);gl.depthMask(true);gl.disable(gl.BLEND);let calls=0;
         for(const [name,m] of this.meshes){if(m.count===0||visibility[name]===false)continue;const alpha=typeof visibility[name]==='number'?visibility[name]:1;gl.uniform1f(this.uniforms.uAlpha,alpha);gl.uniform1f(this.uniforms.uTexture,m.texture?1:0);gl.uniform1f(this.uniforms.uFlat,(m.texture||name==='ocean')?1:0);gl.bindTexture(gl.TEXTURE_2D,m.texture?(this.textures.get(m.texture)||this.surface):this.surface);gl.bindBuffer(gl.ARRAY_BUFFER,m.buffer);const stride=44;for(const [i,index] of this.attribs.entries()){if(index<0)continue;gl.enableVertexAttribArray(index);gl.vertexAttribPointer(index,i===3?2:3,gl.FLOAT,false,stride,[0,12,24,36][i]);}if(alpha<1){gl.enable(gl.BLEND);gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);gl.depthMask(false);}else{gl.disable(gl.BLEND);gl.depthMask(true);}gl.drawArrays(gl.TRIANGLES,0,m.count);calls++;}
         gl.depthMask(true);gl.disable(gl.BLEND);this.lastCalls=calls;
@@ -593,7 +613,7 @@ export function mountAtlasPrototype3d(host, options = {}) {
       uploadTexture(name,canvas){this.textures.set(name,canvas);}
       setMesh(name,builder,texture=null){const array=new Float32Array(builder.a);this.meshes.set(name,{array,count:array.length/11,texture});}
       delMesh(name){this.meshes.delete(name);}
-      resize(width,height){const dpr=Math.min(devicePixelRatio||1,1.5);const w=Math.max(260,Math.round(width*dpr)),h=Math.max(200,Math.round(height*dpr));if(this.canvas.width!==w||this.canvas.height!==h){this.canvas.width=w;this.canvas.height=h;}this.ctx.setTransform(dpr,0,0,dpr,0,0);}
+      resize(width,height){const dpr=Math.min(devicePixelRatio||1,Math.min(1.5,graphicsPreset.maxPixelRatio));const w=Math.max(260,Math.round(width*dpr)),h=Math.max(200,Math.round(height*dpr));if(this.canvas.width!==w||this.canvas.height!==h){this.canvas.width=w;this.canvas.height=h;}this.ctx.setTransform(dpr,0,0,dpr,0,0);}
       project(x,y,z){const {pitch,forward,right}=getCameraAngles(),s=stageHeight/(2*cameraState.span),dx=x-cameraState.x,dz=z-cameraState.z;return [stageWidth/2+(right[0]*dx+right[1]*dz)*s,stageHeight/2+((forward[0]*dx+forward[1]*dz)*Math.sin(pitch)-y*Math.cos(pitch))*s,(forward[0]*dx+forward[1]*dz)*Math.cos(pitch)+y*Math.sin(pitch)];}
       drawMap(name,m){const ctx=this.ctx,canvas=this.textures.get(m.texture);if(!canvas)return;const conf=mapConfigs[m.texture];if(!conf)return;const {x,z,w,h}=conf;const y=name==='map_world'?-0.3:name==='map_region'?.02:name==='map_city'?.08:.17;const tl=this.project(x-w/2,y,z-h/2),tr=this.project(x+w/2,y,z-h/2),bl=this.project(x-w/2,y,z+h/2);const a=(tr[0]-tl[0])/canvas.width,b=(tr[1]-tl[1])/canvas.width,c=(bl[0]-tl[0])/canvas.height,d=(bl[1]-tl[1])/canvas.height;ctx.save();ctx.setTransform(a,b,c,d,tl[0],tl[1]);ctx.imageSmoothingEnabled=true;ctx.drawImage(canvas,0,0);ctx.restore();}
       render(_view,visibility={}){const ctx=this.ctx;const w=stageWidth,h=stageHeight;ctx.save();ctx.setTransform(1,0,0,1,0,0);const dpr=this.canvas.width/w;ctx.setTransform(dpr,0,0,dpr,0,0);ctx.fillStyle='#123e4a';ctx.fillRect(0,0,w,h);
@@ -949,7 +969,7 @@ export function mountAtlasPrototype3d(host, options = {}) {
     }
     function rebuildAll(){applyPlaceNames();baseMapCanvases={world:worldTexture(),region:regionTexture(),city:cityTexture()};dungeon=dungeonGenerate(state.seed,state.roomCount);updateRoomAnchor();drawStrokes();if(engine){for(const key of Object.keys(mapConfigs))engine.uploadTexture(key,mapCanvases[key]);if(!productMap)buildDungeonGeometry();buildManualGeometry();}updateStats();drawFrame();}
     function buildEverything(){if(!engine)return;makeMapMeshes();if(productMap){buildProductGeometry();return;}buildWorldGeometry();buildRegionGeometry();buildCityGeometry();buildDungeonGeometry();buildManualGeometry();}
-    function syncRendererSize(){const b=stage.getBoundingClientRect();const w=Math.max(260,Math.round(b.width));const h=Math.max(240,Math.round(b.height));if(w===stageWidth&&h===stageHeight)return;stageWidth=w;stageHeight=h;canvasDpr=Math.min(devicePixelRatio||1,1.8);if(engine)engine.resize(stageWidth,stageHeight);if(productMap&&productFitPending)productFitCamera(false);drawFrame();}
+    function syncRendererSize(){const b=stage.getBoundingClientRect();const w=Math.max(260,Math.round(b.width));const h=Math.max(240,Math.round(b.height));if(w===stageWidth&&h===stageHeight)return;stageWidth=w;stageHeight=h;canvasDpr=Math.min(devicePixelRatio||1,graphicsPreset.maxPixelRatio);if(engine)engine.resize(stageWidth,stageHeight);if(productMap&&productFitPending)productFitCamera(false);drawFrame();}
     function getCameraAngles(){const pitch=tiltEnabled?tiltAngle:Math.PI/2;return{pitch,forward:[Math.sin(yawAngle),Math.cos(yawAngle)],right:[Math.cos(yawAngle),-Math.sin(yawAngle)]};}
     function screenToWorld(x,y){const{pitch,forward,right}=getCameraAngles(),unit=2*cameraState.span/stageHeight;const ox=(x-stageWidth/2)*unit,oy=(y-stageHeight/2)*unit/Math.max(.2,Math.sin(pitch));return{x:cameraState.x+right[0]*ox+forward[0]*oy,z:cameraState.z+right[1]*ox+forward[1]*oy};}
     function point3dToScreen(x,z,y=0){const{pitch,forward,right}=getCameraAngles(),dx=x-cameraState.x,dz=z-cameraState.z,unit=stageHeight/(2*cameraState.span);return{x:stageWidth/2+(right[0]*dx+right[1]*dz)*unit,y:stageHeight/2+(forward[0]*dx+forward[1]*dz)*Math.sin(pitch)*unit-y*Math.cos(pitch)*unit,visible:true};}
@@ -1017,7 +1037,7 @@ export function mountAtlasPrototype3d(host, options = {}) {
     function pointerUp(e){if(labelDrag){endLabelDrag(e);return;}if(!pointer)return;if(pointer.mode==='select'){productEndSelectDrag();pointer=null;stage.classList.remove('drag');try{stage.releasePointerCapture(e.pointerId);}catch{}drawFrame();return;}if(pointer.mode==='wall'||pointer.mode==='room'){const m=atStageEvent(e),p=screenToWorld(m.x,m.y),dist=Math.hypot(p.x-pointer.point.x,p.z-pointer.point.z);if(dist>cameraState.span*.015){if(pointer.mode==='wall')state.walls.push({id:'w'+Date.now(),level:activeLevel==='room'?'dungeon':activeLevel,start:[pointer.point.x,pointer.point.z],end:[p.x,p.z],...(productMap?{width:productWallWidth()}:{})});else{state.rooms=state.rooms||[];state.rooms.push({id:'r'+Date.now(),level:activeLevel==='room'?'dungeon':activeLevel,start:[pointer.point.x,pointer.point.z],end:[p.x,p.z],material});}buildManualGeometry();persist();toast(pointer.mode==='wall'?'3D-Wand gezeichnet':'3D-Raum erstellt');}else history.pop();}else if(pointer.mode==='paint'){drawStrokes();for(const k of Object.keys(mapConfigs))engine?.uploadTexture(k,mapCanvases[k]);buildManualGeometry();persist();}pointer=null;stage.classList.remove('drag');try{stage.releasePointerCapture(e.pointerId);}catch{}drawFrame();}
     function generate(){if(productMap){toast('Dungeon-Generator gibt es nur in der Demo-Karte');return;}const seed=clamp(Math.floor(Number($('dungeonSeed').value)||42817),1,999999999),rooms=clamp(Math.floor(Number($('roomCount').value)||22),10,48);snapshot();state.seed=seed;state.roomCount=rooms;state.theme=$('dungeonTheme').value;dungeon=dungeonGenerate(state.seed,state.roomCount);updateRoomAnchor();buildDungeonGeometry();buildManualGeometry();persist();toast(`Dungeon erstellt · ${dungeon.rooms.length} Räume · Seed ${state.seed}`);goTo('dungeon');}
     function animate3d(){/* idle: no continuous RAF — was causing perceived drift with layout/hotspot updates */}
-    function activate3D(){let gpu=false;try{engine=new AtlasGL(renderCanvas);gpu=true;}catch(err){glError=err;console.info('WebGL nicht verfügbar, dieselben 3D-Meshes per Canvas-Projektion gerendert.');engine=new AtlasLite3D(fallbackCanvas);}
+    function activate3D(){let gpu=false;try{if(graphicsPreset.preferSoftwareFallback)throw new Error('graphics-preset-lite');engine=new AtlasGL(renderCanvas);gpu=true;}catch(err){glError=err;console.info('WebGL nicht verfügbar, dieselben 3D-Meshes per Canvas-Projektion gerendert.');engine=new AtlasLite3D(fallbackCanvas);host.setAttribute('data-atlas-graphics-fallback','lite3d');}
     renderCanvas.classList.toggle('hidden',!gpu);fallbackCanvas.classList.toggle('hidden',gpu);buildEverything();syncRendererSize();$('engineState').textContent=gpu?'WEBGL · ECHTES 3D · OFFLINE':'3D · SOFTWARE-RENDERER · OFFLINE';window.__sagatree3DReady=true;drawFrame();root.setAttribute('data-atlas-ready','true');
     // Second paint after host layout settles (tab switch often mounts with 0×0 stage first).
     requestAnimationFrame(()=>{if(disposed)return;syncRendererSize();drawFrame();requestAnimationFrame(()=>{if(disposed)return;syncRendererSize();drawFrame();});});}

@@ -17,13 +17,27 @@ target + rollback + degradable graphics presets before Phase D hardening.
 - [ ] Golden Dornhain canvas ↔ WebGL runtime bridge parity measured
 - [ ] Product chrome uses Native3d + prototype-runtime only (no SpatialViewport mount)
 - [ ] Decision record in domain + `.qa/design/atl2-d01-renderer-decision.md`
-- [ ] Graphics presets high/balanced/lite documented and tested
+- [ ] Graphics presets high/balanced/lite documented, tested, and wired into Native3d mount
 - [ ] Gate report `.qa/runs/atl2-d01-renderer-decision.md` CLEAR
 - [ ] Touched files: zero type escape hatches
+
+## Imagination-First (IV)
+
+Productive 3D is a visualization of the same canonical `UnifiedCanvasDoc` / host map
+state as Draufsicht — not a second fiction author.
+
+- [ ] **IV-01** Authority: terrain/props/walls/doors are canonical cartography; decorative
+      atmosphere stays non-authoritative
+- [ ] **IV-07** Hidden-info safety: 3D path does not invent player-visible secrets beyond
+      host/playerView projection
+- [ ] **IV-09** Interaction truth: only registry-backed tools imply gameplay affordances
+- [ ] **IV-18** Canonical linkage: controlled seed/persist binds meshes to `generator_meta`
+      / unified canvas (no localStorage SoT)
 
 ## Edge Cases
 
 - [ ] WebGL unavailable → AtlasLite3D software path remains in target runtime
+- [ ] `lite` preset prefers software fallback without requiring GPU failure
 - [ ] Parallel Three viewport stays inventory-only (no product chrome import)
 
 ## Security Coverage

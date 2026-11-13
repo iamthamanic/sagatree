@@ -9,7 +9,9 @@
  */
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import {
+  resolveAtlasGraphicsPreset,
   webglToolChromeForKind,
+  type AtlasGraphicsPresetId,
   type AtlasMapPin,
   type AtlasMapScale,
   type WebglRuntimeState,
@@ -66,6 +68,8 @@ export type AtlasNative3dEditorProps = {
   readonly mapScale?: AtlasMapScale;
   /** Persisted place labels anchored on the active map. */
   readonly mapPins?: readonly AtlasMapPin[] | null;
+  /** ATL2-D01 graphics quality preset (default balanced). */
+  readonly graphicsPresetId?: AtlasGraphicsPresetId;
 };
 
 /** Rebrand leftover prototype copy to SagaTree product wording. */
@@ -295,6 +299,7 @@ export function AtlasNative3dEditor({
   mapSketchStatus = null,
   mapScale = 'world',
   mapPins = null,
+  graphicsPresetId = 'balanced',
 }: AtlasNative3dEditorProps) {
   const hostRef = useRef<HTMLDivElement>(null);
   const mountRef = useRef<AtlasNativeMountHandle | null>(null);
@@ -383,6 +388,7 @@ export function AtlasNative3dEditor({
         mapSketchStatus: mapSketchStatusRef.current ?? null,
         mapScale: mapScaleRef.current,
         mapPins: mapPinsRef.current ? [...mapPinsRef.current] : null,
+        graphicsPreset: resolveAtlasGraphicsPreset(graphicsPresetId),
       });
       mountRef.current = mount;
       disposePanels = installCollapsiblePanels(host);
@@ -410,7 +416,7 @@ export function AtlasNative3dEditor({
       host.removeAttribute('data-atlas-boot');
       host.removeAttribute('data-atlas-controlled');
     };
-  }, [mapKey, controlled]);
+  }, [mapKey, controlled, graphicsPresetId]);
 
   // Push tree / selection updates without remounting WebGL.
   useEffect(() => {

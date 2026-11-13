@@ -66,5 +66,8 @@ it does **not** justify swapping the live product custom-WebGL path.
 | lite | 1 | prefer AtlasLite3D |
 
 Domain API: `resolveAtlasGraphicsPreset` / `clampAtlasPixelRatio` in
-`atlas-renderer-target.ts`. Runtime already activates `AtlasLite3D` when WebGL
-construction throws.
+`atlas-renderer-target.ts`. `AtlasNative3dEditor` passes the resolved preset into
+`mountAtlasPrototype3d` (`graphicsPreset`). Runtime applies max DPR + antialias,
+and `lite.preferSoftwareFallback` forces `AtlasLite3D` (also used when WebGL
+construction throws). Host attributes: `data-atlas-graphics-preset`,
+`data-atlas-graphics-fallback=lite3d`.
