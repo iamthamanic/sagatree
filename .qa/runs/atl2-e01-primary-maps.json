@@ -1,7 +1,7 @@
 {
   "gate": "atl2-e01",
   "issue": 1219,
-  "head": "0f5875fe7da45f06c6d013ab71d90b68e33d4782",
+  "head": "aea0d5896dcc41a62835367e17d809325b26de95",
   "host": {
     "chainKinds": [
       "continent",
@@ -13,7 +13,9 @@
     "primaryLinks": 5,
     "placeCount": 5,
     "rootMaps": 1,
+    "readPortsOk": true,
     "immutableIds": true,
+    "cycleRejected": true,
     "skipRejected": true,
     "crossWorldRejected": true,
     "strangerDenied": true
@@ -35,13 +37,18 @@
       "ist": "pass-host"
     },
     {
+      "category": "Host read ports",
+      "soll": "listPlaces/links/maps reload hierarchy",
+      "ist": "pass-host"
+    },
+    {
       "category": "Immutable IDs",
       "soll": "rename keeps placeId + mapId",
       "ist": "pass-host"
     },
     {
       "category": "Negatives",
-      "soll": "skip/cross-world/stranger fail-closed",
+      "soll": "cycle/skip/cross-world/stranger fail-closed",
       "ist": "pass-host"
     }
   ],

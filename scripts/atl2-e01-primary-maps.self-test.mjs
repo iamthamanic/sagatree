@@ -93,6 +93,9 @@ const createCmd = pathToFileURL(
 const renameCmd = pathToFileURL(
   join(root, 'server/src/application/commands/rename_world_node.ts'),
 ).href;
+const reparentCmd = pathToFileURL(
+  join(root, 'server/src/application/commands/reparent_world_node.ts'),
+).href;
 
 const { bootstrapHostPersistence } = await import(persistenceUrl);
 const { createPermissionsPorts } = await import(permissionsUrl);
@@ -101,6 +104,7 @@ const { createWorldPorts, createSqliteWorldWriteStore } = await import(worldUrl)
 const { createSqliteWorldReadStore } = await import(worldReadUrl);
 const { create_world_node_with_maps } = await import(createCmd);
 const { rename_world_node } = await import(renameCmd);
+const { reparent_world_node } = await import(reparentCmd);
 
 const work = mkdtempSync(join(tmpdir(), 'atl2-e01-'));
 const dataDir = join(work, 'data');
@@ -111,7 +115,9 @@ const hostEvidence = {
   primaryLinks: 0,
   placeCount: 0,
   rootMaps: 0,
+  readPortsOk: false,
   immutableIds: false,
+  cycleRejected: false,
   skipRejected: false,
   crossWorldRejected: false,
   strangerDenied: false,
@@ -121,8 +127,9 @@ const sollIst = [
   { category: 'Domain six-level plan', soll: 'room plan = 5 steps w/ primary', ist: 'pass-domain' },
   { category: 'Domain edge matrix', soll: 'legal edges ok; skip/self rejected', ist: 'pass-domain' },
   { category: 'Host create chain', soll: 'room → 5 places + 5 primaries + world root', ist: 'pending' },
+  { category: 'Host read ports', soll: 'listPlaces/links/maps reload hierarchy', ist: 'pending' },
   { category: 'Immutable IDs', soll: 'rename keeps placeId + mapId', ist: 'pending' },
-  { category: 'Negatives', soll: 'skip/cross-world/stranger fail-closed', ist: 'pending' },
+  { category: 'Negatives', soll: 'cycle/skip/cross-world/stranger fail-closed', ist: 'pending' },
 ];
 
 try {
@@ -153,6 +160,7 @@ try {
 
   const createNode = create_world_node_with_maps(world);
   const renameNode = rename_world_node(world);
+  const reparentNode = reparent_world_node(world);
 
   const OWNER = actor('owner-e01');
   const STRANGER = actor('stranger-e01');
@@ -221,6 +229,50 @@ try {
   assert.equal(byKind.building.parent_place_id, byKind.place.id);
   assert.equal(byKind.room.parent_place_id, byKind.building.id);
 
+  // Host read ports — acceptance requires list/reload, not SQL-only counts
+  const listedPlaces = world.listWorldPlaces(OWNER, worldId, false, null);
+  assert.equal(listedPlaces.ok, true, `listWorldPlaces: ${listedPlaces.ok ? '' : listedPlaces.error}`);
+  assert.equal(listedPlaces.value.length, 5);
+  const listedByKind = Object.fromEntries(listedPlaces.value.map((p) => [p.kind, p]));
+  assert.equal(listedByKind.continent.parentPlaceId, null);
+  assert.equal(listedByKind.country.parentPlaceId, listedByKind.continent.id);
+  assert.equal(listedByKind.place.parentPlaceId, listedByKind.country.id);
+  assert.equal(listedByKind.building.parentPlaceId, listedByKind.place.id);
+  assert.equal(listedByKind.room.parentPlaceId, listedByKind.building.id);
+  for (const created of room.value.created) {
+    assert.ok(
+      listedPlaces.value.some((p) => p.id === created.placeId && p.kind === created.kind),
+      `place ${created.kind}/${created.placeId} missing from listWorldPlaces`,
+    );
+  }
+
+  const listedLinks = world.listWorldPlaceMapLinks(OWNER, worldId, false, null);
+  assert.equal(listedLinks.ok, true, `listWorldPlaceMapLinks: ${listedLinks.ok ? '' : listedLinks.error}`);
+  const primaryFromPort = listedLinks.value.filter((l) => l.usage === 'primary');
+  assert.equal(primaryFromPort.length, 5);
+  for (const created of room.value.created) {
+    const hit = primaryFromPort.find(
+      (l) => l.placeId === created.placeId && l.mapId === created.mapId,
+    );
+    assert.ok(hit, `primary link ${created.placeId}→${created.mapId} missing from listWorldPlaceMapLinks`);
+  }
+
+  const listedMaps = world.listWorldAtlasMaps(OWNER, worldId, false, null);
+  assert.equal(listedMaps.ok, true, `listWorldAtlasMaps: ${listedMaps.ok ? '' : listedMaps.error}`);
+  assert.ok(listedMaps.value.length >= 6, `expected ≥6 maps (5 node + world root), got ${listedMaps.value.length}`);
+  const worldRoots = listedMaps.value.filter(
+    (m) => m.kind === 'world' && (m.parentMapId ?? null) == null,
+  );
+  assert.equal(worldRoots.length, 1);
+  for (const created of room.value.created) {
+    assert.ok(
+      listedMaps.value.some((m) => m.id === created.mapId),
+      `map ${created.mapId} missing from listWorldAtlasMaps`,
+    );
+  }
+  hostEvidence.readPortsOk = true;
+  sollIst[3].ist = 'pass-host';
+
   // Immutable IDs on rename
   const target = room.value.created[4];
   const renamed = renameNode(OWNER, {
@@ -241,8 +293,39 @@ try {
     )
     .get(target.placeId);
   assert.equal(link.map_id, target.mapId);
+  // Reload via read ports after rename — place/map IDs stay immutable
+  const placesAfterRename = world.listWorldPlaces(OWNER, worldId, false, null);
+  assert.equal(placesAfterRename.ok, true);
+  const renamedViaPort = placesAfterRename.value.find((p) => p.id === target.placeId);
+  assert.ok(renamedViaPort);
+  assert.equal(renamedViaPort.name, 'Großer Schankraum');
   hostEvidence.immutableIds = true;
-  sollIst[3].ist = 'pass-host';
+  sollIst[4].ist = 'pass-host';
+
+  // Host cycle rejection via reparent_world_node (not domain helper alone)
+  const descCycle = reparentNode(OWNER, {
+    worldProfileId: worldId,
+    placeId: byKind.continent.id,
+    newParentPlaceId: byKind.room.id,
+    confirmRelocate: true,
+  });
+  assert.equal(descCycle.ok, false, 'descendant cycle must fail');
+  assert.equal(descCycle.error, '23514', `cycle error ${descCycle.error}`);
+  const selfCycle = reparentNode(OWNER, {
+    worldProfileId: worldId,
+    placeId: byKind.room.id,
+    newParentPlaceId: byKind.room.id,
+    confirmRelocate: true,
+  });
+  assert.equal(selfCycle.ok, false, 'self cycle must fail');
+  assert.equal(selfCycle.error, '23514', `self cycle error ${selfCycle.error}`);
+  // Parent chain unchanged after rejected cycles
+  const still = world.listWorldPlaces(OWNER, worldId, false, null);
+  assert.equal(still.ok, true);
+  const stillByKind = Object.fromEntries(still.value.map((p) => [p.kind, p]));
+  assert.equal(stillByKind.country.parentPlaceId, stillByKind.continent.id);
+  assert.equal(stillByKind.room.parentPlaceId, stillByKind.building.id);
+  hostEvidence.cycleRejected = true;
 
   // Invalid edge / skip: place cannot hang under room tip (rank too deep; no fillable chain)
   const skip = createNode(OWNER, {
@@ -284,7 +367,7 @@ try {
   });
   assert.equal(stranger.ok, false, 'stranger must fail');
   hostEvidence.strangerDenied = true;
-  sollIst[4].ist = 'pass-host';
+  sollIst[5].ist = 'pass-host';
 } finally {
   rmSync(work, { recursive: true, force: true });
 }
@@ -325,7 +408,9 @@ ${sollRows}
 
 - Chain kinds: **${hostEvidence.chainKinds.join(' → ')}**
 - Places / primary links / world root maps: **${hostEvidence.placeCount} / ${hostEvidence.primaryLinks} / ${hostEvidence.rootMaps}**
+- Host read ports (listPlaces/links/maps): **${hostEvidence.readPortsOk ? 'yes' : 'no'}**
 - Immutable IDs on rename: **${hostEvidence.immutableIds ? 'yes' : 'no'}**
+- Cycle rejected (reparent_world_node): **${hostEvidence.cycleRejected ? 'yes' : 'no'}**
 - Skip rejected: **${hostEvidence.skipRejected ? 'yes' : 'no'}**
 - Cross-world rejected: **${hostEvidence.crossWorldRejected ? 'yes' : 'no'}**
 - Stranger denied: **${hostEvidence.strangerDenied ? 'yes' : 'no'}**
