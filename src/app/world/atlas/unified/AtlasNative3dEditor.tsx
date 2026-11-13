@@ -412,6 +412,10 @@ export function AtlasNative3dEditor({
               graphicsPresetId,
             },
           );
+          /* Non-dungeon maps keep diorama lighting — never force ancient look. */
+          if (plan.counts.instances <= 0) return null;
+          const batchIds = (kind: AtlasDungeonLookPlan['batches'][number]['kind']) =>
+            plan.batches.find((b) => b.kind === kind)?.instanceIds ?? [];
           return {
             themeKey: plan.themeKey,
             floor: plan.palette.floor,
@@ -432,7 +436,12 @@ export function AtlasNative3dEditor({
             shadowStrength: plan.light.shadowStrength,
             geometryFingerprint: plan.geometryFingerprint,
             lookFingerprint: plan.lookFingerprint,
-            torchIds: plan.batches.find((b) => b.kind === 'torch')?.instanceIds ?? [],
+            /* Empty arrays mean deny-all for that kind (exhausted budget). */
+            floorIds: [...batchIds('floor')],
+            wallIds: [...batchIds('wall')],
+            doorIds: [...batchIds('door')],
+            torchIds: [...batchIds('torch')],
+            propIds: [...batchIds('prop')],
           };
         })(),
       });

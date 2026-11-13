@@ -2260,7 +2260,11 @@ export function UnifiedAtlasEditor({
           mapSketchStatus={mapSketchStatus ?? null}
           mapScale={mapScale}
           mapPins={mapPins}
-          dungeonThemeKey={dungeonMeta?.themeKey ?? dungeonTheme}
+          dungeonThemeKey={
+            dungeonPreview
+              ? dungeonPreview.generate.params.themeKey
+              : (dungeonMeta?.themeKey ?? dungeonTheme)
+          }
           dungeonLookDoc={forgeDisplayDoc}
           onNavSelect={onWebglNavSelect}
           onNavRename={canEdit ? onWebglNavRename : undefined}

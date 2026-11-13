@@ -136,7 +136,12 @@ export type AtlasPrototypeMountOptions = {
     readonly shadowStrength: number;
     readonly geometryFingerprint: string;
     readonly lookFingerprint: string;
+    /** Budget allowlists — empty array denies that kind (exhausted). */
+    readonly floorIds: readonly string[];
+    readonly wallIds: readonly string[];
+    readonly doorIds: readonly string[];
     readonly torchIds: readonly string[];
+    readonly propIds: readonly string[];
   } | null;
 };
 

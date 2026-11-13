@@ -225,7 +225,7 @@ function normalizeAtlasMapPins(list) {
  *   mapPins?: Array<{id:string,label:string,kind?:string,x:number,y:number}>,
  *   graphicsPreset?: {id:string,maxPixelRatio:number,preferSoftwareFallback:boolean,antialias:boolean}|null,
  *   dioramaLight?: {presetId:string,daylightDir:readonly [number,number,number]|number[],ambient:number,fogDensity:number,fogColor:string,clearColor:readonly [number,number,number,number]|number[],shadowStrength:number,detailLevel:'full'|'reduced'|'minimal'|string}|null,
- *   dungeonLook?: {themeKey:string,floor:string,wall:string,door:string,accent:string,light:string,torchIntensity:number,bloomEnabled:boolean,particlesEnabled:boolean,maxTorchInstances:number,maxInstances:number,fogDensity:number,fogColor:string,clearColor:readonly [number,number,number,number]|number[],ambient:number,daylightDir:readonly [number,number,number]|number[],shadowStrength:number,geometryFingerprint:string,lookFingerprint:string,torchIds:readonly string[]}|null,
+ *   dungeonLook?: {themeKey:string,floor:string,wall:string,door:string,accent:string,light:string,torchIntensity:number,bloomEnabled:boolean,particlesEnabled:boolean,maxTorchInstances:number,maxInstances:number,fogDensity:number,fogColor:string,clearColor:readonly [number,number,number,number]|number[],ambient:number,daylightDir:readonly [number,number,number]|number[],shadowStrength:number,geometryFingerprint:string,lookFingerprint:string,floorIds:readonly string[],wallIds:readonly string[],doorIds:readonly string[],torchIds:readonly string[],propIds:readonly string[]}|null,
  * }=} options
  *   controlled=true: do not use localStorage as world SoT (#721); persist via onPersist.
  *   externalNav: product WorldNode tree for #nav (#747) — disables demo NAV_CHILDREN as SoT.
@@ -397,16 +397,34 @@ export function mountAtlasPrototype3d(host, options = {}) {
         geometryFingerprint:
           typeof dungeonLookRaw.geometryFingerprint === 'string' ? dungeonLookRaw.geometryFingerprint : '',
         lookFingerprint: typeof dungeonLookRaw.lookFingerprint === 'string' ? dungeonLookRaw.lookFingerprint : '',
+        floorIds: Array.isArray(dungeonLookRaw.floorIds)
+          ? dungeonLookRaw.floorIds.filter((id) => typeof id === 'string').slice(0, 4096)
+          : [],
+        wallIds: Array.isArray(dungeonLookRaw.wallIds)
+          ? dungeonLookRaw.wallIds.filter((id) => typeof id === 'string').slice(0, 4096)
+          : [],
+        doorIds: Array.isArray(dungeonLookRaw.doorIds)
+          ? dungeonLookRaw.doorIds.filter((id) => typeof id === 'string').slice(0, 4096)
+          : [],
         torchIds: Array.isArray(dungeonLookRaw.torchIds)
           ? dungeonLookRaw.torchIds.filter((id) => typeof id === 'string').slice(0, 256)
+          : [],
+        propIds: Array.isArray(dungeonLookRaw.propIds)
+          ? dungeonLookRaw.propIds.filter((id) => typeof id === 'string').slice(0, 4096)
           : [],
       }
     : null;
   const isDungeonFeatureId = (id) =>
     typeof id === 'string' && /^(droom-|dwall-|dcorr-|dgrid-|dlamp-|dchest-|ddoor-)/.test(id);
+  /** Budget allowlist: empty array denies all of that kind when dungeonLook is active. */
+  const dungeonAllow = (id, ids) => {
+    if (!dungeonLook || !isDungeonFeatureId(id)) return true;
+    return Array.isArray(ids) && ids.includes(id);
+  };
   if (dungeonLook) {
     host.setAttribute('data-atlas-dungeon-theme', dungeonLook.themeKey);
     host.setAttribute('data-atlas-dungeon-bloom', dungeonLook.bloomEnabled ? '1' : '0');
+    host.setAttribute('data-atlas-dungeon-particles', dungeonLook.particlesEnabled ? '1' : '0');
     host.setAttribute('data-atlas-dungeon-budget', String(dungeonLook.maxInstances));
     host.setAttribute('data-atlas-dungeon-look-fp', dungeonLook.lookFingerprint);
     host.setAttribute('data-atlas-dungeon-geom-fp', dungeonLook.geometryFingerprint);
@@ -428,7 +446,21 @@ export function mountAtlasPrototype3d(host, options = {}) {
         clearColor: dioramaLight.clearColor,
         shadowStrength: dioramaLight.shadowStrength,
       };
-  if (dungeonLook && dungeonLook.bloomEnabled) host.setAttribute('data-atlas-dungeon-bloom-active', '1');
+  if (dungeonLook && dungeonLook.bloomEnabled) {
+    host.setAttribute('data-atlas-dungeon-bloom-active', '1');
+    /* Soft emissive lift — Custom WebGL bloom stand-in (no Three.js post-FX). */
+    host.style.setProperty('--atlas-dungeon-bloom-gain', '1.25');
+    host.style.filter = 'brightness(var(--atlas-dungeon-bloom-gain, 1.25)) saturate(1.12)';
+  } else {
+    host.removeAttribute('data-atlas-dungeon-bloom-active');
+    host.style.removeProperty('--atlas-dungeon-bloom-gain');
+    host.style.removeProperty('filter');
+  }
+  if (dungeonLook && dungeonLook.particlesEnabled) {
+    host.setAttribute('data-atlas-dungeon-particles-active', '1');
+  } else {
+    host.removeAttribute('data-atlas-dungeon-particles-active');
+  }
 
   /** Keep fitting the whole map frame on resize until the user moves the camera. */
   let productFitPending = productMap;
@@ -1034,6 +1066,7 @@ export function mountAtlasPrototype3d(host, options = {}) {
     }
     /** Flat area (2D parity): terrain patches on world/settlement maps, floor plans on interiors. */
     function productRoomInto(b,rm,y,dy){
+      if(!dungeonAllow(rm.id,dungeonLook?dungeonLook.floorIds:null))return;
       const r=productRect(rm);if(!(r.w>.02&&r.h>.02))return;
       const color=(dungeonLook&&isDungeonFeatureId(rm.id)?dungeonLook.floor:null)||productMaterialColor(rm.material,false),interior=mapScale==='interior';
       if(r.points)productPolyFill(b,r.points,y,color);
@@ -1076,14 +1109,17 @@ export function mountAtlasPrototype3d(host, options = {}) {
       const c=[[start[0]-vx,start[1]-vz],[end[0]-vx,end[1]-vz],[end[0]+vx,end[1]+vz],[start[0]+vx,start[1]+vz]];
       const bot=c.map(v=>[v[0],baseY,v[1]]),top=c.map(v=>[v[0],baseY+height,v[1]]);
       const wc=(typeof wallColor==='string'&&wallColor)?wallColor:'#b4b6aa';
+      /* Vertical faces use the same theme wall color (ATL2-F04). */
+      const side=(typeof wallColor==='string'&&wallColor)?wallColor:'#6f6a63';
       b.quad(top[0],top[1],top[2],top[3],wc);
-      for(let i=0;i<4;i++)b.quad(bot[i],bot[(i+1)%4],top[(i+1)%4],top[i],'#6f6a63');
+      for(let i=0;i<4;i++)b.quad(bot[i],bot[(i+1)%4],top[(i+1)%4],top[i],side);
     }
     /**
      * Wall thickness is the doc width; height depends on the map scale.
      * ATL2-D02: carve door openings (parametric t ± half door width) instead of a sealed prism.
      */
     function productWallInto(b,wall,baseY,height){
+      if(!dungeonAllow(wall.id,dungeonLook?dungeonLook.wallIds:null))return;
       const a=Array.isArray(wall.start)?wall.start:[0,0],e=Array.isArray(wall.end)?wall.end:[0,0],dx=e[0]-a[0],dz=e[1]-a[1],length=Math.hypot(dx,dz);if(length<.02)return;
       const thick=Math.max(.3,Number(wall.width)||height*.15);
       const dungeonWallColor=dungeonLook&&isDungeonFeatureId(wall.id)?dungeonLook.wall:null;
@@ -1099,13 +1135,14 @@ export function mountAtlasPrototype3d(host, options = {}) {
       for(const g of gaps){const last=merged[merged.length-1];if(!last||g[0]>last[1]+1e-4)merged.push([g[0],g[1]]);else last[1]=Math.max(last[1],g[1]);}
       let cursor=0;
       for(const [g0,g1] of merged){
-        if(g0-cursor>1e-3)productWallSegmentInto(b,[a[0]+dx*cursor,a[1]+dz*cursor],[a[0]+dx*g0,a[1]+dz*g0],thick,baseY,height);
+        if(g0-cursor>1e-3)productWallSegmentInto(b,[a[0]+dx*cursor,a[1]+dz*cursor],[a[0]+dx*g0,a[1]+dz*g0],thick,baseY,height,dungeonWallColor);
         cursor=g1;
       }
-      if(1-cursor>1e-3)productWallSegmentInto(b,[a[0]+dx*cursor,a[1]+dz*cursor],e,thick,baseY,height);
+      if(1-cursor>1e-3)productWallSegmentInto(b,[a[0]+dx*cursor,a[1]+dz*cursor],e,thick,baseY,height,dungeonWallColor);
     }
     /** ATL2-D02 — open doorway: jambs + lintel only (opening carved from wall). */
     function productDoorInto(b,door,baseY,wallHeight){
+      if(!dungeonAllow(door.id,dungeonLook?dungeonLook.doorIds:null))return;
       const dungeonDoorColor=dungeonLook&&(isDungeonFeatureId(door.id)||isDungeonFeatureId(door.wallId))?dungeonLook.door:null;
       const x=Number(door.x),z=Number(door.z);if(!Number.isFinite(x)||!Number.isFinite(z))return;
       const width=Math.max(.4,Number(door.width)||1.2),openH=Math.max(1.2,wallHeight*0.82),lintelH=Math.max(.25,wallHeight-openH);
@@ -1121,6 +1158,8 @@ export function mountAtlasPrototype3d(host, options = {}) {
       }
       /* lintel above the carved opening */
       const ly=baseY+openH;
+      const lintelTop=(typeof dungeonDoorColor==='string'&&dungeonDoorColor)?dungeonDoorColor:'#a8883a';
+      const lintelSide=(typeof dungeonDoorColor==='string'&&dungeonDoorColor)?dungeonDoorColor:'#8b6914';
       const c=[
         [x-tx*half-nx*thick,z-tz*half-nz*thick],
         [x+tx*half-nx*thick,z+tz*half-nz*thick],
@@ -1128,8 +1167,8 @@ export function mountAtlasPrototype3d(host, options = {}) {
         [x-tx*half+nx*thick,z-tz*half+nz*thick],
       ];
       const bot=c.map(v=>[v[0],ly,v[1]]),top=c.map(v=>[v[0],ly+lintelH,v[1]]);
-      b.quad(top[0],top[1],top[2],top[3],'#a8883a');
-      for(let i=0;i<4;i++)b.quad(bot[i],bot[(i+1)%4],top[(i+1)%4],top[i],'#8b6914');
+      b.quad(top[0],top[1],top[2],top[3],lintelTop);
+      for(let i=0;i<4;i++)b.quad(bot[i],bot[(i+1)%4],top[(i+1)%4],top[i],lintelSide);
     }
     function productTerrainLodStride(){const s=cameraState.span;if(s>=280)return 4;if(s>=90)return 2;return 1;}
     function productTerrainMaxTriangles(stride){if(stride>=4)return 800;if(stride>=2)return 2500;return 8000;}
@@ -1244,9 +1283,10 @@ export function mountAtlasPrototype3d(host, options = {}) {
     function productPropInto(b,p){
       const u=clamp(Number(p.size)||1,.01,40),H=Number(p.height)>0?clamp(Number(p.height),.1,10):1,x=Number(p.x)||0,z=Number(p.z)||0,elev=Number.isFinite(Number(p.elevation))?Number(p.elevation):0;
       const stamp=productStampOf(p),detail=dioramaLight.detailLevel,facades=detail==='full';
-      if(dungeonLook&&isDungeonFeatureId(p.id)&&(stamp==='lampe'||p.type==='torch'||String(p.id).startsWith('dlamp-'))){
-        const allow=dungeonLook.torchIds.length?dungeonLook.torchIds.includes(p.id):true;
-        if(!allow)return;
+      const isTorch=stamp==='lampe'||p.type==='torch'||String(p.id).startsWith('dlamp-');
+      if(dungeonLook&&isDungeonFeatureId(p.id)){
+        if(isTorch){if(!dungeonAllow(p.id,dungeonLook.torchIds))return;}
+        else if(!dungeonAllow(p.id,dungeonLook.propIds))return;
       }
       switch(stamp){
         case'baum':case'tanne':{
@@ -1289,7 +1329,21 @@ export function mountAtlasPrototype3d(host, options = {}) {
         case'stuhl':b.box(x,elev+18*u,z,44*u,5*u,44*u,'#805336');b.box(x,elev+36*u,z-19*u,44*u,36*u,6*u,'#6b432b');break;
         case'fass':b.box(x,elev+26*u,z,56*u,52*u,56*u,'#a97b49');b.box(x,elev+52.5*u,z,50*u,u,50*u,'#7d5a35');break;
         case'bett':b.box(x,elev+12*u,z,80*u,24*u,60*u,'#5b3427');b.box(x,elev+26*u,z-15*u,64*u,6*u,18*u,'#ddc7aa');b.box(x,elev+25*u,z+8*u,76*u,4*u,40*u,'#8a5a45');break;
-        case'lampe':{const torchCol=(dungeonLook&&isDungeonFeatureId(p.id)?dungeonLook.light:null)||'#f6be6e';const pole=(dungeonLook&&isDungeonFeatureId(p.id)?dungeonLook.door:null)||'#8a745b';b.box(x,elev+20*u,z,6*u,40*u,6*u,pole);b.octa(x,elev+44*u,z,8*u*(dungeonLook&&isDungeonFeatureId(p.id)?(0.85+0.4*dungeonLook.torchIntensity):1),torchCol);break;}
+        case'lampe':{
+          const torchCol=(dungeonLook&&isDungeonFeatureId(p.id)?dungeonLook.light:null)||'#f6be6e';
+          const pole=(dungeonLook&&isDungeonFeatureId(p.id)?dungeonLook.door:null)||'#8a745b';
+          const bloomGain=dungeonLook&&isDungeonFeatureId(p.id)&&dungeonLook.bloomEnabled?1.35:1;
+          const flame=8*u*(dungeonLook&&isDungeonFeatureId(p.id)?(0.85+0.4*dungeonLook.torchIntensity):1)*bloomGain;
+          b.box(x,elev+20*u,z,6*u,40*u,6*u,pole);
+          b.octa(x,elev+44*u,z,flame,torchCol);
+          /* ATL2-F04 — particlesEnabled draws spark quads above the flame. */
+          if(dungeonLook&&isDungeonFeatureId(p.id)&&dungeonLook.particlesEnabled){
+            b.octa(x,elev+52*u,z,2.2*u*bloomGain,torchCol);
+            b.octa(x+3*u,elev+50*u,z-2*u,1.6*u,'#fff6d0');
+            b.octa(x-2*u,elev+54*u,z+2*u,1.4*u,torchCol);
+          }
+          break;
+        }
         case'teppich':b.box(x,elev+u,z,80*u,2*u,48*u,'#854b42');break;
         default:b.box(x,elev+22*u,z,44*u,44*u,44*u,'#a07c58');
       }
