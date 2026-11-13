@@ -47,6 +47,7 @@ import {
   atlasZoomCaption,
   emptyWebglRuntime,
   parseWebglRuntimeState,
+  atlasInteractionModeLabelDe,
   beginAtlasEditBatch,
   cancelAtlasEditBatch,
   canAtlasRedo,
@@ -528,6 +529,7 @@ export function UnifiedAtlasEditor({
   const [editHistory, setEditHistory] = useState<AtlasEditHistory>(() => emptyAtlasEditHistory());
   const editHistoryRef = useRef(editHistory);
   editHistoryRef.current = editHistory;
+  const [historyLive, setHistoryLive] = useState('');
   const [, bump] = useState(0);
   pinArmedRef.current = pinArmed;
   marqueeArmedRef.current = marqueeArmed;
@@ -584,6 +586,7 @@ export function UnifiedAtlasEditor({
     if (!stepped) return;
     setEditHistory(stepped.history);
     onDocChange(stepped.doc);
+    setHistoryLive('Rückgängig ausgeführt');
   }, [onDocChange]);
 
   const redo = useCallback(() => {
@@ -591,6 +594,7 @@ export function UnifiedAtlasEditor({
     if (!stepped) return;
     setEditHistory(stepped.history);
     onDocChange(stepped.doc);
+    setHistoryLive('Wiederherstellen ausgeführt');
   }, [onDocChange]);
 
   const goToRect = useCallback(
@@ -1942,12 +1946,22 @@ export function UnifiedAtlasEditor({
 
   return (
     <div
-      className="flex h-full min-h-0 w-full min-w-0 flex-col gap-2"
+      className="@container/atlas flex h-full min-h-0 w-full min-w-0 flex-col gap-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]"
       data-unified-atlas-editor
       data-atlas-demo={isDemo ? 'true' : 'false'}
       data-atlas-world-starter={isWorldStarter ? 'true' : undefined}
       data-atlas-surface-mode={!isDemo ? '2d' : undefined}
+      data-atlas-surface-class="workstation"
     >
+      <p className="sr-only" role="status" aria-live="polite" data-atlas-history-live>
+        {historyLive}
+      </p>
+      <p
+        className="text-[11px] text-muted-foreground @[48rem]:hidden"
+        data-atlas-interaction-hint
+      >
+        {atlasInteractionModeLabelDe('touch')} · Werkzeuge oben rechts; Meta/Karten über Sheets.
+      </p>
       {!isDemo ? (
         <div className="flex flex-wrap items-center gap-2" data-atlas-surface-bar>
           <Button

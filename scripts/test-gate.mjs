@@ -2092,6 +2092,11 @@ function checkWorldAtlasEditor() {
     cwd: root,
     stdio: 'inherit',
   });
+  console.log('ATL2-C05 adaptive workstation / AU content width...');
+  execFileSync(process.execPath, ['scripts/atl2-c05-adaptive-workstation.self-test.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
   console.log('Atlas prototype LOD layers (HTML v3 port)...');
   execFileSync(process.execPath, ['scripts/atlas-prototype-lod.self-test.mjs'], {
     cwd: root,

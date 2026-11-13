@@ -51,8 +51,10 @@ import {
   buildAtlasMapPins,
   extractMapFrameFromGeneratorMeta,
   isDornhainGoldenRootMap,
+  resolveAtlasWorkstationComposition,
   type DornhainGoldenResetMode,
 } from '../../../domains/world/atlas';
+import { useAdaptiveContentBand } from '../../../shared/ui/adaptive';
 import { WorldMapEditorScreen } from '../map';
 import { WorldPlacesPanel } from '../places/WorldPlacesPanel';
 import { AtlasGoldenResetDialog } from './AtlasGoldenResetDialog';
@@ -140,6 +142,17 @@ export function WorldAtlasWorkbench({
     readonly childTitle: string;
     readonly returnMapId: string;
   } | null>(null);
+
+  /** ATL2-C05: recompose chrome from main-pane width (AU-CONTENT-WIDTH). */
+  const workbenchRef = useRef<HTMLDivElement | null>(null);
+  const contentBand = useAdaptiveContentBand(workbenchRef);
+  const workstationComposition = useMemo(
+    () =>
+      resolveAtlasWorkstationComposition(
+        contentBand === 'phone' ? 390 : contentBand === 'tablet' ? 900 : 1280,
+      ),
+    [contentBand],
+  );
 
   const runGoldenReset = useCallback(
     async (mode: DornhainGoldenResetMode) => {
@@ -587,17 +600,24 @@ export function WorldAtlasWorkbench({
 
   return (
     <div
-      className={`@container/main relative flex h-full min-h-0 w-full min-w-0 flex-col ${
+      ref={workbenchRef}
+      className={`@container/main relative flex h-full min-h-0 w-full min-w-0 flex-col pt-[max(0px,env(safe-area-inset-top))] ${
         layoutExact ? 'gap-0' : 'gap-3'
       }`}
       data-world-atlas-workbench
+      data-atlas-surface-class="workstation"
+      data-atlas-content-band={contentBand}
+      data-atlas-reduced-phone={
+        workstationComposition.reducedPhoneComposition ? 'true' : undefined
+      }
+      data-atlas-use-sheets={workstationComposition.useSheetsForChrome ? 'true' : undefined}
       data-atlas-booting={atlasBooting ? 'true' : undefined}
       data-atlas-controlled-store={protoExact ? 'true' : undefined}
     >
       {/* Skip title/rail chrome while booting — avoids <1s menu flash before 3D map. */}
       {(!protoExact && !atlasBooting) || onBack ? (
         <header
-          className={`flex flex-wrap items-center gap-2 ${
+          className={`flex flex-wrap items-center gap-2 px-[max(0px,env(safe-area-inset-left))] pr-[max(0px,env(safe-area-inset-right))] ${
             protoExact ? 'pb-2' : 'border-b border-border pb-3'
           }`}
           data-atlas-prototype-bar

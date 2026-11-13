@@ -348,3 +348,16 @@ export {
   undoAtlasEdit,
   type AtlasEditHistory,
 } from './atlas-edit-history';
+
+export {
+  ATLAS_CONTENT_WIDTH_FLOOR_PX,
+  ATLAS_PHONE_CONTENT_MAX_PX,
+  ATLAS_SIDE_RAIL_MIN_PX,
+  ATLAS_TABLET_CONTENT_MAX_PX,
+  atlasContentWidthUsable,
+  atlasInteractionModeLabelDe,
+  resolveAtlasAdaptiveBand,
+  resolveAtlasWorkstationComposition,
+  type AtlasAdaptiveBand,
+  type AtlasWorkstationComposition,
+} from './atlas-workstation-adaptive';
