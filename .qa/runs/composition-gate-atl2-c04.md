@@ -2,8 +2,8 @@
 
 - Issue: #1209
 - Feature slug: atl2-c04
-- HEAD_SHA: PLACEHOLDER
-- BASE_SHA: PLACEHOLDER
+- HEAD_SHA: e1783d5f15919de431c9912642e8027de1543e2f
+- BASE_SHA: 3d5c3d8d8409c3bc0edb1d69ff5c007dc41d4ce1
 - Date: 2026-11-13
 - Verdict: SKIPPED
 
