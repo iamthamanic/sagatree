@@ -1,0 +1,50 @@
+{
+  "gate": "atl2-d01",
+  "issue": 1212,
+  "head": "55cd32c269b93dcbaace5c0325a5758dd7ca438b",
+  "verdict": "CLEAR",
+  "target": "custom-webgl-prototype-runtime",
+  "golden": {
+    "objects": 11,
+    "rooms": 19,
+    "walls": 0,
+    "strokes": 4,
+    "objectIds": [
+      "s.obj.crypt",
+      "s.obj.market",
+      "s.obj.tavern",
+      "s.obj.tree-a",
+      "s.obj.tree-b",
+      "s.obj.woods",
+      "w.loc.dornhain",
+      "w.loc.eastport",
+      "w.loc.highpass",
+      "w.loc.northkeep",
+      "w.loc.southmarsh"
+    ]
+  },
+  "bridgeMs": 0.485,
+  "presets": [
+    "high",
+    "balanced",
+    "lite"
+  ],
+  "productChrome": {
+    "native3d": true,
+    "spatialViewportImported": false,
+    "atlasGl": true,
+    "atlasLite3d": true
+  },
+  "historicalPoc": {
+    "research": ".qa/research/unified-atlas-renderer-comparison.md",
+    "note": "Hybrid vs Unified-Three PoC retained; does not override live custom-WebGL product path."
+  },
+  "residuals": [
+    {
+      "severity": "Low",
+      "item": "Interactive FPS/draw-call soak on device matrix",
+      "note": "Structural Lite3D + preset contracts locked; device soak deferred to Gate D / #1218.",
+      "blocksGate": false
+    }
+  ]
+}

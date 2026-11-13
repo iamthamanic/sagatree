@@ -361,3 +361,19 @@ export {
   type AtlasAdaptiveBand,
   type AtlasWorkstationComposition,
 } from './atlas-workstation-adaptive';
+
+export {
+  ATLAS_GRAPHICS_PRESETS,
+  ATLAS_PARALLEL_THREE_VIEWPORT_PATH,
+  ATLAS_PRODUCT_3D_HOST_PATH,
+  ATLAS_PRODUCT_3D_MODULE_PATH,
+  ATLAS_PRODUCT_3D_TARGET,
+  ATLAS_RENDERER_DECISION,
+  clampAtlasPixelRatio,
+  isProductAtlasRendererTarget,
+  resolveAtlasGraphicsPreset,
+  type AtlasGraphicsPreset,
+  type AtlasGraphicsPresetId,
+  type AtlasRendererCandidateId,
+  type AtlasRendererDecision,
+} from './atlas-renderer-target';
