@@ -18,6 +18,8 @@ import {
   extractUnifiedCanvasFromGeneratorMeta,
   hydrateCanvasFromLegacyWebgl,
   independentPrimaryBounds,
+  ATLAS_AUTOSAVE_DEBOUNCE_MS,
+  decideAtlasAutosave,
   isAtlasRevisionConflictMessage,
   isDornhainGoldenRootMap,
   locateChildMapFrame,
@@ -96,10 +98,18 @@ export function useWorldAtlasEditor({
   const saveInFlightRef = useRef(false);
   const persistStatusRef = useRef<AtlasPersistStatus>('clean');
   persistStatusRef.current = persistStatus;
+  const pendingOpsRef = useRef(0);
+  const lastEditAtRef = useRef(0);
 
   const bumpPersist = useCallback((event: Parameters<typeof reduceAtlasPersistStatus>[1]) => {
     setPersistStatus((prev) => reduceAtlasPersistStatus(prev, event));
   }, []);
+
+  const noteLocalEdit = useCallback(() => {
+    pendingOpsRef.current += 1;
+    lastEditAtRef.current = Date.now();
+    bumpPersist({ type: 'edit' });
+  }, [bumpPersist]);
 
   const reloadList = useCallback(async () => {
     const id = worldProfileId?.trim() ?? '';
@@ -241,27 +251,27 @@ export function useWorldAtlasEditor({
     (next: UnifiedCanvasDoc) => {
       setCanvasDoc(next);
       setDirtyCanvas(true);
-      bumpPersist({ type: 'edit' });
+      noteLocalEdit();
     },
-    [bumpPersist],
+    [noteLocalEdit],
   );
 
   const updateDungeonMeta = useCallback(
     (next: DungeonGeneratorMeta | null) => {
       setDungeonMeta(next);
       setDirtyCanvas(true);
-      bumpPersist({ type: 'edit' });
+      noteLocalEdit();
     },
-    [bumpPersist],
+    [noteLocalEdit],
   );
 
   const updateWebglRuntime = useCallback(
     (next: WebglRuntimeState | null) => {
       setWebglRuntime(next);
       setDirtyCanvas(true);
-      bumpPersist({ type: 'edit' });
+      noteLocalEdit();
     },
-    [bumpPersist],
+    [noteLocalEdit],
   );
 
   const reloadActiveMap = useCallback(async () => {
@@ -334,8 +344,13 @@ export function useWorldAtlasEditor({
         setDungeonMeta(extractDungeonMetaFromGeneratorMeta(next.generatorMeta));
         setDirtyCanvas(false);
       }
+      if (!editedDuringSave) {
+        pendingOpsRef.current = 0;
+      }
       bumpPersist({ type: 'save_ok' });
-      if (editedDuringSave) bumpPersist({ type: 'edit' });
+      if (editedDuringSave) {
+        noteLocalEdit();
+      }
       await reloadList();
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Speichern fehlgeschlagen.';
@@ -347,7 +362,17 @@ export function useWorldAtlasEditor({
       saveInFlightRef.current = false;
       setSaving(false);
     }
-  }, [map, canEdit, canvasDoc, dirtyLayers, dungeonMeta, webglRuntime, reloadList, bumpPersist]);
+  }, [
+    map,
+    canEdit,
+    canvasDoc,
+    dirtyLayers,
+    dungeonMeta,
+    webglRuntime,
+    reloadList,
+    bumpPersist,
+    noteLocalEdit,
+  ]);
 
   const saveLayers = useCallback(
     async (layers: WorldAtlasFeatureCollection) => {
@@ -783,6 +808,15 @@ export function useWorldAtlasEditor({
     ],
   );
 
+  /** ATL2-C04: contract-driven autosave decision (never save while conflicted). */
+  const autosaveDecision = useCallback(() => {
+    return decideAtlasAutosave({
+      status: persistStatusRef.current,
+      pendingOps: pendingOpsRef.current,
+      msSinceLastEdit: Math.max(0, Date.now() - lastEditAtRef.current),
+    });
+  }, []);
+
   return {
     summaries,
     activeMapId,
@@ -811,5 +845,7 @@ export function useWorldAtlasEditor({
     reloadList,
     resetToGolden,
     contentEpoch,
+    autosaveDecision,
+    autosaveDebounceMs: ATLAS_AUTOSAVE_DEBOUNCE_MS,
   };
 }

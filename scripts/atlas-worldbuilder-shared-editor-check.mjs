@@ -64,7 +64,12 @@ mustInclude('src/app/world/atlas/useWorldAtlasEditor.ts', [
 mustInclude('src/app/world/atlas/WorldAtlasWorkbench.tsx', [
   'onWebglRuntimeChange',
   'data-atlas-controlled-store',
-  '1400',
+  'autosaveDecision',
+  'autosaveDebounceMs',
+]);
+mustInclude('src/app/world/atlas/useWorldAtlasEditor.ts', [
+  'decideAtlasAutosave',
+  'ATLAS_AUTOSAVE_DEBOUNCE_MS',
 ]);
 
 const runtime = readFileSync(

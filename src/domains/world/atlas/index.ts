@@ -332,3 +332,19 @@ export {
   type AtlasPersistEvent,
   type AtlasPersistStatus,
 } from './atlas-persist-state';
+
+export {
+  ATLAS_EDIT_HISTORY_LIMIT,
+  beginAtlasEditBatch,
+  cancelAtlasEditBatch,
+  canAtlasRedo,
+  canAtlasUndo,
+  commitAtlasEditBatch,
+  emptyAtlasEditHistory,
+  parseAtlasEditSnapshot,
+  pushAtlasEdit,
+  redoAtlasEdit,
+  serializeAtlasEditSnapshot,
+  undoAtlasEdit,
+  type AtlasEditHistory,
+} from './atlas-edit-history';

@@ -190,6 +190,10 @@
       "sha256": "c1bdcbaf78d8db00dd897828214b69f0778c41b133169434faad2b681c6d2d09"
     },
     {
+      "path": "src/domains/world/atlas/atlas-edit-history.ts",
+      "sha256": "13a91efde301ec766d3b0f183affcd794abba9f4c4872c00549e9f631947e294"
+    },
+    {
       "path": "src/domains/world/atlas/atlas-map-doc-adapter.ts",
       "sha256": "d85a2ed7b2e6cd9650c4d87664fb09e7b4621779f2a820ed65c421e353caf04a"
     },
@@ -243,7 +247,7 @@
     },
     {
       "path": "src/domains/world/atlas/index.ts",
-      "sha256": "bf4e8c3006402c9e8e2197425a7f1b32ef51ab12e9097c6017b82a41ae32311f"
+      "sha256": "a4e2c2a128d0cca2d21551b2e4e244cc63c43b024f3d164b45b6dc08082a5f84"
     },
     {
       "path": "src/domains/world/atlas/map-edit-ops.ts",
@@ -1206,6 +1210,14 @@
       "line": 367,
       "endLine": 371,
       "text": "export type ClassifyUnifiedCanvasOptions = {\n  readonly scale?: 'world' | 'interior' | 'unknown';\n  /** When true, apply Golden stroke-id heuristics; never use material alone. */\n  readonly inferGoldenStrokeIds?: boolean;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AtlasEditHistory",
+      "path": "src/domains/world/atlas/atlas-edit-history.ts",
+      "line": 12,
+      "endLine": 17,
+      "text": "export type AtlasEditHistory = {\n  readonly past: readonly string[];\n  readonly future: readonly string[];\n  /** When set, intermediate edits coalesce into one undo step ending at commitBatch. */\n  readonly batchBase: string | null;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",

@@ -47,12 +47,22 @@ import {
   atlasZoomCaption,
   emptyWebglRuntime,
   parseWebglRuntimeState,
+  beginAtlasEditBatch,
+  cancelAtlasEditBatch,
+  canAtlasRedo,
+  canAtlasUndo,
   canEditFeatureKind,
   canHitFeature,
   clampAtlasBrushUi,
+  commitAtlasEditBatch,
+  emptyAtlasEditHistory,
   featureKindForId,
   featuresInRect,
   isLayerLocked,
+  pushAtlasEdit,
+  redoAtlasEdit,
+  undoAtlasEdit,
+  type AtlasEditHistory,
   pickDoorAt,
   pickObjectAt,
   pickRoomAt,
@@ -515,8 +525,9 @@ export function UnifiedAtlasEditor({
     readonly { id: string; label: string; left: number; top: number; selected: boolean }[]
   >([]);
   const [viewport, setViewport] = useState({ width: 800, height: 500 });
-  const [history, setHistory] = useState<string[]>([]);
-  const [future, setFuture] = useState<string[]>([]);
+  const [editHistory, setEditHistory] = useState<AtlasEditHistory>(() => emptyAtlasEditHistory());
+  const editHistoryRef = useRef(editHistory);
+  editHistoryRef.current = editHistory;
   const [, bump] = useState(0);
   pinArmedRef.current = pinArmed;
   marqueeArmedRef.current = marqueeArmed;
@@ -530,12 +541,25 @@ export function UnifiedAtlasEditor({
   }, [doc]);
 
   const pushHistory = useCallback((prev: UnifiedCanvasDoc) => {
-    setHistory((h) => {
-      const next = [...h, JSON.stringify(prev)];
-      return next.length > 45 ? next.slice(next.length - 45) : next;
-    });
-    setFuture([]);
+    setEditHistory((h) => pushAtlasEdit(h, prev));
   }, []);
+
+  const startEditBatch = useCallback(() => {
+    setEditHistory((h) => beginAtlasEditBatch(h, docRef.current));
+  }, []);
+
+  const endEditBatch = useCallback(() => {
+    setEditHistory((h) => commitAtlasEditBatch(h, docRef.current));
+  }, []);
+
+  const abortEditBatch = useCallback(() => {
+    setEditHistory((h) => {
+      const cancelled = cancelAtlasEditBatch(h);
+      if (!cancelled) return h;
+      onDocChange(cancelled.doc);
+      return cancelled.history;
+    });
+  }, [onDocChange]);
 
   const commit = useCallback(
     (next: UnifiedCanvasDoc, recordHistory: boolean) => {
@@ -556,23 +580,17 @@ export function UnifiedAtlasEditor({
   );
 
   const undo = useCallback(() => {
-    setHistory((h) => {
-      if (h.length === 0) return h;
-      const prev = h[h.length - 1];
-      setFuture((f) => [...f, JSON.stringify(docRef.current)]);
-      onDocChange(JSON.parse(prev) as UnifiedCanvasDoc);
-      return h.slice(0, -1);
-    });
+    const stepped = undoAtlasEdit(editHistoryRef.current, docRef.current);
+    if (!stepped) return;
+    setEditHistory(stepped.history);
+    onDocChange(stepped.doc);
   }, [onDocChange]);
 
   const redo = useCallback(() => {
-    setFuture((f) => {
-      if (f.length === 0) return f;
-      const next = f[f.length - 1];
-      setHistory((h) => [...h, JSON.stringify(docRef.current)]);
-      onDocChange(JSON.parse(next) as UnifiedCanvasDoc);
-      return f.slice(0, -1);
-    });
+    const stepped = redoAtlasEdit(editHistoryRef.current, docRef.current);
+    if (!stepped) return;
+    setEditHistory(stepped.history);
+    onDocChange(stepped.doc);
   }, [onDocChange]);
 
   const goToRect = useCallback(
@@ -1288,6 +1306,7 @@ export function UnifiedAtlasEditor({
         }
         selectFeature(hit.id, additive);
         if (canEdit && !additive) {
+          startEditBatch();
           dragRef.current = {
             mode: 'move_object',
             id: hit.id,
@@ -1311,6 +1330,7 @@ export function UnifiedAtlasEditor({
         if (vtx >= 0) {
           selectFeature(room.id, additive);
           if (!additive) {
+            startEditBatch();
             dragRef.current = { mode: 'move_room_vertex', id: room.id, index: vtx };
           }
           return;
@@ -1338,6 +1358,7 @@ export function UnifiedAtlasEditor({
         }
         selectFeature(strokeHit.id, additive);
         if (!additive) {
+          startEditBatch();
           dragRef.current = {
             mode: 'move_stroke_point',
             id: strokeHit.id,
@@ -1368,6 +1389,7 @@ export function UnifiedAtlasEditor({
         );
         selectFeature(wallHit.id, additive);
         if (!additive && (ep === 1 || ep === 2)) {
+          startEditBatch();
           dragRef.current = { mode: 'move_wall_endpoint', id: wallHit.id, endpoint: ep };
         }
         return;
@@ -1388,6 +1410,7 @@ export function UnifiedAtlasEditor({
             roomHit.y + roomHit.h - p.y,
           );
           if (cornerDist <= 14 / camRef.current.pixelsPerUnit) {
+            startEditBatch();
             dragRef.current = {
               mode: 'resize_room',
               id: roomHit.id,
@@ -1401,6 +1424,7 @@ export function UnifiedAtlasEditor({
             return;
           }
         }
+        startEditBatch();
         dragRef.current = {
           mode: 'move_room',
           id: roomHit.id,
@@ -1432,6 +1456,7 @@ export function UnifiedAtlasEditor({
         width: tool === 'road' ? brushWidth() * 0.62 : brushWidth(),
         points: [[p.x, p.y] as const],
       };
+      startEditBatch();
       commit(applyMapEdit(workingDoc, { op: 'add_stroke', stroke }), true);
       dragRef.current = { mode: 'paint', strokeId: id };
       return;
@@ -1671,6 +1696,8 @@ export function UnifiedAtlasEditor({
         }
       }
     }
+    // Close any open gesture batch (paint / move / resize) as one undo step.
+    endEditBatch();
     dragRef.current = null;
     try {
       stageRef.current?.releasePointerCapture(e.pointerId);
@@ -2104,7 +2131,18 @@ export function UnifiedAtlasEditor({
             onPointerDown={onPointerDown}
             onPointerMove={onPointerMove}
             onPointerUp={onPointerUp}
-            onPointerCancel={onPointerUp}
+            onPointerCancel={(e) => {
+              // Interrupted gestures restore batchBase instead of committing a partial edit.
+              abortEditBatch();
+              dragRef.current = null;
+              setMarqueeLive(null);
+              try {
+                stageRef.current?.releasePointerCapture(e.pointerId);
+              } catch {
+                /* ignore */
+              }
+              refresh();
+            }}
             onWheel={onWheel}
             onDoubleClick={(e) => {
               const p = worldFromEvent(e);
@@ -2405,10 +2443,24 @@ export function UnifiedAtlasEditor({
             />
           ) : null}
           <div className="flex flex-wrap gap-2">
-            <Button type="button" variant="outline" className="min-h-11" disabled={!canEdit} onClick={undo}>
+            <Button
+              type="button"
+              variant="outline"
+              className="min-h-11"
+              disabled={!canEdit || !canAtlasUndo(editHistory)}
+              onClick={undo}
+              data-atlas-undo
+            >
               ↶ Undo
             </Button>
-            <Button type="button" variant="outline" className="min-h-11" disabled={!canEdit} onClick={redo}>
+            <Button
+              type="button"
+              variant="outline"
+              className="min-h-11"
+              disabled={!canEdit || !canAtlasRedo(editHistory)}
+              onClick={redo}
+              data-atlas-redo
+            >
               ↷ Redo
             </Button>
             {selectedId && canEdit ? (
