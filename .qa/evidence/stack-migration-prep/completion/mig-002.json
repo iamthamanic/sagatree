@@ -5,7 +5,7 @@
   "result": "PASS",
   "githubClosed": true,
   "mergeRef": "PR #860 \u2192 main (after #782)",
-  "note": "Inventories refreshed after ATL2-D05 Codex LOD/budget fixes.",
+  "note": "Inventories refreshed after ATL2-E01 primary-map delete/links (#1219).",
   "checks": [
     {
       "command": "legacy inventory matrix",
@@ -17,14 +17,14 @@
       "command": "rpc inventory 57",
       "result": "PASS",
       "evidenceFile": ".qa/intake/rpc-contracts/inventory.json",
-      "sha256": "28de52e2b21b31b4961099a8c6c892b6122d15ef045cd6e1afc46f094a117f3d"
+      "sha256": "3c577f9e191b0c816d00a5bc247fef194a9984f610b41bb8c074461058cb22de"
     },
     {
       "command": "edge/infra inventory 25+13",
       "result": "PASS",
       "evidenceFile": ".qa/intake/edge-infra-contracts/inventory.json",
-      "sha256": "a27d7d16581f22d98f8e21fb4a3d426533ff7877683c030fa93317314c52d0fc"
+      "sha256": "6d50549b5ff286035eb4cb9947e8631dfba18308fb5fcf744e14c90e05e538b8"
     }
   ],
-  "testedCommit": "995147d1208406b8c573be9ed8353ace855bdde9"
+  "testedCommit": "a260606ed0854c841431eae3c09dbb0ebae06694"
 }

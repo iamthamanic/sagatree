@@ -82,7 +82,7 @@ const [{ createHostWorldAdapter }, { HOST_WORLD_RPC_NAMES }] = await Promise.all
   import(pathToFileURL(join(adapterLoadDir, 'host-world-adapter.ts')).href),
   import(pathToFileURL(join(adapterLoadDir, 'host-world-ports.contract.ts')).href),
 ]);
-assert(Array.isArray(HOST_WORLD_RPC_NAMES) && HOST_WORLD_RPC_NAMES.length === 17, 'contract rpc list');
+assert(Array.isArray(HOST_WORLD_RPC_NAMES) && HOST_WORLD_RPC_NAMES.length === 18, 'contract rpc list');
 assert(typeof createHostWorldAdapter === 'function', 'real createHostWorldAdapter loaded');
 
 const work = mkdtempSync(join(tmpdir(), 'mig313-'));
@@ -92,7 +92,7 @@ const acceptance = [];
 const note = (line) => acceptance.push(line);
 
 try {
-  assert(HOST_WORLD_RPC_NAMES.length === 17, `rpc count ${HOST_WORLD_RPC_NAMES.length}`);
+  assert(HOST_WORLD_RPC_NAMES.length === 18, `rpc count ${HOST_WORLD_RPC_NAMES.length}`);
   const commandsDir = join(root, 'server/src/application/commands');
   for (const name of HOST_WORLD_RPC_NAMES) {
     assert(existsSync(join(commandsDir, `${name}.ts`)), `missing application/commands/${name}.ts`);
@@ -198,6 +198,8 @@ try {
       toResult(world.getWorldAtlasMap(actor(actorId), mapId, playerView, sagaPublicId)),
     upsertWorldAtlasMap: (actorId, input) =>
       toResult(world.upsertWorldAtlasMap(actor(actorId), /** @type {any} */ (input))),
+    deleteWorldAtlasMap: (actorId, worldProfileId, mapId) =>
+      toResult(world.deleteWorldAtlasMap(actor(actorId), worldProfileId, mapId)),
     listWorldPlaces: (actorId, worldProfileId, playerView, sagaPublicId) =>
       toResult(world.listWorldPlaces(actor(actorId), worldProfileId, playerView, sagaPublicId)),
     listWorldPlaceMapLinks: (actorId, worldProfileId, playerView, sagaPublicId) =>
@@ -270,7 +272,7 @@ try {
   };
   const adapter = createHostWorldAdapter(spied);
   assert(adapter.transport === 'host', 'transport tag');
-  assert(adapter.rpcNames.length === 17, 'adapter rpcNames');
+  assert(adapter.rpcNames.length === 18, 'adapter rpcNames');
 
   // --- Profile CRUD + linked-solo ownership ---
   const created = await adapter.createOwnedWorld(OWNER.actorId, 'MIG-313 World');
@@ -480,7 +482,7 @@ try {
   const linkedDelete = world.deleteOwnedWorld(LINKED, soloWorld.value.id);
   assert(linkedDelete.ok, 'linked solo delete');
 
-  note('Map pin upload uses host asset storage; 17 RPC deps + profile CRUD transport ready.');
+  note('Map pin upload uses host asset storage; 18 RPC deps + profile CRUD transport ready.');
 
   for (const m of [
     'archiveWorldNodeSubtree',
@@ -498,13 +500,14 @@ try {
     'reparentWorldNode',
     'saveWorldMap',
     'upsertWorldAtlasMap',
+    'deleteWorldAtlasMap',
     'upsertWorldPlace',
     'upsertWorldPlaceMapLink',
   ]) {
     assert(typeof adapter[m] === 'function', `adapter.${m}`);
     assert(typeof world[m] === 'function', `WorldPorts.${m}`);
   }
-  note('Contract fixtures for all 17 RPCs: host ports + command wrappers present.');
+  note('Contract fixtures for all 18 RPCs: host ports + command wrappers present.');
 
   console.log('PASS: mig-313 world adapter ports (host repository binding, no cutover)');
   for (const line of acceptance) console.log(`  - ${line}`);

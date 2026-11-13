@@ -39,6 +39,8 @@ export function createHostWorldAdapter(ports: HostWorldPorts): HostWorldAdapter 
     getWorldAtlasMap: (actorId, mapId, playerView, sagaPublicId) =>
       ports.getWorldAtlasMap(actorId, mapId, playerView, sagaPublicId),
     upsertWorldAtlasMap: (actorId, input) => ports.upsertWorldAtlasMap(actorId, input),
+    deleteWorldAtlasMap: (actorId, worldProfileId, mapId) =>
+      ports.deleteWorldAtlasMap(actorId, worldProfileId, mapId),
     listWorldPlaces: (actorId, worldProfileId, playerView, sagaPublicId) =>
       ports.listWorldPlaces(actorId, worldProfileId, playerView, sagaPublicId),
     listWorldPlaceMapLinks: (actorId, worldProfileId, playerView, sagaPublicId) =>

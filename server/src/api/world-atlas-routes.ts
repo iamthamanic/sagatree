@@ -487,6 +487,21 @@ export function mountWorldAtlasHttpRoutes(app: Hono, deps: WorldAtlasHttpDeps): 
     return c.json(result.value, 200);
   });
 
+  /** ATL2-E01 — delete secondary atlas map (not primary / not root / not parent). */
+  app.delete('/api/v1/worlds/:worldId/atlas/maps/:mapId', async (c) => {
+    const actorResult = await resolveWorldActor(deps, c.req.raw.headers, false);
+    if (!actorResult.ok) {
+      return c.json({ error: actorResult.error }, actorResult.status);
+    }
+    const result = world.deleteWorldAtlasMap(
+      actorResult.actor,
+      c.req.param('worldId'),
+      c.req.param('mapId'),
+    );
+    if (!result.ok) return c.json({ error: result.error }, worldStatus(result.error));
+    return c.json(result.value, 200);
+  });
+
   app.get('/api/v1/worlds/:worldId/places', async (c) => {
     const actorResult = await resolveWorldActor(deps, c.req.raw.headers, true);
     if (!actorResult.ok) {

@@ -11,6 +11,7 @@ import { randomUUID } from 'node:crypto';
 import type { HostDatabase } from '../../../persistence/open-database.ts';
 import {
   isCanonicalKind,
+  isValidSubtypeForKind,
   mapKindForNode,
   missingAncestorChain,
   placeholderStem,
@@ -998,6 +999,9 @@ export class WorldPlacesStore {
     const subtypeRaw =
       typeof input.subtype === 'string' ? input.subtype.trim() : '';
     const subtype = subtypeRaw.length > 0 ? subtypeRaw : null;
+    if (!isValidSubtypeForKind(kind, subtype)) {
+      return { ok: false, error: '22023' };
+    }
     const descriptionValue =
       typeof input.description === 'string'
         ? input.description.trim().length > 0
