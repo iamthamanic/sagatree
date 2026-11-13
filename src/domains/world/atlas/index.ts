@@ -206,6 +206,21 @@ export {
 } from './dungeon-generator';
 
 export {
+  DUNGEON_CELL_FLOOR,
+  DUNGEON_CELL_LIQUID,
+  DUNGEON_CELL_VOID,
+  DUNGEON_CELL_WALL,
+  DUNGEON_GRID_VERSION,
+  bfsDungeonPassability,
+  rasterizeDungeonGenerateResult,
+  rasterizeDungeonLayout,
+  type DungeonCellKind,
+  type DungeonGridCell,
+  type DungeonRasterizeParams,
+  type DungeonRasterizeResult,
+} from './dungeon-grid';
+
+export {
   WEBGL_RUNTIME_META_KEY,
   LEGACY_WEBGL_LOCAL_STORAGE_KEY,
   STAMP_TO_PROP,
