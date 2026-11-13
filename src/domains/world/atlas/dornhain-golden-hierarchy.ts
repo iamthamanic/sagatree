@@ -157,7 +157,12 @@ export function buildGoldenDornhainCanvas(): UnifiedCanvasDoc {
     [
       stamp('g.tavern', 'haus', 328, 528, 0.6),
       stamp('g.market', 'haus', 378, 488, 0.5),
+      stamp('g.watch', 'turm', 452, 430, 0.45),
       stamp('g.crypt', 'fels', 406, 462, 0.55),
+      stamp('g.oak-a', 'baum', 280, 460, 0.55),
+      stamp('g.oak-b', 'baum', 500, 520, 0.5),
+      stamp('g.pine-a', 'tanne', 250, 540, 0.48),
+      stamp('g.outcrop', 'fels', 430, 540, 0.4),
     ],
   );
 }

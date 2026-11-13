@@ -1,11 +1,10 @@
-# ECC Runner Loop Handoff
+# ECC Runner Loop Handoff — Atlas V2 (#1196)
 
 - **paused:** false
-- **last merged:** #572 via PR #586 (`8ed67ee463f89dd91ed0bd16ea662981e566eee2`)
-- **also merged this session:** #569 (PR #583), #570 (PR #584), #571 (PR #585)
-- **next:** #573 — AI session recap summary (depends on #572)
-- **epic:** #568
-- **branch strategy:** fresh from main
-- **stash:** `stash@{0}` = wip-before-ecc-runner-loop-569 (unrelated — do not drop)
+- **epic:** #1196 ATL2 Spatial Atlas V2
+- **last merged on main:** ATL2-D05 via #1216 (`b6542cfa`)
+- **current:** PR #1258 / #1217 ATL2-D06 — OWNER credits-skip posted (`#issuecomment-6862251862`); ECC re-trigger push
+  - Kodus: waived via trusted `<!-- ecc-kodus-skipped-credits: ollama credits exhausted -->` (OWNER); do not invent Complete
+- **next after merge:** #1218 ATL2-D07 Gate D
 - **resume:** `@ecc-runner-loop continue`
-- **note:** Context compact after #572 merge; claim #573 immediately.
+- **handoffPath (Project store):** `/cursor/stores/self/internal/ecc-runner-loop-atl2-handoff.md`

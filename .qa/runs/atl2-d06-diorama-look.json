@@ -1,0 +1,20 @@
+{
+  "verdict": "CLEAR",
+  "houses": 3,
+  "trees": 3,
+  "rocks": 2,
+  "batches": 8,
+  "houseVariants": [
+    "stone",
+    "timber",
+    "keep"
+  ],
+  "treeVariants": [
+    "birch",
+    "oak",
+    "pine"
+  ],
+  "lightHigh": "high",
+  "lightLiteDetail": "minimal",
+  "productTarget": "custom-webgl-prototype-runtime"
+}

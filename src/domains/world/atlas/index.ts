@@ -450,3 +450,27 @@ export {
   type AtlasRendererCandidateId,
   type AtlasRendererDecision,
 } from './atlas-renderer-target';
+
+export {
+  ATLAS_DIORAMA_LOOK_FORMAT,
+  ATLAS_DIORAMA_MATERIALS,
+  atlasDioramaHouseVariant,
+  atlasDioramaLookPlanIsCanonicalOnly,
+  atlasDioramaRockVariant,
+  atlasDioramaStampKind,
+  atlasDioramaTreeVariant,
+  buildAtlasDioramaLookPlan,
+  buildAtlasDioramaMeshRecipe,
+  resolveAtlasDioramaLightProfile,
+  type AtlasDioramaDetailLevel,
+  type AtlasDioramaHouseVariant,
+  type AtlasDioramaInstanceBatch,
+  type AtlasDioramaLightProfile,
+  type AtlasDioramaLookAuthority,
+  type AtlasDioramaLookPlan,
+  type AtlasDioramaMaterialToken,
+  type AtlasDioramaMeshRecipe,
+  type AtlasDioramaRockVariant,
+  type AtlasDioramaStampKind,
+  type AtlasDioramaTreeVariant,
+} from './atlas-diorama-look';

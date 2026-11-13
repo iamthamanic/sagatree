@@ -224,6 +224,7 @@ function normalizeAtlasMapPins(list) {
  *   mapScale?: 'world'|'settlement'|'interior',
  *   mapPins?: Array<{id:string,label:string,kind?:string,x:number,y:number}>,
  *   graphicsPreset?: {id:string,maxPixelRatio:number,preferSoftwareFallback:boolean,antialias:boolean}|null,
+ *   dioramaLight?: {presetId:string,daylightDir:readonly [number,number,number]|number[],ambient:number,fogDensity:number,fogColor:string,clearColor:readonly [number,number,number,number]|number[],shadowStrength:number,detailLevel:'full'|'reduced'|'minimal'|string}|null,
  * }=} options
  *   controlled=true: do not use localStorage as world SoT (#721); persist via onPersist.
  *   externalNav: product WorldNode tree for #nav (#747) — disables demo NAV_CHILDREN as SoT.
@@ -232,6 +233,7 @@ function normalizeAtlasMapPins(list) {
  *   mapSketchStatus: unlocated ⇒ honest empty ocean, no demo continents (#752).
  *   mapScale / mapPins: product map scale (terrain vs interior rendering) and DB place labels.
  *   graphicsPreset: ATL2-D01 high/balanced/lite DPR + antialias + software prefer.
+ *   dioramaLight: ATL2-D06 daylight / fog / facade detail profile.
  * @returns {{ dispose: () => void, updateExternalNav: (tree: object|null) => void, setActiveNavPlaceId: (id: string|null) => void, setToolChrome: (rows: object[]|null) => void, setCanEdit: (ok: boolean) => void, setMapSketchStatus: (status: string|null) => void, setMapScale: (scale: string|null) => void, setMapPins: (pins: object[]|null) => void }}
  */
 export function mountAtlasPrototype3d(host, options = {}) {
@@ -278,6 +280,60 @@ export function mountAtlasPrototype3d(host, options = {}) {
     antialias: graphicsPresetRaw?.antialias !== false,
   };
   host.setAttribute('data-atlas-graphics-preset', graphicsPreset.id);
+  /** ATL2-D06 — diorama daylight / fog / facade detail (domain light profile). */
+  const dioramaLightRaw =
+    options && options.dioramaLight && typeof options.dioramaLight === 'object'
+      ? options.dioramaLight
+      : null;
+  const dioramaLight = {
+    presetId:
+      typeof dioramaLightRaw?.presetId === 'string' && dioramaLightRaw.presetId
+        ? dioramaLightRaw.presetId
+        : graphicsPreset.id,
+    daylightDir: Array.isArray(dioramaLightRaw?.daylightDir) && dioramaLightRaw.daylightDir.length === 3
+      ? [
+          Number(dioramaLightRaw.daylightDir[0]) || -0.45,
+          Number(dioramaLightRaw.daylightDir[1]) || 1,
+          Number(dioramaLightRaw.daylightDir[2]) || -0.48,
+        ]
+      : [-0.45, 1, -0.48],
+    ambient:
+      typeof dioramaLightRaw?.ambient === 'number' && Number.isFinite(dioramaLightRaw.ambient)
+        ? dioramaLightRaw.ambient
+        : 0.34,
+    fogDensity:
+      typeof dioramaLightRaw?.fogDensity === 'number' && Number.isFinite(dioramaLightRaw.fogDensity)
+        ? Math.max(0, dioramaLightRaw.fogDensity)
+        : 0.00045,
+    fogColor:
+      typeof dioramaLightRaw?.fogColor === 'string' && dioramaLightRaw.fogColor
+        ? dioramaLightRaw.fogColor
+        : '#5f8f9c',
+    clearColor: Array.isArray(dioramaLightRaw?.clearColor) && dioramaLightRaw.clearColor.length >= 3
+      ? [
+          Number(dioramaLightRaw.clearColor[0]) || 0.065,
+          Number(dioramaLightRaw.clearColor[1]) || 0.22,
+          Number(dioramaLightRaw.clearColor[2]) || 0.27,
+          Number(dioramaLightRaw.clearColor[3]) || 1,
+        ]
+      : [0.065, 0.22, 0.27, 1],
+    shadowStrength:
+      typeof dioramaLightRaw?.shadowStrength === 'number' && Number.isFinite(dioramaLightRaw.shadowStrength)
+        ? Math.max(0, Math.min(1, dioramaLightRaw.shadowStrength))
+        : 0.42,
+    detailLevel:
+      dioramaLightRaw?.detailLevel === 'full' ||
+      dioramaLightRaw?.detailLevel === 'reduced' ||
+      dioramaLightRaw?.detailLevel === 'minimal'
+        ? dioramaLightRaw.detailLevel
+        : graphicsPreset.id === 'high'
+          ? 'full'
+          : graphicsPreset.id === 'lite'
+            ? 'minimal'
+            : 'reduced',
+  };
+  host.setAttribute('data-atlas-diorama-detail', dioramaLight.detailLevel);
+  host.setAttribute('data-atlas-diorama-preset', dioramaLight.presetId);
   /** Keep fitting the whole map frame on resize until the user moves the camera. */
   let productFitPending = productMap;
   /** Select tool: selected prop id + active drag ({ id, dx, dz, moved }). */
@@ -572,24 +628,38 @@ export function mountAtlasPrototype3d(host, options = {}) {
         const gl=canvas.getContext('webgl2',{alpha:false,antialias:graphicsPreset.antialias,depth:true,preserveDrawingBuffer:true,powerPreference:'high-performance'}) ||canvas.getContext('webgl',{alpha:false,antialias:graphicsPreset.antialias,depth:true,preserveDrawingBuffer:true});
         if(!gl) throw Error('WebGL nicht verfügbar');
         this.gl=gl;this.meshes=new Map();this.textures=new Map();
+        /* ATL2-D06 — daylight / ambient / view-space distance fog from dioramaLight. */
         const vertex=`attribute vec3 aPos;attribute vec3 aNormal;attribute vec3 aColor;attribute vec2 aUV;
-        uniform mat4 uMatrix; uniform float uFlat;varying vec3 vCol;varying vec2 vUV;
-        void main(){gl_Position=uMatrix*vec4(aPos,1.0);float shade=mix(max(0.27,dot(normalize(aNormal),normalize(vec3(-.45,1.,-.48))))*.82+.30,1.0,uFlat);vCol=aColor*shade;vUV=aUV;}`;
-        const fragment=`precision mediump float;varying vec3 vCol;varying vec2 vUV;uniform sampler2D uSampler;uniform float uTexture;uniform float uAlpha;
-        void main(){vec4 tex=texture2D(uSampler,vUV);float a=mix(1.0,tex.a,uTexture);if(a<0.08)discard;vec3 col=vCol*mix(vec3(1.),tex.rgb,uTexture);gl_FragColor=vec4(col,uAlpha*a);}`;
+        uniform mat4 uMatrix; uniform mat4 uView; uniform float uFlat; uniform vec3 uLightDir; uniform float uAmbient; uniform float uShadow;
+        varying vec3 vCol;varying vec2 vUV;varying float vFogDepth;
+        void main(){vec4 eye=uView*vec4(aPos,1.0);vec4 clip=uMatrix*vec4(aPos,1.0);gl_Position=clip;vFogDepth=length(eye.xyz);float ndl=max(0.0,dot(normalize(aNormal),normalize(uLightDir)));float shade=mix(uAmbient+(1.0-uAmbient)*ndl*(0.55+0.45*uShadow),1.0,uFlat);vCol=aColor*shade;vUV=aUV;}`;
+        const fragment=`precision mediump float;varying vec3 vCol;varying vec2 vUV;varying float vFogDepth;uniform sampler2D uSampler;uniform float uTexture;uniform float uAlpha;uniform float uFogDensity;uniform vec3 uFogColor;
+        void main(){vec4 tex=texture2D(uSampler,vUV);float a=mix(1.0,tex.a,uTexture);if(a<0.08)discard;vec3 col=vCol*mix(vec3(1.),tex.rgb,uTexture);float fog=uFogDensity>0.0?clamp(1.0-exp(-uFogDensity*vFogDepth),0.0,0.72):0.0;col=mix(col,uFogColor,fog);gl_FragColor=vec4(col,uAlpha*a);}`;
         const compile=(type,code)=>{const s=gl.createShader(type);gl.shaderSource(s,code);gl.compileShader(s);if(!gl.getShaderParameter(s,gl.COMPILE_STATUS))throw Error(gl.getShaderInfoLog(s));return s;};
         const p=gl.createProgram();gl.attachShader(p,compile(gl.VERTEX_SHADER,vertex));gl.attachShader(p,compile(gl.FRAGMENT_SHADER,fragment));gl.linkProgram(p);
         if(!gl.getProgramParameter(p,gl.LINK_STATUS))throw Error(gl.getProgramInfoLog(p));this.program=p;
         this.attribs=['aPos','aNormal','aColor','aUV'].map(n=>gl.getAttribLocation(p,n));
-        this.uniforms=Object.fromEntries(['uMatrix','uTexture','uSampler','uAlpha','uFlat'].map(n=>[n,gl.getUniformLocation(p,n)]));
-        gl.useProgram(p);gl.uniform1i(this.uniforms.uSampler,0);gl.enable(gl.DEPTH_TEST);gl.depthFunc(gl.LEQUAL);gl.clearColor(0.0706,0.2431,0.2902,1);gl.disable(gl.CULL_FACE);
+        this.uniforms=Object.fromEntries(['uMatrix','uView','uTexture','uSampler','uAlpha','uFlat','uLightDir','uAmbient','uShadow','uFogDensity','uFogColor'].map(n=>[n,gl.getUniformLocation(p,n)]));
+        gl.useProgram(p);gl.uniform1i(this.uniforms.uSampler,0);gl.enable(gl.DEPTH_TEST);gl.depthFunc(gl.LEQUAL);
+        const cc=dioramaLight.clearColor;gl.clearColor(cc[0],cc[1],cc[2],cc[3]);gl.disable(gl.CULL_FACE);
+        const fogHex=parseInt(String(dioramaLight.fogColor||'#5f8f9c').replace('#',''),16);
+        const fogRgb=[((fogHex>>>16)&255)/255,((fogHex>>>8)&255)/255,(fogHex&255)/255];
+        this.dioramaUniforms={lightDir:dioramaLight.daylightDir,ambient:dioramaLight.ambient,shadow:dioramaLight.shadowStrength,fogDensity:dioramaLight.fogDensity,fogColor:fogRgb};
+        this.identityView=Float32Array.from([1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]);
         this.surface=gl.createTexture();gl.bindTexture(gl.TEXTURE_2D,this.surface);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,1,1,0,gl.RGBA,gl.UNSIGNED_BYTE,new Uint8Array([255,255,255,255]));
       }
       uploadTexture(name,canvas){const gl=this.gl;let t=this.textures.get(name);if(!t){t=gl.createTexture();this.textures.set(name,t);}gl.bindTexture(gl.TEXTURE_2D,t);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,canvas);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR_MIPMAP_LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);gl.generateMipmap(gl.TEXTURE_2D);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,false);}
       setMesh(name,builder,texture=null){const gl=this.gl;const previous=this.meshes.get(name);if(previous?.buffer)gl.deleteBuffer(previous.buffer);const data=new Float32Array(builder.a);const buffer=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,buffer);gl.bufferData(gl.ARRAY_BUFFER,data,gl.STATIC_DRAW);this.meshes.set(name,{buffer,count:data.length/11,texture});}
       delMesh(name){const gl=this.gl,m=this.meshes.get(name);if(m)gl.deleteBuffer(m.buffer);this.meshes.delete(name);}
       resize(width,height){const w=Math.max(200,Math.round(width*Math.min(devicePixelRatio||1,graphicsPreset.maxPixelRatio))),h=Math.max(180,Math.round(height*Math.min(devicePixelRatio||1,graphicsPreset.maxPixelRatio)));if(this.canvas.width!==w||this.canvas.height!==h){this.canvas.width=w;this.canvas.height=h;}this.gl.viewport(0,0,w,h);}
-      render(view,visibility={}){const gl=this.gl;gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);gl.useProgram(this.program);gl.uniformMatrix4fv(this.uniforms.uMatrix,false,view);gl.activeTexture(gl.TEXTURE0);gl.enable(gl.DEPTH_TEST);gl.depthMask(true);gl.disable(gl.BLEND);let calls=0;
+      render(matrices,visibility={}){const gl=this.gl;const mvp=matrices&&matrices.mvp?matrices.mvp:matrices;const view=matrices&&matrices.view?matrices.view:this.identityView;gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);gl.useProgram(this.program);gl.uniformMatrix4fv(this.uniforms.uMatrix,false,mvp);if(this.uniforms.uView)gl.uniformMatrix4fv(this.uniforms.uView,false,view);
+        const du=this.dioramaUniforms||{lightDir:[-.45,1,-.48],ambient:.34,shadow:.42,fogDensity:0,fogColor:[.37,.56,.61]};
+        if(this.uniforms.uLightDir)gl.uniform3fv(this.uniforms.uLightDir,du.lightDir);
+        if(this.uniforms.uAmbient)gl.uniform1f(this.uniforms.uAmbient,du.ambient);
+        if(this.uniforms.uShadow)gl.uniform1f(this.uniforms.uShadow,du.shadow);
+        if(this.uniforms.uFogDensity)gl.uniform1f(this.uniforms.uFogDensity,du.fogDensity);
+        if(this.uniforms.uFogColor)gl.uniform3fv(this.uniforms.uFogColor,du.fogColor);
+        gl.activeTexture(gl.TEXTURE0);gl.enable(gl.DEPTH_TEST);gl.depthMask(true);gl.disable(gl.BLEND);let calls=0;
         for(const [name,m] of this.meshes){if(m.count===0||visibility[name]===false)continue;const alpha=typeof visibility[name]==='number'?visibility[name]:1;gl.uniform1f(this.uniforms.uAlpha,alpha);gl.uniform1f(this.uniforms.uTexture,m.texture?1:0);gl.uniform1f(this.uniforms.uFlat,(m.texture||name==='ocean')?1:0);gl.bindTexture(gl.TEXTURE_2D,m.texture?(this.textures.get(m.texture)||this.surface):this.surface);gl.bindBuffer(gl.ARRAY_BUFFER,m.buffer);const stride=44;for(const [i,index] of this.attribs.entries()){if(index<0)continue;gl.enableVertexAttribArray(index);gl.vertexAttribPointer(index,i===3?2:3,gl.FLOAT,false,stride,[0,12,24,36][i]);}if(alpha<1){gl.enable(gl.BLEND);gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);gl.depthMask(false);}else{gl.disable(gl.BLEND);gl.depthMask(true);}gl.drawArrays(gl.TRIANGLES,0,m.count);calls++;}
         gl.depthMask(true);gl.disable(gl.BLEND);this.lastCalls=calls;
       }
@@ -621,7 +691,19 @@ export function mountAtlasPrototype3d(host, options = {}) {
     /* A fully offline software 3D rasterizer, used only when WebGL is unavailable.
        Geometry is the SAME set of 3D triangles as the GPU renderer; this is not a 2D map fallback. */
     class AtlasLite3D {
-      constructor(canvas){this.canvas=canvas;this.ctx=canvas.getContext('2d',{alpha:false,willReadFrequently:false});if(!this.ctx)throw Error('Canvas 2D nicht verfügbar');this.meshes=new Map();this.textures=new Map();this.lastCalls=0;this.software3D=true;}
+      constructor(canvas){
+        this.canvas=canvas;this.ctx=canvas.getContext('2d',{alpha:false,willReadFrequently:false});if(!this.ctx)throw Error('Canvas 2D nicht verfügbar');this.meshes=new Map();this.textures=new Map();this.lastCalls=0;this.software3D=true;
+        /* ATL2-D06 — same diorama light profile as AtlasGL (lite / WebGL-fail path). */
+        const fogHex=parseInt(String(dioramaLight.fogColor||'#5f8f9c').replace('#',''),16);
+        this.dioramaUniforms={
+          lightDir:dioramaLight.daylightDir,
+          ambient:dioramaLight.ambient,
+          shadow:dioramaLight.shadowStrength,
+          fogDensity:dioramaLight.fogDensity,
+          fogColor:[((fogHex>>>16)&255)/255,((fogHex>>>8)&255)/255,(fogHex&255)/255],
+        };
+        this.clearColor=dioramaLight.clearColor;
+      }
       uploadTexture(name,canvas){this.textures.set(name,canvas);}
       setMesh(name,builder,texture=null){const array=new Float32Array(builder.a);this.meshes.set(name,{array,count:array.length/11,texture});}
       delMesh(name){this.meshes.delete(name);}
@@ -637,10 +719,16 @@ export function mountAtlasPrototype3d(host, options = {}) {
         return [stageWidth/2+(right[0]*dx+right[1]*dz)*s,stageHeight/2+((forward[0]*dx+forward[1]*dz)*Math.sin(pitch)-y*Math.cos(pitch))*s,(forward[0]*dx+forward[1]*dz)*Math.cos(pitch)+y*Math.sin(pitch)];
       }
       drawMap(name,m){const ctx=this.ctx,canvas=this.textures.get(m.texture);if(!canvas)return;const conf=mapConfigs[m.texture];if(!conf)return;const {x,z,w,h}=conf;const y=name==='map_world'?-0.3:name==='map_region'?.02:name==='map_city'?.08:.17;const tl=this.project(x-w/2,y,z-h/2),tr=this.project(x+w/2,y,z-h/2),bl=this.project(x-w/2,y,z+h/2);const a=(tr[0]-tl[0])/canvas.width,b=(tr[1]-tl[1])/canvas.width,c=(bl[0]-tl[0])/canvas.height,d=(bl[1]-tl[1])/canvas.height;ctx.save();ctx.setTransform(a,b,c,d,tl[0],tl[1]);ctx.imageSmoothingEnabled=true;ctx.drawImage(canvas,0,0);ctx.restore();}
-      render(_view,visibility={}){const ctx=this.ctx;const w=stageWidth,h=stageHeight;ctx.save();ctx.setTransform(1,0,0,1,0,0);const dpr=this.canvas.width/w;ctx.setTransform(dpr,0,0,dpr,0,0);ctx.fillStyle='#123e4a';ctx.fillRect(0,0,w,h);
+      render(_matrices,visibility={}){const ctx=this.ctx;const w=stageWidth,h=stageHeight;ctx.save();ctx.setTransform(1,0,0,1,0,0);const dpr=this.canvas.width/w;ctx.setTransform(dpr,0,0,dpr,0,0);
+       const cc=this.clearColor||[0.0706,0.2431,0.2902,1];
+       ctx.fillStyle=`rgb(${Math.round(cc[0]*255)},${Math.round(cc[1]*255)},${Math.round(cc[2]*255)})`;ctx.fillRect(0,0,w,h);
        for(const name of ['map_world','map_region','map_city','map_dungeon']){const m=this.meshes.get(name);if(m&&visibility[name]!==false)this.drawMap(name,m);}
        // Mesh vertices belong to the shared true 3D scene. Sort visible faces back-to-front.
        const faces=[];const{forward,right,pitch}=getCameraAngles();const scale=h/(2*cameraState.span);
+       const du=this.dioramaUniforms||{lightDir:[-.45,1,-.48],ambient:.34,shadow:.42};
+       const Lx=du.lightDir[0],Ly=du.lightDir[1],Lz=du.lightDir[2];
+       const Llen=Math.hypot(Lx,Ly,Lz)||1;
+       const ambient=du.ambient,shadow=du.shadow;
        for(const [name,m] of this.meshes){if(name.startsWith('map_')||name==='ocean'||visibility[name]===false||m.count===0)continue;
         const ar=m.array;const stride=33;for(let i=0;i+stride<=ar.length;i+=stride){const x=(ar[i]+ar[i+11]+ar[i+22])/3,y=(ar[i+1]+ar[i+12]+ar[i+23])/3,z=(ar[i+2]+ar[i+13]+ar[i+24])/3;const dx=x-cameraState.x,dz=z-cameraState.z;
          const sX=(dx*right[0]+dz*right[1])*scale+w/2,sY=((dx*forward[0]+dz*forward[1])*Math.sin(pitch)-y*Math.cos(pitch))*scale+h/2;
@@ -653,7 +741,9 @@ export function mountAtlasPrototype3d(host, options = {}) {
        faces.sort((a,b)=>a[0]-b[0]);let rendered=0;
        for(const [,ar,i] of faces){const p0=this.project(ar[i],ar[i+1],ar[i+2]),p1=this.project(ar[i+11],ar[i+12],ar[i+13]),p2=this.project(ar[i+22],ar[i+23],ar[i+24]);
          const area=(p1[0]-p0[0])*(p2[1]-p0[1])-(p2[0]-p0[0])*(p1[1]-p0[1]);if(Math.abs(area)<.2)continue;
-         const nx=ar[i+3],ny=ar[i+4],nz=ar[i+5],brightness=Math.min(1.08,Math.max(.45,.48+Math.abs(nx*-.4+ny*.9+nz*-.3)*.48));
+         const nx=ar[i+3],ny=ar[i+4],nz=ar[i+5];
+         const ndl=Math.max(0,(nx*Lx+ny*Ly+nz*Lz)/Llen);
+         const brightness=Math.min(1.08,Math.max(.2,ambient+(1-ambient)*ndl*(0.55+0.45*shadow)));
          const col=[ar[i+6],ar[i+7],ar[i+8]].map(v=>Math.max(0,Math.min(255,Math.round(v*brightness*255))));
          ctx.fillStyle=`rgb(${col[0]},${col[1]},${col[2]})`;
          ctx.beginPath();ctx.moveTo(p0[0],p0[1]);ctx.lineTo(p1[0],p1[1]);ctx.lineTo(p2[0],p2[1]);ctx.closePath();ctx.fill();rendered++;
@@ -1037,15 +1127,61 @@ export function mountAtlasPrototype3d(host, options = {}) {
       b.plane(wx,wz,hf.cols*hf.cellSize,hf.rows*hf.cellSize,water-0.02,'#1a5f8a');
     }
     let productGeomFingerprint=null;
+    /** ATL2-D06 — stable variant hash (matches domain atlasDiorama*Variant). */
+    function productDioramaHash(id){let h=2166136261;const s=String(id||'');for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619);}return h>>>0;}
+    function productHousePalette(id){
+      const n=productDioramaHash(id)%3;
+      if(n===0)return{wall:'#ae774c',roof:'#5a6b4a',variant:'timber'};
+      if(n===1)return{wall:'#d7c6a5',roof:'#794c3c',variant:'plaster'};
+      return{wall:'#adb2a4',roof:'#6f4f45',variant:'stone'};
+    }
+    function productTreePalette(id,stamp){
+      if(stamp==='tanne')return{trunk:'#66584a',leaf:'#376456',variant:'pine'};
+      return productDioramaHash(id)%2===0
+        ?{trunk:'#66584a',leaf:'#527b55',variant:'oak'}
+        :{trunk:'#cfc6b4',leaf:'#6a9a62',variant:'birch'};
+    }
     /** Stamp footprints match the 2D Draufsicht (drawStamp draws 2D px × size); u = size. */
     function productPropInto(b,p){
       const u=clamp(Number(p.size)||1,.01,40),H=Number(p.height)>0?clamp(Number(p.height),.1,10):1,x=Number(p.x)||0,z=Number(p.z)||0,elev=Number.isFinite(Number(p.elevation))?Number(p.elevation):0;
-      switch(productStampOf(p)){
-        case'baum':b.box(x,elev+.12*62*u,z,.12*62*u,.24*62*u,.12*62*u,'#66584a');b.cone(x,elev+.20*62*u,z,.65*62*u,1.03*62*u,'#527b55',7);b.cone(x,elev+.63*62*u,z,.48*62*u,.92*62*u,'#527b55',7);break;
-        case'tanne':b.box(x,elev+.12*58*u,z,.12*58*u,.24*58*u,.12*58*u,'#66584a');b.cone(x,elev+.20*58*u,z,.65*58*u,1.03*58*u,'#376456',7);b.cone(x,elev+.63*58*u,z,.48*58*u,.92*58*u,'#376456',7);break;
-        case'fels':b.octa(x,elev+14*u,z,30*u,'#82928a');break;
-        case'haus':b.box(x,elev+55*u*H*.48+.06,z,80*u,55*u*H,60*u,'#d7c6a5');b.pyramid(x,elev+55*u*H+.06,z,80*u*1.2,55*u*H*.64,60*u*1.2,'#794c3c');break;
-        case'turm':b.box(x,elev+45*u*H,z,40*u,90*u*H,40*u,'#adb2a4');b.pyramid(x,elev+90*u*H,z,52*u,30*u,52*u,'#6f4f45');break;
+      const stamp=productStampOf(p),detail=dioramaLight.detailLevel,facades=detail==='full';
+      switch(stamp){
+        case'baum':case'tanne':{
+          const pal=productTreePalette(p.id,stamp),s=stamp==='tanne'?58:62;
+          b.box(x,elev+.12*s*u,z,.12*s*u,.24*s*u,.12*s*u,pal.trunk);
+          if(pal.variant==='birch'){b.cone(x,elev+.28*s*u,z,.55*s*u,.85*s*u,pal.leaf,6);b.cone(x,elev+.70*s*u,z,.38*s*u,.70*s*u,pal.leaf,6);}
+          else if(pal.variant==='pine'){b.cone(x,elev+.18*s*u,z,.55*s*u,1.15*s*u,pal.leaf,7);b.cone(x,elev+.55*s*u,z,.40*s*u,.95*s*u,pal.leaf,7);b.cone(x,elev+.95*s*u,z,.26*s*u,.70*s*u,pal.leaf,6);}
+          else{b.cone(x,elev+.20*s*u,z,.65*s*u,1.03*s*u,pal.leaf,7);b.cone(x,elev+.63*s*u,z,.48*s*u,.92*s*u,pal.leaf,7);}
+          break;
+        }
+        case'fels':{
+          if(productDioramaHash(p.id)%2===0){b.octa(x,elev+14*u,z,30*u,'#82928a');}
+          else{b.box(x,elev+10*u,z,36*u,20*u,28*u,'#82928a');b.box(x+10*u,elev+16*u,z-6*u,18*u,14*u,16*u,'#6f7f78');b.octa(x-8*u,elev+18*u,z+4*u,12*u,'#8a9a92');}
+          break;
+        }
+        case'haus':{
+          const pal=productHousePalette(p.id),bw=80*u,bd=60*u,bh=55*u*H,baseY=elev+bh*.48+.06;
+          b.box(x,baseY,z,bw,bh,bd,pal.wall);
+          b.pyramid(x,elev+bh+.06,z,bw*1.2,bh*.64,bd*1.2,pal.roof);
+          /* Door + optional windows (full detail) — not cubes-only. */
+          b.box(x,elev+bh*.35+.10,z+bd*.5-bd*.06,bw*.18,bh*.55,bd*.12,'#493f3a');
+          if(facades){
+            const wy=elev+bh*.55,wh=bh*.18,ww=bw*.12,wd=bd*.04;
+            b.box(x-bw*.28,wy,z+bd*.5-wd,ww,wh,wd,'#2a3a48');
+            b.box(x+bw*.28,wy,z+bd*.5-wd,ww,wh,wd,'#2a3a48');
+            if(pal.variant==='timber'){b.box(x,elev+bh*.15,z+bd*.5-wd*.5,bw*.92,bh*.04,wd*.5,'#6e422b');b.box(x,elev+bh*.78,z+bd*.5-wd*.5,bw*.92,bh*.04,wd*.5,'#6e422b');}
+            if(pal.variant==='stone'){b.box(x-bw*.5+wd,wy,z,wd,wh,bd*.12,'#2a3a48');b.box(x+bw*.5-wd,wy,z,wd,wh,bd*.12,'#2a3a48');}
+          }
+          break;
+        }
+        case'turm':{
+          const bh=90*u*H,bw=40*u;
+          b.box(x,elev+bh*.5,z,bw,bh,bw,'#adb2a4');
+          b.pyramid(x,elev+bh,z,52*u,30*u,52*u,'#6f4f45');
+          b.box(x,elev+bh*.22,z+bw*.5-bw*.08,bw*.22,bh*.28,bw*.12,'#493f3a');
+          if(facades){b.box(x,elev+bh*.62,z+bw*.5-bw*.05,bw*.14,bh*.12,bw*.08,'#2a3a48');b.box(x,elev+bh*.78,z+bw*.5-bw*.05,bw*.14,bh*.12,bw*.08,'#2a3a48');}
+          break;
+        }
         case'tisch':b.box(x,elev+30*u,z,80*u,6*u,48*u,'#ae774c');for(const xx of[-34,34])for(const zz of[-18,18])b.box(x+xx*u,elev+14*u,z+zz*u,6*u,28*u,6*u,'#6e422b');break;
         case'stuhl':b.box(x,elev+18*u,z,44*u,5*u,44*u,'#805336');b.box(x,elev+36*u,z-19*u,44*u,36*u,6*u,'#6b432b');break;
         case'fass':b.box(x,elev+26*u,z,56*u,52*u,56*u,'#a97b49');b.box(x,elev+52.5*u,z,50*u,u,50*u,'#7d5a35');break;
@@ -1278,18 +1414,22 @@ export function mountAtlasPrototype3d(host, options = {}) {
       const dx=x-cameraState.x,dz=z-cameraState.z,unit=stageHeight/(2*cameraState.span);
       return{x:stageWidth/2+(right[0]*dx+right[1]*dz)*unit,y:stageHeight/2+(forward[0]*dx+forward[1]*dz)*Math.sin(pitch)*unit-y*Math.cos(pitch)*unit,visible:true};
     }
-    function cameraMatrix(){
+    function cameraMatrices(){
       const{eye,at,up,d,mode}=cameraEyeBasis();
       const aspect=Math.max(0.2,stageWidth/Math.max(1,stageHeight));
       const far=Math.max(8000,d*4+200);
       const view=glm.lookAt(eye,at,up);
-      if(mode==='perspective'){const fov=50*Math.PI/180;return glm.mul(glm.perspective(fov,aspect,.2,far),view);}
-      return glm.mul(glm.ortho(-cameraState.span*aspect,cameraState.span*aspect,-cameraState.span,cameraState.span,.1,far),view);
+      const mvp=mode==='perspective'
+        ? glm.mul(glm.perspective(50*Math.PI/180,aspect,.2,far),view)
+        : glm.mul(glm.ortho(-cameraState.span*aspect,cameraState.span*aspect,-cameraState.span,cameraState.span,.1,far),view);
+      return {mvp,view};
     }
+    /** @deprecated Prefer cameraMatrices(); kept for any local callers of the MVP only. */
+    function cameraMatrix(){return cameraMatrices().mvp;}
     function levelFromView(){if(productMap)return'world';const s=cameraState.span,x=cameraState.x,z=cameraState.z;if(s<3.0&&inside(x,z,188,-64,26,20))return'room';if(s<18&&inside(x,z,188,-64,29,25))return'dungeon';if(s<88&&inside(x,z,183,-66,94,82))return'city';if(s<300&&inside(x,z,145,-54,270,210))return'region';return'world';}
     function applyLod(){if(productMap)return productLod();const s=cameraState.span;const empty=isEmptyWorldActive();return{ocean:true,map_world:!empty&&state.layers.world&&s>=18,world3d:!empty&&state.layers.world&&s>90,map_region:!empty&&state.layers.region&&s<300&&s>=18,map_city:!empty&&state.layers.city&&s<100&&s>=18,map_dungeon:!empty&&state.layers.dungeon&&s<19,region3d:!empty&&state.layers.region&&s<200&&s>35,city3d:!empty&&state.layers.city&&s<80&&s>16,dungeon3d:!empty&&state.layers.dungeon&&s<19,grid:!empty&&state.layers.grid&&s<14,manual_world:!empty&&state.layers.stamps&&s>80,manual_region:!empty&&state.layers.stamps&&s<300&&s>32,manual_city:!empty&&state.layers.stamps&&s<95&&s>14,manual_dungeon:!empty&&state.layers.stamps&&s<24,manual_room:!empty&&state.layers.stamps&&s<10};}
     function updateLevel(){const now=levelFromView();if(now!==activeLevel){activeLevel=now;renderNavigation();updateInspector();}if(productMap){updateProductLevelChrome();return;}const land=!isEmptyWorldActive()&&selectedLandId?landDefs.find(l=>l.id===selectedLandId):null;const cont=!isEmptyWorldActive()&&!land&&selectedContinentId?continentDefs.find(c=>c.id===selectedContinentId):null;const current=levels.find(l=>l.id===now);$('level').textContent=land?.tag||cont?.tag||(isEmptyWorldActive()?'OZEAN':(current?.tag||'WELT'));const worldName=(getActiveWorld()?.label)||state.worldLabel||'Welt';$('crumb').textContent=land?`${worldName} › ${land.label}`:cont?`${worldName} › ${cont.label}`:(now==='world'?worldName:[worldName,...levels.filter(l=>l.kind==='stage').slice(0,Math.max(0,['city','dungeon','room'].indexOf(now)+1)).map(x=>x.label)].join(' › '));if(!scaleEdit||scaleEdit.kind!=='zoom'){const z=$('zoom');if(z)z.textContent=zoomPercent()+'%';}updateHotspots();}
-    function drawFrame(){if(engine){/* ATL2-D05 — rebuild product meshes when LOD/fingerprint changes (zoom crosses bands). */if(productMap)buildProductGeometry();syncOceanMesh();engine.render(cameraMatrix(),applyLod());const label=$('engineState');if(label&&label.textContent==='WEBGL wird gestartet')label.textContent=engine.software3D?'3D · SOFTWARE-RENDERER · OFFLINE':'WEBGL · ECHTES 3D · OFFLINE';}updateLevel();}
+    function drawFrame(){if(engine){/* ATL2-D05 — rebuild product meshes when LOD/fingerprint changes (zoom crosses bands). */if(productMap)buildProductGeometry();syncOceanMesh();engine.render(cameraMatrices(),applyLod());const label=$('engineState');if(label&&label.textContent==='WEBGL wird gestartet')label.textContent=engine.software3D?'3D · SOFTWARE-RENDERER · OFFLINE':'WEBGL · ECHTES 3D · OFFLINE';}updateLevel();}
     function updateHotspots(){const opts=[['worldHotspot',145,-54,340,85],['cityHotspot',183,-66,120,24],['dungeonHotspot',188,-64,44,9]];for(const[id,x,z,max,min]of opts){const el=$(id);if(!el)continue;/* Product path: demo hotspots invent geography — hide (#752). */if(productMap||productNavActive()||isEmptyWorldActive()){el.classList.add('hidden');continue;}const ok=cameraState.span<max&&cameraState.span>min;const p=point3dToScreen(x,z,.5);if(ok&&p.x>-10&&p.y>-20&&p.x<stageWidth+10&&p.y<stageHeight+10){el.classList.remove('hidden');el.style.left=p.x+'px';el.style.top=p.y+'px';}else el.classList.add('hidden');}updateMapLabels();}
     function layerTexSize(layer){if(layer==='world')return{w:WORLD_TEX_W,h:WORLD_TEX_H};const cv=baseMapCanvases[layer]||mapCanvases[layer];if(cv)return{w:cv.width,h:cv.height};if(layer==='city')return{w:1000,h:690};if(layer==='region')return{w:1000,h:740};if(layer==='dungeon')return{w:1200,h:800};return{w:1000,h:700};}
     function resolveMapLabelPos(id){const def=MAP_LABEL_DEFAULTS[id];if(!def)return null;const saved=state.mapLabelPos?.[id];if(def.layer==='level'){const lv=levels.find(l=>l.id===(def.id||id));const x=Number.isFinite(saved?.x)?saved.x:(lv?.x??0);const z=Number.isFinite(saved?.z)?saved.z:(lv?.z??0);if(lv&&Number.isFinite(saved?.x)&&Number.isFinite(saved?.z)){lv.x=x;lv.z=z;}return{layer:'level',x,z,size:Number.isFinite(saved?.size)?saved.size:def.size};}return{layer:def.layer,x:Number.isFinite(saved?.x)?saved.x:def.x,y:Number.isFinite(saved?.y)?saved.y:def.y,size:Number.isFinite(saved?.size)?saved.size:def.size};}

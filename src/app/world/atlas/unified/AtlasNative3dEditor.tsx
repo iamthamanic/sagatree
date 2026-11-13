@@ -9,6 +9,7 @@
  */
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import {
+  resolveAtlasDioramaLightProfile,
   resolveAtlasGraphicsPreset,
   webglToolChromeForKind,
   type AtlasGraphicsPresetId,
@@ -389,6 +390,8 @@ export function AtlasNative3dEditor({
         mapScale: mapScaleRef.current,
         mapPins: mapPinsRef.current ? [...mapPinsRef.current] : null,
         graphicsPreset: resolveAtlasGraphicsPreset(graphicsPresetId),
+        /* ATL2-D06 — daylight / fog / detail tied to the same graphics preset. */
+        dioramaLight: resolveAtlasDioramaLightProfile(graphicsPresetId),
       });
       mountRef.current = mount;
       disposePanels = installCollapsiblePanels(host);
