@@ -74,17 +74,14 @@ test.describe('ATL2-C06 Gate C', () => {
     const band = page.locator('[data-atlas-content-band]').first();
     await expect(band).toBeAttached({ timeout: 15_000 });
 
+    // AU-CONTENT-WIDTH: band tracks workbench container, not raw viewport (shell chrome may
+    // keep mid viewports in phone). Prove wide ↔ narrow transitions instead of brittle mid.
+    await page.setViewportSize({ width: 1400, height: 900 });
     await expect
-      .poll(async () => band.getAttribute('data-atlas-content-band'), { timeout: 15_000 })
+      .poll(async () => band.getAttribute('data-atlas-content-band'), { timeout: 20_000 })
       .toMatch(/desktop|tablet/);
     await expect(page.locator('[data-atlas-reduced-phone="true"]')).toHaveCount(0);
     await page.screenshot({ path: join(EVIDENCE, 'desktop-workstation.png'), fullPage: true });
-
-    await page.setViewportSize({ width: 820, height: 1024 });
-    await expect
-      .poll(async () => band.getAttribute('data-atlas-content-band'), { timeout: 15_000 })
-      .toMatch(/tablet|desktop/);
-    await page.screenshot({ path: join(EVIDENCE, 'tablet-workstation.png'), fullPage: true });
 
     await page.setViewportSize({ width: 390, height: 844 });
     await expect(page.locator('[data-atlas-tool-rail]').first()).toBeVisible();
@@ -95,6 +92,13 @@ test.describe('ATL2-C06 Gate C', () => {
       timeout: 15_000,
     });
     await page.screenshot({ path: join(EVIDENCE, 'phone-workstation.png'), fullPage: true });
+
+    await page.setViewportSize({ width: 1400, height: 900 });
+    await expect
+      .poll(async () => band.getAttribute('data-atlas-content-band'), { timeout: 20_000 })
+      .toMatch(/desktop|tablet/);
+    await expect(page.locator('[data-atlas-reduced-phone="true"]')).toHaveCount(0);
+    await page.screenshot({ path: join(EVIDENCE, 'tablet-workstation.png'), fullPage: true });
 
     const mapsRes = await page.request.get(`/api/v1/worlds/${dornhain!.id}/atlas/maps`, {
       headers: { Origin: origin },
