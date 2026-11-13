@@ -1,7 +1,7 @@
 # ATL2-R01 Renderer Hybrid Decision
 
 - Issue: #1266
-- HEAD: `4bfbac4fa5a66b1bc1589d90f459cfae2aa4eede`
+- HEAD: `04f49230ba7e1aa7076554f6fb9737d3d02334df`
 - Verdict: **NO-GO**
 - Productive 3D owner: `custom-webgl-prototype-runtime`
 - Date: 2026-11-13

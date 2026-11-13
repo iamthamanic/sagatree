@@ -1,7 +1,7 @@
 {
   "slug": "atl2-r01-renderer-decision",
   "issue": 1266,
-  "head": "4bfbac4fa5a66b1bc1589d90f459cfae2aa4eede",
+  "head": "04f49230ba7e1aa7076554f6fb9737d3d02334df",
   "verdict": "NO-GO",
   "productiveOwner": "custom-webgl-prototype-runtime",
   "checks": [
