@@ -37576,7 +37576,7 @@
           },
           {
             "path": "src/domains/world/atlas/atlas-hierarchy-nav.ts",
-            "sha256": "c06867348323a2d58054d9518c666ed168c1011a41ac44b38845baecdd145dba"
+            "sha256": "d9df6c10f147e7f325dfc735306fe481e4aa1fc601e215a1f79df0f53b190be7"
           },
           {
             "path": "src/domains/world/atlas/atlas-map-doc-adapter.ts",
@@ -37656,7 +37656,7 @@
           },
           {
             "path": "src/domains/world/atlas/index.ts",
-            "sha256": "23d8f3878792371bf3aa78a1e369d85b03914c8205d38194dd5d4bf9a61f1801"
+            "sha256": "ca3b024e317d8c52b6ccaf33b52e374716437c534a651d226f550c1dfda74c3f"
           },
           {
             "path": "src/domains/world/atlas/map-edit-ops.ts",
@@ -37872,7 +37872,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-world.json",
-      "sourceContractSha256": "31a8fb260d0eb180c7f97ebf5b9c3eba9a6a9d02511df1470505218a789fec21",
+      "sourceContractSha256": "49834332464d3cd6afa022ceeb9a5407f4cb62e341e39b6ac2d297d96f1ac5b8",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],

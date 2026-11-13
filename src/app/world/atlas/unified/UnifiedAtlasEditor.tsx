@@ -633,7 +633,7 @@ export function UnifiedAtlasEditor({
   }, [onDocChange]);
 
   const goToRect = useCallback(
-    (rect: AtlasRect, duration = 650) => {
+    (rect: AtlasRect, duration = 650, onComplete?: () => void) => {
       if (animRef.current != null) cancelAnimationFrame(animRef.current);
       const targetScale = Math.min(
         Math.max(
@@ -661,7 +661,10 @@ export function UnifiedAtlasEditor({
         };
         refresh();
         if (t < 1) animRef.current = requestAnimationFrame(frame);
-        else animRef.current = null;
+        else {
+          animRef.current = null;
+          onComplete?.();
+        }
       };
       animRef.current = requestAnimationFrame(frame);
     },
@@ -669,6 +672,8 @@ export function UnifiedAtlasEditor({
   );
 
   const reportNavView = useCallback(() => {
+    // 3D surface reports via AtlasNative3dEditor — do not overwrite with idle 2D camRef.
+    if (surfaceMode === '3d') return;
     if (!onNavViewChange || viewport.height <= 0) return;
     onNavViewChange({
       centerX: camRef.current.center.x,
@@ -676,7 +681,7 @@ export function UnifiedAtlasEditor({
       span: atlasSpanFromScale(camRef.current.pixelsPerUnit, viewport.height),
       mode: 'ortho-topdown',
     });
-  }, [onNavViewChange, viewport.height]);
+  }, [onNavViewChange, viewport.height, surfaceMode]);
 
   useEffect(() => {
     if (!navRestoreView || viewport.height <= 0) return;
@@ -693,6 +698,7 @@ export function UnifiedAtlasEditor({
 
   useEffect(() => {
     if (!navPendingFocus) return;
+    // Consume only after the fly finishes so parent-space focus plays before a map switch (ATL2-E03).
     goToRect(
       {
         x: navPendingFocus.x,
@@ -701,8 +707,10 @@ export function UnifiedAtlasEditor({
         height: navPendingFocus.height,
       },
       650,
+      () => {
+        onNavPendingFocusConsumed?.();
+      },
     );
-    onNavPendingFocusConsumed?.();
   }, [navPendingFocus, goToRect, onNavPendingFocusConsumed]);
 
   useEffect(() => {
@@ -746,18 +754,23 @@ export function UnifiedAtlasEditor({
   const productWorldFitDoneRef = useRef(false);
   useEffect(() => {
     productWorldFitDoneRef.current = false;
-  }, [workingDoc.demoSeed]);
+  }, [workingDoc.demoSeed, mapKey]);
   // Product maps: one-shot snap to full world extents once the stage has a real size.
+  // Hierarchy restore owns the camera when navRestoreView is present (Codex P1).
   useEffect(() => {
     if (workingDoc.demoSeed !== false) return;
     if (productWorldFitDoneRef.current) return;
     if (viewport.width < 220 || viewport.height < 220) return;
+    if (navRestoreView) {
+      productWorldFitDoneRef.current = true;
+      return;
+    }
     const fit = atlasFitCamera(PRODUCT_WORLD_RECT, viewport, 48);
     fitRef.current = fit.pixelsPerUnit;
     camRef.current = fit;
     productWorldFitDoneRef.current = true;
     refresh();
-  }, [workingDoc.demoSeed, viewport.width, viewport.height, refresh]);
+  }, [workingDoc.demoSeed, viewport.width, viewport.height, refresh, navRestoreView]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -1986,6 +1999,17 @@ export function UnifiedAtlasEditor({
           ctrlKey: ev.ctrlKey,
         }) === 'back'
       ) {
+        const target = ev.target as HTMLElement | null;
+        const tag = target?.tagName;
+        if (
+          tag === 'INPUT' ||
+          tag === 'TEXTAREA' ||
+          tag === 'SELECT' ||
+          target?.isContentEditable
+        ) {
+          return;
+        }
+        if (ev.defaultPrevented) return;
         ev.preventDefault();
         onHierarchyBack();
       }
@@ -2118,6 +2142,8 @@ export function UnifiedAtlasEditor({
           mapSketchStatus={mapSketchStatus ?? null}
           mapScale={mapScale}
           mapPins={mapPins}
+          navRestoreView={navRestoreView}
+          onNavViewChange={onNavViewChange}
           onNavSelect={onWebglNavSelect}
           onNavRename={canEdit ? onWebglNavRename : undefined}
           onNavAdd={canEdit ? onWebglNavAdd : undefined}

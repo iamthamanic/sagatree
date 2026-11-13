@@ -122,8 +122,20 @@ export type EnterChildMapInput = {
   readonly parentCamera: AtlasNavCameraView;
   /** Child map frame on the current (parent) map — required for scale-true drill. */
   readonly childFrame: MapFrameMeta | null;
+  /**
+   * Declared `parent_map_id` of the child summary. When set, must equal the
+   * active map — never invent a scale-true anchor for grandchildren/siblings.
+   */
+  readonly childParentMapId?: string | null;
   /** When true, still switch map but skip fly-to and set unlocated notice. */
   readonly allowUnlocatedOpen?: boolean;
+};
+
+export type AtlasParentFlyRect = {
+  readonly x: number;
+  readonly y: number;
+  readonly width: number;
+  readonly height: number;
 };
 
 export type EnterChildMapResult =
@@ -132,11 +144,21 @@ export type EnterChildMapResult =
       readonly state: AtlasHierarchyNavState;
       readonly unlocated: boolean;
       readonly noticeDe: string | null;
+      /**
+       * Parent-space fly-to for the map being left. Animate on the parent
+       * before switching; child restore uses session snapshot (child-local).
+       */
+      readonly parentFlyTo: AtlasParentFlyRect | null;
     }
   | { readonly ok: false; readonly reasonDe: string };
 
+export const HIERARCHY_NAV_NOT_DIRECT_CHILD_DE =
+  'Nur direkte Kindkarten — Ziel ist kein Kind der aktiven Karte.';
+
 /**
- * Leave current map: snapshot parent camera, activate child, optional fly-to focus.
+ * Leave current map: snapshot parent camera, activate child.
+ * Parent-space fly-to is returned separately so the workbench animates it
+ * before the map switch; the child then restores a child-local camera.
  */
 export function enterChildMap(input: EnterChildMapInput): EnterChildMapResult {
   const childId = input.childMapId.trim();
@@ -151,35 +173,49 @@ export function enterChildMap(input: EnterChildMapInput): EnterChildMapResult {
       },
       unlocated: false,
       noticeDe: null,
+      parentFlyTo: null,
     };
   }
 
+  const declaredParent = input.childParentMapId?.trim() || null;
+  if (declaredParent != null && declaredParent !== input.state.activeMapId) {
+    return { ok: false, reasonDe: HIERARCHY_NAV_NOT_DIRECT_CHILD_DE };
+  }
+
   const frame = input.childFrame;
+  if (
+    frame?.parentAnchor &&
+    frame.parentAnchor.parentMapId.trim() !== input.state.activeMapId
+  ) {
+    return { ok: false, reasonDe: HIERARCHY_NAV_NOT_DIRECT_CHILD_DE };
+  }
+
   const located = frame != null && canLodEnterChildMap(frame);
   if (!located && !input.allowUnlocatedOpen) {
     return { ok: false, reasonDe: HIERARCHY_NAV_UNLOCATED_DE };
   }
 
   const snapshots = withSnapshot(input.state, input.state.activeMapId, input.parentCamera);
-  const childSnap = snapshots[childId] ?? defaultAtlasNavCameraView();
-  let pendingFocus: AtlasHierarchyNavState['pendingFocus'] = null;
-  if (located && frame?.parentAnchor) {
-    const rect = focusRectFromParentAnchor(frame.parentAnchor);
-    pendingFocus = { mapId: childId, ...rect };
-  }
+  const childSnap =
+    snapshots[childId] ??
+    defaultAtlasNavCameraView({ mode: input.parentCamera.mode });
+  const parentFlyTo =
+    located && frame?.parentAnchor
+      ? focusRectFromParentAnchor(frame.parentAnchor)
+      : null;
 
   return {
     ok: true,
     state: {
       activeMapId: childId,
       snapshots: { ...snapshots, [childId]: childSnap },
-      pendingFocus,
+      pendingFocus: null,
     },
     unlocated: !located,
     noticeDe: located ? null : HIERARCHY_NAV_UNLOCATED_DE,
+    parentFlyTo,
   };
 }
-
 export type NavigateAncestorInput = {
   readonly state: AtlasHierarchyNavState;
   readonly maps: readonly AtlasHierarchyMapRef[];

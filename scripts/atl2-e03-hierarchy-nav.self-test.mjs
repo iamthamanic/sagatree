@@ -33,10 +33,26 @@ assert.ok(barrel.includes('enterChildMap'));
 assert.ok(barrel.includes('navigateBack'));
 assert.ok(workbench.includes('data-world-atlas-hierarchy-back'));
 assert.ok(workbench.includes('openMapWithHierarchy'));
+assert.ok(workbench.includes('pendingAfterFlyRef'));
+assert.ok(workbench.includes('parentFlyTo'));
+assert.ok(workbench.includes('isDirect'));
 assert.ok(editor.includes('onHierarchyBack'));
 assert.ok(editor.includes('navRestoreView'));
 assert.ok(editor.includes('parseHierarchyNavKey'));
 assert.ok(editor.includes('wheelRequestsHierarchyBack'));
+assert.ok(editor.includes('isContentEditable'));
+assert.ok(editor.includes('if (navRestoreView)'));
+assert.ok(
+  editor.includes('onNavPendingFocusConsumed?.()'),
+  'fly-to completion consumes pending focus',
+);
+const native3d = readFileSync(
+  join(root, 'src/app/world/atlas/unified/AtlasNative3dEditor.tsx'),
+  'utf8',
+);
+assert.ok(native3d.includes('applyNavCamera'));
+assert.ok(native3d.includes('getNavCamera'));
+assert.ok(native3d.includes('navRestoreView'));
 
 /** Synthetic six-level chain: world → Westmark → Nordreich → Dornhain → Taverne → Schankraum */
 const maps = [
@@ -110,13 +126,25 @@ const enterWest = nav.enterChildMap({
   childMapId: 'm-westmark',
   parentCamera: camWorld,
   childFrame: locatedFrame,
+  childParentMapId: 'm-world',
 });
 assert.equal(enterWest.ok, true);
 assert.equal(enterWest.state.activeMapId, 'm-westmark');
-assert.ok(enterWest.state.pendingFocus);
+assert.equal(enterWest.state.pendingFocus, null, 'child uses snapshot restore, not parent-space focus');
+assert.ok(enterWest.parentFlyTo, 'parent-space fly-to before switch');
+assert.ok(enterWest.parentFlyTo.width > 0);
 assert.equal(enterWest.state.snapshots['m-world'].mode, 'diorama-oblique');
 assert.equal(enterWest.state.snapshots['m-world'].span, 400);
 state = enterWest.state;
+
+const notDirect = nav.enterChildMap({
+  state: nav.createAtlasHierarchyNavState('m-world', camWorld),
+  childMapId: 'm-schank',
+  parentCamera: camWorld,
+  childFrame: locatedFrame,
+  childParentMapId: 'm-tavern',
+});
+assert.equal(notDirect.ok, false, 'grandchild is not a direct child');
 
 const camWest = nav.defaultAtlasNavCameraView({
   centerX: 300,
@@ -149,6 +177,7 @@ for (const childId of path) {
     childMapId: childId,
     parentCamera: camWest,
     childFrame: frame,
+    childParentMapId: parentId,
   });
   assert.equal(step.ok, true, `enter ${childId}`);
   state = step.state;
@@ -191,6 +220,7 @@ const enterCrypt = nav.enterChildMap({
   state,
   childMapId: 'm-crypt',
   parentCamera: camWest,
+  childParentMapId: 'm-dornhain',
   childFrame: {
     status: 'ready',
     parentAnchor: {
@@ -210,6 +240,7 @@ const enterGruft = nav.enterChildMap({
   state,
   childMapId: 'm-gruft',
   parentCamera: camWest,
+  childParentMapId: 'm-crypt',
   childFrame: {
     status: 'ready',
     parentAnchor: {
@@ -259,7 +290,11 @@ assert.equal(nav.wheelRequestsHierarchyBack({ deltaY: -10, atMinSpan: true }), f
 const rect = nav.focusRectFromParentAnchor(locatedFrame.parentAnchor);
 assert.ok(rect.width > 0 && rect.height > 0);
 
-const consumed = nav.consumePendingFocus(enterWest.state);
+const withParentFocus = {
+  ...enterWest.state,
+  pendingFocus: { mapId: 'm-world', ...enterWest.parentFlyTo },
+};
+const consumed = nav.consumePendingFocus(withParentFocus);
 assert.equal(consumed.state.pendingFocus, null);
 assert.ok(consumed.focus);
 

@@ -358,6 +358,7 @@ export {
 
 export {
   HIERARCHY_NAV_BACK_DE,
+  HIERARCHY_NAV_NOT_DIRECT_CHILD_DE,
   HIERARCHY_NAV_UNLOCATED_DE,
   assertIndependentBranches,
   buildMapBreadcrumb,
@@ -374,11 +375,11 @@ export {
   type AtlasHierarchyMapRef,
   type AtlasHierarchyNavState,
   type AtlasNavCameraView,
+  type AtlasParentFlyRect,
   type EnterChildMapResult,
   type HierarchyNavKeyIntent,
   type NavigateAncestorResult,
 } from './atlas-hierarchy-nav';
-
 export {
   ATLAS_AUTOSAVE_DEBOUNCE_MS,
   ATLAS_AUTOSAVE_MAX_PENDING_OPS,

@@ -157,7 +157,11 @@ export function WorldAtlasWorkbench({
   const [hierarchyNav, setHierarchyNav] = useState<AtlasHierarchyNavState | null>(null);
   const [hierarchyNavNotice, setHierarchyNavNotice] = useState<string | null>(null);
   const liveNavCameraRef = useRef<AtlasNavCameraView>(defaultAtlasNavCameraView());
-
+  /** After parent-space fly-to completes, commit the child nav state. */
+  const pendingAfterFlyRef = useRef<{
+    readonly state: AtlasHierarchyNavState;
+    readonly noticeDe: string | null;
+  } | null>(null);
   /** ATL2-C05: recompose chrome from main-pane width (AU-CONTENT-WIDTH). */
   const workbenchRef = useRef<HTMLDivElement | null>(null);
   const contentBand = useAdaptiveContentBand(workbenchRef);
@@ -215,9 +219,10 @@ export function WorldAtlasWorkbench({
         hierarchyNav ??
         createAtlasHierarchyNavState(editor.activeMapId ?? nextMapId, camera);
       if (mode === 'raw' || !editor.activeMapId) {
-        editor.setActiveMapId(nextMapId);
+        if (!editor.setActiveMapId(nextMapId)) return;
         setHierarchyNav(createAtlasHierarchyNavState(nextMapId, camera));
         setHierarchyNavNotice(null);
+        pendingAfterFlyRef.current = null;
         return;
       }
       if (mode === 'ancestor') {
@@ -231,52 +236,73 @@ export function WorldAtlasWorkbench({
           setHierarchyNavNotice(result.reasonDe);
           return;
         }
+        if (!editor.setActiveMapId(result.state.activeMapId)) return;
         setHierarchyNav(result.state);
         setHierarchyNavNotice(null);
-        editor.setActiveMapId(result.state.activeMapId);
+        pendingAfterFlyRef.current = null;
         return;
       }
-      const navItem = placeNav.find((n) => n.mapId === nextMapId);
       const parentId = editor.activeMapId;
-      const childFrame =
-        navItem?.located && parentId
-          ? {
-              status: 'ready' as const,
-              parentAnchor: {
-                parentMapId: parentId,
-                centerX: navItem.x,
-                centerY: navItem.y,
-                extentX: Math.max(1e-6, navItem.focusRect.width / 2),
-                extentY: Math.max(1e-6, navItem.focusRect.height / 2),
-                rotationRad: 0,
-                metersPerUnit: null,
-              },
-            }
-          : editor.map?.id === nextMapId
-            ? extractMapFrameFromGeneratorMeta(editor.map.generatorMeta)
-            : null;
+      const childSummary = editor.summaries.find((s) => s.id === nextMapId);
+      const childParentMapId = childSummary?.parentMapId ?? null;
+      // Only build a locate frame when the summary is a direct child — never rewrite parent.
+      const navItem =
+        childParentMapId === parentId
+          ? placeNav.find((n) => n.mapId === nextMapId && n.located)
+          : undefined;
+      const childFrame = navItem
+        ? {
+            status: 'ready' as const,
+            parentAnchor: {
+              parentMapId: parentId,
+              centerX: navItem.x,
+              centerY: navItem.y,
+              extentX: Math.max(1e-6, navItem.focusRect.width / 2),
+              extentY: Math.max(1e-6, navItem.focusRect.height / 2),
+              rotationRad: 0,
+              metersPerUnit: null,
+            },
+          }
+        : null;
       const result = enterChildMap({
         state: base,
         childMapId: nextMapId,
         parentCamera: camera,
         childFrame,
+        childParentMapId,
         allowUnlocatedOpen: true,
       });
       if (result.ok === false) {
         setHierarchyNavNotice(result.reasonDe);
         return;
       }
+      // Parent-space fly-to on the current map, then switch (Codex P1).
+      if (result.parentFlyTo && atlasSurfaceMode === '2d') {
+        pendingAfterFlyRef.current = {
+          state: result.state,
+          noticeDe: result.noticeDe,
+        };
+        setHierarchyNav({
+          activeMapId: parentId,
+          snapshots: result.state.snapshots,
+          pendingFocus: { mapId: parentId, ...result.parentFlyTo },
+        });
+        setHierarchyNavNotice(null);
+        return;
+      }
+      if (!editor.setActiveMapId(result.state.activeMapId)) return;
       setHierarchyNav(result.state);
       setHierarchyNavNotice(result.noticeDe);
-      editor.setActiveMapId(result.state.activeMapId);
+      pendingAfterFlyRef.current = null;
     },
     [
       hierarchyNav,
       hierarchyMapRefs,
       placeNav,
       editor.activeMapId,
-      editor.map,
+      editor.summaries,
       editor.setActiveMapId,
+      atlasSurfaceMode,
     ],
   );
 
@@ -296,11 +322,11 @@ export function WorldAtlasWorkbench({
       setHierarchyNavNotice(result.reasonDe);
       return;
     }
+    if (!editor.setActiveMapId(result.state.activeMapId)) return;
     setHierarchyNav(result.state);
     setHierarchyNavNotice(null);
-    editor.setActiveMapId(result.state.activeMapId);
+    pendingAfterFlyRef.current = null;
   }, [hierarchyNav, hierarchyMapRefs, editor.activeMapId, editor.setActiveMapId]);
-
   const showLegacyTiles = editor.map?.kind === 'legacy_tiles';
   const showUnified = Boolean(editor.map && !showLegacyTiles);
   /** Exact HTML 3D prototype mount (not flat Canvas2D). */
@@ -548,7 +574,12 @@ export function WorldAtlasWorkbench({
             }`}
             onClick={() => {
               const crumb = editor.breadcrumb.some((c) => c.id === item.id);
-              openMapWithHierarchy(item.id, crumb ? 'ancestor' : 'child');
+              const isDirect =
+                !!editor.activeMapId && item.parentMapId === editor.activeMapId;
+              openMapWithHierarchy(
+                item.id,
+                crumb ? 'ancestor' : isDirect ? 'child' : 'raw',
+              );
               setHierarchyOpen(false);
               setMapsRailExpanded(false);
             }}
@@ -1142,9 +1173,13 @@ export function WorldAtlasWorkbench({
                 // Open primary map for authoring even when unlocated; LOD/hotspots stay gated (#752).
                 if (payload.mapId) {
                   const crumb = editor.breadcrumb.some((c) => c.id === payload.mapId);
+                  const summary = editor.summaries.find((s) => s.id === payload.mapId);
+                  const isDirect =
+                    !!editor.activeMapId &&
+                    summary?.parentMapId === editor.activeMapId;
                   openMapWithHierarchy(
                     payload.mapId,
-                    crumb ? 'ancestor' : 'child',
+                    crumb ? 'ancestor' : isDirect ? 'child' : 'raw',
                   );
                 }
               }}
@@ -1163,6 +1198,12 @@ export function WorldAtlasWorkbench({
                 setHierarchyNav((prev) =>
                   prev ? { ...prev, pendingFocus: null } : prev,
                 );
+                const pending = pendingAfterFlyRef.current;
+                if (!pending) return;
+                pendingAfterFlyRef.current = null;
+                if (!editor.setActiveMapId(pending.state.activeMapId)) return;
+                setHierarchyNav(pending.state);
+                setHierarchyNavNotice(pending.noticeDe);
               }}
               onNavViewChange={(view) => {
                 liveNavCameraRef.current = view;
@@ -1334,9 +1375,15 @@ export function WorldAtlasWorkbench({
                                           const crumb = editor.breadcrumb.some(
                                             (c) => c.id === item.mapId,
                                           );
+                                          const summary = editor.summaries.find(
+                                            (s) => s.id === item.mapId,
+                                          );
+                                          const isDirect =
+                                            !!editor.activeMapId &&
+                                            summary?.parentMapId === editor.activeMapId;
                                           openMapWithHierarchy(
                                             item.mapId,
-                                            crumb ? 'ancestor' : 'child',
+                                            crumb ? 'ancestor' : isDirect ? 'child' : 'raw',
                                           );
                                           setMapsRailExpanded(false);
                                         }
@@ -1363,9 +1410,12 @@ export function WorldAtlasWorkbench({
                                       }`}
                                       onClick={() => {
                                         const crumb = editor.breadcrumb.some((c) => c.id === item.id);
+                                        const isDirect =
+                                          !!editor.activeMapId &&
+                                          item.parentMapId === editor.activeMapId;
                                         openMapWithHierarchy(
                                           item.id,
-                                          crumb ? 'ancestor' : 'child',
+                                          crumb ? 'ancestor' : isDirect ? 'child' : 'raw',
                                         );
                                         setMapsRailExpanded(false);
                                       }}

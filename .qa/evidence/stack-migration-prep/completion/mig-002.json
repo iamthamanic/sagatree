@@ -5,7 +5,7 @@
   "result": "PASS",
   "githubClosed": true,
   "mergeRef": "PR #860 \u2192 main (after #782)",
-  "note": "Inventories refreshed after ATL2-E03 (#1221) hierarchy-nav barrel exports.",
+  "note": "Inventories refreshed after ATL2-E03 (#1221) Codex hierarchy-nav camera/nav fixes.",
   "checks": [
     {
       "command": "legacy inventory matrix",
@@ -23,8 +23,8 @@
       "command": "edge/infra inventory 25+13",
       "result": "PASS",
       "evidenceFile": ".qa/intake/edge-infra-contracts/inventory.json",
-      "sha256": "f3bc30552da16e0db1c5f8dc7a4313b8e51c8bf0582db24a797735604b781fe0"
+      "sha256": "2091fec79c386c36b5dce3acfc1dcc6ea1676f3347caa16e677c78b537691723"
     }
   ],
-  "testedCommit": "24ed98fd79ad412ed2c9ef0814503c37a787f4da"
+  "testedCommit": "5db76e6ec16242f4db1d84c29df7a085aba4ecd7"
 }
