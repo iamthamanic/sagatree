@@ -1,22 +1,50 @@
 # Composition Gate — atl2-e01
 
-- HEAD: 6f82fc626716bc7e18e5b2d2a4081a4bffc88b13
-- Verdict: **CLEAR**
+- Issue: #1219
+- Feature slug: atl2-e01
+- HEAD_SHA: 880c4fd10b864db1bdd5b045f5623145ec2cc4ea
+- BASE_SHA: 0f5875fe7da45f06c6d013ab71d90b68e33d4782
+- Date: 2026-11-13
+- Verdict: CLEAR
+- Acceptance tier: feature-integration
+- Deferred integration: #1220 ATL2-E02 pin↔WorldNode binding; #1221–#1222 E03/E04; Gate E #1223
+
+## Event
+
+Owner creates/lists/deletes WorldNodes with one primary map per hierarchy tip
+(`world > continent > country > place > building > room`); `parent_map_id` locks
+to the parent tip's primary (continent→world root). Secondary maps may delete;
+primary/root maps stay fail-closed.
 
 ## Hop chain
 
-| Producer | Record | Consumer |
-|---|---|---|
-| `createWorldNodeWithMaps` | world_places + primary world_place_map_links + world_atlas_maps parent chain | `listWorldPlaces` / `listWorldAtlasMaps` / `getWorldAtlasMap` / nav tree |
-| `upsertWorldAtlasMap` (secondary) | non-primary map | `deleteWorldAtlasMap` |
-| `deleteWorldAtlasMap` | removes secondary only | list maps (primary graph intact) |
+1. **Producer (domain):** `expectedPrimaryMapParentId` / graph asserts in
+   `src/domains/world/primary-map-links.ts`
+2. **Producer (host):** `createWorldNodeWithMaps` / `upsertWorldAtlasMap` /
+   `deleteWorldAtlasMap` under world module + HTTP DELETE
+3. **Persist:** SQLite `world_places`, `world_atlas_maps`, `world_place_map_links`
+   (unique primary link + expected parent_map_id)
+4. **Authorize:** owner-scoped Policy / service checks (stranger → 42501)
+5. **Consumer (FE):** host world HTTP facades → nav tree / list maps / get map
+6. **Self-test:** `scripts/atl2-e01-primary-map-links.self-test.mjs`
+
+Cardinality: one primary map per WorldNode tip; no dual geometry SoT; no
+skip-to-root when tip parent lacks a primary.
 
 ## Simulations
 
-| Sim | Expected | Result |
-|---|---|---|
-| N-actors | Owner create; stranger delete/create denied (42501) | pass (self-test) |
-| Invalid/missing | skip parent, cross-world, bad subtype, delete primary/root | pass fail-closed |
-| Two consumers | list places + list maps read same primary ids after create | pass |
+| Case | Intended | Composed | Result |
+|------|----------|----------|--------|
+| N-actors | Owner create/list/delete; stranger mutations denied (42501) | Host ports bind actor; ownership filter | pass (self-test) |
+| Invalid/missing | skip parent, cross-world, bad subtype, delete primary/root, tip without parent primary | fail-closed (subtype gate + parent lock + link validation) | pass |
+| Two consumers / crash | list places + list maps read same primary ids after create | same SQLite primary link + parent_map_id | pass |
 
-No dual geometry SoT; primary parent_map_id locked on upsert.
+## Flags
+
+| Tag | Severity | Hops | Why local review missed it | Fix |
+|-----|----------|------|----------------------------|-----|
+| (none) | — | — | — | — |
+
+## Skip reason
+
+n/a
