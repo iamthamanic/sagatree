@@ -486,7 +486,7 @@ export class WorldAtlasStore {
         ? input.generatorMeta
         : {};
 
-    const parentMapId =
+    let parentMapId =
       typeof input.parentMapId === 'string' && input.parentMapId.trim().length > 0
         ? input.parentMapId.trim()
         : null;
@@ -550,6 +550,23 @@ export class WorldAtlasStore {
         return { ok: false, error: '40001' };
       }
 
+      // ATL2-E01: primary-linked maps keep their hierarchy parent_map_id (no silent reparent).
+      const primaryLink = this.#db
+        .prepare(
+          `SELECT place_id AS placeId FROM world_place_map_links
+           WHERE map_id = ? AND usage = 'primary' LIMIT 1`,
+        )
+        .get(mapId) as { placeId: string } | undefined;
+      if (primaryLink) {
+        parentMapId = existing.parent_map_id;
+      } else if (parentMapId === mapId) {
+        this.#db.exec('ROLLBACK');
+        return { ok: false, error: '23514' };
+      } else if (parentMapId && this.#mapWouldCycle(mapId, parentMapId)) {
+        this.#db.exec('ROLLBACK');
+        return { ok: false, error: '23514' };
+      }
+
       const nextSort =
         input.sortOrder === null || input.sortOrder === undefined
           ? existing.sort_order
@@ -610,5 +627,87 @@ export class WorldAtlasStore {
       }
       return { ok: false, error: 'P0001' };
     }
+  }
+
+  /**
+   * Delete a non-primary atlas map (ATL2-E01).
+   * Refuses world-root maps, primary-linked maps, and maps that still have children.
+   */
+  deleteMap(
+    actorIds: readonly string[],
+    worldProfileId: string,
+    mapIdRaw: string,
+  ): { ok: true; value: { readonly deletedMapId: string } } | { ok: false; error: string } {
+    const worldId = worldProfileId.trim();
+    const mapId = mapIdRaw.trim();
+    if (!worldId || !mapId) return { ok: false, error: '22023' };
+    if (!this.worldExists(worldId) || !this.canEditWorld(actorIds, worldId)) {
+      return { ok: false, error: '42501' };
+    }
+
+    try {
+      this.#db.exec('BEGIN IMMEDIATE');
+      const row = this.#loadRow(mapId);
+      if (!row || row.world_profile_id !== worldId) {
+        this.#db.exec('ROLLBACK');
+        return { ok: false, error: 'P0002' };
+      }
+      if (row.parent_map_id == null) {
+        this.#db.exec('ROLLBACK');
+        return { ok: false, error: '23514' };
+      }
+      const primary = this.#db
+        .prepare(
+          `SELECT 1 AS ok FROM world_place_map_links
+           WHERE map_id = ? AND usage = 'primary' LIMIT 1`,
+        )
+        .get(mapId) as { ok: number } | undefined;
+      if (primary) {
+        this.#db.exec('ROLLBACK');
+        return { ok: false, error: '23514' };
+      }
+      const child = this.#db
+        .prepare(
+          `SELECT 1 AS ok FROM world_atlas_maps WHERE parent_map_id = ? LIMIT 1`,
+        )
+        .get(mapId) as { ok: number } | undefined;
+      if (child) {
+        this.#db.exec('ROLLBACK');
+        return { ok: false, error: '23514' };
+      }
+
+      this.#db
+        .prepare(`DELETE FROM world_place_map_links WHERE map_id = ?`)
+        .run(mapId);
+      const del = this.#db.prepare(`DELETE FROM world_atlas_maps WHERE id = ?`).run(mapId);
+      if (del.changes !== 1) {
+        this.#db.exec('ROLLBACK');
+        return { ok: false, error: 'P0001' };
+      }
+      this.#db.exec('COMMIT');
+      return { ok: true, value: { deletedMapId: mapId } };
+    } catch {
+      try {
+        this.#db.exec('ROLLBACK');
+      } catch {
+        /* ignore */
+      }
+      return { ok: false, error: 'P0001' };
+    }
+  }
+
+  /** True if setting mapId.parent = candidateParent would create a cycle. */
+  #mapWouldCycle(mapId: string, candidateParent: string): boolean {
+    let cursor: string | null = candidateParent;
+    const seen = new Set<string>();
+    while (cursor) {
+      if (cursor === mapId) return true;
+      if (seen.has(cursor)) return true;
+      seen.add(cursor);
+      const row = this.#loadRow(cursor);
+      if (!row) return false;
+      cursor = row.parent_map_id;
+    }
+    return false;
   }
 }

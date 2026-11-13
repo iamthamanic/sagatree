@@ -1,0 +1,14 @@
+{
+  "slug": "atl2-e01",
+  "issue": 1219,
+  "verdict": "CLEAR",
+  "checks": [
+    "six-level-create-list-get",
+    "subtype-reject",
+    "skip-cross-world-reject",
+    "immutable-ids",
+    "map-create-list-delete",
+    "primary-parent-lock",
+    "typed-strict"
+  ]
+}

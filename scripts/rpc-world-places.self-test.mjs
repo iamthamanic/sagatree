@@ -120,9 +120,16 @@ try {
     `INSERT INTO project_members (project_id, user_id, role, active, joined_at) VALUES (?, ?, ?, 1, ?)`,
   ).run(projB, PLAYER_B.actorId, 'player', now);
 
-  // Atlas map for links
+  // Atlas maps for links — world root + child maps (ATL2-E01 primary parent_map_id).
+  const worldRootMap = randomUUID();
   const mapA = randomUUID();
   const mapB = randomUUID();
+  db.prepare(
+    `INSERT INTO world_atlas_maps (
+       id, world_profile_id, parent_map_id, kind, title, sort_order,
+       bounds, layers, generator_meta, revision, created_at, updated_at
+     ) VALUES (?, ?, NULL, 'world', 'Weltkarte', 0, '{}', '{"type":"FeatureCollection","features":[]}', '{}', 1, ?, ?)`,
+  ).run(worldRootMap, worldId, now, now);
   for (const [mapId, title] of [
     [mapA, 'Map A'],
     [mapB, 'Map B'],
@@ -131,8 +138,8 @@ try {
       `INSERT INTO world_atlas_maps (
          id, world_profile_id, parent_map_id, kind, title, sort_order,
          bounds, layers, generator_meta, revision, created_at, updated_at
-       ) VALUES (?, ?, NULL, 'world', ?, 0, '{}', '{"type":"FeatureCollection","features":[]}', '{}', 1, ?, ?)`,
-    ).run(mapId, worldId, title, now, now);
+       ) VALUES (?, ?, ?, 'settlement', ?, 0, '{}', '{"type":"FeatureCollection","features":[]}', '{}', 1, ?, ?)`,
+    ).run(mapId, worldId, worldRootMap, title, now, now);
   }
 
   // --- Upsert place create + revise ---

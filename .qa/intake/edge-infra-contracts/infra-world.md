@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-world.json](source-contracts/infra-world.json) (SHA-256 `f12cf35befdcc1e04f17479be2eac0a87f5706de4057f8664fc50d6decb37032`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-world.json](source-contracts/infra-world.json) (SHA-256 `e8aeb6d14e6883518bc935b313fd00f9077399967c7bd56c770eb94b549b6060`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -80,6 +80,8 @@ export function createHostWorldAdapter(ports: HostWorldPorts): HostWorldAdapter 
     getWorldAtlasMap: (actorId, mapId, playerView, sagaPublicId) =>
       ports.getWorldAtlasMap(actorId, mapId, playerView, sagaPublicId),
     upsertWorldAtlasMap: (actorId, input) => ports.upsertWorldAtlasMap(actorId, input),
+    deleteWorldAtlasMap: (actorId, worldProfileId, mapId) =>
+      ports.deleteWorldAtlasMap(actorId, worldProfileId, mapId),
     listWorldPlaces: (actorId, worldProfileId, playerView, sagaPublicId) =>
       ports.listWorldPlaces(actorId, worldProfileId, playerView, sagaPublicId),
     listWorldPlaceMapLinks: (actorId, worldProfileId, playerView, sagaPublicId) =>
@@ -335,6 +337,12 @@ export type HostWorldPorts = HostWorldReadPort & {
     actorId: string,
     input: HostUpsertWorldAtlasMapInput,
   ) => Promise<HostWorldReadResult<HostWorldAtlasMapVm>>;
+  /** ATL2-E01 — delete secondary atlas map (not primary / not root). */
+  readonly deleteWorldAtlasMap: (
+    actorId: string,
+    worldProfileId: string,
+    mapId: string,
+  ) => Promise<HostWorldReadResult<{ readonly deletedMapId: string }>>;
 
   readonly listWorldPlaces: (
     actorId: string,
@@ -399,12 +407,13 @@ export type HostWorldPorts = HostWorldReadPort & {
 };
 ```
 
-### src/infrastructure/world/host-world-ports.contract.ts:248
+### src/infrastructure/world/host-world-ports.contract.ts:254
 
 ```ts
 export const HOST_WORLD_RPC_NAMES = [
   'archive_world_node_subtree',
   'create_world_node_with_maps',
+  'delete_world_atlas_map',
   'delete_world_node',
   'duplicate_world_node',
   'ensure_world_atlas_root',
@@ -423,7 +432,7 @@ export const HOST_WORLD_RPC_NAMES = [
 ] as const;
 ```
 
-### src/infrastructure/world/host-world-ports.contract.ts:268
+### src/infrastructure/world/host-world-ports.contract.ts:275
 
 ```ts
 export type HostWorldRpcName = (typeof HOST_WORLD_RPC_NAMES)[number];
@@ -456,7 +465,7 @@ export type HostWorldReadPort = {
 };
 ```
 
-### src/infrastructure/world/world-atlas-service.ts:33
+### src/infrastructure/world/world-atlas-service.ts:34
 
 ```ts
 export type UpsertWorldAtlasMapInput = {
@@ -475,7 +484,7 @@ export type UpsertWorldAtlasMapInput = {
 };
 ```
 
-### src/infrastructure/world/world-atlas-service.ts:126
+### src/infrastructure/world/world-atlas-service.ts:143
 
 ```ts
 export const worldAtlasService = new WorldAtlasService();
@@ -671,10 +680,11 @@ All backend operations are included in the public declarations above.
 | `src/domains/world/atlas/world-atlas.types.ts` | `094fa1a6f46a54063fe396c7d641c6c34d5b8907c3f6e0127a2ae9e6443dcee7` |
 | `src/domains/world/contracts/world.types.ts` | `ad676f8bf83b6d55627a568c28d5221bd8f4f616e33eae31fab502223c74f6fb` |
 | `src/domains/world/hierarchy/create-plan.ts` | `6fefab23a8f62fb9a6ebe716c3f44704fa7ab5466b8d5fe0de904920f5aee38e` |
-| `src/domains/world/hierarchy/index.ts` | `576f02be2a3187b6da3f83200079cbc3bbd274c44919a569c84da79008fe09b8` |
+| `src/domains/world/hierarchy/index.ts` | `05ef0b33d0950512a3ac12eb64497fb3e3321f43d81b4fcf76e909a2ef52efe2` |
 | `src/domains/world/hierarchy/legacy-kind-map.ts` | `8b9d99f4d56c970e274250c11849b746dbd8597eeade1c5401d327fa65335316` |
 | `src/domains/world/hierarchy/migration-plan.ts` | `2226b97b89db2c2ca56631f3bae26d94bbd4dc9e8973a3f1cff0a2cd26c599a8` |
 | `src/domains/world/hierarchy/mutations.ts` | `15e52f9f6460d4e5ec19d71f3ec42057b1a81e8468bc0d9490f58d7f6f5a6dcc` |
+| `src/domains/world/hierarchy/primary-map-links.ts` | `7d01ecbbb2cb467379eed308f37aa0eac0bd223768077b86ee210414a32a2ece` |
 | `src/domains/world/hierarchy/world-hierarchy.ts` | `eb78e102eb0701a84c7a9b16e6da2321f4722755246ff30e3b4cac04bbd311ea` |
 | `src/domains/world/hierarchy/world-node.types.ts` | `6baf15ffbb844e3483d8d351751aaa9c03c7b0ff17ce7746703154ad7e142e58` |
 | `src/domains/world/hierarchy/world-scoped-inventory.ts` | `d4d2116ff392a949e0ef6c7b94cbffbc217b976f9948ba8d15f1a9c8b2e9354d` |
@@ -692,7 +702,7 @@ All backend operations are included in the public declarations above.
 | `src/domains/world/places/world-place.types.ts` | `32081a2c16516c68393e879ebc4e888441ca4e5009b20404158c6b25d09f4ef0` |
 | `src/domains/world/worldModuleRegistry.ts` | `9683d27ea65c7a22456245c0e2e706168285f61e229f6ea181e0fb6a65064cc0` |
 | `src/infrastructure/host/host-library-http.ts` | `c56b88c60d6c9491fc7b6e6e1143ac4985ffdab5dff16afef8a54bce79629a07` |
-| `src/infrastructure/host/host-world-http.ts` | `3e46295203990e7fa58d2638726d152627fefef512f76d689ccaff504927dbae` |
+| `src/infrastructure/host/host-world-http.ts` | `4e5b1a2d336b907aec8ef7f58505f4605eef1674d15ed6ce4a109d47f352b6bd` |
 | `src/infrastructure/media/optimizer/engines/audio/index.ts` | `7585190a705085692bff0896e08b4d78f791895b47e24d57deeaaa10bb669d4e` |
 | `src/infrastructure/media/optimizer/engines/image/image.worker.ts` | `d34793b4de682556d9306194cfbcd05fdafdf215da25393f955d2669c7499276` |
 | `src/infrastructure/media/optimizer/engines/image/index.ts` | `4944001b7e0f7784d487da2e60d06d845aa564e9ddd7516ff50633af1591a322` |
@@ -706,10 +716,10 @@ All backend operations are included in the public declarations above.
 | `src/infrastructure/media/optimizer/engines/video/index.ts` | `d8c6aaaabb2ad762d4c15f9ef4aa9bc016f5968b2512cfe52f71cb09655dd842` |
 | `src/infrastructure/media/optimizer/index.ts` | `c1b162af47239195707de742a8991bea14d85f2238108968613c3bad3d91cf02` |
 | `src/infrastructure/media/optimizer/media-optimizer.ts` | `7d58424f12b7855ccb3c0153270628850e03afc15c285b1fc2b47218918255d9` |
-| `src/infrastructure/world/host-world-adapter.ts` | `fa229c2ceb37648d38d91f85699817ae584ae85f9195b45ea0ebe594aba786da` |
-| `src/infrastructure/world/host-world-ports.contract.ts` | `406d77c65527f6869c558a7b4c98c901766134f8e8d7dc6afc5271d6ba1a7f8e` |
+| `src/infrastructure/world/host-world-adapter.ts` | `8fbaad8d6d4ec9cc42070444441fae94fb20af020cdada2125a705877ea4e1f1` |
+| `src/infrastructure/world/host-world-ports.contract.ts` | `9d11c1085646775f6c6eb5bdc29baa7ed40af0245354589bd767d4f80da1d582` |
 | `src/infrastructure/world/host-world-read.contract.ts` | `271a052d5f621ddf7f3344eaa55e3a58579c5cf629fe76a4827393d0d1c7a05c` |
-| `src/infrastructure/world/world-atlas-service.ts` | `ace9c6ff13acad2aefa17f25784225461551b5bf6a79e807c9a24786619a552b` |
+| `src/infrastructure/world/world-atlas-service.ts` | `63cdb7aea8402a51c8bf6480e325fd15d951c33c28aa1a7923340251878c5c1d` |
 | `src/infrastructure/world/world-map-service.ts` | `d99faed233ee5c66d96d08397c0e292113a44e43efb51f4b30b7cc6a21a91103` |
 | `src/infrastructure/world/world-place-service.ts` | `5fe2e68dd3949fb193547aa9ee498c15fc0e3f368bf546156a39086e805312bb` |
 | `src/infrastructure/world/world-profile-service.ts` | `10935d830086c8f9972b9f9f982e7ba8203609facd408020c634df4400032610` |

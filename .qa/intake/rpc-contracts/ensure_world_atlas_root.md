@@ -101,7 +101,7 @@ Die finalen Datenbank-Constraints der beteiligten Relationen sind pro RPC in inv
 
 ### src/infrastructure/world/world-atlas-service.ts:1
 
-AST-Auflösung: `host-transport-cut-20`; SHA-256 `ace9c6ff13acad2aefa17f25784225461551b5bf6a79e807c9a24786619a552b`.
+AST-Auflösung: `host-transport-cut-20`; SHA-256 `63cdb7aea8402a51c8bf6480e325fd15d951c33c28aa1a7923340251878c5c1d`.
 
 Der vollständige aufrufende Funktionskörper enthält Parameterumformung, RPC-Aufruf, Response-Prüfung, Fehlerumwandlung und gegebenenfalls Fallback:
 
@@ -120,6 +120,7 @@ import {
   type WorldAtlasBounds,
 } from '../../domains/world/atlas';
 import {
+  deleteHostWorldAtlasMap,
   ensureHostWorldAtlasRoot,
   fetchHostWorldAtlasMap,
   isHostLibraryEnabled,
@@ -204,27 +205,25 @@ class WorldAtlasService {
     return parseWorldAtlasMapVm(data);
   }
 
-  /**
-   * CUT-10b (#1161): Azgaar .map/.zip via world-scoped host assets (world.edit).
-   * Returns owner-scoped storagePath for azgaarMapStoragePath persistence.
-   */
-  async uploadAzgaarMapFile(worldProfileId: string, file: File): Promise<string> {
+  /** ATL2-E01 — Sekundärkarte löschen (Primär-/Wurzelkarte fail-closed). */
+  async deleteMap(worldProfileId: string, mapId: string): Promise<{ deletedMapId: string }> {
     assertHost();
-    const id = worldProfileId.trim();
-    if (!id) throw new Error('Weltprofil fehlt');
-    if (file.size <= 0) throw new Error('Azgaar-Datei ist leer.');
-    if (file.size > AZGAAR_MAX_BYTES) {
-      throw new Error('Azgaar-Datei ist zu groß. Maximum 16 MB');
-    }
-    const published = await publishHostWorldAsset(id, file, 'azgaar');
-    return published.storagePath;
+    const worldId = worldProfileId.trim();
+    const id = mapId.trim();
+    if (!worldId) throw new Error('Weltprofil fehlt');
+    if (!id) throw new Error('Karten-ID fehlt');
+    const data = (await deleteHostWorldAtlasMap(worldId, id)) as {
+      deletedMapId?: unknown;
+    };
+    const deleted =
+      typeof data?.deletedMapId === 'string' ? data.deletedMapId.trim() : '';
+    if (!deleted) throw new Error('Atlas-Karte konnte nicht gelöscht werden');
+    return { deletedMapId: deleted };
   }
 
   /**
-   * CUT-10b (#1161): credentialed host asset URL successor of Storage signed URL.
-   * Cookie media GET on /api/v1/assets/:id — expiresSec retained for API parity only.
-   */
-  async 
+   * CUT-10b (#1161): Azgaar .map/.zip via world-scoped host assets (world.edit).
+   * Returns owner-scoped storageP
 ```
 
 ## Konkrete Abnahmekriterien
@@ -267,4 +266,4 @@ Die folgenden Hashes binden SQL-Kette, transitive Tabellen-/Trigger-/Policyquell
 | [archive/supabase-legacy/supabase/migrations/103_atlas_worldbuilder_create_with_maps.sql](../../../archive/supabase-legacy/supabase/migrations/103_atlas_worldbuilder_create_with_maps.sql) | `84afa7b42fab766cf5114c65aefd433b856a173e1065f7e34f4fc10875ee784d` |
 | [archive/supabase-legacy/supabase/migrations/105_atlas_worldbuilder_player_projection.sql](../../../archive/supabase-legacy/supabase/migrations/105_atlas_worldbuilder_player_projection.sql) | `8ab33d4d6ace74d129350524607e5e3e9ceab4a4c1d06c9d59b867be4899eacf` |
 | [archive/supabase-legacy/supabase/migrations/109_baseline_security_trust_boundaries.sql](../../../archive/supabase-legacy/supabase/migrations/109_baseline_security_trust_boundaries.sql) | `4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b` |
-| [src/infrastructure/world/world-atlas-service.ts](../../../src/infrastructure/world/world-atlas-service.ts) | `ace9c6ff13acad2aefa17f25784225461551b5bf6a79e807c9a24786619a552b` |
+| [src/infrastructure/world/world-atlas-service.ts](../../../src/infrastructure/world/world-atlas-service.ts) | `63cdb7aea8402a51c8bf6480e325fd15d951c33c28aa1a7923340251878c5c1d` |

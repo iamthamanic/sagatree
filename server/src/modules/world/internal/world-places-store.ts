@@ -11,6 +11,7 @@ import { randomUUID } from 'node:crypto';
 import type { HostDatabase } from '../../../persistence/open-database.ts';
 import {
   isCanonicalKind,
+  isValidSubtypeForKind,
   mapKindForNode,
   missingAncestorChain,
   placeholderStem,
@@ -796,6 +797,50 @@ export class WorldPlacesStore {
           this.#db.exec('ROLLBACK');
           return { ok: false, error: '23505' };
         }
+        // ATL2-E01: one map may be primary for at most one place.
+        const mapAlreadyPrimary = this.#db
+          .prepare(
+            `SELECT place_id AS placeId FROM world_place_map_links
+             WHERE map_id = ? AND usage = 'primary' LIMIT 1`,
+          )
+          .get(mapId) as { placeId: string } | undefined;
+        if (mapAlreadyPrimary) {
+          this.#db.exec('ROLLBACK');
+          return { ok: false, error: '23505' };
+        }
+        // Primary map parent_map_id must match hierarchy parent primary (or world root).
+        const mapRow = this.#db
+          .prepare(
+            `SELECT parent_map_id AS parentMapId FROM world_atlas_maps WHERE id = ?`,
+          )
+          .get(mapId) as { parentMapId: string | null } | undefined;
+        if (!mapRow) {
+          this.#db.exec('ROLLBACK');
+          return { ok: false, error: '22023' };
+        }
+        const placeRow = this.#loadPlace(placeId);
+        if (!placeRow) {
+          this.#db.exec('ROLLBACK');
+          return { ok: false, error: '22023' };
+        }
+        let expectedParentMap: string | null = null;
+        if (placeRow.parent_place_id == null || placeRow.kind === 'continent') {
+          const root = this.#db
+            .prepare(
+              `SELECT id FROM world_atlas_maps
+               WHERE world_profile_id = ? AND parent_map_id IS NULL
+               ORDER BY CASE WHEN kind = 'world' THEN 0 ELSE 1 END, sort_order
+               LIMIT 1`,
+            )
+            .get(worldId) as { id: string } | undefined;
+          expectedParentMap = root?.id ?? null;
+        } else {
+          expectedParentMap = this.#primaryMapId(placeRow.parent_place_id);
+        }
+        if (!expectedParentMap || mapRow.parentMapId !== expectedParentMap) {
+          this.#db.exec('ROLLBACK');
+          return { ok: false, error: '23514' };
+        }
       }
 
       const newId = randomUUID();
@@ -998,6 +1043,9 @@ export class WorldPlacesStore {
     const subtypeRaw =
       typeof input.subtype === 'string' ? input.subtype.trim() : '';
     const subtype = subtypeRaw.length > 0 ? subtypeRaw : null;
+    if (!isValidSubtypeForKind(kind, subtype)) {
+      return { ok: false, error: '22023' };
+    }
     const descriptionValue =
       typeof input.description === 'string'
         ? input.description.trim().length > 0
@@ -1024,7 +1072,14 @@ export class WorldPlacesStore {
 
       const rootMapId = this.#ensureWorldRootMap(worldId, now);
       let parentMapId: string | null = parentId ? this.#primaryMapId(parentId) : null;
-      if (!parentMapId) parentMapId = rootMapId;
+      // Continent under world root uses the world map; deeper tips require parent primary.
+      if (!parentMapId) {
+        if (parentId != null) {
+          this.#db.exec('ROLLBACK');
+          return { ok: false, error: '23514' };
+        }
+        parentMapId = rootMapId;
+      }
 
       for (const ancestorKind of chain) {
         const phName = this.#nextPlaceholderName(worldId, parentId, ancestorKind);

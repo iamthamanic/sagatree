@@ -42,6 +42,23 @@ export {
 } from './world-hierarchy';
 
 export {
+  ATLAS_HIERARCHY_LEVELS,
+  assertContiguousHierarchyPath,
+  assertCreateSubtype,
+  assertImmutableNodeIdentity,
+  assertPrimaryMapLinkGraph,
+  canonicalNodeKindChain,
+  expectedPrimaryMapParentId,
+  hierarchyLevelRank,
+  isDeeperKind,
+  nodeKindToHierarchyLevel,
+  type AtlasHierarchyLevel,
+  type PrimaryMapLinkCheck,
+  type PrimaryMapLinkGraph,
+  type PrimaryMapNodeLink,
+} from './primary-map-links';
+
+export {
   ALL_KIND_MAPPINGS,
   mappingForMapKind,
   mappingForPlaceKind,
