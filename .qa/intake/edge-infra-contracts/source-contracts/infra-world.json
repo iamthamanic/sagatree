@@ -235,7 +235,7 @@
     },
     {
       "path": "src/domains/world/atlas/atlas-terrain-mesh.ts",
-      "sha256": "5faabc981465d9b019264d0ae8033ca0ea916b70ab641eb74ce59292b19f6f77"
+      "sha256": "50dc7ef6c013f87f82f2030317c69a8ad619c7b4db1b65db0a7571a18186dd5d"
     },
     {
       "path": "src/domains/world/atlas/atlas-tool-registry.ts",
@@ -271,7 +271,7 @@
     },
     {
       "path": "src/domains/world/atlas/index.ts",
-      "sha256": "a178355f7d512722dea6e850b2581b496888686f18c220529e40dd5e970832a8"
+      "sha256": "edb1a56f72c6bc19b408c22c2f6b4424a82f184974abebae9e640bb13df7a8dd"
     },
     {
       "path": "src/domains/world/atlas/map-edit-ops.ts",

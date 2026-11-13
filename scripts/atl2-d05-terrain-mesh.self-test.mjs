@@ -62,6 +62,30 @@ const emptyPlan = terrain.buildAtlasTerrainMeshPlan(canvas.emptyUnifiedCanvasDoc
 assert.equal(emptyPlan.triangles.length, 0);
 assert.equal(emptyPlan.waterPlane, null);
 
+/* Large chunk: budget raises stride instead of truncating the authoritative extent. */
+const big = {
+  format: 'sagatree-atlas-heightfield-v1',
+  version: 1,
+  assetRef: { kind: 'inline', version: 1 },
+  originX: 0,
+  originZ: 0,
+  cellSize: 8,
+  cols: 128,
+  rows: 128,
+  heights: Array.from({ length: 128 * 128 }, (_, i) => (i % 17 === 0 ? -2 : 3)),
+  waterLevel: 0,
+};
+const bigDoc = { ...canvas.emptyUnifiedCanvasDoc(false), heightfield: big };
+const bigNear = terrain.buildAtlasTerrainMeshPlan(bigDoc, { span: 40 });
+assert.ok(bigNear.triangles.length > 0);
+assert.ok(bigNear.drawBudget.triangleCount <= bigNear.drawBudget.maxTriangles);
+const coverX = new Set(bigNear.triangles.flatMap((t) => [t.a[0], t.b[0], t.c[0]]));
+const coverZ = new Set(bigNear.triangles.flatMap((t) => [t.a[2], t.b[2], t.c[2]]));
+assert.ok(Math.min(...coverX) <= big.originX + 1e-6);
+assert.ok(Math.max(...coverX) >= big.originX + (big.cols - 1) * big.cellSize - 1e-6);
+assert.ok(Math.min(...coverZ) <= big.originZ + 1e-6);
+assert.ok(Math.max(...coverZ) >= big.originZ + (big.rows - 1) * big.cellSize - 1e-6);
+
 const writeEvidence = process.env.ATL2_D05_WRITE_EVIDENCE === '1';
 const outDir = writeEvidence
   ? join(root, '.qa/runs')

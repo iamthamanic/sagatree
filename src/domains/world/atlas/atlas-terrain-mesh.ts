@@ -72,6 +72,38 @@ export function atlasTerrainMaxTriangles(lod: AtlasTerrainLodBand): number {
   return 8000;
 }
 
+/** Triangle count for a full-chunk grid at the given stride (2 tris per cell). */
+export function atlasTerrainTriangleEstimate(
+  cols: number,
+  rows: number,
+  stride: number,
+): number {
+  if (cols < 2 || rows < 2 || stride < 1) return 0;
+  const cellCols = Math.ceil((cols - 1) / stride);
+  const cellRows = Math.ceil((rows - 1) / stride);
+  return cellCols * cellRows * 2;
+}
+
+/**
+ * Prefer the LOD band stride; raise stride until the full chunk fits the budget
+ * (never truncate the authoritative extent).
+ */
+export function atlasTerrainStrideForBudget(
+  cols: number,
+  rows: number,
+  preferredStride: number,
+  maxTriangles: number,
+): number {
+  let stride = Math.max(1, Math.floor(preferredStride) || 1);
+  while (
+    atlasTerrainTriangleEstimate(cols, rows, stride) > maxTriangles &&
+    stride < Math.max(cols, rows)
+  ) {
+    stride += 1;
+  }
+  return stride;
+}
+
 function cellMaterial(
   hf: AtlasHeightfield,
   y00: number,
@@ -95,7 +127,7 @@ export function buildAtlasTerrainMeshPlan(
   options?: { readonly span?: number },
 ): AtlasTerrainMeshPlan {
   const lod = atlasTerrainLodFromSpan(options?.span ?? 200);
-  const stride = atlasTerrainLodStride(lod);
+  const preferredStride = atlasTerrainLodStride(lod);
   const maxTriangles = atlasTerrainMaxTriangles(lod);
   const hf = doc.heightfield;
   if (!hf || hf.cols < 2 || hf.rows < 2 || !Array.isArray(hf.heights)) {
@@ -110,9 +142,16 @@ export function buildAtlasTerrainMeshPlan(
     };
   }
 
+  const stride = atlasTerrainStrideForBudget(
+    hf.cols,
+    hf.rows,
+    preferredStride,
+    maxTriangles,
+  );
   const triangles: AtlasTerrainMeshTriangle[] = [];
   const coastEdges: AtlasTerrainCoastEdge[] = [];
   const water = hf.waterLevel;
+  const coastBudget = Math.max(64, Math.floor(maxTriangles / 4));
 
   for (let row = 0; row < hf.rows - 1; row += stride) {
     for (let col = 0; col < hf.cols - 1; col += stride) {
@@ -131,12 +170,10 @@ export function buildAtlasTerrainMeshPlan(
       const b: [number, number, number] = [x1, y10, z0];
       const c: [number, number, number] = [x1, y11, z1];
       const d: [number, number, number] = [x0, y01, z1];
-      if (triangles.length + 2 <= maxTriangles) {
-        triangles.push({ a, b, c, material }, { a, b: c, c: d, material });
-      }
+      triangles.push({ a, b, c, material }, { a, b: c, c: d, material });
 
-      // Coast edges: transition between water and land neighbors (stride-1 for accuracy).
-      if (stride === 1) {
+      // Coast edges only at preferred near LOD (stride 1); skip when budget forced coarser.
+      if (preferredStride === 1 && stride === 1 && coastEdges.length < coastBudget) {
         const submerged = (h: number) => h < water;
         if (submerged(y00) !== submerged(y10)) {
           coastEdges.push({
@@ -144,7 +181,10 @@ export function buildAtlasTerrainMeshPlan(
             end: [x1, Math.max(y00, y10, water), z0],
           });
         }
-        if (submerged(y00) !== submerged(y01)) {
+        if (
+          coastEdges.length < coastBudget &&
+          submerged(y00) !== submerged(y01)
+        ) {
           coastEdges.push({
             start: [x0, Math.max(y00, y01, water), z0],
             end: [x0, Math.max(y00, y01, water), z1],

@@ -247,6 +247,8 @@ export {
   atlasTerrainLodFromSpan,
   atlasTerrainLodStride,
   atlasTerrainMaxTriangles,
+  atlasTerrainStrideForBudget,
+  atlasTerrainTriangleEstimate,
   buildAtlasTerrainMeshPlan,
   type AtlasTerrainCoastEdge,
   type AtlasTerrainLodBand,
