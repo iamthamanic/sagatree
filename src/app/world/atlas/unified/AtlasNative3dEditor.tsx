@@ -9,12 +9,17 @@
  */
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import {
+  buildAtlasDungeonLookPlan,
+  emptyUnifiedCanvasDoc,
   resolveAtlasDioramaLightProfile,
   resolveAtlasGraphicsPreset,
+  type AtlasDungeonLookPlan,
+  type DungeonThemeKey,
   webglToolChromeForKind,
   type AtlasGraphicsPresetId,
   type AtlasMapPin,
   type AtlasMapScale,
+  type UnifiedCanvasDoc,
   type WebglRuntimeState,
 } from '../../../../domains/world/atlas';
 import type { WorldNodeKind } from '../../../../domains/world/hierarchy';
@@ -71,6 +76,10 @@ export type AtlasNative3dEditorProps = {
   readonly mapPins?: readonly AtlasMapPin[] | null;
   /** ATL2-D01 graphics quality preset (default balanced). */
   readonly graphicsPresetId?: AtlasGraphicsPresetId;
+  /** ATL2-F04 dungeon theme (atmospheric); geometry IDs stay canonical. */
+  readonly dungeonThemeKey?: DungeonThemeKey | null;
+  /** Canvas doc used to build dungeon instance budgets (optional). */
+  readonly dungeonLookDoc?: UnifiedCanvasDoc | null;
 };
 
 /** Rebrand leftover prototype copy to SagaTree product wording. */
@@ -301,6 +310,8 @@ export function AtlasNative3dEditor({
   mapScale = 'world',
   mapPins = null,
   graphicsPresetId = 'balanced',
+  dungeonThemeKey = null,
+  dungeonLookDoc = null,
 }: AtlasNative3dEditorProps) {
   const hostRef = useRef<HTMLDivElement>(null);
   const mountRef = useRef<AtlasNativeMountHandle | null>(null);
@@ -392,6 +403,38 @@ export function AtlasNative3dEditor({
         graphicsPreset: resolveAtlasGraphicsPreset(graphicsPresetId),
         /* ATL2-D06 — daylight / fog / detail tied to the same graphics preset. */
         dioramaLight: resolveAtlasDioramaLightProfile(graphicsPresetId),
+        /* ATL2-F04 — dungeon theme look (Custom WebGL only; no Three.js). */
+        dungeonLook: (() => {
+          const plan: AtlasDungeonLookPlan = buildAtlasDungeonLookPlan(
+            dungeonLookDoc ?? emptyUnifiedCanvasDoc(false),
+            {
+              themeKey: dungeonThemeKey,
+              graphicsPresetId,
+            },
+          );
+          return {
+            themeKey: plan.themeKey,
+            floor: plan.palette.floor,
+            wall: plan.palette.wall,
+            door: plan.palette.door,
+            accent: plan.palette.accent,
+            light: plan.palette.light,
+            torchIntensity: plan.light.torchIntensity,
+            bloomEnabled: plan.budget.bloomEnabled,
+            particlesEnabled: plan.budget.particlesEnabled,
+            maxTorchInstances: plan.budget.maxTorchInstances,
+            maxInstances: plan.budget.maxInstances,
+            fogDensity: plan.light.fogDensity,
+            fogColor: plan.light.fogColor,
+            clearColor: plan.light.clearColor,
+            ambient: plan.light.ambient,
+            daylightDir: plan.light.daylightDir,
+            shadowStrength: plan.light.shadowStrength,
+            geometryFingerprint: plan.geometryFingerprint,
+            lookFingerprint: plan.lookFingerprint,
+            torchIds: plan.batches.find((b) => b.kind === 'torch')?.instanceIds ?? [],
+          };
+        })(),
       });
       mountRef.current = mount;
       disposePanels = installCollapsiblePanels(host);
@@ -419,7 +462,7 @@ export function AtlasNative3dEditor({
       host.removeAttribute('data-atlas-boot');
       host.removeAttribute('data-atlas-controlled');
     };
-  }, [mapKey, controlled, graphicsPresetId]);
+  }, [mapKey, controlled, graphicsPresetId, dungeonThemeKey, dungeonLookDoc]);
 
   // Push tree / selection updates without remounting WebGL.
   useEffect(() => {

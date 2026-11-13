@@ -516,3 +516,22 @@ export {
   type AtlasDioramaStampKind,
   type AtlasDioramaTreeVariant,
 } from './atlas-diorama-look';
+
+export {
+  ATLAS_DUNGEON_LOOK_FORMAT,
+  ATLAS_DUNGEON_THEME_KEYS,
+  atlasDungeonFeatureAlbedo,
+  buildAtlasDungeonLookPlan,
+  isAtlasDungeonFeatureId,
+  resolveAtlasDungeonLightProfile,
+  resolveAtlasDungeonQualityBudget,
+  resolveAtlasDungeonThemeKey,
+  resolveAtlasDungeonThemePalette,
+  type AtlasDungeonInstanceBatch,
+  type AtlasDungeonInstanceKind,
+  type AtlasDungeonLightProfile,
+  type AtlasDungeonLookAuthority,
+  type AtlasDungeonLookPlan,
+  type AtlasDungeonQualityBudget,
+  type AtlasDungeonThemePalette,
+} from './atlas-dungeon-look';
