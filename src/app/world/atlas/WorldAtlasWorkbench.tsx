@@ -286,15 +286,16 @@ export function WorldAtlasWorkbench({
     }
   }, [editor.activeMapId, worldPlaces, worldLinks, worldPrimaryMapId]);
 
-  // Debounced autosave for controlled WebGL / canvas dirty (#721 / #751).
+  // Debounced autosave — ATL2-C04 uses decideAtlasAutosave (never while conflicted).
   useEffect(() => {
     if (!editingAllowed || !editor.map || !editor.dirtyCanvas || editor.saving) return;
-    if (editor.persistStatus === 'conflict') return;
     const timer = window.setTimeout(() => {
+      const decision = editor.autosaveDecision();
+      if (decision.action !== 'save') return;
       void editor.saveCanvas().catch(() => {
-        /* error surfaced on editor.error */
+        /* error surfaced on editor.error / persistStatus */
       });
-    }, 1400);
+    }, editor.autosaveDebounceMs);
     return () => window.clearTimeout(timer);
   }, [
     editingAllowed,
@@ -305,6 +306,8 @@ export function WorldAtlasWorkbench({
     editor.webglRuntime,
     editor.canvasDoc,
     editor.saveCanvas,
+    editor.autosaveDecision,
+    editor.autosaveDebounceMs,
   ]);
 
   // Warn before discarding a dirty draft (browser close / refresh).
