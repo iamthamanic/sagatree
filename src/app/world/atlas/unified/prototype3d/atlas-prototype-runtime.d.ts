@@ -104,6 +104,17 @@ export type AtlasPrototypeMountOptions = {
     readonly preferSoftwareFallback: boolean;
     readonly antialias: boolean;
   } | null;
+  /** ATL2-D06 diorama daylight / fog / facade detail (from domain light profile). */
+  readonly dioramaLight?: {
+    readonly presetId: string;
+    readonly daylightDir: readonly [number, number, number];
+    readonly ambient: number;
+    readonly fogDensity: number;
+    readonly fogColor: string;
+    readonly clearColor: readonly [number, number, number, number];
+    readonly shadowStrength: number;
+    readonly detailLevel: 'full' | 'reduced' | 'minimal';
+  } | null;
 };
 
 export function mountAtlasPrototype3d(
