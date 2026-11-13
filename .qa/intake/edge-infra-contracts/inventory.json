@@ -37579,6 +37579,10 @@
             "sha256": "84ab0edbd0b525c95b5db85afeb683d335351884ba6c612e94f327719a6b60ca"
           },
           {
+            "path": "src/domains/world/atlas/atlas-product-geometry-plan.ts",
+            "sha256": "43de1e1d02d185b20dd184d75800e7875a24a8f944c08c48e65ecc2c9a961252"
+          },
+          {
             "path": "src/domains/world/atlas/atlas-prototype-lod.ts",
             "sha256": "2fb7c706ad2210f7a3f389f22564f60e3f22aa615ec49af49695e388ae582256"
           },
@@ -37600,7 +37604,7 @@
           },
           {
             "path": "src/domains/world/atlas/atlas-webgl-write-retire.ts",
-            "sha256": "c769b6e2d84900aeee7bbbf44ced3f672b0d3f83353cf9e45d87dc6cec239a50"
+            "sha256": "baf40e97aaa9c74c873f3919e72b4d9049e8c7781566ed58ce52ccf2f168ce69"
           },
           {
             "path": "src/domains/world/atlas/atlas-workstation-adaptive.ts",
@@ -37628,7 +37632,7 @@
           },
           {
             "path": "src/domains/world/atlas/index.ts",
-            "sha256": "629774958d97fe96d68c37a2ffd27a8052b350847b5ff57bea616b9d6cc7e538"
+            "sha256": "9d82aa97df36218da934106bd7a6120df8f7165402caaf1b42c4127d962cab11"
           },
           {
             "path": "src/domains/world/atlas/map-edit-ops.ts",
@@ -37648,7 +37652,7 @@
           },
           {
             "path": "src/domains/world/atlas/webgl-runtime-bridge.ts",
-            "sha256": "8f40a60b8f18d0c1a649d6d14604032fe5bfd4bb3594d3607bb58b8f1c8564ca"
+            "sha256": "0ded35da70fd3dc5eae08f22297564acce826a5b723fb339bfd7b7964a6e3b31"
           },
           {
             "path": "src/domains/world/atlas/world-atlas.types.ts",
@@ -37840,7 +37844,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-world.json",
-      "sourceContractSha256": "ece3967b565e133700faa0d6189022c0827be727286fa034a6eb473e635ebe84",
+      "sourceContractSha256": "7dc380c1bfc0137fd5e146165c6afb8c7576ad9506894a107f7235d3cfe0f4db",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],

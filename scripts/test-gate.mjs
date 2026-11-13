@@ -2107,6 +2107,11 @@ function checkWorldAtlasEditor() {
     cwd: root,
     stdio: 'inherit',
   });
+  console.log('ATL2-D02 canonical features as productive WebGL geometry...');
+  execFileSync(process.execPath, ['scripts/atl2-d02-canonical-3d-geometry.self-test.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
   console.log('Atlas prototype LOD layers (HTML v3 port)...');
   execFileSync(process.execPath, ['scripts/atlas-prototype-lod.self-test.mjs'], {
     cwd: root,

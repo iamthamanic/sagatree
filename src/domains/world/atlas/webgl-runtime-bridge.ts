@@ -10,7 +10,9 @@
 import {
   extractUnifiedCanvasFromGeneratorMeta,
   mergeUnifiedCanvasIntoGeneratorMeta,
+  wallPointAt,
   type UnifiedCanvasDoc,
+  type UnifiedCanvasDoor,
   type UnifiedCanvasMaterial,
   type UnifiedCanvasObject,
   type UnifiedCanvasRoom,
@@ -27,6 +29,8 @@ export type WebglRuntimeState = {
   readonly strokes: readonly unknown[];
   readonly walls: readonly unknown[];
   readonly rooms?: readonly unknown[];
+  /** ATL2-D02 — door openings projected from UnifiedCanvasDoc (ephemeral seed only). */
+  readonly doors?: readonly unknown[];
   readonly layers: Readonly<Record<string, unknown>>;
   readonly [key: string]: unknown;
 };
@@ -114,6 +118,7 @@ export function emptyWebglRuntime(): WebglRuntimeState {
     strokes: [],
     walls: [],
     rooms: [],
+    doors: [],
     layers: { ...DEFAULT_WEBGL_LAYERS },
   };
 }
@@ -130,15 +135,16 @@ export function parseWebglRuntimeState(raw: unknown): WebglRuntimeState | null {
     walls: raw.walls,
     layers: raw.layers,
   };
-  if (Array.isArray(raw.rooms)) {
-    return { ...out, rooms: raw.rooms, ...pickExtraRuntimeFields(raw) };
-  }
-  return { ...out, ...pickExtraRuntimeFields(raw) };
+  const withRooms = Array.isArray(raw.rooms) ? { ...out, rooms: raw.rooms } : out;
+  const withDoors = Array.isArray(raw.doors)
+    ? { ...withRooms, doors: raw.doors }
+    : withRooms;
+  return { ...withDoors, ...pickExtraRuntimeFields(raw) };
 }
 
 /** Preserve non-geometry runtime keys (placeNames, worlds, …). */
 function pickExtraRuntimeFields(raw: Record<string, unknown>): Record<string, unknown> {
-  const skip = new Set(['props', 'strokes', 'walls', 'rooms', 'layers']);
+  const skip = new Set(['props', 'strokes', 'walls', 'rooms', 'doors', 'layers']);
   const extra: Record<string, unknown> = {};
   for (const key of Object.keys(raw)) {
     if (skip.has(key)) continue;
@@ -321,20 +327,40 @@ function projectRoomsToCanvas(rooms: readonly unknown[]): UnifiedCanvasRoom[] {
  * Project WebGL geometry into UnifiedCanvasDoc (authoritative from WebGL direction).
  * Empty props → empty objects (no ghost merge). Same for walls/strokes/rooms.
  */
+function projectDoorsToCanvas(
+  rawDoors: readonly unknown[],
+  walls: readonly UnifiedCanvasWall[],
+): UnifiedCanvasDoor[] {
+  const wallIds = new Set(walls.map((w) => w.id));
+  const out: UnifiedCanvasDoor[] = [];
+  for (const raw of rawDoors) {
+    if (!isRecord(raw) || typeof raw.id !== 'string' || typeof raw.wallId !== 'string') continue;
+    if (!wallIds.has(raw.wallId)) continue;
+    if (!isFiniteNum(raw.t) || !isFiniteNum(raw.width) || raw.width <= 0) continue;
+    const t = Math.min(1, Math.max(0, raw.t));
+    out.push({ id: raw.id, wallId: raw.wallId, t, width: raw.width });
+  }
+  return out;
+}
+
 export function syncWebglPropsIntoCanvasDoc(
   doc: UnifiedCanvasDoc,
   runtime: WebglRuntimeState,
 ): UnifiedCanvasDoc {
+  const walls = projectWallsToCanvas(runtime.walls);
   const next: UnifiedCanvasDoc = {
     ...doc,
     objects: projectPropsToObjects(runtime.props),
-    walls: projectWallsToCanvas(runtime.walls),
+    walls,
     strokes: projectStrokesToCanvas(runtime.strokes),
     rooms: projectRoomsToCanvas(runtime.rooms ?? []),
     demoSeed: false,
   };
-  // 3D erase may drop walls without knowing about doors — prune orphans (ATL2-C02).
-  const wallIds = new Set(next.walls.map((w) => w.id));
+  // Prefer runtime doors when present (ATL2-D02); otherwise prune orphans from doc (C02).
+  if (Array.isArray(runtime.doors)) {
+    return { ...next, doors: projectDoorsToCanvas(runtime.doors, walls) };
+  }
+  const wallIds = new Set(walls.map((w) => w.id));
   const doors = (doc.doors ?? []).filter((d) => wallIds.has(d.wallId));
   return { ...next, doors };
 }
@@ -393,6 +419,39 @@ function roomsToWebgl(rooms: readonly UnifiedCanvasRoom[]): unknown[] {
   }));
 }
 
+function doorsToWebgl(
+  doors: readonly UnifiedCanvasDoor[],
+  walls: readonly UnifiedCanvasWall[],
+): unknown[] {
+  const wallsById = new Map(walls.map((w) => [w.id, w] as const));
+  const out: Record<string, unknown>[] = [];
+  for (const d of doors) {
+    const wall = wallsById.get(d.wallId);
+    if (!wall) continue;
+    const dx = wall.x2 - wall.x1;
+    const dy = wall.y2 - wall.y1;
+    const len = Math.hypot(dx, dy);
+    if (!(len > 1e-6)) continue;
+    const tx = dx / len;
+    const ty = dy / len;
+    const [x, z] = wallPointAt(wall, d.t);
+    out.push({
+      id: d.id,
+      wallId: d.wallId,
+      t: d.t,
+      width: d.width,
+      level: 'world',
+      x,
+      z,
+      tx,
+      tz: ty,
+      nx: -ty,
+      nz: tx,
+    });
+  }
+  return out;
+}
+
 /**
  * Rebuild WebGL runtime geometry from UnifiedCanvasDoc (authoritative from 2D direction).
  * Preserves non-prop fields (layers, placeNames, …) from prior runtime.
@@ -407,6 +466,7 @@ export function syncCanvasDocIntoWebglRuntime(
     walls: wallsToWebgl(doc.walls),
     strokes: strokesToWebgl(doc.strokes),
     rooms: roomsToWebgl(doc.rooms),
+    doors: doorsToWebgl(doc.doors ?? [], doc.walls),
     layers: runtime.layers ?? DEFAULT_WEBGL_LAYERS,
   };
 }
