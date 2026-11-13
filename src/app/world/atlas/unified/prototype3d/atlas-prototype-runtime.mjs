@@ -448,13 +448,12 @@ export function mountAtlasPrototype3d(host, options = {}) {
       };
   if (dungeonLook && dungeonLook.bloomEnabled) {
     host.setAttribute('data-atlas-dungeon-bloom-active', '1');
-    /* Soft emissive lift — Custom WebGL bloom stand-in (no Three.js post-FX). */
+    /* Soft emissive lift in WebGL light uniforms + torch flame (no Three.js post-FX). */
     host.style.setProperty('--atlas-dungeon-bloom-gain', '1.25');
-    host.style.filter = 'brightness(var(--atlas-dungeon-bloom-gain, 1.25)) saturate(1.12)';
+    envLight.ambient = Math.min(0.85, Number(envLight.ambient) * 1.18);
   } else {
     host.removeAttribute('data-atlas-dungeon-bloom-active');
     host.style.removeProperty('--atlas-dungeon-bloom-gain');
-    host.style.removeProperty('filter');
   }
   if (dungeonLook && dungeonLook.particlesEnabled) {
     host.setAttribute('data-atlas-dungeon-particles-active', '1');

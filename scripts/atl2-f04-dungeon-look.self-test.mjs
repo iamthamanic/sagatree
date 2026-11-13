@@ -49,8 +49,15 @@ assert.ok(runtimeSrc.includes('data-atlas-dungeon-theme'));
 assert.ok(runtimeSrc.includes('envLight'));
 assert.ok(hostSrc.includes('buildAtlasDungeonLookPlan'));
 assert.ok(hostSrc.includes('dungeonThemeKey'));
+assert.ok(hostSrc.includes('plan.counts.instances <= 0'));
+assert.ok(hostSrc.includes('floorIds'));
+assert.ok(hostSrc.includes('wallIds'));
 assert.ok(editorSrc.includes('dungeonLookDoc'));
 assert.ok(editorSrc.includes('dungeonThemeKey'));
+assert.ok(editorSrc.includes('dungeonPreview.generate.params.themeKey'));
+assert.ok(runtimeSrc.includes('dungeonAllow'));
+assert.ok(runtimeSrc.includes('particlesEnabled'));
+assert.ok(runtimeSrc.includes('bloomEnabled'));
 
 const look = jiti(join(root, 'src/domains/world/atlas/atlas-dungeon-look.ts'));
 const gen = jiti(join(root, 'src/domains/world/atlas/dungeon-generator.ts'));
