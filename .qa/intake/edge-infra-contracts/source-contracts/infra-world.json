@@ -226,6 +226,10 @@
       "sha256": "c769b6e2d84900aeee7bbbf44ced3f672b0d3f83353cf9e45d87dc6cec239a50"
     },
     {
+      "path": "src/domains/world/atlas/atlas-workstation-adaptive.ts",
+      "sha256": "d69212422676124cc3bd9a3ba664be7695209df29e6f5baa37eba68fd811cc48"
+    },
+    {
       "path": "src/domains/world/atlas/canvas-polygon.ts",
       "sha256": "a1bf513b449cf21b8e7d449d291c1f7965303072916f0192a214328a90920cea"
     },
@@ -247,7 +251,7 @@
     },
     {
       "path": "src/domains/world/atlas/index.ts",
-      "sha256": "a4e2c2a128d0cca2d21551b2e4e244cc63c43b024f3d164b45b6dc08082a5f84"
+      "sha256": "bb7ab1732937704098b21d334498347e04bcf7c1a0220035063dac56f78fd357"
     },
     {
       "path": "src/domains/world/atlas/map-edit-ops.ts",
@@ -1402,6 +1406,22 @@
       "line": 27,
       "endLine": 34,
       "text": "export type WebglGeometryBackup = {\n  readonly capturedAt: string;\n  readonly props: readonly unknown[];\n  readonly walls: readonly unknown[];\n  readonly strokes: readonly unknown[];\n  readonly rooms: readonly unknown[];\n  readonly layers: Readonly<Record<string, unknown>>;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AtlasAdaptiveBand",
+      "path": "src/domains/world/atlas/atlas-workstation-adaptive.ts",
+      "line": 9,
+      "endLine": 9,
+      "text": "export type AtlasAdaptiveBand = 'phone' | 'tablet' | 'desktop';"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AtlasWorkstationComposition",
+      "path": "src/domains/world/atlas/atlas-workstation-adaptive.ts",
+      "line": 24,
+      "endLine": 32,
+      "text": "export type AtlasWorkstationComposition = {\n  readonly band: AtlasAdaptiveBand;\n  /** Show left/right desktop rails inline. */\n  readonly showSideRails: boolean;\n  /** Prefer Sheet/Drawer for inspector & hierarchy. */\n  readonly useSheetsForChrome: boolean;\n  /** Reduced Phone workstation: primary map task only. */\n  readonly reducedPhoneComposition: boolean;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
