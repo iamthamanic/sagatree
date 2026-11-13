@@ -194,6 +194,10 @@ export function atlasZoomCaption(percent: number, metersPerUnit: number | null):
 
 export const UNLOCATED_MAP_HINT_DE = 'Ausschnitt noch nicht festgelegt';
 
+/** Longer product chrome copy — never implies scale-true drill while unlocated. */
+export const UNLOCATED_DRILL_BLOCKED_DE =
+  'Ausschnitt noch nicht festgelegt — Verorte den Ausschnitt auf der Elternkarte, bevor Zoom dorthin wechselt.';
+
 export const LOCATE_INVALID_RECT_DE =
   'Ausschnitt ungültig — ziehe ein Rechteck mit positiver Breite und Höhe.';
 
@@ -228,6 +232,21 @@ export function parentAnchorFromParentRect(input: {
   if (width <= 0 || height <= 0) {
     return { ok: false, reason: LOCATE_INVALID_RECT_DE };
   }
+  if (input.metersPerUnit !== undefined && input.metersPerUnit !== null) {
+    const probe = calibrateParentSpatialMeters(
+      {
+        parentMapId,
+        centerX: 0,
+        centerY: 0,
+        extentX: 1,
+        extentY: 1,
+        rotationRad: 0,
+        metersPerUnit: null,
+      },
+      input.metersPerUnit,
+    );
+    if (probe.ok === false) return { ok: false, reason: probe.reason };
+  }
   const centerX = (minX + maxX) / 2;
   const centerY = (minY + maxY) / 2;
   return assertParentSpatialAnchor({
@@ -251,6 +270,8 @@ export function locateChildMapFrame(input: {
   readonly minY: number;
   readonly maxX: number;
   readonly maxY: number;
+  readonly rotationRad?: number;
+  readonly metersPerUnit?: number | null;
 }):
   | { readonly ok: true; readonly frame: MapFrameMeta; readonly anchor: ParentSpatialAnchor }
   | { readonly ok: false; readonly reason: string } {
@@ -263,4 +284,125 @@ export function locateChildMapFrame(input: {
     anchor: built.anchor,
     frame: { status: 'unsketched', parentAnchor: built.anchor },
   };
+}
+
+/** Smallest positive extent accepted by parse/assert (parent units). */
+export const MIN_PARENT_ANCHOR_EXTENT = Number.EPSILON;
+
+export const CALIBRATION_INVALID_DE =
+  'Kalibrierung ungültig — metersPerUnit muss positiv sein oder null (unkalibriert).';
+
+/**
+ * Set or clear metersPerUnit on an existing anchor. Negative / zero / NaN fail closed.
+ * Does not invent geography — only stores an optional scale factor.
+ */
+export function calibrateParentSpatialMeters(
+  anchor: ParentSpatialAnchor,
+  metersPerUnit: number | null,
+):
+  | { readonly ok: true; readonly anchor: ParentSpatialAnchor }
+  | { readonly ok: false; readonly reason: string } {
+  if (metersPerUnit == null) {
+    return { ok: true, anchor: { ...anchor, metersPerUnit: null } };
+  }
+  if (typeof metersPerUnit !== 'number' || !Number.isFinite(metersPerUnit) || metersPerUnit <= 0) {
+    return { ok: false, reason: CALIBRATION_INVALID_DE };
+  }
+  return { ok: true, anchor: { ...anchor, metersPerUnit } };
+}
+
+type Point2 = { readonly x: number; readonly y: number };
+
+function childBoundsHalfExtents(bounds: WorldAtlasBounds): {
+  readonly midX: number;
+  readonly midY: number;
+  readonly halfW: number;
+  readonly halfH: number;
+} {
+  const midX = (bounds.minX + bounds.maxX) / 2;
+  const midY = (bounds.minY + bounds.maxY) / 2;
+  const halfW = (bounds.maxX - bounds.minX) / 2;
+  const halfH = (bounds.maxY - bounds.minY) / 2;
+  return { midX, midY, halfW, halfH };
+}
+
+/**
+ * Map a point in child-local map space → parent map space using the spatial anchor.
+ * Child bounds default to the independent primary frame (0…1000).
+ */
+export function childLocalToParentPoint(
+  anchor: ParentSpatialAnchor,
+  local: Point2,
+  childBounds: WorldAtlasBounds = DEFAULT_ATLAS_BOUNDS,
+): Point2 {
+  const { midX, midY, halfW, halfH } = childBoundsHalfExtents(childBounds);
+  const nx = halfW > 0 ? (local.x - midX) / halfW : 0;
+  const ny = halfH > 0 ? (local.y - midY) / halfH : 0;
+  const cos = Math.cos(anchor.rotationRad);
+  const sin = Math.sin(anchor.rotationRad);
+  const dx = nx * anchor.extentX;
+  const dy = ny * anchor.extentY;
+  return {
+    x: anchor.centerX + dx * cos - dy * sin,
+    y: anchor.centerY + dx * sin + dy * cos,
+  };
+}
+
+/**
+ * Inverse of `childLocalToParentPoint` — required for World→Child navigation / locate parity.
+ */
+export function parentPointToChildLocal(
+  anchor: ParentSpatialAnchor,
+  parent: Point2,
+  childBounds: WorldAtlasBounds = DEFAULT_ATLAS_BOUNDS,
+): Point2 {
+  const { midX, midY, halfW, halfH } = childBoundsHalfExtents(childBounds);
+  const cos = Math.cos(anchor.rotationRad);
+  const sin = Math.sin(anchor.rotationRad);
+  const rx = parent.x - anchor.centerX;
+  const ry = parent.y - anchor.centerY;
+  const dx = rx * cos + ry * sin;
+  const dy = -rx * sin + ry * cos;
+  const nx = anchor.extentX > 0 ? dx / anchor.extentX : 0;
+  const ny = anchor.extentY > 0 ? dy / anchor.extentY : 0;
+  return {
+    x: midX + nx * halfW,
+    y: midY + ny * halfH,
+  };
+}
+
+/**
+ * Axis-aligned footprint AABB of an anchor in parent space.
+ * Includes rotation: OBB half-extents project via |eX·cos|+|eY·sin| / |eX·sin|+|eY·cos|.
+ */
+export function parentAnchorAabb(anchor: ParentSpatialAnchor): {
+  readonly minX: number;
+  readonly minY: number;
+  readonly maxX: number;
+  readonly maxY: number;
+} {
+  const cos = Math.cos(anchor.rotationRad);
+  const sin = Math.sin(anchor.rotationRad);
+  const halfW = Math.abs(anchor.extentX * cos) + Math.abs(anchor.extentY * sin);
+  const halfH = Math.abs(anchor.extentX * sin) + Math.abs(anchor.extentY * cos);
+  return {
+    minX: anchor.centerX - halfW,
+    minY: anchor.centerY - halfH,
+    maxX: anchor.centerX + halfW,
+    maxY: anchor.centerY + halfH,
+  };
+}
+
+/** True when two parent-space anchor AABBs overlap (inclusive edges). */
+export function parentAnchorsOverlapAabb(a: ParentSpatialAnchor, b: ParentSpatialAnchor): boolean {
+  const aa = parentAnchorAabb(a);
+  const bb = parentAnchorAabb(b);
+  return !(aa.maxX < bb.minX || bb.maxX < aa.minX || aa.maxY < bb.minY || bb.maxY < aa.minY);
+}
+
+/**
+ * Honest UI gate: unlocated / missing anchor must never claim scale-true drill.
+ */
+export function unlocatedBlocksScaleTrueDrill(frame: MapFrameMeta): boolean {
+  return frame.status === 'unlocated' || !canLodEnterChildMap(frame);
 }

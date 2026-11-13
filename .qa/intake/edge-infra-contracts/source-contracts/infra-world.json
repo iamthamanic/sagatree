@@ -283,7 +283,7 @@
     },
     {
       "path": "src/domains/world/atlas/index.ts",
-      "sha256": "8f6af0729b939400e4d1c98dc0b182ec0083a22f26200ac04adb2b0afbd67063"
+      "sha256": "328a95ec754783aa60878024448d20155d489e7ddb80b09ebcd767cf3fef67ed"
     },
     {
       "path": "src/domains/world/atlas/map-edit-ops.ts",
@@ -291,7 +291,7 @@
     },
     {
       "path": "src/domains/world/atlas/map-frame.ts",
-      "sha256": "9764fd49aa74482588fea5ba1e1888131b85f05bdbb202057cfed24d6e3e666f"
+      "sha256": "7a5bc6fb6ddcb38efd09fa3adf71889709fa230313a8d241d09cb9f5fa98e7a5"
     },
     {
       "path": "src/domains/world/atlas/unified-canvas-doc.ts",
@@ -1930,6 +1930,14 @@
       "line": 44,
       "endLine": 48,
       "text": "export type MapFrameMeta = {\n  readonly status: MapSketchStatus;\n  readonly parentAnchor: ParentSpatialAnchor | null;\n  readonly featureOwnerHints?: Readonly<Partial<Record<AtlasFeatureOwner, string>>>;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "Point2",
+      "path": "src/domains/world/atlas/map-frame.ts",
+      "line": 314,
+      "endLine": 314,
+      "text": "type Point2 = { readonly x: number; readonly y: number };"
     },
     {
       "kind": "TypeAliasDeclaration",

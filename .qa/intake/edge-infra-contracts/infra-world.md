@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-world.json](source-contracts/infra-world.json) (SHA-256 `ecb896126750d654cc0c3725b6dfbc78aa63b6ff366fc7a10a1aa54b2fed8dc7`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-world.json](source-contracts/infra-world.json) (SHA-256 `bcf451bd44affcbda46ffa510764810942a47ea12f9f3ab49d63dc5d9cc5a36e`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -672,9 +672,9 @@ All backend operations are included in the public declarations above.
 | `src/domains/world/atlas/dungeon-forge-workflow.ts` | `43acec183dd010bf8bef24e2a79ac7a5bb7f317fcd568591a02182c502860b79` |
 | `src/domains/world/atlas/dungeon-generator.ts` | `013ccdb248e427f85b51e9dc8dfbf39b5c5d185e106d0024259afe3301fdbbfc` |
 | `src/domains/world/atlas/dungeon-grid.ts` | `1e564a1f91df01b5e0edb38c3e3976f4809bb053d5d8367b0c5d2666d6f40c4d` |
-| `src/domains/world/atlas/index.ts` | `8f6af0729b939400e4d1c98dc0b182ec0083a22f26200ac04adb2b0afbd67063` |
+| `src/domains/world/atlas/index.ts` | `328a95ec754783aa60878024448d20155d489e7ddb80b09ebcd767cf3fef67ed` |
 | `src/domains/world/atlas/map-edit-ops.ts` | `3440965957e4212748d109f74ce202fa7a320840d5c9f1347b0457347c797b95` |
-| `src/domains/world/atlas/map-frame.ts` | `9764fd49aa74482588fea5ba1e1888131b85f05bdbb202057cfed24d6e3e666f` |
+| `src/domains/world/atlas/map-frame.ts` | `7a5bc6fb6ddcb38efd09fa3adf71889709fa230313a8d241d09cb9f5fa98e7a5` |
 | `src/domains/world/atlas/unified-canvas-doc.ts` | `59fa68591c71d2f0bba3185fffb4adecf8d325464df4701309af76a2a99fbd82` |
 | `src/domains/world/atlas/validate-world-atlas.ts` | `3042c993e644808c908331970dd87367649889dbf9421c5507f88b7b415b009e` |
 | `src/domains/world/atlas/webgl-runtime-bridge.ts` | `4d7acacb2a3ded8df55b0d333bb35d51d2b291f8e3849b24577a44f87785434d` |
