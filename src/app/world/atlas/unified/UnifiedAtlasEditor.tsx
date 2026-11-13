@@ -39,11 +39,19 @@ import {
   atlasSpanFromScale,
   atlasToolsForKind,
   buildDungeonGeneratorMeta,
+  commitDungeonFeaturesToDoc,
   DEFAULT_ATLAS_BOUNDS,
+  dungeonCommitPayloadFromResults,
   dungeonNeedsReforgeConfirm,
   emptyUnifiedCanvasDoc,
   generateDungeon,
   isAtlasToolAllowed,
+  mergeDungeonPreviewIntoDoc,
+  rasterizeDungeonGenerateResult,
+  type DungeonCommitPayload,
+  type DungeonGenerateResult,
+  type DungeonRasterizeResult,
+  type DungeonThemeKey,
   isSettlementLodId,
   atlasZoomCaption,
   emptyWebglRuntime,
@@ -516,7 +524,14 @@ export function UnifiedAtlasEditor({
   };
   const [dungeonSeed, setDungeonSeed] = useState('4242');
   const [dungeonRooms, setDungeonRooms] = useState(16);
-  const [dungeonPreview, setDungeonPreview] = useState<ReturnType<typeof generateDungeon> | null>(null);
+  const [dungeonTheme, setDungeonTheme] = useState<DungeonThemeKey>('ancient');
+  const [dungeonPreview, setDungeonPreview] = useState<{
+    generate: DungeonGenerateResult;
+    raster: DungeonRasterizeResult;
+    payload: DungeonCommitPayload;
+  } | null>(null);
+  const dungeonPreviewRef = useRef(dungeonPreview);
+  dungeonPreviewRef.current = dungeonPreview;
   const [dungeonError, setDungeonError] = useState<string | null>(null);
   const [placeBusy, setPlaceBusy] = useState(false);
   const [placeError, setPlaceError] = useState<string | null>(null);
@@ -554,6 +569,12 @@ export function UnifiedAtlasEditor({
     if (doc.objects.length > 0 || doc.strokes.length > 0 || !doc.demoSeed) return doc;
     return { ...doc, objects: demoSeedObjects() };
   }, [doc]);
+
+  /** Preview overlay — non-canonical until Bestätigen. */
+  const forgeDisplayDoc = useMemo(() => {
+    if (!dungeonPreview?.payload) return workingDoc;
+    return mergeDungeonPreviewIntoDoc(workingDoc, dungeonPreview.payload);
+  }, [workingDoc, dungeonPreview]);
 
   const pushHistory = useCallback((prev: UnifiedCanvasDoc) => {
     setEditHistory((h) => pushAtlasEdit(h, prev));
@@ -707,8 +728,9 @@ export function UnifiedAtlasEditor({
 
     const cam = camRef.current;
     const scale = cam.pixelsPerUnit;
-    const layers = workingDoc.layers;
-    const isDemo = workingDoc.demoSeed !== false;
+    const renderDoc = forgeDisplayDoc;
+    const layers = renderDoc.layers;
+    const isDemo = renderDoc.demoSeed !== false;
 
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, width, height);
@@ -788,7 +810,7 @@ export function UnifiedAtlasEditor({
     }
 
     /* ATL2-D04 — Draufsicht heightfield overlay (same SoT as 3D). */
-    const hf = workingDoc.heightfield;
+    const hf = renderDoc.heightfield;
     if (hf && Array.isArray(hf.heights) && hf.cols >= 2 && hf.rows >= 2 && layers.terrain) {
       const water = hf.waterLevel;
       for (let row = 0; row < hf.rows; row++) {
@@ -849,13 +871,15 @@ export function UnifiedAtlasEditor({
     };
 
     if (layers.drawings) {
-      for (const r of workingDoc.rooms) {
+      for (const r of renderDoc.rooms) {
         if (!areaVisible(r.id)) continue;
         // Ocean base room is already painted as full-canvas fill.
         if (!isDemo && r.id === 'w.ocean') continue;
+        const isPreview = dungeonPreview != null && r.id.startsWith('droom-');
         ctx.fillStyle = isDemo
           ? (MATERIAL_COLORS[r.material] ?? MATERIAL_COLORS.holz)
           : productLandColor(r.material);
+        if (isPreview) ctx.globalAlpha = 0.72;
         if (r.points && r.points.length >= 3) {
           ctx.beginPath();
           ctx.moveTo(r.points[0][0], r.points[0][1]);
@@ -869,7 +893,7 @@ export function UnifiedAtlasEditor({
             ctx.lineWidth = Math.min(r.w, r.h) * 0.08;
             ctx.stroke();
           } else if (!isSettlementLodId(r.id) && r.material !== 'wasser') {
-            ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+            ctx.strokeStyle = isPreview ? 'rgba(6,182,212,0.85)' : 'rgba(255,255,255,0.12)';
             ctx.lineWidth = 3 / Math.max(0.2, scale);
             ctx.stroke();
           }
@@ -881,11 +905,12 @@ export function UnifiedAtlasEditor({
             ctx.strokeRect(r.x, r.y, r.w, r.h);
           } else if (!isSettlementLodId(r.id) && r.material !== 'wasser') {
             // Soft coast outline for land masses
-            ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+            ctx.strokeStyle = isPreview ? 'rgba(6,182,212,0.85)' : 'rgba(255,255,255,0.12)';
             ctx.lineWidth = 3 / Math.max(0.2, scale);
             ctx.strokeRect(r.x, r.y, r.w, r.h);
           }
         }
+        if (isPreview) ctx.globalAlpha = 1;
       }
       if (!isDemo && areaDraft.length > 0) {
         ctx.save();
@@ -910,7 +935,7 @@ export function UnifiedAtlasEditor({
         }
         ctx.restore();
       }
-      for (const s of workingDoc.strokes) {
+      for (const s of renderDoc.strokes) {
         if (s.points.length === 0) continue;
         if (!areaVisible(s.id)) continue;
         ctx.save();
@@ -928,7 +953,7 @@ export function UnifiedAtlasEditor({
         ctx.stroke();
         ctx.restore();
       }
-      for (const w of workingDoc.walls) {
+      for (const w of renderDoc.walls) {
         if (protoLod && !protoLod.mapDungeon && !protoLod.mapCity) continue;
         ctx.strokeStyle = '#34383a';
         ctx.lineWidth = w.width * 1.7;
@@ -943,9 +968,9 @@ export function UnifiedAtlasEditor({
         ctx.lineTo(w.x2, w.y2);
         ctx.stroke();
       }
-      for (const d of workingDoc.doors ?? []) {
+      for (const d of renderDoc.doors ?? []) {
         if (protoLod && !protoLod.mapDungeon && !protoLod.mapCity) continue;
-        const wall = workingDoc.walls.find((w) => w.id === d.wallId);
+        const wall = renderDoc.walls.find((w) => w.id === d.wallId);
         if (!wall) continue;
         const [dx, dy] = wallPointAt(wall, d.t);
         ctx.fillStyle = selectedId === d.id ? '#06B6D4' : '#E8A641';
@@ -955,7 +980,7 @@ export function UnifiedAtlasEditor({
       }
     }
     if (layers.objects) {
-      for (const o of workingDoc.objects) {
+      for (const o of renderDoc.objects) {
         if (isDemo) {
           const inInn = pointInRect(o, INN_RECT);
           const inCity = pointInRect(o, CITY_RECT);
@@ -1957,18 +1982,216 @@ export function UnifiedAtlasEditor({
 
   const isDemo = workingDoc.demoSeed !== false;
   const isWorldStarter = workingDoc.rooms.some((r) => r.id === 'w.ocean');
-  /** Always re-project from current canvas doc so 2D deletes survive 3D remount (#749). */
+
+  const DUNGEON_THEME_LABELS: Record<DungeonThemeKey, string> = {
+    ancient: 'Antik',
+    molten: 'Magma',
+    frost: 'Frost',
+    grim: 'Düster',
+    verdant: 'Grün',
+  };
+
+  const runDungeonGenerate = useCallback(() => {
+    setDungeonError(null);
+    if (dungeonNeedsReforgeConfirm(dungeonMeta)) {
+      if (
+        !window.confirm(
+          'Dungeon neu generieren? Bestätigte oder manuell geänderte Generator-Geometrie wird erst beim Bestätigen ersetzt — handgezeichnete Räume bleiben.',
+        )
+      ) {
+        return;
+      }
+    }
+    const seedRaw = dungeonSeed.trim();
+    if (!/^\d+$/.test(seedRaw)) {
+      setDungeonPreview(null);
+      setDungeonError('Ungültiger Seed — bitte nur Ziffern eingeben. Karte unverändert.');
+      return;
+    }
+    const seedNum = Number.parseInt(seedRaw, 10);
+    if (!Number.isFinite(seedNum)) {
+      setDungeonPreview(null);
+      setDungeonError('Ungültiger Seed — Karte unverändert.');
+      return;
+    }
+    const result = generateDungeon({
+      seed: seedNum,
+      roomCount: dungeonRooms,
+      loopChance: 0.18,
+      themeKey: dungeonTheme,
+      originX: CITY_RECT.x + 8,
+      originY: CITY_RECT.y + CITY_RECT.height + 4,
+      unitScale: 1.1,
+    });
+    if (!result.valid) {
+      setDungeonPreview(null);
+      setDungeonError(result.error ?? 'Generierung fehlgeschlagen — Karte unverändert');
+      return;
+    }
+    const raster = rasterizeDungeonGenerateResult(result);
+    if (!raster.valid || !raster.passable) {
+      setDungeonPreview(null);
+      setDungeonError(raster.error ?? 'Rasterisierung fehlgeschlagen — Karte unverändert');
+      return;
+    }
+    const payload = dungeonCommitPayloadFromResults(result, raster);
+    if (!payload) {
+      setDungeonPreview(null);
+      setDungeonError('Vorschau konnte nicht gebaut werden — Karte unverändert');
+      return;
+    }
+    setDungeonPreview({ generate: result, raster, payload });
+  }, [dungeonMeta, dungeonRooms, dungeonSeed, dungeonTheme]);
+
+  const cancelDungeonPreview = useCallback(() => {
+    setDungeonPreview(null);
+    setDungeonError(null);
+  }, []);
+
+  const commitDungeonPreview = useCallback(() => {
+    if (!dungeonPreview?.payload || !dungeonPreview.generate.valid) return;
+    if (
+      !window.confirm(
+        'Dungeon als editierbare Räume/Wände/Türen übernehmen? Vorherige Generator-Geometrie wird ersetzt; handgezeichnete Features bleiben.',
+      )
+    ) {
+      return;
+    }
+    const meta = buildDungeonGeneratorMeta(dungeonPreview.generate, true);
+    onDungeonMetaChange?.(meta);
+    pushHistory(docRef.current);
+    const next = commitDungeonFeaturesToDoc(workingDoc, dungeonPreview.payload, true);
+    onDocChange(next);
+    setDungeonPreview(null);
+    setDungeonError(null);
+    if (surfaceMode === '2d') {
+      goToRect({
+        x: CITY_RECT.x + 4,
+        y: CITY_RECT.y + CITY_RECT.height,
+        width: 48,
+        height: 36,
+      });
+    }
+  }, [
+    dungeonPreview,
+    goToRect,
+    onDocChange,
+    onDungeonMetaChange,
+    pushHistory,
+    surfaceMode,
+    workingDoc,
+  ]);
+
+  const dungeonForgePanel =
+    canEdit ? (
+      <div className="space-y-2 rounded-md border border-border p-2" data-atlas-dungeon-forge>
+        <p className="text-xs font-semibold">Dungeon-Generator</p>
+        <p className="text-[11px] text-muted-foreground">
+          Seed-basiert (Dungeon Forge MIT). Vorschau ist nicht kanonisch, bis du bestätigst.
+        </p>
+        <Label htmlFor="atlas-dungeon-seed">Seed</Label>
+        <Input
+          id="atlas-dungeon-seed"
+          className="min-h-11"
+          value={dungeonSeed}
+          onChange={(e) => setDungeonSeed(e.target.value)}
+        />
+        <Label htmlFor="atlas-dungeon-theme">Theme</Label>
+        <select
+          id="atlas-dungeon-theme"
+          className="min-h-11 w-full rounded-md border border-border bg-background px-3 text-sm"
+          value={dungeonTheme}
+          onChange={(e) => setDungeonTheme(e.target.value as DungeonThemeKey)}
+          aria-label="Dungeon-Theme"
+        >
+          {(Object.keys(DUNGEON_THEME_LABELS) as DungeonThemeKey[]).map((key) => (
+            <option key={key} value={key}>
+              {DUNGEON_THEME_LABELS[key]}
+            </option>
+          ))}
+        </select>
+        <Label htmlFor="atlas-dungeon-rooms">Räume ({dungeonRooms})</Label>
+        <input
+          id="atlas-dungeon-rooms"
+          type="range"
+          className="w-full accent-primary"
+          min={8}
+          max={40}
+          value={dungeonRooms}
+          onChange={(e) => setDungeonRooms(Number(e.target.value))}
+        />
+        {dungeonNeedsReforgeConfirm(dungeonMeta) ? (
+          <p className="text-[11px] text-amber-600 dark:text-amber-400" data-atlas-dungeon-dirty>
+            Bestätigter/manuell bearbeiteter Dungeon — Reforge ersetzt nur Generator-IDs nach
+            Bestätigung.
+          </p>
+        ) : null}
+        <Button
+          type="button"
+          variant="outline"
+          className="min-h-11 w-full"
+          data-atlas-dungeon-generate
+          onClick={runDungeonGenerate}
+        >
+          Generieren
+        </Button>
+        {dungeonError ? (
+          <p className="text-xs text-destructive" role="alert" data-atlas-dungeon-error>
+            {dungeonError}
+          </p>
+        ) : null}
+        {dungeonPreview?.payload ? (
+          <>
+            <p className="text-xs text-muted-foreground" data-atlas-dungeon-preview-stats>
+              Vorschau · {dungeonPreview.generate.stats.roomCount} Räume ·{' '}
+              {dungeonPreview.raster.doorwayCount} Türen ·{' '}
+              {dungeonPreview.generate.stats.genMs.toFixed(1)} ms
+            </p>
+            <div className="flex flex-col gap-2 sm:flex-row">
+              <Button
+                type="button"
+                className="min-h-11 w-full"
+                data-atlas-dungeon-commit
+                onClick={commitDungeonPreview}
+              >
+                Bestätigen & übernehmen
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                className="min-h-11 w-full"
+                data-atlas-dungeon-cancel
+                onClick={cancelDungeonPreview}
+              >
+                Abbrechen
+              </Button>
+            </div>
+          </>
+        ) : null}
+      </div>
+    ) : null;
+
+  /** Always re-project from display doc so 2D deletes + forge preview survive 3D remount. */
   const controlledSeed = useMemo(
     () =>
       syncCanvasDocIntoWebglRuntime(
         webglRuntime ?? legacySeedRef.current ?? emptyWebglRuntime(),
-        doc,
+        forgeDisplayDoc,
       ),
-    [webglRuntime, doc],
+    [webglRuntime, forgeDisplayDoc],
   );
+
+  /** Remount 3D when preview appears/clears so seedState (forge overlay) is applied. */
+  const forge3dMapKey = useMemo(() => {
+    if (!dungeonPreview?.payload) return mapKey;
+    const gen = dungeonPreview.generate;
+    return `${mapKey}:forge-preview:${gen.seed}:${dungeonPreview.payload.rooms.length}:${dungeonPreview.raster.doorwayCount}`;
+  }, [mapKey, dungeonPreview]);
 
   const handleWebglPersist = useCallback(
     (state: WebglRuntimeState) => {
+      // Preview is non-canonical — never persist forge overlay into the map SoT.
+      if (dungeonPreviewRef.current?.payload) return;
       const parsed = parseWebglRuntimeState(state);
       if (!parsed) return;
       webglRuntimeRef.current = parsed;
@@ -2008,11 +2231,28 @@ export function UnifiedAtlasEditor({
             </Button>
           </div>
         ) : null}
+        {canEdit ? (
+          <div
+            className="pointer-events-none absolute bottom-3 left-3 z-[3] max-h-[min(50vh,28rem)] w-[min(100%-1.5rem,20rem)] overflow-y-auto"
+            data-atlas-dungeon-forge-3d
+          >
+            <div className="pointer-events-auto bg-card/95 shadow-md">{dungeonForgePanel}</div>
+          </div>
+        ) : null}
+        {dungeonPreview?.payload ? (
+          <p
+            className="pointer-events-none absolute left-1/2 top-16 z-[3] -translate-x-1/2 rounded-md bg-card/95 px-3 py-1 text-xs text-primary"
+            data-atlas-dungeon-preview-badge
+            role="status"
+          >
+            Dungeon-Vorschau (nicht gespeichert)
+          </p>
+        ) : null}
         <AtlasNative3dEditor
-          mapKey={mapKey}
+          mapKey={forge3dMapKey}
           controlled
           seedState={controlledSeed}
-          onPersist={canEdit ? handleWebglPersist : undefined}
+          onPersist={canEdit && !dungeonPreview?.payload ? handleWebglPersist : undefined}
           externalNav={webglNavTree}
           activePlaceId={activePlaceId}
           activeNodeKind={activeNodeKind ?? null}
@@ -2708,118 +2948,7 @@ export function UnifiedAtlasEditor({
               </Button>
             ) : null}
           </div>
-          {canEdit ? (
-            <div className="space-y-2 rounded-md border border-border p-2" data-atlas-dungeon-forge>
-              <p className="text-xs font-semibold">Dungeon-Generator</p>
-              <p className="text-[11px] text-muted-foreground">
-                Seed-basiert (Dungeon Forge MIT). Vorschau erst nach Bestätigung kanonisch.
-              </p>
-              <Label htmlFor="atlas-dungeon-seed">Seed</Label>
-              <Input
-                id="atlas-dungeon-seed"
-                className="min-h-11"
-                value={dungeonSeed}
-                onChange={(e) => setDungeonSeed(e.target.value)}
-              />
-              <Label htmlFor="atlas-dungeon-rooms">Räume ({dungeonRooms})</Label>
-              <input
-                id="atlas-dungeon-rooms"
-                type="range"
-                className="w-full accent-primary"
-                min={8}
-                max={40}
-                value={dungeonRooms}
-                onChange={(e) => setDungeonRooms(Number(e.target.value))}
-              />
-              {dungeonNeedsReforgeConfirm(dungeonMeta) ? (
-                <p className="text-[11px] text-amber-600 dark:text-amber-400" data-atlas-dungeon-dirty>
-                  Bestätigter/manuell bearbeiteter Dungeon — erneutes Generieren überschreibt nur nach
-                  Bestätigung.
-                </p>
-              ) : null}
-              <Button
-                type="button"
-                variant="outline"
-                className="min-h-11 w-full"
-                onClick={() => {
-                  setDungeonError(null);
-                  if (dungeonNeedsReforgeConfirm(dungeonMeta)) {
-                    if (
-                      !window.confirm(
-                        'Dungeon neu generieren? Bestätigte oder manuell geänderte Geometrie kann überschrieben werden, wenn du danach „Bestätigen“ wählst.',
-                      )
-                    ) {
-                      return;
-                    }
-                  }
-                  const seedNum = Number.parseInt(dungeonSeed, 10);
-                  const result = generateDungeon({
-                    seed: Number.isFinite(seedNum) ? seedNum : 4242,
-                    roomCount: dungeonRooms,
-                    loopChance: 0.18,
-                    themeKey: 'ancient',
-                    originX: CITY_RECT.x + 8,
-                    originY: CITY_RECT.y + CITY_RECT.height + 4,
-                    unitScale: 1.1,
-                  });
-                  if (!result.valid) {
-                    setDungeonPreview(null);
-                    setDungeonError(result.error ?? 'Generierung fehlgeschlagen');
-                    return;
-                  }
-                  setDungeonPreview(result);
-                }}
-              >
-                Generieren
-              </Button>
-              {dungeonError ? (
-                <p className="text-xs text-destructive" role="alert">
-                  {dungeonError}
-                </p>
-              ) : null}
-              {dungeonPreview?.valid ? (
-                <>
-                  <p className="text-xs text-muted-foreground">
-                    {dungeonPreview.stats.roomCount} Räume · {dungeonPreview.stats.edgeCount} Verbindungen ·{' '}
-                    {dungeonPreview.stats.genMs.toFixed(1)} ms
-                  </p>
-                  <Button
-                    type="button"
-                    className="min-h-11 w-full"
-                    onClick={() => {
-                      if (!dungeonPreview?.valid) return;
-                      if (
-                        !window.confirm(
-                          'Dungeon als editierbare Räume/Wände übernehmen? Bestehende manuelle Geometry bleibt; Generator-Inhalt wird angehängt.',
-                        )
-                      ) {
-                        return;
-                      }
-                      const meta = buildDungeonGeneratorMeta(dungeonPreview, true);
-                      onDungeonMetaChange?.(meta);
-                      pushHistory(docRef.current);
-                      onDocChange({
-                        ...workingDoc,
-                        demoSeed: false,
-                        rooms: [...workingDoc.rooms, ...dungeonPreview.canvasRooms],
-                        walls: [...workingDoc.walls, ...dungeonPreview.canvasWalls],
-                        objects: [...workingDoc.objects, ...dungeonPreview.canvasObjects],
-                      });
-                      setDungeonPreview(null);
-                      goToRect({
-                        x: CITY_RECT.x + 4,
-                        y: CITY_RECT.y + CITY_RECT.height,
-                        width: 48,
-                        height: 36,
-                      });
-                    }}
-                  >
-                    Bestätigen & übernehmen
-                  </Button>
-                </>
-              ) : null}
-            </div>
-          ) : null}
+          {dungeonForgePanel}
           <p className="text-xs font-semibold">Textur</p>
           <div className="grid grid-cols-3 gap-1">
             {(Object.keys(MATERIAL_COLORS) as UnifiedCanvasMaterial[]).map((id) => (
