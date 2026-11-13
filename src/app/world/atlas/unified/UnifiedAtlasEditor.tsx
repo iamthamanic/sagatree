@@ -47,8 +47,10 @@ import {
   atlasZoomCaption,
   emptyWebglRuntime,
   parseWebglRuntimeState,
+  canEditFeatureKind,
   canHitFeature,
   clampAtlasBrushUi,
+  featureKindForId,
   featuresInRect,
   isLayerLocked,
   pickDoorAt,
@@ -1152,6 +1154,7 @@ export function UnifiedAtlasEditor({
     }
 
     if (tool === 'stamp') {
+      if (!canEditFeatureKind(workingDoc, 'object')) return;
       commit(
         applyMapEdit(workingDoc, {
           op: 'add_object',
@@ -1164,6 +1167,7 @@ export function UnifiedAtlasEditor({
     }
 
     if (tool === 'door') {
+      if (!canEditFeatureKind(workingDoc, 'door')) return;
       const wall = pickWallAt(workingDoc, p.x, p.y, 14 / camRef.current.pixelsPerUnit);
       if (wall) {
         const t = wallParamAt(wall, p.x, p.y);
@@ -1186,11 +1190,13 @@ export function UnifiedAtlasEditor({
     if (tool === 'erase') {
       const hit = pickObjectAt(workingDoc, p.x, p.y);
       if (hit) {
+        if (!canEditFeatureKind(workingDoc, 'object')) return;
         commit(applyMapEdit(workingDoc, { op: 'remove_object', id: hit.id }), true);
         return;
       }
       const doorHit = pickDoorAt(workingDoc, p.x, p.y, 12 / camRef.current.pixelsPerUnit);
       if (doorHit) {
+        if (!canEditFeatureKind(workingDoc, 'door')) return;
         commit(applyMapEdit(workingDoc, { op: 'remove_door', id: doorHit.id }), true);
         return;
       }
@@ -1201,22 +1207,26 @@ export function UnifiedAtlasEditor({
         15 / camRef.current.pixelsPerUnit,
       );
       if (strokeHit) {
+        if (!canEditFeatureKind(workingDoc, 'stroke')) return;
         commit(applyMapEdit(workingDoc, { op: 'remove_stroke', id: strokeHit.id }), true);
         return;
       }
       const wallHit = pickWallAt(workingDoc, p.x, p.y, 12 / camRef.current.pixelsPerUnit);
       if (wallHit) {
+        if (!canEditFeatureKind(workingDoc, 'wall')) return;
         commit(applyMapEdit(workingDoc, { op: 'remove_wall', id: wallHit.id }), true);
         return;
       }
       const roomHit = pickRoomAt(workingDoc, p.x, p.y);
       if (roomHit && roomHit.id !== 'w.ocean') {
+        if (!canEditFeatureKind(workingDoc, 'room')) return;
         commit(applyMapEdit(workingDoc, { op: 'remove_room', id: roomHit.id }), true);
       }
       return;
     }
 
     if (tool === 'area') {
+      if (!canEditFeatureKind(workingDoc, 'room')) return;
       if (e.detail >= 2) {
         const draft = areaDraftRef.current;
         if (draft.length >= 3) {
@@ -1256,12 +1266,15 @@ export function UnifiedAtlasEditor({
     if (tool === 'select') {
       const additive = e.shiftKey;
       // Empty drag starts multi-select marquee (ATL2-C03).
+      // Hit probe must ignore hidden layers so marquee / under-hits stay reachable.
+      const thr = 12 / camRef.current.pixelsPerUnit;
+      const layers = workingDoc.layers;
       const hitProbe =
-        pickObjectAt(workingDoc, p.x, p.y) ||
-        pickDoorAt(workingDoc, p.x, p.y, 12 / camRef.current.pixelsPerUnit) ||
-        pickWallAt(workingDoc, p.x, p.y, 12 / camRef.current.pixelsPerUnit) ||
-        pickStrokeAt(workingDoc, p.x, p.y, 12 / camRef.current.pixelsPerUnit) ||
-        pickRoomAt(workingDoc, p.x, p.y);
+        (canHitFeature(layers, null, 'object') && pickObjectAt(workingDoc, p.x, p.y)) ||
+        (canHitFeature(layers, null, 'door') && pickDoorAt(workingDoc, p.x, p.y, thr)) ||
+        (canHitFeature(layers, null, 'wall') && pickWallAt(workingDoc, p.x, p.y, thr)) ||
+        (canHitFeature(layers, null, 'stroke') && pickStrokeAt(workingDoc, p.x, p.y, thr)) ||
+        (canHitFeature(layers, null, 'room') && pickRoomAt(workingDoc, p.x, p.y));
       if (!hitProbe && canEdit) {
         dragRef.current = { mode: 'marquee', start: { x: p.x, y: p.y } };
         setMarqueeLive({ x: p.x, y: p.y, w: 0, h: 0 });
@@ -1404,6 +1417,7 @@ export function UnifiedAtlasEditor({
     }
 
     if (tool === 'brush' || tool === 'road') {
+      if (!canEditFeatureKind(workingDoc, 'stroke')) return;
       const id = uid();
       // Road + wasser material = Fluss; otherwise paved path (ATL2-C01).
       const strokeMaterial =
@@ -1424,6 +1438,7 @@ export function UnifiedAtlasEditor({
     }
 
     if (tool === 'room' || tool === 'wall') {
+      if (!canEditFeatureKind(workingDoc, tool === 'room' ? 'room' : 'wall')) return;
       const snapT = 12 / camRef.current.pixelsPerUnit;
       const start = snapStructurePoint(workingDoc, [p.x, p.y], snapT);
       dragRef.current = {
@@ -1618,20 +1633,24 @@ export function UnifiedAtlasEditor({
       const min = 9 / camRef.current.pixelsPerUnit;
       const snapT = 12 / camRef.current.pixelsPerUnit;
       if (drag.kind === 'room') {
-        const x = Math.min(drag.start.x, p.x);
-        const y = Math.min(drag.start.y, p.y);
-        const w = Math.abs(p.x - drag.start.x);
-        const h = Math.abs(p.y - drag.start.y);
-        if (w > min && h > min) {
-          commit(
-            applyMapEdit(workingDoc, {
-              op: 'add_room',
-              room: { id: uid(), x, y, w, h, material },
-            }),
-            true,
-          );
+        if (!canEditFeatureKind(workingDoc, 'room')) {
+          /* locked — drop shape without commit */
+        } else {
+          const x = Math.min(drag.start.x, p.x);
+          const y = Math.min(drag.start.y, p.y);
+          const w = Math.abs(p.x - drag.start.x);
+          const h = Math.abs(p.y - drag.start.y);
+          if (w > min && h > min) {
+            commit(
+              applyMapEdit(workingDoc, {
+                op: 'add_room',
+                room: { id: uid(), x, y, w, h, material },
+              }),
+              true,
+            );
+          }
         }
-      } else {
+      } else if (canEditFeatureKind(workingDoc, 'wall')) {
         if (Math.hypot(p.x - drag.start.x, p.y - drag.start.y) > min) {
           const a = snapStructurePoint(workingDoc, [drag.start.x, drag.start.y], snapT);
           const b = snapStructurePoint(workingDoc, [p.x, p.y], snapT);
@@ -1745,6 +1764,7 @@ export function UnifiedAtlasEditor({
         return;
       }
       if (ev.key === 'Enter') {
+        if (!canEditFeatureKind(docRef.current, 'room')) return;
         const draft = areaDraftRef.current;
         if (draft.length < 3) {
           setAreaHint('Noch mindestens 3 Punkte setzen, dann Enter zum Schließen.');
@@ -1791,20 +1811,22 @@ export function UnifiedAtlasEditor({
         seedKey,
         placeKind,
       });
-      commit(
-        applyMapEdit(workingDoc, {
-          op: 'add_object',
-          object: {
-            id: uid(),
-            type: 'haus',
-            x: anchor.x,
-            y: anchor.y,
-            size: stampSize,
-            height: req.authorKind === 'building' ? 1.2 : req.authorKind === 'settlement' ? 2.4 : 0.4,
-          },
-        }),
-        true,
-      );
+      if (canEditFeatureKind(workingDoc, 'object')) {
+        commit(
+          applyMapEdit(workingDoc, {
+            op: 'add_object',
+            object: {
+              id: uid(),
+              type: 'haus',
+              x: anchor.x,
+              y: anchor.y,
+              size: stampSize,
+              height: req.authorKind === 'building' ? 1.2 : req.authorKind === 'settlement' ? 2.4 : 0.4,
+            },
+          }),
+          true,
+        );
+      }
       setPlacePin(null);
       setMarqueeLive(null);
       setPinArmed(false);
@@ -2395,10 +2417,12 @@ export function UnifiedAtlasEditor({
                 variant="destructive"
                 className="min-h-11"
                 onClick={() => {
-                  const isRoom = workingDoc.rooms.some((r) => r.id === selectedId);
-                  const isStroke = workingDoc.strokes.some((s) => s.id === selectedId);
-                  const isWall = workingDoc.walls.some((w) => w.id === selectedId);
-                  const isDoor = (workingDoc.doors ?? []).some((d) => d.id === selectedId);
+                  const kind = featureKindForId(workingDoc, selectedId);
+                  if (!kind || !canEditFeatureKind(workingDoc, kind)) return;
+                  const isRoom = kind === 'room';
+                  const isStroke = kind === 'stroke';
+                  const isWall = kind === 'wall';
+                  const isDoor = kind === 'door';
                   commit(
                     applyMapEdit(workingDoc, {
                       op: isRoom
@@ -2422,12 +2446,14 @@ export function UnifiedAtlasEditor({
             ) : null}
             {selectedId &&
             canEdit &&
+            canEditFeatureKind(workingDoc, 'room') &&
             workingDoc.rooms.some((r) => r.id === selectedId && r.id !== 'w.ocean') ? (
               <Button
                 type="button"
                 variant="outline"
                 className="min-h-11"
                 onClick={() => {
+                  if (!canEditFeatureKind(workingDoc, 'room')) return;
                   commit(
                     applyMapEdit(workingDoc, {
                       op: 'rotate_room',
@@ -2443,12 +2469,14 @@ export function UnifiedAtlasEditor({
             ) : null}
             {selectedId &&
             canEdit &&
+            canEditFeatureKind(workingDoc, 'object') &&
             workingDoc.objects.some((o) => o.id === selectedId) ? (
               <Button
                 type="button"
                 variant="outline"
                 className="min-h-11"
                 onClick={() => {
+                  if (!canEditFeatureKind(workingDoc, 'object')) return;
                   const obj = workingDoc.objects.find((o) => o.id === selectedId);
                   if (!obj) return;
                   commit(

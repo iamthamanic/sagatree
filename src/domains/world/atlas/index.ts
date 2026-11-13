@@ -88,15 +88,19 @@ export {
 } from './map-edit-ops';
 
 export {
+  canEditFeatureKind,
   canHitFeature,
   defaultLayerLocks,
+  featureKindForId,
   featuresInRect,
   isLayerLocked,
   isLayerVisible,
   layerForFeatureKind,
+  lockLayerForFeatureKind,
   setLayerLock,
   toggleSelection,
   translateSelected,
+  visibilityLayerForFeatureKind,
   type AtlasFeatureKind,
   type AtlasFeatureRef,
   type AtlasLayerLocks,

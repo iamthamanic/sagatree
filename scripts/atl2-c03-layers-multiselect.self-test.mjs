@@ -44,6 +44,26 @@ assert.equal(
   }),
   true,
 );
+// Visibility follows renderer: rooms/walls/doors use drawings; lock may stay interior.
+assert.equal(sel.visibilityLayerForFeatureKind('room'), 'drawings');
+assert.equal(sel.lockLayerForFeatureKind('room'), 'interior');
+assert.equal(
+  sel.canHitFeature({ objects: true, interior: true, drawings: false }, {}, 'room'),
+  false,
+);
+assert.equal(
+  sel.canHitFeature({ objects: true, interior: false, drawings: true }, { interior: true }, 'room', {
+    forEdit: true,
+  }),
+  false,
+);
+assert.equal(
+  sel.canHitFeature({ objects: true, interior: false, drawings: true }, { interior: true }, 'room', {
+    forEdit: false,
+  }),
+  true,
+);
+assert.equal(editorSrc.includes('canEditFeatureKind'), true);
 
 let doc = canvas.emptyUnifiedCanvasDoc(false);
 doc = ops.applyMapEdit(doc, {
@@ -67,6 +87,30 @@ assert.ok(!hits.some((h) => h.id === 'r1'));
 doc = sel.translateSelected(doc, ['o1', 'o2'], 2, 3);
 assert.equal(doc.objects.find((o) => o.id === 'o1').x, 3);
 assert.equal(doc.objects.find((o) => o.id === 'o2').y, 8);
+
+doc = ops.applyMapEdit(doc, {
+  op: 'add_stroke',
+  stroke: {
+    id: 's1',
+    material: 'erde',
+    width: 1,
+    points: [
+      [0, 0],
+      [1, 1],
+    ],
+  },
+});
+doc = sel.translateSelected(doc, ['s1', 'o1'], 1, 2);
+assert.equal(doc.objects.find((o) => o.id === 'o1').x, 4);
+assert.deepEqual(doc.strokes.find((s) => s.id === 's1').points, [
+  [1, 2],
+  [2, 3],
+]);
+
+const objectsLocked = { ...doc, layerLocks: sel.setLayerLock({}, 'objects', true) };
+assert.equal(sel.canEditFeatureKind(objectsLocked, 'object'), false);
+const afterLockedTranslate = sel.translateSelected(objectsLocked, ['o1'], 10, 0);
+assert.equal(afterLockedTranslate.objects.find((o) => o.id === 'o1').x, 4);
 
 const locked = { ...doc, layerLocks: sel.setLayerLock({}, 'objects', true) };
 const ser = canvas.serializeUnifiedCanvasDoc(locked);

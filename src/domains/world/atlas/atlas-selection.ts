@@ -25,11 +25,25 @@ export type AtlasFeatureRef = {
   readonly id: string;
 };
 
-/** Layer that gates hit-test / edit for a feature kind. */
-export function layerForFeatureKind(kind: AtlasFeatureKind): UnifiedCanvasLayerId {
+/**
+ * Visibility layer — must match UnifiedAtlasEditor render gates.
+ * Rooms/walls/doors paint under `drawings`; objects under `objects`.
+ */
+export function visibilityLayerForFeatureKind(kind: AtlasFeatureKind): UnifiedCanvasLayerId {
+  if (kind === 'object') return 'objects';
+  return 'drawings';
+}
+
+/** Lock ownership layer (inspector "Sperre" / interior structure). */
+export function lockLayerForFeatureKind(kind: AtlasFeatureKind): UnifiedCanvasLayerId {
   if (kind === 'object') return 'objects';
   if (kind === 'stroke') return 'drawings';
   return 'interior';
+}
+
+/** @deprecated use visibilityLayerForFeatureKind / lockLayerForFeatureKind */
+export function layerForFeatureKind(kind: AtlasFeatureKind): UnifiedCanvasLayerId {
+  return visibilityLayerForFeatureKind(kind);
 }
 
 export function isLayerVisible(
@@ -52,10 +66,29 @@ export function canHitFeature(
   kind: AtlasFeatureKind,
   opts?: { readonly forEdit?: boolean },
 ): boolean {
-  const layer = layerForFeatureKind(kind);
-  if (!isLayerVisible(layers, layer)) return false;
-  if (opts?.forEdit && isLayerLocked(locks, layer)) return false;
+  if (!isLayerVisible(layers, visibilityLayerForFeatureKind(kind))) return false;
+  if (opts?.forEdit && isLayerLocked(locks, lockLayerForFeatureKind(kind))) return false;
   return true;
+}
+
+/** True when an edit targeting this kind is allowed. */
+export function canEditFeatureKind(
+  doc: UnifiedCanvasDoc,
+  kind: AtlasFeatureKind,
+): boolean {
+  return canHitFeature(doc.layers, doc.layerLocks, kind, { forEdit: true });
+}
+
+export function featureKindForId(
+  doc: UnifiedCanvasDoc,
+  id: string,
+): AtlasFeatureKind | null {
+  if (doc.objects.some((o) => o.id === id)) return 'object';
+  if (doc.rooms.some((r) => r.id === id)) return 'room';
+  if (doc.walls.some((w) => w.id === id)) return 'wall';
+  if ((doc.doors ?? []).some((d) => d.id === id)) return 'door';
+  if (doc.strokes.some((s) => s.id === id)) return 'stroke';
+  return null;
 }
 
 export function toggleSelection(
@@ -104,7 +137,7 @@ export function featuresInRect(
   return out;
 }
 
-/** Translate all selected geometry by (dx, dy). Skips locked layers via caller. */
+/** Translate all selected geometry by (dx, dy). Skips locked kinds. */
 export function translateSelected(
   doc: UnifiedCanvasDoc,
   ids: readonly string[],
@@ -116,14 +149,17 @@ export function translateSelected(
   const idSet = new Set(ids);
   for (const o of doc.objects) {
     if (!idSet.has(o.id)) continue;
+    if (!canEditFeatureKind(doc, 'object')) continue;
     next = applyMapEdit(next, { op: 'move_object', id: o.id, x: o.x + dx, y: o.y + dy });
   }
   for (const r of doc.rooms) {
     if (!idSet.has(r.id) || r.id === 'w.ocean') continue;
+    if (!canEditFeatureKind(doc, 'room')) continue;
     next = applyMapEdit(next, { op: 'move_room', id: r.id, x: r.x + dx, y: r.y + dy });
   }
   for (const w of doc.walls) {
     if (!idSet.has(w.id)) continue;
+    if (!canEditFeatureKind(doc, 'wall')) continue;
     next = applyMapEdit(next, {
       op: 'move_wall',
       id: w.id,
@@ -132,6 +168,18 @@ export function translateSelected(
       x2: w.x2 + dx,
       y2: w.y2 + dy,
     });
+  }
+  if (canEditFeatureKind(doc, 'stroke')) {
+    const strokes = next.strokes.map((s) => {
+      if (!idSet.has(s.id)) return s;
+      return {
+        ...s,
+        points: s.points.map((pt) => [pt[0] + dx, pt[1] + dy] as const),
+      };
+    });
+    if (strokes !== next.strokes) {
+      next = { ...next, strokes, demoSeed: false };
+    }
   }
   return next;
 }

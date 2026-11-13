@@ -14,14 +14,16 @@ Sperre, Kontext-Inspektor — stufenspezifische Tools bleiben registry-gesteuert
 ## Happy Path
 
 - [ ] Shift+Klick und Auswahl-Rahmen setzen Mehrfachauswahl
-- [ ] Versteckte Ebenen: kein Hit-Test; gesperrte: kein Edit
+- [ ] Versteckte Ebenen: kein Hit-Test; gesperrte: kein Edit (alle Mutationspfade)
 - [ ] LayerLocks persistieren in unifiedCanvas
 - [ ] Inspektor zeigt Auswahlanzahl
+- [ ] Gruppe verschiebt auch Striche
 - [ ] Touched files: zero type escape hatches
 
 ## Edge Cases
 
 - [ ] Legacy docs ohne layerLocks → {}
+- [ ] Sichtbarkeit rooms/walls/doors = drawings; Lock ownership = interior
 - [ ] Locked interior: room/wall/door edits blocked
 
 ## Security Coverage
