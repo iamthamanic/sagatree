@@ -55,6 +55,16 @@ export function isFinitePositive(n: unknown): n is number {
   return typeof n === 'number' && Number.isFinite(n) && n > 0;
 }
 
+/**
+ * Normalize optional physical calibration. Negative / non-finite → null (uncalibrated).
+ * Never invent meters; UI must stay abstract until a positive value is set.
+ */
+export function normalizeMetersPerUnit(raw: unknown): number | null {
+  if (raw == null) return null;
+  if (typeof raw !== 'number' || !Number.isFinite(raw) || raw <= 0) return null;
+  return raw;
+}
+
 export function parseParentSpatialAnchor(raw: unknown): ParentSpatialAnchor | null {
   if (!raw || typeof raw !== 'object') return null;
   const o = raw as Record<string, unknown>;
@@ -66,9 +76,7 @@ export function parseParentSpatialAnchor(raw: unknown): ParentSpatialAnchor | nu
   const rotationRad = o.rotationRad == null ? 0 : Number(o.rotationRad);
   if (![centerX, centerY, extentX, extentY, rotationRad].every(Number.isFinite)) return null;
   if (extentX <= 0 || extentY <= 0) return null;
-  const mpu = o.metersPerUnit;
-  const metersPerUnit =
-    mpu == null ? null : typeof mpu === 'number' && Number.isFinite(mpu) && mpu > 0 ? mpu : null;
+  const metersPerUnit = normalizeMetersPerUnit(o.metersPerUnit);
   return {
     parentMapId: o.parentMapId.trim(),
     centerX,
@@ -251,6 +259,8 @@ export function locateChildMapFrame(input: {
   readonly minY: number;
   readonly maxX: number;
   readonly maxY: number;
+  readonly rotationRad?: number;
+  readonly metersPerUnit?: number | null;
 }):
   | { readonly ok: true; readonly frame: MapFrameMeta; readonly anchor: ParentSpatialAnchor }
   | { readonly ok: false; readonly reason: string } {
@@ -263,4 +273,80 @@ export function locateChildMapFrame(input: {
     anchor: built.anchor,
     frame: { status: 'unsketched', parentAnchor: built.anchor },
   };
+}
+
+type AtlasPoint = { readonly x: number; readonly y: number };
+
+/**
+ * Map a point from child local bounds into parent map space using the anchor.
+ * Invertible with {@link mapPointParentToChild} for the same bounds + anchor.
+ */
+export function mapPointChildToParent(
+  point: AtlasPoint,
+  anchor: ParentSpatialAnchor,
+  childBounds: WorldAtlasBounds = independentPrimaryBounds(),
+): AtlasPoint {
+  const width = childBounds.maxX - childBounds.minX;
+  const height = childBounds.maxY - childBounds.minY;
+  const midX = (childBounds.minX + childBounds.maxX) / 2;
+  const midY = (childBounds.minY + childBounds.maxY) / 2;
+  const nx = width === 0 ? 0 : (2 * (point.x - midX)) / width;
+  const ny = height === 0 ? 0 : (2 * (point.y - midY)) / height;
+  const lx = nx * anchor.extentX;
+  const ly = ny * anchor.extentY;
+  const cos = Math.cos(anchor.rotationRad);
+  const sin = Math.sin(anchor.rotationRad);
+  return {
+    x: anchor.centerX + lx * cos - ly * sin,
+    y: anchor.centerY + lx * sin + ly * cos,
+  };
+}
+
+/**
+ * Inverse of {@link mapPointChildToParent} — parent space → child local bounds.
+ */
+export function mapPointParentToChild(
+  point: AtlasPoint,
+  anchor: ParentSpatialAnchor,
+  childBounds: WorldAtlasBounds = independentPrimaryBounds(),
+): AtlasPoint {
+  const dx = point.x - anchor.centerX;
+  const dy = point.y - anchor.centerY;
+  const cos = Math.cos(anchor.rotationRad);
+  const sin = Math.sin(anchor.rotationRad);
+  const lx = dx * cos + dy * sin;
+  const ly = -dx * sin + dy * cos;
+  const nx = anchor.extentX === 0 ? 0 : lx / anchor.extentX;
+  const ny = anchor.extentY === 0 ? 0 : ly / anchor.extentY;
+  const width = childBounds.maxX - childBounds.minX;
+  const height = childBounds.maxY - childBounds.minY;
+  const midX = (childBounds.minX + childBounds.maxX) / 2;
+  const midY = (childBounds.minY + childBounds.maxY) / 2;
+  return {
+    x: midX + (nx * width) / 2,
+    y: midY + (ny * height) / 2,
+  };
+}
+
+/** Round-trip probe for locate transforms (domain acceptance for ATL2-E02). */
+export function assertInvertibleParentChildMap(
+  anchor: ParentSpatialAnchor,
+  sample: AtlasPoint,
+  childBounds: WorldAtlasBounds = independentPrimaryBounds(),
+  epsilon = 1e-9,
+): { readonly ok: true } | { readonly ok: false; readonly reason: string } {
+  const parent = mapPointChildToParent(sample, anchor, childBounds);
+  const back = mapPointParentToChild(parent, anchor, childBounds);
+  if (
+    !Number.isFinite(parent.x) ||
+    !Number.isFinite(parent.y) ||
+    !Number.isFinite(back.x) ||
+    !Number.isFinite(back.y)
+  ) {
+    return { ok: false, reason: 'Transform nicht endlich' };
+  }
+  if (Math.abs(back.x - sample.x) > epsilon || Math.abs(back.y - sample.y) > epsilon) {
+    return { ok: false, reason: 'Transform nicht invertierbar' };
+  }
+  return { ok: true };
 }

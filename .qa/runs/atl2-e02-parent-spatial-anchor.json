@@ -1,0 +1,44 @@
+{
+  "gate": "atl2-e02",
+  "issue": 1220,
+  "head": "46885289400b6a091f1d6b6b39e7fc9ebdef8ddb",
+  "host": {
+    "locatedReloadOk": true,
+    "unlocatedDeniedLod": true,
+    "strangerDenied": true
+  },
+  "sollIst": [
+    {
+      "category": "Domain locate + invert",
+      "soll": "rect→anchor; round-trip w/ rotation",
+      "ist": "pass-domain"
+    },
+    {
+      "category": "Calibration honesty",
+      "soll": "neg/zero mpu → null; caption abstract",
+      "ist": "pass-domain"
+    },
+    {
+      "category": "Unlocated LOD gate",
+      "soll": "no scale-true drill",
+      "ist": "pass-domain"
+    },
+    {
+      "category": "Host save/reload",
+      "soll": "locate persists on getMap",
+      "ist": "pass-host"
+    },
+    {
+      "category": "Security",
+      "soll": "stranger upsert denied",
+      "ist": "pass-host"
+    }
+  ],
+  "verdict": "CLEAR",
+  "residuals": [
+    {
+      "severity": "Low",
+      "note": "Locate drag UX already wired (locateChildOnParent); E03 owns breadcrumb/zoom camera."
+    }
+  ]
+}
