@@ -187,11 +187,15 @@
     },
     {
       "path": "src/domains/world/atlas/atlas-canonical-features.ts",
-      "sha256": "c1bdcbaf78d8db00dd897828214b69f0778c41b133169434faad2b681c6d2d09"
+      "sha256": "a7e2b9471c960d3839e39f93fe1f6b332f5822620ef589ba4e1a0805dda6c3bd"
     },
     {
       "path": "src/domains/world/atlas/atlas-edit-history.ts",
       "sha256": "13a91efde301ec766d3b0f183affcd794abba9f4c4872c00549e9f631947e294"
+    },
+    {
+      "path": "src/domains/world/atlas/atlas-heightfield.ts",
+      "sha256": "1fafa49c651ac14ba5ae1e9a226b38ffeea636935b7e486daa1cdd41090b71fb"
     },
     {
       "path": "src/domains/world/atlas/atlas-map-doc-adapter.ts",
@@ -211,7 +215,7 @@
     },
     {
       "path": "src/domains/world/atlas/atlas-product-geometry-plan.ts",
-      "sha256": "43de1e1d02d185b20dd184d75800e7875a24a8f944c08c48e65ecc2c9a961252"
+      "sha256": "de94ca0b6c23374ae5aed057fa756539285295574df9925598a0ed029a2a3ce9"
     },
     {
       "path": "src/domains/world/atlas/atlas-prototype-lod.ts",
@@ -231,7 +235,7 @@
     },
     {
       "path": "src/domains/world/atlas/atlas-tool-registry.ts",
-      "sha256": "e70f27b21aa744a40a7e30fd65fe6acdca4497e6c07be960dd59aacca4f376e0"
+      "sha256": "be0492bd7d71f1dafa260c6a1a75165f8c587bd1f55d3178f96fbd67ac5988af"
     },
     {
       "path": "src/domains/world/atlas/atlas-webgl-write-retire.ts",
@@ -263,11 +267,11 @@
     },
     {
       "path": "src/domains/world/atlas/index.ts",
-      "sha256": "4312f3b90b29847232025db2d04305db13b852c5a39364f87cabfaa4bf020069"
+      "sha256": "8d986995169707562d69aa5b92f0e818f5e685d2b7588649a497798bda4997d0"
     },
     {
       "path": "src/domains/world/atlas/map-edit-ops.ts",
-      "sha256": "4b5fce37520768ef5c2184a5a385c20d6f57dd01e5bc85dcb8aa8b47cfa614e0"
+      "sha256": "3440965957e4212748d109f74ce202fa7a320840d5c9f1347b0457347c797b95"
     },
     {
       "path": "src/domains/world/atlas/map-frame.ts",
@@ -275,7 +279,7 @@
     },
     {
       "path": "src/domains/world/atlas/unified-canvas-doc.ts",
-      "sha256": "e65de4161440313a3190cc1fb96c1fa27ba76dfba2ab53ddd94efdf58de44474"
+      "sha256": "59fa68591c71d2f0bba3185fffb4adecf8d325464df4701309af76a2a99fbd82"
     },
     {
       "path": "src/domains/world/atlas/validate-world-atlas.ts",
@@ -283,7 +287,7 @@
     },
     {
       "path": "src/domains/world/atlas/webgl-runtime-bridge.ts",
-      "sha256": "0ded35da70fd3dc5eae08f22297564acce826a5b723fb339bfd7b7964a6e3b31"
+      "sha256": "4d7acacb2a3ded8df55b0d333bb35d51d2b291f8e3849b24577a44f87785434d"
     },
     {
       "path": "src/domains/world/atlas/world-atlas.types.ts",
@@ -1237,6 +1241,38 @@
     },
     {
       "kind": "TypeAliasDeclaration",
+      "name": "AtlasHeightBrushMode",
+      "path": "src/domains/world/atlas/atlas-heightfield.ts",
+      "line": 22,
+      "endLine": 22,
+      "text": "export type AtlasHeightBrushMode = 'raise' | 'lower' | 'smooth' | 'flatten';"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AtlasHeightfieldAssetRef",
+      "path": "src/domains/world/atlas/atlas-heightfield.ts",
+      "line": 24,
+      "endLine": 29,
+      "text": "export type AtlasHeightfieldAssetRef = {\n  readonly kind: 'inline' | 'host-asset';\n  /** Host asset id when kind=host-asset; otherwise omitted. */\n  readonly assetId?: string;\n  readonly version: number;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AtlasHeightfield",
+      "path": "src/domains/world/atlas/atlas-heightfield.ts",
+      "line": 31,
+      "endLine": 46,
+      "text": "export type AtlasHeightfield = {\n  readonly format: typeof ATLAS_HEIGHTFIELD_FORMAT;\n  readonly version: typeof ATLAS_HEIGHTFIELD_VERSION;\n  readonly assetRef: AtlasHeightfieldAssetRef;\n  /** World X of cell (0,0) corner. */\n  readonly originX: number;\n  /** World Z of cell (0,0) corner. */\n  readonly originZ: number;\n  readonly cellSize: number;\n  readonly cols: number;\n  readonly rows: number;\n  /** Row-major heights, length === cols * rows. */\n  readonly heights: readonly number[];\n  /** Shore / water plane; cells below are water-classified. */\n  readonly waterLevel: number;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AtlasHeightBrushStroke",
+      "path": "src/domains/world/atlas/atlas-heightfield.ts",
+      "line": 48,
+      "endLine": 56,
+      "text": "export type AtlasHeightBrushStroke = {\n  readonly mode: AtlasHeightBrushMode;\n  readonly x: number;\n  readonly z: number;\n  readonly radius: number;\n  readonly strength: number;\n  /** Flatten target height when mode=flatten. */\n  readonly targetHeight?: number;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
       "name": "AtlasMapDocScale",
       "path": "src/domains/world/atlas/atlas-map-doc-adapter.ts",
       "line": 35,
@@ -1327,24 +1363,24 @@
       "kind": "TypeAliasDeclaration",
       "name": "AtlasProductGeometryKind",
       "path": "src/domains/world/atlas/atlas-product-geometry-plan.ts",
-      "line": 14,
-      "endLine": 21,
+      "line": 15,
+      "endLine": 22,
       "text": "export type AtlasProductGeometryKind =\n  | 'area'\n  | 'path'\n  | 'wall'\n  | 'door'\n  | 'room'\n  | 'prop'\n  | 'building_footprint';"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "AtlasProductGeometryPrimitive",
       "path": "src/domains/world/atlas/atlas-product-geometry-plan.ts",
-      "line": 23,
-      "endLine": 69,
+      "line": 24,
+      "endLine": 70,
       "text": "export type AtlasProductGeometryPrimitive =\n  | {\n      readonly kind: 'area' | 'room';\n      readonly id: string;\n      readonly canonicalKind: AtlasCanonicalFeatureKind | null;\n      readonly triangles: readonly (readonly [number, number, number])[];\n      readonly points: readonly (readonly [number, number])[];\n      readonly elevation: number;\n    }\n  | {\n      readonly kind: 'path';\n      readonly id: string;\n      readonly canonicalKind: AtlasCanonicalFeatureKind | null;\n      readonly points: readonly (readonly [number, number])[];\n      readonly width: number;\n    }\n  | {\n      readonly kind: 'wall';\n      readonly id: string;\n      readonly canonicalKind: 'wall';\n      readonly start: readonly [number, number];\n      readonly end: readonly [number, number];\n      readonly width: number;\n      readonly doorIds: readonly string[];\n    }\n  | {\n      readonly kind: 'door';\n      readonly id: string;\n      readonly canonicalKind: 'door';\n      readonly wallId: string;\n      readonly t: number;\n      readonly width: number;\n      readonly position: readonly [number, number];\n      readonly tangent: readonly [number, number];\n      readonly normal: readonly [number, number];\n    }\n  | {\n      readonly kind: 'prop' | 'building_footprint';\n      readonly id: string;\n      readonly canonicalKind: AtlasCanonicalFeatureKind | null;\n      readonly x: number;\n      readonly y: number;\n      readonly size: number;\n      readonly elevation: number;\n      readonly height: number;\n      readonly stamp: string;\n    };"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "AtlasProductGeometryPlan",
       "path": "src/domains/world/atlas/atlas-product-geometry-plan.ts",
-      "line": 71,
-      "endLine": 77,
+      "line": 72,
+      "endLine": 78,
       "text": "export type AtlasProductGeometryPlan = {\n  readonly format: 'atl2-product-geometry-plan-v1';\n  readonly primitives: readonly AtlasProductGeometryPrimitive[];\n  readonly counts: Readonly<Record<AtlasProductGeometryKind, number>>;\n  /** Stable fingerprint for runtime scene-diff (skip rebuild when unchanged). */\n  readonly contentFingerprint: string;\n};"
     },
     {
@@ -1471,16 +1507,16 @@
       "kind": "TypeAliasDeclaration",
       "name": "WebglRuntimeToolId",
       "path": "src/domains/world/atlas/atlas-tool-registry.ts",
-      "line": 134,
-      "endLine": 144,
-      "text": "export type WebglRuntimeToolId =\n  | 'hand'\n  | 'select'\n  | 'paint'\n  | 'area'\n  | 'road'\n  | 'stamp'\n  | 'wall'\n  | 'door'\n  | 'room'\n  | 'erase';"
+      "line": 142,
+      "endLine": 153,
+      "text": "export type WebglRuntimeToolId =\n  | 'hand'\n  | 'select'\n  | 'paint'\n  | 'height'\n  | 'area'\n  | 'road'\n  | 'stamp'\n  | 'wall'\n  | 'door'\n  | 'room'\n  | 'erase';"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "WebglToolChromeItem",
       "path": "src/domains/world/atlas/atlas-tool-registry.ts",
-      "line": 183,
-      "endLine": 191,
+      "line": 194,
+      "endLine": 202,
       "text": "export type WebglToolChromeItem = {\n  readonly atlasId: AtlasToolId;\n  readonly runtimeId: WebglRuntimeToolId;\n  readonly labelDe: string;\n  readonly role: AtlasToolDef['role'];\n  readonly enabled: boolean;\n  readonly disabledReason: string | null;\n  readonly createsCanonicalNode: false;\n};"
     },
     {
@@ -1655,17 +1691,17 @@
       "kind": "TypeAliasDeclaration",
       "name": "MapTransform",
       "path": "src/domains/world/atlas/map-edit-ops.ts",
-      "line": 24,
-      "endLine": 31,
+      "line": 33,
+      "endLine": 40,
       "text": "export type MapTransform = {\n  readonly x: number;\n  readonly y: number;\n  readonly z?: number;\n  readonly angle?: number;\n  readonly size?: number;\n  readonly height?: number;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "MapEditOperation",
       "path": "src/domains/world/atlas/map-edit-ops.ts",
-      "line": 33,
-      "endLine": 81,
-      "text": "export type MapEditOperation =\n  | { readonly op: 'add_object'; readonly object: UnifiedCanvasObject }\n  | { readonly op: 'move_object'; readonly id: string; readonly x: number; readonly y: number; readonly z?: number }\n  | { readonly op: 'transform_object'; readonly id: string; readonly patch: Partial<MapTransform> }\n  | { readonly op: 'remove_object'; readonly id: string }\n  | { readonly op: 'add_room'; readonly room: UnifiedCanvasRoom }\n  | { readonly op: 'move_room'; readonly id: string; readonly x: number; readonly y: number }\n  | { readonly op: 'resize_room'; readonly id: string; readonly w: number; readonly h: number }\n  | { readonly op: 'remove_room'; readonly id: string }\n  | { readonly op: 'add_wall'; readonly wall: UnifiedCanvasWall }\n  | { readonly op: 'move_wall'; readonly id: string; readonly x1: number; readonly y1: number; readonly x2: number; readonly y2: number }\n  | { readonly op: 'remove_wall'; readonly id: string }\n  | { readonly op: 'add_door'; readonly door: UnifiedCanvasDoor }\n  | { readonly op: 'move_door'; readonly id: string; readonly t: number }\n  | { readonly op: 'remove_door'; readonly id: string }\n  | { readonly op: 'rotate_room'; readonly id: string; readonly angleRad: number }\n  | { readonly op: 'add_stroke'; readonly stroke: UnifiedCanvasStroke }\n  | {\n      readonly op: 'append_stroke_point';\n      readonly id: string;\n      readonly x: number;\n      readonly y: number;\n    }\n  | {\n      readonly op: 'move_stroke_point';\n      readonly id: string;\n      readonly index: number;\n      readonly x: number;\n      readonly y: number;\n    }\n  | { readonly op: 'remove_stroke'; readonly id: string }\n  | {\n      readonly op: 'set_room_points';\n      readonly id: string;\n      readonly points: readonly (readonly [number, number])[];\n    }\n  | {\n      readonly op: 'move_room_vertex';\n      readonly id: string;\n      readonly index: number;\n      readonly x: number;\n      readonly y: number;\n    }\n  | {\n      readonly op: 'replace_scene';\n      readonly rooms: readonly UnifiedCanvasRoom[];\n      readonly walls: readonly UnifiedCanvasWall[];\n      readonly objects?: readonly UnifiedCanvasObject[];\n    };"
+      "line": 42,
+      "endLine": 94,
+      "text": "export type MapEditOperation =\n  | { readonly op: 'add_object'; readonly object: UnifiedCanvasObject }\n  | { readonly op: 'move_object'; readonly id: string; readonly x: number; readonly y: number; readonly z?: number }\n  | { readonly op: 'transform_object'; readonly id: string; readonly patch: Partial<MapTransform> }\n  | { readonly op: 'remove_object'; readonly id: string }\n  | { readonly op: 'add_room'; readonly room: UnifiedCanvasRoom }\n  | { readonly op: 'move_room'; readonly id: string; readonly x: number; readonly y: number }\n  | { readonly op: 'resize_room'; readonly id: string; readonly w: number; readonly h: number }\n  | { readonly op: 'remove_room'; readonly id: string }\n  | { readonly op: 'add_wall'; readonly wall: UnifiedCanvasWall }\n  | { readonly op: 'move_wall'; readonly id: string; readonly x1: number; readonly y1: number; readonly x2: number; readonly y2: number }\n  | { readonly op: 'remove_wall'; readonly id: string }\n  | { readonly op: 'add_door'; readonly door: UnifiedCanvasDoor }\n  | { readonly op: 'move_door'; readonly id: string; readonly t: number }\n  | { readonly op: 'remove_door'; readonly id: string }\n  | { readonly op: 'rotate_room'; readonly id: string; readonly angleRad: number }\n  | { readonly op: 'add_stroke'; readonly stroke: UnifiedCanvasStroke }\n  | {\n      readonly op: 'append_stroke_point';\n      readonly id: string;\n      readonly x: number;\n      readonly y: number;\n    }\n  | {\n      readonly op: 'move_stroke_point';\n      readonly id: string;\n      readonly index: number;\n      readonly x: number;\n      readonly y: number;\n    }\n  | { readonly op: 'remove_stroke'; readonly id: string }\n  | {\n      readonly op: 'set_room_points';\n      readonly id: string;\n      readonly points: readonly (readonly [number, number])[];\n    }\n  | {\n      readonly op: 'move_room_vertex';\n      readonly id: string;\n      readonly index: number;\n      readonly x: number;\n      readonly y: number;\n    }\n  | {\n      readonly op: 'replace_scene';\n      readonly rooms: readonly UnifiedCanvasRoom[];\n      readonly walls: readonly UnifiedCanvasWall[];\n      readonly objects?: readonly UnifiedCanvasObject[];\n    }\n  | { readonly op: 'ensure_heightfield'; readonly heightfield?: AtlasHeightfield }\n  | { readonly op: 'paint_heightfield'; readonly stroke: AtlasHeightBrushStroke }\n  | { readonly op: 'clear_heightfield' }\n  | { readonly op: 'set_heightfield'; readonly heightfield: AtlasHeightfield | null };"
     },
     {
       "kind": "TypeAliasDeclaration",
@@ -1703,105 +1739,105 @@
       "kind": "TypeAliasDeclaration",
       "name": "UnifiedCanvasTool",
       "path": "src/domains/world/atlas/unified-canvas-doc.ts",
-      "line": 20,
-      "endLine": 30,
-      "text": "export type UnifiedCanvasTool =\n  | 'hand'\n  | 'select'\n  | 'brush'\n  | 'area'\n  | 'road'\n  | 'room'\n  | 'wall'\n  | 'door'\n  | 'stamp'\n  | 'erase';"
+      "line": 25,
+      "endLine": 36,
+      "text": "export type UnifiedCanvasTool =\n  | 'hand'\n  | 'select'\n  | 'brush'\n  | 'height'\n  | 'area'\n  | 'road'\n  | 'room'\n  | 'wall'\n  | 'door'\n  | 'stamp'\n  | 'erase';"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "UnifiedCanvasMaterial",
       "path": "src/domains/world/atlas/unified-canvas-doc.ts",
-      "line": 32,
-      "endLine": 39,
+      "line": 38,
+      "endLine": 45,
       "text": "export type UnifiedCanvasMaterial =\n  | 'gras'\n  | 'erde'\n  | 'sand'\n  | 'wasser'\n  | 'stein'\n  | 'holz'\n  | 'pflaster';"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "UnifiedCanvasStampType",
       "path": "src/domains/world/atlas/unified-canvas-doc.ts",
-      "line": 41,
-      "endLine": 53,
+      "line": 47,
+      "endLine": 59,
       "text": "export type UnifiedCanvasStampType =\n  | 'baum'\n  | 'tanne'\n  | 'fels'\n  | 'haus'\n  | 'turm'\n  | 'tisch'\n  | 'stuhl'\n  | 'fass'\n  | 'bett'\n  | 'kiste'\n  | 'lampe'\n  | 'teppich';"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "UnifiedCanvasLayerId",
       "path": "src/domains/world/atlas/unified-canvas-doc.ts",
-      "line": 55,
-      "endLine": 63,
+      "line": 61,
+      "endLine": 69,
       "text": "export type UnifiedCanvasLayerId =\n  | 'terrain'\n  | 'roads'\n  | 'region'\n  | 'city'\n  | 'interior'\n  | 'drawings'\n  | 'objects'\n  | 'grid';"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "UnifiedCanvasStroke",
       "path": "src/domains/world/atlas/unified-canvas-doc.ts",
-      "line": 65,
-      "endLine": 70,
+      "line": 71,
+      "endLine": 76,
       "text": "export type UnifiedCanvasStroke = {\n  readonly id: string;\n  readonly material: UnifiedCanvasMaterial;\n  readonly width: number;\n  readonly points: readonly (readonly [number, number])[];\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "UnifiedCanvasObject",
       "path": "src/domains/world/atlas/unified-canvas-doc.ts",
-      "line": 72,
-      "endLine": 85,
+      "line": 78,
+      "endLine": 91,
       "text": "export type UnifiedCanvasObject = {\n  readonly id: string;\n  readonly type: UnifiedCanvasStampType;\n  readonly x: number;\n  readonly y: number;\n  /** Optional elevation for 3D/2.5D views (world units). */\n  readonly z?: number;\n  readonly size: number;\n  readonly angle?: number;\n  /** Optional extruded height for 3D building/prop representation. */\n  readonly height?: number;\n  /** GM-only; stripped from party/player projections. */\n  readonly secret?: boolean;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "UnifiedCanvasRoom",
       "path": "src/domains/world/atlas/unified-canvas-doc.ts",
-      "line": 87,
-      "endLine": 101,
+      "line": 93,
+      "endLine": 107,
       "text": "export type UnifiedCanvasRoom = {\n  readonly id: string;\n  readonly x: number;\n  readonly y: number;\n  readonly w: number;\n  readonly h: number;\n  readonly material: UnifiedCanvasMaterial;\n  /**\n   * Optional closed coast / area polygon (≥3). When set, fill uses the polygon;\n   * `x/y/w/h` is the axis-aligned bounding box (compat + LOD).\n   */\n  readonly points?: readonly (readonly [number, number])[];\n  /** GM-only; stripped from party/player projections. */\n  readonly secret?: boolean;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "UnifiedCanvasWall",
       "path": "src/domains/world/atlas/unified-canvas-doc.ts",
-      "line": 103,
-      "endLine": 110,
+      "line": 109,
+      "endLine": 116,
       "text": "export type UnifiedCanvasWall = {\n  readonly id: string;\n  readonly x1: number;\n  readonly y1: number;\n  readonly x2: number;\n  readonly y2: number;\n  readonly width: number;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "UnifiedCanvasDoor",
       "path": "src/domains/world/atlas/unified-canvas-doc.ts",
-      "line": 116,
-      "endLine": 121,
+      "line": 122,
+      "endLine": 127,
       "text": "export type UnifiedCanvasDoor = {\n  readonly id: string;\n  readonly wallId: string;\n  readonly t: number;\n  readonly width: number;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "UnifiedCanvasLayersVisible",
       "path": "src/domains/world/atlas/unified-canvas-doc.ts",
-      "line": 123,
-      "endLine": 123,
+      "line": 129,
+      "endLine": 129,
       "text": "export type UnifiedCanvasLayersVisible = Readonly<Record<UnifiedCanvasLayerId, boolean>>;"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "UnifiedCanvasLayerLocks",
       "path": "src/domains/world/atlas/unified-canvas-doc.ts",
-      "line": 126,
-      "endLine": 126,
+      "line": 132,
+      "endLine": 132,
       "text": "export type UnifiedCanvasLayerLocks = Readonly<Partial<Record<UnifiedCanvasLayerId, boolean>>>;"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "UnifiedCanvasDoc",
       "path": "src/domains/world/atlas/unified-canvas-doc.ts",
-      "line": 128,
-      "endLine": 140,
-      "text": "export type UnifiedCanvasDoc = {\n  readonly format: typeof UNIFIED_CANVAS_FORMAT;\n  readonly layers: UnifiedCanvasLayersVisible;\n  /** Optional; parsers default to {}. Locked layers reject edit hits. */\n  readonly layerLocks?: UnifiedCanvasLayerLocks;\n  readonly strokes: readonly UnifiedCanvasStroke[];\n  readonly objects: readonly UnifiedCanvasObject[];\n  readonly rooms: readonly UnifiedCanvasRoom[];\n  readonly walls: readonly UnifiedCanvasWall[];\n  /** Optional for legacy docs; parsers default to []. */\n  readonly doors?: readonly UnifiedCanvasDoor[];\n  readonly demoSeed?: boolean;\n};"
+      "line": 134,
+      "endLine": 151,
+      "text": "export type UnifiedCanvasDoc = {\n  readonly format: typeof UNIFIED_CANVAS_FORMAT;\n  readonly layers: UnifiedCanvasLayersVisible;\n  /** Optional; parsers default to {}. Locked layers reject edit hits. */\n  readonly layerLocks?: UnifiedCanvasLayerLocks;\n  readonly strokes: readonly UnifiedCanvasStroke[];\n  readonly objects: readonly UnifiedCanvasObject[];\n  readonly rooms: readonly UnifiedCanvasRoom[];\n  readonly walls: readonly UnifiedCanvasWall[];\n  /** Optional for legacy docs; parsers default to []. */\n  readonly doors?: readonly UnifiedCanvasDoor[];\n  /**\n   * Optional heightfield chunk (ATL2-D04). Absent on legacy maps — parsers keep\n   * polygons/strokes untouched when missing or invalid.\n   */\n  readonly heightfield?: AtlasHeightfield | null;\n  readonly demoSeed?: boolean;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "WebglRuntimeState",
       "path": "src/domains/world/atlas/webgl-runtime-bridge.ts",
-      "line": 27,
-      "endLine": 36,
-      "text": "export type WebglRuntimeState = {\n  readonly props: readonly unknown[];\n  readonly strokes: readonly unknown[];\n  readonly walls: readonly unknown[];\n  readonly rooms?: readonly unknown[];\n  /** ATL2-D02 — door openings projected from UnifiedCanvasDoc (ephemeral seed only). */\n  readonly doors?: readonly unknown[];\n  readonly layers: Readonly<Record<string, unknown>>;\n  readonly [key: string]: unknown;\n};"
+      "line": 32,
+      "endLine": 43,
+      "text": "export type WebglRuntimeState = {\n  readonly props: readonly unknown[];\n  readonly strokes: readonly unknown[];\n  readonly walls: readonly unknown[];\n  readonly rooms?: readonly unknown[];\n  /** ATL2-D02 — door openings projected from UnifiedCanvasDoc (ephemeral seed only). */\n  readonly doors?: readonly unknown[];\n  /** ATL2-D04 — heightfield chunk mirrored from UnifiedCanvasDoc (ephemeral seed). */\n  readonly heightfield?: AtlasHeightfield | null;\n  readonly layers: Readonly<Record<string, unknown>>;\n  readonly [key: string]: unknown;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",

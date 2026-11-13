@@ -37560,11 +37560,15 @@
           },
           {
             "path": "src/domains/world/atlas/atlas-canonical-features.ts",
-            "sha256": "c1bdcbaf78d8db00dd897828214b69f0778c41b133169434faad2b681c6d2d09"
+            "sha256": "a7e2b9471c960d3839e39f93fe1f6b332f5822620ef589ba4e1a0805dda6c3bd"
           },
           {
             "path": "src/domains/world/atlas/atlas-edit-history.ts",
             "sha256": "13a91efde301ec766d3b0f183affcd794abba9f4c4872c00549e9f631947e294"
+          },
+          {
+            "path": "src/domains/world/atlas/atlas-heightfield.ts",
+            "sha256": "1fafa49c651ac14ba5ae1e9a226b38ffeea636935b7e486daa1cdd41090b71fb"
           },
           {
             "path": "src/domains/world/atlas/atlas-map-doc-adapter.ts",
@@ -37584,7 +37588,7 @@
           },
           {
             "path": "src/domains/world/atlas/atlas-product-geometry-plan.ts",
-            "sha256": "43de1e1d02d185b20dd184d75800e7875a24a8f944c08c48e65ecc2c9a961252"
+            "sha256": "de94ca0b6c23374ae5aed057fa756539285295574df9925598a0ed029a2a3ce9"
           },
           {
             "path": "src/domains/world/atlas/atlas-prototype-lod.ts",
@@ -37604,7 +37608,7 @@
           },
           {
             "path": "src/domains/world/atlas/atlas-tool-registry.ts",
-            "sha256": "e70f27b21aa744a40a7e30fd65fe6acdca4497e6c07be960dd59aacca4f376e0"
+            "sha256": "be0492bd7d71f1dafa260c6a1a75165f8c587bd1f55d3178f96fbd67ac5988af"
           },
           {
             "path": "src/domains/world/atlas/atlas-webgl-write-retire.ts",
@@ -37636,11 +37640,11 @@
           },
           {
             "path": "src/domains/world/atlas/index.ts",
-            "sha256": "4312f3b90b29847232025db2d04305db13b852c5a39364f87cabfaa4bf020069"
+            "sha256": "8d986995169707562d69aa5b92f0e818f5e685d2b7588649a497798bda4997d0"
           },
           {
             "path": "src/domains/world/atlas/map-edit-ops.ts",
-            "sha256": "4b5fce37520768ef5c2184a5a385c20d6f57dd01e5bc85dcb8aa8b47cfa614e0"
+            "sha256": "3440965957e4212748d109f74ce202fa7a320840d5c9f1347b0457347c797b95"
           },
           {
             "path": "src/domains/world/atlas/map-frame.ts",
@@ -37648,7 +37652,7 @@
           },
           {
             "path": "src/domains/world/atlas/unified-canvas-doc.ts",
-            "sha256": "e65de4161440313a3190cc1fb96c1fa27ba76dfba2ab53ddd94efdf58de44474"
+            "sha256": "59fa68591c71d2f0bba3185fffb4adecf8d325464df4701309af76a2a99fbd82"
           },
           {
             "path": "src/domains/world/atlas/validate-world-atlas.ts",
@@ -37656,7 +37660,7 @@
           },
           {
             "path": "src/domains/world/atlas/webgl-runtime-bridge.ts",
-            "sha256": "0ded35da70fd3dc5eae08f22297564acce826a5b723fb339bfd7b7964a6e3b31"
+            "sha256": "4d7acacb2a3ded8df55b0d333bb35d51d2b291f8e3849b24577a44f87785434d"
           },
           {
             "path": "src/domains/world/atlas/world-atlas.types.ts",
@@ -37848,7 +37852,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-world.json",
-      "sourceContractSha256": "04037d71e96e3955a03b2495fb63b6ca9ee34bf57738070c83b9c810eeb245e1",
+      "sourceContractSha256": "4c217d4b8c4b6cf72a09ce2c829cec33dd37da39e5ce2ebf37c148d959a23039",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],

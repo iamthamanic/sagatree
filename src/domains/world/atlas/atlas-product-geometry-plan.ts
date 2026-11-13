@@ -7,6 +7,7 @@
  * rooms/props/building footprints. Does not duplicate persisted geometry.
  */
 
+import { heightfieldContentFingerprint } from './atlas-heightfield';
 import { triangulatePolygon } from './canvas-polygon';
 import { wallPointAt, type UnifiedCanvasDoc, type UnifiedCanvasDoor, type UnifiedCanvasWall } from './unified-canvas-doc';
 import { classifyUnifiedCanvasDoc, type AtlasCanonicalFeatureKind } from './atlas-canonical-features';
@@ -227,6 +228,7 @@ export function buildAtlasProductGeometryPlan(
     `w${doc.walls.length}`,
     `d${(doc.doors ?? []).length}`,
     `o${doc.objects.length}`,
+    heightfieldContentFingerprint(doc.heightfield),
     ...primitives.map((p) => {
       if (p.kind === 'door') {
         return `door:${p.id}:${p.wallId}:${p.t.toFixed(4)}:${p.width}`;

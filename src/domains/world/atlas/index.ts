@@ -242,6 +242,34 @@ export {
 } from './atlas-product-camera';
 
 export {
+  ATLAS_HEIGHTFIELD_DEFAULT_CELL,
+  ATLAS_HEIGHTFIELD_DEFAULT_SIZE,
+  ATLAS_HEIGHTFIELD_DEFAULT_WATER,
+  ATLAS_HEIGHTFIELD_FORMAT,
+  ATLAS_HEIGHTFIELD_MAP_EXTENT,
+  ATLAS_HEIGHTFIELD_MAX_CELLS,
+  ATLAS_HEIGHTFIELD_VERSION,
+  ATLAS_HEIGHT_MAX,
+  ATLAS_HEIGHT_MIN,
+  applyHeightBrush,
+  applyShoreRule,
+  clearAtlasHeightfield,
+  emptyAtlasHeightfield,
+  heightfieldContentFingerprint,
+  heightfieldIndex,
+  heightfieldMeshTriangles,
+  isWaterCell,
+  parseAtlasHeightfield,
+  sampleHeightfield,
+  serializeAtlasHeightfield,
+  snapshotAtlasHeightfield,
+  type AtlasHeightBrushMode,
+  type AtlasHeightBrushStroke,
+  type AtlasHeightfield,
+  type AtlasHeightfieldAssetRef,
+} from './atlas-heightfield';
+
+export {
   WEBGL_GEOMETRY_BACKUP_META_KEY,
   canvasDocHasGeometry,
   geometryFreeWebglRuntime,

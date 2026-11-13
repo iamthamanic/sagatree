@@ -6,6 +6,15 @@
  */
 
 import {
+  applyHeightBrush,
+  clearAtlasHeightfield,
+  emptyAtlasHeightfield,
+  parseAtlasHeightfield,
+  serializeAtlasHeightfield,
+  type AtlasHeightBrushStroke,
+  type AtlasHeightfield,
+} from './atlas-heightfield';
+import {
   bboxFromPoints,
   pointInPolygon,
   translatePolygon,
@@ -78,7 +87,11 @@ export type MapEditOperation =
       readonly rooms: readonly UnifiedCanvasRoom[];
       readonly walls: readonly UnifiedCanvasWall[];
       readonly objects?: readonly UnifiedCanvasObject[];
-    };
+    }
+  | { readonly op: 'ensure_heightfield'; readonly heightfield?: AtlasHeightfield }
+  | { readonly op: 'paint_heightfield'; readonly stroke: AtlasHeightBrushStroke }
+  | { readonly op: 'clear_heightfield' }
+  | { readonly op: 'set_heightfield'; readonly heightfield: AtlasHeightfield | null };
 
 /** UI brush radius (pixels-ish) clamped for world strokes (ATL2-C01). */
 export const ATLAS_BRUSH_UI_MIN = 8;
@@ -306,6 +319,30 @@ export function applyMapEdit(doc: UnifiedCanvasDoc, edit: MapEditOperation): Uni
         doors: [],
         demoSeed: false,
       };
+    case 'ensure_heightfield': {
+      if (doc.heightfield) return doc;
+      const hf = edit.heightfield
+        ? parseAtlasHeightfield(edit.heightfield) ?? emptyAtlasHeightfield()
+        : emptyAtlasHeightfield();
+      return { ...doc, heightfield: hf, demoSeed: false };
+    }
+    case 'paint_heightfield': {
+      const base = doc.heightfield ?? emptyAtlasHeightfield();
+      const next = applyHeightBrush(base, edit.stroke);
+      return { ...doc, heightfield: next, demoSeed: false };
+    }
+    case 'clear_heightfield': {
+      if (!doc.heightfield) return doc;
+      return { ...doc, heightfield: clearAtlasHeightfield(doc.heightfield), demoSeed: false };
+    }
+    case 'set_heightfield': {
+      if (edit.heightfield == null) {
+        return { ...doc, heightfield: null, demoSeed: false };
+      }
+      const parsed = parseAtlasHeightfield(serializeAtlasHeightfield(edit.heightfield));
+      if (!parsed) return doc;
+      return { ...doc, heightfield: parsed, demoSeed: false };
+    }
     default:
       return doc;
   }
