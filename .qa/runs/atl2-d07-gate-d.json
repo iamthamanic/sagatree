@@ -1,0 +1,116 @@
+{
+  "gate": "atl2-d07",
+  "issue": 1218,
+  "head": "a260606ed0854c841431eae3c09dbb0ebae06694",
+  "stack": [
+    {
+      "pr": 1253,
+      "issue": 1212,
+      "sha": "1ef4ac7cc33e1960325c1e2cea5b2a4b8a8d4873",
+      "title": "ATL2-D01 renderer decision",
+      "present": true
+    },
+    {
+      "pr": 1254,
+      "issue": 1213,
+      "sha": "79737863efc82ac57e79f93fbc4c5b19a6eea753",
+      "title": "ATL2-D02 canonical 3D geometry",
+      "present": true
+    },
+    {
+      "pr": 1255,
+      "issue": 1214,
+      "sha": "bce74cab28e775dc3f99a5c73b6aa4a8e18ac6ea",
+      "title": "ATL2-D03 product camera modes",
+      "present": true
+    },
+    {
+      "pr": 1256,
+      "issue": 1215,
+      "sha": "46288e2fafca2b88d1e0a3dd21b534ab79795209",
+      "title": "ATL2-D04 heightfield terrain",
+      "present": true
+    },
+    {
+      "pr": 1257,
+      "issue": 1216,
+      "sha": "b6542cfa7f067e299d12558c16411b34c25d60f6",
+      "title": "ATL2-D05 terrain mesh / LOD",
+      "present": true
+    },
+    {
+      "pr": 1258,
+      "issue": 1217,
+      "sha": "a260606ed0854c841431eae3c09dbb0ebae06694",
+      "title": "ATL2-D06 diorama look",
+      "present": true
+    }
+  ],
+  "productTarget": "custom-webgl-prototype-runtime",
+  "host": {
+    "ownerMapCount": 6,
+    "ownerMapTitles": [
+      "Dornhain",
+      "Kontinent Westmark",
+      "Krypta unter dem Hügel",
+      "Land Westmark",
+      "Taverne Zum Flüstern",
+      "Welt"
+    ],
+    "worldPublicId": "WO-4F5RE",
+    "persistReload": true,
+    "heightfieldReload": true,
+    "conflict": true,
+    "strangerDeny": true,
+    "outsiderStatus": 403
+  },
+  "sollIst": [
+    {
+      "category": "D01–D06 PR stack on main",
+      "soll": "squash SHAs #1253–#1258 are ancestors of HEAD",
+      "ist": "pass-git"
+    },
+    {
+      "category": "Product 3D target lock",
+      "soll": "custom-webgl-prototype-runtime; Native3d only; no SpatialViewport chrome",
+      "ist": "pass-domain"
+    },
+    {
+      "category": "Camera modes",
+      "soll": "ortho / diorama / perspective cycle + clamp",
+      "ist": "pass-domain"
+    },
+    {
+      "category": "Terrain + diorama geometry",
+      "soll": "heightfield mesh plan + Golden diorama batches from Saved-map canvas",
+      "ist": "pass-domain"
+    },
+    {
+      "category": "2D↔3D delete parity (canonical doc)",
+      "soll": "remove_object clears SoT; bridge sync does not invent ghosts",
+      "ist": "pass-domain"
+    },
+    {
+      "category": "Hierarchy travel (World→Krypta)",
+      "soll": "ensure-starter yields ≥6 Golden map titles",
+      "ist": "pass-host"
+    },
+    {
+      "category": "Persist / Reload (canvas + heightfield)",
+      "soll": "unifiedCanvas+heightfield survive upsert + GET",
+      "ist": "pass-host"
+    },
+    {
+      "category": "Negative policy",
+      "soll": "stale rev 40001; stranger 42501",
+      "ist": "pass-host"
+    }
+  ],
+  "verdict": "CLEAR",
+  "residuals": [
+    {
+      "severity": "Low",
+      "note": "Interactive GPU FPS soak on device matrix deferred — structural Lite3D + presets locked in D01; product soak continues in ops."
+    }
+  ]
+}
