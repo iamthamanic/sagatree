@@ -212,6 +212,14 @@ export {
 } from './webgl-runtime-bridge';
 
 export {
+  buildAtlasProductGeometryPlan,
+  planDoorSeeds,
+  type AtlasProductGeometryKind,
+  type AtlasProductGeometryPlan,
+  type AtlasProductGeometryPrimitive,
+} from './atlas-product-geometry-plan';
+
+export {
   WEBGL_GEOMETRY_BACKUP_META_KEY,
   canvasDocHasGeometry,
   geometryFreeWebglRuntime,

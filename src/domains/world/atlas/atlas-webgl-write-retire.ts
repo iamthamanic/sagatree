@@ -30,6 +30,7 @@ export type WebglGeometryBackup = {
   readonly walls: readonly unknown[];
   readonly strokes: readonly unknown[];
   readonly rooms: readonly unknown[];
+  readonly doors?: readonly unknown[];
   readonly layers: Readonly<Record<string, unknown>>;
 };
 
@@ -41,7 +42,8 @@ export function webglRuntimeHasGeometry(
     runtime.props.length > 0 ||
     runtime.walls.length > 0 ||
     runtime.strokes.length > 0 ||
-    (runtime.rooms?.length ?? 0) > 0
+    (runtime.rooms?.length ?? 0) > 0 ||
+    (runtime.doors?.length ?? 0) > 0
   );
 }
 
@@ -51,11 +53,12 @@ export function canvasDocHasGeometry(doc: UnifiedCanvasDoc | null | undefined): 
     doc.objects.length > 0 ||
     doc.walls.length > 0 ||
     doc.strokes.length > 0 ||
-    doc.rooms.length > 0
+    doc.rooms.length > 0 ||
+    (doc.doors?.length ?? 0) > 0
   );
 }
 
-/** Keep layers / non-geometry extras; clear props/walls/strokes/rooms. */
+/** Keep layers / non-geometry extras; clear props/walls/strokes/rooms/doors. */
 export function geometryFreeWebglRuntime(runtime: WebglRuntimeState): WebglRuntimeState {
   return {
     ...runtime,
@@ -63,6 +66,7 @@ export function geometryFreeWebglRuntime(runtime: WebglRuntimeState): WebglRunti
     walls: [],
     strokes: [],
     rooms: [],
+    doors: [],
   };
 }
 
@@ -87,6 +91,7 @@ export function parseWebglGeometryBackup(raw: unknown): WebglGeometryBackup | nu
     walls: raw.walls,
     strokes: raw.strokes,
     rooms: Array.isArray(raw.rooms) ? raw.rooms : [],
+    ...(Array.isArray(raw.doors) ? { doors: raw.doors } : {}),
     layers: raw.layers,
   };
 }
@@ -101,6 +106,7 @@ function captureGeometryBackup(
     walls: runtime.walls,
     strokes: runtime.strokes,
     rooms: runtime.rooms ?? [],
+    doors: runtime.doors ?? [],
     layers: runtime.layers,
   };
 }
@@ -194,6 +200,7 @@ export function persistableWebglSidecar(
     walls: [],
     strokes: [],
     rooms: [],
+    doors: [],
     layers: freedCurrent.layers ?? freedPrior.layers,
   };
 }
@@ -208,11 +215,19 @@ export function restoreWebglGeometryBackup(
   const current = extractWebglRuntimeFromGeneratorMeta(base);
   // Merge geometry into existing extras (placeNames/worlds) — do not replace wholesale.
   base[WEBGL_RUNTIME_META_KEY] = {
-    ...(current ?? { props: [], walls: [], strokes: [], rooms: [], layers: backup.layers }),
+    ...(current ?? {
+      props: [],
+      walls: [],
+      strokes: [],
+      rooms: [],
+      doors: [],
+      layers: backup.layers,
+    }),
     props: backup.props,
     walls: backup.walls,
     strokes: backup.strokes,
     rooms: backup.rooms,
+    doors: backup.doors ?? [],
     layers: backup.layers,
   };
   delete base[WEBGL_GEOMETRY_BACKUP_META_KEY];

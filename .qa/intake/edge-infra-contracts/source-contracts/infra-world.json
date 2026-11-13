@@ -206,6 +206,10 @@
       "sha256": "84ab0edbd0b525c95b5db85afeb683d335351884ba6c612e94f327719a6b60ca"
     },
     {
+      "path": "src/domains/world/atlas/atlas-product-geometry-plan.ts",
+      "sha256": "43de1e1d02d185b20dd184d75800e7875a24a8f944c08c48e65ecc2c9a961252"
+    },
+    {
       "path": "src/domains/world/atlas/atlas-prototype-lod.ts",
       "sha256": "2fb7c706ad2210f7a3f389f22564f60e3f22aa615ec49af49695e388ae582256"
     },
@@ -227,7 +231,7 @@
     },
     {
       "path": "src/domains/world/atlas/atlas-webgl-write-retire.ts",
-      "sha256": "c769b6e2d84900aeee7bbbf44ced3f672b0d3f83353cf9e45d87dc6cec239a50"
+      "sha256": "baf40e97aaa9c74c873f3919e72b4d9049e8c7781566ed58ce52ccf2f168ce69"
     },
     {
       "path": "src/domains/world/atlas/atlas-workstation-adaptive.ts",
@@ -255,7 +259,7 @@
     },
     {
       "path": "src/domains/world/atlas/index.ts",
-      "sha256": "629774958d97fe96d68c37a2ffd27a8052b350847b5ff57bea616b9d6cc7e538"
+      "sha256": "9d82aa97df36218da934106bd7a6120df8f7165402caaf1b42c4127d962cab11"
     },
     {
       "path": "src/domains/world/atlas/map-edit-ops.ts",
@@ -275,7 +279,7 @@
     },
     {
       "path": "src/domains/world/atlas/webgl-runtime-bridge.ts",
-      "sha256": "8f40a60b8f18d0c1a649d6d14604032fe5bfd4bb3594d3607bb58b8f1c8564ca"
+      "sha256": "0ded35da70fd3dc5eae08f22297564acce826a5b723fb339bfd7b7964a6e3b31"
     },
     {
       "path": "src/domains/world/atlas/world-atlas.types.ts",
@@ -1301,6 +1305,30 @@
     },
     {
       "kind": "TypeAliasDeclaration",
+      "name": "AtlasProductGeometryKind",
+      "path": "src/domains/world/atlas/atlas-product-geometry-plan.ts",
+      "line": 14,
+      "endLine": 21,
+      "text": "export type AtlasProductGeometryKind =\n  | 'area'\n  | 'path'\n  | 'wall'\n  | 'door'\n  | 'room'\n  | 'prop'\n  | 'building_footprint';"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AtlasProductGeometryPrimitive",
+      "path": "src/domains/world/atlas/atlas-product-geometry-plan.ts",
+      "line": 23,
+      "endLine": 69,
+      "text": "export type AtlasProductGeometryPrimitive =\n  | {\n      readonly kind: 'area' | 'room';\n      readonly id: string;\n      readonly canonicalKind: AtlasCanonicalFeatureKind | null;\n      readonly triangles: readonly (readonly [number, number, number])[];\n      readonly points: readonly (readonly [number, number])[];\n      readonly elevation: number;\n    }\n  | {\n      readonly kind: 'path';\n      readonly id: string;\n      readonly canonicalKind: AtlasCanonicalFeatureKind | null;\n      readonly points: readonly (readonly [number, number])[];\n      readonly width: number;\n    }\n  | {\n      readonly kind: 'wall';\n      readonly id: string;\n      readonly canonicalKind: 'wall';\n      readonly start: readonly [number, number];\n      readonly end: readonly [number, number];\n      readonly width: number;\n      readonly doorIds: readonly string[];\n    }\n  | {\n      readonly kind: 'door';\n      readonly id: string;\n      readonly canonicalKind: 'door';\n      readonly wallId: string;\n      readonly t: number;\n      readonly width: number;\n      readonly position: readonly [number, number];\n      readonly tangent: readonly [number, number];\n      readonly normal: readonly [number, number];\n    }\n  | {\n      readonly kind: 'prop' | 'building_footprint';\n      readonly id: string;\n      readonly canonicalKind: AtlasCanonicalFeatureKind | null;\n      readonly x: number;\n      readonly y: number;\n      readonly size: number;\n      readonly elevation: number;\n      readonly height: number;\n      readonly stamp: string;\n    };"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AtlasProductGeometryPlan",
+      "path": "src/domains/world/atlas/atlas-product-geometry-plan.ts",
+      "line": 71,
+      "endLine": 77,
+      "text": "export type AtlasProductGeometryPlan = {\n  readonly format: 'atl2-product-geometry-plan-v1';\n  readonly primitives: readonly AtlasProductGeometryPrimitive[];\n  readonly counts: Readonly<Record<AtlasProductGeometryKind, number>>;\n  /** Stable fingerprint for runtime scene-diff (skip rebuild when unchanged). */\n  readonly contentFingerprint: string;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
       "name": "AtlasPrototypeLevelId",
       "path": "src/domains/world/atlas/atlas-prototype-lod.ts",
       "line": 13,
@@ -1440,8 +1468,8 @@
       "name": "WebglGeometryBackup",
       "path": "src/domains/world/atlas/atlas-webgl-write-retire.ts",
       "line": 27,
-      "endLine": 34,
-      "text": "export type WebglGeometryBackup = {\n  readonly capturedAt: string;\n  readonly props: readonly unknown[];\n  readonly walls: readonly unknown[];\n  readonly strokes: readonly unknown[];\n  readonly rooms: readonly unknown[];\n  readonly layers: Readonly<Record<string, unknown>>;\n};"
+      "endLine": 35,
+      "text": "export type WebglGeometryBackup = {\n  readonly capturedAt: string;\n  readonly props: readonly unknown[];\n  readonly walls: readonly unknown[];\n  readonly strokes: readonly unknown[];\n  readonly rooms: readonly unknown[];\n  readonly doors?: readonly unknown[];\n  readonly layers: Readonly<Record<string, unknown>>;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
@@ -1751,9 +1779,9 @@
       "kind": "TypeAliasDeclaration",
       "name": "WebglRuntimeState",
       "path": "src/domains/world/atlas/webgl-runtime-bridge.ts",
-      "line": 25,
-      "endLine": 32,
-      "text": "export type WebglRuntimeState = {\n  readonly props: readonly unknown[];\n  readonly strokes: readonly unknown[];\n  readonly walls: readonly unknown[];\n  readonly rooms?: readonly unknown[];\n  readonly layers: Readonly<Record<string, unknown>>;\n  readonly [key: string]: unknown;\n};"
+      "line": 27,
+      "endLine": 36,
+      "text": "export type WebglRuntimeState = {\n  readonly props: readonly unknown[];\n  readonly strokes: readonly unknown[];\n  readonly walls: readonly unknown[];\n  readonly rooms?: readonly unknown[];\n  /** ATL2-D02 — door openings projected from UnifiedCanvasDoc (ephemeral seed only). */\n  readonly doors?: readonly unknown[];\n  readonly layers: Readonly<Record<string, unknown>>;\n  readonly [key: string]: unknown;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",

@@ -467,7 +467,7 @@ export function mountAtlasPrototype3d(host, options = {}) {
     const clamp=(v,a,b)=>Math.max(a,Math.min(b,v)),smooth=t=>t*t*(3-2*t),lerp=(a,b,t)=>a+(b-a)*t;
     const WORLD_SUB_DEFAULT='Welt';
     const SEED_WORLD_ID='world';
-    const defaultState=()=>({context:'welt',worldLabel:'Welt',worldSub:WORLD_SUB_DEFAULT,activeWorldId:SEED_WORLD_ID,worlds:[{id:SEED_WORLD_ID,label:'Welt',empty:false}],placeHidden:{},placeNames:JSON.parse(JSON.stringify(PLACE_NAME_DEFAULTS)),mapLabelPos:{},layers:{world:true,region:true,city:true,dungeon:true,stamps:true,grid:false},seed:42817,roomCount:22,theme:'ancient',props:[],strokes:[],walls:[],rooms:[]});
+    const defaultState=()=>({context:'welt',worldLabel:'Welt',worldSub:WORLD_SUB_DEFAULT,activeWorldId:SEED_WORLD_ID,worlds:[{id:SEED_WORLD_ID,label:'Welt',empty:false}],placeHidden:{},placeNames:JSON.parse(JSON.stringify(PLACE_NAME_DEFAULTS)),mapLabelPos:{},layers:{world:true,region:true,city:true,dungeon:true,stamps:true,grid:false},seed:42817,roomCount:22,theme:'ancient',props:[],strokes:[],walls:[],rooms:[],doors:[]});
     let state=defaultState();
     if(controlled&&seedState){
       const s=seedState;
@@ -806,14 +806,75 @@ export function mountAtlasPrototype3d(host, options = {}) {
         b.quad([px+nx,y,pz+nz],[x+nx,y,z+nz],[x-nx,y,z-nz],[px-nx,y,pz-nz],color,up);
       }
     }
-    /** Wall thickness is the doc width; height depends on the map scale. */
-    function productWallInto(b,wall,baseY,height){
-      const a=Array.isArray(wall.start)?wall.start:[0,0],e=Array.isArray(wall.end)?wall.end:[0,0],dx=e[0]-a[0],dz=e[1]-a[1],length=Math.hypot(dx,dz);if(length<.02)return;
-      const thick=Math.max(.3,Number(wall.width)||height*.15),ux=dx/length,uz=dz/length,vx=-uz*thick/2,vz=ux*thick/2;
-      const c=[[a[0]-vx,a[1]-vz],[e[0]-vx,e[1]-vz],[e[0]+vx,e[1]+vz],[a[0]+vx,a[1]+vz]],bot=c.map(v=>[v[0],baseY,v[1]]),top=c.map(v=>[v[0],baseY+height,v[1]]);
+    /** Emit one solid wall segment (no door carve). */
+    function productWallSegmentInto(b,start,end,thick,baseY,height){
+      const dx=end[0]-start[0],dz=end[1]-start[1],length=Math.hypot(dx,dz);if(length<.02)return;
+      const ux=dx/length,uz=dz/length,vx=-uz*thick/2,vz=ux*thick/2;
+      const c=[[start[0]-vx,start[1]-vz],[end[0]-vx,end[1]-vz],[end[0]+vx,end[1]+vz],[start[0]+vx,start[1]+vz]];
+      const bot=c.map(v=>[v[0],baseY,v[1]]),top=c.map(v=>[v[0],baseY+height,v[1]]);
       b.quad(top[0],top[1],top[2],top[3],'#b4b6aa');
       for(let i=0;i<4;i++)b.quad(bot[i],bot[(i+1)%4],top[(i+1)%4],top[i],'#6f6a63');
     }
+    /**
+     * Wall thickness is the doc width; height depends on the map scale.
+     * ATL2-D02: carve door openings (parametric t ± half door width) instead of a sealed prism.
+     */
+    function productWallInto(b,wall,baseY,height){
+      const a=Array.isArray(wall.start)?wall.start:[0,0],e=Array.isArray(wall.end)?wall.end:[0,0],dx=e[0]-a[0],dz=e[1]-a[1],length=Math.hypot(dx,dz);if(length<.02)return;
+      const thick=Math.max(.3,Number(wall.width)||height*.15);
+      const doors=(Array.isArray(state.doors)?state.doors:[]).filter(d=>d&&d.wallId===wall.id);
+      if(!doors.length){productWallSegmentInto(b,a,e,thick,baseY,height);return;}
+      const gaps=doors.map(d=>{
+        const w=Math.max(.4,Number(d.width)||1.2);
+        const halfT=Math.min(0.49,(w/2)/length);
+        const t=Math.min(1,Math.max(0,Number(d.t)||0.5));
+        return [Math.max(0,t-halfT),Math.min(1,t+halfT)];
+      }).sort((p,q)=>p[0]-q[0]);
+      const merged=[];
+      for(const g of gaps){const last=merged[merged.length-1];if(!last||g[0]>last[1]+1e-4)merged.push([g[0],g[1]]);else last[1]=Math.max(last[1],g[1]);}
+      let cursor=0;
+      for(const [g0,g1] of merged){
+        if(g0-cursor>1e-3)productWallSegmentInto(b,[a[0]+dx*cursor,a[1]+dz*cursor],[a[0]+dx*g0,a[1]+dz*g0],thick,baseY,height);
+        cursor=g1;
+      }
+      if(1-cursor>1e-3)productWallSegmentInto(b,[a[0]+dx*cursor,a[1]+dz*cursor],e,thick,baseY,height);
+    }
+    /** ATL2-D02 — open doorway: jambs + lintel only (opening carved from wall). */
+    function productDoorInto(b,door,baseY,wallHeight){
+      const x=Number(door.x),z=Number(door.z);if(!Number.isFinite(x)||!Number.isFinite(z))return;
+      const width=Math.max(.4,Number(door.width)||1.2),openH=Math.max(1.2,wallHeight*0.82),lintelH=Math.max(.25,wallHeight-openH);
+      let tx=Number(door.tx),tz=Number(door.tz),nx=Number(door.nx),nz=Number(door.nz);
+      if(!Number.isFinite(tx)||!Number.isFinite(tz)||Math.hypot(tx,tz)<1e-6){tx=1;tz=0;}
+      const tlen=Math.hypot(tx,tz)||1;tx/=tlen;tz/=tlen;
+      if(!Number.isFinite(nx)||!Number.isFinite(nz)||Math.hypot(nx,nz)<1e-6){nx=-tz;nz=tx;}
+      const nlen=Math.hypot(nx,nz)||1;nx/=nlen;nz/=nlen;
+      const half=width/2,jamb=Math.max(.18,width*.08),thick=Math.max(.25,width*.12);
+      for(const side of[-1,1]){
+        const cx=x+tx*side*(half-jamb/2),cz=z+tz*side*(half-jamb/2);
+        productWallSegmentInto(b,[cx-tx*jamb/2,cz-tz*jamb/2],[cx+tx*jamb/2,cz+tz*jamb/2],thick*2,baseY,openH);
+      }
+      /* lintel above the carved opening */
+      const ly=baseY+openH;
+      const c=[
+        [x-tx*half-nx*thick,z-tz*half-nz*thick],
+        [x+tx*half-nx*thick,z+tz*half-nz*thick],
+        [x+tx*half+nx*thick,z+tz*half+nz*thick],
+        [x-tx*half+nx*thick,z-tz*half+nz*thick],
+      ];
+      const bot=c.map(v=>[v[0],ly,v[1]]),top=c.map(v=>[v[0],ly+lintelH,v[1]]);
+      b.quad(top[0],top[1],top[2],top[3],'#a8883a');
+      for(let i=0;i<4;i++)b.quad(bot[i],bot[(i+1)%4],top[(i+1)%4],top[i],'#8b6914');
+    }
+    function productGeometryFingerprint(){
+      const rooms=Array.isArray(state.rooms)?state.rooms:[],strokes=Array.isArray(state.strokes)?state.strokes:[],walls=Array.isArray(state.walls)?state.walls:[],doors=Array.isArray(state.doors)?state.doors:[],props=Array.isArray(state.props)?state.props:[];
+      return [mapScale,rooms.length,strokes.length,walls.length,doors.length,props.length,productSelectedPropId||'',productDrag&&productDrag.id||''].join(':')+'|'+
+        rooms.map(r=>r&&(r.id+':'+(r.start||[])+':'+(r.end||[])+':'+(Array.isArray(r.points)?r.points.length:0))).join(',')+'|'+
+        strokes.map(s=>s&&(s.id+':'+(Array.isArray(s.points)?s.points.length:0)+':'+(s.size??''))).join(',')+'|'+
+        walls.map(w=>w&&(w.id+':'+(w.start||[])+':'+(w.end||[])+':'+(w.width??''))).join(',')+'|'+
+        doors.map(d=>d&&(d.id+':'+(d.wallId??'')+':'+(d.t??'')+':'+(d.width??'')+':'+(d.x??'')+':'+(d.z??''))).join(',')+'|'+
+        props.map(p=>p&&(p.id+':'+(p.x??'')+':'+(p.z??'')+':'+(p.elevation??'')+':'+(p.height??'')+':'+(p.size??'')+':'+(p.stamp||p.type||''))).join(',');
+    }
+    let productGeomFingerprint=null;
     /** Stamp footprints match the 2D Draufsicht (drawStamp draws 2D px × size); u = size. */
     function productPropInto(b,p){
       const u=clamp(Number(p.size)||1,.01,40),H=Number(p.height)>0?clamp(Number(p.height),.1,10):1,x=Number(p.x)||0,z=Number(p.z)||0,elev=Number.isFinite(Number(p.elevation))?Number(p.elevation):0;
@@ -836,6 +897,9 @@ export function mountAtlasPrototype3d(host, options = {}) {
     function productGridInto(b){const step=mapScale==='interior'?25:mapScale==='settlement'?50:100,t=step*.035;for(let v=0;v<=1000+1e-6;v+=step){b.plane(v,500,t,1000,-.03,'#54665c');b.plane(500,v,1000,t,-.03,'#54665c');}}
     function buildProductGeometry(){
       if(!engine)return;
+      const fp=productGeometryFingerprint();
+      if(fp===productGeomFingerprint&&!productDrag){productSyncSelectionMesh();return;}
+      productGeomFingerprint=fp;
       const mesh={base:new MeshBuilder(),wprops:new MeshBuilder(),s:new MeshBuilder(),d:new MeshBuilder()},live=new MeshBuilder(),sheet=new MeshBuilder(),grid=new MeshBuilder();
       const pick=(id,isProp)=>{const c=productLodClass(id);if(c==='s')return mesh.s;if(c==='d')return mesh.d;if(c==='w'&&isProp)return mesh.wprops;return mesh.base;};
       productSheetInto(sheet);productGridInto(grid);
@@ -845,6 +909,7 @@ export function mountAtlasPrototype3d(host, options = {}) {
       strokes.forEach((st,i)=>{if(st)productStrokeInto(pick(st.id,false),st,-.16+i*dyS);});
       const wallH=mapScale==='interior'?22:mapScale==='settlement'?8:3;
       for(const w of (Array.isArray(state.walls)?state.walls:[]))if(w)productWallInto(pick(w.id,false),w,-.02,wallH);
+      for(const d of (Array.isArray(state.doors)?state.doors:[]))if(d)productDoorInto(pick(d.id,false),d,-.02,wallH);
       for(const p of (Array.isArray(state.props)?state.props:[])){if(!p)continue;productPropInto(productDrag&&productDrag.id===p.id?live:pick(p.id,true),p);}
       engine.setMesh('product_sheet',sheet);
       for(const [key,b] of Object.entries(mesh))engine.setMesh('product_'+key,b);
@@ -888,8 +953,10 @@ export function mountAtlasPrototype3d(host, options = {}) {
       if(prop){snapshot();state.props=state.props.filter(o=>o!==prop);if(productSelectedPropId===prop.id)productSelectedPropId=null;productAfterEdit('Objekt entfernt');return;}
       const si=productLastIndex(state.strokes,s=>productContentVisible(s.id,false)&&Array.isArray(s.points)&&s.points.some(q=>Array.isArray(q)&&Math.hypot(q[0]-p.x,q[1]-p.z)<=Math.max((Number(s.size)||1)/2,tol)));
       if(si>=0){snapshot();state.strokes.splice(si,1);productAfterEdit('Strich entfernt');return;}
+      const di=productLastIndex(state.doors||[],d=>d&&Number.isFinite(Number(d.x))&&Number.isFinite(Number(d.z))&&Math.hypot(Number(d.x)-p.x,Number(d.z)-p.z)<=Math.max((Number(d.width)||1)/2,tol));
+      if(di>=0){snapshot();state.doors.splice(di,1);productAfterEdit('Tür entfernt');return;}
       const wi=productLastIndex(state.walls,w=>productContentVisible(w.id,false)&&productSegDist(p,w.start,w.end)<=Math.max((Number(w.width)||1)/2,tol));
-      if(wi>=0){snapshot();state.walls.splice(wi,1);productAfterEdit('Wand entfernt');return;}
+      if(wi>=0){snapshot();const removed=state.walls.splice(wi,1)[0];if(removed&&Array.isArray(state.doors))state.doors=state.doors.filter(d=>!d||d.wallId!==removed.id);productAfterEdit('Wand entfernt');return;}
       let ri=-1,area=Infinity;(state.rooms||[]).forEach((rm,i)=>{
         if(!rm||!productContentVisible(rm.id,false)||rm.id==='w.ocean')return;
         const r=productRect(rm);
