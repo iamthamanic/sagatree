@@ -1,7 +1,7 @@
 # ATL2-D01 — Renderer decision
 
 - Issue: #1212
-- HEAD: `55cd32c269b93dcbaace5c0325a5758dd7ca438b`
+- HEAD: `d191da96a88b30278e67856f09b6975caac0a81a`
 - Verdict: **CLEAR**
 - Date: 2026-11-13
 
@@ -15,7 +15,7 @@
 
 - objects/rooms/walls/strokes: **11/19/0/4**
 - ID-preserving canvas→webgl→canvas: **yes**
-- Bridge wall-clock: **0.485 ms**
+- Bridge wall-clock: **0.684 ms**
 
 ## Graphics presets
 
