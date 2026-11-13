@@ -457,6 +457,8 @@ export function useWorldAtlasEditor({
       readonly minY: number;
       readonly maxX: number;
       readonly maxY: number;
+      readonly rotationRad?: number;
+      readonly metersPerUnit?: number | null;
       /** When set, also upsert an overview pin on the parent map. */
       readonly childPlaceId?: string | null;
     }): Promise<{ readonly ok: true } | { readonly ok: false; readonly reason: string }> => {
@@ -473,6 +475,8 @@ export function useWorldAtlasEditor({
         minY: input.minY,
         maxX: input.maxX,
         maxY: input.maxY,
+        rotationRad: input.rotationRad,
+        metersPerUnit: input.metersPerUnit,
       });
       if (located.ok === false) {
         setError(located.reason);

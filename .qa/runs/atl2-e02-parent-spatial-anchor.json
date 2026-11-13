@@ -1,0 +1,13 @@
+{
+  "slug": "atl2-e02",
+  "issue": 1220,
+  "verdict": "CLEAR",
+  "product3dTarget": "custom-webgl-prototype-runtime",
+  "checks": [
+    "unlocated-before-locate",
+    "host-locate-upsert",
+    "host-reload-invertible",
+    "stranger-deny"
+  ],
+  "headSha": "fe652e1521b34966ba9f0df015774d5bb3b9253b"
+}
