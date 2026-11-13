@@ -357,6 +357,29 @@ export {
 } from './map-frame';
 
 export {
+  HIERARCHY_NAV_BACK_DE,
+  HIERARCHY_NAV_UNLOCATED_DE,
+  assertIndependentBranches,
+  buildMapBreadcrumb,
+  consumePendingFocus,
+  createAtlasHierarchyNavState,
+  defaultAtlasNavCameraView,
+  enterChildMap,
+  focusRectFromParentAnchor,
+  navigateBack,
+  navigateToAncestor,
+  parseHierarchyNavKey,
+  peekRestoredCamera,
+  wheelRequestsHierarchyBack,
+  type AtlasHierarchyMapRef,
+  type AtlasHierarchyNavState,
+  type AtlasNavCameraView,
+  type EnterChildMapResult,
+  type HierarchyNavKeyIntent,
+  type NavigateAncestorResult,
+} from './atlas-hierarchy-nav';
+
+export {
   ATLAS_AUTOSAVE_DEBOUNCE_MS,
   ATLAS_AUTOSAVE_MAX_PENDING_OPS,
   ATLAS_REVISION_CONFLICT_DE,

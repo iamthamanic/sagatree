@@ -44,15 +44,25 @@ import {
   type WorldNodeKind,
 } from '../../../domains/world/hierarchy';
 import {
+  HIERARCHY_NAV_BACK_DE,
   UNLOCATED_DRILL_BLOCKED_DE,
   UNLOCATED_MAP_HINT_DE,
   atlasMapOwnerPlace,
   atlasMapScaleForKind,
   atlasPersistStatusLabelDe,
   buildAtlasMapPins,
+  createAtlasHierarchyNavState,
+  defaultAtlasNavCameraView,
+  enterChildMap,
   extractMapFrameFromGeneratorMeta,
   isDornhainGoldenRootMap,
+  navigateBack,
+  navigateToAncestor,
+  peekRestoredCamera,
   resolveAtlasWorkstationComposition,
+  type AtlasHierarchyMapRef,
+  type AtlasHierarchyNavState,
+  type AtlasNavCameraView,
   type DornhainGoldenResetMode,
 } from '../../../domains/world/atlas';
 import { useAdaptiveContentBand } from '../../../shared/ui/adaptive';
@@ -143,6 +153,10 @@ export function WorldAtlasWorkbench({
     readonly childTitle: string;
     readonly returnMapId: string;
   } | null>(null);
+  /** ATL2-E03: per-map camera snapshots + pending fly-to. */
+  const [hierarchyNav, setHierarchyNav] = useState<AtlasHierarchyNavState | null>(null);
+  const [hierarchyNavNotice, setHierarchyNavNotice] = useState<string | null>(null);
+  const liveNavCameraRef = useRef<AtlasNavCameraView>(defaultAtlasNavCameraView());
 
   /** ATL2-C05: recompose chrome from main-pane width (AU-CONTENT-WIDTH). */
   const workbenchRef = useRef<HTMLDivElement | null>(null);
@@ -168,6 +182,124 @@ export function WorldAtlasWorkbench({
     },
     [editor.resetToGolden],
   );
+
+  const hierarchyMapRefs: readonly AtlasHierarchyMapRef[] = useMemo(
+    () =>
+      editor.summaries.map((s) => ({
+        id: s.id,
+        title: s.title,
+        parentMapId: s.parentMapId,
+      })),
+    [editor.summaries],
+  );
+
+  useEffect(() => {
+    const id = editor.activeMapId?.trim();
+    if (!id) {
+      setHierarchyNav(null);
+      return;
+    }
+    setHierarchyNav((prev) => {
+      if (prev && prev.activeMapId === id) return prev;
+      if (prev && prev.snapshots[id]) {
+        return { ...prev, activeMapId: id, pendingFocus: prev.pendingFocus?.mapId === id ? prev.pendingFocus : null };
+      }
+      return createAtlasHierarchyNavState(id, liveNavCameraRef.current);
+    });
+  }, [editor.activeMapId]);
+
+  const openMapWithHierarchy = useCallback(
+    (nextMapId: string, mode: 'child' | 'ancestor' | 'raw') => {
+      const camera = liveNavCameraRef.current;
+      const base =
+        hierarchyNav ??
+        createAtlasHierarchyNavState(editor.activeMapId ?? nextMapId, camera);
+      if (mode === 'raw' || !editor.activeMapId) {
+        editor.setActiveMapId(nextMapId);
+        setHierarchyNav(createAtlasHierarchyNavState(nextMapId, camera));
+        setHierarchyNavNotice(null);
+        return;
+      }
+      if (mode === 'ancestor') {
+        const result = navigateToAncestor({
+          state: base,
+          maps: hierarchyMapRefs,
+          targetMapId: nextMapId,
+          currentCamera: camera,
+        });
+        if (!result.ok) {
+          setHierarchyNavNotice(result.reasonDe);
+          return;
+        }
+        setHierarchyNav(result.state);
+        setHierarchyNavNotice(null);
+        editor.setActiveMapId(result.state.activeMapId);
+        return;
+      }
+      const navItem = placeNav.find((n) => n.mapId === nextMapId);
+      const parentId = editor.activeMapId;
+      const childFrame =
+        navItem?.located && parentId
+          ? {
+              status: 'ready' as const,
+              parentAnchor: {
+                parentMapId: parentId,
+                centerX: navItem.x,
+                centerY: navItem.y,
+                extentX: Math.max(1e-6, navItem.focusRect.width / 2),
+                extentY: Math.max(1e-6, navItem.focusRect.height / 2),
+                rotationRad: 0,
+                metersPerUnit: null,
+              },
+            }
+          : editor.map?.id === nextMapId
+            ? extractMapFrameFromGeneratorMeta(editor.map.generatorMeta)
+            : null;
+      const result = enterChildMap({
+        state: base,
+        childMapId: nextMapId,
+        parentCamera: camera,
+        childFrame,
+        allowUnlocatedOpen: true,
+      });
+      if (!result.ok) {
+        setHierarchyNavNotice(result.reasonDe);
+        return;
+      }
+      setHierarchyNav(result.state);
+      setHierarchyNavNotice(result.noticeDe);
+      editor.setActiveMapId(result.state.activeMapId);
+    },
+    [
+      hierarchyNav,
+      hierarchyMapRefs,
+      placeNav,
+      editor.activeMapId,
+      editor.map,
+      editor.setActiveMapId,
+    ],
+  );
+
+  const hierarchyBack = useCallback(() => {
+    const base =
+      hierarchyNav ??
+      (editor.activeMapId
+        ? createAtlasHierarchyNavState(editor.activeMapId, liveNavCameraRef.current)
+        : null);
+    if (!base) return;
+    const result = navigateBack({
+      state: base,
+      maps: hierarchyMapRefs,
+      currentCamera: liveNavCameraRef.current,
+    });
+    if (!result.ok) {
+      setHierarchyNavNotice(result.reasonDe);
+      return;
+    }
+    setHierarchyNav(result.state);
+    setHierarchyNavNotice(null);
+    editor.setActiveMapId(result.state.activeMapId);
+  }, [hierarchyNav, hierarchyMapRefs, editor.activeMapId, editor.setActiveMapId]);
 
   const showLegacyTiles = editor.map?.kind === 'legacy_tiles';
   const showUnified = Boolean(editor.map && !showLegacyTiles);
@@ -415,7 +547,8 @@ export function WorldAtlasWorkbench({
                 : 'hover:bg-muted'
             }`}
             onClick={() => {
-              editor.setActiveMapId(item.id);
+              const crumb = editor.breadcrumb.some((c) => c.id === item.id);
+              openMapWithHierarchy(item.id, crumb ? 'ancestor' : 'child');
               setHierarchyOpen(false);
               setMapsRailExpanded(false);
             }}
@@ -878,13 +1011,27 @@ export function WorldAtlasWorkbench({
               <button
                 type="button"
                 className="min-h-11 rounded px-1 text-foreground underline-offset-2 hover:underline"
-                onClick={() => editor.setActiveMapId(crumb.id)}
+                onClick={() => openMapWithHierarchy(crumb.id, 'ancestor')}
               >
                 {crumb.title}
               </button>
             </span>
           ))}
+          <button
+            type="button"
+            className="ml-2 min-h-11 rounded border border-border px-2 text-foreground hover:border-accent"
+            onClick={hierarchyBack}
+            data-world-atlas-hierarchy-back
+            aria-label={HIERARCHY_NAV_BACK_DE}
+          >
+            {HIERARCHY_NAV_BACK_DE}
+          </button>
         </nav>
+      ) : null}
+      {hierarchyNavNotice ? (
+        <p className="text-sm text-muted-foreground" data-world-atlas-hierarchy-notice role="status">
+          {hierarchyNavNotice}
+        </p>
       ) : null}
 
       <div
@@ -994,9 +1141,40 @@ export function WorldAtlasWorkbench({
                 }
                 // Open primary map for authoring even when unlocated; LOD/hotspots stay gated (#752).
                 if (payload.mapId) {
-                  editor.setActiveMapId(payload.mapId);
+                  const crumb = editor.breadcrumb.some((c) => c.id === payload.mapId);
+                  openMapWithHierarchy(
+                    payload.mapId,
+                    crumb ? 'ancestor' : 'child',
+                  );
                 }
               }}
+              navRestoreView={
+                editor.activeMapId && hierarchyNav
+                  ? peekRestoredCamera(hierarchyNav, editor.activeMapId)
+                  : null
+              }
+              navPendingFocus={
+                hierarchyNav?.pendingFocus &&
+                hierarchyNav.pendingFocus.mapId === editor.activeMapId
+                  ? hierarchyNav.pendingFocus
+                  : null
+              }
+              onNavPendingFocusConsumed={() => {
+                setHierarchyNav((prev) =>
+                  prev ? { ...prev, pendingFocus: null } : prev,
+                );
+              }}
+              onNavViewChange={(view) => {
+                liveNavCameraRef.current = view;
+                setHierarchyNav((prev) => {
+                  if (!prev || !editor.activeMapId) return prev;
+                  return {
+                    ...prev,
+                    snapshots: { ...prev.snapshots, [editor.activeMapId]: view },
+                  };
+                });
+              }}
+              onHierarchyBack={hierarchyBack}
               onWebglNavRename={
                 editingAllowed
                   ? async ({ placeId, label }) => {
@@ -1153,7 +1331,13 @@ export function WorldAtlasWorkbench({
                                       data-atlas-place-nav={item.placeId}
                                       onClick={() => {
                                         if (item.mapId) {
-                                          editor.setActiveMapId(item.mapId);
+                                          const crumb = editor.breadcrumb.some(
+                                            (c) => c.id === item.mapId,
+                                          );
+                                          openMapWithHierarchy(
+                                            item.mapId,
+                                            crumb ? 'ancestor' : 'child',
+                                          );
                                           setMapsRailExpanded(false);
                                         }
                                       }}
@@ -1178,7 +1362,11 @@ export function WorldAtlasWorkbench({
                                           : 'hover:bg-muted'
                                       }`}
                                       onClick={() => {
-                                        editor.setActiveMapId(item.id);
+                                        const crumb = editor.breadcrumb.some((c) => c.id === item.id);
+                                        openMapWithHierarchy(
+                                          item.id,
+                                          crumb ? 'ancestor' : 'child',
+                                        );
                                         setMapsRailExpanded(false);
                                       }}
                                     >
