@@ -274,6 +274,10 @@
       "sha256": "5e9afab7ec94b7bef19535be6311b51a2f77c59b5f82b36fcd8b78007cc336f5"
     },
     {
+      "path": "src/domains/world/atlas/dungeon-forge-workflow.ts",
+      "sha256": "43acec183dd010bf8bef24e2a79ac7a5bb7f317fcd568591a02182c502860b79"
+    },
+    {
       "path": "src/domains/world/atlas/dungeon-generator.ts",
       "sha256": "013ccdb248e427f85b51e9dc8dfbf39b5c5d185e106d0024259afe3301fdbbfc"
     },
@@ -283,7 +287,7 @@
     },
     {
       "path": "src/domains/world/atlas/index.ts",
-      "sha256": "ca3b024e317d8c52b6ccaf33b52e374716437c534a651d226f550c1dfda74c3f"
+      "sha256": "861b482335a2ccd20ae1b6b0260c9a3a8251062b967b89cf583b38540c35794d"
     },
     {
       "path": "src/domains/world/atlas/map-edit-ops.ts",
@@ -1810,6 +1814,14 @@
       "line": 150,
       "endLine": 159,
       "text": "export type DornhainGoldenResetPlan = {\n  readonly mode: DornhainGoldenResetMode;\n  readonly restoreCanvas: boolean;\n  /** World root + all Golden child map seeds. */\n  readonly goldenMapSeeds: readonly string[];\n  readonly restoreGoldenPlaces: boolean;\n  readonly clearSessionProgress: boolean;\n  /** German note when session wipe is requested but not available yet. */\n  readonly sessionProgressNoteDe: string | null;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "DungeonCommitPayload",
+      "path": "src/domains/world/atlas/dungeon-forge-workflow.ts",
+      "line": 43,
+      "endLine": 48,
+      "text": "export type DungeonCommitPayload = {\n  readonly rooms: readonly UnifiedCanvasRoom[];\n  readonly walls: readonly UnifiedCanvasWall[];\n  readonly objects: readonly UnifiedCanvasObject[];\n  readonly doors: readonly UnifiedCanvasDoor[];\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
