@@ -42,8 +42,11 @@ assert.ok(design.includes('custom WebGL'));
 assert.ok(gate.includes('atl2-d02-canonical-3d-geometry.self-test.mjs'));
 assert.ok(indexSrc.includes('buildAtlasProductGeometryPlan'));
 assert.ok(runtimeSrc.includes('productDoorInto'));
+assert.ok(runtimeSrc.includes('productWallSegmentInto'));
+assert.ok(runtimeSrc.includes('carve door openings') || runtimeSrc.includes('door openings'));
 assert.ok(runtimeSrc.includes('productGeometryFingerprint'));
 assert.ok(runtimeSrc.includes('state.doors'));
+assert.ok(runtimeSrc.includes('jambs + lintel') || runtimeSrc.includes('open doorway'));
 assert.ok(!editorSrc.includes('AtlasSpatialViewport'));
 assert.equal(target.ATLAS_PRODUCT_3D_TARGET, 'custom-webgl-prototype-runtime');
 

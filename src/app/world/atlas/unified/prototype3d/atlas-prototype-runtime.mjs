@@ -806,42 +806,64 @@ export function mountAtlasPrototype3d(host, options = {}) {
         b.quad([px+nx,y,pz+nz],[x+nx,y,z+nz],[x-nx,y,z-nz],[px-nx,y,pz-nz],color,up);
       }
     }
-    /** Wall thickness is the doc width; height depends on the map scale. */
-    function productWallInto(b,wall,baseY,height){
-      const a=Array.isArray(wall.start)?wall.start:[0,0],e=Array.isArray(wall.end)?wall.end:[0,0],dx=e[0]-a[0],dz=e[1]-a[1],length=Math.hypot(dx,dz);if(length<.02)return;
-      const thick=Math.max(.3,Number(wall.width)||height*.15),ux=dx/length,uz=dz/length,vx=-uz*thick/2,vz=ux*thick/2;
-      const c=[[a[0]-vx,a[1]-vz],[e[0]-vx,e[1]-vz],[e[0]+vx,e[1]+vz],[a[0]+vx,a[1]+vz]],bot=c.map(v=>[v[0],baseY,v[1]]),top=c.map(v=>[v[0],baseY+height,v[1]]);
+    /** Emit one solid wall segment (no door carve). */
+    function productWallSegmentInto(b,start,end,thick,baseY,height){
+      const dx=end[0]-start[0],dz=end[1]-start[1],length=Math.hypot(dx,dz);if(length<.02)return;
+      const ux=dx/length,uz=dz/length,vx=-uz*thick/2,vz=ux*thick/2;
+      const c=[[start[0]-vx,start[1]-vz],[end[0]-vx,end[1]-vz],[end[0]+vx,end[1]+vz],[start[0]+vx,start[1]+vz]];
+      const bot=c.map(v=>[v[0],baseY,v[1]]),top=c.map(v=>[v[0],baseY+height,v[1]]);
       b.quad(top[0],top[1],top[2],top[3],'#b4b6aa');
       for(let i=0;i<4;i++)b.quad(bot[i],bot[(i+1)%4],top[(i+1)%4],top[i],'#6f6a63');
     }
-    /** ATL2-D02 — door opening marker on wall parametric t (canonical UnifiedCanvasDoor). */
+    /**
+     * Wall thickness is the doc width; height depends on the map scale.
+     * ATL2-D02: carve door openings (parametric t ± half door width) instead of a sealed prism.
+     */
+    function productWallInto(b,wall,baseY,height){
+      const a=Array.isArray(wall.start)?wall.start:[0,0],e=Array.isArray(wall.end)?wall.end:[0,0],dx=e[0]-a[0],dz=e[1]-a[1],length=Math.hypot(dx,dz);if(length<.02)return;
+      const thick=Math.max(.3,Number(wall.width)||height*.15);
+      const doors=(Array.isArray(state.doors)?state.doors:[]).filter(d=>d&&d.wallId===wall.id);
+      if(!doors.length){productWallSegmentInto(b,a,e,thick,baseY,height);return;}
+      const gaps=doors.map(d=>{
+        const w=Math.max(.4,Number(d.width)||1.2);
+        const halfT=Math.min(0.49,(w/2)/length);
+        const t=Math.min(1,Math.max(0,Number(d.t)||0.5));
+        return [Math.max(0,t-halfT),Math.min(1,t+halfT)];
+      }).sort((p,q)=>p[0]-q[0]);
+      const merged=[];
+      for(const g of gaps){const last=merged[merged.length-1];if(!last||g[0]>last[1]+1e-4)merged.push([g[0],g[1]]);else last[1]=Math.max(last[1],g[1]);}
+      let cursor=0;
+      for(const [g0,g1] of merged){
+        if(g0-cursor>1e-3)productWallSegmentInto(b,[a[0]+dx*cursor,a[1]+dz*cursor],[a[0]+dx*g0,a[1]+dz*g0],thick,baseY,height);
+        cursor=g1;
+      }
+      if(1-cursor>1e-3)productWallSegmentInto(b,[a[0]+dx*cursor,a[1]+dz*cursor],e,thick,baseY,height);
+    }
+    /** ATL2-D02 — open doorway: jambs + lintel only (opening carved from wall). */
     function productDoorInto(b,door,baseY,wallHeight){
       const x=Number(door.x),z=Number(door.z);if(!Number.isFinite(x)||!Number.isFinite(z))return;
-      const width=Math.max(.4,Number(door.width)||1.2),h=Math.max(1.2,wallHeight*0.82);
+      const width=Math.max(.4,Number(door.width)||1.2),openH=Math.max(1.2,wallHeight*0.82),lintelH=Math.max(.25,wallHeight-openH);
       let tx=Number(door.tx),tz=Number(door.tz),nx=Number(door.nx),nz=Number(door.nz);
       if(!Number.isFinite(tx)||!Number.isFinite(tz)||Math.hypot(tx,tz)<1e-6){tx=1;tz=0;}
       const tlen=Math.hypot(tx,tz)||1;tx/=tlen;tz/=tlen;
       if(!Number.isFinite(nx)||!Number.isFinite(nz)||Math.hypot(nx,nz)<1e-6){nx=-tz;nz=tx;}
       const nlen=Math.hypot(nx,nz)||1;nx/=nlen;nz/=nlen;
-      const half=width/2,thick=Math.max(.25,width*.18);
+      const half=width/2,jamb=Math.max(.18,width*.08),thick=Math.max(.25,width*.12);
+      for(const side of[-1,1]){
+        const cx=x+tx*side*(half-jamb/2),cz=z+tz*side*(half-jamb/2);
+        productWallSegmentInto(b,[cx-tx*jamb/2,cz-tz*jamb/2],[cx+tx*jamb/2,cz+tz*jamb/2],thick*2,baseY,openH);
+      }
+      /* lintel above the carved opening */
+      const ly=baseY+openH;
       const c=[
         [x-tx*half-nx*thick,z-tz*half-nz*thick],
         [x+tx*half-nx*thick,z+tz*half-nz*thick],
         [x+tx*half+nx*thick,z+tz*half+nz*thick],
         [x-tx*half+nx*thick,z-tz*half+nz*thick],
       ];
-      const bot=c.map(v=>[v[0],baseY,v[1]]),top=c.map(v=>[v[0],baseY+h,v[1]]);
-      b.quad(top[0],top[1],top[2],top[3],'#c4a574');
+      const bot=c.map(v=>[v[0],ly,v[1]]),top=c.map(v=>[v[0],ly+lintelH,v[1]]);
+      b.quad(top[0],top[1],top[2],top[3],'#a8883a');
       for(let i=0;i<4;i++)b.quad(bot[i],bot[(i+1)%4],top[(i+1)%4],top[i],'#8b6914');
-      /* lintel */
-      const lintelY=baseY+h;
-      b.quad(
-        [x-tx*half-nx*thick,lintelY,z-tz*half-nz*thick],
-        [x+tx*half-nx*thick,lintelY,z+tz*half-nz*thick],
-        [x+tx*half+nx*thick,lintelY,z+tz*half+nz*thick],
-        [x-tx*half+nx*thick,lintelY,z-tz*half+nz*thick],
-        '#a8883a'
-      );
     }
     function productGeometryFingerprint(){
       const rooms=Array.isArray(state.rooms)?state.rooms:[],strokes=Array.isArray(state.strokes)?state.strokes:[],walls=Array.isArray(state.walls)?state.walls:[],doors=Array.isArray(state.doors)?state.doors:[],props=Array.isArray(state.props)?state.props:[];
