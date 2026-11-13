@@ -5,7 +5,7 @@
   "result": "PASS",
   "githubClosed": true,
   "mergeRef": "PR #860 \u2192 main (after #782)",
-  "note": "Inventories refreshed after ATL2-E01 primary-map links + ATL2-F01 dungeon forge merge (#1219 / #1224).",
+  "note": "Inventories refreshed after ATL2-E02 (#1220) rebased onto ATL2-F02 (#1225) main.",
   "checks": [
     {
       "command": "legacy inventory matrix",
@@ -23,8 +23,8 @@
       "command": "edge/infra inventory 25+13",
       "result": "PASS",
       "evidenceFile": ".qa/intake/edge-infra-contracts/inventory.json",
-      "sha256": "8334b5fa4c2bd2798d51d8d9b4a372db7f0ce207e66f0f98cdf24409307a75fc"
+      "sha256": "ae4b9760676de79263d2c9bd6d62c3fb894de5c15b53dc98ebbcc73804df80c7"
     }
   ],
-  "testedCommit": "e10676090955b976f8c2a7540a9df17198944a94"
+  "testedCommit": "aef5e961e426ce3220bb84a3efc6a5557feea025"
 }
