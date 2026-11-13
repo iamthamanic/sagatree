@@ -53,7 +53,16 @@ test.describe('ATL2-C06 Gate C', () => {
     await page.goto(`/library/worlds/${dornhain!.publicId}/map`);
     const workstation = page.locator('[data-atlas-surface-class="workstation"]').first();
     await expect(workstation).toBeVisible({ timeout: 45_000 });
-    await expect(page.locator('[data-atlas-tool-rail]').first()).toBeVisible();
+
+    // Product default is controlled 3D; Gate C asserts the 2D Draufsicht authoring chrome.
+    const toTopDown = page.getByRole('button', { name: 'Zur Draufsicht wechseln' });
+    if (await toTopDown.isVisible().catch(() => false)) {
+      await toTopDown.click();
+    }
+    await expect(page.locator('[data-atlas-surface-mode="2d"]').first()).toBeVisible({
+      timeout: 30_000,
+    });
+    await expect(page.locator('[data-atlas-tool-rail]').first()).toBeVisible({ timeout: 30_000 });
     await expect(page.locator('[data-atlas-undo]').first()).toBeVisible();
     await expect(page.locator('[data-atlas-redo]').first()).toBeVisible();
     await expect(page.locator('[data-atlas-history-live]').first()).toBeAttached();
