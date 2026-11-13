@@ -4,7 +4,7 @@
   "localId": "MIG-002",
   "result": "PASS",
   "githubClosed": true,
-  "mergeRef": "PR #860 → main (after #782)",
+  "mergeRef": "PR #860 \u2192 main (after #782)",
   "note": "Inventories refreshed after ATL2-D05 terrain mesh domain + LOD.",
   "checks": [
     {
@@ -26,5 +26,5 @@
       "sha256": "74881f0e1c159d3b8a65fc87ff5cbd1ed44002357f1991ee034ee03dbbcc2ab9"
     }
   ],
-  "testedCommit": "46288e2fafca2b88d1e0a3dd21b534ab79795209"
+  "testedCommit": "bc5453c7e3d6b3e09120a6ea387786cdba28c608"
 }

@@ -2,7 +2,7 @@
 
 - Issue: #1216
 - Feature slug: atl2-d05
-- HEAD_SHA: PENDING
+- HEAD_SHA: bc5453c7e3d6b3e09120a6ea387786cdba28c608
 - BASE_SHA: 46288e2fafca2b88d1e0a3dd21b534ab79795209
 - Date: 2026-11-13
 - Verdict: SKIPPED
