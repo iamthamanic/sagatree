@@ -1,0 +1,55 @@
+{
+  "gate": "atl2-e01",
+  "issue": 1219,
+  "head": "0f5875fe7da45f06c6d013ab71d90b68e33d4782",
+  "host": {
+    "chainKinds": [
+      "continent",
+      "country",
+      "place",
+      "building",
+      "room"
+    ],
+    "primaryLinks": 5,
+    "placeCount": 5,
+    "rootMaps": 1,
+    "immutableIds": true,
+    "skipRejected": true,
+    "crossWorldRejected": true,
+    "strangerDenied": true
+  },
+  "sollIst": [
+    {
+      "category": "Domain six-level plan",
+      "soll": "room plan = 5 steps w/ primary",
+      "ist": "pass-domain"
+    },
+    {
+      "category": "Domain edge matrix",
+      "soll": "legal edges ok; skip/self rejected",
+      "ist": "pass-domain"
+    },
+    {
+      "category": "Host create chain",
+      "soll": "room → 5 places + 5 primaries + world root",
+      "ist": "pass-host"
+    },
+    {
+      "category": "Immutable IDs",
+      "soll": "rename keeps placeId + mapId",
+      "ist": "pass-host"
+    },
+    {
+      "category": "Negatives",
+      "soll": "skip/cross-world/stranger fail-closed",
+      "ist": "pass-host"
+    }
+  ],
+  "verdict": "CLEAR",
+  "residuals": [
+    {
+      "severity": "Low",
+      "note": "Golden Dornhain seed still omits room WorldNodes (tavern/crypt as building); API path proven here for room+chain."
+    }
+  ]
+}
