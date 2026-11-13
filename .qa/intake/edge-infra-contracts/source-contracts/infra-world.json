@@ -206,6 +206,10 @@
       "sha256": "84ab0edbd0b525c95b5db85afeb683d335351884ba6c612e94f327719a6b60ca"
     },
     {
+      "path": "src/domains/world/atlas/atlas-product-camera.ts",
+      "sha256": "af9ccd8867bb48b4433207bebfe4ed901517f2b354796f1242480d7f17faaefa"
+    },
+    {
       "path": "src/domains/world/atlas/atlas-product-geometry-plan.ts",
       "sha256": "43de1e1d02d185b20dd184d75800e7875a24a8f944c08c48e65ecc2c9a961252"
     },
@@ -259,7 +263,7 @@
     },
     {
       "path": "src/domains/world/atlas/index.ts",
-      "sha256": "9d82aa97df36218da934106bd7a6120df8f7165402caaf1b42c4127d962cab11"
+      "sha256": "4312f3b90b29847232025db2d04305db13b852c5a39364f87cabfaa4bf020069"
     },
     {
       "path": "src/domains/world/atlas/map-edit-ops.ts",
@@ -1302,6 +1306,22 @@
       "line": 15,
       "endLine": 21,
       "text": "export type AtlasPersistEvent =\n  | { readonly type: 'edit' }\n  | { readonly type: 'save_start' }\n  | { readonly type: 'save_ok' }\n  | { readonly type: 'save_fail'; readonly conflict: boolean }\n  | { readonly type: 'reload' }\n  | { readonly type: 'ack_saved' };"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AtlasProductCameraMode",
+      "path": "src/domains/world/atlas/atlas-product-camera.ts",
+      "line": 14,
+      "endLine": 14,
+      "text": "export type AtlasProductCameraMode = (typeof ATLAS_PRODUCT_CAMERA_MODES)[number];"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AtlasProductCameraState",
+      "path": "src/domains/world/atlas/atlas-product-camera.ts",
+      "line": 16,
+      "endLine": 24,
+      "text": "export type AtlasProductCameraState = {\n  readonly mode: AtlasProductCameraMode;\n  readonly x: number;\n  readonly z: number;\n  readonly span: number;\n  readonly yawRad: number;\n  /** Pitch from horizon; π/2 = top-down looking down. */\n  readonly pitchRad: number;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
