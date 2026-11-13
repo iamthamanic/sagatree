@@ -2002,9 +2002,20 @@ export function UnifiedAtlasEditor({
         return;
       }
     }
-    const seedNum = Number.parseInt(dungeonSeed, 10);
+    const seedRaw = dungeonSeed.trim();
+    if (!/^\d+$/.test(seedRaw)) {
+      setDungeonPreview(null);
+      setDungeonError('Ungültiger Seed — bitte nur Ziffern eingeben. Karte unverändert.');
+      return;
+    }
+    const seedNum = Number.parseInt(seedRaw, 10);
+    if (!Number.isFinite(seedNum)) {
+      setDungeonPreview(null);
+      setDungeonError('Ungültiger Seed — Karte unverändert.');
+      return;
+    }
     const result = generateDungeon({
-      seed: Number.isFinite(seedNum) ? seedNum : 4242,
+      seed: seedNum,
       roomCount: dungeonRooms,
       loopChance: 0.18,
       themeKey: dungeonTheme,
