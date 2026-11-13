@@ -223,6 +223,7 @@ function normalizeAtlasMapPins(list) {
  *   mapSketchStatus?: string|null,
  *   mapScale?: 'world'|'settlement'|'interior',
  *   mapPins?: Array<{id:string,label:string,kind?:string,x:number,y:number}>,
+ *   graphicsPreset?: {id:string,maxPixelRatio:number,preferSoftwareFallback:boolean,antialias:boolean}|null,
  * }=} options
  *   controlled=true: do not use localStorage as world SoT (#721); persist via onPersist.
  *   externalNav: product WorldNode tree for #nav (#747) — disables demo NAV_CHILDREN as SoT.
@@ -230,6 +231,7 @@ function normalizeAtlasMapPins(list) {
  *   toolChrome: ATLAS_TOOL_REGISTRY-derived rows (#750); canEdit gates map mutations.
  *   mapSketchStatus: unlocated ⇒ honest empty ocean, no demo continents (#752).
  *   mapScale / mapPins: product map scale (terrain vs interior rendering) and DB place labels.
+ *   graphicsPreset: ATL2-D01 high/balanced/lite DPR + antialias + software prefer.
  * @returns {{ dispose: () => void, updateExternalNav: (tree: object|null) => void, setActiveNavPlaceId: (id: string|null) => void, setToolChrome: (rows: object[]|null) => void, setCanEdit: (ok: boolean) => void, setMapSketchStatus: (status: string|null) => void, setMapScale: (scale: string|null) => void, setMapPins: (pins: object[]|null) => void }}
  */
 export function mountAtlasPrototype3d(host, options = {}) {
