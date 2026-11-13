@@ -1,0 +1,9 @@
+{
+  "verdict": "CLEAR",
+  "modes": [
+    "ortho-topdown",
+    "diorama-oblique",
+    "perspective"
+  ],
+  "productTarget": "custom-webgl-prototype-runtime"
+}

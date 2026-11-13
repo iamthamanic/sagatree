@@ -220,6 +220,28 @@ export {
 } from './atlas-product-geometry-plan';
 
 export {
+  ATLAS_DIORAMA_PITCH_DEFAULT,
+  ATLAS_DIORAMA_PITCH_MAX,
+  ATLAS_DIORAMA_PITCH_MIN,
+  ATLAS_PERSPECTIVE_FOV_Y,
+  ATLAS_PERSPECTIVE_PITCH_MAX,
+  ATLAS_PERSPECTIVE_PITCH_MIN,
+  ATLAS_PRODUCT_CAMERA_MODES,
+  atlasProductCameraModeLabelDe,
+  clampAtlasProductCamera,
+  clampPitchForMode,
+  cycleAtlasProductCameraMode,
+  defaultAtlasProductCameraState,
+  interpolateAtlasProductCamera,
+  isAtlasProductCameraMode,
+  parseAtlasProductCameraState,
+  pitchForMode,
+  withAtlasProductCameraMode,
+  type AtlasProductCameraMode,
+  type AtlasProductCameraState,
+} from './atlas-product-camera';
+
+export {
   WEBGL_GEOMETRY_BACKUP_META_KEY,
   canvasDocHasGeometry,
   geometryFreeWebglRuntime,

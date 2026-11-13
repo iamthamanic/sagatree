@@ -4,8 +4,8 @@
   "localId": "MIG-002",
   "result": "PASS",
   "githubClosed": true,
-  "mergeRef": "PR #860 \u2192 main (after #782)",
-  "note": "Inventories refreshed after ATL2-D02 doors bridge + atlas-product-geometry-plan + infra-world source contract rewrite.",
+  "mergeRef": "PR #860 → main (after #782)",
+  "note": "Inventories refreshed after ATL2-D03 Codex camera projection fixes.",
   "checks": [
     {
       "command": "legacy inventory matrix",
@@ -23,8 +23,8 @@
       "command": "edge/infra inventory 25+13",
       "result": "PASS",
       "evidenceFile": ".qa/intake/edge-infra-contracts/inventory.json",
-      "sha256": "9c00594e22e22d43f4bf7fd2fd206ceb5115c450303be51f14f98ffdb24a8dd4"
+      "sha256": "0df572ddab442b13ffaf1befbaf732f9109bad6ae03598ab72852265cfcbf4df"
     }
   ],
-  "testedCommit": "530b9cb07bde3c6b3bcacb63699f255f09f633ff"
+  "testedCommit": "19210a9ccdf1c4c2a1bcc8e3db25cb8a2e4394bd"
 }
