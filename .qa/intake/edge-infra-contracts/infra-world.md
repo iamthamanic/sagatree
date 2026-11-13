@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-world.json](source-contracts/infra-world.json) (SHA-256 `55220415b60c037060f8441f6402ace44c894e74a18b7b4de4032f4b4b33783b`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-world.json](source-contracts/infra-world.json) (SHA-256 `f6c6a6e05795030ae9fb86588e3fd13a3ea2958ab7ccd1e3e3383a92ab12e26f`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -660,8 +660,8 @@ All backend operations are included in the public declarations above.
 | `src/domains/world/atlas/dornhain-golden-hierarchy.ts` | `894d9769af93bcc3655938bbd2e6db5c39dbaf4a386786cb686a19704be9c0c0` |
 | `src/domains/world/atlas/dornhain-golden-reset.ts` | `242b85a727062342a69f934a3b0cb64d3c5c726a71b87548043facd7e62f6c2f` |
 | `src/domains/world/atlas/dornhain-unified-starter.ts` | `5e9afab7ec94b7bef19535be6311b51a2f77c59b5f82b36fcd8b78007cc336f5` |
-| `src/domains/world/atlas/dungeon-generator.ts` | `2f65a7f1d96ef917a4973b52a3470e6bebbdc87eca53d41c0bbfe9bbe5cd81df` |
-| `src/domains/world/atlas/index.ts` | `af1be7d0b7a8780cf5b6c7c07497095f8c9c0151d94d76dd33dbc67ac4791818` |
+| `src/domains/world/atlas/dungeon-generator.ts` | `008fd1b6d2194cdf893e1caec204bcf5288423dc4bad8d52bee012e44b71b642` |
+| `src/domains/world/atlas/index.ts` | `4e96880ac11c1b76c3a8bb84259484345de23716eac4f89968dff53b6c731374` |
 | `src/domains/world/atlas/map-edit-ops.ts` | `3440965957e4212748d109f74ce202fa7a320840d5c9f1347b0457347c797b95` |
 | `src/domains/world/atlas/map-frame.ts` | `9764fd49aa74482588fea5ba1e1888131b85f05bdbb202057cfed24d6e3e666f` |
 | `src/domains/world/atlas/unified-canvas-doc.ts` | `59fa68591c71d2f0bba3185fffb4adecf8d325464df4701309af76a2a99fbd82` |
