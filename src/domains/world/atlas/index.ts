@@ -221,6 +221,15 @@ export {
 } from './dungeon-grid';
 
 export {
+  commitDungeonFeaturesToDoc,
+  dungeonCommitPayloadFromResults,
+  isDungeonGeneratedFeatureId,
+  mergeDungeonPreviewIntoDoc,
+  stripDungeonGeneratedFeatures,
+  type DungeonCommitPayload,
+} from './dungeon-forge-workflow';
+
+export {
   WEBGL_RUNTIME_META_KEY,
   LEGACY_WEBGL_LOCAL_STORAGE_KEY,
   STAMP_TO_PROP,
