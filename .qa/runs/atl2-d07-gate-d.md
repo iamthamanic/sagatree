@@ -1,7 +1,7 @@
 # ATL2-D07 Gate D — Phase D product 3D acceptance
 
 - Issue: #1218
-- HEAD: `a260606ed0854c841431eae3c09dbb0ebae06694`
+- HEAD: `98e8ee519233481b9d66920ba28cfbf23c39efa9`
 - Verdict: **CLEAR**
 - Date: 2026-11-13
 - Product 3D target: `custom-webgl-prototype-runtime` (ticket “Three.js” = product 3D)
@@ -21,7 +21,7 @@
 
 - Owner ensure-starter → Dornhain atlas maps: **6**
 - Titles World→…→Krypta: yes
-- World publicId: **WO-4F5RE**
+- World publicId: **WO-3DQ5U**
 
 ## Soll / Ist (feature categories)
 

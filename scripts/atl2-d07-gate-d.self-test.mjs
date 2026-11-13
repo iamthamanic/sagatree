@@ -493,10 +493,6 @@ try {
   rmSync(work, { recursive: true, force: true });
 }
 
-const writeEvidence = process.env.ATL2_D07_WRITE_EVIDENCE !== '0';
-const outDir = writeEvidence ? join(root, '.qa/runs') : mkdtempSync(join(tmpdir(), 'atl2-d07-out-'));
-mkdirSync(outDir, { recursive: true });
-
 const stackRows = stackStatus
   .map(
     (s) =>
@@ -551,10 +547,32 @@ ${sollRows}
 Phase D product 3D foundation is **${evidence.verdict}**. Phase E may open after merge.
 `;
 
+const writeEvidence = process.env.ATL2_D07_WRITE_EVIDENCE === '1';
+const outDir = writeEvidence ? join(root, '.qa/runs') : mkdtempSync(join(tmpdir(), 'atl2-d07-out-'));
+mkdirSync(outDir, { recursive: true });
 writeFileSync(join(outDir, 'atl2-d07-gate-d.md'), report);
 writeFileSync(join(outDir, 'atl2-d07-gate-d.json'), `${JSON.stringify(evidence, null, 2)}\n`);
 
+if (writeEvidence) {
+  console.log(`wrote evidence to ${outDir}`);
+}
+
+const committedPath = join(root, '.qa/runs/atl2-d07-gate-d.md');
+let committed;
+try {
+  committed = readFileSync(committedPath, 'utf8');
+} catch {
+  committed = null;
+}
+if (committed) {
+  assert.match(committed, /Verdict: \*\*CLEAR\*\*/);
+  assert.match(committed, /#1253/);
+  assert.match(committed, /#1258/);
+  assert.match(committed, /custom-webgl-prototype-runtime/);
+} else {
+  assert.equal(writeEvidence, true, 'first run must set ATL2_D07_WRITE_EVIDENCE=1 to seed .qa/runs');
+}
+
 assert.equal(evidence.verdict, 'CLEAR');
-console.log('atl2-d07-gate-d self-test: PASS');
-console.log(`Verdict: ${evidence.verdict}`);
-console.log(`Evidence: ${join(outDir, 'atl2-d07-gate-d.md')}`);
+console.log(`atl2-d07-gate-d self-test: PASS (${evidence.verdict})`);
+console.log(`report: ${join(outDir, 'atl2-d07-gate-d.md')}${writeEvidence ? '' : ' (transient)'}`);

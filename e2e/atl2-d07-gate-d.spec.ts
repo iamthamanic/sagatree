@@ -68,9 +68,12 @@ test.describe('ATL2-D07 Gate D', () => {
     }
     await expect(mode3d).toBeVisible({ timeout: 60_000 });
 
-    // Product runtime host markers (custom WebGL / Lite) — not SpatialViewport.
-    const nativeHost = page.locator('[data-atlas-native-3d], [data-atlas-graphics-preset]').first();
-    await expect(nativeHost).toBeAttached({ timeout: 60_000 });
+    // Product runtime readiness (custom WebGL / Lite) — not SpatialViewport chrome.
+    // Require data-atlas-ready so a failed init / error panel does not falsely pass.
+    await expect(page.locator('[data-atlas-native-3d]').first()).toBeAttached({ timeout: 60_000 });
+    await expect(page.locator('[data-atlas-ready="true"]').first()).toBeVisible({
+      timeout: 90_000,
+    });
 
     await page.screenshot({ path: join(EVIDENCE, 'product-3d-dornhain.png'), fullPage: true });
 
