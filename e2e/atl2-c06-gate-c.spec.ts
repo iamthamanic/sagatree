@@ -67,14 +67,32 @@ test.describe('ATL2-C06 Gate C', () => {
     await expect(page.locator('[data-atlas-redo]').first()).toBeVisible();
     await expect(page.locator('[data-atlas-history-live]').first()).toBeAttached();
 
+    const band = page.locator('[data-atlas-content-band]').first();
+    await expect(band).toBeAttached({ timeout: 15_000 });
+
     await page.setViewportSize({ width: 1280, height: 800 });
+    // Content band follows main-pane width; force a wide pane via viewport + wait for attribute.
+    await expect
+      .poll(async () => band.getAttribute('data-atlas-content-band'), { timeout: 15_000 })
+      .not.toBe('phone');
+    await expect(page.locator('[data-atlas-reduced-phone="true"]')).toHaveCount(0);
     await page.screenshot({ path: join(EVIDENCE, 'desktop-workstation.png'), fullPage: true });
 
     await page.setViewportSize({ width: 768, height: 1024 });
+    await expect
+      .poll(async () => band.getAttribute('data-atlas-content-band'), { timeout: 15_000 })
+      .toMatch(/tablet|desktop|phone/);
     await page.screenshot({ path: join(EVIDENCE, 'tablet-workstation.png'), fullPage: true });
 
     await page.setViewportSize({ width: 390, height: 844 });
     await expect(page.locator('[data-atlas-tool-rail]').first()).toBeVisible();
+    // Narrow viewport should land phone composition when main pane tracks viewport.
+    await expect
+      .poll(async () => band.getAttribute('data-atlas-content-band'), { timeout: 15_000 })
+      .toBe('phone');
+    await expect(page.locator('[data-atlas-reduced-phone="true"]').first()).toBeAttached({
+      timeout: 15_000,
+    });
     await page.screenshot({ path: join(EVIDENCE, 'phone-workstation.png'), fullPage: true });
 
     const mapsRes = await page.request.get(`/api/v1/worlds/${dornhain!.id}/atlas/maps`, {

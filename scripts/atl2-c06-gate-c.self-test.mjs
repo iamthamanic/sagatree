@@ -190,6 +190,10 @@ assert.equal(sel.canEditFeatureKind(doc, 'object'), false);
 const lockedTry = sel.translateSelected(doc, ['gate-c-obj'], 5, 0);
 assert.equal(lockedTry.objects.find((o) => o.id === 'gate-c-obj').x, 4);
 doc = { ...doc, layerLocks: sel.setLayerLock(doc.layerLocks, 'objects', false) };
+assert.equal(sel.canEditFeatureKind(doc, 'object'), true);
+const unlockedTry = sel.translateSelected(doc, ['gate-c-obj'], 5, 0);
+assert.equal(unlockedTry.objects.find((o) => o.id === 'gate-c-obj').x, 9);
+doc = unlockedTry;
 
 let history = hist.emptyAtlasEditHistory();
 history = hist.pushAtlasEdit(history, doc);
@@ -459,18 +463,17 @@ try {
     });
     strangerCookie = si.cookie;
   }
+  assert.ok(strangerCookie, 'stranger cookie required for cross-owner deny probe');
   const stranger = await httpJson(hostUrl, `/api/v1/worlds/${dornhain.id}/atlas/maps`, {
     method: 'PUT',
     headers: { Origin: hostUrl },
     cookie: strangerCookie,
     body: { ...saveBody, title: 'Hack', expectedRevision: savedRev },
   });
-  assert.ok(
-    stranger.res.status === 403 ||
-      stranger.res.status === 404 ||
-      stranger.json?.error === '42501' ||
-      String(stranger.text).includes('42501'),
-    `stranger deny got ${stranger.res.status} ${stranger.text.slice(0, 200)}`,
+  assert.equal(
+    stranger.json?.error,
+    '42501',
+    `stranger deny expected 42501 got ${stranger.res.status} ${stranger.text.slice(0, 200)}`,
   );
   hostEvidence.strangerDeny = true;
 
