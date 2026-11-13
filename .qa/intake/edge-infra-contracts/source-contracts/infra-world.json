@@ -274,8 +274,12 @@
       "sha256": "013ccdb248e427f85b51e9dc8dfbf39b5c5d185e106d0024259afe3301fdbbfc"
     },
     {
+      "path": "src/domains/world/atlas/dungeon-grid.ts",
+      "sha256": "1e564a1f91df01b5e0edb38c3e3976f4809bb053d5d8367b0c5d2666d6f40c4d"
+    },
+    {
       "path": "src/domains/world/atlas/index.ts",
-      "sha256": "4e96880ac11c1b76c3a8bb84259484345de23716eac4f89968dff53b6c731374"
+      "sha256": "56262bc77a3f90d2d2b96a401d85b05b8c1005e9175ab05c09063b83b07372af"
     },
     {
       "path": "src/domains/world/atlas/map-edit-ops.ts",
@@ -1834,6 +1838,38 @@
       "line": 905,
       "endLine": 913,
       "text": "export type DungeonGeneratorMeta = {\n  readonly generatorVersion: typeof DUNGEON_GENERATOR_VERSION;\n  readonly seed: number;\n  readonly themeKey: DungeonThemeKey;\n  readonly roomCount: number;\n  readonly loopChance: number;\n  readonly confirmed: boolean;\n  readonly manualDirty?: boolean;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "DungeonCellKind",
+      "path": "src/domains/world/atlas/dungeon-grid.ts",
+      "line": 28,
+      "endLine": 32,
+      "text": "export type DungeonCellKind =\n  | typeof DUNGEON_CELL_VOID\n  | typeof DUNGEON_CELL_FLOOR\n  | typeof DUNGEON_CELL_WALL\n  | typeof DUNGEON_CELL_LIQUID;"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "DungeonGridCell",
+      "path": "src/domains/world/atlas/dungeon-grid.ts",
+      "line": 34,
+      "endLine": 42,
+      "text": "export type DungeonGridCell = {\n  readonly x: number;\n  readonly y: number;\n  readonly kind: DungeonCellKind;\n  /** Owning room id, or -1 for corridor / wall / void. */\n  readonly roomId: number;\n  readonly isCorridor: boolean;\n  readonly isDoorway: boolean;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "DungeonRasterizeParams",
+      "path": "src/domains/world/atlas/dungeon-grid.ts",
+      "line": 44,
+      "endLine": 52,
+      "text": "export type DungeonRasterizeParams = {\n  readonly seed: number;\n  readonly themeKey: DungeonThemeKey;\n  readonly originX?: number;\n  readonly originY?: number;\n  readonly unitScale?: number;\n  /** When true, molten/frost themes may stamp liquid pits off the critical path. */\n  readonly enableLiquidPits?: boolean;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "DungeonRasterizeResult",
+      "path": "src/domains/world/atlas/dungeon-grid.ts",
+      "line": 54,
+      "endLine": 72,
+      "text": "export type DungeonRasterizeResult = {\n  readonly valid: boolean;\n  readonly passable: boolean;\n  readonly gridVersion: typeof DUNGEON_GRID_VERSION;\n  readonly width: number;\n  readonly height: number;\n  readonly originGX: number;\n  readonly originGY: number;\n  readonly cells: readonly DungeonGridCell[];\n  readonly floorCount: number;\n  readonly wallCount: number;\n  readonly doorwayCount: number;\n  readonly liquidCount: number;\n  readonly reachableFloorCount: number;\n  readonly canvasRooms: readonly UnifiedCanvasRoom[];\n  readonly canvasWalls: readonly UnifiedCanvasWall[];\n  readonly canvasDoors: readonly UnifiedCanvasDoor[];\n  readonly error?: string;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
