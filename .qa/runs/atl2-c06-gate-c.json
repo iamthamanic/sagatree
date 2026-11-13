@@ -1,0 +1,104 @@
+{
+  "gate": "atl2-c06",
+  "issue": 1211,
+  "head": "57800936158ab72376272d68827f3cbc2b323713",
+  "stack": [
+    {
+      "pr": 1247,
+      "issue": 1206,
+      "sha": "a79b7cfe594ddc8499f12951c1db9d3525bf6159",
+      "title": "ATL2-C01 2D tools",
+      "present": true
+    },
+    {
+      "pr": 1248,
+      "issue": 1207,
+      "sha": "ec9b2f922aba0f50683bc371260f4c30d1578394",
+      "title": "ATL2-C02 room/wall/door",
+      "present": true
+    },
+    {
+      "pr": 1249,
+      "issue": 1208,
+      "sha": "3d5c3d8d8409c3bc0edb1d69ff5c007dc41d4ce1",
+      "title": "ATL2-C03 layers/multi-select",
+      "present": true
+    },
+    {
+      "pr": 1250,
+      "issue": 1209,
+      "sha": "3cf08c6bc1846210396c59f2ada03edad954659a",
+      "title": "ATL2-C04 undo/autosave",
+      "present": true
+    },
+    {
+      "pr": 1251,
+      "issue": 1210,
+      "sha": "eb988119ec1a00f68485ff7c0fbf9c367d35b85f",
+      "title": "ATL2-C05 adaptive workstation",
+      "present": true
+    }
+  ],
+  "host": {
+    "ownerMapCount": 6,
+    "ownerMapTitles": [
+      "Dornhain",
+      "Kontinent Westmark",
+      "Krypta unter dem Hügel",
+      "Land Westmark",
+      "Taverne Zum Flüstern",
+      "Welt"
+    ],
+    "worldPublicId": "WO-K2YS4",
+    "persistReload": true,
+    "conflict": true,
+    "strangerDeny": true,
+    "outsiderStatus": 403
+  },
+  "sollIst": [
+    {
+      "category": "Hierarchy travel (World→Krypta)",
+      "soll": "ensure-starter yields ≥6 Golden map titles",
+      "ist": "pass-host"
+    },
+    {
+      "category": "Polygon / Path / Wall / Door / Object",
+      "soll": "MapEditOps create+delete; empty arrays after last delete",
+      "ist": "pass-domain"
+    },
+    {
+      "category": "Layers / locks",
+      "soll": "locked objects refuse translate; unlock restores edit",
+      "ist": "pass-domain"
+    },
+    {
+      "category": "Undo / Redo",
+      "soll": "history restores object after remove; redo re-applies",
+      "ist": "pass-domain"
+    },
+    {
+      "category": "Adaptive / Touch chrome",
+      "soll": "phone reduced composition; desktop side rails; editor markers",
+      "ist": "pass-domain"
+    },
+    {
+      "category": "Persist / Reload",
+      "soll": "edited unifiedCanvas survives upsert + GET",
+      "ist": "pass-host"
+    },
+    {
+      "category": "Negative policy",
+      "soll": "stale rev 40001; stranger 42501",
+      "ist": "pass-host"
+    }
+  ],
+  "verdict": "CLEAR",
+  "residuals": [
+    {
+      "severity": "Low",
+      "item": "Interactive pointer-draw drill in Browser E2E",
+      "note": "Chrome markers + host persist/reload proven; full freehand stroke UX remains covered by C01 domain + product soak.",
+      "blocksGateC": false
+    }
+  ]
+}
