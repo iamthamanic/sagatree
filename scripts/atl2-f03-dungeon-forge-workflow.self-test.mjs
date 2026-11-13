@@ -41,6 +41,8 @@ assert.ok(editorSrc.includes('rasterizeDungeonGenerateResult'));
 assert.ok(editorSrc.includes('data-atlas-dungeon-cancel'));
 assert.ok(editorSrc.includes('forgeDisplayDoc'));
 assert.ok(editorSrc.includes('forge3dMapKey'));
+assert.ok(editorSrc.includes('Ungültiger Seed'));
+assert.ok(editorSrc.includes('/^\\d+$/'));
 assert.ok(editorSrc.includes("data-atlas-dungeon-forge-3d"));
 /* Preview must not write into canonical persist path. */
 assert.ok(editorSrc.includes('dungeonPreviewRef.current?.payload'));

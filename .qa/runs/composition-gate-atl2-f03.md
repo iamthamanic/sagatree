@@ -2,7 +2,7 @@
 
 - Issue: #1226
 - Feature slug: atl2-f03
-- HEAD_SHA: 53ab87b0f42d7fa3dc500a9d50b6388d214689d0
+- HEAD_SHA: 38885479770e13e59d8d966f95b4cc2fba572d36
 - BASE_SHA: fe652e1521b34966ba9f0df015774d5bb3b9253b
 - Date: 2026-11-13
 - Verdict: CLEAR
@@ -17,7 +17,7 @@ GM forge generate → non-canonical preview merge → explicit commit (raster ro
 2. `dungeonCommitPayloadFromResults` → preview payload
 3. `mergeDungeonPreviewIntoDoc` → `forgeDisplayDoc` (2D paint + 3D seed)
 4. `commitDungeonFeaturesToDoc(replaceGenerated=true)` → canonical doc + dungeon meta
-5. Cancel / failed generate → no canonical mutation
+5. Cancel / failed generate / invalid seed → no canonical mutation
 
 Cardinality: one preview payload per generate; one strip of generator IDs per commit/reforge.
 
