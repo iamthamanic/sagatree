@@ -5,7 +5,7 @@
   "result": "PASS",
   "githubClosed": true,
   "mergeRef": "PR #860 \u2192 main (after #782)",
-  "note": "Inventories refreshed after ATL2-D01 atlas-renderer-target exports + infra-world source contract rewrite.",
+  "note": "Inventories refreshed after ATL2-D02 doors bridge + atlas-product-geometry-plan + infra-world source contract rewrite.",
   "checks": [
     {
       "command": "legacy inventory matrix",
@@ -23,8 +23,8 @@
       "command": "edge/infra inventory 25+13",
       "result": "PASS",
       "evidenceFile": ".qa/intake/edge-infra-contracts/inventory.json",
-      "sha256": "ede17e9d3548ee8d6f65b57abedffe49aaf4a4818550c3a1b31ec16134add914"
+      "sha256": "9c00594e22e22d43f4bf7fd2fd206ceb5115c450303be51f14f98ffdb24a8dd4"
     }
   ],
-  "testedCommit": "8f89207367a984bad903109fc625470072ff08c4"
+  "testedCommit": "3dd83df096e629ebfdc2b8441114bd5dcbed47c3"
 }
