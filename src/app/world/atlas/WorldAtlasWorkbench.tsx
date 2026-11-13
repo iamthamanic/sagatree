@@ -286,16 +286,24 @@ export function WorldAtlasWorkbench({
     }
   }, [editor.activeMapId, worldPlaces, worldLinks, worldPrimaryMapId]);
 
-  // Debounced autosave — ATL2-C04 uses decideAtlasAutosave (never while conflicted).
+  // Autosave — ATL2-C04: max-pending-ops may fire immediately; else debounce inactivity.
   useEffect(() => {
     if (!editingAllowed || !editor.map || !editor.dirtyCanvas || editor.saving) return;
-    const timer = window.setTimeout(() => {
+    const runSave = () => {
       const decision = editor.autosaveDecision();
       if (decision.action !== 'save') return;
       void editor.saveCanvas().catch(() => {
         /* error surfaced on editor.error / persistStatus */
       });
-    }, editor.autosaveDebounceMs);
+    };
+    // Evaluate immediately so ATLAS_AUTOSAVE_MAX_PENDING_OPS can fire mid-gesture.
+    const immediate = editor.autosaveDecision();
+    if (immediate.action === 'save') {
+      runSave();
+      return;
+    }
+    if (immediate.action === 'blocked_conflict') return;
+    const timer = window.setTimeout(runSave, editor.autosaveDebounceMs);
     return () => window.clearTimeout(timer);
   }, [
     editingAllowed,

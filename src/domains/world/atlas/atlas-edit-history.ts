@@ -51,7 +51,10 @@ export function pushAtlasEdit(
   };
 }
 
-/** Start a multi-step gesture (drag/paint) that should undo as one unit. */
+/**
+ * Start a multi-step gesture (drag/paint) that should undo as one unit.
+ * Does not clear redo until the batch actually mutates and commits.
+ */
 export function beginAtlasEditBatch(
   history: AtlasEditHistory,
   current: UnifiedCanvasDoc,
@@ -59,14 +62,26 @@ export function beginAtlasEditBatch(
   if (history.batchBase !== null) return history;
   return {
     past: history.past,
-    future: [],
+    future: history.future,
     batchBase: serializeAtlasEditSnapshot(current),
   };
 }
 
-/** Close an open batch: push the captured base once. */
-export function commitAtlasEditBatch(history: AtlasEditHistory): AtlasEditHistory {
+/**
+ * Close an open batch. If `current` is unchanged from `batchBase`, discard the
+ * batch without pushing history or clearing redo (selection-only clicks).
+ */
+export function commitAtlasEditBatch(
+  history: AtlasEditHistory,
+  current?: UnifiedCanvasDoc,
+): AtlasEditHistory {
   if (history.batchBase === null) return history;
+  if (
+    current !== undefined &&
+    serializeAtlasEditSnapshot(current) === history.batchBase
+  ) {
+    return { past: history.past, future: history.future, batchBase: null };
+  }
   return {
     past: trimPast([...history.past, history.batchBase]),
     future: [],

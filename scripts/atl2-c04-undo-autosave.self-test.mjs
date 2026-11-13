@@ -81,11 +81,22 @@ doc = ops.applyMapEdit(doc, {
 history = hist.beginAtlasEditBatch(history, doc);
 doc = ops.applyMapEdit(doc, { op: 'move_object', id: 'drag', x: 5, y: 5 });
 doc = ops.applyMapEdit(doc, { op: 'move_object', id: 'drag', x: 9, y: 2 });
-history = hist.commitAtlasEditBatch(history);
+history = hist.commitAtlasEditBatch(history, doc);
 assert.equal(history.past.length, 1);
 const afterBatchUndo = hist.undoAtlasEdit(history, doc);
 assert.ok(afterBatchUndo);
 assert.equal(afterBatchUndo.doc.objects.find((o) => o.id === 'drag').x, 0);
+
+// Selection-only batch must not clear redo / push history.
+let withRedo = hist.pushAtlasEdit(hist.emptyAtlasEditHistory(), afterBatchUndo.doc);
+let moved = ops.applyMapEdit(afterBatchUndo.doc, { op: 'move_object', id: 'drag', x: 3, y: 3 });
+const undone = hist.undoAtlasEdit(withRedo, moved);
+assert.ok(undone);
+assert.equal(undone.history.future.length, 1);
+withRedo = hist.beginAtlasEditBatch(undone.history, undone.doc);
+withRedo = hist.commitAtlasEditBatch(withRedo, undone.doc);
+assert.equal(withRedo.future.length, 1);
+assert.equal(withRedo.past.length, undone.history.past.length);
 
 // Cancel batch restores base.
 history = hist.beginAtlasEditBatch(hist.emptyAtlasEditHistory(), afterBatchUndo.doc);
@@ -94,6 +105,10 @@ const cancelled = hist.cancelAtlasEditBatch(history);
 assert.ok(cancelled);
 assert.equal(cancelled.doc.objects.find((o) => o.id === 'drag').x, 0);
 assert.equal(mid.objects.find((o) => o.id === 'drag').x, 99);
+
+assert.ok(editorSrc.includes('abortEditBatch') || editorSrc.includes('cancelAtlasEditBatch'));
+assert.ok(editorSrc.includes('onPointerCancel'));
+assert.ok(wbSrc.includes('ATLAS_AUTOSAVE_MAX_PENDING_OPS') || wbSrc.includes('immediate'));
 
 // Autosave / conflict: never save while conflicted; fail does not invent saved.
 assert.equal(

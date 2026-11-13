@@ -191,7 +191,7 @@
     },
     {
       "path": "src/domains/world/atlas/atlas-edit-history.ts",
-      "sha256": "2e19856c0bff118ccbe8d0c9e3a2a2c42d30c46736d0c93b18fbc94a33ff53f4"
+      "sha256": "13a91efde301ec766d3b0f183affcd794abba9f4c4872c00549e9f631947e294"
     },
     {
       "path": "src/domains/world/atlas/atlas-map-doc-adapter.ts",

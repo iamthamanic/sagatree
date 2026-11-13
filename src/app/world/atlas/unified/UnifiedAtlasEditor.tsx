@@ -48,6 +48,7 @@ import {
   emptyWebglRuntime,
   parseWebglRuntimeState,
   beginAtlasEditBatch,
+  cancelAtlasEditBatch,
   canAtlasRedo,
   canAtlasUndo,
   canEditFeatureKind,
@@ -548,8 +549,17 @@ export function UnifiedAtlasEditor({
   }, []);
 
   const endEditBatch = useCallback(() => {
-    setEditHistory((h) => commitAtlasEditBatch(h));
+    setEditHistory((h) => commitAtlasEditBatch(h, docRef.current));
   }, []);
+
+  const abortEditBatch = useCallback(() => {
+    setEditHistory((h) => {
+      const cancelled = cancelAtlasEditBatch(h);
+      if (!cancelled) return h;
+      onDocChange(cancelled.doc);
+      return cancelled.history;
+    });
+  }, [onDocChange]);
 
   const commit = useCallback(
     (next: UnifiedCanvasDoc, recordHistory: boolean) => {
@@ -2121,7 +2131,18 @@ export function UnifiedAtlasEditor({
             onPointerDown={onPointerDown}
             onPointerMove={onPointerMove}
             onPointerUp={onPointerUp}
-            onPointerCancel={onPointerUp}
+            onPointerCancel={(e) => {
+              // Interrupted gestures restore batchBase instead of committing a partial edit.
+              abortEditBatch();
+              dragRef.current = null;
+              setMarqueeLive(null);
+              try {
+                stageRef.current?.releasePointerCapture(e.pointerId);
+              } catch {
+                /* ignore */
+              }
+              refresh();
+            }}
             onWheel={onWheel}
             onDoubleClick={(e) => {
               const p = worldFromEvent(e);
