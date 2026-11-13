@@ -1,7 +1,7 @@
 # ATL2-C06 Gate C — Phase C 2D editor acceptance
 
 - Issue: #1211
-- HEAD: `e8d28f3fa42420825da80d803785a149db0008fa`
+- HEAD: `57800936158ab72376272d68827f3cbc2b323713`
 - Verdict: **CLEAR**
 - Date: 2026-11-13
 
@@ -19,7 +19,7 @@
 
 - Owner ensure-starter → Dornhain atlas maps: **6**
 - Titles World→…→Krypta: yes
-- World publicId: **WO-CTJE5**
+- World publicId: **WO-K2YS4**
 
 ## Soll / Ist (feature categories)
 
