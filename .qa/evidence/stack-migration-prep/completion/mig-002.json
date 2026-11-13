@@ -5,7 +5,7 @@
   "result": "PASS",
   "githubClosed": true,
   "mergeRef": "PR #860 \u2192 main (after #782)",
-  "note": "Inventories refreshed after ATL2-C05 Codex P1/P2 sheet+safe-area fixes.",
+  "note": "Inventories refreshed after ATL2-D01 atlas-renderer-target exports + infra-world source contract rewrite.",
   "checks": [
     {
       "command": "legacy inventory matrix",
@@ -23,8 +23,8 @@
       "command": "edge/infra inventory 25+13",
       "result": "PASS",
       "evidenceFile": ".qa/intake/edge-infra-contracts/inventory.json",
-      "sha256": "3b8f4c609ca07499874bf0b3ef280e76e34ecf26a87dbf883b865025899f20c6"
+      "sha256": "ede17e9d3548ee8d6f65b57abedffe49aaf4a4818550c3a1b31ec16134add914"
     }
   ],
-  "testedCommit": "48593ac9de454bfab0a9ee8e5d505926e637b1bd"
+  "testedCommit": "8f89207367a984bad903109fc625470072ff08c4"
 }
