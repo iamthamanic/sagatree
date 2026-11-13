@@ -2,7 +2,7 @@
 
 - Issue: #1208
 - Feature slug: atl2-c03
-- HEAD_SHA: acddb040fca1b44f099e47bc8f86f73f3be85bfd
+- HEAD_SHA: d333444dfbcad93c54fb90f2f2fab8313dea67b7
 - BASE_SHA: ec9b2f922aba0f50683bc371260f4c30d1578394
 - Date: 2026-11-12
 - Verdict: SKIPPED
@@ -13,7 +13,7 @@ Editor selection/layer chrome on existing atlas upsert hop; no new hop.
 
 ## Event
 
-Multi-select + layerLocks persist + hit-test gates.
+Multi-select + layerLocks persist + hit-test gates (visibility drawings / lock interior).
 
 ## Hop chain
 
@@ -24,8 +24,9 @@ Multi-select + layerLocks persist + hit-test gates.
 | Case | Intended | Composed | Result |
 |------|----------|----------|--------|
 | N-actors | N/A | canEdit | skip |
-| Locked layer | edit blocked | canHitFeature | pass |
-| Hidden layer | no hit | canHitFeature | pass |
+| Locked layer | edit blocked | canEditFeatureKind | pass |
+| Hidden layer | no hitProbe | canHitFeature drawings | pass |
+| Stroke group move | translate points | translateSelected | pass |
 
 ## Flags
 
