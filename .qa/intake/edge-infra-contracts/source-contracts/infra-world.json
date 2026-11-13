@@ -190,6 +190,10 @@
       "sha256": "a7e2b9471c960d3839e39f93fe1f6b332f5822620ef589ba4e1a0805dda6c3bd"
     },
     {
+      "path": "src/domains/world/atlas/atlas-diorama-look.ts",
+      "sha256": "a0c2f5ea6af2faabed685d4eff4035dad43b1e82f3d6b2a67e017ddcddf99ea6"
+    },
+    {
       "path": "src/domains/world/atlas/atlas-edit-history.ts",
       "sha256": "13a91efde301ec766d3b0f183affcd794abba9f4c4872c00549e9f631947e294"
     },
@@ -255,7 +259,7 @@
     },
     {
       "path": "src/domains/world/atlas/dornhain-golden-hierarchy.ts",
-      "sha256": "1eaf1b81180fda6e36da7388121d64b1162c4c927bed67a405128cddea46e0b1"
+      "sha256": "894d9769af93bcc3655938bbd2e6db5c39dbaf4a386786cb686a19704be9c0c0"
     },
     {
       "path": "src/domains/world/atlas/dornhain-golden-reset.ts",
@@ -271,7 +275,7 @@
     },
     {
       "path": "src/domains/world/atlas/index.ts",
-      "sha256": "edb1a56f72c6bc19b408c22c2f6b4424a82f184974abebae9e640bb13df7a8dd"
+      "sha256": "af1be7d0b7a8780cf5b6c7c07497095f8c9c0151d94d76dd33dbc67ac4791818"
     },
     {
       "path": "src/domains/world/atlas/map-edit-ops.ts",
@@ -1234,6 +1238,94 @@
       "line": 367,
       "endLine": 371,
       "text": "export type ClassifyUnifiedCanvasOptions = {\n  readonly scale?: 'world' | 'interior' | 'unknown';\n  /** When true, apply Golden stroke-id heuristics; never use material alone. */\n  readonly inferGoldenStrokeIds?: boolean;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AtlasDioramaLookAuthority",
+      "path": "src/domains/world/atlas/atlas-diorama-look.ts",
+      "line": 15,
+      "endLine": 15,
+      "text": "export type AtlasDioramaLookAuthority = 'canonical' | 'suggestive' | 'atmospheric';"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AtlasDioramaMaterialToken",
+      "path": "src/domains/world/atlas/atlas-diorama-look.ts",
+      "line": 17,
+      "endLine": 23,
+      "text": "export type AtlasDioramaMaterialToken = {\n  readonly id: string;\n  readonly albedo: string;\n  /** 0 = glossy / metal-ish, 1 = matte (PBR-like roughness token). */\n  readonly roughness: number;\n  readonly metalness: number;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AtlasDioramaDetailLevel",
+      "path": "src/domains/world/atlas/atlas-diorama-look.ts",
+      "line": 25,
+      "endLine": 25,
+      "text": "export type AtlasDioramaDetailLevel = 'full' | 'reduced' | 'minimal';"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AtlasDioramaLightProfile",
+      "path": "src/domains/world/atlas/atlas-diorama-look.ts",
+      "line": 27,
+      "endLine": 40,
+      "text": "export type AtlasDioramaLightProfile = {\n  readonly presetId: AtlasGraphicsPresetId;\n  readonly labelDe: string;\n  /** Directional daylight (world space, unit-ish). */\n  readonly daylightDir: readonly [number, number, number];\n  readonly ambient: number;\n  readonly fogDensity: number;\n  readonly fogColor: string;\n  readonly clearColor: readonly [number, number, number, number];\n  /** 0–1 baked face darkening bias (no shadow map). */\n  readonly shadowStrength: number;\n  readonly detailLevel: AtlasDioramaDetailLevel;\n  readonly maxInstancesPerBatch: number;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AtlasDioramaHouseVariant",
+      "path": "src/domains/world/atlas/atlas-diorama-look.ts",
+      "line": 42,
+      "endLine": 42,
+      "text": "export type AtlasDioramaHouseVariant = 'timber' | 'plaster' | 'stone';"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AtlasDioramaTreeVariant",
+      "path": "src/domains/world/atlas/atlas-diorama-look.ts",
+      "line": 43,
+      "endLine": 43,
+      "text": "export type AtlasDioramaTreeVariant = 'oak' | 'birch' | 'pine';"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AtlasDioramaRockVariant",
+      "path": "src/domains/world/atlas/atlas-diorama-look.ts",
+      "line": 44,
+      "endLine": 44,
+      "text": "export type AtlasDioramaRockVariant = 'boulder' | 'outcrop';"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AtlasDioramaStampKind",
+      "path": "src/domains/world/atlas/atlas-diorama-look.ts",
+      "line": 46,
+      "endLine": 52,
+      "text": "export type AtlasDioramaStampKind =\n  | 'house'\n  | 'tower'\n  | 'tree'\n  | 'rock'\n  | 'street'\n  | 'prop';"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AtlasDioramaMeshRecipe",
+      "path": "src/domains/world/atlas/atlas-diorama-look.ts",
+      "line": 54,
+      "endLine": 67,
+      "text": "export type AtlasDioramaMeshRecipe = {\n  readonly stamp: string;\n  readonly kind: AtlasDioramaStampKind;\n  readonly variant: string;\n  readonly authority: AtlasDioramaLookAuthority;\n  readonly wall: AtlasDioramaMaterialToken;\n  readonly roof: AtlasDioramaMaterialToken | null;\n  readonly foliage: AtlasDioramaMaterialToken | null;\n  readonly trunk: AtlasDioramaMaterialToken | null;\n  readonly windowAlbedo: string | null;\n  readonly doorAlbedo: string | null;\n  /** When false, skip windows/door trim (lite / far detail). */\n  readonly includeFacades: boolean;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AtlasDioramaInstanceBatch",
+      "path": "src/domains/world/atlas/atlas-diorama-look.ts",
+      "line": 69,
+      "endLine": 77,
+      "text": "export type AtlasDioramaInstanceBatch = {\n  readonly batchKey: string;\n  readonly stamp: string;\n  readonly variant: string;\n  readonly kind: AtlasDioramaStampKind;\n  readonly authority: AtlasDioramaLookAuthority;\n  readonly instanceIds: readonly string[];\n  readonly recipe: AtlasDioramaMeshRecipe;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AtlasDioramaLookPlan",
+      "path": "src/domains/world/atlas/atlas-diorama-look.ts",
+      "line": 79,
+      "endLine": 94,
+      "text": "export type AtlasDioramaLookPlan = {\n  readonly format: typeof ATLAS_DIORAMA_LOOK_FORMAT;\n  readonly light: AtlasDioramaLightProfile;\n  readonly batches: readonly AtlasDioramaInstanceBatch[];\n  readonly materials: readonly AtlasDioramaMaterialToken[];\n  readonly counts: {\n    readonly houses: number;\n    readonly trees: number;\n    readonly rocks: number;\n    readonly streets: number;\n    readonly props: number;\n    readonly batches: number;\n    readonly instances: number;\n  };\n  readonly contentFingerprint: string;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",

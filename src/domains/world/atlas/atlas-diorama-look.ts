@@ -345,10 +345,18 @@ export function buildAtlasDioramaLookPlan(
     else if (recipe.kind === 'rock') rocks += 1;
     else props += 1;
 
-    const batchKey = `${recipe.stamp}:${recipe.variant}:${recipe.kind}`;
-    const existing = batchMap.get(batchKey);
+    const baseKey = `${recipe.stamp}:${recipe.variant}:${recipe.kind}`;
+    // Split into uniquely keyed batches when a stamp/variant exceeds the preset
+    // cap — never drop canonical objects (Codex P2 on ATL2-D06).
+    let part = 0;
+    let batchKey = baseKey;
+    let existing = batchMap.get(batchKey);
+    while (existing && existing.instanceIds.length >= light.maxInstancesPerBatch) {
+      part += 1;
+      batchKey = `${baseKey}#${part}`;
+      existing = batchMap.get(batchKey);
+    }
     if (existing) {
-      if (existing.instanceIds.length >= light.maxInstancesPerBatch) continue;
       batchMap.set(batchKey, {
         ...existing,
         instanceIds: [...existing.instanceIds, obj.id],
@@ -373,8 +381,6 @@ export function buildAtlasDioramaLookPlan(
     const token = material(matKey);
     remember(token);
     streets += 1;
-    const batchKey = `street:${matKey}`;
-    const existing = batchMap.get(batchKey);
     const recipe: AtlasDioramaMeshRecipe = {
       stamp: 'street',
       kind: 'street',
@@ -388,6 +394,15 @@ export function buildAtlasDioramaLookPlan(
       doorAlbedo: null,
       includeFacades: false,
     };
+    const baseKey = `street:${matKey}`;
+    let part = 0;
+    let batchKey = baseKey;
+    let existing = batchMap.get(batchKey);
+    while (existing && existing.instanceIds.length >= light.maxInstancesPerBatch) {
+      part += 1;
+      batchKey = `${baseKey}#${part}`;
+      existing = batchMap.get(batchKey);
+    }
     if (existing) {
       batchMap.set(batchKey, {
         ...existing,

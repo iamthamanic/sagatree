@@ -85,6 +85,25 @@ assert.equal(look.buildAtlasDioramaMeshRecipe('haus', 'x', 'minimal').includeFac
 const litePreset = target.resolveAtlasGraphicsPreset('lite');
 assert.equal(litePreset.preferSoftwareFallback, true);
 
+/* Codex P2: overflowing stamp/variant batches must split, not drop objects. */
+const overflowN = look.resolveAtlasDioramaLightProfile('lite').maxInstancesPerBatch + 12;
+const overflowDoc = canvas.emptyUnifiedCanvasDoc(false);
+overflowDoc.objects.push(
+  ...Array.from({ length: overflowN }, (_, i) => ({
+    id: `tanne.overflow.${i}`,
+    type: 'tanne',
+    x: i,
+    y: 0,
+  })),
+);
+const overflowPlan = look.buildAtlasDioramaLookPlan(overflowDoc, { graphicsPresetId: 'lite' });
+assert.equal(overflowPlan.counts.trees, overflowN);
+assert.equal(overflowPlan.counts.instances, overflowN);
+assert.ok(overflowPlan.batches.length >= 2, 'overflow must create split batches');
+assert.ok(
+  overflowPlan.batches.every((b) => b.instanceIds.length <= look.resolveAtlasDioramaLightProfile('lite').maxInstancesPerBatch),
+);
+
 const writeEvidence = process.env.ATL2_D06_WRITE_EVIDENCE === '1';
 const outDir = writeEvidence
   ? join(root, '.qa/runs')
