@@ -52,6 +52,19 @@ assert.ok(ra.canvasWalls.length > 0);
 assert.ok(ra.canvasDoors.length > 0);
 assert.ok(ra.canvasRooms.every((r) => typeof r.id === 'string' && r.id.startsWith('droom-')));
 assert.ok(ra.canvasDoors.every((d) => typeof d.id === 'string' && d.wallId));
+/* Walls must sit in original dungeon coords (not padded grid indices). */
+const roomXs = ra.canvasRooms.flatMap((r) => [r.x, r.x + r.w]);
+const minRoomX = Math.min(...roomXs);
+const maxRoomX = Math.max(...roomXs);
+const wallXs = ra.canvasWalls
+  .filter((w) => w.id.startsWith('dgrid-wall-'))
+  .flatMap((w) => [w.x1, w.x2]);
+assert.ok(wallXs.length > 0);
+assert.ok(
+  Math.min(...wallXs) >= minRoomX - 8 && Math.max(...wallXs) <= maxRoomX + 8,
+  'grid walls shifted away from rooms (origin transform broken)',
+);
+assert.ok(ra.canvasDoors.length >= 1, 'expected room/corridor door thresholds');
 
 const rb = grid.rasterizeDungeonGenerateResult(a);
 assert.deepEqual(

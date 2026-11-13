@@ -395,31 +395,37 @@ export function rasterizeDungeonLayout(
     material: roomMaterial(r.type),
   }));
 
-  // Wall segments: every floor/liquid edge against wall/void → unit wall feature.
+  // Wall segments in original dungeon coordinates (subtract grid pad origin).
   const canvasWalls: UnifiedCanvasWall[] = [];
   const canvasDoors: UnifiedCanvasDoor[] = [];
   let wallSeq = 0;
   let doorSeq = 0;
-  const tryEdge = (
-    x0: number,
-    y0: number,
-    x1: number,
-    y1: number,
-    fromFloor: boolean,
-    doorwayHere: boolean,
+  const toWorld = (gx: number, gy: number) => ({
+    x: ox + (gx - originGX) * scale,
+    y: oy + (gy - originGY) * scale,
+  });
+  const isWalk = (i: number) =>
+    kinds[i] === DUNGEON_CELL_FLOOR || kinds[i] === DUNGEON_CELL_LIQUID;
+  const emitWall = (
+    gx0: number,
+    gy0: number,
+    gx1: number,
+    gy1: number,
+    withDoor: boolean,
   ) => {
-    if (!fromFloor) return;
+    const a = toWorld(gx0, gy0);
+    const b = toWorld(gx1, gy1);
     const id = `dgrid-wall-${seed}-${wallSeq}`;
     wallSeq += 1;
     canvasWalls.push({
       id,
-      x1: ox + x0 * scale,
-      y1: oy + y0 * scale,
-      x2: ox + x1 * scale,
-      y2: oy + y1 * scale,
+      x1: a.x,
+      y1: a.y,
+      x2: b.x,
+      y2: b.y,
       width: Math.max(0.35, 0.45 * scale),
     });
-    if (doorwayHere) {
+    if (withDoor) {
       canvasDoors.push({
         id: `dgrid-door-${seed}-${doorSeq}`,
         wallId: id,
@@ -430,25 +436,67 @@ export function rasterizeDungeonLayout(
     }
   };
 
+  // Emit N/E/S/W perimeter where walkable meets non-walkable (once per shared edge).
   for (let y = 0; y < height; y += 1) {
     for (let x = 0; x < width; x += 1) {
       const i = idx(x, y);
-      const walk =
-        kinds[i] === DUNGEON_CELL_FLOOR || kinds[i] === DUNGEON_CELL_LIQUID;
-      if (!walk) continue;
-      const doorHere = doorway[i] === 1;
-      // North
-      if (y === 0 || kinds[idx(x, y - 1)] === DUNGEON_CELL_WALL || kinds[idx(x, y - 1)] === DUNGEON_CELL_VOID) {
-        tryEdge(x, y, x + 1, y, true, doorHere && (y === 0 || roomAt[idx(x, Math.max(0, y - 1))] >= 0 || corridor[i] === 1));
+      if (!isWalk(i)) continue;
+      // North edge of this cell
+      if (y === 0 || !isWalk(idx(x, y - 1))) {
+        emitWall(x, y, x + 1, y, false);
       }
-      // West
-      if (x === 0 || kinds[idx(x - 1, y)] === DUNGEON_CELL_WALL || kinds[idx(x - 1, y)] === DUNGEON_CELL_VOID) {
-        tryEdge(x, y, x, y + 1, true, doorHere && (x === 0 || roomAt[idx(Math.max(0, x - 1), y)] >= 0 || corridor[i] === 1));
+      // West edge
+      if (x === 0 || !isWalk(idx(x - 1, y))) {
+        emitWall(x, y, x, y + 1, false);
+      }
+      // South edge (only from walkable; neighbor not walkable)
+      if (y === height - 1 || !isWalk(idx(x, y + 1))) {
+        emitWall(x, y + 1, x + 1, y + 1, false);
+      }
+      // East edge
+      if (x === width - 1 || !isWalk(idx(x + 1, y))) {
+        emitWall(x + 1, y, x + 1, y + 1, false);
       }
     }
   }
 
-  // Corridor centerline features (edit hooks) — one wall stub per edge.
+  // Door thresholds on room↔corridor interfaces (shared edges between corridor and room floor).
+  for (let y = 0; y < height; y += 1) {
+    for (let x = 0; x < width; x += 1) {
+      const i = idx(x, y);
+      if (!corridor[i] || kinds[i] !== DUNGEON_CELL_FLOOR) continue;
+      // East neighbor is room
+      if (x < width - 1) {
+        const ni = idx(x + 1, y);
+        if (roomAt[ni] >= 0 && kinds[ni] === DUNGEON_CELL_FLOOR && !corridor[ni]) {
+          emitWall(x + 1, y, x + 1, y + 1, true);
+        }
+      }
+      // South neighbor is room
+      if (y < height - 1) {
+        const ni = idx(x, y + 1);
+        if (roomAt[ni] >= 0 && kinds[ni] === DUNGEON_CELL_FLOOR && !corridor[ni]) {
+          emitWall(x, y + 1, x + 1, y + 1, true);
+        }
+      }
+      // West neighbor is room
+      if (x > 0) {
+        const ni = idx(x - 1, y);
+        if (roomAt[ni] >= 0 && kinds[ni] === DUNGEON_CELL_FLOOR && !corridor[ni]) {
+          emitWall(x, y, x, y + 1, true);
+        }
+      }
+      // North neighbor is room
+      if (y > 0) {
+        const ni = idx(x, y - 1);
+        if (roomAt[ni] >= 0 && kinds[ni] === DUNGEON_CELL_FLOOR && !corridor[ni]) {
+          emitWall(x, y, x + 1, y, true);
+        }
+      }
+    }
+  }
+
+  // Corridor centerline features (edit hooks) — one wall stub per graph edge.
   for (const e of edges) {
     const A = rooms[e.a];
     const B = rooms[e.b];

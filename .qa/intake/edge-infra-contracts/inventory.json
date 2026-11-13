@@ -37648,7 +37648,7 @@
           },
           {
             "path": "src/domains/world/atlas/dungeon-grid.ts",
-            "sha256": "a8e53862a323ba27324d3a988787b6391e962d9109d82c3863dc6f1e7265d761"
+            "sha256": "1e564a1f91df01b5e0edb38c3e3976f4809bb053d5d8367b0c5d2666d6f40c4d"
           },
           {
             "path": "src/domains/world/atlas/index.ts",
@@ -37864,7 +37864,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-world.json",
-      "sourceContractSha256": "3a1d850bba5002e51345a153d027c9887b409a6343c7bdf74690666e0ef70466",
+      "sourceContractSha256": "f12cf35befdcc1e04f17479be2eac0a87f5706de4057f8664fc50d6decb37032",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],
