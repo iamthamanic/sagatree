@@ -1,7 +1,7 @@
 {
   "gate": "atl2-c06",
   "issue": 1211,
-  "head": "eb988119ec1a00f68485ff7c0fbf9c367d35b85f",
+  "head": "e8d28f3fa42420825da80d803785a149db0008fa",
   "stack": [
     {
       "pr": 1247,
@@ -49,7 +49,7 @@
       "Taverne Zum Flüstern",
       "Welt"
     ],
-    "worldPublicId": "WO-J9LA4",
+    "worldPublicId": "WO-CTJE5",
     "persistReload": true,
     "conflict": true,
     "strangerDeny": true,
