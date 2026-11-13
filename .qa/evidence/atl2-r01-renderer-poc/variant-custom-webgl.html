@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <title>ATL2-R01 Custom-WebGL product runtime measure</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        background: #0f172a;
+      }
+      #host {
+        width: 1280px;
+        height: 720px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="host" data-atl2-r01-variant="custom-webgl"></div>
+    <script type="module">
+      import { mountAtlasPrototype3d } from '/src/app/world/atlas/unified/prototype3d/atlas-prototype-runtime.mjs';
+
+      const host = document.getElementById('host');
+      const api = mountAtlasPrototype3d(host, {
+        graphicsPreset: {
+          id: 'balanced',
+          maxPixelRatio: 1.5,
+          preferSoftwareFallback: false,
+          antialias: true,
+        },
+      });
+
+      function percentile(sorted, p) {
+        if (!sorted.length) return null;
+        const i = Math.min(sorted.length - 1, Math.max(0, Math.ceil((p / 100) * sorted.length) - 1));
+        return sorted[i];
+      }
+
+      window.__r01Measure = async function r01Measure() {
+        const samples = [];
+        // warm-up
+        for (let i = 0; i < 10; i++) {
+          await new Promise((r) => requestAnimationFrame(r));
+        }
+        for (let i = 0; i < 45; i++) {
+          const t0 = performance.now();
+          await new Promise((r) => requestAnimationFrame(r));
+          samples.push(performance.now() - t0);
+        }
+        const sorted = [...samples].sort((a, b) => a - b);
+        const mem = performance.memory
+          ? {
+              usedJSHeapMb: +(performance.memory.usedJSHeapSize / 1048576).toFixed(2),
+            }
+          : null;
+        return {
+          variant: 'custom-webgl-product-runtime',
+          logicalOk: Boolean(api) && host.querySelector('canvas') != null,
+          frame: {
+            samples: samples.length,
+            p50Ms: +percentile(sorted, 50).toFixed(3),
+            p95Ms: +percentile(sorted, 95).toFixed(3),
+            medianMs: +percentile(sorted, 50).toFixed(3),
+          },
+          memory: mem,
+          hasSoftwareFallbackPath: true,
+          notes: 'mountAtlasPrototype3d product module (AtlasGL/AtlasLite3D)',
+        };
+      };
+
+      window.__r01Ready = true;
+    </script>
+  </body>
+</html>

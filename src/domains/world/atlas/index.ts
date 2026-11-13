@@ -474,7 +474,9 @@ export {
   ATLAS_PRODUCT_3D_HOST_PATH,
   ATLAS_PRODUCT_3D_MODULE_PATH,
   ATLAS_PRODUCT_3D_TARGET,
+  ATLAS_R01_RENDERER_HYBRID_DECISION,
   ATLAS_RENDERER_DECISION,
+  atlasR01AllowsFollowOnRendererWork,
   clampAtlasPixelRatio,
   isProductAtlasRendererTarget,
   resolveAtlasGraphicsPreset,
@@ -482,6 +484,8 @@ export {
   type AtlasGraphicsPresetId,
   type AtlasRendererCandidateId,
   type AtlasRendererDecision,
+  type AtlasRendererHybridDecision,
+  type AtlasRendererHybridVerdict,
 } from './atlas-renderer-target';
 
 export {

@@ -1,0 +1,62 @@
+{
+  "slug": "atl2-r01-renderer-decision",
+  "issue": 1266,
+  "head": "4bfbac4fa5a66b1bc1589d90f459cfae2aa4eede",
+  "verdict": "NO-GO",
+  "productiveOwner": "custom-webgl-prototype-runtime",
+  "checks": [
+    "inventory",
+    "adr-no-go",
+    "single-product-mount",
+    "browser-measure",
+    "typed-strict"
+  ],
+  "variants": {
+    "custom-webgl": {
+      "variant": "custom-webgl-product-runtime",
+      "logicalOk": true,
+      "frame": {
+        "samples": 45,
+        "p50Ms": 16.7,
+        "p95Ms": 48,
+        "medianMs": 16.7
+      },
+      "memory": {
+        "usedJSHeapMb": 9.54
+      },
+      "hasSoftwareFallbackPath": true,
+      "notes": "mountAtlasPrototype3d product module (AtlasGL/AtlasLite3D)"
+    },
+    "three-inventory": {
+      "variant": "three-inventory-prototype",
+      "logicalOk": true,
+      "frame": {
+        "samples": 45,
+        "p50Ms": 16.7,
+        "p95Ms": 17.1,
+        "medianMs": 16.7
+      },
+      "memory": {
+        "usedJSHeapMb": 9.54
+      },
+      "hasSoftwareFallbackPath": false,
+      "notes": "Inventory-style Three scene (SpatialViewport-class geometry); not product chrome"
+    }
+  },
+  "comparison": {
+    "frameP50Ms": {
+      "custom": 16.7,
+      "three": 16.7
+    },
+    "frameP95Ms": {
+      "custom": 48,
+      "three": 17.1
+    },
+    "memoryUsedJSHeapMb": {
+      "custom": 9.54,
+      "three": 9.54
+    },
+    "decisiveWinForThreeProductSwap": false,
+    "rationale": "No decisive p50/p95 win that offsets missing lite/heightfield/diorama/product chrome; ADR NO-GO."
+  }
+}
