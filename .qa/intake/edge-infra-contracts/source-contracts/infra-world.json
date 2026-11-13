@@ -207,7 +207,7 @@
     },
     {
       "path": "src/domains/world/atlas/atlas-product-camera.ts",
-      "sha256": "af9ccd8867bb48b4433207bebfe4ed901517f2b354796f1242480d7f17faaefa"
+      "sha256": "6d65226fe7e6594079b61df81ec39a226d5b79788327ef95609dc70f9980d179"
     },
     {
       "path": "src/domains/world/atlas/atlas-product-geometry-plan.ts",
