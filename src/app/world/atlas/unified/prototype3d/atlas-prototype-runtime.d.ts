@@ -97,6 +97,13 @@ export type AtlasPrototypeMountOptions = {
   readonly mapScale?: AtlasPrototypeMapScale;
   /** DB place labels anchored on the active map. */
   readonly mapPins?: readonly AtlasPrototypeMapPin[] | null;
+  /** ATL2-D01 degradable graphics preset (DPR / antialias / software prefer). */
+  readonly graphicsPreset?: {
+    readonly id: string;
+    readonly maxPixelRatio: number;
+    readonly preferSoftwareFallback: boolean;
+    readonly antialias: boolean;
+  } | null;
 };
 
 export function mountAtlasPrototype3d(
