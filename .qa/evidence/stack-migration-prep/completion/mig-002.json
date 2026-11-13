@@ -4,8 +4,8 @@
   "localId": "MIG-002",
   "result": "PASS",
   "githubClosed": true,
-  "mergeRef": "PR #860 → main (after #782)",
-  "note": "Inventories refreshed after ATL2-D04 Codex heightfield fixes.",
+  "mergeRef": "PR #860 \u2192 main (after #782)",
+  "note": "Inventories refreshed after ATL2-D05 Codex LOD/budget fixes.",
   "checks": [
     {
       "command": "legacy inventory matrix",
@@ -23,8 +23,8 @@
       "command": "edge/infra inventory 25+13",
       "result": "PASS",
       "evidenceFile": ".qa/intake/edge-infra-contracts/inventory.json",
-      "sha256": "6607223bef1893a1a60c2be3946cc4c95105e4f6aa135be753bab68845a84407"
+      "sha256": "b26319d6e9a3fe136bf6791ac2cb6d13b9973ea515306cc59003d17895e3e39d"
     }
   ],
-  "testedCommit": "f04570f7c1ef3142ab11790dd60b1941eff8a5e7"
+  "testedCommit": "995147d1208406b8c573be9ed8353ace855bdde9"
 }

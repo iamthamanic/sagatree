@@ -942,10 +942,21 @@ export function mountAtlasPrototype3d(host, options = {}) {
       b.quad(top[0],top[1],top[2],top[3],'#a8883a');
       for(let i=0;i<4;i++)b.quad(bot[i],bot[(i+1)%4],top[(i+1)%4],top[i],'#8b6914');
     }
+    function productTerrainLodStride(){const s=cameraState.span;if(s>=280)return 4;if(s>=90)return 2;return 1;}
+    function productTerrainMaxTriangles(stride){if(stride>=4)return 800;if(stride>=2)return 2500;return 8000;}
+    function productTerrainStrideForBudget(cols,rows,preferred,maxTris){
+      let stride=Math.max(1,preferred|0||1);
+      const estimate=(s)=>{const cc=Math.ceil((cols-1)/s),rr=Math.ceil((rows-1)/s);return cc*rr*2;};
+      while(estimate(stride)>maxTris&&stride<Math.max(cols,rows))stride+=1;
+      return stride;
+    }
     function productHeightfieldFingerprint(){
       const hf=state.heightfield;if(!hf||!Array.isArray(hf.heights))return'hf:none';
       let sum=0;for(let i=0;i<hf.heights.length;i++)sum+=(Number(hf.heights[i])||0)*(i+1);
-      return`hf:${hf.cols}x${hf.rows}:${hf.cellSize}:${hf.waterLevel}:${(hf.assetRef&&hf.assetRef.version)||0}:${sum.toFixed(3)}`;
+      const preferred=productTerrainLodStride();
+      const maxTris=productTerrainMaxTriangles(preferred);
+      const stride=hf.cols>=2&&hf.rows>=2?productTerrainStrideForBudget(hf.cols,hf.rows,preferred,maxTris):preferred;
+      return`hf:${hf.cols}x${hf.rows}:${hf.cellSize}:${hf.waterLevel}:${(hf.assetRef&&hf.assetRef.version)||0}:${sum.toFixed(3)}:lod${preferred}:s${stride}`;
     }
     function productGeometryFingerprint(){
       const rooms=Array.isArray(state.rooms)?state.rooms:[],strokes=Array.isArray(state.strokes)?state.strokes:[],walls=Array.isArray(state.walls)?state.walls:[],doors=Array.isArray(state.doors)?state.doors:[],props=Array.isArray(state.props)?state.props:[];
@@ -996,17 +1007,34 @@ export function mountAtlasPrototype3d(host, options = {}) {
     function productHeightfieldInto(b){
       const hf=state.heightfield;if(!hf||!Array.isArray(hf.heights)||hf.cols<2||hf.rows<2)return;
       const water=Number(hf.waterLevel)||0;
-      for(let row=0;row<hf.rows-1;row++){
-        for(let col=0;col<hf.cols-1;col++){
-          const x0=hf.originX+col*hf.cellSize,z0=hf.originZ+row*hf.cellSize,x1=x0+hf.cellSize,z1=z0+hf.cellSize;
-          const y00=Number(hf.heights[row*hf.cols+col])||0,y10=Number(hf.heights[row*hf.cols+col+1])||0;
-          const y01=Number(hf.heights[(row+1)*hf.cols+col])||0,y11=Number(hf.heights[(row+1)*hf.cols+col+1])||0;
+      const preferred=productTerrainLodStride();
+      const maxTris=productTerrainMaxTriangles(preferred);
+      const stride=productTerrainStrideForBudget(hf.cols,hf.rows,preferred,maxTris);
+      const coastBudget=Math.max(64,Math.floor(maxTris/4));
+      let triCount=0,coastCount=0;
+      /* ATL2-D05 — LOD/budget stride covers the full chunk without truncating the tail. */
+      for(let row=0;row<hf.rows-1;row+=stride){
+        for(let col=0;col<hf.cols-1;col+=stride){
+          const c1=Math.min(hf.cols-1,col+stride),r1=Math.min(hf.rows-1,row+stride);
+          const x0=hf.originX+col*hf.cellSize,z0=hf.originZ+row*hf.cellSize;
+          const x1=hf.originX+c1*hf.cellSize,z1=hf.originZ+r1*hf.cellSize;
+          const y00=Number(hf.heights[row*hf.cols+col])||0,y10=Number(hf.heights[row*hf.cols+c1])||0;
+          const y01=Number(hf.heights[r1*hf.cols+col])||0,y11=Number(hf.heights[r1*hf.cols+c1])||0;
           const avg=(y00+y10+y01+y11)/4;
-          const color=avg<water?'#1a5f8a':avg<water+2?'#6f9a68':avg<8?'#527b55':'#80908a';
+          const color=avg<water?'#1a5f8a':avg<water+1.5?'#8fb07a':avg<8?'#527b55':'#80908a';
           const p00=[x0,y00,z0],p10=[x1,y10,z0],p01=[x0,y01,z1],p11=[x1,y11,z1];
-          b.tri(p00,p10,p11,color);b.tri(p00,p11,p01,color);
+          b.tri(p00,p10,p11,color);b.tri(p00,p11,p01,color);triCount+=2;
+          if(preferred===1&&stride===1&&coastCount<coastBudget){
+            const sub=h=>h<water;
+            if(sub(y00)!==sub(y10)){const y=Math.max(y00,y10,water)+.05;b.box((x0+x1)/2,y,z0,Math.max(.4,x1-x0),.12,.4,'#d6af65');coastCount+=1;}
+            if(coastCount<coastBudget&&sub(y00)!==sub(y01)){const y=Math.max(y00,y01,water)+.05;b.box(x0,y,(z0+z1)/2,.4,.12,Math.max(.4,z1-z0),'#d6af65');coastCount+=1;}
+          }
         }
       }
+      void triCount;
+      /* Water plane at shore level — same origin/extent as the heightfield chunk. */
+      const wx=hf.originX+(hf.cols*hf.cellSize)/2,wz=hf.originZ+(hf.rows*hf.cellSize)/2;
+      b.plane(wx,wz,hf.cols*hf.cellSize,hf.rows*hf.cellSize,water-0.02,'#1a5f8a');
     }
     let productGeomFingerprint=null;
     /** Stamp footprints match the 2D Draufsicht (drawStamp draws 2D px × size); u = size. */
@@ -1261,7 +1289,7 @@ export function mountAtlasPrototype3d(host, options = {}) {
     function levelFromView(){if(productMap)return'world';const s=cameraState.span,x=cameraState.x,z=cameraState.z;if(s<3.0&&inside(x,z,188,-64,26,20))return'room';if(s<18&&inside(x,z,188,-64,29,25))return'dungeon';if(s<88&&inside(x,z,183,-66,94,82))return'city';if(s<300&&inside(x,z,145,-54,270,210))return'region';return'world';}
     function applyLod(){if(productMap)return productLod();const s=cameraState.span;const empty=isEmptyWorldActive();return{ocean:true,map_world:!empty&&state.layers.world&&s>=18,world3d:!empty&&state.layers.world&&s>90,map_region:!empty&&state.layers.region&&s<300&&s>=18,map_city:!empty&&state.layers.city&&s<100&&s>=18,map_dungeon:!empty&&state.layers.dungeon&&s<19,region3d:!empty&&state.layers.region&&s<200&&s>35,city3d:!empty&&state.layers.city&&s<80&&s>16,dungeon3d:!empty&&state.layers.dungeon&&s<19,grid:!empty&&state.layers.grid&&s<14,manual_world:!empty&&state.layers.stamps&&s>80,manual_region:!empty&&state.layers.stamps&&s<300&&s>32,manual_city:!empty&&state.layers.stamps&&s<95&&s>14,manual_dungeon:!empty&&state.layers.stamps&&s<24,manual_room:!empty&&state.layers.stamps&&s<10};}
     function updateLevel(){const now=levelFromView();if(now!==activeLevel){activeLevel=now;renderNavigation();updateInspector();}if(productMap){updateProductLevelChrome();return;}const land=!isEmptyWorldActive()&&selectedLandId?landDefs.find(l=>l.id===selectedLandId):null;const cont=!isEmptyWorldActive()&&!land&&selectedContinentId?continentDefs.find(c=>c.id===selectedContinentId):null;const current=levels.find(l=>l.id===now);$('level').textContent=land?.tag||cont?.tag||(isEmptyWorldActive()?'OZEAN':(current?.tag||'WELT'));const worldName=(getActiveWorld()?.label)||state.worldLabel||'Welt';$('crumb').textContent=land?`${worldName} › ${land.label}`:cont?`${worldName} › ${cont.label}`:(now==='world'?worldName:[worldName,...levels.filter(l=>l.kind==='stage').slice(0,Math.max(0,['city','dungeon','room'].indexOf(now)+1)).map(x=>x.label)].join(' › '));if(!scaleEdit||scaleEdit.kind!=='zoom'){const z=$('zoom');if(z)z.textContent=zoomPercent()+'%';}updateHotspots();}
-    function drawFrame(){if(engine){syncOceanMesh();engine.render(cameraMatrix(),applyLod());const label=$('engineState');if(label&&label.textContent==='WEBGL wird gestartet')label.textContent=engine.software3D?'3D · SOFTWARE-RENDERER · OFFLINE':'WEBGL · ECHTES 3D · OFFLINE';}updateLevel();}
+    function drawFrame(){if(engine){/* ATL2-D05 — rebuild product meshes when LOD/fingerprint changes (zoom crosses bands). */if(productMap)buildProductGeometry();syncOceanMesh();engine.render(cameraMatrix(),applyLod());const label=$('engineState');if(label&&label.textContent==='WEBGL wird gestartet')label.textContent=engine.software3D?'3D · SOFTWARE-RENDERER · OFFLINE':'WEBGL · ECHTES 3D · OFFLINE';}updateLevel();}
     function updateHotspots(){const opts=[['worldHotspot',145,-54,340,85],['cityHotspot',183,-66,120,24],['dungeonHotspot',188,-64,44,9]];for(const[id,x,z,max,min]of opts){const el=$(id);if(!el)continue;/* Product path: demo hotspots invent geography — hide (#752). */if(productMap||productNavActive()||isEmptyWorldActive()){el.classList.add('hidden');continue;}const ok=cameraState.span<max&&cameraState.span>min;const p=point3dToScreen(x,z,.5);if(ok&&p.x>-10&&p.y>-20&&p.x<stageWidth+10&&p.y<stageHeight+10){el.classList.remove('hidden');el.style.left=p.x+'px';el.style.top=p.y+'px';}else el.classList.add('hidden');}updateMapLabels();}
     function layerTexSize(layer){if(layer==='world')return{w:WORLD_TEX_W,h:WORLD_TEX_H};const cv=baseMapCanvases[layer]||mapCanvases[layer];if(cv)return{w:cv.width,h:cv.height};if(layer==='city')return{w:1000,h:690};if(layer==='region')return{w:1000,h:740};if(layer==='dungeon')return{w:1200,h:800};return{w:1000,h:700};}
     function resolveMapLabelPos(id){const def=MAP_LABEL_DEFAULTS[id];if(!def)return null;const saved=state.mapLabelPos?.[id];if(def.layer==='level'){const lv=levels.find(l=>l.id===(def.id||id));const x=Number.isFinite(saved?.x)?saved.x:(lv?.x??0);const z=Number.isFinite(saved?.z)?saved.z:(lv?.z??0);if(lv&&Number.isFinite(saved?.x)&&Number.isFinite(saved?.z)){lv.x=x;lv.z=z;}return{layer:'level',x,z,size:Number.isFinite(saved?.size)?saved.size:def.size};}return{layer:def.layer,x:Number.isFinite(saved?.x)?saved.x:def.x,y:Number.isFinite(saved?.y)?saved.y:def.y,size:Number.isFinite(saved?.size)?saved.size:def.size};}

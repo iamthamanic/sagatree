@@ -1,0 +1,6 @@
+{
+  "verdict": "CLEAR",
+  "farTriangles": 338,
+  "nearTriangles": 4802,
+  "productTarget": "custom-webgl-prototype-runtime"
+}

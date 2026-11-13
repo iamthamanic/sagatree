@@ -242,6 +242,21 @@ export {
 } from './atlas-product-camera';
 
 export {
+  ATLAS_TERRAIN_MESH_FORMAT,
+  atlasTerrainDenseTriangleUpperBound,
+  atlasTerrainLodFromSpan,
+  atlasTerrainLodStride,
+  atlasTerrainMaxTriangles,
+  atlasTerrainStrideForBudget,
+  atlasTerrainTriangleEstimate,
+  buildAtlasTerrainMeshPlan,
+  type AtlasTerrainCoastEdge,
+  type AtlasTerrainLodBand,
+  type AtlasTerrainMeshPlan,
+  type AtlasTerrainMeshTriangle,
+} from './atlas-terrain-mesh';
+
+export {
   ATLAS_HEIGHTFIELD_DEFAULT_CELL,
   ATLAS_HEIGHTFIELD_DEFAULT_SIZE,
   ATLAS_HEIGHTFIELD_DEFAULT_WATER,
