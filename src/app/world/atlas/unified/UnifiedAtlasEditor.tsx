@@ -787,6 +787,30 @@ export function UnifiedAtlasEditor({
       );
     }
 
+    /* ATL2-D04 — Draufsicht heightfield overlay (same SoT as 3D). */
+    const hf = workingDoc.heightfield;
+    if (hf && Array.isArray(hf.heights) && hf.cols >= 2 && hf.rows >= 2 && layers.terrain) {
+      const water = hf.waterLevel;
+      for (let row = 0; row < hf.rows; row++) {
+        for (let col = 0; col < hf.cols; col++) {
+          const h = hf.heights[row * hf.cols + col] ?? 0;
+          if (Math.abs(h) < 1e-3 && h >= water) continue;
+          const x = hf.originX + col * hf.cellSize;
+          const y = hf.originZ + row * hf.cellSize;
+          if (h < water) {
+            ctx.fillStyle = 'rgba(26,95,138,0.35)';
+          } else if (h < water + 2) {
+            ctx.fillStyle = 'rgba(111,154,104,0.45)';
+          } else if (h < 8) {
+            ctx.fillStyle = 'rgba(82,123,85,0.55)';
+          } else {
+            ctx.fillStyle = 'rgba(128,144,138,0.65)';
+          }
+          ctx.fillRect(x, y, hf.cellSize + 0.5, hf.cellSize + 0.5);
+        }
+      }
+    }
+
     // Zoom LOD only applies to world maps; settlement / interior maps show all of their content.
     const protoLod =
       !isDemo && mapScale === 'world'

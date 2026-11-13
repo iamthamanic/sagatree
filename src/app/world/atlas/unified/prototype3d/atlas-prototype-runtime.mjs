@@ -958,9 +958,16 @@ export function mountAtlasPrototype3d(host, options = {}) {
     }
     function productEnsureHeightfield(){
       if(state.heightfield&&Array.isArray(state.heightfield.heights))return state.heightfield;
-      const cols=32,rows=32,cellSize=8,originX=500-(cols*cellSize)/2,originZ=500-(rows*cellSize)/2;
+      /* Cover product 0–1000 frame so edge brushes hit cells. */
+      const cols=50,rows=50,cellSize=20,originX=0,originZ=0;
       state.heightfield={format:'sagatree-atlas-heightfield-v1',version:1,assetRef:{kind:'inline',version:1},originX,originZ,cellSize,cols,rows,heights:Array.from({length:cols*rows},()=>0),waterLevel:0};
       return state.heightfield;
+    }
+    function productApplyShore(h,waterLevel,wasSubmerged){
+      const clamped=Math.min(120,Math.max(-80,h));
+      if(wasSubmerged)return Math.min(clamped,waterLevel-0.01);
+      if(clamped<waterLevel)return Math.min(clamped,waterLevel-0.01);
+      return clamped;
     }
     function productApplyHeightBrush(p,mode){
       const hf=productEnsureHeightfield();
@@ -973,13 +980,13 @@ export function mountAtlasPrototype3d(host, options = {}) {
           const cx=hf.originX+(col+.5)*hf.cellSize,cz=hf.originZ+(row+.5)*hf.cellSize;
           const dx=cx-p.x,dz=cz-p.z,d2=dx*dx+dz*dz;if(d2>r2)continue;
           const w=1-Math.sqrt(d2)/radius,falloff=w*w,i=row*hf.cols+col,cur=Number(next[i])||0;
+          const wasSubmerged=cur<hf.waterLevel;
           let h=cur;
           if(mode==='raise')h=cur+strength*falloff;
           else if(mode==='lower')h=cur-strength*falloff;
           else if(mode==='flatten')h=cur+(0-cur)*Math.min(1,strength*falloff);
           else{let sum=0,n=0;for(let rr=row-1;rr<=row+1;rr++)for(let cc=col-1;cc<=col+1;cc++){if(rr<0||cc<0||rr>=hf.rows||cc>=hf.cols)continue;sum+=Number(next[rr*hf.cols+cc])||0;n++;}const avg=n?sum/n:cur;h=cur+(avg-cur)*Math.min(1,strength*falloff);}
-          h=Math.min(120,Math.max(-80,h));
-          if(h<hf.waterLevel)h=Math.min(h,hf.waterLevel-0.01);
+          h=productApplyShore(h,hf.waterLevel,wasSubmerged);
           if(h!==cur){next[i]=h;changed=true;}
         }
       }

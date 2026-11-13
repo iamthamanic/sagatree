@@ -394,6 +394,19 @@ export function classifyUnifiedCanvasDoc(
   for (const door of doc.doors ?? []) features.push(classifyDoor(door));
   for (const object of doc.objects) features.push(classifyObject(object));
 
+  if (
+    doc.heightfield &&
+    Array.isArray(doc.heightfield.heights) &&
+    doc.heightfield.heights.length > 0
+  ) {
+    features.push({
+      kind: 'heightfield',
+      id: 'heightfield:primary',
+      authority: ATLAS_FEATURE_AUTHORITY.heightfield,
+      v1Slot: 'meta',
+    });
+  }
+
   for (const layerId of Object.keys(doc.layers)) {
     features.push({
       kind: 'layer_toggle',

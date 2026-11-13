@@ -13,9 +13,11 @@ export const ATLAS_HEIGHTFIELD_VERSION = 1 as const;
 export const ATLAS_HEIGHT_MIN = -80;
 export const ATLAS_HEIGHT_MAX = 120;
 export const ATLAS_HEIGHTFIELD_MAX_CELLS = 128 * 128;
-export const ATLAS_HEIGHTFIELD_DEFAULT_CELL = 8;
-export const ATLAS_HEIGHTFIELD_DEFAULT_SIZE = 32;
+/** Cover product 0–1000 frame (PRODUCT_WORLD_RECT) with one sheet. */
+export const ATLAS_HEIGHTFIELD_DEFAULT_CELL = 20;
+export const ATLAS_HEIGHTFIELD_DEFAULT_SIZE = 50;
 export const ATLAS_HEIGHTFIELD_DEFAULT_WATER = 0;
+export const ATLAS_HEIGHTFIELD_MAP_EXTENT = 1000;
 
 export type AtlasHeightBrushMode = 'raise' | 'lower' | 'smooth' | 'flatten';
 
@@ -71,12 +73,14 @@ export function emptyAtlasHeightfield(seed?: Partial<AtlasHeightfield>): AtlasHe
     seed?.heights && seed.heights.length === len
       ? seed.heights.map((h) => clampAtlasHeight(finite(h) ? h : 0))
       : Array.from({ length: len }, () => 0);
+  /* Default origin covers the product map frame [0, extent] unless overridden. */
+  const defaultOrigin = 0;
   return {
     format: ATLAS_HEIGHTFIELD_FORMAT,
     version: ATLAS_HEIGHTFIELD_VERSION,
     assetRef: seed?.assetRef ?? { kind: 'inline', version: ATLAS_HEIGHTFIELD_VERSION },
-    originX: finite(seed?.originX) ? seed.originX : 500 - (cols * cellSize) / 2,
-    originZ: finite(seed?.originZ) ? seed.originZ : 500 - (rows * cellSize) / 2,
+    originX: finite(seed?.originX) ? seed.originX : defaultOrigin,
+    originZ: finite(seed?.originZ) ? seed.originZ : defaultOrigin,
     cellSize,
     cols,
     rows,
@@ -183,14 +187,19 @@ export function isWaterCell(hf: AtlasHeightfield, col: number, row: number): boo
   return finite(h) && h < hf.waterLevel;
 }
 
-/** Shore rule: cells below waterLevel stay water; brush cannot raise them above shore without leaveWater. */
+/**
+ * Shore rule: cells that were submerged stay below waterLevel unless leaveWater.
+ * Also clamps candidates that would cross the shore from dry→wet without leaveWater
+ * only when previously submerged (raise cannot create land from water).
+ */
 export function applyShoreRule(
   height: number,
   waterLevel: number,
-  opts?: { readonly leaveWater?: boolean },
+  opts?: { readonly leaveWater?: boolean; readonly wasSubmerged?: boolean },
 ): number {
   const h = clampAtlasHeight(height);
   if (opts?.leaveWater) return h;
+  if (opts?.wasSubmerged) return Math.min(h, waterLevel - 0.01);
   if (h < waterLevel) return Math.min(h, waterLevel - 0.01);
   return h;
 }
@@ -219,6 +228,7 @@ export function applyHeightBrush(
       const falloff = w * w;
       const i = heightfieldIndex(hf.cols, col, row);
       const cur = next[i] ?? 0;
+      const wasSubmerged = cur < hf.waterLevel;
       let h = cur;
       if (stroke.mode === 'raise') {
         h = cur + strength * falloff;
@@ -241,7 +251,7 @@ export function applyHeightBrush(
         const avg = n > 0 ? sum / n : cur;
         h = cur + (avg - cur) * Math.min(1, strength * falloff);
       }
-      h = applyShoreRule(h, hf.waterLevel);
+      h = applyShoreRule(h, hf.waterLevel, { wasSubmerged });
       if (h !== cur) {
         next[i] = h;
         changed = true;

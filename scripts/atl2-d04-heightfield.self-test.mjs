@@ -41,12 +41,19 @@ assert.ok(indexSrc.includes('ATLAS_HEIGHTFIELD_FORMAT'));
 assert.ok(runtimeSrc.includes('product_heightfield'));
 assert.ok(runtimeSrc.includes("runtimeId:'height'") || runtimeSrc.includes('tool===\'height\''));
 assert.ok(editorSrc.includes('height: Mountains') || editorSrc.includes("id: 'height'"));
+assert.ok(editorSrc.includes('workingDoc.heightfield') || editorSrc.includes('ATL2-D04'));
 assert.ok(tools.isAtlasToolAllowed('height', null));
+const classified = jiti(join(root, 'src/domains/world/atlas/atlas-canonical-features.ts'));
 
 const empty = hf.emptyAtlasHeightfield({ cols: 8, rows: 8, cellSize: 10 });
 assert.equal(empty.heights.length, 64);
 assert.equal(hf.parseAtlasHeightfield(null), null);
 assert.equal(hf.parseAtlasHeightfield({ format: 'nope' }), null);
+
+const full = hf.emptyAtlasHeightfield();
+assert.equal(full.originX, 0);
+assert.equal(full.originZ, 0);
+assert.ok(full.cols * full.cellSize >= hf.ATLAS_HEIGHTFIELD_MAP_EXTENT - 1e-6);
 
 const raised = hf.applyHeightBrush(empty, {
   mode: 'raise',
@@ -57,6 +64,22 @@ const raised = hf.applyHeightBrush(empty, {
 });
 assert.ok(raised.heights.some((h) => h > 0.5));
 assert.ok(raised.assetRef.version > empty.assetRef.version);
+
+const wet = hf.emptyAtlasHeightfield({
+  cols: 4,
+  rows: 4,
+  cellSize: 10,
+  waterLevel: 0,
+  heights: Array.from({ length: 16 }, () => -2),
+});
+const tryRaiseLand = hf.applyHeightBrush(wet, {
+  mode: 'raise',
+  x: wet.originX + 20,
+  z: wet.originZ + 20,
+  radius: 40,
+  strength: 10,
+});
+assert.ok(tryRaiseLand.heights.every((h) => h < wet.waterLevel));
 
 const smoothed = hf.applyHeightBrush(raised, {
   mode: 'smooth',
@@ -93,6 +116,8 @@ assert.equal(withHill.rooms.length, roomsBefore);
 const roundTrip = canvas.parseUnifiedCanvasDoc(canvas.serializeUnifiedCanvasDoc(withHill));
 assert.ok(roundTrip?.heightfield);
 assert.equal(roundTrip.heightfield.heights.length, withHill.heightfield.heights.length);
+const cat = classified.classifyUnifiedCanvasDoc(withHill, { scale: 'world' });
+assert.ok(cat.counts.heightfield >= 1);
 
 const legacy = canvas.parseUnifiedCanvasDoc({
   format: canvas.UNIFIED_CANVAS_FORMAT,

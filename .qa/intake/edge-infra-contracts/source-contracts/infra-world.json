@@ -187,7 +187,7 @@
     },
     {
       "path": "src/domains/world/atlas/atlas-canonical-features.ts",
-      "sha256": "c1bdcbaf78d8db00dd897828214b69f0778c41b133169434faad2b681c6d2d09"
+      "sha256": "a7e2b9471c960d3839e39f93fe1f6b332f5822620ef589ba4e1a0805dda6c3bd"
     },
     {
       "path": "src/domains/world/atlas/atlas-edit-history.ts",
@@ -195,7 +195,7 @@
     },
     {
       "path": "src/domains/world/atlas/atlas-heightfield.ts",
-      "sha256": "f7cbda89424e147050dbcf3a92f4f9bd718186f2ccf3aa458cfbbd98ed82abeb"
+      "sha256": "1fafa49c651ac14ba5ae1e9a226b38ffeea636935b7e486daa1cdd41090b71fb"
     },
     {
       "path": "src/domains/world/atlas/atlas-map-doc-adapter.ts",
@@ -267,7 +267,7 @@
     },
     {
       "path": "src/domains/world/atlas/index.ts",
-      "sha256": "73335b485abc68b1ab9daeb1ea84e6e623f7936c144493b967fb6e317b9c7d95"
+      "sha256": "8d986995169707562d69aa5b92f0e818f5e685d2b7588649a497798bda4997d0"
     },
     {
       "path": "src/domains/world/atlas/map-edit-ops.ts",
@@ -1243,32 +1243,32 @@
       "kind": "TypeAliasDeclaration",
       "name": "AtlasHeightBrushMode",
       "path": "src/domains/world/atlas/atlas-heightfield.ts",
-      "line": 20,
-      "endLine": 20,
+      "line": 22,
+      "endLine": 22,
       "text": "export type AtlasHeightBrushMode = 'raise' | 'lower' | 'smooth' | 'flatten';"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "AtlasHeightfieldAssetRef",
       "path": "src/domains/world/atlas/atlas-heightfield.ts",
-      "line": 22,
-      "endLine": 27,
+      "line": 24,
+      "endLine": 29,
       "text": "export type AtlasHeightfieldAssetRef = {\n  readonly kind: 'inline' | 'host-asset';\n  /** Host asset id when kind=host-asset; otherwise omitted. */\n  readonly assetId?: string;\n  readonly version: number;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "AtlasHeightfield",
       "path": "src/domains/world/atlas/atlas-heightfield.ts",
-      "line": 29,
-      "endLine": 44,
+      "line": 31,
+      "endLine": 46,
       "text": "export type AtlasHeightfield = {\n  readonly format: typeof ATLAS_HEIGHTFIELD_FORMAT;\n  readonly version: typeof ATLAS_HEIGHTFIELD_VERSION;\n  readonly assetRef: AtlasHeightfieldAssetRef;\n  /** World X of cell (0,0) corner. */\n  readonly originX: number;\n  /** World Z of cell (0,0) corner. */\n  readonly originZ: number;\n  readonly cellSize: number;\n  readonly cols: number;\n  readonly rows: number;\n  /** Row-major heights, length === cols * rows. */\n  readonly heights: readonly number[];\n  /** Shore / water plane; cells below are water-classified. */\n  readonly waterLevel: number;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "AtlasHeightBrushStroke",
       "path": "src/domains/world/atlas/atlas-heightfield.ts",
-      "line": 46,
-      "endLine": 54,
+      "line": 48,
+      "endLine": 56,
       "text": "export type AtlasHeightBrushStroke = {\n  readonly mode: AtlasHeightBrushMode;\n  readonly x: number;\n  readonly z: number;\n  readonly radius: number;\n  readonly strength: number;\n  /** Flatten target height when mode=flatten. */\n  readonly targetHeight?: number;\n};"
     },
     {
