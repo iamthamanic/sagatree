@@ -1,7 +1,7 @@
 {
   "gate": "atl2-e01",
   "issue": 1219,
-  "head": "aea0d5896dcc41a62835367e17d809325b26de95",
+  "head": "10adfbad4c9deb3b9623ecc4332a9eecce4a2eae",
   "host": {
     "chainKinds": [
       "continent",

@@ -1,7 +1,7 @@
 # ATL2-E01 — Primary maps & six-level WorldNode links
 
 - Issue: #1219
-- HEAD: `aea0d5896dcc41a62835367e17d809325b26de95`
+- HEAD: `10adfbad4c9deb3b9623ecc4332a9eecce4a2eae`
 - Verdict: **CLEAR**
 - Date: 2026-11-13
 
