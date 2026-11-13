@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-world.json](source-contracts/infra-world.json) (SHA-256 `f6c6a6e05795030ae9fb86588e3fd13a3ea2958ab7ccd1e3e3383a92ab12e26f`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-world.json](source-contracts/infra-world.json) (SHA-256 `379326d06fe234ad75b7eb35f1262aa97d6a8a529ca95bf488265d677fdb7c84`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -660,7 +660,7 @@ All backend operations are included in the public declarations above.
 | `src/domains/world/atlas/dornhain-golden-hierarchy.ts` | `894d9769af93bcc3655938bbd2e6db5c39dbaf4a386786cb686a19704be9c0c0` |
 | `src/domains/world/atlas/dornhain-golden-reset.ts` | `242b85a727062342a69f934a3b0cb64d3c5c726a71b87548043facd7e62f6c2f` |
 | `src/domains/world/atlas/dornhain-unified-starter.ts` | `5e9afab7ec94b7bef19535be6311b51a2f77c59b5f82b36fcd8b78007cc336f5` |
-| `src/domains/world/atlas/dungeon-generator.ts` | `008fd1b6d2194cdf893e1caec204bcf5288423dc4bad8d52bee012e44b71b642` |
+| `src/domains/world/atlas/dungeon-generator.ts` | `013ccdb248e427f85b51e9dc8dfbf39b5c5d185e106d0024259afe3301fdbbfc` |
 | `src/domains/world/atlas/index.ts` | `4e96880ac11c1b76c3a8bb84259484345de23716eac4f89968dff53b6c731374` |
 | `src/domains/world/atlas/map-edit-ops.ts` | `3440965957e4212748d109f74ce202fa7a320840d5c9f1347b0457347c797b95` |
 | `src/domains/world/atlas/map-frame.ts` | `9764fd49aa74482588fea5ba1e1888131b85f05bdbb202057cfed24d6e3e666f` |

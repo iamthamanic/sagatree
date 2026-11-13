@@ -10,7 +10,8 @@
 
 import type { UnifiedCanvasObject, UnifiedCanvasRoom, UnifiedCanvasWall } from './unified-canvas-doc';
 
-export const DUNGEON_GENERATOR_VERSION = 'sagatree-dungeon-forge-v1' as const;
+/** Bumped when seeded layout semantics change (roles/critical/leaf-guard). */
+export const DUNGEON_GENERATOR_VERSION = 'sagatree-dungeon-forge-v2' as const;
 
 export type DungeonThemeKey = 'ancient' | 'molten' | 'frost' | 'grim' | 'verdant';
 
@@ -772,14 +773,51 @@ export function validateDungeonSemantics(
   }
   let criticalEdgeCount = 0;
   let loopEdgeCount = 0;
+  const critAdj: number[][] = Array.from({ length: rooms.length }, () => []);
   for (const e of edges) {
-    if (e.isCritical) criticalEdgeCount += 1;
     if (e.isLoop) loopEdgeCount += 1;
+    if (!e.isCritical) continue;
+    criticalEdgeCount += 1;
+    if (e.a < 0 || e.b < 0 || e.a >= rooms.length || e.b >= rooms.length) {
+      return {
+        ok: false,
+        error: 'critical edge out of range',
+        entranceId,
+        bossId,
+        criticalEdgeCount,
+        loopEdgeCount,
+        roleCounts,
+      };
+    }
+    critAdj[e.a].push(e.b);
+    critAdj[e.b].push(e.a);
   }
   if (criticalEdgeCount < 1) {
     return {
       ok: false,
       error: 'critical path empty',
+      entranceId,
+      bossId,
+      criticalEdgeCount,
+      loopEdgeCount,
+      roleCounts,
+    };
+  }
+  const seenCrit = new Uint8Array(rooms.length);
+  const q = [entranceId];
+  seenCrit[entranceId] = 1;
+  for (let h = 0; h < q.length; h += 1) {
+    for (const b of critAdj[q[h]]) {
+      if (!seenCrit[b]) {
+        seenCrit[b] = 1;
+        q.push(b);
+      }
+    }
+  }
+  if (!seenCrit[bossId]) {
+    return {
+      ok: false,
+      error: 'boss unreachable via critical edges',
       entranceId,
       bossId,
       criticalEdgeCount,

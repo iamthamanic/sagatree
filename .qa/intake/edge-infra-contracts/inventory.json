@@ -37644,7 +37644,7 @@
           },
           {
             "path": "src/domains/world/atlas/dungeon-generator.ts",
-            "sha256": "008fd1b6d2194cdf893e1caec204bcf5288423dc4bad8d52bee012e44b71b642"
+            "sha256": "013ccdb248e427f85b51e9dc8dfbf39b5c5d185e106d0024259afe3301fdbbfc"
           },
           {
             "path": "src/domains/world/atlas/index.ts",
@@ -37860,7 +37860,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-world.json",
-      "sourceContractSha256": "f6c6a6e05795030ae9fb86588e3fd13a3ea2958ab7ccd1e3e3383a92ab12e26f",
+      "sourceContractSha256": "379326d06fe234ad75b7eb35f1262aa97d6a8a529ca95bf488265d677fdb7c84",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],

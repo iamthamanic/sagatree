@@ -271,7 +271,7 @@
     },
     {
       "path": "src/domains/world/atlas/dungeon-generator.ts",
-      "sha256": "008fd1b6d2194cdf893e1caec204bcf5288423dc4bad8d52bee012e44b71b642"
+      "sha256": "013ccdb248e427f85b51e9dc8dfbf39b5c5d185e106d0024259afe3301fdbbfc"
     },
     {
       "path": "src/domains/world/atlas/index.ts",
@@ -1731,104 +1731,104 @@
       "kind": "TypeAliasDeclaration",
       "name": "DungeonThemeKey",
       "path": "src/domains/world/atlas/dungeon-generator.ts",
-      "line": 15,
-      "endLine": 15,
+      "line": 16,
+      "endLine": 16,
       "text": "export type DungeonThemeKey = 'ancient' | 'molten' | 'frost' | 'grim' | 'verdant';"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "DungeonGenerateParams",
       "path": "src/domains/world/atlas/dungeon-generator.ts",
-      "line": 17,
-      "endLine": 26,
+      "line": 18,
+      "endLine": 27,
       "text": "export type DungeonGenerateParams = {\n  readonly seed: number;\n  readonly roomCount: number;\n  readonly loopChance: number;\n  readonly themeKey: DungeonThemeKey;\n  /** World-space origin for the generated layout. */\n  readonly originX?: number;\n  readonly originY?: number;\n  readonly unitScale?: number;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "MutableEdge",
       "path": "src/domains/world/atlas/dungeon-generator.ts",
-      "line": 75,
-      "endLine": 80,
+      "line": 76,
+      "endLine": 81,
       "text": "type MutableEdge = {\n  a: number;\n  b: number;\n  isLoop: boolean;\n  isCritical: boolean;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "DungeonRoomRole",
       "path": "src/domains/world/atlas/dungeon-generator.ts",
-      "line": 82,
-      "endLine": 88,
+      "line": 83,
+      "endLine": 89,
       "text": "export type DungeonRoomRole =\n  | 'entrance'\n  | 'combat'\n  | 'elite'\n  | 'treasure'\n  | 'shrine'\n  | 'boss';"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "DungeonGeneratedRoom",
       "path": "src/domains/world/atlas/dungeon-generator.ts",
-      "line": 90,
-      "endLine": 98,
+      "line": 91,
+      "endLine": 99,
       "text": "export type DungeonGeneratedRoom = {\n  readonly id: number;\n  readonly cx: number;\n  readonly cy: number;\n  readonly w: number;\n  readonly h: number;\n  readonly type: DungeonRoomRole;\n  readonly depth: number;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "DungeonGeneratedEdge",
       "path": "src/domains/world/atlas/dungeon-generator.ts",
-      "line": 100,
-      "endLine": 105,
+      "line": 101,
+      "endLine": 106,
       "text": "export type DungeonGeneratedEdge = {\n  readonly a: number;\n  readonly b: number;\n  readonly isLoop: boolean;\n  readonly isCritical: boolean;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "DungeonGenerateResult",
       "path": "src/domains/world/atlas/dungeon-generator.ts",
-      "line": 107,
-      "endLine": 124,
+      "line": 108,
+      "endLine": 125,
       "text": "export type DungeonGenerateResult = {\n  readonly valid: boolean;\n  readonly seed: number;\n  readonly generatorVersion: typeof DUNGEON_GENERATOR_VERSION;\n  readonly params: DungeonGenerateParams;\n  readonly rooms: readonly DungeonGeneratedRoom[];\n  readonly edges: readonly DungeonGeneratedEdge[];\n  readonly canvasRooms: readonly UnifiedCanvasRoom[];\n  readonly canvasWalls: readonly UnifiedCanvasWall[];\n  readonly canvasObjects: readonly UnifiedCanvasObject[];\n  readonly stats: {\n    readonly attempts: number;\n    readonly genMs: number;\n    readonly roomCount: number;\n    readonly edgeCount: number;\n  };\n  readonly error?: string;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "Rng",
       "path": "src/domains/world/atlas/dungeon-generator.ts",
-      "line": 126,
-      "endLine": 131,
+      "line": 127,
+      "endLine": 132,
       "text": "type Rng = {\n  raw: () => number;\n  f: (a: number, b: number) => number;\n  i: (a: number, b: number) => number;\n  chance: (p: number) => boolean;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "DelaunayPt",
       "path": "src/domains/world/atlas/dungeon-generator.ts",
-      "line": 154,
-      "endLine": 154,
+      "line": 155,
+      "endLine": 155,
       "text": "type DelaunayPt = { x: number; y: number; i: number };"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "DelaunayTri",
       "path": "src/domains/world/atlas/dungeon-generator.ts",
-      "line": 155,
-      "endLine": 162,
+      "line": 156,
+      "endLine": 163,
       "text": "type DelaunayTri = {\n  a: DelaunayPt;\n  b: DelaunayPt;\n  c: DelaunayPt;\n  ccx: number;\n  ccy: number;\n  r2: number;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "MutableRoom",
       "path": "src/domains/world/atlas/dungeon-generator.ts",
-      "line": 247,
-      "endLine": 256,
+      "line": 248,
+      "endLine": 257,
       "text": "type MutableRoom = {\n  id: number;\n  cx: number;\n  cy: number;\n  w: number;\n  h: number;\n  type: DungeonRoomRole;\n  depth: number;\n  degree: number;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "DungeonSemanticsValidation",
       "path": "src/domains/world/atlas/dungeon-generator.ts",
-      "line": 699,
-      "endLine": 707,
+      "line": 700,
+      "endLine": 708,
       "text": "export type DungeonSemanticsValidation = {\n  readonly ok: boolean;\n  readonly error?: string;\n  readonly entranceId: number;\n  readonly bossId: number;\n  readonly criticalEdgeCount: number;\n  readonly loopEdgeCount: number;\n  readonly roleCounts: Readonly<Record<DungeonRoomRole, number>>;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "DungeonGeneratorMeta",
       "path": "src/domains/world/atlas/dungeon-generator.ts",
-      "line": 867,
-      "endLine": 875,
+      "line": 905,
+      "endLine": 913,
       "text": "export type DungeonGeneratorMeta = {\n  readonly generatorVersion: typeof DUNGEON_GENERATOR_VERSION;\n  readonly seed: number;\n  readonly themeKey: DungeonThemeKey;\n  readonly roomCount: number;\n  readonly loopChance: number;\n  readonly confirmed: boolean;\n  readonly manualDirty?: boolean;\n};"
     },
     {
