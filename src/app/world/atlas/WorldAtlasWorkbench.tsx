@@ -227,7 +227,7 @@ export function WorldAtlasWorkbench({
           targetMapId: nextMapId,
           currentCamera: camera,
         });
-        if (!result.ok) {
+        if (result.ok === false) {
           setHierarchyNavNotice(result.reasonDe);
           return;
         }
@@ -262,7 +262,7 @@ export function WorldAtlasWorkbench({
         childFrame,
         allowUnlocatedOpen: true,
       });
-      if (!result.ok) {
+      if (result.ok === false) {
         setHierarchyNavNotice(result.reasonDe);
         return;
       }
@@ -292,7 +292,7 @@ export function WorldAtlasWorkbench({
       maps: hierarchyMapRefs,
       currentCamera: liveNavCameraRef.current,
     });
-    if (!result.ok) {
+    if (result.ok === false) {
       setHierarchyNavNotice(result.reasonDe);
       return;
     }

@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-world.json](source-contracts/infra-world.json) (SHA-256 `265d17e532d9b8a8f2da1c73aa94eed17f65365ba9cb079cf36999e7a5cb01b4`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-world.json](source-contracts/infra-world.json) (SHA-256 `31a8fb260d0eb180c7f97ebf5b9c3eba9a6a9d02511df1470505218a789fec21`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -652,6 +652,7 @@ All backend operations are included in the public declarations above.
 | `src/domains/world/atlas/atlas-diorama-look.ts` | `a0c2f5ea6af2faabed685d4eff4035dad43b1e82f3d6b2a67e017ddcddf99ea6` |
 | `src/domains/world/atlas/atlas-edit-history.ts` | `13a91efde301ec766d3b0f183affcd794abba9f4c4872c00549e9f631947e294` |
 | `src/domains/world/atlas/atlas-heightfield.ts` | `1fafa49c651ac14ba5ae1e9a226b38ffeea636935b7e486daa1cdd41090b71fb` |
+| `src/domains/world/atlas/atlas-hierarchy-nav.ts` | `c06867348323a2d58054d9518c666ed168c1011a41ac44b38845baecdd145dba` |
 | `src/domains/world/atlas/atlas-map-doc-adapter.ts` | `d85a2ed7b2e6cd9650c4d87664fb09e7b4621779f2a820ed65c421e353caf04a` |
 | `src/domains/world/atlas/atlas-map-pins.ts` | `1421ca01edd55307c341adc3ac74f4c5a7cef87f60fadbbe0faaa141898b4791` |
 | `src/domains/world/atlas/atlas-persist-state.ts` | `84ab0edbd0b525c95b5db85afeb683d335351884ba6c612e94f327719a6b60ca` |
@@ -671,7 +672,7 @@ All backend operations are included in the public declarations above.
 | `src/domains/world/atlas/dornhain-unified-starter.ts` | `5e9afab7ec94b7bef19535be6311b51a2f77c59b5f82b36fcd8b78007cc336f5` |
 | `src/domains/world/atlas/dungeon-generator.ts` | `013ccdb248e427f85b51e9dc8dfbf39b5c5d185e106d0024259afe3301fdbbfc` |
 | `src/domains/world/atlas/dungeon-grid.ts` | `1e564a1f91df01b5e0edb38c3e3976f4809bb053d5d8367b0c5d2666d6f40c4d` |
-| `src/domains/world/atlas/index.ts` | `7295154fb057cb1aa41c74a4f5290c354f0d222ce4b45ac23beb5770f2fc34ba` |
+| `src/domains/world/atlas/index.ts` | `23d8f3878792371bf3aa78a1e369d85b03914c8205d38194dd5d4bf9a61f1801` |
 | `src/domains/world/atlas/map-edit-ops.ts` | `3440965957e4212748d109f74ce202fa7a320840d5c9f1347b0457347c797b95` |
 | `src/domains/world/atlas/map-frame.ts` | `7a5bc6fb6ddcb38efd09fa3adf71889709fa230313a8d241d09cb9f5fa98e7a5` |
 | `src/domains/world/atlas/unified-canvas-doc.ts` | `59fa68591c71d2f0bba3185fffb4adecf8d325464df4701309af76a2a99fbd82` |

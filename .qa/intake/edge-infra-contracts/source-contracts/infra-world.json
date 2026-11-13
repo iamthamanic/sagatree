@@ -202,6 +202,10 @@
       "sha256": "1fafa49c651ac14ba5ae1e9a226b38ffeea636935b7e486daa1cdd41090b71fb"
     },
     {
+      "path": "src/domains/world/atlas/atlas-hierarchy-nav.ts",
+      "sha256": "c06867348323a2d58054d9518c666ed168c1011a41ac44b38845baecdd145dba"
+    },
+    {
       "path": "src/domains/world/atlas/atlas-map-doc-adapter.ts",
       "sha256": "d85a2ed7b2e6cd9650c4d87664fb09e7b4621779f2a820ed65c421e353caf04a"
     },
@@ -279,7 +283,7 @@
     },
     {
       "path": "src/domains/world/atlas/index.ts",
-      "sha256": "7295154fb057cb1aa41c74a4f5290c354f0d222ce4b45ac23beb5770f2fc34ba"
+      "sha256": "23d8f3878792371bf3aa78a1e369d85b03914c8205d38194dd5d4bf9a61f1801"
     },
     {
       "path": "src/domains/world/atlas/map-edit-ops.ts",
@@ -1374,6 +1378,70 @@
       "line": 48,
       "endLine": 56,
       "text": "export type AtlasHeightBrushStroke = {\n  readonly mode: AtlasHeightBrushMode;\n  readonly x: number;\n  readonly z: number;\n  readonly radius: number;\n  readonly strength: number;\n  /** Flatten target height when mode=flatten. */\n  readonly targetHeight?: number;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AtlasHierarchyMapRef",
+      "path": "src/domains/world/atlas/atlas-hierarchy-nav.ts",
+      "line": 13,
+      "endLine": 17,
+      "text": "export type AtlasHierarchyMapRef = {\n  readonly id: string;\n  readonly title: string;\n  readonly parentMapId: string | null;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AtlasNavCameraView",
+      "path": "src/domains/world/atlas/atlas-hierarchy-nav.ts",
+      "line": 20,
+      "endLine": 26,
+      "text": "export type AtlasNavCameraView = {\n  readonly centerX: number;\n  readonly centerY: number;\n  /** Half-height style span (product) or derived from 2D pixelsPerUnit. */\n  readonly span: number;\n  readonly mode: AtlasProductCameraMode;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AtlasHierarchyNavState",
+      "path": "src/domains/world/atlas/atlas-hierarchy-nav.ts",
+      "line": 28,
+      "endLine": 42,
+      "text": "export type AtlasHierarchyNavState = {\n  readonly activeMapId: string;\n  /** Last known camera per map id (session). */\n  readonly snapshots: Readonly<Record<string, AtlasNavCameraView>>;\n  /** Optional fly-to rect when entering a child (parent-space focus). */\n  readonly pendingFocus:\n    | {\n        readonly mapId: string;\n        readonly x: number;\n        readonly y: number;\n        readonly width: number;\n        readonly height: number;\n      }\n    | null;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "EnterChildMapInput",
+      "path": "src/domains/world/atlas/atlas-hierarchy-nav.ts",
+      "line": 119,
+      "endLine": 127,
+      "text": "export type EnterChildMapInput = {\n  readonly state: AtlasHierarchyNavState;\n  readonly childMapId: string;\n  readonly parentCamera: AtlasNavCameraView;\n  /** Child map frame on the current (parent) map — required for scale-true drill. */\n  readonly childFrame: MapFrameMeta | null;\n  /** When true, still switch map but skip fly-to and set unlocated notice. */\n  readonly allowUnlocatedOpen?: boolean;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "EnterChildMapResult",
+      "path": "src/domains/world/atlas/atlas-hierarchy-nav.ts",
+      "line": 129,
+      "endLine": 136,
+      "text": "export type EnterChildMapResult =\n  | {\n      readonly ok: true;\n      readonly state: AtlasHierarchyNavState;\n      readonly unlocated: boolean;\n      readonly noticeDe: string | null;\n    }\n  | { readonly ok: false; readonly reasonDe: string };"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "NavigateAncestorInput",
+      "path": "src/domains/world/atlas/atlas-hierarchy-nav.ts",
+      "line": 183,
+      "endLine": 188,
+      "text": "export type NavigateAncestorInput = {\n  readonly state: AtlasHierarchyNavState;\n  readonly maps: readonly AtlasHierarchyMapRef[];\n  readonly targetMapId: string;\n  readonly currentCamera: AtlasNavCameraView;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "NavigateAncestorResult",
+      "path": "src/domains/world/atlas/atlas-hierarchy-nav.ts",
+      "line": 190,
+      "endLine": 192,
+      "text": "export type NavigateAncestorResult =\n  | { readonly ok: true; readonly state: AtlasHierarchyNavState }\n  | { readonly ok: false; readonly reasonDe: string };"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "HierarchyNavKeyIntent",
+      "path": "src/domains/world/atlas/atlas-hierarchy-nav.ts",
+      "line": 266,
+      "endLine": 266,
+      "text": "export type HierarchyNavKeyIntent = 'back' | 'none';"
     },
     {
       "kind": "TypeAliasDeclaration",
