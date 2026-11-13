@@ -7,6 +7,11 @@
  */
 
 import {
+  parseAtlasHeightfield,
+  serializeAtlasHeightfield,
+  type AtlasHeightfield,
+} from './atlas-heightfield';
+import {
   bboxFromPoints,
   sanitizePolygonPoints,
   validateClosedPolygon,
@@ -21,6 +26,7 @@ export type UnifiedCanvasTool =
   | 'hand'
   | 'select'
   | 'brush'
+  | 'height'
   | 'area'
   | 'road'
   | 'room'
@@ -136,6 +142,11 @@ export type UnifiedCanvasDoc = {
   readonly walls: readonly UnifiedCanvasWall[];
   /** Optional for legacy docs; parsers default to []. */
   readonly doors?: readonly UnifiedCanvasDoor[];
+  /**
+   * Optional heightfield chunk (ATL2-D04). Absent on legacy maps — parsers keep
+   * polygons/strokes untouched when missing or invalid.
+   */
+  readonly heightfield?: AtlasHeightfield | null;
   readonly demoSeed?: boolean;
 };
 
@@ -355,6 +366,10 @@ export function parseUnifiedCanvasDoc(raw: unknown): UnifiedCanvasDoc | null {
     }
   }
 
+  const heightfield =
+    docRaw.heightfield == null ? null : parseAtlasHeightfield(docRaw.heightfield);
+  /* Invalid heightfield is dropped (legacy-compatible) without failing the whole doc. */
+
   return {
     format: UNIFIED_CANVAS_FORMAT,
     layers,
@@ -364,6 +379,7 @@ export function parseUnifiedCanvasDoc(raw: unknown): UnifiedCanvasDoc | null {
     rooms,
     walls,
     doors,
+    ...(heightfield ? { heightfield } : {}),
     demoSeed: docRaw.demoSeed === false ? false : true,
   };
 }
@@ -411,6 +427,9 @@ export function serializeUnifiedCanvasDoc(doc: UnifiedCanvasDoc): UnifiedCanvasD
       t: d.t,
       width: d.width,
     })),
+    ...(doc.heightfield
+      ? { heightfield: serializeAtlasHeightfield(doc.heightfield) }
+      : {}),
     demoSeed: doc.demoSeed !== false,
   };
 }

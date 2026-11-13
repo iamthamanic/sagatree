@@ -5,7 +5,7 @@
   "result": "PASS",
   "githubClosed": true,
   "mergeRef": "PR #860 → main (after #782)",
-  "note": "Inventories refreshed after ATL2-D03 Codex camera projection fixes.",
+  "note": "Inventories refreshed after ATL2-D04 heightfield domain + infra-world rewrite.",
   "checks": [
     {
       "command": "legacy inventory matrix",
@@ -23,7 +23,7 @@
       "command": "edge/infra inventory 25+13",
       "result": "PASS",
       "evidenceFile": ".qa/intake/edge-infra-contracts/inventory.json",
-      "sha256": "0df572ddab442b13ffaf1befbaf732f9109bad6ae03598ab72852265cfcbf4df"
+      "sha256": "8b13a21443b9d4821f059d136511843f97935c435dcb144cbf38b20ed5930726"
     }
   ],
   "testedCommit": "19210a9ccdf1c4c2a1bcc8e3db25cb8a2e4394bd"

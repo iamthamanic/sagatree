@@ -48,6 +48,13 @@ const CONTENT_TOOLS: readonly AtlasToolDef[] = [
     createsCanonicalNode: false,
   },
   {
+    id: 'height',
+    labelDe: 'Höhe',
+    allowedKinds: ['continent', 'country', 'place'],
+    role: 'terrain',
+    createsCanonicalNode: false,
+  },
+  {
     id: 'area',
     labelDe: 'Fläche',
     allowedKinds: ['continent', 'country', 'place'],
@@ -112,6 +119,7 @@ export function atlasToolsForKind(kind: WorldNodeKind | null): readonly AtlasToo
         t.id === 'hand' ||
         t.id === 'select' ||
         t.id === 'brush' ||
+        t.id === 'height' ||
         t.id === 'area' ||
         t.id === 'road' ||
         t.id === 'erase',
@@ -135,6 +143,7 @@ export type WebglRuntimeToolId =
   | 'hand'
   | 'select'
   | 'paint'
+  | 'height'
   | 'area'
   | 'road'
   | 'stamp'
@@ -147,6 +156,7 @@ const WEBGL_RUNTIME_SUPPORT: Readonly<Record<AtlasToolId, boolean>> = {
   hand: true,
   select: true,
   brush: true,
+  height: true,
   area: true,
   road: true,
   wall: true,
@@ -169,6 +179,7 @@ export function webglRuntimeIdToAtlasTool(runtimeId: string): AtlasToolId | null
     'hand',
     'select',
     'brush',
+    'height',
     'area',
     'road',
     'wall',

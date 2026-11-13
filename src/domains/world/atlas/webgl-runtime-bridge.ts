@@ -8,6 +8,11 @@
  * (see atlas-webgl-write-retire.ts). Bidirectional projection remains for mount/import.
  */
 import {
+  parseAtlasHeightfield,
+  serializeAtlasHeightfield,
+  type AtlasHeightfield,
+} from './atlas-heightfield';
+import {
   extractUnifiedCanvasFromGeneratorMeta,
   mergeUnifiedCanvasIntoGeneratorMeta,
   wallPointAt,
@@ -31,6 +36,8 @@ export type WebglRuntimeState = {
   readonly rooms?: readonly unknown[];
   /** ATL2-D02 — door openings projected from UnifiedCanvasDoc (ephemeral seed only). */
   readonly doors?: readonly unknown[];
+  /** ATL2-D04 — heightfield chunk mirrored from UnifiedCanvasDoc (ephemeral seed). */
+  readonly heightfield?: AtlasHeightfield | null;
   readonly layers: Readonly<Record<string, unknown>>;
   readonly [key: string]: unknown;
 };
@@ -357,12 +364,23 @@ export function syncWebglPropsIntoCanvasDoc(
     demoSeed: false,
   };
   // Prefer runtime doors when present (ATL2-D02); otherwise prune orphans from doc (C02).
+  let withDoors: UnifiedCanvasDoc;
   if (Array.isArray(runtime.doors)) {
-    return { ...next, doors: projectDoorsToCanvas(runtime.doors, walls) };
+    withDoors = { ...next, doors: projectDoorsToCanvas(runtime.doors, walls) };
+  } else {
+    const wallIds = new Set(walls.map((w) => w.id));
+    const doors = (doc.doors ?? []).filter((d) => wallIds.has(d.wallId));
+    withDoors = { ...next, doors };
   }
-  const wallIds = new Set(walls.map((w) => w.id));
-  const doors = (doc.doors ?? []).filter((d) => wallIds.has(d.wallId));
-  return { ...next, doors };
+  // ATL2-D04 — heightfield from runtime seed when present; else keep doc field.
+  if (runtime.heightfield === null) {
+    return { ...withDoors, heightfield: null };
+  }
+  if (runtime.heightfield != null) {
+    const hf = parseAtlasHeightfield(runtime.heightfield);
+    return { ...withDoors, ...(hf ? { heightfield: hf } : {}) };
+  }
+  return withDoors;
 }
 
 function objectsToProps(objects: readonly UnifiedCanvasObject[]): unknown[] {
@@ -467,6 +485,7 @@ export function syncCanvasDocIntoWebglRuntime(
     strokes: strokesToWebgl(doc.strokes),
     rooms: roomsToWebgl(doc.rooms),
     doors: doorsToWebgl(doc.doors ?? [], doc.walls),
+    heightfield: doc.heightfield ? serializeAtlasHeightfield(doc.heightfield) : null,
     layers: runtime.layers ?? DEFAULT_WEBGL_LAYERS,
   };
 }

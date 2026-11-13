@@ -19,6 +19,7 @@ import {
   Hand,
   Cursor,
   PaintBrush,
+  Mountains,
   Path,
   Polygon,
   Square,
@@ -232,6 +233,10 @@ type DragState =
   | {
       readonly mode: 'paint';
       readonly strokeId: string;
+    }
+  | {
+      readonly mode: 'height';
+      readonly heightMode: 'raise' | 'lower' | 'smooth' | 'flatten';
     }
   | {
       readonly mode: 'shape';
@@ -1251,7 +1256,39 @@ export function UnifiedAtlasEditor({
       if (roomHit && roomHit.id !== 'w.ocean') {
         if (!canEditFeatureKind(workingDoc, 'room')) return;
         commit(applyMapEdit(workingDoc, { op: 'remove_room', id: roomHit.id }), true);
+        return;
       }
+      if (workingDoc.heightfield?.heights.some((h) => Math.abs(h) > 1e-3)) {
+        commit(applyMapEdit(workingDoc, { op: 'clear_heightfield' }), true);
+      }
+      return;
+    }
+
+    if (tool === 'height') {
+      if (!canEdit) return;
+      const mode = e.altKey
+        ? 'smooth'
+        : e.shiftKey
+          ? 'lower'
+          : e.metaKey || e.ctrlKey
+            ? 'flatten'
+            : 'raise';
+      startEditBatch();
+      commit(
+        applyMapEdit(workingDoc, {
+          op: 'paint_heightfield',
+          stroke: {
+            mode,
+            x: p.x,
+            z: p.y,
+            radius: Math.max(8, brushWidth() * 1.2),
+            strength: mode === 'smooth' ? 0.55 : 1.4,
+            ...(mode === 'flatten' ? { targetHeight: 0 } : {}),
+          },
+        }),
+        true,
+      );
+      dragRef.current = { mode: 'height', heightMode: mode };
       return;
     }
 
@@ -1594,6 +1631,22 @@ export function UnifiedAtlasEditor({
       refresh();
       return;
     }
+    if (drag.mode === 'height') {
+      const next = applyMapEdit(workingDoc, {
+        op: 'paint_heightfield',
+        stroke: {
+          mode: drag.heightMode,
+          x: p.x,
+          z: p.y,
+          radius: Math.max(8, brushWidth() * 1.2),
+          strength: drag.heightMode === 'smooth' ? 0.55 : 1.4,
+          ...(drag.heightMode === 'flatten' ? { targetHeight: 0 } : {}),
+        },
+      });
+      onDocChange(next);
+      refresh();
+      return;
+    }
     if (drag.mode === 'shape') {
       refresh();
       return;
@@ -1757,6 +1810,7 @@ export function UnifiedAtlasEditor({
     hand: Hand,
     select: Cursor,
     brush: PaintBrush,
+    height: Mountains,
     area: Polygon,
     road: Path,
     room: Square,
@@ -2420,6 +2474,8 @@ export function UnifiedAtlasEditor({
               ? 'Objekte'
               : tool === 'area'
                 ? 'Fläche zeichnen'
+                : tool === 'height'
+                  ? 'Höhenpinsel'
                 : tool === 'brush' || tool === 'road'
                   ? 'Welt gestalten'
                   : tool === 'room' || tool === 'wall' || tool === 'door'
@@ -2433,6 +2489,8 @@ export function UnifiedAtlasEditor({
               ? `Ziehe den Ausschnitt für „${locateSession.childTitle}“ auf dieser Elternkarte. Escape bricht ab.`
               : tool === 'area'
                 ? 'Klick setzt Küstenpunkte. Doppelklick oder Enter schließt die Fläche. Escape bricht ab.'
+                : tool === 'height'
+                  ? 'Ziehen hebt Gelände. Shift = absenken, Alt = glätten, Ctrl/Cmd = einebnen. Radierer löscht das Höhenfeld.'
                 : tool === 'door'
                   ? 'Klick auf eine Wand setzt eine Türöffnung. Kein WorldNode wird erzeugt.'
                   : tool === 'room' || tool === 'wall'
