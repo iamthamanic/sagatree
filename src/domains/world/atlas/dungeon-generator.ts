@@ -10,7 +10,8 @@
 
 import type { UnifiedCanvasObject, UnifiedCanvasRoom, UnifiedCanvasWall } from './unified-canvas-doc';
 
-export const DUNGEON_GENERATOR_VERSION = 'sagatree-dungeon-forge-v1' as const;
+/** Bumped when seeded layout semantics change (roles/critical/leaf-guard). */
+export const DUNGEON_GENERATOR_VERSION = 'sagatree-dungeon-forge-v2' as const;
 
 export type DungeonThemeKey = 'ancient' | 'molten' | 'frost' | 'grim' | 'verdant';
 
@@ -23,6 +24,60 @@ export type DungeonGenerateParams = {
   readonly originX?: number;
   readonly originY?: number;
   readonly unitScale?: number;
+};
+
+/** Inclusive clamp used by generateDungeon (Dungeon Forge parity). */
+export const DUNGEON_ROOM_COUNT_MIN = 4 as const;
+export const DUNGEON_ROOM_COUNT_MAX = 80 as const;
+
+const THEME_KEYS: readonly DungeonThemeKey[] = [
+  'ancient',
+  'molten',
+  'frost',
+  'grim',
+  'verdant',
+];
+
+/**
+ * Normalize untrusted / UI params before generation.
+ * Negative / NaN roomCount → min; oversize → max; loopChance → [0,1]; seed → u32.
+ */
+export function normalizeDungeonGenerateParams(
+  params: DungeonGenerateParams,
+): DungeonGenerateParams {
+  const seedRaw = Number(params.seed);
+  const seed = Number.isFinite(seedRaw) ? seedRaw >>> 0 : 0;
+  const roomsRaw = Number(params.roomCount);
+  const roomCount = Number.isFinite(roomsRaw)
+    ? Math.max(DUNGEON_ROOM_COUNT_MIN, Math.min(DUNGEON_ROOM_COUNT_MAX, Math.floor(roomsRaw)))
+    : DUNGEON_ROOM_COUNT_MIN;
+  const loopRaw = Number(params.loopChance);
+  const loopChance = Number.isFinite(loopRaw) ? Math.max(0, Math.min(1, loopRaw)) : 0;
+  const themeKey = THEME_KEYS.includes(params.themeKey) ? params.themeKey : 'ancient';
+  const originX =
+    typeof params.originX === 'number' && Number.isFinite(params.originX) ? params.originX : 0;
+  const originY =
+    typeof params.originY === 'number' && Number.isFinite(params.originY) ? params.originY : 0;
+  const unitScale =
+    typeof params.unitScale === 'number' && Number.isFinite(params.unitScale) && params.unitScale > 0
+      ? params.unitScale
+      : 1;
+  return {
+    seed,
+    roomCount,
+    loopChance,
+    themeKey,
+    originX,
+    originY,
+    unitScale,
+  };
+}
+
+type MutableEdge = {
+  a: number;
+  b: number;
+  isLoop: boolean;
+  isCritical: boolean;
 };
 
 export type DungeonRoomRole =
@@ -201,6 +256,20 @@ type MutableRoom = {
   degree: number;
 };
 
+function roomMaterialForRole(role: DungeonRoomRole): UnifiedCanvasRoom['material'] {
+  switch (role) {
+    case 'entrance':
+      return 'pflaster';
+    case 'boss':
+    case 'elite':
+    case 'treasure':
+    case 'shrine':
+      return 'stein';
+    default:
+      return 'holz';
+  }
+}
+
 function tryGenerate(
   seed: number,
   params: DungeonGenerateParams,
@@ -208,7 +277,10 @@ function tryGenerate(
   stats: { roomCount: number; edgeCount: number };
 } {
   const rng = makeRng(seed);
-  const N = Math.max(4, Math.min(80, Math.floor(params.roomCount)));
+  const N = Math.max(
+    DUNGEON_ROOM_COUNT_MIN,
+    Math.min(DUNGEON_ROOM_COUNT_MAX, Math.floor(params.roomCount)),
+  );
   const R = Math.sqrt(N) * 4.6;
   const rooms: MutableRoom[] = [];
   for (let i = 0; i < N; i += 1) {
@@ -328,7 +400,7 @@ function tryGenerate(
   let mstLenSum = 0;
   for (const i of mstIdx) mstLenSum += elen(delEdges[i]);
   const mstMean = mstLenSum / Math.max(1, mstIdx.size);
-  const edges: DungeonGeneratedEdge[] = [];
+  const edges: MutableEdge[] = [];
   delEdges.forEach((e, idx) => {
     if (mstIdx.has(idx)) {
       edges.push({ a: e[0], b: e[1], isLoop: false, isCritical: false });
@@ -339,6 +411,35 @@ function tryGenerate(
   for (const e of edges) {
     rooms[e.a].degree += 1;
     rooms[e.b].degree += 1;
+  }
+
+  /* Leaf guard (Dungeon Forge): large dungeons need dead ends — prune loops until ≥3 leaves. */
+  if (N >= 20) {
+    let leafCount = 0;
+    for (let i = 0; i < N; i += 1) if (rooms[i].degree === 1) leafCount += 1;
+    while (leafCount < 3) {
+      let bi = -1;
+      let bs = -1;
+      for (let i = 0; i < edges.length; i += 1) {
+        const e = edges[i];
+        if (!e.isLoop) continue;
+        const s = (rooms[e.a].degree === 2 ? 1 : 0) + (rooms[e.b].degree === 2 ? 1 : 0);
+        const L = Math.hypot(
+          centers[e.a].x - centers[e.b].x,
+          centers[e.a].y - centers[e.b].y,
+        );
+        const score = s * 10000 + L;
+        if (score > bs) {
+          bs = score;
+          bi = i;
+        }
+      }
+      if (bi < 0) break;
+      const e = edges[bi];
+      if (--rooms[e.a].degree === 1) leafCount += 1;
+      if (--rooms[e.b].degree === 1) leafCount += 1;
+      edges.splice(bi, 1);
+    }
   }
 
   const gAdj: Array<Array<{ b: number; i: number }>> = Array.from({ length: N }, () => []);
@@ -383,6 +484,19 @@ function tryGenerate(
       }
     }
   }
+  if (entrance < 0) {
+    return {
+      valid: false,
+      seed,
+      rooms: [],
+      edges: [],
+      canvasRooms: [],
+      canvasWalls: [],
+      canvasObjects: [],
+      stats: { roomCount: 0, edgeCount: 0 },
+      error: 'entrance unresolved',
+    };
+  }
   const dE = distFrom(entrance);
   let maxDepth = 1;
   for (let i = 0; i < N; i += 1) if (dE[i] > maxDepth) maxDepth = dE[i];
@@ -391,6 +505,70 @@ function tryGenerate(
   });
   rooms[entrance].type = 'entrance';
   rooms[boss].type = 'boss';
+
+  /* Critical path entrance → boss (Dungeon Forge). */
+  const par = new Int32Array(N).fill(-1);
+  const pe = new Int32Array(N).fill(-1);
+  {
+    const q = [entrance];
+    const vis = new Uint8Array(N);
+    vis[entrance] = 1;
+    for (let h = 0; h < q.length; h += 1) {
+      const a = q[h];
+      for (const e of gAdj[a]) {
+        if (!vis[e.b]) {
+          vis[e.b] = 1;
+          par[e.b] = a;
+          pe[e.b] = e.i;
+          q.push(e.b);
+        }
+      }
+    }
+  }
+  const critRooms = new Set<number>();
+  for (let c = boss; c !== -1; c = par[c]) {
+    critRooms.add(c);
+    if (pe[c] >= 0) edges[pe[c]].isCritical = true;
+    if (c === entrance) break;
+  }
+
+  const leaves: number[] = [];
+  for (let i = 0; i < N; i += 1) {
+    if (i !== entrance && i !== boss && rooms[i].degree === 1) leaves.push(i);
+  }
+  leaves.sort((a, b) => rooms[b].depth - rooms[a].depth);
+  leaves.slice(0, 4).forEach((i) => {
+    rooms[i].type = 'treasure';
+  });
+
+  const shrineC: number[] = [];
+  for (let i = 0; i < N; i += 1) {
+    const r = rooms[i];
+    if (
+      r.type === 'combat' &&
+      !critRooms.has(i) &&
+      r.depth > maxDepth * 0.3 &&
+      r.depth < maxDepth * 0.85
+    ) {
+      shrineC.push(i);
+    }
+  }
+  for (let k = 0; k < 2 && shrineC.length > 0; k += 1) {
+    const j = shrineC.splice(rng.i(0, shrineC.length - 1), 1)[0];
+    rooms[j].type = 'shrine';
+  }
+
+  const eliteC: number[] = [];
+  for (const i of critRooms) {
+    const r = rooms[i];
+    if (r.type === 'combat' && r.depth >= maxDepth * 0.55 && r.depth <= maxDepth * 0.85) {
+      eliteC.push(i);
+    }
+  }
+  eliteC.sort((a, b) => rooms[a].depth - rooms[b].depth);
+  for (let k = 0; k < Math.min(2, eliteC.length); k += 1) {
+    rooms[eliteC[eliteC.length - 1 - k]].type = 'elite';
+  }
 
   const ox = params.originX ?? 0;
   const oy = params.originY ?? 0;
@@ -402,7 +580,7 @@ function tryGenerate(
     y: oy + (r.cy - r.h / 2) * scale,
     w: r.w * scale,
     h: r.h * scale,
-    material: r.type === 'boss' ? 'stein' : r.type === 'entrance' ? 'pflaster' : 'holz',
+    material: roomMaterialForRole(r.type),
   }));
 
   const canvasWalls: UnifiedCanvasWall[] = [];
@@ -463,6 +641,13 @@ function tryGenerate(
     },
   ];
 
+  const frozenEdges: DungeonGeneratedEdge[] = edges.map((e) => ({
+    a: e.a,
+    b: e.b,
+    isLoop: e.isLoop,
+    isCritical: e.isCritical,
+  }));
+
   return {
     valid: true,
     seed,
@@ -475,20 +660,22 @@ function tryGenerate(
       type: r.type,
       depth: r.depth,
     })),
-    edges,
+    edges: frozenEdges,
     canvasRooms,
     canvasWalls,
     canvasObjects,
-    stats: { roomCount: N, edgeCount: edges.length },
+    stats: { roomCount: N, edgeCount: frozenEdges.length },
   };
 }
 
-/** Validate graph connectivity (all rooms reachable from entrance via edges). */
+/** Validate graph connectivity (all rooms reachable from any start via edges). */
 export function validateDungeonConnectivity(
   roomCount: number,
   edges: readonly DungeonGeneratedEdge[],
+  startRoomId = 0,
 ): boolean {
   if (roomCount < 2) return false;
+  if (startRoomId < 0 || startRoomId >= roomCount) return false;
   const adj: number[][] = Array.from({ length: roomCount }, () => []);
   for (const e of edges) {
     if (e.a < 0 || e.b < 0 || e.a >= roomCount || e.b >= roomCount) return false;
@@ -496,8 +683,8 @@ export function validateDungeonConnectivity(
     adj[e.b].push(e.a);
   }
   const seen = new Uint8Array(roomCount);
-  const q = [0];
-  seen[0] = 1;
+  const q = [startRoomId];
+  seen[startRoomId] = 1;
   for (let h = 0; h < q.length; h += 1) {
     for (const b of adj[q[h]]) {
       if (!seen[b]) {
@@ -510,16 +697,170 @@ export function validateDungeonConnectivity(
   return true;
 }
 
+export type DungeonSemanticsValidation = {
+  readonly ok: boolean;
+  readonly error?: string;
+  readonly entranceId: number;
+  readonly bossId: number;
+  readonly criticalEdgeCount: number;
+  readonly loopEdgeCount: number;
+  readonly roleCounts: Readonly<Record<DungeonRoomRole, number>>;
+};
+
+/** Entrance/boss uniqueness, critical path, and role inventory (Dungeon Forge semantics). */
+export function validateDungeonSemantics(
+  rooms: readonly DungeonGeneratedRoom[],
+  edges: readonly DungeonGeneratedEdge[],
+): DungeonSemanticsValidation {
+  const roleCounts: Record<DungeonRoomRole, number> = {
+    entrance: 0,
+    combat: 0,
+    elite: 0,
+    treasure: 0,
+    shrine: 0,
+    boss: 0,
+  };
+  let entranceId = -1;
+  let bossId = -1;
+  for (const r of rooms) {
+    roleCounts[r.type] += 1;
+    if (r.type === 'entrance') entranceId = r.id;
+    if (r.type === 'boss') bossId = r.id;
+  }
+  if (roleCounts.entrance !== 1 || entranceId < 0) {
+    return {
+      ok: false,
+      error: 'expected exactly one entrance',
+      entranceId,
+      bossId,
+      criticalEdgeCount: 0,
+      loopEdgeCount: 0,
+      roleCounts,
+    };
+  }
+  if (roleCounts.boss !== 1 || bossId < 0) {
+    return {
+      ok: false,
+      error: 'expected exactly one boss',
+      entranceId,
+      bossId,
+      criticalEdgeCount: 0,
+      loopEdgeCount: 0,
+      roleCounts,
+    };
+  }
+  if (entranceId === bossId) {
+    return {
+      ok: false,
+      error: 'entrance and boss must differ',
+      entranceId,
+      bossId,
+      criticalEdgeCount: 0,
+      loopEdgeCount: 0,
+      roleCounts,
+    };
+  }
+  if (!validateDungeonConnectivity(rooms.length, edges, entranceId)) {
+    return {
+      ok: false,
+      error: 'graph not connected from entrance',
+      entranceId,
+      bossId,
+      criticalEdgeCount: 0,
+      loopEdgeCount: 0,
+      roleCounts,
+    };
+  }
+  let criticalEdgeCount = 0;
+  let loopEdgeCount = 0;
+  const critAdj: number[][] = Array.from({ length: rooms.length }, () => []);
+  for (const e of edges) {
+    if (e.isLoop) loopEdgeCount += 1;
+    if (!e.isCritical) continue;
+    criticalEdgeCount += 1;
+    if (e.a < 0 || e.b < 0 || e.a >= rooms.length || e.b >= rooms.length) {
+      return {
+        ok: false,
+        error: 'critical edge out of range',
+        entranceId,
+        bossId,
+        criticalEdgeCount,
+        loopEdgeCount,
+        roleCounts,
+      };
+    }
+    critAdj[e.a].push(e.b);
+    critAdj[e.b].push(e.a);
+  }
+  if (criticalEdgeCount < 1) {
+    return {
+      ok: false,
+      error: 'critical path empty',
+      entranceId,
+      bossId,
+      criticalEdgeCount,
+      loopEdgeCount,
+      roleCounts,
+    };
+  }
+  const seenCrit = new Uint8Array(rooms.length);
+  const q = [entranceId];
+  seenCrit[entranceId] = 1;
+  for (let h = 0; h < q.length; h += 1) {
+    for (const b of critAdj[q[h]]) {
+      if (!seenCrit[b]) {
+        seenCrit[b] = 1;
+        q.push(b);
+      }
+    }
+  }
+  if (!seenCrit[bossId]) {
+    return {
+      ok: false,
+      error: 'boss unreachable via critical edges',
+      entranceId,
+      bossId,
+      criticalEdgeCount,
+      loopEdgeCount,
+      roleCounts,
+    };
+  }
+  return {
+    ok: true,
+    entranceId,
+    bossId,
+    criticalEdgeCount,
+    loopEdgeCount,
+    roleCounts,
+  };
+}
+
+/** Stable fingerprint for reference / determinism tests (rooms + edges + canvas IDs). */
+export function fingerprintDungeonLayout(result: DungeonGenerateResult): string {
+  const rooms = result.rooms.map((r) => `${r.id}:${r.cx},${r.cy},${r.w}x${r.h}:${r.type}:${r.depth}`);
+  const edges = result.edges.map(
+    (e) => `${Math.min(e.a, e.b)}-${Math.max(e.a, e.b)}:${e.isLoop ? 'L' : 'T'}${e.isCritical ? 'C' : ''}`,
+  );
+  const ids = [
+    ...result.canvasRooms.map((r) => r.id),
+    ...result.canvasWalls.map((w) => w.id),
+    ...result.canvasObjects.map((o) => o.id),
+  ];
+  return `v=${result.generatorVersion};seed=${result.seed};rooms=[${rooms.join('|')}];edges=[${edges.join('|')}];ids=[${ids.join('|')}]`;
+}
+
 export function generateDungeon(params: DungeonGenerateParams): DungeonGenerateResult {
+  const normalized = normalizeDungeonGenerateParams(params);
   const t0 = typeof performance !== 'undefined' ? performance.now() : Date.now();
   let attempt = 0;
-  let seed = params.seed >>> 0;
+  let seed = normalized.seed;
   let last: ReturnType<typeof tryGenerate> | null = null;
   while (attempt < 5) {
-    last = tryGenerate(seed, { ...params, seed });
+    last = tryGenerate(seed, { ...normalized, seed });
     if (
       last.valid &&
-      validateDungeonConnectivity(last.rooms.length, last.edges)
+      validateDungeonConnectivity(last.rooms.length, last.edges) &&
+      validateDungeonSemantics(last.rooms, last.edges).ok
     ) {
       break;
     }
@@ -527,12 +868,12 @@ export function generateDungeon(params: DungeonGenerateParams): DungeonGenerateR
     attempt += 1;
   }
   const t1 = typeof performance !== 'undefined' ? performance.now() : Date.now();
-  if (!last || !last.valid) {
+  if (!last || !last.valid || !validateDungeonSemantics(last.rooms, last.edges).ok) {
     return {
       valid: false,
-      seed: params.seed >>> 0,
+      seed: normalized.seed,
       generatorVersion: DUNGEON_GENERATOR_VERSION,
-      params,
+      params: normalized,
       rooms: [],
       edges: [],
       canvasRooms: [],
@@ -546,7 +887,7 @@ export function generateDungeon(params: DungeonGenerateParams): DungeonGenerateR
     valid: true,
     seed: last.seed,
     generatorVersion: DUNGEON_GENERATOR_VERSION,
-    params: { ...params, seed: last.seed },
+    params: { ...normalized, seed: last.seed },
     rooms: last.rooms,
     edges: last.edges,
     canvasRooms: last.canvasRooms,
@@ -601,8 +942,7 @@ export function extractDungeonMetaFromGeneratorMeta(
   const loopChance =
     typeof row.loopChance === 'number' && Number.isFinite(row.loopChance) ? row.loopChance : 0.18;
   const themeRaw = typeof row.themeKey === 'string' ? row.themeKey : 'ancient';
-  const themeKeys: readonly DungeonThemeKey[] = ['ancient', 'molten', 'frost', 'grim', 'verdant'];
-  const themeKey = themeKeys.includes(themeRaw as DungeonThemeKey)
+  const themeKey = THEME_KEYS.includes(themeRaw as DungeonThemeKey)
     ? (themeRaw as DungeonThemeKey)
     : 'ancient';
   if (seed == null || roomCount == null) return null;

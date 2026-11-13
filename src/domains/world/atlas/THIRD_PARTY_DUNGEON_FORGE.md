@@ -1,13 +1,16 @@
 # Third-party: Dungeon Forge
 
 SagaTree’s procedural dungeon generator (`dungeon-generator.ts`) adapts the
-deterministic pipeline (scatter → separate → Delaunay → MST + loops → semantics)
-from **Dungeon Forge** by Majid Manzarpour.
+deterministic pipeline (scatter → separate → Delaunay → MST + loops → leaf guard
+→ critical path → room roles) from **Dungeon Forge** by Majid Manzarpour.
 
 - Upstream: https://github.com/majidmanzarpour/threejs-procedural-dungeon
 - License: MIT © 2026 Majid Manzarpour (see LICENSE text below)
 - Scope of use: generation algorithm only — not the Three.js showcase renderer,
-  post-processing stack, or UI chrome.
+  post-processing stack, monolith `src/main.js` UI, or rasterize/prop kits
+  (those product slices live under Atlas V2 F02+).
+- Import boundary: keep logic in `src/domains/world/atlas/dungeon-generator.ts`;
+  do not vendor the upstream React/Three demo into `src/app/**`.
 
 ## MIT License (upstream)
 

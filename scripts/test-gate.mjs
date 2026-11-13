@@ -2002,6 +2002,11 @@ function checkWorldAtlasEditor() {
     cwd: root,
     stdio: 'inherit',
   });
+  console.log('ATL2-F01 dungeon forge algorithm parity (#1224)...');
+  execFileSync(process.execPath, ['scripts/atl2-f01-dungeon-parity.self-test.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
   console.log('Atlas settlement presets: Großstadt/Stadt/Dorf seedKeys...');
   execFileSync(process.execPath, ['scripts/atlas-settlement-presets.self-test.mjs'], {
     cwd: root,

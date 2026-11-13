@@ -22,10 +22,17 @@ function mustInclude(rel, needles) {
 mustInclude('src/domains/world/atlas/dungeon-generator.ts', [
   'generateDungeon',
   'validateDungeonConnectivity',
+  'validateDungeonSemantics',
+  'normalizeDungeonGenerateParams',
+  'fingerprintDungeonLayout',
   'DUNGEON_GENERATOR_VERSION',
   'buildDungeonGeneratorMeta',
   'dungeonNeedsReforgeConfirm',
   'manualDirty',
+  "type = 'treasure'",
+  "type = 'shrine'",
+  "type = 'elite'",
+  'isCritical = true',
 ]);
 mustInclude('src/domains/world/atlas/THIRD_PARTY_DUNGEON_FORGE.md', ['MIT', 'Majid Manzarpour']);
 mustInclude('third_party/dungeon-forge/LICENSE', ['MIT License', 'Majid Manzarpour']);
@@ -56,7 +63,7 @@ if (build.status !== 0) {
 }
 
 const mod = await import(pathToFileURL(bundle).href);
-const { generateDungeon, validateDungeonConnectivity } = mod;
+const { generateDungeon, validateDungeonConnectivity, validateDungeonSemantics } = mod;
 const a = generateDungeon({
   seed: 4242,
   roomCount: 16,
@@ -67,7 +74,11 @@ const a = generateDungeon({
   unitScale: 1,
 });
 if (!a.valid) throw new Error(`gen failed: ${a.error}`);
-if (!validateDungeonConnectivity(a.rooms.length, a.edges)) throw new Error('disconnected');
+const sem = validateDungeonSemantics(a.rooms, a.edges);
+if (!sem.ok) throw new Error(`semantics: ${sem.error}`);
+if (!validateDungeonConnectivity(a.rooms.length, a.edges, sem.entranceId)) {
+  throw new Error('disconnected');
+}
 if (a.canvasRooms.length !== a.rooms.length) throw new Error('room export mismatch');
 if (a.canvasWalls.length < a.rooms.length) throw new Error('walls missing');
 const b = generateDungeon({
@@ -80,6 +91,7 @@ const b = generateDungeon({
   unitScale: 1,
 });
 if (JSON.stringify(a.rooms) !== JSON.stringify(b.rooms)) throw new Error('not deterministic');
+if (JSON.stringify(a.edges) !== JSON.stringify(b.edges)) throw new Error('edges not deterministic');
 
 console.log(
   JSON.stringify({
@@ -87,6 +99,9 @@ console.log(
     seed: a.seed,
     rooms: a.stats.roomCount,
     edges: a.stats.edgeCount,
+    critical: sem.criticalEdgeCount,
+    loops: sem.loopEdgeCount,
+    roles: sem.roleCounts,
     genMs: +a.stats.genMs.toFixed(3),
   }),
 );
