@@ -107,6 +107,13 @@ import { Button } from '../../../../shared/ui/button';
 import { Input } from '../../../../shared/ui/input';
 import { Label } from '../../../../shared/ui/label';
 import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '../../../../shared/ui/sheet';
+import {
   placeKindForAuthor,
   resolveAtlasLodFromPlaces,
   seedKeyForAuthor,
@@ -530,6 +537,7 @@ export function UnifiedAtlasEditor({
   const editHistoryRef = useRef(editHistory);
   editHistoryRef.current = editHistory;
   const [historyLive, setHistoryLive] = useState('');
+  const [layersSheetOpen, setLayersSheetOpen] = useState(false);
   const [, bump] = useState(0);
   pinArmedRef.current = pinArmed;
   marqueeArmedRef.current = marqueeArmed;
@@ -1899,12 +1907,13 @@ export function UnifiedAtlasEditor({
   if (!isDemo && surfaceMode === '3d') {
     return (
       <div
-        className="relative flex h-full min-h-0 w-full min-w-0 flex-col"
+        className="relative flex h-full min-h-0 w-full min-w-0 flex-col pb-[max(0.5rem,env(safe-area-inset-bottom))]"
         data-unified-atlas-editor
         data-atlas-demo="false"
         data-atlas-world-starter={isWorldStarter ? 'true' : undefined}
         data-atlas-proto-exact="true"
         data-atlas-surface-mode="3d"
+        data-atlas-surface-class="workstation"
       >
         {canEdit ? (
           // Center-top: right-3 overlaps #tools „Werkzeuge“ fold (Atlas E2E / product journeys).
@@ -1944,62 +1953,8 @@ export function UnifiedAtlasEditor({
     );
   }
 
-  return (
-    <div
-      className="@container/atlas flex h-full min-h-0 w-full min-w-0 flex-col gap-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]"
-      data-unified-atlas-editor
-      data-atlas-demo={isDemo ? 'true' : 'false'}
-      data-atlas-world-starter={isWorldStarter ? 'true' : undefined}
-      data-atlas-surface-mode={!isDemo ? '2d' : undefined}
-      data-atlas-surface-class="workstation"
-    >
-      <p className="sr-only" role="status" aria-live="polite" data-atlas-history-live>
-        {historyLive}
-      </p>
-      <p
-        className="text-[11px] text-muted-foreground @[48rem]:hidden"
-        data-atlas-interaction-hint
-      >
-        {atlasInteractionModeLabelDe('touch')} · Werkzeuge oben rechts; Meta/Karten über Sheets.
-      </p>
-      {!isDemo ? (
-        <div className="flex flex-wrap items-center gap-2" data-atlas-surface-bar>
-          <Button
-            type="button"
-            variant="outline"
-            className="min-h-11"
-            data-atlas-surface-toggle
-            aria-label="Zur 3D-Ansicht wechseln"
-            onClick={() => setSurfaceMode('3d')}
-          >
-            3D-Ansicht
-          </Button>
-          <p className="text-xs text-muted-foreground">
-            Draufsicht — dieselben Objekt-IDs wie in 3D (gespeicherter Edit-Store).
-          </p>
-          {surfaceActions ? (
-            <div className="ml-auto flex flex-wrap items-center gap-2" data-atlas-surface-actions>
-              {surfaceActions}
-            </div>
-          ) : null}
-        </div>
-      ) : null}
-      {isDemo && workingDoc.strokes.length === 0 ? (
-        <div
-          className="rounded-md border border-primary/40 bg-primary/10 px-3 py-2 text-sm text-foreground"
-          data-unified-atlas-demo-badge
-          role="status"
-        >
-          Beispielwelt / Demo — Eldoria → Dornhain → Kupferlaterne (nicht kanonisch). Zeichnungen
-          speichern überschreibt den Demo-Hinweis.
-        </div>
-      ) : null}
-
-      <div className="grid min-h-0 flex-1 gap-2 @[48rem]:grid-cols-[12rem_minmax(0,1fr)_14rem]">
-        <aside
-          className="hidden min-h-0 space-y-3 overflow-auto rounded-lg border border-border p-2 @[48rem]:block"
-          data-unified-chrome
-        >
+  const renderLayersChrome = () => (
+    <div className="space-y-3" data-atlas-layers-chrome>
           <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
             {isDemo ? 'Zoom-Stufen · Demo' : 'Orte auf dieser Karte'}
           </p>
@@ -2109,6 +2064,91 @@ export function UnifiedAtlasEditor({
           >
             {isDemo || mapScale === 'world' ? 'Zur Weltkarte' : 'Ganze Karte zeigen'}
           </Button>
+    </div>
+  );
+
+  return (
+    <div
+      className="@container/atlas flex h-full min-h-0 w-full min-w-0 flex-col gap-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]"
+      data-unified-atlas-editor
+      data-atlas-demo={isDemo ? 'true' : 'false'}
+      data-atlas-world-starter={isWorldStarter ? 'true' : undefined}
+      data-atlas-surface-mode={!isDemo ? '2d' : undefined}
+      data-atlas-surface-class="workstation"
+    >
+      <p className="sr-only" role="status" aria-live="polite" data-atlas-history-live>
+        {historyLive}
+      </p>
+      <div
+        className="flex flex-wrap items-center gap-2 @[48rem]:hidden"
+        data-atlas-interaction-hint
+      >
+        <p className="min-w-0 flex-1 text-[11px] text-muted-foreground">
+          {atlasInteractionModeLabelDe('touch')} · Werkzeuge oben rechts.
+        </p>
+        <Sheet open={layersSheetOpen} onOpenChange={setLayersSheetOpen}>
+          <SheetTrigger asChild>
+            <Button
+              type="button"
+              variant="outline"
+              className="min-h-11"
+              data-atlas-layers-sheet-trigger
+            >
+              Ebenen
+            </Button>
+          </SheetTrigger>
+          <SheetContent
+            side="left"
+            className="w-[min(100%,20rem)] overflow-y-auto pb-[max(1rem,env(safe-area-inset-bottom))]"
+          >
+            <SheetHeader>
+              <SheetTitle>Ebenen & Orte</SheetTitle>
+            </SheetHeader>
+            <div className="mt-4" data-atlas-layers-sheet data-unified-chrome>
+              {renderLayersChrome()}
+            </div>
+          </SheetContent>
+        </Sheet>
+      </div>
+      {!isDemo ? (
+        <div className="flex flex-wrap items-center gap-2" data-atlas-surface-bar>
+          <Button
+            type="button"
+            variant="outline"
+            className="min-h-11"
+            data-atlas-surface-toggle
+            aria-label="Zur 3D-Ansicht wechseln"
+            onClick={() => setSurfaceMode('3d')}
+          >
+            3D-Ansicht
+          </Button>
+          <p className="text-xs text-muted-foreground">
+            Draufsicht — dieselben Objekt-IDs wie in 3D (gespeicherter Edit-Store).
+          </p>
+          {surfaceActions ? (
+            <div className="ml-auto flex flex-wrap items-center gap-2" data-atlas-surface-actions>
+              {surfaceActions}
+            </div>
+          ) : null}
+        </div>
+      ) : null}
+      {isDemo && workingDoc.strokes.length === 0 ? (
+        <div
+          className="rounded-md border border-primary/40 bg-primary/10 px-3 py-2 text-sm text-foreground"
+          data-unified-atlas-demo-badge
+          role="status"
+        >
+          Beispielwelt / Demo — Eldoria → Dornhain → Kupferlaterne (nicht kanonisch). Zeichnungen
+          speichern überschreibt den Demo-Hinweis.
+        </div>
+      ) : null}
+
+      <div className="grid min-h-0 flex-1 gap-2 @[48rem]:grid-cols-[12rem_minmax(0,1fr)_14rem]">
+        <aside
+          className="hidden min-h-0 space-y-3 overflow-auto rounded-lg border border-border p-2 @[48rem]:block"
+          data-unified-chrome
+        >
+          {renderLayersChrome()}
         </aside>
 
         <section className="flex min-h-0 min-w-0 flex-col">

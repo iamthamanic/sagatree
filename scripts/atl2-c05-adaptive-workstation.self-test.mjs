@@ -33,6 +33,11 @@ assert.ok(ed.includes('data-atlas-history-live'));
 assert.ok(ed.includes('data-atlas-interaction-hint'));
 assert.ok(ed.includes('@container/atlas'));
 assert.ok(ed.includes('atlasInteractionModeLabelDe'));
+assert.ok(ed.includes('data-atlas-layers-sheet-trigger'));
+assert.ok(ed.includes('renderLayersChrome'));
+assert.ok(ed.includes('safe-area-inset-bottom'));
+assert.ok(ed.includes('data-atlas-surface-mode="3d"'));
+assert.ok(ed.split("surfaceMode === '3d'")[1].includes('safe-area-inset-bottom'));
 
 assert.equal(ad.resolveAtlasAdaptiveBand(320), 'phone');
 assert.equal(ad.resolveAtlasAdaptiveBand(800), 'tablet');

@@ -5,7 +5,7 @@
   "result": "PASS",
   "githubClosed": true,
   "mergeRef": "PR #860 \u2192 main (after #782)",
-  "note": "Inventories refreshed after ATL2-C05 adaptive workstation.",
+  "note": "Inventories refreshed after ATL2-C05 Codex P1/P2 sheet+safe-area fixes.",
   "checks": [
     {
       "command": "legacy inventory matrix",
