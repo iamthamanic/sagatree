@@ -1,7 +1,7 @@
 # ATL2-E02 — ParentSpatialAnchor & locate persistence
 
 - Issue: #1220
-- HEAD: `46885289400b6a091f1d6b6b39e7fc9ebdef8ddb`
+- HEAD: `978f8023e69031d5a62900be8c66d0240c421141`
 - Verdict: **CLEAR**
 - Date: 2026-11-13
 

@@ -1,7 +1,7 @@
 {
   "gate": "atl2-e02",
   "issue": 1220,
-  "head": "46885289400b6a091f1d6b6b39e7fc9ebdef8ddb",
+  "head": "978f8023e69031d5a62900be8c66d0240c421141",
   "host": {
     "locatedReloadOk": true,
     "unlocatedDeniedLod": true,
