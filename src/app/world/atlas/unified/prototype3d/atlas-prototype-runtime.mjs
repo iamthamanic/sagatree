@@ -625,7 +625,16 @@ export function mountAtlasPrototype3d(host, options = {}) {
       setMesh(name,builder,texture=null){const array=new Float32Array(builder.a);this.meshes.set(name,{array,count:array.length/11,texture});}
       delMesh(name){this.meshes.delete(name);}
       resize(width,height){const dpr=Math.min(devicePixelRatio||1,Math.min(1.5,graphicsPreset.maxPixelRatio));const w=Math.max(260,Math.round(width*dpr)),h=Math.max(200,Math.round(height*dpr));if(this.canvas.width!==w||this.canvas.height!==h){this.canvas.width=w;this.canvas.height=h;}this.ctx.setTransform(dpr,0,0,dpr,0,0);}
-      project(x,y,z){const {pitch,forward,right}=getCameraAngles(),s=stageHeight/(2*cameraState.span),dx=x-cameraState.x,dz=z-cameraState.z;return [stageWidth/2+(right[0]*dx+right[1]*dz)*s,stageHeight/2+((forward[0]*dx+forward[1]*dz)*Math.sin(pitch)-y*Math.cos(pitch))*s,(forward[0]*dx+forward[1]*dz)*Math.cos(pitch)+y*Math.sin(pitch)];}
+      project(x,y,z){
+        const {mode}=getCameraAngles();
+        if(mode==='perspective'){
+          const p=point3dToScreen(x,z,y);
+          const depth=p.visible?1:0;
+          return [p.x,p.y,depth];
+        }
+        const {pitch,forward,right}=getCameraAngles(),s=stageHeight/(2*cameraState.span),dx=x-cameraState.x,dz=z-cameraState.z;
+        return [stageWidth/2+(right[0]*dx+right[1]*dz)*s,stageHeight/2+((forward[0]*dx+forward[1]*dz)*Math.sin(pitch)-y*Math.cos(pitch))*s,(forward[0]*dx+forward[1]*dz)*Math.cos(pitch)+y*Math.sin(pitch)];
+      }
       drawMap(name,m){const ctx=this.ctx,canvas=this.textures.get(m.texture);if(!canvas)return;const conf=mapConfigs[m.texture];if(!conf)return;const {x,z,w,h}=conf;const y=name==='map_world'?-0.3:name==='map_region'?.02:name==='map_city'?.08:.17;const tl=this.project(x-w/2,y,z-h/2),tr=this.project(x+w/2,y,z-h/2),bl=this.project(x-w/2,y,z+h/2);const a=(tr[0]-tl[0])/canvas.width,b=(tr[1]-tl[1])/canvas.width,c=(bl[0]-tl[0])/canvas.height,d=(bl[1]-tl[1])/canvas.height;ctx.save();ctx.setTransform(a,b,c,d,tl[0],tl[1]);ctx.imageSmoothingEnabled=true;ctx.drawImage(canvas,0,0);ctx.restore();}
       render(_view,visibility={}){const ctx=this.ctx;const w=stageWidth,h=stageHeight;ctx.save();ctx.setTransform(1,0,0,1,0,0);const dpr=this.canvas.width/w;ctx.setTransform(dpr,0,0,dpr,0,0);ctx.fillStyle='#123e4a';ctx.fillRect(0,0,w,h);
        for(const name of ['map_world','map_region','map_city','map_dungeon']){const m=this.meshes.get(name);if(m&&visibility[name]!==false)this.drawMap(name,m);}
@@ -654,7 +663,7 @@ export function mountAtlasPrototype3d(host, options = {}) {
     }
 
     // Same renderer for every scale; generation changes only GPU meshes, not viewport or app shell.
-    let renderLoop=0,glError=null,tiltAngle=Math.PI/2,yawAngle=0,lastRender=0,yawDrag=null;
+    let renderLoop=0,glError=null,tiltAngle=Math.PI/2,yawAngle=0,lastRender=0,yawDrag=null,cameraAnimActive=false;
     function yawDegrees(){const t=((yawAngle%(Math.PI*2))+Math.PI*2)%(Math.PI*2);return Math.round(t*180/Math.PI)%360;}
     function clampPitchForMode(mode,pitch){
       if(mode==='ortho-topdown')return Math.PI/2;
@@ -664,7 +673,7 @@ export function mountAtlasPrototype3d(host, options = {}) {
     function pitchForMode(mode){if(mode==='ortho-topdown')return Math.PI/2;if(mode==='diorama-oblique')return 1.05;return 0.95;}
     function readCameraSnapshot(){return{mode:cameraMode,x:cameraState.x,z:cameraState.z,span:cameraState.span,yawRad:yawAngle,pitchRad:tiltAngle};}
     function writeCameraToState(){state.camera=readCameraSnapshot();}
-    function applyCameraSnapshot(raw,{draw=true,animate=false}={}){
+    function applyCameraSnapshot(raw,{draw=true,animate=false,persistAfter=false,preserveProductFit=false}={}){
       if(!raw||typeof raw!=='object')return;
       const nextMode=CAMERA_MODES.includes(raw.mode)?raw.mode:cameraMode;
       const target={
@@ -675,17 +684,41 @@ export function mountAtlasPrototype3d(host, options = {}) {
         yawRad:Number.isFinite(raw.yawRad)?raw.yawRad:yawAngle,
         pitchRad:clampPitchForMode(nextMode,Number.isFinite(raw.pitchRad)?raw.pitchRad:pitchForMode(nextMode)),
       };
-      const finish=()=>{cameraMode=target.mode;cameraState={x:target.x,z:target.z,span:target.span};yawAngle=target.yawRad;tiltAngle=target.pitchRad;writeCameraToState();syncYawDialUi();if(draw)drawFrame();};
+      const finish=()=>{
+        cameraAnimActive=false;
+        cameraMode=target.mode;
+        cameraState={x:target.x,z:target.z,span:target.span};
+        yawAngle=target.yawRad;
+        tiltAngle=target.pitchRad;
+        if(preserveProductFit&&Number.isFinite(raw.x)&&Number.isFinite(raw.z)&&Number.isFinite(raw.span))productFitPending=false;
+        writeCameraToState();
+        syncYawDialUi();
+        if(persistAfter)persist();
+        if(draw)drawFrame();
+      };
       if(!animate){finish();return;}
       if(animID)cancelAnimationFrame(animID);
       const start=readCameraSnapshot();const t0=performance.now(),dur=420;
-      const step=t=>{const u=smooth(clamp((t-t0)/dur,0,1));cameraMode=u<0.5?start.mode:target.mode;cameraState={x:lerp(start.x,target.x,u),z:lerp(start.z,target.z,u),span:Math.exp(lerp(Math.log(Math.max(.5,start.span)),Math.log(Math.max(.5,target.span)),u))};yawAngle=lerp(start.yawRad,target.yawRad,u);tiltAngle=lerp(start.pitchRad,target.pitchRad,u);syncYawDialUi();drawFrame();if(u<1)animID=requestAnimationFrame(step);else finish();};
+      cameraAnimActive=true;
+      /* Target mode for whole transition so pitch lerp is not mid-clamped by ortho π/2. */
+      cameraMode=target.mode;
+      const step=t=>{
+        const u=smooth(clamp((t-t0)/dur,0,1));
+        cameraState={x:lerp(start.x,target.x,u),z:lerp(start.z,target.z,u),span:Math.exp(lerp(Math.log(Math.max(.5,start.span)),Math.log(Math.max(.5,target.span)),u))};
+        yawAngle=lerp(start.yawRad,target.yawRad,u);
+        tiltAngle=lerp(start.pitchRad,target.pitchRad,u);
+        syncYawDialUi();
+        drawFrame();
+        if(u<1)animID=requestAnimationFrame(step);else finish();
+      };
       animID=requestAnimationFrame(step);
     }
     function setCameraMode(mode,{animate=true}={}){
       if(!CAMERA_MODES.includes(mode)||mode===cameraMode){syncYawDialUi();return;}
-      applyCameraSnapshot({...readCameraSnapshot(),mode,pitchRad:pitchForMode(mode)},{animate,draw:true});
-      persist();
+      applyCameraSnapshot(
+        {...readCameraSnapshot(),mode,pitchRad:pitchForMode(mode)},
+        {animate,draw:true,persistAfter:true},
+      );
       toast(`Kamera: ${CAMERA_MODE_LABEL[mode]||mode}`);
     }
     function cycleCameraMode(){const i=CAMERA_MODES.indexOf(cameraMode);setCameraMode(CAMERA_MODES[(i+1)%CAMERA_MODES.length]);}
@@ -1081,10 +1114,75 @@ export function mountAtlasPrototype3d(host, options = {}) {
     function rebuildAll(){applyPlaceNames();baseMapCanvases={world:worldTexture(),region:regionTexture(),city:cityTexture()};dungeon=dungeonGenerate(state.seed,state.roomCount);updateRoomAnchor();drawStrokes();if(engine){for(const key of Object.keys(mapConfigs))engine.uploadTexture(key,mapCanvases[key]);if(!productMap)buildDungeonGeometry();buildManualGeometry();}updateStats();drawFrame();}
     function buildEverything(){if(!engine)return;makeMapMeshes();if(productMap){buildProductGeometry();return;}buildWorldGeometry();buildRegionGeometry();buildCityGeometry();buildDungeonGeometry();buildManualGeometry();}
     function syncRendererSize(){const b=stage.getBoundingClientRect();const w=Math.max(260,Math.round(b.width));const h=Math.max(240,Math.round(b.height));if(w===stageWidth&&h===stageHeight)return;stageWidth=w;stageHeight=h;canvasDpr=Math.min(devicePixelRatio||1,graphicsPreset.maxPixelRatio);if(engine)engine.resize(stageWidth,stageHeight);if(productMap&&productFitPending)productFitCamera(false);drawFrame();}
-    function getCameraAngles(){const pitch=clampPitchForMode(cameraMode,tiltAngle);return{pitch,forward:[Math.sin(yawAngle),Math.cos(yawAngle)],right:[Math.cos(yawAngle),-Math.sin(yawAngle)],mode:cameraMode};}
-    function screenToWorld(x,y){const{pitch,forward,right}=getCameraAngles(),unit=2*cameraState.span/stageHeight;const ox=(x-stageWidth/2)*unit,oy=(y-stageHeight/2)*unit/Math.max(.2,Math.sin(pitch));return{x:cameraState.x+right[0]*ox+forward[0]*oy,z:cameraState.z+right[1]*ox+forward[1]*oy};}
-    function point3dToScreen(x,z,y=0){const{pitch,forward,right}=getCameraAngles(),dx=x-cameraState.x,dz=z-cameraState.z,unit=stageHeight/(2*cameraState.span);return{x:stageWidth/2+(right[0]*dx+right[1]*dz)*unit,y:stageHeight/2+(forward[0]*dx+forward[1]*dz)*Math.sin(pitch)*unit-y*Math.cos(pitch)*unit,visible:true};}
-    function cameraMatrix(){const{pitch,forward,mode}=getCameraAngles();const d=cameraState.span*(mode==='perspective'?2.4:3.0);const at=[cameraState.x,0,cameraState.z];const aspect=Math.max(0.2,stageWidth/Math.max(1,stageHeight));let eye,up;if(mode==='ortho-topdown'){eye=[cameraState.x,d+5,cameraState.z];up=[-forward[0],0,-forward[1]];}else{eye=[cameraState.x+forward[0]*Math.cos(pitch)*d,Math.sin(pitch)*d+5,cameraState.z+forward[1]*Math.cos(pitch)*d];up=[0,1,0];}const far=Math.max(8000,d*4+200);const view=glm.lookAt(eye,at,up);if(mode==='perspective'){const fov=50*Math.PI/180;return glm.mul(glm.perspective(fov,aspect,.2,far),view);}return glm.mul(glm.ortho(-cameraState.span*aspect,cameraState.span*aspect,-cameraState.span,cameraState.span,.1,far),view);}
+    function getCameraAngles(){
+      const pitch=cameraAnimActive?tiltAngle:clampPitchForMode(cameraMode,tiltAngle);
+      return{pitch,forward:[Math.sin(yawAngle),Math.cos(yawAngle)],right:[Math.cos(yawAngle),-Math.sin(yawAngle)],mode:cameraMode};
+    }
+    function cameraEyeBasis(){
+      const{pitch,forward,mode}=getCameraAngles();
+      const d=cameraState.span*(mode==='perspective'?2.4:3.0);
+      const at=[cameraState.x,0,cameraState.z];
+      let eye,up;
+      if(mode==='ortho-topdown'){eye=[cameraState.x,d+5,cameraState.z];up=[-forward[0],0,-forward[1]];}
+      else{eye=[cameraState.x+forward[0]*Math.cos(pitch)*d,Math.sin(pitch)*d+5,cameraState.z+forward[1]*Math.cos(pitch)*d];up=[0,1,0];}
+      const zAxis=glm.norm([eye[0]-at[0],eye[1]-at[1],eye[2]-at[2]]);
+      const xAxis=glm.norm(glm.cross(up,zAxis));
+      const yAxis=glm.cross(zAxis,xAxis);
+      return{eye,at,up,d,mode,zAxis,xAxis,yAxis};
+    }
+    function mulMat4Vec4(m,v){
+      return[
+        m[0]*v[0]+m[4]*v[1]+m[8]*v[2]+m[12]*v[3],
+        m[1]*v[0]+m[5]*v[1]+m[9]*v[2]+m[13]*v[3],
+        m[2]*v[0]+m[6]*v[1]+m[10]*v[2]+m[14]*v[3],
+        m[3]*v[0]+m[7]*v[1]+m[11]*v[2]+m[15]*v[3],
+      ];
+    }
+    function screenToWorld(x,y){
+      const{pitch,forward,right,mode}=getCameraAngles();
+      if(mode==='perspective'){
+        const{eye,xAxis,yAxis,zAxis}=cameraEyeBasis();
+        const aspect=Math.max(0.2,stageWidth/Math.max(1,stageHeight));
+        const fov=50*Math.PI/180;
+        const tanHalf=Math.tan(fov/2);
+        const ndcX=(x/Math.max(1,stageWidth))*2-1;
+        const ndcY=1-(y/Math.max(1,stageHeight))*2;
+        const dir=[
+          xAxis[0]*ndcX*tanHalf*aspect+yAxis[0]*ndcY*tanHalf+(-zAxis[0]),
+          xAxis[1]*ndcX*tanHalf*aspect+yAxis[1]*ndcY*tanHalf+(-zAxis[1]),
+          xAxis[2]*ndcX*tanHalf*aspect+yAxis[2]*ndcY*tanHalf+(-zAxis[2]),
+        ];
+        if(Math.abs(dir[1])<1e-8)return{x:cameraState.x,z:cameraState.z};
+        const t=-eye[1]/dir[1];
+        return{x:eye[0]+dir[0]*t,z:eye[2]+dir[2]*t};
+      }
+      const unit=2*cameraState.span/stageHeight;
+      const ox=(x-stageWidth/2)*unit,oy=(y-stageHeight/2)*unit/Math.max(.2,Math.sin(pitch));
+      return{x:cameraState.x+right[0]*ox+forward[0]*oy,z:cameraState.z+right[1]*ox+forward[1]*oy};
+    }
+    function point3dToScreen(x,z,y=0){
+      const{pitch,forward,right,mode}=getCameraAngles();
+      if(mode==='perspective'){
+        const clip=mulMat4Vec4(cameraMatrix(),[x,y,z,1]);
+        if(Math.abs(clip[3])<1e-8)return{x:stageWidth/2,y:stageHeight/2,visible:false};
+        const ndcX=clip[0]/clip[3],ndcY=clip[1]/clip[3];
+        return{
+          x:(ndcX*0.5+0.5)*stageWidth,
+          y:(0.5-ndcY*0.5)*stageHeight,
+          visible:clip[3]>0,
+        };
+      }
+      const dx=x-cameraState.x,dz=z-cameraState.z,unit=stageHeight/(2*cameraState.span);
+      return{x:stageWidth/2+(right[0]*dx+right[1]*dz)*unit,y:stageHeight/2+(forward[0]*dx+forward[1]*dz)*Math.sin(pitch)*unit-y*Math.cos(pitch)*unit,visible:true};
+    }
+    function cameraMatrix(){
+      const{eye,at,up,d,mode}=cameraEyeBasis();
+      const aspect=Math.max(0.2,stageWidth/Math.max(1,stageHeight));
+      const far=Math.max(8000,d*4+200);
+      const view=glm.lookAt(eye,at,up);
+      if(mode==='perspective'){const fov=50*Math.PI/180;return glm.mul(glm.perspective(fov,aspect,.2,far),view);}
+      return glm.mul(glm.ortho(-cameraState.span*aspect,cameraState.span*aspect,-cameraState.span,cameraState.span,.1,far),view);
+    }
     function levelFromView(){if(productMap)return'world';const s=cameraState.span,x=cameraState.x,z=cameraState.z;if(s<3.0&&inside(x,z,188,-64,26,20))return'room';if(s<18&&inside(x,z,188,-64,29,25))return'dungeon';if(s<88&&inside(x,z,183,-66,94,82))return'city';if(s<300&&inside(x,z,145,-54,270,210))return'region';return'world';}
     function applyLod(){if(productMap)return productLod();const s=cameraState.span;const empty=isEmptyWorldActive();return{ocean:true,map_world:!empty&&state.layers.world&&s>=18,world3d:!empty&&state.layers.world&&s>90,map_region:!empty&&state.layers.region&&s<300&&s>=18,map_city:!empty&&state.layers.city&&s<100&&s>=18,map_dungeon:!empty&&state.layers.dungeon&&s<19,region3d:!empty&&state.layers.region&&s<200&&s>35,city3d:!empty&&state.layers.city&&s<80&&s>16,dungeon3d:!empty&&state.layers.dungeon&&s<19,grid:!empty&&state.layers.grid&&s<14,manual_world:!empty&&state.layers.stamps&&s>80,manual_region:!empty&&state.layers.stamps&&s<300&&s>32,manual_city:!empty&&state.layers.stamps&&s<95&&s>14,manual_dungeon:!empty&&state.layers.stamps&&s<24,manual_room:!empty&&state.layers.stamps&&s<10};}
     function updateLevel(){const now=levelFromView();if(now!==activeLevel){activeLevel=now;renderNavigation();updateInspector();}if(productMap){updateProductLevelChrome();return;}const land=!isEmptyWorldActive()&&selectedLandId?landDefs.find(l=>l.id===selectedLandId):null;const cont=!isEmptyWorldActive()&&!land&&selectedContinentId?continentDefs.find(c=>c.id===selectedContinentId):null;const current=levels.find(l=>l.id===now);$('level').textContent=land?.tag||cont?.tag||(isEmptyWorldActive()?'OZEAN':(current?.tag||'WELT'));const worldName=(getActiveWorld()?.label)||state.worldLabel||'Welt';$('crumb').textContent=land?`${worldName} › ${land.label}`:cont?`${worldName} › ${cont.label}`:(now==='world'?worldName:[worldName,...levels.filter(l=>l.kind==='stage').slice(0,Math.max(0,['city','dungeon','room'].indexOf(now)+1)).map(x=>x.label)].join(' › '));if(!scaleEdit||scaleEdit.kind!=='zoom'){const z=$('zoom');if(z)z.textContent=zoomPercent()+'%';}updateHotspots();}
@@ -1252,7 +1350,7 @@ export function mountAtlasPrototype3d(host, options = {}) {
     if(productMap){updateInspector();updateStats();}
     /* ATL2-D03 — hydrate camera presentation extras from seed (not geometry SoT). */
     if(state.camera&&typeof state.camera==='object'){
-      applyCameraSnapshot(state.camera,{draw:false,animate:false});
+      applyCameraSnapshot(state.camera,{draw:false,animate:false,preserveProductFit:true});
     }else{
       writeCameraToState();
     }

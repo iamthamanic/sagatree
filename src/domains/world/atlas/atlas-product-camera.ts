@@ -125,9 +125,11 @@ export function interpolateAtlasProductCamera(
 ): AtlasProductCameraState {
   const u = Math.min(1, Math.max(0, t));
   const smooth = u * u * (3 - 2 * u);
-  const mode = u < 0.5 ? a.mode : b.mode;
-  return clampAtlasProductCamera({
-    mode,
+  /* Target mode for the whole transition so pitch is not mid-clamped by ortho π/2. */
+  if (u <= 0) return clampAtlasProductCamera(a);
+  if (u >= 1) return clampAtlasProductCamera(b);
+  return {
+    mode: b.mode,
     x: a.x + (b.x - a.x) * smooth,
     z: a.z + (b.z - a.z) * smooth,
     span: Math.exp(
@@ -136,7 +138,7 @@ export function interpolateAtlasProductCamera(
     ),
     yawRad: a.yawRad + (b.yawRad - a.yawRad) * smooth,
     pitchRad: a.pitchRad + (b.pitchRad - a.pitchRad) * smooth,
-  });
+  };
 }
 
 /** Apply mode switch keeping target/span/yaw; pitch snaps into mode band. */
