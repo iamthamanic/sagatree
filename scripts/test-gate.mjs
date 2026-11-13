@@ -2132,6 +2132,11 @@ function checkWorldAtlasEditor() {
     cwd: root,
     stdio: 'inherit',
   });
+  console.log('ATL2-D07 Gate D Phase D product 3D acceptance...');
+  execFileSync(process.execPath, ['scripts/atl2-d07-gate-d.self-test.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
   console.log('ATL2-E01 primary maps + WorldNode links (six levels)...');
   execFileSync(process.execPath, ['scripts/atl2-e01-primary-map-links.self-test.mjs'], {
     cwd: root,
