@@ -100,6 +100,7 @@
         return {
           variant: 'three-inventory-prototype',
           logicalOk: fixture.objects.length === 8 && host.querySelector('canvas') != null,
+          fixtureObjectCount: fixture.objects.length,
           frame: {
             samples: samples.length,
             p50Ms: +percentile(sorted, 50).toFixed(3),
@@ -108,7 +109,8 @@
           },
           memory: mem,
           hasSoftwareFallbackPath: false,
-          notes: 'Inventory-style Three scene (SpatialViewport-class geometry); not product chrome',
+          notes:
+            'Inventory-style Three scene from same fixture.json (SpatialViewport-class geometry); not product chrome',
         };
       };
 

@@ -1,7 +1,7 @@
 # ATL2-R01 Renderer Hybrid Decision
 
 - Issue: #1266
-- HEAD: `04f49230ba7e1aa7076554f6fb9737d3d02334df`
+- HEAD: `8cb99e7a153080a784284b2ecd8538ce1151ebd9`
 - Verdict: **NO-GO**
 - Productive 3D owner: `custom-webgl-prototype-runtime`
 - Date: 2026-11-13
@@ -18,8 +18,8 @@
 
 | Metric | Custom-WebGL | Three inventory |
 |----------|-------------|-----------------|
-| frame p50 ms | 16.7 | 16.7 |
-| frame p95 ms | 48 | 17.1 |
+| frame p50 ms | 16.9 | 16.7 |
+| frame p95 ms | 41.8 | 18.5 |
 | JS heap MB | 9.54 | 9.54 |
 
 ## Decision

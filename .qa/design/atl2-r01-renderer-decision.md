@@ -23,11 +23,13 @@ Protocol: identical viewport 1280×720, headless Chromium, same fixture object c
 | Metric | Custom-WebGL (product runtime mount) | Three inventory-style prototype |
 | --- | --- | --- |
 | Logical fixture load | PASS | PASS |
-| Frame p50 (ms) | 16.7 | 16.7 |
-| Frame p95 (ms) | 42.6 | 20.4 |
+| Frame p50 (ms) | 16.9 | 16.7 |
+| Frame p95 (ms) | 41.8 | 18.5 |
 | JS heap (MB) | 9.54 | 9.54 |
 | Software fallback | AtlasLite3D available | **missing** |
 | Heightfield / diorama / product camera presets | present in product path | **missing** in SpatialViewport inventory |
+
+Authoritative numbers: `.qa/evidence/atl2-r01-renderer-poc/results.json` (and `.qa/runs/atl2-r01-renderer-decision.*`).
 
 p95 favors the thin Three inventory scene, but that scene lacks product capabilities
 (lite fallback, heightfield, diorama, camera presets, tool/nav chrome). Equal p50 and

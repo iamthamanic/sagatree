@@ -176,8 +176,15 @@ if (!SKIP_BROWSER) {
     const c = evidence.variants['custom-webgl'];
     const t = evidence.variants['three-inventory'];
     assert.ok(c.frame?.p50Ms != null && t.frame?.p50Ms != null);
+    assert.equal(c.fixtureObjectCount, 8);
+    assert.equal(t.fixtureObjectCount, 8);
     assert.equal(c.hasSoftwareFallbackPath, true);
     assert.equal(t.hasSoftwareFallbackPath, false);
+    // PoC HTML must load the shared fixture (Codex P1).
+    const customHtml = readFileSync(join(pocDir, 'variant-custom-webgl.html'), 'utf8');
+    assert.ok(customHtml.includes('fixture.json'));
+    assert.ok(customHtml.includes('controlled: true'));
+    assert.ok(customHtml.includes('seedState'));
     evidence.comparison = {
       frameP50Ms: { custom: c.frame.p50Ms, three: t.frame.p50Ms },
       frameP95Ms: { custom: c.frame.p95Ms, three: t.frame.p95Ms },

@@ -22,7 +22,35 @@
       import { mountAtlasPrototype3d } from '/src/app/world/atlas/unified/prototype3d/atlas-prototype-runtime.mjs';
 
       const host = document.getElementById('host');
+      const fixture = await fetch('./fixture.json').then((r) => r.json());
+      const props = (fixture.objects || []).map((o) => ({
+        id: String(o.id),
+        level: 'world',
+        // Product controlled map uses doc coords ~0…1000; center fixture around 500.
+        x: 500 + Number(o.x || 0),
+        z: 500 + Number(o.z || 0),
+        type: o.type === 'baum' ? 'baum' : o.type === 'stein' ? 'stein' : 'haus',
+        size: Math.max(0.5, Number(o.size || 4) / 8),
+        rotation: 0,
+      }));
+
       const api = mountAtlasPrototype3d(host, {
+        controlled: true,
+        seedState: {
+          props,
+          strokes: [],
+          walls: [],
+          rooms: [],
+          doors: [],
+          layers: {
+            world: true,
+            region: true,
+            city: true,
+            dungeon: true,
+            stamps: true,
+            grid: false,
+          },
+        },
         graphicsPreset: {
           id: 'balanced',
           maxPixelRatio: 1.5,
@@ -56,7 +84,12 @@
           : null;
         return {
           variant: 'custom-webgl-product-runtime',
-          logicalOk: Boolean(api) && host.querySelector('canvas') != null,
+          logicalOk:
+            Boolean(api) &&
+            host.querySelector('canvas') != null &&
+            props.length === 8 &&
+            fixture.objects.length === 8,
+          fixtureObjectCount: props.length,
           frame: {
             samples: samples.length,
             p50Ms: +percentile(sorted, 50).toFixed(3),
@@ -65,7 +98,8 @@
           },
           memory: mem,
           hasSoftwareFallbackPath: true,
-          notes: 'mountAtlasPrototype3d product module (AtlasGL/AtlasLite3D)',
+          notes:
+            'controlled mountAtlasPrototype3d with identical fixture.json object set (AtlasGL/AtlasLite3D)',
         };
       };
 
