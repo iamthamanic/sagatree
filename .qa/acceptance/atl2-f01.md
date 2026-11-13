@@ -71,7 +71,7 @@ Roadmap: Atlas V2 Epic #1196 (Stufe F / G4) — Dungeon Forge.
 
 ## Composition Gate
 
-- HEAD_SHA: pending (set at commit)
+- HEAD_SHA: 744097da1ab9f1b88bacb1399691589869f42a83
 - Verdict: CLEAR
 - Proof: `.qa/runs/composition-gate-atl2-f01.md`
 - Skip reason: n/a
