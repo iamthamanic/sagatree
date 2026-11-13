@@ -2082,6 +2082,11 @@ function checkWorldAtlasEditor() {
     cwd: root,
     stdio: 'inherit',
   });
+  console.log('ATL2-C03 multi-select / layers / locks...');
+  execFileSync(process.execPath, ['scripts/atl2-c03-layers-multiselect.self-test.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
   console.log('Atlas prototype LOD layers (HTML v3 port)...');
   execFileSync(process.execPath, ['scripts/atlas-prototype-lod.self-test.mjs'], {
     cwd: root,

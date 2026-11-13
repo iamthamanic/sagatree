@@ -42,6 +42,7 @@ export {
   type UnifiedCanvasDoc,
   type UnifiedCanvasDoor,
   type UnifiedCanvasLayerId,
+  type UnifiedCanvasLayerLocks,
   type UnifiedCanvasMaterial,
   type UnifiedCanvasObject,
   type UnifiedCanvasRoom,
@@ -85,6 +86,25 @@ export {
   type MapEditOperation,
   type MapTransform,
 } from './map-edit-ops';
+
+export {
+  canEditFeatureKind,
+  canHitFeature,
+  defaultLayerLocks,
+  featureKindForId,
+  featuresInRect,
+  isLayerLocked,
+  isLayerVisible,
+  layerForFeatureKind,
+  lockLayerForFeatureKind,
+  setLayerLock,
+  toggleSelection,
+  translateSelected,
+  visibilityLayerForFeatureKind,
+  type AtlasFeatureKind,
+  type AtlasFeatureRef,
+  type AtlasLayerLocks,
+} from './atlas-selection';
 
 export {
   ATLAS_TOOL_REGISTRY,
