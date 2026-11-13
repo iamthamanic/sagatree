@@ -4,8 +4,8 @@
   "localId": "MIG-002",
   "result": "PASS",
   "githubClosed": true,
-  "mergeRef": "PR #860 \u2192 main (after #782)",
-  "note": "Inventories refreshed after ATL2-D05 Codex LOD/budget fixes.",
+  "mergeRef": "PR #860 → main (after #782)",
+  "note": "Inventories refreshed after ATL2-E01 primary-map links + ATL2-F01 dungeon forge merge (#1219 / #1224).",
   "checks": [
     {
       "command": "legacy inventory matrix",
@@ -26,5 +26,5 @@
       "sha256": "9e744f1d0fafd4676acdf36544907432d09f834779ab1c4e4463aeeb2e2d4fe3"
     }
   ],
-  "testedCommit": "995147d1208406b8c573be9ed8353ace855bdde9"
+  "testedCommit": "e10676090955b976f8c2a7540a9df17198944a94"
 }
