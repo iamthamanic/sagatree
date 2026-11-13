@@ -1,6 +1,6 @@
 # Composition Gate — atl2-e01
 
-- HEAD: a260606ed0854c841431eae3c09dbb0ebae06694 (pre-commit; WORKTREE matches uncommitted E01 scope)
+- HEAD: ff1b0b6716f541954823d4287e27540d8827a204
 - Verdict: **CLEAR**
 
 ## Hop chain
