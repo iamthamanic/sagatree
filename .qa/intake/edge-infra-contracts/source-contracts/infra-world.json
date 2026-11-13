@@ -234,6 +234,10 @@
       "sha256": "6c16fb40fe26addea8e33e718a89a019de099c6008c1000dd697d48fa12849a7"
     },
     {
+      "path": "src/domains/world/atlas/atlas-terrain-mesh.ts",
+      "sha256": "5faabc981465d9b019264d0ae8033ca0ea916b70ab641eb74ce59292b19f6f77"
+    },
+    {
       "path": "src/domains/world/atlas/atlas-tool-registry.ts",
       "sha256": "be0492bd7d71f1dafa260c6a1a75165f8c587bd1f55d3178f96fbd67ac5988af"
     },
@@ -267,7 +271,7 @@
     },
     {
       "path": "src/domains/world/atlas/index.ts",
-      "sha256": "8d986995169707562d69aa5b92f0e818f5e685d2b7588649a497798bda4997d0"
+      "sha256": "a178355f7d512722dea6e850b2581b496888686f18c220529e40dd5e970832a8"
     },
     {
       "path": "src/domains/world/atlas/map-edit-ops.ts",
@@ -1486,6 +1490,38 @@
       "line": 23,
       "endLine": 26,
       "text": "export type AtlasFeatureRef = {\n  readonly kind: AtlasFeatureKind;\n  readonly id: string;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AtlasTerrainLodBand",
+      "path": "src/domains/world/atlas/atlas-terrain-mesh.ts",
+      "line": 19,
+      "endLine": 19,
+      "text": "export type AtlasTerrainLodBand = 'far' | 'mid' | 'near';"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AtlasTerrainMeshTriangle",
+      "path": "src/domains/world/atlas/atlas-terrain-mesh.ts",
+      "line": 21,
+      "endLine": 26,
+      "text": "export type AtlasTerrainMeshTriangle = {\n  readonly a: readonly [number, number, number];\n  readonly b: readonly [number, number, number];\n  readonly c: readonly [number, number, number];\n  readonly material: 'land' | 'shore' | 'water';\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AtlasTerrainCoastEdge",
+      "path": "src/domains/world/atlas/atlas-terrain-mesh.ts",
+      "line": 28,
+      "endLine": 31,
+      "text": "export type AtlasTerrainCoastEdge = {\n  readonly start: readonly [number, number, number];\n  readonly end: readonly [number, number, number];\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AtlasTerrainMeshPlan",
+      "path": "src/domains/world/atlas/atlas-terrain-mesh.ts",
+      "line": 33,
+      "endLine": 51,
+      "text": "export type AtlasTerrainMeshPlan = {\n  readonly format: typeof ATLAS_TERRAIN_MESH_FORMAT;\n  readonly lod: AtlasTerrainLodBand;\n  readonly triangles: readonly AtlasTerrainMeshTriangle[];\n  readonly coastEdges: readonly AtlasTerrainCoastEdge[];\n  readonly waterPlane: {\n    readonly x: number;\n    readonly z: number;\n    readonly w: number;\n    readonly h: number;\n    readonly y: number;\n  } | null;\n  readonly contentFingerprint: string;\n  readonly drawBudget: {\n    readonly maxTriangles: number;\n    readonly triangleCount: number;\n    readonly coastCount: number;\n  };\n};"
     },
     {
       "kind": "TypeAliasDeclaration",

@@ -5,7 +5,7 @@
   "result": "PASS",
   "githubClosed": true,
   "mergeRef": "PR #860 → main (after #782)",
-  "note": "Inventories refreshed after ATL2-D04 Codex heightfield fixes.",
+  "note": "Inventories refreshed after ATL2-D05 terrain mesh domain + LOD.",
   "checks": [
     {
       "command": "legacy inventory matrix",
@@ -23,8 +23,8 @@
       "command": "edge/infra inventory 25+13",
       "result": "PASS",
       "evidenceFile": ".qa/intake/edge-infra-contracts/inventory.json",
-      "sha256": "6607223bef1893a1a60c2be3946cc4c95105e4f6aa135be753bab68845a84407"
+      "sha256": "74881f0e1c159d3b8a65fc87ff5cbd1ed44002357f1991ee034ee03dbbcc2ab9"
     }
   ],
-  "testedCommit": "f04570f7c1ef3142ab11790dd60b1941eff8a5e7"
+  "testedCommit": "46288e2fafca2b88d1e0a3dd21b534ab79795209"
 }

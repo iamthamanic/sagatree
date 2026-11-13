@@ -942,10 +942,11 @@ export function mountAtlasPrototype3d(host, options = {}) {
       b.quad(top[0],top[1],top[2],top[3],'#a8883a');
       for(let i=0;i<4;i++)b.quad(bot[i],bot[(i+1)%4],top[(i+1)%4],top[i],'#8b6914');
     }
+    function productTerrainLodStride(){const s=cameraState.span;if(s>=280)return 4;if(s>=90)return 2;return 1;}
     function productHeightfieldFingerprint(){
       const hf=state.heightfield;if(!hf||!Array.isArray(hf.heights))return'hf:none';
       let sum=0;for(let i=0;i<hf.heights.length;i++)sum+=(Number(hf.heights[i])||0)*(i+1);
-      return`hf:${hf.cols}x${hf.rows}:${hf.cellSize}:${hf.waterLevel}:${(hf.assetRef&&hf.assetRef.version)||0}:${sum.toFixed(3)}`;
+      return`hf:${hf.cols}x${hf.rows}:${hf.cellSize}:${hf.waterLevel}:${(hf.assetRef&&hf.assetRef.version)||0}:${sum.toFixed(3)}:lod${productTerrainLodStride()}`;
     }
     function productGeometryFingerprint(){
       const rooms=Array.isArray(state.rooms)?state.rooms:[],strokes=Array.isArray(state.strokes)?state.strokes:[],walls=Array.isArray(state.walls)?state.walls:[],doors=Array.isArray(state.doors)?state.doors:[],props=Array.isArray(state.props)?state.props:[];
@@ -996,17 +997,29 @@ export function mountAtlasPrototype3d(host, options = {}) {
     function productHeightfieldInto(b){
       const hf=state.heightfield;if(!hf||!Array.isArray(hf.heights)||hf.cols<2||hf.rows<2)return;
       const water=Number(hf.waterLevel)||0;
-      for(let row=0;row<hf.rows-1;row++){
-        for(let col=0;col<hf.cols-1;col++){
-          const x0=hf.originX+col*hf.cellSize,z0=hf.originZ+row*hf.cellSize,x1=x0+hf.cellSize,z1=z0+hf.cellSize;
-          const y00=Number(hf.heights[row*hf.cols+col])||0,y10=Number(hf.heights[row*hf.cols+col+1])||0;
-          const y01=Number(hf.heights[(row+1)*hf.cols+col])||0,y11=Number(hf.heights[(row+1)*hf.cols+col+1])||0;
+      const stride=productTerrainLodStride();
+      /* ATL2-D05 — LOD stride reduces tris without shifting feature positions. */
+      for(let row=0;row<hf.rows-1;row+=stride){
+        for(let col=0;col<hf.cols-1;col+=stride){
+          const c1=Math.min(hf.cols-1,col+stride),r1=Math.min(hf.rows-1,row+stride);
+          const x0=hf.originX+col*hf.cellSize,z0=hf.originZ+row*hf.cellSize;
+          const x1=hf.originX+c1*hf.cellSize,z1=hf.originZ+r1*hf.cellSize;
+          const y00=Number(hf.heights[row*hf.cols+col])||0,y10=Number(hf.heights[row*hf.cols+c1])||0;
+          const y01=Number(hf.heights[r1*hf.cols+col])||0,y11=Number(hf.heights[r1*hf.cols+c1])||0;
           const avg=(y00+y10+y01+y11)/4;
-          const color=avg<water?'#1a5f8a':avg<water+2?'#6f9a68':avg<8?'#527b55':'#80908a';
+          const color=avg<water?'#1a5f8a':avg<water+1.5?'#8fb07a':avg<8?'#527b55':'#80908a';
           const p00=[x0,y00,z0],p10=[x1,y10,z0],p01=[x0,y01,z1],p11=[x1,y11,z1];
           b.tri(p00,p10,p11,color);b.tri(p00,p11,p01,color);
+          if(stride===1){
+            const sub=h=>h<water;
+            if(sub(y00)!==sub(y10)){const y=Math.max(y00,y10,water)+.05;b.box((x0+x1)/2,y,z0,Math.max(.4,x1-x0),.12,.4,'#d6af65');}
+            if(sub(y00)!==sub(y01)){const y=Math.max(y00,y01,water)+.05;b.box(x0,y,(z0+z1)/2,.4,.12,Math.max(.4,z1-z0),'#d6af65');}
+          }
         }
       }
+      /* Water plane at shore level — same origin/extent as the heightfield chunk. */
+      const wx=hf.originX+(hf.cols*hf.cellSize)/2,wz=hf.originZ+(hf.rows*hf.cellSize)/2;
+      b.plane(wx,wz,hf.cols*hf.cellSize,hf.rows*hf.cellSize,water-0.02,'#1a5f8a');
     }
     let productGeomFingerprint=null;
     /** Stamp footprints match the 2D Draufsicht (drawStamp draws 2D px × size); u = size. */
