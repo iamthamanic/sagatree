@@ -44,6 +44,7 @@ import {
   type WorldNodeKind,
 } from '../../../domains/world/hierarchy';
 import {
+  UNLOCATED_DRILL_BLOCKED_DE,
   UNLOCATED_MAP_HINT_DE,
   atlasMapOwnerPlace,
   atlasMapScaleForKind,
@@ -810,10 +811,7 @@ export function WorldAtlasWorkbench({
           role="status"
         >
           <span className="min-w-0 flex-1">
-            {UNLOCATED_MAP_HINT_DE}
-            {editingAllowed
-              ? ' — Verorte den Ausschnitt auf der Elternkarte, bevor Zoom dorthin wechselt.'
-              : null}
+            {editingAllowed ? UNLOCATED_DRILL_BLOCKED_DE : UNLOCATED_MAP_HINT_DE}
           </span>
           {editingAllowed && editor.map?.parentMapId ? (
             <Button
