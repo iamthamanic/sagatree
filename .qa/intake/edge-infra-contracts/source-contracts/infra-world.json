@@ -5,11 +5,11 @@
   "sourceFiles": [
     {
       "path": "src/infrastructure/world/host-world-adapter.ts",
-      "sha256": "fa229c2ceb37648d38d91f85699817ae584ae85f9195b45ea0ebe594aba786da"
+      "sha256": "8fbaad8d6d4ec9cc42070444441fae94fb20af020cdada2125a705877ea4e1f1"
     },
     {
       "path": "src/infrastructure/world/host-world-ports.contract.ts",
-      "sha256": "406d77c65527f6869c558a7b4c98c901766134f8e8d7dc6afc5271d6ba1a7f8e"
+      "sha256": "9d11c1085646775f6c6eb5bdc29baa7ed40af0245354589bd767d4f80da1d582"
     },
     {
       "path": "src/infrastructure/world/host-world-read.contract.ts",
@@ -17,7 +17,7 @@
     },
     {
       "path": "src/infrastructure/world/world-atlas-service.ts",
-      "sha256": "ace9c6ff13acad2aefa17f25784225461551b5bf6a79e807c9a24786619a552b"
+      "sha256": "63cdb7aea8402a51c8bf6480e325fd15d951c33c28aa1a7923340251878c5c1d"
     },
     {
       "path": "src/infrastructure/world/world-map-service.ts",
@@ -311,7 +311,7 @@
     },
     {
       "path": "src/domains/world/hierarchy/index.ts",
-      "sha256": "576f02be2a3187b6da3f83200079cbc3bbd274c44919a569c84da79008fe09b8"
+      "sha256": "05ef0b33d0950512a3ac12eb64497fb3e3321f43d81b4fcf76e909a2ef52efe2"
     },
     {
       "path": "src/domains/world/hierarchy/legacy-kind-map.ts",
@@ -324,6 +324,10 @@
     {
       "path": "src/domains/world/hierarchy/mutations.ts",
       "sha256": "15e52f9f6460d4e5ec19d71f3ec42057b1a81e8468bc0d9490f58d7f6f5a6dcc"
+    },
+    {
+      "path": "src/domains/world/hierarchy/primary-map-links.ts",
+      "sha256": "7d01ecbbb2cb467379eed308f37aa0eac0bd223768077b86ee210414a32a2ece"
     },
     {
       "path": "src/domains/world/hierarchy/world-hierarchy.ts",
@@ -395,7 +399,7 @@
     },
     {
       "path": "src/infrastructure/host/host-world-http.ts",
-      "sha256": "3e46295203990e7fa58d2638726d152627fefef512f76d689ccaff504927dbae"
+      "sha256": "4e5b1a2d336b907aec8ef7f58505f4605eef1674d15ed6ce4a109d47f352b6bd"
     },
     {
       "path": "src/infrastructure/media/optimizer/engines/audio/index.ts",
@@ -2177,6 +2181,38 @@
     },
     {
       "kind": "TypeAliasDeclaration",
+      "name": "AtlasHierarchyLevel",
+      "path": "src/domains/world/hierarchy/primary-map-links.ts",
+      "line": 27,
+      "endLine": 27,
+      "text": "export type AtlasHierarchyLevel = (typeof ATLAS_HIERARCHY_LEVELS)[number];"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "PrimaryMapNodeLink",
+      "path": "src/domains/world/hierarchy/primary-map-links.ts",
+      "line": 29,
+      "endLine": 36,
+      "text": "export type PrimaryMapNodeLink = {\n  readonly placeId: string;\n  readonly kind: WorldNodeKind;\n  readonly parentPlaceId: string | null;\n  readonly primaryMapId: string;\n  /** world_atlas_maps.parent_map_id for the primary map */\n  readonly primaryMapParentId: string | null;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "PrimaryMapLinkGraph",
+      "path": "src/domains/world/hierarchy/primary-map-links.ts",
+      "line": 38,
+      "endLine": 42,
+      "text": "export type PrimaryMapLinkGraph = {\n  readonly worldProfileId: string;\n  readonly worldRootMapId: string;\n  readonly nodes: readonly PrimaryMapNodeLink[];\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "PrimaryMapLinkCheck",
+      "path": "src/domains/world/hierarchy/primary-map-links.ts",
+      "line": 44,
+      "endLine": 46,
+      "text": "export type PrimaryMapLinkCheck =\n  | { readonly ok: true }\n  | { readonly ok: false; readonly reason: string; readonly placeId?: string };"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
       "name": "WorldNodeKind",
       "path": "src/domains/world/hierarchy/world-node.types.ts",
       "line": 18,
@@ -2667,8 +2703,8 @@
       "kind": "TypeAliasDeclaration",
       "name": "HostWorldPublishedAssetDto",
       "path": "src/infrastructure/host/host-world-http.ts",
-      "line": 387,
-      "endLine": 396,
+      "line": 400,
+      "endLine": 409,
       "text": "export type HostWorldPublishedAssetDto = {\n  readonly assetId: string;\n  readonly contentType: string;\n  readonly byteSize: number;\n  readonly checksumSha256: string;\n  readonly url: string;\n  readonly storagePath: string;\n  readonly purpose: 'map-pin' | 'azgaar';\n  readonly worldProfileId: string;\n};"
     },
     {
@@ -2861,10 +2897,10 @@
     {
       "path": "src/infrastructure/world/world-atlas-service.ts",
       "line": 14,
-      "endLine": 22,
+      "endLine": 23,
       "module": "../host/host-world-http",
       "resolvedPath": "src/infrastructure/host/host-world-http.ts",
-      "expression": "import {\n  ensureHostWorldAtlasRoot,\n  fetchHostWorldAtlasMap,\n  isHostLibraryEnabled,\n  listHostWorldAtlasMaps,\n  publishHostWorldAsset,\n  resolveHostWorldAssetUrl,\n  upsertHostWorldAtlasMap,\n} from '../host/host-world-http';"
+      "expression": "import {\n  deleteHostWorldAtlasMap,\n  ensureHostWorldAtlasRoot,\n  fetchHostWorldAtlasMap,\n  isHostLibraryEnabled,\n  listHostWorldAtlasMaps,\n  publishHostWorldAsset,\n  resolveHostWorldAssetUrl,\n  upsertHostWorldAtlasMap,\n} from '../host/host-world-http';"
     },
     {
       "path": "src/infrastructure/world/world-map-service.ts",
@@ -2950,8 +2986,8 @@
     {
       "path": "src/infrastructure/world/host-world-adapter.ts",
       "line": 22,
-      "endLine": 58,
-      "text": "export function createHostWorldAdapter(ports: HostWorldPorts): HostWorldAdapter {\n  return {\n    transport: 'host',\n    rpcNames: HOST_WORLD_RPC_NAMES,\n    listOwnedWorlds: (actorId) => ports.listOwnedWorlds(actorId),\n    getWorld: (actorId, worldId) => ports.getWorld(actorId, worldId),\n    createOwnedWorld: (actorId, title) => ports.createOwnedWorld(actorId, title),\n    updateOwnedWorld: (actorId, worldId, title) => ports.updateOwnedWorld(actorId, worldId, title),\n    deleteOwnedWorld: (actorId, worldId) => ports.deleteOwnedWorld(actorId, worldId),\n    getWorldMap: (actorId, worldProfileId, playerView) =>\n      ports.getWorldMap(actorId, worldProfileId, playerView),\n    saveWorldMap: (actorId, worldProfileId, expectedRevision, mapData) =>\n      ports.saveWorldMap(actorId, worldProfileId, expectedRevision, mapData),\n    ensureWorldAtlasRoot: (actorId, worldProfileId) =>\n      ports.ensureWorldAtlasRoot(actorId, worldProfileId),\n    listWorldAtlasMaps: (actorId, worldProfileId, playerView, sagaPublicId) =>\n      ports.listWorldAtlasMaps(actorId, worldProfileId, playerView, sagaPublicId),\n    getWorldAtlasMap: (actorId, mapId, playerView, sagaPublicId) =>\n      ports.getWorldAtlasMap(actorId, mapId, playerView, sagaPublicId),\n    upsertWorldAtlasMap: (actorId, input) => ports.upsertWorldAtlasMap(actorId, input),\n    listWorldPlaces: (actorId, worldProfileId, playerView, sagaPublicId) =>\n      ports.listWorldPlaces(actorId, worldProfileId, playerView, sagaPublicId),\n    listWorldPlaceMapLinks: (actorId, worldProfileId, playerView, sagaPublicId) =>\n      ports.listWorldPlaceMapLinks(actorId, worldProfileId, playerView, sagaPublicId),\n    upsertWorldPlace: (actorId, input) => ports.upsertWorldPlace(actorId, input),\n    upsertWorldPlaceMapLink: (actorId, input) => ports.upsertWorldPlaceMapLink(actorId, input),\n    createWorldNodeWithMaps: (actorId, input) => ports.createWorldNodeWithMaps(actorId, input),\n    renameWorldNode: (actorId, input) => ports.renameWorldNode(actorId, input),\n    reparentWorldNode: (actorId, input) => ports.reparentWorldNode(actorId, input),\n    duplicateWorldNode: (actorId, input) => ports.duplicateWorldNode(actorId, input),\n    previewWorldNodeConsequences: (actorId, input) =>\n      ports.previewWorldNodeConsequences(actorId, input),\n    archiveWorldNodeSubtree: (actorId, input) => ports.archiveWorldNodeSubtree(actorId, input),\n    deleteWorldNode: (actorId, input) => ports.deleteWorldNode(actorId, input),\n    publishWorldAsset: (actorId, input) => ports.publishWorldAsset(actorId, input),\n  };\n}"
+      "endLine": 60,
+      "text": "export function createHostWorldAdapter(ports: HostWorldPorts): HostWorldAdapter {\n  return {\n    transport: 'host',\n    rpcNames: HOST_WORLD_RPC_NAMES,\n    listOwnedWorlds: (actorId) => ports.listOwnedWorlds(actorId),\n    getWorld: (actorId, worldId) => ports.getWorld(actorId, worldId),\n    createOwnedWorld: (actorId, title) => ports.createOwnedWorld(actorId, title),\n    updateOwnedWorld: (actorId, worldId, title) => ports.updateOwnedWorld(actorId, worldId, title),\n    deleteOwnedWorld: (actorId, worldId) => ports.deleteOwnedWorld(actorId, worldId),\n    getWorldMap: (actorId, worldProfileId, playerView) =>\n      ports.getWorldMap(actorId, worldProfileId, playerView),\n    saveWorldMap: (actorId, worldProfileId, expectedRevision, mapData) =>\n      ports.saveWorldMap(actorId, worldProfileId, expectedRevision, mapData),\n    ensureWorldAtlasRoot: (actorId, worldProfileId) =>\n      ports.ensureWorldAtlasRoot(actorId, worldProfileId),\n    listWorldAtlasMaps: (actorId, worldProfileId, playerView, sagaPublicId) =>\n      ports.listWorldAtlasMaps(actorId, worldProfileId, playerView, sagaPublicId),\n    getWorldAtlasMap: (actorId, mapId, playerView, sagaPublicId) =>\n      ports.getWorldAtlasMap(actorId, mapId, playerView, sagaPublicId),\n    upsertWorldAtlasMap: (actorId, input) => ports.upsertWorldAtlasMap(actorId, input),\n    deleteWorldAtlasMap: (actorId, worldProfileId, mapId) =>\n      ports.deleteWorldAtlasMap(actorId, worldProfileId, mapId),\n    listWorldPlaces: (actorId, worldProfileId, playerView, sagaPublicId) =>\n      ports.listWorldPlaces(actorId, worldProfileId, playerView, sagaPublicId),\n    listWorldPlaceMapLinks: (actorId, worldProfileId, playerView, sagaPublicId) =>\n      ports.listWorldPlaceMapLinks(actorId, worldProfileId, playerView, sagaPublicId),\n    upsertWorldPlace: (actorId, input) => ports.upsertWorldPlace(actorId, input),\n    upsertWorldPlaceMapLink: (actorId, input) => ports.upsertWorldPlaceMapLink(actorId, input),\n    createWorldNodeWithMaps: (actorId, input) => ports.createWorldNodeWithMaps(actorId, input),\n    renameWorldNode: (actorId, input) => ports.renameWorldNode(actorId, input),\n    reparentWorldNode: (actorId, input) => ports.reparentWorldNode(actorId, input),\n    duplicateWorldNode: (actorId, input) => ports.duplicateWorldNode(actorId, input),\n    previewWorldNodeConsequences: (actorId, input) =>\n      ports.previewWorldNodeConsequences(actorId, input),\n    archiveWorldNodeSubtree: (actorId, input) => ports.archiveWorldNodeSubtree(actorId, input),\n    deleteWorldNode: (actorId, input) => ports.deleteWorldNode(actorId, input),\n    publishWorldAsset: (actorId, input) => ports.publishWorldAsset(actorId, input),\n  };\n}"
     },
     {
       "path": "src/infrastructure/world/host-world-ports.contract.ts",
@@ -3064,19 +3100,19 @@
     {
       "path": "src/infrastructure/world/host-world-ports.contract.ts",
       "line": 137,
-      "endLine": 245,
-      "text": "export type HostWorldPorts = HostWorldReadPort & {\n  readonly createOwnedWorld: (\n    actorId: string,\n    title: string,\n  ) => Promise<HostWorldReadResult<{ readonly id: string; readonly title: string; readonly createdAt: string }>>;\n  readonly updateOwnedWorld: (\n    actorId: string,\n    worldId: string,\n    title: string,\n  ) => Promise<HostWorldReadResult<HostWorldReadDto>>;\n  readonly deleteOwnedWorld: (\n    actorId: string,\n    worldId: string,\n  ) => Promise<HostWorldReadResult<{ readonly deleted: true }>>;\n\n  readonly getWorldMap: (\n    actorId: string,\n    worldProfileId: string,\n    playerView?: boolean,\n  ) => Promise<HostWorldReadResult<HostWorldMapDto>>;\n  readonly saveWorldMap: (\n    actorId: string,\n    worldProfileId: string,\n    expectedRevision: number | null,\n    mapData: Readonly<Record<string, unknown>>,\n  ) => Promise<HostWorldReadResult<HostWorldMapDto>>;\n\n  readonly ensureWorldAtlasRoot: (\n    actorId: string,\n    worldProfileId: string,\n  ) => Promise<HostWorldReadResult<readonly HostWorldAtlasMapSummary[]>>;\n  readonly listWorldAtlasMaps: (\n    actorId: string,\n    worldProfileId: string,\n    playerView?: boolean,\n    sagaPublicId?: string | null,\n  ) => Promise<HostWorldReadResult<readonly HostWorldAtlasMapSummary[]>>;\n  readonly getWorldAtlasMap: (\n    actorId: string,\n    mapId: string,\n    playerView?: boolean,\n    sagaPublicId?: string | null,\n  ) => Promise<HostWorldReadResult<HostWorldAtlasMapVm>>;\n  readonly upsertWorldAtlasMap: (\n    actorId: string,\n    input: HostUpsertWorldAtlasMapInput,\n  ) => Promise<HostWorldReadResult<HostWorldAtlasMapVm>>;\n\n  readonly listWorldPlaces: (\n    actorId: string,\n    worldProfileId: string,\n    playerView?: boolean,\n    sagaPublicId?: string | null,\n  ) => Promise<HostWorldReadResult<readonly HostWorldPlaceVm[]>>;\n  readonly listWorldPlaceMapLinks: (\n    actorId: string,\n    worldProfileId: string,\n    playerView?: boolean,\n    sagaPublicId?: string | null,\n  ) => Promise<HostWorldReadResult<readonly HostWorldPlaceMapLinkVm[]>>;\n  readonly upsertWorldPlace: (\n    actorId: string,\n    input: HostUpsertWorldPlaceInput,\n  ) => Promise<HostWorldReadResult<HostWorldPlaceVm>>;\n  readonly upsertWorldPlaceMapLink: (\n    actorId: string,\n    input: HostUpsertWorldPlaceMapLinkInput,\n  ) => Promise<HostWorldReadResult<HostWorldPlaceMapLinkVm>>;\n\n  readonly createWorldNodeWithMaps: (\n    actorId: string,\n    input: HostCreateWorldNodeInput,\n  ) => Promise<HostWorldReadResult<HostCreateWorldNodeResult>>;\n  readonly renameWorldNode: (\n    actorId: string,\n    input: HostRenameWorldNodeInput,\n  ) => Promise<HostWorldReadResult<HostWorldPlaceVm>>;\n  readonly reparentWorldNode: (\n    actorId: string,\n    input: HostReparentWorldNodeInput,\n  ) => Promise<HostWorldReadResult<Readonly<Record<string, unknown>>>>;\n  readonly duplicateWorldNode: (\n    actorId: string,\n    input: HostDuplicateWorldNodeInput,\n  ) => Promise<HostWorldReadResult<Readonly<Record<string, unknown>>>>;\n  readonly previewWorldNodeConsequences: (\n    actorId: string,\n    input: HostPreviewWorldNodeConsequencesInput,\n  ) => Promise<HostWorldReadResult<Readonly<Record<string, unknown>>>>;\n  readonly archiveWorldNodeSubtree: (\n    actorId: string,\n    input: HostArchiveWorldNodeSubtreeInput,\n  ) => Promise<HostWorldReadResult<Readonly<Record<string, unknown>>>>;\n  readonly deleteWorldNode: (\n    actorId: string,\n    input: HostDeleteWorldNodeInput,\n  ) => Promise<HostWorldReadResult<Readonly<Record<string, unknown>>>>;\n\n  /**\n   * Storage successor for `world-map-pins` / `world-atlas` buckets.\n   * Must not write pin/atlas bytes into world SQL tables.\n   * Implementations MUST authorize `world.edit` for `input.worldProfileId`\n   * before publishing bytes (no cross-world asset attach by actor id alone).\n   */\n  readonly publishWorldAsset: (\n    actorId: string,\n    input: HostWorldAssetPublishInput,\n  ) => Promise<HostWorldReadResult<HostWorldAssetPublishResult>>;\n};"
+      "endLine": 251,
+      "text": "export type HostWorldPorts = HostWorldReadPort & {\n  readonly createOwnedWorld: (\n    actorId: string,\n    title: string,\n  ) => Promise<HostWorldReadResult<{ readonly id: string; readonly title: string; readonly createdAt: string }>>;\n  readonly updateOwnedWorld: (\n    actorId: string,\n    worldId: string,\n    title: string,\n  ) => Promise<HostWorldReadResult<HostWorldReadDto>>;\n  readonly deleteOwnedWorld: (\n    actorId: string,\n    worldId: string,\n  ) => Promise<HostWorldReadResult<{ readonly deleted: true }>>;\n\n  readonly getWorldMap: (\n    actorId: string,\n    worldProfileId: string,\n    playerView?: boolean,\n  ) => Promise<HostWorldReadResult<HostWorldMapDto>>;\n  readonly saveWorldMap: (\n    actorId: string,\n    worldProfileId: string,\n    expectedRevision: number | null,\n    mapData: Readonly<Record<string, unknown>>,\n  ) => Promise<HostWorldReadResult<HostWorldMapDto>>;\n\n  readonly ensureWorldAtlasRoot: (\n    actorId: string,\n    worldProfileId: string,\n  ) => Promise<HostWorldReadResult<readonly HostWorldAtlasMapSummary[]>>;\n  readonly listWorldAtlasMaps: (\n    actorId: string,\n    worldProfileId: string,\n    playerView?: boolean,\n    sagaPublicId?: string | null,\n  ) => Promise<HostWorldReadResult<readonly HostWorldAtlasMapSummary[]>>;\n  readonly getWorldAtlasMap: (\n    actorId: string,\n    mapId: string,\n    playerView?: boolean,\n    sagaPublicId?: string | null,\n  ) => Promise<HostWorldReadResult<HostWorldAtlasMapVm>>;\n  readonly upsertWorldAtlasMap: (\n    actorId: string,\n    input: HostUpsertWorldAtlasMapInput,\n  ) => Promise<HostWorldReadResult<HostWorldAtlasMapVm>>;\n  /** ATL2-E01 — delete secondary atlas map (not primary / not root). */\n  readonly deleteWorldAtlasMap: (\n    actorId: string,\n    worldProfileId: string,\n    mapId: string,\n  ) => Promise<HostWorldReadResult<{ readonly deletedMapId: string }>>;\n\n  readonly listWorldPlaces: (\n    actorId: string,\n    worldProfileId: string,\n    playerView?: boolean,\n    sagaPublicId?: string | null,\n  ) => Promise<HostWorldReadResult<readonly HostWorldPlaceVm[]>>;\n  readonly listWorldPlaceMapLinks: (\n    actorId: string,\n    worldProfileId: string,\n    playerView?: boolean,\n    sagaPublicId?: string | null,\n  ) => Promise<HostWorldReadResult<readonly HostWorldPlaceMapLinkVm[]>>;\n  readonly upsertWorldPlace: (\n    actorId: string,\n    input: HostUpsertWorldPlaceInput,\n  ) => Promise<HostWorldReadResult<HostWorldPlaceVm>>;\n  readonly upsertWorldPlaceMapLink: (\n    actorId: string,\n    input: HostUpsertWorldPlaceMapLinkInput,\n  ) => Promise<HostWorldReadResult<HostWorldPlaceMapLinkVm>>;\n\n  readonly createWorldNodeWithMaps: (\n    actorId: string,\n    input: HostCreateWorldNodeInput,\n  ) => Promise<HostWorldReadResult<HostCreateWorldNodeResult>>;\n  readonly renameWorldNode: (\n    actorId: string,\n    input: HostRenameWorldNodeInput,\n  ) => Promise<HostWorldReadResult<HostWorldPlaceVm>>;\n  readonly reparentWorldNode: (\n    actorId: string,\n    input: HostReparentWorldNodeInput,\n  ) => Promise<HostWorldReadResult<Readonly<Record<string, unknown>>>>;\n  readonly duplicateWorldNode: (\n    actorId: string,\n    input: HostDuplicateWorldNodeInput,\n  ) => Promise<HostWorldReadResult<Readonly<Record<string, unknown>>>>;\n  readonly previewWorldNodeConsequences: (\n    actorId: string,\n    input: HostPreviewWorldNodeConsequencesInput,\n  ) => Promise<HostWorldReadResult<Readonly<Record<string, unknown>>>>;\n  readonly archiveWorldNodeSubtree: (\n    actorId: string,\n    input: HostArchiveWorldNodeSubtreeInput,\n  ) => Promise<HostWorldReadResult<Readonly<Record<string, unknown>>>>;\n  readonly deleteWorldNode: (\n    actorId: string,\n    input: HostDeleteWorldNodeInput,\n  ) => Promise<HostWorldReadResult<Readonly<Record<string, unknown>>>>;\n\n  /**\n   * Storage successor for `world-map-pins` / `world-atlas` buckets.\n   * Must not write pin/atlas bytes into world SQL tables.\n   * Implementations MUST authorize `world.edit` for `input.worldProfileId`\n   * before publishing bytes (no cross-world asset attach by actor id alone).\n   */\n  readonly publishWorldAsset: (\n    actorId: string,\n    input: HostWorldAssetPublishInput,\n  ) => Promise<HostWorldReadResult<HostWorldAssetPublishResult>>;\n};"
     },
     {
       "path": "src/infrastructure/world/host-world-ports.contract.ts",
-      "line": 248,
-      "endLine": 266,
-      "text": "export const HOST_WORLD_RPC_NAMES = [\n  'archive_world_node_subtree',\n  'create_world_node_with_maps',\n  'delete_world_node',\n  'duplicate_world_node',\n  'ensure_world_atlas_root',\n  'get_world_atlas_map',\n  'get_world_map',\n  'list_world_atlas_maps',\n  'list_world_place_map_links',\n  'list_world_places',\n  'preview_world_node_consequences',\n  'rename_world_node',\n  'reparent_world_node',\n  'save_world_map',\n  'upsert_world_atlas_map',\n  'upsert_world_place',\n  'upsert_world_place_map_link',\n] as const;"
+      "line": 254,
+      "endLine": 273,
+      "text": "export const HOST_WORLD_RPC_NAMES = [\n  'archive_world_node_subtree',\n  'create_world_node_with_maps',\n  'delete_world_atlas_map',\n  'delete_world_node',\n  'duplicate_world_node',\n  'ensure_world_atlas_root',\n  'get_world_atlas_map',\n  'get_world_map',\n  'list_world_atlas_maps',\n  'list_world_place_map_links',\n  'list_world_places',\n  'preview_world_node_consequences',\n  'rename_world_node',\n  'reparent_world_node',\n  'save_world_map',\n  'upsert_world_atlas_map',\n  'upsert_world_place',\n  'upsert_world_place_map_link',\n] as const;"
     },
     {
       "path": "src/infrastructure/world/host-world-ports.contract.ts",
-      "line": 268,
-      "endLine": 268,
+      "line": 275,
+      "endLine": 275,
       "text": "export type HostWorldRpcName = (typeof HOST_WORLD_RPC_NAMES)[number];"
     },
     {
@@ -3099,14 +3135,14 @@
     },
     {
       "path": "src/infrastructure/world/world-atlas-service.ts",
-      "line": 33,
-      "endLine": 46,
+      "line": 34,
+      "endLine": 47,
       "text": "export type UpsertWorldAtlasMapInput = {\n  readonly worldProfileId: string;\n  readonly mapId?: string | null;\n  readonly parentMapId?: string | null;\n  readonly kind: WorldAtlasMapKind;\n  readonly title: string;\n  readonly sortOrder?: number;\n  readonly bounds: WorldAtlasBounds;\n  readonly layers: WorldAtlasFeatureCollection;\n  readonly basemapStoragePath?: string | null;\n  readonly azgaarMapStoragePath?: string | null;\n  readonly generatorMeta?: Readonly<Record<string, unknown>>;\n  readonly expectedRevision?: number | null;\n};"
     },
     {
       "path": "src/infrastructure/world/world-atlas-service.ts",
-      "line": 126,
-      "endLine": 126,
+      "line": 143,
+      "endLine": 143,
       "text": "export const worldAtlasService = new WorldAtlasService();"
     },
     {
@@ -3156,9 +3192,9 @@
     {
       "path": "src/infrastructure/world/host-world-adapter.ts",
       "line": 22,
-      "endLine": 58,
+      "endLine": 60,
       "name": "createHostWorldAdapter",
-      "text": "export function createHostWorldAdapter(ports: HostWorldPorts): HostWorldAdapter {\n  return {\n    transport: 'host',\n    rpcNames: HOST_WORLD_RPC_NAMES,\n    listOwnedWorlds: (actorId) => ports.listOwnedWorlds(actorId),\n    getWorld: (actorId, worldId) => ports.getWorld(actorId, worldId),\n    createOwnedWorld: (actorId, title) => ports.createOwnedWorld(actorId, title),\n    updateOwnedWorld: (actorId, worldId, title) => ports.updateOwnedWorld(actorId, worldId, title),\n    deleteOwnedWorld: (actorId, worldId) => ports.deleteOwnedWorld(actorId, worldId),\n    getWorldMap: (actorId, worldProfileId, playerView) =>\n      ports.getWorldMap(actorId, worldProfileId, playerView),\n    saveWorldMap: (actorId, worldProfileId, expectedRevision, mapData) =>\n      ports.saveWorldMap(actorId, worldProfileId, expectedRevision, mapData),\n    ensureWorldAtlasRoot: (actorId, worldProfileId) =>\n      ports.ensureWorldAtlasRoot(actorId, worldProfileId),\n    listWorldAtlasMaps: (actorId, worldProfileId, playerView, sagaPublicId) =>\n      ports.listWorldAtlasMaps(actorId, worldProfileId, playerView, sagaPublicId),\n    getWorldAtlasMap: (actorId, mapId, playerView, sagaPublicId) =>\n      ports.getWorldAtlasMap(actorId, mapId, playerView, sagaPublicId),\n    upsertWorldAtlasMap: (actorId, input) => ports.upsertWorldAtlasMap(actorId, input),\n    listWorldPlaces: (actorId, worldProfileId, playerView, sagaPublicId) =>\n      ports.listWorldPlaces(actorId, worldProfileId, playerView, sagaPublicId),\n    listWorldPlaceMapLinks: (actorId, worldProfileId, playerView, sagaPublicId) =>\n      ports.listWorldPlaceMapLinks(actorId, worldProfileId, playerView, sagaPublicId),\n    upsertWorldPlace: (actorId, input) => ports.upsertWorldPlace(actorId, input),\n    upsertWorldPlaceMapLink: (actorId, input) => ports.upsertWorldPlaceMapLink(actorId, input),\n    createWorldNodeWithMaps: (actorId, input) => ports.createWorldNodeWithMaps(actorId, input),\n    renameWorldNode: (actorId, input) => ports.renameWorldNode(actorId, input),\n    reparentWorldNode: (actorId, input) => ports.reparentWorldNode(actorId, input),\n    duplicateWorldNode: (actorId, input) => ports.duplicateWorldNode(actorId, input),\n    previewWorldNodeConsequences: (actorId, input) =>\n      ports.previewWorldNodeConsequences(actorId, input),\n    archiveWorldNodeSubtree: (actorId, input) => ports.archiveWorldNodeSubtree(actorId, input),\n    deleteWorldNode: (actorId, input) => ports.deleteWorldNode(actorId, input),\n    publishWorldAsset: (actorId, input) => ports.publishWorldAsset(actorId, input),\n  };\n}"
+      "text": "export function createHostWorldAdapter(ports: HostWorldPorts): HostWorldAdapter {\n  return {\n    transport: 'host',\n    rpcNames: HOST_WORLD_RPC_NAMES,\n    listOwnedWorlds: (actorId) => ports.listOwnedWorlds(actorId),\n    getWorld: (actorId, worldId) => ports.getWorld(actorId, worldId),\n    createOwnedWorld: (actorId, title) => ports.createOwnedWorld(actorId, title),\n    updateOwnedWorld: (actorId, worldId, title) => ports.updateOwnedWorld(actorId, worldId, title),\n    deleteOwnedWorld: (actorId, worldId) => ports.deleteOwnedWorld(actorId, worldId),\n    getWorldMap: (actorId, worldProfileId, playerView) =>\n      ports.getWorldMap(actorId, worldProfileId, playerView),\n    saveWorldMap: (actorId, worldProfileId, expectedRevision, mapData) =>\n      ports.saveWorldMap(actorId, worldProfileId, expectedRevision, mapData),\n    ensureWorldAtlasRoot: (actorId, worldProfileId) =>\n      ports.ensureWorldAtlasRoot(actorId, worldProfileId),\n    listWorldAtlasMaps: (actorId, worldProfileId, playerView, sagaPublicId) =>\n      ports.listWorldAtlasMaps(actorId, worldProfileId, playerView, sagaPublicId),\n    getWorldAtlasMap: (actorId, mapId, playerView, sagaPublicId) =>\n      ports.getWorldAtlasMap(actorId, mapId, playerView, sagaPublicId),\n    upsertWorldAtlasMap: (actorId, input) => ports.upsertWorldAtlasMap(actorId, input),\n    deleteWorldAtlasMap: (actorId, worldProfileId, mapId) =>\n      ports.deleteWorldAtlasMap(actorId, worldProfileId, mapId),\n    listWorldPlaces: (actorId, worldProfileId, playerView, sagaPublicId) =>\n      ports.listWorldPlaces(actorId, worldProfileId, playerView, sagaPublicId),\n    listWorldPlaceMapLinks: (actorId, worldProfileId, playerView, sagaPublicId) =>\n      ports.listWorldPlaceMapLinks(actorId, worldProfileId, playerView, sagaPublicId),\n    upsertWorldPlace: (actorId, input) => ports.upsertWorldPlace(actorId, input),\n    upsertWorldPlaceMapLink: (actorId, input) => ports.upsertWorldPlaceMapLink(actorId, input),\n    createWorldNodeWithMaps: (actorId, input) => ports.createWorldNodeWithMaps(actorId, input),\n    renameWorldNode: (actorId, input) => ports.renameWorldNode(actorId, input),\n    reparentWorldNode: (actorId, input) => ports.reparentWorldNode(actorId, input),\n    duplicateWorldNode: (actorId, input) => ports.duplicateWorldNode(actorId, input),\n    previewWorldNodeConsequences: (actorId, input) =>\n      ports.previewWorldNodeConsequences(actorId, input),\n    archiveWorldNodeSubtree: (actorId, input) => ports.archiveWorldNodeSubtree(actorId, input),\n    deleteWorldNode: (actorId, input) => ports.deleteWorldNode(actorId, input),\n    publishWorldAsset: (actorId, input) => ports.publishWorldAsset(actorId, input),\n  };\n}"
     },
     {
       "path": "src/infrastructure/world/host-world-adapter.ts",
@@ -3242,131 +3278,145 @@
       "line": 42,
       "endLine": 43,
       "name": "callback",
-      "text": "(actorId, worldProfileId, playerView, sagaPublicId) =>\n      ports.listWorldPlaces(actorId, worldProfileId, playerView, sagaPublicId)"
+      "text": "(actorId, worldProfileId, mapId) =>\n      ports.deleteWorldAtlasMap(actorId, worldProfileId, mapId)"
     },
     {
       "path": "src/infrastructure/world/host-world-adapter.ts",
       "line": 44,
       "endLine": 45,
       "name": "callback",
-      "text": "(actorId, worldProfileId, playerView, sagaPublicId) =>\n      ports.listWorldPlaceMapLinks(actorId, worldProfileId, playerView, sagaPublicId)"
+      "text": "(actorId, worldProfileId, playerView, sagaPublicId) =>\n      ports.listWorldPlaces(actorId, worldProfileId, playerView, sagaPublicId)"
     },
     {
       "path": "src/infrastructure/world/host-world-adapter.ts",
       "line": 46,
-      "endLine": 46,
-      "name": "callback",
-      "text": "(actorId, input) => ports.upsertWorldPlace(actorId, input)"
-    },
-    {
-      "path": "src/infrastructure/world/host-world-adapter.ts",
-      "line": 47,
       "endLine": 47,
       "name": "callback",
-      "text": "(actorId, input) => ports.upsertWorldPlaceMapLink(actorId, input)"
+      "text": "(actorId, worldProfileId, playerView, sagaPublicId) =>\n      ports.listWorldPlaceMapLinks(actorId, worldProfileId, playerView, sagaPublicId)"
     },
     {
       "path": "src/infrastructure/world/host-world-adapter.ts",
       "line": 48,
       "endLine": 48,
       "name": "callback",
-      "text": "(actorId, input) => ports.createWorldNodeWithMaps(actorId, input)"
+      "text": "(actorId, input) => ports.upsertWorldPlace(actorId, input)"
     },
     {
       "path": "src/infrastructure/world/host-world-adapter.ts",
       "line": 49,
       "endLine": 49,
       "name": "callback",
-      "text": "(actorId, input) => ports.renameWorldNode(actorId, input)"
+      "text": "(actorId, input) => ports.upsertWorldPlaceMapLink(actorId, input)"
     },
     {
       "path": "src/infrastructure/world/host-world-adapter.ts",
       "line": 50,
       "endLine": 50,
       "name": "callback",
-      "text": "(actorId, input) => ports.reparentWorldNode(actorId, input)"
+      "text": "(actorId, input) => ports.createWorldNodeWithMaps(actorId, input)"
     },
     {
       "path": "src/infrastructure/world/host-world-adapter.ts",
       "line": 51,
       "endLine": 51,
       "name": "callback",
-      "text": "(actorId, input) => ports.duplicateWorldNode(actorId, input)"
+      "text": "(actorId, input) => ports.renameWorldNode(actorId, input)"
     },
     {
       "path": "src/infrastructure/world/host-world-adapter.ts",
       "line": 52,
+      "endLine": 52,
+      "name": "callback",
+      "text": "(actorId, input) => ports.reparentWorldNode(actorId, input)"
+    },
+    {
+      "path": "src/infrastructure/world/host-world-adapter.ts",
+      "line": 53,
       "endLine": 53,
       "name": "callback",
-      "text": "(actorId, input) =>\n      ports.previewWorldNodeConsequences(actorId, input)"
+      "text": "(actorId, input) => ports.duplicateWorldNode(actorId, input)"
     },
     {
       "path": "src/infrastructure/world/host-world-adapter.ts",
       "line": 54,
-      "endLine": 54,
-      "name": "callback",
-      "text": "(actorId, input) => ports.archiveWorldNodeSubtree(actorId, input)"
-    },
-    {
-      "path": "src/infrastructure/world/host-world-adapter.ts",
-      "line": 55,
       "endLine": 55,
       "name": "callback",
-      "text": "(actorId, input) => ports.deleteWorldNode(actorId, input)"
+      "text": "(actorId, input) =>\n      ports.previewWorldNodeConsequences(actorId, input)"
     },
     {
       "path": "src/infrastructure/world/host-world-adapter.ts",
       "line": 56,
       "endLine": 56,
       "name": "callback",
+      "text": "(actorId, input) => ports.archiveWorldNodeSubtree(actorId, input)"
+    },
+    {
+      "path": "src/infrastructure/world/host-world-adapter.ts",
+      "line": 57,
+      "endLine": 57,
+      "name": "callback",
+      "text": "(actorId, input) => ports.deleteWorldNode(actorId, input)"
+    },
+    {
+      "path": "src/infrastructure/world/host-world-adapter.ts",
+      "line": 58,
+      "endLine": 58,
+      "name": "callback",
       "text": "(actorId, input) => ports.publishWorldAsset(actorId, input)"
     },
     {
       "path": "src/infrastructure/world/world-atlas-service.ts",
-      "line": 27,
-      "endLine": 31,
+      "line": 28,
+      "endLine": 32,
       "name": "assertHost",
       "text": "function assertHost(): void {\n  if (!isHostLibraryEnabled()) {\n    throw new Error('Host-Anmeldung nicht konfiguriert (VITE_SAGATREE_HOST_AUTH_URL fehlt).');\n  }\n}"
     },
     {
       "path": "src/infrastructure/world/world-atlas-service.ts",
-      "line": 49,
-      "endLine": 58,
+      "line": 50,
+      "endLine": 59,
       "name": "listMaps",
       "text": "async listMaps(\n    worldProfileId: string,\n    options: { readonly playerView?: boolean; readonly sagaPublicId?: string | null } = {},\n  ): Promise<WorldAtlasMapSummary[]> {\n    assertHost();\n    const id = worldProfileId.trim();\n    if (!id) throw new Error('Weltprofil fehlt');\n    const data = await listHostWorldAtlasMaps(id, options);\n    return parseWorldAtlasMapList(data);\n  }"
     },
     {
       "path": "src/infrastructure/world/world-atlas-service.ts",
-      "line": 60,
-      "endLine": 66,
+      "line": 61,
+      "endLine": 67,
       "name": "ensureRoot",
       "text": "async ensureRoot(worldProfileId: string): Promise<WorldAtlasMapSummary[]> {\n    assertHost();\n    const id = worldProfileId.trim();\n    if (!id) throw new Error('Weltprofil fehlt');\n    const data = await ensureHostWorldAtlasRoot(id);\n    return parseWorldAtlasMapList(data);\n  }"
     },
     {
       "path": "src/infrastructure/world/world-atlas-service.ts",
-      "line": 68,
-      "endLine": 78,
+      "line": 69,
+      "endLine": 79,
       "name": "getMap",
       "text": "async getMap(\n    mapId: string,\n    playerView = false,\n    sagaPublicId?: string | null,\n  ): Promise<WorldAtlasMapVm> {\n    assertHost();\n    const id = mapId.trim();\n    if (!id) throw new Error('Karten-ID fehlt');\n    const data = await fetchHostWorldAtlasMap(id, playerView, sagaPublicId);\n    return parseWorldAtlasMapVm(data);\n  }"
     },
     {
       "path": "src/infrastructure/world/world-atlas-service.ts",
-      "line": 80,
-      "endLine": 97,
+      "line": 81,
+      "endLine": 98,
       "name": "upsertMap",
       "text": "async upsertMap(input: UpsertWorldAtlasMapInput): Promise<WorldAtlasMapVm> {\n    assertHost();\n    const data = await upsertHostWorldAtlasMap({\n      worldProfileId: input.worldProfileId.trim(),\n      mapId: input.mapId ?? null,\n      parentMapId: input.parentMapId ?? null,\n      kind: input.kind,\n      title: input.title,\n      sortOrder: input.sortOrder ?? 0,\n      bounds: input.bounds,\n      layers: input.layers,\n      basemapStoragePath: input.basemapStoragePath ?? null,\n      azgaarMapStoragePath: input.azgaarMapStoragePath ?? null,\n      generatorMeta: input.generatorMeta ?? {},\n      expectedRevision: input.expectedRevision ?? null,\n    });\n    return parseWorldAtlasMapVm(data);\n  }"
     },
     {
       "path": "src/infrastructure/world/world-atlas-service.ts",
-      "line": 103,
-      "endLine": 113,
+      "line": 101,
+      "endLine": 114,
+      "name": "deleteMap",
+      "text": "async deleteMap(worldProfileId: string, mapId: string): Promise<{ deletedMapId: string }> {\n    assertHost();\n    const worldId = worldProfileId.trim();\n    const id = mapId.trim();\n    if (!worldId) throw new Error('Weltprofil fehlt');\n    if (!id) throw new Error('Karten-ID fehlt');\n    const data = (await deleteHostWorldAtlasMap(worldId, id)) as {\n      deletedMapId?: unknown;\n    };\n    const deleted =\n      typeof data?.deletedMapId === 'string' ? data.deletedMapId.trim() : '';\n    if (!deleted) throw new Error('Atlas-Karte konnte nicht gelöscht werden');\n    return { deletedMapId: deleted };\n  }"
+    },
+    {
+      "path": "src/infrastructure/world/world-atlas-service.ts",
+      "line": 120,
+      "endLine": 130,
       "name": "uploadAzgaarMapFile",
       "text": "async uploadAzgaarMapFile(worldProfileId: string, file: File): Promise<string> {\n    assertHost();\n    const id = worldProfileId.trim();\n    if (!id) throw new Error('Weltprofil fehlt');\n    if (file.size <= 0) throw new Error('Azgaar-Datei ist leer.');\n    if (file.size > AZGAAR_MAX_BYTES) {\n      throw new Error('Azgaar-Datei ist zu groß. Maximum 16 MB');\n    }\n    const published = await publishHostWorldAsset(id, file, 'azgaar');\n    return published.storagePath;\n  }"
     },
     {
       "path": "src/infrastructure/world/world-atlas-service.ts",
-      "line": 119,
-      "endLine": 123,
+      "line": 136,
+      "endLine": 140,
       "name": "createSignedUrl",
       "text": "async createSignedUrl(storagePath: string, expiresSec = 3600): Promise<string> {\n    void expiresSec;\n    assertHost();\n    return resolveHostWorldAssetUrl(storagePath);\n  }"
     },

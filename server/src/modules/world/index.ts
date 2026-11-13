@@ -198,6 +198,12 @@ export type WorldPorts = {
     actor: Actor,
     input: UpsertWorldAtlasMapInput,
   ) => WorldReadResult<WorldAtlasMapVm>;
+  /** ATL2-E01 — delete non-primary secondary atlas map (refuses root/primary/children). */
+  readonly deleteWorldAtlasMap: (
+    actor: Actor,
+    worldProfileId: string,
+    mapId: string,
+  ) => WorldReadResult<{ readonly deletedMapId: string }>;
   readonly listWorldPlaces: (
     actor: Actor,
     worldProfileId: string,
@@ -548,6 +554,16 @@ export function createWorldPorts(deps: {
       return atlas.upsertMap(ids, { ...input, worldProfileId });
     },
 
+    deleteWorldAtlasMap(actor, worldProfileId, mapId) {
+      if (!actor?.actorId) return { ok: false, error: '42501' };
+      if (!atlas) return { ok: false, error: 'store-unavailable' };
+      const worldId = typeof worldProfileId === 'string' ? worldProfileId.trim() : '';
+      const id = typeof mapId === 'string' ? mapId.trim() : '';
+      if (!worldId || !id) return { ok: false, error: '22023' };
+      const ids = actorIdentityIds(actor);
+      return atlas.deleteMap(ids, worldId, id);
+    },
+
     listWorldPlaces(actor, worldProfileId, playerView = false, sagaPublicId = null) {
       if (!actor?.actorId) return { ok: false, error: '42501' };
       if (!places) return { ok: false, error: 'store-unavailable' };
@@ -761,6 +777,7 @@ export function createWorldPortsStub(): WorldPorts {
     listWorldAtlasMaps: () => ({ ok: false, error: 'store-unavailable' }),
     getWorldAtlasMap: () => ({ ok: false, error: 'store-unavailable' }),
     upsertWorldAtlasMap: () => ({ ok: false, error: 'store-unavailable' }),
+    deleteWorldAtlasMap: () => ({ ok: false, error: 'store-unavailable' }),
     listWorldPlaces: () => ({ ok: false, error: 'store-unavailable' }),
     listWorldPlaceMapLinks: () => ({ ok: false, error: 'store-unavailable' }),
     upsertWorldPlace: () => ({ ok: false, error: 'store-unavailable' }),

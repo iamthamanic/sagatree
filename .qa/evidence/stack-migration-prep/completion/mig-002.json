@@ -4,8 +4,8 @@
   "localId": "MIG-002",
   "result": "PASS",
   "githubClosed": true,
-  "mergeRef": "PR #860 \u2192 main (after #782)",
-  "note": "Inventories refreshed after ATL2-D05 Codex LOD/budget fixes.",
+  "mergeRef": "PR #860 → main (after #782)",
+  "note": "Inventories refreshed after ATL2-E01 primary-map links + ATL2-F01 dungeon forge merge (#1219 / #1224).",
   "checks": [
     {
       "command": "legacy inventory matrix",
@@ -17,14 +17,14 @@
       "command": "rpc inventory 57",
       "result": "PASS",
       "evidenceFile": ".qa/intake/rpc-contracts/inventory.json",
-      "sha256": "28de52e2b21b31b4961099a8c6c892b6122d15ef045cd6e1afc46f094a117f3d"
+      "sha256": "3c577f9e191b0c816d00a5bc247fef194a9984f610b41bb8c074461058cb22de"
     },
     {
       "command": "edge/infra inventory 25+13",
       "result": "PASS",
       "evidenceFile": ".qa/intake/edge-infra-contracts/inventory.json",
-      "sha256": "a92f4d344806c66402fabd3a5780ad8843433dfee8377b409c13f10bc99f9c61"
+      "sha256": "9e744f1d0fafd4676acdf36544907432d09f834779ab1c4e4463aeeb2e2d4fe3"
     }
   ],
-  "testedCommit": "995147d1208406b8c573be9ed8353ace855bdde9"
+  "testedCommit": "e10676090955b976f8c2a7540a9df17198944a94"
 }

@@ -37684,7 +37684,7 @@
           },
           {
             "path": "src/domains/world/hierarchy/index.ts",
-            "sha256": "576f02be2a3187b6da3f83200079cbc3bbd274c44919a569c84da79008fe09b8"
+            "sha256": "05ef0b33d0950512a3ac12eb64497fb3e3321f43d81b4fcf76e909a2ef52efe2"
           },
           {
             "path": "src/domains/world/hierarchy/legacy-kind-map.ts",
@@ -37697,6 +37697,10 @@
           {
             "path": "src/domains/world/hierarchy/mutations.ts",
             "sha256": "15e52f9f6460d4e5ec19d71f3ec42057b1a81e8468bc0d9490f58d7f6f5a6dcc"
+          },
+          {
+            "path": "src/domains/world/hierarchy/primary-map-links.ts",
+            "sha256": "7d01ecbbb2cb467379eed308f37aa0eac0bd223768077b86ee210414a32a2ece"
           },
           {
             "path": "src/domains/world/hierarchy/world-hierarchy.ts",
@@ -37768,7 +37772,7 @@
           },
           {
             "path": "src/infrastructure/host/host-world-http.ts",
-            "sha256": "3e46295203990e7fa58d2638726d152627fefef512f76d689ccaff504927dbae"
+            "sha256": "4e5b1a2d336b907aec8ef7f58505f4605eef1674d15ed6ce4a109d47f352b6bd"
           },
           {
             "path": "src/infrastructure/media/optimizer/engines/audio/index.ts",
@@ -37824,11 +37828,11 @@
           },
           {
             "path": "src/infrastructure/world/host-world-adapter.ts",
-            "sha256": "fa229c2ceb37648d38d91f85699817ae584ae85f9195b45ea0ebe594aba786da"
+            "sha256": "8fbaad8d6d4ec9cc42070444441fae94fb20af020cdada2125a705877ea4e1f1"
           },
           {
             "path": "src/infrastructure/world/host-world-ports.contract.ts",
-            "sha256": "406d77c65527f6869c558a7b4c98c901766134f8e8d7dc6afc5271d6ba1a7f8e"
+            "sha256": "9d11c1085646775f6c6eb5bdc29baa7ed40af0245354589bd767d4f80da1d582"
           },
           {
             "path": "src/infrastructure/world/host-world-read.contract.ts",
@@ -37836,7 +37840,7 @@
           },
           {
             "path": "src/infrastructure/world/world-atlas-service.ts",
-            "sha256": "ace9c6ff13acad2aefa17f25784225461551b5bf6a79e807c9a24786619a552b"
+            "sha256": "63cdb7aea8402a51c8bf6480e325fd15d951c33c28aa1a7923340251878c5c1d"
           },
           {
             "path": "src/infrastructure/world/world-map-service.ts",
@@ -37860,7 +37864,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-world.json",
-      "sourceContractSha256": "379326d06fe234ad75b7eb35f1262aa97d6a8a529ca95bf488265d677fdb7c84",
+      "sourceContractSha256": "988d5e31f04f85745e6891cc2d16de16ffc89569defcf371302e82a595b964e8",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],
@@ -37888,49 +37892,55 @@
         {
           "path": "src/infrastructure/world/host-world-adapter.ts",
           "line": 22,
-          "endLine": 58,
+          "endLine": 60,
           "name": "createHostWorldAdapter"
         },
         {
           "path": "src/infrastructure/world/world-atlas-service.ts",
-          "line": 27,
-          "endLine": 31,
+          "line": 28,
+          "endLine": 32,
           "name": "assertHost"
         },
         {
           "path": "src/infrastructure/world/world-atlas-service.ts",
-          "line": 49,
-          "endLine": 58,
+          "line": 50,
+          "endLine": 59,
           "name": "listMaps"
         },
         {
           "path": "src/infrastructure/world/world-atlas-service.ts",
-          "line": 60,
-          "endLine": 66,
+          "line": 61,
+          "endLine": 67,
           "name": "ensureRoot"
         },
         {
           "path": "src/infrastructure/world/world-atlas-service.ts",
-          "line": 68,
-          "endLine": 78,
+          "line": 69,
+          "endLine": 79,
           "name": "getMap"
         },
         {
           "path": "src/infrastructure/world/world-atlas-service.ts",
-          "line": 80,
-          "endLine": 97,
+          "line": 81,
+          "endLine": 98,
           "name": "upsertMap"
         },
         {
           "path": "src/infrastructure/world/world-atlas-service.ts",
-          "line": 103,
-          "endLine": 113,
+          "line": 101,
+          "endLine": 114,
+          "name": "deleteMap"
+        },
+        {
+          "path": "src/infrastructure/world/world-atlas-service.ts",
+          "line": 120,
+          "endLine": 130,
           "name": "uploadAzgaarMapFile"
         },
         {
           "path": "src/infrastructure/world/world-atlas-service.ts",
-          "line": 119,
-          "endLine": 123,
+          "line": 136,
+          "endLine": 140,
           "name": "createSignedUrl"
         },
         {

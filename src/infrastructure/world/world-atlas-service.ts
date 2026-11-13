@@ -12,6 +12,7 @@ import {
   type WorldAtlasBounds,
 } from '../../domains/world/atlas';
 import {
+  deleteHostWorldAtlasMap,
   ensureHostWorldAtlasRoot,
   fetchHostWorldAtlasMap,
   isHostLibraryEnabled,
@@ -94,6 +95,22 @@ class WorldAtlasService {
       expectedRevision: input.expectedRevision ?? null,
     });
     return parseWorldAtlasMapVm(data);
+  }
+
+  /** ATL2-E01 — Sekundärkarte löschen (Primär-/Wurzelkarte fail-closed). */
+  async deleteMap(worldProfileId: string, mapId: string): Promise<{ deletedMapId: string }> {
+    assertHost();
+    const worldId = worldProfileId.trim();
+    const id = mapId.trim();
+    if (!worldId) throw new Error('Weltprofil fehlt');
+    if (!id) throw new Error('Karten-ID fehlt');
+    const data = (await deleteHostWorldAtlasMap(worldId, id)) as {
+      deletedMapId?: unknown;
+    };
+    const deleted =
+      typeof data?.deletedMapId === 'string' ? data.deletedMapId.trim() : '';
+    if (!deleted) throw new Error('Atlas-Karte konnte nicht gelöscht werden');
+    return { deletedMapId: deleted };
   }
 
   /**

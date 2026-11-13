@@ -181,6 +181,12 @@ export type HostWorldPorts = HostWorldReadPort & {
     actorId: string,
     input: HostUpsertWorldAtlasMapInput,
   ) => Promise<HostWorldReadResult<HostWorldAtlasMapVm>>;
+  /** ATL2-E01 — delete secondary atlas map (not primary / not root). */
+  readonly deleteWorldAtlasMap: (
+    actorId: string,
+    worldProfileId: string,
+    mapId: string,
+  ) => Promise<HostWorldReadResult<{ readonly deletedMapId: string }>>;
 
   readonly listWorldPlaces: (
     actorId: string,
@@ -248,6 +254,7 @@ export type HostWorldPorts = HostWorldReadPort & {
 export const HOST_WORLD_RPC_NAMES = [
   'archive_world_node_subtree',
   'create_world_node_with_maps',
+  'delete_world_atlas_map',
   'delete_world_node',
   'duplicate_world_node',
   'ensure_world_atlas_root',

@@ -2,6 +2,8 @@
  * Canonical WorldNodeKind hierarchy helpers (parity with atlas_wb_* SQL).
  * Location: server/src/modules/world/internal/world-create-helpers.ts
  * Private — import only from world-places-store / world public API consumers inside module.
+ *
+ * Subtype whitelist mirrors src/domains/world/hierarchy/world-node.types (ATL2-E01).
  */
 
 export const CANONICAL_KINDS = [
@@ -16,8 +18,32 @@ export type CanonicalWorldNodeKind = (typeof CANONICAL_KINDS)[number];
 
 const CANONICAL_KIND_SET: ReadonlySet<string> = new Set(CANONICAL_KINDS);
 
+const COUNTRY_SUBTYPES = new Set(['kingdom', 'republic', 'empire']);
+const PLACE_SUBTYPES = new Set(['city', 'village', 'wilderness', 'forest', 'mountain']);
+const BUILDING_SUBTYPES = new Set(['house', 'fortress', 'cave', 'dungeon', 'ruin']);
+const ROOM_SUBTYPES = new Set(['chamber', 'hall', 'corridor']);
+
 export function isCanonicalKind(v: string): v is CanonicalWorldNodeKind {
   return CANONICAL_KIND_SET.has(v);
+}
+
+/** Host-side subtype whitelist (null/empty allowed). */
+export function isValidSubtypeForKind(kind: string, subtype: string | null): boolean {
+  if (subtype == null || subtype === '') return true;
+  switch (kind) {
+    case 'country':
+      return COUNTRY_SUBTYPES.has(subtype);
+    case 'place':
+      return PLACE_SUBTYPES.has(subtype);
+    case 'building':
+      return BUILDING_SUBTYPES.has(subtype);
+    case 'room':
+      return ROOM_SUBTYPES.has(subtype);
+    case 'continent':
+      return false;
+    default:
+      return false;
+  }
 }
 
 export function requiredParentKind(kind: string): string | null {

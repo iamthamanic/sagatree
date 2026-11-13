@@ -203,6 +203,19 @@ export async function upsertHostWorldAtlasMap(input: {
   );
 }
 
+/** ATL2-E01 — delete secondary (non-primary) atlas map. */
+export async function deleteHostWorldAtlasMap(
+  worldProfileId: string,
+  mapId: string,
+): Promise<unknown> {
+  return hostMutateJson(
+    `/api/v1/worlds/${encodeURIComponent(worldProfileId)}/atlas/maps/${encodeURIComponent(mapId)}`,
+    'DELETE',
+    {},
+    'Atlas-Karte konnte nicht gelöscht werden',
+  );
+}
+
 export async function listHostWorldPlaces(
   worldProfileId: string,
   options: { readonly playerView?: boolean; readonly sagaPublicId?: string | null } = {},
