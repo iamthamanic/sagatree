@@ -45,20 +45,28 @@ export type PrimaryMapLinkCheck =
   | { readonly ok: true }
   | { readonly ok: false; readonly reason: string; readonly placeId?: string };
 
-/** Expected parent_map_id for a node's primary map. */
+/**
+ * Expected parent_map_id for a node's primary map.
+ * Continent (or null parent) → world root. Deeper nodes require the parent's
+ * primary map — missing parent primary fails closed (no silent root skip).
+ */
 export function expectedPrimaryMapParentId(input: {
   readonly kind: WorldNodeKind;
   readonly parentPlaceId: string | null;
   readonly parentPrimaryMapId: string | null;
   readonly worldRootMapId: string;
-}): string {
+}): { readonly ok: true; readonly parentMapId: string } | { readonly ok: false; readonly reason: string } {
   if (input.kind === 'continent' || input.parentPlaceId == null) {
-    return input.worldRootMapId;
+    const root = input.worldRootMapId.trim();
+    if (!root) return { ok: false, reason: 'missing_world_root_map' };
+    return { ok: true, parentMapId: root };
   }
-  if (input.parentPrimaryMapId == null || input.parentPrimaryMapId.trim() === '') {
-    return input.worldRootMapId;
+  const parentPrimary =
+    typeof input.parentPrimaryMapId === 'string' ? input.parentPrimaryMapId.trim() : '';
+  if (!parentPrimary) {
+    return { ok: false, reason: 'missing_parent_primary_map' };
   }
-  return input.parentPrimaryMapId;
+  return { ok: true, parentMapId: parentPrimary };
 }
 
 /** Reject unknown / mismatched subtype for Place/Building/Room/Country. */
@@ -123,17 +131,18 @@ export function assertPrimaryMapLinkGraph(graph: PrimaryMapLinkGraph): PrimaryMa
       }
     }
 
-    const expected = expectedPrimaryMapParentId({
-      kind: node.kind,
-      parentPlaceId: node.parentPlaceId,
-      parentPrimaryMapId: parent?.primaryMapId ?? null,
-      worldRootMapId: worldRoot,
-    });
-
-    // When parent is in-graph, parent_map_id must match exactly.
+    // When parent is in-graph (or root continent), parent_map_id must match exactly.
     if (node.parentPlaceId == null || parent) {
-      const actual = node.primaryMapParentId;
-      if (actual !== expected) {
+      const expected = expectedPrimaryMapParentId({
+        kind: node.kind,
+        parentPlaceId: node.parentPlaceId,
+        parentPrimaryMapId: parent?.primaryMapId ?? null,
+        worldRootMapId: worldRoot,
+      });
+      if (expected.ok === false) {
+        return { ok: false, reason: expected.reason, placeId: node.placeId };
+      }
+      if (node.primaryMapParentId !== expected.parentMapId) {
         return { ok: false, reason: 'primary_map_parent_mismatch', placeId: node.placeId };
       }
     }

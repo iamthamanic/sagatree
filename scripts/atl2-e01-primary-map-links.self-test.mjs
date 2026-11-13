@@ -37,24 +37,30 @@ assert.deepEqual([...hierarchy.canonicalNodeKindChain()], [
 ]);
 
 /* --- Domain invariants --- */
-assert.equal(
-  hierarchy.expectedPrimaryMapParentId({
-    kind: 'continent',
-    parentPlaceId: null,
-    parentPrimaryMapId: null,
-    worldRootMapId: 'root',
-  }),
-  'root',
-);
-assert.equal(
-  hierarchy.expectedPrimaryMapParentId({
-    kind: 'place',
-    parentPlaceId: 'country-1',
-    parentPrimaryMapId: 'map-country',
-    worldRootMapId: 'root',
-  }),
-  'map-country',
-);
+const contParent = hierarchy.expectedPrimaryMapParentId({
+  kind: 'continent',
+  parentPlaceId: null,
+  parentPrimaryMapId: null,
+  worldRootMapId: 'root',
+});
+assert.equal(contParent.ok, true);
+assert.equal(contParent.parentMapId, 'root');
+const placeParent = hierarchy.expectedPrimaryMapParentId({
+  kind: 'place',
+  parentPlaceId: 'country-1',
+  parentPrimaryMapId: 'map-country',
+  worldRootMapId: 'root',
+});
+assert.equal(placeParent.ok, true);
+assert.equal(placeParent.parentMapId, 'map-country');
+const missingParentPrimary = hierarchy.expectedPrimaryMapParentId({
+  kind: 'place',
+  parentPlaceId: 'country-1',
+  parentPrimaryMapId: null,
+  worldRootMapId: 'root',
+});
+assert.equal(missingParentPrimary.ok, false);
+assert.equal(missingParentPrimary.reason, 'missing_parent_primary_map');
 
 assert.equal(hierarchy.assertCreateSubtype('place', 'city').ok, true);
 assert.equal(hierarchy.assertCreateSubtype('place', 'kingdom').ok, false);
