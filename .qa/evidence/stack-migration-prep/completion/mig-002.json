@@ -5,7 +5,7 @@
   "result": "PASS",
   "githubClosed": true,
   "mergeRef": "PR #860 \u2192 main (after #782)",
-  "note": "Inventories refreshed after ATL2-E01 primary-map delete/links (#1219).",
+  "note": "Inventories refreshed after ATL2-E01 Codex P2 fail-closed primary links (#1219).",
   "checks": [
     {
       "command": "legacy inventory matrix",
@@ -23,8 +23,8 @@
       "command": "edge/infra inventory 25+13",
       "result": "PASS",
       "evidenceFile": ".qa/intake/edge-infra-contracts/inventory.json",
-      "sha256": "6d50549b5ff286035eb4cb9947e8631dfba18308fb5fcf744e14c90e05e538b8"
+      "sha256": "915aeceaaf2f73a59a7f03856a1bbb5f00417184d3a88f26e83151392a6d9bf5"
     }
   ],
-  "testedCommit": "ff1b0b6716f541954823d4287e27540d8827a204"
+  "testedCommit": "1749f6fc4b133e447db23b007efa3d4f29decf73"
 }

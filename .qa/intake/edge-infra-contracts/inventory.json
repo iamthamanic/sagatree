@@ -37700,7 +37700,7 @@
           },
           {
             "path": "src/domains/world/hierarchy/primary-map-links.ts",
-            "sha256": "87ef973f9dc443729cb1d02f511aec7c9f97752f1cf6457ce1685a9a38a045a0"
+            "sha256": "7d01ecbbb2cb467379eed308f37aa0eac0bd223768077b86ee210414a32a2ece"
           },
           {
             "path": "src/domains/world/hierarchy/world-hierarchy.ts",
@@ -37864,7 +37864,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-world.json",
-      "sourceContractSha256": "cbd62c42d33812d8b816a913a662cb978ed0437ce23aba8bc7ede7251280db93",
+      "sourceContractSha256": "afe09e96c188c47efd5681dcb66c5ecfe64ac9eba89e47fbf261f74c3e07a5a3",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],
