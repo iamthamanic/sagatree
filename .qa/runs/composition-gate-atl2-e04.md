@@ -2,7 +2,7 @@
 
 - Issue: #1222
 - Feature slug: atl2-e04
-- HEAD_SHA: PENDING_FEATURE_TIP
+- HEAD_SHA: 21edbb8bbdc6b54ab40de3cd333ff90132bf7c16
 - BASE_SHA: 95d0d8d48a733bba3113991f92e62330e0826f8d
 - Date: 2026-11-14
 - Verdict: CLEAR
@@ -24,4 +24,4 @@ loads leave the prior map navigable.
 
 ## Notes
 
-Proof pin updated after feature commit (docs-only follow-up).
+Proof pin for feature tip 21edbb8bbdc6b54ab40de3cd333ff90132bf7c16.
