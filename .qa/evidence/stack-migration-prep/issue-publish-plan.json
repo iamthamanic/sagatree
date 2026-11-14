@@ -276,7 +276,7 @@
     {
       "localId": "MIG-503",
       "issueNumber": 844,
-      "title": "MIG-503: Postgres\u2192SQLite data migration dry-run tooling",
+      "title": "MIG-503: Postgres→SQLite data migration dry-run tooling",
       "labels": [
         "P1",
         "migration-wave-2-api-realtime",
@@ -290,7 +290,7 @@
     {
       "localId": "RPC-MARKETPLACE-COUNT",
       "issueNumber": 878,
-      "title": "RPC-MARKETPLACE-COUNT: Marketplace-Downloadz\u00e4hler und Fallback",
+      "title": "RPC-MARKETPLACE-COUNT: Marketplace-Downloadzähler und Fallback",
       "labels": [
         "P1",
         "migration-wave-2-api-realtime",
@@ -304,7 +304,7 @@
     {
       "localId": "RPC-SAGA-AUTHORING",
       "issueNumber": 871,
-      "title": "RPC-SAGA-AUTHORING: Saga-Entwurf, Kopie und Ver\u00f6ffentlichung",
+      "title": "RPC-SAGA-AUTHORING: Saga-Entwurf, Kopie und Veröffentlichung",
       "labels": [
         "P1",
         "migration-wave-2-api-realtime",
@@ -472,7 +472,7 @@
     {
       "localId": "RPC-SAGA-PROJECTIONS",
       "issueNumber": 876,
-      "title": "RPC-SAGA-PROJECTIONS: Saga-\u00dcbersicht, Lore und Outcome-\u00dcbernahme",
+      "title": "RPC-SAGA-PROJECTIONS: Saga-Übersicht, Lore und Outcome-Übernahme",
       "labels": [
         "P1",
         "migration-wave-2-api-realtime",
@@ -528,7 +528,7 @@
     {
       "localId": "RPC-WORLD-PLACES",
       "issueNumber": 863,
-      "title": "RPC-WORLD-PLACES: Orte und Kartenverkn\u00fcpfungen",
+      "title": "RPC-WORLD-PLACES: Orte und Kartenverknüpfungen",
       "labels": [
         "P1",
         "migration-wave-2-api-realtime",
@@ -570,7 +570,7 @@
     {
       "localId": "RPC-WORLD-DESTRUCTIVE",
       "issueNumber": 866,
-      "title": "RPC-WORLD-DESTRUCTIVE: Folgenvorschau, Archivierung und L\u00f6schung",
+      "title": "RPC-WORLD-DESTRUCTIVE: Folgenvorschau, Archivierung und Löschung",
       "labels": [
         "P1",
         "migration-wave-2-api-realtime",
@@ -1200,7 +1200,7 @@
     {
       "localId": "GATE-05",
       "issueNumber": 788,
-      "title": "GATE-05: Desktop packaging PoC (Tauri+sidecar vs Electron) \u2014 deferred until browser host parity",
+      "title": "GATE-05: Desktop packaging PoC (Tauri+sidecar vs Electron) — deferred until browser host parity",
       "labels": [
         "P2",
         "migration-wave-7-cutover-tauri",
