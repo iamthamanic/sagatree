@@ -3729,6 +3729,15 @@ function checkAibertoAib05ChatUi() {
   });
 }
 
+function checkAibertoAib06ToolsRead() {
+  // AIB-06/#1129 — Read/Nav tools; append after AIB-05 cluster (away from Atlas #1283 mid-file hunks).
+  console.log('Aiberto AIB-06 tools read (#1129): registry + Owned ports + navigate allowlist...');
+  execFileSync(process.execPath, ['scripts/aiberto-aib-06-tools-read.self-test.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
+}
+
 function checkPowersEssencesValidation() {
   console.log('Powers/essences validation (#25): deterministic §12 power model audit...');
   execFileSync(process.execPath, ['scripts/validate-powers-essences-ranks.mjs'], {
@@ -4454,6 +4463,7 @@ checkAibertoAib01RulebookIndex();
 checkAibertoAib02CompanionUi();
 checkAibertoAib04AskHost();
 checkAibertoAib05ChatUi();
+checkAibertoAib06ToolsRead();
 checkAssetLicenseInventory();
 scanAddedLinesForSecrets();
 reportDependencyAudit();

@@ -22,6 +22,7 @@ import {
   AIBERTO_ASK_MAX_REQUEST_BYTES,
   checkAibertoAskBodySize,
 } from '../application/aiberto-ask/index.ts';
+import type { AibertoToolsUseCases } from '../application/aiberto-tools/index.ts';
 import {
   LOOK_REF_MAX_REQUEST_BYTES,
   checkContentLengthEnvelope,
@@ -50,6 +51,8 @@ export type AiHttpDeps = {
   readonly characterAvatarMeshy?: CharacterAvatarMeshyUseCases;
   /** AIB-04 — evidence-gated Core rulebook ask (SSE + JSON). */
   readonly aibertoAsk?: AibertoAskUseCases;
+  /** AIB-06 — Read/Nav tool registry + dispatcher. */
+  readonly aibertoTools?: AibertoToolsUseCases;
 };
 
 type JsonBody = Record<string, unknown>;
@@ -830,6 +833,84 @@ export function mountAiHttpRoutes(app: Hono, deps: AiHttpDeps): void {
           Connection: 'keep-alive',
         },
       });
+    });
+  }
+
+  // AIB-06: Read/Nav tools — capabilities + invoke. Flag default off inside use-case.
+  if (deps.aibertoTools) {
+    app.get('/api/v1/ai/aiberto-tools/capabilities', async (c) => {
+      const tools = deps.aibertoTools;
+      if (!tools) {
+        return c.json(
+          { status: 'error', message: 'Aiberto-Tools sind vorübergehend nicht verfügbar.' },
+          503,
+        );
+      }
+      const actorResult = await resolveActor(deps, c.req.raw.headers, {});
+      if (!actorResult.ok) {
+        return c.json(
+          { status: 'error', message: 'Nicht angemeldet.', code: actorResult.error },
+          actorResult.status,
+        );
+      }
+      const result = tools.capabilities(actorResult.actor);
+      if (result.status === 'ok') return c.json(result, 200);
+      if (result.status === 'disabled') return c.json(result, 503);
+      return c.json(
+        { status: 'error', code: result.code, message: result.message },
+        result.httpStatus,
+      );
+    });
+
+    app.post('/api/v1/ai/aiberto-tools/invoke', async (c) => {
+      const tools = deps.aibertoTools;
+      if (!tools) {
+        return c.json(
+          { status: 'error', message: 'Aiberto-Tools sind vorübergehend nicht verfügbar.' },
+          503,
+        );
+      }
+      if (!contentTypeIsJson(c)) {
+        return c.json(
+          { status: 'error', message: 'Content-Type application/json erforderlich.' },
+          415,
+        );
+      }
+      let body: JsonBody = {};
+      try {
+        const text = await c.req.text();
+        if (text && text.trim().length > 0) {
+          const parsed: unknown = JSON.parse(text);
+          if (!isRecord(parsed)) {
+            return c.json({ status: 'error', message: 'Ungültiger Request-Body.' }, 400);
+          }
+          body = parsed;
+        }
+      } catch {
+        return c.json({ status: 'error', message: 'Ungültiger Request-Body.' }, 400);
+      }
+      const actorResult = await resolveActor(deps, c.req.raw.headers, body);
+      if (!actorResult.ok) {
+        return c.json(
+          { status: 'error', message: 'Nicht angemeldet.', code: actorResult.error },
+          actorResult.status,
+        );
+      }
+      const result = await tools.invoke(actorResult.actor, {
+        toolId: body.toolId,
+        args: body.args,
+      });
+      if (result.status === 'ok') return c.json(result, 200);
+      if (result.status === 'disabled') return c.json(result, 503);
+      return c.json(
+        {
+          status: 'error' as const,
+          code: result.code,
+          message: result.message,
+          ...(result.toolId ? { toolId: result.toolId } : {}),
+        },
+        result.httpStatus,
+      );
     });
   }
 }

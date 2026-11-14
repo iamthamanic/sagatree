@@ -97,6 +97,8 @@ export type RouteRegistryDeps = {
   readonly characterLore?: CharacterLoreUseCases;
   /** AIB-04 aiberto-ask + text inference. */
   readonly aibertoAsk?: AibertoAskUseCases;
+  /** AIB-06 Read/Nav tool registry. */
+  readonly aibertoTools?: import('../application/aiberto-tools/index.ts').AibertoToolsUseCases;
   /** CUT-15 look reference analysis. */
   readonly lookReferenceAnalysis?: import('../application/look-reference-analysis/index.ts').LookReferenceAnalysisUseCases;
   /** CUT-18 character avatar Meshy. */
@@ -186,6 +188,7 @@ export function createRouteHandler(deps: RouteRegistryDeps) {
     aiOllama: deps.aiOllama,
     characterLore: deps.characterLore,
     aibertoAsk: deps.aibertoAsk,
+    aibertoTools: deps.aibertoTools,
     lookReferenceAnalysis: deps.lookReferenceAnalysis,
     characterAvatarMeshy: deps.characterAvatarMeshy,
     sessionRecapGenerate: deps.sessionRecapGenerate,
