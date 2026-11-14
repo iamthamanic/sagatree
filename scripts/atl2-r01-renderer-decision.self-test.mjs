@@ -24,7 +24,10 @@ const jiti = createJiti(import.meta.url, { esmResolve: true });
 const target = jiti(join(root, 'src/domains/world/atlas/atlas-renderer-target.ts'));
 
 const WRITE_EVIDENCE = process.env.ATL2_R01_WRITE_EVIDENCE === '1';
-const SKIP_BROWSER = process.env.ATL2_R01_SKIP_BROWSER === '1';
+// CI uses committed PoC results by default; set ATL2_R01_RUN_BROWSER=1 to re-measure.
+const SKIP_BROWSER =
+  process.env.ATL2_R01_SKIP_BROWSER === '1' ||
+  (process.env.CI === 'true' && process.env.ATL2_R01_RUN_BROWSER !== '1');
 const headSha = execSync('git rev-parse HEAD', { cwd: root, encoding: 'utf8' }).trim();
 
 const acceptance = readFileSync(join(root, '.qa/acceptance/atl2-r01-renderer-decision.md'), 'utf8');
