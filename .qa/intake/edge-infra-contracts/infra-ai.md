@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-ai.json](source-contracts/infra-ai.json) (SHA-256 `8bed96d25b12f71930341f1ff926314921388ff8a93fdfc5e4e74b2528443f27`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-ai.json](source-contracts/infra-ai.json) (SHA-256 `83aee082ecc5fe371cfb4a399e3136805895c4dbb7671f5d6133361ca60b993a`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -351,11 +351,11 @@ export type AibertoToolInvokeResult =
     };
 ```
 
-### src/infrastructure/ai/aiberto-tools-service.ts:151
+### src/infrastructure/ai/aiberto-tools-service.ts:159
 
 ```ts
 export async function fetchAibertoToolCapabilities(
-  env: EnvLike = {},
+  env: EnvLike = defaultEnv(),
   fetchImpl: typeof fetch = fetch,
 ): Promise<AibertoToolsCapabilitiesResult> {
   const base = toolsBase(env);
@@ -384,13 +384,13 @@ export async function fetchAibertoToolCapabilities(
 }
 ```
 
-### src/infrastructure/ai/aiberto-tools-service.ts:180
+### src/infrastructure/ai/aiberto-tools-service.ts:188
 
 ```ts
 export async function invokeAibertoTool(
   toolId: string,
   args: Record<string, unknown> = {},
-  env: EnvLike = {},
+  env: EnvLike = defaultEnv(),
   fetchImpl: typeof fetch = fetch,
 ): Promise<AibertoToolInvokeResult> {
   const base = toolsBase(env);
@@ -567,7 +567,7 @@ All backend operations are included in the public declarations above.
 | `src/domains/ai-providers/ollama-settings.ts` | `f3cbc6de1a3822b21cf3edf08f6debb19ea27299b46f54dbd1bfac0eaf83150c` |
 | `src/infrastructure/ai/ai-provider-credentials-service.ts` | `deabff23986dd311748c7efff1539c2fe977465fa8357c5a1fda1577c5562e51` |
 | `src/infrastructure/ai/aiberto-ask-service.ts` | `c70d02b82d012089fa26299ace355ca5edbb73f967c8c462fb4864e46f5f0441` |
-| `src/infrastructure/ai/aiberto-tools-service.ts` | `b5fb50bf60e7f1556f26ea6e9d35bad31cc862eb4b4d9b80ce7c57116b72b783` |
+| `src/infrastructure/ai/aiberto-tools-service.ts` | `e466ae827b15233b575789e500cb9a0cc29121d242cf96924bec6d6d3d8ca640` |
 | `src/infrastructure/ai/host-ai-invoke.ts` | `1d85a9e6c3aad0022c11202a5e829f35eb40a9b503f3eced462d028169fb81db` |
 | `src/infrastructure/ai/ollama-settings-service.ts` | `aaf53b0f3004f001018518dade230a67f923c98897413476c9635f7d0aae1116` |
 | `src/infrastructure/host/host-library-http.ts` | `c56b88c60d6c9491fc7b6e6e1143ac4985ffdab5dff16afef8a54bce79629a07` |

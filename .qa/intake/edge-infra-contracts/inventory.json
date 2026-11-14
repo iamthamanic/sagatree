@@ -28720,7 +28720,7 @@
           },
           {
             "path": "src/infrastructure/ai/aiberto-tools-service.ts",
-            "sha256": "b5fb50bf60e7f1556f26ea6e9d35bad31cc862eb4b4d9b80ce7c57116b72b783"
+            "sha256": "e466ae827b15233b575789e500cb9a0cc29121d242cf96924bec6d6d3d8ca640"
           },
           {
             "path": "src/infrastructure/ai/host-ai-invoke.ts",
@@ -28744,7 +28744,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-ai.json",
-      "sourceContractSha256": "8bed96d25b12f71930341f1ff926314921388ff8a93fdfc5e4e74b2528443f27",
+      "sourceContractSha256": "83aee082ecc5fe371cfb4a399e3136805895c4dbb7671f5d6133361ca60b993a",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],
@@ -28855,37 +28855,43 @@
         {
           "path": "src/infrastructure/ai/aiberto-tools-service.ts",
           "line": 66,
-          "endLine": 68,
+          "endLine": 72,
+          "name": "defaultEnv"
+        },
+        {
+          "path": "src/infrastructure/ai/aiberto-tools-service.ts",
+          "line": 74,
+          "endLine": 76,
           "name": "isRecord"
         },
         {
           "path": "src/infrastructure/ai/aiberto-tools-service.ts",
-          "line": 70,
-          "endLine": 74,
+          "line": 78,
+          "endLine": 82,
           "name": "toolsBase"
         },
         {
           "path": "src/infrastructure/ai/aiberto-tools-service.ts",
-          "line": 76,
-          "endLine": 111,
+          "line": 84,
+          "endLine": 119,
           "name": "parseCapabilities"
         },
         {
           "path": "src/infrastructure/ai/aiberto-tools-service.ts",
-          "line": 113,
-          "endLine": 149,
+          "line": 121,
+          "endLine": 157,
           "name": "parseInvoke"
         },
         {
           "path": "src/infrastructure/ai/aiberto-tools-service.ts",
-          "line": 151,
-          "endLine": 178,
+          "line": 159,
+          "endLine": 186,
           "name": "fetchAibertoToolCapabilities"
         },
         {
           "path": "src/infrastructure/ai/aiberto-tools-service.ts",
-          "line": 180,
-          "endLine": 214,
+          "line": 188,
+          "endLine": 222,
           "name": "invokeAibertoTool"
         },
         {
