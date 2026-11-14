@@ -222,6 +222,10 @@
       "sha256": "1421ca01edd55307c341adc3ac74f4c5a7cef87f60fadbbe0faaa141898b4791"
     },
     {
+      "path": "src/domains/world/atlas/atlas-perf-budgets.ts",
+      "sha256": "573eca9473df86909d283b24362e794e16cec93adc8da84a94f26283c2dad598"
+    },
+    {
       "path": "src/domains/world/atlas/atlas-persist-state.ts",
       "sha256": "84ab0edbd0b525c95b5db85afeb683d335351884ba6c612e94f327719a6b60ca"
     },
@@ -295,7 +299,7 @@
     },
     {
       "path": "src/domains/world/atlas/index.ts",
-      "sha256": "dfef37decc4c8e2739e9ca1168b57da224d3785e7ef930b55de89b0469e54fa2"
+      "sha256": "2346e596b7f67a387be8520cf0fa5a285e2d9500847e8c5db82dfc62628b059f"
     },
     {
       "path": "src/domains/world/atlas/map-edit-ops.ts",
@@ -1642,6 +1646,54 @@
       "line": 15,
       "endLine": 22,
       "text": "export type AtlasMapPin = {\n  readonly id: string;\n  readonly label: string;\n  /** Hierarchy kind (null when the legacy place kind has no canonical node kind). */\n  readonly kind: WorldNodeKind | null;\n  readonly x: number;\n  readonly y: number;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AtlasPerfSceneSize",
+      "path": "src/domains/world/atlas/atlas-perf-budgets.ts",
+      "line": 14,
+      "endLine": 14,
+      "text": "export type AtlasPerfSceneSize = 'small' | 'medium' | 'large';"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AtlasPerfSceneFixture",
+      "path": "src/domains/world/atlas/atlas-perf-budgets.ts",
+      "line": 16,
+      "endLine": 27,
+      "text": "export type AtlasPerfSceneFixture = {\n  readonly id: AtlasPerfSceneSize;\n  readonly labelDe: string;\n  /** Approximate place/room feature count for the fixture. */\n  readonly featureCount: number;\n  /** Approximate instanced mesh count (dungeon / diorama). */\n  readonly instanceCount: number;\n  /** Approximate terrain cells (heightfield / mesh). */\n  readonly terrainCells: number;\n  /** Scenario tag used in evidence. */\n  readonly scenario: 'settlement' | 'dungeon' | 'world';\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AtlasPerfBudget",
+      "path": "src/domains/world/atlas/atlas-perf-budgets.ts",
+      "line": 71,
+      "endLine": 84,
+      "text": "export type AtlasPerfBudget = {\n  readonly sceneSize: AtlasPerfSceneSize;\n  readonly presetId: AtlasGraphicsPresetId;\n  /** Frame time p95 upper bound (ms). */\n  readonly frameP95MsMax: number;\n  /** Cold map load upper bound (ms) — host+parse+first paint proxy. */\n  readonly coldLoadMsMax: number;\n  /** Draw-call upper bound after instancing. */\n  readonly drawCallsMax: number;\n  /** JS heap delta upper bound across a map switch cycle (bytes). */\n  readonly heapDeltaBytesMax: number;\n  /** Max retained GPU resource handles after dispose / context-loss. */\n  readonly retainedHandlesMax: number;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AtlasPerfObservation",
+      "path": "src/domains/world/atlas/atlas-perf-budgets.ts",
+      "line": 115,
+      "endLine": 121,
+      "text": "export type AtlasPerfObservation = {\n  readonly frameP95Ms: number;\n  readonly coldLoadMs: number;\n  readonly drawCalls: number;\n  readonly heapDeltaBytes: number;\n  readonly retainedHandles: number;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AtlasPerfBudgetVerdict",
+      "path": "src/domains/world/atlas/atlas-perf-budgets.ts",
+      "line": 123,
+      "endLine": 128,
+      "text": "export type AtlasPerfBudgetVerdict = {\n  readonly ok: boolean;\n  readonly budget: AtlasPerfBudget;\n  readonly observation: AtlasPerfObservation;\n  readonly violations: readonly string[];\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AtlasPerfResourceSession",
+      "path": "src/domains/world/atlas/atlas-perf-budgets.ts",
+      "line": 183,
+      "endLine": 189,
+      "text": "export type AtlasPerfResourceSession = {\n  readonly generation: number;\n  readonly allocatedHandles: number;\n  readonly liveHandles: number;\n  readonly mapSwitchCount: number;\n  readonly contextLossCount: number;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",

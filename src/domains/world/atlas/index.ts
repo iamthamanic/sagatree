@@ -571,6 +571,27 @@ export {
 } from './atlas-renderer-target';
 
 export {
+  ATLAS_PERF_REFERENCE_HARDWARE_DE,
+  ATLAS_PERF_SCENE_FIXTURES,
+  atlasPerfAllocateHandles,
+  atlasPerfBudgetFor,
+  atlasPerfDisposeAll,
+  atlasPerfMapSwitchStress,
+  atlasPerfSceneFixture,
+  atlasPerfSimulateContextLoss,
+  createAtlasPerfResourceSession,
+  estimateAtlasPerfDrawCalls,
+  evaluateAtlasPerfBudget,
+  suggestAtlasPerfDegrade,
+  type AtlasPerfBudget,
+  type AtlasPerfBudgetVerdict,
+  type AtlasPerfObservation,
+  type AtlasPerfResourceSession,
+  type AtlasPerfSceneFixture,
+  type AtlasPerfSceneSize,
+} from './atlas-perf-budgets';
+
+export {
   ATLAS_DIORAMA_LOOK_FORMAT,
   ATLAS_DIORAMA_MATERIALS,
   atlasDioramaHouseVariant,
