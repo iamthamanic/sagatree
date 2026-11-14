@@ -202,6 +202,10 @@
       "sha256": "13a91efde301ec766d3b0f183affcd794abba9f4c4872c00549e9f631947e294"
     },
     {
+      "path": "src/domains/world/atlas/atlas-gate-g05.ts",
+      "sha256": "6230d7063557f2e1d838838c2de59c93707758732a05cd30cf5b7ee4d2dc947d"
+    },
+    {
       "path": "src/domains/world/atlas/atlas-golden-visual.ts",
       "sha256": "754007ac0525c6797330d3a16995af16e35d747107c36f29e76fa6ecd36cbf7c"
     },
@@ -303,7 +307,7 @@
     },
     {
       "path": "src/domains/world/atlas/index.ts",
-      "sha256": "153bde0423fc622920234b702908c1a901875f06a90f8e885c9e5c344dec50b4"
+      "sha256": "03aa20b0db0625b3199c00145d1e7374249e6908d44c865d8c06c1462a34abcd"
     },
     {
       "path": "src/domains/world/atlas/map-edit-ops.ts",
@@ -1426,6 +1430,54 @@
       "line": 12,
       "endLine": 17,
       "text": "export type AtlasEditHistory = {\n  readonly past: readonly string[];\n  readonly future: readonly string[];\n  /** When set, intermediate edits coalesce into one undo step ending at commitBatch. */\n  readonly batchBase: string | null;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AtlasG05CheckStatus",
+      "path": "src/domains/world/atlas/atlas-gate-g05.ts",
+      "line": 22,
+      "endLine": 22,
+      "text": "export type AtlasG05CheckStatus = 'PASS' | 'FAIL' | 'NOT_RUN';"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AtlasG05CheckId",
+      "path": "src/domains/world/atlas/atlas-gate-g05.ts",
+      "line": 24,
+      "endLine": 37,
+      "text": "export type AtlasG05CheckId =\n  | 'frame-times-small'\n  | 'frame-times-medium'\n  | 'frame-times-large'\n  | 'map-switch-teardown'\n  | 'webgl-context-loss'\n  | 'js-heap-soak'\n  | 'camera-zoom-pick-edit'\n  | 'device-desktop'\n  | 'device-tablet'\n  | 'device-phone'\n  | 'owner-api-secrets'\n  | 'player-secret-negative'\n  | 'visual-screenshot';"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AtlasG05CheckResult",
+      "path": "src/domains/world/atlas/atlas-gate-g05.ts",
+      "line": 39,
+      "endLine": 43,
+      "text": "export type AtlasG05CheckResult = {\n  readonly id: AtlasG05CheckId;\n  readonly status: AtlasG05CheckStatus;\n  readonly detail: string;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AtlasG05FrameSample",
+      "path": "src/domains/world/atlas/atlas-gate-g05.ts",
+      "line": 45,
+      "endLine": 53,
+      "text": "export type AtlasG05FrameSample = {\n  readonly sceneId: AtlasPerfSceneSize;\n  readonly sampleCount: number;\n  readonly p50Ms: number;\n  readonly p95Ms: number;\n  readonly budgetMs: number;\n  readonly renderer: 'webgl' | 'software' | 'unknown';\n  readonly withinBudget: boolean;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AtlasG05DeviceProbe",
+      "path": "src/domains/world/atlas/atlas-gate-g05.ts",
+      "line": 55,
+      "endLine": 61,
+      "text": "export type AtlasG05DeviceProbe = {\n  readonly band: AtlasAdaptiveBand;\n  readonly width: number;\n  readonly height: number;\n  readonly atlasReady: boolean;\n  readonly webglMode: string;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AtlasG05Evidence",
+      "path": "src/domains/world/atlas/atlas-gate-g05.ts",
+      "line": 63,
+      "endLine": 86,
+      "text": "export type AtlasG05Evidence = {\n  readonly format: typeof ATLAS_G05_EVIDENCE_FORMAT;\n  readonly issue: 1233;\n  readonly gate: 'atl2-g05';\n  readonly at: string;\n  readonly repro: {\n    readonly host: string;\n    readonly userAgent: string;\n    readonly viewport: string;\n  };\n  readonly frames: readonly AtlasG05FrameSample[];\n  readonly devices: readonly AtlasG05DeviceProbe[];\n  readonly mapSwitchCycles: number;\n  readonly liveMeshesAfterTeardown: number;\n  readonly contextLossObserved: boolean;\n  readonly contextRestored: boolean;\n  readonly jsHeapUsedMbBefore: number | null;\n  readonly jsHeapUsedMbAfter: number | null;\n  readonly cameraZoomPickEditOk: boolean;\n  readonly ownerSeesSecrets: boolean;\n  readonly playerSecretsAbsent: boolean;\n  readonly screenshotPaths: readonly string[];\n  readonly checks: readonly AtlasG05CheckResult[];\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
