@@ -70,15 +70,21 @@ execFileSync(
 const rb = await import(pathToFileURL(join(outdir, 'rulebook.mjs')).href);
 const index = rb.getSagaTreeCoreRulebookIndex();
 const queries = ['Kampf', 'Erfahrung', 'Fertigkeit', 'Attribute', 'zzzz-no-hit'];
+/** Per-invocation durations (ms) — p95 over individuals, not averages of batches. */
 const samples = [];
 for (const q of queries) {
-  const t0 = performance.now();
-  for (let i = 0; i < 50; i += 1) rb.searchRulebook(index, q, { limit: 20 });
-  samples.push((performance.now() - t0) / 50);
+  for (let i = 0; i < 40; i += 1) {
+    const t0 = performance.now();
+    rb.searchRulebook(index, q, { limit: 20 });
+    samples.push(performance.now() - t0);
+  }
 }
-const p95 = [...samples].sort((a, b) => a - b)[Math.min(samples.length - 1, Math.floor(samples.length * 0.95))];
-// Local/CI budget: < 25ms mean per query on Node (document; not wall-clock UI)
-check(p95 < 25, `NFR-001 search p95 < 25ms (got ${p95.toFixed(2)}ms)`);
-console.log(`AIB-03 NFR-001 search latency samples(ms)=${samples.map((n) => n.toFixed(2)).join(',')} p95=${p95.toFixed(2)}`);
+samples.sort((a, b) => a - b);
+const p95 = samples[Math.min(samples.length - 1, Math.floor(samples.length * 0.95))];
+// Local/CI budget: < 25ms p95 per offline search on Node (document; not wall-clock UI)
+check(p95 < 25, `NFR-001 search p95 < 25ms (got ${p95.toFixed(2)}ms over ${samples.length} calls)`);
+console.log(
+  `AIB-03 NFR-001 search latency n=${samples.length} p50=${samples[Math.floor(samples.length * 0.5)].toFixed(2)} p95=${p95.toFixed(2)} max=${samples[samples.length - 1].toFixed(2)}`,
+);
 
 console.log('AIB-03 Phase-A QA self-test passed.');
