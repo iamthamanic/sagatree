@@ -7,7 +7,7 @@ Date: 2026-11-14
 ## HEAD
 
 - Branch: `issue-1129-aib-06-tools-read`
-- Implementation SHA: _(filled at push — see git HEAD)_
+- Implementation SHA: `f5d00eed7bafaff9afd90a610a6ac06816ec5029`
 - Base: `main` @ `71e9c2986d8926e4b959bc09bb188ff6ad5b8c01` (AIB-05)
 
 ## Producer → consumer
