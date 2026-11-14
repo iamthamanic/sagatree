@@ -15,6 +15,19 @@ export {
 } from './world-atlas.types';
 
 export {
+  UNIFIED_SECRET_IDS,
+  coercePgBoolean,
+  entityIsSecret,
+  featureDiscovered,
+  featureIsSecret,
+  filterPartyLayers,
+  partyPayloadLeaksSecrets,
+  redactDungeonMetaForParty,
+  redactPartyGeneratorMeta,
+  redactUnifiedCanvasForParty,
+} from './party-map-projection';
+
+export {
   parseWorldAtlasBounds,
   parseWorldAtlasLayers,
   parseWorldAtlasMapList,

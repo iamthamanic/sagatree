@@ -2027,6 +2027,11 @@ function checkWorldAtlasEditor() {
     cwd: root,
     stdio: 'inherit',
   });
+  console.log('ATL2-G01 atlas GM/player/owner scopes & secrets (#1229)...');
+  execFileSync(process.execPath, ['scripts/atl2-g01-atlas-scopes.self-test.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
   console.log('Atlas settlement presets: Großstadt/Stadt/Dorf seedKeys...');
   execFileSync(process.execPath, ['scripts/atlas-settlement-presets.self-test.mjs'], {
     cwd: root,
@@ -2189,6 +2194,11 @@ function checkWorldAtlasEditor() {
   });
   console.log('ATL2-E05 Gate E hierarchy travel / anchors / zoom / LOD...');
   execFileSync(process.execPath, ['scripts/atl2-e05-gate-e.self-test.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
+  console.log('ATL2-G01 GM/Player/Owner atlas scopes & secrets...');
+  execFileSync(process.execPath, ['scripts/atl2-g01-scopes.self-test.mjs'], {
     cwd: root,
     stdio: 'inherit',
   });
