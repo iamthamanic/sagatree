@@ -18,7 +18,10 @@ keine reine Geschmacksfreigabe.
 - [x] Fixtures world/country/city/tavern/crypt/room with fixed camera + lighting
 - [x] Art-direction checklist measurable (materials, selection ≥3:1, detail degradable)
 - [x] No unsolicited canonical world objects (IV-01); themes atmospheric (IV-02)
-- [x] Deterministic content fingerprints; CI mode `fingerprint-exact` + documented pixel tolerance
+- [x] Deterministic content fingerprints vs committed `ATLAS_GOLDEN_VISUAL_BASELINES`
+- [x] Spatial geometry in fingerprints; full-field compare (light/look/selection)
+- [x] Material variety: ≥2 canvas materials OR ≥2 look albedos (separate counts)
+- [x] CI mode `fingerprint-exact` + documented pixel tolerance
 - [x] Touched files: zero type escape hatches
 
 ## Edge Cases
