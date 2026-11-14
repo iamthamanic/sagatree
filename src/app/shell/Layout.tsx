@@ -9,6 +9,7 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import {
   Books,
+  BookOpenText,
   CaretLeft,
   CaretRight,
   Chalkboard,
@@ -28,6 +29,13 @@ import {
   initialsFromDisplayName,
   resolveAccountDisplayName,
 } from '../../domains/user-profile';
+import {
+  AibertoCompanion,
+  AibertoToggleButton,
+  isAibertoCompanionEnabled,
+  readAibertoPrefs,
+  writeAibertoPrefs,
+} from '../ai-assistant';
 import { useAccountAvatar } from './useAccountAvatar';
 
 
@@ -78,9 +86,11 @@ export function Layout({ children, currentView, onNavigate }: LayoutProps) {
   const { user, signOut } = useAuth();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [userExpandedDesktop, setUserExpandedDesktop] = useState(false);
+  const [aibertoOpen, setAibertoOpen] = useState(false);
   const { avatarUrl } = useAccountAvatar();
   const isDesktop = useIsDesktop();
   const viewportBand = useAdaptiveBand();
+  const aibertoEnabled = isAibertoCompanionEnabled();
   const displayName = resolveAuthDisplayName(user);
   const avatarInitial = displayName
     ? initialsFromDisplayName(displayName)
@@ -93,6 +103,20 @@ export function Layout({ children, currentView, onNavigate }: LayoutProps) {
       // ignore storage errors (private mode)
     }
   }, []);
+
+  useEffect(() => {
+    if (!aibertoEnabled) return;
+    setAibertoOpen(readAibertoPrefs().open);
+  }, [aibertoEnabled]);
+
+  const toggleAiberto = () => {
+    setAibertoOpen((current) => {
+      const next = !current;
+      const prefs = readAibertoPrefs();
+      writeAibertoPrefs({ ...prefs, open: next });
+      return next;
+    });
+  };
 
   // Compact viewport bands: keep rail collapsed so Journey content keeps width
   // (IDE split panes / tablet). Desktop restores stored preference unless the
@@ -218,6 +242,13 @@ export function Layout({ children, currentView, onNavigate }: LayoutProps) {
                   </button>
                 );
               })}
+              {aibertoEnabled ? (
+                <AibertoToggleButton
+                  open={aibertoOpen}
+                  onToggle={toggleAiberto}
+                  compact={sidebarCollapsed}
+                />
+              ) : null}
             </div>
           </nav>
 
@@ -330,6 +361,23 @@ export function Layout({ children, currentView, onNavigate }: LayoutProps) {
                     )}
                   </button>
                 ) : null}
+                {aibertoEnabled ? (
+                  <button
+                    type="button"
+                    onClick={toggleAiberto}
+                    className={`p-2 rounded-lg transition-colors min-h-11 min-w-11 ${
+                      aibertoOpen
+                        ? 'bg-primary text-primary-foreground'
+                        : 'hover:bg-muted'
+                    }`}
+                    title="Aiberto"
+                    aria-label="Aiberto Regelbuch"
+                    aria-pressed={aibertoOpen}
+                    data-aiberto-toggle="mobile-header"
+                  >
+                    <BookOpenText className="w-5 h-5" size={20} weight="regular" aria-hidden />
+                  </button>
+                ) : null}
                 <button
                   type="button"
                   onClick={() => onNavigate('profile')}
@@ -350,13 +398,18 @@ export function Layout({ children, currentView, onNavigate }: LayoutProps) {
             </div>
           </header>
 
-          <main
-            className="@container/main min-w-0 flex-1 overflow-y-auto overflow-x-hidden pb-20 md:pb-0"
-            data-adaptive-main
-            data-adaptive-viewport-band={viewportBand}
-          >
-            {children}
-          </main>
+          <div className="flex min-h-0 min-w-0 flex-1 overflow-hidden">
+            <main
+              className="@container/main min-w-0 flex-1 overflow-y-auto overflow-x-hidden pb-20 md:pb-0"
+              data-adaptive-main
+              data-adaptive-viewport-band={viewportBand}
+            >
+              {children}
+            </main>
+            {aibertoEnabled ? (
+              <AibertoCompanion open={aibertoOpen} onOpenChange={setAibertoOpen} />
+            ) : null}
+          </div>
         </div>
 
         <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-card border-t border-border safe-area-pb">

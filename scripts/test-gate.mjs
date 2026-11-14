@@ -3702,6 +3702,15 @@ function checkAibertoAib01RulebookIndex() {
   });
 }
 
+function checkAibertoAib02CompanionUi() {
+  // AIB-02/#1125 — keep adjacent to AIB-01; avoid Atlas test-gate hunks (PR #1283).
+  console.log('Aiberto AIB-02 companion UI (#1125): shell dock/sheet + rulebook browser...');
+  execFileSync(process.execPath, ['scripts/aiberto-aib-02-companion-ui.self-test.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
+}
+
 function checkAibertoAib04AskHost() {
   // AIB-04/#1127 — host aiberto-ask; keep adjacent to AIB-01, away from Atlas #1283 / AIB-02 Layout.
   console.log('Aiberto AIB-04 ask host (#1127): text port + evidence/citations + quota...');
@@ -4433,6 +4442,7 @@ checkCharacterEditorRulesUxValidation();
 checkGearResourcesLoadValidation();
 checkAnalogEndToEndPlaytestValidation();
 checkAibertoAib01RulebookIndex();
+checkAibertoAib02CompanionUi();
 checkAibertoAib04AskHost();
 checkAssetLicenseInventory();
 scanAddedLinesForSecrets();
