@@ -1,11 +1,11 @@
 # Composition Gate — aiberto-aib-03-phase-a-qa
 
 - HEAD_SHA: 82e81f8737a4e022ee3e9e978018b9a92203918a
-- BASE_SHA: 5f8f9de01593d99e3280e171cf7ccb804b4c620e
+- BASE_SHA: 71e9c2986d8926e4b959bc09bb188ff6ad5b8c01
 - Date: 2026-11-14
 - Verdict: CLEAR
 - Acceptance tier: qa-e2e
-- Deferred integration: AIB-05 chat UI (after AIB-02+04 on main)
+- Deferred integration: Release-A closed after AIB-03; AIB-05 chat already on main (sibling)
 
 ## Event
 
