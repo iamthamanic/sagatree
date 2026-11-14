@@ -18,8 +18,9 @@ locate, breadcrumb/back zoom, and semantic LOD/lazy loads — without a fake zoo
 
 - [ ] PR stack Gate D + E01–E04 present on `main` (documented SHAs)
 - [ ] Host ensure-starter yields Golden titles World→…→Tavern/Crypt (≥6 maps)
-- [ ] Child maps carry ParentSpatialAnchor / parent_map_id (located drill)
-- [ ] Domain breadcrumb covers both Building/Room branches (Schankraum + Gruftkammer)
+- [ ] Host persists/queries room maps Schankraum + Gruftkammer with full parent chains
+- [ ] Every non-root map carries ParentSpatialAnchor / parent_map_id (located drill)
+- [ ] Domain + host breadcrumbs cover both Building/Room branches (Schankraum + Gruftkammer)
 - [ ] Domain LOD bands + load generation + failure rollback proven
 - [ ] Gate report `.qa/runs/atl2-e05-gate-e.md` CLEAR with Soll/Ist table
 - [ ] Browser wrapper opens Dornhain atlas workstation (2D or 3D)

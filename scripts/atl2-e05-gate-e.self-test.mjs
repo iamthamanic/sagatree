@@ -26,6 +26,9 @@ const EXPECTED_MAP_TITLES = [
   'Krypta unter dem Hügel',
 ];
 
+/** Room-level titles persisted through the host (not seed-only). */
+const ROOM_MAP_TITLES = ['Schankraum', 'Gruftkammer'];
+
 const STACK = [
   {
     pr: 1259,
@@ -273,12 +276,17 @@ const sollIst = [
   },
   {
     category: 'Golden host maps',
-    soll: 'ensure-starter yields ≥6 Golden titles World→…→Tavern/Crypt',
+    soll: 'ensure-starter yields ≥6 Golden titles World→…→Tavern/Crypt; rooms persisted via host',
     ist: 'pending-host',
   },
   {
     category: 'Located child anchors (host)',
-    soll: 'child maps expose parent_map_id / parentSpatialAnchor in generator_meta',
+    soll: 'every non-root map (Golden + rooms) has parent_map_id + ready ParentSpatialAnchor',
+    ist: 'pending-host',
+  },
+  {
+    category: 'Host room chains',
+    soll: 'Schankraum + Gruftkammer host breadcrumbs cover six-level Building/Room branches',
     ist: 'pending-host',
   },
   {
@@ -304,9 +312,88 @@ const hostEvidence = {
   ownerMapTitles: [],
   worldPublicId: null,
   locatedChildren: 0,
+  nonRootCount: 0,
+  roomTitles: [],
+  roomChains: [],
   strangerDeny: false,
   outsiderStatus: null,
 };
+
+/**
+ * @param {object} args
+ * @param {string} args.hostUrl
+ * @param {string} args.cookie
+ * @param {string} args.worldId
+ * @param {string} args.parentMapId
+ * @param {string} args.title
+ * @param {{ centerX: number, centerY: number, extentX: number, extentY: number }} args.anchor
+ */
+async function createLocatedRoomMap({ hostUrl, cookie, worldId, parentMapId, title, anchor }) {
+  const frame = {
+    status: 'ready',
+    parentAnchor: {
+      parentMapId,
+      centerX: anchor.centerX,
+      centerY: anchor.centerY,
+      extentX: anchor.extentX,
+      extentY: anchor.extentY,
+      rotationRad: 0,
+      metersPerUnit: null,
+    },
+  };
+  const generatorMeta = mf.mergeMapFrameIntoGeneratorMeta(
+    {
+      engine: 'unified_canvas',
+      seed: `gate-e.room.${title}`,
+      golden: false,
+      scale: 'scene',
+      gateE: true,
+    },
+    frame,
+  );
+  const created = await httpJson(hostUrl, `/api/v1/worlds/${worldId}/atlas/maps`, {
+    method: 'PUT',
+    headers: { Origin: hostUrl },
+    cookie,
+    body: {
+      // omit mapId → host allocates a new atlas map row
+      parentMapId,
+      kind: 'scene',
+      title,
+      sortOrder: 100,
+      bounds: { minX: 0, minY: 0, maxX: 1000, maxY: 1000 },
+      layers: { type: 'FeatureCollection', features: [] },
+      basemapStoragePath: null,
+      azgaarMapStoragePath: null,
+      generatorMeta,
+    },
+  });
+  assert.ok(
+    created.res.status < 400,
+    `create room ${title}: ${created.res.status} ${created.text.slice(0, 300)}`,
+  );
+  const vm = created.json?.map ?? created.json;
+  assert.ok(vm?.id, `room ${title} missing id`);
+  return vm;
+}
+
+/**
+ * @param {Array<{ id: string, title: string, parentMapId?: string|null, parent_map_id?: string|null }>} rows
+ * @param {string} leafId
+ */
+function hostBreadcrumbTitles(rows, leafId) {
+  const byId = new Map(rows.map((r) => [r.id, r]));
+  const titles = [];
+  let cur = byId.get(leafId) ?? null;
+  const seen = new Set();
+  while (cur && !seen.has(cur.id)) {
+    seen.add(cur.id);
+    titles.unshift(cur.title);
+    const parentId = cur.parentMapId ?? cur.parent_map_id ?? null;
+    cur = parentId ? byId.get(parentId) ?? null : null;
+  }
+  return titles;
+}
 
 const evidence = {
   gate: 'atl2-e05',
@@ -378,34 +465,120 @@ try {
   }
   hostEvidence.ownerMapCount = titles.length;
   hostEvidence.ownerMapTitles = titles;
+
+  const tavern = mapRows.find((m) => m.title === 'Taverne Zum Flüstern');
+  const crypt = mapRows.find((m) => m.title === 'Krypta unter dem Hügel');
+  assert.ok(tavern?.id, 'Taverne map');
+  assert.ok(crypt?.id, 'Krypta map');
+
+  const schank = await createLocatedRoomMap({
+    hostUrl,
+    cookie: ownerCookie,
+    worldId: dornhain.id,
+    parentMapId: tavern.id,
+    title: 'Schankraum',
+    anchor: { centerX: 420, centerY: 380, extentX: 48, extentY: 40 },
+  });
+  const gruft = await createLocatedRoomMap({
+    hostUrl,
+    cookie: ownerCookie,
+    worldId: dornhain.id,
+    parentMapId: crypt.id,
+    title: 'Gruftkammer',
+    anchor: { centerX: 380, centerY: 410, extentX: 44, extentY: 44 },
+  });
+
+  const mapsAfterRooms = await httpJson(hostUrl, `/api/v1/worlds/${dornhain.id}/atlas/maps`, {
+    headers: { Origin: hostUrl },
+    cookie: ownerCookie,
+  });
+  assert.equal(mapsAfterRooms.res.status, 200, mapsAfterRooms.text);
+  const allRows = mapsAfterRooms.json?.maps ?? [];
+  const allTitles = allRows.map((m) => m.title);
+  for (const t of [...EXPECTED_MAP_TITLES, ...ROOM_MAP_TITLES]) {
+    assert.ok(allTitles.includes(t), `missing map title ${t}; got ${allTitles.join(',')}`);
+  }
+  hostEvidence.ownerMapCount = allTitles.length;
+  hostEvidence.ownerMapTitles = allTitles;
+  hostEvidence.roomTitles = ROOM_MAP_TITLES.filter((t) => allTitles.includes(t));
   sollIst[4].ist = 'pass-host';
 
+  /** Enrich list rows with parent ids from detail when list omits them. */
+  const detailById = new Map();
   let located = 0;
-  for (const row of mapRows) {
-    if (row.title === 'Welt') continue;
+  let nonRoot = 0;
+  for (const row of allRows) {
     const detail = await httpJson(hostUrl, `/api/v1/worlds/atlas/maps/${row.id}`, {
       headers: { Origin: hostUrl },
       cookie: ownerCookie,
     });
     assert.equal(detail.res.status, 200, detail.text);
     const vm = detail.json?.map ?? detail.json;
-    const meta = vm?.generatorMeta ?? vm?.generator_meta ?? {};
+    detailById.set(row.id, vm);
     const parentId = vm?.parentMapId ?? vm?.parent_map_id ?? null;
+    const meta = vm?.generatorMeta ?? vm?.generator_meta ?? {};
+    if (!parentId) {
+      assert.equal(row.title, 'Welt', `root map must be Welt, got ${row.title}`);
+      continue;
+    }
+    nonRoot += 1;
     const frame = mf.extractMapFrameFromGeneratorMeta(meta ?? {});
     const parsed = frame?.parentAnchor ? mf.parseParentSpatialAnchor(frame.parentAnchor) : null;
-    if (parentId && frame?.status === 'ready' && parsed) located += 1;
+    assert.equal(
+      frame?.status,
+      'ready',
+      `non-root ${row.title} mapFrame.status=${frame?.status ?? 'missing'}`,
+    );
+    assert.ok(parsed, `non-root ${row.title} missing ParentSpatialAnchor`);
+    assert.equal(
+      parsed.parentMapId,
+      parentId,
+      `anchor.parentMapId mismatch for ${row.title}`,
+    );
+    located += 1;
   }
-  assert.ok(located >= 4, `expected ≥4 located children, got ${located}`);
+  assert.equal(
+    located,
+    nonRoot,
+    `every non-root map must be located; located=${located} nonRoot=${nonRoot}`,
+  );
+  assert.ok(nonRoot >= 7, `expected ≥7 non-root (5 Golden + 2 rooms), got ${nonRoot}`);
   hostEvidence.locatedChildren = located;
+  hostEvidence.nonRootCount = nonRoot;
   sollIst[5].ist = 'pass-host';
 
-  const welt = mapRows.find((m) => m.title === 'Welt');
-  assert.ok(welt?.id, 'Welt map');
-  const weltGet = await httpJson(hostUrl, `/api/v1/worlds/atlas/maps/${welt.id}`, {
-    headers: { Origin: hostUrl },
-    cookie: ownerCookie,
+  const chainRows = allRows.map((r) => {
+    const vm = detailById.get(r.id);
+    return {
+      id: r.id,
+      title: r.title,
+      parentMapId: vm?.parentMapId ?? vm?.parent_map_id ?? r.parentMapId ?? r.parent_map_id ?? null,
+    };
   });
-  const weltVm = weltGet.json?.map ?? weltGet.json;
+  const schankChain = hostBreadcrumbTitles(chainRows, schank.id);
+  const gruftChain = hostBreadcrumbTitles(chainRows, gruft.id);
+  assert.deepEqual(schankChain, [
+    'Welt',
+    'Kontinent Westmark',
+    'Land Westmark',
+    'Dornhain',
+    'Taverne Zum Flüstern',
+    'Schankraum',
+  ]);
+  assert.deepEqual(gruftChain, [
+    'Welt',
+    'Kontinent Westmark',
+    'Land Westmark',
+    'Dornhain',
+    'Krypta unter dem Hügel',
+    'Gruftkammer',
+  ]);
+  hostEvidence.roomChains = [schankChain.join('→'), gruftChain.join('→')];
+  sollIst[6].ist = 'pass-host';
+
+  const welt = allRows.find((m) => m.title === 'Welt');
+  assert.ok(welt?.id, 'Welt map');
+  const weltVm = detailById.get(welt.id);
   const rev0 = weltVm?.revision ?? welt?.revision;
 
   const strangerSign = await httpJson(hostUrl, '/api/auth/sign-up/email', {
@@ -451,7 +624,7 @@ try {
   );
   hostEvidence.strangerDeny = true;
   hostEvidence.outsiderStatus = strangerWrite.res.status;
-  sollIst[6].ist = 'pass-host';
+  sollIst[7].ist = 'pass-host';
 
   evidence.verdict = 'CLEAR';
   evidence.residuals = [
@@ -491,8 +664,9 @@ ${stackRows}
 ## Hierarchy travel (host)
 
 - Owner ensure-starter → Dornhain atlas maps: **${hostEvidence.ownerMapCount}**
-- Titles World→…→Tavern/Crypt: yes
-- Located children with ParentSpatialAnchor: **${hostEvidence.locatedChildren}**
+- Titles World→…→Tavern/Crypt + rooms: yes (${(hostEvidence.roomTitles ?? []).join(', ') || 'n/a'})
+- Non-root maps: **${hostEvidence.nonRootCount}**; all located: **${hostEvidence.locatedChildren}**
+- Host room chains: ${(hostEvidence.roomChains ?? []).map((c) => `\`${c}\``).join(' ; ') || 'n/a'}
 - World publicId: **${hostEvidence.worldPublicId ?? 'n/a'}**
 
 ## Soll / Ist (feature categories)

@@ -15,8 +15,8 @@ visual-only zoom demo.
 
 | Ticket phrase | Gate E meaning |
 | --- | --- |
-| Sechs-Stufen-Hierarchie | World → continent → country → place → building → room (both tavern + crypt branches) |
-| Anker | ParentSpatialAnchor on located children; unlocated stays honest |
+| Sechs-Stufen-Hierarchie | World → continent → country → place → building → room; rooms persisted/queried via host (Schankraum + Gruftkammer) |
+| Anker | ParentSpatialAnchor on **every** non-root map; unlocated stays honest |
 | Zoom / Back | enterChildMap + breadcrumb + navigateBack / wheel-back (E03) |
 | LOD | Semantic hierarchy bands + generation loads + fade/failure rollback (E04) |
 

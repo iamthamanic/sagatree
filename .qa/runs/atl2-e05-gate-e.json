@@ -1,7 +1,7 @@
 {
   "gate": "atl2-e05",
   "issue": 1223,
-  "head": "1d4538c67ecb69c47f3f543039b7ca7432fdfb04",
+  "head": "1644a13df401163865b94e388669dd0c2d9f5c98",
   "stack": [
     {
       "pr": 1259,
@@ -40,17 +40,28 @@
     }
   ],
   "host": {
-    "ownerMapCount": 6,
+    "ownerMapCount": 8,
     "ownerMapTitles": [
       "Dornhain",
       "Kontinent Westmark",
       "Krypta unter dem Hügel",
       "Land Westmark",
       "Taverne Zum Flüstern",
-      "Welt"
+      "Welt",
+      "Gruftkammer",
+      "Schankraum"
     ],
-    "worldPublicId": "WO-4ER3X",
-    "locatedChildren": 5,
+    "worldPublicId": "WO-MPY7Q",
+    "locatedChildren": 7,
+    "nonRootCount": 7,
+    "roomTitles": [
+      "Schankraum",
+      "Gruftkammer"
+    ],
+    "roomChains": [
+      "Welt→Kontinent Westmark→Land Westmark→Dornhain→Taverne Zum Flüstern→Schankraum",
+      "Welt→Kontinent Westmark→Land Westmark→Dornhain→Krypta unter dem Hügel→Gruftkammer"
+    ],
     "strangerDeny": true,
     "outsiderStatus": 403
   },
@@ -77,12 +88,17 @@
     },
     {
       "category": "Golden host maps",
-      "soll": "ensure-starter yields ≥6 Golden titles World→…→Tavern/Crypt",
+      "soll": "ensure-starter yields ≥6 Golden titles World→…→Tavern/Crypt; rooms persisted via host",
       "ist": "pass-host"
     },
     {
       "category": "Located child anchors (host)",
-      "soll": "child maps expose parent_map_id / parentSpatialAnchor in generator_meta",
+      "soll": "every non-root map (Golden + rooms) has parent_map_id + ready ParentSpatialAnchor",
+      "ist": "pass-host"
+    },
+    {
+      "category": "Host room chains",
+      "soll": "Schankraum + Gruftkammer host breadcrumbs cover six-level Building/Room branches",
       "ist": "pass-host"
     },
     {

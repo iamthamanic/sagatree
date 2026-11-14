@@ -1,7 +1,7 @@
 # ATL2-E05 Gate E — Phase E hierarchy acceptance
 
 - Issue: #1223
-- HEAD: `1d4538c67ecb69c47f3f543039b7ca7432fdfb04`
+- HEAD: `1644a13df401163865b94e388669dd0c2d9f5c98`
 - Verdict: **CLEAR**
 - Date: 2026-11-14
 
@@ -17,10 +17,11 @@
 
 ## Hierarchy travel (host)
 
-- Owner ensure-starter → Dornhain atlas maps: **6**
-- Titles World→…→Tavern/Crypt: yes
-- Located children with ParentSpatialAnchor: **5**
-- World publicId: **WO-4ER3X**
+- Owner ensure-starter → Dornhain atlas maps: **8**
+- Titles World→…→Tavern/Crypt + rooms: yes (Schankraum, Gruftkammer)
+- Non-root maps: **7**; all located: **7**
+- Host room chains: `Welt→Kontinent Westmark→Land Westmark→Dornhain→Taverne Zum Flüstern→Schankraum` ; `Welt→Kontinent Westmark→Land Westmark→Dornhain→Krypta unter dem Hügel→Gruftkammer`
+- World publicId: **WO-MPY7Q**
 
 ## Soll / Ist (feature categories)
 
@@ -30,8 +31,9 @@
 | Six hierarchy levels (domain) | ATLAS_HIERARCHY_LEVELS length 6; both room-branch breadcrumbs | **pass-domain** |
 | Anchors + locate (domain) | ParentSpatialAnchor + enterChild requires located; unlocated fails closed | **pass-domain** |
 | LOD / lazy load (domain) | generation load → transition → ready; failure rolls back to prior ready | **pass-domain** |
-| Golden host maps | ensure-starter yields ≥6 Golden titles World→…→Tavern/Crypt | **pass-host** |
-| Located child anchors (host) | child maps expose parent_map_id / parentSpatialAnchor in generator_meta | **pass-host** |
+| Golden host maps | ensure-starter yields ≥6 Golden titles World→…→Tavern/Crypt; rooms persisted via host | **pass-host** |
+| Located child anchors (host) | every non-root map (Golden + rooms) has parent_map_id + ready ParentSpatialAnchor | **pass-host** |
+| Host room chains | Schankraum + Gruftkammer host breadcrumbs cover six-level Building/Room branches | **pass-host** |
 | Negative policy | stranger atlas write denied | **pass-host** |
 
 ## Host ownership
