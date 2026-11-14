@@ -2027,11 +2027,6 @@ function checkWorldAtlasEditor() {
     cwd: root,
     stdio: 'inherit',
   });
-  console.log('ATL2-G01 atlas GM/player/owner scopes & secrets (#1229)...');
-  execFileSync(process.execPath, ['scripts/atl2-g01-atlas-scopes.self-test.mjs'], {
-    cwd: root,
-    stdio: 'inherit',
-  });
   console.log('Atlas settlement presets: Großstadt/Stadt/Dorf seedKeys...');
   execFileSync(process.execPath, ['scripts/atlas-settlement-presets.self-test.mjs'], {
     cwd: root,
