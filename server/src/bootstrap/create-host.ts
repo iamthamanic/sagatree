@@ -91,6 +91,15 @@ import {
   type CharacterLoreUseCases,
 } from '../application/character-lore/index.ts';
 import {
+  createAibertoAskUseCases,
+  resolveAibertoAskRateLimit,
+  type AibertoAskUseCases,
+} from '../application/aiberto-ask/index.ts';
+import {
+  createAibertoRateLimitStore,
+  resolveTextInferenceProviderConfig,
+} from '../modules/ai/index.ts';
+import {
   createSessionRecapGenerateUseCases,
   createSqliteSessionRecapGenerateStore,
   generateSessionRecapStory,
@@ -457,6 +466,32 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
       generateStory: generateCharacterLoreStory,
       rateLimitPerMinute: resolveCharacterLoreRateLimit(
         env.CHARACTER_AI_RATE_LIMIT_PER_MINUTE,
+      ),
+    });
+
+    async function resolveAibertoTextProviderForUser(userId: string) {
+      // Prefer per-user Ollama Organize settings (same path as character-lore).
+      const fromUser = await resolveCharacterLoreProviderForUser(userId);
+      if (fromUser) {
+        return {
+          provider: fromUser.provider,
+          baseUrl: fromUser.baseUrl,
+          model: fromUser.model,
+          ...(fromUser.apiKey ? { apiKey: fromUser.apiKey } : {}),
+        };
+      }
+      return resolveTextInferenceProviderConfig((key) => env[key]);
+    }
+
+    const aibertoAsk: AibertoAskUseCases = createAibertoAskUseCases({
+      envGet: (key) => env[key],
+      authorize: (actor) => permissions.authorize('aiberto.ask', actor, {}),
+      resolveProvider: resolveAibertoTextProviderForUser,
+      rateLimitStore: createAibertoRateLimitStore(),
+      rateLimitPerMinute: resolveAibertoAskRateLimit(
+        env.AIBERTO_ASK_RATE_LIMIT_PER_MINUTE ||
+          env.AIBERTO_AI_RATE_LIMIT_PER_MINUTE ||
+          env.CHARACTER_AI_RATE_LIMIT_PER_MINUTE,
       ),
     });
 
@@ -969,6 +1004,7 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
       aiCredentials,
       aiOllama,
       characterLore,
+      aibertoAsk,
       lookReferenceAnalysis,
       characterAvatarMeshy,
       sessionRecapGenerate,

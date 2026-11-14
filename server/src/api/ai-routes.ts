@@ -1,11 +1,12 @@
 /**
- * Host HTTP adapters for infrastructure/ai (MIG-301 / #800 + CUT-13 / #1148 + CUT-15 / #1150 + CUT-18 / #1153).
+ * Host HTTP adapters for infrastructure/ai (MIG-301 / #800 + CUT-13 / #1148 + CUT-15 / #1150 + CUT-18 / #1153 + AIB-04 / #1127).
  * Location: server/src/api/ai-routes.ts
  *
  * Action-shaped bodies match Edge `ai-provider-credentials` / `ollama-settings`.
  * Character lore generate-background mounts at POST `/api/v1/ai/character-lore`.
  * Look reference analysis mounts at POST `/api/v1/ai/look-reference-analysis`.
  * Character avatar Meshy mounts at POST `/api/v1/ai/character-avatar-meshy`.
+ * Aiberto ask mounts at POST `/api/v1/ai/aiberto-ask` (+ `/stream` SSE).
  */
 import type { Hono } from 'hono';
 import type { Context } from 'hono';
@@ -16,6 +17,11 @@ import type { createOllamaSettingsUseCases } from '../application/ollama-setting
 import type { CharacterLoreUseCases } from '../application/character-lore/index.ts';
 import type { LookReferenceAnalysisUseCases } from '../application/look-reference-analysis/index.ts';
 import type { CharacterAvatarMeshyUseCases } from '../application/character-avatar-meshy/index.ts';
+import type { AibertoAskUseCases } from '../application/aiberto-ask/index.ts';
+import {
+  AIBERTO_ASK_MAX_REQUEST_BYTES,
+  checkAibertoAskBodySize,
+} from '../application/aiberto-ask/index.ts';
 import {
   LOOK_REF_MAX_REQUEST_BYTES,
   checkContentLengthEnvelope,
@@ -42,6 +48,8 @@ export type AiHttpDeps = {
   readonly lookReferenceAnalysis?: LookReferenceAnalysisUseCases;
   /** CUT-18 — character avatar Meshy generation. */
   readonly characterAvatarMeshy?: CharacterAvatarMeshyUseCases;
+  /** AIB-04 — evidence-gated Core rulebook ask (SSE + JSON). */
+  readonly aibertoAsk?: AibertoAskUseCases;
 };
 
 type JsonBody = Record<string, unknown>;
@@ -649,6 +657,179 @@ export function mountAiHttpRoutes(app: Hono, deps: AiHttpDeps): void {
         },
         typeof result.httpStatus === 'number' ? result.httpStatus : 500,
       );
+    });
+  }
+
+  // AIB-04: aiberto-ask (JSON + SSE). Flag/default-off handled inside use-case.
+  if (deps.aibertoAsk) {
+    const readAibertoBody = async (
+      c: Context,
+    ): Promise<
+      | {
+          ok: true;
+          body: unknown;
+          rawBodyUtf8Bytes: number;
+          contentLengthHeader: string | null;
+        }
+      | { ok: false; status: number; message: string }
+    > => {
+      if (!contentTypeIsJson(c)) {
+        return { ok: false, status: 415, message: 'Content-Type application/json erforderlich.' };
+      }
+      const contentLengthHeader = c.req.header('content-length') ?? null;
+      const headerSize = checkAibertoAskBodySize(contentLengthHeader);
+      if (!headerSize.ok) {
+        return { ok: false, status: headerSize.status, message: headerSize.message };
+      }
+      let rawText = '';
+      try {
+        const stream = c.req.raw.body;
+        if (stream) {
+          const reader = stream.getReader();
+          const chunks: Uint8Array[] = [];
+          let total = 0;
+          for (;;) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            if (value) {
+              total += value.byteLength;
+              if (total > AIBERTO_ASK_MAX_REQUEST_BYTES) {
+                await reader.cancel().catch(() => undefined);
+                return {
+                  ok: false,
+                  status: 413,
+                  message:
+                    'Request-Body ist zu groß. Bitte kürze die Frage und versuche es erneut.',
+                };
+              }
+              chunks.push(value);
+            }
+          }
+          rawText = Buffer.concat(chunks.map((u) => Buffer.from(u))).toString('utf8');
+        }
+      } catch {
+        return { ok: false, status: 400, message: 'Ungültiger Request-Body.' };
+      }
+      const rawBodyUtf8Bytes = Buffer.byteLength(rawText, 'utf8');
+      const decodedSize = checkAibertoAskBodySize(null, rawBodyUtf8Bytes);
+      if (!decodedSize.ok) {
+        return { ok: false, status: decodedSize.status, message: decodedSize.message };
+      }
+      let body: unknown = {};
+      if (rawText.trim().length > 0) {
+        try {
+          body = JSON.parse(rawText) as unknown;
+        } catch {
+          return { ok: false, status: 400, message: 'Ungültiger Request-Body.' };
+        }
+      }
+      return { ok: true, body, rawBodyUtf8Bytes, contentLengthHeader };
+    };
+
+    app.post('/api/v1/ai/aiberto-ask', async (c) => {
+      const ask = deps.aibertoAsk;
+      if (!ask) {
+        return c.json(
+          { status: 'error', message: 'Aiberto-Ask ist vorübergehend nicht verfügbar.' },
+          503,
+        );
+      }
+      const parsed = await readAibertoBody(c);
+      if (!parsed.ok) {
+        return c.json({ status: 'error', message: parsed.message }, parsed.status);
+      }
+      const actorResult = await resolveActor(deps, c.req.raw.headers, parsed.body);
+      if (!actorResult.ok) {
+        return c.json(
+          { status: 'error', message: 'Nicht angemeldet.', code: actorResult.error },
+          actorResult.status,
+        );
+      }
+      const result = await ask.ask(actorResult.actor, {
+        body: parsed.body,
+        contentLengthHeader: parsed.contentLengthHeader,
+        rawBodyUtf8Bytes: parsed.rawBodyUtf8Bytes,
+      });
+      if (result.status === 'ok' || result.status === 'unanswered') {
+        return c.json(result, 200);
+      }
+      if (result.status === 'not-configured') {
+        return c.json(result, 200);
+      }
+      if (result.status === 'disabled') {
+        return c.json(result, 503);
+      }
+      return c.json(
+        {
+          status: 'error' as const,
+          code: result.code,
+          message: result.message,
+        },
+        result.httpStatus,
+      );
+    });
+
+    app.post('/api/v1/ai/aiberto-ask/stream', async (c) => {
+      const ask = deps.aibertoAsk;
+      if (!ask) {
+        return c.json(
+          { status: 'error', message: 'Aiberto-Ask ist vorübergehend nicht verfügbar.' },
+          503,
+        );
+      }
+      const parsed = await readAibertoBody(c);
+      if (!parsed.ok) {
+        return c.json({ status: 'error', message: parsed.message }, parsed.status);
+      }
+      const actorResult = await resolveActor(deps, c.req.raw.headers, parsed.body);
+      if (!actorResult.ok) {
+        return c.json(
+          { status: 'error', message: 'Nicht angemeldet.', code: actorResult.error },
+          actorResult.status,
+        );
+      }
+
+      const encoder = new TextEncoder();
+      const stream = new ReadableStream<Uint8Array>({
+        async start(controller) {
+          const write = (event: string, data: unknown) => {
+            controller.enqueue(
+              encoder.encode(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`),
+            );
+          };
+          try {
+            for await (const evt of ask.askStream(actorResult.actor, {
+              body: parsed.body,
+              contentLengthHeader: parsed.contentLengthHeader,
+              rawBodyUtf8Bytes: parsed.rawBodyUtf8Bytes,
+            })) {
+              write(evt.event, evt.data);
+            }
+          } catch {
+            write('error', {
+              status: 'error',
+              code: 'INTERNAL',
+              message: 'Aiberto-Ask Stream fehlgeschlagen.',
+              httpStatus: 500,
+            });
+          } finally {
+            try {
+              controller.close();
+            } catch {
+              /* already closed */
+            }
+          }
+        },
+      });
+
+      return new Response(stream, {
+        status: 200,
+        headers: {
+          'Content-Type': 'text/event-stream; charset=utf-8',
+          'Cache-Control': 'no-cache, no-transform',
+          Connection: 'keep-alive',
+        },
+      });
     });
   }
 }

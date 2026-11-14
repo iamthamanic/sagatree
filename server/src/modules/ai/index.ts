@@ -1,6 +1,8 @@
 /**
- * ai module public API — BYOK credentials + Ollama prefs (MIG-402 / #818).
+ * ai module public API — BYOK credentials + Ollama prefs + text inference (MIG-402 / #818, AIB-04 / #1127).
  * Location: server/src/modules/ai/index.ts
+ *
+ * Media AiModality catalog remains image|3d|video|audio. Text is a separate inference port.
  */
 import type { Actor } from '../identity/index.ts';
 import type { HostDatabase } from '../../persistence/open-database.ts';
@@ -594,3 +596,42 @@ export type {
   AiGmStateWriteResult,
   AiGmStreamChunk,
 } from './internal/ai-gm-quarantine.ts';
+
+/** AIB-04 text inference port (media modalities unchanged). */
+export {
+  inferText,
+  resolveTextInferenceProviderConfig,
+  streamTextInference,
+  stripTextInferenceSecrets,
+  textInferenceErrorContainsSecrets,
+} from './internal/text-inference.ts';
+export type {
+  TextInferenceErr,
+  TextInferenceMessage,
+  TextInferenceOk,
+  TextInferenceProviderConfig,
+  TextInferenceProviderName,
+  TextInferenceRequest,
+  TextInferenceResult,
+  TextInferenceStreamChunk,
+} from './internal/text-inference.ts';
+
+export {
+  AIBERTO_ASK_DEFAULT_RATE_LIMIT,
+  AIBERTO_ASK_MAX_RATE_LIMIT,
+  AIBERTO_ASK_RATE_WINDOW_SECONDS,
+  consumeAibertoAskRateLimit,
+  createAibertoRateLimitStore,
+  resolveAibertoAskRateLimit,
+} from './internal/aiberto-rate-limit.ts';
+export type { AibertoRateLimitStore } from './internal/aiberto-rate-limit.ts';
+
+export {
+  loadRulebookHostApi,
+  resetRulebookHostApiCache,
+} from './internal/rulebook-host.ts';
+export type {
+  HostRulebookIndex,
+  HostRulebookSearchHit,
+  RulebookHostApi,
+} from './internal/rulebook-host.ts';

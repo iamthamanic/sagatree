@@ -7,7 +7,7 @@
  */
 import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import process from 'node:process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -16,7 +16,15 @@ const root = fileURLToPath(new URL('..', import.meta.url));
 const sourcePath = join(root, 'docs', 'sagatree core rules.md');
 const outPath = join(root, 'src', 'domains', 'rulebook', 'generated', 'sagatree-core.json');
 const cacheDir = join(root, 'node_modules', '.cache', 'build-rulebook-index');
-const esbuild = join(root, 'node_modules', '.bin', 'esbuild');
+const esbuildCandidates = [
+  join(root, 'node_modules', '.bin', 'esbuild'),
+  join(root, 'node_modules', 'esbuild', 'bin', 'esbuild'),
+];
+const esbuild = esbuildCandidates.find((p) => existsSync(p));
+if (!esbuild) {
+  console.error('esbuild not found — run npm install at repo root');
+  process.exit(1);
+}
 
 function sha256Hex(payloadUtf8) {
   return createHash('sha256').update(payloadUtf8, 'utf8').digest('hex');
@@ -43,7 +51,23 @@ const index = buildRulebookIndexFromMarkdown(markdown, sha256Hex);
 mkdirSync(dirname(outPath), { recursive: true });
 writeFileSync(outPath, `${JSON.stringify(index, null, 2)}\n`, 'utf8');
 
+// Host runtime bundle (AIB-04): Node can import search/evidence without Vite extensionless paths.
+const hostRuntimePath = join(root, 'src', 'domains', 'rulebook', 'generated', 'host-runtime.mjs');
+execFileSync(
+  esbuild,
+  [
+    join(root, 'src/domains/rulebook/index.ts'),
+    '--bundle',
+    '--platform=node',
+    '--format=esm',
+    '--loader:.json=json',
+    `--outfile=${hostRuntimePath}`,
+  ],
+  { stdio: 'inherit' },
+);
+
 console.log(
   `Wrote ${outPath} (${index.manifest.sectionCount} sections, revision ${index.manifest.revisionHash.slice(0, 12)}…)`,
 );
+console.log(`Wrote ${hostRuntimePath}`);
 process.exit(0);
