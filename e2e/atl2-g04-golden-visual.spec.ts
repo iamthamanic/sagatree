@@ -202,20 +202,17 @@ async function clickMapTitle(page: Page, title: string): Promise<void> {
   await expect(row, `nav focus for ${title}`).toBeAttached({ timeout: 30_000 });
   await row.scrollIntoViewIfNeeded().catch(() => undefined);
 
-  // Do NOT click .nav-edit (starts rename). Prefer icon hit-target, else programmatic button.click().
-  const icon = row.locator('.node-icon').first();
-  if ((await icon.count()) > 0) {
-    await icon.click({ force: true });
-  } else {
-    const focusId = await row.getAttribute('data-focus');
-    expect(focusId, `data-focus for ${title}`).toBeTruthy();
-    await page.evaluate((id) => {
-      const el = document.querySelector(
-        `[data-atlas-nav-source="db"] .nav-focus[data-focus="${id}"]`,
-      ) as HTMLElement | null;
-      el?.click();
-    }, focusId!);
-  }
+  // Prefer programmatic .nav-focus click — mobile force-clicks on .node-icon can
+  // miss the focus handler and leave the map on an ancestor (false goldens).
+  const focusId = await row.getAttribute('data-focus');
+  expect(focusId, `data-focus for ${title}`).toBeTruthy();
+  await page.evaluate((id) => {
+    const el = document.querySelector(
+      `[data-atlas-nav-source="db"] .nav-focus[data-focus="${id}"]`,
+    ) as HTMLButtonElement | HTMLElement | null;
+    if (!el) return;
+    el.click();
+  }, focusId!);
   await exitNavInlineEdit(page);
 
   const search = page.locator('#navSearch, input[placeholder*="Suchen"]').first();
@@ -294,9 +291,11 @@ async function openFixtureMap(page: Page, uiMapTitleDe: string): Promise<void> {
   await openFixtureMap(page, 'Welt');
   for (const step of drill) {
     await clickMapTitle(page, step);
+    // Hard assert each drill step — soft-catch previously allowed Westmark
+    // screenshots to ship as "tavern" mobile goldens.
+    await assertNavCurrent(page, step);
   }
-  // Soft check only — mobile sheet / inline-edit can leave aria-current stale while the map is correct.
-  await assertNavCurrent(page, uiMapTitleDe).catch(() => undefined);
+  await assertNavCurrent(page, uiMapTitleDe);
 }
 
 async function applyFixtureCamera(
