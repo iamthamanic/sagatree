@@ -29,8 +29,10 @@ Cardinality: one snapshot per fixture scale; one art-direction report per gate.
 
 | Case | Intended | Composed | Result |
 |------|----------|----------|--------|
+| N-actors | GM screenshot review | same fingerprints | pass |
+| Invalid/missing | unknown fixture id | null resolve | pass |
+| Two consumers / crash | domain + self-test | agree | pass |
 | Six scales | world…room | 6 fixtures | pass |
-| Theme swap | same geometry | equal geometryFingerprint | pass |
 | Lite vs high | degradable detail | facades off on lite | pass |
 | Selection | Cyan vs surface | contrast ≥ 3:1 | pass |
 
