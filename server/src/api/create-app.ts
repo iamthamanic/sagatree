@@ -11,6 +11,7 @@ import type { TransportUseCase } from '../application/transport/index.ts';
 import type { createAiProviderCredentialsUseCases } from '../application/ai-provider-credentials/index.ts';
 import type { createOllamaSettingsUseCases } from '../application/ollama-settings/index.ts';
 import type { CharacterLoreUseCases } from '../application/character-lore/index.ts';
+import type { AibertoAskUseCases } from '../application/aiberto-ask/index.ts';
 import type { OpsPorts } from '../modules/ops/index.ts';
 import type { PermissionsPorts } from '../modules/permissions/index.ts';
 import type { IdentityPorts } from '../modules/identity/index.ts';
@@ -69,6 +70,8 @@ export type HostApiDeps = {
   readonly aiOllama?: ReturnType<typeof createOllamaSettingsUseCases>;
   /** CUT-13 character-lore generate-background (optional until wired). */
   readonly characterLore?: CharacterLoreUseCases;
+  /** AIB-04 aiberto-ask (optional until wired). */
+  readonly aibertoAsk?: AibertoAskUseCases;
   /** CUT-15 look reference analysis (optional until wired). */
   readonly lookReferenceAnalysis?: import('../application/look-reference-analysis/index.ts').LookReferenceAnalysisUseCases;
   /** CUT-18 character avatar Meshy (optional until wired). */
@@ -451,6 +454,7 @@ export function createHostApi(deps: HostApiDeps): Hono {
       characterLore: deps.characterLore,
       lookReferenceAnalysis: deps.lookReferenceAnalysis,
       characterAvatarMeshy: deps.characterAvatarMeshy,
+      aibertoAsk: deps.aibertoAsk,
     });
   }
 

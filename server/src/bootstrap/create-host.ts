@@ -91,6 +91,15 @@ import {
   type CharacterLoreUseCases,
 } from '../application/character-lore/index.ts';
 import {
+  createAibertoAskUseCases,
+  resolveAibertoAskRateLimit,
+  type AibertoAskUseCases,
+} from '../application/aiberto-ask/index.ts';
+import {
+  createAibertoRateLimitStore,
+  resolveTextInferenceProviderConfig,
+} from '../modules/ai/index.ts';
+import {
   createSessionRecapGenerateUseCases,
   createSqliteSessionRecapGenerateStore,
   generateSessionRecapStory,
@@ -457,6 +466,82 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
       generateStory: generateCharacterLoreStory,
       rateLimitPerMinute: resolveCharacterLoreRateLimit(
         env.CHARACTER_AI_RATE_LIMIT_PER_MINUTE,
+      ),
+    });
+
+    async function resolveAibertoTextProviderForUser(userId: string) {
+      // 1) Explicit AIBERTO_AI_* env wins (dedicated companion config — Codex P2).
+      const aibertoEnv = resolveTextInferenceProviderConfig((key) => {
+        if (key.startsWith('AIBERTO_')) return env[key];
+        return undefined;
+      });
+      if (aibertoEnv) return aibertoEnv;
+
+      // 2) Per-user Ollama Organize row only (no CHARACTER_* env fallback here).
+      const store = ai.store;
+      const row =
+        store && typeof store.loadWithSecret === 'function'
+          ? store.loadWithSecret(userId, OLLAMA_PROVIDER_ID)
+          : null;
+      if (row && row.status === 'active') {
+        const meta = row.meta;
+        const model = typeof meta.model === 'string' ? meta.model.trim() : '';
+        if (model) {
+          const useCloud = meta.useCloud === true;
+          const baseRaw =
+            typeof meta.baseUrl === 'string' && meta.baseUrl.trim()
+              ? meta.baseUrl.trim()
+              : useCloud
+                ? 'https://ollama.com/v1'
+                : 'http://127.0.0.1:11434';
+          const safe = assertSafeOllamaBaseUrl(baseRaw);
+          if (safe.ok) {
+            let apiKey = '';
+            if (row.secretCiphertext && row.secretCiphertext !== OLLAMA_NONE_SECRET) {
+              const enc = parseCredentialsEncryptionKey(env.CREDENTIALS_ENCRYPTION_KEY);
+              if (enc) {
+                try {
+                  apiKey = await decryptProviderSecret(row.secretCiphertext, enc);
+                } catch {
+                  apiKey = '';
+                }
+              }
+            }
+            if (useCloud) {
+              if (apiKey) {
+                return {
+                  provider: 'openai-compatible' as const,
+                  baseUrl: safe.url,
+                  model,
+                  apiKey,
+                };
+              }
+            } else {
+              const native = safe.url.replace(/\/v1\/?$/i, '');
+              return {
+                provider: 'ollama' as const,
+                baseUrl: native,
+                model,
+                ...(apiKey ? { apiKey } : {}),
+              };
+            }
+          }
+        }
+      }
+
+      // 3) Shared CHARACTER_/OLLAMA_ env fallback via text-inference resolver.
+      return resolveTextInferenceProviderConfig((key) => env[key]);
+    }
+
+    const aibertoAsk: AibertoAskUseCases = createAibertoAskUseCases({
+      envGet: (key) => env[key],
+      authorize: (actor) => permissions.authorize('aiberto.ask', actor, {}),
+      resolveProvider: resolveAibertoTextProviderForUser,
+      rateLimitStore: createAibertoRateLimitStore(),
+      rateLimitPerMinute: resolveAibertoAskRateLimit(
+        env.AIBERTO_ASK_RATE_LIMIT_PER_MINUTE ||
+          env.AIBERTO_AI_RATE_LIMIT_PER_MINUTE ||
+          env.CHARACTER_AI_RATE_LIMIT_PER_MINUTE,
       ),
     });
 
@@ -969,6 +1054,7 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
       aiCredentials,
       aiOllama,
       characterLore,
+      aibertoAsk,
       lookReferenceAnalysis,
       characterAvatarMeshy,
       sessionRecapGenerate,
