@@ -5,7 +5,7 @@
   "result": "PASS",
   "githubClosed": true,
   "mergeRef": "PR #860 \u2192 main (after #782)",
-  "note": "Inventories regenerated after AIB-06 Codex P1/P2 aiberto-tools-service refresh (#1129).",
+  "note": "Inventories regenerated; hashes refreshed after main sync for ATL2-G04 #1283.",
   "checks": [
     {
       "command": "legacy inventory matrix",
@@ -26,5 +26,5 @@
       "sha256": "2730578f1ef78425493bf40bb32271e77a938e58b7ed347456b6a8809e195b11"
     }
   ],
-  "testedCommit": "a94a7b70e620f52301e76014caa11d1605a904ae"
+  "testedCommit": "3c1dab51ac59c95c883b6c371842a6653223cd91"
 }
