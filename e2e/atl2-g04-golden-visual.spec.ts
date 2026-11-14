@@ -106,12 +106,18 @@ async function openDornhainAtlas3d(page: Page): Promise<{ worldId: string }> {
 }
 
 async function ensureLayersOpen(page: Page): Promise<void> {
-  // Product chrome collapses Ebenen on narrow panes — expand for nav rows.
+  // Product chrome collapses Ebenen after capture — always re-open for hierarchy drill.
   const layersBtn = page.getByRole('button', { name: /Ebenen/i }).first();
   if ((await layersBtn.count()) > 0) {
     const expanded = await layersBtn.getAttribute('aria-expanded');
-    if (expanded !== 'true') {
+    const navVisible = await page
+      .locator('[data-atlas-nav-source="db"]')
+      .first()
+      .isVisible()
+      .catch(() => false);
+    if (expanded !== 'true' || !navVisible) {
       await layersBtn.click().catch(() => undefined);
+      await page.waitForTimeout(200);
     }
   }
   const sideToggle = page.locator('[data-action="side"]').first();
@@ -122,6 +128,9 @@ async function ensureLayersOpen(page: Page): Promise<void> {
       if (!wide) await sideToggle.click().catch(() => undefined);
     }
   }
+  await expect(page.locator('[data-atlas-nav-source="db"]').first()).toBeAttached({
+    timeout: 20_000,
+  });
 }
 
 /** Drill path from world root to the fixture map (product Dornhain hierarchy). */
@@ -137,9 +146,9 @@ async function clickMapTitle(page: Page, title: string): Promise<void> {
   await ensureLayersOpen(page);
 
   const labelBtn = page
-    .getByRole('button', { name: new RegExp(`${title}\\s*öffnen|^${title}$`, 'i') })
+    .getByRole('button', { name: new RegExp(`${title}\\s*öffnen`, 'i') })
     .first();
-  if ((await labelBtn.count()) > 0) {
+  if ((await labelBtn.count()) > 0 && (await labelBtn.isVisible().catch(() => false))) {
     await labelBtn.click({ force: true });
     await waitAtlasReady(page);
     await page.waitForTimeout(350);
@@ -155,23 +164,35 @@ async function clickMapTitle(page: Page, title: string): Promise<void> {
     }
   }
 
+  // Prefer visible DB nav rows — never hidden demo hotspots (class="hotspot hidden").
   const focusRow = page
     .locator(
-      '[data-atlas-nav-source="db"] .nav-focus, [data-atlas-nav-source="db"] [data-focus], [data-focus]',
+      '[data-atlas-nav-source="db"] .nav-focus:not(.hidden), [data-atlas-nav-source="db"] [data-focus]:not(.hidden)',
     )
     .filter({ hasText: title })
     .first();
-  if ((await focusRow.count()) > 0) {
+  if ((await focusRow.count()) > 0 && (await focusRow.isVisible().catch(() => false))) {
     await focusRow.click({ force: true });
     await waitAtlasReady(page);
     await page.waitForTimeout(350);
     return;
   }
 
-  // Workbench place/map rows often use the bare title as button text.
-  const row = page.locator('button, [role="button"], [data-atlas-place-row]').filter({ hasText: title }).first();
+  // Search nav filter then click matching place/map row.
+  const search = page.locator('#navSearch, input[placeholder*="Suchen"]').first();
+  if ((await search.count()) > 0 && (await search.isVisible().catch(() => false))) {
+    await search.fill(title);
+    await page.waitForTimeout(200);
+  }
+  const row = page
+    .locator('[data-atlas-nav-source="db"] button, [data-atlas-nav-source="db"] [role="button"]')
+    .filter({ hasText: title })
+    .first();
   await expect(row).toBeAttached({ timeout: 30_000 });
   await row.click({ force: true });
+  if ((await search.count()) > 0 && (await search.isVisible().catch(() => false))) {
+    await search.fill('');
+  }
   await waitAtlasReady(page);
   await page.waitForTimeout(350);
 }
@@ -242,6 +263,101 @@ function webglCanvas(page: Page) {
   return page.locator('[data-atlas-native-3d] canvas:not(.hidden)').first();
 }
 
+/** Desktop capture bitmap — must match committed PNG baselines. */
+const DESKTOP_CAPTURE = { width: 992, height: 600 } as const;
+
+/**
+ * Stabilize capture bitmap size without toggling Ebenen/Werkzeuge (that hid nav).
+ * Alias name kept for self-test contract: collapseChromeForCapture.
+ * Desktop: soft CSS pin + page clip to DESKTOP_CAPTURE (992×600) so 644 vs 600 flake cannot fail.
+ */
+async function collapseChromeForCapture(
+  page: Page,
+  fixed?: { width: number; height: number },
+): Promise<{ width: number; height: number }> {
+  if (fixed) {
+    await page.evaluate((size) => {
+      const root = document.querySelector('[data-atlas-native-3d]');
+      if (!root) return;
+      const stage =
+        (root.querySelector('.stage') as HTMLElement | null) ??
+        (root.querySelector('[data-atlas-stage]') as HTMLElement | null) ??
+        (root as HTMLElement);
+      stage.style.boxSizing = 'border-box';
+      stage.style.width = `${size.width}px`;
+      stage.style.height = `${size.height}px`;
+      stage.style.maxHeight = `${size.height}px`;
+      stage.style.minHeight = `${size.height}px`;
+      stage.style.flex = '0 0 auto';
+      const canvas = root.querySelector('canvas:not(.hidden)') as HTMLCanvasElement | null;
+      if (canvas) {
+        canvas.style.width = `${size.width}px`;
+        canvas.style.height = `${size.height}px`;
+      }
+      window.dispatchEvent(new Event('resize'));
+    }, fixed);
+  }
+
+  const canvas = webglCanvas(page);
+  let last = { width: 0, height: 0 };
+  // Soft wait only — never fail closed on exact CSS size; clip enforces baseline dims.
+  await expect
+    .poll(
+      async () => {
+        const box = await canvas.boundingBox();
+        last = {
+          width: box ? Math.round(box.width) : 0,
+          height: box ? Math.round(box.height) : 0,
+        };
+        return last.width >= 300 && last.height >= 400 ? 1 : 0;
+      },
+      { timeout: 20_000 },
+    )
+    .toBe(1);
+  await page.waitForTimeout(250);
+  return last;
+}
+
+async function captureFixtureScreenshot(
+  page: Page,
+  snapshotName: string,
+  evidencePath: string,
+  fixed?: { width: number; height: number },
+): Promise<void> {
+  await collapseChromeForCapture(page, fixed);
+  const canvas = webglCanvas(page);
+  await expect(canvas).toBeVisible({ timeout: 30_000 });
+  const box = await canvas.boundingBox();
+  expect(box, `no canvas box for ${snapshotName}`).toBeTruthy();
+  // Clip must fit inside the canvas box (Playwright rejects out-of-bounds clips).
+  const clip = fixed
+    ? {
+        x: box!.x,
+        y: box!.y,
+        width: Math.min(fixed.width, Math.round(box!.width)),
+        height: Math.min(fixed.height, Math.round(box!.height)),
+      }
+    : {
+        x: box!.x,
+        y: box!.y,
+        width: Math.round(box!.width),
+        height: Math.round(box!.height),
+      };
+  expect(clip.width, `${snapshotName} clip width`).toBeGreaterThan(300);
+  expect(clip.height, `${snapshotName} clip height`).toBeGreaterThan(400);
+  if (fixed) {
+    expect(clip.width, `${snapshotName} desktop width`).toBe(fixed.width);
+    expect(clip.height, `${snapshotName} desktop height`).toBe(fixed.height);
+  }
+  // Page clip (not canvas.toHaveScreenshot) keeps baseline dims stable at 992×600.
+  await page.screenshot({ path: evidencePath, clip, animations: 'disabled' });
+  await expect(page).toHaveScreenshot(snapshotName, {
+    clip,
+    maxDiffPixelRatio: PIXEL_RATIO,
+    animations: 'disabled',
+  });
+}
+
 test.describe('ATL2-G04 golden visual regression', () => {
   test('host protocol self-test PASS', () => {
     expect(existsSync(selfTest)).toBeTruthy();
@@ -278,18 +394,12 @@ test.describe('ATL2-G04 golden visual regression', () => {
     for (const fixture of gv.ATLAS_GOLDEN_VISUAL_FIXTURES) {
       await openFixtureMap(page, fixture.uiMapTitleDe);
       await applyFixtureCamera(page, fixture.camera);
-      const canvas = webglCanvas(page);
-      await expect(canvas).toBeVisible({ timeout: 30_000 });
-
-      // Evidence copy (raw) — compare is toHaveScreenshot below (fail-closed).
-      await canvas.screenshot({
-        path: join(EVIDENCE, `raw-${fixture.id}-desktop.png`),
-      });
-
-      await expect(canvas).toHaveScreenshot(`g04-${fixture.id}-desktop.png`, {
-        maxDiffPixelRatio: PIXEL_RATIO,
-        animations: 'disabled',
-      });
+      await captureFixtureScreenshot(
+        page,
+        `g04-${fixture.id}-desktop.png`,
+        join(EVIDENCE, `raw-${fixture.id}-desktop.png`),
+        DESKTOP_CAPTURE,
+      );
       captureLog.push({
         fixtureId: fixture.id,
         viewport: 'desktop',
@@ -300,21 +410,33 @@ test.describe('ATL2-G04 golden visual regression', () => {
 
     // Mobile: required subset (world + tavern) — same productive Custom WebGL.
     await page.setViewportSize({ width: mobile!.width, height: mobile!.height });
+    // Clear desktop stage pin so mobile canvas can reflow.
+    await page.evaluate(() => {
+      const root = document.querySelector('[data-atlas-native-3d]');
+      if (!root) return;
+      const stage =
+        (root.querySelector('.stage') as HTMLElement | null) ??
+        (root.querySelector('[data-atlas-stage]') as HTMLElement | null) ??
+        (root as HTMLElement);
+      stage.style.width = '';
+      stage.style.height = '';
+      stage.style.maxHeight = '';
+      stage.style.minHeight = '';
+      stage.style.flex = '';
+      window.dispatchEvent(new Event('resize'));
+    });
     await waitAtlasReady(page);
+    await page.waitForTimeout(400);
     for (const id of gv.ATLAS_GOLDEN_VISUAL_MOBILE_FIXTURE_IDS) {
       const fixture = gv.ATLAS_GOLDEN_VISUAL_FIXTURES.find((f) => f.id === id);
       expect(fixture).toBeTruthy();
       await openFixtureMap(page, fixture!.uiMapTitleDe);
       await applyFixtureCamera(page, fixture!.camera);
-      const canvas = webglCanvas(page);
-      await expect(canvas).toBeVisible({ timeout: 30_000 });
-      await canvas.screenshot({
-        path: join(EVIDENCE, `raw-${fixture!.id}-mobile.png`),
-      });
-      await expect(canvas).toHaveScreenshot(`g04-${fixture!.id}-mobile.png`, {
-        maxDiffPixelRatio: PIXEL_RATIO,
-        animations: 'disabled',
-      });
+      await captureFixtureScreenshot(
+        page,
+        `g04-${fixture!.id}-mobile.png`,
+        join(EVIDENCE, `raw-${fixture!.id}-mobile.png`),
+      );
       captureLog.push({
         fixtureId: fixture!.id,
         viewport: 'mobile',

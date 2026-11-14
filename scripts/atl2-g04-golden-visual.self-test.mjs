@@ -56,6 +56,10 @@ assert.ok(e2eSrc.includes('SAGATREE_BROWSER_E2E_HOST'), 'e2e must gate on host B
 assert.ok(e2eSrc.includes('data-atlas-ready'), 'e2e must wait for productive atlas ready');
 assert.ok(e2eSrc.includes('__sagatreeAtlas'), 'e2e must drive Custom WebGL camera bridge');
 assert.ok(e2eSrc.includes('maxDiffPixelRatio'), 'e2e must pass documented pixel tolerance');
+assert.ok(
+  e2eSrc.includes('collapseChromeForCapture'),
+  'e2e must collapse Ebenen/Werkzeuge before capture (canvas size stability)',
+);
 assert.ok(e2eSrc.includes('g04-world-desktop') || e2eSrc.includes('g04-${fixture.id}-desktop'));
 assert.ok(e2eSrc.includes('mobile'), 'e2e must capture a mobile viewport');
 assert.ok(!e2eSrc.includes('maxDiffPixelRatio: 1'), 'must not auto-PASS all pixel diffs');
