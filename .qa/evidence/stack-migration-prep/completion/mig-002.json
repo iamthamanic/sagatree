@@ -5,7 +5,7 @@
   "result": "PASS",
   "githubClosed": true,
   "mergeRef": "PR #860 → main (after #782)",
-  "note": "Inventories regenerated after ATL2-G03 Codex P1/P2 adaptive fixes.",
+  "note": "Inventories regenerated; MIG-002 hashes refreshed after ATL2-G04 main sync.",
   "checks": [
     {
       "command": "legacy inventory matrix",
@@ -23,8 +23,8 @@
       "command": "edge/infra inventory 25+13",
       "result": "PASS",
       "evidenceFile": ".qa/intake/edge-infra-contracts/inventory.json",
-      "sha256": "b9e62acafd60612dc4949af192849f91b572f87351f6127f64fd6d5589e44045"
+      "sha256": "dee6ff9092f44d06066e0d925f7474f3841b6d59ed7ebd4c54ae32be813775a1"
     }
   ],
-  "testedCommit": "a7b4bd334ad778d11cac829775021c2af73d9bbe"
+  "testedCommit": "6ea98f67141e7cb8a864a1cd1b7579e78787ebaa"
 }
