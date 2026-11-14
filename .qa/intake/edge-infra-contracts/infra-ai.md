@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-ai.json](source-contracts/infra-ai.json) (SHA-256 `f39d5dc7d39863707fa48c84b9034a2c345ad44f46b19090f865716568685913`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-ai.json](source-contracts/infra-ai.json) (SHA-256 `e084f92eedf68d4368d3384957079c3d0e8713966dbd91b33c36dce1152a30c0`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -227,6 +227,7 @@ export async function streamAibertoAsk(
   const reader = response.body.getReader();
   const decoder = new TextDecoder();
   let pending = '';
+  let sawTerminal = false;
   try {
     for (;;) {
       const { done, value } = await reader.read();
@@ -247,8 +248,12 @@ export async function streamAibertoAsk(
           handlers.onToken?.(parsed.text);
         } else if (evt.event === 'final') {
           const final = parseFinal(parsed);
-          if (final) handlers.onFinal?.(final);
+          if (final) {
+            sawTerminal = true;
+            handlers.onFinal?.(final);
+          }
         } else if (evt.event === 'error') {
+          sawTerminal = true;
           const errFinal = parseFinal(parsed);
           handlers.onError?.(
             errFinal ?? {
@@ -259,6 +264,13 @@ export async function streamAibertoAsk(
           );
         }
       }
+    }
+    if (!sawTerminal && !options?.signal?.aborted) {
+      handlers.onError?.({
+        status: 'error',
+        code: 'PROVIDER_UNAVAILABLE',
+        message: 'Aiberto-Stream endete ohne Antwort. Bitte erneut versuchen.',
+      });
     }
   } catch (err) {
     if (options?.signal?.aborted) return;
@@ -413,7 +425,7 @@ All backend operations are included in the public declarations above.
 | `src/domains/ai-providers/index.ts` | `460e4fa3639a12e0e028b19de91b947e482fee90585dc9844d6f8cfa70df2f05` |
 | `src/domains/ai-providers/ollama-settings.ts` | `f3cbc6de1a3822b21cf3edf08f6debb19ea27299b46f54dbd1bfac0eaf83150c` |
 | `src/infrastructure/ai/ai-provider-credentials-service.ts` | `deabff23986dd311748c7efff1539c2fe977465fa8357c5a1fda1577c5562e51` |
-| `src/infrastructure/ai/aiberto-ask-service.ts` | `e4ec0ef2b56652604431681cddad3a27ff20cd930f9d8e289346e969288e6b85` |
+| `src/infrastructure/ai/aiberto-ask-service.ts` | `c70d02b82d012089fa26299ace355ca5edbb73f967c8c462fb4864e46f5f0441` |
 | `src/infrastructure/ai/host-ai-invoke.ts` | `1d85a9e6c3aad0022c11202a5e829f35eb40a9b503f3eced462d028169fb81db` |
 | `src/infrastructure/ai/ollama-settings-service.ts` | `aaf53b0f3004f001018518dade230a67f923c98897413476c9635f7d0aae1116` |
 | `src/infrastructure/host/host-library-http.ts` | `c56b88c60d6c9491fc7b6e6e1143ac4985ffdab5dff16afef8a54bce79629a07` |

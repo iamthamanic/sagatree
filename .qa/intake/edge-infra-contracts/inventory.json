@@ -28715,7 +28715,7 @@
           },
           {
             "path": "src/infrastructure/ai/aiberto-ask-service.ts",
-            "sha256": "e4ec0ef2b56652604431681cddad3a27ff20cd930f9d8e289346e969288e6b85"
+            "sha256": "c70d02b82d012089fa26299ace355ca5edbb73f967c8c462fb4864e46f5f0441"
           },
           {
             "path": "src/infrastructure/ai/host-ai-invoke.ts",
@@ -28739,7 +28739,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-ai.json",
-      "sourceContractSha256": "f39d5dc7d39863707fa48c84b9034a2c345ad44f46b19090f865716568685913",
+      "sourceContractSha256": "e084f92eedf68d4368d3384957079c3d0e8713966dbd91b33c36dce1152a30c0",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],
@@ -28844,7 +28844,7 @@
         {
           "path": "src/infrastructure/ai/aiberto-ask-service.ts",
           "line": 138,
-          "endLine": 241,
+          "endLine": 253,
           "name": "streamAibertoAsk"
         },
         {

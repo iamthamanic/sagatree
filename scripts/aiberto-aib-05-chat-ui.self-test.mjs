@@ -33,6 +33,7 @@ check(companion.includes('isAibertoChatEnabled'), 'companion gates chat tab');
 check(companion.includes('data-aiberto-tab="chat"'), 'chat tab marker');
 check(companion.includes('AibertoChatPanel'), 'chat panel composed');
 check(companion.includes('onOpenSection'), 'citation → section wiring');
+check(/forceMount/.test(companion), 'chat TabsContent forceMount keeps history');
 check(!companion.includes('dangerouslySetInnerHTML'), 'no raw HTML in companion');
 
 const chat = readFileSync(join(root, 'src/app/ai-assistant/AibertoChatPanel.tsx'), 'utf8');
@@ -51,6 +52,7 @@ const infra = readFileSync(join(root, 'src/infrastructure/ai/aiberto-ask-service
 check(infra.includes('/api/v1/ai/aiberto-ask/stream'), 'SSE stream path');
 check(infra.includes("credentials: 'include'"), 'cookie credentials');
 check(infra.includes('text/event-stream'), 'SSE accept');
+check(infra.includes('sawTerminal'), 'premature SSE EOF → onError');
 
 const browser = readFileSync(join(root, 'src/app/ai-assistant/RulebookBrowser.tsx'), 'utf8');
 check(browser.includes('selectedSectionId'), 'controlled section for citations');

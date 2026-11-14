@@ -197,6 +197,7 @@ export async function streamAibertoAsk(
   const reader = response.body.getReader();
   const decoder = new TextDecoder();
   let pending = '';
+  let sawTerminal = false;
   try {
     for (;;) {
       const { done, value } = await reader.read();
@@ -217,8 +218,12 @@ export async function streamAibertoAsk(
           handlers.onToken?.(parsed.text);
         } else if (evt.event === 'final') {
           const final = parseFinal(parsed);
-          if (final) handlers.onFinal?.(final);
+          if (final) {
+            sawTerminal = true;
+            handlers.onFinal?.(final);
+          }
         } else if (evt.event === 'error') {
+          sawTerminal = true;
           const errFinal = parseFinal(parsed);
           handlers.onError?.(
             errFinal ?? {
@@ -229,6 +234,13 @@ export async function streamAibertoAsk(
           );
         }
       }
+    }
+    if (!sawTerminal && !options?.signal?.aborted) {
+      handlers.onError?.({
+        status: 'error',
+        code: 'PROVIDER_UNAVAILABLE',
+        message: 'Aiberto-Stream endete ohne Antwort. Bitte erneut versuchen.',
+      });
     }
   } catch (err) {
     if (options?.signal?.aborted) return;

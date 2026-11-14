@@ -19,14 +19,21 @@ Chat mode in the Aiberto panel: streaming, stop, citation chips → rulebook sec
 - AIB-04 host `/api/v1/ai/aiberto-ask` (+ `/stream`) on main
 - `VITE_AIBERTO_CHAT_ENABLED` controls Chat tab visibility (default off)
 
+## Adaptive surface
+
+- Mode: Overlay (Companion dock / phone sheet) — not a full Journey page
+- Bands: Phone (bottom sheet), Tablet/Desktop (right dock 320–520px)
+- Gates: **AU-02** (Send/Stop/tabs ≥44px), **AU-03** (sheet safe areas), **AU-04** (keyboard + focus), **AU-06** (sheet vs dock recomposition), **AU-08** (focus + aria names), **AU-09** (empty/streaming/error/banner), **AU-10** (SagaTree tokens), **AU-12** (composer + CTA with virtual keyboard)
+
 ## Happy Path
 
 - [ ] Chat tab visible only when chat capability flag is on
 - [ ] Composer posts to host aiberto-ask stream; tokens append; Stop aborts
-- [ ] Citation chips navigate to Regelbuch section (same panel)
+- [ ] Citation chips navigate to Regelbuch section (same panel); chat RAM history survives tab switch
 - [ ] Safe Markdown (no HTML injection)
 - [ ] Reload clears chat memory; dock open/width prefs persist
 - [ ] Provider/flag errors show DE copy; Rulebook tab still works
+- [ ] AU-02/03/04/06/08/09/10/12 satisfied on Phone sheet + Tablet/Desktop dock
 - [ ] Self-test wired (prefer not conflicting with AIB-03 e2e hunk)
 
 ## Edge Cases

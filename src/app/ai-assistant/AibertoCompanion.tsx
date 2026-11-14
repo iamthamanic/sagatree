@@ -129,7 +129,12 @@ export function AibertoCompanion({ open: openProp, onOpenChange }: AibertoCompan
               onSelectedSectionIdChange={setRuleSectionId}
             />
           </TabsContent>
-          <TabsContent value="chat" className="mt-0 min-h-0 flex-1 overflow-hidden">
+          {/* forceMount: citation → Regeln must not unmount Chat (RAM history). */}
+          <TabsContent
+            value="chat"
+            forceMount
+            className="mt-0 min-h-0 flex-1 overflow-hidden data-[state=inactive]:hidden"
+          >
             <AibertoChatPanel onOpenSection={openSectionFromChat} />
           </TabsContent>
         </Tabs>
