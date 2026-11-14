@@ -267,7 +267,7 @@
     },
     {
       "path": "src/domains/world/atlas/atlas-workstation-adaptive.ts",
-      "sha256": "d69212422676124cc3bd9a3ba664be7695209df29e6f5baa37eba68fd811cc48"
+      "sha256": "2a87a8f4cf36e532f9bbb0faa0085013f4169fedc26622a1bbef800b46f59846"
     },
     {
       "path": "src/domains/world/atlas/canvas-polygon.ts",
@@ -299,7 +299,7 @@
     },
     {
       "path": "src/domains/world/atlas/index.ts",
-      "sha256": "20ef5591f0f29d9d8bb95229a79c9883162c4f522ecbfb72f2166327fba75508"
+      "sha256": "bbcf425d7a5109bfe0fda9dde03e53db0d9687bb12f2ba0747e9387920a32960"
     },
     {
       "path": "src/domains/world/atlas/map-edit-ops.ts",
@@ -1939,17 +1939,65 @@
       "kind": "TypeAliasDeclaration",
       "name": "AtlasAdaptiveBand",
       "path": "src/domains/world/atlas/atlas-workstation-adaptive.ts",
-      "line": 9,
-      "endLine": 9,
+      "line": 10,
+      "endLine": 10,
       "text": "export type AtlasAdaptiveBand = 'phone' | 'tablet' | 'desktop';"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "AtlasWorkstationComposition",
       "path": "src/domains/world/atlas/atlas-workstation-adaptive.ts",
-      "line": 24,
-      "endLine": 32,
+      "line": 25,
+      "endLine": 33,
       "text": "export type AtlasWorkstationComposition = {\n  readonly band: AtlasAdaptiveBand;\n  /** Show left/right desktop rails inline. */\n  readonly showSideRails: boolean;\n  /** Prefer Sheet/Drawer for inspector & hierarchy. */\n  readonly useSheetsForChrome: boolean;\n  /** Reduced Phone workstation: primary map task only. */\n  readonly reducedPhoneComposition: boolean;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AtlasWorkstationSurfaceState",
+      "path": "src/domains/world/atlas/atlas-workstation-adaptive.ts",
+      "line": 73,
+      "endLine": 80,
+      "text": "export type AtlasWorkstationSurfaceState =\n  | 'ready'\n  | 'loading'\n  | 'empty'\n  | 'unlocated'\n  | 'error'\n  | 'webgl-fallback'\n  | 'reduced-motion';"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AtlasGestureMode",
+      "path": "src/domains/world/atlas/atlas-workstation-adaptive.ts",
+      "line": 82,
+      "endLine": 82,
+      "text": "export type AtlasGestureMode = 'pan' | 'draw' | 'select' | 'navigate';"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AtlasCriticalControlId",
+      "path": "src/domains/world/atlas/atlas-workstation-adaptive.ts",
+      "line": 84,
+      "endLine": 90,
+      "text": "export type AtlasCriticalControlId =\n  | 'save'\n  | 'undo'\n  | 'nav-breadcrumb'\n  | 'tool-hand'\n  | 'view-2d'\n  | 'view-3d';"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AtlasKeyboardShortcut",
+      "path": "src/domains/world/atlas/atlas-workstation-adaptive.ts",
+      "line": 92,
+      "endLine": 97,
+      "text": "export type AtlasKeyboardShortcut = {\n  readonly id: string;\n  readonly keysDe: string;\n  readonly actionDe: string;\n  readonly bands: readonly AtlasAdaptiveBand[];\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AtlasGestureDisambiguation",
+      "path": "src/domains/world/atlas/atlas-workstation-adaptive.ts",
+      "line": 133,
+      "endLine": 138,
+      "text": "export type AtlasGestureDisambiguation = {\n  readonly mode: AtlasGestureMode;\n  readonly touchActionCss: 'none' | 'pan-x pan-y' | 'manipulation';\n  readonly pointerPrimary: 'touch' | 'mouse' | 'pen' | 'keyboard';\n  readonly labelDe: string;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "ResolveAtlasSurfaceStateInput",
+      "path": "src/domains/world/atlas/atlas-workstation-adaptive.ts",
+      "line": 187,
+      "endLine": 194,
+      "text": "export type ResolveAtlasSurfaceStateInput = {\n  readonly loading?: boolean;\n  readonly error?: boolean;\n  readonly emptyMaps?: boolean;\n  readonly unlocated?: boolean;\n  readonly webglFallback?: boolean;\n  readonly reducedMotion?: boolean;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
