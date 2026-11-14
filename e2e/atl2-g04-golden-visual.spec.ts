@@ -333,8 +333,9 @@ function webglCanvas(page: Page) {
   return page.locator('[data-atlas-native-3d] canvas:not(.hidden)').first();
 }
 
-/** Desktop capture bitmap — must match committed PNG baselines. */
+/** Capture bitmaps — must match committed PNG baselines (chrome height flake otherwise). */
 const DESKTOP_CAPTURE = { width: 992, height: 600 } as const;
+const MOBILE_CAPTURE = { width: 366, height: 604 } as const;
 
 /**
  * Hide HTML chrome that paints over the WebGL stage so page-clip screenshots
@@ -494,10 +495,10 @@ async function captureFixtureScreenshot(
   expect(clip.width, `${snapshotName} clip width`).toBeGreaterThan(300);
   expect(clip.height, `${snapshotName} clip height`).toBeGreaterThan(400);
   if (fixed) {
-    expect(clip.width, `${snapshotName} desktop width`).toBe(fixed.width);
-    expect(clip.height, `${snapshotName} desktop height`).toBe(fixed.height);
+    expect(clip.width, `${snapshotName} fixed width`).toBe(fixed.width);
+    expect(clip.height, `${snapshotName} fixed height`).toBe(fixed.height);
   }
-  // Page clip (not canvas.toHaveScreenshot) keeps baseline dims stable at 992×600.
+  // Page clip (not canvas.toHaveScreenshot) keeps baseline dims stable.
   try {
     await page.screenshot({ path: evidencePath, clip, animations: 'disabled' });
     await expect(page).toHaveScreenshot(snapshotName, {
@@ -588,6 +589,7 @@ test.describe('ATL2-G04 golden visual regression', () => {
         page,
         `g04-${fixture!.id}-mobile.png`,
         join(EVIDENCE, `raw-${fixture!.id}-mobile.png`),
+        MOBILE_CAPTURE,
       );
       captureLog.push({
         fixtureId: fixture!.id,
