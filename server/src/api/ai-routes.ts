@@ -22,6 +22,11 @@ import {
   AIBERTO_ASK_MAX_REQUEST_BYTES,
   checkAibertoAskBodySize,
 } from '../application/aiberto-ask/index.ts';
+import type { AibertoToolsUseCases } from '../application/aiberto-tools/index.ts';
+import {
+  AIBERTO_TOOLS_MAX_REQUEST_BYTES,
+  checkAibertoToolsBodySize,
+} from '../application/aiberto-tools/index.ts';
 import {
   LOOK_REF_MAX_REQUEST_BYTES,
   checkContentLengthEnvelope,
@@ -50,6 +55,8 @@ export type AiHttpDeps = {
   readonly characterAvatarMeshy?: CharacterAvatarMeshyUseCases;
   /** AIB-04 — evidence-gated Core rulebook ask (SSE + JSON). */
   readonly aibertoAsk?: AibertoAskUseCases;
+  /** AIB-06 — Read/Nav tool registry + dispatcher. */
+  readonly aibertoTools?: AibertoToolsUseCases;
 };
 
 type JsonBody = Record<string, unknown>;
@@ -830,6 +837,123 @@ export function mountAiHttpRoutes(app: Hono, deps: AiHttpDeps): void {
           Connection: 'keep-alive',
         },
       });
+    });
+  }
+
+  // AIB-06: Read/Nav tools — capabilities + invoke. Flag default off inside use-case.
+  if (deps.aibertoTools) {
+    app.get('/api/v1/ai/aiberto-tools/capabilities', async (c) => {
+      const tools = deps.aibertoTools;
+      if (!tools) {
+        return c.json(
+          { status: 'error', message: 'Aiberto-Tools sind vorübergehend nicht verfügbar.' },
+          503,
+        );
+      }
+      const actorResult = await resolveActor(deps, c.req.raw.headers, {});
+      if (!actorResult.ok) {
+        return c.json(
+          { status: 'error', message: 'Nicht angemeldet.', code: actorResult.error },
+          actorResult.status,
+        );
+      }
+      const result = tools.capabilities(actorResult.actor);
+      if (result.status === 'ok') return c.json(result, 200);
+      if (result.status === 'disabled') return c.json(result, 503);
+      return c.json(
+        { status: 'error', code: result.code, message: result.message },
+        result.httpStatus,
+      );
+    });
+
+    app.post('/api/v1/ai/aiberto-tools/invoke', async (c) => {
+      const tools = deps.aibertoTools;
+      if (!tools) {
+        return c.json(
+          { status: 'error', message: 'Aiberto-Tools sind vorübergehend nicht verfügbar.' },
+          503,
+        );
+      }
+      if (!contentTypeIsJson(c)) {
+        return c.json(
+          { status: 'error', message: 'Content-Type application/json erforderlich.' },
+          415,
+        );
+      }
+      const contentLengthHeader = c.req.header('content-length') ?? null;
+      const headerSize = checkAibertoToolsBodySize(contentLengthHeader);
+      if (!headerSize.ok) {
+        return c.json({ status: 'error', message: headerSize.message }, headerSize.status);
+      }
+      let rawText = '';
+      try {
+        const stream = c.req.raw.body;
+        if (stream) {
+          const reader = stream.getReader();
+          const chunks: Uint8Array[] = [];
+          let total = 0;
+          for (;;) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            if (value) {
+              total += value.byteLength;
+              if (total > AIBERTO_TOOLS_MAX_REQUEST_BYTES) {
+                await reader.cancel().catch(() => undefined);
+                return c.json(
+                  {
+                    status: 'error',
+                    message:
+                      'Request-Body ist zu groß. Bitte kürze die Tool-Argumente und versuche es erneut.',
+                  },
+                  413,
+                );
+              }
+              chunks.push(value);
+            }
+          }
+          rawText = Buffer.concat(chunks.map((u) => Buffer.from(u))).toString('utf8');
+        }
+      } catch {
+        return c.json({ status: 'error', message: 'Ungültiger Request-Body.' }, 400);
+      }
+      const decodedSize = checkAibertoToolsBodySize(null, Buffer.byteLength(rawText, 'utf8'));
+      if (!decodedSize.ok) {
+        return c.json({ status: 'error', message: decodedSize.message }, decodedSize.status);
+      }
+      let body: JsonBody = {};
+      if (rawText.trim().length > 0) {
+        try {
+          const parsed: unknown = JSON.parse(rawText);
+          if (!isRecord(parsed)) {
+            return c.json({ status: 'error', message: 'Ungültiger Request-Body.' }, 400);
+          }
+          body = parsed;
+        } catch {
+          return c.json({ status: 'error', message: 'Ungültiger Request-Body.' }, 400);
+        }
+      }
+      const actorResult = await resolveActor(deps, c.req.raw.headers, body);
+      if (!actorResult.ok) {
+        return c.json(
+          { status: 'error', message: 'Nicht angemeldet.', code: actorResult.error },
+          actorResult.status,
+        );
+      }
+      const result = await tools.invoke(actorResult.actor, {
+        toolId: body.toolId,
+        args: body.args,
+      });
+      if (result.status === 'ok') return c.json(result, 200);
+      if (result.status === 'disabled') return c.json(result, 503);
+      return c.json(
+        {
+          status: 'error' as const,
+          code: result.code,
+          message: result.message,
+          ...(result.toolId ? { toolId: result.toolId } : {}),
+        },
+        result.httpStatus,
+      );
     });
   }
 }

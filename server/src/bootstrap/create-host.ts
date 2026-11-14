@@ -96,6 +96,11 @@ import {
   type AibertoAskUseCases,
 } from '../application/aiberto-ask/index.ts';
 import {
+  createAibertoToolsUseCases,
+  resolveAibertoToolsBudget,
+  type AibertoToolsUseCases,
+} from '../application/aiberto-tools/index.ts';
+import {
   createAibertoRateLimitStore,
   resolveTextInferenceProviderConfig,
 } from '../modules/ai/index.ts';
@@ -781,6 +786,20 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
     const lobbyReadyHub = createLobbyReadyHub();
     const sessionInfraPorts = sessionPorts ? createSessionInfraPorts(sessionPorts) : null;
 
+    // AIB-06 — after character/inventory/world/session ports exist (Owned + policy).
+    const aibertoTools: AibertoToolsUseCases = createAibertoToolsUseCases({
+      envGet: (key) => env[key],
+      authorize: (actor) => permissions.authorize('aiberto.tools', actor, {}),
+      authorizeWorldRead: (actor, resource) =>
+        permissions.authorize('world.read', actor, resource),
+      character,
+      inventory,
+      world,
+      session: sessionPorts,
+      rateLimitStore: createAibertoRateLimitStore(),
+      budgetPerMinute: resolveAibertoToolsBudget(env.AIBERTO_TOOLS_RATE_LIMIT_PER_MINUTE),
+    });
+
     const projectInfra: ProjectInfraPorts =
       db && sessionPorts
         ? createProjectInfraPorts({
@@ -1055,6 +1074,7 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
       aiOllama,
       characterLore,
       aibertoAsk,
+      aibertoTools,
       lookReferenceAnalysis,
       characterAvatarMeshy,
       sessionRecapGenerate,

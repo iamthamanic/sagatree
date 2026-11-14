@@ -1,11 +1,12 @@
 /**
- * AibertoChatPanel — in-memory streaming chat over aiberto-ask (AIB-05 / #1128).
+ * AibertoChatPanel — in-memory streaming chat + optional Tool-Activity (AIB-05/06).
  * Location: src/app/ai-assistant/AibertoChatPanel.tsx
  *
  * Chat is RAM-only (reload clears). Citations jump to Rulebook via callback.
+ * Tools (flag) show Activity cards; navigate ClientActions use History API.
  */
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { PaperPlaneTilt, Stop } from '@phosphor-icons/react';
+import { PaperPlaneTilt, Stop, Wrench } from '@phosphor-icons/react';
 import { Button } from '../../shared/ui/button';
 import { Textarea } from '../../shared/ui/textarea';
 import { ScrollArea } from '../../shared/ui/scroll-area';
@@ -15,7 +16,15 @@ import {
   type AibertoAskCitation,
   type AibertoAskFinal,
 } from '../../infrastructure/ai/aiberto-ask-service';
+import { invokeAibertoTool } from '../../infrastructure/ai/aiberto-tools-service';
+import { useAppLocation } from '../shell';
 import { renderSafeChatMarkdown } from './safe-chat-markdown';
+import {
+  AibertoToolActivityList,
+  type AibertoToolActivity,
+  type AibertoToolActivityStatus,
+} from './AibertoToolActivityCard';
+import { isAibertoToolsReadEnabled } from './aiberto-flags';
 
 export type AibertoChatPanelProps = {
   readonly onOpenSection: (sectionId: string) => void;
@@ -42,17 +51,24 @@ function statusMessage(final: AibertoAskFinal): string {
   return '';
 }
 
+function applyClientNavigate(path: string, navigateToPath: (path: string) => void): void {
+  navigateToPath(path);
+}
+
 export function AibertoChatPanel({ onOpenSection }: AibertoChatPanelProps) {
+  const toolsEnabled = isAibertoToolsReadEnabled();
+  const { navigateToPath } = useAppLocation();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [draft, setDraft] = useState('');
   const [busy, setBusy] = useState(false);
   const [banner, setBanner] = useState<string | null>(null);
+  const [activities, setActivities] = useState<AibertoToolActivity[]>([]);
   const abortRef = useRef<AbortController | null>(null);
   const bottomRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
-  }, [messages, busy]);
+  }, [messages, busy, activities]);
 
   useEffect(() => {
     return () => {
@@ -68,6 +84,117 @@ export function AibertoChatPanel({ onOpenSection }: AibertoChatPanelProps) {
       prev.map((m) => (m.streaming ? { ...m, streaming: false } : m)),
     );
   }, []);
+
+  const runToolSearch = useCallback(async () => {
+    const query = draft.trim();
+    if (!query || !toolsEnabled || busy) return;
+    const activityId = newId();
+    const pendingSearch: AibertoToolActivity = {
+      id: activityId,
+      toolId: 'rulebook.search',
+      labelDe: 'Regelbuch suchen',
+      status: 'pending',
+    };
+    setActivities((prev) => [pendingSearch, ...prev].slice(0, 12));
+    setBusy(true);
+    const result = await invokeAibertoTool('rulebook.search', { query, limit: 5 });
+    if (result.status === 'ok') {
+      const hits =
+        result.data &&
+        typeof result.data === 'object' &&
+        result.data !== null &&
+        'hits' in result.data &&
+        Array.isArray((result.data as { hits: unknown }).hits)
+          ? (result.data as { hits: readonly { sectionId?: string; title?: string }[] }).hits
+          : [];
+      setActivities((prev) =>
+        prev.map((a) =>
+          a.id === activityId
+            ? {
+                ...a,
+                status: 'ok' satisfies AibertoToolActivityStatus,
+                detail: `${hits.length} Treffer`,
+              }
+            : a,
+        ),
+      );
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: newId(),
+          role: 'system',
+          text:
+            hits.length > 0
+              ? `Tool rulebook.search: ${hits
+                  .slice(0, 5)
+                  .map((h) => h.title || h.sectionId || '?')
+                  .join(' · ')}`
+              : 'Tool rulebook.search: keine Treffer.',
+        },
+      ]);
+    } else {
+      const denied = result.status === 'error' && result.code === 'FORBIDDEN';
+      const nextStatus: AibertoToolActivityStatus = denied ? 'denied' : 'error';
+      setActivities((prev) =>
+        prev.map((a) =>
+          a.id === activityId
+            ? {
+                ...a,
+                status: nextStatus,
+                detail: result.message,
+              }
+            : a,
+        ),
+      );
+      setBanner(result.message);
+    }
+    setBusy(false);
+  }, [busy, draft, toolsEnabled]);
+
+  const runToolNavigate = useCallback(
+    async (route: string) => {
+      if (!toolsEnabled || busy) return;
+      const activityId = newId();
+      const pendingNav: AibertoToolActivity = {
+        id: activityId,
+        toolId: 'app.navigate',
+        labelDe: 'Navigieren',
+        status: 'pending',
+      };
+      setActivities((prev) => [pendingNav, ...prev].slice(0, 12));
+      setBusy(true);
+      const result = await invokeAibertoTool('app.navigate', { route });
+      if (result.status === 'ok' && result.clientAction) {
+        setActivities((prev) =>
+          prev.map((a) =>
+            a.id === activityId
+              ? {
+                  ...a,
+                  status: 'ok' satisfies AibertoToolActivityStatus,
+                  detail: result.clientAction?.path,
+                }
+              : a,
+          ),
+        );
+        applyClientNavigate(result.clientAction.path, navigateToPath);
+      } else {
+        setActivities((prev) =>
+          prev.map((a) =>
+            a.id === activityId
+              ? {
+                  ...a,
+                  status: 'error' satisfies AibertoToolActivityStatus,
+                  detail: result.status === 'ok' ? 'Keine ClientAction' : result.message,
+                }
+              : a,
+          ),
+        );
+        if (result.status !== 'ok') setBanner(result.message);
+      }
+      setBusy(false);
+    },
+    [busy, navigateToPath, toolsEnabled],
+  );
 
   const send = useCallback(async () => {
     const question = draft.trim();
@@ -154,6 +281,37 @@ export function AibertoChatPanel({ onOpenSection }: AibertoChatPanelProps) {
           data-aiberto-chat-banner
         >
           {banner} · Regelbuch bleibt unter „Regeln“ nutzbar.
+        </div>
+      ) : null}
+
+      {toolsEnabled ? (
+        <div className="shrink-0 space-y-2" data-aiberto-tools-surface>
+          <AibertoToolActivityList activities={activities} />
+          <div className="flex flex-wrap gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              className="h-11"
+              disabled={busy || !draft.trim()}
+              onClick={() => void runToolSearch()}
+              aria-label="Regelbuch-Tool suchen"
+              data-aiberto-tool-run="rulebook.search"
+            >
+              <Wrench size={16} weight="regular" aria-hidden className="mr-1.5" />
+              Tool: Suche
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              className="h-11"
+              disabled={busy}
+              onClick={() => void runToolNavigate('library')}
+              aria-label="Zur Bibliothek navigieren"
+              data-aiberto-tool-run="app.navigate"
+            >
+              Tool: Bibliothek
+            </Button>
+          </div>
         </div>
       ) : null}
 

@@ -72,6 +72,8 @@ export type HostApiDeps = {
   readonly characterLore?: CharacterLoreUseCases;
   /** AIB-04 aiberto-ask (optional until wired). */
   readonly aibertoAsk?: AibertoAskUseCases;
+  /** AIB-06 Read/Nav tools (optional until wired). */
+  readonly aibertoTools?: import('../application/aiberto-tools/index.ts').AibertoToolsUseCases;
   /** CUT-15 look reference analysis (optional until wired). */
   readonly lookReferenceAnalysis?: import('../application/look-reference-analysis/index.ts').LookReferenceAnalysisUseCases;
   /** CUT-18 character avatar Meshy (optional until wired). */
@@ -455,6 +457,7 @@ export function createHostApi(deps: HostApiDeps): Hono {
       lookReferenceAnalysis: deps.lookReferenceAnalysis,
       characterAvatarMeshy: deps.characterAvatarMeshy,
       aibertoAsk: deps.aibertoAsk,
+      aibertoTools: deps.aibertoTools,
     });
   }
 
