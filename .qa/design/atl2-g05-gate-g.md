@@ -15,7 +15,7 @@ wrapper, not a checkbox theatre.
 
 | Ticket phrase | Gate G meaning |
 | --- | --- |
-| Owner-/Player-Policy + Secret-Negativproben | Host stranger deny + `playerView` crypt redaction; domain party projection |
+| Owner-/Player-Policy + Secret-Negativproben | Host stranger deny + active player membership crypt redaction (no client `playerView` flag); domain party projection |
 | Performance- und Memory-Grenzen | `atlas-perf-budgets` fixtures + GPU session teardown / context-loss |
 | Adaptive UI / Keyboard / Touch / Fallback | `atlas-workstation-adaptive` bands, gestures, surface states |
 | Visual-Regression | G04 fingerprints + Browser E2E `toHaveScreenshot` (maxDiffPixelRatio 0.08) |

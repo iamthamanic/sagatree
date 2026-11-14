@@ -18,7 +18,7 @@ regression — without closing the gate on self-tests alone.
 ## Happy Path
 
 - [x] PR stack G01–G04 present on `main` (documented squash SHAs)
-- [x] Owner/GM full maps; party/`playerView` strips secrets on host API
+- [x] Owner/GM full maps; active player membership strips secrets without client `playerView` flag (SC-03)
 - [x] Stranger atlas write denied (`42501` / 403)
 - [x] Perf fixtures + GPU teardown / context-loss budgets met (no unbounded leak)
 - [x] Adaptive bands, critical controls, gestures, surface states documented

@@ -276,8 +276,8 @@ const sollIst = [
     ist: 'pending-host',
   },
   {
-    category: 'Host playerView redaction',
-    soll: 'crypt playerView strips secret/crypt entities after party reveal',
+    category: 'Host player-session redaction (SC-03)',
+    soll: 'active player membership fetches revealed crypt without playerView flag; secrets stripped',
     ist: 'pending-host',
   },
 ];
@@ -300,6 +300,7 @@ const hostEvidence = {
   outsiderStatus: null,
   playerViewRedaction: false,
   playerViewMapCount: 0,
+  playerSessionUserId: null,
 };
 
 const evidence = {
@@ -449,9 +450,46 @@ try {
     (p) => p.seedKey === 'loc.crypt' || p.name === 'Krypta unter dem Hügel',
   );
   assert.ok(cryptPlace?.id, 'crypt place');
+
+  /* Real non-editor player (SC-03): membership + party reveal, then fetch WITHOUT playerView. */
+  const playerSign = await httpJson(hostUrl, '/api/auth/sign-up/email', {
+    method: 'POST',
+    headers: { Origin: hostUrl },
+    body: { email: 'player-gate-g@sagatree.test', password: '1234', name: 'player' },
+  });
+  assert.ok(playerSign.res.status < 400, `player sign-up ${playerSign.res.status}`);
+  let playerCookie = playerSign.cookie;
+  if (!playerCookie) {
+    const si = await httpJson(hostUrl, '/api/auth/sign-in/email', {
+      method: 'POST',
+      headers: { Origin: hostUrl },
+      body: { email: 'player-gate-g@sagatree.test', password: '1234' },
+    });
+    playerCookie = si.cookie;
+  }
+  assert.ok(playerCookie, 'player cookie');
+  const playerSession = await httpJson(hostUrl, '/api/auth/get-session', {
+    headers: { Origin: hostUrl },
+    cookie: playerCookie,
+  });
+  const playerUserId =
+    playerSession.json?.user?.id ||
+    playerSession.json?.session?.userId ||
+    playerSession.json?.user?.userId;
+  assert.ok(
+    typeof playerUserId === 'string' && playerUserId.length > 0,
+    `player user id ${JSON.stringify(playerSession.json)}`,
+  );
+
   const dbPath = join(dataDir, 'host.sqlite');
   const db = new DatabaseSync(dbPath);
   try {
+    const nowIso = new Date().toISOString();
+    db.prepare(
+      `INSERT INTO project_members
+         (project_id, user_id, role, active, joined_at, id, character_id)
+       VALUES (?, ?, 'player', 1, ?, ?, NULL)`,
+    ).run(ensure.json.id, playerUserId, nowIso, randomUUID());
     db.prepare(
       `INSERT INTO saga_asset_bindings
          (id, project_id, asset_kind, asset_id, reveal, label, metadata, world_place_id, updated_at)
@@ -461,18 +499,23 @@ try {
       ensure.json.id,
       cryptPlace.id,
       cryptPlace.id,
-      new Date().toISOString(),
+      nowIso,
     );
   } finally {
     db.close();
   }
 
+  // Default playerView=false — partyOnly must still apply because !canEdit for members.
   const cryptPlayer = await httpJson(
     hostUrl,
-    `/api/v1/worlds/atlas/maps/${cryptSummary.id}?playerView=1&sagaPublicId=${encodeURIComponent(sagaPublicId)}`,
-    { headers: { Origin: hostUrl }, cookie: ownerCookie },
+    `/api/v1/worlds/atlas/maps/${cryptSummary.id}?sagaPublicId=${encodeURIComponent(sagaPublicId)}`,
+    { headers: { Origin: hostUrl }, cookie: playerCookie },
   );
-  assert.equal(cryptPlayer.res.status, 200, cryptPlayer.text);
+  assert.equal(
+    cryptPlayer.res.status,
+    200,
+    `player crypt get: ${cryptPlayer.res.status} ${cryptPlayer.text.slice(0, 300)}`,
+  );
   const playerMeta =
     cryptPlayer.json?.generatorMeta ?? cryptPlayer.json?.map?.generatorMeta ?? null;
   const playerCanvas = playerMeta?.unifiedCanvas;
@@ -481,7 +524,7 @@ try {
     (row) =>
       row && (row.secret === true || row.id === 's.obj.crypt' || row.id === 's.crypt'),
   );
-  assert.equal(leaked.length, 0, `player view leaked secrets: ${JSON.stringify(leaked)}`);
+  assert.equal(leaked.length, 0, `player session leaked secrets: ${JSON.stringify(leaked)}`);
   if (playerMeta?.dungeon) {
     assert.equal(
       Object.keys(playerMeta.dungeon).every((k) => k === 'themeKey'),
@@ -489,8 +532,14 @@ try {
       `player dungeon meta must be theme-only: ${JSON.stringify(playerMeta.dungeon)}`,
     );
   }
+  assert.equal(
+    playerMeta?.editorSecret,
+    undefined,
+    'player session must drop editorSecret',
+  );
   hostEvidence.playerViewRedaction = true;
   hostEvidence.playerViewMapCount = 1;
+  hostEvidence.playerSessionUserId = playerUserId;
   sollIst[6].ist = 'pass-host';
 
   evidence.verdict = 'CLEAR';
@@ -539,7 +588,8 @@ ${stackRows}
 - Owner ensure-starter → Dornhain atlas maps: **${hostEvidence.ownerMapCount}**
 - World publicId: **${hostEvidence.worldPublicId ?? 'n/a'}**
 - Stranger write deny: **${hostEvidence.strangerDeny ? 'yes' : 'no'}** (status **${hostEvidence.outsiderStatus ?? 'n/a'}**)
-- Player-view crypt redaction: **${hostEvidence.playerViewRedaction ? 'yes' : 'no'}**
+- Player-session crypt redaction (no playerView flag): **${hostEvidence.playerViewRedaction ? 'yes' : 'no'}**
+- Player user id: **${hostEvidence.playerSessionUserId ?? 'n/a'}**
 
 ## Soll / Ist (feature categories)
 

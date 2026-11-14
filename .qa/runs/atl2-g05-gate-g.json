@@ -1,7 +1,7 @@
 {
   "gate": "atl2-g05",
   "issue": 1233,
-  "head": "85e894fe5c22ace64630dfed81baf7449971534a",
+  "head": "50969ffeadd525380444ce6b24a39600ceb1cc87",
   "stack": [
     {
       "pr": 1279,
@@ -34,11 +34,12 @@
   ],
   "host": {
     "ownerMapCount": 6,
-    "worldPublicId": "WO-4JFNF",
+    "worldPublicId": "WO-N8JVT",
     "strangerDeny": true,
     "outsiderStatus": 403,
     "playerViewRedaction": true,
-    "playerViewMapCount": 1
+    "playerViewMapCount": 1,
+    "playerSessionUserId": "yIO8E21EnxYWLUCS8Yp6RWKFaOl77qCP"
   },
   "sollIst": [
     {
@@ -72,8 +73,8 @@
       "ist": "pass-host"
     },
     {
-      "category": "Host playerView redaction",
-      "soll": "crypt playerView strips secret/crypt entities after party reveal",
+      "category": "Host player-session redaction (SC-03)",
+      "soll": "active player membership fetches revealed crypt without playerView flag; secrets stripped",
       "ist": "pass-host"
     }
   ],

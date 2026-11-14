@@ -1,7 +1,7 @@
 # ATL2-G05 Gate G — Phase G quality acceptance
 
 - Issue: #1233
-- HEAD: `85e894fe5c22ace64630dfed81baf7449971534a`
+- HEAD: `50969ffeadd525380444ce6b24a39600ceb1cc87`
 - Verdict: **CLEAR**
 - Date: 2026-11-14
 
@@ -17,9 +17,10 @@
 ## Host security negatives
 
 - Owner ensure-starter → Dornhain atlas maps: **6**
-- World publicId: **WO-4JFNF**
+- World publicId: **WO-N8JVT**
 - Stranger write deny: **yes** (status **403**)
-- Player-view crypt redaction: **yes**
+- Player-session crypt redaction (no playerView flag): **yes**
+- Player user id: **yIO8E21EnxYWLUCS8Yp6RWKFaOl77qCP**
 
 ## Soll / Ist (feature categories)
 
@@ -31,7 +32,7 @@
 | Adaptive UX (domain) | phone/tablet/desktop bands, 44px touch, surface states, keyboard shortcuts | **pass-domain** |
 | Golden visual (domain + e2e contract) | 6 fixtures match baselines; Browser E2E toHaveScreenshot @ 0.08 | **pass-domain** |
 | Host stranger deny | non-owner atlas write denied (42501/403) | **pass-host** |
-| Host playerView redaction | crypt playerView strips secret/crypt entities after party reveal | **pass-host** |
+| Host player-session redaction (SC-03) | active player membership fetches revealed crypt without playerView flag; secrets stripped | **pass-host** |
 
 ## Residuals (non-blocking for Gate G)
 

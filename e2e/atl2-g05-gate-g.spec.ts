@@ -86,29 +86,9 @@ test.describe('ATL2-G05 Gate G', () => {
         'Krypta unter dem Hügel',
       ]),
     );
-
-    const crypt = (
-      ((await mapsRes.json()) as { maps?: Array<{ title: string; id: string }> }).maps ?? []
-    ).find((m) => m.title === 'Krypta unter dem Hügel');
-    expect(crypt?.id).toBeTruthy();
-
-    const playerMap = await page.request.get(
-      `/api/v1/worlds/atlas/maps/${crypt!.id}?playerView=1&sagaPublicId=${encodeURIComponent(ensureBody.publicId!)}`,
-      { headers: { Origin: origin } },
-    );
-    expect(playerMap.ok(), await playerMap.text()).toBeTruthy();
-    const playerJson = (await playerMap.json()) as {
-      generatorMeta?: { unifiedCanvas?: { objects?: Array<{ id: string; secret?: boolean }> } };
-      map?: { generatorMeta?: { unifiedCanvas?: { objects?: Array<{ id: string; secret?: boolean }> } } };
-    };
-    const playerCanvas =
-      playerJson.generatorMeta?.unifiedCanvas ?? playerJson.map?.generatorMeta?.unifiedCanvas;
-    if (playerCanvas?.objects) {
-      const leaked = playerCanvas.objects.filter(
-        (o) => o.secret === true || o.id === 's.obj.crypt' || o.id === 's.crypt',
-      );
-      expect(leaked).toEqual([]);
-    }
+    // Party-reveal + non-editor SC-03 redaction is proven in
+    // scripts/atl2-g05-gate-g.self-test.mjs (host protocol) — Browser E2E does not
+    // seed saga_asset_bindings or invent a second player membership here.
   });
 
   test('browser-host: phone viewport atlas chrome (device matrix)', async ({ page }) => {
