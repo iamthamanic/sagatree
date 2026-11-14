@@ -50,6 +50,15 @@ export type AtlasPrototypeMapPin = {
   readonly y: number;
 };
 
+export type AtlasPrototypeNavCamera = {
+  readonly mode: string;
+  readonly x: number;
+  readonly z: number;
+  readonly span: number;
+  readonly yawRad: number;
+  readonly pitchRad: number;
+};
+
 export type AtlasPrototypeMount = {
   readonly dispose: () => void;
   readonly updateExternalNav: (tree: AtlasPrototypeExternalNav | null) => void;
@@ -59,8 +68,12 @@ export type AtlasPrototypeMount = {
   readonly setMapSketchStatus: (status: string | null) => void;
   readonly setMapScale: (scale: AtlasPrototypeMapScale | null) => void;
   readonly setMapPins: (pins: readonly AtlasPrototypeMapPin[] | null) => void;
+  readonly applyNavCamera: (
+    raw: Partial<AtlasPrototypeNavCamera>,
+    opts?: { readonly animate?: boolean; readonly draw?: boolean },
+  ) => void;
+  readonly getNavCamera: () => AtlasPrototypeNavCamera | null;
 };
-
 export type AtlasPrototypeNavAddPayload = {
   readonly uiKind: string;
   readonly parentId: string;
