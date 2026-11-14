@@ -56,7 +56,7 @@ export default defineConfig({
     },
     {
       name: 'mobile-chrome',
-      testMatch: /(?:adaptive-ui-quality|golden-mobile-journeys)\.spec\.ts/,
+      testMatch: /(?:adaptive-ui-quality|golden-mobile-journeys|aiberto-phase-a)\.spec\.ts/,
       use: {
         ...devices['Pixel 7'],
         // CI installs Chromium only — keep phone emulation on Chromium.
@@ -65,7 +65,7 @@ export default defineConfig({
     },
     {
       name: 'tablet-chrome',
-      testMatch: /(?:adaptive-ui-quality|golden-mobile-journeys)\.spec\.ts/,
+      testMatch: /(?:adaptive-ui-quality|golden-mobile-journeys|aiberto-phase-a)\.spec\.ts/,
       use: {
         ...devices['iPad Mini'],
         // iPad Mini defaults to WebKit; force Chromium for CI parity.
