@@ -44,8 +44,26 @@ type AtlasNativeMountHandle = {
   readonly setMapSketchStatus: (status: string | null) => void;
   readonly setMapScale: (scale: AtlasMapScale | null) => void;
   readonly setMapPins: (pins: readonly AtlasMapPin[] | null) => void;
+  readonly applyNavCamera?: (
+    raw: {
+      readonly mode?: string;
+      readonly x?: number;
+      readonly z?: number;
+      readonly span?: number;
+      readonly yawRad?: number;
+      readonly pitchRad?: number;
+    },
+    opts?: { readonly animate?: boolean; readonly draw?: boolean },
+  ) => void;
+  readonly getNavCamera?: () => {
+    readonly mode: string;
+    readonly x: number;
+    readonly z: number;
+    readonly span: number;
+    readonly yawRad: number;
+    readonly pitchRad: number;
+  } | null;
 };
-
 export type AtlasNative3dEditorProps = {
   readonly className?: string;
   /** Remount key (active map id + revision). */
@@ -76,12 +94,27 @@ export type AtlasNative3dEditorProps = {
   readonly mapPins?: readonly AtlasMapPin[] | null;
   /** ATL2-D01 graphics quality preset (default balanced). */
   readonly graphicsPresetId?: AtlasGraphicsPresetId;
+<<<<<<< ours
   /** ATL2-F04 dungeon theme (atmospheric); geometry IDs stay canonical. */
   readonly dungeonThemeKey?: DungeonThemeKey | null;
   /** Canvas doc used to build dungeon instance budgets (optional). */
   readonly dungeonLookDoc?: UnifiedCanvasDoc | null;
+=======
+  /** ATL2-E03: restore product camera after hierarchy back/breadcrumb. */
+  readonly navRestoreView?: {
+    readonly centerX: number;
+    readonly centerY: number;
+    readonly span: number;
+    readonly mode: 'ortho-topdown' | 'diorama-oblique' | 'perspective';
+  } | null;
+  readonly onNavViewChange?: (view: {
+    readonly centerX: number;
+    readonly centerY: number;
+    readonly span: number;
+    readonly mode: 'ortho-topdown' | 'diorama-oblique' | 'perspective';
+  }) => void;
+>>>>>>> theirs
 };
-
 /** Rebrand leftover prototype copy to SagaTree product wording. */
 function applySagaTreeCopy(host: HTMLElement): void {
   const eyebrow = host.querySelector('.side .eyebrow');
@@ -310,13 +343,22 @@ export function AtlasNative3dEditor({
   mapScale = 'world',
   mapPins = null,
   graphicsPresetId = 'balanced',
+<<<<<<< ours
   dungeonThemeKey = null,
   dungeonLookDoc = null,
+=======
+  navRestoreView = null,
+  onNavViewChange,
+>>>>>>> theirs
 }: AtlasNative3dEditorProps) {
   const hostRef = useRef<HTMLDivElement>(null);
   const mountRef = useRef<AtlasNativeMountHandle | null>(null);
   const persistRef = useRef(onPersist);
   persistRef.current = onPersist;
+  const onNavViewChangeRef = useRef(onNavViewChange);
+  onNavViewChangeRef.current = onNavViewChange;
+  const navRestoreViewRef = useRef(navRestoreView);
+  navRestoreViewRef.current = navRestoreView;
   const navSelectRef = useRef(onNavSelect);
   navSelectRef.current = onNavSelect;
   const navRenameRef = useRef(onNavRename);
@@ -365,14 +407,68 @@ export function AtlasNative3dEditor({
     let mount: AtlasNativeMountHandle | null = null;
     let disposePanels: (() => void) | null = null;
     let copyTimer = 0;
+    let sampleTimer = 0;
     try {
+      const restore = navRestoreViewRef.current;
+      const seeded =
+        restore && seedRef.current
+          ? {
+              ...seedRef.current,
+              camera: {
+                mode: restore.mode,
+                x: restore.centerX,
+                z: restore.centerY,
+                span: restore.span,
+                yawRad: 0,
+                pitchRad:
+                  restore.mode === 'ortho-topdown'
+                    ? Math.PI / 2
+                    : restore.mode === 'diorama-oblique'
+                      ? 1.05
+                      : 0.95,
+              },
+            }
+          : restore
+            ? {
+                props: [],
+                strokes: [],
+                walls: [],
+                layers: {},
+                camera: {
+                  mode: restore.mode,
+                  x: restore.centerX,
+                  z: restore.centerY,
+                  span: restore.span,
+                  yawRad: 0,
+                  pitchRad:
+                    restore.mode === 'ortho-topdown'
+                      ? Math.PI / 2
+                      : restore.mode === 'diorama-oblique'
+                        ? 1.05
+                        : 0.95,
+                },
+              }
+            : (seedRef.current ?? null);
       mount = mountAtlasPrototype3d(host, {
         controlled,
-        seedState: seedRef.current ?? null,
+        seedState: seeded,
         onPersist: controlled
           ? (state) => {
               const next = state as WebglRuntimeState;
               persistRef.current?.(next);
+              const cam = mountRef.current?.getNavCamera?.();
+              if (cam && onNavViewChangeRef.current) {
+                const mode =
+                  cam.mode === 'diorama-oblique' || cam.mode === 'perspective'
+                    ? cam.mode
+                    : 'ortho-topdown';
+                onNavViewChangeRef.current({
+                  centerX: cam.x,
+                  centerY: cam.z,
+                  span: cam.span,
+                  mode,
+                });
+              }
             }
           : undefined,
         externalNav: externalNavRef.current ?? null,
@@ -450,12 +546,52 @@ export function AtlasNative3dEditor({
       applySagaTreeCopy(host);
       // Nav is rendered async after mount — rebrand once levels paint.
       copyTimer = window.setTimeout(() => applySagaTreeCopy(host), 0);
+      if (restore) {
+        mount.applyNavCamera?.(
+          {
+            mode: restore.mode,
+            x: restore.centerX,
+            z: restore.centerY,
+            span: restore.span,
+          },
+          { animate: false, draw: true },
+        );
+      }
+      // Sample live 3D camera for hierarchy snapshots (Codex P1).
+      sampleTimer = window.setInterval(() => {
+        const cam = mountRef.current?.getNavCamera?.();
+        if (!cam || !onNavViewChangeRef.current) return;
+        const mode =
+          cam.mode === 'diorama-oblique' || cam.mode === 'perspective'
+            ? cam.mode
+            : 'ortho-topdown';
+        onNavViewChangeRef.current({
+          centerX: cam.x,
+          centerY: cam.z,
+          span: cam.span,
+          mode,
+        });
+      }, 500);
       setError(null);
     } catch (err) {
       setError(err instanceof Error ? err.message : '3D-Atlas konnte nicht gestartet werden.');
     }
     return () => {
       window.clearTimeout(copyTimer);
+      window.clearInterval(sampleTimer);
+      const cam = mountRef.current?.getNavCamera?.();
+      if (cam && onNavViewChangeRef.current) {
+        const mode =
+          cam.mode === 'diorama-oblique' || cam.mode === 'perspective'
+            ? cam.mode
+            : 'ortho-topdown';
+        onNavViewChangeRef.current({
+          centerX: cam.x,
+          centerY: cam.z,
+          span: cam.span,
+          mode,
+        });
+      }
       mountRef.current = null;
       try {
         disposePanels?.();

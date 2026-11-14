@@ -2167,6 +2167,16 @@ function checkWorldAtlasEditor() {
     cwd: root,
     stdio: 'inherit',
   });
+  console.log('ATL2-E03 hierarchy zoom / breadcrumb / back-nav...');
+  execFileSync(process.execPath, ['scripts/atl2-e03-hierarchy-nav.self-test.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
+  console.log('ATL2-E04 hierarchy LOD / lazy child loads / transitions...');
+  execFileSync(process.execPath, ['scripts/atl2-e04-hierarchy-lod.self-test.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
   console.log('Atlas prototype LOD layers (HTML v3 port)...');
   execFileSync(process.execPath, ['scripts/atlas-prototype-lod.self-test.mjs'], {
     cwd: root,

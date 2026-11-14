@@ -502,6 +502,10 @@ export function mountAtlasPrototype3d(host, options = {}) {
   let setMapScaleImpl = () => {};
   /** @type {(pins: object[]|null) => void} */
   let setMapPinsImpl = () => {};
+  /** @type {(raw: object, opts?: object) => void} */
+  let applyNavCameraImpl = () => {};
+  /** @type {() => object|null} */
+  let getNavCameraImpl = () => null;
 
   {
 
@@ -1821,6 +1825,23 @@ export function mountAtlasPrototype3d(host, options = {}) {
       mapPins = normalizeAtlasMapPins(pins);
       updateMapLabels();
     };
+    applyNavCameraImpl = function applyNavCamera(raw, opts = {}) {
+      if (disposed) return;
+      applyCameraSnapshot(raw, {
+        draw: opts.draw !== false,
+        animate: !!opts.animate,
+        persistAfter: false,
+        preserveProductFit: true,
+      });
+    };
+    getNavCameraImpl = function getNavCamera() {
+      if (disposed) return null;
+      try {
+        return readCameraSnapshot();
+      } catch {
+        return null;
+      }
+    };
     disposeRuntime = function __disposeAtlasPrototype() {
       try { if (typeof renderLoop !== 'undefined' && renderLoop) cancelAnimationFrame(renderLoop); } catch (e) {}
       try { if (typeof animID !== 'undefined' && animID) cancelAnimationFrame(animID); } catch (e) {}
@@ -1856,6 +1877,12 @@ export function mountAtlasPrototype3d(host, options = {}) {
     },
     setMapPins(pins) {
       setMapPinsImpl(pins);
+    },
+    applyNavCamera(raw, opts = {}) {
+      applyNavCameraImpl(raw, opts);
+    },
+    getNavCamera() {
+      return getNavCameraImpl();
     },
   };
 }
