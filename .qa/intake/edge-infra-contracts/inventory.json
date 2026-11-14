@@ -28689,6 +28689,7 @@
       "implementationIssue": 800,
       "files": [
         "src/infrastructure/ai/ai-provider-credentials-service.ts",
+        "src/infrastructure/ai/aiberto-ask-service.ts",
         "src/infrastructure/ai/host-ai-invoke.ts",
         "src/infrastructure/ai/ollama-settings-service.ts"
       ],
@@ -28713,6 +28714,10 @@
             "sha256": "deabff23986dd311748c7efff1539c2fe977465fa8357c5a1fda1577c5562e51"
           },
           {
+            "path": "src/infrastructure/ai/aiberto-ask-service.ts",
+            "sha256": "e4ec0ef2b56652604431681cddad3a27ff20cd930f9d8e289346e969288e6b85"
+          },
+          {
             "path": "src/infrastructure/ai/host-ai-invoke.ts",
             "sha256": "1d85a9e6c3aad0022c11202a5e829f35eb40a9b503f3eced462d028169fb81db"
           },
@@ -28734,7 +28739,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-ai.json",
-      "sourceContractSha256": "91159075120712f8943fffab474f10f7654f4a2fde7bdbd6bab5025a9856a098",
+      "sourceContractSha256": "f39d5dc7d39863707fa48c84b9034a2c345ad44f46b19090f865716568685913",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],
@@ -28811,6 +28816,36 @@
           "line": 124,
           "endLine": 127,
           "name": "delete"
+        },
+        {
+          "path": "src/infrastructure/ai/aiberto-ask-service.ts",
+          "line": 58,
+          "endLine": 60,
+          "name": "isRecord"
+        },
+        {
+          "path": "src/infrastructure/ai/aiberto-ask-service.ts",
+          "line": 62,
+          "endLine": 67,
+          "name": "askUrl"
+        },
+        {
+          "path": "src/infrastructure/ai/aiberto-ask-service.ts",
+          "line": 69,
+          "endLine": 120,
+          "name": "parseFinal"
+        },
+        {
+          "path": "src/infrastructure/ai/aiberto-ask-service.ts",
+          "line": 122,
+          "endLine": 136,
+          "name": "parseSseBlocks"
+        },
+        {
+          "path": "src/infrastructure/ai/aiberto-ask-service.ts",
+          "line": 138,
+          "endLine": 241,
+          "name": "streamAibertoAsk"
         },
         {
           "path": "src/infrastructure/ai/host-ai-invoke.ts",
