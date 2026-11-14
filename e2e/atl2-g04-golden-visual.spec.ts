@@ -325,7 +325,8 @@ async function applyFixtureCamera(
       }
     }
   }, camera);
-  await page.waitForTimeout(300);
+  // Extra settle — orbit/zoom can leave one dirty frame in page-clip captures.
+  await page.waitForTimeout(500);
 }
 
 function webglCanvas(page: Page) {
@@ -356,25 +357,49 @@ async function dismissCaptureOverlays(page: Page): Promise<void> {
       if (el.dataset.g04CaptureHide === '1') return;
       el.dataset.g04CaptureHide = '1';
       el.dataset.g04PrevVisibility = el.style.visibility;
+      el.dataset.g04PrevDisplay = el.style.display;
       el.style.visibility = 'hidden';
+      el.style.display = 'none';
     };
 
-    // Only overlays that paint over the WebGL stage — keep fold buttons interactive for next fixture.
+    // Page-clip screenshots include HTML that paints over the WebGL stage.
+    // Hide every absolute chrome rail/label/pin — not only dungeon-forge.
     markHidden(document.querySelector('[data-atlas-dungeon-forge-3d]'));
+    markHidden(document.querySelector('[data-atlas-dungeon-forge]'));
+    markHidden(document.querySelector('[data-atlas-maps-rail]'));
+    markHidden(document.querySelector('[data-atlas-tool-rail]'));
+    markHidden(document.querySelector('[data-atlas-prototype-bar]'));
     document.querySelectorAll('[data-atlas-surface-toggle]').forEach((el) => {
       markHidden(el.closest('div'));
     });
     document
-      .querySelectorAll('.map-label, .hotspot, .scale-widget, .action-tools, .mode-chip')
+      .querySelectorAll(
+        [
+          '.map-label',
+          '.hotspot',
+          '.scale-widget',
+          '.action-tools',
+          '.mode-chip',
+          '[data-atlas-map-pin]',
+          '[data-unified-chrome]',
+          '[data-atlas-surface-actions]',
+          '[data-atlas-surface-bar]',
+          '[data-atlas-missing-detail]',
+        ].join(', '),
+      )
       .forEach((el) => markHidden(el));
   });
+  // Allow layout to drop overlay boxes before clip.
+  await page.waitForTimeout(200);
 }
 
 async function restoreCaptureOverlays(page: Page): Promise<void> {
   await page.evaluate(() => {
     document.querySelectorAll<HTMLElement>('[data-g04-capture-hide="1"]').forEach((el) => {
       el.style.visibility = el.dataset.g04PrevVisibility ?? '';
+      el.style.display = el.dataset.g04PrevDisplay ?? '';
       delete el.dataset.g04PrevVisibility;
+      delete el.dataset.g04PrevDisplay;
       delete el.dataset.g04CaptureHide;
     });
   });
