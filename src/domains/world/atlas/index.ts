@@ -612,3 +612,25 @@ export {
   type AtlasDungeonQualityBudget,
   type AtlasDungeonThemePalette,
 } from './atlas-dungeon-look';
+
+export {
+  ATLAS_PERF_BUDGET_FORMAT,
+  ATLAS_PERF_BUDGET_THRESHOLDS,
+  ATLAS_PERF_SCENE_FIXTURES,
+  atlasGpuAcquire,
+  atlasGpuContextLost,
+  atlasGpuContextRestored,
+  atlasGpuMapSwitch,
+  atlasGpuReleaseAll,
+  atlasGpuSessionWithinTeardownBudget,
+  createAtlasGpuResourceSession,
+  measureAtlasPerfPlan,
+  resolveAtlasPerfBudgetMaxInstances,
+  resolveAtlasPerfSceneFixture,
+  summarizeAtlasLookAgainstBudget,
+  type AtlasGpuResourceSession,
+  type AtlasPerfBudgetThresholds,
+  type AtlasPerfPlanMeasurement,
+  type AtlasPerfSceneFixture,
+  type AtlasPerfSceneSize,
+} from './atlas-perf-budgets';
