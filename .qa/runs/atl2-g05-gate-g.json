@@ -1,7 +1,7 @@
 {
   "gate": "atl2-g05",
   "issue": 1233,
-  "head": "575099fec1ea51652f3e12462a547a45e642d0ea",
+  "head": "85e894fe5c22ace64630dfed81baf7449971534a",
   "stack": [
     {
       "pr": 1279,
@@ -34,7 +34,7 @@
   ],
   "host": {
     "ownerMapCount": 6,
-    "worldPublicId": "WO-98DKL",
+    "worldPublicId": "WO-4JFNF",
     "strangerDeny": true,
     "outsiderStatus": 403,
     "playerViewRedaction": true,
