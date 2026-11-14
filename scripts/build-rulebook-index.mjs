@@ -66,8 +66,23 @@ execFileSync(
   { stdio: 'inherit' },
 );
 
+// Package a copy under server/ so Dockerfile.host (server/src only) ships the runtime (Codex P1).
+const hostPackagedPath = join(
+  root,
+  'server',
+  'src',
+  'modules',
+  'ai',
+  'internal',
+  'generated',
+  'host-runtime.mjs',
+);
+mkdirSync(dirname(hostPackagedPath), { recursive: true });
+writeFileSync(hostPackagedPath, readFileSync(hostRuntimePath));
+
 console.log(
   `Wrote ${outPath} (${index.manifest.sectionCount} sections, revision ${index.manifest.revisionHash.slice(0, 12)}…)`,
 );
 console.log(`Wrote ${hostRuntimePath}`);
+console.log(`Wrote ${hostPackagedPath}`);
 process.exit(0);

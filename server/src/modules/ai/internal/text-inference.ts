@@ -143,6 +143,27 @@ function extractOllamaContent(value: unknown): string | null {
   return value.message.content.trim() || null;
 }
 
+function mapFetchError(err: unknown): TextInferenceErr {
+  const name = err instanceof Error ? err.name : '';
+  const message = err instanceof Error ? err.message : '';
+  if (
+    name === 'TimeoutError' ||
+    name === 'AbortError' ||
+    /timeout|aborted/i.test(message)
+  ) {
+    return {
+      ok: false,
+      code: 'TIMEOUT',
+      message: 'Text-Inference Timeout. Bitte versuche es erneut.',
+    };
+  }
+  return {
+    ok: false,
+    code: 'PROVIDER_UNAVAILABLE',
+    message: 'Text-Provider ist nicht erreichbar.',
+  };
+}
+
 async function inferOpenAiCompatible(
   config: TextInferenceProviderConfig,
   request: TextInferenceRequest,
@@ -179,12 +200,8 @@ async function inferOpenAiCompatible(
       };
     }
     return { ok: true, text, provider: config.provider, model: config.model };
-  } catch {
-    return {
-      ok: false,
-      code: 'PROVIDER_UNAVAILABLE',
-      message: 'Text-Provider ist nicht erreichbar.',
-    };
+  } catch (err) {
+    return mapFetchError(err);
   }
 }
 
@@ -221,12 +238,8 @@ async function inferOllama(
       };
     }
     return { ok: true, text, provider: config.provider, model: config.model };
-  } catch {
-    return {
-      ok: false,
-      code: 'PROVIDER_UNAVAILABLE',
-      message: 'Text-Provider ist nicht erreichbar.',
-    };
+  } catch (err) {
+    return mapFetchError(err);
   }
 }
 
@@ -292,12 +305,9 @@ async function* streamOpenAiCompatible(
       }),
       signal: request.signal ?? AbortSignal.timeout(90_000),
     });
-  } catch {
-    yield {
-      type: 'error',
-      code: 'PROVIDER_UNAVAILABLE',
-      message: 'Text-Provider ist nicht erreichbar.',
-    };
+  } catch (err) {
+    const mapped = mapFetchError(err);
+    yield { type: 'error', code: mapped.code, message: mapped.message };
     return;
   }
   if (!response.ok || !response.body) {
@@ -340,12 +350,9 @@ async function* streamOpenAiCompatible(
         yield { type: 'token', text: piece };
       }
     }
-  } catch {
-    yield {
-      type: 'error',
-      code: 'PROVIDER_UNAVAILABLE',
-      message: 'Text-Stream abgebrochen.',
-    };
+  } catch (err) {
+    const mapped = mapFetchError(err);
+    yield { type: 'error', code: mapped.code, message: mapped.message };
     return;
   }
   yield { type: 'done', text: full };
@@ -368,12 +375,9 @@ async function* streamOllama(
       }),
       signal: request.signal ?? AbortSignal.timeout(90_000),
     });
-  } catch {
-    yield {
-      type: 'error',
-      code: 'PROVIDER_UNAVAILABLE',
-      message: 'Text-Provider ist nicht erreichbar.',
-    };
+  } catch (err) {
+    const mapped = mapFetchError(err);
+    yield { type: 'error', code: mapped.code, message: mapped.message };
     return;
   }
   if (!response.ok || !response.body) {
@@ -409,24 +413,16 @@ async function* streamOllama(
         if (isRecord(parsed.message) && typeof parsed.message.content === 'string') {
           const piece = parsed.message.content;
           if (piece) {
-            // Ollama streaming sends cumulative or delta depending on version; prefer delta when present.
-            const delta =
-              typeof parsed.message.content === 'string' && parsed.done !== true
-                ? piece
-                : piece;
             // Many Ollama builds send per-chunk deltas in message.content.
-            full += delta;
-            yield { type: 'token', text: delta };
+            full += piece;
+            yield { type: 'token', text: piece };
           }
         }
       }
     }
-  } catch {
-    yield {
-      type: 'error',
-      code: 'PROVIDER_UNAVAILABLE',
-      message: 'Text-Stream abgebrochen.',
-    };
+  } catch (err) {
+    const mapped = mapFetchError(err);
+    yield { type: 'error', code: mapped.code, message: mapped.message };
     return;
   }
   yield { type: 'done', text: full };

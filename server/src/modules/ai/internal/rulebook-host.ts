@@ -2,12 +2,12 @@
  * rulebook-host — load domains/rulebook host-runtime bundle (AIB-04).
  * Location: server/src/modules/ai/internal/rulebook-host.ts
  *
- * Uses the committed esbuild bundle from scripts/build-rulebook-index.mjs so Host
- * Node (strip-types) does not depend on extensionless Vite imports.
+ * Prefers the packaged copy under server/src/modules/ai/internal/generated/
+ * (shipped by Dockerfile.host). Falls back to repo domains/generated for monorepo runs.
  */
-import { pathToFileURL } from 'node:url';
+import { existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 export type HostRulebookSearchHit = {
   sectionId: string;
@@ -67,6 +67,9 @@ let cachedApi: RulebookHostApi | null = null;
 
 function resolveHostRuntimePath(): string {
   const here = dirname(fileURLToPath(import.meta.url));
+  const packaged = join(here, 'generated', 'host-runtime.mjs');
+  if (existsSync(packaged)) return packaged;
+  // Monorepo / worktree fallback when build-rulebook-index has not packaged yet.
   return join(here, '../../../../../src/domains/rulebook/generated/host-runtime.mjs');
 }
 

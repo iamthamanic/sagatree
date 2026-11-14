@@ -470,16 +470,66 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
     });
 
     async function resolveAibertoTextProviderForUser(userId: string) {
-      // Prefer per-user Ollama Organize settings (same path as character-lore).
-      const fromUser = await resolveCharacterLoreProviderForUser(userId);
-      if (fromUser) {
-        return {
-          provider: fromUser.provider,
-          baseUrl: fromUser.baseUrl,
-          model: fromUser.model,
-          ...(fromUser.apiKey ? { apiKey: fromUser.apiKey } : {}),
-        };
+      // 1) Explicit AIBERTO_AI_* env wins (dedicated companion config — Codex P2).
+      const aibertoEnv = resolveTextInferenceProviderConfig((key) => {
+        if (key.startsWith('AIBERTO_')) return env[key];
+        return undefined;
+      });
+      if (aibertoEnv) return aibertoEnv;
+
+      // 2) Per-user Ollama Organize row only (no CHARACTER_* env fallback here).
+      const store = ai.store;
+      const row =
+        store && typeof store.loadWithSecret === 'function'
+          ? store.loadWithSecret(userId, OLLAMA_PROVIDER_ID)
+          : null;
+      if (row && row.status === 'active') {
+        const meta = row.meta;
+        const model = typeof meta.model === 'string' ? meta.model.trim() : '';
+        if (model) {
+          const useCloud = meta.useCloud === true;
+          const baseRaw =
+            typeof meta.baseUrl === 'string' && meta.baseUrl.trim()
+              ? meta.baseUrl.trim()
+              : useCloud
+                ? 'https://ollama.com/v1'
+                : 'http://127.0.0.1:11434';
+          const safe = assertSafeOllamaBaseUrl(baseRaw);
+          if (safe.ok) {
+            let apiKey = '';
+            if (row.secretCiphertext && row.secretCiphertext !== OLLAMA_NONE_SECRET) {
+              const enc = parseCredentialsEncryptionKey(env.CREDENTIALS_ENCRYPTION_KEY);
+              if (enc) {
+                try {
+                  apiKey = await decryptProviderSecret(row.secretCiphertext, enc);
+                } catch {
+                  apiKey = '';
+                }
+              }
+            }
+            if (useCloud) {
+              if (apiKey) {
+                return {
+                  provider: 'openai-compatible' as const,
+                  baseUrl: safe.url,
+                  model,
+                  apiKey,
+                };
+              }
+            } else {
+              const native = safe.url.replace(/\/v1\/?$/i, '');
+              return {
+                provider: 'ollama' as const,
+                baseUrl: native,
+                model,
+                ...(apiKey ? { apiKey } : {}),
+              };
+            }
+          }
+        }
       }
+
+      // 3) Shared CHARACTER_/OLLAMA_ env fallback via text-inference resolver.
       return resolveTextInferenceProviderConfig((key) => env[key]);
     }
 
