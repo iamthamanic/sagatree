@@ -1,7 +1,7 @@
 # ATL2-G05 Gate G — Phase G quality acceptance
 
 - Issue: #1233
-- HEAD: `50969ffeadd525380444ce6b24a39600ceb1cc87`
+- HEAD: `25e5322dc77dc4bff02a3771c48cf46f7a951c76`
 - Verdict: **CLEAR**
 - Date: 2026-11-14
 
@@ -17,10 +17,10 @@
 ## Host security negatives
 
 - Owner ensure-starter → Dornhain atlas maps: **6**
-- World publicId: **WO-N8JVT**
+- World publicId: **WO-XTCU6**
 - Stranger write deny: **yes** (status **403**)
 - Player-session crypt redaction (no playerView flag): **yes**
-- Player user id: **yIO8E21EnxYWLUCS8Yp6RWKFaOl77qCP**
+- Player user id: **kiICIeRwZ3hjIHh21Up7kBqeU9IQ5KDw**
 
 ## Soll / Ist (feature categories)
 

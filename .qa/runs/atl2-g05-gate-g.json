@@ -1,7 +1,7 @@
 {
   "gate": "atl2-g05",
   "issue": 1233,
-  "head": "50969ffeadd525380444ce6b24a39600ceb1cc87",
+  "head": "25e5322dc77dc4bff02a3771c48cf46f7a951c76",
   "stack": [
     {
       "pr": 1279,
@@ -34,12 +34,12 @@
   ],
   "host": {
     "ownerMapCount": 6,
-    "worldPublicId": "WO-N8JVT",
+    "worldPublicId": "WO-XTCU6",
     "strangerDeny": true,
     "outsiderStatus": 403,
     "playerViewRedaction": true,
     "playerViewMapCount": 1,
-    "playerSessionUserId": "yIO8E21EnxYWLUCS8Yp6RWKFaOl77qCP"
+    "playerSessionUserId": "kiICIeRwZ3hjIHh21Up7kBqeU9IQ5KDw"
   },
   "sollIst": [
     {
