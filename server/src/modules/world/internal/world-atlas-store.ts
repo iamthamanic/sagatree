@@ -169,6 +169,11 @@ function redactUnifiedCanvasForParty(raw: unknown): unknown {
   };
 }
 
+/**
+ * Party / playerView generator_meta projection (ATL2-G01).
+ * Whitelist only — dungeon forge drafts, golden seed keys, and other GM
+ * authoring markers must not appear in player payloads.
+ */
 function redactPartyMeta(meta: Record<string, unknown>): Record<string, unknown> {
   const out: Record<string, unknown> = {
     engine: typeof meta.engine === 'string' ? meta.engine : 'unified_canvas',
@@ -178,7 +183,7 @@ function redactPartyMeta(meta: Record<string, unknown>): Record<string, unknown>
   }
   if (meta.webglRuntime !== undefined) out.webglRuntime = meta.webglRuntime;
   if (meta.mapFrame !== undefined) out.mapFrame = meta.mapFrame;
-  if (meta.dungeon !== undefined) out.dungeon = meta.dungeon;
+  // Explicitly omit: dungeon forge state, golden/seed/placeSeedKey, scale notes.
   return out;
 }
 

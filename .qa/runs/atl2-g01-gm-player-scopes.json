@@ -1,0 +1,39 @@
+{
+  "gate": "atl2-g01",
+  "issue": 1229,
+  "head": "11efd6ffb5fc80d0324cc72eb0a23495f9a00e3e",
+  "host": {
+    "strangerDeny": true,
+    "outsiderStatus": 403,
+    "unrevealedDeny": true,
+    "playerSecretsRedacted": true,
+    "dungeonMetaOmitted": true,
+    "seedKeysOmitted": true,
+    "revealedMapTitles": [
+      "Krypta unter dem Hügel"
+    ]
+  },
+  "sollIst": [
+    {
+      "category": "Foreign / stranger write deny",
+      "soll": "stranger atlas upsert → 42501/403",
+      "ist": "pass-host"
+    },
+    {
+      "category": "Unrevealed map fail-closed",
+      "soll": "playerView without reveal / without saga → deny or empty",
+      "ist": "pass-host"
+    },
+    {
+      "category": "Party-reveal gating",
+      "soll": "after party binding, crypt appears; secrets still redacted",
+      "ist": "pass-host"
+    },
+    {
+      "category": "Meta whitelist",
+      "soll": "player generator_meta omits dungeon + golden seed keys",
+      "ist": "pass-host"
+    }
+  ],
+  "verdict": "CLEAR"
+}
