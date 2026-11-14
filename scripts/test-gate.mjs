@@ -3702,6 +3702,15 @@ function checkAibertoAib01RulebookIndex() {
   });
 }
 
+function checkAibertoAib04AskHost() {
+  // AIB-04/#1127 — host aiberto-ask; keep adjacent to AIB-01, away from Atlas #1283 / AIB-02 Layout.
+  console.log('Aiberto AIB-04 ask host (#1127): text port + evidence/citations + quota...');
+  execFileSync(process.execPath, ['scripts/aiberto-aib-04-ask-host.self-test.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
+}
+
 function checkPowersEssencesValidation() {
   console.log('Powers/essences validation (#25): deterministic §12 power model audit...');
   execFileSync(process.execPath, ['scripts/validate-powers-essences-ranks.mjs'], {
@@ -4424,6 +4433,7 @@ checkCharacterEditorRulesUxValidation();
 checkGearResourcesLoadValidation();
 checkAnalogEndToEndPlaytestValidation();
 checkAibertoAib01RulebookIndex();
+checkAibertoAib04AskHost();
 checkAssetLicenseInventory();
 scanAddedLinesForSecrets();
 reportDependencyAudit();
