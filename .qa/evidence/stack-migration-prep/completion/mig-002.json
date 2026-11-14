@@ -5,7 +5,7 @@
   "result": "PASS",
   "githubClosed": true,
   "mergeRef": "PR #860 \u2192 main (after #782)",
-  "note": "Inventories regenerated after ATL2-F04 \u00d7 main sync (R01 #1273 / E04).",
+  "note": "Inventories regenerated after ATL2-F04 \u00d7 main sync (R01 #1273); testedCommit pinned to merge tip.",
   "checks": [
     {
       "command": "legacy inventory matrix",
@@ -26,5 +26,5 @@
       "sha256": "778a90ee38b94596799fc6541055270ccf331e7033dc3ac7049a87dbaf8bb66b"
     }
   ],
-  "testedCommit": "9356165bcbb4f11de5b0f35c86087ff4e4b4dfb9"
+  "testedCommit": "9802527fcb5f900e6782303dd53781f32735bec9"
 }
