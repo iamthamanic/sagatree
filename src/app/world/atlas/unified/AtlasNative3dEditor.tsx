@@ -94,12 +94,10 @@ export type AtlasNative3dEditorProps = {
   readonly mapPins?: readonly AtlasMapPin[] | null;
   /** ATL2-D01 graphics quality preset (default balanced). */
   readonly graphicsPresetId?: AtlasGraphicsPresetId;
-<<<<<<< ours
   /** ATL2-F04 dungeon theme (atmospheric); geometry IDs stay canonical. */
   readonly dungeonThemeKey?: DungeonThemeKey | null;
   /** Canvas doc used to build dungeon instance budgets (optional). */
   readonly dungeonLookDoc?: UnifiedCanvasDoc | null;
-=======
   /** ATL2-E03: restore product camera after hierarchy back/breadcrumb. */
   readonly navRestoreView?: {
     readonly centerX: number;
@@ -113,7 +111,6 @@ export type AtlasNative3dEditorProps = {
     readonly span: number;
     readonly mode: 'ortho-topdown' | 'diorama-oblique' | 'perspective';
   }) => void;
->>>>>>> theirs
 };
 /** Rebrand leftover prototype copy to SagaTree product wording. */
 function applySagaTreeCopy(host: HTMLElement): void {
@@ -343,13 +340,10 @@ export function AtlasNative3dEditor({
   mapScale = 'world',
   mapPins = null,
   graphicsPresetId = 'balanced',
-<<<<<<< ours
   dungeonThemeKey = null,
   dungeonLookDoc = null,
-=======
   navRestoreView = null,
   onNavViewChange,
->>>>>>> theirs
 }: AtlasNative3dEditorProps) {
   const hostRef = useRef<HTMLDivElement>(null);
   const mountRef = useRef<AtlasNativeMountHandle | null>(null);
