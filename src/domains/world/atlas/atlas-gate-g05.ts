@@ -155,8 +155,8 @@ export function emptyAtlasG05Checks(): AtlasG05CheckResult[] {
 }
 
 /**
- * Fail-closed rollup: any FAIL → FAIL (even if other rows are NOT_RUN);
- * else any NOT_RUN / missing id → NOT_RUN; else PASS.
+ * Fail-closed rollup: a FAIL row → FAIL (even if other rows are NOT_RUN);
+ * else a NOT_RUN / missing id → NOT_RUN; else PASS.
  */
 export function rollupAtlasG05Checks(
   checks: readonly AtlasG05CheckResult[],
