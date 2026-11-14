@@ -281,8 +281,19 @@ const createHost = readFileSync(join(root, 'server/src/bootstrap/create-host.ts'
 check(createHost.includes('createAibertoAskUseCases'), 'create-host wires aiberto-ask');
 check(createHost.includes('aibertoAsk'), 'create-host passes aibertoAsk');
 
-// No UI surface in this ticket
-check(!existsSync(join(root, 'src/app/ai-assistant')), 'no FE chat slice in AIB-04');
+// No chat UI in AIB-04 (AIB-02 may already ship Regeln companion under app/ai-assistant).
+const chatMarkers = [
+  'src/app/ai-assistant/AibertoChat.tsx',
+  'src/app/ai-assistant/ChatPanel.tsx',
+  'src/app/ai-assistant/aiberto-chat.tsx',
+];
+for (const rel of chatMarkers) {
+  check(!existsSync(join(root, rel)), `no FE chat slice in AIB-04 (${rel})`);
+}
+if (existsSync(join(root, 'src/app/ai-assistant'))) {
+  const barrel = readFileSync(join(root, 'src/app/ai-assistant/index.ts'), 'utf8');
+  check(!/Chat|aiberto-ask|stream/i.test(barrel), 'ai-assistant barrel has no chat/ask exports');
+}
 
 writeFileSync(join(outdir, 'ok'), 'ok\n');
 console.log('AIB-04 aiberto-ask host self-test passed.');

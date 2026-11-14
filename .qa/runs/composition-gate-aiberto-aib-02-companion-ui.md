@@ -1,15 +1,15 @@
 # Composition Gate — aiberto-aib-02-companion-ui
 
-- HEAD_SHA: b757c5700974438b5d09d57b2097820c628c381d
-- BASE_SHA: 4d19ef7c8fcc5b0e16d1c51628fc82cb49e01174
+- HEAD_SHA: 0000000000000000000000000000000000000000
+- BASE_SHA: 0c263408d141bd9b0f955ee6ad1845ed0d80e6f0
 - Date: 2026-11-14
 - Verdict: CLEAR
 - Acceptance tier: shell-ui
-- Deferred integration: AIB-04 host ask / chat (sibling); AIB-03 if any
+- Deferred integration: AIB-05 chat UI streaming (consumes AIB-04 host); no chat in this PR
 
 ## Event
 
-AIB-02 shell companion panel + offline Rulebook browser (#1125). Desktop dock + phone sheet; no chat/LLM/host; Layout mount only (Atlas #1283 does not touch Layout).
+AIB-02 shell companion panel + offline Rulebook browser (#1125). Desktop dock + phone sheet; no chat/LLM client; Layout mount only. Merged main after sibling AIB-04 (#1286) for test-gate coexistence.
 
 ## Hop chain
 
@@ -27,6 +27,7 @@ AIB-02 shell companion panel + offline Rulebook browser (#1125). Desktop dock + 
 | Offline search | no Host/LLM | domains/rulebook only | pass |
 | ORC / version | notice + hash visible | data-aiberto-orc-notice / version | pass |
 | Atlas isolation | no workbench/editor edits | Layout-only shell touch | pass |
+| Coexist AIB-04 | host ask + FE companion | test-gate runs both self-tests | pass |
 
 ## Flags
 
