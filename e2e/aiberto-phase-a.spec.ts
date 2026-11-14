@@ -9,9 +9,9 @@ import { test, expect, type Page } from '@playwright/test';
 import { ensureLoggedIn, dashboardReadyLocator } from './helpers/auth';
 import { expectMinTouchTargets, expectNoHorizontalOverflow } from './helpers/adaptive-ui-quality';
 
-/** Visible Aiberto chrome control (sidebar vs mobile header). */
+/** Visible Aiberto chrome control (sidebar vs `md:hidden` mobile header). */
 function aibertoToggle(page: Page) {
-  return page.getByRole('button', { name: 'Aiberto Regelbuch' }).filter({ visible: true });
+  return page.locator('[data-aiberto-toggle]').filter({ visible: true });
 }
 
 async function openAiberto(page: Page) {
