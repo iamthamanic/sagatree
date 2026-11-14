@@ -45,6 +45,7 @@ import {
 } from '../../../domains/world/hierarchy';
 import {
   HIERARCHY_NAV_BACK_DE,
+  LOD_TRANSITION_BUSY_DE,
   UNLOCATED_DRILL_BLOCKED_DE,
   UNLOCATED_MAP_HINT_DE,
   atlasMapOwnerPlace,
@@ -53,9 +54,11 @@ import {
   buildAtlasMapPins,
   createAtlasHierarchyNavState,
   defaultAtlasNavCameraView,
+  decidePrefetchChildMap,
   enterChildMap,
   extractMapFrameFromGeneratorMeta,
   isDornhainGoldenRootMap,
+  lodBandFromBreadcrumbDepth,
   navigateBack,
   navigateToAncestor,
   peekRestoredCamera,
@@ -197,6 +200,12 @@ export function WorldAtlasWorkbench({
     [editor.summaries],
   );
 
+  /** ATL2-E04: semantic LOD band from active breadcrumb depth. */
+  const hierarchyLodBand = useMemo(() => {
+    const depth = Math.max(1, editor.breadcrumb.length || 1);
+    return lodBandFromBreadcrumbDepth(depth);
+  }, [editor.breadcrumb.length]);
+
   useEffect(() => {
     const id = editor.activeMapId?.trim();
     if (!id) {
@@ -276,6 +285,14 @@ export function WorldAtlasWorkbench({
         setHierarchyNavNotice(result.reasonDe);
         return;
       }
+      // ATL2-E04: record prefetch eligibility (unlocated never pretends scale-true drill).
+      void decidePrefetchChildMap({
+        childMapId: nextMapId,
+        childFrame,
+        cache: editor.mapCache,
+        contentFingerprint: nextMapId,
+        cacheEpoch: editor.lodSession.cacheEpoch,
+      });
       // Parent-space fly-to on the current map, then switch (Codex P1).
       if (result.parentFlyTo && atlasSurfaceMode === '2d') {
         pendingAfterFlyRef.current = {
@@ -302,6 +319,8 @@ export function WorldAtlasWorkbench({
       editor.activeMapId,
       editor.summaries,
       editor.setActiveMapId,
+      editor.mapCache,
+      editor.lodSession.cacheEpoch,
       atlasSurfaceMode,
     ],
   );
@@ -1059,6 +1078,19 @@ export function WorldAtlasWorkbench({
           </button>
         </nav>
       ) : null}
+      <span className="sr-only" data-world-atlas-lod-band={hierarchyLodBand}>
+        {hierarchyLodBand}
+      </span>
+      {editor.lodSession.phase === 'loading' || editor.lodSession.phase === 'transitioning' ? (
+        <p className="text-sm text-muted-foreground" data-world-atlas-lod-transition role="status">
+          {LOD_TRANSITION_BUSY_DE}
+        </p>
+      ) : null}
+      {editor.lodSession.phase === 'error' && editor.lodSession.errorDe ? (
+        <p className="text-sm text-destructive" data-world-atlas-lod-error role="alert">
+          {editor.lodSession.errorDe}
+        </p>
+      ) : null}
       {hierarchyNavNotice ? (
         <p className="text-sm text-muted-foreground" data-world-atlas-hierarchy-notice role="status">
           {hierarchyNavNotice}
@@ -1216,6 +1248,7 @@ export function WorldAtlasWorkbench({
                 });
               }}
               onHierarchyBack={hierarchyBack}
+              hierarchyLodBand={hierarchyLodBand}
               onWebglNavRename={
                 editingAllowed
                   ? async ({ placeId, label }) => {

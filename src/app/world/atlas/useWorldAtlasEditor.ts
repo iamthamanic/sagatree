@@ -32,6 +32,19 @@ import {
   reduceAtlasPersistStatus,
   shouldUpgradeDornhainUnifiedToWorld,
   unlocatedChildMapGeneratorMeta,
+  beginAtlasMapLoad,
+  bumpAtlasMapCacheEpoch,
+  cancelAtlasMapLoad,
+  completeAtlasMapLoad,
+  createAtlasMapLoadSession,
+  failAtlasMapLoad,
+  finishAtlasMapTransition,
+  invalidateAtlasMapCache,
+  putAtlasMapCacheEntry,
+  shouldApplyAtlasMapLoad,
+  LOD_LOAD_FAILED_DE,
+  type AtlasMapCacheStore,
+  type AtlasMapLoadSession,
   type AtlasPersistStatus,
   type DornhainGoldenResetMode,
   type DungeonGeneratorMeta,
@@ -89,12 +102,19 @@ export function useWorldAtlasEditor({
    */
   const [contentEpoch, setContentEpoch] = useState(0);
   const bumpContentEpoch = useCallback(() => setContentEpoch((n) => n + 1), []);
+  /** ATL2-E04: hierarchy LOD load session + soft map cache. */
+  const [lodSession, setLodSession] = useState<AtlasMapLoadSession>(() =>
+    createAtlasMapLoadSession(null),
+  );
+  const [mapCache, setMapCache] = useState<AtlasMapCacheStore>({});
   const canvasDocRef = useRef(canvasDoc);
   canvasDocRef.current = canvasDoc;
   const webglRuntimeRef = useRef(webglRuntime);
   webglRuntimeRef.current = webglRuntime;
   const dungeonMetaRef = useRef(dungeonMeta);
   dungeonMetaRef.current = dungeonMeta;
+  const lodSessionRef = useRef(lodSession);
+  lodSessionRef.current = lodSession;
   const saveInFlightRef = useRef(false);
   const persistStatusRef = useRef<AtlasPersistStatus>('clean');
   persistStatusRef.current = persistStatus;
@@ -175,7 +195,6 @@ export function useWorldAtlasEditor({
   }, [reloadList]);
 
   useEffect(() => {
-    let cancelled = false;
     const id = activeMapId;
     if (!id) {
       setMap(null);
@@ -184,18 +203,31 @@ export function useWorldAtlasEditor({
       setWebglRuntime(null);
       setDirtyCanvas(false);
       setDungeonMeta(null);
+      setLodSession((prev) => cancelAtlasMapLoad(prev));
       return;
     }
+    // ATL2-E04: generation token cancels stale loads on rapid hierarchy drill.
+    const started = beginAtlasMapLoad(lodSessionRef.current, id, 'loading');
+    const generation = started.generation;
+    lodSessionRef.current = started;
+    setLodSession(started);
     setLoading(true);
     setError(null);
+    let disposed = false;
     void worldAtlasService
       .getMap(id, playerView, sagaPublicId)
       .then((vm) => {
-        if (cancelled) return;
+        if (disposed) return;
+        if (!shouldApplyAtlasMapLoad(lodSessionRef.current, generation, id)) return;
+        const transitioned = completeAtlasMapLoad(lodSessionRef.current, generation, id);
+        const ready = finishAtlasMapTransition(transitioned, generation);
+        lodSessionRef.current = ready;
+        setLodSession(ready);
         const parsed = extractUnifiedCanvasFromGeneratorMeta(vm.generatorMeta);
         const upgrade = shouldUpgradeDornhainUnifiedToWorld(vm.generatorMeta, parsed);
         const nextTitle = normalizeDornhainWorldLayerTitle(vm.title);
         const titleChanged = nextTitle !== vm.title;
+        const fingerprint = `${vm.id}:${String(vm.updatedAt ?? '')}:${upgrade ? 'up' : 'ok'}`;
         if (upgrade) {
           const worldMeta = buildDornhainUnifiedGeneratorMeta();
           const worldDoc =
@@ -232,18 +264,43 @@ export function useWorldAtlasEditor({
         }
         setDirtyLayers(null);
         setDungeonMeta(extractDungeonMetaFromGeneratorMeta(vm.generatorMeta));
+        setMapCache((prev) =>
+          putAtlasMapCacheEntry(prev, {
+            mapId: id,
+            contentFingerprint: fingerprint,
+            cachedAtEpoch: lodSessionRef.current.cacheEpoch,
+          }),
+        );
         bumpContentEpoch();
       })
       .catch((err: unknown) => {
-        if (cancelled) return;
-        setError(err instanceof Error ? err.message : 'Karte konnte nicht geladen werden.');
+        if (disposed) return;
+        if (!shouldApplyAtlasMapLoad(lodSessionRef.current, generation, id)) return;
+        const failed = failAtlasMapLoad(
+          lodSessionRef.current,
+          generation,
+          err instanceof Error ? err.message : LOD_LOAD_FAILED_DE,
+        );
+        lodSessionRef.current = failed;
+        setLodSession(failed);
+        setError(err instanceof Error ? err.message : LOD_LOAD_FAILED_DE);
         setMap(null);
       })
       .finally(() => {
-        if (!cancelled) setLoading(false);
+        if (disposed) return;
+        if (lodSessionRef.current.generation === generation) setLoading(false);
       });
     return () => {
-      cancelled = true;
+      disposed = true;
+      if (
+        lodSessionRef.current.generation === generation &&
+        (lodSessionRef.current.phase === 'loading' ||
+          lodSessionRef.current.phase === 'prefetching')
+      ) {
+        const cancelled = cancelAtlasMapLoad(lodSessionRef.current);
+        lodSessionRef.current = cancelled;
+        setLodSession(cancelled);
+      }
     };
   }, [activeMapId, playerView, sagaPublicId, bumpContentEpoch]);
 
@@ -348,6 +405,13 @@ export function useWorldAtlasEditor({
         pendingOpsRef.current = 0;
       }
       bumpPersist({ type: 'save_ok' });
+      // ATL2-E04: saved content invalidates soft LOD cache for this map.
+      setMapCache((prev) => invalidateAtlasMapCache(prev, map.id));
+      setLodSession((prev) => {
+        const next = bumpAtlasMapCacheEpoch(prev);
+        lodSessionRef.current = next;
+        return next;
+      });
       if (editedDuringSave) {
         noteLocalEdit();
       }
@@ -852,5 +916,7 @@ export function useWorldAtlasEditor({
     contentEpoch,
     autosaveDecision,
     autosaveDebounceMs: ATLAS_AUTOSAVE_DEBOUNCE_MS,
+    lodSession,
+    mapCache,
   };
 }

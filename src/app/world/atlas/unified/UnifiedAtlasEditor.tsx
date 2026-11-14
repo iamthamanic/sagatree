@@ -102,6 +102,8 @@ import {
   type AtlasMapPin,
   type AtlasMapScale,
   type AtlasNavCameraView,
+  type AtlasHierarchyLodBand,
+  atlasHierarchyLodLayerFlags,
   parseHierarchyNavKey,
   wheelRequestsHierarchyBack,
 } from '../../../../domains/world/atlas';
@@ -247,6 +249,11 @@ export type UnifiedAtlasEditorProps = {
   readonly onNavViewChange?: (view: AtlasNavCameraView) => void;
   /** ATL2-E03: hierarchy back (Escape / Alt+ArrowUp / wheel-at-min). */
   readonly onHierarchyBack?: () => void;
+  /**
+   * ATL2-E04: semantic LOD band for the active hierarchy tip.
+   * Editor layer toggles can only hide further — never force-show LOD-hidden content.
+   */
+  readonly hierarchyLodBand?: AtlasHierarchyLodBand | null;
 };
 
 type DragState =
@@ -474,6 +481,7 @@ export function UnifiedAtlasEditor({
   onNavPendingFocusConsumed,
   onNavViewChange,
   onHierarchyBack,
+  hierarchyLodBand = null,
 }: UnifiedAtlasEditorProps) {
   const stageRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -808,7 +816,18 @@ export function UnifiedAtlasEditor({
     const cam = camRef.current;
     const scale = cam.pixelsPerUnit;
     const renderDoc = forgeDisplayDoc;
-    const layers = renderDoc.layers;
+    // ATL2-E04: semantic LOD AND editor toggles (editor may only hide further).
+    const lodFlags = hierarchyLodBand
+      ? atlasHierarchyLodLayerFlags(hierarchyLodBand, {
+          terrain: renderDoc.layers.terrain,
+          region: renderDoc.layers.region,
+          city: renderDoc.layers.city,
+          interior: renderDoc.layers.interior,
+          objects: renderDoc.layers.objects,
+          grid: renderDoc.layers.grid,
+        })
+      : null;
+    const layers = lodFlags ? { ...renderDoc.layers, ...lodFlags } : renderDoc.layers;
     const isDemo = renderDoc.demoSeed !== false;
 
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
