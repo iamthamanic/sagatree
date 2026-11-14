@@ -1,0 +1,297 @@
+{
+  "schemaVersion": 1,
+  "area": "rulesets",
+  "evidenceKind": "exact-typescript-ast-source",
+  "sourceFiles": [
+    {
+      "path": "src/infrastructure/rulesets/ruleset-service.ts",
+      "sha256": "63ee20191f274a6c5f788e4824a098dc9761273ec0681af0341c2576dd92bb2d"
+    }
+  ],
+  "supportingSourceFiles": [
+    {
+      "path": "src/domains/marketplace/contracts/marketplace.types.ts",
+      "sha256": "000aecc695577333ad6fce27422ad02bc15f26ffca88507ebfee1fafb04b9467"
+    },
+    {
+      "path": "src/domains/rules/ruleset-catalog/index.ts",
+      "sha256": "c2f52133fdeaa82ca586670b79ce0144063cc852a2a5ca8b5b6b44369fc0e21e"
+    },
+    {
+      "path": "src/domains/rules/ruleset-catalog/types.ts",
+      "sha256": "1b76d37fc3c90d29d3f719644e6915a66462d7b55c4c6cec07a0caadfdf1512d"
+    },
+    {
+      "path": "src/domains/user-profile/contracts/user-profile.types.ts",
+      "sha256": "2f3f3472e9a3448099144be0993fd83bbbc2270050ce76dceadd8821501c26b7"
+    },
+    {
+      "path": "src/domains/user-profile/display-name.ts",
+      "sha256": "87cfc4858f198e56ea2857c505162f112efd5edacde4dbb1f7fcd995b4535516"
+    },
+    {
+      "path": "src/domains/user-profile/index.ts",
+      "sha256": "d094d245ff9356298ef20c48635ca3e7adcc0e1ccf180554586949e0b496c496"
+    },
+    {
+      "path": "src/infrastructure/host/host-catalog-http.ts",
+      "sha256": "9049245360683a74e7e2602d35126d815d64344d384c6684e4c2c3d41aa626d3"
+    },
+    {
+      "path": "src/infrastructure/host/host-library-http.ts",
+      "sha256": "c56b88c60d6c9491fc7b6e6e1143ac4985ffdab5dff16afef8a54bce79629a07"
+    },
+    {
+      "path": "src/lib/hostAuthBridge.ts",
+      "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
+    }
+  ],
+  "importedTypeDeclarations": [
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "MarketplaceItemType",
+      "path": "src/domains/marketplace/contracts/marketplace.types.ts",
+      "line": 3,
+      "endLine": 3,
+      "text": "export type MarketplaceItemType = 'world' | 'adventure' | 'character' | 'item' | 'ruleset';"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "MarketplaceItem",
+      "path": "src/domains/marketplace/contracts/marketplace.types.ts",
+      "line": 5,
+      "endLine": 20,
+      "text": "export interface MarketplaceItem {\n  id: string;\n  type: MarketplaceItemType;\n  title: string;\n  description: string | null;\n  author_id: string;\n  author_name?: string; // Joined from users table\n  data: Record<string, unknown>; // Item-specific data (flexible JSONB)\n  rating: number;\n  downloads: number;\n  price: number; // 0.00 = free\n  image_url: string | null;\n  tags: string[];\n  created_at: string;\n  updated_at: string;\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "CreateMarketplaceItemDTO",
+      "path": "src/domains/marketplace/contracts/marketplace.types.ts",
+      "line": 22,
+      "endLine": 30,
+      "text": "export interface CreateMarketplaceItemDTO {\n  type: MarketplaceItemType;\n  title: string;\n  description?: string;\n  data: Record<string, unknown>;\n  price?: number;\n  image_url?: string;\n  tags?: string[];\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "UpdateMarketplaceItemDTO",
+      "path": "src/domains/marketplace/contracts/marketplace.types.ts",
+      "line": 32,
+      "endLine": 39,
+      "text": "export interface UpdateMarketplaceItemDTO {\n  title?: string;\n  description?: string;\n  data?: Record<string, unknown>;\n  price?: number;\n  image_url?: string;\n  tags?: string[];\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "MarketplaceFilters",
+      "path": "src/domains/marketplace/contracts/marketplace.types.ts",
+      "line": 41,
+      "endLine": 49,
+      "text": "export interface MarketplaceFilters {\n  type?: MarketplaceItemType | 'all';\n  searchQuery?: string;\n  minRating?: number;\n  maxPrice?: number;\n  tags?: string[];\n  sortBy?: 'downloads' | 'rating' | 'created_at' | 'price';\n  sortOrder?: 'asc' | 'desc';\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "Ruleset",
+      "path": "src/domains/rules/ruleset-catalog/types.ts",
+      "line": 5,
+      "endLine": 41,
+      "text": "export interface Ruleset {\n  id: string;\n  creator_user_id: string | null;\n  name: string;\n  description: string | null;\n  version: string | null;\n\n  attributes_config: {\n    primary: string[];\n    derived: string[];\n  };\n  skills_config: Array<{\n    name: string;\n    ability: string;\n  }>;\n  classes_config: Array<{\n    name: string;\n    hit_die: string;\n  }>;\n  races_config: Array<{\n    name: string;\n    speed: number;\n    size: string;\n  }>;\n  combat_rules: Record<string, unknown>;\n  dice_rules: Record<string, unknown>;\n  level_progression: Record<string, unknown>;\n\n  is_official: boolean;\n  is_public: boolean;\n  is_marketplace_item: boolean;\n  downloads_count: number;\n  rating: number | null;\n\n  created_at: string;\n  updated_at: string;\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "CreateRulesetDTO",
+      "path": "src/domains/rules/ruleset-catalog/types.ts",
+      "line": 43,
+      "endLine": 54,
+      "text": "export interface CreateRulesetDTO {\n  name: string;\n  description?: string;\n  version?: string;\n  attributes_config: Ruleset['attributes_config'];\n  skills_config?: Ruleset['skills_config'];\n  classes_config?: Ruleset['classes_config'];\n  races_config?: Ruleset['races_config'];\n  combat_rules?: Record<string, unknown>;\n  dice_rules?: Record<string, unknown>;\n  is_public?: boolean;\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "UpdateRulesetDTO",
+      "path": "src/domains/rules/ruleset-catalog/types.ts",
+      "line": 56,
+      "endLine": 58,
+      "text": "export interface UpdateRulesetDTO extends Partial<CreateRulesetDTO> {\n  id: string;\n}"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "UserProfileVm",
+      "path": "src/domains/user-profile/contracts/user-profile.types.ts",
+      "line": 6,
+      "endLine": 13,
+      "text": "export type UserProfileVm = {\n  readonly id: string;\n  readonly displayName: string | null;\n  readonly avatarPath: string | null;\n  /** Signed or resolvable URL for UI; null when no avatar_path. */\n  readonly avatarUrl: string | null;\n  readonly updatedAt: string | null;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AccountDisplayNameInput",
+      "path": "src/domains/user-profile/display-name.ts",
+      "line": 8,
+      "endLine": 13,
+      "text": "export type AccountDisplayNameInput = {\n  readonly profileDisplayName?: string | null;\n  readonly authDisplayName?: string | null;\n  readonly authUsername?: string | null;\n  readonly email?: string | null;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "EnvLike",
+      "path": "src/infrastructure/host/host-catalog-http.ts",
+      "line": 18,
+      "endLine": 21,
+      "text": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "EnvLike",
+      "path": "src/infrastructure/host/host-library-http.ts",
+      "line": 10,
+      "endLine": 12,
+      "text": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "HostLibraryCharacterDto",
+      "path": "src/infrastructure/host/host-library-http.ts",
+      "line": 59,
+      "endLine": 72,
+      "text": "export type HostLibraryCharacterDto = {\n  readonly id: string;\n  readonly publicId?: string;\n  readonly name: string;\n  readonly description?: string;\n  readonly class?: string;\n  readonly race?: string;\n  readonly level?: number;\n  readonly sheetStatus?: string;\n  readonly portraitUrl?: string | null;\n  readonly sheet?: Readonly<Record<string, unknown>>;\n  readonly createdAt?: string;\n  readonly updatedAt?: string;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "HostLibraryProjectDto",
+      "path": "src/infrastructure/host/host-library-http.ts",
+      "line": 87,
+      "endLine": 108,
+      "text": "export type HostLibraryProjectDto = {\n  readonly id: string;\n  readonly publicId?: string;\n  readonly code?: string;\n  readonly name: string;\n  readonly description?: string | null;\n  readonly worldId?: string | null;\n  readonly worldProfileId?: string | null;\n  readonly defaultLookProfileId?: string | null;\n  readonly allowPlayerCharacterLookOverride?: boolean;\n  readonly sagaId?: string | null;\n  readonly sagaVersionId?: string | null;\n  readonly sagaTitle?: string | null;\n  readonly sagaSlug?: string | null;\n  readonly sagaOrigin?: string | null;\n  readonly gmUserId: string;\n  readonly status?: string;\n  readonly memberCount?: number;\n  readonly sessionCount?: number;\n  readonly createdAt?: string;\n  readonly updatedAt?: string;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "HostLibraryWorldDto",
+      "path": "src/infrastructure/host/host-library-http.ts",
+      "line": 123,
+      "endLine": 129,
+      "text": "export type HostLibraryWorldDto = {\n  readonly id: string;\n  readonly title: string;\n  readonly createdAt: string;\n  /** CUT-10 — WO-XXXXX when present. */\n  readonly publicId?: string | null;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "FetchHostLibraryItemsOptions",
+      "path": "src/infrastructure/host/host-library-http.ts",
+      "line": 748,
+      "endLine": 753,
+      "text": "export type FetchHostLibraryItemsOptions = {\n  readonly worldProfileId?: string | null;\n  readonly query?: string;\n  readonly includeArchived?: boolean;\n  readonly origins?: readonly ('standard' | 'personal' | 'world')[];\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "HostNpcControllerAssignmentDto",
+      "path": "src/infrastructure/host/host-library-http.ts",
+      "line": 1039,
+      "endLine": 1045,
+      "text": "export type HostNpcControllerAssignmentDto = {\n  readonly projectId: string;\n  readonly definitionId: string;\n  readonly controllerUserId: string | null;\n  readonly assignedBy?: string;\n  readonly updatedAt?: string;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "HostNpcInstanceDto",
+      "path": "src/infrastructure/host/host-library-http.ts",
+      "line": 1098,
+      "endLine": 1111,
+      "text": "export type HostNpcInstanceDto = {\n  readonly id: string;\n  readonly projectId: string;\n  readonly sessionId: string | null;\n  readonly definitionId: string;\n  readonly displayName: string;\n  readonly instanceKind: string;\n  readonly sequenceNumber: number;\n  readonly snapshot: Record<string, unknown>;\n  readonly runtime: Record<string, unknown>;\n  readonly createdBy?: string;\n  readonly createdAt?: string;\n  readonly updatedAt?: string;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "HostPublishedAssetDto",
+      "path": "src/infrastructure/host/host-library-http.ts",
+      "line": 1220,
+      "endLine": 1227,
+      "text": "export type HostPublishedAssetDto = {\n  readonly assetId: string;\n  readonly contentType: string;\n  readonly byteSize: number;\n  readonly checksumSha256: string;\n  readonly url: string;\n  readonly storagePath: string;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "HostWhoamiDto",
+      "path": "src/lib/hostAuthBridge.ts",
+      "line": 24,
+      "endLine": 29,
+      "text": "export type HostWhoamiDto = {\n  readonly ok: true;\n  readonly actorId: string;\n  readonly kind: 'remote-account';\n  readonly email: string | null;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "EnvLike",
+      "path": "src/lib/hostAuthBridge.ts",
+      "line": 31,
+      "endLine": 31,
+      "text": "type EnvLike = { readonly VITE_SAGATREE_HOST_AUTH_URL?: string };"
+    }
+  ],
+  "calls": [],
+  "imports": [
+    {
+      "path": "src/infrastructure/rulesets/ruleset-service.ts",
+      "line": 5,
+      "endLine": 5,
+      "module": "../../domains/rules/ruleset-catalog",
+      "resolvedPath": "src/domains/rules/ruleset-catalog/index.ts",
+      "expression": "import type { CreateRulesetDTO, Ruleset, UpdateRulesetDTO } from '../../domains/rules/ruleset-catalog';"
+    },
+    {
+      "path": "src/infrastructure/rulesets/ruleset-service.ts",
+      "line": 6,
+      "endLine": 13,
+      "module": "../host/host-catalog-http",
+      "resolvedPath": "src/infrastructure/host/host-catalog-http.ts",
+      "expression": "import {\n  createHostRuleset,\n  deleteHostRuleset,\n  fetchHostRuleset,\n  fetchHostRulesets,\n  isHostLibraryEnabled,\n  updateHostRuleset,\n} from '../host/host-catalog-http';"
+    }
+  ],
+  "publicDeclarations": [
+    {
+      "path": "src/infrastructure/rulesets/ruleset-service.ts",
+      "line": 21,
+      "endLine": 51,
+      "text": "export const rulesetService = {\n  async getAll(): Promise<Ruleset[]> {\n    assertHost();\n    return fetchHostRulesets(false);\n  },\n\n  async getOfficial(): Promise<Ruleset[]> {\n    assertHost();\n    return fetchHostRulesets(true);\n  },\n\n  async getById(id: string): Promise<Ruleset | null> {\n    assertHost();\n    return fetchHostRuleset(id);\n  },\n\n  async create(dto: CreateRulesetDTO): Promise<Ruleset> {\n    assertHost();\n    return createHostRuleset(dto);\n  },\n\n  async update(dto: UpdateRulesetDTO): Promise<Ruleset> {\n    assertHost();\n    return updateHostRuleset(dto);\n  },\n\n  async delete(id: string): Promise<void> {\n    assertHost();\n    await deleteHostRuleset(id);\n  },\n};"
+    }
+  ],
+  "operationDeclarations": [
+    {
+      "path": "src/infrastructure/rulesets/ruleset-service.ts",
+      "line": 15,
+      "endLine": 19,
+      "name": "assertHost",
+      "text": "function assertHost(): void {\n  if (!isHostLibraryEnabled()) {\n    throw new Error('Host-Anmeldung nicht konfiguriert (VITE_SAGATREE_HOST_AUTH_URL fehlt).');\n  }\n}"
+    },
+    {
+      "path": "src/infrastructure/rulesets/ruleset-service.ts",
+      "line": 22,
+      "endLine": 25,
+      "name": "getAll",
+      "text": "async getAll(): Promise<Ruleset[]> {\n    assertHost();\n    return fetchHostRulesets(false);\n  }"
+    },
+    {
+      "path": "src/infrastructure/rulesets/ruleset-service.ts",
+      "line": 27,
+      "endLine": 30,
+      "name": "getOfficial",
+      "text": "async getOfficial(): Promise<Ruleset[]> {\n    assertHost();\n    return fetchHostRulesets(true);\n  }"
+    },
+    {
+      "path": "src/infrastructure/rulesets/ruleset-service.ts",
+      "line": 32,
+      "endLine": 35,
+      "name": "getById",
+      "text": "async getById(id: string): Promise<Ruleset | null> {\n    assertHost();\n    return fetchHostRuleset(id);\n  }"
+    },
+    {
+      "path": "src/infrastructure/rulesets/ruleset-service.ts",
+      "line": 37,
+      "endLine": 40,
+      "name": "create",
+      "text": "async create(dto: CreateRulesetDTO): Promise<Ruleset> {\n    assertHost();\n    return createHostRuleset(dto);\n  }"
+    },
+    {
+      "path": "src/infrastructure/rulesets/ruleset-service.ts",
+      "line": 42,
+      "endLine": 45,
+      "name": "update",
+      "text": "async update(dto: UpdateRulesetDTO): Promise<Ruleset> {\n    assertHost();\n    return updateHostRuleset(dto);\n  }"
+    },
+    {
+      "path": "src/infrastructure/rulesets/ruleset-service.ts",
+      "line": 47,
+      "endLine": 50,
+      "name": "delete",
+      "text": "async delete(id: string): Promise<void> {\n    assertHost();\n    await deleteHostRuleset(id);\n  }"
+    }
+  ]
+}

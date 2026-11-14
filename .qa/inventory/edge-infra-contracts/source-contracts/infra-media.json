@@ -1,0 +1,919 @@
+{
+  "schemaVersion": 1,
+  "area": "media",
+  "evidenceKind": "exact-typescript-ast-source",
+  "sourceFiles": [
+    {
+      "path": "src/infrastructure/media/optimizer/engines/audio/index.ts",
+      "sha256": "7585190a705085692bff0896e08b4d78f791895b47e24d57deeaaa10bb669d4e"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/image.worker.ts",
+      "sha256": "d34793b4de682556d9306194cfbcd05fdafdf215da25393f955d2669c7499276"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/index.ts",
+      "sha256": "4944001b7e0f7784d487da2e60d06d845aa564e9ddd7516ff50633af1591a322"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/optimize-image.ts",
+      "sha256": "bf73e826651227f704aff5ed584546a087f22f26c68a4c45ba918dfefbe7ce3e"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/raster-decode.ts",
+      "sha256": "8ba5eda07565b10d1fb3d4090d068d12b1415399088c6c6b4a2aadc3fe4d290c"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/resource-limits.ts",
+      "sha256": "1178fc226c85aee4f4989a7bd650d0b9830b37657c7499c1cec174b4aa9af364"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/types.ts",
+      "sha256": "501095579c8bf1cc3af3a93147f4ab9fe1f280909c02e759d3d95c0f7151d45d"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/webp-budget.ts",
+      "sha256": "7e7a1669b42c38b713f35952517260a61ca636cc6f84f29c76b949e3bcc2f70c"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/webp-worker-client.ts",
+      "sha256": "718b74e3146c6723862f0a4639eb5b7905a35f70a8c0e3c6e33d530a4ef80b84"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/model3d/index.ts",
+      "sha256": "bcc13ca0c9f7bfa1a68e6c893509b21e682fe2c44732945fba85215042ac6d62"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/video/index.ts",
+      "sha256": "d8c6aaaabb2ad762d4c15f9ef4aa9bc016f5968b2512cfe52f71cb09655dd842"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/index.ts",
+      "sha256": "c1b162af47239195707de742a8991bea14d85f2238108968613c3bad3d91cf02"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/media-optimizer.ts",
+      "sha256": "7d58424f12b7855ccb3c0153270628850e03afc15c285b1fc2b47218918255d9"
+    }
+  ],
+  "supportingSourceFiles": [
+    {
+      "path": "src/domains/media/index.ts",
+      "sha256": "768ded2d0f0fd1d510d660924e787817673955dbeff021d7de9e0a8d8e38bdec"
+    },
+    {
+      "path": "src/domains/media/optimization-contract.ts",
+      "sha256": "ba9216dab79a9c03f66a16b77dedf1c26d4d00d6ae2693cc5a68919d1647846d"
+    },
+    {
+      "path": "src/domains/media/optimization-policy.ts",
+      "sha256": "6145574bc08d1eb94f54d488ebc1f8bc030c2a956e3e3fd24cb15a7c8e50c5ec"
+    }
+  ],
+  "importedTypeDeclarations": [
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "MediaKind",
+      "path": "src/domains/media/optimization-contract.ts",
+      "line": 10,
+      "endLine": 10,
+      "text": "export type MediaKind = 'image' | 'video' | 'model3d' | 'audio';"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "MediaOptimizeStatus",
+      "path": "src/domains/media/optimization-contract.ts",
+      "line": 18,
+      "endLine": 24,
+      "text": "export type MediaOptimizeStatus =\n  | 'optimized'\n  | 'unchanged'\n  | 'unsupported'\n  | 'over-budget'\n  | 'aborted'\n  | 'failed';"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AssetProfileId",
+      "path": "src/domains/media/optimization-contract.ts",
+      "line": 36,
+      "endLine": 41,
+      "text": "export type AssetProfileId =\n  | 'character-portrait'\n  | 'map-pin'\n  | 'look-reference'\n  | 'item-thumbnail'\n  | 'user-avatar';"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "MediaByteBudget",
+      "path": "src/domains/media/optimization-contract.ts",
+      "line": 55,
+      "endLine": 58,
+      "text": "export type MediaByteBudget = {\n  readonly targetBytes: number;\n  readonly maxUploadBytes: number;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "MediaOptimizeFailureCode",
+      "path": "src/domains/media/optimization-contract.ts",
+      "line": 60,
+      "endLine": 68,
+      "text": "export type MediaOptimizeFailureCode =\n  | 'unsupported-kind'\n  | 'unsupported-mime'\n  | 'over-max-upload'\n  | 'over-aggregate-budget'\n  | 'encode-failed'\n  | 'aborted'\n  | 'invalid-input'\n  | 'wasm-unavailable';"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "MediaOptimizeInputMeta",
+      "path": "src/domains/media/optimization-contract.ts",
+      "line": 70,
+      "endLine": 81,
+      "text": "export type MediaOptimizeInputMeta = {\n  readonly kind: MediaKind;\n  readonly profileId: AssetProfileId;\n  readonly mimeType: string;\n  readonly byteSize: number;\n  readonly width?: number;\n  readonly height?: number;\n  /** True when source is an animated GIF (or similar) that must not be silently flattened. */\n  readonly hasAnimation?: boolean;\n  /** True when source has an alpha channel that policy must preserve. */\n  readonly hasAlpha?: boolean;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "MediaOptimizeResultBase",
+      "path": "src/domains/media/optimization-contract.ts",
+      "line": 83,
+      "endLine": 87,
+      "text": "type MediaOptimizeResultBase = {\n  readonly kind: MediaKind;\n  readonly profileId: AssetProfileId;\n  readonly input: MediaOptimizeInputMeta;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "MediaOptimizeOptimizedResult",
+      "path": "src/domains/media/optimization-contract.ts",
+      "line": 89,
+      "endLine": 95,
+      "text": "export type MediaOptimizeOptimizedResult = MediaOptimizeResultBase & {\n  readonly status: 'optimized';\n  readonly outputMimeType: string;\n  readonly outputByteSize: number;\n  readonly width?: number;\n  readonly height?: number;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "MediaOptimizeUnchangedResult",
+      "path": "src/domains/media/optimization-contract.ts",
+      "line": 97,
+      "endLine": 102,
+      "text": "export type MediaOptimizeUnchangedResult = MediaOptimizeResultBase & {\n  readonly status: 'unchanged';\n  /** Echo of the validated original — required for unchanged. */\n  readonly outputMimeType: string;\n  readonly outputByteSize: number;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "MediaOptimizeUnsupportedResult",
+      "path": "src/domains/media/optimization-contract.ts",
+      "line": 104,
+      "endLine": 108,
+      "text": "export type MediaOptimizeUnsupportedResult = MediaOptimizeResultBase & {\n  readonly status: 'unsupported';\n  readonly code: MediaOptimizeFailureCode;\n  readonly message: string;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "MediaOptimizeOverBudgetResult",
+      "path": "src/domains/media/optimization-contract.ts",
+      "line": 110,
+      "endLine": 115,
+      "text": "export type MediaOptimizeOverBudgetResult = MediaOptimizeResultBase & {\n  readonly status: 'over-budget';\n  readonly code: 'over-max-upload' | 'over-aggregate-budget';\n  readonly message: string;\n  readonly attemptedByteSize?: number;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "MediaOptimizeAbortedResult",
+      "path": "src/domains/media/optimization-contract.ts",
+      "line": 117,
+      "endLine": 121,
+      "text": "export type MediaOptimizeAbortedResult = MediaOptimizeResultBase & {\n  readonly status: 'aborted';\n  readonly code: 'aborted';\n  readonly message: string;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "MediaOptimizeFailedResult",
+      "path": "src/domains/media/optimization-contract.ts",
+      "line": 123,
+      "endLine": 127,
+      "text": "export type MediaOptimizeFailedResult = MediaOptimizeResultBase & {\n  readonly status: 'failed';\n  readonly code: MediaOptimizeFailureCode;\n  readonly message: string;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "MediaOptimizeResult",
+      "path": "src/domains/media/optimization-contract.ts",
+      "line": 129,
+      "endLine": 135,
+      "text": "export type MediaOptimizeResult =\n  | MediaOptimizeOptimizedResult\n  | MediaOptimizeUnchangedResult\n  | MediaOptimizeUnsupportedResult\n  | MediaOptimizeOverBudgetResult\n  | MediaOptimizeAbortedResult\n  | MediaOptimizeFailedResult;"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "GifAnimationPolicy",
+      "path": "src/domains/media/optimization-policy.ts",
+      "line": 19,
+      "endLine": 19,
+      "text": "export type GifAnimationPolicy = 'allow' | 'convert-static-required' | 'reject';"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "ImageAssetPolicy",
+      "path": "src/domains/media/optimization-policy.ts",
+      "line": 21,
+      "endLine": 36,
+      "text": "export type ImageAssetPolicy = {\n  readonly profileId: AssetProfileId;\n  readonly kind: 'image';\n  readonly allowedMimeTypes: readonly string[];\n  readonly budget: MediaByteBudget;\n  /** Soft max dimension hint for later engines (not a hard encode floor here). */\n  readonly maxEdgePx: number;\n  readonly minQuality: number;\n  readonly preserveAlpha: boolean;\n  readonly gifAnimation: GifAnimationPolicy;\n  /** When false, engines must not emit WebP until coordinated migration completes. */\n  readonly allowWebpOutput: boolean;\n  readonly maxImagesPerRequest?: number;\n  /** Hard aggregate JSON/Base64 request ceiling (Look analysis). */\n  readonly maxAggregateRequestBytes?: number;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "UnsupportedKindPolicy",
+      "path": "src/domains/media/optimization-policy.ts",
+      "line": 38,
+      "endLine": 43,
+      "text": "export type UnsupportedKindPolicy = {\n  readonly profileId: AssetProfileId;\n  readonly kind: Exclude<MediaKind, 'image'>;\n  readonly supported: false;\n  readonly message: string;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AssetPolicy",
+      "path": "src/domains/media/optimization-policy.ts",
+      "line": 45,
+      "endLine": 45,
+      "text": "export type AssetPolicy = ImageAssetPolicy | UnsupportedKindPolicy;"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "MediaPolicyEvaluation",
+      "path": "src/domains/media/optimization-policy.ts",
+      "line": 167,
+      "endLine": 180,
+      "text": "export type MediaPolicyEvaluation =\n  | { readonly ok: true; readonly policy: ImageAssetPolicy }\n  | {\n      readonly ok: false;\n      readonly reason:\n        | 'unsupported-mime'\n        | 'over-max-upload'\n        | 'gif-not-allowed'\n        | 'animation-not-allowed'\n        | 'too-many-images'\n        | 'over-aggregate-budget';\n      readonly message: string;\n      readonly policy: ImageAssetPolicy;\n    };"
+    }
+  ],
+  "calls": [],
+  "imports": [
+    {
+      "path": "src/infrastructure/media/optimizer/engines/audio/index.ts",
+      "line": 9,
+      "endLine": 12,
+      "module": "../../../../../domains/media",
+      "resolvedPath": "src/domains/media/index.ts",
+      "expression": "import type {\n  MediaOptimizeInputMeta,\n  MediaOptimizeResult,\n} from '../../../../../domains/media';"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/image.worker.ts",
+      "line": 6,
+      "endLine": 6,
+      "module": "./webp-budget",
+      "resolvedPath": "src/infrastructure/media/optimizer/engines/image/webp-budget.ts",
+      "expression": "import { encodeWebpUnderBudget } from './webp-budget';"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/image.worker.ts",
+      "line": 7,
+      "endLine": 7,
+      "module": "./webp-budget",
+      "resolvedPath": "src/infrastructure/media/optimizer/engines/image/webp-budget.ts",
+      "expression": "import type { WebpEncodeOptions } from './webp-budget';"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/image.worker.ts",
+      "line": 63,
+      "endLine": 63,
+      "module": "@jsquash/webp",
+      "resolvedPath": null,
+      "expression": "import('@jsquash/webp')",
+      "kind": "dynamic-import"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/index.ts",
+      "line": 10,
+      "endLine": 10,
+      "module": "../../../../../domains/media",
+      "resolvedPath": "src/domains/media/index.ts",
+      "expression": "import type { MediaOptimizeResult } from '../../../../../domains/media';"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/index.ts",
+      "line": 11,
+      "endLine": 11,
+      "module": "./optimize-image",
+      "resolvedPath": "src/infrastructure/media/optimizer/engines/image/optimize-image.ts",
+      "expression": "import { runOptimizeImage } from './optimize-image';"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/index.ts",
+      "line": 12,
+      "endLine": 12,
+      "module": "./types",
+      "resolvedPath": "src/infrastructure/media/optimizer/engines/image/types.ts",
+      "expression": "import type { ImageEngineRequest } from './types';"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/optimize-image.ts",
+      "line": 6,
+      "endLine": 6,
+      "module": "../../../../../domains/media",
+      "resolvedPath": "src/domains/media/index.ts",
+      "expression": "import type { MediaOptimizeResult } from '../../../../../domains/media';"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/optimize-image.ts",
+      "line": 7,
+      "endLine": 10,
+      "module": "../../../../../domains/media",
+      "resolvedPath": "src/domains/media/index.ts",
+      "expression": "import {\n  evaluateImageAgainstPolicy,\n  normalizeImageMime,\n} from '../../../../../domains/media';"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/optimize-image.ts",
+      "line": 11,
+      "endLine": 11,
+      "module": "./raster-decode",
+      "resolvedPath": "src/infrastructure/media/optimizer/engines/image/raster-decode.ts",
+      "expression": "import { blobToImageDataFittingLimits } from './raster-decode';"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/optimize-image.ts",
+      "line": 12,
+      "endLine": 16,
+      "module": "./resource-limits",
+      "resolvedPath": "src/infrastructure/media/optimizer/engines/image/resource-limits.ts",
+      "expression": "import {\n  assertImageInputByteLimit,\n  assertImagePixelLimit,\n  IMAGE_ENGINE_MAX_PIXELS,\n} from './resource-limits';"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/optimize-image.ts",
+      "line": 17,
+      "endLine": 17,
+      "module": "./webp-worker-client",
+      "resolvedPath": "src/infrastructure/media/optimizer/engines/image/webp-worker-client.ts",
+      "expression": "import { encodeWebpWithWorkerFallback } from './webp-worker-client';"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/optimize-image.ts",
+      "line": 18,
+      "endLine": 18,
+      "module": "./types",
+      "resolvedPath": "src/infrastructure/media/optimizer/engines/image/types.ts",
+      "expression": "import type { ImageEngineRequest } from './types';"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/raster-decode.ts",
+      "line": 8,
+      "endLine": 12,
+      "module": "./resource-limits",
+      "resolvedPath": "src/infrastructure/media/optimizer/engines/image/resource-limits.ts",
+      "expression": "import {\n  computeImageDownscaleFactor,\n  IMAGE_ENGINE_ABSOLUTE_MAX_EDGE_PX,\n  IMAGE_ENGINE_MAX_PIXELS,\n} from './resource-limits';"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/types.ts",
+      "line": 6,
+      "endLine": 6,
+      "module": "../../../../../domains/media",
+      "resolvedPath": "src/domains/media/index.ts",
+      "expression": "import type { MediaOptimizeInputMeta } from '../../../../../domains/media';"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/webp-worker-client.ts",
+      "line": 6,
+      "endLine": 6,
+      "module": "./webp-budget",
+      "resolvedPath": "src/infrastructure/media/optimizer/engines/image/webp-budget.ts",
+      "expression": "import { encodeWebpUnderBudget } from './webp-budget';"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/webp-worker-client.ts",
+      "line": 7,
+      "endLine": 7,
+      "module": "./raster-decode",
+      "resolvedPath": "src/infrastructure/media/optimizer/engines/image/raster-decode.ts",
+      "expression": "import { scaleImageData } from './raster-decode';"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/webp-worker-client.ts",
+      "line": 8,
+      "endLine": 11,
+      "module": "./image.worker",
+      "resolvedPath": "src/infrastructure/media/optimizer/engines/image/image.worker.ts",
+      "expression": "import type {\n  ImageWorkerEncodeRequest,\n  ImageWorkerResponse,\n} from './image.worker';"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/webp-worker-client.ts",
+      "line": 12,
+      "endLine": 12,
+      "module": "./webp-budget",
+      "resolvedPath": "src/infrastructure/media/optimizer/engines/image/webp-budget.ts",
+      "expression": "import type { WebpBudgetResult } from './webp-budget';"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/webp-worker-client.ts",
+      "line": 42,
+      "endLine": 42,
+      "module": "@jsquash/webp",
+      "resolvedPath": null,
+      "expression": "import('@jsquash/webp')",
+      "kind": "dynamic-import"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/model3d/index.ts",
+      "line": 9,
+      "endLine": 12,
+      "module": "../../../../../domains/media",
+      "resolvedPath": "src/domains/media/index.ts",
+      "expression": "import type {\n  MediaOptimizeInputMeta,\n  MediaOptimizeResult,\n} from '../../../../../domains/media';"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/video/index.ts",
+      "line": 9,
+      "endLine": 12,
+      "module": "../../../../../domains/media",
+      "resolvedPath": "src/domains/media/index.ts",
+      "expression": "import type {\n  MediaOptimizeInputMeta,\n  MediaOptimizeResult,\n} from '../../../../../domains/media';"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/media-optimizer.ts",
+      "line": 9,
+      "endLine": 14,
+      "module": "../../../domains/media",
+      "resolvedPath": "src/domains/media/index.ts",
+      "expression": "import type {\n  AssetProfileId,\n  MediaKind,\n  MediaOptimizeInputMeta,\n  MediaOptimizeResult,\n} from '../../../domains/media';"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/media-optimizer.ts",
+      "line": 15,
+      "endLine": 18,
+      "module": "../../../domains/media",
+      "resolvedPath": "src/domains/media/index.ts",
+      "expression": "import {\n  assertMediaOptimizeResultInvariants,\n  isMediaKind,\n} from '../../../domains/media';"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/media-optimizer.ts",
+      "line": 86,
+      "endLine": 86,
+      "module": "./engines/image/index",
+      "resolvedPath": "src/infrastructure/media/optimizer/engines/image/index.ts",
+      "expression": "import('./engines/image/index')",
+      "kind": "dynamic-import"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/media-optimizer.ts",
+      "line": 98,
+      "endLine": 98,
+      "module": "./engines/video/index",
+      "resolvedPath": "src/infrastructure/media/optimizer/engines/video/index.ts",
+      "expression": "import('./engines/video/index')",
+      "kind": "dynamic-import"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/media-optimizer.ts",
+      "line": 103,
+      "endLine": 103,
+      "module": "./engines/audio/index",
+      "resolvedPath": "src/infrastructure/media/optimizer/engines/audio/index.ts",
+      "expression": "import('./engines/audio/index')",
+      "kind": "dynamic-import"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/media-optimizer.ts",
+      "line": 108,
+      "endLine": 108,
+      "module": "./engines/model3d/index",
+      "resolvedPath": "src/infrastructure/media/optimizer/engines/model3d/index.ts",
+      "expression": "import('./engines/model3d/index')",
+      "kind": "dynamic-import"
+    }
+  ],
+  "publicDeclarations": [
+    {
+      "path": "src/infrastructure/media/optimizer/engines/audio/index.ts",
+      "line": 14,
+      "endLine": 17,
+      "text": "export type AudioEngineRequest = {\n  readonly input: MediaOptimizeInputMeta;\n  readonly signal?: AbortSignal;\n};"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/audio/index.ts",
+      "line": 19,
+      "endLine": 42,
+      "text": "export async function optimizeAudio(\n  request: AudioEngineRequest,\n): Promise<MediaOptimizeResult> {\n  if (request.signal?.aborted) {\n    return {\n      status: 'aborted',\n      kind: 'audio',\n      profileId: request.input.profileId,\n      input: { ...request.input, kind: 'audio' },\n      code: 'aborted',\n      message: 'Audio-Optimierung abgebrochen.',\n    };\n  }\n\n  return {\n    status: 'unsupported',\n    kind: 'audio',\n    profileId: request.input.profileId,\n    input: { ...request.input, kind: 'audio' },\n    code: 'unsupported-kind',\n    message:\n      'Audio-Transcoding ist in V1 nicht verfügbar (Ausbau-TODO: geprüfte Codec-Pipeline).',\n  };\n}"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/image.worker.ts",
+      "line": 9,
+      "endLine": 21,
+      "text": "export type ImageWorkerEncodeRequest = {\n  readonly type: 'encode';\n  readonly requestId: string;\n  readonly width: number;\n  readonly height: number;\n  /** RGBA pixel buffer (transferred). */\n  readonly rgba: ArrayBuffer;\n  readonly targetBytes: number;\n  readonly maxUploadBytes: number;\n  readonly maxOutputBytes: number;\n  readonly minQuality: number;\n  readonly minEdgePx?: number;\n};"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/image.worker.ts",
+      "line": 23,
+      "endLine": 39,
+      "text": "export type ImageWorkerResponse =\n  | {\n      readonly type: 'result';\n      readonly requestId: string;\n      readonly ok: true;\n      readonly buffer: ArrayBuffer;\n      readonly width: number;\n      readonly height: number;\n    }\n  | {\n      readonly type: 'result';\n      readonly requestId: string;\n      readonly ok: false;\n      readonly reason: 'over-budget' | 'encode-failed' | 'aborted';\n      readonly message: string;\n      readonly attemptedByteSize?: number;\n    };"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/index.ts",
+      "line": 35,
+      "endLine": 39,
+      "text": "export async function optimizeImage(\n  request: ImageEngineRequest,\n): Promise<MediaOptimizeResult> {\n  return runOptimizeImage(request);\n}"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/optimize-image.ts",
+      "line": 47,
+      "endLine": 283,
+      "text": "export async function runOptimizeImage(\n  request: ImageEngineRequest,\n): Promise<MediaOptimizeResult> {\n  const input = { ...request.input, kind: 'image' as const };\n\n  if (request.signal?.aborted) {\n    return abortedResult(request);\n  }\n\n  if (!request.bytes) {\n    return {\n      status: 'failed',\n      kind: 'image',\n      profileId: input.profileId,\n      input,\n      code: 'invalid-input',\n      message: 'Bildbytes fehlen für die Image-Engine.',\n    };\n  }\n\n  const inputLimit = assertImageInputByteLimit(input.byteSize);\n  if (inputLimit.ok === false) {\n    if (inputLimit.code === 'over-max-upload') {\n      return {\n        status: 'over-budget',\n        kind: 'image',\n        profileId: input.profileId,\n        input,\n        code: 'over-max-upload',\n        message: inputLimit.message,\n        attemptedByteSize: input.byteSize,\n      };\n    }\n    return {\n      status: 'failed',\n      kind: 'image',\n      profileId: input.profileId,\n      input,\n      code: 'invalid-input',\n      message: inputLimit.message,\n    };\n  }\n\n  const policyEval = evaluateImageAgainstPolicy(input, {\n    imageCountInRequest: request.imageCountInRequest,\n    aggregateRequestBytes: request.aggregateRequestBytes,\n  });\n  if (policyEval.ok === false) {\n    if (\n      policyEval.reason === 'over-max-upload' ||\n      policyEval.reason === 'over-aggregate-budget'\n    ) {\n      return {\n        status: 'over-budget',\n        kind: 'image',\n        profileId: input.profileId,\n        input,\n        code: policyEval.reason,\n        message: policyEval.message,\n        attemptedByteSize: input.byteSize,\n      };\n    }\n    return {\n      status: 'unsupported',\n      kind: 'image',\n      profileId: input.profileId,\n      input,\n      code: 'unsupported-mime',\n      message: policyEval.message,\n    };\n  }\n\n  const policy = policyEval.policy;\n  const mime = normalizeImageMime(input.mimeType);\n\n  // Animated GIF keep is only valid when policy allows animation without convert.\n  if (mime === 'image/gif' && input.hasAnimation === true && policy.gifAnimation === 'allow') {\n    if (input.byteSize <= policy.budget.maxUploadBytes) {\n      return {\n        status: 'unchanged',\n        kind: 'image',\n        profileId: input.profileId,\n        input,\n        outputMimeType: input.mimeType,\n        outputByteSize: input.byteSize,\n      };\n    }\n  }\n\n  // Small valid originals: unchanged (no Dateiwachstum / no unnecessary encode).\n  const needsGifConvert =\n    mime === 'image/gif' && policy.gifAnimation === 'convert-static-required';\n  const withinTarget = input.byteSize <= policy.budget.targetBytes;\n  if (!needsGifConvert && withinTarget && input.byteSize <= policy.budget.maxUploadBytes) {\n    return {\n      status: 'unchanged',\n      kind: 'image',\n      profileId: input.profileId,\n      input,\n      outputMimeType: input.mimeType,\n      outputByteSize: input.byteSize,\n    };\n  }\n\n  if (!policy.allowWebpOutput) {\n    if (input.byteSize <= policy.budget.maxUploadBytes) {\n      return {\n        status: 'unchanged',\n        kind: 'image',\n        profileId: input.profileId,\n        input,\n        outputMimeType: input.mimeType,\n        outputByteSize: input.byteSize,\n      };\n    }\n    return {\n      status: 'over-budget',\n      kind: 'image',\n      profileId: input.profileId,\n      input,\n      code: 'over-max-upload',\n      message:\n        'Item-Thumbnail überschreitet maxUploadBytes; WebP-Ausgabe ist für dieses Profil noch nicht freigeschaltet.',\n      attemptedByteSize: input.byteSize,\n    };\n  }\n\n  if (request.signal?.aborted) {\n    return abortedResult(request);\n  }\n\n  let imageData: ImageData;\n  try {\n    const blob = toBlob(request.bytes, mime);\n    // Downscale into policy maxEdge + engine pixel ceiling during decode —\n    // large phone photos must not hard-fail before WebP budget encode.\n    imageData = await blobToImageDataFittingLimits(blob, {\n      maxEdgePx: policy.maxEdgePx,\n      maxPixels: IMAGE_ENGINE_MAX_PIXELS,\n    });\n  } catch (error) {\n    return {\n      status: 'failed',\n      kind: 'image',\n      profileId: input.profileId,\n      input,\n      code: 'encode-failed',\n      message: `Raster-Decode fehlgeschlagen: ${error instanceof Error ? error.message : String(error)}`,\n    };\n  }\n\n  const pixelLimit = assertImagePixelLimit(imageData.width, imageData.height);\n  if (pixelLimit.ok === false) {\n    // Should be unreachable after fitting decode; keep fail-closed.\n    if (pixelLimit.code === 'over-max-upload') {\n      return {\n        status: 'over-budget',\n        kind: 'image',\n        profileId: input.profileId,\n        input,\n        code: 'over-max-upload',\n        message: pixelLimit.message,\n        attemptedByteSize: input.byteSize,\n      };\n    }\n    return {\n      status: 'failed',\n      kind: 'image',\n      profileId: input.profileId,\n      input,\n      code: 'invalid-input',\n      message: pixelLimit.message,\n    };\n  }\n\n  const budgeted = await encodeWebpWithWorkerFallback({\n    imageData,\n    targetBytes: policy.budget.targetBytes,\n    maxUploadBytes: policy.budget.maxUploadBytes,\n    maxOutputBytes: input.byteSize,\n    minQuality: policy.minQuality,\n    signal: request.signal,\n  });\n\n  if (budgeted.ok === false) {\n    if (budgeted.reason === 'aborted') {\n      return abortedResult(request);\n    }\n    if (budgeted.reason === 'over-budget') {\n      return {\n        status: 'over-budget',\n        kind: 'image',\n        profileId: input.profileId,\n        input,\n        code: 'over-max-upload',\n        message: budgeted.message,\n        attemptedByteSize: budgeted.attemptedByteSize,\n      };\n    }\n    return {\n      status: 'failed',\n      kind: 'image',\n      profileId: input.profileId,\n      input,\n      code: 'encode-failed',\n      message: budgeted.message,\n    };\n  }\n\n  // Guard: never claim optimized if we grew the file\n  if (budgeted.buffer.byteLength > input.byteSize) {\n    return {\n      status: 'failed',\n      kind: 'image',\n      profileId: input.profileId,\n      input,\n      code: 'encode-failed',\n      message: 'WebP-Ausgabe wäre größer als das Original — abgelehnt.',\n    };\n  }\n\n  const outputBytes = new Uint8Array(budgeted.buffer);\n  if (request.onOptimizedBytes) {\n    request.onOptimizedBytes(outputBytes);\n  }\n\n  return {\n    status: 'optimized',\n    kind: 'image',\n    profileId: input.profileId,\n    input,\n    outputMimeType: 'image/webp',\n    outputByteSize: budgeted.buffer.byteLength,\n    width: budgeted.width,\n    height: budgeted.height,\n  };\n}"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/raster-decode.ts",
+      "line": 16,
+      "endLine": 21,
+      "text": "export async function blobToImageData(blob: Blob): Promise<ImageData> {\n  return blobToImageDataFittingLimits(blob, {\n    maxEdgePx: MAX_DIMENSION,\n    maxPixels: IMAGE_ENGINE_MAX_PIXELS,\n  });\n}"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/raster-decode.ts",
+      "line": 27,
+      "endLine": 58,
+      "text": "export async function blobToImageDataFittingLimits(\n  blob: Blob,\n  limits: { readonly maxEdgePx: number; readonly maxPixels: number },\n): Promise<ImageData> {\n  const bitmap = await createImageBitmap(blob);\n  try {\n    const w = bitmap.width;\n    const h = bitmap.height;\n    if (w < 1 || h < 1) {\n      throw new Error(`Bildabmessungen nicht unterstützt (${w}×${h})`);\n    }\n    // Cap policy edge by absolute engine edge; oversize edges scale down instead of reject.\n    const effectiveMaxEdge = Math.min(\n      limits.maxEdgePx > 0 ? limits.maxEdgePx : MAX_DIMENSION,\n      MAX_DIMENSION,\n    );\n    const scale = computeImageDownscaleFactor(w, h, effectiveMaxEdge, limits.maxPixels);\n    const tw = Math.max(1, Math.floor(w * scale));\n    const th = Math.max(1, Math.floor(h * scale));\n    const canvas = document.createElement('canvas');\n    canvas.width = tw;\n    canvas.height = th;\n    const ctx = canvas.getContext('2d', { alpha: true });\n    if (!ctx) {\n      throw new Error('Canvas 2D nicht verfügbar');\n    }\n    ctx.drawImage(bitmap, 0, 0, tw, th);\n    return ctx.getImageData(0, 0, tw, th);\n  } finally {\n    bitmap.close();\n  }\n}"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/raster-decode.ts",
+      "line": 60,
+      "endLine": 77,
+      "text": "export async function scaleImageData(\n  source: ImageData,\n  targetW: number,\n  targetH: number,\n): Promise<ImageData> {\n  const bmp = await createImageBitmap(source);\n  try {\n    const canvas = document.createElement('canvas');\n    canvas.width = targetW;\n    canvas.height = targetH;\n    const ctx = canvas.getContext('2d', { alpha: true });\n    if (!ctx) throw new Error('Canvas 2D nicht verfügbar');\n    ctx.drawImage(bmp, 0, 0, targetW, targetH);\n    return ctx.getImageData(0, 0, targetW, targetH);\n  } finally {\n    bmp.close();\n  }\n}"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/resource-limits.ts",
+      "line": 7,
+      "endLine": 7,
+      "text": "export const IMAGE_ENGINE_MAX_INPUT_BYTES = 40 * 1024 * 1024;"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/resource-limits.ts",
+      "line": 10,
+      "endLine": 10,
+      "text": "export const IMAGE_ENGINE_ABSOLUTE_MAX_EDGE_PX = 8192;"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/resource-limits.ts",
+      "line": 13,
+      "endLine": 13,
+      "text": "export const IMAGE_ENGINE_MAX_PIXELS = 16_777_216;"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/resource-limits.ts",
+      "line": 19,
+      "endLine": 36,
+      "text": "export function computeImageDownscaleFactor(\n  width: number,\n  height: number,\n  maxEdgePx: number,\n  maxPixels: number = IMAGE_ENGINE_MAX_PIXELS,\n): number {\n  if (width < 1 || height < 1) return 1;\n  let scale = 1;\n  const longest = Math.max(width, height);\n  if (maxEdgePx > 0 && longest > maxEdgePx) {\n    scale = Math.min(scale, maxEdgePx / longest);\n  }\n  const pixels = width * height;\n  if (maxPixels > 0 && pixels * scale * scale > maxPixels) {\n    scale = Math.min(scale, Math.sqrt(maxPixels / pixels));\n  }\n  return scale;\n}"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/resource-limits.ts",
+      "line": 38,
+      "endLine": 42,
+      "text": "export type ResourceLimitFailure = {\n  readonly ok: false;\n  readonly code: 'invalid-input' | 'over-max-upload';\n  readonly message: string;\n};"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/resource-limits.ts",
+      "line": 44,
+      "endLine": 44,
+      "text": "export type ResourceLimitSuccess = { readonly ok: true };"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/resource-limits.ts",
+      "line": 46,
+      "endLine": 64,
+      "text": "export function assertImageInputByteLimit(\n  byteSize: number,\n): ResourceLimitSuccess | ResourceLimitFailure {\n  if (byteSize <= 0) {\n    return {\n      ok: false,\n      code: 'invalid-input',\n      message: 'Bildbytes ungültig (Größe 0).',\n    };\n  }\n  if (byteSize > IMAGE_ENGINE_MAX_INPUT_BYTES) {\n    return {\n      ok: false,\n      code: 'over-max-upload',\n      message: `Eingabe ${byteSize} Bytes überschreitet Engine-Limit ${IMAGE_ENGINE_MAX_INPUT_BYTES}.`,\n    };\n  }\n  return { ok: true };\n}"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/resource-limits.ts",
+      "line": 66,
+      "endLine": 96,
+      "text": "export function assertImagePixelLimit(\n  width: number,\n  height: number,\n): ResourceLimitSuccess | ResourceLimitFailure {\n  if (width < 1 || height < 1) {\n    return {\n      ok: false,\n      code: 'invalid-input',\n      message: `Ungültige Abmessungen (${width}×${height}).`,\n    };\n  }\n  if (\n    width > IMAGE_ENGINE_ABSOLUTE_MAX_EDGE_PX ||\n    height > IMAGE_ENGINE_ABSOLUTE_MAX_EDGE_PX\n  ) {\n    return {\n      ok: false,\n      code: 'invalid-input',\n      message: `Kante überschreitet ${IMAGE_ENGINE_ABSOLUTE_MAX_EDGE_PX}px (${width}×${height}).`,\n    };\n  }\n  const pixels = width * height;\n  if (pixels > IMAGE_ENGINE_MAX_PIXELS) {\n    return {\n      ok: false,\n      code: 'over-max-upload',\n      message: `Pixelanzahl ${pixels} überschreitet Limit ${IMAGE_ENGINE_MAX_PIXELS}.`,\n    };\n  }\n  return { ok: true };\n}"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/types.ts",
+      "line": 8,
+      "endLine": 17,
+      "text": "export type ImageEngineRequest = {\n  readonly input: MediaOptimizeInputMeta;\n  readonly signal?: AbortSignal;\n  /** Raw image bytes — required for encode/decode. */\n  readonly bytes?: Blob | ArrayBuffer | Uint8Array;\n  readonly imageCountInRequest?: number;\n  readonly aggregateRequestBytes?: number;\n  /** Optional sink for optimized WebP bytes (keeps Blob out of domain results). */\n  readonly onOptimizedBytes?: (bytes: Uint8Array) => void;\n};"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/webp-budget.ts",
+      "line": 9,
+      "endLine": 15,
+      "text": "export type WebpEncodeOptions = {\n  readonly lossless?: number;\n  readonly exact?: number;\n  readonly quality?: number;\n  readonly method?: number;\n  readonly alpha_quality?: number;\n};"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/webp-budget.ts",
+      "line": 17,
+      "endLine": 20,
+      "text": "export type WebpEncodeFn = (\n  data: ImageData,\n  opts: WebpEncodeOptions,\n) => Promise<ArrayBuffer>;"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/webp-budget.ts",
+      "line": 22,
+      "endLine": 26,
+      "text": "export type ScaleImageDataFn = (\n  source: ImageData,\n  targetW: number,\n  targetH: number,\n) => Promise<ImageData>;"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/webp-budget.ts",
+      "line": 28,
+      "endLine": 41,
+      "text": "export type WebpBudgetParams = {\n  readonly imageData: ImageData;\n  readonly encode: WebpEncodeFn;\n  readonly scaleImageData: ScaleImageDataFn;\n  /** Soft goal for the ladder (preferred encoded size). */\n  readonly targetBytes: number;\n  /** Hard ceiling — failure if nothing ≤ this. */\n  readonly maxUploadBytes: number;\n  /** Reject candidates larger than the original payload (kein Dateiwachstum). */\n  readonly maxOutputBytes: number;\n  readonly minQuality: number;\n  readonly minEdgePx?: number;\n  readonly signal?: AbortSignal;\n};"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/webp-budget.ts",
+      "line": 43,
+      "endLine": 48,
+      "text": "export type WebpBudgetSuccess = {\n  readonly ok: true;\n  readonly buffer: ArrayBuffer;\n  readonly width: number;\n  readonly height: number;\n};"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/webp-budget.ts",
+      "line": 50,
+      "endLine": 55,
+      "text": "export type WebpBudgetFailure = {\n  readonly ok: false;\n  readonly reason: 'over-budget' | 'aborted' | 'encode-failed';\n  readonly message: string;\n  readonly attemptedByteSize?: number;\n};"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/webp-budget.ts",
+      "line": 57,
+      "endLine": 57,
+      "text": "export type WebpBudgetResult = WebpBudgetSuccess | WebpBudgetFailure;"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/webp-budget.ts",
+      "line": 81,
+      "endLine": 193,
+      "text": "export async function encodeWebpUnderBudget(\n  params: WebpBudgetParams,\n): Promise<WebpBudgetResult> {\n  const {\n    encode,\n    scaleImageData,\n    targetBytes,\n    maxUploadBytes,\n    maxOutputBytes,\n    minQuality,\n    signal,\n  } = params;\n  const minEdge = params.minEdgePx ?? 320;\n  let imageData = params.imageData;\n  let bestUnderMax: { buffer: ArrayBuffer; width: number; height: number } | null =\n    null;\n\n  const consider = (\n    buffer: ArrayBuffer,\n    width: number,\n    height: number,\n  ): WebpBudgetSuccess | null => {\n    const size = buffer.byteLength;\n    if (!isAcceptable(size, maxUploadBytes, maxOutputBytes)) {\n      return null;\n    }\n    if (!bestUnderMax || size < bestUnderMax.buffer.byteLength) {\n      bestUnderMax = { buffer, width, height };\n    }\n    if (size <= targetBytes) {\n      return { ok: true, buffer, width, height };\n    }\n    return null;\n  };\n\n  try {\n    throwIfAborted(signal);\n\n    // 1) Lossless\n    {\n      const buffer = await encode(imageData, { lossless: 1, exact: 1 });\n      const hit = consider(buffer, imageData.width, imageData.height);\n      if (hit) return hit;\n    }\n\n    // 2) Lossy qualities (respect profile minQuality floor)\n    const qualities = DEFAULT_QUALITIES.filter((q) => q >= minQuality);\n    const ladder = qualities.length > 0 ? qualities : [minQuality];\n    for (const quality of ladder) {\n      throwIfAborted(signal);\n      const buffer = await encode(imageData, {\n        lossless: 0,\n        quality,\n        method: 6,\n        alpha_quality: 100,\n      });\n      const hit = consider(buffer, imageData.width, imageData.height);\n      if (hit) return hit;\n    }\n\n    // 3) Downscale + mid quality\n    let w = imageData.width;\n    let h = imageData.height;\n    let scale = 0.9;\n    while (scale > 0.35 && (w > minEdge || h > minEdge)) {\n      throwIfAborted(signal);\n      const nw = Math.max(1, Math.floor(w * scale));\n      const nh = Math.max(1, Math.floor(h * scale));\n      imageData = await scaleImageData(imageData, nw, nh);\n      w = nw;\n      h = nh;\n      const q = Math.max(minQuality, 78);\n      const buffer = await encode(imageData, {\n        lossless: 0,\n        quality: q,\n        method: 6,\n        alpha_quality: 100,\n      });\n      const hit = consider(buffer, w, h);\n      if (hit) return hit;\n      scale *= 0.88;\n    }\n\n    if (bestUnderMax) {\n      return {\n        ok: true,\n        buffer: bestUnderMax.buffer,\n        width: bestUnderMax.width,\n        height: bestUnderMax.height,\n      };\n    }\n\n    return {\n      ok: false,\n      reason: 'over-budget',\n      message: `Bild konnte nicht unter ${(maxUploadBytes / (1024 * 1024)).toFixed(0)} MiB komprimiert werden.`,\n      attemptedByteSize: maxOutputBytes,\n    };\n  } catch (error) {\n    if (error instanceof Error && (error.name === 'AbortError' || error.message === 'aborted')) {\n      return {\n        ok: false,\n        reason: 'aborted',\n        message: 'Bildoptimierung abgebrochen.',\n      };\n    }\n    return {\n      ok: false,\n      reason: 'encode-failed',\n      message: `WebP-Encoder-Fehler: ${error instanceof Error ? error.message : String(error)}`,\n    };\n  }\n}"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/webp-worker-client.ts",
+      "line": 14,
+      "endLine": 22,
+      "text": "export type WorkerEncodeParams = {\n  readonly imageData: ImageData;\n  readonly targetBytes: number;\n  readonly maxUploadBytes: number;\n  readonly maxOutputBytes: number;\n  readonly minQuality: number;\n  readonly minEdgePx?: number;\n  readonly signal?: AbortSignal;\n};"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/webp-worker-client.ts",
+      "line": 26,
+      "endLine": 33,
+      "text": "export function isImageWorkerSupported(): boolean {\n  if (workerSupported !== null) return workerSupported;\n  workerSupported =\n    typeof Worker !== 'undefined' &&\n    typeof URL !== 'undefined' &&\n    typeof OffscreenCanvas !== 'undefined';\n  return workerSupported;\n}"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/webp-worker-client.ts",
+      "line": 63,
+      "endLine": 166,
+      "text": "export async function encodeWebpWithWorkerFallback(\n  params: WorkerEncodeParams,\n): Promise<WebpBudgetResult> {\n  if (params.signal?.aborted) {\n    return {\n      ok: false,\n      reason: 'aborted',\n      message: 'Bildoptimierung abgebrochen.',\n    };\n  }\n\n  if (!isImageWorkerSupported()) {\n    return encodeOnMainThread(params);\n  }\n\n  return new Promise<WebpBudgetResult>((resolve) => {\n    let settled = false;\n    const requestId = `img-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;\n    let worker: Worker;\n    try {\n      worker = createImageWorker();\n    } catch {\n      void encodeOnMainThread(params).then(resolve);\n      return;\n    }\n\n    const finish = (result: WebpBudgetResult) => {\n      if (settled) return;\n      settled = true;\n      params.signal?.removeEventListener('abort', onAbort);\n      try {\n        worker.terminate();\n      } catch {\n        /* ignore */\n      }\n      resolve(result);\n    };\n\n    const onAbort = () => {\n      finish({\n        ok: false,\n        reason: 'aborted',\n        message: 'Bildoptimierung abgebrochen.',\n      });\n    };\n\n    params.signal?.addEventListener('abort', onAbort, { once: true });\n\n    worker.onmessage = (event: MessageEvent<ImageWorkerResponse>) => {\n      const msg = event.data;\n      if (!msg || msg.requestId !== requestId) return;\n      if (msg.ok === true) {\n        finish({\n          ok: true,\n          buffer: msg.buffer,\n          width: msg.width,\n          height: msg.height,\n        });\n        return;\n      }\n      if (msg.ok === false) {\n        finish({\n          ok: false,\n          reason: msg.reason,\n          message: msg.message,\n          attemptedByteSize: msg.attemptedByteSize,\n        });\n      }\n    };\n\n    worker.onerror = () => {\n      // Worker failed to boot — fall back once.\n      if (settled) return;\n      settled = true;\n      params.signal?.removeEventListener('abort', onAbort);\n      try {\n        worker.terminate();\n      } catch {\n        /* ignore */\n      }\n      void encodeOnMainThread(params).then(resolve);\n    };\n\n    const rgbaCopy = params.imageData.data.buffer.slice(\n      params.imageData.data.byteOffset,\n      params.imageData.data.byteOffset + params.imageData.data.byteLength,\n    );\n\n    const request: ImageWorkerEncodeRequest = {\n      type: 'encode',\n      requestId,\n      width: params.imageData.width,\n      height: params.imageData.height,\n      rgba: rgbaCopy,\n      targetBytes: params.targetBytes,\n      maxUploadBytes: params.maxUploadBytes,\n      maxOutputBytes: params.maxOutputBytes,\n      minQuality: params.minQuality,\n      minEdgePx: params.minEdgePx,\n    };\n\n    worker.postMessage(request, [rgbaCopy]);\n  });\n}"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/model3d/index.ts",
+      "line": 14,
+      "endLine": 17,
+      "text": "export type Model3dEngineRequest = {\n  readonly input: MediaOptimizeInputMeta;\n  readonly signal?: AbortSignal;\n};"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/model3d/index.ts",
+      "line": 19,
+      "endLine": 42,
+      "text": "export async function optimizeModel3d(\n  request: Model3dEngineRequest,\n): Promise<MediaOptimizeResult> {\n  if (request.signal?.aborted) {\n    return {\n      status: 'aborted',\n      kind: 'model3d',\n      profileId: request.input.profileId,\n      input: { ...request.input, kind: 'model3d' },\n      code: 'aborted',\n      message: '3D-Optimierung abgebrochen.',\n    };\n  }\n\n  return {\n    status: 'unsupported',\n    kind: 'model3d',\n    profileId: request.input.profileId,\n    input: { ...request.input, kind: 'model3d' },\n    code: 'unsupported-kind',\n    message:\n      '3D-Optimierung ist in V1 nicht verfügbar (Ausbau-TODO: glTF Transform / meshopt).',\n  };\n}"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/video/index.ts",
+      "line": 14,
+      "endLine": 17,
+      "text": "export type VideoEngineRequest = {\n  readonly input: MediaOptimizeInputMeta;\n  readonly signal?: AbortSignal;\n};"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/video/index.ts",
+      "line": 19,
+      "endLine": 42,
+      "text": "export async function optimizeVideo(\n  request: VideoEngineRequest,\n): Promise<MediaOptimizeResult> {\n  if (request.signal?.aborted) {\n    return {\n      status: 'aborted',\n      kind: 'video',\n      profileId: request.input.profileId,\n      input: { ...request.input, kind: 'video' },\n      code: 'aborted',\n      message: 'Video-Optimierung abgebrochen.',\n    };\n  }\n\n  return {\n    status: 'unsupported',\n    kind: 'video',\n    profileId: request.input.profileId,\n    input: { ...request.input, kind: 'video' },\n    code: 'unsupported-kind',\n    message:\n      'Video-Transcoding ist in V1 nicht verfügbar (Ausbau-TODO: Mediabunny / geprüfte Runtime).',\n  };\n}"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/media-optimizer.ts",
+      "line": 20,
+      "endLine": 35,
+      "text": "export type OptimizeMediaRequest = {\n  readonly kind: MediaKind;\n  readonly profileId: AssetProfileId;\n  readonly mimeType: string;\n  readonly byteSize: number;\n  readonly width?: number;\n  readonly height?: number;\n  readonly hasAnimation?: boolean;\n  readonly hasAlpha?: boolean;\n  readonly signal?: AbortSignal;\n  /** Image payload for the WebP engine (#630); ignored by stub engines. */\n  readonly bytes?: Blob | ArrayBuffer | Uint8Array;\n  readonly imageCountInRequest?: number;\n  readonly aggregateRequestBytes?: number;\n  readonly onOptimizedBytes?: (bytes: Uint8Array) => void;\n};"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/media-optimizer.ts",
+      "line": 54,
+      "endLine": 138,
+      "text": "export async function optimizeMedia(\n  request: OptimizeMediaRequest,\n): Promise<MediaOptimizeResult> {\n  if (!isMediaKind(request.kind)) {\n    const input = toInputMeta({ ...request, kind: 'image' });\n    return {\n      status: 'unsupported',\n      kind: 'image',\n      profileId: request.profileId,\n      input,\n      code: 'unsupported-kind',\n      message: `Unbekannte MediaKind: ${String(request.kind)}`,\n    };\n  }\n\n  if (request.signal?.aborted) {\n    const input = toInputMeta(request);\n    return {\n      status: 'aborted',\n      kind: request.kind,\n      profileId: request.profileId,\n      input,\n      code: 'aborted',\n      message: 'Media-Optimierung abgebrochen.',\n    };\n  }\n\n  const input = toInputMeta(request);\n  let result: MediaOptimizeResult;\n\n  switch (request.kind) {\n    case 'image': {\n      const { optimizeImage } = await import('./engines/image/index');\n      result = await optimizeImage({\n        input,\n        signal: request.signal,\n        bytes: request.bytes,\n        imageCountInRequest: request.imageCountInRequest,\n        aggregateRequestBytes: request.aggregateRequestBytes,\n        onOptimizedBytes: request.onOptimizedBytes,\n      });\n      break;\n    }\n    case 'video': {\n      const { optimizeVideo } = await import('./engines/video/index');\n      result = await optimizeVideo({ input, signal: request.signal });\n      break;\n    }\n    case 'audio': {\n      const { optimizeAudio } = await import('./engines/audio/index');\n      result = await optimizeAudio({ input, signal: request.signal });\n      break;\n    }\n    case 'model3d': {\n      const { optimizeModel3d } = await import('./engines/model3d/index');\n      result = await optimizeModel3d({ input, signal: request.signal });\n      break;\n    }\n    default: {\n      const _exhaustive: never = request.kind;\n      result = {\n        status: 'unsupported',\n        kind: 'image',\n        profileId: request.profileId,\n        input,\n        code: 'unsupported-kind',\n        message: `Unbehandelte MediaKind: ${String(_exhaustive)}`,\n      };\n    }\n  }\n\n  const invariants = assertMediaOptimizeResultInvariants(result);\n  if (invariants.ok === false) {\n    return {\n      status: 'failed',\n      kind: request.kind,\n      profileId: request.profileId,\n      input,\n      code: 'invalid-input',\n      message: `Optimizer-Ergebnis verletzt Invarianten: ${invariants.reason}`,\n    };\n  }\n\n  return result;\n}"
+    }
+  ],
+  "operationDeclarations": [
+    {
+      "path": "src/infrastructure/media/optimizer/engines/audio/index.ts",
+      "line": 19,
+      "endLine": 42,
+      "name": "optimizeAudio",
+      "text": "export async function optimizeAudio(\n  request: AudioEngineRequest,\n): Promise<MediaOptimizeResult> {\n  if (request.signal?.aborted) {\n    return {\n      status: 'aborted',\n      kind: 'audio',\n      profileId: request.input.profileId,\n      input: { ...request.input, kind: 'audio' },\n      code: 'aborted',\n      message: 'Audio-Optimierung abgebrochen.',\n    };\n  }\n\n  return {\n    status: 'unsupported',\n    kind: 'audio',\n    profileId: request.input.profileId,\n    input: { ...request.input, kind: 'audio' },\n    code: 'unsupported-kind',\n    message:\n      'Audio-Transcoding ist in V1 nicht verfügbar (Ausbau-TODO: geprüfte Codec-Pipeline).',\n  };\n}"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/image.worker.ts",
+      "line": 41,
+      "endLine": 56,
+      "name": "scaleImageData",
+      "text": "async function scaleImageData(\n  source: ImageData,\n  targetW: number,\n  targetH: number,\n): Promise<ImageData> {\n  const bmp = await createImageBitmap(source);\n  try {\n    const canvas = new OffscreenCanvas(targetW, targetH);\n    const ctx = canvas.getContext('2d', { alpha: true });\n    if (!ctx) throw new Error('OffscreenCanvas 2D nicht verfügbar');\n    ctx.drawImage(bmp, 0, 0, targetW, targetH);\n    return ctx.getImageData(0, 0, targetW, targetH);\n  } finally {\n    bmp.close();\n  }\n}"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/image.worker.ts",
+      "line": 58,
+      "endLine": 116,
+      "name": "callback",
+      "text": "async (event: MessageEvent<ImageWorkerEncodeRequest>) => {\n  const msg = event.data;\n  if (!msg || msg.type !== 'encode') return;\n\n  try {\n    const { encode } = await import('@jsquash/webp');\n    const imageData = new ImageData(\n      new Uint8ClampedArray(msg.rgba),\n      msg.width,\n      msg.height,\n    );\n\n    const budgeted = await encodeWebpUnderBudget({\n      imageData,\n      encode: async (data, opts: WebpEncodeOptions) => {\n        const buf = await encode(data, opts);\n        return buf as ArrayBuffer;\n      },\n      scaleImageData,\n      targetBytes: msg.targetBytes,\n      maxUploadBytes: msg.maxUploadBytes,\n      maxOutputBytes: msg.maxOutputBytes,\n      minQuality: msg.minQuality,\n      minEdgePx: msg.minEdgePx,\n    });\n\n    if (budgeted.ok === false) {\n      const response: ImageWorkerResponse = {\n        type: 'result',\n        requestId: msg.requestId,\n        ok: false,\n        reason: budgeted.reason,\n        message: budgeted.message,\n        attemptedByteSize: budgeted.attemptedByteSize,\n      };\n      postWorkerMessage(response);\n      return;\n    }\n\n    const response: ImageWorkerResponse = {\n      type: 'result',\n      requestId: msg.requestId,\n      ok: true,\n      buffer: budgeted.buffer,\n      width: budgeted.width,\n      height: budgeted.height,\n    };\n    postWorkerMessage(response, [budgeted.buffer]);\n  } catch (error) {\n    const response: ImageWorkerResponse = {\n      type: 'result',\n      requestId: msg.requestId,\n      ok: false,\n      reason: 'encode-failed',\n      message: `Worker-Encoder-Fehler: ${error instanceof Error ? error.message : String(error)}`,\n    };\n    postWorkerMessage(response);\n  }\n}"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/image.worker.ts",
+      "line": 72,
+      "endLine": 75,
+      "name": "callback",
+      "text": "async (data, opts: WebpEncodeOptions) => {\n        const buf = await encode(data, opts);\n        return buf as ArrayBuffer;\n      }"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/image.worker.ts",
+      "line": 118,
+      "endLine": 121,
+      "name": "postMessage",
+      "text": "declare function postMessage(\n  message: ImageWorkerResponse,\n  transfer?: Transferable[],\n): void;"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/image.worker.ts",
+      "line": 123,
+      "endLine": 132,
+      "name": "postWorkerMessage",
+      "text": "function postWorkerMessage(\n  response: ImageWorkerResponse,\n  transfer?: Transferable[],\n): void {\n  if (transfer) {\n    postMessage(response, transfer);\n  } else {\n    postMessage(response);\n  }\n}"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/index.ts",
+      "line": 35,
+      "endLine": 39,
+      "name": "optimizeImage",
+      "text": "export async function optimizeImage(\n  request: ImageEngineRequest,\n): Promise<MediaOptimizeResult> {\n  return runOptimizeImage(request);\n}"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/optimize-image.ts",
+      "line": 20,
+      "endLine": 29,
+      "name": "abortedResult",
+      "text": "function abortedResult(request: ImageEngineRequest): MediaOptimizeResult {\n  return {\n    status: 'aborted',\n    kind: 'image',\n    profileId: request.input.profileId,\n    input: { ...request.input, kind: 'image' },\n    code: 'aborted',\n    message: 'Bildoptimierung abgebrochen.',\n  };\n}"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/optimize-image.ts",
+      "line": 31,
+      "endLine": 41,
+      "name": "toBlob",
+      "text": "function toBlob(bytes: Blob | ArrayBuffer | Uint8Array, mimeType: string): Blob {\n  if (bytes instanceof ArrayBuffer) {\n    return new Blob([bytes], { type: mimeType });\n  }\n  if (ArrayBuffer.isView(bytes)) {\n    const copy = new Uint8Array(bytes.byteLength);\n    copy.set(new Uint8Array(bytes.buffer, bytes.byteOffset, bytes.byteLength));\n    return new Blob([copy], { type: mimeType });\n  }\n  return bytes;\n}"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/optimize-image.ts",
+      "line": 47,
+      "endLine": 283,
+      "name": "runOptimizeImage",
+      "text": "export async function runOptimizeImage(\n  request: ImageEngineRequest,\n): Promise<MediaOptimizeResult> {\n  const input = { ...request.input, kind: 'image' as const };\n\n  if (request.signal?.aborted) {\n    return abortedResult(request);\n  }\n\n  if (!request.bytes) {\n    return {\n      status: 'failed',\n      kind: 'image',\n      profileId: input.profileId,\n      input,\n      code: 'invalid-input',\n      message: 'Bildbytes fehlen für die Image-Engine.',\n    };\n  }\n\n  const inputLimit = assertImageInputByteLimit(input.byteSize);\n  if (inputLimit.ok === false) {\n    if (inputLimit.code === 'over-max-upload') {\n      return {\n        status: 'over-budget',\n        kind: 'image',\n        profileId: input.profileId,\n        input,\n        code: 'over-max-upload',\n        message: inputLimit.message,\n        attemptedByteSize: input.byteSize,\n      };\n    }\n    return {\n      status: 'failed',\n      kind: 'image',\n      profileId: input.profileId,\n      input,\n      code: 'invalid-input',\n      message: inputLimit.message,\n    };\n  }\n\n  const policyEval = evaluateImageAgainstPolicy(input, {\n    imageCountInRequest: request.imageCountInRequest,\n    aggregateRequestBytes: request.aggregateRequestBytes,\n  });\n  if (policyEval.ok === false) {\n    if (\n      policyEval.reason === 'over-max-upload' ||\n      policyEval.reason === 'over-aggregate-budget'\n    ) {\n      return {\n        status: 'over-budget',\n        kind: 'image',\n        profileId: input.profileId,\n        input,\n        code: policyEval.reason,\n        message: policyEval.message,\n        attemptedByteSize: input.byteSize,\n      };\n    }\n    return {\n      status: 'unsupported',\n      kind: 'image',\n      profileId: input.profileId,\n      input,\n      code: 'unsupported-mime',\n      message: policyEval.message,\n    };\n  }\n\n  const policy = policyEval.policy;\n  const mime = normalizeImageMime(input.mimeType);\n\n  // Animated GIF keep is only valid when policy allows animation without convert.\n  if (mime === 'image/gif' && input.hasAnimation === true && policy.gifAnimation === 'allow') {\n    if (input.byteSize <= policy.budget.maxUploadBytes) {\n      return {\n        status: 'unchanged',\n        kind: 'image',\n        profileId: input.profileId,\n        input,\n        outputMimeType: input.mimeType,\n        outputByteSize: input.byteSize,\n      };\n    }\n  }\n\n  // Small valid originals: unchanged (no Dateiwachstum / no unnecessary encode).\n  const needsGifConvert =\n    mime === 'image/gif' && policy.gifAnimation === 'convert-static-required';\n  const withinTarget = input.byteSize <= policy.budget.targetBytes;\n  if (!needsGifConvert && withinTarget && input.byteSize <= policy.budget.maxUploadBytes) {\n    return {\n      status: 'unchanged',\n      kind: 'image',\n      profileId: input.profileId,\n      input,\n      outputMimeType: input.mimeType,\n      outputByteSize: input.byteSize,\n    };\n  }\n\n  if (!policy.allowWebpOutput) {\n    if (input.byteSize <= policy.budget.maxUploadBytes) {\n      return {\n        status: 'unchanged',\n        kind: 'image',\n        profileId: input.profileId,\n        input,\n        outputMimeType: input.mimeType,\n        outputByteSize: input.byteSize,\n      };\n    }\n    return {\n      status: 'over-budget',\n      kind: 'image',\n      profileId: input.profileId,\n      input,\n      code: 'over-max-upload',\n      message:\n        'Item-Thumbnail überschreitet maxUploadBytes; WebP-Ausgabe ist für dieses Profil noch nicht freigeschaltet.',\n      attemptedByteSize: input.byteSize,\n    };\n  }\n\n  if (request.signal?.aborted) {\n    return abortedResult(request);\n  }\n\n  let imageData: ImageData;\n  try {\n    const blob = toBlob(request.bytes, mime);\n    // Downscale into policy maxEdge + engine pixel ceiling during decode —\n    // large phone photos must not hard-fail before WebP budget encode.\n    imageData = await blobToImageDataFittingLimits(blob, {\n      maxEdgePx: policy.maxEdgePx,\n      maxPixels: IMAGE_ENGINE_MAX_PIXELS,\n    });\n  } catch (error) {\n    return {\n      status: 'failed',\n      kind: 'image',\n      profileId: input.profileId,\n      input,\n      code: 'encode-failed',\n      message: `Raster-Decode fehlgeschlagen: ${error instanceof Error ? error.message : String(error)}`,\n    };\n  }\n\n  const pixelLimit = assertImagePixelLimit(imageData.width, imageData.height);\n  if (pixelLimit.ok === false) {\n    // Should be unreachable after fitting decode; keep fail-closed.\n    if (pixelLimit.code === 'over-max-upload') {\n      return {\n        status: 'over-budget',\n        kind: 'image',\n        profileId: input.profileId,\n        input,\n        code: 'over-max-upload',\n        message: pixelLimit.message,\n        attemptedByteSize: input.byteSize,\n      };\n    }\n    return {\n      status: 'failed',\n      kind: 'image',\n      profileId: input.profileId,\n      input,\n      code: 'invalid-input',\n      message: pixelLimit.message,\n    };\n  }\n\n  const budgeted = await encodeWebpWithWorkerFallback({\n    imageData,\n    targetBytes: policy.budget.targetBytes,\n    maxUploadBytes: policy.budget.maxUploadBytes,\n    maxOutputBytes: input.byteSize,\n    minQuality: policy.minQuality,\n    signal: request.signal,\n  });\n\n  if (budgeted.ok === false) {\n    if (budgeted.reason === 'aborted') {\n      return abortedResult(request);\n    }\n    if (budgeted.reason === 'over-budget') {\n      return {\n        status: 'over-budget',\n        kind: 'image',\n        profileId: input.profileId,\n        input,\n        code: 'over-max-upload',\n        message: budgeted.message,\n        attemptedByteSize: budgeted.attemptedByteSize,\n      };\n    }\n    return {\n      status: 'failed',\n      kind: 'image',\n      profileId: input.profileId,\n      input,\n      code: 'encode-failed',\n      message: budgeted.message,\n    };\n  }\n\n  // Guard: never claim optimized if we grew the file\n  if (budgeted.buffer.byteLength > input.byteSize) {\n    return {\n      status: 'failed',\n      kind: 'image',\n      profileId: input.profileId,\n      input,\n      code: 'encode-failed',\n      message: 'WebP-Ausgabe wäre größer als das Original — abgelehnt.',\n    };\n  }\n\n  const outputBytes = new Uint8Array(budgeted.buffer);\n  if (request.onOptimizedBytes) {\n    request.onOptimizedBytes(outputBytes);\n  }\n\n  return {\n    status: 'optimized',\n    kind: 'image',\n    profileId: input.profileId,\n    input,\n    outputMimeType: 'image/webp',\n    outputByteSize: budgeted.buffer.byteLength,\n    width: budgeted.width,\n    height: budgeted.height,\n  };\n}"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/raster-decode.ts",
+      "line": 16,
+      "endLine": 21,
+      "name": "blobToImageData",
+      "text": "export async function blobToImageData(blob: Blob): Promise<ImageData> {\n  return blobToImageDataFittingLimits(blob, {\n    maxEdgePx: MAX_DIMENSION,\n    maxPixels: IMAGE_ENGINE_MAX_PIXELS,\n  });\n}"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/raster-decode.ts",
+      "line": 27,
+      "endLine": 58,
+      "name": "blobToImageDataFittingLimits",
+      "text": "export async function blobToImageDataFittingLimits(\n  blob: Blob,\n  limits: { readonly maxEdgePx: number; readonly maxPixels: number },\n): Promise<ImageData> {\n  const bitmap = await createImageBitmap(blob);\n  try {\n    const w = bitmap.width;\n    const h = bitmap.height;\n    if (w < 1 || h < 1) {\n      throw new Error(`Bildabmessungen nicht unterstützt (${w}×${h})`);\n    }\n    // Cap policy edge by absolute engine edge; oversize edges scale down instead of reject.\n    const effectiveMaxEdge = Math.min(\n      limits.maxEdgePx > 0 ? limits.maxEdgePx : MAX_DIMENSION,\n      MAX_DIMENSION,\n    );\n    const scale = computeImageDownscaleFactor(w, h, effectiveMaxEdge, limits.maxPixels);\n    const tw = Math.max(1, Math.floor(w * scale));\n    const th = Math.max(1, Math.floor(h * scale));\n    const canvas = document.createElement('canvas');\n    canvas.width = tw;\n    canvas.height = th;\n    const ctx = canvas.getContext('2d', { alpha: true });\n    if (!ctx) {\n      throw new Error('Canvas 2D nicht verfügbar');\n    }\n    ctx.drawImage(bitmap, 0, 0, tw, th);\n    return ctx.getImageData(0, 0, tw, th);\n  } finally {\n    bitmap.close();\n  }\n}"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/raster-decode.ts",
+      "line": 60,
+      "endLine": 77,
+      "name": "scaleImageData",
+      "text": "export async function scaleImageData(\n  source: ImageData,\n  targetW: number,\n  targetH: number,\n): Promise<ImageData> {\n  const bmp = await createImageBitmap(source);\n  try {\n    const canvas = document.createElement('canvas');\n    canvas.width = targetW;\n    canvas.height = targetH;\n    const ctx = canvas.getContext('2d', { alpha: true });\n    if (!ctx) throw new Error('Canvas 2D nicht verfügbar');\n    ctx.drawImage(bmp, 0, 0, targetW, targetH);\n    return ctx.getImageData(0, 0, targetW, targetH);\n  } finally {\n    bmp.close();\n  }\n}"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/resource-limits.ts",
+      "line": 19,
+      "endLine": 36,
+      "name": "computeImageDownscaleFactor",
+      "text": "export function computeImageDownscaleFactor(\n  width: number,\n  height: number,\n  maxEdgePx: number,\n  maxPixels: number = IMAGE_ENGINE_MAX_PIXELS,\n): number {\n  if (width < 1 || height < 1) return 1;\n  let scale = 1;\n  const longest = Math.max(width, height);\n  if (maxEdgePx > 0 && longest > maxEdgePx) {\n    scale = Math.min(scale, maxEdgePx / longest);\n  }\n  const pixels = width * height;\n  if (maxPixels > 0 && pixels * scale * scale > maxPixels) {\n    scale = Math.min(scale, Math.sqrt(maxPixels / pixels));\n  }\n  return scale;\n}"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/resource-limits.ts",
+      "line": 46,
+      "endLine": 64,
+      "name": "assertImageInputByteLimit",
+      "text": "export function assertImageInputByteLimit(\n  byteSize: number,\n): ResourceLimitSuccess | ResourceLimitFailure {\n  if (byteSize <= 0) {\n    return {\n      ok: false,\n      code: 'invalid-input',\n      message: 'Bildbytes ungültig (Größe 0).',\n    };\n  }\n  if (byteSize > IMAGE_ENGINE_MAX_INPUT_BYTES) {\n    return {\n      ok: false,\n      code: 'over-max-upload',\n      message: `Eingabe ${byteSize} Bytes überschreitet Engine-Limit ${IMAGE_ENGINE_MAX_INPUT_BYTES}.`,\n    };\n  }\n  return { ok: true };\n}"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/resource-limits.ts",
+      "line": 66,
+      "endLine": 96,
+      "name": "assertImagePixelLimit",
+      "text": "export function assertImagePixelLimit(\n  width: number,\n  height: number,\n): ResourceLimitSuccess | ResourceLimitFailure {\n  if (width < 1 || height < 1) {\n    return {\n      ok: false,\n      code: 'invalid-input',\n      message: `Ungültige Abmessungen (${width}×${height}).`,\n    };\n  }\n  if (\n    width > IMAGE_ENGINE_ABSOLUTE_MAX_EDGE_PX ||\n    height > IMAGE_ENGINE_ABSOLUTE_MAX_EDGE_PX\n  ) {\n    return {\n      ok: false,\n      code: 'invalid-input',\n      message: `Kante überschreitet ${IMAGE_ENGINE_ABSOLUTE_MAX_EDGE_PX}px (${width}×${height}).`,\n    };\n  }\n  const pixels = width * height;\n  if (pixels > IMAGE_ENGINE_MAX_PIXELS) {\n    return {\n      ok: false,\n      code: 'over-max-upload',\n      message: `Pixelanzahl ${pixels} überschreitet Limit ${IMAGE_ENGINE_MAX_PIXELS}.`,\n    };\n  }\n  return { ok: true };\n}"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/webp-budget.ts",
+      "line": 61,
+      "endLine": 67,
+      "name": "throwIfAborted",
+      "text": "function throwIfAborted(signal: AbortSignal | undefined): void {\n  if (signal?.aborted) {\n    const err = new Error('aborted');\n    err.name = 'AbortError';\n    throw err;\n  }\n}"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/webp-budget.ts",
+      "line": 69,
+      "endLine": 75,
+      "name": "isAcceptable",
+      "text": "function isAcceptable(\n  byteLength: number,\n  maxUploadBytes: number,\n  maxOutputBytes: number,\n): boolean {\n  return byteLength > 0 && byteLength <= maxUploadBytes && byteLength <= maxOutputBytes;\n}"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/webp-budget.ts",
+      "line": 81,
+      "endLine": 193,
+      "name": "encodeWebpUnderBudget",
+      "text": "export async function encodeWebpUnderBudget(\n  params: WebpBudgetParams,\n): Promise<WebpBudgetResult> {\n  const {\n    encode,\n    scaleImageData,\n    targetBytes,\n    maxUploadBytes,\n    maxOutputBytes,\n    minQuality,\n    signal,\n  } = params;\n  const minEdge = params.minEdgePx ?? 320;\n  let imageData = params.imageData;\n  let bestUnderMax: { buffer: ArrayBuffer; width: number; height: number } | null =\n    null;\n\n  const consider = (\n    buffer: ArrayBuffer,\n    width: number,\n    height: number,\n  ): WebpBudgetSuccess | null => {\n    const size = buffer.byteLength;\n    if (!isAcceptable(size, maxUploadBytes, maxOutputBytes)) {\n      return null;\n    }\n    if (!bestUnderMax || size < bestUnderMax.buffer.byteLength) {\n      bestUnderMax = { buffer, width, height };\n    }\n    if (size <= targetBytes) {\n      return { ok: true, buffer, width, height };\n    }\n    return null;\n  };\n\n  try {\n    throwIfAborted(signal);\n\n    // 1) Lossless\n    {\n      const buffer = await encode(imageData, { lossless: 1, exact: 1 });\n      const hit = consider(buffer, imageData.width, imageData.height);\n      if (hit) return hit;\n    }\n\n    // 2) Lossy qualities (respect profile minQuality floor)\n    const qualities = DEFAULT_QUALITIES.filter((q) => q >= minQuality);\n    const ladder = qualities.length > 0 ? qualities : [minQuality];\n    for (const quality of ladder) {\n      throwIfAborted(signal);\n      const buffer = await encode(imageData, {\n        lossless: 0,\n        quality,\n        method: 6,\n        alpha_quality: 100,\n      });\n      const hit = consider(buffer, imageData.width, imageData.height);\n      if (hit) return hit;\n    }\n\n    // 3) Downscale + mid quality\n    let w = imageData.width;\n    let h = imageData.height;\n    let scale = 0.9;\n    while (scale > 0.35 && (w > minEdge || h > minEdge)) {\n      throwIfAborted(signal);\n      const nw = Math.max(1, Math.floor(w * scale));\n      const nh = Math.max(1, Math.floor(h * scale));\n      imageData = await scaleImageData(imageData, nw, nh);\n      w = nw;\n      h = nh;\n      const q = Math.max(minQuality, 78);\n      const buffer = await encode(imageData, {\n        lossless: 0,\n        quality: q,\n        method: 6,\n        alpha_quality: 100,\n      });\n      const hit = consider(buffer, w, h);\n      if (hit) return hit;\n      scale *= 0.88;\n    }\n\n    if (bestUnderMax) {\n      return {\n        ok: true,\n        buffer: bestUnderMax.buffer,\n        width: bestUnderMax.width,\n        height: bestUnderMax.height,\n      };\n    }\n\n    return {\n      ok: false,\n      reason: 'over-budget',\n      message: `Bild konnte nicht unter ${(maxUploadBytes / (1024 * 1024)).toFixed(0)} MiB komprimiert werden.`,\n      attemptedByteSize: maxOutputBytes,\n    };\n  } catch (error) {\n    if (error instanceof Error && (error.name === 'AbortError' || error.message === 'aborted')) {\n      return {\n        ok: false,\n        reason: 'aborted',\n        message: 'Bildoptimierung abgebrochen.',\n      };\n    }\n    return {\n      ok: false,\n      reason: 'encode-failed',\n      message: `WebP-Encoder-Fehler: ${error instanceof Error ? error.message : String(error)}`,\n    };\n  }\n}"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/webp-budget.ts",
+      "line": 98,
+      "endLine": 114,
+      "name": "consider",
+      "text": "(\n    buffer: ArrayBuffer,\n    width: number,\n    height: number,\n  ): WebpBudgetSuccess | null => {\n    const size = buffer.byteLength;\n    if (!isAcceptable(size, maxUploadBytes, maxOutputBytes)) {\n      return null;\n    }\n    if (!bestUnderMax || size < bestUnderMax.buffer.byteLength) {\n      bestUnderMax = { buffer, width, height };\n    }\n    if (size <= targetBytes) {\n      return { ok: true, buffer, width, height };\n    }\n    return null;\n  }"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/webp-budget.ts",
+      "line": 127,
+      "endLine": 127,
+      "name": "callback",
+      "text": "(q) => q >= minQuality"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/webp-worker-client.ts",
+      "line": 26,
+      "endLine": 33,
+      "name": "isImageWorkerSupported",
+      "text": "export function isImageWorkerSupported(): boolean {\n  if (workerSupported !== null) return workerSupported;\n  workerSupported =\n    typeof Worker !== 'undefined' &&\n    typeof URL !== 'undefined' &&\n    typeof OffscreenCanvas !== 'undefined';\n  return workerSupported;\n}"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/webp-worker-client.ts",
+      "line": 35,
+      "endLine": 39,
+      "name": "createImageWorker",
+      "text": "function createImageWorker(): Worker {\n  return new Worker(new URL('./image.worker.ts', import.meta.url), {\n    type: 'module',\n  });\n}"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/webp-worker-client.ts",
+      "line": 41,
+      "endLine": 57,
+      "name": "encodeOnMainThread",
+      "text": "async function encodeOnMainThread(params: WorkerEncodeParams): Promise<WebpBudgetResult> {\n  const { encode } = await import('@jsquash/webp');\n  return encodeWebpUnderBudget({\n    imageData: params.imageData,\n    encode: async (data, opts) => {\n      const buf = await encode(data, opts);\n      return buf as ArrayBuffer;\n    },\n    scaleImageData,\n    targetBytes: params.targetBytes,\n    maxUploadBytes: params.maxUploadBytes,\n    maxOutputBytes: params.maxOutputBytes,\n    minQuality: params.minQuality,\n    minEdgePx: params.minEdgePx,\n    signal: params.signal,\n  });\n}"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/webp-worker-client.ts",
+      "line": 45,
+      "endLine": 48,
+      "name": "callback",
+      "text": "async (data, opts) => {\n      const buf = await encode(data, opts);\n      return buf as ArrayBuffer;\n    }"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/webp-worker-client.ts",
+      "line": 63,
+      "endLine": 166,
+      "name": "encodeWebpWithWorkerFallback",
+      "text": "export async function encodeWebpWithWorkerFallback(\n  params: WorkerEncodeParams,\n): Promise<WebpBudgetResult> {\n  if (params.signal?.aborted) {\n    return {\n      ok: false,\n      reason: 'aborted',\n      message: 'Bildoptimierung abgebrochen.',\n    };\n  }\n\n  if (!isImageWorkerSupported()) {\n    return encodeOnMainThread(params);\n  }\n\n  return new Promise<WebpBudgetResult>((resolve) => {\n    let settled = false;\n    const requestId = `img-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;\n    let worker: Worker;\n    try {\n      worker = createImageWorker();\n    } catch {\n      void encodeOnMainThread(params).then(resolve);\n      return;\n    }\n\n    const finish = (result: WebpBudgetResult) => {\n      if (settled) return;\n      settled = true;\n      params.signal?.removeEventListener('abort', onAbort);\n      try {\n        worker.terminate();\n      } catch {\n        /* ignore */\n      }\n      resolve(result);\n    };\n\n    const onAbort = () => {\n      finish({\n        ok: false,\n        reason: 'aborted',\n        message: 'Bildoptimierung abgebrochen.',\n      });\n    };\n\n    params.signal?.addEventListener('abort', onAbort, { once: true });\n\n    worker.onmessage = (event: MessageEvent<ImageWorkerResponse>) => {\n      const msg = event.data;\n      if (!msg || msg.requestId !== requestId) return;\n      if (msg.ok === true) {\n        finish({\n          ok: true,\n          buffer: msg.buffer,\n          width: msg.width,\n          height: msg.height,\n        });\n        return;\n      }\n      if (msg.ok === false) {\n        finish({\n          ok: false,\n          reason: msg.reason,\n          message: msg.message,\n          attemptedByteSize: msg.attemptedByteSize,\n        });\n      }\n    };\n\n    worker.onerror = () => {\n      // Worker failed to boot — fall back once.\n      if (settled) return;\n      settled = true;\n      params.signal?.removeEventListener('abort', onAbort);\n      try {\n        worker.terminate();\n      } catch {\n        /* ignore */\n      }\n      void encodeOnMainThread(params).then(resolve);\n    };\n\n    const rgbaCopy = params.imageData.data.buffer.slice(\n      params.imageData.data.byteOffset,\n      params.imageData.data.byteOffset + params.imageData.data.byteLength,\n    );\n\n    const request: ImageWorkerEncodeRequest = {\n      type: 'encode',\n      requestId,\n      width: params.imageData.width,\n      height: params.imageData.height,\n      rgba: rgbaCopy,\n      targetBytes: params.targetBytes,\n      maxUploadBytes: params.maxUploadBytes,\n      maxOutputBytes: params.maxOutputBytes,\n      minQuality: params.minQuality,\n      minEdgePx: params.minEdgePx,\n    };\n\n    worker.postMessage(request, [rgbaCopy]);\n  });\n}"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/webp-worker-client.ts",
+      "line": 78,
+      "endLine": 165,
+      "name": "callback",
+      "text": "(resolve) => {\n    let settled = false;\n    const requestId = `img-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;\n    let worker: Worker;\n    try {\n      worker = createImageWorker();\n    } catch {\n      void encodeOnMainThread(params).then(resolve);\n      return;\n    }\n\n    const finish = (result: WebpBudgetResult) => {\n      if (settled) return;\n      settled = true;\n      params.signal?.removeEventListener('abort', onAbort);\n      try {\n        worker.terminate();\n      } catch {\n        /* ignore */\n      }\n      resolve(result);\n    };\n\n    const onAbort = () => {\n      finish({\n        ok: false,\n        reason: 'aborted',\n        message: 'Bildoptimierung abgebrochen.',\n      });\n    };\n\n    params.signal?.addEventListener('abort', onAbort, { once: true });\n\n    worker.onmessage = (event: MessageEvent<ImageWorkerResponse>) => {\n      const msg = event.data;\n      if (!msg || msg.requestId !== requestId) return;\n      if (msg.ok === true) {\n        finish({\n          ok: true,\n          buffer: msg.buffer,\n          width: msg.width,\n          height: msg.height,\n        });\n        return;\n      }\n      if (msg.ok === false) {\n        finish({\n          ok: false,\n          reason: msg.reason,\n          message: msg.message,\n          attemptedByteSize: msg.attemptedByteSize,\n        });\n      }\n    };\n\n    worker.onerror = () => {\n      // Worker failed to boot — fall back once.\n      if (settled) return;\n      settled = true;\n      params.signal?.removeEventListener('abort', onAbort);\n      try {\n        worker.terminate();\n      } catch {\n        /* ignore */\n      }\n      void encodeOnMainThread(params).then(resolve);\n    };\n\n    const rgbaCopy = params.imageData.data.buffer.slice(\n      params.imageData.data.byteOffset,\n      params.imageData.data.byteOffset + params.imageData.data.byteLength,\n    );\n\n    const request: ImageWorkerEncodeRequest = {\n      type: 'encode',\n      requestId,\n      width: params.imageData.width,\n      height: params.imageData.height,\n      rgba: rgbaCopy,\n      targetBytes: params.targetBytes,\n      maxUploadBytes: params.maxUploadBytes,\n      maxOutputBytes: params.maxOutputBytes,\n      minQuality: params.minQuality,\n      minEdgePx: params.minEdgePx,\n    };\n\n    worker.postMessage(request, [rgbaCopy]);\n  }"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/webp-worker-client.ts",
+      "line": 89,
+      "endLine": 99,
+      "name": "finish",
+      "text": "(result: WebpBudgetResult) => {\n      if (settled) return;\n      settled = true;\n      params.signal?.removeEventListener('abort', onAbort);\n      try {\n        worker.terminate();\n      } catch {\n        /* ignore */\n      }\n      resolve(result);\n    }"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/webp-worker-client.ts",
+      "line": 101,
+      "endLine": 107,
+      "name": "onAbort",
+      "text": "() => {\n      finish({\n        ok: false,\n        reason: 'aborted',\n        message: 'Bildoptimierung abgebrochen.',\n      });\n    }"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/webp-worker-client.ts",
+      "line": 111,
+      "endLine": 131,
+      "name": "callback",
+      "text": "(event: MessageEvent<ImageWorkerResponse>) => {\n      const msg = event.data;\n      if (!msg || msg.requestId !== requestId) return;\n      if (msg.ok === true) {\n        finish({\n          ok: true,\n          buffer: msg.buffer,\n          width: msg.width,\n          height: msg.height,\n        });\n        return;\n      }\n      if (msg.ok === false) {\n        finish({\n          ok: false,\n          reason: msg.reason,\n          message: msg.message,\n          attemptedByteSize: msg.attemptedByteSize,\n        });\n      }\n    }"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/webp-worker-client.ts",
+      "line": 133,
+      "endLine": 144,
+      "name": "callback",
+      "text": "() => {\n      // Worker failed to boot — fall back once.\n      if (settled) return;\n      settled = true;\n      params.signal?.removeEventListener('abort', onAbort);\n      try {\n        worker.terminate();\n      } catch {\n        /* ignore */\n      }\n      void encodeOnMainThread(params).then(resolve);\n    }"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/model3d/index.ts",
+      "line": 19,
+      "endLine": 42,
+      "name": "optimizeModel3d",
+      "text": "export async function optimizeModel3d(\n  request: Model3dEngineRequest,\n): Promise<MediaOptimizeResult> {\n  if (request.signal?.aborted) {\n    return {\n      status: 'aborted',\n      kind: 'model3d',\n      profileId: request.input.profileId,\n      input: { ...request.input, kind: 'model3d' },\n      code: 'aborted',\n      message: '3D-Optimierung abgebrochen.',\n    };\n  }\n\n  return {\n    status: 'unsupported',\n    kind: 'model3d',\n    profileId: request.input.profileId,\n    input: { ...request.input, kind: 'model3d' },\n    code: 'unsupported-kind',\n    message:\n      '3D-Optimierung ist in V1 nicht verfügbar (Ausbau-TODO: glTF Transform / meshopt).',\n  };\n}"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/video/index.ts",
+      "line": 19,
+      "endLine": 42,
+      "name": "optimizeVideo",
+      "text": "export async function optimizeVideo(\n  request: VideoEngineRequest,\n): Promise<MediaOptimizeResult> {\n  if (request.signal?.aborted) {\n    return {\n      status: 'aborted',\n      kind: 'video',\n      profileId: request.input.profileId,\n      input: { ...request.input, kind: 'video' },\n      code: 'aborted',\n      message: 'Video-Optimierung abgebrochen.',\n    };\n  }\n\n  return {\n    status: 'unsupported',\n    kind: 'video',\n    profileId: request.input.profileId,\n    input: { ...request.input, kind: 'video' },\n    code: 'unsupported-kind',\n    message:\n      'Video-Transcoding ist in V1 nicht verfügbar (Ausbau-TODO: Mediabunny / geprüfte Runtime).',\n  };\n}"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/media-optimizer.ts",
+      "line": 37,
+      "endLine": 48,
+      "name": "toInputMeta",
+      "text": "function toInputMeta(request: OptimizeMediaRequest): MediaOptimizeInputMeta {\n  return {\n    kind: request.kind,\n    profileId: request.profileId,\n    mimeType: request.mimeType,\n    byteSize: request.byteSize,\n    width: request.width,\n    height: request.height,\n    hasAnimation: request.hasAnimation,\n    hasAlpha: request.hasAlpha,\n  };\n}"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/media-optimizer.ts",
+      "line": 54,
+      "endLine": 138,
+      "name": "optimizeMedia",
+      "text": "export async function optimizeMedia(\n  request: OptimizeMediaRequest,\n): Promise<MediaOptimizeResult> {\n  if (!isMediaKind(request.kind)) {\n    const input = toInputMeta({ ...request, kind: 'image' });\n    return {\n      status: 'unsupported',\n      kind: 'image',\n      profileId: request.profileId,\n      input,\n      code: 'unsupported-kind',\n      message: `Unbekannte MediaKind: ${String(request.kind)}`,\n    };\n  }\n\n  if (request.signal?.aborted) {\n    const input = toInputMeta(request);\n    return {\n      status: 'aborted',\n      kind: request.kind,\n      profileId: request.profileId,\n      input,\n      code: 'aborted',\n      message: 'Media-Optimierung abgebrochen.',\n    };\n  }\n\n  const input = toInputMeta(request);\n  let result: MediaOptimizeResult;\n\n  switch (request.kind) {\n    case 'image': {\n      const { optimizeImage } = await import('./engines/image/index');\n      result = await optimizeImage({\n        input,\n        signal: request.signal,\n        bytes: request.bytes,\n        imageCountInRequest: request.imageCountInRequest,\n        aggregateRequestBytes: request.aggregateRequestBytes,\n        onOptimizedBytes: request.onOptimizedBytes,\n      });\n      break;\n    }\n    case 'video': {\n      const { optimizeVideo } = await import('./engines/video/index');\n      result = await optimizeVideo({ input, signal: request.signal });\n      break;\n    }\n    case 'audio': {\n      const { optimizeAudio } = await import('./engines/audio/index');\n      result = await optimizeAudio({ input, signal: request.signal });\n      break;\n    }\n    case 'model3d': {\n      const { optimizeModel3d } = await import('./engines/model3d/index');\n      result = await optimizeModel3d({ input, signal: request.signal });\n      break;\n    }\n    default: {\n      const _exhaustive: never = request.kind;\n      result = {\n        status: 'unsupported',\n        kind: 'image',\n        profileId: request.profileId,\n        input,\n        code: 'unsupported-kind',\n        message: `Unbehandelte MediaKind: ${String(_exhaustive)}`,\n      };\n    }\n  }\n\n  const invariants = assertMediaOptimizeResultInvariants(result);\n  if (invariants.ok === false) {\n    return {\n      status: 'failed',\n      kind: request.kind,\n      profileId: request.profileId,\n      input,\n      code: 'invalid-input',\n      message: `Optimizer-Ergebnis verletzt Invarianten: ${invariants.reason}`,\n    };\n  }\n\n  return result;\n}"
+    }
+  ]
+}

@@ -1,0 +1,920 @@
+{
+  "schemaVersion": 1,
+  "area": "user-profile",
+  "evidenceKind": "exact-typescript-ast-source",
+  "sourceFiles": [
+    {
+      "path": "src/infrastructure/user-profile/account-avatar-changed.ts",
+      "sha256": "79b2b404b93bdf7174d30341c08b23662aaa412686c9b3251106e1d79fc42045"
+    },
+    {
+      "path": "src/infrastructure/user-profile/account-avatar-store.ts",
+      "sha256": "ca478b00af6f5b52a531dcb244e8a2d5f92e4765bde69d1d52afa80e1542dbdb"
+    },
+    {
+      "path": "src/infrastructure/user-profile/host-user-profile-adapter.ts",
+      "sha256": "c9625210b18534d7340c84a3f4202e3f775a933dbefed8de66b489c1bba9f604"
+    },
+    {
+      "path": "src/infrastructure/user-profile/host-user-profile-ports.contract.ts",
+      "sha256": "7f4aaaa098bd0a8625e916074ae7c4a0e2d34b99d4effd1ccb0a890148f01511"
+    },
+    {
+      "path": "src/infrastructure/user-profile/index.ts",
+      "sha256": "174c73d885fbc9316dbdfb8b0b09b1060821d40b36030a61c672150e61fecb20"
+    },
+    {
+      "path": "src/infrastructure/user-profile/user-profile-service.ts",
+      "sha256": "013cd52d0e1f39653a7f50689c50e83fd9eb27339a53d1207033bf40b0cb6e4c"
+    }
+  ],
+  "supportingSourceFiles": [
+    {
+      "path": "src/domains/marketplace/contracts/marketplace.types.ts",
+      "sha256": "000aecc695577333ad6fce27422ad02bc15f26ffca88507ebfee1fafb04b9467"
+    },
+    {
+      "path": "src/domains/media/index.ts",
+      "sha256": "768ded2d0f0fd1d510d660924e787817673955dbeff021d7de9e0a8d8e38bdec"
+    },
+    {
+      "path": "src/domains/media/optimization-contract.ts",
+      "sha256": "ba9216dab79a9c03f66a16b77dedf1c26d4d00d6ae2693cc5a68919d1647846d"
+    },
+    {
+      "path": "src/domains/media/optimization-policy.ts",
+      "sha256": "6145574bc08d1eb94f54d488ebc1f8bc030c2a956e3e3fd24cb15a7c8e50c5ec"
+    },
+    {
+      "path": "src/domains/rules/ruleset-catalog/index.ts",
+      "sha256": "c2f52133fdeaa82ca586670b79ce0144063cc852a2a5ca8b5b6b44369fc0e21e"
+    },
+    {
+      "path": "src/domains/rules/ruleset-catalog/types.ts",
+      "sha256": "1b76d37fc3c90d29d3f719644e6915a66462d7b55c4c6cec07a0caadfdf1512d"
+    },
+    {
+      "path": "src/domains/user-profile/contracts/user-profile.types.ts",
+      "sha256": "2f3f3472e9a3448099144be0993fd83bbbc2270050ce76dceadd8821501c26b7"
+    },
+    {
+      "path": "src/domains/user-profile/display-name.ts",
+      "sha256": "87cfc4858f198e56ea2857c505162f112efd5edacde4dbb1f7fcd995b4535516"
+    },
+    {
+      "path": "src/domains/user-profile/index.ts",
+      "sha256": "d094d245ff9356298ef20c48635ca3e7adcc0e1ccf180554586949e0b496c496"
+    },
+    {
+      "path": "src/infrastructure/host/host-catalog-http.ts",
+      "sha256": "9049245360683a74e7e2602d35126d815d64344d384c6684e4c2c3d41aa626d3"
+    },
+    {
+      "path": "src/infrastructure/host/host-library-http.ts",
+      "sha256": "c56b88c60d6c9491fc7b6e6e1143ac4985ffdab5dff16afef8a54bce79629a07"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/audio/index.ts",
+      "sha256": "7585190a705085692bff0896e08b4d78f791895b47e24d57deeaaa10bb669d4e"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/image.worker.ts",
+      "sha256": "d34793b4de682556d9306194cfbcd05fdafdf215da25393f955d2669c7499276"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/index.ts",
+      "sha256": "4944001b7e0f7784d487da2e60d06d845aa564e9ddd7516ff50633af1591a322"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/optimize-image.ts",
+      "sha256": "bf73e826651227f704aff5ed584546a087f22f26c68a4c45ba918dfefbe7ce3e"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/raster-decode.ts",
+      "sha256": "8ba5eda07565b10d1fb3d4090d068d12b1415399088c6c6b4a2aadc3fe4d290c"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/resource-limits.ts",
+      "sha256": "1178fc226c85aee4f4989a7bd650d0b9830b37657c7499c1cec174b4aa9af364"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/types.ts",
+      "sha256": "501095579c8bf1cc3af3a93147f4ab9fe1f280909c02e759d3d95c0f7151d45d"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/webp-budget.ts",
+      "sha256": "7e7a1669b42c38b713f35952517260a61ca636cc6f84f29c76b949e3bcc2f70c"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/webp-worker-client.ts",
+      "sha256": "718b74e3146c6723862f0a4639eb5b7905a35f70a8c0e3c6e33d530a4ef80b84"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/model3d/index.ts",
+      "sha256": "bcc13ca0c9f7bfa1a68e6c893509b21e682fe2c44732945fba85215042ac6d62"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/video/index.ts",
+      "sha256": "d8c6aaaabb2ad762d4c15f9ef4aa9bc016f5968b2512cfe52f71cb09655dd842"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/index.ts",
+      "sha256": "c1b162af47239195707de742a8991bea14d85f2238108968613c3bad3d91cf02"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/media-optimizer.ts",
+      "sha256": "7d58424f12b7855ccb3c0153270628850e03afc15c285b1fc2b47218918255d9"
+    },
+    {
+      "path": "src/lib/hostAuthBridge.ts",
+      "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
+    }
+  ],
+  "importedTypeDeclarations": [
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "MarketplaceItemType",
+      "path": "src/domains/marketplace/contracts/marketplace.types.ts",
+      "line": 3,
+      "endLine": 3,
+      "text": "export type MarketplaceItemType = 'world' | 'adventure' | 'character' | 'item' | 'ruleset';"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "MarketplaceItem",
+      "path": "src/domains/marketplace/contracts/marketplace.types.ts",
+      "line": 5,
+      "endLine": 20,
+      "text": "export interface MarketplaceItem {\n  id: string;\n  type: MarketplaceItemType;\n  title: string;\n  description: string | null;\n  author_id: string;\n  author_name?: string; // Joined from users table\n  data: Record<string, unknown>; // Item-specific data (flexible JSONB)\n  rating: number;\n  downloads: number;\n  price: number; // 0.00 = free\n  image_url: string | null;\n  tags: string[];\n  created_at: string;\n  updated_at: string;\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "CreateMarketplaceItemDTO",
+      "path": "src/domains/marketplace/contracts/marketplace.types.ts",
+      "line": 22,
+      "endLine": 30,
+      "text": "export interface CreateMarketplaceItemDTO {\n  type: MarketplaceItemType;\n  title: string;\n  description?: string;\n  data: Record<string, unknown>;\n  price?: number;\n  image_url?: string;\n  tags?: string[];\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "UpdateMarketplaceItemDTO",
+      "path": "src/domains/marketplace/contracts/marketplace.types.ts",
+      "line": 32,
+      "endLine": 39,
+      "text": "export interface UpdateMarketplaceItemDTO {\n  title?: string;\n  description?: string;\n  data?: Record<string, unknown>;\n  price?: number;\n  image_url?: string;\n  tags?: string[];\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "MarketplaceFilters",
+      "path": "src/domains/marketplace/contracts/marketplace.types.ts",
+      "line": 41,
+      "endLine": 49,
+      "text": "export interface MarketplaceFilters {\n  type?: MarketplaceItemType | 'all';\n  searchQuery?: string;\n  minRating?: number;\n  maxPrice?: number;\n  tags?: string[];\n  sortBy?: 'downloads' | 'rating' | 'created_at' | 'price';\n  sortOrder?: 'asc' | 'desc';\n}"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "MediaKind",
+      "path": "src/domains/media/optimization-contract.ts",
+      "line": 10,
+      "endLine": 10,
+      "text": "export type MediaKind = 'image' | 'video' | 'model3d' | 'audio';"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "MediaOptimizeStatus",
+      "path": "src/domains/media/optimization-contract.ts",
+      "line": 18,
+      "endLine": 24,
+      "text": "export type MediaOptimizeStatus =\n  | 'optimized'\n  | 'unchanged'\n  | 'unsupported'\n  | 'over-budget'\n  | 'aborted'\n  | 'failed';"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AssetProfileId",
+      "path": "src/domains/media/optimization-contract.ts",
+      "line": 36,
+      "endLine": 41,
+      "text": "export type AssetProfileId =\n  | 'character-portrait'\n  | 'map-pin'\n  | 'look-reference'\n  | 'item-thumbnail'\n  | 'user-avatar';"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "MediaByteBudget",
+      "path": "src/domains/media/optimization-contract.ts",
+      "line": 55,
+      "endLine": 58,
+      "text": "export type MediaByteBudget = {\n  readonly targetBytes: number;\n  readonly maxUploadBytes: number;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "MediaOptimizeFailureCode",
+      "path": "src/domains/media/optimization-contract.ts",
+      "line": 60,
+      "endLine": 68,
+      "text": "export type MediaOptimizeFailureCode =\n  | 'unsupported-kind'\n  | 'unsupported-mime'\n  | 'over-max-upload'\n  | 'over-aggregate-budget'\n  | 'encode-failed'\n  | 'aborted'\n  | 'invalid-input'\n  | 'wasm-unavailable';"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "MediaOptimizeInputMeta",
+      "path": "src/domains/media/optimization-contract.ts",
+      "line": 70,
+      "endLine": 81,
+      "text": "export type MediaOptimizeInputMeta = {\n  readonly kind: MediaKind;\n  readonly profileId: AssetProfileId;\n  readonly mimeType: string;\n  readonly byteSize: number;\n  readonly width?: number;\n  readonly height?: number;\n  /** True when source is an animated GIF (or similar) that must not be silently flattened. */\n  readonly hasAnimation?: boolean;\n  /** True when source has an alpha channel that policy must preserve. */\n  readonly hasAlpha?: boolean;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "MediaOptimizeResultBase",
+      "path": "src/domains/media/optimization-contract.ts",
+      "line": 83,
+      "endLine": 87,
+      "text": "type MediaOptimizeResultBase = {\n  readonly kind: MediaKind;\n  readonly profileId: AssetProfileId;\n  readonly input: MediaOptimizeInputMeta;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "MediaOptimizeOptimizedResult",
+      "path": "src/domains/media/optimization-contract.ts",
+      "line": 89,
+      "endLine": 95,
+      "text": "export type MediaOptimizeOptimizedResult = MediaOptimizeResultBase & {\n  readonly status: 'optimized';\n  readonly outputMimeType: string;\n  readonly outputByteSize: number;\n  readonly width?: number;\n  readonly height?: number;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "MediaOptimizeUnchangedResult",
+      "path": "src/domains/media/optimization-contract.ts",
+      "line": 97,
+      "endLine": 102,
+      "text": "export type MediaOptimizeUnchangedResult = MediaOptimizeResultBase & {\n  readonly status: 'unchanged';\n  /** Echo of the validated original — required for unchanged. */\n  readonly outputMimeType: string;\n  readonly outputByteSize: number;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "MediaOptimizeUnsupportedResult",
+      "path": "src/domains/media/optimization-contract.ts",
+      "line": 104,
+      "endLine": 108,
+      "text": "export type MediaOptimizeUnsupportedResult = MediaOptimizeResultBase & {\n  readonly status: 'unsupported';\n  readonly code: MediaOptimizeFailureCode;\n  readonly message: string;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "MediaOptimizeOverBudgetResult",
+      "path": "src/domains/media/optimization-contract.ts",
+      "line": 110,
+      "endLine": 115,
+      "text": "export type MediaOptimizeOverBudgetResult = MediaOptimizeResultBase & {\n  readonly status: 'over-budget';\n  readonly code: 'over-max-upload' | 'over-aggregate-budget';\n  readonly message: string;\n  readonly attemptedByteSize?: number;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "MediaOptimizeAbortedResult",
+      "path": "src/domains/media/optimization-contract.ts",
+      "line": 117,
+      "endLine": 121,
+      "text": "export type MediaOptimizeAbortedResult = MediaOptimizeResultBase & {\n  readonly status: 'aborted';\n  readonly code: 'aborted';\n  readonly message: string;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "MediaOptimizeFailedResult",
+      "path": "src/domains/media/optimization-contract.ts",
+      "line": 123,
+      "endLine": 127,
+      "text": "export type MediaOptimizeFailedResult = MediaOptimizeResultBase & {\n  readonly status: 'failed';\n  readonly code: MediaOptimizeFailureCode;\n  readonly message: string;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "MediaOptimizeResult",
+      "path": "src/domains/media/optimization-contract.ts",
+      "line": 129,
+      "endLine": 135,
+      "text": "export type MediaOptimizeResult =\n  | MediaOptimizeOptimizedResult\n  | MediaOptimizeUnchangedResult\n  | MediaOptimizeUnsupportedResult\n  | MediaOptimizeOverBudgetResult\n  | MediaOptimizeAbortedResult\n  | MediaOptimizeFailedResult;"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "GifAnimationPolicy",
+      "path": "src/domains/media/optimization-policy.ts",
+      "line": 19,
+      "endLine": 19,
+      "text": "export type GifAnimationPolicy = 'allow' | 'convert-static-required' | 'reject';"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "ImageAssetPolicy",
+      "path": "src/domains/media/optimization-policy.ts",
+      "line": 21,
+      "endLine": 36,
+      "text": "export type ImageAssetPolicy = {\n  readonly profileId: AssetProfileId;\n  readonly kind: 'image';\n  readonly allowedMimeTypes: readonly string[];\n  readonly budget: MediaByteBudget;\n  /** Soft max dimension hint for later engines (not a hard encode floor here). */\n  readonly maxEdgePx: number;\n  readonly minQuality: number;\n  readonly preserveAlpha: boolean;\n  readonly gifAnimation: GifAnimationPolicy;\n  /** When false, engines must not emit WebP until coordinated migration completes. */\n  readonly allowWebpOutput: boolean;\n  readonly maxImagesPerRequest?: number;\n  /** Hard aggregate JSON/Base64 request ceiling (Look analysis). */\n  readonly maxAggregateRequestBytes?: number;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "UnsupportedKindPolicy",
+      "path": "src/domains/media/optimization-policy.ts",
+      "line": 38,
+      "endLine": 43,
+      "text": "export type UnsupportedKindPolicy = {\n  readonly profileId: AssetProfileId;\n  readonly kind: Exclude<MediaKind, 'image'>;\n  readonly supported: false;\n  readonly message: string;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AssetPolicy",
+      "path": "src/domains/media/optimization-policy.ts",
+      "line": 45,
+      "endLine": 45,
+      "text": "export type AssetPolicy = ImageAssetPolicy | UnsupportedKindPolicy;"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "MediaPolicyEvaluation",
+      "path": "src/domains/media/optimization-policy.ts",
+      "line": 167,
+      "endLine": 180,
+      "text": "export type MediaPolicyEvaluation =\n  | { readonly ok: true; readonly policy: ImageAssetPolicy }\n  | {\n      readonly ok: false;\n      readonly reason:\n        | 'unsupported-mime'\n        | 'over-max-upload'\n        | 'gif-not-allowed'\n        | 'animation-not-allowed'\n        | 'too-many-images'\n        | 'over-aggregate-budget';\n      readonly message: string;\n      readonly policy: ImageAssetPolicy;\n    };"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "Ruleset",
+      "path": "src/domains/rules/ruleset-catalog/types.ts",
+      "line": 5,
+      "endLine": 41,
+      "text": "export interface Ruleset {\n  id: string;\n  creator_user_id: string | null;\n  name: string;\n  description: string | null;\n  version: string | null;\n\n  attributes_config: {\n    primary: string[];\n    derived: string[];\n  };\n  skills_config: Array<{\n    name: string;\n    ability: string;\n  }>;\n  classes_config: Array<{\n    name: string;\n    hit_die: string;\n  }>;\n  races_config: Array<{\n    name: string;\n    speed: number;\n    size: string;\n  }>;\n  combat_rules: Record<string, unknown>;\n  dice_rules: Record<string, unknown>;\n  level_progression: Record<string, unknown>;\n\n  is_official: boolean;\n  is_public: boolean;\n  is_marketplace_item: boolean;\n  downloads_count: number;\n  rating: number | null;\n\n  created_at: string;\n  updated_at: string;\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "CreateRulesetDTO",
+      "path": "src/domains/rules/ruleset-catalog/types.ts",
+      "line": 43,
+      "endLine": 54,
+      "text": "export interface CreateRulesetDTO {\n  name: string;\n  description?: string;\n  version?: string;\n  attributes_config: Ruleset['attributes_config'];\n  skills_config?: Ruleset['skills_config'];\n  classes_config?: Ruleset['classes_config'];\n  races_config?: Ruleset['races_config'];\n  combat_rules?: Record<string, unknown>;\n  dice_rules?: Record<string, unknown>;\n  is_public?: boolean;\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "UpdateRulesetDTO",
+      "path": "src/domains/rules/ruleset-catalog/types.ts",
+      "line": 56,
+      "endLine": 58,
+      "text": "export interface UpdateRulesetDTO extends Partial<CreateRulesetDTO> {\n  id: string;\n}"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "UserProfileVm",
+      "path": "src/domains/user-profile/contracts/user-profile.types.ts",
+      "line": 6,
+      "endLine": 13,
+      "text": "export type UserProfileVm = {\n  readonly id: string;\n  readonly displayName: string | null;\n  readonly avatarPath: string | null;\n  /** Signed or resolvable URL for UI; null when no avatar_path. */\n  readonly avatarUrl: string | null;\n  readonly updatedAt: string | null;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AccountDisplayNameInput",
+      "path": "src/domains/user-profile/display-name.ts",
+      "line": 8,
+      "endLine": 13,
+      "text": "export type AccountDisplayNameInput = {\n  readonly profileDisplayName?: string | null;\n  readonly authDisplayName?: string | null;\n  readonly authUsername?: string | null;\n  readonly email?: string | null;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "EnvLike",
+      "path": "src/infrastructure/host/host-catalog-http.ts",
+      "line": 18,
+      "endLine": 21,
+      "text": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "EnvLike",
+      "path": "src/infrastructure/host/host-library-http.ts",
+      "line": 10,
+      "endLine": 12,
+      "text": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "HostLibraryCharacterDto",
+      "path": "src/infrastructure/host/host-library-http.ts",
+      "line": 59,
+      "endLine": 72,
+      "text": "export type HostLibraryCharacterDto = {\n  readonly id: string;\n  readonly publicId?: string;\n  readonly name: string;\n  readonly description?: string;\n  readonly class?: string;\n  readonly race?: string;\n  readonly level?: number;\n  readonly sheetStatus?: string;\n  readonly portraitUrl?: string | null;\n  readonly sheet?: Readonly<Record<string, unknown>>;\n  readonly createdAt?: string;\n  readonly updatedAt?: string;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "HostLibraryProjectDto",
+      "path": "src/infrastructure/host/host-library-http.ts",
+      "line": 87,
+      "endLine": 108,
+      "text": "export type HostLibraryProjectDto = {\n  readonly id: string;\n  readonly publicId?: string;\n  readonly code?: string;\n  readonly name: string;\n  readonly description?: string | null;\n  readonly worldId?: string | null;\n  readonly worldProfileId?: string | null;\n  readonly defaultLookProfileId?: string | null;\n  readonly allowPlayerCharacterLookOverride?: boolean;\n  readonly sagaId?: string | null;\n  readonly sagaVersionId?: string | null;\n  readonly sagaTitle?: string | null;\n  readonly sagaSlug?: string | null;\n  readonly sagaOrigin?: string | null;\n  readonly gmUserId: string;\n  readonly status?: string;\n  readonly memberCount?: number;\n  readonly sessionCount?: number;\n  readonly createdAt?: string;\n  readonly updatedAt?: string;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "HostLibraryWorldDto",
+      "path": "src/infrastructure/host/host-library-http.ts",
+      "line": 123,
+      "endLine": 129,
+      "text": "export type HostLibraryWorldDto = {\n  readonly id: string;\n  readonly title: string;\n  readonly createdAt: string;\n  /** CUT-10 — WO-XXXXX when present. */\n  readonly publicId?: string | null;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "FetchHostLibraryItemsOptions",
+      "path": "src/infrastructure/host/host-library-http.ts",
+      "line": 748,
+      "endLine": 753,
+      "text": "export type FetchHostLibraryItemsOptions = {\n  readonly worldProfileId?: string | null;\n  readonly query?: string;\n  readonly includeArchived?: boolean;\n  readonly origins?: readonly ('standard' | 'personal' | 'world')[];\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "HostNpcControllerAssignmentDto",
+      "path": "src/infrastructure/host/host-library-http.ts",
+      "line": 1039,
+      "endLine": 1045,
+      "text": "export type HostNpcControllerAssignmentDto = {\n  readonly projectId: string;\n  readonly definitionId: string;\n  readonly controllerUserId: string | null;\n  readonly assignedBy?: string;\n  readonly updatedAt?: string;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "HostNpcInstanceDto",
+      "path": "src/infrastructure/host/host-library-http.ts",
+      "line": 1098,
+      "endLine": 1111,
+      "text": "export type HostNpcInstanceDto = {\n  readonly id: string;\n  readonly projectId: string;\n  readonly sessionId: string | null;\n  readonly definitionId: string;\n  readonly displayName: string;\n  readonly instanceKind: string;\n  readonly sequenceNumber: number;\n  readonly snapshot: Record<string, unknown>;\n  readonly runtime: Record<string, unknown>;\n  readonly createdBy?: string;\n  readonly createdAt?: string;\n  readonly updatedAt?: string;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "HostPublishedAssetDto",
+      "path": "src/infrastructure/host/host-library-http.ts",
+      "line": 1220,
+      "endLine": 1227,
+      "text": "export type HostPublishedAssetDto = {\n  readonly assetId: string;\n  readonly contentType: string;\n  readonly byteSize: number;\n  readonly checksumSha256: string;\n  readonly url: string;\n  readonly storagePath: string;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AudioEngineRequest",
+      "path": "src/infrastructure/media/optimizer/engines/audio/index.ts",
+      "line": 14,
+      "endLine": 17,
+      "text": "export type AudioEngineRequest = {\n  readonly input: MediaOptimizeInputMeta;\n  readonly signal?: AbortSignal;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "ImageWorkerEncodeRequest",
+      "path": "src/infrastructure/media/optimizer/engines/image/image.worker.ts",
+      "line": 9,
+      "endLine": 21,
+      "text": "export type ImageWorkerEncodeRequest = {\n  readonly type: 'encode';\n  readonly requestId: string;\n  readonly width: number;\n  readonly height: number;\n  /** RGBA pixel buffer (transferred). */\n  readonly rgba: ArrayBuffer;\n  readonly targetBytes: number;\n  readonly maxUploadBytes: number;\n  readonly maxOutputBytes: number;\n  readonly minQuality: number;\n  readonly minEdgePx?: number;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "ImageWorkerResponse",
+      "path": "src/infrastructure/media/optimizer/engines/image/image.worker.ts",
+      "line": 23,
+      "endLine": 39,
+      "text": "export type ImageWorkerResponse =\n  | {\n      readonly type: 'result';\n      readonly requestId: string;\n      readonly ok: true;\n      readonly buffer: ArrayBuffer;\n      readonly width: number;\n      readonly height: number;\n    }\n  | {\n      readonly type: 'result';\n      readonly requestId: string;\n      readonly ok: false;\n      readonly reason: 'over-budget' | 'encode-failed' | 'aborted';\n      readonly message: string;\n      readonly attemptedByteSize?: number;\n    };"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "ResourceLimitFailure",
+      "path": "src/infrastructure/media/optimizer/engines/image/resource-limits.ts",
+      "line": 38,
+      "endLine": 42,
+      "text": "export type ResourceLimitFailure = {\n  readonly ok: false;\n  readonly code: 'invalid-input' | 'over-max-upload';\n  readonly message: string;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "ResourceLimitSuccess",
+      "path": "src/infrastructure/media/optimizer/engines/image/resource-limits.ts",
+      "line": 44,
+      "endLine": 44,
+      "text": "export type ResourceLimitSuccess = { readonly ok: true };"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "ImageEngineRequest",
+      "path": "src/infrastructure/media/optimizer/engines/image/types.ts",
+      "line": 8,
+      "endLine": 17,
+      "text": "export type ImageEngineRequest = {\n  readonly input: MediaOptimizeInputMeta;\n  readonly signal?: AbortSignal;\n  /** Raw image bytes — required for encode/decode. */\n  readonly bytes?: Blob | ArrayBuffer | Uint8Array;\n  readonly imageCountInRequest?: number;\n  readonly aggregateRequestBytes?: number;\n  /** Optional sink for optimized WebP bytes (keeps Blob out of domain results). */\n  readonly onOptimizedBytes?: (bytes: Uint8Array) => void;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "WebpEncodeOptions",
+      "path": "src/infrastructure/media/optimizer/engines/image/webp-budget.ts",
+      "line": 9,
+      "endLine": 15,
+      "text": "export type WebpEncodeOptions = {\n  readonly lossless?: number;\n  readonly exact?: number;\n  readonly quality?: number;\n  readonly method?: number;\n  readonly alpha_quality?: number;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "WebpEncodeFn",
+      "path": "src/infrastructure/media/optimizer/engines/image/webp-budget.ts",
+      "line": 17,
+      "endLine": 20,
+      "text": "export type WebpEncodeFn = (\n  data: ImageData,\n  opts: WebpEncodeOptions,\n) => Promise<ArrayBuffer>;"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "ScaleImageDataFn",
+      "path": "src/infrastructure/media/optimizer/engines/image/webp-budget.ts",
+      "line": 22,
+      "endLine": 26,
+      "text": "export type ScaleImageDataFn = (\n  source: ImageData,\n  targetW: number,\n  targetH: number,\n) => Promise<ImageData>;"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "WebpBudgetParams",
+      "path": "src/infrastructure/media/optimizer/engines/image/webp-budget.ts",
+      "line": 28,
+      "endLine": 41,
+      "text": "export type WebpBudgetParams = {\n  readonly imageData: ImageData;\n  readonly encode: WebpEncodeFn;\n  readonly scaleImageData: ScaleImageDataFn;\n  /** Soft goal for the ladder (preferred encoded size). */\n  readonly targetBytes: number;\n  /** Hard ceiling — failure if nothing ≤ this. */\n  readonly maxUploadBytes: number;\n  /** Reject candidates larger than the original payload (kein Dateiwachstum). */\n  readonly maxOutputBytes: number;\n  readonly minQuality: number;\n  readonly minEdgePx?: number;\n  readonly signal?: AbortSignal;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "WebpBudgetSuccess",
+      "path": "src/infrastructure/media/optimizer/engines/image/webp-budget.ts",
+      "line": 43,
+      "endLine": 48,
+      "text": "export type WebpBudgetSuccess = {\n  readonly ok: true;\n  readonly buffer: ArrayBuffer;\n  readonly width: number;\n  readonly height: number;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "WebpBudgetFailure",
+      "path": "src/infrastructure/media/optimizer/engines/image/webp-budget.ts",
+      "line": 50,
+      "endLine": 55,
+      "text": "export type WebpBudgetFailure = {\n  readonly ok: false;\n  readonly reason: 'over-budget' | 'aborted' | 'encode-failed';\n  readonly message: string;\n  readonly attemptedByteSize?: number;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "WebpBudgetResult",
+      "path": "src/infrastructure/media/optimizer/engines/image/webp-budget.ts",
+      "line": 57,
+      "endLine": 57,
+      "text": "export type WebpBudgetResult = WebpBudgetSuccess | WebpBudgetFailure;"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "WorkerEncodeParams",
+      "path": "src/infrastructure/media/optimizer/engines/image/webp-worker-client.ts",
+      "line": 14,
+      "endLine": 22,
+      "text": "export type WorkerEncodeParams = {\n  readonly imageData: ImageData;\n  readonly targetBytes: number;\n  readonly maxUploadBytes: number;\n  readonly maxOutputBytes: number;\n  readonly minQuality: number;\n  readonly minEdgePx?: number;\n  readonly signal?: AbortSignal;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "Model3dEngineRequest",
+      "path": "src/infrastructure/media/optimizer/engines/model3d/index.ts",
+      "line": 14,
+      "endLine": 17,
+      "text": "export type Model3dEngineRequest = {\n  readonly input: MediaOptimizeInputMeta;\n  readonly signal?: AbortSignal;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "VideoEngineRequest",
+      "path": "src/infrastructure/media/optimizer/engines/video/index.ts",
+      "line": 14,
+      "endLine": 17,
+      "text": "export type VideoEngineRequest = {\n  readonly input: MediaOptimizeInputMeta;\n  readonly signal?: AbortSignal;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "OptimizeMediaRequest",
+      "path": "src/infrastructure/media/optimizer/media-optimizer.ts",
+      "line": 20,
+      "endLine": 35,
+      "text": "export type OptimizeMediaRequest = {\n  readonly kind: MediaKind;\n  readonly profileId: AssetProfileId;\n  readonly mimeType: string;\n  readonly byteSize: number;\n  readonly width?: number;\n  readonly height?: number;\n  readonly hasAnimation?: boolean;\n  readonly hasAlpha?: boolean;\n  readonly signal?: AbortSignal;\n  /** Image payload for the WebP engine (#630); ignored by stub engines. */\n  readonly bytes?: Blob | ArrayBuffer | Uint8Array;\n  readonly imageCountInRequest?: number;\n  readonly aggregateRequestBytes?: number;\n  readonly onOptimizedBytes?: (bytes: Uint8Array) => void;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "HostWhoamiDto",
+      "path": "src/lib/hostAuthBridge.ts",
+      "line": 24,
+      "endLine": 29,
+      "text": "export type HostWhoamiDto = {\n  readonly ok: true;\n  readonly actorId: string;\n  readonly kind: 'remote-account';\n  readonly email: string | null;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "EnvLike",
+      "path": "src/lib/hostAuthBridge.ts",
+      "line": 31,
+      "endLine": 31,
+      "text": "type EnvLike = { readonly VITE_SAGATREE_HOST_AUTH_URL?: string };"
+    }
+  ],
+  "calls": [],
+  "imports": [
+    {
+      "path": "src/infrastructure/user-profile/account-avatar-changed.ts",
+      "line": 5,
+      "endLine": 8,
+      "module": "./account-avatar-store",
+      "resolvedPath": "src/infrastructure/user-profile/account-avatar-store.ts",
+      "expression": "import {\n  publishAccountAvatarUrl,\n  subscribeAccountAvatarUrl,\n} from './account-avatar-store';"
+    },
+    {
+      "path": "src/infrastructure/user-profile/host-user-profile-adapter.ts",
+      "line": 9,
+      "endLine": 9,
+      "module": "./host-user-profile-ports.contract",
+      "resolvedPath": "src/infrastructure/user-profile/host-user-profile-ports.contract.ts",
+      "expression": "import type { HostUserProfilePorts } from './host-user-profile-ports.contract';"
+    },
+    {
+      "path": "src/infrastructure/user-profile/host-user-profile-adapter.ts",
+      "line": 10,
+      "endLine": 10,
+      "module": "./host-user-profile-ports.contract",
+      "resolvedPath": "src/infrastructure/user-profile/host-user-profile-ports.contract.ts",
+      "expression": "import { HOST_USER_PROFILE_OPS } from './host-user-profile-ports.contract';"
+    },
+    {
+      "path": "src/infrastructure/user-profile/user-profile-service.ts",
+      "line": 7,
+      "endLine": 7,
+      "module": "../../domains/user-profile",
+      "resolvedPath": "src/domains/user-profile/index.ts",
+      "expression": "import type { UserProfileVm } from '../../domains/user-profile';"
+    },
+    {
+      "path": "src/infrastructure/user-profile/user-profile-service.ts",
+      "line": 8,
+      "endLine": 13,
+      "module": "../host/host-catalog-http",
+      "resolvedPath": "src/infrastructure/host/host-catalog-http.ts",
+      "expression": "import {\n  fetchHostOwnUserProfile,\n  fetchHostProfilesByUserIds,\n  isHostLibraryEnabled,\n  uploadHostUserAvatar,\n} from '../host/host-catalog-http';"
+    },
+    {
+      "path": "src/infrastructure/user-profile/user-profile-service.ts",
+      "line": 38,
+      "endLine": 38,
+      "module": "../media/optimizer",
+      "resolvedPath": "src/infrastructure/media/optimizer/index.ts",
+      "expression": "import('../media/optimizer')",
+      "kind": "dynamic-import"
+    }
+  ],
+  "publicDeclarations": [
+    {
+      "path": "src/infrastructure/user-profile/account-avatar-changed.ts",
+      "line": 11,
+      "endLine": 11,
+      "text": "export const ACCOUNT_AVATAR_CHANGED_EVENT = 'sagatree:account-avatar-changed';"
+    },
+    {
+      "path": "src/infrastructure/user-profile/account-avatar-changed.ts",
+      "line": 13,
+      "endLine": 15,
+      "text": "export type AccountAvatarChangedDetail = {\n  readonly avatarUrl: string | null;\n};"
+    },
+    {
+      "path": "src/infrastructure/user-profile/account-avatar-changed.ts",
+      "line": 17,
+      "endLine": 19,
+      "text": "export function notifyAccountAvatarChanged(avatarUrl: string | null): void {\n  publishAccountAvatarUrl(avatarUrl);\n}"
+    },
+    {
+      "path": "src/infrastructure/user-profile/account-avatar-changed.ts",
+      "line": 21,
+      "endLine": 25,
+      "text": "export function subscribeAccountAvatarChanged(\n  listener: (avatarUrl: string | null) => void,\n): () => void {\n  return subscribeAccountAvatarUrl(listener);\n}"
+    },
+    {
+      "path": "src/infrastructure/user-profile/account-avatar-store.ts",
+      "line": 17,
+      "endLine": 19,
+      "text": "export function getAccountAvatarUrlCache(): string | null {\n  return cachedAvatarUrl;\n}"
+    },
+    {
+      "path": "src/infrastructure/user-profile/account-avatar-store.ts",
+      "line": 21,
+      "endLine": 23,
+      "text": "export function getAccountAvatarLoadedUserId(): string | null {\n  return remoteLoadedUserId;\n}"
+    },
+    {
+      "path": "src/infrastructure/user-profile/account-avatar-store.ts",
+      "line": 25,
+      "endLine": 31,
+      "text": "export function publishAccountAvatarUrl(avatarUrl: string | null): void {\n  if (cachedAvatarUrl === avatarUrl) return;\n  cachedAvatarUrl = avatarUrl;\n  for (const listener of listeners) {\n    listener(avatarUrl);\n  }\n}"
+    },
+    {
+      "path": "src/infrastructure/user-profile/account-avatar-store.ts",
+      "line": 33,
+      "endLine": 41,
+      "text": "export function clearAccountAvatarUrlCache(): void {\n  remoteLoadedUserId = null;\n  loadInFlight = null;\n  if (cachedAvatarUrl === null) return;\n  cachedAvatarUrl = null;\n  for (const listener of listeners) {\n    listener(null);\n  }\n}"
+    },
+    {
+      "path": "src/infrastructure/user-profile/account-avatar-store.ts",
+      "line": 43,
+      "endLine": 48,
+      "text": "export function subscribeAccountAvatarUrl(listener: AvatarListener): () => void {\n  listeners.add(listener);\n  return () => {\n    listeners.delete(listener);\n  };\n}"
+    },
+    {
+      "path": "src/infrastructure/user-profile/account-avatar-store.ts",
+      "line": 56,
+      "endLine": 83,
+      "text": "export function ensureAccountAvatarLoaded(\n  userId: string,\n  loadProfile: ProfileLoader,\n): Promise<void> {\n  if (remoteLoadedUserId === userId) {\n    return Promise.resolve();\n  }\n  if (loadInFlight) return loadInFlight;\n\n  loadInFlight = (async () => {\n    try {\n      const row = await loadProfile();\n      const remote = row?.avatarUrl ?? null;\n      remoteLoadedUserId = userId;\n      if (remote) {\n        publishAccountAvatarUrl(remote);\n      }\n      // else: keep optimistic cache (local Object URL) if present\n    } catch (err) {\n      console.error('Account avatar remote load failed:', err);\n      remoteLoadedUserId = userId;\n    } finally {\n      loadInFlight = null;\n    }\n  })();\n\n  return loadInFlight;\n}"
+    },
+    {
+      "path": "src/infrastructure/user-profile/host-user-profile-adapter.ts",
+      "line": 12,
+      "endLine": 15,
+      "text": "export type HostUserProfileAdapter = HostUserProfilePorts & {\n  readonly transport: 'host';\n  readonly ops: typeof HOST_USER_PROFILE_OPS;\n};"
+    },
+    {
+      "path": "src/infrastructure/user-profile/host-user-profile-adapter.ts",
+      "line": 21,
+      "endLine": 33,
+      "text": "export function createHostUserProfileAdapter(\n  ports: HostUserProfilePorts,\n): HostUserProfileAdapter {\n  return {\n    transport: 'host',\n    ops: HOST_USER_PROFILE_OPS,\n    ensureOwnProfileRow: (actorId) => ports.ensureOwnProfileRow(actorId),\n    getOwnProfile: (actorId) => ports.getOwnProfile(actorId),\n    getProfilesByUserIds: (actorId, userIds) =>\n      ports.getProfilesByUserIds(actorId, userIds),\n    uploadAvatar: (actorId, input) => ports.uploadAvatar(actorId, input),\n  };\n}"
+    },
+    {
+      "path": "src/infrastructure/user-profile/host-user-profile-ports.contract.ts",
+      "line": 11,
+      "endLine": 13,
+      "text": "export type HostUserProfileResult<T> =\n  | { readonly ok: true; readonly value: T }\n  | { readonly ok: false; readonly error: string; readonly code?: string };"
+    },
+    {
+      "path": "src/infrastructure/user-profile/host-user-profile-ports.contract.ts",
+      "line": 15,
+      "endLine": 21,
+      "text": "export type HostUserProfileVm = {\n  readonly id: string;\n  readonly displayName: string | null;\n  readonly avatarPath: string | null;\n  readonly avatarUrl: string | null;\n  readonly updatedAt: string | null;\n};"
+    },
+    {
+      "path": "src/infrastructure/user-profile/host-user-profile-ports.contract.ts",
+      "line": 23,
+      "endLine": 28,
+      "text": "export type HostUploadUserAvatarInput = {\n  readonly bytes: Uint8Array;\n  readonly contentType?: string;\n  /** Never trusted — foreign claim → DENY on host. */\n  readonly claimedOwnerUserId?: string;\n};"
+    },
+    {
+      "path": "src/infrastructure/user-profile/host-user-profile-ports.contract.ts",
+      "line": 34,
+      "endLine": 49,
+      "text": "export type HostUserProfilePorts = {\n  readonly ensureOwnProfileRow: (\n    actorId: string,\n  ) => Promise<HostUserProfileResult<void>>;\n  readonly getOwnProfile: (\n    actorId: string,\n  ) => Promise<HostUserProfileResult<HostUserProfileVm | null>>;\n  readonly getProfilesByUserIds: (\n    actorId: string,\n    userIds: readonly string[],\n  ) => Promise<HostUserProfileResult<readonly HostUserProfileVm[]>>;\n  readonly uploadAvatar: (\n    actorId: string,\n    input: HostUploadUserAvatarInput,\n  ) => Promise<HostUserProfileResult<HostUserProfileVm>>;\n};"
+    },
+    {
+      "path": "src/infrastructure/user-profile/host-user-profile-ports.contract.ts",
+      "line": 52,
+      "endLine": 57,
+      "text": "export const HOST_USER_PROFILE_OPS = [\n  'ensureOwnProfileRow',\n  'getOwnProfile',\n  'getProfilesByUserIds',\n  'uploadAvatar',\n] as const;"
+    },
+    {
+      "path": "src/infrastructure/user-profile/host-user-profile-ports.contract.ts",
+      "line": 59,
+      "endLine": 59,
+      "text": "export type HostUserProfileOp = (typeof HOST_USER_PROFILE_OPS)[number];"
+    },
+    {
+      "path": "src/infrastructure/user-profile/user-profile-service.ts",
+      "line": 15,
+      "endLine": 22,
+      "text": "export type UploadUserAvatarOptions = {\n  /**\n   * When true, skip client optimize (caller already ran user-avatar intake).\n   * Storage MIME/magic-byte/owner checks still run on the host.\n   */\n  readonly alreadyOptimized?: boolean;\n  readonly signal?: AbortSignal;\n};"
+    },
+    {
+      "path": "src/infrastructure/user-profile/user-profile-service.ts",
+      "line": 34,
+      "endLine": 74,
+      "text": "export async function prepareUserAvatarFile(\n  file: File,\n  signal?: AbortSignal,\n): Promise<File> {\n  const { optimizeMedia } = await import('../media/optimizer');\n  let optimizedBytes: Uint8Array | undefined;\n  const result = await optimizeMedia({\n    kind: 'image',\n    profileId: 'user-avatar',\n    mimeType: file.type || 'application/octet-stream',\n    byteSize: file.size,\n    bytes: file,\n    signal,\n    onOptimizedBytes: (bytes) => {\n      optimizedBytes = bytes;\n    },\n  });\n\n  if (result.status === 'unchanged') {\n    return file;\n  }\n\n  if (result.status === 'optimized') {\n    if (!optimizedBytes || optimizedBytes.byteLength === 0) {\n      throw new Error('Avatar-Optimierung lieferte keine Bytes (kein stilles Original).');\n    }\n    const copy = new Uint8Array(optimizedBytes.byteLength);\n    copy.set(optimizedBytes);\n    const base = file.name.replace(/\\.[^.]+$/, '') || 'avatar';\n    const ext = result.outputMimeType === 'image/webp' ? 'webp' : 'bin';\n    return new File([copy], `${base}.${ext}`, { type: result.outputMimeType });\n  }\n\n  if (result.status === 'aborted') {\n    throw new Error(result.message || 'Avatar-Optimierung abgebrochen.');\n  }\n\n  throw new Error(\n    result.message || `Avatar-Optimierung fehlgeschlagen (${result.status}).`,\n  );\n}"
+    },
+    {
+      "path": "src/infrastructure/user-profile/user-profile-service.ts",
+      "line": 76,
+      "endLine": 96,
+      "text": "export const userProfileService = {\n  async getOwnProfile(): Promise<UserProfileVm | null> {\n    assertHost();\n    return fetchHostOwnUserProfile();\n  },\n\n  async getProfilesByUserIds(userIds: readonly string[]): Promise<UserProfileVm[]> {\n    assertHost();\n    return fetchHostProfilesByUserIds(userIds);\n  },\n\n  async uploadAvatar(file: File, options?: UploadUserAvatarOptions): Promise<UserProfileVm> {\n    assertHost();\n    const prepared = options?.alreadyOptimized\n      ? file\n      : await prepareUserAvatarFile(file, options?.signal);\n    return uploadHostUserAvatar(prepared);\n  },\n\n  prepareAvatarFile: prepareUserAvatarFile,\n};"
+    }
+  ],
+  "operationDeclarations": [
+    {
+      "path": "src/infrastructure/user-profile/account-avatar-changed.ts",
+      "line": 17,
+      "endLine": 19,
+      "name": "notifyAccountAvatarChanged",
+      "text": "export function notifyAccountAvatarChanged(avatarUrl: string | null): void {\n  publishAccountAvatarUrl(avatarUrl);\n}"
+    },
+    {
+      "path": "src/infrastructure/user-profile/account-avatar-changed.ts",
+      "line": 21,
+      "endLine": 25,
+      "name": "subscribeAccountAvatarChanged",
+      "text": "export function subscribeAccountAvatarChanged(\n  listener: (avatarUrl: string | null) => void,\n): () => void {\n  return subscribeAccountAvatarUrl(listener);\n}"
+    },
+    {
+      "path": "src/infrastructure/user-profile/account-avatar-store.ts",
+      "line": 17,
+      "endLine": 19,
+      "name": "getAccountAvatarUrlCache",
+      "text": "export function getAccountAvatarUrlCache(): string | null {\n  return cachedAvatarUrl;\n}"
+    },
+    {
+      "path": "src/infrastructure/user-profile/account-avatar-store.ts",
+      "line": 21,
+      "endLine": 23,
+      "name": "getAccountAvatarLoadedUserId",
+      "text": "export function getAccountAvatarLoadedUserId(): string | null {\n  return remoteLoadedUserId;\n}"
+    },
+    {
+      "path": "src/infrastructure/user-profile/account-avatar-store.ts",
+      "line": 25,
+      "endLine": 31,
+      "name": "publishAccountAvatarUrl",
+      "text": "export function publishAccountAvatarUrl(avatarUrl: string | null): void {\n  if (cachedAvatarUrl === avatarUrl) return;\n  cachedAvatarUrl = avatarUrl;\n  for (const listener of listeners) {\n    listener(avatarUrl);\n  }\n}"
+    },
+    {
+      "path": "src/infrastructure/user-profile/account-avatar-store.ts",
+      "line": 33,
+      "endLine": 41,
+      "name": "clearAccountAvatarUrlCache",
+      "text": "export function clearAccountAvatarUrlCache(): void {\n  remoteLoadedUserId = null;\n  loadInFlight = null;\n  if (cachedAvatarUrl === null) return;\n  cachedAvatarUrl = null;\n  for (const listener of listeners) {\n    listener(null);\n  }\n}"
+    },
+    {
+      "path": "src/infrastructure/user-profile/account-avatar-store.ts",
+      "line": 43,
+      "endLine": 48,
+      "name": "subscribeAccountAvatarUrl",
+      "text": "export function subscribeAccountAvatarUrl(listener: AvatarListener): () => void {\n  listeners.add(listener);\n  return () => {\n    listeners.delete(listener);\n  };\n}"
+    },
+    {
+      "path": "src/infrastructure/user-profile/account-avatar-store.ts",
+      "line": 45,
+      "endLine": 47,
+      "name": "callback",
+      "text": "() => {\n    listeners.delete(listener);\n  }"
+    },
+    {
+      "path": "src/infrastructure/user-profile/account-avatar-store.ts",
+      "line": 56,
+      "endLine": 83,
+      "name": "ensureAccountAvatarLoaded",
+      "text": "export function ensureAccountAvatarLoaded(\n  userId: string,\n  loadProfile: ProfileLoader,\n): Promise<void> {\n  if (remoteLoadedUserId === userId) {\n    return Promise.resolve();\n  }\n  if (loadInFlight) return loadInFlight;\n\n  loadInFlight = (async () => {\n    try {\n      const row = await loadProfile();\n      const remote = row?.avatarUrl ?? null;\n      remoteLoadedUserId = userId;\n      if (remote) {\n        publishAccountAvatarUrl(remote);\n      }\n      // else: keep optimistic cache (local Object URL) if present\n    } catch (err) {\n      console.error('Account avatar remote load failed:', err);\n      remoteLoadedUserId = userId;\n    } finally {\n      loadInFlight = null;\n    }\n  })();\n\n  return loadInFlight;\n}"
+    },
+    {
+      "path": "src/infrastructure/user-profile/account-avatar-store.ts",
+      "line": 65,
+      "endLine": 80,
+      "name": "callback",
+      "text": "async () => {\n    try {\n      const row = await loadProfile();\n      const remote = row?.avatarUrl ?? null;\n      remoteLoadedUserId = userId;\n      if (remote) {\n        publishAccountAvatarUrl(remote);\n      }\n      // else: keep optimistic cache (local Object URL) if present\n    } catch (err) {\n      console.error('Account avatar remote load failed:', err);\n      remoteLoadedUserId = userId;\n    } finally {\n      loadInFlight = null;\n    }\n  }"
+    },
+    {
+      "path": "src/infrastructure/user-profile/host-user-profile-adapter.ts",
+      "line": 21,
+      "endLine": 33,
+      "name": "createHostUserProfileAdapter",
+      "text": "export function createHostUserProfileAdapter(\n  ports: HostUserProfilePorts,\n): HostUserProfileAdapter {\n  return {\n    transport: 'host',\n    ops: HOST_USER_PROFILE_OPS,\n    ensureOwnProfileRow: (actorId) => ports.ensureOwnProfileRow(actorId),\n    getOwnProfile: (actorId) => ports.getOwnProfile(actorId),\n    getProfilesByUserIds: (actorId, userIds) =>\n      ports.getProfilesByUserIds(actorId, userIds),\n    uploadAvatar: (actorId, input) => ports.uploadAvatar(actorId, input),\n  };\n}"
+    },
+    {
+      "path": "src/infrastructure/user-profile/host-user-profile-adapter.ts",
+      "line": 27,
+      "endLine": 27,
+      "name": "callback",
+      "text": "(actorId) => ports.ensureOwnProfileRow(actorId)"
+    },
+    {
+      "path": "src/infrastructure/user-profile/host-user-profile-adapter.ts",
+      "line": 28,
+      "endLine": 28,
+      "name": "callback",
+      "text": "(actorId) => ports.getOwnProfile(actorId)"
+    },
+    {
+      "path": "src/infrastructure/user-profile/host-user-profile-adapter.ts",
+      "line": 29,
+      "endLine": 30,
+      "name": "callback",
+      "text": "(actorId, userIds) =>\n      ports.getProfilesByUserIds(actorId, userIds)"
+    },
+    {
+      "path": "src/infrastructure/user-profile/host-user-profile-adapter.ts",
+      "line": 31,
+      "endLine": 31,
+      "name": "callback",
+      "text": "(actorId, input) => ports.uploadAvatar(actorId, input)"
+    },
+    {
+      "path": "src/infrastructure/user-profile/user-profile-service.ts",
+      "line": 24,
+      "endLine": 28,
+      "name": "assertHost",
+      "text": "function assertHost(): void {\n  if (!isHostLibraryEnabled()) {\n    throw new Error('Host-Anmeldung nicht konfiguriert (VITE_SAGATREE_HOST_AUTH_URL fehlt).');\n  }\n}"
+    },
+    {
+      "path": "src/infrastructure/user-profile/user-profile-service.ts",
+      "line": 34,
+      "endLine": 74,
+      "name": "prepareUserAvatarFile",
+      "text": "export async function prepareUserAvatarFile(\n  file: File,\n  signal?: AbortSignal,\n): Promise<File> {\n  const { optimizeMedia } = await import('../media/optimizer');\n  let optimizedBytes: Uint8Array | undefined;\n  const result = await optimizeMedia({\n    kind: 'image',\n    profileId: 'user-avatar',\n    mimeType: file.type || 'application/octet-stream',\n    byteSize: file.size,\n    bytes: file,\n    signal,\n    onOptimizedBytes: (bytes) => {\n      optimizedBytes = bytes;\n    },\n  });\n\n  if (result.status === 'unchanged') {\n    return file;\n  }\n\n  if (result.status === 'optimized') {\n    if (!optimizedBytes || optimizedBytes.byteLength === 0) {\n      throw new Error('Avatar-Optimierung lieferte keine Bytes (kein stilles Original).');\n    }\n    const copy = new Uint8Array(optimizedBytes.byteLength);\n    copy.set(optimizedBytes);\n    const base = file.name.replace(/\\.[^.]+$/, '') || 'avatar';\n    const ext = result.outputMimeType === 'image/webp' ? 'webp' : 'bin';\n    return new File([copy], `${base}.${ext}`, { type: result.outputMimeType });\n  }\n\n  if (result.status === 'aborted') {\n    throw new Error(result.message || 'Avatar-Optimierung abgebrochen.');\n  }\n\n  throw new Error(\n    result.message || `Avatar-Optimierung fehlgeschlagen (${result.status}).`,\n  );\n}"
+    },
+    {
+      "path": "src/infrastructure/user-profile/user-profile-service.ts",
+      "line": 47,
+      "endLine": 49,
+      "name": "callback",
+      "text": "(bytes) => {\n      optimizedBytes = bytes;\n    }"
+    },
+    {
+      "path": "src/infrastructure/user-profile/user-profile-service.ts",
+      "line": 77,
+      "endLine": 80,
+      "name": "getOwnProfile",
+      "text": "async getOwnProfile(): Promise<UserProfileVm | null> {\n    assertHost();\n    return fetchHostOwnUserProfile();\n  }"
+    },
+    {
+      "path": "src/infrastructure/user-profile/user-profile-service.ts",
+      "line": 82,
+      "endLine": 85,
+      "name": "getProfilesByUserIds",
+      "text": "async getProfilesByUserIds(userIds: readonly string[]): Promise<UserProfileVm[]> {\n    assertHost();\n    return fetchHostProfilesByUserIds(userIds);\n  }"
+    },
+    {
+      "path": "src/infrastructure/user-profile/user-profile-service.ts",
+      "line": 87,
+      "endLine": 93,
+      "name": "uploadAvatar",
+      "text": "async uploadAvatar(file: File, options?: UploadUserAvatarOptions): Promise<UserProfileVm> {\n    assertHost();\n    const prepared = options?.alreadyOptimized\n      ? file\n      : await prepareUserAvatarFile(file, options?.signal);\n    return uploadHostUserAvatar(prepared);\n  }"
+    }
+  ]
+}

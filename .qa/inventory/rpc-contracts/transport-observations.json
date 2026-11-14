@@ -1,0 +1,133 @@
+{
+  "source": {
+    "repositoryHead": "839a8c256f53fc7f3be3375efd127ae07524458f",
+    "node": "v24.19.0",
+    "platform": "linux-x64",
+    "harnessSources": [
+      {
+        "path": "scripts/stack-migration-db/atlas-product.spec.ts",
+        "sha256": "dcc51c51a2febaf79c39735471fa300f893957e35893a1a9fae9ed4edae1637a"
+      },
+      {
+        "path": "scripts/stack-migration-db/bootstrap.mjs",
+        "sha256": "a95a2f6f8afbf58194f267fdbbe2dd90e9d4d7b30ca139e2963a30c14f0bead7"
+      },
+      {
+        "path": "scripts/stack-migration-db/canary.mjs",
+        "sha256": "3cae349311941f07ff4fb166868e3ec5715ea077b7f6dd7e3a2a08b0d3f4a04c"
+      },
+      {
+        "path": "scripts/stack-migration-db/cluster.mjs",
+        "sha256": "14ddbe194b0fce90c0285201986637ed9c52de4828483b06c65ec4e96ee2c25c"
+      },
+      {
+        "path": "scripts/stack-migration-db/evidence.mjs",
+        "sha256": "3c7870427458a5bb5d6351e84f559a0c925f5849362d94155d4429537e517758"
+      },
+      {
+        "path": "scripts/stack-migration-db/fixtures.mjs",
+        "sha256": "8850071b22593dbe037d3345ca27ed097e4ba9c42b5f635dd363cf245097a997"
+      },
+      {
+        "path": "scripts/stack-migration-db/package-lock.json",
+        "sha256": "02c13222021b5aef4958610ce210a1dff3e1f59cfc6938a7127d4d05c51d9004"
+      },
+      {
+        "path": "scripts/stack-migration-db/package.json",
+        "sha256": "0e43903d7994ff4e3e1572a413fd51322c0e25858e3ced65cdb19ad9ea0660b4"
+      },
+      {
+        "path": "scripts/stack-migration-db/probes.mjs",
+        "sha256": "e4ca427f071097be227190a644a3efa10a61c457bf54de1708b462618e70c3b6"
+      },
+      {
+        "path": "scripts/stack-migration-db/product-playwright.config.ts",
+        "sha256": "0ee7b18f5b853b3b6482f86a7dd0efbc58976edfbdb557dc3a25947c0590bffc"
+      },
+      {
+        "path": "scripts/stack-migration-db/product-run.mjs",
+        "sha256": "039352fb0f5f29ec8e6a8ced3ea95f871a5fff4ac7c75664d378f366dc81db91"
+      },
+      {
+        "path": "scripts/stack-migration-db/provision-browser.py",
+        "sha256": "83fb6f826df3b9b949b1ef8b88dc206fa673bc028bc7e9055eed784deb40753e"
+      },
+      {
+        "path": "scripts/stack-migration-db/provision-tools.py",
+        "sha256": "e1e824b0b866a93696b0ad7739847a1e6530e1032f1cbc4a2161ba19cb5ef196"
+      },
+      {
+        "path": "scripts/stack-migration-db/run.mjs",
+        "sha256": "330835c2995754b2490ac51889e0adb84520d402837d29a116c7a4093ffb5c1d"
+      },
+      {
+        "path": "scripts/stack-migration-db/services.mjs",
+        "sha256": "7bd2045bc1ae732609a1107fa636a2b475f73b84279f9b7a7f7156baf1cfe5e8"
+      }
+    ],
+    "scope": "Repository HEAD identifies the checkout; hashes identify the executed working-tree harness and each SQL source separately."
+  },
+  "services": [
+    {
+      "name": "gotrue",
+      "repository": "supabase/gotrue",
+      "tag": "v2.143.0",
+      "manifest": "sha256:fb3c5ba85da7f02a84500b69b86f7a1d121b8922dde5ffb987d10fd6e23de330",
+      "target": "usr/local/bin/auth",
+      "layer": "sha256:d7e89007946b899674f686692571c44e0a1fe3bedd446d4f6c0da94fc81e1d72",
+      "sha256": "ce0dab6dab3b2638e3d9993b1e7abb030273f5bf6f301c8467e21a1cf1a6d133",
+      "bytes": 33150230
+    },
+    {
+      "name": "postgrest",
+      "repository": "postgrest/postgrest",
+      "tag": "v12.0.1",
+      "manifest": "sha256:d3d040b53ed98cf4281266589523943cf727cc30b43cdcec346f073842042122",
+      "target": "bin/postgrest",
+      "layer": "sha256:f01ccac3e0435d0ab9fc214058930754d2ee08e34b5eca926dbeaf5f158c563d",
+      "sha256": "0d005c98f464815a0c7642eafa4e562ad701957eaa475e9cec8bb329ea0b4cf4",
+      "bytes": 17398464
+    }
+  ],
+  "observedAt": "2026-10-21T08:22:09.006Z",
+  "observations": [
+    {
+      "actor": "outsider",
+      "actorId": "a7700000-0000-4000-8000-000000000005",
+      "authentication": "Actual GoTrue password grant",
+      "method": "POST",
+      "path": "/rest/v1/rpc/list_world_atlas_maps",
+      "request": {
+        "p_world_profile_id": "a7700000-0000-4000-8000-000000000101",
+        "p_player_view": false,
+        "p_saga_public_id": "SA-FX234"
+      },
+      "status": 403,
+      "response": {
+        "code": "42501",
+        "details": null,
+        "hint": null,
+        "message": "forbidden"
+      }
+    },
+    {
+      "actor": "player1",
+      "actorId": "a7700000-0000-4000-8000-000000000003",
+      "authentication": "Actual GoTrue password grant",
+      "method": "POST",
+      "path": "/rest/v1/rpc/get_world_atlas_map",
+      "request": {
+        "p_map_id": "a7700000-0000-4000-8000-000000000502",
+        "p_player_view": true,
+        "p_saga_public_id": "SA-FX234"
+      },
+      "status": 500,
+      "response": {
+        "code": "P0002",
+        "details": null,
+        "hint": null,
+        "message": "not found"
+      }
+    }
+  ]
+}

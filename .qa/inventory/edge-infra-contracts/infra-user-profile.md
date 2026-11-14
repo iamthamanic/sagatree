@@ -1,0 +1,390 @@
+# Infrastructure contract: user-profile
+
+**Status: SPEC; current branch source verified.** Implementation issue: **#811**.
+
+Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
+
+Exact AST snapshot: [infra-user-profile.json](source-contracts/infra-user-profile.json) (SHA-256 `6a523c7e9097f63faf6e1bc3ad971416b643d9cdeafc6ce78df020eed66747b0`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+
+## Facade behavior and authorization boundary
+
+ensureOwnProfileRow performs own select-then-insert and treats23505 duplicate race as success; getOwnProfile maps displayName/avatarPath/avatarUrl/updatedAt. getProfilesByUserIds trims/deduplicates arbitrary requested IDs, queries visible profile rows and signs avatar URLs in parallel for lobby display. uploadAvatar validates PNG/JPEG/WebP magic/MIME and<=5MiB, uploads owner/random path, updates own row, cleans failed new object best-effort and old object asynchronously, then signs604800s URL.
+
+Writes derive own user identity and storage prefix from authenticated user. Batch profile display intentionally reads visible other-user profiles and signs their visible avatars under actual table/storage policies. Do not invent an owner-only read restriction that breaks lobby identity; do not allow foreign profile writes.
+
+The adapter establishes request/filter behavior. Server permission and rollback guarantees require the linked effective SQL/RLS contracts and backend fixtures; a source-only adapter review does not prove a live RLS policy.
+
+## Complete backend inventory
+
+RPCs (0): none.
+
+Tables (0): none.
+
+Storage buckets (0): none.
+
+Edge invokes (0): none.
+
+Realtime call sites: 0. Direct fetch sites: 0. Explicit auth/helper sites: 0.
+
+## Complete implementation dependencies
+
+| Kind | Contract dependency | Implementation issue | Additional policy/group |
+|---|---|---|---|
+| infra | `media` | #805 |  |
+
+## Acceptance and negative tests (required, not executed)
+
+- Own row race23505 succeeds; actual select/insert errors fail with formatted details.
+- Batch IDs are trimmed/deduplicated, absent rows omitted, signing failures returnavatarUrl null, and visible teammate profiles remain displayable.
+- Valid<=5MiB avatar replaces own path and emits cache/event update; foreign writes denied; invalid magic/MIME/size rejected; DB update failure cleans new object while retaining previous row.
+
+## Observed source defects and explicit successor decisions
+
+- Object deletion is best effort/asynchronous and separate from profile row update; no atomic storage+DB transaction. There is no standalone delete-avatar or display-name mutation method in this facade.
+
+## All backend calls, arguments, filters and result handling
+
+This area has no RPC, Edge, table, storage, realtime, fetch or auth calls. Its public browser processing/worker API is retained in the complete public declarations.
+
+## Complete public declarations and facade operation contracts
+
+### src/infrastructure/user-profile/account-avatar-changed.ts:11
+
+```ts
+export const ACCOUNT_AVATAR_CHANGED_EVENT = 'sagatree:account-avatar-changed';
+```
+
+### src/infrastructure/user-profile/account-avatar-changed.ts:13
+
+```ts
+export type AccountAvatarChangedDetail = {
+  readonly avatarUrl: string | null;
+};
+```
+
+### src/infrastructure/user-profile/account-avatar-changed.ts:17
+
+```ts
+export function notifyAccountAvatarChanged(avatarUrl: string | null): void {
+  publishAccountAvatarUrl(avatarUrl);
+}
+```
+
+### src/infrastructure/user-profile/account-avatar-changed.ts:21
+
+```ts
+export function subscribeAccountAvatarChanged(
+  listener: (avatarUrl: string | null) => void,
+): () => void {
+  return subscribeAccountAvatarUrl(listener);
+}
+```
+
+### src/infrastructure/user-profile/account-avatar-store.ts:17
+
+```ts
+export function getAccountAvatarUrlCache(): string | null {
+  return cachedAvatarUrl;
+}
+```
+
+### src/infrastructure/user-profile/account-avatar-store.ts:21
+
+```ts
+export function getAccountAvatarLoadedUserId(): string | null {
+  return remoteLoadedUserId;
+}
+```
+
+### src/infrastructure/user-profile/account-avatar-store.ts:25
+
+```ts
+export function publishAccountAvatarUrl(avatarUrl: string | null): void {
+  if (cachedAvatarUrl === avatarUrl) return;
+  cachedAvatarUrl = avatarUrl;
+  for (const listener of listeners) {
+    listener(avatarUrl);
+  }
+}
+```
+
+### src/infrastructure/user-profile/account-avatar-store.ts:33
+
+```ts
+export function clearAccountAvatarUrlCache(): void {
+  remoteLoadedUserId = null;
+  loadInFlight = null;
+  if (cachedAvatarUrl === null) return;
+  cachedAvatarUrl = null;
+  for (const listener of listeners) {
+    listener(null);
+  }
+}
+```
+
+### src/infrastructure/user-profile/account-avatar-store.ts:43
+
+```ts
+export function subscribeAccountAvatarUrl(listener: AvatarListener): () => void {
+  listeners.add(listener);
+  return () => {
+    listeners.delete(listener);
+  };
+}
+```
+
+### src/infrastructure/user-profile/account-avatar-store.ts:56
+
+```ts
+export function ensureAccountAvatarLoaded(
+  userId: string,
+  loadProfile: ProfileLoader,
+): Promise<void> {
+  if (remoteLoadedUserId === userId) {
+    return Promise.resolve();
+  }
+  if (loadInFlight) return loadInFlight;
+
+  loadInFlight = (async () => {
+    try {
+      const row = await loadProfile();
+      const remote = row?.avatarUrl ?? null;
+      remoteLoadedUserId = userId;
+      if (remote) {
+        publishAccountAvatarUrl(remote);
+      }
+      // else: keep optimistic cache (local Object URL) if present
+    } catch (err) {
+      console.error('Account avatar remote load failed:', err);
+      remoteLoadedUserId = userId;
+    } finally {
+      loadInFlight = null;
+    }
+  })();
+
+  return loadInFlight;
+}
+```
+
+### src/infrastructure/user-profile/host-user-profile-adapter.ts:12
+
+```ts
+export type HostUserProfileAdapter = HostUserProfilePorts & {
+  readonly transport: 'host';
+  readonly ops: typeof HOST_USER_PROFILE_OPS;
+};
+```
+
+### src/infrastructure/user-profile/host-user-profile-adapter.ts:21
+
+```ts
+export function createHostUserProfileAdapter(
+  ports: HostUserProfilePorts,
+): HostUserProfileAdapter {
+  return {
+    transport: 'host',
+    ops: HOST_USER_PROFILE_OPS,
+    ensureOwnProfileRow: (actorId) => ports.ensureOwnProfileRow(actorId),
+    getOwnProfile: (actorId) => ports.getOwnProfile(actorId),
+    getProfilesByUserIds: (actorId, userIds) =>
+      ports.getProfilesByUserIds(actorId, userIds),
+    uploadAvatar: (actorId, input) => ports.uploadAvatar(actorId, input),
+  };
+}
+```
+
+### src/infrastructure/user-profile/host-user-profile-ports.contract.ts:11
+
+```ts
+export type HostUserProfileResult<T> =
+  | { readonly ok: true; readonly value: T }
+  | { readonly ok: false; readonly error: string; readonly code?: string };
+```
+
+### src/infrastructure/user-profile/host-user-profile-ports.contract.ts:15
+
+```ts
+export type HostUserProfileVm = {
+  readonly id: string;
+  readonly displayName: string | null;
+  readonly avatarPath: string | null;
+  readonly avatarUrl: string | null;
+  readonly updatedAt: string | null;
+};
+```
+
+### src/infrastructure/user-profile/host-user-profile-ports.contract.ts:23
+
+```ts
+export type HostUploadUserAvatarInput = {
+  readonly bytes: Uint8Array;
+  readonly contentType?: string;
+  /** Never trusted — foreign claim → DENY on host. */
+  readonly claimedOwnerUserId?: string;
+};
+```
+
+### src/infrastructure/user-profile/host-user-profile-ports.contract.ts:34
+
+```ts
+export type HostUserProfilePorts = {
+  readonly ensureOwnProfileRow: (
+    actorId: string,
+  ) => Promise<HostUserProfileResult<void>>;
+  readonly getOwnProfile: (
+    actorId: string,
+  ) => Promise<HostUserProfileResult<HostUserProfileVm | null>>;
+  readonly getProfilesByUserIds: (
+    actorId: string,
+    userIds: readonly string[],
+  ) => Promise<HostUserProfileResult<readonly HostUserProfileVm[]>>;
+  readonly uploadAvatar: (
+    actorId: string,
+    input: HostUploadUserAvatarInput,
+  ) => Promise<HostUserProfileResult<HostUserProfileVm>>;
+};
+```
+
+### src/infrastructure/user-profile/host-user-profile-ports.contract.ts:52
+
+```ts
+export const HOST_USER_PROFILE_OPS = [
+  'ensureOwnProfileRow',
+  'getOwnProfile',
+  'getProfilesByUserIds',
+  'uploadAvatar',
+] as const;
+```
+
+### src/infrastructure/user-profile/host-user-profile-ports.contract.ts:59
+
+```ts
+export type HostUserProfileOp = (typeof HOST_USER_PROFILE_OPS)[number];
+```
+
+### src/infrastructure/user-profile/user-profile-service.ts:15
+
+```ts
+export type UploadUserAvatarOptions = {
+  /**
+   * When true, skip client optimize (caller already ran user-avatar intake).
+   * Storage MIME/magic-byte/owner checks still run on the host.
+   */
+  readonly alreadyOptimized?: boolean;
+  readonly signal?: AbortSignal;
+};
+```
+
+### src/infrastructure/user-profile/user-profile-service.ts:34
+
+```ts
+export async function prepareUserAvatarFile(
+  file: File,
+  signal?: AbortSignal,
+): Promise<File> {
+  const { optimizeMedia } = await import('../media/optimizer');
+  let optimizedBytes: Uint8Array | undefined;
+  const result = await optimizeMedia({
+    kind: 'image',
+    profileId: 'user-avatar',
+    mimeType: file.type || 'application/octet-stream',
+    byteSize: file.size,
+    bytes: file,
+    signal,
+    onOptimizedBytes: (bytes) => {
+      optimizedBytes = bytes;
+    },
+  });
+
+  if (result.status === 'unchanged') {
+    return file;
+  }
+
+  if (result.status === 'optimized') {
+    if (!optimizedBytes || optimizedBytes.byteLength === 0) {
+      throw new Error('Avatar-Optimierung lieferte keine Bytes (kein stilles Original).');
+    }
+    const copy = new Uint8Array(optimizedBytes.byteLength);
+    copy.set(optimizedBytes);
+    const base = file.name.replace(/\.[^.]+$/, '') || 'avatar';
+    const ext = result.outputMimeType === 'image/webp' ? 'webp' : 'bin';
+    return new File([copy], `${base}.${ext}`, { type: result.outputMimeType });
+  }
+
+  if (result.status === 'aborted') {
+    throw new Error(result.message || 'Avatar-Optimierung abgebrochen.');
+  }
+
+  throw new Error(
+    result.message || `Avatar-Optimierung fehlgeschlagen (${result.status}).`,
+  );
+}
+```
+
+### src/infrastructure/user-profile/user-profile-service.ts:76
+
+```ts
+export const userProfileService = {
+  async getOwnProfile(): Promise<UserProfileVm | null> {
+    assertHost();
+    return fetchHostOwnUserProfile();
+  },
+
+  async getProfilesByUserIds(userIds: readonly string[]): Promise<UserProfileVm[]> {
+    assertHost();
+    return fetchHostProfilesByUserIds(userIds);
+  },
+
+  async uploadAvatar(file: File, options?: UploadUserAvatarOptions): Promise<UserProfileVm> {
+    assertHost();
+    const prepared = options?.alreadyOptimized
+      ? file
+      : await prepareUserAvatarFile(file, options?.signal);
+    return uploadHostUserAvatar(prepared);
+  },
+
+  prepareAvatarFile: prepareUserAvatarFile,
+};
+```
+
+
+## Remaining backend helper operations
+
+All backend operations are included in the public declarations above.
+
+## Verification source manifest
+
+| Path | SHA-256 |
+|---|---|
+| `src/domains/marketplace/contracts/marketplace.types.ts` | `000aecc695577333ad6fce27422ad02bc15f26ffca88507ebfee1fafb04b9467` |
+| `src/domains/media/index.ts` | `768ded2d0f0fd1d510d660924e787817673955dbeff021d7de9e0a8d8e38bdec` |
+| `src/domains/media/optimization-contract.ts` | `ba9216dab79a9c03f66a16b77dedf1c26d4d00d6ae2693cc5a68919d1647846d` |
+| `src/domains/media/optimization-policy.ts` | `6145574bc08d1eb94f54d488ebc1f8bc030c2a956e3e3fd24cb15a7c8e50c5ec` |
+| `src/domains/rules/ruleset-catalog/index.ts` | `c2f52133fdeaa82ca586670b79ce0144063cc852a2a5ca8b5b6b44369fc0e21e` |
+| `src/domains/rules/ruleset-catalog/types.ts` | `1b76d37fc3c90d29d3f719644e6915a66462d7b55c4c6cec07a0caadfdf1512d` |
+| `src/domains/user-profile/contracts/user-profile.types.ts` | `2f3f3472e9a3448099144be0993fd83bbbc2270050ce76dceadd8821501c26b7` |
+| `src/domains/user-profile/display-name.ts` | `87cfc4858f198e56ea2857c505162f112efd5edacde4dbb1f7fcd995b4535516` |
+| `src/domains/user-profile/index.ts` | `d094d245ff9356298ef20c48635ca3e7adcc0e1ccf180554586949e0b496c496` |
+| `src/infrastructure/host/host-catalog-http.ts` | `9049245360683a74e7e2602d35126d815d64344d384c6684e4c2c3d41aa626d3` |
+| `src/infrastructure/host/host-library-http.ts` | `c56b88c60d6c9491fc7b6e6e1143ac4985ffdab5dff16afef8a54bce79629a07` |
+| `src/infrastructure/media/optimizer/engines/audio/index.ts` | `7585190a705085692bff0896e08b4d78f791895b47e24d57deeaaa10bb669d4e` |
+| `src/infrastructure/media/optimizer/engines/image/image.worker.ts` | `d34793b4de682556d9306194cfbcd05fdafdf215da25393f955d2669c7499276` |
+| `src/infrastructure/media/optimizer/engines/image/index.ts` | `4944001b7e0f7784d487da2e60d06d845aa564e9ddd7516ff50633af1591a322` |
+| `src/infrastructure/media/optimizer/engines/image/optimize-image.ts` | `bf73e826651227f704aff5ed584546a087f22f26c68a4c45ba918dfefbe7ce3e` |
+| `src/infrastructure/media/optimizer/engines/image/raster-decode.ts` | `8ba5eda07565b10d1fb3d4090d068d12b1415399088c6c6b4a2aadc3fe4d290c` |
+| `src/infrastructure/media/optimizer/engines/image/resource-limits.ts` | `1178fc226c85aee4f4989a7bd650d0b9830b37657c7499c1cec174b4aa9af364` |
+| `src/infrastructure/media/optimizer/engines/image/types.ts` | `501095579c8bf1cc3af3a93147f4ab9fe1f280909c02e759d3d95c0f7151d45d` |
+| `src/infrastructure/media/optimizer/engines/image/webp-budget.ts` | `7e7a1669b42c38b713f35952517260a61ca636cc6f84f29c76b949e3bcc2f70c` |
+| `src/infrastructure/media/optimizer/engines/image/webp-worker-client.ts` | `718b74e3146c6723862f0a4639eb5b7905a35f70a8c0e3c6e33d530a4ef80b84` |
+| `src/infrastructure/media/optimizer/engines/model3d/index.ts` | `bcc13ca0c9f7bfa1a68e6c893509b21e682fe2c44732945fba85215042ac6d62` |
+| `src/infrastructure/media/optimizer/engines/video/index.ts` | `d8c6aaaabb2ad762d4c15f9ef4aa9bc016f5968b2512cfe52f71cb09655dd842` |
+| `src/infrastructure/media/optimizer/index.ts` | `c1b162af47239195707de742a8991bea14d85f2238108968613c3bad3d91cf02` |
+| `src/infrastructure/media/optimizer/media-optimizer.ts` | `7d58424f12b7855ccb3c0153270628850e03afc15c285b1fc2b47218918255d9` |
+| `src/infrastructure/user-profile/account-avatar-changed.ts` | `79b2b404b93bdf7174d30341c08b23662aaa412686c9b3251106e1d79fc42045` |
+| `src/infrastructure/user-profile/account-avatar-store.ts` | `ca478b00af6f5b52a531dcb244e8a2d5f92e4765bde69d1d52afa80e1542dbdb` |
+| `src/infrastructure/user-profile/host-user-profile-adapter.ts` | `c9625210b18534d7340c84a3f4202e3f775a933dbefed8de66b489c1bba9f604` |
+| `src/infrastructure/user-profile/host-user-profile-ports.contract.ts` | `7f4aaaa098bd0a8625e916074ae7c4a0e2d34b99d4effd1ccb0a890148f01511` |
+| `src/infrastructure/user-profile/index.ts` | `174c73d885fbc9316dbdfb8b0b09b1060821d40b36030a61c672150e61fecb20` |
+| `src/infrastructure/user-profile/user-profile-service.ts` | `013cd52d0e1f39653a7f50689c50e83fd9eb27339a53d1207033bf40b0cb6e4c` |
+| `src/lib/hostAuthBridge.ts` | `30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a` |
+

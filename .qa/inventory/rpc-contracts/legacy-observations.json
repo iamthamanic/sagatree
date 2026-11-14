@@ -1,0 +1,93 @@
+{
+  "schemaVersion": 1,
+  "scope": "Synthetic data, isolated PostgreSQL 15 with official Supabase bootstrap and unmodified repository migrations. Assertions of expected secure behavior are red where the legacy defect was reproduced; all helper abuse probes were rolled back.",
+  "sourceBaseline": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248",
+  "reportExportSha256": "a1686d10da7ac34700140cb8069d1866efdab77543d3bf39d095ee208270b1d5",
+  "observedAt": "2026-10-21T08:11:46.036Z",
+  "postgresVersion": "PostgreSQL 15.18 on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 7.5.0-3ubuntu1~18.04) 7.5.0, 64-bit",
+  "liveDatabaseVerified": false,
+  "productRuntimeVerified": false,
+  "securityParityApproved": false,
+  "tests": [
+    {
+      "id": "BASELINE-SEC-RAW-ATLAS",
+      "name": "Player direct table access cannot bypass hidden-map RPC projection",
+      "severity": "High",
+      "status": "passed",
+      "details": null,
+      "durationMs": 6
+    },
+    {
+      "id": "BASELINE-SEC-CROSS-SAGA",
+      "name": "Membership in saga A cannot read a map revealed only in saga B",
+      "severity": "High",
+      "status": "failed",
+      "error": "Player in saga A received the hidden map title from saga B without membership in B",
+      "sqlstate": "ERR_ASSERTION",
+      "durationMs": 17
+    },
+    {
+      "id": "BASELINE-SEC-LEGACY-MAP",
+      "name": "Player cannot disable undiscovered-pin redaction using p_player_view=false",
+      "severity": "High",
+      "status": "failed",
+      "error": "Authenticated player can disable redaction and obtain undiscovered pins\n+ actual - expected\n\n+ [\n+   {\n+     discovered: false,\n+     id: 'hidden-pin',\n+     name: 'Unrevealed legacy pin'\n+   }\n+ ]\n- []\n",
+      "sqlstate": "ERR_ASSERTION",
+      "durationMs": 25
+    },
+    {
+      "id": "BASELINE-RPC-RECAP-OVERLOAD",
+      "name": "Two-argument recap call resolves without overload ambiguity",
+      "severity": "Medium",
+      "status": "failed",
+      "error": "function public.save_session_recap_summary(uuid, text) is not unique",
+      "sqlstate": "42725",
+      "durationMs": 5
+    },
+    {
+      "id": "BASELINE-SEC-FOREIGN-LEAVE",
+      "name": "Foreign owner cannot change another session through leave_play_session",
+      "severity": "High",
+      "status": "failed",
+      "error": "Foreign leave mutated revision 6→7, events 6→7",
+      "sqlstate": "ERR_ASSERTION",
+      "durationMs": 19
+    },
+    {
+      "id": "BASELINE-SEC-EVENT-HELPER-ANON",
+      "name": "anon cannot append forged session events through a definer helper",
+      "severity": "Critical",
+      "status": "failed",
+      "error": "anon forged 1 event as another actor through append_session_event; test transaction rolled back",
+      "sqlstate": "ERR_ASSERTION",
+      "durationMs": 7
+    },
+    {
+      "id": "BASELINE-SEC-ADVENTURE-HELPER-ANON",
+      "name": "anon cannot claim GM authority in a public adventure helper",
+      "severity": "Critical",
+      "status": "failed",
+      "error": "anon wrote a project flag with p_is_gm=true through a definer helper; test transaction rolled back",
+      "sqlstate": "ERR_ASSERTION",
+      "durationMs": 9
+    },
+    {
+      "id": "BASELINE-SEC-EVENT-HELPER-AUTHENTICATED",
+      "name": "authenticated cannot append forged session events through a definer helper",
+      "severity": "High",
+      "status": "failed",
+      "error": "authenticated forged 1 event as another actor through append_session_event; test transaction rolled back",
+      "sqlstate": "ERR_ASSERTION",
+      "durationMs": 7
+    },
+    {
+      "id": "BASELINE-SEC-ADVENTURE-HELPER-AUTHENTICATED",
+      "name": "authenticated cannot claim GM authority in a public adventure helper",
+      "severity": "High",
+      "status": "failed",
+      "error": "authenticated wrote a project flag with p_is_gm=true through a definer helper; test transaction rolled back",
+      "sqlstate": "ERR_ASSERTION",
+      "durationMs": 8
+    }
+  ]
+}

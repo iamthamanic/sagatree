@@ -1,0 +1,2097 @@
+{
+  "schemaVersion": 1,
+  "area": "npc-creature",
+  "evidenceKind": "exact-typescript-ast-source",
+  "sourceFiles": [
+    {
+      "path": "src/infrastructure/npc-creature/host-npc-creature-adapter.ts",
+      "sha256": "1f3bd51bb9b9f05b4a04d27c5107fd4ee78189f96d67323694c42cea2606470a"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/host-npc-creature-ports.contract.ts",
+      "sha256": "5115ac6e4829356cee014436c464e361c2486d928caa2d8121dd6a896bf7996b"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature-controller.persistence.ts",
+      "sha256": "9832d02675fdfc5a7d9520ff68c60a3636e25de2ed497e523218e7c8985fe530"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature-instance.persistence.ts",
+      "sha256": "00aaa3e07b5cdc72305da5381e0c8e0754b2a159df623a4a6355748cb269776f"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
+      "sha256": "f85a652361f7d0943b139693473f103ca55aaaefd6393b293bd67fd6a4496c4c"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature.persistence.ts",
+      "sha256": "2823d44f52887026e5e5bac5120bb7d2def738e29e1354686d06f670e0d33420"
+    }
+  ],
+  "supportingSourceFiles": [
+    {
+      "path": "src/domains/character/avatar/face-anchor-contract.ts",
+      "sha256": "e302f0b6ab5827217a8bd30aa0a77fa8b0147c429b32a48b15c312f4cd778b5a"
+    },
+    {
+      "path": "src/domains/character/avatar/morph-contract.ts",
+      "sha256": "7540a9aaaba59981033500ac67329060e39c2f259c35460c964c39c1e461d96f"
+    },
+    {
+      "path": "src/domains/character/domain/character.entity.ts",
+      "sha256": "56e76a478531eb46ae523b1b1c3d8fd4d076af742baf2ef1edea5dac70768120"
+    },
+    {
+      "path": "src/domains/npc-creature/contracts.ts",
+      "sha256": "0939d59a22bc21b04d1de19429f8d3541f4f3df22a2fb14b7b7db8bb8ff9738f"
+    },
+    {
+      "path": "src/domains/npc-creature/controller-assignment.ts",
+      "sha256": "0c572faa9709ff00fbb5c1a183271b4c4f53a664ad0f2db2d87bd69c7694c37a"
+    },
+    {
+      "path": "src/domains/npc-creature/core-catalog.ts",
+      "sha256": "ab597ca223259ec07cdb0c954dc647d296d255bd744e0033737028b0546df6ba"
+    },
+    {
+      "path": "src/domains/npc-creature/definition.ts",
+      "sha256": "c5cfbd3e9b937142fd04b2d9d8ef1470382062ae1565d4cf3622eb6053c05a45"
+    },
+    {
+      "path": "src/domains/npc-creature/derived.ts",
+      "sha256": "13a0113281e9def92d1ac9658b181a890bfcd05dd3cbfe3049ef670e9b0c500c"
+    },
+    {
+      "path": "src/domains/npc-creature/icon-assets.ts",
+      "sha256": "d786c058900713946c0578b46c1f444418b2a19db04ce77b4b1bec87eea82035"
+    },
+    {
+      "path": "src/domains/npc-creature/index.ts",
+      "sha256": "f2a5a026df813bb828e68e0c672eebd95e3a9627f1b1cf25d6cb7c6a2db5cc9e"
+    },
+    {
+      "path": "src/domains/npc-creature/instance.ts",
+      "sha256": "4a4371ccf0efab85cd867355c387331ab815b58c2ef40c57179300d2639552c0"
+    },
+    {
+      "path": "src/domains/npc-creature/library-query.ts",
+      "sha256": "f33a123fd69281685c654e4fcd322d697cbad5544ada723c021ba2335b62f273"
+    },
+    {
+      "path": "src/domains/npc-creature/pack.ts",
+      "sha256": "401d1450f6060c6984ec3a937ad4a5127602ce34f0e169fe008b860392892e25"
+    },
+    {
+      "path": "src/domains/npc-creature/packs/animals.ts",
+      "sha256": "728cbea35f072058db6974ce5dd3c80686012a9bd00e4de85c80e0d9f969b021"
+    },
+    {
+      "path": "src/domains/npc-creature/packs/build-builtin.ts",
+      "sha256": "ce343c3558c918920fd328fa1891d5085d00cf4c7fd3360709f749a3fe0c20c7"
+    },
+    {
+      "path": "src/domains/npc-creature/packs/context-packs.ts",
+      "sha256": "a95d23684c4c3687a02b4c98c3437155ef3a1eb01b02e39e8db50d8cf4b36ec6"
+    },
+    {
+      "path": "src/domains/npc-creature/packs/fantasy-basics.ts",
+      "sha256": "81ca439a786d0fcb2fa3bf28d801f68f068d7ff201831c157c2cec876f78561b"
+    },
+    {
+      "path": "src/domains/npc-creature/packs/index.ts",
+      "sha256": "7bb8adddd9ea09409db03785cfcce0656338fe948a86a2f5b4aa14f6a986aeb7"
+    },
+    {
+      "path": "src/domains/npc-creature/parse.ts",
+      "sha256": "29986eb9251451da88c70e6f127f8dd21007a1d61f232da6100872a9be7b2e02"
+    },
+    {
+      "path": "src/domains/npc-creature/payload.ts",
+      "sha256": "935c5f24af7e47173315ba80661767fe0b7acb2f890227c2062b333f3394f1fa"
+    },
+    {
+      "path": "src/domains/npc-creature/policy.ts",
+      "sha256": "c864eecb3fff0e0c7fc5c64ae3090ab7b45e0dfb134280583dd732b66d1ecb05"
+    },
+    {
+      "path": "src/domains/npc-creature/promotion.ts",
+      "sha256": "bf49060eeb671c84102d35471568f2497bb60865310851e247bbcbc230cc7f92"
+    },
+    {
+      "path": "src/domains/npc-creature/taxonomy.ts",
+      "sha256": "3dbc3aaed85858710186551bb41eeaac7475bcb573e1b980a9e64e63852936bc"
+    },
+    {
+      "path": "src/domains/npc-creature/validate.ts",
+      "sha256": "5cedac40b675972a2c617212d86603cdfec39692f17afe6a96d19d2270d33fd0"
+    },
+    {
+      "path": "src/domains/npc-creature/world-catalog.ts",
+      "sha256": "6f87522e1d00aa2ed1b9e1e0310d47f8bb25506fc33d6bee9048f98705ddba2f"
+    },
+    {
+      "path": "src/domains/rules/sagatree/attribute-progression/index.ts",
+      "sha256": "1f7ef073a45fd01150c4a90c7b711953f9e0c9efe4ba235bb2cf93e5b6523ae3"
+    },
+    {
+      "path": "src/domains/rules/sagatree/character-creation/index.ts",
+      "sha256": "9e032fe110c4665ec6744e0750d07c57a5d6b083fb292b2bd6441e21db7cdb07"
+    },
+    {
+      "path": "src/domains/rules/sagatree/npc-creature-power/benchmarks.ts",
+      "sha256": "d102fe585bfec2eb44e556fc133d67086fb9915da4ba65497c83869fa82eb54d"
+    },
+    {
+      "path": "src/domains/rules/sagatree/npc-creature-power/combat-roles.ts",
+      "sha256": "28a1ddccaf3a34292e919a768bac20a226e9a4fbb423f17ab7c3cf70be27f512"
+    },
+    {
+      "path": "src/domains/rules/sagatree/npc-creature-power/compute.ts",
+      "sha256": "8085e6151a610bc1465cf129ea22845850042d6cff3c93aa052055039ead49f8"
+    },
+    {
+      "path": "src/domains/rules/sagatree/npc-creature-power/damage-steps.ts",
+      "sha256": "8bc739457eeeb77336b6124153d3f3a3642877c50c23fa7dab1f82b075c26a58"
+    },
+    {
+      "path": "src/domains/rules/sagatree/npc-creature-power/index.ts",
+      "sha256": "ff26d6741c491b687d01d8eaa87722a89df1fe25251794625d98e35a0f3fb5c6"
+    },
+    {
+      "path": "src/domains/rules/sagatree/npc-creature-power/machtgrad.ts",
+      "sha256": "19d4daafb9580b890ed2337feccffed19122a01dfb23c2eeb2dadd2523778f7a"
+    },
+    {
+      "path": "src/domains/rules/sagatree/npc-creature-power/profiles.ts",
+      "sha256": "aa3d450842ddce7548f6e8e826225cdbdeae6de7660e09798fe43663dc9ce1fa"
+    },
+    {
+      "path": "src/domains/rules/sagatree/npc-creature-power/types.ts",
+      "sha256": "de25ba46549bab20e0e55a513fb0745e722449d8f1b61bb51887d986653c4eab"
+    },
+    {
+      "path": "src/infrastructure/host/host-library-http.ts",
+      "sha256": "c56b88c60d6c9491fc7b6e6e1143ac4985ffdab5dff16afef8a54bce79629a07"
+    },
+    {
+      "path": "src/infrastructure/host/host-session-http.ts",
+      "sha256": "f0e603ecf93151669c7b809cb63aea3d0a98ed2ca17ae8f2768a5444bb9cab56"
+    },
+    {
+      "path": "src/lib/authenticatedUser.ts",
+      "sha256": "5d9deef60efd85a3ecd56e9b55f67ecb2d03c2964c4f9217e6de6842d8e0b403"
+    },
+    {
+      "path": "src/lib/hostAuthBridge.ts",
+      "sha256": "30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a"
+    },
+    {
+      "path": "src/lib/localAdmin.ts",
+      "sha256": "103feaea892b0582022557ff81cef61105f3d9ed4eb421a20d8b0b415c2de498"
+    },
+    {
+      "path": "src/lib/networkTimeout.ts",
+      "sha256": "835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851"
+    }
+  ],
+  "importedTypeDeclarations": [
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "SagaTreeFaceAnchorId",
+      "path": "src/domains/character/avatar/face-anchor-contract.ts",
+      "line": 36,
+      "endLine": 36,
+      "text": "export type SagaTreeFaceAnchorId = (typeof SAGA_TREE_FACE_ANCHOR_IDS)[number];"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "SagaTreeFaceAnchorBarycentric",
+      "path": "src/domains/character/avatar/face-anchor-contract.ts",
+      "line": 39,
+      "endLine": 43,
+      "text": "export interface SagaTreeFaceAnchorBarycentric {\n  readonly u: number;\n  readonly v: number;\n  readonly w: number;\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "SagaTreeFaceAnchorTriangleBinding",
+      "path": "src/domains/character/avatar/face-anchor-contract.ts",
+      "line": 49,
+      "endLine": 54,
+      "text": "export interface SagaTreeFaceAnchorTriangleBinding {\n  readonly nodeIdentity: string;\n  readonly primitiveIndex: number;\n  readonly triangleIndex: number;\n  readonly barycentric: SagaTreeFaceAnchorBarycentric;\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "SagaTreeFaceAnchorsManifestV1",
+      "path": "src/domains/character/avatar/face-anchor-contract.ts",
+      "line": 56,
+      "endLine": 59,
+      "text": "export interface SagaTreeFaceAnchorsManifestV1 {\n  readonly contractVersion: typeof FACE_ANCHORS_CONTRACT_VERSION;\n  readonly anchors: Readonly<Partial<Record<SagaTreeFaceAnchorId, SagaTreeFaceAnchorTriangleBinding>>>;\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "SagaTreeFaceAnchorBindingValidationIssue",
+      "path": "src/domains/character/avatar/face-anchor-contract.ts",
+      "line": 61,
+      "endLine": 71,
+      "text": "export interface SagaTreeFaceAnchorBindingValidationIssue {\n  readonly code:\n    | 'invalid_anchor_id'\n    | 'invalid_node_identity'\n    | 'invalid_primitive_index'\n    | 'invalid_triangle_index'\n    | 'invalid_barycentric'\n    | 'contract_version_mismatch';\n  readonly anchorId?: SagaTreeFaceAnchorId;\n  readonly detail: string;\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "SagaTreeFaceAnchorBindingValidationResult",
+      "path": "src/domains/character/avatar/face-anchor-contract.ts",
+      "line": 73,
+      "endLine": 76,
+      "text": "export interface SagaTreeFaceAnchorBindingValidationResult {\n  readonly ok: boolean;\n  readonly issues: readonly SagaTreeFaceAnchorBindingValidationIssue[];\n}"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AvatarMorphBodyKey",
+      "path": "src/domains/character/avatar/morph-contract.ts",
+      "line": 43,
+      "endLine": 43,
+      "text": "export type AvatarMorphBodyKey = (typeof AVATAR_MORPH_BODY_KEYS)[number];"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AvatarMorphFaceKey",
+      "path": "src/domains/character/avatar/morph-contract.ts",
+      "line": 44,
+      "endLine": 44,
+      "text": "export type AvatarMorphFaceKey = (typeof AVATAR_MORPH_FACE_KEYS)[number];"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AvatarMorphParamKey",
+      "path": "src/domains/character/avatar/morph-contract.ts",
+      "line": 45,
+      "endLine": 45,
+      "text": "export type AvatarMorphParamKey = AvatarMorphBodyKey | AvatarMorphFaceKey;"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AvatarMorphCapabilityFlag",
+      "path": "src/domains/character/avatar/morph-contract.ts",
+      "line": 47,
+      "endLine": 47,
+      "text": "export type AvatarMorphCapabilityFlag = 'morph-body-v1' | 'morph-face-v1';"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AvatarMorphParamGroup",
+      "path": "src/domains/character/avatar/morph-contract.ts",
+      "line": 49,
+      "endLine": 49,
+      "text": "export type AvatarMorphParamGroup = 'body' | 'face';"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "AvatarMorphParamMeta",
+      "path": "src/domains/character/avatar/morph-contract.ts",
+      "line": 52,
+      "endLine": 60,
+      "text": "export interface AvatarMorphParamMeta {\n  key: AvatarMorphParamKey;\n  group: AvatarMorphParamGroup;\n  labelDe: string;\n  min: -1;\n  max: 1;\n  default: 0;\n  step: number;\n}"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AvatarMorphBodyValues",
+      "path": "src/domains/character/avatar/morph-contract.ts",
+      "line": 62,
+      "endLine": 62,
+      "text": "export type AvatarMorphBodyValues = Readonly<Record<AvatarMorphBodyKey, number>>;"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AvatarMorphFaceValues",
+      "path": "src/domains/character/avatar/morph-contract.ts",
+      "line": 63,
+      "endLine": 63,
+      "text": "export type AvatarMorphFaceValues = Readonly<Record<AvatarMorphFaceKey, number>>;"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "AvatarMorphColorsV1",
+      "path": "src/domains/character/avatar/morph-contract.ts",
+      "line": 65,
+      "endLine": 69,
+      "text": "export interface AvatarMorphColorsV1 {\n  skin: string;\n  eyes: string;\n  hair: string;\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "AvatarMorphTraitSlotsV1",
+      "path": "src/domains/character/avatar/morph-contract.ts",
+      "line": 72,
+      "endLine": 76,
+      "text": "export interface AvatarMorphTraitSlotsV1 {\n  markings: readonly string[];\n  scars: readonly string[];\n  cybernetics: readonly string[];\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "SagaTreeAvatarMorphStateV1",
+      "path": "src/domains/character/avatar/morph-contract.ts",
+      "line": 78,
+      "endLine": 84,
+      "text": "export interface SagaTreeAvatarMorphStateV1 {\n  contractVersion: typeof MORPH_CONTRACT_VERSION;\n  body: AvatarMorphBodyValues;\n  face: AvatarMorphFaceValues;\n  colors: AvatarMorphColorsV1;\n  traits: AvatarMorphTraitSlotsV1;\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "AvatarMorphCapabilities",
+      "path": "src/domains/character/avatar/morph-contract.ts",
+      "line": 86,
+      "endLine": 88,
+      "text": "export interface AvatarMorphCapabilities {\n  flags: readonly AvatarMorphCapabilityFlag[];\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "AvatarMorphValidationResult",
+      "path": "src/domains/character/avatar/morph-contract.ts",
+      "line": 90,
+      "endLine": 97,
+      "text": "export interface AvatarMorphValidationResult {\n  ok: boolean;\n  state: SagaTreeAvatarMorphStateV1;\n  /** Unknown keys that were ignored (fail-safe). */\n  ignoredKeys: readonly string[];\n  /** Human-readable DE reasons when values were clamped/rejected. */\n  warnings: readonly string[];\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "CharacterAttributesDto",
+      "path": "src/domains/character/domain/character.entity.ts",
+      "line": 9,
+      "endLine": 16,
+      "text": "export interface CharacterAttributesDto {\n  strength: number;\n  dexterity: number;\n  endurance: number;\n  mind: number;\n  perception: number;\n  charisma: number;\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "CharacterAttributeStorageDto",
+      "path": "src/domains/character/domain/character.entity.ts",
+      "line": 18,
+      "endLine": 22,
+      "text": "export interface CharacterAttributeStorageDto extends Partial<CharacterAttributesDto> {\n  constitution?: number;\n  intelligence?: number;\n  wisdom?: number;\n}"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "CharacterAvatarFormat",
+      "path": "src/domains/character/domain/character.entity.ts",
+      "line": 24,
+      "endLine": 24,
+      "text": "export type CharacterAvatarFormat = 'vrm' | 'glb';"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "CharacterAvatarDto",
+      "path": "src/domains/character/domain/character.entity.ts",
+      "line": 31,
+      "endLine": 69,
+      "text": "export interface CharacterAvatarDto {\n  schema_version: 1;\n  /** @deprecated Prefer `source`. Kept for legacy readers; always `m3-character-studio`. */\n  provider: 'm3-character-studio';\n  /**\n   * Avatar origin — never a capability proof (#6 owns capabilities).\n   * Missing → resolve via resolveAvatarSource (legacy provider → sagatree).\n   */\n  source?: 'sagatree' | 'import' | 'meshy';\n  preset: string;\n  model_format: CharacterAvatarFormat;\n  model_url?: string;\n  traits: { head?: string; ears?: string; hair?: string; clothing?: string; accessory?: string };\n  /** hair/skin required for legacy; eyes optional until morph migration. */\n  colors: { hair: string; skin: string; eyes?: string };\n  body: { height: number; size: number };\n  morph_contract_version?: 'SagaTreeAvatarMorphV1';\n  /** Validated morph state — prefer morph-contract helpers over raw writes. */\n  morph?: SagaTreeAvatarMorphStateV1;\n  /**\n   * Avatar V2 template ingress (#260) — optional; ignored by legacy readers.\n   * `template_id` e.g. `species-template:dwarf`; `body_family` from template pack.\n   */\n  template_id?: string;\n  body_family?: 'standard' | 'compact' | 'heavy' | 'custom';\n  /** V2 anatomy; legacy `non-humanoid` still readable via composition mapper. */\n  anatomy?: 'humanoid' | 'custom-creature' | 'non-humanoid' | 'unknown';\n  body_compatibility?: 'standard' | 'compact' | 'heavy' | 'custom' | 'unknown';\n  /** V2 modularity; legacy `none` maps to monolithic. */\n  modularity?: 'modular-parts' | 'limited' | 'monolithic' | 'none';\n  /** Logical starter wardrobe ids applied as basic outfit (not inventory). */\n  starter_wardrobe?: readonly string[];\n  /**\n   * Manual Face Mapping bindings for this character (#persist).\n   * SagaTreeFaceAnchorsV1 — mesh triangle anchors only; never webcam landmarks.\n   * Optional; ignored by legacy readers. Wins over sibling face-anchors.json sidecar.\n   */\n  face_anchors?: SagaTreeFaceAnchorsManifestV1;\n}"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "CharacterGenderReading",
+      "path": "src/domains/character/domain/character.entity.ts",
+      "line": 71,
+      "endLine": 71,
+      "text": "export type CharacterGenderReading = 'masculine-read' | 'feminine-read' | 'diverse';"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "CharacterAppearanceDto",
+      "path": "src/domains/character/domain/character.entity.ts",
+      "line": 73,
+      "endLine": 88,
+      "text": "export interface CharacterAppearanceDto {\n  body_size: number;\n  height: number;\n  face_features: string;\n  hair_style: string;\n  hair_color: string;\n  skin_tone: string;\n  clothing: string;\n  gender_reading?: CharacterGenderReading;\n  avatar?: CharacterAvatarDto;\n  /**\n   * Optional personal LookProfile override for player-character resolution (#347).\n   * Null/omitted → inherit saga/session/system. Must be active + owned when set.\n   */\n  personal_look_profile_id?: string | null;\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "AbilityDto",
+      "path": "src/domains/character/domain/character.entity.ts",
+      "line": 90,
+      "endLine": 102,
+      "text": "export interface AbilityDto {\n  id: string;\n  name: string;\n  description: string;\n  type: 'combat' | 'magic' | 'skill';\n  cost: number;\n  effect: string;\n  source?: string;\n  rank?: 'I' | 'II' | 'III' | 'IV' | 'V';\n  action_type?: 'Passiv' | 'Hauptaktion' | 'Bewegung' | 'Reaktion';\n  tags?: string[];\n  usage_limit?: string;\n}"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "ItemType",
+      "path": "src/domains/character/domain/character.entity.ts",
+      "line": 104,
+      "endLine": 104,
+      "text": "export type ItemType = 'weapon' | 'armor' | 'shield' | 'tool' | 'consumable' | 'misc';"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "ItemDto",
+      "path": "src/domains/character/domain/character.entity.ts",
+      "line": 106,
+      "endLine": 119,
+      "text": "export interface ItemDto {\n  id: string;\n  name: string;\n  description: string;\n  type: ItemType;\n  quantity: number;\n  load?: 0 | 1 | 2 | 3;\n  cost?: 0 | 1 | 2 | 3 | 4 | 5;\n  damage?: string;\n  damage_type?: string;\n  protection?: 1 | 2 | 3;\n  minimum_strength?: 1 | 2 | 4;\n  traits?: string[];\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "EmotionProfileDto",
+      "path": "src/domains/character/domain/character.entity.ts",
+      "line": 121,
+      "endLine": 125,
+      "text": "export interface EmotionProfileDto {\n  id: string;\n  name: string;\n  intensity: number;\n}"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "CreateNpcCreatureDefinitionTarget",
+      "path": "src/domains/npc-creature/contracts.ts",
+      "line": 14,
+      "endLine": 16,
+      "text": "export type CreateNpcCreatureDefinitionTarget =\n  | { scope: 'personal' }\n  | { scope: 'world'; worldProfileId: string };"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "CreateNpcCreatureDefinitionInput",
+      "path": "src/domains/npc-creature/contracts.ts",
+      "line": 18,
+      "endLine": 21,
+      "text": "export interface CreateNpcCreatureDefinitionInput {\n  target: CreateNpcCreatureDefinitionTarget;\n  draft: NpcCreatureDefinitionWriteDraft;\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "UpdateNpcCreatureDefinitionInput",
+      "path": "src/domains/npc-creature/contracts.ts",
+      "line": 23,
+      "endLine": 26,
+      "text": "export interface UpdateNpcCreatureDefinitionInput {\n  definitionId: string;\n  draft: NpcCreatureDefinitionWriteDraft;\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "NpcCreatureDefinitionRepository",
+      "path": "src/domains/npc-creature/contracts.ts",
+      "line": 28,
+      "endLine": 49,
+      "text": "export interface NpcCreatureDefinitionRepository {\n  listDefinitions(options?: {\n    scope?: NpcCreatureScope;\n    worldProfileId?: string | null;\n    includeArchived?: boolean;\n  }): Promise<NpcCreatureCatalogRecord[]>;\n\n  getDefinitionById(definitionId: string): Promise<NpcCreatureCatalogRecord | null>;\n\n  createDefinition(\n    input: CreateNpcCreatureDefinitionInput,\n  ): Promise<NpcCreatureCatalogRecord>;\n\n  updateDefinition(\n    input: UpdateNpcCreatureDefinitionInput,\n  ): Promise<NpcCreatureCatalogRecord>;\n\n  /** Soft-delete: status → archived. Hard delete is not offered while instances may appear later. */\n  archiveDefinition(definitionId: string): Promise<NpcCreatureCatalogRecord>;\n\n  restoreDefinition(definitionId: string): Promise<NpcCreatureCatalogRecord>;\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "NpcCreatureDefinitionSummary",
+      "path": "src/domains/npc-creature/contracts.ts",
+      "line": 52,
+      "endLine": 58,
+      "text": "export interface NpcCreatureDefinitionSummary {\n  definition: NpcCreatureDefinition;\n  machtgradLabel: string;\n  status: NpcCreatureCatalogRecord['status'];\n  scope: NpcCreatureScope;\n  worldProfileId: string | null;\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "NpcControllerAssignment",
+      "path": "src/domains/npc-creature/controller-assignment.ts",
+      "line": 11,
+      "endLine": 16,
+      "text": "export interface NpcControllerAssignment {\n  projectId: string;\n  definitionId: string;\n  /** null / omitted = unassigned (GM control). */\n  controllerUserId: string | null;\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "NpcControllerAssignmentContext",
+      "path": "src/domains/npc-creature/controller-assignment.ts",
+      "line": 18,
+      "endLine": 24,
+      "text": "export interface NpcControllerAssignmentContext {\n  actorUserId: string;\n  /** Trusted role of the actor in the project. */\n  actorRole: 'gm' | 'player';\n  /** Active member user ids (trusted, from project_members). */\n  activeMemberUserIds: readonly string[];\n}"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "NpcControllerAssignmentErrorCode",
+      "path": "src/domains/npc-creature/controller-assignment.ts",
+      "line": 26,
+      "endLine": 32,
+      "text": "export type NpcControllerAssignmentErrorCode =\n  | 'not_gm'\n  | 'not_member'\n  | 'missing_project'\n  | 'missing_definition'\n  | 'sheet_not_full'\n  | 'invalid_controller';"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "NpcControllerAssignmentOk",
+      "path": "src/domains/npc-creature/controller-assignment.ts",
+      "line": 34,
+      "endLine": 40,
+      "text": "export interface NpcControllerAssignmentOk {\n  ok: true;\n  assignment: NpcControllerAssignment;\n  /** sheetMode / identity must remain unchanged by this use case. */\n  preservesSheetMode: true;\n  preservesIdentity: true;\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "NpcControllerAssignmentErr",
+      "path": "src/domains/npc-creature/controller-assignment.ts",
+      "line": 42,
+      "endLine": 46,
+      "text": "export interface NpcControllerAssignmentErr {\n  ok: false;\n  code: NpcControllerAssignmentErrorCode;\n  message: string;\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "NpcCreatureDefinition",
+      "path": "src/domains/npc-creature/definition.ts",
+      "line": 25,
+      "endLine": 63,
+      "text": "export interface NpcCreatureDefinition {\n  /** Stable catalog id, e.g. `personal:<uuid>` or `world:<uuid>`. */\n  id: string;\n  scope: NpcCreatureScope;\n  name: string;\n  description: string;\n  kind: NpcCreatureKind;\n  category: NpcCreatureCategory;\n  sheetMode: NpcCreatureSheetMode;\n  level: SagaTreeNpcLevel;\n  combatProfile: SagaTreeCombatProfile;\n  combatRole: SagaTreeCombatRole;\n  /** Free-form tags; empty/omitted is fine. */\n  tags: readonly string[];\n  /**\n   * Static SVG slug under `/assets/npc-creatures/{iconKey}.svg`.\n   * Parallel to item `iconKey` — not Meshy/storage.\n   */\n  iconKey?: string;\n  /** Optional Meshy/upload portrait key (asset pipeline later). */\n  portraitAssetKey?: string;\n  /** Optional notes / lore hooks (definition-level only). */\n  notes?: string;\n  /**\n   * Explicit numeric overrides for Advanced editor (#198).\n   * Recommended values remain derived via the power framework; overrides are never\n   * silently clamped on save (invalid values fail validation).\n   */\n  statOverrides?: NpcCreatureStatOverrides;\n  /** Free-text combat authoring for Kampf tab (#198). */\n  combatDetails?: NpcCreatureCombatDetails;\n  /** Free-text detail authoring for Details tab (#198). */\n  detailExtras?: NpcCreatureDetailExtras;\n  /**\n   * Opaque full-sheet snapshot when sheetMode is `full`.\n   * Compact definitions must not carry this; parse fails closed if present.\n   */\n  fullSheet?: Readonly<Record<string, unknown>>;\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "NpcCreatureStatOverrides",
+      "path": "src/domains/npc-creature/definition.ts",
+      "line": 66,
+      "endLine": 74,
+      "text": "export interface NpcCreatureStatOverrides {\n  health?: number;\n  defense?: number;\n  movementMeters?: number;\n  attributes?: readonly [number, number, number, number, number, number];\n  resistanceHigh?: number;\n  resistanceNormal?: number;\n  resistanceLow?: number;\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "NpcCreatureCombatDetails",
+      "path": "src/domains/npc-creature/definition.ts",
+      "line": 77,
+      "endLine": 86,
+      "text": "export interface NpcCreatureCombatDetails {\n  attacks?: string;\n  reactions?: string;\n  signatures?: string;\n  impulseOptions?: string;\n  wendepunkt?: string;\n  resistancesNotes?: string;\n  weaknessesNotes?: string;\n  immunitiesNotes?: string;\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "NpcCreatureDetailExtras",
+      "path": "src/domains/npc-creature/definition.ts",
+      "line": 89,
+      "endLine": 93,
+      "text": "export interface NpcCreatureDetailExtras {\n  senses?: string;\n  behavior?: string;\n  loot?: string;\n}"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "NpcCreatureDefinitionWriteDraft",
+      "path": "src/domains/npc-creature/definition.ts",
+      "line": 96,
+      "endLine": 96,
+      "text": "export type NpcCreatureDefinitionWriteDraft = Omit<NpcCreatureDefinition, 'id' | 'scope'>;"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "NpcCreatureDerivedPower",
+      "path": "src/domains/npc-creature/derived.ts",
+      "line": 17,
+      "endLine": 21,
+      "text": "export interface NpcCreatureDerivedPower {\n  machtgrad: SagaTreeMachtgrad;\n  machtgradLabel: string;\n  benchmarks: SagaTreeCompactStatblockBenchmarks;\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "NpcCreatureEffectiveStats",
+      "path": "src/domains/npc-creature/derived.ts",
+      "line": 24,
+      "endLine": 38,
+      "text": "export interface NpcCreatureEffectiveStats {\n  recommended: SagaTreeCompactStatblockBenchmarks;\n  health: number;\n  defense: number;\n  movementMeters: number;\n  attributes: readonly [number, number, number, number, number, number];\n  resistanceHigh: number;\n  resistanceNormal: number;\n  resistanceLow: number;\n  healthOverridden: boolean;\n  defenseOverridden: boolean;\n  movementOverridden: boolean;\n  attributesOverridden: boolean;\n  resistancesOverridden: boolean;\n}"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "NpcCreatureIconGenerationStatus",
+      "path": "src/domains/npc-creature/icon-assets.ts",
+      "line": 30,
+      "endLine": 34,
+      "text": "export type NpcCreatureIconGenerationStatus =\n  | 'needs-png'\n  | 'needs-svg'\n  | 'ready'\n  | 'regenerate';"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "NpcCreatureIconManifestEntry",
+      "path": "src/domains/npc-creature/icon-assets.ts",
+      "line": 36,
+      "endLine": 49,
+      "text": "export interface NpcCreatureIconManifestEntry {\n  id: string;\n  slug: string;\n  name: string;\n  /** Short subject description for Cursor PNG authoring. */\n  iconPrompt: string;\n  /** Definition `iconKey` — same as slug for static SVG icons. */\n  iconKey: string;\n  /** Repo-relative PNG source path. */\n  sourcePng: string;\n  /** Repo-relative SVG output path. */\n  outputSvg: string;\n  status: NpcCreatureIconGenerationStatus;\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "NpcCreatureIconPromptInput",
+      "path": "src/domains/npc-creature/icon-assets.ts",
+      "line": 51,
+      "endLine": 55,
+      "text": "export interface NpcCreatureIconPromptInput {\n  name: string;\n  /** Subject-only description (no style boilerplate). */\n  iconPrompt: string;\n}"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "NpcCreatureInstanceKind",
+      "path": "src/domains/npc-creature/instance.ts",
+      "line": 26,
+      "endLine": 26,
+      "text": "export type NpcCreatureInstanceKind = 'generic' | 'persistent';"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "NpcCreatureDefinitionSnapshot",
+      "path": "src/domains/npc-creature/instance.ts",
+      "line": 32,
+      "endLine": 48,
+      "text": "export interface NpcCreatureDefinitionSnapshot {\n  name: string;\n  kind: NpcCreatureKind;\n  category: NpcCreatureCategory;\n  sheetMode: NpcCreatureSheetMode;\n  level: SagaTreeNpcLevel;\n  combatProfile: SagaTreeCombatProfile;\n  combatRole: SagaTreeCombatRole;\n  tags: readonly string[];\n  iconKey?: string;\n  portraitAssetKey?: string;\n  notes?: string;\n  /** Max HP frozen at snapshot time from effective definition stats. */\n  maxHealth: number;\n  /** ISO timestamp when the snapshot was captured. */\n  capturedAt: string;\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "NpcCreatureInstanceRuntime",
+      "path": "src/domains/npc-creature/instance.ts",
+      "line": 51,
+      "endLine": 57,
+      "text": "export interface NpcCreatureInstanceRuntime {\n  currentHp: number;\n  conditions: readonly string[];\n  /** Session-local override; null = no temp override (GM or campaign controller). */\n  temporaryControllerUserId: string | null;\n  encounterNotes: string;\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "NpcCreatureInstance",
+      "path": "src/domains/npc-creature/instance.ts",
+      "line": 63,
+      "endLine": 74,
+      "text": "export interface NpcCreatureInstance {\n  id: string;\n  projectId: string;\n  /** null = campaign-scoped (typical for persistent uniques). */\n  sessionId: string | null;\n  definitionId: string;\n  displayName: string;\n  instanceKind: NpcCreatureInstanceKind;\n  sequenceNumber: number;\n  snapshot: NpcCreatureDefinitionSnapshot;\n  runtime: NpcCreatureInstanceRuntime;\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "NpcCreatureInstanceSpawnRequest",
+      "path": "src/domains/npc-creature/instance.ts",
+      "line": 76,
+      "endLine": 83,
+      "text": "export interface NpcCreatureInstanceSpawnRequest {\n  projectId: string;\n  sessionId?: string | null;\n  definitionId: string;\n  instanceKind: NpcCreatureInstanceKind;\n  /** Optional explicit display name; otherwise derived as `Name #N`. */\n  displayName?: string | null;\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "NpcCreatureInstanceSpawnContext",
+      "path": "src/domains/npc-creature/instance.ts",
+      "line": 85,
+      "endLine": 98,
+      "text": "export interface NpcCreatureInstanceSpawnContext {\n  actorUserId: string;\n  actorRole: 'gm' | 'player';\n  activeMemberUserIds: readonly string[];\n  /** Existing instances in the same project (for sequence numbering). */\n  existingInstances: readonly NpcCreatureInstance[];\n  /**\n   * True when the actor may read the definition in this adventure context\n   * (personal owner, world-readable, or trusted builtin/core catalog).\n   */\n  definitionReadable: boolean;\n  /** Clock for snapshot.capturedAt — injectable for tests. */\n  nowIso?: string;\n}"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "NpcCreatureInstanceSpawnErrorCode",
+      "path": "src/domains/npc-creature/instance.ts",
+      "line": 100,
+      "endLine": 106,
+      "text": "export type NpcCreatureInstanceSpawnErrorCode =\n  | 'not_gm'\n  | 'not_member'\n  | 'missing_project'\n  | 'missing_definition'\n  | 'definition_not_readable'\n  | 'invalid_kind';"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "NpcCreatureInstanceSpawnOk",
+      "path": "src/domains/npc-creature/instance.ts",
+      "line": 108,
+      "endLine": 113,
+      "text": "export interface NpcCreatureInstanceSpawnOk {\n  ok: true;\n  instance: Omit<NpcCreatureInstance, 'id'>;\n  /** Snapshot is independent of later definition edits. */\n  snapshotIsolated: true;\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "NpcCreatureInstanceSpawnErr",
+      "path": "src/domains/npc-creature/instance.ts",
+      "line": 115,
+      "endLine": 119,
+      "text": "export interface NpcCreatureInstanceSpawnErr {\n  ok: false;\n  code: NpcCreatureInstanceSpawnErrorCode;\n  message: string;\n}"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "NpcCreatureInstanceRuntimeErrorCode",
+      "path": "src/domains/npc-creature/instance.ts",
+      "line": 121,
+      "endLine": 127,
+      "text": "export type NpcCreatureInstanceRuntimeErrorCode =\n  | 'not_gm'\n  | 'not_member'\n  | 'missing_instance'\n  | 'invalid_hp'\n  | 'invalid_controller'\n  | 'invalid_conditions';"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "NpcCreatureInstanceRuntimeUpdate",
+      "path": "src/domains/npc-creature/instance.ts",
+      "line": 129,
+      "endLine": 134,
+      "text": "export interface NpcCreatureInstanceRuntimeUpdate {\n  currentHp?: number;\n  conditions?: readonly string[];\n  temporaryControllerUserId?: string | null;\n  encounterNotes?: string;\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "NpcCreatureInstanceRuntimeOk",
+      "path": "src/domains/npc-creature/instance.ts",
+      "line": 136,
+      "endLine": 139,
+      "text": "export interface NpcCreatureInstanceRuntimeOk {\n  ok: true;\n  instance: NpcCreatureInstance;\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "NpcCreatureInstanceRuntimeErr",
+      "path": "src/domains/npc-creature/instance.ts",
+      "line": 141,
+      "endLine": 145,
+      "text": "export interface NpcCreatureInstanceRuntimeErr {\n  ok: false;\n  code: NpcCreatureInstanceRuntimeErrorCode;\n  message: string;\n}"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "NpcCreatureLibraryKindFilter",
+      "path": "src/domains/npc-creature/library-query.ts",
+      "line": 23,
+      "endLine": 23,
+      "text": "export type NpcCreatureLibraryKindFilter = 'all' | NpcCreatureKind;"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "LibraryNpcCreatureSource",
+      "path": "src/domains/npc-creature/library-query.ts",
+      "line": 26,
+      "endLine": 26,
+      "text": "export type LibraryNpcCreatureSource = 'core' | 'pack' | 'world' | 'personal';"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "NpcCreatureLibraryFilters",
+      "path": "src/domains/npc-creature/library-query.ts",
+      "line": 44,
+      "endLine": 51,
+      "text": "export interface NpcCreatureLibraryFilters {\n  kind: NpcCreatureLibraryKindFilter;\n  categories: readonly NpcCreatureCategory[];\n  machtgrade: readonly SagaTreeMachtgrad[];\n  combatRoles: readonly SagaTreeCombatRole[];\n  sheetModes: readonly NpcCreatureSheetMode[];\n  sources: readonly LibraryNpcCreatureSource[];\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "NpcCreaturePack",
+      "path": "src/domains/npc-creature/pack.ts",
+      "line": 14,
+      "endLine": 25,
+      "text": "export interface NpcCreaturePack {\n  /** Stable pack id, e.g. `builtin:npc-fantasy-basics`. */\n  id: string;\n  /** Integer pack version — bump when membership or metadata changes. */\n  version: number;\n  name: string;\n  description: string;\n  /** Setting / theme tags for UI grouping; not usage bans. */\n  settingTags: readonly string[];\n  /** Definition ids in this pack (order is declaration order). */\n  definitionIds: readonly string[];\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "BuiltinNpcCreatureInput",
+      "path": "src/domains/npc-creature/packs/build-builtin.ts",
+      "line": 17,
+      "endLine": 33,
+      "text": "export interface BuiltinNpcCreatureInput {\n  id: string;\n  name: string;\n  description: string;\n  kind: NpcCreatureKind;\n  category: NpcCreatureCategory;\n  level: SagaTreeNpcLevel;\n  combatProfile: SagaTreeCombatProfile;\n  combatRole?: SagaTreeCombatRole;\n  tags?: readonly string[];\n  notes?: string;\n  /**\n   * Static SVG slug under `/assets/npc-creatures/{iconKey}.svg`.\n   * Defaults to definition id with dots → hyphens.\n   */\n  iconKey?: string;\n}"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "NpcCreatureDefinitionPayloadVersion",
+      "path": "src/domains/npc-creature/payload.ts",
+      "line": 11,
+      "endLine": 12,
+      "text": "export type NpcCreatureDefinitionPayloadVersion =\n  typeof NPC_CREATURE_DEFINITION_PAYLOAD_VERSION;"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "NpcCreatureCatalogRecord",
+      "path": "src/domains/npc-creature/policy.ts",
+      "line": 11,
+      "endLine": 18,
+      "text": "export interface NpcCreatureCatalogRecord {\n  definition: NpcCreatureDefinition;\n  status: NpcCreatureStatus;\n  ownerUserId: string;\n  worldProfileId: string | null;\n  /** Immutable public NPC/creature id (NPCC-XXXXX) when persisted. */\n  publicId?: string | null;\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "NpcCreatureMutationContext",
+      "path": "src/domains/npc-creature/policy.ts",
+      "line": 20,
+      "endLine": 24,
+      "text": "export interface NpcCreatureMutationContext {\n  userId: string;\n  /** World profiles the caller may edit (trusted). */\n  editableWorldProfileIds: readonly string[];\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "NpcCreatureVisibilityContext",
+      "path": "src/domains/npc-creature/policy.ts",
+      "line": 26,
+      "endLine": 30,
+      "text": "export interface NpcCreatureVisibilityContext {\n  userId: string;\n  /** Worlds the caller may read (trusted). */\n  readableWorldProfileIds: readonly string[];\n}"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "NpcLibraryPromotionAction",
+      "path": "src/domains/npc-creature/promotion.ts",
+      "line": 22,
+      "endLine": 25,
+      "text": "export type NpcLibraryPromotionAction =\n  | 'template-to-character'\n  | 'compact-to-full'\n  | 'controller-assign';"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "NpcUnresolvedChoiceKey",
+      "path": "src/domains/npc-creature/promotion.ts",
+      "line": 27,
+      "endLine": 35,
+      "text": "export type NpcUnresolvedChoiceKey =\n  | 'gender_reading'\n  | 'archetype'\n  | 'essence'\n  | 'species_traits'\n  | 'background'\n  | 'attributes'\n  | 'skills'\n  | 'race';"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "NpcUnresolvedChoice",
+      "path": "src/domains/npc-creature/promotion.ts",
+      "line": 37,
+      "endLine": 42,
+      "text": "export interface NpcUnresolvedChoice {\n  key: NpcUnresolvedChoiceKey;\n  /** German UI label. */\n  labelDe: string;\n  reason: string;\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "NpcCharacterEditorSeed",
+      "path": "src/domains/npc-creature/promotion.ts",
+      "line": 48,
+      "endLine": 59,
+      "text": "export interface NpcCharacterEditorSeed {\n  name: string;\n  description: string;\n  level: number;\n  race: string;\n  notes?: string;\n  /** Present only when compact attrs are a legal Full base distribution. */\n  attributes?: CharacterAttributesDto;\n  /** Compact reference values shown when attributes are unresolved. */\n  compactAttributeReference?: CharacterAttributesDto;\n  speciesProfileName?: string;\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "NpcPromotionPlan",
+      "path": "src/domains/npc-creature/promotion.ts",
+      "line": 61,
+      "endLine": 69,
+      "text": "export interface NpcPromotionPlan {\n  kind: 'template-to-character' | 'compact-to-full';\n  sourceDefinitionId: string;\n  /** Template path: false. Compact→Full: true (same definition id). */\n  preserveIdentity: boolean;\n  mappedFields: readonly string[];\n  unresolvedChoices: readonly NpcUnresolvedChoice[];\n  editorSeed: NpcCharacterEditorSeed;\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "NpcPromotionPlanResult",
+      "path": "src/domains/npc-creature/promotion.ts",
+      "line": 71,
+      "endLine": 74,
+      "text": "export interface NpcPromotionPlanResult {\n  ok: true;\n  plan: NpcPromotionPlan;\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "NpcPromotionPlanError",
+      "path": "src/domains/npc-creature/promotion.ts",
+      "line": 76,
+      "endLine": 80,
+      "text": "export interface NpcPromotionPlanError {\n  ok: false;\n  code: 'not_template' | 'not_compact' | 'already_full' | 'cannot_mutate' | 'core_immutable';\n  message: string;\n}"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "NpcCreatureKind",
+      "path": "src/domains/npc-creature/taxonomy.ts",
+      "line": 10,
+      "endLine": 10,
+      "text": "export type NpcCreatureKind = (typeof NPC_CREATURE_KINDS)[number];"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "NpcCreatureCategory",
+      "path": "src/domains/npc-creature/taxonomy.ts",
+      "line": 22,
+      "endLine": 22,
+      "text": "export type NpcCreatureCategory = (typeof NPC_CREATURE_CATEGORIES)[number];"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "NpcCreatureSheetMode",
+      "path": "src/domains/npc-creature/taxonomy.ts",
+      "line": 26,
+      "endLine": 26,
+      "text": "export type NpcCreatureSheetMode = (typeof NPC_CREATURE_SHEET_MODES)[number];"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "NpcCreatureScope",
+      "path": "src/domains/npc-creature/taxonomy.ts",
+      "line": 33,
+      "endLine": 33,
+      "text": "export type NpcCreatureScope = (typeof NPC_CREATURE_SCOPES)[number];"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "NpcCreaturePersistedScope",
+      "path": "src/domains/npc-creature/taxonomy.ts",
+      "line": 37,
+      "endLine": 37,
+      "text": "export type NpcCreaturePersistedScope = (typeof NPC_CREATURE_PERSISTED_SCOPES)[number];"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "NpcCreatureStatus",
+      "path": "src/domains/npc-creature/taxonomy.ts",
+      "line": 49,
+      "endLine": 49,
+      "text": "export type NpcCreatureStatus = (typeof NPC_CREATURE_STATUSES)[number];"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "NpcCreatureValidationResult",
+      "path": "src/domains/npc-creature/validate.ts",
+      "line": 135,
+      "endLine": 137,
+      "text": "export type NpcCreatureValidationResult =\n  | { ok: true }\n  | { ok: false; errors: string[] };"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "NpcCreatureCatalogModuleConfig",
+      "path": "src/domains/npc-creature/world-catalog.ts",
+      "line": 22,
+      "endLine": 28,
+      "text": "export interface NpcCreatureCatalogModuleConfig {\n  enabledPackIds: string[];\n  includedDefinitionIds: string[];\n  excludedDefinitionIds: string[];\n  /** When false, personal definitions are omitted from world availability. Default true. */\n  allowPersonalDefinitions: boolean;\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "NpcCreatureCatalogModuleDiagnosis",
+      "path": "src/domains/npc-creature/world-catalog.ts",
+      "line": 31,
+      "endLine": 36,
+      "text": "export interface NpcCreatureCatalogModuleDiagnosis {\n  unknownPackIds: readonly string[];\n  unknownIncludedDefinitionIds: readonly string[];\n  unknownExcludedDefinitionIds: readonly string[];\n  coercedFields: readonly string[];\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "NormalizeNpcCreatureCatalogModuleResult",
+      "path": "src/domains/npc-creature/world-catalog.ts",
+      "line": 38,
+      "endLine": 41,
+      "text": "export interface NormalizeNpcCreatureCatalogModuleResult {\n  config: NpcCreatureCatalogModuleConfig;\n  diagnosis: NpcCreatureCatalogModuleDiagnosis;\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "ResolveWorldNpcCreatureCatalogInput",
+      "path": "src/domains/npc-creature/world-catalog.ts",
+      "line": 43,
+      "endLine": 58,
+      "text": "export interface ResolveWorldNpcCreatureCatalogInput {\n  config: NpcCreatureCatalogModuleConfig;\n  /** Core archetypes — always present; excludes of these ids are ignored. */\n  coreDefinitions: readonly NpcCreatureDefinition[];\n  /**\n   * Resolves pack members and explicit includes (builtin, world, …).\n   * Core ids may also resolve here; Core list is still unioned explicitly.\n   */\n  resolveDefinition: (definitionId: string) => NpcCreatureDefinition | undefined;\n  /** Pack catalog; defaults to ALL_NPC_CREATURE_PACKS. */\n  packs?: readonly NpcCreaturePack[];\n  /** World-scoped definitions for this world — always appended after excludes. */\n  worldDefinitions?: readonly NpcCreatureDefinition[];\n  /** Personal definitions — appended only when allowPersonalDefinitions is true. */\n  personalDefinitions?: readonly NpcCreatureDefinition[];\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "NpcCreatureCatalogResolveDiagnosis",
+      "path": "src/domains/npc-creature/world-catalog.ts",
+      "line": 60,
+      "endLine": 64,
+      "text": "export interface NpcCreatureCatalogResolveDiagnosis {\n  unknownPackIds: readonly string[];\n  unresolvedIncludedDefinitionIds: readonly string[];\n  ignoredCoreExcludeIds: readonly string[];\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "ResolvedWorldNpcCreatureCatalog",
+      "path": "src/domains/npc-creature/world-catalog.ts",
+      "line": 66,
+      "endLine": 69,
+      "text": "export interface ResolvedWorldNpcCreatureCatalog {\n  definitions: readonly NpcCreatureDefinition[];\n  diagnosis: NpcCreatureCatalogResolveDiagnosis;\n}"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "SagaTreeAttributeAdvanceLevel",
+      "path": "src/domains/rules/sagatree/attribute-progression/index.ts",
+      "line": 10,
+      "endLine": 10,
+      "text": "export type SagaTreeAttributeAdvanceLevel = (typeof SAGA_TREE_ATTRIBUTE_ADVANCE_LEVELS)[number];"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "SagaTreeAttributeAdvances",
+      "path": "src/domains/rules/sagatree/attribute-progression/index.ts",
+      "line": 11,
+      "endLine": 11,
+      "text": "export type SagaTreeAttributeAdvances = Partial<Record<SagaTreeAttributeAdvanceLevel, SagaTreeAttributeKey>>;"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "SagaTreePersistedAttributeBuild",
+      "path": "src/domains/rules/sagatree/attribute-progression/index.ts",
+      "line": 13,
+      "endLine": 16,
+      "text": "export type SagaTreePersistedAttributeBuild = {\n  baseAttributes?: CharacterAttributesDto;\n  attributeAdvances?: SagaTreeAttributeAdvances;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "SagaTreeResolvedAttributeBuild",
+      "path": "src/domains/rules/sagatree/attribute-progression/index.ts",
+      "line": 18,
+      "endLine": 21,
+      "text": "export type SagaTreeResolvedAttributeBuild = {\n  baseAttributes: CharacterAttributesDto;\n  attributeAdvances: SagaTreeAttributeAdvances;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "SagaTreeAttributeBonusLevelGuideEntry",
+      "path": "src/domains/rules/sagatree/attribute-progression/index.ts",
+      "line": 115,
+      "endLine": 119,
+      "text": "export type SagaTreeAttributeBonusLevelGuideEntry = {\n  levelLabel: string;\n  maxBonus: number;\n  description: string;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "CharacterRulesetKey",
+      "path": "src/domains/rules/sagatree/character-creation/index.ts",
+      "line": 1,
+      "endLine": 1,
+      "text": "export type CharacterRulesetKey = 'sagatree-core' | 'dnd-5.5e';"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "SagaTreeAttributeKey",
+      "path": "src/domains/rules/sagatree/character-creation/index.ts",
+      "line": 3,
+      "endLine": 9,
+      "text": "export type SagaTreeAttributeKey =\n  | 'strength'\n  | 'dexterity'\n  | 'endurance'\n  | 'mind'\n  | 'perception'\n  | 'charisma';"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "SagaTreeArchetypeKey",
+      "path": "src/domains/rules/sagatree/character-creation/index.ts",
+      "line": 11,
+      "endLine": 11,
+      "text": "export type SagaTreeArchetypeKey = 'fighter' | 'thinker' | 'healer' | 'rebel' | 'diplomat';"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "SagaTreeEssenceKey",
+      "path": "src/domains/rules/sagatree/character-creation/index.ts",
+      "line": 12,
+      "endLine": 12,
+      "text": "export type SagaTreeEssenceKey = 'physical' | 'mental' | 'spiritual' | 'bound' | 'technological';"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "SagaTreeRaceKey",
+      "path": "src/domains/rules/sagatree/character-creation/index.ts",
+      "line": 13,
+      "endLine": 13,
+      "text": "export type SagaTreeRaceKey = 'human' | 'elf' | 'dwarf' | 'halfling' | 'orc' | 'cyborg' | 'alien';"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "SagaTreeSkillKey",
+      "path": "src/domains/rules/sagatree/character-creation/index.ts",
+      "line": 14,
+      "endLine": 32,
+      "text": "export type SagaTreeSkillKey =\n  | 'athletics'\n  | 'acrobatics'\n  | 'sleight'\n  | 'stealth'\n  | 'melee'\n  | 'ranged'\n  | 'awareness'\n  | 'insight'\n  | 'survival'\n  | 'investigation'\n  | 'knowledge'\n  | 'technology'\n  | 'medicine'\n  | 'driving'\n  | 'persuasion'\n  | 'deception'\n  | 'intimidation'\n  | 'performance';"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "SagaTreeSpeciesTraitKey",
+      "path": "src/domains/rules/sagatree/character-creation/index.ts",
+      "line": 34,
+      "endLine": 48,
+      "text": "export type SagaTreeSpeciesTraitKey =\n  | 'sharpened-sense'\n  | 'natural-weapon'\n  | 'narrow-resistance'\n  | 'environment-adaptation'\n  | 'enduring-organism'\n  | 'low-rest-need'\n  | 'natural-protection'\n  | 'enhanced-climbing'\n  | 'enhanced-swimming'\n  | 'amphibious'\n  | 'enhanced-sight'\n  | 'flight'\n  | 'extreme-environment'\n  | 'exceptional-body';"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "CharacterCreationOption",
+      "path": "src/domains/rules/sagatree/character-creation/index.ts",
+      "line": 50,
+      "endLine": 53,
+      "text": "export interface CharacterCreationOption {\n  value: string;\n  label: string;\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "SagaTreeRaceOption",
+      "path": "src/domains/rules/sagatree/character-creation/index.ts",
+      "line": 55,
+      "endLine": 58,
+      "text": "export interface SagaTreeRaceOption extends CharacterCreationOption {\n  value: SagaTreeRaceKey;\n  description: string;\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "SagaTreeAttributeDefinition",
+      "path": "src/domains/rules/sagatree/character-creation/index.ts",
+      "line": 60,
+      "endLine": 65,
+      "text": "export interface SagaTreeAttributeDefinition {\n  key: SagaTreeAttributeKey;\n  label: string;\n  shortLabel: string;\n  description: string;\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "SagaTreeCoreAbilityDefinition",
+      "path": "src/domains/rules/sagatree/character-creation/index.ts",
+      "line": 67,
+      "endLine": 73,
+      "text": "export interface SagaTreeCoreAbilityDefinition {\n  name: string;\n  rank: 'I';\n  actionType: 'Passiv' | 'Hauptaktion';\n  description: string;\n  effect: string;\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "SagaTreeArchetypeOption",
+      "path": "src/domains/rules/sagatree/character-creation/index.ts",
+      "line": 75,
+      "endLine": 82,
+      "text": "export interface SagaTreeArchetypeOption extends CharacterCreationOption {\n  value: SagaTreeArchetypeKey;\n  summary: string;\n  /** What this archetype is and what choosing it changes at character creation. */\n  description: string;\n  skills: readonly SagaTreeSkillKey[];\n  coreAbility: SagaTreeCoreAbilityDefinition;\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "SagaTreeEssenceOption",
+      "path": "src/domains/rules/sagatree/character-creation/index.ts",
+      "line": 84,
+      "endLine": 88,
+      "text": "export interface SagaTreeEssenceOption extends CharacterCreationOption {\n  value: SagaTreeEssenceKey;\n  summary: string;\n  description: string;\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "SagaTreeSkillDefinition",
+      "path": "src/domains/rules/sagatree/character-creation/index.ts",
+      "line": 90,
+      "endLine": 97,
+      "text": "export interface SagaTreeSkillDefinition {\n  key: SagaTreeSkillKey;\n  label: string;\n  attribute: SagaTreeAttributeKey;\n  summary: string;\n  excludes?: string;\n  specializations: readonly string[];\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "SagaTreeSpeciesTraitDefinition",
+      "path": "src/domains/rules/sagatree/character-creation/index.ts",
+      "line": 99,
+      "endLine": 109,
+      "text": "export interface SagaTreeSpeciesTraitDefinition {\n  key: SagaTreeSpeciesTraitKey;\n  label: string;\n  cost: 1 | 2 | 3;\n  description: string;\n  detailLabel?: string;\n  detailPlaceholder?: string;\n  detailRequired?: boolean;\n  available?: boolean;\n  unavailableReason?: string;\n}"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "SagaTreeNpcLevel",
+      "path": "src/domains/rules/sagatree/npc-creature-power/types.ts",
+      "line": 6,
+      "endLine": 6,
+      "text": "export type SagaTreeNpcLevel = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20;"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "SagaTreeMachtgrad",
+      "path": "src/domains/rules/sagatree/npc-creature-power/types.ts",
+      "line": 8,
+      "endLine": 8,
+      "text": "export type SagaTreeMachtgrad = 'gering' | 'mittel' | 'hoch' | 'extrem' | 'legendaer';"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "SagaTreeCombatRole",
+      "path": "src/domains/rules/sagatree/npc-creature-power/types.ts",
+      "line": 10,
+      "endLine": 10,
+      "text": "export type SagaTreeCombatRole = 'standard' | 'elite' | 'boss';"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "SagaTreeCombatProfile",
+      "path": "src/domains/rules/sagatree/npc-creature-power/types.ts",
+      "line": 12,
+      "endLine": 19,
+      "text": "export type SagaTreeCombatProfile =\n  | 'noncombat'\n  | 'balanced'\n  | 'tough'\n  | 'offensive'\n  | 'mobile'\n  | 'ranged'\n  | 'control_support';"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "SagaTreeDamageStep",
+      "path": "src/domains/rules/sagatree/npc-creature-power/types.ts",
+      "line": 21,
+      "endLine": 26,
+      "text": "export type SagaTreeDamageStep = {\n  dice: number;\n  sides: number;\n  flat: number;\n  label: string;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "SagaTreeResistanceSlots",
+      "path": "src/domains/rules/sagatree/npc-creature-power/types.ts",
+      "line": 28,
+      "endLine": 32,
+      "text": "export type SagaTreeResistanceSlots = {\n  high: number;\n  normal: number;\n  low: number;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "SagaTreeLevelBenchmark",
+      "path": "src/domains/rules/sagatree/npc-creature-power/types.ts",
+      "line": 34,
+      "endLine": 45,
+      "text": "export type SagaTreeLevelBenchmark = {\n  level: SagaTreeNpcLevel;\n  machtgrad: SagaTreeMachtgrad;\n  experienceBonus: number;\n  primarySkillRank: number;\n  primaryModifier: number;\n  defense: number;\n  resistances: SagaTreeResistanceSlots;\n  health: number;\n  baseDamage: SagaTreeDamageStep;\n  attributeDefaults: readonly [number, number, number, number, number, number];\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "SagaTreeProfileAdjustments",
+      "path": "src/domains/rules/sagatree/npc-creature-power/types.ts",
+      "line": 47,
+      "endLine": 62,
+      "text": "export type SagaTreeProfileAdjustments = {\n  healthMultiplier: number;\n  defenseDelta: number;\n  primaryAttackDelta: number;\n  meleeAttackDelta: number;\n  rangedAttackDelta: number;\n  controlEffectDelta: number;\n  bodyOrDurabilityResistDelta: number;\n  reflexResistDelta: number;\n  mindOrControlResistDelta: number;\n  weakestResistDelta: number;\n  movementDeltaMeters: number;\n  damageStepDelta: number;\n  requiresRangedPrimary: boolean;\n  combatSignatureRequired: boolean;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "SagaTreeCombatRoleRules",
+      "path": "src/domains/rules/sagatree/npc-creature-power/types.ts",
+      "line": 64,
+      "endLine": 72,
+      "text": "export type SagaTreeCombatRoleRules = {\n  role: SagaTreeCombatRole;\n  healthMultiplier: number;\n  threatUnitsSameLevel: number;\n  impulsesPerRound: number;\n  wendepunktPerCombat: number;\n  signatureAbilityBonus: number;\n  minImpulseOptions: number;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "SagaTreeCompactStatblockInput",
+      "path": "src/domains/rules/sagatree/npc-creature-power/types.ts",
+      "line": 74,
+      "endLine": 82,
+      "text": "export type SagaTreeCompactStatblockInput = {\n  level: number;\n  combatProfile: SagaTreeCombatProfile;\n  combatRole: SagaTreeCombatRole;\n  /** Base movement in meters before profile shifts (default 9). */\n  baseMovementMeters?: number;\n  /** When true, impulses are unavailable (Kampfunfähig). */\n  incapacitated?: boolean;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "SagaTreeCompactStatblockBenchmarks",
+      "path": "src/domains/rules/sagatree/npc-creature-power/types.ts",
+      "line": 84,
+      "endLine": 113,
+      "text": "export type SagaTreeCompactStatblockBenchmarks = {\n  level: SagaTreeNpcLevel;\n  machtgrad: SagaTreeMachtgrad;\n  machtgradLabel: string;\n  combatProfile: SagaTreeCombatProfile;\n  combatRole: SagaTreeCombatRole;\n  experienceBonus: number;\n  primarySkillRank: number;\n  primaryModifier: number;\n  defense: number;\n  resistances: SagaTreeResistanceSlots;\n  baseHealth: number;\n  health: number;\n  baseDamage: SagaTreeDamageStep;\n  primaryDamage: SagaTreeDamageStep;\n  attributeDefaults: readonly [number, number, number, number, number, number];\n  movementMeters: number;\n  threatUnitsSameLevel: number;\n  impulsesPerRound: number;\n  wendepunktPerCombat: number;\n  signatureAbilityBudget: number;\n  minImpulseOptions: number;\n  impulsesAllowed: boolean;\n  combatSignatureRequired: boolean;\n  requiresRangedPrimary: boolean;\n  primaryAttackDelta: number;\n  meleeAttackDelta: number;\n  rangedAttackDelta: number;\n  controlEffectDelta: number;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "EnvLike",
+      "path": "src/infrastructure/host/host-library-http.ts",
+      "line": 10,
+      "endLine": 12,
+      "text": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "HostLibraryCharacterDto",
+      "path": "src/infrastructure/host/host-library-http.ts",
+      "line": 59,
+      "endLine": 72,
+      "text": "export type HostLibraryCharacterDto = {\n  readonly id: string;\n  readonly publicId?: string;\n  readonly name: string;\n  readonly description?: string;\n  readonly class?: string;\n  readonly race?: string;\n  readonly level?: number;\n  readonly sheetStatus?: string;\n  readonly portraitUrl?: string | null;\n  readonly sheet?: Readonly<Record<string, unknown>>;\n  readonly createdAt?: string;\n  readonly updatedAt?: string;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "HostLibraryProjectDto",
+      "path": "src/infrastructure/host/host-library-http.ts",
+      "line": 87,
+      "endLine": 108,
+      "text": "export type HostLibraryProjectDto = {\n  readonly id: string;\n  readonly publicId?: string;\n  readonly code?: string;\n  readonly name: string;\n  readonly description?: string | null;\n  readonly worldId?: string | null;\n  readonly worldProfileId?: string | null;\n  readonly defaultLookProfileId?: string | null;\n  readonly allowPlayerCharacterLookOverride?: boolean;\n  readonly sagaId?: string | null;\n  readonly sagaVersionId?: string | null;\n  readonly sagaTitle?: string | null;\n  readonly sagaSlug?: string | null;\n  readonly sagaOrigin?: string | null;\n  readonly gmUserId: string;\n  readonly status?: string;\n  readonly memberCount?: number;\n  readonly sessionCount?: number;\n  readonly createdAt?: string;\n  readonly updatedAt?: string;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "HostLibraryWorldDto",
+      "path": "src/infrastructure/host/host-library-http.ts",
+      "line": 123,
+      "endLine": 129,
+      "text": "export type HostLibraryWorldDto = {\n  readonly id: string;\n  readonly title: string;\n  readonly createdAt: string;\n  /** CUT-10 — WO-XXXXX when present. */\n  readonly publicId?: string | null;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "FetchHostLibraryItemsOptions",
+      "path": "src/infrastructure/host/host-library-http.ts",
+      "line": 748,
+      "endLine": 753,
+      "text": "export type FetchHostLibraryItemsOptions = {\n  readonly worldProfileId?: string | null;\n  readonly query?: string;\n  readonly includeArchived?: boolean;\n  readonly origins?: readonly ('standard' | 'personal' | 'world')[];\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "HostNpcControllerAssignmentDto",
+      "path": "src/infrastructure/host/host-library-http.ts",
+      "line": 1039,
+      "endLine": 1045,
+      "text": "export type HostNpcControllerAssignmentDto = {\n  readonly projectId: string;\n  readonly definitionId: string;\n  readonly controllerUserId: string | null;\n  readonly assignedBy?: string;\n  readonly updatedAt?: string;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "HostNpcInstanceDto",
+      "path": "src/infrastructure/host/host-library-http.ts",
+      "line": 1098,
+      "endLine": 1111,
+      "text": "export type HostNpcInstanceDto = {\n  readonly id: string;\n  readonly projectId: string;\n  readonly sessionId: string | null;\n  readonly definitionId: string;\n  readonly displayName: string;\n  readonly instanceKind: string;\n  readonly sequenceNumber: number;\n  readonly snapshot: Record<string, unknown>;\n  readonly runtime: Record<string, unknown>;\n  readonly createdBy?: string;\n  readonly createdAt?: string;\n  readonly updatedAt?: string;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "HostPublishedAssetDto",
+      "path": "src/infrastructure/host/host-library-http.ts",
+      "line": 1220,
+      "endLine": 1227,
+      "text": "export type HostPublishedAssetDto = {\n  readonly assetId: string;\n  readonly contentType: string;\n  readonly byteSize: number;\n  readonly checksumSha256: string;\n  readonly url: string;\n  readonly storagePath: string;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "EnvLike",
+      "path": "src/infrastructure/host/host-session-http.ts",
+      "line": 12,
+      "endLine": 15,
+      "text": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "HostPlaySessionDto",
+      "path": "src/infrastructure/host/host-session-http.ts",
+      "line": 98,
+      "endLine": 120,
+      "text": "export type HostPlaySessionDto = {\n  readonly sessionId: string;\n  readonly projectId: string;\n  readonly publicId?: string;\n  readonly joinCode?: string | null;\n  readonly code?: string | null;\n  readonly status: string;\n  readonly sessionNumber?: number;\n  readonly name?: string | null;\n  readonly createdAt?: string;\n  readonly startedAt?: string | null;\n  readonly endedAt?: string | null;\n  readonly gmUserId?: string;\n  /** Session Look override; null/omit = inherit project default. */\n  readonly lookProfileId?: string | null;\n  readonly players?: readonly {\n    readonly id?: string;\n    readonly userId?: string;\n    readonly characterId?: string | null;\n    readonly isOnline?: boolean;\n    readonly joinedAt?: string;\n  }[];\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "HostSessionRecapGenerateResult",
+      "path": "src/infrastructure/host/host-session-http.ts",
+      "line": 391,
+      "endLine": 400,
+      "text": "export type HostSessionRecapGenerateResult =\n  | {\n      readonly status: 'ok';\n      readonly summaryText: string;\n      readonly summaryStatus: string;\n      readonly provider: string;\n      readonly model: string;\n    }\n  | { readonly status: 'not-configured'; readonly message: string }\n  | { readonly status: 'error'; readonly message: string };"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "HostSessionMediaTokenResult",
+      "path": "src/infrastructure/host/host-session-http.ts",
+      "line": 436,
+      "endLine": 454,
+      "text": "export type HostSessionMediaTokenResult =\n  | {\n      readonly ok: true;\n      readonly token: string;\n      readonly url: string;\n      readonly roomId: string;\n      readonly expiresAt: string;\n      readonly ttlSeconds: number;\n    }\n  | {\n      readonly ok: false;\n      readonly degraded: true;\n      readonly reason:\n        | 'media_service_unavailable'\n        | 'forbidden'\n        | 'unauthorized'\n        | 'bad_request';\n      readonly message: string;\n    };"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "HostPromoteOutcomeDto",
+      "path": "src/infrastructure/host/host-session-http.ts",
+      "line": 603,
+      "endLine": 609,
+      "text": "export type HostPromoteOutcomeDto = {\n  readonly ok?: boolean;\n  readonly idempotent?: boolean;\n  readonly targetKind?: string;\n  readonly targetRef?: string;\n  readonly messageDe?: string;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "HostWhoamiDto",
+      "path": "src/lib/hostAuthBridge.ts",
+      "line": 24,
+      "endLine": 29,
+      "text": "export type HostWhoamiDto = {\n  readonly ok: true;\n  readonly actorId: string;\n  readonly kind: 'remote-account';\n  readonly email: string | null;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "EnvLike",
+      "path": "src/lib/hostAuthBridge.ts",
+      "line": 31,
+      "endLine": 31,
+      "text": "type EnvLike = { readonly VITE_SAGATREE_HOST_AUTH_URL?: string };"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "TimedOut",
+      "path": "src/lib/networkTimeout.ts",
+      "line": 12,
+      "endLine": 12,
+      "text": "export type TimedOut = typeof TIMED_OUT;"
+    }
+  ],
+  "calls": [
+    {
+      "kind": "auth-helper",
+      "name": null,
+      "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
+      "line": 361,
+      "endLine": 361,
+      "resolution": "dynamic-expression",
+      "expression": "getAuthenticatedUserId()",
+      "chain": "getAuthenticatedUserId()",
+      "arguments": [],
+      "enclosingOperation": {
+        "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
+        "line": 355,
+        "endLine": 391,
+        "text": "export async function assignNpcCreatureController(input: {\n  projectId: string;\n  definitionId: string;\n  controllerUserId: string | null;\n  activeMemberUserIds: readonly string[];\n}): Promise<NpcControllerAssignment> {\n  const actorUserId = await getAuthenticatedUserId();\n  const record = await getNpcCreatureDefinition(input.definitionId);\n  if (!record) {\n    throw new Error('Figur wurde nicht gefunden.');\n  }\n\n  const planned = planNpcControllerAssignment(\n    record.definition,\n    {\n      projectId: input.projectId,\n      definitionId: input.definitionId,\n      controllerUserId: input.controllerUserId,\n    },\n    {\n      actorUserId,\n      actorRole: 'gm',\n      activeMemberUserIds: input.activeMemberUserIds,\n    },\n  );\n  if (planned.ok === false) {\n    throw new Error(planned.message);\n  }\n\n  assertHost();\n  const assignment = await assignHostNpcCreatureController({\n    projectId: planned.assignment.projectId,\n    definitionId: planned.assignment.definitionId,\n    controllerUserId: planned.assignment.controllerUserId,\n  });\n  return mapHostControllerAssignment(assignment);\n}"
+      }
+    },
+    {
+      "kind": "auth-helper",
+      "name": null,
+      "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
+      "line": 447,
+      "endLine": 447,
+      "resolution": "dynamic-expression",
+      "expression": "getAuthenticatedUserId()",
+      "chain": "getAuthenticatedUserId()",
+      "arguments": [],
+      "enclosingOperation": {
+        "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
+        "line": 439,
+        "endLine": 491,
+        "text": "export async function spawnNpcCreatureInstance(input: {\n  projectId: string;\n  sessionId?: string | null;\n  definitionId: string;\n  instanceKind: NpcCreatureInstanceKind;\n  displayName?: string | null;\n  activeMemberUserIds: readonly string[];\n}): Promise<NpcCreatureInstance> {\n  const actorUserId = await getAuthenticatedUserId();\n  const definition = await resolveDefinitionForInstance(input.definitionId);\n  if (!definition) {\n    throw new Error('Figuren-Vorlage wurde nicht gefunden.');\n  }\n\n  const existing = await listNpcCreatureInstances(input.projectId);\n  const definitionReadable =\n    isBuiltinOrCoreDefinitionId(definition.id) ||\n    Boolean(await getNpcCreatureDefinition(definition.id));\n\n  const planned = planNpcCreatureInstanceSpawn(\n    definition,\n    {\n      projectId: input.projectId,\n      sessionId: input.sessionId ?? null,\n      definitionId: input.definitionId,\n      instanceKind: input.instanceKind,\n      displayName: input.displayName ?? null,\n    },\n    {\n      actorUserId,\n      actorRole: 'gm',\n      activeMemberUserIds: input.activeMemberUserIds,\n      existingInstances: existing,\n      definitionReadable,\n    },\n  );\n  if (planned.ok === false) {\n    throw new Error(planned.message);\n  }\n\n  assertHost();\n  const instance = await spawnHostNpcInstance({\n    projectId: planned.instance.projectId,\n    definitionId: planned.instance.definitionId,\n    instanceKind: planned.instance.instanceKind,\n    snapshot: toInstanceSnapshotPayload(planned.instance.snapshot),\n    runtime: toInstanceRuntimePayload(planned.instance.runtime),\n    displayName: planned.instance.displayName,\n    sequenceNumber: planned.instance.sequenceNumber,\n    sessionId: planned.instance.sessionId,\n  });\n  return mapHostInstanceDto(instance);\n}"
+      }
+    },
+    {
+      "kind": "auth-helper",
+      "name": null,
+      "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
+      "line": 499,
+      "endLine": 499,
+      "resolution": "dynamic-expression",
+      "expression": "getAuthenticatedUserId()",
+      "chain": "getAuthenticatedUserId()",
+      "arguments": [],
+      "enclosingOperation": {
+        "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
+        "line": 494,
+        "endLine": 519,
+        "text": "export async function updateNpcCreatureInstanceRuntime(input: {\n  instance: NpcCreatureInstance;\n  patch: NpcCreatureInstanceRuntimeUpdate;\n  activeMemberUserIds: readonly string[];\n}): Promise<NpcCreatureInstance> {\n  const actorUserId = await getAuthenticatedUserId();\n  const planned = planNpcCreatureInstanceRuntimeUpdate(\n    input.instance,\n    input.patch,\n    {\n      actorUserId,\n      actorRole: 'gm',\n      activeMemberUserIds: input.activeMemberUserIds,\n    },\n  );\n  if (planned.ok === false) {\n    throw new Error(planned.message);\n  }\n\n  assertHost();\n  const instance = await updateHostNpcInstanceRuntime(\n    planned.instance.id!,\n    toInstanceRuntimePayload(planned.instance.runtime),\n  );\n  return mapHostInstanceDto(instance);\n}"
+      }
+    }
+  ],
+  "imports": [
+    {
+      "path": "src/infrastructure/npc-creature/host-npc-creature-adapter.ts",
+      "line": 9,
+      "endLine": 9,
+      "module": "./host-npc-creature-ports.contract",
+      "resolvedPath": "src/infrastructure/npc-creature/host-npc-creature-ports.contract.ts",
+      "expression": "import type { HostNpcCreaturePorts } from './host-npc-creature-ports.contract';"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/host-npc-creature-adapter.ts",
+      "line": 10,
+      "endLine": 10,
+      "module": "./host-npc-creature-ports.contract",
+      "resolvedPath": "src/infrastructure/npc-creature/host-npc-creature-ports.contract.ts",
+      "expression": "import { HOST_NPC_CREATURE_OPS } from './host-npc-creature-ports.contract';"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature-controller.persistence.ts",
+      "line": 5,
+      "endLine": 5,
+      "module": "../../domains/npc-creature",
+      "resolvedPath": "src/domains/npc-creature/index.ts",
+      "expression": "import type { NpcControllerAssignment } from '../../domains/npc-creature';"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature-instance.persistence.ts",
+      "line": 6,
+      "endLine": 11,
+      "module": "../../domains/npc-creature",
+      "resolvedPath": "src/domains/npc-creature/index.ts",
+      "expression": "import type {\n  NpcCreatureDefinitionSnapshot,\n  NpcCreatureInstance,\n  NpcCreatureInstanceKind,\n  NpcCreatureInstanceRuntime,\n} from '../../domains/npc-creature';"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
+      "line": 10,
+      "endLine": 36,
+      "module": "../../domains/npc-creature",
+      "resolvedPath": "src/domains/npc-creature/index.ts",
+      "expression": "import {\n  assertFullSheetHasNoSilentIllegalAttributes,\n  buildCompactToFullWriteDraft,\n  deriveNpcCreaturePower,\n  getBuiltinNpcCreatureDefinition,\n  getCoreNpcCreatureDefinition,\n  getNpcCreatureCatalogModuleConfig,\n  isCoreNpcCreatureDefinitionId,\n  listCoreNpcCreatureDefinitions,\n  parseNpcCreatureDefinition,\n  planNpcControllerAssignment,\n  planNpcCreatureInstanceRuntimeUpdate,\n  planNpcCreatureInstanceSpawn,\n  resolveWorldNpcCreatureCatalog,\n  type CreateNpcCreatureDefinitionInput,\n  type NpcControllerAssignment,\n  type NpcCreatureCatalogModuleConfig,\n  type NpcCreatureCatalogRecord,\n  type NpcCreatureDefinition,\n  type NpcCreatureDefinitionSummary,\n  type NpcCreatureInstance,\n  type NpcCreatureInstanceKind,\n  type NpcCreatureInstanceRuntimeUpdate,\n  type NpcCreatureScope,\n  type ResolvedWorldNpcCreatureCatalog,\n  type UpdateNpcCreatureDefinitionInput,\n} from '../../domains/npc-creature';"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
+      "line": 37,
+      "endLine": 37,
+      "module": "../../lib/authenticatedUser",
+      "resolvedPath": "src/lib/authenticatedUser.ts",
+      "expression": "import { getAuthenticatedUserId } from '../../lib/authenticatedUser';"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
+      "line": 38,
+      "endLine": 55,
+      "module": "../host/host-library-http",
+      "resolvedPath": "src/infrastructure/host/host-library-http.ts",
+      "expression": "import {\n  archiveHostLibraryNpcCreature,\n  assignHostNpcCreatureController,\n  createHostLibraryNpcCreature,\n  duplicateHostLibraryNpcCreature,\n  fetchHostLibraryNpcCreatureById,\n  fetchHostLibraryNpcCreatures,\n  fetchHostNpcCreatureControllerAssignment,\n  fetchHostNpcInstances,\n  isHostLibraryEnabled,\n  removeHostNpcInstance,\n  restoreHostLibraryNpcCreature,\n  spawnHostNpcInstance,\n  updateHostLibraryNpcCreature,\n  updateHostNpcInstanceRuntime,\n  type HostNpcControllerAssignmentDto,\n  type HostNpcInstanceDto,\n} from '../host/host-library-http';"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
+      "line": 56,
+      "endLine": 56,
+      "module": "../host/host-session-http",
+      "resolvedPath": "src/infrastructure/host/host-session-http.ts",
+      "expression": "import { clearHostNpcTempControllersForSession } from '../host/host-session-http';"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
+      "line": 57,
+      "endLine": 61,
+      "module": "./npc-creature-instance.persistence",
+      "resolvedPath": "src/infrastructure/npc-creature/npc-creature-instance.persistence.ts",
+      "expression": "import {\n  toInstanceRuntimePayload,\n  toInstanceSnapshotPayload,\n  toNpcCreatureInstance,\n} from './npc-creature-instance.persistence';"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature.persistence.ts",
+      "line": 5,
+      "endLine": 9,
+      "module": "../../domains/npc-creature",
+      "resolvedPath": "src/domains/npc-creature/index.ts",
+      "expression": "import {\n  NPC_CREATURE_DEFINITION_PAYLOAD_VERSION,\n  parseNpcCreatureDefinition,\n  toNpcCreatureDefinitionPayload,\n} from '../../domains/npc-creature';"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature.persistence.ts",
+      "line": 10,
+      "endLine": 15,
+      "module": "../../domains/npc-creature",
+      "resolvedPath": "src/domains/npc-creature/index.ts",
+      "expression": "import type {\n  NpcCreatureCatalogRecord,\n  NpcCreatureDefinition,\n  NpcCreatureScope,\n  NpcCreatureStatus,\n} from '../../domains/npc-creature';"
+    }
+  ],
+  "publicDeclarations": [
+    {
+      "path": "src/infrastructure/npc-creature/host-npc-creature-adapter.ts",
+      "line": 12,
+      "endLine": 15,
+      "text": "export type HostNpcCreatureAdapter = HostNpcCreaturePorts & {\n  readonly transport: 'host';\n  readonly ops: typeof HOST_NPC_CREATURE_OPS;\n};"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/host-npc-creature-adapter.ts",
+      "line": 21,
+      "endLine": 50,
+      "text": "export function createHostNpcCreatureAdapter(\n  ports: HostNpcCreaturePorts,\n): HostNpcCreatureAdapter {\n  return {\n    transport: 'host',\n    ops: HOST_NPC_CREATURE_OPS,\n    listDefinitions: (actorId, options) => ports.listDefinitions(actorId, options),\n    getDefinition: (actorId, definitionId) => ports.getDefinition(actorId, definitionId),\n    createDefinition: (actorId, input) => ports.createDefinition(actorId, input),\n    updateDefinition: (actorId, definitionId, draft) =>\n      ports.updateDefinition(actorId, definitionId, draft),\n    archiveDefinition: (actorId, definitionId) =>\n      ports.archiveDefinition(actorId, definitionId),\n    restoreDefinition: (actorId, definitionId) =>\n      ports.restoreDefinition(actorId, definitionId),\n    duplicateDefinition: (actorId, sourceDefinitionId) =>\n      ports.duplicateDefinition(actorId, sourceDefinitionId),\n    getControllerAssignment: (actorId, projectId, definitionId) =>\n      ports.getControllerAssignment(actorId, projectId, definitionId),\n    assignController: (actorId, projectId, definitionId, controllerUserId) =>\n      ports.assignController(actorId, projectId, definitionId, controllerUserId),\n    listInstances: (actorId, projectId) => ports.listInstances(actorId, projectId),\n    spawnInstance: (actorId, input) => ports.spawnInstance(actorId, input),\n    updateRuntime: (actorId, instanceId, runtime) =>\n      ports.updateRuntime(actorId, instanceId, runtime),\n    removeInstance: (actorId, instanceId) => ports.removeInstance(actorId, instanceId),\n    clearTempControllersForSession: (actorId, sessionId) =>\n      ports.clearTempControllersForSession(actorId, sessionId),\n  };\n}"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/host-npc-creature-ports.contract.ts",
+      "line": 9,
+      "endLine": 11,
+      "text": "export type HostNpcCreatureResult<T> =\n  | { readonly ok: true; readonly value: T }\n  | { readonly ok: false; readonly error: string };"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/host-npc-creature-ports.contract.ts",
+      "line": 13,
+      "endLine": 24,
+      "text": "export type HostNpcDefinitionRecord = {\n  readonly id: string;\n  readonly publicId: string;\n  readonly scope: 'personal' | 'world' | 'core' | 'builtin';\n  readonly worldProfileId: string | null;\n  readonly ownerUserId: string | null;\n  readonly status: 'active' | 'archived';\n  readonly payload: Readonly<Record<string, unknown>>;\n  readonly payloadVersion: number;\n  readonly createdAt: string;\n  readonly updatedAt: string;\n};"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/host-npc-creature-ports.contract.ts",
+      "line": 26,
+      "endLine": 39,
+      "text": "export type HostNpcInstanceRow = {\n  readonly id: string;\n  readonly projectId: string;\n  readonly sessionId: string | null;\n  readonly definitionId: string;\n  readonly displayName: string;\n  readonly instanceKind: string;\n  readonly sequenceNumber: number;\n  readonly snapshot: Readonly<Record<string, unknown>>;\n  readonly runtime: Readonly<Record<string, unknown>>;\n  readonly createdBy: string;\n  readonly createdAt: string;\n  readonly updatedAt: string;\n};"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/host-npc-creature-ports.contract.ts",
+      "line": 41,
+      "endLine": 47,
+      "text": "export type HostNpcControllerAssignmentRow = {\n  readonly projectId: string;\n  readonly definitionId: string;\n  readonly controllerUserId: string | null;\n  readonly assignedBy: string;\n  readonly updatedAt: string;\n};"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/host-npc-creature-ports.contract.ts",
+      "line": 53,
+      "endLine": 132,
+      "text": "export type HostNpcCreaturePorts = {\n  readonly listDefinitions: (\n    actorId: string,\n    options?: {\n      readonly scope?: 'personal' | 'world' | 'core' | 'builtin';\n      readonly worldProfileId?: string | null;\n      readonly includeArchived?: boolean;\n    },\n  ) => Promise<HostNpcCreatureResult<readonly HostNpcDefinitionRecord[]>>;\n  readonly getDefinition: (\n    actorId: string,\n    definitionId: string,\n  ) => Promise<HostNpcCreatureResult<HostNpcDefinitionRecord | null>>;\n  readonly createDefinition: (\n    actorId: string,\n    input: {\n      readonly scope: 'personal' | 'world';\n      readonly worldProfileId?: string | null;\n      readonly draft: unknown;\n    },\n  ) => Promise<HostNpcCreatureResult<HostNpcDefinitionRecord>>;\n  readonly updateDefinition: (\n    actorId: string,\n    definitionId: string,\n    draft: unknown,\n  ) => Promise<HostNpcCreatureResult<HostNpcDefinitionRecord>>;\n  readonly archiveDefinition: (\n    actorId: string,\n    definitionId: string,\n  ) => Promise<HostNpcCreatureResult<HostNpcDefinitionRecord>>;\n  readonly restoreDefinition: (\n    actorId: string,\n    definitionId: string,\n  ) => Promise<HostNpcCreatureResult<HostNpcDefinitionRecord>>;\n  readonly duplicateDefinition: (\n    actorId: string,\n    sourceDefinitionId: string,\n  ) => Promise<HostNpcCreatureResult<HostNpcDefinitionRecord>>;\n  readonly getControllerAssignment: (\n    actorId: string,\n    projectId: string,\n    definitionId: string,\n  ) => Promise<HostNpcCreatureResult<HostNpcControllerAssignmentRow | null>>;\n  readonly assignController: (\n    actorId: string,\n    projectId: string,\n    definitionId: string,\n    controllerUserId: string | null,\n  ) => Promise<HostNpcCreatureResult<HostNpcControllerAssignmentRow>>;\n  readonly listInstances: (\n    actorId: string,\n    projectId: string,\n  ) => Promise<HostNpcCreatureResult<readonly HostNpcInstanceRow[]>>;\n  readonly spawnInstance: (\n    actorId: string,\n    input: {\n      readonly projectId: string;\n      readonly definitionId: string;\n      readonly instanceKind: string;\n      readonly snapshot: unknown;\n      readonly runtime: unknown;\n      readonly displayName: string;\n      readonly sequenceNumber: number;\n      readonly sessionId?: string | null;\n    },\n  ) => Promise<HostNpcCreatureResult<HostNpcInstanceRow>>;\n  readonly updateRuntime: (\n    actorId: string,\n    instanceId: string,\n    runtime: unknown,\n  ) => Promise<HostNpcCreatureResult<HostNpcInstanceRow>>;\n  readonly removeInstance: (\n    actorId: string,\n    instanceId: string,\n  ) => Promise<HostNpcCreatureResult<{ readonly id: string }>>;\n  readonly clearTempControllersForSession: (\n    actorId: string,\n    sessionId: string,\n  ) => Promise<HostNpcCreatureResult<{ readonly cleared: number }>>;\n};"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/host-npc-creature-ports.contract.ts",
+      "line": 135,
+      "endLine": 150,
+      "text": "export const HOST_NPC_CREATURE_OPS = [\n  'listDefinitions',\n  'getDefinition',\n  'createDefinition',\n  'updateDefinition',\n  'archiveDefinition',\n  'restoreDefinition',\n  'duplicateDefinition',\n  'getControllerAssignment',\n  'assignController',\n  'listInstances',\n  'spawnInstance',\n  'updateRuntime',\n  'removeInstance',\n  'clearTempControllersForSession',\n] as const;"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/host-npc-creature-ports.contract.ts",
+      "line": 152,
+      "endLine": 152,
+      "text": "export type HostNpcCreatureOp = (typeof HOST_NPC_CREATURE_OPS)[number];"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature-controller.persistence.ts",
+      "line": 7,
+      "endLine": 13,
+      "text": "export interface NpcControllerAssignmentRow {\n  project_id: string;\n  definition_id: string;\n  controller_user_id: string | null;\n  assigned_by: string;\n  updated_at: string;\n}"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature-controller.persistence.ts",
+      "line": 15,
+      "endLine": 23,
+      "text": "export function toNpcControllerAssignment(\n  row: NpcControllerAssignmentRow,\n): NpcControllerAssignment {\n  return {\n    projectId: row.project_id,\n    definitionId: row.definition_id,\n    controllerUserId: row.controller_user_id,\n  };\n}"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature-instance.persistence.ts",
+      "line": 13,
+      "endLine": 26,
+      "text": "export interface NpcCreatureInstanceRow {\n  id: string;\n  project_id: string;\n  session_id: string | null;\n  definition_id: string;\n  display_name: string;\n  instance_kind: string;\n  sequence_number: number;\n  snapshot: unknown;\n  runtime: unknown;\n  created_by?: string;\n  created_at?: string;\n  updated_at?: string;\n}"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature-instance.persistence.ts",
+      "line": 75,
+      "endLine": 89,
+      "text": "export function toNpcCreatureInstance(row: NpcCreatureInstanceRow): NpcCreatureInstance {\n  const kind: NpcCreatureInstanceKind =\n    row.instance_kind === 'persistent' ? 'persistent' : 'generic';\n  return {\n    id: row.id,\n    projectId: row.project_id,\n    sessionId: row.session_id,\n    definitionId: row.definition_id,\n    displayName: row.display_name,\n    instanceKind: kind,\n    sequenceNumber: row.sequence_number,\n    snapshot: parseSnapshot(row.snapshot),\n    runtime: parseRuntime(row.runtime),\n  };\n}"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature-instance.persistence.ts",
+      "line": 91,
+      "endLine": 100,
+      "text": "export function toInstanceRuntimePayload(\n  runtime: NpcCreatureInstanceRuntime,\n): Record<string, unknown> {\n  return {\n    currentHp: runtime.currentHp,\n    conditions: [...runtime.conditions],\n    temporaryControllerUserId: runtime.temporaryControllerUserId,\n    encounterNotes: runtime.encounterNotes,\n  };\n}"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature-instance.persistence.ts",
+      "line": 102,
+      "endLine": 119,
+      "text": "export function toInstanceSnapshotPayload(\n  snapshot: NpcCreatureDefinitionSnapshot,\n): Record<string, unknown> {\n  return {\n    name: snapshot.name,\n    kind: snapshot.kind,\n    category: snapshot.category,\n    sheetMode: snapshot.sheetMode,\n    level: snapshot.level,\n    combatProfile: snapshot.combatProfile,\n    combatRole: snapshot.combatRole,\n    tags: [...snapshot.tags],\n    portraitAssetKey: snapshot.portraitAssetKey ?? null,\n    notes: snapshot.notes ?? null,\n    maxHealth: snapshot.maxHealth,\n    capturedAt: snapshot.capturedAt,\n  };\n}"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
+      "line": 102,
+      "endLine": 116,
+      "text": "export async function listNpcCreatureDefinitions(options?: {\n  scope?: NpcCreatureScope;\n  worldProfileId?: string | null;\n  includeArchived?: boolean;\n}): Promise<NpcCreatureCatalogRecord[]> {\n  assertHost();\n  const rows = await fetchHostLibraryNpcCreatures({\n    scope: options?.scope,\n    worldProfileId: options?.worldProfileId,\n    includeArchived: options?.includeArchived === true,\n  });\n  return rows\n    .map(mapHostLibraryNpcRecord)\n    .filter((record): record is NpcCreatureCatalogRecord => record !== null);\n}"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
+      "line": 118,
+      "endLine": 137,
+      "text": "export async function getNpcCreatureDefinition(\n  definitionId: string,\n): Promise<NpcCreatureCatalogRecord | null> {\n  const pack =\n    getCoreNpcCreatureDefinition(definitionId) ??\n    getBuiltinNpcCreatureDefinition(definitionId);\n  if (pack) {\n    const record = {\n      definition: pack,\n      status: 'active' as const,\n      worldProfileId: null,\n      publicId: null,\n    } as NpcCreatureCatalogRecord;\n    record.ownerUserId = '';\n    return record;\n  }\n  assertHost();\n  const raw = await fetchHostLibraryNpcCreatureById(definitionId);\n  return raw ? mapHostLibraryNpcRecord(raw) : null;\n}"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
+      "line": 145,
+      "endLine": 156,
+      "text": "export async function createNpcCreatureDefinition(\n  input: CreateNpcCreatureDefinitionInput,\n): Promise<NpcCreatureCatalogRecord> {\n  assertHost();\n  const created = await createHostLibraryNpcCreature({\n    scope: input.target.scope,\n    worldProfileId:\n      input.target.scope === 'world' ? input.target.worldProfileId : null,\n    draft: input.draft,\n  });\n  return requireHostNpcRecord(created, 'Host-NPC anlegen: ungültige Antwort');\n}"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
+      "line": 158,
+      "endLine": 167,
+      "text": "export async function updateNpcCreatureDefinition(\n  input: UpdateNpcCreatureDefinitionInput,\n): Promise<NpcCreatureCatalogRecord> {\n  assertHost();\n  const updated = await updateHostLibraryNpcCreature(\n    input.definitionId,\n    input.draft,\n  );\n  return requireHostNpcRecord(updated, 'Host-NPC speichern: ungültige Antwort');\n}"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
+      "line": 169,
+      "endLine": 175,
+      "text": "export async function archiveNpcCreatureDefinition(\n  definitionId: string,\n): Promise<NpcCreatureCatalogRecord> {\n  assertHost();\n  const archived = await archiveHostLibraryNpcCreature(definitionId);\n  return requireHostNpcRecord(archived, 'Host-NPC archivieren: ungültige Antwort');\n}"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
+      "line": 188,
+      "endLine": 207,
+      "text": "export async function duplicateNpcCreatureDefinition(\n  definitionId: string,\n  sourceDefinition?: NpcCreatureDefinition,\n): Promise<NpcCreatureCatalogRecord> {\n  assertHost();\n  // Packs are core-scoped (builtins live under core packs — no `builtin` scope).\n  const pack =\n    getCoreNpcCreatureDefinition(definitionId) ??\n    getBuiltinNpcCreatureDefinition(definitionId) ??\n    (sourceDefinition?.scope === 'core' ? sourceDefinition : null);\n  if (pack) {\n    const { id: _id, scope: _scope, ...rest } = pack;\n    return createNpcCreatureDefinition({\n      target: { scope: 'personal' },\n      draft: { ...rest, name: personalCopyName(rest.name) },\n    });\n  }\n  const duplicated = await duplicateHostLibraryNpcCreature(definitionId);\n  return requireHostNpcRecord(duplicated, 'Host-NPC duplizieren: ungültige Antwort');\n}"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
+      "line": 210,
+      "endLine": 216,
+      "text": "export async function restoreNpcCreatureDefinition(\n  definitionId: string,\n): Promise<NpcCreatureCatalogRecord> {\n  assertHost();\n  const restored = await restoreHostLibraryNpcCreature(definitionId);\n  return requireHostNpcRecord(restored, 'Host-NPC wiederherstellen: ungültige Antwort');\n}"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
+      "line": 219,
+      "endLine": 232,
+      "text": "export function toNpcCreatureDefinitionSummaries(\n  records: readonly NpcCreatureCatalogRecord[],\n): NpcCreatureDefinitionSummary[] {\n  return records.map((record) => {\n    const derived = deriveNpcCreaturePower(record.definition);\n    return {\n      definition: record.definition,\n      machtgradLabel: derived.machtgradLabel,\n      status: record.status,\n      scope: record.definition.scope,\n      worldProfileId: record.worldProfileId,\n    };\n  });\n}"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
+      "line": 238,
+      "endLine": 246,
+      "text": "export async function loadWorldProfileNpcCreatureCatalog(\n  worldProfileId: string,\n): Promise<NpcCreatureCatalogRecord[]> {\n  return listNpcCreatureDefinitions({\n    scope: 'world',\n    worldProfileId,\n    includeArchived: true,\n  });\n}"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
+      "line": 248,
+      "endLine": 252,
+      "text": "export interface WorldNpcCreatureAvailability {\n  config: NpcCreatureCatalogModuleConfig;\n  resolved: ResolvedWorldNpcCreatureCatalog;\n  worldRecords: NpcCreatureCatalogRecord[];\n}"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
+      "line": 259,
+      "endLine": 298,
+      "text": "export async function loadWorldNpcCreatureAvailability(\n  worldProfileId: string,\n): Promise<WorldNpcCreatureAvailability> {\n  assertHost();\n  const modules = null;\n  const [worldRecords, personalRecords] = await Promise.all([\n    loadWorldProfileNpcCreatureCatalog(worldProfileId),\n    listNpcCreatureDefinitions({\n      scope: 'personal',\n      includeArchived: false,\n    }),\n  ]);\n  const { config } = getNpcCreatureCatalogModuleConfig(modules);\n  const worldDefinitions = worldRecords\n    .filter((record) => record.status === 'active')\n    .map((record) => record.definition);\n  const personalDefinitions = personalRecords.map((record) => record.definition);\n\n  const resolveDefinition = (\n    definitionId: string,\n  ): NpcCreatureDefinition | undefined => {\n    const builtin = getBuiltinNpcCreatureDefinition(definitionId);\n    if (builtin) return builtin;\n    const core = getCoreNpcCreatureDefinition(definitionId);\n    if (core) return core;\n    const world = worldDefinitions.find((entry) => entry.id === definitionId);\n    if (world) return world;\n    return personalDefinitions.find((entry) => entry.id === definitionId);\n  };\n\n  const resolved = resolveWorldNpcCreatureCatalog({\n    config,\n    coreDefinitions: listCoreNpcCreatureDefinitions(),\n    resolveDefinition,\n    worldDefinitions,\n    personalDefinitions,\n  });\n\n  return { config, resolved, worldRecords };\n}"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
+      "line": 304,
+      "endLine": 328,
+      "text": "export async function promoteNpcCreatureCompactToFull(input: {\n  definitionId: string;\n  fullSheet: Readonly<Record<string, unknown>>;\n}): Promise<NpcCreatureCatalogRecord> {\n  const attrsCheck = assertFullSheetHasNoSilentIllegalAttributes(input.fullSheet);\n  if (attrsCheck.ok === false) {\n    throw new Error(attrsCheck.message);\n  }\n\n  assertHost();\n  const existing = await getNpcCreatureDefinition(input.definitionId);\n  if (!existing) {\n    throw new Error('Figur wurde nicht gefunden.');\n  }\n\n  const draft = buildCompactToFullWriteDraft(existing.definition, input.fullSheet);\n  if (!draft) {\n    throw new Error('Compact→Full-Entwurf ungültig — Full Sheet fehlt oder ist leer.');\n  }\n\n  return updateNpcCreatureDefinition({\n    definitionId: input.definitionId,\n    draft,\n  });\n}"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
+      "line": 341,
+      "endLine": 348,
+      "text": "export async function getNpcCreatureControllerAssignment(\n  projectId: string,\n  definitionId: string,\n): Promise<NpcControllerAssignment | null> {\n  assertHost();\n  const assignment = await fetchHostNpcCreatureControllerAssignment(projectId, definitionId);\n  return assignment ? mapHostControllerAssignment(assignment) : null;\n}"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
+      "line": 355,
+      "endLine": 391,
+      "text": "export async function assignNpcCreatureController(input: {\n  projectId: string;\n  definitionId: string;\n  controllerUserId: string | null;\n  activeMemberUserIds: readonly string[];\n}): Promise<NpcControllerAssignment> {\n  const actorUserId = await getAuthenticatedUserId();\n  const record = await getNpcCreatureDefinition(input.definitionId);\n  if (!record) {\n    throw new Error('Figur wurde nicht gefunden.');\n  }\n\n  const planned = planNpcControllerAssignment(\n    record.definition,\n    {\n      projectId: input.projectId,\n      definitionId: input.definitionId,\n      controllerUserId: input.controllerUserId,\n    },\n    {\n      actorUserId,\n      actorRole: 'gm',\n      activeMemberUserIds: input.activeMemberUserIds,\n    },\n  );\n  if (planned.ok === false) {\n    throw new Error(planned.message);\n  }\n\n  assertHost();\n  const assignment = await assignHostNpcCreatureController({\n    projectId: planned.assignment.projectId,\n    definitionId: planned.assignment.definitionId,\n    controllerUserId: planned.assignment.controllerUserId,\n  });\n  return mapHostControllerAssignment(assignment);\n}"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
+      "line": 427,
+      "endLine": 433,
+      "text": "export async function listNpcCreatureInstances(\n  projectId: string,\n): Promise<NpcCreatureInstance[]> {\n  assertHost();\n  const rows = await fetchHostNpcInstances(projectId);\n  return rows.map(mapHostInstanceDto);\n}"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
+      "line": 439,
+      "endLine": 491,
+      "text": "export async function spawnNpcCreatureInstance(input: {\n  projectId: string;\n  sessionId?: string | null;\n  definitionId: string;\n  instanceKind: NpcCreatureInstanceKind;\n  displayName?: string | null;\n  activeMemberUserIds: readonly string[];\n}): Promise<NpcCreatureInstance> {\n  const actorUserId = await getAuthenticatedUserId();\n  const definition = await resolveDefinitionForInstance(input.definitionId);\n  if (!definition) {\n    throw new Error('Figuren-Vorlage wurde nicht gefunden.');\n  }\n\n  const existing = await listNpcCreatureInstances(input.projectId);\n  const definitionReadable =\n    isBuiltinOrCoreDefinitionId(definition.id) ||\n    Boolean(await getNpcCreatureDefinition(definition.id));\n\n  const planned = planNpcCreatureInstanceSpawn(\n    definition,\n    {\n      projectId: input.projectId,\n      sessionId: input.sessionId ?? null,\n      definitionId: input.definitionId,\n      instanceKind: input.instanceKind,\n      displayName: input.displayName ?? null,\n    },\n    {\n      actorUserId,\n      actorRole: 'gm',\n      activeMemberUserIds: input.activeMemberUserIds,\n      existingInstances: existing,\n      definitionReadable,\n    },\n  );\n  if (planned.ok === false) {\n    throw new Error(planned.message);\n  }\n\n  assertHost();\n  const instance = await spawnHostNpcInstance({\n    projectId: planned.instance.projectId,\n    definitionId: planned.instance.definitionId,\n    instanceKind: planned.instance.instanceKind,\n    snapshot: toInstanceSnapshotPayload(planned.instance.snapshot),\n    runtime: toInstanceRuntimePayload(planned.instance.runtime),\n    displayName: planned.instance.displayName,\n    sequenceNumber: planned.instance.sequenceNumber,\n    sessionId: planned.instance.sessionId,\n  });\n  return mapHostInstanceDto(instance);\n}"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
+      "line": 494,
+      "endLine": 519,
+      "text": "export async function updateNpcCreatureInstanceRuntime(input: {\n  instance: NpcCreatureInstance;\n  patch: NpcCreatureInstanceRuntimeUpdate;\n  activeMemberUserIds: readonly string[];\n}): Promise<NpcCreatureInstance> {\n  const actorUserId = await getAuthenticatedUserId();\n  const planned = planNpcCreatureInstanceRuntimeUpdate(\n    input.instance,\n    input.patch,\n    {\n      actorUserId,\n      actorRole: 'gm',\n      activeMemberUserIds: input.activeMemberUserIds,\n    },\n  );\n  if (planned.ok === false) {\n    throw new Error(planned.message);\n  }\n\n  assertHost();\n  const instance = await updateHostNpcInstanceRuntime(\n    planned.instance.id!,\n    toInstanceRuntimePayload(planned.instance.runtime),\n  );\n  return mapHostInstanceDto(instance);\n}"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
+      "line": 522,
+      "endLine": 525,
+      "text": "export async function removeNpcCreatureInstance(instanceId: string): Promise<void> {\n  assertHost();\n  await removeHostNpcInstance(instanceId);\n}"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
+      "line": 531,
+      "endLine": 536,
+      "text": "export async function clearNpcCreatureInstanceTempControllersForSession(\n  sessionId: string,\n): Promise<number> {\n  assertHost();\n  return clearHostNpcTempControllersForSession(sessionId);\n}"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature.persistence.ts",
+      "line": 18,
+      "endLine": 18,
+      "text": "export type PersistedNpcCreatureScope = Extract<NpcCreatureScope, 'world' | 'personal'>;"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature.persistence.ts",
+      "line": 21,
+      "endLine": 32,
+      "text": "export interface NpcCreatureDefinitionDto {\n  id: string;\n  public_id?: string | null;\n  scope: PersistedNpcCreatureScope;\n  world_profile_id: string | null;\n  owner_user_id: string;\n  payload: unknown;\n  status: NpcCreatureStatus;\n  payload_version: number;\n  created_at: string;\n  updated_at: string;\n}"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature.persistence.ts",
+      "line": 34,
+      "endLine": 35,
+      "text": "export const NPC_CREATURE_DEFINITION_COLUMNS =\n  'id, public_id, scope, world_profile_id, owner_user_id, payload, status, payload_version, created_at, updated_at';"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature.persistence.ts",
+      "line": 41,
+      "endLine": 57,
+      "text": "export function mapNpcCreatureDefinitionRow(\n  dto: NpcCreatureDefinitionDto,\n): NpcCreatureCatalogRecord | null {\n  const definition = parseNpcCreatureDefinition(dto.id, dto.scope, dto.payload);\n  if (!definition) return null;\n  const publicId =\n    typeof dto.public_id === 'string' && dto.public_id.trim()\n      ? dto.public_id.trim().toUpperCase()\n      : null;\n  return {\n    definition,\n    status: dto.status === 'archived' ? 'archived' : 'active',\n    worldProfileId: dto.world_profile_id,\n    ownerUserId: dto.owner_user_id,\n    publicId,\n  };\n}"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature.persistence.ts",
+      "line": 60,
+      "endLine": 67,
+      "text": "export function toPersistedNpcCreatureWrite(\n  definition: NpcCreatureDefinition,\n): { payload: Record<string, unknown>; payload_version: number } {\n  return {\n    payload: toNpcCreatureDefinitionPayload(definition),\n    payload_version: NPC_CREATURE_DEFINITION_PAYLOAD_VERSION,\n  };\n}"
+    }
+  ],
+  "operationDeclarations": [
+    {
+      "path": "src/infrastructure/npc-creature/host-npc-creature-adapter.ts",
+      "line": 21,
+      "endLine": 50,
+      "name": "createHostNpcCreatureAdapter",
+      "text": "export function createHostNpcCreatureAdapter(\n  ports: HostNpcCreaturePorts,\n): HostNpcCreatureAdapter {\n  return {\n    transport: 'host',\n    ops: HOST_NPC_CREATURE_OPS,\n    listDefinitions: (actorId, options) => ports.listDefinitions(actorId, options),\n    getDefinition: (actorId, definitionId) => ports.getDefinition(actorId, definitionId),\n    createDefinition: (actorId, input) => ports.createDefinition(actorId, input),\n    updateDefinition: (actorId, definitionId, draft) =>\n      ports.updateDefinition(actorId, definitionId, draft),\n    archiveDefinition: (actorId, definitionId) =>\n      ports.archiveDefinition(actorId, definitionId),\n    restoreDefinition: (actorId, definitionId) =>\n      ports.restoreDefinition(actorId, definitionId),\n    duplicateDefinition: (actorId, sourceDefinitionId) =>\n      ports.duplicateDefinition(actorId, sourceDefinitionId),\n    getControllerAssignment: (actorId, projectId, definitionId) =>\n      ports.getControllerAssignment(actorId, projectId, definitionId),\n    assignController: (actorId, projectId, definitionId, controllerUserId) =>\n      ports.assignController(actorId, projectId, definitionId, controllerUserId),\n    listInstances: (actorId, projectId) => ports.listInstances(actorId, projectId),\n    spawnInstance: (actorId, input) => ports.spawnInstance(actorId, input),\n    updateRuntime: (actorId, instanceId, runtime) =>\n      ports.updateRuntime(actorId, instanceId, runtime),\n    removeInstance: (actorId, instanceId) => ports.removeInstance(actorId, instanceId),\n    clearTempControllersForSession: (actorId, sessionId) =>\n      ports.clearTempControllersForSession(actorId, sessionId),\n  };\n}"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/host-npc-creature-adapter.ts",
+      "line": 27,
+      "endLine": 27,
+      "name": "callback",
+      "text": "(actorId, options) => ports.listDefinitions(actorId, options)"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/host-npc-creature-adapter.ts",
+      "line": 28,
+      "endLine": 28,
+      "name": "callback",
+      "text": "(actorId, definitionId) => ports.getDefinition(actorId, definitionId)"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/host-npc-creature-adapter.ts",
+      "line": 29,
+      "endLine": 29,
+      "name": "callback",
+      "text": "(actorId, input) => ports.createDefinition(actorId, input)"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/host-npc-creature-adapter.ts",
+      "line": 30,
+      "endLine": 31,
+      "name": "callback",
+      "text": "(actorId, definitionId, draft) =>\n      ports.updateDefinition(actorId, definitionId, draft)"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/host-npc-creature-adapter.ts",
+      "line": 32,
+      "endLine": 33,
+      "name": "callback",
+      "text": "(actorId, definitionId) =>\n      ports.archiveDefinition(actorId, definitionId)"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/host-npc-creature-adapter.ts",
+      "line": 34,
+      "endLine": 35,
+      "name": "callback",
+      "text": "(actorId, definitionId) =>\n      ports.restoreDefinition(actorId, definitionId)"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/host-npc-creature-adapter.ts",
+      "line": 36,
+      "endLine": 37,
+      "name": "callback",
+      "text": "(actorId, sourceDefinitionId) =>\n      ports.duplicateDefinition(actorId, sourceDefinitionId)"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/host-npc-creature-adapter.ts",
+      "line": 38,
+      "endLine": 39,
+      "name": "callback",
+      "text": "(actorId, projectId, definitionId) =>\n      ports.getControllerAssignment(actorId, projectId, definitionId)"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/host-npc-creature-adapter.ts",
+      "line": 40,
+      "endLine": 41,
+      "name": "callback",
+      "text": "(actorId, projectId, definitionId, controllerUserId) =>\n      ports.assignController(actorId, projectId, definitionId, controllerUserId)"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/host-npc-creature-adapter.ts",
+      "line": 42,
+      "endLine": 42,
+      "name": "callback",
+      "text": "(actorId, projectId) => ports.listInstances(actorId, projectId)"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/host-npc-creature-adapter.ts",
+      "line": 43,
+      "endLine": 43,
+      "name": "callback",
+      "text": "(actorId, input) => ports.spawnInstance(actorId, input)"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/host-npc-creature-adapter.ts",
+      "line": 44,
+      "endLine": 45,
+      "name": "callback",
+      "text": "(actorId, instanceId, runtime) =>\n      ports.updateRuntime(actorId, instanceId, runtime)"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/host-npc-creature-adapter.ts",
+      "line": 46,
+      "endLine": 46,
+      "name": "callback",
+      "text": "(actorId, instanceId) => ports.removeInstance(actorId, instanceId)"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/host-npc-creature-adapter.ts",
+      "line": 47,
+      "endLine": 48,
+      "name": "callback",
+      "text": "(actorId, sessionId) =>\n      ports.clearTempControllersForSession(actorId, sessionId)"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature-controller.persistence.ts",
+      "line": 15,
+      "endLine": 23,
+      "name": "toNpcControllerAssignment",
+      "text": "export function toNpcControllerAssignment(\n  row: NpcControllerAssignmentRow,\n): NpcControllerAssignment {\n  return {\n    projectId: row.project_id,\n    definitionId: row.definition_id,\n    controllerUserId: row.controller_user_id,\n  };\n}"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature-instance.persistence.ts",
+      "line": 28,
+      "endLine": 31,
+      "name": "asStringArray",
+      "text": "function asStringArray(value: unknown): string[] {\n  if (!Array.isArray(value)) return [];\n  return value.filter((entry): entry is string => typeof entry === 'string');\n}"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature-instance.persistence.ts",
+      "line": 30,
+      "endLine": 30,
+      "name": "callback",
+      "text": "(entry): entry is string => typeof entry === 'string'"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature-instance.persistence.ts",
+      "line": 33,
+      "endLine": 56,
+      "name": "parseSnapshot",
+      "text": "function parseSnapshot(raw: unknown): NpcCreatureDefinitionSnapshot {\n  const obj = raw && typeof raw === 'object' ? (raw as Record<string, unknown>) : {};\n  const tags = asStringArray(obj.tags);\n  return {\n    name: typeof obj.name === 'string' ? obj.name : 'Figur',\n    kind: obj.kind === 'creature' ? 'creature' : 'npc',\n    category: (typeof obj.category === 'string' ? obj.category : 'sonstige') as NpcCreatureDefinitionSnapshot['category'],\n    sheetMode: obj.sheetMode === 'full' ? 'full' : 'compact',\n    level: (typeof obj.level === 'number' ? obj.level : 1) as NpcCreatureDefinitionSnapshot['level'],\n    combatProfile: (typeof obj.combatProfile === 'string'\n      ? obj.combatProfile\n      : 'balanced') as NpcCreatureDefinitionSnapshot['combatProfile'],\n    combatRole: (typeof obj.combatRole === 'string'\n      ? obj.combatRole\n      : 'standard') as NpcCreatureDefinitionSnapshot['combatRole'],\n    tags,\n    portraitAssetKey:\n      typeof obj.portraitAssetKey === 'string' ? obj.portraitAssetKey : undefined,\n    notes: typeof obj.notes === 'string' ? obj.notes : undefined,\n    maxHealth: typeof obj.maxHealth === 'number' ? obj.maxHealth : 1,\n    capturedAt:\n      typeof obj.capturedAt === 'string' ? obj.capturedAt : new Date(0).toISOString(),\n  };\n}"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature-instance.persistence.ts",
+      "line": 58,
+      "endLine": 73,
+      "name": "parseRuntime",
+      "text": "function parseRuntime(raw: unknown): NpcCreatureInstanceRuntime {\n  const obj = raw && typeof raw === 'object' ? (raw as Record<string, unknown>) : {};\n  const temp =\n    obj.temporaryControllerUserId === null\n    || obj.temporaryControllerUserId === undefined\n      ? null\n      : typeof obj.temporaryControllerUserId === 'string'\n        ? obj.temporaryControllerUserId\n        : null;\n  return {\n    currentHp: typeof obj.currentHp === 'number' ? obj.currentHp : 0,\n    conditions: asStringArray(obj.conditions),\n    temporaryControllerUserId: temp && temp.trim() ? temp.trim() : null,\n    encounterNotes: typeof obj.encounterNotes === 'string' ? obj.encounterNotes : '',\n  };\n}"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature-instance.persistence.ts",
+      "line": 75,
+      "endLine": 89,
+      "name": "toNpcCreatureInstance",
+      "text": "export function toNpcCreatureInstance(row: NpcCreatureInstanceRow): NpcCreatureInstance {\n  const kind: NpcCreatureInstanceKind =\n    row.instance_kind === 'persistent' ? 'persistent' : 'generic';\n  return {\n    id: row.id,\n    projectId: row.project_id,\n    sessionId: row.session_id,\n    definitionId: row.definition_id,\n    displayName: row.display_name,\n    instanceKind: kind,\n    sequenceNumber: row.sequence_number,\n    snapshot: parseSnapshot(row.snapshot),\n    runtime: parseRuntime(row.runtime),\n  };\n}"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature-instance.persistence.ts",
+      "line": 91,
+      "endLine": 100,
+      "name": "toInstanceRuntimePayload",
+      "text": "export function toInstanceRuntimePayload(\n  runtime: NpcCreatureInstanceRuntime,\n): Record<string, unknown> {\n  return {\n    currentHp: runtime.currentHp,\n    conditions: [...runtime.conditions],\n    temporaryControllerUserId: runtime.temporaryControllerUserId,\n    encounterNotes: runtime.encounterNotes,\n  };\n}"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature-instance.persistence.ts",
+      "line": 102,
+      "endLine": 119,
+      "name": "toInstanceSnapshotPayload",
+      "text": "export function toInstanceSnapshotPayload(\n  snapshot: NpcCreatureDefinitionSnapshot,\n): Record<string, unknown> {\n  return {\n    name: snapshot.name,\n    kind: snapshot.kind,\n    category: snapshot.category,\n    sheetMode: snapshot.sheetMode,\n    level: snapshot.level,\n    combatProfile: snapshot.combatProfile,\n    combatRole: snapshot.combatRole,\n    tags: [...snapshot.tags],\n    portraitAssetKey: snapshot.portraitAssetKey ?? null,\n    notes: snapshot.notes ?? null,\n    maxHealth: snapshot.maxHealth,\n    capturedAt: snapshot.capturedAt,\n  };\n}"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
+      "line": 63,
+      "endLine": 67,
+      "name": "assertHost",
+      "text": "function assertHost(): void {\n  if (!isHostLibraryEnabled()) {\n    throw new Error('Host-Anmeldung nicht konfiguriert (VITE_SAGATREE_HOST_AUTH_URL fehlt).');\n  }\n}"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
+      "line": 69,
+      "endLine": 100,
+      "name": "mapHostLibraryNpcRecord",
+      "text": "function mapHostLibraryNpcRecord(raw: unknown): NpcCreatureCatalogRecord | null {\n  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null;\n  const row = raw as Record<string, unknown>;\n  const id = typeof row.id === 'string' ? row.id : null;\n  if (!id) return null;\n  const scopeRaw = row.scope;\n  const scope =\n    scopeRaw === 'personal' || scopeRaw === 'world' || scopeRaw === 'core' || scopeRaw === 'builtin'\n      ? scopeRaw\n      : null;\n  if (!scope || scope === 'core' || scope === 'builtin') return null;\n  const payload =\n    row.payload && typeof row.payload === 'object' && !Array.isArray(row.payload)\n      ? row.payload\n      : {};\n  const definition = parseNpcCreatureDefinition(id, scope, payload);\n  if (!definition) return null;\n  const publicId =\n    typeof row.publicId === 'string' && row.publicId.trim()\n      ? row.publicId.trim().toUpperCase()\n      : null;\n  // Assign ownership via property write — facade must not invent owners in literals.\n  const record = {\n    definition,\n    status: (row.status === 'archived' ? 'archived' : 'active') as NpcCreatureCatalogRecord['status'],\n    worldProfileId: typeof row.worldProfileId === 'string' ? row.worldProfileId : null,\n    publicId,\n  } as NpcCreatureCatalogRecord;\n  const ownerFromHost = row['ownerUserId'];\n  record.ownerUserId = typeof ownerFromHost === 'string' ? ownerFromHost : '';\n  return record;\n}"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
+      "line": 102,
+      "endLine": 116,
+      "name": "listNpcCreatureDefinitions",
+      "text": "export async function listNpcCreatureDefinitions(options?: {\n  scope?: NpcCreatureScope;\n  worldProfileId?: string | null;\n  includeArchived?: boolean;\n}): Promise<NpcCreatureCatalogRecord[]> {\n  assertHost();\n  const rows = await fetchHostLibraryNpcCreatures({\n    scope: options?.scope,\n    worldProfileId: options?.worldProfileId,\n    includeArchived: options?.includeArchived === true,\n  });\n  return rows\n    .map(mapHostLibraryNpcRecord)\n    .filter((record): record is NpcCreatureCatalogRecord => record !== null);\n}"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
+      "line": 115,
+      "endLine": 115,
+      "name": "callback",
+      "text": "(record): record is NpcCreatureCatalogRecord => record !== null"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
+      "line": 118,
+      "endLine": 137,
+      "name": "getNpcCreatureDefinition",
+      "text": "export async function getNpcCreatureDefinition(\n  definitionId: string,\n): Promise<NpcCreatureCatalogRecord | null> {\n  const pack =\n    getCoreNpcCreatureDefinition(definitionId) ??\n    getBuiltinNpcCreatureDefinition(definitionId);\n  if (pack) {\n    const record = {\n      definition: pack,\n      status: 'active' as const,\n      worldProfileId: null,\n      publicId: null,\n    } as NpcCreatureCatalogRecord;\n    record.ownerUserId = '';\n    return record;\n  }\n  assertHost();\n  const raw = await fetchHostLibraryNpcCreatureById(definitionId);\n  return raw ? mapHostLibraryNpcRecord(raw) : null;\n}"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
+      "line": 139,
+      "endLine": 143,
+      "name": "requireHostNpcRecord",
+      "text": "function requireHostNpcRecord(raw: unknown, message: string): NpcCreatureCatalogRecord {\n  const record = mapHostLibraryNpcRecord(raw);\n  if (!record) throw new Error(message);\n  return record;\n}"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
+      "line": 145,
+      "endLine": 156,
+      "name": "createNpcCreatureDefinition",
+      "text": "export async function createNpcCreatureDefinition(\n  input: CreateNpcCreatureDefinitionInput,\n): Promise<NpcCreatureCatalogRecord> {\n  assertHost();\n  const created = await createHostLibraryNpcCreature({\n    scope: input.target.scope,\n    worldProfileId:\n      input.target.scope === 'world' ? input.target.worldProfileId : null,\n    draft: input.draft,\n  });\n  return requireHostNpcRecord(created, 'Host-NPC anlegen: ungültige Antwort');\n}"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
+      "line": 158,
+      "endLine": 167,
+      "name": "updateNpcCreatureDefinition",
+      "text": "export async function updateNpcCreatureDefinition(\n  input: UpdateNpcCreatureDefinitionInput,\n): Promise<NpcCreatureCatalogRecord> {\n  assertHost();\n  const updated = await updateHostLibraryNpcCreature(\n    input.definitionId,\n    input.draft,\n  );\n  return requireHostNpcRecord(updated, 'Host-NPC speichern: ungültige Antwort');\n}"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
+      "line": 169,
+      "endLine": 175,
+      "name": "archiveNpcCreatureDefinition",
+      "text": "export async function archiveNpcCreatureDefinition(\n  definitionId: string,\n): Promise<NpcCreatureCatalogRecord> {\n  assertHost();\n  const archived = await archiveHostLibraryNpcCreature(definitionId);\n  return requireHostNpcRecord(archived, 'Host-NPC archivieren: ungültige Antwort');\n}"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
+      "line": 177,
+      "endLine": 181,
+      "name": "personalCopyName",
+      "text": "function personalCopyName(sourceName: string): string {\n  const suffix = ' (Kopie)';\n  const maxBase = Math.max(1, 255 - suffix.length);\n  return `${sourceName.trim().slice(0, maxBase) || 'NPC'}${suffix}`;\n}"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
+      "line": 188,
+      "endLine": 207,
+      "name": "duplicateNpcCreatureDefinition",
+      "text": "export async function duplicateNpcCreatureDefinition(\n  definitionId: string,\n  sourceDefinition?: NpcCreatureDefinition,\n): Promise<NpcCreatureCatalogRecord> {\n  assertHost();\n  // Packs are core-scoped (builtins live under core packs — no `builtin` scope).\n  const pack =\n    getCoreNpcCreatureDefinition(definitionId) ??\n    getBuiltinNpcCreatureDefinition(definitionId) ??\n    (sourceDefinition?.scope === 'core' ? sourceDefinition : null);\n  if (pack) {\n    const { id: _id, scope: _scope, ...rest } = pack;\n    return createNpcCreatureDefinition({\n      target: { scope: 'personal' },\n      draft: { ...rest, name: personalCopyName(rest.name) },\n    });\n  }\n  const duplicated = await duplicateHostLibraryNpcCreature(definitionId);\n  return requireHostNpcRecord(duplicated, 'Host-NPC duplizieren: ungültige Antwort');\n}"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
+      "line": 210,
+      "endLine": 216,
+      "name": "restoreNpcCreatureDefinition",
+      "text": "export async function restoreNpcCreatureDefinition(\n  definitionId: string,\n): Promise<NpcCreatureCatalogRecord> {\n  assertHost();\n  const restored = await restoreHostLibraryNpcCreature(definitionId);\n  return requireHostNpcRecord(restored, 'Host-NPC wiederherstellen: ungültige Antwort');\n}"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
+      "line": 219,
+      "endLine": 232,
+      "name": "toNpcCreatureDefinitionSummaries",
+      "text": "export function toNpcCreatureDefinitionSummaries(\n  records: readonly NpcCreatureCatalogRecord[],\n): NpcCreatureDefinitionSummary[] {\n  return records.map((record) => {\n    const derived = deriveNpcCreaturePower(record.definition);\n    return {\n      definition: record.definition,\n      machtgradLabel: derived.machtgradLabel,\n      status: record.status,\n      scope: record.definition.scope,\n      worldProfileId: record.worldProfileId,\n    };\n  });\n}"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
+      "line": 222,
+      "endLine": 231,
+      "name": "callback",
+      "text": "(record) => {\n    const derived = deriveNpcCreaturePower(record.definition);\n    return {\n      definition: record.definition,\n      machtgradLabel: derived.machtgradLabel,\n      status: record.status,\n      scope: record.definition.scope,\n      worldProfileId: record.worldProfileId,\n    };\n  }"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
+      "line": 238,
+      "endLine": 246,
+      "name": "loadWorldProfileNpcCreatureCatalog",
+      "text": "export async function loadWorldProfileNpcCreatureCatalog(\n  worldProfileId: string,\n): Promise<NpcCreatureCatalogRecord[]> {\n  return listNpcCreatureDefinitions({\n    scope: 'world',\n    worldProfileId,\n    includeArchived: true,\n  });\n}"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
+      "line": 259,
+      "endLine": 298,
+      "name": "loadWorldNpcCreatureAvailability",
+      "text": "export async function loadWorldNpcCreatureAvailability(\n  worldProfileId: string,\n): Promise<WorldNpcCreatureAvailability> {\n  assertHost();\n  const modules = null;\n  const [worldRecords, personalRecords] = await Promise.all([\n    loadWorldProfileNpcCreatureCatalog(worldProfileId),\n    listNpcCreatureDefinitions({\n      scope: 'personal',\n      includeArchived: false,\n    }),\n  ]);\n  const { config } = getNpcCreatureCatalogModuleConfig(modules);\n  const worldDefinitions = worldRecords\n    .filter((record) => record.status === 'active')\n    .map((record) => record.definition);\n  const personalDefinitions = personalRecords.map((record) => record.definition);\n\n  const resolveDefinition = (\n    definitionId: string,\n  ): NpcCreatureDefinition | undefined => {\n    const builtin = getBuiltinNpcCreatureDefinition(definitionId);\n    if (builtin) return builtin;\n    const core = getCoreNpcCreatureDefinition(definitionId);\n    if (core) return core;\n    const world = worldDefinitions.find((entry) => entry.id === definitionId);\n    if (world) return world;\n    return personalDefinitions.find((entry) => entry.id === definitionId);\n  };\n\n  const resolved = resolveWorldNpcCreatureCatalog({\n    config,\n    coreDefinitions: listCoreNpcCreatureDefinitions(),\n    resolveDefinition,\n    worldDefinitions,\n    personalDefinitions,\n  });\n\n  return { config, resolved, worldRecords };\n}"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
+      "line": 273,
+      "endLine": 273,
+      "name": "callback",
+      "text": "(record) => record.status === 'active'"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
+      "line": 274,
+      "endLine": 274,
+      "name": "callback",
+      "text": "(record) => record.definition"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
+      "line": 275,
+      "endLine": 275,
+      "name": "callback",
+      "text": "(record) => record.definition"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
+      "line": 277,
+      "endLine": 287,
+      "name": "resolveDefinition",
+      "text": "(\n    definitionId: string,\n  ): NpcCreatureDefinition | undefined => {\n    const builtin = getBuiltinNpcCreatureDefinition(definitionId);\n    if (builtin) return builtin;\n    const core = getCoreNpcCreatureDefinition(definitionId);\n    if (core) return core;\n    const world = worldDefinitions.find((entry) => entry.id === definitionId);\n    if (world) return world;\n    return personalDefinitions.find((entry) => entry.id === definitionId);\n  }"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
+      "line": 284,
+      "endLine": 284,
+      "name": "callback",
+      "text": "(entry) => entry.id === definitionId"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
+      "line": 286,
+      "endLine": 286,
+      "name": "callback",
+      "text": "(entry) => entry.id === definitionId"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
+      "line": 304,
+      "endLine": 328,
+      "name": "promoteNpcCreatureCompactToFull",
+      "text": "export async function promoteNpcCreatureCompactToFull(input: {\n  definitionId: string;\n  fullSheet: Readonly<Record<string, unknown>>;\n}): Promise<NpcCreatureCatalogRecord> {\n  const attrsCheck = assertFullSheetHasNoSilentIllegalAttributes(input.fullSheet);\n  if (attrsCheck.ok === false) {\n    throw new Error(attrsCheck.message);\n  }\n\n  assertHost();\n  const existing = await getNpcCreatureDefinition(input.definitionId);\n  if (!existing) {\n    throw new Error('Figur wurde nicht gefunden.');\n  }\n\n  const draft = buildCompactToFullWriteDraft(existing.definition, input.fullSheet);\n  if (!draft) {\n    throw new Error('Compact→Full-Entwurf ungültig — Full Sheet fehlt oder ist leer.');\n  }\n\n  return updateNpcCreatureDefinition({\n    definitionId: input.definitionId,\n    draft,\n  });\n}"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
+      "line": 330,
+      "endLine": 338,
+      "name": "mapHostControllerAssignment",
+      "text": "function mapHostControllerAssignment(\n  dto: HostNpcControllerAssignmentDto,\n): NpcControllerAssignment {\n  return {\n    projectId: dto.projectId,\n    definitionId: dto.definitionId,\n    controllerUserId: dto.controllerUserId,\n  };\n}"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
+      "line": 341,
+      "endLine": 348,
+      "name": "getNpcCreatureControllerAssignment",
+      "text": "export async function getNpcCreatureControllerAssignment(\n  projectId: string,\n  definitionId: string,\n): Promise<NpcControllerAssignment | null> {\n  assertHost();\n  const assignment = await fetchHostNpcCreatureControllerAssignment(projectId, definitionId);\n  return assignment ? mapHostControllerAssignment(assignment) : null;\n}"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
+      "line": 355,
+      "endLine": 391,
+      "name": "assignNpcCreatureController",
+      "text": "export async function assignNpcCreatureController(input: {\n  projectId: string;\n  definitionId: string;\n  controllerUserId: string | null;\n  activeMemberUserIds: readonly string[];\n}): Promise<NpcControllerAssignment> {\n  const actorUserId = await getAuthenticatedUserId();\n  const record = await getNpcCreatureDefinition(input.definitionId);\n  if (!record) {\n    throw new Error('Figur wurde nicht gefunden.');\n  }\n\n  const planned = planNpcControllerAssignment(\n    record.definition,\n    {\n      projectId: input.projectId,\n      definitionId: input.definitionId,\n      controllerUserId: input.controllerUserId,\n    },\n    {\n      actorUserId,\n      actorRole: 'gm',\n      activeMemberUserIds: input.activeMemberUserIds,\n    },\n  );\n  if (planned.ok === false) {\n    throw new Error(planned.message);\n  }\n\n  assertHost();\n  const assignment = await assignHostNpcCreatureController({\n    projectId: planned.assignment.projectId,\n    definitionId: planned.assignment.definitionId,\n    controllerUserId: planned.assignment.controllerUserId,\n  });\n  return mapHostControllerAssignment(assignment);\n}"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
+      "line": 393,
+      "endLine": 402,
+      "name": "resolveDefinitionForInstance",
+      "text": "async function resolveDefinitionForInstance(\n  definitionId: string,\n): Promise<NpcCreatureDefinition | null> {\n  const builtin = getBuiltinNpcCreatureDefinition(definitionId);\n  if (builtin) return builtin;\n  const core = getCoreNpcCreatureDefinition(definitionId);\n  if (core) return core;\n  const record = await getNpcCreatureDefinition(definitionId);\n  return record?.definition ?? null;\n}"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
+      "line": 404,
+      "endLine": 419,
+      "name": "mapHostInstanceDto",
+      "text": "function mapHostInstanceDto(dto: HostNpcInstanceDto): NpcCreatureInstance {\n  return toNpcCreatureInstance({\n    id: dto.id,\n    project_id: dto.projectId,\n    session_id: dto.sessionId,\n    definition_id: dto.definitionId,\n    display_name: dto.displayName,\n    instance_kind: dto.instanceKind,\n    sequence_number: dto.sequenceNumber,\n    snapshot: dto.snapshot,\n    runtime: dto.runtime,\n    created_by: dto.createdBy,\n    created_at: dto.createdAt,\n    updated_at: dto.updatedAt,\n  });\n}"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
+      "line": 421,
+      "endLine": 424,
+      "name": "isBuiltinOrCoreDefinitionId",
+      "text": "function isBuiltinOrCoreDefinitionId(definitionId: string): boolean {\n  if (isCoreNpcCreatureDefinitionId(definitionId)) return true;\n  return Boolean(getBuiltinNpcCreatureDefinition(definitionId));\n}"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
+      "line": 427,
+      "endLine": 433,
+      "name": "listNpcCreatureInstances",
+      "text": "export async function listNpcCreatureInstances(\n  projectId: string,\n): Promise<NpcCreatureInstance[]> {\n  assertHost();\n  const rows = await fetchHostNpcInstances(projectId);\n  return rows.map(mapHostInstanceDto);\n}"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
+      "line": 439,
+      "endLine": 491,
+      "name": "spawnNpcCreatureInstance",
+      "text": "export async function spawnNpcCreatureInstance(input: {\n  projectId: string;\n  sessionId?: string | null;\n  definitionId: string;\n  instanceKind: NpcCreatureInstanceKind;\n  displayName?: string | null;\n  activeMemberUserIds: readonly string[];\n}): Promise<NpcCreatureInstance> {\n  const actorUserId = await getAuthenticatedUserId();\n  const definition = await resolveDefinitionForInstance(input.definitionId);\n  if (!definition) {\n    throw new Error('Figuren-Vorlage wurde nicht gefunden.');\n  }\n\n  const existing = await listNpcCreatureInstances(input.projectId);\n  const definitionReadable =\n    isBuiltinOrCoreDefinitionId(definition.id) ||\n    Boolean(await getNpcCreatureDefinition(definition.id));\n\n  const planned = planNpcCreatureInstanceSpawn(\n    definition,\n    {\n      projectId: input.projectId,\n      sessionId: input.sessionId ?? null,\n      definitionId: input.definitionId,\n      instanceKind: input.instanceKind,\n      displayName: input.displayName ?? null,\n    },\n    {\n      actorUserId,\n      actorRole: 'gm',\n      activeMemberUserIds: input.activeMemberUserIds,\n      existingInstances: existing,\n      definitionReadable,\n    },\n  );\n  if (planned.ok === false) {\n    throw new Error(planned.message);\n  }\n\n  assertHost();\n  const instance = await spawnHostNpcInstance({\n    projectId: planned.instance.projectId,\n    definitionId: planned.instance.definitionId,\n    instanceKind: planned.instance.instanceKind,\n    snapshot: toInstanceSnapshotPayload(planned.instance.snapshot),\n    runtime: toInstanceRuntimePayload(planned.instance.runtime),\n    displayName: planned.instance.displayName,\n    sequenceNumber: planned.instance.sequenceNumber,\n    sessionId: planned.instance.sessionId,\n  });\n  return mapHostInstanceDto(instance);\n}"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
+      "line": 494,
+      "endLine": 519,
+      "name": "updateNpcCreatureInstanceRuntime",
+      "text": "export async function updateNpcCreatureInstanceRuntime(input: {\n  instance: NpcCreatureInstance;\n  patch: NpcCreatureInstanceRuntimeUpdate;\n  activeMemberUserIds: readonly string[];\n}): Promise<NpcCreatureInstance> {\n  const actorUserId = await getAuthenticatedUserId();\n  const planned = planNpcCreatureInstanceRuntimeUpdate(\n    input.instance,\n    input.patch,\n    {\n      actorUserId,\n      actorRole: 'gm',\n      activeMemberUserIds: input.activeMemberUserIds,\n    },\n  );\n  if (planned.ok === false) {\n    throw new Error(planned.message);\n  }\n\n  assertHost();\n  const instance = await updateHostNpcInstanceRuntime(\n    planned.instance.id!,\n    toInstanceRuntimePayload(planned.instance.runtime),\n  );\n  return mapHostInstanceDto(instance);\n}"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
+      "line": 522,
+      "endLine": 525,
+      "name": "removeNpcCreatureInstance",
+      "text": "export async function removeNpcCreatureInstance(instanceId: string): Promise<void> {\n  assertHost();\n  await removeHostNpcInstance(instanceId);\n}"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
+      "line": 531,
+      "endLine": 536,
+      "name": "clearNpcCreatureInstanceTempControllersForSession",
+      "text": "export async function clearNpcCreatureInstanceTempControllersForSession(\n  sessionId: string,\n): Promise<number> {\n  assertHost();\n  return clearHostNpcTempControllersForSession(sessionId);\n}"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature.persistence.ts",
+      "line": 41,
+      "endLine": 57,
+      "name": "mapNpcCreatureDefinitionRow",
+      "text": "export function mapNpcCreatureDefinitionRow(\n  dto: NpcCreatureDefinitionDto,\n): NpcCreatureCatalogRecord | null {\n  const definition = parseNpcCreatureDefinition(dto.id, dto.scope, dto.payload);\n  if (!definition) return null;\n  const publicId =\n    typeof dto.public_id === 'string' && dto.public_id.trim()\n      ? dto.public_id.trim().toUpperCase()\n      : null;\n  return {\n    definition,\n    status: dto.status === 'archived' ? 'archived' : 'active',\n    worldProfileId: dto.world_profile_id,\n    ownerUserId: dto.owner_user_id,\n    publicId,\n  };\n}"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/npc-creature.persistence.ts",
+      "line": 60,
+      "endLine": 67,
+      "name": "toPersistedNpcCreatureWrite",
+      "text": "export function toPersistedNpcCreatureWrite(\n  definition: NpcCreatureDefinition,\n): { payload: Record<string, unknown>; payload_version: number } {\n  return {\n    payload: toNpcCreatureDefinitionPayload(definition),\n    payload_version: NPC_CREATURE_DEFINITION_PAYLOAD_VERSION,\n  };\n}"
+    }
+  ]
+}
