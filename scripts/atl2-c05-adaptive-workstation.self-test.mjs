@@ -37,7 +37,14 @@ assert.ok(ed.includes('data-atlas-layers-sheet-trigger'));
 assert.ok(ed.includes('renderLayersChrome'));
 assert.ok(ed.includes('safe-area-inset-bottom'));
 assert.ok(ed.includes('data-atlas-surface-mode="3d"'));
-assert.ok(ed.split("surfaceMode === '3d'")[1].includes('safe-area-inset-bottom'));
+// 3D mount shell (not the early surfaceMode === '3d' reportNavView guard) keeps AU safe-area.
+{
+  const mountIdx = ed.indexOf('data-atlas-surface-mode="3d"');
+  assert.ok(mountIdx >= 0);
+  assert.ok(
+    ed.slice(Math.max(0, mountIdx - 600), mountIdx + 200).includes('safe-area-inset-bottom'),
+  );
+}
 
 assert.equal(ad.resolveAtlasAdaptiveBand(320), 'phone');
 assert.equal(ad.resolveAtlasAdaptiveBand(800), 'tablet');

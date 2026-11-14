@@ -101,6 +101,9 @@ import {
   type WebglRuntimeState,
   type AtlasMapPin,
   type AtlasMapScale,
+  type AtlasNavCameraView,
+  parseHierarchyNavKey,
+  wheelRequestsHierarchyBack,
 } from '../../../../domains/world/atlas';
 import type { WorldNodeKind } from '../../../../domains/world/hierarchy';
 import {
@@ -230,6 +233,20 @@ export type UnifiedAtlasEditorProps = {
     readonly maxY: number;
   }) => void;
   readonly onLocateCancel?: () => void;
+  /** ATL2-E03: restore session camera when remounting after breadcrumb/back. */
+  readonly navRestoreView?: AtlasNavCameraView | null;
+  /** ATL2-E03: fly-to focus after enter-child (parent-space rect). */
+  readonly navPendingFocus?: {
+    readonly x: number;
+    readonly y: number;
+    readonly width: number;
+    readonly height: number;
+  } | null;
+  readonly onNavPendingFocusConsumed?: () => void;
+  /** ATL2-E03: report live Draufsicht camera for per-map snapshots. */
+  readonly onNavViewChange?: (view: AtlasNavCameraView) => void;
+  /** ATL2-E03: hierarchy back (Escape / Alt+ArrowUp / wheel-at-min). */
+  readonly onHierarchyBack?: () => void;
 };
 
 type DragState =
@@ -452,6 +469,11 @@ export function UnifiedAtlasEditor({
   locateSession = null,
   onLocateCommit,
   onLocateCancel,
+  navRestoreView = null,
+  navPendingFocus = null,
+  onNavPendingFocusConsumed,
+  onNavViewChange,
+  onHierarchyBack,
 }: UnifiedAtlasEditorProps) {
   const stageRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -632,7 +654,7 @@ export function UnifiedAtlasEditor({
   }, [onDocChange]);
 
   const goToRect = useCallback(
-    (rect: AtlasRect, duration = 650) => {
+    (rect: AtlasRect, duration = 650, onComplete?: () => void) => {
       if (animRef.current != null) cancelAnimationFrame(animRef.current);
       const targetScale = Math.min(
         Math.max(
@@ -660,12 +682,64 @@ export function UnifiedAtlasEditor({
         };
         refresh();
         if (t < 1) animRef.current = requestAnimationFrame(frame);
-        else animRef.current = null;
+        else {
+          animRef.current = null;
+          onComplete?.();
+        }
       };
       animRef.current = requestAnimationFrame(frame);
     },
     [viewport.height, viewport.width, refresh],
   );
+
+  const reportNavView = useCallback(() => {
+    // 3D surface reports via AtlasNative3dEditor — do not overwrite with idle 2D camRef.
+    if (surfaceMode === '3d') return;
+    if (!onNavViewChange || viewport.height <= 0) return;
+    onNavViewChange({
+      centerX: camRef.current.center.x,
+      centerY: camRef.current.center.y,
+      span: atlasSpanFromScale(camRef.current.pixelsPerUnit, viewport.height),
+      mode: 'ortho-topdown',
+    });
+  }, [onNavViewChange, viewport.height, surfaceMode]);
+
+  useEffect(() => {
+    if (!navRestoreView || viewport.height <= 0) return;
+    const ppu = Math.max(
+      fitRef.current * 0.7,
+      Math.min(320, viewport.height / (2 * Math.max(0.5, navRestoreView.span))),
+    );
+    camRef.current = {
+      center: { x: navRestoreView.centerX, y: navRestoreView.centerY },
+      pixelsPerUnit: ppu,
+    };
+    refresh();
+  }, [mapKey, navRestoreView, viewport.height, refresh]);
+
+  useEffect(() => {
+    if (!navPendingFocus) return;
+    // Consume only after the fly finishes so parent-space focus plays before a map switch (ATL2-E03).
+    goToRect(
+      {
+        x: navPendingFocus.x,
+        y: navPendingFocus.y,
+        width: navPendingFocus.width,
+        height: navPendingFocus.height,
+      },
+      650,
+      () => {
+        onNavPendingFocusConsumed?.();
+      },
+    );
+  }, [navPendingFocus, goToRect, onNavPendingFocusConsumed]);
+
+  useEffect(() => {
+    reportNavView();
+    return () => {
+      reportNavView();
+    };
+  }, [mapKey, reportNavView]);
 
   const mapWorldRect =
     workingDoc.demoSeed !== false ? WORLD_RECT : PRODUCT_WORLD_RECT;
@@ -701,18 +775,23 @@ export function UnifiedAtlasEditor({
   const productWorldFitDoneRef = useRef(false);
   useEffect(() => {
     productWorldFitDoneRef.current = false;
-  }, [workingDoc.demoSeed]);
+  }, [workingDoc.demoSeed, mapKey]);
   // Product maps: one-shot snap to full world extents once the stage has a real size.
+  // Hierarchy restore owns the camera when navRestoreView is present (Codex P1).
   useEffect(() => {
     if (workingDoc.demoSeed !== false) return;
     if (productWorldFitDoneRef.current) return;
     if (viewport.width < 220 || viewport.height < 220) return;
+    if (navRestoreView) {
+      productWorldFitDoneRef.current = true;
+      return;
+    }
     const fit = atlasFitCamera(PRODUCT_WORLD_RECT, viewport, 48);
     fitRef.current = fit.pixelsPerUnit;
     camRef.current = fit;
     productWorldFitDoneRef.current = true;
     refresh();
-  }, [workingDoc.demoSeed, viewport.width, viewport.height, refresh]);
+  }, [workingDoc.demoSeed, viewport.width, viewport.height, refresh, navRestoreView]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -1823,6 +1902,15 @@ export function UnifiedAtlasEditor({
 
   const onWheel = (e: React.WheelEvent) => {
     e.preventDefault();
+    const minPpu = fitRef.current * 0.7;
+    const atMinSpan = camRef.current.pixelsPerUnit <= minPpu * 1.02;
+    if (
+      onHierarchyBack &&
+      wheelRequestsHierarchyBack({ deltaY: e.deltaY, atMinSpan })
+    ) {
+      onHierarchyBack();
+      return;
+    }
     const rect = stageRef.current?.getBoundingClientRect();
     if (!rect) return;
     const cursor = { x: e.clientX - rect.left, y: e.clientY - rect.top };
@@ -1831,7 +1919,7 @@ export function UnifiedAtlasEditor({
       { width: viewport.width, height: viewport.height },
       cursor,
       camRef.current.pixelsPerUnit * Math.exp(-e.deltaY * 0.0019),
-      fitRef.current * 0.7,
+      minPpu,
       320,
     );
     camRef.current = next;
@@ -1898,14 +1986,13 @@ export function UnifiedAtlasEditor({
         refresh();
         return;
       }
-      if (tool !== 'area' || !canEdit) return;
-      if (ev.key === 'Escape') {
+      if (tool === 'area' && canEdit && ev.key === 'Escape') {
         setAreaDraft([]);
         setAreaHint(null);
         refresh();
         return;
       }
-      if (ev.key === 'Enter') {
+      if (tool === 'area' && canEdit && ev.key === 'Enter') {
         if (!canEditFeatureKind(docRef.current, 'room')) return;
         const draft = areaDraftRef.current;
         if (draft.length < 3) {
@@ -1924,11 +2011,46 @@ export function UnifiedAtlasEditor({
         commit(applyMapEdit(docRef.current, { op: 'add_room', room: built.room }), true);
         setAreaDraft([]);
         setAreaHint(null);
+        return;
+      }
+      if (
+        !locateSession &&
+        tool !== 'area' &&
+        onHierarchyBack &&
+        parseHierarchyNavKey({
+          key: ev.key,
+          altKey: ev.altKey,
+          metaKey: ev.metaKey,
+          ctrlKey: ev.ctrlKey,
+        }) === 'back'
+      ) {
+        const target = ev.target as HTMLElement | null;
+        const tag = target?.tagName;
+        if (
+          tag === 'INPUT' ||
+          tag === 'TEXTAREA' ||
+          tag === 'SELECT' ||
+          target?.isContentEditable
+        ) {
+          return;
+        }
+        if (ev.defaultPrevented) return;
+        ev.preventDefault();
+        onHierarchyBack();
       }
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [tool, canEdit, material, commit, refresh, locateSession, onLocateCancel]);
+  }, [
+    tool,
+    canEdit,
+    material,
+    commit,
+    refresh,
+    locateSession,
+    onLocateCancel,
+    onHierarchyBack,
+  ]);
 
   const handleDefinePlace = async (req: AtlasDefinePlaceRequest) => {
     if (!onCreatePlace || !canEdit) return;
@@ -2260,6 +2382,8 @@ export function UnifiedAtlasEditor({
           mapSketchStatus={mapSketchStatus ?? null}
           mapScale={mapScale}
           mapPins={mapPins}
+          navRestoreView={navRestoreView}
+          onNavViewChange={onNavViewChange}
           onNavSelect={onWebglNavSelect}
           onNavRename={canEdit ? onWebglNavRename : undefined}
           onNavAdd={canEdit ? onWebglNavAdd : undefined}

@@ -5,7 +5,7 @@
   "result": "PASS",
   "githubClosed": true,
   "mergeRef": "PR #860 \u2192 main (after #782)",
-  "note": "Inventories refreshed after ATL2-R01 (#1266) sync onto ATL2-F03 (#1226) main.",
+  "note": "Inventories from main after ATL2-E03 (#1221); R01 (#1266) merge kept main tip fingerprints.",
   "checks": [
     {
       "command": "legacy inventory matrix",
@@ -23,8 +23,8 @@
       "command": "edge/infra inventory 25+13",
       "result": "PASS",
       "evidenceFile": ".qa/intake/edge-infra-contracts/inventory.json",
-      "sha256": "eb68463c1eb9933f9a3f75e2ea498791f75d3d2f8e14d04fabd52a59202038d8"
+      "sha256": "104a88c26c3713bb70b7e2b8861af9214d978bd8c430012804b561bf943d9725"
     }
   ],
-  "testedCommit": "6f9998bce67e2ecb8c6ba6cf96781c4d7ecb2cb4"
+  "testedCommit": "3ba2a964dbb1735ccf7f383a525a407388bacebd"
 }

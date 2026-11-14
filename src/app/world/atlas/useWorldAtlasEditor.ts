@@ -586,8 +586,9 @@ export function useWorldAtlasEditor({
     return chain;
   })();
 
+  /** Returns false when the user cancels an unsaved-change confirm (ATL2-E03). */
   const setActiveMapIdGuarded = useCallback(
-    (nextId: string | null) => {
+    (nextId: string | null): boolean => {
       if (
         dirtyCanvas &&
         persistStatusRef.current !== 'clean' &&
@@ -600,17 +601,17 @@ export function useWorldAtlasEditor({
             : window.confirm(
                 'Ungespeicherte Änderungen verwerfen und die Karte wechseln?',
               );
-        if (!ok) return;
+        if (!ok) return false;
       }
       setActiveMapId(nextId);
       if (nextId !== activeMapId) {
         setDirtyCanvas(false);
         bumpPersist({ type: 'reload' });
       }
+      return true;
     },
     [activeMapId, dirtyCanvas, bumpPersist],
   );
-
   const resetToGolden = useCallback(
     async (mode: DornhainGoldenResetMode): Promise<{ readonly noteDe: string | null }> => {
       if (!map || !canEdit) {
