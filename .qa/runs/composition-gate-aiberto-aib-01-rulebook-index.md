@@ -1,9 +1,10 @@
 # Composition Gate — aiberto-aib-01-rulebook-index
 
-- HEAD_SHA: 6535e30b51171fd9eeb9edf43539447110d32fee
+- HEAD_SHA: 5c32162e97dd0fad149c6df5852cd48cd652e06a
 - Date: 2026-11-14
-- Verdict: CLEAR
+- Verdict: SKIPPED
 - Acceptance tier: domain-index
+- Reason: single-hop application diff without downstream side-effect path (indexer + pure search only; no UI/host consumer yet)
 
 ## Event
 
