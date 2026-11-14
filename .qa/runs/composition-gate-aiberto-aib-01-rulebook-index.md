@@ -1,6 +1,6 @@
 # Composition Gate — aiberto-aib-01-rulebook-index
 
-- HEAD_SHA: 5c32162e97dd0fad149c6df5852cd48cd652e06a
+- HEAD_SHA: 46a5ac58e7ba71b9283fe74f466ecee1159b9d35
 - Date: 2026-11-14
 - Verdict: SKIPPED
 - Acceptance tier: domain-index
