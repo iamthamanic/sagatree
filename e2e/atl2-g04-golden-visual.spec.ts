@@ -223,6 +223,7 @@ async function clickMapTitle(page: Page, title: string): Promise<void> {
     const filled = await search.inputValue().catch(() => '');
     if (filled) await search.fill('');
   }
+  await ensureAtlasWorkbench(page);
   await waitAtlasReady(page);
   await page.waitForTimeout(350);
 }
@@ -256,10 +257,22 @@ async function assertNavCurrent(page: Page, title: string): Promise<void> {
     .toBe(1);
 }
 
+/** Re-open Dornhain atlas if a mis-click left the workbench (mobile shell Home/Bibliothek). */
+async function ensureAtlasWorkbench(page: Page): Promise<void> {
+  const atlas = page.locator('[data-atlas-native-3d]').first();
+  if ((await atlas.count()) > 0 && (await atlas.isVisible().catch(() => false))) {
+    return;
+  }
+  await openDornhainAtlas3d(page);
+}
+
 async function openFixtureMap(page: Page, uiMapTitleDe: string): Promise<void> {
+  await ensureAtlasWorkbench(page);
   if (uiMapTitleDe === 'Welt') {
     await ensureLayersOpen(page);
-    const home = page.locator('[data-action="home"]').first();
+    // Scope to atlas workbench — never hit shell bottom-nav / companion chrome.
+    const atlasRoot = page.locator('[data-world-atlas-workbench], [data-atlas-native-3d]').first();
+    const home = atlasRoot.locator('[data-action="home"]').first();
     if ((await home.count()) > 0) {
       await home.click({ force: true }).catch(() => undefined);
     }
@@ -269,12 +282,8 @@ async function openFixtureMap(page: Page, uiMapTitleDe: string): Promise<void> {
       .first();
     if ((await worldFocus.count()) > 0) {
       await worldFocus.click({ force: true }).catch(() => undefined);
-    } else {
-      const worldCrumb = page.getByRole('button', { name: /^Welt$/i }).first();
-      if ((await worldCrumb.count()) > 0) {
-        await worldCrumb.click({ force: true }).catch(() => undefined);
-      }
     }
+    await ensureAtlasWorkbench(page);
     await waitAtlasReady(page);
     await page.waitForTimeout(300);
     return;
@@ -578,6 +587,18 @@ test.describe('ATL2-G04 golden visual regression', () => {
       stage.style.flex = '';
       window.dispatchEvent(new Event('resize'));
     });
+    // Hide shell bottom nav during mobile atlas ops — overlaps stage and steals force-clicks.
+    await page.evaluate(() => {
+      const nav = document.querySelector(
+        'nav[aria-label], [data-shell-bottom-nav], [data-adaptive-bottom-nav], footer nav',
+      );
+      if (nav instanceof HTMLElement) {
+        nav.dataset.g04PrevVisibility = nav.style.visibility;
+        nav.style.visibility = 'hidden';
+        nav.dataset.g04CaptureHide = '1';
+      }
+    });
+    await ensureAtlasWorkbench(page);
     await waitAtlasReady(page);
     await page.waitForTimeout(400);
     for (const id of gv.ATLAS_GOLDEN_VISUAL_MOBILE_FIXTURE_IDS) {
