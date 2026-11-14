@@ -37567,6 +37567,10 @@
             "sha256": "a0c2f5ea6af2faabed685d4eff4035dad43b1e82f3d6b2a67e017ddcddf99ea6"
           },
           {
+            "path": "src/domains/world/atlas/atlas-dungeon-look.ts",
+            "sha256": "4cb36a35663c13b62699ccd846df59ebc3ab38feafb497998302a35c09cdc9d8"
+          },
+          {
             "path": "src/domains/world/atlas/atlas-edit-history.ts",
             "sha256": "13a91efde301ec766d3b0f183affcd794abba9f4c4872c00549e9f631947e294"
           },
@@ -37664,7 +37668,7 @@
           },
           {
             "path": "src/domains/world/atlas/index.ts",
-            "sha256": "f70523066ffa6db0e0299ceea4ed417e26e006df2032f67c8c38e19f125d2557"
+            "sha256": "a87ade5bb4f35a01c54e22ef1ca0ef0886c7eeb2b094f300eea5ccff872cfb53"
           },
           {
             "path": "src/domains/world/atlas/map-edit-ops.ts",
@@ -37880,7 +37884,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-world.json",
-      "sourceContractSha256": "2e7d34ac1f29e1400db3d8eab7ff2dc9c6bc15fcb4f4bb460720bbe4970fa6d7",
+      "sourceContractSha256": "360d7e91679809ad9fddce52919f1f9631b775ab93ea6b6f0404320b3fa885ec",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],

@@ -128,6 +128,34 @@ export type AtlasPrototypeMountOptions = {
     readonly shadowStrength: number;
     readonly detailLevel: 'full' | 'reduced' | 'minimal';
   } | null;
+  /** ATL2-F04 dungeon theme look (Custom WebGL; atmospheric only). */
+  readonly dungeonLook?: {
+    readonly themeKey: string;
+    readonly floor: string;
+    readonly wall: string;
+    readonly door: string;
+    readonly accent: string;
+    readonly light: string;
+    readonly torchIntensity: number;
+    readonly bloomEnabled: boolean;
+    readonly particlesEnabled: boolean;
+    readonly maxTorchInstances: number;
+    readonly maxInstances: number;
+    readonly fogDensity: number;
+    readonly fogColor: string;
+    readonly clearColor: readonly [number, number, number, number];
+    readonly ambient: number;
+    readonly daylightDir: readonly [number, number, number];
+    readonly shadowStrength: number;
+    readonly geometryFingerprint: string;
+    readonly lookFingerprint: string;
+    /** Budget allowlists — empty array denies that kind (exhausted). */
+    readonly floorIds: readonly string[];
+    readonly wallIds: readonly string[];
+    readonly doorIds: readonly string[];
+    readonly torchIds: readonly string[];
+    readonly propIds: readonly string[];
+  } | null;
 };
 
 export function mountAtlasPrototype3d(
