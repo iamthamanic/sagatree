@@ -1,6 +1,6 @@
 # Composition Gate — aiberto-aib-02-companion-ui
 
-- HEAD_SHA: d6af3081fbb629bf7672710a0412f609d175d265
+- HEAD_SHA: b757c5700974438b5d09d57b2097820c628c381d
 - BASE_SHA: 4d19ef7c8fcc5b0e16d1c51628fc82cb49e01174
 - Date: 2026-11-14
 - Verdict: CLEAR
