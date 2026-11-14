@@ -22,6 +22,7 @@ import { renderSafeChatMarkdown } from './safe-chat-markdown';
 import {
   AibertoToolActivityList,
   type AibertoToolActivity,
+  type AibertoToolActivityStatus,
 } from './AibertoToolActivityCard';
 import { isAibertoToolsReadEnabled } from './aiberto-flags';
 
@@ -88,15 +89,13 @@ export function AibertoChatPanel({ onOpenSection }: AibertoChatPanelProps) {
     const query = draft.trim();
     if (!query || !toolsEnabled || busy) return;
     const activityId = newId();
-    setActivities((prev) => [
-      {
-        id: activityId,
-        toolId: 'rulebook.search',
-        labelDe: 'Regelbuch suchen',
-        status: 'pending',
-      },
-      ...prev,
-    ].slice(0, 12));
+    const pendingSearch: AibertoToolActivity = {
+      id: activityId,
+      toolId: 'rulebook.search',
+      labelDe: 'Regelbuch suchen',
+      status: 'pending',
+    };
+    setActivities((prev) => [pendingSearch, ...prev].slice(0, 12));
     setBusy(true);
     const result = await invokeAibertoTool('rulebook.search', { query, limit: 5 });
     if (result.status === 'ok') {
@@ -113,7 +112,7 @@ export function AibertoChatPanel({ onOpenSection }: AibertoChatPanelProps) {
           a.id === activityId
             ? {
                 ...a,
-                status: 'ok',
+                status: 'ok' satisfies AibertoToolActivityStatus,
                 detail: `${hits.length} Treffer`,
               }
             : a,
@@ -135,12 +134,13 @@ export function AibertoChatPanel({ onOpenSection }: AibertoChatPanelProps) {
       ]);
     } else {
       const denied = result.status === 'error' && result.code === 'FORBIDDEN';
+      const nextStatus: AibertoToolActivityStatus = denied ? 'denied' : 'error';
       setActivities((prev) =>
         prev.map((a) =>
           a.id === activityId
             ? {
                 ...a,
-                status: denied ? 'denied' : 'error',
+                status: nextStatus,
                 detail: result.message,
               }
             : a,
@@ -155,22 +155,24 @@ export function AibertoChatPanel({ onOpenSection }: AibertoChatPanelProps) {
     async (route: string) => {
       if (!toolsEnabled || busy) return;
       const activityId = newId();
-      setActivities((prev) => [
-        {
-          id: activityId,
-          toolId: 'app.navigate',
-          labelDe: 'Navigieren',
-          status: 'pending',
-        },
-        ...prev,
-      ].slice(0, 12));
+      const pendingNav: AibertoToolActivity = {
+        id: activityId,
+        toolId: 'app.navigate',
+        labelDe: 'Navigieren',
+        status: 'pending',
+      };
+      setActivities((prev) => [pendingNav, ...prev].slice(0, 12));
       setBusy(true);
       const result = await invokeAibertoTool('app.navigate', { route });
       if (result.status === 'ok' && result.clientAction) {
         setActivities((prev) =>
           prev.map((a) =>
             a.id === activityId
-              ? { ...a, status: 'ok', detail: result.clientAction?.path }
+              ? {
+                  ...a,
+                  status: 'ok' satisfies AibertoToolActivityStatus,
+                  detail: result.clientAction?.path,
+                }
               : a,
           ),
         );
@@ -181,7 +183,7 @@ export function AibertoChatPanel({ onOpenSection }: AibertoChatPanelProps) {
             a.id === activityId
               ? {
                   ...a,
-                  status: 'error',
+                  status: 'error' satisfies AibertoToolActivityStatus,
                   detail: result.status === 'ok' ? 'Keine ClientAction' : result.message,
                 }
               : a,
