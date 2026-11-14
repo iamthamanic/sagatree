@@ -1,7 +1,7 @@
 # Composition Gate — aiberto-aib-06-tools-read
 
-- HEAD_SHA: 38e01801bb31edc1c8d97d06895dff98c81e1222
-- BASE_SHA: 71e9c2986d8926e4b959bc09bb188ff6ad5b8c01
+- HEAD_SHA: eb9adcf8df03d74f43bf879ebbd55f01295b15e5
+- BASE_SHA: b541aae7256c468331a7bcc1fb220b450337ce88
 - Date: 2026-11-14
 - Verdict: CLEAR
 - Acceptance tier: host tools dispatcher + companion Tool-Activity consumer
