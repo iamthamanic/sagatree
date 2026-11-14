@@ -17,7 +17,7 @@ import {
   type AibertoAskFinal,
 } from '../../infrastructure/ai/aiberto-ask-service';
 import { invokeAibertoTool } from '../../infrastructure/ai/aiberto-tools-service';
-import { useAppLocation } from '../shell/routing/useAppLocation';
+import { useAppLocation } from '../shell';
 import { renderSafeChatMarkdown } from './safe-chat-markdown';
 import {
   AibertoToolActivityList,
