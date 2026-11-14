@@ -5,7 +5,7 @@
   "result": "PASS",
   "githubClosed": true,
   "mergeRef": "PR #860 \u2192 main (after #782)",
-  "note": "Inventories regenerated after ATL2-G04 Codex P1/P2 baseline+spatial fixes.",
+  "note": "Inventories regenerated after ATL2-G04 real Custom-WebGL screenshot pixel-diff acceptance upgrade.",
   "checks": [
     {
       "command": "legacy inventory matrix",

@@ -2,11 +2,11 @@
  * atlas-golden-visual — ATL2-G04 golden visual regression fixtures + checklist.
  * Location: src/domains/world/atlas/atlas-golden-visual.ts
  *
- * Pure domain — no React / Host / Three. Screenshots are represented as
- * deterministic fingerprints (materials, camera, light, selection chrome).
- * Pixel tolerance is documented for Playwright review; CI asserts fingerprints.
- * Productive 3D remains custom-webgl (R01 NO-GO). Atmospheric detail never
- * invents canonical geometry (IV-01 / IV-02).
+ * Pure domain — no React / Host / Three. Content fingerprints pin materials,
+ * camera, light, and selection chrome. Browser E2E must still capture real
+ * Custom-WebGL screenshots and pixel-diff them (never auto-PASS on fingerprints
+ * alone). Productive 3D remains custom-webgl (R01 NO-GO). Atmospheric detail
+ * never invents canonical geometry (IV-01 / IV-02).
  */
 
 import {
@@ -53,15 +53,21 @@ export const ATLAS_GOLDEN_VISUAL_SCALE_IDS = [
 
 export type AtlasGoldenVisualScaleId = (typeof ATLAS_GOLDEN_VISUAL_SCALE_IDS)[number];
 
-/** Documented Playwright / review pixel tolerance (not asserted in Node CI). */
+/**
+ * Documented Playwright pixel tolerance + dual CI modes.
+ * Fingerprints alone never satisfy G04 — Browser E2E must pixel-diff.
+ */
 export type AtlasGoldenVisualTolerance = {
   readonly format: typeof ATLAS_GOLDEN_VISUAL_FORMAT;
   /** Max per-channel absolute diff for soft pixel review. */
   readonly maxChannelDelta: number;
-  /** Max fraction of differing pixels before mandatory human review. */
+  /** Max fraction of differing pixels before fail (Playwright toHaveScreenshot). */
   readonly maxDiffPixelRatio: number;
-  /** CI compares fingerprints exactly; pixel soft-fail never auto-promotes. */
-  readonly ciMode: 'fingerprint-exact';
+  /**
+   * Node/test-gate: fingerprint-exact.
+   * Browser E2E: pixel-diff against committed PNG baselines (fail if missing).
+   */
+  readonly ciMode: 'fingerprint-and-screenshot';
   readonly reviewLabelDe: string;
 };
 
@@ -69,10 +75,25 @@ export const ATLAS_GOLDEN_VISUAL_TOLERANCE: AtlasGoldenVisualTolerance = {
   format: ATLAS_GOLDEN_VISUAL_FORMAT,
   maxChannelDelta: 8,
   maxDiffPixelRatio: 0.02,
-  ciMode: 'fingerprint-exact',
+  ciMode: 'fingerprint-and-screenshot',
   reviewLabelDe:
-    'Pixel-Diff nur Review; CI fordert identische Material-/Kamera-/Licht-Fingerprints',
+    'CI: Fingerprints exakt + Playwright Pixel-Diff (maxDiffPixelRatio 0.02); fehlende Baseline = FAIL',
 };
+
+/** Fixed capture viewports — Desktop all fixtures; Mobile at least one relevant. */
+export const ATLAS_GOLDEN_VISUAL_VIEWPORTS = [
+  { id: 'desktop', width: 1280, height: 800 },
+  { id: 'mobile', width: 390, height: 844 },
+] as const;
+
+export type AtlasGoldenVisualViewportId =
+  (typeof ATLAS_GOLDEN_VISUAL_VIEWPORTS)[number]['id'];
+
+/** Fixtures that must run on mobile in addition to full desktop matrix. */
+export const ATLAS_GOLDEN_VISUAL_MOBILE_FIXTURE_IDS = [
+  'world',
+  'tavern',
+] as const satisfies readonly AtlasGoldenVisualScaleId[];
 
 /** SagaTree Cyan selected / primary (THEME_GUIDE dark). */
 export const ATLAS_GOLDEN_SELECTION_OUTLINE = '#06B6D4' as const;
@@ -82,6 +103,8 @@ export const ATLAS_GOLDEN_SELECTION_SURFACE = '#1E293B' as const;
 export type AtlasGoldenVisualFixture = {
   readonly id: AtlasGoldenVisualScaleId;
   readonly labelDe: string;
+  /** Product nav / atlas map title used to open the scene in Browser E2E. */
+  readonly uiMapTitleDe: string;
   readonly mapSeedKey: string;
   readonly camera: AtlasProductCameraState;
   readonly graphicsPresetId: AtlasGraphicsPresetId;
@@ -139,6 +162,7 @@ export const ATLAS_GOLDEN_VISUAL_FIXTURES: readonly AtlasGoldenVisualFixture[] =
   {
     id: 'world',
     labelDe: 'Welt Donalu / Dornhain',
+    uiMapTitleDe: 'Welt',
     mapSeedKey: DORNHAIN_WORLD_MAP_SEED,
     camera: fixedDioramaCamera(500, 500, 900),
     graphicsPresetId: 'balanced',
@@ -150,6 +174,7 @@ export const ATLAS_GOLDEN_VISUAL_FIXTURES: readonly AtlasGoldenVisualFixture[] =
   {
     id: 'country',
     labelDe: 'Land Westmark',
+    uiMapTitleDe: 'Land Westmark',
     mapSeedKey: 'dornhain.map.country.westmark',
     camera: fixedDioramaCamera(430, 400, 420),
     graphicsPresetId: 'balanced',
@@ -161,6 +186,7 @@ export const ATLAS_GOLDEN_VISUAL_FIXTURES: readonly AtlasGoldenVisualFixture[] =
   {
     id: 'city',
     labelDe: 'Siedlung Dornhain',
+    uiMapTitleDe: 'Dornhain',
     mapSeedKey: 'dornhain.map.place.dornhain',
     camera: fixedDioramaCamera(360, 510, 220),
     graphicsPresetId: 'high',
@@ -172,6 +198,7 @@ export const ATLAS_GOLDEN_VISUAL_FIXTURES: readonly AtlasGoldenVisualFixture[] =
   {
     id: 'tavern',
     labelDe: 'Taverne Zum Flüstern',
+    uiMapTitleDe: 'Taverne Zum Flüstern',
     mapSeedKey: 'dornhain.map.loc.tavern',
     camera: fixedDioramaCamera(400, 360, 140),
     graphicsPresetId: 'balanced',
@@ -183,6 +210,7 @@ export const ATLAS_GOLDEN_VISUAL_FIXTURES: readonly AtlasGoldenVisualFixture[] =
   {
     id: 'crypt',
     labelDe: 'Krypta unter dem Hügel',
+    uiMapTitleDe: 'Krypta unter dem Hügel',
     mapSeedKey: 'dornhain.map.loc.crypt',
     camera: fixedDioramaCamera(420, 380, 160),
     graphicsPresetId: 'balanced',
@@ -194,6 +222,8 @@ export const ATLAS_GOLDEN_VISUAL_FIXTURES: readonly AtlasGoldenVisualFixture[] =
   {
     id: 'room',
     labelDe: 'Schankraum (Raum-Maßstab)',
+    /** Room scale reuses tavern product map; camera span is fixed to room. */
+    uiMapTitleDe: 'Taverne Zum Flüstern',
     mapSeedKey: 'dornhain.map.loc.tavern#room.tap',
     camera: fixedDioramaCamera(360, 350, 90),
     graphicsPresetId: 'lite',

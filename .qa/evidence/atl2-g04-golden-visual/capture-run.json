@@ -1,0 +1,55 @@
+{
+  "at": "2026-11-14T12:33:41.801Z",
+  "target": "custom-webgl-prototype-runtime",
+  "maxDiffPixelRatio": 0.02,
+  "captures": [
+    {
+      "fixtureId": "world",
+      "viewport": "desktop",
+      "uiMapTitleDe": "Welt",
+      "webgl": true
+    },
+    {
+      "fixtureId": "country",
+      "viewport": "desktop",
+      "uiMapTitleDe": "Land Westmark",
+      "webgl": true
+    },
+    {
+      "fixtureId": "city",
+      "viewport": "desktop",
+      "uiMapTitleDe": "Dornhain",
+      "webgl": true
+    },
+    {
+      "fixtureId": "tavern",
+      "viewport": "desktop",
+      "uiMapTitleDe": "Taverne Zum Flüstern",
+      "webgl": true
+    },
+    {
+      "fixtureId": "crypt",
+      "viewport": "desktop",
+      "uiMapTitleDe": "Krypta unter dem Hügel",
+      "webgl": true
+    },
+    {
+      "fixtureId": "room",
+      "viewport": "desktop",
+      "uiMapTitleDe": "Taverne Zum Flüstern",
+      "webgl": true
+    },
+    {
+      "fixtureId": "world",
+      "viewport": "mobile",
+      "uiMapTitleDe": "Welt",
+      "webgl": true
+    },
+    {
+      "fixtureId": "tavern",
+      "viewport": "mobile",
+      "uiMapTitleDe": "Taverne Zum Flüstern",
+      "webgl": true
+    }
+  ]
+}

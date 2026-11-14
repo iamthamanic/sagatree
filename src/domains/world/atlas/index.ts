@@ -656,8 +656,10 @@ export {
   ATLAS_GOLDEN_VISUAL_BASELINES,
   ATLAS_GOLDEN_VISUAL_FIXTURES,
   ATLAS_GOLDEN_VISUAL_FORMAT,
+  ATLAS_GOLDEN_VISUAL_MOBILE_FIXTURE_IDS,
   ATLAS_GOLDEN_VISUAL_SCALE_IDS,
   ATLAS_GOLDEN_VISUAL_TOLERANCE,
+  ATLAS_GOLDEN_VISUAL_VIEWPORTS,
   atlasGoldenContrastRatio,
   atlasGoldenSpatialGeometryFingerprint,
   atlasGoldenVisualFixturesCoverHierarchy,
@@ -677,5 +679,6 @@ export {
   type AtlasGoldenVisualScaleId,
   type AtlasGoldenVisualSnapshot,
   type AtlasGoldenVisualTolerance,
+  type AtlasGoldenVisualViewportId,
 } from './atlas-golden-visual';
 
