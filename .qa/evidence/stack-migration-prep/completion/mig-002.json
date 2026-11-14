@@ -5,7 +5,7 @@
   "result": "PASS",
   "githubClosed": true,
   "mergeRef": "PR #860 \u2192 main (after #782)",
-  "note": "Inventories regenerated after ATL2-G03 adaptive UX domain export (#1231 / #1282).",
+  "note": "Inventories aligned for ATL2-G03 #1282 tip.",
   "checks": [
     {
       "command": "legacy inventory matrix",
@@ -26,5 +26,5 @@
       "sha256": "c004a899f4d7aabf9443be2bebd4be1d2cee51864b156c884530e8ac76a03a22"
     }
   ],
-  "testedCommit": "8ea34450d904d17a2565e683fe3759e1b3d8512a"
+  "testedCommit": "3dda2ad2eb110d1732586f9398f84a61a106aab9"
 }
