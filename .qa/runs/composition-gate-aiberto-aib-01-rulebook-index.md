@@ -1,6 +1,6 @@
 # Composition Gate — aiberto-aib-01-rulebook-index
 
-- HEAD_SHA: 9bf5a62816fa024ed3c9f3292b18d5fa920ab95a
+- HEAD_SHA: 4392ce0a54ad70676ee6e8a0a1823423ea45a8b8
 - BASE_SHA: bd8959322b310cd7e049eecf1e11cd0fed868dc9
 - Date: 2026-11-14
 - Verdict: SKIPPED
@@ -12,7 +12,7 @@ Single-hop domain indexer + pure search with no downstream UI/host consumer in t
 
 ## Event
 
-AIB-01 Core rulebook indexer + pure shared search (#1124). No UI hop. Codex P1/P2 fixes on HEAD.
+AIB-01 Core rulebook indexer + pure shared search (#1124). Codex P1/P2 search/self-test fixes. No UI hop.
 
 ## Hop chain
 
@@ -24,11 +24,11 @@ AIB-01 Core rulebook indexer + pure shared search (#1124). No UI hop. Codex P1/P
 
 | Case | Intended | Composed | Result |
 |------|----------|----------|--------|
-| Deterministic rebuild | same source → same revisionHash | two builds identical + matches committed | pass |
+| Deterministic rebuild | same source → same revisionHash | two builds identical | pass |
 | Normativity | §§1–18 binding; 19 validation; 20 release | indexed tags | pass |
 | EB pilot | Doc §5.3 ↔ `getSagaTreeAppliedExperienceBonus` | no second engine | pass |
-| No false hits | unknown/1-char query → [] | binding boost gated on match | pass |
 | No UI | domain-only | no `app/ai-assistant` | pass |
+| Unknown query | no false binding hits | zzzz/one-char → [] | pass |
 
 ## Flags
 
