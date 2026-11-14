@@ -203,7 +203,7 @@
     },
     {
       "path": "src/domains/world/atlas/atlas-gate-g05.ts",
-      "sha256": "17ac6138bd3ee3c0da442e3d0e7c6dee8d6b13b6380e6c3297de97c73ec9eefb"
+      "sha256": "9ec85728e9d6c7cf3b9894e21b232c823fbdd0dd58fdd9503285f6dc81372506"
     },
     {
       "path": "src/domains/world/atlas/atlas-golden-visual.ts",
