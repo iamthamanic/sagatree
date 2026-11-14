@@ -5,7 +5,7 @@
   "result": "PASS",
   "githubClosed": true,
   "mergeRef": "PR #860 \u2192 main (after #782)",
-  "note": "Inventories regenerated after ATL2-G01 party-map-projection (#1229).",
+  "note": "Inventories regenerated after ATL2-G02 atlas-perf-budgets domain export (#1230).",
   "checks": [
     {
       "command": "legacy inventory matrix",
@@ -23,8 +23,8 @@
       "command": "edge/infra inventory 25+13",
       "result": "PASS",
       "evidenceFile": ".qa/intake/edge-infra-contracts/inventory.json",
-      "sha256": "7eac7b93219f3e5b705e1cb563ba731f02dd65216ba6490a3992b9b74af4c9ed"
+      "sha256": "d2cf5a4d806380d62b13c86843017f1ef201f7ecdcaa5e6d0aff164313e27e2e"
     }
   ],
-  "testedCommit": "81cbe3d55388365ee629915071b0ce8ef74265f8"
+  "testedCommit": "50240d6f1fd187cb8d347c48dc4762cb5c84a051"
 }

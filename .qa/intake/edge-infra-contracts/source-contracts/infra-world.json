@@ -222,6 +222,10 @@
       "sha256": "1421ca01edd55307c341adc3ac74f4c5a7cef87f60fadbbe0faaa141898b4791"
     },
     {
+      "path": "src/domains/world/atlas/atlas-perf-budgets.ts",
+      "sha256": "1678b08ae9e9cec6f99fd825e4a5ca01c20d92e534074d4f192fb9ba1a69f40a"
+    },
+    {
       "path": "src/domains/world/atlas/atlas-persist-state.ts",
       "sha256": "84ab0edbd0b525c95b5db85afeb683d335351884ba6c612e94f327719a6b60ca"
     },
@@ -295,7 +299,7 @@
     },
     {
       "path": "src/domains/world/atlas/index.ts",
-      "sha256": "dfef37decc4c8e2739e9ca1168b57da224d3785e7ef930b55de89b0469e54fa2"
+      "sha256": "7d87f8077151566743e71783a1c494f151cc7bf3742ab75192a370bd9b87142f"
     },
     {
       "path": "src/domains/world/atlas/map-edit-ops.ts",
@@ -1642,6 +1646,46 @@
       "line": 15,
       "endLine": 22,
       "text": "export type AtlasMapPin = {\n  readonly id: string;\n  readonly label: string;\n  /** Hierarchy kind (null when the legacy place kind has no canonical node kind). */\n  readonly kind: WorldNodeKind | null;\n  readonly x: number;\n  readonly y: number;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AtlasPerfSceneSize",
+      "path": "src/domains/world/atlas/atlas-perf-budgets.ts",
+      "line": 21,
+      "endLine": 21,
+      "text": "export type AtlasPerfSceneSize = 'small' | 'medium' | 'large';"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AtlasPerfSceneFixture",
+      "path": "src/domains/world/atlas/atlas-perf-budgets.ts",
+      "line": 23,
+      "endLine": 32,
+      "text": "export type AtlasPerfSceneFixture = {\n  readonly id: AtlasPerfSceneSize;\n  readonly labelDe: string;\n  /** Reference hardware band for acceptance docs (CI runs headless Node). */\n  readonly referenceHardware: string;\n  readonly dungeonRoomCount: number;\n  readonly dungeonSeed: number;\n  readonly themeKey: 'ancient' | 'molten' | 'frost' | 'grim' | 'verdant';\n  readonly graphicsPresetId: AtlasGraphicsPresetId;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AtlasPerfBudgetThresholds",
+      "path": "src/domains/world/atlas/atlas-perf-budgets.ts",
+      "line": 65,
+      "endLine": 80,
+      "text": "export type AtlasPerfBudgetThresholds = {\n  readonly format: typeof ATLAS_PERF_BUDGET_FORMAT;\n  /** Soft frame target for interactive hardware soak (documented, not CI GPU). */\n  readonly frameP95MsSoft: number;\n  /** Cold plan build (domain) must stay under this on CI. */\n  readonly coldPlanMsMax: number;\n  /** Product geometry + look plan instances must respect preset budget. */\n  readonly maxInstancesHigh: number;\n  readonly maxInstancesBalanced: number;\n  readonly maxInstancesLite: number;\n  /** Estimated draw batches (one per look batch + geometry kinds present). */\n  readonly maxDrawBatchesLarge: number;\n  /** After N map-switch / context-loss cycles, live GPU resource counter must be 0. */\n  readonly mapSwitchCycles: number;\n  readonly maxLiveGpuHandlesAfterTeardown: number;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AtlasPerfPlanMeasurement",
+      "path": "src/domains/world/atlas/atlas-perf-budgets.ts",
+      "line": 94,
+      "endLine": 105,
+      "text": "export type AtlasPerfPlanMeasurement = {\n  readonly sceneId: AtlasPerfSceneSize;\n  readonly coldPlanMs: number;\n  readonly lookInstances: number;\n  readonly lookBatches: number;\n  readonly lookTruncated: number;\n  readonly geometryPrimitives: number;\n  readonly geometryFingerprint: string;\n  readonly lookFingerprint: string;\n  readonly budgetMaxInstances: number;\n  readonly withinBudget: boolean;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AtlasGpuResourceSession",
+      "path": "src/domains/world/atlas/atlas-perf-budgets.ts",
+      "line": 172,
+      "endLine": 178,
+      "text": "export type AtlasGpuResourceSession = {\n  readonly generation: number;\n  readonly liveHandles: number;\n  readonly lostCount: number;\n  readonly restoreCount: number;\n  readonly mapSwitchCount: number;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
