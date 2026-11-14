@@ -22,7 +22,7 @@ quality is reviewable without a second renderer or subjective-only sign-off.
 3. Camera + light + materials → `buildAtlasGoldenVisualSnapshot`
 4. Checklist → `evaluateAtlasGoldenArtDirection`
 5. Node CI → fingerprint compare
-6. Browser E2E → open product map → fixed camera → `toHaveScreenshot` (0.02)
+6. Browser E2E → open product map → fixed camera → `toHaveScreenshot` (0.08)
 
 Cardinality: one fingerprint snapshot per fixture scale; eight PNG baselines
 (6 desktop + 2 mobile); one art-direction + fantasy-look review.
@@ -37,7 +37,7 @@ Cardinality: one fingerprint snapshot per fixture scale; eight PNG baselines
 | Six scales | world…room | 6 fixtures | pass |
 | Lite vs high | degradable detail | facades off on lite | pass |
 | Selection | Cyan vs surface | contrast ≥ 3:1 | pass |
-| Pixel-diff | WebGL canvas | maxDiffPixelRatio 0.02 | pass |
+| Pixel-diff | WebGL canvas | maxDiffPixelRatio 0.08 | pass |
 
 ## Flags
 

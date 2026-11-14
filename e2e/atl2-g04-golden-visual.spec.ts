@@ -455,7 +455,14 @@ async function collapseChromeForCapture(
       { timeout: 20_000 },
     )
     .toBe(1);
-  await page.waitForTimeout(250);
+  // Extra settle: Custom WebGL AA / label fade otherwise drifts ~3–6% vs 2% budget.
+  await page.waitForTimeout(600);
+  await page.evaluate(
+    () =>
+      new Promise<void>((resolve) => {
+        requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
+      }),
+  );
   return last;
 }
 

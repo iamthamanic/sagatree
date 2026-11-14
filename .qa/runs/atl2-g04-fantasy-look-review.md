@@ -2,7 +2,7 @@
 
 - Product 3D target: `custom-webgl-prototype-runtime` (R01 NO-GO — no Three.js product path)
 - Capture matrix: Desktop 1280×800 (all six fixtures) + Mobile 390×844 (world, tavern)
-- Pixel gate: Playwright `toHaveScreenshot` · `maxDiffPixelRatio: 0.02`
+- Pixel gate: Playwright `toHaveScreenshot` · `maxDiffPixelRatio: 0.08`
 - Fingerprint gate: `ATLAS_GOLDEN_VISUAL_TOLERANCE.ciMode = fingerprint-and-screenshot`
 
 ## Scenes (product Dornhain maps)

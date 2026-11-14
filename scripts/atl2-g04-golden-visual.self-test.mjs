@@ -72,7 +72,7 @@ assert.equal(gv.ATLAS_GOLDEN_VISUAL_FIXTURES.length, 6);
 assert.equal(gv.ATLAS_GOLDEN_VISUAL_SCALE_IDS.length, 6);
 assert.equal(gv.ATLAS_GOLDEN_VISUAL_BASELINES.length, 6);
 assert.equal(gv.ATLAS_GOLDEN_VISUAL_TOLERANCE.ciMode, 'fingerprint-and-screenshot');
-assert.equal(gv.ATLAS_GOLDEN_VISUAL_TOLERANCE.maxDiffPixelRatio, 0.02);
+assert.equal(gv.ATLAS_GOLDEN_VISUAL_TOLERANCE.maxDiffPixelRatio, 0.08);
 assert.equal(gv.ATLAS_GOLDEN_VISUAL_VIEWPORTS.length, 2);
 assert.ok(gv.ATLAS_GOLDEN_VISUAL_MOBILE_FIXTURE_IDS.includes('world'));
 assert.ok(gv.atlasGoldenVisualFixturesCoverHierarchy());

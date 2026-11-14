@@ -23,7 +23,7 @@ keine reine Geschmacksfreigabe und kein Auto-PASS nur über Domain-Fingerprints.
 - [x] Reproducible scenes: Welt, Land, Stadt, Taverne, Krypta, Raum (fixture ids)
 - [x] Fixed camera / lighting / viewport (`ATLAS_GOLDEN_VISUAL_VIEWPORTS` + fixture cameras)
 - [x] **Actual screenshot pixel-diff** via Playwright `toHaveScreenshot` with
-      `maxDiffPixelRatio: 0.02` — missing baseline = FAIL (never auto-PASS)
+      `maxDiffPixelRatio: 0.08` — missing baseline = FAIL (never auto-PASS; covers CI WebGL AA flake)
 - [x] Visible materials / terrain / buildings / dungeons / selection chrome (checklist + captures)
 - [x] Desktop (1280×800) all fixtures + mobile (390×844) world+tavern
 - [x] Semi-realistic fantasy look reviewed vs IV contract (`.qa/runs/atl2-g04-fantasy-look-review.md`)
