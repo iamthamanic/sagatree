@@ -9,7 +9,6 @@
 
 import {
   buildAtlasDungeonLookPlan,
-  resolveAtlasDungeonQualityBudget,
   type AtlasDungeonLookPlan,
 } from './atlas-dungeon-look';
 import { buildAtlasProductGeometryPlan } from './atlas-product-geometry-plan';
@@ -110,6 +109,15 @@ export function resolveAtlasPerfSceneFixture(id: AtlasPerfSceneSize): AtlasPerfS
   return hit;
 }
 
+/** Exported ATL2-G02 preset ceilings — drives `withinBudget` / `budgetMaxInstances`. */
+export function resolveAtlasPerfBudgetMaxInstances(
+  graphicsPresetId: AtlasGraphicsPresetId,
+): number {
+  if (graphicsPresetId === 'high') return ATLAS_PERF_BUDGET_THRESHOLDS.maxInstancesHigh;
+  if (graphicsPresetId === 'lite') return ATLAS_PERF_BUDGET_THRESHOLDS.maxInstancesLite;
+  return ATLAS_PERF_BUDGET_THRESHOLDS.maxInstancesBalanced;
+}
+
 /**
  * Measure domain plan cost for a UnifiedCanvasDoc already filled with dungeon geometry.
  * Callers supply the doc (from generateDungeon → rasterize) so this stays pure.
@@ -126,9 +134,9 @@ export function measureAtlasPerfPlan(
   });
   const geometry = buildAtlasProductGeometryPlan(doc);
   const coldPlanMs = nowMs() - t0;
-  const budget = resolveAtlasDungeonQualityBudget(fixture.graphicsPresetId);
+  const budgetMaxInstances = resolveAtlasPerfBudgetMaxInstances(fixture.graphicsPresetId);
   const withinBudget =
-    look.counts.instances <= budget.maxInstances &&
+    look.counts.instances <= budgetMaxInstances &&
     coldPlanMs <= ATLAS_PERF_BUDGET_THRESHOLDS.coldPlanMsMax &&
     (fixture.id !== 'large' ||
       look.counts.batches <= ATLAS_PERF_BUDGET_THRESHOLDS.maxDrawBatchesLarge);
@@ -142,7 +150,7 @@ export function measureAtlasPerfPlan(
     geometryPrimitives: geometry.primitives.length,
     geometryFingerprint: geometry.contentFingerprint,
     lookFingerprint: look.lookFingerprint,
-    budgetMaxInstances: budget.maxInstances,
+    budgetMaxInstances,
     withinBudget,
   };
 }

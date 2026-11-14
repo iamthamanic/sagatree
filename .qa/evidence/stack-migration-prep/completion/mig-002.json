@@ -5,7 +5,7 @@
   "result": "PASS",
   "githubClosed": true,
   "mergeRef": "PR #860 \u2192 main (after #782)",
-  "note": "Inventories regenerated after ATL2-G02 atlas-perf-budgets domain export (#1230).",
+  "note": "Inventories regenerated after ATL2-G02 Codex P2 (shader dispose + preset thresholds) on #1280.",
   "checks": [
     {
       "command": "legacy inventory matrix",
@@ -23,8 +23,8 @@
       "command": "edge/infra inventory 25+13",
       "result": "PASS",
       "evidenceFile": ".qa/intake/edge-infra-contracts/inventory.json",
-      "sha256": "d2cf5a4d806380d62b13c86843017f1ef201f7ecdcaa5e6d0aff164313e27e2e"
+      "sha256": "826d4e9d2af2714107d5927289d3c797386123d05f8d3ab2edb9e71bdde2bb0a"
     }
   ],
-  "testedCommit": "024a57bc6f3346fcbfe38b420585d2c7b0781186"
+  "testedCommit": "64c7410b5d3df6033270faa49a2e4cb815366391"
 }

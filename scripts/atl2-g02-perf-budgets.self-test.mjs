@@ -39,6 +39,10 @@ assert.ok(runtimeSrc.includes('webglcontextlost'));
 assert.ok(runtimeSrc.includes('webglcontextrestored'));
 assert.ok(runtimeSrc.includes('data-atlas-webgl-lost'));
 assert.ok(runtimeSrc.includes('dispose(){const gl=this.gl'));
+assert.ok(runtimeSrc.includes('deleteProgram'));
+assert.ok(runtimeSrc.includes('deleteShader'));
+assert.ok(runtimeSrc.includes('this.shaders='));
+assert.ok(perfSrc.includes('resolveAtlasPerfBudgetMaxInstances'));
 
 const perf = jiti(join(root, 'src/domains/world/atlas/atlas-perf-budgets.ts'));
 const gen = jiti(join(root, 'src/domains/world/atlas/dungeon-generator.ts'));
@@ -71,6 +75,8 @@ for (const fixture of perf.ATLAS_PERF_SCENE_FIXTURES) {
   const payload = wf.dungeonCommitPayloadFromResults(result, raster);
   const doc = wf.commitDungeonFeaturesToDoc(emptyUnifiedCanvasDoc(false), payload, true);
   const m = perf.measureAtlasPerfPlan(doc, fixture);
+  const expectedMax = perf.resolveAtlasPerfBudgetMaxInstances(fixture.graphicsPresetId);
+  assert.equal(m.budgetMaxInstances, expectedMax, `${fixture.id} budgetMaxInstances`);
   assert.equal(m.withinBudget, true, `${fixture.id} budget: ${JSON.stringify(m)}`);
   assert.ok(m.lookInstances <= m.budgetMaxInstances, fixture.id);
   assert.ok(m.coldPlanMs <= perf.ATLAS_PERF_BUDGET_THRESHOLDS.coldPlanMsMax, fixture.id);

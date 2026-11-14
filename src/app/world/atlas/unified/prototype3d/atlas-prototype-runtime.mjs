@@ -767,8 +767,9 @@ export function mountAtlasPrototype3d(host, options = {}) {
         const fragment=`precision mediump float;varying vec3 vCol;varying vec2 vUV;varying float vFogDepth;uniform sampler2D uSampler;uniform float uTexture;uniform float uAlpha;uniform float uFogDensity;uniform vec3 uFogColor;
         void main(){vec4 tex=texture2D(uSampler,vUV);float a=mix(1.0,tex.a,uTexture);if(a<0.08)discard;vec3 col=vCol*mix(vec3(1.),tex.rgb,uTexture);float fog=uFogDensity>0.0?clamp(1.0-exp(-uFogDensity*vFogDepth),0.0,0.72):0.0;col=mix(col,uFogColor,fog);gl_FragColor=vec4(col,uAlpha*a);}`;
         const compile=(type,code)=>{const s=gl.createShader(type);gl.shaderSource(s,code);gl.compileShader(s);if(!gl.getShaderParameter(s,gl.COMPILE_STATUS))throw Error(gl.getShaderInfoLog(s));return s;};
-        const p=gl.createProgram();gl.attachShader(p,compile(gl.VERTEX_SHADER,vertex));gl.attachShader(p,compile(gl.FRAGMENT_SHADER,fragment));gl.linkProgram(p);
-        if(!gl.getProgramParameter(p,gl.LINK_STATUS))throw Error(gl.getProgramInfoLog(p));this.program=p;
+        const vs=compile(gl.VERTEX_SHADER,vertex);const fs=compile(gl.FRAGMENT_SHADER,fragment);
+        const p=gl.createProgram();gl.attachShader(p,vs);gl.attachShader(p,fs);gl.linkProgram(p);
+        if(!gl.getProgramParameter(p,gl.LINK_STATUS))throw Error(gl.getProgramInfoLog(p));this.program=p;this.shaders=[vs,fs];
         this.attribs=['aPos','aNormal','aColor','aUV'].map(n=>gl.getAttribLocation(p,n));
         this.uniforms=Object.fromEntries(['uMatrix','uView','uTexture','uSampler','uAlpha','uFlat','uLightDir','uAmbient','uShadow','uFogDensity','uFogColor'].map(n=>[n,gl.getUniformLocation(p,n)]));
         gl.useProgram(p);gl.uniform1i(this.uniforms.uSampler,0);gl.enable(gl.DEPTH_TEST);gl.depthFunc(gl.LEQUAL);
@@ -783,8 +784,8 @@ export function mountAtlasPrototype3d(host, options = {}) {
       setMesh(name,builder,texture=null){const gl=this.gl;const previous=this.meshes.get(name);if(previous?.buffer)gl.deleteBuffer(previous.buffer);const data=new Float32Array(builder.a);const buffer=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,buffer);gl.bufferData(gl.ARRAY_BUFFER,data,gl.STATIC_DRAW);this.meshes.set(name,{buffer,count:data.length/11,texture});}
       delMesh(name){const gl=this.gl,m=this.meshes.get(name);if(m)gl.deleteBuffer(m.buffer);this.meshes.delete(name);}
       resize(width,height){const w=Math.max(200,Math.round(width*Math.min(devicePixelRatio||1,graphicsPreset.maxPixelRatio))),h=Math.max(180,Math.round(height*Math.min(devicePixelRatio||1,graphicsPreset.maxPixelRatio)));if(this.canvas.width!==w||this.canvas.height!==h){this.canvas.width=w;this.canvas.height=h;}this.gl.viewport(0,0,w,h);}
-      /* ATL2-G02 — drop buffers/textures so context-loss / map teardown cannot leak handles. */
-      dispose(){const gl=this.gl;if(!gl)return;for(const m of this.meshes.values()){if(m?.buffer)gl.deleteBuffer(m.buffer);}this.meshes.clear();for(const t of this.textures.values()){if(t)gl.deleteTexture(t);}this.textures.clear();if(this.surface){gl.deleteTexture(this.surface);this.surface=null;}this.gl=null;}
+      /* ATL2-G02 — drop buffers/textures/shaders/program so remounts cannot leak GPU handles. */
+      dispose(){const gl=this.gl;if(!gl)return;for(const m of this.meshes.values()){if(m?.buffer)gl.deleteBuffer(m.buffer);}this.meshes.clear();for(const t of this.textures.values()){if(t)gl.deleteTexture(t);}this.textures.clear();if(this.surface){gl.deleteTexture(this.surface);this.surface=null;}if(this.program){const shaders=this.shaders||[];for(const s of shaders){if(s)gl.deleteShader(s);}gl.deleteProgram(this.program);this.program=null;this.shaders=null;}this.gl=null;}
       render(matrices,visibility={}){const gl=this.gl;if(!gl)return;const mvp=matrices&&matrices.mvp?matrices.mvp:matrices;const view=matrices&&matrices.view?matrices.view:this.identityView;gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);gl.useProgram(this.program);gl.uniformMatrix4fv(this.uniforms.uMatrix,false,mvp);if(this.uniforms.uView)gl.uniformMatrix4fv(this.uniforms.uView,false,view);
         const du=this.dioramaUniforms||{lightDir:[-.45,1,-.48],ambient:.34,shadow:.42,fogDensity:0,fogColor:[.37,.56,.61]};
         if(this.uniforms.uLightDir)gl.uniform3fv(this.uniforms.uLightDir,du.lightDir);

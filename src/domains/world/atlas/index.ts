@@ -625,6 +625,7 @@ export {
   atlasGpuSessionWithinTeardownBudget,
   createAtlasGpuResourceSession,
   measureAtlasPerfPlan,
+  resolveAtlasPerfBudgetMaxInstances,
   resolveAtlasPerfSceneFixture,
   summarizeAtlasLookAgainstBudget,
   type AtlasGpuResourceSession,

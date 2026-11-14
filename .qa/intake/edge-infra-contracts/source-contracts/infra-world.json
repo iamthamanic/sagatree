@@ -223,7 +223,7 @@
     },
     {
       "path": "src/domains/world/atlas/atlas-perf-budgets.ts",
-      "sha256": "1678b08ae9e9cec6f99fd825e4a5ca01c20d92e534074d4f192fb9ba1a69f40a"
+      "sha256": "3a74334bd3b91af40731ea970d9a79cd189ca672b830e40025adfc71dbe4cf33"
     },
     {
       "path": "src/domains/world/atlas/atlas-persist-state.ts",
@@ -299,7 +299,7 @@
     },
     {
       "path": "src/domains/world/atlas/index.ts",
-      "sha256": "7d87f8077151566743e71783a1c494f151cc7bf3742ab75192a370bd9b87142f"
+      "sha256": "20ef5591f0f29d9d8bb95229a79c9883162c4f522ecbfb72f2166327fba75508"
     },
     {
       "path": "src/domains/world/atlas/map-edit-ops.ts",
@@ -1651,40 +1651,40 @@
       "kind": "TypeAliasDeclaration",
       "name": "AtlasPerfSceneSize",
       "path": "src/domains/world/atlas/atlas-perf-budgets.ts",
-      "line": 21,
-      "endLine": 21,
+      "line": 20,
+      "endLine": 20,
       "text": "export type AtlasPerfSceneSize = 'small' | 'medium' | 'large';"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "AtlasPerfSceneFixture",
       "path": "src/domains/world/atlas/atlas-perf-budgets.ts",
-      "line": 23,
-      "endLine": 32,
+      "line": 22,
+      "endLine": 31,
       "text": "export type AtlasPerfSceneFixture = {\n  readonly id: AtlasPerfSceneSize;\n  readonly labelDe: string;\n  /** Reference hardware band for acceptance docs (CI runs headless Node). */\n  readonly referenceHardware: string;\n  readonly dungeonRoomCount: number;\n  readonly dungeonSeed: number;\n  readonly themeKey: 'ancient' | 'molten' | 'frost' | 'grim' | 'verdant';\n  readonly graphicsPresetId: AtlasGraphicsPresetId;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "AtlasPerfBudgetThresholds",
       "path": "src/domains/world/atlas/atlas-perf-budgets.ts",
-      "line": 65,
-      "endLine": 80,
+      "line": 64,
+      "endLine": 79,
       "text": "export type AtlasPerfBudgetThresholds = {\n  readonly format: typeof ATLAS_PERF_BUDGET_FORMAT;\n  /** Soft frame target for interactive hardware soak (documented, not CI GPU). */\n  readonly frameP95MsSoft: number;\n  /** Cold plan build (domain) must stay under this on CI. */\n  readonly coldPlanMsMax: number;\n  /** Product geometry + look plan instances must respect preset budget. */\n  readonly maxInstancesHigh: number;\n  readonly maxInstancesBalanced: number;\n  readonly maxInstancesLite: number;\n  /** Estimated draw batches (one per look batch + geometry kinds present). */\n  readonly maxDrawBatchesLarge: number;\n  /** After N map-switch / context-loss cycles, live GPU resource counter must be 0. */\n  readonly mapSwitchCycles: number;\n  readonly maxLiveGpuHandlesAfterTeardown: number;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "AtlasPerfPlanMeasurement",
       "path": "src/domains/world/atlas/atlas-perf-budgets.ts",
-      "line": 94,
-      "endLine": 105,
+      "line": 93,
+      "endLine": 104,
       "text": "export type AtlasPerfPlanMeasurement = {\n  readonly sceneId: AtlasPerfSceneSize;\n  readonly coldPlanMs: number;\n  readonly lookInstances: number;\n  readonly lookBatches: number;\n  readonly lookTruncated: number;\n  readonly geometryPrimitives: number;\n  readonly geometryFingerprint: string;\n  readonly lookFingerprint: string;\n  readonly budgetMaxInstances: number;\n  readonly withinBudget: boolean;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "AtlasGpuResourceSession",
       "path": "src/domains/world/atlas/atlas-perf-budgets.ts",
-      "line": 172,
-      "endLine": 178,
+      "line": 180,
+      "endLine": 186,
       "text": "export type AtlasGpuResourceSession = {\n  readonly generation: number;\n  readonly liveHandles: number;\n  readonly lostCount: number;\n  readonly restoreCount: number;\n  readonly mapSwitchCount: number;\n};"
     },
     {
