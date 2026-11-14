@@ -3720,6 +3720,15 @@ function checkAibertoAib04AskHost() {
   });
 }
 
+function checkAibertoAib05ChatUi() {
+  // AIB-05/#1128 — chat UI; keep adjacent to AIB-04. Avoid AIB-03 Phase-A e2e/playwright hunks (PR #1287).
+  console.log('Aiberto AIB-05 chat UI (#1128): capability tab + safe markdown + stream client...');
+  execFileSync(process.execPath, ['scripts/aiberto-aib-05-chat-ui.self-test.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
+}
+
 function checkPowersEssencesValidation() {
   console.log('Powers/essences validation (#25): deterministic §12 power model audit...');
   execFileSync(process.execPath, ['scripts/validate-powers-essences-ranks.mjs'], {
@@ -4444,6 +4453,7 @@ checkAnalogEndToEndPlaytestValidation();
 checkAibertoAib01RulebookIndex();
 checkAibertoAib02CompanionUi();
 checkAibertoAib04AskHost();
+checkAibertoAib05ChatUi();
 checkAssetLicenseInventory();
 scanAddedLinesForSecrets();
 reportDependencyAudit();
