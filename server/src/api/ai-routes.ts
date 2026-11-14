@@ -24,6 +24,10 @@ import {
 } from '../application/aiberto-ask/index.ts';
 import type { AibertoToolsUseCases } from '../application/aiberto-tools/index.ts';
 import {
+  AIBERTO_TOOLS_MAX_REQUEST_BYTES,
+  checkAibertoToolsBodySize,
+} from '../application/aiberto-tools/index.ts';
+import {
   LOOK_REF_MAX_REQUEST_BYTES,
   checkContentLengthEnvelope,
 } from '../application/look-reference-analysis/index.ts';
@@ -876,18 +880,57 @@ export function mountAiHttpRoutes(app: Hono, deps: AiHttpDeps): void {
           415,
         );
       }
-      let body: JsonBody = {};
+      const contentLengthHeader = c.req.header('content-length') ?? null;
+      const headerSize = checkAibertoToolsBodySize(contentLengthHeader);
+      if (!headerSize.ok) {
+        return c.json({ status: 'error', message: headerSize.message }, headerSize.status);
+      }
+      let rawText = '';
       try {
-        const text = await c.req.text();
-        if (text && text.trim().length > 0) {
-          const parsed: unknown = JSON.parse(text);
+        const stream = c.req.raw.body;
+        if (stream) {
+          const reader = stream.getReader();
+          const chunks: Uint8Array[] = [];
+          let total = 0;
+          for (;;) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            if (value) {
+              total += value.byteLength;
+              if (total > AIBERTO_TOOLS_MAX_REQUEST_BYTES) {
+                await reader.cancel().catch(() => undefined);
+                return c.json(
+                  {
+                    status: 'error',
+                    message:
+                      'Request-Body ist zu groß. Bitte kürze die Tool-Argumente und versuche es erneut.',
+                  },
+                  413,
+                );
+              }
+              chunks.push(value);
+            }
+          }
+          rawText = Buffer.concat(chunks.map((u) => Buffer.from(u))).toString('utf8');
+        }
+      } catch {
+        return c.json({ status: 'error', message: 'Ungültiger Request-Body.' }, 400);
+      }
+      const decodedSize = checkAibertoToolsBodySize(null, Buffer.byteLength(rawText, 'utf8'));
+      if (!decodedSize.ok) {
+        return c.json({ status: 'error', message: decodedSize.message }, decodedSize.status);
+      }
+      let body: JsonBody = {};
+      if (rawText.trim().length > 0) {
+        try {
+          const parsed: unknown = JSON.parse(rawText);
           if (!isRecord(parsed)) {
             return c.json({ status: 'error', message: 'Ungültiger Request-Body.' }, 400);
           }
           body = parsed;
+        } catch {
+          return c.json({ status: 'error', message: 'Ungültiger Request-Body.' }, 400);
         }
-      } catch {
-        return c.json({ status: 'error', message: 'Ungültiger Request-Body.' }, 400);
       }
       const actorResult = await resolveActor(deps, c.req.raw.headers, body);
       if (!actorResult.ok) {

@@ -6,7 +6,10 @@
  * No write tools. No second AI provider stack. Flag AIBERTO_TOOLS_READ_ENABLED default off.
  */
 import type { Actor } from '../../modules/identity/index.ts';
-import type { PolicyDecision } from '../../modules/permissions/index.ts';
+import {
+  actorIdsForGovernance,
+  type PolicyDecision,
+} from '../../modules/permissions/index.ts';
 import type { CharacterPorts } from '../../modules/character/index.ts';
 import type { InventoryPorts } from '../../modules/inventory/index.ts';
 import type { WorldPorts } from '../../modules/world/index.ts';
@@ -44,10 +47,30 @@ export {
 } from './navigate-allowlist.ts';
 
 export const AIBERTO_TOOLS_MAX_ARGS_BYTES = 8_000;
+/** Whole invoke JSON body (toolId + args + wrapper) — enforced at HTTP boundary. */
+export const AIBERTO_TOOLS_MAX_REQUEST_BYTES = 16_000;
 export const AIBERTO_TOOLS_DEFAULT_BUDGET_PER_MINUTE = 30;
 export const AIBERTO_TOOLS_RATE_WINDOW_SECONDS = 60;
 /** Align with aiberto-ask rate-limit ceiling (modules/ai). */
 export const AIBERTO_TOOLS_MAX_BUDGET_PER_MINUTE = 60;
+
+export function checkAibertoToolsBodySize(
+  contentLengthHeader: string | null,
+  decodedBytes?: number,
+): { ok: true } | { ok: false; status: 413; message: string } {
+  const message =
+    'Request-Body ist zu groß. Bitte kürze die Tool-Argumente und versuche es erneut.';
+  if (contentLengthHeader != null && contentLengthHeader !== '') {
+    const n = Number.parseInt(contentLengthHeader, 10);
+    if (Number.isFinite(n) && n > AIBERTO_TOOLS_MAX_REQUEST_BYTES) {
+      return { ok: false, status: 413, message };
+    }
+  }
+  if (typeof decodedBytes === 'number' && decodedBytes > AIBERTO_TOOLS_MAX_REQUEST_BYTES) {
+    return { ok: false, status: 413, message };
+  }
+  return { ok: true };
+}
 
 export type AibertoToolsAuthorize = (actor: Actor) => PolicyDecision;
 export type AibertoWorldAuthorize = (
@@ -441,20 +464,28 @@ export function createAibertoToolsUseCases(deps: AibertoToolsDeps): AibertoTools
         };
       }
       case 'character.list': {
-        const result = deps.character.listOwnedCharacters(userId);
-        if (!result.ok) {
-          return {
-            status: 'error',
-            code: 'INTERNAL',
-            message: 'Charakterliste nicht verfügbar.',
-            httpStatus: 503,
-            toolId,
-          };
+        // Include linked solo owner IDs (Library parity) — never client-supplied.
+        const ownerIds = actorIdsForGovernance(actor);
+        const merged = new Map<string, ReturnType<typeof toCharacterDto>>();
+        for (const ownerId of ownerIds) {
+          const result = deps.character.listOwnedCharacters(ownerId);
+          if (!result.ok) {
+            return {
+              status: 'error',
+              code: 'INTERNAL',
+              message: 'Charakterliste nicht verfügbar.',
+              httpStatus: 503,
+              toolId,
+            };
+          }
+          for (const row of result.value) {
+            if (!merged.has(row.id)) merged.set(row.id, toCharacterDto(row));
+          }
         }
         return {
           status: 'ok',
           toolId,
-          data: { characters: result.value.map(toCharacterDto) },
+          data: { characters: [...merged.values()] },
         };
       }
       case 'character.get': {
@@ -467,17 +498,26 @@ export function createAibertoToolsUseCases(deps: AibertoToolsDeps): AibertoTools
             toolId,
           };
         }
-        const result = deps.character.getOwnedCharacter(userId, args.characterId.trim());
-        if (!result.ok) {
-          return {
-            status: 'error',
-            code: 'INTERNAL',
-            message: 'Charakter nicht verfügbar.',
-            httpStatus: 503,
-            toolId,
-          };
+        const characterId = args.characterId.trim();
+        const ownerIds = actorIdsForGovernance(actor);
+        let found: ReturnType<typeof toCharacterDto> | null = null;
+        for (const ownerId of ownerIds) {
+          const result = deps.character.getOwnedCharacter(ownerId, characterId);
+          if (!result.ok) {
+            return {
+              status: 'error',
+              code: 'INTERNAL',
+              message: 'Charakter nicht verfügbar.',
+              httpStatus: 503,
+              toolId,
+            };
+          }
+          if (result.value != null) {
+            found = toCharacterDto(result.value);
+            break;
+          }
         }
-        if (result.value == null) {
+        if (found == null) {
           // Owned miss covers cross-owner + missing — never leak existence via owner fields.
           return {
             status: 'error',
@@ -487,7 +527,7 @@ export function createAibertoToolsUseCases(deps: AibertoToolsDeps): AibertoTools
             toolId,
           };
         }
-        return { status: 'ok', toolId, data: { character: toCharacterDto(result.value) } };
+        return { status: 'ok', toolId, data: { character: found } };
       }
       case 'inventory.list': {
         if (typeof args.characterId !== 'string' || !args.characterId.trim()) {
@@ -500,8 +540,25 @@ export function createAibertoToolsUseCases(deps: AibertoToolsDeps): AibertoTools
           };
         }
         const characterId = args.characterId.trim();
-        const owned = deps.character.getOwnedCharacter(userId, characterId);
-        if (!owned.ok || owned.value == null) {
+        const ownerIds = actorIdsForGovernance(actor);
+        let owningId: string | null = null;
+        for (const ownerId of ownerIds) {
+          const owned = deps.character.getOwnedCharacter(ownerId, characterId);
+          if (!owned.ok) {
+            return {
+              status: 'error',
+              code: 'INTERNAL',
+              message: 'Inventar nicht verfügbar.',
+              httpStatus: 503,
+              toolId,
+            };
+          }
+          if (owned.value != null) {
+            owningId = ownerId;
+            break;
+          }
+        }
+        if (owningId == null) {
           return {
             status: 'error',
             code: 'FORBIDDEN',
@@ -510,7 +567,7 @@ export function createAibertoToolsUseCases(deps: AibertoToolsDeps): AibertoTools
             toolId,
           };
         }
-        const inv = deps.inventory.getOwnedInventory(userId, characterId);
+        const inv = deps.inventory.getOwnedInventory(owningId, characterId);
         if (!inv.ok) {
           return {
             status: 'error',

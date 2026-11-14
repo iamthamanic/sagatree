@@ -50,6 +50,11 @@ const infra = readFileSync(join(root, 'src/infrastructure/ai/aiberto-tools-servi
 check(infra.includes('/api/v1/ai/aiberto-tools/capabilities'), 'capabilities path');
 check(infra.includes('/api/v1/ai/aiberto-tools/invoke'), 'invoke path');
 check(infra.includes("credentials: 'include'"), 'cookie credentials');
+check(infra.includes('defaultEnv') && infra.includes('import.meta'), 'FE env defaults to import.meta.env');
+
+const routes = readFileSync(join(root, 'server/src/api/ai-routes.ts'), 'utf8');
+check(routes.includes('checkAibertoToolsBodySize'), 'HTTP body size gate');
+check(routes.includes('AIBERTO_TOOLS_MAX_REQUEST_BYTES'), 'HTTP max request bytes');
 
 const policy = readFileSync(
   join(root, 'server/src/modules/permissions/internal/policy-service.ts'),
@@ -233,6 +238,40 @@ check(
 
 const own = await uc.invoke(actor, { toolId: 'character.get', args: { characterId: 'char-own-1' } });
 check(own.status === 'ok' && own.data.character.publicId === 'CH-OWN01', 'owned get ok');
+
+// Linked solo owner visible via remote actor (Library parity)
+const soloOwner = '33333333-3333-4333-8333-333333333333';
+const linkedRow = {
+  id: 'char-solo-1',
+  publicId: 'CH-SOLO1',
+  ownerUserId: soloOwner,
+  characterType: 'pc',
+  sheetStatus: 'complete',
+  name: 'SoloHeld',
+  description: '',
+  level: 1,
+  sheet: {},
+  portraitStoragePath: null,
+  createdAt: '2026-01-01T00:00:00.000Z',
+  updatedAt: '2026-01-01T00:00:00.000Z',
+};
+ownedRows.push(linkedRow);
+const remote = {
+  kind: 'remote-account',
+  actorId: actor.actorId,
+  linkedSoloActorIds: [soloOwner],
+};
+const linkedList = await uc.invoke(remote, { toolId: 'character.list', args: {} });
+check(
+  linkedList.status === 'ok' &&
+    linkedList.data.characters.some((c) => c.id === 'char-solo-1'),
+  'linked solo characters listed',
+);
+const linkedGet = await uc.invoke(remote, {
+  toolId: 'character.get',
+  args: { characterId: 'char-solo-1' },
+});
+check(linkedGet.status === 'ok', 'linked solo character get');
 
 const nav = await uc.invoke(actor, { toolId: 'app.navigate', args: { route: 'dashboard' } });
 check(

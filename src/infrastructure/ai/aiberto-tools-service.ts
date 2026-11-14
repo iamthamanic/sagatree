@@ -63,6 +63,14 @@ type EnvLike = {
   readonly VITE_SAGATREE_HOST_AUTH_URL?: string;
 };
 
+function defaultEnv(): EnvLike {
+  try {
+    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};
+  } catch {
+    return {};
+  }
+}
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
@@ -149,7 +157,7 @@ function parseInvoke(value: unknown): AibertoToolInvokeResult {
 }
 
 export async function fetchAibertoToolCapabilities(
-  env: EnvLike = {},
+  env: EnvLike = defaultEnv(),
   fetchImpl: typeof fetch = fetch,
 ): Promise<AibertoToolsCapabilitiesResult> {
   const base = toolsBase(env);
@@ -180,7 +188,7 @@ export async function fetchAibertoToolCapabilities(
 export async function invokeAibertoTool(
   toolId: string,
   args: Record<string, unknown> = {},
-  env: EnvLike = {},
+  env: EnvLike = defaultEnv(),
   fetchImpl: typeof fetch = fetch,
 ): Promise<AibertoToolInvokeResult> {
   const base = toolsBase(env);
