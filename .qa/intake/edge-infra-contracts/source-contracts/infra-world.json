@@ -267,7 +267,7 @@
     },
     {
       "path": "src/domains/world/atlas/atlas-workstation-adaptive.ts",
-      "sha256": "d5d6dfd124a1e33549b1fc89fcb435104d3c60c547e2803f2c5c8cd00792f7d4"
+      "sha256": "2a87a8f4cf36e532f9bbb0faa0085013f4169fedc26622a1bbef800b46f59846"
     },
     {
       "path": "src/domains/world/atlas/canvas-polygon.ts",
@@ -1995,8 +1995,8 @@
       "kind": "TypeAliasDeclaration",
       "name": "ResolveAtlasSurfaceStateInput",
       "path": "src/domains/world/atlas/atlas-workstation-adaptive.ts",
-      "line": 186,
-      "endLine": 193,
+      "line": 187,
+      "endLine": 194,
       "text": "export type ResolveAtlasSurfaceStateInput = {\n  readonly loading?: boolean;\n  readonly error?: boolean;\n  readonly emptyMaps?: boolean;\n  readonly unlocated?: boolean;\n  readonly webglFallback?: boolean;\n  readonly reducedMotion?: boolean;\n};"
     },
     {

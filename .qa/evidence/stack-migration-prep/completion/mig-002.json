@@ -5,7 +5,7 @@
   "result": "PASS",
   "githubClosed": true,
   "mergeRef": "PR #860 \u2192 main (after #782)",
-  "note": "Inventories aligned for ATL2-G03 #1282 tip.",
+  "note": "Inventories regenerated after ATL2-G03 Codex P1/P2 adaptive fixes.",
   "checks": [
     {
       "command": "legacy inventory matrix",
@@ -23,7 +23,7 @@
       "command": "edge/infra inventory 25+13",
       "result": "PASS",
       "evidenceFile": ".qa/intake/edge-infra-contracts/inventory.json",
-      "sha256": "c004a899f4d7aabf9443be2bebd4be1d2cee51864b156c884530e8ac76a03a22"
+      "sha256": "fd56287d40e7f5d1d37fa80d8188aab6d89cf8875dfbf9b71c5e74d05d6a2b3f"
     }
   ],
   "testedCommit": "543c0574dd98d4dba611c9cf3e0764b03fb5ef34"
