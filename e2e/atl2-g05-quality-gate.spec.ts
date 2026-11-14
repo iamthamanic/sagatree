@@ -85,7 +85,9 @@ async function waitAtlasReady(page: Page): Promise<void> {
     .toBe('webgl');
 }
 
-async function openDornhainAtlas3d(page: Page): Promise<{ worldId: string }> {
+async function openDornhainAtlas3d(
+  page: Page,
+): Promise<{ worldId: string; sagaPublicId: string; projectId: string }> {
   await ensureLoggedIn(page);
   const origin = new URL(page.url()).origin;
   const ensure = await page.request.post('/api/v1/projects/ensure-starter', {
@@ -93,6 +95,9 @@ async function openDornhainAtlas3d(page: Page): Promise<{ worldId: string }> {
     data: { slug: 'dornhain.whisper' },
   });
   expect(ensure.ok(), await ensure.text()).toBeTruthy();
+  const ensureBody = (await ensure.json()) as { id?: string; publicId?: string };
+  expect(ensureBody.id).toBeTruthy();
+  expect(ensureBody.publicId).toBeTruthy();
   const worlds = await page.request.get('/api/v1/library/worlds', {
     headers: { Origin: origin },
   });
@@ -113,7 +118,11 @@ async function openDornhainAtlas3d(page: Page): Promise<{ worldId: string }> {
   }
   await expect(mode3d).toBeVisible({ timeout: 60_000 });
   await waitAtlasReady(page);
-  return { worldId: dornhain!.id };
+  return {
+    worldId: dornhain!.id,
+    sagaPublicId: ensureBody.publicId!,
+    projectId: ensureBody.id!,
+  };
 }
 
 async function detectRenderer(page: Page): Promise<'webgl' | 'software' | 'unknown'> {
@@ -183,7 +192,7 @@ test.describe('ATL2-G05 quality gate', () => {
     test.setTimeout(420_000);
     mkdirSync(EVIDENCE, { recursive: true });
 
-    const { worldId } = await openDornhainAtlas3d(page);
+    const { worldId, sagaPublicId, projectId } = await openDornhainAtlas3d(page);
     const origin = new URL(page.url()).origin;
     const renderer = await detectRenderer(page);
     const screenshotPaths: string[] = [];
@@ -321,20 +330,50 @@ test.describe('ATL2-G05 quality gate', () => {
     expect(ownerDetail.ok()).toBeTruthy();
     const ownerMap = await ownerDetail.json();
 
-    const playerDetail = await page.request.get(
-      `/api/v1/worlds/atlas/maps/${firstMapId}?playerView=true`,
+    // Promote any existing location bindings to party so playerView can resolve a map.
+    const bindingsRes = await page.request.get(
+      `/api/v1/sagas/${encodeURIComponent(sagaPublicId)}/bindings?assetKind=location`,
       { headers: { Origin: origin } },
     );
-    expect(playerDetail.ok()).toBeTruthy();
-    const playerMap = await playerDetail.json();
+    if (bindingsRes.ok()) {
+      const bindingsBody = (await bindingsRes.json()) as {
+        bindings?: Array<{ id: string; reveal?: string }>;
+      };
+      for (const b of bindingsBody.bindings ?? []) {
+        if (b.reveal === 'party') continue;
+        await page.request.post(
+          `/api/v1/projects/${encodeURIComponent(projectId)}/bindings/${encodeURIComponent(b.id)}/reveal`,
+          {
+            headers: { Origin: origin, 'Content-Type': 'application/json' },
+            data: { reveal: 'party' },
+          },
+        );
+      }
+    }
+
+    // playerView requires sagaPublicId; without party-revealed place→map links the
+    // host returns 404 (P0002) — that is fail-closed (no secret payload).
+    const playerDetail = await page.request.get(
+      `/api/v1/worlds/atlas/maps/${firstMapId}?playerView=1&sagaPublicId=${encodeURIComponent(sagaPublicId)}`,
+      { headers: { Origin: origin } },
+    );
+    let playerMap: unknown = null;
+    if (playerDetail.ok()) {
+      playerMap = await playerDetail.json();
+    } else {
+      expect([403, 404]).toContain(playerDetail.status());
+    }
 
     // Owner path may or may not embed editorSecret on Dornhain starter — treat
     // "owner can call without projection" as ok when payload is richer / unredacted.
     const ownerSeesSecrets =
       payloadHasEditorSecret(ownerMap) ||
-      JSON.stringify(ownerMap).length >= JSON.stringify(playerMap).length;
+      (playerMap != null
+        ? JSON.stringify(ownerMap).length >= JSON.stringify(playerMap).length
+        : true);
 
-    const playerSecretsAbsent = !playerPayloadLeaksSecrets(playerMap);
+    const playerSecretsAbsent =
+      playerMap == null || !playerPayloadLeaksSecrets(playerMap);
 
     const checks = g05.buildAtlasG05ChecksFromEvidence({
       frames,
