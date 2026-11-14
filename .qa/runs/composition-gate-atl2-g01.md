@@ -2,7 +2,7 @@
 
 - Issue: #1229
 - Feature slug: atl2-g01
-- HEAD_SHA: 5e736b5e03dd917c086c2b5003be6e538f72376d
+- HEAD_SHA: 805a4624e18c8beb37fe5fd4ba1ed9eaa7be2626
 - BASE_SHA: 11efd6ffb5fc80d0324cc72eb0a23495f9a00e3e
 - Date: 2026-11-14
 - Verdict: CLEAR
@@ -17,7 +17,7 @@ geometry, meta, and dungeon seed; writes stay owner-scoped.
 1. Actor → Policy / `canReadWorld` / `canEditWorld` (owner vs member)
 2. `listMaps` / `getMap` with `partyOnly = !canEdit || playerView`
 3. Saga membership → `partyRevealedMapIds` (reveal=`party` bindings)
-4. `#toVm`: `filterPartyLayers` + `redactPartyMeta` (unifiedCanvas + dungeon theme-only)
+4. `#toVm`: `filterPartyLayers` + `redactPartyGeneratorMeta / redactDungeonMetaForParty` (unifiedCanvas + dungeon theme-only)
 5. `upsertMap` / `ensureRoot` / `deleteMap` require `canEditWorld` → `42501` otherwise
 
 Cardinality: one redacted VM per get; one allowed map-id set per saga project.
