@@ -1,7 +1,7 @@
 # ATL2-G05 Gate G — Phase G quality acceptance
 
 - Issue: #1233
-- HEAD: `0de611ba68830c424a3f6adbff3ec346b0a2e389`
+- HEAD: `575099fec1ea51652f3e12462a547a45e642d0ea`
 - Verdict: **CLEAR**
 - Date: 2026-11-14
 
@@ -17,7 +17,7 @@
 ## Host security negatives
 
 - Owner ensure-starter → Dornhain atlas maps: **6**
-- World publicId: **WO-HN6X3**
+- World publicId: **WO-98DKL**
 - Stranger write deny: **yes** (status **403**)
 - Player-view crypt redaction: **yes**
 
