@@ -1,0 +1,14 @@
+{
+  "id": "atl2-r01-fixture",
+  "note": "Read-only Dornhain-shaped counts for renderer compare — not a product scene",
+  "objects": [
+    {"id": "o1", "type": "haus", "x": 10, "z": -20, "size": 8, "h": 6},
+    {"id": "o2", "type": "haus", "x": -30, "z": 15, "size": 6, "h": 5},
+    {"id": "o3", "type": "baum", "x": 40, "z": 40, "size": 3, "h": 8},
+    {"id": "o4", "type": "haus", "x": -50, "z": -40, "size": 10, "h": 7},
+    {"id": "o5", "type": "stein", "x": 0, "z": 0, "size": 4, "h": 2},
+    {"id": "o6", "type": "haus", "x": 70, "z": -10, "size": 7, "h": 5},
+    {"id": "o7", "type": "baum", "x": -70, "z": 30, "size": 3, "h": 9},
+    {"id": "o8", "type": "haus", "x": 25, "z": 55, "size": 9, "h": 6}
+  ]
+}

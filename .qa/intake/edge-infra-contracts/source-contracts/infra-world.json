@@ -239,7 +239,7 @@
     },
     {
       "path": "src/domains/world/atlas/atlas-renderer-target.ts",
-      "sha256": "db574d6116c15d301a0b82ab2169e3c2ec0fd6551195ff44cb74d16b5dbe4ed6"
+      "sha256": "51beb5d64d2972fa88a42a1f0437d42639c689f9612cd852e94ed72721b48678"
     },
     {
       "path": "src/domains/world/atlas/atlas-revision-contract.ts",
@@ -295,7 +295,7 @@
     },
     {
       "path": "src/domains/world/atlas/index.ts",
-      "sha256": "95de52a5e06a434953d9d4329af119855e25b7dfa595f94513f10e778d6c9e87"
+      "sha256": "a87ade5bb4f35a01c54e22ef1ca0ef0886c7eeb2b094f300eea5ccff872cfb53"
     },
     {
       "path": "src/domains/world/atlas/map-edit-ops.ts",
@@ -1758,6 +1758,22 @@
       "line": 64,
       "endLine": 70,
       "text": "export type AtlasRendererDecision = {\n  readonly target: AtlasRendererCandidateId;\n  readonly issue: 1212;\n  readonly reasonDe: string;\n  readonly rollbackDe: string;\n  readonly retireParallelIn: 'atl2-h-cleanup' | 'none';\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AtlasRendererHybridVerdict",
+      "path": "src/domains/world/atlas/atlas-renderer-target.ts",
+      "line": 109,
+      "endLine": 109,
+      "text": "export type AtlasRendererHybridVerdict = 'GO' | 'NO-GO';"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AtlasRendererHybridDecision",
+      "path": "src/domains/world/atlas/atlas-renderer-target.ts",
+      "line": 111,
+      "endLine": 118,
+      "text": "export type AtlasRendererHybridDecision = {\n  readonly issue: 1266;\n  readonly verdict: AtlasRendererHybridVerdict;\n  readonly productiveOwner: AtlasRendererCandidateId;\n  readonly followOnIssues: readonly [1267, 1268, 1269, 1270];\n  readonly reasonDe: string;\n  readonly evidencePaths: readonly string[];\n};"
     },
     {
       "kind": "TypeAliasDeclaration",

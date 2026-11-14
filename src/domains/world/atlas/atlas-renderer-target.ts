@@ -101,3 +101,40 @@ export function clampAtlasPixelRatio(
 export function isProductAtlasRendererTarget(id: AtlasRendererCandidateId): boolean {
   return id === ATLAS_PRODUCT_3D_TARGET;
 }
+
+/**
+ * ATL2-R01 (#1266) — Hybrid/Three reuse GO/NO-GO for follow-on R02–R05.
+ * Completing R01 does not auto-greenlight #1267–#1270; only `GO` does.
+ */
+export type AtlasRendererHybridVerdict = 'GO' | 'NO-GO';
+
+export type AtlasRendererHybridDecision = {
+  readonly issue: 1266;
+  readonly verdict: AtlasRendererHybridVerdict;
+  readonly productiveOwner: AtlasRendererCandidateId;
+  readonly followOnIssues: readonly [1267, 1268, 1269, 1270];
+  readonly reasonDe: string;
+  readonly evidencePaths: readonly string[];
+};
+
+export const ATLAS_R01_RENDERER_HYBRID_DECISION: AtlasRendererHybridDecision = {
+  issue: 1266,
+  verdict: 'NO-GO',
+  productiveOwner: ATLAS_PRODUCT_3D_TARGET,
+  followOnIssues: [1267, 1268, 1269, 1270],
+  reasonDe:
+    'Kein entscheidender Messgewinn für Three als Produkt-Backend; SpatialViewport fehlt ' +
+    'Heightfield/Diorama/Lite-Fallback; Phase-D/E/F-Investition bleibt auf Custom-WebGL. ' +
+    'R02–R05 nicht starten — not_planned bis neue ADR mit Paritäts-CLEAR.',
+  evidencePaths: [
+    '.qa/design/atl2-r01-renderer-decision.md',
+    '.qa/design/atl2-r01-reuse-matrix.md',
+    '.qa/evidence/atl2-r01-renderer-poc/results.json',
+  ],
+};
+
+export function atlasR01AllowsFollowOnRendererWork(
+  decision: AtlasRendererHybridDecision = ATLAS_R01_RENDERER_HYBRID_DECISION,
+): boolean {
+  return decision.verdict === 'GO';
+}
