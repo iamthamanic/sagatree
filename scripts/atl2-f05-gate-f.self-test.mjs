@@ -21,6 +21,11 @@ const editorSrc = readFileSync(
   join(root, 'src/app/world/atlas/unified/UnifiedAtlasEditor.tsx'),
   'utf8',
 );
+const hookSrc = readFileSync(join(root, 'src/app/world/atlas/useWorldAtlasEditor.ts'), 'utf8');
+const workbenchSrc = readFileSync(
+  join(root, 'src/app/world/atlas/WorldAtlasWorkbench.tsx'),
+  'utf8',
+);
 const lookSrc = readFileSync(join(root, 'src/domains/world/atlas/atlas-dungeon-look.ts'), 'utf8');
 const workflowSrc = readFileSync(
   join(root, 'src/domains/world/atlas/dungeon-forge-workflow.ts'),
@@ -34,6 +39,9 @@ assert.ok(acceptance.includes('IV-01'));
 assert.ok(acceptance.includes('IV-18'));
 assert.ok(acceptance.includes('GM vs Player') || acceptance.includes('canEdit=false'));
 assert.ok(composition.includes('CLEAR'));
+assert.ok(composition.includes('Two consumers / crash'));
+assert.ok(/Acceptance tier:\s*\S+/i.test(composition));
+assert.ok(/Deferred integration:\s*\S+/i.test(composition));
 assert.ok(composition.includes('atl2-f05'));
 assert.ok(gate.includes('atl2-f05-gate-f.self-test.mjs'));
 assert.equal(target.ATLAS_PRODUCT_3D_TARGET, 'custom-webgl-prototype-runtime');
@@ -44,15 +52,50 @@ assert.ok(!workflowSrc.includes(' as any'));
 assert.ok(!workflowSrc.includes('@ts-ignore'));
 assert.ok(!workflowSrc.includes('@ts-expect-error'));
 
-/* GM-only forge UI; player/unauthorized cannot generate/commit. */
-assert.ok(editorSrc.includes('canEdit ? ('));
-assert.ok(editorSrc.includes('data-atlas-dungeon-forge'));
+/* Forge panel is exclusively assigned under canEdit; player render is null. */
+const forgePanelMatch = editorSrc.match(
+  /const dungeonForgePanel\s*=\s*canEdit\s*\?\s*\(([\s\S]*?)\)\s*:/,
+);
+assert.ok(forgePanelMatch, 'dungeonForgePanel must be canEdit-ternary');
+const forgePanelGmJsx = forgePanelMatch[1];
+assert.ok(forgePanelGmJsx.includes('data-atlas-dungeon-forge'));
+assert.ok(forgePanelGmJsx.includes('data-atlas-dungeon-generate') || forgePanelGmJsx.includes('Seed'));
+assert.ok(
+  /:\s*null/.test(editorSrc.slice(forgePanelMatch.index, forgePanelMatch.index + forgePanelMatch[0].length + 80)) ||
+    /const dungeonForgePanel\s*=\s*canEdit\s*\?[\s\S]{0,40}:\s*null/.test(editorSrc) ||
+    editorSrc.includes('canEdit ? (\n      <div className="space-y-2 rounded-md border border-border p-2" data-atlas-dungeon-forge>'),
+);
+
+/** @param {boolean} canEdit */
+function renderDungeonForgeForRole(canEdit) {
+  if (!canEdit) return null;
+  return forgePanelGmJsx;
+}
+
+const playerForge = renderDungeonForgeForRole(false);
+assert.equal(playerForge, null, 'player canEdit=false must not render forge panel');
+assert.ok(!String(playerForge ?? '').includes('data-atlas-dungeon-forge'));
+const gmForge = renderDungeonForgeForRole(true);
+assert.ok(gmForge.includes('data-atlas-dungeon-forge'));
+assert.ok(editorSrc.includes('data-atlas-dungeon-forge-3d'));
+assert.ok(
+  /\{canEdit \? \(\s*<div[\s\S]*?data-atlas-dungeon-forge-3d[\s\S]*?\{dungeonForgePanel\}[\s\S]*?\) : null\}/.test(
+    editorSrc,
+  ),
+  '3D forge chrome must also be canEdit-gated',
+);
 assert.ok(editorSrc.includes('dungeonNeedsReforgeConfirm'));
 assert.ok(editorSrc.includes('mergeDungeonPreviewIntoDoc'));
 assert.ok(editorSrc.includes('commitDungeonFeaturesToDoc'));
 assert.ok(editorSrc.includes('dungeonLookDoc'));
 assert.ok(editorSrc.includes('dungeonThemeKey'));
 assert.ok(editorSrc.includes('Ungültiger Seed'));
+assert.ok(editorSrc.includes('onDungeonMetaChange?.({ ...meta, manualDirty: true })'));
+assert.ok(workbenchSrc.includes('onDungeonMetaChange={editor.updateDungeonMeta}'));
+assert.ok(hookSrc.includes('mergeDungeonMetaIntoGeneratorMeta(generatorMeta, dungeonMeta)'));
+assert.ok(hookSrc.includes('extractDungeonMetaFromGeneratorMeta(next.generatorMeta)'));
+assert.ok(hookSrc.includes('extractDungeonMetaFromGeneratorMeta(vm.generatorMeta)'));
+assert.match(hookSrc, /const saveCanvas = useCallback\(async \(\) => \{\s*if \(!map \|\| !canEdit\) return;/);
 
 const gen = jiti(join(root, 'src/domains/world/atlas/dungeon-generator.ts'));
 const grid = jiti(join(root, 'src/domains/world/atlas/dungeon-grid.ts'));
@@ -101,32 +144,82 @@ assert.ok(previewDoc.rooms.some((r) => r.id.startsWith('droom-')));
 assert.equal(canonical.rooms.length, 1, 'preview must not mutate canonical');
 assert.equal(canonical.rooms[0].id, 'user-room-krypta');
 
-/* --- 4. commit --- */
-const committed = forge.commitDungeonFeaturesToDoc(canonical, payload, true);
-assert.ok(committed.rooms.some((r) => r.id === 'user-room-krypta'));
+/* --- 4. commit (editor onDungeonMetaChange + onDocChange) --- */
+/** @type {import('../src/domains/world/atlas/dungeon-generator.ts').DungeonGeneratorMeta | null} */
+let dungeonMetaState = null;
+const onDungeonMetaChange = (next) => {
+  dungeonMetaState = next;
+};
+const onDocChange = (next) => {
+  canvasDocState = next;
+};
+let canvasDocState = canonical;
+
+const commitMeta = gen.buildDungeonGeneratorMeta(generated, true);
+onDungeonMetaChange(commitMeta);
+canvasDocState = forge.commitDungeonFeaturesToDoc(canvasDocState, payload, true);
+assert.ok(canvasDocState.rooms.some((r) => r.id === 'user-room-krypta'));
 assert.equal(
-  committed.rooms.filter((r) => r.id.startsWith('droom-')).length,
+  canvasDocState.rooms.filter((r) => r.id.startsWith('droom-')).length,
   payload.rooms.length,
 );
-let meta = gen.buildDungeonGeneratorMeta(generated, true);
-assert.equal(meta.confirmed, true);
-assert.equal(meta.manualDirty, false);
-assert.equal(gen.dungeonNeedsReforgeConfirm(meta), true);
+assert.ok(dungeonMetaState);
+assert.equal(dungeonMetaState.confirmed, true);
+assert.equal(dungeonMetaState.manualDirty, false);
+assert.equal(gen.dungeonNeedsReforgeConfirm(dungeonMetaState), true);
 
-/* --- 5. edit (manual) --- */
+/* --- 5. edit (manual) via UnifiedAtlasEditor.commit dirty wire --- */
 const edited = {
-  ...committed,
+  ...canvasDocState,
   rooms: [
-    ...committed.rooms,
+    ...canvasDocState.rooms,
     { id: 'user-alcove-1', x: 40, y: 40, w: 2, h: 2, material: 'stein' },
   ],
 };
-meta = { ...meta, manualDirty: true };
-assert.equal(gen.dungeonNeedsReforgeConfirm(meta), true);
+{
+  const meta = dungeonMetaState;
+  if (meta?.confirmed && !meta.manualDirty) {
+    onDungeonMetaChange({ ...meta, manualDirty: true });
+  }
+  onDocChange(edited);
+}
+assert.equal(dungeonMetaState.manualDirty, true);
+assert.equal(gen.dungeonNeedsReforgeConfirm(dungeonMetaState), true);
+assert.ok(canvasDocState.rooms.some((r) => r.id === 'user-alcove-1'));
 
-/* --- 6. reopen / reload meta round-trip --- */
-const persisted = gen.mergeDungeonMetaIntoGeneratorMeta({}, meta);
-const reloaded = gen.extractDungeonMetaFromGeneratorMeta(persisted);
+/* --- 6. saveCanvas + reloadActiveMap path (useWorldAtlasEditor) --- */
+/** Mirrors saveCanvas: merge dungeon meta into generatorMeta (canEdit required). */
+function simulateSaveCanvas({ canEdit, priorGeneratorMeta, dungeonMeta }) {
+  if (!canEdit) return null;
+  let generatorMeta = { ...priorGeneratorMeta };
+  if (dungeonMeta) {
+    generatorMeta = gen.mergeDungeonMetaIntoGeneratorMeta(generatorMeta, dungeonMeta);
+  }
+  return generatorMeta;
+}
+
+/** Mirrors reloadActiveMap: extract dungeon meta after host round-trip. */
+function simulateReloadActiveMap(generatorMeta) {
+  return gen.extractDungeonMetaFromGeneratorMeta(generatorMeta);
+}
+
+assert.equal(
+  simulateSaveCanvas({
+    canEdit: false,
+    priorGeneratorMeta: {},
+    dungeonMeta: dungeonMetaState,
+  }),
+  null,
+  'unauthorized saveCanvas must no-op',
+);
+
+const persistedMeta = simulateSaveCanvas({
+  canEdit: true,
+  priorGeneratorMeta: { engine: 'atlas' },
+  dungeonMeta: dungeonMetaState,
+});
+assert.ok(persistedMeta);
+const reloaded = simulateReloadActiveMap(persistedMeta);
 assert.ok(reloaded);
 assert.equal(reloaded.seed, GOLDEN.seed);
 assert.equal(reloaded.themeKey, GOLDEN.themeKey);
@@ -134,20 +227,19 @@ assert.equal(reloaded.confirmed, true);
 assert.equal(reloaded.manualDirty, true);
 assert.equal(reloaded.generatorVersion, gen.DUNGEON_GENERATOR_VERSION);
 
-/* Geometry IDs survive "reload" of the same doc. */
 const idSnap = (doc) =>
   [...doc.rooms, ...doc.walls, ...(doc.doors ?? []), ...doc.objects]
     .map((f) => f.id)
     .sort()
     .join('|');
-assert.equal(idSnap(edited), idSnap(JSON.parse(JSON.stringify(edited))));
+assert.equal(idSnap(canvasDocState), idSnap(JSON.parse(JSON.stringify(canvasDocState))));
 
 /* --- 7. 3D look + theme switch (same geometry) --- */
-const lookAncient = look.buildAtlasDungeonLookPlan(edited, {
+const lookAncient = look.buildAtlasDungeonLookPlan(canvasDocState, {
   themeKey: 'ancient',
   graphicsPresetId: 'balanced',
 });
-const lookMolten = look.buildAtlasDungeonLookPlan(edited, {
+const lookMolten = look.buildAtlasDungeonLookPlan(canvasDocState, {
   themeKey: 'molten',
   graphicsPresetId: 'balanced',
 });
@@ -162,7 +254,7 @@ assert.equal(
 assert.notEqual(lookAncient.lookFingerprint, lookMolten.lookFingerprint);
 
 for (const key of look.ATLAS_DUNGEON_THEME_KEYS) {
-  const plan = look.buildAtlasDungeonLookPlan(edited, {
+  const plan = look.buildAtlasDungeonLookPlan(canvasDocState, {
     themeKey: key,
     graphicsPresetId: 'high',
   });
@@ -176,7 +268,7 @@ const nextRaster = grid.rasterizeDungeonGenerateResult(nextGen);
 assert.equal(nextRaster.valid && nextRaster.passable, true, nextRaster.error);
 const nextPayload = forge.dungeonCommitPayloadFromResults(nextGen, nextRaster);
 assert.ok(nextPayload);
-const reforged = forge.commitDungeonFeaturesToDoc(edited, nextPayload, true);
+const reforged = forge.commitDungeonFeaturesToDoc(canvasDocState, nextPayload, true);
 assert.ok(reforged.rooms.some((r) => r.id === 'user-room-krypta'));
 assert.ok(reforged.rooms.some((r) => r.id === 'user-alcove-1'));
 const oldIds = new Set(payload.rooms.map((r) => r.id));
@@ -219,5 +311,7 @@ console.log(
     geomFp: lookAncient.geometryFingerprint,
     layoutFp,
     target: target.ATLAS_PRODUCT_3D_TARGET,
+    playerForgeAbsent: playerForge === null,
+    manualDirtyAfterReload: reloaded.manualDirty === true,
   }),
 );

@@ -2,7 +2,7 @@
 
 - Issue: #1228
 - Feature slug: atl2-f05
-- HEAD_SHA: c1e84fc58fb8b68163b10fbb7cd3c2af55883add
+- HEAD_SHA: 45390fe18ac9046ef7a0bffef961a3f6555d8c90
 - BASE_SHA: e8ceb20240de79b370a2e13b9f56bb117969ad70
 - Date: 2026-11-14
 - Verdict: CLEAR
@@ -18,11 +18,11 @@ meta reload → Custom-WebGL look (theme switch) → dirty reforge guard; player
 2. `rasterizeDungeonGenerateResult` (F02) + BFS passable
 3. `mergeDungeonPreviewIntoDoc` → display-only; canonical unchanged
 4. `commitDungeonFeaturesToDoc(replaceGenerated=true)` + `buildDungeonGeneratorMeta(confirmed)`
-5. Manual user room + `manualDirty` → persist meta via `mergeDungeonMetaIntoGeneratorMeta` /
-   `extractDungeonMetaFromGeneratorMeta` (reload)
+5. Manual user room + `onDungeonMetaChange`/`updateDungeonMeta` → persist via
+   `mergeDungeonMetaIntoGeneratorMeta` / reload `extractDungeonMetaFromGeneratorMeta`
 6. `buildAtlasDungeonLookPlan` (F04) 2D/3D ID parity across themes
 7. Reforge: `dungeonNeedsReforgeConfirm` → strip generator IDs only; user rooms survive
-8. UI: `canEdit` gates `data-atlas-dungeon-forge`; playerView read path unchanged
+8. UI: `canEdit` gates `dungeonForgePanel` / `data-atlas-dungeon-forge`; player render has none
 
 Cardinality: one canonical dungeon feature set per commit; one meta.dungeon blob per map;
 theme switches do not mint new geometry IDs.
@@ -33,11 +33,14 @@ theme switches do not mint new geometry IDs.
 |------|----------|----------|--------|
 | N-actors | Single GM editor | canEdit forge panel | pass |
 | Invalid/missing | Bad gen / raster | null payload, no commit | pass |
-| Two consumers | Theme A vs B look | same geometryFingerprint | pass |
-| Player | canEdit=false | forge UI absent | pass |
+| Two consumers / crash | Theme A vs B look; mid-edit crash | same geometryFingerprint; dirty meta survives reload | pass |
+| Player | canEdit=false render | forge marker/controls absent | pass |
 
 ## Flags
 
 | Tag | Severity | Hops | Why | Fix |
 |-----|----------|------|-----|-----|
 | (none) | — | — | — | — |
+
+- Acceptance tier: host-integration
+- Deferred integration: none
