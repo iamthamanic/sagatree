@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-ai.json](source-contracts/infra-ai.json) (SHA-256 `91159075120712f8943fffab474f10f7654f4a2fde7bdbd6bab5025a9856a098`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-ai.json](source-contracts/infra-ai.json) (SHA-256 `e084f92eedf68d4368d3384957079c3d0e8713966dbd91b33c36dce1152a30c0`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -105,6 +105,182 @@ export class AiProviderCredentialsService {
 
 ```ts
 export const aiProviderCredentialsService = new AiProviderCredentialsService();
+```
+
+### src/infrastructure/ai/aiberto-ask-service.ts:11
+
+```ts
+export type AibertoAskCitation = {
+  readonly sectionId: string;
+  readonly title?: string;
+  readonly number?: string | null;
+};
+```
+
+### src/infrastructure/ai/aiberto-ask-service.ts:17
+
+```ts
+export type AibertoAskFinal =
+  | {
+      readonly status: 'ok';
+      readonly answer: string;
+      readonly citations: readonly AibertoAskCitation[];
+      readonly droppedCitationIds?: readonly string[];
+      readonly indexRevision: string;
+      readonly retrievedSectionIds: readonly string[];
+      readonly provider?: string;
+      readonly model?: string;
+    }
+  | {
+      readonly status: 'unanswered';
+      readonly reason: string;
+      readonly message: string;
+      readonly indexRevision: string;
+      readonly retrievedSectionIds: readonly string[];
+    }
+  | {
+      readonly status: 'disabled' | 'not-configured';
+      readonly code: string;
+      readonly message: string;
+    }
+  | {
+      readonly status: 'error';
+      readonly code: string;
+      readonly message: string;
+      readonly httpStatus?: number;
+    };
+```
+
+### src/infrastructure/ai/aiberto-ask-service.ts:47
+
+```ts
+export type AibertoAskStreamHandlers = {
+  readonly onMeta?: (data: Record<string, unknown>) => void;
+  readonly onToken?: (text: string) => void;
+  readonly onFinal?: (data: AibertoAskFinal) => void;
+  readonly onError?: (data: AibertoAskFinal) => void;
+};
+```
+
+### src/infrastructure/ai/aiberto-ask-service.ts:138
+
+```ts
+export async function streamAibertoAsk(
+  question: string,
+  handlers: AibertoAskStreamHandlers,
+  options?: {
+    readonly signal?: AbortSignal;
+    readonly fetchImpl?: typeof fetch;
+    readonly env?: EnvLike;
+  },
+): Promise<void> {
+  const fetchImpl = options?.fetchImpl ?? fetch;
+  const env = options?.env ?? ((import.meta as ImportMeta & { env?: EnvLike }).env ?? {});
+  const url = askUrl(env, true);
+  if (!url) {
+    handlers.onError?.({
+      status: 'error',
+      code: 'HOST_UNAVAILABLE',
+      message: 'Aiberto-Host ist nicht erreichbar. Prüfe die Verbindung.',
+    });
+    return;
+  }
+
+  let response: Response;
+  try {
+    response = await fetchImpl(url, {
+      method: 'POST',
+      credentials: 'include',
+      headers: { Accept: 'text/event-stream', 'content-type': 'application/json' },
+      body: JSON.stringify({ question }),
+      signal: options?.signal,
+    });
+  } catch (err) {
+    if (options?.signal?.aborted) return;
+    handlers.onError?.({
+      status: 'error',
+      code: 'HOST_UNAVAILABLE',
+      message: 'Aiberto-Host ist nicht erreichbar. Prüfe die Verbindung.',
+    });
+    return;
+  }
+
+  const contentType = response.headers.get('content-type') ?? '';
+  if (!response.ok || !contentType.includes('text/event-stream') || !response.body) {
+    let fallback: AibertoAskFinal | null = null;
+    try {
+      const json: unknown = await response.json();
+      fallback = parseFinal(json);
+    } catch {
+      fallback = null;
+    }
+    handlers.onError?.(
+      fallback ?? {
+        status: 'error',
+        code: 'PROVIDER_UNAVAILABLE',
+        message: 'Aiberto-Chat konnte nicht gestartet werden. Bitte später erneut versuchen.',
+      },
+    );
+    return;
+  }
+
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let pending = '';
+  let sawTerminal = false;
+  try {
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      pending += decoder.decode(value, { stream: true });
+      const { events, rest } = parseSseBlocks(pending);
+      pending = rest;
+      for (const evt of events) {
+        let parsed: unknown;
+        try {
+          parsed = JSON.parse(evt.data);
+        } catch {
+          continue;
+        }
+        if (evt.event === 'meta' && isRecord(parsed)) {
+          handlers.onMeta?.(parsed);
+        } else if (evt.event === 'token' && isRecord(parsed) && typeof parsed.text === 'string') {
+          handlers.onToken?.(parsed.text);
+        } else if (evt.event === 'final') {
+          const final = parseFinal(parsed);
+          if (final) {
+            sawTerminal = true;
+            handlers.onFinal?.(final);
+          }
+        } else if (evt.event === 'error') {
+          sawTerminal = true;
+          const errFinal = parseFinal(parsed);
+          handlers.onError?.(
+            errFinal ?? {
+              status: 'error',
+              code: 'INTERNAL',
+              message: 'Aiberto-Stream fehlgeschlagen.',
+            },
+          );
+        }
+      }
+    }
+    if (!sawTerminal && !options?.signal?.aborted) {
+      handlers.onError?.({
+        status: 'error',
+        code: 'PROVIDER_UNAVAILABLE',
+        message: 'Aiberto-Stream endete ohne Antwort. Bitte erneut versuchen.',
+      });
+    }
+  } catch (err) {
+    if (options?.signal?.aborted) return;
+    handlers.onError?.({
+      status: 'error',
+      code: 'PROVIDER_UNAVAILABLE',
+      message: 'Aiberto-Stream abgebrochen. Bitte erneut versuchen.',
+    });
+  }
+}
 ```
 
 ### src/infrastructure/ai/host-ai-invoke.ts:10
@@ -249,6 +425,7 @@ All backend operations are included in the public declarations above.
 | `src/domains/ai-providers/index.ts` | `460e4fa3639a12e0e028b19de91b947e482fee90585dc9844d6f8cfa70df2f05` |
 | `src/domains/ai-providers/ollama-settings.ts` | `f3cbc6de1a3822b21cf3edf08f6debb19ea27299b46f54dbd1bfac0eaf83150c` |
 | `src/infrastructure/ai/ai-provider-credentials-service.ts` | `deabff23986dd311748c7efff1539c2fe977465fa8357c5a1fda1577c5562e51` |
+| `src/infrastructure/ai/aiberto-ask-service.ts` | `c70d02b82d012089fa26299ace355ca5edbb73f967c8c462fb4864e46f5f0441` |
 | `src/infrastructure/ai/host-ai-invoke.ts` | `1d85a9e6c3aad0022c11202a5e829f35eb40a9b503f3eced462d028169fb81db` |
 | `src/infrastructure/ai/ollama-settings-service.ts` | `aaf53b0f3004f001018518dade230a67f923c98897413476c9635f7d0aae1116` |
 | `src/infrastructure/host/host-library-http.ts` | `c56b88c60d6c9491fc7b6e6e1143ac4985ffdab5dff16afef8a54bce79629a07` |
