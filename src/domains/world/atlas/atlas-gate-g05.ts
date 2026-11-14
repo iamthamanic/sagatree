@@ -155,20 +155,24 @@ export function emptyAtlasG05Checks(): AtlasG05CheckResult[] {
 }
 
 /**
- * Fail-closed rollup: FAIL row → FAIL; NOT_RUN row → NOT_RUN; else PASS.
- * Missing required ids count as NOT_RUN (never silent PASS).
+ * Fail-closed rollup: any FAIL → FAIL (even if other rows are NOT_RUN);
+ * else any NOT_RUN / missing id → NOT_RUN; else PASS.
  */
 export function rollupAtlasG05Checks(
   checks: readonly AtlasG05CheckResult[],
 ): AtlasG05CheckStatus {
   const byId = new Map(checks.map((c) => [c.id, c]));
+  let hasNotRun = false;
   for (const id of ATLAS_G05_REQUIRED_CHECK_IDS) {
     const row = byId.get(id);
-    if (!row || row.status === 'NOT_RUN') return 'NOT_RUN';
+    if (!row) {
+      hasNotRun = true;
+      continue;
+    }
+    if (row.status === 'FAIL') return 'FAIL';
+    if (row.status === 'NOT_RUN') hasNotRun = true;
   }
-  for (const id of ATLAS_G05_REQUIRED_CHECK_IDS) {
-    if (byId.get(id)!.status === 'FAIL') return 'FAIL';
-  }
+  if (hasNotRun) return 'NOT_RUN';
   return 'PASS';
 }
 

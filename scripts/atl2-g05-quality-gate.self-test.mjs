@@ -114,6 +114,16 @@ const leak = g05.buildAtlasG05ChecksFromEvidence({
 });
 assert.equal(g05.rollupAtlasG05Checks(leak), 'FAIL');
 
+// FAIL wins over NOT_RUN (optional context-loss missing must not mask a FAIL row).
+const mixed = built.map((c) =>
+  c.id === 'webgl-context-loss'
+    ? { ...c, status: 'NOT_RUN', detail: 'unavailable' }
+    : c.id === 'player-secret-negative'
+      ? { ...c, status: 'FAIL', detail: 'leak' }
+      : c,
+);
+assert.equal(g05.rollupAtlasG05Checks(mixed), 'FAIL');
+
 const evidencePath = join(root, '.qa/evidence/atl2-g05/quality-evidence.json');
 if (existsSync(evidencePath)) {
   const evidence = JSON.parse(readFileSync(evidencePath, 'utf8'));

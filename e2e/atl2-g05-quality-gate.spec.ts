@@ -57,6 +57,8 @@ type AtlasBridge = {
     webglContext?: string;
     webglLost?: boolean;
     span?: number;
+    yawDeg?: number;
+    cameraMode?: string;
   };
   orbit: (yaw: number, pitch: number) => void;
   zoomAt?: (factor: number) => void;
@@ -64,6 +66,7 @@ type AtlasBridge = {
   forceContextLoss?: () => boolean;
   generate?: (opts?: { roomCount?: number }) => void;
   setCameraMode?: (mode: string) => void;
+  setMapScale?: (scale: string) => void;
 };
 
 async function waitAtlasReady(page: Page): Promise<void> {
@@ -129,11 +132,37 @@ async function detectRenderer(page: Page): Promise<'webgl' | 'software' | 'unkno
   return page.evaluate(() => {
     const host = document.querySelector('[data-atlas-native-3d]');
     if (host?.getAttribute('data-atlas-graphics-fallback')) return 'software';
+    const canvas = host?.querySelector('canvas') as HTMLCanvasElement | null;
+    const gl =
+      (canvas?.getContext('webgl') as WebGLRenderingContext | null) ||
+      (canvas?.getContext('webgl2') as WebGLRenderingContext | null);
+    if (gl) {
+      const dbg = gl.getExtension('WEBGL_debug_renderer_info') as {
+        UNMASKED_RENDERER_WEBGL: number;
+      } | null;
+      if (dbg) {
+        const renderer = String(gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL) || '').toLowerCase();
+        if (
+          /swiftshader|llvmpipe|softpipe|software|microsoft basic render|angle \(google,\s*vulkan|angle \(google,\s*swiftshader/.test(
+            renderer,
+          )
+        ) {
+          return 'software';
+        }
+      }
+    }
     const bridge = (window as unknown as { __sagatreeAtlas?: AtlasBridge }).__sagatreeAtlas;
-    const ctx = bridge?.getState()?.webglContext;
-    if (ctx === 'ok') return 'webgl';
+    const st = bridge?.getState() as
+      | { webglContext?: string; mode?: string; software3D?: boolean; renderer?: string }
+      | undefined;
+    if (st?.software3D) return 'software';
+    if (/swiftshader|llvmpipe|softpipe|software|microsoft basic render/i.test(st?.renderer || '')) {
+      return 'software';
+    }
+    const ctx = st?.webglContext;
     if (ctx === 'fallback') return 'software';
-    return bridge?.getState()?.mode === 'webgl' ? 'webgl' : 'unknown';
+    if (ctx === 'ok') return 'webgl';
+    return st?.mode === 'webgl' ? 'webgl' : 'unknown';
   });
 }
 
@@ -169,8 +198,10 @@ function playerPayloadLeaksSecrets(payload: unknown): boolean {
   const raw = JSON.stringify(payload ?? {});
   if (raw.includes('editorSecret')) return true;
   if (/"reveal"\s*:\s*"gm"/.test(raw)) return true;
-  // Party dungeon meta must not expose seed/dirty
-  if (/"seed"\s*:\s*\d+/.test(raw) && raw.includes('generator')) return true;
+  // Party dungeon/meta must not expose seed (numeric or string like dornhain.unified.v4)
+  if (/"seed"\s*:\s*(\d+|"[^"]+")/.test(raw) && /generator/i.test(raw)) return true;
+  if (/"forge"/.test(raw) && /generatorMeta|generator_meta/i.test(raw)) return true;
+  if (/"dirty"\s*:\s*true/.test(raw) && /generatorMeta|generator_meta/i.test(raw)) return true;
   return false;
 }
 
@@ -216,12 +247,23 @@ test.describe('ATL2-G05 quality gate', () => {
     // --- Camera / zoom / pick / edit ---
     const cameraZoomPickEditOk = await page.evaluate(() => {
       const bridge = (window as unknown as { __sagatreeAtlas?: AtlasBridge }).__sagatreeAtlas;
-      if (!bridge) return false;
+      if (!bridge?.zoomAt || !bridge.setCameraMode) return false;
       const before = bridge.getState();
+      const beforeSpan = before.span ?? NaN;
+      const beforeYaw = before.yawDeg ?? NaN;
       bridge.orbit(0.4, 0.15);
-      bridge.zoomAt?.(0.85);
-      bridge.setCameraMode?.('diorama-oblique');
-      const after = bridge.getState();
+      bridge.zoomAt(0.85);
+      bridge.setCameraMode('diorama-oblique');
+      const afterOrbitZoom = bridge.getState();
+      const spanChanged =
+        Number.isFinite(afterOrbitZoom.span) &&
+        Number.isFinite(beforeSpan) &&
+        Math.abs((afterOrbitZoom.span as number) - beforeSpan) > 0.05;
+      const yawChanged =
+        Number.isFinite(afterOrbitZoom.yawDeg) &&
+        Number.isFinite(beforeYaw) &&
+        Math.abs((afterOrbitZoom.yawDeg as number) - beforeYaw) > 0.05;
+      const modeChanged = afterOrbitZoom.cameraMode === 'diorama-oblique';
       const canvas = document.querySelector(
         '[data-atlas-native-3d] canvas:not(.hidden)',
       ) as HTMLCanvasElement | null;
@@ -235,7 +277,14 @@ test.describe('ATL2-G05 quality gate', () => {
           }),
         );
       }
-      return after.mode === 'webgl' && Number.isFinite(after.span ?? before.span);
+      const afterPick = bridge.getState();
+      return (
+        afterPick.mode === 'webgl' &&
+        spanChanged &&
+        yawChanged &&
+        modeChanged &&
+        Number.isFinite(afterPick.span)
+      );
     });
 
     // --- Map-switch soak + context loss ---
@@ -261,23 +310,28 @@ test.describe('ATL2-G05 quality gate', () => {
       return bridge?.forceContextLoss?.() ?? false;
     });
     if (forced) {
-      contextLossObserved = true;
       await page.waitForTimeout(200);
       const lost = await page.evaluate(() => {
         const host = document.querySelector('[data-atlas-native-3d]');
         return host?.getAttribute('data-atlas-webgl-lost') === 'true';
       });
-      contextLossObserved = contextLossObserved && (lost || true);
-      await page.waitForTimeout(800);
-      await waitAtlasReady(page).catch(() => undefined);
-      contextRestored = await page.evaluate(() => {
-        const host = document.querySelector('[data-atlas-native-3d]');
-        const bridge = (window as unknown as { __sagatreeAtlas?: AtlasBridge }).__sagatreeAtlas;
-        return (
-          host?.getAttribute('data-atlas-webgl-lost') !== 'true' &&
-          bridge?.getState()?.mode === 'webgl'
-        );
-      });
+      contextLossObserved = lost === true;
+      if (!lost) {
+        // Extension reported success but host never marked loss — fail the row.
+        contextLossObserved = true;
+        contextRestored = false;
+      } else {
+        await page.waitForTimeout(800);
+        await waitAtlasReady(page).catch(() => undefined);
+        contextRestored = await page.evaluate(() => {
+          const host = document.querySelector('[data-atlas-native-3d]');
+          const bridge = (window as unknown as { __sagatreeAtlas?: AtlasBridge }).__sagatreeAtlas;
+          return (
+            host?.getAttribute('data-atlas-webgl-lost') !== 'true' &&
+            bridge?.getState()?.mode === 'webgl'
+          );
+        });
+      }
     }
     const heapAfter = await jsHeapMb(page);
 
