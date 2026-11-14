@@ -27,17 +27,21 @@ function sha256Hex(payloadUtf8) {
   return createHash('sha256').update(payloadUtf8, 'utf8').digest('hex');
 }
 
-console.log('AIB-01: rebuild rulebook index (determinism)…');
+const generatedPath = join(root, 'src/domains/rulebook/generated/sagatree-core.json');
+const committed = readFileSync(generatedPath, 'utf8');
+
+console.log('AIB-01: rebuild rulebook index (determinism + committed freshness)…');
 execFileSync(process.execPath, [join(root, 'scripts/build-rulebook-index.mjs')], {
   cwd: root,
   stdio: 'inherit',
 });
-const first = readFileSync(join(root, 'src/domains/rulebook/generated/sagatree-core.json'), 'utf8');
+const first = readFileSync(generatedPath, 'utf8');
+check(first === committed, 'T-001: rebuild matches committed sagatree-core.json (no stale artifact)');
 execFileSync(process.execPath, [join(root, 'scripts/build-rulebook-index.mjs')], {
   cwd: root,
   stdio: 'inherit',
 });
-const second = readFileSync(join(root, 'src/domains/rulebook/generated/sagatree-core.json'), 'utf8');
+const second = readFileSync(generatedPath, 'utf8');
 check(first === second, 'T-001: two builds of same source produce identical JSON');
 
 const indexJson = JSON.parse(first);
@@ -96,6 +100,8 @@ check(recomputed === index.manifest.revisionHash, 'T-001: revisionHash matches c
 
 const empty = rulebook.searchRulebook(index, '   ');
 check(empty.length === 0, 'T-002: empty query → []');
+check(rulebook.searchRulebook(index, 'zzzznotaword').length === 0, 'T-002: unknown token → []');
+check(rulebook.searchRulebook(index, 'x').length === 0, 'T-002: one-char query → [] (no binding false positives)');
 
 const ebHits = rulebook.searchRulebook(index, 'anwendbarer Erfahrungsbonus', { limit: 10 });
 check(ebHits.length > 0, 'T-002: phrase search returns hits');

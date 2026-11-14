@@ -64,8 +64,8 @@ function scoreSection(section: RulebookSection, query: string, tokens: string[])
     if (bodyHits > 0) score += Math.min(24, bodyHits * 4);
   }
 
-  // Prefer binding playtest when scores tie-ish.
-  if (section.normativity === 'binding-playtest') score += 2;
+  // Prefer binding playtest only after a real phrase/token match (never invent hits).
+  if (score > 0 && section.normativity === 'binding-playtest') score += 2;
   return score;
 }
 
