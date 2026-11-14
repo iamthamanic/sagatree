@@ -2,10 +2,12 @@
 
 - Issue: #1229
 - Feature slug: atl2-g01
-- HEAD_SHA: 805a4624e18c8beb37fe5fd4ba1ed9eaa7be2626
+- HEAD_SHA: 312dbf45860a40799a589240689b56542408ed14
 - BASE_SHA: 11efd6ffb5fc80d0324cc72eb0a23495f9a00e3e
 - Date: 2026-11-14
 - Verdict: CLEAR
+- Acceptance tier: feature-integration
+- Deferred integration: none
 
 ## Event
 
@@ -28,7 +30,7 @@ Cardinality: one redacted VM per get; one allowed map-id set per saga project.
 |------|----------|----------|--------|
 | N-actors | Owner + player | partyOnly projection | pass |
 | Invalid/missing | Foreign saga / unrevealed map | 42501 / P0002 | pass |
-| Two consumers | Editor vs player same mapId | secrets diverge | pass |
+| Two consumers / crash | Editor vs player same mapId | secrets diverge | pass |
 | Write | Player upsert | 42501 | pass |
 
 ## Flags
