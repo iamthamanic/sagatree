@@ -5,7 +5,7 @@
   "result": "PASS",
   "githubClosed": true,
   "mergeRef": "PR #860 \u2192 main (after #782)",
-  "note": "Inventories regenerated after ATL2-G05 (#1233) atlas-gate-g05 export; edge inventory sha256 refreshed.",
+  "note": "Inventories regenerated after ATL2-G05 Codex findings fix (#1233).",
   "checks": [
     {
       "command": "legacy inventory matrix",
@@ -23,7 +23,7 @@
       "command": "edge/infra inventory 25+13",
       "result": "PASS",
       "evidenceFile": ".qa/intake/edge-infra-contracts/inventory.json",
-      "sha256": "bdc4658e427d586f4f38ca2ab3234a7f80ca84ffd5572b13e74911b215ba8c1c"
+      "sha256": "7fe07673b304277a5deeee47cdfa0e65c7868d0d8d5020e64697815f230e4b6b"
     }
   ],
   "testedCommit": "bea92d97a0ad8997afe2e230799bc6f717744477"

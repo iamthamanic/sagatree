@@ -37658,7 +37658,7 @@
           },
           {
             "path": "src/domains/world/atlas/atlas-gate-g05.ts",
-            "sha256": "6230d7063557f2e1d838838c2de59c93707758732a05cd30cf5b7ee4d2dc947d"
+            "sha256": "17ac6138bd3ee3c0da442e3d0e7c6dee8d6b13b6380e6c3297de97c73ec9eefb"
           },
           {
             "path": "src/domains/world/atlas/atlas-golden-visual.ts",
@@ -37982,7 +37982,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-world.json",
-      "sourceContractSha256": "7e6d6f5541fe67a15490adac7e88760469da50ecf2434e42fe0faa7917f0a515",
+      "sourceContractSha256": "8982f32044aed0f6cbcc0b41194a3be27f6175fa1261e50103cad47b2c16d2f1",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],

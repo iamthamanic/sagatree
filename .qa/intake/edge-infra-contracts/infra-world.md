@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-world.json](source-contracts/infra-world.json) (SHA-256 `7e6d6f5541fe67a15490adac7e88760469da50ecf2434e42fe0faa7917f0a515`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-world.json](source-contracts/infra-world.json) (SHA-256 `8982f32044aed0f6cbcc0b41194a3be27f6175fa1261e50103cad47b2c16d2f1`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -652,7 +652,7 @@ All backend operations are included in the public declarations above.
 | `src/domains/world/atlas/atlas-diorama-look.ts` | `a0c2f5ea6af2faabed685d4eff4035dad43b1e82f3d6b2a67e017ddcddf99ea6` |
 | `src/domains/world/atlas/atlas-dungeon-look.ts` | `4cb36a35663c13b62699ccd846df59ebc3ab38feafb497998302a35c09cdc9d8` |
 | `src/domains/world/atlas/atlas-edit-history.ts` | `13a91efde301ec766d3b0f183affcd794abba9f4c4872c00549e9f631947e294` |
-| `src/domains/world/atlas/atlas-gate-g05.ts` | `6230d7063557f2e1d838838c2de59c93707758732a05cd30cf5b7ee4d2dc947d` |
+| `src/domains/world/atlas/atlas-gate-g05.ts` | `17ac6138bd3ee3c0da442e3d0e7c6dee8d6b13b6380e6c3297de97c73ec9eefb` |
 | `src/domains/world/atlas/atlas-golden-visual.ts` | `754007ac0525c6797330d3a16995af16e35d747107c36f29e76fa6ecd36cbf7c` |
 | `src/domains/world/atlas/atlas-heightfield.ts` | `1fafa49c651ac14ba5ae1e9a226b38ffeea636935b7e486daa1cdd41090b71fb` |
 | `src/domains/world/atlas/atlas-hierarchy-lod.ts` | `d8f476a6aab1a6f8c63ee4d465401869e5b4191154b89b238f60fdba6c8b9bff` |
