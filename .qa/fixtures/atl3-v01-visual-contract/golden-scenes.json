@@ -1,0 +1,580 @@
+{
+  "format": "atl3-v01-visual-contract-v1",
+  "issue": 1295,
+  "slug": "atl3-v01-visual-contract",
+  "design": ".qa/design/atl3-procedural-fantasy-rendering.md",
+  "baselineRenderer": "custom-webgl-prototype-runtime",
+  "worldSeed": "dornhain.unified.v4",
+  "starterSlug": "dornhain.whisper",
+  "scenes": [
+    {
+      "id": "dornhain-block",
+      "labelDe": "Dornhain — Stadtblock",
+      "mapSeedKey": "dornhain.map.place.dornhain",
+      "mapTitleDe": "Dornhain",
+      "mapKind": "settlement",
+      "navDrill": [
+        "Kontinent Westmark",
+        "Land Westmark",
+        "Dornhain"
+      ],
+      "domainBuilder": "buildGoldenDornhainCanvas",
+      "dataFingerprint": "29f3947cb45600e3",
+      "lookFamily": "outdoor",
+      "lightProfile": {
+        "source": "resolveAtlasDioramaLightProfile",
+        "presetId": "balanced",
+        "daylightDir": [
+          -0.4,
+          1,
+          -0.5
+        ],
+        "ambient": 0.34,
+        "fogDensity": 0.00045,
+        "shadowStrength": 0.42,
+        "detailLevel": "reduced"
+      },
+      "requiredFeatureIds": [
+        "g.town.plaza",
+        "g.town.block-a",
+        "g.town.block-b",
+        "g.street",
+        "g.tavern",
+        "g.market",
+        "g.watch",
+        "g.oak-a",
+        "g.oak-b",
+        "g.pine-a",
+        "g.outcrop"
+      ],
+      "zoomLevels": [
+        {
+          "id": "z0-uebersicht",
+          "labelDe": "Übersicht",
+          "zoomPercent": 100,
+          "center": [
+            390,
+            470
+          ]
+        },
+        {
+          "id": "z1-stadtblock",
+          "labelDe": "Stadtblock",
+          "zoomPercent": 240,
+          "center": [
+            390,
+            470
+          ]
+        },
+        {
+          "id": "z2-detail-kleines-gebaeude",
+          "labelDe": "Detail (kleines Gebäude g.watch)",
+          "zoomPercent": 480,
+          "center": [
+            452,
+            430
+          ]
+        }
+      ]
+    },
+    {
+      "id": "krypta",
+      "labelDe": "Krypta unter dem Hügel",
+      "mapSeedKey": "dornhain.map.loc.crypt",
+      "mapTitleDe": "Krypta unter dem Hügel",
+      "mapKind": "scene",
+      "navDrill": [
+        "Kontinent Westmark",
+        "Land Westmark",
+        "Dornhain",
+        "Krypta unter dem Hügel"
+      ],
+      "domainBuilder": "buildGoldenCryptCanvas",
+      "dataFingerprint": "9fc038d9291de012",
+      "lookFamily": "indoor",
+      "dungeonThemeKey": "ancient",
+      "lightProfile": {
+        "source": "resolveAtlasDungeonLightProfile",
+        "presetId": "balanced",
+        "daylightDir": [
+          -0.35,
+          1,
+          -0.25
+        ],
+        "ambient": 0.28,
+        "fogDensity": 0.0004,
+        "shadowStrength": 0.35,
+        "torchIntensity": 0.75
+      },
+      "requiredFeatureIds": [
+        "g.crypt.hall",
+        "g.crypt.vault",
+        "g.crypt.w1",
+        "g.crypt.w2",
+        "g.crypt.w3",
+        "g.crypt.relic",
+        "g.crypt.lamp"
+      ],
+      "zoomLevels": [
+        {
+          "id": "z0-uebersicht",
+          "labelDe": "Übersicht",
+          "zoomPercent": 100,
+          "center": [
+            420,
+            480
+          ]
+        },
+        {
+          "id": "z1-raumgruppe",
+          "labelDe": "Raumgruppe",
+          "zoomPercent": 175,
+          "center": [
+            420,
+            480
+          ]
+        },
+        {
+          "id": "z2-raum",
+          "labelDe": "Halle mit Reliquie/Lampe",
+          "zoomPercent": 330,
+          "center": [
+            400,
+            360
+          ]
+        }
+      ]
+    }
+  ],
+  "cameras": [
+    {
+      "id": "ortho-topdown",
+      "labelDe": "Draufsicht (Ortho)",
+      "yawDeg": 0,
+      "pitchRad": 1.5707963267948966
+    },
+    {
+      "id": "diorama-oblique",
+      "labelDe": "Diorama (Schräg)",
+      "yawDeg": 20,
+      "pitchRad": 1.05
+    },
+    {
+      "id": "perspective",
+      "labelDe": "Perspektive",
+      "yawDeg": 20,
+      "pitchRad": 0.95,
+      "fovYDeg": 50
+    }
+  ],
+  "zoomSpanBase": 530,
+  "viewports": [
+    {
+      "id": "desktop",
+      "band": "desktop",
+      "width": 1280,
+      "height": 800,
+      "matrix": "all-cameras-all-zooms"
+    },
+    {
+      "id": "tablet",
+      "band": "tablet",
+      "width": 834,
+      "height": 1112,
+      "matrix": "diorama-oblique@z0"
+    },
+    {
+      "id": "phone",
+      "band": "phone",
+      "width": 390,
+      "height": 844,
+      "matrix": "diorama-oblique@z0"
+    }
+  ],
+  "qualityProfiles": [
+    {
+      "id": "high",
+      "capturedInBaseline": false,
+      "reason": "Produkt hat keinen Preset-Wähler; AtlasNative3dEditor nutzt immer 'balanced'."
+    },
+    {
+      "id": "balanced",
+      "capturedInBaseline": true
+    },
+    {
+      "id": "lite",
+      "capturedInBaseline": false,
+      "reason": "Produkt hat keinen Preset-Wähler; Lite/Software-Fallback nur bei WebGL-Init-Fehler."
+    }
+  ],
+  "tolerances": {
+    "cameraCenterUnits": 0.5,
+    "spanRelative": 0.01,
+    "yawDeg": 0.5,
+    "repeatCapture": {
+      "maxChannelDelta": 8,
+      "maxDiffPixelRatio": 0.08
+    },
+    "nonBlank": {
+      "minDistinctColors": 16,
+      "minLumaStdDev": 3
+    }
+  },
+  "screenshotName": "v01__<sceneId>__map-<atlasMapId>__<camera>__<zoomId>__<buildSha10>__<preset>-<renderer>__<viewport>.png",
+  "screenshotNameRegex": "^v01__[a-z0-9-]+__map-[a-z0-9-]+__(ortho-topdown|diorama-oblique|perspective)__z[0-9]-[a-z0-9-]+__[0-9a-f]{10}__(high|balanced|lite)-(hardware-webgl|software-webgl|lite3d-fallback|unknown)__(desktop|tablet|phone)\\.png$",
+  "hardwareBudgets": [
+    {
+      "tier": "desktop-reference",
+      "deviceClassDe": "Desktop/Laptop mit iGPU (Intel Iris Xe / Apple M1), Chrome stable, 1280×800, DPR 1–2",
+      "preset": "high",
+      "frameP50Ms": 12,
+      "frameP95Ms": 16.7,
+      "firstFrameAfterMapOpenMs": 1500,
+      "drawCallsMax": 150,
+      "trianglesMax": 500000,
+      "gpuMemoryMbMax": 256,
+      "proceduralTextureMaxPx": 1024,
+      "heapGrowthAfter8MapSwitchesMbMax": 16
+    },
+    {
+      "tier": "tablet",
+      "deviceClassDe": "Tablet Mittelklasse (iPad 9. Gen / Galaxy Tab S6 Lite), 834×1112, DPR 2",
+      "preset": "balanced",
+      "frameP50Ms": 16.7,
+      "frameP95Ms": 33.3,
+      "firstFrameAfterMapOpenMs": 2500,
+      "drawCallsMax": 100,
+      "trianglesMax": 250000,
+      "gpuMemoryMbMax": 128,
+      "proceduralTextureMaxPx": 512,
+      "heapGrowthAfter8MapSwitchesMbMax": 16
+    },
+    {
+      "tier": "phone-low-end",
+      "deviceClassDe": "Android Low-End (Mali-G52-Klasse, z. B. Moto G), 390×844, DPR ≤ 1,5",
+      "preset": "lite",
+      "frameP50Ms": 25,
+      "frameP95Ms": 33.3,
+      "firstFrameAfterMapOpenMs": 3500,
+      "drawCallsMax": 60,
+      "trianglesMax": 100000,
+      "gpuMemoryMbMax": 96,
+      "proceduralTextureMaxPx": 256,
+      "heapGrowthAfter8MapSwitchesMbMax": 16
+    }
+  ],
+  "ciSoftwareCeiling": {
+    "renderer": "software-webgl",
+    "frameP95Ms": 120,
+    "note": "Nur Regressionsgrenze für SwiftShader-CI, keine Abnahme für echte Hardware."
+  },
+  "instanceBudgets": {
+    "source": "ATLAS_PERF_BUDGET_THRESHOLDS",
+    "high": 2048,
+    "balanced": 1024,
+    "lite": 256
+  },
+  "dataFingerprintMethod": "sha256(canonical sorted-key JSON of stored generatorMeta.unifiedCanvas.{rooms,walls,doors,objects,strokes,heightfield}).slice(0,16) — equals the Golden domain builder output",
+  "criteria": [
+    {
+      "id": "D-GEO-01",
+      "scene": "dornhain-block",
+      "area": "geometry",
+      "authority": "suggestive",
+      "metric": "Anzahl unterscheidbarer Dachformen und Dach-Material-Tokens über g.tavern, g.market, g.watch (Domain-Plan + Z2-Screenshot)",
+      "soll": "≥ 3 Dachformen (z. B. Sattel/Walm/Turmhelm) und ≥ 3 Dach-Material-Tokens; Variante deterministisch aus Feature-ID + Seed",
+      "ist": "1 Dachform (Pyramide/Walm) für Häuser und Turm; 2 Dach-Tokens (roofDark, roofMoss); Varianten deterministisch (FNV-Hash der Feature-ID)",
+      "status": "GAP",
+      "evidence": "domain:buildAtlasDioramaLookPlan + z2-detail-kleines-gebaeude (alle Kameras)"
+    },
+    {
+      "id": "D-GEO-02",
+      "scene": "dornhain-block",
+      "area": "geometry",
+      "authority": "suggestive",
+      "metric": "Baumkronen: Anzahl Silhouetten-Varianten + deterministische Pro-Instanz-Skalierung/Rotation",
+      "soll": "≥ 3 Arten mit unterscheidbarer Silhouette; Pro-Instanz-Jitter Skala ±10–25 % und Rotation aus Feature-ID-Seed; Kronen nicht als einzelnes Low-Poly-Primitiv",
+      "ist": "3 Varianten im Plan (oak, birch, pine); im Bild alle als ähnliches Low-Poly-Primitiv (Ikosaeder/Kegel), kein sichtbarer Jitter",
+      "status": "PARTIAL",
+      "evidence": "domain plan batches + z1/z2 Screenshots"
+    },
+    {
+      "id": "D-GEO-03",
+      "scene": "dornhain-block",
+      "area": "geometry",
+      "authority": "canonical",
+      "metric": "Gelände-Relief: Höhenbereich des Heightfields und sichtbarer Schattierungsgradient am Boden (Diorama Z1)",
+      "soll": "Höhenvarianz > 0 mit sichtbarem Licht-/Schattengradient auf Hügeln/Böschungen; Relief nur aus gespeicherten Heightfield-Daten (canonical) oder als markierte suggestive Mikro-Variation",
+      "ist": "Gespeicherte Golden-Dornhain-Karte hat kein Heightfield (null) → Gelände vollständig flach",
+      "status": "GAP",
+      "evidence": "stored generatorMeta.unifiedCanvas.heightfield = null; Diorama/Perspektive Z0–Z2",
+      "acceptedException": "Datenlücke: Relief erfordert entweder ein Heightfield in der Golden-Karte (ändert G04-Fingerprints) oder eine suggestive Mikro-Relief-Regel — Entscheidung offen (siehe Design §11)."
+    },
+    {
+      "id": "D-MAT-01",
+      "scene": "dornhain-block",
+      "area": "material",
+      "authority": "suggestive",
+      "metric": "Materialübergänge Pflaster/Gras/Erde/Holz: Breite der Übergangszone an Polygonkanten in Z1 (px) und Luma-Streuung innerhalb einer Materialfläche",
+      "soll": "Übergangszone ≥ 4 px (weich/gebrochen statt 1-px-Polygonkante) in Z1 Desktop; Luma-σ innerhalb einer Materialfläche ≥ 4 (prozedurale Textur statt Flachfarbe)",
+      "ist": "Harte 1-px-Polygonkanten; jede Fläche einfarbig (Flat-Albedo, keine prozedurale Textur)",
+      "status": "GAP",
+      "evidence": "z1-stadtblock (ortho/diorama/perspective)"
+    },
+    {
+      "id": "D-SHD-01",
+      "scene": "dornhain-block",
+      "area": "light",
+      "authority": "atmospheric",
+      "metric": "Kontaktschatten (AO) unter Gebäuden/Bäumen und Schlagschatten passend zu daylightDir in Diorama/Perspektive",
+      "soll": "100 % der Gebäude und Bäume mit sichtbarem Bodenschatten (≥ 10 Luma dunkler als freie Fläche) in Richtung −daylightDir; Kontakt-AO an der Basis; Ortho: Schatten optional, aber konsistent",
+      "ist": "Keine Schatten: nur gebackene Flächenabdunklung (shadowStrength 0.42, keine Shadow-Map)",
+      "status": "GAP",
+      "evidence": "diorama-oblique/perspective Z1/Z2"
+    },
+    {
+      "id": "D-LOD-01",
+      "scene": "dornhain-block",
+      "area": "lod",
+      "authority": "suggestive",
+      "metric": "Detailstufen pro Zoomstufe: Fassadendetails (Fenster/Türen) in Z2 sichtbar, in Z0 aggregiert; keine sichtbaren Pop-ins zwischen Z0→Z1→Z2",
+      "soll": "Z2: Türen + Fenster an jedem Haus sichtbar; Z0: vereinfachte Silhouetten; LOD-Schwellen dokumentiert und zoomabhängig (nicht nur preset-abhängig)",
+      "ist": "Türen an 2 Häusern in Z1/Z2 sichtbar, keine Fenster; Detailstufe hängt nur am Grafik-Preset (balanced = reduced), nicht am Zoom",
+      "status": "PARTIAL",
+      "evidence": "z0/z1/z2 Sequenz je Kamera"
+    },
+    {
+      "id": "D-READ-01",
+      "scene": "dornhain-block",
+      "area": "readability",
+      "authority": "canonical",
+      "metric": "Lesbarkeit kleines Gebäude g.watch (Turm, size 0.45): Bildschirm-Fußabdruck in Z1 Desktop",
+      "soll": "≥ 16×16 px in Z1 auf 1280×800; Ortsbeschriftungen (HTML) überdecken das Ziel nicht vollständig",
+      "ist": "Turm in Z1 Diorama ca. 40×55 px (visuell aus Baseline geschätzt), klar als Gebäude erkennbar",
+      "status": "MET",
+      "evidence": "z1-stadtblock diorama-oblique desktop"
+    },
+    {
+      "id": "D-ART-01",
+      "scene": "dornhain-block",
+      "area": "artifact",
+      "authority": "canonical",
+      "metric": "Z-Fighting / Streifenartefakte auf koplanaren Bodenpolygonen (Plaza/Blöcke/Ozean) in allen Kameras",
+      "soll": "0 sichtbare Streifen-/Flimmerartefakte in allen 3 Kameras × 3 Zoomstufen (Layer-Offset oder Polygon-Offset)",
+      "ist": "Sichtbare horizontale Streifen (Z-Fighting) zwischen Plaza und Block-Flächen in Perspektive Z2 und an Kanten",
+      "status": "GAP",
+      "evidence": "perspective z2-detail-kleines-gebaeude"
+    },
+    {
+      "id": "K-GEO-01",
+      "scene": "krypta",
+      "area": "geometry",
+      "authority": "canonical",
+      "metric": "Raumschluss: jede Raumkante hat eine Wand, Raumübergänge haben Türen (gespeicherte Daten)",
+      "soll": "Jeder Raum allseitig von Wänden begrenzt außer an Türen; ≥ 1 Tür pro Raumverbindung; Türen als eigene Geometrie sichtbar",
+      "ist": "Gespeicherte Golden-Krypta: 2 Räume, 3 Wände (Halle südlich offen, Gewölbe ohne Wände), 0 Türen",
+      "status": "GAP",
+      "evidence": "stored generatorMeta + z0-z2 alle Kameras",
+      "acceptedException": "Datenlücke der Golden-Krypta: Türen/Wände fehlen in den gespeicherten Daten, nicht im Renderer. Änderung der Golden-Daten ändert G04-Fingerprints → Entscheidung offen (Design §11)."
+    },
+    {
+      "id": "K-GEO-02",
+      "scene": "krypta",
+      "area": "geometry",
+      "authority": "canonical",
+      "metric": "Wandhöhe: in Diorama Z2 sichtbare Wand-Seitenflächen (px)",
+      "soll": "Wände als Volumen mit lesbarer Höhe: sichtbare Seitenfläche ≥ 12 px in Diorama Z2 Desktop",
+      "ist": "Wände als flache, niedrige Leisten; Seitenfläche ca. 8–15 px (visuell geschätzt), kaum als Wand lesbar",
+      "status": "PARTIAL",
+      "evidence": "z2-raum diorama-oblique"
+    },
+    {
+      "id": "K-MAT-01",
+      "scene": "krypta",
+      "area": "material",
+      "authority": "suggestive",
+      "metric": "Stein-Material: Oberflächenvariation (Fugen/Platten/Risse) — Luma-σ innerhalb der Hallen-Bodenfläche in Z2",
+      "soll": "Luma-σ innerhalb der Bodenfläche ≥ 6; Wandmaterial unterscheidbar vom Boden (ΔLuma ≥ 10)",
+      "ist": "Boden und Wände flach einfarbig (Flat-Albedo), keine Fugen/Platten",
+      "status": "GAP",
+      "evidence": "z2-raum alle Kameras"
+    },
+    {
+      "id": "K-LIT-01",
+      "scene": "krypta",
+      "area": "light",
+      "authority": "atmospheric",
+      "metric": "Atmosphärisches Licht: g.crypt.lamp als warme Punktlichtquelle mit Abfall (Luma nahe Lampe vs. ferner Boden)",
+      "soll": "Luma im Radius der Lampe ≥ 1,3× ferner Boden; Lichtfarbe warm (Theme ancient light #ffc17b); ambient ≤ 0,3",
+      "ist": "Kein lokales Licht: Dungeon-Look-Plan greift nur für droom-/dwall-/dlamp-IDs, Golden-Krypta nutzt g.crypt.* → 0 Fackeln, gleichmäßige Ausleuchtung",
+      "status": "GAP",
+      "evidence": "domain:buildAtlasDungeonLookPlan(counts.torches=0) + z2-raum"
+    },
+    {
+      "id": "K-SHD-01",
+      "scene": "krypta",
+      "area": "light",
+      "authority": "atmospheric",
+      "metric": "Kontakt-AO an Wandfüßen und Raumecken",
+      "soll": "Sichtbare Abdunklung entlang Wandfuß und in Ecken (≥ 8 Luma dunkler als Raummitte)",
+      "ist": "Keine AO, Ecken gleich hell wie Raummitte",
+      "status": "GAP",
+      "evidence": "z1/z2 diorama/perspective"
+    },
+    {
+      "id": "K-ATM-01",
+      "scene": "krypta",
+      "area": "atmosphere",
+      "authority": "atmospheric",
+      "metric": "Atmosphärische Kanäle (Nebel, Staub/Partikel, Lichtschein) — Anzahl aktiver Kanäle",
+      "soll": "1–3 dominante Atmosphärenkanäle (IV-14), nicht persistiert, nicht abfragbar; abschaltbar im lite-Profil",
+      "ist": "Keine sichtbaren Atmosphärenkanäle",
+      "status": "GAP",
+      "evidence": "z0–z2 alle Kameras",
+      "ivGates": [
+        "IV-14",
+        "IV-02"
+      ]
+    },
+    {
+      "id": "K-ART-01",
+      "scene": "krypta",
+      "area": "artifact",
+      "authority": "canonical",
+      "metric": "Z-Fighting auf Krypta-Böden in Perspektive",
+      "soll": "0 Streifenartefakte in allen 3 Kameras × 3 Zoomstufen; 100 % der Raumbodenfläche sichtbar",
+      "ist": "Starke Streifen (Z-Fighting) auf Hallen- und Gewölbeboden in Perspektive Z1; Gewölbeboden teilweise unsichtbar",
+      "status": "GAP",
+      "evidence": "perspective z1-raumgruppe"
+    },
+    {
+      "id": "C-CAM-01",
+      "scene": "*",
+      "area": "camera",
+      "authority": "canonical",
+      "metric": "Gleiche Szene in allen Kameramodi: identische Mesh-Namen-Menge je Szene/Zoomstufe über ortho/diorama/perspective",
+      "soll": "Identische Mesh-Menge in allen 3 Kameramodi je Szene/Zoomstufe (Δ = 0; keine zweite Szene, keine zweite Karte)",
+      "ist": "Identisch (14 Mesh-Slots je Szene)",
+      "status": "MET",
+      "evidence": "capture-manifest.sameSceneAcrossCameras"
+    },
+    {
+      "id": "C-DET-01",
+      "scene": "*",
+      "area": "determinism",
+      "authority": "canonical",
+      "metric": "Reproduzierbarkeit: erneute Aufnahme derselben Kamera nach Kamera-Rundreise",
+      "soll": "Pixel-Diff ≤ 0,08 (maxChannelDelta 8) auf demselben Renderer/Preset",
+      "ist": "Diff 0 (pixelidentisch) für Dornhain und Krypta",
+      "status": "MET",
+      "evidence": "capture-manifest.repeatCapture"
+    },
+    {
+      "id": "C-CAM-02",
+      "scene": "*",
+      "area": "camera",
+      "authority": "canonical",
+      "metric": "Kamera-/Zoomvorgaben über Produkt-Bedienelemente (#coords, #zoom, Kameramodus, Gierwinkel) innerhalb Toleranz",
+      "soll": "Zentrum ±0,5 Einheiten, Span ±1 %, Gier ±0,5°, Pitch = Modus-Default",
+      "ist": "Alle 22 Aufnahmen innerhalb Toleranz",
+      "status": "MET",
+      "evidence": "capture-manifest.captures[].actual"
+    },
+    {
+      "id": "C-DATA-01",
+      "scene": "*",
+      "area": "data",
+      "authority": "canonical",
+      "metric": "Gespeicherte Kartendaten = Golden-Domain-Daten (Feature-Fingerprint)",
+      "soll": "Fingerprint (16 Hex-Zeichen) der gespeicherten generatorMeta.unifiedCanvas = gepinnter Vertragswert (0 Abweichung); Seed = mapSeedKey",
+      "ist": "Dornhain 29f3947cb45600e3, Krypta 9fc038d9291de012 — identisch",
+      "status": "MET",
+      "evidence": "capture-manifest.storedData + self-test"
+    },
+    {
+      "id": "C-AU-01",
+      "scene": "*",
+      "area": "adaptive",
+      "authority": "canonical",
+      "metric": "Tablet/Phone: Canvas nutzbar, keine horizontale Überbreite",
+      "soll": "Canvas ≥ 200 px breit, overflowX ≤ 1 px (AU-01); Workstation-Phone = reduzierte Komposition (AU-06)",
+      "ist": "Tablet 730×912, Phone 366×604, overflowX 0",
+      "status": "MET",
+      "evidence": "capture-manifest.devices",
+      "auGates": [
+        "AU-01",
+        "AU-06"
+      ]
+    },
+    {
+      "id": "C-PROF-01",
+      "scene": "*",
+      "area": "quality-profile",
+      "authority": "atmospheric",
+      "metric": "Aufnahmen in den Profilen high/balanced/lite",
+      "soll": "Alle 3 Profile (high/balanced/lite) je Szene/Kamera aufgenommen; lite = Low-End/Software-Pfad, D-READ-01 bleibt erfüllt (≥ 16×16 px)",
+      "ist": "Nur balanced aufnehmbar: Produkt hat keinen Preset-Wähler (AtlasNative3dEditor nutzt immer balanced)",
+      "status": "NOT_RUN",
+      "evidence": "qualityProfiles[].capturedInBaseline"
+    },
+    {
+      "id": "C-PERF-01",
+      "scene": "*",
+      "area": "performance",
+      "authority": "canonical",
+      "metric": "Frame p50/p95, Erstbild, Draw Calls, Dreiecke, GPU-Speicher, Heap-Wachstum auf echter Zielhardware (hardwareBudgets)",
+      "soll": "Je Tier alle Werte aus hardwareBudgets einhalten (z. B. Tablet p95 ≤ 33,3 ms), gemessen auf echter Hardware",
+      "ist": "Nur SwiftShader-CI gemessen (p95 17–19 ms bei 258–344 Dreiecken) — keine Hardware-Aussage",
+      "status": "NOT_RUN",
+      "evidence": "capture-manifest.perf (software-rendering)"
+    },
+    {
+      "id": "C-AUTH-01",
+      "scene": "*",
+      "area": "authority",
+      "authority": "canonical",
+      "metric": "Renderer erzeugt keine neuen kanonischen Objekte; suggestive Variation nur aus Feature-ID + Seed; Atmosphäre nicht persistiert",
+      "soll": "Mesh-/Instanz-IDs ⊆ gespeicherte Feature-IDs; keine Gameplay-Affordanzen aus suggestive/atmospheric (IV-01/02/09)",
+      "ist": "Diorama-Plan ist canonical-only (atlasDioramaLookPlanIsCanonicalOnly = true); Themes atmosphärisch",
+      "status": "MET",
+      "evidence": "self-test domain check",
+      "ivGates": [
+        "IV-01",
+        "IV-02",
+        "IV-09",
+        "IV-18"
+      ]
+    },
+    {
+      "id": "C-SEC-01",
+      "scene": "*",
+      "area": "security",
+      "authority": "canonical",
+      "metric": "Player-Variante: keine GM-only/unentdeckten Inhalte in Meshes, Texturen, Caches (IV-07)",
+      "soll": "Player-Capture derselben Szene enthält 0 GM-only/unentdeckte Features; Texture-/Mesh-Caches pro Rolle getrennt (IV-07)",
+      "ist": "Baseline nur als Owner/GM aufgenommen; Player-Projektion durch ATL2-G01 (Host) geprüft, nicht visuell",
+      "status": "NOT_RUN",
+      "evidence": "—",
+      "ivGates": [
+        "IV-07"
+      ]
+    }
+  ],
+  "statusValues": [
+    "MET",
+    "PARTIAL",
+    "GAP",
+    "NOT_RUN",
+    "ACCEPTED_EXCEPTION"
+  ],
+  "g04Reference": {
+    "note": "Ausgangsbelege ATL2-G04 (#1232) — werden nicht umetikettiert oder überschrieben, nur gegenübergestellt.",
+    "dornhain-block": ".qa/evidence/atl2-g04-golden-visual/raw-city-desktop.png",
+    "krypta": ".qa/evidence/atl2-g04-golden-visual/raw-crypt-desktop.png"
+  },
+  "baseline": {
+    "dir": ".qa/evidence/atl3-v01-visual-contract/baseline",
+    "manifest": "capture-manifest.json",
+    "runDir": ".qa/evidence/atl3-v01-visual-contract/run"
+  }
+}
