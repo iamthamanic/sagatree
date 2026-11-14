@@ -2,7 +2,7 @@
 
 - Issue: #1233
 - Feature slug: atl2-g05
-- HEAD_SHA: bea92d97a0ad8997afe2e230799bc6f717744477
+- HEAD_SHA: aeeb98d0aa6b692c7abd2d3dd9a046a18adb511b
 - BASE_SHA: 9009014e3881249ec295cc8dc265108f08c13d04
 - Date: 2026-11-14
 - Verdict: CLEAR
@@ -27,6 +27,15 @@ Cardinality: 13 required checks; 3 scene sizes; 3 device bands; one evidence fil
 
 ## Simulations
 
+### N-actors
+Concurrent atlas quality probes share one evidence file; last writer wins with explicit rollup.
+
+### Invalid/missing
+Missing HOST evidence stays NOT_RUN (never silent PASS).
+
+### Two consumers / crash
+Context-loss + map-switch teardown leaves liveMeshes=0; crash mid-sample does not invent PASS rows.
+
 | Case | Intended | Composed | Result |
 |------|----------|----------|--------|
 | Missing evidence | NOT_RUN rollup | emptyAtlasG05Checks | pass |
@@ -34,6 +43,11 @@ Cardinality: 13 required checks; 3 scene sizes; 3 device bands; one evidence fil
 | CI software | p95 ≤ 120 | atlasG05FrameBudgetMs(software) | pass |
 | Player leak | FAIL | playerSecretsAbsent=false | pass |
 | Map switch | liveMeshes=0 after cycles | teardown check | pass |
+
+## Flags
+
+- Acceptance tier: feature-integration
+- Deferred integration: none
 
 ## Notes
 
