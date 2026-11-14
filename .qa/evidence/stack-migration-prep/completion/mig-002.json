@@ -5,7 +5,7 @@
   "result": "PASS",
   "githubClosed": true,
   "mergeRef": "PR #860 \u2192 main (after #782)",
-  "note": "Inventories regenerated after AIB-06 Codex P1/P2 aiberto-tools-service refresh (#1129).",
+  "note": "Inventories regenerated after AIB-06 (#1289) sync into ATL2-G04 (#1283); edge inventory sha256 refreshed.",
   "checks": [
     {
       "command": "legacy inventory matrix",
@@ -23,8 +23,8 @@
       "command": "edge/infra inventory 25+13",
       "result": "PASS",
       "evidenceFile": ".qa/intake/edge-infra-contracts/inventory.json",
-      "sha256": "3dee4fab36054fe88f0bf0074ce2cae0aefd441a3275dd2d308232429b1c790a"
+      "sha256": "2730578f1ef78425493bf40bb32271e77a938e58b7ed347456b6a8809e195b11"
     }
   ],
-  "testedCommit": "a94a7b70e620f52301e76014caa11d1605a904ae"
+  "testedCommit": "361d3bd31d8f9cc7bf1918dda2c5d25b174eaab1"
 }
