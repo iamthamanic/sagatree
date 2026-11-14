@@ -2022,6 +2022,11 @@ function checkWorldAtlasEditor() {
     cwd: root,
     stdio: 'inherit',
   });
+  console.log('ATL2-F05 Gate F dungeon generate/edit/2D-3D parity (#1228)...');
+  execFileSync(process.execPath, ['scripts/atl2-f05-gate-f.self-test.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
   console.log('Atlas settlement presets: Großstadt/Stadt/Dorf seedKeys...');
   execFileSync(process.execPath, ['scripts/atlas-settlement-presets.self-test.mjs'], {
     cwd: root,
