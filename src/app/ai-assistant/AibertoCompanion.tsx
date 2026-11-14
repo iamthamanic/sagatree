@@ -1,12 +1,12 @@
 /**
- * AibertoCompanion — shell-global rulebook companion (AIB-02 / #1125).
+ * AibertoCompanion — shell-global rulebook + chat companion (AIB-02 / AIB-05).
  * Location: src/app/ai-assistant/AibertoCompanion.tsx
  *
  * Desktop/tablet: right dock 320–520px with drag resize.
- * Phone: AdaptiveSheet (background may block). Phase A: Regeln only — no chat.
+ * Phone: AdaptiveSheet. Chat tab only when VITE_AIBERTO_CHAT_ENABLED.
  */
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { BookOpenText, X } from '@phosphor-icons/react';
+import { BookOpenText, ChatCircleText, X } from '@phosphor-icons/react';
 import {
   AdaptiveSheet,
   AdaptiveSheetContent,
@@ -15,8 +15,10 @@ import {
   useAdaptiveBand,
 } from '../../shared/ui/adaptive';
 import { Button } from '../../shared/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../shared/ui/tabs';
 import { RulebookBrowser } from './RulebookBrowser';
-import { isAibertoCompanionEnabled } from './aiberto-flags';
+import { AibertoChatPanel } from './AibertoChatPanel';
+import { isAibertoChatEnabled, isAibertoCompanionEnabled } from './aiberto-flags';
 import {
   AIBERTO_DOCK_MAX_PX,
   AIBERTO_DOCK_MIN_PX,
@@ -32,16 +34,26 @@ export type AibertoCompanionProps = {
   onOpenChange?: (open: boolean) => void;
 };
 
+type PanelTab = 'rules' | 'chat';
+
 export function AibertoCompanion({ open: openProp, onOpenChange }: AibertoCompanionProps) {
   const enabled = isAibertoCompanionEnabled();
+  const chatEnabled = isAibertoChatEnabled();
   const band = useAdaptiveBand();
   const phone = band === 'phone';
   const [prefs, setPrefs] = useState<AibertoPrefs>(() => readAibertoPrefs());
+  const [tab, setTab] = useState<PanelTab>('rules');
+  const [ruleSectionId, setRuleSectionId] = useState<string | null>(null);
   const dragRef = useRef<{ startX: number; startWidth: number } | null>(null);
 
   useEffect(() => {
     setPrefs(readAibertoPrefs());
   }, []);
+
+  // Chat capability off → force rules tab (no disabled chat stub).
+  useEffect(() => {
+    if (!chatEnabled && tab === 'chat') setTab('rules');
+  }, [chatEnabled, tab]);
 
   const open = openProp ?? prefs.open;
 
@@ -63,6 +75,11 @@ export function AibertoCompanion({ open: openProp, onOpenChange }: AibertoCompan
       writeAibertoPrefs(updated);
       return updated;
     });
+  }, []);
+
+  const openSectionFromChat = useCallback((sectionId: string) => {
+    setRuleSectionId(sectionId);
+    setTab('rules');
   }, []);
 
   useEffect(() => {
@@ -87,6 +104,49 @@ export function AibertoCompanion({ open: openProp, onOpenChange }: AibertoCompan
 
   if (!enabled) return null;
 
+  const body = (
+    <div className="flex h-full min-h-0 flex-col gap-3">
+      {chatEnabled ? (
+        <Tabs
+          value={tab}
+          onValueChange={(value) => setTab(value === 'chat' ? 'chat' : 'rules')}
+          className="flex min-h-0 flex-1 flex-col gap-2"
+          data-aiberto-tabs
+        >
+          <TabsList className="h-11 w-full shrink-0" aria-label="Aiberto-Modus">
+            <TabsTrigger value="rules" className="min-h-11 flex-1" data-aiberto-tab="rules">
+              <BookOpenText size={16} weight="regular" aria-hidden className="mr-1.5" />
+              Regeln
+            </TabsTrigger>
+            <TabsTrigger value="chat" className="min-h-11 flex-1" data-aiberto-tab="chat">
+              <ChatCircleText size={16} weight="regular" aria-hidden className="mr-1.5" />
+              Chat
+            </TabsTrigger>
+          </TabsList>
+          <TabsContent value="rules" className="mt-0 min-h-0 flex-1 overflow-hidden">
+            <RulebookBrowser
+              selectedSectionId={ruleSectionId}
+              onSelectedSectionIdChange={setRuleSectionId}
+            />
+          </TabsContent>
+          {/* forceMount: citation → Regeln must not unmount Chat (RAM history). */}
+          <TabsContent
+            value="chat"
+            forceMount
+            className="mt-0 min-h-0 flex-1 overflow-hidden data-[state=inactive]:hidden"
+          >
+            <AibertoChatPanel onOpenSection={openSectionFromChat} />
+          </TabsContent>
+        </Tabs>
+      ) : (
+        <RulebookBrowser
+          selectedSectionId={ruleSectionId}
+          onSelectedSectionIdChange={setRuleSectionId}
+        />
+      )}
+    </div>
+  );
+
   if (phone) {
     return (
       <AdaptiveSheet open={open} onOpenChange={setOpen}>
@@ -99,12 +159,10 @@ export function AibertoCompanion({ open: openProp, onOpenChange }: AibertoCompan
           <AdaptiveSheetHeader className="shrink-0 border-b border-border px-4 py-3">
             <AdaptiveSheetTitle className="flex items-center gap-2">
               <BookOpenText size={20} weight="regular" aria-hidden />
-              Aiberto · Regeln
+              Aiberto
             </AdaptiveSheetTitle>
           </AdaptiveSheetHeader>
-          <div className="min-h-0 flex-1 overflow-hidden p-4">
-            <RulebookBrowser />
-          </div>
+          <div className="min-h-0 flex-1 overflow-hidden p-4">{body}</div>
         </AdaptiveSheetContent>
       </AdaptiveSheet>
     );
@@ -116,7 +174,7 @@ export function AibertoCompanion({ open: openProp, onOpenChange }: AibertoCompan
     <aside
       data-aiberto-companion="dock"
       data-adaptive-band={band}
-      aria-label="Aiberto Regelbuch"
+      aria-label="Aiberto Companion"
       className="relative flex h-full min-h-0 shrink-0 flex-col border-l border-border bg-card"
       style={{ width: prefs.widthPx }}
     >
@@ -158,7 +216,7 @@ export function AibertoCompanion({ open: openProp, onOpenChange }: AibertoCompan
       <div className="flex shrink-0 items-center justify-between gap-2 border-b border-border px-3 py-2">
         <div className="flex min-w-0 items-center gap-2 text-sm font-semibold">
           <BookOpenText size={20} weight="regular" aria-hidden className="shrink-0" />
-          <span className="truncate">Aiberto · Regeln</span>
+          <span className="truncate">Aiberto</span>
         </div>
         <Button
           type="button"
@@ -171,9 +229,7 @@ export function AibertoCompanion({ open: openProp, onOpenChange }: AibertoCompan
           <X size={18} weight="regular" aria-hidden />
         </Button>
       </div>
-      <div className="min-h-0 flex-1 overflow-hidden p-3">
-        <RulebookBrowser />
-      </div>
+      <div className="min-h-0 flex-1 overflow-hidden p-3">{body}</div>
       <p className="sr-only">
         Dockbreite {prefs.widthPx}px, erlaubt {AIBERTO_DOCK_MIN_PX}–{AIBERTO_DOCK_MAX_PX}px.
       </p>
@@ -197,7 +253,7 @@ export function AibertoToggleButton({
       type="button"
       onClick={onToggle}
       title="Aiberto"
-      aria-label="Aiberto Regelbuch"
+      aria-label="Aiberto Companion"
       aria-pressed={open}
       data-aiberto-toggle
       className={`flex items-center rounded-lg text-sm transition-colors focus-visible:ring-2 focus-visible:ring-primary ${

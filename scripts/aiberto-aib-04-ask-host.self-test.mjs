@@ -281,18 +281,15 @@ const createHost = readFileSync(join(root, 'server/src/bootstrap/create-host.ts'
 check(createHost.includes('createAibertoAskUseCases'), 'create-host wires aiberto-ask');
 check(createHost.includes('aibertoAsk'), 'create-host passes aibertoAsk');
 
-// No chat UI in AIB-04 (AIB-02 may already ship Regeln companion under app/ai-assistant).
-const chatMarkers = [
+// AIB-05 owns FE chat (`AibertoChatPanel` + barrel exports). AIB-04 only forbids
+// alternate stub filenames that would duplicate the AIB-05 surface.
+const forbiddenChatStubs = [
   'src/app/ai-assistant/AibertoChat.tsx',
   'src/app/ai-assistant/ChatPanel.tsx',
   'src/app/ai-assistant/aiberto-chat.tsx',
 ];
-for (const rel of chatMarkers) {
-  check(!existsSync(join(root, rel)), `no FE chat slice in AIB-04 (${rel})`);
-}
-if (existsSync(join(root, 'src/app/ai-assistant'))) {
-  const barrel = readFileSync(join(root, 'src/app/ai-assistant/index.ts'), 'utf8');
-  check(!/Chat|aiberto-ask|stream/i.test(barrel), 'ai-assistant barrel has no chat/ask exports');
+for (const rel of forbiddenChatStubs) {
+  check(!existsSync(join(root, rel)), `no duplicate FE chat stub (${rel})`);
 }
 
 writeFileSync(join(outdir, 'ok'), 'ok\n');

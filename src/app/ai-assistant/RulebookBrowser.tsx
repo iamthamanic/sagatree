@@ -46,12 +46,31 @@ function initialSectionId(sections: readonly RulebookSection[]): string | null {
   return numbered?.id ?? sections[0]?.id ?? null;
 }
 
-export function RulebookBrowser() {
+export type RulebookBrowserProps = {
+  /** Controlled section selection (citation navigation from Chat). */
+  readonly selectedSectionId?: string | null;
+  readonly onSelectedSectionIdChange?: (sectionId: string | null) => void;
+};
+
+export function RulebookBrowser({
+  selectedSectionId,
+  onSelectedSectionIdChange,
+}: RulebookBrowserProps = {}) {
   const index = useMemo(() => getSagaTreeCoreRulebookIndex(), []);
   const [query, setQuery] = useState('');
-  const [selectedId, setSelectedId] = useState<string | null>(() =>
+  const [internalSelectedId, setInternalSelectedId] = useState<string | null>(() =>
     initialSectionId(index.sections),
   );
+  // Only a concrete section id is treated as controlled (citation jump).
+  // null/undefined keep local TOC selection so Phase-A default section still shows.
+  const selectedId =
+    typeof selectedSectionId === 'string' && selectedSectionId.length > 0
+      ? selectedSectionId
+      : internalSelectedId;
+  const setSelectedId = (sectionId: string | null) => {
+    setInternalSelectedId(sectionId);
+    onSelectedSectionIdChange?.(sectionId);
+  };
 
   const trimmed = query.trim();
   const hits = useMemo(
