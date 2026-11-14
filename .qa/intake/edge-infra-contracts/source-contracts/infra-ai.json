@@ -12,6 +12,10 @@
       "sha256": "c70d02b82d012089fa26299ace355ca5edbb73f967c8c462fb4864e46f5f0441"
     },
     {
+      "path": "src/infrastructure/ai/aiberto-tools-service.ts",
+      "sha256": "b5fb50bf60e7f1556f26ea6e9d35bad31cc862eb4b4d9b80ce7c57116b72b783"
+    },
+    {
       "path": "src/infrastructure/ai/host-ai-invoke.ts",
       "sha256": "1d85a9e6c3aad0022c11202a5e829f35eb40a9b503f3eced462d028169fb81db"
     },
@@ -215,6 +219,22 @@
       "expression": "import { isHostLibraryEnabled } from '../host/host-library-http';"
     },
     {
+      "path": "src/infrastructure/ai/aiberto-tools-service.ts",
+      "line": 7,
+      "endLine": 7,
+      "module": "../../lib/hostAuthBridge",
+      "resolvedPath": "src/lib/hostAuthBridge.ts",
+      "expression": "import { getHostAuthBaseUrl } from '../../lib/hostAuthBridge';"
+    },
+    {
+      "path": "src/infrastructure/ai/aiberto-tools-service.ts",
+      "line": 8,
+      "endLine": 8,
+      "module": "../host/host-library-http",
+      "resolvedPath": "src/infrastructure/host/host-library-http.ts",
+      "expression": "import { isHostLibraryEnabled } from '../host/host-library-http';"
+    },
+    {
       "path": "src/infrastructure/ai/host-ai-invoke.ts",
       "line": 7,
       "endLine": 7,
@@ -291,6 +311,42 @@
       "line": 138,
       "endLine": 253,
       "text": "export async function streamAibertoAsk(\n  question: string,\n  handlers: AibertoAskStreamHandlers,\n  options?: {\n    readonly signal?: AbortSignal;\n    readonly fetchImpl?: typeof fetch;\n    readonly env?: EnvLike;\n  },\n): Promise<void> {\n  const fetchImpl = options?.fetchImpl ?? fetch;\n  const env = options?.env ?? ((import.meta as ImportMeta & { env?: EnvLike }).env ?? {});\n  const url = askUrl(env, true);\n  if (!url) {\n    handlers.onError?.({\n      status: 'error',\n      code: 'HOST_UNAVAILABLE',\n      message: 'Aiberto-Host ist nicht erreichbar. Prüfe die Verbindung.',\n    });\n    return;\n  }\n\n  let response: Response;\n  try {\n    response = await fetchImpl(url, {\n      method: 'POST',\n      credentials: 'include',\n      headers: { Accept: 'text/event-stream', 'content-type': 'application/json' },\n      body: JSON.stringify({ question }),\n      signal: options?.signal,\n    });\n  } catch (err) {\n    if (options?.signal?.aborted) return;\n    handlers.onError?.({\n      status: 'error',\n      code: 'HOST_UNAVAILABLE',\n      message: 'Aiberto-Host ist nicht erreichbar. Prüfe die Verbindung.',\n    });\n    return;\n  }\n\n  const contentType = response.headers.get('content-type') ?? '';\n  if (!response.ok || !contentType.includes('text/event-stream') || !response.body) {\n    let fallback: AibertoAskFinal | null = null;\n    try {\n      const json: unknown = await response.json();\n      fallback = parseFinal(json);\n    } catch {\n      fallback = null;\n    }\n    handlers.onError?.(\n      fallback ?? {\n        status: 'error',\n        code: 'PROVIDER_UNAVAILABLE',\n        message: 'Aiberto-Chat konnte nicht gestartet werden. Bitte später erneut versuchen.',\n      },\n    );\n    return;\n  }\n\n  const reader = response.body.getReader();\n  const decoder = new TextDecoder();\n  let pending = '';\n  let sawTerminal = false;\n  try {\n    for (;;) {\n      const { done, value } = await reader.read();\n      if (done) break;\n      pending += decoder.decode(value, { stream: true });\n      const { events, rest } = parseSseBlocks(pending);\n      pending = rest;\n      for (const evt of events) {\n        let parsed: unknown;\n        try {\n          parsed = JSON.parse(evt.data);\n        } catch {\n          continue;\n        }\n        if (evt.event === 'meta' && isRecord(parsed)) {\n          handlers.onMeta?.(parsed);\n        } else if (evt.event === 'token' && isRecord(parsed) && typeof parsed.text === 'string') {\n          handlers.onToken?.(parsed.text);\n        } else if (evt.event === 'final') {\n          const final = parseFinal(parsed);\n          if (final) {\n            sawTerminal = true;\n            handlers.onFinal?.(final);\n          }\n        } else if (evt.event === 'error') {\n          sawTerminal = true;\n          const errFinal = parseFinal(parsed);\n          handlers.onError?.(\n            errFinal ?? {\n              status: 'error',\n              code: 'INTERNAL',\n              message: 'Aiberto-Stream fehlgeschlagen.',\n            },\n          );\n        }\n      }\n    }\n    if (!sawTerminal && !options?.signal?.aborted) {\n      handlers.onError?.({\n        status: 'error',\n        code: 'PROVIDER_UNAVAILABLE',\n        message: 'Aiberto-Stream endete ohne Antwort. Bitte erneut versuchen.',\n      });\n    }\n  } catch (err) {\n    if (options?.signal?.aborted) return;\n    handlers.onError?.({\n      status: 'error',\n      code: 'PROVIDER_UNAVAILABLE',\n      message: 'Aiberto-Stream abgebrochen. Bitte erneut versuchen.',\n    });\n  }\n}"
+    },
+    {
+      "path": "src/infrastructure/ai/aiberto-tools-service.ts",
+      "line": 10,
+      "endLine": 16,
+      "text": "export type AibertoToolCapability = {\n  readonly id: string;\n  readonly kind: 'read' | 'nav';\n  readonly labelDe: string;\n  readonly descriptionDe: string;\n  readonly argsSchema: Readonly<Record<string, string>>;\n};"
+    },
+    {
+      "path": "src/infrastructure/ai/aiberto-tools-service.ts",
+      "line": 18,
+      "endLine": 21,
+      "text": "export type AibertoClientNavigateAction = {\n  readonly type: 'app.navigate';\n  readonly path: string;\n};"
+    },
+    {
+      "path": "src/infrastructure/ai/aiberto-tools-service.ts",
+      "line": 23,
+      "endLine": 41,
+      "text": "export type AibertoToolsCapabilitiesResult =\n  | {\n      readonly status: 'ok';\n      readonly enabled: true;\n      readonly note: string;\n      readonly tools: readonly AibertoToolCapability[];\n    }\n  | {\n      readonly status: 'disabled';\n      readonly code: string;\n      readonly message: string;\n      readonly enabled: false;\n      readonly tools: readonly [];\n    }\n  | {\n      readonly status: 'error';\n      readonly code: string;\n      readonly message: string;\n    };"
+    },
+    {
+      "path": "src/infrastructure/ai/aiberto-tools-service.ts",
+      "line": 43,
+      "endLine": 60,
+      "text": "export type AibertoToolInvokeResult =\n  | {\n      readonly status: 'ok';\n      readonly toolId: string;\n      readonly data: unknown;\n      readonly clientAction?: AibertoClientNavigateAction;\n    }\n  | {\n      readonly status: 'disabled';\n      readonly code: string;\n      readonly message: string;\n    }\n  | {\n      readonly status: 'error';\n      readonly code: string;\n      readonly message: string;\n      readonly toolId?: string;\n    };"
+    },
+    {
+      "path": "src/infrastructure/ai/aiberto-tools-service.ts",
+      "line": 151,
+      "endLine": 178,
+      "text": "export async function fetchAibertoToolCapabilities(\n  env: EnvLike = {},\n  fetchImpl: typeof fetch = fetch,\n): Promise<AibertoToolsCapabilitiesResult> {\n  const base = toolsBase(env);\n  if (base === null) {\n    return {\n      status: 'error',\n      code: 'NOT_CONFIGURED',\n      message: 'Host nicht erreichbar.',\n    };\n  }\n  try {\n    const response = await fetchImpl(`${base}/api/v1/ai/aiberto-tools/capabilities`, {\n      method: 'GET',\n      credentials: 'include',\n      headers: { Accept: 'application/json' },\n    });\n    const json: unknown = await response.json().catch(() => null);\n    return parseCapabilities(json);\n  } catch {\n    return {\n      status: 'error',\n      code: 'INTERNAL',\n      message: 'Capabilities-Anfrage fehlgeschlagen.',\n    };\n  }\n}"
+    },
+    {
+      "path": "src/infrastructure/ai/aiberto-tools-service.ts",
+      "line": 180,
+      "endLine": 214,
+      "text": "export async function invokeAibertoTool(\n  toolId: string,\n  args: Record<string, unknown> = {},\n  env: EnvLike = {},\n  fetchImpl: typeof fetch = fetch,\n): Promise<AibertoToolInvokeResult> {\n  const base = toolsBase(env);\n  if (base === null) {\n    return {\n      status: 'error',\n      code: 'NOT_CONFIGURED',\n      message: 'Host nicht erreichbar.',\n    };\n  }\n  try {\n    const response = await fetchImpl(`${base}/api/v1/ai/aiberto-tools/invoke`, {\n      method: 'POST',\n      credentials: 'include',\n      headers: {\n        Accept: 'application/json',\n        'Content-Type': 'application/json',\n      },\n      body: JSON.stringify({ toolId, args }),\n    });\n    const json: unknown = await response.json().catch(() => null);\n    return parseInvoke(json);\n  } catch {\n    return {\n      status: 'error',\n      code: 'INTERNAL',\n      message: 'Tool-Aufruf fehlgeschlagen.',\n      toolId,\n    };\n  }\n}"
     },
     {
       "path": "src/infrastructure/ai/host-ai-invoke.ts",
@@ -470,6 +526,69 @@
       "endLine": 253,
       "name": "streamAibertoAsk",
       "text": "export async function streamAibertoAsk(\n  question: string,\n  handlers: AibertoAskStreamHandlers,\n  options?: {\n    readonly signal?: AbortSignal;\n    readonly fetchImpl?: typeof fetch;\n    readonly env?: EnvLike;\n  },\n): Promise<void> {\n  const fetchImpl = options?.fetchImpl ?? fetch;\n  const env = options?.env ?? ((import.meta as ImportMeta & { env?: EnvLike }).env ?? {});\n  const url = askUrl(env, true);\n  if (!url) {\n    handlers.onError?.({\n      status: 'error',\n      code: 'HOST_UNAVAILABLE',\n      message: 'Aiberto-Host ist nicht erreichbar. Prüfe die Verbindung.',\n    });\n    return;\n  }\n\n  let response: Response;\n  try {\n    response = await fetchImpl(url, {\n      method: 'POST',\n      credentials: 'include',\n      headers: { Accept: 'text/event-stream', 'content-type': 'application/json' },\n      body: JSON.stringify({ question }),\n      signal: options?.signal,\n    });\n  } catch (err) {\n    if (options?.signal?.aborted) return;\n    handlers.onError?.({\n      status: 'error',\n      code: 'HOST_UNAVAILABLE',\n      message: 'Aiberto-Host ist nicht erreichbar. Prüfe die Verbindung.',\n    });\n    return;\n  }\n\n  const contentType = response.headers.get('content-type') ?? '';\n  if (!response.ok || !contentType.includes('text/event-stream') || !response.body) {\n    let fallback: AibertoAskFinal | null = null;\n    try {\n      const json: unknown = await response.json();\n      fallback = parseFinal(json);\n    } catch {\n      fallback = null;\n    }\n    handlers.onError?.(\n      fallback ?? {\n        status: 'error',\n        code: 'PROVIDER_UNAVAILABLE',\n        message: 'Aiberto-Chat konnte nicht gestartet werden. Bitte später erneut versuchen.',\n      },\n    );\n    return;\n  }\n\n  const reader = response.body.getReader();\n  const decoder = new TextDecoder();\n  let pending = '';\n  let sawTerminal = false;\n  try {\n    for (;;) {\n      const { done, value } = await reader.read();\n      if (done) break;\n      pending += decoder.decode(value, { stream: true });\n      const { events, rest } = parseSseBlocks(pending);\n      pending = rest;\n      for (const evt of events) {\n        let parsed: unknown;\n        try {\n          parsed = JSON.parse(evt.data);\n        } catch {\n          continue;\n        }\n        if (evt.event === 'meta' && isRecord(parsed)) {\n          handlers.onMeta?.(parsed);\n        } else if (evt.event === 'token' && isRecord(parsed) && typeof parsed.text === 'string') {\n          handlers.onToken?.(parsed.text);\n        } else if (evt.event === 'final') {\n          const final = parseFinal(parsed);\n          if (final) {\n            sawTerminal = true;\n            handlers.onFinal?.(final);\n          }\n        } else if (evt.event === 'error') {\n          sawTerminal = true;\n          const errFinal = parseFinal(parsed);\n          handlers.onError?.(\n            errFinal ?? {\n              status: 'error',\n              code: 'INTERNAL',\n              message: 'Aiberto-Stream fehlgeschlagen.',\n            },\n          );\n        }\n      }\n    }\n    if (!sawTerminal && !options?.signal?.aborted) {\n      handlers.onError?.({\n        status: 'error',\n        code: 'PROVIDER_UNAVAILABLE',\n        message: 'Aiberto-Stream endete ohne Antwort. Bitte erneut versuchen.',\n      });\n    }\n  } catch (err) {\n    if (options?.signal?.aborted) return;\n    handlers.onError?.({\n      status: 'error',\n      code: 'PROVIDER_UNAVAILABLE',\n      message: 'Aiberto-Stream abgebrochen. Bitte erneut versuchen.',\n    });\n  }\n}"
+    },
+    {
+      "path": "src/infrastructure/ai/aiberto-tools-service.ts",
+      "line": 66,
+      "endLine": 68,
+      "name": "isRecord",
+      "text": "function isRecord(value: unknown): value is Record<string, unknown> {\n  return typeof value === 'object' && value !== null && !Array.isArray(value);\n}"
+    },
+    {
+      "path": "src/infrastructure/ai/aiberto-tools-service.ts",
+      "line": 70,
+      "endLine": 74,
+      "name": "toolsBase",
+      "text": "function toolsBase(env: EnvLike): string | null {\n  const base = getHostAuthBaseUrl(env);\n  if (base === null || !isHostLibraryEnabled(env)) return null;\n  return base === '' ? '' : base;\n}"
+    },
+    {
+      "path": "src/infrastructure/ai/aiberto-tools-service.ts",
+      "line": 76,
+      "endLine": 111,
+      "name": "parseCapabilities",
+      "text": "function parseCapabilities(value: unknown): AibertoToolsCapabilitiesResult {\n  if (!isRecord(value) || typeof value.status !== 'string') {\n    return { status: 'error', code: 'INTERNAL', message: 'Ungültige Capabilities-Antwort.' };\n  }\n  if (value.status === 'ok' && Array.isArray(value.tools)) {\n    return {\n      status: 'ok',\n      enabled: true,\n      note: typeof value.note === 'string' ? value.note : '',\n      tools: value.tools.filter(\n        (t): t is AibertoToolCapability =>\n          isRecord(t) &&\n          typeof t.id === 'string' &&\n          (t.kind === 'read' || t.kind === 'nav') &&\n          typeof t.labelDe === 'string',\n      ),\n    };\n  }\n  if (value.status === 'disabled') {\n    return {\n      status: 'disabled',\n      code: typeof value.code === 'string' ? value.code : 'FLAG_DISABLED',\n      message:\n        typeof value.message === 'string'\n          ? value.message\n          : 'Aiberto-Tools sind deaktiviert.',\n      enabled: false,\n      tools: [],\n    };\n  }\n  return {\n    status: 'error',\n    code: typeof value.code === 'string' ? value.code : 'INTERNAL',\n    message: typeof value.message === 'string' ? value.message : 'Capabilities fehlgeschlagen.',\n  };\n}"
+    },
+    {
+      "path": "src/infrastructure/ai/aiberto-tools-service.ts",
+      "line": 86,
+      "endLine": 90,
+      "name": "callback",
+      "text": "(t): t is AibertoToolCapability =>\n          isRecord(t) &&\n          typeof t.id === 'string' &&\n          (t.kind === 'read' || t.kind === 'nav') &&\n          typeof t.labelDe === 'string'"
+    },
+    {
+      "path": "src/infrastructure/ai/aiberto-tools-service.ts",
+      "line": 113,
+      "endLine": 149,
+      "name": "parseInvoke",
+      "text": "function parseInvoke(value: unknown): AibertoToolInvokeResult {\n  if (!isRecord(value) || typeof value.status !== 'string') {\n    return { status: 'error', code: 'INTERNAL', message: 'Ungültige Tool-Antwort.' };\n  }\n  if (value.status === 'ok' && typeof value.toolId === 'string') {\n    let clientAction: AibertoClientNavigateAction | undefined;\n    if (\n      isRecord(value.clientAction) &&\n      value.clientAction.type === 'app.navigate' &&\n      typeof value.clientAction.path === 'string'\n    ) {\n      clientAction = { type: 'app.navigate', path: value.clientAction.path };\n    }\n    return {\n      status: 'ok',\n      toolId: value.toolId,\n      data: value.data,\n      ...(clientAction ? { clientAction } : {}),\n    };\n  }\n  if (value.status === 'disabled') {\n    return {\n      status: 'disabled',\n      code: typeof value.code === 'string' ? value.code : 'FLAG_DISABLED',\n      message:\n        typeof value.message === 'string'\n          ? value.message\n          : 'Aiberto-Tools sind deaktiviert.',\n    };\n  }\n  return {\n    status: 'error',\n    code: typeof value.code === 'string' ? value.code : 'INTERNAL',\n    message: typeof value.message === 'string' ? value.message : 'Tool-Aufruf fehlgeschlagen.',\n    ...(typeof value.toolId === 'string' ? { toolId: value.toolId } : {}),\n  };\n}"
+    },
+    {
+      "path": "src/infrastructure/ai/aiberto-tools-service.ts",
+      "line": 151,
+      "endLine": 178,
+      "name": "fetchAibertoToolCapabilities",
+      "text": "export async function fetchAibertoToolCapabilities(\n  env: EnvLike = {},\n  fetchImpl: typeof fetch = fetch,\n): Promise<AibertoToolsCapabilitiesResult> {\n  const base = toolsBase(env);\n  if (base === null) {\n    return {\n      status: 'error',\n      code: 'NOT_CONFIGURED',\n      message: 'Host nicht erreichbar.',\n    };\n  }\n  try {\n    const response = await fetchImpl(`${base}/api/v1/ai/aiberto-tools/capabilities`, {\n      method: 'GET',\n      credentials: 'include',\n      headers: { Accept: 'application/json' },\n    });\n    const json: unknown = await response.json().catch(() => null);\n    return parseCapabilities(json);\n  } catch {\n    return {\n      status: 'error',\n      code: 'INTERNAL',\n      message: 'Capabilities-Anfrage fehlgeschlagen.',\n    };\n  }\n}"
+    },
+    {
+      "path": "src/infrastructure/ai/aiberto-tools-service.ts",
+      "line": 169,
+      "endLine": 169,
+      "name": "callback",
+      "text": "() => null"
+    },
+    {
+      "path": "src/infrastructure/ai/aiberto-tools-service.ts",
+      "line": 180,
+      "endLine": 214,
+      "name": "invokeAibertoTool",
+      "text": "export async function invokeAibertoTool(\n  toolId: string,\n  args: Record<string, unknown> = {},\n  env: EnvLike = {},\n  fetchImpl: typeof fetch = fetch,\n): Promise<AibertoToolInvokeResult> {\n  const base = toolsBase(env);\n  if (base === null) {\n    return {\n      status: 'error',\n      code: 'NOT_CONFIGURED',\n      message: 'Host nicht erreichbar.',\n    };\n  }\n  try {\n    const response = await fetchImpl(`${base}/api/v1/ai/aiberto-tools/invoke`, {\n      method: 'POST',\n      credentials: 'include',\n      headers: {\n        Accept: 'application/json',\n        'Content-Type': 'application/json',\n      },\n      body: JSON.stringify({ toolId, args }),\n    });\n    const json: unknown = await response.json().catch(() => null);\n    return parseInvoke(json);\n  } catch {\n    return {\n      status: 'error',\n      code: 'INTERNAL',\n      message: 'Tool-Aufruf fehlgeschlagen.',\n      toolId,\n    };\n  }\n}"
+    },
+    {
+      "path": "src/infrastructure/ai/aiberto-tools-service.ts",
+      "line": 204,
+      "endLine": 204,
+      "name": "callback",
+      "text": "() => null"
     },
     {
       "path": "src/infrastructure/ai/host-ai-invoke.ts",
