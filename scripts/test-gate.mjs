@@ -2172,6 +2172,11 @@ function checkWorldAtlasEditor() {
     cwd: root,
     stdio: 'inherit',
   });
+  console.log('ATL2-E05 Gate E hierarchy travel / anchors / zoom / LOD...');
+  execFileSync(process.execPath, ['scripts/atl2-e05-gate-e.self-test.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
   console.log('Atlas prototype LOD layers (HTML v3 port)...');
   execFileSync(process.execPath, ['scripts/atlas-prototype-lod.self-test.mjs'], {
     cwd: root,

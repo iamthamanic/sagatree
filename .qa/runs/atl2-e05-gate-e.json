@@ -1,0 +1,101 @@
+{
+  "gate": "atl2-e05",
+  "issue": 1223,
+  "head": "1d4538c67ecb69c47f3f543039b7ca7432fdfb04",
+  "stack": [
+    {
+      "pr": 1259,
+      "issue": 1218,
+      "sha": "0f5875fe7da45f06c6d013ab71d90b68e33d4782",
+      "title": "ATL2-D07 Gate D",
+      "present": true
+    },
+    {
+      "pr": 1261,
+      "issue": 1219,
+      "sha": "46885289400b6a091f1d6b6b39e7fc9ebdef8ddb",
+      "title": "ATL2-E01 primary maps",
+      "present": true
+    },
+    {
+      "pr": 1264,
+      "issue": 1220,
+      "sha": "4bfbac4fa5a66b1bc1589d90f459cfae2aa4eede",
+      "title": "ATL2-E02 ParentSpatialAnchor",
+      "present": true
+    },
+    {
+      "pr": 1272,
+      "issue": 1221,
+      "sha": "95d0d8d48a733bba3113991f92e62330e0826f8d",
+      "title": "ATL2-E03 hierarchy nav",
+      "present": true
+    },
+    {
+      "pr": 1275,
+      "issue": 1222,
+      "sha": "1d4538c67ecb69c47f3f543039b7ca7432fdfb04",
+      "title": "ATL2-E04 hierarchy LOD",
+      "present": true
+    }
+  ],
+  "host": {
+    "ownerMapCount": 6,
+    "ownerMapTitles": [
+      "Dornhain",
+      "Kontinent Westmark",
+      "Krypta unter dem Hügel",
+      "Land Westmark",
+      "Taverne Zum Flüstern",
+      "Welt"
+    ],
+    "worldPublicId": "WO-4ER3X",
+    "locatedChildren": 5,
+    "strangerDeny": true,
+    "outsiderStatus": 403
+  },
+  "sollIst": [
+    {
+      "category": "Gate D + E01–E04 stack on main",
+      "soll": "squash SHAs #1259/#1261/#1264/#1272/#1275 are ancestors of HEAD",
+      "ist": "pass-git"
+    },
+    {
+      "category": "Six hierarchy levels (domain)",
+      "soll": "ATLAS_HIERARCHY_LEVELS length 6; both room-branch breadcrumbs",
+      "ist": "pass-domain"
+    },
+    {
+      "category": "Anchors + locate (domain)",
+      "soll": "ParentSpatialAnchor + enterChild requires located; unlocated fails closed",
+      "ist": "pass-domain"
+    },
+    {
+      "category": "LOD / lazy load (domain)",
+      "soll": "generation load → transition → ready; failure rolls back to prior ready",
+      "ist": "pass-domain"
+    },
+    {
+      "category": "Golden host maps",
+      "soll": "ensure-starter yields ≥6 Golden titles World→…→Tavern/Crypt",
+      "ist": "pass-host"
+    },
+    {
+      "category": "Located child anchors (host)",
+      "soll": "child maps expose parent_map_id / parentSpatialAnchor in generator_meta",
+      "ist": "pass-host"
+    },
+    {
+      "category": "Negative policy",
+      "soll": "stranger atlas write denied",
+      "ist": "pass-host"
+    }
+  ],
+  "verdict": "CLEAR",
+  "residuals": [
+    {
+      "severity": "Info",
+      "note": "Interactive deep-link / reload matrix in live browser continues under ops; Gate E locks host+domain protocol for E01–E04."
+    }
+  ]
+}
