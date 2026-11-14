@@ -543,7 +543,9 @@ export {
   ATLAS_PRODUCT_3D_HOST_PATH,
   ATLAS_PRODUCT_3D_MODULE_PATH,
   ATLAS_PRODUCT_3D_TARGET,
+  ATLAS_R01_RENDERER_HYBRID_DECISION,
   ATLAS_RENDERER_DECISION,
+  atlasR01AllowsFollowOnRendererWork,
   clampAtlasPixelRatio,
   isProductAtlasRendererTarget,
   resolveAtlasGraphicsPreset,
@@ -551,6 +553,8 @@ export {
   type AtlasGraphicsPresetId,
   type AtlasRendererCandidateId,
   type AtlasRendererDecision,
+  type AtlasRendererHybridDecision,
+  type AtlasRendererHybridVerdict,
 } from './atlas-renderer-target';
 
 export {
@@ -576,3 +580,22 @@ export {
   type AtlasDioramaStampKind,
   type AtlasDioramaTreeVariant,
 } from './atlas-diorama-look';
+
+export {
+  ATLAS_DUNGEON_LOOK_FORMAT,
+  ATLAS_DUNGEON_THEME_KEYS,
+  atlasDungeonFeatureAlbedo,
+  buildAtlasDungeonLookPlan,
+  isAtlasDungeonFeatureId,
+  resolveAtlasDungeonLightProfile,
+  resolveAtlasDungeonQualityBudget,
+  resolveAtlasDungeonThemeKey,
+  resolveAtlasDungeonThemePalette,
+  type AtlasDungeonInstanceBatch,
+  type AtlasDungeonInstanceKind,
+  type AtlasDungeonLightProfile,
+  type AtlasDungeonLookAuthority,
+  type AtlasDungeonLookPlan,
+  type AtlasDungeonQualityBudget,
+  type AtlasDungeonThemePalette,
+} from './atlas-dungeon-look';

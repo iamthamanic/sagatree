@@ -194,6 +194,10 @@
       "sha256": "a0c2f5ea6af2faabed685d4eff4035dad43b1e82f3d6b2a67e017ddcddf99ea6"
     },
     {
+      "path": "src/domains/world/atlas/atlas-dungeon-look.ts",
+      "sha256": "4cb36a35663c13b62699ccd846df59ebc3ab38feafb497998302a35c09cdc9d8"
+    },
+    {
       "path": "src/domains/world/atlas/atlas-edit-history.ts",
       "sha256": "13a91efde301ec766d3b0f183affcd794abba9f4c4872c00549e9f631947e294"
     },
@@ -235,7 +239,7 @@
     },
     {
       "path": "src/domains/world/atlas/atlas-renderer-target.ts",
-      "sha256": "db574d6116c15d301a0b82ab2169e3c2ec0fd6551195ff44cb74d16b5dbe4ed6"
+      "sha256": "51beb5d64d2972fa88a42a1f0437d42639c689f9612cd852e94ed72721b48678"
     },
     {
       "path": "src/domains/world/atlas/atlas-revision-contract.ts",
@@ -291,7 +295,7 @@
     },
     {
       "path": "src/domains/world/atlas/index.ts",
-      "sha256": "9a2c07f22265f70166c112e980f5c6db7d55fdeb9393582ccc0f246d80288591"
+      "sha256": "a87ade5bb4f35a01c54e22ef1ca0ef0886c7eeb2b094f300eea5ccff872cfb53"
     },
     {
       "path": "src/domains/world/atlas/map-edit-ops.ts",
@@ -1349,6 +1353,62 @@
     },
     {
       "kind": "TypeAliasDeclaration",
+      "name": "AtlasDungeonLookAuthority",
+      "path": "src/domains/world/atlas/atlas-dungeon-look.ts",
+      "line": 32,
+      "endLine": 32,
+      "text": "export type AtlasDungeonLookAuthority = 'canonical' | 'atmospheric';"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AtlasDungeonThemePalette",
+      "path": "src/domains/world/atlas/atlas-dungeon-look.ts",
+      "line": 34,
+      "endLine": 44,
+      "text": "export type AtlasDungeonThemePalette = {\n  readonly themeKey: DungeonThemeKey;\n  readonly labelDe: string;\n  readonly floor: string;\n  readonly wall: string;\n  readonly door: string;\n  readonly accent: string;\n  readonly light: string;\n  readonly fogColor: string;\n  readonly clearColor: readonly [number, number, number, number];\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AtlasDungeonLightProfile",
+      "path": "src/domains/world/atlas/atlas-dungeon-look.ts",
+      "line": 46,
+      "endLine": 59,
+      "text": "export type AtlasDungeonLightProfile = {\n  readonly themeKey: DungeonThemeKey;\n  readonly presetId: AtlasGraphicsPresetId;\n  readonly labelDe: string;\n  readonly daylightDir: readonly [number, number, number];\n  readonly ambient: number;\n  readonly fogDensity: number;\n  readonly fogColor: string;\n  readonly clearColor: readonly [number, number, number, number];\n  readonly torchIntensity: number;\n  readonly shadowStrength: number;\n  readonly bloomEnabled: boolean;\n  readonly particlesEnabled: boolean;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AtlasDungeonQualityBudget",
+      "path": "src/domains/world/atlas/atlas-dungeon-look.ts",
+      "line": 61,
+      "endLine": 69,
+      "text": "export type AtlasDungeonQualityBudget = {\n  readonly presetId: AtlasGraphicsPresetId;\n  readonly maxInstances: number;\n  readonly maxTorchInstances: number;\n  readonly maxParticleEmitters: number;\n  readonly bloomEnabled: boolean;\n  readonly particlesEnabled: boolean;\n  readonly preferSoftwareFallback: boolean;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AtlasDungeonInstanceKind",
+      "path": "src/domains/world/atlas/atlas-dungeon-look.ts",
+      "line": 71,
+      "endLine": 71,
+      "text": "export type AtlasDungeonInstanceKind = 'wall' | 'door' | 'floor' | 'torch' | 'prop';"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AtlasDungeonInstanceBatch",
+      "path": "src/domains/world/atlas/atlas-dungeon-look.ts",
+      "line": 73,
+      "endLine": 80,
+      "text": "export type AtlasDungeonInstanceBatch = {\n  readonly batchKey: string;\n  readonly kind: AtlasDungeonInstanceKind;\n  readonly authority: AtlasDungeonLookAuthority;\n  readonly materialId: string;\n  readonly albedo: string;\n  readonly instanceIds: readonly string[];\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AtlasDungeonLookPlan",
+      "path": "src/domains/world/atlas/atlas-dungeon-look.ts",
+      "line": 82,
+      "endLine": 103,
+      "text": "export type AtlasDungeonLookPlan = {\n  readonly format: typeof ATLAS_DUNGEON_LOOK_FORMAT;\n  readonly themeKey: DungeonThemeKey;\n  readonly palette: AtlasDungeonThemePalette;\n  readonly light: AtlasDungeonLightProfile;\n  readonly budget: AtlasDungeonQualityBudget;\n  readonly batches: readonly AtlasDungeonInstanceBatch[];\n  readonly counts: {\n    readonly floors: number;\n    readonly walls: number;\n    readonly doors: number;\n    readonly torches: number;\n    readonly props: number;\n    readonly batches: number;\n    readonly instances: number;\n    readonly truncated: number;\n  };\n  /** Theme-independent fingerprint of dungeon feature IDs (geometry SoT). */\n  readonly geometryFingerprint: string;\n  /** Theme + budget dependent fingerprint (look SoT). */\n  readonly lookFingerprint: string;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
       "name": "AtlasEditHistory",
       "path": "src/domains/world/atlas/atlas-edit-history.ts",
       "line": 12,
@@ -1698,6 +1758,22 @@
       "line": 64,
       "endLine": 70,
       "text": "export type AtlasRendererDecision = {\n  readonly target: AtlasRendererCandidateId;\n  readonly issue: 1212;\n  readonly reasonDe: string;\n  readonly rollbackDe: string;\n  readonly retireParallelIn: 'atl2-h-cleanup' | 'none';\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AtlasRendererHybridVerdict",
+      "path": "src/domains/world/atlas/atlas-renderer-target.ts",
+      "line": 109,
+      "endLine": 109,
+      "text": "export type AtlasRendererHybridVerdict = 'GO' | 'NO-GO';"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AtlasRendererHybridDecision",
+      "path": "src/domains/world/atlas/atlas-renderer-target.ts",
+      "line": 111,
+      "endLine": 118,
+      "text": "export type AtlasRendererHybridDecision = {\n  readonly issue: 1266;\n  readonly verdict: AtlasRendererHybridVerdict;\n  readonly productiveOwner: AtlasRendererCandidateId;\n  readonly followOnIssues: readonly [1267, 1268, 1269, 1270];\n  readonly reasonDe: string;\n  readonly evidencePaths: readonly string[];\n};"
     },
     {
       "kind": "TypeAliasDeclaration",

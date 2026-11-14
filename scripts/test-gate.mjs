@@ -2017,6 +2017,11 @@ function checkWorldAtlasEditor() {
     cwd: root,
     stdio: 'inherit',
   });
+  console.log('ATL2-F04 dungeon 3D themes/instancing/lighting (#1227)...');
+  execFileSync(process.execPath, ['scripts/atl2-f04-dungeon-look.self-test.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
   console.log('Atlas settlement presets: Großstadt/Stadt/Dorf seedKeys...');
   execFileSync(process.execPath, ['scripts/atlas-settlement-presets.self-test.mjs'], {
     cwd: root,
@@ -2162,6 +2167,11 @@ function checkWorldAtlasEditor() {
     cwd: root,
     stdio: 'inherit',
   });
+  console.log('ATL2-R01 renderer hybrid GO/NO-GO decision...');
+  execFileSync(process.execPath, ['scripts/atl2-r01-renderer-decision.self-test.mjs'], {
+      cwd: root,
+      stdio: 'inherit',
+    });
   console.log('ATL2-E03 hierarchy zoom / breadcrumb / back-nav...');
   execFileSync(process.execPath, ['scripts/atl2-e03-hierarchy-nav.self-test.mjs'], {
     cwd: root,

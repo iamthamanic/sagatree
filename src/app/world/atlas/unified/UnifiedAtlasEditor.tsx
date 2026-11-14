@@ -2410,6 +2410,12 @@ export function UnifiedAtlasEditor({
           mapSketchStatus={mapSketchStatus ?? null}
           mapScale={mapScale}
           mapPins={mapPins}
+          dungeonThemeKey={
+            dungeonPreview
+              ? dungeonPreview.generate.params.themeKey
+              : (dungeonMeta?.themeKey ?? dungeonTheme)
+          }
+          dungeonLookDoc={forgeDisplayDoc}
           navRestoreView={navRestoreView}
           onNavViewChange={onNavViewChange}
           onNavSelect={onWebglNavSelect}

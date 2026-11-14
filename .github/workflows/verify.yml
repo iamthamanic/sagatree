@@ -21,7 +21,8 @@ jobs:
   test-gate:
     name: Test Gate
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    # Atlas V2 self-tests (E/F/R) push wall time past 15m under Actions load.
+    timeout-minutes: 25
 
     steps:
       - name: Checkout
