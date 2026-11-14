@@ -25,12 +25,23 @@ regression — without closing the gate on self-tests alone.
 - [x] Golden visual fingerprints + Browser E2E `toHaveScreenshot` contract locked
 - [x] Gate report `.qa/runs/atl2-g05-gate-g.md` CLEAR with Soll/Ist table
 - [x] Browser wrapper opens Dornhain atlas workstation (device matrix evidence)
+- [x] HOST Browser E2E measures the productive Custom-WebGL atlas (no synthetic plan costs):
+  rAF frame p50/p95 on real Golden maps (Taverne / Dornhain / Welt), 8× map-switch soak with
+  bounded mesh slots, WebGL context loss → restore with identical mesh set, JS-heap growth,
+  three camera modes + zoom/orbit deltas, desktop / tablet / phone matrix
+  (`.qa/evidence/atl2-g05-gate-g/browser-measurement.json`)
+- [x] Fail-closed rows: any FAIL fails the test; NOT_RUN never counts as PASS
+  (only `js-heap-soak` may be NOT_RUN where `performance.memory` is absent)
 - [x] Touched files: zero type escape hatches (typed-strict / Boy Scout)
 
 ## Edge Cases
 
 - [x] Party dungeon meta: atmospheric `themeKey` only (no seed / dirty)
 - [x] Context-loss → release handles; restore re-activates within budget
+- [x] Context restore re-uploads product geometry + ocean (defect found by Gate G: stale
+  `productGeomFingerprint` / `oceanCache` left product maps blank after restore — fixed in `activate3D`)
+- [x] Software WebGL (SwiftShader / llvmpipe) detected via `WEBGL_debug_renderer_info` and judged
+  against the documented 120 ms CI ceiling; hardware budget stays G02 `frameP95MsSoft` 33.3 ms
 - [x] Narrow main pane / phone band fail-closed chrome overflow
 - [x] Missing PNG baseline / pixel-diff mismatch fail-closed (G04 e2e)
 
@@ -60,7 +71,11 @@ SKIPPED — acceptance protocol / evidence lock; no new hop
 ## Implementation Notes
 
 - Protocol: `scripts/atl2-g05-gate-g.self-test.mjs` → `.qa/runs/atl2-g05-gate-g.md`
-- Browser wrapper: `e2e/atl2-g05-gate-g.spec.ts`
+- Browser wrapper + measurement: `e2e/atl2-g05-gate-g.spec.ts`
+- Screenshot naming: `g05__<world>-<map>-map<mapId8>__<camera>__<buildSha>__<preset>-<renderer>__<viewport>.png`
+- Integration note: single G05 owner PR (#1292); unique browser measurement intent ported from #1293
+  without its runtime test hooks, domain module or migration-inventory churn
+- Known limitation: CI numbers are software-rendering measurements — re-measure p50/p95 on real GPUs
 - Design: `.qa/design/atl2-g05-gate-g.md`
 - Stitches G01–G04 evidence; does not re-implement product features
 - Non-goals: Three.js product path (#1267–#1270); subjective taste sign-off

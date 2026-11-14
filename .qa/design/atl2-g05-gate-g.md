@@ -16,7 +16,7 @@ wrapper, not a checkbox theatre.
 | Ticket phrase | Gate G meaning |
 | --- | --- |
 | Owner-/Player-Policy + Secret-Negativproben | Host stranger deny + active player membership crypt redaction (no client `playerView` flag); domain party projection |
-| Performance- und Memory-Grenzen | `atlas-perf-budgets` fixtures + GPU session teardown / context-loss |
+| Performance- und Memory-Grenzen | `atlas-perf-budgets` fixtures + GPU session teardown / context-loss (domain) **and** HOST Browser E2E rAF p50/p95, map-switch soak, real `WEBGL_lose_context` loss/restore, JS-heap growth |
 | Adaptive UI / Keyboard / Touch / Fallback | `atlas-workstation-adaptive` bands, gestures, surface states |
 | Visual-Regression | G04 fingerprints + Browser E2E `toHaveScreenshot` (maxDiffPixelRatio 0.08) |
 
@@ -24,7 +24,7 @@ wrapper, not a checkbox theatre.
 
 - Self-test: `scripts/atl2-g05-gate-g.self-test.mjs`
 - Report: `.qa/runs/atl2-g05-gate-g.md` / `.json`
-- Browser: `e2e/atl2-g05-gate-g.spec.ts`
+- Browser: `e2e/atl2-g05-gate-g.spec.ts` (+ `.qa/evidence/atl2-g05-gate-g/browser-measurement.json`, screenshots)
 - Composition: SKIPPED (protocol lock)
 - Upstream CLEAR: `.qa/acceptance/atl2-g01.md` … `atl2-g04.md`
 

@@ -126,6 +126,31 @@ assert.ok(design.includes('playerView'));
 assert.ok(composition.includes('SKIPPED'));
 assert.ok(composition.includes('atl2-g05'));
 assert.ok(existsSync(e2ePath), 'missing e2e/atl2-g05-gate-g.spec.ts');
+/* Browser measurement contract (ported from #1293): real rAF frames, context loss, heap, devices. */
+const e2eG05 = readFileSync(e2ePath, 'utf8');
+for (const needle of [
+  'browser-measurement.json',
+  'frame-times-',
+  'webgl-context-loss',
+  'map-switch-teardown',
+  'js-heap-soak',
+  "band: 'tablet'",
+  'camera-modes-zoom-orbit',
+  'software-webgl',
+  "rows.some((r) => r.status === 'FAIL')",
+]) {
+  assert.ok(e2eG05.includes(needle), `G05 browser measurement contract missing: ${needle}`);
+}
+/* Context-restore defect found by Gate G: new engine must drop geometry caches. */
+const runtimeSrc = readFileSync(
+  join(root, 'src/app/world/atlas/unified/prototype3d/atlas-prototype-runtime.mjs'),
+  'utf8',
+);
+assert.match(
+  runtimeSrc,
+  /function activate3D\(\)\{[^]*?productGeomFingerprint=null;oceanCache=null;/,
+  'activate3D must reset product geometry + ocean caches (context restore re-upload)',
+);
 assert.ok(gateSrc.includes('atl2-g05-gate-g.self-test.mjs'), 'wired in test-gate');
 assert.ok(gateSrc.includes('atl2-g01-scopes.self-test.mjs'));
 assert.ok(gateSrc.includes('atl2-g02-perf-budgets.self-test.mjs'));
@@ -600,6 +625,8 @@ ${sollRows}
 ## Residuals (non-blocking for Gate G)
 
 - **Info**: G04 Browser E2E pixel-diff matrix remains the shipping visual gate; Gate G stitches policy/perf/adaptive/visual contracts.
+- **Info**: Browser measurement (\`e2e/atl2-g05-gate-g.spec.ts\` → \`.qa/evidence/atl2-g05-gate-g/browser-measurement.json\`) runs on CI SwiftShader = software-rendering numbers; hardware GPU p50/p95 must be re-measured on real devices.
+- **Medium (fixed in this PR)**: WebGL context restore left product maps blank (stale product-geometry + ocean caches in \`activate3D\`); covered by the \`webgl-context-loss\` browser row.
 
 ## Decision
 
