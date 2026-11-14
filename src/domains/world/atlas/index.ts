@@ -648,3 +648,29 @@ export {
   type AtlasPerfSceneFixture,
   type AtlasPerfSceneSize,
 } from './atlas-perf-budgets';
+
+export {
+  ATLAS_GOLDEN_ART_DIRECTION_CHECKS,
+  ATLAS_GOLDEN_SELECTION_OUTLINE,
+  ATLAS_GOLDEN_SELECTION_SURFACE,
+  ATLAS_GOLDEN_VISUAL_FIXTURES,
+  ATLAS_GOLDEN_VISUAL_FORMAT,
+  ATLAS_GOLDEN_VISUAL_SCALE_IDS,
+  ATLAS_GOLDEN_VISUAL_TOLERANCE,
+  atlasGoldenContrastRatio,
+  atlasGoldenVisualFixturesCoverHierarchy,
+  buildAtlasGoldenVisualSnapshot,
+  buildGoldenRoomCanvas,
+  compareAtlasGoldenVisualSnapshots,
+  evaluateAtlasGoldenArtDirection,
+  resolveAtlasGoldenVisualFixture,
+  type AtlasGoldenArtDirectionCheck,
+  type AtlasGoldenArtDirectionCheckId,
+  type AtlasGoldenArtDirectionReport,
+  type AtlasGoldenVisualCompareResult,
+  type AtlasGoldenVisualFixture,
+  type AtlasGoldenVisualScaleId,
+  type AtlasGoldenVisualSnapshot,
+  type AtlasGoldenVisualTolerance,
+} from './atlas-golden-visual';
+
