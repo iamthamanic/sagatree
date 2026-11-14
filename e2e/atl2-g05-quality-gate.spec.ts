@@ -313,15 +313,16 @@ test.describe('ATL2-G05 quality gate', () => {
     ).maps?.[0]?.id;
     expect(firstMapId).toBeTruthy();
 
+    // GET detail is global by mapId (not world-scoped) — see world-atlas-routes.
     const ownerDetail = await page.request.get(
-      `/api/v1/worlds/${worldId}/atlas/maps/${firstMapId}`,
+      `/api/v1/worlds/atlas/maps/${firstMapId}`,
       { headers: { Origin: origin } },
     );
     expect(ownerDetail.ok()).toBeTruthy();
     const ownerMap = await ownerDetail.json();
 
     const playerDetail = await page.request.get(
-      `/api/v1/worlds/${worldId}/atlas/maps/${firstMapId}?playerView=true`,
+      `/api/v1/worlds/atlas/maps/${firstMapId}?playerView=true`,
       { headers: { Origin: origin } },
     );
     expect(playerDetail.ok()).toBeTruthy();
