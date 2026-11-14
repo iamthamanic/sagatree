@@ -66,6 +66,6 @@ Host use-case `aiberto-ask`: Better Auth actor, Core rulebook retrieval, evidenc
 
 ## Composition Gate
 
-- HEAD_SHA: 5a476effd0cd83f142d42772221c98bfee009582
+- HEAD_SHA: 71d2eb058c0e8837049c4b8869d0b2a649cf19b1
 - Verdict: CLEAR
 - Proof: `.qa/runs/composition-gate-aiberto-aib-04-ask-host.md`
