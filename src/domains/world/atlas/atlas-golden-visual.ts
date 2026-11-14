@@ -223,7 +223,8 @@ export const ATLAS_GOLDEN_ART_DIRECTION_CHECKS: readonly AtlasGoldenArtDirection
   {
     id: 'materials-distinct',
     labelDe: 'Unterschiedliche Gelände-/Gebäude-/Dungeon-Materialien',
-    measurable: '≥2 distinct canvas materials OR ≥2 look albedo tokens per fixture',
+    measurable:
+      'per fixture: ≥2 distinct canvas materials OR (≥2 look albedo tokens) — counted separately, not as a mixed union',
   },
   {
     id: 'selection-readable',
@@ -325,6 +326,44 @@ function cameraFingerprint(cam: AtlasProductCameraState): string {
   ]);
 }
 
+/**
+ * Spatial geometry fingerprint — includes coordinates / extents so moving an
+ * object, stroke, room, wall, or door changes the golden hash even when IDs
+ * and materials stay the same (Codex P1 #1232).
+ */
+export function atlasGoldenSpatialGeometryFingerprint(doc: UnifiedCanvasDoc): string {
+  const parts: string[] = [];
+  for (const r of [...doc.rooms].sort((a, b) => a.id.localeCompare(b.id))) {
+    const poly =
+      Array.isArray(r.points) && r.points.length > 0
+        ? r.points.map((p) => `${p[0].toFixed(3)},${p[1].toFixed(3)}`).join(';')
+        : '';
+    parts.push(
+      `room:${r.id}:${r.material}:${r.x.toFixed(3)}:${r.y.toFixed(3)}:${r.w.toFixed(3)}:${r.h.toFixed(3)}:${poly}`,
+    );
+  }
+  for (const s of [...doc.strokes].sort((a, b) => a.id.localeCompare(b.id))) {
+    const pts = s.points.map((p) => `${p[0].toFixed(3)},${p[1].toFixed(3)}`).join(';');
+    parts.push(`stroke:${s.id}:${s.material}:${s.width.toFixed(3)}:${pts}`);
+  }
+  for (const o of [...doc.objects].sort((a, b) => a.id.localeCompare(b.id))) {
+    parts.push(
+      `obj:${o.id}:${o.type}:${o.x.toFixed(3)}:${o.y.toFixed(3)}:${o.size.toFixed(3)}`,
+    );
+  }
+  for (const w of [...doc.walls].sort((a, b) => a.id.localeCompare(b.id))) {
+    parts.push(
+      `wall:${w.id}:${w.x1.toFixed(3)}:${w.y1.toFixed(3)}:${w.x2.toFixed(3)}:${w.y2.toFixed(3)}:${w.width.toFixed(3)}`,
+    );
+  }
+  for (const d of [...(doc.doors ?? [])].sort((a, b) => a.id.localeCompare(b.id))) {
+    parts.push(
+      `door:${d.id}:${d.wallId}:${d.t.toFixed(4)}:${d.width.toFixed(3)}`,
+    );
+  }
+  return hashParts(parts);
+}
+
 export function resolveAtlasGoldenVisualFixture(
   id: AtlasGoldenVisualScaleId,
 ): AtlasGoldenVisualFixture {
@@ -345,38 +384,46 @@ export function buildAtlasGoldenVisualSnapshot(
     ATLAS_GOLDEN_SELECTION_SURFACE,
   );
 
+  const spatialGeometry = atlasGoldenSpatialGeometryFingerprint(doc);
+
   if (fixture.lookFamily === 'outdoor') {
     const plan = buildAtlasDioramaLookPlan(doc, {
       graphicsPresetId: fixture.graphicsPresetId,
     });
     const light = plan.light;
     const lookAlbedos = [...new Set(plan.materials.map((m) => m.albedo))];
+    const lightFingerprint = hashParts([
+      light.presetId,
+      light.detailLevel,
+      light.fogColor,
+      String(light.ambient),
+      light.daylightDir.join(','),
+    ]);
+    const lookFingerprint = hashParts([plan.contentFingerprint, spatialGeometry]);
+    const geometryFingerprint = hashParts([spatialGeometry, plan.contentFingerprint]);
+    const camFp = cameraFingerprint(fixture.camera);
     const contentFingerprint = hashParts([
       fixture.id,
       fixture.mapSeedKey,
-      cameraFingerprint(fixture.camera),
-      light.presetId,
-      light.detailLevel,
-      plan.contentFingerprint,
+      camFp,
+      lightFingerprint,
+      lookFingerprint,
+      geometryFingerprint,
       stableJoin(materials),
       stableJoin(lookAlbedos),
+      ATLAS_GOLDEN_SELECTION_OUTLINE,
+      selectionContrastRatio.toFixed(4),
     ]);
     return {
       format: ATLAS_GOLDEN_VISUAL_FORMAT,
       fixtureId: fixture.id,
       mapSeedKey: fixture.mapSeedKey,
-      cameraFingerprint: cameraFingerprint(fixture.camera),
-      lightFingerprint: hashParts([
-        light.presetId,
-        light.detailLevel,
-        light.fogColor,
-        String(light.ambient),
-        light.daylightDir.join(','),
-      ]),
+      cameraFingerprint: camFp,
+      lightFingerprint,
       materialKeys: materials,
       lookAlbedos,
-      geometryFingerprint: plan.contentFingerprint,
-      lookFingerprint: plan.contentFingerprint,
+      geometryFingerprint,
+      lookFingerprint,
       selectionOutline: ATLAS_GOLDEN_SELECTION_OUTLINE,
       selectionContrastRatio,
       contentFingerprint,
@@ -390,37 +437,51 @@ export function buildAtlasGoldenVisualSnapshot(
     graphicsPresetId: fixture.graphicsPresetId,
   });
   const lookAlbedos = [
-    ...new Set(plan.batches.map((b) => b.albedo)),
-    plan.palette.floor,
-    plan.palette.wall,
+    ...new Set([
+      ...plan.batches.map((b) => b.albedo),
+      plan.palette.floor,
+      plan.palette.wall,
+      plan.palette.door,
+      plan.palette.accent,
+    ]),
   ];
+  const lightFingerprint = hashParts([
+    plan.light.themeKey,
+    plan.light.presetId,
+    plan.light.fogColor,
+    String(plan.light.ambient),
+    plan.light.daylightDir.join(','),
+  ]);
+  const geometryFingerprint = hashParts([
+    spatialGeometry,
+    plan.geometryFingerprint,
+  ]);
+  const lookFingerprint = hashParts([plan.lookFingerprint, spatialGeometry]);
+  const camFp = cameraFingerprint(fixture.camera);
   const contentFingerprint = hashParts([
     fixture.id,
     fixture.mapSeedKey,
-    cameraFingerprint(fixture.camera),
+    camFp,
+    lightFingerprint,
+    lookFingerprint,
+    geometryFingerprint,
     plan.themeKey,
     plan.budget.presetId,
-    plan.geometryFingerprint,
-    plan.lookFingerprint,
     stableJoin(materials),
     stableJoin(lookAlbedos),
+    ATLAS_GOLDEN_SELECTION_OUTLINE,
+    selectionContrastRatio.toFixed(4),
   ]);
   return {
     format: ATLAS_GOLDEN_VISUAL_FORMAT,
     fixtureId: fixture.id,
     mapSeedKey: fixture.mapSeedKey,
-    cameraFingerprint: cameraFingerprint(fixture.camera),
-    lightFingerprint: hashParts([
-      plan.light.themeKey,
-      plan.light.presetId,
-      plan.light.fogColor,
-      String(plan.light.ambient),
-      plan.light.daylightDir.join(','),
-    ]),
+    cameraFingerprint: camFp,
+    lightFingerprint,
     materialKeys: materials,
     lookAlbedos,
-    geometryFingerprint: plan.geometryFingerprint,
-    lookFingerprint: plan.lookFingerprint,
+    geometryFingerprint,
+    lookFingerprint,
     selectionOutline: ATLAS_GOLDEN_SELECTION_OUTLINE,
     selectionContrastRatio,
     contentFingerprint,
@@ -439,28 +500,49 @@ export function compareAtlasGoldenVisualSnapshots(
   expected: AtlasGoldenVisualSnapshot,
   actual: AtlasGoldenVisualSnapshot,
 ): AtlasGoldenVisualCompareResult {
-  if (expected.contentFingerprint !== actual.contentFingerprint) {
+  const fields: readonly (keyof AtlasGoldenVisualSnapshot)[] = [
+    'format',
+    'fixtureId',
+    'mapSeedKey',
+    'cameraFingerprint',
+    'lightFingerprint',
+    'geometryFingerprint',
+    'lookFingerprint',
+    'selectionOutline',
+    'contentFingerprint',
+    'detailLevel',
+  ];
+  for (const field of fields) {
+    const e = String(expected[field]);
+    const a = String(actual[field]);
+    if (e !== a) {
+      return { ok: false, reason: `${field} mismatch`, expected: e, actual: a };
+    }
+  }
+  if (
+    Math.abs(expected.selectionContrastRatio - actual.selectionContrastRatio) > 1e-6
+  ) {
     return {
       ok: false,
-      reason: 'contentFingerprint mismatch',
-      expected: expected.contentFingerprint,
-      actual: actual.contentFingerprint,
+      reason: 'selectionContrastRatio mismatch',
+      expected: String(expected.selectionContrastRatio),
+      actual: String(actual.selectionContrastRatio),
     };
   }
-  if (expected.cameraFingerprint !== actual.cameraFingerprint) {
+  if (stableJoin(expected.materialKeys) !== stableJoin(actual.materialKeys)) {
     return {
       ok: false,
-      reason: 'cameraFingerprint mismatch',
-      expected: expected.cameraFingerprint,
-      actual: actual.cameraFingerprint,
+      reason: 'materialKeys mismatch',
+      expected: stableJoin(expected.materialKeys),
+      actual: stableJoin(actual.materialKeys),
     };
   }
-  if (expected.geometryFingerprint !== actual.geometryFingerprint) {
+  if (stableJoin(expected.lookAlbedos) !== stableJoin(actual.lookAlbedos)) {
     return {
       ok: false,
-      reason: 'geometryFingerprint mismatch',
-      expected: expected.geometryFingerprint,
-      actual: actual.geometryFingerprint,
+      reason: 'lookAlbedos mismatch',
+      expected: stableJoin(expected.lookAlbedos),
+      actual: stableJoin(actual.lookAlbedos),
     };
   }
   return {
@@ -469,6 +551,166 @@ export function compareAtlasGoldenVisualSnapshots(
     expected: expected.contentFingerprint,
     actual: actual.contentFingerprint,
   };
+}
+
+/** Committed cross-commit golden baseline (fingerprint-exact CI). */
+export type AtlasGoldenVisualBaseline = {
+  readonly fixtureId: AtlasGoldenVisualScaleId;
+  readonly contentFingerprint: string;
+  readonly cameraFingerprint: string;
+  readonly lightFingerprint: string;
+  readonly geometryFingerprint: string;
+  readonly lookFingerprint: string;
+  readonly selectionOutline: typeof ATLAS_GOLDEN_SELECTION_OUTLINE;
+  readonly selectionContrastRatio: number;
+  readonly materialKeys: readonly string[];
+  readonly lookAlbedos: readonly string[];
+  readonly detailLevel: AtlasDioramaDetailLevel | 'indoor-theme';
+};
+
+/**
+ * Regenerated when fixtures / look contracts intentionally change.
+ * Self-test compares live snapshots to this table (not same-run twin captures).
+ */
+export const ATLAS_GOLDEN_VISUAL_BASELINES: readonly AtlasGoldenVisualBaseline[] = [
+  {
+    fixtureId: 'world',
+    contentFingerprint: '2a6c7829',
+    cameraFingerprint: '5a8a75ad',
+    lightFingerprint: 'abb4f920',
+    geometryFingerprint: 'cafdac1f',
+    lookFingerprint: '59e9b5d9',
+    selectionOutline: '#06B6D4',
+    selectionContrastRatio: 6.025371305386859,
+    materialKeys: ['erde', 'gras', 'holz', 'pflaster', 'sand', 'stein', 'wasser'],
+    lookAlbedos: [
+      '#2a3a48',
+      '#376456',
+      '#493f3a',
+      '#5a6b4a',
+      '#66584a',
+      '#6a9a62',
+      '#6f4f45',
+      '#794c3c',
+      '#7a6548',
+      '#82928a',
+      '#9a9180',
+      '#adb2a4',
+      '#ae774c',
+      '#cfc6b4',
+      '#d7c6a5',
+    ],
+    detailLevel: 'reduced',
+  },
+  {
+    fixtureId: 'country',
+    contentFingerprint: '04896ab7',
+    cameraFingerprint: '172fbc93',
+    lightFingerprint: 'abb4f920',
+    geometryFingerprint: '9d877e76',
+    lookFingerprint: 'fbf314cc',
+    selectionOutline: '#06B6D4',
+    selectionContrastRatio: 6.025371305386859,
+    materialKeys: ['gras', 'pflaster', 'wasser'],
+    lookAlbedos: ['#2a3a48', '#493f3a', '#6f4f45', '#82928a', '#9a9180', '#adb2a4'],
+    detailLevel: 'reduced',
+  },
+  {
+    fixtureId: 'city',
+    contentFingerprint: '4591075b',
+    cameraFingerprint: '3dadb73b',
+    lightFingerprint: 'f63a4b91',
+    geometryFingerprint: 'b7bf318d',
+    lookFingerprint: '3b44bf05',
+    selectionOutline: '#06B6D4',
+    selectionContrastRatio: 6.025371305386859,
+    materialKeys: ['holz', 'pflaster', 'stein', 'wasser'],
+    lookAlbedos: [
+      '#2a3a48',
+      '#376456',
+      '#493f3a',
+      '#527b55',
+      '#5a6b4a',
+      '#66584a',
+      '#6a9a62',
+      '#6f4f45',
+      '#82928a',
+      '#9a9180',
+      '#adb2a4',
+      '#ae774c',
+      '#cfc6b4',
+    ],
+    detailLevel: 'full',
+  },
+  {
+    fixtureId: 'tavern',
+    contentFingerprint: '3fc09e5a',
+    cameraFingerprint: '23f272a6',
+    lightFingerprint: '9a386073',
+    geometryFingerprint: 'b4ec7bde',
+    lookFingerprint: 'fc8da4a4',
+    selectionOutline: '#06B6D4',
+    selectionContrastRatio: 6.025371305386859,
+    materialKeys: ['holz', 'stein'],
+    lookAlbedos: ['#3a403c', '#424b47', '#667069', '#8fad68'],
+    detailLevel: 'indoor-theme',
+  },
+  {
+    fixtureId: 'crypt',
+    contentFingerprint: '31bd7680',
+    cameraFingerprint: 'f5d89624',
+    lightFingerprint: '522e872b',
+    geometryFingerprint: '72aff879',
+    lookFingerprint: '90c20a94',
+    selectionOutline: '#06B6D4',
+    selectionContrastRatio: 6.025371305386859,
+    materialKeys: ['erde', 'stein'],
+    lookAlbedos: ['#505963', '#777b82', '#8a745b', '#d4a96b'],
+    detailLevel: 'indoor-theme',
+  },
+  {
+    fixtureId: 'room',
+    contentFingerprint: 'd9f36dad',
+    cameraFingerprint: '7c4a89e6',
+    lightFingerprint: '479333c7',
+    geometryFingerprint: 'b7858c00',
+    lookFingerprint: '4aa371fa',
+    selectionOutline: '#06B6D4',
+    selectionContrastRatio: 6.025371305386859,
+    materialKeys: ['holz'],
+    lookAlbedos: ['#3a403c', '#424b47', '#667069', '#8fad68'],
+    detailLevel: 'indoor-theme',
+  },
+];
+
+export function resolveAtlasGoldenVisualBaseline(
+  id: AtlasGoldenVisualScaleId,
+): AtlasGoldenVisualBaseline | null {
+  return ATLAS_GOLDEN_VISUAL_BASELINES.find((b) => b.fixtureId === id) ?? null;
+}
+
+export function snapshotMatchesGoldenBaseline(
+  snap: AtlasGoldenVisualSnapshot,
+  baseline: AtlasGoldenVisualBaseline,
+): AtlasGoldenVisualCompareResult {
+  return compareAtlasGoldenVisualSnapshots(
+    {
+      format: ATLAS_GOLDEN_VISUAL_FORMAT,
+      fixtureId: baseline.fixtureId,
+      mapSeedKey: snap.mapSeedKey,
+      cameraFingerprint: baseline.cameraFingerprint,
+      lightFingerprint: baseline.lightFingerprint,
+      materialKeys: baseline.materialKeys,
+      lookAlbedos: baseline.lookAlbedos,
+      geometryFingerprint: baseline.geometryFingerprint,
+      lookFingerprint: baseline.lookFingerprint,
+      selectionOutline: baseline.selectionOutline,
+      selectionContrastRatio: baseline.selectionContrastRatio,
+      contentFingerprint: baseline.contentFingerprint,
+      detailLevel: baseline.detailLevel,
+    },
+    snap,
+  );
 }
 
 export type AtlasGoldenArtDirectionReport = {
@@ -488,9 +730,11 @@ export function evaluateAtlasGoldenArtDirection(): AtlasGoldenArtDirectionReport
 
   for (const fixture of ATLAS_GOLDEN_VISUAL_FIXTURES) {
     const snap = buildAtlasGoldenVisualSnapshot(fixture);
-    const distinct = new Set([...snap.materialKeys, ...snap.lookAlbedos]).size;
-    fixtureMaterialCounts[fixture.id] = distinct;
-    if (distinct < 2) materialsDistinct = false;
+    const canvasDistinct = new Set(snap.materialKeys).size;
+    const albedoDistinct = new Set(snap.lookAlbedos).size;
+    /* Counted separately — do not mix material names with albedo hex strings. */
+    fixtureMaterialCounts[fixture.id] = Math.max(canvasDistinct, albedoDistinct);
+    if (canvasDistinct < 2 && albedoDistinct < 2) materialsDistinct = false;
     selectionContrastRatio = snap.selectionContrastRatio;
   }
 

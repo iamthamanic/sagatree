@@ -25,8 +25,10 @@ assert.ok(acceptance.includes('fingerprint'));
 assert.ok(composition.includes('CLEAR'));
 assert.ok(gate.includes('atl2-g04-golden-visual.self-test.mjs'));
 assert.ok(indexSrc.includes('ATLAS_GOLDEN_VISUAL_FIXTURES'));
+assert.ok(indexSrc.includes('ATLAS_GOLDEN_VISUAL_BASELINES'));
 assert.ok(indexSrc.includes('evaluateAtlasGoldenArtDirection'));
 assert.ok(visualSrc.includes('ATLAS_GOLDEN_VISUAL_TOLERANCE'));
+assert.ok(visualSrc.includes('atlasGoldenSpatialGeometryFingerprint'));
 assert.ok(visualSrc.includes('diorama-oblique'));
 assert.ok(!visualSrc.includes(' as any'));
 assert.ok(!visualSrc.includes('@ts-ignore'));
@@ -39,6 +41,7 @@ const target = jiti(join(root, 'src/domains/world/atlas/atlas-renderer-target.ts
 assert.equal(target.ATLAS_PRODUCT_3D_TARGET, 'custom-webgl-prototype-runtime');
 assert.equal(gv.ATLAS_GOLDEN_VISUAL_FIXTURES.length, 6);
 assert.equal(gv.ATLAS_GOLDEN_VISUAL_SCALE_IDS.length, 6);
+assert.equal(gv.ATLAS_GOLDEN_VISUAL_BASELINES.length, 6);
 assert.equal(gv.ATLAS_GOLDEN_VISUAL_TOLERANCE.ciMode, 'fingerprint-exact');
 assert.ok(gv.atlasGoldenVisualFixturesCoverHierarchy());
 
@@ -48,17 +51,58 @@ for (const fixture of gv.ATLAS_GOLDEN_VISUAL_FIXTURES) {
   assert.equal(snap.format, 'atl2-golden-visual-v1');
   assert.equal(snap.fixtureId, fixture.id);
   assert.equal(snap.cameraFingerprint.length, 8);
-  assert.ok(snap.materialKeys.length + snap.lookAlbedos.length >= 2, fixture.id);
+  const canvasDistinct = new Set(snap.materialKeys).size;
+  const albedoDistinct = new Set(snap.lookAlbedos).size;
+  assert.ok(
+    canvasDistinct >= 2 || albedoDistinct >= 2,
+    `${fixture.id}: need ≥2 canvas materials OR ≥2 look albedos (got ${canvasDistinct}/${albedoDistinct})`,
+  );
   assert.ok(snap.selectionContrastRatio >= 3, `${fixture.id} contrast`);
-  const again = gv.buildAtlasGoldenVisualSnapshot(fixture);
-  const cmp = gv.compareAtlasGoldenVisualSnapshots(snap, again);
-  assert.equal(cmp.ok, true, `${fixture.id}: ${cmp.reason}`);
+
+  const baseline = gv.resolveAtlasGoldenVisualBaseline(fixture.id);
+  assert.ok(baseline, `${fixture.id} missing committed baseline`);
+  const cmp = gv.snapshotMatchesGoldenBaseline(snap, baseline);
+  assert.equal(cmp.ok, true, `${fixture.id} vs baseline: ${cmp.reason} exp=${cmp.expected} act=${cmp.actual}`);
+
+  /* Spatial regression: move one object → geometry fingerprint must change. */
+  if (fixture.lookFamily === 'outdoor') {
+    const doc = fixture.buildCanvas();
+    const moved = {
+      ...doc,
+      objects: doc.objects.map((o, i) =>
+        i === 0 ? { ...o, x: o.x + 17.5, y: o.y + 9.25 } : o,
+      ),
+    };
+    const before = gv.atlasGoldenSpatialGeometryFingerprint(doc);
+    const after = gv.atlasGoldenSpatialGeometryFingerprint(moved);
+    assert.notEqual(before, after, `${fixture.id} spatial fingerprint ignores object move`);
+  } else {
+    const doc = fixture.buildCanvas();
+    const moved = {
+      ...doc,
+      rooms: doc.rooms.map((r, i) => (i === 0 ? { ...r, x: r.x + 11, w: r.w + 3 } : r)),
+    };
+    const before = gv.atlasGoldenSpatialGeometryFingerprint(doc);
+    const after = gv.atlasGoldenSpatialGeometryFingerprint(moved);
+    assert.notEqual(before, after, `${fixture.id} spatial fingerprint ignores room move`);
+  }
+
   snapshots.push({
     id: snap.fixtureId,
     fp: snap.contentFingerprint,
     materials: snap.materialKeys.length,
     albedos: snap.lookAlbedos.length,
   });
+}
+
+/* Full-field compare must fail when only lightFingerprint drifts. */
+{
+  const fixture = gv.resolveAtlasGoldenVisualFixture('city');
+  const snap = gv.buildAtlasGoldenVisualSnapshot(fixture);
+  const drifted = { ...snap, lightFingerprint: 'deadbeef' };
+  const cmp = gv.compareAtlasGoldenVisualSnapshots(snap, drifted);
+  assert.equal(cmp.ok, false);
+  assert.equal(cmp.reason, 'lightFingerprint mismatch');
 }
 
 const ids = new Set(snapshots.map((s) => s.id));
@@ -85,6 +129,7 @@ console.log(
     fixtures: snapshots,
     artDirection: report.checks,
     tolerance: gv.ATLAS_GOLDEN_VISUAL_TOLERANCE,
+    baselines: gv.ATLAS_GOLDEN_VISUAL_BASELINES.length,
     target: target.ATLAS_PRODUCT_3D_TARGET,
   }),
 );
