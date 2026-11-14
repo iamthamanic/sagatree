@@ -411,8 +411,9 @@ test.describe('ATL2-G05 Gate G', () => {
     const rows: G05Row[] = [];
     const screenshots: string[] = [];
     const shot = async (mapTitle: string, camera: string, viewport: string) => {
-      const mapId = (mapIdByTitle.get(mapTitle) ?? 'unknown').slice(0, 8);
-      const name = `g05__${slug(worldPublicId)}-${slug(mapTitle)}-map${mapId}__${camera}__${sha}__${slug(profile)}__${viewport}.png`;
+      // Full atlas map id (Golden ids share long prefixes, so truncation is ambiguous).
+      const mapId = mapIdByTitle.get(mapTitle) ?? 'unknown';
+      const name = `g05__${slug(worldPublicId)}-${slug(mapTitle)}__map-${slug(mapId)}__${camera}__${sha}__${slug(profile)}__${viewport}.png`;
       await page.screenshot({ path: join(EVIDENCE, name), animations: 'disabled' });
       screenshots.push(name);
     };

@@ -72,7 +72,7 @@ SKIPPED — acceptance protocol / evidence lock; no new hop
 
 - Protocol: `scripts/atl2-g05-gate-g.self-test.mjs` → `.qa/runs/atl2-g05-gate-g.md`
 - Browser wrapper + measurement: `e2e/atl2-g05-gate-g.spec.ts`
-- Screenshot naming: `g05__<world>-<map>-map<mapId8>__<camera>__<buildSha>__<preset>-<renderer>__<viewport>.png`
+- Screenshot naming: `g05__<world>-<map>__map-<atlasMapId>__<camera>__<buildSha>__<preset>-<renderer>__<viewport>.png` (full atlas map id)
 - Integration note: single G05 owner PR (#1292); unique browser measurement intent ported from #1293
   without its runtime test hooks, domain module or migration-inventory churn
 - Known limitation: CI numbers are software-rendering measurements — re-measure p50/p95 on real GPUs
