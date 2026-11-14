@@ -783,7 +783,9 @@ export function mountAtlasPrototype3d(host, options = {}) {
       setMesh(name,builder,texture=null){const gl=this.gl;const previous=this.meshes.get(name);if(previous?.buffer)gl.deleteBuffer(previous.buffer);const data=new Float32Array(builder.a);const buffer=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,buffer);gl.bufferData(gl.ARRAY_BUFFER,data,gl.STATIC_DRAW);this.meshes.set(name,{buffer,count:data.length/11,texture});}
       delMesh(name){const gl=this.gl,m=this.meshes.get(name);if(m)gl.deleteBuffer(m.buffer);this.meshes.delete(name);}
       resize(width,height){const w=Math.max(200,Math.round(width*Math.min(devicePixelRatio||1,graphicsPreset.maxPixelRatio))),h=Math.max(180,Math.round(height*Math.min(devicePixelRatio||1,graphicsPreset.maxPixelRatio)));if(this.canvas.width!==w||this.canvas.height!==h){this.canvas.width=w;this.canvas.height=h;}this.gl.viewport(0,0,w,h);}
-      render(matrices,visibility={}){const gl=this.gl;const mvp=matrices&&matrices.mvp?matrices.mvp:matrices;const view=matrices&&matrices.view?matrices.view:this.identityView;gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);gl.useProgram(this.program);gl.uniformMatrix4fv(this.uniforms.uMatrix,false,mvp);if(this.uniforms.uView)gl.uniformMatrix4fv(this.uniforms.uView,false,view);
+      /* ATL2-G02 — drop buffers/textures so context-loss / map teardown cannot leak handles. */
+      dispose(){const gl=this.gl;if(!gl)return;for(const m of this.meshes.values()){if(m?.buffer)gl.deleteBuffer(m.buffer);}this.meshes.clear();for(const t of this.textures.values()){if(t)gl.deleteTexture(t);}this.textures.clear();if(this.surface){gl.deleteTexture(this.surface);this.surface=null;}this.gl=null;}
+      render(matrices,visibility={}){const gl=this.gl;if(!gl)return;const mvp=matrices&&matrices.mvp?matrices.mvp:matrices;const view=matrices&&matrices.view?matrices.view:this.identityView;gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);gl.useProgram(this.program);gl.uniformMatrix4fv(this.uniforms.uMatrix,false,mvp);if(this.uniforms.uView)gl.uniformMatrix4fv(this.uniforms.uView,false,view);
         const du=this.dioramaUniforms||{lightDir:[-.45,1,-.48],ambient:.34,shadow:.42,fogDensity:0,fogColor:[.37,.56,.61]};
         if(this.uniforms.uLightDir)gl.uniform3fv(this.uniforms.uLightDir,du.lightDir);
         if(this.uniforms.uAmbient)gl.uniform1f(this.uniforms.uAmbient,du.ambient);
@@ -1649,10 +1651,15 @@ export function mountAtlasPrototype3d(host, options = {}) {
     function pointerUp(e){if(labelDrag){endLabelDrag(e);return;}if(!pointer)return;if(pointer.mode==='select'){productEndSelectDrag();pointer=null;stage.classList.remove('drag');try{stage.releasePointerCapture(e.pointerId);}catch{}drawFrame();return;}if(pointer.mode==='height'){buildManualGeometry();persist();}else if(pointer.mode==='wall'||pointer.mode==='room'){const m=atStageEvent(e),p=screenToWorld(m.x,m.y),dist=Math.hypot(p.x-pointer.point.x,p.z-pointer.point.z);if(dist>cameraState.span*.015){if(pointer.mode==='wall')state.walls.push({id:'w'+Date.now(),level:activeLevel==='room'?'dungeon':activeLevel,start:[pointer.point.x,pointer.point.z],end:[p.x,p.z],...(productMap?{width:productWallWidth()}:{})});else{state.rooms=state.rooms||[];state.rooms.push({id:'r'+Date.now(),level:activeLevel==='room'?'dungeon':activeLevel,start:[pointer.point.x,pointer.point.z],end:[p.x,p.z],material});}buildManualGeometry();persist();toast(pointer.mode==='wall'?'3D-Wand gezeichnet':'3D-Raum erstellt');}else history.pop();}else if(pointer.mode==='paint'){drawStrokes();for(const k of Object.keys(mapConfigs))engine?.uploadTexture(k,mapCanvases[k]);buildManualGeometry();persist();}pointer=null;stage.classList.remove('drag');try{stage.releasePointerCapture(e.pointerId);}catch{}drawFrame();}
     function generate(){if(productMap){toast('Dungeon-Generator gibt es nur in der Demo-Karte');return;}const seed=clamp(Math.floor(Number($('dungeonSeed').value)||42817),1,999999999),rooms=clamp(Math.floor(Number($('roomCount').value)||22),10,48);snapshot();state.seed=seed;state.roomCount=rooms;state.theme=$('dungeonTheme').value;dungeon=dungeonGenerate(state.seed,state.roomCount);updateRoomAnchor();buildDungeonGeometry();buildManualGeometry();persist();toast(`Dungeon erstellt · ${dungeon.rooms.length} Räume · Seed ${state.seed}`);goTo('dungeon');}
     function animate3d(){/* idle: no continuous RAF — was causing perceived drift with layout/hotspot updates */}
-    function activate3D(){let gpu=false;try{if(graphicsPreset.preferSoftwareFallback)throw new Error('graphics-preset-lite');engine=new AtlasGL(renderCanvas);gpu=true;}catch(err){glError=err;console.info('WebGL nicht verfügbar, dieselben 3D-Meshes per Canvas-Projektion gerendert.');engine=new AtlasLite3D(fallbackCanvas);host.setAttribute('data-atlas-graphics-fallback','lite3d');}
+    function activate3D(){let gpu=false;try{if(graphicsPreset.preferSoftwareFallback)throw new Error('graphics-preset-lite');if(engine&&typeof engine.dispose==='function'){try{engine.dispose();}catch{}}engine=new AtlasGL(renderCanvas);gpu=true;host.removeAttribute('data-atlas-graphics-fallback');host.setAttribute('data-atlas-webgl-context','ok');host.removeAttribute('data-atlas-webgl-lost');}catch(err){glError=err;console.info('WebGL nicht verfügbar, dieselben 3D-Meshes per Canvas-Projektion gerendert.');if(engine&&typeof engine.dispose==='function'){try{engine.dispose();}catch{}}engine=new AtlasLite3D(fallbackCanvas);host.setAttribute('data-atlas-graphics-fallback','lite3d');host.setAttribute('data-atlas-webgl-context','fallback');}
     renderCanvas.classList.toggle('hidden',!gpu);fallbackCanvas.classList.toggle('hidden',gpu);buildEverything();syncRendererSize();$('engineState').textContent=gpu?'WEBGL · ECHTES 3D · OFFLINE':'3D · SOFTWARE-RENDERER · OFFLINE';window.__sagatree3DReady=true;drawFrame();root.setAttribute('data-atlas-ready','true');
     // Second paint after host layout settles (tab switch often mounts with 0×0 stage first).
     requestAnimationFrame(()=>{if(disposed)return;syncRendererSize();drawFrame();requestAnimationFrame(()=>{if(disposed)return;syncRendererSize();drawFrame();});});}
+    /* ATL2-G02 — WebGL context loss: release meshes, mark lost, restore without unbounded growth. */
+    function onWebglContextLost(ev){ev.preventDefault();host.setAttribute('data-atlas-webgl-lost','true');host.setAttribute('data-atlas-webgl-context','lost');window.__sagatree3DReady=false;if(engine&&typeof engine.dispose==='function'){try{engine.dispose();}catch{}}engine=null;}
+    function onWebglContextRestored(){if(disposed)return;host.removeAttribute('data-atlas-webgl-lost');activate3D();}
+    renderCanvas.addEventListener('webglcontextlost',onWebglContextLost,{passive:false});
+    renderCanvas.addEventListener('webglcontextrestored',onWebglContextRestored);
 
 
     function dungeonTexture(){if(productMap)return productBlankCanvas();const cv=document.createElement('canvas');cv.width=1200;cv.height=800;const ctx=cv.getContext('2d'),r=hashseed(565);ctx.fillStyle='#202a2d';ctx.fillRect(0,0,cv.width,cv.height);for(let i=0;i<34000;i++){const x=r()*1200,y=r()*800,a=r()*.10;ctx.fillStyle=r()>.5?`rgba(165,170,153,${a})`:`rgba(8,17,21,${a})`;ctx.fillRect(x,y,r()*5+1,r()*5+1);}for(let i=0;i<150;i++){const x=r()*1200,y=r()*800;ctx.strokeStyle='rgba(8,16,19,.15)';ctx.lineWidth=r()*1.5+.4;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+r()*38-19,y+r()*32-16);ctx.stroke();}const grad=ctx.createRadialGradient(600,400,180,600,400,850);grad.addColorStop(0,'#00000000');grad.addColorStop(1,'#00000099');ctx.fillStyle=grad;ctx.fillRect(0,0,1200,800);return cv;}
@@ -1845,7 +1852,17 @@ export function mountAtlasPrototype3d(host, options = {}) {
     disposeRuntime = function __disposeAtlasPrototype() {
       try { if (typeof renderLoop !== 'undefined' && renderLoop) cancelAnimationFrame(renderLoop); } catch (e) {}
       try { if (typeof animID !== 'undefined' && animID) cancelAnimationFrame(animID); } catch (e) {}
+      try {
+        renderCanvas.removeEventListener('webglcontextlost', onWebglContextLost);
+        renderCanvas.removeEventListener('webglcontextrestored', onWebglContextRestored);
+      } catch (e) {}
+      try { if (engine && typeof engine.dispose === 'function') engine.dispose(); } catch (e) {}
+      engine = null;
       try { delete window.__sagatreeAtlas; delete window.__sagatree3DReady; } catch (e) {}
+      try {
+        host.removeAttribute('data-atlas-webgl-lost');
+        host.setAttribute('data-atlas-webgl-context', 'disposed');
+      } catch (e) {}
     };
   }
 
