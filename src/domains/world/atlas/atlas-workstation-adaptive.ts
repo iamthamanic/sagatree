@@ -162,9 +162,10 @@ export function resolveAtlasGestureDisambiguation(input: {
   else mode = 'draw';
 
   if (mode === 'pan' || mode === 'navigate') {
+    /* Keep touch-action:none — camera pan is custom (atlasPanBy), not browser scroll. */
     return {
       mode,
-      touchActionCss: 'pan-x pan-y',
+      touchActionCss: 'none',
       pointerPrimary,
       labelDe:
         mode === 'navigate'

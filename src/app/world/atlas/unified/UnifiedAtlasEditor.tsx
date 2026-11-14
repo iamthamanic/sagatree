@@ -215,6 +215,10 @@ export type UnifiedAtlasEditorProps = {
   /** Product surface (3D vs Draufsicht); pass it to keep the choice across map remounts. */
   readonly surfaceMode?: '3d' | '2d';
   readonly onSurfaceModeChange?: (mode: '3d' | '2d') => void;
+  /** ATL2-G03 — Ctrl/Cmd+S from editor keyboard catalog. */
+  readonly onRequestSave?: () => void;
+  /** ATL2-G03 — WebGL mount failure for workbench surface state. */
+  readonly onWebglMountError?: (message: string | null) => void;
   /** Host actions shown in the Draufsicht surface bar (Golden, Voll/Spieleransicht, Speichern). */
   readonly surfaceActions?: ReactNode;
   /** Optional floating chrome on the canvas (e.g. Karten hierarchy rail). */
@@ -469,6 +473,8 @@ export function UnifiedAtlasEditor({
   mapPins = null,
   surfaceMode: surfaceModeProp,
   onSurfaceModeChange,
+  onRequestSave,
+  onWebglMountError,
   surfaceActions = null,
   canvasLeftRail = null,
   mapKey = 'map',
@@ -2052,6 +2058,38 @@ export function UnifiedAtlasEditor({
         setAreaHint(null);
         return;
       }
+      const target = ev.target as HTMLElement | null;
+      const tag = target?.tagName;
+      const typing =
+        tag === 'INPUT' ||
+        tag === 'TEXTAREA' ||
+        tag === 'SELECT' ||
+        Boolean(target?.isContentEditable);
+      /* ATL2-G03 — advertised shortcuts (skip while typing). */
+      if (!typing && !ev.defaultPrevented) {
+        const mod = ev.metaKey || ev.ctrlKey;
+        const key = ev.key.length === 1 ? ev.key.toLowerCase() : ev.key;
+        if (mod && key === 'z' && !ev.shiftKey && !ev.altKey) {
+          ev.preventDefault();
+          undo();
+          return;
+        }
+        if (mod && ((key === 'z' && ev.shiftKey) || key === 'y') && !ev.altKey) {
+          ev.preventDefault();
+          redo();
+          return;
+        }
+        if (mod && key === 's' && !ev.shiftKey && !ev.altKey) {
+          ev.preventDefault();
+          onRequestSave?.();
+          return;
+        }
+        if (!mod && !ev.altKey && (key === 'h' || key === 'H')) {
+          ev.preventDefault();
+          setTool('hand');
+          return;
+        }
+      }
       if (
         !locateSession &&
         tool !== 'area' &&
@@ -2063,16 +2101,7 @@ export function UnifiedAtlasEditor({
           ctrlKey: ev.ctrlKey,
         }) === 'back'
       ) {
-        const target = ev.target as HTMLElement | null;
-        const tag = target?.tagName;
-        if (
-          tag === 'INPUT' ||
-          tag === 'TEXTAREA' ||
-          tag === 'SELECT' ||
-          target?.isContentEditable
-        ) {
-          return;
-        }
+        if (typing) return;
         if (ev.defaultPrevented) return;
         ev.preventDefault();
         onHierarchyBack();
@@ -2089,6 +2118,9 @@ export function UnifiedAtlasEditor({
     locateSession,
     onLocateCancel,
     onHierarchyBack,
+    undo,
+    redo,
+    onRequestSave,
   ]);
 
   const handleDefinePlace = async (req: AtlasDefinePlaceRequest) => {
@@ -2435,6 +2467,7 @@ export function UnifiedAtlasEditor({
           onNavDuplicate={canEdit ? onWebglNavDuplicate : undefined}
           onNavArchive={canEdit ? onWebglNavArchive : undefined}
           onNavReparent={canEdit ? onWebglNavReparent : undefined}
+          onWebglMountError={onWebglMountError}
         />
       </div>
     );

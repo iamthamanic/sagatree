@@ -142,6 +142,8 @@ export function WorldAtlasWorkbench({
   const [placeNavTick, setPlaceNavTick] = useState(0);
   const [activePlaceId, setActivePlaceId] = useState<string | null>(null);
   const [atlasSurfaceMode, setAtlasSurfaceMode] = useState<'3d' | '2d'>('3d');
+  /** ATL2-G03 — WebGL mount failure → surface webgl-fallback + force Draufsicht. */
+  const [webglMountFailed, setWebglMountFailed] = useState(false);
   const [webglCreateRequest, setWebglCreateRequest] = useState<WebglNavCreateRequest | null>(
     null,
   );
@@ -407,6 +409,7 @@ export function WorldAtlasWorkbench({
         error: Boolean(editor.error),
         emptyMaps: !editor.loading && !editor.error && editor.summaries.length === 0,
         unlocated: mapUnlocated,
+        webglFallback: webglMountFailed,
         reducedMotion,
       }),
     [
@@ -415,6 +418,7 @@ export function WorldAtlasWorkbench({
       editor.loading,
       editor.summaries.length,
       mapUnlocated,
+      webglMountFailed,
       reducedMotion,
     ],
   );
@@ -1210,6 +1214,15 @@ export function WorldAtlasWorkbench({
               onDocChange={editor.updateCanvasDoc}
               webglRuntime={editor.webglRuntime}
               onWebglRuntimeChange={editor.updateWebglRuntime}
+              onRequestSave={() => {
+                void editor.saveCanvas().catch(() => {
+                  /* error stays on editor.error */
+                });
+              }}
+              onWebglMountError={(message) => {
+                setWebglMountFailed(Boolean(message));
+                if (message) setAtlasSurfaceMode('2d');
+              }}
               dungeonMeta={editor.dungeonMeta}
               onDungeonMetaChange={editor.updateDungeonMeta}
               locateSession={

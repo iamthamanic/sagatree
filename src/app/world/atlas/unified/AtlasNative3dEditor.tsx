@@ -111,6 +111,8 @@ export type AtlasNative3dEditorProps = {
     readonly span: number;
     readonly mode: 'ortho-topdown' | 'diorama-oblique' | 'perspective';
   }) => void;
+  /** ATL2-G03 — mount failure so workbench can enter webgl-fallback + switch to 2D. */
+  readonly onWebglMountError?: (message: string | null) => void;
 };
 /** Rebrand leftover prototype copy to SagaTree product wording. */
 function applySagaTreeCopy(host: HTMLElement): void {
@@ -344,6 +346,7 @@ export function AtlasNative3dEditor({
   dungeonLookDoc = null,
   navRestoreView = null,
   onNavViewChange,
+  onWebglMountError,
 }: AtlasNative3dEditorProps) {
   const hostRef = useRef<HTMLDivElement>(null);
   const mountRef = useRef<AtlasNativeMountHandle | null>(null);
@@ -351,6 +354,8 @@ export function AtlasNative3dEditor({
   persistRef.current = onPersist;
   const onNavViewChangeRef = useRef(onNavViewChange);
   onNavViewChangeRef.current = onNavViewChange;
+  const onWebglMountErrorRef = useRef(onWebglMountError);
+  onWebglMountErrorRef.current = onWebglMountError;
   const navRestoreViewRef = useRef(navRestoreView);
   navRestoreViewRef.current = navRestoreView;
   const navSelectRef = useRef(onNavSelect);
@@ -567,8 +572,12 @@ export function AtlasNative3dEditor({
         });
       }, 500);
       setError(null);
+      onWebglMountErrorRef.current?.(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : '3D-Atlas konnte nicht gestartet werden.');
+      const message =
+        err instanceof Error ? err.message : '3D-Atlas konnte nicht gestartet werden.';
+      setError(message);
+      onWebglMountErrorRef.current?.(message);
     }
     return () => {
       window.clearTimeout(copyTimer);

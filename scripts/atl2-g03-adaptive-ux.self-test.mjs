@@ -38,6 +38,19 @@ assert.ok(wbSrc.includes('data-atlas-surface-state'));
 assert.ok(wbSrc.includes('data-atlas-surface-live'));
 assert.ok(wbSrc.includes('prefers-reduced-motion'));
 assert.ok(wbSrc.includes('resolveAtlasWorkstationSurfaceState'));
+assert.ok(wbSrc.includes('webglFallback'));
+assert.ok(wbSrc.includes('onWebglMountError'));
+assert.ok(wbSrc.includes('onRequestSave'));
+const edSrc = readFileSync(join(root, 'src/app/world/atlas/unified/UnifiedAtlasEditor.tsx'), 'utf8');
+assert.ok(edSrc.includes("key === 's'"));
+assert.ok(edSrc.includes('onRequestSave?.()'));
+assert.ok(edSrc.includes('undo()'));
+assert.ok(edSrc.includes("setTool('hand')"));
+const nativeSrc = readFileSync(
+  join(root, 'src/app/world/atlas/unified/AtlasNative3dEditor.tsx'),
+  'utf8',
+);
+assert.ok(nativeSrc.includes('onWebglMountError'));
 
 const ad = jiti(join(root, 'src/domains/world/atlas/atlas-workstation-adaptive.ts'));
 
@@ -55,7 +68,8 @@ const pan = ad.resolveAtlasGestureDisambiguation({
   band: 'phone',
 });
 assert.equal(pan.mode, 'pan');
-assert.equal(pan.touchActionCss, 'pan-x pan-y');
+/* Custom atlasPanBy — browser must not claim the gesture (Codex P1). */
+assert.equal(pan.touchActionCss, 'none');
 
 const draw = ad.resolveAtlasGestureDisambiguation({
   tool: 'paint',
