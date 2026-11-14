@@ -161,7 +161,8 @@
       "ai.host-invoke",
       "host-product-deny.unavailable-result",
       "inventory-persistence.persist-migrated",
-      "ai.aiberto-ask"
+      "ai.aiberto-ask",
+      "ai.aiberto-tools"
     ],
     "1156": [],
     "1157": [
@@ -1774,6 +1775,20 @@
       "notes": "AIB-05 FE client for AIB-04 host aiberto-ask; cookie SSE; no Supabase path"
     },
     {
+      "stableKey": "ai.aiberto-tools",
+      "historicalCaller": "src/infrastructure/ai/aiberto-tools-service.ts",
+      "uiJourney": "Aiberto Companion Tool-Activity",
+      "previousBehavior": "n/a (new host-only Read/Nav tools)",
+      "hostSuccessor": "GET/POST /api/v1/ai/aiberto-tools/*",
+      "dataOwner": "ai",
+      "risk": "medium",
+      "classification": "HOST_VERIFIED",
+      "issueRef": 1155,
+      "evidenceTest": "scripts/aiberto-aib-06-tools-read.self-test.mjs",
+      "featureAvailableBeforeCutover": false,
+      "notes": "AIB-06 FE client for Read/Nav tools; cookie credentials; no Supabase path"
+    },
+    {
       "stableKey": "lib.supabase-client-invoke",
       "historicalCaller": "src/lib/supabase-client.ts",
       "uiJourney": "Edge wrappers",
@@ -1971,10 +1986,10 @@
     }
   ],
   "counts": {
-    "HOST_VERIFIED": 124,
+    "HOST_VERIFIED": 125,
     "PARITY_MISSING": 0,
     "LEGACY_UNUSED": 3,
-    "total": 127
+    "total": 128
   },
   "followUpIssues": {
     "1158": "CUT-23 final host-only parity closer"

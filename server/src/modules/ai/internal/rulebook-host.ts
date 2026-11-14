@@ -30,6 +30,14 @@ export type HostRulebookIndex = {
   sections: readonly unknown[];
 };
 
+export type HostRulebookSection = {
+  readonly id: string;
+  readonly title: string;
+  readonly number: string | null;
+  readonly body: string;
+  readonly normativity: string;
+};
+
 export type RulebookHostApi = {
   readonly getSagaTreeCoreRulebookIndex: () => HostRulebookIndex;
   readonly searchRulebook: (
@@ -37,6 +45,11 @@ export type RulebookHostApi = {
     query: string,
     options?: { limit?: number },
   ) => HostRulebookSearchHit[];
+  /** AIB-06 — optional until older packaged runtimes are rebuilt. */
+  readonly getRulebookSection?: (
+    index: HostRulebookIndex,
+    sectionId: string,
+  ) => HostRulebookSection | null;
   readonly evidenceGate: (hits: readonly HostRulebookSearchHit[]) =>
     | { ok: true; hits: readonly HostRulebookSearchHit[] }
     | { ok: false; reason: 'no-evidence' };
