@@ -1,6 +1,6 @@
 # Composition Gate — aiberto-aib-05-chat-ui
 
-- HEAD_SHA: 39c28ce32c05492f79ebdf1494a1d56e08cbee81
+- HEAD_SHA: c25af4af11a8fddeaa7867ecc2c489f95422351d
 - BASE_SHA: 5f8f9de01593d99e3280e171cf7ccb804b4c620e
 - Date: 2026-11-14
 - Verdict: CLEAR
