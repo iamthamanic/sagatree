@@ -1,6 +1,6 @@
 # Composition Gate — aiberto-aib-04-ask-host
 
-- HEAD_SHA: 91def1616e8a3c61825765369b790a92a18f148d
+- HEAD_SHA: a2204d61ee0f80114be32dacf6624638745caf10
 - BASE_SHA: 4d19ef7c8fcc5b0e16d1c51628fc82cb49e01174
 - Date: 2026-11-14
 - Verdict: CLEAR
@@ -8,30 +8,28 @@
 
 ## Event
 
-AIB-04 Host `aiberto-ask` + text inference port + evidence/citation validation (#1127).
-Implementation commit: `91def1616`. Subsequent docs-only commits pin this proof for PR #1286.
+AIB-04 Host `aiberto-ask` + text inference + evidence/citations (#1127).
+Codex P1/P2 addressed in `a2204d61e` (packaged host-runtime, Compose AIBERTO_*, provider precedence, TIMEOUT).
 
 ## Hop chain
 
-1. **Producer:** `src/domains/rulebook` (search + citations) via `generated/host-runtime.mjs`
-2. **Gate:** `application/aiberto-ask` — flag → auth → policy `aiberto.ask` → quota → evidence → text inference → citation validate
-3. **Consumer:** HTTP `POST /api/v1/ai/aiberto-ask` (+ `/stream` SSE) for AIB-05 UI later
+1. **Producer:** `domains/rulebook` + packaged `server/src/modules/ai/internal/generated/host-runtime.mjs`
+2. **Gate:** `application/aiberto-ask` (flag → auth/policy → quota → evidence → text-inference → citations)
+3. **Consumer:** HTTP `POST /api/v1/ai/aiberto-ask` (+ `/stream`). No FE chat (AIB-05).
 
 ## Simulations
 
 | Case | Intended | Composed | Result |
 |------|----------|----------|--------|
-| Text port | media modalities unchanged | `AiModality` still image\|3d\|video\|audio; `inferText` separate | pass |
-| No evidence | unanswered, no LLM | empty/unknown query → unanswered | pass |
-| Fake citation | drop / unanswered | validateCitations drops stc-fake | pass |
-| Flag off | disabled | `AIBERTO_CHAT_ENABLED` default off | pass |
-| Auth deny | 401/403 | missing actor / policy deny | pass |
-| Quota | 429 + secret scrub | rate-limit + stripTextInferenceSecrets | pass |
-| No UI | host-only | no Layout/App/ai-assistant chat | pass |
+| Docker image | runtime in server/src | packaged host-runtime.mjs | pass |
+| Flag off | disabled | AIBERTO_CHAT_ENABLED default empty | pass |
+| No evidence | unanswered | empty search | pass |
+| Fake citation | drop | validateCitations | pass |
+| AIBERTO_AI_* | wins over CHARACTER_* | resolve order | pass |
+| Timeout | TIMEOUT | mapFetchError | pass |
 
 ## Flags
 
 | Tag | Severity | Hops | Why local review missed it | Fix |
 |-----|----------|------|----------------------------|-----|
 | (none) | — | — | — | — |
-
