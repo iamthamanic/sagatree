@@ -3693,6 +3693,15 @@ function checkAnalogEndToEndPlaytestValidation() {
   });
 }
 
+function checkAibertoAib01RulebookIndex() {
+  // AIB-01/#1124 — keep far from Atlas world-atlas test-gate hunks (e.g. PR #1283).
+  console.log('Aiberto AIB-01 rulebook index (#1124): deterministic index + search + EB pilot...');
+  execFileSync(process.execPath, ['scripts/aiberto-aib-01-rulebook-index.self-test.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
+}
+
 function checkPowersEssencesValidation() {
   console.log('Powers/essences validation (#25): deterministic §12 power model audit...');
   execFileSync(process.execPath, ['scripts/validate-powers-essences-ranks.mjs'], {
@@ -4414,6 +4423,7 @@ checkTravelChaseVehiclesValidation();
 checkCharacterEditorRulesUxValidation();
 checkGearResourcesLoadValidation();
 checkAnalogEndToEndPlaytestValidation();
+checkAibertoAib01RulebookIndex();
 checkAssetLicenseInventory();
 scanAddedLinesForSecrets();
 reportDependencyAudit();
