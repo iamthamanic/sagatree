@@ -42,9 +42,10 @@ check(/name: 'mobile-chrome'/.test(config), 'mobile-chrome project');
 check(/name: 'tablet-chrome'/.test(config), 'tablet-chrome project');
 check(/name: 'chromium'/.test(config), 'chromium desktop project');
 check(
-  /testMatch: \/\(\?:adaptive-ui-quality\|golden-mobile-journeys\)\\.spec\\.ts\//.test(config) ||
-    /testMatch: \/adaptive-ui-quality\\.spec\\.ts\//.test(config),
-  'mobile/tablet testMatch limit (adaptive ± golden journeys)',
+  /testMatch: \/\(\?:adaptive-ui-quality\|golden-mobile-journeys(?:\|aiberto-phase-a)?\)\\.spec\\.ts\//.test(
+    config,
+  ) || /testMatch: \/adaptive-ui-quality\\.spec\\.ts\//.test(config),
+  'mobile/tablet testMatch limit (adaptive ± golden journeys ± aiberto-phase-a)',
 );
 check(/Pixel 7/.test(config), 'Pixel 7 phone device');
 check(/iPad Mini/.test(config), 'iPad Mini tablet device');

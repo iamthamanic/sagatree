@@ -371,7 +371,7 @@ export function Layout({ children, currentView, onNavigate }: LayoutProps) {
                         : 'hover:bg-muted'
                     }`}
                     title="Aiberto"
-                    aria-label="Aiberto Regelbuch"
+                    aria-label="Aiberto Companion"
                     aria-pressed={aibertoOpen}
                     data-aiberto-toggle="mobile-header"
                   >

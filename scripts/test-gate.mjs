@@ -3716,6 +3716,15 @@ function checkAibertoAib02CompanionUi() {
   });
 }
 
+function checkAibertoAib03PhaseAQa() {
+  // AIB-03/#1126 — Phase-A QA; keep with AIB-01/02; avoid Atlas #1283 hunks.
+  console.log('Aiberto AIB-03 Phase-A QA (#1126): e2e journeys + NFR-001 search latency...');
+  execFileSync(process.execPath, ['scripts/aiberto-aib-03-phase-a-qa.self-test.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
+}
+
 function checkAibertoAib04AskHost() {
   // AIB-04/#1127 — host aiberto-ask; keep adjacent to AIB-01, away from Atlas #1283 / AIB-02 Layout.
   console.log('Aiberto AIB-04 ask host (#1127): text port + evidence/citations + quota...');
@@ -4457,6 +4466,7 @@ checkGearResourcesLoadValidation();
 checkAnalogEndToEndPlaytestValidation();
 checkAibertoAib01RulebookIndex();
 checkAibertoAib02CompanionUi();
+checkAibertoAib03PhaseAQa();
 checkAibertoAib04AskHost();
 checkAibertoAib05ChatUi();
 checkAssetLicenseInventory();

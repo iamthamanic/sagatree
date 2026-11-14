@@ -257,7 +257,9 @@ export function AibertoToggleButton({
       aria-pressed={open}
       data-aiberto-toggle
       className={`flex items-center rounded-lg text-sm transition-colors focus-visible:ring-2 focus-visible:ring-primary ${
-        compact ? 'justify-center px-2 py-3' : 'gap-3 px-4 py-3'
+        compact
+          ? 'min-h-11 min-w-11 justify-center px-2 py-3'
+          : 'gap-3 px-4 py-3'
       } ${
         open
           ? 'bg-primary text-primary-foreground hover:bg-accent hover:text-accent-foreground'
