@@ -682,3 +682,24 @@ export {
   type AtlasGoldenVisualViewportId,
 } from './atlas-golden-visual';
 
+export {
+  ATLAS_G05_DEVICE_VIEWPORTS,
+  ATLAS_G05_EVIDENCE_FORMAT,
+  ATLAS_G05_FRAME_P95_MS_CI_SOFTWARE,
+  ATLAS_G05_FRAME_P95_MS_SOFT,
+  ATLAS_G05_REQUIRED_CHECK_IDS,
+  atlasG05FrameBudgetMs,
+  atlasG05PercentileMs,
+  atlasG05SceneFixturesCoverHierarchy,
+  buildAtlasG05ChecksFromEvidence,
+  emptyAtlasG05Checks,
+  rollupAtlasG05Checks,
+  summarizeAtlasG05FrameSample,
+  type AtlasG05CheckId,
+  type AtlasG05CheckResult,
+  type AtlasG05CheckStatus,
+  type AtlasG05DeviceProbe,
+  type AtlasG05Evidence,
+  type AtlasG05FrameSample,
+} from './atlas-gate-g05';
+
