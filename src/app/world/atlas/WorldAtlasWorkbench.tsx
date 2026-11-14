@@ -61,7 +61,9 @@ import {
   navigateBack,
   navigateToAncestor,
   peekRestoredCamera,
+  atlasWorkstationSurfaceLabelDe,
   resolveAtlasWorkstationComposition,
+  resolveAtlasWorkstationSurfaceState,
   type AtlasHierarchyMapRef,
   type AtlasHierarchyNavState,
   type AtlasNavCameraView,
@@ -174,6 +176,15 @@ export function WorldAtlasWorkbench({
       ),
     [contentBand],
   );
+  const [reducedMotion, setReducedMotion] = useState(false);
+  useEffect(() => {
+    if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return;
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const sync = () => setReducedMotion(mq.matches);
+    sync();
+    mq.addEventListener('change', sync);
+    return () => mq.removeEventListener('change', sync);
+  }, []);
 
   const runGoldenReset = useCallback(
     async (mode: DornhainGoldenResetMode) => {
@@ -388,6 +399,26 @@ export function WorldAtlasWorkbench({
     Boolean(worldProfileId.trim()) &&
     (editor.loading || editor.summaries.length > 0);
   const layoutExact = protoExact || atlasBooting;
+  /** ATL2-G03 — adaptive surface state for aria/live + band chrome. */
+  const workstationSurfaceState = useMemo(
+    () =>
+      resolveAtlasWorkstationSurfaceState({
+        loading: atlasBooting || editor.loading,
+        error: Boolean(editor.error),
+        emptyMaps: !editor.loading && !editor.error && editor.summaries.length === 0,
+        unlocated: mapUnlocated,
+        reducedMotion,
+      }),
+    [
+      atlasBooting,
+      editor.error,
+      editor.loading,
+      editor.summaries.length,
+      mapUnlocated,
+      reducedMotion,
+    ],
+  );
+  const workstationSurfaceLabelDe = atlasWorkstationSurfaceLabelDe(workstationSurfaceState);
 
   const worldPrimaryMapId = useMemo(() => {
     const worldSummary = editor.summaries.find((s) => s.kind === 'world');
@@ -811,7 +842,17 @@ export function WorldAtlasWorkbench({
       data-atlas-use-sheets={workstationComposition.useSheetsForChrome ? 'true' : undefined}
       data-atlas-booting={atlasBooting ? 'true' : undefined}
       data-atlas-controlled-store={protoExact ? 'true' : undefined}
+      data-atlas-surface-state={workstationSurfaceState}
+      data-atlas-reduced-motion={reducedMotion ? 'true' : undefined}
     >
+      <p
+        className="sr-only"
+        role="status"
+        aria-live="polite"
+        data-atlas-surface-live
+      >
+        {workstationSurfaceLabelDe}
+      </p>
       {/* Skip title/rail chrome while booting — avoids <1s menu flash before 3D map. */}
       {(!protoExact && !atlasBooting) || onBack ? (
         <header

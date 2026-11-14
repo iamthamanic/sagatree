@@ -57,6 +57,7 @@ import {
   emptyWebglRuntime,
   parseWebglRuntimeState,
   atlasInteractionModeLabelDe,
+  resolveAtlasGestureDisambiguation,
   beginAtlasEditBatch,
   cancelAtlasEditBatch,
   canAtlasRedo,
@@ -536,6 +537,16 @@ export function UnifiedAtlasEditor({
   );
 
   const [tool, setTool] = useState<UnifiedCanvasTool>('hand');
+  /** ATL2-G03 — pan vs draw touch-action for adaptive gesture disambiguation. */
+  const gesture = useMemo(
+    () =>
+      resolveAtlasGestureDisambiguation({
+        tool,
+        pointerType: 'touch',
+        band: 'phone',
+      }),
+    [tool],
+  );
   const [material, setMaterial] = useState<UnifiedCanvasMaterial>('gras');
   const [areaDraft, setAreaDraft] = useState<readonly (readonly [number, number])[]>([]);
   const areaDraftRef = useRef(areaDraft);
@@ -2647,10 +2658,12 @@ export function UnifiedAtlasEditor({
           </div>
           <div
             ref={stageRef}
-            className={`relative min-h-[min(70vh,40rem)] flex-1 touch-none overflow-hidden rounded-lg border border-border bg-[#10212a] ${
-              locateSession || pinArmed || marqueeArmed ? 'cursor-crosshair' : ''
-            }`}
+            className={`relative min-h-[min(70vh,40rem)] flex-1 overflow-hidden rounded-lg border border-border bg-[#10212a] ${
+              gesture.mode === 'pan' || gesture.mode === 'navigate' ? '' : 'touch-none'
+            } ${locateSession || pinArmed || marqueeArmed ? 'cursor-crosshair' : ''}`}
+            style={{ touchAction: gesture.touchActionCss }}
             data-unified-atlas-viewport
+            data-atlas-gesture-mode={gesture.mode}
             data-tool={
               locateSession ? 'locate' : pinArmed ? 'pin' : marqueeArmed ? 'marquee' : tool
             }

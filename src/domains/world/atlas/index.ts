@@ -539,15 +539,29 @@ export {
 
 export {
   ATLAS_CONTENT_WIDTH_FLOOR_PX,
+  ATLAS_KEYBOARD_SHORTCUTS,
+  ATLAS_MIN_TOUCH_TARGET_PX,
   ATLAS_PHONE_CONTENT_MAX_PX,
   ATLAS_SIDE_RAIL_MIN_PX,
   ATLAS_TABLET_CONTENT_MAX_PX,
+  atlasChromeOverflowSafe,
   atlasContentWidthUsable,
+  atlasCriticalControlsForBand,
   atlasInteractionModeLabelDe,
+  atlasKeyboardShortcutsForBand,
+  atlasWorkstationSurfaceLabelDe,
   resolveAtlasAdaptiveBand,
+  resolveAtlasGestureDisambiguation,
   resolveAtlasWorkstationComposition,
+  resolveAtlasWorkstationSurfaceState,
   type AtlasAdaptiveBand,
+  type AtlasCriticalControlId,
+  type AtlasGestureDisambiguation,
+  type AtlasGestureMode,
+  type AtlasKeyboardShortcut,
   type AtlasWorkstationComposition,
+  type AtlasWorkstationSurfaceState,
+  type ResolveAtlasSurfaceStateInput,
 } from './atlas-workstation-adaptive';
 
 export {
