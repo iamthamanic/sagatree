@@ -1,10 +1,14 @@
 # Composition Gate — aiberto-aib-01-rulebook-index
 
-- HEAD_SHA: d768d5900da93adb66b350e9007442ad3c0f69e6
+- HEAD_SHA: 9bfe17680ba01baa04da79ea3c9a8705e625aef9
+- BASE_SHA: bd8959322b310cd7e049eecf1e11cd0fed868dc9
 - Date: 2026-11-14
 - Verdict: SKIPPED
 - Acceptance tier: domain-index
-- Reason: single-hop application diff without downstream side-effect path (indexer + pure search only; no UI/host consumer yet)
+
+## Skip reason
+
+Single-hop domain indexer + pure search without a downstream UI/host consumer path in this slice (AIB-02/AIB-04 are later consumers). Composer gate analysis: no multi-hop side-effect path requiring CLEAR simulations.
 
 ## Event
 
