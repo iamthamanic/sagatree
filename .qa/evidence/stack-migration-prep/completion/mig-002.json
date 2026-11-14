@@ -4,7 +4,7 @@
   "localId": "MIG-002",
   "result": "PASS",
   "githubClosed": true,
-  "mergeRef": "PR #860 → main (after #782)",
+  "mergeRef": "PR #860 \u2192 main (after #782)",
   "note": "Inventories refreshed after ATL2-R01 (#1266) sync with E04 (#1222/#1275) on main.",
   "checks": [
     {
@@ -26,5 +26,5 @@
       "sha256": "111b191784c6f44aa484f2de0a42f0909c28b7645e26da340ac2752ff014d06d"
     }
   ],
-  "testedCommit": "646f3337c4679d8c88158d0ff67f450e10ecfe93"
+  "testedCommit": "bdfa5611c42239c47c9306417e6212e4c54b2d0b"
 }
