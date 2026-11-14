@@ -5,7 +5,7 @@
   "result": "PASS",
   "githubClosed": true,
   "mergeRef": "PR #860 → main (after #782)",
-  "note": "Inventories regenerated after ATL2-F04 sync with E03/E04 main (#1227).",
+  "note": "Inventories refreshed after ATL2-F04 dungeon look (#1227) sync with E03/E04 main.",
   "checks": [
     {
       "command": "legacy inventory matrix",
@@ -26,5 +26,5 @@
       "sha256": "94e12e36f184901c595d0a6db119b3c5130afe2ee877ae35d9dba28fe147ca1f"
     }
   ],
-  "testedCommit": "aa81be3e067c2455edc4d687fdcc794f20c60030"
+  "testedCommit": "d8ba02d132769fdd546ea6c8077c273a1a89d8a8"
 }
