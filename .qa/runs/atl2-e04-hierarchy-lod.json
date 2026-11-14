@@ -2,7 +2,7 @@
   "slug": "atl2-e04",
   "issue": 1222,
   "verdict": "CLEAR",
-  "generatedAt": "2026-11-14T00:17:52.938Z",
+  "generatedAt": "2026-11-14T00:25:32.633Z",
   "checks": [
     "semantic-lod-bands",
     "load-generation-cancel",

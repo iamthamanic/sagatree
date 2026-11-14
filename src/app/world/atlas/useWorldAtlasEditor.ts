@@ -32,14 +32,17 @@ import {
   reduceAtlasPersistStatus,
   shouldUpgradeDornhainUnifiedToWorld,
   unlocatedChildMapGeneratorMeta,
+  atlasLodFallbackActiveMapId,
   beginAtlasMapLoad,
   bumpAtlasMapCacheEpoch,
   cancelAtlasMapLoad,
   completeAtlasMapLoad,
   createAtlasMapLoadSession,
+  decidePrefetchChildMap,
   failAtlasMapLoad,
   finishAtlasMapTransition,
   invalidateAtlasMapCache,
+  isAtlasMapCacheFresh,
   putAtlasMapCacheEntry,
   shouldApplyAtlasMapLoad,
   LOD_LOAD_FAILED_DE,
@@ -48,6 +51,8 @@ import {
   type AtlasPersistStatus,
   type DornhainGoldenResetMode,
   type DungeonGeneratorMeta,
+  type MapFrameMeta,
+  type PrefetchChildDecision,
   type UnifiedCanvasDoc,
   type WorldAtlasFeatureCollection,
   type WorldAtlasMapKind,
@@ -115,6 +120,12 @@ export function useWorldAtlasEditor({
   dungeonMetaRef.current = dungeonMeta;
   const lodSessionRef = useRef(lodSession);
   lodSessionRef.current = lodSession;
+  const mapCacheRef = useRef(mapCache);
+  mapCacheRef.current = mapCache;
+  /** Warm VMs from ATL2-E04 prefetch — consulted before network on drill. */
+  const prefetchedVmRef = useRef<Record<string, WorldAtlasMapVm>>({});
+  const activeMapIdRef = useRef(activeMapId);
+  activeMapIdRef.current = activeMapId;
   const saveInFlightRef = useRef(false);
   const persistStatusRef = useRef<AtlasPersistStatus>('clean');
   persistStatusRef.current = persistStatus;
@@ -194,6 +205,59 @@ export function useWorldAtlasEditor({
     void reloadList();
   }, [reloadList]);
 
+  const applyLoadedMapVm = useCallback((vm: WorldAtlasMapVm) => {
+    const parsed = extractUnifiedCanvasFromGeneratorMeta(vm.generatorMeta);
+    const upgrade = shouldUpgradeDornhainUnifiedToWorld(vm.generatorMeta, parsed);
+    const nextTitle = normalizeDornhainWorldLayerTitle(vm.title);
+    const titleChanged = nextTitle !== vm.title;
+    const fingerprint = `${vm.id}:${String(vm.updatedAt ?? '')}:${upgrade ? 'up' : 'ok'}`;
+    if (upgrade) {
+      const worldMeta = buildDornhainUnifiedGeneratorMeta();
+      const worldDoc =
+        extractUnifiedCanvasFromGeneratorMeta(worldMeta) ?? emptyUnifiedCanvasDoc(false);
+      setMap({ ...vm, title: nextTitle, generatorMeta: { ...vm.generatorMeta, ...worldMeta } });
+      setCanvasDoc(worldDoc);
+      setWebglRuntime(extractWebglRuntimeFromGeneratorMeta(worldMeta));
+      setDirtyCanvas(true);
+      setPersistStatus((prev) => reduceAtlasPersistStatus(prev, { type: 'edit' }));
+    } else if (titleChanged) {
+      const hydrated = hydrateCanvasFromLegacyWebgl(vm.generatorMeta, true);
+      setMap({ ...vm, title: nextTitle });
+      setCanvasDoc(hydrated.canvas);
+      setWebglRuntime(hydrated.runtime);
+      setDirtyCanvas(true);
+      setPersistStatus((prev) => reduceAtlasPersistStatus(prev, { type: 'edit' }));
+    } else {
+      const hydrated = hydrateCanvasFromLegacyWebgl(vm.generatorMeta, true);
+      setMap(vm);
+      setCanvasDoc(hydrated.canvas);
+      setWebglRuntime(hydrated.runtime);
+      if (hydrated.migrated) {
+        setDirtyCanvas(true);
+        setPersistStatus((prev) => reduceAtlasPersistStatus(prev, { type: 'edit' }));
+      } else {
+        setDirtyCanvas(false);
+        setPersistStatus((prev) => reduceAtlasPersistStatus(prev, { type: 'reload' }));
+      }
+    }
+    if (upgrade || titleChanged) {
+      setSummaries((prev) =>
+        prev.map((s) => (s.id === vm.id ? { ...s, title: nextTitle } : s)),
+      );
+    }
+    setDirtyLayers(null);
+    setDungeonMeta(extractDungeonMetaFromGeneratorMeta(vm.generatorMeta));
+    setMapCache((prev) =>
+      putAtlasMapCacheEntry(prev, {
+        mapId: vm.id,
+        contentFingerprint: fingerprint,
+        cachedAtEpoch: lodSessionRef.current.cacheEpoch,
+      }),
+    );
+    prefetchedVmRef.current[vm.id] = vm;
+    return fingerprint;
+  }, []);
+
   useEffect(() => {
     const id = activeMapId;
     if (!id) {
@@ -214,64 +278,46 @@ export function useWorldAtlasEditor({
     setLoading(true);
     setError(null);
     let disposed = false;
+
+    const commitVm = (vm: WorldAtlasMapVm) => {
+      if (disposed) return;
+      if (!shouldApplyAtlasMapLoad(lodSessionRef.current, generation, id)) return;
+      // Stay in `transitioning` until the workbench fade completes (Codex P2).
+      const transitioned = completeAtlasMapLoad(lodSessionRef.current, generation, id);
+      lodSessionRef.current = transitioned;
+      setLodSession(transitioned);
+      applyLoadedMapVm(vm);
+      bumpContentEpoch();
+    };
+
+    const warmed = prefetchedVmRef.current[id];
+    const warmedFp =
+      warmed != null
+        ? `${warmed.id}:${String(warmed.updatedAt ?? '')}:${
+            shouldUpgradeDornhainUnifiedToWorld(
+              warmed.generatorMeta,
+              extractUnifiedCanvasFromGeneratorMeta(warmed.generatorMeta),
+            )
+              ? 'up'
+              : 'ok'
+          }`
+        : null;
+    if (
+      warmed &&
+      warmedFp &&
+      isAtlasMapCacheFresh(mapCacheRef.current, id, warmedFp, lodSessionRef.current.cacheEpoch)
+    ) {
+      commitVm(warmed);
+      if (!disposed && lodSessionRef.current.generation === generation) setLoading(false);
+      return () => {
+        disposed = true;
+      };
+    }
+
     void worldAtlasService
       .getMap(id, playerView, sagaPublicId)
       .then((vm) => {
-        if (disposed) return;
-        if (!shouldApplyAtlasMapLoad(lodSessionRef.current, generation, id)) return;
-        const transitioned = completeAtlasMapLoad(lodSessionRef.current, generation, id);
-        const ready = finishAtlasMapTransition(transitioned, generation);
-        lodSessionRef.current = ready;
-        setLodSession(ready);
-        const parsed = extractUnifiedCanvasFromGeneratorMeta(vm.generatorMeta);
-        const upgrade = shouldUpgradeDornhainUnifiedToWorld(vm.generatorMeta, parsed);
-        const nextTitle = normalizeDornhainWorldLayerTitle(vm.title);
-        const titleChanged = nextTitle !== vm.title;
-        const fingerprint = `${vm.id}:${String(vm.updatedAt ?? '')}:${upgrade ? 'up' : 'ok'}`;
-        if (upgrade) {
-          const worldMeta = buildDornhainUnifiedGeneratorMeta();
-          const worldDoc =
-            extractUnifiedCanvasFromGeneratorMeta(worldMeta) ?? emptyUnifiedCanvasDoc(false);
-          setMap({ ...vm, title: nextTitle, generatorMeta: { ...vm.generatorMeta, ...worldMeta } });
-          setCanvasDoc(worldDoc);
-          setWebglRuntime(extractWebglRuntimeFromGeneratorMeta(worldMeta));
-          setDirtyCanvas(true);
-          setPersistStatus((prev) => reduceAtlasPersistStatus(prev, { type: 'edit' }));
-        } else if (titleChanged) {
-          const hydrated = hydrateCanvasFromLegacyWebgl(vm.generatorMeta, true);
-          setMap({ ...vm, title: nextTitle });
-          setCanvasDoc(hydrated.canvas);
-          setWebglRuntime(hydrated.runtime);
-          setDirtyCanvas(true);
-          setPersistStatus((prev) => reduceAtlasPersistStatus(prev, { type: 'edit' }));
-        } else {
-          const hydrated = hydrateCanvasFromLegacyWebgl(vm.generatorMeta, true);
-          setMap(vm);
-          setCanvasDoc(hydrated.canvas);
-          setWebglRuntime(hydrated.runtime);
-          if (hydrated.migrated) {
-            setDirtyCanvas(true);
-            setPersistStatus((prev) => reduceAtlasPersistStatus(prev, { type: 'edit' }));
-          } else {
-            setDirtyCanvas(false);
-            setPersistStatus((prev) => reduceAtlasPersistStatus(prev, { type: 'reload' }));
-          }
-        }
-        if (upgrade || titleChanged) {
-          setSummaries((prev) =>
-            prev.map((s) => (s.id === vm.id ? { ...s, title: nextTitle } : s)),
-          );
-        }
-        setDirtyLayers(null);
-        setDungeonMeta(extractDungeonMetaFromGeneratorMeta(vm.generatorMeta));
-        setMapCache((prev) =>
-          putAtlasMapCacheEntry(prev, {
-            mapId: id,
-            contentFingerprint: fingerprint,
-            cachedAtEpoch: lodSessionRef.current.cacheEpoch,
-          }),
-        );
-        bumpContentEpoch();
+        commitVm(vm);
       })
       .catch((err: unknown) => {
         if (disposed) return;
@@ -284,7 +330,13 @@ export function useWorldAtlasEditor({
         lodSessionRef.current = failed;
         setLodSession(failed);
         setError(err instanceof Error ? err.message : LOD_LOAD_FAILED_DE);
-        setMap(null);
+        // Keep previous map mounted; roll React activeMapId back to last ready tip.
+        const fallback = atlasLodFallbackActiveMapId(failed);
+        if (fallback && fallback !== id) {
+          setActiveMapId(fallback);
+        } else if (!fallback) {
+          setMap(null);
+        }
       })
       .finally(() => {
         if (disposed) return;
@@ -302,7 +354,66 @@ export function useWorldAtlasEditor({
         setLodSession(cancelled);
       }
     };
-  }, [activeMapId, playerView, sagaPublicId, bumpContentEpoch]);
+  }, [activeMapId, playerView, sagaPublicId, bumpContentEpoch, applyLoadedMapVm]);
+
+  /** ATL2-E04: finish parent→child fade once UI animation completes. */
+  const finishLodTransition = useCallback((generation: number) => {
+    const next = finishAtlasMapTransition(lodSessionRef.current, generation);
+    lodSessionRef.current = next;
+    setLodSession(next);
+  }, []);
+
+  /**
+   * ATL2-E04: actually prefetch a located child (getMap + soft cache).
+   * Does not bump the active load generation (avoids cancelling an in-flight tip).
+   */
+  const prefetchChildMap = useCallback(
+    async (input: {
+      readonly childMapId: string;
+      readonly childFrame: MapFrameMeta | null;
+      readonly contentFingerprint?: string;
+    }): Promise<PrefetchChildDecision> => {
+      const id = input.childMapId.trim();
+      const fingerprintHint = (input.contentFingerprint ?? id).trim() || id;
+      const decision = decidePrefetchChildMap({
+        childMapId: id,
+        childFrame: input.childFrame,
+        cache: mapCacheRef.current,
+        contentFingerprint: fingerprintHint,
+        cacheEpoch: lodSessionRef.current.cacheEpoch,
+      });
+      if (!decision.ok) return decision;
+      if (decision.reason === 'cache-hit' && prefetchedVmRef.current[id]) {
+        return decision;
+      }
+      try {
+        const vm = await worldAtlasService.getMap(id, playerView, sagaPublicId);
+        if (activeMapIdRef.current === id) {
+          // Tip already switched — load effect owns apply; still warm cache.
+        }
+        const fingerprint = `${vm.id}:${String(vm.updatedAt ?? '')}:${
+          shouldUpgradeDornhainUnifiedToWorld(
+            vm.generatorMeta,
+            extractUnifiedCanvasFromGeneratorMeta(vm.generatorMeta),
+          )
+            ? 'up'
+            : 'ok'
+        }`;
+        prefetchedVmRef.current[id] = vm;
+        setMapCache((prev) =>
+          putAtlasMapCacheEntry(prev, {
+            mapId: id,
+            contentFingerprint: fingerprint,
+            cachedAtEpoch: lodSessionRef.current.cacheEpoch,
+          }),
+        );
+        return { ok: true, reason: 'prefetch' };
+      } catch {
+        return { ok: false, reasonDe: LOD_LOAD_FAILED_DE };
+      }
+    },
+    [playerView, sagaPublicId],
+  );
 
   const updateCanvasDoc = useCallback(
     (next: UnifiedCanvasDoc) => {
@@ -918,5 +1029,7 @@ export function useWorldAtlasEditor({
     autosaveDebounceMs: ATLAS_AUTOSAVE_DEBOUNCE_MS,
     lodSession,
     mapCache,
+    finishLodTransition,
+    prefetchChildMap,
   };
 }

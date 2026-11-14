@@ -54,7 +54,6 @@ import {
   buildAtlasMapPins,
   createAtlasHierarchyNavState,
   defaultAtlasNavCameraView,
-  decidePrefetchChildMap,
   enterChildMap,
   extractMapFrameFromGeneratorMeta,
   isDornhainGoldenRootMap,
@@ -285,13 +284,11 @@ export function WorldAtlasWorkbench({
         setHierarchyNavNotice(result.reasonDe);
         return;
       }
-      // ATL2-E04: record prefetch eligibility (unlocated never pretends scale-true drill).
-      void decidePrefetchChildMap({
+      // ATL2-E04: prefetch located children (getMap + soft cache) before/alongside switch.
+      void editor.prefetchChildMap({
         childMapId: nextMapId,
         childFrame,
-        cache: editor.mapCache,
         contentFingerprint: nextMapId,
-        cacheEpoch: editor.lodSession.cacheEpoch,
       });
       // Parent-space fly-to on the current map, then switch (Codex P1).
       if (result.parentFlyTo && atlasSurfaceMode === '2d') {
@@ -319,11 +316,28 @@ export function WorldAtlasWorkbench({
       editor.activeMapId,
       editor.summaries,
       editor.setActiveMapId,
-      editor.mapCache,
-      editor.lodSession.cacheEpoch,
+      editor.prefetchChildMap,
       atlasSurfaceMode,
     ],
   );
+
+  // ATL2-E04: keep lodSession in `transitioning` until fade completes (Codex P2).
+  useEffect(() => {
+    if (editor.lodSession.phase !== 'transitioning') return;
+    const generation = editor.lodSession.generation;
+    const reduced =
+      typeof window !== 'undefined' &&
+      window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    const ms = reduced ? 0 : 280;
+    const timer = window.setTimeout(() => {
+      editor.finishLodTransition(generation);
+    }, ms);
+    return () => window.clearTimeout(timer);
+  }, [
+    editor.lodSession.phase,
+    editor.lodSession.generation,
+    editor.finishLodTransition,
+  ]);
 
   const hierarchyBack = useCallback(() => {
     const base =

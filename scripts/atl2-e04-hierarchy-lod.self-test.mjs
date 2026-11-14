@@ -34,11 +34,25 @@ assert.ok(barrel.includes('atlasHierarchyLodLayerFlags'));
 assert.ok(editorHook.includes('beginAtlasMapLoad'));
 assert.ok(editorHook.includes('shouldApplyAtlasMapLoad'));
 assert.ok(editorHook.includes('lodSession'));
+assert.ok(editorHook.includes('prefetchChildMap'));
+assert.ok(editorHook.includes('finishLodTransition'));
+assert.ok(editorHook.includes('atlasLodFallbackActiveMapId'));
+assert.ok(editorHook.includes('completeAtlasMapLoad'));
+assert.ok(
+  !editorHook.includes('finishAtlasMapTransition(transitioned'),
+  'must not finish transition before fade',
+);
 assert.ok(workbench.includes('hierarchyLodBand'));
 assert.ok(workbench.includes('data-world-atlas-lod-band'));
-assert.ok(workbench.includes('decidePrefetchChildMap'));
+assert.ok(workbench.includes('prefetchChildMap'));
+assert.ok(workbench.includes('finishLodTransition'));
 assert.ok(unified.includes('hierarchyLodBand'));
 assert.ok(unified.includes('atlasHierarchyLodLayerFlags'));
+assert.ok(unified.includes('lodAwareDisplayDoc'));
+assert.ok(
+  unified.includes('lodAwareDisplayDoc'),
+  '3D controlledSeed must consume LOD-aware doc',
+);
 
 assert.equal(lod.lodBandFromBreadcrumbDepth(1), 'world');
 assert.equal(lod.lodBandFromBreadcrumbDepth(6), 'room');

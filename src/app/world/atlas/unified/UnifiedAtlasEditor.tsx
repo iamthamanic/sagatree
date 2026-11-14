@@ -606,6 +606,26 @@ export function UnifiedAtlasEditor({
     return mergeDungeonPreviewIntoDoc(workingDoc, dungeonPreview.payload);
   }, [workingDoc, dungeonPreview]);
 
+  /**
+   * ATL2-E04: semantic LOD ∧ editor layers for both 2D paint and 3D controlledSeed
+   * (Codex P2 — hierarchyLodBand must affect 3D, not only Draufsicht).
+   */
+  const lodAwareDisplayDoc = useMemo(() => {
+    if (!hierarchyLodBand) return forgeDisplayDoc;
+    const lodFlags = atlasHierarchyLodLayerFlags(hierarchyLodBand, {
+      terrain: forgeDisplayDoc.layers.terrain,
+      region: forgeDisplayDoc.layers.region,
+      city: forgeDisplayDoc.layers.city,
+      interior: forgeDisplayDoc.layers.interior,
+      objects: forgeDisplayDoc.layers.objects,
+      grid: forgeDisplayDoc.layers.grid,
+    });
+    return {
+      ...forgeDisplayDoc,
+      layers: { ...forgeDisplayDoc.layers, ...lodFlags },
+    };
+  }, [forgeDisplayDoc, hierarchyLodBand]);
+
   const pushHistory = useCallback((prev: UnifiedCanvasDoc) => {
     setEditHistory((h) => pushAtlasEdit(h, prev));
   }, []);
@@ -815,19 +835,8 @@ export function UnifiedAtlasEditor({
 
     const cam = camRef.current;
     const scale = cam.pixelsPerUnit;
-    const renderDoc = forgeDisplayDoc;
-    // ATL2-E04: semantic LOD AND editor toggles (editor may only hide further).
-    const lodFlags = hierarchyLodBand
-      ? atlasHierarchyLodLayerFlags(hierarchyLodBand, {
-          terrain: renderDoc.layers.terrain,
-          region: renderDoc.layers.region,
-          city: renderDoc.layers.city,
-          interior: renderDoc.layers.interior,
-          objects: renderDoc.layers.objects,
-          grid: renderDoc.layers.grid,
-        })
-      : null;
-    const layers = lodFlags ? { ...renderDoc.layers, ...lodFlags } : renderDoc.layers;
+    const renderDoc = lodAwareDisplayDoc;
+    const layers = renderDoc.layers;
     const isDemo = renderDoc.demoSeed !== false;
 
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -2317,9 +2326,9 @@ export function UnifiedAtlasEditor({
     () =>
       syncCanvasDocIntoWebglRuntime(
         webglRuntime ?? legacySeedRef.current ?? emptyWebglRuntime(),
-        forgeDisplayDoc,
+        lodAwareDisplayDoc,
       ),
-    [webglRuntime, forgeDisplayDoc],
+    [webglRuntime, lodAwareDisplayDoc],
   );
 
   /** Remount 3D when preview appears/clears so seedState (forge overlay) is applied. */
