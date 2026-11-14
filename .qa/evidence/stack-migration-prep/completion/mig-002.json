@@ -5,7 +5,7 @@
   "result": "PASS",
   "githubClosed": true,
   "mergeRef": "PR #860 \u2192 main (after #782)",
-  "note": "Inventories regenerated after ATL2-G04 OWNER screenshot/e2e expansion.",
+  "note": "Inventories unchanged; ATL2-G04 room desktop baseline resized to CI 992x600.",
   "checks": [
     {
       "command": "legacy inventory matrix",
@@ -26,5 +26,5 @@
       "sha256": "940ba09906b91fd191528cf2555b27b44b6831a6279cf6d7a09237994843942c"
     }
   ],
-  "testedCommit": "cd5d462d7330e23e54091127e028a7a809d3fd71"
+  "testedCommit": "c077b0e6d2f7397cd8c7da0801c716fb5a256b77"
 }
