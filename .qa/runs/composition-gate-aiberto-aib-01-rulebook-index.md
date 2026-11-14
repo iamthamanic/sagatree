@@ -1,6 +1,6 @@
 # Composition Gate — aiberto-aib-01-rulebook-index
 
-- HEAD_SHA: (filled at PR open / merge)
+- HEAD_SHA: 6535e30b51171fd9eeb9edf43539447110d32fee
 - Date: 2026-11-14
 - Verdict: CLEAR
 - Acceptance tier: domain-index
