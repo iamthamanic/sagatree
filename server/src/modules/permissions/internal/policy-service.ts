@@ -55,6 +55,7 @@ export type PolicyOp =
   | 'ruleset.write'
   | 'saga.read'
   | 'saga.write'
+  | 'aiberto.ask'
   | string;
 
 type WorldRow = { id: string; owner_user_id: string };
@@ -101,6 +102,8 @@ export class PolicyService {
 
     if (op === 'host.health.read') return allow('public-health');
     if (op === 'host.ping.write') return allow('solo-mutation');
+    // Core rulebook Q&A: any authenticated actor (product knowledge; no project resource).
+    if (op === 'aiberto.ask') return allow('aiberto-ask-authenticated');
 
     if (!this.#db) return deny('deny-by-default');
 

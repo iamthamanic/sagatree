@@ -1,5 +1,5 @@
 /**
- * rulebook — public barrel for SagaTree Core rulebook index + pure search (AIB-01).
+ * rulebook — public barrel for SagaTree Core rulebook index + pure search (AIB-01/AIB-04).
  * Location: src/domains/rulebook/index.ts
  *
  * Text SoT remains docs/sagatree core rules.md; compute SoT remains domains/rules/sagatree.
@@ -44,3 +44,13 @@ export {
   assertAppliedExperienceBonusPilot,
   type AppliedEbPilotCase,
 } from './eb-pilot';
+
+export {
+  evidenceGate,
+  extractClaimedCitationIds,
+  formatEvidenceForPrompt,
+  validateCitations,
+  type AibertoCitation,
+  type CitationValidationResult,
+  type EvidenceGateResult,
+} from './citations';
