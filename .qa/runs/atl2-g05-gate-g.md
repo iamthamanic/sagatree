@@ -1,7 +1,7 @@
 # ATL2-G05 Gate G — Phase G quality acceptance
 
 - Issue: #1233
-- HEAD: `25e5322dc77dc4bff02a3771c48cf46f7a951c76`
+- HEAD: `cab551356120cd76efd955009ffc7a64afc149a6`
 - Verdict: **CLEAR**
 - Date: 2026-11-14
 
@@ -17,10 +17,10 @@
 ## Host security negatives
 
 - Owner ensure-starter → Dornhain atlas maps: **6**
-- World publicId: **WO-XTCU6**
+- World publicId: **WO-6SXNS**
 - Stranger write deny: **yes** (status **403**)
 - Player-session crypt redaction (no playerView flag): **yes**
-- Player user id: **kiICIeRwZ3hjIHh21Up7kBqeU9IQ5KDw**
+- Player user id: **ZVzgl6wwc4TtINnN49kVRF0QERhzqYkL**
 
 ## Soll / Ist (feature categories)
 
@@ -37,6 +37,8 @@
 ## Residuals (non-blocking for Gate G)
 
 - **Info**: G04 Browser E2E pixel-diff matrix remains the shipping visual gate; Gate G stitches policy/perf/adaptive/visual contracts.
+- **Info**: Browser measurement (`e2e/atl2-g05-gate-g.spec.ts` → `.qa/evidence/atl2-g05-gate-g/browser-measurement.json`) runs on CI SwiftShader = software-rendering numbers; hardware GPU p50/p95 must be re-measured on real devices.
+- **Medium (fixed in this PR)**: WebGL context restore left product maps blank (stale product-geometry + ocean caches in `activate3D`); covered by the `webgl-context-loss` browser row.
 
 ## Decision
 

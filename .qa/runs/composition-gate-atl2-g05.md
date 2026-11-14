@@ -2,7 +2,7 @@
 
 - Issue: #1233
 - Feature slug: atl2-g05
-- HEAD_SHA: 25e5322dc77dc4bff02a3771c48cf46f7a951c76
+- HEAD_SHA: cab551356120cd76efd955009ffc7a64afc149a6
 - BASE_SHA: 9009014e3881249ec295cc8dc265108f08c13d04
 - Date: 2026-11-14
 - Verdict: SKIPPED
@@ -11,7 +11,10 @@
 
 Acceptance protocol / evidence lock for Phase G (Security / Performance /
 Adaptive UX / Visual quality) — no new producer→consumer hop; documents
-G01–G04 stack CLEAR.
+G01–G04 stack CLEAR. The only runtime change in this PR (ATL2-G05 context-restore
+fix: `activate3D` drops the client-side product geometry / ocean caches so a new
+WebGL engine re-uploads meshes) is renderer-local and adds no backend,
+persistence or service hop.
 
 ## Event
 
