@@ -8,14 +8,14 @@ Epic acceptance skeleton. Child slices own detailed checklists; this file tracks
 
 ## Release A (AIB-01…03)
 
-- [ ] Deterministic Core rulebook index + pure shared search (T-001/T-002)
-- [ ] EB pilot Doc↔Domain (T-010) for one claim
-- [ ] Shell companion mounts once; editor/route preserved (SCN-001)
-- [ ] Desktop dock+resize; Phone sheet; AU-CONTENT-WIDTH / 320px (SCN-002)
-- [ ] Offline TOC/search/source without LLM/Host (SCN-004)
-- [ ] Section shows stable ID, version/hash, normativity (SCN-005)
-- [ ] ORC/license notice visible in Rulebook UI (Q-001)
-- [ ] Composition gate + `npm run test-gate` for A slice(s)
+- [x] Deterministic Core rulebook index + pure shared search (T-001/T-002) — AIB-01
+- [x] EB pilot Doc↔Domain (T-010) for one claim — AIB-01
+- [x] Shell companion mounts once; editor/route preserved (SCN-001) — AIB-02
+- [x] Desktop dock+resize; Phone sheet; AU-CONTENT-WIDTH / 320px (SCN-002) — AIB-02
+- [x] Offline TOC/search/source without LLM/Host (SCN-004) — AIB-02
+- [x] Section shows stable ID, version/hash, normativity (SCN-005) — AIB-02
+- [x] ORC/license notice visible in Rulebook UI (Q-001) — AIB-02
+- [x] Composition gate + `npm run test-gate` for A slice(s) — AIB-01/02
 
 ## Release B (AIB-04…05)
 

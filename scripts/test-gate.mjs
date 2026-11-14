@@ -3702,6 +3702,15 @@ function checkAibertoAib01RulebookIndex() {
   });
 }
 
+function checkAibertoAib02CompanionUi() {
+  // AIB-02/#1125 — keep adjacent to AIB-01; avoid Atlas test-gate hunks (PR #1283).
+  console.log('Aiberto AIB-02 companion UI (#1125): shell dock/sheet + rulebook browser...');
+  execFileSync(process.execPath, ['scripts/aiberto-aib-02-companion-ui.self-test.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
+}
+
 function checkPowersEssencesValidation() {
   console.log('Powers/essences validation (#25): deterministic §12 power model audit...');
   execFileSync(process.execPath, ['scripts/validate-powers-essences-ranks.mjs'], {
@@ -4424,6 +4433,7 @@ checkCharacterEditorRulesUxValidation();
 checkGearResourcesLoadValidation();
 checkAnalogEndToEndPlaytestValidation();
 checkAibertoAib01RulebookIndex();
+checkAibertoAib02CompanionUi();
 checkAssetLicenseInventory();
 scanAddedLinesForSecrets();
 reportDependencyAudit();
