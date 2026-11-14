@@ -384,7 +384,7 @@ test.describe('ATL2-G05 quality gate', () => {
     expect(ownerDetail.ok()).toBeTruthy();
     const ownerMap = await ownerDetail.json();
 
-    // Promote any existing location bindings to party so playerView can resolve a map.
+    // Promote existing location bindings to party so playerView can resolve a map.
     const bindingsRes = await page.request.get(
       `/api/v1/sagas/${encodeURIComponent(sagaPublicId)}/bindings?assetKind=location`,
       { headers: { Origin: origin } },
