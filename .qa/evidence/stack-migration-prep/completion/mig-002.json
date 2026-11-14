@@ -5,7 +5,7 @@
   "result": "PASS",
   "githubClosed": true,
   "mergeRef": "PR #860 \u2192 main (after #782)",
-  "note": "Inventories regenerated after ATL2-G03 Codex P1/P2 adaptive fixes.",
+  "note": "Inventories regenerated after ATL2-G04 golden visual (OWNER #1283).",
   "checks": [
     {
       "command": "legacy inventory matrix",
@@ -23,8 +23,8 @@
       "command": "edge/infra inventory 25+13",
       "result": "PASS",
       "evidenceFile": ".qa/intake/edge-infra-contracts/inventory.json",
-      "sha256": "fd56287d40e7f5d1d37fa80d8188aab6d89cf8875dfbf9b71c5e74d05d6a2b3f"
+      "sha256": "3d70122209d6378e79a14b98a09feff798a1093f0ea376ade44e97e7d9a840ef"
     }
   ],
-  "testedCommit": "a7b4bd334ad778d11cac829775021c2af73d9bbe"
+  "testedCommit": "148f02bf05c761e6726bfa4bbe2135f9ac2ff929"
 }
