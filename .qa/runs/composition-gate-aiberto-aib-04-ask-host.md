@@ -1,6 +1,6 @@
 # Composition Gate — aiberto-aib-04-ask-host
 
-- HEAD_SHA: (filled at commit)
+- HEAD_SHA: 91def1616e8a3c61825765369b790a92a18f148d
 - BASE_SHA: 4d19ef7c8fcc5b0e16d1c51628fc82cb49e01174
 - Date: 2026-11-14
 - Verdict: CLEAR
