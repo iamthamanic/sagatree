@@ -102,6 +102,8 @@ import {
   type AtlasMapPin,
   type AtlasMapScale,
   type AtlasNavCameraView,
+  type AtlasHierarchyLodBand,
+  atlasHierarchyLodLayerFlags,
   parseHierarchyNavKey,
   wheelRequestsHierarchyBack,
 } from '../../../../domains/world/atlas';
@@ -247,6 +249,11 @@ export type UnifiedAtlasEditorProps = {
   readonly onNavViewChange?: (view: AtlasNavCameraView) => void;
   /** ATL2-E03: hierarchy back (Escape / Alt+ArrowUp / wheel-at-min). */
   readonly onHierarchyBack?: () => void;
+  /**
+   * ATL2-E04: semantic LOD band for the active hierarchy tip.
+   * Editor layer toggles can only hide further — never force-show LOD-hidden content.
+   */
+  readonly hierarchyLodBand?: AtlasHierarchyLodBand | null;
 };
 
 type DragState =
@@ -474,6 +481,7 @@ export function UnifiedAtlasEditor({
   onNavPendingFocusConsumed,
   onNavViewChange,
   onHierarchyBack,
+  hierarchyLodBand = null,
 }: UnifiedAtlasEditorProps) {
   const stageRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -597,6 +605,26 @@ export function UnifiedAtlasEditor({
     if (!dungeonPreview?.payload) return workingDoc;
     return mergeDungeonPreviewIntoDoc(workingDoc, dungeonPreview.payload);
   }, [workingDoc, dungeonPreview]);
+
+  /**
+   * ATL2-E04: semantic LOD ∧ editor layers for both 2D paint and 3D controlledSeed
+   * (Codex P2 — hierarchyLodBand must affect 3D, not only Draufsicht).
+   */
+  const lodAwareDisplayDoc = useMemo(() => {
+    if (!hierarchyLodBand) return forgeDisplayDoc;
+    const lodFlags = atlasHierarchyLodLayerFlags(hierarchyLodBand, {
+      terrain: forgeDisplayDoc.layers.terrain,
+      region: forgeDisplayDoc.layers.region,
+      city: forgeDisplayDoc.layers.city,
+      interior: forgeDisplayDoc.layers.interior,
+      objects: forgeDisplayDoc.layers.objects,
+      grid: forgeDisplayDoc.layers.grid,
+    });
+    return {
+      ...forgeDisplayDoc,
+      layers: { ...forgeDisplayDoc.layers, ...lodFlags },
+    };
+  }, [forgeDisplayDoc, hierarchyLodBand]);
 
   const pushHistory = useCallback((prev: UnifiedCanvasDoc) => {
     setEditHistory((h) => pushAtlasEdit(h, prev));
@@ -807,7 +835,7 @@ export function UnifiedAtlasEditor({
 
     const cam = camRef.current;
     const scale = cam.pixelsPerUnit;
-    const renderDoc = forgeDisplayDoc;
+    const renderDoc = lodAwareDisplayDoc;
     const layers = renderDoc.layers;
     const isDemo = renderDoc.demoSeed !== false;
 
@@ -2298,9 +2326,9 @@ export function UnifiedAtlasEditor({
     () =>
       syncCanvasDocIntoWebglRuntime(
         webglRuntime ?? legacySeedRef.current ?? emptyWebglRuntime(),
-        forgeDisplayDoc,
+        lodAwareDisplayDoc,
       ),
-    [webglRuntime, forgeDisplayDoc],
+    [webglRuntime, lodAwareDisplayDoc],
   );
 
   /** Remount 3D when preview appears/clears so seedState (forge overlay) is applied. */
