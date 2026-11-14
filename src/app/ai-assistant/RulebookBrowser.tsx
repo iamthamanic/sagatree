@@ -32,24 +32,33 @@ function normativityLabel(value: RulebookNormativity): string {
   }
 }
 
-function topLevelSections(sections: readonly RulebookSection[]): RulebookSection[] {
-  return sections.filter((section) => section.headingLevel === 2);
+/** Browsable TOC: numbered sections at all depths (empty H2 parents still list children). */
+function tocSections(sections: readonly RulebookSection[]): RulebookSection[] {
+  return sections.filter((section) => Boolean(section.number));
+}
+
+function initialSectionId(sections: readonly RulebookSection[]): string | null {
+  const withBody = sections.find(
+    (section) => Boolean(section.number) && section.bodyMarkdown.trim().length > 0,
+  );
+  if (withBody) return withBody.id;
+  const numbered = sections.find((section) => Boolean(section.number));
+  return numbered?.id ?? sections[0]?.id ?? null;
 }
 
 export function RulebookBrowser() {
   const index = useMemo(() => getSagaTreeCoreRulebookIndex(), []);
   const [query, setQuery] = useState('');
-  const [selectedId, setSelectedId] = useState<string | null>(() => {
-    const first = index.sections.find((section) => section.number === '1');
-    return first?.id ?? index.sections[0]?.id ?? null;
-  });
+  const [selectedId, setSelectedId] = useState<string | null>(() =>
+    initialSectionId(index.sections),
+  );
 
   const trimmed = query.trim();
   const hits = useMemo(
     () => (trimmed ? searchRulebook(index, trimmed, { limit: 30 }) : []),
     [index, trimmed],
   );
-  const toc = useMemo(() => topLevelSections(index.sections), [index.sections]);
+  const toc = useMemo(() => tocSections(index.sections), [index.sections]);
   const selected = selectedId ? getRulebookSection(index, selectedId) : null;
 
   return (
@@ -105,22 +114,27 @@ export function RulebookBrowser() {
                     </button>
                   </li>
                 ))
-              : toc.map((section) => (
-                  <li key={section.id}>
-                    <button
-                      type="button"
-                      className={`flex min-h-11 w-full items-center rounded-md px-3 py-2 text-left text-sm transition-colors focus-visible:ring-2 focus-visible:ring-primary ${
-                        selectedId === section.id
-                          ? 'bg-primary text-primary-foreground'
-                          : 'hover:bg-accent/10 hover:text-accent'
-                      }`}
-                      onClick={() => setSelectedId(section.id)}
-                    >
-                      {section.number ? `§${section.number} ` : ''}
-                      {section.title}
-                    </button>
-                  </li>
-                ))}
+              : toc.map((section) => {
+                  const depth = Math.max(0, section.headingLevel - 2);
+                  return (
+                    <li key={section.id}>
+                      <button
+                        type="button"
+                        className={`flex min-h-11 w-full items-center rounded-md py-2 pr-3 text-left text-sm transition-colors focus-visible:ring-2 focus-visible:ring-primary ${
+                          selectedId === section.id
+                            ? 'bg-primary text-primary-foreground'
+                            : 'hover:bg-accent/10 hover:text-accent'
+                        }`}
+                        style={{ paddingLeft: `${12 + depth * 12}px` }}
+                        onClick={() => setSelectedId(section.id)}
+                        data-aiberto-toc-level={section.headingLevel}
+                      >
+                        {section.number ? `§${section.number} ` : ''}
+                        {section.title}
+                      </button>
+                    </li>
+                  );
+                })}
             {trimmed && hits.length === 0 ? (
               <li className="px-3 py-4 text-sm text-muted-foreground">Keine Treffer.</li>
             ) : null}

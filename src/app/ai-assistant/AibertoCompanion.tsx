@@ -122,14 +122,36 @@ export function AibertoCompanion({ open: openProp, onOpenChange }: AibertoCompan
     >
       <button
         type="button"
+        role="slider"
+        aria-orientation="vertical"
         aria-label="Aiberto-Breite anpassen"
-        title="Breite ziehen (320–520px)"
-        className="absolute top-0 bottom-0 left-0 z-10 w-2 -translate-x-1 cursor-col-resize touch-none hover:bg-primary/30 focus-visible:bg-primary/40 focus-visible:outline-none"
+        aria-valuemin={AIBERTO_DOCK_MIN_PX}
+        aria-valuemax={AIBERTO_DOCK_MAX_PX}
+        aria-valuenow={prefs.widthPx}
+        aria-valuetext={`${prefs.widthPx} Pixel`}
+        title="Breite ziehen oder Pfeiltasten (320–520px)"
+        className="absolute top-0 bottom-0 left-0 z-10 w-2 -translate-x-1 cursor-col-resize touch-none hover:bg-primary/30 focus-visible:bg-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
         onPointerDown={(event) => {
           event.preventDefault();
           dragRef.current = { startX: event.clientX, startWidth: prefs.widthPx };
           document.body.style.cursor = 'col-resize';
           document.body.style.userSelect = 'none';
+        }}
+        onKeyDown={(event) => {
+          const step = event.shiftKey ? 32 : 16;
+          if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
+            event.preventDefault();
+            setWidth(prefs.widthPx + step);
+          } else if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
+            event.preventDefault();
+            setWidth(prefs.widthPx - step);
+          } else if (event.key === 'Home') {
+            event.preventDefault();
+            setWidth(AIBERTO_DOCK_MIN_PX);
+          } else if (event.key === 'End') {
+            event.preventDefault();
+            setWidth(AIBERTO_DOCK_MAX_PX);
+          }
         }}
         data-aiberto-resize
       />
