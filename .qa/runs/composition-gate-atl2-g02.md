@@ -2,16 +2,18 @@
 
 - Issue: #1230
 - Feature slug: atl2-g02
-- HEAD_SHA: 4ec972b0970a21c6ac9814178cec8f4f9a83ea2c
+- HEAD_SHA: 4dfa87d784a31990bade5235e74248c3c40a25bb
 - BASE_SHA: 8df8589249cd73ec4abf5959669d18364ea0777a
 - Date: 2026-11-14
 - Verdict: CLEAR
+- Acceptance tier: feature-integration
+- Deferred integration: none
 
 ## Event
 
 Large atlas/dungeon scenes are planned under documented quality budgets; GPU
 resources are released on context-loss and map teardown so repeated switches
-cannot grow unbounded.
+cannot grow unbounded. Productive 3D remains Custom WebGL (R01 NO-GO).
 
 ## Hop chain
 
@@ -29,7 +31,7 @@ Cardinality: one plan measurement per fixture; one GPU session per mount.
 |------|----------|----------|--------|
 | N-actors | GM edit + player view | same budgets, different auth | pass |
 | Invalid/missing | empty doc | 0 instances | pass |
-| Two consumers | look + geometry fingerprints | independent | pass |
+| Two consumers / crash | look + geometry fingerprints | independent; teardown zeros handles | pass |
 | Context loss | lost then restore | handles reset | pass |
 
 ## Flags
