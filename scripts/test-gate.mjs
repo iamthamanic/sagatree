@@ -3698,6 +3698,33 @@ function checkAnalogEndToEndPlaytestValidation() {
   });
 }
 
+function checkAibertoAib01RulebookIndex() {
+  // AIB-01/#1124 — keep far from Atlas world-atlas test-gate hunks (e.g. PR #1283).
+  console.log('Aiberto AIB-01 rulebook index (#1124): deterministic index + search + EB pilot...');
+  execFileSync(process.execPath, ['scripts/aiberto-aib-01-rulebook-index.self-test.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
+}
+
+function checkAibertoAib02CompanionUi() {
+  // AIB-02/#1125 — keep adjacent to AIB-01; avoid Atlas test-gate hunks (PR #1283).
+  console.log('Aiberto AIB-02 companion UI (#1125): shell dock/sheet + rulebook browser...');
+  execFileSync(process.execPath, ['scripts/aiberto-aib-02-companion-ui.self-test.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
+}
+
+function checkAibertoAib04AskHost() {
+  // AIB-04/#1127 — host aiberto-ask; keep adjacent to AIB-01, away from Atlas #1283 / AIB-02 Layout.
+  console.log('Aiberto AIB-04 ask host (#1127): text port + evidence/citations + quota...');
+  execFileSync(process.execPath, ['scripts/aiberto-aib-04-ask-host.self-test.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
+}
+
 function checkPowersEssencesValidation() {
   console.log('Powers/essences validation (#25): deterministic §12 power model audit...');
   execFileSync(process.execPath, ['scripts/validate-powers-essences-ranks.mjs'], {
@@ -4419,6 +4446,9 @@ checkTravelChaseVehiclesValidation();
 checkCharacterEditorRulesUxValidation();
 checkGearResourcesLoadValidation();
 checkAnalogEndToEndPlaytestValidation();
+checkAibertoAib01RulebookIndex();
+checkAibertoAib02CompanionUi();
+checkAibertoAib04AskHost();
 checkAssetLicenseInventory();
 scanAddedLinesForSecrets();
 reportDependencyAudit();

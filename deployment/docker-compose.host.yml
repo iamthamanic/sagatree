@@ -41,6 +41,13 @@ services:
       CHARACTER_AI_API_KEY: ${CHARACTER_AI_API_KEY:-}
       CHARACTER_AI_MODEL: ${CHARACTER_AI_MODEL:-}
       OLLAMA_HOST: ${OLLAMA_HOST:-http://ollama:11434}
+      # AIB-04 aiberto-ask — default off until provider ready; expose so Compose .env reaches the host.
+      AIBERTO_CHAT_ENABLED: ${AIBERTO_CHAT_ENABLED:-}
+      AIBERTO_AI_PROVIDER: ${AIBERTO_AI_PROVIDER:-}
+      AIBERTO_AI_BASE_URL: ${AIBERTO_AI_BASE_URL:-}
+      AIBERTO_AI_API_KEY: ${AIBERTO_AI_API_KEY:-}
+      AIBERTO_AI_MODEL: ${AIBERTO_AI_MODEL:-}
+      AIBERTO_ASK_RATE_LIMIT_PER_MINUTE: ${AIBERTO_ASK_RATE_LIMIT_PER_MINUTE:-}
       MESHY_API_KEY: ${MESHY_API_KEY:-}
     volumes:
       - host-data:/data
