@@ -5,7 +5,7 @@
   "result": "PASS",
   "githubClosed": true,
   "mergeRef": "PR #860 → main (after #782)",
-  "note": "Inventories refreshed after ATL2-F04 dungeon look (#1227); SoT is .qa/intake (not .qa/inventory).",
+  "note": "Inventories regenerated for ATL2-F04 after E03/E04 main sync (#1227).",
   "checks": [
     {
       "command": "legacy inventory matrix",
@@ -26,5 +26,5 @@
       "sha256": "94e12e36f184901c595d0a6db119b3c5130afe2ee877ae35d9dba28fe147ca1f"
     }
   ],
-  "testedCommit": "a9f50a3b4e687a7b40e212875a5f901a04b721a8"
+  "testedCommit": "PENDING"
 }
