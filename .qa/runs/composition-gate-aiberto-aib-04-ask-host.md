@@ -1,6 +1,6 @@
 # Composition Gate — aiberto-aib-04-ask-host
 
-- HEAD_SHA: 71d2eb058c0e8837049c4b8869d0b2a649cf19b1
+- HEAD_SHA: 91def1616e8a3c61825765369b790a92a18f148d
 - BASE_SHA: 4d19ef7c8fcc5b0e16d1c51628fc82cb49e01174
 - Date: 2026-11-14
 - Verdict: CLEAR
@@ -9,6 +9,7 @@
 ## Event
 
 AIB-04 Host `aiberto-ask` + text inference port + evidence/citation validation (#1127).
+Implementation commit: `91def1616`. Subsequent docs-only commits pin this proof for PR #1286.
 
 ## Hop chain
 
@@ -33,3 +34,4 @@ AIB-04 Host `aiberto-ask` + text inference port + evidence/citation validation (
 | Tag | Severity | Hops | Why local review missed it | Fix |
 |-----|----------|------|----------------------------|-----|
 | (none) | — | — | — | — |
+
