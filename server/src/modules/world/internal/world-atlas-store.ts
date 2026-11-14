@@ -4,6 +4,10 @@
  * Location: server/src/modules/world/internal/world-atlas-store.ts
  */
 import { randomUUID } from 'node:crypto';
+import {
+  filterPartyLayers,
+  redactPartyGeneratorMeta,
+} from './party-map-projection.ts';
 import type { HostDatabase } from '../../../persistence/open-database.ts';
 
 export type PartyRevealedAtlasMapIds = (
@@ -96,90 +100,6 @@ function parseJsonObject(raw: string | null | undefined): Record<string, unknown
 
 function isAllowedKind(kind: string): kind is WorldAtlasMapKind {
   return (ALLOWED_KINDS as readonly string[]).includes(kind);
-}
-
-/**
- * Parity with PostgreSQL `(json->>'flag')::boolean` + COALESCE defaults used in
- * get/list_world_atlas_map player redaction (094/102/105).
- */
-function coercePgBoolean(value: unknown, whenNull: boolean): boolean {
-  if (value === undefined || value === null) return whenNull;
-  if (typeof value === 'boolean') return value;
-  if (typeof value === 'number') {
-    if (value === 1) return true;
-    if (value === 0) return false;
-    return whenNull;
-  }
-  if (typeof value === 'string') {
-    const normalized = value.trim().toLowerCase();
-    if (normalized === '') return whenNull;
-    if (['true', 't', 'yes', 'y', 'on', '1'].includes(normalized)) return true;
-    if (['false', 'f', 'no', 'n', 'off', '0'].includes(normalized)) return false;
-    return whenNull;
-  }
-  return whenNull;
-}
-
-function featureIsSecret(props: Record<string, unknown>): boolean {
-  return coercePgBoolean(props.secret, false) === true;
-}
-
-function featureDiscovered(props: Record<string, unknown>): boolean {
-  return coercePgBoolean(props.discovered, true) === true;
-}
-
-function filterPartyLayers(layers: Record<string, unknown>): Record<string, unknown> {
-  const features = Array.isArray(layers.features) ? layers.features : [];
-  const visible = features.filter((feat) => {
-    if (!feat || typeof feat !== 'object' || Array.isArray(feat)) return false;
-    const props = (feat as { properties?: unknown }).properties;
-    if (!props || typeof props !== 'object' || Array.isArray(props)) return true;
-    const p = props as Record<string, unknown>;
-    if (featureIsSecret(p)) return false;
-    return featureDiscovered(p);
-  });
-  return { type: 'FeatureCollection', features: visible };
-}
-
-/** Golden crypt ids + any entity flagged `secret: true`. */
-const UNIFIED_SECRET_IDS = new Set(['s.crypt', 's.obj.crypt']);
-
-function entityIsSecret(row: Record<string, unknown>): boolean {
-  if (coercePgBoolean(row.secret, false) === true) return true;
-  return typeof row.id === 'string' && UNIFIED_SECRET_IDS.has(row.id);
-}
-
-function redactUnifiedCanvasForParty(raw: unknown): unknown {
-  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return raw;
-  const doc = raw as Record<string, unknown>;
-  const filterList = (key: string): unknown => {
-    const list = doc[key];
-    if (!Array.isArray(list)) return list;
-    return list.filter((item) => {
-      if (!item || typeof item !== 'object' || Array.isArray(item)) return true;
-      return !entityIsSecret(item as Record<string, unknown>);
-    });
-  };
-  return {
-    ...doc,
-    objects: filterList('objects'),
-    rooms: filterList('rooms'),
-    strokes: filterList('strokes'),
-    walls: filterList('walls'),
-  };
-}
-
-function redactPartyMeta(meta: Record<string, unknown>): Record<string, unknown> {
-  const out: Record<string, unknown> = {
-    engine: typeof meta.engine === 'string' ? meta.engine : 'unified_canvas',
-  };
-  if (meta.unifiedCanvas !== undefined) {
-    out.unifiedCanvas = redactUnifiedCanvasForParty(meta.unifiedCanvas);
-  }
-  if (meta.webglRuntime !== undefined) out.webglRuntime = meta.webglRuntime;
-  if (meta.mapFrame !== undefined) out.mapFrame = meta.mapFrame;
-  if (meta.dungeon !== undefined) out.dungeon = meta.dungeon;
-  return out;
 }
 
 export class WorldAtlasStore {
@@ -278,7 +198,7 @@ export class WorldAtlasStore {
     let parentMapId = summary.parentMapId;
     if (partyOnly) {
       layers = filterPartyLayers(layers);
-      meta = redactPartyMeta(meta);
+      meta = redactPartyGeneratorMeta(meta);
     }
     return {
       ...summary,

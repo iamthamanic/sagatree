@@ -98,8 +98,13 @@ const store = fs.readFileSync(
   path.join(root, 'server/src/modules/world/internal/world-atlas-store.ts'),
   'utf8',
 );
-assert(store.includes('redactUnifiedCanvasForParty'), 'party redacts unifiedCanvas');
-assert(store.includes('s.crypt'), 'crypt id redacted');
+assert(store.includes('redactPartyGeneratorMeta'), 'party projection wired in store');
+const partyProjection = fs.readFileSync(
+  path.join(root, 'server/src/modules/world/internal/party-map-projection.ts'),
+  'utf8',
+);
+assert(partyProjection.includes('redactUnifiedCanvasForParty'), 'party redacts unifiedCanvas');
+assert(partyProjection.includes('s.crypt'), 'crypt id redacted');
 
 const host = fs.readFileSync(
   path.join(root, 'server/src/bootstrap/ensure-dornhain-default.ts'),

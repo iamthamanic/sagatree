@@ -5,7 +5,7 @@
   "result": "PASS",
   "githubClosed": true,
   "mergeRef": "PR #860 \u2192 main (after #782)",
-  "note": "Inventories regenerated after ATL2-F04 \u00d7 main sync (R01 #1273); testedCommit pinned to merge tip.",
+  "note": "Inventories regenerated after ATL2-G01 party-map-projection (#1229).",
   "checks": [
     {
       "command": "legacy inventory matrix",
@@ -23,8 +23,8 @@
       "command": "edge/infra inventory 25+13",
       "result": "PASS",
       "evidenceFile": ".qa/intake/edge-infra-contracts/inventory.json",
-      "sha256": "778a90ee38b94596799fc6541055270ccf331e7033dc3ac7049a87dbaf8bb66b"
+      "sha256": "7eac7b93219f3e5b705e1cb563ba731f02dd65216ba6490a3992b9b74af4c9ed"
     }
   ],
-  "testedCommit": "9802527fcb5f900e6782303dd53781f32735bec9"
+  "testedCommit": "81cbe3d55388365ee629915071b0ce8ef74265f8"
 }
