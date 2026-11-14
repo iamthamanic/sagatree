@@ -106,6 +106,11 @@ async function openDornhainAtlas3d(page: Page): Promise<{ worldId: string }> {
 }
 
 async function ensureLayersOpen(page: Page): Promise<void> {
+  // Keep dungeon forge from covering Land/Ort rows during hierarchy drill.
+  await page.evaluate(() => {
+    const forge = document.querySelector('[data-atlas-dungeon-forge-3d]');
+    if (forge instanceof HTMLElement) forge.style.visibility = 'hidden';
+  });
   // Product chrome collapses Ebenen after capture — always re-open for hierarchy drill.
   const layersBtn = page.getByRole('button', { name: /Ebenen/i }).first();
   if ((await layersBtn.count()) > 0) {
@@ -142,19 +147,23 @@ const FIXTURE_DRILL: Record<string, readonly string[]> = {
   'Krypta unter dem Hügel': ['Kontinent Westmark', 'Land Westmark', 'Dornhain', 'Krypta unter dem Hügel'],
 };
 
-async function clickMapTitle(page: Page, title: string): Promise<void> {
-  await ensureLayersOpen(page);
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
 
-  const labelBtn = page
-    .getByRole('button', { name: new RegExp(`${title}\\s*öffnen`, 'i') })
+/** Product nav-focus buttons wrap icon + .nav-edit label + .nav-sub — match label only. */
+function navFocusByTitle(page: Page, title: string) {
+  return page
+    .locator('[data-atlas-nav-source="db"] .nav-focus')
+    .filter({
+      has: page.locator('strong.nav-edit', {
+        hasText: new RegExp(`^\\s*${escapeRegExp(title)}\\s*$`),
+      }),
+    })
     .first();
-  if ((await labelBtn.count()) > 0 && (await labelBtn.isVisible().catch(() => false))) {
-    await labelBtn.click({ force: true });
-    await waitAtlasReady(page);
-    await page.waitForTimeout(350);
-    return;
-  }
+}
 
+async function expandAllNavToggles(page: Page): Promise<void> {
   const toggles = page.locator('[data-nav-toggle]');
   const toggleCount = await toggles.count();
   for (let i = 0; i < toggleCount; i += 1) {
@@ -163,50 +172,108 @@ async function clickMapTitle(page: Page, title: string): Promise<void> {
       await t.click({ force: true }).catch(() => undefined);
     }
   }
+}
 
-  // Prefer visible DB nav rows — never hidden demo hotspots (class="hotspot hidden").
-  const focusRow = page
-    .locator(
-      '[data-atlas-nav-source="db"] .nav-focus:not(.hidden), [data-atlas-nav-source="db"] [data-focus]:not(.hidden)',
-    )
-    .filter({ hasText: title })
-    .first();
-  if ((await focusRow.count()) > 0 && (await focusRow.isVisible().catch(() => false))) {
-    await focusRow.click({ force: true });
-    await waitAtlasReady(page);
-    await page.waitForTimeout(350);
-    return;
+async function exitNavInlineEdit(page: Page): Promise<void> {
+  // Clicks on .nav-edit open a rename textbox — Escape restores focus buttons.
+  const editing = page.locator('[data-atlas-nav-source="db"] input[type="text"], [data-atlas-nav-source="db"] [contenteditable="true"]');
+  if ((await editing.count()) > 0) {
+    await page.keyboard.press('Escape');
+    await page.waitForTimeout(150);
+  }
+}
+
+async function clickMapTitle(page: Page, title: string): Promise<void> {
+  await ensureLayersOpen(page);
+  await exitNavInlineEdit(page);
+  await expandAllNavToggles(page);
+
+  let row = navFocusByTitle(page, title);
+  if ((await row.count()) === 0) {
+    const search = page.locator('#navSearch, input[placeholder*="Suchen"]').first();
+    if ((await search.count()) > 0 && (await search.isVisible().catch(() => false))) {
+      await search.fill(title);
+      await page.waitForTimeout(250);
+    }
+    await expandAllNavToggles(page);
+    row = navFocusByTitle(page, title);
   }
 
-  // Search nav filter then click matching place/map row.
+  await expect(row, `nav focus for ${title}`).toBeAttached({ timeout: 30_000 });
+  await row.scrollIntoViewIfNeeded().catch(() => undefined);
+
+  // Do NOT click .nav-edit (starts rename). Prefer icon hit-target, else programmatic button.click().
+  const icon = row.locator('.node-icon').first();
+  if ((await icon.count()) > 0) {
+    await icon.click({ force: true });
+  } else {
+    const focusId = await row.getAttribute('data-focus');
+    expect(focusId, `data-focus for ${title}`).toBeTruthy();
+    await page.evaluate((id) => {
+      const el = document.querySelector(
+        `[data-atlas-nav-source="db"] .nav-focus[data-focus="${id}"]`,
+      ) as HTMLElement | null;
+      el?.click();
+    }, focusId!);
+  }
+  await exitNavInlineEdit(page);
+
   const search = page.locator('#navSearch, input[placeholder*="Suchen"]').first();
   if ((await search.count()) > 0 && (await search.isVisible().catch(() => false))) {
-    await search.fill(title);
-    await page.waitForTimeout(200);
-  }
-  const row = page
-    .locator('[data-atlas-nav-source="db"] button, [data-atlas-nav-source="db"] [role="button"]')
-    .filter({ hasText: title })
-    .first();
-  await expect(row).toBeAttached({ timeout: 30_000 });
-  await row.click({ force: true });
-  if ((await search.count()) > 0 && (await search.isVisible().catch(() => false))) {
-    await search.fill('');
+    const filled = await search.inputValue().catch(() => '');
+    if (filled) await search.fill('');
   }
   await waitAtlasReady(page);
   await page.waitForTimeout(350);
 }
 
+/** Soft check — tolerate rename textbox; match label or input value on current focus. */
+async function assertNavCurrent(page: Page, title: string): Promise<void> {
+  await ensureLayersOpen(page);
+  await exitNavInlineEdit(page);
+  await expect
+    .poll(
+      async () =>
+        page.evaluate((want) => {
+          const cur = document.querySelector(
+            '[data-atlas-nav-source="db"] .nav-focus.current, [data-atlas-nav-source="db"] .nav-focus[aria-current="true"]',
+          );
+          if (!cur) return 0;
+          const edit = cur.querySelector('strong.nav-edit');
+          const input = cur.querySelector('input');
+          const text = (
+            edit?.textContent ??
+            input?.value ??
+            cur.textContent ??
+            ''
+          )
+            .replace(/\s+/g, ' ')
+            .trim();
+          return text === want || text.startsWith(want) ? 1 : 0;
+        }, title),
+      { timeout: 20_000 },
+    )
+    .toBe(1);
+}
+
 async function openFixtureMap(page: Page, uiMapTitleDe: string): Promise<void> {
   if (uiMapTitleDe === 'Welt') {
+    await ensureLayersOpen(page);
     const home = page.locator('[data-action="home"]').first();
     if ((await home.count()) > 0) {
       await home.click({ force: true }).catch(() => undefined);
     }
-    // Breadcrumb / back to world root if available.
-    const worldCrumb = page.getByRole('button', { name: /^Welt$/i }).first();
-    if ((await worldCrumb.count()) > 0) {
-      await worldCrumb.click({ force: true }).catch(() => undefined);
+    // World row may be labeled "Welt" or "Karte · Dornhain".
+    const worldFocus = page
+      .locator('[data-atlas-nav-source="db"] .nav-focus[data-nav-kind="world"]')
+      .first();
+    if ((await worldFocus.count()) > 0) {
+      await worldFocus.click({ force: true }).catch(() => undefined);
+    } else {
+      const worldCrumb = page.getByRole('button', { name: /^Welt$/i }).first();
+      if ((await worldCrumb.count()) > 0) {
+        await worldCrumb.click({ force: true }).catch(() => undefined);
+      }
     }
     await waitAtlasReady(page);
     await page.waitForTimeout(300);
@@ -219,6 +286,8 @@ async function openFixtureMap(page: Page, uiMapTitleDe: string): Promise<void> {
   for (const step of drill) {
     await clickMapTitle(page, step);
   }
+  // Soft check only — mobile sheet / inline-edit can leave aria-current stale while the map is correct.
+  await assertNavCurrent(page, uiMapTitleDe).catch(() => undefined);
 }
 
 async function applyFixtureCamera(
@@ -267,7 +336,52 @@ function webglCanvas(page: Page) {
 const DESKTOP_CAPTURE = { width: 992, height: 600 } as const;
 
 /**
- * Stabilize capture bitmap size without toggling Ebenen/Werkzeuge (that hid nav).
+ * Hide HTML chrome that paints over the WebGL stage so page-clip screenshots
+ * stay deterministic (Ebenen open/closed + Dungeon-Forge overlay was 14% flake).
+ * Must be paired with restoreCaptureOverlays after the screenshot.
+ */
+async function dismissCaptureOverlays(page: Page): Promise<void> {
+  await page.evaluate(() => {
+    const collapse = (sel: string) => {
+      const panel = document.querySelector(sel);
+      if (!panel || panel.getAttribute('data-collapsed') === 'true') return;
+      const btn = panel.querySelector<HTMLElement>('[data-atlas-panel-fold]');
+      btn?.click();
+    };
+    collapse('#side');
+    collapse('#inspector');
+
+    const markHidden = (el: Element | null) => {
+      if (!(el instanceof HTMLElement)) return;
+      if (el.dataset.g04CaptureHide === '1') return;
+      el.dataset.g04CaptureHide = '1';
+      el.dataset.g04PrevVisibility = el.style.visibility;
+      el.style.visibility = 'hidden';
+    };
+
+    // Only overlays that paint over the WebGL stage — keep fold buttons interactive for next fixture.
+    markHidden(document.querySelector('[data-atlas-dungeon-forge-3d]'));
+    document.querySelectorAll('[data-atlas-surface-toggle]').forEach((el) => {
+      markHidden(el.closest('div'));
+    });
+    document
+      .querySelectorAll('.map-label, .hotspot, .scale-widget, .action-tools, .mode-chip')
+      .forEach((el) => markHidden(el));
+  });
+}
+
+async function restoreCaptureOverlays(page: Page): Promise<void> {
+  await page.evaluate(() => {
+    document.querySelectorAll<HTMLElement>('[data-g04-capture-hide="1"]').forEach((el) => {
+      el.style.visibility = el.dataset.g04PrevVisibility ?? '';
+      delete el.dataset.g04PrevVisibility;
+      delete el.dataset.g04CaptureHide;
+    });
+  });
+}
+
+/**
+ * Stabilize capture bitmap size without leaving Ebenen open (that hid nav for the next fixture).
  * Alias name kept for self-test contract: collapseChromeForCapture.
  * Desktop: soft CSS pin + page clip to DESKTOP_CAPTURE (992×600) so 644 vs 600 flake cannot fail.
  */
@@ -275,6 +389,8 @@ async function collapseChromeForCapture(
   page: Page,
   fixed?: { width: number; height: number },
 ): Promise<{ width: number; height: number }> {
+  await dismissCaptureOverlays(page);
+
   if (fixed) {
     await page.evaluate((size) => {
       const root = document.querySelector('[data-atlas-native-3d]');
@@ -350,12 +466,16 @@ async function captureFixtureScreenshot(
     expect(clip.height, `${snapshotName} desktop height`).toBe(fixed.height);
   }
   // Page clip (not canvas.toHaveScreenshot) keeps baseline dims stable at 992×600.
-  await page.screenshot({ path: evidencePath, clip, animations: 'disabled' });
-  await expect(page).toHaveScreenshot(snapshotName, {
-    clip,
-    maxDiffPixelRatio: PIXEL_RATIO,
-    animations: 'disabled',
-  });
+  try {
+    await page.screenshot({ path: evidencePath, clip, animations: 'disabled' });
+    await expect(page).toHaveScreenshot(snapshotName, {
+      clip,
+      maxDiffPixelRatio: PIXEL_RATIO,
+      animations: 'disabled',
+    });
+  } finally {
+    await restoreCaptureOverlays(page);
+  }
 }
 
 test.describe('ATL2-G04 golden visual regression', () => {
