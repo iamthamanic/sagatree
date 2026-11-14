@@ -1,0 +1,242 @@
+{
+  "format": "atl3-v01-visual-contract-report-v1",
+  "issue": 1295,
+  "rows": [
+    {
+      "id": "contract-shape",
+      "status": "PASS",
+      "detail": "scenes=2 cameras=3"
+    },
+    {
+      "id": "stored-data-dornhain-block",
+      "status": "PASS",
+      "detail": "seed=dornhain.map.place.dornhain fp=29f3947cb45600e3 features=13"
+    },
+    {
+      "id": "stored-data-krypta",
+      "status": "PASS",
+      "detail": "seed=dornhain.map.loc.crypt fp=9fc038d9291de012 features=7"
+    },
+    {
+      "id": "light-profiles",
+      "status": "PASS",
+      "detail": "diorama=balanced dungeon=ancient/balanced"
+    },
+    {
+      "id": "cameras-zoom",
+      "status": "PASS",
+      "detail": "dornhain-block:100/240/480% krypta:100/175/330%"
+    },
+    {
+      "id": "ist-facts",
+      "status": "PASS",
+      "detail": "{\"dornhainRoofTokens\":2,\"dornhainTreeVariants\":3,\"dornhainHeightfield\":\"none\",\"kryptaRooms\":2,\"kryptaWalls\":3,\"kryptaDoors\":0,\"kryptaDungeonLookTorches\":0,\"kryptaDungeonLookInstances\":0}"
+    },
+    {
+      "id": "soll-ist-matrix",
+      "status": "PASS",
+      "detail": "criteria=24 {\"MET\":7,\"PARTIAL\":3,\"GAP\":11,\"NOT_RUN\":3,\"ACCEPTED_EXCEPTION\":0}"
+    },
+    {
+      "id": "budgets",
+      "status": "PASS",
+      "detail": "tiers=desktop-reference,tablet,phone-low-end ciCeiling=120ms (software only)"
+    },
+    {
+      "id": "baseline-set",
+      "status": "PASS",
+      "detail": "captures=22 sha=61498dde6f renderer=software-webgl/balanced"
+    },
+    {
+      "id": "docs-gates",
+      "status": "PASS",
+      "detail": "design + acceptance + e2e + test-gate"
+    }
+  ],
+  "facts": {
+    "dornhainRoofTokens": 2,
+    "dornhainTreeVariants": 3,
+    "dornhainHeightfield": "none",
+    "kryptaRooms": 2,
+    "kryptaWalls": 3,
+    "kryptaDoors": 0,
+    "kryptaDungeonLookTorches": 0,
+    "kryptaDungeonLookInstances": 0
+  },
+  "criteria": [
+    {
+      "id": "D-GEO-01",
+      "scene": "dornhain-block",
+      "area": "geometry",
+      "status": "GAP"
+    },
+    {
+      "id": "D-GEO-02",
+      "scene": "dornhain-block",
+      "area": "geometry",
+      "status": "PARTIAL"
+    },
+    {
+      "id": "D-GEO-03",
+      "scene": "dornhain-block",
+      "area": "geometry",
+      "status": "GAP"
+    },
+    {
+      "id": "D-MAT-01",
+      "scene": "dornhain-block",
+      "area": "material",
+      "status": "GAP"
+    },
+    {
+      "id": "D-SHD-01",
+      "scene": "dornhain-block",
+      "area": "light",
+      "status": "GAP"
+    },
+    {
+      "id": "D-LOD-01",
+      "scene": "dornhain-block",
+      "area": "lod",
+      "status": "PARTIAL"
+    },
+    {
+      "id": "D-READ-01",
+      "scene": "dornhain-block",
+      "area": "readability",
+      "status": "MET"
+    },
+    {
+      "id": "D-ART-01",
+      "scene": "dornhain-block",
+      "area": "artifact",
+      "status": "GAP"
+    },
+    {
+      "id": "K-GEO-01",
+      "scene": "krypta",
+      "area": "geometry",
+      "status": "GAP"
+    },
+    {
+      "id": "K-GEO-02",
+      "scene": "krypta",
+      "area": "geometry",
+      "status": "PARTIAL"
+    },
+    {
+      "id": "K-MAT-01",
+      "scene": "krypta",
+      "area": "material",
+      "status": "GAP"
+    },
+    {
+      "id": "K-LIT-01",
+      "scene": "krypta",
+      "area": "light",
+      "status": "GAP"
+    },
+    {
+      "id": "K-SHD-01",
+      "scene": "krypta",
+      "area": "light",
+      "status": "GAP"
+    },
+    {
+      "id": "K-ATM-01",
+      "scene": "krypta",
+      "area": "atmosphere",
+      "status": "GAP"
+    },
+    {
+      "id": "K-ART-01",
+      "scene": "krypta",
+      "area": "artifact",
+      "status": "GAP"
+    },
+    {
+      "id": "C-CAM-01",
+      "scene": "*",
+      "area": "camera",
+      "status": "MET"
+    },
+    {
+      "id": "C-DET-01",
+      "scene": "*",
+      "area": "determinism",
+      "status": "MET"
+    },
+    {
+      "id": "C-CAM-02",
+      "scene": "*",
+      "area": "camera",
+      "status": "MET"
+    },
+    {
+      "id": "C-DATA-01",
+      "scene": "*",
+      "area": "data",
+      "status": "MET"
+    },
+    {
+      "id": "C-AU-01",
+      "scene": "*",
+      "area": "adaptive",
+      "status": "MET"
+    },
+    {
+      "id": "C-PROF-01",
+      "scene": "*",
+      "area": "quality-profile",
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "C-PERF-01",
+      "scene": "*",
+      "area": "performance",
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "C-AUTH-01",
+      "scene": "*",
+      "area": "authority",
+      "status": "MET"
+    },
+    {
+      "id": "C-SEC-01",
+      "scene": "*",
+      "area": "security",
+      "status": "NOT_RUN"
+    }
+  ],
+  "statusCount": {
+    "MET": 7,
+    "PARTIAL": 3,
+    "GAP": 11,
+    "NOT_RUN": 3,
+    "ACCEPTED_EXCEPTION": 0
+  },
+  "baseline": {
+    "buildSha": "61498dde6f",
+    "renderer": {
+      "kind": "software-webgl",
+      "unmasked": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+      "preset": "balanced"
+    },
+    "captures": 22,
+    "perf": [
+      {
+        "sceneId": "dornhain-block",
+        "p50": 16.7,
+        "p95": 17.3,
+        "ceilingMs": 120
+      },
+      {
+        "sceneId": "krypta",
+        "p50": 16.6,
+        "p95": 17.1,
+        "ceilingMs": 120
+      }
+    ]
+  }
+}
