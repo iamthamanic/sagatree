@@ -2,7 +2,7 @@
 
 - Issue: #1222
 - Feature slug: atl2-e04
-- HEAD_SHA: 8771669ea4bd4fd9354156f801539757d21259eb
+- HEAD_SHA: 646f3337c4679d8c88158d0ff67f450e10ecfe93
 - BASE_SHA: 95d0d8d48a733bba3113991f92e62330e0826f8d
 - Date: 2026-11-14
 - Verdict: CLEAR
@@ -24,4 +24,4 @@ stays until fade completes; failed loads roll back to prior activeMapId.
 
 ## Notes
 
-Proof pin for Codex-P2 fix tip 8771669ea4bd4fd9354156f801539757d21259eb.
+Proof pin for infra-world fingerprint tip 646f3337c4679d8c88158d0ff67f450e10ecfe93 (after Codex P2 LOD wiring).

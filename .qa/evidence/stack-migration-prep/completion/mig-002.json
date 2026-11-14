@@ -5,7 +5,7 @@
   "result": "PASS",
   "githubClosed": true,
   "mergeRef": "PR #860 \u2192 main (after #782)",
-  "note": "Inventories refreshed after ATL2-E04 (#1222) Codex P2 LOD wiring (atlas barrel).",
+  "note": "Inventories refreshed after ATL2-E04 (#1222) infra-world fingerprint tip.",
   "checks": [
     {
       "command": "legacy inventory matrix",
@@ -26,5 +26,5 @@
       "sha256": "3dd675486450ecf4b3cbad99e87a32f091097f5e54c997f0f43a29b770810992"
     }
   ],
-  "testedCommit": "cc6f0ecee90907ce75e21ef53e67a88335485761"
+  "testedCommit": "646f3337c4679d8c88158d0ff67f450e10ecfe93"
 }
