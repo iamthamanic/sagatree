@@ -65,6 +65,6 @@ Chat mode in the Aiberto panel: streaming, stop, citation chips → rulebook sec
 
 ## Composition Gate
 
-- HEAD_SHA: d81063d0408cebe6cfcc0ef34e85b063564c10b4
+- HEAD_SHA: 5e313395d73791025fb82e6fc35b234213c34411
 - Verdict: CLEAR
 - Proof: `.qa/runs/composition-gate-aiberto-aib-05-chat-ui.md`
