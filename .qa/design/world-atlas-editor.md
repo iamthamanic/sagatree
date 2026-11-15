@@ -1,5 +1,7 @@
 # Design / Spike — World Atlas Editor (#702)
 
+> **Status (ATL2-H02 #1235, 2026-11-15):** Historical. The Leaflet/Geoman path described as "kept in repo" was removed in ATL2-H01 (#1234); product 2D is Canvas2D `UnifiedAtlasEditor`. Current ATL2 architecture: `docs/architecture/atlas-v2-architecture.md` (renderer SoT ADR-ST-10). Content below is preserved as written.
+
 Ready for /implement: YES (phased)
 
 ## Phase 1 findings

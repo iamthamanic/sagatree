@@ -2182,6 +2182,11 @@ function checkWorldAtlasEditor() {
     cwd: root,
     stdio: 'inherit',
   });
+  console.log('ATL2-H02 atlas docs sync (canonical index, banners, golden/test commands) (#1235)...');
+  execFileSync(process.execPath, ['scripts/atl2-h02-docs-sync.self-test.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
   console.log('ATL2-E03 hierarchy zoom / breadcrumb / back-nav...');
   execFileSync(process.execPath, ['scripts/atl2-e03-hierarchy-nav.self-test.mjs'], {
     cwd: root,
