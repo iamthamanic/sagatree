@@ -62,6 +62,21 @@ export function textIndicatesKodusCreditsExhausted(text) {
   return KODUS_CREDITS_EXHAUSTED_RE.test(String(text ?? ''));
 }
 
+/** Review-abort / status wording of a Kody outage card (not a code finding). */
+const KODY_REVIEW_ABORT_RE =
+  /code review (?:failed|aborted|skipped|could not)|review (?:was )?(?:aborted|skipped|failed)|could not be (?:evaluated|completed|run)|failed to run|configured API key|top up the account|adjust the plan|prüfung (?:schlug fehl|abgebrochen|fehlgeschlagen)|review (?:abgebrochen|fehlgeschlagen)/i;
+
+/**
+ * True only for a Kody outage/status card: credits/quota wording AND review-abort
+ * wording AND no severity badge. A badge-less finding that merely discusses
+ * billing limits or HTTP 429 handling in code is NOT an outage card.
+ */
+export function isKodyCreditsOutageCard(body) {
+  const text = String(body ?? '');
+  if (KODY_SEVERITY_RE.test(text)) return false;
+  return textIndicatesKodusCreditsExhausted(text) && KODY_REVIEW_ABORT_RE.test(text);
+}
+
 const SEVERITY_MAP = {
   critical: 'Critical',
   high: 'High',
@@ -99,8 +114,8 @@ export function kodyFindingSeverity(body, { failClosedUnknown = true } = {}) {
     const mapped = mapKodySeverityToken(m[1] || m[2]);
     if (mapped) return mapped;
   }
-  // Provider credits/quota abort card (no severity badge) is an outage notice, not a finding.
-  if (textIndicatesKodusCreditsExhausted(text) && /credit|billing|quota|\b4(?:29|02)\b/i.test(text)) return null;
+  // Provider credits/quota abort card (status wording, no badge) is an outage notice, not a finding.
+  if (isKodyCreditsOutageCard(text)) return null;
   if (failClosedUnknown && KODY_FINDING_MARK_RE.test(text) && !/Code Review Completed/i.test(text)) {
     return 'Critical';
   }
@@ -178,15 +193,23 @@ export function hasTrustedKodusCreditsSkip(comments) {
 }
 
 /**
- * True when a Kody issue comment on the PR shows provider credits/billing exhaustion
- * (Kody may abort before creating a check-run — then only the issue card exists).
+ * True when a Kody outage card for the CURRENT HEAD shows provider credits/billing
+ * exhaustion (Kody may abort before creating a check-run — then only the card exists).
+ * Cards must be posted at/after the HEAD commit time; without a HEAD time the
+ * evidence cannot be bound to HEAD and nothing is skipped (fail-closed).
+ * @param {object[]} comments
+ * @param {{ headCommittedAt?: string|null }} [opts]
  */
-export function kodyIssueCommentsIndicateCreditsExhausted(comments) {
+export function kodyIssueCommentsIndicateCreditsExhausted(comments, { headCommittedAt = null } = {}) {
   const list = Array.isArray(comments) ? comments : [];
+  const headMs = headCommittedAt ? Date.parse(headCommittedAt) : NaN;
+  if (Number.isNaN(headMs)) return false;
   return list.some((c) => {
     const login = c.user?.login ?? c.author?.login ?? '';
     if (!isKodyBotLogin(login)) return false;
-    return textIndicatesKodusCreditsExhausted(c.body ?? '');
+    const createdMs = Date.parse(c.created_at ?? c.createdAt ?? '');
+    if (Number.isNaN(createdMs) || createdMs < headMs) return false;
+    return isKodyCreditsOutageCard(c.body ?? '');
   });
 }
 
@@ -414,7 +437,7 @@ export function findKodusSubmittedReviewForHead(reviews, headSha) {
  */
 export function evaluateKodusHeadEvidence(
   checkRun,
-  { reviews = [], headSha = '', issueComments = [] } = {},
+  { reviews = [], headSha = '', issueComments = [], headCommittedAt = null } = {},
 ) {
   const fromCheck = evaluateKodusCheckRun(checkRun);
   if (fromCheck.ok) return fromCheck;
@@ -443,12 +466,12 @@ export function evaluateKodusHeadEvidence(
         detail: `Kody APPROVED review on HEAD (no check-run; id=${approved.id})`,
       };
     }
-    if (kodyIssueCommentsIndicateCreditsExhausted(issueComments)) {
+    if (kodyIssueCommentsIndicateCreditsExhausted(issueComments, { headCommittedAt })) {
       return {
         ok: true,
         skipped: true,
         reason: 'kodus-skipped-credits',
-        detail: `Kody skipped: no check-run; kody-ai issue comment shows provider credits/quota exhausted${markerNote}`,
+        detail: `Kody skipped: no check-run; kody-ai outage card posted after HEAD commit shows provider credits/quota exhausted${markerNote}`,
       };
     }
     return fromCheck;

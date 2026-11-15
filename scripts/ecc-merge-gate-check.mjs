@@ -484,10 +484,22 @@ export function resolveKodusReviewForHead(
     ]);
     commentList = Array.isArray(fetched) ? fetched : [];
   }
+  // Bind no-check-run outage cards to the current HEAD (fail-closed when unknown).
+  let headCommittedAt = null;
+  if (!selected) {
+    try {
+      const commit = ghJson(['api', `repos/${owner}/${repo}/commits/${headSha}`]);
+      headCommittedAt =
+        commit.commit?.committer?.date ?? commit.commit?.author?.date ?? null;
+    } catch {
+      headCommittedAt = null;
+    }
+  }
   return evaluateKodusHeadEvidence(selected, {
     reviews: reviewList ?? [],
     headSha,
     issueComments: commentList ?? [],
+    headCommittedAt,
   });
 }
 

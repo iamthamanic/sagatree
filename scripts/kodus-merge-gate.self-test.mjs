@@ -22,6 +22,8 @@ import {
   isKodusIgnoredFilesSkip,
   hasTrustedKodusCreditsSkip,
   textIndicatesKodusCreditsExhausted,
+  isKodyCreditsOutageCard,
+  kodyIssueCommentsIndicateCreditsExhausted,
 } from './kodus-merge-gate.mjs';
 import { evaluateMergeGate, findingSeverity } from './ecc-merge-gate-check.mjs';
 
@@ -185,9 +187,40 @@ assert(
 assert(
   evaluateKodusHeadEvidence(null, {
     headSha: 'abc',
-    issueComments: [{ user: { login: 'kody-ai[bot]' }, body: 'Code review aborted: out of credits (HTTP 429)' }],
+    headCommittedAt: '2026-11-15T07:00:00Z',
+    issueComments: [
+      { user: { login: 'kody-ai[bot]' }, created_at: '2026-11-15T07:05:00Z', body: 'Code review aborted: out of credits (HTTP 429)' },
+    ],
   }).skipped === true,
-  'missing check-run + Kody credits issue card → SKIPPED without marker',
+  'missing check-run + current-HEAD Kody credits card → SKIPPED without marker',
+);
+// Codex P1 (#1303): an outage card from an earlier commit must not waive a later HEAD.
+assert(
+  evaluateKodusHeadEvidence(null, {
+    headSha: 'abc',
+    headCommittedAt: '2026-11-15T09:00:00Z',
+    issueComments: [
+      { user: { login: 'kody-ai[bot]' }, created_at: '2026-11-15T07:05:00Z', body: 'Code review aborted: out of credits (HTTP 429)' },
+    ],
+  }).ok === false,
+  'stale credits card (before HEAD commit) does not skip Kody',
+);
+assert(
+  !kodyIssueCommentsIndicateCreditsExhausted(
+    [{ user: { login: 'kody-ai' }, created_at: '2026-11-15T07:05:00Z', body: 'Code review aborted: out of credits' }],
+    { headCommittedAt: null },
+  ),
+  'unknown HEAD time → card evidence not bound → no skip (fail-closed)',
+);
+// Codex P2 (#1303): badge-less findings that discuss billing/429 handling stay findings.
+const badgeLessBillingFinding =
+  'Kody Rules: the payment adapter ignores the billing limit response and retries on HTTP 429 forever.';
+assert(!isKodyCreditsOutageCard(badgeLessBillingFinding), 'billing/429 code finding is not an outage card');
+assert(kodyFindingSeverity(badgeLessBillingFinding) === 'Critical', 'badge-less billing finding stays fail-closed Critical');
+assert(
+  collectKodusIssueCommentFindings([{ id: 11, user: { login: 'kody-ai[bot]' }, body: badgeLessBillingFinding }], allowed)
+    .length === 1,
+  'badge-less billing finding still collected',
 );
 assert(
   evaluateKodusHeadEvidence(null, {
@@ -244,6 +277,7 @@ assert(
     issueComments: [
       {
         user: { login: 'kody-ai' },
+        created_at: '2026-11-15T08:00:00Z',
         body: 'Die Prüfung schlug fehl… out of credits … HTTP 429 … openai_compatible',
       },
       {
@@ -251,6 +285,7 @@ assert(
         author_association: 'OWNER',
       },
     ],
+    headCommittedAt: '2026-11-15T07:00:00Z',
   }).reason === 'kodus-skipped-credits',
   'missing check-run + Kody credits issue card + OWNER skip = SKIPPED',
 );
