@@ -15,12 +15,14 @@
  */
 import { expect, test, type Page } from '@playwright/test';
 import { execFileSync } from 'node:child_process';
+import { createJiti } from 'jiti';
 import { createHash } from 'node:crypto';
 import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { ensureLoggedIn } from './helpers/auth';
 
 const root = process.cwd();
+const jiti = createJiti(import.meta.url, { esmResolve: true });
 const HOST = process.env.SAGATREE_BROWSER_E2E_HOST === '1';
 const CONTRACT_PATH = join(root, '.qa/fixtures/atl3-v01-visual-contract/golden-scenes.json');
 const SELF_TEST = join(root, 'scripts/atl3-v01-visual-contract.self-test.mjs');
@@ -124,7 +126,15 @@ function canonicalJson(value: unknown): string {
   }
   return JSON.stringify(value);
 }
-function featureFingerprint(doc: Record<string, unknown>): string {
+const unifiedDoc = jiti(join(root, 'src/domains/world/atlas/unified-canvas-doc.ts')) as {
+  parseUnifiedCanvasDoc: (raw: unknown) => Record<string, unknown> | null;
+  serializeUnifiedCanvasDoc: (doc: Record<string, unknown>) => Record<string, unknown>;
+};
+/** Same canonical form as the self-test: product parse → serialize (no-op re-persist is not drift). */
+function featureFingerprint(rawDoc: Record<string, unknown>): string {
+  const parsed = unifiedDoc.parseUnifiedCanvasDoc(rawDoc);
+  if (!parsed) return 'unparseable';
+  const doc = unifiedDoc.serializeUnifiedCanvasDoc(parsed);
   const pick = {
     rooms: doc.rooms ?? [],
     walls: doc.walls ?? [],
@@ -473,7 +483,11 @@ test.describe('ATL3-V01 visual contract baseline (#1295)', () => {
       const vm = (raw.map ?? raw) as { generatorMeta?: { seed?: unknown; dungeon?: unknown; unifiedCanvas?: Record<string, unknown> } };
       expect(vm.generatorMeta?.seed, `${scene.id} seed`).toBe(scene.mapSeedKey);
       const fp = featureFingerprint(vm.generatorMeta?.unifiedCanvas ?? {});
-      expect(fp, `${scene.id} stored data fingerprint`).toBe(scene.dataFingerprint);
+      const uc = (vm.generatorMeta?.unifiedCanvas ?? {}) as Record<string, unknown>;
+      const parts = ['rooms', 'walls', 'doors', 'objects', 'strokes', 'heightfield']
+        .map((k) => `${k}=${Array.isArray(uc[k]) ? (uc[k] as unknown[]).length : uc[k] ? 'set' : 'none'}:${createHash('sha256').update(canonicalJson(uc[k] ?? null)).digest('hex').slice(0, 8)}`)
+        .join(' ');
+      expect(fp, `${scene.id} stored data fingerprint (${parts})`).toBe(scene.dataFingerprint);
       storedData.push({
         sceneId: scene.id, mapId, fingerprint: fp, seed: vm.generatorMeta?.seed,
         heightfield: Boolean(vm.generatorMeta?.unifiedCanvas?.heightfield), dungeon: vm.generatorMeta?.dungeon ?? null,

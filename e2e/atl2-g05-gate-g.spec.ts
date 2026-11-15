@@ -685,7 +685,10 @@ test.describe('ATL2-G05 Gate G', () => {
       await page.keyboard.press('Control+z');
       await expect.poll(async () => Number((await bridgeState(page))?.props ?? -1)).toBe(props0);
     } finally {
-      await page.unrouteAll({ behavior: 'ignoreErrors' });
+      // Close the page while atlas writes are still held: aborting them first let the
+      // product's persist retry reach the DB and leak the stamp into the Golden Dornhain
+      // map (seen by ATL3-V01's stored-fingerprint check, which runs after this spec).
+      await page.close().catch(() => undefined);
       for (const h of held) await h.abort();
     }
   });

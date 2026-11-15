@@ -10,7 +10,7 @@
     {
       "id": "stored-data-dornhain-block",
       "status": "PASS",
-      "detail": "seed=dornhain.map.place.dornhain fp=f6b3d3b75f672b0a features=13"
+      "detail": "seed=dornhain.map.place.dornhain fp=3ec9b21f1c3d0ff1 features=13"
     },
     {
       "id": "stored-data-krypta",
@@ -20,7 +20,7 @@
     {
       "id": "host-seed-parity",
       "status": "PASS",
-      "detail": "dornhain-block=f6b3d3b75f672b0a krypta=aa520e6f8290e2f8"
+      "detail": "dornhain-block=3ec9b21f1c3d0ff1 krypta=aa520e6f8290e2f8"
     },
     {
       "id": "golden-terrain",
@@ -65,12 +65,12 @@
     {
       "id": "baseline-set",
       "status": "PASS",
-      "detail": "captures=36 sha=c4d7215b54 renderers=balanced:software-webgl,high:software-webgl,lite:lite3d-fallback"
+      "detail": "captures=36 sha=9994c28a9f renderers=balanced:software-webgl,high:software-webgl,lite:lite3d-fallback"
     },
     {
       "id": "matrix-not-stale",
       "status": "PASS",
-      "detail": "evidence-rules=18 visual-only=6 digest=fdec2941d3776825"
+      "detail": "evidence-rules=18 visual-only=6 digest=964f12d9e1f017b3"
     },
     {
       "id": "docs-gates",
@@ -249,7 +249,7 @@
     "ACCEPTED_EXCEPTION": 0
   },
   "baseline": {
-    "buildSha": "c4d7215b54",
+    "buildSha": "9994c28a9f",
     "renderer": {
       "kind": "software-webgl",
       "unmasked": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
@@ -261,7 +261,7 @@
         "sceneId": "dornhain-block",
         "profile": "balanced",
         "p50": 16.7,
-        "p95": 18,
+        "p95": 18.5,
         "ceilingMs": 120,
         "rendererKind": "software-webgl"
       },
@@ -269,7 +269,7 @@
         "sceneId": "krypta",
         "profile": "balanced",
         "p50": 16.7,
-        "p95": 17,
+        "p95": 21.5,
         "ceilingMs": 120,
         "rendererKind": "software-webgl"
       },
@@ -277,7 +277,7 @@
         "sceneId": "dornhain-block",
         "profile": "high",
         "p50": 16.7,
-        "p95": 18,
+        "p95": 47,
         "ceilingMs": 120,
         "rendererKind": "software-webgl"
       },
@@ -285,23 +285,23 @@
         "sceneId": "krypta",
         "profile": "high",
         "p50": 16.7,
-        "p95": 17.2,
+        "p95": 17.8,
         "ceilingMs": 120,
         "rendererKind": "software-webgl"
       },
       {
         "sceneId": "dornhain-block",
         "profile": "lite",
-        "p50": 16.7,
-        "p95": 18.2,
+        "p50": 16.6,
+        "p95": 18.1,
         "ceilingMs": 120,
         "rendererKind": "lite3d-fallback"
       },
       {
         "sceneId": "krypta",
         "profile": "lite",
-        "p50": 16.7,
-        "p95": 17.2,
+        "p50": 16.6,
+        "p95": 18.5,
         "ceilingMs": 120,
         "rendererKind": "lite3d-fallback"
       }

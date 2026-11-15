@@ -49,7 +49,13 @@ function canonicalJson(value) {
   }
   return JSON.stringify(value);
 }
-function featureFingerprint(doc) {
+const unifiedDoc = jiti(join(root, 'src/domains/world/atlas/unified-canvas-doc.ts'));
+/** Fingerprint over the product's canonical persisted form (parse → serialize), so a no-op
+ *  re-persist by the product (e.g. default `angle: 0`) is not data drift; real edits still are. */
+function featureFingerprint(rawDoc) {
+  const parsed = unifiedDoc.parseUnifiedCanvasDoc(rawDoc);
+  assert.ok(parsed, 'stored unifiedCanvas parses as a product doc');
+  const doc = unifiedDoc.serializeUnifiedCanvasDoc(parsed);
   const pick = {
     rooms: doc.rooms ?? [],
     walls: doc.walls ?? [],

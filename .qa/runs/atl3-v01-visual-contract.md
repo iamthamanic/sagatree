@@ -1,15 +1,15 @@
 # ATL3-V01 visual contract — self-test report (#1295)
 
 - Contract: `.qa/fixtures/atl3-v01-visual-contract/golden-scenes.json`
-- Baseline: `.qa/evidence/atl3-v01-visual-contract/baseline` (build c4d7215b54, balanced=software-webgl, high=software-webgl, lite=lite3d-fallback, 36 captures)
+- Baseline: `.qa/evidence/atl3-v01-visual-contract/baseline` (build 9994c28a9f, balanced=software-webgl, high=software-webgl, lite=lite3d-fallback, 36 captures)
 - Measurement class: software-rendering (not a GPU product measurement)
 
 | Check | Status | Detail |
 |---|---|---|
 | contract-shape | PASS | scenes=2 cameras=3 |
-| stored-data-dornhain-block | PASS | seed=dornhain.map.place.dornhain fp=f6b3d3b75f672b0a features=13 |
+| stored-data-dornhain-block | PASS | seed=dornhain.map.place.dornhain fp=3ec9b21f1c3d0ff1 features=13 |
 | stored-data-krypta | PASS | seed=dornhain.map.loc.crypt fp=aa520e6f8290e2f8 features=200 |
-| host-seed-parity | PASS | dornhain-block=f6b3d3b75f672b0a krypta=aa520e6f8290e2f8 |
+| host-seed-parity | PASS | dornhain-block=3ec9b21f1c3d0ff1 krypta=aa520e6f8290e2f8 |
 | golden-terrain | PASS | hills=4 peak=28 underFeaturesMax=-1.65 |
 | golden-forge-krypta | PASS | seed=1425 rooms=5 walls=166 doors=27 objects=2 |
 | light-profiles | PASS | diorama=balanced dungeon=ancient/balanced |
@@ -18,8 +18,8 @@
 | soll-ist-matrix | PASS | criteria=24 {"MET":8,"PARTIAL":6,"GAP":8,"NOT_RUN":2,"ACCEPTED_EXCEPTION":0} |
 | budgets | PASS | tiers=desktop-reference,tablet,phone-low-end ciCeiling=120ms (software only) |
 | quality-switch | PASS | default=balanced rows=6 |
-| baseline-set | PASS | captures=36 sha=c4d7215b54 renderers=balanced:software-webgl,high:software-webgl,lite:lite3d-fallback |
-| matrix-not-stale | PASS | evidence-rules=18 visual-only=6 digest=fdec2941d3776825 |
+| baseline-set | PASS | captures=36 sha=9994c28a9f renderers=balanced:software-webgl,high:software-webgl,lite:lite3d-fallback |
+| matrix-not-stale | PASS | evidence-rules=18 visual-only=6 digest=964f12d9e1f017b3 |
 | docs-gates | PASS | design + acceptance + e2e + test-gate |
 
 ## Soll/Ist status

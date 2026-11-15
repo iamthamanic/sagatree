@@ -19,7 +19,7 @@
         "Dornhain"
       ],
       "domainBuilder": "buildGoldenDornhainCanvas",
-      "dataFingerprint": "f6b3d3b75f672b0a",
+      "dataFingerprint": "3ec9b21f1c3d0ff1",
       "lookFamily": "outdoor",
       "lightProfile": {
         "source": "resolveAtlasDioramaLightProfile",
@@ -568,7 +568,7 @@
       "authority": "canonical",
       "metric": "Kamera-/Zoomvorgaben über Produkt-Bedienelemente (#coords, #zoom, Kameramodus, Gierwinkel) innerhalb Toleranz",
       "soll": "Zentrum ±0,5 Einheiten, Span ±1 %, Gier ±0,5°, Pitch = Modus-Default",
-      "ist": "Alle 36 Aufnahmen innerhalb Toleranz",
+      "ist": "Alle 36 Aufnahmen innerhalb Toleranz; seit G05 (#1292, kein Remount bei Dokumentänderung) auch die ersten Diorama-/Perspektive-Aufnahmen je Profil sichtbar mit Gier 20°",
       "status": "MET",
       "evidence": "capture-manifest.captures[].actual"
     },
@@ -579,7 +579,7 @@
       "authority": "canonical",
       "metric": "Gespeicherte Kartendaten = Golden-Domain-Daten (Feature-Fingerprint)",
       "soll": "Fingerprint (16 Hex-Zeichen) der gespeicherten generatorMeta.unifiedCanvas = gepinnter Vertragswert (0 Abweichung); Seed = mapSeedKey",
-      "ist": "Dornhain f6b3d3b75f672b0a (inkl. Heightfield), Krypta aa520e6f8290e2f8 (Forge-Seed 1425) — gespeichert = Domain = Host-Seed",
+      "ist": "Dornhain 3ec9b21f1c3d0ff1 (inkl. Heightfield), Krypta aa520e6f8290e2f8 (Forge-Seed 1425) — gespeichert = Domain = Host-Seed",
       "status": "MET",
       "evidence": "capture-manifest.storedData + self-test"
     },
@@ -743,8 +743,8 @@
   ],
   "matrixEvaluation": {
     "evaluatedAt": "2026-11-15",
-    "evaluatedBy": "ATL3-V01 Runde 2 (PR #1302)",
-    "baselineDigest": "fdec2941d3776825",
+    "evaluatedBy": "ATL3-V01 Runde 2 (PR #1302), nach Merge von ATL2-G05 (#1292) neu bewertet",
+    "baselineDigest": "964f12d9e1f017b3",
     "visualOnlyCriteria": [
       "D-MAT-01",
       "D-LOD-01",
@@ -753,6 +753,9 @@
       "K-MAT-01",
       "K-ATM-01"
     ],
-    "rule": "Visuell bewertete Kriterien gelten nur für genau diese Baseline-Pixel (sha256 über normierte Dateinamen + PNG-Bytes). Neue Baseline → self-test FAIL bis Matrix neu bewertet und Digest neu gepinnt; Browser-Lauf FAIL bei Drift gegen die Baseline (tolerances.baselineDrift)."
+    "rule": "Visuell bewertete Kriterien gelten nur für genau diese Baseline-Pixel (sha256 über normierte Dateinamen + PNG-Bytes). Neue Baseline → self-test FAIL bis Matrix neu bewertet und Digest neu gepinnt; Browser-Lauf FAIL bei Drift gegen die Baseline (tolerances.baselineDrift).",
+    "history": [
+      "fdec2941d3776825 → 964f12d9e1f017b3: nach G05-Merge stimmen 12 Diorama-/Perspektive-Aufnahmen (balanced Z0, high/lite Z1) wieder mit dem Gierwinkel 20° überein (vorher nach Runtime-Remount bei 0°); visuelle Kriterien unverändert neu bewertet."
+    ]
   }
 }
