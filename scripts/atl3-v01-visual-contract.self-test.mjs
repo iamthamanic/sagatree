@@ -241,7 +241,10 @@ row('cameras-zoom', 'PASS', contract.scenes.map((s) => `${s.id}:${s.zoomLevels.m
   facts.runtimeShadowPass = /createFramebuffer|shadowMap|depthTexture/i.test(runtimeSrc);
   facts.runtimeLocalLightFalloff = /pointLight|lightFalloff|uTorch|torchLight/i.test(runtimeSrc);
   facts.runtimeDepthBias = /polygonOffset|POLYGON_OFFSET/.test(runtimeSrc);
+  // Round 3: lite (Canvas2D) painter's algorithm layers ground before standing geometry (no terrain-over-floor sort errors).
+  facts.runtimeLiteGroundPass = /LITE_GROUND_Y/.test(runtimeSrc) && /ground\.concat\(rest\)/.test(runtimeSrc);
   facts.kryptaCorridorStubWalls = krypta.walls.filter((w) => w.id.startsWith('dcorr-')).length;
+  facts.kryptaCorridorFloors = krypta.rooms.filter((r) => r.id.startsWith('dcorr-')).length;
   facts.dioramaDoors = plan.batches.filter((b) => /door/i.test(b.kind ?? '')).length;
   contract.__facts = facts;
   assert.equal(facts.kryptaDungeonLookTruncatedLite, 0, 'Golden Krypta fits the lite instance budget (no dropped canonical features)');
@@ -401,7 +404,7 @@ const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
     'D-GEO-03': f.dornhainHeightfield === 'none' || f.dornhainHeightMax <= 0 ? ['GAP'] : ['PARTIAL', 'MET'],
     'D-SHD-01': f.runtimeShadowPass ? ['PARTIAL', 'MET'] : ['GAP'],
     'K-SHD-01': f.runtimeShadowPass ? ['PARTIAL', 'MET'] : ['GAP'],
-    'K-GEO-01': f.kryptaDoors === 0 ? ['GAP'] : f.kryptaCorridorStubWalls > 0 ? ['PARTIAL'] : ['PARTIAL', 'MET'],
+    'K-GEO-01': f.kryptaDoors === 0 ? ['GAP'] : f.kryptaCorridorStubWalls > 0 || f.kryptaCorridorFloors === 0 ? ['PARTIAL'] : ['PARTIAL', 'MET'],
     'K-LIT-01': f.kryptaDungeonLookTorches === 0 ? ['GAP'] : f.runtimeLocalLightFalloff ? ['PARTIAL', 'MET'] : ['PARTIAL'],
     'D-ART-01': f.runtimeDepthBias ? ['GAP', 'PARTIAL', 'MET'] : ['GAP', 'PARTIAL'],
     'K-ART-01': f.runtimeDepthBias ? ['GAP', 'PARTIAL', 'MET'] : ['GAP', 'PARTIAL'],
@@ -410,7 +413,7 @@ const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
     'C-CAM-02': okCamera ? ['MET'] : ['GAP'],
     'C-DATA-01': okData ? ['MET'] : ['GAP'],
     'C-AU-01': okDevices ? ['MET'] : ['GAP'],
-    'C-PROF-01': allProfiles ? ['PARTIAL', 'MET'] : ['NOT_RUN'],
+    'C-PROF-01': !allProfiles ? ['NOT_RUN'] : f.runtimeLiteGroundPass ? ['PARTIAL', 'MET'] : ['PARTIAL'],
     'C-PERF-01': hardware ? ['GAP', 'PARTIAL', 'MET'] : ['NOT_RUN'],
     'C-SEC-01': playerCaptured ? ['GAP', 'PARTIAL', 'MET'] : ['NOT_RUN'],
     'C-AUTH-01': ['MET'],
