@@ -110,7 +110,7 @@ test.describe('ATL2-C06 Gate C', () => {
     expect(titles).toEqual(
       expect.arrayContaining([
         'Welt',
-        'Land Westmark',
+        'Nordreich',
         'Dornhain',
         'Krypta unter dem Hügel',
       ]),

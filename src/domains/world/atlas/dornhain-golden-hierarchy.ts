@@ -2,8 +2,9 @@
  * dornhain-golden-hierarchy — Golden child-map seeds + canvases (Steps 5+6).
  * Location: src/domains/world/atlas/dornhain-golden-hierarchy.ts
  *
- * Pure domain — no React / Host. Naming placeholders until PM freeze:
- * Kontinent Westmark / Land Westmark under Donalu.
+ * Pure domain — no React / Host. Golden names (owner freeze 2026-11-15, ATL2-H03 #1236):
+ * Kontinent Westmark / Nordreich under Donalu. The country was the "Land Westmark"
+ * placeholder before; seed keys and stable ids are unchanged (no data migration).
  */
 import {
   mergeMapFrameIntoGeneratorMeta,
@@ -224,7 +225,7 @@ export const DORNHAIN_GOLDEN_MAPS: readonly DornhainGoldenMapSpec[] = [
   {
     seedKey: 'dornhain.map.country.westmark',
     placeSeedKey: 'country.westmark',
-    title: 'Land Westmark',
+    title: 'Nordreich',
     kind: 'region',
     parentMapSeedKey: 'dornhain.map.continent.westmark',
     parentAnchor: { centerX: 430, centerY: 400, extentX: 110, extentY: 100 },
