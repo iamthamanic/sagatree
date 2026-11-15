@@ -1,5 +1,7 @@
 # ATL2-D01 — Productive 3D renderer decision
 
+> **Status (ATL2-H02 #1235, 2026-11-15):** Still valid. `AtlasSpatialViewport` is no longer barrel-exported either (quarantined in ATL2-H01 #1234). Current ATL2 architecture: `docs/architecture/atlas-v2-architecture.md` (renderer SoT ADR-ST-10). Content below is preserved as written.
+
 **Issue:** #1212  
 **Slug:** `atl2-d01`  
 **Date:** 2026-11-13

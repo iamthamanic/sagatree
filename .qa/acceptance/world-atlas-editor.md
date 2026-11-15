@@ -1,5 +1,7 @@
 # Feature: World Atlas Editor (Unified Canvas + dual navigation)
 
+> **Status (ATL2-H02 #1235, 2026-11-15):** Historical. "Leaflet module may remain in repo" no longer holds — `WorldAtlasLeafletMap.tsx` was removed in ATL2-H01 (#1234). Current ATL2 architecture: `docs/architecture/atlas-v2-architecture.md` (renderer SoT ADR-ST-10). Content below is preserved as written.
+
 <!-- updated by /implement 2026-10-17 — unified canvas primary -->
 
 ## Intent
