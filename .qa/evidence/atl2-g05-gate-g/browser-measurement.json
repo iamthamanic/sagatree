@@ -1,0 +1,139 @@
+{
+  "format": "atl2-g05-browser-measurement-v1",
+  "issue": 1233,
+  "buildSha": "cab5513561",
+  "at": "2026-11-14T22:24:12.792Z",
+  "renderer": {
+    "kind": "software-webgl",
+    "unmasked": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+    "preset": "balanced"
+  },
+  "measurementClass": "software-rendering (not a GPU product measurement)",
+  "budgetMs": 120,
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.8078.4 Safari/537.36",
+  "frames": [
+    {
+      "scene": "small",
+      "map": "Taverne Zum Flüstern",
+      "meshes": 14,
+      "triangles": 368,
+      "samples": 48,
+      "p50": 16.699999999999818,
+      "p95": 33.40000000000009,
+      "drawP95": 0.3000000002793968,
+      "budgetMs": 120
+    },
+    {
+      "scene": "medium",
+      "map": "Dornhain",
+      "meshes": 14,
+      "triangles": 344,
+      "samples": 48,
+      "p50": 16.699999999999818,
+      "p95": 66.59999999999945,
+      "drawP95": 0.40000000037252903,
+      "budgetMs": 120
+    },
+    {
+      "scene": "large",
+      "map": "Welt",
+      "meshes": 14,
+      "triangles": 767,
+      "samples": 48,
+      "p50": 16.69999999999891,
+      "p95": 16.700000000000728,
+      "drawP95": 0.5,
+      "budgetMs": 120
+    }
+  ],
+  "cameras": [
+    {
+      "mode": "ortho-topdown",
+      "ok": true,
+      "span": 530,
+      "yaw": 0
+    },
+    {
+      "mode": "diorama-oblique",
+      "ok": true,
+      "span": 530,
+      "yaw": 0
+    },
+    {
+      "mode": "perspective",
+      "ok": true,
+      "span": 530,
+      "yaw": 0
+    }
+  ],
+  "rows": [
+    {
+      "id": "frame-times-small",
+      "status": "PASS",
+      "detail": "Taverne Zum Flüstern: meshes=14 triangles=368 p50=16.7ms p95=33.4ms drawP95=0.3ms budget=120ms renderer=software-webgl"
+    },
+    {
+      "id": "frame-times-medium",
+      "status": "PASS",
+      "detail": "Dornhain: meshes=14 triangles=344 p50=16.7ms p95=66.6ms drawP95=0.4ms budget=120ms renderer=software-webgl"
+    },
+    {
+      "id": "frame-times-large",
+      "status": "PASS",
+      "detail": "Welt: meshes=14 triangles=767 p50=16.7ms p95=16.7ms drawP95=0.5ms budget=120ms renderer=software-webgl"
+    },
+    {
+      "id": "camera-modes-zoom-orbit",
+      "status": "PASS",
+      "detail": "ortho-topdown=true diorama-oblique=true perspective=true spanΔ=106.00 yawΔ=25.00"
+    },
+    {
+      "id": "map-switch-teardown",
+      "status": "PASS",
+      "detail": "cycles=8 meshesWarm=14 meshesAfter=14"
+    },
+    {
+      "id": "js-heap-soak",
+      "status": "PASS",
+      "detail": "before=82.4MB after=82.4MB limit=+48MB (performance.memory, coarse)"
+    },
+    {
+      "id": "webgl-context-loss",
+      "status": "PASS",
+      "detail": "lostObserved=true restored=true meshes 14→14"
+    },
+    {
+      "id": "device-desktop",
+      "status": "PASS",
+      "detail": "1280x800 ready=true canvas=992x600 overflowX=0"
+    },
+    {
+      "id": "device-tablet",
+      "status": "PASS",
+      "detail": "834x1112 ready=true canvas=730x912 overflowX=0"
+    },
+    {
+      "id": "device-phone",
+      "status": "PASS",
+      "detail": "390x844 ready=true canvas=366x604 overflowX=0"
+    },
+    {
+      "id": "visual-screenshots",
+      "status": "PASS",
+      "detail": "screenshots=10"
+    }
+  ],
+  "rollup": "PASS",
+  "screenshots": [
+    "g05__wo-zfsx8-taverne-zum-flustern__map-dh-map-loc-tavern-9ba9c2f1d134__default__cab5513561__balanced-software-webgl__desktop.png",
+    "g05__wo-zfsx8-dornhain__map-dh-map-place-dornhain-68593bdc9c75__default__cab5513561__balanced-software-webgl__desktop.png",
+    "g05__wo-zfsx8-welt__map-dh-atlas-root-7a5f6dbafc53__default__cab5513561__balanced-software-webgl__desktop.png",
+    "g05__wo-zfsx8-dornhain__map-dh-map-place-dornhain-68593bdc9c75__ortho-topdown__cab5513561__balanced-software-webgl__desktop.png",
+    "g05__wo-zfsx8-dornhain__map-dh-map-place-dornhain-68593bdc9c75__diorama-oblique__cab5513561__balanced-software-webgl__desktop.png",
+    "g05__wo-zfsx8-dornhain__map-dh-map-place-dornhain-68593bdc9c75__perspective__cab5513561__balanced-software-webgl__desktop.png",
+    "g05__wo-zfsx8-dornhain__map-dh-map-place-dornhain-68593bdc9c75__after-context-restore__cab5513561__balanced-software-webgl__desktop.png",
+    "g05__wo-zfsx8-dornhain__map-dh-map-place-dornhain-68593bdc9c75__default__cab5513561__balanced-software-webgl__desktop.png",
+    "g05__wo-zfsx8-dornhain__map-dh-map-place-dornhain-68593bdc9c75__default__cab5513561__balanced-software-webgl__tablet.png",
+    "g05__wo-zfsx8-dornhain__map-dh-map-place-dornhain-68593bdc9c75__default__cab5513561__balanced-software-webgl__phone.png"
+  ]
+}

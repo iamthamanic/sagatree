@@ -1,0 +1,88 @@
+{
+  "gate": "atl2-g05",
+  "issue": 1233,
+  "head": "cab551356120cd76efd955009ffc7a64afc149a6",
+  "stack": [
+    {
+      "pr": 1279,
+      "issue": 1229,
+      "sha": "8df8589249cd73ec4abf5959669d18364ea0777a",
+      "title": "ATL2-G01 GM/player scopes",
+      "present": true
+    },
+    {
+      "pr": 1280,
+      "issue": 1230,
+      "sha": "60749aeab7811adda0918602635bedb34fc336fe",
+      "title": "ATL2-G02 perf budgets",
+      "present": true
+    },
+    {
+      "pr": 1282,
+      "issue": 1231,
+      "sha": "bd8959322b310cd7e049eecf1e11cd0fed868dc9",
+      "title": "ATL2-G03 adaptive UX",
+      "present": true
+    },
+    {
+      "pr": 1283,
+      "issue": 1232,
+      "sha": "9009014e3881249ec295cc8dc265108f08c13d04",
+      "title": "ATL2-G04 golden visual",
+      "present": true
+    }
+  ],
+  "host": {
+    "ownerMapCount": 6,
+    "worldPublicId": "WO-6SXNS",
+    "strangerDeny": true,
+    "outsiderStatus": 403,
+    "playerViewRedaction": true,
+    "playerViewMapCount": 1,
+    "playerSessionUserId": "ZVzgl6wwc4TtINnN49kVRF0QERhzqYkL"
+  },
+  "sollIst": [
+    {
+      "category": "G01–G04 stack on main",
+      "soll": "squash SHAs #1279/#1280/#1282/#1283 are ancestors of HEAD",
+      "ist": "pass-git"
+    },
+    {
+      "category": "Party / secret policy (domain)",
+      "soll": "party projection strips secrets; dungeon theme-only; host store wires redaction",
+      "ist": "pass-domain"
+    },
+    {
+      "category": "Perf / memory budgets (domain)",
+      "soll": "fixtures + map-switch/context-loss teardown within budget (no unbounded leak)",
+      "ist": "pass-domain"
+    },
+    {
+      "category": "Adaptive UX (domain)",
+      "soll": "phone/tablet/desktop bands, 44px touch, surface states, keyboard shortcuts",
+      "ist": "pass-domain"
+    },
+    {
+      "category": "Golden visual (domain + e2e contract)",
+      "soll": "6 fixtures match baselines; Browser E2E toHaveScreenshot @ 0.08",
+      "ist": "pass-domain"
+    },
+    {
+      "category": "Host stranger deny",
+      "soll": "non-owner atlas write denied (42501/403)",
+      "ist": "pass-host"
+    },
+    {
+      "category": "Host player-session redaction (SC-03)",
+      "soll": "active player membership fetches revealed crypt without playerView flag; secrets stripped",
+      "ist": "pass-host"
+    }
+  ],
+  "verdict": "CLEAR",
+  "residuals": [
+    {
+      "severity": "Info",
+      "note": "Full Browser E2E G04 pixel matrix + mobile device projects remain CI-enforced; Gate G locks host+domain protocol for G01–G04."
+    }
+  ]
+}

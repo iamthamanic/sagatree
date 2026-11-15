@@ -83,8 +83,29 @@ export type AtlasPrototypeNavPlacePayload = {
   readonly placeId: string;
 };
 
+/** Host-owned undo/redo stacks (JSON snapshots), reused across remounts of one map. */
+export type AtlasPrototypeHistoryStore = {
+  undo: string[];
+  redo: string[];
+};
+
+export type AtlasPrototypeEditHistory = {
+  readonly undo: string[];
+  readonly redo: string[];
+  readonly snapshot: (json: string) => void;
+  readonly undoFrom: (currentJson: string) => string | null;
+  readonly redoFrom: (currentJson: string) => string | null;
+};
+
+export function createAtlasEditHistory(
+  store: AtlasPrototypeHistoryStore | null | undefined,
+  limit?: number,
+): AtlasPrototypeEditHistory;
+
 export type AtlasPrototypeMountOptions = {
   readonly controlled?: boolean;
+  /** G05: same object for every mount of one map so edits/remounts keep undo/redo. */
+  readonly historyStore?: AtlasPrototypeHistoryStore | null;
   readonly seedState?: Readonly<Record<string, unknown>> | null;
   readonly onPersist?: (state: Readonly<Record<string, unknown>>) => void;
   /** When set, #nav is driven by persisted WorldNodes (product path #747). */

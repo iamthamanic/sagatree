@@ -20,10 +20,17 @@ const runtimeSrc = readFileSync(
   join(root, 'src/app/world/atlas/unified/prototype3d/atlas-prototype-runtime.mjs'),
   'utf8',
 );
-const hostSrc = readFileSync(
+const hostEditorSrc = readFileSync(
   join(root, 'src/app/world/atlas/unified/AtlasNative3dEditor.tsx'),
   'utf8',
 );
+// G05 (#1233): look resolution lives in atlas-native-3d-look.ts (memoised in the host).
+const hostLookSrc = readFileSync(
+  join(root, 'src/app/world/atlas/unified/atlas-native-3d-look.ts'),
+  'utf8',
+);
+assert.ok(hostEditorSrc.includes('resolveAtlasNative3dDungeonLook'));
+const hostSrc = `${hostEditorSrc}\n${hostLookSrc}`;
 const editorSrc = readFileSync(
   join(root, 'src/app/world/atlas/unified/UnifiedAtlasEditor.tsx'),
   'utf8',
