@@ -1992,7 +1992,7 @@ function checkWorldMapPartyPosition() {
 }
 
 function checkWorldAtlasEditor() {
-  console.log('World atlas editor (#702): dual nav, Leaflet/Geoman workbench, migration...');
+  console.log('World atlas editor (#702): dual nav, unified workbench, migration...');
   execFileSync(process.execPath, ['scripts/world-atlas-editor-check.mjs'], {
     cwd: root,
     stdio: 'inherit',

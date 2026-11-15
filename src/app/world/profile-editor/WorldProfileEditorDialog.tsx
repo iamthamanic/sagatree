@@ -207,7 +207,7 @@ export function WorldProfileEditorDialog({
                 data-world-map-module-section
               >
                 <p className="text-sm text-muted-foreground">
-                  Vollständiger Atlas (Leaflet / Hierarchie) unter Bibliothek → Welten → Karte.
+                  Vollständiger Atlas (2D/3D, Hierarchie) unter Bibliothek → Welten → Karte.
                   Hier bleibt der Legacy-Kachel-Editor für bestehende Karten.
                 </p>
                 {world.publicId ? (
