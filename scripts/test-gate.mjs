@@ -2227,6 +2227,11 @@ function checkWorldAtlasEditor() {
     cwd: root,
     stdio: 'inherit',
   });
+  console.log('ATL3-V01 Golden Krypta host mirror parity (forge → server seed)...');
+  execFileSync(process.execPath, ['scripts/atl3-v01-golden-krypta-forge.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
   console.log('Atlas prototype 3D exact embed...');
   execFileSync(process.execPath, ['scripts/atlas-prototype-3d-embed.self-test.mjs'], {
     cwd: root,

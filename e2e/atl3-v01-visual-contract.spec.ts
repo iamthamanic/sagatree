@@ -10,12 +10,13 @@
  * not a pixel-diff gate (G04 stays the regression gate). Fail-closed on:
  * stored data drift, camera not applied, blank capture, missing matrix rows.
  * Camera centre and zoom go through the product scale widget (#coords / #zoom);
- * mode and yaw through the public atlas bridge — no test hooks in the runtime.
+ * mode and yaw through the public atlas bridge; the quality profile through the
+ * product switch ([data-atlas-graphics-preset-select]) — no test hooks in the runtime.
  */
 import { expect, test, type Page } from '@playwright/test';
 import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { ensureLoggedIn } from './helpers/auth';
 
@@ -40,6 +41,9 @@ type SceneSpec = {
 };
 type CameraSpec = { id: 'ortho-topdown' | 'diorama-oblique' | 'perspective'; yawDeg: number; pitchRad: number };
 type ViewportSpec = { id: 'desktop' | 'tablet' | 'phone'; width: number; height: number; matrix: string };
+type ProfileId = 'high' | 'balanced' | 'lite';
+/** One capture block: quality profile × viewport × cameras × zoom levels (zoomIds 'all' or id prefixes). */
+type ProfileRow = { profile: ProfileId; viewport: ViewportSpec['id']; cameras: readonly CameraSpec['id'][]; zoomIds: 'all' | readonly string[] };
 type Contract = {
   format: string;
   starterSlug: string;
@@ -52,10 +56,13 @@ type Contract = {
     spanRelative: number;
     yawDeg: number;
     repeatCapture: { maxChannelDelta: number; maxDiffPixelRatio: number };
+    baselineDrift: { maxChannelDelta: number; maxDiffPixelRatio: number };
     nonBlank: { minDistinctColors: number; minLumaStdDev: number };
   };
   screenshotNameRegex: string;
   ciSoftwareCeiling: { frameP95Ms: number };
+  profileMatrix: readonly ProfileRow[];
+  qualitySwitch: { default: ProfileId };
 };
 type CameraSnapshot = { mode: string; x: number; z: number; span: number; yawRad: number; pitchRad: number };
 type AtlasState = { mode: string; geometry?: Array<{ name: string; triangles: number }> };
@@ -76,6 +83,7 @@ type RendererKind = 'hardware-webgl' | 'software-webgl' | 'lite3d-fallback' | 'u
 type ImageMetrics = { width: number; height: number; lumaMean: number; lumaStdDev: number; distinctColors: number; edgeDensity: number; dominantColorShare: number };
 type CaptureRow = {
   file: string;
+  profile: ProfileId;
   sceneId: string;
   mapId: string;
   camera: string;
@@ -293,6 +301,17 @@ async function applyCamera(page: Page, cam: CameraSpec, zoom: ZoomLevel): Promis
   return target;
 }
 
+/** Select a quality profile through the product switch and wait for the remounted runtime. */
+async function selectProfile(page: Page, profile: ProfileId): Promise<void> {
+  const select = page.locator('[data-atlas-graphics-preset-select]').first();
+  await expect(select).toBeVisible({ timeout: 30_000 });
+  if ((await select.inputValue()) !== profile) await select.selectOption(profile);
+  await expect(page.locator('[data-atlas-native-3d-host]').first()).toHaveAttribute('data-atlas-graphics-preset', profile, {
+    timeout: 60_000,
+  });
+  await waitAtlasReady(page);
+}
+
 /**
  * Hide HTML chrome over the WebGL stage (G04 selector set) via an injected
  * stylesheet, so overlays re-rendered after a controlled-runtime remount stay
@@ -304,7 +323,7 @@ const CHROME_SELECTORS = [
   '[data-atlas-prototype-bar]', '.map-label', '.map-labels', '[data-map-pin]', '.hotspot', '.scale-widget',
   '.action-tools', '.mode-chip', '[data-atlas-map-pin]', '[data-unified-chrome]', '[data-atlas-surface-actions]',
   '[data-atlas-surface-bar]', '[data-atlas-missing-detail]', '.toast', '#notice', '#side', '#inspector',
-  '[data-atlas-surface-toggle]', 'div:has(> [data-atlas-surface-toggle])',
+  '[data-atlas-surface-toggle]', 'div:has(> [data-atlas-surface-toggle])', '[data-atlas-graphics-preset-select]',
 ];
 async function hideChrome(page: Page, hide: boolean): Promise<void> {
   await page.evaluate(
@@ -426,19 +445,24 @@ test.describe('ATL3-V01 visual contract baseline (#1295)', () => {
 
   test('browser-host: Custom-WebGL baseline captures for Dornhain + Krypta', async ({ page }) => {
     test.skip(!HOST, 'requires browser-e2e-with-host');
-    test.setTimeout(420_000);
+    test.setTimeout(900_000);
     rmSync(EVIDENCE, { recursive: true, force: true });
     mkdirSync(EVIDENCE, { recursive: true });
     const sha = buildSha();
-    const desktop = must(contract.viewports.find((v) => v.id === 'desktop'), 'desktop viewport');
+    const viewportOf = (id: ViewportSpec['id']) => must(contract.viewports.find((v) => v.id === id), `${id} viewport`);
+    const desktop = viewportOf('desktop');
     await page.setViewportSize({ width: desktop.width, height: desktop.height });
     const { worldId, origin } = await openDornhainAtlas3d(page);
+
+    // 0) Quality switch is a product setting with the documented default (fresh device = no stored choice).
+    const switchDefault = await page.locator('[data-atlas-graphics-preset-select]').first().inputValue();
+    expect(switchDefault, 'quality switch default').toBe(contract.qualitySwitch.default);
 
     // 1) Stored map data == contract fingerprint (fixed stored data, not a test-only scene).
     const mapsRes = await page.request.get(`/api/v1/worlds/${worldId}/atlas/maps`, { headers: { Origin: origin } });
     expect(mapsRes.ok()).toBeTruthy();
     const maps = ((await mapsRes.json()) as { maps?: Array<{ id: string; title: string }> }).maps ?? [];
-    const storedData: Array<{ sceneId: string; mapId: string; fingerprint: string; seed: unknown }> = [];
+    const storedData: Array<{ sceneId: string; mapId: string; fingerprint: string; seed: unknown; heightfield: boolean; dungeon: unknown }> = [];
     for (const scene of contract.scenes) {
       const map = maps.find((m) => m.title === scene.mapTitleDe);
       expect(map, `stored map ${scene.mapTitleDe}`).toBeTruthy();
@@ -446,21 +470,26 @@ test.describe('ATL3-V01 visual contract baseline (#1295)', () => {
       const detail = await page.request.get(`/api/v1/worlds/atlas/maps/${mapId}`, { headers: { Origin: origin } });
       expect(detail.ok()).toBeTruthy();
       const raw = (await detail.json()) as { map?: Record<string, unknown> } & Record<string, unknown>;
-      const vm = (raw.map ?? raw) as { generatorMeta?: { seed?: unknown; unifiedCanvas?: Record<string, unknown> } };
+      const vm = (raw.map ?? raw) as { generatorMeta?: { seed?: unknown; dungeon?: unknown; unifiedCanvas?: Record<string, unknown> } };
       expect(vm.generatorMeta?.seed, `${scene.id} seed`).toBe(scene.mapSeedKey);
       const fp = featureFingerprint(vm.generatorMeta?.unifiedCanvas ?? {});
       expect(fp, `${scene.id} stored data fingerprint`).toBe(scene.dataFingerprint);
-      storedData.push({ sceneId: scene.id, mapId, fingerprint: fp, seed: vm.generatorMeta?.seed });
+      storedData.push({
+        sceneId: scene.id, mapId, fingerprint: fp, seed: vm.generatorMeta?.seed,
+        heightfield: Boolean(vm.generatorMeta?.unifiedCanvas?.heightfield), dungeon: vm.generatorMeta?.dungeon ?? null,
+      });
     }
     const mapIdOf = (sceneId: string) => must(storedData.find((s) => s.sceneId === sceneId), `stored map for ${sceneId}`).mapId;
 
-    const renderer = await detectRenderer(page);
+    const renderers: Partial<Record<ProfileId, Awaited<ReturnType<typeof detectRenderer>>>> = {};
     const captures: CaptureRow[] = [];
-    const perf: Array<{ sceneId: string; p50: number; p95: number; ceilingMs: number }> = [];
+    const perf: Array<{ sceneId: string; profile: ProfileId; p50: number; p95: number; ceilingMs: number; rendererKind: RendererKind }> = [];
     const meshSets: Record<string, string[]> = {};
     const repeat: Array<{ file: string; diffRatio: number; maxDelta: number }> = [];
+    const devices: Array<{ viewport: string; profile: ProfileId; sceneId: string; canvas: { w: number; h: number }; overflowX: number }> = [];
 
-    const capture = async (scene: SceneSpec, cam: CameraSpec, zoom: ZoomLevel, viewport: ViewportSpec) => {
+    const capture = async (scene: SceneSpec, cam: CameraSpec, zoom: ZoomLevel, viewport: ViewportSpec, profile: ProfileId) => {
+      const renderer = must(renderers[profile], `renderer for ${profile}`);
       const target = await applyCamera(page, cam, zoom);
       const actual = must(await bridge(page).camera(), 'camera state');
       const st = must(await bridge(page).state(), 'atlas state');
@@ -471,100 +500,151 @@ test.describe('ATL3-V01 visual contract baseline (#1295)', () => {
       await hideChrome(page, false);
       const file = `v01__${scene.id}__map-${slug(mapIdOf(scene.id))}__${cam.id}__${zoom.id}__${sha}__${slug(renderer.preset)}-${renderer.kind}__${viewport.id}.png`;
       expect(file, 'screenshot name contract').toMatch(nameRe);
+      expect(renderer.preset, `${file}: runtime preset`).toBe(profile);
       writeFileSync(join(EVIDENCE, file), png);
       const metrics = await imageMetrics(page, png);
       expect(metrics.distinctColors, `${file} not blank (colors)`).toBeGreaterThanOrEqual(contract.tolerances.nonBlank.minDistinctColors);
       expect(metrics.lumaStdDev, `${file} not blank (contrast)`).toBeGreaterThanOrEqual(contract.tolerances.nonBlank.minLumaStdDev);
       expect(geometry.length, `${file} meshes`).toBeGreaterThan(0);
       captures.push({
-        file, sceneId: scene.id, mapId: mapIdOf(scene.id), camera: cam.id, zoomId: zoom.id, viewport: viewport.id,
+        file, profile, sceneId: scene.id, mapId: mapIdOf(scene.id), camera: cam.id, zoomId: zoom.id, viewport: viewport.id,
         target, actual, meshes: geometry.length,
         triangles: geometry.reduce((s, g) => s + (Number(g.triangles) || 0), 0), metrics,
       });
-      meshSets[`${scene.id}|${cam.id}|${zoom.id}`] = geometry.map((g) => g.name).sort();
+      meshSets[`${profile}|${viewport.id}|${scene.id}|${cam.id}|${zoom.id}`] = geometry.map((g) => g.name).sort();
       return png;
     };
 
-    // 2) Desktop: every scene × camera × zoom level.
-    for (const scene of contract.scenes) {
-      await openScene(page, scene);
-      for (const cam of contract.cameras) {
-        for (const zoom of scene.zoomLevels) {
-          const png = await capture(scene, cam, zoom, desktop);
-          if (cam.id === 'ortho-topdown' && zoom === scene.zoomLevels[0]) {
-            // Reproducibility: same camera re-applied after a perspective round trip.
-            await applyCamera(page, contract.cameras[2], scene.zoomLevels[2]);
-            await applyCamera(page, cam, zoom);
-            await hideChrome(page, true);
-            const again = await page.locator('[data-atlas-native-3d-host] canvas:not(.hidden)').first().screenshot({ animations: 'disabled' });
-            await hideChrome(page, false);
-            mkdirSync(join(EVIDENCE, 'repeat'), { recursive: true });
-            const repeatFile = must(captures.at(-1), 'last capture').file;
-            writeFileSync(join(EVIDENCE, 'repeat', repeatFile), again);
-            const m = await imageMetrics(page, png, again);
-            repeat.push({ file: repeatFile, diffRatio: m.diffRatio ?? 1, maxDelta: m.maxDelta ?? 255 });
-          }
-        }
-      }
-      await applyCamera(page, contract.cameras[1], scene.zoomLevels[0]);
-      const f = await sampleFrames(page);
-      perf.push({ sceneId: scene.id, ...f, ceilingMs: contract.ciSoftwareCeiling.frameP95Ms });
-    }
-
-    // 3) Tablet / phone: diorama-oblique at z0 per scene (AU device bands).
-    const devices: Array<{ viewport: string; sceneId: string; canvas: { w: number; h: number }; overflowX: number }> = [];
-    for (const viewport of contract.viewports.filter((v) => v.id !== 'desktop')) {
+    // 2) Capture blocks from the contract profile matrix (product quality switch, not a runtime hook).
+    const zoomsFor = (scene: SceneSpec, row: ProfileRow) =>
+      row.zoomIds === 'all' ? scene.zoomLevels : scene.zoomLevels.filter((z) => row.zoomIds !== 'all' && row.zoomIds.some((p) => z.id.startsWith(`${p}-`)));
+    for (const row of contract.profileMatrix) {
+      const viewport = viewportOf(row.viewport);
       await page.setViewportSize({ width: viewport.width, height: viewport.height });
       await page.waitForTimeout(400);
+      await selectProfile(page, row.profile);
+      renderers[row.profile] = await detectRenderer(page);
+      const cams = contract.cameras.filter((c) => row.cameras.includes(c.id));
       for (const scene of contract.scenes) {
         await openScene(page, scene);
-        await capture(scene, contract.cameras[1], scene.zoomLevels[0], viewport);
-        const dims = await page.evaluate(() => {
-          const c = document.querySelector('[data-atlas-native-3d-host] canvas:not(.hidden)') as HTMLCanvasElement | null;
-          const r = c?.getBoundingClientRect();
-          return { w: Math.round(r?.width ?? 0), h: Math.round(r?.height ?? 0), overflowX: document.documentElement.scrollWidth - window.innerWidth };
-        });
-        devices.push({ viewport: viewport.id, sceneId: scene.id, canvas: { w: dims.w, h: dims.h }, overflowX: dims.overflowX });
-        expect(dims.w, `${viewport.id} canvas width`).toBeGreaterThanOrEqual(200);
-        expect(dims.overflowX, `${viewport.id} horizontal overflow (AU-01)`).toBeLessThanOrEqual(1);
+        const zooms = zoomsFor(scene, row);
+        expect(zooms.length, `${row.profile}/${row.viewport}/${scene.id} zoom rows`).toBeGreaterThan(0);
+        for (const cam of cams) {
+          for (const zoom of zooms) {
+            const png = await capture(scene, cam, zoom, viewport, row.profile);
+            if (viewport.id === 'desktop' && cam.id === 'ortho-topdown' && zoom === zooms[0]) {
+              // Reproducibility: same camera re-applied after a perspective round trip (per profile).
+              await applyCamera(page, contract.cameras[2], scene.zoomLevels[2]);
+              await applyCamera(page, cam, zoom);
+              await hideChrome(page, true);
+              const again = await page.locator('[data-atlas-native-3d-host] canvas:not(.hidden)').first().screenshot({ animations: 'disabled' });
+              await hideChrome(page, false);
+              mkdirSync(join(EVIDENCE, 'repeat'), { recursive: true });
+              const repeatFile = must(captures.at(-1), 'last capture').file;
+              writeFileSync(join(EVIDENCE, 'repeat', repeatFile), again);
+              const m = await imageMetrics(page, png, again);
+              repeat.push({ file: repeatFile, diffRatio: m.diffRatio ?? 1, maxDelta: m.maxDelta ?? 255 });
+            }
+          }
+        }
+        if (viewport.id === 'desktop') {
+          await applyCamera(page, contract.cameras[1], zooms[0]);
+          const f = await sampleFrames(page);
+          perf.push({ sceneId: scene.id, profile: row.profile, ...f, ceilingMs: contract.ciSoftwareCeiling.frameP95Ms, rendererKind: renderers[row.profile]?.kind ?? 'unknown' });
+        } else {
+          const dims = await page.evaluate(() => {
+            const c = document.querySelector('[data-atlas-native-3d-host] canvas:not(.hidden)') as HTMLCanvasElement | null;
+            const r = c?.getBoundingClientRect();
+            return { w: Math.round(r?.width ?? 0), h: Math.round(r?.height ?? 0), overflowX: document.documentElement.scrollWidth - window.innerWidth };
+          });
+          devices.push({ viewport: viewport.id, profile: row.profile, sceneId: scene.id, canvas: { w: dims.w, h: dims.h }, overflowX: dims.overflowX });
+          expect(dims.w, `${viewport.id} canvas width`).toBeGreaterThanOrEqual(200);
+          expect(dims.overflowX, `${viewport.id} horizontal overflow (AU-01)`).toBeLessThanOrEqual(1);
+        }
       }
     }
+    // Leave the device on the product default again.
+    await page.setViewportSize({ width: desktop.width, height: desktop.height });
+    await selectProfile(page, contract.qualitySwitch.default);
 
-    // 4) Same scene graph across camera modes (no second scene per camera).
-    const sameSceneAcrossCameras = contract.scenes.every((scene) =>
-      scene.zoomLevels.every((zoom) => {
-        const sets = contract.cameras.map((c) => JSON.stringify(meshSets[`${scene.id}|${c.id}|${zoom.id}`] ?? []));
-        return sets.every((s) => s === sets[0]);
-      }),
+    // 3) Same scene graph across camera modes (no second scene per camera), per profile/viewport/zoom.
+    const groups = new Map<string, string[]>();
+    for (const [key, names] of Object.entries(meshSets)) {
+      const [profile, viewport, sceneId, , zoomId] = key.split('|');
+      const g = `${profile}|${viewport}|${sceneId}|${zoomId}`;
+      groups.set(g, [...(groups.get(g) ?? []), JSON.stringify(names)]);
+    }
+    const sameSceneAcrossCameras = [...groups.values()].every((sets) => sets.every((x) => x === sets[0]));
+
+    // 3b) Stale-matrix guard (Codex P2): output must still match the committed baseline the Soll/Ist matrix
+    // was evaluated against. If the renderer changed (better or worse), fail until the baseline is re-captured
+    // and the matrix re-evaluated (self-test pins matrixEvaluation.baselineDigest).
+    const baselineDir = join(root, contract.baseline.dir);
+    const normName = (f: string) => f.split('__').filter((_, i) => i !== 2 && i !== 5).join('__'); // drop map id + build sha
+    const committed = new Map<string, string>();
+    if (existsSync(baselineDir)) {
+      for (const f of readdirSync(baselineDir)) if (f.endsWith('.png')) committed.set(normName(f), f);
+    }
+    const baselineDrift: Array<{ file: string; baseline: string | null; diffRatio: number }> = [];
+    for (const c of captures) {
+      const base = committed.get(normName(c.file)) ?? null;
+      if (!base) {
+        baselineDrift.push({ file: c.file, baseline: null, diffRatio: 1 });
+        continue;
+      }
+      const m = await imageMetrics(page, readFileSync(join(EVIDENCE, c.file)), readFileSync(join(baselineDir, base)));
+      const diffRatio = m.diffRatio ?? 1;
+      if (diffRatio > contract.tolerances.baselineDrift.maxDiffPixelRatio) baselineDrift.push({ file: c.file, baseline: base, diffRatio });
+    }
+    const expectedTotal = contract.profileMatrix.reduce(
+      (n, row) => n + contract.scenes.reduce((m, sc) => m + zoomsFor(sc, row).length * row.cameras.length, 0),
+      0,
     );
-    const expectedDesktop = contract.scenes.reduce((s, sc) => s + sc.zoomLevels.length * contract.cameras.length, 0);
+    const byProfile = Object.fromEntries(
+      (['high', 'balanced', 'lite'] as const).map((p) => [p, captures.filter((c) => c.profile === p).length]),
+    );
+    const balancedRenderer = must(renderers.balanced, 'balanced renderer');
     const manifest = {
-      format: 'atl3-v01-baseline-capture-v1',
+      format: 'atl3-v01-baseline-capture-v2',
       issue: 1295,
       buildSha: sha,
       at: new Date().toISOString(),
-      renderer,
+      renderer: balancedRenderer,
+      renderers,
       measurementClass:
-        renderer.kind === 'hardware-webgl' ? 'hardware-webgl' : 'software-rendering (not a GPU product measurement)',
+        balancedRenderer.kind === 'hardware-webgl' ? 'hardware-webgl' : 'software-rendering (not a GPU product measurement)',
       contractFormat: contract.format,
+      qualitySwitch: { default: switchDefault },
       storedData,
       captures,
       repeatCapture: repeat,
       perf,
       devices,
       sameSceneAcrossCameras,
-      counts: { desktop: captures.filter((c) => c.viewport === 'desktop').length, expectedDesktop, total: captures.length },
+      baselineDrift,
+      counts: {
+        desktop: captures.filter((c) => c.viewport === 'desktop' && c.profile === 'balanced').length,
+        expectedDesktop: contract.scenes.reduce((s, sc) => s + sc.zoomLevels.length * contract.cameras.length, 0),
+        byProfile,
+        expectedTotal,
+        total: captures.length,
+      },
     };
     writeFileSync(join(EVIDENCE, 'capture-manifest.json'), `${JSON.stringify(manifest, null, 2)}\n`);
 
-    expect(manifest.counts.desktop).toBe(expectedDesktop);
+    expect(manifest.counts.desktop).toBe(manifest.counts.expectedDesktop);
+    expect(manifest.counts.total).toBe(expectedTotal);
     expect(sameSceneAcrossCameras, 'same mesh set across camera modes').toBeTruthy();
+    expect(
+      baselineDrift,
+      'renderer output drifted from the committed V01 baseline: re-capture baseline/ and re-evaluate the Soll/Ist matrix (stale GAP/PARTIAL/MET)',
+    ).toEqual([]);
     for (const r of repeat) {
       expect(r.diffRatio, `${r.file} repeat capture`).toBeLessThanOrEqual(contract.tolerances.repeatCapture.maxDiffPixelRatio);
     }
     for (const p of perf) {
-      const budget = renderer.kind === 'hardware-webgl' ? 33.3 : p.ceilingMs;
-      expect(p.p95, `${p.sceneId} frame p95 (${renderer.kind})`).toBeLessThanOrEqual(budget);
+      const budget = p.rendererKind === 'hardware-webgl' ? 33.3 : p.ceilingMs;
+      expect(p.p95, `${p.sceneId}/${p.profile} frame p95 (${p.rendererKind})`).toBeLessThanOrEqual(budget);
     }
   });
 });

@@ -33,6 +33,7 @@ const dungeon = jiti(join(root, 'src/domains/world/atlas/atlas-dungeon-look.ts')
 const camera = jiti(join(root, 'src/domains/world/atlas/atlas-product-camera.ts'));
 const perf = jiti(join(root, 'src/domains/world/atlas/atlas-perf-budgets.ts'));
 const target = jiti(join(root, 'src/domains/world/atlas/atlas-renderer-target.ts'));
+const hostSeed = jiti(join(root, 'server/src/bootstrap/dornhain-golden-hierarchy-seed.ts'));
 
 const rows = [];
 const row = (id, status, detail) => rows.push({ id, status, detail });
@@ -97,6 +98,83 @@ for (const scene of contract.scenes) {
   row(`stored-data-${scene.id}`, 'PASS', `seed=${scene.mapSeedKey} fp=${fp} features=${ids.size}`);
 }
 
+/* 2b) Host seed = FE Golden builder (ensure-starter stores exactly the contract data) */
+for (const scene of contract.scenes) {
+  const host = hostSeed.DORHAIN_GOLDEN_MAP_SEEDS.find((m) => m.seedKey === scene.mapSeedKey);
+  assert.ok(host, `${scene.id}: Host seed exists`);
+  assert.equal(featureFingerprint(host.buildCanvas()), scene.dataFingerprint, `${scene.id}: Host seed data = contract fingerprint`);
+  const fe = golden.DORNHAIN_GOLDEN_MAPS.find((m) => m.seedKey === scene.mapSeedKey);
+  const feMeta = golden.buildDornhainGoldenChildGeneratorMeta(fe, 'parent');
+  const hostMeta = hostSeed.buildGoldenChildGeneratorMeta(host, 'parent');
+  assert.deepEqual(hostMeta.dungeon ?? null, feMeta.dungeon ?? null, `${scene.id}: Host generatorMeta.dungeon = FE`);
+}
+row('host-seed-parity', 'PASS', contract.scenes.map((s) => `${s.id}=${s.dataFingerprint}`).join(' '));
+
+/* 2c) Dornhain terrain (decision 1): canonical heightfield, relief > 0, never under canonical features */
+{
+  const t = contract.scenes[0].terrain;
+  const hf = docs['dornhain-block'].heightfield;
+  assert.ok(hf, 'Dornhain Golden carries a heightfield');
+  assert.deepEqual([hf.cols, hf.rows, hf.cellSize, hf.originX, hf.originZ, hf.waterLevel], [t.cols, t.rows, t.cellSize, t.origin[0], t.origin[1], t.waterLevel]);
+  assert.deepEqual(golden.GOLDEN_DORNHAIN_HILLS.map((h) => ({ ...h })), t.hills, 'hills pinned in contract');
+  const at = (x, z) => {
+    const c = (x - hf.originX) / hf.cellSize;
+    const r = (z - hf.originZ) / hf.cellSize;
+    const c0 = Math.max(0, Math.min(hf.cols - 2, Math.floor(c)));
+    const r0 = Math.max(0, Math.min(hf.rows - 2, Math.floor(r)));
+    const fx = Math.min(1, Math.max(0, c - c0));
+    const fz = Math.min(1, Math.max(0, r - r0));
+    const H = (cc, rr) => hf.heights[rr * hf.cols + cc];
+    return H(c0, r0) * (1 - fx) * (1 - fz) + H(c0 + 1, r0) * fx * (1 - fz) + H(c0, r0 + 1) * (1 - fx) * fz + H(c0 + 1, r0 + 1) * fx * fz;
+  };
+  const doc = docs['dornhain-block'];
+  let worst = -Infinity;
+  for (const r of doc.rooms.filter((r) => r.id !== 'g.ocean')) {
+    for (let x = r.x; x <= r.x + r.w; x += 5) for (let z = r.y; z <= r.y + r.h; z += 5) worst = Math.max(worst, at(x, z));
+  }
+  for (const o of doc.objects) for (const [dx, dz] of [[0, 0], [24, 0], [-24, 0], [0, 24], [0, -24]]) worst = Math.max(worst, at(o.x + dx, o.y + dz));
+  for (const st of doc.strokes) for (const [x, z] of st.points) worst = Math.max(worst, at(x, z));
+  assert.ok(worst <= -0.6, `terrain buries canonical features (max ${worst})`);
+  const peak = Math.max(...hf.heights);
+  assert.ok(peak >= 10, 'relief rises above the map sheet');
+  row('golden-terrain', 'PASS', `hills=${t.hills.length} peak=${peak} underFeaturesMax=${worst.toFixed(2)}`);
+}
+
+/* 2d) Krypta = committed Dungeon-Forge crypt (decisions 1 + 4): closed rooms, doors, theme torch */
+{
+  const f = contract.scenes[1].forge;
+  const p = golden.GOLDEN_KRYPTA_FORGE_PARAMS;
+  assert.deepEqual(
+    [p.seed, p.roomCount, p.loopChance, p.themeKey, p.originX, p.originY, p.unitScale],
+    [f.seed, f.roomCount, f.loopChance, f.themeKey, f.origin[0], f.origin[1], f.unitScale],
+    'forge params pinned in contract',
+  );
+  const meta = golden.buildGoldenCryptDungeonMeta();
+  assert.equal(meta.generatorVersion, f.generatorVersion);
+  assert.equal(meta.confirmed, true, 'committed (confirmed) forge run');
+  assert.equal(meta.themeKey, contract.scenes[1].dungeonThemeKey);
+  const doc = docs.krypta;
+  assert.ok(doc.rooms.length >= 4 && doc.rooms.every((r) => dungeon.isAtlasDungeonFeatureId(r.id)), 'forge rooms');
+  assert.ok((doc.doors ?? []).length > 0, 'forge doors');
+  const wallIds = new Set(doc.walls.map((w) => w.id));
+  assert.ok(doc.doors.every((d) => wallIds.has(d.wallId)), 'every door sits on a stored wall');
+  // Room closure: every room edge is covered by wall segments (rasterised forge walls run along the cell grid).
+  const onEdge = (r, x, z) => doc.walls.some((w) => {
+    const minX = Math.min(w.x1, w.x2) - 1e-6, maxX = Math.max(w.x1, w.x2) + 1e-6;
+    const minZ = Math.min(w.y1, w.y2) - 1e-6, maxZ = Math.max(w.y1, w.y2) + 1e-6;
+    const tol = r.w / 4;
+    return x >= minX - tol && x <= maxX + tol && z >= minZ - tol && z <= maxZ + tol;
+  });
+  let open = 0;
+  for (const r of doc.rooms) {
+    for (const [x, z] of [[r.x + r.w / 2, r.y], [r.x + r.w / 2, r.y + r.h], [r.x, r.y + r.h / 2], [r.x + r.w, r.y + r.h / 2]]) {
+      if (!onEdge(r, x, z)) open += 1;
+    }
+  }
+  assert.equal(open, 0, `Krypta rooms have open sides (${open})`);
+  row('golden-forge-krypta', 'PASS', `seed=${p.seed} rooms=${doc.rooms.length} walls=${doc.walls.length} doors=${doc.doors.length} objects=${doc.objects.length}`);
+}
+
 /* 3) Light profiles pinned to domain (drift = deliberate contract change) */
 {
   const dl = diorama.resolveAtlasDioramaLightProfile('balanced');
@@ -140,23 +218,27 @@ row('cameras-zoom', 'PASS', contract.scenes.map((s) => `${s.id}:${s.zoomLevels.m
   const treeVariants = new Set(plan.batches.filter((b) => b.kind === 'tree').map((b) => b.variant)).size;
   const krypta = docs.krypta;
   const kPlan = dungeon.buildAtlasDungeonLookPlan(krypta, { themeKey: contract.scenes[1].dungeonThemeKey, graphicsPresetId: 'balanced' });
+  const kLite = dungeon.buildAtlasDungeonLookPlan(krypta, { themeKey: contract.scenes[1].dungeonThemeKey, graphicsPresetId: 'lite' });
   const facts = {
     dornhainRoofTokens: roofTokens,
     dornhainTreeVariants: treeVariants,
     dornhainHeightfield: docs['dornhain-block'].heightfield ? 'present' : 'none',
+    dornhainHeightMax: docs['dornhain-block'].heightfield ? Math.max(...docs['dornhain-block'].heightfield.heights) : 0,
     kryptaRooms: krypta.rooms.length,
     kryptaWalls: krypta.walls.length,
     kryptaDoors: (krypta.doors ?? []).length,
     kryptaDungeonLookTorches: kPlan.counts.torches,
     kryptaDungeonLookInstances: kPlan.counts.instances,
+    kryptaDungeonLookTruncatedLite: kLite.counts.truncated,
   };
-  const crit = (id) => contract.criteria.find((c) => c.id === id);
-  // If the domain improves, the GAP/PARTIAL row must be re-evaluated, not left stale.
-  if (roofTokens < 3) assert.equal(crit('D-GEO-01').status, 'GAP');
-  if (treeVariants >= 3) assert.notEqual(crit('D-GEO-02').status, 'GAP');
-  if (facts.dornhainHeightfield === 'none') assert.equal(crit('D-GEO-03').status, 'GAP');
-  if (facts.kryptaDoors === 0) assert.equal(crit('K-GEO-01').status, 'GAP');
-  if (facts.kryptaDungeonLookTorches === 0) assert.equal(crit('K-LIT-01').status, 'GAP');
+  const runtimeSrc = read('src/app/world/atlas/unified/prototype3d/atlas-prototype-runtime.mjs');
+  facts.runtimeShadowPass = /createFramebuffer|shadowMap|depthTexture/i.test(runtimeSrc);
+  facts.runtimeLocalLightFalloff = /pointLight|lightFalloff|uTorch|torchLight/i.test(runtimeSrc);
+  facts.runtimeDepthBias = /polygonOffset|POLYGON_OFFSET/.test(runtimeSrc);
+  facts.kryptaCorridorStubWalls = krypta.walls.filter((w) => w.id.startsWith('dcorr-')).length;
+  facts.dioramaDoors = plan.batches.filter((b) => /door/i.test(b.kind ?? '')).length;
+  contract.__facts = facts;
+  assert.equal(facts.kryptaDungeonLookTruncatedLite, 0, 'Golden Krypta fits the lite instance budget (no dropped canonical features)');
   row('ist-facts', 'PASS', JSON.stringify(facts));
   contract.__facts = facts;
 }
@@ -200,11 +282,36 @@ row('soll-ist-matrix', 'PASS', `criteria=${contract.criteria.length} ${JSON.stri
     assert.ok(b.frameP95Ms <= perf.ATLAS_PERF_BUDGET_THRESHOLDS.frameP95MsSoft, `${b.tier}: p95 not looser than G02 soft budget`);
     assert.ok(target.ATLAS_GRAPHICS_PRESETS.some((p) => p.id === b.preset), `${b.tier}: preset`);
   }
+  assert.equal(contract.referenceDevices.status, 'binding', 'reference devices confirmed (Ben 2026-11-15)');
+  for (const b of contract.hardwareBudgets) {
+    assert.ok(Array.isArray(b.referenceDevices) && b.referenceDevices.length >= 1, `${b.tier}: named reference devices`);
+  }
   const ib = contract.instanceBudgets;
   const t = perf.ATLAS_PERF_BUDGET_THRESHOLDS;
   assert.deepEqual([ib.high, ib.balanced, ib.lite], [t.maxInstancesHigh, t.maxInstancesBalanced, t.maxInstancesLite]);
   assert.equal(contract.ciSoftwareCeiling.renderer, 'software-webgl');
   row('budgets', 'PASS', `tiers=${tiers.join(',')} ciCeiling=${contract.ciSoftwareCeiling.frameP95Ms}ms (software only)`);
+}
+
+/* 7b) Product quality switch (decision 2): default, strict parse, wired into the 3D editor */
+{
+  assert.equal(target.ATLAS_GRAPHICS_PRESET_DEFAULT, contract.qualitySwitch.default);
+  assert.equal(target.parseAtlasGraphicsPresetId('high'), 'high');
+  assert.equal(target.parseAtlasGraphicsPresetId('ultra'), null);
+  assert.equal(target.parseAtlasGraphicsPresetId(null), null);
+  assert.deepEqual(contract.qualityProfiles.map((q) => q.id), target.ATLAS_GRAPHICS_PRESETS.map((p) => p.id));
+  assert.ok(contract.qualityProfiles.every((q) => q.captured === true), 'all profiles captured');
+  assert.equal(contract.qualityProfiles.filter((q) => q.default).map((q) => q.id).join(), contract.qualitySwitch.default);
+  const editorSrc = read('src/app/world/atlas/unified/UnifiedAtlasEditor.tsx');
+  const hookSrc = read('src/app/world/atlas/unified/useAtlasGraphicsPreset.ts');
+  assert.ok(editorSrc.includes('data-atlas-graphics-preset-select'), 'switch rendered in the 3D editor');
+  assert.ok(editorSrc.includes('graphicsPresetId={graphicsPresetId}'), 'switch drives AtlasNative3dEditor');
+  assert.ok(hookSrc.includes('ATLAS_GRAPHICS_PRESET_STORAGE_KEY') && hookSrc.includes('parseAtlasGraphicsPresetId'), 'persisted + parsed');
+  const runtimeSrc = read('src/app/world/atlas/unified/prototype3d/atlas-prototype-runtime.mjs');
+  assert.ok(!/__v01|atl3-v01|testHook/i.test(runtimeSrc), 'no V01 test hooks in the runtime');
+  const profiles = new Set(contract.profileMatrix.map((r) => r.profile));
+  for (const id of ['high', 'balanced', 'lite']) assert.ok(profiles.has(id), `profile matrix covers ${id}`);
+  row('quality-switch', 'PASS', `default=${target.ATLAS_GRAPHICS_PRESET_DEFAULT} rows=${contract.profileMatrix.length}`);
 }
 
 /* 8) Committed Custom-WebGL baseline set (Ist evidence) */
@@ -214,11 +321,19 @@ assert.ok(existsSync(manifestPath), 'committed baseline manifest missing');
 const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
 {
   const nameRe = new RegExp(contract.screenshotNameRegex);
-  assert.equal(manifest.format, 'atl3-v01-baseline-capture-v1');
+  assert.equal(manifest.format, 'atl3-v01-baseline-capture-v2');
   assert.equal(manifest.contractFormat, contract.format);
   const expectedDesktop = contract.scenes.reduce((s, sc) => s + sc.zoomLevels.length * contract.cameras.length, 0);
   assert.equal(manifest.counts.desktop, expectedDesktop);
-  assert.equal(manifest.counts.total, expectedDesktop + contract.scenes.length * (contract.viewports.length - 1));
+  const zoomsFor = (scene, r) => (r.zoomIds === 'all' ? scene.zoomLevels : scene.zoomLevels.filter((z) => r.zoomIds.some((p) => z.id.startsWith(`${p}-`))));
+  const expectedTotal = contract.profileMatrix.reduce(
+    (n, r) => n + contract.scenes.reduce((m, sc) => m + zoomsFor(sc, r).length * r.cameras.length, 0),
+    0,
+  );
+  assert.equal(manifest.counts.total, expectedTotal);
+  for (const id of ['high', 'balanced', 'lite']) assert.ok(manifest.counts.byProfile[id] > 0, `baseline has ${id} captures`);
+  assert.equal(manifest.qualitySwitch.default, contract.qualitySwitch.default, 'browser saw the product default');
+  for (const c of manifest.captures) assert.ok(c.file.includes(`__${c.profile}-`), `${c.file}: profile in name`);
   for (const c of manifest.captures) {
     assert.match(c.file, nameRe, `baseline name ${c.file}`);
     assert.ok(c.file.includes(`__${manifest.buildSha}__`), `${c.file}: build SHA`);
@@ -236,7 +351,77 @@ const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
     assert.ok(existsSync(join(root, ref)), `G04 reference ${ref}`);
     assert.ok(!manifest.captures.some((c) => c.file.includes('g04')), 'G04 shots are not relabelled as V01');
   }
-  row('baseline-set', 'PASS', `captures=${manifest.counts.total} sha=${manifest.buildSha} renderer=${manifest.renderer.kind}/${manifest.renderer.preset}`);
+  row('baseline-set', 'PASS', `captures=${manifest.counts.total} sha=${manifest.buildSha} renderers=${Object.entries(manifest.renderers).map(([k, v]) => `${k}:${v.kind}`).join(',')}`);
+}
+
+/* 8b) Stale-matrix guard (Codex P2 on PR #1302): every status must agree with measured evidence, both ways.
+ *  - Evidence rules: a row may not stay GAP/PARTIAL/NOT_RUN once the domain/runtime/capture evidence shows the
+ *    improvement, and may not claim MET while the evidence still shows the gap.
+ *  - Visual-only rows are bound to the exact baseline pixels they were judged on (matrixEvaluation.baselineDigest);
+ *    a re-captured baseline fails here until the matrix is re-evaluated and the digest re-pinned. The browser
+ *    capture fails on drift against the committed baseline (manifest.baselineDrift), so a renderer change cannot
+ *    pass CI with a stale matrix. */
+{
+  const f = contract.__facts;
+  const st = (id) => {
+    const c = contract.criteria.find((x) => x.id === id);
+    assert.ok(c, `criterion ${id} exists`);
+    return c.status;
+  };
+  const caps = manifest.captures;
+  const tol = contract.tolerances;
+  const okRepeat = manifest.repeatCapture.length > 0 && manifest.repeatCapture.every((r) => r.diffRatio <= tol.repeatCapture.maxDiffPixelRatio);
+  const okDevices = manifest.devices.length > 0 && manifest.devices.every((d) => d.canvas.w >= 200 && d.overflowX <= 1);
+  const okCamera = caps.every((c) => c.actual && Math.abs(c.actual.x - c.target.x) <= tol.cameraCenterUnits && Math.abs(c.actual.z - c.target.z) <= tol.cameraCenterUnits);
+  const okData = manifest.storedData.every((d) => contract.scenes.find((sc) => sc.id === d.sceneId)?.dataFingerprint === d.fingerprint);
+  const allProfiles = ['high', 'balanced', 'lite'].every((p) => (manifest.counts.byProfile?.[p] ?? 0) > 0);
+  const hardware = /^hardware/.test(manifest.measurementClass ?? '');
+  const playerCaptured = caps.some((c) => c.role === 'player');
+  /** id → allowed statuses derived from evidence (exact where the evidence is binary). */
+  const allowedBy = {
+    'D-GEO-01': f.dornhainRoofTokens < 3 ? ['GAP'] : ['PARTIAL', 'MET'],
+    'D-GEO-02': f.dornhainTreeVariants < 3 ? ['GAP'] : ['PARTIAL', 'MET'],
+    'D-GEO-03': f.dornhainHeightfield === 'none' || f.dornhainHeightMax <= 0 ? ['GAP'] : ['PARTIAL', 'MET'],
+    'D-SHD-01': f.runtimeShadowPass ? ['PARTIAL', 'MET'] : ['GAP'],
+    'K-SHD-01': f.runtimeShadowPass ? ['PARTIAL', 'MET'] : ['GAP'],
+    'K-GEO-01': f.kryptaDoors === 0 ? ['GAP'] : f.kryptaCorridorStubWalls > 0 ? ['PARTIAL'] : ['PARTIAL', 'MET'],
+    'K-LIT-01': f.kryptaDungeonLookTorches === 0 ? ['GAP'] : f.runtimeLocalLightFalloff ? ['PARTIAL', 'MET'] : ['PARTIAL'],
+    'D-ART-01': f.runtimeDepthBias ? ['GAP', 'PARTIAL', 'MET'] : ['GAP', 'PARTIAL'],
+    'K-ART-01': f.runtimeDepthBias ? ['GAP', 'PARTIAL', 'MET'] : ['GAP', 'PARTIAL'],
+    'C-CAM-01': manifest.sameSceneAcrossCameras ? ['MET'] : ['GAP'],
+    'C-DET-01': okRepeat ? ['MET'] : ['GAP'],
+    'C-CAM-02': okCamera ? ['MET'] : ['GAP'],
+    'C-DATA-01': okData ? ['MET'] : ['GAP'],
+    'C-AU-01': okDevices ? ['MET'] : ['GAP'],
+    'C-PROF-01': allProfiles ? ['PARTIAL', 'MET'] : ['NOT_RUN'],
+    'C-PERF-01': hardware ? ['GAP', 'PARTIAL', 'MET'] : ['NOT_RUN'],
+    'C-SEC-01': playerCaptured ? ['GAP', 'PARTIAL', 'MET'] : ['NOT_RUN'],
+    'C-AUTH-01': ['MET'],
+  };
+  const stale = [];
+  for (const [id, allowed] of Object.entries(allowedBy)) {
+    if (!allowed.includes(st(id))) stale.push(`${id}=${st(id)} (evidence allows ${allowed.join('/')})`);
+  }
+  assert.deepEqual(stale, [], `Soll/Ist matrix is stale against evidence: ${stale.join('; ')}`);
+
+  // Visual-only rows: pinned to the baseline pixels they were judged on.
+  const visualOnly = contract.criteria.filter((c) => !(c.id in allowedBy)).map((c) => c.id);
+  const me = contract.matrixEvaluation;
+  assert.ok(me && typeof me.baselineDigest === 'string', 'matrixEvaluation.baselineDigest pinned');
+  assert.deepEqual([...me.visualOnlyCriteria].sort(), [...visualOnly].sort(), 'matrixEvaluation lists every visual-only criterion');
+  const digest = createHash('sha256');
+  const norm = (file) => file.split('__').filter((_, i) => i !== 2 && i !== 5).join('__');
+  for (const c of [...caps].sort((x, y) => norm(x.file).localeCompare(norm(y.file)))) {
+    digest.update(`${norm(c.file)}:${createHash('sha256').update(readFileSync(join(baseDir, c.file))).digest('hex')}\n`);
+  }
+  const baselineDigest = digest.digest('hex').slice(0, 16);
+  assert.equal(
+    baselineDigest,
+    me.baselineDigest,
+    `baseline re-captured (${baselineDigest}) but matrix still evaluated against ${me.baselineDigest}: re-evaluate ${visualOnly.join(', ')} and re-pin matrixEvaluation`,
+  );
+  assert.deepEqual(manifest.baselineDrift ?? [], [], 'committed baseline has no drift entries');
+  row('matrix-not-stale', 'PASS', `evidence-rules=${Object.keys(allowedBy).length} visual-only=${visualOnly.length} digest=${baselineDigest}`);
 }
 
 /* 9) Docs, gates, wiring */
@@ -250,7 +435,7 @@ for (const needle of [
 for (const c of contract.criteria) assert.ok(design.includes(c.id), `design doc lists ${c.id}`);
 assert.ok(acceptance.includes('#1295') && acceptance.includes('atl3-v01-visual-contract'));
 assert.ok(gate.includes('atl3-v01-visual-contract.self-test.mjs'), 'test-gate wiring');
-for (const needle of ['SAGATREE_BROWSER_E2E_HOST', 'data-atlas-ready', '__sagatreeAtlas', "'coords'", "'zoom'", 'featureFingerprint', 'repeatCapture', 'sameSceneAcrossCameras', 'software-rendering']) {
+for (const needle of ['SAGATREE_BROWSER_E2E_HOST', 'data-atlas-ready', '__sagatreeAtlas', "'coords'", "'zoom'", 'featureFingerprint', 'repeatCapture', 'sameSceneAcrossCameras', 'software-rendering', 'data-atlas-graphics-preset-select', 'profileMatrix']) {
   assert.ok(e2eSrc.includes(needle), `e2e contract: ${needle}`);
 }
 for (const src of [e2eSrc]) {
@@ -278,7 +463,7 @@ if (process.env.ATL3_V01_WRITE_EVIDENCE === '1') {
     '# ATL3-V01 visual contract — self-test report (#1295)',
     '',
     `- Contract: \`${CONTRACT_REL}\``,
-    `- Baseline: \`${contract.baseline.dir}\` (build ${manifest.buildSha}, ${manifest.renderer.kind}, preset ${manifest.renderer.preset}, ${manifest.counts.total} captures)`,
+    `- Baseline: \`${contract.baseline.dir}\` (build ${manifest.buildSha}, ${Object.entries(manifest.renderers).map(([k, v]) => `${k}=${v.kind}`).join(', ')}, ${manifest.counts.total} captures)`,
     `- Measurement class: ${manifest.measurementClass}`,
     '',
     '| Check | Status | Detail |',

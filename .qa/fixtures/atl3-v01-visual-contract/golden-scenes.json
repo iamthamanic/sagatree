@@ -19,7 +19,7 @@
         "Dornhain"
       ],
       "domainBuilder": "buildGoldenDornhainCanvas",
-      "dataFingerprint": "29f3947cb45600e3",
+      "dataFingerprint": "f6b3d3b75f672b0a",
       "lookFamily": "outdoor",
       "lightProfile": {
         "source": "resolveAtlasDioramaLightProfile",
@@ -75,11 +75,55 @@
             430
           ]
         }
-      ]
+      ],
+      "terrain": {
+        "source": "GOLDEN_DORNHAIN_HILLS / buildGoldenDornhainHeightfield",
+        "authority": "canonical",
+        "cellSize": 20,
+        "cols": 41,
+        "rows": 33,
+        "origin": [
+          100,
+          180
+        ],
+        "baseHeight": -4,
+        "waterLevel": -3,
+        "hills": [
+          {
+            "id": "hill.north",
+            "x": 360,
+            "z": 300,
+            "radius": 110,
+            "peak": 28
+          },
+          {
+            "id": "hill.north-east",
+            "x": 490,
+            "z": 285,
+            "radius": 90,
+            "peak": 22
+          },
+          {
+            "id": "hill.east",
+            "x": 650,
+            "z": 520,
+            "radius": 80,
+            "peak": 16
+          },
+          {
+            "id": "hill.south-west",
+            "x": 210,
+            "z": 650,
+            "radius": 80,
+            "peak": 12
+          }
+        ],
+        "clearance": "Gelände unter Räumen/Straßen/Stempeln ≤ −0,6 (unter dem Kartenblatt y ≈ −0,5)"
+      }
     },
     {
       "id": "krypta",
-      "labelDe": "Krypta unter dem Hügel",
+      "labelDe": "Krypta unter dem Hügel (Dungeon-Forge)",
       "mapSeedKey": "dornhain.map.loc.crypt",
       "mapTitleDe": "Krypta unter dem Hügel",
       "mapKind": "scene",
@@ -90,7 +134,7 @@
         "Krypta unter dem Hügel"
       ],
       "domainBuilder": "buildGoldenCryptCanvas",
-      "dataFingerprint": "9fc038d9291de012",
+      "dataFingerprint": "aa520e6f8290e2f8",
       "lookFamily": "indoor",
       "dungeonThemeKey": "ancient",
       "lightProfile": {
@@ -107,13 +151,15 @@
         "torchIntensity": 0.75
       },
       "requiredFeatureIds": [
-        "g.crypt.hall",
-        "g.crypt.vault",
-        "g.crypt.w1",
-        "g.crypt.w2",
-        "g.crypt.w3",
-        "g.crypt.relic",
-        "g.crypt.lamp"
+        "droom-1425-0",
+        "droom-1425-1",
+        "droom-1425-2",
+        "droom-1425-3",
+        "droom-1425-4",
+        "dlamp-1425-entrance",
+        "dchest-1425-boss",
+        "dgrid-wall-1425-0",
+        "dgrid-door-1425-0"
       ],
       "zoomLevels": [
         {
@@ -121,29 +167,49 @@
           "labelDe": "Übersicht",
           "zoomPercent": 100,
           "center": [
-            420,
-            480
+            500,
+            500
           ]
         },
         {
           "id": "z1-raumgruppe",
-          "labelDe": "Raumgruppe",
+          "labelDe": "Raumgruppe (Süd)",
           "zoomPercent": 175,
           "center": [
-            420,
-            480
+            560,
+            600
           ]
         },
         {
           "id": "z2-raum",
-          "labelDe": "Halle mit Reliquie/Lampe",
+          "labelDe": "Eingangsraum mit Fackel (dlamp-1425-entrance)",
           "zoomPercent": 330,
           "center": [
-            400,
-            360
+            644,
+            617
           ]
         }
-      ]
+      ],
+      "forge": {
+        "source": "GOLDEN_KRYPTA_FORGE_PARAMS / buildGoldenCryptCanvas (generate → rasterize → commit)",
+        "generatorVersion": "sagatree-dungeon-forge-v2",
+        "seed": 1425,
+        "roomCount": 5,
+        "loopChance": 0.18,
+        "themeKey": "ancient",
+        "origin": [
+          464,
+          545
+        ],
+        "unitScale": 18,
+        "confirmed": true,
+        "stampSizeNormalisation": {
+          "lampe": 0.35,
+          "kiste": 0.5,
+          "heightDividedByUnitScale": true
+        },
+        "hostMirror": "server/src/bootstrap/dornhain-golden-krypta-forge.ts"
+      }
     }
   ],
   "cameras": [
@@ -194,17 +260,24 @@
   "qualityProfiles": [
     {
       "id": "high",
-      "capturedInBaseline": false,
-      "reason": "Produkt hat keinen Preset-Wähler; AtlasNative3dEditor nutzt immer 'balanced'."
+      "default": false,
+      "captured": true,
+      "renderer": "Custom-WebGL (AtlasGL)",
+      "detailLevel": "full"
     },
     {
       "id": "balanced",
-      "capturedInBaseline": true
+      "default": true,
+      "captured": true,
+      "renderer": "Custom-WebGL (AtlasGL)",
+      "detailLevel": "reduced"
     },
     {
       "id": "lite",
-      "capturedInBaseline": false,
-      "reason": "Produkt hat keinen Preset-Wähler; Lite/Software-Fallback nur bei WebGL-Init-Fehler."
+      "default": false,
+      "captured": true,
+      "renderer": "AtlasLite3D Canvas-Projektion (preferSoftwareFallback)",
+      "detailLevel": "minimal"
     }
   ],
   "tolerances": {
@@ -218,14 +291,28 @@
     "nonBlank": {
       "minDistinctColors": 16,
       "minLumaStdDev": 3
+    },
+    "baselineDrift": {
+      "maxChannelDelta": 8,
+      "maxDiffPixelRatio": 0.08,
+      "note": "Lauf vs. committete Baseline (gleicher Name ohne Map-ID/SHA). Überschreitung = Renderer-Änderung → Baseline neu aufnehmen und Soll/Ist-Matrix neu bewerten (Stale-Matrix-Guard)."
     }
   },
   "screenshotName": "v01__<sceneId>__map-<atlasMapId>__<camera>__<zoomId>__<buildSha10>__<preset>-<renderer>__<viewport>.png",
   "screenshotNameRegex": "^v01__[a-z0-9-]+__map-[a-z0-9-]+__(ortho-topdown|diorama-oblique|perspective)__z[0-9]-[a-z0-9-]+__[0-9a-f]{10}__(high|balanced|lite)-(hardware-webgl|software-webgl|lite3d-fallback|unknown)__(desktop|tablet|phone)\\.png$",
+  "referenceDevices": {
+    "status": "binding",
+    "decidedBy": "Ben, 2026-11-15 (PR #1302)",
+    "measurementNote": "Verbindliche Referenzgeräte. Die Perf-Zahlen in den Läufen bleiben Software-Rendering-Messungen (SwiftShader/Headless), bis echte Geräteläufe vorliegen; sie werden nie als Hardware-Messung ausgewiesen."
+  },
   "hardwareBudgets": [
     {
       "tier": "desktop-reference",
       "deviceClassDe": "Desktop/Laptop mit iGPU (Intel Iris Xe / Apple M1), Chrome stable, 1280×800, DPR 1–2",
+      "referenceDevices": [
+        "Intel Iris Xe (Laptop-iGPU)",
+        "Apple M1"
+      ],
       "preset": "high",
       "frameP50Ms": 12,
       "frameP95Ms": 16.7,
@@ -239,6 +326,10 @@
     {
       "tier": "tablet",
       "deviceClassDe": "Tablet Mittelklasse (iPad 9. Gen / Galaxy Tab S6 Lite), 834×1112, DPR 2",
+      "referenceDevices": [
+        "iPad (9. Generation)",
+        "Samsung Galaxy Tab S6 Lite"
+      ],
       "preset": "balanced",
       "frameP50Ms": 16.7,
       "frameP95Ms": 33.3,
@@ -252,6 +343,9 @@
     {
       "tier": "phone-low-end",
       "deviceClassDe": "Android Low-End (Mali-G52-Klasse, z. B. Moto G), 390×844, DPR ≤ 1,5",
+      "referenceDevices": [
+        "Android-Phone mit Mali-G52 (z. B. Moto G-Klasse)"
+      ],
       "preset": "lite",
       "frameP50Ms": 25,
       "frameP95Ms": 33.3,
@@ -305,10 +399,9 @@
       "authority": "canonical",
       "metric": "Gelände-Relief: Höhenbereich des Heightfields und sichtbarer Schattierungsgradient am Boden (Diorama Z1)",
       "soll": "Höhenvarianz > 0 mit sichtbarem Licht-/Schattengradient auf Hügeln/Böschungen; Relief nur aus gespeicherten Heightfield-Daten (canonical) oder als markierte suggestive Mikro-Variation",
-      "ist": "Gespeicherte Golden-Dornhain-Karte hat kein Heightfield (null) → Gelände vollständig flach",
-      "status": "GAP",
-      "evidence": "stored generatorMeta.unifiedCanvas.heightfield = null; Diorama/Perspektive Z0–Z2",
-      "acceptedException": "Datenlücke: Relief erfordert entweder ein Heightfield in der Golden-Karte (ändert G04-Fingerprints) oder eine suggestive Mikro-Relief-Regel — Entscheidung offen (siehe Design §11)."
+      "ist": "Gespeichertes Golden-Heightfield (41×33, Zelle 20, 4 Hügel, Höhe −4…28): Relief in Diorama/Perspektive Z0–Z1 sichtbar, aber als facettierte Flächen mit kaum sichtbarem Schattierungsgradient (Farbe nach Höhe, keine weiche Normalen-Schattierung); im lite-Profil (Canvas2D-Fallback) Sortierfehler am Gelände",
+      "status": "PARTIAL",
+      "evidence": "stored generatorMeta.unifiedCanvas.heightfield (self-test golden-terrain) + Diorama/Perspektive Z0–Z1"
     },
     {
       "id": "D-MAT-01",
@@ -372,10 +465,9 @@
       "authority": "canonical",
       "metric": "Raumschluss: jede Raumkante hat eine Wand, Raumübergänge haben Türen (gespeicherte Daten)",
       "soll": "Jeder Raum allseitig von Wänden begrenzt außer an Türen; ≥ 1 Tür pro Raumverbindung; Türen als eigene Geometrie sichtbar",
-      "ist": "Gespeicherte Golden-Krypta: 2 Räume, 3 Wände (Halle südlich offen, Gewölbe ohne Wände), 0 Türen",
-      "status": "GAP",
-      "evidence": "stored generatorMeta + z0-z2 alle Kameras",
-      "acceptedException": "Datenlücke der Golden-Krypta: Türen/Wände fehlen in den gespeicherten Daten, nicht im Renderer. Änderung der Golden-Daten ändert G04-Fingerprints → Entscheidung offen (Design §11)."
+      "ist": "Committed Dungeon-Forge-Krypta (Seed 1425): 5 Räume, alle Raumkanten mit Wänden (self-test: 0 offene Seiten), 27 Türen auf gespeicherten Wänden, Türrahmen in Z1/Z2 sichtbar. Aber: die 5 Korridor-Mittellinien (dcorr-*) werden als volle Wandbalken gerendert und kreuzen Räume diagonal",
+      "status": "PARTIAL",
+      "evidence": "stored generatorMeta (self-test golden-forge-krypta) + z0–z2 alle Kameras"
     },
     {
       "id": "K-GEO-02",
@@ -384,8 +476,8 @@
       "authority": "canonical",
       "metric": "Wandhöhe: in Diorama Z2 sichtbare Wand-Seitenflächen (px)",
       "soll": "Wände als Volumen mit lesbarer Höhe: sichtbare Seitenfläche ≥ 12 px in Diorama Z2 Desktop",
-      "ist": "Wände als flache, niedrige Leisten; Seitenfläche ca. 8–15 px (visuell geschätzt), kaum als Wand lesbar",
-      "status": "PARTIAL",
+      "ist": "Forge-Wände als Volumen, Seitenflächen in Diorama Z2 ca. 15–25 px (visuell aus Baseline geschätzt), klar als Wand lesbar",
+      "status": "MET",
       "evidence": "z2-raum diorama-oblique"
     },
     {
@@ -404,11 +496,11 @@
       "scene": "krypta",
       "area": "light",
       "authority": "atmospheric",
-      "metric": "Atmosphärisches Licht: g.crypt.lamp als warme Punktlichtquelle mit Abfall (Luma nahe Lampe vs. ferner Boden)",
+      "metric": "Atmosphärisches Licht: Fackel dlamp-1425-entrance als warme Punktlichtquelle mit Abfall (Luma nahe Fackel vs. ferner Boden)",
       "soll": "Luma im Radius der Lampe ≥ 1,3× ferner Boden; Lichtfarbe warm (Theme ancient light #ffc17b); ambient ≤ 0,3",
-      "ist": "Kein lokales Licht: Dungeon-Look-Plan greift nur für droom-/dwall-/dlamp-IDs, Golden-Krypta nutzt g.crypt.* → 0 Fackeln, gleichmäßige Ausleuchtung",
-      "status": "GAP",
-      "evidence": "domain:buildAtlasDungeonLookPlan(counts.torches=0) + z2-raum"
+      "ist": "Dungeon-Look-Plan: 1 Fackel (dlamp-1425-entrance) mit Flamme + Funken in Theme-Lichtfarbe #ffc17b sichtbar; kein echtes Punktlicht, kein Helligkeitsabfall am Boden (Luma-Verhältnis ≈ 1,0)",
+      "status": "PARTIAL",
+      "evidence": "domain:buildAtlasDungeonLookPlan(counts.torches=1) + z2-raum"
     },
     {
       "id": "K-SHD-01",
@@ -443,7 +535,7 @@
       "authority": "canonical",
       "metric": "Z-Fighting auf Krypta-Böden in Perspektive",
       "soll": "0 Streifenartefakte in allen 3 Kameras × 3 Zoomstufen; 100 % der Raumbodenfläche sichtbar",
-      "ist": "Starke Streifen (Z-Fighting) auf Hallen- und Gewölbeboden in Perspektive Z1; Gewölbeboden teilweise unsichtbar",
+      "ist": "Perspektive Z1: Raumböden nicht sichtbar (nur Wände); im lite-Profil große Sortierfehler-Dreiecke über den Böden; Korridorbalken (dcorr-*) kreuzen Räume",
       "status": "GAP",
       "evidence": "perspective z1-raumgruppe"
     },
@@ -454,7 +546,7 @@
       "authority": "canonical",
       "metric": "Gleiche Szene in allen Kameramodi: identische Mesh-Namen-Menge je Szene/Zoomstufe über ortho/diorama/perspective",
       "soll": "Identische Mesh-Menge in allen 3 Kameramodi je Szene/Zoomstufe (Δ = 0; keine zweite Szene, keine zweite Karte)",
-      "ist": "Identisch (14 Mesh-Slots je Szene)",
+      "ist": "Identisch je Profil/Viewport/Szene/Zoomstufe über ortho/diorama/perspective (sameSceneAcrossCameras = true)",
       "status": "MET",
       "evidence": "capture-manifest.sameSceneAcrossCameras"
     },
@@ -465,7 +557,7 @@
       "authority": "canonical",
       "metric": "Reproduzierbarkeit: erneute Aufnahme derselben Kamera nach Kamera-Rundreise",
       "soll": "Pixel-Diff ≤ 0,08 (maxChannelDelta 8) auf demselben Renderer/Preset",
-      "ist": "Diff 0 (pixelidentisch) für Dornhain und Krypta",
+      "ist": "Diff 0 (pixelidentisch) für Dornhain und Krypta in allen 3 Profilen; komplette Neuaufnahme der 36 Bilder gegen die committete Baseline ebenfalls pixelidentisch",
       "status": "MET",
       "evidence": "capture-manifest.repeatCapture"
     },
@@ -476,7 +568,7 @@
       "authority": "canonical",
       "metric": "Kamera-/Zoomvorgaben über Produkt-Bedienelemente (#coords, #zoom, Kameramodus, Gierwinkel) innerhalb Toleranz",
       "soll": "Zentrum ±0,5 Einheiten, Span ±1 %, Gier ±0,5°, Pitch = Modus-Default",
-      "ist": "Alle 22 Aufnahmen innerhalb Toleranz",
+      "ist": "Alle 36 Aufnahmen innerhalb Toleranz",
       "status": "MET",
       "evidence": "capture-manifest.captures[].actual"
     },
@@ -487,7 +579,7 @@
       "authority": "canonical",
       "metric": "Gespeicherte Kartendaten = Golden-Domain-Daten (Feature-Fingerprint)",
       "soll": "Fingerprint (16 Hex-Zeichen) der gespeicherten generatorMeta.unifiedCanvas = gepinnter Vertragswert (0 Abweichung); Seed = mapSeedKey",
-      "ist": "Dornhain 29f3947cb45600e3, Krypta 9fc038d9291de012 — identisch",
+      "ist": "Dornhain f6b3d3b75f672b0a (inkl. Heightfield), Krypta aa520e6f8290e2f8 (Forge-Seed 1425) — gespeichert = Domain = Host-Seed",
       "status": "MET",
       "evidence": "capture-manifest.storedData + self-test"
     },
@@ -498,7 +590,7 @@
       "authority": "canonical",
       "metric": "Tablet/Phone: Canvas nutzbar, keine horizontale Überbreite",
       "soll": "Canvas ≥ 200 px breit, overflowX ≤ 1 px (AU-01); Workstation-Phone = reduzierte Komposition (AU-06)",
-      "ist": "Tablet 730×912, Phone 366×604, overflowX 0",
+      "ist": "Tablet 730×912, Phone 366×604 (balanced und lite), overflowX 0",
       "status": "MET",
       "evidence": "capture-manifest.devices",
       "auGates": [
@@ -513,9 +605,9 @@
       "authority": "atmospheric",
       "metric": "Aufnahmen in den Profilen high/balanced/lite",
       "soll": "Alle 3 Profile (high/balanced/lite) je Szene/Kamera aufgenommen; lite = Low-End/Software-Pfad, D-READ-01 bleibt erfüllt (≥ 16×16 px)",
-      "ist": "Nur balanced aufnehmbar: Produkt hat keinen Preset-Wähler (AtlasNative3dEditor nutzt immer balanced)",
-      "status": "NOT_RUN",
-      "evidence": "qualityProfiles[].capturedInBaseline"
+      "ist": "Produkt-Schalter „Grafikqualität“ (Hoch/Ausgewogen/Sparsam, Default Ausgewogen) aufgenommen: high + lite je Szene × 3 Kameras (Z1), lite zusätzlich Phone. high = WebGL (SwiftShader), lite = Canvas2D-Fallback (AtlasLite3D). lite: Ortho lesbar, aber Diorama/Perspektive mit Sortierfehlern (Gelände, Krypta-Böden) → D-READ-01 im lite-Diorama nicht erfüllt",
+      "status": "PARTIAL",
+      "evidence": "capture-manifest.counts.byProfile + renderers"
     },
     {
       "id": "C-PERF-01",
@@ -524,7 +616,7 @@
       "authority": "canonical",
       "metric": "Frame p50/p95, Erstbild, Draw Calls, Dreiecke, GPU-Speicher, Heap-Wachstum auf echter Zielhardware (hardwareBudgets)",
       "soll": "Je Tier alle Werte aus hardwareBudgets einhalten (z. B. Tablet p95 ≤ 33,3 ms), gemessen auf echter Hardware",
-      "ist": "Nur SwiftShader-CI gemessen (p95 17–19 ms bei 258–344 Dreiecken) — keine Hardware-Aussage",
+      "ist": "Nur SwiftShader-CI gemessen (p95 16,9–17,5 ms in high/balanced/lite) — Software-Rendering, keine Hardware-Aussage; Referenzgeräte verbindlich, Geräteläufe ausstehend",
       "status": "NOT_RUN",
       "evidence": "capture-manifest.perf (software-rendering)"
     },
@@ -576,5 +668,91 @@
     "dir": ".qa/evidence/atl3-v01-visual-contract/baseline",
     "manifest": "capture-manifest.json",
     "runDir": ".qa/evidence/atl3-v01-visual-contract/run"
+  },
+  "qualitySwitch": {
+    "surface": "Atlas 3D-Ansicht, Auswahl oben mittig ([data-atlas-graphics-preset-select], aria-label „Grafikqualität der 3D-Ansicht“)",
+    "persistence": "localStorage sagatree-atlas-graphics-preset (pro Gerät)",
+    "default": "balanced",
+    "domain": "ATLAS_GRAPHICS_PRESET_DEFAULT / parseAtlasGraphicsPresetId (atlas-renderer-target.ts)"
+  },
+  "profileMatrix": [
+    {
+      "profile": "balanced",
+      "viewport": "desktop",
+      "cameras": [
+        "ortho-topdown",
+        "diorama-oblique",
+        "perspective"
+      ],
+      "zoomIds": "all"
+    },
+    {
+      "profile": "balanced",
+      "viewport": "tablet",
+      "cameras": [
+        "diorama-oblique"
+      ],
+      "zoomIds": [
+        "z0"
+      ]
+    },
+    {
+      "profile": "balanced",
+      "viewport": "phone",
+      "cameras": [
+        "diorama-oblique"
+      ],
+      "zoomIds": [
+        "z0"
+      ]
+    },
+    {
+      "profile": "high",
+      "viewport": "desktop",
+      "cameras": [
+        "ortho-topdown",
+        "diorama-oblique",
+        "perspective"
+      ],
+      "zoomIds": [
+        "z1"
+      ]
+    },
+    {
+      "profile": "lite",
+      "viewport": "desktop",
+      "cameras": [
+        "ortho-topdown",
+        "diorama-oblique",
+        "perspective"
+      ],
+      "zoomIds": [
+        "z1"
+      ]
+    },
+    {
+      "profile": "lite",
+      "viewport": "phone",
+      "cameras": [
+        "diorama-oblique"
+      ],
+      "zoomIds": [
+        "z0"
+      ]
+    }
+  ],
+  "matrixEvaluation": {
+    "evaluatedAt": "2026-11-15",
+    "evaluatedBy": "ATL3-V01 Runde 2 (PR #1302)",
+    "baselineDigest": "fdec2941d3776825",
+    "visualOnlyCriteria": [
+      "D-MAT-01",
+      "D-LOD-01",
+      "D-READ-01",
+      "K-GEO-02",
+      "K-MAT-01",
+      "K-ATM-01"
+    ],
+    "rule": "Visuell bewertete Kriterien gelten nur für genau diese Baseline-Pixel (sha256 über normierte Dateinamen + PNG-Bytes). Neue Baseline → self-test FAIL bis Matrix neu bewertet und Digest neu gepinnt; Browser-Lauf FAIL bei Drift gegen die Baseline (tolerances.baselineDrift)."
   }
 }
