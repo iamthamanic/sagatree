@@ -226,7 +226,14 @@ try {
     ...(canvas.objects ?? []),
     ...(canvas.rooms ?? []),
   ]
-    .filter((row) => row && (row.secret === true || row.id === 'g.crypt.relic' || String(row.id || '').includes('crypt')))
+    .filter(
+      (row) =>
+        row &&
+        (row.secret === true ||
+          String(row.id || '').includes('crypt') ||
+          /* ATL3-V01: Golden Krypta is a committed Dungeon-Forge crypt (droom-/dlamp-/dchest- ids). */
+          /^d(room|lamp|chest)-/.test(String(row.id || ''))),
+    )
     .map((row) => row.id);
   assert.ok(gmSecretIds.length >= 1, `GM crypt canvas should include secret/crypt entities, got ${JSON.stringify(canvas.objects)}`);
 

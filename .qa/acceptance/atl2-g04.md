@@ -62,3 +62,12 @@ keine reine Geschmacksfreigabe und kein Auto-PASS nur über Domain-Fingerprints.
   `e2e/atl2-g04-golden-visual.spec.ts-snapshots/` +
   `.qa/evidence/atl2-g04-golden-visual/`
 - Non-goals: subjective taste sign-off; Three.js product path; dual renderer
+
+## Bewusste Änderung durch ATL3-V01 Runde 2 (#1295, 2026-11-15)
+
+- Entscheidung Ben: Golden-Daten ergänzt. `city` (Dornhain) trägt jetzt ein kanonisches Heightfield,
+  `crypt` ist die committete Dungeon-Forge-Krypta (Seed 1425, Türen, geschlossene Räume, Fackel).
+- Der räumliche G04-Fingerprint bezieht das Heightfield ein (`heightfieldContentFingerprint`).
+- Neu gepinnt: `city` content/geometry/look, `crypt` content/camera/geometry/look/materials (Kamera auf die
+  Forge-Krypta zentriert, Auswahl `droom-1425-3`). Snapshots `g04-city-*`/`g04-crypt-*` neu aufgenommen;
+  world/country/tavern/room unverändert.

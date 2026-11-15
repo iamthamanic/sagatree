@@ -37658,7 +37658,7 @@
           },
           {
             "path": "src/domains/world/atlas/atlas-golden-visual.ts",
-            "sha256": "754007ac0525c6797330d3a16995af16e35d747107c36f29e76fa6ecd36cbf7c"
+            "sha256": "88b77614af2b7d42bec9313904732665357915182428f73288e7dc25f8093eec"
           },
           {
             "path": "src/domains/world/atlas/atlas-heightfield.ts",
@@ -37702,7 +37702,7 @@
           },
           {
             "path": "src/domains/world/atlas/atlas-renderer-target.ts",
-            "sha256": "51beb5d64d2972fa88a42a1f0437d42639c689f9612cd852e94ed72721b48678"
+            "sha256": "b7119cbcc981e7c0c98c939aa09044496bd958fe6fd596f36e279da758d0505b"
           },
           {
             "path": "src/domains/world/atlas/atlas-revision-contract.ts",
@@ -37734,7 +37734,7 @@
           },
           {
             "path": "src/domains/world/atlas/dornhain-golden-hierarchy.ts",
-            "sha256": "894d9769af93bcc3655938bbd2e6db5c39dbaf4a386786cb686a19704be9c0c0"
+            "sha256": "75d134df2c52e4d46deee382f811d869180b37e9cf9978f68dc265a70c3f3776"
           },
           {
             "path": "src/domains/world/atlas/dornhain-golden-reset.ts",
@@ -37758,7 +37758,7 @@
           },
           {
             "path": "src/domains/world/atlas/index.ts",
-            "sha256": "153bde0423fc622920234b702908c1a901875f06a90f8e885c9e5c344dec50b4"
+            "sha256": "ba4d307f7433a59873e45ced4b3c64216edfc5b195ef8dbec04cca6bb6ffd9f5"
           },
           {
             "path": "src/domains/world/atlas/map-edit-ops.ts",
@@ -37978,7 +37978,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-world.json",
-      "sourceContractSha256": "13ed0aade20add862e23b01e72347544f74a8379852d3952a5e4a0e23d7e16dd",
+      "sourceContractSha256": "738d99b0b0d44abf57bb8e67c24cc9f30e6e18982ca79c22461fa00570e933e4",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],

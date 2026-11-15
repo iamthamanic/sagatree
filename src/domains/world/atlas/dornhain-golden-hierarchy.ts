@@ -4,7 +4,27 @@
  *
  * Pure domain — no React / Host. Naming placeholders until PM freeze:
  * Kontinent Westmark / Land Westmark under Donalu.
+ *
+ * ATL3-V01 round 2 (#1295, Ben 2026-11-15): Dornhain carries a canonical
+ * heightfield (hills around the town, never under rooms/stamps) and the Krypta
+ * is a committed Dungeon-Forge crypt (seed 1425, theme ancient). Both change
+ * the G04 / V01 data fingerprints deliberately. Host mirror:
+ * `server/src/bootstrap/dornhain-golden-hierarchy-seed.ts` (parity self-test).
  */
+import {
+  ATLAS_HEIGHTFIELD_FORMAT,
+  ATLAS_HEIGHTFIELD_VERSION,
+  type AtlasHeightfield,
+} from './atlas-heightfield';
+import {
+  buildDungeonGeneratorMeta,
+  generateDungeon,
+  mergeDungeonMetaIntoGeneratorMeta,
+  type DungeonGenerateParams,
+  type DungeonGeneratorMeta,
+} from './dungeon-generator';
+import { rasterizeDungeonGenerateResult } from './dungeon-grid';
+import { commitDungeonFeaturesToDoc, dungeonCommitPayloadFromResults } from './dungeon-forge-workflow';
 import {
   mergeMapFrameIntoGeneratorMeta,
   type ParentSpatialAnchor,
@@ -33,6 +53,8 @@ export type DornhainGoldenMapSpec = {
     readonly rotationRad?: number;
   };
   readonly buildCanvas: () => UnifiedCanvasDoc;
+  /** Committed Dungeon-Forge meta (`generatorMeta.dungeon`) for forge-built Golden maps. */
+  readonly buildDungeonMeta?: () => DungeonGeneratorMeta;
 };
 
 function rectRoom(
@@ -140,8 +162,67 @@ export function buildGoldenCountryCanvas(): UnifiedCanvasDoc {
   );
 }
 
+/**
+ * Golden Dornhain hills (canonical terrain, ATL3-V01 D-GEO-03). Compact smooth
+ * bumps over a submerged base (-4): only the hill tops rise above the map sheet
+ * (y ≈ -0.5), so rooms, streets and stamps stay on flat ground (self-test checks
+ * clearance). Mirrored 1:1 in the Host seed.
+ */
+export const GOLDEN_DORNHAIN_HILLS: readonly {
+  readonly id: string;
+  readonly x: number;
+  readonly z: number;
+  readonly radius: number;
+  readonly peak: number;
+}[] = [
+  { id: 'hill.north', x: 360, z: 300, radius: 110, peak: 28 },
+  { id: 'hill.north-east', x: 490, z: 285, radius: 90, peak: 22 },
+  { id: 'hill.east', x: 650, z: 520, radius: 80, peak: 16 },
+  { id: 'hill.south-west', x: 210, z: 650, radius: 80, peak: 12 },
+];
+
+const GOLDEN_DORNHAIN_HF = {
+  originX: 100,
+  originZ: 180,
+  cellSize: 20,
+  cols: 41,
+  rows: 33,
+  base: -4,
+  waterLevel: -3,
+} as const;
+
+export function buildGoldenDornhainHeightfield(): AtlasHeightfield {
+  const f = GOLDEN_DORNHAIN_HF;
+  const heights: number[] = [];
+  for (let row = 0; row < f.rows; row += 1) {
+    for (let col = 0; col < f.cols; col += 1) {
+      const x = f.originX + col * f.cellSize;
+      const z = f.originZ + row * f.cellSize;
+      let h: number = f.base;
+      for (const hill of GOLDEN_DORNHAIN_HILLS) {
+        const d2 = ((x - hill.x) ** 2 + (z - hill.z) ** 2) / hill.radius ** 2;
+        const s = Math.max(0, 1 - d2);
+        h = Math.max(h, f.base + (hill.peak - f.base) * s * s);
+      }
+      heights.push(Math.round(h * 10) / 10);
+    }
+  }
+  return {
+    format: ATLAS_HEIGHTFIELD_FORMAT,
+    version: ATLAS_HEIGHTFIELD_VERSION,
+    assetRef: { kind: 'inline', version: ATLAS_HEIGHTFIELD_VERSION },
+    originX: f.originX,
+    originZ: f.originZ,
+    cellSize: f.cellSize,
+    cols: f.cols,
+    rows: f.rows,
+    heights,
+    waterLevel: f.waterLevel,
+  };
+}
+
 export function buildGoldenDornhainCanvas(): UnifiedCanvasDoc {
-  return baseDoc(
+  const doc = baseDoc(
     [
       rectRoom('g.town.plaza', 'pflaster', 300, 420, 180, 140),
       rectRoom('g.town.block-a', 'stein', 220, 380, 90, 80),
@@ -165,6 +246,7 @@ export function buildGoldenDornhainCanvas(): UnifiedCanvasDoc {
       stamp('g.outcrop', 'fels', 430, 540, 0.4),
     ],
   );
+  return { ...doc, heightfield: buildGoldenDornhainHeightfield() };
 }
 
 export function buildGoldenTavernCanvas(): UnifiedCanvasDoc {
@@ -190,24 +272,50 @@ export function buildGoldenTavernCanvas(): UnifiedCanvasDoc {
   };
 }
 
+/**
+ * Golden Krypta = committed Dungeon-Forge crypt (ATL3-V01 decision 4). Same
+ * generate → rasterize → commit path as the product forge; layout centred in
+ * the 0–1000 frame. Forge stamp sizes scale with `unitScale` (1.2 cells), which
+ * is far beyond the product stamp scale at Golden size — the two committed
+ * objects are normalised to the previous Golden stamp sizes (lamp 0.35,
+ * chest 0.5; height in cells). Geometry/IDs stay untouched forge output.
+ */
+export const GOLDEN_KRYPTA_FORGE_PARAMS: DungeonGenerateParams = {
+  seed: 1425,
+  roomCount: 5,
+  loopChance: 0.18,
+  themeKey: 'ancient',
+  originX: 464,
+  originY: 545,
+  unitScale: 18,
+};
+
+const GOLDEN_KRYPTA_STAMP_SIZE: Readonly<Record<string, number>> = { lampe: 0.35, kiste: 0.5 };
+
+function forgeGoldenKrypta() {
+  const generate = generateDungeon(GOLDEN_KRYPTA_FORGE_PARAMS);
+  const raster = rasterizeDungeonGenerateResult(generate);
+  const payload = dungeonCommitPayloadFromResults(generate, raster);
+  if (!payload || generate.seed !== GOLDEN_KRYPTA_FORGE_PARAMS.seed) {
+    throw new Error('Golden Krypta forge failed — seed/params no longer produce a valid crypt');
+  }
+  const unit = GOLDEN_KRYPTA_FORGE_PARAMS.unitScale ?? 1;
+  const objects = payload.objects.map((o) => ({
+    ...o,
+    size: GOLDEN_KRYPTA_STAMP_SIZE[o.type] ?? o.size / unit,
+    ...(typeof o.height === 'number' ? { height: o.height / unit } : {}),
+  }));
+  return { generate, payload: { ...payload, objects } };
+}
+
 export function buildGoldenCryptCanvas(): UnifiedCanvasDoc {
-  const empty = emptyUnifiedCanvasDoc(false);
-  return {
-    ...empty,
-    rooms: [
-      rectRoom('g.crypt.hall', 'stein', 240, 240, 360, 280),
-      rectRoom('g.crypt.vault', 'erde', 320, 560, 200, 160),
-    ],
-    walls: [
-      { id: 'g.crypt.w1', x1: 240, y1: 240, x2: 600, y2: 240, width: 10 },
-      { id: 'g.crypt.w2', x1: 240, y1: 240, x2: 240, y2: 520, width: 10 },
-      { id: 'g.crypt.w3', x1: 600, y1: 240, x2: 600, y2: 520, width: 10 },
-    ],
-    objects: [
-      stamp('g.crypt.relic', 'kiste', 400, 360, 0.5),
-      stamp('g.crypt.lamp', 'lampe', 300, 300, 0.35),
-    ],
-  };
+  const { payload } = forgeGoldenKrypta();
+  return commitDungeonFeaturesToDoc(emptyUnifiedCanvasDoc(false), payload, true);
+}
+
+/** `generatorMeta.dungeon` of the committed Golden Krypta (confirmed forge run). */
+export function buildGoldenCryptDungeonMeta(): DungeonGeneratorMeta {
+  return buildDungeonGeneratorMeta(forgeGoldenKrypta().generate, true);
 }
 
 /** Ordered parent→child so reset can upsert without forward refs. */
@@ -256,6 +364,7 @@ export const DORNHAIN_GOLDEN_MAPS: readonly DornhainGoldenMapSpec[] = [
     parentMapSeedKey: 'dornhain.map.place.dornhain',
     parentAnchor: { centerX: 406, centerY: 462, extentX: 28, extentY: 28 },
     buildCanvas: buildGoldenCryptCanvas,
+    buildDungeonMeta: buildGoldenCryptDungeonMeta,
   },
 ];
 
@@ -279,16 +388,17 @@ export function buildDornhainGoldenChildGeneratorMeta(
     rotationRad: spec.parentAnchor.rotationRad ?? 0,
     metersPerUnit: null,
   };
+  const base: Record<string, unknown> = {
+    engine: 'unified_canvas',
+    seed: spec.seedKey,
+    golden: true,
+    placeSeedKey: spec.placeSeedKey,
+    scale: spec.kind,
+    unifiedCanvas: canvas,
+    bounds: DEFAULT_ATLAS_BOUNDS,
+  };
   return mergeMapFrameIntoGeneratorMeta(
-    {
-      engine: 'unified_canvas',
-      seed: spec.seedKey,
-      golden: true,
-      placeSeedKey: spec.placeSeedKey,
-      scale: spec.kind,
-      unifiedCanvas: canvas,
-      bounds: DEFAULT_ATLAS_BOUNDS,
-    },
+    spec.buildDungeonMeta ? mergeDungeonMetaIntoGeneratorMeta(base, spec.buildDungeonMeta()) : base,
     { status: 'ready', parentAnchor: anchor },
   );
 }

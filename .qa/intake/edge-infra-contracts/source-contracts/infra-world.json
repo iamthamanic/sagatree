@@ -203,7 +203,7 @@
     },
     {
       "path": "src/domains/world/atlas/atlas-golden-visual.ts",
-      "sha256": "754007ac0525c6797330d3a16995af16e35d747107c36f29e76fa6ecd36cbf7c"
+      "sha256": "88b77614af2b7d42bec9313904732665357915182428f73288e7dc25f8093eec"
     },
     {
       "path": "src/domains/world/atlas/atlas-heightfield.ts",
@@ -247,7 +247,7 @@
     },
     {
       "path": "src/domains/world/atlas/atlas-renderer-target.ts",
-      "sha256": "51beb5d64d2972fa88a42a1f0437d42639c689f9612cd852e94ed72721b48678"
+      "sha256": "b7119cbcc981e7c0c98c939aa09044496bd958fe6fd596f36e279da758d0505b"
     },
     {
       "path": "src/domains/world/atlas/atlas-revision-contract.ts",
@@ -279,7 +279,7 @@
     },
     {
       "path": "src/domains/world/atlas/dornhain-golden-hierarchy.ts",
-      "sha256": "894d9769af93bcc3655938bbd2e6db5c39dbaf4a386786cb686a19704be9c0c0"
+      "sha256": "75d134df2c52e4d46deee382f811d869180b37e9cf9978f68dc265a70c3f3776"
     },
     {
       "path": "src/domains/world/atlas/dornhain-golden-reset.ts",
@@ -303,7 +303,7 @@
     },
     {
       "path": "src/domains/world/atlas/index.ts",
-      "sha256": "153bde0423fc622920234b702908c1a901875f06a90f8e885c9e5c344dec50b4"
+      "sha256": "ba4d307f7433a59873e45ced4b3c64216edfc5b195ef8dbec04cca6bb6ffd9f5"
     },
     {
       "path": "src/domains/world/atlas/map-edit-ops.ts",
@@ -1431,80 +1431,80 @@
       "kind": "TypeAliasDeclaration",
       "name": "AtlasGoldenVisualScaleId",
       "path": "src/domains/world/atlas/atlas-golden-visual.ts",
-      "line": 54,
-      "endLine": 54,
+      "line": 55,
+      "endLine": 55,
       "text": "export type AtlasGoldenVisualScaleId = (typeof ATLAS_GOLDEN_VISUAL_SCALE_IDS)[number];"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "AtlasGoldenVisualTolerance",
       "path": "src/domains/world/atlas/atlas-golden-visual.ts",
-      "line": 60,
-      "endLine": 72,
+      "line": 61,
+      "endLine": 73,
       "text": "export type AtlasGoldenVisualTolerance = {\n  readonly format: typeof ATLAS_GOLDEN_VISUAL_FORMAT;\n  /** Max per-channel absolute diff for soft pixel review. */\n  readonly maxChannelDelta: number;\n  /** Max fraction of differing pixels before fail (Playwright toHaveScreenshot). */\n  readonly maxDiffPixelRatio: number;\n  /**\n   * Node/test-gate: fingerprint-exact.\n   * Browser E2E: pixel-diff against committed PNG baselines (fail if missing).\n   */\n  readonly ciMode: 'fingerprint-and-screenshot';\n  readonly reviewLabelDe: string;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "AtlasGoldenVisualViewportId",
       "path": "src/domains/world/atlas/atlas-golden-visual.ts",
-      "line": 90,
-      "endLine": 91,
+      "line": 91,
+      "endLine": 92,
       "text": "export type AtlasGoldenVisualViewportId =\n  (typeof ATLAS_GOLDEN_VISUAL_VIEWPORTS)[number]['id'];"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "AtlasGoldenVisualFixture",
       "path": "src/domains/world/atlas/atlas-golden-visual.ts",
-      "line": 104,
-      "endLine": 117,
+      "line": 105,
+      "endLine": 118,
       "text": "export type AtlasGoldenVisualFixture = {\n  readonly id: AtlasGoldenVisualScaleId;\n  readonly labelDe: string;\n  /** Product nav / atlas map title used to open the scene in Browser E2E. */\n  readonly uiMapTitleDe: string;\n  readonly mapSeedKey: string;\n  readonly camera: AtlasProductCameraState;\n  readonly graphicsPresetId: AtlasGraphicsPresetId;\n  /** outdoor → diorama look; indoor → dungeon look for material variety. */\n  readonly lookFamily: 'outdoor' | 'indoor';\n  readonly indoorThemeKey: 'ancient' | 'grim' | null;\n  readonly selectionFeatureId: string;\n  readonly buildCanvas: () => UnifiedCanvasDoc;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "AtlasGoldenArtDirectionCheckId",
       "path": "src/domains/world/atlas/atlas-golden-visual.ts",
-      "line": 238,
-      "endLine": 244,
+      "line": 240,
+      "endLine": 246,
       "text": "export type AtlasGoldenArtDirectionCheckId =\n  | 'materials-distinct'\n  | 'selection-readable'\n  | 'detail-degradable'\n  | 'no-unsolicited-canonical'\n  | 'fixed-camera-light'\n  | 'overlay-tokens';"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "AtlasGoldenArtDirectionCheck",
       "path": "src/domains/world/atlas/atlas-golden-visual.ts",
-      "line": 246,
-      "endLine": 250,
+      "line": 248,
+      "endLine": 252,
       "text": "export type AtlasGoldenArtDirectionCheck = {\n  readonly id: AtlasGoldenArtDirectionCheckId;\n  readonly labelDe: string;\n  readonly measurable: string;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "AtlasGoldenVisualSnapshot",
       "path": "src/domains/world/atlas/atlas-golden-visual.ts",
-      "line": 287,
-      "endLine": 301,
+      "line": 289,
+      "endLine": 303,
       "text": "export type AtlasGoldenVisualSnapshot = {\n  readonly format: typeof ATLAS_GOLDEN_VISUAL_FORMAT;\n  readonly fixtureId: AtlasGoldenVisualScaleId;\n  readonly mapSeedKey: string;\n  readonly cameraFingerprint: string;\n  readonly lightFingerprint: string;\n  readonly materialKeys: readonly string[];\n  readonly lookAlbedos: readonly string[];\n  readonly geometryFingerprint: string;\n  readonly lookFingerprint: string;\n  readonly selectionOutline: typeof ATLAS_GOLDEN_SELECTION_OUTLINE;\n  readonly selectionContrastRatio: number;\n  readonly contentFingerprint: string;\n  readonly detailLevel: AtlasDioramaDetailLevel | 'indoor-theme';\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "AtlasGoldenVisualCompareResult",
       "path": "src/domains/world/atlas/atlas-golden-visual.ts",
-      "line": 523,
-      "endLine": 528,
+      "line": 528,
+      "endLine": 533,
       "text": "export type AtlasGoldenVisualCompareResult = {\n  readonly ok: boolean;\n  readonly reason: string;\n  readonly expected: string;\n  readonly actual: string;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "AtlasGoldenVisualBaseline",
       "path": "src/domains/world/atlas/atlas-golden-visual.ts",
-      "line": 588,
-      "endLine": 600,
+      "line": 593,
+      "endLine": 605,
       "text": "export type AtlasGoldenVisualBaseline = {\n  readonly fixtureId: AtlasGoldenVisualScaleId;\n  readonly contentFingerprint: string;\n  readonly cameraFingerprint: string;\n  readonly lightFingerprint: string;\n  readonly geometryFingerprint: string;\n  readonly lookFingerprint: string;\n  readonly selectionOutline: typeof ATLAS_GOLDEN_SELECTION_OUTLINE;\n  readonly selectionContrastRatio: number;\n  readonly materialKeys: readonly string[];\n  readonly lookAlbedos: readonly string[];\n  readonly detailLevel: AtlasDioramaDetailLevel | 'indoor-theme';\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "AtlasGoldenArtDirectionReport",
       "path": "src/domains/world/atlas/atlas-golden-visual.ts",
-      "line": 747,
-      "endLine": 755,
+      "line": 754,
+      "endLine": 762,
       "text": "export type AtlasGoldenArtDirectionReport = {\n  readonly format: typeof ATLAS_GOLDEN_VISUAL_FORMAT;\n  readonly checks: Readonly<Record<AtlasGoldenArtDirectionCheckId, boolean>>;\n  readonly allPass: boolean;\n  readonly selectionContrastRatio: number;\n  readonly fixtureMaterialCounts: Readonly<Record<AtlasGoldenVisualScaleId, number>>;\n  readonly outdoorCanonicalOnly: boolean;\n  readonly detailDegrades: boolean;\n};"
     },
     {
@@ -1895,16 +1895,16 @@
       "kind": "TypeAliasDeclaration",
       "name": "AtlasRendererHybridVerdict",
       "path": "src/domains/world/atlas/atlas-renderer-target.ts",
-      "line": 109,
-      "endLine": 109,
+      "line": 121,
+      "endLine": 121,
       "text": "export type AtlasRendererHybridVerdict = 'GO' | 'NO-GO';"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "AtlasRendererHybridDecision",
       "path": "src/domains/world/atlas/atlas-renderer-target.ts",
-      "line": 111,
-      "endLine": 118,
+      "line": 123,
+      "endLine": 130,
       "text": "export type AtlasRendererHybridDecision = {\n  readonly issue: 1266;\n  readonly verdict: AtlasRendererHybridVerdict;\n  readonly productiveOwner: AtlasRendererCandidateId;\n  readonly followOnIssues: readonly [1267, 1268, 1269, 1270];\n  readonly reasonDe: string;\n  readonly evidencePaths: readonly string[];\n};"
     },
     {
@@ -2111,9 +2111,9 @@
       "kind": "TypeAliasDeclaration",
       "name": "DornhainGoldenMapSpec",
       "path": "src/domains/world/atlas/dornhain-golden-hierarchy.ts",
-      "line": 25,
-      "endLine": 36,
-      "text": "export type DornhainGoldenMapSpec = {\n  readonly seedKey: string;\n  readonly placeSeedKey: string;\n  readonly title: string;\n  readonly kind: WorldAtlasMapKind;\n  /** Parent Golden map seed; null = world root (`dornhain.unified.v4`). */\n  readonly parentMapSeedKey: string | null;\n  readonly parentAnchor: Omit<ParentSpatialAnchor, 'parentMapId' | 'metersPerUnit' | 'rotationRad'> & {\n    readonly rotationRad?: number;\n  };\n  readonly buildCanvas: () => UnifiedCanvasDoc;\n};"
+      "line": 45,
+      "endLine": 58,
+      "text": "export type DornhainGoldenMapSpec = {\n  readonly seedKey: string;\n  readonly placeSeedKey: string;\n  readonly title: string;\n  readonly kind: WorldAtlasMapKind;\n  /** Parent Golden map seed; null = world root (`dornhain.unified.v4`). */\n  readonly parentMapSeedKey: string | null;\n  readonly parentAnchor: Omit<ParentSpatialAnchor, 'parentMapId' | 'metersPerUnit' | 'rotationRad'> & {\n    readonly rotationRad?: number;\n  };\n  readonly buildCanvas: () => UnifiedCanvasDoc;\n  /** Committed Dungeon-Forge meta (`generatorMeta.dungeon`) for forge-built Golden maps. */\n  readonly buildDungeonMeta?: () => DungeonGeneratorMeta;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
