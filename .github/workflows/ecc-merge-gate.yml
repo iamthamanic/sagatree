@@ -3,7 +3,9 @@ name: ECC Merge Gate
 # Machine-enforced merge prerequisites for Epic #773 recovery:
 # - Unresolved Codex/Bugbot P1/P2 (Critical/Important) review findings → FAIL
 # - Unresolved Kodus (kody-ai) Critical/High/Medium/Low/Info findings → FAIL
-# - Kodus "Kody Code Review" check-run must succeed for current HEAD (Complete)
+# - Kodus "Kody Code Review" check-run must succeed for current HEAD (Complete);
+#   provider credits/quota exhaustion (billing limit, HTTP 429) → Kody part SKIPPED,
+#   gate decides on findings + remaining required checks (scripts/kodus-merge-gate.mjs)
 # - Required quality checks must be green on the PR head SHA
 #
 # Privilege split: evaluate job checks out PR head with checks:read only.
