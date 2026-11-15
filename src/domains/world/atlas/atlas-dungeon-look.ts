@@ -53,10 +53,41 @@ export type AtlasDungeonLightProfile = {
   readonly fogColor: string;
   readonly clearColor: readonly [number, number, number, number];
   readonly torchIntensity: number;
+  /**
+   * ATL3-V01 round 3 — torch point-light falloff: light radius in dungeon cells, max lights,
+   * and falloff model per preset (WebGL per-pixel smooth `(1-(d/r)²)²`; lite per-face linear).
+   */
+  readonly torchRadiusCells: number;
+  readonly maxTorchLights: number;
+  readonly torchFalloff: AtlasDungeonTorchFalloff;
   readonly shadowStrength: number;
   readonly bloomEnabled: boolean;
   readonly particlesEnabled: boolean;
 };
+
+export type AtlasDungeonTorchFalloff = 'smooth-quadratic-per-pixel' | 'linear-per-face';
+
+/** Torch light falloff per quality preset (ATL3-V01 round 3, #1295). */
+export const ATLAS_DUNGEON_TORCH_LIGHT: Readonly<
+  Record<AtlasGraphicsPresetId, { readonly radiusCells: number; readonly maxLights: number; readonly falloff: AtlasDungeonTorchFalloff }>
+> = {
+  high: { radiusCells: 5, maxLights: 8, falloff: 'smooth-quadratic-per-pixel' },
+  balanced: { radiusCells: 4, maxLights: 4, falloff: 'smooth-quadratic-per-pixel' },
+  lite: { radiusCells: 3, maxLights: 2, falloff: 'linear-per-face' },
+};
+
+/** Torch light contribution (0..1) at `distance` for a light of `radius` under `falloff`. */
+export function atlasDungeonTorchAttenuation(
+  distance: number,
+  radius: number,
+  falloff: AtlasDungeonTorchFalloff,
+): number {
+  if (!(radius > 0) || !Number.isFinite(distance)) return 0;
+  const t = Math.max(0, distance) / radius;
+  if (falloff === 'linear-per-face') return Math.max(0, 1 - t);
+  const q = Math.max(0, 1 - t * t);
+  return q * q;
+}
 
 export type AtlasDungeonQualityBudget = {
   readonly presetId: AtlasGraphicsPresetId;
@@ -241,6 +272,9 @@ export function resolveAtlasDungeonLightProfile(
     fogColor: palette.fogColor,
     clearColor: palette.clearColor,
     torchIntensity: torchByPreset[budget.presetId],
+    torchRadiusCells: ATLAS_DUNGEON_TORCH_LIGHT[budget.presetId].radiusCells,
+    maxTorchLights: ATLAS_DUNGEON_TORCH_LIGHT[budget.presetId].maxLights,
+    torchFalloff: ATLAS_DUNGEON_TORCH_LIGHT[budget.presetId].falloff,
     shadowStrength: budget.presetId === 'lite' ? 0.15 : budget.presetId === 'high' ? 0.55 : 0.35,
     bloomEnabled: budget.bloomEnabled,
     particlesEnabled: budget.particlesEnabled,

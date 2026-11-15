@@ -23,6 +23,8 @@ export type AtlasNative3dDungeonLook = {
   readonly accent: string;
   readonly light: string;
   readonly torchIntensity: number;
+  readonly torchRadiusCells: number;
+  readonly maxTorchLights: number;
   readonly bloomEnabled: boolean;
   readonly particlesEnabled: boolean;
   readonly maxTorchInstances: number;
@@ -63,6 +65,8 @@ export function resolveAtlasNative3dDungeonLook(
     accent: plan.palette.accent,
     light: plan.palette.light,
     torchIntensity: plan.light.torchIntensity,
+    torchRadiusCells: plan.light.torchRadiusCells,
+    maxTorchLights: plan.light.maxTorchLights,
     bloomEnabled: plan.budget.bloomEnabled,
     particlesEnabled: plan.budget.particlesEnabled,
     maxTorchInstances: plan.budget.maxTorchInstances,

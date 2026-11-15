@@ -210,6 +210,9 @@ export {
   generateDungeon,
   mergeDungeonMetaIntoGeneratorMeta,
   normalizeDungeonGenerateParams,
+  DUNGEON_PROP_REAL_SIZE,
+  dungeonPropRealSizeCells,
+  dungeonPropStampSize,
   validateDungeonConnectivity,
   validateDungeonSemantics,
   type DungeonGenerateParams,
@@ -618,7 +621,9 @@ export {
 export {
   ATLAS_DUNGEON_LOOK_FORMAT,
   ATLAS_DUNGEON_THEME_KEYS,
+  ATLAS_DUNGEON_TORCH_LIGHT,
   atlasDungeonFeatureAlbedo,
+  atlasDungeonTorchAttenuation,
   buildAtlasDungeonLookPlan,
   isAtlasDungeonFeatureId,
   resolveAtlasDungeonLightProfile,
@@ -632,6 +637,7 @@ export {
   type AtlasDungeonLookPlan,
   type AtlasDungeonQualityBudget,
   type AtlasDungeonThemePalette,
+  type AtlasDungeonTorchFalloff,
 } from './atlas-dungeon-look';
 
 export {
