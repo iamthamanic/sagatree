@@ -72,7 +72,7 @@ Rules until then: Custom WebGL stays productive; no second productive 3D mount; 
 | Item | Source |
 | --- | --- |
 | Golden world seed | `dornhain.unified.v4` (`DORNHAIN_WORLD_MAP_SEED`) |
-| Golden maps (FE domain) | `src/domains/world/atlas/dornhain-golden-hierarchy.ts` — Kontinent Westmark → Land Westmark → Dornhain → Taverne Zum Flüstern / Krypta unter dem Hügel (names are placeholders until PM freeze) |
+| Golden maps (FE domain) | `src/domains/world/atlas/dornhain-golden-hierarchy.ts` — Welt → Kontinent Westmark → Nordreich → Dornhain → Taverne Zum Flüstern (→ Schankraum) / Krypta unter dem Hügel (→ Gruftkammer) — owner freeze 2026-11-15 (ATL2-H03 #1236); seed keys stay `country.westmark` |
 | Host seed mirror | `server/src/bootstrap/dornhain-golden-hierarchy-seed.ts` (no FE imports — architecture boundary) |
 | Reset to Golden | `src/domains/world/atlas/dornhain-golden-reset.ts` (modes `atlas` / `atlas_places` / `everything`), UI `src/app/world/atlas/AtlasGoldenResetDialog.tsx` |
 | Golden visual fixtures | `src/domains/world/atlas/atlas-golden-visual.ts` (`atl2-golden-visual-v1`), baselines `e2e/atl2-g04-golden-visual.spec.ts-snapshots/`, capture `scripts/atl2-g04-capture-baselines.mjs` |
@@ -90,7 +90,7 @@ Golden screenshots and measurements are valid only when produced by the real hos
 | Host Browser E2E, full suite as in CI (ephemeral host + SQLite + Better Auth) | `npm run test:e2e` (= `node scripts/browser-e2e-with-host.mjs`) |
 | Host Browser E2E, single spec | `npm run test:e2e -- e2e/atl2-h01-cleanup.spec.ts --project=chromium` (args forwarded to Playwright since ATL2-H02) |
 | Device matrix (phone / tablet) | `npm run test:e2e -- e2e/golden-mobile-journeys.spec.ts e2e/adaptive-ui-quality.spec.ts --project=mobile-chrome --project=tablet-chrome` |
-| Atlas gate specs | `e2e/atl2-a04-gate-a.spec.ts`, `e2e/atl2-c06-gate-c.spec.ts`, `e2e/atl2-d07-gate-d.spec.ts`, `e2e/atl2-e05-gate-e.spec.ts`, `e2e/atl2-g04-golden-visual.spec.ts`, `e2e/atl2-g05-gate-g.spec.ts`, `e2e/atl2-h01-cleanup.spec.ts` |
+| Atlas gate specs | `e2e/atl2-a04-gate-a.spec.ts`, `e2e/atl2-c06-gate-c.spec.ts`, `e2e/atl2-d07-gate-d.spec.ts`, `e2e/atl2-e05-gate-e.spec.ts`, `e2e/atl2-g04-golden-visual.spec.ts`, `e2e/atl2-g05-gate-g.spec.ts`, `e2e/atl2-h01-cleanup.spec.ts`, `e2e/atl2-h03-golden-journey.spec.ts` (Golden journey incl. phone/tablet viewports) |
 
 ## 6. Certification checklist (per gate)
 
@@ -105,7 +105,7 @@ A gate counts as CLEAR only if its evidence is reproducible on the current HEAD 
 | E | #1223 | `.qa/acceptance/atl2-e05.md` | `scripts/atl2-e05-gate-e.self-test.mjs` | `.qa/runs/atl2-e05-gate-e.md` |
 | F | #1228 | `.qa/acceptance/atl2-f05.md` | `scripts/atl2-f05-gate-f.self-test.mjs` | (in acceptance) |
 | G | #1233 | `.qa/acceptance/atl2-g05.md` | `scripts/atl2-g05-gate-g.self-test.mjs` | `.qa/runs/atl2-g05-gate-g.md` |
-| H | #1234–#1237 | `.qa/acceptance/atl2-h01.md`, `.qa/acceptance/atl2-h02.md` (H03/H04 pending) | `scripts/atl2-h01-cleanup.self-test.mjs`, `scripts/atl2-h02-docs-sync.self-test.mjs` | — |
+| H | #1234–#1237 | `.qa/acceptance/atl2-h01.md`, `.qa/acceptance/atl2-h02.md`, `.qa/acceptance/atl2-h03.md` (H04 pending) | `scripts/atl2-h01-cleanup.self-test.mjs`, `scripts/atl2-h02-docs-sync.self-test.mjs`, `scripts/atl2-h03-golden-e2e.self-test.mjs` | — |
 
 ## 7. Migration / upgrade notes
 

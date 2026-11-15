@@ -54,7 +54,7 @@ test.describe('ATL2-A04 Gate A', () => {
       expect.arrayContaining([
         'Welt',
         'Kontinent Westmark',
-        'Land Westmark',
+        'Nordreich',
         'Dornhain',
         'Taverne Zum Flüstern',
         'Krypta unter dem Hügel',
