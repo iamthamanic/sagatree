@@ -7,13 +7,10 @@
  * Product path (#721): controlled mount — seed/persist via generator_meta, not localStorage SoT.
  * Product nav (#747): external WorldNode tree replaces demo NAV_CHILDREN in #nav.
  */
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import {
-  buildAtlasDungeonLookPlan,
-  emptyUnifiedCanvasDoc,
   resolveAtlasDioramaLightProfile,
   resolveAtlasGraphicsPreset,
-  type AtlasDungeonLookPlan,
   type DungeonThemeKey,
   webglToolChromeForKind,
   type AtlasGraphicsPresetId,
@@ -25,6 +22,10 @@ import {
 import type { WorldNodeKind } from '../../../../domains/world/hierarchy';
 import type { AtlasWebglNavTree } from '../../../../domains/world/places';
 import { mountAtlasPrototype3d } from './prototype3d/atlas-prototype-runtime.mjs';
+import {
+  atlasNative3dDungeonLookKey,
+  resolveAtlasNative3dDungeonLook,
+} from './atlas-native-3d-look';
 import './prototype3d/atlas-sagatree-skin.css';
 
 export type AtlasNativeNavSelectPayload = {
@@ -68,6 +69,11 @@ export type AtlasNative3dEditorProps = {
   readonly className?: string;
   /** Remount key (active map id + revision). */
   readonly mapKey?: string;
+  /**
+   * Undo/redo scope (G05). Defaults to `mapKey`. Runtime remounts with the same key
+   * (edit-driven look change, forge preview toggle) keep the edit history.
+   */
+  readonly historyKey?: string;
   /** When true, runtime never uses localStorage as world SoT. */
   readonly controlled?: boolean;
   readonly seedState?: WebglRuntimeState | null;
@@ -322,9 +328,32 @@ function installCollapsiblePanels(host: HTMLElement): () => void {
   };
 }
 
+/** Host-owned undo/redo stacks (runtime JSON snapshots), mutated in place by the runtime. */
+type AtlasPrototypeHistoryStore = { undo: string[]; redo: string[] };
+
+const MAX_HISTORY_SCOPES = 4;
+
+/** Get or create the undo/redo store for `key`; evicts the oldest scopes beyond the cap. */
+function resolveHistoryStore(
+  stores: Map<string, AtlasPrototypeHistoryStore>,
+  key: string,
+): AtlasPrototypeHistoryStore {
+  const existing = stores.get(key);
+  if (existing) return existing;
+  const created: AtlasPrototypeHistoryStore = { undo: [], redo: [] };
+  stores.set(key, created);
+  while (stores.size > MAX_HISTORY_SCOPES) {
+    const oldest = stores.keys().next().value;
+    if (oldest === undefined) break;
+    stores.delete(oldest);
+  }
+  return created;
+}
+
 export function AtlasNative3dEditor({
   className,
   mapKey = 'default',
+  historyKey,
   controlled = false,
   seedState = null,
   onPersist,
@@ -390,6 +419,27 @@ export function AtlasNative3dEditor({
     mapKeyRef.current = mapKey;
     seedRef.current = seedState;
   }
+  /*
+   * G05 Undo/Redo: host-owned stacks per history key survive runtime remounts of the same
+   * map. Keys are kept (bounded) so a forge preview (own key, never persisted) does not
+   * erase the base map's history, and preview snapshots never leak into the base map.
+   */
+  const effectiveHistoryKey = historyKey ?? mapKey;
+  const historyStoresRef = useRef(new Map<string, AtlasPrototypeHistoryStore>());
+  const historyStore = resolveHistoryStore(historyStoresRef.current, effectiveHistoryKey);
+  const historyStoreRef = useRef(historyStore);
+  historyStoreRef.current = historyStore;
+  /*
+   * Remount only when the dungeon look *value* changes — the doc object identity changes on
+   * every edit and used to remount the runtime (wiping undo history).
+   */
+  const dungeonLook = useMemo(
+    () => resolveAtlasNative3dDungeonLook(dungeonLookDoc, dungeonThemeKey, graphicsPresetId),
+    [dungeonLookDoc, dungeonThemeKey, graphicsPresetId],
+  );
+  const dungeonLookKey = atlasNative3dDungeonLookKey(dungeonLook);
+  const dungeonLookRef = useRef(dungeonLook);
+  dungeonLookRef.current = dungeonLook;
   const [error, setError] = useState<string | null>(null);
 
   // Layout effect: mount + collapse panels before the browser paints (no open→close flash).
@@ -450,6 +500,7 @@ export function AtlasNative3dEditor({
             : (seedRef.current ?? null);
       mount = mountAtlasPrototype3d(host, {
         controlled,
+        historyStore: historyStoreRef.current,
         seedState: seeded,
         onPersist: controlled
           ? (state) => {
@@ -499,46 +550,7 @@ export function AtlasNative3dEditor({
         /* ATL2-D06 — daylight / fog / detail tied to the same graphics preset. */
         dioramaLight: resolveAtlasDioramaLightProfile(graphicsPresetId),
         /* ATL2-F04 — dungeon theme look (Custom WebGL only; no Three.js). */
-        dungeonLook: (() => {
-          const plan: AtlasDungeonLookPlan = buildAtlasDungeonLookPlan(
-            dungeonLookDoc ?? emptyUnifiedCanvasDoc(false),
-            {
-              themeKey: dungeonThemeKey,
-              graphicsPresetId,
-            },
-          );
-          /* Non-dungeon maps keep diorama lighting — never force ancient look. */
-          if (plan.counts.instances <= 0) return null;
-          const batchIds = (kind: AtlasDungeonLookPlan['batches'][number]['kind']) =>
-            plan.batches.find((b) => b.kind === kind)?.instanceIds ?? [];
-          return {
-            themeKey: plan.themeKey,
-            floor: plan.palette.floor,
-            wall: plan.palette.wall,
-            door: plan.palette.door,
-            accent: plan.palette.accent,
-            light: plan.palette.light,
-            torchIntensity: plan.light.torchIntensity,
-            bloomEnabled: plan.budget.bloomEnabled,
-            particlesEnabled: plan.budget.particlesEnabled,
-            maxTorchInstances: plan.budget.maxTorchInstances,
-            maxInstances: plan.budget.maxInstances,
-            fogDensity: plan.light.fogDensity,
-            fogColor: plan.light.fogColor,
-            clearColor: plan.light.clearColor,
-            ambient: plan.light.ambient,
-            daylightDir: plan.light.daylightDir,
-            shadowStrength: plan.light.shadowStrength,
-            geometryFingerprint: plan.geometryFingerprint,
-            lookFingerprint: plan.lookFingerprint,
-            /* Empty arrays mean deny-all for that kind (exhausted budget). */
-            floorIds: [...batchIds('floor')],
-            wallIds: [...batchIds('wall')],
-            doorIds: [...batchIds('door')],
-            torchIds: [...batchIds('torch')],
-            propIds: [...batchIds('prop')],
-          };
-        })(),
+        dungeonLook: dungeonLookRef.current,
       });
       mountRef.current = mount;
       disposePanels = installCollapsiblePanels(host);
@@ -610,7 +622,7 @@ export function AtlasNative3dEditor({
       host.removeAttribute('data-atlas-boot');
       host.removeAttribute('data-atlas-controlled');
     };
-  }, [mapKey, controlled, graphicsPresetId, dungeonThemeKey, dungeonLookDoc]);
+  }, [mapKey, controlled, graphicsPresetId, dungeonLookKey]);
 
   // Push tree / selection updates without remounting WebGL.
   useEffect(() => {
