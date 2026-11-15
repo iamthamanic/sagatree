@@ -43,3 +43,7 @@ not a collection of isolated smoke checks.
 - `node scripts/atl2-h03-golden-e2e.self-test.mjs` (wired in `npm run test-gate`)
 - Golden regressions: `atl2-a03/a04/c06/d07/e05/g04/g05` self-tests
 - Browser E2E (host): `e2e/atl2-h03-golden-journey.spec.ts`; regression `e2e/atl2-g04-golden-visual.spec.ts`
+
+## Composition Gate
+
+- Verdict: CLEAR — proof `.qa/runs/composition-gate-atl2-h03.md` (title-only legacy rename on host bootstrap; ids unchanged)
