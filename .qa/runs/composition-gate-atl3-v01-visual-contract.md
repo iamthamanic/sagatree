@@ -2,8 +2,8 @@
 
 - Issue: #1295
 - Feature slug: atl3-v01-visual-contract
-- HEAD_SHA: 3bf14f3db81582db1deea70f8116aaa6f944199e
-- BASE_SHA: a93f5598d8cc8df93ff0f91a2aea7e95b638db83
+- HEAD_SHA: 182d138a44c6f283043c73a293166c801e6c1bf8
+- BASE_SHA: 07f3c4bc65868726f2144ed557f146ed03bb2b1c
 - Date: 2026-11-15
 - Verdict: CLEAR
 - Acceptance tier: browser-host (product data + quality switch + capture evidence)
@@ -38,7 +38,7 @@ Cardinality: 2 golden scenes × 1 stored map each; 1 preset per device; 36 basel
 |------|----------|----------|--------|
 | N-actors | Owner/GM sees the same stored maps in every profile | same fingerprints across 3 profiles | pass |
 | Invalid/missing | unknown stored preset value / missing baseline file | falls back to balanced / drift entry FAIL | pass |
-| Two consumers / crash | FE builder + host seed both produce the crypt | parity script + self-test agree (f6b3d3b7…, aa520e6f…) | pass |
+| Two consumers / crash | FE builder + host seed both produce the crypt | parity script + self-test agree (3ec9b21f…, aa520e6f…) | pass |
 | Existing world | ensure-starter on a world with old golden maps | no re-seed (documented, reset needed) | pass |
 | Profile switch | high → lite → balanced | runtime remount, host attribute reflects preset | pass |
 | Repeat capture | 3 consecutive runs | 42/42 pixel-identical | pass |
