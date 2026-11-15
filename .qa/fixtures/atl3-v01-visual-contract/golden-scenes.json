@@ -134,7 +134,7 @@
         "Krypta unter dem Hügel"
       ],
       "domainBuilder": "buildGoldenCryptCanvas",
-      "dataFingerprint": "aa520e6f8290e2f8",
+      "dataFingerprint": "a44b49a77d61e201",
       "lookFamily": "indoor",
       "dungeonThemeKey": "ancient",
       "lightProfile": {
@@ -401,7 +401,7 @@
       "authority": "canonical",
       "metric": "Gelände-Relief: Höhenbereich des Heightfields und sichtbarer Schattierungsgradient am Boden (Diorama Z1)",
       "soll": "Höhenvarianz > 0 mit sichtbarem Licht-/Schattengradient auf Hügeln/Böschungen; Relief nur aus gespeicherten Heightfield-Daten (canonical) oder als markierte suggestive Mikro-Variation",
-      "ist": "Gespeichertes Golden-Heightfield (41×33, Zelle 20, 4 Hügel, Höhe −4…28): Relief in Diorama/Perspektive Z0–Z1 sichtbar, aber als facettierte Flächen mit kaum sichtbarem Schattierungsgradient (Farbe nach Höhe, keine weiche Normalen-Schattierung); im lite-Profil (Canvas2D-Fallback) Sortierfehler am Gelände",
+      "ist": "Gespeichertes Golden-Heightfield (41×33, Zelle 20, 4 Hügel, Höhe −4…28): Relief in Diorama/Perspektive Z0–Z1 sichtbar, aber als facettierte Flächen mit kaum sichtbarem Schattierungsgradient (Farbe nach Höhe, keine weiche Normalen-Schattierung). Runde 3: lite-Profil ohne Gelände-/Boden-Sortierfehler (Boden-Pass vor stehender Geometrie). Rest: in balanced schneidet ein Unterwasser-Geländedreieck (LOD-Stride) sichtbar in die Plaza",
       "status": "PARTIAL",
       "evidence": "stored generatorMeta.unifiedCanvas.heightfield (self-test golden-terrain) + Diorama/Perspektive Z0–Z1"
     },
@@ -467,8 +467,8 @@
       "authority": "canonical",
       "metric": "Raumschluss: jede Raumkante hat eine Wand, Raumübergänge haben Türen (gespeicherte Daten)",
       "soll": "Jeder Raum allseitig von Wänden begrenzt außer an Türen; ≥ 1 Tür pro Raumverbindung; Türen als eigene Geometrie sichtbar",
-      "ist": "Committed Dungeon-Forge-Krypta (Seed 1425): 5 Räume, alle Raumkanten mit Wänden (self-test: 0 offene Seiten), 27 Türen auf gespeicherten Wänden, Türrahmen in Z1/Z2 sichtbar. Aber: die 5 Korridor-Mittellinien (dcorr-*) werden als volle Wandbalken gerendert und kreuzen Räume diagonal",
-      "status": "PARTIAL",
+      "ist": "Committed Dungeon-Forge-Krypta (Seed 1425): 5 Räume + 6 Korridor-Bodenflächen (dcorr-*, aus dem Zellraster), 161 Rasterwände (dgrid-wall-*) nur entlang Raum-/Korridorkanten (self-test: 0 offene Seiten, 0 dcorr-Wände, Korridore überlappen keine Räume), 27 Türen auf gespeicherten Wänden, Türrahmen in Z1/Z2 sichtbar. Runde 3: keine Korridor-Mittellinien-Wandbalken mehr",
+      "status": "MET",
       "evidence": "stored generatorMeta (self-test golden-forge-krypta) + z0–z2 alle Kameras"
     },
     {
@@ -500,8 +500,8 @@
       "authority": "atmospheric",
       "metric": "Atmosphärisches Licht: Fackel dlamp-1425-entrance als warme Punktlichtquelle mit Abfall (Luma nahe Fackel vs. ferner Boden)",
       "soll": "Luma im Radius der Lampe ≥ 1,3× ferner Boden; Lichtfarbe warm (Theme ancient light #ffc17b); ambient ≤ 0,3",
-      "ist": "Dungeon-Look-Plan: 1 Fackel (dlamp-1425-entrance) mit Flamme + Funken in Theme-Lichtfarbe #ffc17b sichtbar; kein echtes Punktlicht, kein Helligkeitsabfall am Boden (Luma-Verhältnis ≈ 1,0)",
-      "status": "PARTIAL",
+      "ist": "Runde 3: Fackel dlamp-1425-entrance als Punktlicht mit Distanzabfall je Qualitätsprofil (high: 5 Zellen, ≤ 8 Lichter, per Pixel (1−(d/r)²)²; balanced: 4 Zellen, ≤ 4 Lichter, per Pixel; lite: 3 Zellen, ≤ 2 Lichter, linear pro (unterteilter) Fläche). Balanced Z2 Diorama: Boden-Luma nahe Fackel ≈ 175 vs. unbeleuchteter Boden ≈ 97 (≈ 1,8×), stetiger Abfall bis zur Raumkante; Lichtfarbe warm (#ffc17b); ambient high 0,22 / balanced 0,28. Hinweis: lite hält ambient 0,40 (Lesbarkeit Low-End) — dort gilt ambient ≤ 0,3 bewusst nicht",
+      "status": "MET",
       "evidence": "domain:buildAtlasDungeonLookPlan(counts.torches=1) + z2-raum"
     },
     {
@@ -522,8 +522,8 @@
       "authority": "atmospheric",
       "metric": "Atmosphärische Kanäle (Nebel, Staub/Partikel, Lichtschein) — Anzahl aktiver Kanäle",
       "soll": "1–3 dominante Atmosphärenkanäle (IV-14), nicht persistiert, nicht abfragbar; abschaltbar im lite-Profil",
-      "ist": "Keine sichtbaren Atmosphärenkanäle",
-      "status": "GAP",
+      "ist": "Runde 3: 1 sichtbarer Kanal — warmer Fackel-Lichtschein (atmosphärisch, nicht persistiert, nur aus gespeicherter Fackel abgeleitet); Distanznebel nur in Perspektive fern; kein Staub/Partikel sichtbar; lite reduziert den Lichtschein (2 Lichter, pro Fläche), schaltet ihn aber nicht ab",
+      "status": "PARTIAL",
       "evidence": "z0–z2 alle Kameras",
       "ivGates": [
         "IV-14",
@@ -537,8 +537,8 @@
       "authority": "canonical",
       "metric": "Z-Fighting auf Krypta-Böden in Perspektive",
       "soll": "0 Streifenartefakte in allen 3 Kameras × 3 Zoomstufen; 100 % der Raumbodenfläche sichtbar",
-      "ist": "Perspektive Z1: Raumböden nicht sichtbar (nur Wände); im lite-Profil große Sortierfehler-Dreiecke über den Böden; Korridorbalken (dcorr-*) kreuzen Räume",
-      "status": "GAP",
+      "ist": "Runde 3: Korridorbalken entfernt (Korridore = Bodenflächen), lite-Sortierfehler über den Böden behoben, Raumböden in allen Kameras gerendert. Offen: Perspektive Z1 (WebGL) Böden durch Distanznebel (Deckel 0,72) fast in Nebelfarbe; Perspektive Z2 Z-Fighting-Streifen auf einer koplanaren Grundfläche außerhalb der Krypta (bereits in Runde 2)",
+      "status": "PARTIAL",
       "evidence": "perspective z1-raumgruppe"
     },
     {
@@ -581,7 +581,7 @@
       "authority": "canonical",
       "metric": "Gespeicherte Kartendaten = Golden-Domain-Daten (Feature-Fingerprint)",
       "soll": "Fingerprint (16 Hex-Zeichen) der gespeicherten generatorMeta.unifiedCanvas = gepinnter Vertragswert (0 Abweichung); Seed = mapSeedKey",
-      "ist": "Dornhain 3ec9b21f1c3d0ff1 (inkl. Heightfield), Krypta aa520e6f8290e2f8 (Forge-Seed 1425) — gespeichert = Domain = Host-Seed",
+      "ist": "Dornhain 3ec9b21f1c3d0ff1 (inkl. Heightfield), Krypta a44b49a77d61e201 (Forge-Seed 1425, Runde 3: Korridorböden + Realgrößen-Props) — gespeichert = Domain = Host-Seed",
       "status": "MET",
       "evidence": "capture-manifest.storedData + self-test"
     },
@@ -607,8 +607,8 @@
       "authority": "atmospheric",
       "metric": "Aufnahmen in den Profilen high/balanced/lite",
       "soll": "Alle 3 Profile (high/balanced/lite) je Szene/Kamera aufgenommen; lite = Low-End/Software-Pfad, D-READ-01 bleibt erfüllt (≥ 16×16 px)",
-      "ist": "Produkt-Schalter „Grafikqualität“ (Hoch/Ausgewogen/Sparsam, Default Ausgewogen) aufgenommen: high + lite je Szene × 3 Kameras (Z1), lite zusätzlich Phone. high = WebGL (SwiftShader), lite = Canvas2D-Fallback (AtlasLite3D). lite: Ortho lesbar, aber Diorama/Perspektive mit Sortierfehlern (Gelände, Krypta-Böden) → D-READ-01 im lite-Diorama nicht erfüllt",
-      "status": "PARTIAL",
+      "ist": "Produkt-Schalter „Grafikqualität“ (Hoch/Ausgewogen/Sparsam, Default Ausgewogen) aufgenommen: high + lite je Szene × 3 Kameras (Z1), lite zusätzlich Phone. high = WebGL (SwiftShader), lite = Canvas2D-Fallback (AtlasLite3D). Runde 3: lite-Maleralgorithmus mit BBox-Culling, Unterteilung großer Flächen und Boden-Pass → Diorama/Perspektive ohne Sortierfehler; D-READ-01 im lite-Diorama erfüllt (Turm ≈ 34×55 px)",
+      "status": "MET",
       "evidence": "capture-manifest.counts.byProfile + renderers"
     },
     {
@@ -745,8 +745,8 @@
   ],
   "matrixEvaluation": {
     "evaluatedAt": "2026-11-15",
-    "evaluatedBy": "ATL3-V01 Runde 2 (PR #1302), nach Merge von ATL2-G05 (#1292) neu bewertet",
-    "baselineDigest": "964f12d9e1f017b3",
+    "evaluatedBy": "ATL3-V01 Runde 3 (PR #1302): Bens 5 visuelle Punkte (Migration, Prop-Realgröße, Korridorböden, Fackel-Abfall, lite-Tiefensortierung) neu bewertet",
+    "baselineDigest": "9445e6985f67f707",
     "visualOnlyCriteria": [
       "D-MAT-01",
       "D-LOD-01",
@@ -757,7 +757,8 @@
     ],
     "rule": "Visuell bewertete Kriterien gelten nur für genau diese Baseline-Pixel (sha256 über normierte Dateinamen + PNG-Bytes). Neue Baseline → self-test FAIL bis Matrix neu bewertet und Digest neu gepinnt; Browser-Lauf FAIL bei Drift gegen die Baseline (tolerances.baselineDrift).",
     "history": [
-      "fdec2941d3776825 → 964f12d9e1f017b3: nach G05-Merge stimmen 12 Diorama-/Perspektive-Aufnahmen (balanced Z0, high/lite Z1) wieder mit dem Gierwinkel 20° überein (vorher nach Runtime-Remount bei 0°); visuelle Kriterien unverändert neu bewertet."
+      "fdec2941d3776825 → 964f12d9e1f017b3: nach G05-Merge stimmen 12 Diorama-/Perspektive-Aufnahmen (balanced Z0, high/lite Z1) wieder mit dem Gierwinkel 20° überein (vorher nach Runtime-Remount bei 0°); visuelle Kriterien unverändert neu bewertet.",
+      "964f12d9e1f017b3 → 9445e6985f67f707: Runde 3 — Krypta mit Korridorböden statt Mittellinien-Wandbalken, Props in Realgröße, Fackel-Punktlicht mit Distanzabfall (high/balanced per Pixel, lite pro Fläche), lite-Maleralgorithmus (BBox-Culling, Unterteilung, Boden-Pass). Visuell neu bewertet: K-ATM-01 GAP → PARTIAL (Fackel-Lichtschein); D-MAT-01, D-LOD-01, D-READ-01, K-GEO-02, K-MAT-01 unverändert."
     ]
   }
 }

@@ -15,7 +15,7 @@
 - [x] Budgets für echte Zielhardware mit verbindlichen Referenzgeräten; CI-Werte als Software-Rendering gekennzeichnet.
 - [x] Frame-p95 auf Software-WebGL nur informativ (protokolliert, kein Fehlschlag); Hardware-Renderer behalten das harte Budget (V01 + Gate G, Self-Test-geprüft).
 - [x] Nutzbar als Testorakel für R01B, Migration und R05.
-- [x] Kein Three.js-Prototyp, keine GO/NO-GO-Entscheidung, keine Renderer-/Datenmodelländerung, null Escape Hatches (Runde 2: nur Golden-Daten + Qualitäts-Schalter, Datenmodell unverändert).
+- [x] Kein Three.js-Prototyp, keine GO/NO-GO-Entscheidung, keine Renderer-/Datenmodelländerung, null Escape Hatches (Runde 2: nur Golden-Daten + Qualitäts-Schalter, Datenmodell unverändert; Runde 3: gezielte Renderer-/Forge-Fixes auf Bens Entscheidung, Datenmodell unverändert).
 
 ## Runde 2 — Entscheidungen Ben (2026-11-15)
 
@@ -26,15 +26,25 @@
 - [x] Baselines deterministisch neu aufgenommen (36 Bilder), Wiederholungslauf pixelidentisch.
 - [x] Stale-Matrix-Guard (Codex P2): self-test prüft Status gegen Evidenzregeln + Baseline-Digest; Browser-Lauf scheitert bei Drift gegen die committete Baseline.
 
+## Runde 3 — offene visuelle Punkte (Entscheidung Ben, 2026-11-15)
+
+- [x] **Bestehende Welten:** idempotentes Golden-Upgrade beim `ensure-starter` (`dornhain-golden-content-upgrade.ts`): unberührte Alt-Krypta (vor V01 / Runde 2) → Forge-Krypta, Dornhain ohne Heightfield → mit Heightfield; Nutzeränderungen werden nie überschrieben (Signaturvergleich), zweiter Lauf ändert nichts (DB-self-test).
+- [x] **Prop-Realgröße:** `dungeonPropStampSize` — Fackel 1,2 Zellen, Kiste 0,9 Zellen, unabhängig von `unitScale` (self-test über unitScale 1…40).
+- [x] **Korridore:** Bodenflächen `dcorr-*` aus dem Zellraster, Wände nur entlang der Kanten, keine Mittellinien-Wandbalken (K-GEO-01 MET).
+- [x] **Fackel-Abfall:** Punktlicht mit Distanzabfall je Profil (high/balanced per Pixel, lite pro Fläche); balanced Z2 ≈ 1,8× Boden-Luma nahe Fackel (K-LIT-01 MET).
+- [x] **lite-Tiefensortierung:** BBox-Culling, Unterteilung, Boden-Pass vor stehender Geometrie (C-PROF-01 MET).
+- [x] Baseline bewusst neu aufgenommen (36 Bilder), Wiederholungslauf gegen die neue Baseline drift-frei (Diff 0); Matrix neu bewertet (MET 11 · PARTIAL 5 · GAP 6 · NOT_RUN 2), Digest `9445e6985f67f707`.
+- [x] G04 `crypt` Fingerprints + Snapshot `g04-crypt-desktop-chromium.png` bewusst erneuert.
+- [x] Screenshots: `/workspace/sagatree/artifacts/v01/round3/` (4 Standardansichten + Korridor/Fackel-Abfall balanced + lite).
+
 ## Nicht erfüllt / offen (bewusst)
 
 - C-PERF-01 NOT_RUN (keine Geräteläufe), C-SEC-01 NOT_RUN (Player-Visual).
-- C-PROF-01 PARTIAL: `lite` (Canvas2D-Fallback) mit Sortierfehlern in Diorama/Perspektive.
-- K-LIT-01 PARTIAL: Fackel sichtbar, aber kein Punktlicht mit Abfall.
-- K-GEO-01 PARTIAL: Korridor-Mittellinien (`dcorr-*`) als Wandbalken quer durch Räume.
-- Bestehende Welten behalten die alte Krypta/kein Heightfield bis zum Welt-Reset.
+- K-ART-01 PARTIAL: Perspektive (WebGL) Böden in Z1 durch Distanznebel fast in Nebelfarbe; Z2 Z-Fighting-Streifen auf einer koplanaren Grundfläche außerhalb der Krypta (seit Runde 2).
+- D-GEO-03 PARTIAL: Dornhain balanced — Unterwasser-Geländedreieck (Heightfield-LOD) schneidet in die Plaza.
+- Welten mit nutzerbearbeiteter Alt-Krypta/Alt-Dornhain bleiben bewusst unverändert (nur Reset bringt die neuen Golden-Daten).
 
 ## Prüfung
 
-- `node scripts/atl3-v01-visual-contract.self-test.mjs` und `node scripts/atl3-v01-golden-krypta-forge.mjs` (beide im `npm run test-gate`)
+- `node scripts/atl3-v01-visual-contract.self-test.mjs`, `node scripts/atl3-v01-round3-visual-fixes.self-test.mjs` und `node scripts/atl3-v01-golden-krypta-forge.mjs` (alle im `npm run test-gate`)
 - `e2e/atl3-v01-visual-contract.spec.ts` (Host-Browser, Chromium)

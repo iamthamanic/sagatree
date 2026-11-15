@@ -694,12 +694,12 @@ export const ATLAS_GOLDEN_VISUAL_BASELINES: readonly AtlasGoldenVisualBaseline[]
   },
   {
     fixtureId: 'crypt',
-    /* ATL3-V01 round 2 (#1295): committed Dungeon-Forge Krypta (seed 1425) — deliberate change. */
-    contentFingerprint: 'fe10552a',
+    /* ATL3-V01 round 2+3 (#1295): Dungeon-Forge Krypta (seed 1425); round 3 corridor floors + real-size props — deliberate. */
+    contentFingerprint: 'efb2286a',
     cameraFingerprint: 'ee21bf68',
     lightFingerprint: '522e872b',
-    geometryFingerprint: '64772ebd',
-    lookFingerprint: 'bc35ea05',
+    geometryFingerprint: 'b39a69fa',
+    lookFingerprint: '6681c4bf',
     selectionOutline: '#06B6D4',
     selectionContrastRatio: 6.025371305386859,
     materialKeys: ['holz', 'pflaster', 'stein'],
