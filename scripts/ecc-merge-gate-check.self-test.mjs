@@ -230,4 +230,56 @@ assert(workflow.includes('Stack migration isolated candidates'), 'workflow_run r
   assert(resolveCalls === 1, 'single resolve when unlocked up front');
 }
 
+// Ben policy: Kody out of credits/quota (HTTP 429) → Kody part SKIPPED; decide on the rest.
+{
+  const kodusSkipped = {
+    ok: true,
+    skipped: true,
+    reason: 'kodus-skipped-credits',
+    detail: 'Kody skipped: review provider credits/quota exhausted',
+  };
+  const passSkip = evaluateMergeGate({
+    unresolvedFindings: [],
+    checkFailures: [],
+    pendingReviewsForHead: [],
+    kodusReview: kodusSkipped,
+  });
+  assert(passSkip.ok === true && /Kodus skipped/.test(passSkip.detail), 'credits-skipped Kody + green checks → PASS');
+  const failSkipChecks = evaluateMergeGate({
+    unresolvedFindings: [],
+    checkFailures: [{ name: 'Browser E2E', reason: 'conclusion=failure' }],
+    pendingReviewsForHead: [],
+    kodusReview: kodusSkipped,
+  });
+  assert(failSkipChecks.ok === false && failSkipChecks.reason === 'required-checks', 'credits skip never hides a red required check');
+  const failSkipFindings = evaluateMergeGate({
+    unresolvedFindings: [{ severity: 'High', path: '(issue-comment)', source: 'kodus-issue-comment' }],
+    checkFailures: [],
+    pendingReviewsForHead: [],
+    kodusReview: kodusSkipped,
+  });
+  assert(failSkipFindings.ok === false && failSkipFindings.reason === 'unresolved-findings', 'credits skip never hides real Kody findings');
+  const failRealKody = evaluateMergeGate({
+    unresolvedFindings: [],
+    checkFailures: [],
+    pendingReviewsForHead: [],
+    kodusReview: { ok: false, reason: 'kodus-failed', detail: 'conclusion=failure' },
+  });
+  assert(failRealKody.ok === false && failRealKody.reason === 'kodus-failed', 'non-credits Kody failure still FAIL');
+
+  let sleeps = 0;
+  const waited = waitForKodusReview('o', 'r', 'sha', { required: true, pullNumber: 1 }, {
+    timeoutMs: 60_000,
+    intervalMs: 1,
+    sleep: () => { sleeps += 1; },
+    fetchReviews: () => [],
+    resolve: () => kodusSkipped,
+    log: () => {},
+  });
+  assert(waited.kodusReview.skipped === true && sleeps === 0, 'credits skip ends the Kodus poll immediately');
+  assert(src.includes('Kodus SKIPPED for credits'), 'gate log names the credits skip');
+  assert(src.includes('### Kodus review skipped (provider credits/quota exhausted)'), 'gate summary section for credits skip');
+  assert(/kodusReview\.skipped \? 'SKIPPED'/.test(src), 'Kodus status line prints SKIPPED');
+}
+
 console.log('PASS: ecc-merge-gate-check.self-test');
