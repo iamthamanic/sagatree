@@ -82,6 +82,18 @@ declare global {
   }
 }
 type RendererKind = 'hardware-webgl' | 'software-webgl' | 'lite3d-fallback' | 'unknown';
+type FrameBudgetMode = 'enforced' | 'informational';
+
+/**
+ * Frame-time budget policy (#1295 round 2): on a software-WebGL host (SwiftShader/llvmpipe) the rAF
+ * cadence measures CI-runner load, not the scene (draw p95 < 2 ms), so p95 is logged only. Real /
+ * hardware renderers keep the hard budget. The lite Canvas2D fallback follows its host.
+ */
+function frameBudgetMode(kind: RendererKind, hostKind: RendererKind): FrameBudgetMode {
+  if (kind === 'software-webgl') return 'informational';
+  if (kind === 'lite3d-fallback' && hostKind === 'software-webgl') return 'informational';
+  return 'enforced';
+}
 type ImageMetrics = { width: number; height: number; lumaMean: number; lumaStdDev: number; distinctColors: number; edgeDensity: number; dominantColorShare: number };
 type CaptureRow = {
   file: string;
@@ -497,7 +509,7 @@ test.describe('ATL3-V01 visual contract baseline (#1295)', () => {
 
     const renderers: Partial<Record<ProfileId, Awaited<ReturnType<typeof detectRenderer>>>> = {};
     const captures: CaptureRow[] = [];
-    const perf: Array<{ sceneId: string; profile: ProfileId; p50: number; p95: number; ceilingMs: number; rendererKind: RendererKind }> = [];
+    const perf: Array<{ sceneId: string; profile: ProfileId; p50: number; p95: number; ceilingMs: number; rendererKind: RendererKind; budgetMode: FrameBudgetMode }> = [];
     const meshSets: Record<string, string[]> = {};
     const repeat: Array<{ file: string; diffRatio: number; maxDelta: number }> = [];
     const devices: Array<{ viewport: string; profile: ProfileId; sceneId: string; canvas: { w: number; h: number }; overflowX: number }> = [];
@@ -564,7 +576,9 @@ test.describe('ATL3-V01 visual contract baseline (#1295)', () => {
         if (viewport.id === 'desktop') {
           await applyCamera(page, contract.cameras[1], zooms[0]);
           const f = await sampleFrames(page);
-          perf.push({ sceneId: scene.id, profile: row.profile, ...f, ceilingMs: contract.ciSoftwareCeiling.frameP95Ms, rendererKind: renderers[row.profile]?.kind ?? 'unknown' });
+          const rendererKind = renderers[row.profile]?.kind ?? 'unknown';
+          const hostKind = renderers.balanced?.kind ?? 'unknown';
+          perf.push({ sceneId: scene.id, profile: row.profile, ...f, ceilingMs: contract.ciSoftwareCeiling.frameP95Ms, rendererKind, budgetMode: frameBudgetMode(rendererKind, hostKind) });
         } else {
           const dims = await page.evaluate(() => {
             const c = document.querySelector('[data-atlas-native-3d-host] canvas:not(.hidden)') as HTMLCanvasElement | null;
@@ -658,6 +672,12 @@ test.describe('ATL3-V01 visual contract baseline (#1295)', () => {
     }
     for (const p of perf) {
       const budget = p.rendererKind === 'hardware-webgl' ? 33.3 : p.ceilingMs;
+      if (p.budgetMode === 'informational') {
+        // Software WebGL: logged, never failing (contract ciSoftwareCeiling.enforcement).
+        console.log(`[V01 frame p95 informational] ${p.sceneId}/${p.profile} p95=${p.p95}ms ceiling=${budget}ms renderer=${p.rendererKind}`);
+        test.info().annotations.push({ type: 'frame-p95-informational', description: `${p.sceneId}/${p.profile} p95=${p.p95}ms (ceiling ${budget}ms, ${p.rendererKind})` });
+        continue;
+      }
       expect(p.p95, `${p.sceneId}/${p.profile} frame p95 (${p.rendererKind})`).toBeLessThanOrEqual(budget);
     }
   });

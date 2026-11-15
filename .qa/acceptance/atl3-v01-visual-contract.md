@@ -13,6 +13,7 @@
 - [x] Soll/Ist-Matrix mit beobachtbaren Metriken, Status und akzeptierten Ausnahmen (Dächer, Baumkronen, Relief, Materialübergänge, Schatten, LOD, Lesbarkeit, Profile, Performance).
 - [x] Regeln canonical / suggestive / atmospheric; IV-01, IV-02, IV-07, IV-09, IV-14, IV-18; AU-01, AU-06 (Phone/Tablet/Desktop).
 - [x] Budgets für echte Zielhardware mit verbindlichen Referenzgeräten; CI-Werte als Software-Rendering gekennzeichnet.
+- [x] Frame-p95 auf Software-WebGL nur informativ (protokolliert, kein Fehlschlag); Hardware-Renderer behalten das harte Budget (V01 + Gate G, Self-Test-geprüft).
 - [x] Nutzbar als Testorakel für R01B, Migration und R05.
 - [x] Kein Three.js-Prototyp, keine GO/NO-GO-Entscheidung, keine Renderer-/Datenmodelländerung, null Escape Hatches (Runde 2: nur Golden-Daten + Qualitäts-Schalter, Datenmodell unverändert).
 

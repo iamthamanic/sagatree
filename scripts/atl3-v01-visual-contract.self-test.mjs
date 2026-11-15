@@ -296,6 +296,17 @@ row('soll-ist-matrix', 'PASS', `criteria=${contract.criteria.length} ${JSON.stri
   const t = perf.ATLAS_PERF_BUDGET_THRESHOLDS;
   assert.deepEqual([ib.high, ib.balanced, ib.lite], [t.maxInstancesHigh, t.maxInstancesBalanced, t.maxInstancesLite]);
   assert.equal(contract.ciSoftwareCeiling.renderer, 'software-webgl');
+  assert.equal(contract.ciSoftwareCeiling.enforcement, 'informational', 'software-WebGL frame p95 is logged, not failing');
+  assert.equal(contract.ciSoftwareCeiling.hardwareEnforcement, 'hard', 'hardware renderers keep the hard budget');
+  {
+    const spec = readFileSync(join(root, 'e2e/atl3-v01-visual-contract.spec.ts'), 'utf8');
+    assert.match(spec, /if \(kind === 'software-webgl'\) return 'informational';/, 'V01 spec: software WebGL informational');
+    assert.match(spec, /return 'enforced';/, 'V01 spec: hardware enforced');
+    assert.match(spec, /toBeLessThanOrEqual\(budget\)/, 'V01 spec: enforced budget still asserts');
+    const g05 = readFileSync(join(root, 'e2e/atl2-g05-gate-g.spec.ts'), 'utf8');
+    assert.match(g05, /const frameBudgetEnforced = renderer\.kind !== 'software-webgl';/, 'Gate G: software WebGL frame p95 informational');
+    assert.match(g05, /: p95 <= budgetMs\s*\? 'PASS'\s*: 'FAIL'/, 'Gate G: hardware frame p95 stays a hard budget');
+  }
   row('budgets', 'PASS', `tiers=${tiers.join(',')} ciCeiling=${contract.ciSoftwareCeiling.frameP95Ms}ms (software only)`);
 }
 

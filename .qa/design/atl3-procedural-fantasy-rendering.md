@@ -54,8 +54,8 @@ Fingerprint: sha256(canonical sorted-key JSON of the product-canonical form `ser
 
 | Szene | Karte | Map-Seed | Domain-Builder | Daten-Fingerprint | Navigation |
 |---|---|---|---|---|---|
-| `dornhain-block` | Dornhain (`settlement`) | `dornhain.map.place.dornhain` | `buildGoldenDornhainCanvas` | `3ec9b21f1c3d0ff1` | Welt › Kontinent Westmark › Land Westmark › Dornhain |
-| `krypta` | Krypta unter dem Hügel (`scene`) | `dornhain.map.loc.crypt` | `buildGoldenCryptCanvas` | `aa520e6f8290e2f8` | Welt › Kontinent Westmark › Land Westmark › Dornhain › Krypta unter dem Hügel |
+| `dornhain-block` | Dornhain (`settlement`) | `dornhain.map.place.dornhain` | `buildGoldenDornhainCanvas` | `3ec9b21f1c3d0ff1` | Welt › Kontinent Westmark › Nordreich › Dornhain |
+| `krypta` | Krypta unter dem Hügel (`scene`) | `dornhain.map.loc.crypt` | `buildGoldenCryptCanvas` | `aa520e6f8290e2f8` | Welt › Kontinent Westmark › Nordreich › Dornhain › Krypta unter dem Hügel |
 
 **Deterministische Seeds:** World `dornhain.unified.v4`; Map-Seeds wie oben; Varianten (Haus/Baum/Fels)
 deterministisch per FNV-1a-Hash der Feature-ID (`atlas-diorama-look.ts`); Dungeon-Theme `ancient`.
@@ -239,8 +239,18 @@ Galaxy Tab S6 Lite**, Phone **Mali-G52** (Moto-G-Klasse). Die Budgets unten gelt
 erhobenen Perf-Zahlen bleiben Software-Messungen (SwiftShader/Headless), bis echte Geräteläufe vorliegen; C-PERF-01
 bleibt bis dahin NOT_RUN.
 
-Abnahme gilt nur auf echter Hardware. CI misst **Software-Rendering** (SwiftShader) und prüft dort nur die
-Regressionsgrenze p95 ≤ 120 ms — das ist **keine** Hardware-Aussage.
+Abnahme gilt nur auf echter Hardware. CI misst **Software-Rendering** (SwiftShader) — das ist **keine** Hardware-Aussage.
+
+**Frame-Budget-Durchsetzung (Ben, 2026-11-15, nach CI-Befund auf PR #1302):** Wird der Renderer als
+**Software-WebGL** erkannt (`UNMASKED_RENDERER` ~ SwiftShader/llvmpipe/softpipe), ist das Frame-p95-Budget
+**informativ**: Der Wert wird gegen die Software-Grenze (p95 ≤ 120 ms, `ciSoftwareCeiling`) protokolliert
+(Konsole, Playwright-Annotation, `budgetMode: informational` im Run-Manifest bzw. Status `INFO` in Gate G
+`browser-measurement.json`), lässt den Test aber **nicht** fehlschlagen. Grund: Auf geteilten, GPU-losen
+CI-Runnern misst die rAF-Kadenz Runner-Last, nicht die Szene (Befund: Gate G Dornhain p95 150–166,7 ms und
+V01 `dornhain-block/high` 177,9 ms bei Szenen-Draw-p95 0,6–1,7 ms; auch die unveränderte Taverne lag bei
+133–233 ms). Der lite-Canvas2D-Fallback folgt dabei seinem Host. Für **echte/Hardware-Renderer** bleibt das Budget
+**hart** (Gate G 33,3 ms, V01 33,3 ms bzw. `hardwareBudgets`). Gilt für `e2e/atl3-v01-visual-contract.spec.ts`
+und `e2e/atl2-g05-gate-g.spec.ts`; der V01-Self-Test prüft beide Policies (Software informativ, Hardware hart).
 
 | Tier | Geräteklasse | Profil | p50 ms | p95 ms | Erstbild ms | Draw Calls | Dreiecke | GPU-MB | Prozedurale Textur | Heap +MB nach 8 Map-Wechseln |
 |---|---|---|---|---|---|---|---|---|---|---|
