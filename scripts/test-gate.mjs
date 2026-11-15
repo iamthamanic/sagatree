@@ -2177,6 +2177,11 @@ function checkWorldAtlasEditor() {
       cwd: root,
       stdio: 'inherit',
     });
+  console.log('ATL2-H01 non-destructive atlas cleanup (one renderer / writer, quarantine) (#1234)...');
+  execFileSync(process.execPath, ['scripts/atl2-h01-cleanup.self-test.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
   console.log('ATL2-E03 hierarchy zoom / breadcrumb / back-nav...');
   execFileSync(process.execPath, ['scripts/atl2-e03-hierarchy-nav.self-test.mjs'], {
     cwd: root,

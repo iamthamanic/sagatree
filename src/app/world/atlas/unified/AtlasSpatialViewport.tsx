@@ -3,6 +3,11 @@
  * Location: src/app/world/atlas/unified/AtlasSpatialViewport.tsx
  *
  * Hybrid path: Canvas2D remains the texture/brush editor; this viewport edits the same document.
+ *
+ * QUARANTINE (ATL2-H01 #1234, ADR-ST-10 NO-GO): non-product Three.js inventory. Not mounted
+ * in product chrome and not re-exported from the `unified` barrel. Kept (not deleted) because
+ * ATL3-R01B #1296 re-evaluates its reuse. Do not import from product modules; any reactivation
+ * requires a superseding GO-ADR plus R05 #1270 and #1300 CLEAR.
  */
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
