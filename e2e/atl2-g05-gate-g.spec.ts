@@ -52,6 +52,9 @@ type AtlasBridge = {
     yawDeg?: number;
     cameraMode?: string;
     geometry?: Array<{ name: string; triangles: number }>;
+    props?: number;
+    undoDepth?: number;
+    redoDepth?: number;
   };
   setCameraMode: (mode: string, opts?: { animate?: boolean }) => void;
   setYaw: (deg: number) => void;
@@ -608,5 +611,82 @@ test.describe('ATL2-G05 Gate G', () => {
       rows.filter((r) => r.status !== 'PASS' && r.id !== 'js-heap-soak'),
       JSON.stringify(rows, null, 2),
     ).toEqual([]);
+  });
+
+  /*
+   * G05 finding (#1233): every 3D edit rebuilt the runtime (doc identity → remount) and wiped
+   * Undo/Redo. Edit → wait past autosave debounce → undo → redo must work on the SAME runtime.
+   * Atlas writes are held (never reach the DB) so Golden maps stay pristine for other specs.
+   */
+  test('browser-host: 3D edit → undo → redo survives runtime rebuild triggers', async ({ page }) => {
+    test.skip(!HOST, 'requires browser-e2e-with-host');
+    test.setTimeout(240_000);
+    const held: Array<{ abort: () => Promise<void> }> = [];
+    try {
+      await page.setViewportSize({ width: 1280, height: 800 });
+      await openDornhainAtlas3d(page);
+      // Hold atlas map writes (PUT/DELETE) only after load — ensure-root (POST) must pass.
+      await page.route(
+        (url) => /\/api\/v1\/worlds\/[^/]+\/atlas\/maps(\/|$)/.test(url.pathname),
+        async (route) => {
+          const method = route.request().method();
+          if (method !== 'PUT' && method !== 'DELETE') {
+            await route.continue();
+            return;
+          }
+          held.push({ abort: () => route.abort().catch(() => undefined) });
+        },
+      );
+      for (const title of SCENES[1].drill) await focusNavTitle(page, title);
+      await page.evaluate(() => {
+        const root = document.querySelector<HTMLElement>('[data-atlas-native-3d-host] > *');
+        if (root) root.dataset.g05UndoProbe = 'mount-1';
+      });
+      const before = await bridgeState(page);
+      const props0 = Number(before?.props ?? 0);
+      expect(before?.undoDepth ?? 0, 'fresh map has no undo history').toBe(0);
+
+      const toolsFold = page.locator('[data-atlas-native-3d-host] [data-atlas-panel-fold="tools"]').first();
+      if ((await toolsFold.getAttribute('aria-expanded')) !== 'true') await toolsFold.click();
+      await page.locator('[data-atlas-native-3d-host] [data-tool="stamp"]').first().click();
+      await toolsFold.click();
+      const stage = page.locator('[data-atlas-native-3d-host] #stage').first();
+      const box = await stage.boundingBox();
+      expect(box, 'stage visible').toBeTruthy();
+      if (!box) return;
+      await page.mouse.click(box.x + box.width * 0.55, box.y + box.height * 0.55);
+      await expect.poll(async () => Number((await bridgeState(page))?.props ?? 0)).toBe(props0 + 1);
+      // Past ATLAS_AUTOSAVE_DEBOUNCE_MS (1.2 s): persist → doc change used to remount here.
+      await page.waitForTimeout(2_500);
+      const afterEdit = await bridgeState(page);
+      expect(afterEdit?.undoDepth, 'edit recorded in undo history after persist').toBe(1);
+      const sameRuntime = await page.evaluate(
+        () =>
+          document.querySelector<HTMLElement>('[data-atlas-native-3d-host] > *')?.dataset.g05UndoProbe ?? null,
+      );
+      expect(sameRuntime, 'plain edit does not remount the 3D runtime').toBe('mount-1');
+
+      const root = page.locator('[data-atlas-native-3d-host] > *').first();
+      await root.focus();
+      await page.keyboard.press('Control+z');
+      await expect.poll(async () => Number((await bridgeState(page))?.props ?? -1)).toBe(props0);
+      await page.waitForTimeout(1_500);
+      const afterUndo = await bridgeState(page);
+      expect(afterUndo?.redoDepth, 'redo available after undo + persist').toBe(1);
+
+      await root.focus();
+      await page.keyboard.press('Control+Shift+z');
+      await expect.poll(async () => Number((await bridgeState(page))?.props ?? -1)).toBe(props0 + 1);
+      const afterRedo = await bridgeState(page);
+      expect(afterRedo?.undoDepth).toBe(1);
+      expect(afterRedo?.redoDepth).toBe(0);
+      // Leave the scene as found (local only; writes are held).
+      await root.focus();
+      await page.keyboard.press('Control+z');
+      await expect.poll(async () => Number((await bridgeState(page))?.props ?? -1)).toBe(props0);
+    } finally {
+      await page.unrouteAll({ behavior: 'ignoreErrors' });
+      for (const h of held) await h.abort();
+    }
   });
 });

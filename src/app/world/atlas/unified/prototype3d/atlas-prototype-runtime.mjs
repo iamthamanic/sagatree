@@ -205,9 +205,46 @@ function normalizeAtlasMapPins(list) {
 }
 
 /**
+ * Undo/redo stacks for one map that survive runtime remounts (G05 / #1233).
+ * The host owns `store` ({ undo: string[], redo: string[] }) and passes the same
+ * object to every mount of the same map, so rebuilding the WebGL runtime after an
+ * edit (seed/look change, context restore) never wipes the edit history.
+ * Entries are JSON snapshots of the runtime state; arrays are mutated in place.
+ * @param {{undo?: string[], redo?: string[]}|null|undefined} store
+ * @param {number} [limit]
+ */
+function createAtlasEditHistory(store, limit = 45) {
+  const undo = store && Array.isArray(store.undo) ? store.undo : [];
+  const redo = store && Array.isArray(store.redo) ? store.redo : [];
+  return {
+    undo,
+    redo,
+    /** Record the state *before* an edit; a new edit clears the redo branch. */
+    snapshot(json) {
+      undo.push(json);
+      while (undo.length > limit) undo.shift();
+      redo.length = 0;
+    },
+    /** @returns {string|null} state to restore, or null when nothing to undo */
+    undoFrom(currentJson) {
+      if (!undo.length) return null;
+      redo.push(currentJson);
+      return undo.pop();
+    },
+    /** @returns {string|null} state to restore, or null when nothing to redo */
+    redoFrom(currentJson) {
+      if (!redo.length) return null;
+      undo.push(currentJson);
+      return redo.pop();
+    },
+  };
+}
+
+/**
  * @param {HTMLElement} host
  * @param {{
  *   controlled?: boolean,
+ *   historyStore?: {undo: string[], redo: string[]}|null,
  *   seedState?: object|null,
  *   onPersist?: (state: object) => void,
  *   externalNav?: object|null,
@@ -228,6 +265,7 @@ function normalizeAtlasMapPins(list) {
  *   dungeonLook?: {themeKey:string,floor:string,wall:string,door:string,accent:string,light:string,torchIntensity:number,bloomEnabled:boolean,particlesEnabled:boolean,maxTorchInstances:number,maxInstances:number,fogDensity:number,fogColor:string,clearColor:readonly [number,number,number,number]|number[],ambient:number,daylightDir:readonly [number,number,number]|number[],shadowStrength:number,geometryFingerprint:string,lookFingerprint:string,floorIds:readonly string[],wallIds:readonly string[],doorIds:readonly string[],torchIds:readonly string[],propIds:readonly string[]}|null,
  * }=} options
  *   controlled=true: do not use localStorage as world SoT (#721); persist via onPersist.
+ *   historyStore: host-owned undo/redo stacks reused across remounts of the same map.
  *   externalNav: product WorldNode tree for #nav (#747) — disables demo NAV_CHILDREN as SoT.
  *   onNavAdd/Duplicate/Archive/Reparent: product #748 server mutation bridge (no localStorage SoT).
  *   toolChrome: ATLAS_TOOL_REGISTRY-derived rows (#750); canEdit gates map mutations.
@@ -240,6 +278,7 @@ function normalizeAtlasMapPins(list) {
  */
 export function mountAtlasPrototype3d(host, options = {}) {
   const controlled = options && options.controlled === true;
+  const editHistory = createAtlasEditHistory(options && options.historyStore);
   const onExternalPersist = typeof options.onPersist === 'function' ? options.onPersist : null;
   const seedState = options && options.seedState && typeof options.seedState === 'object' ? options.seedState : null;
   const onNavSelect = typeof options.onNavSelect === 'function' ? options.onNavSelect : null;
@@ -678,7 +717,7 @@ export function mountAtlasPrototype3d(host, options = {}) {
     applyPlaceNames();
 
     let engine=null,textureWorld=null,textureRegion=null,textureCity=null,canvasDpr=1,stageWidth=760,stageHeight=540;
-    const SPAN_MIN=.5,SPAN_MAX=8000;let cameraState=productMap?{x:500,z:500,span:530}:{x:0,z:0,span:450},tool='hand',material='grass',propType=productMap?'haus':'tree',brushSize=35,pointer=null,history=[],redoStack=[],animID=null,noticeTimer=null,lastMouse=null,activeLevel='world',dungeon=null;
+    const SPAN_MIN=.5,SPAN_MAX=8000;let cameraState=productMap?{x:500,z:500,span:530}:{x:0,z:0,span:450},tool='hand',material='grass',propType=productMap?'haus':'tree',brushSize=35,pointer=null,animID=null,noticeTimer=null,lastMouse=null,activeLevel='world',dungeon=null;
     /** ATL2-D03: ortho-topdown | diorama-oblique | perspective — same meshes, view matrix only. */
     const CAMERA_MODES=['ortho-topdown','diorama-oblique','perspective'];
     const CAMERA_MODE_LABEL={
@@ -693,7 +732,7 @@ export function mountAtlasPrototype3d(host, options = {}) {
     const rnd=(r,a,b)=>lerp(a,b,r());
     const randi=(r,a,b)=>Math.floor(rnd(r,a,b+1));
     const inside=(x,z,cx,cz,w,h)=>Math.abs(x-cx)<=w/2&&Math.abs(z-cz)<=h/2;
-    function snapshot(){history.push(JSON.stringify(state));if(history.length>45)history.shift();redoStack.length=0;}
+    function snapshot(){editHistory.snapshot(JSON.stringify(state));}
     function persist(opts){
       const bootstrap=!!(opts&&opts.bootstrap);
       try{writeCameraToState();}catch{ /* camera helpers may not exist during early bootstrap */ }
@@ -714,8 +753,8 @@ export function mountAtlasPrototype3d(host, options = {}) {
       try{localStorage.setItem('sagatree-atlas-webgl-v3',JSON.stringify(state));$('saveState').textContent='Lokal gespeichert';}catch{$('saveState').textContent='Speicher voll · Export nutzen';}updateStats();
     }
     function toast(message){$('notice').textContent=message;$('notice').classList.remove('hidden');clearTimeout(noticeTimer);noticeTimer=setTimeout(()=>$('notice').classList.add('hidden'),3100);}
-    function undo(){if(!history.length)return;redoStack.push(JSON.stringify(state));state=JSON.parse(history.pop());syncControls();rebuildAll();persist();}
-    function redo(){if(!redoStack.length)return;history.push(JSON.stringify(state));state=JSON.parse(redoStack.pop());syncControls();rebuildAll();persist();}
+    function undo(){const prev=editHistory.undoFrom(JSON.stringify(state));if(prev==null)return;state=JSON.parse(prev);syncControls();rebuildAll();persist();}
+    function redo(){const next=editHistory.redoFrom(JSON.stringify(state));if(next==null)return;state=JSON.parse(next);syncControls();rebuildAll();persist();}
     function createTexture(width,height,seed,bg){const canvas=document.createElement('canvas');canvas.width=width;canvas.height=height;const c=canvas.getContext('2d');const r=hashseed(seed);c.fillStyle=bg;c.fillRect(0,0,width,height);for(let i=0;i<14500;i++){const x=r()*width,y=r()*height,sz=r()*3+.4;c.fillStyle=r()>.46?'rgba(244,232,186,.045)':'rgba(11,31,31,.055)';c.fillRect(x,y,sz,sz);}return {canvas,c,r};}
     function coastalPath(c,pts){c.beginPath();let n=pts.length;for(let i=0;i<n;i++){const p=pts[i],q=pts[(i+1)%n],mid=[(p[0]+q[0])/2,(p[1]+q[1])/2];if(i===0)c.moveTo(mid[0],mid[1]);c.quadraticCurveTo(p[0],p[1],mid[0],mid[1]);}c.closePath();}
     function drawTree(c,x,y,sz=9){c.fillStyle='#356454';c.strokeStyle='#203f3b';c.lineWidth=1;c.beginPath();c.moveTo(x,y-sz);c.lineTo(x-sz*.75,y+sz*.65);c.lineTo(x+sz*.75,y+sz*.65);c.closePath();c.fill();c.stroke();c.strokeStyle='#e9e3ba88';c.beginPath();c.moveTo(x,y-sz+3);c.lineTo(x-sz*.3,y+sz*.3);c.stroke();}
@@ -1649,7 +1688,7 @@ export function mountAtlasPrototype3d(host, options = {}) {
     function stampAt(p){if(productMap){productStampAt(p);return;}snapshot();state.props.push({id:'o'+Date.now()+'-'+Math.floor(Math.random()*99999),level:activeLevel==='room'?'dungeon':activeLevel,x:p.x,z:p.z,type:propType,size:1,rotation:0});if(engine)buildManualGeometry();persist();drawFrame();}
     function pointerDown(e){if(e.button!==0||e.target.closest('.action-tools,.scale-widget,.hotspot,.map-label,.map-labels,.stage-message'))return;if(animID)cancelAnimationFrame(animID);productFitPending=false;const m=atStageEvent(e),p=screenToWorld(m.x,m.y);lastMouse=p;if(tool!=='hand'&&!allowMutation(tool)){pointer=null;return;}pointer={mode:tool,point:p,screen:m,last:p,pointerId:e.pointerId};if(productMap&&productPointerDown(e,p))return;if(tool==='stamp'){stampAt(p);pointer=null;return;}if(tool==='erase'){const radius=Math.max(.09,cameraState.span/stageHeight*30);let near=-1,best=radius;state.props.forEach((o,i)=>{const d=Math.hypot(o.x-p.x,o.z-p.z);if(d<best){best=d;near=i;}});if(near!==-1){snapshot();state.props.splice(near,1);buildManualGeometry();persist();toast('Objekt entfernt');}pointer=null;return;}if(tool==='paint'){snapshot();const level=choosePaintLevel();state.strokes.push({id:'p'+Date.now(),level,material,size:brushSizeWorld(level),points:[[p.x,p.z]]});dabAt(p,state.strokes.at(-1));}if(tool==='wall'||tool==='room')snapshot();stage.setPointerCapture?.(e.pointerId);stage.classList.add('drag');drawFrame();}
     function pointerMove(e){if(labelDrag){moveLabelDrag(e);return;}if(e.target.closest('.action-tools,.scale-widget,.hotspot,.map-label'))return;const m=atStageEvent(e),p=screenToWorld(m.x,m.y);lastMouse=p;if(!scaleEdit){const c=$('coords');if(c)c.textContent=`X ${p.x.toFixed(1)} · Z ${p.z.toFixed(1)}`;};if(!pointer)return;if(pointer.mode==='select'){productDragSelected(p);return;}if(pointer.mode==='height'){if(Math.hypot(p.x-pointer.last.x,p.z-pointer.last.z)>Math.max(.5,cameraState.span*.01)){productApplyHeightBrush(p,pointer.heightMode||'raise');pointer.last=p;buildManualGeometry();drawFrame();}}else if(pointer.mode==='hand'){cameraState.x+=pointer.last.x-p.x;cameraState.z+=pointer.last.z-p.z;pointer.last=screenToWorld(m.x,m.y);drawFrame();}else if(pointer.mode==='paint'){const stroke=state.strokes.at(-1);if(Math.hypot(p.x-pointer.last.x,p.z-pointer.last.z)>Math.max(.03,stroke.size*.12)){stroke.points.push([p.x,p.z]);dabAt(p,stroke);pointer.last=p;}}}
-    function pointerUp(e){if(labelDrag){endLabelDrag(e);return;}if(!pointer)return;if(pointer.mode==='select'){productEndSelectDrag();pointer=null;stage.classList.remove('drag');try{stage.releasePointerCapture(e.pointerId);}catch{}drawFrame();return;}if(pointer.mode==='height'){buildManualGeometry();persist();}else if(pointer.mode==='wall'||pointer.mode==='room'){const m=atStageEvent(e),p=screenToWorld(m.x,m.y),dist=Math.hypot(p.x-pointer.point.x,p.z-pointer.point.z);if(dist>cameraState.span*.015){if(pointer.mode==='wall')state.walls.push({id:'w'+Date.now(),level:activeLevel==='room'?'dungeon':activeLevel,start:[pointer.point.x,pointer.point.z],end:[p.x,p.z],...(productMap?{width:productWallWidth()}:{})});else{state.rooms=state.rooms||[];state.rooms.push({id:'r'+Date.now(),level:activeLevel==='room'?'dungeon':activeLevel,start:[pointer.point.x,pointer.point.z],end:[p.x,p.z],material});}buildManualGeometry();persist();toast(pointer.mode==='wall'?'3D-Wand gezeichnet':'3D-Raum erstellt');}else history.pop();}else if(pointer.mode==='paint'){drawStrokes();for(const k of Object.keys(mapConfigs))engine?.uploadTexture(k,mapCanvases[k]);buildManualGeometry();persist();}pointer=null;stage.classList.remove('drag');try{stage.releasePointerCapture(e.pointerId);}catch{}drawFrame();}
+    function pointerUp(e){if(labelDrag){endLabelDrag(e);return;}if(!pointer)return;if(pointer.mode==='select'){productEndSelectDrag();pointer=null;stage.classList.remove('drag');try{stage.releasePointerCapture(e.pointerId);}catch{}drawFrame();return;}if(pointer.mode==='height'){buildManualGeometry();persist();}else if(pointer.mode==='wall'||pointer.mode==='room'){const m=atStageEvent(e),p=screenToWorld(m.x,m.y),dist=Math.hypot(p.x-pointer.point.x,p.z-pointer.point.z);if(dist>cameraState.span*.015){if(pointer.mode==='wall')state.walls.push({id:'w'+Date.now(),level:activeLevel==='room'?'dungeon':activeLevel,start:[pointer.point.x,pointer.point.z],end:[p.x,p.z],...(productMap?{width:productWallWidth()}:{})});else{state.rooms=state.rooms||[];state.rooms.push({id:'r'+Date.now(),level:activeLevel==='room'?'dungeon':activeLevel,start:[pointer.point.x,pointer.point.z],end:[p.x,p.z],material});}buildManualGeometry();persist();toast(pointer.mode==='wall'?'3D-Wand gezeichnet':'3D-Raum erstellt');}else editHistory.undo.pop();}else if(pointer.mode==='paint'){drawStrokes();for(const k of Object.keys(mapConfigs))engine?.uploadTexture(k,mapCanvases[k]);buildManualGeometry();persist();}pointer=null;stage.classList.remove('drag');try{stage.releasePointerCapture(e.pointerId);}catch{}drawFrame();}
     function generate(){if(productMap){toast('Dungeon-Generator gibt es nur in der Demo-Karte');return;}const seed=clamp(Math.floor(Number($('dungeonSeed').value)||42817),1,999999999),rooms=clamp(Math.floor(Number($('roomCount').value)||22),10,48);snapshot();state.seed=seed;state.roomCount=rooms;state.theme=$('dungeonTheme').value;dungeon=dungeonGenerate(state.seed,state.roomCount);updateRoomAnchor();buildDungeonGeometry();buildManualGeometry();persist();toast(`Dungeon erstellt · ${dungeon.rooms.length} Räume · Seed ${state.seed}`);goTo('dungeon');}
     function animate3d(){/* idle: no continuous RAF — was causing perceived drift with layout/hotspot updates */}
     function activate3D(){/* ATL2-G05 (#1233): a new engine (first mount, context restore, fallback) has no GPU meshes — drop the product geometry + ocean caches so buildEverything() re-uploads instead of short-circuiting on unchanged keys. */productGeomFingerprint=null;oceanCache=null;let gpu=false;try{if(graphicsPreset.preferSoftwareFallback)throw new Error('graphics-preset-lite');if(engine&&typeof engine.dispose==='function'){try{engine.dispose();}catch{}}engine=new AtlasGL(renderCanvas);gpu=true;host.removeAttribute('data-atlas-graphics-fallback');host.setAttribute('data-atlas-webgl-context','ok');host.removeAttribute('data-atlas-webgl-lost');}catch(err){glError=err;console.info('WebGL nicht verfügbar, dieselben 3D-Meshes per Canvas-Projektion gerendert.');if(engine&&typeof engine.dispose==='function'){try{engine.dispose();}catch{}}engine=new AtlasLite3D(fallbackCanvas);host.setAttribute('data-atlas-graphics-fallback','lite3d');host.setAttribute('data-atlas-webgl-context','fallback');}
@@ -1767,7 +1806,7 @@ export function mountAtlasPrototype3d(host, options = {}) {
     }
     persist({bootstrap:true});
     $('engineState').textContent='WEBGL wird gestartet';
-    window.__sagatreeAtlas={getState:()=>({level:activeLevel,span:cameraState.span,mode:engine?'webgl':'failed',cameraMode,camera:readCameraSnapshot(),product:productMap?{scale:mapScale,pins:mapPins.length,selected:productSelectedPropId,camera:{x:cameraState.x,z:cameraState.z,mode:cameraMode,pitchRad:tiltAngle,yawRad:yawAngle}}:null,rooms:dungeon.rooms.length,props:state.props.length,strokes:state.strokes.length,shapes:(state.rooms||[]).length,geometry:engine?[...engine.meshes.entries()].map(([name,m])=>({name,triangles:m.count/3})): [],yawDeg:yawDegrees()}),focus:id=>goTo(id,0),generate,zoomAt,orbit:(yaw,pitch)=>{yawAngle=yaw;if(Number.isFinite(pitch)){if(cameraMode==='ortho-topdown')cameraMode='diorama-oblique';tiltAngle=clampPitchForMode(cameraMode,pitch);}writeCameraToState();syncYawDialUi();drawFrame();},setYaw:deg=>applyYawDegrees(deg),setCameraMode,cycleCameraMode,getCameraState:readCameraSnapshot};
+    window.__sagatreeAtlas={getState:()=>({level:activeLevel,span:cameraState.span,mode:engine?'webgl':'failed',cameraMode,camera:readCameraSnapshot(),product:productMap?{scale:mapScale,pins:mapPins.length,selected:productSelectedPropId,camera:{x:cameraState.x,z:cameraState.z,mode:cameraMode,pitchRad:tiltAngle,yawRad:yawAngle}}:null,rooms:dungeon.rooms.length,props:state.props.length,strokes:state.strokes.length,shapes:(state.rooms||[]).length,geometry:engine?[...engine.meshes.entries()].map(([name,m])=>({name,triangles:m.count/3})): [],yawDeg:yawDegrees(),undoDepth:editHistory.undo.length,redoDepth:editHistory.redo.length}),focus:id=>goTo(id,0),generate,zoomAt,orbit:(yaw,pitch)=>{yawAngle=yaw;if(Number.isFinite(pitch)){if(cameraMode==='ortho-topdown')cameraMode='diorama-oblique';tiltAngle=clampPitchForMode(cameraMode,pitch);}writeCameraToState();syncYawDialUi();drawFrame();},setYaw:deg=>applyYawDegrees(deg),setCameraMode,cycleCameraMode,getCameraState:readCameraSnapshot};
     activate3D();
     syncYawDialUi();
 
@@ -1904,3 +1943,6 @@ export function mountAtlasPrototype3d(host, options = {}) {
     },
   };
 }
+
+// Named export kept separate: classic-script loaders strip `export {…}` (db-tree / tree-actions checks).
+export { createAtlasEditHistory };

@@ -2217,6 +2217,11 @@ function checkWorldAtlasEditor() {
     cwd: root,
     stdio: 'inherit',
   });
+  console.log('3D product map Undo/Redo survives runtime rebuilds (G05 finding, #1233)...');
+  execFileSync(process.execPath, ['scripts/atlas-3d-undo-history.self-test.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
   console.log('Atlas prototype LOD layers (HTML v3 port)...');
   execFileSync(process.execPath, ['scripts/atlas-prototype-lod.self-test.mjs'], {
     cwd: root,
