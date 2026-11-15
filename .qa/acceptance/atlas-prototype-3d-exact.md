@@ -26,5 +26,5 @@ Show the Unified Atlas **exactly** as in `sagatree_unified_atlas_3d_v3.html`: ti
 - Runtime (editable): `src/app/world/atlas/unified/prototype3d/atlas-prototype-runtime.mjs` — WebGL AtlasGL + Lite3D + LOD/tools from HTML v3.
 - Host: `AtlasNative3dEditor` mounts runtime into SagaTree DOM (no iframe); CSS remapped to theme tokens; duplicate brand bar hidden.
 - `UnifiedAtlasEditor` uses native host when `demoSeed === false`.
-- Reference HTML kept at `public/atlas-prototype-3d.html`.
+- Reference HTML kept at `.qa/research/atlas-prototype-3d-reference.html` (moved out of `public/`, not shipped — ATL2-H01 #1234).
 - Self-test: `scripts/atlas-prototype-3d-embed.self-test.mjs`.
