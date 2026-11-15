@@ -2,8 +2,8 @@
 
 - Issue: #1295
 - Feature slug: atl3-v01-visual-contract
-- HEAD_SHA: 182d138a44c6f283043c73a293166c801e6c1bf8
-- BASE_SHA: 07f3c4bc65868726f2144ed557f146ed03bb2b1c
+- HEAD_SHA: ca488e051d8408729897bf46754464d4fc3efda5
+- BASE_SHA: 7fe51524bc73b231df4598851dcc94f6dcd083bd
 - Date: 2026-11-15
 - Verdict: CLEAR
 - Acceptance tier: browser-host (product data + quality switch + capture evidence)
