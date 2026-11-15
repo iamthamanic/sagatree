@@ -10,6 +10,7 @@ import {
   GOLDEN_KRYPTA_FORGE_DUNGEON_META,
   GOLDEN_KRYPTA_FORGE_FEATURES,
 } from './dornhain-golden-krypta-forge.ts';
+import { isUntouchedLegacyGoldenCanvas } from './dornhain-golden-content-upgrade.ts';
 
 export const DORHAIN_UNIFIED_SEED = 'dornhain.unified.v4';
 export const DORHAIN_WORLD_LAYER_TITLE = 'Welt';
@@ -576,6 +577,20 @@ export function seedDornhainGoldenHierarchy(
         mapId,
         worldId,
       );
+    } else if (isUntouchedLegacyGoldenCanvas(spec.seedKey, prevMeta.unifiedCanvas, generatorMeta.unifiedCanvas)) {
+      // ATL3-V01 round 3 (#1295): untouched superseded Golden canvas (pre-V01 crypt / Dornhain
+      // without heightfield) → current Golden canvas (+ forge meta). User-edited canvases never match.
+      const legacyTitle = (DORHAIN_GOLDEN_LEGACY_MAP_TITLES[spec.seedKey] ?? []).includes(existing.title);
+      const nextMeta = {
+        ...prevMeta,
+        unifiedCanvas: generatorMeta.unifiedCanvas,
+        ...(generatorMeta.dungeon ? { dungeon: generatorMeta.dungeon } : {}),
+        golden: true,
+      };
+      db.prepare(
+        `UPDATE world_atlas_maps SET title = ?, generator_meta = ?, revision = revision + 1, updated_at = ?
+         WHERE id = ? AND world_profile_id = ?`,
+      ).run(legacyTitle ? spec.title : existing.title, JSON.stringify(nextMeta), now, mapId, worldId);
     } else if (
       existing.title !== spec.title &&
       (DORHAIN_GOLDEN_LEGACY_MAP_TITLES[spec.seedKey] ?? []).includes(existing.title)

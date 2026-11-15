@@ -276,10 +276,9 @@ export function buildGoldenTavernCanvas(): UnifiedCanvasDoc {
 /**
  * Golden Krypta = committed Dungeon-Forge crypt (ATL3-V01 decision 4). Same
  * generate → rasterize → commit path as the product forge; layout centred in
- * the 0–1000 frame. Forge stamp sizes scale with `unitScale` (1.2 cells), which
- * is far beyond the product stamp scale at Golden size — the two committed
- * objects are normalised to the previous Golden stamp sizes (lamp 0.35,
- * chest 0.5; height in cells). Geometry/IDs stay untouched forge output.
+ * the 0–1000 frame. Untouched forge output (round 3, #1295): props keep their
+ * real-world size for any `unitScale` (`dungeonPropStampSize`), corridors are
+ * `dcorr-*` floor runs between their perimeter walls (no centerline bars).
  */
 export const GOLDEN_KRYPTA_FORGE_PARAMS: DungeonGenerateParams = {
   seed: 1425,
@@ -291,8 +290,6 @@ export const GOLDEN_KRYPTA_FORGE_PARAMS: DungeonGenerateParams = {
   unitScale: 18,
 };
 
-const GOLDEN_KRYPTA_STAMP_SIZE: Readonly<Record<string, number>> = { lampe: 0.35, kiste: 0.5 };
-
 function forgeGoldenKrypta() {
   const generate = generateDungeon(GOLDEN_KRYPTA_FORGE_PARAMS);
   const raster = rasterizeDungeonGenerateResult(generate);
@@ -300,13 +297,7 @@ function forgeGoldenKrypta() {
   if (!payload || generate.seed !== GOLDEN_KRYPTA_FORGE_PARAMS.seed) {
     throw new Error('Golden Krypta forge failed — seed/params no longer produce a valid crypt');
   }
-  const unit = GOLDEN_KRYPTA_FORGE_PARAMS.unitScale ?? 1;
-  const objects = payload.objects.map((o) => ({
-    ...o,
-    size: GOLDEN_KRYPTA_STAMP_SIZE[o.type] ?? o.size / unit,
-    ...(typeof o.height === 'number' ? { height: o.height / unit } : {}),
-  }));
-  return { generate, payload: { ...payload, objects } };
+  return { generate, payload };
 }
 
 export function buildGoldenCryptCanvas(): UnifiedCanvasDoc {

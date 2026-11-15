@@ -97,8 +97,11 @@ assert.equal(baseDoc.rooms[0].id, 'user-room-1');
 /* First commit with replaceGenerated replaces only generator IDs (none yet). */
 const committed = forge.commitDungeonFeaturesToDoc(baseDoc, payload, true);
 assert.ok(committed.rooms.some((r) => r.id === 'user-room-1'));
-assert.ok(committed.rooms.filter((r) => r.id.startsWith('droom-')).length === payload.rooms.length);
+assert.ok(committed.rooms.filter((r) => /^(droom-|dcorr-)/.test(r.id)).length === payload.rooms.length);
 assert.ok(committed.doors.length === payload.doors.length);
+/* ATL3-V01 round 3: corridors are floor runs (dcorr-* rooms) between perimeter walls, never wall bars. */
+assert.ok(payload.rooms.some((r) => r.id.startsWith('dcorr-')), 'corridor floors committed');
+assert.ok(!payload.walls.some((w) => w.id.startsWith('dcorr-')), 'no corridor centerline wall bars');
 
 /* Manual dirty reforge: second generate+commit replaces generator IDs, keeps user room. */
 const result2 = gen.generateDungeon({ ...baseParams, seed: 7777, roomCount: 12 });
@@ -110,7 +113,7 @@ assert.ok(payload2);
 const reforged = forge.commitDungeonFeaturesToDoc(committed, payload2, true);
 assert.ok(reforged.rooms.some((r) => r.id === 'user-room-1'));
 assert.equal(
-  reforged.rooms.filter((r) => r.id.startsWith('droom-')).length,
+  reforged.rooms.filter((r) => /^(droom-|dcorr-)/.test(r.id)).length,
   payload2.rooms.length,
 );
 const oldDungeonIds = new Set(payload.rooms.map((r) => r.id));

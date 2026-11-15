@@ -12,11 +12,17 @@ export const GOLDEN_KRYPTA_FORGE_DUNGEON_META = {"generatorVersion":"sagatree-du
 
 export const GOLDEN_KRYPTA_FORGE_FEATURES = {
   rooms: [
-    {"id":"droom-1425-0","x":329,"y":482,"w":90,"h":90,"material":"stein"},
-    {"id":"droom-1425-1","x":455,"y":554,"w":90,"h":126,"material":"holz"},
-    {"id":"droom-1425-2","x":590,"y":563,"w":108,"h":108,"material":"pflaster"},
-    {"id":"droom-1425-3","x":329,"y":284,"w":162,"h":162,"material":"stein"},
-    {"id":"droom-1425-4","x":275,"y":608,"w":126,"h":90,"material":"stein"},
+    {"id":"droom-1425-0","x":338,"y":491,"w":90,"h":90,"material":"stein"},
+    {"id":"droom-1425-1","x":464,"y":563,"w":90,"h":126,"material":"holz"},
+    {"id":"droom-1425-2","x":590,"y":563,"w":126,"h":126,"material":"pflaster"},
+    {"id":"droom-1425-3","x":338,"y":293,"w":162,"h":162,"material":"stein"},
+    {"id":"droom-1425-4","x":284,"y":617,"w":126,"h":90,"material":"stein"},
+    {"id":"dcorr-1425-0","x":356,"y":455,"w":54,"h":36,"material":"stein"},
+    {"id":"dcorr-1425-1","x":428,"y":509,"w":90,"h":18,"material":"stein"},
+    {"id":"dcorr-1425-2","x":428,"y":527,"w":108,"h":36,"material":"stein"},
+    {"id":"dcorr-1425-3","x":374,"y":581,"w":36,"h":36,"material":"stein"},
+    {"id":"dcorr-1425-4","x":554,"y":599,"w":36,"h":54,"material":"stein"},
+    {"id":"dcorr-1425-5","x":410,"y":653,"w":54,"h":36,"material":"stein"},
   ],
   walls: [
     {"id":"dgrid-wall-1425-0","x1":338,"y1":293,"x2":356,"y2":293,"width":8.1},
@@ -180,11 +186,6 @@ export const GOLDEN_KRYPTA_FORGE_FEATURES = {
     {"id":"dgrid-wall-1425-158","x1":464,"y1":653,"x2":464,"y2":671,"width":8.1},
     {"id":"dgrid-wall-1425-159","x1":410,"y1":671,"x2":410,"y2":689,"width":8.1},
     {"id":"dgrid-wall-1425-160","x1":464,"y1":671,"x2":464,"y2":689,"width":8.1},
-    {"id":"dcorr-1425-0-1","x1":374,"y1":527,"x2":500,"y2":617,"width":21.599999999999998},
-    {"id":"dcorr-1425-0-3","x1":374,"y1":527,"x2":410,"y2":365,"width":21.599999999999998},
-    {"id":"dcorr-1425-1-2","x1":500,"y1":617,"x2":644,"y2":617,"width":21.599999999999998},
-    {"id":"dcorr-1425-0-4","x1":374,"y1":527,"x2":338,"y2":653,"width":14.4},
-    {"id":"dcorr-1425-1-4","x1":500,"y1":617,"x2":338,"y2":653,"width":14.4},
   ],
   doors: [
     {"id":"dgrid-door-1425-0","wallId":"dgrid-wall-1425-134","t":0.5,"width":19.8},
@@ -216,7 +217,7 @@ export const GOLDEN_KRYPTA_FORGE_FEATURES = {
     {"id":"dgrid-door-1425-26","wallId":"dgrid-wall-1425-160","t":0.5,"width":19.8},
   ],
   objects: [
-    {"id":"dlamp-1425-entrance","type":"lampe","x":644,"y":617,"size":0.35,"height":1.5,"angle":0},
-    {"id":"dchest-1425-boss","type":"kiste","x":410,"y":365,"size":0.5,"height":1,"angle":0},
+    {"id":"dlamp-1425-entrance","type":"lampe","x":644,"y":617,"size":0.45,"angle":0},
+    {"id":"dchest-1425-boss","type":"kiste","x":410,"y":365,"size":0.36818,"angle":0},
   ],
 } as const;

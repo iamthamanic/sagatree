@@ -68,6 +68,11 @@ export type DungeonRasterizeResult = {
   readonly canvasRooms: readonly UnifiedCanvasRoom[];
   readonly canvasWalls: readonly UnifiedCanvasWall[];
   readonly canvasDoors: readonly UnifiedCanvasDoor[];
+  /**
+   * Corridor floors (`dcorr-*`) as axis-aligned floor runs over corridor cells (ATL3-V01 round 3):
+   * corridors render as floors between their perimeter walls, never as bars through rooms.
+   */
+  readonly canvasCorridors: readonly UnifiedCanvasRoom[];
   readonly error?: string;
 };
 
@@ -172,6 +177,7 @@ export function rasterizeDungeonLayout(
     canvasRooms: [],
     canvasWalls: [],
     canvasDoors: [],
+    canvasCorridors: [],
     error,
   });
 
@@ -386,15 +392,6 @@ export function rasterizeDungeonLayout(
     }
   }
 
-  const canvasRooms: UnifiedCanvasRoom[] = rooms.map((r) => ({
-    id: `droom-${seed}-${r.id}`,
-    x: ox + (r.cx - r.w / 2) * scale,
-    y: oy + (r.cy - r.h / 2) * scale,
-    w: r.w * scale,
-    h: r.h * scale,
-    material: roomMaterial(r.type),
-  }));
-
   // Wall segments in original dungeon coordinates (subtract grid pad origin).
   const canvasWalls: UnifiedCanvasWall[] = [];
   const canvasDoors: UnifiedCanvasDoor[] = [];
@@ -403,6 +400,40 @@ export function rasterizeDungeonLayout(
   const toWorld = (gx: number, gy: number) => ({
     x: ox + (gx - originGX) * scale,
     y: oy + (gy - originGY) * scale,
+  });
+
+  // Room floors cover exactly their raster cells (cell bbox), so floors meet the perimeter walls
+  // and corridor floor runs edge-to-edge without overlap (ATL3-V01 round 3, #1295).
+  const roomBox = new Map<number, { x0: number; y0: number; x1: number; y1: number }>();
+  for (let y = 0; y < height; y += 1) {
+    for (let x = 0; x < width; x += 1) {
+      const rid = roomAt[idx(x, y)];
+      if (rid < 0 || corridor[idx(x, y)]) continue;
+      const b = roomBox.get(rid);
+      if (!b) roomBox.set(rid, { x0: x, y0: y, x1: x + 1, y1: y + 1 });
+      else {
+        b.x0 = Math.min(b.x0, x);
+        b.y0 = Math.min(b.y0, y);
+        b.x1 = Math.max(b.x1, x + 1);
+        b.y1 = Math.max(b.y1, y + 1);
+      }
+    }
+  }
+  const canvasRooms: UnifiedCanvasRoom[] = rooms.map((r) => {
+    const b = roomBox.get(r.id);
+    if (!b) {
+      return {
+        id: `droom-${seed}-${r.id}`,
+        x: ox + (r.cx - r.w / 2) * scale,
+        y: oy + (r.cy - r.h / 2) * scale,
+        w: r.w * scale,
+        h: r.h * scale,
+        material: roomMaterial(r.type),
+      };
+    }
+    const a = toWorld(b.x0, b.y0);
+    const c = toWorld(b.x1, b.y1);
+    return { id: `droom-${seed}-${r.id}`, x: a.x, y: a.y, w: c.x - a.x, h: c.y - a.y, material: roomMaterial(r.type) };
   });
   const isWalk = (i: number) =>
     kinds[i] === DUNGEON_CELL_FLOOR || kinds[i] === DUNGEON_CELL_LIQUID;
@@ -496,17 +527,52 @@ export function rasterizeDungeonLayout(
     }
   }
 
-  // Corridor centerline features (edit hooks) — one wall stub per graph edge.
-  for (const e of edges) {
-    const A = rooms[e.a];
-    const B = rooms[e.b];
-    canvasWalls.push({
-      id: `dcorr-${seed}-${e.a}-${e.b}`,
-      x1: ox + A.cx * scale,
-      y1: oy + A.cy * scale,
-      x2: ox + B.cx * scale,
-      y2: oy + B.cy * scale,
-      width: e.isCritical ? 1.2 * scale : 0.8 * scale,
+  // Corridor floors: merge corridor cells into axis-aligned floor runs (row runs, then identical
+  // runs on consecutive rows). They sit between the corridor perimeter walls emitted above and never
+  // overlap room cells (`stamp` only marks non-room cells as corridor).
+  const canvasCorridors: UnifiedCanvasRoom[] = [];
+  {
+    type Run = { x0: number; x1: number; y0: number; y1: number };
+    let open: Run[] = [];
+    const closed: Run[] = [];
+    for (let y = 0; y < height; y += 1) {
+      const rowRuns: Array<{ x0: number; x1: number }> = [];
+      let x = 0;
+      while (x < width) {
+        if (corridor[idx(x, y)] && isWalk(idx(x, y))) {
+          const x0 = x;
+          while (x < width && corridor[idx(x, y)] && isWalk(idx(x, y))) x += 1;
+          rowRuns.push({ x0, x1: x });
+        } else {
+          x += 1;
+        }
+      }
+      const next: Run[] = [];
+      for (const r of rowRuns) {
+        const prev = open.find((o) => o.x0 === r.x0 && o.x1 === r.x1 && o.y1 === y);
+        if (prev) {
+          prev.y1 = y + 1;
+          next.push(prev);
+        } else {
+          next.push({ x0: r.x0, x1: r.x1, y0: y, y1: y + 1 });
+        }
+      }
+      for (const o of open) if (!next.includes(o)) closed.push(o);
+      open = next;
+    }
+    closed.push(...open);
+    closed.sort((a, b) => a.y0 - b.y0 || a.x0 - b.x0);
+    closed.forEach((r, k) => {
+      const a = toWorld(r.x0, r.y0);
+      const b = toWorld(r.x1, r.y1);
+      canvasCorridors.push({
+        id: `dcorr-${seed}-${k}`,
+        x: a.x,
+        y: a.y,
+        w: b.x - a.x,
+        h: b.y - a.y,
+        material: 'stein',
+      });
     });
   }
 
@@ -530,6 +596,7 @@ export function rasterizeDungeonLayout(
     canvasRooms,
     canvasWalls,
     canvasDoors,
+    canvasCorridors,
     error: passable ? undefined : 'floor graph not fully reachable from entrance',
   };
 }
@@ -557,6 +624,7 @@ export function rasterizeDungeonGenerateResult(
       canvasRooms: [],
       canvasWalls: [],
       canvasDoors: [],
+      canvasCorridors: [],
       error: result.error ?? 'generation invalid',
     };
   }
