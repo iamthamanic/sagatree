@@ -247,13 +247,13 @@ test.describe('ATL2-H03 Golden journey (#1236)', () => {
 
       // ── Dungeon generate = preview in the 3D runtime (stays WebGL, no Golden map write).
       const generate = page.locator('[data-atlas-dungeon-generate]').first();
-      if ((await generate.count()) > 0 && (await generate.isVisible())) {
-        await generate.click();
-        await page.waitForTimeout(800);
-        const st = await atlasBridgeState(page);
-        expect(st?.mode).toBe('webgl');
-        expect(((st as { rooms?: number } | null)?.rooms ?? 0)).toBeGreaterThan(0);
-      }
+      // Control must exist on the crypt map — a missing/hidden generator is a regression.
+      await expect(generate, 'dungeon "Generieren" control on crypt').toBeVisible({ timeout: 20_000 });
+      await generate.click();
+      await page.waitForTimeout(800);
+      const st = await atlasBridgeState(page);
+      expect(st?.mode).toBe('webgl');
+      expect((st as { rooms?: number } | null)?.rooms ?? 0).toBeGreaterThan(0);
       expect((await getMap(page.request, origin, cryptId)).revision).toBeGreaterThanOrEqual(1);
 
       // ── Back up the chain to the world root (both branches walked).
@@ -392,15 +392,24 @@ test.describe('ATL2-H03 Golden journey (#1236)', () => {
       }
       expect((await getMap(page.request, origin, tavernId)).revision).toBe(golden.revision);
 
-      // Offline: 2D edit cannot be persisted; server keeps the Golden revision.
+      // Offline: the 2D edit cannot reach the host while offline (server keeps the Golden
+      // revision; APIRequestContext is not affected by browser offline emulation). After
+      // reconnect the edit is persisted at most once (no duplicate). Automatic retry after
+      // reconnect is not guaranteed today (follow-up, see .qa/design/atl2-h03-golden-e2e.md).
       await drillToTavern(page);
       await toSurface(page, '2d');
       await page.context().setOffline(true);
       await placeStamp2d(page, /Fass/, 0.45, 0.55);
       await page.waitForTimeout(3_000);
-      await page.context().setOffline(false);
       expect((await getMap(page.request, origin, tavernId)).revision).toBe(golden.revision);
       await expect(page.locator('[data-unified-atlas-editor]').first()).toBeVisible();
+      await page.context().setOffline(false);
+      await page.waitForTimeout(3_000);
+      const afterReconnect = await getMap(page.request, origin, tavernId);
+      expect([golden.revision, golden.revision + 1]).toContain(afterReconnect.revision);
+      expect(objectIds(afterReconnect).length).toBe(
+        GOLDEN_TAVERN_OBJECT_IDS.length + (afterReconnect.revision - golden.revision),
+      );
     } finally {
       await page.context().setOffline(false);
       await page.reload();

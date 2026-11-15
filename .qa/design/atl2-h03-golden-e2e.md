@@ -39,3 +39,10 @@ Ben approved the issue names: the country level is **Nordreich** (was the placeh
   keep V01's canvas/heightfield changes and H03's names. H03 does not touch the PNG baselines.
 - H03 wires its self-test next to the H01 block in `test-gate.mjs`, away from V01's insertion
   point (after the undo-history block).
+
+## Finding (for Ben / follow-up)
+
+- Offline edit: while offline nothing reaches the host (asserted). After reconnect the pending
+  autosave is persisted **sometimes** (observed 1 of 2 local runs) — there is no guaranteed
+  retry-on-reconnect. The journey asserts "at most once, no duplicate"; a deterministic
+  reconnect-retry belongs in a product follow-up (not H03 scope).
