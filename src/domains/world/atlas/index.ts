@@ -565,6 +565,8 @@ export {
 } from './atlas-workstation-adaptive';
 
 export {
+  ATLAS_GRAPHICS_PRESET_DEFAULT,
+  ATLAS_GRAPHICS_PRESET_STORAGE_KEY,
   ATLAS_GRAPHICS_PRESETS,
   ATLAS_PARALLEL_THREE_VIEWPORT_PATH,
   ATLAS_PRODUCT_3D_HOST_PATH,
@@ -575,6 +577,7 @@ export {
   atlasR01AllowsFollowOnRendererWork,
   clampAtlasPixelRatio,
   isProductAtlasRendererTarget,
+  parseAtlasGraphicsPresetId,
   resolveAtlasGraphicsPreset,
   type AtlasGraphicsPreset,
   type AtlasGraphicsPresetId,

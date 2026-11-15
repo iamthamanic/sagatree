@@ -82,6 +82,18 @@ export const ATLAS_RENDERER_DECISION: AtlasRendererDecision = {
   retireParallelIn: 'atl2-h-cleanup',
 };
 
+/** Product default when the user has not chosen a preset (ATL3-V01 #1295). */
+export const ATLAS_GRAPHICS_PRESET_DEFAULT: AtlasGraphicsPresetId = 'balanced';
+
+/** Device-local preference key for the Atlas graphics quality switch. */
+export const ATLAS_GRAPHICS_PRESET_STORAGE_KEY = 'sagatree-atlas-graphics-preset' as const;
+
+/** Strict parse of an untrusted preset id (storage / form value); null when unknown. */
+export function parseAtlasGraphicsPresetId(raw: unknown): AtlasGraphicsPresetId | null {
+  if (typeof raw !== 'string') return null;
+  return ATLAS_GRAPHICS_PRESETS.some((p) => p.id === raw) ? (raw as AtlasGraphicsPresetId) : null;
+}
+
 export function resolveAtlasGraphicsPreset(
   id: AtlasGraphicsPresetId,
 ): AtlasGraphicsPreset {
