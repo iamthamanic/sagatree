@@ -1,5 +1,7 @@
 # ATL2-A01 — Atlas Ist/Soll- und Duplikat-Matrix
 
+> **Status (ATL2-H02 #1235, 2026-11-15):** Still valid as Phase A inventory. Row 18 (orphan `WorldAtlasLeafletMap`) is resolved — removed in ATL2-H01 (#1234); `AtlasSpatialViewport` is quarantined, not removed. Current ATL2 architecture: `docs/architecture/atlas-v2-architecture.md` (renderer SoT ADR-ST-10). Content below is preserved as written.
+
 **Issue:** [#1197](https://github.com/iamthamanic/sagatree/issues/1197)  
 **Epic:** [#1196](https://github.com/iamthamanic/sagatree/issues/1196)  
 **Date:** 2026-11-11  

@@ -137,7 +137,9 @@ try {
 
   const child = spawn(
     process.execPath,
-    [join(root, 'node_modules/@playwright/test/cli.js'), 'test'],
+    // ATL2-H02 (#1235): forward spec/project args (`npm run test:e2e -- e2e/x.spec.ts --project=chromium`);
+    // no args (CI) keeps running the full suite.
+    [join(root, 'node_modules/@playwright/test/cli.js'), 'test', ...process.argv.slice(2)],
     {
       cwd: root,
       stdio: 'inherit',

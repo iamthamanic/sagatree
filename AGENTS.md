@@ -130,6 +130,8 @@ For `PERFORMANCE` work, agents MUST read and apply `docs/concepts/conductor-expe
 
 For visualization work, agents MUST read and apply `docs/concepts/imagination-first-visualization-contract.md`. Relevant acceptance criteria must reference its `IV-*` gates.
 
+For **Atlas** work, agents MUST start from `docs/architecture/atlas-v2-architecture.md` (canonical ATL2 index). Renderer SoT is ADR-ST-10 (Custom WebGL); ATL3/Three.js issues (#1294 ff.) are future work, not fulfilled.
+
 For **any new user-facing UI**, agents MUST read and apply `docs/concepts/adaptive-ui-experience-contract.md`. Relevant acceptance criteria must reference its `AU-*` gates (device bands, touch targets, safe areas, recomposition, states). Subjective "responsive" / "mobile-first" / "Apple-like" wording is never enough.
 
 **Content width (not only viewport):** Shell chrome may use the viewport band (`useAdaptiveBand`). Journey / form recomposition MUST also respect **available main-pane width** (`@container/main` on shell `<main>`, `useAdaptiveContentBand`, `AdaptiveJourneyColumn`). Split IDE previews and collapsed sidebars are first-class test surfaces. Do not ship Journey screens that assume a full-monitor width while leaving large empty gutters or clipping primary controls in a narrow main pane. Soft `max-w-*` caps are for readability; columns must still be `w-full min-w-0` inside the main container. See gate **AU-CONTENT-WIDTH** and `docs/ui-styleguide.md` § Page width.

@@ -1,5 +1,7 @@
 # ATL2-R01 — Renderer Reuse Matrix (Custom WebGL vs Three inventory)
 
+> **Status (ATL2-H02 #1235, 2026-11-15):** Still valid. Since ATL2-H01 (#1234) `AtlasSpatialViewport` is quarantined (no barrel export) and kept for the ATL3-R01B #1296 re-evaluation. Current ATL2 architecture: `docs/architecture/atlas-v2-architecture.md` (renderer SoT ADR-ST-10). Content below is preserved as written.
+
 **Issue:** #1266  
 **Date:** 2026-11-14  
 **Product SoT today:** `custom-webgl-prototype-runtime` (D01 / Gate D)

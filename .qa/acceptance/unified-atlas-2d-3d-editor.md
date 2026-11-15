@@ -1,5 +1,7 @@
 # Feature: Unified Atlas 2D/3D Editor (Hybrid)
 
+> **Status (ATL2-H02 #1235, 2026-11-15):** Historical. The Three.js 3D view described here is not the product path — productive 3D is Custom WebGL (ADR-ST-10); `AtlasSpatialViewport` is quarantined (ATL2-H01). Current ATL2 architecture: `docs/architecture/atlas-v2-architecture.md` (renderer SoT ADR-ST-10). Content below is preserved as written.
+
 ## Intent
 
 One atlas workstation with a shared editable document. Canvas2D Draufsicht + Three.js 3D view both edit the same objects. Dungeon Forge–derived generator produces editable rooms/walls. Focus mode enlarges the map. Gates: **IV-***, **AU-CONTENT-WIDTH**, **AU-TOUCH**.

@@ -1,5 +1,7 @@
 # Design — SagaTree Unified Atlas 2D/3D Editor
 
+> **Status (ATL2-H02 #1235, 2026-11-15):** Historical (2026-10 Hybrid Canvas2D + Three.js design). Superseded: productive 3D is Custom WebGL (ATL2-D01 #1212, ADR-ST-10); `AtlasSpatialViewport` is quarantined inventory (ATL2-H01). Current ATL2 architecture: `docs/architecture/atlas-v2-architecture.md` (renderer SoT ADR-ST-10). Content below is preserved as written.
+
 **Status:** In progress (hybrid path landed; nested DB LOD + full transform gizmos remaining)  
 **Date:** 2026-10-17  
 **Branch:** `feat/unified-atlas-2d-3d-editor`  

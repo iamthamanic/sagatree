@@ -1,5 +1,7 @@
 # ATL2 Renderer Architecture Audit — Three.js wording vs product WebGL
 
+> **Status (ATL2-H02 #1235, 2026-11-15):** Still valid. "Retire in ATL2-H cleanup" was executed as a non-destructive quarantine in ATL2-H01 (#1234); retirement or reuse of the Three inventory is decided by ATL3-R01B #1296. Current ATL2 architecture: `docs/architecture/atlas-v2-architecture.md` (renderer SoT ADR-ST-10). Content below is preserved as written.
+
 **Date:** 2026-11-13  
 **Epic:** #1196  
 **Decision lock:** ATL2-D01 / #1212 (`.qa/design/atl2-d01-renderer-decision.md`)  

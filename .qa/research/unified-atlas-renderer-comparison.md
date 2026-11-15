@@ -1,5 +1,7 @@
 # Unified Atlas — Renderer Architecture Comparison (measured)
 
+> **Status (ATL2-H02 #1235, 2026-11-15):** Prior art only — compares two Three.js architectures, not product Custom WebGL vs Three.js (see ATL2-R01 #1266). Current ATL2 architecture: `docs/architecture/atlas-v2-architecture.md` (renderer SoT ADR-ST-10). Content below is preserved as written.
+
 **Date:** 2026-10-17  
 **Branch:** `feat/unified-atlas-2d-3d-editor`  
 **Evidence:** `.qa/evidence/unified-atlas-renderer-poc/`  
