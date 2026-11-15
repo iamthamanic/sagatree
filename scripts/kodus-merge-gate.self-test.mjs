@@ -21,6 +21,7 @@ import {
   isKodusCreditsExhaustedFailure,
   isKodusIgnoredFilesSkip,
   hasTrustedKodusCreditsSkip,
+  textIndicatesKodusCreditsExhausted,
 } from './kodus-merge-gate.mjs';
 import { evaluateMergeGate, findingSeverity } from './ecc-merge-gate-check.mjs';
 
@@ -140,9 +141,75 @@ assert(
   evaluateKodusCheckRun(creditsFailRun).reason === 'kodus-credits-exhausted',
   'credits failure classified',
 );
+{
+  // Ben policy: Kody out of credits must not fail the ECC gate — skip Kody, no marker needed.
+  const r = evaluateKodusHeadEvidence(creditsFailRun, { headSha: 'abc' });
+  assert(r.ok === true && r.skipped === true, 'credits failure without marker → Kody SKIPPED');
+  assert(r.reason === 'kodus-skipped-credits', 'credits skip reason');
+  assert(/credits\/quota exhausted/.test(r.detail), 'credits skip detail is explicit');
+}
+// Observed production text on PR #1292/#1302 (2026-11-15).
+const prodCreditsRun = {
+  ...creditsFailRun,
+  output: {
+    title: 'Code Review Failed',
+    summary:
+      '- The configured API key (openai_compatible) is out of credits or has hit its billing limit. Top up the account or adjust the plan. (2 files/stages)\n- Kody Rules could not be evaluated: all 9 rule check(s) failed to run. Your Kody Rules were not applied to this PR.',
+  },
+};
+assert(evaluateKodusHeadEvidence(prodCreditsRun, { headSha: 'abc' }).skipped === true, 'production credits text → SKIPPED');
+for (const [conclusion, summary] of [
+  ['failure', 'Provider error: HTTP 429 Too Many Requests'],
+  ['failure', 'Error code: 429 - {"error":{"code":"insufficient_quota"}}'],
+  ['failure', 'You exceeded your current quota, please check your plan and billing details.'],
+  ['neutral', 'Review aborted: usage limit reached'],
+  ['skipped', 'Code Review Skipped — credits exhausted'],
+  ['failure', 'status 402 Payment Required'],
+]) {
+  const run = { ...creditsFailRun, conclusion, output: { title: 'Code Review Failed', summary } };
+  assert(isKodusCreditsExhaustedFailure(run), `detect quota/429: ${summary}`);
+  assert(evaluateKodusHeadEvidence(run, { headSha: 'abc' }).skipped === true, `quota/429 → SKIPPED (${conclusion})`);
+}
+for (const text of ['openai_compatible model crashed', 'fixed 429 files', 'Medium: rate limit handling missing', 'timeout']) {
+  assert(!textIndicatesKodusCreditsExhausted(text), `not credits: ${text}`);
+}
 assert(
-  evaluateKodusHeadEvidence(creditsFailRun, { headSha: 'abc' }).ok === false,
-  'credits failure without marker still FAIL',
+  evaluateKodusHeadEvidence({ ...creditsFailRun, app: { slug: 'evil-app' } }, { headSha: 'abc' }).ok === false,
+  'spoofed app credits text never skips',
+);
+assert(
+  evaluateKodusHeadEvidence({ ...creditsFailRun, status: 'in_progress', conclusion: null }, { headSha: 'abc' }).reason ===
+    'kodus-pending',
+  'in-progress Kody with credits-like title still pending (no early skip)',
+);
+assert(
+  evaluateKodusHeadEvidence(null, {
+    headSha: 'abc',
+    issueComments: [{ user: { login: 'kody-ai[bot]' }, body: 'Code review aborted: out of credits (HTTP 429)' }],
+  }).skipped === true,
+  'missing check-run + Kody credits issue card → SKIPPED without marker',
+);
+assert(
+  evaluateKodusHeadEvidence(null, {
+    headSha: 'abc',
+    issueComments: [{ user: { login: 'someone' }, body: 'Kody is out of credits' }],
+  }).ok === false,
+  'non-Kody credits comment does not skip a missing Kody check',
+);
+assert(
+  kodyFindingSeverity('Code Review Failed: the configured API key is out of credits or has hit its billing limit') === null,
+  'credits abort card is not a finding',
+);
+assert(
+  collectKodusIssueCommentFindings(
+    [{ id: 9, user: { login: 'kody-ai[bot]' }, body: 'Kody Rules could not be evaluated: out of credits / billing limit' }],
+    allowed,
+  ).length === 0,
+  'credits abort card not collected as Kody finding',
+);
+assert(
+  collectKodusIssueCommentFindings([{ id: 10, user: { login: 'kody-ai[bot]' }, body: criticalBody }], allowed).length === 1,
+  'real Kody severity finding still collected',
 );
 assert(
   !hasTrustedKodusCreditsSkip([
@@ -168,8 +235,8 @@ assert(
         author_association: 'OWNER',
       },
     ],
-  }).ok === true,
-  'credits exhausted + trusted marker = PASS (kodus-skipped-credits)',
+  }).skipped === true,
+  'credits exhausted + trusted marker = SKIPPED (kodus-skipped-credits)',
 );
 assert(
   evaluateKodusHeadEvidence(null, {
@@ -185,7 +252,7 @@ assert(
       },
     ],
   }).reason === 'kodus-skipped-credits',
-  'missing check-run + Kody credits issue card + OWNER skip = PASS',
+  'missing check-run + Kody credits issue card + OWNER skip = SKIPPED',
 );
 assert(
   evaluateKodusHeadEvidence(null, {

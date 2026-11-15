@@ -217,6 +217,13 @@ export function evaluateMergeGate({
       detail: `${checkFailures.length} required check failure(s)`,
     };
   }
+  if (kodusReview?.skipped) {
+    return {
+      ok: true,
+      reason: 'pass',
+      detail: 'ECC Merge Gate PASS (Kodus skipped: provider credits/quota exhausted)',
+    };
+  }
   return { ok: true, reason: 'pass', detail: 'ECC Merge Gate PASS' };
 }
 
@@ -706,6 +713,11 @@ export function runMergeGateCheck({
       pullNumber: ctx.pullNumber,
     });
     kodusReview = waited.kodusReview;
+    if (kodusReview?.skipped) {
+      console.error(
+        `ECC Merge Gate: Kodus SKIPPED for credits — ${kodusReview.detail}. Deciding on findings + remaining required checks only.`,
+      );
+    }
     const reviewList = waited.reviews;
     unresolved = collectUnresolvedFindings(
       ctx.owner,
@@ -759,7 +771,7 @@ export function runMergeGateCheck({
       apiError
         ? 'unknown (API error)'
         : kodusReview
-          ? `${kodusReview.ok ? 'PASS' : 'FAIL'} (${kodusReview.reason})`
+          ? `${kodusReview.skipped ? 'SKIPPED' : kodusReview.ok ? 'PASS' : 'FAIL'} (${kodusReview.reason})`
           : 'n/a'
     }`,
     `- Unresolved review findings: ${apiError ? 'unknown (API error)' : unresolved.length}`,
@@ -770,6 +782,15 @@ export function runMergeGateCheck({
 
   if (kodusReview && !kodusReview.ok) {
     lines.push('', '### Kodus review', `- ${kodusReview.reason}: ${kodusReview.detail}`);
+  }
+  if (kodusReview?.skipped) {
+    lines.push(
+      '',
+      '### Kodus review skipped (provider credits/quota exhausted)',
+      `- ${kodusReview.reason}: ${kodusReview.detail}`,
+      '- Kody did not review this HEAD; the decision uses unresolved findings, pending reviews and the remaining required checks only.',
+      '- Existing Kody findings (threads / severity cards) still block until resolved.',
+    );
   }
   if (unresolved.length > 0) {
     lines.push('', '### Unresolved findings');

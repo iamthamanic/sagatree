@@ -25,15 +25,42 @@ export const KODY_DISMISS_MARKERS = [
 ];
 
 /**
- * Trusted OWNER/MEMBER/COLLABORATOR marker: skip Kodus completion when the
- * provider (e.g. Ollama openai_compatible) is out of credits / HTTP 429.
- * Free-text alone is never enough — HTML marker required.
+ * Legacy OWNER/MEMBER/COLLABORATOR marker. No longer required: a credits/quota
+ * exhaustion reported by the genuine kody-ai app is skipped automatically
+ * (see evaluateKodusHeadEvidence). Still recognised so the gate log can cite it.
  */
 export const KODUS_CREDITS_SKIP_MARKER_RE =
   /<!--\s*ecc-kodus-skipped-credits\s*:\s*.+?\s*-->/i;
 
-const KODUS_CREDITS_EXHAUSTED_RE =
-  /out of credits|billing limit|usage limit|HTTP\s*429|monthly usage limit|openai_compatible/i;
+/**
+ * Provider credits / billing / quota / rate-limit exhaustion (Kody "Code Review
+ * Failed" text, OpenAI-compatible `insufficient_quota`, HTTP 429/402).
+ * Bare provider names (e.g. `openai_compatible`) are NOT evidence on their own.
+ */
+export const KODUS_CREDITS_EXHAUSTED_RE = new RegExp(
+  [
+    String.raw`out of credits`,
+    String.raw`(?:insufficient|no|exhausted|depleted)\s+credits?`,
+    String.raw`credits?\s+(?:exhausted|depleted|exceeded|ran out|run out)`,
+    String.raw`billing\s+limit`,
+    String.raw`(?:monthly\s+)?usage\s+limit`,
+    String.raw`insufficient_quota`,
+    String.raw`quota\s+(?:exceeded|exhausted|reached|limit)`,
+    String.raw`exceeded\s+(?:your\s+)?(?:current\s+)?quota`,
+    String.raw`rate[\s_-]?limit(?:ed|\s+exceeded|\s+reached)`,
+    String.raw`too\s+many\s+requests`,
+    String.raw`(?:HTTP|status|error|code)[\s:=#]*429\b`,
+    String.raw`\b429\s+too\s+many`,
+    String.raw`(?:HTTP|status|error|code)[\s:=#]*402\b`,
+    String.raw`payment\s+required`,
+  ].join('|'),
+  'i',
+);
+
+/** True when free text reads as provider credits / quota / rate-limit exhaustion. */
+export function textIndicatesKodusCreditsExhausted(text) {
+  return KODUS_CREDITS_EXHAUSTED_RE.test(String(text ?? ''));
+}
 
 const SEVERITY_MAP = {
   critical: 'Critical',
@@ -72,6 +99,8 @@ export function kodyFindingSeverity(body, { failClosedUnknown = true } = {}) {
     const mapped = mapKodySeverityToken(m[1] || m[2]);
     if (mapped) return mapped;
   }
+  // Provider credits/quota abort card (no severity badge) is an outage notice, not a finding.
+  if (textIndicatesKodusCreditsExhausted(text) && /credit|billing|quota|\b4(?:29|02)\b/i.test(text)) return null;
   if (failClosedUnknown && KODY_FINDING_MARK_RE.test(text) && !/Code Review Completed/i.test(text)) {
     return 'Critical';
   }
@@ -133,7 +162,7 @@ export function isKodusCreditsExhaustedFailure(checkRun) {
     checkRun.output?.summary ?? '',
     checkRun.output?.text ?? '',
   ].join('\n');
-  return KODUS_CREDITS_EXHAUSTED_RE.test(blob);
+  return textIndicatesKodusCreditsExhausted(blob);
 }
 
 /**
@@ -157,7 +186,7 @@ export function kodyIssueCommentsIndicateCreditsExhausted(comments) {
   return list.some((c) => {
     const login = c.user?.login ?? c.author?.login ?? '';
     if (!isKodyBotLogin(login)) return false;
-    return KODUS_CREDITS_EXHAUSTED_RE.test(c.body ?? '');
+    return textIndicatesKodusCreditsExhausted(c.body ?? '');
   });
 }
 
@@ -220,9 +249,9 @@ export function evaluateKodusCheckRun(checkRun) {
   if (checkRun.conclusion === 'cancelled') {
     return { ok: false, reason: 'kodus-cancelled', detail: 'Kody check cancelled' };
   }
-  // Only success counts — neutral/skipped/failure are fail-closed
-  // (credits-exhausted may be waived later via trusted PR marker;
-  // intentional "All Files Ignored" skip is a completed no-op review).
+  // Only success counts — neutral/skipped/failure are fail-closed, except:
+  // provider credits/quota exhaustion (Kody never ran → skipped by
+  // evaluateKodusHeadEvidence) and the intentional "All Files Ignored" skip.
   if (checkRun.conclusion !== 'success') {
     if (isKodusIgnoredFilesSkip(checkRun)) {
       return {
@@ -375,8 +404,11 @@ export function findKodusSubmittedReviewForHead(reviews, headSha) {
 
 /**
  * Combine check-run + optional APPROVED review when the check was overwritten to skipped.
- * Credits exhaustion may PASS only with a trusted `<!-- ecc-kodus-skipped-credits: … -->`
- * marker on a PR issue comment (OWNER/MEMBER/COLLABORATOR).
+ * Provider credits/quota exhaustion (check-run from the genuine kody-ai app, or a
+ * kody-ai issue card when no check-run exists) means Kody never reviewed: the Kody
+ * part is SKIPPED (`ok: true, skipped: true, reason: 'kodus-skipped-credits'`) and
+ * the gate decides on findings + remaining required checks only. Real Kody findings
+ * (threads / severity cards) are still collected and still block.
  * @param {object|null} checkRun
  * @param {{ reviews?: object[], headSha?: string, issueComments?: object[] }} [opts]
  */
@@ -389,15 +421,15 @@ export function evaluateKodusHeadEvidence(
   if (fromCheck.reason === 'kodus-pending' || fromCheck.reason === 'kodus-started-only') {
     return fromCheck;
   }
-  if (
-    fromCheck.reason === 'kodus-credits-exhausted' &&
-    hasTrustedKodusCreditsSkip(issueComments)
-  ) {
+  const markerNote = hasTrustedKodusCreditsSkip(issueComments)
+    ? '; trusted ecc-kodus-skipped-credits marker present'
+    : '';
+  if (fromCheck.reason === 'kodus-credits-exhausted') {
     return {
       ok: true,
+      skipped: true,
       reason: 'kodus-skipped-credits',
-      detail:
-        'Kody skipped: provider (Ollama/openai_compatible) credits exhausted; trusted ecc-kodus-skipped-credits marker present',
+      detail: `Kody skipped: review provider credits/quota exhausted (check-run ${checkRun.conclusion}, id=${checkRun.id ?? 'n/a'})${markerNote}`,
     };
   }
   // Missing check-run: APPROVED unlocks; credits abort (issue card + OWNER skip) also unlocks.
@@ -411,15 +443,12 @@ export function evaluateKodusHeadEvidence(
         detail: `Kody APPROVED review on HEAD (no check-run; id=${approved.id})`,
       };
     }
-    if (
-      hasTrustedKodusCreditsSkip(issueComments) &&
-      kodyIssueCommentsIndicateCreditsExhausted(issueComments)
-    ) {
+    if (kodyIssueCommentsIndicateCreditsExhausted(issueComments)) {
       return {
         ok: true,
+        skipped: true,
         reason: 'kodus-skipped-credits',
-        detail:
-          'Kody missing check-run; issue comment shows credits exhausted; trusted ecc-kodus-skipped-credits marker present',
+        detail: `Kody skipped: no check-run; kody-ai issue comment shows provider credits/quota exhausted${markerNote}`,
       };
     }
     return fromCheck;
