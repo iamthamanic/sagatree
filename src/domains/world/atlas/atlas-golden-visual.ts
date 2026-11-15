@@ -175,8 +175,8 @@ export const ATLAS_GOLDEN_VISUAL_FIXTURES: readonly AtlasGoldenVisualFixture[] =
   },
   {
     id: 'country',
-    labelDe: 'Land Westmark',
-    uiMapTitleDe: 'Land Westmark',
+    labelDe: 'Nordreich',
+    uiMapTitleDe: 'Nordreich',
     mapSeedKey: 'dornhain.map.country.westmark',
     camera: fixedDioramaCamera(430, 400, 420),
     graphicsPresetId: 'balanced',

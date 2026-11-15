@@ -40,9 +40,9 @@ export const DORNHAIN_GOLDEN_PLACES: readonly DornhainGoldenPlaceSpec[] = [
   },
   {
     seedKey: 'country.westmark',
-    name: 'Land Westmark',
+    name: 'Nordreich',
     kind: 'country',
-    description: 'Land auf dem Kontinent Westmark (Golden-Platzhaltername).',
+    description: 'Land Nordreich auf dem Kontinent Westmark (Golden-Name, Owner-Freeze 2026-11-15 / ATL2-H03 #1236).',
     sortOrder: 5,
     parentSeedKey: 'continent.westmark',
     anchor: { x: 430, y: 400 },

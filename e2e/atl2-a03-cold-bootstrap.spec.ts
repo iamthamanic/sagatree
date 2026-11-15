@@ -70,7 +70,7 @@ test.describe('ATL2-A03 cold bootstrap', () => {
       expect.arrayContaining([
         'Welt',
         'Kontinent Westmark',
-        'Land Westmark',
+        'Nordreich',
         'Dornhain',
         'Taverne Zum Flüstern',
         'Krypta unter dem Hügel',

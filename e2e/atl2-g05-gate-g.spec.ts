@@ -36,8 +36,8 @@ const DEVICE_MATRIX = [
 ] as const;
 /** Real Golden product maps as small / medium / large scenes (no synthetic stress geometry). */
 const SCENES = [
-  { size: 'small', title: 'Taverne Zum Flüstern', drill: ['Kontinent Westmark', 'Land Westmark', 'Dornhain', 'Taverne Zum Flüstern'] },
-  { size: 'medium', title: 'Dornhain', drill: ['Kontinent Westmark', 'Land Westmark', 'Dornhain'] },
+  { size: 'small', title: 'Taverne Zum Flüstern', drill: ['Kontinent Westmark', 'Nordreich', 'Dornhain', 'Taverne Zum Flüstern'] },
+  { size: 'medium', title: 'Dornhain', drill: ['Kontinent Westmark', 'Nordreich', 'Dornhain'] },
   { size: 'large', title: 'Welt', drill: [] },
 ] as const;
 

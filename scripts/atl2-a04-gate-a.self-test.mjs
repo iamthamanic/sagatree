@@ -19,7 +19,7 @@ const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const EXPECTED_MAP_TITLES = [
   'Welt',
   'Kontinent Westmark',
-  'Land Westmark',
+  'Nordreich',
   'Dornhain',
   'Taverne Zum Flüstern',
   'Krypta unter dem Hügel',

@@ -20,7 +20,7 @@ const jiti = createJiti(import.meta.url, { esmResolve: true });
 const EXPECTED_MAP_TITLES = [
   'Welt',
   'Kontinent Westmark',
-  'Land Westmark',
+  'Nordreich',
   'Dornhain',
   'Taverne Zum Flüstern',
   'Krypta unter dem Hügel',
@@ -560,7 +560,7 @@ try {
   assert.deepEqual(schankChain, [
     'Welt',
     'Kontinent Westmark',
-    'Land Westmark',
+    'Nordreich',
     'Dornhain',
     'Taverne Zum Flüstern',
     'Schankraum',
@@ -568,7 +568,7 @@ try {
   assert.deepEqual(gruftChain, [
     'Welt',
     'Kontinent Westmark',
-    'Land Westmark',
+    'Nordreich',
     'Dornhain',
     'Krypta unter dem Hügel',
     'Gruftkammer',

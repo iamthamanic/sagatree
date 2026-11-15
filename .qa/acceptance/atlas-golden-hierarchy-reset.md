@@ -9,7 +9,7 @@ country → place → buildings) with minimum authored content per level. Reset
 modes restore the full Golden map chain (not only the world root). Session wipe
 on `everything` stays honest when unavailable.
 
-Naming (until PM freeze): **Kontinent Westmark** / **Land Westmark** under Donalu.
+Naming (owner freeze 2026-11-15, ATL2-H03 #1236): **Kontinent Westmark** / **Nordreich** under Donalu (seed keys stay `continent.westmark` / `country.westmark`).
 
 ## Happy Path
 

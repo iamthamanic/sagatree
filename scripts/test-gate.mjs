@@ -2187,6 +2187,11 @@ function checkWorldAtlasEditor() {
     cwd: root,
     stdio: 'inherit',
   });
+  console.log('ATL2-H03 Golden-E2E names / legacy title migration / journey contract (#1236)...');
+  execFileSync(process.execPath, ['scripts/atl2-h03-golden-e2e.self-test.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
   console.log('ATL2-E03 hierarchy zoom / breadcrumb / back-nav...');
   execFileSync(process.execPath, ['scripts/atl2-e03-hierarchy-nav.self-test.mjs'], {
     cwd: root,

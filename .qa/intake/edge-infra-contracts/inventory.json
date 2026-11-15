@@ -37658,7 +37658,7 @@
           },
           {
             "path": "src/domains/world/atlas/atlas-golden-visual.ts",
-            "sha256": "88b77614af2b7d42bec9313904732665357915182428f73288e7dc25f8093eec"
+            "sha256": "345f7cde07e25060a5a2707c1f6ec36251c1e08e8853d7eff461db4ea0c0af88"
           },
           {
             "path": "src/domains/world/atlas/atlas-heightfield.ts",
@@ -37734,11 +37734,11 @@
           },
           {
             "path": "src/domains/world/atlas/dornhain-golden-hierarchy.ts",
-            "sha256": "75d134df2c52e4d46deee382f811d869180b37e9cf9978f68dc265a70c3f3776"
+            "sha256": "ac95b447bce79e16d6e356460b5abb9cf137a4341b08ebe3a9655505635228fc"
           },
           {
             "path": "src/domains/world/atlas/dornhain-golden-reset.ts",
-            "sha256": "242b85a727062342a69f934a3b0cb64d3c5c726a71b87548043facd7e62f6c2f"
+            "sha256": "993c1935fda833ddaf0f51c8f1c10b8b25a28e944c2e783ec2d89f2e9e95e9eb"
           },
           {
             "path": "src/domains/world/atlas/dornhain-unified-starter.ts",
@@ -37978,7 +37978,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-world.json",
-      "sourceContractSha256": "738d99b0b0d44abf57bb8e67c24cc9f30e6e18982ca79c22461fa00570e933e4",
+      "sourceContractSha256": "19a10e23524211f932251bf3c8eb334fb55812b819633724c952bfa236bb2429",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],

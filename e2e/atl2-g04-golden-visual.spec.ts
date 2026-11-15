@@ -141,10 +141,10 @@ async function ensureLayersOpen(page: Page): Promise<void> {
 /** Drill path from world root to the fixture map (product Dornhain hierarchy). */
 const FIXTURE_DRILL: Record<string, readonly string[]> = {
   Welt: [],
-  'Land Westmark': ['Kontinent Westmark', 'Land Westmark'],
-  Dornhain: ['Kontinent Westmark', 'Land Westmark', 'Dornhain'],
-  'Taverne Zum Flüstern': ['Kontinent Westmark', 'Land Westmark', 'Dornhain', 'Taverne Zum Flüstern'],
-  'Krypta unter dem Hügel': ['Kontinent Westmark', 'Land Westmark', 'Dornhain', 'Krypta unter dem Hügel'],
+  'Nordreich': ['Kontinent Westmark', 'Nordreich'],
+  Dornhain: ['Kontinent Westmark', 'Nordreich', 'Dornhain'],
+  'Taverne Zum Flüstern': ['Kontinent Westmark', 'Nordreich', 'Dornhain', 'Taverne Zum Flüstern'],
+  'Krypta unter dem Hügel': ['Kontinent Westmark', 'Nordreich', 'Dornhain', 'Krypta unter dem Hügel'],
 };
 
 function escapeRegExp(value: string): string {
