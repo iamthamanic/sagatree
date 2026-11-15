@@ -113,4 +113,4 @@ A gate counts as CLEAR only if its evidence is reproducible on the current HEAD 
 - **HTML prototype** moved from `public/atlas-prototype-3d.html` to `.qa/research/atlas-prototype-3d-reference.html` — the URL `/atlas-prototype-3d.html` no longer serves it.
 - **WebGL direct writes retired** (B04, `atlas-webgl-write-retire.ts`): the 3D runtime persists only through the controlled bridge into `UnifiedCanvasDoc`.
 - **3D Undo/Redo** (G05 fix): history is host-owned per map and survives runtime rebuilds; it is session-local (not persisted).
-- Unused npm deps `leaflet`, `react-leaflet`, `@geoman-io/leaflet-geoman-free`, `@types/leaflet` remain in `package.json` pending a separate dependency PR.
+- Unused npm deps `leaflet`, `react-leaflet`, `@geoman-io/leaflet-geoman-free`, `@types/leaflet` removed in a separate dependency PR (#1306, after ATL2-H01 removed their last importer).
