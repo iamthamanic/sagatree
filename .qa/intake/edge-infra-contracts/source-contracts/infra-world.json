@@ -203,7 +203,7 @@
     },
     {
       "path": "src/domains/world/atlas/atlas-golden-visual.ts",
-      "sha256": "754007ac0525c6797330d3a16995af16e35d747107c36f29e76fa6ecd36cbf7c"
+      "sha256": "db7842b5da4fcf305f68550679caff6ab06414d057bd7d2716d75484e1d380d9"
     },
     {
       "path": "src/domains/world/atlas/atlas-heightfield.ts",
@@ -279,11 +279,11 @@
     },
     {
       "path": "src/domains/world/atlas/dornhain-golden-hierarchy.ts",
-      "sha256": "894d9769af93bcc3655938bbd2e6db5c39dbaf4a386786cb686a19704be9c0c0"
+      "sha256": "361644dc722ac28a2fa0fcaabb05c087cb6581505f95923bc8a4a3c44af8992d"
     },
     {
       "path": "src/domains/world/atlas/dornhain-golden-reset.ts",
-      "sha256": "242b85a727062342a69f934a3b0cb64d3c5c726a71b87548043facd7e62f6c2f"
+      "sha256": "993c1935fda833ddaf0f51c8f1c10b8b25a28e944c2e783ec2d89f2e9e95e9eb"
     },
     {
       "path": "src/domains/world/atlas/dornhain-unified-starter.ts",
@@ -2111,8 +2111,8 @@
       "kind": "TypeAliasDeclaration",
       "name": "DornhainGoldenMapSpec",
       "path": "src/domains/world/atlas/dornhain-golden-hierarchy.ts",
-      "line": 25,
-      "endLine": 36,
+      "line": 26,
+      "endLine": 37,
       "text": "export type DornhainGoldenMapSpec = {\n  readonly seedKey: string;\n  readonly placeSeedKey: string;\n  readonly title: string;\n  readonly kind: WorldAtlasMapKind;\n  /** Parent Golden map seed; null = world root (`dornhain.unified.v4`). */\n  readonly parentMapSeedKey: string | null;\n  readonly parentAnchor: Omit<ParentSpatialAnchor, 'parentMapId' | 'metersPerUnit' | 'rotationRad'> & {\n    readonly rotationRad?: number;\n  };\n  readonly buildCanvas: () => UnifiedCanvasDoc;\n};"
     },
     {
