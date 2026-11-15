@@ -46,10 +46,15 @@ requiredChecks:
 # Severity badges severity_level-{critical|high|medium|low|info} block until
 # resolved or dismissed (<!-- ecc-finding-dismissed: … -->).
 #
-# Provider credits exhausted (Ollama openai_compatible / HTTP 429 / billing limit):
-# OWNER/MEMBER/COLLABORATOR may waive Kodus completion for that PR with
-# <!-- ecc-kodus-skipped-credits: ollama credits exhausted --> on an issue comment.
-# Free-text alone is never enough. Other Kody failures stay fail-closed.
+# Provider credits/quota exhausted (out of credits / billing limit / insufficient_quota /
+# HTTP 429 / 402): when the genuine kody-ai app reports this on its "Kody Code Review"
+# check-run (any non-success conclusion) — or posts it as an issue card without
+# creating a check-run — Kody did not review, so the Kody part is SKIPPED
+# automatically (no owner marker needed) and logged as "Kodus SKIPPED for credits".
+# The gate then decides on unresolved findings, pending reviews and the remaining
+# required checks only. Real Kody findings still block; other Kody failures
+# (crash, cancelled, generic skipped, missing without credits evidence) stay fail-closed.
+# The legacy <!-- ecc-kodus-skipped-credits: … --> marker is still cited in the log.
 
 requireKodusReview: true
 

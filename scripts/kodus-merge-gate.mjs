@@ -25,15 +25,57 @@ export const KODY_DISMISS_MARKERS = [
 ];
 
 /**
- * Trusted OWNER/MEMBER/COLLABORATOR marker: skip Kodus completion when the
- * provider (e.g. Ollama openai_compatible) is out of credits / HTTP 429.
- * Free-text alone is never enough — HTML marker required.
+ * Legacy OWNER/MEMBER/COLLABORATOR marker. No longer required: a credits/quota
+ * exhaustion reported by the genuine kody-ai app is skipped automatically
+ * (see evaluateKodusHeadEvidence). Still recognised so the gate log can cite it.
  */
 export const KODUS_CREDITS_SKIP_MARKER_RE =
   /<!--\s*ecc-kodus-skipped-credits\s*:\s*.+?\s*-->/i;
 
-const KODUS_CREDITS_EXHAUSTED_RE =
-  /out of credits|billing limit|usage limit|HTTP\s*429|monthly usage limit|openai_compatible/i;
+/**
+ * Provider credits / billing / quota / rate-limit exhaustion (Kody "Code Review
+ * Failed" text, OpenAI-compatible `insufficient_quota`, HTTP 429/402).
+ * Bare provider names (e.g. `openai_compatible`) are NOT evidence on their own.
+ */
+export const KODUS_CREDITS_EXHAUSTED_RE = new RegExp(
+  [
+    String.raw`out of credits`,
+    String.raw`(?:insufficient|no|exhausted|depleted)\s+credits?`,
+    String.raw`credits?\s+(?:exhausted|depleted|exceeded|ran out|run out)`,
+    String.raw`billing\s+limit`,
+    String.raw`(?:monthly\s+)?usage\s+limit`,
+    String.raw`insufficient_quota`,
+    String.raw`quota\s+(?:exceeded|exhausted|reached|limit)`,
+    String.raw`exceeded\s+(?:your\s+)?(?:current\s+)?quota`,
+    String.raw`rate[\s_-]?limit(?:ed|\s+exceeded|\s+reached)`,
+    String.raw`too\s+many\s+requests`,
+    String.raw`(?:HTTP|status|error|code)[\s:=#]*429\b`,
+    String.raw`\b429\s+too\s+many`,
+    String.raw`(?:HTTP|status|error|code)[\s:=#]*402\b`,
+    String.raw`payment\s+required`,
+  ].join('|'),
+  'i',
+);
+
+/** True when free text reads as provider credits / quota / rate-limit exhaustion. */
+export function textIndicatesKodusCreditsExhausted(text) {
+  return KODUS_CREDITS_EXHAUSTED_RE.test(String(text ?? ''));
+}
+
+/** Review-abort / status wording of a Kody outage card (not a code finding). */
+const KODY_REVIEW_ABORT_RE =
+  /code review (?:failed|aborted|skipped|could not)|review (?:was )?(?:aborted|skipped|failed)|could not be (?:evaluated|completed|run)|failed to run|configured API key|top up the account|adjust the plan|prüfung (?:schlug fehl|abgebrochen|fehlgeschlagen)|review (?:abgebrochen|fehlgeschlagen)/i;
+
+/**
+ * True only for a Kody outage/status card: credits/quota wording AND review-abort
+ * wording AND no severity badge. A badge-less finding that merely discusses
+ * billing limits or HTTP 429 handling in code is NOT an outage card.
+ */
+export function isKodyCreditsOutageCard(body) {
+  const text = String(body ?? '');
+  if (KODY_SEVERITY_RE.test(text)) return false;
+  return textIndicatesKodusCreditsExhausted(text) && KODY_REVIEW_ABORT_RE.test(text);
+}
 
 const SEVERITY_MAP = {
   critical: 'Critical',
@@ -72,6 +114,8 @@ export function kodyFindingSeverity(body, { failClosedUnknown = true } = {}) {
     const mapped = mapKodySeverityToken(m[1] || m[2]);
     if (mapped) return mapped;
   }
+  // Provider credits/quota abort card (status wording, no badge) is an outage notice, not a finding.
+  if (isKodyCreditsOutageCard(text)) return null;
   if (failClosedUnknown && KODY_FINDING_MARK_RE.test(text) && !/Code Review Completed/i.test(text)) {
     return 'Critical';
   }
@@ -133,7 +177,7 @@ export function isKodusCreditsExhaustedFailure(checkRun) {
     checkRun.output?.summary ?? '',
     checkRun.output?.text ?? '',
   ].join('\n');
-  return KODUS_CREDITS_EXHAUSTED_RE.test(blob);
+  return textIndicatesKodusCreditsExhausted(blob);
 }
 
 /**
@@ -149,15 +193,23 @@ export function hasTrustedKodusCreditsSkip(comments) {
 }
 
 /**
- * True when a Kody issue comment on the PR shows provider credits/billing exhaustion
- * (Kody may abort before creating a check-run — then only the issue card exists).
+ * True when a Kody outage card for the CURRENT HEAD shows provider credits/billing
+ * exhaustion (Kody may abort before creating a check-run — then only the card exists).
+ * Cards must be posted at/after the HEAD commit time; without a HEAD time the
+ * evidence cannot be bound to HEAD and nothing is skipped (fail-closed).
+ * @param {object[]} comments
+ * @param {{ headCommittedAt?: string|null }} [opts]
  */
-export function kodyIssueCommentsIndicateCreditsExhausted(comments) {
+export function kodyIssueCommentsIndicateCreditsExhausted(comments, { headCommittedAt = null } = {}) {
   const list = Array.isArray(comments) ? comments : [];
+  const headMs = headCommittedAt ? Date.parse(headCommittedAt) : NaN;
+  if (Number.isNaN(headMs)) return false;
   return list.some((c) => {
     const login = c.user?.login ?? c.author?.login ?? '';
     if (!isKodyBotLogin(login)) return false;
-    return KODUS_CREDITS_EXHAUSTED_RE.test(c.body ?? '');
+    const createdMs = Date.parse(c.created_at ?? c.createdAt ?? '');
+    if (Number.isNaN(createdMs) || createdMs < headMs) return false;
+    return isKodyCreditsOutageCard(c.body ?? '');
   });
 }
 
@@ -220,9 +272,9 @@ export function evaluateKodusCheckRun(checkRun) {
   if (checkRun.conclusion === 'cancelled') {
     return { ok: false, reason: 'kodus-cancelled', detail: 'Kody check cancelled' };
   }
-  // Only success counts — neutral/skipped/failure are fail-closed
-  // (credits-exhausted may be waived later via trusted PR marker;
-  // intentional "All Files Ignored" skip is a completed no-op review).
+  // Only success counts — neutral/skipped/failure are fail-closed, except:
+  // provider credits/quota exhaustion (Kody never ran → skipped by
+  // evaluateKodusHeadEvidence) and the intentional "All Files Ignored" skip.
   if (checkRun.conclusion !== 'success') {
     if (isKodusIgnoredFilesSkip(checkRun)) {
       return {
@@ -375,29 +427,32 @@ export function findKodusSubmittedReviewForHead(reviews, headSha) {
 
 /**
  * Combine check-run + optional APPROVED review when the check was overwritten to skipped.
- * Credits exhaustion may PASS only with a trusted `<!-- ecc-kodus-skipped-credits: … -->`
- * marker on a PR issue comment (OWNER/MEMBER/COLLABORATOR).
+ * Provider credits/quota exhaustion (check-run from the genuine kody-ai app, or a
+ * kody-ai issue card when no check-run exists) means Kody never reviewed: the Kody
+ * part is SKIPPED (`ok: true, skipped: true, reason: 'kodus-skipped-credits'`) and
+ * the gate decides on findings + remaining required checks only. Real Kody findings
+ * (threads / severity cards) are still collected and still block.
  * @param {object|null} checkRun
  * @param {{ reviews?: object[], headSha?: string, issueComments?: object[] }} [opts]
  */
 export function evaluateKodusHeadEvidence(
   checkRun,
-  { reviews = [], headSha = '', issueComments = [] } = {},
+  { reviews = [], headSha = '', issueComments = [], headCommittedAt = null } = {},
 ) {
   const fromCheck = evaluateKodusCheckRun(checkRun);
   if (fromCheck.ok) return fromCheck;
   if (fromCheck.reason === 'kodus-pending' || fromCheck.reason === 'kodus-started-only') {
     return fromCheck;
   }
-  if (
-    fromCheck.reason === 'kodus-credits-exhausted' &&
-    hasTrustedKodusCreditsSkip(issueComments)
-  ) {
+  const markerNote = hasTrustedKodusCreditsSkip(issueComments)
+    ? '; trusted ecc-kodus-skipped-credits marker present'
+    : '';
+  if (fromCheck.reason === 'kodus-credits-exhausted') {
     return {
       ok: true,
+      skipped: true,
       reason: 'kodus-skipped-credits',
-      detail:
-        'Kody skipped: provider (Ollama/openai_compatible) credits exhausted; trusted ecc-kodus-skipped-credits marker present',
+      detail: `Kody skipped: review provider credits/quota exhausted (check-run ${checkRun.conclusion}, id=${checkRun.id ?? 'n/a'})${markerNote}`,
     };
   }
   // Missing check-run: APPROVED unlocks; credits abort (issue card + OWNER skip) also unlocks.
@@ -411,15 +466,12 @@ export function evaluateKodusHeadEvidence(
         detail: `Kody APPROVED review on HEAD (no check-run; id=${approved.id})`,
       };
     }
-    if (
-      hasTrustedKodusCreditsSkip(issueComments) &&
-      kodyIssueCommentsIndicateCreditsExhausted(issueComments)
-    ) {
+    if (kodyIssueCommentsIndicateCreditsExhausted(issueComments, { headCommittedAt })) {
       return {
         ok: true,
+        skipped: true,
         reason: 'kodus-skipped-credits',
-        detail:
-          'Kody missing check-run; issue comment shows credits exhausted; trusted ecc-kodus-skipped-credits marker present',
+        detail: `Kody skipped: no check-run; kody-ai outage card posted after HEAD commit shows provider credits/quota exhausted${markerNote}`,
       };
     }
     return fromCheck;
