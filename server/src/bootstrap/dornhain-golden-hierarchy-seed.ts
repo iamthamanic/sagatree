@@ -37,9 +37,9 @@ export const DORHAIN_GOLDEN_PLACE_SEEDS: readonly DornhainGoldenPlaceSeed[] = [
   {
     stableId: 'dh-place-country-westmark',
     seedKey: 'country.westmark',
-    name: 'Land Westmark',
+    name: 'Nordreich',
     kind: 'country',
-    description: 'Land auf dem Kontinent Westmark (Golden-Platzhaltername).',
+    description: 'Land Nordreich auf dem Kontinent Westmark (Golden-Name, Owner-Freeze 2026-11-15 / ATL2-H03 #1236).',
     parentSeedKey: 'continent.westmark',
     anchor: { x: 430, y: 400 },
     sortOrder: 5,
@@ -186,6 +186,15 @@ export type DornhainGoldenMapSeed = {
 };
 
 /** Ordered parent→child so cold bootstrap upserts without forward refs. */
+/**
+ * Pre-freeze Golden map titles (ATL2-H03 #1236, owner freeze 2026-11-15). Existing worlds
+ * whose map still carries exactly the old Golden title get the frozen title on bootstrap;
+ * user-renamed maps and authored canvases are never touched.
+ */
+export const DORHAIN_GOLDEN_LEGACY_MAP_TITLES: Readonly<Record<string, readonly string[]>> = {
+  'dornhain.map.country.westmark': ['Land Westmark'],
+};
+
 export const DORHAIN_GOLDEN_MAP_SEEDS: readonly DornhainGoldenMapSeed[] = [
   {
     stableId: 'dh-map-continent-westmark',
@@ -240,7 +249,7 @@ export const DORHAIN_GOLDEN_MAP_SEEDS: readonly DornhainGoldenMapSeed[] = [
     stableId: 'dh-map-country-westmark',
     seedKey: 'dornhain.map.country.westmark',
     placeSeedKey: 'country.westmark',
-    title: 'Land Westmark',
+    title: 'Nordreich',
     kind: 'region',
     parentMapSeedKey: 'dornhain.map.continent.westmark',
     parentAnchor: { centerX: 430, centerY: 400, extentX: 110, extentY: 100 },
@@ -520,6 +529,15 @@ export function seedDornhainGoldenHierarchy(
         mapId,
         worldId,
       );
+    } else if (
+      existing.title !== spec.title &&
+      (DORHAIN_GOLDEN_LEGACY_MAP_TITLES[spec.seedKey] ?? []).includes(existing.title)
+    ) {
+      // Title-only rename to the frozen Golden name; canvas/revision semantics unchanged.
+      db.prepare(
+        `UPDATE world_atlas_maps SET title = ?, revision = revision + 1, updated_at = ?
+         WHERE id = ? AND world_profile_id = ?`,
+      ).run(spec.title, now, mapId, worldId);
     }
     mapIdsBySeed.set(spec.seedKey, mapId);
   }

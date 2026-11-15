@@ -5,7 +5,7 @@
 ## Intent
 
 Fresh Dornhain worlds and Golden-Reset must land the same six-level
-map hierarchy (Welt → Kontinent Westmark → Land Westmark → Dornhain →
+map hierarchy (Welt → Kontinent Westmark → Nordreich → Dornhain →
 Taverne/Krypta) with linked places — never a flat root-only seed.
 
 ## Preconditions
