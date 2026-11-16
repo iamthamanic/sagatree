@@ -838,18 +838,18 @@ precision highp float;
 #else
 precision mediump float;
 #endif
-varying vec3 vCol;varying vec2 vUV;varying float vFogDepth;varying vec3 vWorld;varying vec3 vAlb;uniform sampler2D uSampler;uniform float uTexture;uniform float uAlpha;uniform float uFogDensity;uniform vec3 uFogColor;
+varying vec3 vCol;varying vec2 vUV;varying float vFogDepth;varying vec3 vWorld;varying vec3 vAlb;uniform sampler2D uSampler;uniform float uTexture;uniform float uAlpha;uniform float uFogDensity;uniform float uFogStart;uniform vec3 uFogColor;
         uniform vec4 uTorch[8];uniform int uTorchCount;uniform vec3 uTorchColor;uniform float uTorchGain;
         void main(){vec4 tex=texture2D(uSampler,vUV);float a=mix(1.0,tex.a,uTexture);if(a<0.08)discard;vec3 texc=mix(vec3(1.),tex.rgb,uTexture);vec3 col=vCol*texc;
         vec3 torchLight=vec3(0.0);for(int i=0;i<8;i++){if(i>=uTorchCount)break;vec3 d=(vWorld-uTorch[i].xyz)/uTorch[i].w;float q=clamp(1.0-dot(d,d),0.0,1.0);torchLight+=uTorchColor*(q*q);}
         col+=vAlb*texc*torchLight*uTorchGain;
-        float fog=uFogDensity>0.0?clamp(1.0-exp(-uFogDensity*vFogDepth),0.0,0.72):0.0;col=mix(col,uFogColor,fog);gl_FragColor=vec4(col,uAlpha*a);}`;
+        float fog=uFogDensity>0.0?clamp(1.0-exp(-uFogDensity*max(0.0,vFogDepth-uFogStart)),0.0,0.72):0.0;col=mix(col,uFogColor,fog);gl_FragColor=vec4(col,uAlpha*a);}`;
         const compile=(type,code)=>{const s=gl.createShader(type);gl.shaderSource(s,code);gl.compileShader(s);if(!gl.getShaderParameter(s,gl.COMPILE_STATUS))throw Error(gl.getShaderInfoLog(s));return s;};
         const vs=compile(gl.VERTEX_SHADER,vertex);const fs=compile(gl.FRAGMENT_SHADER,fragment);
         const p=gl.createProgram();gl.attachShader(p,vs);gl.attachShader(p,fs);gl.linkProgram(p);
         if(!gl.getProgramParameter(p,gl.LINK_STATUS))throw Error(gl.getProgramInfoLog(p));this.program=p;this.shaders=[vs,fs];
         this.attribs=['aPos','aNormal','aColor','aUV'].map(n=>gl.getAttribLocation(p,n));
-        this.uniforms=Object.fromEntries(['uMatrix','uView','uTexture','uSampler','uAlpha','uFlat','uLightDir','uAmbient','uShadow','uFogDensity','uFogColor','uTorchCount','uTorchColor','uTorchGain'].map(n=>[n,gl.getUniformLocation(p,n)]));
+        this.uniforms=Object.fromEntries(['uMatrix','uView','uTexture','uSampler','uAlpha','uFlat','uLightDir','uAmbient','uShadow','uFogDensity','uFogStart','uFogColor','uTorchCount','uTorchColor','uTorchGain'].map(n=>[n,gl.getUniformLocation(p,n)]));
         this.uniforms.uTorch=gl.getUniformLocation(p,'uTorch[0]');this.torchData=new Float32Array(32);
         gl.useProgram(p);gl.uniform1i(this.uniforms.uSampler,0);gl.enable(gl.DEPTH_TEST);gl.depthFunc(gl.LEQUAL);
         const cc=envLight.clearColor;gl.clearColor(cc[0],cc[1],cc[2],cc[3]);gl.disable(gl.CULL_FACE);
@@ -871,13 +871,15 @@ varying vec3 vCol;varying vec2 vUV;varying float vFogDepth;varying vec3 vWorld;v
         if(this.uniforms.uAmbient)gl.uniform1f(this.uniforms.uAmbient,du.ambient);
         if(this.uniforms.uShadow)gl.uniform1f(this.uniforms.uShadow,du.shadow);
         if(this.uniforms.uFogDensity)gl.uniform1f(this.uniforms.uFogDensity,du.fogDensity);
+        /* ATL3-R01B leftover (a) — perspective fog starts behind the focus point so medium-zoom floors stay readable. */
+        if(this.uniforms.uFogStart)gl.uniform1f(this.uniforms.uFogStart,matrices&&typeof matrices.fogStart==='number'?matrices.fogStart:0);
         if(this.uniforms.uFogColor)gl.uniform3fv(this.uniforms.uFogColor,du.fogColor);
         /* Visual contract #1295 round 3 — torch point lights (dungeon look; count per quality preset). */
         const torchLights=dungeonLook?productTorchLights(dungeonLook.maxTorchLights):[];
         if(this.uniforms.uTorchCount)gl.uniform1i(this.uniforms.uTorchCount,torchLights.length);
         if(torchLights.length){this.torchData.fill(0);torchLights.forEach((l,i)=>this.torchData.set(l,i*4));if(this.uniforms.uTorch)gl.uniform4fv(this.uniforms.uTorch,this.torchData);if(this.uniforms.uTorchColor)gl.uniform3fv(this.uniforms.uTorchColor,hexToRgb(dungeonLook.light));if(this.uniforms.uTorchGain)gl.uniform1f(this.uniforms.uTorchGain,torchLightGain());}
         gl.activeTexture(gl.TEXTURE0);gl.enable(gl.DEPTH_TEST);gl.depthMask(true);gl.disable(gl.BLEND);let calls=0;
-        for(const [name,m] of this.meshes){if(m.count===0||visibility[name]===false)continue;const alpha=typeof visibility[name]==='number'?visibility[name]:1;gl.uniform1f(this.uniforms.uAlpha,alpha);gl.uniform1f(this.uniforms.uTexture,m.texture?1:0);gl.uniform1f(this.uniforms.uFlat,(m.texture||name==='ocean')?1:0);gl.bindTexture(gl.TEXTURE_2D,m.texture?(this.textures.get(m.texture)||this.surface):this.surface);gl.bindBuffer(gl.ARRAY_BUFFER,m.buffer);const stride=44;for(const [i,index] of this.attribs.entries()){if(index<0)continue;gl.enableVertexAttribArray(index);gl.vertexAttribPointer(index,i===3?2:3,gl.FLOAT,false,stride,[0,12,24,36][i]);}if(alpha<1){gl.enable(gl.BLEND);gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);gl.depthMask(false);}else{gl.disable(gl.BLEND);gl.depthMask(true);}gl.drawArrays(gl.TRIANGLES,0,m.count);calls++;}
+        for(const [name,m] of this.meshes){if(m.count===0||visibility[name]===false)continue;const alpha=typeof visibility[name]==='number'?visibility[name]:1;gl.uniform1f(this.uniforms.uAlpha,alpha);gl.uniform1f(this.uniforms.uTexture,m.texture?1:0);gl.uniform1f(this.uniforms.uFlat,(m.texture||name==='ocean')?1:0);gl.bindTexture(gl.TEXTURE_2D,m.texture?(this.textures.get(m.texture)||this.surface):this.surface);gl.bindBuffer(gl.ARRAY_BUFFER,m.buffer);const stride=44;for(const [i,index] of this.attribs.entries()){if(index<0)continue;gl.enableVertexAttribArray(index);gl.vertexAttribPointer(index,i===3?2:3,gl.FLOAT,false,stride,[0,12,24,36][i]);}if(alpha<1){gl.enable(gl.BLEND);gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);gl.depthMask(false);}else{gl.disable(gl.BLEND);gl.depthMask(true);}/* ATL3-R01B leftover (b) — depth bias pushes the full-frame background planes (ocean / sheet) behind every map layer. */const bias=name==='ocean'?8:name==='product_sheet'?4:0;if(bias){gl.enable(gl.POLYGON_OFFSET_FILL);gl.polygonOffset(1,bias);}gl.drawArrays(gl.TRIANGLES,0,m.count);if(bias)gl.disable(gl.POLYGON_OFFSET_FILL);calls++;}
         gl.depthMask(true);gl.disable(gl.BLEND);this.lastCalls=calls;
       }
     }
@@ -1483,9 +1485,9 @@ varying vec3 vCol;varying vec2 vUV;varying float vFogDepth;varying vec3 vWorld;v
       const mesh={base:new MeshBuilder(),wprops:new MeshBuilder(),s:new MeshBuilder(),d:new MeshBuilder()},live=new MeshBuilder(),sheet=new MeshBuilder(),grid=new MeshBuilder(),hfMesh=new MeshBuilder();
       const pick=(id,isProp)=>{const c=productLodClass(id);if(c==='s')return mesh.s;if(c==='d')return mesh.d;if(c==='w'&&isProp)return mesh.wprops;return mesh.base;};
       productSheetInto(sheet);productGridInto(grid);productHeightfieldInto(hfMesh);
-      const rooms=Array.isArray(state.rooms)?state.rooms:[],dyR=Math.min(.01,.3/Math.max(1,rooms.length));
+      const rooms=Array.isArray(state.rooms)?state.rooms:[],dyR=Math.min(.075,.3/Math.max(1,rooms.length)); /* ATL3-R01B leftover (c) — .01 spacing let the full-frame water room win depth ties over the plaza. */
       rooms.forEach((rm,i)=>{if(rm)productRoomInto(pick(rm.id,false),rm,-.48+i*dyR,dyR);});
-      const strokes=Array.isArray(state.strokes)?state.strokes:[],dyS=Math.min(.01,.11/Math.max(1,strokes.length));
+      const strokes=Array.isArray(state.strokes)?state.strokes:[],dyS=Math.min(.03,.11/Math.max(1,strokes.length));
       strokes.forEach((st,i)=>{if(st)productStrokeInto(pick(st.id,false),st,-.16+i*dyS);});
       const wallH=mapScale==='interior'?22:mapScale==='settlement'?8:3;
       for(const w of (Array.isArray(state.walls)?state.walls:[]))if(w)productWallInto(pick(w.id,false),w,-.02,wallH);
@@ -1700,11 +1702,15 @@ varying vec3 vCol;varying vec2 vUV;varying float vFogDepth;varying vec3 vWorld;v
       const{eye,at,up,d,mode}=cameraEyeBasis();
       const aspect=Math.max(0.2,stageWidth/Math.max(1,stageHeight));
       const far=Math.max(8000,d*4+200);
+      /* ATL3-R01B leftover (b) — a fixed .2 near plane left ~0.1 depth units of precision at medium
+         perspective zoom, so stacked flat layers (sheet/ocean/rooms) z-fought into stripes.
+         The eye is always >= sin(0.35)*d above ground, so a d-relative near plane is safe. */
+      const near=Math.max(.2,d*.02);
       const view=glm.lookAt(eye,at,up);
       const mvp=mode==='perspective'
-        ? glm.mul(glm.perspective(50*Math.PI/180,aspect,.2,far),view)
+        ? glm.mul(glm.perspective(50*Math.PI/180,aspect,near,far),view)
         : glm.mul(glm.ortho(-cameraState.span*aspect,cameraState.span*aspect,-cameraState.span,cameraState.span,.1,far),view);
-      return {mvp,view};
+      return {mvp,view,fogStart:mode==='perspective'?d*.75:0};
     }
     /** @deprecated Prefer cameraMatrices(); kept for any local callers of the MVP only. */
     function cameraMatrix(){return cameraMatrices().mvp;}
