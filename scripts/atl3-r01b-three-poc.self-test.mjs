@@ -81,7 +81,8 @@ for (const f of [...pocFiles, 'e2e/atl3-r01b-three-poc.spec.ts']) {
 const spec = read('e2e/atl3-r01b-three-poc.spec.ts');
 assert.ok(/import type \{\} from '..\/src\/infrastructure\/world\/atlas-r01b-three-poc\/r01b-poc-harness'/.test(spec), 'spec imports harness type-only');
 assert.ok(spec.includes("route.abort()") || spec.includes('held'), 'edit path PUT held (no DB write)');
-assert.ok(spec.includes("tier === 'desktop-reference'") && spec.includes('!software && budget'), 'hardware budgets enforced on real GPUs');
+assert.ok(spec.includes("tier === 'desktop-reference'") && spec.includes('hardware && budget'), 'hardware budgets enforced on real GPUs');
+assert.ok(/const hardware = !softwareMarker && \/nvidia/.test(spec), 'hardware classification requires positive GPU evidence');
 row('poc-isolated', `${pocFiles.length} PoC files, 0 product importers, 0 escape hatches`);
 
 /* 4) Committed browser evidence. */
@@ -101,8 +102,19 @@ assert.ok(ev.picking.every((p) => p.hits === p.tried && p.tried > 0), 'picking')
 assert.ok(ev.contextLoss.every((c) => c.lost && c.restored), 'context loss/restore');
 assert.ok(ev.editPath.idsAfter === ev.editPath.idsBefore + 1 && ev.editPath.planarOffset < 1 && /no write/.test(ev.editPath.dbWrite), 'edit path');
 assert.equal(ev.loadError.rejected, true, 'load error rejects');
-if (/^software/.test(ev.renderer.kind)) {
-  assert.match(ev.measurementClass, /informational/, 'software perf is informational');
+const ab = ev.abThresholds;
+assert.ok(ab && ab.minStructureCorr >= 0.25 && ab.minUnrelatedMargin >= 0.1 && ab.edgeDensityVsCustomMin >= 0.9 && ab.distinctColorsVsCustomMin >= 1, 'A/B thresholds recorded');
+for (const c of ev.captures) {
+  const x = c.ab;
+  assert.ok(x, `${c.file}: quantitative A/B`);
+  assert.ok(x.structureCorr >= ab.minStructureCorr, `${c.file}: structure ${x.structureCorr}`);
+  assert.ok(x.structureCorr - x.unrelatedSceneMaxCorr >= ab.minUnrelatedMargin - 1e-3, `${c.file}: unrelated-scene margin`);
+  assert.ok(x.structureCorr > x.otherViewMaxCorr, `${c.file}: identifies own camera/zoom`);
+  assert.ok(x.edgeDensityRatio >= ab.edgeDensityVsCustomMin && x.distinctColorsRatio >= ab.distinctColorsVsCustomMin, `${c.file}: richness ≥ custom`);
+}
+assert.ok(['hardware-webgl', 'software-webgl', 'unverified-webgl'].includes(ev.renderer.kind), 'renderer classified');
+if (ev.renderer.kind !== 'hardware-webgl') {
+  assert.match(ev.measurementClass, /informational/, 'non-hardware perf is informational');
   assert.ok(ev.perf.every((p) => p.budgetMode === 'informational'));
 } else {
   const b = contract.hardwareBudgets.find((x) => x.tier === 'desktop-reference');

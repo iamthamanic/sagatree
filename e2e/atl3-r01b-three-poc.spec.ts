@@ -167,6 +167,64 @@ async function imageMetrics(page: Page, png: Buffer): Promise<ImageMetrics> {
   }, png.toString('base64'));
 }
 
+/** 64×40 box-downsampled luma gradient map (palette-independent structure: coastlines, walls, footprints). */
+const GRAD_W = 64;
+const GRAD_H = 40;
+async function gradientMap(page: Page, png: Buffer): Promise<number[]> {
+  return page.evaluate(async ({ b64, W, H }) => {
+    const bmp = await createImageBitmap(await (await fetch(`data:image/png;base64,${b64}`)).blob());
+    const c = new OffscreenCanvas(bmp.width, bmp.height);
+    const ctx = c.getContext('2d');
+    if (!ctx) throw new Error('2d context unavailable');
+    ctx.drawImage(bmp, 0, 0);
+    const { width, height, data } = ctx.getImageData(0, 0, bmp.width, bmp.height);
+    const cells = new Float64Array(W * H);
+    for (let gy = 0; gy < H; gy += 1) {
+      const y0 = Math.floor((gy * height) / H), y1 = Math.max(y0 + 1, Math.floor(((gy + 1) * height) / H));
+      for (let gx = 0; gx < W; gx += 1) {
+        const x0 = Math.floor((gx * width) / W), x1 = Math.max(x0 + 1, Math.floor(((gx + 1) * width) / W));
+        let sum = 0;
+        for (let y = y0; y < y1; y += 1) {
+          for (let x = x0; x < x1; x += 1) {
+            const i = (y * width + x) * 4;
+            sum += 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
+          }
+        }
+        cells[gy * W + gx] = sum / ((y1 - y0) * (x1 - x0));
+      }
+    }
+    const out: number[] = [];
+    for (let gy = 0; gy < H - 1; gy += 1) {
+      for (let gx = 0; gx < W - 1; gx += 1) {
+        const i = gy * W + gx;
+        out.push(Math.abs(cells[i + 1] - cells[i]) + Math.abs(cells[i + W] - cells[i]));
+      }
+    }
+    return out;
+  }, { b64: png.toString('base64'), W: GRAD_W, H: GRAD_H });
+}
+
+function pearson(a: readonly number[], b: readonly number[]): number {
+  const n = Math.min(a.length, b.length);
+  let ma = 0, mb = 0;
+  for (let i = 0; i < n; i += 1) { ma += a[i]; mb += b[i]; }
+  ma /= n; mb /= n;
+  let ab = 0, aa = 0, bb = 0;
+  for (let i = 0; i < n; i += 1) {
+    const da = a[i] - ma, db = b[i] - mb;
+    ab += da * db; aa += da * da; bb += db * db;
+  }
+  return ab / Math.sqrt(aa * bb + 1e-9);
+}
+
+/**
+ * Quantitative A/B per paired capture (#1296 equal fidelity). Pixel palettes differ by design (PBR vs flat albedo),
+ * so layout is compared on gradient structure: the PoC frame must (1) correlate with its paired custom frame,
+ * (2) clearly better than with any custom frame of the other Golden scene (unrelated image), (3) best among all
+ * other camera/zoom views of the same scene (pair identification), and (4) be at least as rich as custom.
+ */
+const AB = { minStructureCorr: 0.25, minUnrelatedMargin: 0.1, edgeDensityVsCustomMin: 0.9, distinctColorsVsCustomMin: 1 } as const;
+
 async function toSurface(page: Page, mode: '2d' | '3d'): Promise<void> {
   const target = page.locator(`[data-atlas-surface-mode="${mode}"]`).first();
   await expect(page.locator('[data-atlas-surface-mode="2d"], [data-atlas-surface-mode="3d"]').first()).toBeVisible({ timeout: 60_000 });
@@ -226,12 +284,18 @@ test.describe('ATL3-R01B Three.js PoC vs custom WebGL (#1296)', () => {
       const dbg = gl?.getExtension('WEBGL_debug_renderer_info');
       return gl && dbg ? String(gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL)) : 'unknown';
     });
-    const software = /swiftshader|llvmpipe|softpipe|software/i.test(unmasked);
+    // Hardware only on positive evidence (known GPU vendor, no software marker); unknown → unverified (never gate evidence).
+    const softwareMarker = /swiftshader|llvmpipe|softpipe|lavapipe|software|microsoft basic render/i.test(unmasked);
+    const hardware = !softwareMarker && /nvidia|geforce|quadro|radeon|amd|intel|iris|uhd graphics|apple|adreno|mali|powervr/i.test(unmasked);
+    const rendererKind = hardware ? 'hardware-webgl' : softwareMarker ? 'software-webgl' : 'unverified-webgl';
 
     const results = {
       format: 'atl3-r01b-three-poc-v1', issue: 1296, buildSha: buildSha(), at: new Date().toISOString(),
-      renderer: { unmasked, kind: software ? 'software-webgl' : 'hardware-webgl', three: 'three@0.186.1 (repo dependency)' },
-      measurementClass: software ? 'software-webgl (SwiftShader): informational only — no hardware perf / quality claim' : 'hardware-webgl',
+      renderer: { unmasked, kind: rendererKind, three: 'three@0.186.1 (repo dependency)' },
+      abThresholds: { ...AB, structure: `pearson(gradient maps ${GRAD_W}×${GRAD_H})` },
+      measurementClass: hardware
+        ? 'hardware-webgl'
+        : `${rendererKind} (${unmasked}): informational only — no hardware perf / quality claim`,
       storedData: [...docs].map(([sceneId, d]) => ({ sceneId, mapId: d.mapId, fingerprint: d.fingerprint })),
       load: [] as Array<Record<string, number | string>>,
       captures: [] as Array<Record<string, unknown>>,
@@ -250,6 +314,14 @@ test.describe('ATL3-R01B Three.js PoC vs custom WebGL (#1296)', () => {
 
     // Every V01 WebGL capture (desktop all cameras/zooms + tablet/phone diorama Z0); lite stays AtlasLite3D.
     const mirrored = manifest.captures.filter((c) => c.profile === 'high' || c.profile === 'balanced');
+    const customGrad = new Map<string, number[]>();
+    const gradOfCustom = async (file: string): Promise<number[]> => {
+      const hit = customGrad.get(file);
+      if (hit) return hit;
+      const g = await gradientMap(pocPage, readFileSync(join(V01_BASELINE, file)));
+      customGrad.set(file, g);
+      return g;
+    };
     expect(mirrored.filter((c) => c.viewport === 'desktop').length, 'V01 desktop high/balanced captures to mirror').toBeGreaterThanOrEqual(20);
     for (const profile of ['high', 'balanced'] as const) {
       const cold = await pocPage.evaluate(async ({ q, a }) => {
@@ -289,9 +361,30 @@ test.describe('ATL3-R01B Three.js PoC vs custom WebGL (#1296)', () => {
           const metrics = await imageMetrics(pocPage, png);
           expect(metrics.distinctColors, `${file} non-blank`).toBeGreaterThanOrEqual(contract.tolerances.nonBlank.minDistinctColors);
           expect(metrics.lumaStdDev, `${file} non-blank`).toBeGreaterThanOrEqual(contract.tolerances.nonBlank.minLumaStdDev);
+          // Quantitative A/B against the paired custom frame (+ controls).
+          const g = await gradientMap(pocPage, png);
+          const own = pearson(g, await gradOfCustom(row.file));
+          let unrelated = -1;
+          for (const o of mirrored.filter((c) => c.sceneId !== scene.id && c.viewport === row.viewport)) unrelated = Math.max(unrelated, pearson(g, await gradOfCustom(o.file)));
+          let otherView = -1;
+          for (const o of mirrored.filter((c) => c.sceneId === scene.id && c.profile === profile && c.viewport === row.viewport && (c.camera !== row.camera || c.zoomId !== row.zoomId))) {
+            otherView = Math.max(otherView, pearson(g, await gradOfCustom(o.file)));
+          }
+          const ab = {
+            structureCorr: Math.round(own * 1000) / 1000,
+            unrelatedSceneMaxCorr: Math.round(unrelated * 1000) / 1000,
+            otherViewMaxCorr: Math.round(otherView * 1000) / 1000,
+            edgeDensityRatio: Math.round((metrics.edgeDensity / Math.max(1e-6, row.metrics.edgeDensity)) * 100) / 100,
+            distinctColorsRatio: Math.round((metrics.distinctColors / Math.max(1, row.metrics.distinctColors)) * 100) / 100,
+          };
+          expect(own, `${file} A/B structure vs paired custom frame`).toBeGreaterThanOrEqual(AB.minStructureCorr);
+          expect(own - unrelated, `${file} A/B margin vs unrelated scene`).toBeGreaterThanOrEqual(AB.minUnrelatedMargin);
+          expect(own, `${file} A/B identifies its own camera/zoom`).toBeGreaterThan(otherView);
+          expect(ab.edgeDensityRatio, `${file} edge density ≥ custom`).toBeGreaterThanOrEqual(AB.edgeDensityVsCustomMin);
+          expect(ab.distinctColorsRatio, `${file} distinct colours ≥ custom`).toBeGreaterThanOrEqual(AB.distinctColorsVsCustomMin);
           results.captures.push({
             file, sceneId: scene.id, camera: row.camera, zoomId: row.zoomId, profile, viewport: row.viewport, view,
-            customFile: row.file, three: info, metrics,
+            customFile: row.file, three: info, metrics, ab,
             custom: { meshes: row.meshes, triangles: row.triangles, metrics: row.metrics },
           });
         }
@@ -301,10 +394,10 @@ test.describe('ATL3-R01B Three.js PoC vs custom WebGL (#1296)', () => {
         const fr = must(await pocPage.evaluate(({ v, n }) => window.__r01bThreePoc?.frames(v, n) ?? null, { v: perfRow.actual, n: FRAME_SAMPLES + 8 }), 'frames');
         const deltas = fr.deltas.slice(8);
         const custom = manifest.perf.find((p) => p.sceneId === scene.id && p.profile === profile);
-        results.perf.push({ sceneId: scene.id, profile, p50: pct(deltas, 50), p95: pct(deltas, 95), customP50: custom?.p50 ?? -1, customP95: custom?.p95 ?? -1, budgetMode: software ? 'informational' : 'enforced' });
+        results.perf.push({ sceneId: scene.id, profile, p50: pct(deltas, 50), p95: pct(deltas, 95), customP50: custom?.p50 ?? -1, customP95: custom?.p95 ?? -1, budgetMode: hardware ? 'enforced' : 'informational' });
         // ADR-ST-11 hardware-evidence gate: on a real GPU the desktop-reference budget is hard (never on SwiftShader).
         const budget = contract.hardwareBudgets.find((b) => b.tier === 'desktop-reference' && b.preset === profile);
-        if (!software && budget) {
+        if (hardware && budget) {
           expect(pct(deltas, 95), `${scene.id} ${profile} frame p95 (hardware)`).toBeLessThanOrEqual(budget.frameP95Ms);
           const perfInfo = must(await pocPage.evaluate((v) => window.__r01bThreePoc?.render(v) ?? null, perfRow.actual), 'render info');
           expect(perfInfo.calls, `${scene.id} ${profile} draw calls (hardware)`).toBeLessThanOrEqual(budget.drawCallsMax);

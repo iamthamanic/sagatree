@@ -1,23 +1,30 @@
 {
   "format": "atl3-r01b-three-poc-v1",
   "issue": 1296,
-  "buildSha": "651c90afd8",
-  "at": "2026-11-16T08:44:43.194Z",
+  "buildSha": "07cd2262c7",
+  "at": "2026-11-16T09:14:32.799Z",
   "renderer": {
     "unmasked": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
     "kind": "software-webgl",
     "three": "three@0.186.1 (repo dependency)"
   },
-  "measurementClass": "software-webgl (SwiftShader): informational only — no hardware perf / quality claim",
+  "abThresholds": {
+    "minStructureCorr": 0.25,
+    "minUnrelatedMargin": 0.1,
+    "edgeDensityVsCustomMin": 0.9,
+    "distinctColorsVsCustomMin": 1,
+    "structure": "pearson(gradient maps 64×40)"
+  },
+  "measurementClass": "software-webgl (ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)): informational only — no hardware perf / quality claim",
   "storedData": [
     {
       "sceneId": "dornhain-block",
-      "mapId": "dh-map-place-dornhain__72e8dde627a4",
+      "mapId": "dh-map-place-dornhain__6517e7f969bf",
       "fingerprint": "3ec9b21f1c3d0ff1"
     },
     {
       "sceneId": "krypta",
-      "mapId": "dh-map-loc-crypt__b3e785a1606c",
+      "mapId": "dh-map-loc-crypt__c17051e65fd2",
       "fingerprint": "a44b49a77d61e201"
     }
   ],
@@ -25,28 +32,28 @@
     {
       "profile": "high",
       "sceneId": "dornhain-block",
-      "coldLoadMs": 25,
-      "textureDecodeMs": 10,
+      "coldLoadMs": 28,
+      "textureDecodeMs": 14,
       "shaderCompileMs": 7.6,
-      "firstFrameMs": 103,
-      "sceneBuildMs": 10.5
+      "firstFrameMs": 106,
+      "sceneBuildMs": 9.8
     },
     {
       "profile": "high",
       "sceneId": "krypta",
-      "coldLoadMs": 25,
-      "textureDecodeMs": 10,
-      "shaderCompileMs": 5.2,
-      "firstFrameMs": 79,
-      "sceneBuildMs": 8.1
+      "coldLoadMs": 28,
+      "textureDecodeMs": 14,
+      "shaderCompileMs": 6.2,
+      "firstFrameMs": 86,
+      "sceneBuildMs": 8.5
     },
     {
       "profile": "balanced",
       "sceneId": "dornhain-block",
       "coldLoadMs": 10,
       "textureDecodeMs": 3,
-      "shaderCompileMs": 1.9,
-      "firstFrameMs": 63,
+      "shaderCompileMs": 2.1,
+      "firstFrameMs": 61,
       "sceneBuildMs": 1.8
     },
     {
@@ -54,9 +61,9 @@
       "sceneId": "krypta",
       "coldLoadMs": 10,
       "textureDecodeMs": 3,
-      "shaderCompileMs": 5.4,
-      "firstFrameMs": 256,
-      "sceneBuildMs": 11.1
+      "shaderCompileMs": 10.5,
+      "firstFrameMs": 190,
+      "sceneBuildMs": 7.5
     }
   ],
   "captures": [
@@ -91,6 +98,13 @@
         "distinctColors": 996,
         "edgeDensity": 0.0738,
         "dominantColorShare": 0.1189
+      },
+      "ab": {
+        "structureCorr": 0.443,
+        "unrelatedSceneMaxCorr": 0.143,
+        "otherViewMaxCorr": 0.185,
+        "edgeDensityRatio": 6.42,
+        "distinctColorsRatio": 10.38
       },
       "custom": {
         "meshes": 14,
@@ -138,6 +152,13 @@
         "edgeDensity": 0.0702,
         "dominantColorShare": 0.1062
       },
+      "ab": {
+        "structureCorr": 0.486,
+        "unrelatedSceneMaxCorr": 0.16,
+        "otherViewMaxCorr": 0.293,
+        "edgeDensityRatio": 5.85,
+        "distinctColorsRatio": 7.37
+      },
       "custom": {
         "meshes": 14,
         "triangles": 1106,
@@ -183,6 +204,13 @@
         "distinctColors": 1089,
         "edgeDensity": 0.0495,
         "dominantColorShare": 0.0987
+      },
+      "ab": {
+        "structureCorr": 0.506,
+        "unrelatedSceneMaxCorr": 0.205,
+        "otherViewMaxCorr": 0.353,
+        "edgeDensityRatio": 3.26,
+        "distinctColorsRatio": 6.08
       },
       "custom": {
         "meshes": 14,
@@ -230,6 +258,13 @@
         "edgeDensity": 0.0391,
         "dominantColorShare": 0.4991
       },
+      "ab": {
+        "structureCorr": 0.569,
+        "unrelatedSceneMaxCorr": 0.333,
+        "otherViewMaxCorr": 0.355,
+        "edgeDensityRatio": 3.59,
+        "distinctColorsRatio": 3.85
+      },
       "custom": {
         "meshes": 14,
         "triangles": 3032,
@@ -275,6 +310,13 @@
         "distinctColors": 387,
         "edgeDensity": 0.0362,
         "dominantColorShare": 0.4407
+      },
+      "ab": {
+        "structureCorr": 0.511,
+        "unrelatedSceneMaxCorr": 0.281,
+        "otherViewMaxCorr": 0.374,
+        "edgeDensityRatio": 3.42,
+        "distinctColorsRatio": 3.2
       },
       "custom": {
         "meshes": 14,
@@ -322,6 +364,13 @@
         "edgeDensity": 0.0243,
         "dominantColorShare": 0.4564
       },
+      "ab": {
+        "structureCorr": 0.495,
+        "unrelatedSceneMaxCorr": 0.328,
+        "otherViewMaxCorr": 0.477,
+        "edgeDensityRatio": 1.8,
+        "distinctColorsRatio": 1.96
+      },
       "custom": {
         "meshes": 14,
         "triangles": 3032,
@@ -367,6 +416,13 @@
         "distinctColors": 653,
         "edgeDensity": 0.0106,
         "dominantColorShare": 0.4608
+      },
+      "ab": {
+        "structureCorr": 0.541,
+        "unrelatedSceneMaxCorr": 0.163,
+        "otherViewMaxCorr": 0.34,
+        "edgeDensityRatio": 4.61,
+        "distinctColorsRatio": 12.09
       },
       "custom": {
         "meshes": 14,
@@ -414,6 +470,13 @@
         "edgeDensity": 0.0738,
         "dominantColorShare": 0.1189
       },
+      "ab": {
+        "structureCorr": 0.444,
+        "unrelatedSceneMaxCorr": 0.143,
+        "otherViewMaxCorr": 0.185,
+        "edgeDensityRatio": 7.17,
+        "distinctColorsRatio": 11.96
+      },
       "custom": {
         "meshes": 14,
         "triangles": 986,
@@ -459,6 +522,13 @@
         "distinctColors": 1072,
         "edgeDensity": 0.1921,
         "dominantColorShare": 0.0863
+      },
+      "ab": {
+        "structureCorr": 0.404,
+        "unrelatedSceneMaxCorr": 0.077,
+        "otherViewMaxCorr": 0.1,
+        "edgeDensityRatio": 13.25,
+        "distinctColorsRatio": 12.18
       },
       "custom": {
         "meshes": 14,
@@ -506,6 +576,13 @@
         "edgeDensity": 0.0109,
         "dominantColorShare": 0.5382
       },
+      "ab": {
+        "structureCorr": 0.576,
+        "unrelatedSceneMaxCorr": 0.224,
+        "otherViewMaxCorr": 0.352,
+        "edgeDensityRatio": 5.45,
+        "distinctColorsRatio": 8.26
+      },
       "custom": {
         "meshes": 14,
         "triangles": 506,
@@ -551,6 +628,13 @@
         "distinctColors": 1067,
         "edgeDensity": 0.0701,
         "dominantColorShare": 0.1062
+      },
+      "ab": {
+        "structureCorr": 0.484,
+        "unrelatedSceneMaxCorr": 0.158,
+        "otherViewMaxCorr": 0.303,
+        "edgeDensityRatio": 6.49,
+        "distinctColorsRatio": 8.08
       },
       "custom": {
         "meshes": 14,
@@ -598,6 +682,13 @@
         "edgeDensity": 0.21,
         "dominantColorShare": 0.0795
       },
+      "ab": {
+        "structureCorr": 0.447,
+        "unrelatedSceneMaxCorr": 0.142,
+        "otherViewMaxCorr": 0.248,
+        "edgeDensityRatio": 12.73,
+        "distinctColorsRatio": 8
+      },
       "custom": {
         "meshes": 14,
         "triangles": 986,
@@ -643,6 +734,13 @@
         "distinctColors": 741,
         "edgeDensity": 0.0087,
         "dominantColorShare": 0.6074
+      },
+      "ab": {
+        "structureCorr": 0.615,
+        "unrelatedSceneMaxCorr": 0.235,
+        "otherViewMaxCorr": 0.408,
+        "edgeDensityRatio": 1.05,
+        "distinctColorsRatio": 4.46
       },
       "custom": {
         "meshes": 14,
@@ -690,6 +788,13 @@
         "edgeDensity": 0.0495,
         "dominantColorShare": 0.0987
       },
+      "ab": {
+        "structureCorr": 0.508,
+        "unrelatedSceneMaxCorr": 0.203,
+        "otherViewMaxCorr": 0.355,
+        "edgeDensityRatio": 3.84,
+        "distinctColorsRatio": 6.06
+      },
       "custom": {
         "meshes": 14,
         "triangles": 986,
@@ -735,6 +840,13 @@
         "distinctColors": 1291,
         "edgeDensity": 0.1818,
         "dominantColorShare": 0.0572
+      },
+      "ab": {
+        "structureCorr": 0.469,
+        "unrelatedSceneMaxCorr": 0.128,
+        "otherViewMaxCorr": 0.266,
+        "edgeDensityRatio": 10.1,
+        "distinctColorsRatio": 7.38
       },
       "custom": {
         "meshes": 14,
@@ -782,6 +894,13 @@
         "edgeDensity": 0.0191,
         "dominantColorShare": 0.2147
       },
+      "ab": {
+        "structureCorr": 0.527,
+        "unrelatedSceneMaxCorr": 0.121,
+        "otherViewMaxCorr": -1,
+        "edgeDensityRatio": 6.82,
+        "distinctColorsRatio": 10.51
+      },
       "custom": {
         "meshes": 14,
         "triangles": 506,
@@ -827,6 +946,13 @@
         "distinctColors": 663,
         "edgeDensity": 0.0238,
         "dominantColorShare": 0.1623
+      },
+      "ab": {
+        "structureCorr": 0.273,
+        "unrelatedSceneMaxCorr": 0.088,
+        "otherViewMaxCorr": -1,
+        "edgeDensityRatio": 1.3,
+        "distinctColorsRatio": 4.7
       },
       "custom": {
         "meshes": 14,
@@ -874,6 +1000,13 @@
         "edgeDensity": 0.0134,
         "dominantColorShare": 0.4618
       },
+      "ab": {
+        "structureCorr": 0.679,
+        "unrelatedSceneMaxCorr": 0.35,
+        "otherViewMaxCorr": 0.362,
+        "edgeDensityRatio": 1.12,
+        "distinctColorsRatio": 4.88
+      },
       "custom": {
         "meshes": 14,
         "triangles": 3032,
@@ -919,6 +1052,13 @@
         "distinctColors": 330,
         "edgeDensity": 0.0387,
         "dominantColorShare": 0.4995
+      },
+      "ab": {
+        "structureCorr": 0.579,
+        "unrelatedSceneMaxCorr": 0.333,
+        "otherViewMaxCorr": 0.391,
+        "edgeDensityRatio": 3.22,
+        "distinctColorsRatio": 5.24
       },
       "custom": {
         "meshes": 14,
@@ -966,6 +1106,13 @@
         "edgeDensity": 0.105,
         "dominantColorShare": 0.4013
       },
+      "ab": {
+        "structureCorr": 0.484,
+        "unrelatedSceneMaxCorr": 0.241,
+        "otherViewMaxCorr": 0.283,
+        "edgeDensityRatio": 7.34,
+        "distinctColorsRatio": 5.34
+      },
       "custom": {
         "meshes": 14,
         "triangles": 3032,
@@ -1011,6 +1158,13 @@
         "distinctColors": 273,
         "edgeDensity": 0.013,
         "dominantColorShare": 0.5327
+      },
+      "ab": {
+        "structureCorr": 0.652,
+        "unrelatedSceneMaxCorr": 0.346,
+        "otherViewMaxCorr": 0.451,
+        "edgeDensityRatio": 1.86,
+        "distinctColorsRatio": 4.07
       },
       "custom": {
         "meshes": 14,
@@ -1058,6 +1212,13 @@
         "edgeDensity": 0.0359,
         "dominantColorShare": 0.4409
       },
+      "ab": {
+        "structureCorr": 0.504,
+        "unrelatedSceneMaxCorr": 0.282,
+        "otherViewMaxCorr": 0.356,
+        "edgeDensityRatio": 3.18,
+        "distinctColorsRatio": 4.07
+      },
       "custom": {
         "meshes": 14,
         "triangles": 3032,
@@ -1103,6 +1264,13 @@
         "distinctColors": 537,
         "edgeDensity": 0.0934,
         "dominantColorShare": 0.3729
+      },
+      "ab": {
+        "structureCorr": 0.436,
+        "unrelatedSceneMaxCorr": 0.264,
+        "otherViewMaxCorr": 0.334,
+        "edgeDensityRatio": 7.98,
+        "distinctColorsRatio": 4.2
       },
       "custom": {
         "meshes": 14,
@@ -1150,6 +1318,13 @@
         "edgeDensity": 0.011,
         "dominantColorShare": 0.6234
       },
+      "ab": {
+        "structureCorr": 0.617,
+        "unrelatedSceneMaxCorr": 0.334,
+        "otherViewMaxCorr": 0.55,
+        "edgeDensityRatio": 1.04,
+        "distinctColorsRatio": 2.39
+      },
       "custom": {
         "meshes": 14,
         "triangles": 3032,
@@ -1195,6 +1370,13 @@
         "distinctColors": 373,
         "edgeDensity": 0.0243,
         "dominantColorShare": 0.4565
+      },
+      "ab": {
+        "structureCorr": 0.472,
+        "unrelatedSceneMaxCorr": 0.327,
+        "otherViewMaxCorr": 0.444,
+        "edgeDensityRatio": 1.84,
+        "distinctColorsRatio": 2.68
       },
       "custom": {
         "meshes": 14,
@@ -1242,6 +1424,13 @@
         "edgeDensity": 0.071,
         "dominantColorShare": 0.4049
       },
+      "ab": {
+        "structureCorr": 0.412,
+        "unrelatedSceneMaxCorr": 0.282,
+        "otherViewMaxCorr": 0.402,
+        "edgeDensityRatio": 5.38,
+        "distinctColorsRatio": 3.34
+      },
       "custom": {
         "meshes": 14,
         "triangles": 3032,
@@ -1287,6 +1476,13 @@
         "distinctColors": 357,
         "edgeDensity": 0.0245,
         "dominantColorShare": 0.41
+      },
+      "ab": {
+        "structureCorr": 0.518,
+        "unrelatedSceneMaxCorr": 0.237,
+        "otherViewMaxCorr": -1,
+        "edgeDensityRatio": 3.36,
+        "distinctColorsRatio": 4.82
       },
       "custom": {
         "meshes": 14,
@@ -1334,6 +1530,13 @@
         "edgeDensity": 0.0378,
         "dominantColorShare": 0.4229
       },
+      "ab": {
+        "structureCorr": 0.353,
+        "unrelatedSceneMaxCorr": 0.069,
+        "otherViewMaxCorr": -1,
+        "edgeDensityRatio": 1.62,
+        "distinctColorsRatio": 2.21
+      },
       "custom": {
         "meshes": 14,
         "triangles": 3032,
@@ -1353,7 +1556,7 @@
     {
       "sceneId": "dornhain-block",
       "profile": "high",
-      "p50": 66.6,
+      "p50": 49.9,
       "p95": 100.1,
       "customP50": 26.5,
       "customP95": 70.3,
@@ -1363,7 +1566,7 @@
       "sceneId": "krypta",
       "profile": "high",
       "p50": 16.7,
-      "p95": 66.7,
+      "p95": 83.4,
       "customP50": 16.9,
       "customP95": 42.1,
       "budgetMode": "informational"
@@ -1372,7 +1575,7 @@
       "sceneId": "dornhain-block",
       "profile": "balanced",
       "p50": 16.7,
-      "p95": 50,
+      "p95": 50.1,
       "customP50": 16.8,
       "customP95": 35.7,
       "budgetMode": "informational"
@@ -1381,7 +1584,7 @@
       "sceneId": "krypta",
       "profile": "balanced",
       "p50": 16.7,
-      "p95": 16.7,
+      "p95": 33.4,
       "customP50": 16.6,
       "customP95": 19.8,
       "budgetMode": "informational"
@@ -1462,7 +1665,7 @@
       "sceneId": "dornhain-block",
       "lost": true,
       "restored": true,
-      "restoreMs": 85,
+      "restoreMs": 91,
       "info": {
         "calls": 28,
         "triangles": 2006,
@@ -1475,7 +1678,7 @@
       "sceneId": "krypta",
       "lost": true,
       "restored": true,
-      "restoreMs": 128,
+      "restoreMs": 131,
       "info": {
         "calls": 15,
         "triangles": 6570,
@@ -1486,11 +1689,11 @@
     }
   ],
   "heapMb": {
-    "dornhain-block": 31.566619873046875,
-    "krypta": 31.566619873046875
+    "dornhain-block": 28.03802490234375,
+    "krypta": 28.03802490234375
   },
   "editPath": {
-    "addedId": "gk7zdixr9",
+    "addedId": "ftxouilkb",
     "doc": {
       "x": 585.7143012844787,
       "y": 557.1428415726642
@@ -1507,7 +1710,7 @@
   },
   "loadError": {
     "rejected": true,
-    "ms": 16,
+    "ms": 20,
     "message": "[object Event]"
   },
   "fallback": {

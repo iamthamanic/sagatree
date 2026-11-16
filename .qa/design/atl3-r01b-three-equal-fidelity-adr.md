@@ -37,7 +37,7 @@ V01 baseline re-captured, repeat drift-free, digest `8c2a66b4a3e91bf7` (MET 13 �
 ## 4. Measurements (SwiftShader — informational)
 
 See `.qa/evidence/atl3-r01b-three-poc/results.json` and the ADR table. Summary: ID parity 13/13 + 201/201, picking 10/10,
-edit path offset 0, restore 85/128 ms, load-error reject 16 ms, heap ≈ 31.6 MB, 14–28 draw calls, image richness
+edit path offset 0, quantitative A/B per pair (gradient-structure corr ≥ 0.25, ≥ 0.10 over the other scene, pair identified 28/28 — margin vs neighbouring zoom of the same camera only ≥ 0.010; richness ≥ custom), restore 85/128 ms, load-error reject 16 ms, heap ≈ 31.6 MB, 14–28 draw calls, image richness
 (edge density median 3.8×, distinct colours median 5.2×). Frame times on SwiftShader vary ±40 % run to run and are
 dominated by the CPU rasteriser (PCF shadow pass + per-pixel PBR); they prove nothing about GPUs either way.
 

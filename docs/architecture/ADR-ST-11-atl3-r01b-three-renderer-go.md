@@ -34,13 +34,15 @@ and a `CanvasTexture` torch halo. Browser spec: `e2e/atl3-r01b-three-poc.spec.ts
 | Edit path | 2D surface `Haus` stamp → held PUT body (no DB write) → PoC: new ID present, centroid planar offset 0, IDs 13 → 14 |
 | Context loss/restore | lost + restored, 85 ms / 128 ms, non-blank after restore |
 | Load error | corrupt PBR texture → rejects in 16 ms (no hang, no partial scene) |
+| Quantitative A/B per pair (28) | gradient-structure correlation with the paired custom frame ≥ 0.25 (min 0.273), ≥ 0.10 above any frame of the other scene (min margin 0.130), and higher than every other camera/zoom of the same scene (pair identified 28/28, min margin 0.010 — near views are similar) |
 | Image richness vs custom (same view, 28 pairs) | edge density 1.0–13× (median 3.8×), distinct colours 2–12× (median 5.2×) — custom is flat-albedo |
 | Draw calls / triangles | 14–28 calls vs 14 custom meshes; ≈ 2× triangles (box walls, roofs) |
 | Load (software) | cold load 10–25 ms, texture decode 3–10 ms, shader compile 2–8 ms, first frame 63–256 ms |
-| Frames (software, informational) | Three p50/p95 16.7–66.6 / 16.7–100 ms vs custom 16.6–26.5 / 19.8–70.3 ms (run-to-run variance on SwiftShader up to ±40 %) |
+| Frames (software, informational) | Three p50/p95 16.7–66.6 / 16.7–100.1 ms over two runs vs custom 16.6–26.5 / 19.8–70.3 ms (run-to-run variance on SwiftShader up to ±40 %) |
 | JS heap | ≈ 31.6 MB |
 
-SwiftShader frame times measure the CPU rasteriser, not a GPU; per #1296 software WebGL is **never** sole proof. No
+SwiftShader frame times measure the CPU rasteriser, not a GPU; per #1296 software WebGL is **never** sole proof. The spec
+classifies a run as `hardware-webgl` only on a positive GPU-vendor match; unknown renderers are `unverified-webgl` (informational, never gate evidence). No
 hardware perf claim is made here — that is gate 2.
 
 Side-by-side (custom | Three | V8): `.qa/evidence/atl3-r01b-three-poc/ab/*.jpg`.
