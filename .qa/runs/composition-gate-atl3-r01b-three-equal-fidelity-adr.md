@@ -2,7 +2,7 @@
 
 - Issue: #1296
 - Feature slug: atl3-r01b-three-equal-fidelity-adr
-- HEAD_SHA: 9e31f9ddb5b1396d0382613a640a1a5d562d4370
+- HEAD_SHA: 71b1dd2cd848a11f9de09e83244da34d58e7170e
 - BASE_SHA: 651c90afd8b203aa6f096470a09c62aec02b6083
 - Date: 2026-11-16
 - Verdict: CLEAR
@@ -41,7 +41,8 @@ Cardinality: 2 golden scenes × 1 stored map; 28 PoC captures paired 1:1 with V0
 | Load error | corrupt texture | rejects in 16 ms, no partial scene | pass |
 | Gate bypass | GO with one gate pending/failed | `atlasR01bAllowsFollowOnRendererWork` false (self-test matrix) | pass |
 | Second productive mount | PoC imported by product code | self-test FAIL (import scan) | pass |
-| Software-only proof | SwiftShader numbers as GO evidence | informational only; hardware budgets enforced only on real GPUs | pass |
+| Software-only proof | SwiftShader or unknown renderer as GO evidence | informational only; hardware = positive GPU match, budgets enforced only there | pass |
+| Unrelated image | PoC renders something varied but wrong | quantitative A/B per pair fails (structure, unrelated-scene margin, own view) | pass |
 | Leftover regressions | V01 views after fixes | repeat capture drift 0; D-ART-01/K-ART-01 MET | pass |
 
 ## Flags
