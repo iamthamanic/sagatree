@@ -39,7 +39,12 @@ const FRAME_SAMPLES = 48;
 
 type CameraId = 'ortho-topdown' | 'diorama-oblique' | 'perspective';
 type Scene = { id: string; mapTitleDe: string; mapKind: string; navDrill: readonly string[]; dataFingerprint: string; lookFamily: 'outdoor' | 'indoor' };
-type Contract = { scenes: readonly Scene[]; tolerances: { nonBlank: { minDistinctColors: number; minLumaStdDev: number } } };
+type HardwareBudget = { tier: string; preset: string; frameP50Ms: number; frameP95Ms: number; firstFrameAfterMapOpenMs: number; drawCallsMax: number };
+type Contract = {
+  scenes: readonly Scene[];
+  tolerances: { nonBlank: { minDistinctColors: number; minLumaStdDev: number } };
+  hardwareBudgets: readonly HardwareBudget[];
+};
 type Snapshot = { mode: CameraId; x: number; z: number; span: number; yawRad: number; pitchRad: number };
 type ImageMetrics = { width: number; height: number; lumaMean: number; lumaStdDev: number; distinctColors: number; edgeDensity: number; dominantColorShare: number };
 type V01Capture = { file: string; profile: string; sceneId: string; camera: CameraId; zoomId: string; viewport: string; actual: Snapshot; meshes: number; triangles: number; metrics: ImageMetrics };
@@ -297,6 +302,15 @@ test.describe('ATL3-R01B Three.js PoC vs custom WebGL (#1296)', () => {
         const deltas = fr.deltas.slice(8);
         const custom = manifest.perf.find((p) => p.sceneId === scene.id && p.profile === profile);
         results.perf.push({ sceneId: scene.id, profile, p50: pct(deltas, 50), p95: pct(deltas, 95), customP50: custom?.p50 ?? -1, customP95: custom?.p95 ?? -1, budgetMode: software ? 'informational' : 'enforced' });
+        // ADR-ST-11 hardware-evidence gate: on a real GPU the desktop-reference budget is hard (never on SwiftShader).
+        const budget = contract.hardwareBudgets.find((b) => b.tier === 'desktop-reference' && b.preset === profile);
+        if (!software && budget) {
+          expect(pct(deltas, 95), `${scene.id} ${profile} frame p95 (hardware)`).toBeLessThanOrEqual(budget.frameP95Ms);
+          const perfInfo = must(await pocPage.evaluate((v) => window.__r01bThreePoc?.render(v) ?? null, perfRow.actual), 'render info');
+          expect(perfInfo.calls, `${scene.id} ${profile} draw calls (hardware)`).toBeLessThanOrEqual(budget.drawCallsMax);
+          const firstFrame = results.load.find((l) => l.sceneId === scene.id && l.profile === profile)?.firstFrameMs;
+          expect(typeof firstFrame === 'number' ? firstFrame : Infinity, `${scene.id} ${profile} first frame (hardware)`).toBeLessThanOrEqual(budget.firstFrameAfterMapOpenMs);
+        }
 
         if (profile === 'high') {
           // 2D↔3D id parity: every canonical id of the stored doc exists in the Three scene.

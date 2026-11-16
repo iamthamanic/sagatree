@@ -45,7 +45,7 @@
 | --- | --- | --- | --- | --- |
 | H01-1 | 2026-11-15 | Keep Custom WebGL (`AtlasGL`/`AtlasLite3D`) untouched | ADR-ST-10 NO-GO is binding; #1270/#1300 not CLEAR | New GO-ADR via #1296 + R05/#1300 CLEAR |
 | H01-2 | 2026-11-15 | Quarantine `AtlasSpatialViewport` instead of deleting | #1294/#1296 explicitly evaluate reuse; deleting would pre-empt ATL3 | Re-export only with a GO-ADR |
-| H01-3 | 2026-11-15 | `ATLAS_RENDERER_DECISION.retireParallelIn = 'atl2-h-cleanup'` is read as "quarantine in ATL2-H"; actual retirement/reuse is decided by ATL3-R01B #1296 | Value lives in `atlas-renderer-target.ts`, which open PR #1302 (V01) also edits — not changed here to avoid a competing renderer-file PR | Update together with the #1296 ADR |
+| H01-3 | 2026-11-15 | `ATLAS_RENDERER_DECISION.retireParallelIn = 'atl2-h-cleanup'` is read as "quarantine in ATL2-H"; actual retirement/reuse is decided by ATL3-R01B #1296 | Value lives in `atlas-renderer-target.ts`, which open PR #1302 (V01) also edits — not changed here to avoid a competing renderer-file PR | Done in ATL3-R01B (#1296, ADR-ST-11): `retireParallelIn = 'atl3-r02-adapter'` — R02 deletes SpatialViewport |
 | H01-4 | 2026-11-15 | Delete `WorldAtlasLeafletMap.tsx` | 0 references; second (legacy) 2D editor path; no own data format | `git revert` |
 | H01-5 | 2026-11-15 | Move HTML prototype out of `public/` | Unreferenced legacy prototype shipped in the product bundle with its own localStorage SoT | Move back (not recommended) |
 | H01-6 | 2026-11-15 | Keep `leaflet`, `react-leaflet`, `@geoman-io/leaflet-geoman-free`, `@types/leaflet` in `package.json` for now | Removing deps changes the lockfile — separate dependency PR (owner decision) | — |

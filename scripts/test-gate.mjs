@@ -2262,6 +2262,11 @@ function checkWorldAtlasEditor() {
     cwd: root,
     stdio: 'inherit',
   });
+  console.log('ATL3-R01B Three.js equal-fidelity PoC + conditional GO-ADR (#1296)...');
+  execFileSync(process.execPath, ['scripts/atl3-r01b-three-poc.self-test.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
   console.log('Atlas prototype 3D exact embed...');
   execFileSync(process.execPath, ['scripts/atlas-prototype-3d-embed.self-test.mjs'], {
     cwd: root,

@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-world.json](source-contracts/infra-world.json) (SHA-256 `9a5983d710bdfe18cc9223be542159a9ddef1b6ee00ac90d1cfd85ab93851102`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-world.json](source-contracts/infra-world.json) (SHA-256 `1933597d45fecc9f0da0d416598d3b791064a79964d42abaa52b80e13a4f58af`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -47,6 +47,898 @@ None in the reviewed source.
 This area has no RPC, Edge, table, storage, realtime, fetch or auth calls. Its public browser processing/worker API is retained in the complete public declarations.
 
 ## Complete public declarations and facade operation contracts
+
+### src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-camera.ts:10
+
+```ts
+export type R01bCameraMode = 'ortho-topdown' | 'diorama-oblique' | 'perspective';
+```
+
+### src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-camera.ts:12
+
+```ts
+export type R01bView = {
+  readonly mode: R01bCameraMode;
+  /** Canvas x (world x). */
+  readonly x: number;
+  /** Canvas y (world z). */
+  readonly z: number;
+  /** Half view height in world units (custom runtime `cameraState.span`). */
+  readonly span: number;
+  readonly yawRad: number;
+  readonly pitchRad: number;
+};
+```
+
+### src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-camera.ts:24
+
+```ts
+export type R01bCameraRig = {
+  readonly eye: readonly [number, number, number];
+  readonly at: readonly [number, number, number];
+  readonly up: readonly [number, number, number];
+  /** Eye → focus distance used by the custom runtime (`d`). */
+  readonly distance: number;
+  readonly near: number;
+  readonly far: number;
+  readonly perspective: boolean;
+  readonly fovYDeg: number;
+  /** Ortho half extents (only meaningful when `perspective` is false). */
+  readonly halfHeight: number;
+  readonly halfWidth: number;
+};
+```
+
+### src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-camera.ts:44
+
+```ts
+export function r01bClampPitch(mode: R01bCameraMode, pitch: number): number {
+  if (mode === 'ortho-topdown') return Math.PI / 2;
+  if (mode === 'diorama-oblique') return clamp(pitch, 0.61, 1.22);
+  return clamp(pitch, 0.35, 1.35);
+}
+```
+
+### src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-camera.ts:51
+
+```ts
+export function r01bCameraRig(view: R01bView, aspect: number): R01bCameraRig {
+  const safeAspect = Math.max(0.2, aspect);
+  const pitch = r01bClampPitch(view.mode, view.pitchRad);
+  const forward: readonly [number, number] = [Math.sin(view.yawRad), Math.cos(view.yawRad)];
+  const perspective = view.mode === 'perspective';
+  const distance = view.span * (perspective ? 2.4 : 3.0);
+  const at: readonly [number, number, number] = [view.x, 0, view.z];
+  const topdown = view.mode === 'ortho-topdown';
+  const eye: readonly [number, number, number] = topdown
+    ? [view.x, distance + 5, view.z]
+    : [
+        view.x + forward[0] * Math.cos(pitch) * distance,
+        Math.sin(pitch) * distance + 5,
+        view.z + forward[1] * Math.cos(pitch) * distance,
+      ];
+  const up: readonly [number, number, number] = topdown ? [-forward[0], 0, -forward[1]] : [0, 1, 0];
+  return {
+    eye,
+    at,
+    up,
+    distance,
+    near: perspective ? Math.max(0.2, distance * 0.02) : 0.1,
+    far: Math.max(8000, distance * 4 + 200),
+    perspective,
+    fovYDeg: 50,
+    halfHeight: view.span,
+    halfWidth: view.span * safeAspect,
+  };
+}
+```
+
+### src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-camera.ts:82
+
+```ts
+export function r01bFogBand(
+  rig: R01bCameraRig,
+  look: 'outdoor' | 'indoor',
+): { readonly near: number; readonly far: number } {
+  const d = rig.distance;
+  // V8 ratios (city 18..40 @ d=22, crypt 13..32): fog starts behind the focus point.
+  return look === 'indoor' ? { near: d * 0.95, far: d * 2.6 } : { near: d * 0.9, far: d * 3.2 };
+}
+```
+
+### src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-harness.ts:15
+
+```ts
+export type R01bHarnessFrameStats = {
+  readonly p50: number;
+  readonly p95: number;
+  readonly frames: number;
+  /** Raw rAF deltas (ms) so callers can use the same percentile rule as ATL3-V01. */
+  readonly deltas: readonly number[];
+};
+```
+
+### src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-harness.ts:23
+
+```ts
+export type R01bHarnessApi = {
+  readonly create: (opts: {
+    readonly canvasId: string;
+    readonly quality: R01bQuality;
+    readonly atlas: R01bPbrAtlas;
+  }) => Promise<{ readonly coldLoadMs: number; readonly textureDecodeMs: number }>;
+  readonly setDoc: (raw: unknown, mapScale: R01bMapScale, look: R01bLook) => { readonly ok: boolean; readonly ids: number };
+  readonly first: (view: R01bView) => { readonly shaderCompileMs: number; readonly firstFrameMs: number; readonly sceneBuildMs: number };
+  readonly render: (view: R01bView) => R01bRenderInfo;
+  readonly frames: (view: R01bView, count: number) => Promise<R01bHarnessFrameStats>;
+  readonly ids: () => string[];
+  readonly centroidOf: (id: string) => [number, number, number] | null;
+  readonly pick: (px: number, py: number) => string | null;
+  readonly project: (x: number, y: number, z: number) => [number, number];
+  readonly contextLossRoundTrip: (view: R01bView) => Promise<{ readonly lost: boolean; readonly restored: boolean; readonly restoreMs: number; readonly info: R01bRenderInfo }>;
+  readonly heapMb: () => number | null;
+  /** Edge case "Ladefehler": a corrupt PBR texture must reject (no hang, no partial scene). */
+  readonly loadErrorProbe: (atlas: R01bPbrAtlas) => Promise<{ readonly rejected: boolean; readonly ms: number; readonly message: string }>;
+  readonly dispose: () => void;
+};
+```
+
+### src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-runtime.ts:25
+
+```ts
+export type R01bQuality = 'high' | 'balanced';
+```
+
+### src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-runtime.ts:26
+
+```ts
+export type R01bPbrTextureSet = { readonly map: string; readonly normal: string; readonly rough: string };
+```
+
+### src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-runtime.ts:27
+
+```ts
+export type R01bPbrAtlas = Readonly<Record<R01bPbrKind, R01bPbrTextureSet>>;
+```
+
+### src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-runtime.ts:29
+
+```ts
+export type R01bRenderInfo = {
+  readonly calls: number;
+  readonly triangles: number;
+  readonly geometries: number;
+  readonly textures: number;
+  readonly programs: number;
+};
+```
+
+### src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-runtime.ts:37
+
+```ts
+export type R01bLoadTimings = {
+  readonly textureDecodeMs: number;
+  readonly sceneBuildMs: number;
+  readonly shaderCompileMs: number;
+  readonly firstFrameMs: number;
+};
+```
+
+### src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-runtime.ts:133
+
+```ts
+export class R01bThreePoc {
+  readonly renderer: THREE.WebGLRenderer;
+  readonly scene = new THREE.Scene();
+  private readonly root = new THREE.Group();
+  private readonly hemi = new THREE.HemisphereLight();
+  private readonly sun = new THREE.DirectionalLight();
+  private readonly fill = new THREE.DirectionalLight();
+  private camera: THREE.PerspectiveCamera | THREE.OrthographicCamera = new THREE.PerspectiveCamera();
+  private readonly pbr = new Map<R01bPbrKind, { map: THREE.Texture; normal: THREE.Texture; rough: THREE.Texture }>();
+  private readonly materials = new Map<R01bSurfaceKey, THREE.MeshStandardMaterial>();
+  private readonly water: THREE.ShaderMaterial;
+  private readonly halo: THREE.SpriteMaterial;
+  private readonly pickables: THREE.Mesh[] = [];
+  private plan: R01bScenePlan | null = null;
+  private doc: UnifiedCanvasDoc | null = null;
+  private rig: R01bCameraRig | null = null;
+  private sceneKey = '';
+  private lastSceneBuildMs = 0;
+  private contextLost = false;
+  readonly timings: { textureDecodeMs: number; sceneBuildMs: number; shaderCompileMs: number; firstFrameMs: number } = {
+    textureDecodeMs: 0, sceneBuildMs: 0, shaderCompileMs: 0, firstFrameMs: 0,
+  };
+
+  constructor(readonly canvas: HTMLCanvasElement, readonly quality: R01bQuality) {
+    this.renderer = new THREE.WebGLRenderer({
+      canvas,
+      antialias: quality === 'high',
+      alpha: false,
+      powerPreference: 'high-performance',
+      preserveDrawingBuffer: true,
+    });
+    this.renderer.setPixelRatio(quality === 'high' ? Math.min(window.devicePixelRatio || 1, 1.65) : 1);
+    this.renderer.shadowMap.enabled = true;
+    this.renderer.shadowMap.type = THREE.PCFShadowMap;
+    this.renderer.outputColorSpace = THREE.SRGBColorSpace;
+    this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    this.sun.castShadow = true;
+    const size = quality === 'high' ? 2048 : 1024;
+    this.sun.shadow.mapSize.set(size, size);
+    this.sun.shadow.radius = quality === 'high' ? 3 : 1.5;
+    this.scene.add(this.hemi, this.sun, this.sun.target, this.fill, this.fill.target, this.root);
+    this.water = new THREE.ShaderMaterial({
+      vertexShader: WATER_VERTEX,
+      fragmentShader: WATER_FRAGMENT,
+      transparent: true,
+      side: THREE.DoubleSide,
+      uniforms: {
+        uTime: { value: 0 },
+        uTile: { value: 38 },
+        uDeep: { value: new THREE.Color() },
+        uShallow: { value: new THREE.Color() },
+        uSky: { value: new THREE.Color() },
+        uSunDir: { value: SUN_DIR.clone() },
+        uFogColor: { value: new THREE.Color() },
+        uFogNear: { value: 1e6 },
+        uFogFar: { value: 2e6 },
+      },
+    });
+    this.halo = new THREE.SpriteMaterial({
+      map: torchHaloTexture(),
+      color: 0xffb36b,
+      blending: THREE.AdditiveBlending,
+      transparent: true,
+      depthWrite: false,
+      fog: true,
+    });
+    canvas.addEventListener('webglcontextlost', () => { this.contextLost = true; });
+    canvas.addEventListener('webglcontextrestored', () => { this.contextLost = false; });
+  }
+
+  get isContextLost(): boolean {
+    return this.contextLost;
+  }
+
+  async loadAtlas(atlas: R01bPbrAtlas): Promise<void> {
+    const t0 = performance.now();
+    const loader = new THREE.TextureLoader();
+    const aniso = Math.min(8, this.renderer.capabilities.getMaxAnisotropy());
+    await Promise.all(
+      R01B_PBR_KINDS.map(async (kind) => {
+        const set = atlas[kind];
+        const [map, normal, rough] = await Promise.all([
+          loadTexture(loader, set.map, true, aniso),
+          loadTexture(loader, set.normal, false, aniso),
+          loadTexture(loader, set.rough, false, aniso),
+        ]);
+        this.pbr.set(kind, { map, normal, rough });
+      }),
+    );
+    this.timings.textureDecodeMs = performance.now() - t0;
+  }
+
+  private material(key: R01bSurfaceKey): THREE.MeshStandardMaterial {
+    const hit = this.materials.get(key);
+    if (hit) return hit;
+    const spec = R01B_SURFACES[key];
+    const m = new THREE.MeshStandardMaterial({ color: spec.color, roughness: spec.roughness, metalness: 'metalness' in spec ? spec.metalness : 0 });
+    const tex = spec.pbr ? this.pbr.get(spec.pbr) : undefined;
+    if (tex) {
+      m.map = tex.map;
+      m.normalMap = tex.normal;
+      m.roughnessMap = tex.rough;
+      m.normalScale.set(spec.normalScale, spec.normalScale);
+    }
+    if ('emissive' in spec) {
+      m.emissive = new THREE.Color(spec.emissive);
+      m.emissiveIntensity = 2.2;
+      m.toneMapped = false;
+    }
+    this.materials.set(key, m);
+    return m;
+  }
+
+  /** Read-only: swap the canonical doc (e.g. after a 2D edit captured from the product). */
+  setDoc(doc: UnifiedCanvasDoc, mapScale: R01bMapScale, look: R01bLook): void {
+    this.doc = doc;
+    this.sceneKey = '';
+    this.plan = null;
+    this.mapScale = mapScale;
+    this.look = look;
+  }
+  private mapScale: R01bMapScale = 'settlement';
+  private look: R01bLook = 'outdoor';
+
+  private clearRoot(): void {
+    for (const child of [...this.root.children]) {
+      this.root.remove(child);
+      if (child instanceof THREE.Mesh) child.geometry.dispose();
+      if (child instanceof THREE.PointLight) child.dispose();
+      // Sprites share one material/texture (disposed in dispose()).
+    }
+    this.pickables.length = 0;
+  }
+
+  /** (Re)build meshes when doc / LOD stride changes — mirrors the runtime fingerprint rebuild. */
+  private ensureScene(view: R01bView): void {
+    const doc = this.doc;
+    if (!doc) throw new Error('R01B PoC: no doc');
+    const span = view.span;
+    const lodKey = span >= 280 ? 'far' : span >= 90 ? 'mid' : 'near';
+    const key = `${lodKey}|${this.mapScale}|${this.look}|${this.quality}`;
+    if (key === this.sceneKey && this.plan) return;
+    const t0 = performance.now();
+    this.clearRoot();
+    const plan = buildR01bScenePlan(doc, { mapScale: this.mapScale, look: this.look, span, fullDetail: this.quality === 'high' });
+    for (const [key2, builder] of plan.builders) {
+      if (builder.triangleCount === 0) continue;
+      const mesh = new THREE.Mesh(builder.build(), this.material(key2));
+      const flat = key2.startsWith('sheet') || key2.startsWith('floor');
+      mesh.castShadow = !flat;
+      mesh.receiveShadow = true;
+      mesh.userData.triIds = builder.triIds;
+      mesh.name = `r01b:${key2}`;
+      this.root.add(mesh);
+      this.pickables.push(mesh);
+    }
+    if (plan.water.triangleCount > 0) {
+      const mesh = new THREE.Mesh(plan.water.build(), this.water);
+      mesh.userData.triIds = plan.water.triIds;
+      mesh.name = 'r01b:water';
+      mesh.renderOrder = 2;
+      this.root.add(mesh);
+      this.pickables.push(mesh);
+    }
+    if (plan.terrain) {
+      const mats = plan.terrain.groups.map((g) => this.material(g.surface));
+      plan.terrain.groups.forEach((g, i) => plan.terrain?.geometry.addGroup(g.start, g.count, i));
+      const mesh = new THREE.Mesh(plan.terrain.geometry, mats);
+      mesh.castShadow = true;
+      mesh.receiveShadow = true;
+      mesh.name = 'r01b:terrain';
+      this.root.add(mesh);
+    }
+    if (plan.doorInstances.matrices.length) {
+      const inst = new THREE.InstancedMesh(new THREE.BoxGeometry(1, 1, 1), this.material('wood-dark'), plan.doorInstances.matrices.length);
+      plan.doorInstances.matrices.forEach((m, i) => inst.setMatrixAt(i, m));
+      inst.instanceMatrix.needsUpdate = true;
+      inst.computeBoundingSphere();
+      inst.castShadow = true;
+      inst.receiveShadow = true;
+      inst.userData.instanceIds = plan.doorInstances.ids;
+      inst.name = 'r01b:doors';
+      this.root.add(inst);
+      this.pickables.push(inst);
+    }
+    const torchColor = new THREE.Color(0xffa858);
+    for (const t of plan.torches) {
+      const light = new THREE.PointLight(torchColor, 1.65 * (t.radius / 4) ** 2 * (this.look === 'indoor' ? 1 : 0.35), t.radius, 2);
+      light.position.copy(t.position);
+      light.name = `r01b:torch:${t.id}`;
+      this.root.add(light);
+      const sprite = new THREE.Sprite(this.halo);
+      sprite.position.copy(t.position);
+      sprite.scale.setScalar(t.radius * 0.32);
+      sprite.renderOrder = 3;
+      sprite.name = `r01b:halo:${t.id}`;
+      this.root.add(sprite);
+    }
+    this.plan = plan;
+    this.sceneKey = key;
+    this.lastSceneBuildMs = performance.now() - t0;
+    this.timings.sceneBuildMs = this.lastSceneBuildMs;
+  }
+
+  private applyView(view: R01bView): void {
+    const w = this.canvas.clientWidth || this.canvas.width, h = this.canvas.clientHeight || this.canvas.height;
+    this.renderer.setSize(w, h, false);
+    const aspect = w / Math.max(1, h);
+    const rig = r01bCameraRig(view, aspect);
+    this.rig = rig;
+    if (rig.perspective) {
+      const cam = this.camera instanceof THREE.PerspectiveCamera ? this.camera : new THREE.PerspectiveCamera();
+      cam.fov = rig.fovYDeg;
+      cam.aspect = aspect;
+      cam.near = rig.near;
+      cam.far = rig.far;
+      this.camera = cam;
+    } else {
+      const cam = this.camera instanceof THREE.OrthographicCamera ? this.camera : new THREE.OrthographicCamera();
+      cam.left = -rig.halfWidth;
+      cam.right = rig.halfWidth;
+      cam.top = rig.halfHeight;
+      cam.bottom = -rig.halfHeight;
+      cam.near = rig.near;
+      cam.far = rig.far;
+      this.camera = cam;
+    }
+    this.camera.position.set(rig.eye[0], rig.eye[1], rig.eye[2]);
+    this.camera.up.set(rig.up[0], rig.up[1], rig.up[2]);
+    this.camera.lookAt(rig.at[0], rig.at[1], rig.at[2]);
+    this.camera.updateProjectionMatrix();
+    this.camera.updateMatrixWorld(true);
+
+    const look = LOOKS[this.look];
+    const at = new THREE.Vector3(rig.at[0], rig.at[1], rig.at[2]);
+    this.scene.background = new THREE.Color(look.background);
+    const band = r01bFogBand(rig, this.look);
+    this.scene.fog = new THREE.Fog(look.background, band.near, band.far);
+    this.hemi.color.set(look.hemiSky);
+    this.hemi.groundColor.set(look.hemiGround);
+    this.hemi.intensity = look.hemi;
+    this.sun.color.set(look.sun);
+    this.sun.intensity = look.sunI;
+    this.fill.color.set(look.fill);
+    this.fill.intensity = look.fillI;
+    this.renderer.toneMappingExposure = look.exposure;
+    // Shadow frustum fitted to the visible ground (perspective sees further than ortho).
+    const ext = view.span * aspect * (rig.perspective ? 2.2 : 1.35);
+    const reach = rig.distance * 1.5 + 600;
+    this.sun.position.copy(at).addScaledVector(SUN_DIR, reach);
+    this.sun.target.position.copy(at);
+    this.fill.position.copy(at).addScaledVector(FILL_DIR, reach);
+    this.fill.target.position.copy(at);
+    const sc = this.sun.shadow.camera;
+    sc.left = -ext;
+    sc.right = ext;
+    sc.top = ext;
+    sc.bottom = -ext;
+    sc.near = 1;
+    sc.far = reach * 2 + 400;
+    sc.updateProjectionMatrix();
+    this.sun.shadow.bias = -0.0004;
+    this.sun.shadow.normalBias = ((ext * 2) / this.sun.shadow.mapSize.x) * 1.2;
+    this.sun.target.updateMatrixWorld();
+    this.fill.target.updateMatrixWorld();
+
+    const u = this.water.uniforms;
+    u.uDeep.value.set(look.deep);
+    u.uShallow.value.set(look.shallow);
+    u.uSky.value.set(look.sky);
+    u.uFogColor.value.set(look.background);
+    u.uFogNear.value = band.near;
+    u.uFogFar.value = band.far;
+  }
+
+  /** Render one frame. Returns ms spent in scene build (0 when cached). */
+  render(view: R01bView, timeSec = 0): number {
+    const before = this.sceneKey;
+    this.ensureScene(view);
+    this.applyView(view);
+    this.water.uniforms.uTime.value = timeSec;
+    this.renderer.render(this.scene, this.camera);
+    return before === this.sceneKey ? 0 : this.lastSceneBuildMs;
+  }
+
+  /** First render incl. explicit shader compile timing (cold-load evidence). */
+  firstRender(view: R01bView): void {
+    const t0 = performance.now();
+    this.ensureScene(view);
+    this.applyView(view);
+    const c0 = performance.now();
+    this.renderer.compile(this.scene, this.camera);
+    this.timings.shaderCompileMs = performance.now() - c0;
+    this.renderer.render(this.scene, this.camera);
+    const gl = this.renderer.getContext();
+    gl.finish();
+    this.timings.firstFrameMs = performance.now() - t0;
+  }
+
+  info(): R01bRenderInfo {
+    const i = this.renderer.info;
+    return {
+      calls: i.render.calls,
+      triangles: i.render.triangles,
+      geometries: i.memory.geometries,
+      textures: i.memory.textures,
+      programs: i.programs?.length ?? 0,
+    };
+  }
+
+  /** Canonical ids present in the Three scene (2D↔3D id stability evidence). */
+  ids(): string[] {
+    return [...(this.plan?.ids ?? [])].sort();
+  }
+
+  /** Position of an id's first triangle centroid / instance (edit-path evidence). */
+  centroidOf(id: string): [number, number, number] | null {
+    for (const mesh of this.pickables) {
+      const triIds: unknown = mesh.userData.triIds;
+      if (!Array.isArray(triIds)) continue;
+      const pos = mesh.geometry.getAttribute('position');
+      let sx = 0, sy = 0, sz = 0, n = 0;
+      triIds.forEach((t, tri) => {
+        if (t !== id) return;
+        for (let k = 0; k < 3; k += 1) {
+          sx += pos.getX(tri * 3 + k);
+          sy += pos.getY(tri * 3 + k);
+          sz += pos.getZ(tri * 3 + k);
+          n += 1;
+        }
+      });
+      if (n) return [sx / n, sy / n, sz / n];
+    }
+    return null;
+  }
+
+  /** Raycast pick at canvas pixel → canonical id (camera/picking parity evidence). */
+  pick(px: number, py: number): string | null {
+    const w = this.canvas.clientWidth || this.canvas.width, h = this.canvas.clientHeight || this.canvas.height;
+    const ray = new THREE.Raycaster();
+    ray.setFromCamera(new THREE.Vector2((px / w) * 2 - 1, 1 - (py / h) * 2), this.camera);
+    for (const hit of ray.intersectObjects(this.pickables, false)) {
+      const obj = hit.object;
+      const instanceIds: unknown = obj.userData.instanceIds;
+      if (Array.isArray(instanceIds) && typeof hit.instanceId === 'number') {
+        const v: unknown = instanceIds[hit.instanceId];
+        if (typeof v === 'string') return v;
+      }
+      const triIds: unknown = obj.userData.triIds;
+      if (Array.isArray(triIds) && typeof hit.faceIndex === 'number') {
+        const v: unknown = triIds[hit.faceIndex];
+        if (typeof v === 'string' && !v.startsWith('__')) return v;
+      }
+    }
+    return null;
+  }
+
+  /** Project world point to canvas pixels with the current camera. */
+  project(x: number, y: number, z: number): [number, number] {
+    const w = this.canvas.clientWidth || this.canvas.width, h = this.canvas.clientHeight || this.canvas.height;
+    const v = new THREE.Vector3(x, y, z).project(this.camera);
+    return [(v.x * 0.5 + 0.5) * w, (0.5 - v.y * 0.5) * h];
+  }
+
+  forceContextLoss(): void {
+    this.renderer.forceContextLoss();
+  }
+
+  forceContextRestore(): void {
+    this.renderer.forceContextRestore();
+  }
+
+  dispose(): void {
+    this.clearRoot();
+    for (const m of this.materials.values()) m.dispose();
+    this.materials.clear();
+    for (const t of this.pbr.values()) {
+      t.map.dispose();
+      t.normal.dispose();
+      t.rough.dispose();
+    }
+    this.pbr.clear();
+    this.water.dispose();
+    this.halo.map?.dispose();
+    this.halo.dispose();
+    this.renderer.dispose();
+  }
+
+  get currentRig(): R01bCameraRig | null {
+    return this.rig;
+  }
+}
+```
+
+### src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-scene.ts:19
+
+```ts
+export type R01bMapScale = 'world' | 'settlement' | 'interior';
+```
+
+### src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-scene.ts:20
+
+```ts
+export type R01bLook = 'outdoor' | 'indoor';
+```
+
+### src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-scene.ts:21
+
+```ts
+export const R01B_PBR_KINDS = [
+  'grass', 'dirt', 'moss', 'rock', 'wall', 'wood', 'roof', 'cobble', 'plaster', 'gravel',
+] as const;
+```
+
+### src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-scene.ts:24
+
+```ts
+export type R01bPbrKind = (typeof R01B_PBR_KINDS)[number];
+```
+
+### src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-scene.ts:38
+
+```ts
+export const R01B_SURFACES = {
+  'terrain-grass': { pbr: 'grass', color: '#ffffff', roughness: 0.97, normalScale: 0.63, tile: 70 },
+  'terrain-shore': { pbr: 'gravel', color: '#e5d9c1', roughness: 0.93, normalScale: 0.51, tile: 50 },
+  'terrain-bed': { pbr: 'gravel', color: '#75938a', roughness: 0.87, normalScale: 0.56, tile: 50 },
+  'terrain-cliff': { pbr: 'rock', color: '#a9b2a0', roughness: 0.94, normalScale: 0.77, tile: 60 },
+  'sheet-outdoor': { pbr: 'grass', color: '#c9d6b5', roughness: 0.97, normalScale: 0.5, tile: 70 },
+  'sheet-indoor': { pbr: 'rock', color: '#4d565a', roughness: 0.96, normalScale: 0.7, tile: 60 },
+  'floor-cobble': { pbr: 'cobble', color: '#d2c9b2', roughness: 0.9, normalScale: 0.68, tile: 34 },
+  'floor-stone': { pbr: 'cobble', color: '#a8a59a', roughness: 0.92, normalScale: 0.72, tile: 30 },
+  'floor-wood': { pbr: 'wood', color: '#d3a77b', roughness: 0.86, normalScale: 0.56, tile: 30 },
+  'floor-dirt': { pbr: 'dirt', color: '#c6b18a', roughness: 0.98, normalScale: 0.58, tile: 40 },
+  'floor-gravel': { pbr: 'gravel', color: '#e5d9c1', roughness: 0.93, normalScale: 0.51, tile: 40 },
+  'floor-grass': { pbr: 'grass', color: '#ffffff', roughness: 0.97, normalScale: 0.63, tile: 60 },
+  'floor-moss': { pbr: 'moss', color: '#a1c3a1', roughness: 0.94, normalScale: 0.56, tile: 40 },
+  wall: { pbr: 'wall', color: '#ddd6bf', roughness: 0.94, normalScale: 0.58, tile: 26 },
+  'wall-indoor': { pbr: 'wall', color: '#b8b19e', roughness: 0.95, normalScale: 0.66, tile: 22 },
+  plaster: { pbr: 'plaster', color: '#f0dfbf', roughness: 0.97, normalScale: 0.33, tile: 22 },
+  roof: { pbr: 'roof', color: '#f4c0a7', roughness: 0.85, normalScale: 0.81, tile: 18 },
+  wood: { pbr: 'wood', color: '#d3a77b', roughness: 0.86, normalScale: 0.56, tile: 16 },
+  'wood-dark': { pbr: 'wood', color: '#8d6a4b', roughness: 0.88, normalScale: 0.6, tile: 14 },
+  rock: { pbr: 'rock', color: '#a9b2a0', roughness: 0.94, normalScale: 0.77, tile: 28 },
+  leaf: { pbr: 'moss', color: '#8fbf8a', roughness: 0.94, normalScale: 0.56, tile: 18 },
+  'leaf-pine': { pbr: 'moss', color: '#6f9f86', roughness: 0.94, normalScale: 0.56, tile: 18 },
+  window: { pbr: null, color: '#2a3a48', roughness: 0.25, normalScale: 0, tile: 1, metalness: 0.1 },
+  flame: { pbr: null, color: '#ffb35c', roughness: 1, normalScale: 0, tile: 1, emissive: '#ffa858' },
+} as const satisfies Record<string, SurfaceSpec>;
+```
+
+### src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-scene.ts:64
+
+```ts
+export type R01bSurfaceKey = keyof typeof R01B_SURFACES;
+```
+
+### src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-scene.ts:67
+
+```ts
+export function r01bFloorSurface(material: string | undefined, scale: R01bMapScale): R01bSurfaceKey | 'water' {
+  const m = (material ?? '').toLowerCase();
+  if (m === 'wasser' || m === 'water') return 'water';
+  if (m === 'holz' || m === 'wood') return 'floor-wood';
+  if (m === 'pflaster' || m === 'paving') return 'floor-cobble';
+  if (m === 'stein' || m === 'stone') return scale === 'interior' ? 'floor-stone' : 'floor-cobble';
+  if (m === 'erde' || m === 'earth') return 'floor-dirt';
+  if (m === 'sand') return 'floor-gravel';
+  if (m === 'moos' || m === 'moss') return 'floor-moss';
+  return 'floor-grass';
+}
+```
+
+### src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-scene.ts:80
+
+```ts
+export class R01bGeoBuilder {
+  readonly positions: number[] = [];
+  readonly normals: number[] = [];
+  readonly uvs: number[] = [];
+  readonly triIds: string[] = [];
+
+  constructor(private readonly tile: number) {}
+
+  get triangleCount(): number {
+    return this.triIds.length;
+  }
+
+  tri(a: THREE.Vector3, b: THREE.Vector3, c: THREE.Vector3, id: string, normal?: THREE.Vector3): void {
+    const n = normal ?? new THREE.Vector3().subVectors(b, a).cross(new THREE.Vector3().subVectors(c, a)).normalize();
+    const ax = Math.abs(n.x), ay = Math.abs(n.y), az = Math.abs(n.z);
+    for (const p of [a, b, c]) {
+      this.positions.push(p.x, p.y, p.z);
+      this.normals.push(n.x, n.y, n.z);
+      if (ay >= ax && ay >= az) this.uvs.push(p.x / this.tile, p.z / this.tile);
+      else if (az >= ax) this.uvs.push(p.x / this.tile, p.y / this.tile);
+      else this.uvs.push(p.z / this.tile, p.y / this.tile);
+    }
+    this.triIds.push(id);
+  }
+
+  /** Append a (possibly indexed) Three geometry transformed by `matrix`. */
+  geometry(source: THREE.BufferGeometry, matrix: THREE.Matrix4, id: string): void {
+    const g = source.index ? source.toNonIndexed() : source.clone();
+    g.applyMatrix4(matrix);
+    const pos = g.getAttribute('position');
+    for (let i = 0; i + 2 < pos.count; i += 3) {
+      const a = new THREE.Vector3().fromBufferAttribute(pos, i);
+      const b = new THREE.Vector3().fromBufferAttribute(pos, i + 1);
+      const c = new THREE.Vector3().fromBufferAttribute(pos, i + 2);
+      this.tri(a, b, c, id);
+    }
+    g.dispose();
+  }
+
+  build(): THREE.BufferGeometry {
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.Float32BufferAttribute(this.positions, 3));
+    g.setAttribute('normal', new THREE.Float32BufferAttribute(this.normals, 3));
+    g.setAttribute('uv', new THREE.Float32BufferAttribute(this.uvs, 2));
+    g.computeBoundingSphere();
+    return g;
+  }
+}
+```
+
+### src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-scene.ts:141
+
+```ts
+export type R01bScenePlan = {
+  readonly builders: Map<R01bSurfaceKey, R01bGeoBuilder>;
+  readonly water: R01bGeoBuilder;
+  readonly terrain: {
+    readonly geometry: THREE.BufferGeometry;
+    readonly groups: readonly { readonly surface: R01bSurfaceKey; readonly start: number; readonly count: number }[];
+    readonly stride: number;
+  } | null;
+  /** Door jambs + lintels as instances of one unit box (InstancedMesh). */
+  readonly doorInstances: { readonly matrices: THREE.Matrix4[]; readonly ids: string[] };
+  readonly torches: readonly { readonly id: string; readonly position: THREE.Vector3; readonly radius: number }[];
+  readonly ids: ReadonlySet<string>;
+  readonly planFingerprint: string;
+  readonly look: R01bLook;
+  readonly mapScale: R01bMapScale;
+};
+```
+
+### src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-scene.ts:159
+
+```ts
+export function r01bTerrainStride(span: number, cols: number, rows: number): number {
+  const preferred = span >= 280 ? 4 : span >= 90 ? 2 : 1;
+  const maxTris = preferred >= 4 ? 800 : preferred >= 2 ? 2500 : 8000;
+  let stride = Math.max(1, preferred);
+  const estimate = (s: number): number => Math.ceil((cols - 1) / s) * Math.ceil((rows - 1) / s) * 2;
+  while (estimate(stride) > maxTris && stride < Math.max(cols, rows)) stride += 1;
+  return stride;
+}
+```
+
+### src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-scene.ts:374
+
+```ts
+export type R01bSceneOptions = {
+  readonly mapScale: R01bMapScale;
+  readonly look: R01bLook;
+  /** Camera span — drives the terrain LOD stride exactly like the custom runtime. */
+  readonly span: number;
+  readonly fullDetail: boolean;
+};
+```
+
+### src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-scene.ts:383
+
+```ts
+export function buildR01bScenePlan(doc: UnifiedCanvasDoc, opts: R01bSceneOptions): R01bScenePlan {
+  const plan = buildAtlasProductGeometryPlan(doc, { mapScale: opts.mapScale });
+  const builders = new Map<R01bSurfaceKey, R01bGeoBuilder>();
+  const get = (k: R01bSurfaceKey): R01bGeoBuilder => {
+    let b = builders.get(k);
+    if (!b) {
+      b = new R01bGeoBuilder(R01B_SURFACES[k].tile);
+      builders.set(k, b);
+    }
+    return b;
+  };
+  const water = new R01bGeoBuilder(60);
+  const ids = new Set<string>();
+  const torches: { id: string; position: THREE.Vector3; radius: number }[] = [];
+  const doorInstances: { matrices: THREE.Matrix4[]; ids: string[] } = { matrices: [], ids: [] };
+  const up = new THREE.Vector3(0, 1, 0);
+
+  // Sheet (non-world product maps) at y −0.5 — PRODUCT_FRAME 1000×1000.
+  if (opts.mapScale !== 'world') {
+    const b = get(opts.look === 'indoor' ? 'sheet-indoor' : 'sheet-outdoor');
+    const y = -0.5;
+    const p = (x: number, z: number): THREE.Vector3 => new THREE.Vector3(x, y, z);
+    b.tri(p(0, 0), p(0, 1000), p(1000, 1000), '__sheet', up);
+    b.tri(p(0, 0), p(1000, 1000), p(1000, 0), '__sheet', up);
+  }
+
+  const rooms = plan.primitives.filter((q): q is Extract<AtlasProductGeometryPrimitive, { kind: 'area' | 'room' }> => q.kind === 'area' || q.kind === 'room');
+  const dyR = Math.min(0.075, 0.3 / Math.max(1, rooms.length));
+  const roomMaterial = new Map(doc.rooms.map((r) => [r.id, r.material] as const));
+  rooms.forEach((rm, i) => {
+    const y = -0.48 + i * dyR;
+    const surface = r01bFloorSurface(roomMaterial.get(rm.id), opts.mapScale);
+    const b = surface === 'water' ? water : get(surface);
+    for (const [ia, ib, ic] of rm.triangles) {
+      const a = rm.points[ia], c = rm.points[ib], d = rm.points[ic];
+      if (!a || !c || !d) continue;
+      const va = new THREE.Vector3(a[0], y, a[1]), vb = new THREE.Vector3(c[0], y, c[1]), vc = new THREE.Vector3(d[0], y, d[1]);
+      // Canvas winding varies — always emit an upward-facing triangle.
+      const n = new THREE.Vector3().subVectors(vb, va).cross(new THREE.Vector3().subVectors(vc, va));
+      if (n.y >= 0) b.tri(va, vb, vc, rm.id, up);
+      else b.tri(va, vc, vb, rm.id, up);
+    }
+    ids.add(rm.id);
+  });
+
+  const paths = plan.primitives.filter((q): q is Extract<AtlasProductGeometryPrimitive, { kind: 'path' }> => q.kind === 'path');
+  const dyS = Math.min(0.03, 0.11 / Math.max(1, paths.length));
+  const strokeMaterial = new Map(doc.strokes.map((s) => [s.id, s.material] as const));
+  paths.forEach((pt, i) => {
+    const surface = r01bFloorSurface(strokeMaterial.get(pt.id), opts.mapScale);
+    ribbon(surface === 'water' ? water : get(surface), pt.points, pt.width, -0.16 + i * dyS, pt.id);
+    ids.add(pt.id);
+  });
+
+  const wallH = opts.mapScale === 'interior' ? 22 : opts.mapScale === 'settlement' ? 8 : 3;
+  const doorsByWall = new Map<string, Extract<AtlasProductGeometryPrimitive, { kind: 'door' }>[]>();
+  for (const q of plan.primitives) {
+    if (q.kind !== 'door') continue;
+    const list = doorsByWall.get(q.wallId) ?? [];
+    list.push(q);
+    doorsByWall.set(q.wallId, list);
+  }
+  const wallKey: R01bSurfaceKey = opts.look === 'indoor' ? 'wall-indoor' : 'wall';
+  for (const q of plan.primitives) {
+    if (q.kind !== 'wall') continue;
+    ids.add(q.id);
+    const dx = q.end[0] - q.start[0], dz = q.end[1] - q.start[1], length = Math.hypot(dx, dz);
+    if (length < 0.02) continue;
+    const thick = Math.max(0.3, q.width || wallH * 0.15);
+    const gaps = (doorsByWall.get(q.id) ?? [])
+      .map((d) => {
+        const halfT = Math.min(0.49, Math.max(0.4, d.width || 1.2) / 2 / length);
+        const t = Math.min(1, Math.max(0, d.t || 0.5));
+        return [Math.max(0, t - halfT), Math.min(1, t + halfT)] as [number, number];
+      })
+      .sort((a, b) => a[0] - b[0]);
+    const merged: [number, number][] = [];
+    for (const g of gaps) {
+      const last = merged[merged.length - 1];
+      if (!last || g[0] > last[1] + 1e-4) merged.push([g[0], g[1]]);
+      else last[1] = Math.max(last[1], g[1]);
+    }
+    let cursor = 0;
+    const at = (t: number): readonly [number, number] => [q.start[0] + dx * t, q.start[1] + dz * t];
+    for (const [g0, g1] of merged) {
+      if (g0 - cursor > 1e-3) wallBox(get(wallKey), at(cursor), at(g0), thick, -0.02, wallH, q.id);
+      cursor = g1;
+    }
+    if (1 - cursor > 1e-3) wallBox(get(wallKey), at(cursor), q.end, thick, -0.02, wallH, q.id);
+  }
+
+  // Doors: jambs + lintel (same dimensions as productDoorInto) → one InstancedMesh.
+  for (const q of plan.primitives) {
+    if (q.kind !== 'door') continue;
+    ids.add(q.id);
+    const width = Math.max(0.4, q.width || 1.2), openH = Math.max(1.2, wallH * 0.82), lintelH = Math.max(0.25, wallH - openH);
+    const [tx, tz] = q.tangent, [x, z] = q.position;
+    const half = width / 2, jamb = Math.max(0.18, width * 0.08), thick = Math.max(0.25, width * 0.12);
+    const rot = Math.atan2(-tz, tx);
+    for (const side of [-1, 1]) {
+      const cx = x + tx * side * (half - jamb / 2), cz = z + tz * side * (half - jamb / 2);
+      doorInstances.matrices.push(boxMatrix(cx, -0.02 + openH / 2, cz, jamb, openH, thick * 2, rot).clone());
+      doorInstances.ids.push(q.id);
+    }
+    doorInstances.matrices.push(boxMatrix(x, -0.02 + openH + lintelH / 2, z, width, lintelH, thick * 2, rot).clone());
+    doorInstances.ids.push(q.id);
+  }
+
+  for (const q of plan.primitives) {
+    if (q.kind !== 'prop' && q.kind !== 'building_footprint') continue;
+    ids.add(q.id);
+    propInto(get, q, torches, opts.fullDetail);
+  }
+
+  const hf = doc.heightfield ?? null;
+  const terrain = hf ? buildTerrain(hf, opts.span) : null;
+  if (hf && terrain) {
+    // Water plane at shore level over the heightfield chunk (runtime parity).
+    const y = hf.waterLevel - 0.02, x0 = hf.originX, z0 = hf.originZ;
+    const x1 = x0 + hf.cols * hf.cellSize, z1 = z0 + hf.rows * hf.cellSize;
+    water.tri(new THREE.Vector3(x0, y, z0), new THREE.Vector3(x0, y, z1), new THREE.Vector3(x1, y, z1), '__terrain-water', up);
+    water.tri(new THREE.Vector3(x0, y, z0), new THREE.Vector3(x1, y, z1), new THREE.Vector3(x1, y, z0), '__terrain-water', up);
+  }
+
+  return {
+    builders,
+    water,
+    terrain,
+    doorInstances,
+    torches,
+    ids,
+    planFingerprint: plan.contentFingerprint,
+    look: opts.look,
+    mapScale: opts.mapScale,
+  };
+}
+```
 
 ### src/infrastructure/world/host-world-adapter.ts:13
 
@@ -663,7 +1555,7 @@ All backend operations are included in the public declarations above.
 | `src/domains/world/atlas/atlas-product-camera.ts` | `6d65226fe7e6594079b61df81ec39a226d5b79788327ef95609dc70f9980d179` |
 | `src/domains/world/atlas/atlas-product-geometry-plan.ts` | `de94ca0b6c23374ae5aed057fa756539285295574df9925598a0ed029a2a3ce9` |
 | `src/domains/world/atlas/atlas-prototype-lod.ts` | `2fb7c706ad2210f7a3f389f22564f60e3f22aa615ec49af49695e388ae582256` |
-| `src/domains/world/atlas/atlas-renderer-target.ts` | `b7119cbcc981e7c0c98c939aa09044496bd958fe6fd596f36e279da758d0505b` |
+| `src/domains/world/atlas/atlas-renderer-target.ts` | `d68377cb2f99d390a94f1c7603ce11e23461964ecb2a23012017efc602dbd73d` |
 | `src/domains/world/atlas/atlas-revision-contract.ts` | `d01c356239143862f9aa8f3fd44fca79105e3ed390327c34b9be6ce1902c78d6` |
 | `src/domains/world/atlas/atlas-selection.ts` | `6c16fb40fe26addea8e33e718a89a019de099c6008c1000dd697d48fa12849a7` |
 | `src/domains/world/atlas/atlas-terrain-mesh.ts` | `50dc7ef6c013f87f82f2030317c69a8ad619c7b4db1b65db0a7571a18186dd5d` |
@@ -677,7 +1569,7 @@ All backend operations are included in the public declarations above.
 | `src/domains/world/atlas/dungeon-forge-workflow.ts` | `c9fdba0da576bc5f5516bb6c637d6efc993c9fab630fa2e42b725836f4ef0317` |
 | `src/domains/world/atlas/dungeon-generator.ts` | `6bbed5a42d16ec727e2745b0e1f47dc9d3f1dcc219ee0ccb06f15340307908e1` |
 | `src/domains/world/atlas/dungeon-grid.ts` | `56d9698047b1405a3ba4525146a189e8c8d299d0270fd6d678a0dafa5a0a8854` |
-| `src/domains/world/atlas/index.ts` | `301178f3784b36f134b2d1a01ee2c8163128ab6cd64361693d57570ea127b1e1` |
+| `src/domains/world/atlas/index.ts` | `065f2bead931d3ce4ce52818c78465193cc667f98bcbec5b5d8f7a8b51a22d25` |
 | `src/domains/world/atlas/map-edit-ops.ts` | `3440965957e4212748d109f74ce202fa7a320840d5c9f1347b0457347c797b95` |
 | `src/domains/world/atlas/map-frame.ts` | `7a5bc6fb6ddcb38efd09fa3adf71889709fa230313a8d241d09cb9f5fa98e7a5` |
 | `src/domains/world/atlas/party-map-projection.ts` | `eeb742f12fa5e35e03a2a2c57f2c92f8ddb9d996562c88d6de96169d61b82fc9` |
@@ -723,6 +1615,10 @@ All backend operations are included in the public declarations above.
 | `src/infrastructure/media/optimizer/engines/video/index.ts` | `d8c6aaaabb2ad762d4c15f9ef4aa9bc016f5968b2512cfe52f71cb09655dd842` |
 | `src/infrastructure/media/optimizer/index.ts` | `c1b162af47239195707de742a8991bea14d85f2238108968613c3bad3d91cf02` |
 | `src/infrastructure/media/optimizer/media-optimizer.ts` | `7d58424f12b7855ccb3c0153270628850e03afc15c285b1fc2b47218918255d9` |
+| `src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-camera.ts` | `dd6241e785bdbde6276b261fef7c56eaef13500075f413169a8fadd767ae7cc3` |
+| `src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-harness.ts` | `7cb604c899852fcf48364b031180e8c2c4acae92f779e68cc2416e58686e536a` |
+| `src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-runtime.ts` | `f250027a4c5a9674e377313738dac7f70a8a253464c46033f6a400a229b53c82` |
+| `src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-scene.ts` | `f63e63b2be555ef8348d15141ed44a01e70670667e3d0946221db2720cc32d8c` |
 | `src/infrastructure/world/host-world-adapter.ts` | `8fbaad8d6d4ec9cc42070444441fae94fb20af020cdada2125a705877ea4e1f1` |
 | `src/infrastructure/world/host-world-ports.contract.ts` | `9d11c1085646775f6c6eb5bdc29baa7ed40af0245354589bd767d4f80da1d582` |
 | `src/infrastructure/world/host-world-read.contract.ts` | `271a052d5f621ddf7f3344eaa55e3a58579c5cf629fe76a4827393d0d1c7a05c` |
