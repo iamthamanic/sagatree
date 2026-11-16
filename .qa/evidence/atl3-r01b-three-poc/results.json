@@ -1,8 +1,8 @@
 {
   "format": "atl3-r01b-three-poc-v1",
   "issue": 1296,
-  "buildSha": "07cd2262c7",
-  "at": "2026-11-16T09:14:32.799Z",
+  "buildSha": "6257b5e351",
+  "at": "2026-11-16T10:00:59.643Z",
   "renderer": {
     "unmasked": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
     "kind": "software-webgl",
@@ -19,12 +19,12 @@
   "storedData": [
     {
       "sceneId": "dornhain-block",
-      "mapId": "dh-map-place-dornhain__6517e7f969bf",
+      "mapId": "dh-map-place-dornhain__91d50c1cfe5e",
       "fingerprint": "3ec9b21f1c3d0ff1"
     },
     {
       "sceneId": "krypta",
-      "mapId": "dh-map-loc-crypt__c17051e65fd2",
+      "mapId": "dh-map-loc-crypt__19ff3b680420",
       "fingerprint": "a44b49a77d61e201"
     }
   ],
@@ -32,38 +32,38 @@
     {
       "profile": "high",
       "sceneId": "dornhain-block",
-      "coldLoadMs": 28,
-      "textureDecodeMs": 14,
-      "shaderCompileMs": 7.6,
-      "firstFrameMs": 106,
-      "sceneBuildMs": 9.8
+      "coldLoadMs": 23,
+      "textureDecodeMs": 11,
+      "shaderCompileMs": 7.3,
+      "firstFrameMs": 112,
+      "sceneBuildMs": 12.9
     },
     {
       "profile": "high",
       "sceneId": "krypta",
-      "coldLoadMs": 28,
-      "textureDecodeMs": 14,
-      "shaderCompileMs": 6.2,
-      "firstFrameMs": 86,
-      "sceneBuildMs": 8.5
+      "coldLoadMs": 23,
+      "textureDecodeMs": 11,
+      "shaderCompileMs": 5.7,
+      "firstFrameMs": 82,
+      "sceneBuildMs": 8.6
     },
     {
       "profile": "balanced",
       "sceneId": "dornhain-block",
       "coldLoadMs": 10,
       "textureDecodeMs": 3,
-      "shaderCompileMs": 2.1,
-      "firstFrameMs": 61,
-      "sceneBuildMs": 1.8
+      "shaderCompileMs": 2.2,
+      "firstFrameMs": 73,
+      "sceneBuildMs": 1.6
     },
     {
       "profile": "balanced",
       "sceneId": "krypta",
       "coldLoadMs": 10,
       "textureDecodeMs": 3,
-      "shaderCompileMs": 10.5,
-      "firstFrameMs": 190,
-      "sceneBuildMs": 7.5
+      "shaderCompileMs": 8.5,
+      "firstFrameMs": 235,
+      "sceneBuildMs": 5.3
     }
   ],
   "captures": [
@@ -1556,7 +1556,7 @@
     {
       "sceneId": "dornhain-block",
       "profile": "high",
-      "p50": 49.9,
+      "p50": 50,
       "p95": 100.1,
       "customP50": 26.5,
       "customP95": 70.3,
@@ -1566,7 +1566,7 @@
       "sceneId": "krypta",
       "profile": "high",
       "p50": 16.7,
-      "p95": 83.4,
+      "p95": 66.7,
       "customP50": 16.9,
       "customP95": 42.1,
       "budgetMode": "informational"
@@ -1575,7 +1575,7 @@
       "sceneId": "dornhain-block",
       "profile": "balanced",
       "p50": 16.7,
-      "p95": 50.1,
+      "p95": 33.4,
       "customP50": 16.8,
       "customP95": 35.7,
       "budgetMode": "informational"
@@ -1584,7 +1584,7 @@
       "sceneId": "krypta",
       "profile": "balanced",
       "p50": 16.7,
-      "p95": 33.4,
+      "p95": 16.7,
       "customP50": 16.6,
       "customP95": 19.8,
       "budgetMode": "informational"
@@ -1665,7 +1665,7 @@
       "sceneId": "dornhain-block",
       "lost": true,
       "restored": true,
-      "restoreMs": 91,
+      "restoreMs": 96,
       "info": {
         "calls": 28,
         "triangles": 2006,
@@ -1678,7 +1678,7 @@
       "sceneId": "krypta",
       "lost": true,
       "restored": true,
-      "restoreMs": 131,
+      "restoreMs": 128,
       "info": {
         "calls": 15,
         "triangles": 6570,
@@ -1689,28 +1689,28 @@
     }
   ],
   "heapMb": {
-    "dornhain-block": 28.03802490234375,
-    "krypta": 28.03802490234375
+    "dornhain-block": 24.7955322265625,
+    "krypta": 24.7955322265625
   },
   "editPath": {
-    "addedId": "ftxouilkb",
+    "addedId": "hu95695h0",
     "doc": {
       "x": 585.7143012844787,
       "y": 557.1428415726642
     },
     "threeCentroid": [
-      585.7142944335938,
-      21.78939946492513,
-      557.142822265625
+      585.7143249511719,
+      9.48479974269867,
+      557.1428527832031
     ],
     "planarOffset": 0,
     "idsBefore": 13,
     "idsAfter": 14,
-    "dbWrite": "held (no write)"
+    "dbWrite": "blocked (no write; stored fingerprint re-verified)"
   },
   "loadError": {
     "rejected": true,
-    "ms": 20,
+    "ms": 10,
     "message": "[object Event]"
   },
   "fallback": {

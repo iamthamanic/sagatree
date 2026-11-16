@@ -80,7 +80,7 @@ for (const f of [...pocFiles, 'e2e/atl3-r01b-three-poc.spec.ts']) {
 }
 const spec = read('e2e/atl3-r01b-three-poc.spec.ts');
 assert.ok(/import type \{\} from '..\/src\/infrastructure\/world\/atlas-r01b-three-poc\/r01b-poc-harness'/.test(spec), 'spec imports harness type-only');
-assert.ok(spec.includes("route.abort()") || spec.includes('held'), 'edit path PUT held (no DB write)');
+assert.ok(spec.includes("route.abort('failed')") && spec.includes('stored data unchanged after the edit path'), 'edit path writes blocked + stored data re-verified (no DB write)');
 assert.ok(spec.includes("tier === 'desktop-reference'") && spec.includes('hardware && budget'), 'hardware budgets enforced on real GPUs');
 assert.ok(/const hardware = !softwareMarker && \/nvidia/.test(spec), 'hardware classification requires positive GPU evidence');
 row('poc-isolated', `${pocFiles.length} PoC files, 0 product importers, 0 escape hatches`);

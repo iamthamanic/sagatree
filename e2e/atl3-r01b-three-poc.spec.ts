@@ -445,18 +445,21 @@ test.describe('ATL3-R01B Three.js PoC vs custom WebGL (#1296)', () => {
       }
     }
 
-    // 3) Edit path: real 2D stamp edit in the product → held autosave PUT → same id in the PoC.
+    // 3) Edit path: real 2D stamp edit in the product → captured autosave PUT → same id in the PoC.
+    // Every map write is aborted on the spot (never held): a held request can be released when the page
+    // closes, which leaked the edit into the shared CI database (V01 then saw 9 Dornhain objects).
     const dornhain = must(contract.scenes.find((s) => s.id === 'dornhain-block'), 'dornhain scene');
-    const held: Route[] = [];
     let putBody: Record<string, unknown> | null = null;
-    await page.route((url) => /\/api\/v1\/worlds\/[^/]+\/atlas\/maps(\/|$)/.test(url.pathname), async (route) => {
+    let blockedWrites = 0;
+    await context.route((url) => /\/api\/v1\/worlds\/(?:[^/]+\/)?atlas\/maps(\/|$)/.test(url.pathname), async (route: Route) => {
       const method = route.request().method();
-      if (method !== 'PUT' && method !== 'DELETE') { await route.continue(); return; }
+      if (method === 'GET' || method === 'HEAD' || method === 'OPTIONS') { await route.continue(); return; }
       const json: unknown = route.request().postDataJSON();
-      if (json && typeof json === 'object' && 'mapId' in json && json.mapId === must(docs.get('dornhain-block'), 'dh').mapId) {
+      if (method === 'PUT' && json && typeof json === 'object' && 'mapId' in json && json.mapId === must(docs.get('dornhain-block'), 'dh').mapId) {
         putBody = json as Record<string, unknown>;
       }
-      held.push(route);
+      blockedWrites += 1;
+      await route.abort('failed');
     });
     try {
       // The product tab idled in the background while the PoC tab rendered (rAF throttled): foreground it.
@@ -493,13 +496,26 @@ test.describe('ATL3-R01B Three.js PoC vs custom WebGL (#1296)', () => {
       const c = must(r.centroid, 'new object geometry in the Three scene');
       const p = must(pos, 'new object position');
       const planar = Math.hypot(c[0] - p.x, c[2] - p.y);
-      results.editPath = { addedId: added[0], doc: p, threeCentroid: c, planarOffset: Math.round(planar * 100) / 100, idsBefore: before.length, idsAfter: after.length, dbWrite: 'held (no write)' };
+      results.editPath = { addedId: added[0], doc: p, threeCentroid: c, planarOffset: Math.round(planar * 100) / 100, idsBefore: before.length, idsAfter: after.length, dbWrite: 'blocked (no write; stored fingerprint re-verified)' };
       expect(planar, 'new 3D object sits at its 2D position').toBeLessThan(40);
     } finally {
-      // Close the product page while the PUT is still held so the Golden map is never written.
+      // Teardown writes (unmount autosave while the page closes) bypass routing, so cut the network first and
+      // unload under the still-active route; only then close. Verified by the stored-data post-condition below.
+      await context.setOffline(true);
+      await page.goto('about:blank').catch(() => undefined);
       await page.close().catch(() => undefined);
-      for (const h of held) await h.abort().catch(() => undefined);
+      await context.setOffline(false);
     }
+    // Post-condition: the stored Golden maps are byte-for-byte unchanged (shared CI DB; V01 runs next).
+    for (const scene of contract.scenes) {
+      const dd = must(docs.get(scene.id), scene.id);
+      const res = await pocPage.request.get(`/api/v1/worlds/atlas/maps/${dd.mapId}`, { headers: { Origin: origin } });
+      expect(res.ok()).toBeTruthy();
+      const body = (await res.json()) as { map?: StoredMap } & StoredMap;
+      const raw = must((body.map ?? body).generatorMeta?.unifiedCanvas, `${scene.id} unifiedCanvas after edit path`);
+      expect(featureFingerprint(raw), `${scene.id} stored data unchanged after the edit path (no DB write)`).toBe(scene.dataFingerprint);
+    }
+    expect(blockedWrites, 'the 2D edit attempted a write and it was blocked').toBeGreaterThan(0);
     expect(errors, 'no page errors in the PoC').toEqual([]);
     writeFileSync(join(RUN, 'results.json'), `${JSON.stringify(results, null, 2)}\n`);
   });
