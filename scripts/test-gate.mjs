@@ -2247,6 +2247,21 @@ function checkWorldAtlasEditor() {
     cwd: root,
     stdio: 'inherit',
   });
+  console.log('ATL3-V01 visual quality contract / Golden scenes oracle (#1295)...');
+  execFileSync(process.execPath, ['scripts/atl3-v01-visual-contract.self-test.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
+  console.log('ATL3-V01 round 3 visual fixes (upgrade / prop size / corridors / torch / lite depth)...');
+  execFileSync(process.execPath, ['scripts/atl3-v01-round3-visual-fixes.self-test.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
+  console.log('ATL3-V01 Golden Krypta host mirror parity (forge → server seed)...');
+  execFileSync(process.execPath, ['scripts/atl3-v01-golden-krypta-forge.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
   console.log('Atlas prototype 3D exact embed...');
   execFileSync(process.execPath, ['scripts/atlas-prototype-3d-embed.self-test.mjs'], {
     cwd: root,

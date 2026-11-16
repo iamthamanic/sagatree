@@ -195,7 +195,7 @@
     },
     {
       "path": "src/domains/world/atlas/atlas-dungeon-look.ts",
-      "sha256": "4cb36a35663c13b62699ccd846df59ebc3ab38feafb497998302a35c09cdc9d8"
+      "sha256": "b28dfd123ebb46472258442834d636b2962ed78a7261d458bc57a5ad1d3f352c"
     },
     {
       "path": "src/domains/world/atlas/atlas-edit-history.ts",
@@ -203,7 +203,7 @@
     },
     {
       "path": "src/domains/world/atlas/atlas-golden-visual.ts",
-      "sha256": "db7842b5da4fcf305f68550679caff6ab06414d057bd7d2716d75484e1d380d9"
+      "sha256": "91958356d646ac68021110bf3b2faa5c63ad42de142bc00236d3e07bd5c426ec"
     },
     {
       "path": "src/domains/world/atlas/atlas-heightfield.ts",
@@ -247,7 +247,7 @@
     },
     {
       "path": "src/domains/world/atlas/atlas-renderer-target.ts",
-      "sha256": "51beb5d64d2972fa88a42a1f0437d42639c689f9612cd852e94ed72721b48678"
+      "sha256": "b7119cbcc981e7c0c98c939aa09044496bd958fe6fd596f36e279da758d0505b"
     },
     {
       "path": "src/domains/world/atlas/atlas-revision-contract.ts",
@@ -279,7 +279,7 @@
     },
     {
       "path": "src/domains/world/atlas/dornhain-golden-hierarchy.ts",
-      "sha256": "361644dc722ac28a2fa0fcaabb05c087cb6581505f95923bc8a4a3c44af8992d"
+      "sha256": "0eb37f4a217a2bd4f67bcd3bf20d407ec08440f3d20e41e5d0ed738de91faa3e"
     },
     {
       "path": "src/domains/world/atlas/dornhain-golden-reset.ts",
@@ -291,19 +291,19 @@
     },
     {
       "path": "src/domains/world/atlas/dungeon-forge-workflow.ts",
-      "sha256": "43acec183dd010bf8bef24e2a79ac7a5bb7f317fcd568591a02182c502860b79"
+      "sha256": "c9fdba0da576bc5f5516bb6c637d6efc993c9fab630fa2e42b725836f4ef0317"
     },
     {
       "path": "src/domains/world/atlas/dungeon-generator.ts",
-      "sha256": "013ccdb248e427f85b51e9dc8dfbf39b5c5d185e106d0024259afe3301fdbbfc"
+      "sha256": "6bbed5a42d16ec727e2745b0e1f47dc9d3f1dcc219ee0ccb06f15340307908e1"
     },
     {
       "path": "src/domains/world/atlas/dungeon-grid.ts",
-      "sha256": "1e564a1f91df01b5e0edb38c3e3976f4809bb053d5d8367b0c5d2666d6f40c4d"
+      "sha256": "56d9698047b1405a3ba4525146a189e8c8d299d0270fd6d678a0dafa5a0a8854"
     },
     {
       "path": "src/domains/world/atlas/index.ts",
-      "sha256": "153bde0423fc622920234b702908c1a901875f06a90f8e885c9e5c344dec50b4"
+      "sha256": "301178f3784b36f134b2d1a01ee2c8163128ab6cd64361693d57570ea127b1e1"
     },
     {
       "path": "src/domains/world/atlas/map-edit-ops.ts",
@@ -1384,39 +1384,47 @@
       "name": "AtlasDungeonLightProfile",
       "path": "src/domains/world/atlas/atlas-dungeon-look.ts",
       "line": 46,
-      "endLine": 59,
-      "text": "export type AtlasDungeonLightProfile = {\n  readonly themeKey: DungeonThemeKey;\n  readonly presetId: AtlasGraphicsPresetId;\n  readonly labelDe: string;\n  readonly daylightDir: readonly [number, number, number];\n  readonly ambient: number;\n  readonly fogDensity: number;\n  readonly fogColor: string;\n  readonly clearColor: readonly [number, number, number, number];\n  readonly torchIntensity: number;\n  readonly shadowStrength: number;\n  readonly bloomEnabled: boolean;\n  readonly particlesEnabled: boolean;\n};"
+      "endLine": 66,
+      "text": "export type AtlasDungeonLightProfile = {\n  readonly themeKey: DungeonThemeKey;\n  readonly presetId: AtlasGraphicsPresetId;\n  readonly labelDe: string;\n  readonly daylightDir: readonly [number, number, number];\n  readonly ambient: number;\n  readonly fogDensity: number;\n  readonly fogColor: string;\n  readonly clearColor: readonly [number, number, number, number];\n  readonly torchIntensity: number;\n  /**\n   * ATL3-V01 round 3 — torch point-light falloff: light radius in dungeon cells, max lights,\n   * and falloff model per preset (WebGL per-pixel smooth `(1-(d/r)²)²`; lite per-face linear).\n   */\n  readonly torchRadiusCells: number;\n  readonly maxTorchLights: number;\n  readonly torchFalloff: AtlasDungeonTorchFalloff;\n  readonly shadowStrength: number;\n  readonly bloomEnabled: boolean;\n  readonly particlesEnabled: boolean;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AtlasDungeonTorchFalloff",
+      "path": "src/domains/world/atlas/atlas-dungeon-look.ts",
+      "line": 68,
+      "endLine": 68,
+      "text": "export type AtlasDungeonTorchFalloff = 'smooth-quadratic-per-pixel' | 'linear-per-face';"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "AtlasDungeonQualityBudget",
       "path": "src/domains/world/atlas/atlas-dungeon-look.ts",
-      "line": 61,
-      "endLine": 69,
+      "line": 92,
+      "endLine": 100,
       "text": "export type AtlasDungeonQualityBudget = {\n  readonly presetId: AtlasGraphicsPresetId;\n  readonly maxInstances: number;\n  readonly maxTorchInstances: number;\n  readonly maxParticleEmitters: number;\n  readonly bloomEnabled: boolean;\n  readonly particlesEnabled: boolean;\n  readonly preferSoftwareFallback: boolean;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "AtlasDungeonInstanceKind",
       "path": "src/domains/world/atlas/atlas-dungeon-look.ts",
-      "line": 71,
-      "endLine": 71,
+      "line": 102,
+      "endLine": 102,
       "text": "export type AtlasDungeonInstanceKind = 'wall' | 'door' | 'floor' | 'torch' | 'prop';"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "AtlasDungeonInstanceBatch",
       "path": "src/domains/world/atlas/atlas-dungeon-look.ts",
-      "line": 73,
-      "endLine": 80,
+      "line": 104,
+      "endLine": 111,
       "text": "export type AtlasDungeonInstanceBatch = {\n  readonly batchKey: string;\n  readonly kind: AtlasDungeonInstanceKind;\n  readonly authority: AtlasDungeonLookAuthority;\n  readonly materialId: string;\n  readonly albedo: string;\n  readonly instanceIds: readonly string[];\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "AtlasDungeonLookPlan",
       "path": "src/domains/world/atlas/atlas-dungeon-look.ts",
-      "line": 82,
-      "endLine": 103,
+      "line": 113,
+      "endLine": 134,
       "text": "export type AtlasDungeonLookPlan = {\n  readonly format: typeof ATLAS_DUNGEON_LOOK_FORMAT;\n  readonly themeKey: DungeonThemeKey;\n  readonly palette: AtlasDungeonThemePalette;\n  readonly light: AtlasDungeonLightProfile;\n  readonly budget: AtlasDungeonQualityBudget;\n  readonly batches: readonly AtlasDungeonInstanceBatch[];\n  readonly counts: {\n    readonly floors: number;\n    readonly walls: number;\n    readonly doors: number;\n    readonly torches: number;\n    readonly props: number;\n    readonly batches: number;\n    readonly instances: number;\n    readonly truncated: number;\n  };\n  /** Theme-independent fingerprint of dungeon feature IDs (geometry SoT). */\n  readonly geometryFingerprint: string;\n  /** Theme + budget dependent fingerprint (look SoT). */\n  readonly lookFingerprint: string;\n};"
     },
     {
@@ -1431,80 +1439,80 @@
       "kind": "TypeAliasDeclaration",
       "name": "AtlasGoldenVisualScaleId",
       "path": "src/domains/world/atlas/atlas-golden-visual.ts",
-      "line": 54,
-      "endLine": 54,
+      "line": 55,
+      "endLine": 55,
       "text": "export type AtlasGoldenVisualScaleId = (typeof ATLAS_GOLDEN_VISUAL_SCALE_IDS)[number];"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "AtlasGoldenVisualTolerance",
       "path": "src/domains/world/atlas/atlas-golden-visual.ts",
-      "line": 60,
-      "endLine": 72,
+      "line": 61,
+      "endLine": 73,
       "text": "export type AtlasGoldenVisualTolerance = {\n  readonly format: typeof ATLAS_GOLDEN_VISUAL_FORMAT;\n  /** Max per-channel absolute diff for soft pixel review. */\n  readonly maxChannelDelta: number;\n  /** Max fraction of differing pixels before fail (Playwright toHaveScreenshot). */\n  readonly maxDiffPixelRatio: number;\n  /**\n   * Node/test-gate: fingerprint-exact.\n   * Browser E2E: pixel-diff against committed PNG baselines (fail if missing).\n   */\n  readonly ciMode: 'fingerprint-and-screenshot';\n  readonly reviewLabelDe: string;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "AtlasGoldenVisualViewportId",
       "path": "src/domains/world/atlas/atlas-golden-visual.ts",
-      "line": 90,
-      "endLine": 91,
+      "line": 91,
+      "endLine": 92,
       "text": "export type AtlasGoldenVisualViewportId =\n  (typeof ATLAS_GOLDEN_VISUAL_VIEWPORTS)[number]['id'];"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "AtlasGoldenVisualFixture",
       "path": "src/domains/world/atlas/atlas-golden-visual.ts",
-      "line": 104,
-      "endLine": 117,
+      "line": 105,
+      "endLine": 118,
       "text": "export type AtlasGoldenVisualFixture = {\n  readonly id: AtlasGoldenVisualScaleId;\n  readonly labelDe: string;\n  /** Product nav / atlas map title used to open the scene in Browser E2E. */\n  readonly uiMapTitleDe: string;\n  readonly mapSeedKey: string;\n  readonly camera: AtlasProductCameraState;\n  readonly graphicsPresetId: AtlasGraphicsPresetId;\n  /** outdoor → diorama look; indoor → dungeon look for material variety. */\n  readonly lookFamily: 'outdoor' | 'indoor';\n  readonly indoorThemeKey: 'ancient' | 'grim' | null;\n  readonly selectionFeatureId: string;\n  readonly buildCanvas: () => UnifiedCanvasDoc;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "AtlasGoldenArtDirectionCheckId",
       "path": "src/domains/world/atlas/atlas-golden-visual.ts",
-      "line": 238,
-      "endLine": 244,
+      "line": 240,
+      "endLine": 246,
       "text": "export type AtlasGoldenArtDirectionCheckId =\n  | 'materials-distinct'\n  | 'selection-readable'\n  | 'detail-degradable'\n  | 'no-unsolicited-canonical'\n  | 'fixed-camera-light'\n  | 'overlay-tokens';"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "AtlasGoldenArtDirectionCheck",
       "path": "src/domains/world/atlas/atlas-golden-visual.ts",
-      "line": 246,
-      "endLine": 250,
+      "line": 248,
+      "endLine": 252,
       "text": "export type AtlasGoldenArtDirectionCheck = {\n  readonly id: AtlasGoldenArtDirectionCheckId;\n  readonly labelDe: string;\n  readonly measurable: string;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "AtlasGoldenVisualSnapshot",
       "path": "src/domains/world/atlas/atlas-golden-visual.ts",
-      "line": 287,
-      "endLine": 301,
+      "line": 289,
+      "endLine": 303,
       "text": "export type AtlasGoldenVisualSnapshot = {\n  readonly format: typeof ATLAS_GOLDEN_VISUAL_FORMAT;\n  readonly fixtureId: AtlasGoldenVisualScaleId;\n  readonly mapSeedKey: string;\n  readonly cameraFingerprint: string;\n  readonly lightFingerprint: string;\n  readonly materialKeys: readonly string[];\n  readonly lookAlbedos: readonly string[];\n  readonly geometryFingerprint: string;\n  readonly lookFingerprint: string;\n  readonly selectionOutline: typeof ATLAS_GOLDEN_SELECTION_OUTLINE;\n  readonly selectionContrastRatio: number;\n  readonly contentFingerprint: string;\n  readonly detailLevel: AtlasDioramaDetailLevel | 'indoor-theme';\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "AtlasGoldenVisualCompareResult",
       "path": "src/domains/world/atlas/atlas-golden-visual.ts",
-      "line": 523,
-      "endLine": 528,
+      "line": 528,
+      "endLine": 533,
       "text": "export type AtlasGoldenVisualCompareResult = {\n  readonly ok: boolean;\n  readonly reason: string;\n  readonly expected: string;\n  readonly actual: string;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "AtlasGoldenVisualBaseline",
       "path": "src/domains/world/atlas/atlas-golden-visual.ts",
-      "line": 588,
-      "endLine": 600,
+      "line": 593,
+      "endLine": 605,
       "text": "export type AtlasGoldenVisualBaseline = {\n  readonly fixtureId: AtlasGoldenVisualScaleId;\n  readonly contentFingerprint: string;\n  readonly cameraFingerprint: string;\n  readonly lightFingerprint: string;\n  readonly geometryFingerprint: string;\n  readonly lookFingerprint: string;\n  readonly selectionOutline: typeof ATLAS_GOLDEN_SELECTION_OUTLINE;\n  readonly selectionContrastRatio: number;\n  readonly materialKeys: readonly string[];\n  readonly lookAlbedos: readonly string[];\n  readonly detailLevel: AtlasDioramaDetailLevel | 'indoor-theme';\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "AtlasGoldenArtDirectionReport",
       "path": "src/domains/world/atlas/atlas-golden-visual.ts",
-      "line": 747,
-      "endLine": 755,
+      "line": 754,
+      "endLine": 762,
       "text": "export type AtlasGoldenArtDirectionReport = {\n  readonly format: typeof ATLAS_GOLDEN_VISUAL_FORMAT;\n  readonly checks: Readonly<Record<AtlasGoldenArtDirectionCheckId, boolean>>;\n  readonly allPass: boolean;\n  readonly selectionContrastRatio: number;\n  readonly fixtureMaterialCounts: Readonly<Record<AtlasGoldenVisualScaleId, number>>;\n  readonly outdoorCanonicalOnly: boolean;\n  readonly detailDegrades: boolean;\n};"
     },
     {
@@ -1895,16 +1903,16 @@
       "kind": "TypeAliasDeclaration",
       "name": "AtlasRendererHybridVerdict",
       "path": "src/domains/world/atlas/atlas-renderer-target.ts",
-      "line": 109,
-      "endLine": 109,
+      "line": 121,
+      "endLine": 121,
       "text": "export type AtlasRendererHybridVerdict = 'GO' | 'NO-GO';"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "AtlasRendererHybridDecision",
       "path": "src/domains/world/atlas/atlas-renderer-target.ts",
-      "line": 111,
-      "endLine": 118,
+      "line": 123,
+      "endLine": 130,
       "text": "export type AtlasRendererHybridDecision = {\n  readonly issue: 1266;\n  readonly verdict: AtlasRendererHybridVerdict;\n  readonly productiveOwner: AtlasRendererCandidateId;\n  readonly followOnIssues: readonly [1267, 1268, 1269, 1270];\n  readonly reasonDe: string;\n  readonly evidencePaths: readonly string[];\n};"
     },
     {
@@ -2111,9 +2119,9 @@
       "kind": "TypeAliasDeclaration",
       "name": "DornhainGoldenMapSpec",
       "path": "src/domains/world/atlas/dornhain-golden-hierarchy.ts",
-      "line": 26,
-      "endLine": 37,
-      "text": "export type DornhainGoldenMapSpec = {\n  readonly seedKey: string;\n  readonly placeSeedKey: string;\n  readonly title: string;\n  readonly kind: WorldAtlasMapKind;\n  /** Parent Golden map seed; null = world root (`dornhain.unified.v4`). */\n  readonly parentMapSeedKey: string | null;\n  readonly parentAnchor: Omit<ParentSpatialAnchor, 'parentMapId' | 'metersPerUnit' | 'rotationRad'> & {\n    readonly rotationRad?: number;\n  };\n  readonly buildCanvas: () => UnifiedCanvasDoc;\n};"
+      "line": 46,
+      "endLine": 59,
+      "text": "export type DornhainGoldenMapSpec = {\n  readonly seedKey: string;\n  readonly placeSeedKey: string;\n  readonly title: string;\n  readonly kind: WorldAtlasMapKind;\n  /** Parent Golden map seed; null = world root (`dornhain.unified.v4`). */\n  readonly parentMapSeedKey: string | null;\n  readonly parentAnchor: Omit<ParentSpatialAnchor, 'parentMapId' | 'metersPerUnit' | 'rotationRad'> & {\n    readonly rotationRad?: number;\n  };\n  readonly buildCanvas: () => UnifiedCanvasDoc;\n  /** Committed Dungeon-Forge meta (`generatorMeta.dungeon`) for forge-built Golden maps. */\n  readonly buildDungeonMeta?: () => DungeonGeneratorMeta;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
@@ -2157,98 +2165,106 @@
     },
     {
       "kind": "TypeAliasDeclaration",
+      "name": "DungeonPropKind",
+      "path": "src/domains/world/atlas/dungeon-generator.ts",
+      "line": 29,
+      "endLine": 29,
+      "text": "export type DungeonPropKind = keyof typeof DUNGEON_PROP_REAL_SIZE;"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
       "name": "DungeonGenerateParams",
       "path": "src/domains/world/atlas/dungeon-generator.ts",
-      "line": 18,
-      "endLine": 27,
+      "line": 44,
+      "endLine": 53,
       "text": "export type DungeonGenerateParams = {\n  readonly seed: number;\n  readonly roomCount: number;\n  readonly loopChance: number;\n  readonly themeKey: DungeonThemeKey;\n  /** World-space origin for the generated layout. */\n  readonly originX?: number;\n  readonly originY?: number;\n  readonly unitScale?: number;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "MutableEdge",
       "path": "src/domains/world/atlas/dungeon-generator.ts",
-      "line": 76,
-      "endLine": 81,
+      "line": 102,
+      "endLine": 107,
       "text": "type MutableEdge = {\n  a: number;\n  b: number;\n  isLoop: boolean;\n  isCritical: boolean;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "DungeonRoomRole",
       "path": "src/domains/world/atlas/dungeon-generator.ts",
-      "line": 83,
-      "endLine": 89,
+      "line": 109,
+      "endLine": 115,
       "text": "export type DungeonRoomRole =\n  | 'entrance'\n  | 'combat'\n  | 'elite'\n  | 'treasure'\n  | 'shrine'\n  | 'boss';"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "DungeonGeneratedRoom",
       "path": "src/domains/world/atlas/dungeon-generator.ts",
-      "line": 91,
-      "endLine": 99,
+      "line": 117,
+      "endLine": 125,
       "text": "export type DungeonGeneratedRoom = {\n  readonly id: number;\n  readonly cx: number;\n  readonly cy: number;\n  readonly w: number;\n  readonly h: number;\n  readonly type: DungeonRoomRole;\n  readonly depth: number;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "DungeonGeneratedEdge",
       "path": "src/domains/world/atlas/dungeon-generator.ts",
-      "line": 101,
-      "endLine": 106,
+      "line": 127,
+      "endLine": 132,
       "text": "export type DungeonGeneratedEdge = {\n  readonly a: number;\n  readonly b: number;\n  readonly isLoop: boolean;\n  readonly isCritical: boolean;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "DungeonGenerateResult",
       "path": "src/domains/world/atlas/dungeon-generator.ts",
-      "line": 108,
-      "endLine": 125,
+      "line": 134,
+      "endLine": 151,
       "text": "export type DungeonGenerateResult = {\n  readonly valid: boolean;\n  readonly seed: number;\n  readonly generatorVersion: typeof DUNGEON_GENERATOR_VERSION;\n  readonly params: DungeonGenerateParams;\n  readonly rooms: readonly DungeonGeneratedRoom[];\n  readonly edges: readonly DungeonGeneratedEdge[];\n  readonly canvasRooms: readonly UnifiedCanvasRoom[];\n  readonly canvasWalls: readonly UnifiedCanvasWall[];\n  readonly canvasObjects: readonly UnifiedCanvasObject[];\n  readonly stats: {\n    readonly attempts: number;\n    readonly genMs: number;\n    readonly roomCount: number;\n    readonly edgeCount: number;\n  };\n  readonly error?: string;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "Rng",
       "path": "src/domains/world/atlas/dungeon-generator.ts",
-      "line": 127,
-      "endLine": 132,
+      "line": 153,
+      "endLine": 158,
       "text": "type Rng = {\n  raw: () => number;\n  f: (a: number, b: number) => number;\n  i: (a: number, b: number) => number;\n  chance: (p: number) => boolean;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "DelaunayPt",
       "path": "src/domains/world/atlas/dungeon-generator.ts",
-      "line": 155,
-      "endLine": 155,
+      "line": 181,
+      "endLine": 181,
       "text": "type DelaunayPt = { x: number; y: number; i: number };"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "DelaunayTri",
       "path": "src/domains/world/atlas/dungeon-generator.ts",
-      "line": 156,
-      "endLine": 163,
+      "line": 182,
+      "endLine": 189,
       "text": "type DelaunayTri = {\n  a: DelaunayPt;\n  b: DelaunayPt;\n  c: DelaunayPt;\n  ccx: number;\n  ccy: number;\n  r2: number;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "MutableRoom",
       "path": "src/domains/world/atlas/dungeon-generator.ts",
-      "line": 248,
-      "endLine": 257,
+      "line": 274,
+      "endLine": 283,
       "text": "type MutableRoom = {\n  id: number;\n  cx: number;\n  cy: number;\n  w: number;\n  h: number;\n  type: DungeonRoomRole;\n  depth: number;\n  degree: number;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "DungeonSemanticsValidation",
       "path": "src/domains/world/atlas/dungeon-generator.ts",
-      "line": 700,
-      "endLine": 708,
+      "line": 714,
+      "endLine": 722,
       "text": "export type DungeonSemanticsValidation = {\n  readonly ok: boolean;\n  readonly error?: string;\n  readonly entranceId: number;\n  readonly bossId: number;\n  readonly criticalEdgeCount: number;\n  readonly loopEdgeCount: number;\n  readonly roleCounts: Readonly<Record<DungeonRoomRole, number>>;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "DungeonGeneratorMeta",
       "path": "src/domains/world/atlas/dungeon-generator.ts",
-      "line": 905,
-      "endLine": 913,
+      "line": 919,
+      "endLine": 927,
       "text": "export type DungeonGeneratorMeta = {\n  readonly generatorVersion: typeof DUNGEON_GENERATOR_VERSION;\n  readonly seed: number;\n  readonly themeKey: DungeonThemeKey;\n  readonly roomCount: number;\n  readonly loopChance: number;\n  readonly confirmed: boolean;\n  readonly manualDirty?: boolean;\n};"
     },
     {
@@ -2280,8 +2296,8 @@
       "name": "DungeonRasterizeResult",
       "path": "src/domains/world/atlas/dungeon-grid.ts",
       "line": 54,
-      "endLine": 72,
-      "text": "export type DungeonRasterizeResult = {\n  readonly valid: boolean;\n  readonly passable: boolean;\n  readonly gridVersion: typeof DUNGEON_GRID_VERSION;\n  readonly width: number;\n  readonly height: number;\n  readonly originGX: number;\n  readonly originGY: number;\n  readonly cells: readonly DungeonGridCell[];\n  readonly floorCount: number;\n  readonly wallCount: number;\n  readonly doorwayCount: number;\n  readonly liquidCount: number;\n  readonly reachableFloorCount: number;\n  readonly canvasRooms: readonly UnifiedCanvasRoom[];\n  readonly canvasWalls: readonly UnifiedCanvasWall[];\n  readonly canvasDoors: readonly UnifiedCanvasDoor[];\n  readonly error?: string;\n};"
+      "endLine": 77,
+      "text": "export type DungeonRasterizeResult = {\n  readonly valid: boolean;\n  readonly passable: boolean;\n  readonly gridVersion: typeof DUNGEON_GRID_VERSION;\n  readonly width: number;\n  readonly height: number;\n  readonly originGX: number;\n  readonly originGY: number;\n  readonly cells: readonly DungeonGridCell[];\n  readonly floorCount: number;\n  readonly wallCount: number;\n  readonly doorwayCount: number;\n  readonly liquidCount: number;\n  readonly reachableFloorCount: number;\n  readonly canvasRooms: readonly UnifiedCanvasRoom[];\n  readonly canvasWalls: readonly UnifiedCanvasWall[];\n  readonly canvasDoors: readonly UnifiedCanvasDoor[];\n  /**\n   * Corridor floors (`dcorr-*`) as axis-aligned floor runs over corridor cells (ATL3-V01 round 3):\n   * corridors render as floors between their perimeter walls, never as bars through rooms.\n   */\n  readonly canvasCorridors: readonly UnifiedCanvasRoom[];\n  readonly error?: string;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",

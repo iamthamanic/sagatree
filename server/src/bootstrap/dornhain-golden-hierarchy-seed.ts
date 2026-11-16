@@ -6,6 +6,11 @@
  * contracts without importing frontend domains (architecture boundary).
  */
 import type { HostDatabase } from '../persistence/index.ts';
+import {
+  GOLDEN_KRYPTA_FORGE_DUNGEON_META,
+  GOLDEN_KRYPTA_FORGE_FEATURES,
+} from './dornhain-golden-krypta-forge.ts';
+import { isUntouchedLegacyGoldenCanvas } from './dornhain-golden-content-upgrade.ts';
 
 export const DORHAIN_UNIFIED_SEED = 'dornhain.unified.v4';
 export const DORHAIN_WORLD_LAYER_TITLE = 'Welt';
@@ -103,8 +108,53 @@ type UnifiedCanvasDoc = {
   readonly objects: readonly unknown[];
   readonly rooms: readonly unknown[];
   readonly walls: readonly unknown[];
+  readonly doors?: readonly unknown[];
+  readonly heightfield?: Record<string, unknown>;
   readonly demoSeed: false;
 };
+
+/** ATL3-V01 — mirrors FE `GOLDEN_DORNHAIN_HILLS` / `buildGoldenDornhainHeightfield` 1:1. */
+const GOLDEN_DORNHAIN_HILLS = [
+  { x: 360, z: 300, radius: 110, peak: 28 },
+  { x: 490, z: 285, radius: 90, peak: 22 },
+  { x: 650, z: 520, radius: 80, peak: 16 },
+  { x: 210, z: 650, radius: 80, peak: 12 },
+] as const;
+
+function goldenDornhainHeightfield(): Record<string, unknown> {
+  const originX = 100;
+  const originZ = 180;
+  const cellSize = 20;
+  const cols = 41;
+  const rows = 33;
+  const base = -4;
+  const heights: number[] = [];
+  for (let row = 0; row < rows; row += 1) {
+    for (let col = 0; col < cols; col += 1) {
+      const x = originX + col * cellSize;
+      const z = originZ + row * cellSize;
+      let h: number = base;
+      for (const hill of GOLDEN_DORNHAIN_HILLS) {
+        const d2 = ((x - hill.x) ** 2 + (z - hill.z) ** 2) / hill.radius ** 2;
+        const s = Math.max(0, 1 - d2);
+        h = Math.max(h, base + (hill.peak - base) * s * s);
+      }
+      heights.push(Math.round(h * 10) / 10);
+    }
+  }
+  return {
+    format: 'sagatree-atlas-heightfield-v1',
+    version: 1,
+    assetRef: { kind: 'inline', version: 1 },
+    originX,
+    originZ,
+    cellSize,
+    cols,
+    rows,
+    heights,
+    waterLevel: -3,
+  };
+}
 
 function emptyLayers(): UnifiedCanvasDoc['layers'] {
   return {
@@ -183,6 +233,8 @@ export type DornhainGoldenMapSeed = {
     readonly extentY: number;
   };
   readonly buildCanvas: () => UnifiedCanvasDoc;
+  /** Committed Dungeon-Forge meta stored under generatorMeta.dungeon. */
+  readonly dungeonMeta?: Readonly<Record<string, unknown>>;
 };
 
 /** Ordered parent→child so cold bootstrap upserts without forward refs. */
@@ -279,8 +331,8 @@ export const DORHAIN_GOLDEN_MAP_SEEDS: readonly DornhainGoldenMapSeed[] = [
     kind: 'settlement',
     parentMapSeedKey: 'dornhain.map.country.westmark',
     parentAnchor: { centerX: 360, centerY: 510, extentX: 55, extentY: 55 },
-    buildCanvas: () =>
-      baseDoc(
+    buildCanvas: () => ({
+      ...baseDoc(
         [
           rect('g.town.plaza', 'pflaster', 300, 420, 180, 140),
           rect('g.town.block-a', 'stein', 220, 380, 90, 80),
@@ -304,6 +356,8 @@ export const DORHAIN_GOLDEN_MAP_SEEDS: readonly DornhainGoldenMapSeed[] = [
           stamp('g.outcrop', 'fels', 430, 540, 0.4),
         ],
       ),
+      heightfield: goldenDornhainHeightfield(),
+    }),
   },
   {
     stableId: 'dh-map-loc-tavern',
@@ -344,25 +398,18 @@ export const DORHAIN_GOLDEN_MAP_SEEDS: readonly DornhainGoldenMapSeed[] = [
     kind: 'scene',
     parentMapSeedKey: 'dornhain.map.place.dornhain',
     parentAnchor: { centerX: 406, centerY: 462, extentX: 28, extentY: 28 },
+    /* ATL3-V01 — committed Dungeon-Forge crypt (generated mirror, see file header). */
     buildCanvas: () => ({
       format: 'sagatree-unified-atlas-v1',
       layers: emptyLayers(),
-      rooms: [
-        rect('g.crypt.hall', 'stein', 240, 240, 360, 280),
-        rect('g.crypt.vault', 'erde', 320, 560, 200, 160),
-      ],
-      walls: [
-        { id: 'g.crypt.w1', x1: 240, y1: 240, x2: 600, y2: 240, width: 10 },
-        { id: 'g.crypt.w2', x1: 240, y1: 240, x2: 240, y2: 520, width: 10 },
-        { id: 'g.crypt.w3', x1: 600, y1: 240, x2: 600, y2: 520, width: 10 },
-      ],
-      objects: [
-        stamp('g.crypt.relic', 'kiste', 400, 360, 0.5),
-        stamp('g.crypt.lamp', 'lampe', 300, 300, 0.35),
-      ],
+      rooms: GOLDEN_KRYPTA_FORGE_FEATURES.rooms.map((r) => ({ ...r })),
+      walls: GOLDEN_KRYPTA_FORGE_FEATURES.walls.map((w) => ({ ...w })),
+      doors: GOLDEN_KRYPTA_FORGE_FEATURES.doors.map((d) => ({ ...d })),
+      objects: GOLDEN_KRYPTA_FORGE_FEATURES.objects.map((o) => ({ ...o })),
       strokes: [],
       demoSeed: false,
     }),
+    dungeonMeta: GOLDEN_KRYPTA_FORGE_DUNGEON_META,
   },
 ];
 
@@ -378,6 +425,7 @@ export function buildGoldenChildGeneratorMeta(
     scale: spec.kind,
     mapStatus: 'ready',
     unifiedCanvas: spec.buildCanvas(),
+    ...(spec.dungeonMeta ? { dungeon: { ...spec.dungeonMeta } } : {}),
     bounds: { minX: 0, minY: 0, maxX: 1000, maxY: 1000 },
     mapFrame: {
       status: 'ready',
@@ -529,6 +577,20 @@ export function seedDornhainGoldenHierarchy(
         mapId,
         worldId,
       );
+    } else if (isUntouchedLegacyGoldenCanvas(spec.seedKey, prevMeta.unifiedCanvas, generatorMeta.unifiedCanvas)) {
+      // ATL3-V01 round 3 (#1295): untouched superseded Golden canvas (pre-V01 crypt / Dornhain
+      // without heightfield) → current Golden canvas (+ forge meta). User-edited canvases never match.
+      const legacyTitle = (DORHAIN_GOLDEN_LEGACY_MAP_TITLES[spec.seedKey] ?? []).includes(existing.title);
+      const nextMeta = {
+        ...prevMeta,
+        unifiedCanvas: generatorMeta.unifiedCanvas,
+        ...(generatorMeta.dungeon ? { dungeon: generatorMeta.dungeon } : {}),
+        golden: true,
+      };
+      db.prepare(
+        `UPDATE world_atlas_maps SET title = ?, generator_meta = ?, revision = revision + 1, updated_at = ?
+         WHERE id = ? AND world_profile_id = ?`,
+      ).run(legacyTitle ? spec.title : existing.title, JSON.stringify(nextMeta), now, mapId, worldId);
     } else if (
       existing.title !== spec.title &&
       (DORHAIN_GOLDEN_LEGACY_MAP_TITLES[spec.seedKey] ?? []).includes(existing.title)

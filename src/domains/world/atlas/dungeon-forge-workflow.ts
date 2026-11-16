@@ -53,7 +53,8 @@ export function dungeonCommitPayloadFromResults(
 ): DungeonCommitPayload | null {
   if (!generate.valid || !raster.valid || !raster.passable) return null;
   return {
-    rooms: raster.canvasRooms,
+    // Corridor floors (`dcorr-*`) follow the rooms so they draw as floors, not wall bars.
+    rooms: [...raster.canvasRooms, ...raster.canvasCorridors],
     walls: raster.canvasWalls,
     objects: generate.canvasObjects,
     doors: raster.canvasDoors,

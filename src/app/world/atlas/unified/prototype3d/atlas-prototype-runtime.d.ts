@@ -158,6 +158,9 @@ export type AtlasPrototypeMountOptions = {
     readonly accent: string;
     readonly light: string;
     readonly torchIntensity: number;
+    /** ATL3-V01 round 3 — torch light radius (dungeon cells) and lights per preset (≤ 8). */
+    readonly torchRadiusCells?: number;
+    readonly maxTorchLights?: number;
     readonly bloomEnabled: boolean;
     readonly particlesEnabled: boolean;
     readonly maxTorchInstances: number;

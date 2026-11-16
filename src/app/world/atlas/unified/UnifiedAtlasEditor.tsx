@@ -107,6 +107,8 @@ import {
   atlasHierarchyLodLayerFlags,
   parseHierarchyNavKey,
   wheelRequestsHierarchyBack,
+  ATLAS_GRAPHICS_PRESETS,
+  parseAtlasGraphicsPresetId,
 } from '../../../../domains/world/atlas';
 import type { WorldNodeKind } from '../../../../domains/world/hierarchy';
 import {
@@ -157,6 +159,7 @@ import {
   type AtlasDefinePlaceRequest,
 } from './AtlasDefinePlacePanel';
 import { AtlasNative3dEditor } from './AtlasNative3dEditor';
+import { useAtlasGraphicsPreset } from './useAtlasGraphicsPreset';
 
 export type UnifiedAtlasCreatePlaceInput = {
   readonly authorKind: AtlasPlaceAuthorKind;
@@ -569,6 +572,8 @@ export function UnifiedAtlasEditor({
   const selectFeature = (id: string, additive: boolean) => {
     setSelectedIds((prev) => toggleSelection(prev, id, additive));
   };
+  /* ATL3-V01 (#1295): device-local 3D quality switch (high / balanced / lite). */
+  const { presetId: graphicsPresetId, setPresetId: setGraphicsPresetId } = useAtlasGraphicsPreset();
   const [dungeonSeed, setDungeonSeed] = useState('4242');
   const [dungeonRooms, setDungeonRooms] = useState(16);
   const [dungeonTheme, setDungeonTheme] = useState<DungeonThemeKey>('ancient');
@@ -2409,9 +2414,9 @@ export function UnifiedAtlasEditor({
         data-atlas-surface-mode="3d"
         data-atlas-surface-class="workstation"
       >
-        {canEdit ? (
-          // Center-top: right-3 overlaps #tools „Werkzeuge“ fold (Atlas E2E / product journeys).
-          <div className="pointer-events-none absolute left-1/2 top-3 z-[3] -translate-x-1/2">
+        {/* Center-top: right-3 overlaps #tools „Werkzeuge“ fold (Atlas E2E / product journeys). */}
+        <div className="pointer-events-none absolute left-1/2 top-3 z-[3] flex -translate-x-1/2 items-center gap-2">
+          {canEdit ? (
             <Button
               type="button"
               variant="outline"
@@ -2422,8 +2427,25 @@ export function UnifiedAtlasEditor({
             >
               Draufsicht
             </Button>
-          </div>
-        ) : null}
+          ) : null}
+          <select
+            className="pointer-events-auto min-h-11 rounded-md border border-border bg-card/95 px-2 text-sm"
+            data-atlas-graphics-preset-select
+            aria-label="Grafikqualität der 3D-Ansicht"
+            title="Grafikqualität (nur dieses Gerät)"
+            value={graphicsPresetId}
+            onChange={(e) => {
+              const next = parseAtlasGraphicsPresetId(e.target.value);
+              if (next) setGraphicsPresetId(next);
+            }}
+          >
+            {ATLAS_GRAPHICS_PRESETS.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.labelDe.split(' — ')[0]}
+              </option>
+            ))}
+          </select>
+        </div>
         {canEdit ? (
           <div
             className="pointer-events-none absolute bottom-3 left-3 z-[3] max-h-[min(50vh,28rem)] w-[min(100%-1.5rem,20rem)] overflow-y-auto"
@@ -2453,6 +2475,7 @@ export function UnifiedAtlasEditor({
           mapSketchStatus={mapSketchStatus ?? null}
           mapScale={mapScale}
           mapPins={mapPins}
+          graphicsPresetId={graphicsPresetId}
           dungeonThemeKey={
             dungeonPreview
               ? dungeonPreview.generate.params.themeKey

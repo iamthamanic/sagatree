@@ -402,6 +402,15 @@ export function mountAtlasPrototype3d(host, options = {}) {
           typeof dungeonLookRaw.maxInstances === 'number' && Number.isFinite(dungeonLookRaw.maxInstances)
             ? Math.max(0, Math.floor(dungeonLookRaw.maxInstances))
             : 1024,
+        /* Visual contract #1295 round 3 — torch point-light falloff (radius in dungeon cells, lights per preset). */
+        torchRadiusCells:
+          typeof dungeonLookRaw.torchRadiusCells === 'number' && Number.isFinite(dungeonLookRaw.torchRadiusCells)
+            ? Math.max(0.5, Math.min(12, dungeonLookRaw.torchRadiusCells))
+            : 4,
+        maxTorchLights:
+          typeof dungeonLookRaw.maxTorchLights === 'number' && Number.isFinite(dungeonLookRaw.maxTorchLights)
+            ? Math.max(0, Math.min(8, Math.floor(dungeonLookRaw.maxTorchLights)))
+            : 4,
         fogDensity:
           typeof dungeonLookRaw.fogDensity === 'number' && Number.isFinite(dungeonLookRaw.fogDensity)
             ? Math.max(0, dungeonLookRaw.fogDensity)
@@ -792,6 +801,26 @@ export function mountAtlasPrototype3d(host, options = {}) {
     function updateRoomAnchor(){const rm=dungeon.rooms.find(r=>r.type==='boss')||dungeon.rooms[0];if(!rm)return;const room=levels.find(l=>l.id==='room');if(!room)return;room.x=188+(rm.x+rm.w/2-dungeon.W/2)*.155;room.z=-64+(rm.y+rm.h/2-dungeon.H/2)*.155;}
 
     /* SagaTree Atlas v3 — self-contained real 3D WebGL renderer (no remote scripts). */
+    /**
+     * Visual contract #1295 round 3 — torch point lights for the dungeon look: [x, flameY, z, radius] per torch,
+     * capped at `max` (preset: high 8 / balanced 4 / lite 2). Radius = torchRadiusCells × cell size,
+     * the cell size derived from the torch stamp (forge torch = 1.2 cells ≙ 48·u canvas units).
+     */
+    function productTorchLights(max) {
+      if (!dungeonLook || !productMap || !(max > 0)) return [];
+      const out = [];
+      for (const p of Array.isArray(state.props) ? state.props : []) {
+        if (!p) continue;
+        const stamp = PRODUCT_STAMPS[p.stamp] ? p.stamp : PRODUCT_PROP_TO_STAMP[p.type] || '';
+        const isTorch = stamp === 'lampe' || p.type === 'torch' || String(p.id).startsWith('dlamp-');
+        if (!isTorch || !dungeonAllow(p.id, dungeonLook.torchIds)) continue;
+        const u = clamp(Number(p.size) || 1, 0.01, 40);
+        const elev = Number.isFinite(Number(p.elevation)) ? Number(p.elevation) : 0;
+        out.push([Number(p.x) || 0, elev + 44 * u, Number(p.z) || 0, Math.max(1, dungeonLook.torchRadiusCells * 40 * u)]);
+        if (out.length >= max) break;
+      }
+      return out;
+    }
     class AtlasGL {
       constructor(canvas){
         this.canvas=canvas;
@@ -801,16 +830,27 @@ export function mountAtlasPrototype3d(host, options = {}) {
         /* ATL2-D06 — daylight / ambient / view-space distance fog from dioramaLight. */
         const vertex=`attribute vec3 aPos;attribute vec3 aNormal;attribute vec3 aColor;attribute vec2 aUV;
         uniform mat4 uMatrix; uniform mat4 uView; uniform float uFlat; uniform vec3 uLightDir; uniform float uAmbient; uniform float uShadow;
-        varying vec3 vCol;varying vec2 vUV;varying float vFogDepth;
-        void main(){vec4 eye=uView*vec4(aPos,1.0);vec4 clip=uMatrix*vec4(aPos,1.0);gl_Position=clip;vFogDepth=length(eye.xyz);float ndl=max(0.0,dot(normalize(aNormal),normalize(uLightDir)));float shade=mix(uAmbient+(1.0-uAmbient)*ndl*(0.55+0.45*uShadow),1.0,uFlat);vCol=aColor*shade;vUV=aUV;}`;
-        const fragment=`precision mediump float;varying vec3 vCol;varying vec2 vUV;varying float vFogDepth;uniform sampler2D uSampler;uniform float uTexture;uniform float uAlpha;uniform float uFogDensity;uniform vec3 uFogColor;
-        void main(){vec4 tex=texture2D(uSampler,vUV);float a=mix(1.0,tex.a,uTexture);if(a<0.08)discard;vec3 col=vCol*mix(vec3(1.),tex.rgb,uTexture);float fog=uFogDensity>0.0?clamp(1.0-exp(-uFogDensity*vFogDepth),0.0,0.72):0.0;col=mix(col,uFogColor,fog);gl_FragColor=vec4(col,uAlpha*a);}`;
+        varying vec3 vCol;varying vec2 vUV;varying float vFogDepth;varying vec3 vWorld;varying vec3 vAlb;
+        void main(){vec4 eye=uView*vec4(aPos,1.0);vec4 clip=uMatrix*vec4(aPos,1.0);gl_Position=clip;vFogDepth=length(eye.xyz);float ndl=max(0.0,dot(normalize(aNormal),normalize(uLightDir)));float shade=mix(uAmbient+(1.0-uAmbient)*ndl*(0.55+0.45*uShadow),1.0,uFlat);vCol=aColor*shade;vAlb=aColor;vWorld=aPos;vUV=aUV;}`;
+        /* Visual contract #1295 round 3 — per-pixel torch point lights: smooth distance falloff (1-(d/r)²)², up to 8 lights. */
+        const fragment=`#ifdef GL_FRAGMENT_PRECISION_HIGH
+precision highp float;
+#else
+precision mediump float;
+#endif
+varying vec3 vCol;varying vec2 vUV;varying float vFogDepth;varying vec3 vWorld;varying vec3 vAlb;uniform sampler2D uSampler;uniform float uTexture;uniform float uAlpha;uniform float uFogDensity;uniform vec3 uFogColor;
+        uniform vec4 uTorch[8];uniform int uTorchCount;uniform vec3 uTorchColor;uniform float uTorchGain;
+        void main(){vec4 tex=texture2D(uSampler,vUV);float a=mix(1.0,tex.a,uTexture);if(a<0.08)discard;vec3 texc=mix(vec3(1.),tex.rgb,uTexture);vec3 col=vCol*texc;
+        vec3 torchLight=vec3(0.0);for(int i=0;i<8;i++){if(i>=uTorchCount)break;vec3 d=(vWorld-uTorch[i].xyz)/uTorch[i].w;float q=clamp(1.0-dot(d,d),0.0,1.0);torchLight+=uTorchColor*(q*q);}
+        col+=vAlb*texc*torchLight*uTorchGain;
+        float fog=uFogDensity>0.0?clamp(1.0-exp(-uFogDensity*vFogDepth),0.0,0.72):0.0;col=mix(col,uFogColor,fog);gl_FragColor=vec4(col,uAlpha*a);}`;
         const compile=(type,code)=>{const s=gl.createShader(type);gl.shaderSource(s,code);gl.compileShader(s);if(!gl.getShaderParameter(s,gl.COMPILE_STATUS))throw Error(gl.getShaderInfoLog(s));return s;};
         const vs=compile(gl.VERTEX_SHADER,vertex);const fs=compile(gl.FRAGMENT_SHADER,fragment);
         const p=gl.createProgram();gl.attachShader(p,vs);gl.attachShader(p,fs);gl.linkProgram(p);
         if(!gl.getProgramParameter(p,gl.LINK_STATUS))throw Error(gl.getProgramInfoLog(p));this.program=p;this.shaders=[vs,fs];
         this.attribs=['aPos','aNormal','aColor','aUV'].map(n=>gl.getAttribLocation(p,n));
-        this.uniforms=Object.fromEntries(['uMatrix','uView','uTexture','uSampler','uAlpha','uFlat','uLightDir','uAmbient','uShadow','uFogDensity','uFogColor'].map(n=>[n,gl.getUniformLocation(p,n)]));
+        this.uniforms=Object.fromEntries(['uMatrix','uView','uTexture','uSampler','uAlpha','uFlat','uLightDir','uAmbient','uShadow','uFogDensity','uFogColor','uTorchCount','uTorchColor','uTorchGain'].map(n=>[n,gl.getUniformLocation(p,n)]));
+        this.uniforms.uTorch=gl.getUniformLocation(p,'uTorch[0]');this.torchData=new Float32Array(32);
         gl.useProgram(p);gl.uniform1i(this.uniforms.uSampler,0);gl.enable(gl.DEPTH_TEST);gl.depthFunc(gl.LEQUAL);
         const cc=envLight.clearColor;gl.clearColor(cc[0],cc[1],cc[2],cc[3]);gl.disable(gl.CULL_FACE);
         const fogHex=parseInt(String(envLight.fogColor||'#5f8f9c').replace('#',''),16);
@@ -832,6 +872,10 @@ export function mountAtlasPrototype3d(host, options = {}) {
         if(this.uniforms.uShadow)gl.uniform1f(this.uniforms.uShadow,du.shadow);
         if(this.uniforms.uFogDensity)gl.uniform1f(this.uniforms.uFogDensity,du.fogDensity);
         if(this.uniforms.uFogColor)gl.uniform3fv(this.uniforms.uFogColor,du.fogColor);
+        /* Visual contract #1295 round 3 — torch point lights (dungeon look; count per quality preset). */
+        const torchLights=dungeonLook?productTorchLights(dungeonLook.maxTorchLights):[];
+        if(this.uniforms.uTorchCount)gl.uniform1i(this.uniforms.uTorchCount,torchLights.length);
+        if(torchLights.length){this.torchData.fill(0);torchLights.forEach((l,i)=>this.torchData.set(l,i*4));if(this.uniforms.uTorch)gl.uniform4fv(this.uniforms.uTorch,this.torchData);if(this.uniforms.uTorchColor)gl.uniform3fv(this.uniforms.uTorchColor,hexToRgb(dungeonLook.light));if(this.uniforms.uTorchGain)gl.uniform1f(this.uniforms.uTorchGain,torchLightGain());}
         gl.activeTexture(gl.TEXTURE0);gl.enable(gl.DEPTH_TEST);gl.depthMask(true);gl.disable(gl.BLEND);let calls=0;
         for(const [name,m] of this.meshes){if(m.count===0||visibility[name]===false)continue;const alpha=typeof visibility[name]==='number'?visibility[name]:1;gl.uniform1f(this.uniforms.uAlpha,alpha);gl.uniform1f(this.uniforms.uTexture,m.texture?1:0);gl.uniform1f(this.uniforms.uFlat,(m.texture||name==='ocean')?1:0);gl.bindTexture(gl.TEXTURE_2D,m.texture?(this.textures.get(m.texture)||this.surface):this.surface);gl.bindBuffer(gl.ARRAY_BUFFER,m.buffer);const stride=44;for(const [i,index] of this.attribs.entries()){if(index<0)continue;gl.enableVertexAttribArray(index);gl.vertexAttribPointer(index,i===3?2:3,gl.FLOAT,false,stride,[0,12,24,36][i]);}if(alpha<1){gl.enable(gl.BLEND);gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);gl.depthMask(false);}else{gl.disable(gl.BLEND);gl.depthMask(true);}gl.drawArrays(gl.TRIANGLES,0,m.count);calls++;}
         gl.depthMask(true);gl.disable(gl.BLEND);this.lastCalls=calls;
@@ -863,6 +907,12 @@ export function mountAtlasPrototype3d(host, options = {}) {
 
     /* A fully offline software 3D rasterizer, used only when WebGL is unavailable.
        Geometry is the SAME set of 3D triangles as the GPU renderer; this is not a 2D map fallback. */
+    /** Lite painter's algorithm (Visual contract #1295 round 3): split projected edges above this, ≤ 3 levels; ground = y ≤ 0.05. */
+    const LITE_MAX_EDGE_PX=96,LITE_MAX_SPLIT=3,LITE_GROUND_Y=0.05;
+    /** Inside a torch radius faces split finer (≤ 28 px, ≤ 5 levels) so the per-face falloff reads as a gradient. */
+    const LITE_TORCH_EDGE_PX=28,LITE_TORCH_SPLIT=5;
+    /** Torch light gain from the preset torch intensity (high 1 / balanced .75 / lite .45) + bloom lift. */
+    function torchLightGain(){return dungeonLook?(0.55+0.65*dungeonLook.torchIntensity)*(dungeonLook.bloomEnabled?1.15:1):0;}
     class AtlasLite3D {
       constructor(canvas){
         this.canvas=canvas;this.ctx=canvas.getContext('2d',{alpha:false,willReadFrequently:false});if(!this.ctx)throw Error('Canvas 2D nicht verfügbar');this.meshes=new Map();this.textures=new Map();this.lastCalls=0;this.software3D=true;
@@ -896,28 +946,58 @@ export function mountAtlasPrototype3d(host, options = {}) {
        const cc=this.clearColor||[0.0706,0.2431,0.2902,1];
        ctx.fillStyle=`rgb(${Math.round(cc[0]*255)},${Math.round(cc[1]*255)},${Math.round(cc[2]*255)})`;ctx.fillRect(0,0,w,h);
        for(const name of ['map_world','map_region','map_city','map_dungeon']){const m=this.meshes.get(name);if(m&&visibility[name]!==false)this.drawMap(name,m);}
-       // Mesh vertices belong to the shared true 3D scene. Sort visible faces back-to-front.
-       const faces=[];const{forward,right,pitch}=getCameraAngles();const scale=h/(2*cameraState.span);
+       // Mesh vertices belong to the shared true 3D scene (painter's algorithm, visual round 3 #1295):
+       //  - cull on the projected triangle bbox (not the centroid) so large floors/terrain never vanish;
+       //  - split large projected triangles (≤ LITE_MAX_SPLIT levels) so depth keys stay local;
+       //  - ground pass first (every vertex at/below LITE_GROUND_Y: terrain base, sheet, floors, roads)
+       //    ordered by height, then everything standing on it back-to-front (eye distance in perspective).
+       const{forward,pitch,mode}=getCameraAngles();const persp=mode==='perspective';
+       const eye=persp?cameraEyeBasis().eye:null;const cosP=Math.cos(pitch),sinP=Math.sin(pitch);
        const du=this.dioramaUniforms||{lightDir:[-.45,1,-.48],ambient:.34,shadow:.42};
        const Lx=du.lightDir[0],Ly=du.lightDir[1],Lz=du.lightDir[2];
        const Llen=Math.hypot(Lx,Ly,Lz)||1;
        const ambient=du.ambient,shadow=du.shadow;
+       /* Lite torch falloff: per-face linear (1-d/r), max 2 lights (cheaper than the per-pixel WebGL path). */
+       const torches=dungeonLook?productTorchLights(Math.min(2,dungeonLook.maxTorchLights)):[];
+       const tCol=torches.length?hexToRgb(dungeonLook.light):null,tGain=torches.length?torchLightGain():0;
+       const ground=[],rest=[];const self=this;
+       const keyOf=(cx,cy,cz)=>persp?-Math.hypot(cx-eye[0],cy-eye[1],cz-eye[2]):((cx-cameraState.x)*forward[0]+(cz-cameraState.z)*forward[1])*cosP+cy*sinP;
+       function addFace(a,b,c,pa,pb,pc,nrm,col,level){
+         if(persp&&(!pa[2]||!pb[2]||!pc[2]))return;
+         const minX=Math.min(pa[0],pb[0],pc[0]),maxX=Math.max(pa[0],pb[0],pc[0]),minY=Math.min(pa[1],pb[1],pc[1]),maxY=Math.max(pa[1],pb[1],pc[1]);
+         if(maxX<0||minX>w||maxY<0||minY>h)return;
+         const edge=Math.max(Math.hypot(pb[0]-pa[0],pb[1]-pa[1]),Math.hypot(pc[0]-pb[0],pc[1]-pb[1]),Math.hypot(pa[0]-pc[0],pa[1]-pc[1]));
+         let maxEdge=LITE_MAX_EDGE_PX,maxLevel=LITE_MAX_SPLIT;
+         if(torches.length&&level<LITE_TORCH_SPLIT){
+           const ex=Math.max(Math.abs(a[0]-b[0]),Math.abs(b[0]-c[0]),Math.abs(c[0]-a[0]),Math.abs(a[2]-b[2]),Math.abs(b[2]-c[2]),Math.abs(c[2]-a[2]));
+           const mx=(a[0]+b[0]+c[0])/3,my=(a[1]+b[1]+c[1])/3,mz=(a[2]+b[2]+c[2])/3;
+           for(const L of torches){if(Math.hypot(mx-L[0],my-L[1],mz-L[2])<L[3]+ex){maxEdge=LITE_TORCH_EDGE_PX;maxLevel=LITE_TORCH_SPLIT;break;}}
+         }
+         if(edge>maxEdge&&level<maxLevel){
+           const mid=(p,q)=>[(p[0]+q[0])/2,(p[1]+q[1])/2,(p[2]+q[2])/2];
+           const ab=mid(a,b),bc=mid(b,c),ca=mid(c,a);
+           const pab=self.project(ab[0],ab[1],ab[2]),pbc=self.project(bc[0],bc[1],bc[2]),pca=self.project(ca[0],ca[1],ca[2]);
+           addFace(a,ab,ca,pa,pab,pca,nrm,col,level+1);addFace(ab,b,bc,pab,pb,pbc,nrm,col,level+1);
+           addFace(ca,bc,c,pca,pbc,pc,nrm,col,level+1);addFace(ab,bc,ca,pab,pbc,pca,nrm,col,level+1);
+           return;
+         }
+         const cx=(a[0]+b[0]+c[0])/3,cy=(a[1]+b[1]+c[1])/3,cz=(a[2]+b[2]+c[2])/3;
+         const face=[keyOf(cx,cy,cz),cy,pa,pb,pc,nrm,col,cx,cz];
+         (Math.max(a[1],b[1],c[1])<=LITE_GROUND_Y?ground:rest).push(face);
+       }
        for(const [name,m] of this.meshes){if(name.startsWith('map_')||name==='ocean'||visibility[name]===false||m.count===0)continue;
-        const ar=m.array;const stride=33;for(let i=0;i+stride<=ar.length;i+=stride){const x=(ar[i]+ar[i+11]+ar[i+22])/3,y=(ar[i+1]+ar[i+12]+ar[i+23])/3,z=(ar[i+2]+ar[i+13]+ar[i+24])/3;const dx=x-cameraState.x,dz=z-cameraState.z;
-         const sX=(dx*right[0]+dz*right[1])*scale+w/2,sY=((dx*forward[0]+dz*forward[1])*Math.sin(pitch)-y*Math.cos(pitch))*scale+h/2;
-         const r=Math.max(11,Math.abs(y)*scale*.9,Math.abs(ar[i]-ar[i+11])*scale*.5,Math.abs(ar[i+2]-ar[i+13])*scale*.5);
-         if(sX < -r*3||sX>w+r*3||sY < -r*3||sY>h+r*3)continue;
-         const depth=(dx*forward[0]+dz*forward[1])*Math.cos(pitch)+y*Math.sin(pitch);
-         faces.push([depth,ar,i,sX,sY]);
+        const ar=m.array;const stride=33;for(let i=0;i+stride<=ar.length;i+=stride){
+         const a=[ar[i],ar[i+1],ar[i+2]],b=[ar[i+11],ar[i+12],ar[i+13]],c=[ar[i+22],ar[i+23],ar[i+24]];
+         addFace(a,b,c,this.project(a[0],a[1],a[2]),this.project(b[0],b[1],b[2]),this.project(c[0],c[1],c[2]),[ar[i+3],ar[i+4],ar[i+5]],[ar[i+6],ar[i+7],ar[i+8]],0);
         }
        }
-       faces.sort((a,b)=>a[0]-b[0]);let rendered=0;
-       for(const [,ar,i] of faces){const p0=this.project(ar[i],ar[i+1],ar[i+2]),p1=this.project(ar[i+11],ar[i+12],ar[i+13]),p2=this.project(ar[i+22],ar[i+23],ar[i+24]);
+       ground.sort((p,q)=>(p[1]-q[1])||(p[0]-q[0]));rest.sort((p,q)=>p[0]-q[0]);let rendered=0;
+       for(const face of ground.concat(rest)){const[,cy,p0,p1,p2,nrm,alb,cx,cz]=face;
          const area=(p1[0]-p0[0])*(p2[1]-p0[1])-(p2[0]-p0[0])*(p1[1]-p0[1]);if(Math.abs(area)<.2)continue;
-         const nx=ar[i+3],ny=ar[i+4],nz=ar[i+5];
-         const ndl=Math.max(0,(nx*Lx+ny*Ly+nz*Lz)/Llen);
+         const ndl=Math.max(0,(nrm[0]*Lx+nrm[1]*Ly+nrm[2]*Lz)/Llen);
          const brightness=Math.min(1.08,Math.max(.2,ambient+(1-ambient)*ndl*(0.55+0.45*shadow)));
-         const col=[ar[i+6],ar[i+7],ar[i+8]].map(v=>Math.max(0,Math.min(255,Math.round(v*brightness*255))));
+         let tr=0,tg=0,tb=0;for(const L of torches){const q=Math.max(0,1-Math.hypot(cx-L[0],cy-L[1],cz-L[2])/L[3]);tr+=tCol[0]*q;tg+=tCol[1]*q;tb+=tCol[2]*q;}
+         const col=[alb[0]*(brightness+tr*tGain),alb[1]*(brightness+tg*tGain),alb[2]*(brightness+tb*tGain)].map(v=>Math.max(0,Math.min(255,Math.round(v*255))));
          ctx.fillStyle=`rgb(${col[0]},${col[1]},${col[2]})`;
          ctx.beginPath();ctx.moveTo(p0[0],p0[1]);ctx.lineTo(p1[0],p1[1]);ctx.lineTo(p2[0],p2[1]);ctx.closePath();ctx.fill();rendered++;
        }

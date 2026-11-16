@@ -18,6 +18,7 @@ import {
   type AtlasDioramaDetailLevel,
 } from './atlas-diorama-look';
 import { buildAtlasDungeonLookPlan } from './atlas-dungeon-look';
+import { heightfieldContentFingerprint } from './atlas-heightfield';
 import {
   ATLAS_DIORAMA_PITCH_DEFAULT,
   defaultAtlasProductCameraState,
@@ -213,11 +214,12 @@ export const ATLAS_GOLDEN_VISUAL_FIXTURES: readonly AtlasGoldenVisualFixture[] =
     labelDe: 'Krypta unter dem Hügel',
     uiMapTitleDe: 'Krypta unter dem Hügel',
     mapSeedKey: 'dornhain.map.loc.crypt',
-    camera: fixedDioramaCamera(420, 380, 160),
+    /* ATL3-V01 round 2: Golden Krypta = committed Dungeon-Forge crypt (whole layout in frame). */
+    camera: fixedDioramaCamera(500, 500, 460),
     graphicsPresetId: 'balanced',
     lookFamily: 'indoor',
     indoorThemeKey: 'ancient',
-    selectionFeatureId: 'g.crypt.hall',
+    selectionFeatureId: 'droom-1425-3',
     buildCanvas: buildGoldenCryptCanvas,
   },
   {
@@ -360,7 +362,8 @@ function cameraFingerprint(cam: AtlasProductCameraState): string {
 /**
  * Spatial geometry fingerprint — includes coordinates / extents so moving an
  * object, stroke, room, wall, or door changes the golden hash even when IDs
- * and materials stay the same (Codex P1 #1232).
+ * and materials stay the same (Codex P1 #1232). A heightfield (when present)
+ * is part of the geometry (ATL3-V01 #1295).
  */
 export function atlasGoldenSpatialGeometryFingerprint(doc: UnifiedCanvasDoc): string {
   const parts: string[] = [];
@@ -392,6 +395,8 @@ export function atlasGoldenSpatialGeometryFingerprint(doc: UnifiedCanvasDoc): st
       `door:${d.id}:${d.wallId}:${d.t.toFixed(4)}:${d.width.toFixed(3)}`,
     );
   }
+  /* ATL3-V01 round 2: canonical terrain is geometry too (Golden Dornhain hills). */
+  if (doc.heightfield) parts.push(heightfieldContentFingerprint(doc.heightfield));
   return hashParts(parts);
 }
 
@@ -648,11 +653,12 @@ export const ATLAS_GOLDEN_VISUAL_BASELINES: readonly AtlasGoldenVisualBaseline[]
   },
   {
     fixtureId: 'city',
-    contentFingerprint: '4591075b',
+    /* ATL3-V01 round 2 (#1295): Golden Dornhain heightfield (hills) — deliberate change. */
+    contentFingerprint: 'ba504bee',
     cameraFingerprint: '3dadb73b',
     lightFingerprint: 'f63a4b91',
-    geometryFingerprint: 'b7bf318d',
-    lookFingerprint: '3b44bf05',
+    geometryFingerprint: 'f44ea5ea',
+    lookFingerprint: '57d94718',
     selectionOutline: '#06B6D4',
     selectionContrastRatio: 6.025371305386859,
     materialKeys: ['holz', 'pflaster', 'stein', 'wasser'],
@@ -688,15 +694,16 @@ export const ATLAS_GOLDEN_VISUAL_BASELINES: readonly AtlasGoldenVisualBaseline[]
   },
   {
     fixtureId: 'crypt',
-    contentFingerprint: '31bd7680',
-    cameraFingerprint: 'f5d89624',
+    /* ATL3-V01 round 2+3 (#1295): Dungeon-Forge Krypta (seed 1425); round 3 corridor floors + real-size props — deliberate. */
+    contentFingerprint: 'efb2286a',
+    cameraFingerprint: 'ee21bf68',
     lightFingerprint: '522e872b',
-    geometryFingerprint: '72aff879',
-    lookFingerprint: '90c20a94',
+    geometryFingerprint: 'b39a69fa',
+    lookFingerprint: '6681c4bf',
     selectionOutline: '#06B6D4',
     selectionContrastRatio: 6.025371305386859,
-    materialKeys: ['erde', 'stein'],
-    lookAlbedos: ['#505963', '#777b82', '#8a745b', '#d4a96b'],
+    materialKeys: ['holz', 'pflaster', 'stein'],
+    lookAlbedos: ['#505963', '#777b82', '#8a745b', '#d4a96b', '#ffc17b'],
     detailLevel: 'indoor-theme',
   },
   {

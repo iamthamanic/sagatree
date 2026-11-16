@@ -1,0 +1,1448 @@
+{
+  "format": "atl3-v01-baseline-capture-v2",
+  "issue": 1295,
+  "buildSha": "995fb3404b",
+  "at": "2026-11-15T20:43:50.171Z",
+  "renderer": {
+    "kind": "software-webgl",
+    "unmasked": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+    "preset": "balanced"
+  },
+  "renderers": {
+    "balanced": {
+      "kind": "software-webgl",
+      "unmasked": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+      "preset": "balanced"
+    },
+    "high": {
+      "kind": "software-webgl",
+      "unmasked": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+      "preset": "high"
+    },
+    "lite": {
+      "kind": "lite3d-fallback",
+      "unmasked": "",
+      "preset": "lite"
+    }
+  },
+  "measurementClass": "software-rendering (not a GPU product measurement)",
+  "contractFormat": "atl3-v01-visual-contract-v1",
+  "qualitySwitch": {
+    "default": "balanced"
+  },
+  "storedData": [
+    {
+      "sceneId": "dornhain-block",
+      "mapId": "dh-map-place-dornhain__c971d089b3c0",
+      "fingerprint": "3ec9b21f1c3d0ff1",
+      "seed": "dornhain.map.place.dornhain",
+      "heightfield": true,
+      "dungeon": null
+    },
+    {
+      "sceneId": "krypta",
+      "mapId": "dh-map-loc-crypt__6a4adf224cfe",
+      "fingerprint": "a44b49a77d61e201",
+      "seed": "dornhain.map.loc.crypt",
+      "heightfield": false,
+      "dungeon": {
+        "generatorVersion": "sagatree-dungeon-forge-v2",
+        "seed": 1425,
+        "themeKey": "ancient",
+        "roomCount": 5,
+        "loopChance": 0.18,
+        "confirmed": true,
+        "manualDirty": false
+      }
+    }
+  ],
+  "captures": [
+    {
+      "file": "v01__dornhain-block__map-dh-map-place-dornhain-c971d089b3c0__ortho-topdown__z0-uebersicht__995fb3404b__balanced-software-webgl__desktop.png",
+      "profile": "balanced",
+      "sceneId": "dornhain-block",
+      "mapId": "dh-map-place-dornhain__c971d089b3c0",
+      "camera": "ortho-topdown",
+      "zoomId": "z0-uebersicht",
+      "viewport": "desktop",
+      "target": {
+        "x": 390,
+        "z": 470,
+        "span": 530,
+        "yawDeg": 0
+      },
+      "actual": {
+        "mode": "ortho-topdown",
+        "x": 390,
+        "z": 470,
+        "span": 530,
+        "yawRad": 0,
+        "pitchRad": 1.5707963267948966
+      },
+      "meshes": 14,
+      "triangles": 506,
+      "metrics": {
+        "width": 992,
+        "height": 600,
+        "lumaMean": 105.61,
+        "lumaStdDev": 6.72,
+        "distinctColors": 54,
+        "edgeDensity": 0.0023,
+        "dominantColorShare": 0.4696
+      }
+    },
+    {
+      "file": "v01__dornhain-block__map-dh-map-place-dornhain-c971d089b3c0__ortho-topdown__z1-stadtblock__995fb3404b__balanced-software-webgl__desktop.png",
+      "profile": "balanced",
+      "sceneId": "dornhain-block",
+      "mapId": "dh-map-place-dornhain__c971d089b3c0",
+      "camera": "ortho-topdown",
+      "zoomId": "z1-stadtblock",
+      "viewport": "desktop",
+      "target": {
+        "x": 390,
+        "z": 470,
+        "span": 220.83333333333334,
+        "yawDeg": 0
+      },
+      "actual": {
+        "mode": "ortho-topdown",
+        "x": 390,
+        "z": 470,
+        "span": 220.83333333333334,
+        "yawRad": 0,
+        "pitchRad": 1.5707963267948966
+      },
+      "meshes": 14,
+      "triangles": 986,
+      "metrics": {
+        "width": 992,
+        "height": 600,
+        "lumaMean": 86.71,
+        "lumaStdDev": 15.43,
+        "distinctColors": 83,
+        "edgeDensity": 0.0103,
+        "dominantColorShare": 0.6857
+      }
+    },
+    {
+      "file": "v01__dornhain-block__map-dh-map-place-dornhain-c971d089b3c0__ortho-topdown__z2-detail-kleines-gebaeude__995fb3404b__balanced-software-webgl__desktop.png",
+      "profile": "balanced",
+      "sceneId": "dornhain-block",
+      "mapId": "dh-map-place-dornhain__c971d089b3c0",
+      "camera": "ortho-topdown",
+      "zoomId": "z2-detail-kleines-gebaeude",
+      "viewport": "desktop",
+      "target": {
+        "x": 452,
+        "z": 430,
+        "span": 110.41666666666667,
+        "yawDeg": 0
+      },
+      "actual": {
+        "mode": "ortho-topdown",
+        "x": 452,
+        "z": 430,
+        "span": 110.41666666666667,
+        "yawRad": 0,
+        "pitchRad": 1.5707963267948966
+      },
+      "meshes": 14,
+      "triangles": 986,
+      "metrics": {
+        "width": 992,
+        "height": 600,
+        "lumaMean": 85.88,
+        "lumaStdDev": 27.62,
+        "distinctColors": 88,
+        "edgeDensity": 0.0145,
+        "dominantColorShare": 0.3534
+      }
+    },
+    {
+      "file": "v01__dornhain-block__map-dh-map-place-dornhain-c971d089b3c0__diorama-oblique__z0-uebersicht__995fb3404b__balanced-software-webgl__desktop.png",
+      "profile": "balanced",
+      "sceneId": "dornhain-block",
+      "mapId": "dh-map-place-dornhain__c971d089b3c0",
+      "camera": "diorama-oblique",
+      "zoomId": "z0-uebersicht",
+      "viewport": "desktop",
+      "target": {
+        "x": 390,
+        "z": 470,
+        "span": 530,
+        "yawDeg": 20
+      },
+      "actual": {
+        "mode": "diorama-oblique",
+        "x": 390,
+        "z": 470,
+        "span": 530,
+        "yawRad": 0.3490658503988659,
+        "pitchRad": 1.05
+      },
+      "meshes": 14,
+      "triangles": 506,
+      "metrics": {
+        "width": 992,
+        "height": 600,
+        "lumaMean": 106.06,
+        "lumaStdDev": 6.79,
+        "distinctColors": 82,
+        "edgeDensity": 0.0019,
+        "dominantColorShare": 0.5382
+      }
+    },
+    {
+      "file": "v01__dornhain-block__map-dh-map-place-dornhain-c971d089b3c0__diorama-oblique__z1-stadtblock__995fb3404b__balanced-software-webgl__desktop.png",
+      "profile": "balanced",
+      "sceneId": "dornhain-block",
+      "mapId": "dh-map-place-dornhain__c971d089b3c0",
+      "camera": "diorama-oblique",
+      "zoomId": "z1-stadtblock",
+      "viewport": "desktop",
+      "target": {
+        "x": 390,
+        "z": 470,
+        "span": 220.83333333333334,
+        "yawDeg": 20
+      },
+      "actual": {
+        "mode": "diorama-oblique",
+        "x": 390,
+        "z": 470,
+        "span": 220.83333333333334,
+        "yawRad": 0.3490658503988659,
+        "pitchRad": 1.05
+      },
+      "meshes": 14,
+      "triangles": 986,
+      "metrics": {
+        "width": 992,
+        "height": 600,
+        "lumaMean": 85.81,
+        "lumaStdDev": 14.03,
+        "distinctColors": 138,
+        "edgeDensity": 0.0116,
+        "dominantColorShare": 0.461
+      }
+    },
+    {
+      "file": "v01__dornhain-block__map-dh-map-place-dornhain-c971d089b3c0__diorama-oblique__z2-detail-kleines-gebaeude__995fb3404b__balanced-software-webgl__desktop.png",
+      "profile": "balanced",
+      "sceneId": "dornhain-block",
+      "mapId": "dh-map-place-dornhain__c971d089b3c0",
+      "camera": "diorama-oblique",
+      "zoomId": "z2-detail-kleines-gebaeude",
+      "viewport": "desktop",
+      "target": {
+        "x": 452,
+        "z": 430,
+        "span": 110.41666666666667,
+        "yawDeg": 20
+      },
+      "actual": {
+        "mode": "diorama-oblique",
+        "x": 452,
+        "z": 430,
+        "span": 110.41666666666667,
+        "yawRad": 0.3490658503988659,
+        "pitchRad": 1.05
+      },
+      "meshes": 14,
+      "triangles": 986,
+      "metrics": {
+        "width": 992,
+        "height": 600,
+        "lumaMean": 85.28,
+        "lumaStdDev": 27.53,
+        "distinctColors": 145,
+        "edgeDensity": 0.0165,
+        "dominantColorShare": 0.3451
+      }
+    },
+    {
+      "file": "v01__dornhain-block__map-dh-map-place-dornhain-c971d089b3c0__perspective__z0-uebersicht__995fb3404b__balanced-software-webgl__desktop.png",
+      "profile": "balanced",
+      "sceneId": "dornhain-block",
+      "mapId": "dh-map-place-dornhain__c971d089b3c0",
+      "camera": "perspective",
+      "zoomId": "z0-uebersicht",
+      "viewport": "desktop",
+      "target": {
+        "x": 390,
+        "z": 470,
+        "span": 530,
+        "yawDeg": 20
+      },
+      "actual": {
+        "mode": "perspective",
+        "x": 390,
+        "z": 470,
+        "span": 530,
+        "yawRad": 0.3490658503988659,
+        "pitchRad": 0.95
+      },
+      "meshes": 14,
+      "triangles": 506,
+      "metrics": {
+        "width": 992,
+        "height": 600,
+        "lumaMean": 104.46,
+        "lumaStdDev": 8.68,
+        "distinctColors": 84,
+        "edgeDensity": 0.0012,
+        "dominantColorShare": 0.6074
+      }
+    },
+    {
+      "file": "v01__dornhain-block__map-dh-map-place-dornhain-c971d089b3c0__perspective__z1-stadtblock__995fb3404b__balanced-software-webgl__desktop.png",
+      "profile": "balanced",
+      "sceneId": "dornhain-block",
+      "mapId": "dh-map-place-dornhain__c971d089b3c0",
+      "camera": "perspective",
+      "zoomId": "z1-stadtblock",
+      "viewport": "desktop",
+      "target": {
+        "x": 390,
+        "z": 470,
+        "span": 220.83333333333334,
+        "yawDeg": 20
+      },
+      "actual": {
+        "mode": "perspective",
+        "x": 390,
+        "z": 470,
+        "span": 220.83333333333334,
+        "yawRad": 0.3490658503988659,
+        "pitchRad": 0.95
+      },
+      "meshes": 14,
+      "triangles": 986,
+      "metrics": {
+        "width": 992,
+        "height": 600,
+        "lumaMean": 86.14,
+        "lumaStdDev": 14.74,
+        "distinctColors": 179,
+        "edgeDensity": 0.011,
+        "dominantColorShare": 0.416
+      }
+    },
+    {
+      "file": "v01__dornhain-block__map-dh-map-place-dornhain-c971d089b3c0__perspective__z2-detail-kleines-gebaeude__995fb3404b__balanced-software-webgl__desktop.png",
+      "profile": "balanced",
+      "sceneId": "dornhain-block",
+      "mapId": "dh-map-place-dornhain__c971d089b3c0",
+      "camera": "perspective",
+      "zoomId": "z2-detail-kleines-gebaeude",
+      "viewport": "desktop",
+      "target": {
+        "x": 452,
+        "z": 430,
+        "span": 110.41666666666667,
+        "yawDeg": 20
+      },
+      "actual": {
+        "mode": "perspective",
+        "x": 452,
+        "z": 430,
+        "span": 110.41666666666667,
+        "yawRad": 0.3490658503988659,
+        "pitchRad": 0.95
+      },
+      "meshes": 14,
+      "triangles": 986,
+      "metrics": {
+        "width": 992,
+        "height": 600,
+        "lumaMean": 85.21,
+        "lumaStdDev": 26.27,
+        "distinctColors": 199,
+        "edgeDensity": 0.0166,
+        "dominantColorShare": 0.3141
+      }
+    },
+    {
+      "file": "v01__krypta__map-dh-map-loc-crypt-6a4adf224cfe__ortho-topdown__z0-uebersicht__995fb3404b__balanced-software-webgl__desktop.png",
+      "profile": "balanced",
+      "sceneId": "krypta",
+      "mapId": "dh-map-loc-crypt__6a4adf224cfe",
+      "camera": "ortho-topdown",
+      "zoomId": "z0-uebersicht",
+      "viewport": "desktop",
+      "target": {
+        "x": 500,
+        "z": 500,
+        "span": 530,
+        "yawDeg": 0
+      },
+      "actual": {
+        "mode": "ortho-topdown",
+        "x": 500,
+        "z": 500,
+        "span": 530,
+        "yawRad": 0,
+        "pitchRad": 1.5707963267948966
+      },
+      "meshes": 14,
+      "triangles": 3032,
+      "metrics": {
+        "width": 992,
+        "height": 600,
+        "lumaMean": 81.82,
+        "lumaStdDev": 13.64,
+        "distinctColors": 49,
+        "edgeDensity": 0.012,
+        "dominantColorShare": 0.4964
+      }
+    },
+    {
+      "file": "v01__krypta__map-dh-map-loc-crypt-6a4adf224cfe__ortho-topdown__z1-raumgruppe__995fb3404b__balanced-software-webgl__desktop.png",
+      "profile": "balanced",
+      "sceneId": "krypta",
+      "mapId": "dh-map-loc-crypt__6a4adf224cfe",
+      "camera": "ortho-topdown",
+      "zoomId": "z1-raumgruppe",
+      "viewport": "desktop",
+      "target": {
+        "x": 560,
+        "z": 600,
+        "span": 302.85714285714283,
+        "yawDeg": 0
+      },
+      "actual": {
+        "mode": "ortho-topdown",
+        "x": 560,
+        "z": 600,
+        "span": 302.85714285714283,
+        "yawRad": 0,
+        "pitchRad": 1.5707963267948966
+      },
+      "meshes": 14,
+      "triangles": 3032,
+      "metrics": {
+        "width": 992,
+        "height": 600,
+        "lumaMean": 65.29,
+        "lumaStdDev": 17.11,
+        "distinctColors": 63,
+        "edgeDensity": 0.0119,
+        "dominantColorShare": 0.6601
+      }
+    },
+    {
+      "file": "v01__krypta__map-dh-map-loc-crypt-6a4adf224cfe__ortho-topdown__z2-raum__995fb3404b__balanced-software-webgl__desktop.png",
+      "profile": "balanced",
+      "sceneId": "krypta",
+      "mapId": "dh-map-loc-crypt__6a4adf224cfe",
+      "camera": "ortho-topdown",
+      "zoomId": "z2-raum",
+      "viewport": "desktop",
+      "target": {
+        "x": 644,
+        "z": 617,
+        "span": 160.6060606060606,
+        "yawDeg": 0
+      },
+      "actual": {
+        "mode": "ortho-topdown",
+        "x": 644,
+        "z": 617,
+        "span": 160.6060606060606,
+        "yawRad": 0,
+        "pitchRad": 1.5707963267948966
+      },
+      "meshes": 14,
+      "triangles": 3032,
+      "metrics": {
+        "width": 992,
+        "height": 600,
+        "lumaMean": 62.85,
+        "lumaStdDev": 25.72,
+        "distinctColors": 87,
+        "edgeDensity": 0.0143,
+        "dominantColorShare": 0.5633
+      }
+    },
+    {
+      "file": "v01__krypta__map-dh-map-loc-crypt-6a4adf224cfe__diorama-oblique__z0-uebersicht__995fb3404b__balanced-software-webgl__desktop.png",
+      "profile": "balanced",
+      "sceneId": "krypta",
+      "mapId": "dh-map-loc-crypt__6a4adf224cfe",
+      "camera": "diorama-oblique",
+      "zoomId": "z0-uebersicht",
+      "viewport": "desktop",
+      "target": {
+        "x": 500,
+        "z": 500,
+        "span": 530,
+        "yawDeg": 20
+      },
+      "actual": {
+        "mode": "diorama-oblique",
+        "x": 500,
+        "z": 500,
+        "span": 530,
+        "yawRad": 0.3490658503988659,
+        "pitchRad": 1.05
+      },
+      "meshes": 14,
+      "triangles": 3032,
+      "metrics": {
+        "width": 992,
+        "height": 600,
+        "lumaMean": 83.37,
+        "lumaStdDev": 13.42,
+        "distinctColors": 67,
+        "edgeDensity": 0.0069,
+        "dominantColorShare": 0.5327
+      }
+    },
+    {
+      "file": "v01__krypta__map-dh-map-loc-crypt-6a4adf224cfe__diorama-oblique__z1-raumgruppe__995fb3404b__balanced-software-webgl__desktop.png",
+      "profile": "balanced",
+      "sceneId": "krypta",
+      "mapId": "dh-map-loc-crypt__6a4adf224cfe",
+      "camera": "diorama-oblique",
+      "zoomId": "z1-raumgruppe",
+      "viewport": "desktop",
+      "target": {
+        "x": 560,
+        "z": 600,
+        "span": 302.85714285714283,
+        "yawDeg": 20
+      },
+      "actual": {
+        "mode": "diorama-oblique",
+        "x": 560,
+        "z": 600,
+        "span": 302.85714285714283,
+        "yawRad": 0.3490658503988659,
+        "pitchRad": 1.05
+      },
+      "meshes": 14,
+      "triangles": 3032,
+      "metrics": {
+        "width": 992,
+        "height": 600,
+        "lumaMean": 64.14,
+        "lumaStdDev": 16.5,
+        "distinctColors": 94,
+        "edgeDensity": 0.0113,
+        "dominantColorShare": 0.3331
+      }
+    },
+    {
+      "file": "v01__krypta__map-dh-map-loc-crypt-6a4adf224cfe__diorama-oblique__z2-raum__995fb3404b__balanced-software-webgl__desktop.png",
+      "profile": "balanced",
+      "sceneId": "krypta",
+      "mapId": "dh-map-loc-crypt__6a4adf224cfe",
+      "camera": "diorama-oblique",
+      "zoomId": "z2-raum",
+      "viewport": "desktop",
+      "target": {
+        "x": 644,
+        "z": 617,
+        "span": 160.6060606060606,
+        "yawDeg": 20
+      },
+      "actual": {
+        "mode": "diorama-oblique",
+        "x": 644,
+        "z": 617,
+        "span": 160.6060606060606,
+        "yawRad": 0.3490658503988659,
+        "pitchRad": 1.05
+      },
+      "meshes": 14,
+      "triangles": 3032,
+      "metrics": {
+        "width": 992,
+        "height": 600,
+        "lumaMean": 59.16,
+        "lumaStdDev": 23.77,
+        "distinctColors": 128,
+        "edgeDensity": 0.0118,
+        "dominantColorShare": 0.4559
+      }
+    },
+    {
+      "file": "v01__krypta__map-dh-map-loc-crypt-6a4adf224cfe__perspective__z0-uebersicht__995fb3404b__balanced-software-webgl__desktop.png",
+      "profile": "balanced",
+      "sceneId": "krypta",
+      "mapId": "dh-map-loc-crypt__6a4adf224cfe",
+      "camera": "perspective",
+      "zoomId": "z0-uebersicht",
+      "viewport": "desktop",
+      "target": {
+        "x": 500,
+        "z": 500,
+        "span": 530,
+        "yawDeg": 20
+      },
+      "actual": {
+        "mode": "perspective",
+        "x": 500,
+        "z": 500,
+        "span": 530,
+        "yawRad": 0.3490658503988659,
+        "pitchRad": 0.95
+      },
+      "meshes": 14,
+      "triangles": 3032,
+      "metrics": {
+        "width": 992,
+        "height": 600,
+        "lumaMean": 91.92,
+        "lumaStdDev": 5.89,
+        "distinctColors": 72,
+        "edgeDensity": 0.004,
+        "dominantColorShare": 0.8007
+      }
+    },
+    {
+      "file": "v01__krypta__map-dh-map-loc-crypt-6a4adf224cfe__perspective__z1-raumgruppe__995fb3404b__balanced-software-webgl__desktop.png",
+      "profile": "balanced",
+      "sceneId": "krypta",
+      "mapId": "dh-map-loc-crypt__6a4adf224cfe",
+      "camera": "perspective",
+      "zoomId": "z1-raumgruppe",
+      "viewport": "desktop",
+      "target": {
+        "x": 560,
+        "z": 600,
+        "span": 302.85714285714283,
+        "yawDeg": 20
+      },
+      "actual": {
+        "mode": "perspective",
+        "x": 560,
+        "z": 600,
+        "span": 302.85714285714283,
+        "yawRad": 0.3490658503988659,
+        "pitchRad": 0.95
+      },
+      "meshes": 14,
+      "triangles": 3032,
+      "metrics": {
+        "width": 992,
+        "height": 600,
+        "lumaMean": 92.58,
+        "lumaStdDev": 8.2,
+        "distinctColors": 83,
+        "edgeDensity": 0.0115,
+        "dominantColorShare": 0.9434
+      }
+    },
+    {
+      "file": "v01__krypta__map-dh-map-loc-crypt-6a4adf224cfe__perspective__z2-raum__995fb3404b__balanced-software-webgl__desktop.png",
+      "profile": "balanced",
+      "sceneId": "krypta",
+      "mapId": "dh-map-loc-crypt__6a4adf224cfe",
+      "camera": "perspective",
+      "zoomId": "z2-raum",
+      "viewport": "desktop",
+      "target": {
+        "x": 644,
+        "z": 617,
+        "span": 160.6060606060606,
+        "yawDeg": 20
+      },
+      "actual": {
+        "mode": "perspective",
+        "x": 644,
+        "z": 617,
+        "span": 160.6060606060606,
+        "yawRad": 0.3490658503988659,
+        "pitchRad": 0.95
+      },
+      "meshes": 14,
+      "triangles": 3032,
+      "metrics": {
+        "width": 992,
+        "height": 600,
+        "lumaMean": 57.34,
+        "lumaStdDev": 21.6,
+        "distinctColors": 140,
+        "edgeDensity": 0.0213,
+        "dominantColorShare": 0.3849
+      }
+    },
+    {
+      "file": "v01__dornhain-block__map-dh-map-place-dornhain-c971d089b3c0__diorama-oblique__z0-uebersicht__995fb3404b__balanced-software-webgl__tablet.png",
+      "profile": "balanced",
+      "sceneId": "dornhain-block",
+      "mapId": "dh-map-place-dornhain__c971d089b3c0",
+      "camera": "diorama-oblique",
+      "zoomId": "z0-uebersicht",
+      "viewport": "tablet",
+      "target": {
+        "x": 390,
+        "z": 470,
+        "span": 530,
+        "yawDeg": 20
+      },
+      "actual": {
+        "mode": "diorama-oblique",
+        "x": 390,
+        "z": 470,
+        "span": 530,
+        "yawRad": 0.3490658503988659,
+        "pitchRad": 1.05
+      },
+      "meshes": 14,
+      "triangles": 506,
+      "metrics": {
+        "width": 730,
+        "height": 912,
+        "lumaMean": 102.51,
+        "lumaStdDev": 7.55,
+        "distinctColors": 78,
+        "edgeDensity": 0.0028,
+        "dominantColorShare": 0.5107
+      }
+    },
+    {
+      "file": "v01__krypta__map-dh-map-loc-crypt-6a4adf224cfe__diorama-oblique__z0-uebersicht__995fb3404b__balanced-software-webgl__tablet.png",
+      "profile": "balanced",
+      "sceneId": "krypta",
+      "mapId": "dh-map-loc-crypt__6a4adf224cfe",
+      "camera": "diorama-oblique",
+      "zoomId": "z0-uebersicht",
+      "viewport": "tablet",
+      "target": {
+        "x": 500,
+        "z": 500,
+        "span": 530,
+        "yawDeg": 20
+      },
+      "actual": {
+        "mode": "diorama-oblique",
+        "x": 500,
+        "z": 500,
+        "span": 530,
+        "yawRad": 0.3490658503988659,
+        "pitchRad": 1.05
+      },
+      "meshes": 14,
+      "triangles": 3032,
+      "metrics": {
+        "width": 730,
+        "height": 912,
+        "lumaMean": 75.33,
+        "lumaStdDev": 12.9,
+        "distinctColors": 75,
+        "edgeDensity": 0.0075,
+        "dominantColorShare": 0.2868
+      }
+    },
+    {
+      "file": "v01__dornhain-block__map-dh-map-place-dornhain-c971d089b3c0__diorama-oblique__z0-uebersicht__995fb3404b__balanced-software-webgl__phone.png",
+      "profile": "balanced",
+      "sceneId": "dornhain-block",
+      "mapId": "dh-map-place-dornhain__c971d089b3c0",
+      "camera": "diorama-oblique",
+      "zoomId": "z0-uebersicht",
+      "viewport": "phone",
+      "target": {
+        "x": 390,
+        "z": 470,
+        "span": 530,
+        "yawDeg": 20
+      },
+      "actual": {
+        "mode": "diorama-oblique",
+        "x": 390,
+        "z": 470,
+        "span": 530,
+        "yawRad": 0.3490658503988659,
+        "pitchRad": 1.05
+      },
+      "meshes": 14,
+      "triangles": 506,
+      "metrics": {
+        "width": 366,
+        "height": 604,
+        "lumaMean": 97.59,
+        "lumaStdDev": 20.13,
+        "distinctColors": 142,
+        "edgeDensity": 0.0183,
+        "dominantColorShare": 0.4332
+      }
+    },
+    {
+      "file": "v01__krypta__map-dh-map-loc-crypt-6a4adf224cfe__diorama-oblique__z0-uebersicht__995fb3404b__balanced-software-webgl__phone.png",
+      "profile": "balanced",
+      "sceneId": "krypta",
+      "mapId": "dh-map-loc-crypt__6a4adf224cfe",
+      "camera": "diorama-oblique",
+      "zoomId": "z0-uebersicht",
+      "viewport": "phone",
+      "target": {
+        "x": 500,
+        "z": 500,
+        "span": 530,
+        "yawDeg": 20
+      },
+      "actual": {
+        "mode": "diorama-oblique",
+        "x": 500,
+        "z": 500,
+        "span": 530,
+        "yawRad": 0.3490658503988659,
+        "pitchRad": 1.05
+      },
+      "meshes": 14,
+      "triangles": 3032,
+      "metrics": {
+        "width": 366,
+        "height": 604,
+        "lumaMean": 73.02,
+        "lumaStdDev": 18.87,
+        "distinctColors": 131,
+        "edgeDensity": 0.0234,
+        "dominantColorShare": 0.2783
+      }
+    },
+    {
+      "file": "v01__dornhain-block__map-dh-map-place-dornhain-c971d089b3c0__ortho-topdown__z1-stadtblock__995fb3404b__high-software-webgl__desktop.png",
+      "profile": "high",
+      "sceneId": "dornhain-block",
+      "mapId": "dh-map-place-dornhain__c971d089b3c0",
+      "camera": "ortho-topdown",
+      "zoomId": "z1-stadtblock",
+      "viewport": "desktop",
+      "target": {
+        "x": 390,
+        "z": 470,
+        "span": 220.83333333333334,
+        "yawDeg": 0
+      },
+      "actual": {
+        "mode": "ortho-topdown",
+        "x": 390,
+        "z": 470,
+        "span": 220.83333333333334,
+        "yawRad": 0,
+        "pitchRad": 1.5707963267948966
+      },
+      "meshes": 14,
+      "triangles": 1106,
+      "metrics": {
+        "width": 992,
+        "height": 600,
+        "lumaMean": 85.44,
+        "lumaStdDev": 18.03,
+        "distinctColors": 96,
+        "edgeDensity": 0.0115,
+        "dominantColorShare": 0.5185
+      }
+    },
+    {
+      "file": "v01__dornhain-block__map-dh-map-place-dornhain-c971d089b3c0__diorama-oblique__z1-stadtblock__995fb3404b__high-software-webgl__desktop.png",
+      "profile": "high",
+      "sceneId": "dornhain-block",
+      "mapId": "dh-map-place-dornhain__c971d089b3c0",
+      "camera": "diorama-oblique",
+      "zoomId": "z1-stadtblock",
+      "viewport": "desktop",
+      "target": {
+        "x": 390,
+        "z": 470,
+        "span": 220.83333333333334,
+        "yawDeg": 20
+      },
+      "actual": {
+        "mode": "diorama-oblique",
+        "x": 390,
+        "z": 470,
+        "span": 220.83333333333334,
+        "yawRad": 0.3490658503988659,
+        "pitchRad": 1.05
+      },
+      "meshes": 14,
+      "triangles": 1106,
+      "metrics": {
+        "width": 992,
+        "height": 600,
+        "lumaMean": 84.49,
+        "lumaStdDev": 16.59,
+        "distinctColors": 149,
+        "edgeDensity": 0.013,
+        "dominantColorShare": 0.3845
+      }
+    },
+    {
+      "file": "v01__dornhain-block__map-dh-map-place-dornhain-c971d089b3c0__perspective__z1-stadtblock__995fb3404b__high-software-webgl__desktop.png",
+      "profile": "high",
+      "sceneId": "dornhain-block",
+      "mapId": "dh-map-place-dornhain__c971d089b3c0",
+      "camera": "perspective",
+      "zoomId": "z1-stadtblock",
+      "viewport": "desktop",
+      "target": {
+        "x": 390,
+        "z": 470,
+        "span": 220.83333333333334,
+        "yawDeg": 20
+      },
+      "actual": {
+        "mode": "perspective",
+        "x": 390,
+        "z": 470,
+        "span": 220.83333333333334,
+        "yawRad": 0.3490658503988659,
+        "pitchRad": 0.95
+      },
+      "meshes": 14,
+      "triangles": 1106,
+      "metrics": {
+        "width": 992,
+        "height": 600,
+        "lumaMean": 85.87,
+        "lumaStdDev": 18.01,
+        "distinctColors": 183,
+        "edgeDensity": 0.013,
+        "dominantColorShare": 0.5462
+      }
+    },
+    {
+      "file": "v01__krypta__map-dh-map-loc-crypt-6a4adf224cfe__ortho-topdown__z1-raumgruppe__995fb3404b__high-software-webgl__desktop.png",
+      "profile": "high",
+      "sceneId": "krypta",
+      "mapId": "dh-map-loc-crypt__6a4adf224cfe",
+      "camera": "ortho-topdown",
+      "zoomId": "z1-raumgruppe",
+      "viewport": "desktop",
+      "target": {
+        "x": 560,
+        "z": 600,
+        "span": 302.85714285714283,
+        "yawDeg": 0
+      },
+      "actual": {
+        "mode": "ortho-topdown",
+        "x": 560,
+        "z": 600,
+        "span": 302.85714285714283,
+        "yawRad": 0,
+        "pitchRad": 1.5707963267948966
+      },
+      "meshes": 14,
+      "triangles": 3032,
+      "metrics": {
+        "width": 992,
+        "height": 600,
+        "lumaMean": 73.28,
+        "lumaStdDev": 16.24,
+        "distinctColors": 86,
+        "edgeDensity": 0.0109,
+        "dominantColorShare": 0.7812
+      }
+    },
+    {
+      "file": "v01__krypta__map-dh-map-loc-crypt-6a4adf224cfe__diorama-oblique__z1-raumgruppe__995fb3404b__high-software-webgl__desktop.png",
+      "profile": "high",
+      "sceneId": "krypta",
+      "mapId": "dh-map-loc-crypt__6a4adf224cfe",
+      "camera": "diorama-oblique",
+      "zoomId": "z1-raumgruppe",
+      "viewport": "desktop",
+      "target": {
+        "x": 560,
+        "z": 600,
+        "span": 302.85714285714283,
+        "yawDeg": 20
+      },
+      "actual": {
+        "mode": "diorama-oblique",
+        "x": 560,
+        "z": 600,
+        "span": 302.85714285714283,
+        "yawRad": 0.3490658503988659,
+        "pitchRad": 1.05
+      },
+      "meshes": 14,
+      "triangles": 3032,
+      "metrics": {
+        "width": 992,
+        "height": 600,
+        "lumaMean": 71.94,
+        "lumaStdDev": 15.53,
+        "distinctColors": 121,
+        "edgeDensity": 0.0106,
+        "dominantColorShare": 0.3279
+      }
+    },
+    {
+      "file": "v01__krypta__map-dh-map-loc-crypt-6a4adf224cfe__perspective__z1-raumgruppe__995fb3404b__high-software-webgl__desktop.png",
+      "profile": "high",
+      "sceneId": "krypta",
+      "mapId": "dh-map-loc-crypt__6a4adf224cfe",
+      "camera": "perspective",
+      "zoomId": "z1-raumgruppe",
+      "viewport": "desktop",
+      "target": {
+        "x": 560,
+        "z": 600,
+        "span": 302.85714285714283,
+        "yawDeg": 20
+      },
+      "actual": {
+        "mode": "perspective",
+        "x": 560,
+        "z": 600,
+        "span": 302.85714285714283,
+        "yawRad": 0.3490658503988659,
+        "pitchRad": 0.95
+      },
+      "meshes": 14,
+      "triangles": 3032,
+      "metrics": {
+        "width": 992,
+        "height": 600,
+        "lumaMean": 92.84,
+        "lumaStdDev": 7.47,
+        "distinctColors": 102,
+        "edgeDensity": 0.0104,
+        "dominantColorShare": 0.9382
+      }
+    },
+    {
+      "file": "v01__dornhain-block__map-dh-map-place-dornhain-c971d089b3c0__ortho-topdown__z1-stadtblock__995fb3404b__lite-lite3d-fallback__desktop.png",
+      "profile": "lite",
+      "sceneId": "dornhain-block",
+      "mapId": "dh-map-place-dornhain__c971d089b3c0",
+      "camera": "ortho-topdown",
+      "zoomId": "z1-stadtblock",
+      "viewport": "desktop",
+      "target": {
+        "x": 390,
+        "z": 470,
+        "span": 220.83333333333334,
+        "yawDeg": 0
+      },
+      "actual": {
+        "mode": "ortho-topdown",
+        "x": 390,
+        "z": 470,
+        "span": 220.83333333333334,
+        "yawRad": 0,
+        "pitchRad": 1.5707963267948966
+      },
+      "meshes": 14,
+      "triangles": 986,
+      "metrics": {
+        "width": 992,
+        "height": 600,
+        "lumaMean": 67.59,
+        "lumaStdDev": 19.31,
+        "distinctColors": 177,
+        "edgeDensity": 0.011,
+        "dominantColorShare": 0.6324
+      }
+    },
+    {
+      "file": "v01__dornhain-block__map-dh-map-place-dornhain-c971d089b3c0__diorama-oblique__z1-stadtblock__995fb3404b__lite-lite3d-fallback__desktop.png",
+      "profile": "lite",
+      "sceneId": "dornhain-block",
+      "mapId": "dh-map-place-dornhain__c971d089b3c0",
+      "camera": "diorama-oblique",
+      "zoomId": "z1-stadtblock",
+      "viewport": "desktop",
+      "target": {
+        "x": 390,
+        "z": 470,
+        "span": 220.83333333333334,
+        "yawDeg": 20
+      },
+      "actual": {
+        "mode": "diorama-oblique",
+        "x": 390,
+        "z": 470,
+        "span": 220.83333333333334,
+        "yawRad": 0.3490658503988659,
+        "pitchRad": 1.05
+      },
+      "meshes": 14,
+      "triangles": 986,
+      "metrics": {
+        "width": 992,
+        "height": 600,
+        "lumaMean": 66.57,
+        "lumaStdDev": 17.96,
+        "distinctColors": 259,
+        "edgeDensity": 0.0113,
+        "dominantColorShare": 0.6325
+      }
+    },
+    {
+      "file": "v01__dornhain-block__map-dh-map-place-dornhain-c971d089b3c0__perspective__z1-stadtblock__995fb3404b__lite-lite3d-fallback__desktop.png",
+      "profile": "lite",
+      "sceneId": "dornhain-block",
+      "mapId": "dh-map-place-dornhain__c971d089b3c0",
+      "camera": "perspective",
+      "zoomId": "z1-stadtblock",
+      "viewport": "desktop",
+      "target": {
+        "x": 390,
+        "z": 470,
+        "span": 220.83333333333334,
+        "yawDeg": 20
+      },
+      "actual": {
+        "mode": "perspective",
+        "x": 390,
+        "z": 470,
+        "span": 220.83333333333334,
+        "yawRad": 0.3490658503988659,
+        "pitchRad": 0.95
+      },
+      "meshes": 14,
+      "triangles": 986,
+      "metrics": {
+        "width": 992,
+        "height": 600,
+        "lumaMean": 63.54,
+        "lumaStdDev": 17.27,
+        "distinctColors": 258,
+        "edgeDensity": 0.0117,
+        "dominantColorShare": 0.6277
+      }
+    },
+    {
+      "file": "v01__krypta__map-dh-map-loc-crypt-6a4adf224cfe__ortho-topdown__z1-raumgruppe__995fb3404b__lite-lite3d-fallback__desktop.png",
+      "profile": "lite",
+      "sceneId": "krypta",
+      "mapId": "dh-map-loc-crypt__6a4adf224cfe",
+      "camera": "ortho-topdown",
+      "zoomId": "z1-raumgruppe",
+      "viewport": "desktop",
+      "target": {
+        "x": 560,
+        "z": 600,
+        "span": 302.85714285714283,
+        "yawDeg": 0
+      },
+      "actual": {
+        "mode": "ortho-topdown",
+        "x": 560,
+        "z": 600,
+        "span": 302.85714285714283,
+        "yawRad": 0,
+        "pitchRad": 1.5707963267948966
+      },
+      "meshes": 14,
+      "triangles": 3008,
+      "metrics": {
+        "width": 992,
+        "height": 600,
+        "lumaMean": 35.33,
+        "lumaStdDev": 22.37,
+        "distinctColors": 75,
+        "edgeDensity": 0.0121,
+        "dominantColorShare": 0.7834
+      }
+    },
+    {
+      "file": "v01__krypta__map-dh-map-loc-crypt-6a4adf224cfe__diorama-oblique__z1-raumgruppe__995fb3404b__lite-lite3d-fallback__desktop.png",
+      "profile": "lite",
+      "sceneId": "krypta",
+      "mapId": "dh-map-loc-crypt__6a4adf224cfe",
+      "camera": "diorama-oblique",
+      "zoomId": "z1-raumgruppe",
+      "viewport": "desktop",
+      "target": {
+        "x": 560,
+        "z": 600,
+        "span": 302.85714285714283,
+        "yawDeg": 20
+      },
+      "actual": {
+        "mode": "diorama-oblique",
+        "x": 560,
+        "z": 600,
+        "span": 302.85714285714283,
+        "yawRad": 0.3490658503988659,
+        "pitchRad": 1.05
+      },
+      "meshes": 14,
+      "triangles": 3008,
+      "metrics": {
+        "width": 992,
+        "height": 600,
+        "lumaMean": 33.72,
+        "lumaStdDev": 19.84,
+        "distinctColors": 105,
+        "edgeDensity": 0.0121,
+        "dominantColorShare": 0.7784
+      }
+    },
+    {
+      "file": "v01__krypta__map-dh-map-loc-crypt-6a4adf224cfe__perspective__z1-raumgruppe__995fb3404b__lite-lite3d-fallback__desktop.png",
+      "profile": "lite",
+      "sceneId": "krypta",
+      "mapId": "dh-map-loc-crypt__6a4adf224cfe",
+      "camera": "perspective",
+      "zoomId": "z1-raumgruppe",
+      "viewport": "desktop",
+      "target": {
+        "x": 560,
+        "z": 600,
+        "span": 302.85714285714283,
+        "yawDeg": 20
+      },
+      "actual": {
+        "mode": "perspective",
+        "x": 560,
+        "z": 600,
+        "span": 302.85714285714283,
+        "yawRad": 0.3490658503988659,
+        "pitchRad": 0.95
+      },
+      "meshes": 14,
+      "triangles": 3008,
+      "metrics": {
+        "width": 992,
+        "height": 600,
+        "lumaMean": 30.69,
+        "lumaStdDev": 16.18,
+        "distinctColors": 107,
+        "edgeDensity": 0.0102,
+        "dominantColorShare": 0.718
+      }
+    },
+    {
+      "file": "v01__dornhain-block__map-dh-map-place-dornhain-c971d089b3c0__diorama-oblique__z0-uebersicht__995fb3404b__lite-lite3d-fallback__phone.png",
+      "profile": "lite",
+      "sceneId": "dornhain-block",
+      "mapId": "dh-map-place-dornhain__c971d089b3c0",
+      "camera": "diorama-oblique",
+      "zoomId": "z0-uebersicht",
+      "viewport": "phone",
+      "target": {
+        "x": 390,
+        "z": 470,
+        "span": 530,
+        "yawDeg": 20
+      },
+      "actual": {
+        "mode": "diorama-oblique",
+        "x": 390,
+        "z": 470,
+        "span": 530,
+        "yawRad": 0.3490658503988659,
+        "pitchRad": 1.05
+      },
+      "meshes": 14,
+      "triangles": 506,
+      "metrics": {
+        "width": 366,
+        "height": 604,
+        "lumaMean": 61.62,
+        "lumaStdDev": 20.6,
+        "distinctColors": 302,
+        "edgeDensity": 0.0244,
+        "dominantColorShare": 0.5444
+      }
+    },
+    {
+      "file": "v01__krypta__map-dh-map-loc-crypt-6a4adf224cfe__diorama-oblique__z0-uebersicht__995fb3404b__lite-lite3d-fallback__phone.png",
+      "profile": "lite",
+      "sceneId": "krypta",
+      "mapId": "dh-map-loc-crypt__6a4adf224cfe",
+      "camera": "diorama-oblique",
+      "zoomId": "z0-uebersicht",
+      "viewport": "phone",
+      "target": {
+        "x": 500,
+        "z": 500,
+        "span": 530,
+        "yawDeg": 20
+      },
+      "actual": {
+        "mode": "diorama-oblique",
+        "x": 500,
+        "z": 500,
+        "span": 530,
+        "yawRad": 0.3490658503988659,
+        "pitchRad": 1.05
+      },
+      "meshes": 14,
+      "triangles": 3008,
+      "metrics": {
+        "width": 366,
+        "height": 604,
+        "lumaMean": 36.96,
+        "lumaStdDev": 25.27,
+        "distinctColors": 155,
+        "edgeDensity": 0.0294,
+        "dominantColorShare": 0.6818
+      }
+    }
+  ],
+  "repeatCapture": [
+    {
+      "file": "v01__dornhain-block__map-dh-map-place-dornhain-c971d089b3c0__ortho-topdown__z0-uebersicht__995fb3404b__balanced-software-webgl__desktop.png",
+      "diffRatio": 0,
+      "maxDelta": 0
+    },
+    {
+      "file": "v01__krypta__map-dh-map-loc-crypt-6a4adf224cfe__ortho-topdown__z0-uebersicht__995fb3404b__balanced-software-webgl__desktop.png",
+      "diffRatio": 0,
+      "maxDelta": 0
+    },
+    {
+      "file": "v01__dornhain-block__map-dh-map-place-dornhain-c971d089b3c0__ortho-topdown__z1-stadtblock__995fb3404b__high-software-webgl__desktop.png",
+      "diffRatio": 0,
+      "maxDelta": 0
+    },
+    {
+      "file": "v01__krypta__map-dh-map-loc-crypt-6a4adf224cfe__ortho-topdown__z1-raumgruppe__995fb3404b__high-software-webgl__desktop.png",
+      "diffRatio": 0,
+      "maxDelta": 0
+    },
+    {
+      "file": "v01__dornhain-block__map-dh-map-place-dornhain-c971d089b3c0__ortho-topdown__z1-stadtblock__995fb3404b__lite-lite3d-fallback__desktop.png",
+      "diffRatio": 0,
+      "maxDelta": 0
+    },
+    {
+      "file": "v01__krypta__map-dh-map-loc-crypt-6a4adf224cfe__ortho-topdown__z1-raumgruppe__995fb3404b__lite-lite3d-fallback__desktop.png",
+      "diffRatio": 0,
+      "maxDelta": 0
+    }
+  ],
+  "perf": [
+    {
+      "sceneId": "dornhain-block",
+      "profile": "balanced",
+      "p50": 16.7,
+      "p95": 17.9,
+      "ceilingMs": 120,
+      "rendererKind": "software-webgl",
+      "budgetMode": "informational"
+    },
+    {
+      "sceneId": "krypta",
+      "profile": "balanced",
+      "p50": 16.7,
+      "p95": 18.9,
+      "ceilingMs": 120,
+      "rendererKind": "software-webgl",
+      "budgetMode": "informational"
+    },
+    {
+      "sceneId": "dornhain-block",
+      "profile": "high",
+      "p50": 16.9,
+      "p95": 70,
+      "ceilingMs": 120,
+      "rendererKind": "software-webgl",
+      "budgetMode": "informational"
+    },
+    {
+      "sceneId": "krypta",
+      "profile": "high",
+      "p50": 16.7,
+      "p95": 19.8,
+      "ceilingMs": 120,
+      "rendererKind": "software-webgl",
+      "budgetMode": "informational"
+    },
+    {
+      "sceneId": "dornhain-block",
+      "profile": "lite",
+      "p50": 16.7,
+      "p95": 17.5,
+      "ceilingMs": 120,
+      "rendererKind": "lite3d-fallback",
+      "budgetMode": "informational"
+    },
+    {
+      "sceneId": "krypta",
+      "profile": "lite",
+      "p50": 16.8,
+      "p95": 23.4,
+      "ceilingMs": 120,
+      "rendererKind": "lite3d-fallback",
+      "budgetMode": "informational"
+    }
+  ],
+  "devices": [
+    {
+      "viewport": "tablet",
+      "profile": "balanced",
+      "sceneId": "dornhain-block",
+      "canvas": {
+        "w": 730,
+        "h": 912
+      },
+      "overflowX": 0
+    },
+    {
+      "viewport": "tablet",
+      "profile": "balanced",
+      "sceneId": "krypta",
+      "canvas": {
+        "w": 730,
+        "h": 912
+      },
+      "overflowX": 0
+    },
+    {
+      "viewport": "phone",
+      "profile": "balanced",
+      "sceneId": "dornhain-block",
+      "canvas": {
+        "w": 366,
+        "h": 604
+      },
+      "overflowX": 0
+    },
+    {
+      "viewport": "phone",
+      "profile": "balanced",
+      "sceneId": "krypta",
+      "canvas": {
+        "w": 366,
+        "h": 604
+      },
+      "overflowX": 0
+    },
+    {
+      "viewport": "phone",
+      "profile": "lite",
+      "sceneId": "dornhain-block",
+      "canvas": {
+        "w": 366,
+        "h": 604
+      },
+      "overflowX": 0
+    },
+    {
+      "viewport": "phone",
+      "profile": "lite",
+      "sceneId": "krypta",
+      "canvas": {
+        "w": 366,
+        "h": 604
+      },
+      "overflowX": 0
+    }
+  ],
+  "sameSceneAcrossCameras": true,
+  "baselineDrift": [],
+  "counts": {
+    "desktop": 18,
+    "expectedDesktop": 18,
+    "byProfile": {
+      "high": 6,
+      "balanced": 22,
+      "lite": 8
+    },
+    "expectedTotal": 36,
+    "total": 36
+  }
+}

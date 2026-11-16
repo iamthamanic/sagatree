@@ -165,11 +165,15 @@ export {
 export {
   DORNHAIN_GOLDEN_MAPS,
   DORNHAIN_WORLD_MAP_SEED,
+  GOLDEN_DORNHAIN_HILLS,
+  GOLDEN_KRYPTA_FORGE_PARAMS,
   buildDornhainGoldenChildGeneratorMeta,
   buildGoldenContinentCanvas,
   buildGoldenCountryCanvas,
   buildGoldenCryptCanvas,
+  buildGoldenCryptDungeonMeta,
   buildGoldenDornhainCanvas,
+  buildGoldenDornhainHeightfield,
   buildGoldenTavernCanvas,
   isDornhainGoldenMapSeed,
   type DornhainGoldenMapSpec,
@@ -206,6 +210,9 @@ export {
   generateDungeon,
   mergeDungeonMetaIntoGeneratorMeta,
   normalizeDungeonGenerateParams,
+  DUNGEON_PROP_REAL_SIZE,
+  dungeonPropRealSizeCells,
+  dungeonPropStampSize,
   validateDungeonConnectivity,
   validateDungeonSemantics,
   type DungeonGenerateParams,
@@ -565,6 +572,8 @@ export {
 } from './atlas-workstation-adaptive';
 
 export {
+  ATLAS_GRAPHICS_PRESET_DEFAULT,
+  ATLAS_GRAPHICS_PRESET_STORAGE_KEY,
   ATLAS_GRAPHICS_PRESETS,
   ATLAS_PARALLEL_THREE_VIEWPORT_PATH,
   ATLAS_PRODUCT_3D_HOST_PATH,
@@ -575,6 +584,7 @@ export {
   atlasR01AllowsFollowOnRendererWork,
   clampAtlasPixelRatio,
   isProductAtlasRendererTarget,
+  parseAtlasGraphicsPresetId,
   resolveAtlasGraphicsPreset,
   type AtlasGraphicsPreset,
   type AtlasGraphicsPresetId,
@@ -611,7 +621,9 @@ export {
 export {
   ATLAS_DUNGEON_LOOK_FORMAT,
   ATLAS_DUNGEON_THEME_KEYS,
+  ATLAS_DUNGEON_TORCH_LIGHT,
   atlasDungeonFeatureAlbedo,
+  atlasDungeonTorchAttenuation,
   buildAtlasDungeonLookPlan,
   isAtlasDungeonFeatureId,
   resolveAtlasDungeonLightProfile,
@@ -625,6 +637,7 @@ export {
   type AtlasDungeonLookPlan,
   type AtlasDungeonQualityBudget,
   type AtlasDungeonThemePalette,
+  type AtlasDungeonTorchFalloff,
 } from './atlas-dungeon-look';
 
 export {

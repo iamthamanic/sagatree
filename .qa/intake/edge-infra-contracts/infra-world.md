@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-world.json](source-contracts/infra-world.json) (SHA-256 `02ccb13fff4a757b1c92f994af8e831e1ba0243b3c69f67f4522a200f6b6c692`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-world.json](source-contracts/infra-world.json) (SHA-256 `9a5983d710bdfe18cc9223be542159a9ddef1b6ee00ac90d1cfd85ab93851102`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -650,9 +650,9 @@ All backend operations are included in the public declarations above.
 | `src/domains/rules/sagatree/npc-creature-power/types.ts` | `de25ba46549bab20e0e55a513fb0745e722449d8f1b61bb51887d986653c4eab` |
 | `src/domains/world/atlas/atlas-canonical-features.ts` | `a7e2b9471c960d3839e39f93fe1f6b332f5822620ef589ba4e1a0805dda6c3bd` |
 | `src/domains/world/atlas/atlas-diorama-look.ts` | `a0c2f5ea6af2faabed685d4eff4035dad43b1e82f3d6b2a67e017ddcddf99ea6` |
-| `src/domains/world/atlas/atlas-dungeon-look.ts` | `4cb36a35663c13b62699ccd846df59ebc3ab38feafb497998302a35c09cdc9d8` |
+| `src/domains/world/atlas/atlas-dungeon-look.ts` | `b28dfd123ebb46472258442834d636b2962ed78a7261d458bc57a5ad1d3f352c` |
 | `src/domains/world/atlas/atlas-edit-history.ts` | `13a91efde301ec766d3b0f183affcd794abba9f4c4872c00549e9f631947e294` |
-| `src/domains/world/atlas/atlas-golden-visual.ts` | `db7842b5da4fcf305f68550679caff6ab06414d057bd7d2716d75484e1d380d9` |
+| `src/domains/world/atlas/atlas-golden-visual.ts` | `91958356d646ac68021110bf3b2faa5c63ad42de142bc00236d3e07bd5c426ec` |
 | `src/domains/world/atlas/atlas-heightfield.ts` | `1fafa49c651ac14ba5ae1e9a226b38ffeea636935b7e486daa1cdd41090b71fb` |
 | `src/domains/world/atlas/atlas-hierarchy-lod.ts` | `d8f476a6aab1a6f8c63ee4d465401869e5b4191154b89b238f60fdba6c8b9bff` |
 | `src/domains/world/atlas/atlas-hierarchy-nav.ts` | `d9df6c10f147e7f325dfc735306fe481e4aa1fc601e215a1f79df0f53b190be7` |
@@ -663,7 +663,7 @@ All backend operations are included in the public declarations above.
 | `src/domains/world/atlas/atlas-product-camera.ts` | `6d65226fe7e6594079b61df81ec39a226d5b79788327ef95609dc70f9980d179` |
 | `src/domains/world/atlas/atlas-product-geometry-plan.ts` | `de94ca0b6c23374ae5aed057fa756539285295574df9925598a0ed029a2a3ce9` |
 | `src/domains/world/atlas/atlas-prototype-lod.ts` | `2fb7c706ad2210f7a3f389f22564f60e3f22aa615ec49af49695e388ae582256` |
-| `src/domains/world/atlas/atlas-renderer-target.ts` | `51beb5d64d2972fa88a42a1f0437d42639c689f9612cd852e94ed72721b48678` |
+| `src/domains/world/atlas/atlas-renderer-target.ts` | `b7119cbcc981e7c0c98c939aa09044496bd958fe6fd596f36e279da758d0505b` |
 | `src/domains/world/atlas/atlas-revision-contract.ts` | `d01c356239143862f9aa8f3fd44fca79105e3ed390327c34b9be6ce1902c78d6` |
 | `src/domains/world/atlas/atlas-selection.ts` | `6c16fb40fe26addea8e33e718a89a019de099c6008c1000dd697d48fa12849a7` |
 | `src/domains/world/atlas/atlas-terrain-mesh.ts` | `50dc7ef6c013f87f82f2030317c69a8ad619c7b4db1b65db0a7571a18186dd5d` |
@@ -671,13 +671,13 @@ All backend operations are included in the public declarations above.
 | `src/domains/world/atlas/atlas-webgl-write-retire.ts` | `baf40e97aaa9c74c873f3919e72b4d9049e8c7781566ed58ce52ccf2f168ce69` |
 | `src/domains/world/atlas/atlas-workstation-adaptive.ts` | `2a87a8f4cf36e532f9bbb0faa0085013f4169fedc26622a1bbef800b46f59846` |
 | `src/domains/world/atlas/canvas-polygon.ts` | `a1bf513b449cf21b8e7d449d291c1f7965303072916f0192a214328a90920cea` |
-| `src/domains/world/atlas/dornhain-golden-hierarchy.ts` | `361644dc722ac28a2fa0fcaabb05c087cb6581505f95923bc8a4a3c44af8992d` |
+| `src/domains/world/atlas/dornhain-golden-hierarchy.ts` | `0eb37f4a217a2bd4f67bcd3bf20d407ec08440f3d20e41e5d0ed738de91faa3e` |
 | `src/domains/world/atlas/dornhain-golden-reset.ts` | `993c1935fda833ddaf0f51c8f1c10b8b25a28e944c2e783ec2d89f2e9e95e9eb` |
 | `src/domains/world/atlas/dornhain-unified-starter.ts` | `5e9afab7ec94b7bef19535be6311b51a2f77c59b5f82b36fcd8b78007cc336f5` |
-| `src/domains/world/atlas/dungeon-forge-workflow.ts` | `43acec183dd010bf8bef24e2a79ac7a5bb7f317fcd568591a02182c502860b79` |
-| `src/domains/world/atlas/dungeon-generator.ts` | `013ccdb248e427f85b51e9dc8dfbf39b5c5d185e106d0024259afe3301fdbbfc` |
-| `src/domains/world/atlas/dungeon-grid.ts` | `1e564a1f91df01b5e0edb38c3e3976f4809bb053d5d8367b0c5d2666d6f40c4d` |
-| `src/domains/world/atlas/index.ts` | `153bde0423fc622920234b702908c1a901875f06a90f8e885c9e5c344dec50b4` |
+| `src/domains/world/atlas/dungeon-forge-workflow.ts` | `c9fdba0da576bc5f5516bb6c637d6efc993c9fab630fa2e42b725836f4ef0317` |
+| `src/domains/world/atlas/dungeon-generator.ts` | `6bbed5a42d16ec727e2745b0e1f47dc9d3f1dcc219ee0ccb06f15340307908e1` |
+| `src/domains/world/atlas/dungeon-grid.ts` | `56d9698047b1405a3ba4525146a189e8c8d299d0270fd6d678a0dafa5a0a8854` |
+| `src/domains/world/atlas/index.ts` | `301178f3784b36f134b2d1a01ee2c8163128ab6cd64361693d57570ea127b1e1` |
 | `src/domains/world/atlas/map-edit-ops.ts` | `3440965957e4212748d109f74ce202fa7a320840d5c9f1347b0457347c797b95` |
 | `src/domains/world/atlas/map-frame.ts` | `7a5bc6fb6ddcb38efd09fa3adf71889709fa230313a8d241d09cb9f5fa98e7a5` |
 | `src/domains/world/atlas/party-map-projection.ts` | `eeb742f12fa5e35e03a2a2c57f2c92f8ddb9d996562c88d6de96169d61b82fc9` |

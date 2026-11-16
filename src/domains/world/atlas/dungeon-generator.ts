@@ -15,6 +15,32 @@ export const DUNGEON_GENERATOR_VERSION = 'sagatree-dungeon-forge-v2' as const;
 
 export type DungeonThemeKey = 'ancient' | 'molten' | 'frost' | 'grim' | 'verdant';
 
+/**
+ * Real-world prop extents in dungeon cells (1 cell ≈ 1.5 m) and the runtime model extent of a stamp
+ * at `size = 1` (canvas units; `productPropInto`: torch stand ≈ 48 tall, crate box 44 wide).
+ * Forge props keep this real size for every `unitScale` (ATL3-V01 round 3, #1295): the stamp size
+ * is `cells × unitScale / modelUnits`, so a torch is always ~1.2 cells tall, a chest ~0.9 cells wide.
+ */
+export const DUNGEON_PROP_REAL_SIZE = {
+  lampe: { cells: 1.2, modelUnits: 48 },
+  kiste: { cells: 0.9, modelUnits: 44 },
+} as const;
+
+export type DungeonPropKind = keyof typeof DUNGEON_PROP_REAL_SIZE;
+
+/** Stamp `size` for a forge prop at `unitScale` canvas units per cell (real size stays constant). */
+export function dungeonPropStampSize(kind: DungeonPropKind, unitScale: number): number {
+  const unit = Number.isFinite(unitScale) && unitScale > 0 ? unitScale : 1;
+  const spec = DUNGEON_PROP_REAL_SIZE[kind];
+  return Math.round(((spec.cells * unit) / spec.modelUnits) * 1e5) / 1e5;
+}
+
+/** Real-world extent (in cells) of a forge prop stamp — inverse of {@link dungeonPropStampSize}. */
+export function dungeonPropRealSizeCells(kind: DungeonPropKind, size: number, unitScale: number): number {
+  const unit = Number.isFinite(unitScale) && unitScale > 0 ? unitScale : 1;
+  return (size * DUNGEON_PROP_REAL_SIZE[kind].modelUnits) / unit;
+}
+
 export type DungeonGenerateParams = {
   readonly seed: number;
   readonly roomCount: number;
@@ -607,18 +633,8 @@ function tryGenerate(
       });
     });
   }
-  for (const e of edges) {
-    const A = rooms[e.a];
-    const B = rooms[e.b];
-    canvasWalls.push({
-      id: `dcorr-${seed}-${e.a}-${e.b}`,
-      x1: ox + A.cx * scale,
-      y1: oy + A.cy * scale,
-      x2: ox + B.cx * scale,
-      y2: oy + B.cy * scale,
-      width: e.isCritical ? 1.2 * scale : 0.8 * scale,
-    });
-  }
+  // Corridors are floor runs from the raster (`dungeon-grid` canvasCorridors), never
+  // centerline wall bars through rooms (ATL3-V01 round 3, #1295).
 
   const canvasObjects: UnifiedCanvasObject[] = [
     {
@@ -626,8 +642,7 @@ function tryGenerate(
       type: 'lampe',
       x: ox + rooms[entrance].cx * scale,
       y: oy + rooms[entrance].cy * scale,
-      size: 1.2 * scale,
-      height: 1.5 * scale,
+      size: dungeonPropStampSize('lampe', scale),
       angle: 0,
     },
     {
@@ -635,8 +650,7 @@ function tryGenerate(
       type: 'kiste',
       x: ox + rooms[boss].cx * scale,
       y: oy + rooms[boss].cy * scale,
-      size: 1.4 * scale,
-      height: 1 * scale,
+      size: dungeonPropStampSize('kiste', scale),
       angle: 0,
     },
   ];

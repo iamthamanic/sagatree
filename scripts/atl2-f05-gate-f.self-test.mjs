@@ -160,7 +160,7 @@ onDungeonMetaChange(commitMeta);
 canvasDocState = forge.commitDungeonFeaturesToDoc(canvasDocState, payload, true);
 assert.ok(canvasDocState.rooms.some((r) => r.id === 'user-room-krypta'));
 assert.equal(
-  canvasDocState.rooms.filter((r) => r.id.startsWith('droom-')).length,
+  canvasDocState.rooms.filter((r) => /^(droom-|dcorr-)/.test(r.id)).length,
   payload.rooms.length,
 );
 assert.ok(dungeonMetaState);
@@ -277,7 +277,7 @@ assert.ok(
   'reforge must drop prior generator room ids',
 );
 assert.equal(
-  reforged.rooms.filter((r) => r.id.startsWith('droom-')).length,
+  reforged.rooms.filter((r) => /^(droom-|dcorr-)/.test(r.id)).length,
   nextPayload.rooms.length,
 );
 
