@@ -401,7 +401,7 @@
       "authority": "canonical",
       "metric": "Gelände-Relief: Höhenbereich des Heightfields und sichtbarer Schattierungsgradient am Boden (Diorama Z1)",
       "soll": "Höhenvarianz > 0 mit sichtbarem Licht-/Schattengradient auf Hügeln/Böschungen; Relief nur aus gespeicherten Heightfield-Daten (canonical) oder als markierte suggestive Mikro-Variation",
-      "ist": "Gespeichertes Golden-Heightfield (41×33, Zelle 20, 4 Hügel, Höhe −4…28): Relief in Diorama/Perspektive Z0–Z1 sichtbar, aber als facettierte Flächen mit kaum sichtbarem Schattierungsgradient (Farbe nach Höhe, keine weiche Normalen-Schattierung). Runde 3: lite-Profil ohne Gelände-/Boden-Sortierfehler (Boden-Pass vor stehender Geometrie). Rest: in balanced schneidet ein Unterwasser-Geländedreieck (LOD-Stride) sichtbar in die Plaza",
+      "ist": "Gespeichertes Golden-Heightfield (41×33, Zelle 20, 4 Hügel, Höhe −4…28): Relief in Diorama/Perspektive Z0–Z1 sichtbar, aber als facettierte Flächen mit kaum sichtbarem Schattierungsgradient (Farbe nach Höhe, keine weiche Normalen-Schattierung). Runde 3: lite-Profil ohne Gelände-/Boden-Sortierfehler. R01B: das „Unterwasser-Dreieck“ in der Plaza war Z-Fighting zwischen Ozean-Raum (−0,48) und Plaza (−0,47), nicht Gelände (Gelände ≤ −0,5 unter allen Flächen bei Stride 1–6) — behoben per Layerabstand + Polygon-Offset. Rest: nur noch die facettierte Relief-Schattierung (Three-PoC zeigt weiche Normalen + Schatten, siehe ADR-ST-11)",
       "status": "PARTIAL",
       "evidence": "stored generatorMeta.unifiedCanvas.heightfield (self-test golden-terrain) + Diorama/Perspektive Z0–Z1"
     },
@@ -456,9 +456,9 @@
       "authority": "canonical",
       "metric": "Z-Fighting / Streifenartefakte auf koplanaren Bodenpolygonen (Plaza/Blöcke/Ozean) in allen Kameras",
       "soll": "0 sichtbare Streifen-/Flimmerartefakte in allen 3 Kameras × 3 Zoomstufen (Layer-Offset oder Polygon-Offset)",
-      "ist": "Sichtbare horizontale Streifen (Z-Fighting) zwischen Plaza und Block-Flächen in Perspektive Z2 und an Kanten",
-      "status": "GAP",
-      "evidence": "perspective z2-detail-kleines-gebaeude"
+      "ist": "R01B: keine sichtbaren Streifen-/Flimmerartefakte zwischen Plaza, Blöcken und Ozean in allen 3 Kameras × 3 Zoomstufen — Ozean-/Grundfläche mit Polygon-Offset (POLYGON_OFFSET_FILL), Raum-Layerabstand bis 0,075 statt 0,01, Perspektiv-Near-Plane mit Distanz skaliert (Tiefenpräzision)",
+      "status": "MET",
+      "evidence": "perspective z2-detail-kleines-gebaeude + diorama z0/z1 balanced"
     },
     {
       "id": "K-GEO-01",
@@ -537,9 +537,9 @@
       "authority": "canonical",
       "metric": "Z-Fighting auf Krypta-Böden in Perspektive",
       "soll": "0 Streifenartefakte in allen 3 Kameras × 3 Zoomstufen; 100 % der Raumbodenfläche sichtbar",
-      "ist": "Runde 3: Korridorbalken entfernt (Korridore = Bodenflächen), lite-Sortierfehler über den Böden behoben, Raumböden in allen Kameras gerendert. Offen: Perspektive Z1 (WebGL) Böden durch Distanznebel (Deckel 0,72) fast in Nebelfarbe; Perspektive Z2 Z-Fighting-Streifen auf einer koplanaren Grundfläche außerhalb der Krypta (bereits in Runde 2)",
-      "status": "PARTIAL",
-      "evidence": "perspective z1-raumgruppe"
+      "ist": "Runde 3: Korridore als Bodenflächen, lite-Sortierung behoben. R01B: Perspektive Z1 Raumböden klar sichtbar (Nebel beginnt erst bei d·0,75 hinter dem Fokus statt ab Augendistanz 0), Perspektive Z2 ohne Z-Fighting-Streifen auf der Grundfläche außerhalb der Krypta (Polygon-Offset + skalierte Near-Plane); 100 % der Raumbodenfläche in allen Kameras sichtbar",
+      "status": "MET",
+      "evidence": "perspective z1-raumgruppe (high/balanced) + z2-raum"
     },
     {
       "id": "C-CAM-01",
@@ -744,9 +744,9 @@
     }
   ],
   "matrixEvaluation": {
-    "evaluatedAt": "2026-11-15",
-    "evaluatedBy": "ATL3-V01 Runde 3 (PR #1302): Bens 5 visuelle Punkte (Migration, Prop-Realgröße, Korridorböden, Fackel-Abfall, lite-Tiefensortierung) neu bewertet",
-    "baselineDigest": "9445e6985f67f707",
+    "evaluatedAt": "2026-11-16",
+    "evaluatedBy": "ATL3-R01B (#1296): drei von Ben nach R01B verschobene V01-Restpunkte im Custom-Renderer behoben (Perspektiv-Nebel, Z-Fighting, Plaza-Dreieck) und neu bewertet",
+    "baselineDigest": "8c2a66b4a3e91bf7",
     "visualOnlyCriteria": [
       "D-MAT-01",
       "D-LOD-01",
@@ -758,7 +758,8 @@
     "rule": "Visuell bewertete Kriterien gelten nur für genau diese Baseline-Pixel (sha256 über normierte Dateinamen + PNG-Bytes). Neue Baseline → self-test FAIL bis Matrix neu bewertet und Digest neu gepinnt; Browser-Lauf FAIL bei Drift gegen die Baseline (tolerances.baselineDrift).",
     "history": [
       "fdec2941d3776825 → 964f12d9e1f017b3: nach G05-Merge stimmen 12 Diorama-/Perspektive-Aufnahmen (balanced Z0, high/lite Z1) wieder mit dem Gierwinkel 20° überein (vorher nach Runtime-Remount bei 0°); visuelle Kriterien unverändert neu bewertet.",
-      "964f12d9e1f017b3 → 9445e6985f67f707: Runde 3 — Krypta mit Korridorböden statt Mittellinien-Wandbalken, Props in Realgröße, Fackel-Punktlicht mit Distanzabfall (high/balanced per Pixel, lite pro Fläche), lite-Maleralgorithmus (BBox-Culling, Unterteilung, Boden-Pass). Visuell neu bewertet: K-ATM-01 GAP → PARTIAL (Fackel-Lichtschein); D-MAT-01, D-LOD-01, D-READ-01, K-GEO-02, K-MAT-01 unverändert."
+      "964f12d9e1f017b3 → 9445e6985f67f707: Runde 3 — Krypta mit Korridorböden statt Mittellinien-Wandbalken, Props in Realgröße, Fackel-Punktlicht mit Distanzabfall (high/balanced per Pixel, lite pro Fläche), lite-Maleralgorithmus (BBox-Culling, Unterteilung, Boden-Pass). Visuell neu bewertet: K-ATM-01 GAP → PARTIAL (Fackel-Lichtschein); D-MAT-01, D-LOD-01, D-READ-01, K-GEO-02, K-MAT-01 unverändert.",
+      "9445e6985f67f707 → 8c2a66b4a3e91bf7: R01B — Perspektive: Near-Plane max(0,2; d·0,02) statt fix 0,2 (Tiefenpräzision) und Nebelbeginn bei d·0,75 statt Augendistanz 0 (Krypta-Böden in Perspektive Z1 nicht mehr nebelfarben); Ozean-/Grundfläche mit Polygon-Offset und größerem Raum-Layerabstand (keine Streifen außerhalb der Krypta, kein Wasser-Dreieck in der Dornhain-Plaza). Visuell neu bewertet: D-ART-01 GAP → MET, K-ART-01 PARTIAL → MET, D-GEO-03 bleibt PARTIAL (nur noch facettierte Relief-Schattierung); D-MAT-01, D-LOD-01, D-READ-01, K-GEO-02, K-MAT-01, K-ATM-01 unverändert."
     ]
   }
 }

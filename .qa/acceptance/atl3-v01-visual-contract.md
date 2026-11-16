@@ -40,8 +40,9 @@
 ## Nicht erfüllt / offen (bewusst)
 
 - C-PERF-01 NOT_RUN (keine Geräteläufe), C-SEC-01 NOT_RUN (Player-Visual).
-- K-ART-01 PARTIAL: Perspektive (WebGL) Böden in Z1 durch Distanznebel fast in Nebelfarbe; Z2 Z-Fighting-Streifen auf einer koplanaren Grundfläche außerhalb der Krypta (seit Runde 2).
-- D-GEO-03 PARTIAL: Dornhain balanced — Unterwasser-Geländedreieck (Heightfield-LOD) schneidet in die Plaza.
+- ~~K-ART-01 PARTIAL: Perspektive (WebGL) Böden in Z1 durch Distanznebel fast in Nebelfarbe; Z2 Z-Fighting-Streifen auf einer koplanaren Grundfläche außerhalb der Krypta.~~ Behoben in ATL3-R01B (#1296): K-ART-01 MET, D-ART-01 MET.
+- ~~D-GEO-03: Dornhain balanced — Unterwasser-Geländedreieck schneidet in die Plaza.~~ Behoben in ATL3-R01B (#1296) (Ozean/Plaza-Z-Fighting); D-GEO-03 bleibt PARTIAL nur wegen facettierter Relief-Schattierung.
+- Nach R01B: Matrix MET 13 · PARTIAL 4 · GAP 5 · NOT_RUN 2, Digest `8c2a66b4a3e91bf7`.
 - Welten mit nutzerbearbeiteter Alt-Krypta/Alt-Dornhain bleiben bewusst unverändert (nur Reset bringt die neuen Golden-Daten).
 
 ## Prüfung

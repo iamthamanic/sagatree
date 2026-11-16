@@ -9,7 +9,9 @@
 export type AtlasRendererCandidateId =
   | 'custom-webgl-prototype-runtime'
   | 'three-spatial-viewport'
-  | 'unified-three-poc';
+  | 'unified-three-poc'
+  /** ATL3-R01B (#1296) isolated Three.js scene PoC — not mounted in the product. */
+  | 'three-r01b-scene';
 
 /** Graphics quality presets for degradable devices (AU / CE performance). */
 export type AtlasGraphicsPresetId = 'high' | 'balanced' | 'lite';
@@ -61,12 +63,20 @@ export const ATLAS_PRODUCT_3D_HOST_PATH =
 export const ATLAS_PARALLEL_THREE_VIEWPORT_PATH =
   'src/app/world/atlas/unified/AtlasSpatialViewport.tsx' as const;
 
+/**
+ * Where the parallel Three inventory (`AtlasSpatialViewport`) is retired.
+ * - `atl2-h-cleanup`: quarantined in ATL2-H (#1234, H01-3) — historical value.
+ * - `atl3-r02-adapter`: ATL3-R01B (#1296, ADR-ST-11) — deleted by the R02 scene adapter (#1267), which starts
+ *   from the R01B scene module instead; never re-exported or mounted before that.
+ */
+export type AtlasRetireParallelIn = 'atl2-h-cleanup' | 'atl3-r02-adapter' | 'none';
+
 export type AtlasRendererDecision = {
   readonly target: AtlasRendererCandidateId;
   readonly issue: 1212;
   readonly reasonDe: string;
   readonly rollbackDe: string;
-  readonly retireParallelIn: 'atl2-h-cleanup' | 'none';
+  readonly retireParallelIn: AtlasRetireParallelIn;
 };
 
 export const ATLAS_RENDERER_DECISION: AtlasRendererDecision = {
@@ -79,7 +89,8 @@ export const ATLAS_RENDERER_DECISION: AtlasRendererDecision = {
   rollbackDe:
     'Bei kritischem Regression: Draufsicht (Canvas2D) bleibt Authoring-Quelle; 3D-Ansicht ' +
     'kann auf controlled seed ohne Mutation zurückfallen. Parallel-Three nicht reaktivieren.',
-  retireParallelIn: 'atl2-h-cleanup',
+  /** Updated with the #1296 ADR (H01-3): SpatialViewport is not the reuse vehicle; R02 removes it. */
+  retireParallelIn: 'atl3-r02-adapter',
 };
 
 /** Product default when the user has not chosen a preset (ATL3-V01 #1295). */
@@ -149,4 +160,67 @@ export function atlasR01AllowsFollowOnRendererWork(
   decision: AtlasRendererHybridDecision = ATLAS_R01_RENDERER_HYBRID_DECISION,
 ): boolean {
   return decision.verdict === 'GO';
+}
+
+/**
+ * ATL3-R01B (#1296, ADR-ST-11) — Three.js equal-fidelity PoC verdict.
+ * GO is a recommendation bound to explicit gates: R02–R05 (#1267–#1270) stay closed and the custom WebGL
+ * runtime stays the sole productive owner until owner approval AND a hardware-WebGL evidence run of the
+ * R01B spec within the V01 hardware budgets are recorded here (software WebGL is never sole proof).
+ * ADR-ST-10 / #1266 stay immutable; ADR-ST-11 supersedes ADR-ST-10 only once both gates are `passed`.
+ */
+export type AtlasR01bGateState = 'pending' | 'passed' | 'failed';
+
+export type AtlasR01bRendererDecision = {
+  readonly issue: 1296;
+  readonly adr: 'ADR-ST-11';
+  readonly verdict: AtlasRendererHybridVerdict;
+  /** Candidate the follow-on slices would promote (R02 starts from the R01B scene module). */
+  readonly proposedOwner: AtlasRendererCandidateId;
+  /** Productive owner until the R04 (#1269) switch; there is never a second productive mount. */
+  readonly productiveOwner: AtlasRendererCandidateId;
+  readonly gates: {
+    readonly ownerApproval: AtlasR01bGateState;
+    readonly hardwareEvidence: AtlasR01bGateState;
+  };
+  readonly followOnIssues: readonly [1267, 1268, 1269, 1270];
+  readonly pocModulePath: string;
+  readonly reasonDe: string;
+  readonly rollbackDe: string;
+  readonly evidencePaths: readonly string[];
+};
+
+export const ATLAS_R01B_RENDERER_DECISION: AtlasR01bRendererDecision = {
+  issue: 1296,
+  adr: 'ADR-ST-11',
+  verdict: 'GO',
+  proposedOwner: 'three-r01b-scene',
+  productiveOwner: ATLAS_PRODUCT_3D_TARGET,
+  gates: { ownerApproval: 'pending', hardwareEvidence: 'pending' },
+  followOnIssues: [1267, 1268, 1269, 1270],
+  pocModulePath: 'src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-scene.ts',
+  reasonDe:
+    'Three.js rendert dieselben gespeicherten Golden-Objekte (Dornhain + Krypta) mit denselben V01-Kameras und ' +
+    'identischen IDs (2D-Edit → 3D gleiche Objekt-ID, Picking, Context-Restore) und schließt die Material-/' +
+    'Licht-/Schattenlücke zu Atlas V8 (PBR-Atlas, PCF-Schatten, ACES, Instancing). Custom-WebGL bräuchte dafür ' +
+    'eine eigene Engine-Schicht. Software-WebGL-Frame-Zeiten sind langsamer und nur informativ.',
+  rollbackDe:
+    'Bis zum R04-Schalter bleibt Custom-WebGL (AtlasGL + AtlasLite3D) einziger Produkt-Renderer; danach bleibt ' +
+    'er nur als Rollback-Pfad bis R05/#1300 CLEAR. AtlasLite3D bleibt Lite-/No-WebGL-Fallback.',
+  evidencePaths: [
+    'docs/architecture/ADR-ST-11-atl3-r01b-three-renderer-go.md',
+    '.qa/design/atl3-r01b-three-equal-fidelity-adr.md',
+    '.qa/evidence/atl3-r01b-three-poc/results.json',
+  ],
+};
+
+/** Fail-closed: only an explicit GO with both gates `passed` reopens #1267–#1270. */
+export function atlasR01bAllowsFollowOnRendererWork(
+  decision: AtlasR01bRendererDecision = ATLAS_R01B_RENDERER_DECISION,
+): boolean {
+  return (
+    decision.verdict === 'GO' &&
+    decision.gates.ownerApproval === 'passed' &&
+    decision.gates.hardwareEvidence === 'passed'
+  );
 }

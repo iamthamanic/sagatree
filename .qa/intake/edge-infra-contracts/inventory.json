@@ -37476,6 +37476,10 @@
       "area": "world",
       "implementationIssue": 812,
       "files": [
+        "src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-camera.ts",
+        "src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-harness.ts",
+        "src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-runtime.ts",
+        "src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-scene.ts",
         "src/infrastructure/world/host-world-adapter.ts",
         "src/infrastructure/world/host-world-ports.contract.ts",
         "src/infrastructure/world/host-world-read.contract.ts",
@@ -37702,7 +37706,7 @@
           },
           {
             "path": "src/domains/world/atlas/atlas-renderer-target.ts",
-            "sha256": "b7119cbcc981e7c0c98c939aa09044496bd958fe6fd596f36e279da758d0505b"
+            "sha256": "d68377cb2f99d390a94f1c7603ce11e23461964ecb2a23012017efc602dbd73d"
           },
           {
             "path": "src/domains/world/atlas/atlas-revision-contract.ts",
@@ -37758,7 +37762,7 @@
           },
           {
             "path": "src/domains/world/atlas/index.ts",
-            "sha256": "301178f3784b36f134b2d1a01ee2c8163128ab6cd64361693d57570ea127b1e1"
+            "sha256": "065f2bead931d3ce4ce52818c78465193cc667f98bcbec5b5d8f7a8b51a22d25"
           },
           {
             "path": "src/domains/world/atlas/map-edit-ops.ts",
@@ -37941,6 +37945,22 @@
             "sha256": "7d58424f12b7855ccb3c0153270628850e03afc15c285b1fc2b47218918255d9"
           },
           {
+            "path": "src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-camera.ts",
+            "sha256": "dd6241e785bdbde6276b261fef7c56eaef13500075f413169a8fadd767ae7cc3"
+          },
+          {
+            "path": "src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-harness.ts",
+            "sha256": "7cb604c899852fcf48364b031180e8c2c4acae92f779e68cc2416e58686e536a"
+          },
+          {
+            "path": "src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-runtime.ts",
+            "sha256": "f250027a4c5a9674e377313738dac7f70a8a253464c46033f6a400a229b53c82"
+          },
+          {
+            "path": "src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-scene.ts",
+            "sha256": "f63e63b2be555ef8348d15141ed44a01e70670667e3d0946221db2720cc32d8c"
+          },
+          {
             "path": "src/infrastructure/world/host-world-adapter.ts",
             "sha256": "8fbaad8d6d4ec9cc42070444441fae94fb20af020cdada2125a705877ea4e1f1"
           },
@@ -37978,7 +37998,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-world.json",
-      "sourceContractSha256": "9a5983d710bdfe18cc9223be542159a9ddef1b6ee00ac90d1cfd85ab93851102",
+      "sourceContractSha256": "1933597d45fecc9f0da0d416598d3b791064a79964d42abaa52b80e13a4f58af",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],
@@ -38003,6 +38023,318 @@
       "authz": "Owner/editor read differs from saga-player reveal projection; preserve p_saga_public_id,p_player_view and no private catalog/map/layer/title exposure.",
       "legacyDefects": [],
       "publicOperationSources": [
+        {
+          "path": "src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-camera.ts",
+          "line": 39,
+          "endLine": 41,
+          "name": "clamp"
+        },
+        {
+          "path": "src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-camera.ts",
+          "line": 44,
+          "endLine": 48,
+          "name": "r01bClampPitch"
+        },
+        {
+          "path": "src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-camera.ts",
+          "line": 51,
+          "endLine": 79,
+          "name": "r01bCameraRig"
+        },
+        {
+          "path": "src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-camera.ts",
+          "line": 82,
+          "endLine": 89,
+          "name": "r01bFogBand"
+        },
+        {
+          "path": "src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-harness.ts",
+          "line": 55,
+          "endLine": 58,
+          "name": "need"
+        },
+        {
+          "path": "src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-harness.ts",
+          "line": 60,
+          "endLine": 63,
+          "name": "pct"
+        },
+        {
+          "path": "src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-harness.ts",
+          "line": 65,
+          "endLine": 70,
+          "name": "waitEvent"
+        },
+        {
+          "path": "src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-harness.ts",
+          "line": 73,
+          "endLine": 81,
+          "name": "create"
+        },
+        {
+          "path": "src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-harness.ts",
+          "line": 82,
+          "endLine": 87,
+          "name": "setDoc"
+        },
+        {
+          "path": "src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-harness.ts",
+          "line": 88,
+          "endLine": 92,
+          "name": "first"
+        },
+        {
+          "path": "src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-harness.ts",
+          "line": 93,
+          "endLine": 97,
+          "name": "render"
+        },
+        {
+          "path": "src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-harness.ts",
+          "line": 98,
+          "endLine": 116,
+          "name": "frames"
+        },
+        {
+          "path": "src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-harness.ts",
+          "line": 103,
+          "endLine": 113,
+          "name": "step"
+        },
+        {
+          "path": "src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-harness.ts",
+          "line": 121,
+          "endLine": 135,
+          "name": "contextLossRoundTrip"
+        },
+        {
+          "path": "src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-harness.ts",
+          "line": 136,
+          "endLine": 147,
+          "name": "loadErrorProbe"
+        },
+        {
+          "path": "src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-harness.ts",
+          "line": 149,
+          "endLine": 152,
+          "name": "dispose"
+        },
+        {
+          "path": "src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-runtime.ts",
+          "line": 105,
+          "endLine": 121,
+          "name": "torchHaloTexture"
+        },
+        {
+          "path": "src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-runtime.ts",
+          "line": 123,
+          "endLine": 131,
+          "name": "loadTexture"
+        },
+        {
+          "path": "src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-runtime.ts",
+          "line": 207,
+          "endLine": 223,
+          "name": "loadAtlas"
+        },
+        {
+          "path": "src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-runtime.ts",
+          "line": 247,
+          "endLine": 253,
+          "name": "setDoc"
+        },
+        {
+          "path": "src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-runtime.ts",
+          "line": 409,
+          "endLine": 416,
+          "name": "render"
+        },
+        {
+          "path": "src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-runtime.ts",
+          "line": 419,
+          "endLine": 430,
+          "name": "firstRender"
+        },
+        {
+          "path": "src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-runtime.ts",
+          "line": 432,
+          "endLine": 441,
+          "name": "info"
+        },
+        {
+          "path": "src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-runtime.ts",
+          "line": 444,
+          "endLine": 446,
+          "name": "ids"
+        },
+        {
+          "path": "src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-runtime.ts",
+          "line": 449,
+          "endLine": 467,
+          "name": "centroidOf"
+        },
+        {
+          "path": "src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-runtime.ts",
+          "line": 470,
+          "endLine": 488,
+          "name": "pick"
+        },
+        {
+          "path": "src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-runtime.ts",
+          "line": 491,
+          "endLine": 495,
+          "name": "project"
+        },
+        {
+          "path": "src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-runtime.ts",
+          "line": 497,
+          "endLine": 499,
+          "name": "forceContextLoss"
+        },
+        {
+          "path": "src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-runtime.ts",
+          "line": 501,
+          "endLine": 503,
+          "name": "forceContextRestore"
+        },
+        {
+          "path": "src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-runtime.ts",
+          "line": 505,
+          "endLine": 519,
+          "name": "dispose"
+        },
+        {
+          "path": "src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-scene.ts",
+          "line": 67,
+          "endLine": 77,
+          "name": "r01bFloorSurface"
+        },
+        {
+          "path": "src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-scene.ts",
+          "line": 92,
+          "endLine": 103,
+          "name": "tri"
+        },
+        {
+          "path": "src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-scene.ts",
+          "line": 106,
+          "endLine": 117,
+          "name": "geometry"
+        },
+        {
+          "path": "src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-scene.ts",
+          "line": 119,
+          "endLine": 126,
+          "name": "build"
+        },
+        {
+          "path": "src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-scene.ts",
+          "line": 132,
+          "endLine": 138,
+          "name": "boxMatrix"
+        },
+        {
+          "path": "src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-scene.ts",
+          "line": 159,
+          "endLine": 166,
+          "name": "r01bTerrainStride"
+        },
+        {
+          "path": "src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-scene.ts",
+          "line": 163,
+          "endLine": 163,
+          "name": "estimate"
+        },
+        {
+          "path": "src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-scene.ts",
+          "line": 168,
+          "endLine": 173,
+          "name": "terrainSurface"
+        },
+        {
+          "path": "src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-scene.ts",
+          "line": 175,
+          "endLine": 219,
+          "name": "buildTerrain"
+        },
+        {
+          "path": "src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-scene.ts",
+          "line": 184,
+          "endLine": 184,
+          "name": "h"
+        },
+        {
+          "path": "src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-scene.ts",
+          "line": 221,
+          "endLine": 243,
+          "name": "ribbon"
+        },
+        {
+          "path": "src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-scene.ts",
+          "line": 246,
+          "endLine": 250,
+          "name": "wallBox"
+        },
+        {
+          "path": "src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-scene.ts",
+          "line": 252,
+          "endLine": 259,
+          "name": "hash"
+        },
+        {
+          "path": "src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-scene.ts",
+          "line": 263,
+          "endLine": 372,
+          "name": "propInto"
+        },
+        {
+          "path": "src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-scene.ts",
+          "line": 272,
+          "endLine": 273,
+          "name": "box"
+        },
+        {
+          "path": "src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-scene.ts",
+          "line": 274,
+          "endLine": 278,
+          "name": "cone"
+        },
+        {
+          "path": "src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-scene.ts",
+          "line": 279,
+          "endLine": 284,
+          "name": "pyramid"
+        },
+        {
+          "path": "src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-scene.ts",
+          "line": 285,
+          "endLine": 289,
+          "name": "octa"
+        },
+        {
+          "path": "src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-scene.ts",
+          "line": 383,
+          "endLine": 518,
+          "name": "buildR01bScenePlan"
+        },
+        {
+          "path": "src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-scene.ts",
+          "line": 386,
+          "endLine": 393,
+          "name": "get"
+        },
+        {
+          "path": "src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-scene.ts",
+          "line": 404,
+          "endLine": 404,
+          "name": "p"
+        },
+        {
+          "path": "src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-scene.ts",
+          "line": 466,
+          "endLine": 466,
+          "name": "at"
+        },
         {
           "path": "src/infrastructure/world/host-world-adapter.ts",
           "line": 22,

@@ -32,9 +32,9 @@ Epic #1196 and Gate D #1218 originally named **Three.js** as the 3D projection. 
 | Issue | Role | ATL2 status |
 | --- | --- | --- |
 | [#1294](https://github.com/iamthamanic/sagatree/issues/1294) | ATL3 Epic — Procedural Fantasy Rendering (Three.js, materials, satellite view) | open — future |
-| [#1295](https://github.com/iamthamanic/sagatree/issues/1295) | ATL3-V01 visual quality contract + golden scenes | open — future (separate workstream) |
-| [#1296](https://github.com/iamthamanic/sagatree/issues/1296) | ATL3-R01B — new Three.js visual PoC; may supersede ADR-ST-10 | open — future |
-| [#1267](https://github.com/iamthamanic/sagatree/issues/1267)–[#1270](https://github.com/iamthamanic/sagatree/issues/1270) | R02–R05 Three.js migration + Gate R | closed `not_planned`; reactivated **only** after a GO-ADR from #1296 |
+| [#1295](https://github.com/iamthamanic/sagatree/issues/1295) | ATL3-V01 visual quality contract + golden scenes | merged (PR #1302); oracle `.qa/fixtures/atl3-v01-visual-contract/golden-scenes.json` |
+| [#1296](https://github.com/iamthamanic/sagatree/issues/1296) | ATL3-R01B — isolated Three.js equal-fidelity PoC (`src/infrastructure/world/atlas-r01b-three-poc/`) + `docs/architecture/ADR-ST-11-atl3-r01b-three-renderer-go.md` | ADR-ST-11 **proposed, conditional GO** — not in force until owner approval + hardware evidence (`atlasR01bAllowsFollowOnRendererWork() === false`); ADR-ST-10 stays binding |
+| [#1267](https://github.com/iamthamanic/sagatree/issues/1267)–[#1270](https://github.com/iamthamanic/sagatree/issues/1270) | R02–R05 Three.js migration + Gate R | closed `not_planned`; reactivated **only** when both ADR-ST-11 gates are `passed` (reopen table in ADR-ST-11) |
 | [#1297](https://github.com/iamthamanic/sagatree/issues/1297) / [#1298](https://github.com/iamthamanic/sagatree/issues/1298) / [#1299](https://github.com/iamthamanic/sagatree/issues/1299) | Procedural materials / geometry+LOD / satellite camera | open — future, conditional on GO |
 | [#1300](https://github.com/iamthamanic/sagatree/issues/1300) | ATL3-Q01 independent quality + renderer-retirement gate | open — future |
 | [#1301](https://github.com/iamthamanic/sagatree/issues/1301) | Tile/LOD streaming feasibility (P2) | open — study only |
@@ -47,6 +47,7 @@ Rules until then: Custom WebGL stays productive; no second productive 3D mount; 
 | --- | --- |
 | `AGENTS.md` | Repo workflow, gates, contracts (mandatory) |
 | `docs/architecture/ADR-ST-10-atl2-r01-custom-webgl-product-sot.md` | Renderer SoT (binding) |
+| `docs/architecture/ADR-ST-11-atl3-r01b-three-renderer-go.md` | ATL3-R01B conditional GO for Three.js (proposed; supersedes ADR-ST-10 only once its gates pass) |
 | `docs/architecture/atlas-v2-architecture.md` | This index |
 | `docs/concepts/imagination-first-visualization-contract.md` | IV-* gates (map as spatial aid, no invented geography) |
 | `docs/concepts/adaptive-ui-experience-contract.md` | AU-* gates (device bands, touch, recomposition) |
