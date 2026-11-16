@@ -2,7 +2,7 @@
 
 - Issue: #1296
 - Feature slug: atl3-r01b-three-equal-fidelity-adr
-- HEAD_SHA: 71b1dd2cd848a11f9de09e83244da34d58e7170e
+- HEAD_SHA: 44e47b53d4c3062586ec90eddc7f0815724ff542
 - BASE_SHA: 651c90afd8b203aa6f096470a09c62aec02b6083
 - Date: 2026-11-16
 - Verdict: CLEAR
@@ -36,7 +36,7 @@ Cardinality: 2 golden scenes × 1 stored map; 28 PoC captures paired 1:1 with V0
 |------|----------|----------|--------|
 | Same data | PoC and product read identical stored objects | fingerprints 3ec9b21f…/a44b49a7… in both | pass |
 | ID stability | every canonical doc ID exists in 3D | 13/13, 201/201; picking 10/10 | pass |
-| Edit path | 2D edit appears in 3D with same ID, nothing persisted | new ID present, offset 0, PUT held | pass |
+| Edit path | 2D edit appears in 3D with same ID, nothing persisted | new ID present, offset 0, writes aborted + offline teardown; stored fingerprints re-verified (shared DB: R01B then V01) | pass |
 | Render reset | context loss → restore | restored 85/128 ms, non-blank | pass |
 | Load error | corrupt texture | rejects in 16 ms, no partial scene | pass |
 | Gate bypass | GO with one gate pending/failed | `atlasR01bAllowsFollowOnRendererWork` false (self-test matrix) | pass |
