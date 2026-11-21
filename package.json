@@ -60,7 +60,7 @@
   "devDependencies": {
     "@jsquash/jpeg": "1.6.0",
     "@jsquash/png": "3.1.1",
-    "@playwright/test": "^1.55.0",
+    "@playwright/test": "^1.65.0",
     "@tailwindcss/vite": "4.3.3",
     "@types/node": "^26.6.6",
     "@types/react": "^18.3.31",
