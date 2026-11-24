@@ -2,7 +2,7 @@
  * project-service — Host HTTP adapter for projects/campaigns (CUT-20).
  * Location: src/infrastructure/project/project-service.ts
  *
- * Product runtime uses host Library + project routes only — host HTTP only.
+ * Product runtime uses host Library + project routes only — no Supabase client.
  */
 import { getAuthenticatedUserId } from '../../lib/authenticatedUser';
 import {

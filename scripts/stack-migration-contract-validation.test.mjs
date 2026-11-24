@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { validateMigrationPlan } from './stack-migration-contract-validation.mjs';
+import { RETIRED_SOURCE_REFS, validateMigrationPlan } from './stack-migration-contract-validation.mjs';
 import { buildMigrationPlan, publishEntry, renderIssue } from './stack-migration-issue-rendering.mjs';
 import { validatePublicationEntry } from './stack-migration-publish-payload.mjs';
 
@@ -349,6 +349,17 @@ test('nonexistent design and assertion sources fail', () => {
   target.designFile = '.qa/design/nonexistent-migration-contract.md';
   target.assertions[0].sourceRefs = ['src/does-not-exist.ts'];
   rejects(input, /designFile must resolve/); rejects(input, /assertion source not found/);
+});
+
+test('retired assertion sources are only accepted while absent (#1328)', () => {
+  const [retired] = Object.keys(RETIRED_SOURCE_REFS);
+  assert.ok(retired, 'retired ledger must not be empty');
+  const input = clone(); issue(input, 'MIG-301').assertions[0].sourceRefs = [retired];
+  assert.ok(!errors(input).some((entry) => entry.includes(retired)), 'absent retired source must pass');
+  const reappeared = { ...io, exists: (path) => path === retired || io.exists(path) };
+  rejects(input, /retired assertion source reappeared/, reappeared);
+  const other = clone(); issue(other, 'MIG-301').assertions[0].sourceRefs = ['src/lib/other-deleted.ts'];
+  rejects(other, /assertion source not found/);
 });
 
 test('coordinated removal of MIG-501 from every mutable inventory cannot redefine coverage', () => {

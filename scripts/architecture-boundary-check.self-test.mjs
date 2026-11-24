@@ -99,24 +99,21 @@ assertNoCrossSliceViolation(
   "export { CharacterInventoryV2Panel } from '../inventory/CharacterInventoryV2Panel';",
 );
 
-const dynamicImport = "const client = await import('../../../lib/asset-urls');";
+const dynamicImport = "const client = await import('../../../lib/retired-baas-client');";
 const appDynamicViolations = checkContentImportPaths(
   dynamicImport,
-  [
-    { label: 'Supabase client', test: (p) => p.includes('supabase') },
-    { label: 'Supabase lib', test: (p) => /(?:^|\/)lib\/supabase(?:\.|$)/.test(p) },
-  ],
+  [{ label: 'Retired BaaS client', test: (p) => /(?:^|\/)lib\/retired-baas-client(?:\.|$)/.test(p) }],
   'app',
   'src/app/character/edit/CharacterEditor.tsx',
 );
 assert(
-  appDynamicViolations.some((entry) => entry.rule.includes('Supabase')),
-  `dynamic supabase import should fail, got ${JSON.stringify(appDynamicViolations)}`,
+  appDynamicViolations.some((entry) => entry.rule.includes('Retired BaaS')),
+  `dynamic forbidden import should fail, got ${JSON.stringify(appDynamicViolations)}`,
 );
 
 assert(
-  extractImportPaths(dynamicImport).includes('../../../lib/asset-urls'),
-  'extractImportPaths should capture dynamic imports',
+  extractImportPaths(dynamicImport).includes('../../../lib/retired-baas-client'),
+'extractImportPaths should capture dynamic imports',
 );
 
 assert(

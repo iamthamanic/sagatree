@@ -13,11 +13,11 @@
     },
     {
       "path": "src/infrastructure/user-profile/host-user-profile-adapter.ts",
-      "sha256": "c9625210b18534d7340c84a3f4202e3f775a933dbefed8de66b489c1bba9f604"
+      "sha256": "67155e3dfce6ee4c544e340fbf4c2992e11979de3602864fe2b78ce5fe101a55"
     },
     {
       "path": "src/infrastructure/user-profile/host-user-profile-ports.contract.ts",
-      "sha256": "7f4aaaa098bd0a8625e916074ae7c4a0e2d34b99d4effd1ccb0a890148f01511"
+      "sha256": "7fec9c4d96f7c305e8afddf3573b5d6e2e579a5f800058d3f55de1cd7179839c"
     },
     {
       "path": "src/infrastructure/user-profile/index.ts",
@@ -39,7 +39,7 @@
     },
     {
       "path": "src/domains/media/optimization-contract.ts",
-      "sha256": "ba9216dab79a9c03f66a16b77dedf1c26d4d00d6ae2693cc5a68919d1647846d"
+      "sha256": "997c49f8cda2ea1661a89e4fbdbc5a106500da46fadaf7a3a9fc5900134c7ccd"
     },
     {
       "path": "src/domains/media/optimization-policy.ts",
@@ -59,7 +59,7 @@
     },
     {
       "path": "src/domains/user-profile/display-name.ts",
-      "sha256": "87cfc4858f198e56ea2857c505162f112efd5edacde4dbb1f7fcd995b4535516"
+      "sha256": "8d538ee042cf6909c3abfa4ea0d7435fe9bc80fe2af29dd78a5b64a53275b269"
     },
     {
       "path": "src/domains/user-profile/index.ts",
@@ -67,11 +67,11 @@
     },
     {
       "path": "src/infrastructure/host/host-catalog-http.ts",
-      "sha256": "9049245360683a74e7e2602d35126d815d64344d384c6684e4c2c3d41aa626d3"
+      "sha256": "72c81f6f14dc152ec5e793f91f0d7702e2ef145526fb5cf2521e2e60e4b05acc"
     },
     {
       "path": "src/infrastructure/host/host-library-http.ts",
-      "sha256": "c56b88c60d6c9491fc7b6e6e1143ac4985ffdab5dff16afef8a54bce79629a07"
+      "sha256": "7f909cafd35ac7fab15a90f37dd6164390fbac5b85d915618a1f46138b7d852a"
     },
     {
       "path": "src/infrastructure/media/optimizer/engines/audio/index.ts",

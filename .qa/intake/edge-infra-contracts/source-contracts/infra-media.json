@@ -63,7 +63,7 @@
     },
     {
       "path": "src/domains/media/optimization-contract.ts",
-      "sha256": "ba9216dab79a9c03f66a16b77dedf1c26d4d00d6ae2693cc5a68919d1647846d"
+      "sha256": "997c49f8cda2ea1661a89e4fbdbc5a106500da46fadaf7a3a9fc5900134c7ccd"
     },
     {
       "path": "src/domains/media/optimization-policy.ts",

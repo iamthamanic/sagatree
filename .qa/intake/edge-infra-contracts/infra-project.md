@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-project.json](source-contracts/infra-project.json) (SHA-256 `73e8cb53c17509bb51f308177e111747d967a4846042f132261ae02b2d62e872`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-project.json](source-contracts/infra-project.json) (SHA-256 `cfa95de54a973a95578d4817c4182661027c3af11491a0c4b3e4592b46e6b49a`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -492,23 +492,23 @@ async leaveProject(projectId: string): Promise<void> {
 
 | Path | SHA-256 |
 |---|---|
-| `src/domains/project/contracts/project.types.ts` | `1777f75b3bd865b09e3fba61324b7331439f5846c98dea1230e27b6f976a0ca8` |
-| `src/domains/project/contracts/saga-overview.ts` | `d4ddafbea6f3d8a8678c44d6fd9096ebe1f6985e4c335f5050dac2915918dc94` |
+| `src/domains/project/contracts/project.types.ts` | `ba6eadec19abdf34c965497f792403183d427cd8193d8d5293d8b39b91612ae5` |
+| `src/domains/project/contracts/saga-overview.ts` | `34fb96c09db3a492e615548e4e681e782056df1f725100ed0cc8e40d6805df72` |
 | `src/domains/saga/permissions/catalog.ts` | `fa18a08f5e4fd9db4886aa51e89858769d2fa84853d3109df36a1db8913ee3c7` |
 | `src/domains/saga/permissions/index.ts` | `27ab6076d9afb89c5dc6d0bf11b9a0e3502efade690cd7dba2973e2acad24bba` |
 | `src/domains/saga/permissions/lore-timeline.ts` | `f245a4b02ce971d772808ddcdb70944992ba7f8cb0fbc1d012e5f6c93e11b48b` |
-| `src/domains/session/contracts/session-lifecycle.ts` | `c70eb365aa31906dc8cd8f7a3cc2c5ed1141b5bab8489a1d56ced8a41c1ce5be` |
-| `src/infrastructure/host/host-library-http.ts` | `c56b88c60d6c9491fc7b6e6e1143ac4985ffdab5dff16afef8a54bce79629a07` |
+| `src/domains/session/contracts/session-lifecycle.ts` | `1351a7e593a24cfed6467313def0c6b2fc293adae6f8032fbb7289dce36a8260` |
+| `src/infrastructure/host/host-library-http.ts` | `7f909cafd35ac7fab15a90f37dd6164390fbac5b85d915618a1f46138b7d852a` |
 | `src/infrastructure/host/host-project-http.ts` | `287a426fb8645638e263a7b2d612d071eec4bf054cc778193b82f6b8252a0f92` |
 | `src/infrastructure/host/host-session-http.ts` | `f0e603ecf93151669c7b809cb63aea3d0a98ed2ca17ae8f2768a5444bb9cab56` |
-| `src/infrastructure/project/host-project-adapter.ts` | `f8137115741c452c865883275c6d95529faf29ca28620c5adc92eedc30002e90` |
-| `src/infrastructure/project/host-project-ports.contract.ts` | `96d05101ba2cbe8364ae30bbcde48235a1058a65a43f733d03433d7f26a8236f` |
+| `src/infrastructure/project/host-project-adapter.ts` | `d595a50fb380c7c6eb3ccaa3a30e8681ef964c58b869edb63a6dbedbee3eefd8` |
+| `src/infrastructure/project/host-project-ports.contract.ts` | `7ab253171577d0d7bc8b0668bde65434c85d36d36c01234c4e86978193be427f` |
 | `src/infrastructure/project/project-member-service.ts` | `40fc648e091c11dcdcf4535747d9db0cd6dc5da9e475663c3ff60dff9a53e594` |
 | `src/infrastructure/project/project-service.ts` | `29846df2ae25287b68cba443a9c85f2f9952fa9cc1afd3faf762a78eb57a6fa6` |
 | `src/infrastructure/project/saga-overview-service.ts` | `29f68ebd797d4fc19e5aaede3860e9bd2984bc7123fb37e4557f4a5ea5407a28` |
 | `src/infrastructure/project/saga-permission-service.ts` | `e177bbfaa085cc5ab6a03f9ba437ba003766443da87b02cfaa2ae2348f9ec6e1` |
-| `src/lib/authenticatedUser.ts` | `5d9deef60efd85a3ecd56e9b55f67ecb2d03c2964c4f9217e6de6842d8e0b403` |
+| `src/lib/authenticatedUser.ts` | `b034ac66b532232c33ec19d5427aef11b6828905ca3e3e8991f060be3e9026d6` |
 | `src/lib/hostAuthBridge.ts` | `30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a` |
-| `src/lib/localAdmin.ts` | `103feaea892b0582022557ff81cef61105f3d9ed4eb421a20d8b0b415c2de498` |
-| `src/lib/networkTimeout.ts` | `835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851` |
+| `src/lib/localAdmin.ts` | `7ceb27ff34dffa628cb47eaa6669f3bec32cc62981f310111a3615725bb0d376` |
+| `src/lib/networkTimeout.ts` | `47fd1262837db8dfbdebf1a2459e5d1f7c165430ade5afa4b0de03658af582c4` |
 

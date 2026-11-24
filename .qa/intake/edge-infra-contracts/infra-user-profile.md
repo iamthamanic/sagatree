@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-user-profile.json](source-contracts/infra-user-profile.json) (SHA-256 `6a523c7e9097f63faf6e1bc3ad971416b643d9cdeafc6ce78df020eed66747b0`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-user-profile.json](source-contracts/infra-user-profile.json) (SHA-256 `a6825a982b92fe0e92dd0a5deba76f1fcfc947789b160c5e95cfe7a93cd8feb3`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -358,15 +358,15 @@ All backend operations are included in the public declarations above.
 |---|---|
 | `src/domains/marketplace/contracts/marketplace.types.ts` | `000aecc695577333ad6fce27422ad02bc15f26ffca88507ebfee1fafb04b9467` |
 | `src/domains/media/index.ts` | `768ded2d0f0fd1d510d660924e787817673955dbeff021d7de9e0a8d8e38bdec` |
-| `src/domains/media/optimization-contract.ts` | `ba9216dab79a9c03f66a16b77dedf1c26d4d00d6ae2693cc5a68919d1647846d` |
+| `src/domains/media/optimization-contract.ts` | `997c49f8cda2ea1661a89e4fbdbc5a106500da46fadaf7a3a9fc5900134c7ccd` |
 | `src/domains/media/optimization-policy.ts` | `6145574bc08d1eb94f54d488ebc1f8bc030c2a956e3e3fd24cb15a7c8e50c5ec` |
 | `src/domains/rules/ruleset-catalog/index.ts` | `c2f52133fdeaa82ca586670b79ce0144063cc852a2a5ca8b5b6b44369fc0e21e` |
 | `src/domains/rules/ruleset-catalog/types.ts` | `1b76d37fc3c90d29d3f719644e6915a66462d7b55c4c6cec07a0caadfdf1512d` |
 | `src/domains/user-profile/contracts/user-profile.types.ts` | `2f3f3472e9a3448099144be0993fd83bbbc2270050ce76dceadd8821501c26b7` |
-| `src/domains/user-profile/display-name.ts` | `87cfc4858f198e56ea2857c505162f112efd5edacde4dbb1f7fcd995b4535516` |
+| `src/domains/user-profile/display-name.ts` | `8d538ee042cf6909c3abfa4ea0d7435fe9bc80fe2af29dd78a5b64a53275b269` |
 | `src/domains/user-profile/index.ts` | `d094d245ff9356298ef20c48635ca3e7adcc0e1ccf180554586949e0b496c496` |
-| `src/infrastructure/host/host-catalog-http.ts` | `9049245360683a74e7e2602d35126d815d64344d384c6684e4c2c3d41aa626d3` |
-| `src/infrastructure/host/host-library-http.ts` | `c56b88c60d6c9491fc7b6e6e1143ac4985ffdab5dff16afef8a54bce79629a07` |
+| `src/infrastructure/host/host-catalog-http.ts` | `72c81f6f14dc152ec5e793f91f0d7702e2ef145526fb5cf2521e2e60e4b05acc` |
+| `src/infrastructure/host/host-library-http.ts` | `7f909cafd35ac7fab15a90f37dd6164390fbac5b85d915618a1f46138b7d852a` |
 | `src/infrastructure/media/optimizer/engines/audio/index.ts` | `7585190a705085692bff0896e08b4d78f791895b47e24d57deeaaa10bb669d4e` |
 | `src/infrastructure/media/optimizer/engines/image/image.worker.ts` | `d34793b4de682556d9306194cfbcd05fdafdf215da25393f955d2669c7499276` |
 | `src/infrastructure/media/optimizer/engines/image/index.ts` | `4944001b7e0f7784d487da2e60d06d845aa564e9ddd7516ff50633af1591a322` |
@@ -382,8 +382,8 @@ All backend operations are included in the public declarations above.
 | `src/infrastructure/media/optimizer/media-optimizer.ts` | `7d58424f12b7855ccb3c0153270628850e03afc15c285b1fc2b47218918255d9` |
 | `src/infrastructure/user-profile/account-avatar-changed.ts` | `79b2b404b93bdf7174d30341c08b23662aaa412686c9b3251106e1d79fc42045` |
 | `src/infrastructure/user-profile/account-avatar-store.ts` | `ca478b00af6f5b52a531dcb244e8a2d5f92e4765bde69d1d52afa80e1542dbdb` |
-| `src/infrastructure/user-profile/host-user-profile-adapter.ts` | `c9625210b18534d7340c84a3f4202e3f775a933dbefed8de66b489c1bba9f604` |
-| `src/infrastructure/user-profile/host-user-profile-ports.contract.ts` | `7f4aaaa098bd0a8625e916074ae7c4a0e2d34b99d4effd1ccb0a890148f01511` |
+| `src/infrastructure/user-profile/host-user-profile-adapter.ts` | `67155e3dfce6ee4c544e340fbf4c2992e11979de3602864fe2b78ce5fe101a55` |
+| `src/infrastructure/user-profile/host-user-profile-ports.contract.ts` | `7fec9c4d96f7c305e8afddf3573b5d6e2e579a5f800058d3f55de1cd7179839c` |
 | `src/infrastructure/user-profile/index.ts` | `174c73d885fbc9316dbdfb8b0b09b1060821d40b36030a61c672150e61fecb20` |
 | `src/infrastructure/user-profile/user-profile-service.ts` | `013cd52d0e1f39653a7f50689c50e83fd9eb27339a53d1207033bf40b0cb6e4c` |
 | `src/lib/hostAuthBridge.ts` | `30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a` |

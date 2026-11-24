@@ -5,11 +5,11 @@
   "sourceFiles": [
     {
       "path": "src/infrastructure/session/host-session-adapter.ts",
-      "sha256": "57c52ff948f0e5169f302c2de0a58e4eabffa35668fb121605533bcddbb3d4fb"
+      "sha256": "9bb63b8c538dca110829b2f41ae8ff87420ddddc609f3cf067db83a185b2ce2d"
     },
     {
       "path": "src/infrastructure/session/host-session-ports.contract.ts",
-      "sha256": "b7d49eee90da55c7a0acadd765ddb202527fc003789f855ae910425e073f928f"
+      "sha256": "a6b2c4cc0eca3551640dd5745202a722c22971bf837d2b39a0afcd48e0eb1b5c"
     },
     {
       "path": "src/infrastructure/session/live-session-access.resolver.ts",
@@ -45,7 +45,7 @@
     },
     {
       "path": "src/infrastructure/session/session-lobby-channel.ts",
-      "sha256": "1dec5e7d1f3eb0a53a91b28c458db30bf2f3e4200c27aeafa811139fbf1890ed"
+      "sha256": "b3b8cbf0b380e3ca766df68d0a4dccc275495115161180b2ca0c8b41a47c35eb"
     },
     {
       "path": "src/infrastructure/session/session-recap-ai-service.ts",
@@ -79,11 +79,11 @@
     },
     {
       "path": "src/domains/session/contracts/session-invite.ts",
-      "sha256": "dac4795822314800fb59ff5e11b56ab8ce808071c43185e99711a92b66c0d4dc"
+      "sha256": "df348618335a19017b10ddb82e7a911d22305b9ff3e235af50a2fcdb236a6f6d"
     },
     {
       "path": "src/domains/session/contracts/session-lifecycle.ts",
-      "sha256": "c70eb365aa31906dc8cd8f7a3cc2c5ed1141b5bab8489a1d56ced8a41c1ce5be"
+      "sha256": "1351a7e593a24cfed6467313def0c6b2fc293adae6f8032fbb7289dce36a8260"
     },
     {
       "path": "src/domains/session/contracts/session-prepare-recap.ts",
@@ -91,7 +91,7 @@
     },
     {
       "path": "src/domains/session/contracts/session-runtime.ts",
-      "sha256": "c928a253185cf9aa6fac10b380807033d86c0df4120fdc80b223800c626b84e2"
+      "sha256": "d29024cd5da222d76e2e7acebf3bdf24e54bb0dc7a9f20ceda3d53efb4b2eeec"
     },
     {
       "path": "src/domains/session/contracts/session.types.ts",
@@ -103,7 +103,7 @@
     },
     {
       "path": "src/infrastructure/host/host-library-http.ts",
-      "sha256": "c56b88c60d6c9491fc7b6e6e1143ac4985ffdab5dff16afef8a54bce79629a07"
+      "sha256": "7f909cafd35ac7fab15a90f37dd6164390fbac5b85d915618a1f46138b7d852a"
     },
     {
       "path": "src/infrastructure/host/host-session-http.ts",
@@ -111,7 +111,7 @@
     },
     {
       "path": "src/lib/authenticatedUser.ts",
-      "sha256": "5d9deef60efd85a3ecd56e9b55f67ecb2d03c2964c4f9217e6de6842d8e0b403"
+      "sha256": "b034ac66b532232c33ec19d5427aef11b6828905ca3e3e8991f060be3e9026d6"
     },
     {
       "path": "src/lib/hostAuthBridge.ts",
@@ -119,11 +119,11 @@
     },
     {
       "path": "src/lib/localAdmin.ts",
-      "sha256": "103feaea892b0582022557ff81cef61105f3d9ed4eb421a20d8b0b415c2de498"
+      "sha256": "7ceb27ff34dffa628cb47eaa6669f3bec32cc62981f310111a3615725bb0d376"
     },
     {
       "path": "src/lib/networkTimeout.ts",
-      "sha256": "835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851"
+      "sha256": "47fd1262837db8dfbdebf1a2459e5d1f7c165430ade5afa4b0de03658af582c4"
     }
   ],
   "importedTypeDeclarations": [

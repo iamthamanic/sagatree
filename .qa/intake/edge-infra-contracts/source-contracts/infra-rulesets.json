@@ -27,7 +27,7 @@
     },
     {
       "path": "src/domains/user-profile/display-name.ts",
-      "sha256": "87cfc4858f198e56ea2857c505162f112efd5edacde4dbb1f7fcd995b4535516"
+      "sha256": "8d538ee042cf6909c3abfa4ea0d7435fe9bc80fe2af29dd78a5b64a53275b269"
     },
     {
       "path": "src/domains/user-profile/index.ts",
@@ -35,11 +35,11 @@
     },
     {
       "path": "src/infrastructure/host/host-catalog-http.ts",
-      "sha256": "9049245360683a74e7e2602d35126d815d64344d384c6684e4c2c3d41aa626d3"
+      "sha256": "72c81f6f14dc152ec5e793f91f0d7702e2ef145526fb5cf2521e2e60e4b05acc"
     },
     {
       "path": "src/infrastructure/host/host-library-http.ts",
-      "sha256": "c56b88c60d6c9491fc7b6e6e1143ac4985ffdab5dff16afef8a54bce79629a07"
+      "sha256": "7f909cafd35ac7fab15a90f37dd6164390fbac5b85d915618a1f46138b7d852a"
     },
     {
       "path": "src/lib/hostAuthBridge.ts",

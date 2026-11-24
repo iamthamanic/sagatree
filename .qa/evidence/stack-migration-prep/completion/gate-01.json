@@ -6,7 +6,7 @@
   "testedCommit": "cb6a7f7a2c241f8f951649447f17e7476e1a931e",
   "githubClosed": true,
   "mergeRef": "PR #882 → main; human APPROVED on #784",
-  "note": "Completion requires merge SHA + hashed check artifacts; architecture freigabe or source fingerprint alone is insufficient.",
+  "note": "Completion requires merge SHA + hashed check artifacts; architecture freigabe or source fingerprint alone is insufficient. #1328: sha256 refreshed after history banners on ADRs/owner protocols, renamed shutdown evidence path and regenerated edge/infra inventory (comment-only source changes; AST snapshots unchanged).",
   "checks": [
     {
       "command": "PoC report PASS",
@@ -18,13 +18,13 @@
       "command": "ADR-ST-05",
       "result": "PASS",
       "evidenceFile": "docs/architecture/ADR-ST-05-gate-01-drizzle-policy.md",
-      "sha256": "62ba756de8589bee082969d4955b76c55ee4fa597e66a16d54af9773638438b8"
+      "sha256": "fe455cac6034465b1ffb1e54a0e95fa2aca9fa65ddb5bd4820685a497cfe7c07"
     },
     {
       "command": "architecture-approvals GATE-01",
       "result": "PASS",
       "evidenceFile": ".qa/evidence/stack-migration-prep/architecture-approvals.json",
-      "sha256": "bb84614c104218aa6e384630a9458cc65b927d6ee93df814f8a2520610edcdb6"
+      "sha256": "bb4fe93078bb4826d605fb4d13ff409f28644051993b22d581c9f96b9352d1d9"
     }
   ]
 }

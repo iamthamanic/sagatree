@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-session.json](source-contracts/infra-session.json) (SHA-256 `ed6136b6128429a12b726e70b440a2d8123f10aa794bc7efe66d3e40ada72fdf`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-session.json](source-contracts/infra-session.json) (SHA-256 `a876bafe4b9ffa396829abce73db8b487dee717a5dfee9d1b1ab32e0701636ec`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -1353,16 +1353,16 @@ async function openLobbyReadyStream(
 |---|---|
 | `src/domains/resource-id/session-routing.ts` | `8a471af964126b08e663785fec8c260762629d673747ec8b72cec0369b963400` |
 | `src/domains/session/contracts/live-session-access.ts` | `5c5fea67625237d0ae703e54e07dceb52d1694df8fe7bab6248b13810f4df411` |
-| `src/domains/session/contracts/session-invite.ts` | `dac4795822314800fb59ff5e11b56ab8ce808071c43185e99711a92b66c0d4dc` |
-| `src/domains/session/contracts/session-lifecycle.ts` | `c70eb365aa31906dc8cd8f7a3cc2c5ed1141b5bab8489a1d56ced8a41c1ce5be` |
+| `src/domains/session/contracts/session-invite.ts` | `df348618335a19017b10ddb82e7a911d22305b9ff3e235af50a2fcdb236a6f6d` |
+| `src/domains/session/contracts/session-lifecycle.ts` | `1351a7e593a24cfed6467313def0c6b2fc293adae6f8032fbb7289dce36a8260` |
 | `src/domains/session/contracts/session-prepare-recap.ts` | `14a939d627bc1b7393a8e32c1a9bf9f2b74aab0058416bd6e73a9a59cbcc7c7f` |
-| `src/domains/session/contracts/session-runtime.ts` | `c928a253185cf9aa6fac10b380807033d86c0df4120fdc80b223800c626b84e2` |
+| `src/domains/session/contracts/session-runtime.ts` | `d29024cd5da222d76e2e7acebf3bdf24e54bb0dc7a9f20ceda3d53efb4b2eeec` |
 | `src/domains/session/contracts/session.types.ts` | `3f2056b6b4cb4ef86dbffd4271482131a3bf4714c3329b8827a067acfde29a04` |
 | `src/domains/session/media/media-plane-contract.ts` | `7cba204291a86a1159b961048280899541f95c102abad8e2c8f61e7662ba8c1b` |
-| `src/infrastructure/host/host-library-http.ts` | `c56b88c60d6c9491fc7b6e6e1143ac4985ffdab5dff16afef8a54bce79629a07` |
+| `src/infrastructure/host/host-library-http.ts` | `7f909cafd35ac7fab15a90f37dd6164390fbac5b85d915618a1f46138b7d852a` |
 | `src/infrastructure/host/host-session-http.ts` | `f0e603ecf93151669c7b809cb63aea3d0a98ed2ca17ae8f2768a5444bb9cab56` |
-| `src/infrastructure/session/host-session-adapter.ts` | `57c52ff948f0e5169f302c2de0a58e4eabffa35668fb121605533bcddbb3d4fb` |
-| `src/infrastructure/session/host-session-ports.contract.ts` | `b7d49eee90da55c7a0acadd765ddb202527fc003789f855ae910425e073f928f` |
+| `src/infrastructure/session/host-session-adapter.ts` | `9bb63b8c538dca110829b2f41ae8ff87420ddddc609f3cf067db83a185b2ce2d` |
+| `src/infrastructure/session/host-session-ports.contract.ts` | `a6b2c4cc0eca3551640dd5745202a722c22971bf837d2b39a0afcd48e0eb1b5c` |
 | `src/infrastructure/session/live-session-access.resolver.ts` | `88276a0afb9522e2dbb75f98959562ace873f33662ec2dea668428f91a762b9a` |
 | `src/infrastructure/session/media/index.ts` | `ba6906bf57e04303b283786671d0ae7e0024949e512d59b3b783289e6ba19155` |
 | `src/infrastructure/session/media/livekit-media-plane-adapter.ts` | `ba41c95f3816b79818a9c312c056ec896ac75fd4633dba27954cdcdb797b381d` |
@@ -1371,14 +1371,14 @@ async function openLobbyReadyStream(
 | `src/infrastructure/session/media/memory-media-plane-adapter.ts` | `31fc7cee75c49c1e3af09b784e4a8dad3446bbe5ae5ddd6f7b2c9aee142dc5be` |
 | `src/infrastructure/session/media/memory-media-plane-bus.ts` | `1616d229067f513a12c67319aec28649e3a0afdf77779f9071b595dc024ff193` |
 | `src/infrastructure/session/media/session-media-plane.ts` | `ce8d3ec690f83745646400443d7870cd96383e341628a2d8f017e2d391fbb225` |
-| `src/infrastructure/session/session-lobby-channel.ts` | `1dec5e7d1f3eb0a53a91b28c458db30bf2f3e4200c27aeafa811139fbf1890ed` |
+| `src/infrastructure/session/session-lobby-channel.ts` | `b3b8cbf0b380e3ca766df68d0a4dccc275495115161180b2ca0c8b41a47c35eb` |
 | `src/infrastructure/session/session-recap-ai-service.ts` | `b0161e496d5de5ecc1a850a5eb908611396b03b69860fd6e9d93be2f92822960` |
 | `src/infrastructure/session/session-recap-service.ts` | `0fb9b8f81980a70e42c578ed1274ad43b6098f2cac6c6cf89cbba5bd0ab934fc` |
 | `src/infrastructure/session/session-runtime-channel.ts` | `07b49ed37f61a3e737f58e42b5fea1dd8151c66430014ce1f8fb04e1a85fa69a` |
 | `src/infrastructure/session/session-runtime-service.ts` | `49c9781729542abf9ca36d23d26ddf7206bd1247b6f5fe6b7e964f5942cf2961` |
 | `src/infrastructure/session/session-service.ts` | `674d30a083283997b85b3f5397276675403bceb5de34832009ee1d1355ffa40a` |
-| `src/lib/authenticatedUser.ts` | `5d9deef60efd85a3ecd56e9b55f67ecb2d03c2964c4f9217e6de6842d8e0b403` |
+| `src/lib/authenticatedUser.ts` | `b034ac66b532232c33ec19d5427aef11b6828905ca3e3e8991f060be3e9026d6` |
 | `src/lib/hostAuthBridge.ts` | `30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a` |
-| `src/lib/localAdmin.ts` | `103feaea892b0582022557ff81cef61105f3d9ed4eb421a20d8b0b415c2de498` |
-| `src/lib/networkTimeout.ts` | `835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851` |
+| `src/lib/localAdmin.ts` | `7ceb27ff34dffa628cb47eaa6669f3bec32cc62981f310111a3615725bb0d376` |
+| `src/lib/networkTimeout.ts` | `47fd1262837db8dfbdebf1a2459e5d1f7c165430ade5afa4b0de03658af582c4` |
 

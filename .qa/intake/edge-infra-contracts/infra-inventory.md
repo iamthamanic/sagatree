@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-inventory.json](source-contracts/infra-inventory.json) (SHA-256 `12741259448d42f2fa7bc81e1b691a4f8be9a841462a4663c07b520d1170b599`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-inventory.json](source-contracts/infra-inventory.json) (SHA-256 `ebc757072ed30dc832f77aa2ffeec1580e5c3db4929fe163bbcb6fd85e611699`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -1024,61 +1024,61 @@ async function invokeHost(body: Record<string, unknown>): Promise<FunctionRespon
 | `src/domains/character/inventory-v2/catalog.ts` | `f909f58dcb7c831a3626c74e51fa16ce9d4c8c118ac8b8b9ec3b7385cb1df31d` |
 | `src/domains/character/inventory-v2/core-catalog.ts` | `d3822381e8fdc3a4cee8dccdd2202fd9d1124d76e4cec1bac4f270b26e7c12ed` |
 | `src/domains/character/inventory-v2/index.ts` | `893781b8449f0db869c064c184d56c6d412aefae61c122645cddae2d19673ba0` |
-| `src/domains/character/inventory-v2/migrate-legacy.ts` | `25dbe6979d3f16380078fcedfbe9dc132a93bfece2474b868181a636189bf11c` |
-| `src/domains/character/inventory-v2/operations.ts` | `a2e704b8a6c9d0f734d0c2f8db4fd5fcd7f419ddf2468ad7ac210d5c4d5c62d9` |
-| `src/domains/character/inventory-v2/primitives.ts` | `7fd8dd5bddc63580ede1b8e0d6c89c146531ba7751128b664bf731c405343c86` |
-| `src/domains/character/inventory-v2/state.ts` | `c78ffa8a34d754fcfa444f587d1ae8457b1cfbbbea8d80e205f5b964b05de775` |
-| `src/domains/character/inventory-v2/types.ts` | `ac4780f56499b209346e1be76ed06c1a81bbbc78843ff5d74a9bd96f83fc8643` |
-| `src/domains/character/inventory-v2/validation.ts` | `d893ca4d051be6075a44e42b6be1bba2d72366bdac267b5625b723a39318609f` |
-| `src/domains/items/assets.ts` | `531258cd09a5e29affafb2d52d7154400cd17a19a7e4a0e1f05dffa26461ae24` |
-| `src/domains/items/definition.ts` | `e47891149c62504d1ff96fb38e6a86ca26bf2e9a52795b7cd876a66b90c78b4a` |
-| `src/domains/items/fork.ts` | `6123d90663a24b1af0dd583a601cb491799137ef4ae894b0e2bf3d5643fb8b76` |
+| `src/domains/character/inventory-v2/migrate-legacy.ts` | `d58e79c0ec7aafd7e5b505875c6740959b9ca0fbd3d58044a955de651dc61a61` |
+| `src/domains/character/inventory-v2/operations.ts` | `84627bec59e4dc936ac71fe4c39215717d4af158d3cda017a2d29cc4d609d358` |
+| `src/domains/character/inventory-v2/primitives.ts` | `5021b44baa17a7327c3bdb83de9d64ff2b0d20158ff46aaef5a08cfc68c45569` |
+| `src/domains/character/inventory-v2/state.ts` | `1f9ad7531f6926ce95ade24278656d3a7fdfbc32d4cba1fde4a01e8b1dbf6ea2` |
+| `src/domains/character/inventory-v2/types.ts` | `1fe13df9923dcd8e8fac3c4ab6e8bfbd35eb10ec352081ae5f252a2823da3c77` |
+| `src/domains/character/inventory-v2/validation.ts` | `20f96d7c715b91a84db6124873e1cea1817c3feaaf62585f656aecac77360e74` |
+| `src/domains/items/assets.ts` | `13a88adc0b73c0beab3786996b991ab9c0670d467d6385cdb97ab2c08c1d3c38` |
+| `src/domains/items/definition.ts` | `ef251eed365154c4d4cb7c6f7d72bdc121fb7760425b4cac58591740f3368944` |
+| `src/domains/items/fork.ts` | `2a8e5ca8f664f83f6b0ecf976d0f214d59888a341db41ff731f8f5604cf4d371` |
 | `src/domains/items/icon-assets.ts` | `afa9813b79e9cbd36e56c0ab1b378a07e055f531cac8091ccdb93f45230c0079` |
 | `src/domains/items/index.ts` | `f0bf801bd99a13014598868bcd1def1c03e1a2dcab208f5b7fdb0d8b9bd89b48` |
-| `src/domains/items/library-query.ts` | `513d0d38b0531a58c25f9f680f4887f6e667d0594fa2c05bb4908179b34d8f83` |
-| `src/domains/items/model3d-assets.ts` | `389043b61b7b9cea94ccc7e2c14a871b6e755d3bf428a205b3a3a278fe5fef2c` |
-| `src/domains/items/normalize.ts` | `4b26c5ec71b9c3c2d1186004b6a4e7d1d09a48e078447e7b8815d2e5bf908909` |
-| `src/domains/items/pack.ts` | `3214e2a3cbe1db088fb0eaca3d52503911f3c3601c6b01ed08bb75ef2707d975` |
-| `src/domains/items/packs/build-standard-item.ts` | `1c2654f0e7980b409762995fe9025649f9cc2bd5324df3a6d50dd4642bdfe569` |
-| `src/domains/items/packs/contemporary-basic.ts` | `c72535324491133bc1331abd5fb050d6c328f2177976b8d76f39b2438118f1c1` |
-| `src/domains/items/packs/context-packs.ts` | `768e1cf834ea03ecb0b6b3e2335da8e4356682da34bf045df5ba18a1dd9df6fb` |
-| `src/domains/items/packs/core-snapshots.ts` | `440e4fe239eedb982555c2e4aa82ea45ae3d687cb26e057516c1b36feccbc19e` |
-| `src/domains/items/packs/fantasy-basic.ts` | `0d18e6a46d5d0603b66eade2eaa92f56a0531ad0e71dc1361bfca6cb4f507c2a` |
-| `src/domains/items/packs/index.ts` | `d851952181c448d93ac61a51e2f4d02d89253447ef74ca93ff1048590bfff43d` |
-| `src/domains/items/packs/scifi-basic.ts` | `6bfed5584dfaabcbc1ce6c323ebd6d9ababc286e9a94d77106c8355667379333` |
-| `src/domains/items/payload.ts` | `cca377861fecbee054a248d6df16baa630a1cedc496fac0fd34b0dc58e575efc` |
-| `src/domains/items/taxonomy.ts` | `fa58dde95e4f9fa424244137f845ee4dbf8ae77d3e4e3ec1d114b74b1debc54a` |
-| `src/domains/items/validate.ts` | `3ad0170cce5d6cd27889eecf9752c707c19680e28ccdf493d71851bffbab4524` |
-| `src/domains/items/world-catalog.ts` | `fc39966cc6290f6c59bfdef799cd9e972e7799978299b8fe83a6a8b4b1162941` |
+| `src/domains/items/library-query.ts` | `dd323479a80955a0b302688b3f7696cedd47d9a0ad41ab5ae5cff836dadf2d60` |
+| `src/domains/items/model3d-assets.ts` | `80c1039bbc26634426aa11d686be78ed7b7454d8c3ca1aed4f04c51f63de363a` |
+| `src/domains/items/normalize.ts` | `d422f42aba4d42bfe9c998b08ce652cb7f4c9a599d37145bb9ff0bd8802d2a12` |
+| `src/domains/items/pack.ts` | `5bbfcd4281787655816e921966465b8b923395bd82f3cf177872ff162dd8ca52` |
+| `src/domains/items/packs/build-standard-item.ts` | `20c12f039359118ff7da32369d691507cd427fd2385115182d8fbc9e73624b84` |
+| `src/domains/items/packs/contemporary-basic.ts` | `27b236cbed30bc2e726c74770d344a8bea889dbd9dcd07f2e2aa1ba854dc368a` |
+| `src/domains/items/packs/context-packs.ts` | `3e937ac0a28c6e0cd4a9a31293741bdb8be227160b4225c4dc759395b8906ca3` |
+| `src/domains/items/packs/core-snapshots.ts` | `02e7b6f3c5f6489d8a9e64d9b7cd4b2f5aae7bcadf936e2f6dc1ba17ff8a29aa` |
+| `src/domains/items/packs/fantasy-basic.ts` | `bf57619bcf321f4662e7b901bc87f4ab1f220d33af5028878c0bf1f0b9d695cf` |
+| `src/domains/items/packs/index.ts` | `ce1be63b2477bf222226d7e9f27329d7e0ab85b8d397ce155575e123bfa84cbc` |
+| `src/domains/items/packs/scifi-basic.ts` | `f5a6a7d2fcffc70cca5d682c1fbfb4958da0264fa40b36b1d006abe855b464ea` |
+| `src/domains/items/payload.ts` | `a55a765efb9444af8ac56fb54b867dbd27d3852184d13201298f28236c490d61` |
+| `src/domains/items/taxonomy.ts` | `dfc8e520760a38f6ff74416f1b628105f3515ba2339da0a9044b56f69364459d` |
+| `src/domains/items/validate.ts` | `60029927eecad1632629695677f49626e07ae8a80bab3b56e3d9fbcbeeb18579` |
+| `src/domains/items/world-catalog.ts` | `db0d6a449c0ffb41c18a4248327113781359146deb1c27d352e833ca94aa1384` |
 | `src/domains/media/index.ts` | `768ded2d0f0fd1d510d660924e787817673955dbeff021d7de9e0a8d8e38bdec` |
-| `src/domains/media/optimization-contract.ts` | `ba9216dab79a9c03f66a16b77dedf1c26d4d00d6ae2693cc5a68919d1647846d` |
+| `src/domains/media/optimization-contract.ts` | `997c49f8cda2ea1661a89e4fbdbc5a106500da46fadaf7a3a9fc5900134c7ccd` |
 | `src/domains/media/optimization-policy.ts` | `6145574bc08d1eb94f54d488ebc1f8bc030c2a956e3e3fd24cb15a7c8e50c5ec` |
-| `src/domains/project/contracts/project.types.ts` | `1777f75b3bd865b09e3fba61324b7331439f5846c98dea1230e27b6f976a0ca8` |
+| `src/domains/project/contracts/project.types.ts` | `ba6eadec19abdf34c965497f792403183d427cd8193d8d5293d8b39b91612ae5` |
 | `src/domains/resource-id/index.ts` | `0ba8da924c8d9d62250e0428d4acfed48b0055205d3e256808a3f6ac4d045c0b` |
 | `src/domains/resource-id/public-resource-id.ts` | `6df4fbe9cc3c7c1705ab88c1fba8baea8e7daef9b3869b96dcef8ce1e547a9ca` |
 | `src/domains/resource-id/screen-vs-modal.ts` | `3a4b3a3cbfba83eccd410cb08fdbe73c02c9b911effb3ff7918fdf703816ecb1` |
 | `src/domains/resource-id/session-routing.ts` | `8a471af964126b08e663785fec8c260762629d673747ec8b72cec0369b963400` |
 | `src/domains/rules/sagatree/character-creation/index.ts` | `9e032fe110c4665ec6744e0750d07c57a5d6b083fb292b2bd6441e21db7cdb07` |
-| `src/domains/rules/sagatree/items/carry-capacity.ts` | `1ea1910d07cbfcbbe5373a78a9256e79a746273f16a3c2e2e82693f1a17037df` |
+| `src/domains/rules/sagatree/items/carry-capacity.ts` | `191e5a1a25f0b210dd95930f1e1f3455da8f1d21e1aca7dc8e16b6a6129251c8` |
 | `src/domains/rules/sagatree/items/index.ts` | `ab296a0e5462aecb9c94a1e5b530a1afac2b1556d793c09eab631cad6bd62822` |
-| `src/domains/rules/sagatree/items/resource-affordability.ts` | `ed42c8faa66a711bd8c7be240df38530bb2d02fff435d1f3aa200538f9388a09` |
-| `src/domains/rules/sagatree/items/tool-rules.ts` | `3026c3797388370309b0ea33d1366969abc05b803654cf99c68c4eff42832f18` |
-| `src/domains/rules/sagatree/items/types.ts` | `af76e6a5ebcec4a5e8acc3d3fd6461abfe083065c025080ef0b2ca851fdc6ff2` |
-| `src/domains/rules/sagatree/items/validators.ts` | `257732bceab776a0afc34f01340eb7e47a94b5c9d984ebf3fff8e0bb7c8ff543` |
+| `src/domains/rules/sagatree/items/resource-affordability.ts` | `e8fab76b8eb1441dcee849c53249158196e3aab0690185648234d610aa9fb846` |
+| `src/domains/rules/sagatree/items/tool-rules.ts` | `c69170ac5b37d1e71a6c90eda6c993f14d7962d0db5f0adfe8c44568a637cf82` |
+| `src/domains/rules/sagatree/items/types.ts` | `9699b169feaf183597651838ea9f8b062e205d36862e50fa824fb95f54dc233e` |
+| `src/domains/rules/sagatree/items/validators.ts` | `2d523a6d4cc37de3e34d19492c687fd7056b4acb3f9aac7a026fe786034c8e5e` |
 | `src/domains/rules/sagatree/skill-progression/index.ts` | `7b4f5f109d49785497b4639a154b6e3856d58e52421befa7fa0ba0a278967cb7` |
 | `src/domains/rules/sagatree/species-trait-options/index.ts` | `b21687494d66c5e5b3e1b791eadf3aa1ecabb9094695768a7961bba8b36730c4` |
-| `src/domains/session/contracts/session-lifecycle.ts` | `c70eb365aa31906dc8cd8f7a3cc2c5ed1141b5bab8489a1d56ced8a41c1ce5be` |
-| `src/infrastructure/character/character.persistence.ts` | `5ed5f363555b9c4a3922507e01a227f74aee706764065641eb27ac9510024bd5` |
-| `src/infrastructure/host/host-library-http.ts` | `c56b88c60d6c9491fc7b6e6e1143ac4985ffdab5dff16afef8a54bce79629a07` |
+| `src/domains/session/contracts/session-lifecycle.ts` | `1351a7e593a24cfed6467313def0c6b2fc293adae6f8032fbb7289dce36a8260` |
+| `src/infrastructure/character/character.persistence.ts` | `0952bd632d90e054913cb0b41183df82274c46f6920f28736193e0e486bea2d1` |
+| `src/infrastructure/host/host-library-http.ts` | `7f909cafd35ac7fab15a90f37dd6164390fbac5b85d915618a1f46138b7d852a` |
 | `src/infrastructure/host/host-project-http.ts` | `287a426fb8645638e263a7b2d612d071eec4bf054cc778193b82f6b8252a0f92` |
 | `src/infrastructure/host/host-session-http.ts` | `f0e603ecf93151669c7b809cb63aea3d0a98ed2ca17ae8f2768a5444bb9cab56` |
-| `src/infrastructure/inventory/host-inventory-adapter.ts` | `705ee213e4ffa49ea7b0d89583a01b5ae78bcd6a990464dd5104d88abc83b6b2` |
-| `src/infrastructure/inventory/host-inventory-ports.contract.ts` | `cca3f64ca3e2aead63b30f1c4b62aeae27cdf9dbd41f6f7791294f8d722cb915` |
-| `src/infrastructure/inventory/inventory-persistence.ts` | `f62a29cc17219f2c455155f3f0a0e3fe14ca6838ac3d43df7fa19f3578773357` |
+| `src/infrastructure/inventory/host-inventory-adapter.ts` | `06530d155a9514388bc5dd9ba7272bcaee338de038799e29cdd52c745cddff05` |
+| `src/infrastructure/inventory/host-inventory-ports.contract.ts` | `8debf5b89bfcf5c232ce62d1432877c7c749276dc9d40b8ed361d6d68f9f8e89` |
+| `src/infrastructure/inventory/inventory-persistence.ts` | `445a8dbb746d03fbe520c6281e0e3d0b1e55543f3e1948c7fd89518fdb4e04ee` |
 | `src/infrastructure/inventory/item-catalog-service.ts` | `d4dd71a5bad8a8599c7f239d6f84bce2d52f795b8ca30073f6d69a69d1bef9a5` |
 | `src/infrastructure/inventory/item-catalog.persistence.ts` | `a68903ba909af8030e81d28555a65798800c9a32a790a4281e96f52b1550c566` |
-| `src/infrastructure/inventory/item-model3d-service.ts` | `78ea9163f36e15ce80fa6fb6da215f097c88b46d9bcae3bc78e5e3652d71cfe7` |
-| `src/infrastructure/inventory/item-thumbnail-service.ts` | `5725377b8fcb3ff8b95ecaab949c561aab4837fe7d5b966c305a9c6ca9eb6a2f` |
+| `src/infrastructure/inventory/item-model3d-service.ts` | `a742072a08bb74e82290cebb2907b0742760414fb582ddfdcb8c1a585258224c` |
+| `src/infrastructure/inventory/item-thumbnail-service.ts` | `11f2e1739e43b26a2451e627c0c67101669809bc30cd0c93152c595e6054719d` |
 | `src/infrastructure/media/optimizer/engines/audio/index.ts` | `7585190a705085692bff0896e08b4d78f791895b47e24d57deeaaa10bb669d4e` |
 | `src/infrastructure/media/optimizer/engines/image/image.worker.ts` | `d34793b4de682556d9306194cfbcd05fdafdf215da25393f955d2669c7499276` |
 | `src/infrastructure/media/optimizer/engines/image/index.ts` | `4944001b7e0f7784d487da2e60d06d845aa564e9ddd7516ff50633af1591a322` |
@@ -1094,9 +1094,9 @@ async function invokeHost(body: Record<string, unknown>): Promise<FunctionRespon
 | `src/infrastructure/media/optimizer/media-optimizer.ts` | `7d58424f12b7855ccb3c0153270628850e03afc15c285b1fc2b47218918255d9` |
 | `src/infrastructure/project/project-member-service.ts` | `40fc648e091c11dcdcf4535747d9db0cd6dc5da9e475663c3ff60dff9a53e594` |
 | `src/infrastructure/project/project-service.ts` | `29846df2ae25287b68cba443a9c85f2f9952fa9cc1afd3faf762a78eb57a6fa6` |
-| `src/lib/authenticatedUser.ts` | `5d9deef60efd85a3ecd56e9b55f67ecb2d03c2964c4f9217e6de6842d8e0b403` |
+| `src/lib/asset-urls.ts` | `fe92683d4c1418a3bfa9d6fe11d1be8c68ee11eea01e9b3b5f7119f7f86006af` |
+| `src/lib/authenticatedUser.ts` | `b034ac66b532232c33ec19d5427aef11b6828905ca3e3e8991f060be3e9026d6` |
 | `src/lib/hostAuthBridge.ts` | `30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a` |
-| `src/lib/localAdmin.ts` | `103feaea892b0582022557ff81cef61105f3d9ed4eb421a20d8b0b415c2de498` |
-| `src/lib/networkTimeout.ts` | `835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851` |
-| `src/lib/supabase.ts` | `839e17a14a542d976711340a32179c445c0ac170df628b6adbd21e1e289e195d` |
+| `src/lib/localAdmin.ts` | `7ceb27ff34dffa628cb47eaa6669f3bec32cc62981f310111a3615725bb0d376` |
+| `src/lib/networkTimeout.ts` | `47fd1262837db8dfbdebf1a2459e5d1f7c165430ade5afa4b0de03658af582c4` |
 

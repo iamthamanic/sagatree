@@ -6,7 +6,7 @@
   "testedCommit": "00b07b787e50c86e67652ed20cc7dccc2de99fea",
   "githubClosed": true,
   "mergeRef": "PR #886 \u2192 main; human APPROVED on #787",
-  "note": "GATE-04 evidence refreshed after CUT-21 archive path move (deterministic report rewrite).",
+  "note": "GATE-04 evidence refreshed after CUT-21 archive path move (deterministic report rewrite). #1328: sha256 refreshed after history banners on ADRs/owner protocols, renamed shutdown evidence path and regenerated edge/infra inventory (comment-only source changes; AST snapshots unchanged).",
   "checks": [
     {
       "command": "PoC report PASS",
@@ -18,13 +18,13 @@
       "command": "ADR-ST-08",
       "result": "PASS",
       "evidenceFile": "docs/architecture/ADR-ST-08-gate-04-sqlite-single-writer.md",
-      "sha256": "be9bdabee13643809655bb9ec6d41a94bd3d55312c86d5d5f9132d7cdd5b4eb3"
+      "sha256": "a52e70c5a5a96b06077e1c24dbf8449f5ee1ffb5c64a9957aa23a6483b4d17ae"
     },
     {
       "command": "architecture-approvals GATE-04",
       "result": "PASS",
       "evidenceFile": ".qa/evidence/stack-migration-prep/architecture-approvals.json",
-      "sha256": "bb84614c104218aa6e384630a9458cc65b927d6ee93df814f8a2520610edcdb6"
+      "sha256": "bb4fe93078bb4826d605fb4d13ff409f28644051993b22d581c9f96b9352d1d9"
     }
   ]
 }
