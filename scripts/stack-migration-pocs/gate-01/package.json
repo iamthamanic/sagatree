@@ -8,10 +8,11 @@
     "generate": "zen generate --schema zenstack/schema.zmodel",
     "typecheck": "tsc --noEmit",
     "run": "node --import tsx run.ts",
-    "check": "npm run generate && npm run typecheck && npm run run && npm run render && npm run verify && npm run test:evidence",
+    "check": "npm run generate && npm run proxy-smoke && npm run typecheck && npm run run && npm run render && npm run verify && npm run test:evidence",
     "render": "node render-report.mjs",
     "verify": "node verify.mjs",
-    "test:evidence": "node --test verify.test.mjs"
+    "test:evidence": "node --test verify.test.mjs",
+    "proxy-smoke": "node proxy-smoke.mjs"
   },
   "dependencies": {
     "@zenstackhq/orm": "3.9.8",

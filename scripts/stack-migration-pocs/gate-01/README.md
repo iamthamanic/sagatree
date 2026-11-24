@@ -43,7 +43,7 @@ Der CI-Schritt `npm audit --audit-level=high` muss grün bleiben. Transitive Pak
 
 - `effect` 3.22.5 (GHSA-7589-6fvf-x4pw, ReDoS in `Schema.TemplateLiteral`, betroffen <= 3.22.0). `@prisma/config` 6.19.3 pinnt `effect` exakt auf 3.21.0, und es gibt keine neuere Prisma-6-Version; ZenStack 3.x verlangt `prisma ^6.19.0`, ein ZenStack-Upgrade hilft also nicht.
 - `hono` 4.13.21 (GHSA-4m76-xfj5-7975, GHSA-h7mg-cq63-vhpq, GHSA-3gg2-335m-rxc6, GHSA-46wx-v44x-9hh2, GHSA-4h7h-rv7c-7m2v).
-- `@hono/node-server` 2.1.11 (GHSA-rmxm-3fg6-px4f, GHSA-jpvv-r467-5p4w). Die 1.x-Linie hat für GHSA-rmxm-3fg6-px4f keinen Fix; `@zenstackhq/cli` nutzt daraus nur `serve()` für `zen proxy`.
+- `@hono/node-server` 2.1.11 (GHSA-rmxm-3fg6-px4f, GHSA-jpvv-r467-5p4w). Die 1.x-Linie hat für GHSA-rmxm-3fg6-px4f keinen Fix; `@zenstackhq/cli` nutzt daraus nur `serve()` für `zen proxy`. Weil das eine Major-Version über der von ZenStack deklarierten Range `^1.13.8` liegt, startet `npm run check` über `proxy-smoke.mjs` einen echten `zen proxy` und verlangt eine JSON-Antwort von `/api/schema`.
 
 Die Overrides entfallen, sobald ZenStack/Prisma selbst gepatchte Versionen ziehen.
 
