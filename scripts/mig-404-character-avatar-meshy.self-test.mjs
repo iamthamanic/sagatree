@@ -27,7 +27,7 @@ const appUrl = pathToFileURL(
   join(root, 'server/src/application/character-avatar-meshy/index.ts'),
 ).href;
 const allowUrl = pathToFileURL(
-  join(root, 'archive/supabase-legacy/supabase/functions/_shared/edge-dispatcher-allowlist.ts'),
+  join(root, 'server/src/http/edge-main-dispatcher.ts'),
 ).href;
 
 const {

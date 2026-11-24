@@ -38,7 +38,7 @@ const [dispatcher, app, allow] = await Promise.all([
   import(pathToFileURL(join(root, 'server/src/application/edge-main/index.ts')).href),
   import(
     pathToFileURL(
-      join(root, 'archive/supabase-legacy/supabase/functions/_shared/edge-dispatcher-allowlist.ts'),
+      join(root, 'server/src/http/edge-main-dispatcher.ts'),
     ).href
   ),
 ]);
@@ -67,9 +67,21 @@ assert(EDGE_MAIN_WORKER_MEMORY_LIMIT_MB === 512, '512MiB');
 assert(EDGE_MAIN_WORKER_TIMEOUT_MS === 300_000, '300s timeout');
 assert(
   JSON.stringify([...HOST_EDGE_DISPATCHER_ALLOWLIST]) ===
-    JSON.stringify([...EDGE_DISPATCHER_ALLOWLIST]),
-  'host allowlist mirrors Edge allowlist',
+    JSON.stringify([
+      'ai-provider-credentials',
+      'character-avatar-meshy',
+      'character-lore',
+      'item-model3d',
+      'item-thumbnail',
+      'look-reference-analysis',
+      'ollama-settings',
+      'session-media-token',
+      'session-recap',
+    ]),
+  'host allowlist pinned (#668 deny-by-default)',
 );
+assert(EDGE_DISPATCHER_ALLOWLIST === HOST_EDGE_DISPATCHER_ALLOWLIST, 'canonical alias');
+assert(isEdgeDispatcherAllowed === isHostEdgeDispatcherAllowed, 'canonical predicate alias');
 
 const createApp = readFileSync(join(root, 'server/src/api/create-app.ts'), 'utf8');
 assert(!/functions\/v1\/main|edge-main-dispatcher/i.test(createApp), 'no create-app cutover mount');
