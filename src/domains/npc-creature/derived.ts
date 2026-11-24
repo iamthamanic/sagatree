@@ -2,7 +2,7 @@
  * Derived NPC/creature presentation helpers using the power framework (#196/#198).
  * Location: src/domains/npc-creature/derived.ts
  *
- * Domain-pure: no React, no Supabase, no UI imports.
+ * Domain-pure: no React, no backend clients, no UI imports.
  */
 
 import {

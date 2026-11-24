@@ -4,7 +4,7 @@
  *
  * Classifies humanoid artifacts by normalized proportions against
  * Standard / Compact / Heavy references. Never invents a family under threshold.
- * Species/lore is orthogonal and unused here. No React / Three / Supabase.
+ * Species/lore is orthogonal and unused here. No React / Three / backend clients.
  */
 
 import type { AvatarV2Anatomy, AvatarV2BodyFamily } from './composition-contract-v2';

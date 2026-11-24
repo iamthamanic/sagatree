@@ -3,8 +3,8 @@
  * Location: src/infrastructure/session/host-session-ports.contract.ts
  *
  * Transport-free DTO mirror of the 12 infra-session RPCs + 2 Edge shapes composed
- * by host `createSessionPorts` (+ media-token / recap Edge quarantine). Supabase
- * facades remain live until cutover; this documents the host shape for parity
+ * by host `createSessionPorts` (+ media-token / recap Edge quarantine). Legacy
+ * facades were retired with the cutover; this documents the host shape for parity
  * checks without importing the Node host package.
  */
 

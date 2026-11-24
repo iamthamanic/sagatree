@@ -2,7 +2,7 @@
  * host-user-profile-adapter — Binds infra HostUserProfilePorts to an injected host impl (MIG-312).
  * Location: src/infrastructure/user-profile/host-user-profile-adapter.ts
  *
- * Production UI still calls Supabase user-profile facades. This adapter is the
+ * The legacy user-profile facades were retired with CUT-20. This adapter is the
  * typed dual-path seam: tests and future host transport inject HostUserProfilePorts.
  * No server/ imports; no client role elevation.
  */

@@ -6,7 +6,7 @@
   "testedCommit": "12583684993bcc38299998295662c786f09b2e53",
   "githubClosed": false,
   "mergeRef": "PR #906 PoC remediaiton on main; human APPROVED Variant A on #785; ADR on PR #908",
-  "note": "Gate PoC executed+PASS and human architecture APPROVED. Product auth implementation remains MIG-014/015 — architecture freigabe alone does not accept those tickets.",
+  "note": "Gate PoC executed+PASS and human architecture APPROVED. Product auth implementation remains MIG-014/015 — architecture freigabe alone does not accept those tickets. #1328: sha256 refreshed after history banners on ADRs/owner protocols, renamed shutdown evidence path and regenerated edge/infra inventory (comment-only source changes; AST snapshots unchanged).",
   "checks": [
     {
       "command": "PoC report PASS",
@@ -18,13 +18,13 @@
       "command": "ADR-ST-06",
       "result": "PASS",
       "evidenceFile": "docs/architecture/ADR-ST-06-gate-02-auth-handshake.md",
-      "sha256": "1f939bdf5a55cd0f38807b5fef74e993aa8e150c790c21ea9d863b12760e3634"
+      "sha256": "e65392268bc3e93dfe08ef94944402ad0713d3df715c37314a79150b486bab99"
     },
     {
       "command": "architecture-approvals GATE-02",
       "result": "PASS",
       "evidenceFile": ".qa/evidence/stack-migration-prep/architecture-approvals.json",
-      "sha256": "bb84614c104218aa6e384630a9458cc65b927d6ee93df814f8a2520610edcdb6"
+      "sha256": "bb4fe93078bb4826d605fb4d13ff409f28644051993b22d581c9f96b9352d1d9"
     }
   ]
 }

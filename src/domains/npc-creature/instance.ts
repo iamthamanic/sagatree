@@ -2,7 +2,7 @@
  * NpcCreatureInstance — adventure/session occurrence of a library definition (#201).
  * Location: src/domains/npc-creature/instance.ts
  *
- * Domain-pure: no React, no Supabase, no UI imports.
+ * Domain-pure: no React, no backend clients, no UI imports.
  * Instance owns runtime HP/conditions/temp controller; definition updates must not
  * silently rewrite the frozen snapshot.
  */

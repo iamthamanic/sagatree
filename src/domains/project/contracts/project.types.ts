@@ -4,7 +4,7 @@
  */
 
 // ============================================
-// DTOs (Data Transfer Objects - from Supabase)
+// DTOs (Data Transfer Objects - persisted rows)
 // ============================================
 
 export interface ProjectDto {

@@ -5,11 +5,11 @@
   "sourceFiles": [
     {
       "path": "src/infrastructure/project/host-project-adapter.ts",
-      "sha256": "f8137115741c452c865883275c6d95529faf29ca28620c5adc92eedc30002e90"
+      "sha256": "d595a50fb380c7c6eb3ccaa3a30e8681ef964c58b869edb63a6dbedbee3eefd8"
     },
     {
       "path": "src/infrastructure/project/host-project-ports.contract.ts",
-      "sha256": "96d05101ba2cbe8364ae30bbcde48235a1058a65a43f733d03433d7f26a8236f"
+      "sha256": "7ab253171577d0d7bc8b0668bde65434c85d36d36c01234c4e86978193be427f"
     },
     {
       "path": "src/infrastructure/project/project-member-service.ts",
@@ -31,11 +31,11 @@
   "supportingSourceFiles": [
     {
       "path": "src/domains/project/contracts/project.types.ts",
-      "sha256": "1777f75b3bd865b09e3fba61324b7331439f5846c98dea1230e27b6f976a0ca8"
+      "sha256": "ba6eadec19abdf34c965497f792403183d427cd8193d8d5293d8b39b91612ae5"
     },
     {
       "path": "src/domains/project/contracts/saga-overview.ts",
-      "sha256": "d4ddafbea6f3d8a8678c44d6fd9096ebe1f6985e4c335f5050dac2915918dc94"
+      "sha256": "34fb96c09db3a492e615548e4e681e782056df1f725100ed0cc8e40d6805df72"
     },
     {
       "path": "src/domains/saga/permissions/catalog.ts",
@@ -51,11 +51,11 @@
     },
     {
       "path": "src/domains/session/contracts/session-lifecycle.ts",
-      "sha256": "c70eb365aa31906dc8cd8f7a3cc2c5ed1141b5bab8489a1d56ced8a41c1ce5be"
+      "sha256": "1351a7e593a24cfed6467313def0c6b2fc293adae6f8032fbb7289dce36a8260"
     },
     {
       "path": "src/infrastructure/host/host-library-http.ts",
-      "sha256": "c56b88c60d6c9491fc7b6e6e1143ac4985ffdab5dff16afef8a54bce79629a07"
+      "sha256": "7f909cafd35ac7fab15a90f37dd6164390fbac5b85d915618a1f46138b7d852a"
     },
     {
       "path": "src/infrastructure/host/host-project-http.ts",
@@ -67,7 +67,7 @@
     },
     {
       "path": "src/lib/authenticatedUser.ts",
-      "sha256": "5d9deef60efd85a3ecd56e9b55f67ecb2d03c2964c4f9217e6de6842d8e0b403"
+      "sha256": "b034ac66b532232c33ec19d5427aef11b6828905ca3e3e8991f060be3e9026d6"
     },
     {
       "path": "src/lib/hostAuthBridge.ts",
@@ -75,11 +75,11 @@
     },
     {
       "path": "src/lib/localAdmin.ts",
-      "sha256": "103feaea892b0582022557ff81cef61105f3d9ed4eb421a20d8b0b415c2de498"
+      "sha256": "7ceb27ff34dffa628cb47eaa6669f3bec32cc62981f310111a3615725bb0d376"
     },
     {
       "path": "src/lib/networkTimeout.ts",
-      "sha256": "835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851"
+      "sha256": "47fd1262837db8dfbdebf1a2459e5d1f7c165430ade5afa4b0de03658af582c4"
     }
   ],
   "importedTypeDeclarations": [

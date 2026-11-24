@@ -4,7 +4,7 @@
  *
  * Future AI/neural rendering capabilities for `rendered` and `realtime`.
  * Reuses LookProfile + LookReference — no parallel style object.
- * Pure domain: no React, Supabase, or concrete neural engines.
+ * Pure domain: no React, backend clients, or concrete neural engines.
  */
 
 import type {

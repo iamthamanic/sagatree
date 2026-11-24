@@ -4,7 +4,7 @@
  *
  * Transport-free DTO mirror of `server/src/modules/world` public ports for all
  * 17 world/atlas/place RPCs + profile CRUD + map-pin/atlas asset publish.
- * Frontend Supabase adapters remain live until cutover; this file documents the
+ * Legacy frontend adapters were retired with the cutover; this file documents the
  * host shape for parity checks without importing the Node host package.
  */
 
@@ -126,7 +126,7 @@ export type HostWorldAssetPublishInput = {
 export type HostWorldAssetPublishResult = {
   readonly assetId: string;
   readonly contentType: string;
-  /** Opaque storage reference (successor of Supabase bucket path). */
+  /** Opaque storage reference (successor of the legacy bucket path). */
   readonly storageRef: string;
 };
 

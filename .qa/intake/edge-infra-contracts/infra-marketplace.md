@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-marketplace.json](source-contracts/infra-marketplace.json) (SHA-256 `393c10aeeb4c5efe101f587e5f0b0c8d668997ad7f7132472203abc25730f5fa`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-marketplace.json](source-contracts/infra-marketplace.json) (SHA-256 `df7624e5fc94aa15ab1306fde0ef2acb910bd868280ac7dc6934a3cc40d1ec7c`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -327,15 +327,15 @@ All backend operations are included in the public declarations above.
 
 | Path | SHA-256 |
 |---|---|
-| `src/domains/marketplace/client-trust.ts` | `35e6c76ef6fb9f0db4d4bb013e6fa14b9a4db37f1bf05af722e0368d969d3a34` |
+| `src/domains/marketplace/client-trust.ts` | `569345649cf62550f0c5313fe1e210b19380252ec36a31c0d6bc1785294dd2ae` |
 | `src/domains/marketplace/contracts/marketplace.types.ts` | `000aecc695577333ad6fce27422ad02bc15f26ffca88507ebfee1fafb04b9467` |
 | `src/domains/rules/ruleset-catalog/index.ts` | `c2f52133fdeaa82ca586670b79ce0144063cc852a2a5ca8b5b6b44369fc0e21e` |
 | `src/domains/rules/ruleset-catalog/types.ts` | `1b76d37fc3c90d29d3f719644e6915a66462d7b55c4c6cec07a0caadfdf1512d` |
 | `src/domains/user-profile/contracts/user-profile.types.ts` | `2f3f3472e9a3448099144be0993fd83bbbc2270050ce76dceadd8821501c26b7` |
-| `src/domains/user-profile/display-name.ts` | `87cfc4858f198e56ea2857c505162f112efd5edacde4dbb1f7fcd995b4535516` |
+| `src/domains/user-profile/display-name.ts` | `8d538ee042cf6909c3abfa4ea0d7435fe9bc80fe2af29dd78a5b64a53275b269` |
 | `src/domains/user-profile/index.ts` | `d094d245ff9356298ef20c48635ca3e7adcc0e1ccf180554586949e0b496c496` |
-| `src/infrastructure/host/host-catalog-http.ts` | `9049245360683a74e7e2602d35126d815d64344d384c6684e4c2c3d41aa626d3` |
-| `src/infrastructure/host/host-library-http.ts` | `c56b88c60d6c9491fc7b6e6e1143ac4985ffdab5dff16afef8a54bce79629a07` |
+| `src/infrastructure/host/host-catalog-http.ts` | `72c81f6f14dc152ec5e793f91f0d7702e2ef145526fb5cf2521e2e60e4b05acc` |
+| `src/infrastructure/host/host-library-http.ts` | `7f909cafd35ac7fab15a90f37dd6164390fbac5b85d915618a1f46138b7d852a` |
 | `src/infrastructure/marketplace/host-marketplace-adapter.ts` | `26df96d9df6c7ae0cebd69e90e85a77075fbbc1138c86b505f8dee97e7e072e0` |
 | `src/infrastructure/marketplace/host-marketplace-ports.contract.ts` | `f77e7aee8352e2155253cddead1f51d9de10170ca250db27405f7f1f336fcf1b` |
 | `src/infrastructure/marketplace/index.ts` | `15e40b95148db8d15546f5c1815b51f7846c343e5fc334406548c64858162542` |

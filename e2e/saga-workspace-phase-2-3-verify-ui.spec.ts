@@ -7,7 +7,7 @@
 import { test, expect } from '@playwright/test';
 import fs from 'node:fs';
 import path from 'node:path';
-import { ensureLoggedIn, isInertSupabaseEnv } from './helpers/auth';
+import { ensureLoggedIn, hasLiveHostSeed } from './helpers/auth';
 
 const SAGA = process.env.SAGA_PUBLIC_ID ?? 'SA-E979J';
 const EVIDENCE = '.qa/evidence/saga-workspace-phase-2-3';
@@ -18,8 +18,8 @@ test.beforeAll(() => {
 
 test.beforeEach(() => {
   test.skip(
-    isInertSupabaseEnv(),
-    'Requires live Supabase + Dornhain seed (set VITE_SUPABASE_* repo secrets)',
+    !hasLiveHostSeed(),
+    'Requires a live host with Dornhain seed (set SAGATREE_E2E_LIVE_SEED=1)',
   );
 });
 

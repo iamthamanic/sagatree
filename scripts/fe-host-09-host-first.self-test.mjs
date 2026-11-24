@@ -81,14 +81,11 @@ assert(
 );
 assert(!/VITE_SAGATREE_HOST_LIBRARY\s*===\s*['"]0['"]/.test(hostLibSrc), 'no LIBRARY=0 opt-out');
 
-const supabaseSrc = readFileSync(join(root, 'src/lib/supabase.ts'), 'utf8');
-assert(
-  !/^\s*import\s+.*@supabase\/supabase-js/m.test(supabaseSrc),
-  'CUT-21: supabase.ts SDK-free (no createClient import)',
-);
-assert(!/\bcreateClient\s*\(/.test(supabaseSrc), 'CUT-21: no Supabase client construction');
-assert(/rewriteBrowserStorageUrl/.test(supabaseSrc), 'storage URL helper retained');
-assert(!/isHostLibraryExplicitlyDisabled/.test(supabaseSrc), 'supabase stub has no opt-out');
+const assetUrlsSrc = readFileSync(join(root, 'src/lib/asset-urls.ts'), 'utf8');
+assert(!/^\s*import\s/m.test(assetUrlsSrc), 'asset-urls helper has no SDK/client imports');
+assert(!/\bcreateClient\s*\(/.test(assetUrlsSrc), 'CUT-21: no legacy client construction');
+assert(/rewriteBrowserStorageUrl/.test(assetUrlsSrc), 'storage URL helper retained');
+assert(!/isHostLibraryExplicitlyDisabled/.test(assetUrlsSrc), 'asset-urls helper has no opt-out');
 
 const authUserSrc = readFileSync(join(root, 'src/lib/authenticatedUser.ts'), 'utf8');
 assert(/probeHostActor/.test(authUserSrc), 'authenticatedUser host actor');
@@ -98,7 +95,7 @@ assert(/assertHostProductSurfaceAvailable/.test(denySrc), 'deny helper');
 assert(/Host-Modus noch nicht verfügbar/.test(denySrc), 'German DENY copy');
 
 const residualDoc = readFileSync(
-  join(root, 'docs/architecture/fe-host-09-residual-supabase.md'),
+  join(root, 'docs/architecture/fe-host-09-residual-legacy-paths.md'),
   'utf8',
 );
 assert(/Residual allowlist/.test(residualDoc), 'residual allowlist doc');

@@ -3,7 +3,7 @@
  * Same definition may appear in multiple packs; no duplicated ItemDefinition.
  * Location: src/domains/items/packs/context-packs.ts
  *
- * Domain-pure: no React, no Supabase, no UI imports.
+ * Domain-pure: no React, no backend clients, no UI imports.
  */
 
 import type { ItemPack } from '../pack';

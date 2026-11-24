@@ -3,7 +3,7 @@
  * Location: server/src/migration/bundles/index.ts
  *
  * Isolated-contract surface under server/src/migration/bundles. Does not cut over
- * production or shut down Supabase.
+ * production or shut down the legacy stack.
  */
 export {
   BUNDLE_FORMAT,

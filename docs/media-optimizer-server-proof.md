@@ -8,8 +8,8 @@ Prove whether SagaTree’s Deno Edge runtime can run WASM decode/encode (`@jsqua
 
 ## Method
 
-- Isolated Deno module: `supabase/functions/_shared/media-server-optimize-proof.ts`
-- Deno proof suite: `supabase/functions/_shared/media-server-optimize-proof.proof.ts` (synthetic PNG/JPEG/WebP via same WASM codecs; not `*_test.ts` so blanket Edge `deno test` skips WASM permissions)
+- Isolated Deno module (former Edge tree, retired with CUT-21): `_shared/media-server-optimize-proof.ts`
+- Deno proof suite (same tree): `_shared/media-server-optimize-proof.proof.ts` (synthetic PNG/JPEG/WebP via same WASM codecs; not `*_test.ts` so blanket Edge `deno test` skips WASM permissions)
 - Node runner: `scripts/media-optimizer-server-proof-check.mjs` (`deno test --node-modules-dir=auto …`)
 - Decision record: `docs/media-optimizer-server-decision.md`
 

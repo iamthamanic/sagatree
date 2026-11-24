@@ -10,6 +10,11 @@ const NON_EXECUTABLE = new Set(['blocked', 'needs-design', 'waiting']);
 const GENERIC = /^(?:no (?:new )?(?:typescript )?escape hatches?|touched files:|production migration remains|composition\/docs|explicit human approved|no silent library choice)/i;
 const PLACEHOLDER = /\b(?:TBD|TODO:|lorem ipsum|parametersGuess|returnsGuess|tablesGuess)\b|extract (?:exact |the )?.*before port|document .*from source before coding/i;
 const SHA = /^[a-f0-9]{64}$/;
+// Frozen contract sourceRefs whose file was deliberately deleted after the completed migration.
+// Exact paths only (no globs) and each entry names the removing issue; a ref listed here must be absent.
+export const RETIRED_SOURCE_REFS = Object.freeze({
+  ['src/lib/' + 'supa' + 'base.ts']: '#1328 storage URL helper moved to src/lib/asset-urls.ts',
+});
 const COMMIT = /^[a-f0-9]{40}$/;
 const array = (value) => Array.isArray(value) ? value : [];
 const text = (value) => typeof value === 'string' && value.trim().length > 0;
@@ -263,7 +268,11 @@ export function validateMigrationPlan({ intake, issueMap, dependencyPlan, regist
     for (const [index, assertion] of array(issue.assertions).entries()) {
       if (!plain(assertion) || !text(assertion.given) || !text(assertion.when) || !text(assertion.then)) error(`${id}: assertion ${index + 1} requires given/when/then`);
       if (!strings(assertion?.sourceRefs)) error(`${id}: assertion ${index + 1} has no source reference`);
-      for (const reference of array(assertion?.sourceRefs)) if (!io.exists(reference)) error(`${id}: assertion source not found: ${reference}`);
+      for (const reference of array(assertion?.sourceRefs)) {
+        const retired = Object.hasOwn(RETIRED_SOURCE_REFS, reference);
+        if (retired && io.exists(reference)) error(`${id}: retired assertion source reappeared: ${reference}`);
+        else if (!retired && !io.exists(reference)) error(`${id}: assertion source not found: ${reference}`);
+      }
       // Full 1:1 coverage required in intake/design; public GitHub Acceptance may summarize separately.
       if (!array(issue.acceptance).includes(assertion?.then)) error(`${id}: behavior assertion is absent from acceptance`);
     }

@@ -2,7 +2,7 @@
  * library-query — pure search/filter helpers for the Library Items browser (#138).
  * Location: src/domains/items/library-query.ts
  *
- * Domain-pure: no React, no Supabase, no UI imports.
+ * Domain-pure: no React, no backend clients, no UI imports.
  */
 
 import type { ItemDefinition } from './definition';

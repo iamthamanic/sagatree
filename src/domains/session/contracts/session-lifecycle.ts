@@ -1,7 +1,7 @@
 /**
  * session-lifecycle — Pure status-transition and join-payload rules for play sessions.
  * Location: src/domains/session/contracts/session-lifecycle.ts
- * Hides: which status edges are legal; never touches Supabase/React.
+ * Hides: which status edges are legal; never touches backend clients/React.
  */
 
 export type PlaySessionStatus = 'waiting' | 'active' | 'paused' | 'completed';

@@ -22,7 +22,7 @@ import { pathForDownload } from '../../../domains/desktop-release';
 import { SagaTreeLogo } from '../SagaTreeLogo';
 import { isHostLibraryEnabled } from '../../../infrastructure/host/host-library-http';
 
-/** Map Kong/GoTrue / Better Auth responses to a clear DE message. */
+/** Map gateway / Better Auth responses to a clear DE message. */
 function authErrorMessage(err: unknown, fallback: string): string {
   if (err && typeof err === 'object') {
     const status = 'status' in err ? Number((err as { status?: number }).status) : NaN;

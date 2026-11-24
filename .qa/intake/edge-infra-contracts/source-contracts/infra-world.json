@@ -21,15 +21,15 @@
     },
     {
       "path": "src/infrastructure/world/host-world-adapter.ts",
-      "sha256": "8fbaad8d6d4ec9cc42070444441fae94fb20af020cdada2125a705877ea4e1f1"
+      "sha256": "0b7fa8f6400dfb74e1bc60fd7409136560758a750045fdc95d5a57896f5725da"
     },
     {
       "path": "src/infrastructure/world/host-world-ports.contract.ts",
-      "sha256": "9d11c1085646775f6c6eb5bdc29baa7ed40af0245354589bd767d4f80da1d582"
+      "sha256": "1828628b574107b3e89784d7e9507dd6632bddf06d3814b60740e24106af6b39"
     },
     {
       "path": "src/infrastructure/world/host-world-read.contract.ts",
-      "sha256": "271a052d5f621ddf7f3344eaa55e3a58579c5cf629fe76a4827393d0d1c7a05c"
+      "sha256": "a777803278308f2fefab6f19f92f9387fac8cf76f662d84ae593dfa333b2dbf3"
     },
     {
       "path": "src/infrastructure/world/world-atlas-service.ts",
@@ -45,57 +45,57 @@
     },
     {
       "path": "src/infrastructure/world/world-profile-service.ts",
-      "sha256": "10935d830086c8f9972b9f9f982e7ba8203609facd408020c634df4400032610"
+      "sha256": "cc4734a1cf6cda82dd088b2df16df136db81b350e1f8c493178500b2ad072a05"
     }
   ],
   "supportingSourceFiles": [
     {
       "path": "src/domains/character/inventory-v2/primitives.ts",
-      "sha256": "7fd8dd5bddc63580ede1b8e0d6c89c146531ba7751128b664bf731c405343c86"
+      "sha256": "5021b44baa17a7327c3bdb83de9d64ff2b0d20158ff46aaef5a08cfc68c45569"
     },
     {
       "path": "src/domains/items/definition.ts",
-      "sha256": "e47891149c62504d1ff96fb38e6a86ca26bf2e9a52795b7cd876a66b90c78b4a"
+      "sha256": "ef251eed365154c4d4cb7c6f7d72bdc121fb7760425b4cac58591740f3368944"
     },
     {
       "path": "src/domains/items/pack.ts",
-      "sha256": "3214e2a3cbe1db088fb0eaca3d52503911f3c3601c6b01ed08bb75ef2707d975"
+      "sha256": "5bbfcd4281787655816e921966465b8b923395bd82f3cf177872ff162dd8ca52"
     },
     {
       "path": "src/domains/items/packs/build-standard-item.ts",
-      "sha256": "1c2654f0e7980b409762995fe9025649f9cc2bd5324df3a6d50dd4642bdfe569"
+      "sha256": "20c12f039359118ff7da32369d691507cd427fd2385115182d8fbc9e73624b84"
     },
     {
       "path": "src/domains/items/packs/contemporary-basic.ts",
-      "sha256": "c72535324491133bc1331abd5fb050d6c328f2177976b8d76f39b2438118f1c1"
+      "sha256": "27b236cbed30bc2e726c74770d344a8bea889dbd9dcd07f2e2aa1ba854dc368a"
     },
     {
       "path": "src/domains/items/packs/context-packs.ts",
-      "sha256": "768e1cf834ea03ecb0b6b3e2335da8e4356682da34bf045df5ba18a1dd9df6fb"
+      "sha256": "3e937ac0a28c6e0cd4a9a31293741bdb8be227160b4225c4dc759395b8906ca3"
     },
     {
       "path": "src/domains/items/packs/core-snapshots.ts",
-      "sha256": "440e4fe239eedb982555c2e4aa82ea45ae3d687cb26e057516c1b36feccbc19e"
+      "sha256": "02e7b6f3c5f6489d8a9e64d9b7cd4b2f5aae7bcadf936e2f6dc1ba17ff8a29aa"
     },
     {
       "path": "src/domains/items/packs/fantasy-basic.ts",
-      "sha256": "0d18e6a46d5d0603b66eade2eaa92f56a0531ad0e71dc1361bfca6cb4f507c2a"
+      "sha256": "bf57619bcf321f4662e7b901bc87f4ab1f220d33af5028878c0bf1f0b9d695cf"
     },
     {
       "path": "src/domains/items/packs/index.ts",
-      "sha256": "d851952181c448d93ac61a51e2f4d02d89253447ef74ca93ff1048590bfff43d"
+      "sha256": "ce1be63b2477bf222226d7e9f27329d7e0ab85b8d397ce155575e123bfa84cbc"
     },
     {
       "path": "src/domains/items/packs/scifi-basic.ts",
-      "sha256": "6bfed5584dfaabcbc1ce6c323ebd6d9ababc286e9a94d77106c8355667379333"
+      "sha256": "f5a6a7d2fcffc70cca5d682c1fbfb4958da0264fa40b36b1d006abe855b464ea"
     },
     {
       "path": "src/domains/items/taxonomy.ts",
-      "sha256": "fa58dde95e4f9fa424244137f845ee4dbf8ae77d3e4e3ec1d114b74b1debc54a"
+      "sha256": "dfc8e520760a38f6ff74416f1b628105f3515ba2339da0a9044b56f69364459d"
     },
     {
       "path": "src/domains/items/world-catalog.ts",
-      "sha256": "fc39966cc6290f6c59bfdef799cd9e972e7799978299b8fe83a6a8b4b1162941"
+      "sha256": "db0d6a449c0ffb41c18a4248327113781359146deb1c27d352e833ca94aa1384"
     },
     {
       "path": "src/domains/media/index.ts",
@@ -103,7 +103,7 @@
     },
     {
       "path": "src/domains/media/optimization-contract.ts",
-      "sha256": "ba9216dab79a9c03f66a16b77dedf1c26d4d00d6ae2693cc5a68919d1647846d"
+      "sha256": "997c49f8cda2ea1661a89e4fbdbc5a106500da46fadaf7a3a9fc5900134c7ccd"
     },
     {
       "path": "src/domains/media/optimization-policy.ts",
@@ -111,43 +111,43 @@
     },
     {
       "path": "src/domains/npc-creature/definition.ts",
-      "sha256": "c5cfbd3e9b937142fd04b2d9d8ef1470382062ae1565d4cf3622eb6053c05a45"
+      "sha256": "e71694c0b6b94940cc1f70182331cebfb99d21a7ed4f6814fc8f31eabccacdbf"
     },
     {
       "path": "src/domains/npc-creature/pack.ts",
-      "sha256": "401d1450f6060c6984ec3a937ad4a5127602ce34f0e169fe008b860392892e25"
+      "sha256": "c1d0c00a7b414279bd9816236d44e1b31951419e7e9e37adbaa47a3b255ce9b2"
     },
     {
       "path": "src/domains/npc-creature/packs/animals.ts",
-      "sha256": "728cbea35f072058db6974ce5dd3c80686012a9bd00e4de85c80e0d9f969b021"
+      "sha256": "aba4fe81bdf14630749823857e33b312aa302ae51afaadcd5fd374c1380bf4e1"
     },
     {
       "path": "src/domains/npc-creature/packs/build-builtin.ts",
-      "sha256": "ce343c3558c918920fd328fa1891d5085d00cf4c7fd3360709f749a3fe0c20c7"
+      "sha256": "8e92a766d1df940b0409229db5f88b09b04b7bf581a5d22b7e0ea19ca06bb624"
     },
     {
       "path": "src/domains/npc-creature/packs/context-packs.ts",
-      "sha256": "a95d23684c4c3687a02b4c98c3437155ef3a1eb01b02e39e8db50d8cf4b36ec6"
+      "sha256": "44a4b45e305eec376b5a6d6159cd36b192299f5513a6bbf4153d4651bd92afe7"
     },
     {
       "path": "src/domains/npc-creature/packs/fantasy-basics.ts",
-      "sha256": "81ca439a786d0fcb2fa3bf28d801f68f068d7ff201831c157c2cec876f78561b"
+      "sha256": "09d6feac730cc18b2ea57646e83e61fec83925ff5fbe2418779d7ae1036cd98d"
     },
     {
       "path": "src/domains/npc-creature/packs/index.ts",
-      "sha256": "7bb8adddd9ea09409db03785cfcce0656338fe948a86a2f5b4aa14f6a986aeb7"
+      "sha256": "92364bfe7025bd975d42afa3f508ab81518910ab2d9b90fa7412a8d1f1aef0a0"
     },
     {
       "path": "src/domains/npc-creature/taxonomy.ts",
-      "sha256": "3dbc3aaed85858710186551bb41eeaac7475bcb573e1b980a9e64e63852936bc"
+      "sha256": "856cef40a70191f1c9c6a2622754b356576eeb7a694c5bc846871e12d9094529"
     },
     {
       "path": "src/domains/npc-creature/world-catalog.ts",
-      "sha256": "6f87522e1d00aa2ed1b9e1e0310d47f8bb25506fc33d6bee9048f98705ddba2f"
+      "sha256": "572fc2a835817734363e051f69689ea4a7275a07d7583be00db9e3c7747e2e4a"
     },
     {
       "path": "src/domains/rules/sagatree/items/carry-capacity.ts",
-      "sha256": "1ea1910d07cbfcbbe5373a78a9256e79a746273f16a3c2e2e82693f1a17037df"
+      "sha256": "191e5a1a25f0b210dd95930f1e1f3455da8f1d21e1aca7dc8e16b6a6129251c8"
     },
     {
       "path": "src/domains/rules/sagatree/items/index.ts",
@@ -155,19 +155,19 @@
     },
     {
       "path": "src/domains/rules/sagatree/items/resource-affordability.ts",
-      "sha256": "ed42c8faa66a711bd8c7be240df38530bb2d02fff435d1f3aa200538f9388a09"
+      "sha256": "e8fab76b8eb1441dcee849c53249158196e3aab0690185648234d610aa9fb846"
     },
     {
       "path": "src/domains/rules/sagatree/items/tool-rules.ts",
-      "sha256": "3026c3797388370309b0ea33d1366969abc05b803654cf99c68c4eff42832f18"
+      "sha256": "c69170ac5b37d1e71a6c90eda6c993f14d7962d0db5f0adfe8c44568a637cf82"
     },
     {
       "path": "src/domains/rules/sagatree/items/types.ts",
-      "sha256": "af76e6a5ebcec4a5e8acc3d3fd6461abfe083065c025080ef0b2ca851fdc6ff2"
+      "sha256": "9699b169feaf183597651838ea9f8b062e205d36862e50fa824fb95f54dc233e"
     },
     {
       "path": "src/domains/rules/sagatree/items/validators.ts",
-      "sha256": "257732bceab776a0afc34f01340eb7e47a94b5c9d984ebf3fff8e0bb7c8ff543"
+      "sha256": "2d523a6d4cc37de3e34d19492c687fd7056b4acb3f9aac7a026fe786034c8e5e"
     },
     {
       "path": "src/domains/rules/sagatree/npc-creature-power/benchmarks.ts",
@@ -259,7 +259,7 @@
     },
     {
       "path": "src/domains/world/atlas/atlas-prototype-lod.ts",
-      "sha256": "2fb7c706ad2210f7a3f389f22564f60e3f22aa615ec49af49695e388ae582256"
+      "sha256": "f3eddacef2627a378106892a67a27f057cf84ccdd64b8db0c3ceacbf1470a317"
     },
     {
       "path": "src/domains/world/atlas/atlas-renderer-target.ts",
@@ -299,11 +299,11 @@
     },
     {
       "path": "src/domains/world/atlas/dornhain-golden-reset.ts",
-      "sha256": "993c1935fda833ddaf0f51c8f1c10b8b25a28e944c2e783ec2d89f2e9e95e9eb"
+      "sha256": "bf0639ef36ff62eadff1b3d233f3f7a2876e61cd05d0b82054de69db15bb8427"
     },
     {
       "path": "src/domains/world/atlas/dornhain-unified-starter.ts",
-      "sha256": "5e9afab7ec94b7bef19535be6311b51a2f77c59b5f82b36fcd8b78007cc336f5"
+      "sha256": "87ff1c15ca8202f29ebcc1a720c6a75395e2a8fa5f74bceb09ec2b1be35b657a"
     },
     {
       "path": "src/domains/world/atlas/dungeon-forge-workflow.ts",
@@ -311,7 +311,7 @@
     },
     {
       "path": "src/domains/world/atlas/dungeon-generator.ts",
-      "sha256": "6bbed5a42d16ec727e2745b0e1f47dc9d3f1dcc219ee0ccb06f15340307908e1"
+      "sha256": "a8bfde86372f240ec53ac9e4e1fcd6cf048e87edec0215e00d70c5a7919e2932"
     },
     {
       "path": "src/domains/world/atlas/dungeon-grid.ts",
@@ -335,7 +335,7 @@
     },
     {
       "path": "src/domains/world/atlas/unified-canvas-doc.ts",
-      "sha256": "59fa68591c71d2f0bba3185fffb4adecf8d325464df4701309af76a2a99fbd82"
+      "sha256": "568badf03cd75c9e261aa6e746a8451a98e36a940d80acfebea85f92f876ae66"
     },
     {
       "path": "src/domains/world/atlas/validate-world-atlas.ts",
@@ -399,7 +399,7 @@
     },
     {
       "path": "src/domains/world/map/dornhain-starter-map.ts",
-      "sha256": "b4bb022827d2b2fe7f4d0b490e1348b5f9fc1045ba1547b1e734d9130e335b8c"
+      "sha256": "da890d3ea52915635465b34a5762a869f606d50698ea2e9cb84611ad08836f32"
     },
     {
       "path": "src/domains/world/map/index.ts",
@@ -443,7 +443,7 @@
     },
     {
       "path": "src/infrastructure/host/host-library-http.ts",
-      "sha256": "c56b88c60d6c9491fc7b6e6e1143ac4985ffdab5dff16afef8a54bce79629a07"
+      "sha256": "7f909cafd35ac7fab15a90f37dd6164390fbac5b85d915618a1f46138b7d852a"
     },
     {
       "path": "src/infrastructure/host/host-world-http.ts",
@@ -3859,7 +3859,7 @@
       "path": "src/infrastructure/world/host-world-ports.contract.ts",
       "line": 126,
       "endLine": 131,
-      "text": "export type HostWorldAssetPublishResult = {\n  readonly assetId: string;\n  readonly contentType: string;\n  /** Opaque storage reference (successor of Supabase bucket path). */\n  readonly storageRef: string;\n};"
+      "text": "export type HostWorldAssetPublishResult = {\n  readonly assetId: string;\n  readonly contentType: string;\n  /** Opaque storage reference (successor of the legacy bucket path). */\n  readonly storageRef: string;\n};"
     },
     {
       "path": "src/infrastructure/world/host-world-ports.contract.ts",

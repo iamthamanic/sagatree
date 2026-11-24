@@ -1,7 +1,7 @@
 /**
  * #32 Gear / resources / load validation E2E.
  * Structural + affordability UI paths. Catalog/personal writes soft-assert when
- * Supabase catalog is unavailable (same pattern as inventory-v2.spec.ts).
+ * host catalog is unavailable (same pattern as inventory-v2.spec.ts).
  * Location: e2e/validate-gear-resources-load.spec.ts
  */
 import { test, expect, type Page } from '@playwright/test';
@@ -95,7 +95,7 @@ test.describe('#32 validate-gear-resources-load', () => {
       test.info().annotations.push({
         type: 'note',
         description:
-          'Core catalog rows not loaded (likely no Supabase in CI). Resources + load UI asserted; affordability covered by validate-gear-resources-load.mjs.',
+          'Core catalog rows not loaded (likely no live host backend in CI). Resources + load UI asserted; affordability covered by validate-gear-resources-load.mjs.',
       });
       await page.screenshot({
         path: path.join(EVIDENCE, '02-catalog-shell-only.png'),

@@ -2,7 +2,7 @@
  * Look domain value types — LookProfile contracts (#339).
  * Location: src/domains/look/types.ts
  *
- * Pure TypeScript; no React, Supabase, or provider (ToonLab) types.
+ * Pure TypeScript; no React, backend clients, or provider (ToonLab) types.
  */
 
 /** How a look version was authored / obtained. */

@@ -2,7 +2,7 @@
  * sagatree item rule types — §5.7 / §8.3 / §10 load, cost, protection, traits.
  * Location: src/domains/rules/sagatree/items/types.ts
  *
- * Domain-pure: no React, no Supabase, no inventory state.
+ * Domain-pure: no React, no backend clients, no inventory state.
  */
 
 /** Load points per unit (§10.2). */

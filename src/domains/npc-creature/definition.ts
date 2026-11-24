@@ -2,7 +2,7 @@
  * NpcCreatureDefinition — reusable library definition (not a session instance).
  * Location: src/domains/npc-creature/definition.ts
  *
- * Domain-pure: no React, no Supabase, no UI imports.
+ * Domain-pure: no React, no backend clients, no UI imports.
  * Machtgrad is derived from level via the power framework — never authored.
  */
 

@@ -4,7 +4,7 @@
  *
  * Derives Anatomy + Modularity from structural evidence only.
  * Metadata hints are validated, never blindly trusted when geometry disagrees.
- * No React / Three / Supabase / glTF IO here.
+ * No React / Three / backend clients / glTF IO here.
  */
 
 import {

@@ -1,5 +1,7 @@
 # Owner RELEASE — Dornhain cutover scope (2026-11-01)
 
+> **Historisch — abgeschlossene Entscheidung, nicht Produkt-Stack.** Datiertes Owner-Entscheidungsprotokoll; Erwähnungen des früheren Backend-Stacks beschreiben den damaligen Stand. Aktueller Stack: [`AGENTS.md`](../../AGENTS.md) · [`host-modular-monolith.md`](host-modular-monolith.md) (#1328).
+
 **Actor:** Repository owner (`iamthamanic`), explicit chat decision 2026-11-01.  
 **Transcribed by:** agent under owner instruction (not agent-selected scope).  
 **GitHub anchors:** [#849](https://github.com/iamthamanic/sagatree/issues/849#issuecomment-6554822337), [#788](https://github.com/iamthamanic/sagatree/issues/788).

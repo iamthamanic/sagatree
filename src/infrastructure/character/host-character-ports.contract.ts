@@ -3,7 +3,7 @@
  * Location: src/infrastructure/character/host-character-ports.contract.ts
  *
  * Transport-free DTO mirror of `server/src/modules/character` sheet infra ports.
- * Supabase facades remain live until cutover; this documents the host shape
+ * Legacy facades were retired with the cutover (CUT-20/21); this documents the host shape
  * for parity checks without importing the Node host package.
  */
 

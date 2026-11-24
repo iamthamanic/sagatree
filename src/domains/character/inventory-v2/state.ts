@@ -5,7 +5,7 @@
  * on this module so the "exactly one physical location" rule exists once.
  * Location: src/domains/character/inventory-v2/state.ts
  *
- * Domain-pure: no React, no Supabase, no UI imports.
+ * Domain-pure: no React, no backend clients, no UI imports.
  */
 
 import type {

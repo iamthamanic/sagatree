@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-saga.json](source-contracts/infra-saga.json) (SHA-256 `cfd908766d52d75677d85e9caf9a5bf13a5fd291b66f05f9e41d74bfc49107e4`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-saga.json](source-contracts/infra-saga.json) (SHA-256 `b2913dcdd3d89fa80da10af3334295d81ee0a4d2ca7c1ae20165028edc4dc378`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -296,13 +296,13 @@ All backend operations are included in the public declarations above.
 
 | Path | SHA-256 |
 |---|---|
-| `src/domains/saga/contracts/saga-definition.ts` | `69b8fab72a158942d4f807e8b9fabcdae815506fb18e4e82434a71d0cdb9ee05` |
-| `src/domains/session/contracts/session-outcome-promotion.ts` | `d3c26e886f5f1da3b617723feaad5510218d486413ea7953bbc382593578bedd` |
-| `src/infrastructure/host/host-library-http.ts` | `c56b88c60d6c9491fc7b6e6e1143ac4985ffdab5dff16afef8a54bce79629a07` |
+| `src/domains/saga/contracts/saga-definition.ts` | `2c1509cf4f9026dff9f39cd4548e10a4fba1132f4ed53ff4f58fe71babe692b5` |
+| `src/domains/session/contracts/session-outcome-promotion.ts` | `6354ee19535827055e5d4464d4698a498c7cb3d4c2511044d7948889fc56990a` |
+| `src/infrastructure/host/host-library-http.ts` | `7f909cafd35ac7fab15a90f37dd6164390fbac5b85d915618a1f46138b7d852a` |
 | `src/infrastructure/host/host-saga-definition-http.ts` | `3bf857114def303681691297c71f09a9b6278658e51cad659f0d7e51e0a819f1` |
 | `src/infrastructure/host/host-session-http.ts` | `f0e603ecf93151669c7b809cb63aea3d0a98ed2ca17ae8f2768a5444bb9cab56` |
-| `src/infrastructure/saga/host-saga-adapter.ts` | `7f0c52eaafcd6ee4f0deec9e5e4a5a282dc1d2ded67bd3a0e00a65636097aa62` |
-| `src/infrastructure/saga/host-saga-ports.contract.ts` | `c3734bbd18e4a04460915e128bbc2c46626934cf7bde76305918355f0ba85649` |
+| `src/infrastructure/saga/host-saga-adapter.ts` | `e28c482990d2b48ef1d68e56555251ab33f1a247aa2b60b45bd690cc10c71ca4` |
+| `src/infrastructure/saga/host-saga-ports.contract.ts` | `4fe987e282d94e22a2fd33d688bbbff7b4e4327c600c8a34bc9d376d3139e47f` |
 | `src/infrastructure/saga/saga-definition-service.ts` | `758929f1748a796774d5cf957bd92f780a836562c7a27c3d6b3757a764ddc8dc` |
 | `src/infrastructure/saga/session-outcome-promotion-service.ts` | `b998cb8c4294c8933e3aaf2622f747a9461f18815af77a5cdd58314a94bd107f` |
 | `src/lib/hostAuthBridge.ts` | `30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a` |

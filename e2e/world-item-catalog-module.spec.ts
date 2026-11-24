@@ -5,7 +5,7 @@
 import { test, expect, type Page, type Route } from '@playwright/test';
 import fs from 'node:fs';
 import path from 'node:path';
-import { ensureLoggedIn, installLocalAdminGoTrueSuccess } from './helpers/auth';
+import { ensureLoggedIn } from './helpers/auth';
 
 const EVIDENCE_DIR = '.qa/evidence/item-world-catalog-module';
 
@@ -35,7 +35,7 @@ test.beforeAll(() => {
 test('world item-catalog module toggles packs and shows live count', async ({ page }) => {
   test.skip(
     true,
-    'CUT-20 Soft-DENY #1160: world item-catalog module still mocked via PostgREST world_profiles',
+    'CUT-20 Soft-DENY #1160: world item-catalog module still mocked via legacy REST world_profiles',
   );
   test.setTimeout(60_000);
   const worlds: StoredWorld[] = [];
@@ -87,7 +87,6 @@ test('world item-catalog module toggles packs and shows live count', async ({ pa
   });
 
   await page.setViewportSize({ width: 1440, height: 900 });
-  await installLocalAdminGoTrueSuccess(page);
   await ensureLoggedIn(page);
   await page.getByRole('button', { name: 'Bibliothek' }).first().click();
   await page.getByRole('tab', { name: 'Welten' }).click();

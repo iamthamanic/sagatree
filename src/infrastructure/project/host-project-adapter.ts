@@ -2,7 +2,7 @@
  * host-project-adapter — Binds infra HostProjectPorts to an injected host impl (MIG-308).
  * Location: src/infrastructure/project/host-project-adapter.ts
  *
- * Production UI still calls Supabase project / member / saga facades. This adapter
+ * The legacy project / member / saga facades were retired with CUT-20. This adapter
  * is the typed dual-path seam: tests and future host transport inject HostProjectPorts.
  * No server/ imports; no client role elevation.
  */

@@ -6,7 +6,7 @@
  * Legacy Edge `item-model3d` remains until dual-path removal (CUT-20).
  */
 import { getHostAuthBaseUrl } from '../../lib/hostAuthBridge';
-import { rewriteBrowserStorageUrl } from '../../lib/supabase';
+import { rewriteBrowserStorageUrl } from '../../lib/asset-urls';
 import { isHostLibraryEnabled } from '../host/host-library-http';
 import {
   ITEM_MODEL3D_MAX_BYTES,

@@ -33,6 +33,6 @@ Enforced by `checkHostDrizzlePersistenceBoundaries` inside `scripts/architecture
 
 ## Non-goals
 
-- Production cutover / Supabase shutdown
+- Production cutover / legacy-stack shutdown (done since CUT-21/22/23)
 - Changing GATE-04 PRAGMA policy
 - Hand-editing generated migration registry contracts (#847/#849 evidence is additive)

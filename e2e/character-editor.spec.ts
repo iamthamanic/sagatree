@@ -383,7 +383,7 @@ test('character editor exposes the SagaTree Core creation flow', async ({ page }
   await expect(page.getByText(/Legacy-Charakter|vollständige Herkunft nicht rekonstruierbar/i)).toHaveCount(0);
   await expect(page.getByRole('button', { name: /Speichern/i }).first()).toBeEnabled();
 
-  // Live POST + Bibliothek roundtrip needs a reachable Supabase stack (local .env).
+  // Live POST + Bibliothek roundtrip needs a reachable live host (local .env).
   // GitHub Actions has no DB — skipping avoids a 7m waitForResponse hang. Opt in with E2E_LIVE_CHARACTER_SAVE=1.
   const requireLiveSave = process.env.E2E_LIVE_CHARACTER_SAVE === '1' || !process.env.CI;
   if (requireLiveSave) {
@@ -460,7 +460,7 @@ test('character editor exposes the SagaTree Core creation flow', async ({ page }
   } else {
     test.info().annotations.push({
       type: 'note',
-      description: 'Skipped live character POST/Bibliothek roundtrip (CI without Supabase). Covered by local E2E + repository assert.',
+      description: 'Skipped live character POST/Bibliothek roundtrip (CI without a live host backend). Covered by local E2E + repository assert.',
     });
   }
 

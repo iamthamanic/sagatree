@@ -39,7 +39,7 @@ import {
 import { useAccountAvatar } from './useAccountAvatar';
 
 
-/** Minimal auth shape for chrome identity — avoid app→@supabase import (#94). */
+/** Minimal auth shape for chrome identity — avoid app→auth-SDK import (#94). */
 type AuthDisplayUser = {
   email?: string | null;
   user_metadata?: Record<string, unknown> | null;

@@ -136,7 +136,7 @@ export function normalizeHexColor(value: string, fallback: string): string {
   return /^#[0-9a-fA-F]{6}$/.test(value) ? value.toUpperCase() : fallback;
 }
 
-/** Local Supabase/Kong signed URLs are http://localhost — allow loopback only. */
+/** Local signed asset URLs are http://localhost — allow loopback only. */
 function isLoopbackHostname(hostname: string): boolean {
   const host = hostname.trim().toLowerCase();
   return host === 'localhost' || host === '127.0.0.1' || host === '[::1]' || host === '::1';

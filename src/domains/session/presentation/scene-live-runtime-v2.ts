@@ -3,7 +3,7 @@
  * Location: src/domains/session/presentation/scene-live-runtime-v2.ts
  *
  * Semantic scene config via refs only. Normalizes #301 SharedScenePresentation V1
- * without duplicating Look/Character/NPC definitions. Never imports React/Supabase.
+ * without duplicating Look/Character/NPC definitions. Never imports React/backend clients.
  */
 
 import {

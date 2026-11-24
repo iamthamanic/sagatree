@@ -3,7 +3,7 @@
  * Location: src/domains/character/avatar/identity-transfer-v1.ts
  *
  * Encodes reproducible approach comparison + default/fallback for #263 Conversion.
- * No React / Three / Supabase / provider SDKs. No invented capabilities.
+ * No React / Three / backend clients / provider SDKs. No invented capabilities.
  */
 
 import type { AvatarV2BodyFamily } from './composition-contract-v2';

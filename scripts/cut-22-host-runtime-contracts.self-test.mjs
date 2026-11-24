@@ -47,12 +47,11 @@ assert(!/docker compose up -d\n/.test(selfhost) || /env\.host/.test(selfhost), '
 
 const agents = readFileSync(join(root, 'AGENTS.md'), 'utf8');
 assert(/SQLite/.test(agents), 'AGENTS.md mentions SQLite host stack');
-assert(/archive\/supabase-legacy/.test(agents), 'AGENTS.md points at archive');
+assert(!/archive\/[\w.-]*legacy/.test(agents), 'AGENTS.md must not point at a legacy archive (#1328)');
 
-const stub = readFileSync(join(root, 'src/lib/supabase-client.ts'), 'utf8');
-assert(!/@supabase\/supabase-js/.test(stub), 'supabase-client stub is SDK-free');
-assert(!/createClient/.test(stub), 'supabase-client stub has no createClient');
-assert(!/functions\.invoke/.test(stub), 'supabase-client stub has no functions.invoke');
+const assetUrls = readFileSync(join(root, 'src/lib/asset-urls.ts'), 'utf8');
+assert(!/createClient/.test(assetUrls), 'asset-urls helper has no createClient');
+assert(!/functions\.invoke/.test(assetUrls), 'asset-urls helper has no functions.invoke');
 
 // docker compose config — host-only services (no supabase-*)
 const secret = 'cut22-self-test-secret-at-least-32-chars';

@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-npc-creature.json](source-contracts/infra-npc-creature.json) (SHA-256 `d66cd71c8ca412dedb894856d7a84f3425d84c01adf52f973d9a2ad0f617206c`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-npc-creature.json](source-contracts/infra-npc-creature.json) (SHA-256 `00abc7ceebd9c2f5db82ed49a6a5d093cc35bc3956e8b54ff6839016155b94c7`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -888,28 +888,28 @@ All backend operations are included in the public declarations above.
 | `src/domains/character/avatar/face-anchor-contract.ts` | `e302f0b6ab5827217a8bd30aa0a77fa8b0147c429b32a48b15c312f4cd778b5a` |
 | `src/domains/character/avatar/morph-contract.ts` | `7540a9aaaba59981033500ac67329060e39c2f259c35460c964c39c1e461d96f` |
 | `src/domains/character/domain/character.entity.ts` | `56e76a478531eb46ae523b1b1c3d8fd4d076af742baf2ef1edea5dac70768120` |
-| `src/domains/npc-creature/contracts.ts` | `0939d59a22bc21b04d1de19429f8d3541f4f3df22a2fb14b7b7db8bb8ff9738f` |
-| `src/domains/npc-creature/controller-assignment.ts` | `0c572faa9709ff00fbb5c1a183271b4c4f53a664ad0f2db2d87bd69c7694c37a` |
-| `src/domains/npc-creature/core-catalog.ts` | `ab597ca223259ec07cdb0c954dc647d296d255bd744e0033737028b0546df6ba` |
-| `src/domains/npc-creature/definition.ts` | `c5cfbd3e9b937142fd04b2d9d8ef1470382062ae1565d4cf3622eb6053c05a45` |
-| `src/domains/npc-creature/derived.ts` | `13a0113281e9def92d1ac9658b181a890bfcd05dd3cbfe3049ef670e9b0c500c` |
+| `src/domains/npc-creature/contracts.ts` | `374e384c9b82e3b4030e0eeb4e9172478e8c28c96b9bf9e00869da00440d6b0a` |
+| `src/domains/npc-creature/controller-assignment.ts` | `eb039fab76c6aa98a3945b50c49dcad0d109d676241999052f5843b7be9cb7d0` |
+| `src/domains/npc-creature/core-catalog.ts` | `44b57528060a7e73768bb3c48afa659fa3130ce5a13857abba2df26f070b01c4` |
+| `src/domains/npc-creature/definition.ts` | `e71694c0b6b94940cc1f70182331cebfb99d21a7ed4f6814fc8f31eabccacdbf` |
+| `src/domains/npc-creature/derived.ts` | `ba0a82e95e90d90a45324f7a23698f6a82f88518e2efd9ba7360b0a4ad02cde8` |
 | `src/domains/npc-creature/icon-assets.ts` | `d786c058900713946c0578b46c1f444418b2a19db04ce77b4b1bec87eea82035` |
 | `src/domains/npc-creature/index.ts` | `f2a5a026df813bb828e68e0c672eebd95e3a9627f1b1cf25d6cb7c6a2db5cc9e` |
-| `src/domains/npc-creature/instance.ts` | `4a4371ccf0efab85cd867355c387331ab815b58c2ef40c57179300d2639552c0` |
-| `src/domains/npc-creature/library-query.ts` | `f33a123fd69281685c654e4fcd322d697cbad5544ada723c021ba2335b62f273` |
-| `src/domains/npc-creature/pack.ts` | `401d1450f6060c6984ec3a937ad4a5127602ce34f0e169fe008b860392892e25` |
-| `src/domains/npc-creature/packs/animals.ts` | `728cbea35f072058db6974ce5dd3c80686012a9bd00e4de85c80e0d9f969b021` |
-| `src/domains/npc-creature/packs/build-builtin.ts` | `ce343c3558c918920fd328fa1891d5085d00cf4c7fd3360709f749a3fe0c20c7` |
-| `src/domains/npc-creature/packs/context-packs.ts` | `a95d23684c4c3687a02b4c98c3437155ef3a1eb01b02e39e8db50d8cf4b36ec6` |
-| `src/domains/npc-creature/packs/fantasy-basics.ts` | `81ca439a786d0fcb2fa3bf28d801f68f068d7ff201831c157c2cec876f78561b` |
-| `src/domains/npc-creature/packs/index.ts` | `7bb8adddd9ea09409db03785cfcce0656338fe948a86a2f5b4aa14f6a986aeb7` |
-| `src/domains/npc-creature/parse.ts` | `29986eb9251451da88c70e6f127f8dd21007a1d61f232da6100872a9be7b2e02` |
-| `src/domains/npc-creature/payload.ts` | `935c5f24af7e47173315ba80661767fe0b7acb2f890227c2062b333f3394f1fa` |
+| `src/domains/npc-creature/instance.ts` | `a11b7ec956684a89c589d0502db2bbcb434b682cfb14770740ad79ee979a2c1e` |
+| `src/domains/npc-creature/library-query.ts` | `ce7d2b3cd7bf34f3d2cf5a8eb607d3066e24388078768136e4324666db0f854f` |
+| `src/domains/npc-creature/pack.ts` | `c1d0c00a7b414279bd9816236d44e1b31951419e7e9e37adbaa47a3b255ce9b2` |
+| `src/domains/npc-creature/packs/animals.ts` | `aba4fe81bdf14630749823857e33b312aa302ae51afaadcd5fd374c1380bf4e1` |
+| `src/domains/npc-creature/packs/build-builtin.ts` | `8e92a766d1df940b0409229db5f88b09b04b7bf581a5d22b7e0ea19ca06bb624` |
+| `src/domains/npc-creature/packs/context-packs.ts` | `44a4b45e305eec376b5a6d6159cd36b192299f5513a6bbf4153d4651bd92afe7` |
+| `src/domains/npc-creature/packs/fantasy-basics.ts` | `09d6feac730cc18b2ea57646e83e61fec83925ff5fbe2418779d7ae1036cd98d` |
+| `src/domains/npc-creature/packs/index.ts` | `92364bfe7025bd975d42afa3f508ab81518910ab2d9b90fa7412a8d1f1aef0a0` |
+| `src/domains/npc-creature/parse.ts` | `3a4669e43e8c90679bdf0cef3accbce41a89a5e71448379ba3f4cc3b9f2bb4d4` |
+| `src/domains/npc-creature/payload.ts` | `9f3ea083da2d0e592350980c089af5dfb56831abb7e6115a9062aafcffa3f757` |
 | `src/domains/npc-creature/policy.ts` | `c864eecb3fff0e0c7fc5c64ae3090ab7b45e0dfb134280583dd732b66d1ecb05` |
-| `src/domains/npc-creature/promotion.ts` | `bf49060eeb671c84102d35471568f2497bb60865310851e247bbcbc230cc7f92` |
-| `src/domains/npc-creature/taxonomy.ts` | `3dbc3aaed85858710186551bb41eeaac7475bcb573e1b980a9e64e63852936bc` |
+| `src/domains/npc-creature/promotion.ts` | `307cc8d49734a2043023121bb341c6b98c5a4f70d960925e58b6d9a6b3609310` |
+| `src/domains/npc-creature/taxonomy.ts` | `856cef40a70191f1c9c6a2622754b356576eeb7a694c5bc846871e12d9094529` |
 | `src/domains/npc-creature/validate.ts` | `5cedac40b675972a2c617212d86603cdfec39692f17afe6a96d19d2270d33fd0` |
-| `src/domains/npc-creature/world-catalog.ts` | `6f87522e1d00aa2ed1b9e1e0310d47f8bb25506fc33d6bee9048f98705ddba2f` |
+| `src/domains/npc-creature/world-catalog.ts` | `572fc2a835817734363e051f69689ea4a7275a07d7583be00db9e3c7747e2e4a` |
 | `src/domains/rules/sagatree/attribute-progression/index.ts` | `1f7ef073a45fd01150c4a90c7b711953f9e0c9efe4ba235bb2cf93e5b6523ae3` |
 | `src/domains/rules/sagatree/character-creation/index.ts` | `9e032fe110c4665ec6744e0750d07c57a5d6b083fb292b2bd6441e21db7cdb07` |
 | `src/domains/rules/sagatree/npc-creature-power/benchmarks.ts` | `d102fe585bfec2eb44e556fc133d67086fb9915da4ba65497c83869fa82eb54d` |
@@ -920,7 +920,7 @@ All backend operations are included in the public declarations above.
 | `src/domains/rules/sagatree/npc-creature-power/machtgrad.ts` | `19d4daafb9580b890ed2337feccffed19122a01dfb23c2eeb2dadd2523778f7a` |
 | `src/domains/rules/sagatree/npc-creature-power/profiles.ts` | `aa3d450842ddce7548f6e8e826225cdbdeae6de7660e09798fe43663dc9ce1fa` |
 | `src/domains/rules/sagatree/npc-creature-power/types.ts` | `de25ba46549bab20e0e55a513fb0745e722449d8f1b61bb51887d986653c4eab` |
-| `src/infrastructure/host/host-library-http.ts` | `c56b88c60d6c9491fc7b6e6e1143ac4985ffdab5dff16afef8a54bce79629a07` |
+| `src/infrastructure/host/host-library-http.ts` | `7f909cafd35ac7fab15a90f37dd6164390fbac5b85d915618a1f46138b7d852a` |
 | `src/infrastructure/host/host-session-http.ts` | `f0e603ecf93151669c7b809cb63aea3d0a98ed2ca17ae8f2768a5444bb9cab56` |
 | `src/infrastructure/npc-creature/host-npc-creature-adapter.ts` | `1f3bd51bb9b9f05b4a04d27c5107fd4ee78189f96d67323694c42cea2606470a` |
 | `src/infrastructure/npc-creature/host-npc-creature-ports.contract.ts` | `5115ac6e4829356cee014436c464e361c2486d928caa2d8121dd6a896bf7996b` |
@@ -928,8 +928,8 @@ All backend operations are included in the public declarations above.
 | `src/infrastructure/npc-creature/npc-creature-instance.persistence.ts` | `00aaa3e07b5cdc72305da5381e0c8e0754b2a159df623a4a6355748cb269776f` |
 | `src/infrastructure/npc-creature/npc-creature-service.ts` | `f85a652361f7d0943b139693473f103ca55aaaefd6393b293bd67fd6a4496c4c` |
 | `src/infrastructure/npc-creature/npc-creature.persistence.ts` | `2823d44f52887026e5e5bac5120bb7d2def738e29e1354686d06f670e0d33420` |
-| `src/lib/authenticatedUser.ts` | `5d9deef60efd85a3ecd56e9b55f67ecb2d03c2964c4f9217e6de6842d8e0b403` |
+| `src/lib/authenticatedUser.ts` | `b034ac66b532232c33ec19d5427aef11b6828905ca3e3e8991f060be3e9026d6` |
 | `src/lib/hostAuthBridge.ts` | `30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a` |
-| `src/lib/localAdmin.ts` | `103feaea892b0582022557ff81cef61105f3d9ed4eb421a20d8b0b415c2de498` |
-| `src/lib/networkTimeout.ts` | `835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851` |
+| `src/lib/localAdmin.ts` | `7ceb27ff34dffa628cb47eaa6669f3bec32cc62981f310111a3615725bb0d376` |
+| `src/lib/networkTimeout.ts` | `47fd1262837db8dfbdebf1a2459e5d1f7c165430ade5afa4b0de03658af582c4` |
 

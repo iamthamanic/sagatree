@@ -28732,7 +28732,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "c56b88c60d6c9491fc7b6e6e1143ac4985ffdab5dff16afef8a54bce79629a07"
+            "sha256": "7f909cafd35ac7fab15a90f37dd6164390fbac5b85d915618a1f46138b7d852a"
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
@@ -28744,7 +28744,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-ai.json",
-      "sourceContractSha256": "83aee082ecc5fe371cfb4a399e3136805895c4dbb7671f5d6133361ca60b993a",
+      "sourceContractSha256": "3f2dc5d4be0285d2945cf0e39486f0adb567bf515af9da0798e304df8155d79a",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],
@@ -29052,11 +29052,11 @@
           },
           {
             "path": "src/domains/character/avatar/asset-authoring-contract-v1.ts",
-            "sha256": "04cdfc70d0760b668179b3091b214abbbae437eeaae0a3e9f7ad28c3bbc4a72c"
+            "sha256": "97caec2d59fe5de1ede5861544790a20197e626a679590928ff637953f177e61"
           },
           {
             "path": "src/domains/character/avatar/avatar-artifact-contract-v2.ts",
-            "sha256": "40c846babdc34cd397c26d381b70a4e11e20178e1352a95ee5760caffc3cfc29"
+            "sha256": "4359b91962af3a91c373cabd3e42767a85b5650b62e9907614a5bd8a32c8716e"
           },
           {
             "path": "src/domains/character/avatar/avatar-import.ts",
@@ -29072,7 +29072,7 @@
           },
           {
             "path": "src/domains/character/avatar/avatar-structure-analyzer-v2.ts",
-            "sha256": "0aa35307f1895ec321898139ec2e6bc0ac932e93b498e7c1f3ddefd2741b5de7"
+            "sha256": "0e60d15d0708e467e8aac2690a8357fe263d7749a415c79612d857fe555e44ed"
           },
           {
             "path": "src/domains/character/avatar/base-body-contract.ts",
@@ -29080,7 +29080,7 @@
           },
           {
             "path": "src/domains/character/avatar/body-conversion-flow-v1.ts",
-            "sha256": "7017bbf19812d2743363d0bdebf0a1ca114158202ee4376d5e5296b5749ac951"
+            "sha256": "21e1293693672d2e401850498dc8262d4f5eef4b4b0061cadaa93fa7da9fa09a"
           },
           {
             "path": "src/domains/character/avatar/body-family-variant-resolver-v1.ts",
@@ -29088,7 +29088,7 @@
           },
           {
             "path": "src/domains/character/avatar/body-profile-contract-v1.ts",
-            "sha256": "4db146c3b7effc7146d64574711fea862331c7f8f67d21f4a9421fcb17f672d9"
+            "sha256": "5b8f4c2077bed5b54866585ab45fc178476e064c4d005c9f9df96aef3eac0fcc"
           },
           {
             "path": "src/domains/character/avatar/body-region-mask-v1.ts",
@@ -29108,11 +29108,11 @@
           },
           {
             "path": "src/domains/character/avatar/custom-creature-flow-v1.ts",
-            "sha256": "96ce926dd9ef900abf22e268827ad07726111afa6c9051ba118cead980c8cbda"
+            "sha256": "df01fb328e0416cf4a141818b8d0b6143ef26c6674e528159ae2e847b0a83640"
           },
           {
             "path": "src/domains/character/avatar/custom-rig-decision-v1.ts",
-            "sha256": "2e55886058007be9d24275f1de43025cc97fab5d0fb8e257dcabfc93483bc790"
+            "sha256": "25aa072bdf42257a35b83eb14000f29773be03c1e5a807b4fbfe44a1cf4e7b56"
           },
           {
             "path": "src/domains/character/avatar/editor-surface-resolver-v1.ts",
@@ -29120,7 +29120,7 @@
           },
           {
             "path": "src/domains/character/avatar/equipment-visual-contract.ts",
-            "sha256": "b9f93ce6a4f06d38ae5075eab2de15ce7c5bb2b70ffeb652c12d57f0c307ca90"
+            "sha256": "b6ffeadde79b974046fd9e69ba9be347f1d2f67bc56f5b8e6e4dead971a236af"
           },
           {
             "path": "src/domains/character/avatar/face-anchor-agent-review-v1.ts",
@@ -29192,11 +29192,11 @@
           },
           {
             "path": "src/domains/character/avatar/identity-transfer-v1.ts",
-            "sha256": "c35cf3acf1c11934ba067d6fb65509bc71a40ce3a270299e1928f06264a321ab"
+            "sha256": "a945e311b41da2d1c8711b1b2e5eaed3298be6663558df5e67582af7cb9b932b"
           },
           {
             "path": "src/domains/character/avatar/import-original-flow-v1.ts",
-            "sha256": "da4ad959cfab4ecbc6cab718ff582a37c5a828778aa8350a6f6d8e7c22c14e60"
+            "sha256": "873a5dd37e8dcbd922f3506fc47bee5b2b93044f2fd1f4cf451ffe122641894c"
           },
           {
             "path": "src/domains/character/avatar/index.ts",
@@ -29216,7 +29216,7 @@
           },
           {
             "path": "src/domains/character/avatar/modular-generate-decomposition-v1.ts",
-            "sha256": "3c152565d112e155022b4817d58256d4bb2e81332c1719f8847a7460a52a00a5"
+            "sha256": "e471fbe4cded9fa29a01389b83710911aedf35807fe4df12b20e0183c7031c38"
           },
           {
             "path": "src/domains/character/avatar/modular-generate-flow-v1.ts",
@@ -29276,7 +29276,7 @@
           },
           {
             "path": "src/domains/character/avatar/starter-wardrobe-manifest-v1.ts",
-            "sha256": "fe01a2e66308f3d3681fa69eb948ea003be0e9e36a67b51c63435b02c18c8f1b"
+            "sha256": "2274947a93c3fc11c173a93bc9789bf05bc4f696fd7d56ef48d5a9cb8aa6c25c"
           },
           {
             "path": "src/domains/character/avatar/trait-catalog.ts",
@@ -29340,27 +29340,27 @@
           },
           {
             "path": "src/domains/character/inventory-v2/migrate-legacy.ts",
-            "sha256": "25dbe6979d3f16380078fcedfbe9dc132a93bfece2474b868181a636189bf11c"
+            "sha256": "d58e79c0ec7aafd7e5b505875c6740959b9ca0fbd3d58044a955de651dc61a61"
           },
           {
             "path": "src/domains/character/inventory-v2/operations.ts",
-            "sha256": "a2e704b8a6c9d0f734d0c2f8db4fd5fcd7f419ddf2468ad7ac210d5c4d5c62d9"
+            "sha256": "84627bec59e4dc936ac71fe4c39215717d4af158d3cda017a2d29cc4d609d358"
           },
           {
             "path": "src/domains/character/inventory-v2/primitives.ts",
-            "sha256": "7fd8dd5bddc63580ede1b8e0d6c89c146531ba7751128b664bf731c405343c86"
+            "sha256": "5021b44baa17a7327c3bdb83de9d64ff2b0d20158ff46aaef5a08cfc68c45569"
           },
           {
             "path": "src/domains/character/inventory-v2/state.ts",
-            "sha256": "c78ffa8a34d754fcfa444f587d1ae8457b1cfbbbea8d80e205f5b964b05de775"
+            "sha256": "1f9ad7531f6926ce95ade24278656d3a7fdfbc32d4cba1fde4a01e8b1dbf6ea2"
           },
           {
             "path": "src/domains/character/inventory-v2/types.ts",
-            "sha256": "ac4780f56499b209346e1be76ed06c1a81bbbc78843ff5d74a9bd96f83fc8643"
+            "sha256": "1fe13df9923dcd8e8fac3c4ab6e8bfbd35eb10ec352081ae5f252a2823da3c77"
           },
           {
             "path": "src/domains/character/inventory-v2/validation.ts",
-            "sha256": "d893ca4d051be6075a44e42b6be1bba2d72366bdac267b5625b723a39318609f"
+            "sha256": "20f96d7c715b91a84db6124873e1cea1817c3feaaf62585f656aecac77360e74"
           },
           {
             "path": "src/domains/character/liveact/index.ts",
@@ -29584,7 +29584,7 @@
           },
           {
             "path": "src/domains/character/use-cases/avatar-presets.ts",
-            "sha256": "8d49ca20f98e0168298235f6f77610e92dc78da0d02e628f7168714d3a17a7bd"
+            "sha256": "5a1391d846fc97e75e5da0a4ed3571f6b31334c0a58b0ba735789c1e67959f8c"
           },
           {
             "path": "src/domains/character/use-cases/character-lore-examples.ts",
@@ -29612,15 +29612,15 @@
           },
           {
             "path": "src/domains/items/assets.ts",
-            "sha256": "531258cd09a5e29affafb2d52d7154400cd17a19a7e4a0e1f05dffa26461ae24"
+            "sha256": "13a88adc0b73c0beab3786996b991ab9c0670d467d6385cdb97ab2c08c1d3c38"
           },
           {
             "path": "src/domains/items/definition.ts",
-            "sha256": "e47891149c62504d1ff96fb38e6a86ca26bf2e9a52795b7cd876a66b90c78b4a"
+            "sha256": "ef251eed365154c4d4cb7c6f7d72bdc121fb7760425b4cac58591740f3368944"
           },
           {
             "path": "src/domains/items/fork.ts",
-            "sha256": "6123d90663a24b1af0dd583a601cb491799137ef4ae894b0e2bf3d5643fb8b76"
+            "sha256": "2a8e5ca8f664f83f6b0ecf976d0f214d59888a341db41ff731f8f5604cf4d371"
           },
           {
             "path": "src/domains/items/icon-assets.ts",
@@ -29632,67 +29632,67 @@
           },
           {
             "path": "src/domains/items/library-query.ts",
-            "sha256": "513d0d38b0531a58c25f9f680f4887f6e667d0594fa2c05bb4908179b34d8f83"
+            "sha256": "dd323479a80955a0b302688b3f7696cedd47d9a0ad41ab5ae5cff836dadf2d60"
           },
           {
             "path": "src/domains/items/model3d-assets.ts",
-            "sha256": "389043b61b7b9cea94ccc7e2c14a871b6e755d3bf428a205b3a3a278fe5fef2c"
+            "sha256": "80c1039bbc26634426aa11d686be78ed7b7454d8c3ca1aed4f04c51f63de363a"
           },
           {
             "path": "src/domains/items/normalize.ts",
-            "sha256": "4b26c5ec71b9c3c2d1186004b6a4e7d1d09a48e078447e7b8815d2e5bf908909"
+            "sha256": "d422f42aba4d42bfe9c998b08ce652cb7f4c9a599d37145bb9ff0bd8802d2a12"
           },
           {
             "path": "src/domains/items/pack.ts",
-            "sha256": "3214e2a3cbe1db088fb0eaca3d52503911f3c3601c6b01ed08bb75ef2707d975"
+            "sha256": "5bbfcd4281787655816e921966465b8b923395bd82f3cf177872ff162dd8ca52"
           },
           {
             "path": "src/domains/items/packs/build-standard-item.ts",
-            "sha256": "1c2654f0e7980b409762995fe9025649f9cc2bd5324df3a6d50dd4642bdfe569"
+            "sha256": "20c12f039359118ff7da32369d691507cd427fd2385115182d8fbc9e73624b84"
           },
           {
             "path": "src/domains/items/packs/contemporary-basic.ts",
-            "sha256": "c72535324491133bc1331abd5fb050d6c328f2177976b8d76f39b2438118f1c1"
+            "sha256": "27b236cbed30bc2e726c74770d344a8bea889dbd9dcd07f2e2aa1ba854dc368a"
           },
           {
             "path": "src/domains/items/packs/context-packs.ts",
-            "sha256": "768e1cf834ea03ecb0b6b3e2335da8e4356682da34bf045df5ba18a1dd9df6fb"
+            "sha256": "3e937ac0a28c6e0cd4a9a31293741bdb8be227160b4225c4dc759395b8906ca3"
           },
           {
             "path": "src/domains/items/packs/core-snapshots.ts",
-            "sha256": "440e4fe239eedb982555c2e4aa82ea45ae3d687cb26e057516c1b36feccbc19e"
+            "sha256": "02e7b6f3c5f6489d8a9e64d9b7cd4b2f5aae7bcadf936e2f6dc1ba17ff8a29aa"
           },
           {
             "path": "src/domains/items/packs/fantasy-basic.ts",
-            "sha256": "0d18e6a46d5d0603b66eade2eaa92f56a0531ad0e71dc1361bfca6cb4f507c2a"
+            "sha256": "bf57619bcf321f4662e7b901bc87f4ab1f220d33af5028878c0bf1f0b9d695cf"
           },
           {
             "path": "src/domains/items/packs/index.ts",
-            "sha256": "d851952181c448d93ac61a51e2f4d02d89253447ef74ca93ff1048590bfff43d"
+            "sha256": "ce1be63b2477bf222226d7e9f27329d7e0ab85b8d397ce155575e123bfa84cbc"
           },
           {
             "path": "src/domains/items/packs/scifi-basic.ts",
-            "sha256": "6bfed5584dfaabcbc1ce6c323ebd6d9ababc286e9a94d77106c8355667379333"
+            "sha256": "f5a6a7d2fcffc70cca5d682c1fbfb4958da0264fa40b36b1d006abe855b464ea"
           },
           {
             "path": "src/domains/items/payload.ts",
-            "sha256": "cca377861fecbee054a248d6df16baa630a1cedc496fac0fd34b0dc58e575efc"
+            "sha256": "a55a765efb9444af8ac56fb54b867dbd27d3852184d13201298f28236c490d61"
           },
           {
             "path": "src/domains/items/taxonomy.ts",
-            "sha256": "fa58dde95e4f9fa424244137f845ee4dbf8ae77d3e4e3ec1d114b74b1debc54a"
+            "sha256": "dfc8e520760a38f6ff74416f1b628105f3515ba2339da0a9044b56f69364459d"
           },
           {
             "path": "src/domains/items/validate.ts",
-            "sha256": "3ad0170cce5d6cd27889eecf9752c707c19680e28ccdf493d71851bffbab4524"
+            "sha256": "60029927eecad1632629695677f49626e07ae8a80bab3b56e3d9fbcbeeb18579"
           },
           {
             "path": "src/domains/items/world-catalog.ts",
-            "sha256": "fc39966cc6290f6c59bfdef799cd9e972e7799978299b8fe83a6a8b4b1162941"
+            "sha256": "db0d6a449c0ffb41c18a4248327113781359146deb1c27d352e833ca94aa1384"
           },
           {
             "path": "src/domains/look/advanced-adaption.ts",
-            "sha256": "c90df8e1dea1b4f641677cab0beec580b0904c3bdb272e7f6fa4cf42730770d5"
+            "sha256": "7be8a93b6e3b5bebda9a4765ffc41732fbcc312bdcee18f3c330199653ea605d"
           },
           {
             "path": "src/domains/look/advanced-look-capability-status.ts",
@@ -29708,7 +29708,7 @@
           },
           {
             "path": "src/domains/look/index.ts",
-            "sha256": "e667f9f85e3f658bd33b596e73fbdb75bda168eadec2ffdd1c778d173337bc59"
+            "sha256": "ac262564c454325d9c1ff9081dff7601585ccc1f7e8686000433db1dbb4327a4"
           },
           {
             "path": "src/domains/look/invariants.ts",
@@ -29724,7 +29724,7 @@
           },
           {
             "path": "src/domains/look/persistence-contracts.ts",
-            "sha256": "fce690cdfa0bded2ae00b62f9db2043ae3b01fb0d9db7b489bc82e22c62dc97c"
+            "sha256": "62248360a9ff1593911b621f7e02aa967b970d79d9699c2d2185b6adb0b3cac0"
           },
           {
             "path": "src/domains/look/personal-look-override.ts",
@@ -29744,7 +29744,7 @@
           },
           {
             "path": "src/domains/look/types.ts",
-            "sha256": "50f245351c3f2168038a45831a0cb0c35ed5c15488aeacb3aff7f9ccc3d87262"
+            "sha256": "dadf0b8779e593f86f8d199db07e9e4e7730ab436974df60ed3bc0b3094c9ee5"
           },
           {
             "path": "src/domains/look/write-draft.ts",
@@ -29756,7 +29756,7 @@
           },
           {
             "path": "src/domains/media/optimization-contract.ts",
-            "sha256": "ba9216dab79a9c03f66a16b77dedf1c26d4d00d6ae2693cc5a68919d1647846d"
+            "sha256": "997c49f8cda2ea1661a89e4fbdbc5a106500da46fadaf7a3a9fc5900134c7ccd"
           },
           {
             "path": "src/domains/media/optimization-policy.ts",
@@ -29764,7 +29764,7 @@
           },
           {
             "path": "src/domains/project/contracts/project.types.ts",
-            "sha256": "1777f75b3bd865b09e3fba61324b7331439f5846c98dea1230e27b6f976a0ca8"
+            "sha256": "ba6eadec19abdf34c965497f792403183d427cd8193d8d5293d8b39b91612ae5"
           },
           {
             "path": "src/domains/resource-id/index.ts",
@@ -29796,7 +29796,7 @@
           },
           {
             "path": "src/domains/rules/sagatree/items/carry-capacity.ts",
-            "sha256": "1ea1910d07cbfcbbe5373a78a9256e79a746273f16a3c2e2e82693f1a17037df"
+            "sha256": "191e5a1a25f0b210dd95930f1e1f3455da8f1d21e1aca7dc8e16b6a6129251c8"
           },
           {
             "path": "src/domains/rules/sagatree/items/index.ts",
@@ -29804,19 +29804,19 @@
           },
           {
             "path": "src/domains/rules/sagatree/items/resource-affordability.ts",
-            "sha256": "ed42c8faa66a711bd8c7be240df38530bb2d02fff435d1f3aa200538f9388a09"
+            "sha256": "e8fab76b8eb1441dcee849c53249158196e3aab0690185648234d610aa9fb846"
           },
           {
             "path": "src/domains/rules/sagatree/items/tool-rules.ts",
-            "sha256": "3026c3797388370309b0ea33d1366969abc05b803654cf99c68c4eff42832f18"
+            "sha256": "c69170ac5b37d1e71a6c90eda6c993f14d7962d0db5f0adfe8c44568a637cf82"
           },
           {
             "path": "src/domains/rules/sagatree/items/types.ts",
-            "sha256": "af76e6a5ebcec4a5e8acc3d3fd6461abfe083065c025080ef0b2ca851fdc6ff2"
+            "sha256": "9699b169feaf183597651838ea9f8b062e205d36862e50fa824fb95f54dc233e"
           },
           {
             "path": "src/domains/rules/sagatree/items/validators.ts",
-            "sha256": "257732bceab776a0afc34f01340eb7e47a94b5c9d984ebf3fff8e0bb7c8ff543"
+            "sha256": "2d523a6d4cc37de3e34d19492c687fd7056b4acb3f9aac7a026fe786034c8e5e"
           },
           {
             "path": "src/domains/rules/sagatree/skill-progression/index.ts",
@@ -29836,7 +29836,7 @@
           },
           {
             "path": "src/domains/rules/sagatree/starting-templates/types.ts",
-            "sha256": "c9c79a2284ea49966c4756ca3a2954a9861222fc0a49c59b6e8a371ce192bc6a"
+            "sha256": "9ebacae761467d3d70da47916cb23e91dedaa8cbcc999fd1807c908acedbe45c"
           },
           {
             "path": "src/domains/rules/sagatree/starting-templates/validate.ts",
@@ -29848,7 +29848,7 @@
           },
           {
             "path": "src/domains/session/contracts/session-lifecycle.ts",
-            "sha256": "c70eb365aa31906dc8cd8f7a3cc2c5ed1141b5bab8489a1d56ced8a41c1ce5be"
+            "sha256": "1351a7e593a24cfed6467313def0c6b2fc293adae6f8032fbb7289dce36a8260"
           },
           {
             "path": "src/domains/session/media/media-plane-contract.ts",
@@ -29972,15 +29972,15 @@
           },
           {
             "path": "src/infrastructure/character/character.persistence.ts",
-            "sha256": "5ed5f363555b9c4a3922507e01a227f74aee706764065641eb27ac9510024bd5"
+            "sha256": "0952bd632d90e054913cb0b41183df82274c46f6920f28736193e0e486bea2d1"
           },
           {
             "path": "src/infrastructure/character/host-character-adapter.ts",
-            "sha256": "13f20441555da88736aa75337568f69c2e2d516ca2a1193f0fe3d4da83317fa8"
+            "sha256": "16b4b21b18439144e98ce6dda826651541a36cc1d854b57b530b8e0994b309df"
           },
           {
             "path": "src/infrastructure/character/host-character-ports.contract.ts",
-            "sha256": "a731a0dd97b4e55beee4c08600f69d50112efec738935d93aafab65c4c223dfc"
+            "sha256": "01d79a0f9f4309e82c2c3755c9de47593f1cbdaab6d2c4dfb26881316a0cde5f"
           },
           {
             "path": "src/infrastructure/character/liveact/face-anchors-manifest-url.ts",
@@ -30064,7 +30064,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "c56b88c60d6c9491fc7b6e6e1143ac4985ffdab5dff16afef8a54bce79629a07"
+            "sha256": "7f909cafd35ac7fab15a90f37dd6164390fbac5b85d915618a1f46138b7d852a"
           },
           {
             "path": "src/infrastructure/host/host-project-http.ts",
@@ -30076,7 +30076,7 @@
           },
           {
             "path": "src/infrastructure/inventory/inventory-persistence.ts",
-            "sha256": "f62a29cc17219f2c455155f3f0a0e3fe14ca6838ac3d43df7fa19f3578773357"
+            "sha256": "445a8dbb746d03fbe520c6281e0e3d0b1e55543f3e1948c7fd89518fdb4e04ee"
           },
           {
             "path": "src/infrastructure/inventory/item-catalog-service.ts",
@@ -30096,11 +30096,11 @@
           },
           {
             "path": "src/infrastructure/look/host-look-adapter.ts",
-            "sha256": "f1c8129f9ff83fb5e586da01b59cf26e3d6e54385f20e631ee353d0802c409c1"
+            "sha256": "886fd72c386ce688dafb4f3b9c70bd6208441bfa8df04debbd7d1c293abb5552"
           },
           {
             "path": "src/infrastructure/look/host-look-ports.contract.ts",
-            "sha256": "f815bac34628b904e1c813d4929872b688d6dc140bebdf2a17a586c11556cf0f"
+            "sha256": "d83c34ff511387ed7a3afaa6fef47e487a0964e9bfe05fac686a8f439e03b6ff"
           },
           {
             "path": "src/infrastructure/look/index.ts",
@@ -30128,7 +30128,7 @@
           },
           {
             "path": "src/infrastructure/look/look.persistence.ts",
-            "sha256": "ed0a97cba6560930610fc032bd7679b5a7e4b49f837e401cd5a872974598f482"
+            "sha256": "48bc0454e2550aa42cdc819e295de776b3cca8bfc29c68e5f7cdfc1791a6463d"
           },
           {
             "path": "src/infrastructure/media/optimizer/engines/audio/index.ts",
@@ -30216,7 +30216,7 @@
           },
           {
             "path": "src/lib/authenticatedUser.ts",
-            "sha256": "5d9deef60efd85a3ecd56e9b55f67ecb2d03c2964c4f9217e6de6842d8e0b403"
+            "sha256": "b034ac66b532232c33ec19d5427aef11b6828905ca3e3e8991f060be3e9026d6"
           },
           {
             "path": "src/lib/entityCache.ts",
@@ -30228,11 +30228,11 @@
           },
           {
             "path": "src/lib/localAdmin.ts",
-            "sha256": "103feaea892b0582022557ff81cef61105f3d9ed4eb421a20d8b0b415c2de498"
+            "sha256": "7ceb27ff34dffa628cb47eaa6669f3bec32cc62981f310111a3615725bb0d376"
           },
           {
             "path": "src/lib/networkTimeout.ts",
-            "sha256": "835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851"
+            "sha256": "47fd1262837db8dfbdebf1a2459e5d1f7c165430ade5afa4b0de03658af582c4"
           }
         ],
         "liveBackendVerified": false,
@@ -30240,7 +30240,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-character.json",
-      "sourceContractSha256": "107a9c9083032e953a0b408576154ce7ea5fffc054b6ad1c5c324afb2e71016f",
+      "sourceContractSha256": "f20b1a90b283f1b1a126e9b337ec6e030decdfece48bfe3a4670735803f30233",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],
@@ -33056,39 +33056,39 @@
           },
           {
             "path": "src/domains/character/inventory-v2/migrate-legacy.ts",
-            "sha256": "25dbe6979d3f16380078fcedfbe9dc132a93bfece2474b868181a636189bf11c"
+            "sha256": "d58e79c0ec7aafd7e5b505875c6740959b9ca0fbd3d58044a955de651dc61a61"
           },
           {
             "path": "src/domains/character/inventory-v2/operations.ts",
-            "sha256": "a2e704b8a6c9d0f734d0c2f8db4fd5fcd7f419ddf2468ad7ac210d5c4d5c62d9"
+            "sha256": "84627bec59e4dc936ac71fe4c39215717d4af158d3cda017a2d29cc4d609d358"
           },
           {
             "path": "src/domains/character/inventory-v2/primitives.ts",
-            "sha256": "7fd8dd5bddc63580ede1b8e0d6c89c146531ba7751128b664bf731c405343c86"
+            "sha256": "5021b44baa17a7327c3bdb83de9d64ff2b0d20158ff46aaef5a08cfc68c45569"
           },
           {
             "path": "src/domains/character/inventory-v2/state.ts",
-            "sha256": "c78ffa8a34d754fcfa444f587d1ae8457b1cfbbbea8d80e205f5b964b05de775"
+            "sha256": "1f9ad7531f6926ce95ade24278656d3a7fdfbc32d4cba1fde4a01e8b1dbf6ea2"
           },
           {
             "path": "src/domains/character/inventory-v2/types.ts",
-            "sha256": "ac4780f56499b209346e1be76ed06c1a81bbbc78843ff5d74a9bd96f83fc8643"
+            "sha256": "1fe13df9923dcd8e8fac3c4ab6e8bfbd35eb10ec352081ae5f252a2823da3c77"
           },
           {
             "path": "src/domains/character/inventory-v2/validation.ts",
-            "sha256": "d893ca4d051be6075a44e42b6be1bba2d72366bdac267b5625b723a39318609f"
+            "sha256": "20f96d7c715b91a84db6124873e1cea1817c3feaaf62585f656aecac77360e74"
           },
           {
             "path": "src/domains/items/assets.ts",
-            "sha256": "531258cd09a5e29affafb2d52d7154400cd17a19a7e4a0e1f05dffa26461ae24"
+            "sha256": "13a88adc0b73c0beab3786996b991ab9c0670d467d6385cdb97ab2c08c1d3c38"
           },
           {
             "path": "src/domains/items/definition.ts",
-            "sha256": "e47891149c62504d1ff96fb38e6a86ca26bf2e9a52795b7cd876a66b90c78b4a"
+            "sha256": "ef251eed365154c4d4cb7c6f7d72bdc121fb7760425b4cac58591740f3368944"
           },
           {
             "path": "src/domains/items/fork.ts",
-            "sha256": "6123d90663a24b1af0dd583a601cb491799137ef4ae894b0e2bf3d5643fb8b76"
+            "sha256": "2a8e5ca8f664f83f6b0ecf976d0f214d59888a341db41ff731f8f5604cf4d371"
           },
           {
             "path": "src/domains/items/icon-assets.ts",
@@ -33100,63 +33100,63 @@
           },
           {
             "path": "src/domains/items/library-query.ts",
-            "sha256": "513d0d38b0531a58c25f9f680f4887f6e667d0594fa2c05bb4908179b34d8f83"
+            "sha256": "dd323479a80955a0b302688b3f7696cedd47d9a0ad41ab5ae5cff836dadf2d60"
           },
           {
             "path": "src/domains/items/model3d-assets.ts",
-            "sha256": "389043b61b7b9cea94ccc7e2c14a871b6e755d3bf428a205b3a3a278fe5fef2c"
+            "sha256": "80c1039bbc26634426aa11d686be78ed7b7454d8c3ca1aed4f04c51f63de363a"
           },
           {
             "path": "src/domains/items/normalize.ts",
-            "sha256": "4b26c5ec71b9c3c2d1186004b6a4e7d1d09a48e078447e7b8815d2e5bf908909"
+            "sha256": "d422f42aba4d42bfe9c998b08ce652cb7f4c9a599d37145bb9ff0bd8802d2a12"
           },
           {
             "path": "src/domains/items/pack.ts",
-            "sha256": "3214e2a3cbe1db088fb0eaca3d52503911f3c3601c6b01ed08bb75ef2707d975"
+            "sha256": "5bbfcd4281787655816e921966465b8b923395bd82f3cf177872ff162dd8ca52"
           },
           {
             "path": "src/domains/items/packs/build-standard-item.ts",
-            "sha256": "1c2654f0e7980b409762995fe9025649f9cc2bd5324df3a6d50dd4642bdfe569"
+            "sha256": "20c12f039359118ff7da32369d691507cd427fd2385115182d8fbc9e73624b84"
           },
           {
             "path": "src/domains/items/packs/contemporary-basic.ts",
-            "sha256": "c72535324491133bc1331abd5fb050d6c328f2177976b8d76f39b2438118f1c1"
+            "sha256": "27b236cbed30bc2e726c74770d344a8bea889dbd9dcd07f2e2aa1ba854dc368a"
           },
           {
             "path": "src/domains/items/packs/context-packs.ts",
-            "sha256": "768e1cf834ea03ecb0b6b3e2335da8e4356682da34bf045df5ba18a1dd9df6fb"
+            "sha256": "3e937ac0a28c6e0cd4a9a31293741bdb8be227160b4225c4dc759395b8906ca3"
           },
           {
             "path": "src/domains/items/packs/core-snapshots.ts",
-            "sha256": "440e4fe239eedb982555c2e4aa82ea45ae3d687cb26e057516c1b36feccbc19e"
+            "sha256": "02e7b6f3c5f6489d8a9e64d9b7cd4b2f5aae7bcadf936e2f6dc1ba17ff8a29aa"
           },
           {
             "path": "src/domains/items/packs/fantasy-basic.ts",
-            "sha256": "0d18e6a46d5d0603b66eade2eaa92f56a0531ad0e71dc1361bfca6cb4f507c2a"
+            "sha256": "bf57619bcf321f4662e7b901bc87f4ab1f220d33af5028878c0bf1f0b9d695cf"
           },
           {
             "path": "src/domains/items/packs/index.ts",
-            "sha256": "d851952181c448d93ac61a51e2f4d02d89253447ef74ca93ff1048590bfff43d"
+            "sha256": "ce1be63b2477bf222226d7e9f27329d7e0ab85b8d397ce155575e123bfa84cbc"
           },
           {
             "path": "src/domains/items/packs/scifi-basic.ts",
-            "sha256": "6bfed5584dfaabcbc1ce6c323ebd6d9ababc286e9a94d77106c8355667379333"
+            "sha256": "f5a6a7d2fcffc70cca5d682c1fbfb4958da0264fa40b36b1d006abe855b464ea"
           },
           {
             "path": "src/domains/items/payload.ts",
-            "sha256": "cca377861fecbee054a248d6df16baa630a1cedc496fac0fd34b0dc58e575efc"
+            "sha256": "a55a765efb9444af8ac56fb54b867dbd27d3852184d13201298f28236c490d61"
           },
           {
             "path": "src/domains/items/taxonomy.ts",
-            "sha256": "fa58dde95e4f9fa424244137f845ee4dbf8ae77d3e4e3ec1d114b74b1debc54a"
+            "sha256": "dfc8e520760a38f6ff74416f1b628105f3515ba2339da0a9044b56f69364459d"
           },
           {
             "path": "src/domains/items/validate.ts",
-            "sha256": "3ad0170cce5d6cd27889eecf9752c707c19680e28ccdf493d71851bffbab4524"
+            "sha256": "60029927eecad1632629695677f49626e07ae8a80bab3b56e3d9fbcbeeb18579"
           },
           {
             "path": "src/domains/items/world-catalog.ts",
-            "sha256": "fc39966cc6290f6c59bfdef799cd9e972e7799978299b8fe83a6a8b4b1162941"
+            "sha256": "db0d6a449c0ffb41c18a4248327113781359146deb1c27d352e833ca94aa1384"
           },
           {
             "path": "src/domains/media/index.ts",
@@ -33164,7 +33164,7 @@
           },
           {
             "path": "src/domains/media/optimization-contract.ts",
-            "sha256": "ba9216dab79a9c03f66a16b77dedf1c26d4d00d6ae2693cc5a68919d1647846d"
+            "sha256": "997c49f8cda2ea1661a89e4fbdbc5a106500da46fadaf7a3a9fc5900134c7ccd"
           },
           {
             "path": "src/domains/media/optimization-policy.ts",
@@ -33172,7 +33172,7 @@
           },
           {
             "path": "src/domains/project/contracts/project.types.ts",
-            "sha256": "1777f75b3bd865b09e3fba61324b7331439f5846c98dea1230e27b6f976a0ca8"
+            "sha256": "ba6eadec19abdf34c965497f792403183d427cd8193d8d5293d8b39b91612ae5"
           },
           {
             "path": "src/domains/resource-id/index.ts",
@@ -33196,7 +33196,7 @@
           },
           {
             "path": "src/domains/rules/sagatree/items/carry-capacity.ts",
-            "sha256": "1ea1910d07cbfcbbe5373a78a9256e79a746273f16a3c2e2e82693f1a17037df"
+            "sha256": "191e5a1a25f0b210dd95930f1e1f3455da8f1d21e1aca7dc8e16b6a6129251c8"
           },
           {
             "path": "src/domains/rules/sagatree/items/index.ts",
@@ -33204,19 +33204,19 @@
           },
           {
             "path": "src/domains/rules/sagatree/items/resource-affordability.ts",
-            "sha256": "ed42c8faa66a711bd8c7be240df38530bb2d02fff435d1f3aa200538f9388a09"
+            "sha256": "e8fab76b8eb1441dcee849c53249158196e3aab0690185648234d610aa9fb846"
           },
           {
             "path": "src/domains/rules/sagatree/items/tool-rules.ts",
-            "sha256": "3026c3797388370309b0ea33d1366969abc05b803654cf99c68c4eff42832f18"
+            "sha256": "c69170ac5b37d1e71a6c90eda6c993f14d7962d0db5f0adfe8c44568a637cf82"
           },
           {
             "path": "src/domains/rules/sagatree/items/types.ts",
-            "sha256": "af76e6a5ebcec4a5e8acc3d3fd6461abfe083065c025080ef0b2ca851fdc6ff2"
+            "sha256": "9699b169feaf183597651838ea9f8b062e205d36862e50fa824fb95f54dc233e"
           },
           {
             "path": "src/domains/rules/sagatree/items/validators.ts",
-            "sha256": "257732bceab776a0afc34f01340eb7e47a94b5c9d984ebf3fff8e0bb7c8ff543"
+            "sha256": "2d523a6d4cc37de3e34d19492c687fd7056b4acb3f9aac7a026fe786034c8e5e"
           },
           {
             "path": "src/domains/rules/sagatree/skill-progression/index.ts",
@@ -33228,15 +33228,15 @@
           },
           {
             "path": "src/domains/session/contracts/session-lifecycle.ts",
-            "sha256": "c70eb365aa31906dc8cd8f7a3cc2c5ed1141b5bab8489a1d56ced8a41c1ce5be"
+            "sha256": "1351a7e593a24cfed6467313def0c6b2fc293adae6f8032fbb7289dce36a8260"
           },
           {
             "path": "src/infrastructure/character/character.persistence.ts",
-            "sha256": "5ed5f363555b9c4a3922507e01a227f74aee706764065641eb27ac9510024bd5"
+            "sha256": "0952bd632d90e054913cb0b41183df82274c46f6920f28736193e0e486bea2d1"
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "c56b88c60d6c9491fc7b6e6e1143ac4985ffdab5dff16afef8a54bce79629a07"
+            "sha256": "7f909cafd35ac7fab15a90f37dd6164390fbac5b85d915618a1f46138b7d852a"
           },
           {
             "path": "src/infrastructure/host/host-project-http.ts",
@@ -33248,15 +33248,15 @@
           },
           {
             "path": "src/infrastructure/inventory/host-inventory-adapter.ts",
-            "sha256": "705ee213e4ffa49ea7b0d89583a01b5ae78bcd6a990464dd5104d88abc83b6b2"
+            "sha256": "06530d155a9514388bc5dd9ba7272bcaee338de038799e29cdd52c745cddff05"
           },
           {
             "path": "src/infrastructure/inventory/host-inventory-ports.contract.ts",
-            "sha256": "cca3f64ca3e2aead63b30f1c4b62aeae27cdf9dbd41f6f7791294f8d722cb915"
+            "sha256": "8debf5b89bfcf5c232ce62d1432877c7c749276dc9d40b8ed361d6d68f9f8e89"
           },
           {
             "path": "src/infrastructure/inventory/inventory-persistence.ts",
-            "sha256": "f62a29cc17219f2c455155f3f0a0e3fe14ca6838ac3d43df7fa19f3578773357"
+            "sha256": "445a8dbb746d03fbe520c6281e0e3d0b1e55543f3e1948c7fd89518fdb4e04ee"
           },
           {
             "path": "src/infrastructure/inventory/item-catalog-service.ts",
@@ -33268,11 +33268,11 @@
           },
           {
             "path": "src/infrastructure/inventory/item-model3d-service.ts",
-            "sha256": "78ea9163f36e15ce80fa6fb6da215f097c88b46d9bcae3bc78e5e3652d71cfe7"
+            "sha256": "a742072a08bb74e82290cebb2907b0742760414fb582ddfdcb8c1a585258224c"
           },
           {
             "path": "src/infrastructure/inventory/item-thumbnail-service.ts",
-            "sha256": "5725377b8fcb3ff8b95ecaab949c561aab4837fe7d5b966c305a9c6ca9eb6a2f"
+            "sha256": "11f2e1739e43b26a2451e627c0c67101669809bc30cd0c93152c595e6054719d"
           },
           {
             "path": "src/infrastructure/media/optimizer/engines/audio/index.ts",
@@ -33335,8 +33335,12 @@
             "sha256": "29846df2ae25287b68cba443a9c85f2f9952fa9cc1afd3faf762a78eb57a6fa6"
           },
           {
+            "path": "src/lib/asset-urls.ts",
+            "sha256": "fe92683d4c1418a3bfa9d6fe11d1be8c68ee11eea01e9b3b5f7119f7f86006af"
+          },
+          {
             "path": "src/lib/authenticatedUser.ts",
-            "sha256": "5d9deef60efd85a3ecd56e9b55f67ecb2d03c2964c4f9217e6de6842d8e0b403"
+            "sha256": "b034ac66b532232c33ec19d5427aef11b6828905ca3e3e8991f060be3e9026d6"
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
@@ -33344,15 +33348,11 @@
           },
           {
             "path": "src/lib/localAdmin.ts",
-            "sha256": "103feaea892b0582022557ff81cef61105f3d9ed4eb421a20d8b0b415c2de498"
+            "sha256": "7ceb27ff34dffa628cb47eaa6669f3bec32cc62981f310111a3615725bb0d376"
           },
           {
             "path": "src/lib/networkTimeout.ts",
-            "sha256": "835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851"
-          },
-          {
-            "path": "src/lib/supabase.ts",
-            "sha256": "839e17a14a542d976711340a32179c445c0ac170df628b6adbd21e1e289e195d"
+            "sha256": "47fd1262837db8dfbdebf1a2459e5d1f7c165430ade5afa4b0de03658af582c4"
           }
         ],
         "liveBackendVerified": false,
@@ -33360,7 +33360,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-inventory.json",
-      "sourceContractSha256": "12741259448d42f2fa7bc81e1b691a4f8be9a841462a4663c07b520d1170b599",
+      "sourceContractSha256": "ebc757072ed30dc832f77aa2ffeec1580e5c3db4929fe163bbcb6fd85e611699",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],
@@ -33970,7 +33970,7 @@
           },
           {
             "path": "src/domains/look/advanced-adaption.ts",
-            "sha256": "c90df8e1dea1b4f641677cab0beec580b0904c3bdb272e7f6fa4cf42730770d5"
+            "sha256": "7be8a93b6e3b5bebda9a4765ffc41732fbcc312bdcee18f3c330199653ea605d"
           },
           {
             "path": "src/domains/look/advanced-look-capability-status.ts",
@@ -33986,7 +33986,7 @@
           },
           {
             "path": "src/domains/look/index.ts",
-            "sha256": "e667f9f85e3f658bd33b596e73fbdb75bda168eadec2ffdd1c778d173337bc59"
+            "sha256": "ac262564c454325d9c1ff9081dff7601585ccc1f7e8686000433db1dbb4327a4"
           },
           {
             "path": "src/domains/look/invariants.ts",
@@ -34002,7 +34002,7 @@
           },
           {
             "path": "src/domains/look/persistence-contracts.ts",
-            "sha256": "fce690cdfa0bded2ae00b62f9db2043ae3b01fb0d9db7b489bc82e22c62dc97c"
+            "sha256": "62248360a9ff1593911b621f7e02aa967b970d79d9699c2d2185b6adb0b3cac0"
           },
           {
             "path": "src/domains/look/personal-look-override.ts",
@@ -34022,7 +34022,7 @@
           },
           {
             "path": "src/domains/look/types.ts",
-            "sha256": "50f245351c3f2168038a45831a0cb0c35ed5c15488aeacb3aff7f9ccc3d87262"
+            "sha256": "dadf0b8779e593f86f8d199db07e9e4e7730ab436974df60ed3bc0b3094c9ee5"
           },
           {
             "path": "src/domains/look/write-draft.ts",
@@ -34038,7 +34038,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "c56b88c60d6c9491fc7b6e6e1143ac4985ffdab5dff16afef8a54bce79629a07"
+            "sha256": "7f909cafd35ac7fab15a90f37dd6164390fbac5b85d915618a1f46138b7d852a"
           },
           {
             "path": "src/infrastructure/look/adapters/host-mtoon-look-adapter.ts",
@@ -34050,11 +34050,11 @@
           },
           {
             "path": "src/infrastructure/look/host-look-adapter.ts",
-            "sha256": "f1c8129f9ff83fb5e586da01b59cf26e3d6e54385f20e631ee353d0802c409c1"
+            "sha256": "886fd72c386ce688dafb4f3b9c70bd6208441bfa8df04debbd7d1c293abb5552"
           },
           {
             "path": "src/infrastructure/look/host-look-ports.contract.ts",
-            "sha256": "f815bac34628b904e1c813d4929872b688d6dc140bebdf2a17a586c11556cf0f"
+            "sha256": "d83c34ff511387ed7a3afaa6fef47e487a0964e9bfe05fac686a8f439e03b6ff"
           },
           {
             "path": "src/infrastructure/look/index.ts",
@@ -34082,7 +34082,7 @@
           },
           {
             "path": "src/infrastructure/look/look.persistence.ts",
-            "sha256": "ed0a97cba6560930610fc032bd7679b5a7e4b49f837e401cd5a872974598f482"
+            "sha256": "48bc0454e2550aa42cdc819e295de776b3cca8bfc29c68e5f7cdfc1791a6463d"
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
@@ -34094,7 +34094,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-look.json",
-      "sourceContractSha256": "70682e2a08172cca17706e898b48c6715e69f3dcf1c7be242df94872de235566",
+      "sourceContractSha256": "f62d8c46a7d52d8ccda75789b6c3015c87d1beee79b3df7029e023217410a102",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],
@@ -34471,7 +34471,7 @@
         "sourceFiles": [
           {
             "path": "src/domains/marketplace/client-trust.ts",
-            "sha256": "35e6c76ef6fb9f0db4d4bb013e6fa14b9a4db37f1bf05af722e0368d969d3a34"
+            "sha256": "569345649cf62550f0c5313fe1e210b19380252ec36a31c0d6bc1785294dd2ae"
           },
           {
             "path": "src/domains/marketplace/contracts/marketplace.types.ts",
@@ -34491,7 +34491,7 @@
           },
           {
             "path": "src/domains/user-profile/display-name.ts",
-            "sha256": "87cfc4858f198e56ea2857c505162f112efd5edacde4dbb1f7fcd995b4535516"
+            "sha256": "8d538ee042cf6909c3abfa4ea0d7435fe9bc80fe2af29dd78a5b64a53275b269"
           },
           {
             "path": "src/domains/user-profile/index.ts",
@@ -34499,11 +34499,11 @@
           },
           {
             "path": "src/infrastructure/host/host-catalog-http.ts",
-            "sha256": "9049245360683a74e7e2602d35126d815d64344d384c6684e4c2c3d41aa626d3"
+            "sha256": "72c81f6f14dc152ec5e793f91f0d7702e2ef145526fb5cf2521e2e60e4b05acc"
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "c56b88c60d6c9491fc7b6e6e1143ac4985ffdab5dff16afef8a54bce79629a07"
+            "sha256": "7f909cafd35ac7fab15a90f37dd6164390fbac5b85d915618a1f46138b7d852a"
           },
           {
             "path": "src/infrastructure/marketplace/host-marketplace-adapter.ts",
@@ -34531,7 +34531,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-marketplace.json",
-      "sourceContractSha256": "393c10aeeb4c5efe101f587e5f0b0c8d668997ad7f7132472203abc25730f5fa",
+      "sourceContractSha256": "df7624e5fc94aa15ab1306fde0ef2acb910bd868280ac7dc6934a3cc40d1ec7c",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],
@@ -34653,7 +34653,7 @@
           },
           {
             "path": "src/domains/media/optimization-contract.ts",
-            "sha256": "ba9216dab79a9c03f66a16b77dedf1c26d4d00d6ae2693cc5a68919d1647846d"
+            "sha256": "997c49f8cda2ea1661a89e4fbdbc5a106500da46fadaf7a3a9fc5900134c7ccd"
           },
           {
             "path": "src/domains/media/optimization-policy.ts",
@@ -34717,7 +34717,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-media.json",
-      "sourceContractSha256": "334043c5e667576e582ed4de89767d4424d923f8889164ca2800c346b7eed2d0",
+      "sourceContractSha256": "c001b733cff3a92529da84b7d0bdcde18b3784fb5b49f4d7f0fdec1beaa7bcae",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],
@@ -34942,23 +34942,23 @@
           },
           {
             "path": "src/domains/npc-creature/contracts.ts",
-            "sha256": "0939d59a22bc21b04d1de19429f8d3541f4f3df22a2fb14b7b7db8bb8ff9738f"
+            "sha256": "374e384c9b82e3b4030e0eeb4e9172478e8c28c96b9bf9e00869da00440d6b0a"
           },
           {
             "path": "src/domains/npc-creature/controller-assignment.ts",
-            "sha256": "0c572faa9709ff00fbb5c1a183271b4c4f53a664ad0f2db2d87bd69c7694c37a"
+            "sha256": "eb039fab76c6aa98a3945b50c49dcad0d109d676241999052f5843b7be9cb7d0"
           },
           {
             "path": "src/domains/npc-creature/core-catalog.ts",
-            "sha256": "ab597ca223259ec07cdb0c954dc647d296d255bd744e0033737028b0546df6ba"
+            "sha256": "44b57528060a7e73768bb3c48afa659fa3130ce5a13857abba2df26f070b01c4"
           },
           {
             "path": "src/domains/npc-creature/definition.ts",
-            "sha256": "c5cfbd3e9b937142fd04b2d9d8ef1470382062ae1565d4cf3622eb6053c05a45"
+            "sha256": "e71694c0b6b94940cc1f70182331cebfb99d21a7ed4f6814fc8f31eabccacdbf"
           },
           {
             "path": "src/domains/npc-creature/derived.ts",
-            "sha256": "13a0113281e9def92d1ac9658b181a890bfcd05dd3cbfe3049ef670e9b0c500c"
+            "sha256": "ba0a82e95e90d90a45324f7a23698f6a82f88518e2efd9ba7360b0a4ad02cde8"
           },
           {
             "path": "src/domains/npc-creature/icon-assets.ts",
@@ -34970,43 +34970,43 @@
           },
           {
             "path": "src/domains/npc-creature/instance.ts",
-            "sha256": "4a4371ccf0efab85cd867355c387331ab815b58c2ef40c57179300d2639552c0"
+            "sha256": "a11b7ec956684a89c589d0502db2bbcb434b682cfb14770740ad79ee979a2c1e"
           },
           {
             "path": "src/domains/npc-creature/library-query.ts",
-            "sha256": "f33a123fd69281685c654e4fcd322d697cbad5544ada723c021ba2335b62f273"
+            "sha256": "ce7d2b3cd7bf34f3d2cf5a8eb607d3066e24388078768136e4324666db0f854f"
           },
           {
             "path": "src/domains/npc-creature/pack.ts",
-            "sha256": "401d1450f6060c6984ec3a937ad4a5127602ce34f0e169fe008b860392892e25"
+            "sha256": "c1d0c00a7b414279bd9816236d44e1b31951419e7e9e37adbaa47a3b255ce9b2"
           },
           {
             "path": "src/domains/npc-creature/packs/animals.ts",
-            "sha256": "728cbea35f072058db6974ce5dd3c80686012a9bd00e4de85c80e0d9f969b021"
+            "sha256": "aba4fe81bdf14630749823857e33b312aa302ae51afaadcd5fd374c1380bf4e1"
           },
           {
             "path": "src/domains/npc-creature/packs/build-builtin.ts",
-            "sha256": "ce343c3558c918920fd328fa1891d5085d00cf4c7fd3360709f749a3fe0c20c7"
+            "sha256": "8e92a766d1df940b0409229db5f88b09b04b7bf581a5d22b7e0ea19ca06bb624"
           },
           {
             "path": "src/domains/npc-creature/packs/context-packs.ts",
-            "sha256": "a95d23684c4c3687a02b4c98c3437155ef3a1eb01b02e39e8db50d8cf4b36ec6"
+            "sha256": "44a4b45e305eec376b5a6d6159cd36b192299f5513a6bbf4153d4651bd92afe7"
           },
           {
             "path": "src/domains/npc-creature/packs/fantasy-basics.ts",
-            "sha256": "81ca439a786d0fcb2fa3bf28d801f68f068d7ff201831c157c2cec876f78561b"
+            "sha256": "09d6feac730cc18b2ea57646e83e61fec83925ff5fbe2418779d7ae1036cd98d"
           },
           {
             "path": "src/domains/npc-creature/packs/index.ts",
-            "sha256": "7bb8adddd9ea09409db03785cfcce0656338fe948a86a2f5b4aa14f6a986aeb7"
+            "sha256": "92364bfe7025bd975d42afa3f508ab81518910ab2d9b90fa7412a8d1f1aef0a0"
           },
           {
             "path": "src/domains/npc-creature/parse.ts",
-            "sha256": "29986eb9251451da88c70e6f127f8dd21007a1d61f232da6100872a9be7b2e02"
+            "sha256": "3a4669e43e8c90679bdf0cef3accbce41a89a5e71448379ba3f4cc3b9f2bb4d4"
           },
           {
             "path": "src/domains/npc-creature/payload.ts",
-            "sha256": "935c5f24af7e47173315ba80661767fe0b7acb2f890227c2062b333f3394f1fa"
+            "sha256": "9f3ea083da2d0e592350980c089af5dfb56831abb7e6115a9062aafcffa3f757"
           },
           {
             "path": "src/domains/npc-creature/policy.ts",
@@ -35014,11 +35014,11 @@
           },
           {
             "path": "src/domains/npc-creature/promotion.ts",
-            "sha256": "bf49060eeb671c84102d35471568f2497bb60865310851e247bbcbc230cc7f92"
+            "sha256": "307cc8d49734a2043023121bb341c6b98c5a4f70d960925e58b6d9a6b3609310"
           },
           {
             "path": "src/domains/npc-creature/taxonomy.ts",
-            "sha256": "3dbc3aaed85858710186551bb41eeaac7475bcb573e1b980a9e64e63852936bc"
+            "sha256": "856cef40a70191f1c9c6a2622754b356576eeb7a694c5bc846871e12d9094529"
           },
           {
             "path": "src/domains/npc-creature/validate.ts",
@@ -35026,7 +35026,7 @@
           },
           {
             "path": "src/domains/npc-creature/world-catalog.ts",
-            "sha256": "6f87522e1d00aa2ed1b9e1e0310d47f8bb25506fc33d6bee9048f98705ddba2f"
+            "sha256": "572fc2a835817734363e051f69689ea4a7275a07d7583be00db9e3c7747e2e4a"
           },
           {
             "path": "src/domains/rules/sagatree/attribute-progression/index.ts",
@@ -35070,7 +35070,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "c56b88c60d6c9491fc7b6e6e1143ac4985ffdab5dff16afef8a54bce79629a07"
+            "sha256": "7f909cafd35ac7fab15a90f37dd6164390fbac5b85d915618a1f46138b7d852a"
           },
           {
             "path": "src/infrastructure/host/host-session-http.ts",
@@ -35102,7 +35102,7 @@
           },
           {
             "path": "src/lib/authenticatedUser.ts",
-            "sha256": "5d9deef60efd85a3ecd56e9b55f67ecb2d03c2964c4f9217e6de6842d8e0b403"
+            "sha256": "b034ac66b532232c33ec19d5427aef11b6828905ca3e3e8991f060be3e9026d6"
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
@@ -35110,11 +35110,11 @@
           },
           {
             "path": "src/lib/localAdmin.ts",
-            "sha256": "103feaea892b0582022557ff81cef61105f3d9ed4eb421a20d8b0b415c2de498"
+            "sha256": "7ceb27ff34dffa628cb47eaa6669f3bec32cc62981f310111a3615725bb0d376"
           },
           {
             "path": "src/lib/networkTimeout.ts",
-            "sha256": "835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851"
+            "sha256": "47fd1262837db8dfbdebf1a2459e5d1f7c165430ade5afa4b0de03658af582c4"
           }
         ],
         "liveBackendVerified": false,
@@ -35122,7 +35122,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-npc-creature.json",
-      "sourceContractSha256": "d66cd71c8ca412dedb894856d7a84f3425d84c01adf52f973d9a2ad0f617206c",
+      "sourceContractSha256": "00abc7ceebd9c2f5db82ed49a6a5d093cc35bc3956e8b54ff6839016155b94c7",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],
@@ -35501,11 +35501,11 @@
         "sourceFiles": [
           {
             "path": "src/domains/project/contracts/project.types.ts",
-            "sha256": "1777f75b3bd865b09e3fba61324b7331439f5846c98dea1230e27b6f976a0ca8"
+            "sha256": "ba6eadec19abdf34c965497f792403183d427cd8193d8d5293d8b39b91612ae5"
           },
           {
             "path": "src/domains/project/contracts/saga-overview.ts",
-            "sha256": "d4ddafbea6f3d8a8678c44d6fd9096ebe1f6985e4c335f5050dac2915918dc94"
+            "sha256": "34fb96c09db3a492e615548e4e681e782056df1f725100ed0cc8e40d6805df72"
           },
           {
             "path": "src/domains/saga/permissions/catalog.ts",
@@ -35521,11 +35521,11 @@
           },
           {
             "path": "src/domains/session/contracts/session-lifecycle.ts",
-            "sha256": "c70eb365aa31906dc8cd8f7a3cc2c5ed1141b5bab8489a1d56ced8a41c1ce5be"
+            "sha256": "1351a7e593a24cfed6467313def0c6b2fc293adae6f8032fbb7289dce36a8260"
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "c56b88c60d6c9491fc7b6e6e1143ac4985ffdab5dff16afef8a54bce79629a07"
+            "sha256": "7f909cafd35ac7fab15a90f37dd6164390fbac5b85d915618a1f46138b7d852a"
           },
           {
             "path": "src/infrastructure/host/host-project-http.ts",
@@ -35537,11 +35537,11 @@
           },
           {
             "path": "src/infrastructure/project/host-project-adapter.ts",
-            "sha256": "f8137115741c452c865883275c6d95529faf29ca28620c5adc92eedc30002e90"
+            "sha256": "d595a50fb380c7c6eb3ccaa3a30e8681ef964c58b869edb63a6dbedbee3eefd8"
           },
           {
             "path": "src/infrastructure/project/host-project-ports.contract.ts",
-            "sha256": "96d05101ba2cbe8364ae30bbcde48235a1058a65a43f733d03433d7f26a8236f"
+            "sha256": "7ab253171577d0d7bc8b0668bde65434c85d36d36c01234c4e86978193be427f"
           },
           {
             "path": "src/infrastructure/project/project-member-service.ts",
@@ -35561,7 +35561,7 @@
           },
           {
             "path": "src/lib/authenticatedUser.ts",
-            "sha256": "5d9deef60efd85a3ecd56e9b55f67ecb2d03c2964c4f9217e6de6842d8e0b403"
+            "sha256": "b034ac66b532232c33ec19d5427aef11b6828905ca3e3e8991f060be3e9026d6"
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
@@ -35569,11 +35569,11 @@
           },
           {
             "path": "src/lib/localAdmin.ts",
-            "sha256": "103feaea892b0582022557ff81cef61105f3d9ed4eb421a20d8b0b415c2de498"
+            "sha256": "7ceb27ff34dffa628cb47eaa6669f3bec32cc62981f310111a3615725bb0d376"
           },
           {
             "path": "src/lib/networkTimeout.ts",
-            "sha256": "835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851"
+            "sha256": "47fd1262837db8dfbdebf1a2459e5d1f7c165430ade5afa4b0de03658af582c4"
           }
         ],
         "liveBackendVerified": false,
@@ -35581,7 +35581,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-project.json",
-      "sourceContractSha256": "73e8cb53c17509bb51f308177e111747d967a4846042f132261ae02b2d62e872",
+      "sourceContractSha256": "cfa95de54a973a95578d4817c4182661027c3af11491a0c4b3e4592b46e6b49a",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],
@@ -35910,7 +35910,7 @@
           },
           {
             "path": "src/domains/user-profile/display-name.ts",
-            "sha256": "87cfc4858f198e56ea2857c505162f112efd5edacde4dbb1f7fcd995b4535516"
+            "sha256": "8d538ee042cf6909c3abfa4ea0d7435fe9bc80fe2af29dd78a5b64a53275b269"
           },
           {
             "path": "src/domains/user-profile/index.ts",
@@ -35918,11 +35918,11 @@
           },
           {
             "path": "src/infrastructure/host/host-catalog-http.ts",
-            "sha256": "9049245360683a74e7e2602d35126d815d64344d384c6684e4c2c3d41aa626d3"
+            "sha256": "72c81f6f14dc152ec5e793f91f0d7702e2ef145526fb5cf2521e2e60e4b05acc"
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "c56b88c60d6c9491fc7b6e6e1143ac4985ffdab5dff16afef8a54bce79629a07"
+            "sha256": "7f909cafd35ac7fab15a90f37dd6164390fbac5b85d915618a1f46138b7d852a"
           },
           {
             "path": "src/infrastructure/rulesets/ruleset-service.ts",
@@ -35938,7 +35938,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-rulesets.json",
-      "sourceContractSha256": "094ebd803519cac89f9a02c4639106f41c21f805c2623cdf413663f3dbffb898",
+      "sourceContractSha256": "7d96da525d500e44e62badd635969e9fd1c454af9888dbd52f5b9d1d3711dac5",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],
@@ -36025,15 +36025,15 @@
         "sourceFiles": [
           {
             "path": "src/domains/saga/contracts/saga-definition.ts",
-            "sha256": "69b8fab72a158942d4f807e8b9fabcdae815506fb18e4e82434a71d0cdb9ee05"
+            "sha256": "2c1509cf4f9026dff9f39cd4548e10a4fba1132f4ed53ff4f58fe71babe692b5"
           },
           {
             "path": "src/domains/session/contracts/session-outcome-promotion.ts",
-            "sha256": "d3c26e886f5f1da3b617723feaad5510218d486413ea7953bbc382593578bedd"
+            "sha256": "6354ee19535827055e5d4464d4698a498c7cb3d4c2511044d7948889fc56990a"
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "c56b88c60d6c9491fc7b6e6e1143ac4985ffdab5dff16afef8a54bce79629a07"
+            "sha256": "7f909cafd35ac7fab15a90f37dd6164390fbac5b85d915618a1f46138b7d852a"
           },
           {
             "path": "src/infrastructure/host/host-saga-definition-http.ts",
@@ -36045,11 +36045,11 @@
           },
           {
             "path": "src/infrastructure/saga/host-saga-adapter.ts",
-            "sha256": "7f0c52eaafcd6ee4f0deec9e5e4a5a282dc1d2ded67bd3a0e00a65636097aa62"
+            "sha256": "e28c482990d2b48ef1d68e56555251ab33f1a247aa2b60b45bd690cc10c71ca4"
           },
           {
             "path": "src/infrastructure/saga/host-saga-ports.contract.ts",
-            "sha256": "c3734bbd18e4a04460915e128bbc2c46626934cf7bde76305918355f0ba85649"
+            "sha256": "4fe987e282d94e22a2fd33d688bbbff7b4e4327c600c8a34bc9d376d3139e47f"
           },
           {
             "path": "src/infrastructure/saga/saga-definition-service.ts",
@@ -36069,7 +36069,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-saga.json",
-      "sourceContractSha256": "cfd908766d52d75677d85e9caf9a5bf13a5fd291b66f05f9e41d74bfc49107e4",
+      "sourceContractSha256": "b2913dcdd3d89fa80da10af3334295d81ee0a4d2ca7c1ae20165028edc4dc378",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],
@@ -36225,11 +36225,11 @@
           },
           {
             "path": "src/domains/session/contracts/session-invite.ts",
-            "sha256": "dac4795822314800fb59ff5e11b56ab8ce808071c43185e99711a92b66c0d4dc"
+            "sha256": "df348618335a19017b10ddb82e7a911d22305b9ff3e235af50a2fcdb236a6f6d"
           },
           {
             "path": "src/domains/session/contracts/session-lifecycle.ts",
-            "sha256": "c70eb365aa31906dc8cd8f7a3cc2c5ed1141b5bab8489a1d56ced8a41c1ce5be"
+            "sha256": "1351a7e593a24cfed6467313def0c6b2fc293adae6f8032fbb7289dce36a8260"
           },
           {
             "path": "src/domains/session/contracts/session-prepare-recap.ts",
@@ -36249,7 +36249,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "c56b88c60d6c9491fc7b6e6e1143ac4985ffdab5dff16afef8a54bce79629a07"
+            "sha256": "7f909cafd35ac7fab15a90f37dd6164390fbac5b85d915618a1f46138b7d852a"
           },
           {
             "path": "src/infrastructure/host/host-session-http.ts",
@@ -36257,11 +36257,11 @@
           },
           {
             "path": "src/infrastructure/session/host-session-adapter.ts",
-            "sha256": "57c52ff948f0e5169f302c2de0a58e4eabffa35668fb121605533bcddbb3d4fb"
+            "sha256": "9bb63b8c538dca110829b2f41ae8ff87420ddddc609f3cf067db83a185b2ce2d"
           },
           {
             "path": "src/infrastructure/session/host-session-ports.contract.ts",
-            "sha256": "b7d49eee90da55c7a0acadd765ddb202527fc003789f855ae910425e073f928f"
+            "sha256": "a6b2c4cc0eca3551640dd5745202a722c22971bf837d2b39a0afcd48e0eb1b5c"
           },
           {
             "path": "src/infrastructure/session/live-session-access.resolver.ts",
@@ -36297,7 +36297,7 @@
           },
           {
             "path": "src/infrastructure/session/session-lobby-channel.ts",
-            "sha256": "1dec5e7d1f3eb0a53a91b28c458db30bf2f3e4200c27aeafa811139fbf1890ed"
+            "sha256": "b3b8cbf0b380e3ca766df68d0a4dccc275495115161180b2ca0c8b41a47c35eb"
           },
           {
             "path": "src/infrastructure/session/session-recap-ai-service.ts",
@@ -36321,7 +36321,7 @@
           },
           {
             "path": "src/lib/authenticatedUser.ts",
-            "sha256": "5d9deef60efd85a3ecd56e9b55f67ecb2d03c2964c4f9217e6de6842d8e0b403"
+            "sha256": "b034ac66b532232c33ec19d5427aef11b6828905ca3e3e8991f060be3e9026d6"
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
@@ -36329,11 +36329,11 @@
           },
           {
             "path": "src/lib/localAdmin.ts",
-            "sha256": "103feaea892b0582022557ff81cef61105f3d9ed4eb421a20d8b0b415c2de498"
+            "sha256": "7ceb27ff34dffa628cb47eaa6669f3bec32cc62981f310111a3615725bb0d376"
           },
           {
             "path": "src/lib/networkTimeout.ts",
-            "sha256": "835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851"
+            "sha256": "47fd1262837db8dfbdebf1a2459e5d1f7c165430ade5afa4b0de03658af582c4"
           }
         ],
         "liveBackendVerified": false,
@@ -36341,7 +36341,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-session.json",
-      "sourceContractSha256": "ed6136b6128429a12b726e70b440a2d8123f10aa794bc7efe66d3e40ada72fdf",
+      "sourceContractSha256": "716c93b2f409d79268e392fb8ec7d58b7aac6c9c141e12f0fb1575594ad6d1fd",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],
@@ -37228,7 +37228,7 @@
           },
           {
             "path": "src/domains/media/optimization-contract.ts",
-            "sha256": "ba9216dab79a9c03f66a16b77dedf1c26d4d00d6ae2693cc5a68919d1647846d"
+            "sha256": "997c49f8cda2ea1661a89e4fbdbc5a106500da46fadaf7a3a9fc5900134c7ccd"
           },
           {
             "path": "src/domains/media/optimization-policy.ts",
@@ -37248,7 +37248,7 @@
           },
           {
             "path": "src/domains/user-profile/display-name.ts",
-            "sha256": "87cfc4858f198e56ea2857c505162f112efd5edacde4dbb1f7fcd995b4535516"
+            "sha256": "8d538ee042cf6909c3abfa4ea0d7435fe9bc80fe2af29dd78a5b64a53275b269"
           },
           {
             "path": "src/domains/user-profile/index.ts",
@@ -37256,11 +37256,11 @@
           },
           {
             "path": "src/infrastructure/host/host-catalog-http.ts",
-            "sha256": "9049245360683a74e7e2602d35126d815d64344d384c6684e4c2c3d41aa626d3"
+            "sha256": "72c81f6f14dc152ec5e793f91f0d7702e2ef145526fb5cf2521e2e60e4b05acc"
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "c56b88c60d6c9491fc7b6e6e1143ac4985ffdab5dff16afef8a54bce79629a07"
+            "sha256": "7f909cafd35ac7fab15a90f37dd6164390fbac5b85d915618a1f46138b7d852a"
           },
           {
             "path": "src/infrastructure/media/optimizer/engines/audio/index.ts",
@@ -37324,11 +37324,11 @@
           },
           {
             "path": "src/infrastructure/user-profile/host-user-profile-adapter.ts",
-            "sha256": "c9625210b18534d7340c84a3f4202e3f775a933dbefed8de66b489c1bba9f604"
+            "sha256": "67155e3dfce6ee4c544e340fbf4c2992e11979de3602864fe2b78ce5fe101a55"
           },
           {
             "path": "src/infrastructure/user-profile/host-user-profile-ports.contract.ts",
-            "sha256": "7f4aaaa098bd0a8625e916074ae7c4a0e2d34b99d4effd1ccb0a890148f01511"
+            "sha256": "7fec9c4d96f7c305e8afddf3573b5d6e2e579a5f800058d3f55de1cd7179839c"
           },
           {
             "path": "src/infrastructure/user-profile/index.ts",
@@ -37348,7 +37348,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-user-profile.json",
-      "sourceContractSha256": "6a523c7e9097f63faf6e1bc3ad971416b643d9cdeafc6ce78df020eed66747b0",
+      "sourceContractSha256": "a6825a982b92fe0e92dd0a5deba76f1fcfc947789b160c5e95cfe7a93cd8feb3",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],
@@ -37494,51 +37494,51 @@
         "sourceFiles": [
           {
             "path": "src/domains/character/inventory-v2/primitives.ts",
-            "sha256": "7fd8dd5bddc63580ede1b8e0d6c89c146531ba7751128b664bf731c405343c86"
+            "sha256": "5021b44baa17a7327c3bdb83de9d64ff2b0d20158ff46aaef5a08cfc68c45569"
           },
           {
             "path": "src/domains/items/definition.ts",
-            "sha256": "e47891149c62504d1ff96fb38e6a86ca26bf2e9a52795b7cd876a66b90c78b4a"
+            "sha256": "ef251eed365154c4d4cb7c6f7d72bdc121fb7760425b4cac58591740f3368944"
           },
           {
             "path": "src/domains/items/pack.ts",
-            "sha256": "3214e2a3cbe1db088fb0eaca3d52503911f3c3601c6b01ed08bb75ef2707d975"
+            "sha256": "5bbfcd4281787655816e921966465b8b923395bd82f3cf177872ff162dd8ca52"
           },
           {
             "path": "src/domains/items/packs/build-standard-item.ts",
-            "sha256": "1c2654f0e7980b409762995fe9025649f9cc2bd5324df3a6d50dd4642bdfe569"
+            "sha256": "20c12f039359118ff7da32369d691507cd427fd2385115182d8fbc9e73624b84"
           },
           {
             "path": "src/domains/items/packs/contemporary-basic.ts",
-            "sha256": "c72535324491133bc1331abd5fb050d6c328f2177976b8d76f39b2438118f1c1"
+            "sha256": "27b236cbed30bc2e726c74770d344a8bea889dbd9dcd07f2e2aa1ba854dc368a"
           },
           {
             "path": "src/domains/items/packs/context-packs.ts",
-            "sha256": "768e1cf834ea03ecb0b6b3e2335da8e4356682da34bf045df5ba18a1dd9df6fb"
+            "sha256": "3e937ac0a28c6e0cd4a9a31293741bdb8be227160b4225c4dc759395b8906ca3"
           },
           {
             "path": "src/domains/items/packs/core-snapshots.ts",
-            "sha256": "440e4fe239eedb982555c2e4aa82ea45ae3d687cb26e057516c1b36feccbc19e"
+            "sha256": "02e7b6f3c5f6489d8a9e64d9b7cd4b2f5aae7bcadf936e2f6dc1ba17ff8a29aa"
           },
           {
             "path": "src/domains/items/packs/fantasy-basic.ts",
-            "sha256": "0d18e6a46d5d0603b66eade2eaa92f56a0531ad0e71dc1361bfca6cb4f507c2a"
+            "sha256": "bf57619bcf321f4662e7b901bc87f4ab1f220d33af5028878c0bf1f0b9d695cf"
           },
           {
             "path": "src/domains/items/packs/index.ts",
-            "sha256": "d851952181c448d93ac61a51e2f4d02d89253447ef74ca93ff1048590bfff43d"
+            "sha256": "ce1be63b2477bf222226d7e9f27329d7e0ab85b8d397ce155575e123bfa84cbc"
           },
           {
             "path": "src/domains/items/packs/scifi-basic.ts",
-            "sha256": "6bfed5584dfaabcbc1ce6c323ebd6d9ababc286e9a94d77106c8355667379333"
+            "sha256": "f5a6a7d2fcffc70cca5d682c1fbfb4958da0264fa40b36b1d006abe855b464ea"
           },
           {
             "path": "src/domains/items/taxonomy.ts",
-            "sha256": "fa58dde95e4f9fa424244137f845ee4dbf8ae77d3e4e3ec1d114b74b1debc54a"
+            "sha256": "dfc8e520760a38f6ff74416f1b628105f3515ba2339da0a9044b56f69364459d"
           },
           {
             "path": "src/domains/items/world-catalog.ts",
-            "sha256": "fc39966cc6290f6c59bfdef799cd9e972e7799978299b8fe83a6a8b4b1162941"
+            "sha256": "db0d6a449c0ffb41c18a4248327113781359146deb1c27d352e833ca94aa1384"
           },
           {
             "path": "src/domains/media/index.ts",
@@ -37546,7 +37546,7 @@
           },
           {
             "path": "src/domains/media/optimization-contract.ts",
-            "sha256": "ba9216dab79a9c03f66a16b77dedf1c26d4d00d6ae2693cc5a68919d1647846d"
+            "sha256": "997c49f8cda2ea1661a89e4fbdbc5a106500da46fadaf7a3a9fc5900134c7ccd"
           },
           {
             "path": "src/domains/media/optimization-policy.ts",
@@ -37554,43 +37554,43 @@
           },
           {
             "path": "src/domains/npc-creature/definition.ts",
-            "sha256": "c5cfbd3e9b937142fd04b2d9d8ef1470382062ae1565d4cf3622eb6053c05a45"
+            "sha256": "e71694c0b6b94940cc1f70182331cebfb99d21a7ed4f6814fc8f31eabccacdbf"
           },
           {
             "path": "src/domains/npc-creature/pack.ts",
-            "sha256": "401d1450f6060c6984ec3a937ad4a5127602ce34f0e169fe008b860392892e25"
+            "sha256": "c1d0c00a7b414279bd9816236d44e1b31951419e7e9e37adbaa47a3b255ce9b2"
           },
           {
             "path": "src/domains/npc-creature/packs/animals.ts",
-            "sha256": "728cbea35f072058db6974ce5dd3c80686012a9bd00e4de85c80e0d9f969b021"
+            "sha256": "aba4fe81bdf14630749823857e33b312aa302ae51afaadcd5fd374c1380bf4e1"
           },
           {
             "path": "src/domains/npc-creature/packs/build-builtin.ts",
-            "sha256": "ce343c3558c918920fd328fa1891d5085d00cf4c7fd3360709f749a3fe0c20c7"
+            "sha256": "8e92a766d1df940b0409229db5f88b09b04b7bf581a5d22b7e0ea19ca06bb624"
           },
           {
             "path": "src/domains/npc-creature/packs/context-packs.ts",
-            "sha256": "a95d23684c4c3687a02b4c98c3437155ef3a1eb01b02e39e8db50d8cf4b36ec6"
+            "sha256": "44a4b45e305eec376b5a6d6159cd36b192299f5513a6bbf4153d4651bd92afe7"
           },
           {
             "path": "src/domains/npc-creature/packs/fantasy-basics.ts",
-            "sha256": "81ca439a786d0fcb2fa3bf28d801f68f068d7ff201831c157c2cec876f78561b"
+            "sha256": "09d6feac730cc18b2ea57646e83e61fec83925ff5fbe2418779d7ae1036cd98d"
           },
           {
             "path": "src/domains/npc-creature/packs/index.ts",
-            "sha256": "7bb8adddd9ea09409db03785cfcce0656338fe948a86a2f5b4aa14f6a986aeb7"
+            "sha256": "92364bfe7025bd975d42afa3f508ab81518910ab2d9b90fa7412a8d1f1aef0a0"
           },
           {
             "path": "src/domains/npc-creature/taxonomy.ts",
-            "sha256": "3dbc3aaed85858710186551bb41eeaac7475bcb573e1b980a9e64e63852936bc"
+            "sha256": "856cef40a70191f1c9c6a2622754b356576eeb7a694c5bc846871e12d9094529"
           },
           {
             "path": "src/domains/npc-creature/world-catalog.ts",
-            "sha256": "6f87522e1d00aa2ed1b9e1e0310d47f8bb25506fc33d6bee9048f98705ddba2f"
+            "sha256": "572fc2a835817734363e051f69689ea4a7275a07d7583be00db9e3c7747e2e4a"
           },
           {
             "path": "src/domains/rules/sagatree/items/carry-capacity.ts",
-            "sha256": "1ea1910d07cbfcbbe5373a78a9256e79a746273f16a3c2e2e82693f1a17037df"
+            "sha256": "191e5a1a25f0b210dd95930f1e1f3455da8f1d21e1aca7dc8e16b6a6129251c8"
           },
           {
             "path": "src/domains/rules/sagatree/items/index.ts",
@@ -37598,19 +37598,19 @@
           },
           {
             "path": "src/domains/rules/sagatree/items/resource-affordability.ts",
-            "sha256": "ed42c8faa66a711bd8c7be240df38530bb2d02fff435d1f3aa200538f9388a09"
+            "sha256": "e8fab76b8eb1441dcee849c53249158196e3aab0690185648234d610aa9fb846"
           },
           {
             "path": "src/domains/rules/sagatree/items/tool-rules.ts",
-            "sha256": "3026c3797388370309b0ea33d1366969abc05b803654cf99c68c4eff42832f18"
+            "sha256": "c69170ac5b37d1e71a6c90eda6c993f14d7962d0db5f0adfe8c44568a637cf82"
           },
           {
             "path": "src/domains/rules/sagatree/items/types.ts",
-            "sha256": "af76e6a5ebcec4a5e8acc3d3fd6461abfe083065c025080ef0b2ca851fdc6ff2"
+            "sha256": "9699b169feaf183597651838ea9f8b062e205d36862e50fa824fb95f54dc233e"
           },
           {
             "path": "src/domains/rules/sagatree/items/validators.ts",
-            "sha256": "257732bceab776a0afc34f01340eb7e47a94b5c9d984ebf3fff8e0bb7c8ff543"
+            "sha256": "2d523a6d4cc37de3e34d19492c687fd7056b4acb3f9aac7a026fe786034c8e5e"
           },
           {
             "path": "src/domains/rules/sagatree/npc-creature-power/benchmarks.ts",
@@ -37702,7 +37702,7 @@
           },
           {
             "path": "src/domains/world/atlas/atlas-prototype-lod.ts",
-            "sha256": "2fb7c706ad2210f7a3f389f22564f60e3f22aa615ec49af49695e388ae582256"
+            "sha256": "f3eddacef2627a378106892a67a27f057cf84ccdd64b8db0c3ceacbf1470a317"
           },
           {
             "path": "src/domains/world/atlas/atlas-renderer-target.ts",
@@ -37742,11 +37742,11 @@
           },
           {
             "path": "src/domains/world/atlas/dornhain-golden-reset.ts",
-            "sha256": "993c1935fda833ddaf0f51c8f1c10b8b25a28e944c2e783ec2d89f2e9e95e9eb"
+            "sha256": "bf0639ef36ff62eadff1b3d233f3f7a2876e61cd05d0b82054de69db15bb8427"
           },
           {
             "path": "src/domains/world/atlas/dornhain-unified-starter.ts",
-            "sha256": "5e9afab7ec94b7bef19535be6311b51a2f77c59b5f82b36fcd8b78007cc336f5"
+            "sha256": "87ff1c15ca8202f29ebcc1a720c6a75395e2a8fa5f74bceb09ec2b1be35b657a"
           },
           {
             "path": "src/domains/world/atlas/dungeon-forge-workflow.ts",
@@ -37754,7 +37754,7 @@
           },
           {
             "path": "src/domains/world/atlas/dungeon-generator.ts",
-            "sha256": "6bbed5a42d16ec727e2745b0e1f47dc9d3f1dcc219ee0ccb06f15340307908e1"
+            "sha256": "a8bfde86372f240ec53ac9e4e1fcd6cf048e87edec0215e00d70c5a7919e2932"
           },
           {
             "path": "src/domains/world/atlas/dungeon-grid.ts",
@@ -37778,7 +37778,7 @@
           },
           {
             "path": "src/domains/world/atlas/unified-canvas-doc.ts",
-            "sha256": "59fa68591c71d2f0bba3185fffb4adecf8d325464df4701309af76a2a99fbd82"
+            "sha256": "568badf03cd75c9e261aa6e746a8451a98e36a940d80acfebea85f92f876ae66"
           },
           {
             "path": "src/domains/world/atlas/validate-world-atlas.ts",
@@ -37842,7 +37842,7 @@
           },
           {
             "path": "src/domains/world/map/dornhain-starter-map.ts",
-            "sha256": "b4bb022827d2b2fe7f4d0b490e1348b5f9fc1045ba1547b1e734d9130e335b8c"
+            "sha256": "da890d3ea52915635465b34a5762a869f606d50698ea2e9cb84611ad08836f32"
           },
           {
             "path": "src/domains/world/map/index.ts",
@@ -37886,7 +37886,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "c56b88c60d6c9491fc7b6e6e1143ac4985ffdab5dff16afef8a54bce79629a07"
+            "sha256": "7f909cafd35ac7fab15a90f37dd6164390fbac5b85d915618a1f46138b7d852a"
           },
           {
             "path": "src/infrastructure/host/host-world-http.ts",
@@ -37962,15 +37962,15 @@
           },
           {
             "path": "src/infrastructure/world/host-world-adapter.ts",
-            "sha256": "8fbaad8d6d4ec9cc42070444441fae94fb20af020cdada2125a705877ea4e1f1"
+            "sha256": "0b7fa8f6400dfb74e1bc60fd7409136560758a750045fdc95d5a57896f5725da"
           },
           {
             "path": "src/infrastructure/world/host-world-ports.contract.ts",
-            "sha256": "9d11c1085646775f6c6eb5bdc29baa7ed40af0245354589bd767d4f80da1d582"
+            "sha256": "1828628b574107b3e89784d7e9507dd6632bddf06d3814b60740e24106af6b39"
           },
           {
             "path": "src/infrastructure/world/host-world-read.contract.ts",
-            "sha256": "271a052d5f621ddf7f3344eaa55e3a58579c5cf629fe76a4827393d0d1c7a05c"
+            "sha256": "a777803278308f2fefab6f19f92f9387fac8cf76f662d84ae593dfa333b2dbf3"
           },
           {
             "path": "src/infrastructure/world/world-atlas-service.ts",
@@ -37986,7 +37986,7 @@
           },
           {
             "path": "src/infrastructure/world/world-profile-service.ts",
-            "sha256": "10935d830086c8f9972b9f9f982e7ba8203609facd408020c634df4400032610"
+            "sha256": "cc4734a1cf6cda82dd088b2df16df136db81b350e1f8c493178500b2ad072a05"
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
@@ -37998,7 +37998,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-world.json",
-      "sourceContractSha256": "1933597d45fecc9f0da0d416598d3b791064a79964d42abaa52b80e13a4f58af",
+      "sourceContractSha256": "749d6d7ede45785c772df0b4ff02765c575b11480bd42731b927ac81943d6537",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],

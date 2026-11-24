@@ -184,11 +184,11 @@
       "actor": "iamthamanic",
       "decision": "APPROVED \u2014 Productive Dornhain-scoped Supabase live shutdown execute after MIG-702 readiness; Dornhain host content must survive",
       "sourceUrl": "https://github.com/iamthamanic/sagatree/issues/851#issuecomment-6565086247",
-      "evidenceFile": "docs/architecture/migration-owner-release-2026-11-01-supabase-live-shutdown.md",
+      "evidenceFile": "docs/architecture/migration-owner-release-2026-11-01-legacy-baas-shutdown.md",
       "approvedAt": "2026-11-01T22:50:00Z",
       "provenance": "Owner chat 2026-11-01 evening: live Supabase Abschaltung authorized as Freigabe-Handlung; CUTOVER-DORHAIN remains APPROVED_DRILL_AND_SHUTDOWN_AFTER_PROOF (drill Freigabe), this RELEASE authorizes the productive act.",
       "bindingConstraints": [
-        "docs/architecture/migration-owner-release-2026-11-01-supabase-live-shutdown.md",
+        "docs/architecture/migration-owner-release-2026-11-01-legacy-baas-shutdown.md",
         "docs/ops/cutover/shutdown/live-execute.md",
         "releases.CUTOVER-DORHAIN APPROVED_DRILL_AND_SHUTDOWN_AFTER_PROOF",
         "MIG-702 readiness + Dornhain catalog intact on host"

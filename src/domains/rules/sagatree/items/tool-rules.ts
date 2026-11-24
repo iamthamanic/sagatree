@@ -5,7 +5,7 @@
  * High-quality tools never invent a numeric bonus; advantage applies only when
  * an explicit rule defines it.
  *
- * Domain-pure: no React, no Supabase, no inventory state.
+ * Domain-pure: no React, no backend clients, no inventory state.
  */
 
 /** How suitable the available tools are for the attempted action. */

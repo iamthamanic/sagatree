@@ -39,7 +39,7 @@ const {
 } = await import(modUrl);
 
 const allowUrl = pathToFileURL(
-  join(root, 'archive/supabase-legacy/supabase/functions/_shared/edge-dispatcher-allowlist.ts'),
+  join(root, 'server/src/http/edge-main-dispatcher.ts'),
 ).href;
 const { isEdgeDispatcherAllowed, EDGE_DISPATCHER_ALLOWLIST } = await import(allowUrl);
 const { createRouteHandler } = await import(

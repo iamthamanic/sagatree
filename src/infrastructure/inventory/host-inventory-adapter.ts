@@ -2,7 +2,7 @@
  * host-inventory-adapter — Binds infra HostInventoryPorts to an injected host impl (MIG-303).
  * Location: src/infrastructure/inventory/host-inventory-adapter.ts
  *
- * Production UI still calls Supabase inventory facades. Dual-path seam only.
+ * The legacy inventory facades were retired with CUT-20. Dual-path seam only.
  */
 import type { HostInventoryPorts } from './host-inventory-ports.contract';
 import { HOST_INVENTORY_OPS } from './host-inventory-ports.contract';

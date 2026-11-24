@@ -2,7 +2,7 @@
  * starting-templates types — species-neutral Level-1 SagaTree start builds (#463).
  * Location: src/domains/rules/sagatree/starting-templates/types.ts
  *
- * Pure domain: no React, Supabase, race/appearance/inventory fields.
+ * Pure domain: no React, backend clients, race/appearance/inventory fields.
  */
 import type { CharacterAttributesDto } from '../../../character/domain/character.entity';
 import type {

@@ -3,7 +3,7 @@
  * Location: server/src/bootstrap/ensure-dornhain-default.ts
  *
  * Cutover drills already seed fixtures; fresh solo hosts must still land Dornhain
- * world + saga + pregens + items/monsters/NPCs without a Supabase migration.
+ * world + saga + pregens + items/monsters/NPCs without an external seed migration.
  */
 import { createHash, randomUUID } from 'node:crypto';
 import type { HostDatabase } from '../persistence/index.ts';

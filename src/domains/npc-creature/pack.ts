@@ -4,7 +4,7 @@
  * appear in multiple packs. Packs never embed full definition payloads.
  * Location: src/domains/npc-creature/pack.ts
  *
- * Domain-pure: no React, no Supabase, no UI imports.
+ * Domain-pure: no React, no backend clients, no UI imports.
  */
 
 /**

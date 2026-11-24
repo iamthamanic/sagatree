@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * mig-702-shutdown-readiness.self-test — Dornhain Supabase shutdown gate (#851).
+ * mig-702-shutdown-readiness.self-test — Dornhain legacy-stack shutdown gate (#851, historical).
  * Location: scripts/mig-702-shutdown-readiness.self-test.mjs
  */
 import { mkdtempSync, rmSync, existsSync, readdirSync, readFileSync } from 'node:fs';
@@ -63,7 +63,7 @@ try {
       callMatrix: [
         {
           operationId: 'host.ok',
-          supabaseNetworkCall: false,
+          legacyNetworkCall: false,
           successorVerified: true,
           humanApprovedRetirement: false,
         },
@@ -107,8 +107,8 @@ try {
     'empty-call-matrix',
   );
 
-  assert(!drill.blockedWithSupabaseLeftover.shutdownReady, 'supabase leftover → blocked');
-  assert(drill.blockedWithSupabaseLeftover.supabaseBlockerCount >= 1, 'supabase count');
+  assert(!drill.blockedWithLegacyLeftover.shutdownReady, 'legacy leftover → blocked');
+  assert(drill.blockedWithLegacyLeftover.legacyBlockerCount >= 1, 'legacy count');
 
   assert(!drill.blockedBrokenCatalog.shutdownReady, 'broken catalog → blocked');
 

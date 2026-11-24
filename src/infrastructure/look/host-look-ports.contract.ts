@@ -3,7 +3,7 @@
  * Location: src/infrastructure/look/host-look-ports.contract.ts
  *
  * Transport-free DTO mirror of `server/src/modules/look` LookProfile ports.
- * Supabase facades remain live until cutover; this documents the host shape
+ * Legacy facades were retired with the cutover (CUT-20/21); this documents the host shape
  * for parity checks without importing the Node host package.
  */
 

@@ -3,7 +3,7 @@
  * Values are copied at authoring time — no runtime merge with Core (#137).
  * Location: src/domains/items/packs/core-snapshots.ts
  *
- * Domain-pure: no React, no Supabase, no UI imports.
+ * Domain-pure: no React, no backend clients, no UI imports.
  */
 
 import type {

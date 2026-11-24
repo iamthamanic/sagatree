@@ -2,7 +2,7 @@
  * resolve-binding-image — Map saga binding asset ids to Library static icon URLs.
  * Location: src/domains/saga/bindings/resolve-binding-image.ts
  *
- * Pure domain: uses core/builtin catalogs only (no React, no Supabase).
+ * Pure domain: uses core/builtin catalogs only (no React, no backend clients).
  */
 import type { SagaAssetKind } from '../permissions/catalog';
 import { sagatreeNativePregenPortraitUrl } from '../../character/use-cases/sagatree-native-pregen-portraits';

@@ -4,7 +4,7 @@
  *
  * Orchestrates Upload→Analyze→Original-behalten states and product copy.
  * Never invents anatomy/family/capabilities — only maps validated analysis.
- * No React / Supabase / Three / glTF IO.
+ * No React / backend clients / Three / glTF IO.
  */
 
 import type { PerformanceFaceValidationReportV1 } from '../liveact/liveact-performance-face-contract';

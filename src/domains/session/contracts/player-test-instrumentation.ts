@@ -2,7 +2,7 @@
  * player-test-instrumentation — Phase 9–10 dogfood + external test measurement contract (#304 / Epic #210).
  * Location: src/domains/session/contracts/player-test-instrumentation.ts
  * Hides: operator copy / sheet layout; pure metric + path constants for gate + runbook links.
- * Never imports React or Supabase.
+ * Never imports React or backend clients.
  */
 
 import { VOICE_VIDEO_EXTERNAL_NOTE } from './prepared-adventure-fixture';

@@ -4,7 +4,7 @@
  * circular import through this module.
  * Location: src/domains/character/inventory-v2/primitives.ts
  *
- * Domain-pure: no React, no Supabase, no UI imports.
+ * Domain-pure: no React, no backend clients, no UI imports.
  *
  * ItemLoad / ItemCost / MinimumStrength / ItemProtection are owned by the
  * SagaTree items rules kernel (`domains/rules/sagatree/items`) and re-exported

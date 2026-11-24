@@ -23,7 +23,7 @@
 | **Character Creation** | Charakter-Erstellung | ✅ Characters Function | Implementiert |
 | **Game State** | Speichern/Laden | ✅ Sessions Save/Load | Implementiert |
 | **Chat Interface** | Chat mit DM | ✅ Sessions Chat | Implementiert |
-| **User Accounts** | Auth System | ✅ Supabase Auth | Implementiert |
+| **User Accounts** | Auth System | ✅ Better Auth (Host) | Implementiert |
 
 ### Fehlende Features:
 1. **Frontend UI** - SagaTree hat das Frontend, aber wir haben nur das Backend erstellt
@@ -48,7 +48,7 @@
 
 ### Fehlende Features:
 1. **Unit Catalog** - Wir haben Monster (Bestiary), aber keine militärischen Einheiten
-2. **Web Dashboard** - Wir haben Supabase Studio, aber kein Custom Dashboard
+2. **Web Dashboard** - Host-Betrieb über Runbooks (`docs/ops/host/`), aber kein Custom Dashboard
 3. **Heartbeat System** - Nicht implementiert für Game-Integration
 4. **Arma Reforger Integration** - Spezifisch für Arma, nicht relevant für TTRPG
 

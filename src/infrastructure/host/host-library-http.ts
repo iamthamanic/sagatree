@@ -3,7 +3,7 @@
  * Location: src/infrastructure/host/host-library-http.ts
  *
  * CUT-20: host product runtime when `VITE_SAGATREE_HOST_AUTH_URL` is set.
- * Legacy `VITE_SAGATREE_HOST_LIBRARY=0` opt-out removed — no Supabase dual-path.
+ * Legacy `VITE_SAGATREE_HOST_LIBRARY=0` opt-out removed — no legacy dual-path.
  */
 import { getHostAuthBaseUrl } from '../../lib/hostAuthBridge';
 

@@ -1,6 +1,5 @@
 # SagaTree product default — Node host (CUT-22 / #1157).
 # Authoritative runbook: docs/ops/host-compose-profiles.md
-# Legacy Supabase stack (archived, not product): archive/supabase-legacy/docker-compose.supabase.yml
 #
 # Usage (from repo root):
 #   cp deployment/.env.host.example deployment/.env.host   # set SAGATREE_BETTER_AUTH_SECRET

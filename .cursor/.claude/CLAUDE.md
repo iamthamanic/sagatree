@@ -34,9 +34,9 @@ Read `AGENTS.md` at repo root before making changes.
 ## Stack
 
 - Frontend: React + Vite + TypeScript + Tailwind + Radix
-- Backend: Supabase (self-host) — Auth, Postgres, Edge Functions, Storage
+- Backend: Node/Hono host (`server/`) — Better Auth, Policy Service, SQLite/Drizzle, local asset store
 - Quality: `npm run test-gate`, `npm run composition-gate`
-- Architecture: `src/domains` (pure), `src/infrastructure` (Supabase), `src/app` (vertical slices)
+- Architecture: `src/domains` (pure), `src/infrastructure` (host HTTP adapters), `src/app` (vertical slices)
 
 ## MCP Servers
 

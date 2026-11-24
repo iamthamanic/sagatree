@@ -4,7 +4,7 @@
  *
  * Extends #303 multiuser security patterns; does not invent a second harness.
  * Composes Dornhain (#377), Golden Mobile (#484), and Live Session contracts.
- * Never imports React or Supabase.
+ * Never imports React or backend clients.
  */
 import {
   authorizeSessionCommand,

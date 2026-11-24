@@ -2,7 +2,7 @@
  * Resolves the current actor id for service-layer calls (CUT-20).
  * Location: src/lib/authenticatedUser.ts
  *
- * Product runtime uses Better Auth cookies via `probeHostActor` — no Supabase JWT.
+ * Product runtime uses Better Auth cookies via `probeHostActor` (host session only).
  */
 
 import { isLocalAdminSession, LOCAL_ADMIN_USER_ID } from './localAdmin';
@@ -35,9 +35,9 @@ export async function getAuthenticatedUserId(): Promise<string> {
 
 /**
  * Ensures a host actor session exists for world/atlas-style surfaces.
- * Replaces legacy GoTrue JWT assertion (CUT-20).
+ * Fails closed when the host library is disabled or no actor is resolvable.
  */
-export async function assertSupabaseJwtSession(): Promise<string> {
+export async function assertHostActorSession(): Promise<string> {
   if (!isHostLibraryEnabled()) {
     throw new Error(API_AUTH_REQUIRED_DE);
   }

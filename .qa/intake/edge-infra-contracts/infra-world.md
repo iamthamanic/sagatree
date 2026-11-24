@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-world.json](source-contracts/infra-world.json) (SHA-256 `1933597d45fecc9f0da0d416598d3b791064a79964d42abaa52b80e13a4f58af`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-world.json](source-contracts/infra-world.json) (SHA-256 `749d6d7ede45785c772df0b4ff02765c575b11480bd42731b927ac81943d6537`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -1174,7 +1174,7 @@ export type HostWorldAssetPublishInput = {
 export type HostWorldAssetPublishResult = {
   readonly assetId: string;
   readonly contentType: string;
-  /** Opaque storage reference (successor of Supabase bucket path). */
+  /** Opaque storage reference (successor of the legacy bucket path). */
   readonly storageRef: string;
 };
 ```
@@ -1502,36 +1502,36 @@ All backend operations are included in the public declarations above.
 
 | Path | SHA-256 |
 |---|---|
-| `src/domains/character/inventory-v2/primitives.ts` | `7fd8dd5bddc63580ede1b8e0d6c89c146531ba7751128b664bf731c405343c86` |
-| `src/domains/items/definition.ts` | `e47891149c62504d1ff96fb38e6a86ca26bf2e9a52795b7cd876a66b90c78b4a` |
-| `src/domains/items/pack.ts` | `3214e2a3cbe1db088fb0eaca3d52503911f3c3601c6b01ed08bb75ef2707d975` |
-| `src/domains/items/packs/build-standard-item.ts` | `1c2654f0e7980b409762995fe9025649f9cc2bd5324df3a6d50dd4642bdfe569` |
-| `src/domains/items/packs/contemporary-basic.ts` | `c72535324491133bc1331abd5fb050d6c328f2177976b8d76f39b2438118f1c1` |
-| `src/domains/items/packs/context-packs.ts` | `768e1cf834ea03ecb0b6b3e2335da8e4356682da34bf045df5ba18a1dd9df6fb` |
-| `src/domains/items/packs/core-snapshots.ts` | `440e4fe239eedb982555c2e4aa82ea45ae3d687cb26e057516c1b36feccbc19e` |
-| `src/domains/items/packs/fantasy-basic.ts` | `0d18e6a46d5d0603b66eade2eaa92f56a0531ad0e71dc1361bfca6cb4f507c2a` |
-| `src/domains/items/packs/index.ts` | `d851952181c448d93ac61a51e2f4d02d89253447ef74ca93ff1048590bfff43d` |
-| `src/domains/items/packs/scifi-basic.ts` | `6bfed5584dfaabcbc1ce6c323ebd6d9ababc286e9a94d77106c8355667379333` |
-| `src/domains/items/taxonomy.ts` | `fa58dde95e4f9fa424244137f845ee4dbf8ae77d3e4e3ec1d114b74b1debc54a` |
-| `src/domains/items/world-catalog.ts` | `fc39966cc6290f6c59bfdef799cd9e972e7799978299b8fe83a6a8b4b1162941` |
+| `src/domains/character/inventory-v2/primitives.ts` | `5021b44baa17a7327c3bdb83de9d64ff2b0d20158ff46aaef5a08cfc68c45569` |
+| `src/domains/items/definition.ts` | `ef251eed365154c4d4cb7c6f7d72bdc121fb7760425b4cac58591740f3368944` |
+| `src/domains/items/pack.ts` | `5bbfcd4281787655816e921966465b8b923395bd82f3cf177872ff162dd8ca52` |
+| `src/domains/items/packs/build-standard-item.ts` | `20c12f039359118ff7da32369d691507cd427fd2385115182d8fbc9e73624b84` |
+| `src/domains/items/packs/contemporary-basic.ts` | `27b236cbed30bc2e726c74770d344a8bea889dbd9dcd07f2e2aa1ba854dc368a` |
+| `src/domains/items/packs/context-packs.ts` | `3e937ac0a28c6e0cd4a9a31293741bdb8be227160b4225c4dc759395b8906ca3` |
+| `src/domains/items/packs/core-snapshots.ts` | `02e7b6f3c5f6489d8a9e64d9b7cd4b2f5aae7bcadf936e2f6dc1ba17ff8a29aa` |
+| `src/domains/items/packs/fantasy-basic.ts` | `bf57619bcf321f4662e7b901bc87f4ab1f220d33af5028878c0bf1f0b9d695cf` |
+| `src/domains/items/packs/index.ts` | `ce1be63b2477bf222226d7e9f27329d7e0ab85b8d397ce155575e123bfa84cbc` |
+| `src/domains/items/packs/scifi-basic.ts` | `f5a6a7d2fcffc70cca5d682c1fbfb4958da0264fa40b36b1d006abe855b464ea` |
+| `src/domains/items/taxonomy.ts` | `dfc8e520760a38f6ff74416f1b628105f3515ba2339da0a9044b56f69364459d` |
+| `src/domains/items/world-catalog.ts` | `db0d6a449c0ffb41c18a4248327113781359146deb1c27d352e833ca94aa1384` |
 | `src/domains/media/index.ts` | `768ded2d0f0fd1d510d660924e787817673955dbeff021d7de9e0a8d8e38bdec` |
-| `src/domains/media/optimization-contract.ts` | `ba9216dab79a9c03f66a16b77dedf1c26d4d00d6ae2693cc5a68919d1647846d` |
+| `src/domains/media/optimization-contract.ts` | `997c49f8cda2ea1661a89e4fbdbc5a106500da46fadaf7a3a9fc5900134c7ccd` |
 | `src/domains/media/optimization-policy.ts` | `6145574bc08d1eb94f54d488ebc1f8bc030c2a956e3e3fd24cb15a7c8e50c5ec` |
-| `src/domains/npc-creature/definition.ts` | `c5cfbd3e9b937142fd04b2d9d8ef1470382062ae1565d4cf3622eb6053c05a45` |
-| `src/domains/npc-creature/pack.ts` | `401d1450f6060c6984ec3a937ad4a5127602ce34f0e169fe008b860392892e25` |
-| `src/domains/npc-creature/packs/animals.ts` | `728cbea35f072058db6974ce5dd3c80686012a9bd00e4de85c80e0d9f969b021` |
-| `src/domains/npc-creature/packs/build-builtin.ts` | `ce343c3558c918920fd328fa1891d5085d00cf4c7fd3360709f749a3fe0c20c7` |
-| `src/domains/npc-creature/packs/context-packs.ts` | `a95d23684c4c3687a02b4c98c3437155ef3a1eb01b02e39e8db50d8cf4b36ec6` |
-| `src/domains/npc-creature/packs/fantasy-basics.ts` | `81ca439a786d0fcb2fa3bf28d801f68f068d7ff201831c157c2cec876f78561b` |
-| `src/domains/npc-creature/packs/index.ts` | `7bb8adddd9ea09409db03785cfcce0656338fe948a86a2f5b4aa14f6a986aeb7` |
-| `src/domains/npc-creature/taxonomy.ts` | `3dbc3aaed85858710186551bb41eeaac7475bcb573e1b980a9e64e63852936bc` |
-| `src/domains/npc-creature/world-catalog.ts` | `6f87522e1d00aa2ed1b9e1e0310d47f8bb25506fc33d6bee9048f98705ddba2f` |
-| `src/domains/rules/sagatree/items/carry-capacity.ts` | `1ea1910d07cbfcbbe5373a78a9256e79a746273f16a3c2e2e82693f1a17037df` |
+| `src/domains/npc-creature/definition.ts` | `e71694c0b6b94940cc1f70182331cebfb99d21a7ed4f6814fc8f31eabccacdbf` |
+| `src/domains/npc-creature/pack.ts` | `c1d0c00a7b414279bd9816236d44e1b31951419e7e9e37adbaa47a3b255ce9b2` |
+| `src/domains/npc-creature/packs/animals.ts` | `aba4fe81bdf14630749823857e33b312aa302ae51afaadcd5fd374c1380bf4e1` |
+| `src/domains/npc-creature/packs/build-builtin.ts` | `8e92a766d1df940b0409229db5f88b09b04b7bf581a5d22b7e0ea19ca06bb624` |
+| `src/domains/npc-creature/packs/context-packs.ts` | `44a4b45e305eec376b5a6d6159cd36b192299f5513a6bbf4153d4651bd92afe7` |
+| `src/domains/npc-creature/packs/fantasy-basics.ts` | `09d6feac730cc18b2ea57646e83e61fec83925ff5fbe2418779d7ae1036cd98d` |
+| `src/domains/npc-creature/packs/index.ts` | `92364bfe7025bd975d42afa3f508ab81518910ab2d9b90fa7412a8d1f1aef0a0` |
+| `src/domains/npc-creature/taxonomy.ts` | `856cef40a70191f1c9c6a2622754b356576eeb7a694c5bc846871e12d9094529` |
+| `src/domains/npc-creature/world-catalog.ts` | `572fc2a835817734363e051f69689ea4a7275a07d7583be00db9e3c7747e2e4a` |
+| `src/domains/rules/sagatree/items/carry-capacity.ts` | `191e5a1a25f0b210dd95930f1e1f3455da8f1d21e1aca7dc8e16b6a6129251c8` |
 | `src/domains/rules/sagatree/items/index.ts` | `ab296a0e5462aecb9c94a1e5b530a1afac2b1556d793c09eab631cad6bd62822` |
-| `src/domains/rules/sagatree/items/resource-affordability.ts` | `ed42c8faa66a711bd8c7be240df38530bb2d02fff435d1f3aa200538f9388a09` |
-| `src/domains/rules/sagatree/items/tool-rules.ts` | `3026c3797388370309b0ea33d1366969abc05b803654cf99c68c4eff42832f18` |
-| `src/domains/rules/sagatree/items/types.ts` | `af76e6a5ebcec4a5e8acc3d3fd6461abfe083065c025080ef0b2ca851fdc6ff2` |
-| `src/domains/rules/sagatree/items/validators.ts` | `257732bceab776a0afc34f01340eb7e47a94b5c9d984ebf3fff8e0bb7c8ff543` |
+| `src/domains/rules/sagatree/items/resource-affordability.ts` | `e8fab76b8eb1441dcee849c53249158196e3aab0690185648234d610aa9fb846` |
+| `src/domains/rules/sagatree/items/tool-rules.ts` | `c69170ac5b37d1e71a6c90eda6c993f14d7962d0db5f0adfe8c44568a637cf82` |
+| `src/domains/rules/sagatree/items/types.ts` | `9699b169feaf183597651838ea9f8b062e205d36862e50fa824fb95f54dc233e` |
+| `src/domains/rules/sagatree/items/validators.ts` | `2d523a6d4cc37de3e34d19492c687fd7056b4acb3f9aac7a026fe786034c8e5e` |
 | `src/domains/rules/sagatree/npc-creature-power/benchmarks.ts` | `d102fe585bfec2eb44e556fc133d67086fb9915da4ba65497c83869fa82eb54d` |
 | `src/domains/rules/sagatree/npc-creature-power/combat-roles.ts` | `28a1ddccaf3a34292e919a768bac20a226e9a4fbb423f17ab7c3cf70be27f512` |
 | `src/domains/rules/sagatree/npc-creature-power/compute.ts` | `8085e6151a610bc1465cf129ea22845850042d6cff3c93aa052055039ead49f8` |
@@ -1554,7 +1554,7 @@ All backend operations are included in the public declarations above.
 | `src/domains/world/atlas/atlas-persist-state.ts` | `84ab0edbd0b525c95b5db85afeb683d335351884ba6c612e94f327719a6b60ca` |
 | `src/domains/world/atlas/atlas-product-camera.ts` | `6d65226fe7e6594079b61df81ec39a226d5b79788327ef95609dc70f9980d179` |
 | `src/domains/world/atlas/atlas-product-geometry-plan.ts` | `de94ca0b6c23374ae5aed057fa756539285295574df9925598a0ed029a2a3ce9` |
-| `src/domains/world/atlas/atlas-prototype-lod.ts` | `2fb7c706ad2210f7a3f389f22564f60e3f22aa615ec49af49695e388ae582256` |
+| `src/domains/world/atlas/atlas-prototype-lod.ts` | `f3eddacef2627a378106892a67a27f057cf84ccdd64b8db0c3ceacbf1470a317` |
 | `src/domains/world/atlas/atlas-renderer-target.ts` | `d68377cb2f99d390a94f1c7603ce11e23461964ecb2a23012017efc602dbd73d` |
 | `src/domains/world/atlas/atlas-revision-contract.ts` | `d01c356239143862f9aa8f3fd44fca79105e3ed390327c34b9be6ce1902c78d6` |
 | `src/domains/world/atlas/atlas-selection.ts` | `6c16fb40fe26addea8e33e718a89a019de099c6008c1000dd697d48fa12849a7` |
@@ -1564,16 +1564,16 @@ All backend operations are included in the public declarations above.
 | `src/domains/world/atlas/atlas-workstation-adaptive.ts` | `2a87a8f4cf36e532f9bbb0faa0085013f4169fedc26622a1bbef800b46f59846` |
 | `src/domains/world/atlas/canvas-polygon.ts` | `a1bf513b449cf21b8e7d449d291c1f7965303072916f0192a214328a90920cea` |
 | `src/domains/world/atlas/dornhain-golden-hierarchy.ts` | `0eb37f4a217a2bd4f67bcd3bf20d407ec08440f3d20e41e5d0ed738de91faa3e` |
-| `src/domains/world/atlas/dornhain-golden-reset.ts` | `993c1935fda833ddaf0f51c8f1c10b8b25a28e944c2e783ec2d89f2e9e95e9eb` |
-| `src/domains/world/atlas/dornhain-unified-starter.ts` | `5e9afab7ec94b7bef19535be6311b51a2f77c59b5f82b36fcd8b78007cc336f5` |
+| `src/domains/world/atlas/dornhain-golden-reset.ts` | `bf0639ef36ff62eadff1b3d233f3f7a2876e61cd05d0b82054de69db15bb8427` |
+| `src/domains/world/atlas/dornhain-unified-starter.ts` | `87ff1c15ca8202f29ebcc1a720c6a75395e2a8fa5f74bceb09ec2b1be35b657a` |
 | `src/domains/world/atlas/dungeon-forge-workflow.ts` | `c9fdba0da576bc5f5516bb6c637d6efc993c9fab630fa2e42b725836f4ef0317` |
-| `src/domains/world/atlas/dungeon-generator.ts` | `6bbed5a42d16ec727e2745b0e1f47dc9d3f1dcc219ee0ccb06f15340307908e1` |
+| `src/domains/world/atlas/dungeon-generator.ts` | `a8bfde86372f240ec53ac9e4e1fcd6cf048e87edec0215e00d70c5a7919e2932` |
 | `src/domains/world/atlas/dungeon-grid.ts` | `56d9698047b1405a3ba4525146a189e8c8d299d0270fd6d678a0dafa5a0a8854` |
 | `src/domains/world/atlas/index.ts` | `065f2bead931d3ce4ce52818c78465193cc667f98bcbec5b5d8f7a8b51a22d25` |
 | `src/domains/world/atlas/map-edit-ops.ts` | `3440965957e4212748d109f74ce202fa7a320840d5c9f1347b0457347c797b95` |
 | `src/domains/world/atlas/map-frame.ts` | `7a5bc6fb6ddcb38efd09fa3adf71889709fa230313a8d241d09cb9f5fa98e7a5` |
 | `src/domains/world/atlas/party-map-projection.ts` | `eeb742f12fa5e35e03a2a2c57f2c92f8ddb9d996562c88d6de96169d61b82fc9` |
-| `src/domains/world/atlas/unified-canvas-doc.ts` | `59fa68591c71d2f0bba3185fffb4adecf8d325464df4701309af76a2a99fbd82` |
+| `src/domains/world/atlas/unified-canvas-doc.ts` | `568badf03cd75c9e261aa6e746a8451a98e36a940d80acfebea85f92f876ae66` |
 | `src/domains/world/atlas/validate-world-atlas.ts` | `3042c993e644808c908331970dd87367649889dbf9421c5507f88b7b415b009e` |
 | `src/domains/world/atlas/webgl-runtime-bridge.ts` | `4d7acacb2a3ded8df55b0d333bb35d51d2b291f8e3849b24577a44f87785434d` |
 | `src/domains/world/atlas/world-atlas.types.ts` | `094fa1a6f46a54063fe396c7d641c6c34d5b8907c3f6e0127a2ae9e6443dcee7` |
@@ -1589,7 +1589,7 @@ All backend operations are included in the public declarations above.
 | `src/domains/world/hierarchy/world-scoped-inventory.ts` | `d4d2116ff392a949e0ef6c7b94cbffbc217b976f9948ba8d15f1a9c8b2e9354d` |
 | `src/domains/world/map/atlas-camera.ts` | `e6f12a22831e1abe42cd69ee4040e68689b89924e67b7e63d978972683d84c48` |
 | `src/domains/world/map/constants.ts` | `4310089141e333e8d740199f8c4ed212ce65dfdcbc119ef81ce8b3f8b6b1f707` |
-| `src/domains/world/map/dornhain-starter-map.ts` | `b4bb022827d2b2fe7f4d0b490e1348b5f9fc1045ba1547b1e734d9130e335b8c` |
+| `src/domains/world/map/dornhain-starter-map.ts` | `da890d3ea52915635465b34a5762a869f606d50698ea2e9cb84611ad08836f32` |
 | `src/domains/world/map/index.ts` | `7ed8b7504cf841d0c40932c5bccf90c96871e0bb1e69ce1a51815c4615721624` |
 | `src/domains/world/map/validate-world-map.ts` | `0209b9dfc4f8113ad8d0f620c482f0c0fd24af5a9d0a49ac19b07c7c439d91ec` |
 | `src/domains/world/map/world-map.types.ts` | `3f84174b19f1ea1237560bf26c8874073ace59703dafe46cd14b7b63944dc8d2` |
@@ -1600,7 +1600,7 @@ All backend operations are included in the public declarations above.
 | `src/domains/world/places/settlement-presets.ts` | `b2b5b95f43524fda6c7a76eeb332150202f9750c47db5d7a6518fee98b796199` |
 | `src/domains/world/places/world-place.types.ts` | `32081a2c16516c68393e879ebc4e888441ca4e5009b20404158c6b25d09f4ef0` |
 | `src/domains/world/worldModuleRegistry.ts` | `9683d27ea65c7a22456245c0e2e706168285f61e229f6ea181e0fb6a65064cc0` |
-| `src/infrastructure/host/host-library-http.ts` | `c56b88c60d6c9491fc7b6e6e1143ac4985ffdab5dff16afef8a54bce79629a07` |
+| `src/infrastructure/host/host-library-http.ts` | `7f909cafd35ac7fab15a90f37dd6164390fbac5b85d915618a1f46138b7d852a` |
 | `src/infrastructure/host/host-world-http.ts` | `4e5b1a2d336b907aec8ef7f58505f4605eef1674d15ed6ce4a109d47f352b6bd` |
 | `src/infrastructure/media/optimizer/engines/audio/index.ts` | `7585190a705085692bff0896e08b4d78f791895b47e24d57deeaaa10bb669d4e` |
 | `src/infrastructure/media/optimizer/engines/image/image.worker.ts` | `d34793b4de682556d9306194cfbcd05fdafdf215da25393f955d2669c7499276` |
@@ -1619,12 +1619,12 @@ All backend operations are included in the public declarations above.
 | `src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-harness.ts` | `7cb604c899852fcf48364b031180e8c2c4acae92f779e68cc2416e58686e536a` |
 | `src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-runtime.ts` | `f250027a4c5a9674e377313738dac7f70a8a253464c46033f6a400a229b53c82` |
 | `src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-scene.ts` | `f63e63b2be555ef8348d15141ed44a01e70670667e3d0946221db2720cc32d8c` |
-| `src/infrastructure/world/host-world-adapter.ts` | `8fbaad8d6d4ec9cc42070444441fae94fb20af020cdada2125a705877ea4e1f1` |
-| `src/infrastructure/world/host-world-ports.contract.ts` | `9d11c1085646775f6c6eb5bdc29baa7ed40af0245354589bd767d4f80da1d582` |
-| `src/infrastructure/world/host-world-read.contract.ts` | `271a052d5f621ddf7f3344eaa55e3a58579c5cf629fe76a4827393d0d1c7a05c` |
+| `src/infrastructure/world/host-world-adapter.ts` | `0b7fa8f6400dfb74e1bc60fd7409136560758a750045fdc95d5a57896f5725da` |
+| `src/infrastructure/world/host-world-ports.contract.ts` | `1828628b574107b3e89784d7e9507dd6632bddf06d3814b60740e24106af6b39` |
+| `src/infrastructure/world/host-world-read.contract.ts` | `a777803278308f2fefab6f19f92f9387fac8cf76f662d84ae593dfa333b2dbf3` |
 | `src/infrastructure/world/world-atlas-service.ts` | `63cdb7aea8402a51c8bf6480e325fd15d951c33c28aa1a7923340251878c5c1d` |
 | `src/infrastructure/world/world-map-service.ts` | `d99faed233ee5c66d96d08397c0e292113a44e43efb51f4b30b7cc6a21a91103` |
 | `src/infrastructure/world/world-place-service.ts` | `5fe2e68dd3949fb193547aa9ee498c15fc0e3f368bf546156a39086e805312bb` |
-| `src/infrastructure/world/world-profile-service.ts` | `10935d830086c8f9972b9f9f982e7ba8203609facd408020c634df4400032610` |
+| `src/infrastructure/world/world-profile-service.ts` | `cc4734a1cf6cda82dd088b2df16df136db81b350e1f8c493178500b2ad072a05` |
 | `src/lib/hostAuthBridge.ts` | `30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a` |
 

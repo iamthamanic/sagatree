@@ -265,7 +265,7 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
     let db: HostDatabase | null = persistence.db;
     const schemaVersion = persistence.schemaVersion;
 
-    // Solo product default: Dornhain must exist without Supabase seed migrations.
+    // Solo product default: Dornhain must exist without any external seed migrations.
     if (db) {
       try {
         ensureDornhainDefaultCatalog(db, actorId);
@@ -631,7 +631,7 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
           : undefined, // returns ok/approved-locked for race safety
       });
 
-    // CUT-19 — LiveKit media token. Host SQLite replaces Supabase config flags.
+    // CUT-19 — LiveKit media token. Host SQLite wiring gates the media-token store.
     const livekitApiKey = (env.LIVEKIT_API_KEY ?? '').trim();
     const livekitApiSecret = (env.LIVEKIT_API_SECRET ?? '').trim();
     const livekitUrl = (env.LIVEKIT_URL ?? '').trim();
@@ -641,7 +641,7 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
         : null;
     const sessionMediaTokenStore = createSessionMediaTokenStore({
       livekit: livekitConfig,
-      supabaseConfigured: Boolean(db),
+      storeConfigured: Boolean(db),
       membershipLookupConfigured: Boolean(db),
     });
     const sessionMediaToken: SessionMediaTokenUseCases =

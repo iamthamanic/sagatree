@@ -1,9 +1,9 @@
 # SagaTree Self-Host (host-only)
 
 **Product runtime:** React/Vite frontend → Node/Hono host → SQLite + Better Auth + local assets.  
-Optional AI / LiveKit / Meshy are external providers — not mediated by Supabase.
+Optional AI / LiveKit / Meshy are external providers called by the host only.
 
-Legacy Supabase/Edge/Postgres Compose is archived under `archive/supabase-legacy/` and is **not** the product path (CUT-22 / #1157).
+There is no other backend stack: root `docker compose` starts the host only (CUT-22 / #1157).
 
 ## Features
 
@@ -79,8 +79,6 @@ Frontend (separate terminal): keep `VITE_SAGATREE_HOST_AUTH_URL=same-origin` (Vi
 | `SAGATREE_AUTH_BASE_URL` | Cookie origin (default loopback `http://127.0.0.1:8787`) |
 | `VITE_SAGATREE_HOST_AUTH_URL` | Browser → host |
 
-Archived Supabase env template: `archive/supabase-legacy/.env.supabase.example` (not required for product).
-
 ## Frontend build for host
 
 ```bash
@@ -98,4 +96,3 @@ persistent volume; use the backup mount documented in host ops.
 
 - Host modular monolith: [`docs/architecture/host-modular-monolith.md`](docs/architecture/host-modular-monolith.md)
 - Cutover epic: #1135 · CUT-22: #1157
-- Legacy Supabase compose (archive only): `archive/supabase-legacy/docker-compose.supabase.yml`

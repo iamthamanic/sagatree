@@ -58,7 +58,7 @@ assert(
   'root compose must not pull product Supabase images',
 );
 
-const residual = readFileSync(join(root, 'docs/architecture/fe-host-09-residual-supabase.md'), 'utf8');
+const residual = readFileSync(join(root, 'docs/architecture/fe-host-09-residual-legacy-paths.md'), 'utf8');
 assert(/Residual allowlist/.test(residual), 'residual allowlist doc present');
 assert(/CUT-21|archived/i.test(residual), 'residual doc records archive/cutover status');
 

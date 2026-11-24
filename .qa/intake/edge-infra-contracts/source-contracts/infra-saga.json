@@ -5,11 +5,11 @@
   "sourceFiles": [
     {
       "path": "src/infrastructure/saga/host-saga-adapter.ts",
-      "sha256": "7f0c52eaafcd6ee4f0deec9e5e4a5a282dc1d2ded67bd3a0e00a65636097aa62"
+      "sha256": "e28c482990d2b48ef1d68e56555251ab33f1a247aa2b60b45bd690cc10c71ca4"
     },
     {
       "path": "src/infrastructure/saga/host-saga-ports.contract.ts",
-      "sha256": "c3734bbd18e4a04460915e128bbc2c46626934cf7bde76305918355f0ba85649"
+      "sha256": "4fe987e282d94e22a2fd33d688bbbff7b4e4327c600c8a34bc9d376d3139e47f"
     },
     {
       "path": "src/infrastructure/saga/saga-definition-service.ts",
@@ -23,15 +23,15 @@
   "supportingSourceFiles": [
     {
       "path": "src/domains/saga/contracts/saga-definition.ts",
-      "sha256": "69b8fab72a158942d4f807e8b9fabcdae815506fb18e4e82434a71d0cdb9ee05"
+      "sha256": "2c1509cf4f9026dff9f39cd4548e10a4fba1132f4ed53ff4f58fe71babe692b5"
     },
     {
       "path": "src/domains/session/contracts/session-outcome-promotion.ts",
-      "sha256": "d3c26e886f5f1da3b617723feaad5510218d486413ea7953bbc382593578bedd"
+      "sha256": "6354ee19535827055e5d4464d4698a498c7cb3d4c2511044d7948889fc56990a"
     },
     {
       "path": "src/infrastructure/host/host-library-http.ts",
-      "sha256": "c56b88c60d6c9491fc7b6e6e1143ac4985ffdab5dff16afef8a54bce79629a07"
+      "sha256": "7f909cafd35ac7fab15a90f37dd6164390fbac5b85d915618a1f46138b7d852a"
     },
     {
       "path": "src/infrastructure/host/host-saga-definition-http.ts",

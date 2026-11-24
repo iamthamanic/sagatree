@@ -2,7 +2,7 @@
  * NPC/creature taxonomy — categories, kinds, sheet modes, scopes (#196).
  * Location: src/domains/npc-creature/taxonomy.ts
  *
- * Domain-pure: no React, no Supabase, no UI imports.
+ * Domain-pure: no React, no backend clients, no UI imports.
  */
 
 /** Create-flow kind: person vs creature family. Independent of category. */

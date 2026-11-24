@@ -2,7 +2,7 @@
  * library-query — pure search/filter helpers for the Library NPCs & Kreaturen browser (#197).
  * Location: src/domains/npc-creature/library-query.ts
  *
- * Domain-pure: no React, no Supabase, no UI imports.
+ * Domain-pure: no React, no backend clients, no UI imports.
  */
 
 import {

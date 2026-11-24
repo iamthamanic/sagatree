@@ -3,7 +3,8 @@
  * edge-dispatcher-allowlist-check — static contract for #668 deny-by-default mounts.
  * Location: scripts/edge-dispatcher-allowlist-check.mjs
  *
- * Wired into test-gate. Deno unit tests: edge-dispatcher-allowlist_test.ts
+ * Wired into test-gate. Source of truth: server/src/http/edge-main-dispatcher.ts (host-owned
+ * since #1328; no external mirror). Behavioural coverage: scripts/mig-414-edge-main.self-test.mjs.
  */
 import { existsSync, readFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
@@ -17,28 +18,26 @@ function fail(msg) {
   process.exit(1);
 }
 
-function read(rel) {
-  return readFileSync(join(root, rel), 'utf8');
+const dispatcherTs = 'server/src/http/edge-main-dispatcher.ts';
+if (!existsSync(join(root, dispatcherTs))) fail(`missing ${dispatcherTs}`);
+const src = readFileSync(join(root, dispatcherTs), 'utf8');
+
+for (const symbol of [
+  'HOST_EDGE_DISPATCHER_ALLOWLIST',
+  'HOST_EDGE_DISPATCHER_BLOCKED',
+  'isHostEdgeDispatcherAllowed',
+  'EDGE_DISPATCHER_ALLOWLIST',
+  'isEdgeDispatcherAllowed',
+]) {
+  if (!new RegExp(`export (const|function) ${symbol}\\b`).test(src)) {
+    fail(`${dispatcherTs} must export ${symbol}`);
+  }
 }
 
-const allowlistTs = 'archive/supabase-legacy/supabase/functions/_shared/edge-dispatcher-allowlist.ts';
-const allowlistTest = 'archive/supabase-legacy/supabase/functions/_shared/edge-dispatcher-allowlist_test.ts';
-const mainTs = 'archive/supabase-legacy/supabase/functions/main/index.ts';
-
-for (const rel of [allowlistTs, allowlistTest, mainTs]) {
-  if (!existsSync(join(root, rel))) fail(`missing ${rel}`);
-}
-
-const allowSrc = read(allowlistTs);
-const mainSrc = read(mainTs);
-const testSrc = read(allowlistTest);
-
-if (!allowSrc.includes('EDGE_DISPATCHER_ALLOWLIST')) {
-  fail('allowlist module must export EDGE_DISPATCHER_ALLOWLIST');
-}
-if (!allowSrc.includes('isEdgeDispatcherAllowed')) {
-  fail('allowlist module must export isEdgeDispatcherAllowed');
-}
+const start = src.indexOf('export const HOST_EDGE_DISPATCHER_ALLOWLIST');
+const end = src.indexOf('] as const', start);
+if (start < 0 || end < 0) fail('HOST_EDGE_DISPATCHER_ALLOWLIST array literal not found');
+const allowlistBlock = src.slice(start, end);
 
 for (const name of [
   'character-lore',
@@ -48,21 +47,11 @@ for (const name of [
   'ai-provider-credentials',
   'ollama-settings',
 ]) {
-  if (!allowSrc.includes(`'${name}'`)) {
+  if (!allowlistBlock.includes(`'${name}'`)) {
     fail(`allowlist must include hardened mount ${name}`);
   }
 }
 
-for (const legacy of ['characters', 'sessions', 'ai-gm', 'marketplace', 'dm-tools']) {
-  if (new RegExp(`['"]${legacy}['"]`).test(allowSrc) && allowSrc.includes('EDGE_DISPATCHER_ALLOWLIST')) {
-    // Legacy must not appear inside the allowlist array — rough check via line scan
-  }
-}
-
-const allowlistBlock = allowSrc.slice(
-  allowSrc.indexOf('EDGE_DISPATCHER_ALLOWLIST'),
-  allowSrc.indexOf('] as const'),
-);
 for (const legacy of [
   'characters',
   'sessions',
@@ -79,28 +68,21 @@ for (const legacy of [
   }
 }
 
-if (!mainSrc.includes('isEdgeDispatcherAllowed')) {
-  fail('main dispatcher must call isEdgeDispatcherAllowed');
-}
-if (!mainSrc.includes('edge-dispatcher-allowlist')) {
-  fail('main must import edge-dispatcher-allowlist');
-}
-if (!mainSrc.includes('gateEdgeRequestJwt')) {
-  fail('main must still enforce JWT gate after allowlist');
+if (!/HOST_EDGE_DISPATCHER_BLOCKED\s*=\s*new Set\(\[\s*'main',\s*'_shared'\s*\]\)/.test(src)) {
+  fail('main and _shared must stay blocked');
 }
 
-// Allowlist check must run before worker create
-const allowIdx = mainSrc.indexOf('isEdgeDispatcherAllowed');
-const createIdx = mainSrc.indexOf('userWorkers.create');
-if (allowIdx < 0 || createIdx < 0 || allowIdx > createIdx) {
-  fail('allowlist check must run before EdgeRuntime.userWorkers.create');
+// Allowlist must be evaluated before the JWT gate and before any forward decision.
+const dispatchIdx = src.indexOf('export async function dispatchEdgeMainRequest');
+if (dispatchIdx < 0) fail('dispatchEdgeMainRequest missing');
+const body = src.slice(dispatchIdx);
+const allowIdx = body.indexOf('isHostEdgeDispatcherAllowed(serviceName)');
+const jwtIdx = body.indexOf('gateEdgeMainJwt(');
+if (allowIdx < 0 || jwtIdx < 0 || allowIdx > jwtIdx) {
+  fail('allowlist check must run before the JWT gate in dispatchEdgeMainRequest');
 }
-
-if (!testSrc.includes('legacy unauthenticated workers are denied')) {
-  fail('Deno tests must cover legacy deny');
-}
-if (!testSrc.includes('characters')) {
-  fail('Deno tests must name characters as denied');
+if (!/wouldCreateWorker:\s*false/.test(body)) {
+  fail('dispatcher must never create workers (wouldCreateWorker: false)');
 }
 
 console.log('edge-dispatcher-allowlist-check OK');

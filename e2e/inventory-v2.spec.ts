@@ -1,7 +1,7 @@
 /**
  * Inventory v2 integration E2E (#114) — structural smoke across desktop + mobile.
  * Deep domain / catalog scenarios remain covered by inventory-*-check.mjs in test-gate.
- * Catalog add that needs live Supabase catalog load is soft-asserted (CI often has no DB).
+ * Catalog add that needs a live host catalog load is soft-asserted (CI often has no DB).
  * Location: e2e/inventory-v2.spec.ts
  */
 import { test, expect, type Page } from '@playwright/test';

@@ -5,7 +5,7 @@
  * never mutates its input; a rule violation leaves the original state intact.
  * Location: src/domains/character/inventory-v2/operations.ts
  *
- * Domain-pure: no React, no Supabase, no UI imports.
+ * Domain-pure: no React, no backend clients, no UI imports.
  */
 
 import type {

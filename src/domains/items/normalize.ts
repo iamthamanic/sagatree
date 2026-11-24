@@ -2,7 +2,7 @@
  * normalizeItemDefinition — fill safe taxonomy defaults for legacy definitions.
  * Location: src/domains/items/normalize.ts
  *
- * Domain-pure: no React, no Supabase, no UI imports.
+ * Domain-pure: no React, no backend clients, no UI imports.
  */
 
 import type { InventoryItemType, ItemDefinitionScope } from '../character/inventory-v2/primitives';

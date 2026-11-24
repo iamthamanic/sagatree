@@ -2,7 +2,7 @@
  * Media optimizer contracts — pure MediaKind / budget / result types (#625).
  * Location: src/domains/media/optimization-contract.ts
  *
- * No React, no Supabase, no Browser APIs. Infrastructure engines and app intake
+ * No React, no backend clients, no Browser APIs. Infrastructure engines and app intake
  * consume these contracts; client claims never replace server MIME/RLS checks.
  */
 

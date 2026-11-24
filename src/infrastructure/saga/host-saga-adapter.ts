@@ -2,7 +2,7 @@
  * host-saga-adapter — Binds infra HostSagaPorts to an injected host impl (MIG-310).
  * Location: src/infrastructure/saga/host-saga-adapter.ts
  *
- * Production UI still calls Supabase saga-definition / promote facades. This adapter
+ * The legacy saga-definition / promote facades were retired with CUT-20. This adapter
  * is the typed dual-path seam: tests and future host transport inject HostSagaPorts.
  * No server/ imports; no client role elevation.
  */

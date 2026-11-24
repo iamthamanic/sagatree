@@ -286,7 +286,7 @@ try {
   assert(/application\/json/.test(routesSrc), 'JSON Content-Type required');
 
   const allow = readFileSync(
-    join(root, 'archive/supabase-legacy/supabase/functions/_shared/edge-dispatcher-allowlist.ts'),
+    join(root, 'server/src/http/edge-main-dispatcher.ts'),
     'utf8',
   );
   assert(/ai-provider-credentials/.test(allow), 'Edge credentials still allowlisted');

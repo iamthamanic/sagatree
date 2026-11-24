@@ -10,7 +10,7 @@ import { ensureLoggedIn } from './helpers/auth';
 test.beforeEach(() => {
   test.skip(
     true,
-    'CUT-20: Teilnehmen still mocks PostgREST projects/sessions; retarget to Host session-join APIs in follow-up',
+    'CUT-20: Teilnehmen still mocks legacy REST projects/sessions; retarget to Host session-join APIs in follow-up',
   );
 });
 

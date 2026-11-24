@@ -53,10 +53,9 @@
       "@radix-ui/react-avatar@1.1.3": ["node_modules/@radix-ui/react-avatar"],
       "@radix-ui/react-aspect-ratio@1.1.2": ["node_modules/@radix-ui/react-aspect-ratio"],
       "@radix-ui/react-alert-dialog@1.1.6": ["node_modules/@radix-ui/react-alert-dialog"],
-      "@radix-ui/react-accordion@1.2.3": ["node_modules/@radix-ui/react-accordion"],
-      "@jsr/supabase__supabase-js@2.49.8": ["node_modules/@jsr/supabase__supabase-js"]
+      "@radix-ui/react-accordion@1.2.3": ["node_modules/@radix-ui/react-accordion"]
     }
   },
   "include": ["src/**/*.ts", "src/**/*.tsx"],
-  "exclude": ["node_modules", "build", "supabase"]
+  "exclude": ["node_modules", "build"]
 }

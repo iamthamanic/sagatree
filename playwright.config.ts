@@ -14,8 +14,6 @@ export default defineConfig({
   // Platform-agnostic baselines so darwin-authored PNGs work on linux CI (#483).
   snapshotPathTemplate:
     '{testDir}/{testFileDir}/{testFileName}-snapshots/{arg}-{projectName}{ext}',
-  // CUT-20: GoTrue Local Admin timeout contract removed — product auth is Host Better Auth.
-  testIgnore: [/auth-local-admin-timeout\.spec\.ts/],
   fullyParallel: true,
   forbidOnly: isCi,
   // CI: two retries absorb transient shell/auth races without masking hard failures.

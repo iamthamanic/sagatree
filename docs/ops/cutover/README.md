@@ -1,5 +1,8 @@
 # Cutover ops (MIG-700+)
 
+> **Historisch — abgeschlossene Runbooks, nicht Produkt-Stack.** The Dornhain cutover is done; the
+> product runs host-only. These pages document how the cutover was proven (#1328).
+
 Owner RELEASE (2026-11-01): Dornhain pilot — see
 `docs/architecture/migration-owner-release-2026-11-01-dornhain.md`.
 
@@ -7,7 +10,7 @@ Owner RELEASE (2026-11-01): Dornhain pilot — see
 
 1. **MIG-700 drill** — Freeze → single writer → import → Rollback (`server/src/migration/cutover`)
 2. **MIG-701** — reading parity window (fixture/staging) — [`parity-window/`](./parity-window/)
-3. **MIG-702** — Supabase shutdown readiness after Dornhain host proof — [`shutdown/`](./shutdown/)
+3. **MIG-702** — legacy-stack shutdown readiness after Dornhain host proof — [`shutdown/`](./shutdown/)
 
 ## Hard requirement
 

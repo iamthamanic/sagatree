@@ -2,7 +2,7 @@
  * session-lobby — Preflight Lobby contract between join and live (#491).
  * Location: src/domains/session/contracts/session-lobby.ts
  *
- * Pure domain: roster/ready/media opt-in descriptors. No React/Supabase.
+ * Pure domain: roster/ready/media opt-in descriptors. No React/backend clients.
  * Ready is preflight signal only — never gameplay authorization.
  */
 

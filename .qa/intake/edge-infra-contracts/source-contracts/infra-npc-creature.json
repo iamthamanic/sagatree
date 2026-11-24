@@ -43,23 +43,23 @@
     },
     {
       "path": "src/domains/npc-creature/contracts.ts",
-      "sha256": "0939d59a22bc21b04d1de19429f8d3541f4f3df22a2fb14b7b7db8bb8ff9738f"
+      "sha256": "374e384c9b82e3b4030e0eeb4e9172478e8c28c96b9bf9e00869da00440d6b0a"
     },
     {
       "path": "src/domains/npc-creature/controller-assignment.ts",
-      "sha256": "0c572faa9709ff00fbb5c1a183271b4c4f53a664ad0f2db2d87bd69c7694c37a"
+      "sha256": "eb039fab76c6aa98a3945b50c49dcad0d109d676241999052f5843b7be9cb7d0"
     },
     {
       "path": "src/domains/npc-creature/core-catalog.ts",
-      "sha256": "ab597ca223259ec07cdb0c954dc647d296d255bd744e0033737028b0546df6ba"
+      "sha256": "44b57528060a7e73768bb3c48afa659fa3130ce5a13857abba2df26f070b01c4"
     },
     {
       "path": "src/domains/npc-creature/definition.ts",
-      "sha256": "c5cfbd3e9b937142fd04b2d9d8ef1470382062ae1565d4cf3622eb6053c05a45"
+      "sha256": "e71694c0b6b94940cc1f70182331cebfb99d21a7ed4f6814fc8f31eabccacdbf"
     },
     {
       "path": "src/domains/npc-creature/derived.ts",
-      "sha256": "13a0113281e9def92d1ac9658b181a890bfcd05dd3cbfe3049ef670e9b0c500c"
+      "sha256": "ba0a82e95e90d90a45324f7a23698f6a82f88518e2efd9ba7360b0a4ad02cde8"
     },
     {
       "path": "src/domains/npc-creature/icon-assets.ts",
@@ -71,43 +71,43 @@
     },
     {
       "path": "src/domains/npc-creature/instance.ts",
-      "sha256": "4a4371ccf0efab85cd867355c387331ab815b58c2ef40c57179300d2639552c0"
+      "sha256": "a11b7ec956684a89c589d0502db2bbcb434b682cfb14770740ad79ee979a2c1e"
     },
     {
       "path": "src/domains/npc-creature/library-query.ts",
-      "sha256": "f33a123fd69281685c654e4fcd322d697cbad5544ada723c021ba2335b62f273"
+      "sha256": "ce7d2b3cd7bf34f3d2cf5a8eb607d3066e24388078768136e4324666db0f854f"
     },
     {
       "path": "src/domains/npc-creature/pack.ts",
-      "sha256": "401d1450f6060c6984ec3a937ad4a5127602ce34f0e169fe008b860392892e25"
+      "sha256": "c1d0c00a7b414279bd9816236d44e1b31951419e7e9e37adbaa47a3b255ce9b2"
     },
     {
       "path": "src/domains/npc-creature/packs/animals.ts",
-      "sha256": "728cbea35f072058db6974ce5dd3c80686012a9bd00e4de85c80e0d9f969b021"
+      "sha256": "aba4fe81bdf14630749823857e33b312aa302ae51afaadcd5fd374c1380bf4e1"
     },
     {
       "path": "src/domains/npc-creature/packs/build-builtin.ts",
-      "sha256": "ce343c3558c918920fd328fa1891d5085d00cf4c7fd3360709f749a3fe0c20c7"
+      "sha256": "8e92a766d1df940b0409229db5f88b09b04b7bf581a5d22b7e0ea19ca06bb624"
     },
     {
       "path": "src/domains/npc-creature/packs/context-packs.ts",
-      "sha256": "a95d23684c4c3687a02b4c98c3437155ef3a1eb01b02e39e8db50d8cf4b36ec6"
+      "sha256": "44a4b45e305eec376b5a6d6159cd36b192299f5513a6bbf4153d4651bd92afe7"
     },
     {
       "path": "src/domains/npc-creature/packs/fantasy-basics.ts",
-      "sha256": "81ca439a786d0fcb2fa3bf28d801f68f068d7ff201831c157c2cec876f78561b"
+      "sha256": "09d6feac730cc18b2ea57646e83e61fec83925ff5fbe2418779d7ae1036cd98d"
     },
     {
       "path": "src/domains/npc-creature/packs/index.ts",
-      "sha256": "7bb8adddd9ea09409db03785cfcce0656338fe948a86a2f5b4aa14f6a986aeb7"
+      "sha256": "92364bfe7025bd975d42afa3f508ab81518910ab2d9b90fa7412a8d1f1aef0a0"
     },
     {
       "path": "src/domains/npc-creature/parse.ts",
-      "sha256": "29986eb9251451da88c70e6f127f8dd21007a1d61f232da6100872a9be7b2e02"
+      "sha256": "3a4669e43e8c90679bdf0cef3accbce41a89a5e71448379ba3f4cc3b9f2bb4d4"
     },
     {
       "path": "src/domains/npc-creature/payload.ts",
-      "sha256": "935c5f24af7e47173315ba80661767fe0b7acb2f890227c2062b333f3394f1fa"
+      "sha256": "9f3ea083da2d0e592350980c089af5dfb56831abb7e6115a9062aafcffa3f757"
     },
     {
       "path": "src/domains/npc-creature/policy.ts",
@@ -115,11 +115,11 @@
     },
     {
       "path": "src/domains/npc-creature/promotion.ts",
-      "sha256": "bf49060eeb671c84102d35471568f2497bb60865310851e247bbcbc230cc7f92"
+      "sha256": "307cc8d49734a2043023121bb341c6b98c5a4f70d960925e58b6d9a6b3609310"
     },
     {
       "path": "src/domains/npc-creature/taxonomy.ts",
-      "sha256": "3dbc3aaed85858710186551bb41eeaac7475bcb573e1b980a9e64e63852936bc"
+      "sha256": "856cef40a70191f1c9c6a2622754b356576eeb7a694c5bc846871e12d9094529"
     },
     {
       "path": "src/domains/npc-creature/validate.ts",
@@ -127,7 +127,7 @@
     },
     {
       "path": "src/domains/npc-creature/world-catalog.ts",
-      "sha256": "6f87522e1d00aa2ed1b9e1e0310d47f8bb25506fc33d6bee9048f98705ddba2f"
+      "sha256": "572fc2a835817734363e051f69689ea4a7275a07d7583be00db9e3c7747e2e4a"
     },
     {
       "path": "src/domains/rules/sagatree/attribute-progression/index.ts",
@@ -171,7 +171,7 @@
     },
     {
       "path": "src/infrastructure/host/host-library-http.ts",
-      "sha256": "c56b88c60d6c9491fc7b6e6e1143ac4985ffdab5dff16afef8a54bce79629a07"
+      "sha256": "7f909cafd35ac7fab15a90f37dd6164390fbac5b85d915618a1f46138b7d852a"
     },
     {
       "path": "src/infrastructure/host/host-session-http.ts",
@@ -179,7 +179,7 @@
     },
     {
       "path": "src/lib/authenticatedUser.ts",
-      "sha256": "5d9deef60efd85a3ecd56e9b55f67ecb2d03c2964c4f9217e6de6842d8e0b403"
+      "sha256": "b034ac66b532232c33ec19d5427aef11b6828905ca3e3e8991f060be3e9026d6"
     },
     {
       "path": "src/lib/hostAuthBridge.ts",
@@ -187,11 +187,11 @@
     },
     {
       "path": "src/lib/localAdmin.ts",
-      "sha256": "103feaea892b0582022557ff81cef61105f3d9ed4eb421a20d8b0b415c2de498"
+      "sha256": "7ceb27ff34dffa628cb47eaa6669f3bec32cc62981f310111a3615725bb0d376"
     },
     {
       "path": "src/lib/networkTimeout.ts",
-      "sha256": "835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851"
+      "sha256": "47fd1262837db8dfbdebf1a2459e5d1f7c165430ade5afa4b0de03658af582c4"
     }
   ],
   "importedTypeDeclarations": [

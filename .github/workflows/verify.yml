@@ -113,7 +113,7 @@ jobs:
         run: npx playwright install --with-deps chromium
 
       # CUT-20: product FE is host-only (Better Auth). Ephemeral host + Vite /api
-      # proxy — no GoTrue dual-path. Optional VITE_SUPABASE_* remain unset.
+      # proxy; no other auth backend or env is involved.
       - name: Run Browser E2E (host Better Auth)
         run: node scripts/browser-e2e-with-host.mjs
 

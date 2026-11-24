@@ -29,7 +29,7 @@ const [mod, app, allow] = await Promise.all([
   ),
   import(
     pathToFileURL(
-      join(root, 'archive/supabase-legacy/supabase/functions/_shared/edge-dispatcher-allowlist.ts'),
+      join(root, 'server/src/http/edge-main-dispatcher.ts'),
     ).href
   ),
 ]);
@@ -125,7 +125,7 @@ function seedBase(store) {
 function configuredStore() {
   const store = createSessionMediaTokenStore({
     livekit: { apiKey: API_KEY, apiSecret: API_SECRET, url: LIVEKIT_URL },
-    supabaseConfigured: true,
+    storeConfigured: true,
     membershipLookupConfigured: true,
   });
   seedBase(store);
@@ -250,7 +250,7 @@ function configuredStore() {
 {
   const store = createSessionMediaTokenStore({
     livekit: null,
-    supabaseConfigured: true,
+    storeConfigured: true,
     membershipLookupConfigured: true,
   });
   seedBase(store);
@@ -267,7 +267,7 @@ function configuredStore() {
 
   const partial = createSessionMediaTokenStore({
     livekit: { apiKey: API_KEY, apiSecret: '', url: LIVEKIT_URL },
-    supabaseConfigured: true,
+    storeConfigured: true,
     membershipLookupConfigured: true,
   });
   seedBase(partial);
@@ -308,7 +308,7 @@ function configuredStore() {
 
   const whitespaceLk = createSessionMediaTokenStore({
     livekit: { apiKey: '  ', apiSecret: API_SECRET, url: LIVEKIT_URL },
-    supabaseConfigured: true,
+    storeConfigured: true,
     membershipLookupConfigured: true,
   });
   seedBase(whitespaceLk);
@@ -319,24 +319,24 @@ function configuredStore() {
   assert(wsRes.httpStatus === 503, 'whitespace LiveKit key → 503');
 
   const failClosed = createSessionMediaTokenStore();
-  assert(failClosed.supabaseConfigured === false, 'default supabase fail-closed');
+  assert(failClosed.storeConfigured === false, 'default store fail-closed');
   assert(failClosed.membershipLookupConfigured === false, 'default membership fail-closed');
 
-  const noSupabase = createSessionMediaTokenStore({
+  const noStore = createSessionMediaTokenStore({
     livekit: { apiKey: API_KEY, apiSecret: API_SECRET, url: LIVEKIT_URL },
-    supabaseConfigured: false,
+    storeConfigured: false,
     membershipLookupConfigured: true,
   });
-  seedBase(noSupabase);
-  const noSb = await createSessionMediaTokenUseCases({ store: noSupabase }).issue(
+  seedBase(noStore);
+  const noSb = await createSessionMediaTokenUseCases({ store: noStore }).issue(
     actor(PLAYER),
     { body: { sessionId: SESSION_ID } },
   );
-  assert(noSb.httpStatus === 503, 'supabase missing 503');
+  assert(noSb.httpStatus === 503, 'store missing 503');
 
   const noMembershipCfg = createSessionMediaTokenStore({
     livekit: { apiKey: API_KEY, apiSecret: API_SECRET, url: LIVEKIT_URL },
-    supabaseConfigured: true,
+    storeConfigured: true,
     membershipLookupConfigured: false,
   });
   seedBase(noMembershipCfg);
@@ -370,7 +370,7 @@ function configuredStore() {
   const REMOTE = 'remote-account-1';
   const store = createSessionMediaTokenStore({
     livekit: { apiKey: API_KEY, apiSecret: API_SECRET, url: LIVEKIT_URL },
-    supabaseConfigured: true,
+    storeConfigured: true,
     membershipLookupConfigured: true,
   });
   seedSessionMediaTokenSession(store, { id: SESSION_ID, project_id: PROJECT_ID });

@@ -3,7 +3,7 @@
  * Location: src/domains/session/contracts/session-entry-routing.ts
  *
  * Role comes from authorized membership, never from URL claims.
- * Pure domain — path builders only; no React/Supabase.
+ * Pure domain — path builders only; no React/backend clients.
  */
 
 import type { SessionRole } from './live-session-access';

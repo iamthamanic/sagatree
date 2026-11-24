@@ -2,7 +2,7 @@
  * session-lobby-channel — Ephemeral ready-state for Lobby preflight (#491 / CUT-04b).
  * Location: src/infrastructure/session/session-lobby-channel.ts
  *
- * Host realtime SSE fan-out (no Supabase Realtime). Ready is never gameplay auth.
+ * Host realtime SSE fan-out (no third-party realtime service). Ready is never gameplay auth.
  */
 import { getHostAuthBaseUrl } from '../../lib/hostAuthBridge';
 import {

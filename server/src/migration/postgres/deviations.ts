@@ -27,7 +27,7 @@ export const KNOWN_LEGACY_PERMISSION_DEVIATIONS: readonly LegacyPermissionDeviat
     summary:
       'Nicht-Editor mit Welt-Leserecht kann undiscovered Pins mit p_player_view=false lesen.',
     sourceEvidence:
-      'supabase/migrations/068_world_maps.sql; .qa/intake/rpc-contracts/legacy-observations.json',
+      'legacy migration 068_world_maps.sql; .qa/intake/rpc-contracts/legacy-observations.json',
     requiredSuccessorAcceptance:
       'Player-Filter serverseitig anhand Editor-Recht erzwingen; true/false/NULL als Player prüfen. Unsicheren Legacy-Response nicht als Parität übernehmen.',
     importPolicy: 'document-only-no-production-import',

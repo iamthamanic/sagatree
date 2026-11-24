@@ -1,6 +1,6 @@
 /**
  * useItemEditor — load/save/dirty/mode state for Item Workbench (#139).
- * Persistence via catalog service only; no Supabase in this slice.
+ * Persistence via catalog service only; no backend client in this slice.
  * Location: src/app/items/workbench/useItemEditor.ts
  */
 import { useEffect, useRef, useState } from 'react';

@@ -3,7 +3,7 @@
  * Location: src/infrastructure/inventory/host-inventory-ports.contract.ts
  *
  * Transport-free DTO mirror of `server/src/modules/inventory` infra ports.
- * Supabase facades remain live until cutover.
+ * Legacy facades were retired with the cutover (CUT-20/21).
  */
 
 export type HostInventoryResult<T> =

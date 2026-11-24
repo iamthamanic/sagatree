@@ -1,5 +1,5 @@
 /**
- * Local Admin GoTrue JWT adopt/discard policy (pure).
+ * Local Admin session adopt/discard policy (pure).
  * Location: src/lib/localAdminAuthPolicy.ts
  *
  * The storage flag (`sagatree-local-admin-session`) is the durable intent signal.
@@ -17,14 +17,14 @@ export type LocalAdminJwtDecision = 'adopt' | 'discard' | 'ignore';
 export type LocalAdminJwtContext = {
   /** `isLocalAdminSession()` — shortcut / offline Local Admin still wanted. */
   localAdminSessionActive: boolean;
-  /** GoTrue (or listener) user is the seeded Local Admin identity. */
+  /** Auth (or listener) user is the seeded Local Admin identity. */
   sessionUserIsSeededAdmin: boolean;
   /** UI already shows a different authenticated user. */
   currentUserIsOther: boolean;
 };
 
 /**
- * Decide whether a Local Admin GoTrue session should be kept or scrubbed.
+ * Decide whether a Local Admin auth session should be kept or scrubbed.
  */
 export function decideLocalAdminJwt(ctx: LocalAdminJwtContext): LocalAdminJwtDecision {
   if (!ctx.sessionUserIsSeededAdmin) return 'ignore';

@@ -12,7 +12,7 @@ Read [AGENTS.md](../../AGENTS.md) before changing code.
 - React + Vite + TypeScript + Tailwind + Radix
 - Node/Hono host — Better Auth, Policy Service, SQLite, local assets (`server/`)
 - Optional AI/Media providers (Ollama/BYOK, LiveKit, Meshy); core runs without them
-- Legacy Supabase/Edge archived under `archive/supabase-legacy/` (not product)
+- No other backend: never add a third-party BaaS, Edge-function runtime or direct DB REST client
 - UI/errors Deutsch; commits and PR text English
 - Quality gate: `npm run test-gate` (includes architecture-boundary-check)
 
@@ -29,6 +29,7 @@ Read [AGENTS.md](../../AGENTS.md) before changing code.
 - Issue branches from `main` — never commit directly to `main`
 - Acceptance: `.qa/acceptance/<slug>.md` when present
 - Composition proof: `.qa/runs/composition-gate-<slug>.md` (CLEAR/SKIPPED for current HEAD)
+- Older `.qa/acceptance/**`, `.qa/runs/**`, `.qa/intake/**`, `.qa/design/**` and `.qa/evidence/**` files are historical evidence of past tickets — never read them as the current stack (#1328)
 - Ship only after `@ecc-check` READY / green CI **and** Kodus (`Kody Code Review` Complete on HEAD) + Codex findings cleared — see AGENTS.md “External AI Review Contract”
 - Long queues: after each merge, update handoff + auto-compact in-session, then immediately next issue — see AGENTS.md “Context compact & long queues”
 

@@ -54,9 +54,9 @@ export type SessionMediaTokenStore = {
   /** Present only to prove session_players never grants access. */
   sessionPlayers: SessionMediaTokenSessionPlayerRow[];
   livekit: SessionMediaTokenLiveKitConfig | null;
-  /** Mirrors missing SUPABASE_URL / SUPABASE_ANON_KEY → 503. */
-  supabaseConfigured: boolean;
-  /** Mirrors missing SUPABASE_SERVICE_ROLE_KEY → 503. */
+  /** Host persistence wired (false → 503 fail-closed). */
+  storeConfigured: boolean;
+  /** Membership lookup wired (false → 503 fail-closed). */
   membershipLookupConfigured: boolean;
   /** Diagnostic: no DB writes on success path. */
   writeCount: number;
@@ -120,7 +120,7 @@ export function createSessionMediaTokenStore(
     Pick<
       SessionMediaTokenStore,
       | 'livekit'
-      | 'supabaseConfigured'
+      | 'storeConfigured'
       | 'membershipLookupConfigured'
     >
   >,
@@ -131,7 +131,7 @@ export function createSessionMediaTokenStore(
     sessionPlayers: [],
     livekit: options?.livekit ?? null,
     // Fail-closed defaults — fixtures / wired hosts must opt in explicitly.
-    supabaseConfigured: options?.supabaseConfigured ?? false,
+    storeConfigured: options?.storeConfigured ?? false,
     membershipLookupConfigured: options?.membershipLookupConfigured ?? false,
     writeCount: 0,
     livekitHttpCalls: 0,
@@ -488,11 +488,11 @@ export async function issueSessionMediaToken(
     };
   }
 
-  if (!store.supabaseConfigured) {
+  if (!store.storeConfigured) {
     return degraded(
       503,
       'media_service_unavailable',
-      'Supabase config fehlt.',
+      'Host-Konfiguration fehlt.',
     );
   }
 

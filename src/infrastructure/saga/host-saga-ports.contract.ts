@@ -3,7 +3,7 @@
  * Location: src/infrastructure/saga/host-saga-ports.contract.ts
  *
  * Transport-free DTO mirror of the 11 infra-saga RPCs composed by host
- * `createSagaInfraPorts`. Supabase facades remain live until cutover; this
+ * `createSagaInfraPorts`. Legacy facades were retired with the cutover (CUT-20/21); this
  * documents the host shape for parity checks without importing the Node host.
  */
 

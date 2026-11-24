@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-look.json](source-contracts/infra-look.json) (SHA-256 `70682e2a08172cca17706e898b48c6715e69f3dcf1c7be242df94872de235566`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-look.json](source-contracts/infra-look.json) (SHA-256 `f62d8c46a7d52d8ccda75789b6c3015c87d1beee79b3df7029e023217410a102`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -944,34 +944,34 @@ async function invokeHostLookReferenceAnalysis(
 | Path | SHA-256 |
 |---|---|
 | `src/domains/character/avatar/mtoon-profile.ts` | `26ee5c67078a58d989167c19a36ddf2dca8d79ed840e0e30879a9b5c563b0cb7` |
-| `src/domains/look/advanced-adaption.ts` | `c90df8e1dea1b4f641677cab0beec580b0904c3bdb272e7f6fa4cf42730770d5` |
+| `src/domains/look/advanced-adaption.ts` | `7be8a93b6e3b5bebda9a4765ffc41732fbcc312bdcee18f3c330199653ea605d` |
 | `src/domains/look/advanced-look-capability-status.ts` | `8812db0fc1121ffec2e1985650d4968e0c82e201d2db20363e6e248c1ea1c9dd` |
 | `src/domains/look/advanced-look-provider-registry.ts` | `915dc569d7dac9a4fa0e79a8b5a5e4738e6a7ac90db9d41f4c9d6bd344277529` |
 | `src/domains/look/capability-metadata.ts` | `2f0902e0e4f29931f8fc066251c234326af7d7b9e553713507f3adf7ba85dad2` |
-| `src/domains/look/index.ts` | `e667f9f85e3f658bd33b596e73fbdb75bda168eadec2ffdd1c778d173337bc59` |
+| `src/domains/look/index.ts` | `ac262564c454325d9c1ff9081dff7601585ccc1f7e8686000433db1dbb4327a4` |
 | `src/domains/look/invariants.ts` | `52acc9213f3b5a65b6e9cc76fadd47368b2f8d6d7e0d5ae73ccfa4d460df8a9d` |
 | `src/domains/look/library-query.ts` | `ac9712635bf88db68a6b849454b5f18657ebc21f7e56140377f697e30cb23ac3` |
 | `src/domains/look/parse.ts` | `087a08665705c6d82c92ddee83e40b19a7243c4f08d1a08d8744c2e0c5cc1306` |
-| `src/domains/look/persistence-contracts.ts` | `fce690cdfa0bded2ae00b62f9db2043ae3b01fb0d9db7b489bc82e22c62dc97c` |
+| `src/domains/look/persistence-contracts.ts` | `62248360a9ff1593911b621f7e02aa967b970d79d9699c2d2185b6adb0b3cac0` |
 | `src/domains/look/personal-look-override.ts` | `c3d95da0d51245da6df9ae735297e025213d806a648f1ca6d822c2955b77df32` |
 | `src/domains/look/reference-analysis.ts` | `e1157c73b47a86cf3d5115aff751807775cd6056e7f254b2b5fbf7278ced1e51` |
 | `src/domains/look/resolve.ts` | `80e29915c579fbc187741192cc38e6f67154246ae1b97ee666b6e0d610baa584` |
 | `src/domains/look/system-default.ts` | `eca9aacce5aa2f3e879ededa648b8c41eea133be4da9f37d0fbf8399c201fc19` |
-| `src/domains/look/types.ts` | `50f245351c3f2168038a45831a0cb0c35ed5c15488aeacb3aff7f9ccc3d87262` |
+| `src/domains/look/types.ts` | `dadf0b8779e593f86f8d199db07e9e4e7730ab436974df60ed3bc0b3094c9ee5` |
 | `src/domains/look/write-draft.ts` | `7c8b04b229269b73a26b64d68f0656dc5ada2048e75cd29d5a53887fc6f29e58` |
 | `src/infrastructure/character/avatar/mtoon-style-applier.ts` | `1c9fc4fdb30546c0b34ccb222035c74d78251985e575f8a79da86f3f6cd762be` |
 | `src/infrastructure/character/avatar/toonlab-compatibility-spike.ts` | `e896927b2a2fa4c4ad74550b0909a681596d41bdc356980a31afd42b493f5d30` |
-| `src/infrastructure/host/host-library-http.ts` | `c56b88c60d6c9491fc7b6e6e1143ac4985ffdab5dff16afef8a54bce79629a07` |
+| `src/infrastructure/host/host-library-http.ts` | `7f909cafd35ac7fab15a90f37dd6164390fbac5b85d915618a1f46138b7d852a` |
 | `src/infrastructure/look/adapters/host-mtoon-look-adapter.ts` | `19b2f7008ffa27b5bd6c951019a55bde20d82f195ff9f798aa91b4d0a729e3a5` |
 | `src/infrastructure/look/adapters/toonlab-look-adapter.ts` | `4edeab261bda3b114a4a9c9d7dcdb16a1cc73c24df0db23539480aa3a0834acb` |
-| `src/infrastructure/look/host-look-adapter.ts` | `f1c8129f9ff83fb5e586da01b59cf26e3d6e54385f20e631ee353d0802c409c1` |
-| `src/infrastructure/look/host-look-ports.contract.ts` | `f815bac34628b904e1c813d4929872b688d6dc140bebdf2a17a586c11556cf0f` |
+| `src/infrastructure/look/host-look-adapter.ts` | `886fd72c386ce688dafb4f3b9c70bd6208441bfa8df04debbd7d1c293abb5552` |
+| `src/infrastructure/look/host-look-ports.contract.ts` | `d83c34ff511387ed7a3afaa6fef47e487a0964e9bfe05fac686a8f439e03b6ff` |
 | `src/infrastructure/look/index.ts` | `9459251bdf2ae00dab0a11fdd0d77cc113264577367b61273e3a04c658aec47f` |
 | `src/infrastructure/look/look-material-roles.ts` | `2e8161b18a046bb073664a586bb645dc1428c5796d04ade0b625c9339f8cfcdb` |
 | `src/infrastructure/look/look-reference-analysis-service.ts` | `6d7aa8c45fd62cd4448f273eb642f681279613a88c2216b95a2f3fa74a8599fd` |
 | `src/infrastructure/look/look-runtime-types.ts` | `c31d27eaf600ed47e69f16120e584b06a985f29618923118a4c08570f276b2c6` |
 | `src/infrastructure/look/look-runtime.ts` | `64487d02f2831514e86b721d41b0964ac8e99b37faf1a33b8771b4fa7b955d23` |
 | `src/infrastructure/look/look-service.ts` | `3cfd97ccbc21d072865088cf1a0fe5f61e0a43e574f895d869ac80451cc25188` |
-| `src/infrastructure/look/look.persistence.ts` | `ed0a97cba6560930610fc032bd7679b5a7e4b49f837e401cd5a872974598f482` |
+| `src/infrastructure/look/look.persistence.ts` | `48bc0454e2550aa42cdc819e295de776b3cca8bfc29c68e5f7cdfc1791a6463d` |
 | `src/lib/hostAuthBridge.ts` | `30e513fead7db706b38e29ea0e44fadb745f98d57f5949b8deebd0e788a4d23a` |
 

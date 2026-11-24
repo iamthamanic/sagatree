@@ -11,7 +11,7 @@
 /** Explicit product decision: no automatic host/public activation. */
 export const BESTIARY_PUBLIC_ACTIVATION_AUTHORIZED = false as const;
 
-/** Legacy CR → XP table from supabase/functions/bestiary/index.ts calculateXP. */
+/** Legacy CR → XP table from legacy Edge function bestiary/index.ts calculateXP. */
 const XP_TABLE: Readonly<Record<number, number>> = Object.freeze({
   0: 10,
   0.125: 25,

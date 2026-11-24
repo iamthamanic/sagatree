@@ -4,7 +4,7 @@
  *
  * v4 Golden: planetary ocean + continents + Dornhain pin + settlement LOD (`s.*`).
  * Editable product seed (`demoSeed: false`) — not Eldoria demo.
- * Pure domain — no React / Supabase.
+ * Pure domain — no React / backend clients.
  */
 
 import {

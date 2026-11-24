@@ -1,6 +1,6 @@
 # Host modular monolith — binding architecture contract
 
-> **Status:** Binding **host module** architecture (Epic #773). Product runtime after CUT-21/22/23 is the Node host — not Supabase.  
+> **Status:** Binding **host module** architecture (Epic #773). Product runtime after CUT-21/22/23 is the Node host only.  
 > **ORM (GATE-01):** APPROVED — Drizzle + SagaTree Policy Service ([ADR-ST-05](ADR-ST-05-gate-01-drizzle-policy.md)); does **not** replace this module contract.  
 > **SQLite writer (GATE-04):** APPROVED — single writer, WAL, `synchronous=FULL`, atomic state/revision/event/idempotency ([ADR-ST-08](ADR-ST-08-gate-04-sqlite-single-writer.md)); capacity/load drills remain a separate ops concern (do not confuse with “SQLite not shipped”).  
 > **Anchors:** MIG-010/#789 (first technical enforcement), successors MIG-011/#790–MIG-013/#792, functional ports, then CUT-20..23 host-only product path.  
@@ -64,7 +64,7 @@ Composition root (`server/src/bootstrap/**`, `server/src/http/route-registry.ts`
 - Exactly **one** module owns each persisted aggregate family (see table above).
 - Cross-module **writes** go through the owning module’s public use-case/port — never by importing foreign persistence.
 - Cross-module **reads** of foreign data use the owning module’s **read port** (projection DTO). No shared mutable row objects across modules.
-- Frontend `src/infrastructure/<area>` adapters talk to host HTTP/WS (Better Auth cookies). They do not import `server/**`. Supabase clients are not a product dual-path (CUT-20/21).
+- Frontend `src/infrastructure/<area>` adapters talk to host HTTP/WS (Better Auth cookies). They do not import `server/**`. There is no second backend client or dual-path (CUT-20/21).
 
 ## 5. Allowed module dependencies and cycle rules
 
@@ -74,12 +74,12 @@ Composition root (`server/src/bootstrap/**`, `server/src/http/route-registry.ts`
 - `modules/A` → `modules/permissions`, `modules/identity` (for actor/policy only)
 - `modules/A` → read ports of `modules/B` when the inventory already couples those areas (recorded in the use-case)
 - `http` / `bootstrap` → any public module/use-case factory
-- All host code → `src/domains/**` / `src/domains/rules/**` (not React, not Supabase client)
+- All host code → `src/domains/**` / `src/domains/rules/**` (not React, not a backend client)
 
 **Forbidden:**
 
 - Cycles among `server/src/modules/*` (DAG only; enforce in CI once `server/` lands)
-- `src/domains/**` → `server/**`, React, Supabase, Drizzle
+- `src/domains/**` → `server/**`, React, backend clients, Drizzle
 - `src/app/**` / `src/infrastructure/**` → `server/**` internals
 - Product code → raw ORM/client (`drizzle-orm`, `better-sqlite3`, ZenStack client) outside owning `modules/*/persistence` (additional GATE-01 boundary; does not replace module checks)
 
@@ -166,5 +166,5 @@ Canonical split inventory: `.qa/intake/rpc-contracts/split-groups.json`.
 ## 10. Non-claims / status notes
 
 - GATE-01 and GATE-04 decisions remain as approved ADRs above; GATE-02/03/05 remain separate human decisions where not otherwise superseded.
-- Historical note: early drafts of this file deferred “production cutover / Supabase shutdown”. **Product** Supabase/Deno runtime removal is completed via CUT-21/22/23 on `main`; this section must not be read as “Supabase is still the default”.
+- Historical note: early drafts of this file deferred the production cutover. Removal of the former backend runtime is completed via CUT-21/22/23 on `main` (remnants: #1328); the host is the only product runtime.
 - Capacity/load “RELEASE APPROVED” for a specific VPS fleet remains an ops judgment — host-only compose being the default does not by itself prove every deployment’s load test.

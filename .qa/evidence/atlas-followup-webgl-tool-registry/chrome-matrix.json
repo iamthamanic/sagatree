@@ -19,6 +19,12 @@
       "role": "terrain"
     },
     {
+      "atlasId": "height",
+      "runtimeId": "height",
+      "enabled": true,
+      "role": "terrain"
+    },
+    {
       "atlasId": "area",
       "runtimeId": "area",
       "enabled": true,
@@ -28,7 +34,7 @@
       "atlasId": "road",
       "runtimeId": "road",
       "enabled": true,
-      "role": "border"
+      "role": "path"
     },
     {
       "atlasId": "erase",
@@ -54,6 +60,12 @@
       "atlasId": "wall",
       "runtimeId": "wall",
       "enabled": true,
+      "role": "structure"
+    },
+    {
+      "atlasId": "door",
+      "runtimeId": "door",
+      "enabled": false,
       "role": "structure"
     },
     {

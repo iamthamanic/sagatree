@@ -1,5 +1,9 @@
 # Owner RELEASE — Supabase Dornhain live shutdown execute (2026-11-01)
 
+> **Historisch — abgeschlossene Entscheidung, nicht Produkt-Stack.** Datiertes Owner-Entscheidungsprotokoll; Erwähnungen des früheren Backend-Stacks beschreiben den damaligen Stand. Aktueller Stack: [`AGENTS.md`](../../AGENTS.md) · [`host-modular-monolith.md`](host-modular-monolith.md) (#1328).
+
+> **Dateiname:** bis #1328 hieß diese Datei `migration-owner-release-2026-11-01-supabase-live-shutdown.md` (der frühere Backend-Anbieter war Supabase). Umbenannt, damit Pfad-Scans den alten Stack nicht als aktuell melden. Das dort genannte Execute-Skript wurde nach dem Shutdown mit #1328 entfernt (Git-Historie).
+
 **Actor:** Repository owner (`iamthamanic`), explicit chat decision 2026-11-01 evening.  
 **Transcribed by:** agent under owner instruction.  
 **GitHub anchor:** [#851](https://github.com/iamthamanic/sagatree/issues/851#issuecomment-6565086247).
@@ -30,17 +34,10 @@ on the host. Non-Dornhain disposable tenant data may exit with Supabase.
 
 ## Execution entry
 
-```bash
-# Dry-run (default): prove Freigabe + targets; no Management API mutation
-node --experimental-strip-types scripts/supabase-dornhain-live-shutdown.execute.mjs
-
-# Live act (requires token + typed confirmation env)
-CONFIRM_DORHAIN_LIVE_SHUTDOWN=I_UNDERSTAND_DORHAIN_HOST_SURVIVES \
-SUPABASE_ACCESS_TOKEN=… \
-node --experimental-strip-types scripts/supabase-dornhain-live-shutdown.execute.mjs --execute
-```
-
-Ops checklist: `docs/ops/cutover/shutdown/live-execute.md`
+Executed and closed. The one-off execute script and its ops checklist were removed with #1328
+(they targeted the retired provider's Management API). To review them, see the Git history
+before #1328 (`git log --diff-filter=D --name-only -- scripts docs/ops/cutover/shutdown`).
+There is nothing left to run.
 
 ## Explicitly not approved by silence
 

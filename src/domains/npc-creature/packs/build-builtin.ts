@@ -2,7 +2,7 @@
  * buildBuiltinNpcCreature — construct a read-only Core/builtin NpcCreatureDefinition.
  * Location: src/domains/npc-creature/packs/build-builtin.ts
  *
- * Domain-pure: no React, no Supabase, no UI imports.
+ * Domain-pure: no React, no backend clients, no UI imports.
  */
 
 import type { NpcCreatureDefinition } from '../definition';

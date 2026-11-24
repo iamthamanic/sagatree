@@ -27,7 +27,7 @@ const kong = 'archive/supabase-legacy/supabase/config/kong.yml';
 const compose = 'archive/supabase-legacy/docker-compose.supabase.yml';
 const login = 'src/app/shell/auth/LoginScreen.tsx';
 const docs = 'docs/ops/auth-ai-gm-rate-limits.md';
-const allowlist = 'archive/supabase-legacy/supabase/functions/_shared/edge-dispatcher-allowlist.ts';
+const allowlist = 'server/src/http/edge-main-dispatcher.ts';
 
 for (const rel of [migration, shared, sharedTest, aiGm, kong, compose, login, docs]) {
   if (!existsSync(join(root, rel))) fail(`missing ${rel}`);

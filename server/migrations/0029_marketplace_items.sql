@@ -1,5 +1,5 @@
 -- RPC-MARKETPLACE-COUNT (#878). Durable marketplace_items for host download counter.
--- Deployment decision: host SQLite successor replaces optional src/supabase marketplace RPC scripts.
+-- Deployment decision: host SQLite successor replaces the optional legacy marketplace RPC scripts.
 -- Counters are server-authority only — no client write fallback (#675).
 
 CREATE TABLE IF NOT EXISTS marketplace_items (

@@ -1,7 +1,7 @@
 /**
  * inventory-persistence — read/write helpers for Inventory v2 on characters (#109, CUT-20).
  *
- * Persisted migration uses host Library character PATCH — no Supabase PostgREST.
+ * Persisted migration uses host Library character PATCH — no direct database REST gateway.
  * Location: src/infrastructure/inventory/inventory-persistence.ts
  */
 import type { ItemDto } from '../../domains/character/domain/character.entity';

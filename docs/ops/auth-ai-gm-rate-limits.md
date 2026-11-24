@@ -1,5 +1,7 @@
 # Auth + AI GM rate limits (#670)
 
+> **Historisch — beschreibt den stillgelegten früheren Backend-Stack, nicht den Produkt-Stack.** Produktbetrieb: [`host-compose-profiles.md`](host-compose-profiles.md) · [`../../README_SELFHOST.md`](../../README_SELFHOST.md). Diese Seite bleibt nur, solange archivgebundene Checks sie lesen, und wird mit der Archiv-Löschung (#1328, Phase 2) entfernt.
+
 Abuse ceilings for expensive and credential-stuffing surfaces.
 
 ## AI GM (`ai-gm`)

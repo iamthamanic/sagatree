@@ -1,5 +1,7 @@
 # Negative authz suite (#607)
 
+> **Teilweise historisch.** Die Abschnitte *What it proves* und *Edge JWT gate* beschreiben den stillgelegten früheren Backend-Stack; aktuell ist der Abschnitt *Host parity (MIG-600)*. Produktbetrieb: [`host-compose-profiles.md`](host-compose-profiles.md) · [`../../README_SELFHOST.md`](../../README_SELFHOST.md). Die historischen Abschnitte werden mit der Archiv-Löschung (#1328, Phase 2) entfernt.
+
 Regression suite for deny paths on the promoted Compose stack.
 
 ## What it proves

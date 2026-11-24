@@ -1,4 +1,7 @@
 # SagaTree Epic #773 — bindende Produktentscheidungen und Implementierungsbedingungen
+
+> **Historisch — abgeschlossene Entscheidung, nicht Produkt-Stack.** Datiertes Owner-Entscheidungsprotokoll; Erwähnungen des früheren Backend-Stacks beschreiben den damaligen Stand. Aktueller Stack: [`AGENTS.md`](../../AGENTS.md) · [`host-modular-monolith.md`](host-modular-monolith.md) (#1328).
+
 **Beschlossen:** 2026-10-23 durch den Repository-Owner, in dessen Auftrag via verbundenem GitHub-Zugang dokumentiert. **Scope:** Produktarchitektur und Spezifikation, keine Produktionsfreigabe.
 **Quelle:** [Epic-Kommentar](https://github.com/iamthamanic/sagatree/issues/773#issuecomment-6364771554); spezifische GATE-Kommentare unten.
 

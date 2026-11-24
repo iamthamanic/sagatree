@@ -2,7 +2,7 @@
  * saga-overview — Typed view-model for the saga hub overview RPC (#570).
  * Location: src/domains/project/contracts/saga-overview.ts
  *
- * Pure domain: parse/assert only. No React, no Supabase.
+ * Pure domain: parse/assert only. No React, no backend clients.
  * Audience projection of world clocks/consequences is done server-side;
  * client re-validates shape and may re-resolve primaryAction.
  */

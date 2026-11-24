@@ -1,9 +1,9 @@
 /**
- * MIG-702 Dornhain-scoped Supabase shutdown readiness (isolated-contract).
+ * MIG-702 Dornhain-scoped legacy-stack shutdown readiness (isolated-contract, historical).
  * Location: server/src/migration/cutover/shutdown-readiness.ts
  *
  * Predecessors + non-empty call-path matrix + restore/permission negatives must
- * pass. Live Supabase network calls always block. Productive shutdown binds to
+ * pass. Live legacy-stack network calls always block. Productive shutdown binds to
  * the canonical CUTOVER-DORHAIN release record on disk — never fabricated
  * approval objects alone.
  */
@@ -48,8 +48,8 @@ export type PredecessorEvidence = z.infer<typeof predecessorEvidenceSchema>;
 
 const callMatrixEntrySchema = z.object({
   operationId: z.string().min(1),
-  /** Remaining live Supabase network call — always a blocker while true. */
-  supabaseNetworkCall: z.boolean(),
+  /** Remaining live legacy-stack network call — always a blocker while true. */
+  legacyNetworkCall: z.boolean(),
   successorVerified: z.boolean(),
   humanApprovedRetirement: z.boolean(),
 });
@@ -119,7 +119,7 @@ export type ShutdownBlocker = {
     | 'predecessor-evidence-invalid'
     | 'duplicate-predecessor'
     | 'empty-call-matrix'
-    | 'supabase-network-blocker'
+    | 'legacy-network-blocker'
     | 'operation-without-successor'
     | 'restore-not-proven'
     | 'catalog-not-intact'
@@ -133,7 +133,7 @@ export type ShutdownReadinessReport = {
   readonly productiveShutdownAuthorized: boolean;
   readonly blockers: readonly ShutdownBlocker[];
   readonly predecessorIdsChecked: readonly ShutdownPredecessorId[];
-  readonly supabaseBlockerCount: number;
+  readonly legacyBlockerCount: number;
   readonly catalogIntact: boolean;
   readonly boundRelease: {
     readonly releaseId: typeof CANONICAL_RELEASE_ID;
@@ -306,13 +306,13 @@ export function evaluateShutdownReadiness(raw: ShutdownReadinessInput): Shutdown
     });
   }
 
-  let supabaseBlockerCount = 0;
+  let legacyBlockerCount = 0;
   for (const entry of callMatrix) {
-    if (entry.supabaseNetworkCall) {
-      supabaseBlockerCount += 1;
+    if (entry.legacyNetworkCall) {
+      legacyBlockerCount += 1;
       blockers.push({
-        code: 'supabase-network-blocker',
-        detail: `${entry.operationId}: remaining Supabase network call (retirement flag does not clear live calls)`,
+        code: 'legacy-network-blocker',
+        detail: `${entry.operationId}: remaining legacy-stack network call (retirement flag does not clear live calls)`,
       });
       continue;
     }
@@ -367,7 +367,7 @@ export function evaluateShutdownReadiness(raw: ShutdownReadinessInput): Shutdown
     productiveShutdownAuthorized,
     blockers,
     predecessorIdsChecked: [...REQUIRED_PREDECESSORS],
-    supabaseBlockerCount,
+    legacyBlockerCount,
     catalogIntact: restore.catalogIntact,
     boundRelease: bound,
   };
@@ -524,7 +524,7 @@ export function runDornhainShutdownReadinessDrill(args: {
   readonly strangerUserId?: string;
 }): {
   readonly blockedWithoutEvidence: ShutdownReadinessReport;
-  readonly blockedWithSupabaseLeftover: ShutdownReadinessReport;
+  readonly blockedWithLegacyLeftover: ShutdownReadinessReport;
   readonly blockedEmptyMatrix: ShutdownReadinessReport;
   readonly blockedBrokenCatalog: ShutdownReadinessReport;
   readonly readyWithFreigabe: ShutdownReadinessReport;
@@ -552,7 +552,7 @@ export function runDornhainShutdownReadinessDrill(args: {
     callMatrix: [
       {
         operationId: 'host.world.read',
-        supabaseNetworkCall: false,
+        legacyNetworkCall: false,
         successorVerified: true,
         humanApprovedRetirement: false,
       },
@@ -612,19 +612,19 @@ export function runDornhainShutdownReadinessDrill(args: {
     'empty-call-matrix expected',
   );
 
-  const blockedWithSupabaseLeftover = evaluateShutdownReadiness({
+  const blockedWithLegacyLeftover = evaluateShutdownReadiness({
     repoRoot: args.repoRoot,
     predecessors: preds,
     callMatrix: [
       {
         operationId: 'edge.characters.list',
-        supabaseNetworkCall: true,
+        legacyNetworkCall: true,
         successorVerified: false,
         humanApprovedRetirement: true,
       },
       {
         operationId: 'host.character.read',
-        supabaseNetworkCall: false,
+        legacyNetworkCall: false,
         successorVerified: true,
         humanApprovedRetirement: false,
       },
@@ -632,7 +632,7 @@ export function runDornhainShutdownReadinessDrill(args: {
     restore: {
       catalogIntact: true,
       restoreDrillPass: true,
-      archivePath: 'fixture://supabase-leftover',
+      archivePath: 'fixture://legacy-leftover',
     },
     permission: {
       strangerUserId,
@@ -642,8 +642,8 @@ export function runDornhainShutdownReadinessDrill(args: {
     },
     humanApproval: freigabe,
   });
-  assertOk(!blockedWithSupabaseLeftover.shutdownReady, 'leftover supabase call must block');
-  assertOk(blockedWithSupabaseLeftover.supabaseBlockerCount >= 1, 'supabase blocker counted');
+  assertOk(!blockedWithLegacyLeftover.shutdownReady, 'leftover legacy call must block');
+  assertOk(blockedWithLegacyLeftover.legacyBlockerCount >= 1, 'legacy blocker counted');
 
   const brokenCatalogIntact = catalogPresenceFromObserved({
     worldTitles: ['Wrong World'],
@@ -662,7 +662,7 @@ export function runDornhainShutdownReadinessDrill(args: {
     callMatrix: [
       {
         operationId: 'host.world.read',
-        supabaseNetworkCall: false,
+        legacyNetworkCall: false,
         successorVerified: true,
         humanApprovedRetirement: false,
       },
@@ -703,25 +703,25 @@ export function runDornhainShutdownReadinessDrill(args: {
     callMatrix: [
       {
         operationId: 'host.character.read',
-        supabaseNetworkCall: false,
+        legacyNetworkCall: false,
         successorVerified: true,
         humanApprovedRetirement: false,
       },
       {
         operationId: 'host.world.read',
-        supabaseNetworkCall: false,
+        legacyNetworkCall: false,
         successorVerified: true,
         humanApprovedRetirement: false,
       },
       {
         operationId: 'host.catalog.dornhain',
-        supabaseNetworkCall: false,
+        legacyNetworkCall: false,
         successorVerified: true,
         humanApprovedRetirement: false,
       },
       {
         operationId: 'legacy.edge.unused',
-        supabaseNetworkCall: false,
+        legacyNetworkCall: false,
         successorVerified: false,
         humanApprovedRetirement: true,
       },
@@ -746,7 +746,7 @@ export function runDornhainShutdownReadinessDrill(args: {
   );
   assertOk(readyWithFreigabe.boundRelease?.releaseId === CANONICAL_RELEASE_ID, 'bound release');
   assertOk(readyWithFreigabe.catalogIntact, 'Dornhain catalog intact');
-  assertOk(readyWithFreigabe.supabaseBlockerCount === 0, 'no open supabase blockers');
+  assertOk(readyWithFreigabe.legacyBlockerCount === 0, 'no open legacy blockers');
 
   const forgedApproval = evaluateShutdownReadiness({
     repoRoot: args.repoRoot,
@@ -755,7 +755,7 @@ export function runDornhainShutdownReadinessDrill(args: {
       ? [
           {
             operationId: 'host.character.read',
-            supabaseNetworkCall: false,
+            legacyNetworkCall: false,
             successorVerified: true,
             humanApprovedRetirement: false,
           },
@@ -763,7 +763,7 @@ export function runDornhainShutdownReadinessDrill(args: {
       : [
           {
             operationId: 'host.character.read',
-            supabaseNetworkCall: false,
+            legacyNetworkCall: false,
             successorVerified: true,
             humanApprovedRetirement: false,
           },
@@ -797,13 +797,13 @@ export function runDornhainShutdownReadinessDrill(args: {
     callMatrix: [
       {
         operationId: 'host.character.read',
-        supabaseNetworkCall: false,
+        legacyNetworkCall: false,
         successorVerified: true,
         humanApprovedRetirement: false,
       },
       {
         operationId: 'host.world.read',
-        supabaseNetworkCall: false,
+        legacyNetworkCall: false,
         successorVerified: true,
         humanApprovedRetirement: false,
       },
@@ -831,13 +831,13 @@ export function runDornhainShutdownReadinessDrill(args: {
     archiveDir: args.archiveDir,
     report: readyWithFreigabe,
     responsibleDecision:
-      'MIG-702 Dornhain Freigabe A: Supabase exit allowed after parity+restore proof',
+      'MIG-702 Dornhain Freigabe A: legacy-stack exit allowed after parity+restore proof',
   });
   assertOk(archive.approval?.evidenceFile === freigabe.linkedPath, 'archive stores Freigabe path');
 
   return {
     blockedWithoutEvidence,
-    blockedWithSupabaseLeftover,
+    blockedWithLegacyLeftover,
     blockedEmptyMatrix,
     blockedBrokenCatalog,
     readyWithFreigabe,

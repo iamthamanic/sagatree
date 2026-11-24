@@ -6,7 +6,7 @@
  * legacy overflow.
  * Location: src/domains/character/inventory-v2/validation.ts
  *
- * Domain-pure: no React, no Supabase, no UI imports.
+ * Domain-pure: no React, no backend clients, no UI imports.
  */
 
 import type {

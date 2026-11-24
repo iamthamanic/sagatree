@@ -2,7 +2,7 @@
  * sagatree item rule validators — fail-closed parsers for untrusted values.
  * Location: src/domains/rules/sagatree/items/validators.ts
  *
- * Domain-pure: no React, no Supabase, no inventory state.
+ * Domain-pure: no React, no backend clients, no inventory state.
  */
 
 import {

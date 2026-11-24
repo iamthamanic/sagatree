@@ -2,7 +2,7 @@
  * useWorldProfiles — App hook for world profile list/CRUD.
  * Location: src/app/world/profile-editor/useWorldProfiles.ts
  *
- * Waits for a GoTrue JWT (`hasJwtSession`) before listing — offline Local Admin
+ * Waits for an auth session (`hasJwtSession`) before listing — offline Local Admin
  * UI alone cannot pass world_profiles RLS. Host Library cutover skips JWT
  * (`VITE_SAGATREE_HOST_LIBRARY`) and reads via host HTTP instead.
  */

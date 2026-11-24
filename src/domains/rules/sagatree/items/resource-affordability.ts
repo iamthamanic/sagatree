@@ -5,7 +5,7 @@
  * UI shows a single current level (0–5). Shape is extensible with optional `base`
  * for a later base/current dual bookkeeping UI without rewrite.
  *
- * Domain-pure: no React, no Supabase, no inventory state.
+ * Domain-pure: no React, no backend clients, no inventory state.
  */
 import type { ItemCost } from './types';
 import { isItemCost } from './validators';

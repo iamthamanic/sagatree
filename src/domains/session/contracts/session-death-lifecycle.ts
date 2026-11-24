@@ -2,7 +2,7 @@
  * session-death-lifecycle — Authoritative alive→downed→stable→dead track (#373).
  * Location: src/domains/session/contracts/session-death-lifecycle.ts
  *
- * SagaTree Core Rules §8.5 / §16.4. Pure domain; no React/Supabase.
+ * SagaTree Core Rules §8.5 / §16.4. Pure domain; no React/backend clients.
  * Does not duplicate damage math — only life-state transitions after HP changes.
  */
 import type { LiveSessionAccess } from './live-session-access';

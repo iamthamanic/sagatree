@@ -2,12 +2,13 @@
  * Edge `main` dispatcher boundary (MIG-414 / #830) — isolated-contract host port.
  * Location: server/src/http/edge-main-dispatcher.ts
  *
- * Ports resolve/allowlist/JWT gate semantics from archive/supabase-legacy/supabase/functions/main +
- * _shared/edge-jwt-gate. Does not start Deno userWorkers; public activation stays false
- * until an authorized cutover ticket. Live Edge `main` remains the production mount.
+ * Host-owned resolve/allowlist/JWT gate semantics for the historical `/functions/v1/<name>`
+ * dispatch boundary (ported in MIG-414; the former worker runtime is gone since CUT-21).
+ * Never starts workers; public activation stays false (no host mount of `/functions/v1`).
  *
- * Allowlist must stay byte-equal to archive/supabase-legacy/supabase/functions/_shared/edge-dispatcher-allowlist.ts
- * (enforced by scripts/mig-414-edge-main.self-test.mjs).
+ * This module is the single source of truth for the dispatcher allowlist (#668 deny-by-default,
+ * #1328 no external mirror). Pinned by scripts/edge-dispatcher-allowlist-check.mjs and
+ * scripts/mig-414-edge-main.self-test.mjs.
  *
  * JWT gate uses `jose` with explicit HS256 allowlist. Issuer/audience are NOT required by
  * the frozen Edge source contract (incomplete claims; worker auth remains mandatory).
@@ -19,13 +20,13 @@ import { z } from 'zod';
 /** Explicit product decision: no automatic host/public activation of the dispatcher. */
 export const EDGE_MAIN_PUBLIC_ACTIVATION_AUTHORIZED = false as const;
 
-/** Matches EdgeRuntime.userWorkers.create memoryLimitMb in archive/supabase-legacy/supabase/functions/main. */
+/** Per-worker memory budget the historical dispatcher granted (kept as a pinned contract value). */
 export const EDGE_MAIN_WORKER_MEMORY_LIMIT_MB = 512 as const;
 
-/** Matches EdgeRuntime.userWorkers.create workerTimeoutMs (5 * 60 * 1000). */
+/** Per-worker timeout the historical dispatcher granted (5 * 60 * 1000). */
 export const EDGE_MAIN_WORKER_TIMEOUT_MS = 5 * 60 * 1000;
 
-/** Mirror of EDGE_DISPATCHER_ALLOWLIST — keep in sync with Edge shared allowlist. */
+/** Hardened mounts the dispatcher may resolve (JWT + owner/service checks inside). */
 export const HOST_EDGE_DISPATCHER_ALLOWLIST = [
   'ai-provider-credentials',
   'character-avatar-meshy',
@@ -38,7 +39,7 @@ export const HOST_EDGE_DISPATCHER_ALLOWLIST = [
   'session-recap',
 ] as const;
 
-/** Mirror of EDGE_DISPATCHER_BLOCKED. */
+/** Reserved path segments that must never resolve to a worker. */
 export const HOST_EDGE_DISPATCHER_BLOCKED = new Set(['main', '_shared']);
 
 const ALLOWED = new Set<string>(HOST_EDGE_DISPATCHER_ALLOWLIST);
@@ -100,6 +101,11 @@ export function isHostEdgeDispatcherAllowed(serviceName: string): boolean {
   if (HOST_EDGE_DISPATCHER_BLOCKED.has(serviceName)) return false;
   return ALLOWED.has(serviceName);
 }
+
+/** Canonical allowlist names (host is the only implementation since #1328). */
+export const EDGE_DISPATCHER_ALLOWLIST = HOST_EDGE_DISPATCHER_ALLOWLIST;
+export const EDGE_DISPATCHER_BLOCKED = HOST_EDGE_DISPATCHER_BLOCKED;
+export const isEdgeDispatcherAllowed = isHostEdgeDispatcherAllowed;
 
 function base64UrlToBytes(input: string): Uint8Array {
   const padded = input.replace(/-/g, '+').replace(/_/g, '/');
