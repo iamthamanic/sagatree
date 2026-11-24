@@ -46,10 +46,10 @@ Secrets: no Kodus/API keys in the repository. Auth is via the installed GitHub A
 - **Tech Stack:**
   - **Frontend:** React + Vite + TypeScript + Tailwind CSS + Radix UI
   - **Backend:** Node host (Hono) — Better Auth, Policy Service, domain modules
-  - **Database:** SQLite (host `SAGATREE_DATA_DIR`) — not Supabase Postgres
+  - **Database:** SQLite/Drizzle (host `SAGATREE_DATA_DIR`, WAL, single writer)
   - **Assets:** Local host asset store (credentialed HTTP)
   - **AI / Media:** Optional external providers (Ollama/BYOK, LiveKit, Meshy)
-  - **Legacy:** Supabase/Edge/Deno archived under `archive/supabase-legacy/` (CUT-21/22)
+  - **No other backend:** no third-party BaaS, no Edge-function runtime, no direct DB REST client (CUT-21/22, #1328)
 
 ## Architecture
 
@@ -103,8 +103,6 @@ server/                # Node/Hono host — bootstrap, modules, HTTP (not import
 **Host modular monolith (Epic #773):** top-level `server/` is a registered host package. Binding contract: `docs/architecture/host-modular-monolith.md` (vertical use-cases, domain modules, public APIs vs private persistence, central bootstrap). Product cutover: CUT-21/22/23. ORM choice (GATE-01 / Drizzle) does not replace module-boundary rules.
 
 **Boundary enforcement:** `scripts/architecture-boundary-check.mjs` — layer import rules + legacy eradication gate + registered `server/` host package / module-boundary checks.
-
-**Archived Edge CORS (historical only):** Former Deno Edge sources live under `archive/supabase-legacy/supabase/functions/`. `scripts/edge-cors-shared-check.mjs` still validates that archive tree; it is **not** a product integration path.
 
 ### Host modules (product backend)
 
@@ -299,7 +297,7 @@ Canonical visual rules: [`src/THEME_GUIDE.md`](src/THEME_GUIDE.md) § Iconograph
 
 ### Frontend → Infrastructure (Host HTTP)
 
-**Direkte Persistenz- und Host-Calls gehören in Infrastructure-Adapter — nicht in App-Slices oder Domains.** Produkt-Auth: Better Auth Cookie-Bridge (`src/lib/hostAuthBridge.ts`, `VITE_SAGATREE_HOST_AUTH_URL`). `src/lib/supabase.ts` ist ein SDK-freier Legacy-Stub (CUT-21) — kein `@supabase/supabase-js`.
+**Direkte Persistenz- und Host-Calls gehören in Infrastructure-Adapter — nicht in App-Slices oder Domains.** Produkt-Auth: Better Auth Cookie-Bridge (`src/lib/hostAuthBridge.ts`, `VITE_SAGATREE_HOST_AUTH_URL`). Asset-URLs laufen über `src/lib/asset-urls.ts`; es gibt keinen weiteren Backend-Client.
 
 1. **Host Auth Bridge** (`src/lib/hostAuthBridge.ts` + `src/lib/auth-context.tsx`)
    ```typescript
@@ -319,12 +317,12 @@ Canonical visual rules: [`src/THEME_GUIDE.md`](src/THEME_GUIDE.md) § Iconograph
    import { characterService } from '../../../infrastructure/character/character-service';
    ```
 
-4. **Do not** add new Supabase/GoTrue/Edge `functions.invoke` product paths. Historical Edge sources: `archive/supabase-legacy/`.
+4. **Do not** add third-party BaaS SDKs, Edge `functions.invoke` calls or a second auth server. New backend behaviour goes into a host module under `server/src/modules/`.
 
 ### Rulesets Integration
 
 **Primary:** SagaTree Rulesets (Custom) via host `rulesets` module / infrastructure facades.  
-**Supplement:** Open5e API (D&D 5e SRD) only where an existing adapter already merges SRD data — do not reintroduce PostgREST `.from('rulesets')` clients.
+**Supplement:** Open5e API (D&D 5e SRD) only where an existing adapter already merges SRD data — do not reintroduce direct table clients such as `.from('rulesets')`.
 
 ### State Management
 
@@ -429,7 +427,7 @@ Vor Commit: `npm run test-gate` (inkl. `architecture-boundary-check`).
 
 ### Integration
 - [ ] Frontend reaches host via `VITE_SAGATREE_HOST_AUTH_URL`
-- [ ] Auth flow works (no GoTrue dual-path)
+- [ ] Auth flow works (Better Auth cookie session only)
 - [ ] Host realtime / session rooms where already wired
 - [ ] Asset upload/download via host asset store
 
@@ -438,4 +436,4 @@ Vor Commit: `npm run test-gate` (inkl. `architecture-boundary-check`).
 - Self-host: [`README_SELFHOST.md`](README_SELFHOST.md)
 - Compose: [`docs/ops/host-compose-profiles.md`](docs/ops/host-compose-profiles.md)
 - Host modules: [`docs/architecture/host-modular-monolith.md`](docs/architecture/host-modular-monolith.md)
-- Legacy Supabase: `archive/supabase-legacy/` only
+- Historical decisions (ADRs, owner protocols): `docs/architecture/ADR-ST-*.md`, `docs/architecture/migration-owner-*.md` — dated history, not the current stack

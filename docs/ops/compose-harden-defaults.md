@@ -1,8 +1,9 @@
 # Compose harden defaults (#605)
 
+> **Historisch — beschreibt den stillgelegten früheren Backend-Stack, nicht den Produkt-Stack.** Produktbetrieb: [`host-compose-profiles.md`](host-compose-profiles.md) · [`../../README_SELFHOST.md`](../../README_SELFHOST.md). Diese Seite bleibt nur, solange archivgebundene Checks sie lesen, und wird mit der Archiv-Löschung (#1328, Phase 2) entfernt.
+
 Never delete volumes (`docker compose down -v`).
 
-Slim / optional services: [`compose-profiles.md`](compose-profiles.md) (`ai-local`, `graph`, `dev-tools`, `full`).
 
 ## Defaults
 

@@ -95,8 +95,6 @@ public/assets/avatars/canonical/*.vrm
 # Local daily release-readiness state (OpenClaw/runtime only)
 .qa/release/runtime/
 
-# local Kong expand (#604)
-supabase/config/kong.runtime.yml
 .qa/tmp/
 __pycache__/
 
@@ -104,5 +102,5 @@ __pycache__/
 deployment/.env.host
 deployment/backups/
 
-# CUT-21: Deno eradicated; historical lock under archive/supabase-legacy/
+# CUT-21: Deno eradicated; never commit a lock
 deno.lock

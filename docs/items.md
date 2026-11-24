@@ -123,7 +123,7 @@ Raster generation is Cursor Agent image generation; vectorization is VTracer in 
 
 - **Archive**: definition `status: archived` — owned instances stay resolvable; archived defs leave the add-catalog surface
 - **Fork**: `buildForkedItemDefinitionDraft` copies mechanics + taxonomy, sets `basedOnDefinitionId`, never reuses source id
-- Persistence: `src/infrastructure/inventory/item-catalog-service.ts` + Supabase repository (owner/world from auth)
+- Persistence: `src/infrastructure/inventory/item-catalog-service.ts` + host item catalog routes (owner/world from the Better Auth actor)
 
 ## Marketplace — future boundary
 
@@ -142,7 +142,7 @@ encode storefront source metadata. Character Editor remains **kein Shop**
 
 Infrastructure
   src/infrastructure/inventory/item-catalog-service.ts
-  src/infrastructure/inventory/supabase-item-catalog.repository.ts
+  src/infrastructure/inventory/item-catalog.persistence.ts
   src/infrastructure/inventory/item-thumbnail-service.ts
   src/infrastructure/inventory/item-model3d-service.ts
 
@@ -159,10 +159,10 @@ Static SVG icons
   scripts/vectorize-item-icons.mjs
   .github/workflows/vectorize-item-icons.yml
 
-Edge / storage
-  supabase/functions/item-thumbnail/
-  supabase/functions/item-model3d/
-  migrations 015–018 (definitions, inventory_v2, thumbnails, models)
+Host / storage
+  server/src/api/item-model3d-routes.ts  (POST /api/v1/items/model3d)
+  server/src/api/item-thumbnail-routes.ts (POST /api/v1/items/thumbnail)
+  host SQLite catalog + local asset store (definitions, inventory_v2, thumbnails, models)
 ```
 
 ## QA gates

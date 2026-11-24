@@ -3,9 +3,7 @@
 Node-host Compose is the **product default** (CUT-22 / #1157). Root
 `docker-compose.yml` `include`s `deployment/docker-compose.host.yml`, so
 `docker compose --env-file deployment/.env.host up -d --build` from the repo
-root starts the host only. Legacy Supabase Compose is archived at
-`archive/supabase-legacy/docker-compose.supabase.yml` and is not required for
-product. Never delete volumes (`docker compose down -v`).
+root starts the host only; no other backend stack is required. Never delete volumes (`docker compose down -v`).
 
 ## Paths (reproducible)
 
@@ -71,6 +69,5 @@ Do **not** bake `CHARACTER_AI_API_KEY`, `MESHY_API_KEY`, or
 
 - Host backup / restore / rollback: [`host/backup-restore.md`](host/backup-restore.md),
   [`host/update-rollback.md`](host/update-rollback.md)
-- Legacy Supabase slim profiles (archived redirect only): [`compose-profiles.md`](compose-profiles.md)
-- Historical Kong/Edge harden notes (archive ops; not product start): [`compose-harden-defaults.md`](compose-harden-defaults.md)
+- Harden notes of the retired pre-host stack (historical, not product start): [`compose-harden-defaults.md`](compose-harden-defaults.md)
 - Frontend/agent entry: [`../../README.md`](../../README.md) · [`../../AGENTS.md`](../../AGENTS.md)

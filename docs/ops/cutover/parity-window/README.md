@@ -30,6 +30,6 @@ Code: `server/src/migration/cutover/parity-window.ts`
 
 ## Non-claims
 
-- Not a live Supabase dual-write.
+- Not a live dual-write against the legacy stack.
 - Not production shutdown (MIG-702).
 - Not GATE-05 desktop APPROVED.

@@ -1,5 +1,9 @@
 # Owner RELEASE — Supabase Dornhain live shutdown execute (2026-11-01)
 
+> **Historisch — abgeschlossene Entscheidung, nicht Produkt-Stack.** Datiertes Owner-Entscheidungsprotokoll; Erwähnungen des früheren Backend-Stacks beschreiben den damaligen Stand. Aktueller Stack: [`AGENTS.md`](../../AGENTS.md) · [`host-modular-monolith.md`](host-modular-monolith.md) (#1328).
+
+> **Dateiname:** bis #1328 hieß diese Datei `migration-owner-release-2026-11-01-supabase-live-shutdown.md` (der frühere Backend-Anbieter war Supabase). Umbenannt, damit Pfad-Scans den alten Stack nicht als aktuell melden. Das dort genannte Execute-Skript wurde nach dem Shutdown mit #1328 entfernt (Git-Historie).
+
 **Actor:** Repository owner (`iamthamanic`), explicit chat decision 2026-11-01 evening.  
 **Transcribed by:** agent under owner instruction.  
 **GitHub anchor:** [#851](https://github.com/iamthamanic/sagatree/issues/851#issuecomment-6565086247).

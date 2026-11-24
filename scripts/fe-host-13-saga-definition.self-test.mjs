@@ -68,7 +68,7 @@ async function signIn(baseURL, email, password) {
 }
 
 const residualDoc = readFileSync(
-  join(root, 'docs/architecture/fe-host-09-residual-supabase.md'),
+  join(root, 'docs/architecture/fe-host-09-residual-legacy-paths.md'),
   'utf8',
 );
 assert(/Saga definition RPC editor/.test(residualDoc), 'residual row present');

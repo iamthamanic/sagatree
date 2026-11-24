@@ -1,5 +1,7 @@
 # ADR-ST-06 — GATE-02: Auth handshake (Better Auth + Colyseus)
 
+> **Historisch — abgeschlossene Entscheidung, nicht Produkt-Stack.** Diese ADR hält fest, *warum* SagaTree vom früheren gehosteten Backend-Stack auf den Node/Hono-Host (Better Auth, Policy Service, SQLite/Drizzle) gewechselt ist. Erwähnungen des alten Stacks beschreiben den damaligen Stand; der aktuelle Stack steht in [`AGENTS.md`](../../AGENTS.md) und [`host-modular-monolith.md`](host-modular-monolith.md) (#1328).
+
 - **Status:** **APPROVED — Variant A**, product implementation only (platform release / production cutover NOT approved)
 - **Date:** 2026-10-22
 - **Issue:** [#785](https://github.com/iamthamanic/sagatree/issues/785)

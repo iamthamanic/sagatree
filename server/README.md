@@ -83,4 +83,4 @@ Structured errors: `401` unauthenticated, `403` policy deny, `409` stale revisio
 
 ## Non-claims
 
-GATE-05 and production cutover / Supabase Auth shutdown are **not** approved. GATE-04 capacity remains **NOT RUN** (MIG-700/#849). HTTPS Secure-cookie platform proofs and full Colyseus product rooms remain later tickets.
+GATE-05 (desktop sidecar packaging) is **not** approved. GATE-04 capacity remains **NOT RUN** (MIG-700/#849). HTTPS Secure-cookie platform proofs and full Colyseus product rooms remain later tickets.

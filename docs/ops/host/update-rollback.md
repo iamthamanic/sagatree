@@ -60,4 +60,4 @@ Then start the previous host version against the restored data dir and confirm
 
 - `docker compose down -v` on a volume that still holds the only copy of data.
 - Promote a `.staging/*` directory as a restore point.
-- Claim RELEASE APPROVED / Supabase shutdown from this drill alone.
+- Claim RELEASE APPROVED / legacy-stack shutdown from this drill alone.

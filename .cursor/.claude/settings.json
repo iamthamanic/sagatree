@@ -16,7 +16,7 @@
       "Bash(npx *)",
       "Read(*)",
       "Edit(src/*)",
-      "Edit(supabase/*)",
+      "Edit(server/*)",
       "Edit(scripts/*)",
       "Edit(e2e/*)",
       "Edit(docs/*)",

@@ -69,7 +69,7 @@ async function signIn(baseURL, email, password) {
 }
 
 const residual = readFileSync(
-  join(root, 'docs/architecture/fe-host-09-residual-supabase.md'),
+  join(root, 'docs/architecture/fe-host-09-residual-legacy-paths.md'),
   'utf8',
 );
 assert(/DONE \(FE-HOST-14\)/.test(residual), 'FE-HOST-14 DONE markers');

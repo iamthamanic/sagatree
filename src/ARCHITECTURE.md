@@ -1,7 +1,7 @@
 # SagaTree Frontend Architecture
 
 > **Aktuell (Produkt):** Frontend-Schichten und Importgrenzen (#94). Backend-Runtime ist der Node/Hono-Host — siehe [`docs/architecture/host-modular-monolith.md`](../docs/architecture/host-modular-monolith.md) und [`README_SELFHOST.md`](../README_SELFHOST.md).  
-> Abschnitte *Vision* / *Datenmodell* / *Key Features* unten sind Produkt-/Zielvision; sie sind **keine** Betriebsanleitung für den archivierten Supabase-Stack.
+> Abschnitte *Vision* / *Datenmodell* / *Key Features* unten sind Produkt-/Zielvision; sie sind **keine** Betriebsanleitung (Betrieb: Host-Docs oben).
 
 ## Layered Architecture (#94)
 
@@ -44,7 +44,7 @@ SagaTree uses a **Modular Monolith** with explicit layers:
 
 **Forbidden (eradicated):** `src/modules/**`, `src/components/**` — must not exist; recreating fails CI.
 
-**Allowed code-bearing `src/` roots:** `domains/`, `infrastructure/`, `app/`, `shared/`, `lib/`, `utils/`, `assets/`, `styles/` (plus any roots still allowlisted by `scripts/architecture-boundary-check.mjs`). Historical `src/supabase/` was archived under `archive/supabase-legacy/`. Top-level source under `src/` is limited to composition roots `App.tsx` and `main.tsx` — no ad-hoc `src/FooService.ts`.
+**Allowed code-bearing `src/` roots:** `domains/`, `infrastructure/`, `app/`, `shared/`, `lib/`, `utils/`, `assets/`, `styles/` (plus any roots still allowlisted by `scripts/architecture-boundary-check.mjs`). Top-level source under `src/` is limited to composition roots `App.tsx` and `main.tsx` — no ad-hoc `src/FooService.ts`.
 
 **Cross-area imports:** relative and `@/` alias paths are checked the same way. Area barrels (`app/<area>/index.ts`) may re-export own-area internals only; other areas still require that area's public barrel.
 

@@ -52,7 +52,7 @@ Charaktere · Sessions · Welten — für Gamemaster und Spieler
 Marke und Regelwerk: **SagaTree** / **SagaTree Core** (Ruleset-ID `sagatree-core`).
 
 Dieses Repo: **React + Vite**-Frontend und **Node/Hono-Host** (Better Auth, Policy Service, SQLite, lokale Assets) mit Schichten `domains` → `infrastructure` → `app` · UI in `shared/ui`.  
-Archivierter Supabase-/Edge-Stack: `archive/supabase-legacy/` (nicht Produktpfad; CUT-21/22/23).
+Kein weiteres Backend (CUT-21/22/23, #1328): keine Drittanbieter-BaaS, keine Edge-Function-Runtime.
 
 | Rolle | Nutzen |
 | --- | --- |
@@ -118,7 +118,6 @@ SagaTree folgt einer klaren Markenidentität aus dem Logo: **Teal für Auswahl &
 | Optional | Ollama / BYOK AI · LiveKit · Meshy (externe Provider; Core bleibt ohne sie nutzbar) |
 | Qualität | Playwright · `test-gate` · `composition-gate` · Architecture Boundary Check |
 | Deploy | Docker Compose Host (`deployment/docker-compose.host.yml`; Vite-Build → `build/`) |
-| Archiv | Supabase/GoTrue/PostgREST/Deno Edge unter `archive/supabase-legacy/` — nicht Produkt |
 
 Frontend-Dev: **`http://localhost:3004`** · Host: **`http://127.0.0.1:8787`** (`GET /health`)
 
@@ -230,8 +229,6 @@ Produkt-Runtime (CUT-22): **Node Host · Better Auth · SQLite · lokale Assets*
 Optional: `--profile ai` (Ollama), externe LiveKit/Meshy-Keys — Core bleibt ohne sie nutzbar.  
 Runbook: [`docs/ops/host-compose-profiles.md`](docs/ops/host-compose-profiles.md) · Self-Host: [`README_SELFHOST.md`](README_SELFHOST.md)
 
-Archivierter Supabase-Stack (nicht Produkt): `archive/supabase-legacy/docker-compose.supabase.yml`
-
 ---
 
 ## Quality Gates
@@ -264,7 +261,6 @@ SagaTree/
 ├── src/                      # Frontend (app · domains · infrastructure · shared · lib)
 ├── server/                   # Node/Hono Host (bootstrap · modules · http)
 ├── deployment/               # Dockerfile.host · docker-compose.host.yml · .env.host.example
-├── archive/supabase-legacy/  # Historischer Supabase/Edge-Stack (nicht Produkt)
 ├── public/                   # Favicons, MediaPipe, Item-/NPC-Assets
 ├── docs/                     # Regeln, Styleguides, Brand, Concepts, Ops
 ├── e2e/ · scripts/ · assets/
@@ -287,7 +283,7 @@ SagaTree/
 | Items / Inventory | [`docs/items.md`](docs/items.md) · [`docs/inventory-v2.md`](docs/inventory-v2.md) |
 | Avatar Assets | [`docs/avatar assets.md`](docs/avatar%20assets.md) |
 | World Profiles | [`docs/world profiles.md`](docs/world%20profiles.md) |
-| Historisch (nicht Startweg) | [`INTEGRATION.md`](INTEGRATION.md) · [`src/AUTH_SETUP.md`](src/AUTH_SETUP.md) · [`src/SUPABASE_SETUP.md`](src/SUPABASE_SETUP.md) · [`docs/architektur-sqlite-based.md`](docs/architektur-sqlite-based.md) |
+| Historisch (nicht Startweg) | ADRs [`docs/architecture/ADR-ST-*.md`](docs/architecture/) · [`docs/architektur-sqlite-based.md`](docs/architektur-sqlite-based.md) |
 
 Desktop-Installer: Pipeline skizziert in [`docs/ops/desktop-release.md`](docs/ops/desktop-release.md); Produkt-`src-tauri/` ist auf `main` **nicht** vorhanden (PoC/GATE-05; offene PRs ≠ gemergter Stand).
 
@@ -295,9 +291,10 @@ Desktop-Installer: Pipeline skizziert in [`docs/ops/desktop-release.md`](docs/op
 
 ## Recent changes
 
-- **CUT-21 / #1156 · CUT-22 / #1157 · CUT-23 / #1158** — Produkt-Runtime host-only (Node/Hono · Better Auth · SQLite); Supabase/Edge archiviert
+- **CUT-21 / #1156 · CUT-22 / #1157 · CUT-23 / #1158** — Produkt-Runtime host-only (Node/Hono · Better Auth · SQLite)
 - **2026-10-22** — UI-Icons: Lucide → Phosphor (`@phosphor-icons/react`); Sidebar Cyan/Gold-Zustände
-- Ältere Einträge (Atlas, Lobby, Bibliothek) bleiben in der Git-Historie / gemergten PRs; GoTrue/PostgREST-Hinweise dort beschreiben den **damaligen** Stack
+- **#1328** — letzte Spuren des früheren Backend-Stacks aus Code, Tests und Einstiegsdocs entfernt
+- Ältere Einträge (Atlas, Lobby, Bibliothek) bleiben in der Git-Historie / gemergten PRs; Stack-Hinweise dort beschreiben den **damaligen** Stand
 
 ---
 

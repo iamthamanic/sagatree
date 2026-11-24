@@ -17,5 +17,5 @@
 
 ## Shutdown gate
 
-Supabase may be shut down only when this drill (or successor staging evidence) is green
+The legacy stack could be shut down only when this drill (or successor staging evidence) is green
 and linked from MIG-702 completionEvidence.

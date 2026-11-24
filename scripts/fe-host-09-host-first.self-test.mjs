@@ -95,7 +95,7 @@ assert(/assertHostProductSurfaceAvailable/.test(denySrc), 'deny helper');
 assert(/Host-Modus noch nicht verfügbar/.test(denySrc), 'German DENY copy');
 
 const residualDoc = readFileSync(
-  join(root, 'docs/architecture/fe-host-09-residual-supabase.md'),
+  join(root, 'docs/architecture/fe-host-09-residual-legacy-paths.md'),
   'utf8',
 );
 assert(/Residual allowlist/.test(residualDoc), 'residual allowlist doc');

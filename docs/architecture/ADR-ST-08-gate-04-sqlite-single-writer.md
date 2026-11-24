@@ -1,5 +1,7 @@
 # ADR-ST-08 — GATE-04: SQLite single-writer with atomic state/revision/event/idempotency
 
+> **Historisch — abgeschlossene Entscheidung, nicht Produkt-Stack.** Diese ADR hält fest, *warum* SagaTree vom früheren gehosteten Backend-Stack auf den Node/Hono-Host (Better Auth, Policy Service, SQLite/Drizzle) gewechselt ist. Erwähnungen des alten Stacks beschreiben den damaligen Stand; der aktuelle Stack steht in [`AGENTS.md`](../../AGENTS.md) und [`host-modular-monolith.md`](host-modular-monolith.md) (#1328).
+
 - **Status:** Accepted (implementation freigabe only)
 - **Date:** 2026-10-21
 - **Issue:** [#787](https://github.com/iamthamanic/sagatree/issues/787)

@@ -1,5 +1,7 @@
 # ADR-ST-05 — GATE-01: Drizzle ORM + SagaTree Policy Service
 
+> **Historisch — abgeschlossene Entscheidung, nicht Produkt-Stack.** Diese ADR hält fest, *warum* SagaTree vom früheren gehosteten Backend-Stack auf den Node/Hono-Host (Better Auth, Policy Service, SQLite/Drizzle) gewechselt ist. Erwähnungen des alten Stacks beschreiben den damaligen Stand; der aktuelle Stack steht in [`AGENTS.md`](../../AGENTS.md) und [`host-modular-monolith.md`](host-modular-monolith.md) (#1328).
+
 - **Status:** Accepted
 - **Date:** 2026-10-21
 - **Issue:** [#784](https://github.com/iamthamanic/sagatree/issues/784)
