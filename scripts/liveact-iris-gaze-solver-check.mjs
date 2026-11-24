@@ -81,6 +81,29 @@ check(/474,\s*475,\s*476,\s*477/.test(adapter), 'LEFT iris contour indices');
 check(/469,\s*470,\s*471,\s*472/.test(adapter), 'RIGHT iris contour indices');
 check(!/\b468\b|\b473\b/.test(adapter), 'no undocumented iris center hardcodes');
 
+// Provenance against the installed package (not just the source text): the adapter's contour
+// indices must equal FaceLandmarker.FACE_LANDMARKS_{LEFT,RIGHT}_IRIS of the pinned version.
+const LEFT_IRIS_CONTOUR = [474, 475, 476, 477];
+const RIGHT_IRIS_CONTOUR = [469, 470, 471, 472];
+const pinnedMediaPipe = JSON.parse(read('package.json')).dependencies?.['@mediapipe/tasks-vision'];
+const installedMediaPipe = JSON.parse(read('node_modules/@mediapipe/tasks-vision/package.json')).version;
+check(
+  typeof pinnedMediaPipe === 'string' && /^\d+\.\d+\.\d+$/.test(pinnedMediaPipe),
+  `@mediapipe/tasks-vision exact pin (got ${pinnedMediaPipe})`,
+);
+check(installedMediaPipe === pinnedMediaPipe, `installed mediapipe ${installedMediaPipe} == pin ${pinnedMediaPipe}`);
+const { FaceLandmarker } = await import('@mediapipe/tasks-vision');
+const connectionIndices = (connections) =>
+  [...new Set((connections ?? []).flatMap((c) => [c.start, c.end]))].sort((a, b) => a - b);
+check(
+  JSON.stringify(connectionIndices(FaceLandmarker.FACE_LANDMARKS_LEFT_IRIS)) === JSON.stringify(LEFT_IRIS_CONTOUR),
+  `FACE_LANDMARKS_LEFT_IRIS@${installedMediaPipe} == ${LEFT_IRIS_CONTOUR.join(',')}`,
+);
+check(
+  JSON.stringify(connectionIndices(FaceLandmarker.FACE_LANDMARKS_RIGHT_IRIS)) === JSON.stringify(RIGHT_IRIS_CONTOUR),
+  `FACE_LANDMARKS_RIGHT_IRIS@${installedMediaPipe} == ${RIGHT_IRIS_CONTOUR.join(',')}`,
+);
+
 const privacyRoots = [
   '.qa/evidence/liveact-iris-gaze-solver',
   '.qa/fixtures/liveact-iris-gaze-solver',
@@ -233,9 +256,9 @@ writeFileSync(
 const summary = {
   contractVersion: mod.LIVEACT_IRIS_GAZE_CONTRACT,
   irisLandmarkProvenance: {
-    package: '@mediapipe/tasks-vision@0.10.14',
-    leftContour: [474, 475, 476, 477],
-    rightContour: [469, 470, 471, 472],
+    package: `@mediapipe/tasks-vision@${installedMediaPipe}`,
+    leftContour: LEFT_IRIS_CONTOUR,
+    rightContour: RIGHT_IRIS_CONTOUR,
     center: 'centroid(contour[4])',
   },
   ab,
