@@ -14,6 +14,7 @@
 **/.vite
 **/coverage
 
+archive
 public/assets
 public/mediapipe
 docs

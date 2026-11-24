@@ -99,7 +99,7 @@ assert(runbook.includes('not-configured') || runbook.includes('unsupported'), 'r
 
 assert(/node_modules/.test(dockerignore), '.dockerignore excludes node_modules');
 assert(/\.git/.test(dockerignore), '.dockerignore excludes .git');
-assert(/supabase/.test(dockerignore), '.dockerignore excludes supabase');
+assert(/^archive$/m.test(dockerignore), '.dockerignore excludes the retired archive tree');
 assert(/public\/assets|\.qa/.test(dockerignore), '.dockerignore excludes heavy/non-host trees');
 
 console.log('ok: static deployment compose / Dockerfile / runbook / .dockerignore');
