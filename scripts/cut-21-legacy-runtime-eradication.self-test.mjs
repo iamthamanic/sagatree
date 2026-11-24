@@ -9,7 +9,7 @@
  * storage URL helper lives at its neutral location. Does not require any archive to exist.
  */
 import { spawnSync } from 'node:child_process';
-import { existsSync, readFileSync, readdirSync, statSync, unlinkSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import { LEGACY_BAAS, legacyStackPattern } from './lib/legacy-stack-terms.mjs';
 
@@ -44,9 +44,9 @@ for (const rel of [LEGACY_BAAS, `src/${LEGACY_BAAS}`, `src/utils/${LEGACY_BAAS}`
     encoding: 'utf8',
   });
   assert(tracked.status !== 0, 'deno.lock must not remain tracked at repo root');
-  // Local Deno tooling may recreate an untracked lock; scrub it so the tree stays clean.
+  // Local Deno tooling may recreate an untracked lock; warn, never delete local files.
   if (existsSync(denoLock)) {
-    unlinkSync(denoLock);
+    console.warn('WARN: untracked deno.lock at repo root; leaving it untouched');
   }
 }
 

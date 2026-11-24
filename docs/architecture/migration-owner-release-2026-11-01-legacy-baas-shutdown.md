@@ -34,17 +34,10 @@ on the host. Non-Dornhain disposable tenant data may exit with Supabase.
 
 ## Execution entry
 
-```bash
-# Dry-run (default): prove Freigabe + targets; no Management API mutation
-node --experimental-strip-types scripts/supabase-dornhain-live-shutdown.execute.mjs
-
-# Live act (requires token + typed confirmation env)
-CONFIRM_DORHAIN_LIVE_SHUTDOWN=I_UNDERSTAND_DORHAIN_HOST_SURVIVES \
-SUPABASE_ACCESS_TOKEN=… \
-node --experimental-strip-types scripts/supabase-dornhain-live-shutdown.execute.mjs --execute
-```
-
-Ops checklist: `docs/ops/cutover/shutdown/live-execute.md`
+Executed and closed. The one-off execute script and its ops checklist were removed with #1328
+(they targeted the retired provider's Management API). To review them, see the Git history
+before #1328 (`git log --diff-filter=D --name-only -- scripts docs/ops/cutover/shutdown`).
+There is nothing left to run.
 
 ## Explicitly not approved by silence
 

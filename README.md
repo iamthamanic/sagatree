@@ -250,6 +250,8 @@ npx playwright install chromium
 npm run test:e2e
 ```
 
+Specs, die einen langlebigen Host mit Dornhain-Seed und festen Public-IDs brauchen (z. B. `e2e/saga-workspace-phase-2-3-verify-ui.spec.ts`, `SAGA_PUBLIC_ID`), laufen nur mit `SAGATREE_E2E_LIVE_SEED=1` gegen einen solchen Host. Der ephemere CI-Host (`SAGATREE_BROWSER_E2E_HOST=1`) seedet diese IDs nicht, deshalb überspringt CI sie bewusst (vor #1328 genauso, damals über den Legacy-Env-Guard).
+
 Agent-Konfiguration: [`.cursor/`](.cursor/) — vor Änderungen: `npx ecc-agentshield scan --path .cursor`
 
 ---
