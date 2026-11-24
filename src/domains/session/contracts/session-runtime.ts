@@ -2,7 +2,7 @@
  * session-runtime — Authoritative play-session runtime contract (separate from definition DTOs).
  * Location: src/domains/session/contracts/session-runtime.ts
  * Hides: revision concurrency, roster/presence, shared gameplay shape, event kinds.
- * Never imports React or backend clients.
+ * Never imports React or Supabase.
  */
 import type { PlaySessionStatus } from './session-lifecycle';
 import { normalizePlaySessionStatus } from './session-lifecycle';

@@ -36237,7 +36237,7 @@
           },
           {
             "path": "src/domains/session/contracts/session-runtime.ts",
-            "sha256": "d29024cd5da222d76e2e7acebf3bdf24e54bb0dc7a9f20ceda3d53efb4b2eeec"
+            "sha256": "c928a253185cf9aa6fac10b380807033d86c0df4120fdc80b223800c626b84e2"
           },
           {
             "path": "src/domains/session/contracts/session.types.ts",
@@ -36341,7 +36341,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-session.json",
-      "sourceContractSha256": "a876bafe4b9ffa396829abce73db8b487dee717a5dfee9d1b1ab32e0701636ec",
+      "sourceContractSha256": "716c93b2f409d79268e392fb8ec7d58b7aac6c9c141e12f0fb1575594ad6d1fd",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],

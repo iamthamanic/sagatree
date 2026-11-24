@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-session.json](source-contracts/infra-session.json) (SHA-256 `a876bafe4b9ffa396829abce73db8b487dee717a5dfee9d1b1ab32e0701636ec`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-session.json](source-contracts/infra-session.json) (SHA-256 `716c93b2f409d79268e392fb8ec7d58b7aac6c9c141e12f0fb1575594ad6d1fd`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -1356,7 +1356,7 @@ async function openLobbyReadyStream(
 | `src/domains/session/contracts/session-invite.ts` | `df348618335a19017b10ddb82e7a911d22305b9ff3e235af50a2fcdb236a6f6d` |
 | `src/domains/session/contracts/session-lifecycle.ts` | `1351a7e593a24cfed6467313def0c6b2fc293adae6f8032fbb7289dce36a8260` |
 | `src/domains/session/contracts/session-prepare-recap.ts` | `14a939d627bc1b7393a8e32c1a9bf9f2b74aab0058416bd6e73a9a59cbcc7c7f` |
-| `src/domains/session/contracts/session-runtime.ts` | `d29024cd5da222d76e2e7acebf3bdf24e54bb0dc7a9f20ceda3d53efb4b2eeec` |
+| `src/domains/session/contracts/session-runtime.ts` | `c928a253185cf9aa6fac10b380807033d86c0df4120fdc80b223800c626b84e2` |
 | `src/domains/session/contracts/session.types.ts` | `3f2056b6b4cb4ef86dbffd4271482131a3bf4714c3329b8827a067acfde29a04` |
 | `src/domains/session/media/media-plane-contract.ts` | `7cba204291a86a1159b961048280899541f95c102abad8e2c8f61e7662ba8c1b` |
 | `src/infrastructure/host/host-library-http.ts` | `7f909cafd35ac7fab15a90f37dd6164390fbac5b85d915618a1f46138b7d852a` |
