@@ -72,7 +72,7 @@ check(/getActiveFaceTrackingRuntime/.test(runtime), 'singleton getter export');
 check(!/localStorage|indexedDB|sessionStorage/.test(runtime), 'no landmark persistence');
 check(!/fetch\([^)]*landmark|analytics|postMessage/.test(runtime), 'no landmark upload heur');
 
-check(pkg.dependencies?.['@mediapipe/tasks-vision'] === '0.10.14', 'pinned mediapipe 0.10.14');
+check(pkg.dependencies?.['@mediapipe/tasks-vision'] === '1.2.3', 'pinned mediapipe 1.2.3');
 
 check(/applyFaceTrackingDrive/.test(studio), 'studio applies drive');
 check(/resetFaceTrackingPose/.test(studio), 'studio resets pose');
