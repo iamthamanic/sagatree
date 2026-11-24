@@ -38,52 +38,8 @@ function resolveDiffBase() {
   return undefined;
 }
 
-function changedDenoFunctionFiles() {
-  const base = resolveDiffBase();
-  if (!base) return [];
-
-  const output = git([
-    'diff',
-    '--name-only',
-    '--diff-filter=ACMR',
-    `${base}..HEAD`,
-    '--',
-    'archive/supabase-legacy/supabase/functions',
-  ]);
-
-  return output
-    ? output.split('\n').filter((path) => path.endsWith('.ts'))
-    : [];
-}
-
-function trackedDenoTestFiles() {
-  const output = git(['ls-files', 'archive/supabase-legacy/supabase/functions']);
-  return output
-    ? output.split('\n').filter((path) => path.endsWith('_test.ts'))
-    : [];
-}
-
-function runDeno(args, label) {
-  const result = spawnSync('deno', args, {
-    cwd: root,
-    encoding: 'utf8',
-    stdio: 'inherit',
-  });
-
-  if (result.error) {
-    console.error(`${label} could not start: ${result.error.message}`);
-    process.exit(1);
-  }
-
-  if (result.status !== 0) {
-    console.error(`${label} failed.`);
-    process.exit(result.status ?? 1);
-  }
-}
-
 function checkChangedDenoFunctions() {
-  // CUT-21 (#1156): Deno Edge runtime eradicated from the active stack.
-  // Historical sources live under archive/supabase-legacy/ and are not executed.
+  // CUT-21 (#1156): Deno Edge runtime eradicated from the active stack (#1328: sources deleted).
   console.log('Deno Edge Function check skipped (CUT-21: no Deno product runtime).');
 }
 
@@ -1404,17 +1360,17 @@ function checkFeHost09HostFirst() {
 }
 
 function checkCut20LegacyClientBan() {
-  console.log('CUT-20 legacy Supabase client ban (#1155)...');
+  console.log('CUT-20 legacy BaaS client ban (#1155)...');
   execFileSync(process.execPath, ['scripts/cut-20-legacy-client-ban.self-test.mjs'], {
     cwd: root,
     stdio: 'inherit',
   });
   console.log('OK: cut-20-legacy-client-ban.self-test');
-  execFileSync(process.execPath, ['scripts/cut-21-eradicate-supabase.self-test.mjs'], {
+  execFileSync(process.execPath, ['scripts/cut-21-legacy-runtime-eradication.self-test.mjs'], {
     cwd: root,
     stdio: 'inherit',
   });
-  console.log('OK: cut-21-eradicate-supabase.self-test');
+  console.log('OK: cut-21-legacy-runtime-eradication.self-test');
   console.log('CUT-22 host runtime contracts (#1157)...');
   execFileSync(process.execPath, ['scripts/cut-22-host-runtime-contracts.self-test.mjs'], {
     cwd: root,
@@ -3945,9 +3901,9 @@ function checkAssetLicenseInventory() {
   });
 }
 
-function checkEdgeCorsShared() {
-  console.log('Edge CORS shared helper (#305): _shared/cors + no local Origin literals...');
-  execFileSync(process.execPath, ['scripts/edge-cors-shared-check.mjs'], {
+function checkDocsRuntimeDrift() {
+  console.log('Docs runtime drift (#1328): entry/agent docs describe the host stack only...');
+  execFileSync(process.execPath, ['scripts/docs-runtime-drift-check.mjs'], {
     cwd: root,
     stdio: 'inherit',
   });
@@ -4145,7 +4101,7 @@ execFileSync('npm', ['run', 'checks'], {
 
 checkChangedDenoFunctions();
 checkArchitectureBoundaries();
-checkEdgeCorsShared();
+checkDocsRuntimeDrift();
 checkSecClientTrustMarketplace();
 checkItemDomainTaxonomy();
 checkSagaTreeItemRulesKernel();
