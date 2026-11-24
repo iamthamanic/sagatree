@@ -12,7 +12,7 @@
       "command": "PoC report PASS",
       "result": "PASS",
       "evidenceFile": ".qa/evidence/stack-migration-prep/pocs/gate-01/report.json",
-      "sha256": "1abbf722dabc9edb02f99633fcb52b82ae28371e8468dd0985b64652da66c824"
+      "sha256": "daf99c09a5d708896e8d1252d814670a56c8f08cd458b755596971a24bc9780e"
     },
     {
       "command": "ADR-ST-05",

@@ -34,11 +34,12 @@ while (Date.now() < deadline) {
   const code = await Promise.race([exited, new Promise((r) => setTimeout(() => r(undefined), 500))]);
   if (code !== undefined) fail('zen proxy exited early with code ' + code);
   try {
-    const res = await fetch('http://127.0.0.1:' + port + '/api/schema');
+    const res = await fetch('http://127.0.0.1:' + port + '/api/schema', { signal: AbortSignal.timeout(5_000) });
     if (res.status !== 200) fail('/api/schema returned HTTP ' + res.status);
     body = await res.json();
     break;
   } catch (error) {
+    // TypeError = connection refused while the proxy is still starting; a timeout (hang) fails.
     if (!(error instanceof TypeError)) fail(String(error));
   }
 }

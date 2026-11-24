@@ -2,14 +2,14 @@
 
 **Ausführungsstatus:** EXECUTED_SCOPE_PASS. **Architektur:** NOT_APPROVED. Keine Migration ist dadurch freigegeben.
 
-Beobachtet: 2026-11-24T19:23:12.067Z. Node v22.23.5, Native-ABI 127, linux/x64.
+Beobachtet: 2026-11-24T19:36:34.374Z. Node v22.23.5, Native-ABI 127, linux/x64.
 
 ## Reale Ergebnisse
 
 | Kandidat | Fachliche Tests | Write-Median (ms) | Write-p95 (ms) | Write-Maximum (ms) | Kaltstart-Median (ms) | Kaltstart-p95 (ms) |
 | --- | --- | --- | --- | --- | --- | --- |
-| drizzle | 42 PASS / 0 FAIL | 0.649 | 1.570 | 2.579 | 528.459 | 604.408 |
-| zenstack | 42 PASS / 0 FAIL | 5.920 | 7.659 | 16.867 | 463.352 | 517.662 |
+| drizzle | 42 PASS / 0 FAIL | 0.666 | 1.189 | 3.558 | 506.878 | 810.044 |
+| zenstack | 42 PASS / 0 FAIL | 6.046 | 7.768 | 15.937 | 484.759 | 504.323 |
 
 Je Kandidat: 100 sequentielle, echte SQLite-Transaktionen mit Revision und Quittung; zehn frische Node-Prozesse. Die Kaltstart-Wanduhr umfasst Prozessstart, Loader, Import, Datenbanköffnung und ersten autorisierten Read. OS-/Transpiler-Caches wurden nicht geleert. Das sind Messungen dieses Fixtures, keine allgemeine Leistungsgarantie.
 
