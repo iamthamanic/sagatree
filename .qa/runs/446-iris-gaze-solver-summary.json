@@ -1,7 +1,7 @@
 {
   "contractVersion": "SagaTreeLiveActIrisGazeV1",
   "irisLandmarkProvenance": {
-    "package": "@mediapipe/tasks-vision@0.10.14",
+    "package": "@mediapipe/tasks-vision@1.2.3",
     "leftContour": [
       474,
       475,
