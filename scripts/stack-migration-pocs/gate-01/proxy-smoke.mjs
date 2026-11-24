@@ -34,13 +34,15 @@ while (Date.now() < deadline) {
   const code = await Promise.race([exited, new Promise((r) => setTimeout(() => r(undefined), 500))]);
   if (code !== undefined) fail('zen proxy exited early with code ' + code);
   try {
-    const res = await fetch('http://127.0.0.1:' + port + '/api/schema', { signal: AbortSignal.timeout(5_000) });
+    const res = await fetch('http://127.0.0.1:' + port + '/api/schema', { signal: AbortSignal.timeout(Math.max(1, Math.min(5_000, deadline - Date.now()))) });
     if (res.status !== 200) fail('/api/schema returned HTTP ' + res.status);
     body = await res.json();
     break;
   } catch (error) {
-    // TypeError = connection refused while the proxy is still starting; a timeout (hang) fails.
-    if (!(error instanceof TypeError)) fail(String(error));
+    // Retry until the overall 60s deadline: TypeError = connection refused while the proxy
+    // is still starting, TimeoutError = a cold first request still initialising. A hang that
+    // outlasts the deadline ends below as 'no HTTP answer within 60s'.
+    if (!(error instanceof TypeError) && error?.name !== 'TimeoutError') fail(String(error));
   }
 }
 if (!body) fail('no HTTP answer within 60s');
