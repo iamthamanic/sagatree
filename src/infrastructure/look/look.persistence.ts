@@ -1,5 +1,5 @@
 /**
- * look.persistence — DTO mapping between Supabase rows and Look domain (#340).
+ * look.persistence — DTO mapping between persisted rows and Look domain (#340).
  * Location: src/infrastructure/look/look.persistence.ts
  */
 

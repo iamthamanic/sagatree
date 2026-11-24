@@ -3,7 +3,7 @@
  * Location: src/domains/character/avatar/avatar-artifact-contract-v2.ts
  *
  * Pure domain: Template / Import / Generate land on one owner-scoped AvatarArtifact.
- * Capabilities/analysis are never trusted from the client. No React / Supabase / Three.
+ * Capabilities/analysis are never trusted from the client. No React / backend clients / Three.
  */
 
 import {

@@ -3,7 +3,7 @@
  * Location: src/domains/session/presentation/program-presentation.ts
  *
  * Public-only shared program surface. SharedScenePresentation is a source input,
- * not duplicated scene truth. Never imports React or Supabase.
+ * not duplicated scene truth. Never imports React or backend clients.
  */
 
 import {

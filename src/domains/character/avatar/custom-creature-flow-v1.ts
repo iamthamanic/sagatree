@@ -4,7 +4,7 @@
  *
  * Product path for Faruk-like / free-form bodies: keep original geometry,
  * activate only evidence-backed capabilities, optional humanoid conversion.
- * No React / Three / Supabase.
+ * No React / Three / backend clients.
  */
 
 import {

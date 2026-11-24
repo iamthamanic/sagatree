@@ -5,7 +5,7 @@
  * Algorithm adapted from Dungeon Forge (MIT © 2026 Majid Manzarpour):
  * https://github.com/majidmanzarpour/threejs-procedural-dungeon
  * Scatter → separate → Delaunay → MST+loops → rooms/walls export.
- * Pure domain — no Three.js / React / Supabase.
+ * Pure domain — no Three.js / React / backend clients.
  */
 
 import type { UnifiedCanvasObject, UnifiedCanvasRoom, UnifiedCanvasWall } from './unified-canvas-doc';

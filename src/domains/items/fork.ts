@@ -3,7 +3,7 @@
  * Personal or World draft with provenance (#136). Never reuses the source id.
  * Location: src/domains/items/fork.ts
  *
- * Domain-pure: no React, no Supabase, no UI imports.
+ * Domain-pure: no React, no backend clients, no UI imports.
  */
 
 import type { ItemDefinitionScope } from '../character/inventory-v2/primitives';

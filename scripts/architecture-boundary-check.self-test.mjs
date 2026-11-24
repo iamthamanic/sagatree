@@ -99,9 +99,9 @@ assertNoCrossSliceViolation(
   "export { CharacterInventoryV2Panel } from '../inventory/CharacterInventoryV2Panel';",
 );
 
-const dynamicSupabase = "const client = await import('../../../lib/supabase');";
+const dynamicImport = "const client = await import('../../../lib/asset-urls');";
 const appDynamicViolations = checkContentImportPaths(
-  dynamicSupabase,
+  dynamicImport,
   [
     { label: 'Supabase client', test: (p) => p.includes('supabase') },
     { label: 'Supabase lib', test: (p) => /(?:^|\/)lib\/supabase(?:\.|$)/.test(p) },
@@ -115,7 +115,7 @@ assert(
 );
 
 assert(
-  extractImportPaths(dynamicSupabase).includes('../../../lib/supabase'),
+  extractImportPaths(dynamicImport).includes('../../../lib/asset-urls'),
   'extractImportPaths should capture dynamic imports',
 );
 

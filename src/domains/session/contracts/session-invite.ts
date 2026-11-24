@@ -2,7 +2,7 @@
  * session-invite — Pure invite URL + resolve decision helpers (#490).
  * Location: src/domains/session/contracts/session-invite.ts
  *
- * No React/Supabase. Role is never taken from the invite token/URL.
+ * No React/backend clients. Role is never taken from the invite token/URL.
  */
 const INVITE_RETURN_KEY = 'sagatree:invite-return';
 

@@ -1,5 +1,5 @@
 -- MIG-312 user_profiles persistence (host SQLite). Module ownership: user-profile.
--- Mirrors supabase/migrations/081_user_profiles_and_avatars.sql table shape (no auth FK on host).
+-- Mirrors legacy migration 081_user_profiles_and_avatars.sql table shape (no auth FK on host).
 -- Avatar bytes live under dataDir/user-avatars/ (bucket parity); path is not authorization.
 
 CREATE TABLE IF NOT EXISTS user_profiles (

@@ -65,7 +65,7 @@ export function createUserProfileStore(db: HostDatabase) {
 
     /**
      * Select-then-insert. Concurrent insert race (SQLite UNIQUE) is success — mirrors 23505.
-     * `displayName` seeds first insert only (Supabase signup-trigger parity); never overwrites.
+     * `displayName` seeds first insert only (legacy signup-trigger parity); never overwrites.
      */
     ensureOwn(
       userId: string,

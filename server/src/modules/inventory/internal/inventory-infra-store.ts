@@ -3,7 +3,7 @@
  * Private — import only from inventory public API.
  * Location: server/src/modules/inventory/internal/inventory-infra-store.ts
  *
- * Supabase remains live FE default. Creator thumbnail/model Edge shapes stay in
+ * The FE uses host HTTP since CUT-20. Creator thumbnail/model Edge shapes stay in
  * item-thumbnail / item-model3d modules (not moved here).
  *
  * characters.inventory_* writes go through injected CharacterInventoryColumnsStore

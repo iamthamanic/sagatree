@@ -2,7 +2,7 @@
  * Sci-Fi Basic — 40 builtin-standard ItemDefinitions (#137).
  * Location: src/domains/items/packs/scifi-basic.ts
  *
- * Domain-pure: no React, no Supabase, no UI imports.
+ * Domain-pure: no React, no backend clients, no UI imports.
  */
 
 import type { ItemDefinition } from '../definition';

@@ -2,7 +2,7 @@
  * combat-encounter — Authoritative live encounter contract for Player Test (#300).
  * Location: src/domains/session/contracts/combat-encounter.ts
  * Hides: initiative order, turn/round, HP/conditions, action economy slots.
- * Never imports React or Supabase.
+ * Never imports React or backend clients.
  */
 
 export const ENCOUNTER_SCHEMA_VERSION = 1 as const;

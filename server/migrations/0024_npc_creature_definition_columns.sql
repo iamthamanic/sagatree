@@ -1,4 +1,4 @@
--- MIG-307 (#806): align npc_creature_definitions with Supabase persistence columns.
+-- MIG-307 (#806): align npc_creature_definitions with the legacy persistence columns.
 -- Adds public_id (NPCC-XXXXX) + payload_version.
 -- Deterministic backfill guarantees letter+digit body before unique index.
 

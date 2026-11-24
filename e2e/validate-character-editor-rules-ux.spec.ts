@@ -201,7 +201,7 @@ test.describe('Character Editor rules UX (#21)', () => {
     if (!liveSaveEnabled()) {
       test.info().annotations.push({
         type: 'note',
-        description: 'Skipped live LEGAL-1 POST/reload (CI without Supabase). Sheet is complete and Speichern enabled.',
+        description: 'Skipped live LEGAL-1 POST/reload (CI without a live host backend). Sheet is complete and Speichern enabled.',
       });
       return;
     }
@@ -266,7 +266,7 @@ test.describe('Character Editor rules UX (#21)', () => {
     if (!liveSaveEnabled()) {
       test.info().annotations.push({
         type: 'note',
-        description: 'Skipped live LEGAL-2+3 POST/reload (CI without Supabase). Mental+L5 budgets complete; Preset panel visible.',
+        description: 'Skipped live LEGAL-2+3 POST/reload (CI without a live host backend). Mental+L5 budgets complete; Preset panel visible.',
       });
       return;
     }

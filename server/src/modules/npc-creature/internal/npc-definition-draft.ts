@@ -2,7 +2,7 @@
  * Structural NPC definition draft normalization (MIG-307 / #806).
  * Location: server/src/modules/npc-creature/internal/npc-definition-draft.ts
  *
- * Host must not import FE domains. Full domain validate stays on Supabase path;
+ * Host must not import FE domains. Full domain validate stays on the legacy path;
  * here we fail-closed on identity smuggling and required catalog fields.
  */
 

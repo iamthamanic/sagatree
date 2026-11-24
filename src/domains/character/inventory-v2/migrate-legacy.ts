@@ -2,7 +2,7 @@
  * Inventory v2 legacy migration (#109).
  *
  * Pure function: flat `ItemDto[]` → Inventory v2 state + Personal definition
- * drafts. No Supabase, no React. Persistence of the resulting drafts and the
+ * drafts. No backend clients, no React. Persistence of the resulting drafts and the
  * versioned state lives under `src/infrastructure/**`.
  *
  * Location: src/domains/character/inventory-v2/migrate-legacy.ts

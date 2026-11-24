@@ -6,7 +6,7 @@
  * (`calculateTotalLoad`); this module owns the capacity ceiling. Consumers must
  * not copy the formula.
  *
- * Domain-pure: no React, no Supabase, no inventory state.
+ * Domain-pure: no React, no backend clients, no inventory state.
  */
 
 /**

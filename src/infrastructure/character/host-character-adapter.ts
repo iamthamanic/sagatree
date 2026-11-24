@@ -2,7 +2,7 @@
  * host-character-adapter — Binds infra HostCharacterPorts to an injected host impl (MIG-302).
  * Location: src/infrastructure/character/host-character-adapter.ts
  *
- * Production UI still calls Supabase character-service facades. This adapter is the
+ * The legacy character-service facades were retired with CUT-20. This adapter is the
  * typed dual-path seam: tests and future host transport inject HostCharacterPorts.
  * No server/ imports; no client role elevation.
  */

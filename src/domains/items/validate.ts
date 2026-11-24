@@ -3,7 +3,7 @@
  * Does not require combat fields; allows kindKey=device with any inventory type.
  * Location: src/domains/items/validate.ts
  *
- * Domain-pure: no React, no Supabase, no UI imports.
+ * Domain-pure: no React, no backend clients, no UI imports.
  */
 
 import type { ItemDefinition } from './definition';

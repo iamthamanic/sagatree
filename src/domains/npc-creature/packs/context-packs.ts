@@ -3,7 +3,7 @@
  * Reference existing builtin definition ids; may add a few exclusive members.
  * Location: src/domains/npc-creature/packs/context-packs.ts
  *
- * Domain-pure: no React, no Supabase, no UI imports.
+ * Domain-pure: no React, no backend clients, no UI imports.
  */
 
 import type { NpcCreatureDefinition } from '../definition';

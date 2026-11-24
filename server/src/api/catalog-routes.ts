@@ -440,7 +440,7 @@ export function mountCatalogHttpRoutes(app: Hono, deps: CatalogHttpDeps): void {
     });
   });
 
-  /** FE-HOST-14: peer lobby profiles without PostgREST batch. */
+  /** FE-HOST-14: peer lobby profiles without a legacy REST gateway batch. */
   app.post('/api/v1/user-profile/batch', async (c) => {
     if (!deps.userProfile) return c.json({ error: 'not-configured' }, 503);
     const parsed = await readJsonSafe(c);

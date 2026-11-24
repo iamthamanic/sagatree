@@ -2,7 +2,7 @@
  * shared-rolls — Session roll command inputs + lastRoll projection (#299).
  * Location: src/domains/session/contracts/shared-rolls.ts
  * Hides: which payload keys clients may send vs server-owned result fields.
- * Never imports React or Supabase.
+ * Never imports React or backend clients.
  */
 import {
   isProbeGrade,

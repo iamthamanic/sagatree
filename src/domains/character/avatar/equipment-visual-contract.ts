@@ -1,6 +1,6 @@
 /**
  * Avatar equipment visual contract — Inventory-v2 → visual projection (#158).
- * Pure domain: no React / Three / Supabase. Gameplay SoT stays InventoryState.
+ * Pure domain: no React / Three / backend clients. Gameplay SoT stays InventoryState.
  * Location: src/domains/character/avatar/equipment-visual-contract.ts
  */
 

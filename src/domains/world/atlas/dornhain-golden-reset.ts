@@ -2,7 +2,7 @@
  * dornhain-golden-reset — Reset-to-Golden modes + Golden place specs.
  * Location: src/domains/world/atlas/dornhain-golden-reset.ts
  *
- * Pure domain — no React / Supabase.
+ * Pure domain — no React / backend clients.
  */
 
 import type { WorldPlaceKind } from '../places/world-place.types';

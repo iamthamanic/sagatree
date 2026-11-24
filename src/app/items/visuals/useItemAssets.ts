@@ -1,7 +1,7 @@
 /**
  * useItemAssets — reusable item thumbnail (#140/#643) + model3d (#141) UI state.
  * Thumbnail upload: Object URL preview first, then item-thumbnail optimize via service.
- * Network via itemThumbnailService / itemModel3dService only; no Supabase imports.
+ * Network via itemThumbnailService / itemModel3dService only; no backend-client imports.
  * Location: src/app/items/visuals/useItemAssets.ts
  */
 import { useEffect, useRef, useState } from 'react';

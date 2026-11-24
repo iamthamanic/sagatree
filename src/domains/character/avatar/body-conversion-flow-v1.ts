@@ -3,7 +3,7 @@
  * Location: src/domains/character/avatar/body-conversion-flow-v1.ts
  *
  * Implements Identity Transfer Spike (#262) default/degraded pipelines for
- * optional Import → Standard/Compact/Heavy conversion. No React / Three / Supabase.
+ * optional Import → Standard/Compact/Heavy conversion. No React / Three / backend clients.
  */
 
 import {

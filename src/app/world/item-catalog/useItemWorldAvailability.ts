@@ -1,7 +1,7 @@
 /**
  * useItemWorldAvailability — world-editor state for the `item-catalog` module
  * (#142). Wraps pack toggles, include/exclude lists, personal switch, and a
- * live effective-count via the domain-pure resolver. Does not call Supabase
+ * live effective-count via the domain-pure resolver. Does not call a backend client
  * for pack data; optional world-scoped defs load through the catalog service.
  * Location: src/app/world/item-catalog/useItemWorldAvailability.ts
  */

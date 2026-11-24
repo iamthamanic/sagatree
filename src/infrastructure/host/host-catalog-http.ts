@@ -278,7 +278,7 @@ export async function fetchHostOwnUserProfile(
   return body.profile ?? null;
 }
 
-/** FE-HOST-14: peer lobby profiles via host batch (no PostgREST). */
+/** FE-HOST-14: peer lobby profiles via host batch (no legacy REST gateway). */
 export async function fetchHostProfilesByUserIds(
   userIds: readonly string[],
   env: EnvLike = defaultEnv(),

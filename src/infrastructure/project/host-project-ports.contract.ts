@@ -3,7 +3,7 @@
  * Location: src/infrastructure/project/host-project-ports.contract.ts
  *
  * Transport-free DTO mirror of the 11 infra-project RPCs composed by host
- * `createProjectInfraPorts`. Supabase facades remain live until cutover; this
+ * `createProjectInfraPorts`. Legacy facades were retired with the cutover (CUT-20/21); this
  * documents the host shape for parity checks without importing the Node host.
  */
 

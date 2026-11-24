@@ -1,5 +1,5 @@
 /**
- * character.persistence — Supabase row shape for characters table.
+ * character.persistence — Persisted row shape for characters table.
  * Location: src/infrastructure/character/character.persistence.ts
  */
 import type {

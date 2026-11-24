@@ -47,18 +47,18 @@ for (const file of walk(srcRoot)) {
   }
 }
 
-const supabaseTs = readFileSync(join(root, 'src/lib/supabase.ts'), 'utf8');
-if (/^\s*import\s+.*@supabase\/supabase-js/m.test(supabaseTs) || /\bcreateClient\s*\(/.test(supabaseTs)) {
+const assetUrlsTs = readFileSync(join(root, 'src/lib/asset-urls.ts'), 'utf8');
+if (/\bcreateClient\s*\(/.test(assetUrlsTs)) {
   failures += 1;
-  console.error('FAIL: supabase.ts must stay SDK-free after CUT-21 (no createClient)');
+  console.error('FAIL: asset-urls.ts must stay client-free (no createClient)');
 }
-if (/publicAnonKey|from ['\"].*utils\/supabase\/info/.test(supabaseTs)) {
+if (/publicAnonKey|from ['\"].*\/info['\"]/.test(assetUrlsTs)) {
   failures += 1;
-  console.error('FAIL: supabase.ts must not fall back to info.tsx JWT');
+  console.error('FAIL: asset-urls.ts must not fall back to an anon-key info module');
 }
-if (jwtRe.test(supabaseTs)) {
+if (jwtRe.test(assetUrlsTs)) {
   failures += 1;
-  console.error('FAIL: supabase.ts must not contain JWT literals');
+  console.error('FAIL: asset-urls.ts must not contain JWT literals');
 }
 
 const info = readFileSync(join(root, 'archive/supabase-legacy/src-utils-supabase/info.tsx'), 'utf8');

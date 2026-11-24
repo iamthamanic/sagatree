@@ -1,6 +1,6 @@
 /**
  * Item model3d asset contract — stable model3d key + GLB helpers (#141).
- * Domain-pure: no React, no Supabase, no network.
+ * Domain-pure: no React, no backend clients, no network.
  * Location: src/domains/items/model3d-assets.ts
  */
 

@@ -2,7 +2,7 @@
  * prepared-adventure-fixture — Domain contract for Epic #210 player-test prepared adventure (#302).
  * Location: src/domains/session/contracts/prepared-adventure-fixture.ts
  * Hides: stable fixture ids, beat list, pregen descriptors, NPC spawn plan, integrity checks.
- * Never imports React or Supabase.
+ * Never imports React or backend clients.
  */
 
 import { SCENE_PRESENTATION_PRESETS } from './shared-scene-presentation';

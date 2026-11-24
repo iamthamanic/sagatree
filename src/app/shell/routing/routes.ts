@@ -1,5 +1,5 @@
 /**
- * App shell route table — pure pathname ↔ screen mapping (no React, no Supabase).
+ * App shell route table — pure pathname ↔ screen mapping (no React, no backend clients).
  * Location: src/app/shell/routing/routes.ts
  *
  * #133 History foundation + #276 Saga/Session public-id resource routes.

@@ -2,7 +2,7 @@
  * Look reference vision provider (CUT-15 / #1150).
  * Location: server/src/modules/look/internal/look-reference-vision.ts
  *
- * Ported from supabase/functions/_shared/look-reference-analysis-provider.ts.
+ * Ported from legacy Edge function _shared/look-reference-analysis-provider.ts.
  * Server-only keys; never returns secrets in payloads.
  */
 

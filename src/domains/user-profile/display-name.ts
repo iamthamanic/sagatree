@@ -2,7 +2,7 @@
  * Account display-name + initials helpers (#682).
  * Location: src/domains/user-profile/display-name.ts
  *
- * Pure domain — no React, no Supabase. Shared by Layout chrome, Profile, Lobby.
+ * Pure domain — no React, no backend clients. Shared by Layout chrome, Profile, Lobby.
  */
 
 export type AccountDisplayNameInput = {

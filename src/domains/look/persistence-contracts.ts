@@ -2,7 +2,7 @@
  * Look persistence contracts — repository surface for #340.
  * Location: src/domains/look/persistence-contracts.ts
  *
- * Infrastructure implements these; domain stays React/Supabase-free.
+ * Infrastructure implements these; domain stays React/backend clients-free.
  */
 
 import type {

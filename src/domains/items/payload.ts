@@ -2,7 +2,7 @@
  * ItemDefinition payload versioning — taxonomy / asset-key contract (#136).
  * Location: src/domains/items/payload.ts
  *
- * Domain-pure: no React, no Supabase, no UI imports.
+ * Domain-pure: no React, no backend clients, no UI imports.
  */
 
 /**

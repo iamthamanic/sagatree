@@ -2,7 +2,7 @@
  * NPC/creature promotion use cases (#200): Template→Character and Compact→Full.
  * Location: src/domains/npc-creature/promotion.ts
  *
- * Domain-pure: no React, no Supabase, no UI imports.
+ * Domain-pure: no React, no backend clients, no UI imports.
  * Illegal compact values become unresolved legal choices — never a silent Full build.
  */
 

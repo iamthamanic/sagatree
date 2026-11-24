@@ -2,7 +2,7 @@
  * saga-definition — Story definition + version contracts (#574 / #575).
  * Location: src/domains/saga/contracts/saga-definition.ts
  *
- * Pure domain: parse + audience project + draft validation. No React / Supabase.
+ * Pure domain: parse + audience project + draft validation. No React / backend clients.
  */
 
 export type SagaDefinitionOrigin = 'native' | 'user' | 'private_backfill';

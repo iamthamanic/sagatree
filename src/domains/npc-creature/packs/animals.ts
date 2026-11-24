@@ -2,7 +2,7 @@
  * Tiere — builtin animal pack (#199).
  * Location: src/domains/npc-creature/packs/animals.ts
  *
- * Domain-pure: no React, no Supabase, no UI imports.
+ * Domain-pure: no React, no backend clients, no UI imports.
  */
 
 import type { NpcCreatureDefinition } from '../definition';

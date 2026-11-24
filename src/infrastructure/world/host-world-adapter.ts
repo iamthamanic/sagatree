@@ -2,7 +2,7 @@
  * host-world-adapter — Binds infra HostWorldPorts to an injected host implementation (MIG-313).
  * Location: src/infrastructure/world/host-world-adapter.ts
  *
- * Production UI still calls Supabase `world-*-service` facades. This adapter is the
+ * The legacy `world-*-service` facades were retired with CUT-20. This adapter is the
  * typed cutover seam: tests and future host transport inject a HostWorldPorts
  * implementation. No server/ imports; no client role elevation.
  */

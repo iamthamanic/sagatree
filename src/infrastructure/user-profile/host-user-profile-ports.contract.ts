@@ -3,8 +3,8 @@
  * Location: src/infrastructure/user-profile/host-user-profile-ports.contract.ts
  *
  * Transport-free DTO mirror of `server/src/modules/user-profile` ports
- * (table user_profiles + storage user-avatars; 0 RPCs). Supabase facades
- * remain live until cutover; this documents the host shape for parity checks
+ * (table user_profiles + storage user-avatars; 0 RPCs). Legacy facades
+ * were retired with the cutover; this documents the host shape for parity checks
  * without importing the Node host package.
  */
 

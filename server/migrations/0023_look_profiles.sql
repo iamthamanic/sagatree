@@ -1,5 +1,5 @@
 -- MIG-304 LookProfile persistence (host SQLite). Module ownership: look.
--- Mirrors supabase/migrations/046_look_profiles.sql + 084 public_id (LK-XXXXX).
+-- Mirrors legacy migration 046_look_profiles.sql + 084 public_id (LK-XXXXX).
 -- Append-only versions; archive via status (no DELETE).
 
 CREATE TABLE IF NOT EXISTS look_profiles (

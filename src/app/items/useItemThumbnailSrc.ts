@@ -1,6 +1,6 @@
 /**
  * useItemThumbnailSrc — resolve thumbnail2d assetKey to a signed URL (#140).
- * App-slice hook; infrastructure service only, no direct Supabase.
+ * App-slice hook; infrastructure service only, no direct backend client.
  * Location: src/app/items/useItemThumbnailSrc.ts
  */
 import { useEffect, useState } from 'react';

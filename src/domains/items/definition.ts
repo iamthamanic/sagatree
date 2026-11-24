@@ -4,7 +4,7 @@
  * via public re-exports.
  * Location: src/domains/items/definition.ts
  *
- * Domain-pure: no React, no Supabase, no UI imports.
+ * Domain-pure: no React, no backend clients, no UI imports.
  */
 
 import type {

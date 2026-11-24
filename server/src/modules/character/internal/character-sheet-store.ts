@@ -3,7 +3,7 @@
  * Private — import only from character public API.
  * Location: server/src/modules/character/internal/character-sheet-store.ts
  *
- * Supabase remains live FE default; this is the host isolated-contract store.
+ * The FE uses host HTTP since CUT-20; this is the host isolated-contract store.
  * Creator/VRM rendering utilities stay client-side (not moved here).
  * Artifact resolve/seed: PC-only + deleted_at IS NULL (parity with owner-guard triggers).
  */
@@ -80,7 +80,7 @@ function stringField(
   return null;
 }
 
-/** Host parity with supabase/migrations/035_guard_sheet_status_complete.sql (sheet_json). */
+/** Host parity with legacy migration 035_guard_sheet_status_complete.sql (sheet_json). */
 export function isCompleteSheetPayload(
   name: string,
   level: number,

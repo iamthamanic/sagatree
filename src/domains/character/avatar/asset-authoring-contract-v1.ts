@@ -4,7 +4,7 @@
  *
  * Provider-neutral Generate → Select → Normalize → Validate → Publish workflow.
  * Reuses Avatar3dGeneration contracts; Meshy is one adapter, Tripo must fit without
- * Domain/UI redesign. No React / Supabase / provider SDKs.
+ * Domain/UI redesign. No React / backend clients / provider SDKs.
  */
 
 import {

@@ -1,7 +1,7 @@
 /**
  * Look reference image mime sniff + size limits (MIG-412 / #828).
  * Location: server/src/modules/look/internal/look-reference-image.ts
- * Ported from supabase/functions/_shared/look-reference-analysis-image.ts
+ * Ported from legacy Edge function _shared/look-reference-analysis-image.ts
  */
 
 export const LOOK_REF_ANALYSIS_MAX_BYTES = 8 * 1024 * 1024;

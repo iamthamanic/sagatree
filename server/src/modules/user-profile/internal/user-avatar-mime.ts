@@ -1,7 +1,7 @@
 /**
  * User-avatar MIME sniff + size limits (MIG-312 / #811).
  * Location: server/src/modules/user-profile/internal/user-avatar-mime.ts
- * Parity with src/infrastructure/user-profile/supabase-user-profile.repository.ts
+ * Parity with the former FE user-profile repository MIME allowlist (pre-host)
  */
 
 export const USER_AVATAR_MAX_BYTES = 5 * 1024 * 1024;

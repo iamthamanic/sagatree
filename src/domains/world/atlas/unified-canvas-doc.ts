@@ -3,7 +3,7 @@
  * Location: src/domains/world/atlas/unified-canvas-doc.ts
  *
  * Stored under world_atlas_maps.generator_meta.unifiedCanvas.
- * Pure domain — no React / Supabase.
+ * Pure domain — no React / backend clients.
  */
 
 import {

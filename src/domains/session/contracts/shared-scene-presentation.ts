@@ -2,7 +2,7 @@
  * shared-scene-presentation — Shared scene/location presentation contract (#301).
  * Location: src/domains/session/contracts/shared-scene-presentation.ts
  * Hides: presentation schema, GM input validation, forged-key stripping.
- * Never imports React or Supabase.
+ * Never imports React or backend clients.
  * Reusable later for 3D via opaque sceneRef (no grid/fog/world-builder here).
  */
 

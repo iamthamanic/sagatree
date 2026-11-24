@@ -1,7 +1,7 @@
 /**
  * marketplace client-trust — Reject privileged client fields; whitelist update patches (#675).
  * Location: src/domains/marketplace/client-trust.ts
- * Pure domain rules — no React, no Supabase.
+ * Pure domain rules — no React, no backend clients.
  *
  * Hand parsers (not Zod): frontend has no zod dependency; issue #675 Non-Goals /
  * Assumptions allow equivalent hand parsers / shared helpers at this boundary.

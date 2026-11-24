@@ -151,7 +151,7 @@ export function useWorldAtlasEditor({
       return;
     }
     if (authLoading) return;
-    // FE-HOST-07: host library uses Better Auth cookies — no GoTrue JWT reconnect.
+    // FE-HOST-07: host library uses Better Auth cookies — no JWT reconnect.
     if (!isHostLibraryEnabled() && !hasJwtSession) {
       const ok = await ensureJwtSession();
       if (!ok) {

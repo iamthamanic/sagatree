@@ -4,7 +4,7 @@
  * in multiple packs. Packs never carry marketplace source metadata.
  * Location: src/domains/items/pack.ts
  *
- * Domain-pure: no React, no Supabase, no UI imports.
+ * Domain-pure: no React, no backend clients, no UI imports.
  */
 
 import type { ItemSettingTag } from './taxonomy';

@@ -2,7 +2,7 @@
  * Builtin NPC/creature packs — Fantasy Basics, Tiere, context packs (#199).
  * Location: src/domains/npc-creature/packs/index.ts
  *
- * Domain-pure: no React, no Supabase, no UI imports.
+ * Domain-pure: no React, no backend clients, no UI imports.
  */
 
 import type { NpcCreatureDefinition } from '../definition';

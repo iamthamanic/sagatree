@@ -2,7 +2,7 @@
  * host-look-adapter — Binds infra HostLookProfilePorts to an injected host impl (MIG-304).
  * Location: src/infrastructure/look/host-look-adapter.ts
  *
- * Production UI still calls Supabase look-service facades. This adapter is the
+ * The legacy look-service facades were retired with CUT-20. This adapter is the
  * typed dual-path seam: tests and future host transport inject HostLookProfilePorts.
  * No server/ imports; no client role elevation.
  */

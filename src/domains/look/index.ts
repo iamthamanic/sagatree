@@ -2,7 +2,7 @@
  * look domain barrel — LookProfile contracts & resolution (#339).
  * Location: src/domains/look/index.ts
  *
- * Pure domain: no React, no Supabase, no provider adapter types.
+ * Pure domain: no React, no backend clients, no provider adapter types.
  */
 
 export {

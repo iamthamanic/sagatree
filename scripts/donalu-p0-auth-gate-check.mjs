@@ -24,21 +24,21 @@ function requireIncludes(content, needle, label) {
   if (!content.includes(needle)) fail(`missing ${label}: ${needle}`);
 }
 
-/** CUT-20 host-only facades use assertHost(); legacy dual-path keeps assertSupabaseJwtSession. */
+/** CUT-20 host-only facades use assertHost() / assertHostActorSession(). */
 function requireProductAuthGate(content, label) {
   const hostOnly =
     content.includes('assertHost') &&
     (content.includes('isHostLibraryEnabled') ||
       content.includes('Host-Anmeldung nicht konfiguriert'));
-  if (!content.includes('assertSupabaseJwtSession') && !hostOnly) {
+  if (!content.includes('assertHostActorSession') && !hostOnly) {
     fail(
-      `missing ${label}: assertSupabaseJwtSession or CUT-20 assertHost() + isHostLibraryEnabled`,
+      `missing ${label}: assertHostActorSession or CUT-20 assertHost() + isHostLibraryEnabled`,
     );
   }
 }
 
 const authUser = read('src/lib/authenticatedUser.ts');
-requireIncludes(authUser, 'export async function assertSupabaseJwtSession', 'assertSupabaseJwtSession export');
+requireIncludes(authUser, 'export async function assertHostActorSession', 'assertHostActorSession export');
 requireIncludes(authUser, 'API_AUTH_REQUIRED_DE', 'German API auth message');
 
 const authCtx = read('src/lib/auth-context.tsx');

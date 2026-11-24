@@ -205,8 +205,7 @@ const SOURCE_COVERAGE_ALLOWLIST = new Set([
   'src/infrastructure/host/host-saga-definition-http.ts',
   'src/infrastructure/host/host-session-http.ts',
   'src/infrastructure/host/host-world-http.ts',
-  'src/lib/supabase.ts',
-  'src/lib/supabase-client.ts',
+  'src/lib/asset-urls.ts',
   'src/lib/auth-context.tsx',
   'src/lib/authenticatedUser.ts',
 ]);

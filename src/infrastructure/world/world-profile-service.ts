@@ -2,7 +2,7 @@
  * world-profile-service — world profile persistence facade (CUT-20 host Library HTTP).
  * Location: src/infrastructure/world/world-profile-service.ts
  *
- * Product runtime uses host Library world routes only — no Supabase client.
+ * Product runtime uses host Library world routes only — host HTTP only.
  */
 import { normalizeWorldModuleConfigMap } from '../../domains/world/worldModuleRegistry';
 import type {

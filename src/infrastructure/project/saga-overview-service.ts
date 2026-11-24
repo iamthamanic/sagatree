@@ -2,7 +2,7 @@
  * saga-overview-service — Host HTTP for saga hub overview (#570).
  * Location: src/infrastructure/project/saga-overview-service.ts
  *
- * CUT-20: host project HTTP only — no Supabase RPC.
+ * CUT-20: host project HTTP only — host HTTP only.
  */
 import {
   assertSagaOverviewAudienceSafe,

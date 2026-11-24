@@ -3,7 +3,7 @@
  * Location: src/domains/npc-creature/contracts.ts
  *
  * Infrastructure implements these; app slices consume via infrastructure.
- * Domain-pure: no React, no Supabase, no UI imports.
+ * Domain-pure: no React, no backend clients, no UI imports.
  */
 
 import type { NpcCreatureDefinition, NpcCreatureDefinitionWriteDraft } from './definition';

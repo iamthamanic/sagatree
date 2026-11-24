@@ -2,7 +2,7 @@
  * dornhain-starter-map — Deterministic basic terrain + pins for Dornhain (#atlas).
  * Location: src/domains/world/map/dornhain-starter-map.ts
  *
- * Mirrors supabase seed so client fallbacks / tests stay aligned.
+ * Mirrors the host Dornhain seed so client fallbacks / tests stay aligned.
  */
 import { DEFAULT_MAP_SIZE } from './constants';
 import { emptyWorldMapData, tileKey, type WorldMapData, type WorldMapPin } from './world-map.types';

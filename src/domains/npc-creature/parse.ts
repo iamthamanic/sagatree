@@ -3,7 +3,7 @@
  * Location: src/domains/npc-creature/parse.ts
  *
  * Identity (id, scope) comes from trusted columns — never from payload.
- * Domain-pure: no React, no Supabase, no UI imports.
+ * Domain-pure: no React, no backend clients, no UI imports.
  */
 
 import {

@@ -2,7 +2,7 @@
  * NPC/creature definition payload versioning (#196).
  * Location: src/domains/npc-creature/payload.ts
  *
- * Domain-pure: no React, no Supabase, no UI imports.
+ * Domain-pure: no React, no backend clients, no UI imports.
  */
 
 /** Version stamped into persisted definition payloads. */

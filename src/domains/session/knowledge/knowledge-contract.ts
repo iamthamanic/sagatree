@@ -3,7 +3,7 @@
  * Location: src/domains/session/knowledge/knowledge-contract.ts
  *
  * Audience-aware knowledge state. Secret bodies never leave the server-side
- * projection for unauthorized participants. Pure domain — no React/Supabase.
+ * projection for unauthorized participants. Pure domain — no React/backend clients.
  */
 
 import {

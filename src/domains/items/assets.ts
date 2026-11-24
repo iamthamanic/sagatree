@@ -1,6 +1,6 @@
 /**
  * Item thumbnail asset contract — stable assetKey + prompt helpers (#140).
- * Domain-pure: no React, no Supabase, no network.
+ * Domain-pure: no React, no backend clients, no network.
  * Location: src/domains/items/assets.ts
  */
 

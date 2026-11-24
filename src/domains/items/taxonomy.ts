@@ -3,7 +3,7 @@
  * vocabularies for ItemDefinition metadata (#134).
  * Location: src/domains/items/taxonomy.ts
  *
- * Domain-pure: no React, no Supabase, no UI imports.
+ * Domain-pure: no React, no backend clients, no UI imports.
  */
 
 /** Semantic item kind — independent of InventoryItemType inventory behavior. */

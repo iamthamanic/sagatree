@@ -1,11 +1,11 @@
 /**
- * Shared network timeouts for auth bootstrap and Supabase REST calls.
+ * Shared network timeouts for auth bootstrap and host HTTP calls.
  * Prevents the UI from hanging when the self-host stack is unreachable.
  * Location: src/lib/networkTimeout.ts
  */
 
 export const AUTH_SESSION_TIMEOUT_MS = 1_500;
-export const SUPABASE_QUERY_TIMEOUT_MS = 5_000;
+export const HOST_QUERY_TIMEOUT_MS = 5_000;
 
 export const TIMED_OUT = Symbol('network-timeout');
 

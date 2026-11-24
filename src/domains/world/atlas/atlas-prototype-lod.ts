@@ -3,7 +3,7 @@
  * Location: src/domains/world/atlas/atlas-prototype-lod.ts
  *
  * Pure domain: same camera-stage logic as the offline WebGL prototype, mapped onto
- * the product 1000² canvas (Dornhain anchors). No React / Supabase.
+ * the product 1000² canvas (Dornhain anchors). No React / backend clients.
  */
 
 import type { AtlasPoint, AtlasRect } from '../map/atlas-camera';

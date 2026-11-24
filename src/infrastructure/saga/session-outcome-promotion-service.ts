@@ -2,7 +2,7 @@
  * session-outcome-promotion-service — Host HTTP for #582 promote.
  * Location: src/infrastructure/saga/session-outcome-promotion-service.ts
  *
- * CUT-20: host session HTTP only — no Supabase RPC.
+ * CUT-20: host session HTTP only — host HTTP only.
  */
 import { isHostLibraryEnabled } from '../host/host-library-http';
 import {

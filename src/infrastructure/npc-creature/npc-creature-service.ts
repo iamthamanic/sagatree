@@ -350,7 +350,7 @@ export async function getNpcCreatureControllerAssignment(
 /**
  * Assign / clear controller (#200 / CUT-02).
  * Domain plan is a client hint only; host ports re-validate GM + membership.
- * Under host-first: Host HTTP — never Supabase RPC.
+ * Under host-first: Host HTTP — host HTTP only.
  */
 export async function assignNpcCreatureController(input: {
   projectId: string;

@@ -2,7 +2,7 @@
  * session-outcome-promotion — Plan promote of recap consequences (#582).
  * Location: src/domains/session/contracts/session-outcome-promotion.ts
  *
- * Pure domain: eligibility + confirm copy. No React / Supabase.
+ * Pure domain: eligibility + confirm copy. No React / backend clients.
  */
 
 export type PromoteTarget = 'saga' | 'world';

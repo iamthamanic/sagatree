@@ -2,7 +2,7 @@
  * player-panel — Pure Player Panel V1 view model for live session screens (#298).
  * Location: src/domains/session/contracts/player-panel.ts
  * Hides: derived combat stats, inventory read-first projection, connection banners.
- * Never imports React or Supabase.
+ * Never imports React or backend clients.
  */
 import type { CharacterVm } from '../../character/contracts/character.views';
 import type { CharacterAttributesDto } from '../../character/domain/character.entity';

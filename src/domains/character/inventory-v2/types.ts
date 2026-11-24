@@ -6,7 +6,7 @@
  * circular import with the items domain.
  * Location: src/domains/character/inventory-v2/types.ts
  *
- * Domain-pure: no React, no Supabase, no UI imports.
+ * Domain-pure: no React, no backend clients, no UI imports.
  */
 
 import type { EquipmentSlot } from './primitives';

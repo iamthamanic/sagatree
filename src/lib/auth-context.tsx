@@ -2,7 +2,7 @@
  * AuthProvider — Better Auth (host) session for the product runtime (CUT-20 / FE-HOST-07).
  * Location: src/lib/auth-context.tsx
  *
- * Legacy GoTrue/Supabase auth paths were removed with dual-path CUT-20. When
+ * Legacy legacy auth paths were removed with dual-path CUT-20. When
  * `VITE_SAGATREE_HOST_AUTH_URL` is unset, host auth is disabled — see
  * `isHostAuthBridgeEnabled` / `getHostAuthBaseUrl`.
  */
@@ -49,7 +49,7 @@ export {
   HOST_AUTH_SESSION_BEARER_KEYS,
 };
 
-/** Minimal user shape for `useAuth()` (no `@supabase/supabase-js` after CUT-20). */
+/** Minimal user shape for `useAuth()` (host actor; no third-party auth SDK). */
 export type AuthUser = {
   readonly id: string;
   readonly email?: string;

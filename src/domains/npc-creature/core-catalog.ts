@@ -3,7 +3,7 @@
  * Repository-local only; never written to npc_creature_definitions.
  * Location: src/domains/npc-creature/core-catalog.ts
  *
- * Domain-pure: no React, no Supabase, no UI imports.
+ * Domain-pure: no React, no backend clients, no UI imports.
  */
 
 import type { NpcCreatureDefinition } from './definition';

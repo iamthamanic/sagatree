@@ -4,7 +4,7 @@
  *
  * Encodes approach comparison + default/degraded pipeline for #269.
  * Provider part-split is adapter-only — never a domain capability claim.
- * No React / Three / Supabase / live provider calls.
+ * No React / Three / backend clients / live provider calls.
  */
 
 export const MODULAR_GENERATE_DECOMPOSITION_VERSION =

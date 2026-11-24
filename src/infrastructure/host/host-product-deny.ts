@@ -2,8 +2,8 @@
  * host-product-deny — FE-HOST-09 explicit German DENY for residual Edge/RPC surfaces.
  * Location: src/infrastructure/host/host-product-deny.ts
  *
- * Used when host-first is on but a legacy Supabase Edge/RPC product path has no
- * host successor yet. Fail closed — never hang on GoTrue/PostgREST.
+ * Used when host-first is on but a legacy Edge/RPC product path has no
+ * host successor yet. Fail closed — never hang on legacy auth/REST.
  */
 import { isHostLibraryEnabled } from './host-library-http';
 

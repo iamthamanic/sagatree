@@ -2,7 +2,7 @@
  * host-session-adapter — Binds infra HostSessionPorts to an injected host impl (MIG-311).
  * Location: src/infrastructure/session/host-session-adapter.ts
  *
- * Production UI still calls Supabase session-* facades. Dual-path seam only.
+ * The legacy session-* facades were retired with CUT-20. Dual-path seam only.
  * No server/ imports; no client role elevation.
  */
 import type { HostSessionPorts } from './host-session-ports.contract';

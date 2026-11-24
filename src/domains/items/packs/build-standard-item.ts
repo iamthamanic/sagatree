@@ -3,7 +3,7 @@
  * Optionally snapshots mechanics from a Core archetype id (no runtime merge).
  * Location: src/domains/items/packs/build-standard-item.ts
  *
- * Domain-pure: no React, no Supabase, no UI imports.
+ * Domain-pure: no React, no backend clients, no UI imports.
  */
 
 import type {

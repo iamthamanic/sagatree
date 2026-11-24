@@ -2,7 +2,7 @@
  * NPC/creature controller assignment (#200) — orthogonal to sheet mode / identity.
  * Location: src/domains/npc-creature/controller-assignment.ts
  *
- * Domain-pure: no React, no Supabase, no UI imports.
+ * Domain-pure: no React, no backend clients, no UI imports.
  * Campaign membership must be supplied from trusted infrastructure context.
  */
 

@@ -10,7 +10,6 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {
   ensureLoggedIn,
-  installLocalAdminGoTrueSuccess,
   E2E_LOCAL_ADMIN_USER_ID,
 } from './helpers/auth';
 
@@ -140,13 +139,12 @@ async function installAtlasMocks(page: Page) {
 test('product WebGL atlas mounts DB nav + registry tools (contract)', async ({ page }) => {
   test.skip(
     true,
-    'CUT-20: atlas contract still stubs GoTrue/PostgREST; host world-by-public-id journey covered by Atlas isolated product gate',
+    'CUT-20: atlas contract still stubs legacy auth/REST; host world-by-public-id journey covered by Atlas isolated product gate',
   );
   test.setTimeout(90_000);
   fs.mkdirSync(EVIDENCE, { recursive: true });
-  // Contract path always stubs GoTrue so JWT + RPC mocks stay deterministic
+  // Contract path stubs legacy auth so JWT + RPC mocks stay deterministic
   // whether CI uses inert placeholders or live secret URLs.
-  await installLocalAdminGoTrueSuccess(page);
   await installAtlasMocks(page);
   await ensureLoggedIn(page);
 
@@ -184,7 +182,6 @@ test('cross-owner atlas RPC remains denied without ownership (negative)', async 
     'CUT-20: negative still mocks rest/v1 world_profiles; host authz covered by MIG-600 self-test + Atlas isolated',
   );
   test.setTimeout(60_000);
-  await installLocalAdminGoTrueSuccess(page);
   let denied = false;
   await page.route('**/rest/v1/world_profiles*', async (route) => {
     if (route.request().method() === 'GET') {

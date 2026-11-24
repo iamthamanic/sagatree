@@ -2,7 +2,7 @@
  * multiuser-e2e-security — Phase 8 checklist + security failure classification (#303 / Epic #210).
  * Location: src/domains/session/contracts/multiuser-e2e-security.ts
  * Hides: Playwright/account wiring; pure contract for gate + client error mapping.
- * Never imports React or Supabase.
+ * Never imports React or backend clients.
  */
 
 /** Ordered Phase 8 vertical-slice steps from Epic #210. */
@@ -44,7 +44,7 @@ export type RuntimeSecurityClass =
   | 'unknown';
 
 /**
- * Classify RPC / PostgREST error text into a stable security class for UI + E2E asserts.
+ * Classify RPC / REST error text into a stable security class for UI + E2E asserts.
  */
 export function classifyRuntimeSecurityError(message: string): RuntimeSecurityClass {
   const m = message.trim().toLowerCase();

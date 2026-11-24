@@ -4,7 +4,7 @@
  *
  * Six logical wearables × Standard/Compact/Heavy family fits. One logical id;
  * body family resolves the variant — never species-duplicated contracts.
- * Pure domain: no React / Three / Supabase.
+ * Pure domain: no React / Three / backend clients.
  */
 
 import {

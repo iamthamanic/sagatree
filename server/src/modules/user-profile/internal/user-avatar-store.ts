@@ -2,7 +2,7 @@
  * Local user-avatars object store under dataDir (MIG-312 / #811).
  * Location: server/src/modules/user-profile/internal/user-avatar-store.ts
  *
- * Bucket parity with Supabase `user-avatars`. Path prefix is owner-scoped;
+ * Bucket parity with the legacy `user-avatars` bucket. Path prefix is owner-scoped;
  * object deletion is best-effort and separate from profile row updates.
  */
 import { mkdirSync, unlinkSync, writeFileSync, existsSync, readFileSync } from 'node:fs';

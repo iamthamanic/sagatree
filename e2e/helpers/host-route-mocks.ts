@@ -1,5 +1,5 @@
 /**
- * CUT-20 Browser E2E — mock Host `/api/v1/library/*` instead of PostgREST.
+ * CUT-20 Browser E2E — mock Host `/api/v1/library/*` instead of the legacy REST gateway.
  * Location: e2e/helpers/host-route-mocks.ts
  */
 import type { Page, Route } from '@playwright/test';

@@ -4,7 +4,7 @@
  * scope/ownership. Definitions are referenced by id — never embedded duplicates.
  * Location: src/domains/npc-creature/world-catalog.ts
  *
- * Domain-pure: no React, no Supabase, no UI imports.
+ * Domain-pure: no React, no backend clients, no UI imports.
  */
 
 import type { NpcCreatureDefinition } from './definition';

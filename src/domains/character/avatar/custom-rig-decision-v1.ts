@@ -4,7 +4,7 @@
  *
  * Reproducible provider/path comparison for Humanoid vs Custom Creature.
  * Provider success never elevates capabilities — Analyzer/Revalidation owns that.
- * No React / Three / Supabase / live GPU calls.
+ * No React / Three / backend clients / live GPU calls.
  */
 
 import type { AvatarRigProfileKindV2 } from './rig-capability-contract-v2';
