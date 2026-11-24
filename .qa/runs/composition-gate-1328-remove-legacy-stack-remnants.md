@@ -1,6 +1,6 @@
 # Composition Gate — 1328-remove-legacy-stack-remnants
 
-- HEAD_SHA: 8965299970453d92cde91c76d9e6bcd9e639134b
+- HEAD_SHA: 3dc347ed86bf4cb9ed2d7fc40d2476693c1ea8cd
 - BASE_SHA: 1490c7854b7d6ee45fdb3cccdaefe73f7d27574c
 - Date: 2026-11-24
 - Verdict: SKIPPED
