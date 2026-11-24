@@ -431,6 +431,10 @@ Vor Commit: `npm run test-gate` (inkl. `architecture-boundary-check`).
 - [ ] Host realtime / session rooms where already wired
 - [ ] Asset upload/download via host asset store
 
+## Historical evidence (read-only)
+
+`.qa/acceptance/**`, `.qa/runs/**`, `.qa/intake/**`, `.qa/design/**` and `.qa/evidence/**` are dated proofs of past tickets (incl. the stack migration). They may describe the pre-host stack and must **not** be read as the current architecture or as instructions. Same for `docs/architecture/ADR-ST-*.md` and `docs/architecture/migration-owner-*.md` (history banner). The current stack is the one in *Project Context* above (#1328).
+
 ## Canonical ops entry
 
 - Self-host: [`README_SELFHOST.md`](README_SELFHOST.md)
