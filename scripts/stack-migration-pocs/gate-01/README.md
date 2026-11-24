@@ -37,6 +37,16 @@ python run-node22.py
 
 Das erste Werkzeug lädt das offizielle, auf SHA-256 gepinnte Node-22.23.3-Archiv. Das zweite erzeugt eine isolierte Kopie ohne `node_modules`, führt mit der Node-22-Toolchain ein eigenes `npm ci` aus, lädt die tatsächliche native SQLite-Bibliothek und führt die vollständige Suite erneut aus. Node-24-Bindings werden dabei nicht wiederverwendet. Installations-/Build-Logs und der zweite Bericht liegen unter `pocs/gate-01/node22/`.
 
+## Abhängigkeits-Overrides (npm audit)
+
+Der CI-Schritt `npm audit --audit-level=high` muss grün bleiben. Transitive Pakete, für die der direkte Abhängigkeitsbaum noch keine gepatchte Version zieht, werden in `package.json` unter `overrides` exakt gepinnt:
+
+- `effect` 3.22.5 (GHSA-7589-6fvf-x4pw, ReDoS in `Schema.TemplateLiteral`, betroffen <= 3.22.0). `@prisma/config` 6.19.3 pinnt `effect` exakt auf 3.21.0, und es gibt keine neuere Prisma-6-Version; ZenStack 3.x verlangt `prisma ^6.19.0`, ein ZenStack-Upgrade hilft also nicht.
+- `hono` 4.13.21 (GHSA-4m76-xfj5-7975, GHSA-h7mg-cq63-vhpq, GHSA-3gg2-335m-rxc6, GHSA-46wx-v44x-9hh2, GHSA-4h7h-rv7c-7m2v).
+- `@hono/node-server` 2.1.11 (GHSA-rmxm-3fg6-px4f, GHSA-jpvv-r467-5p4w). Die 1.x-Linie hat für GHSA-rmxm-3fg6-px4f keinen Fix; `@zenstackhq/cli` nutzt daraus nur `serve()` für `zen proxy`.
+
+Die Overrides entfallen, sobald ZenStack/Prisma selbst gepatchte Versionen ziehen.
+
 ## Rollen und Daten
 
 | Identität | Rechte im Fixture |

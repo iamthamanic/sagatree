@@ -28,6 +28,9 @@
   },
   "overrides": {
     "deepmerge-ts": "8.0.2",
-    "esbuild": "0.28.1"
+    "esbuild": "0.28.1",
+    "effect": "3.22.5",
+    "@hono/node-server": "2.1.11",
+    "hono": "4.13.21"
   }
 }
