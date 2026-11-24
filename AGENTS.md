@@ -130,7 +130,7 @@ For `PERFORMANCE` work, agents MUST read and apply `docs/concepts/conductor-expe
 
 For visualization work, agents MUST read and apply `docs/concepts/imagination-first-visualization-contract.md`. Relevant acceptance criteria must reference its `IV-*` gates.
 
-For **Atlas** work, agents MUST start from `docs/architecture/atlas-v2-architecture.md` (canonical ATL2 index). Renderer SoT is ADR-ST-10 (Custom WebGL); ATL3/Three.js issues (#1294 ff.) are future work, not fulfilled.
+For **Atlas** work, agents MUST start from `docs/architecture/atlas-v2-architecture.md` (canonical ATL2 index). Renderer SoT is ADR-ST-10 (Custom WebGL); ATL3-R01B (#1296) proposes ADR-ST-11 (conditional GO for Three.js), which is not in force until owner approval + hardware evidence — R02–R05 stay closed until then.
 
 For **any new user-facing UI**, agents MUST read and apply `docs/concepts/adaptive-ui-experience-contract.md`. Relevant acceptance criteria must reference its `AU-*` gates (device bands, touch targets, safe areas, recomposition, states). Subjective "responsive" / "mobile-first" / "Apple-like" wording is never enough.
 
