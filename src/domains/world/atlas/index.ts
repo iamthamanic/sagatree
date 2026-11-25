@@ -700,3 +700,27 @@ export {
   type AtlasGoldenVisualViewportId,
 } from './atlas-golden-visual';
 
+export {
+  buildAtlasSceneScatter,
+  type AtlasScatterInstance,
+  type AtlasScatterKind,
+  type AtlasScatterPlan,
+} from './atlas-scene-scatter';
+
+export {
+  ATLAS_BIOME_BRUSHES,
+  ATLAS_TERRAIN_SCULPT_MODES,
+  applyAtlasTerrainSculptDab,
+  type AtlasBiomeBrushId,
+  type AtlasBiomeBrushSpec,
+  type AtlasTerrainSculptMode,
+} from './atlas-biome-brush';
+
+export {
+  formatAtlasSpanLabelDe,
+  resolveContinuousZoomTransition,
+  type AtlasScaleLabelSpec,
+  type AtlasZoomTransitionIntent,
+} from './atlas-continuous-zoom';
+
+

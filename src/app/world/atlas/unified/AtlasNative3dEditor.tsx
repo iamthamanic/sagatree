@@ -27,6 +27,7 @@ import {
   atlasNative3dDungeonLookKey,
   resolveAtlasNative3dDungeonLook,
 } from './atlas-native-3d-look';
+import { AtlasThreeWorkstation } from './AtlasThreeWorkstation';
 import './prototype3d/atlas-sagatree-skin.css';
 
 export type AtlasNativeNavSelectPayload = {
@@ -122,6 +123,15 @@ export type AtlasNative3dEditorProps = {
   readonly onWebglMountError?: (message: string | null) => void;
   /** Optional React content portaled cleanly inside the collapsible Werkzeuge (#inspector) drawer. */
   readonly toolsSlot?: ReactNode;
+  /** Canonical UnifiedCanvasDoc driving the productive Three.js PBR Workstation (ADR-ST-11). */
+  readonly doc?: UnifiedCanvasDoc | null;
+  readonly canUndo?: boolean;
+  readonly canRedo?: boolean;
+  readonly onUndo?: () => void;
+  readonly onRedo?: () => void;
+  readonly onCommitDoc?: (next: UnifiedCanvasDoc, recordHistory: boolean) => void;
+  readonly onHierarchyBack?: () => void;
+  readonly topBarExtra?: ReactNode;
 };
 /** Rebrand leftover prototype copy to SagaTree product wording. */
 function applySagaTreeCopy(host: HTMLElement): void {
@@ -368,7 +378,83 @@ function resolveHistoryStore(
   return created;
 }
 
-export function AtlasNative3dEditor({
+export function AtlasNative3dEditor(props: AtlasNative3dEditorProps) {
+  const {
+    className,
+    mapKey = 'default',
+    controlled = false,
+    externalNav = null,
+    activePlaceId = null,
+    onNavSelect,
+    onNavAdd,
+    canEdit = true,
+    mapScale = 'world',
+    mapPins = null,
+    graphicsPresetId = 'balanced',
+    navRestoreView = null,
+    onNavViewChange,
+    onWebglMountError,
+    toolsSlot = null,
+    doc = null,
+    canUndo = false,
+    canRedo = false,
+    onUndo,
+    onRedo,
+    onCommitDoc,
+    onHierarchyBack,
+    topBarExtra = null,
+  } = props;
+  const [threeFailed, setThreeFailed] = useState(false);
+
+  // ADR-ST-11: Three.js PBR Workstation is the productive 3D engine for high/balanced;
+  // lite preset or WebGL failure falls back cleanly to Custom WebGL / AtlasLite3D.
+  const useThreeWorkstation = Boolean(doc) && graphicsPresetId !== 'lite' && !threeFailed;
+
+  if (useThreeWorkstation && doc) {
+    return (
+      <div
+        className={`flex h-full min-h-0 w-full min-w-0 flex-col overflow-hidden ${className ?? ''}`}
+        data-atlas-native-3d
+        data-atlas-proto-exact="true"
+        data-atlas-renderer="three-js"
+        data-atlas-controlled={controlled ? 'true' : undefined}
+        data-atlas-product-nav={externalNav ? 'true' : undefined}
+        style={{ background: '#10252f' }}
+      >
+        <AtlasThreeWorkstation
+          doc={doc}
+          canEdit={canEdit}
+          mapKey={mapKey}
+          mapScale={mapScale}
+          graphicsPresetId={graphicsPresetId}
+          externalNav={externalNav}
+          activePlaceId={activePlaceId}
+          mapPins={mapPins ?? []}
+          navRestoreView={navRestoreView}
+          canUndo={canUndo}
+          canRedo={canRedo}
+          onUndo={() => onUndo?.()}
+          onRedo={() => onRedo?.()}
+          onCommitDoc={(next, recordHistory) => onCommitDoc?.(next, recordHistory)}
+          onNavSelect={onNavSelect}
+          onNavAdd={onNavAdd}
+          onNavViewChange={onNavViewChange}
+          onHierarchyBack={onHierarchyBack}
+          onWebglMountError={(msg) => {
+            if (msg) setThreeFailed(true);
+            onWebglMountError?.(msg);
+          }}
+          toolsSlot={toolsSlot}
+          topBarExtra={topBarExtra}
+        />
+      </div>
+    );
+  }
+
+  return <AtlasNative3dLegacyHost {...props} />;
+}
+
+function AtlasNative3dLegacyHost({
   className,
   mapKey = 'default',
   historyKey,

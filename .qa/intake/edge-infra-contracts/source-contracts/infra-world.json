@@ -20,6 +20,26 @@
       "sha256": "f63e63b2be555ef8348d15141ed44a01e70670667e3d0946221db2720cc32d8c"
     },
     {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-camera.ts",
+      "sha256": "25c501f4e7d8804e49084c3e66246f03954113bd59ed223062f8cbd45f4e2a80"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
+      "sha256": "58cf1d1801535807d3ed1e1bc97d41447332fae979778cfb45f2dde2125dc80b"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
+      "sha256": "6b38edebaa6c3d159e8128f3ba0d96488d0d8406fdbb35618225c96b5fc718fe"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/index.ts",
+      "sha256": "addbc7fa4de485ef268730e10046a86aa5eb5ebfe59aad5b6bb8d489b1ab1aaf"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/pbr-textures.ts",
+      "sha256": "f0beec174b3d506ac90814d7180c3aa64bad0c384e82eb727431d7dd8ffbccec"
+    },
+    {
       "path": "src/infrastructure/world/host-world-adapter.ts",
       "sha256": "8fbaad8d6d4ec9cc42070444441fae94fb20af020cdada2125a705877ea4e1f1"
     },
@@ -202,8 +222,16 @@
       "sha256": "de25ba46549bab20e0e55a513fb0745e722449d8f1b61bb51887d986653c4eab"
     },
     {
+      "path": "src/domains/world/atlas/atlas-biome-brush.ts",
+      "sha256": "4ccfcc1605b213b904137ab1e62661a249dc5804c4246152a03741e4825ea7e9"
+    },
+    {
       "path": "src/domains/world/atlas/atlas-canonical-features.ts",
       "sha256": "a7e2b9471c960d3839e39f93fe1f6b332f5822620ef589ba4e1a0805dda6c3bd"
+    },
+    {
+      "path": "src/domains/world/atlas/atlas-continuous-zoom.ts",
+      "sha256": "ddb4ca5b0611b2c122aa8b5b8cb0f5738daaa601a64d47f8bfde7f213d2d372f"
     },
     {
       "path": "src/domains/world/atlas/atlas-diorama-look.ts",
@@ -270,6 +298,10 @@
       "sha256": "d01c356239143862f9aa8f3fd44fca79105e3ed390327c34b9be6ce1902c78d6"
     },
     {
+      "path": "src/domains/world/atlas/atlas-scene-scatter.ts",
+      "sha256": "b83c860ca82ff993a5141463b6e152097bf5783cb7bc7369a1a09683892bb1aa"
+    },
+    {
       "path": "src/domains/world/atlas/atlas-selection.ts",
       "sha256": "6c16fb40fe26addea8e33e718a89a019de099c6008c1000dd697d48fa12849a7"
     },
@@ -319,7 +351,7 @@
     },
     {
       "path": "src/domains/world/atlas/index.ts",
-      "sha256": "065f2bead931d3ce4ce52818c78465193cc667f98bcbec5b5d8f7a8b51a22d25"
+      "sha256": "0ab497de1b528fb163c1479a0166241de3cd267ad3d512f3087bde4d761990f2"
     },
     {
       "path": "src/domains/world/atlas/map-edit-ops.ts",
@@ -1229,6 +1261,30 @@
     },
     {
       "kind": "TypeAliasDeclaration",
+      "name": "AtlasBiomeBrushId",
+      "path": "src/domains/world/atlas/atlas-biome-brush.ts",
+      "line": 18,
+      "endLine": 25,
+      "text": "export type AtlasBiomeBrushId =\n  | 'gras'\n  | 'erde'\n  | 'sand'\n  | 'stein'\n  | 'pflaster'\n  | 'holz'\n  | 'wasser';"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AtlasBiomeBrushSpec",
+      "path": "src/domains/world/atlas/atlas-biome-brush.ts",
+      "line": 27,
+      "endLine": 32,
+      "text": "export type AtlasBiomeBrushSpec = {\n  readonly id: AtlasBiomeBrushId;\n  readonly labelDe: string;\n  readonly swatchHex: string;\n  readonly material: UnifiedCanvasMaterial;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AtlasTerrainSculptMode",
+      "path": "src/domains/world/atlas/atlas-biome-brush.ts",
+      "line": 44,
+      "endLine": 44,
+      "text": "export type AtlasTerrainSculptMode = AtlasHeightBrushMode;"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
       "name": "AtlasCanonicalFeatureKind",
       "path": "src/domains/world/atlas/atlas-canonical-features.ts",
       "line": 24,
@@ -1290,6 +1346,22 @@
       "line": 367,
       "endLine": 371,
       "text": "export type ClassifyUnifiedCanvasOptions = {\n  readonly scale?: 'world' | 'interior' | 'unknown';\n  /** When true, apply Golden stroke-id heuristics; never use material alone. */\n  readonly inferGoldenStrokeIds?: boolean;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AtlasZoomTransitionIntent",
+      "path": "src/domains/world/atlas/atlas-continuous-zoom.ts",
+      "line": 13,
+      "endLine": 22,
+      "text": "export type AtlasZoomTransitionIntent =\n  | { readonly kind: 'none' }\n  | {\n      readonly kind: 'enter-child';\n      readonly pin: AtlasMapPin;\n      readonly distance: number;\n    }\n  | {\n      readonly kind: 'exit-parent';\n    };"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AtlasScaleLabelSpec",
+      "path": "src/domains/world/atlas/atlas-continuous-zoom.ts",
+      "line": 24,
+      "endLine": 28,
+      "text": "export type AtlasScaleLabelSpec = {\n  readonly scale: AtlasMapScale;\n  readonly tagDe: string;\n  readonly unitsPerKm: number;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
@@ -1970,6 +2042,30 @@
       "line": 64,
       "endLine": 67,
       "text": "export type AtlasAutosaveDecision =\n  | { readonly action: 'wait' }\n  | { readonly action: 'save' }\n  | { readonly action: 'blocked_conflict' };"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AtlasScatterKind",
+      "path": "src/domains/world/atlas/atlas-scene-scatter.ts",
+      "line": 17,
+      "endLine": 27,
+      "text": "export type AtlasScatterKind =\n  | 'oak'\n  | 'birch'\n  | 'pine'\n  | 'bush'\n  | 'rock'\n  | 'mountain'\n  | 'flower'\n  | 'barrel'\n  | 'crate'\n  | 'rubble';"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AtlasScatterInstance",
+      "path": "src/domains/world/atlas/atlas-scene-scatter.ts",
+      "line": 29,
+      "endLine": 39,
+      "text": "export type AtlasScatterInstance = {\n  readonly id: string;\n  readonly kind: AtlasScatterKind;\n  readonly authority: 'suggestive';\n  readonly x: number;\n  readonly y: number;\n  readonly elevation: number;\n  readonly scale: number;\n  readonly rotationRad: number;\n  readonly tintVariant: number;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AtlasScatterPlan",
+      "path": "src/domains/world/atlas/atlas-scene-scatter.ts",
+      "line": 41,
+      "endLine": 47,
+      "text": "export type AtlasScatterPlan = {\n  readonly format: 'atl3-d01-scatter-plan-v1';\n  readonly seed: string;\n  readonly presetId: AtlasGraphicsPresetId;\n  readonly maxBudget: number;\n  readonly instances: readonly AtlasScatterInstance[];\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
@@ -3471,6 +3567,78 @@
       "expression": "import type { UnifiedCanvasDoc } from '../../../domains/world/atlas/unified-canvas-doc';"
     },
     {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
+      "line": 11,
+      "endLine": 11,
+      "module": "three",
+      "resolvedPath": null,
+      "expression": "import * as THREE from 'three';"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
+      "line": 12,
+      "endLine": 18,
+      "module": "../../../domains/world/atlas",
+      "resolvedPath": "src/domains/world/atlas/index.ts",
+      "expression": "import type {\n  AtlasGraphicsPresetId,\n  AtlasMapPin,\n  AtlasMapScale,\n  AtlasScatterKind,\n  UnifiedCanvasDoc,\n} from '../../../domains/world/atlas';"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
+      "line": 19,
+      "endLine": 27,
+      "module": "./atlas-three-camera",
+      "resolvedPath": "src/infrastructure/world/atlas-three/atlas-three-camera.ts",
+      "expression": "import {\n  buildAtlasThreeCameraRig,\n  buildAtlasThreeFogBand,\n  clampAtlasThreePitch,\n  defaultAtlasThreePitch,\n  interpolateAtlasThreeView,\n  type AtlasThreeCameraMode,\n  type AtlasThreeCameraView,\n} from './atlas-three-camera';"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
+      "line": 28,
+      "endLine": 34,
+      "module": "./atlas-three-scene",
+      "resolvedPath": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
+      "expression": "import {\n  ATLAS_THREE_SURFACES,\n  buildAtlasThreeScenePlan,\n  type AtlasThreeLook,\n  type AtlasThreeScenePlan,\n  type AtlasThreeSurfaceKey,\n} from './atlas-three-scene';"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
+      "line": 35,
+      "endLine": 35,
+      "module": "./pbr-textures",
+      "resolvedPath": "src/infrastructure/world/atlas-three/pbr-textures.ts",
+      "expression": "import { AtlasPbrTextureLibrary } from './pbr-textures';"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
+      "line": 11,
+      "endLine": 11,
+      "module": "three",
+      "resolvedPath": null,
+      "expression": "import * as THREE from 'three';"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
+      "line": 12,
+      "endLine": 25,
+      "module": "../../../domains/world/atlas",
+      "resolvedPath": "src/domains/world/atlas/index.ts",
+      "expression": "import {\n  ATLAS_HEIGHTFIELD_FORMAT,\n  ATLAS_HEIGHTFIELD_VERSION,\n  buildAtlasProductGeometryPlan,\n  buildAtlasSceneScatter,\n  pointInPolygon,\n  sampleHeightfield,\n  type AtlasGraphicsPresetId,\n  type AtlasHeightfield,\n  type AtlasMapScale,\n  type AtlasProductGeometryPrimitive,\n  type AtlasScatterKind,\n  type UnifiedCanvasDoc,\n} from '../../../domains/world/atlas';"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
+      "line": 26,
+      "endLine": 26,
+      "module": "./pbr-textures",
+      "resolvedPath": "src/infrastructure/world/atlas-three/pbr-textures.ts",
+      "expression": "import type { AtlasPbrKind } from './pbr-textures';"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/pbr-textures.ts",
+      "line": 9,
+      "endLine": 9,
+      "module": "three",
+      "resolvedPath": null,
+      "expression": "import * as THREE from 'three';"
+    },
+    {
       "path": "src/infrastructure/world/host-world-adapter.ts",
       "line": 10,
       "endLine": 10,
@@ -3740,6 +3908,162 @@
       "line": 383,
       "endLine": 518,
       "text": "export function buildR01bScenePlan(doc: UnifiedCanvasDoc, opts: R01bSceneOptions): R01bScenePlan {\n  const plan = buildAtlasProductGeometryPlan(doc, { mapScale: opts.mapScale });\n  const builders = new Map<R01bSurfaceKey, R01bGeoBuilder>();\n  const get = (k: R01bSurfaceKey): R01bGeoBuilder => {\n    let b = builders.get(k);\n    if (!b) {\n      b = new R01bGeoBuilder(R01B_SURFACES[k].tile);\n      builders.set(k, b);\n    }\n    return b;\n  };\n  const water = new R01bGeoBuilder(60);\n  const ids = new Set<string>();\n  const torches: { id: string; position: THREE.Vector3; radius: number }[] = [];\n  const doorInstances: { matrices: THREE.Matrix4[]; ids: string[] } = { matrices: [], ids: [] };\n  const up = new THREE.Vector3(0, 1, 0);\n\n  // Sheet (non-world product maps) at y −0.5 — PRODUCT_FRAME 1000×1000.\n  if (opts.mapScale !== 'world') {\n    const b = get(opts.look === 'indoor' ? 'sheet-indoor' : 'sheet-outdoor');\n    const y = -0.5;\n    const p = (x: number, z: number): THREE.Vector3 => new THREE.Vector3(x, y, z);\n    b.tri(p(0, 0), p(0, 1000), p(1000, 1000), '__sheet', up);\n    b.tri(p(0, 0), p(1000, 1000), p(1000, 0), '__sheet', up);\n  }\n\n  const rooms = plan.primitives.filter((q): q is Extract<AtlasProductGeometryPrimitive, { kind: 'area' | 'room' }> => q.kind === 'area' || q.kind === 'room');\n  const dyR = Math.min(0.075, 0.3 / Math.max(1, rooms.length));\n  const roomMaterial = new Map(doc.rooms.map((r) => [r.id, r.material] as const));\n  rooms.forEach((rm, i) => {\n    const y = -0.48 + i * dyR;\n    const surface = r01bFloorSurface(roomMaterial.get(rm.id), opts.mapScale);\n    const b = surface === 'water' ? water : get(surface);\n    for (const [ia, ib, ic] of rm.triangles) {\n      const a = rm.points[ia], c = rm.points[ib], d = rm.points[ic];\n      if (!a || !c || !d) continue;\n      const va = new THREE.Vector3(a[0], y, a[1]), vb = new THREE.Vector3(c[0], y, c[1]), vc = new THREE.Vector3(d[0], y, d[1]);\n      // Canvas winding varies — always emit an upward-facing triangle.\n      const n = new THREE.Vector3().subVectors(vb, va).cross(new THREE.Vector3().subVectors(vc, va));\n      if (n.y >= 0) b.tri(va, vb, vc, rm.id, up);\n      else b.tri(va, vc, vb, rm.id, up);\n    }\n    ids.add(rm.id);\n  });\n\n  const paths = plan.primitives.filter((q): q is Extract<AtlasProductGeometryPrimitive, { kind: 'path' }> => q.kind === 'path');\n  const dyS = Math.min(0.03, 0.11 / Math.max(1, paths.length));\n  const strokeMaterial = new Map(doc.strokes.map((s) => [s.id, s.material] as const));\n  paths.forEach((pt, i) => {\n    const surface = r01bFloorSurface(strokeMaterial.get(pt.id), opts.mapScale);\n    ribbon(surface === 'water' ? water : get(surface), pt.points, pt.width, -0.16 + i * dyS, pt.id);\n    ids.add(pt.id);\n  });\n\n  const wallH = opts.mapScale === 'interior' ? 22 : opts.mapScale === 'settlement' ? 8 : 3;\n  const doorsByWall = new Map<string, Extract<AtlasProductGeometryPrimitive, { kind: 'door' }>[]>();\n  for (const q of plan.primitives) {\n    if (q.kind !== 'door') continue;\n    const list = doorsByWall.get(q.wallId) ?? [];\n    list.push(q);\n    doorsByWall.set(q.wallId, list);\n  }\n  const wallKey: R01bSurfaceKey = opts.look === 'indoor' ? 'wall-indoor' : 'wall';\n  for (const q of plan.primitives) {\n    if (q.kind !== 'wall') continue;\n    ids.add(q.id);\n    const dx = q.end[0] - q.start[0], dz = q.end[1] - q.start[1], length = Math.hypot(dx, dz);\n    if (length < 0.02) continue;\n    const thick = Math.max(0.3, q.width || wallH * 0.15);\n    const gaps = (doorsByWall.get(q.id) ?? [])\n      .map((d) => {\n        const halfT = Math.min(0.49, Math.max(0.4, d.width || 1.2) / 2 / length);\n        const t = Math.min(1, Math.max(0, d.t || 0.5));\n        return [Math.max(0, t - halfT), Math.min(1, t + halfT)] as [number, number];\n      })\n      .sort((a, b) => a[0] - b[0]);\n    const merged: [number, number][] = [];\n    for (const g of gaps) {\n      const last = merged[merged.length - 1];\n      if (!last || g[0] > last[1] + 1e-4) merged.push([g[0], g[1]]);\n      else last[1] = Math.max(last[1], g[1]);\n    }\n    let cursor = 0;\n    const at = (t: number): readonly [number, number] => [q.start[0] + dx * t, q.start[1] + dz * t];\n    for (const [g0, g1] of merged) {\n      if (g0 - cursor > 1e-3) wallBox(get(wallKey), at(cursor), at(g0), thick, -0.02, wallH, q.id);\n      cursor = g1;\n    }\n    if (1 - cursor > 1e-3) wallBox(get(wallKey), at(cursor), q.end, thick, -0.02, wallH, q.id);\n  }\n\n  // Doors: jambs + lintel (same dimensions as productDoorInto) → one InstancedMesh.\n  for (const q of plan.primitives) {\n    if (q.kind !== 'door') continue;\n    ids.add(q.id);\n    const width = Math.max(0.4, q.width || 1.2), openH = Math.max(1.2, wallH * 0.82), lintelH = Math.max(0.25, wallH - openH);\n    const [tx, tz] = q.tangent, [x, z] = q.position;\n    const half = width / 2, jamb = Math.max(0.18, width * 0.08), thick = Math.max(0.25, width * 0.12);\n    const rot = Math.atan2(-tz, tx);\n    for (const side of [-1, 1]) {\n      const cx = x + tx * side * (half - jamb / 2), cz = z + tz * side * (half - jamb / 2);\n      doorInstances.matrices.push(boxMatrix(cx, -0.02 + openH / 2, cz, jamb, openH, thick * 2, rot).clone());\n      doorInstances.ids.push(q.id);\n    }\n    doorInstances.matrices.push(boxMatrix(x, -0.02 + openH + lintelH / 2, z, width, lintelH, thick * 2, rot).clone());\n    doorInstances.ids.push(q.id);\n  }\n\n  for (const q of plan.primitives) {\n    if (q.kind !== 'prop' && q.kind !== 'building_footprint') continue;\n    ids.add(q.id);\n    propInto(get, q, torches, opts.fullDetail);\n  }\n\n  const hf = doc.heightfield ?? null;\n  const terrain = hf ? buildTerrain(hf, opts.span) : null;\n  if (hf && terrain) {\n    // Water plane at shore level over the heightfield chunk (runtime parity).\n    const y = hf.waterLevel - 0.02, x0 = hf.originX, z0 = hf.originZ;\n    const x1 = x0 + hf.cols * hf.cellSize, z1 = z0 + hf.rows * hf.cellSize;\n    water.tri(new THREE.Vector3(x0, y, z0), new THREE.Vector3(x0, y, z1), new THREE.Vector3(x1, y, z1), '__terrain-water', up);\n    water.tri(new THREE.Vector3(x0, y, z0), new THREE.Vector3(x1, y, z1), new THREE.Vector3(x1, y, z0), '__terrain-water', up);\n  }\n\n  return {\n    builders,\n    water,\n    terrain,\n    doorInstances,\n    torches,\n    ids,\n    planFingerprint: plan.contentFingerprint,\n    look: opts.look,\n    mapScale: opts.mapScale,\n  };\n}"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-camera.ts",
+      "line": 9,
+      "endLine": 9,
+      "text": "export type AtlasThreeCameraMode = 'ortho-topdown' | 'diorama-oblique' | 'perspective';"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-camera.ts",
+      "line": 11,
+      "endLine": 18,
+      "text": "export type AtlasThreeCameraView = {\n  readonly mode: AtlasThreeCameraMode;\n  readonly x: number;\n  readonly z: number;\n  readonly span: number;\n  readonly yawRad: number;\n  readonly pitchRad: number;\n};"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-camera.ts",
+      "line": 20,
+      "endLine": 31,
+      "text": "export type AtlasThreeCameraRig = {\n  readonly eye: readonly [number, number, number];\n  readonly at: readonly [number, number, number];\n  readonly up: readonly [number, number, number];\n  readonly distance: number;\n  readonly near: number;\n  readonly far: number;\n  readonly perspective: boolean;\n  readonly fovYDeg: number;\n  readonly halfHeight: number;\n  readonly halfWidth: number;\n};"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-camera.ts",
+      "line": 37,
+      "endLine": 41,
+      "text": "export function clampAtlasThreePitch(mode: AtlasThreeCameraMode, pitch: number): number {\n  if (mode === 'ortho-topdown') return Math.PI / 2;\n  if (mode === 'diorama-oblique') return clamp(pitch, 0.55, 1.25);\n  return clamp(pitch, 0.32, 1.38);\n}"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-camera.ts",
+      "line": 43,
+      "endLine": 47,
+      "text": "export function defaultAtlasThreePitch(mode: AtlasThreeCameraMode): number {\n  if (mode === 'ortho-topdown') return Math.PI / 2;\n  if (mode === 'diorama-oblique') return 1.02;\n  return 0.88;\n}"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-camera.ts",
+      "line": 49,
+      "endLine": 83,
+      "text": "export function buildAtlasThreeCameraRig(\n  view: AtlasThreeCameraView,\n  aspect: number,\n): AtlasThreeCameraRig {\n  const safeAspect = Math.max(0.2, aspect);\n  const pitch = clampAtlasThreePitch(view.mode, view.pitchRad);\n  const forward: readonly [number, number] = [Math.sin(view.yawRad), Math.cos(view.yawRad)];\n  const perspective = view.mode === 'perspective';\n  const distance = view.span * (perspective ? 2.4 : 3.0);\n  const at: readonly [number, number, number] = [view.x, 0, view.z];\n  const topdown = view.mode === 'ortho-topdown';\n  const eye: readonly [number, number, number] = topdown\n    ? [view.x, distance + 5, view.z]\n    : [\n        view.x + forward[0] * Math.cos(pitch) * distance,\n        Math.sin(pitch) * distance + 5,\n        view.z + forward[1] * Math.cos(pitch) * distance,\n      ];\n  const up: readonly [number, number, number] = topdown\n    ? [-forward[0], 0, -forward[1]]\n    : [0, 1, 0];\n\n  return {\n    eye,\n    at,\n    up,\n    distance,\n    near: perspective ? Math.max(0.2, distance * 0.02) : 0.1,\n    far: Math.max(8000, distance * 4 + 400),\n    perspective,\n    fovYDeg: 48,\n    halfHeight: view.span,\n    halfWidth: view.span * safeAspect,\n  };\n}"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-camera.ts",
+      "line": 85,
+      "endLine": 93,
+      "text": "export function buildAtlasThreeFogBand(\n  rig: AtlasThreeCameraRig,\n  look: 'outdoor' | 'indoor',\n): { readonly near: number; readonly far: number } {\n  const d = rig.distance;\n  return look === 'indoor'\n    ? { near: d * 0.95, far: d * 2.8 }\n    : { near: d * 0.95, far: d * 3.6 };\n}"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-camera.ts",
+      "line": 96,
+      "endLine": 113,
+      "text": "export function interpolateAtlasThreeView(\n  from: AtlasThreeCameraView,\n  to: AtlasThreeCameraView,\n  t: number,\n): AtlasThreeCameraView {\n  const k = clamp(t, 0, 1);\n  const e = k * k * (3 - 2 * k);\n  const logFrom = Math.log(Math.max(1, from.span));\n  const logTo = Math.log(Math.max(1, to.span));\n  return {\n    mode: to.mode,\n    x: from.x + (to.x - from.x) * e,\n    z: from.z + (to.z - from.z) * e,\n    span: Math.exp(logFrom + (logTo - logFrom) * e),\n    yawRad: from.yawRad + (to.yawRad - from.yawRad) * e,\n    pitchRad: from.pitchRad + (to.pitchRad - from.pitchRad) * e,\n  };\n}"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
+      "line": 37,
+      "endLine": 37,
+      "text": "export type AtlasThreeLightingMode = 'day' | 'evening' | 'night';"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
+      "line": 39,
+      "endLine": 46,
+      "text": "export type AtlasThreeProjectedPin = {\n  readonly id: string;\n  readonly label: string;\n  readonly kind: string;\n  readonly left: number;\n  readonly top: number;\n  readonly visible: boolean;\n};"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
+      "line": 48,
+      "endLine": 54,
+      "text": "export type AtlasThreeRuntimeConfig = {\n  readonly canvas: HTMLCanvasElement;\n  readonly presetId: AtlasGraphicsPresetId;\n  readonly onCameraChange?: (view: AtlasThreeCameraView) => void;\n  readonly onProjectedPins?: (pins: readonly AtlasThreeProjectedPin[]) => void;\n  readonly onContextLostChange?: (lost: boolean) => void;\n};"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
+      "line": 295,
+      "endLine": 921,
+      "text": "export class AtlasThreeRuntime {\n  readonly renderer: THREE.WebGLRenderer;\n  readonly scene = new THREE.Scene();\n  private readonly root = new THREE.Group();\n  private readonly gizmoGroup = new THREE.Group();\n  private readonly selectionRing: THREE.Mesh;\n  private readonly gizmoAxisX: THREE.Mesh;\n  private readonly gizmoAxisZ: THREE.Mesh;\n  private readonly hemi = new THREE.HemisphereLight();\n  private readonly sun = new THREE.DirectionalLight();\n  private readonly fill = new THREE.DirectionalLight();\n  private camera: THREE.PerspectiveCamera | THREE.OrthographicCamera = new THREE.OrthographicCamera();\n  private readonly pbr: AtlasPbrTextureLibrary;\n  private readonly materials = new Map<AtlasThreeSurfaceKey, THREE.MeshStandardMaterial>();\n  private readonly waterMat: THREE.ShaderMaterial;\n  private readonly haloMat: THREE.SpriteMaterial;\n  private readonly haloTex: THREE.CanvasTexture;\n  private readonly pickables: THREE.Mesh[] = [];\n  private readonly raycaster = new THREE.Raycaster();\n  private readonly groundPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);\n\n  private presetId: AtlasGraphicsPresetId;\n  private doc: UnifiedCanvasDoc | null = null;\n  private mapScale: AtlasMapScale = 'world';\n  private look: AtlasThreeLook = 'outdoor';\n  private seed = 'dornhain.unified.v4';\n  private hideRoofs = false;\n  private lightingMode: AtlasThreeLightingMode = 'day';\n  private pins: readonly AtlasMapPin[] = [];\n  private selectedId: string | null = null;\n  private gizmoVisible = false;\n  private plan: AtlasThreeScenePlan | null = null;\n  private sceneKey = '';\n  private docRevision = 0;\n  private view: AtlasThreeCameraView = {\n    mode: 'diorama-oblique',\n    x: 500,\n    z: 500,\n    span: 470,\n    yawRad: 0.35,\n    pitchRad: defaultAtlasThreePitch('diorama-oblique'),\n  };\n  private flight: {\n    readonly from: AtlasThreeCameraView;\n    readonly to: AtlasThreeCameraView;\n    readonly startMs: number;\n    readonly durationMs: number;\n  } | null = null;\n  private rafId = 0;\n  private startTime = performance.now();\n  private disposed = false;\n  private contextLost = false;\n  private readonly onCameraChange?: (view: AtlasThreeCameraView) => void;\n  private readonly onProjectedPins?: (pins: readonly AtlasThreeProjectedPin[]) => void;\n  private readonly onContextLostChange?: (lost: boolean) => void;\n  private readonly onContextLostListener: (ev: Event) => void;\n  private readonly onContextRestoredListener: () => void;\n\n  constructor(private readonly config: AtlasThreeRuntimeConfig) {\n    this.presetId = config.presetId;\n    this.onCameraChange = config.onCameraChange;\n    this.onProjectedPins = config.onProjectedPins;\n    this.onContextLostChange = config.onContextLostChange;\n\n    this.renderer = new THREE.WebGLRenderer({\n      canvas: config.canvas,\n      antialias: config.presetId !== 'lite',\n      alpha: false,\n      powerPreference: 'high-performance',\n      preserveDrawingBuffer: true,\n    });\n    this.applyQualityProfile(config.presetId);\n    this.renderer.shadowMap.enabled = true;\n    this.renderer.shadowMap.type = THREE.PCFShadowMap;\n    this.renderer.outputColorSpace = THREE.SRGBColorSpace;\n    this.renderer.toneMapping = THREE.ACESFilmicToneMapping;\n\n    const texSize = config.presetId === 'high' ? 256 : 128;\n    const aniso = Math.min(8, this.renderer.capabilities.getMaxAnisotropy());\n    this.pbr = new AtlasPbrTextureLibrary(texSize, aniso);\n\n    this.sun.castShadow = true;\n    this.scene.add(this.hemi, this.sun, this.sun.target, this.fill, this.fill.target, this.root, this.gizmoGroup);\n\n    // 3D Selection Ring + Transform Gizmo handles (ATL4-A01 #1309 — Cyan/Gold SagaTree brand roles!)\n    const ringGeo = new THREE.RingGeometry(0.85, 1.0, 48);\n    ringGeo.rotateX(-Math.PI / 2);\n    this.selectionRing = new THREE.Mesh(\n      ringGeo,\n      new THREE.MeshBasicMaterial({\n        color: 0x06b6d4,\n        side: THREE.DoubleSide,\n        depthWrite: false,\n        transparent: true,\n        opacity: 0.92,\n      }),\n    );\n    const axisGeoX = new THREE.BoxGeometry(1.6, 0.08, 0.08);\n    axisGeoX.translate(0.8, 0.12, 0);\n    this.gizmoAxisX = new THREE.Mesh(\n      axisGeoX,\n      new THREE.MeshBasicMaterial({ color: 0xf59e0b, depthTest: false }),\n    );\n    const axisGeoZ = new THREE.BoxGeometry(0.08, 0.08, 1.6);\n    axisGeoZ.translate(0, 0.12, 0.8);\n    this.gizmoAxisZ = new THREE.Mesh(\n      axisGeoZ,\n      new THREE.MeshBasicMaterial({ color: 0x06b6d4, depthTest: false }),\n    );\n    this.gizmoGroup.add(this.selectionRing, this.gizmoAxisX, this.gizmoAxisZ);\n    this.gizmoGroup.visible = false;\n\n    this.waterMat = new THREE.ShaderMaterial({\n      vertexShader: WATER_VERTEX,\n      fragmentShader: WATER_FRAGMENT,\n      transparent: true,\n      side: THREE.DoubleSide,\n      uniforms: {\n        uTime: { value: 0 },\n        uTile: { value: 24 },\n        uDeep: { value: new THREE.Color('#1d586c') },\n        uShallow: { value: new THREE.Color('#4c99a5') },\n        uSky: { value: new THREE.Color('#b5d6de') },\n        uSunDir: { value: new THREE.Vector3(-10, 17, 9).normalize() },\n        uFogColor: { value: new THREE.Color('#739aa8') },\n        uFogNear: { value: 1e6 },\n        uFogFar: { value: 2e6 },\n      },\n    });\n    this.haloTex = createTorchHaloTexture();\n    this.haloMat = new THREE.SpriteMaterial({\n      map: this.haloTex,\n      color: 0xffb36b,\n      blending: THREE.AdditiveBlending,\n      transparent: true,\n      depthWrite: false,\n      fog: true,\n    });\n\n    this.onContextLostListener = (ev: Event) => {\n      ev.preventDefault();\n      this.contextLost = true;\n      this.onContextLostChange?.(true);\n    };\n    this.onContextRestoredListener = () => {\n      this.contextLost = false;\n      this.sceneKey = '';\n      this.onContextLostChange?.(false);\n    };\n    config.canvas.addEventListener('webglcontextlost', this.onContextLostListener);\n    config.canvas.addEventListener('webglcontextrestored', this.onContextRestoredListener);\n\n    this.startLoop();\n  }\n\n  applyQualityProfile(presetId: AtlasGraphicsPresetId): void {\n    this.presetId = presetId;\n    const maxDpr = presetId === 'high' ? 2 : presetId === 'balanced' ? 1.5 : 1;\n    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, maxDpr));\n    const shadowSize = presetId === 'high' ? 2048 : 1024;\n    this.sun.shadow.mapSize.set(shadowSize, shadowSize);\n    this.sun.shadow.radius = presetId === 'high' ? 3 : 1.5;\n    this.sceneKey = '';\n  }\n\n  setSceneState(input: {\n    readonly doc: UnifiedCanvasDoc;\n    readonly mapScale: AtlasMapScale;\n    readonly look: AtlasThreeLook;\n    readonly seed: string;\n    readonly hideRoofs: boolean;\n    readonly lightingMode: AtlasThreeLightingMode;\n    readonly pins: readonly AtlasMapPin[];\n    readonly selectedId: string | null;\n    readonly gizmoVisible: boolean;\n  }): void {\n    const docChanged = this.doc !== input.doc;\n    const scaleChanged = this.mapScale !== input.mapScale;\n    const lookChanged = this.look !== input.look;\n    const seedChanged = this.seed !== input.seed;\n    const roofChanged = this.hideRoofs !== input.hideRoofs;\n    const lightChanged = this.lightingMode !== input.lightingMode;\n    this.doc = input.doc;\n    this.mapScale = input.mapScale;\n    this.look = input.look;\n    this.seed = input.seed;\n    this.hideRoofs = input.hideRoofs;\n    this.lightingMode = input.lightingMode;\n    this.pins = input.pins;\n    this.selectedId = input.selectedId;\n    this.gizmoVisible = input.gizmoVisible;\n    if (docChanged || scaleChanged || lookChanged || seedChanged || roofChanged || lightChanged) {\n      this.docRevision += 1;\n      this.sceneKey = '';\n    }\n    this.updateSelectionGizmo();\n  }\n\n  getView(): AtlasThreeCameraView {\n    return { ...this.view };\n  }\n\n  setView(next: Partial<AtlasThreeCameraView>, animate = false): void {\n    const targetMode: AtlasThreeCameraMode = next.mode ?? this.view.mode;\n    const target: AtlasThreeCameraView = {\n      mode: targetMode,\n      x: next.x ?? this.view.x,\n      z: next.z ?? this.view.z,\n      span: Math.max(24, Math.min(1400, next.span ?? this.view.span)),\n      yawRad: next.yawRad ?? this.view.yawRad,\n      pitchRad: clampAtlasThreePitch(\n        targetMode,\n        next.pitchRad ?? (next.mode ? defaultAtlasThreePitch(targetMode) : this.view.pitchRad),\n      ),\n    };\n    if (animate) {\n      const reduced =\n        typeof window !== 'undefined' &&\n        window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;\n      this.flight = reduced\n        ? null\n        : { from: { ...this.view }, to: target, startMs: performance.now(), durationMs: 520 };\n      if (!this.flight) {\n        this.view = target;\n        this.onCameraChange?.(this.view);\n      }\n    } else {\n      this.flight = null;\n      this.view = target;\n      this.onCameraChange?.(this.view);\n    }\n  }\n\n  flyTo(x: number, z: number, span: number): void {\n    this.setView({ x, z, span }, true);\n  }\n\n  resetCamera(): void {\n    const mode = this.view.mode;\n    const defaultSpan = this.mapScale === 'world' ? 470 : this.mapScale === 'settlement' ? 320 : 280;\n    this.setView(\n      {\n        mode,\n        x: 500,\n        z: 500,\n        span: defaultSpan,\n        yawRad: mode === 'ortho-topdown' ? 0 : 0.35,\n        pitchRad: defaultAtlasThreePitch(mode),\n      },\n      true,\n    );\n  }\n\n  /** Raycast screen coordinates (px relative to canvas) to ground plane (x, z). */\n  screenToGround(px: number, py: number): { readonly x: number; readonly z: number } | null {\n    const w = this.config.canvas.clientWidth || 1;\n    const h = this.config.canvas.clientHeight || 1;\n    const ndc = new THREE.Vector2((px / w) * 2 - 1, -(py / h) * 2 + 1);\n    this.raycaster.setFromCamera(ndc, this.camera);\n    const out = new THREE.Vector3();\n    if (!this.raycaster.ray.intersectPlane(this.groundPlane, out)) return null;\n    return { x: out.x, z: out.z };\n  }\n\n  /** Raycast screen coordinates to canonical feature ID (objects prioritized over terrain/floors). */\n  pickCanonicalId(px: number, py: number): string | null {\n    const w = this.config.canvas.clientWidth || 1;\n    const h = this.config.canvas.clientHeight || 1;\n    const ndc = new THREE.Vector2((px / w) * 2 - 1, -(py / h) * 2 + 1);\n    this.raycaster.setFromCamera(ndc, this.camera);\n    const hits = this.raycaster.intersectObjects(this.pickables, false);\n    const objectIds = new Set((this.doc?.objects ?? []).map((o) => o.id));\n    let fallback: string | null = null;\n    for (const hit of hits) {\n      let id: string | null = null;\n      const triIds = hit.object.userData.triIds as string[] | undefined;\n      const instIds = hit.object.userData.instanceIds as string[] | undefined;\n      if (triIds && typeof hit.faceIndex === 'number') {\n        id = triIds[hit.faceIndex] ?? null;\n      } else if (instIds && typeof hit.instanceId === 'number') {\n        id = instIds[hit.instanceId] ?? null;\n      }\n      if (!id || id.startsWith('__') || id === 'g.ocean' || id === 'w.ocean') continue;\n      if (objectIds.has(id)) return id;\n      if (!fallback) fallback = id;\n    }\n    return fallback;\n  }\n\n  /** Expose canonical IDs currently rendered in Three.js. */\n  getRenderedIds(): string[] {\n    return [...(this.plan?.ids ?? [])].sort();\n  }\n\n  getStats(): { readonly calls: number; readonly triangles: number; readonly rooms: number } {\n    return {\n      calls: this.renderer.info.render.calls,\n      triangles: this.renderer.info.render.triangles,\n      rooms: this.doc?.rooms.length ?? 0,\n    };\n  }\n\n  private getMaterial(key: AtlasThreeSurfaceKey): THREE.MeshStandardMaterial {\n    const hit = this.materials.get(key);\n    if (hit) return hit;\n    const spec = ATLAS_THREE_SURFACES[key];\n    const mat = new THREE.MeshStandardMaterial({\n      color: spec.color,\n      roughness: spec.roughness,\n      metalness: 'metalness' in spec ? spec.metalness : 0,\n      vertexColors: 'vertexColors' in spec ? spec.vertexColors : false,\n    });\n    if (spec.pbr) {\n      const tex = this.pbr.get(spec.pbr);\n      mat.map = tex.map;\n      mat.normalMap = tex.normal;\n      mat.roughnessMap = tex.rough;\n      mat.normalScale.set(spec.normalScale, spec.normalScale);\n    }\n    if ('emissive' in spec) {\n      mat.emissive = new THREE.Color(spec.emissive);\n      mat.emissiveIntensity = 1.85;\n      mat.toneMapped = false;\n    }\n    this.materials.set(key, mat);\n    return mat;\n  }\n\n  private clearRoot(): void {\n    for (const child of [...this.root.children]) {\n      this.root.remove(child);\n      if (child instanceof THREE.Mesh) child.geometry.dispose();\n      if (child instanceof THREE.PointLight) child.dispose();\n    }\n    this.pickables.length = 0;\n  }\n\n  private ensureScene(): void {\n    if (!this.doc) return;\n    const lodBucket = this.view.span >= 420 ? 'far' : this.view.span >= 180 ? 'mid' : 'near';\n    const key = `${this.docRevision}|${lodBucket}|${this.presetId}|${this.hideRoofs ? 'cut' : 'full'}`;\n    if (key === this.sceneKey && this.plan) return;\n\n    this.clearRoot();\n    const warmWindows = this.look === 'indoor' || this.lightingMode !== 'day';\n    const plan = buildAtlasThreeScenePlan(this.doc, {\n      mapScale: this.mapScale,\n      look: this.look,\n      span: this.view.span,\n      presetId: this.presetId,\n      seed: this.seed,\n      hideRoofs: this.hideRoofs,\n      warmWindows,\n    });\n\n    for (const [surfaceKey, builder] of plan.builders) {\n      if (builder.triangleCount === 0) continue;\n      const mesh = new THREE.Mesh(builder.build(), this.getMaterial(surfaceKey));\n      const flat = surfaceKey.startsWith('sheet') || surfaceKey.startsWith('floor');\n      mesh.castShadow = !flat;\n      mesh.receiveShadow = true;\n      mesh.userData.triIds = builder.triIds;\n      mesh.name = `atlas3:${surfaceKey}`;\n      this.root.add(mesh);\n      this.pickables.push(mesh);\n    }\n\n    if (plan.water.triangleCount > 0) {\n      const mesh = new THREE.Mesh(plan.water.build(), this.waterMat);\n      mesh.userData.triIds = plan.water.triIds;\n      mesh.name = 'atlas3:water';\n      mesh.renderOrder = 2;\n      this.root.add(mesh);\n      this.pickables.push(mesh);\n    }\n\n    if (plan.terrain) {\n      const mesh = new THREE.Mesh(plan.terrain, this.getMaterial('terrain'));\n      mesh.castShadow = true;\n      mesh.receiveShadow = true;\n      mesh.name = 'atlas3:terrain';\n      this.root.add(mesh);\n    }\n\n    if (plan.doorInstances.matrices.length > 0) {\n      const inst = new THREE.InstancedMesh(\n        new THREE.BoxGeometry(1, 1, 1),\n        this.getMaterial('wood-dark'),\n        plan.doorInstances.matrices.length,\n      );\n      plan.doorInstances.matrices.forEach((m, i) => inst.setMatrixAt(i, m));\n      inst.instanceMatrix.needsUpdate = true;\n      inst.computeBoundingSphere();\n      inst.castShadow = true;\n      inst.receiveShadow = true;\n      inst.userData.instanceIds = plan.doorInstances.ids;\n      inst.name = 'atlas3:doors';\n      this.root.add(inst);\n      this.pickables.push(inst);\n    }\n\n    // Instanced suggestive scenery scatter (ATL3-D01 #1327) — 1 draw call per mesh part!\n    for (const batch of plan.scatterBatches) {\n      const { parts } = buildScatterGeometry(batch.kind);\n      for (const part of parts) {\n        const inst = new THREE.InstancedMesh(\n          part.geo,\n          this.getMaterial(part.surface),\n          batch.matrices.length,\n        );\n        batch.matrices.forEach((m, i) => inst.setMatrixAt(i, m));\n        inst.instanceMatrix.needsUpdate = true;\n        inst.computeBoundingSphere();\n        inst.castShadow = batch.kind !== 'flower' && batch.kind !== 'rubble';\n        inst.receiveShadow = true;\n        inst.name = `atlas3:scatter:${batch.kind}`;\n        this.root.add(inst);\n      }\n    }\n\n    const torchColor = new THREE.Color(0xffaa56);\n    for (const t of plan.torches) {\n      const intensityScale = this.look === 'indoor' || this.lightingMode === 'night' ? 1.0 : 0.4;\n      const light = new THREE.PointLight(\n        torchColor,\n        1.7 * (t.radius / 4) ** 2 * intensityScale,\n        t.radius,\n        2,\n      );\n      light.position.copy(t.position);\n      this.root.add(light);\n      const sprite = new THREE.Sprite(this.haloMat);\n      sprite.position.copy(t.position);\n      sprite.scale.setScalar(t.radius * 0.3);\n      sprite.renderOrder = 3;\n      this.root.add(sprite);\n    }\n\n    this.plan = plan;\n    this.sceneKey = key;\n    this.updateSelectionGizmo();\n  }\n\n  private updateSelectionGizmo(): void {\n    if (!this.selectedId || !this.doc) {\n      this.gizmoGroup.visible = false;\n      return;\n    }\n    const obj = this.doc.objects.find((o) => o.id === this.selectedId);\n    if (!obj) {\n      this.gizmoGroup.visible = false;\n      return;\n    }\n    const radius = Math.max(16, obj.size * 44);\n    this.gizmoGroup.position.set(obj.x, (obj.z ?? 0) + 1.2, obj.y);\n    this.selectionRing.scale.set(radius, 1, radius);\n    this.gizmoAxisX.scale.set(radius * 0.85, 1, 1);\n    this.gizmoAxisZ.scale.set(1, 1, radius * 0.85);\n    this.gizmoAxisX.visible = this.gizmoVisible;\n    this.gizmoAxisZ.visible = this.gizmoVisible;\n    this.gizmoGroup.visible = true;\n  }\n\n  private syncCameraAndLighting(w: number, h: number): void {\n    const aspect = w / Math.max(1, h);\n    const rig = buildAtlasThreeCameraRig(this.view, aspect);\n    if (rig.perspective) {\n      const cam =\n        this.camera instanceof THREE.PerspectiveCamera\n          ? this.camera\n          : new THREE.PerspectiveCamera();\n      cam.fov = rig.fovYDeg;\n      cam.aspect = aspect;\n      cam.near = rig.near;\n      cam.far = rig.far;\n      this.camera = cam;\n    } else {\n      const cam =\n        this.camera instanceof THREE.OrthographicCamera\n          ? this.camera\n          : new THREE.OrthographicCamera();\n      cam.left = -rig.halfWidth;\n      cam.right = rig.halfWidth;\n      cam.top = rig.halfHeight;\n      cam.bottom = -rig.halfHeight;\n      cam.near = rig.near;\n      cam.far = rig.far;\n      this.camera = cam;\n    }\n    this.camera.position.set(rig.eye[0], rig.eye[1], rig.eye[2]);\n    this.camera.up.set(rig.up[0], rig.up[1], rig.up[2]);\n    this.camera.lookAt(rig.at[0], rig.at[1], rig.at[2]);\n    this.camera.updateProjectionMatrix();\n    this.camera.updateMatrixWorld(true);\n\n    const spec = this.look === 'indoor' ? INDOOR_LIGHTING : OUTDOOR_LIGHTING[this.lightingMode];\n    const at = new THREE.Vector3(rig.at[0], rig.at[1], rig.at[2]);\n    const sunDir = new THREE.Vector3(spec.sunDir[0], spec.sunDir[1], spec.sunDir[2]).normalize();\n    const fillDir = new THREE.Vector3(7, 6, -7).normalize();\n    this.scene.background = new THREE.Color(spec.background);\n    const band = buildAtlasThreeFogBand(rig, this.look);\n    this.scene.fog = new THREE.Fog(spec.background, band.near, band.far);\n    this.hemi.color.set(spec.hemiSky);\n    this.hemi.groundColor.set(spec.hemiGround);\n    this.hemi.intensity = spec.hemiIntensity;\n    this.sun.color.set(spec.sunColor);\n    this.sun.intensity = spec.sunIntensity;\n    this.fill.color.set(spec.fillColor);\n    this.fill.intensity = spec.fillIntensity;\n    this.renderer.toneMappingExposure = spec.exposure;\n\n    const ext = this.view.span * aspect * (rig.perspective ? 2.1 : 1.4);\n    const reach = rig.distance * 1.4 + 600;\n    this.sun.position.copy(at).addScaledVector(sunDir, reach);\n    this.sun.target.position.copy(at);\n    this.fill.position.copy(at).addScaledVector(fillDir, reach);\n    this.fill.target.position.copy(at);\n    const sc = this.sun.shadow.camera;\n    sc.left = -ext;\n    sc.right = ext;\n    sc.top = ext;\n    sc.bottom = -ext;\n    sc.near = 1;\n    sc.far = reach * 2 + 400;\n    sc.updateProjectionMatrix();\n    this.sun.shadow.bias = -0.0004;\n    this.sun.shadow.normalBias = ((ext * 2) / this.sun.shadow.mapSize.x) * 1.25;\n    this.sun.target.updateMatrixWorld();\n    this.fill.target.updateMatrixWorld();\n\n    const u = this.waterMat.uniforms;\n    u.uDeep.value.set(spec.waterDeep);\n    u.uShallow.value.set(spec.waterShallow);\n    u.uSky.value.set(spec.waterSky);\n    u.uSunDir.value.copy(sunDir);\n    u.uFogColor.value.set(spec.background);\n    u.uFogNear.value = band.near;\n    u.uFogFar.value = band.far;\n  }\n\n  private lastPinEmitKey = '';\n\n  private emitProjectedPins(w: number, h: number): void {\n    if (!this.onProjectedPins) return;\n    if (this.pins.length === 0) {\n      if (this.lastPinEmitKey !== '') {\n        this.lastPinEmitKey = '';\n        this.onProjectedPins([]);\n      }\n      return;\n    }\n    const projected: AtlasThreeProjectedPin[] = [];\n    const v = new THREE.Vector3();\n    for (const pin of this.pins) {\n      v.set(pin.x, 12, pin.y).project(this.camera);\n      const visible = v.z >= -1 && v.z <= 1;\n      const left = Math.round(((v.x + 1) * 0.5) * w);\n      const top = Math.round(((1 - v.y) * 0.5) * h);\n      projected.push({\n        id: pin.id,\n        label: pin.label,\n        kind: pin.kind ?? 'place',\n        left,\n        top,\n        visible: visible && left >= -80 && left <= w + 80 && top >= -40 && top <= h + 40,\n      });\n    }\n    const key = projected.map((p) => `${p.id}:${p.left},${p.top},${p.visible ? 1 : 0}`).join('|');\n    if (key !== this.lastPinEmitKey) {\n      this.lastPinEmitKey = key;\n      this.onProjectedPins(projected);\n    }\n  }\n\n  private startLoop(): void {\n    const tick = (now: number) => {\n      if (this.disposed) return;\n      this.rafId = window.requestAnimationFrame(tick);\n      if (this.contextLost || !this.doc) return;\n      const w = this.config.canvas.clientWidth;\n      const h = this.config.canvas.clientHeight;\n      if (w < 8 || h < 8) return;\n\n      if (this.flight) {\n        const t = (now - this.flight.startMs) / Math.max(1, this.flight.durationMs);\n        this.view = interpolateAtlasThreeView(this.flight.from, this.flight.to, t);\n        if (t >= 1) {\n          this.flight = null;\n          this.onCameraChange?.(this.view);\n        }\n      }\n\n      if (this.config.canvas.width !== Math.round(w * this.renderer.getPixelRatio()) ||\n          this.config.canvas.height !== Math.round(h * this.renderer.getPixelRatio())) {\n        this.renderer.setSize(w, h, false);\n      }\n\n      this.ensureScene();\n      this.syncCameraAndLighting(w, h);\n      this.waterMat.uniforms.uTime.value = (now - this.startTime) * 0.001;\n      this.renderer.render(this.scene, this.camera);\n      this.emitProjectedPins(w, h);\n    };\n    this.rafId = window.requestAnimationFrame(tick);\n  }\n\n  dispose(): void {\n    this.disposed = true;\n    window.cancelAnimationFrame(this.rafId);\n    this.config.canvas.removeEventListener('webglcontextlost', this.onContextLostListener);\n    this.config.canvas.removeEventListener('webglcontextrestored', this.onContextRestoredListener);\n    this.clearRoot();\n    this.selectionRing.geometry.dispose();\n    (this.selectionRing.material as THREE.Material).dispose();\n    this.gizmoAxisX.geometry.dispose();\n    (this.gizmoAxisX.material as THREE.Material).dispose();\n    this.gizmoAxisZ.geometry.dispose();\n    (this.gizmoAxisZ.material as THREE.Material).dispose();\n    for (const mat of this.materials.values()) mat.dispose();\n    this.materials.clear();\n    this.waterMat.dispose();\n    this.haloMat.dispose();\n    this.haloTex.dispose();\n    this.pbr.dispose();\n    this.renderer.dispose();\n  }\n}"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
+      "line": 28,
+      "endLine": 28,
+      "text": "export type AtlasThreeLook = 'outdoor' | 'indoor';"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
+      "line": 30,
+      "endLine": 39,
+      "text": "export type AtlasThreeSurfaceSpec = {\n  readonly pbr: AtlasPbrKind | null;\n  readonly color: string;\n  readonly roughness: number;\n  readonly normalScale: number;\n  readonly tile: number;\n  readonly emissive?: string;\n  readonly metalness?: number;\n  readonly vertexColors?: boolean;\n};"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
+      "line": 41,
+      "endLine": 84,
+      "text": "export const ATLAS_THREE_SURFACES = {\n  terrain: {\n    pbr: 'grass',\n    color: '#ffffff',\n    roughness: 0.94,\n    normalScale: 0.72,\n    tile: 74,\n    vertexColors: true,\n  },\n  'sheet-outdoor': { pbr: 'grass', color: '#bdd0a8', roughness: 0.96, normalScale: 0.52, tile: 74 },\n  'sheet-indoor': { pbr: 'rock', color: '#465056', roughness: 0.95, normalScale: 0.7, tile: 54 },\n  'floor-cobble': { pbr: 'cobble', color: '#d8cfb8', roughness: 0.88, normalScale: 0.7, tile: 34 },\n  'floor-stone': { pbr: 'cobble', color: '#a8a69d', roughness: 0.9, normalScale: 0.75, tile: 28 },\n  'floor-wood': { pbr: 'wood', color: '#d5aa7e', roughness: 0.84, normalScale: 0.56, tile: 28 },\n  'floor-dirt': { pbr: 'dirt', color: '#c8b28d', roughness: 0.96, normalScale: 0.58, tile: 42 },\n  'floor-sand': { pbr: 'sand', color: '#e4d5af', roughness: 0.9, normalScale: 0.54, tile: 46 },\n  'floor-grass': { pbr: 'grass', color: '#d7e2c2', roughness: 0.95, normalScale: 0.65, tile: 62 },\n  'floor-moss': { pbr: 'moss', color: '#9fc29b', roughness: 0.94, normalScale: 0.6, tile: 42 },\n  wall: { pbr: 'wall', color: '#ded7c2', roughness: 0.92, normalScale: 0.62, tile: 26 },\n  'wall-indoor': { pbr: 'wall', color: '#b6b09f', roughness: 0.94, normalScale: 0.7, tile: 22 },\n  plaster: { pbr: 'plaster', color: '#f2e3c7', roughness: 0.95, normalScale: 0.36, tile: 22 },\n  'roof-tile': { pbr: 'roofTile', color: '#f2c4ae', roughness: 0.84, normalScale: 0.82, tile: 18 },\n  'roof-slate': { pbr: 'roofSlate', color: '#b4c2cf', roughness: 0.76, normalScale: 0.78, tile: 18 },\n  'roof-moss': { pbr: 'roofMoss', color: '#bed0a8', roughness: 0.88, normalScale: 0.8, tile: 18 },\n  wood: { pbr: 'wood', color: '#d3a77b', roughness: 0.84, normalScale: 0.56, tile: 16 },\n  'wood-dark': { pbr: 'wood', color: '#8a6648', roughness: 0.86, normalScale: 0.6, tile: 14 },\n  'bark-birch': { pbr: 'plaster', color: '#dfd8c8', roughness: 0.86, normalScale: 0.4, tile: 14 },\n  rock: { pbr: 'rock', color: '#b4bcb0', roughness: 0.92, normalScale: 0.82, tile: 32 },\n  snow: { pbr: 'snow', color: '#eef4f8', roughness: 0.76, normalScale: 0.35, tile: 36 },\n  leaf: { pbr: 'moss', color: '#7eb276', roughness: 0.92, normalScale: 0.55, tile: 18 },\n  'leaf-birch': { pbr: 'moss', color: '#a1c97b', roughness: 0.9, normalScale: 0.5, tile: 18 },\n  'leaf-pine': { pbr: 'moss', color: '#4f866a', roughness: 0.94, normalScale: 0.58, tile: 18 },\n  flower: { pbr: null, color: '#e8c468', roughness: 0.85, normalScale: 0, tile: 1 },\n  window: { pbr: null, color: '#2b3e4f', roughness: 0.22, normalScale: 0, tile: 1, metalness: 0.18 },\n  'window-warm': {\n    pbr: null,\n    color: '#ffcf7d',\n    roughness: 0.4,\n    normalScale: 0,\n    tile: 1,\n    emissive: '#ffb658',\n  },\n  flame: { pbr: null, color: '#ffb961', roughness: 1, normalScale: 0, tile: 1, emissive: '#ffa64c' },\n} as const satisfies Record<string, AtlasThreeSurfaceSpec>;"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
+      "line": 86,
+      "endLine": 86,
+      "text": "export type AtlasThreeSurfaceKey = keyof typeof ATLAS_THREE_SURFACES;"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
+      "line": 88,
+      "endLine": 102,
+      "text": "export function atlasThreeFloorSurface(\n  material: string | undefined,\n  scale: AtlasMapScale,\n): AtlasThreeSurfaceKey | 'water' {\n  const m = (material ?? '').toLowerCase();\n  if (m === 'wasser' || m === 'water') return 'water';\n  if (m === 'holz' || m === 'wood') return 'floor-wood';\n  if (m === 'pflaster' || m === 'paving') return 'floor-cobble';\n  if (m === 'stein' || m === 'stone') return scale === 'interior' ? 'floor-stone' : 'rock';\n  if (m === 'erde' || m === 'earth') return 'floor-dirt';\n  if (m === 'sand') return 'floor-sand';\n  if (m === 'moos' || m === 'moss') return 'floor-moss';\n  if (m === 'schnee' || m === 'snow') return 'snow';\n  return 'floor-grass';\n}"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
+      "line": 104,
+      "endLine": 160,
+      "text": "export class AtlasThreeGeoBuilder {\n  readonly positions: number[] = [];\n  readonly normals: number[] = [];\n  readonly uvs: number[] = [];\n  readonly triIds: string[] = [];\n\n  constructor(private readonly tile: number) {}\n\n  get triangleCount(): number {\n    return this.triIds.length;\n  }\n\n  tri(\n    a: THREE.Vector3,\n    b: THREE.Vector3,\n    c: THREE.Vector3,\n    id: string,\n    normal?: THREE.Vector3,\n  ): void {\n    const n =\n      normal ??\n      new THREE.Vector3().subVectors(b, a).cross(new THREE.Vector3().subVectors(c, a)).normalize();\n    const ax = Math.abs(n.x);\n    const ay = Math.abs(n.y);\n    const az = Math.abs(n.z);\n    for (const p of [a, b, c]) {\n      this.positions.push(p.x, p.y, p.z);\n      this.normals.push(n.x, n.y, n.z);\n      if (ay >= ax && ay >= az) this.uvs.push(p.x / this.tile, p.z / this.tile);\n      else if (az >= ax) this.uvs.push(p.x / this.tile, p.y / this.tile);\n      else this.uvs.push(p.z / this.tile, p.y / this.tile);\n    }\n    this.triIds.push(id);\n  }\n\n  geometry(source: THREE.BufferGeometry, matrix: THREE.Matrix4, id: string): void {\n    const g = source.index ? source.toNonIndexed() : source.clone();\n    g.applyMatrix4(matrix);\n    const pos = g.getAttribute('position');\n    for (let i = 0; i + 2 < pos.count; i += 3) {\n      const a = new THREE.Vector3().fromBufferAttribute(pos, i);\n      const b = new THREE.Vector3().fromBufferAttribute(pos, i + 1);\n      const c = new THREE.Vector3().fromBufferAttribute(pos, i + 2);\n      this.tri(a, b, c, id);\n    }\n    g.dispose();\n  }\n\n  build(): THREE.BufferGeometry {\n    const g = new THREE.BufferGeometry();\n    g.setAttribute('position', new THREE.Float32BufferAttribute(this.positions, 3));\n    g.setAttribute('normal', new THREE.Float32BufferAttribute(this.normals, 3));\n    g.setAttribute('uv', new THREE.Float32BufferAttribute(this.uvs, 2));\n    g.computeBoundingSphere();\n    return g;\n  }\n}"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
+      "line": 189,
+      "endLine": 192,
+      "text": "export type AtlasThreeScatterBatch = {\n  readonly kind: AtlasScatterKind;\n  readonly matrices: readonly THREE.Matrix4[];\n};"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
+      "line": 194,
+      "endLine": 208,
+      "text": "export type AtlasThreeScenePlan = {\n  readonly builders: Map<AtlasThreeSurfaceKey, AtlasThreeGeoBuilder>;\n  readonly water: AtlasThreeGeoBuilder;\n  readonly terrain: THREE.BufferGeometry | null;\n  readonly doorInstances: { readonly matrices: THREE.Matrix4[]; readonly ids: string[] };\n  readonly scatterBatches: readonly AtlasThreeScatterBatch[];\n  readonly torches: readonly {\n    readonly id: string;\n    readonly position: THREE.Vector3;\n    readonly radius: number;\n  }[];\n  readonly ids: ReadonlySet<string>;\n  readonly look: AtlasThreeLook;\n  readonly mapScale: AtlasMapScale;\n};"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
+      "line": 824,
+      "endLine": 832,
+      "text": "export type BuildAtlasThreeSceneOptions = {\n  readonly mapScale: AtlasMapScale;\n  readonly look: AtlasThreeLook;\n  readonly span: number;\n  readonly presetId: AtlasGraphicsPresetId;\n  readonly seed: string;\n  readonly hideRoofs?: boolean;\n  readonly warmWindows?: boolean;\n};"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
+      "line": 834,
+      "endLine": 1072,
+      "text": "export function buildAtlasThreeScenePlan(\n  doc: UnifiedCanvasDoc,\n  opts: BuildAtlasThreeSceneOptions,\n): AtlasThreeScenePlan {\n  const plan = buildAtlasProductGeometryPlan(doc, { mapScale: opts.mapScale });\n  const builders = new Map<AtlasThreeSurfaceKey, AtlasThreeGeoBuilder>();\n  const get = (k: AtlasThreeSurfaceKey): AtlasThreeGeoBuilder => {\n    let b = builders.get(k);\n    if (!b) {\n      b = new AtlasThreeGeoBuilder(ATLAS_THREE_SURFACES[k].tile);\n      builders.set(k, b);\n    }\n    return b;\n  };\n  const water = new AtlasThreeGeoBuilder(56);\n  const ids = new Set<string>();\n  const torches: { id: string; position: THREE.Vector3; radius: number }[] = [];\n  const doorInstances: { matrices: THREE.Matrix4[]; ids: string[] } = { matrices: [], ids: [] };\n  const up = new THREE.Vector3(0, 1, 0);\n\n  // Determine active terrain heightfield: canonical heightfield OR suggestive 3D fantasy world relief!\n  const syntheticRelief =\n    opts.look === 'outdoor' && !doc.heightfield && doc.layers.terrain !== false\n      ? synthesizeWorldReliefHeightfield(doc, opts.seed)\n      : null;\n  const activeTerrainHf = doc.heightfield ?? syntheticRelief;\n  const sampleGroundY = (x: number, z: number, fallback: number): number => {\n    if (!activeTerrainHf) return fallback;\n    const sampled = sampleHeightfield(activeTerrainHf, x, z);\n    if (sampled === null || !Number.isFinite(sampled)) return fallback;\n    return syntheticRelief ? Math.max(0.2, sampled) : sampled > fallback ? sampled : fallback;\n  };\n\n  // Full ocean surround (world), lush meadow horizon (settlement), or dark slate sheet (interior).\n  if (opts.look === 'indoor') {\n    const b = get('sheet-indoor');\n    const y = -0.52;\n    const p = (x: number, z: number): THREE.Vector3 => new THREE.Vector3(x, y, z);\n    b.tri(p(-600, -600), p(-600, 1600), p(1600, 1600), '__sheet', up);\n    b.tri(p(-600, -600), p(1600, 1600), p(1600, -600), '__sheet', up);\n  } else if (opts.mapScale === 'settlement') {\n    const b = get('sheet-outdoor');\n    const y = -0.54;\n    const p = (x: number, z: number): THREE.Vector3 => new THREE.Vector3(x, y, z);\n    b.tri(p(-1400, -1400), p(-1400, 2400), p(2400, 2400), '__meadow', up);\n    b.tri(p(-1400, -1400), p(2400, 2400), p(2400, -1400), '__meadow', up);\n  } else {\n    const wy = activeTerrainHf ? activeTerrainHf.waterLevel : -0.52;\n    const p = (x: number, z: number): THREE.Vector3 => new THREE.Vector3(x, wy, z);\n    water.tri(p(-1400, -1400), p(-1400, 2400), p(2400, 2400), '__ocean', up);\n    water.tri(p(-1400, -1400), p(2400, 2400), p(2400, -1400), '__ocean', up);\n  }\n\n  const rooms = plan.primitives.filter(\n    (q): q is Extract<AtlasProductGeometryPrimitive, { kind: 'area' | 'room' }> =>\n      q.kind === 'area' || q.kind === 'room',\n  );\n  const dyR = Math.min(0.075, 0.3 / Math.max(1, rooms.length));\n  const roomMaterial = new Map(doc.rooms.map((r) => [r.id, r.material] as const));\n  rooms.forEach((rm, i) => {\n    ids.add(rm.id);\n    const matName = roomMaterial.get(rm.id);\n    // When suggestive 3D fantasy terrain relief is active, the continuous terrain mesh\n    // renders the land & water biomes cleanly without flat z-fighting slabs (keep paved squares!).\n    if (syntheticRelief && matName !== 'pflaster') {\n      return;\n    }\n    const y =\n      syntheticRelief && matName === 'pflaster'\n        ? sampleGroundY(\n            rm.points.reduce((a, p) => a + p[0], 0) / Math.max(1, rm.points.length),\n            rm.points.reduce((a, p) => a + p[1], 0) / Math.max(1, rm.points.length),\n            4.5,\n          ) + 0.38\n        : -0.45 + i * dyR;\n    // Settlement valley surround: render g.ocean / w.ocean as a lush grassy valley floor\n    // instead of a flat water sheet so settlements like Dornhain sit in green hills.\n    const surface: AtlasThreeSurfaceKey | 'water' =\n      opts.mapScale === 'settlement' && (rm.id === 'g.ocean' || rm.id === 'w.ocean')\n        ? 'sheet-outdoor'\n        : atlasThreeFloorSurface(matName, opts.mapScale);\n    const b = surface === 'water' ? water : get(surface);\n    for (const [ia, ib, ic] of rm.triangles) {\n      const a = rm.points[ia];\n      const c = rm.points[ib];\n      const d = rm.points[ic];\n      if (!a || !c || !d) continue;\n      const va = new THREE.Vector3(a[0], y, a[1]);\n      const vb = new THREE.Vector3(c[0], y, c[1]);\n      const vc = new THREE.Vector3(d[0], y, d[1]);\n      const n = new THREE.Vector3().subVectors(vb, va).cross(new THREE.Vector3().subVectors(vc, va));\n      if (n.y >= 0) b.tri(va, vb, vc, rm.id, up);\n      else b.tri(va, vc, vb, rm.id, up);\n    }\n  });\n\n  if (doc.layers.roads !== false) {\n    const paths = plan.primitives.filter(\n      (q): q is Extract<AtlasProductGeometryPrimitive, { kind: 'path' }> => q.kind === 'path',\n    );\n    const dyS = Math.min(0.03, 0.12 / Math.max(1, paths.length));\n    const strokeMaterial = new Map(doc.strokes.map((s) => [s.id, s.material] as const));\n    paths.forEach((pt, i) => {\n      ids.add(pt.id);\n      const matName = strokeMaterial.get(pt.id);\n      // Rivers & mountain ridges are already sculpted directly into the suggestive 3D terrain!\n      if (syntheticRelief && (matName === 'wasser' || matName === 'stein')) {\n        return;\n      }\n      const surface = atlasThreeFloorSurface(matName, opts.mapScale);\n      const lift = 0.55 + i * dyS;\n      buildRibbon(\n        surface === 'water' ? water : get(surface),\n        pt.points,\n        pt.width,\n        -0.14 + i * dyS,\n        pt.id,\n        syntheticRelief ? (rx, rz) => sampleGroundY(rx, rz, 4.5) + lift : undefined,\n      );\n    });\n  }\n\n  const wallH = opts.mapScale === 'interior' ? 24 : opts.mapScale === 'settlement' ? 9 : 4;\n  const doorsByWall = new Map<string, Extract<AtlasProductGeometryPrimitive, { kind: 'door' }>[]>();\n  for (const q of plan.primitives) {\n    if (q.kind !== 'door') continue;\n    const list = doorsByWall.get(q.wallId) ?? [];\n    list.push(q);\n    doorsByWall.set(q.wallId, list);\n  }\n  const wallKey: AtlasThreeSurfaceKey = opts.look === 'indoor' ? 'wall-indoor' : 'wall';\n  for (const q of plan.primitives) {\n    if (q.kind !== 'wall') continue;\n    ids.add(q.id);\n    const dx = q.end[0] - q.start[0];\n    const dz = q.end[1] - q.start[1];\n    const length = Math.hypot(dx, dz);\n    if (length < 0.02) continue;\n    const thick = Math.max(0.4, q.width);\n    const doors = (doorsByWall.get(q.id) ?? []).slice().sort((a, b) => a.t - b.t);\n    const pt = (t: number): readonly [number, number] => [\n      q.start[0] + dx * t,\n      q.start[1] + dz * t,\n    ];\n    let cursor = 0;\n    for (const dr of doors) {\n      ids.add(dr.id);\n      const half = Math.min(0.45, Math.max(0.2, dr.width) / (2 * length));\n      const a = Math.max(cursor, dr.t - half);\n      const b = Math.min(1, dr.t + half);\n      if (a - cursor > 1e-3) wallBox(get(wallKey), pt(cursor), pt(a), thick, -0.42, wallH, q.id);\n      const doorH = wallH * 0.72;\n      const lintelH = wallH - doorH;\n      if (lintelH > 0.2) wallBox(get(wallKey), pt(a), pt(b), thick, -0.42 + doorH, lintelH, q.id);\n      const rot = Math.atan2(-dz, dx);\n      const jambW = Math.max(0.25, thick * 0.45);\n      for (const endT of [a, b]) {\n        const [jx, jz] = pt(endT);\n        doorInstances.matrices.push(\n          composeMatrix(jx, -0.42 + doorH / 2, jz, jambW, doorH, thick * 1.18, rot),\n        );\n        doorInstances.ids.push(dr.id);\n      }\n      const [mx, mz] = pt((a + b) / 2);\n      doorInstances.matrices.push(\n        composeMatrix(mx, -0.42 + doorH, mz, Math.max(0.2, (b - a) * length), jambW, thick * 1.2, rot),\n      );\n      doorInstances.ids.push(dr.id);\n      cursor = Math.max(cursor, b);\n    }\n    if (1 - cursor > 1e-3) wallBox(get(wallKey), pt(cursor), pt(1), thick, -0.42, wallH, q.id);\n  }\n\n  const objAngles = new Map(doc.objects.map((o) => [o.id, o.angle ?? 0] as const));\n  const fullDetail = opts.presetId === 'high' || opts.span < 380;\n  const showCanonicalObjects =\n    opts.mapScale === 'world' ? doc.layers.terrain !== false : doc.layers.objects !== false;\n  if (showCanonicalObjects) {\n    for (const q of plan.primitives) {\n      if (q.kind !== 'prop' && q.kind !== 'building_footprint') continue;\n      ids.add(q.id);\n      const groundElevation = sampleGroundY(q.x, q.y, -0.35);\n      emitCanonicalProp(get, q, objAngles.get(q.id) ?? 0, torches, {\n        fullDetail,\n        hideRoofs: Boolean(opts.hideRoofs),\n        warmWindows: Boolean(opts.warmWindows),\n        groundElevation,\n      });\n    }\n  }\n\n  const terrain =\n    doc.layers.terrain !== false && activeTerrainHf\n      ? buildBlendedTerrain(activeTerrainHf, opts.span)\n      : null;\n\n  // Suggestive scenery scatter (ATL3-D01 #1327) grouped by kind for InstancedMesh rendering.\n  const scatter = buildAtlasSceneScatter({\n    doc,\n    seed: opts.seed,\n    mapScale: opts.mapScale,\n    presetId: opts.presetId,\n    elevationSampler: activeTerrainHf\n      ? (x, y) => sampleGroundY(x, y, 0)\n      : undefined,\n  });\n  const scatterByKind = new Map<AtlasScatterKind, THREE.Matrix4[]>();\n  for (const inst of scatter.instances) {\n    const list = scatterByKind.get(inst.kind) ?? [];\n    list.push(\n      composeMatrix(\n        inst.x,\n        inst.elevation,\n        inst.y,\n        inst.scale,\n        inst.scale,\n        inst.scale,\n        inst.rotationRad,\n      ),\n    );\n    scatterByKind.set(inst.kind, list);\n  }\n  const scatterBatches: AtlasThreeScatterBatch[] = [];\n  for (const [kind, matrices] of scatterByKind) {\n    if (matrices.length > 0) scatterBatches.push({ kind, matrices });\n  }\n\n  return {\n    builders,\n    water,\n    terrain,\n    doorInstances,\n    scatterBatches,\n    torches,\n    ids,\n    look: opts.look,\n    mapScale: opts.mapScale,\n  };\n}"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/pbr-textures.ts",
+      "line": 11,
+      "endLine": 26,
+      "text": "export const ATLAS_PBR_KINDS = [\n  'grass',\n  'dirt',\n  'moss',\n  'rock',\n  'snow',\n  'sand',\n  'gravel',\n  'cobble',\n  'wall',\n  'plaster',\n  'wood',\n  'roofTile',\n  'roofSlate',\n  'roofMoss',\n] as const;"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/pbr-textures.ts",
+      "line": 28,
+      "endLine": 28,
+      "text": "export type AtlasPbrKind = (typeof ATLAS_PBR_KINDS)[number];"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/pbr-textures.ts",
+      "line": 30,
+      "endLine": 34,
+      "text": "export type AtlasPbrTextureSet = {\n  readonly map: THREE.CanvasTexture;\n  readonly normal: THREE.CanvasTexture;\n  readonly rough: THREE.CanvasTexture;\n};"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/pbr-textures.ts",
+      "line": 344,
+      "endLine": 368,
+      "text": "export class AtlasPbrTextureLibrary {\n  private readonly sets = new Map<AtlasPbrKind, AtlasPbrTextureSet>();\n\n  constructor(\n    private readonly size: number,\n    private readonly anisotropy: number,\n  ) {}\n\n  get(kind: AtlasPbrKind): AtlasPbrTextureSet {\n    const cached = this.sets.get(kind);\n    if (cached) return cached;\n    const created = synthesizeSurface(kind, this.size, this.anisotropy);\n    this.sets.set(kind, created);\n    return created;\n  }\n\n  dispose(): void {\n    for (const set of this.sets.values()) {\n      set.map.dispose();\n      set.normal.dispose();\n      set.rough.dispose();\n    }\n    this.sets.clear();\n  }\n}"
     },
     {
       "path": "src/infrastructure/world/host-world-adapter.ts",
@@ -4505,6 +4829,622 @@
       "endLine": 466,
       "name": "at",
       "text": "(t: number): readonly [number, number] => [q.start[0] + dx * t, q.start[1] + dz * t]"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-camera.ts",
+      "line": 33,
+      "endLine": 35,
+      "name": "clamp",
+      "text": "function clamp(v: number, lo: number, hi: number): number {\n  return Math.min(hi, Math.max(lo, v));\n}"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-camera.ts",
+      "line": 37,
+      "endLine": 41,
+      "name": "clampAtlasThreePitch",
+      "text": "export function clampAtlasThreePitch(mode: AtlasThreeCameraMode, pitch: number): number {\n  if (mode === 'ortho-topdown') return Math.PI / 2;\n  if (mode === 'diorama-oblique') return clamp(pitch, 0.55, 1.25);\n  return clamp(pitch, 0.32, 1.38);\n}"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-camera.ts",
+      "line": 43,
+      "endLine": 47,
+      "name": "defaultAtlasThreePitch",
+      "text": "export function defaultAtlasThreePitch(mode: AtlasThreeCameraMode): number {\n  if (mode === 'ortho-topdown') return Math.PI / 2;\n  if (mode === 'diorama-oblique') return 1.02;\n  return 0.88;\n}"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-camera.ts",
+      "line": 49,
+      "endLine": 83,
+      "name": "buildAtlasThreeCameraRig",
+      "text": "export function buildAtlasThreeCameraRig(\n  view: AtlasThreeCameraView,\n  aspect: number,\n): AtlasThreeCameraRig {\n  const safeAspect = Math.max(0.2, aspect);\n  const pitch = clampAtlasThreePitch(view.mode, view.pitchRad);\n  const forward: readonly [number, number] = [Math.sin(view.yawRad), Math.cos(view.yawRad)];\n  const perspective = view.mode === 'perspective';\n  const distance = view.span * (perspective ? 2.4 : 3.0);\n  const at: readonly [number, number, number] = [view.x, 0, view.z];\n  const topdown = view.mode === 'ortho-topdown';\n  const eye: readonly [number, number, number] = topdown\n    ? [view.x, distance + 5, view.z]\n    : [\n        view.x + forward[0] * Math.cos(pitch) * distance,\n        Math.sin(pitch) * distance + 5,\n        view.z + forward[1] * Math.cos(pitch) * distance,\n      ];\n  const up: readonly [number, number, number] = topdown\n    ? [-forward[0], 0, -forward[1]]\n    : [0, 1, 0];\n\n  return {\n    eye,\n    at,\n    up,\n    distance,\n    near: perspective ? Math.max(0.2, distance * 0.02) : 0.1,\n    far: Math.max(8000, distance * 4 + 400),\n    perspective,\n    fovYDeg: 48,\n    halfHeight: view.span,\n    halfWidth: view.span * safeAspect,\n  };\n}"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-camera.ts",
+      "line": 85,
+      "endLine": 93,
+      "name": "buildAtlasThreeFogBand",
+      "text": "export function buildAtlasThreeFogBand(\n  rig: AtlasThreeCameraRig,\n  look: 'outdoor' | 'indoor',\n): { readonly near: number; readonly far: number } {\n  const d = rig.distance;\n  return look === 'indoor'\n    ? { near: d * 0.95, far: d * 2.8 }\n    : { near: d * 0.95, far: d * 3.6 };\n}"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-camera.ts",
+      "line": 96,
+      "endLine": 113,
+      "name": "interpolateAtlasThreeView",
+      "text": "export function interpolateAtlasThreeView(\n  from: AtlasThreeCameraView,\n  to: AtlasThreeCameraView,\n  t: number,\n): AtlasThreeCameraView {\n  const k = clamp(t, 0, 1);\n  const e = k * k * (3 - 2 * k);\n  const logFrom = Math.log(Math.max(1, from.span));\n  const logTo = Math.log(Math.max(1, to.span));\n  return {\n    mode: to.mode,\n    x: from.x + (to.x - from.x) * e,\n    z: from.z + (to.z - from.z) * e,\n    span: Math.exp(logFrom + (logTo - logFrom) * e),\n    yawRad: from.yawRad + (to.yawRad - from.yawRad) * e,\n    pitchRad: from.pitchRad + (to.pitchRad - from.pitchRad) * e,\n  };\n}"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
+      "line": 180,
+      "endLine": 196,
+      "name": "createTorchHaloTexture",
+      "text": "function createTorchHaloTexture(): THREE.CanvasTexture {\n  const c = document.createElement('canvas');\n  c.width = 64;\n  c.height = 64;\n  const ctx = c.getContext('2d');\n  if (ctx) {\n    const g = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);\n    g.addColorStop(0, 'rgba(255,238,196,1)');\n    g.addColorStop(0.28, 'rgba(255,182,102,0.55)');\n    g.addColorStop(1, 'rgba(255,146,66,0)');\n    ctx.fillStyle = g;\n    ctx.fillRect(0, 0, 64, 64);\n  }\n  const tex = new THREE.CanvasTexture(c);\n  tex.colorSpace = THREE.SRGBColorSpace;\n  return tex;\n}"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
+      "line": 199,
+      "endLine": 293,
+      "name": "buildScatterGeometry",
+      "text": "function buildScatterGeometry(kind: AtlasScatterKind): {\n  readonly parts: readonly { readonly geo: THREE.BufferGeometry; readonly surface: AtlasThreeSurfaceKey }[];\n} {\n  switch (kind) {\n    case 'pine': {\n      const trunk = new THREE.CylinderGeometry(2.4, 4.4, 16, 6);\n      trunk.translate(0, 8, 0);\n      const c1 = new THREE.ConeGeometry(22, 36, 7);\n      c1.translate(0, 26, 0);\n      const c2 = new THREE.ConeGeometry(16, 30, 7);\n      c2.translate(0, 44, 0);\n      const c3 = new THREE.ConeGeometry(10, 24, 6);\n      c3.translate(0, 58, 0);\n      return {\n        parts: [\n          { geo: trunk, surface: 'wood-dark' },\n          { geo: c1, surface: 'leaf-pine' },\n          { geo: c2, surface: 'leaf-pine' },\n          { geo: c3, surface: 'leaf-pine' },\n        ],\n      };\n    }\n    case 'birch': {\n      const trunk = new THREE.CylinderGeometry(2.1, 3.6, 18, 6);\n      trunk.translate(0, 9, 0);\n      const crown = new THREE.DodecahedronGeometry(18, 1);\n      crown.translate(0, 28, 0);\n      return {\n        parts: [\n          { geo: trunk, surface: 'bark-birch' },\n          { geo: crown, surface: 'leaf-birch' },\n        ],\n      };\n    }\n    case 'oak': {\n      const trunk = new THREE.CylinderGeometry(3.2, 5.2, 16, 6);\n      trunk.translate(0, 8, 0);\n      const crown = new THREE.DodecahedronGeometry(21, 1);\n      crown.translate(0, 28, 0);\n      return {\n        parts: [\n          { geo: trunk, surface: 'wood-dark' },\n          { geo: crown, surface: 'leaf' },\n        ],\n      };\n    }\n    case 'bush': {\n      const g = new THREE.DodecahedronGeometry(11, 0);\n      g.scale(1.2, 0.72, 1.1);\n      g.translate(0, 6, 0);\n      return { parts: [{ geo: g, surface: 'leaf' }] };\n    }\n    case 'flower': {\n      const g = new THREE.DodecahedronGeometry(5, 0);\n      g.scale(1.2, 0.45, 1.2);\n      g.translate(0, 2.2, 0);\n      return { parts: [{ geo: g, surface: 'flower' }] };\n    }\n    case 'mountain': {\n      const base = new THREE.ConeGeometry(42, 58, 7);\n      base.translate(0, 26, 0);\n      const cap = new THREE.ConeGeometry(16, 22, 7);\n      cap.translate(0, 46, 0);\n      return {\n        parts: [\n          { geo: base, surface: 'rock' },\n          { geo: cap, surface: 'snow' },\n        ],\n      };\n    }\n    case 'barrel': {\n      const g = new THREE.CylinderGeometry(7, 8, 15, 8);\n      g.translate(0, 7.5, 0);\n      return { parts: [{ geo: g, surface: 'wood' }] };\n    }\n    case 'crate': {\n      const g = new THREE.BoxGeometry(13, 13, 13);\n      g.translate(0, 6.5, 0);\n      return { parts: [{ geo: g, surface: 'wood-dark' }] };\n    }\n    case 'rubble': {\n      const g = new THREE.DodecahedronGeometry(6.5, 0);\n      g.scale(1.3, 0.48, 1.1);\n      g.translate(0, 2.5, 0);\n      return { parts: [{ geo: g, surface: 'rock' }] };\n    }\n    case 'rock':\n    default: {\n      const g = new THREE.DodecahedronGeometry(13, 0);\n      g.scale(1.25, 0.75, 1.05);\n      g.translate(0, 7, 0);\n      return { parts: [{ geo: g, surface: 'rock' }] };\n    }\n  }\n}"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
+      "line": 434,
+      "endLine": 438,
+      "name": "callback",
+      "text": "(ev: Event) => {\n      ev.preventDefault();\n      this.contextLost = true;\n      this.onContextLostChange?.(true);\n    }"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
+      "line": 439,
+      "endLine": 443,
+      "name": "callback",
+      "text": "() => {\n      this.contextLost = false;\n      this.sceneKey = '';\n      this.onContextLostChange?.(false);\n    }"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
+      "line": 450,
+      "endLine": 458,
+      "name": "applyQualityProfile",
+      "text": "applyQualityProfile(presetId: AtlasGraphicsPresetId): void {\n    this.presetId = presetId;\n    const maxDpr = presetId === 'high' ? 2 : presetId === 'balanced' ? 1.5 : 1;\n    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, maxDpr));\n    const shadowSize = presetId === 'high' ? 2048 : 1024;\n    this.sun.shadow.mapSize.set(shadowSize, shadowSize);\n    this.sun.shadow.radius = presetId === 'high' ? 3 : 1.5;\n    this.sceneKey = '';\n  }"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
+      "line": 460,
+      "endLine": 491,
+      "name": "setSceneState",
+      "text": "setSceneState(input: {\n    readonly doc: UnifiedCanvasDoc;\n    readonly mapScale: AtlasMapScale;\n    readonly look: AtlasThreeLook;\n    readonly seed: string;\n    readonly hideRoofs: boolean;\n    readonly lightingMode: AtlasThreeLightingMode;\n    readonly pins: readonly AtlasMapPin[];\n    readonly selectedId: string | null;\n    readonly gizmoVisible: boolean;\n  }): void {\n    const docChanged = this.doc !== input.doc;\n    const scaleChanged = this.mapScale !== input.mapScale;\n    const lookChanged = this.look !== input.look;\n    const seedChanged = this.seed !== input.seed;\n    const roofChanged = this.hideRoofs !== input.hideRoofs;\n    const lightChanged = this.lightingMode !== input.lightingMode;\n    this.doc = input.doc;\n    this.mapScale = input.mapScale;\n    this.look = input.look;\n    this.seed = input.seed;\n    this.hideRoofs = input.hideRoofs;\n    this.lightingMode = input.lightingMode;\n    this.pins = input.pins;\n    this.selectedId = input.selectedId;\n    this.gizmoVisible = input.gizmoVisible;\n    if (docChanged || scaleChanged || lookChanged || seedChanged || roofChanged || lightChanged) {\n      this.docRevision += 1;\n      this.sceneKey = '';\n    }\n    this.updateSelectionGizmo();\n  }"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
+      "line": 493,
+      "endLine": 495,
+      "name": "getView",
+      "text": "getView(): AtlasThreeCameraView {\n    return { ...this.view };\n  }"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
+      "line": 497,
+      "endLine": 526,
+      "name": "setView",
+      "text": "setView(next: Partial<AtlasThreeCameraView>, animate = false): void {\n    const targetMode: AtlasThreeCameraMode = next.mode ?? this.view.mode;\n    const target: AtlasThreeCameraView = {\n      mode: targetMode,\n      x: next.x ?? this.view.x,\n      z: next.z ?? this.view.z,\n      span: Math.max(24, Math.min(1400, next.span ?? this.view.span)),\n      yawRad: next.yawRad ?? this.view.yawRad,\n      pitchRad: clampAtlasThreePitch(\n        targetMode,\n        next.pitchRad ?? (next.mode ? defaultAtlasThreePitch(targetMode) : this.view.pitchRad),\n      ),\n    };\n    if (animate) {\n      const reduced =\n        typeof window !== 'undefined' &&\n        window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;\n      this.flight = reduced\n        ? null\n        : { from: { ...this.view }, to: target, startMs: performance.now(), durationMs: 520 };\n      if (!this.flight) {\n        this.view = target;\n        this.onCameraChange?.(this.view);\n      }\n    } else {\n      this.flight = null;\n      this.view = target;\n      this.onCameraChange?.(this.view);\n    }\n  }"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
+      "line": 528,
+      "endLine": 530,
+      "name": "flyTo",
+      "text": "flyTo(x: number, z: number, span: number): void {\n    this.setView({ x, z, span }, true);\n  }"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
+      "line": 532,
+      "endLine": 546,
+      "name": "resetCamera",
+      "text": "resetCamera(): void {\n    const mode = this.view.mode;\n    const defaultSpan = this.mapScale === 'world' ? 470 : this.mapScale === 'settlement' ? 320 : 280;\n    this.setView(\n      {\n        mode,\n        x: 500,\n        z: 500,\n        span: defaultSpan,\n        yawRad: mode === 'ortho-topdown' ? 0 : 0.35,\n        pitchRad: defaultAtlasThreePitch(mode),\n      },\n      true,\n    );\n  }"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
+      "line": 549,
+      "endLine": 557,
+      "name": "screenToGround",
+      "text": "screenToGround(px: number, py: number): { readonly x: number; readonly z: number } | null {\n    const w = this.config.canvas.clientWidth || 1;\n    const h = this.config.canvas.clientHeight || 1;\n    const ndc = new THREE.Vector2((px / w) * 2 - 1, -(py / h) * 2 + 1);\n    this.raycaster.setFromCamera(ndc, this.camera);\n    const out = new THREE.Vector3();\n    if (!this.raycaster.ray.intersectPlane(this.groundPlane, out)) return null;\n    return { x: out.x, z: out.z };\n  }"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
+      "line": 560,
+      "endLine": 582,
+      "name": "pickCanonicalId",
+      "text": "pickCanonicalId(px: number, py: number): string | null {\n    const w = this.config.canvas.clientWidth || 1;\n    const h = this.config.canvas.clientHeight || 1;\n    const ndc = new THREE.Vector2((px / w) * 2 - 1, -(py / h) * 2 + 1);\n    this.raycaster.setFromCamera(ndc, this.camera);\n    const hits = this.raycaster.intersectObjects(this.pickables, false);\n    const objectIds = new Set((this.doc?.objects ?? []).map((o) => o.id));\n    let fallback: string | null = null;\n    for (const hit of hits) {\n      let id: string | null = null;\n      const triIds = hit.object.userData.triIds as string[] | undefined;\n      const instIds = hit.object.userData.instanceIds as string[] | undefined;\n      if (triIds && typeof hit.faceIndex === 'number') {\n        id = triIds[hit.faceIndex] ?? null;\n      } else if (instIds && typeof hit.instanceId === 'number') {\n        id = instIds[hit.instanceId] ?? null;\n      }\n      if (!id || id.startsWith('__') || id === 'g.ocean' || id === 'w.ocean') continue;\n      if (objectIds.has(id)) return id;\n      if (!fallback) fallback = id;\n    }\n    return fallback;\n  }"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
+      "line": 566,
+      "endLine": 566,
+      "name": "callback",
+      "text": "(o) => o.id"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
+      "line": 585,
+      "endLine": 587,
+      "name": "getRenderedIds",
+      "text": "getRenderedIds(): string[] {\n    return [...(this.plan?.ids ?? [])].sort();\n  }"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
+      "line": 589,
+      "endLine": 595,
+      "name": "getStats",
+      "text": "getStats(): { readonly calls: number; readonly triangles: number; readonly rooms: number } {\n    return {\n      calls: this.renderer.info.render.calls,\n      triangles: this.renderer.info.render.triangles,\n      rooms: this.doc?.rooms.length ?? 0,\n    };\n  }"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
+      "line": 685,
+      "endLine": 685,
+      "name": "callback",
+      "text": "(m, i) => inst.setMatrixAt(i, m)"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
+      "line": 705,
+      "endLine": 705,
+      "name": "callback",
+      "text": "(m, i) => inst.setMatrixAt(i, m)"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
+      "line": 743,
+      "endLine": 743,
+      "name": "callback",
+      "text": "(o) => o.id === this.selectedId"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
+      "line": 862,
+      "endLine": 862,
+      "name": "callback",
+      "text": "(p) => `${p.id}:${p.left},${p.top},${p.visible ? 1 : 0}`"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
+      "line": 870,
+      "endLine": 897,
+      "name": "tick",
+      "text": "(now: number) => {\n      if (this.disposed) return;\n      this.rafId = window.requestAnimationFrame(tick);\n      if (this.contextLost || !this.doc) return;\n      const w = this.config.canvas.clientWidth;\n      const h = this.config.canvas.clientHeight;\n      if (w < 8 || h < 8) return;\n\n      if (this.flight) {\n        const t = (now - this.flight.startMs) / Math.max(1, this.flight.durationMs);\n        this.view = interpolateAtlasThreeView(this.flight.from, this.flight.to, t);\n        if (t >= 1) {\n          this.flight = null;\n          this.onCameraChange?.(this.view);\n        }\n      }\n\n      if (this.config.canvas.width !== Math.round(w * this.renderer.getPixelRatio()) ||\n          this.config.canvas.height !== Math.round(h * this.renderer.getPixelRatio())) {\n        this.renderer.setSize(w, h, false);\n      }\n\n      this.ensureScene();\n      this.syncCameraAndLighting(w, h);\n      this.waterMat.uniforms.uTime.value = (now - this.startTime) * 0.001;\n      this.renderer.render(this.scene, this.camera);\n      this.emitProjectedPins(w, h);\n    }"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
+      "line": 901,
+      "endLine": 920,
+      "name": "dispose",
+      "text": "dispose(): void {\n    this.disposed = true;\n    window.cancelAnimationFrame(this.rafId);\n    this.config.canvas.removeEventListener('webglcontextlost', this.onContextLostListener);\n    this.config.canvas.removeEventListener('webglcontextrestored', this.onContextRestoredListener);\n    this.clearRoot();\n    this.selectionRing.geometry.dispose();\n    (this.selectionRing.material as THREE.Material).dispose();\n    this.gizmoAxisX.geometry.dispose();\n    (this.gizmoAxisX.material as THREE.Material).dispose();\n    this.gizmoAxisZ.geometry.dispose();\n    (this.gizmoAxisZ.material as THREE.Material).dispose();\n    for (const mat of this.materials.values()) mat.dispose();\n    this.materials.clear();\n    this.waterMat.dispose();\n    this.haloMat.dispose();\n    this.haloTex.dispose();\n    this.pbr.dispose();\n    this.renderer.dispose();\n  }"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
+      "line": 88,
+      "endLine": 102,
+      "name": "atlasThreeFloorSurface",
+      "text": "export function atlasThreeFloorSurface(\n  material: string | undefined,\n  scale: AtlasMapScale,\n): AtlasThreeSurfaceKey | 'water' {\n  const m = (material ?? '').toLowerCase();\n  if (m === 'wasser' || m === 'water') return 'water';\n  if (m === 'holz' || m === 'wood') return 'floor-wood';\n  if (m === 'pflaster' || m === 'paving') return 'floor-cobble';\n  if (m === 'stein' || m === 'stone') return scale === 'interior' ? 'floor-stone' : 'rock';\n  if (m === 'erde' || m === 'earth') return 'floor-dirt';\n  if (m === 'sand') return 'floor-sand';\n  if (m === 'moos' || m === 'moss') return 'floor-moss';\n  if (m === 'schnee' || m === 'snow') return 'snow';\n  return 'floor-grass';\n}"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
+      "line": 116,
+      "endLine": 137,
+      "name": "tri",
+      "text": "tri(\n    a: THREE.Vector3,\n    b: THREE.Vector3,\n    c: THREE.Vector3,\n    id: string,\n    normal?: THREE.Vector3,\n  ): void {\n    const n =\n      normal ??\n      new THREE.Vector3().subVectors(b, a).cross(new THREE.Vector3().subVectors(c, a)).normalize();\n    const ax = Math.abs(n.x);\n    const ay = Math.abs(n.y);\n    const az = Math.abs(n.z);\n    for (const p of [a, b, c]) {\n      this.positions.push(p.x, p.y, p.z);\n      this.normals.push(n.x, n.y, n.z);\n      if (ay >= ax && ay >= az) this.uvs.push(p.x / this.tile, p.z / this.tile);\n      else if (az >= ax) this.uvs.push(p.x / this.tile, p.y / this.tile);\n      else this.uvs.push(p.z / this.tile, p.y / this.tile);\n    }\n    this.triIds.push(id);\n  }"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
+      "line": 139,
+      "endLine": 150,
+      "name": "geometry",
+      "text": "geometry(source: THREE.BufferGeometry, matrix: THREE.Matrix4, id: string): void {\n    const g = source.index ? source.toNonIndexed() : source.clone();\n    g.applyMatrix4(matrix);\n    const pos = g.getAttribute('position');\n    for (let i = 0; i + 2 < pos.count; i += 3) {\n      const a = new THREE.Vector3().fromBufferAttribute(pos, i);\n      const b = new THREE.Vector3().fromBufferAttribute(pos, i + 1);\n      const c = new THREE.Vector3().fromBufferAttribute(pos, i + 2);\n      this.tri(a, b, c, id);\n    }\n    g.dispose();\n  }"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
+      "line": 152,
+      "endLine": 159,
+      "name": "build",
+      "text": "build(): THREE.BufferGeometry {\n    const g = new THREE.BufferGeometry();\n    g.setAttribute('position', new THREE.Float32BufferAttribute(this.positions, 3));\n    g.setAttribute('normal', new THREE.Float32BufferAttribute(this.normals, 3));\n    g.setAttribute('uv', new THREE.Float32BufferAttribute(this.uvs, 2));\n    g.computeBoundingSphere();\n    return g;\n  }"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
+      "line": 164,
+      "endLine": 178,
+      "name": "composeMatrix",
+      "text": "function composeMatrix(\n  cx: number,\n  cy: number,\n  cz: number,\n  sx: number,\n  sy: number,\n  sz: number,\n  rotY = 0,\n): THREE.Matrix4 {\n  return new THREE.Matrix4().compose(\n    new THREE.Vector3(cx, cy, cz),\n    new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), rotY),\n    new THREE.Vector3(Math.max(1e-3, sx), Math.max(1e-3, sy), Math.max(1e-3, sz)),\n  );\n}"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
+      "line": 180,
+      "endLine": 187,
+      "name": "hashId",
+      "text": "function hashId(id: string): number {\n  let h = 2166136261;\n  for (let i = 0; i < id.length; i += 1) {\n    h ^= id.charCodeAt(i);\n    h = Math.imul(h, 16777619);\n  }\n  return h >>> 0;\n}"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
+      "line": 211,
+      "endLine": 242,
+      "name": "terrainColorAt",
+      "text": "function terrainColorAt(height: number, waterLevel: number, slope: number): THREE.Color {\n  const c = new THREE.Color();\n  if (height < waterLevel - 0.6) {\n    const depthT = Math.min(1, (waterLevel - 0.6 - height) / 7);\n    c.set('#2b6972').lerp(new THREE.Color('#1a4452'), depthT);\n    return c;\n  }\n  if (height < waterLevel + 1.8) {\n    const t = Math.max(0, Math.min(1, (height - (waterLevel - 0.6)) / 2.4));\n    c.set('#5a928a').lerp(new THREE.Color('#decfa4'), t);\n    return c;\n  }\n  if (height < 13) {\n    const t = Math.max(0, Math.min(1, (height - (waterLevel + 1.8)) / 11.2));\n    c.set('#7ea85f').lerp(new THREE.Color('#4a7b4c'), t);\n    if (slope > 0.28) {\n      c.lerp(new THREE.Color('#8d9387'), Math.min(0.82, (slope - 0.28) * 2.1));\n    }\n    return c;\n  }\n  if (height < 25) {\n    const t = Math.max(0, Math.min(1, (height - 13) / 12));\n    c.set('#6d7c63').lerp(new THREE.Color('#959d94'), t);\n    if (slope > 0.35) {\n      c.lerp(new THREE.Color('#7f8580'), Math.min(0.75, (slope - 0.35) * 1.8));\n    }\n    return c;\n  }\n  const snowT = Math.max(0, Math.min(1, (height - 25) / 14));\n  c.set('#9ba49d').lerp(new THREE.Color('#f3f7fa'), snowT);\n  return c;\n}"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
+      "line": 244,
+      "endLine": 248,
+      "name": "hash2D",
+      "text": "function hash2D(ix: number, iz: number, seed: number): number {\n  let h = (ix * 374761393 + iz * 668265263 + seed * 1442695041) | 0;\n  h = Math.imul(h ^ (h >>> 13), 1274126177);\n  return ((h ^ (h >>> 16)) >>> 0) / 4294967296;\n}"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
+      "line": 250,
+      "endLine": 262,
+      "name": "valueNoise2D",
+      "text": "function valueNoise2D(x: number, z: number, seed: number): number {\n  const ix = Math.floor(x);\n  const iz = Math.floor(z);\n  const fx = x - ix;\n  const fz = z - iz;\n  const u = fx * fx * (3 - 2 * fx);\n  const v = fz * fz * (3 - 2 * fz);\n  const a = hash2D(ix, iz, seed);\n  const b = hash2D(ix + 1, iz, seed);\n  const c = hash2D(ix, iz + 1, seed);\n  const d = hash2D(ix + 1, iz + 1, seed);\n  return a * (1 - u) * (1 - v) + b * u * (1 - v) + c * (1 - u) * v + d * u * v;\n}"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
+      "line": 264,
+      "endLine": 274,
+      "name": "fbm2D",
+      "text": "function fbm2D(x: number, z: number, seed: number): number {\n  let sum = 0;\n  let amp = 0.52;\n  let freq = 1;\n  for (let i = 0; i < 4; i += 1) {\n    sum += valueNoise2D(x * freq, z * freq, seed + i * 31) * amp;\n    freq *= 2.05;\n    amp *= 0.48;\n  }\n  return sum;\n}"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
+      "line": 276,
+      "endLine": 290,
+      "name": "distPointToSeg",
+      "text": "function distPointToSeg(\n  px: number,\n  pz: number,\n  ax: number,\n  az: number,\n  bx: number,\n  bz: number,\n): number {\n  const dx = bx - ax;\n  const dz = bz - az;\n  const len2 = dx * dx + dz * dz;\n  if (len2 <= 1e-6) return Math.hypot(px - ax, pz - az);\n  const t = Math.max(0, Math.min(1, ((px - ax) * dx + (pz - az) * dz) / len2));\n  return Math.hypot(px - (ax + dx * t), pz - (az + dz * t));\n}"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
+      "line": 298,
+      "endLine": 461,
+      "name": "synthesizeWorldReliefHeightfield",
+      "text": "function synthesizeWorldReliefHeightfield(\n  doc: UnifiedCanvasDoc,\n  seedStr: string,\n): AtlasHeightfield | null {\n  const landRooms = doc.rooms.filter(\n    (r) => r.id !== 'w.ocean' && r.id !== 'g.ocean' && r.material !== 'wasser',\n  );\n  if (landRooms.length === 0) return null;\n\n  const lakeRooms = doc.rooms.filter(\n    (r) => r.id !== 'w.ocean' && r.id !== 'g.ocean' && r.material === 'wasser',\n  );\n  const riverStrokes = doc.strokes.filter((s) => s.material === 'wasser');\n  const ridgeStrokes = doc.strokes.filter((s) => s.material === 'stein');\n  const buildings = doc.objects.filter((o) => o.type === 'haus' || o.type === 'turm');\n\n  const toPoly = (r: UnifiedCanvasDoc['rooms'][number]): readonly (readonly [number, number])[] =>\n    r.points && r.points.length >= 3\n      ? r.points\n      : [\n          [r.x, r.y],\n          [r.x + r.w, r.y],\n          [r.x + r.w, r.y + r.h],\n          [r.x, r.y + r.h],\n        ];\n\n  const landPolys = landRooms.map((r) => ({\n    material: r.material,\n    pts: toPoly(r),\n  }));\n  const lakePolys = lakeRooms.map((r) => toPoly(r));\n\n  const seed = hashId(seedStr);\n  const cols = 81;\n  const rows = 81;\n  const cellSize = 1000 / (cols - 1);\n  const rawH = new Float32Array(cols * rows);\n\n  for (let r = 0; r < rows; r += 1) {\n    const z = r * cellSize;\n    for (let c = 0; c < cols; c += 1) {\n      const x = c * cellSize;\n      // Subtle organic coastline warp so straight polygon edges read as natural bays & capes.\n      const wx = x + (fbm2D(x * 0.0085, z * 0.0085, seed + 17) - 0.5) * 34;\n      const wz = z + (fbm2D(x * 0.0085 + 19, z * 0.0085 + 11, seed + 53) - 0.5) * 34;\n\n      let mat: string | null = null;\n      for (const lp of landPolys) {\n        if (pointInPolygon(wx, wz, lp.pts)) {\n          mat = lp.material;\n        }\n      }\n      const inLake = lakePolys.some((lp) => pointInPolygon(wx, wz, lp));\n      const idx = r * cols + c;\n      if (!mat || inLake) {\n        rawH[idx] = inLake ? -3.4 : -7.5;\n        continue;\n      }\n      const n = fbm2D(x * 0.011, z * 0.011, seed);\n      const ridge = 1 - Math.abs(fbm2D(x * 0.017 + 7, z * 0.017 - 5, seed + 99) * 2 - 1);\n      if (mat === 'sand') {\n        rawH[idx] = 1.9 + n * 3.8;\n      } else if (mat === 'stein') {\n        rawH[idx] = 20 + n * 16 + ridge * ridge * 24;\n      } else if (mat === 'erde') {\n        rawH[idx] = 10.5 + n * 13 + ridge * 6;\n      } else if (mat === 'holz') {\n        rawH[idx] = 7.5 + n * 9;\n      } else if (mat === 'pflaster') {\n        rawH[idx] = 5.2 + n * 1.2;\n      } else {\n        rawH[idx] = 4.8 + n * 9.5 + ridge * 3.2;\n      }\n    }\n  }\n\n  // Smooth coastline shelves & biome transitions (2 quick box-filter passes).\n  const smooth = new Float32Array(rawH);\n  const tmp = new Float32Array(rawH.length);\n  for (let pass = 0; pass < 2; pass += 1) {\n    for (let r = 0; r < rows; r += 1) {\n      for (let c = 0; c < cols; c += 1) {\n        let acc = 0;\n        let weight = 0;\n        for (let dr = -1; dr <= 1; dr += 1) {\n          const rr = Math.max(0, Math.min(rows - 1, r + dr));\n          for (let dc = -1; dc <= 1; dc += 1) {\n            const cc = Math.max(0, Math.min(cols - 1, c + dc));\n            const w = dr === 0 && dc === 0 ? 4 : dr === 0 || dc === 0 ? 2 : 1;\n            acc += smooth[rr * cols + cc]! * w;\n            weight += w;\n          }\n        }\n        tmp[r * cols + c] = acc / weight;\n      }\n    }\n    smooth.set(tmp);\n  }\n\n  // Apply mountain ridges, carved river valleys, and flat settlement plateaus.\n  const heights: number[] = new Array(cols * rows);\n  for (let r = 0; r < rows; r += 1) {\n    const z = r * cellSize;\n    for (let c = 0; c < cols; c += 1) {\n      const x = c * cellSize;\n      const idx = r * cols + c;\n      let h = smooth[idx]!;\n\n      for (const rs of ridgeStrokes) {\n        let bestD = Infinity;\n        for (let i = 0; i + 1 < rs.points.length; i += 1) {\n          const a = rs.points[i]!;\n          const b = rs.points[i + 1]!;\n          bestD = Math.min(bestD, distPointToSeg(x, z, a[0], a[1], b[0], b[1]));\n        }\n        const spanR = Math.max(42, rs.width * 3.8);\n        if (bestD < spanR) {\n          const t = 1 - bestD / spanR;\n          const peakNoise = 0.72 + fbm2D(x * 0.025, z * 0.025, seed + 211) * 0.6;\n          h = Math.max(h, h + t * t * 30 * peakNoise);\n        }\n      }\n\n      for (const rv of riverStrokes) {\n        let bestD = Infinity;\n        for (let i = 0; i + 1 < rv.points.length; i += 1) {\n          const a = rv.points[i]!;\n          const b = rv.points[i + 1]!;\n          bestD = Math.min(bestD, distPointToSeg(x, z, a[0], a[1], b[0], b[1]));\n        }\n        const riverW = Math.max(12, rv.width * 1.45);\n        if (bestD < riverW * 2.2) {\n          const t = Math.max(0, 1 - bestD / (riverW * 2.2));\n          h = h * (1 - t * t) + -2.2 * (t * t);\n        }\n      }\n\n      for (const b of buildings) {\n        const d = Math.hypot(x - b.x, z - b.y);\n        const flatR = Math.max(26, b.size * 54);\n        if (d < flatR && h > 1.2) {\n          const t = 1 - d / flatR;\n          const target = Math.min(11, Math.max(4.5, h * 0.75));\n          h = h * (1 - t * 0.55) + target * (t * 0.55);\n        }\n      }\n\n      heights[idx] = Math.round(h * 10) / 10;\n    }\n  }\n\n  return {\n    format: ATLAS_HEIGHTFIELD_FORMAT,\n    version: ATLAS_HEIGHTFIELD_VERSION,\n    assetRef: { kind: 'inline', version: ATLAS_HEIGHTFIELD_VERSION },\n    originX: 0,\n    originZ: 0,\n    cellSize,\n    cols,\n    rows,\n    heights,\n    waterLevel: 0,\n  };\n}"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
+      "line": 303,
+      "endLine": 303,
+      "name": "callback",
+      "text": "(r) => r.id !== 'w.ocean' && r.id !== 'g.ocean' && r.material !== 'wasser'"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
+      "line": 308,
+      "endLine": 308,
+      "name": "callback",
+      "text": "(r) => r.id !== 'w.ocean' && r.id !== 'g.ocean' && r.material === 'wasser'"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
+      "line": 310,
+      "endLine": 310,
+      "name": "callback",
+      "text": "(s) => s.material === 'wasser'"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
+      "line": 311,
+      "endLine": 311,
+      "name": "callback",
+      "text": "(s) => s.material === 'stein'"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
+      "line": 312,
+      "endLine": 312,
+      "name": "callback",
+      "text": "(o) => o.type === 'haus' || o.type === 'turm'"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
+      "line": 314,
+      "endLine": 322,
+      "name": "toPoly",
+      "text": "(r: UnifiedCanvasDoc['rooms'][number]): readonly (readonly [number, number])[] =>\n    r.points && r.points.length >= 3\n      ? r.points\n      : [\n          [r.x, r.y],\n          [r.x + r.w, r.y],\n          [r.x + r.w, r.y + r.h],\n          [r.x, r.y + r.h],\n        ]"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
+      "line": 324,
+      "endLine": 327,
+      "name": "callback",
+      "text": "(r) => ({\n    material: r.material,\n    pts: toPoly(r),\n  })"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
+      "line": 328,
+      "endLine": 328,
+      "name": "callback",
+      "text": "(r) => toPoly(r)"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
+      "line": 350,
+      "endLine": 350,
+      "name": "callback",
+      "text": "(lp) => pointInPolygon(wx, wz, lp)"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
+      "line": 463,
+      "endLine": 471,
+      "name": "terrainStride",
+      "text": "function terrainStride(span: number, cols: number, rows: number): number {\n  const preferred = span >= 550 ? 2 : 1;\n  const maxTris = span >= 550 ? 3600 : 12000;\n  let stride = preferred;\n  const estimate = (s: number): number =>\n    Math.ceil((cols - 1) / s) * Math.ceil((rows - 1) / s) * 2;\n  while (estimate(stride) > maxTris && stride < Math.max(cols, rows)) stride += 1;\n  return stride;\n}"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
+      "line": 467,
+      "endLine": 468,
+      "name": "estimate",
+      "text": "(s: number): number =>\n    Math.ceil((cols - 1) / s) * Math.ceil((rows - 1) / s) * 2"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
+      "line": 473,
+      "endLine": 527,
+      "name": "buildBlendedTerrain",
+      "text": "function buildBlendedTerrain(hf: AtlasHeightfield, span: number): THREE.BufferGeometry | null {\n  if (hf.cols < 2 || hf.rows < 2) return null;\n  const stride = terrainStride(span, hf.cols, hf.rows);\n  const colsL: number[] = [];\n  for (let c = 0; c < hf.cols - 1; c += stride) colsL.push(c);\n  colsL.push(hf.cols - 1);\n  const rowsL: number[] = [];\n  for (let r = 0; r < hf.rows - 1; r += stride) rowsL.push(r);\n  rowsL.push(hf.rows - 1);\n\n  const h = (c: number, r: number): number => Number(hf.heights[r * hf.cols + c]) || 0;\n  const positions: number[] = [];\n  const uvs: number[] = [];\n  const colors: number[] = [];\n\n  for (let j = 0; j < rowsL.length; j += 1) {\n    const r = rowsL[j]!;\n    for (let i = 0; i < colsL.length; i += 1) {\n      const c = colsL[i]!;\n      const x = hf.originX + c * hf.cellSize;\n      const z = hf.originZ + r * hf.cellSize;\n      const elev = h(c, r);\n      const hL = h(Math.max(0, c - 1), r);\n      const hR = h(Math.min(hf.cols - 1, c + 1), r);\n      const hU = h(c, Math.max(0, r - 1));\n      const hD = h(c, Math.min(hf.rows - 1, r + 1));\n      const slope = Math.hypot(hR - hL, hD - hU) / Math.max(1, hf.cellSize * 2);\n      const col = terrainColorAt(elev, hf.waterLevel, slope);\n      positions.push(x, elev, z);\n      uvs.push(x / 72, z / 72);\n      colors.push(col.r, col.g, col.b);\n    }\n  }\n\n  const w = colsL.length;\n  const index: number[] = [];\n  for (let j = 0; j + 1 < rowsL.length; j += 1) {\n    for (let i = 0; i + 1 < colsL.length; i += 1) {\n      const i00 = j * w + i;\n      const i10 = j * w + i + 1;\n      const i01 = (j + 1) * w + i;\n      const i11 = (j + 1) * w + i + 1;\n      index.push(i00, i11, i10, i00, i01, i11);\n    }\n  }\n\n  const geometry = new THREE.BufferGeometry();\n  geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));\n  geometry.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));\n  geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));\n  geometry.setIndex(index);\n  geometry.computeVertexNormals();\n  geometry.computeBoundingSphere();\n  return geometry;\n}"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
+      "line": 483,
+      "endLine": 483,
+      "name": "h",
+      "text": "(c: number, r: number): number => Number(hf.heights[r * hf.cols + c]) || 0"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
+      "line": 529,
+      "endLine": 575,
+      "name": "buildRibbon",
+      "text": "function buildRibbon(\n  b: AtlasThreeGeoBuilder,\n  points: readonly (readonly [number, number])[],\n  width: number,\n  y: number,\n  id: string,\n  sampleY?: (x: number, z: number) => number,\n): void {\n  const r = Math.max(0.2, width) / 2;\n  const up = new THREE.Vector3(0, 1, 0);\n  const yAt = (px: number, pz: number): number => (sampleY ? sampleY(px, pz) : y);\n  const kept: (readonly [number, number])[] = [];\n  for (const p of points) {\n    const last = kept[kept.length - 1];\n    if (last && Math.hypot(p[0] - last[0], p[1] - last[1]) < r * 0.35) continue;\n    kept.push(p);\n  }\n  kept.forEach(([x, z], i) => {\n    const cy = yAt(x, z);\n    for (let k = 0; k < 10; k += 1) {\n      const a = (k * Math.PI) / 5;\n      const c = ((k + 1) * Math.PI) / 5;\n      const ax = x + Math.cos(a) * r;\n      const az = z + Math.sin(a) * r;\n      const cx = x + Math.cos(c) * r;\n      const cz = z + Math.sin(c) * r;\n      b.tri(\n        new THREE.Vector3(x, cy, z),\n        new THREE.Vector3(cx, yAt(cx, cz), cz),\n        new THREE.Vector3(ax, yAt(ax, az), az),\n        id,\n        up,\n      );\n    }\n    if (i === 0) return;\n    const [px, pz] = kept[i - 1]!;\n    const len = Math.hypot(x - px, z - pz) || 1;\n    const nx = (-(z - pz) / len) * r;\n    const nz = ((x - px) / len) * r;\n    const q0 = new THREE.Vector3(px + nx, yAt(px + nx, pz + nz), pz + nz);\n    const q1 = new THREE.Vector3(x + nx, yAt(x + nx, z + nz), z + nz);\n    const q2 = new THREE.Vector3(x - nx, yAt(x - nx, z - nz), z - nz);\n    const q3 = new THREE.Vector3(px - nx, yAt(px - nx, pz - nz), pz - nz);\n    b.tri(q0, q1, q2, id, up);\n    b.tri(q0, q2, q3, id, up);\n  });\n}"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
+      "line": 539,
+      "endLine": 539,
+      "name": "yAt",
+      "text": "(px: number, pz: number): number => (sampleY ? sampleY(px, pz) : y)"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
+      "line": 546,
+      "endLine": 574,
+      "name": "callback",
+      "text": "([x, z], i) => {\n    const cy = yAt(x, z);\n    for (let k = 0; k < 10; k += 1) {\n      const a = (k * Math.PI) / 5;\n      const c = ((k + 1) * Math.PI) / 5;\n      const ax = x + Math.cos(a) * r;\n      const az = z + Math.sin(a) * r;\n      const cx = x + Math.cos(c) * r;\n      const cz = z + Math.sin(c) * r;\n      b.tri(\n        new THREE.Vector3(x, cy, z),\n        new THREE.Vector3(cx, yAt(cx, cz), cz),\n        new THREE.Vector3(ax, yAt(ax, az), az),\n        id,\n        up,\n      );\n    }\n    if (i === 0) return;\n    const [px, pz] = kept[i - 1]!;\n    const len = Math.hypot(x - px, z - pz) || 1;\n    const nx = (-(z - pz) / len) * r;\n    const nz = ((x - px) / len) * r;\n    const q0 = new THREE.Vector3(px + nx, yAt(px + nx, pz + nz), pz + nz);\n    const q1 = new THREE.Vector3(x + nx, yAt(x + nx, z + nz), z + nz);\n    const q2 = new THREE.Vector3(x - nx, yAt(x - nx, z - nz), z - nz);\n    const q3 = new THREE.Vector3(px - nx, yAt(px - nx, pz - nz), pz - nz);\n    b.tri(q0, q1, q2, id, up);\n    b.tri(q0, q2, q3, id, up);\n  }"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
+      "line": 577,
+      "endLine": 603,
+      "name": "wallBox",
+      "text": "function wallBox(\n  b: AtlasThreeGeoBuilder,\n  s: readonly [number, number],\n  e: readonly [number, number],\n  thick: number,\n  baseY: number,\n  height: number,\n  id: string,\n): void {\n  const dx = e[0] - s[0];\n  const dz = e[1] - s[1];\n  const len = Math.hypot(dx, dz);\n  if (len < 0.02) return;\n  b.geometry(\n    UNIT_BOX,\n    composeMatrix(\n      (s[0] + e[0]) / 2,\n      baseY + height / 2,\n      (s[1] + e[1]) / 2,\n      len,\n      height,\n      thick,\n      Math.atan2(-dz, dx),\n    ),\n    id,\n  );\n}"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
+      "line": 606,
+      "endLine": 615,
+      "name": "createGableRoofGeometry",
+      "text": "function createGableRoofGeometry(w: number, h: number, d: number): THREE.BufferGeometry {\n  const shape = new THREE.Shape();\n  shape.moveTo(-w / 2, 0);\n  shape.lineTo(w / 2, 0);\n  shape.lineTo(0, h);\n  shape.closePath();\n  const geo = new THREE.ExtrudeGeometry(shape, { depth: d, bevelEnabled: false, steps: 1 });\n  geo.translate(0, 0, -d / 2);\n  return geo;\n}"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
+      "line": 619,
+      "endLine": 822,
+      "name": "emitCanonicalProp",
+      "text": "function emitCanonicalProp(\n  get: (k: AtlasThreeSurfaceKey) => AtlasThreeGeoBuilder,\n  p: PropPrim,\n  angleDeg: number,\n  torches: { id: string; position: THREE.Vector3; radius: number }[],\n  opts: {\n    readonly fullDetail: boolean;\n    readonly hideRoofs: boolean;\n    readonly warmWindows: boolean;\n    readonly groundElevation: number;\n  },\n): void {\n  const u = Math.min(40, Math.max(0.01, p.size || 1));\n  const H = p.height > 0 ? Math.min(10, Math.max(0.1, p.height)) : 1;\n  const x = p.x;\n  const z = p.y;\n  const elev = Number.isFinite(p.elevation) && p.elevation !== 0 ? p.elevation : opts.groundElevation;\n  const id = p.id;\n  const rotY = (angleDeg * Math.PI) / 180;\n  const rootM = new THREE.Matrix4().compose(\n    new THREE.Vector3(x, elev, z),\n    new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), rotY),\n    new THREE.Vector3(1, 1, 1),\n  );\n  const localBox = (\n    k: AtlasThreeSurfaceKey,\n    lx: number,\n    ly: number,\n    lz: number,\n    sx: number,\n    sy: number,\n    sz: number,\n    localRotY = 0,\n  ): void => {\n    const m = rootM.clone().multiply(composeMatrix(lx, ly, lz, sx, sy, sz, localRotY));\n    get(k).geometry(UNIT_BOX, m, id);\n  };\n  const localGeo = (\n    k: AtlasThreeSurfaceKey,\n    geo: THREE.BufferGeometry,\n    lx: number,\n    ly: number,\n    lz: number,\n    sx = 1,\n    sy = 1,\n    sz = 1,\n    localRotY = 0,\n  ): void => {\n    const m = rootM.clone().multiply(composeMatrix(lx, ly, lz, sx, sy, sz, localRotY));\n    get(k).geometry(geo, m, id);\n    geo.dispose();\n  };\n\n  const hHash = hashId(id);\n\n  switch (p.stamp) {\n    case 'baum':\n    case 'tanne': {\n      const s = p.stamp === 'tanne' ? 58 : 64;\n      const jitter = 0.88 + ((hHash % 25) / 100);\n      const sc = s * u * jitter;\n      const isBirch = p.stamp === 'baum' && hHash % 3 === 1;\n      localGeo(\n        isBirch ? 'bark-birch' : 'wood-dark',\n        new THREE.CylinderGeometry(0.055 * sc, 0.11 * sc, 0.34 * sc, 6),\n        0,\n        0.17 * sc,\n        0,\n      );\n      if (p.stamp === 'tanne') {\n        localGeo('leaf-pine', new THREE.ConeGeometry(0.56 * sc, 0.9 * sc, 7), 0, 0.62 * sc, 0);\n        localGeo('leaf-pine', new THREE.ConeGeometry(0.44 * sc, 0.82 * sc, 7), 0, 0.96 * sc, 0);\n        localGeo('leaf-pine', new THREE.ConeGeometry(0.3 * sc, 0.68 * sc, 6), 0, 1.28 * sc, 0);\n        localGeo('leaf-pine', new THREE.ConeGeometry(0.17 * sc, 0.45 * sc, 5), 0, 1.54 * sc, 0);\n      } else {\n        const leafKey: AtlasThreeSurfaceKey = isBirch ? 'leaf-birch' : 'leaf';\n        localGeo(leafKey, new THREE.DodecahedronGeometry(0.46 * sc, 1), 0, 0.72 * sc, 0);\n        localGeo(leafKey, new THREE.DodecahedronGeometry(0.32 * sc, 0), 0.24 * sc, 0.62 * sc, 0.18 * sc);\n        localGeo(leafKey, new THREE.DodecahedronGeometry(0.3 * sc, 0), -0.22 * sc, 0.66 * sc, -0.14 * sc);\n        localGeo(leafKey, new THREE.DodecahedronGeometry(0.26 * sc, 0), 0.04 * sc, 0.96 * sc, -0.06 * sc);\n      }\n      break;\n    }\n    case 'fels': {\n      const crag = 24 * u;\n      localGeo('rock', new THREE.DodecahedronGeometry(crag * 0.72, 0), 0, crag * 0.48, 0, 1.25, 0.85, 1.05);\n      localGeo('rock', new THREE.DodecahedronGeometry(crag * 0.5, 0), crag * 0.48, crag * 0.36, -crag * 0.24, 1.1, 0.95, 0.9);\n      if (crag > 12) {\n        localGeo('snow', new THREE.ConeGeometry(crag * 0.32, crag * 0.38, 6), 0, crag * 0.96, 0);\n      }\n      break;\n    }\n    case 'haus': {\n      const styleIdx = hHash % 3;\n      const wallKey: AtlasThreeSurfaceKey = styleIdx === 2 ? 'wall' : 'plaster';\n      const roofKey: AtlasThreeSurfaceKey =\n        styleIdx === 0 ? 'roof-tile' : styleIdx === 1 ? 'roof-slate' : 'roof-moss';\n      const bw = 80 * u;\n      const bd = 60 * u;\n      const bh = 54 * u * H;\n      // Stone foundation plinth\n      localBox('wall', 0, bh * 0.08, 0, bw * 1.04, bh * 0.16, bd * 1.04);\n      // Main walls (when cutaway/hideRoofs is active, render hollow interior shell)\n      if (opts.hideRoofs) {\n        localBox('floor-wood', 0, 0.4, 0, bw * 0.96, 0.8, bd * 0.96);\n        const wt = Math.max(2, bw * 0.07);\n        const lowH = bh * 0.45;\n        localBox(wallKey, 0, lowH / 2, -bd / 2 + wt / 2, bw, lowH, wt);\n        localBox(wallKey, 0, lowH / 2, bd / 2 - wt / 2, bw, lowH, wt);\n        localBox(wallKey, -bw / 2 + wt / 2, lowH / 2, 0, wt, lowH, bd);\n        localBox(wallKey, bw / 2 - wt / 2, lowH / 2, 0, wt, lowH, bd);\n      } else {\n        localBox(wallKey, 0, bh * 0.54, 0, bw, bh * 0.88, bd);\n        // 3 distinct roof shapes (ATL3-G01 D-GEO-01): gable, hip pyramid, twin-gable cottage\n        if (styleIdx === 0) {\n          const gable = createGableRoofGeometry(bw * 1.16, bh * 0.68, bd * 1.14);\n          localGeo(roofKey, gable, 0, bh * 0.98, 0);\n          localBox('wall', bw * 0.28, bh * 1.32, -bd * 0.15, bw * 0.14, bh * 0.52, bd * 0.16);\n        } else if (styleIdx === 1) {\n          const hip = new THREE.ConeGeometry(Math.SQRT1_2, bh * 0.66, 4);\n          hip.rotateY(Math.PI / 4);\n          localGeo(roofKey, hip, 0, bh * 0.98 + bh * 0.33, 0, bw * 1.18, 1, bd * 1.18);\n        } else {\n          const gable = createGableRoofGeometry(bd * 1.16, bh * 0.62, bw * 1.14);\n          localGeo(roofKey, gable, 0, bh * 0.98, 0, 1, 1, 1, Math.PI / 2);\n          localBox('wall', -bw * 0.26, bh * 1.28, bd * 0.12, bw * 0.14, bh * 0.46, bd * 0.16);\n        }\n        // Timber framing + door + windows\n        localBox('wood-dark', 0, bh * 0.34, bd * 0.5 + 0.3, bw * 0.18, bh * 0.52, bd * 0.08);\n        const winKey: AtlasThreeSurfaceKey = opts.warmWindows ? 'window-warm' : 'window';\n        if (opts.fullDetail) {\n          const wy = bh * 0.58;\n          const wh = bh * 0.19;\n          const ww = bw * 0.13;\n          localBox(winKey, -bw * 0.28, wy, bd * 0.5 + 0.35, ww, wh, bd * 0.05);\n          localBox(winKey, bw * 0.28, wy, bd * 0.5 + 0.35, ww, wh, bd * 0.05);\n          localBox(winKey, -bw * 0.28, wy, -bd * 0.5 - 0.35, ww, wh, bd * 0.05);\n          localBox(winKey, bw * 0.28, wy, -bd * 0.5 - 0.35, ww, wh, bd * 0.05);\n          if (styleIdx !== 2) {\n            localBox('wood-dark', 0, bh * 0.18, bd * 0.5 + 0.2, bw * 1.01, bh * 0.05, bd * 0.04);\n            localBox('wood-dark', 0, bh * 0.82, bd * 0.5 + 0.2, bw * 1.01, bh * 0.05, bd * 0.04);\n            localBox('wood-dark', -bw * 0.48, bh * 0.52, bd * 0.5 + 0.2, bw * 0.05, bh * 0.72, bd * 0.04);\n            localBox('wood-dark', bw * 0.48, bh * 0.52, bd * 0.5 + 0.2, bw * 0.05, bh * 0.72, bd * 0.04);\n          }\n        }\n      }\n      break;\n    }\n    case 'turm': {\n      const bh = 96 * u * H;\n      const bw = 42 * u;\n      localGeo('wall', new THREE.CylinderGeometry(bw * 0.48, bw * 0.55, bh, 8), 0, bh * 0.5, 0);\n      if (!opts.hideRoofs) {\n        // Battlement crown + tall spire (Turmhelm)\n        localGeo('wall', new THREE.CylinderGeometry(bw * 0.58, bw * 0.54, bh * 0.1, 8), 0, bh * 0.96, 0);\n        localGeo('roof-slate', new THREE.ConeGeometry(bw * 0.66, bh * 0.46, 8), 0, bh * 1.24, 0);\n      }\n      localBox('wood-dark', 0, bh * 0.2, bw * 0.48, bw * 0.22, bh * 0.28, bw * 0.14);\n      const winKey: AtlasThreeSurfaceKey = opts.warmWindows ? 'window-warm' : 'window';\n      if (opts.fullDetail) {\n        localBox(winKey, 0, bh * 0.58, bw * 0.48, bw * 0.14, bh * 0.12, bw * 0.1);\n        localBox(winKey, 0, bh * 0.78, bw * 0.48, bw * 0.14, bh * 0.12, bw * 0.1);\n      }\n      break;\n    }\n    case 'tisch':\n      localBox('wood', 0, 30 * u, 0, 80 * u, 6 * u, 48 * u);\n      for (const xx of [-34, 34]) {\n        for (const zz of [-18, 18]) {\n          localBox('wood-dark', xx * u, 14 * u, zz * u, 6 * u, 28 * u, 6 * u);\n        }\n      }\n      break;\n    case 'stuhl':\n      localBox('wood', 0, 18 * u, 0, 44 * u, 5 * u, 44 * u);\n      localBox('wood-dark', 0, 36 * u, -19 * u, 44 * u, 36 * u, 6 * u);\n      break;\n    case 'fass':\n      localGeo('wood', new THREE.CylinderGeometry(24 * u, 26 * u, 52 * u, 10), 0, 26 * u, 0);\n      localGeo('wood-dark', new THREE.CylinderGeometry(27 * u, 27 * u, 4 * u, 10), 0, 14 * u, 0);\n      localGeo('wood-dark', new THREE.CylinderGeometry(27 * u, 27 * u, 4 * u, 10), 0, 38 * u, 0);\n      break;\n    case 'bett':\n      localBox('wood-dark', 0, 12 * u, 0, 80 * u, 24 * u, 60 * u);\n      localBox('plaster', 0, 26 * u, -15 * u, 64 * u, 6 * u, 18 * u);\n      break;\n    case 'teppich':\n      localBox('roof-tile', 0, 1.1 * u, 0, 80 * u, 2 * u, 48 * u);\n      break;\n    case 'lampe': {\n      localBox('wood-dark', 0, 20 * u, 0, 6 * u, 40 * u, 6 * u);\n      localGeo('flame', new THREE.OctahedronGeometry(5 * u, 0), 0, 44 * u, 0);\n      torches.push({\n        id,\n        position: new THREE.Vector3(x, elev + 46 * u, z),\n        radius: Math.max(125, 420 * u),\n      });\n      break;\n    }\n    default:\n      localBox('wood', 0, 22 * u, 0, 44 * u, 44 * u, 44 * u);\n      localBox('wood-dark', 0, 44.5 * u, 0, 46 * u, 2.5 * u, 46 * u);\n  }\n}"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
+      "line": 643,
+      "endLine": 655,
+      "name": "localBox",
+      "text": "(\n    k: AtlasThreeSurfaceKey,\n    lx: number,\n    ly: number,\n    lz: number,\n    sx: number,\n    sy: number,\n    sz: number,\n    localRotY = 0,\n  ): void => {\n    const m = rootM.clone().multiply(composeMatrix(lx, ly, lz, sx, sy, sz, localRotY));\n    get(k).geometry(UNIT_BOX, m, id);\n  }"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
+      "line": 656,
+      "endLine": 670,
+      "name": "localGeo",
+      "text": "(\n    k: AtlasThreeSurfaceKey,\n    geo: THREE.BufferGeometry,\n    lx: number,\n    ly: number,\n    lz: number,\n    sx = 1,\n    sy = 1,\n    sz = 1,\n    localRotY = 0,\n  ): void => {\n    const m = rootM.clone().multiply(composeMatrix(lx, ly, lz, sx, sy, sz, localRotY));\n    get(k).geometry(geo, m, id);\n    geo.dispose();\n  }"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
+      "line": 834,
+      "endLine": 1072,
+      "name": "buildAtlasThreeScenePlan",
+      "text": "export function buildAtlasThreeScenePlan(\n  doc: UnifiedCanvasDoc,\n  opts: BuildAtlasThreeSceneOptions,\n): AtlasThreeScenePlan {\n  const plan = buildAtlasProductGeometryPlan(doc, { mapScale: opts.mapScale });\n  const builders = new Map<AtlasThreeSurfaceKey, AtlasThreeGeoBuilder>();\n  const get = (k: AtlasThreeSurfaceKey): AtlasThreeGeoBuilder => {\n    let b = builders.get(k);\n    if (!b) {\n      b = new AtlasThreeGeoBuilder(ATLAS_THREE_SURFACES[k].tile);\n      builders.set(k, b);\n    }\n    return b;\n  };\n  const water = new AtlasThreeGeoBuilder(56);\n  const ids = new Set<string>();\n  const torches: { id: string; position: THREE.Vector3; radius: number }[] = [];\n  const doorInstances: { matrices: THREE.Matrix4[]; ids: string[] } = { matrices: [], ids: [] };\n  const up = new THREE.Vector3(0, 1, 0);\n\n  // Determine active terrain heightfield: canonical heightfield OR suggestive 3D fantasy world relief!\n  const syntheticRelief =\n    opts.look === 'outdoor' && !doc.heightfield && doc.layers.terrain !== false\n      ? synthesizeWorldReliefHeightfield(doc, opts.seed)\n      : null;\n  const activeTerrainHf = doc.heightfield ?? syntheticRelief;\n  const sampleGroundY = (x: number, z: number, fallback: number): number => {\n    if (!activeTerrainHf) return fallback;\n    const sampled = sampleHeightfield(activeTerrainHf, x, z);\n    if (sampled === null || !Number.isFinite(sampled)) return fallback;\n    return syntheticRelief ? Math.max(0.2, sampled) : sampled > fallback ? sampled : fallback;\n  };\n\n  // Full ocean surround (world), lush meadow horizon (settlement), or dark slate sheet (interior).\n  if (opts.look === 'indoor') {\n    const b = get('sheet-indoor');\n    const y = -0.52;\n    const p = (x: number, z: number): THREE.Vector3 => new THREE.Vector3(x, y, z);\n    b.tri(p(-600, -600), p(-600, 1600), p(1600, 1600), '__sheet', up);\n    b.tri(p(-600, -600), p(1600, 1600), p(1600, -600), '__sheet', up);\n  } else if (opts.mapScale === 'settlement') {\n    const b = get('sheet-outdoor');\n    const y = -0.54;\n    const p = (x: number, z: number): THREE.Vector3 => new THREE.Vector3(x, y, z);\n    b.tri(p(-1400, -1400), p(-1400, 2400), p(2400, 2400), '__meadow', up);\n    b.tri(p(-1400, -1400), p(2400, 2400), p(2400, -1400), '__meadow', up);\n  } else {\n    const wy = activeTerrainHf ? activeTerrainHf.waterLevel : -0.52;\n    const p = (x: number, z: number): THREE.Vector3 => new THREE.Vector3(x, wy, z);\n    water.tri(p(-1400, -1400), p(-1400, 2400), p(2400, 2400), '__ocean', up);\n    water.tri(p(-1400, -1400), p(2400, 2400), p(2400, -1400), '__ocean', up);\n  }\n\n  const rooms = plan.primitives.filter(\n    (q): q is Extract<AtlasProductGeometryPrimitive, { kind: 'area' | 'room' }> =>\n      q.kind === 'area' || q.kind === 'room',\n  );\n  const dyR = Math.min(0.075, 0.3 / Math.max(1, rooms.length));\n  const roomMaterial = new Map(doc.rooms.map((r) => [r.id, r.material] as const));\n  rooms.forEach((rm, i) => {\n    ids.add(rm.id);\n    const matName = roomMaterial.get(rm.id);\n    // When suggestive 3D fantasy terrain relief is active, the continuous terrain mesh\n    // renders the land & water biomes cleanly without flat z-fighting slabs (keep paved squares!).\n    if (syntheticRelief && matName !== 'pflaster') {\n      return;\n    }\n    const y =\n      syntheticRelief && matName === 'pflaster'\n        ? sampleGroundY(\n            rm.points.reduce((a, p) => a + p[0], 0) / Math.max(1, rm.points.length),\n            rm.points.reduce((a, p) => a + p[1], 0) / Math.max(1, rm.points.length),\n            4.5,\n          ) + 0.38\n        : -0.45 + i * dyR;\n    // Settlement valley surround: render g.ocean / w.ocean as a lush grassy valley floor\n    // instead of a flat water sheet so settlements like Dornhain sit in green hills.\n    const surface: AtlasThreeSurfaceKey | 'water' =\n      opts.mapScale === 'settlement' && (rm.id === 'g.ocean' || rm.id === 'w.ocean')\n        ? 'sheet-outdoor'\n        : atlasThreeFloorSurface(matName, opts.mapScale);\n    const b = surface === 'water' ? water : get(surface);\n    for (const [ia, ib, ic] of rm.triangles) {\n      const a = rm.points[ia];\n      const c = rm.points[ib];\n      const d = rm.points[ic];\n      if (!a || !c || !d) continue;\n      const va = new THREE.Vector3(a[0], y, a[1]);\n      const vb = new THREE.Vector3(c[0], y, c[1]);\n      const vc = new THREE.Vector3(d[0], y, d[1]);\n      const n = new THREE.Vector3().subVectors(vb, va).cross(new THREE.Vector3().subVectors(vc, va));\n      if (n.y >= 0) b.tri(va, vb, vc, rm.id, up);\n      else b.tri(va, vc, vb, rm.id, up);\n    }\n  });\n\n  if (doc.layers.roads !== false) {\n    const paths = plan.primitives.filter(\n      (q): q is Extract<AtlasProductGeometryPrimitive, { kind: 'path' }> => q.kind === 'path',\n    );\n    const dyS = Math.min(0.03, 0.12 / Math.max(1, paths.length));\n    const strokeMaterial = new Map(doc.strokes.map((s) => [s.id, s.material] as const));\n    paths.forEach((pt, i) => {\n      ids.add(pt.id);\n      const matName = strokeMaterial.get(pt.id);\n      // Rivers & mountain ridges are already sculpted directly into the suggestive 3D terrain!\n      if (syntheticRelief && (matName === 'wasser' || matName === 'stein')) {\n        return;\n      }\n      const surface = atlasThreeFloorSurface(matName, opts.mapScale);\n      const lift = 0.55 + i * dyS;\n      buildRibbon(\n        surface === 'water' ? water : get(surface),\n        pt.points,\n        pt.width,\n        -0.14 + i * dyS,\n        pt.id,\n        syntheticRelief ? (rx, rz) => sampleGroundY(rx, rz, 4.5) + lift : undefined,\n      );\n    });\n  }\n\n  const wallH = opts.mapScale === 'interior' ? 24 : opts.mapScale === 'settlement' ? 9 : 4;\n  const doorsByWall = new Map<string, Extract<AtlasProductGeometryPrimitive, { kind: 'door' }>[]>();\n  for (const q of plan.primitives) {\n    if (q.kind !== 'door') continue;\n    const list = doorsByWall.get(q.wallId) ?? [];\n    list.push(q);\n    doorsByWall.set(q.wallId, list);\n  }\n  const wallKey: AtlasThreeSurfaceKey = opts.look === 'indoor' ? 'wall-indoor' : 'wall';\n  for (const q of plan.primitives) {\n    if (q.kind !== 'wall') continue;\n    ids.add(q.id);\n    const dx = q.end[0] - q.start[0];\n    const dz = q.end[1] - q.start[1];\n    const length = Math.hypot(dx, dz);\n    if (length < 0.02) continue;\n    const thick = Math.max(0.4, q.width);\n    const doors = (doorsByWall.get(q.id) ?? []).slice().sort((a, b) => a.t - b.t);\n    const pt = (t: number): readonly [number, number] => [\n      q.start[0] + dx * t,\n      q.start[1] + dz * t,\n    ];\n    let cursor = 0;\n    for (const dr of doors) {\n      ids.add(dr.id);\n      const half = Math.min(0.45, Math.max(0.2, dr.width) / (2 * length));\n      const a = Math.max(cursor, dr.t - half);\n      const b = Math.min(1, dr.t + half);\n      if (a - cursor > 1e-3) wallBox(get(wallKey), pt(cursor), pt(a), thick, -0.42, wallH, q.id);\n      const doorH = wallH * 0.72;\n      const lintelH = wallH - doorH;\n      if (lintelH > 0.2) wallBox(get(wallKey), pt(a), pt(b), thick, -0.42 + doorH, lintelH, q.id);\n      const rot = Math.atan2(-dz, dx);\n      const jambW = Math.max(0.25, thick * 0.45);\n      for (const endT of [a, b]) {\n        const [jx, jz] = pt(endT);\n        doorInstances.matrices.push(\n          composeMatrix(jx, -0.42 + doorH / 2, jz, jambW, doorH, thick * 1.18, rot),\n        );\n        doorInstances.ids.push(dr.id);\n      }\n      const [mx, mz] = pt((a + b) / 2);\n      doorInstances.matrices.push(\n        composeMatrix(mx, -0.42 + doorH, mz, Math.max(0.2, (b - a) * length), jambW, thick * 1.2, rot),\n      );\n      doorInstances.ids.push(dr.id);\n      cursor = Math.max(cursor, b);\n    }\n    if (1 - cursor > 1e-3) wallBox(get(wallKey), pt(cursor), pt(1), thick, -0.42, wallH, q.id);\n  }\n\n  const objAngles = new Map(doc.objects.map((o) => [o.id, o.angle ?? 0] as const));\n  const fullDetail = opts.presetId === 'high' || opts.span < 380;\n  const showCanonicalObjects =\n    opts.mapScale === 'world' ? doc.layers.terrain !== false : doc.layers.objects !== false;\n  if (showCanonicalObjects) {\n    for (const q of plan.primitives) {\n      if (q.kind !== 'prop' && q.kind !== 'building_footprint') continue;\n      ids.add(q.id);\n      const groundElevation = sampleGroundY(q.x, q.y, -0.35);\n      emitCanonicalProp(get, q, objAngles.get(q.id) ?? 0, torches, {\n        fullDetail,\n        hideRoofs: Boolean(opts.hideRoofs),\n        warmWindows: Boolean(opts.warmWindows),\n        groundElevation,\n      });\n    }\n  }\n\n  const terrain =\n    doc.layers.terrain !== false && activeTerrainHf\n      ? buildBlendedTerrain(activeTerrainHf, opts.span)\n      : null;\n\n  // Suggestive scenery scatter (ATL3-D01 #1327) grouped by kind for InstancedMesh rendering.\n  const scatter = buildAtlasSceneScatter({\n    doc,\n    seed: opts.seed,\n    mapScale: opts.mapScale,\n    presetId: opts.presetId,\n    elevationSampler: activeTerrainHf\n      ? (x, y) => sampleGroundY(x, y, 0)\n      : undefined,\n  });\n  const scatterByKind = new Map<AtlasScatterKind, THREE.Matrix4[]>();\n  for (const inst of scatter.instances) {\n    const list = scatterByKind.get(inst.kind) ?? [];\n    list.push(\n      composeMatrix(\n        inst.x,\n        inst.elevation,\n        inst.y,\n        inst.scale,\n        inst.scale,\n        inst.scale,\n        inst.rotationRad,\n      ),\n    );\n    scatterByKind.set(inst.kind, list);\n  }\n  const scatterBatches: AtlasThreeScatterBatch[] = [];\n  for (const [kind, matrices] of scatterByKind) {\n    if (matrices.length > 0) scatterBatches.push({ kind, matrices });\n  }\n\n  return {\n    builders,\n    water,\n    terrain,\n    doorInstances,\n    scatterBatches,\n    torches,\n    ids,\n    look: opts.look,\n    mapScale: opts.mapScale,\n  };\n}"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
+      "line": 840,
+      "endLine": 847,
+      "name": "get",
+      "text": "(k: AtlasThreeSurfaceKey): AtlasThreeGeoBuilder => {\n    let b = builders.get(k);\n    if (!b) {\n      b = new AtlasThreeGeoBuilder(ATLAS_THREE_SURFACES[k].tile);\n      builders.set(k, b);\n    }\n    return b;\n  }"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
+      "line": 860,
+      "endLine": 865,
+      "name": "sampleGroundY",
+      "text": "(x: number, z: number, fallback: number): number => {\n    if (!activeTerrainHf) return fallback;\n    const sampled = sampleHeightfield(activeTerrainHf, x, z);\n    if (sampled === null || !Number.isFinite(sampled)) return fallback;\n    return syntheticRelief ? Math.max(0.2, sampled) : sampled > fallback ? sampled : fallback;\n  }"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
+      "line": 871,
+      "endLine": 871,
+      "name": "p",
+      "text": "(x: number, z: number): THREE.Vector3 => new THREE.Vector3(x, y, z)"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
+      "line": 877,
+      "endLine": 877,
+      "name": "p",
+      "text": "(x: number, z: number): THREE.Vector3 => new THREE.Vector3(x, y, z)"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
+      "line": 882,
+      "endLine": 882,
+      "name": "p",
+      "text": "(x: number, z: number): THREE.Vector3 => new THREE.Vector3(x, wy, z)"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
+      "line": 888,
+      "endLine": 889,
+      "name": "callback",
+      "text": "(q): q is Extract<AtlasProductGeometryPrimitive, { kind: 'area' | 'room' }> =>\n      q.kind === 'area' || q.kind === 'room'"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
+      "line": 892,
+      "endLine": 892,
+      "name": "callback",
+      "text": "(r) => [r.id, r.material] as const"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
+      "line": 893,
+      "endLine": 928,
+      "name": "callback",
+      "text": "(rm, i) => {\n    ids.add(rm.id);\n    const matName = roomMaterial.get(rm.id);\n    // When suggestive 3D fantasy terrain relief is active, the continuous terrain mesh\n    // renders the land & water biomes cleanly without flat z-fighting slabs (keep paved squares!).\n    if (syntheticRelief && matName !== 'pflaster') {\n      return;\n    }\n    const y =\n      syntheticRelief && matName === 'pflaster'\n        ? sampleGroundY(\n            rm.points.reduce((a, p) => a + p[0], 0) / Math.max(1, rm.points.length),\n            rm.points.reduce((a, p) => a + p[1], 0) / Math.max(1, rm.points.length),\n            4.5,\n          ) + 0.38\n        : -0.45 + i * dyR;\n    // Settlement valley surround: render g.ocean / w.ocean as a lush grassy valley floor\n    // instead of a flat water sheet so settlements like Dornhain sit in green hills.\n    const surface: AtlasThreeSurfaceKey | 'water' =\n      opts.mapScale === 'settlement' && (rm.id === 'g.ocean' || rm.id === 'w.ocean')\n        ? 'sheet-outdoor'\n        : atlasThreeFloorSurface(matName, opts.mapScale);\n    const b = surface === 'water' ? water : get(surface);\n    for (const [ia, ib, ic] of rm.triangles) {\n      const a = rm.points[ia];\n      const c = rm.points[ib];\n      const d = rm.points[ic];\n      if (!a || !c || !d) continue;\n      const va = new THREE.Vector3(a[0], y, a[1]);\n      const vb = new THREE.Vector3(c[0], y, c[1]);\n      const vc = new THREE.Vector3(d[0], y, d[1]);\n      const n = new THREE.Vector3().subVectors(vb, va).cross(new THREE.Vector3().subVectors(vc, va));\n      if (n.y >= 0) b.tri(va, vb, vc, rm.id, up);\n      else b.tri(va, vc, vb, rm.id, up);\n    }\n  }"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
+      "line": 904,
+      "endLine": 904,
+      "name": "callback",
+      "text": "(a, p) => a + p[0]"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
+      "line": 905,
+      "endLine": 905,
+      "name": "callback",
+      "text": "(a, p) => a + p[1]"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
+      "line": 932,
+      "endLine": 932,
+      "name": "callback",
+      "text": "(q): q is Extract<AtlasProductGeometryPrimitive, { kind: 'path' }> => q.kind === 'path'"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
+      "line": 935,
+      "endLine": 935,
+      "name": "callback",
+      "text": "(s) => [s.id, s.material] as const"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
+      "line": 936,
+      "endLine": 953,
+      "name": "callback",
+      "text": "(pt, i) => {\n      ids.add(pt.id);\n      const matName = strokeMaterial.get(pt.id);\n      // Rivers & mountain ridges are already sculpted directly into the suggestive 3D terrain!\n      if (syntheticRelief && (matName === 'wasser' || matName === 'stein')) {\n        return;\n      }\n      const surface = atlasThreeFloorSurface(matName, opts.mapScale);\n      const lift = 0.55 + i * dyS;\n      buildRibbon(\n        surface === 'water' ? water : get(surface),\n        pt.points,\n        pt.width,\n        -0.14 + i * dyS,\n        pt.id,\n        syntheticRelief ? (rx, rz) => sampleGroundY(rx, rz, 4.5) + lift : undefined,\n      );\n    }"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
+      "line": 951,
+      "endLine": 951,
+      "name": "callback",
+      "text": "(rx, rz) => sampleGroundY(rx, rz, 4.5) + lift"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
+      "line": 973,
+      "endLine": 973,
+      "name": "callback",
+      "text": "(a, b) => a.t - b.t"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
+      "line": 974,
+      "endLine": 977,
+      "name": "pt",
+      "text": "(t: number): readonly [number, number] => [\n      q.start[0] + dx * t,\n      q.start[1] + dz * t,\n    ]"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
+      "line": 1007,
+      "endLine": 1007,
+      "name": "callback",
+      "text": "(o) => [o.id, o.angle ?? 0] as const"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
+      "line": 1037,
+      "endLine": 1037,
+      "name": "callback",
+      "text": "(x, y) => sampleGroundY(x, y, 0)"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/pbr-textures.ts",
+      "line": 38,
+      "endLine": 42,
+      "name": "hash2d",
+      "text": "function hash2d(ix: number, iy: number, seed: number): number {\n  let h = (Math.imul(ix, 374761393) + Math.imul(iy, 668265263) + Math.imul(seed, 1442695041)) | 0;\n  h = Math.imul(h ^ (h >>> 13), 1274126177);\n  return ((h ^ (h >>> 16)) >>> 0) / 4294967296;\n}"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/pbr-textures.ts",
+      "line": 45,
+      "endLine": 63,
+      "name": "tileNoise",
+      "text": "function tileNoise(u: number, v: number, period: number, seed: number): number {\n  const x = ((u % 1) + 1) % 1 * period;\n  const y = ((v % 1) + 1) % 1 * period;\n  const x0 = Math.floor(x);\n  const y0 = Math.floor(y);\n  const x1 = (x0 + 1) % period;\n  const y1 = (y0 + 1) % period;\n  const fx = x - x0;\n  const fy = y - y0;\n  const sx = fx * fx * (3 - 2 * fx);\n  const sy = fy * fy * (3 - 2 * fy);\n  const n00 = hash2d(x0, y0, seed);\n  const n10 = hash2d(x1, y0, seed);\n  const n01 = hash2d(x0, y1, seed);\n  const n11 = hash2d(x1, y1, seed);\n  const nx0 = n00 + (n10 - n00) * sx;\n  const nx1 = n01 + (n11 - n01) * sx;\n  return nx0 + (nx1 - nx0) * sy;\n}"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/pbr-textures.ts",
+      "line": 66,
+      "endLine": 78,
+      "name": "tileFbm",
+      "text": "function tileFbm(u: number, v: number, basePeriod: number, seed: number): number {\n  let sum = 0;\n  let amp = 0.5;\n  let norm = 0;\n  let period = basePeriod;\n  for (let oct = 0; oct < 4; oct += 1) {\n    sum += tileNoise(u, v, period, seed + oct * 31) * amp;\n    norm += amp;\n    amp *= 0.5;\n    period *= 2;\n  }\n  return sum / norm;\n}"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/pbr-textures.ts",
+      "line": 80,
+      "endLine": 82,
+      "name": "clampByte",
+      "text": "function clampByte(v: number): number {\n  return Math.max(0, Math.min(255, Math.round(v)));\n}"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/pbr-textures.ts",
+      "line": 84,
+      "endLine": 91,
+      "name": "mixRgb",
+      "text": "function mixRgb(a: Rgb, b: Rgb, t: number): Rgb {\n  const k = Math.max(0, Math.min(1, t));\n  return [\n    a[0] + (b[0] - a[0]) * k,\n    a[1] + (b[1] - a[1]) * k,\n    a[2] + (b[2] - a[2]) * k,\n  ];\n}"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/pbr-textures.ts",
+      "line": 93,
+      "endLine": 105,
+      "name": "configureTexture",
+      "text": "function configureTexture(\n  canvas: HTMLCanvasElement,\n  srgb: boolean,\n  anisotropy: number,\n): THREE.CanvasTexture {\n  const tex = new THREE.CanvasTexture(canvas);\n  tex.wrapS = THREE.RepeatWrapping;\n  tex.wrapT = THREE.RepeatWrapping;\n  tex.anisotropy = anisotropy;\n  tex.colorSpace = srgb ? THREE.SRGBColorSpace : THREE.NoColorSpace;\n  tex.needsUpdate = true;\n  return tex;\n}"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/pbr-textures.ts",
+      "line": 107,
+      "endLine": 342,
+      "name": "synthesizeSurface",
+      "text": "function synthesizeSurface(\n  kind: AtlasPbrKind,\n  size: number,\n  anisotropy: number,\n): AtlasPbrTextureSet {\n  const albedoCanvas = document.createElement('canvas');\n  const normalCanvas = document.createElement('canvas');\n  const roughCanvas = document.createElement('canvas');\n  albedoCanvas.width = normalCanvas.width = roughCanvas.width = size;\n  albedoCanvas.height = normalCanvas.height = roughCanvas.height = size;\n\n  const aCtx = albedoCanvas.getContext('2d');\n  const nCtx = normalCanvas.getContext('2d');\n  const rCtx = roughCanvas.getContext('2d');\n  if (!aCtx || !nCtx || !rCtx) {\n    return {\n      map: configureTexture(albedoCanvas, true, anisotropy),\n      normal: configureTexture(normalCanvas, false, anisotropy),\n      rough: configureTexture(roughCanvas, false, anisotropy),\n    };\n  }\n\n  const aImg = aCtx.createImageData(size, size);\n  const nImg = nCtx.createImageData(size, size);\n  const rImg = rCtx.createImageData(size, size);\n  const heightField = new Float32Array(size * size);\n  const seed = ATLAS_PBR_KINDS.indexOf(kind) * 97 + 13;\n\n  for (let py = 0; py < size; py += 1) {\n    const v = py / size;\n    for (let px = 0; px < size; px += 1) {\n      const u = px / size;\n      const idx = py * size + px;\n      const fbm = tileFbm(u, v, 8, seed);\n      const fine = tileFbm(u, v, 24, seed + 199);\n\n      let rgb: Rgb = [140, 140, 140];\n      let h = fbm * 0.65 + fine * 0.35;\n      let rough = 0.88;\n\n      switch (kind) {\n        case 'grass': {\n          const blades = tileNoise(u, v, 48, seed + 7);\n          const patch = tileFbm(u, v, 4, seed + 51);\n          rgb = mixRgb([76, 118, 66], [122, 158, 86], fbm * 0.65 + patch * 0.35);\n          rgb = mixRgb(rgb, [145, 168, 92], blades * 0.25);\n          h = fbm * 0.45 + blades * 0.55;\n          rough = 0.92 - blades * 0.1;\n          break;\n        }\n        case 'moss': {\n          const tuft = tileFbm(u, v, 16, seed + 17);\n          rgb = mixRgb([56, 94, 58], [108, 144, 78], tuft);\n          h = tuft * 0.7 + fine * 0.3;\n          rough = 0.95;\n          break;\n        }\n        case 'dirt': {\n          const pebbles = tileNoise(u, v, 32, seed + 9);\n          rgb = mixRgb([112, 86, 60], [164, 134, 96], fbm);\n          if (pebbles > 0.82) rgb = mixRgb(rgb, [142, 132, 118], 0.55);\n          h = fbm * 0.6 + pebbles * 0.4;\n          rough = 0.96;\n          break;\n        }\n        case 'sand': {\n          const ripple = Math.sin((u * 6 + fbm * 0.85) * Math.PI * 2) * 0.5 + 0.5;\n          rgb = mixRgb([196, 178, 136], [224, 209, 168], ripple * 0.55 + fine * 0.45);\n          h = ripple * 0.5 + fine * 0.5;\n          rough = 0.86;\n          break;\n        }\n        case 'gravel': {\n          const grit = tileNoise(u, v, 40, seed + 23);\n          rgb = mixRgb([138, 134, 122], [192, 184, 166], grit * 0.6 + fbm * 0.4);\n          h = grit * 0.65 + fine * 0.35;\n          rough = 0.92;\n          break;\n        }\n        case 'rock': {\n          const strata = Math.sin((v * 5 + fbm * 1.4) * Math.PI * 2) * 0.5 + 0.5;\n          const crack = Math.abs(tileFbm(u, v, 12, seed + 41) - 0.5) * 2;\n          rgb = mixRgb([86, 94, 92], [148, 152, 142], strata * 0.55 + fbm * 0.45);\n          if (crack < 0.14) rgb = mixRgb(rgb, [46, 52, 54], 0.7);\n          h = strata * 0.5 + crack * 0.35 + fine * 0.15;\n          rough = 0.9;\n          break;\n        }\n        case 'snow': {\n          const drift = tileFbm(u, v, 6, seed + 61);\n          rgb = mixRgb([214, 226, 234], [244, 248, 250], drift * 0.7 + fine * 0.3);\n          h = drift * 0.75 + fine * 0.25;\n          rough = 0.78;\n          break;\n        }\n        case 'cobble': {\n          const gx = 8;\n          const gy = 8;\n          const row = Math.floor(v * gy);\n          const su = (u * gx + (row % 2) * 0.5) % gx;\n          const sv = (v * gy) % 1;\n          const cellX = Math.floor(su);\n          const fx = su - cellX;\n          const fy = sv;\n          const edge = Math.min(fx, 1 - fx, fy, 1 - fy);\n          const mortar = edge < 0.09 ? 0 : Math.min(1, (edge - 0.09) / 0.14);\n          const tone = hash2d(cellX, row, seed + 88);\n          const stone = mixRgb([126, 122, 114], [184, 174, 156], tone * 0.65 + fine * 0.35);\n          rgb = mixRgb([68, 66, 62], stone, mortar);\n          h = mortar * (0.65 + tone * 0.2 + fine * 0.15);\n          rough = 0.84 + (1 - mortar) * 0.14;\n          break;\n        }\n        case 'wall': {\n          const cols = 4;\n          const rows = 8;\n          const row = Math.floor(v * rows);\n          const su = (u * cols + (row % 2) * 0.5) % cols;\n          const cellX = Math.floor(su);\n          const fx = su - cellX;\n          const fy = (v * rows) % 1;\n          const mortar = fx < 0.05 || fx > 0.95 || fy < 0.09 || fy > 0.91 ? 0 : 1;\n          const tone = hash2d(cellX, row, seed + 77);\n          const block = mixRgb([124, 122, 114], [176, 170, 154], tone * 0.6 + fbm * 0.4);\n          rgb = mixRgb([66, 66, 64], block, mortar);\n          h = mortar * (0.65 + fine * 0.35);\n          rough = 0.92;\n          break;\n        }\n        case 'plaster': {\n          rgb = mixRgb([214, 196, 164], [238, 226, 198], fbm * 0.75 + fine * 0.25);\n          h = 0.5 + (fbm - 0.5) * 0.35 + (fine - 0.5) * 0.2;\n          rough = 0.93;\n          break;\n        }\n        case 'wood': {\n          const plank = Math.floor(v * 6);\n          const pv = (v * 6) % 1;\n          const seam = pv < 0.05 || pv > 0.95 ? 0 : 1;\n          const grain = Math.sin((v * 42 + tileFbm(u, v, 8, seed + 12) * 4.5) * Math.PI) * 0.5 + 0.5;\n          const tone = hash2d(plank, 3, seed + 33);\n          const board = mixRgb([112, 76, 48], [168, 122, 78], grain * 0.55 + tone * 0.45);\n          rgb = mixRgb([58, 38, 24], board, seam);\n          h = seam * (0.55 + grain * 0.35 + fine * 0.1);\n          rough = 0.8 + (1 - grain) * 0.14;\n          break;\n        }\n        case 'roofTile':\n        case 'roofSlate':\n        case 'roofMoss': {\n          const cols = 8;\n          const rows = 10;\n          const row = Math.floor(v * rows);\n          const su = (u * cols + (row % 2) * 0.5) % cols;\n          const cellX = Math.floor(su);\n          const fx = su - cellX;\n          const fy = (v * rows) % 1;\n          const overlap = fy;\n          const gap = fx < 0.06 || fx > 0.94 || fy < 0.08 ? 0.15 : 1;\n          const tone = hash2d(cellX, row, seed + 123);\n          const pair: readonly [Rgb, Rgb] =\n            kind === 'roofTile'\n              ? [\n                  [138, 66, 46],\n                  [194, 102, 68],\n                ]\n              : kind === 'roofSlate'\n                ? [\n                    [62, 74, 86],\n                    [104, 118, 132],\n                  ]\n                : [\n                    [72, 98, 62],\n                    [122, 138, 84],\n                  ];\n          const base = mixRgb(pair[0], pair[1], tone * 0.6 + fine * 0.4);\n          rgb = mixRgb([36, 32, 30], base, gap * (0.72 + overlap * 0.28));\n          h = gap * (0.3 + overlap * 0.65);\n          rough = kind === 'roofSlate' ? 0.72 : 0.84;\n          break;\n        }\n      }\n\n      heightField[idx] = h;\n      const o = idx * 4;\n      aImg.data[o] = clampByte(rgb[0]);\n      aImg.data[o + 1] = clampByte(rgb[1]);\n      aImg.data[o + 2] = clampByte(rgb[2]);\n      aImg.data[o + 3] = 255;\n\n      const rb = clampByte(rough * 255);\n      rImg.data[o] = rb;\n      rImg.data[o + 1] = rb;\n      rImg.data[o + 2] = rb;\n      rImg.data[o + 3] = 255;\n    }\n  }\n\n  // Sobel gradient heightfield → tangent-space normal map.\n  const strength = 2.4;\n  for (let py = 0; py < size; py += 1) {\n    const ym = (py - 1 + size) % size;\n    const yp = (py + 1) % size;\n    for (let px = 0; px < size; px += 1) {\n      const xm = (px - 1 + size) % size;\n      const xp = (px + 1) % size;\n      const tl = heightField[ym * size + xm]!;\n      const tc = heightField[ym * size + px]!;\n      const tr = heightField[ym * size + xp]!;\n      const ml = heightField[py * size + xm]!;\n      const mr = heightField[py * size + xp]!;\n      const bl = heightField[yp * size + xm]!;\n      const bc = heightField[yp * size + px]!;\n      const br = heightField[yp * size + xp]!;\n      const dx = (tr + 2 * mr + br - (tl + 2 * ml + bl)) * strength;\n      const dy = (bl + 2 * bc + br - (tl + 2 * tc + tr)) * strength;\n      const dz = 1.0;\n      const invLen = 1 / Math.hypot(dx, dy, dz);\n      const o = (py * size + px) * 4;\n      nImg.data[o] = clampByte((-dx * invLen * 0.5 + 0.5) * 255);\n      nImg.data[o + 1] = clampByte((-dy * invLen * 0.5 + 0.5) * 255);\n      nImg.data[o + 2] = clampByte((dz * invLen * 0.5 + 0.5) * 255);\n      nImg.data[o + 3] = 255;\n    }\n  }\n\n  aCtx.putImageData(aImg, 0, 0);\n  nCtx.putImageData(nImg, 0, 0);\n  rCtx.putImageData(rImg, 0, 0);\n\n  return {\n    map: configureTexture(albedoCanvas, true, anisotropy),\n    normal: configureTexture(normalCanvas, false, anisotropy),\n    rough: configureTexture(roughCanvas, false, anisotropy),\n  };\n}"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/pbr-textures.ts",
+      "line": 352,
+      "endLine": 358,
+      "name": "get",
+      "text": "get(kind: AtlasPbrKind): AtlasPbrTextureSet {\n    const cached = this.sets.get(kind);\n    if (cached) return cached;\n    const created = synthesizeSurface(kind, this.size, this.anisotropy);\n    this.sets.set(kind, created);\n    return created;\n  }"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/pbr-textures.ts",
+      "line": 360,
+      "endLine": 367,
+      "name": "dispose",
+      "text": "dispose(): void {\n    for (const set of this.sets.values()) {\n      set.map.dispose();\n      set.normal.dispose();\n      set.rough.dispose();\n    }\n    this.sets.clear();\n  }"
     },
     {
       "path": "src/infrastructure/world/host-world-adapter.ts",

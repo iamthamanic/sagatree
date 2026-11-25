@@ -159,6 +159,7 @@ import {
   type AtlasDefinePlaceRequest,
 } from './AtlasDefinePlacePanel';
 import { AtlasNative3dEditor } from './AtlasNative3dEditor';
+import { AtlasSplit2dCanvas } from './AtlasSplit2dCanvas';
 import { useAtlasGraphicsPreset } from './useAtlasGraphicsPreset';
 
 export type UnifiedAtlasCreatePlaceInput = {
@@ -536,9 +537,11 @@ export function UnifiedAtlasEditor({
     [onDocChangeProp, onWebglRuntimeChange],
   );
   const [localSurfaceMode, setLocalSurfaceMode] = useState<'3d' | '2d'>('3d');
+  const [splitView, setSplitView] = useState(false);
   const surfaceMode = surfaceModeProp ?? localSurfaceMode;
   const setSurfaceMode = useCallback(
     (mode: '3d' | '2d') => {
+      if (mode === '2d') setSplitView(false);
       setLocalSurfaceMode(mode);
       onSurfaceModeChange?.(mode);
     },
@@ -2402,8 +2405,78 @@ export function UnifiedAtlasEditor({
     [onDocChangeProp, onWebglRuntimeChange],
   );
 
-  // Product maps: controlled WebGL (#721) — generator_meta is SoT; Draufsicht (2D) optional.
+  // Product maps: controlled 3D workstation (Three.js PBR on high/balanced, Lite fallback on lite) + Split 2D+3D / Draufsicht.
   if (!isDemo && surfaceMode === '3d') {
+    const isLiteFallback = graphicsPresetId === 'lite';
+    const surfaceControls = (
+      <div className="flex flex-wrap items-center gap-1.5">
+        {canEdit ? (
+          <div
+            className="flex items-center rounded-md border border-border bg-background/70 p-0.5"
+            role="group"
+            aria-label="Kartenansicht"
+          >
+            <button
+              type="button"
+              aria-pressed={!splitView}
+              className={`min-h-9 rounded px-2.5 text-xs font-semibold transition-colors ${
+                !splitView
+                  ? 'bg-primary text-primary-foreground'
+                  : 'text-muted-foreground hover:text-accent'
+              }`}
+              onClick={() => setSplitView(false)}
+            >
+              3D
+            </button>
+            <button
+              type="button"
+              data-atlas-split-toggle
+              aria-pressed={splitView}
+              className={`min-h-9 rounded px-2.5 text-xs font-semibold transition-colors ${
+                splitView
+                  ? 'bg-primary text-primary-foreground'
+                  : 'text-muted-foreground hover:text-accent'
+              }`}
+              onClick={() => setSplitView((v) => !v)}
+            >
+              Split 2D+3D
+            </button>
+            <button
+              type="button"
+              data-atlas-surface-toggle
+              aria-label="Zur Draufsicht wechseln"
+              className="min-h-9 rounded px-2.5 text-xs font-semibold text-muted-foreground transition-colors hover:text-accent"
+              onClick={() => setSurfaceMode('2d')}
+            >
+              Draufsicht
+            </button>
+          </div>
+        ) : null}
+        <select
+          className="min-h-10 rounded-md border border-border bg-background/80 px-2 text-xs text-foreground"
+          data-atlas-graphics-preset-select
+          aria-label="Grafikqualität der 3D-Ansicht"
+          title="Grafikqualität (nur dieses Gerät)"
+          value={graphicsPresetId}
+          onChange={(e) => {
+            const next = parseAtlasGraphicsPresetId(e.target.value);
+            if (next) setGraphicsPresetId(next);
+          }}
+        >
+          {ATLAS_GRAPHICS_PRESETS.map((p) => (
+            <option key={p.id} value={p.id}>
+              {p.labelDe.split(' — ')[0]}
+            </option>
+          ))}
+        </select>
+        {surfaceActions ? (
+          <div className="flex items-center gap-1.5" data-atlas-surface-actions>
+            {surfaceActions}
+          </div>
+        ) : null}
+      </div>
+    );
+
     return (
       <div
         className="relative flex h-full min-h-0 w-full min-w-0 flex-col pb-[max(0.5rem,env(safe-area-inset-bottom))]"
@@ -2412,95 +2485,102 @@ export function UnifiedAtlasEditor({
         data-atlas-world-starter={isWorldStarter ? 'true' : undefined}
         data-atlas-proto-exact="true"
         data-atlas-surface-mode="3d"
+        data-atlas-split-view={splitView ? 'true' : undefined}
         data-atlas-surface-class="workstation"
       >
-        {/* Center-top: right-3 overlaps #tools „Werkzeuge“ fold (Atlas E2E / product journeys). */}
-        <div className="pointer-events-none absolute left-1/2 top-3 z-[3] flex -translate-x-1/2 items-center gap-2">
-          {canEdit ? (
-            <Button
-              type="button"
-              variant="outline"
-              className="pointer-events-auto min-h-11 bg-card/95"
-              data-atlas-surface-toggle
-              aria-label="Zur Draufsicht wechseln"
-              onClick={() => setSurfaceMode('2d')}
-            >
-              Draufsicht
-            </Button>
-          ) : null}
-          <select
-            className="pointer-events-auto min-h-11 rounded-md border border-border bg-card/95 px-2 text-sm"
-            data-atlas-graphics-preset-select
-            aria-label="Grafikqualität der 3D-Ansicht"
-            title="Grafikqualität (nur dieses Gerät)"
-            value={graphicsPresetId}
-            onChange={(e) => {
-              const next = parseAtlasGraphicsPresetId(e.target.value);
-              if (next) setGraphicsPresetId(next);
-            }}
-          >
-            {ATLAS_GRAPHICS_PRESETS.map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.labelDe.split(' — ')[0]}
-              </option>
-            ))}
-          </select>
-        </div>
+        {/* Only float controls on the legacy Lite fallback; Three.js Workstation docks them cleanly in its top bar. */}
+        {isLiteFallback ? (
+          <div className="pointer-events-none absolute left-1/2 top-3 z-[3] flex -translate-x-1/2 items-center gap-2">
+            <div className="pointer-events-auto rounded-lg border border-border bg-card/95 p-1 shadow">
+              {surfaceControls}
+            </div>
+          </div>
+        ) : null}
         {dungeonPreview?.payload ? (
           <p
-            className="pointer-events-none absolute left-1/2 top-16 z-[3] -translate-x-1/2 rounded-md bg-card/95 px-3 py-1 text-xs text-primary"
+            className="pointer-events-none absolute left-1/2 top-16 z-[3] -translate-x-1/2 rounded-md border border-primary/50 bg-card/95 px-3 py-1 text-xs font-semibold text-primary shadow"
             data-atlas-dungeon-preview-badge
             role="status"
           >
             Dungeon-Vorschau (nicht gespeichert)
           </p>
         ) : null}
-        <AtlasNative3dEditor
-          mapKey={forge3dMapKey}
-          controlled
-          seedState={controlledSeed}
-          onPersist={canEdit && !dungeonPreview?.payload ? handleWebglPersist : undefined}
-          externalNav={webglNavTree}
-          activePlaceId={activePlaceId}
-          activeNodeKind={activeNodeKind ?? null}
-          canEdit={canEdit}
-          mapSketchStatus={mapSketchStatus ?? null}
-          mapScale={mapScale}
-          mapPins={mapPins}
-          graphicsPresetId={graphicsPresetId}
-          dungeonThemeKey={
-            dungeonPreview
-              ? dungeonPreview.generate.params.themeKey
-              : (dungeonMeta?.themeKey ?? dungeonTheme)
-          }
-          dungeonLookDoc={forgeDisplayDoc}
-          navRestoreView={navRestoreView}
-          onNavViewChange={onNavViewChange}
-          onNavSelect={onWebglNavSelect}
-          onNavRename={canEdit ? onWebglNavRename : undefined}
-          onNavAdd={canEdit ? onWebglNavAdd : undefined}
-          onNavDuplicate={canEdit ? onWebglNavDuplicate : undefined}
-          onNavArchive={canEdit ? onWebglNavArchive : undefined}
-          onNavReparent={canEdit ? onWebglNavReparent : undefined}
-          onWebglMountError={onWebglMountError}
-          toolsSlot={canEdit ? (
-            <div className="mt-3 border-t border-border pt-3" data-atlas-dungeon-forge-3d>
-              <details
-                className="group"
-                open={mapScale === 'interior' || Boolean(dungeonPreview)}
-              >
-                <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between rounded-md px-2 text-xs font-semibold text-foreground hover:bg-muted">
-                  <span>Dungeon-Generator</span>
-                  <CaretDown
-                    className="size-3.5 text-muted-foreground transition-transform group-open:rotate-180"
-                    aria-hidden
-                  />
-                </summary>
-                <div className="pt-2">{dungeonForgePanel}</div>
-              </details>
+        <div className="flex min-h-0 flex-1 overflow-hidden">
+          {splitView ? (
+            <div className="hidden min-h-0 min-w-0 flex-1 lg:flex">
+              <AtlasSplit2dCanvas
+                doc={lodAwareDisplayDoc}
+                mapScale={mapScale}
+                mapPins={mapPins ?? []}
+                activePlaceId={activePlaceId}
+                onSelectPin={(pin) => {
+                  const navNode = webglNavTree?.nodes.find((n) => n.id === pin.id) ?? null;
+                  onWebglNavSelect?.({
+                    placeId: pin.id,
+                    mapId: navNode?.primaryMapId ?? null,
+                    worldRoot: false,
+                  });
+                }}
+              />
             </div>
           ) : null}
-        />
+          <div className="flex min-h-0 min-w-0 flex-1">
+            <AtlasNative3dEditor
+              mapKey={forge3dMapKey}
+              controlled
+              seedState={controlledSeed}
+              onPersist={canEdit && !dungeonPreview?.payload ? handleWebglPersist : undefined}
+              doc={lodAwareDisplayDoc}
+              canUndo={canAtlasUndo(editHistory)}
+              canRedo={canAtlasRedo(editHistory)}
+              onUndo={undo}
+              onRedo={redo}
+              onCommitDoc={commit}
+              onHierarchyBack={onHierarchyBack}
+              topBarExtra={isLiteFallback ? null : surfaceControls}
+              externalNav={webglNavTree}
+              activePlaceId={activePlaceId}
+              activeNodeKind={activeNodeKind ?? null}
+              canEdit={canEdit}
+              mapSketchStatus={mapSketchStatus ?? null}
+              mapScale={mapScale}
+              mapPins={mapPins}
+              graphicsPresetId={graphicsPresetId}
+              dungeonThemeKey={
+                dungeonPreview
+                  ? dungeonPreview.generate.params.themeKey
+                  : (dungeonMeta?.themeKey ?? dungeonTheme)
+              }
+              dungeonLookDoc={forgeDisplayDoc}
+              navRestoreView={navRestoreView}
+              onNavViewChange={onNavViewChange}
+              onNavSelect={onWebglNavSelect}
+              onNavRename={canEdit ? onWebglNavRename : undefined}
+              onNavAdd={canEdit ? onWebglNavAdd : undefined}
+              onNavDuplicate={canEdit ? onWebglNavDuplicate : undefined}
+              onNavArchive={canEdit ? onWebglNavArchive : undefined}
+              onNavReparent={canEdit ? onWebglNavReparent : undefined}
+              onWebglMountError={onWebglMountError}
+              toolsSlot={canEdit ? (
+                <div className="mt-3 border-t border-border pt-3" data-atlas-dungeon-forge-3d>
+                  <details
+                    className="group"
+                    open={mapScale === 'interior' || Boolean(dungeonPreview)}
+                  >
+                    <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between rounded-md px-2 text-xs font-semibold text-foreground hover:bg-muted">
+                      <span>Dungeon-Generator</span>
+                      <CaretDown
+                        className="size-3.5 text-muted-foreground transition-transform group-open:rotate-180"
+                        aria-hidden
+                      />
+                    </summary>
+                    <div className="pt-2">{dungeonForgePanel}</div>
+                  </details>
+                </div>
+              ) : null}
+            />
+          </div>
+        </div>
       </div>
     );
   }
