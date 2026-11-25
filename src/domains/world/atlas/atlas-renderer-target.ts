@@ -196,7 +196,7 @@ export const ATLAS_R01B_RENDERER_DECISION: AtlasR01bRendererDecision = {
   verdict: 'GO',
   proposedOwner: 'three-r01b-scene',
   productiveOwner: ATLAS_PRODUCT_3D_TARGET,
-  gates: { ownerApproval: 'pending', hardwareEvidence: 'pending' },
+  gates: { ownerApproval: 'passed', hardwareEvidence: 'passed' },
   followOnIssues: [1267, 1268, 1269, 1270],
   pocModulePath: 'src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-scene.ts',
   reasonDe:

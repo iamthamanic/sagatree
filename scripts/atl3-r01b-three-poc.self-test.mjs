@@ -30,11 +30,11 @@ assert.equal(d.proposedOwner, 'three-r01b-scene');
 assert.equal(d.productiveOwner, 'custom-webgl-prototype-runtime');
 assert.equal(target.ATLAS_PRODUCT_3D_TARGET, 'custom-webgl-prototype-runtime', 'custom WebGL stays productive');
 assert.deepEqual([...d.followOnIssues], [1267, 1268, 1269, 1270]);
-assert.deepEqual({ ...d.gates }, { ownerApproval: 'pending', hardwareEvidence: 'pending' }, 'gates pending until owner + hardware');
-assert.equal(target.atlasR01bAllowsFollowOnRendererWork(), false, 'R02–R05 stay closed');
+assert.deepEqual({ ...d.gates }, { ownerApproval: 'passed', hardwareEvidence: 'passed' }, 'both ADR-ST-11 gates passed');
+assert.equal(target.atlasR01bAllowsFollowOnRendererWork(), true, 'R02–R05 unlocked after owner + hardware proof');
 const pass = { ...d, gates: { ownerApproval: 'passed', hardwareEvidence: 'passed' } };
 assert.equal(target.atlasR01bAllowsFollowOnRendererWork(pass), true);
-for (const gates of [{ ownerApproval: 'passed', hardwareEvidence: 'pending' }, { ownerApproval: 'pending', hardwareEvidence: 'passed' }, { ownerApproval: 'passed', hardwareEvidence: 'failed' }]) {
+for (const gates of [{ ownerApproval: 'pending', hardwareEvidence: 'pending' }, { ownerApproval: 'passed', hardwareEvidence: 'pending' }, { ownerApproval: 'pending', hardwareEvidence: 'passed' }, { ownerApproval: 'passed', hardwareEvidence: 'failed' }]) {
   assert.equal(target.atlasR01bAllowsFollowOnRendererWork({ ...d, gates }), false, `fail-closed ${JSON.stringify(gates)}`);
 }
 assert.equal(target.atlasR01bAllowsFollowOnRendererWork({ ...pass, verdict: 'NO-GO' }), false);

@@ -2446,14 +2446,6 @@ export function UnifiedAtlasEditor({
             ))}
           </select>
         </div>
-        {canEdit ? (
-          <div
-            className="pointer-events-none absolute bottom-3 left-3 z-[3] max-h-[min(50vh,28rem)] w-[min(100%-1.5rem,20rem)] overflow-y-auto"
-            data-atlas-dungeon-forge-3d
-          >
-            <div className="pointer-events-auto bg-card/95 shadow-md">{dungeonForgePanel}</div>
-          </div>
-        ) : null}
         {dungeonPreview?.payload ? (
           <p
             className="pointer-events-none absolute left-1/2 top-16 z-[3] -translate-x-1/2 rounded-md bg-card/95 px-3 py-1 text-xs text-primary"
@@ -2491,6 +2483,23 @@ export function UnifiedAtlasEditor({
           onNavArchive={canEdit ? onWebglNavArchive : undefined}
           onNavReparent={canEdit ? onWebglNavReparent : undefined}
           onWebglMountError={onWebglMountError}
+          toolsSlot={canEdit ? (
+            <div className="mt-3 border-t border-border pt-3" data-atlas-dungeon-forge-3d>
+              <details
+                className="group"
+                open={mapScale === 'interior' || Boolean(dungeonPreview)}
+              >
+                <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between rounded-md px-2 text-xs font-semibold text-foreground hover:bg-muted">
+                  <span>Dungeon-Generator</span>
+                  <CaretDown
+                    className="size-3.5 text-muted-foreground transition-transform group-open:rotate-180"
+                    aria-hidden
+                  />
+                </summary>
+                <div className="pt-2">{dungeonForgePanel}</div>
+              </details>
+            </div>
+          ) : null}
         />
       </div>
     );

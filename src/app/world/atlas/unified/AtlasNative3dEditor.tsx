@@ -7,7 +7,8 @@
  * Product path (#721): controlled mount — seed/persist via generator_meta, not localStorage SoT.
  * Product nav (#747): external WorldNode tree replaces demo NAV_CHILDREN in #nav.
  */
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 import {
   resolveAtlasDioramaLightProfile,
   resolveAtlasGraphicsPreset,
@@ -119,6 +120,8 @@ export type AtlasNative3dEditorProps = {
   }) => void;
   /** ATL2-G03 — mount failure so workbench can enter webgl-fallback + switch to 2D. */
   readonly onWebglMountError?: (message: string | null) => void;
+  /** Optional React content portaled cleanly inside the collapsible Werkzeuge (#inspector) drawer. */
+  readonly toolsSlot?: ReactNode;
 };
 /** Rebrand leftover prototype copy to SagaTree product wording. */
 function applySagaTreeCopy(host: HTMLElement): void {
@@ -246,7 +249,10 @@ function installMapFirstReveal(atlasRoot: HTMLElement): () => void {
 }
 
 /** Layers / Tools fold controls — collapse each aside upward to a slim toggle. */
-function installCollapsiblePanels(host: HTMLElement): () => void {
+function installCollapsiblePanels(host: HTMLElement): {
+  readonly dispose: () => void;
+  readonly toolsSlotEl: HTMLElement | null;
+} {
   const atlasRoot = host.querySelector('#atlas3d');
   const cleanups: Array<() => void> = [];
   // Boot: collapsed before first paint — no open→close transition flash.
@@ -317,14 +323,26 @@ function installCollapsiblePanels(host: HTMLElement): () => void {
     actionTools.classList.remove('atlas-tools-on-canvas');
   }
 
+  let toolsSlotEl: HTMLElement | null = null;
+  if (toolsInner) {
+    const slot = document.createElement('div');
+    slot.className = 'atlas-tools-slot';
+    slot.dataset.atlasToolsSlot = 'true';
+    toolsInner.appendChild(slot);
+    toolsSlotEl = slot;
+  }
+
   atlasRoot?.setAttribute('data-panels-ready', 'true');
 
   if (atlasRoot instanceof HTMLElement) {
     cleanups.push(installMapFirstReveal(atlasRoot));
   }
 
-  return () => {
-    for (const fn of cleanups) fn();
+  return {
+    dispose: () => {
+      for (const fn of cleanups) fn();
+    },
+    toolsSlotEl,
   };
 }
 
@@ -376,6 +394,7 @@ export function AtlasNative3dEditor({
   navRestoreView = null,
   onNavViewChange,
   onWebglMountError,
+  toolsSlot = null,
 }: AtlasNative3dEditorProps) {
   const hostRef = useRef<HTMLDivElement>(null);
   const mountRef = useRef<AtlasNativeMountHandle | null>(null);
@@ -441,6 +460,7 @@ export function AtlasNative3dEditor({
   const dungeonLookRef = useRef(dungeonLook);
   dungeonLookRef.current = dungeonLook;
   const [error, setError] = useState<string | null>(null);
+  const [toolsSlotEl, setToolsSlotEl] = useState<HTMLElement | null>(null);
 
   // Layout effect: mount + collapse panels before the browser paints (no open→close flash).
   useLayoutEffect(() => {
@@ -553,7 +573,9 @@ export function AtlasNative3dEditor({
         dungeonLook: dungeonLookRef.current,
       });
       mountRef.current = mount;
-      disposePanels = installCollapsiblePanels(host);
+      const panels = installCollapsiblePanels(host);
+      disposePanels = panels.dispose;
+      setToolsSlotEl(panels.toolsSlotEl);
       applySagaTreeCopy(host);
       // Nav is rendered async after mount — rebrand once levels paint.
       copyTimer = window.setTimeout(() => applySagaTreeCopy(host), 0);
@@ -608,6 +630,7 @@ export function AtlasNative3dEditor({
         });
       }
       mountRef.current = null;
+      setToolsSlotEl(null);
       try {
         disposePanels?.();
       } catch {
@@ -685,6 +708,7 @@ export function AtlasNative3dEditor({
         </p>
       ) : null}
       <div ref={hostRef} className="min-h-0 min-w-0 flex-1" data-atlas-native-3d-host />
+      {toolsSlotEl && toolsSlot ? createPortal(toolsSlot, toolsSlotEl) : null}
     </div>
   );
 }

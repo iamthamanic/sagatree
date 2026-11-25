@@ -37706,7 +37706,7 @@
           },
           {
             "path": "src/domains/world/atlas/atlas-renderer-target.ts",
-            "sha256": "d68377cb2f99d390a94f1c7603ce11e23461964ecb2a23012017efc602dbd73d"
+            "sha256": "f51d6dc7122851ef8b88e1c567984f50f743a1630cf5f36212205fe70c8662ff"
           },
           {
             "path": "src/domains/world/atlas/atlas-revision-contract.ts",
@@ -37998,7 +37998,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-world.json",
-      "sourceContractSha256": "1933597d45fecc9f0da0d416598d3b791064a79964d42abaa52b80e13a4f58af",
+      "sourceContractSha256": "e8ef82c536fdf4927160aaed627ce83b9796e58297e6c7144bbaaedcee6aeb3f",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],

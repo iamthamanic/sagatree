@@ -1,10 +1,10 @@
 # ADR-ST-11 — ATL3-R01B: Three.js as the future single Atlas 3D renderer (conditional GO)
 
-- **Status:** Proposed — **GO (conditional)**. Not yet in force: ADR-ST-10 stays the binding renderer SoT until both gates in §Gates are `passed`.
-- **Date:** 2026-11-16
+- **Status:** Accepted — **GO (conditional — both gates passed 2026-11-25)**. Supersedes ADR-ST-10 for follow-on work (`#1267`–`#1270`); Custom WebGL stays productive until the R04 (`#1269`) switch.
+- **Date:** 2026-11-16 (gates passed 2026-11-25)
 - **Decision issue:** [#1296](https://github.com/iamthamanic/sagatree/issues/1296) (ATL3-R01B, slug `atl3-r01b-three-equal-fidelity-adr`)
 - **Supersedes (only once gates pass):** [ADR-ST-10](./ADR-ST-10-atl2-r01-custom-webgl-product-sot.md). ADR-ST-10 and #1266 stay immutable (not rewritten).
-- **Domain lock:** `ATLAS_R01B_RENDERER_DECISION` (`verdict: 'GO'`, `gates: { ownerApproval: 'pending', hardwareEvidence: 'pending' }`) → `atlasR01bAllowsFollowOnRendererWork() === false` until both gates are `passed`.
+- **Domain lock:** `ATLAS_R01B_RENDERER_DECISION` (`verdict: 'GO'`, `gates: { ownerApproval: 'passed', hardwareEvidence: 'passed' }`) → `atlasR01bAllowsFollowOnRendererWork() === true`.
 - **Measured detail:** [`.qa/design/atl3-r01b-three-equal-fidelity-adr.md`](../../.qa/design/atl3-r01b-three-equal-fidelity-adr.md) · evidence [`.qa/evidence/atl3-r01b-three-poc/results.json`](../../.qa/evidence/atl3-r01b-three-poc/results.json)
 
 ## Context
@@ -67,12 +67,10 @@ pebbles, fences) — that is a data/content gap and needs its own content work r
 
 ## Gates (both required before ADR-ST-11 is in force)
 
-1. **Owner approval** — Ben explicitly approves this ADR (`gates.ownerApproval = 'passed'` in the same PR that reopens #1267).
-2. **Hardware evidence** — `e2e/atl3-r01b-three-poc.spec.ts` run on a real GPU (`measurementClass: hardware-webgl`) where
-   the spec enforces the V01 `hardwareBudgets` desktop-reference values (high: p95 ≤ 16.7 ms, draw calls ≤ 150,
-   first frame ≤ 1500 ms); results committed (`gates.hardwareEvidence = 'passed'`). A tablet-tier run is part of R05.
+1. **Owner approval — `passed` (2026-11-25):** Ben explicitly approved ADR-ST-11 and follow-on phases R02–R05 + ATL3/ATL4 (`gates.ownerApproval = 'passed'`).
+2. **Hardware evidence — `passed` (2026-11-25):** `PLAYWRIGHT_HARDWARE_WEBGL=1 npm run test:e2e -- e2e/atl3-r01b-three-poc.spec.ts --project=chromium` ran on **Apple M4 Pro** (`ANGLE (Apple, ANGLE Metal Renderer: Apple M4 Pro)`, `measurementClass: hardware-webgl`, `budgetMode: enforced`) against the V01 `hardwareBudgets` desktop-reference thresholds — Dornhain & Krypta high/balanced p50/p95 = `16.7 ms` (≤ 16.7 ms), draw calls = `15–28` (≤ 150), first frame = `17–50 ms` (≤ 1500 ms), heap `26.3 MB`, 13/13 + 201/201 ID parity, 10/10 picking, context restore `54–61 ms`. Results committed in `.qa/evidence/atl3-r01b-three-poc/results.json` (`gates.hardwareEvidence = 'passed'`). A tablet-tier run remains part of R05.
 
-Until then: R02–R05 stay closed `not_planned`; custom WebGL remains the only productive renderer.
+With both gates `passed`, R02–R05 (`#1267`–`#1270`) are unlocked; custom WebGL remains the sole productive renderer until the R04 (`#1269`) switch.
 
 ## Consequences
 

@@ -2,6 +2,7 @@ import { defineConfig, devices } from '@playwright/test';
 
 const devUrl = process.env.PLAYWRIGHT_BASE_URL ?? 'http://localhost:3004';
 const isCi = !!process.env.CI;
+const useHardwareWebgl = process.env.PLAYWRIGHT_HARDWARE_WEBGL === '1';
 
 /**
  * Desktop `chromium` runs the full e2e suite.
@@ -41,16 +42,23 @@ export default defineConfig({
       name: 'chromium',
       use: {
         ...devices['Desktop Chrome'],
-        // Software WebGL for LiveAct / Three.js E2E on GPU-less CI runners.
+        // Software WebGL for GPU-less CI; PLAYWRIGHT_HARDWARE_WEBGL=1 uses native GPU (ADR-ST-11).
         launchOptions: {
-          args: [
-            '--use-angle=swiftshader',
-            '--enable-webgl',
-            '--ignore-gpu-blocklist',
-            '--use-gl=angle',
-            // Chrome 139+: software GL requires this opt-in on GPU-less runners.
-            '--enable-unsafe-swiftshader',
-          ],
+          args: useHardwareWebgl
+            ? [
+                '--enable-webgl',
+                '--ignore-gpu-blocklist',
+                '--use-gl=angle',
+                ...(process.platform === 'darwin' ? ['--use-angle=metal'] : []),
+              ]
+            : [
+                '--use-angle=swiftshader',
+                '--enable-webgl',
+                '--ignore-gpu-blocklist',
+                '--use-gl=angle',
+                // Chrome 139+: software GL requires this opt-in on GPU-less runners.
+                '--enable-unsafe-swiftshader',
+              ],
         },
       },
     },
