@@ -386,6 +386,21 @@ export {
 } from './map-frame';
 
 export {
+  ATLAS_UNIFORM_EXTENT_EPSILON,
+  WORLD_SPACE_ERROR_DE,
+  anchorHasShear,
+  describeWorldChain,
+  localToWorld,
+  resolveWorldChain,
+  worldToLocal,
+  type AtlasPoint2,
+  type AtlasWorldResult,
+  type AtlasWorldSpaceNode,
+  type AtlasWorldTransformChain,
+  type AtlasWorldTransformError,
+} from './atlas-world-space';
+
+export {
   HIERARCHY_NAV_BACK_DE,
   HIERARCHY_NAV_NOT_DIRECT_CHILD_DE,
   HIERARCHY_NAV_UNLOCATED_DE,
