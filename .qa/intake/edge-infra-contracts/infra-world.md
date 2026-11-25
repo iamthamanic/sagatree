@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-world.json](source-contracts/infra-world.json) (SHA-256 `d839b624ae8d60e9c0c2e2c37838973eb81b555c715d5b0a92747b990e087935`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-world.json](source-contracts/infra-world.json) (SHA-256 `a3cb8a09c7ff6b635f6050deda10c5fbb792974cb1ed9a40ccdecdae9938eb6a`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -1180,7 +1180,7 @@ export type AtlasThreeRuntimeConfig = {
 };
 ```
 
-### src/infrastructure/world/atlas-three/atlas-three-runtime.ts:462
+### src/infrastructure/world/atlas-three/atlas-three-runtime.ts:521
 
 ```ts
 export class AtlasThreeRuntime {
@@ -1216,6 +1216,12 @@ export class AtlasThreeRuntime {
     readonly base: THREE.Vector3;
     readonly phase: number;
   }> = [];
+  private readonly torchLights: Array<{
+    readonly light: THREE.PointLight;
+    readonly baseIntensity: number;
+    readonly phase: number;
+  }> = [];
+  private readonly envMap: THREE.Texture;
   private readonly pickables: THREE.Mesh[] = [];
   private readonly raycaster = new THREE.Raycaster();
   private readonly groundPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
@@ -1283,9 +1289,12 @@ export class AtlasThreeRuntime {
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
 
-    const texSize = config.presetId === 'high' ? 256 : 128;
+    const texSize = config.presetId === 'high' ? 512 : 256;
     const aniso = Math.min(8, this.renderer.capabilities.getMaxAnisotropy());
     this.pbr = new AtlasPbrTextureLibrary(texSize, aniso);
+    this.envMap = createProceduralWarmEnvMap(this.renderer);
+    this.scene.environment = this.envMap;
+    this.scene.environmentIntensity = 0.58;
 
     // 1) Atmospheric Sky Dome (follows camera — seamless horizon!)
     this.skyMat = new THREE.ShaderMaterial({
@@ -1644,20 +1653,88 @@ export class AtlasThreeRuntime {
     );
   }
 
-  resetCamera(): void {
+  /** Capture the current WebGL frame as a lightweight JPEG data URL for seamless flight transitions. */
+  captureFrameDataUrl(): string | null {
+    try {
+      this.renderer.render(this.scene, this.camera);
+      return this.config.canvas.toDataURL('image/jpeg', 0.84);
+    } catch {
+      return null;
+    }
+  }
+
+  /** Smooth arrival glide onto the newly loaded map's exact content center. */
+  frameContentBounds(opts?: { readonly animateFrom?: 'in' | 'out' | null }): void {
+    this.ensureScene();
+    const bounds = this.plan?.contentBounds ?? {
+      centerX: this.mapScale === 'settlement' ? 370 : 500,
+      centerZ: this.mapScale === 'settlement' ? 485 : 500,
+      fitSpan: this.mapScale === 'world' ? 430 : this.mapScale === 'settlement' ? 195 : 220,
+    };
     const mode = this.targetView.mode;
-    const defaultSpan = this.mapScale === 'world' ? 430 : this.mapScale === 'settlement' ? 195 : 220;
-    const defaultX = this.mapScale === 'settlement' ? 370 : 500;
-    const defaultZ = this.mapScale === 'settlement' ? 485 : 500;
+    const targetSpan = bounds.fitSpan;
+    const targetYaw = mode === 'ortho-topdown' ? 0 : 0.42;
+    const targetPitch = autoAtlasThreePitchForSpan(mode, targetSpan);
+    this.manualPitchOverride = false;
+
+    if (opts?.animateFrom) {
+      const startSpan =
+        opts.animateFrom === 'in'
+          ? Math.min(1800, targetSpan * 1.48)
+          : Math.max(48, targetSpan * 0.68);
+      this.view = {
+        mode,
+        x: bounds.centerX,
+        z: bounds.centerZ,
+        span: startSpan,
+        yawRad: targetYaw,
+        pitchRad: autoAtlasThreePitchForSpan(mode, startSpan),
+      };
+      this.targetView = { ...this.view };
+      this.setView(
+        {
+          mode,
+          x: bounds.centerX,
+          z: bounds.centerZ,
+          span: targetSpan,
+          yawRad: targetYaw,
+          pitchRad: targetPitch,
+        },
+        true,
+      );
+      return;
+    }
+
+    this.setView(
+      {
+        mode,
+        x: bounds.centerX,
+        z: bounds.centerZ,
+        span: targetSpan,
+        yawRad: targetYaw,
+        pitchRad: targetPitch,
+      },
+      false,
+    );
+  }
+
+  resetCamera(): void {
+    this.ensureScene();
+    const bounds = this.plan?.contentBounds ?? {
+      centerX: this.mapScale === 'settlement' ? 370 : 500,
+      centerZ: this.mapScale === 'settlement' ? 485 : 500,
+      fitSpan: this.mapScale === 'world' ? 430 : this.mapScale === 'settlement' ? 195 : 220,
+    };
+    const mode = this.targetView.mode;
     this.manualPitchOverride = false;
     this.setView(
       {
         mode,
-        x: defaultX,
-        z: defaultZ,
-        span: defaultSpan,
+        x: bounds.centerX,
+        z: bounds.centerZ,
+        span: bounds.fitSpan,
         yawRad: mode === 'ortho-topdown' ? 0 : 0.42,
-        pitchRad: autoAtlasThreePitchForSpan(mode, defaultSpan),
+        pitchRad: autoAtlasThreePitchForSpan(mode, bounds.fitSpan),
       },
       true,
     );
@@ -1744,6 +1821,7 @@ export class AtlasThreeRuntime {
       if (child instanceof THREE.PointLight) child.dispose();
     }
     this.smokePuffs.length = 0;
+    this.torchLights.length = 0;
     this.pickables.length = 0;
   }
 
@@ -1872,21 +1950,24 @@ export class AtlasThreeRuntime {
       this.root.add(sprite);
     }
 
-    // Warm Torches & Tavern Porch Lanterns
-    const torchColor = new THREE.Color(0xffac52);
-    for (const t of plan.torches.slice(0, 16)) {
-      const intensityScale = this.look === 'indoor' || this.lightingMode === 'night' ? 1.0 : this.lightingMode === 'evening' ? 0.72 : 0.34;
-      const light = new THREE.PointLight(
-        torchColor,
-        1.7 * (t.radius / 4) ** 2 * intensityScale,
-        t.radius,
-        2,
-      );
+    // Warm Torches, Hearth Fires, Tavern Candles & Street Lanterns
+    const torchColor = new THREE.Color(0xffb154);
+    for (let ti = 0; ti < Math.min(20, plan.torches.length); ti += 1) {
+      const t = plan.torches[ti]!;
+      const intensityScale =
+        this.look === 'indoor' || this.lightingMode === 'night'
+          ? 1.18
+          : this.lightingMode === 'evening'
+            ? 0.84
+            : 0.36;
+      const baseIntensity = 1.9 * (t.radius / 4) ** 2 * intensityScale;
+      const light = new THREE.PointLight(torchColor, baseIntensity, t.radius, 2);
       light.position.copy(t.position);
       this.root.add(light);
+      this.torchLights.push({ light, baseIntensity, phase: ti * 1.37 });
       const sprite = new THREE.Sprite(this.haloMat);
       sprite.position.copy(t.position);
-      sprite.scale.setScalar(t.radius * 0.28);
+      sprite.scale.setScalar(t.radius * 0.24);
       sprite.renderOrder = 3;
       this.root.add(sprite);
     }
@@ -2035,6 +2116,18 @@ export class AtlasThreeRuntime {
       const s = 6 + cycle * 14;
       puff.sprite.scale.setScalar(s);
     }
+
+    // Subtle organic firelight flicker on hearth fires, candles & dungeon torches
+    for (const tl of this.torchLights) {
+      const wave =
+        Math.sin(elapsedSec * 6.4 + tl.phase) * 0.055 +
+        Math.sin(elapsedSec * 11.3 + tl.phase * 2.1) * 0.03;
+      tl.light.intensity = tl.baseIntensity * (1 + wave);
+    }
+
+    // Adjust IBL bounce for outdoor daylight vs warm tavern/crypt interior
+    this.scene.environmentIntensity =
+      this.look === 'indoor' ? 0.42 : this.lightingMode === 'night' ? 0.28 : 0.62;
   }
 
   private emitProjectedPins(w: number, h: number): void {
@@ -2133,6 +2226,7 @@ export class AtlasThreeRuntime {
     for (const mat of this.materials.values()) mat.dispose();
     this.materials.clear();
     this.pbr.dispose();
+    this.envMap.dispose();
     this.skyDome.geometry.dispose();
     this.skyMat.dispose();
     this.infiniteOcean.geometry.dispose();
@@ -2190,9 +2284,9 @@ export const ATLAS_THREE_SURFACES = {
   },
   'sheet-outdoor': { pbr: 'grass', color: '#bdd0a8', roughness: 0.96, normalScale: 0.52, tile: 74 },
   'sheet-indoor': { pbr: 'rock', color: '#465056', roughness: 0.95, normalScale: 0.7, tile: 54 },
-  'floor-cobble': { pbr: 'cobble', color: '#d8cfb8', roughness: 0.88, normalScale: 0.7, tile: 34 },
-  'floor-stone': { pbr: 'cobble', color: '#a8a69d', roughness: 0.9, normalScale: 0.75, tile: 28 },
-  'floor-wood': { pbr: 'wood', color: '#d5aa7e', roughness: 0.84, normalScale: 0.56, tile: 28 },
+  'floor-cobble': { pbr: 'cobble', color: '#e4dac2', roughness: 0.84, normalScale: 0.68, tile: 48 },
+  'floor-stone': { pbr: 'cobble', color: '#b4b0a5', roughness: 0.86, normalScale: 0.72, tile: 36 },
+  'floor-wood': { pbr: 'wood', color: '#deb486', roughness: 0.72, normalScale: 0.58, tile: 34 },
   'floor-dirt': { pbr: 'dirt', color: '#c8b28d', roughness: 0.96, normalScale: 0.58, tile: 42 },
   'floor-sand': { pbr: 'sand', color: '#e4d5af', roughness: 0.9, normalScale: 0.54, tile: 46 },
   'floor-grass': { pbr: 'grass', color: '#d7e2c2', roughness: 0.95, normalScale: 0.65, tile: 62 },
@@ -2212,8 +2306,11 @@ export const ATLAS_THREE_SURFACES = {
   'leaf-sun': { pbr: 'moss', color: '#8fbe65', roughness: 0.88, normalScale: 0.56, tile: 16 },
   'leaf-birch': { pbr: 'moss', color: '#9bc46e', roughness: 0.88, normalScale: 0.52, tile: 16 },
   'leaf-pine': { pbr: 'moss', color: '#3b6f54', roughness: 0.92, normalScale: 0.62, tile: 16 },
-  'gold-accent': { pbr: null, color: '#e8b658', roughness: 0.32, normalScale: 0, tile: 1, metalness: 0.62 },
-  flower: { pbr: null, color: '#f0cf6c', roughness: 0.85, normalScale: 0, tile: 1 },
+  'gold-accent': { pbr: null, color: '#eab95a', roughness: 0.28, normalScale: 0, tile: 1, metalness: 0.72 },
+  'iron-dark': { pbr: null, color: '#394048', roughness: 0.42, normalScale: 0, tile: 1, metalness: 0.68 },
+  'fabric-crimson': { pbr: 'fabric', color: '#d85852', roughness: 0.92, normalScale: 0.35, tile: 32 },
+  'bottle-emerald': { pbr: null, color: '#2b8a64', roughness: 0.14, normalScale: 0, tile: 1, metalness: 0.12 },
+  flower: { pbr: null, color: '#f3d474', roughness: 0.85, normalScale: 0, tile: 1 },
   window: { pbr: null, color: '#2b3e4f', roughness: 0.22, normalScale: 0, tile: 1, metalness: 0.18 },
   'window-warm': {
     pbr: null,
@@ -2227,13 +2324,13 @@ export const ATLAS_THREE_SURFACES = {
 } as const satisfies Record<string, AtlasThreeSurfaceSpec>;
 ```
 
-### src/infrastructure/world/atlas-three/atlas-three-scene.ts:88
+### src/infrastructure/world/atlas-three/atlas-three-scene.ts:91
 
 ```ts
 export type AtlasThreeSurfaceKey = keyof typeof ATLAS_THREE_SURFACES;
 ```
 
-### src/infrastructure/world/atlas-three/atlas-three-scene.ts:90
+### src/infrastructure/world/atlas-three/atlas-three-scene.ts:93
 
 ```ts
 export function atlasThreeFloorSurface(
@@ -2253,7 +2350,7 @@ export function atlasThreeFloorSurface(
 }
 ```
 
-### src/infrastructure/world/atlas-three/atlas-three-scene.ts:106
+### src/infrastructure/world/atlas-three/atlas-three-scene.ts:109
 
 ```ts
 export class AtlasThreeGeoBuilder {
@@ -2262,7 +2359,7 @@ export class AtlasThreeGeoBuilder {
   readonly uvs: number[] = [];
   readonly triIds: string[] = [];
 
-  constructor(private readonly tile: number) {}
+  constructor(private readonly tile: number) { }
 
   get triangleCount(): number {
     return this.triIds.length;
@@ -2315,7 +2412,7 @@ export class AtlasThreeGeoBuilder {
 }
 ```
 
-### src/infrastructure/world/atlas-three/atlas-three-scene.ts:191
+### src/infrastructure/world/atlas-three/atlas-three-scene.ts:194
 
 ```ts
 export type AtlasThreeScatterBatch = {
@@ -2324,7 +2421,7 @@ export type AtlasThreeScatterBatch = {
 };
 ```
 
-### src/infrastructure/world/atlas-three/atlas-three-scene.ts:196
+### src/infrastructure/world/atlas-three/atlas-three-scene.ts:199
 
 ```ts
 export type AtlasThreeAoDisc = {
@@ -2335,7 +2432,17 @@ export type AtlasThreeAoDisc = {
 };
 ```
 
-### src/infrastructure/world/atlas-three/atlas-three-scene.ts:203
+### src/infrastructure/world/atlas-three/atlas-three-scene.ts:206
+
+```ts
+export type AtlasThreeContentBounds = {
+  readonly centerX: number;
+  readonly centerZ: number;
+  readonly fitSpan: number;
+};
+```
+
+### src/infrastructure/world/atlas-three/atlas-three-scene.ts:212
 
 ```ts
 export type AtlasThreeScenePlan = {
@@ -2343,6 +2450,7 @@ export type AtlasThreeScenePlan = {
   readonly water: AtlasThreeGeoBuilder;
   readonly terrain: THREE.BufferGeometry | null;
   readonly waterLevel: number;
+  readonly contentBounds: AtlasThreeContentBounds;
   readonly doorInstances: { readonly matrices: THREE.Matrix4[]; readonly ids: string[] };
   readonly scatterBatches: readonly AtlasThreeScatterBatch[];
   readonly aoDiscs: readonly AtlasThreeAoDisc[];
@@ -2359,7 +2467,7 @@ export type AtlasThreeScenePlan = {
 };
 ```
 
-### src/infrastructure/world/atlas-three/atlas-three-scene.ts:881
+### src/infrastructure/world/atlas-three/atlas-three-scene.ts:929
 
 ```ts
 export type BuildAtlasThreeSceneOptions = {
@@ -2373,7 +2481,7 @@ export type BuildAtlasThreeSceneOptions = {
 };
 ```
 
-### src/infrastructure/world/atlas-three/atlas-three-scene.ts:891
+### src/infrastructure/world/atlas-three/atlas-three-scene.ts:939
 
 ```ts
 export function buildAtlasThreeScenePlan(
@@ -2456,7 +2564,7 @@ export function buildAtlasThreeScenePlan(
       else b.tri(va, vc, vb, rm.id, up);
     }
 
-    // V7/V8 Dornhain touch: add a charming stone village fountain on main cobblestone plazas (suggestive only).
+    // V7/V8 Dornhain touch: stone village fountain, glowing corner lanterns, striped market stall & fences on plazas!
     if (opts.mapScale === 'settlement' && matName === 'pflaster' && opts.presetId !== 'lite') {
       const minX = Math.min(...rm.points.map((p) => p[0]));
       const maxX = Math.max(...rm.points.map((p) => p[0]));
@@ -2465,19 +2573,198 @@ export function buildAtlasThreeScenePlan(
       if (maxX - minX >= 100 && maxZ - minZ >= 80) {
         const fx = (minX + maxX) * 0.5;
         const fz = (minZ + maxZ) * 0.5;
-        const rimGeo = new THREE.CylinderGeometry(11.5, 13, 4.6, 12);
-        get('wall').geometry(rimGeo, composeMatrix(fx, y + 2.3, fz, 1, 1, 1), '__fountain');
+        const rimGeo = new THREE.CylinderGeometry(12, 13.8, 5, 14);
+        get('wall').geometry(rimGeo, composeMatrix(fx, y + 2.5, fz, 1, 1, 1), '__fountain');
         rimGeo.dispose();
-        const spireGeo = new THREE.CylinderGeometry(2.2, 3.6, 10.5, 8);
-        get('wall').geometry(spireGeo, composeMatrix(fx, y + 5.2, fz, 1, 1, 1), '__fountain');
+        const spireGeo = new THREE.CylinderGeometry(2.3, 3.8, 11.5, 8);
+        get('wall').geometry(spireGeo, composeMatrix(fx, y + 5.7, fz, 1, 1, 1), '__fountain');
         spireGeo.dispose();
-        const capGeo = new THREE.CylinderGeometry(5.5, 2.5, 2.4, 10);
-        get('wall').geometry(capGeo, composeMatrix(fx, y + 9.2, fz, 1, 1, 1), '__fountain');
+        const capGeo = new THREE.CylinderGeometry(5.8, 2.5, 2.6, 12);
+        get('wall').geometry(capGeo, composeMatrix(fx, y + 10.2, fz, 1, 1, 1), '__fountain');
         capGeo.dispose();
-        const poolGeo = new THREE.CylinderGeometry(9.6, 9.6, 0.6, 12);
-        water.geometry(poolGeo, composeMatrix(fx, y + 3.9, fz, 1, 1, 1), '__fountain-water');
+        const poolGeo = new THREE.CylinderGeometry(10.2, 10.2, 0.7, 14);
+        water.geometry(poolGeo, composeMatrix(fx, y + 4.3, fz, 1, 1, 1), '__fountain-water');
         poolGeo.dispose();
-        aoDiscs.push({ x: fx, y: y + 0.14, z: fz, radius: 18 });
+        aoDiscs.push({ x: fx, y: y + 0.14, z: fz, radius: 19 });
+
+        // Warm medieval wooden street lanterns at plaza corners (V7/V8 evening magic!)
+        const lampCorners: readonly [number, number][] = [
+          [minX + 12, minZ + 12],
+          [maxX - 12, minZ + 12],
+          [minX + 12, maxZ - 12],
+          [maxX - 12, maxZ - 12],
+        ];
+        for (let lc = 0; lc < lampCorners.length; lc += 1) {
+          const [lx, lz] = lampCorners[lc]!;
+          get('wood-dark').geometry(UNIT_BOX, composeMatrix(lx, y + 11, lz, 2.6, 22, 2.6), '__streetlamp');
+          get('iron-dark').geometry(UNIT_BOX, composeMatrix(lx + 2.2, y + 21, lz, 6, 1.4, 1.8), '__streetlamp');
+          get('flame').geometry(UNIT_BOX, composeMatrix(lx + 4.2, y + 19, lz, 3.2, 4, 3.2), '__streetlamp');
+          torches.push({
+            id: `__streetlamp-${lc}`,
+            position: new THREE.Vector3(lx + 4.2, y + 19.5, lz),
+            radius: 68,
+          });
+        }
+
+        // Festive crimson & oak market stall tucked near the northeast plaza edge
+        const sx = maxX - 30;
+        const sz = minZ + 22;
+        get('wood').geometry(UNIT_BOX, composeMatrix(sx, y + 5.5, sz, 24, 11, 12), '__market-stall');
+        for (const px of [-11, 11]) {
+          for (const pz of [-5, 5]) {
+            get('wood-dark').geometry(UNIT_BOX, composeMatrix(sx + px, y + 13, sz + pz, 2, 16, 2), '__market-stall');
+          }
+        }
+        get('fabric-crimson').geometry(UNIT_BOX, composeMatrix(sx, y + 21.5, sz, 28, 2.6, 16), '__market-stall');
+        aoDiscs.push({ x: sx, y: y + 0.14, z: sz, radius: 18 });
+      }
+    }
+
+    // Dungeon-Alchemist Interior Dressing: transform bare wooden/stone rooms into rich cozy taverns!
+    if (opts.mapScale === 'interior' && opts.presetId !== 'lite') {
+      const minX = Math.min(...rm.points.map((p) => p[0]));
+      const maxX = Math.max(...rm.points.map((p) => p[0]));
+      const minZ = Math.min(...rm.points.map((p) => p[1]));
+      const maxZ = Math.max(...rm.points.map((p) => p[1]));
+      const rw = maxX - minX;
+      const rh = maxZ - minZ;
+
+      // 1) Main wooden tavern hall: grand stone fireplace, crimson hearth rug, oak benches, bookshelves, wall sconces & entrance double door!
+      if (matName === 'holz' && rw >= 180 && rh >= 160) {
+        // Grand stone hearth fireplace on the east-north wall
+        const hx = maxX - 18;
+        const hz = minZ + rh * 0.48;
+        get('wall-indoor').geometry(UNIT_BOX, composeMatrix(hx + 6, y + 16, hz, 24, 32, 64), '__hearth');
+        get('iron-dark').geometry(UNIT_BOX, composeMatrix(hx - 2, y + 9, hz, 12, 17, 36), '__hearth');
+        get('wood-dark').geometry(UNIT_BOX, composeMatrix(hx - 2, y + 21, hz, 18, 4, 72), '__hearth');
+        get('wood-dark').geometry(UNIT_BOX, composeMatrix(hx - 4, y + 3, hz, 8, 5, 22), '__hearth-logs');
+        get('flame').geometry(UNIT_BOX, composeMatrix(hx - 4, y + 8, hz, 7, 10, 20), '__hearth-fire');
+        // Mantlepiece candles
+        for (const mz of [-22, 22]) {
+          get('gold-accent').geometry(UNIT_BOX, composeMatrix(hx - 4, y + 24, hz + mz, 3.5, 2, 3.5), '__hearth');
+          get('plaster').geometry(UNIT_BOX, composeMatrix(hx - 4, y + 27.5, hz + mz, 2.2, 6, 2.2), '__hearth');
+          get('flame').geometry(UNIT_BOX, composeMatrix(hx - 4, y + 31.5, hz + mz, 2.4, 3, 2.4), '__hearth');
+        }
+        torches.push({
+          id: '__hearth-light',
+          position: new THREE.Vector3(hx - 14, y + 18, hz),
+          radius: 290,
+        });
+
+        // Cozy woven crimson-gold hearth rug in front of fireplace + central hall runner
+        get('fabric-crimson').geometry(
+          UNIT_BOX,
+          composeMatrix(hx - 54, y + 0.7, hz, 64, 1.2, 92),
+          '__tavern-rug',
+        );
+        get('fabric-crimson').geometry(
+          UNIT_BOX,
+          composeMatrix(minX + rw * 0.44, y + 0.65, maxZ - 64, 118, 1.1, 46),
+          '__tavern-runner',
+        );
+
+        // Second cozy tavern booth (oak trestle table + dual wooden benches + glowing candle) in southeast corner
+        const bx = maxX - 88;
+        const bz = maxZ - 68;
+        const boothClear = !doc.objects.some((o) => Math.hypot(o.x - bx, o.y - bz) < 75);
+        if (boothClear) {
+          get('wood').geometry(UNIT_BOX, composeMatrix(bx, y + 18, bz, 62, 4.5, 34), '__booth');
+          get('wood-dark').geometry(UNIT_BOX, composeMatrix(bx - 22, y + 9, bz, 5, 18, 28), '__booth');
+          get('wood-dark').geometry(UNIT_BOX, composeMatrix(bx + 22, y + 9, bz, 5, 18, 28), '__booth');
+          get('wood').geometry(UNIT_BOX, composeMatrix(bx, y + 10.5, bz - 28, 56, 3.5, 12), '__booth');
+          get('wood').geometry(UNIT_BOX, composeMatrix(bx, y + 10.5, bz + 28, 56, 3.5, 12), '__booth');
+          get('gold-accent').geometry(UNIT_BOX, composeMatrix(bx + 12, y + 22.5, bz + 4, 4, 5, 4), '__booth');
+          get('plaster').geometry(UNIT_BOX, composeMatrix(bx - 4, y + 23.5, bz, 2.4, 7, 2.4), '__booth');
+          get('flame').geometry(UNIT_BOX, composeMatrix(bx - 4, y + 28, bz, 2.8, 3.4, 2.8), '__booth');
+          torches.push({
+            id: '__booth-candle',
+            position: new THREE.Vector3(bx - 4, y + 30, bz),
+            radius: 175,
+          });
+          aoDiscs.push({ x: bx, y: y + 0.14, z: bz, radius: 46 });
+        }
+
+        // Tall oak wall bookshelf / trophy cabinet along the north wall (east of bar)
+        const sx = maxX - 96;
+        const sz = minZ + 14;
+        get('wood-dark').geometry(UNIT_BOX, composeMatrix(sx, y + 15, sz, 66, 30, 14), '__shelf');
+        get('wood').geometry(UNIT_BOX, composeMatrix(sx, y + 8, sz + 3, 58, 2, 10), '__shelf');
+        get('wood').geometry(UNIT_BOX, composeMatrix(sx, y + 17, sz + 3, 58, 2, 10), '__shelf');
+        get('bottle-emerald').geometry(UNIT_BOX, composeMatrix(sx - 18, y + 12.5, sz + 3, 4.5, 8, 4.5), '__shelf');
+        get('fabric-crimson').geometry(UNIT_BOX, composeMatrix(sx + 4, y + 12.5, sz + 3, 14, 7.5, 8), '__shelf');
+        get('gold-accent').geometry(UNIT_BOX, composeMatrix(sx + 20, y + 21, sz + 3, 5, 6, 5), '__shelf');
+
+        // Heavy carved oak tavern double entrance doors on south wall
+        const dxDoor = minX + rw * 0.44;
+        get('wood-dark').geometry(UNIT_BOX, composeMatrix(dxDoor, y + 13, maxZ - 3, 52, 26, 11), '__tavern-door');
+        get('iron-dark').geometry(UNIT_BOX, composeMatrix(dxDoor, y + 8, maxZ - 8.5, 48, 2.2, 1.2), '__tavern-door');
+        get('iron-dark').geometry(UNIT_BOX, composeMatrix(dxDoor, y + 19, maxZ - 8.5, 48, 2.2, 1.2), '__tavern-door');
+        get('gold-accent').geometry(UNIT_BOX, composeMatrix(dxDoor - 4, y + 13, maxZ - 9, 2.4, 2.4, 2.4), '__tavern-door');
+        get('gold-accent').geometry(UNIT_BOX, composeMatrix(dxDoor + 4, y + 13, maxZ - 9, 2.4, 2.4, 2.4), '__tavern-door');
+
+        // Warm wrought-iron wall sconces around perimeter for rich golden-amber ambiance
+        const sconces: readonly [number, number][] = [
+          [minX + 12, minZ + rh * 0.52],
+          [minX + 12, maxZ - 48],
+          [minX + rw * 0.55, minZ + 12],
+          [maxX - 48, maxZ - 12],
+        ];
+        for (let sc = 0; sc < sconces.length; sc += 1) {
+          const [scx, scz] = sconces[sc]!;
+          get('iron-dark').geometry(UNIT_BOX, composeMatrix(scx, y + 17, scz, 4, 8, 4), '__sconce');
+          get('flame').geometry(UNIT_BOX, composeMatrix(scx, y + 22, scz, 3.6, 4.5, 3.6), '__sconce');
+          torches.push({
+            id: `__sconce-${sc}`,
+            position: new THREE.Vector3(scx, y + 24, scz),
+            radius: 195,
+          });
+        }
+      }
+
+      // 2) Tavern stone bar corner (e.g. `g.tav.bar`): carved L-shaped oak counter, tap kegs, bottle shelf & barstools!
+      if (matName === 'stein' && rw >= 80 && rw <= 200 && rh >= 50 && rh <= 130) {
+        const hasWoodHall = doc.rooms.some((r) => r.material === 'holz' && r.w >= 180);
+        if (hasWoodHall) {
+          // Main front bar counter along south edge + return along east edge
+          get('wood-dark').geometry(UNIT_BOX, composeMatrix(minX + rw * 0.5, y + 10, maxZ - 6, rw - 8, 20, 14), '__bar-counter');
+          get('wood').geometry(UNIT_BOX, composeMatrix(minX + rw * 0.5, y + 20.8, maxZ - 6, rw - 2, 3, 18), '__bar-counter');
+          get('gold-accent').geometry(UNIT_BOX, composeMatrix(minX + rw * 0.5, y + 3.5, maxZ + 3, rw - 10, 1.8, 1.8), '__bar-counter');
+          get('wood-dark').geometry(UNIT_BOX, composeMatrix(maxX - 6, y + 10, minZ + rh * 0.5, 14, 20, rh - 10), '__bar-counter');
+          get('wood').geometry(UNIT_BOX, composeMatrix(maxX - 6, y + 20.8, minZ + rh * 0.5, 18, 3, rh - 4), '__bar-counter');
+
+          // 3 brass-tapped ale kegs + emerald bottles along the back bar
+          for (let k = 0; k < 3; k += 1) {
+            const kx = minX + 26 + k * 34;
+            const kz = minZ + 18;
+            const kegGeo = new THREE.CylinderGeometry(8.5, 9, 18, 10);
+            get('wood').geometry(kegGeo, composeMatrix(kx, y + 11, kz, 1, 1, 1), '__bar-keg');
+            kegGeo.dispose();
+            const hoopGeo = new THREE.CylinderGeometry(9.4, 9.4, 2, 10);
+            get('iron-dark').geometry(hoopGeo, composeMatrix(kx, y + 16, kz, 1, 1, 1), '__bar-keg');
+            hoopGeo.dispose();
+            get('bottle-emerald').geometry(UNIT_BOX, composeMatrix(kx + 14, y + 25.5, maxZ - 6, 3.2, 8.5, 3.2), '__bar-bottle');
+          }
+          // 3 carved oak barstools along the front of the bar
+          for (let s = 0; s < 3; s += 1) {
+            const stx = minX + 28 + s * 38;
+            const stz = maxZ + 18;
+            const seatGeo = new THREE.CylinderGeometry(8, 8, 2.5, 10);
+            get('wood').geometry(seatGeo, composeMatrix(stx, y + 14, stz, 1, 1, 1), '__barstool');
+            seatGeo.dispose();
+            const legGeo = new THREE.CylinderGeometry(2.4, 4.5, 13, 6);
+            get('wood-dark').geometry(legGeo, composeMatrix(stx, y + 7, stz, 1, 1, 1), '__barstool');
+            legGeo.dispose();
+            aoDiscs.push({ x: stx, y: y + 0.14, z: stz, radius: 11 });
+          }
+          // Warm bar lantern
+          get('gold-accent').geometry(UNIT_BOX, composeMatrix(maxX - 8, y + 25, maxZ - 6, 5, 6, 5), '__bar-lamp');
+          get('flame').geometry(UNIT_BOX, composeMatrix(maxX - 8, y + 29, maxZ - 6, 3.5, 4, 3.5), '__bar-lamp');
+          torches.push({
+            id: '__bar-lantern',
+            position: new THREE.Vector3(maxX - 8, y + 31, maxZ - 6),
+            radius: 210,
+          });
+        }
       }
     }
   });
@@ -2557,6 +2844,22 @@ export function buildAtlasThreeScenePlan(
       cursor = Math.max(cursor, b);
     }
     if (1 - cursor > 1e-3) wallBox(get(wallKey), pt(cursor), pt(1), thick, -0.42, wallH, q.id);
+
+    // Architectural interior detailing: oak wainscoting baseboard, beveled capstone & corner timber pilasters!
+    if (opts.mapScale === 'interior' && opts.presetId !== 'lite') {
+      const capKey: AtlasThreeSurfaceKey = doc.rooms.some((r) => r.material === 'holz') ? 'wood-dark' : 'rock';
+      wallBox(get(capKey), q.start, q.end, thick * 1.24, -0.42 + wallH, 1.8, '__wall-cap');
+      wallBox(get(capKey), q.start, q.end, thick * 1.22, -0.42, 4.2, '__wall-base');
+      const postCount = Math.max(2, Math.round(length / 95) + 1);
+      for (let pi = 0; pi < postCount; pi += 1) {
+        const [px, pz] = pt(pi / Math.max(1, postCount - 1));
+        get(capKey).geometry(
+          UNIT_BOX,
+          composeMatrix(px, -0.42 + wallH * 0.5, pz, thick * 1.45, wallH + 2.4, thick * 1.45),
+          '__wall-pilaster',
+        );
+      }
+    }
   }
 
   const objAngles = new Map(doc.objects.map((o) => [o.id, o.angle ?? 0] as const));
@@ -2627,11 +2930,56 @@ export function buildAtlasThreeScenePlan(
     if (matrices.length > 0) scatterBatches.push({ kind, matrices });
   }
 
+  // Compute exact content bounding box so every map (e.g. Taverne at 200..600) frames dead-center!
+  let minCX = Infinity;
+  let maxCX = -Infinity;
+  let minCZ = Infinity;
+  let maxCZ = -Infinity;
+  for (const r of doc.rooms) {
+    if (r.id === 'w.ocean' || r.id === 'g.ocean') continue;
+    const pts = r.points && r.points.length >= 3
+      ? r.points
+      : [
+          [r.x, r.y],
+          [r.x + r.w, r.y + r.h],
+        ];
+    for (const [px, pz] of pts) {
+      if (px < minCX) minCX = px;
+      if (px > maxCX) maxCX = px;
+      if (pz < minCZ) minCZ = pz;
+      if (pz > maxCZ) maxCZ = pz;
+    }
+  }
+  for (const o of doc.objects) {
+    if (o.x < minCX) minCX = o.x;
+    if (o.x > maxCX) maxCX = o.x;
+    if (o.y < minCZ) minCZ = o.y;
+    if (o.y > maxCZ) maxCZ = o.y;
+  }
+  const hasBounds = Number.isFinite(minCX) && Number.isFinite(maxCX) && maxCX > minCX;
+  const contentBounds: AtlasThreeContentBounds = hasBounds
+    ? {
+        centerX: (minCX + maxCX) * 0.5,
+        centerZ: (minCZ + maxCZ) * 0.5,
+        fitSpan:
+          opts.mapScale === 'world'
+            ? Math.max(360, Math.min(500, Math.max(maxCX - minCX, maxCZ - minCZ) * 0.54))
+            : opts.mapScale === 'settlement'
+              ? Math.max(175, Math.min(280, Math.max(maxCX - minCX, maxCZ - minCZ) * 0.58))
+              : Math.max(210, Math.min(340, Math.max(maxCX - minCX, maxCZ - minCZ) * 0.74)),
+      }
+    : {
+        centerX: 500,
+        centerZ: 500,
+        fitSpan: opts.mapScale === 'world' ? 430 : 210,
+      };
+
   return {
     builders,
     water,
     terrain,
     waterLevel,
+    contentBounds,
     doorInstances,
     scatterBatches,
     aoDiscs,
@@ -2663,16 +3011,17 @@ export const ATLAS_PBR_KINDS = [
   'roofTile',
   'roofSlate',
   'roofMoss',
+  'fabric',
 ] as const;
 ```
 
-### src/infrastructure/world/atlas-three/pbr-textures.ts:28
+### src/infrastructure/world/atlas-three/pbr-textures.ts:29
 
 ```ts
 export type AtlasPbrKind = (typeof ATLAS_PBR_KINDS)[number];
 ```
 
-### src/infrastructure/world/atlas-three/pbr-textures.ts:30
+### src/infrastructure/world/atlas-three/pbr-textures.ts:31
 
 ```ts
 export type AtlasPbrTextureSet = {
@@ -2682,7 +3031,7 @@ export type AtlasPbrTextureSet = {
 };
 ```
 
-### src/infrastructure/world/atlas-three/pbr-textures.ts:344
+### src/infrastructure/world/atlas-three/pbr-textures.ts:369
 
 ```ts
 export class AtlasPbrTextureLibrary {
@@ -3322,6 +3671,7 @@ All backend operations are included in the public declarations above.
 | `src/domains/world/atlas/atlas-heightfield.ts` | `1fafa49c651ac14ba5ae1e9a226b38ffeea636935b7e486daa1cdd41090b71fb` |
 | `src/domains/world/atlas/atlas-hierarchy-lod.ts` | `d8f476a6aab1a6f8c63ee4d465401869e5b4191154b89b238f60fdba6c8b9bff` |
 | `src/domains/world/atlas/atlas-hierarchy-nav.ts` | `d9df6c10f147e7f325dfc735306fe481e4aa1fc601e215a1f79df0f53b190be7` |
+| `src/domains/world/atlas/atlas-label-hierarchy.ts` | `6f8f987d86aa3e9e7ab9aeb0d35d5fe2d1ae215cc55a553bcb8af55ec7ea7fc6` |
 | `src/domains/world/atlas/atlas-map-doc-adapter.ts` | `d85a2ed7b2e6cd9650c4d87664fb09e7b4621779f2a820ed65c421e353caf04a` |
 | `src/domains/world/atlas/atlas-map-pins.ts` | `1421ca01edd55307c341adc3ac74f4c5a7cef87f60fadbbe0faaa141898b4791` |
 | `src/domains/world/atlas/atlas-perf-budgets.ts` | `3a74334bd3b91af40731ea970d9a79cd189ca672b830e40025adfc71dbe4cf33` |
@@ -3331,7 +3681,7 @@ All backend operations are included in the public declarations above.
 | `src/domains/world/atlas/atlas-prototype-lod.ts` | `2fb7c706ad2210f7a3f389f22564f60e3f22aa615ec49af49695e388ae582256` |
 | `src/domains/world/atlas/atlas-renderer-target.ts` | `f51d6dc7122851ef8b88e1c567984f50f743a1630cf5f36212205fe70c8662ff` |
 | `src/domains/world/atlas/atlas-revision-contract.ts` | `d01c356239143862f9aa8f3fd44fca79105e3ed390327c34b9be6ce1902c78d6` |
-| `src/domains/world/atlas/atlas-scene-scatter.ts` | `b83c860ca82ff993a5141463b6e152097bf5783cb7bc7369a1a09683892bb1aa` |
+| `src/domains/world/atlas/atlas-scene-scatter.ts` | `6be6ec6311fab797778151ca5213d334a99e66406b3436fae526149d0c0d6cef` |
 | `src/domains/world/atlas/atlas-selection.ts` | `6c16fb40fe26addea8e33e718a89a019de099c6008c1000dd697d48fa12849a7` |
 | `src/domains/world/atlas/atlas-terrain-mesh.ts` | `50dc7ef6c013f87f82f2030317c69a8ad619c7b4db1b65db0a7571a18186dd5d` |
 | `src/domains/world/atlas/atlas-tool-registry.ts` | `be0492bd7d71f1dafa260c6a1a75165f8c587bd1f55d3178f96fbd67ac5988af` |
@@ -3344,7 +3694,7 @@ All backend operations are included in the public declarations above.
 | `src/domains/world/atlas/dungeon-forge-workflow.ts` | `c9fdba0da576bc5f5516bb6c637d6efc993c9fab630fa2e42b725836f4ef0317` |
 | `src/domains/world/atlas/dungeon-generator.ts` | `6bbed5a42d16ec727e2745b0e1f47dc9d3f1dcc219ee0ccb06f15340307908e1` |
 | `src/domains/world/atlas/dungeon-grid.ts` | `56d9698047b1405a3ba4525146a189e8c8d299d0270fd6d678a0dafa5a0a8854` |
-| `src/domains/world/atlas/index.ts` | `0ab497de1b528fb163c1479a0166241de3cd267ad3d512f3087bde4d761990f2` |
+| `src/domains/world/atlas/index.ts` | `e5422b342627ef01f2f87945a2f08204e30572aa289b46b5e93a117959679606` |
 | `src/domains/world/atlas/map-edit-ops.ts` | `3440965957e4212748d109f74ce202fa7a320840d5c9f1347b0457347c797b95` |
 | `src/domains/world/atlas/map-frame.ts` | `7a5bc6fb6ddcb38efd09fa3adf71889709fa230313a8d241d09cb9f5fa98e7a5` |
 | `src/domains/world/atlas/party-map-projection.ts` | `eeb742f12fa5e35e03a2a2c57f2c92f8ddb9d996562c88d6de96169d61b82fc9` |
@@ -3395,10 +3745,10 @@ All backend operations are included in the public declarations above.
 | `src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-runtime.ts` | `f250027a4c5a9674e377313738dac7f70a8a253464c46033f6a400a229b53c82` |
 | `src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-scene.ts` | `f63e63b2be555ef8348d15141ed44a01e70670667e3d0946221db2720cc32d8c` |
 | `src/infrastructure/world/atlas-three/atlas-three-camera.ts` | `3346a74d70149897f69d6cd394a6b2d1728510b4f4874038680e3dee8f942088` |
-| `src/infrastructure/world/atlas-three/atlas-three-runtime.ts` | `35cbdb8204454351b31bea60c5d6f83c3bc988f37139224c794f19869af6a40e` |
-| `src/infrastructure/world/atlas-three/atlas-three-scene.ts` | `3063f5353faf0682583a61bbdeab2bf9a75701829e8bbcbf6fb9b9594d2f17bf` |
+| `src/infrastructure/world/atlas-three/atlas-three-runtime.ts` | `4fd22fc07f1cc8c8f528222c75f03be6f0794f5657b89aa07d3b58f37ddb0f7b` |
+| `src/infrastructure/world/atlas-three/atlas-three-scene.ts` | `9cf34c83b4e1f7ceed92d1a275717766d7c71fbd8d8294fd5c38dd5cc0a5e5e2` |
 | `src/infrastructure/world/atlas-three/index.ts` | `b51298f6bced92e59e408f83abb139eee77c7859e2b2ba108ba6d6e36d18d6f0` |
-| `src/infrastructure/world/atlas-three/pbr-textures.ts` | `f0beec174b3d506ac90814d7180c3aa64bad0c384e82eb727431d7dd8ffbccec` |
+| `src/infrastructure/world/atlas-three/pbr-textures.ts` | `e5eb4eb6a63888eb95f95368e9e19400c8331b2d880f3b566708aeed2fc060b8` |
 | `src/infrastructure/world/host-world-adapter.ts` | `8fbaad8d6d4ec9cc42070444441fae94fb20af020cdada2125a705877ea4e1f1` |
 | `src/infrastructure/world/host-world-ports.contract.ts` | `9d11c1085646775f6c6eb5bdc29baa7ed40af0245354589bd767d4f80da1d582` |
 | `src/infrastructure/world/host-world-read.contract.ts` | `271a052d5f621ddf7f3344eaa55e3a58579c5cf629fe76a4827393d0d1c7a05c` |

@@ -49,9 +49,9 @@ export const ATLAS_THREE_SURFACES = {
   },
   'sheet-outdoor': { pbr: 'grass', color: '#bdd0a8', roughness: 0.96, normalScale: 0.52, tile: 74 },
   'sheet-indoor': { pbr: 'rock', color: '#465056', roughness: 0.95, normalScale: 0.7, tile: 54 },
-  'floor-cobble': { pbr: 'cobble', color: '#d8cfb8', roughness: 0.88, normalScale: 0.7, tile: 34 },
-  'floor-stone': { pbr: 'cobble', color: '#a8a69d', roughness: 0.9, normalScale: 0.75, tile: 28 },
-  'floor-wood': { pbr: 'wood', color: '#d5aa7e', roughness: 0.84, normalScale: 0.56, tile: 28 },
+  'floor-cobble': { pbr: 'cobble', color: '#e4dac2', roughness: 0.84, normalScale: 0.68, tile: 48 },
+  'floor-stone': { pbr: 'cobble', color: '#b4b0a5', roughness: 0.86, normalScale: 0.72, tile: 36 },
+  'floor-wood': { pbr: 'wood', color: '#deb486', roughness: 0.72, normalScale: 0.58, tile: 34 },
   'floor-dirt': { pbr: 'dirt', color: '#c8b28d', roughness: 0.96, normalScale: 0.58, tile: 42 },
   'floor-sand': { pbr: 'sand', color: '#e4d5af', roughness: 0.9, normalScale: 0.54, tile: 46 },
   'floor-grass': { pbr: 'grass', color: '#d7e2c2', roughness: 0.95, normalScale: 0.65, tile: 62 },
@@ -71,8 +71,11 @@ export const ATLAS_THREE_SURFACES = {
   'leaf-sun': { pbr: 'moss', color: '#8fbe65', roughness: 0.88, normalScale: 0.56, tile: 16 },
   'leaf-birch': { pbr: 'moss', color: '#9bc46e', roughness: 0.88, normalScale: 0.52, tile: 16 },
   'leaf-pine': { pbr: 'moss', color: '#3b6f54', roughness: 0.92, normalScale: 0.62, tile: 16 },
-  'gold-accent': { pbr: null, color: '#e8b658', roughness: 0.32, normalScale: 0, tile: 1, metalness: 0.62 },
-  flower: { pbr: null, color: '#f0cf6c', roughness: 0.85, normalScale: 0, tile: 1 },
+  'gold-accent': { pbr: null, color: '#eab95a', roughness: 0.28, normalScale: 0, tile: 1, metalness: 0.72 },
+  'iron-dark': { pbr: null, color: '#394048', roughness: 0.42, normalScale: 0, tile: 1, metalness: 0.68 },
+  'fabric-crimson': { pbr: 'fabric', color: '#d85852', roughness: 0.92, normalScale: 0.35, tile: 32 },
+  'bottle-emerald': { pbr: null, color: '#2b8a64', roughness: 0.14, normalScale: 0, tile: 1, metalness: 0.12 },
+  flower: { pbr: null, color: '#f3d474', roughness: 0.85, normalScale: 0, tile: 1 },
   window: { pbr: null, color: '#2b3e4f', roughness: 0.22, normalScale: 0, tile: 1, metalness: 0.18 },
   'window-warm': {
     pbr: null,
@@ -109,7 +112,7 @@ export class AtlasThreeGeoBuilder {
   readonly uvs: number[] = [];
   readonly triIds: string[] = [];
 
-  constructor(private readonly tile: number) {}
+  constructor(private readonly tile: number) { }
 
   get triangleCount(): number {
     return this.triIds.length;
@@ -200,11 +203,18 @@ export type AtlasThreeAoDisc = {
   readonly radius: number;
 };
 
+export type AtlasThreeContentBounds = {
+  readonly centerX: number;
+  readonly centerZ: number;
+  readonly fitSpan: number;
+};
+
 export type AtlasThreeScenePlan = {
   readonly builders: Map<AtlasThreeSurfaceKey, AtlasThreeGeoBuilder>;
   readonly water: AtlasThreeGeoBuilder;
   readonly terrain: THREE.BufferGeometry | null;
   readonly waterLevel: number;
+  readonly contentBounds: AtlasThreeContentBounds;
   readonly doorInstances: { readonly matrices: THREE.Matrix4[]; readonly ids: string[] };
   readonly scatterBatches: readonly AtlasThreeScatterBatch[];
   readonly aoDiscs: readonly AtlasThreeAoDisc[];
@@ -328,11 +338,11 @@ function synthesizeWorldReliefHeightfield(
     r.points && r.points.length >= 3
       ? r.points
       : [
-          [r.x, r.y],
-          [r.x + r.w, r.y],
-          [r.x + r.w, r.y + r.h],
-          [r.x, r.y + r.h],
-        ];
+        [r.x, r.y],
+        [r.x + r.w, r.y],
+        [r.x + r.w, r.y + r.h],
+        [r.x, r.y + r.h],
+      ];
 
   const landPolys = landRooms.map((r) => ({
     material: r.material,
@@ -838,29 +848,67 @@ function emitCanonicalProp(
       }
       break;
     }
-    case 'tisch':
-      localBox('wood', 0, 30 * u, 0, 80 * u, 6 * u, 48 * u);
-      for (const xx of [-34, 34]) {
-        for (const zz of [-18, 18]) {
-          localBox('wood-dark', xx * u, 14 * u, zz * u, 6 * u, 28 * u, 6 * u);
+    case 'tisch': {
+      // Heavy medieval oak trestle table with wooden trencher plates, brass tankards & lit wax candle!
+      localBox('wood', 0, 29 * u, 0, 86 * u, 6.5 * u, 50 * u);
+      localBox('wood-dark', 0, 25 * u, 0, 74 * u, 3 * u, 42 * u);
+      for (const xx of [-32, 32]) {
+        localBox('wood-dark', xx * u, 13 * u, -17 * u, 7 * u, 26 * u, 7 * u);
+        localBox('wood-dark', xx * u, 13 * u, 17 * u, 7 * u, 26 * u, 7 * u);
+        localBox('wood-dark', xx * u, 7 * u, 0, 6 * u, 4 * u, 38 * u);
+      }
+      localBox('wood-dark', 0, 9 * u, 0, 66 * u, 4 * u, 5 * u);
+      // Tabletop dressing: brass candleholder + glowing flame + tankards + wooden plates
+      localGeo('gold-accent', new THREE.CylinderGeometry(4.5 * u, 6 * u, 2 * u, 8), 0, 33.2 * u, 0);
+      localGeo('plaster', new THREE.CylinderGeometry(1.8 * u, 2.2 * u, 8.5 * u, 8), 0, 38 * u, 0);
+      localGeo('flame', new THREE.OctahedronGeometry(2.6 * u, 0), 0, 44 * u, 0);
+      localGeo('gold-accent', new THREE.CylinderGeometry(2.8 * u, 3.2 * u, 6.5 * u, 8), -20 * u, 35.5 * u, 8 * u);
+      localGeo('gold-accent', new THREE.CylinderGeometry(2.8 * u, 3.2 * u, 6.5 * u, 8), 22 * u, 35.5 * u, -7 * u);
+      localGeo('wood-dark', new THREE.CylinderGeometry(7.5 * u, 6.5 * u, 1.4 * u, 10), -18 * u, 33 * u, -8 * u);
+      localGeo('wood-dark', new THREE.CylinderGeometry(7.5 * u, 6.5 * u, 1.4 * u, 10), 18 * u, 33 * u, 9 * u);
+      torches.push({
+        id: `${id}:candle`,
+        position: new THREE.Vector3(x, elev + 46 * u, z),
+        radius: Math.max(115, 220 * u),
+      });
+      aoDiscs.push({ x, y: elev + 0.14, z, radius: 58 * u });
+      break;
+    }
+    case 'stuhl': {
+      // Carved medieval high-back oak chair with legs, cross-stretchers & slatted back
+      localBox('wood', 0, 17 * u, 0, 42 * u, 5 * u, 40 * u);
+      for (const xx of [-17, 17]) {
+        for (const zz of [-16, 16]) {
+          localBox('wood-dark', xx * u, 8.5 * u, zz * u, 5 * u, 17 * u, 5 * u);
         }
       }
+      localBox('wood-dark', -17 * u, 35 * u, -17 * u, 5 * u, 36 * u, 5 * u);
+      localBox('wood-dark', 17 * u, 35 * u, -17 * u, 5 * u, 36 * u, 5 * u);
+      localBox('wood', 0, 48 * u, -17 * u, 40 * u, 8 * u, 5 * u);
+      localBox('wood', 0, 32 * u, -17 * u, 34 * u, 6 * u, 4 * u);
+      aoDiscs.push({ x, y: elev + 0.14, z, radius: 28 * u });
       break;
-    case 'stuhl':
-      localBox('wood', 0, 18 * u, 0, 44 * u, 5 * u, 44 * u);
-      localBox('wood-dark', 0, 36 * u, -19 * u, 44 * u, 36 * u, 6 * u);
+    }
+    case 'fass': {
+      // Iron-banded oak ale barrel + brass spigot + companion small keg
+      localGeo('wood', new THREE.CylinderGeometry(23 * u, 25 * u, 50 * u, 12), 0, 25 * u, 0);
+      localGeo('iron-dark', new THREE.CylinderGeometry(26 * u, 26 * u, 4.5 * u, 12), 0, 12 * u, 0);
+      localGeo('iron-dark', new THREE.CylinderGeometry(26 * u, 26 * u, 4.5 * u, 12), 0, 38 * u, 0);
+      localGeo('gold-accent', new THREE.CylinderGeometry(2.2 * u, 2.2 * u, 10 * u, 6), 0, 20 * u, 26 * u);
+      localGeo('wood-dark', new THREE.CylinderGeometry(16 * u, 17 * u, 32 * u, 10), 34 * u, 16 * u, 12 * u);
+      localGeo('iron-dark', new THREE.CylinderGeometry(18 * u, 18 * u, 3.5 * u, 10), 34 * u, 8 * u, 12 * u);
+      localGeo('iron-dark', new THREE.CylinderGeometry(18 * u, 18 * u, 3.5 * u, 10), 34 * u, 24 * u, 12 * u);
+      aoDiscs.push({ x, y: elev + 0.14, z, radius: 42 * u });
       break;
-    case 'fass':
-      localGeo('wood', new THREE.CylinderGeometry(24 * u, 26 * u, 52 * u, 10), 0, 26 * u, 0);
-      localGeo('wood-dark', new THREE.CylinderGeometry(27 * u, 27 * u, 4 * u, 10), 0, 14 * u, 0);
-      localGeo('wood-dark', new THREE.CylinderGeometry(27 * u, 27 * u, 4 * u, 10), 0, 38 * u, 0);
-      break;
+    }
     case 'bett':
-      localBox('wood-dark', 0, 12 * u, 0, 80 * u, 24 * u, 60 * u);
-      localBox('plaster', 0, 26 * u, -15 * u, 64 * u, 6 * u, 18 * u);
+      localBox('wood-dark', 0, 12 * u, 0, 82 * u, 22 * u, 62 * u);
+      localBox('fabric-crimson', 0, 24 * u, 6 * u, 74 * u, 6 * u, 44 * u);
+      localBox('plaster', 0, 26 * u, -18 * u, 64 * u, 7 * u, 16 * u);
+      localBox('wood-dark', 0, 26 * u, -30 * u, 84 * u, 32 * u, 5 * u);
       break;
     case 'teppich':
-      localBox('roof-tile', 0, 1.1 * u, 0, 80 * u, 2 * u, 48 * u);
+      localBox('fabric-crimson', 0, 0.9 * u, 0, 84 * u, 1.6 * u, 52 * u);
       break;
     case 'lampe': {
       localBox('wood-dark', 0, 20 * u, 0, 6 * u, 40 * u, 6 * u);
@@ -968,7 +1016,7 @@ export function buildAtlasThreeScenePlan(
       else b.tri(va, vc, vb, rm.id, up);
     }
 
-    // V7/V8 Dornhain touch: add a charming stone village fountain on main cobblestone plazas (suggestive only).
+    // V7/V8 Dornhain touch: stone village fountain, glowing corner lanterns, striped market stall & fences on plazas!
     if (opts.mapScale === 'settlement' && matName === 'pflaster' && opts.presetId !== 'lite') {
       const minX = Math.min(...rm.points.map((p) => p[0]));
       const maxX = Math.max(...rm.points.map((p) => p[0]));
@@ -977,19 +1025,198 @@ export function buildAtlasThreeScenePlan(
       if (maxX - minX >= 100 && maxZ - minZ >= 80) {
         const fx = (minX + maxX) * 0.5;
         const fz = (minZ + maxZ) * 0.5;
-        const rimGeo = new THREE.CylinderGeometry(11.5, 13, 4.6, 12);
-        get('wall').geometry(rimGeo, composeMatrix(fx, y + 2.3, fz, 1, 1, 1), '__fountain');
+        const rimGeo = new THREE.CylinderGeometry(12, 13.8, 5, 14);
+        get('wall').geometry(rimGeo, composeMatrix(fx, y + 2.5, fz, 1, 1, 1), '__fountain');
         rimGeo.dispose();
-        const spireGeo = new THREE.CylinderGeometry(2.2, 3.6, 10.5, 8);
-        get('wall').geometry(spireGeo, composeMatrix(fx, y + 5.2, fz, 1, 1, 1), '__fountain');
+        const spireGeo = new THREE.CylinderGeometry(2.3, 3.8, 11.5, 8);
+        get('wall').geometry(spireGeo, composeMatrix(fx, y + 5.7, fz, 1, 1, 1), '__fountain');
         spireGeo.dispose();
-        const capGeo = new THREE.CylinderGeometry(5.5, 2.5, 2.4, 10);
-        get('wall').geometry(capGeo, composeMatrix(fx, y + 9.2, fz, 1, 1, 1), '__fountain');
+        const capGeo = new THREE.CylinderGeometry(5.8, 2.5, 2.6, 12);
+        get('wall').geometry(capGeo, composeMatrix(fx, y + 10.2, fz, 1, 1, 1), '__fountain');
         capGeo.dispose();
-        const poolGeo = new THREE.CylinderGeometry(9.6, 9.6, 0.6, 12);
-        water.geometry(poolGeo, composeMatrix(fx, y + 3.9, fz, 1, 1, 1), '__fountain-water');
+        const poolGeo = new THREE.CylinderGeometry(10.2, 10.2, 0.7, 14);
+        water.geometry(poolGeo, composeMatrix(fx, y + 4.3, fz, 1, 1, 1), '__fountain-water');
         poolGeo.dispose();
-        aoDiscs.push({ x: fx, y: y + 0.14, z: fz, radius: 18 });
+        aoDiscs.push({ x: fx, y: y + 0.14, z: fz, radius: 19 });
+
+        // Warm medieval wooden street lanterns at plaza corners (V7/V8 evening magic!)
+        const lampCorners: readonly [number, number][] = [
+          [minX + 12, minZ + 12],
+          [maxX - 12, minZ + 12],
+          [minX + 12, maxZ - 12],
+          [maxX - 12, maxZ - 12],
+        ];
+        for (let lc = 0; lc < lampCorners.length; lc += 1) {
+          const [lx, lz] = lampCorners[lc]!;
+          get('wood-dark').geometry(UNIT_BOX, composeMatrix(lx, y + 11, lz, 2.6, 22, 2.6), '__streetlamp');
+          get('iron-dark').geometry(UNIT_BOX, composeMatrix(lx + 2.2, y + 21, lz, 6, 1.4, 1.8), '__streetlamp');
+          get('flame').geometry(UNIT_BOX, composeMatrix(lx + 4.2, y + 19, lz, 3.2, 4, 3.2), '__streetlamp');
+          torches.push({
+            id: `__streetlamp-${lc}`,
+            position: new THREE.Vector3(lx + 4.2, y + 19.5, lz),
+            radius: 68,
+          });
+        }
+
+        // Festive crimson & oak market stall tucked near the northeast plaza edge
+        const sx = maxX - 30;
+        const sz = minZ + 22;
+        get('wood').geometry(UNIT_BOX, composeMatrix(sx, y + 5.5, sz, 24, 11, 12), '__market-stall');
+        for (const px of [-11, 11]) {
+          for (const pz of [-5, 5]) {
+            get('wood-dark').geometry(UNIT_BOX, composeMatrix(sx + px, y + 13, sz + pz, 2, 16, 2), '__market-stall');
+          }
+        }
+        get('fabric-crimson').geometry(UNIT_BOX, composeMatrix(sx, y + 21.5, sz, 28, 2.6, 16), '__market-stall');
+        aoDiscs.push({ x: sx, y: y + 0.14, z: sz, radius: 18 });
+      }
+    }
+
+    // Dungeon-Alchemist Interior Dressing: transform bare wooden/stone rooms into rich cozy taverns!
+    if (opts.mapScale === 'interior' && opts.presetId !== 'lite') {
+      const minX = Math.min(...rm.points.map((p) => p[0]));
+      const maxX = Math.max(...rm.points.map((p) => p[0]));
+      const minZ = Math.min(...rm.points.map((p) => p[1]));
+      const maxZ = Math.max(...rm.points.map((p) => p[1]));
+      const rw = maxX - minX;
+      const rh = maxZ - minZ;
+
+      // 1) Main wooden tavern hall: grand stone fireplace, crimson hearth rug, oak benches, bookshelves, wall sconces & entrance double door!
+      if (matName === 'holz' && rw >= 180 && rh >= 160) {
+        // Grand stone hearth fireplace on the east-north wall
+        const hx = maxX - 18;
+        const hz = minZ + rh * 0.48;
+        get('wall-indoor').geometry(UNIT_BOX, composeMatrix(hx + 6, y + 16, hz, 24, 32, 64), '__hearth');
+        get('iron-dark').geometry(UNIT_BOX, composeMatrix(hx - 2, y + 9, hz, 12, 17, 36), '__hearth');
+        get('wood-dark').geometry(UNIT_BOX, composeMatrix(hx - 2, y + 21, hz, 18, 4, 72), '__hearth');
+        get('wood-dark').geometry(UNIT_BOX, composeMatrix(hx - 4, y + 3, hz, 8, 5, 22), '__hearth-logs');
+        get('flame').geometry(UNIT_BOX, composeMatrix(hx - 4, y + 8, hz, 7, 10, 20), '__hearth-fire');
+        // Mantlepiece candles
+        for (const mz of [-22, 22]) {
+          get('gold-accent').geometry(UNIT_BOX, composeMatrix(hx - 4, y + 24, hz + mz, 3.5, 2, 3.5), '__hearth');
+          get('plaster').geometry(UNIT_BOX, composeMatrix(hx - 4, y + 27.5, hz + mz, 2.2, 6, 2.2), '__hearth');
+          get('flame').geometry(UNIT_BOX, composeMatrix(hx - 4, y + 31.5, hz + mz, 2.4, 3, 2.4), '__hearth');
+        }
+        torches.push({
+          id: '__hearth-light',
+          position: new THREE.Vector3(hx - 14, y + 18, hz),
+          radius: 290,
+        });
+
+        // Cozy woven crimson-gold hearth rug in front of fireplace + central hall runner
+        get('fabric-crimson').geometry(
+          UNIT_BOX,
+          composeMatrix(hx - 54, y + 0.7, hz, 64, 1.2, 92),
+          '__tavern-rug',
+        );
+        get('fabric-crimson').geometry(
+          UNIT_BOX,
+          composeMatrix(minX + rw * 0.44, y + 0.65, maxZ - 64, 118, 1.1, 46),
+          '__tavern-runner',
+        );
+
+        // Second cozy tavern booth (oak trestle table + dual wooden benches + glowing candle) in southeast corner
+        const bx = maxX - 88;
+        const bz = maxZ - 68;
+        const boothClear = !doc.objects.some((o) => Math.hypot(o.x - bx, o.y - bz) < 75);
+        if (boothClear) {
+          get('wood').geometry(UNIT_BOX, composeMatrix(bx, y + 18, bz, 62, 4.5, 34), '__booth');
+          get('wood-dark').geometry(UNIT_BOX, composeMatrix(bx - 22, y + 9, bz, 5, 18, 28), '__booth');
+          get('wood-dark').geometry(UNIT_BOX, composeMatrix(bx + 22, y + 9, bz, 5, 18, 28), '__booth');
+          get('wood').geometry(UNIT_BOX, composeMatrix(bx, y + 10.5, bz - 28, 56, 3.5, 12), '__booth');
+          get('wood').geometry(UNIT_BOX, composeMatrix(bx, y + 10.5, bz + 28, 56, 3.5, 12), '__booth');
+          get('gold-accent').geometry(UNIT_BOX, composeMatrix(bx + 12, y + 22.5, bz + 4, 4, 5, 4), '__booth');
+          get('plaster').geometry(UNIT_BOX, composeMatrix(bx - 4, y + 23.5, bz, 2.4, 7, 2.4), '__booth');
+          get('flame').geometry(UNIT_BOX, composeMatrix(bx - 4, y + 28, bz, 2.8, 3.4, 2.8), '__booth');
+          torches.push({
+            id: '__booth-candle',
+            position: new THREE.Vector3(bx - 4, y + 30, bz),
+            radius: 175,
+          });
+          aoDiscs.push({ x: bx, y: y + 0.14, z: bz, radius: 46 });
+        }
+
+        // Tall oak wall bookshelf / trophy cabinet along the north wall (east of bar)
+        const sx = maxX - 96;
+        const sz = minZ + 14;
+        get('wood-dark').geometry(UNIT_BOX, composeMatrix(sx, y + 15, sz, 66, 30, 14), '__shelf');
+        get('wood').geometry(UNIT_BOX, composeMatrix(sx, y + 8, sz + 3, 58, 2, 10), '__shelf');
+        get('wood').geometry(UNIT_BOX, composeMatrix(sx, y + 17, sz + 3, 58, 2, 10), '__shelf');
+        get('bottle-emerald').geometry(UNIT_BOX, composeMatrix(sx - 18, y + 12.5, sz + 3, 4.5, 8, 4.5), '__shelf');
+        get('fabric-crimson').geometry(UNIT_BOX, composeMatrix(sx + 4, y + 12.5, sz + 3, 14, 7.5, 8), '__shelf');
+        get('gold-accent').geometry(UNIT_BOX, composeMatrix(sx + 20, y + 21, sz + 3, 5, 6, 5), '__shelf');
+
+        // Heavy carved oak tavern double entrance doors on south wall
+        const dxDoor = minX + rw * 0.44;
+        get('wood-dark').geometry(UNIT_BOX, composeMatrix(dxDoor, y + 13, maxZ - 3, 52, 26, 11), '__tavern-door');
+        get('iron-dark').geometry(UNIT_BOX, composeMatrix(dxDoor, y + 8, maxZ - 8.5, 48, 2.2, 1.2), '__tavern-door');
+        get('iron-dark').geometry(UNIT_BOX, composeMatrix(dxDoor, y + 19, maxZ - 8.5, 48, 2.2, 1.2), '__tavern-door');
+        get('gold-accent').geometry(UNIT_BOX, composeMatrix(dxDoor - 4, y + 13, maxZ - 9, 2.4, 2.4, 2.4), '__tavern-door');
+        get('gold-accent').geometry(UNIT_BOX, composeMatrix(dxDoor + 4, y + 13, maxZ - 9, 2.4, 2.4, 2.4), '__tavern-door');
+
+        // Warm wrought-iron wall sconces around perimeter for rich golden-amber ambiance
+        const sconces: readonly [number, number][] = [
+          [minX + 12, minZ + rh * 0.52],
+          [minX + 12, maxZ - 48],
+          [minX + rw * 0.55, minZ + 12],
+          [maxX - 48, maxZ - 12],
+        ];
+        for (let sc = 0; sc < sconces.length; sc += 1) {
+          const [scx, scz] = sconces[sc]!;
+          get('iron-dark').geometry(UNIT_BOX, composeMatrix(scx, y + 17, scz, 4, 8, 4), '__sconce');
+          get('flame').geometry(UNIT_BOX, composeMatrix(scx, y + 22, scz, 3.6, 4.5, 3.6), '__sconce');
+          torches.push({
+            id: `__sconce-${sc}`,
+            position: new THREE.Vector3(scx, y + 24, scz),
+            radius: 195,
+          });
+        }
+      }
+
+      // 2) Tavern stone bar corner (e.g. `g.tav.bar`): carved L-shaped oak counter, tap kegs, bottle shelf & barstools!
+      if (matName === 'stein' && rw >= 80 && rw <= 200 && rh >= 50 && rh <= 130) {
+        const hasWoodHall = doc.rooms.some((r) => r.material === 'holz' && r.w >= 180);
+        if (hasWoodHall) {
+          // Main front bar counter along south edge + return along east edge
+          get('wood-dark').geometry(UNIT_BOX, composeMatrix(minX + rw * 0.5, y + 10, maxZ - 6, rw - 8, 20, 14), '__bar-counter');
+          get('wood').geometry(UNIT_BOX, composeMatrix(minX + rw * 0.5, y + 20.8, maxZ - 6, rw - 2, 3, 18), '__bar-counter');
+          get('gold-accent').geometry(UNIT_BOX, composeMatrix(minX + rw * 0.5, y + 3.5, maxZ + 3, rw - 10, 1.8, 1.8), '__bar-counter');
+          get('wood-dark').geometry(UNIT_BOX, composeMatrix(maxX - 6, y + 10, minZ + rh * 0.5, 14, 20, rh - 10), '__bar-counter');
+          get('wood').geometry(UNIT_BOX, composeMatrix(maxX - 6, y + 20.8, minZ + rh * 0.5, 18, 3, rh - 4), '__bar-counter');
+
+          // 3 brass-tapped ale kegs + emerald bottles along the back bar
+          for (let k = 0; k < 3; k += 1) {
+            const kx = minX + 26 + k * 34;
+            const kz = minZ + 18;
+            const kegGeo = new THREE.CylinderGeometry(8.5, 9, 18, 10);
+            get('wood').geometry(kegGeo, composeMatrix(kx, y + 11, kz, 1, 1, 1), '__bar-keg');
+            kegGeo.dispose();
+            const hoopGeo = new THREE.CylinderGeometry(9.4, 9.4, 2, 10);
+            get('iron-dark').geometry(hoopGeo, composeMatrix(kx, y + 16, kz, 1, 1, 1), '__bar-keg');
+            hoopGeo.dispose();
+            get('bottle-emerald').geometry(UNIT_BOX, composeMatrix(kx + 14, y + 25.5, maxZ - 6, 3.2, 8.5, 3.2), '__bar-bottle');
+          }
+          // 3 carved oak barstools along the front of the bar
+          for (let s = 0; s < 3; s += 1) {
+            const stx = minX + 28 + s * 38;
+            const stz = maxZ + 18;
+            const seatGeo = new THREE.CylinderGeometry(8, 8, 2.5, 10);
+            get('wood').geometry(seatGeo, composeMatrix(stx, y + 14, stz, 1, 1, 1), '__barstool');
+            seatGeo.dispose();
+            const legGeo = new THREE.CylinderGeometry(2.4, 4.5, 13, 6);
+            get('wood-dark').geometry(legGeo, composeMatrix(stx, y + 7, stz, 1, 1, 1), '__barstool');
+            legGeo.dispose();
+            aoDiscs.push({ x: stx, y: y + 0.14, z: stz, radius: 11 });
+          }
+          // Warm bar lantern
+          get('gold-accent').geometry(UNIT_BOX, composeMatrix(maxX - 8, y + 25, maxZ - 6, 5, 6, 5), '__bar-lamp');
+          get('flame').geometry(UNIT_BOX, composeMatrix(maxX - 8, y + 29, maxZ - 6, 3.5, 4, 3.5), '__bar-lamp');
+          torches.push({
+            id: '__bar-lantern',
+            position: new THREE.Vector3(maxX - 8, y + 31, maxZ - 6),
+            radius: 210,
+          });
+        }
       }
     }
   });
@@ -1069,6 +1296,22 @@ export function buildAtlasThreeScenePlan(
       cursor = Math.max(cursor, b);
     }
     if (1 - cursor > 1e-3) wallBox(get(wallKey), pt(cursor), pt(1), thick, -0.42, wallH, q.id);
+
+    // Architectural interior detailing: oak wainscoting baseboard, beveled capstone & corner timber pilasters!
+    if (opts.mapScale === 'interior' && opts.presetId !== 'lite') {
+      const capKey: AtlasThreeSurfaceKey = doc.rooms.some((r) => r.material === 'holz') ? 'wood-dark' : 'rock';
+      wallBox(get(capKey), q.start, q.end, thick * 1.24, -0.42 + wallH, 1.8, '__wall-cap');
+      wallBox(get(capKey), q.start, q.end, thick * 1.22, -0.42, 4.2, '__wall-base');
+      const postCount = Math.max(2, Math.round(length / 95) + 1);
+      for (let pi = 0; pi < postCount; pi += 1) {
+        const [px, pz] = pt(pi / Math.max(1, postCount - 1));
+        get(capKey).geometry(
+          UNIT_BOX,
+          composeMatrix(px, -0.42 + wallH * 0.5, pz, thick * 1.45, wallH + 2.4, thick * 1.45),
+          '__wall-pilaster',
+        );
+      }
+    }
   }
 
   const objAngles = new Map(doc.objects.map((o) => [o.id, o.angle ?? 0] as const));
@@ -1139,11 +1382,56 @@ export function buildAtlasThreeScenePlan(
     if (matrices.length > 0) scatterBatches.push({ kind, matrices });
   }
 
+  // Compute exact content bounding box so every map (e.g. Taverne at 200..600) frames dead-center!
+  let minCX = Infinity;
+  let maxCX = -Infinity;
+  let minCZ = Infinity;
+  let maxCZ = -Infinity;
+  for (const r of doc.rooms) {
+    if (r.id === 'w.ocean' || r.id === 'g.ocean') continue;
+    const pts = r.points && r.points.length >= 3
+      ? r.points
+      : [
+          [r.x, r.y],
+          [r.x + r.w, r.y + r.h],
+        ];
+    for (const [px, pz] of pts) {
+      if (px < minCX) minCX = px;
+      if (px > maxCX) maxCX = px;
+      if (pz < minCZ) minCZ = pz;
+      if (pz > maxCZ) maxCZ = pz;
+    }
+  }
+  for (const o of doc.objects) {
+    if (o.x < minCX) minCX = o.x;
+    if (o.x > maxCX) maxCX = o.x;
+    if (o.y < minCZ) minCZ = o.y;
+    if (o.y > maxCZ) maxCZ = o.y;
+  }
+  const hasBounds = Number.isFinite(minCX) && Number.isFinite(maxCX) && maxCX > minCX;
+  const contentBounds: AtlasThreeContentBounds = hasBounds
+    ? {
+        centerX: (minCX + maxCX) * 0.5,
+        centerZ: (minCZ + maxCZ) * 0.5,
+        fitSpan:
+          opts.mapScale === 'world'
+            ? Math.max(360, Math.min(500, Math.max(maxCX - minCX, maxCZ - minCZ) * 0.54))
+            : opts.mapScale === 'settlement'
+              ? Math.max(175, Math.min(280, Math.max(maxCX - minCX, maxCZ - minCZ) * 0.58))
+              : Math.max(210, Math.min(340, Math.max(maxCX - minCX, maxCZ - minCZ) * 0.74)),
+      }
+    : {
+        centerX: 500,
+        centerZ: 500,
+        fitSpan: opts.mapScale === 'world' ? 430 : 210,
+      };
+
   return {
     builders,
     water,
     terrain,
     waterLevel,
+    contentBounds,
     doorInstances,
     scatterBatches,
     aoDiscs,

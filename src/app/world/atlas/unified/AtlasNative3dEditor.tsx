@@ -131,6 +131,7 @@ export type AtlasNative3dEditorProps = {
   readonly onRedo?: () => void;
   readonly onCommitDoc?: (next: UnifiedCanvasDoc, recordHistory: boolean) => void;
   readonly onHierarchyBack?: () => void;
+  readonly forcedTopDown?: boolean;
   readonly topBarExtra?: ReactNode;
 };
 /** Rebrand leftover prototype copy to SagaTree product wording. */
@@ -402,6 +403,7 @@ export function AtlasNative3dEditor(props: AtlasNative3dEditorProps) {
     onRedo,
     onCommitDoc,
     onHierarchyBack,
+    forcedTopDown = false,
     topBarExtra = null,
   } = props;
   const [threeFailed, setThreeFailed] = useState(false);
@@ -445,6 +447,7 @@ export function AtlasNative3dEditor(props: AtlasNative3dEditorProps) {
             onWebglMountError?.(msg);
           }}
           toolsSlot={toolsSlot}
+          forcedTopDown={forcedTopDown}
           topBarExtra={topBarExtra}
         />
       </div>
@@ -568,7 +571,27 @@ function AtlasNative3dLegacyHost({
       const seeded =
         restore && seedRef.current
           ? {
-              ...seedRef.current,
+            ...seedRef.current,
+            camera: {
+              mode: restore.mode,
+              x: restore.centerX,
+              z: restore.centerY,
+              span: restore.span,
+              yawRad: 0,
+              pitchRad:
+                restore.mode === 'ortho-topdown'
+                  ? Math.PI / 2
+                  : restore.mode === 'diorama-oblique'
+                    ? 1.05
+                    : 0.95,
+            },
+          }
+          : restore
+            ? {
+              props: [],
+              strokes: [],
+              walls: [],
+              layers: {},
               camera: {
                 mode: restore.mode,
                 x: restore.centerX,
@@ -583,26 +606,6 @@ function AtlasNative3dLegacyHost({
                       : 0.95,
               },
             }
-          : restore
-            ? {
-                props: [],
-                strokes: [],
-                walls: [],
-                layers: {},
-                camera: {
-                  mode: restore.mode,
-                  x: restore.centerX,
-                  z: restore.centerY,
-                  span: restore.span,
-                  yawRad: 0,
-                  pitchRad:
-                    restore.mode === 'ortho-topdown'
-                      ? Math.PI / 2
-                      : restore.mode === 'diorama-oblique'
-                        ? 1.05
-                        : 0.95,
-                },
-              }
             : (seedRef.current ?? null);
       mount = mountAtlasPrototype3d(host, {
         controlled,
@@ -610,22 +613,22 @@ function AtlasNative3dLegacyHost({
         seedState: seeded,
         onPersist: controlled
           ? (state) => {
-              const next = state as WebglRuntimeState;
-              persistRef.current?.(next);
-              const cam = mountRef.current?.getNavCamera?.();
-              if (cam && onNavViewChangeRef.current) {
-                const mode =
-                  cam.mode === 'diorama-oblique' || cam.mode === 'perspective'
-                    ? cam.mode
-                    : 'ortho-topdown';
-                onNavViewChangeRef.current({
-                  centerX: cam.x,
-                  centerY: cam.z,
-                  span: cam.span,
-                  mode,
-                });
-              }
+            const next = state as WebglRuntimeState;
+            persistRef.current?.(next);
+            const cam = mountRef.current?.getNavCamera?.();
+            if (cam && onNavViewChangeRef.current) {
+              const mode =
+                cam.mode === 'diorama-oblique' || cam.mode === 'perspective'
+                  ? cam.mode
+                  : 'ortho-topdown';
+              onNavViewChangeRef.current({
+                centerX: cam.x,
+                centerY: cam.z,
+                span: cam.span,
+                mode,
+              });
             }
+          }
           : undefined,
         externalNav: externalNavRef.current ?? null,
         activePlaceId: activePlaceIdRef.current ?? null,

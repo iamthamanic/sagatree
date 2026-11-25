@@ -58,6 +58,8 @@ import {
   ATLAS_TERRAIN_SCULPT_MODES,
   applyAtlasTerrainSculptDab,
   applyMapEdit,
+  classifyAtlasPortalKind,
+  computeAtlasPinZoomPresentation,
   formatAtlasSpanLabelDe,
   resolveContinuousZoomTransition,
   type AtlasBiomeBrushId,
@@ -83,6 +85,10 @@ import {
 import { Button } from '../../../../shared/ui/button';
 import { Input } from '../../../../shared/ui/input';
 import type { AtlasNativeNavSelectPayload } from './AtlasNative3dEditor';
+import {
+  AtlasPortalTransitionOverlay,
+  type AtlasPortalTransitionState,
+} from './AtlasPortalTransitionOverlay';
 
 export type AtlasThreeToolId =
   | 'hand'
@@ -173,61 +179,62 @@ export type AtlasThreeWorkstationProps = {
   }) => void;
   readonly onHierarchyBack?: () => void;
   readonly onWebglMountError?: (message: string | null) => void;
+  readonly forcedTopDown?: boolean;
   readonly toolsSlot?: ReactNode;
   readonly topBarExtra?: ReactNode;
 };
 
 type DragSession =
   | {
-      readonly kind: 'pan';
-      readonly startPx: number;
-      readonly startPy: number;
-      readonly startX: number;
-      readonly startZ: number;
-      readonly span: number;
-      readonly yawRad: number;
-    }
+    readonly kind: 'pan';
+    readonly startPx: number;
+    readonly startPy: number;
+    readonly startX: number;
+    readonly startZ: number;
+    readonly span: number;
+    readonly yawRad: number;
+  }
   | {
-      readonly kind: 'orbit';
-      readonly startPx: number;
-      readonly startPy: number;
-      readonly startYaw: number;
-      readonly startPitch: number;
-    }
+    readonly kind: 'orbit';
+    readonly startPx: number;
+    readonly startPy: number;
+    readonly startYaw: number;
+    readonly startPitch: number;
+  }
   | {
-      readonly kind: 'compass';
-      readonly startPx: number;
-      readonly startYaw: number;
-      readonly moved: boolean;
-    }
+    readonly kind: 'compass';
+    readonly startPx: number;
+    readonly startYaw: number;
+    readonly moved: boolean;
+  }
   | {
-      readonly kind: 'move-object';
-      readonly id: string;
-      readonly startGroundX: number;
-      readonly startGroundZ: number;
-      readonly origX: number;
-      readonly origY: number;
-    }
+    readonly kind: 'move-object';
+    readonly id: string;
+    readonly startGroundX: number;
+    readonly startGroundZ: number;
+    readonly origX: number;
+    readonly origY: number;
+  }
   | {
-      readonly kind: 'rotate-object';
-      readonly id: string;
-      readonly startPx: number;
-      readonly origAngle: number;
-    }
+    readonly kind: 'rotate-object';
+    readonly id: string;
+    readonly startPx: number;
+    readonly origAngle: number;
+  }
   | {
-      readonly kind: 'scale-object';
-      readonly id: string;
-      readonly startPx: number;
-      readonly origSize: number;
-    }
+    readonly kind: 'scale-object';
+    readonly id: string;
+    readonly startPx: number;
+    readonly origSize: number;
+  }
   | {
-      readonly kind: 'height';
-      readonly targetHeight?: number;
-    }
+    readonly kind: 'height';
+    readonly targetHeight?: number;
+  }
   | {
-      readonly kind: 'biome';
-      readonly strokeId: string;
-    };
+    readonly kind: 'biome';
+    readonly strokeId: string;
+  };
 
 export function AtlasThreeWorkstation({
   doc,
@@ -249,6 +256,7 @@ export function AtlasThreeWorkstation({
   onNavViewChange,
   onHierarchyBack,
   onWebglMountError,
+  forcedTopDown = false,
   toolsSlot = null,
   topBarExtra = null,
 }: AtlasThreeWorkstationProps) {
@@ -265,6 +273,9 @@ export function AtlasThreeWorkstation({
   onWebglMountErrorRef.current = onWebglMountError;
   const transitionCooldownRef = useRef(0);
   const transitionTimerRef = useRef<number | null>(null);
+  const transitionSeqRef = useRef(0);
+  const pendingArrivalDirRef = useRef<'in' | 'out' | null>(null);
+  const prevTopDownRef = useRef(forcedTopDown);
 
   // Map-First: both Ebenen & Werkzeuge start collapsed as floating frosted-glass chips!
   const [layersOpen, setLayersOpen] = useState(false);
@@ -291,12 +302,16 @@ export function AtlasThreeWorkstation({
   const [hudYawDeg, setHudYawDeg] = useState(24);
   const [ready, setReady] = useState(false);
   const [contextLost, setContextLost] = useState(false);
-  const [transitionVisual, setTransitionVisual] = useState<'none' | 'in' | 'out'>('none');
+  const [portalTransition, setPortalTransition] = useState<AtlasPortalTransitionState | null>(null);
 
   const look: 'outdoor' | 'indoor' = mapScale === 'interior' ? 'indoor' : 'outdoor';
   const activeTool: AtlasThreeToolId = canEdit ? tool : 'hand';
   const mapIdByPlaceId = useMemo(
     () => new Map((externalNav?.nodes ?? []).map((n) => [n.id, n.primaryMapId] as const)),
+    [externalNav],
+  );
+  const navNodeById = useMemo(
+    () => new Map((externalNav?.nodes ?? []).map((n) => [n.id, n] as const)),
     [externalNav],
   );
   const baseSpan = defaultSpanForScale(mapScale);
@@ -313,25 +328,68 @@ export function AtlasThreeWorkstation({
   );
 
   const triggerSmoothLevelTransition = useCallback(
-    (direction: 'in' | 'out', action: () => void) => {
+    (
+      direction: 'in' | 'out',
+      action: () => void,
+      meta?: {
+        readonly label?: string | null;
+        readonly kind?: string | null;
+        readonly sub?: string | null;
+        readonly targetX?: number;
+        readonly targetZ?: number;
+      },
+    ) => {
       const now = performance.now();
       if (now < transitionCooldownRef.current) return;
-      transitionCooldownRef.current = now + 950;
+      transitionCooldownRef.current = now + 820;
+      pendingArrivalDirRef.current = direction;
+
       const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
       if (reduced) {
         action();
         return;
       }
-      setTransitionVisual(direction);
+
+      const rt = runtimeRef.current;
+      const portalKind = classifyAtlasPortalKind({
+        direction,
+        fromScale: mapScale,
+        targetLabel: meta?.label,
+        targetKind: meta?.kind,
+        targetSub: meta?.sub,
+      });
+
+      const isPortal = portalKind === 'tavern-doors' || portalKind === 'crypt-gate';
+      const snapshotUrl =
+        !isPortal && portalKind !== 'outdoor-exit' ? (rt?.captureFrameDataUrl() ?? null) : null;
+
+      if (rt && direction === 'in' && meta?.targetX !== undefined && meta?.targetZ !== undefined) {
+        rt.flyTo(meta.targetX, meta.targetZ, Math.max(42, rt.getView().span * 0.48));
+      } else if (rt && direction === 'out') {
+        const cur = rt.getView();
+        rt.flyTo(cur.x, cur.z, Math.min(1800, cur.span * 1.45));
+      }
+
+      transitionSeqRef.current += 1;
+      const seqId = transitionSeqRef.current;
+      setPortalTransition({
+        id: seqId,
+        kind: portalKind,
+        label: meta?.label ?? null,
+        snapshotUrl,
+      });
+
+      const swapDelayMs = isPortal ? 180 : 40;
+      const clearDelayMs = isPortal ? 900 : 540;
       if (transitionTimerRef.current !== null) window.clearTimeout(transitionTimerRef.current);
       transitionTimerRef.current = window.setTimeout(() => {
         action();
         transitionTimerRef.current = window.setTimeout(() => {
-          setTransitionVisual('none');
-        }, 220);
-      }, 160);
+          setPortalTransition((cur) => (cur?.id === seqId ? null : cur));
+        }, clearDelayMs);
+      }, swapDelayMs);
     },
-    [],
+    [mapScale],
   );
 
   // Mount Three.js runtime once per canvas lifetime.
@@ -419,47 +477,35 @@ export function AtlasThreeWorkstation({
     runtimeRef.current?.applyQualityProfile(graphicsPresetId);
   }, [graphicsPresetId]);
 
-  // Smooth Google-Maps Flyover framing whenever active map changes.
+  // Unified Draufsicht toggle: smoothly tilt straight overhead (90° North) inside the EXACT same UI!
   useEffect(() => {
+    if (prevTopDownRef.current === forcedTopDown) return;
+    prevTopDownRef.current = forcedTopDown;
     const rt = runtimeRef.current;
     if (!rt) return;
-    setSelectedId(null);
-    const span = defaultSpanForScale(mapScale);
-    const defaultX = mapScale === 'settlement' ? 370 : 500;
-    const defaultZ = mapScale === 'settlement' ? 485 : 500;
-    if (navRestoreView && navRestoreView.span < 900) {
-      const targetMode: AtlasThreeCameraMode =
-        navRestoreView.mode === 'perspective' ? 'perspective' : 'diorama-oblique';
-      setCameraMode(targetMode);
-      const clampedSpan = Math.min(navRestoreView.span, span * 1.35);
+    const cur = rt.getTargetView();
+    if (forcedTopDown) {
+      setCameraMode('ortho-topdown');
       rt.setView(
         {
-          mode: targetMode,
-          x: navRestoreView.centerX,
-          z: navRestoreView.centerY,
-          span: clampedSpan,
-          yawRad: 0.42,
-          pitchRad: autoAtlasThreePitchForSpan(targetMode, clampedSpan),
+          mode: 'ortho-topdown',
+          yawRad: 0,
+          pitchRad: Math.PI / 2,
         },
-        false,
+        true,
       );
-      return;
+    } else {
+      setCameraMode('diorama-oblique');
+      rt.setView(
+        {
+          mode: 'diorama-oblique',
+          yawRad: cur.yawRad === 0 ? 0.42 : cur.yawRad,
+          pitchRad: autoAtlasThreePitchForSpan('diorama-oblique', cur.span),
+        },
+        true,
+      );
     }
-    setCameraMode('diorama-oblique');
-    // Subtle fly-in settle when switching scales for silky Google-Maps continuity
-    rt.setView(
-      {
-        mode: 'diorama-oblique',
-        x: defaultX,
-        z: defaultZ,
-        span: span * 1.18,
-        yawRad: 0.42,
-        pitchRad: autoAtlasThreePitchForSpan('diorama-oblique', span * 1.18),
-      },
-      false,
-    );
-    rt.flyTo(defaultX, defaultZ, span);
-  }, [mapKey, mapScale]);
+  }, [forcedTopDown]);
 
   // Push live canonical document + pins + visual modes into Three.js runtime.
   useEffect(() => {
@@ -493,6 +539,46 @@ export function AtlasThreeWorkstation({
     canEdit,
     activeTool,
   ]);
+
+  // Smooth Google-Maps Flyover framing onto exact content center whenever active map changes!
+  useEffect(() => {
+    const rt = runtimeRef.current;
+    if (!rt) return;
+    setSelectedId(null);
+    const arrivalDir = pendingArrivalDirRef.current;
+    pendingArrivalDirRef.current = null;
+
+    if (forcedTopDown) {
+      setCameraMode('ortho-topdown');
+      rt.setView({ mode: 'ortho-topdown', yawRad: 0, pitchRad: Math.PI / 2 }, false);
+      rt.frameContentBounds({ animateFrom: arrivalDir ?? 'in' });
+      return;
+    }
+
+    // Always frame interiors & fresh arrivals dead-center onto real contentBounds so nothing clips behind the top pill!
+    if (navRestoreView && navRestoreView.span < 900 && !arrivalDir && mapScale !== 'interior') {
+      const targetMode: AtlasThreeCameraMode =
+        navRestoreView.mode === 'perspective' ? 'perspective' : 'diorama-oblique';
+      setCameraMode(targetMode);
+      const clampedSpan = Math.min(navRestoreView.span, defaultSpanForScale(mapScale) * 1.35);
+      rt.setView(
+        {
+          mode: targetMode,
+          x: navRestoreView.centerX,
+          z: navRestoreView.centerY,
+          span: clampedSpan,
+          yawRad: 0.42,
+          pitchRad: autoAtlasThreePitchForSpan(targetMode, clampedSpan),
+        },
+        false,
+      );
+      return;
+    }
+
+    setCameraMode('diorama-oblique');
+    rt.setView({ mode: 'diorama-oblique' }, false);
+    rt.frameContentBounds({ animateFrom: arrivalDir ?? 'in' });
+  }, [mapKey, mapScale]);
 
   // Keyboard shortcuts (W/E/T/Q, G=Grid, Cmd/Ctrl+Z, Escape, Delete)
   useEffect(() => {
@@ -581,13 +667,24 @@ export function AtlasThreeWorkstation({
       if (transition.kind === 'enter-child') {
         const childMapId = mapIdByPlaceId.get(transition.pin.id) ?? null;
         if (childMapId) {
-          triggerSmoothLevelTransition('in', () => {
-            onNavSelect?.({
-              placeId: transition.pin.id,
-              mapId: childMapId,
-              worldRoot: false,
-            });
-          });
+          const navNode = navNodeById.get(transition.pin.id);
+          triggerSmoothLevelTransition(
+            'in',
+            () => {
+              onNavSelect?.({
+                placeId: transition.pin.id,
+                mapId: childMapId,
+                worldRoot: false,
+              });
+            },
+            {
+              label: transition.pin.label,
+              kind: transition.pin.kind,
+              sub: navNode?.sub,
+              targetX: transition.pin.x,
+              targetZ: transition.pin.y,
+            },
+          );
         }
       } else if (transition.kind === 'exit-parent' && onHierarchyBack) {
         triggerSmoothLevelTransition('out', () => {
@@ -595,7 +692,7 @@ export function AtlasThreeWorkstation({
         });
       }
     },
-    [hasParentMap, mapIdByPlaceId, mapPins, mapScale, onHierarchyBack, onNavSelect, triggerSmoothLevelTransition],
+    [hasParentMap, mapIdByPlaceId, mapPins, mapScale, navNodeById, onHierarchyBack, onNavSelect, triggerSmoothLevelTransition],
   );
 
   const handlePointerDown = useCallback(
@@ -873,12 +970,12 @@ export function AtlasThreeWorkstation({
         const nextStrokes = curDoc.strokes.map((s) =>
           s.id === drag.strokeId
             ? {
-                ...s,
-                points: [
-                  ...s.points,
-                  [Math.round(ground.x * 10) / 10, Math.round(ground.z * 10) / 10] as const,
-                ],
-              }
+              ...s,
+              points: [
+                ...s.points,
+                [Math.round(ground.x * 10) / 10, Math.round(ground.z * 10) / 10] as const,
+              ],
+            }
             : s,
         );
         onCommitDocRef.current({ ...curDoc, strokes: nextStrokes, demoSeed: false }, false);
@@ -949,28 +1046,34 @@ export function AtlasThreeWorkstation({
                 type="button"
                 data-atlas-nav-node={node.id}
                 aria-current={active ? 'true' : undefined}
-                className={`flex min-h-11 min-w-0 flex-1 items-center gap-2 rounded-md border px-2 text-left text-xs transition-colors ${
-                  active
-                    ? 'border-primary bg-primary text-primary-foreground font-semibold'
-                    : 'border-transparent text-foreground hover:border-accent hover:bg-muted/70'
-                }`}
+                className={`flex min-h-11 min-w-0 flex-1 items-center gap-2 rounded-md border px-2 text-left text-xs transition-colors ${active
+                  ? 'border-primary bg-primary text-primary-foreground font-semibold'
+                  : 'border-transparent text-foreground hover:border-accent hover:bg-muted/70'
+                  }`}
                 onClick={() =>
-                  triggerSmoothLevelTransition('in', () => {
-                    onNavSelect?.({
-                      placeId: node.id,
-                      mapId: node.primaryMapId,
-                      worldRoot: false,
-                    });
-                  })
+                  triggerSmoothLevelTransition(
+                    'in',
+                    () => {
+                      onNavSelect?.({
+                        placeId: node.id,
+                        mapId: node.primaryMapId,
+                        worldRoot: false,
+                      });
+                    },
+                    {
+                      label: node.label,
+                      kind: node.kind,
+                      sub: node.sub,
+                    },
+                  )
                 }
               >
                 <MapPin className="size-3.5 shrink-0" aria-hidden />
                 <span className="min-w-0 flex-1 truncate">
                   <span className="block truncate">{node.label}</span>
                   <span
-                    className={`block truncate text-[10px] ${
-                      active ? 'text-primary-foreground/80' : 'text-muted-foreground'
-                    }`}
+                    className={`block truncate text-[10px] ${active ? 'text-primary-foreground/80' : 'text-muted-foreground'
+                      }`}
                   >
                     {node.sub}
                   </span>
@@ -1003,21 +1106,12 @@ export function AtlasThreeWorkstation({
       data-atlas-surface-ready={ready ? 'true' : undefined}
       data-atlas-chrome-ready={ready ? 'true' : undefined}
     >
-      {/* 100% Full-Bleed Three.js Spatial Stage with smooth Google-Maps crossfade */}
-      <div
-        className={`absolute inset-0 transition-[transform,opacity,filter] duration-200 ease-out motion-reduce:transition-none ${
-          transitionVisual === 'in'
-            ? 'scale-[1.04] opacity-75 blur-[1.5px]'
-            : transitionVisual === 'out'
-              ? 'scale-[0.96] opacity-75 blur-[1.5px]'
-              : 'scale-100 opacity-100 blur-0'
-        }`}
-      >
+      {/* 100% Full-Bleed Three.js Spatial Stage */}
+      <div className="absolute inset-0">
         <canvas
           ref={canvasRef}
-          className={`block h-full w-full touch-none ${
-            activeTool === 'hand' ? 'cursor-grab active:cursor-grabbing' : 'cursor-crosshair'
-          }`}
+          className={`block h-full w-full touch-none ${activeTool === 'hand' ? 'cursor-grab active:cursor-grabbing' : 'cursor-crosshair'
+            }`}
           aria-label="Interaktive Three.js 3D-Weltkarte"
           onContextMenu={(e) => e.preventDefault()}
           onWheel={handleWheel}
@@ -1028,18 +1122,39 @@ export function AtlasThreeWorkstation({
         />
       </div>
 
-      {/* Projected HTML Place Pins — smart 2D screen-space collision declutter + anchor stems */}
+      {/* Thematic 3D Portal & Atmospheric Flight Overlay (Oak Tavern Doors, Crypt Portcullis, Google-Earth Flight) */}
+      <AtlasPortalTransitionOverlay transition={portalTransition} />
+
+      {/* Google-Maps Hierarchical Zoom-Tier Progressive Pin Labels + Smart 2D Collision Declutter */}
       {(() => {
-        const visiblePins = projectedPins.filter((p) => p.visible);
-        if (visiblePins.length === 0) return null;
-        const placed = visiblePins.map((p) => ({
-          pin: p,
-          x: p.left,
-          y: p.top - 16,
-          w: Math.max(108, p.label.length * 7 + 44),
-          h: 34,
+        const visibleEntries = projectedPins
+          .filter((p) => p.visible)
+          .map((pin) => ({
+            pin,
+            pres: computeAtlasPinZoomPresentation(pin, hudSpan, mapScale, {
+              activePlaceId,
+              totalPins: mapPins.length,
+            }),
+          }))
+          .filter((entry) => entry.pres.visible);
+
+        if (visibleEntries.length === 0) return null;
+
+        const placed = visibleEntries.map(({ pin, pres }) => ({
+          pin,
+          pres,
+          x: pin.left,
+          y: pin.top - (pres.tier === 1 ? 22 : pres.tier === 2 ? 16 : 12),
+          w:
+            pres.tier === 1
+              ? Math.max(122, pin.label.length * 7.8 + 50)
+              : pres.tier === 2
+                ? Math.max(106, pin.label.length * 7 + 44)
+                : Math.max(92, pin.label.length * 6.4 + 34),
+          h: pres.tier === 1 ? 38 : pres.tier === 2 ? 32 : 28,
         }));
-        for (let iter = 0; iter < 10; iter += 1) {
+
+        for (let iter = 0; iter < 12; iter += 1) {
           for (let i = 0; i < placed.length; i += 1) {
             for (let j = i + 1; j < placed.length; j += 1) {
               const a = placed[i]!;
@@ -1064,32 +1179,36 @@ export function AtlasThreeWorkstation({
             }
           }
         }
+
         return (
           <>
             <svg
               className="pointer-events-none absolute inset-0 z-[2] h-full w-full overflow-visible"
               aria-hidden
             >
-              {placed.map(({ pin, x, y }) => {
+              {placed.map(({ pin, pres, x, y }) => {
                 const dist = Math.hypot(x - pin.left, y - pin.top);
+                const accent =
+                  pres.tier === 1 ? '#f59e0b' : pres.tier === 2 ? '#06b6d4' : '#94a3b8';
                 return (
-                  <g key={`stem-${pin.id}`}>
+                  <g key={`stem-${pin.id}`} style={{ opacity: pres.opacity }}>
                     {dist > 10 ? (
                       <line
                         x1={pin.left}
                         y1={pin.top}
                         x2={x}
-                        y2={y + 12}
-                        stroke="rgba(6, 182, 212, 0.72)"
-                        strokeWidth={1.5}
+                        y2={y + (pres.tier === 1 ? 14 : 11)}
+                        stroke={accent}
+                        strokeOpacity={pres.tier === 3 ? 0.55 : 0.78}
+                        strokeWidth={pres.tier === 1 ? 1.8 : 1.35}
                         strokeDasharray="3 2"
                       />
                     ) : null}
                     <circle
                       cx={pin.left}
                       cy={pin.top}
-                      r={3.5}
-                      fill="#06b6d4"
+                      r={pres.tier === 1 ? 4.2 : pres.tier === 2 ? 3.4 : 2.6}
+                      fill={accent}
                       stroke="#0f172a"
                       strokeWidth={1.5}
                     />
@@ -1097,35 +1216,69 @@ export function AtlasThreeWorkstation({
                 );
               })}
             </svg>
-            {placed.map(({ pin, x, y }) => {
+            {placed.map(({ pin, pres, x, y }) => {
               const targetMapId = mapIdByPlaceId.get(pin.id) ?? null;
+              const navNode = navNodeById.get(pin.id);
+              const tierClasses =
+                pres.tier === 1
+                  ? 'min-h-9 rounded-full border border-amber-400/75 bg-slate-950/90 px-3.5 py-1.5 text-[13px] font-bold tracking-wide text-amber-50 shadow-xl backdrop-blur-md hover:border-amber-300 hover:bg-accent hover:text-accent-foreground'
+                  : pres.tier === 2
+                    ? 'min-h-8 rounded-full border border-primary/70 bg-card/90 px-2.5 py-1 text-xs font-semibold text-foreground shadow-lg backdrop-blur hover:border-accent hover:bg-accent hover:text-accent-foreground'
+                    : 'min-h-7 rounded-full border border-border/80 bg-card/80 px-2 py-0.5 text-[11px] font-medium text-muted-foreground shadow backdrop-blur hover:border-accent hover:bg-accent hover:text-accent-foreground';
               return (
                 <div
                   key={pin.id}
-                  className="pointer-events-auto absolute z-[3] -translate-x-1/2 -translate-y-1/2"
-                  style={{ left: Math.round(x), top: Math.round(y) }}
+                  className="pointer-events-auto absolute z-[3] transition-[opacity,transform] duration-200 ease-out"
+                  data-atlas-pin-tier={pres.tier}
+                  style={{
+                    left: Math.round(x),
+                    top: Math.round(y),
+                    opacity: pres.opacity,
+                    transform: `translate(-50%, -50%) scale(${pres.scale})`,
+                  }}
                 >
                   <button
                     type="button"
                     data-atlas-3d-pin={pin.id}
-                    className="flex min-h-8 items-center gap-1.5 whitespace-nowrap rounded-full border border-primary/70 bg-card/90 px-2.5 py-1 text-xs font-semibold text-foreground shadow-lg backdrop-blur transition-colors hover:border-accent hover:bg-accent hover:text-accent-foreground"
+                    className={`flex items-center gap-1.5 whitespace-nowrap transition-colors ${tierClasses}`}
                     onClick={() => {
                       const sourcePin = mapPins.find((p) => p.id === pin.id);
-                      if (sourcePin) {
-                        runtimeRef.current?.flyTo(sourcePin.x, sourcePin.y, Math.max(85, hudSpan * 0.45));
-                      }
                       if (targetMapId) {
-                        triggerSmoothLevelTransition('in', () => {
-                          onNavSelect?.({ placeId: pin.id, mapId: targetMapId, worldRoot: false });
-                        });
+                        triggerSmoothLevelTransition(
+                          'in',
+                          () => {
+                            onNavSelect?.({ placeId: pin.id, mapId: targetMapId, worldRoot: false });
+                          },
+                          {
+                            label: pin.label,
+                            kind: pin.kind,
+                            sub: navNode?.sub,
+                            targetX: sourcePin?.x,
+                            targetZ: sourcePin?.y,
+                          },
+                        );
                       } else {
+                        if (sourcePin) {
+                          runtimeRef.current?.flyTo(sourcePin.x, sourcePin.y, Math.max(85, hudSpan * 0.52));
+                        }
                         onNavSelect?.({ placeId: pin.id, mapId: null, worldRoot: false });
                       }
                     }}
                   >
-                    <MapPin className="size-3.5 shrink-0 text-primary" aria-hidden />
-                    <span>{pin.label}</span>
-                    {targetMapId ? <CaretRight className="size-3 shrink-0 opacity-70" aria-hidden /> : null}
+                    <MapPin
+                      className={
+                        pres.tier === 1
+                          ? 'size-4 shrink-0 text-amber-400'
+                          : pres.tier === 2
+                            ? 'size-3.5 shrink-0 text-primary'
+                            : 'size-3 shrink-0 text-muted-foreground'
+                      }
+                      aria-hidden
+                    />
+                    {pres.showText ? <span>{pin.label}</span> : null}
+                    {targetMapId && pres.showText ? (
+                      <CaretRight className="size-3 shrink-0 opacity-70" aria-hidden />
+                    ) : null}
                   </button>
                 </div>
               );
@@ -1143,11 +1296,10 @@ export function AtlasThreeWorkstation({
           type="button"
           data-atlas-panel-fold="layers"
           aria-expanded={layersOpen}
-          className={`pointer-events-auto flex min-h-11 items-center gap-2 rounded-lg border px-3.5 text-sm font-semibold shadow-lg backdrop-blur-md transition-colors ${
-            layersOpen
-              ? 'border-primary bg-primary text-primary-foreground'
-              : 'border-border/90 bg-card/90 text-foreground hover:border-accent hover:bg-accent hover:text-accent-foreground'
-          }`}
+          className={`pointer-events-auto flex min-h-11 items-center gap-2 rounded-lg border px-3.5 text-sm font-semibold shadow-lg backdrop-blur-md transition-colors ${layersOpen
+            ? 'border-primary bg-primary text-primary-foreground'
+            : 'border-border/90 bg-card/90 text-foreground hover:border-accent hover:bg-accent hover:text-accent-foreground'
+            }`}
           onClick={() => setLayersOpen((v) => !v)}
         >
           <Stack className="size-4" aria-hidden />
@@ -1196,11 +1348,10 @@ export function AtlasThreeWorkstation({
                     type="button"
                     data-atlas-nav-root
                     aria-current={!activePlaceId || activePlaceId === externalNav.worldId ? 'true' : undefined}
-                    className={`flex min-h-11 w-full items-center gap-2 rounded-md border px-2 text-left text-xs transition-colors ${
-                      !activePlaceId || activePlaceId === externalNav.worldId
-                        ? 'border-primary bg-primary text-primary-foreground font-semibold'
-                        : 'border-transparent text-foreground hover:border-accent hover:bg-muted/70'
-                    }`}
+                    className={`flex min-h-11 w-full items-center gap-2 rounded-md border px-2 text-left text-xs transition-colors ${!activePlaceId || activePlaceId === externalNav.worldId
+                      ? 'border-primary bg-primary text-primary-foreground font-semibold'
+                      : 'border-transparent text-foreground hover:border-accent hover:bg-muted/70'
+                      }`}
                     onClick={() =>
                       triggerSmoothLevelTransition('out', () => {
                         onNavSelect?.({
@@ -1215,11 +1366,10 @@ export function AtlasThreeWorkstation({
                     <span className="min-w-0 flex-1 truncate">
                       <span className="block truncate">{externalNav.worldLabel}</span>
                       <span
-                        className={`block truncate text-[10px] ${
-                          !activePlaceId || activePlaceId === externalNav.worldId
-                            ? 'text-primary-foreground/80'
-                            : 'text-muted-foreground'
-                        }`}
+                        className={`block truncate text-[10px] ${!activePlaceId || activePlaceId === externalNav.worldId
+                          ? 'text-primary-foreground/80'
+                          : 'text-muted-foreground'
+                          }`}
                       >
                         Weltkarte
                       </span>
@@ -1277,36 +1427,40 @@ export function AtlasThreeWorkstation({
 
           {topBarExtra}
 
-          <div className="h-5 w-px bg-border/80" aria-hidden />
+          {!forcedTopDown ? (
+            <>
+              <div className="h-5 w-px bg-border/80" aria-hidden />
 
-          <div
-            className="flex items-center rounded-lg bg-background/60 p-0.5"
-            role="group"
-            aria-label="Kameramodus"
-          >
-            {(
-              [
-                { id: 'diorama-oblique', label: 'Diorama' },
-                { id: 'ortho-topdown', label: 'Satellit' },
-                { id: 'perspective', label: 'Perspektive' },
-              ] as const
-            ).map((m) => (
-              <button
-                key={m.id}
-                type="button"
-                data-atlas-camera-mode={m.id}
-                aria-pressed={cameraMode === m.id}
-                className={`min-h-8 rounded-md px-2.5 text-xs font-semibold transition-colors ${
-                  cameraMode === m.id
-                    ? 'bg-primary text-primary-foreground'
-                    : 'text-muted-foreground hover:text-accent'
-                }`}
-                onClick={() => switchCameraMode(m.id)}
+              <div
+                className="flex items-center rounded-lg bg-background/60 p-0.5"
+                role="group"
+                aria-label="Kameramodus"
               >
-                {m.label}
-              </button>
-            ))}
-          </div>
+                {(
+                  [
+                    { id: 'diorama-oblique', label: 'Diorama' },
+                    { id: 'ortho-topdown', label: 'Satellit' },
+                    { id: 'perspective', label: 'Perspektive' },
+                  ] as const
+                ).map((m) => (
+                  <button
+                    key={m.id}
+                    type="button"
+                    data-atlas-camera-mode={m.id}
+                    aria-pressed={cameraMode === m.id}
+                    className={`min-h-8 rounded-md px-2.5 text-xs font-semibold transition-colors ${
+                      cameraMode === m.id
+                        ? 'bg-primary text-primary-foreground'
+                        : 'text-muted-foreground hover:text-accent'
+                    }`}
+                    onClick={() => switchCameraMode(m.id)}
+                  >
+                    {m.label}
+                  </button>
+                ))}
+              </div>
+            </>
+          ) : null}
         </div>
       </div>
 
@@ -1319,11 +1473,10 @@ export function AtlasThreeWorkstation({
           type="button"
           data-atlas-panel-fold="tools"
           aria-expanded={toolsOpen}
-          className={`pointer-events-auto flex min-h-11 items-center gap-2 rounded-lg border px-3.5 text-sm font-semibold shadow-lg backdrop-blur-md transition-colors ${
-            toolsOpen
-              ? 'border-primary bg-primary text-primary-foreground'
-              : 'border-border/90 bg-card/90 text-foreground hover:border-accent hover:bg-accent hover:text-accent-foreground'
-          }`}
+          className={`pointer-events-auto flex min-h-11 items-center gap-2 rounded-lg border px-3.5 text-sm font-semibold shadow-lg backdrop-blur-md transition-colors ${toolsOpen
+            ? 'border-primary bg-primary text-primary-foreground'
+            : 'border-border/90 bg-card/90 text-foreground hover:border-accent hover:bg-accent hover:text-accent-foreground'
+            }`}
           onClick={() => setToolsOpen((v) => !v)}
         >
           <Wrench className="size-4" aria-hidden />
@@ -1391,11 +1544,10 @@ export function AtlasThreeWorkstation({
                     disabled={editOnly && !canEdit}
                     aria-pressed={activeTool === id}
                     data-atlas-3d-tool={id}
-                    className={`flex min-h-12 flex-col items-center justify-center gap-1 rounded-md border px-1 text-[10px] font-semibold transition-colors disabled:opacity-40 ${
-                      activeTool === id
-                        ? 'border-primary bg-primary text-primary-foreground'
-                        : 'border-border bg-background/60 text-foreground hover:border-accent hover:text-accent'
-                    }`}
+                    className={`flex min-h-12 flex-col items-center justify-center gap-1 rounded-md border px-1 text-[10px] font-semibold transition-colors disabled:opacity-40 ${activeTool === id
+                      ? 'border-primary bg-primary text-primary-foreground'
+                      : 'border-border bg-background/60 text-foreground hover:border-accent hover:text-accent'
+                      }`}
                     onClick={() => setTool(id)}
                   >
                     <Icon className="size-4" aria-hidden />
@@ -1414,11 +1566,10 @@ export function AtlasThreeWorkstation({
                         key={m.id}
                         type="button"
                         aria-pressed={sculptMode === m.id}
-                        className={`min-h-9 rounded border px-2 text-xs font-medium ${
-                          sculptMode === m.id
-                            ? 'border-primary bg-primary text-primary-foreground'
-                            : 'border-border hover:border-accent'
-                        }`}
+                        className={`min-h-9 rounded border px-2 text-xs font-medium ${sculptMode === m.id
+                          ? 'border-primary bg-primary text-primary-foreground'
+                          : 'border-border hover:border-accent'
+                          }`}
                         onClick={() => setSculptMode(m.id)}
                       >
                         {m.labelDe}
@@ -1461,11 +1612,10 @@ export function AtlasThreeWorkstation({
                         key={b.id}
                         type="button"
                         aria-pressed={biomeId === b.id}
-                        className={`flex min-h-9 items-center gap-2 rounded border px-2 text-left text-xs ${
-                          biomeId === b.id
-                            ? 'border-primary bg-primary/15 font-semibold text-foreground'
-                            : 'border-border hover:border-accent'
-                        }`}
+                        className={`flex min-h-9 items-center gap-2 rounded border px-2 text-left text-xs ${biomeId === b.id
+                          ? 'border-primary bg-primary/15 font-semibold text-foreground'
+                          : 'border-border hover:border-accent'
+                          }`}
                         onClick={() => setBiomeId(b.id)}
                       >
                         <span
@@ -1500,11 +1650,10 @@ export function AtlasThreeWorkstation({
                         key={opt.id}
                         type="button"
                         aria-pressed={stampKind === opt.id}
-                        className={`flex min-h-9 items-center gap-1.5 rounded border px-2 text-xs ${
-                          stampKind === opt.id
-                            ? 'border-primary bg-primary text-primary-foreground font-semibold'
-                            : 'border-border hover:border-accent'
-                        }`}
+                        className={`flex min-h-9 items-center gap-1.5 rounded border px-2 text-xs ${stampKind === opt.id
+                          ? 'border-primary bg-primary text-primary-foreground font-semibold'
+                          : 'border-border hover:border-accent'
+                          }`}
                         onClick={() => {
                           setStampKind(opt.id);
                           setStampSize(opt.defaultSize);
@@ -1654,11 +1803,10 @@ export function AtlasThreeWorkstation({
                         key={id}
                         type="button"
                         aria-pressed={lightingMode === id}
-                        className={`flex min-h-9 items-center justify-center gap-1 rounded border text-xs font-semibold transition-colors ${
-                          lightingMode === id
-                            ? 'border-primary bg-primary text-primary-foreground'
-                            : 'border-border bg-background/60 text-foreground hover:border-accent hover:text-accent'
-                        }`}
+                        className={`flex min-h-9 items-center justify-center gap-1 rounded border text-xs font-semibold transition-colors ${lightingMode === id
+                          ? 'border-primary bg-primary text-primary-foreground'
+                          : 'border-border bg-background/60 text-foreground hover:border-accent hover:text-accent'
+                          }`}
                         onClick={() => setLightingMode(id)}
                       >
                         <Icon className="size-3.5" aria-hidden />
@@ -1680,11 +1828,10 @@ export function AtlasThreeWorkstation({
                       type="button"
                       data-atlas-style-mode={st.id}
                       aria-pressed={styleMode === st.id}
-                      className={`min-h-9 rounded border text-xs font-semibold transition-colors ${
-                        styleMode === st.id
-                          ? 'border-primary bg-primary text-primary-foreground'
-                          : 'border-border bg-background/60 text-foreground hover:border-accent hover:text-accent'
-                      }`}
+                      className={`min-h-9 rounded border text-xs font-semibold transition-colors ${styleMode === st.id
+                        ? 'border-primary bg-primary text-primary-foreground'
+                        : 'border-border bg-background/60 text-foreground hover:border-accent hover:text-accent'
+                        }`}
                       onClick={() => setStyleMode(st.id)}
                     >
                       {st.label}
@@ -1694,11 +1841,10 @@ export function AtlasThreeWorkstation({
                 <button
                   type="button"
                   aria-pressed={hideRoofs}
-                  className={`flex min-h-10 w-full items-center justify-center gap-2 rounded-md border px-3 text-xs font-semibold transition-colors ${
-                    hideRoofs
-                      ? 'border-primary bg-primary text-primary-foreground'
-                      : 'border-border bg-background/60 text-foreground hover:border-accent hover:text-accent'
-                  }`}
+                  className={`flex min-h-10 w-full items-center justify-center gap-2 rounded-md border px-3 text-xs font-semibold transition-colors ${hideRoofs
+                    ? 'border-primary bg-primary text-primary-foreground'
+                    : 'border-border bg-background/60 text-foreground hover:border-accent hover:text-accent'
+                    }`}
                   onClick={() => setHideRoofs((v) => !v)}
                 >
                   {hideRoofs ? <EyeSlash className="size-4" aria-hidden /> : <Eye className="size-4" aria-hidden />}
@@ -1732,11 +1878,10 @@ export function AtlasThreeWorkstation({
                     <button
                       key={obj.id}
                       type="button"
-                      className={`flex min-h-9 w-full items-center justify-between rounded border px-2 text-left text-xs ${
-                        selectedId === obj.id
-                          ? 'border-primary bg-primary/15 font-semibold text-foreground'
-                          : 'border-border/70 hover:border-accent'
-                      }`}
+                      className={`flex min-h-9 w-full items-center justify-between rounded border px-2 text-left text-xs ${selectedId === obj.id
+                        ? 'border-primary bg-primary/15 font-semibold text-foreground'
+                        : 'border-border/70 hover:border-accent'
+                        }`}
                       onClick={() => {
                         setSelectedId(obj.id);
                         runtimeRef.current?.flyTo(obj.x, obj.y, Math.min(hudSpan, 145));
@@ -1817,11 +1962,10 @@ export function AtlasThreeWorkstation({
           aria-pressed={showGrid}
           title="Kampfgrid ein-/ausblenden (G)"
           aria-label="Kampfgrid ein-/ausblenden"
-          className={`flex min-h-9 min-w-9 items-center justify-center rounded-md transition-colors ${
-            showGrid
-              ? 'bg-primary/20 text-primary'
-              : 'text-muted-foreground hover:bg-accent/20 hover:text-accent'
-          }`}
+          className={`flex min-h-9 min-w-9 items-center justify-center rounded-md transition-colors ${showGrid
+            ? 'bg-primary/20 text-primary'
+            : 'text-muted-foreground hover:bg-accent/20 hover:text-accent'
+            }`}
           onClick={() => setShowGrid((v) => !v)}
         >
           <GridFour className="size-4" aria-hidden />

@@ -259,9 +259,15 @@ export function buildAtlasSceneScatter(input: {
   };
 
   if (mapScale === 'interior') {
-    // Subtle suggestive dungeon/tavern rubble & mossy floor stones strictly inside rooms, away from walls/props.
-    const targetCount = Math.min(maxBudget, presetId === 'high' ? 48 : presetId === 'balanced' ? 28 : 12);
-    const rooms = doc.rooms.filter((r) => r.id !== 'g.ocean' && r.id !== 'w.ocean' && !isWaterMaterial(r.material));
+    // Subtle suggestive dungeon rubble strictly inside stone/earth/moss rooms — NEVER scatter pebbles on hardwood tavern floors!
+    const targetCount = Math.min(maxBudget, presetId === 'high' ? 42 : presetId === 'balanced' ? 24 : 10);
+    const rooms = doc.rooms.filter(
+      (r) =>
+        r.id !== 'g.ocean' &&
+        r.id !== 'w.ocean' &&
+        !isWaterMaterial(r.material) &&
+        !isPavedOrInteriorMaterial(r.material),
+    );
     let attempts = 0;
     while (instances.length < targetCount && attempts < targetCount * 8 && rooms.length > 0) {
       attempts += 1;
@@ -269,7 +275,7 @@ export function buildAtlasSceneScatter(input: {
       const x = room.x + 8 + rng() * Math.max(4, room.w - 16);
       const y = room.y + 8 + rng() * Math.max(4, room.h - 16);
       if (isNearWall(x, y, 8) || isNearObject(x, y, 10)) continue;
-      pushInst('rubble', x, y, -0.35, 0.25 + rng() * 0.35);
+      pushInst('rubble', x, y, -0.35, 0.22 + rng() * 0.3);
     }
     return { format: 'atl3-d01-scatter-plan-v1', seed, presetId, maxBudget, instances };
   }

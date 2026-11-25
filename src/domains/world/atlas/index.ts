@@ -723,4 +723,13 @@ export {
   type AtlasZoomTransitionIntent,
 } from './atlas-continuous-zoom';
 
+export {
+  classifyAtlasPinTier,
+  classifyAtlasPortalKind,
+  computeAtlasPinZoomPresentation,
+  type AtlasLabelTier,
+  type AtlasPinZoomPresentation,
+  type AtlasPortalTransitionKind,
+} from './atlas-label-hierarchy';
+
 

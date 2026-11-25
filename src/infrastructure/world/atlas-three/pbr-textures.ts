@@ -23,6 +23,7 @@ export const ATLAS_PBR_KINDS = [
   'roofTile',
   'roofSlate',
   'roofMoss',
+  'fabric',
 ] as const;
 
 export type AtlasPbrKind = (typeof ATLAS_PBR_KINDS)[number];
@@ -200,55 +201,79 @@ function synthesizeSurface(
           break;
         }
         case 'cobble': {
-          const gx = 8;
-          const gy = 8;
-          const row = Math.floor(v * gy);
-          const su = (u * gx + (row % 2) * 0.5) % gx;
-          const sv = (v * gy) % 1;
+          // Organic medieval warm sandstone flagstones (soft warm earth mortar + subtle moss — zero polka-dot grid!)
+          const gx = 5;
+          const gy = 5;
+          const warpU = u + (fbm - 0.5) * 0.045;
+          const warpV = v + (fine - 0.5) * 0.045;
+          const row = Math.floor(((warpV % 1) + 1) % 1 * gy);
+          const su = ((((warpU % 1) + 1) % 1) * gx + (row % 2) * 0.45) % gx;
+          const sv = ((((warpV % 1) + 1) % 1) * gy) % 1;
           const cellX = Math.floor(su);
           const fx = su - cellX;
           const fy = sv;
           const edge = Math.min(fx, 1 - fx, fy, 1 - fy);
-          const mortar = edge < 0.09 ? 0 : Math.min(1, (edge - 0.09) / 0.14);
+          const mortar = edge < 0.055 ? 0 : Math.min(1, (edge - 0.055) / 0.11);
           const tone = hash2d(cellX, row, seed + 88);
-          const stone = mixRgb([126, 122, 114], [184, 174, 156], tone * 0.65 + fine * 0.35);
-          rgb = mixRgb([68, 66, 62], stone, mortar);
-          h = mortar * (0.65 + tone * 0.2 + fine * 0.15);
-          rough = 0.84 + (1 - mortar) * 0.14;
+          const warmHue = hash2d(cellX + 7, row + 3, seed + 141);
+          const stoneBase = mixRgb([152, 142, 124], [198, 184, 158], tone * 0.65 + fine * 0.35);
+          const stone = mixRgb(stoneBase, [174, 166, 148], warmHue * 0.35);
+          const mortarCol = fbm > 0.62 ? ([98, 108, 82] as Rgb) : ([104, 96, 84] as Rgb);
+          rgb = mixRgb(mortarCol, stone, mortar);
+          h = mortar * (0.68 + tone * 0.18 + fine * 0.14);
+          rough = 0.78 + (1 - mortar) * 0.18;
           break;
         }
         case 'wall': {
           const cols = 4;
-          const rows = 8;
+          const rows = 6;
           const row = Math.floor(v * rows);
-          const su = (u * cols + (row % 2) * 0.5) % cols;
+          const su = (u * cols + (row % 2) * 0.48) % cols;
           const cellX = Math.floor(su);
           const fx = su - cellX;
           const fy = (v * rows) % 1;
-          const mortar = fx < 0.05 || fx > 0.95 || fy < 0.09 || fy > 0.91 ? 0 : 1;
+          const edge = Math.min(fx, 1 - fx, fy, 1 - fy);
+          const mortar = edge < 0.045 ? 0 : Math.min(1, (edge - 0.045) / 0.08);
           const tone = hash2d(cellX, row, seed + 77);
-          const block = mixRgb([124, 122, 114], [176, 170, 154], tone * 0.6 + fbm * 0.4);
-          rgb = mixRgb([66, 66, 64], block, mortar);
-          h = mortar * (0.65 + fine * 0.35);
-          rough = 0.92;
+          const block = mixRgb([134, 128, 116], [186, 178, 160], tone * 0.62 + fbm * 0.38);
+          rgb = mixRgb([84, 80, 74], block, mortar);
+          h = mortar * (0.68 + fine * 0.32);
+          rough = 0.86;
           break;
         }
         case 'plaster': {
-          rgb = mixRgb([214, 196, 164], [238, 226, 198], fbm * 0.75 + fine * 0.25);
-          h = 0.5 + (fbm - 0.5) * 0.35 + (fine - 0.5) * 0.2;
-          rough = 0.93;
+          rgb = mixRgb([220, 204, 174], [244, 234, 208], fbm * 0.75 + fine * 0.25);
+          h = 0.5 + (fbm - 0.5) * 0.32 + (fine - 0.5) * 0.18;
+          rough = 0.91;
           break;
         }
         case 'wood': {
           const plank = Math.floor(v * 6);
           const pv = (v * 6) % 1;
-          const seam = pv < 0.05 || pv > 0.95 ? 0 : 1;
-          const grain = Math.sin((v * 42 + tileFbm(u, v, 8, seed + 12) * 4.5) * Math.PI) * 0.5 + 0.5;
+          const endJoint = Math.abs((((u * 2 + plank * 0.37) % 1) + 1) % 1 - 0.5) < 0.012 ? 0.35 : 1;
+          const seam = pv < 0.04 || pv > 0.96 ? 0.2 : endJoint;
+          const grain =
+            Math.sin((v * 46 + tileFbm(u, v, 8, seed + 12) * 5.2) * Math.PI) * 0.5 + 0.5;
           const tone = hash2d(plank, 3, seed + 33);
-          const board = mixRgb([112, 76, 48], [168, 122, 78], grain * 0.55 + tone * 0.45);
-          rgb = mixRgb([58, 38, 24], board, seam);
-          h = seam * (0.55 + grain * 0.35 + fine * 0.1);
-          rough = 0.8 + (1 - grain) * 0.14;
+          const board = mixRgb([124, 84, 52], [184, 134, 84], grain * 0.55 + tone * 0.45);
+          rgb = mixRgb([64, 42, 26], board, seam);
+          h = seam * (0.58 + grain * 0.32 + fine * 0.1);
+          rough = 0.68 + (1 - grain) * 0.18;
+          break;
+        }
+        case 'fabric': {
+          const weave = (Math.sin(u * Math.PI * 64) * Math.sin(v * Math.PI * 64)) * 0.5 + 0.5;
+          const border =
+            u < 0.08 || u > 0.92 || v < 0.08 || v > 0.92
+              ? 1
+              : u < 0.12 || u > 0.88 || v < 0.12 || v > 0.88
+                ? 0.65
+                : 0;
+          const base = mixRgb([128, 34, 38], [166, 48, 46], fbm * 0.6 + weave * 0.4);
+          const trim = mixRgb([196, 152, 68], [228, 188, 96], weave * 0.5 + fine * 0.5);
+          rgb = mixRgb(base, trim, border);
+          h = 0.5 + weave * 0.25 + border * 0.15;
+          rough = 0.94;
           break;
         }
         case 'roofTile':

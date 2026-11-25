@@ -143,23 +143,23 @@ const OUTDOOR_LIGHTING: Readonly<Record<AtlasThreeLightingMode, LightingSpec>> =
 };
 
 const INDOOR_LIGHTING: LightingSpec = {
-  skyZenith: '#0f1720',
-  skyHorizon: '#17222b',
+  skyZenith: '#11161d',
+  skyHorizon: '#191f26',
   sunGlow: '#ffd4a3',
-  hemiSky: '#98b2b6',
-  hemiGround: '#322e29',
-  hemiIntensity: 1.32,
-  sunColor: '#ffe0b8',
-  sunIntensity: 2.35,
-  fillColor: '#8db3c9',
-  fillIntensity: 0.44,
-  exposure: 1.08,
+  hemiSky: '#c9bba6',
+  hemiGround: '#4a3829',
+  hemiIntensity: 1.55,
+  sunColor: '#ffe0b4',
+  sunIntensity: 2.6,
+  fillColor: '#a6b8cc',
+  fillIntensity: 0.56,
+  exposure: 1.16,
   waterDeep: '#102f3a',
   waterShallow: '#2a6670',
   waterSky: '#4e6c72',
-  meadowLight: '#283238',
-  meadowDark: '#1b2228',
-  sunDir: [-8, 16, 6],
+  meadowLight: '#242930',
+  meadowDark: '#14181e',
+  sunDir: [-9, 17, 7],
 };
 
 const SKY_VERTEX = /* glsl */ `
@@ -350,86 +350,145 @@ function createRadialSoftTexture(innerRgba: string, midRgba: string, outerRgba: 
   return tex;
 }
 
+function createProceduralWarmEnvMap(renderer: THREE.WebGLRenderer): THREE.Texture {
+  const c = document.createElement('canvas');
+  c.width = 128;
+  c.height = 64;
+  const ctx = c.getContext('2d');
+  if (ctx) {
+    const grad = ctx.createLinearGradient(0, 0, 0, 64);
+    grad.addColorStop(0.0, '#4a7fa0');
+    grad.addColorStop(0.35, '#9cc4d0');
+    grad.addColorStop(0.5, '#f5dfc0');
+    grad.addColorStop(0.62, '#8b7a5e');
+    grad.addColorStop(1.0, '#2a332b');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, 128, 64);
+    // Warm sunlit highlight spot for realistic specular gleam on brass, roofs & wood
+    const sunGrad = ctx.createRadialGradient(34, 20, 1, 34, 20, 22);
+    sunGrad.addColorStop(0, 'rgba(255, 246, 220, 0.95)');
+    sunGrad.addColorStop(0.45, 'rgba(255, 214, 150, 0.45)');
+    sunGrad.addColorStop(1, 'rgba(255, 214, 150, 0)');
+    ctx.fillStyle = sunGrad;
+    ctx.fillRect(0, 0, 128, 64);
+  }
+  const src = new THREE.CanvasTexture(c);
+  src.mapping = THREE.EquirectangularReflectionMapping;
+  src.colorSpace = THREE.SRGBColorSpace;
+  src.flipY = false;
+  const pmrem = new THREE.PMREMGenerator(renderer);
+  const env = pmrem.fromEquirectangular(src).texture;
+  src.dispose();
+  pmrem.dispose();
+  return env;
+}
+
 /** Build shared rich multi-cluster geometry for instanced suggestive scatter kinds. */
 function buildScatterGeometry(kind: AtlasScatterKind): {
   readonly parts: readonly { readonly geo: THREE.BufferGeometry; readonly surface: AtlasThreeSurfaceKey }[];
 } {
   switch (kind) {
     case 'pine': {
-      const trunk = new THREE.CylinderGeometry(2.4, 4.4, 16, 6);
-      trunk.translate(0, 8, 0);
-      const c1 = new THREE.ConeGeometry(23, 36, 7);
-      c1.translate(0, 25, 0);
-      const c2 = new THREE.ConeGeometry(17, 30, 7);
-      c2.translate(0, 44, 0);
-      const c3 = new THREE.ConeGeometry(10.5, 24, 6);
-      c3.translate(0, 58, 0);
+      // Soft multi-tier organic fantasy spruce (4 overlapping tiers + warm sunlit tip)
+      const trunk = new THREE.CylinderGeometry(2.2, 4.6, 17, 6);
+      trunk.translate(0, 8.5, 0);
+      const c1 = new THREE.ConeGeometry(23, 28, 8);
+      c1.scale(1.08, 1, 0.94);
+      c1.translate(0, 22, 0);
+      const c2 = new THREE.ConeGeometry(18.5, 26, 8);
+      c2.rotateY(0.42);
+      c2.translate(0.8, 36, -0.6);
+      const c3 = new THREE.ConeGeometry(13.5, 22, 7);
+      c3.rotateY(0.85);
+      c3.translate(-0.6, 49, 0.5);
+      const c4 = new THREE.ConeGeometry(7.8, 16, 6);
+      c4.translate(0, 59, 0);
       return {
         parts: [
           { geo: trunk, surface: 'wood-dark' },
           { geo: c1, surface: 'leaf-pine' },
           { geo: c2, surface: 'leaf-pine' },
-          { geo: c3, surface: 'leaf-sun' },
+          { geo: c3, surface: 'leaf' },
+          { geo: c4, surface: 'leaf-sun' },
         ],
       };
     }
     case 'birch': {
-      const trunk = new THREE.CylinderGeometry(2.1, 3.6, 19, 6);
-      trunk.translate(0, 9.5, 0);
-      const c1 = new THREE.DodecahedronGeometry(16, 1);
-      c1.translate(0, 27, 0);
-      const c2 = new THREE.DodecahedronGeometry(12, 0);
-      c2.translate(7, 34, 4);
+      const trunk = new THREE.CylinderGeometry(2.0, 3.8, 21, 6);
+      trunk.translate(0, 10.5, 0);
+      const c1 = new THREE.DodecahedronGeometry(16.5, 1);
+      c1.scale(1.12, 0.95, 1.04);
+      c1.translate(0, 28, 0);
+      const c2 = new THREE.DodecahedronGeometry(13, 1);
+      c2.translate(8, 34, 4);
+      const c3 = new THREE.DodecahedronGeometry(11, 1);
+      c3.translate(-7, 35, -5);
       return {
         parts: [
           { geo: trunk, surface: 'bark-birch' },
           { geo: c1, surface: 'leaf-birch' },
           { geo: c2, surface: 'leaf-sun' },
+          { geo: c3, surface: 'leaf-birch' },
         ],
       };
     }
     case 'oak': {
-      const trunk = new THREE.CylinderGeometry(3.2, 5.4, 17, 6);
-      trunk.translate(0, 8.5, 0);
+      const trunk = new THREE.CylinderGeometry(3.4, 5.8, 18, 7);
+      trunk.translate(0, 9, 0);
       const base = new THREE.DodecahedronGeometry(19, 1);
+      base.scale(1.16, 0.88, 1.08);
       base.translate(0, 27, 0);
-      const top = new THREE.DodecahedronGeometry(14, 1);
-      top.translate(5, 36, -3);
+      const sideA = new THREE.DodecahedronGeometry(13.5, 1);
+      sideA.translate(-11, 29, 7);
+      const sideB = new THREE.DodecahedronGeometry(12.5, 1);
+      sideB.translate(10, 28, -8);
+      const top = new THREE.DodecahedronGeometry(14.5, 1);
+      top.translate(4, 37, -2);
       return {
         parts: [
           { geo: trunk, surface: 'wood-dark' },
           { geo: base, surface: 'leaf' },
+          { geo: sideA, surface: 'leaf' },
+          { geo: sideB, surface: 'leaf' },
           { geo: top, surface: 'leaf-sun' },
         ],
       };
     }
     case 'bush': {
-      const g = new THREE.DodecahedronGeometry(11, 0);
-      g.scale(1.25, 0.72, 1.12);
+      const g = new THREE.DodecahedronGeometry(11, 1);
+      g.scale(1.28, 0.72, 1.12);
       g.translate(0, 6, 0);
       return { parts: [{ geo: g, surface: 'leaf-sun' }] };
     }
     case 'flower': {
-      const g = new THREE.DodecahedronGeometry(5, 0);
-      g.scale(1.2, 0.45, 1.2);
-      g.translate(0, 2.2, 0);
+      const g = new THREE.DodecahedronGeometry(5.5, 0);
+      g.scale(1.3, 0.48, 1.3);
+      g.translate(0, 2.4, 0);
       return { parts: [{ geo: g, surface: 'flower' }] };
     }
     case 'mountain': {
-      const base = new THREE.ConeGeometry(42, 68, 7);
-      base.translate(0, 30, 0);
-      const shoulder = new THREE.ConeGeometry(28, 46, 6);
-      shoulder.translate(21, 19, -12);
-      const ridge = new THREE.ConeGeometry(22, 36, 6);
-      ridge.translate(-17, 15, 11);
-      const cap = new THREE.ConeGeometry(13.5, 25, 7);
-      cap.translate(0, 53, 0);
+      // Dramatic multi-ridge alpine massif with sharp faceted spire + asymmetric snow ridge
+      const base = new THREE.ConeGeometry(46, 78, 7);
+      base.scale(1.22, 1, 0.92);
+      base.translate(0, 35, 0);
+      const shoulder = new THREE.ConeGeometry(31, 56, 6);
+      shoulder.rotateY(0.5);
+      shoulder.translate(23, 24, -14);
+      const ridge = new THREE.ConeGeometry(25, 44, 6);
+      ridge.rotateY(-0.4);
+      ridge.translate(-20, 19, 13);
+      const capMain = new THREE.ConeGeometry(16, 30, 7);
+      capMain.scale(1.18, 1, 0.9);
+      capMain.translate(0, 61, 0);
+      const capSub = new THREE.ConeGeometry(10.5, 19, 6);
+      capSub.translate(23, 44, -14);
       return {
         parts: [
           { geo: base, surface: 'rock' },
           { geo: shoulder, surface: 'rock' },
           { geo: ridge, surface: 'rock' },
-          { geo: cap, surface: 'snow' },
+          { geo: capMain, surface: 'snow' },
+          { geo: capSub, surface: 'snow' },
         ],
       };
     }
@@ -492,6 +551,12 @@ export class AtlasThreeRuntime {
     readonly base: THREE.Vector3;
     readonly phase: number;
   }> = [];
+  private readonly torchLights: Array<{
+    readonly light: THREE.PointLight;
+    readonly baseIntensity: number;
+    readonly phase: number;
+  }> = [];
+  private readonly envMap: THREE.Texture;
   private readonly pickables: THREE.Mesh[] = [];
   private readonly raycaster = new THREE.Raycaster();
   private readonly groundPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
@@ -559,9 +624,12 @@ export class AtlasThreeRuntime {
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
 
-    const texSize = config.presetId === 'high' ? 256 : 128;
+    const texSize = config.presetId === 'high' ? 512 : 256;
     const aniso = Math.min(8, this.renderer.capabilities.getMaxAnisotropy());
     this.pbr = new AtlasPbrTextureLibrary(texSize, aniso);
+    this.envMap = createProceduralWarmEnvMap(this.renderer);
+    this.scene.environment = this.envMap;
+    this.scene.environmentIntensity = 0.58;
 
     // 1) Atmospheric Sky Dome (follows camera — seamless horizon!)
     this.skyMat = new THREE.ShaderMaterial({
@@ -920,20 +988,88 @@ export class AtlasThreeRuntime {
     );
   }
 
-  resetCamera(): void {
+  /** Capture the current WebGL frame as a lightweight JPEG data URL for seamless flight transitions. */
+  captureFrameDataUrl(): string | null {
+    try {
+      this.renderer.render(this.scene, this.camera);
+      return this.config.canvas.toDataURL('image/jpeg', 0.84);
+    } catch {
+      return null;
+    }
+  }
+
+  /** Smooth arrival glide onto the newly loaded map's exact content center. */
+  frameContentBounds(opts?: { readonly animateFrom?: 'in' | 'out' | null }): void {
+    this.ensureScene();
+    const bounds = this.plan?.contentBounds ?? {
+      centerX: this.mapScale === 'settlement' ? 370 : 500,
+      centerZ: this.mapScale === 'settlement' ? 485 : 500,
+      fitSpan: this.mapScale === 'world' ? 430 : this.mapScale === 'settlement' ? 195 : 220,
+    };
     const mode = this.targetView.mode;
-    const defaultSpan = this.mapScale === 'world' ? 430 : this.mapScale === 'settlement' ? 195 : 220;
-    const defaultX = this.mapScale === 'settlement' ? 370 : 500;
-    const defaultZ = this.mapScale === 'settlement' ? 485 : 500;
+    const targetSpan = bounds.fitSpan;
+    const targetYaw = mode === 'ortho-topdown' ? 0 : 0.42;
+    const targetPitch = autoAtlasThreePitchForSpan(mode, targetSpan);
+    this.manualPitchOverride = false;
+
+    if (opts?.animateFrom) {
+      const startSpan =
+        opts.animateFrom === 'in'
+          ? Math.min(1800, targetSpan * 1.48)
+          : Math.max(48, targetSpan * 0.68);
+      this.view = {
+        mode,
+        x: bounds.centerX,
+        z: bounds.centerZ,
+        span: startSpan,
+        yawRad: targetYaw,
+        pitchRad: autoAtlasThreePitchForSpan(mode, startSpan),
+      };
+      this.targetView = { ...this.view };
+      this.setView(
+        {
+          mode,
+          x: bounds.centerX,
+          z: bounds.centerZ,
+          span: targetSpan,
+          yawRad: targetYaw,
+          pitchRad: targetPitch,
+        },
+        true,
+      );
+      return;
+    }
+
+    this.setView(
+      {
+        mode,
+        x: bounds.centerX,
+        z: bounds.centerZ,
+        span: targetSpan,
+        yawRad: targetYaw,
+        pitchRad: targetPitch,
+      },
+      false,
+    );
+  }
+
+  resetCamera(): void {
+    this.ensureScene();
+    const bounds = this.plan?.contentBounds ?? {
+      centerX: this.mapScale === 'settlement' ? 370 : 500,
+      centerZ: this.mapScale === 'settlement' ? 485 : 500,
+      fitSpan: this.mapScale === 'world' ? 430 : this.mapScale === 'settlement' ? 195 : 220,
+    };
+    const mode = this.targetView.mode;
     this.manualPitchOverride = false;
     this.setView(
       {
         mode,
-        x: defaultX,
-        z: defaultZ,
-        span: defaultSpan,
+        x: bounds.centerX,
+        z: bounds.centerZ,
+        span: bounds.fitSpan,
         yawRad: mode === 'ortho-topdown' ? 0 : 0.42,
-        pitchRad: autoAtlasThreePitchForSpan(mode, defaultSpan),
+        pitchRad: autoAtlasThreePitchForSpan(mode, bounds.fitSpan),
       },
       true,
     );
@@ -1020,6 +1156,7 @@ export class AtlasThreeRuntime {
       if (child instanceof THREE.PointLight) child.dispose();
     }
     this.smokePuffs.length = 0;
+    this.torchLights.length = 0;
     this.pickables.length = 0;
   }
 
@@ -1148,21 +1285,24 @@ export class AtlasThreeRuntime {
       this.root.add(sprite);
     }
 
-    // Warm Torches & Tavern Porch Lanterns
-    const torchColor = new THREE.Color(0xffac52);
-    for (const t of plan.torches.slice(0, 16)) {
-      const intensityScale = this.look === 'indoor' || this.lightingMode === 'night' ? 1.0 : this.lightingMode === 'evening' ? 0.72 : 0.34;
-      const light = new THREE.PointLight(
-        torchColor,
-        1.7 * (t.radius / 4) ** 2 * intensityScale,
-        t.radius,
-        2,
-      );
+    // Warm Torches, Hearth Fires, Tavern Candles & Street Lanterns
+    const torchColor = new THREE.Color(0xffb154);
+    for (let ti = 0; ti < Math.min(20, plan.torches.length); ti += 1) {
+      const t = plan.torches[ti]!;
+      const intensityScale =
+        this.look === 'indoor' || this.lightingMode === 'night'
+          ? 1.18
+          : this.lightingMode === 'evening'
+            ? 0.84
+            : 0.36;
+      const baseIntensity = 1.9 * (t.radius / 4) ** 2 * intensityScale;
+      const light = new THREE.PointLight(torchColor, baseIntensity, t.radius, 2);
       light.position.copy(t.position);
       this.root.add(light);
+      this.torchLights.push({ light, baseIntensity, phase: ti * 1.37 });
       const sprite = new THREE.Sprite(this.haloMat);
       sprite.position.copy(t.position);
-      sprite.scale.setScalar(t.radius * 0.28);
+      sprite.scale.setScalar(t.radius * 0.24);
       sprite.renderOrder = 3;
       this.root.add(sprite);
     }
@@ -1311,6 +1451,18 @@ export class AtlasThreeRuntime {
       const s = 6 + cycle * 14;
       puff.sprite.scale.setScalar(s);
     }
+
+    // Subtle organic firelight flicker on hearth fires, candles & dungeon torches
+    for (const tl of this.torchLights) {
+      const wave =
+        Math.sin(elapsedSec * 6.4 + tl.phase) * 0.055 +
+        Math.sin(elapsedSec * 11.3 + tl.phase * 2.1) * 0.03;
+      tl.light.intensity = tl.baseIntensity * (1 + wave);
+    }
+
+    // Adjust IBL bounce for outdoor daylight vs warm tavern/crypt interior
+    this.scene.environmentIntensity =
+      this.look === 'indoor' ? 0.42 : this.lightingMode === 'night' ? 0.28 : 0.62;
   }
 
   private emitProjectedPins(w: number, h: number): void {
@@ -1409,6 +1561,7 @@ export class AtlasThreeRuntime {
     for (const mat of this.materials.values()) mat.dispose();
     this.materials.clear();
     this.pbr.dispose();
+    this.envMap.dispose();
     this.skyDome.geometry.dispose();
     this.skyMat.dispose();
     this.infiniteOcean.geometry.dispose();

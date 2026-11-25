@@ -538,6 +538,7 @@ export function UnifiedAtlasEditor({
   );
   const [localSurfaceMode, setLocalSurfaceMode] = useState<'3d' | '2d'>('3d');
   const [splitView, setSplitView] = useState(false);
+  const [topDownSurface, setTopDownSurface] = useState(false);
   const surfaceMode = surfaceModeProp ?? localSurfaceMode;
   const setSurfaceMode = useCallback(
     (mode: '3d' | '2d') => {
@@ -745,17 +746,20 @@ export function UnifiedAtlasEditor({
     [viewport.height, viewport.width, refresh],
   );
 
+  const onNavViewChangeRef = useRef(onNavViewChange);
+  onNavViewChangeRef.current = onNavViewChange;
+
   const reportNavView = useCallback(() => {
     // 3D surface reports via AtlasNative3dEditor — do not overwrite with idle 2D camRef.
     if (surfaceMode === '3d') return;
-    if (!onNavViewChange || viewport.height <= 0) return;
-    onNavViewChange({
+    if (!onNavViewChangeRef.current || viewport.height <= 0) return;
+    onNavViewChangeRef.current({
       centerX: camRef.current.center.x,
       centerY: camRef.current.center.y,
       span: atlasSpanFromScale(camRef.current.pixelsPerUnit, viewport.height),
       mode: 'ortho-topdown',
     });
-  }, [onNavViewChange, viewport.height, surfaceMode]);
+  }, [viewport.height, surfaceMode]);
 
   useEffect(() => {
     if (!navRestoreView || viewport.height <= 0) return;
@@ -2418,13 +2422,16 @@ export function UnifiedAtlasEditor({
           >
             <button
               type="button"
-              aria-pressed={!splitView}
+              aria-pressed={!splitView && !topDownSurface}
               className={`min-h-8 rounded-md px-2.5 text-xs font-semibold transition-colors ${
-                !splitView
+                !splitView && !topDownSurface
                   ? 'bg-primary text-primary-foreground'
                   : 'text-muted-foreground hover:text-accent'
               }`}
-              onClick={() => setSplitView(false)}
+              onClick={() => {
+                setSplitView(false);
+                setTopDownSurface(false);
+              }}
             >
               3D
             </button>
@@ -2432,21 +2439,35 @@ export function UnifiedAtlasEditor({
               type="button"
               data-atlas-split-toggle
               aria-pressed={splitView}
-              className={`min-h-8 rounded-md px-2.5 text-xs font-semibold transition-colors ${
-                splitView
-                  ? 'bg-primary text-primary-foreground'
-                  : 'text-muted-foreground hover:text-accent'
-              }`}
-              onClick={() => setSplitView((v) => !v)}
+              className={`min-h-8 rounded-md px-2.5 text-xs font-semibold transition-colors ${splitView
+                ? 'bg-primary text-primary-foreground'
+                : 'text-muted-foreground hover:text-accent'
+                }`}
+              onClick={() => {
+                setTopDownSurface(false);
+                setSplitView((v) => !v);
+              }}
             >
               Split
             </button>
             <button
               type="button"
               data-atlas-surface-toggle
+              aria-pressed={topDownSurface}
               aria-label="Zur Draufsicht wechseln"
-              className="min-h-8 rounded-md px-2.5 text-xs font-semibold text-muted-foreground transition-colors hover:text-accent"
-              onClick={() => setSurfaceMode('2d')}
+              className={`min-h-8 rounded-md px-2.5 text-xs font-semibold transition-colors ${
+                topDownSurface
+                  ? 'bg-primary text-primary-foreground'
+                  : 'text-muted-foreground hover:text-accent'
+              }`}
+              onClick={() => {
+                if (isLiteFallback) {
+                  setSurfaceMode('2d');
+                  return;
+                }
+                setSplitView(false);
+                setTopDownSurface(true);
+              }}
             >
               Draufsicht
             </button>
@@ -2537,6 +2558,7 @@ export function UnifiedAtlasEditor({
               onRedo={redo}
               onCommitDoc={commit}
               onHierarchyBack={onHierarchyBack}
+              forcedTopDown={topDownSurface}
               topBarExtra={isLiteFallback ? null : surfaceControls}
               externalNav={webglNavTree}
               activePlaceId={activePlaceId}

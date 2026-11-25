@@ -16,12 +16,14 @@ const read = (rel) => readFileSync(join(root, rel), 'utf8');
 const scatterMod = jiti(join(root, 'src/domains/world/atlas/atlas-scene-scatter.ts'));
 const brushMod = jiti(join(root, 'src/domains/world/atlas/atlas-biome-brush.ts'));
 const zoomMod = jiti(join(root, 'src/domains/world/atlas/atlas-continuous-zoom.ts'));
+const labelMod = jiti(join(root, 'src/domains/world/atlas/atlas-label-hierarchy.ts'));
 const cameraMod = jiti(join(root, 'src/infrastructure/world/atlas-three/atlas-three-camera.ts'));
 const golden = jiti(join(root, 'src/domains/world/atlas/dornhain-golden-hierarchy.ts'));
 const starter = jiti(join(root, 'src/domains/world/atlas/dornhain-unified-starter.ts'));
 
 // 1) Architecture & code hygiene checks
 const workstationSrc = read('src/app/world/atlas/unified/AtlasThreeWorkstation.tsx');
+const portalSrc = read('src/app/world/atlas/unified/AtlasPortalTransitionOverlay.tsx');
 const splitSrc = read('src/app/world/atlas/unified/AtlasSplit2dCanvas.tsx');
 const nativeSrc = read('src/app/world/atlas/unified/AtlasNative3dEditor.tsx');
 const threeSceneSrc = read('src/infrastructure/world/atlas-three/atlas-three-scene.ts');
@@ -30,6 +32,7 @@ const pbrSrc = read('src/infrastructure/world/atlas-three/pbr-textures.ts');
 
 for (const [name, src] of [
   ['AtlasThreeWorkstation.tsx', workstationSrc],
+  ['AtlasPortalTransitionOverlay.tsx', portalSrc],
   ['AtlasSplit2dCanvas.tsx', splitSrc],
   ['AtlasNative3dEditor.tsx', nativeSrc],
 ]) {
@@ -151,6 +154,40 @@ const exit = zoomMod.resolveContinuousZoomTransition({
   mapScale: 'settlement',
 });
 assert.equal(exit.kind, 'exit-parent');
+
+// 5) Google-Maps zoom-tier label hierarchy & thematic portal archetypes
+const tavernPin = { id: 'p-tav', label: 'Taverne Zum Flüstern', kind: 'building' };
+const marketPin = { id: 'p-mkt', label: 'Marktplatz', kind: 'place' };
+const roadPin = { id: 'p-road', label: 'Whisper Road', kind: 'place' };
+const cryptPin = { id: 'p-cry', label: 'Krypta unter dem Hügel', kind: 'place' };
+
+assert.equal(labelMod.classifyAtlasPinTier(tavernPin, 'settlement'), 1);
+assert.equal(labelMod.classifyAtlasPinTier(marketPin, 'settlement'), 2);
+assert.equal(labelMod.classifyAtlasPinTier(roadPin, 'settlement'), 3);
+assert.equal(labelMod.classifyAtlasPinTier(cryptPin, 'settlement'), 3);
+
+// At wide settlement zoom (span 340): Tier 1 visible, Tier 3 hidden!
+assert.equal(labelMod.computeAtlasPinZoomPresentation(tavernPin, 340, 'settlement', { totalPins: 4 }).visible, true);
+assert.equal(labelMod.computeAtlasPinZoomPresentation(roadPin, 340, 'settlement', { totalPins: 4 }).visible, false);
+// At close settlement zoom (span 110): Tier 3 smoothly revealed!
+assert.equal(labelMod.computeAtlasPinZoomPresentation(roadPin, 110, 'settlement', { totalPins: 4 }).opacity, 1);
+
+assert.equal(
+  labelMod.classifyAtlasPortalKind({ direction: 'in', fromScale: 'settlement', targetLabel: 'Taverne Zum Flüstern', targetKind: 'building' }),
+  'tavern-doors',
+);
+assert.equal(
+  labelMod.classifyAtlasPortalKind({ direction: 'in', fromScale: 'settlement', targetLabel: 'Krypta unter dem Hügel', targetKind: 'scene' }),
+  'crypt-gate',
+);
+assert.equal(
+  labelMod.classifyAtlasPortalKind({ direction: 'out', fromScale: 'interior' }),
+  'outdoor-exit',
+);
+assert.equal(
+  labelMod.classifyAtlasPortalKind({ direction: 'in', fromScale: 'world', targetLabel: 'Kontinent Westmark', targetKind: 'region' }),
+  'flight-in',
+);
 
 console.log(
   JSON.stringify({
