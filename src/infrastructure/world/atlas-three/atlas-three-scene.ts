@@ -59,28 +59,30 @@ export const ATLAS_THREE_SURFACES = {
   wall: { pbr: 'wall', color: '#ded7c2', roughness: 0.92, normalScale: 0.62, tile: 26 },
   'wall-indoor': { pbr: 'wall', color: '#b6b09f', roughness: 0.94, normalScale: 0.7, tile: 22 },
   plaster: { pbr: 'plaster', color: '#f2e3c7', roughness: 0.95, normalScale: 0.36, tile: 22 },
-  'roof-tile': { pbr: 'roofTile', color: '#f2c4ae', roughness: 0.84, normalScale: 0.82, tile: 18 },
-  'roof-slate': { pbr: 'roofSlate', color: '#b4c2cf', roughness: 0.76, normalScale: 0.78, tile: 18 },
-  'roof-moss': { pbr: 'roofMoss', color: '#bed0a8', roughness: 0.88, normalScale: 0.8, tile: 18 },
-  wood: { pbr: 'wood', color: '#d3a77b', roughness: 0.84, normalScale: 0.56, tile: 16 },
-  'wood-dark': { pbr: 'wood', color: '#8a6648', roughness: 0.86, normalScale: 0.6, tile: 14 },
-  'bark-birch': { pbr: 'plaster', color: '#dfd8c8', roughness: 0.86, normalScale: 0.4, tile: 14 },
-  rock: { pbr: 'rock', color: '#b4bcb0', roughness: 0.92, normalScale: 0.82, tile: 32 },
-  snow: { pbr: 'snow', color: '#eef4f8', roughness: 0.76, normalScale: 0.35, tile: 36 },
-  leaf: { pbr: 'moss', color: '#7eb276', roughness: 0.92, normalScale: 0.55, tile: 18 },
-  'leaf-birch': { pbr: 'moss', color: '#a1c97b', roughness: 0.9, normalScale: 0.5, tile: 18 },
-  'leaf-pine': { pbr: 'moss', color: '#4f866a', roughness: 0.94, normalScale: 0.58, tile: 18 },
-  flower: { pbr: null, color: '#e8c468', roughness: 0.85, normalScale: 0, tile: 1 },
+  'roof-tile': { pbr: 'roofTile', color: '#e69b78', roughness: 0.82, normalScale: 0.88, tile: 16 },
+  'roof-slate': { pbr: 'roofSlate', color: '#90a3b5', roughness: 0.74, normalScale: 0.82, tile: 16 },
+  'roof-moss': { pbr: 'roofMoss', color: '#a5bd88', roughness: 0.88, normalScale: 0.84, tile: 16 },
+  wood: { pbr: 'wood', color: '#c8986b', roughness: 0.84, normalScale: 0.62, tile: 15 },
+  'wood-dark': { pbr: 'wood', color: '#5c412c', roughness: 0.86, normalScale: 0.66, tile: 14 },
+  'bark-birch': { pbr: 'plaster', color: '#dfd8c8', roughness: 0.86, normalScale: 0.44, tile: 14 },
+  rock: { pbr: 'rock', color: '#9ea89e', roughness: 0.92, normalScale: 0.9, tile: 30 },
+  snow: { pbr: 'snow', color: '#f2f7fa', roughness: 0.74, normalScale: 0.36, tile: 34 },
+  leaf: { pbr: 'moss', color: '#5f9458', roughness: 0.9, normalScale: 0.6, tile: 16 },
+  'leaf-sun': { pbr: 'moss', color: '#8fbe65', roughness: 0.88, normalScale: 0.56, tile: 16 },
+  'leaf-birch': { pbr: 'moss', color: '#9bc46e', roughness: 0.88, normalScale: 0.52, tile: 16 },
+  'leaf-pine': { pbr: 'moss', color: '#3b6f54', roughness: 0.92, normalScale: 0.62, tile: 16 },
+  'gold-accent': { pbr: null, color: '#e8b658', roughness: 0.32, normalScale: 0, tile: 1, metalness: 0.62 },
+  flower: { pbr: null, color: '#f0cf6c', roughness: 0.85, normalScale: 0, tile: 1 },
   window: { pbr: null, color: '#2b3e4f', roughness: 0.22, normalScale: 0, tile: 1, metalness: 0.18 },
   'window-warm': {
     pbr: null,
-    color: '#ffcf7d',
-    roughness: 0.4,
+    color: '#ffd584',
+    roughness: 0.35,
     normalScale: 0,
     tile: 1,
-    emissive: '#ffb658',
+    emissive: '#ffae45',
   },
-  flame: { pbr: null, color: '#ffb961', roughness: 1, normalScale: 0, tile: 1, emissive: '#ffa64c' },
+  flame: { pbr: null, color: '#ffbe66', roughness: 1, normalScale: 0, tile: 1, emissive: '#ffa342' },
 } as const satisfies Record<string, AtlasThreeSurfaceSpec>;
 
 export type AtlasThreeSurfaceKey = keyof typeof ATLAS_THREE_SURFACES;
@@ -191,12 +193,23 @@ export type AtlasThreeScatterBatch = {
   readonly matrices: readonly THREE.Matrix4[];
 };
 
+export type AtlasThreeAoDisc = {
+  readonly x: number;
+  readonly y: number;
+  readonly z: number;
+  readonly radius: number;
+};
+
 export type AtlasThreeScenePlan = {
   readonly builders: Map<AtlasThreeSurfaceKey, AtlasThreeGeoBuilder>;
   readonly water: AtlasThreeGeoBuilder;
   readonly terrain: THREE.BufferGeometry | null;
+  readonly waterLevel: number;
   readonly doorInstances: { readonly matrices: THREE.Matrix4[]; readonly ids: string[] };
   readonly scatterBatches: readonly AtlasThreeScatterBatch[];
+  readonly aoDiscs: readonly AtlasThreeAoDisc[];
+  readonly smokePoints: readonly THREE.Vector3[];
+  readonly mistPoints: readonly { readonly position: THREE.Vector3; readonly scale: number }[];
   readonly torches: readonly {
     readonly id: string;
     readonly position: THREE.Vector3;
@@ -442,6 +455,14 @@ function synthesizeWorldReliefHeightfield(
         }
       }
 
+      // Smoothly taper outer 5% edge underwater so zero rectangular seam ever appears in the infinite ocean.
+      const edgeDist = Math.min(x, 1000 - x, z, 1000 - z);
+      if (edgeDist < 55) {
+        const et = Math.max(0, edgeDist / 55);
+        const smoothEdge = et * et * (3 - 2 * et);
+        h = -13 * (1 - smoothEdge) + h * smoothEdge;
+      }
+
       heights[idx] = Math.round(h * 10) / 10;
     }
   }
@@ -621,6 +642,9 @@ function emitCanonicalProp(
   p: PropPrim,
   angleDeg: number,
   torches: { id: string; position: THREE.Vector3; radius: number }[],
+  aoDiscs: AtlasThreeAoDisc[],
+  smokePoints: THREE.Vector3[],
+  mistPoints: { position: THREE.Vector3; scale: number }[],
   opts: {
     readonly fullDetail: boolean;
     readonly hideRoofs: boolean;
@@ -686,26 +710,33 @@ function emitCanonicalProp(
         0,
       );
       if (p.stamp === 'tanne') {
-        localGeo('leaf-pine', new THREE.ConeGeometry(0.56 * sc, 0.9 * sc, 7), 0, 0.62 * sc, 0);
-        localGeo('leaf-pine', new THREE.ConeGeometry(0.44 * sc, 0.82 * sc, 7), 0, 0.96 * sc, 0);
-        localGeo('leaf-pine', new THREE.ConeGeometry(0.3 * sc, 0.68 * sc, 6), 0, 1.28 * sc, 0);
-        localGeo('leaf-pine', new THREE.ConeGeometry(0.17 * sc, 0.45 * sc, 5), 0, 1.54 * sc, 0);
+        localGeo('leaf-pine', new THREE.ConeGeometry(0.58 * sc, 0.88 * sc, 7), 0, 0.58 * sc, 0);
+        localGeo('leaf-pine', new THREE.ConeGeometry(0.46 * sc, 0.8 * sc, 7), 0, 0.94 * sc, 0);
+        localGeo('leaf-pine', new THREE.ConeGeometry(0.32 * sc, 0.66 * sc, 6), 0, 1.26 * sc, 0);
+        localGeo('leaf-sun', new THREE.ConeGeometry(0.18 * sc, 0.44 * sc, 5), 0, 1.54 * sc, 0);
       } else {
         const leafKey: AtlasThreeSurfaceKey = isBirch ? 'leaf-birch' : 'leaf';
-        localGeo(leafKey, new THREE.DodecahedronGeometry(0.46 * sc, 1), 0, 0.72 * sc, 0);
-        localGeo(leafKey, new THREE.DodecahedronGeometry(0.32 * sc, 0), 0.24 * sc, 0.62 * sc, 0.18 * sc);
-        localGeo(leafKey, new THREE.DodecahedronGeometry(0.3 * sc, 0), -0.22 * sc, 0.66 * sc, -0.14 * sc);
-        localGeo(leafKey, new THREE.DodecahedronGeometry(0.26 * sc, 0), 0.04 * sc, 0.96 * sc, -0.06 * sc);
+        const sunKey: AtlasThreeSurfaceKey = isBirch ? 'leaf-birch' : 'leaf-sun';
+        localGeo(leafKey, new THREE.DodecahedronGeometry(0.46 * sc, 1), 0, 0.68 * sc, 0);
+        localGeo(leafKey, new THREE.DodecahedronGeometry(0.34 * sc, 0), 0.25 * sc, 0.6 * sc, 0.18 * sc);
+        localGeo(leafKey, new THREE.DodecahedronGeometry(0.31 * sc, 0), -0.23 * sc, 0.64 * sc, -0.15 * sc);
+        localGeo(sunKey, new THREE.DodecahedronGeometry(0.3 * sc, 1), 0.08 * sc, 0.96 * sc, 0.04 * sc);
+        localGeo(sunKey, new THREE.DodecahedronGeometry(0.22 * sc, 0), -0.16 * sc, 0.88 * sc, 0.14 * sc);
       }
+      aoDiscs.push({ x, y: elev + 0.16, z, radius: sc * 0.58 });
       break;
     }
     case 'fels': {
       const crag = 24 * u;
-      localGeo('rock', new THREE.DodecahedronGeometry(crag * 0.72, 0), 0, crag * 0.48, 0, 1.25, 0.85, 1.05);
-      localGeo('rock', new THREE.DodecahedronGeometry(crag * 0.5, 0), crag * 0.48, crag * 0.36, -crag * 0.24, 1.1, 0.95, 0.9);
-      if (crag > 12) {
-        localGeo('snow', new THREE.ConeGeometry(crag * 0.32, crag * 0.38, 6), 0, crag * 0.96, 0);
+      localGeo('rock', new THREE.ConeGeometry(crag * 0.92, crag * 1.15, 7), 0, crag * 0.54, 0, 1.18, 1.0, 1.04);
+      localGeo('rock', new THREE.ConeGeometry(crag * 0.64, crag * 0.85, 6), crag * 0.52, crag * 0.4, -crag * 0.24, 1.1, 1.0, 0.95);
+      localGeo('rock', new THREE.ConeGeometry(crag * 0.52, crag * 0.72, 6), -crag * 0.46, crag * 0.34, crag * 0.26, 1.0, 0.95, 1.1);
+      if (crag > 11) {
+        localGeo('snow', new THREE.ConeGeometry(crag * 0.3, crag * 0.44, 7), 0, crag * 0.94, 0, 1.08, 1.0, 0.96);
+        localGeo('snow', new THREE.ConeGeometry(crag * 0.2, crag * 0.3, 6), crag * 0.52, crag * 0.72, -crag * 0.24);
+        mistPoints.push({ position: new THREE.Vector3(x, elev + crag * 0.78, z), scale: crag * 2.2 });
       }
+      aoDiscs.push({ x, y: elev + 0.16, z, radius: crag * 1.15 });
       break;
     }
     case 'haus': {
@@ -713,14 +744,14 @@ function emitCanonicalProp(
       const wallKey: AtlasThreeSurfaceKey = styleIdx === 2 ? 'wall' : 'plaster';
       const roofKey: AtlasThreeSurfaceKey =
         styleIdx === 0 ? 'roof-tile' : styleIdx === 1 ? 'roof-slate' : 'roof-moss';
-      const bw = 80 * u;
-      const bd = 60 * u;
-      const bh = 54 * u * H;
-      // Stone foundation plinth
-      localBox('wall', 0, bh * 0.08, 0, bw * 1.04, bh * 0.16, bd * 1.04);
-      // Main walls (when cutaway/hideRoofs is active, render hollow interior shell)
+      const bw = 82 * u;
+      const bd = 62 * u;
+      const bh = 56 * u * H;
+      // Raised cobblestone foundation plinth (V7/V8 Dornhain Fachwerk craft)
+      localBox('wall', 0, bh * 0.1, 0, bw * 1.08, bh * 0.2, bd * 1.08);
+      aoDiscs.push({ x, y: elev + 0.14, z, radius: Math.max(bw, bd) * 0.76 });
       if (opts.hideRoofs) {
-        localBox('floor-wood', 0, 0.4, 0, bw * 0.96, 0.8, bd * 0.96);
+        localBox('floor-wood', 0, 0.45, 0, bw * 0.96, 0.9, bd * 0.96);
         const wt = Math.max(2, bw * 0.07);
         const lowH = bh * 0.45;
         localBox(wallKey, 0, lowH / 2, -bd / 2 + wt / 2, bw, lowH, wt);
@@ -728,56 +759,82 @@ function emitCanonicalProp(
         localBox(wallKey, -bw / 2 + wt / 2, lowH / 2, 0, wt, lowH, bd);
         localBox(wallKey, bw / 2 - wt / 2, lowH / 2, 0, wt, lowH, bd);
       } else {
-        localBox(wallKey, 0, bh * 0.54, 0, bw, bh * 0.88, bd);
-        // 3 distinct roof shapes (ATL3-G01 D-GEO-01): gable, hip pyramid, twin-gable cottage
+        // Main plaster/stone body + subtle second-story timber overhang
+        localBox(wallKey, 0, bh * 0.56, 0, bw, bh * 0.86, bd);
+        // 3 distinct roof shapes + ridge beam + stone chimney with animated smoke!
         if (styleIdx === 0) {
-          const gable = createGableRoofGeometry(bw * 1.16, bh * 0.68, bd * 1.14);
+          const gable = createGableRoofGeometry(bw * 1.22, bh * 0.74, bd * 1.18);
           localGeo(roofKey, gable, 0, bh * 0.98, 0);
-          localBox('wall', bw * 0.28, bh * 1.32, -bd * 0.15, bw * 0.14, bh * 0.52, bd * 0.16);
+          localBox('wood-dark', 0, bh * 1.72, 0, bw * 0.07, bh * 0.07, bd * 1.22);
+          localBox('wall', bw * 0.28, bh * 1.38, -bd * 0.16, bw * 0.15, bh * 0.58, bd * 0.17);
+          localBox('wall', bw * 0.28, bh * 1.68, -bd * 0.16, bw * 0.19, bh * 0.06, bd * 0.21);
+          smokePoints.push(new THREE.Vector3(x + bw * 0.24, elev + bh * 1.78, z - bd * 0.12));
         } else if (styleIdx === 1) {
-          const hip = new THREE.ConeGeometry(Math.SQRT1_2, bh * 0.66, 4);
+          const hip = new THREE.ConeGeometry(Math.SQRT1_2, bh * 0.72, 4);
           hip.rotateY(Math.PI / 4);
-          localGeo(roofKey, hip, 0, bh * 0.98 + bh * 0.33, 0, bw * 1.18, 1, bd * 1.18);
+          localGeo(roofKey, hip, 0, bh * 0.98 + bh * 0.36, 0, bw * 1.22, 1, bd * 1.22);
+          localBox('wall', -bw * 0.22, bh * 1.34, -bd * 0.18, bw * 0.14, bh * 0.5, bd * 0.16);
+          smokePoints.push(new THREE.Vector3(x - bw * 0.2, elev + bh * 1.66, z - bd * 0.15));
         } else {
-          const gable = createGableRoofGeometry(bd * 1.16, bh * 0.62, bw * 1.14);
+          const gable = createGableRoofGeometry(bd * 1.2, bh * 0.68, bw * 1.18);
           localGeo(roofKey, gable, 0, bh * 0.98, 0, 1, 1, 1, Math.PI / 2);
-          localBox('wall', -bw * 0.26, bh * 1.28, bd * 0.12, bw * 0.14, bh * 0.46, bd * 0.16);
+          localBox('wood-dark', 0, bh * 1.66, 0, bw * 1.2, bh * 0.07, bd * 0.07);
+          localBox('wall', -bw * 0.26, bh * 1.32, bd * 0.14, bw * 0.15, bh * 0.52, bd * 0.17);
+          smokePoints.push(new THREE.Vector3(x - bw * 0.24, elev + bh * 1.64, z + bd * 0.12));
         }
-        // Timber framing + door + windows
-        localBox('wood-dark', 0, bh * 0.34, bd * 0.5 + 0.3, bw * 0.18, bh * 0.52, bd * 0.08);
-        const winKey: AtlasThreeSurfaceKey = opts.warmWindows ? 'window-warm' : 'window';
+        // Recessed timber door + wooden awning
+        localBox('wood-dark', 0, bh * 0.34, bd * 0.5 + 0.35, bw * 0.2, bh * 0.5, bd * 0.09);
+        localBox('roof-tile', 0, bh * 0.61, bd * 0.56, bw * 0.28, bh * 0.08, bd * 0.18);
+        // Warm glowing windows (golden-hour cozy glow like V7/V8 Dornhain!)
+        const winKey: AtlasThreeSurfaceKey = 'window-warm';
         if (opts.fullDetail) {
-          const wy = bh * 0.58;
-          const wh = bh * 0.19;
-          const ww = bw * 0.13;
-          localBox(winKey, -bw * 0.28, wy, bd * 0.5 + 0.35, ww, wh, bd * 0.05);
-          localBox(winKey, bw * 0.28, wy, bd * 0.5 + 0.35, ww, wh, bd * 0.05);
-          localBox(winKey, -bw * 0.28, wy, -bd * 0.5 - 0.35, ww, wh, bd * 0.05);
-          localBox(winKey, bw * 0.28, wy, -bd * 0.5 - 0.35, ww, wh, bd * 0.05);
-          if (styleIdx !== 2) {
-            localBox('wood-dark', 0, bh * 0.18, bd * 0.5 + 0.2, bw * 1.01, bh * 0.05, bd * 0.04);
-            localBox('wood-dark', 0, bh * 0.82, bd * 0.5 + 0.2, bw * 1.01, bh * 0.05, bd * 0.04);
-            localBox('wood-dark', -bw * 0.48, bh * 0.52, bd * 0.5 + 0.2, bw * 0.05, bh * 0.72, bd * 0.04);
-            localBox('wood-dark', bw * 0.48, bh * 0.52, bd * 0.5 + 0.2, bw * 0.05, bh * 0.72, bd * 0.04);
+          const wy = bh * 0.56;
+          const wh = bh * 0.2;
+          const ww = bw * 0.14;
+          for (const side of [1, -1]) {
+            localBox(winKey, -bw * 0.29, wy, side * (bd * 0.5 + 0.38), ww, wh, bd * 0.05);
+            localBox(winKey, bw * 0.29, wy, side * (bd * 0.5 + 0.38), ww, wh, bd * 0.05);
+            // Fachwerk beams & posts
+            localBox('wood-dark', 0, bh * 0.22, side * (bd * 0.5 + 0.22), bw * 1.03, bh * 0.055, bd * 0.045);
+            localBox('wood-dark', 0, bh * 0.52, side * (bd * 0.5 + 0.22), bw * 1.03, bh * 0.05, bd * 0.045);
+            localBox('wood-dark', 0, bh * 0.88, side * (bd * 0.5 + 0.22), bw * 1.03, bh * 0.055, bd * 0.045);
+            localBox('wood-dark', -bw * 0.48, bh * 0.55, side * (bd * 0.5 + 0.22), bw * 0.055, bh * 0.72, bd * 0.045);
+            localBox('wood-dark', bw * 0.48, bh * 0.55, side * (bd * 0.5 + 0.22), bw * 0.055, bh * 0.72, bd * 0.045);
+            localBox('wood-dark', 0, bh * 0.7, side * (bd * 0.5 + 0.22), bw * 0.05, bh * 0.38, bd * 0.045);
+          }
+          // Cozy porch lantern glow on larger houses / taverns
+          if (u >= 0.48) {
+            torches.push({
+              id: `${id}:lantern`,
+              position: new THREE.Vector3(
+                x + Math.sin(rotY) * (bd * 0.62),
+                elev + bh * 0.46,
+                z + Math.cos(rotY) * (bd * 0.62),
+              ),
+              radius: Math.max(46, bw * 1.65),
+            });
           }
         }
       }
       break;
     }
     case 'turm': {
-      const bh = 96 * u * H;
-      const bw = 42 * u;
-      localGeo('wall', new THREE.CylinderGeometry(bw * 0.48, bw * 0.55, bh, 8), 0, bh * 0.5, 0);
+      const bh = 104 * u * H;
+      const bw = 44 * u;
+      aoDiscs.push({ x, y: elev + 0.14, z, radius: bw * 0.92 });
+      localGeo('wall', new THREE.CylinderGeometry(bw * 0.48, bw * 0.58, bh, 8), 0, bh * 0.5, 0);
       if (!opts.hideRoofs) {
-        // Battlement crown + tall spire (Turmhelm)
-        localGeo('wall', new THREE.CylinderGeometry(bw * 0.58, bw * 0.54, bh * 0.1, 8), 0, bh * 0.96, 0);
-        localGeo('roof-slate', new THREE.ConeGeometry(bw * 0.66, bh * 0.46, 8), 0, bh * 1.24, 0);
+        // Protruding timber/stone hoarding crown + tall slate spire + golden finial
+        localGeo('wood-dark', new THREE.CylinderGeometry(bw * 0.6, bw * 0.54, bh * 0.08, 8), 0, bh * 0.91, 0);
+        localGeo('wall', new THREE.CylinderGeometry(bw * 0.62, bw * 0.58, bh * 0.1, 8), 0, bh * 0.98, 0);
+        localGeo('roof-slate', new THREE.ConeGeometry(bw * 0.7, bh * 0.5, 8), 0, bh * 1.28, 0);
+        localGeo('gold-accent', new THREE.OctahedronGeometry(bw * 0.1, 0), 0, bh * 1.55, 0);
       }
-      localBox('wood-dark', 0, bh * 0.2, bw * 0.48, bw * 0.22, bh * 0.28, bw * 0.14);
-      const winKey: AtlasThreeSurfaceKey = opts.warmWindows ? 'window-warm' : 'window';
+      localBox('wood-dark', 0, bh * 0.18, bw * 0.5, bw * 0.22, bh * 0.26, bw * 0.14);
       if (opts.fullDetail) {
-        localBox(winKey, 0, bh * 0.58, bw * 0.48, bw * 0.14, bh * 0.12, bw * 0.1);
-        localBox(winKey, 0, bh * 0.78, bw * 0.48, bw * 0.14, bh * 0.12, bw * 0.1);
+        localBox('window-warm', 0, bh * 0.56, bw * 0.5, bw * 0.14, bh * 0.12, bw * 0.1);
+        localBox('window-warm', 0, bh * 0.76, bw * 0.5, bw * 0.14, bh * 0.12, bw * 0.1);
+        localBox('window-warm', bw * 0.5, bh * 0.66, 0, bw * 0.1, bh * 0.12, bw * 0.14);
       }
       break;
     }
@@ -848,6 +905,9 @@ export function buildAtlasThreeScenePlan(
   const water = new AtlasThreeGeoBuilder(56);
   const ids = new Set<string>();
   const torches: { id: string; position: THREE.Vector3; radius: number }[] = [];
+  const aoDiscs: AtlasThreeAoDisc[] = [];
+  const smokePoints: THREE.Vector3[] = [];
+  const mistPoints: { position: THREE.Vector3; scale: number }[] = [];
   const doorInstances: { matrices: THREE.Matrix4[]; ids: string[] } = { matrices: [], ids: [] };
   const up = new THREE.Vector3(0, 1, 0);
 
@@ -857,6 +917,7 @@ export function buildAtlasThreeScenePlan(
       ? synthesizeWorldReliefHeightfield(doc, opts.seed)
       : null;
   const activeTerrainHf = doc.heightfield ?? syntheticRelief;
+  const waterLevel = activeTerrainHf ? activeTerrainHf.waterLevel : -0.52;
   const sampleGroundY = (x: number, z: number, fallback: number): number => {
     if (!activeTerrainHf) return fallback;
     const sampled = sampleHeightfield(activeTerrainHf, x, z);
@@ -864,25 +925,9 @@ export function buildAtlasThreeScenePlan(
     return syntheticRelief ? Math.max(0.2, sampled) : sampled > fallback ? sampled : fallback;
   };
 
-  // Full ocean surround (world), lush meadow horizon (settlement), or dark slate sheet (interior).
-  if (opts.look === 'indoor') {
-    const b = get('sheet-indoor');
-    const y = -0.52;
-    const p = (x: number, z: number): THREE.Vector3 => new THREE.Vector3(x, y, z);
-    b.tri(p(-600, -600), p(-600, 1600), p(1600, 1600), '__sheet', up);
-    b.tri(p(-600, -600), p(1600, 1600), p(1600, -600), '__sheet', up);
-  } else if (opts.mapScale === 'settlement') {
-    const b = get('sheet-outdoor');
-    const y = -0.54;
-    const p = (x: number, z: number): THREE.Vector3 => new THREE.Vector3(x, y, z);
-    b.tri(p(-1400, -1400), p(-1400, 2400), p(2400, 2400), '__meadow', up);
-    b.tri(p(-1400, -1400), p(2400, 2400), p(2400, -1400), '__meadow', up);
-  } else {
-    const wy = activeTerrainHf ? activeTerrainHf.waterLevel : -0.52;
-    const p = (x: number, z: number): THREE.Vector3 => new THREE.Vector3(x, wy, z);
-    water.tri(p(-1400, -1400), p(-1400, 2400), p(2400, 2400), '__ocean', up);
-    water.tri(p(-1400, -1400), p(2400, 2400), p(2400, -1400), '__ocean', up);
-  }
+  // NOTE: Infinite ocean / infinite meadow / infinite dark cavern horizon surround is rendered
+  // by AtlasThreeRuntime (camera-following 28k×28k plane + sky dome + FogExp2) so zero
+  // rectangular edges ever appear when zooming out!
 
   const rooms = plan.primitives.filter(
     (q): q is Extract<AtlasProductGeometryPrimitive, { kind: 'area' | 'room' }> =>
@@ -893,25 +938,22 @@ export function buildAtlasThreeScenePlan(
   rooms.forEach((rm, i) => {
     ids.add(rm.id);
     const matName = roomMaterial.get(rm.id);
+    // Skip ocean backdrop polygons — handled seamlessly by the infinite camera-following surround.
+    if (rm.id === 'g.ocean' || rm.id === 'w.ocean') {
+      return;
+    }
     // When suggestive 3D fantasy terrain relief is active, the continuous terrain mesh
     // renders the land & water biomes cleanly without flat z-fighting slabs (keep paved squares!).
     if (syntheticRelief && matName !== 'pflaster') {
       return;
     }
+    const cx = rm.points.reduce((a, p) => a + p[0], 0) / Math.max(1, rm.points.length);
+    const cz = rm.points.reduce((a, p) => a + p[1], 0) / Math.max(1, rm.points.length);
     const y =
       syntheticRelief && matName === 'pflaster'
-        ? sampleGroundY(
-            rm.points.reduce((a, p) => a + p[0], 0) / Math.max(1, rm.points.length),
-            rm.points.reduce((a, p) => a + p[1], 0) / Math.max(1, rm.points.length),
-            4.5,
-          ) + 0.38
+        ? sampleGroundY(cx, cz, 4.5) + 0.38
         : -0.45 + i * dyR;
-    // Settlement valley surround: render g.ocean / w.ocean as a lush grassy valley floor
-    // instead of a flat water sheet so settlements like Dornhain sit in green hills.
-    const surface: AtlasThreeSurfaceKey | 'water' =
-      opts.mapScale === 'settlement' && (rm.id === 'g.ocean' || rm.id === 'w.ocean')
-        ? 'sheet-outdoor'
-        : atlasThreeFloorSurface(matName, opts.mapScale);
+    const surface: AtlasThreeSurfaceKey | 'water' = atlasThreeFloorSurface(matName, opts.mapScale);
     const b = surface === 'water' ? water : get(surface);
     for (const [ia, ib, ic] of rm.triangles) {
       const a = rm.points[ia];
@@ -924,6 +966,31 @@ export function buildAtlasThreeScenePlan(
       const n = new THREE.Vector3().subVectors(vb, va).cross(new THREE.Vector3().subVectors(vc, va));
       if (n.y >= 0) b.tri(va, vb, vc, rm.id, up);
       else b.tri(va, vc, vb, rm.id, up);
+    }
+
+    // V7/V8 Dornhain touch: add a charming stone village fountain on main cobblestone plazas (suggestive only).
+    if (opts.mapScale === 'settlement' && matName === 'pflaster' && opts.presetId !== 'lite') {
+      const minX = Math.min(...rm.points.map((p) => p[0]));
+      const maxX = Math.max(...rm.points.map((p) => p[0]));
+      const minZ = Math.min(...rm.points.map((p) => p[1]));
+      const maxZ = Math.max(...rm.points.map((p) => p[1]));
+      if (maxX - minX >= 100 && maxZ - minZ >= 80) {
+        const fx = (minX + maxX) * 0.5;
+        const fz = (minZ + maxZ) * 0.5;
+        const rimGeo = new THREE.CylinderGeometry(11.5, 13, 4.6, 12);
+        get('wall').geometry(rimGeo, composeMatrix(fx, y + 2.3, fz, 1, 1, 1), '__fountain');
+        rimGeo.dispose();
+        const spireGeo = new THREE.CylinderGeometry(2.2, 3.6, 10.5, 8);
+        get('wall').geometry(spireGeo, composeMatrix(fx, y + 5.2, fz, 1, 1, 1), '__fountain');
+        spireGeo.dispose();
+        const capGeo = new THREE.CylinderGeometry(5.5, 2.5, 2.4, 10);
+        get('wall').geometry(capGeo, composeMatrix(fx, y + 9.2, fz, 1, 1, 1), '__fountain');
+        capGeo.dispose();
+        const poolGeo = new THREE.CylinderGeometry(9.6, 9.6, 0.6, 12);
+        water.geometry(poolGeo, composeMatrix(fx, y + 3.9, fz, 1, 1, 1), '__fountain-water');
+        poolGeo.dispose();
+        aoDiscs.push({ x: fx, y: y + 0.14, z: fz, radius: 18 });
+      }
     }
   });
 
@@ -1013,7 +1080,7 @@ export function buildAtlasThreeScenePlan(
       if (q.kind !== 'prop' && q.kind !== 'building_footprint') continue;
       ids.add(q.id);
       const groundElevation = sampleGroundY(q.x, q.y, -0.35);
-      emitCanonicalProp(get, q, objAngles.get(q.id) ?? 0, torches, {
+      emitCanonicalProp(get, q, objAngles.get(q.id) ?? 0, torches, aoDiscs, smokePoints, mistPoints, {
         fullDetail,
         hideRoofs: Boolean(opts.hideRoofs),
         warmWindows: Boolean(opts.warmWindows),
@@ -1052,6 +1119,20 @@ export function buildAtlasThreeScenePlan(
       ),
     );
     scatterByKind.set(inst.kind, list);
+    if (inst.kind === 'oak' || inst.kind === 'birch' || inst.kind === 'pine' || inst.kind === 'mountain') {
+      aoDiscs.push({
+        x: inst.x,
+        y: inst.elevation + 0.14,
+        z: inst.y,
+        radius: inst.kind === 'mountain' ? inst.scale * 46 : inst.scale * 24,
+      });
+    }
+    if (inst.kind === 'mountain' && mistPoints.length < 18) {
+      mistPoints.push({
+        position: new THREE.Vector3(inst.x, inst.elevation + inst.scale * 36, inst.y),
+        scale: inst.scale * 72,
+      });
+    }
   }
   const scatterBatches: AtlasThreeScatterBatch[] = [];
   for (const [kind, matrices] of scatterByKind) {
@@ -1062,8 +1143,12 @@ export function buildAtlasThreeScenePlan(
     builders,
     water,
     terrain,
+    waterLevel,
     doorInstances,
     scatterBatches,
+    aoDiscs,
+    smokePoints,
+    mistPoints,
     torches,
     ids,
     look: opts.look,

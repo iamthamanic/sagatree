@@ -16,6 +16,7 @@ const read = (rel) => readFileSync(join(root, rel), 'utf8');
 const scatterMod = jiti(join(root, 'src/domains/world/atlas/atlas-scene-scatter.ts'));
 const brushMod = jiti(join(root, 'src/domains/world/atlas/atlas-biome-brush.ts'));
 const zoomMod = jiti(join(root, 'src/domains/world/atlas/atlas-continuous-zoom.ts'));
+const cameraMod = jiti(join(root, 'src/infrastructure/world/atlas-three/atlas-three-camera.ts'));
 const golden = jiti(join(root, 'src/domains/world/atlas/dornhain-golden-hierarchy.ts'));
 const starter = jiti(join(root, 'src/domains/world/atlas/dornhain-unified-starter.ts'));
 
@@ -45,7 +46,27 @@ for (const [name, src] of [
 }
 assert.ok(threeRuntimeSrc.includes('PCFShadowMap'), 'runtime enables PCFShadowMap');
 assert.ok(threeRuntimeSrc.includes('ACESFilmicToneMapping'), 'runtime enables ACESFilmicToneMapping');
+assert.ok(threeRuntimeSrc.includes('FogExp2'), 'runtime uses FogExp2 for seamless infinite horizon');
+assert.ok(threeRuntimeSrc.includes('infiniteOcean'), 'runtime mounts camera-following infinite ocean');
+assert.ok(threeRuntimeSrc.includes('skyDome'), 'runtime mounts atmospheric sky dome');
 assert.ok(threeSceneSrc.includes('synthesizeWorldReliefHeightfield'), 'scene synthesizes 3D world relief');
+assert.ok(threeSceneSrc.includes('aoDiscs'), 'scene computes ground contact-shadow AO discs');
+assert.ok(workstationSrc.includes('data-atlas-bottom-taskbar'), 'workstation renders floating bottom scale/navigation taskbar');
+assert.ok(workstationSrc.includes('data-atlas-compass-dial'), 'workstation renders interactive rotating compass dial');
+assert.ok(workstationSrc.includes('data-atlas-grid-toggle'), 'workstation renders tactical grid toggle');
+
+// 1b) Smooth camera pitch curve & inertia damping
+const pitchFar = cameraMod.autoAtlasThreePitchForSpan('diorama-oblique', 900);
+const pitchClose = cameraMod.autoAtlasThreePitchForSpan('diorama-oblique', 90);
+assert.ok(pitchFar > pitchClose, `expected steeper overview pitch (${pitchFar}) > close diorama pitch (${pitchClose})`);
+const damped = cameraMod.dampAtlasThreeView(
+  { mode: 'diorama-oblique', x: 500, z: 500, span: 600, yawRad: 0, pitchRad: 1.0 },
+  { mode: 'diorama-oblique', x: 600, z: 500, span: 300, yawRad: 0.5, pitchRad: 0.8 },
+  0.016,
+);
+assert.ok(damped.next.x > 500 && damped.next.x < 600, 'dampAtlasThreeView smoothly interpolates x');
+assert.ok(damped.next.span < 600 && damped.next.span > 300, 'dampAtlasThreeView smoothly interpolates span');
+assert.equal(damped.settled, false, 'dampAtlasThreeView does not snap immediately on 16ms step');
 
 // 2) Scatter determinism, suggestive-only authority & budget enforcement
 const worldDoc = starter.buildDornhainUnifiedCanvasDoc();

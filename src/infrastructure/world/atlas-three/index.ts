@@ -3,9 +3,11 @@
  * Location: src/infrastructure/world/atlas-three/index.ts
  */
 export {
+  autoAtlasThreePitchForSpan,
   buildAtlasThreeCameraRig,
   buildAtlasThreeFogBand,
   clampAtlasThreePitch,
+  dampAtlasThreeView,
   defaultAtlasThreePitch,
   interpolateAtlasThreeView,
   type AtlasThreeCameraMode,
@@ -18,6 +20,7 @@ export {
   AtlasThreeGeoBuilder,
   atlasThreeFloorSurface,
   buildAtlasThreeScenePlan,
+  type AtlasThreeAoDisc,
   type AtlasThreeLook,
   type AtlasThreeScatterBatch,
   type AtlasThreeScenePlan,
@@ -30,6 +33,7 @@ export {
   type AtlasThreeLightingMode,
   type AtlasThreeProjectedPin,
   type AtlasThreeRuntimeConfig,
+  type AtlasThreeStyleMode,
 } from './atlas-three-runtime';
 
 export {

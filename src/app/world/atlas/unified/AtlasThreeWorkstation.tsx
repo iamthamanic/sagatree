@@ -1,15 +1,16 @@
 /**
- * AtlasThreeWorkstation — Unified SagaTree React/Radix Three.js 3D Workstation.
+ * AtlasThreeWorkstation — Full-Bleed Map-First SagaTree Three.js 3D Workstation.
  * Location: src/app/world/atlas/unified/AtlasThreeWorkstation.tsx
  *
- * Replaces the legacy vanilla-DOM prototype overlay with a clean SagaTree-native
- * workstation over `AtlasThreeRuntime` (ADR-ST-11 / ATL3 R04 / ATL4 A01-B02):
- *  - Left collapsible rail: Ebenen (persisted WorldNode hierarchy + layer visibility)
- *  - Center stage: Three.js PBR + PCFSoftShadow + GLSL water + instanced scatter
- *    with Diorama / Satellit (ortho) / Perspektive cameras, Day/Evening/Night
- *    lighting, Roof Cutaway, 3D Gizmos (W/E/T), terrain sculpt, biome paint,
- *    direct stamp placement, projected Place Pins, and continuous zoom transitions
- *  - Right collapsible rail: Werkzeuge + Feature-Inspektor + Dungeon-Generator slot
+ * Preserves SagaTree's original full-bleed Google-Maps / Figma spatial chrome:
+ *  - 100 % full-bleed Three.js canvas with infinite ocean/meadow/sky & FogExp2
+ *  - Top-left floating collapsible `Ebenen` glass chip → hierarchy + layer panel
+ *    (starts collapsed; leaves bottom-left open for `Vollansicht` & `Golden`)
+ *  - Top-center minimal floating glass pill (3D/Split/2D · Diorama/Satellit · Quality)
+ *  - Top-right floating collapsible `Werkzeuge` glass chip → 3D tools, Darstellung
+ *    (Tag/Abend/Nacht, PBR/Illustrativ/Cel, Dächer), Feature Search & Dungeon-Generator
+ *  - Bottom-center floating Scale/HUD Taskbar (X · Z | − 100% + | ▦ Grid | ○ 0° Compass)
+ *  - Butter-smooth Google-Maps inertia zoom with automatic cross-scale LOD transitions
  */
 import {
   useCallback,
@@ -26,8 +27,8 @@ import {
   ArrowClockwise,
   ArrowCounterClockwise,
   ArrowUUpLeft,
+  CaretDown,
   CaretRight,
-  Compass,
   Copy,
   Cube,
   Cursor,
@@ -35,6 +36,7 @@ import {
   Eye,
   EyeSlash,
   GlobeHemisphereWest,
+  GridFour,
   Hand,
   HouseLine,
   MagnifyingGlass,
@@ -70,11 +72,13 @@ import {
 import type { AtlasWebglNavNode, AtlasWebglNavTree } from '../../../../domains/world/places';
 import {
   AtlasThreeRuntime,
+  autoAtlasThreePitchForSpan,
   defaultAtlasThreePitch,
   type AtlasThreeCameraMode,
   type AtlasThreeCameraView,
   type AtlasThreeLightingMode,
   type AtlasThreeProjectedPin,
+  type AtlasThreeStyleMode,
 } from '../../../../infrastructure/world/atlas-three';
 import { Button } from '../../../../shared/ui/button';
 import { Input } from '../../../../shared/ui/input';
@@ -133,6 +137,12 @@ function clamp(v: number, lo: number, hi: number): number {
   return Math.min(hi, Math.max(lo, v));
 }
 
+function defaultSpanForScale(scale: AtlasMapScale): number {
+  if (scale === 'world') return 430;
+  if (scale === 'settlement') return 195;
+  return 220;
+}
+
 export type AtlasThreeWorkstationProps = {
   readonly doc: UnifiedCanvasDoc;
   readonly canEdit: boolean;
@@ -183,6 +193,12 @@ type DragSession =
       readonly startPy: number;
       readonly startYaw: number;
       readonly startPitch: number;
+    }
+  | {
+      readonly kind: 'compass';
+      readonly startPx: number;
+      readonly startYaw: number;
+      readonly moved: boolean;
     }
   | {
       readonly kind: 'move-object';
@@ -247,13 +263,18 @@ export function AtlasThreeWorkstation({
   onNavViewChangeRef.current = onNavViewChange;
   const onWebglMountErrorRef = useRef(onWebglMountError);
   onWebglMountErrorRef.current = onWebglMountError;
+  const transitionCooldownRef = useRef(0);
+  const transitionTimerRef = useRef<number | null>(null);
 
-  const [layersOpen, setLayersOpen] = useState(true);
+  // Map-First: both Ebenen & Werkzeuge start collapsed as floating frosted-glass chips!
+  const [layersOpen, setLayersOpen] = useState(false);
   const [toolsOpen, setToolsOpen] = useState(false);
+  const [navSearch, setNavSearch] = useState('');
   const [tool, setTool] = useState<AtlasThreeToolId>('hand');
-  // Always open in dramatic 3D Diorama oblique perspective (user can switch to Satellit/Perspektive anytime).
   const [cameraMode, setCameraMode] = useState<AtlasThreeCameraMode>('diorama-oblique');
   const [lightingMode, setLightingMode] = useState<AtlasThreeLightingMode>('day');
+  const [styleMode, setStyleMode] = useState<AtlasThreeStyleMode>('pbr');
+  const [showGrid, setShowGrid] = useState(false);
   const [hideRoofs, setHideRoofs] = useState(false);
   const [sculptMode, setSculptMode] = useState<AtlasTerrainSculptMode>('raise');
   const [sculptRadius, setSculptRadius] = useState(64);
@@ -265,15 +286,12 @@ export function AtlasThreeWorkstation({
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [featureQuery, setFeatureQuery] = useState('');
   const [projectedPins, setProjectedPins] = useState<readonly AtlasThreeProjectedPin[]>([]);
-  const [hudCoords, setHudCoords] = useState('X 500 · Z 500');
-  const [hudSpan, setHudSpan] = useState(mapScale === 'world' ? 470 : 320);
+  const [hudCoords, setHudCoords] = useState('X 500.0 · Z 500.0');
+  const [hudSpan, setHudSpan] = useState(() => defaultSpanForScale(mapScale));
+  const [hudYawDeg, setHudYawDeg] = useState(24);
   const [ready, setReady] = useState(false);
   const [contextLost, setContextLost] = useState(false);
-  const [zoomPrompt, setZoomPrompt] = useState<
-    | { readonly kind: 'enter'; readonly pin: AtlasMapPin }
-    | { readonly kind: 'exit' }
-    | null
-  >(null);
+  const [transitionVisual, setTransitionVisual] = useState<'none' | 'in' | 'out'>('none');
 
   const look: 'outdoor' | 'indoor' = mapScale === 'interior' ? 'indoor' : 'outdoor';
   const activeTool: AtlasThreeToolId = canEdit ? tool : 'hand';
@@ -281,8 +299,42 @@ export function AtlasThreeWorkstation({
     () => new Map((externalNav?.nodes ?? []).map((n) => [n.id, n.primaryMapId] as const)),
     [externalNav],
   );
+  const baseSpan = defaultSpanForScale(mapScale);
+  const zoomPct = Math.max(10, Math.min(2500, Math.round((baseSpan / Math.max(12, hudSpan)) * 100)));
+  const hasParentMap = Boolean(activePlaceId && activePlaceId !== externalNav?.worldId);
 
-  // Mount Three.js runtime once per canvas lifetime (preset updates in-place).
+  useEffect(
+    () => () => {
+      if (transitionTimerRef.current !== null) {
+        window.clearTimeout(transitionTimerRef.current);
+      }
+    },
+    [],
+  );
+
+  const triggerSmoothLevelTransition = useCallback(
+    (direction: 'in' | 'out', action: () => void) => {
+      const now = performance.now();
+      if (now < transitionCooldownRef.current) return;
+      transitionCooldownRef.current = now + 950;
+      const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+      if (reduced) {
+        action();
+        return;
+      }
+      setTransitionVisual(direction);
+      if (transitionTimerRef.current !== null) window.clearTimeout(transitionTimerRef.current);
+      transitionTimerRef.current = window.setTimeout(() => {
+        action();
+        transitionTimerRef.current = window.setTimeout(() => {
+          setTransitionVisual('none');
+        }, 220);
+      }, 160);
+    },
+    [],
+  );
+
+  // Mount Three.js runtime once per canvas lifetime.
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -293,6 +345,8 @@ export function AtlasThreeWorkstation({
         presetId: graphicsPresetId,
         onCameraChange: (v) => {
           setHudSpan(v.span);
+          const deg = ((Math.round((v.yawRad * 180) / Math.PI) % 360) + 360) % 360;
+          setHudYawDeg(deg);
           onNavViewChangeRef.current?.({
             centerX: v.x,
             centerY: v.z,
@@ -307,7 +361,6 @@ export function AtlasThreeWorkstation({
       setReady(true);
       onWebglMountErrorRef.current?.(null);
 
-      // Expose lightweight read/camera bridge compatible with Atlas E2E inspection.
       const win = window as Window & {
         __sagatreeAtlas?: {
           getState: () => {
@@ -333,9 +386,9 @@ export function AtlasThreeWorkstation({
               mode: 'diorama-oblique',
               x: 500,
               z: 500,
-              span: 470,
-              yawRad: 0.35,
-              pitchRad: 1.02,
+              span: 430,
+              yawRad: 0.42,
+              pitchRad: 0.94,
             },
             rooms: stats.rooms,
             calls: stats.calls,
@@ -362,52 +415,53 @@ export function AtlasThreeWorkstation({
     };
   }, []);
 
-  // Apply graphics preset changes cleanly without tearing down WebGL context.
   useEffect(() => {
     runtimeRef.current?.applyQualityProfile(graphicsPresetId);
   }, [graphicsPresetId]);
 
-  // Reset / restore camera whenever the active map changes — always frame nicely in 3D Diorama.
+  // Smooth Google-Maps Flyover framing whenever active map changes.
   useEffect(() => {
     const rt = runtimeRef.current;
     if (!rt) return;
     setSelectedId(null);
-    setZoomPrompt(null);
-    const defaultSpan = mapScale === 'world' ? 430 : mapScale === 'settlement' ? 195 : 220;
+    const span = defaultSpanForScale(mapScale);
     const defaultX = mapScale === 'settlement' ? 370 : 500;
     const defaultZ = mapScale === 'settlement' ? 485 : 500;
     if (navRestoreView && navRestoreView.span < 900) {
       const targetMode: AtlasThreeCameraMode =
         navRestoreView.mode === 'perspective' ? 'perspective' : 'diorama-oblique';
       setCameraMode(targetMode);
+      const clampedSpan = Math.min(navRestoreView.span, span * 1.35);
       rt.setView(
         {
           mode: targetMode,
           x: navRestoreView.centerX,
           z: navRestoreView.centerY,
-          span: Math.min(navRestoreView.span, defaultSpan * 1.35),
+          span: clampedSpan,
           yawRad: 0.42,
-          pitchRad: defaultAtlasThreePitch(targetMode),
+          pitchRad: autoAtlasThreePitchForSpan(targetMode, clampedSpan),
         },
         false,
       );
       return;
     }
     setCameraMode('diorama-oblique');
+    // Subtle fly-in settle when switching scales for silky Google-Maps continuity
     rt.setView(
       {
         mode: 'diorama-oblique',
         x: defaultX,
         z: defaultZ,
-        span: defaultSpan,
+        span: span * 1.18,
         yawRad: 0.42,
-        pitchRad: defaultAtlasThreePitch('diorama-oblique'),
+        pitchRad: autoAtlasThreePitchForSpan('diorama-oblique', span * 1.18),
       },
       false,
     );
+    rt.flyTo(defaultX, defaultZ, span);
   }, [mapKey, mapScale]);
 
-  // Push live canonical document + pins + selection into Three.js runtime.
+  // Push live canonical document + pins + visual modes into Three.js runtime.
   useEffect(() => {
     runtimeRef.current?.setSceneState({
       doc,
@@ -416,6 +470,8 @@ export function AtlasThreeWorkstation({
       seed: mapKey,
       hideRoofs,
       lightingMode,
+      styleMode,
+      showGrid,
       pins: mapPins,
       selectedId,
       gizmoVisible:
@@ -423,9 +479,22 @@ export function AtlasThreeWorkstation({
         Boolean(selectedId) &&
         (activeTool === 'select' || activeTool === 'move' || activeTool === 'rotate' || activeTool === 'scale'),
     });
-  }, [doc, mapScale, look, mapKey, hideRoofs, lightingMode, mapPins, selectedId, canEdit, activeTool]);
+  }, [
+    doc,
+    mapScale,
+    look,
+    mapKey,
+    hideRoofs,
+    lightingMode,
+    styleMode,
+    showGrid,
+    mapPins,
+    selectedId,
+    canEdit,
+    activeTool,
+  ]);
 
-  // Keyboard shortcuts (V17 / ATL4-A01: W=Move, E=Rotate, T=Scale, Q=Hand/Orbit, Del=Delete, Cmd/Ctrl+Z=Undo).
+  // Keyboard shortcuts (W/E/T/Q, G=Grid, Cmd/Ctrl+Z, Escape, Delete)
   useEffect(() => {
     const onKeyDown = (ev: KeyboardEvent) => {
       const tag = (ev.target as HTMLElement | null)?.tagName;
@@ -442,8 +511,12 @@ export function AtlasThreeWorkstation({
         setTool('hand');
         return;
       }
-      if (!canEdit) return;
       const k = ev.key.toLowerCase();
+      if (k === 'g') {
+        setShowGrid((v) => !v);
+        return;
+      }
+      if (!canEdit) return;
       if (k === 'q') setTool('hand');
       else if (k === 'w') setTool('move');
       else if (k === 'e') setTool('rotate');
@@ -462,11 +535,14 @@ export function AtlasThreeWorkstation({
 
   const switchCameraMode = useCallback((mode: AtlasThreeCameraMode) => {
     setCameraMode(mode);
-    runtimeRef.current?.setView(
+    const rt = runtimeRef.current;
+    if (!rt) return;
+    const cur = rt.getTargetView();
+    rt.setView(
       {
         mode,
-        yawRad: mode === 'ortho-topdown' ? 0 : 0.35,
-        pitchRad: defaultAtlasThreePitch(mode),
+        yawRad: mode === 'ortho-topdown' ? 0 : cur.yawRad === 0 ? 0.42 : cur.yawRad,
+        pitchRad: autoAtlasThreePitchForSpan(mode, cur.span),
       },
       true,
     );
@@ -475,12 +551,12 @@ export function AtlasThreeWorkstation({
   const zoomByFactor = useCallback((factor: number) => {
     const rt = runtimeRef.current;
     if (!rt) return;
-    const cur = rt.getView();
-    rt.setView({ span: clamp(cur.span * factor, 35, 1100) }, true);
+    const cur = rt.getTargetView();
+    const nextSpan = clamp(cur.span * factor, 18, 2200);
+    rt.setView({ span: nextSpan }, true);
   }, []);
 
-  const hasParentMap = Boolean(activePlaceId && activePlaceId !== externalNav?.worldId);
-
+  // Google-Maps butter-smooth inertia wheel zoom + automatic seamless cross-scale transitions!
   const handleWheel = useCallback(
     (ev: ReactWheelEvent<HTMLCanvasElement>) => {
       ev.preventDefault();
@@ -490,36 +566,36 @@ export function AtlasThreeWorkstation({
       const rect = canvas.getBoundingClientRect();
       const px = ev.clientX - rect.left;
       const py = ev.clientY - rect.top;
-      const before = rt.screenToGround(px, py);
-      const cur = rt.getView();
-      const factor = Math.exp(ev.deltaY * 0.0014);
-      const nextSpan = clamp(cur.span * factor, 35, 1100);
-      rt.setView({ span: nextSpan }, false);
-      if (before) {
-        const after = rt.screenToGround(px, py);
-        if (after) {
-          rt.setView({ x: cur.x + (before.x - after.x), z: cur.z + (before.z - after.z) }, false);
-        }
-      }
-      const updated = rt.getView();
+      const target = rt.zoomAtScreen(ev.deltaY, px, py);
+
       const transition = resolveContinuousZoomTransition({
-        centerX: updated.x,
-        centerY: updated.z,
-        span: updated.span,
+        centerX: target.x,
+        centerY: target.z,
+        span: target.span,
         wheelDeltaY: ev.deltaY,
         hasParentMap,
         pins: mapPins,
         mapScale,
       });
+
       if (transition.kind === 'enter-child') {
-        setZoomPrompt({ kind: 'enter', pin: transition.pin });
-      } else if (transition.kind === 'exit-parent') {
-        setZoomPrompt({ kind: 'exit' });
-      } else {
-        setZoomPrompt(null);
+        const childMapId = mapIdByPlaceId.get(transition.pin.id) ?? null;
+        if (childMapId) {
+          triggerSmoothLevelTransition('in', () => {
+            onNavSelect?.({
+              placeId: transition.pin.id,
+              mapId: childMapId,
+              worldRoot: false,
+            });
+          });
+        }
+      } else if (transition.kind === 'exit-parent' && onHierarchyBack) {
+        triggerSmoothLevelTransition('out', () => {
+          onHierarchyBack();
+        });
       }
     },
-    [hasParentMap, mapPins, mapScale],
+    [hasParentMap, mapIdByPlaceId, mapPins, mapScale, onHierarchyBack, onNavSelect, triggerSmoothLevelTransition],
   );
 
   const handlePointerDown = useCallback(
@@ -530,10 +606,10 @@ export function AtlasThreeWorkstation({
       const rect = canvas.getBoundingClientRect();
       const px = ev.clientX - rect.left;
       const py = ev.clientY - rect.top;
-      const cur = rt.getView();
+      const cur = rt.getTargetView();
 
-      // Right-click or Alt+drag always orbits the 3D camera cleanly.
-      if (ev.button === 2 || ev.altKey) {
+      // Right-click, Shift+drag, or Alt+drag smoothly orbits & tilts the 3D camera.
+      if (ev.button === 2 || ev.shiftKey || ev.altKey) {
         dragRef.current = {
           kind: 'orbit',
           startPx: px,
@@ -625,7 +701,6 @@ export function AtlasThreeWorkstation({
         return;
       }
 
-      // Select / Move / Rotate / Scale canonical objects directly in 3D!
       if (picked) {
         const obj = docRef.current.objects.find((o) => o.id === picked);
         setSelectedId(picked);
@@ -701,7 +776,7 @@ export function AtlasThreeWorkstation({
       const py = ev.clientY - rect.top;
       const ground = rt.screenToGround(px, py);
       if (ground) {
-        setHudCoords(`X ${Math.round(ground.x)} · Z ${Math.round(ground.z)}`);
+        setHudCoords(`X ${ground.x.toFixed(1)} · Z ${ground.z.toFixed(1)}`);
       }
       const drag = dragRef.current;
       if (!drag) return;
@@ -718,6 +793,7 @@ export function AtlasThreeWorkstation({
             pitchRad: drag.startPitch + dy * 0.005,
           },
           false,
+          { manualPitch: true },
         );
         return;
       }
@@ -856,56 +932,64 @@ export function AtlasThreeWorkstation({
     const childIds = externalNav.childrenByParentId[parentId] ?? [];
     if (childIds.length === 0) return null;
     const byId = new Map<string, AtlasWebglNavNode>(externalNav.nodes.map((n) => [n.id, n]));
+    const q = navSearch.trim().toLowerCase();
     return childIds.map((cid) => {
       const node = byId.get(cid);
       if (!node) return null;
+      const matches = !q || node.label.toLowerCase().includes(q) || node.sub.toLowerCase().includes(q);
+      const branch = renderNavBranch(node.id, depth + 1);
+      if (!matches && !branch) return null;
       const active = activePlaceId === node.id;
       const addSpec = NEXT_CHILD_KIND[node.kind];
       return (
         <div key={node.id} className="space-y-0.5">
-          <div className="flex items-center gap-1" style={{ paddingLeft: `${depth * 10}px` }}>
-            <button
-              type="button"
-              data-atlas-nav-node={node.id}
-              aria-current={active ? 'true' : undefined}
-              className={`flex min-h-11 min-w-0 flex-1 items-center gap-2 rounded-md border px-2 text-left text-xs transition-colors ${
-                active
-                  ? 'border-primary bg-primary text-primary-foreground font-semibold'
-                  : 'border-transparent text-foreground hover:border-accent hover:bg-muted/70'
-              }`}
-              onClick={() =>
-                onNavSelect?.({
-                  placeId: node.id,
-                  mapId: node.primaryMapId,
-                  worldRoot: false,
-                })
-              }
-            >
-              <MapPin className="size-3.5 shrink-0" aria-hidden />
-              <span className="min-w-0 flex-1 truncate">
-                <span className="block truncate">{node.label}</span>
-                <span
-                  className={`block truncate text-[10px] ${
-                    active ? 'text-primary-foreground/80' : 'text-muted-foreground'
-                  }`}
-                >
-                  {node.sub}
-                </span>
-              </span>
-            </button>
-            {canEdit && onNavAdd && addSpec ? (
+          {matches ? (
+            <div className="flex items-center gap-1" style={{ paddingLeft: `${depth * 10}px` }}>
               <button
                 type="button"
-                className="flex min-h-9 min-w-9 shrink-0 items-center justify-center rounded-md border border-border text-muted-foreground hover:border-accent hover:text-accent"
-                title={`${addSpec.label} unter ${node.label} anlegen`}
-                aria-label={`${addSpec.label} anlegen`}
-                onClick={() => onNavAdd({ uiKind: addSpec.uiKind, parentId: node.id })}
+                data-atlas-nav-node={node.id}
+                aria-current={active ? 'true' : undefined}
+                className={`flex min-h-11 min-w-0 flex-1 items-center gap-2 rounded-md border px-2 text-left text-xs transition-colors ${
+                  active
+                    ? 'border-primary bg-primary text-primary-foreground font-semibold'
+                    : 'border-transparent text-foreground hover:border-accent hover:bg-muted/70'
+                }`}
+                onClick={() =>
+                  triggerSmoothLevelTransition('in', () => {
+                    onNavSelect?.({
+                      placeId: node.id,
+                      mapId: node.primaryMapId,
+                      worldRoot: false,
+                    });
+                  })
+                }
               >
-                <Plus className="size-3.5" aria-hidden />
+                <MapPin className="size-3.5 shrink-0" aria-hidden />
+                <span className="min-w-0 flex-1 truncate">
+                  <span className="block truncate">{node.label}</span>
+                  <span
+                    className={`block truncate text-[10px] ${
+                      active ? 'text-primary-foreground/80' : 'text-muted-foreground'
+                    }`}
+                  >
+                    {node.sub}
+                  </span>
+                </span>
               </button>
-            ) : null}
-          </div>
-          {renderNavBranch(node.id, depth + 1)}
+              {canEdit && onNavAdd && addSpec ? (
+                <button
+                  type="button"
+                  className="flex min-h-9 min-w-9 shrink-0 items-center justify-center rounded-md border border-border text-muted-foreground hover:border-accent hover:text-accent"
+                  title={`${addSpec.label} unter ${node.label} anlegen`}
+                  aria-label={`${addSpec.label} anlegen`}
+                  onClick={() => onNavAdd({ uiKind: addSpec.uiKind, parentId: node.id })}
+                >
+                  <Plus className="size-3.5" aria-hidden />
+                </button>
+              ) : null}
+            </div>
+          ) : null}
+          {branch}
         </div>
       );
     });
@@ -913,188 +997,195 @@ export function AtlasThreeWorkstation({
 
   return (
     <div
-      className="relative flex h-full min-h-0 w-full min-w-0 flex-col overflow-hidden bg-[#10252f]"
+      className="relative h-full min-h-0 w-full min-w-0 overflow-hidden bg-[#10252f]"
       data-atlas-three-workstation
       data-atlas-ready={ready ? 'true' : undefined}
       data-atlas-surface-ready={ready ? 'true' : undefined}
       data-atlas-chrome-ready={ready ? 'true' : undefined}
     >
-      {/* Top Workstation Control Strip — clean SagaTree bar, zero canvas overlap */}
+      {/* 100% Full-Bleed Three.js Spatial Stage with smooth Google-Maps crossfade */}
       <div
-        className="z-[5] flex flex-wrap items-center gap-1.5 border-b border-border bg-card/95 px-2.5 py-1.5 backdrop-blur"
-        data-atlas-workstation-topbar
+        className={`absolute inset-0 transition-[transform,opacity,filter] duration-200 ease-out motion-reduce:transition-none ${
+          transitionVisual === 'in'
+            ? 'scale-[1.04] opacity-75 blur-[1.5px]'
+            : transitionVisual === 'out'
+              ? 'scale-[0.96] opacity-75 blur-[1.5px]'
+              : 'scale-100 opacity-100 blur-0'
+        }`}
       >
-        <Button
+        <canvas
+          ref={canvasRef}
+          className={`block h-full w-full touch-none ${
+            activeTool === 'hand' ? 'cursor-grab active:cursor-grabbing' : 'cursor-crosshair'
+          }`}
+          aria-label="Interaktive Three.js 3D-Weltkarte"
+          onContextMenu={(e) => e.preventDefault()}
+          onWheel={handleWheel}
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUp}
+          onPointerCancel={handlePointerUp}
+        />
+      </div>
+
+      {/* Projected HTML Place Pins — smart 2D screen-space collision declutter + anchor stems */}
+      {(() => {
+        const visiblePins = projectedPins.filter((p) => p.visible);
+        if (visiblePins.length === 0) return null;
+        const placed = visiblePins.map((p) => ({
+          pin: p,
+          x: p.left,
+          y: p.top - 16,
+          w: Math.max(108, p.label.length * 7 + 44),
+          h: 34,
+        }));
+        for (let iter = 0; iter < 10; iter += 1) {
+          for (let i = 0; i < placed.length; i += 1) {
+            for (let j = i + 1; j < placed.length; j += 1) {
+              const a = placed[i]!;
+              const b = placed[j]!;
+              const dx = b.x - a.x;
+              const dy = b.y - a.y;
+              const overlapX = (a.w + b.w) * 0.5 + 8 - Math.abs(dx);
+              const overlapY = (a.h + b.h) * 0.5 + 6 - Math.abs(dy);
+              if (overlapX > 0 && overlapY > 0) {
+                if (overlapY <= overlapX) {
+                  const push = overlapY * 0.54;
+                  const dir = dy >= 0 ? 1 : -1;
+                  a.y -= dir * push;
+                  b.y += dir * push;
+                } else {
+                  const push = overlapX * 0.54;
+                  const dir = dx >= 0 ? 1 : -1;
+                  a.x -= dir * push;
+                  b.x += dir * push;
+                }
+              }
+            }
+          }
+        }
+        return (
+          <>
+            <svg
+              className="pointer-events-none absolute inset-0 z-[2] h-full w-full overflow-visible"
+              aria-hidden
+            >
+              {placed.map(({ pin, x, y }) => {
+                const dist = Math.hypot(x - pin.left, y - pin.top);
+                return (
+                  <g key={`stem-${pin.id}`}>
+                    {dist > 10 ? (
+                      <line
+                        x1={pin.left}
+                        y1={pin.top}
+                        x2={x}
+                        y2={y + 12}
+                        stroke="rgba(6, 182, 212, 0.72)"
+                        strokeWidth={1.5}
+                        strokeDasharray="3 2"
+                      />
+                    ) : null}
+                    <circle
+                      cx={pin.left}
+                      cy={pin.top}
+                      r={3.5}
+                      fill="#06b6d4"
+                      stroke="#0f172a"
+                      strokeWidth={1.5}
+                    />
+                  </g>
+                );
+              })}
+            </svg>
+            {placed.map(({ pin, x, y }) => {
+              const targetMapId = mapIdByPlaceId.get(pin.id) ?? null;
+              return (
+                <div
+                  key={pin.id}
+                  className="pointer-events-auto absolute z-[3] -translate-x-1/2 -translate-y-1/2"
+                  style={{ left: Math.round(x), top: Math.round(y) }}
+                >
+                  <button
+                    type="button"
+                    data-atlas-3d-pin={pin.id}
+                    className="flex min-h-8 items-center gap-1.5 whitespace-nowrap rounded-full border border-primary/70 bg-card/90 px-2.5 py-1 text-xs font-semibold text-foreground shadow-lg backdrop-blur transition-colors hover:border-accent hover:bg-accent hover:text-accent-foreground"
+                    onClick={() => {
+                      const sourcePin = mapPins.find((p) => p.id === pin.id);
+                      if (sourcePin) {
+                        runtimeRef.current?.flyTo(sourcePin.x, sourcePin.y, Math.max(85, hudSpan * 0.45));
+                      }
+                      if (targetMapId) {
+                        triggerSmoothLevelTransition('in', () => {
+                          onNavSelect?.({ placeId: pin.id, mapId: targetMapId, worldRoot: false });
+                        });
+                      } else {
+                        onNavSelect?.({ placeId: pin.id, mapId: null, worldRoot: false });
+                      }
+                    }}
+                  >
+                    <MapPin className="size-3.5 shrink-0 text-primary" aria-hidden />
+                    <span>{pin.label}</span>
+                    {targetMapId ? <CaretRight className="size-3 shrink-0 opacity-70" aria-hidden /> : null}
+                  </button>
+                </div>
+              );
+            })}
+          </>
+        );
+      })()}
+
+      {/* TOP-LEFT Floating Collapsible `Ebenen` Chip & Frosted-Glass Drawer (leaves bottom-left open for Vollansicht/Golden!) */}
+      <div
+        className="pointer-events-none absolute left-3 top-3 z-[6] flex max-h-[calc(100%-5.25rem)] flex-col items-start gap-2"
+        data-atlas-three-layers
+      >
+        <button
           type="button"
-          variant={layersOpen ? 'default' : 'outline'}
-          size="sm"
-          className="min-h-10 gap-1.5"
           data-atlas-panel-fold="layers"
           aria-expanded={layersOpen}
+          className={`pointer-events-auto flex min-h-11 items-center gap-2 rounded-lg border px-3.5 text-sm font-semibold shadow-lg backdrop-blur-md transition-colors ${
+            layersOpen
+              ? 'border-primary bg-primary text-primary-foreground'
+              : 'border-border/90 bg-card/90 text-foreground hover:border-accent hover:bg-accent hover:text-accent-foreground'
+          }`}
           onClick={() => setLayersOpen((v) => !v)}
         >
           <Stack className="size-4" aria-hidden />
           <span>Ebenen</span>
-        </Button>
+          <CaretDown
+            className={`size-3.5 transition-transform duration-200 ${layersOpen ? 'rotate-180' : ''}`}
+            aria-hidden
+          />
+        </button>
 
-        {hasParentMap && onHierarchyBack ? (
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            className="min-h-10 gap-1"
-            onClick={onHierarchyBack}
-          >
-            <ArrowUUpLeft className="size-4" aria-hidden />
-            <span>Hoch</span>
-          </Button>
-        ) : null}
-
-        {/* Camera modes: Diorama / Satellit (ATL3-C01) / Perspektive */}
-        <div
-          className="flex items-center rounded-md border border-border bg-background/70 p-0.5"
-          role="group"
-          aria-label="Kameramodus"
-        >
-          {(
-            [
-              { id: 'diorama-oblique', label: 'Diorama' },
-              { id: 'ortho-topdown', label: 'Satellit' },
-              { id: 'perspective', label: 'Perspektive' },
-            ] as const
-          ).map((m) => (
-            <button
-              key={m.id}
-              type="button"
-              data-atlas-camera-mode={m.id}
-              aria-pressed={cameraMode === m.id}
-              className={`min-h-9 rounded px-2.5 text-xs font-semibold transition-colors ${
-                cameraMode === m.id
-                  ? 'bg-primary text-primary-foreground'
-                  : 'text-muted-foreground hover:text-accent'
-              }`}
-              onClick={() => switchCameraMode(m.id)}
-            >
-              {m.label}
-            </button>
-          ))}
-        </div>
-
-        {/* Lighting / Time of Day */}
-        {look === 'outdoor' ? (
-          <div
-            className="flex items-center rounded-md border border-border bg-background/70 p-0.5"
-            role="group"
-            aria-label="Lichtstimmung"
-          >
-            {(
-              [
-                { id: 'day', label: 'Tag', Icon: Sun },
-                { id: 'evening', label: 'Abend', Icon: SunHorizon },
-                { id: 'night', label: 'Nacht', Icon: Moon },
-              ] as const
-            ).map(({ id, label, Icon }) => (
-              <button
-                key={id}
-                type="button"
-                aria-pressed={lightingMode === id}
-                title={label}
-                className={`flex min-h-9 items-center gap-1 rounded px-2 text-xs font-medium transition-colors ${
-                  lightingMode === id
-                    ? 'bg-primary text-primary-foreground'
-                    : 'text-muted-foreground hover:text-accent'
-                }`}
-                onClick={() => setLightingMode(id)}
-              >
-                <Icon className="size-3.5" aria-hidden />
-                <span className="hidden xl:inline">{label}</span>
-              </button>
-            ))}
-          </div>
-        ) : null}
-
-        {/* Roof Cutaway (ATL4-I01) */}
-        <Button
-          type="button"
-          variant={hideRoofs ? 'default' : 'outline'}
-          size="sm"
-          className="min-h-10 gap-1"
-          aria-pressed={hideRoofs}
-          title="Dächer ausblenden / Innenräume zeigen"
-          onClick={() => setHideRoofs((v) => !v)}
-        >
-          {hideRoofs ? <EyeSlash className="size-4" aria-hidden /> : <Eye className="size-4" aria-hidden />}
-          <span className="hidden lg:inline">{hideRoofs ? 'Innenraum' : 'Dächer'}</span>
-        </Button>
-
-        {topBarExtra}
-
-        <div className="ml-auto flex items-center gap-1.5">
-          {canEdit ? (
-            <>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                className="min-h-10 min-w-10 px-2"
-                disabled={!canUndo}
-                title="Rückgängig (⌘Z)"
-                aria-label="Rückgängig"
-                onClick={onUndo}
-              >
-                <ArrowCounterClockwise className="size-4" aria-hidden />
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                className="min-h-10 min-w-10 px-2"
-                disabled={!canRedo}
-                title="Wiederholen (⇧⌘Z)"
-                aria-label="Wiederholen"
-                onClick={onRedo}
-              >
-                <ArrowClockwise className="size-4" aria-hidden />
-              </Button>
-            </>
-          ) : null}
-          <Button
-            type="button"
-            variant={toolsOpen ? 'default' : 'outline'}
-            size="sm"
-            className="min-h-10 gap-1.5"
-            data-atlas-panel-fold="tools"
-            aria-expanded={toolsOpen}
-            onClick={() => setToolsOpen((v) => !v)}
-          >
-            <Wrench className="size-4" aria-hidden />
-            <span>Werkzeuge</span>
-          </Button>
-        </div>
-      </div>
-
-      {/* Main 3-Pane Workstation Body — Sidebars dock cleanly without colliding! */}
-      <div className="relative flex min-h-0 flex-1 overflow-hidden">
-        {/* Left Rail: Ebenen (Hierarchy + Layer Visibility) — docked cleanly in flex, never overlapping! */}
         {layersOpen ? (
           <aside
-            data-atlas-three-layers
-            className="z-[4] flex w-60 shrink-0 flex-col overflow-hidden border-r border-border bg-card/95 backdrop-blur"
+            className="pointer-events-auto flex min-h-0 w-72 flex-col overflow-hidden rounded-xl border border-border/90 bg-card/92 shadow-2xl backdrop-blur-md"
             aria-label="Welthierarchie und Ebenen"
           >
-            <div className="flex items-center justify-between border-b border-border px-3 py-2">
-              <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                Welthierarchie
-              </span>
+            <div className="flex items-center gap-1.5 border-b border-border/80 p-2">
+              <div className="relative min-w-0 flex-1">
+                <MagnifyingGlass
+                  className="pointer-events-none absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground"
+                  aria-hidden
+                />
+                <Input
+                  value={navSearch}
+                  onChange={(e) => setNavSearch(e.target.value)}
+                  placeholder="Ebenen suchen…"
+                  className="min-h-10 pl-8 text-xs"
+                  aria-label="Ebenen durchsuchen"
+                />
+              </div>
               {canEdit && onNavAdd && externalNav ? (
                 <button
                   type="button"
-                  className="flex min-h-8 min-w-8 items-center justify-center rounded border border-border text-muted-foreground hover:border-accent hover:text-accent"
+                  className="flex min-h-10 min-w-10 shrink-0 items-center justify-center rounded-md border border-border text-muted-foreground hover:border-accent hover:text-accent"
                   title="Neuen Kontinent anlegen"
                   aria-label="Neuen Kontinent anlegen"
                   onClick={() => onNavAdd({ uiKind: 'kontinent', parentId: externalNav.worldId })}
                 >
-                  <Plus className="size-3.5" aria-hidden />
+                  <Plus className="size-4" aria-hidden />
                 </button>
               ) : null}
             </div>
@@ -1111,10 +1202,12 @@ export function AtlasThreeWorkstation({
                         : 'border-transparent text-foreground hover:border-accent hover:bg-muted/70'
                     }`}
                     onClick={() =>
-                      onNavSelect?.({
-                        placeId: null,
-                        mapId: externalNav.worldPrimaryMapId,
-                        worldRoot: true,
+                      triggerSmoothLevelTransition('out', () => {
+                        onNavSelect?.({
+                          placeId: null,
+                          mapId: externalNav.worldPrimaryMapId,
+                          worldRoot: true,
+                        });
                       })
                     }
                   >
@@ -1138,8 +1231,8 @@ export function AtlasThreeWorkstation({
                 <p className="px-2 py-4 text-xs text-muted-foreground">Weltstruktur wird geladen…</p>
               )}
 
-              <div className="border-t border-border pt-2">
-                <p className="mb-1.5 px-1 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+              <div className="border-t border-border/80 pt-2">
+                <p className="mb-1.5 px-1 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
                   Sichtbare Ebenen
                 </p>
                 <div className="space-y-1">
@@ -1162,161 +1255,122 @@ export function AtlasThreeWorkstation({
             </div>
           </aside>
         ) : null}
+      </div>
 
-        {/* Center 3D Three.js Stage */}
-        <div className="relative min-h-0 min-w-0 flex-1 overflow-hidden">
-          <canvas
-            ref={canvasRef}
-            className={`block h-full w-full touch-none ${
-              activeTool === 'hand' ? 'cursor-grab active:cursor-grabbing' : 'cursor-crosshair'
-            }`}
-            aria-label="Interaktive Three.js 3D-Weltkarte"
-            onContextMenu={(e) => e.preventDefault()}
-            onWheel={handleWheel}
-            onPointerDown={handlePointerDown}
-            onPointerMove={handlePointerMove}
-            onPointerUp={handlePointerUp}
-            onPointerCancel={handlePointerUp}
-          />
-
-          {/* Projected HTML Place Pins (click flies camera; button drills into child map) */}
-          {projectedPins.map((pin) => {
-            if (!pin.visible) return null;
-            const targetMapId = mapIdByPlaceId.get(pin.id) ?? null;
-            return (
-              <div
-                key={pin.id}
-                className="pointer-events-auto absolute z-[3] -translate-x-1/2 -translate-y-full"
-                style={{ left: pin.left, top: pin.top }}
-              >
-                <button
-                  type="button"
-                  data-atlas-3d-pin={pin.id}
-                  className="flex min-h-9 items-center gap-1.5 rounded-full border border-primary/70 bg-card/90 px-3 py-1 text-xs font-semibold text-foreground shadow-lg backdrop-blur transition-colors hover:border-accent hover:bg-accent hover:text-accent-foreground"
-                  onClick={() => {
-                    const sourcePin = mapPins.find((p) => p.id === pin.id);
-                    if (sourcePin) {
-                      runtimeRef.current?.flyTo(sourcePin.x, sourcePin.y, Math.max(90, hudSpan * 0.52));
-                    }
-                    onNavSelect?.({ placeId: pin.id, mapId: targetMapId, worldRoot: false });
-                  }}
-                >
-                  <MapPin className="size-3.5 text-primary" aria-hidden />
-                  <span>{pin.label}</span>
-                  {targetMapId ? <CaretRight className="size-3 opacity-70" aria-hidden /> : null}
-                </button>
-              </div>
-            );
-          })}
-
-          {/* Continuous Zoom Transition Prompt (ATL4-S02) */}
-          {zoomPrompt ? (
-            <div className="absolute left-1/2 top-3 z-[4] flex -translate-x-1/2 items-center gap-2 rounded-lg border border-primary/60 bg-card/95 px-3 py-2 text-xs shadow-lg backdrop-blur">
-              {zoomPrompt.kind === 'enter' ? (
-                <>
-                  <span>
-                    Detailkarte bereit: <strong>{zoomPrompt.pin.label}</strong>
-                  </span>
-                  <Button
-                    type="button"
-                    size="sm"
-                    className="min-h-8"
-                    onClick={() => {
-                      onNavSelect?.({
-                        placeId: zoomPrompt.pin.id,
-                        mapId: mapIdByPlaceId.get(zoomPrompt.pin.id) ?? null,
-                        worldRoot: false,
-                      });
-                      setZoomPrompt(null);
-                    }}
-                  >
-                    Hineinzoomen
-                  </Button>
-                </>
-              ) : (
-                <>
-                  <span>Zur übergeordneten Karte wechseln?</span>
-                  <Button
-                    type="button"
-                    size="sm"
-                    className="min-h-8"
-                    onClick={() => {
-                      onHierarchyBack?.();
-                      setZoomPrompt(null);
-                    }}
-                  >
-                    Ebene höher
-                  </Button>
-                </>
-              )}
-            </div>
-          ) : null}
-
-          {contextLost ? (
-            <div
-              className="absolute inset-0 z-[5] flex items-center justify-center bg-background/80 p-4 text-sm font-semibold text-foreground"
-              role="alert"
+      {/* TOP-CENTER Minimal Floating Glass Pill (Original SagaTree placement — zero full-width bar!) */}
+      <div
+        className="pointer-events-none absolute left-1/2 top-3 z-[6] flex max-w-[calc(100%-17rem)] -translate-x-1/2 flex-wrap items-center justify-center gap-1.5"
+        data-atlas-workstation-topbar
+      >
+        <div className="pointer-events-auto flex flex-wrap items-center gap-1.5 rounded-xl border border-border/90 bg-card/90 p-1 shadow-lg backdrop-blur-md">
+          {hasParentMap && onHierarchyBack ? (
+            <button
+              type="button"
+              className="flex min-h-9 items-center gap-1 rounded-lg border border-border/70 px-2.5 text-xs font-semibold text-foreground hover:border-accent hover:text-accent"
+              title="Eine Ebene höher (oder einfach rauszoomen)"
+              onClick={() => triggerSmoothLevelTransition('out', () => onHierarchyBack())}
             >
-              WebGL-Kontext wird wiederhergestellt…
-            </div>
+              <ArrowUUpLeft className="size-3.5" aria-hidden />
+              <span>Hoch</span>
+            </button>
           ) : null}
 
-          {/* Compact Bottom HUD — Coords, Scale, Zoom Controls, Reset */}
-          <div className="pointer-events-none absolute inset-x-3 bottom-3 z-[3] flex items-center justify-between gap-2">
-            <div className="pointer-events-auto flex items-center gap-2 rounded-lg border border-border bg-card/90 px-2.5 py-1.5 text-[11px] text-muted-foreground shadow backdrop-blur">
-              <span className="font-mono text-foreground">{hudCoords}</span>
-              <span>·</span>
-              <span>{formatAtlasSpanLabelDe(hudSpan, mapScale)}</span>
-              <span className="hidden md:inline">· Rechtsklick: Drehen · Rad: Zoom</span>
-            </div>
-            <div className="pointer-events-auto flex items-center gap-1 rounded-lg border border-border bg-card/90 p-1 shadow backdrop-blur">
+          {topBarExtra}
+
+          <div className="h-5 w-px bg-border/80" aria-hidden />
+
+          <div
+            className="flex items-center rounded-lg bg-background/60 p-0.5"
+            role="group"
+            aria-label="Kameramodus"
+          >
+            {(
+              [
+                { id: 'diorama-oblique', label: 'Diorama' },
+                { id: 'ortho-topdown', label: 'Satellit' },
+                { id: 'perspective', label: 'Perspektive' },
+              ] as const
+            ).map((m) => (
               <button
+                key={m.id}
                 type="button"
-                className="flex min-h-9 min-w-9 items-center justify-center rounded text-sm font-bold hover:bg-muted"
-                aria-label="Verkleinern"
-                onClick={() => zoomByFactor(1.35)}
+                data-atlas-camera-mode={m.id}
+                aria-pressed={cameraMode === m.id}
+                className={`min-h-8 rounded-md px-2.5 text-xs font-semibold transition-colors ${
+                  cameraMode === m.id
+                    ? 'bg-primary text-primary-foreground'
+                    : 'text-muted-foreground hover:text-accent'
+                }`}
+                onClick={() => switchCameraMode(m.id)}
               >
-                −
+                {m.label}
               </button>
-              <button
-                type="button"
-                className="flex min-h-9 min-w-9 items-center justify-center rounded text-sm font-bold hover:bg-muted"
-                aria-label="Vergrößern"
-                onClick={() => zoomByFactor(0.74)}
-              >
-                +
-              </button>
-              <button
-                type="button"
-                className="flex min-h-9 min-w-9 items-center justify-center rounded hover:bg-muted"
-                title="Kamera zurücksetzen"
-                aria-label="Kamera zurücksetzen"
-                onClick={() => runtimeRef.current?.resetCamera()}
-              >
-                <Compass className="size-4" aria-hidden />
-              </button>
-            </div>
+            ))}
           </div>
         </div>
+      </div>
 
-        {/* Right Rail: Werkzeuge + Feature Inspector + Dungeon-Generator — docked cleanly in flex! */}
+      {/* TOP-RIGHT Floating Collapsible `Werkzeuge` Chip & Frosted-Glass Drawer */}
+      <div
+        className="pointer-events-none absolute right-3 top-3 z-[6] flex max-h-[calc(100%-5.25rem)] flex-col items-end gap-2"
+        data-atlas-three-tools
+      >
+        <button
+          type="button"
+          data-atlas-panel-fold="tools"
+          aria-expanded={toolsOpen}
+          className={`pointer-events-auto flex min-h-11 items-center gap-2 rounded-lg border px-3.5 text-sm font-semibold shadow-lg backdrop-blur-md transition-colors ${
+            toolsOpen
+              ? 'border-primary bg-primary text-primary-foreground'
+              : 'border-border/90 bg-card/90 text-foreground hover:border-accent hover:bg-accent hover:text-accent-foreground'
+          }`}
+          onClick={() => setToolsOpen((v) => !v)}
+        >
+          <Wrench className="size-4" aria-hidden />
+          <span>Werkzeuge</span>
+          <CaretDown
+            className={`size-3.5 transition-transform duration-200 ${toolsOpen ? 'rotate-180' : ''}`}
+            aria-hidden
+          />
+        </button>
+
         {toolsOpen ? (
           <aside
-            data-atlas-three-tools
-            className="z-[4] flex w-80 shrink-0 flex-col overflow-hidden border-l border-border bg-card/95 backdrop-blur"
+            className="pointer-events-auto flex min-h-0 w-80 flex-col overflow-hidden rounded-xl border border-border/90 bg-card/94 shadow-2xl backdrop-blur-md"
             aria-label="Kartenwerkzeuge und Inspektor"
           >
-            <div className="flex items-center justify-between border-b border-border px-3 py-2">
+            <div className="flex items-center justify-between border-b border-border/80 px-3 py-2">
               <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                Werkzeuge &amp; Inspektor
+                Werkzeuge &amp; Darstellung
               </span>
-              <span className="rounded bg-primary/15 px-1.5 py-0.5 text-[10px] font-semibold text-primary">
-                Three.js PBR
-              </span>
+              {canEdit ? (
+                <div className="flex items-center gap-1">
+                  <button
+                    type="button"
+                    className="flex min-h-8 min-w-8 items-center justify-center rounded border border-border/80 text-foreground hover:border-accent hover:text-accent disabled:opacity-35"
+                    disabled={!canUndo}
+                    title="Rückgängig (⌘Z)"
+                    aria-label="Rückgängig"
+                    onClick={onUndo}
+                  >
+                    <ArrowCounterClockwise className="size-3.5" aria-hidden />
+                  </button>
+                  <button
+                    type="button"
+                    className="flex min-h-8 min-w-8 items-center justify-center rounded border border-border/80 text-foreground hover:border-accent hover:text-accent disabled:opacity-35"
+                    disabled={!canRedo}
+                    title="Wiederholen (⇧⌘Z)"
+                    aria-label="Wiederholen"
+                    onClick={onRedo}
+                  >
+                    <ArrowClockwise className="size-3.5" aria-hidden />
+                  </button>
+                </div>
+              ) : null}
             </div>
 
             <div className="min-h-0 flex-1 space-y-4 overflow-y-auto p-3">
-              {/* Tool Grid */}
+              {/* 3D Tool Grid */}
               <div className="grid grid-cols-3 gap-1.5" role="toolbar" aria-label="3D-Werkzeuge">
                 {(
                   [
@@ -1350,7 +1404,7 @@ export function AtlasThreeWorkstation({
                 ))}
               </div>
 
-              {/* Contextual Tool Options: Heightfield Sculpt (ATL4-B02) */}
+              {/* Contextual Tool Options: Heightfield Sculpt */}
               {activeTool === 'height' && canEdit ? (
                 <div className="space-y-2 rounded-lg border border-border bg-background/60 p-2.5">
                   <p className="text-xs font-semibold">Gelände formen (Höhenfeld)</p>
@@ -1397,7 +1451,7 @@ export function AtlasThreeWorkstation({
                 </div>
               ) : null}
 
-              {/* Contextual Tool Options: Biome Paint (ATL4-B01) */}
+              {/* Contextual Tool Options: Biome Paint */}
               {activeTool === 'biome' && canEdit ? (
                 <div className="space-y-2 rounded-lg border border-border bg-background/60 p-2.5">
                   <p className="text-xs font-semibold">Biome &amp; Wege malen</p>
@@ -1476,7 +1530,7 @@ export function AtlasThreeWorkstation({
                 </div>
               ) : null}
 
-              {/* Selected Object Inspector (ATL4-A01 / V17) */}
+              {/* Selected Object Inspector */}
               {selectedObject ? (
                 <div className="space-y-2 rounded-lg border border-primary/50 bg-primary/5 p-2.5">
                   <div className="flex items-center justify-between">
@@ -1582,8 +1636,78 @@ export function AtlasThreeWorkstation({
                 </div>
               ) : null}
 
-              {/* Feature Search & Catalog (V17 Inspector parity) */}
-              <div className="space-y-2 border-t border-border pt-3">
+              {/* Darstellung & Atmosphäre (V17 Style Switch + Time of Day + Roof Cutaway) */}
+              <div className="space-y-2.5 border-t border-border/80 pt-3">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                  Darstellung &amp; Atmosphäre
+                </p>
+                {look === 'outdoor' ? (
+                  <div className="grid grid-cols-3 gap-1" role="group" aria-label="Lichtstimmung">
+                    {(
+                      [
+                        { id: 'day', label: 'Tag', Icon: Sun },
+                        { id: 'evening', label: 'Abend', Icon: SunHorizon },
+                        { id: 'night', label: 'Nacht', Icon: Moon },
+                      ] as const
+                    ).map(({ id, label, Icon }) => (
+                      <button
+                        key={id}
+                        type="button"
+                        aria-pressed={lightingMode === id}
+                        className={`flex min-h-9 items-center justify-center gap-1 rounded border text-xs font-semibold transition-colors ${
+                          lightingMode === id
+                            ? 'border-primary bg-primary text-primary-foreground'
+                            : 'border-border bg-background/60 text-foreground hover:border-accent hover:text-accent'
+                        }`}
+                        onClick={() => setLightingMode(id)}
+                      >
+                        <Icon className="size-3.5" aria-hidden />
+                        <span>{label}</span>
+                      </button>
+                    ))}
+                  </div>
+                ) : null}
+                <div className="grid grid-cols-3 gap-1" role="group" aria-label="Darstellungsstil">
+                  {(
+                    [
+                      { id: 'pbr', label: 'PBR' },
+                      { id: 'illustrated', label: 'Illustrativ' },
+                      { id: 'cel', label: 'Cel' },
+                    ] as const
+                  ).map((st) => (
+                    <button
+                      key={st.id}
+                      type="button"
+                      data-atlas-style-mode={st.id}
+                      aria-pressed={styleMode === st.id}
+                      className={`min-h-9 rounded border text-xs font-semibold transition-colors ${
+                        styleMode === st.id
+                          ? 'border-primary bg-primary text-primary-foreground'
+                          : 'border-border bg-background/60 text-foreground hover:border-accent hover:text-accent'
+                      }`}
+                      onClick={() => setStyleMode(st.id)}
+                    >
+                      {st.label}
+                    </button>
+                  ))}
+                </div>
+                <button
+                  type="button"
+                  aria-pressed={hideRoofs}
+                  className={`flex min-h-10 w-full items-center justify-center gap-2 rounded-md border px-3 text-xs font-semibold transition-colors ${
+                    hideRoofs
+                      ? 'border-primary bg-primary text-primary-foreground'
+                      : 'border-border bg-background/60 text-foreground hover:border-accent hover:text-accent'
+                  }`}
+                  onClick={() => setHideRoofs((v) => !v)}
+                >
+                  {hideRoofs ? <EyeSlash className="size-4" aria-hidden /> : <Eye className="size-4" aria-hidden />}
+                  <span>{hideRoofs ? 'Innenräume sichtbar (Dächer aus)' : 'Dächer ausblenden / Innenräume'}</span>
+                </button>
+              </div>
+
+              {/* Feature Search & Catalog */}
+              <div className="space-y-2 border-t border-border/80 pt-3">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-semibold">Objekte auf dieser Karte</span>
                   <span className="font-mono text-[10px] text-muted-foreground">
@@ -1603,7 +1727,7 @@ export function AtlasThreeWorkstation({
                     aria-label="Kartenobjekte durchsuchen"
                   />
                 </div>
-                <div className="max-h-40 space-y-1 overflow-y-auto pr-1">
+                <div className="max-h-36 space-y-1 overflow-y-auto pr-1">
                   {filteredObjects.map((obj) => (
                     <button
                       key={obj.id}
@@ -1615,7 +1739,7 @@ export function AtlasThreeWorkstation({
                       }`}
                       onClick={() => {
                         setSelectedId(obj.id);
-                        runtimeRef.current?.flyTo(obj.x, obj.y, Math.min(hudSpan, 180));
+                        runtimeRef.current?.flyTo(obj.x, obj.y, Math.min(hudSpan, 145));
                       }}
                     >
                       <span className="flex items-center gap-1.5 truncate">
@@ -1633,7 +1757,7 @@ export function AtlasThreeWorkstation({
                 </div>
               </div>
 
-              {/* Dungeon-Generator Slot cleanly nested inside Werkzeuge */}
+              {/* Dungeon-Generator cleanly nested inside Werkzeuge */}
               {toolsSlot ? (
                 <div data-atlas-tools-dungeon-section>{toolsSlot}</div>
               ) : null}
@@ -1641,6 +1765,130 @@ export function AtlasThreeWorkstation({
           </aside>
         ) : null}
       </div>
+
+      {/* BOTTOM-CENTER Floating Scale & Navigation Taskbar (Original SagaTree .scale-widget!) */}
+      <div
+        className="pointer-events-auto absolute bottom-3 left-1/2 z-[6] flex -translate-x-1/2 items-center gap-1 whitespace-nowrap rounded-xl border border-border/90 bg-card/92 px-2 py-1 shadow-xl backdrop-blur-md"
+        data-atlas-bottom-taskbar
+        role="region"
+        aria-label="Kartenmaßstab und Navigation"
+      >
+        <button
+          type="button"
+          className="min-h-9 whitespace-nowrap border-r border-border/80 pr-2.5 font-mono text-[11px] tabular-nums text-muted-foreground transition-colors hover:text-foreground"
+          title={`Kamera zentrieren · ${formatAtlasSpanLabelDe(hudSpan, mapScale)}`}
+          onClick={() => runtimeRef.current?.resetCamera()}
+        >
+          {hudCoords}
+        </button>
+
+        <button
+          type="button"
+          className="flex min-h-9 min-w-8 items-center justify-center rounded-md text-sm font-bold text-foreground transition-colors hover:bg-accent/20 hover:text-accent"
+          aria-label="Herauszoomen"
+          onClick={() => zoomByFactor(1.35)}
+        >
+          −
+        </button>
+
+        <button
+          type="button"
+          className="min-h-9 min-w-[3.4rem] rounded-md px-1.5 font-mono text-xs font-bold text-foreground transition-colors hover:bg-muted/60"
+          title={formatAtlasSpanLabelDe(hudSpan, mapScale)}
+          onClick={() => runtimeRef.current?.resetCamera()}
+        >
+          {zoomPct}%
+        </button>
+
+        <button
+          type="button"
+          className="flex min-h-9 min-w-8 items-center justify-center rounded-md text-sm font-bold text-foreground transition-colors hover:bg-accent/20 hover:text-accent"
+          aria-label="Hineinzoomen"
+          onClick={() => zoomByFactor(0.74)}
+        >
+          +
+        </button>
+
+        <div className="mx-0.5 h-5 w-px bg-border/80" aria-hidden />
+
+        <button
+          type="button"
+          data-atlas-grid-toggle
+          aria-pressed={showGrid}
+          title="Kampfgrid ein-/ausblenden (G)"
+          aria-label="Kampfgrid ein-/ausblenden"
+          className={`flex min-h-9 min-w-9 items-center justify-center rounded-md transition-colors ${
+            showGrid
+              ? 'bg-primary/20 text-primary'
+              : 'text-muted-foreground hover:bg-accent/20 hover:text-accent'
+          }`}
+          onClick={() => setShowGrid((v) => !v)}
+        >
+          <GridFour className="size-4" aria-hidden />
+        </button>
+
+        {/* Interactive 360° Rotating Compass Dial — drag to rotate, click to snap smoothly to 0° North! */}
+        <button
+          type="button"
+          data-atlas-compass-dial
+          title="Ziehen: Karte drehen · Klick: Norden (0°)"
+          aria-label={`Kartendrehung ${hudYawDeg} Grad — Klick für Norden`}
+          className="relative ml-0.5 flex size-9 shrink-0 cursor-grab items-center justify-center rounded-full border border-muted-foreground/60 text-[10px] font-bold text-foreground transition-colors hover:border-accent hover:text-accent active:cursor-grabbing"
+          onPointerDown={(ev) => {
+            const cur = runtimeRef.current?.getTargetView();
+            if (!cur) return;
+            dragRef.current = {
+              kind: 'compass',
+              startPx: ev.clientX,
+              startYaw: cur.yawRad,
+              moved: false,
+            };
+            ev.currentTarget.setPointerCapture(ev.pointerId);
+          }}
+          onPointerMove={(ev) => {
+            const drag = dragRef.current;
+            if (!drag || drag.kind !== 'compass') return;
+            const dx = ev.clientX - drag.startPx;
+            if (Math.abs(dx) > 3) {
+              dragRef.current = { ...drag, moved: true };
+            }
+            runtimeRef.current?.setView({ yawRad: drag.startYaw + dx * 0.014 }, false);
+          }}
+          onPointerUp={(ev) => {
+            const drag = dragRef.current;
+            if (!drag || drag.kind !== 'compass') return;
+            const moved = drag.moved;
+            dragRef.current = null;
+            try {
+              ev.currentTarget.releasePointerCapture(ev.pointerId);
+            } catch {
+              /* ignore */
+            }
+            if (!moved) {
+              runtimeRef.current?.setYawAnimated(0);
+            }
+          }}
+        >
+          <span
+            className="pointer-events-none absolute top-0.5 left-1/2 h-2 w-0.5 -translate-x-1/2 rounded-full bg-primary"
+            style={{
+              transformOrigin: '50% 1rem',
+              transform: `translateX(-50%) rotate(${hudYawDeg}deg)`,
+            }}
+            aria-hidden
+          />
+          <span className="font-mono tabular-nums">{hudYawDeg}°</span>
+        </button>
+      </div>
+
+      {contextLost ? (
+        <div
+          className="absolute inset-0 z-[10] flex items-center justify-center bg-background/80 p-4 text-sm font-semibold text-foreground"
+          role="alert"
+        >
+          WebGL-Kontext wird wiederhergestellt…
+        </div>
+      ) : null}
     </div>
   );
 }

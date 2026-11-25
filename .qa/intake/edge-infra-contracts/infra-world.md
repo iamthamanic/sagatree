@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-world.json](source-contracts/infra-world.json) (SHA-256 `11a41c643aae13b78f564bd34d08fd46f01ebc94d42717c2977f6487b7b081ca`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-world.json](source-contracts/infra-world.json) (SHA-256 `d839b624ae8d60e9c0c2e2c37838973eb81b555c715d5b0a92747b990e087935`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -940,13 +940,13 @@ export function buildR01bScenePlan(doc: UnifiedCanvasDoc, opts: R01bSceneOptions
 }
 ```
 
-### src/infrastructure/world/atlas-three/atlas-three-camera.ts:9
+### src/infrastructure/world/atlas-three/atlas-three-camera.ts:10
 
 ```ts
 export type AtlasThreeCameraMode = 'ortho-topdown' | 'diorama-oblique' | 'perspective';
 ```
 
-### src/infrastructure/world/atlas-three/atlas-three-camera.ts:11
+### src/infrastructure/world/atlas-three/atlas-three-camera.ts:12
 
 ```ts
 export type AtlasThreeCameraView = {
@@ -959,7 +959,7 @@ export type AtlasThreeCameraView = {
 };
 ```
 
-### src/infrastructure/world/atlas-three/atlas-three-camera.ts:20
+### src/infrastructure/world/atlas-three/atlas-three-camera.ts:21
 
 ```ts
 export type AtlasThreeCameraRig = {
@@ -976,27 +976,47 @@ export type AtlasThreeCameraRig = {
 };
 ```
 
-### src/infrastructure/world/atlas-three/atlas-three-camera.ts:37
+### src/infrastructure/world/atlas-three/atlas-three-camera.ts:38
 
 ```ts
 export function clampAtlasThreePitch(mode: AtlasThreeCameraMode, pitch: number): number {
   if (mode === 'ortho-topdown') return Math.PI / 2;
-  if (mode === 'diorama-oblique') return clamp(pitch, 0.55, 1.25);
-  return clamp(pitch, 0.32, 1.38);
+  if (mode === 'diorama-oblique') return clamp(pitch, 0.52, 1.32);
+  return clamp(pitch, 0.3, 1.42);
 }
 ```
 
-### src/infrastructure/world/atlas-three/atlas-three-camera.ts:43
+### src/infrastructure/world/atlas-three/atlas-three-camera.ts:44
 
 ```ts
 export function defaultAtlasThreePitch(mode: AtlasThreeCameraMode): number {
   if (mode === 'ortho-topdown') return Math.PI / 2;
-  if (mode === 'diorama-oblique') return 1.02;
-  return 0.88;
+  if (mode === 'diorama-oblique') return 0.94;
+  return 0.78;
 }
 ```
 
-### src/infrastructure/world/atlas-three/atlas-three-camera.ts:49
+### src/infrastructure/world/atlas-three/atlas-three-camera.ts:56
+
+```ts
+export function autoAtlasThreePitchForSpan(
+  mode: AtlasThreeCameraMode,
+  span: number,
+): number {
+  if (mode === 'ortho-topdown') return Math.PI / 2;
+  const logSpan = Math.log(clamp(span, 24, 2400));
+  const lo = Math.log(65);
+  const hi = Math.log(950);
+  const t = clamp((logSpan - lo) / (hi - lo), 0, 1);
+  const smooth = t * t * (3 - 2 * t);
+  if (mode === 'perspective') {
+    return clampAtlasThreePitch(mode, 0.52 + smooth * 0.56);
+  }
+  return clampAtlasThreePitch(mode, 0.68 + smooth * 0.48);
+}
+```
+
+### src/infrastructure/world/atlas-three/atlas-three-camera.ts:72
 
 ```ts
 export function buildAtlasThreeCameraRig(
@@ -1007,7 +1027,7 @@ export function buildAtlasThreeCameraRig(
   const pitch = clampAtlasThreePitch(view.mode, view.pitchRad);
   const forward: readonly [number, number] = [Math.sin(view.yawRad), Math.cos(view.yawRad)];
   const perspective = view.mode === 'perspective';
-  const distance = view.span * (perspective ? 2.4 : 3.0);
+  const distance = view.span * (perspective ? 2.25 : 3.0);
   const at: readonly [number, number, number] = [view.x, 0, view.z];
   const topdown = view.mode === 'ortho-topdown';
   const eye: readonly [number, number, number] = topdown
@@ -1026,31 +1046,40 @@ export function buildAtlasThreeCameraRig(
     at,
     up,
     distance,
-    near: perspective ? Math.max(0.2, distance * 0.02) : 0.1,
-    far: Math.max(8000, distance * 4 + 400),
+    near: perspective ? Math.max(0.2, distance * 0.015) : 0.1,
+    far: Math.max(26000, distance * 8 + 4000),
     perspective,
-    fovYDeg: 48,
+    fovYDeg: 46,
     halfHeight: view.span,
     halfWidth: view.span * safeAspect,
   };
 }
 ```
 
-### src/infrastructure/world/atlas-three/atlas-three-camera.ts:85
+### src/infrastructure/world/atlas-three/atlas-three-camera.ts:108
 
 ```ts
 export function buildAtlasThreeFogBand(
   rig: AtlasThreeCameraRig,
   look: 'outdoor' | 'indoor',
-): { readonly near: number; readonly far: number } {
-  const d = rig.distance;
-  return look === 'indoor'
-    ? { near: d * 0.95, far: d * 2.8 }
-    : { near: d * 0.95, far: d * 3.6 };
+): { readonly near: number; readonly far: number; readonly expDensity: number } {
+  const d = Math.max(120, rig.distance);
+  if (look === 'indoor') {
+    return {
+      near: d * 1.15,
+      far: d * 4.2,
+      expDensity: 0.22 / d,
+    };
+  }
+  return {
+    near: d * 1.5,
+    far: d * 6.5,
+    expDensity: 0.085 / d,
+  };
 }
 ```
 
-### src/infrastructure/world/atlas-three/atlas-three-camera.ts:96
+### src/infrastructure/world/atlas-three/atlas-three-camera.ts:128
 
 ```ts
 export function interpolateAtlasThreeView(
@@ -1073,13 +1102,60 @@ export function interpolateAtlasThreeView(
 }
 ```
 
-### src/infrastructure/world/atlas-three/atlas-three-runtime.ts:37
+### src/infrastructure/world/atlas-three/atlas-three-camera.ts:151
+
+```ts
+export function dampAtlasThreeView(
+  current: AtlasThreeCameraView,
+  target: AtlasThreeCameraView,
+  dtSeconds: number,
+  speed = 12,
+): { readonly next: AtlasThreeCameraView; readonly settled: boolean } {
+  const alpha = 1 - Math.exp(-Math.max(0.001, Math.min(0.1, dtSeconds)) * speed);
+  const nx = current.x + (target.x - current.x) * alpha;
+  const nz = current.z + (target.z - current.z) * alpha;
+  const logCur = Math.log(Math.max(1, current.span));
+  const logTgt = Math.log(Math.max(1, target.span));
+  const nspan = Math.exp(logCur + (logTgt - logCur) * alpha);
+  const nyaw = current.yawRad + (target.yawRad - current.yawRad) * alpha;
+  const npitch = current.pitchRad + (target.pitchRad - current.pitchRad) * alpha;
+
+  const settled =
+    Math.abs(nx - target.x) < 0.04 &&
+    Math.abs(nz - target.z) < 0.04 &&
+    Math.abs(nspan - target.span) < 0.04 &&
+    Math.abs(nyaw - target.yawRad) < 0.0004 &&
+    Math.abs(npitch - target.pitchRad) < 0.0004;
+
+  return {
+    next: settled
+      ? { ...target }
+      : {
+          mode: target.mode,
+          x: nx,
+          z: nz,
+          span: nspan,
+          yawRad: nyaw,
+          pitchRad: npitch,
+        },
+    settled,
+  };
+}
+```
+
+### src/infrastructure/world/atlas-three/atlas-three-runtime.ts:44
 
 ```ts
 export type AtlasThreeLightingMode = 'day' | 'evening' | 'night';
 ```
 
-### src/infrastructure/world/atlas-three/atlas-three-runtime.ts:39
+### src/infrastructure/world/atlas-three/atlas-three-runtime.ts:45
+
+```ts
+export type AtlasThreeStyleMode = 'pbr' | 'illustrated' | 'cel';
+```
+
+### src/infrastructure/world/atlas-three/atlas-three-runtime.ts:47
 
 ```ts
 export type AtlasThreeProjectedPin = {
@@ -1092,7 +1168,7 @@ export type AtlasThreeProjectedPin = {
 };
 ```
 
-### src/infrastructure/world/atlas-three/atlas-three-runtime.ts:48
+### src/infrastructure/world/atlas-three/atlas-three-runtime.ts:56
 
 ```ts
 export type AtlasThreeRuntimeConfig = {
@@ -1104,7 +1180,7 @@ export type AtlasThreeRuntimeConfig = {
 };
 ```
 
-### src/infrastructure/world/atlas-three/atlas-three-runtime.ts:295
+### src/infrastructure/world/atlas-three/atlas-three-runtime.ts:462
 
 ```ts
 export class AtlasThreeRuntime {
@@ -1115,6 +1191,13 @@ export class AtlasThreeRuntime {
   private readonly selectionRing: THREE.Mesh;
   private readonly gizmoAxisX: THREE.Mesh;
   private readonly gizmoAxisZ: THREE.Mesh;
+  private readonly skyDome: THREE.Mesh;
+  private readonly skyMat: THREE.ShaderMaterial;
+  private readonly infiniteOcean: THREE.Mesh;
+  private readonly infiniteMeadow: THREE.Mesh;
+  private readonly meadowMat: THREE.ShaderMaterial;
+  private readonly gridMesh: THREE.Mesh;
+  private readonly gridMat: THREE.ShaderMaterial;
   private readonly hemi = new THREE.HemisphereLight();
   private readonly sun = new THREE.DirectionalLight();
   private readonly fill = new THREE.DirectionalLight();
@@ -1124,6 +1207,15 @@ export class AtlasThreeRuntime {
   private readonly waterMat: THREE.ShaderMaterial;
   private readonly haloMat: THREE.SpriteMaterial;
   private readonly haloTex: THREE.CanvasTexture;
+  private readonly aoMat: THREE.MeshBasicMaterial;
+  private readonly aoTex: THREE.CanvasTexture;
+  private readonly mistMat: THREE.SpriteMaterial;
+  private readonly mistTex: THREE.CanvasTexture;
+  private readonly smokePuffs: Array<{
+    readonly sprite: THREE.Sprite;
+    readonly base: THREE.Vector3;
+    readonly phase: number;
+  }> = [];
   private readonly pickables: THREE.Mesh[] = [];
   private readonly raycaster = new THREE.Raycaster();
   private readonly groundPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
@@ -1135,20 +1227,24 @@ export class AtlasThreeRuntime {
   private seed = 'dornhain.unified.v4';
   private hideRoofs = false;
   private lightingMode: AtlasThreeLightingMode = 'day';
+  private styleMode: AtlasThreeStyleMode = 'pbr';
+  private showGrid = false;
   private pins: readonly AtlasMapPin[] = [];
   private selectedId: string | null = null;
   private gizmoVisible = false;
   private plan: AtlasThreeScenePlan | null = null;
   private sceneKey = '';
   private docRevision = 0;
+  private manualPitchOverride = false;
   private view: AtlasThreeCameraView = {
     mode: 'diorama-oblique',
     x: 500,
     z: 500,
-    span: 470,
-    yawRad: 0.35,
-    pitchRad: defaultAtlasThreePitch('diorama-oblique'),
+    span: 430,
+    yawRad: 0.42,
+    pitchRad: autoAtlasThreePitchForSpan('diorama-oblique', 430),
   };
+  private targetView: AtlasThreeCameraView = { ...this.view };
   private flight: {
     readonly from: AtlasThreeCameraView;
     readonly to: AtlasThreeCameraView;
@@ -1157,6 +1253,9 @@ export class AtlasThreeRuntime {
   } | null = null;
   private rafId = 0;
   private startTime = performance.now();
+  private lastFrameMs = performance.now();
+  private lastCameraNotifyMs = 0;
+  private lastPinEmitKey = '';
   private disposed = false;
   private contextLost = false;
   private readonly onCameraChange?: (view: AtlasThreeCameraView) => void;
@@ -1188,10 +1287,105 @@ export class AtlasThreeRuntime {
     const aniso = Math.min(8, this.renderer.capabilities.getMaxAnisotropy());
     this.pbr = new AtlasPbrTextureLibrary(texSize, aniso);
 
-    this.sun.castShadow = true;
-    this.scene.add(this.hemi, this.sun, this.sun.target, this.fill, this.fill.target, this.root, this.gizmoGroup);
+    // 1) Atmospheric Sky Dome (follows camera — seamless horizon!)
+    this.skyMat = new THREE.ShaderMaterial({
+      vertexShader: SKY_VERTEX,
+      fragmentShader: SKY_FRAGMENT,
+      side: THREE.BackSide,
+      depthWrite: false,
+      uniforms: {
+        uZenith: { value: new THREE.Color('#3e748c') },
+        uHorizon: { value: new THREE.Color('#9ec2c6') },
+        uSunGlow: { value: new THREE.Color('#fff1d1') },
+        uSunDir: { value: new THREE.Vector3(-12, 16, 10).normalize() },
+      },
+    });
+    this.skyDome = new THREE.Mesh(new THREE.SphereGeometry(18000, 32, 16), this.skyMat);
+    this.skyDome.frustumCulled = false;
+    this.skyDome.renderOrder = -10;
 
-    // 3D Selection Ring + Transform Gizmo handles (ATL4-A01 #1309 — Cyan/Gold SagaTree brand roles!)
+    // 2) Infinite Ocean Plane (28,000×28,000, locked to camera X/Z every frame — ZERO square borders!)
+    this.waterMat = new THREE.ShaderMaterial({
+      vertexShader: WATER_VERTEX,
+      fragmentShader: WATER_FRAGMENT,
+      side: THREE.DoubleSide,
+      uniforms: {
+        uTime: { value: 0 },
+        uTile: { value: 26 },
+        uDeep: { value: new THREE.Color('#134f6e') },
+        uShallow: { value: new THREE.Color('#2f8ea1') },
+        uSky: { value: new THREE.Color('#a8cfd4') },
+        uSunDir: { value: new THREE.Vector3(-12, 16, 10).normalize() },
+        uFogColor: { value: new THREE.Color('#9ec2c6') },
+        uFocus: { value: new THREE.Vector2(500, 500) },
+        uSpan: { value: 430 },
+      },
+    });
+    const oceanGeo = new THREE.PlaneGeometry(28000, 28000, 1, 1);
+    oceanGeo.rotateX(-Math.PI / 2);
+    this.infiniteOcean = new THREE.Mesh(oceanGeo, this.waterMat);
+    this.infiniteOcean.frustumCulled = false;
+    this.infiniteOcean.renderOrder = 1;
+
+    // 3) Infinite Meadow / Cavern Horizon Plane (for settlement / interior scales — zero edges!)
+    this.meadowMat = new THREE.ShaderMaterial({
+      vertexShader: MEADOW_VERTEX,
+      fragmentShader: MEADOW_FRAGMENT,
+      side: THREE.DoubleSide,
+      uniforms: {
+        uLight: { value: new THREE.Color('#8bb562') },
+        uDark: { value: new THREE.Color('#5d874a') },
+        uFogColor: { value: new THREE.Color('#9ec2c6') },
+        uFocus: { value: new THREE.Vector2(500, 500) },
+        uSpan: { value: 220 },
+        uIndoor: { value: 0 },
+      },
+    });
+    const meadowGeo = new THREE.PlaneGeometry(28000, 28000, 1, 1);
+    meadowGeo.rotateX(-Math.PI / 2);
+    this.infiniteMeadow = new THREE.Mesh(meadowGeo, this.meadowMat);
+    this.infiniteMeadow.frustumCulled = false;
+    this.infiniteMeadow.receiveShadow = true;
+
+    // 4) Interactive 3D Tactical Battle Grid (toggled via bottom taskbar ▦ button!)
+    this.gridMat = new THREE.ShaderMaterial({
+      vertexShader: GRID_VERTEX,
+      fragmentShader: GRID_FRAGMENT,
+      transparent: true,
+      depthWrite: false,
+      polygonOffset: true,
+      polygonOffsetFactor: -2,
+      polygonOffsetUnits: -2,
+      uniforms: {
+        uStep: { value: 40 },
+        uColor: { value: new THREE.Color('#06b6d4') },
+        uFocus: { value: new THREE.Vector2(500, 500) },
+        uSpan: { value: 220 },
+      },
+    });
+    const gridGeo = new THREE.PlaneGeometry(8000, 8000, 1, 1);
+    gridGeo.rotateX(-Math.PI / 2);
+    this.gridMesh = new THREE.Mesh(gridGeo, this.gridMat);
+    this.gridMesh.frustumCulled = false;
+    this.gridMesh.renderOrder = 4;
+    this.gridMesh.visible = false;
+
+    this.sun.castShadow = true;
+    this.scene.add(
+      this.skyDome,
+      this.infiniteOcean,
+      this.infiniteMeadow,
+      this.gridMesh,
+      this.hemi,
+      this.sun,
+      this.sun.target,
+      this.fill,
+      this.fill.target,
+      this.root,
+      this.gizmoGroup,
+    );
+
+    // 5) 3D Selection Ring + Transform Gizmo handles (SagaTree Cyan + Gold)
     const ringGeo = new THREE.RingGeometry(0.85, 1.0, 48);
     ringGeo.rotateX(-Math.PI / 2);
     this.selectionRing = new THREE.Mesh(
@@ -1201,17 +1395,17 @@ export class AtlasThreeRuntime {
         side: THREE.DoubleSide,
         depthWrite: false,
         transparent: true,
-        opacity: 0.92,
+        opacity: 0.94,
       }),
     );
     const axisGeoX = new THREE.BoxGeometry(1.6, 0.08, 0.08);
-    axisGeoX.translate(0.8, 0.12, 0);
+    axisGeoX.translate(0.8, 0.14, 0);
     this.gizmoAxisX = new THREE.Mesh(
       axisGeoX,
       new THREE.MeshBasicMaterial({ color: 0xf59e0b, depthTest: false }),
     );
     const axisGeoZ = new THREE.BoxGeometry(0.08, 0.08, 1.6);
-    axisGeoZ.translate(0, 0.12, 0.8);
+    axisGeoZ.translate(0, 0.14, 0.8);
     this.gizmoAxisZ = new THREE.Mesh(
       axisGeoZ,
       new THREE.MeshBasicMaterial({ color: 0x06b6d4, depthTest: false }),
@@ -1219,28 +1413,39 @@ export class AtlasThreeRuntime {
     this.gizmoGroup.add(this.selectionRing, this.gizmoAxisX, this.gizmoAxisZ);
     this.gizmoGroup.visible = false;
 
-    this.waterMat = new THREE.ShaderMaterial({
-      vertexShader: WATER_VERTEX,
-      fragmentShader: WATER_FRAGMENT,
-      transparent: true,
-      side: THREE.DoubleSide,
-      uniforms: {
-        uTime: { value: 0 },
-        uTile: { value: 24 },
-        uDeep: { value: new THREE.Color('#1d586c') },
-        uShallow: { value: new THREE.Color('#4c99a5') },
-        uSky: { value: new THREE.Color('#b5d6de') },
-        uSunDir: { value: new THREE.Vector3(-10, 17, 9).normalize() },
-        uFogColor: { value: new THREE.Color('#739aa8') },
-        uFogNear: { value: 1e6 },
-        uFogFar: { value: 2e6 },
-      },
-    });
-    this.haloTex = createTorchHaloTexture();
+    // 6) Atmospheric sprite & contact-shadow textures
+    this.haloTex = createRadialSoftTexture(
+      'rgba(255,240,198,1)',
+      'rgba(255,178,94,0.52)',
+      'rgba(255,140,60,0)',
+    );
     this.haloMat = new THREE.SpriteMaterial({
       map: this.haloTex,
-      color: 0xffb36b,
+      color: 0xffb86c,
       blending: THREE.AdditiveBlending,
+      transparent: true,
+      depthWrite: false,
+      fog: true,
+    });
+    this.aoTex = createRadialSoftTexture(
+      'rgba(10,18,14,0.52)',
+      'rgba(10,18,14,0.22)',
+      'rgba(10,18,14,0)',
+    );
+    this.aoMat = new THREE.MeshBasicMaterial({
+      map: this.aoTex,
+      transparent: true,
+      depthWrite: false,
+      polygonOffset: true,
+      polygonOffsetFactor: -1,
+    });
+    this.mistTex = createRadialSoftTexture(
+      'rgba(232,242,244,0.38)',
+      'rgba(220,235,238,0.16)',
+      'rgba(210,228,232,0)',
+    );
+    this.mistMat = new THREE.SpriteMaterial({
+      map: this.mistTex,
       transparent: true,
       depthWrite: false,
       fog: true,
@@ -1279,6 +1484,8 @@ export class AtlasThreeRuntime {
     readonly seed: string;
     readonly hideRoofs: boolean;
     readonly lightingMode: AtlasThreeLightingMode;
+    readonly styleMode?: AtlasThreeStyleMode;
+    readonly showGrid?: boolean;
     readonly pins: readonly AtlasMapPin[];
     readonly selectedId: string | null;
     readonly gizmoVisible: boolean;
@@ -1289,15 +1496,23 @@ export class AtlasThreeRuntime {
     const seedChanged = this.seed !== input.seed;
     const roofChanged = this.hideRoofs !== input.hideRoofs;
     const lightChanged = this.lightingMode !== input.lightingMode;
+    const nextStyle = input.styleMode ?? this.styleMode;
+    const styleChanged = this.styleMode !== nextStyle;
     this.doc = input.doc;
     this.mapScale = input.mapScale;
     this.look = input.look;
     this.seed = input.seed;
     this.hideRoofs = input.hideRoofs;
     this.lightingMode = input.lightingMode;
+    this.styleMode = nextStyle;
+    this.showGrid = Boolean(input.showGrid);
+    this.gridMesh.visible = this.showGrid;
     this.pins = input.pins;
     this.selectedId = input.selectedId;
     this.gizmoVisible = input.gizmoVisible;
+    if (styleChanged) {
+      this.applyStyleToMaterials();
+    }
     if (docChanged || scaleChanged || lookChanged || seedChanged || roofChanged || lightChanged) {
       this.docRevision += 1;
       this.sceneKey = '';
@@ -1305,27 +1520,62 @@ export class AtlasThreeRuntime {
     this.updateSelectionGizmo();
   }
 
+  private applyStyleToMaterials(): void {
+    for (const [key, mat] of this.materials) {
+      const spec = ATLAS_THREE_SURFACES[key];
+      if (this.styleMode === 'cel') {
+        mat.roughness = Math.min(1, spec.roughness + 0.08);
+        mat.normalScale.set(spec.normalScale * 0.35, spec.normalScale * 0.35);
+      } else if (this.styleMode === 'illustrated') {
+        mat.roughness = Math.min(1, spec.roughness + 0.03);
+        mat.normalScale.set(spec.normalScale * 0.72, spec.normalScale * 0.72);
+      } else {
+        mat.roughness = spec.roughness;
+        mat.normalScale.set(spec.normalScale, spec.normalScale);
+      }
+      mat.needsUpdate = true;
+    }
+  }
+
   getView(): AtlasThreeCameraView {
     return { ...this.view };
   }
 
-  setView(next: Partial<AtlasThreeCameraView>, animate = false): void {
-    const targetMode: AtlasThreeCameraMode = next.mode ?? this.view.mode;
+  getTargetView(): AtlasThreeCameraView {
+    return { ...this.targetView };
+  }
+
+  setView(
+    next: Partial<AtlasThreeCameraView>,
+    animate = false,
+    opts?: { readonly manualPitch?: boolean },
+  ): void {
+    const targetMode: AtlasThreeCameraMode = next.mode ?? this.targetView.mode;
+    const nextSpan = Math.max(16, Math.min(2400, next.span ?? this.targetView.span));
+    if (opts?.manualPitch) {
+      this.manualPitchOverride = true;
+    } else if (next.mode) {
+      this.manualPitchOverride = false;
+    }
+    const pitch =
+      next.pitchRad !== undefined
+        ? clampAtlasThreePitch(targetMode, next.pitchRad)
+        : next.mode || !this.manualPitchOverride
+          ? autoAtlasThreePitchForSpan(targetMode, nextSpan)
+          : this.targetView.pitchRad;
     const target: AtlasThreeCameraView = {
       mode: targetMode,
-      x: next.x ?? this.view.x,
-      z: next.z ?? this.view.z,
-      span: Math.max(24, Math.min(1400, next.span ?? this.view.span)),
-      yawRad: next.yawRad ?? this.view.yawRad,
-      pitchRad: clampAtlasThreePitch(
-        targetMode,
-        next.pitchRad ?? (next.mode ? defaultAtlasThreePitch(targetMode) : this.view.pitchRad),
-      ),
+      x: next.x ?? this.targetView.x,
+      z: next.z ?? this.targetView.z,
+      span: nextSpan,
+      yawRad: next.yawRad ?? this.targetView.yawRad,
+      pitchRad: pitch,
     };
     if (animate) {
       const reduced =
         typeof window !== 'undefined' &&
         window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+      this.targetView = target;
       this.flight = reduced
         ? null
         : { from: { ...this.view }, to: target, startMs: performance.now(), durationMs: 520 };
@@ -1335,26 +1585,79 @@ export class AtlasThreeRuntime {
       }
     } else {
       this.flight = null;
+      this.targetView = target;
       this.view = target;
       this.onCameraChange?.(this.view);
     }
   }
 
+  /**
+   * Butter-smooth Google-Maps inertia wheel zoom toward the exact world point under (px, py),
+   * with automatic Diorama pitch adaptation.
+   */
+  zoomAtScreen(deltaY: number, px: number, py: number): AtlasThreeCameraView {
+    this.flight = null;
+    const before = this.screenToGround(px, py);
+    const factor = Math.exp(deltaY * 0.00125);
+    const nextSpan = Math.max(16, Math.min(2400, this.targetView.span * factor));
+    const ratio = nextSpan / Math.max(1, this.targetView.span);
+
+    let nextX = this.targetView.x;
+    let nextZ = this.targetView.z;
+    if (before) {
+      nextX = before.x + (this.targetView.x - before.x) * ratio;
+      nextZ = before.z + (this.targetView.z - before.z) * ratio;
+    }
+
+    const nextPitch =
+      this.targetView.mode === 'ortho-topdown'
+        ? Math.PI / 2
+        : this.manualPitchOverride
+          ? this.targetView.pitchRad
+          : autoAtlasThreePitchForSpan(this.targetView.mode, nextSpan);
+
+    this.targetView = {
+      ...this.targetView,
+      x: nextX,
+      z: nextZ,
+      span: nextSpan,
+      pitchRad: nextPitch,
+    };
+    return { ...this.targetView };
+  }
+
+  /** Smoothly ease yaw (e.g. clicking the compass dial snaps smoothly back to 0° North). */
+  setYawAnimated(yawRad: number): void {
+    this.setView({ yawRad }, true);
+  }
+
   flyTo(x: number, z: number, span: number): void {
-    this.setView({ x, z, span }, true);
+    this.manualPitchOverride = false;
+    this.setView(
+      {
+        x,
+        z,
+        span,
+        pitchRad: autoAtlasThreePitchForSpan(this.targetView.mode, span),
+      },
+      true,
+    );
   }
 
   resetCamera(): void {
-    const mode = this.view.mode;
-    const defaultSpan = this.mapScale === 'world' ? 470 : this.mapScale === 'settlement' ? 320 : 280;
+    const mode = this.targetView.mode;
+    const defaultSpan = this.mapScale === 'world' ? 430 : this.mapScale === 'settlement' ? 195 : 220;
+    const defaultX = this.mapScale === 'settlement' ? 370 : 500;
+    const defaultZ = this.mapScale === 'settlement' ? 485 : 500;
+    this.manualPitchOverride = false;
     this.setView(
       {
         mode,
-        x: 500,
-        z: 500,
+        x: defaultX,
+        z: defaultZ,
         span: defaultSpan,
-        yawRad: mode === 'ortho-topdown' ? 0 : 0.35,
-        pitchRad: defaultAtlasThreePitch(mode),
+        yawRad: mode === 'ortho-topdown' ? 0 : 0.42,
+        pitchRad: autoAtlasThreePitchForSpan(mode, defaultSpan),
       },
       true,
     );
@@ -1396,7 +1699,6 @@ export class AtlasThreeRuntime {
     return fallback;
   }
 
-  /** Expose canonical IDs currently rendered in Three.js. */
   getRenderedIds(): string[] {
     return [...(this.plan?.ids ?? [])].sort();
   }
@@ -1428,7 +1730,7 @@ export class AtlasThreeRuntime {
     }
     if ('emissive' in spec) {
       mat.emissive = new THREE.Color(spec.emissive);
-      mat.emissiveIntensity = 1.85;
+      mat.emissiveIntensity = 1.9;
       mat.toneMapped = false;
     }
     this.materials.set(key, mat);
@@ -1441,24 +1743,28 @@ export class AtlasThreeRuntime {
       if (child instanceof THREE.Mesh) child.geometry.dispose();
       if (child instanceof THREE.PointLight) child.dispose();
     }
+    this.smokePuffs.length = 0;
     this.pickables.length = 0;
   }
 
   private ensureScene(): void {
     if (!this.doc) return;
+    // Automatic smooth roof cutaway when zoomed deep into a settlement building!
+    const autoCutaway = this.mapScale === 'settlement' && this.view.span < 58;
+    const effectiveHideRoofs = this.hideRoofs || autoCutaway;
     const lodBucket = this.view.span >= 420 ? 'far' : this.view.span >= 180 ? 'mid' : 'near';
-    const key = `${this.docRevision}|${lodBucket}|${this.presetId}|${this.hideRoofs ? 'cut' : 'full'}`;
+    const key = `${this.docRevision}|${lodBucket}|${this.presetId}|${effectiveHideRoofs ? 'cut' : 'full'}`;
     if (key === this.sceneKey && this.plan) return;
 
     this.clearRoot();
-    const warmWindows = this.look === 'indoor' || this.lightingMode !== 'day';
+    const warmWindows = true;
     const plan = buildAtlasThreeScenePlan(this.doc, {
       mapScale: this.mapScale,
       look: this.look,
       span: this.view.span,
       presetId: this.presetId,
       seed: this.seed,
-      hideRoofs: this.hideRoofs,
+      hideRoofs: effectiveHideRoofs,
       warmWindows,
     });
 
@@ -1508,7 +1814,7 @@ export class AtlasThreeRuntime {
       this.pickables.push(inst);
     }
 
-    // Instanced suggestive scenery scatter (ATL3-D01 #1327) — 1 draw call per mesh part!
+    // Instanced suggestive scenery scatter (1 draw call per mesh part!)
     for (const batch of plan.scatterBatches) {
       const { parts } = buildScatterGeometry(batch.kind);
       for (const part of parts) {
@@ -1527,9 +1833,49 @@ export class AtlasThreeRuntime {
       }
     }
 
-    const torchColor = new THREE.Color(0xffaa56);
-    for (const t of plan.torches) {
-      const intensityScale = this.look === 'indoor' || this.lightingMode === 'night' ? 1.0 : 0.4;
+    // Soft Ground Contact Shadow AO Discs (single InstancedMesh draw call!)
+    if (plan.aoDiscs.length > 0) {
+      const discGeo = new THREE.PlaneGeometry(2, 2);
+      discGeo.rotateX(-Math.PI / 2);
+      const aoInst = new THREE.InstancedMesh(discGeo, this.aoMat, plan.aoDiscs.length);
+      const mat4 = new THREE.Matrix4();
+      const quat = new THREE.Quaternion();
+      plan.aoDiscs.forEach((d, i) => {
+        mat4.compose(new THREE.Vector3(d.x, d.y, d.z), quat, new THREE.Vector3(d.radius, 1, d.radius));
+        aoInst.setMatrixAt(i, mat4);
+      });
+      aoInst.instanceMatrix.needsUpdate = true;
+      aoInst.computeBoundingSphere();
+      aoInst.renderOrder = 2;
+      aoInst.name = 'atlas3:ao';
+      this.root.add(aoInst);
+    }
+
+    // Animated Chimney Smoke Puffs (V7/V8 Dornhain cozy life!)
+    for (const base of plan.smokePoints.slice(0, 12)) {
+      for (let k = 0; k < 3; k += 1) {
+        const sprite = new THREE.Sprite(this.mistMat);
+        sprite.position.copy(base);
+        sprite.scale.setScalar(10);
+        sprite.renderOrder = 4;
+        this.root.add(sprite);
+        this.smokePuffs.push({ sprite, base: base.clone(), phase: k / 3 });
+      }
+    }
+
+    // Subtle Alpine Peak Mist Sprites
+    for (const m of plan.mistPoints.slice(0, 14)) {
+      const sprite = new THREE.Sprite(this.mistMat);
+      sprite.position.copy(m.position);
+      sprite.scale.set(m.scale * 1.4, m.scale * 0.65, 1);
+      sprite.renderOrder = 3;
+      this.root.add(sprite);
+    }
+
+    // Warm Torches & Tavern Porch Lanterns
+    const torchColor = new THREE.Color(0xffac52);
+    for (const t of plan.torches.slice(0, 16)) {
+      const intensityScale = this.look === 'indoor' || this.lightingMode === 'night' ? 1.0 : this.lightingMode === 'evening' ? 0.72 : 0.34;
       const light = new THREE.PointLight(
         torchColor,
         1.7 * (t.radius / 4) ** 2 * intensityScale,
@@ -1540,13 +1886,14 @@ export class AtlasThreeRuntime {
       this.root.add(light);
       const sprite = new THREE.Sprite(this.haloMat);
       sprite.position.copy(t.position);
-      sprite.scale.setScalar(t.radius * 0.3);
+      sprite.scale.setScalar(t.radius * 0.28);
       sprite.renderOrder = 3;
       this.root.add(sprite);
     }
 
     this.plan = plan;
     this.sceneKey = key;
+    this.applyStyleToMaterials();
     this.updateSelectionGizmo();
   }
 
@@ -1570,7 +1917,7 @@ export class AtlasThreeRuntime {
     this.gizmoGroup.visible = true;
   }
 
-  private syncCameraAndLighting(w: number, h: number): void {
+  private syncCameraAndLighting(w: number, h: number, elapsedSec: number): void {
     const aspect = w / Math.max(1, h);
     const rig = buildAtlasThreeCameraRig(this.view, aspect);
     if (rig.perspective) {
@@ -1606,48 +1953,89 @@ export class AtlasThreeRuntime {
     const at = new THREE.Vector3(rig.at[0], rig.at[1], rig.at[2]);
     const sunDir = new THREE.Vector3(spec.sunDir[0], spec.sunDir[1], spec.sunDir[2]).normalize();
     const fillDir = new THREE.Vector3(7, 6, -7).normalize();
-    this.scene.background = new THREE.Color(spec.background);
     const band = buildAtlasThreeFogBand(rig, this.look);
-    this.scene.fog = new THREE.Fog(spec.background, band.near, band.far);
+
+    // Seamless Exponential Fog + Sky Dome matched 1:1
+    this.scene.background = new THREE.Color(spec.skyHorizon);
+    this.scene.fog = new THREE.FogExp2(spec.skyHorizon, band.expDensity);
+    this.skyDome.position.set(rig.eye[0], 0, rig.eye[2]);
+    this.skyMat.uniforms.uZenith!.value.set(spec.skyZenith);
+    this.skyMat.uniforms.uHorizon!.value.set(spec.skyHorizon);
+    this.skyMat.uniforms.uSunGlow!.value.set(spec.sunGlow);
+    this.skyMat.uniforms.uSunDir!.value.copy(sunDir);
+
+    // Lock INFINITE surround planes to camera target X/Z — zero borders at ANY zoom!
+    const isWorldOcean = this.look === 'outdoor' && this.mapScale === 'world';
+    this.infiniteOcean.visible = isWorldOcean;
+    this.infiniteMeadow.visible = !isWorldOcean;
+    const wy = this.plan ? this.plan.waterLevel : -0.52;
+    this.infiniteOcean.position.set(this.view.x, wy, this.view.z);
+    this.infiniteMeadow.position.set(this.view.x, -0.54, this.view.z);
+    this.meadowMat.uniforms.uLight!.value.set(spec.meadowLight);
+    this.meadowMat.uniforms.uDark!.value.set(spec.meadowDark);
+    this.meadowMat.uniforms.uFogColor!.value.set(spec.skyHorizon);
+    this.meadowMat.uniforms.uFocus!.value.set(this.view.x, this.view.z);
+    this.meadowMat.uniforms.uSpan!.value = this.view.span;
+    this.meadowMat.uniforms.uIndoor!.value = this.look === 'indoor' ? 1 : 0;
+
+    // Tactical grid follows camera target (sits crisply above cobblestone/wood/meadow)
+    this.gridMesh.position.set(this.view.x, this.mapScale === 'world' ? 2.2 : 0.72, this.view.z);
+    this.gridMat.uniforms.uStep!.value =
+      this.view.span > 500 ? 100 : this.view.span > 160 ? 32 : 16;
+    this.gridMat.uniforms.uFocus!.value.set(this.view.x, this.view.z);
+    this.gridMat.uniforms.uSpan!.value = this.view.span;
+    this.gridMat.uniforms.uColor!.value.set(
+      this.lightingMode === 'evening' ? '#fde68a' : '#22d3ee',
+    );
+
+    // Style-aware lighting & exposure
+    const styleExp =
+      this.styleMode === 'illustrated' ? 1.06 : this.styleMode === 'cel' ? 0.96 : 1.0;
     this.hemi.color.set(spec.hemiSky);
     this.hemi.groundColor.set(spec.hemiGround);
     this.hemi.intensity = spec.hemiIntensity;
     this.sun.color.set(spec.sunColor);
-    this.sun.intensity = spec.sunIntensity;
+    this.sun.intensity = spec.sunIntensity * (this.styleMode === 'cel' ? 1.15 : 1.0);
+    this.sun.position.copy(at).addScaledVector(sunDir, Math.max(400, this.view.span * 2.2));
+    this.sun.target.position.copy(at);
+    const shadowHalf = Math.max(220, this.view.span * 1.45);
+    this.sun.shadow.camera.left = -shadowHalf;
+    this.sun.shadow.camera.right = shadowHalf;
+    this.sun.shadow.camera.top = shadowHalf;
+    this.sun.shadow.camera.bottom = -shadowHalf;
+    this.sun.shadow.camera.near = 20;
+    this.sun.shadow.camera.far = Math.max(2400, this.view.span * 7);
+    this.sun.shadow.bias = -0.0005;
+    this.sun.shadow.normalBias = 0.025;
+    this.sun.shadow.camera.updateProjectionMatrix();
+
     this.fill.color.set(spec.fillColor);
     this.fill.intensity = spec.fillIntensity;
-    this.renderer.toneMappingExposure = spec.exposure;
-
-    const ext = this.view.span * aspect * (rig.perspective ? 2.1 : 1.4);
-    const reach = rig.distance * 1.4 + 600;
-    this.sun.position.copy(at).addScaledVector(sunDir, reach);
-    this.sun.target.position.copy(at);
-    this.fill.position.copy(at).addScaledVector(fillDir, reach);
+    this.fill.position.copy(at).addScaledVector(fillDir, Math.max(300, this.view.span * 1.8));
     this.fill.target.position.copy(at);
-    const sc = this.sun.shadow.camera;
-    sc.left = -ext;
-    sc.right = ext;
-    sc.top = ext;
-    sc.bottom = -ext;
-    sc.near = 1;
-    sc.far = reach * 2 + 400;
-    sc.updateProjectionMatrix();
-    this.sun.shadow.bias = -0.0004;
-    this.sun.shadow.normalBias = ((ext * 2) / this.sun.shadow.mapSize.x) * 1.25;
-    this.sun.target.updateMatrixWorld();
-    this.fill.target.updateMatrixWorld();
 
-    const u = this.waterMat.uniforms;
-    u.uDeep.value.set(spec.waterDeep);
-    u.uShallow.value.set(spec.waterShallow);
-    u.uSky.value.set(spec.waterSky);
-    u.uSunDir.value.copy(sunDir);
-    u.uFogColor.value.set(spec.background);
-    u.uFogNear.value = band.near;
-    u.uFogFar.value = band.far;
+    this.renderer.toneMappingExposure = spec.exposure * styleExp;
+    this.waterMat.uniforms.uTime!.value = elapsedSec;
+    this.waterMat.uniforms.uDeep!.value.set(spec.waterDeep);
+    this.waterMat.uniforms.uShallow!.value.set(spec.waterShallow);
+    this.waterMat.uniforms.uSky!.value.set(spec.waterSky);
+    this.waterMat.uniforms.uSunDir!.value.copy(sunDir);
+    this.waterMat.uniforms.uFogColor!.value.set(spec.skyHorizon);
+    this.waterMat.uniforms.uFocus!.value.set(this.view.x, this.view.z);
+    this.waterMat.uniforms.uSpan!.value = this.view.span;
+
+    // Gentle rising chimney smoke animation
+    for (const puff of this.smokePuffs) {
+      const cycle = (elapsedSec * 0.22 + puff.phase) % 1;
+      puff.sprite.position.set(
+        puff.base.x + Math.sin(elapsedSec * 0.7 + puff.phase * 6) * 4 + cycle * 12,
+        puff.base.y + cycle * 26,
+        puff.base.z + cycle * 6,
+      );
+      const s = 6 + cycle * 14;
+      puff.sprite.scale.setScalar(s);
+    }
   }
-
-  private lastPinEmitKey = '';
 
   private emitProjectedPins(w: number, h: number): void {
     if (!this.onProjectedPins) return;
@@ -1661,7 +2049,7 @@ export class AtlasThreeRuntime {
     const projected: AtlasThreeProjectedPin[] = [];
     const v = new THREE.Vector3();
     for (const pin of this.pins) {
-      v.set(pin.x, 12, pin.y).project(this.camera);
+      v.set(pin.x, 14, pin.y).project(this.camera);
       const visible = v.z >= -1 && v.z <= 1;
       const left = Math.round(((v.x + 1) * 0.5) * w);
       const top = Math.round(((1 - v.y) * 0.5) * h);
@@ -1686,27 +2074,50 @@ export class AtlasThreeRuntime {
       if (this.disposed) return;
       this.rafId = window.requestAnimationFrame(tick);
       if (this.contextLost || !this.doc) return;
+      const dtSec = Math.min(0.05, Math.max(0.001, (now - this.lastFrameMs) / 1000));
+      this.lastFrameMs = now;
+
       const w = this.config.canvas.clientWidth;
       const h = this.config.canvas.clientHeight;
       if (w < 8 || h < 8) return;
+      if (this.config.canvas.width !== Math.round(w * this.renderer.getPixelRatio())) {
+        this.renderer.setSize(w, h, false);
+      }
 
       if (this.flight) {
-        const t = (now - this.flight.startMs) / Math.max(1, this.flight.durationMs);
+        const t = (now - this.flight.startMs) / this.flight.durationMs;
         this.view = interpolateAtlasThreeView(this.flight.from, this.flight.to, t);
         if (t >= 1) {
+          this.view = this.flight.to;
+          this.targetView = { ...this.view };
           this.flight = null;
+          this.onCameraChange?.(this.view);
+        } else if (now - this.lastCameraNotifyMs > 48) {
+          this.lastCameraNotifyMs = now;
+          this.onCameraChange?.(this.view);
+        }
+      } else {
+        const damped = dampAtlasThreeView(this.view, this.targetView, dtSec, 11.5);
+        if (!damped.settled) {
+          this.view = damped.next;
+          if (now - this.lastCameraNotifyMs > 48) {
+            this.lastCameraNotifyMs = now;
+            this.onCameraChange?.(this.view);
+          }
+        } else if (
+          this.view.x !== this.targetView.x ||
+          this.view.z !== this.targetView.z ||
+          this.view.span !== this.targetView.span ||
+          this.view.yawRad !== this.targetView.yawRad ||
+          this.view.pitchRad !== this.targetView.pitchRad
+        ) {
+          this.view = { ...this.targetView };
           this.onCameraChange?.(this.view);
         }
       }
 
-      if (this.config.canvas.width !== Math.round(w * this.renderer.getPixelRatio()) ||
-          this.config.canvas.height !== Math.round(h * this.renderer.getPixelRatio())) {
-        this.renderer.setSize(w, h, false);
-      }
-
       this.ensureScene();
-      this.syncCameraAndLighting(w, h);
-      this.waterMat.uniforms.uTime.value = (now - this.startTime) * 0.001;
+      this.syncCameraAndLighting(w, h, (now - this.startTime) * 0.001);
       this.renderer.render(this.scene, this.camera);
       this.emitProjectedPins(w, h);
     };
@@ -1719,18 +2130,26 @@ export class AtlasThreeRuntime {
     this.config.canvas.removeEventListener('webglcontextlost', this.onContextLostListener);
     this.config.canvas.removeEventListener('webglcontextrestored', this.onContextRestoredListener);
     this.clearRoot();
-    this.selectionRing.geometry.dispose();
-    (this.selectionRing.material as THREE.Material).dispose();
-    this.gizmoAxisX.geometry.dispose();
-    (this.gizmoAxisX.material as THREE.Material).dispose();
-    this.gizmoAxisZ.geometry.dispose();
-    (this.gizmoAxisZ.material as THREE.Material).dispose();
     for (const mat of this.materials.values()) mat.dispose();
     this.materials.clear();
-    this.waterMat.dispose();
-    this.haloMat.dispose();
-    this.haloTex.dispose();
     this.pbr.dispose();
+    this.skyDome.geometry.dispose();
+    this.skyMat.dispose();
+    this.infiniteOcean.geometry.dispose();
+    this.waterMat.dispose();
+    this.infiniteMeadow.geometry.dispose();
+    this.meadowMat.dispose();
+    this.gridMesh.geometry.dispose();
+    this.gridMat.dispose();
+    this.haloTex.dispose();
+    this.haloMat.dispose();
+    this.aoTex.dispose();
+    this.aoMat.dispose();
+    this.mistTex.dispose();
+    this.mistMat.dispose();
+    this.selectionRing.geometry.dispose();
+    this.gizmoAxisX.geometry.dispose();
+    this.gizmoAxisZ.geometry.dispose();
     this.renderer.dispose();
   }
 }
@@ -1781,38 +2200,40 @@ export const ATLAS_THREE_SURFACES = {
   wall: { pbr: 'wall', color: '#ded7c2', roughness: 0.92, normalScale: 0.62, tile: 26 },
   'wall-indoor': { pbr: 'wall', color: '#b6b09f', roughness: 0.94, normalScale: 0.7, tile: 22 },
   plaster: { pbr: 'plaster', color: '#f2e3c7', roughness: 0.95, normalScale: 0.36, tile: 22 },
-  'roof-tile': { pbr: 'roofTile', color: '#f2c4ae', roughness: 0.84, normalScale: 0.82, tile: 18 },
-  'roof-slate': { pbr: 'roofSlate', color: '#b4c2cf', roughness: 0.76, normalScale: 0.78, tile: 18 },
-  'roof-moss': { pbr: 'roofMoss', color: '#bed0a8', roughness: 0.88, normalScale: 0.8, tile: 18 },
-  wood: { pbr: 'wood', color: '#d3a77b', roughness: 0.84, normalScale: 0.56, tile: 16 },
-  'wood-dark': { pbr: 'wood', color: '#8a6648', roughness: 0.86, normalScale: 0.6, tile: 14 },
-  'bark-birch': { pbr: 'plaster', color: '#dfd8c8', roughness: 0.86, normalScale: 0.4, tile: 14 },
-  rock: { pbr: 'rock', color: '#b4bcb0', roughness: 0.92, normalScale: 0.82, tile: 32 },
-  snow: { pbr: 'snow', color: '#eef4f8', roughness: 0.76, normalScale: 0.35, tile: 36 },
-  leaf: { pbr: 'moss', color: '#7eb276', roughness: 0.92, normalScale: 0.55, tile: 18 },
-  'leaf-birch': { pbr: 'moss', color: '#a1c97b', roughness: 0.9, normalScale: 0.5, tile: 18 },
-  'leaf-pine': { pbr: 'moss', color: '#4f866a', roughness: 0.94, normalScale: 0.58, tile: 18 },
-  flower: { pbr: null, color: '#e8c468', roughness: 0.85, normalScale: 0, tile: 1 },
+  'roof-tile': { pbr: 'roofTile', color: '#e69b78', roughness: 0.82, normalScale: 0.88, tile: 16 },
+  'roof-slate': { pbr: 'roofSlate', color: '#90a3b5', roughness: 0.74, normalScale: 0.82, tile: 16 },
+  'roof-moss': { pbr: 'roofMoss', color: '#a5bd88', roughness: 0.88, normalScale: 0.84, tile: 16 },
+  wood: { pbr: 'wood', color: '#c8986b', roughness: 0.84, normalScale: 0.62, tile: 15 },
+  'wood-dark': { pbr: 'wood', color: '#5c412c', roughness: 0.86, normalScale: 0.66, tile: 14 },
+  'bark-birch': { pbr: 'plaster', color: '#dfd8c8', roughness: 0.86, normalScale: 0.44, tile: 14 },
+  rock: { pbr: 'rock', color: '#9ea89e', roughness: 0.92, normalScale: 0.9, tile: 30 },
+  snow: { pbr: 'snow', color: '#f2f7fa', roughness: 0.74, normalScale: 0.36, tile: 34 },
+  leaf: { pbr: 'moss', color: '#5f9458', roughness: 0.9, normalScale: 0.6, tile: 16 },
+  'leaf-sun': { pbr: 'moss', color: '#8fbe65', roughness: 0.88, normalScale: 0.56, tile: 16 },
+  'leaf-birch': { pbr: 'moss', color: '#9bc46e', roughness: 0.88, normalScale: 0.52, tile: 16 },
+  'leaf-pine': { pbr: 'moss', color: '#3b6f54', roughness: 0.92, normalScale: 0.62, tile: 16 },
+  'gold-accent': { pbr: null, color: '#e8b658', roughness: 0.32, normalScale: 0, tile: 1, metalness: 0.62 },
+  flower: { pbr: null, color: '#f0cf6c', roughness: 0.85, normalScale: 0, tile: 1 },
   window: { pbr: null, color: '#2b3e4f', roughness: 0.22, normalScale: 0, tile: 1, metalness: 0.18 },
   'window-warm': {
     pbr: null,
-    color: '#ffcf7d',
-    roughness: 0.4,
+    color: '#ffd584',
+    roughness: 0.35,
     normalScale: 0,
     tile: 1,
-    emissive: '#ffb658',
+    emissive: '#ffae45',
   },
-  flame: { pbr: null, color: '#ffb961', roughness: 1, normalScale: 0, tile: 1, emissive: '#ffa64c' },
+  flame: { pbr: null, color: '#ffbe66', roughness: 1, normalScale: 0, tile: 1, emissive: '#ffa342' },
 } as const satisfies Record<string, AtlasThreeSurfaceSpec>;
 ```
 
-### src/infrastructure/world/atlas-three/atlas-three-scene.ts:86
+### src/infrastructure/world/atlas-three/atlas-three-scene.ts:88
 
 ```ts
 export type AtlasThreeSurfaceKey = keyof typeof ATLAS_THREE_SURFACES;
 ```
 
-### src/infrastructure/world/atlas-three/atlas-three-scene.ts:88
+### src/infrastructure/world/atlas-three/atlas-three-scene.ts:90
 
 ```ts
 export function atlasThreeFloorSurface(
@@ -1832,7 +2253,7 @@ export function atlasThreeFloorSurface(
 }
 ```
 
-### src/infrastructure/world/atlas-three/atlas-three-scene.ts:104
+### src/infrastructure/world/atlas-three/atlas-three-scene.ts:106
 
 ```ts
 export class AtlasThreeGeoBuilder {
@@ -1894,7 +2315,7 @@ export class AtlasThreeGeoBuilder {
 }
 ```
 
-### src/infrastructure/world/atlas-three/atlas-three-scene.ts:189
+### src/infrastructure/world/atlas-three/atlas-three-scene.ts:191
 
 ```ts
 export type AtlasThreeScatterBatch = {
@@ -1903,15 +2324,30 @@ export type AtlasThreeScatterBatch = {
 };
 ```
 
-### src/infrastructure/world/atlas-three/atlas-three-scene.ts:194
+### src/infrastructure/world/atlas-three/atlas-three-scene.ts:196
+
+```ts
+export type AtlasThreeAoDisc = {
+  readonly x: number;
+  readonly y: number;
+  readonly z: number;
+  readonly radius: number;
+};
+```
+
+### src/infrastructure/world/atlas-three/atlas-three-scene.ts:203
 
 ```ts
 export type AtlasThreeScenePlan = {
   readonly builders: Map<AtlasThreeSurfaceKey, AtlasThreeGeoBuilder>;
   readonly water: AtlasThreeGeoBuilder;
   readonly terrain: THREE.BufferGeometry | null;
+  readonly waterLevel: number;
   readonly doorInstances: { readonly matrices: THREE.Matrix4[]; readonly ids: string[] };
   readonly scatterBatches: readonly AtlasThreeScatterBatch[];
+  readonly aoDiscs: readonly AtlasThreeAoDisc[];
+  readonly smokePoints: readonly THREE.Vector3[];
+  readonly mistPoints: readonly { readonly position: THREE.Vector3; readonly scale: number }[];
   readonly torches: readonly {
     readonly id: string;
     readonly position: THREE.Vector3;
@@ -1923,7 +2359,7 @@ export type AtlasThreeScenePlan = {
 };
 ```
 
-### src/infrastructure/world/atlas-three/atlas-three-scene.ts:824
+### src/infrastructure/world/atlas-three/atlas-three-scene.ts:881
 
 ```ts
 export type BuildAtlasThreeSceneOptions = {
@@ -1937,7 +2373,7 @@ export type BuildAtlasThreeSceneOptions = {
 };
 ```
 
-### src/infrastructure/world/atlas-three/atlas-three-scene.ts:834
+### src/infrastructure/world/atlas-three/atlas-three-scene.ts:891
 
 ```ts
 export function buildAtlasThreeScenePlan(
@@ -1957,6 +2393,9 @@ export function buildAtlasThreeScenePlan(
   const water = new AtlasThreeGeoBuilder(56);
   const ids = new Set<string>();
   const torches: { id: string; position: THREE.Vector3; radius: number }[] = [];
+  const aoDiscs: AtlasThreeAoDisc[] = [];
+  const smokePoints: THREE.Vector3[] = [];
+  const mistPoints: { position: THREE.Vector3; scale: number }[] = [];
   const doorInstances: { matrices: THREE.Matrix4[]; ids: string[] } = { matrices: [], ids: [] };
   const up = new THREE.Vector3(0, 1, 0);
 
@@ -1966,6 +2405,7 @@ export function buildAtlasThreeScenePlan(
       ? synthesizeWorldReliefHeightfield(doc, opts.seed)
       : null;
   const activeTerrainHf = doc.heightfield ?? syntheticRelief;
+  const waterLevel = activeTerrainHf ? activeTerrainHf.waterLevel : -0.52;
   const sampleGroundY = (x: number, z: number, fallback: number): number => {
     if (!activeTerrainHf) return fallback;
     const sampled = sampleHeightfield(activeTerrainHf, x, z);
@@ -1973,25 +2413,9 @@ export function buildAtlasThreeScenePlan(
     return syntheticRelief ? Math.max(0.2, sampled) : sampled > fallback ? sampled : fallback;
   };
 
-  // Full ocean surround (world), lush meadow horizon (settlement), or dark slate sheet (interior).
-  if (opts.look === 'indoor') {
-    const b = get('sheet-indoor');
-    const y = -0.52;
-    const p = (x: number, z: number): THREE.Vector3 => new THREE.Vector3(x, y, z);
-    b.tri(p(-600, -600), p(-600, 1600), p(1600, 1600), '__sheet', up);
-    b.tri(p(-600, -600), p(1600, 1600), p(1600, -600), '__sheet', up);
-  } else if (opts.mapScale === 'settlement') {
-    const b = get('sheet-outdoor');
-    const y = -0.54;
-    const p = (x: number, z: number): THREE.Vector3 => new THREE.Vector3(x, y, z);
-    b.tri(p(-1400, -1400), p(-1400, 2400), p(2400, 2400), '__meadow', up);
-    b.tri(p(-1400, -1400), p(2400, 2400), p(2400, -1400), '__meadow', up);
-  } else {
-    const wy = activeTerrainHf ? activeTerrainHf.waterLevel : -0.52;
-    const p = (x: number, z: number): THREE.Vector3 => new THREE.Vector3(x, wy, z);
-    water.tri(p(-1400, -1400), p(-1400, 2400), p(2400, 2400), '__ocean', up);
-    water.tri(p(-1400, -1400), p(2400, 2400), p(2400, -1400), '__ocean', up);
-  }
+  // NOTE: Infinite ocean / infinite meadow / infinite dark cavern horizon surround is rendered
+  // by AtlasThreeRuntime (camera-following 28k×28k plane + sky dome + FogExp2) so zero
+  // rectangular edges ever appear when zooming out!
 
   const rooms = plan.primitives.filter(
     (q): q is Extract<AtlasProductGeometryPrimitive, { kind: 'area' | 'room' }> =>
@@ -2002,25 +2426,22 @@ export function buildAtlasThreeScenePlan(
   rooms.forEach((rm, i) => {
     ids.add(rm.id);
     const matName = roomMaterial.get(rm.id);
+    // Skip ocean backdrop polygons — handled seamlessly by the infinite camera-following surround.
+    if (rm.id === 'g.ocean' || rm.id === 'w.ocean') {
+      return;
+    }
     // When suggestive 3D fantasy terrain relief is active, the continuous terrain mesh
     // renders the land & water biomes cleanly without flat z-fighting slabs (keep paved squares!).
     if (syntheticRelief && matName !== 'pflaster') {
       return;
     }
+    const cx = rm.points.reduce((a, p) => a + p[0], 0) / Math.max(1, rm.points.length);
+    const cz = rm.points.reduce((a, p) => a + p[1], 0) / Math.max(1, rm.points.length);
     const y =
       syntheticRelief && matName === 'pflaster'
-        ? sampleGroundY(
-            rm.points.reduce((a, p) => a + p[0], 0) / Math.max(1, rm.points.length),
-            rm.points.reduce((a, p) => a + p[1], 0) / Math.max(1, rm.points.length),
-            4.5,
-          ) + 0.38
+        ? sampleGroundY(cx, cz, 4.5) + 0.38
         : -0.45 + i * dyR;
-    // Settlement valley surround: render g.ocean / w.ocean as a lush grassy valley floor
-    // instead of a flat water sheet so settlements like Dornhain sit in green hills.
-    const surface: AtlasThreeSurfaceKey | 'water' =
-      opts.mapScale === 'settlement' && (rm.id === 'g.ocean' || rm.id === 'w.ocean')
-        ? 'sheet-outdoor'
-        : atlasThreeFloorSurface(matName, opts.mapScale);
+    const surface: AtlasThreeSurfaceKey | 'water' = atlasThreeFloorSurface(matName, opts.mapScale);
     const b = surface === 'water' ? water : get(surface);
     for (const [ia, ib, ic] of rm.triangles) {
       const a = rm.points[ia];
@@ -2033,6 +2454,31 @@ export function buildAtlasThreeScenePlan(
       const n = new THREE.Vector3().subVectors(vb, va).cross(new THREE.Vector3().subVectors(vc, va));
       if (n.y >= 0) b.tri(va, vb, vc, rm.id, up);
       else b.tri(va, vc, vb, rm.id, up);
+    }
+
+    // V7/V8 Dornhain touch: add a charming stone village fountain on main cobblestone plazas (suggestive only).
+    if (opts.mapScale === 'settlement' && matName === 'pflaster' && opts.presetId !== 'lite') {
+      const minX = Math.min(...rm.points.map((p) => p[0]));
+      const maxX = Math.max(...rm.points.map((p) => p[0]));
+      const minZ = Math.min(...rm.points.map((p) => p[1]));
+      const maxZ = Math.max(...rm.points.map((p) => p[1]));
+      if (maxX - minX >= 100 && maxZ - minZ >= 80) {
+        const fx = (minX + maxX) * 0.5;
+        const fz = (minZ + maxZ) * 0.5;
+        const rimGeo = new THREE.CylinderGeometry(11.5, 13, 4.6, 12);
+        get('wall').geometry(rimGeo, composeMatrix(fx, y + 2.3, fz, 1, 1, 1), '__fountain');
+        rimGeo.dispose();
+        const spireGeo = new THREE.CylinderGeometry(2.2, 3.6, 10.5, 8);
+        get('wall').geometry(spireGeo, composeMatrix(fx, y + 5.2, fz, 1, 1, 1), '__fountain');
+        spireGeo.dispose();
+        const capGeo = new THREE.CylinderGeometry(5.5, 2.5, 2.4, 10);
+        get('wall').geometry(capGeo, composeMatrix(fx, y + 9.2, fz, 1, 1, 1), '__fountain');
+        capGeo.dispose();
+        const poolGeo = new THREE.CylinderGeometry(9.6, 9.6, 0.6, 12);
+        water.geometry(poolGeo, composeMatrix(fx, y + 3.9, fz, 1, 1, 1), '__fountain-water');
+        poolGeo.dispose();
+        aoDiscs.push({ x: fx, y: y + 0.14, z: fz, radius: 18 });
+      }
     }
   });
 
@@ -2122,7 +2568,7 @@ export function buildAtlasThreeScenePlan(
       if (q.kind !== 'prop' && q.kind !== 'building_footprint') continue;
       ids.add(q.id);
       const groundElevation = sampleGroundY(q.x, q.y, -0.35);
-      emitCanonicalProp(get, q, objAngles.get(q.id) ?? 0, torches, {
+      emitCanonicalProp(get, q, objAngles.get(q.id) ?? 0, torches, aoDiscs, smokePoints, mistPoints, {
         fullDetail,
         hideRoofs: Boolean(opts.hideRoofs),
         warmWindows: Boolean(opts.warmWindows),
@@ -2161,6 +2607,20 @@ export function buildAtlasThreeScenePlan(
       ),
     );
     scatterByKind.set(inst.kind, list);
+    if (inst.kind === 'oak' || inst.kind === 'birch' || inst.kind === 'pine' || inst.kind === 'mountain') {
+      aoDiscs.push({
+        x: inst.x,
+        y: inst.elevation + 0.14,
+        z: inst.y,
+        radius: inst.kind === 'mountain' ? inst.scale * 46 : inst.scale * 24,
+      });
+    }
+    if (inst.kind === 'mountain' && mistPoints.length < 18) {
+      mistPoints.push({
+        position: new THREE.Vector3(inst.x, inst.elevation + inst.scale * 36, inst.y),
+        scale: inst.scale * 72,
+      });
+    }
   }
   const scatterBatches: AtlasThreeScatterBatch[] = [];
   for (const [kind, matrices] of scatterByKind) {
@@ -2171,8 +2631,12 @@ export function buildAtlasThreeScenePlan(
     builders,
     water,
     terrain,
+    waterLevel,
     doorInstances,
     scatterBatches,
+    aoDiscs,
+    smokePoints,
+    mistPoints,
     torches,
     ids,
     look: opts.look,
@@ -2850,7 +3314,7 @@ All backend operations are included in the public declarations above.
 | `src/domains/rules/sagatree/npc-creature-power/types.ts` | `de25ba46549bab20e0e55a513fb0745e722449d8f1b61bb51887d986653c4eab` |
 | `src/domains/world/atlas/atlas-biome-brush.ts` | `4ccfcc1605b213b904137ab1e62661a249dc5804c4246152a03741e4825ea7e9` |
 | `src/domains/world/atlas/atlas-canonical-features.ts` | `a7e2b9471c960d3839e39f93fe1f6b332f5822620ef589ba4e1a0805dda6c3bd` |
-| `src/domains/world/atlas/atlas-continuous-zoom.ts` | `ddb4ca5b0611b2c122aa8b5b8cb0f5738daaa601a64d47f8bfde7f213d2d372f` |
+| `src/domains/world/atlas/atlas-continuous-zoom.ts` | `e91303c0fee7b8365286f5c50a8dc6d2cbaa9213ab2e5e829999829942991ca0` |
 | `src/domains/world/atlas/atlas-diorama-look.ts` | `a0c2f5ea6af2faabed685d4eff4035dad43b1e82f3d6b2a67e017ddcddf99ea6` |
 | `src/domains/world/atlas/atlas-dungeon-look.ts` | `b28dfd123ebb46472258442834d636b2962ed78a7261d458bc57a5ad1d3f352c` |
 | `src/domains/world/atlas/atlas-edit-history.ts` | `13a91efde301ec766d3b0f183affcd794abba9f4c4872c00549e9f631947e294` |
@@ -2930,10 +3394,10 @@ All backend operations are included in the public declarations above.
 | `src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-harness.ts` | `7cb604c899852fcf48364b031180e8c2c4acae92f779e68cc2416e58686e536a` |
 | `src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-runtime.ts` | `f250027a4c5a9674e377313738dac7f70a8a253464c46033f6a400a229b53c82` |
 | `src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-scene.ts` | `f63e63b2be555ef8348d15141ed44a01e70670667e3d0946221db2720cc32d8c` |
-| `src/infrastructure/world/atlas-three/atlas-three-camera.ts` | `25c501f4e7d8804e49084c3e66246f03954113bd59ed223062f8cbd45f4e2a80` |
-| `src/infrastructure/world/atlas-three/atlas-three-runtime.ts` | `58cf1d1801535807d3ed1e1bc97d41447332fae979778cfb45f2dde2125dc80b` |
-| `src/infrastructure/world/atlas-three/atlas-three-scene.ts` | `6b38edebaa6c3d159e8128f3ba0d96488d0d8406fdbb35618225c96b5fc718fe` |
-| `src/infrastructure/world/atlas-three/index.ts` | `addbc7fa4de485ef268730e10046a86aa5eb5ebfe59aad5b6bb8d489b1ab1aaf` |
+| `src/infrastructure/world/atlas-three/atlas-three-camera.ts` | `3346a74d70149897f69d6cd394a6b2d1728510b4f4874038680e3dee8f942088` |
+| `src/infrastructure/world/atlas-three/atlas-three-runtime.ts` | `35cbdb8204454351b31bea60c5d6f83c3bc988f37139224c794f19869af6a40e` |
+| `src/infrastructure/world/atlas-three/atlas-three-scene.ts` | `3063f5353faf0682583a61bbdeab2bf9a75701829e8bbcbf6fb9b9594d2f17bf` |
+| `src/infrastructure/world/atlas-three/index.ts` | `b51298f6bced92e59e408f83abb139eee77c7859e2b2ba108ba6d6e36d18d6f0` |
 | `src/infrastructure/world/atlas-three/pbr-textures.ts` | `f0beec174b3d506ac90814d7180c3aa64bad0c384e82eb727431d7dd8ffbccec` |
 | `src/infrastructure/world/host-world-adapter.ts` | `8fbaad8d6d4ec9cc42070444441fae94fb20af020cdada2125a705877ea4e1f1` |
 | `src/infrastructure/world/host-world-ports.contract.ts` | `9d11c1085646775f6c6eb5bdc29baa7ed40af0245354589bd767d4f80da1d582` |

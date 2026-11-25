@@ -1,9 +1,10 @@
 /**
- * atlas-three-camera — Productive Three.js camera rig (V01 / ATL3-C01 parity).
+ * atlas-three-camera — Productive Three.js camera rig with Google-Maps inertia & auto-pitch.
  * Location: src/infrastructure/world/atlas-three/atlas-three-camera.ts
  *
- * Pure math (no DOM): drives Diorama (oblique), Synthetic Satellite (ortho-topdown),
- * and Perspective exploration cameras over the exact same canonical Three.js scene.
+ * Pure math (no DOM): drives Diorama (oblique with smooth zoom-based pitch curve),
+ * Synthetic Satellite (ortho-topdown), and Perspective exploration cameras over
+ * the exact same canonical Three.js scene.
  */
 
 export type AtlasThreeCameraMode = 'ortho-topdown' | 'diorama-oblique' | 'perspective';
@@ -36,14 +37,36 @@ function clamp(v: number, lo: number, hi: number): number {
 
 export function clampAtlasThreePitch(mode: AtlasThreeCameraMode, pitch: number): number {
   if (mode === 'ortho-topdown') return Math.PI / 2;
-  if (mode === 'diorama-oblique') return clamp(pitch, 0.55, 1.25);
-  return clamp(pitch, 0.32, 1.38);
+  if (mode === 'diorama-oblique') return clamp(pitch, 0.52, 1.32);
+  return clamp(pitch, 0.3, 1.42);
 }
 
 export function defaultAtlasThreePitch(mode: AtlasThreeCameraMode): number {
   if (mode === 'ortho-topdown') return Math.PI / 2;
-  if (mode === 'diorama-oblique') return 1.02;
-  return 0.88;
+  if (mode === 'diorama-oblique') return 0.94;
+  return 0.78;
+}
+
+/**
+ * Google-Maps / Apple-Maps style automatic pitch curve:
+ * - Wide overview (span >= 750) tilts slightly higher (~66°) for clean cartography
+ * - Mid country/region (span ~ 320) rests in classic 3D Diorama (~53°)
+ * - Close settlement/village (span <= 140) leans down (~39°) for dramatic 3D buildings & mountains
+ */
+export function autoAtlasThreePitchForSpan(
+  mode: AtlasThreeCameraMode,
+  span: number,
+): number {
+  if (mode === 'ortho-topdown') return Math.PI / 2;
+  const logSpan = Math.log(clamp(span, 24, 2400));
+  const lo = Math.log(65);
+  const hi = Math.log(950);
+  const t = clamp((logSpan - lo) / (hi - lo), 0, 1);
+  const smooth = t * t * (3 - 2 * t);
+  if (mode === 'perspective') {
+    return clampAtlasThreePitch(mode, 0.52 + smooth * 0.56);
+  }
+  return clampAtlasThreePitch(mode, 0.68 + smooth * 0.48);
 }
 
 export function buildAtlasThreeCameraRig(
@@ -54,7 +77,7 @@ export function buildAtlasThreeCameraRig(
   const pitch = clampAtlasThreePitch(view.mode, view.pitchRad);
   const forward: readonly [number, number] = [Math.sin(view.yawRad), Math.cos(view.yawRad)];
   const perspective = view.mode === 'perspective';
-  const distance = view.span * (perspective ? 2.4 : 3.0);
+  const distance = view.span * (perspective ? 2.25 : 3.0);
   const at: readonly [number, number, number] = [view.x, 0, view.z];
   const topdown = view.mode === 'ortho-topdown';
   const eye: readonly [number, number, number] = topdown
@@ -73,10 +96,10 @@ export function buildAtlasThreeCameraRig(
     at,
     up,
     distance,
-    near: perspective ? Math.max(0.2, distance * 0.02) : 0.1,
-    far: Math.max(8000, distance * 4 + 400),
+    near: perspective ? Math.max(0.2, distance * 0.015) : 0.1,
+    far: Math.max(26000, distance * 8 + 4000),
     perspective,
-    fovYDeg: 48,
+    fovYDeg: 46,
     halfHeight: view.span,
     halfWidth: view.span * safeAspect,
   };
@@ -85,11 +108,20 @@ export function buildAtlasThreeCameraRig(
 export function buildAtlasThreeFogBand(
   rig: AtlasThreeCameraRig,
   look: 'outdoor' | 'indoor',
-): { readonly near: number; readonly far: number } {
-  const d = rig.distance;
-  return look === 'indoor'
-    ? { near: d * 0.95, far: d * 2.8 }
-    : { near: d * 0.95, far: d * 3.6 };
+): { readonly near: number; readonly far: number; readonly expDensity: number } {
+  const d = Math.max(120, rig.distance);
+  if (look === 'indoor') {
+    return {
+      near: d * 1.15,
+      far: d * 4.2,
+      expDensity: 0.22 / d,
+    };
+  }
+  return {
+    near: d * 1.5,
+    far: d * 6.5,
+    expDensity: 0.085 / d,
+  };
 }
 
 /** Smooth V17-style exponential span + linear focus camera interpolation. */
@@ -109,5 +141,46 @@ export function interpolateAtlasThreeView(
     span: Math.exp(logFrom + (logTo - logFrom) * e),
     yawRad: from.yawRad + (to.yawRad - from.yawRad) * e,
     pitchRad: from.pitchRad + (to.pitchRad - from.pitchRad) * e,
+  };
+}
+
+/**
+ * Critically damped frame-rate-independent inertia step for buttery Google-Maps
+ * wheel zoom and pan damping.
+ */
+export function dampAtlasThreeView(
+  current: AtlasThreeCameraView,
+  target: AtlasThreeCameraView,
+  dtSeconds: number,
+  speed = 12,
+): { readonly next: AtlasThreeCameraView; readonly settled: boolean } {
+  const alpha = 1 - Math.exp(-Math.max(0.001, Math.min(0.1, dtSeconds)) * speed);
+  const nx = current.x + (target.x - current.x) * alpha;
+  const nz = current.z + (target.z - current.z) * alpha;
+  const logCur = Math.log(Math.max(1, current.span));
+  const logTgt = Math.log(Math.max(1, target.span));
+  const nspan = Math.exp(logCur + (logTgt - logCur) * alpha);
+  const nyaw = current.yawRad + (target.yawRad - current.yawRad) * alpha;
+  const npitch = current.pitchRad + (target.pitchRad - current.pitchRad) * alpha;
+
+  const settled =
+    Math.abs(nx - target.x) < 0.04 &&
+    Math.abs(nz - target.z) < 0.04 &&
+    Math.abs(nspan - target.span) < 0.04 &&
+    Math.abs(nyaw - target.yawRad) < 0.0004 &&
+    Math.abs(npitch - target.pitchRad) < 0.0004;
+
+  return {
+    next: settled
+      ? { ...target }
+      : {
+          mode: target.mode,
+          x: nx,
+          z: nz,
+          span: nspan,
+          yawRad: nyaw,
+          pitchRad: npitch,
+        },
+    settled,
   };
 }

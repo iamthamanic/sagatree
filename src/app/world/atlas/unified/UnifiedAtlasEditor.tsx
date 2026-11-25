@@ -268,67 +268,67 @@ export type UnifiedAtlasEditorProps = {
 type DragState =
   | { readonly mode: 'pan'; readonly px: number; readonly py: number; readonly cam: AtlasCamera }
   | {
-      readonly mode: 'locate';
-      readonly start: { readonly x: number; readonly y: number };
-    }
+    readonly mode: 'locate';
+    readonly start: { readonly x: number; readonly y: number };
+  }
   | {
-      readonly mode: 'paint';
-      readonly strokeId: string;
-    }
+    readonly mode: 'paint';
+    readonly strokeId: string;
+  }
   | {
-      readonly mode: 'height';
-      readonly heightMode: 'raise' | 'lower' | 'smooth' | 'flatten';
-    }
+    readonly mode: 'height';
+    readonly heightMode: 'raise' | 'lower' | 'smooth' | 'flatten';
+  }
   | {
-      readonly mode: 'shape';
-      readonly start: { x: number; y: number };
-      readonly kind: 'room' | 'wall' | 'road';
-    }
+    readonly mode: 'shape';
+    readonly start: { x: number; y: number };
+    readonly kind: 'room' | 'wall' | 'road';
+  }
   | {
-      readonly mode: 'move_object';
-      readonly id: string;
-      readonly ox: number;
-      readonly oy: number;
-      readonly sx: number;
-      readonly sy: number;
-    }
+    readonly mode: 'move_object';
+    readonly id: string;
+    readonly ox: number;
+    readonly oy: number;
+    readonly sx: number;
+    readonly sy: number;
+  }
   | {
-      readonly mode: 'move_room';
-      readonly id: string;
-      readonly ox: number;
-      readonly oy: number;
-      readonly sx: number;
-      readonly sy: number;
-    }
+    readonly mode: 'move_room';
+    readonly id: string;
+    readonly ox: number;
+    readonly oy: number;
+    readonly sx: number;
+    readonly sy: number;
+  }
   | {
-      readonly mode: 'move_room_vertex';
-      readonly id: string;
-      readonly index: number;
-    }
+    readonly mode: 'move_room_vertex';
+    readonly id: string;
+    readonly index: number;
+  }
   | {
-      readonly mode: 'move_stroke_point';
-      readonly id: string;
-      readonly index: number;
-    }
+    readonly mode: 'move_stroke_point';
+    readonly id: string;
+    readonly index: number;
+  }
   | {
-      readonly mode: 'move_wall_endpoint';
-      readonly id: string;
-      readonly endpoint: 1 | 2;
-    }
+    readonly mode: 'move_wall_endpoint';
+    readonly id: string;
+    readonly endpoint: 1 | 2;
+  }
   | {
-      readonly mode: 'resize_room';
-      readonly id: string;
-      readonly ox: number;
-      readonly oy: number;
-      readonly ow: number;
-      readonly oh: number;
-      readonly sx: number;
-      readonly sy: number;
-    }
+    readonly mode: 'resize_room';
+    readonly id: string;
+    readonly ox: number;
+    readonly oy: number;
+    readonly ow: number;
+    readonly oh: number;
+    readonly sx: number;
+    readonly sy: number;
+  }
   | {
-      readonly mode: 'marquee';
-      readonly start: { x: number; y: number };
-    }
+    readonly mode: 'marquee';
+    readonly start: { x: number; y: number };
+  }
   | null;
 
 /** Product (non-demo) maps use DEFAULT_ATLAS_BOUNDS — not Eldoria's 1440×900 demo rect. */
@@ -969,13 +969,13 @@ export function UnifiedAtlasEditor({
     const protoLod =
       !isDemo && mapScale === 'world'
         ? atlasPrototypeApplyLod(scale, height, {
-            terrain: layers.terrain,
-            region: layers.region,
-            city: layers.city,
-            interior: layers.interior,
-            objects: layers.objects,
-            grid: layers.grid,
-          })
+          terrain: layers.terrain,
+          region: layers.region,
+          city: layers.city,
+          interior: layers.interior,
+          objects: layers.objects,
+          grid: layers.grid,
+        })
         : null;
     // World terrain (w.* areas and strokes) stays as the base layer when zoomed in, as in 3D.
     const areaVisible = (id: string): boolean =>
@@ -1247,17 +1247,17 @@ export function UnifiedAtlasEditor({
       }
       setPinScreen((prev) =>
         prev.length === nextPins.length &&
-        prev.every((p, i) => {
-          const n = nextPins[i];
-          return (
-            !!n &&
-            p.id === n.id &&
-            p.label === n.label &&
-            p.left === n.left &&
-            p.top === n.top &&
-            p.selected === n.selected
-          );
-        })
+          prev.every((p, i) => {
+            const n = nextPins[i];
+            return (
+              !!n &&
+              p.id === n.id &&
+              p.label === n.label &&
+              p.left === n.left &&
+              p.top === n.top &&
+              p.selected === n.selected
+            );
+          })
           ? prev
           : nextPins,
       );
@@ -2412,14 +2412,14 @@ export function UnifiedAtlasEditor({
       <div className="flex flex-wrap items-center gap-1.5">
         {canEdit ? (
           <div
-            className="flex items-center rounded-md border border-border bg-background/70 p-0.5"
+            className="flex items-center rounded-lg bg-background/60 p-0.5"
             role="group"
             aria-label="Kartenansicht"
           >
             <button
               type="button"
               aria-pressed={!splitView}
-              className={`min-h-9 rounded px-2.5 text-xs font-semibold transition-colors ${
+              className={`min-h-8 rounded-md px-2.5 text-xs font-semibold transition-colors ${
                 !splitView
                   ? 'bg-primary text-primary-foreground'
                   : 'text-muted-foreground hover:text-accent'
@@ -2432,20 +2432,20 @@ export function UnifiedAtlasEditor({
               type="button"
               data-atlas-split-toggle
               aria-pressed={splitView}
-              className={`min-h-9 rounded px-2.5 text-xs font-semibold transition-colors ${
+              className={`min-h-8 rounded-md px-2.5 text-xs font-semibold transition-colors ${
                 splitView
                   ? 'bg-primary text-primary-foreground'
                   : 'text-muted-foreground hover:text-accent'
               }`}
               onClick={() => setSplitView((v) => !v)}
             >
-              Split 2D+3D
+              Split
             </button>
             <button
               type="button"
               data-atlas-surface-toggle
               aria-label="Zur Draufsicht wechseln"
-              className="min-h-9 rounded px-2.5 text-xs font-semibold text-muted-foreground transition-colors hover:text-accent"
+              className="min-h-8 rounded-md px-2.5 text-xs font-semibold text-muted-foreground transition-colors hover:text-accent"
               onClick={() => setSurfaceMode('2d')}
             >
               Draufsicht
@@ -2453,7 +2453,7 @@ export function UnifiedAtlasEditor({
           </div>
         ) : null}
         <select
-          className="min-h-10 rounded-md border border-border bg-background/80 px-2 text-xs text-foreground"
+          className="min-h-9 rounded-lg border border-border/80 bg-background/70 px-2 text-xs text-foreground"
           data-atlas-graphics-preset-select
           aria-label="Grafikqualität der 3D-Ansicht"
           title="Grafikqualität (nur dieses Gerät)"
@@ -2587,115 +2587,114 @@ export function UnifiedAtlasEditor({
 
   const renderLayersChrome = () => (
     <div className="space-y-3" data-atlas-layers-chrome>
-          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-            {isDemo ? 'Zoom-Stufen · Demo' : 'Orte auf dieser Karte'}
+      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+        {isDemo ? 'Zoom-Stufen · Demo' : 'Orte auf dieser Karte'}
+      </p>
+      <p className="text-[11px] text-muted-foreground">
+        {isDemo
+          ? 'Eldoria → Dornhain → Kupferlaterne.'
+          : 'Klick zoomt zum Ort. Doppelklick auf die Karte zoomt hinein.'}
+      </p>
+      <nav className="space-y-1" aria-label="Kartenstruktur" data-atlas-zoom-stages>
+        {isDemo ? (
+          <>
+            <button
+              type="button"
+              className="flex min-h-11 w-full items-center gap-2 rounded-md px-2 text-left text-sm hover:bg-muted"
+              onClick={() => goToRect(mapWorldRect)}
+            >
+              <span className="flex size-7 shrink-0 items-center justify-center rounded-md border border-border text-xs">
+                ◎
+              </span>
+              <span className="min-w-0 flex-1 truncate font-medium">Weltkarte</span>
+            </button>
+            {ELDORIA_NODES.filter((n) => n.id !== 'world').map((n) => (
+              <button
+                key={n.id}
+                type="button"
+                className="flex min-h-11 w-full items-center gap-2 rounded-md px-2 text-left text-sm hover:bg-muted"
+                onClick={() => goToRect(n.area)}
+              >
+                <span className="flex size-7 shrink-0 items-center justify-center rounded-md border border-border text-xs">
+                  {n.id === 'city' ? '⌂' : '◇'}
+                </span>
+                <span className="min-w-0 flex-1 truncate font-medium">{n.label}</span>
+              </button>
+            ))}
+          </>
+        ) : mapPins && mapPins.length > 0 ? (
+          mapPins.map((pin) => (
+            <button
+              key={pin.id}
+              type="button"
+              data-atlas-pin-nav={pin.id}
+              aria-current={pin.id === activePlaceId ? 'true' : undefined}
+              className={`flex min-h-11 w-full items-center gap-2 rounded-md px-2 text-left text-sm ${pin.id === activePlaceId ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'
+                }`}
+              onClick={() => focusMapPin(pin.id)}
+            >
+              <span className="flex size-7 shrink-0 items-center justify-center rounded-md border border-border text-xs">
+                {pin.kind === 'place' || pin.kind === 'building' ? '⌂' : pin.kind === 'room' ? '▧' : '◇'}
+              </span>
+              <span className="min-w-0 flex-1 truncate font-medium">{pin.label}</span>
+            </button>
+          ))
+        ) : (
+          <p className="px-2 text-xs text-muted-foreground">
+            Noch keine Orte auf dieser Karte verortet.
           </p>
-          <p className="text-[11px] text-muted-foreground">
-            {isDemo
-              ? 'Eldoria → Dornhain → Kupferlaterne.'
-              : 'Klick zoomt zum Ort. Doppelklick auf die Karte zoomt hinein.'}
-          </p>
-          <nav className="space-y-1" aria-label="Kartenstruktur" data-atlas-zoom-stages>
-            {isDemo ? (
-              <>
-                <button
-                  type="button"
-                  className="flex min-h-11 w-full items-center gap-2 rounded-md px-2 text-left text-sm hover:bg-muted"
-                  onClick={() => goToRect(mapWorldRect)}
-                >
-                  <span className="flex size-7 shrink-0 items-center justify-center rounded-md border border-border text-xs">
-                    ◎
-                  </span>
-                  <span className="min-w-0 flex-1 truncate font-medium">Weltkarte</span>
-                </button>
-                {ELDORIA_NODES.filter((n) => n.id !== 'world').map((n) => (
-                  <button
-                    key={n.id}
-                    type="button"
-                    className="flex min-h-11 w-full items-center gap-2 rounded-md px-2 text-left text-sm hover:bg-muted"
-                    onClick={() => goToRect(n.area)}
-                  >
-                    <span className="flex size-7 shrink-0 items-center justify-center rounded-md border border-border text-xs">
-                      {n.id === 'city' ? '⌂' : '◇'}
-                    </span>
-                    <span className="min-w-0 flex-1 truncate font-medium">{n.label}</span>
-                  </button>
-                ))}
-              </>
-            ) : mapPins && mapPins.length > 0 ? (
-              mapPins.map((pin) => (
-                <button
-                  key={pin.id}
-                  type="button"
-                  data-atlas-pin-nav={pin.id}
-                  aria-current={pin.id === activePlaceId ? 'true' : undefined}
-                  className={`flex min-h-11 w-full items-center gap-2 rounded-md px-2 text-left text-sm ${
-                    pin.id === activePlaceId ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'
-                  }`}
-                  onClick={() => focusMapPin(pin.id)}
-                >
-                  <span className="flex size-7 shrink-0 items-center justify-center rounded-md border border-border text-xs">
-                    {pin.kind === 'place' || pin.kind === 'building' ? '⌂' : pin.kind === 'room' ? '▧' : '◇'}
-                  </span>
-                  <span className="min-w-0 flex-1 truncate font-medium">{pin.label}</span>
-                </button>
-              ))
-            ) : (
-              <p className="px-2 text-xs text-muted-foreground">
-                Noch keine Orte auf dieser Karte verortet.
-              </p>
-            )}
-          </nav>
-          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-            Ebenen · Sicht · Sperre
-          </p>
-          <div className="space-y-1" data-atlas-layer-switches>
-            {(isDemo ? LAYER_LABELS : ATLAS_PROTOTYPE_LAYER_LABELS).map((l) => {
-              const canvasId = (
-                isDemo ? l.id : (l as (typeof ATLAS_PROTOTYPE_LAYER_LABELS)[number]).canvasLayer
-              ) as UnifiedCanvasLayerId;
-              return (
-                <div
-                  key={l.id}
-                  className="flex min-h-11 items-center gap-2 text-sm"
-                  data-atlas-layer-row={l.id}
-                >
-                  <label className="flex min-w-0 flex-1 items-center gap-2">
-                    <input
-                      type="checkbox"
-                      className="size-4 accent-primary"
-                      data-atlas-layer={l.id}
-                      checked={workingDoc.layers[canvasId]}
-                      disabled={!canEdit}
-                      onChange={(e) => setLayer(canvasId, e.target.checked)}
-                      aria-label={`${l.label} sichtbar`}
-                    />
-                    <span className="min-w-0 flex-1 truncate">{l.label}</span>
-                  </label>
-                  <label className="flex items-center gap-1 text-[10px] text-muted-foreground">
-                    <input
-                      type="checkbox"
-                      className="size-4 accent-primary"
-                      data-atlas-layer-lock={l.id}
-                      checked={layerLocked(canvasId)}
-                      disabled={!canEdit}
-                      onChange={(e) => setLayerLocked(canvasId, e.target.checked)}
-                      aria-label={`${l.label} sperren`}
-                    />
-                    Sperre
-                  </label>
-                </div>
-              );
-            })}
-          </div>
-          <Button
-            type="button"
-            variant="outline"
-            className="min-h-11 w-full"
-            onClick={() => goToRect(mapWorldRect)}
-          >
-            {isDemo || mapScale === 'world' ? 'Zur Weltkarte' : 'Ganze Karte zeigen'}
-          </Button>
+        )}
+      </nav>
+      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+        Ebenen · Sicht · Sperre
+      </p>
+      <div className="space-y-1" data-atlas-layer-switches>
+        {(isDemo ? LAYER_LABELS : ATLAS_PROTOTYPE_LAYER_LABELS).map((l) => {
+          const canvasId = (
+            isDemo ? l.id : (l as (typeof ATLAS_PROTOTYPE_LAYER_LABELS)[number]).canvasLayer
+          ) as UnifiedCanvasLayerId;
+          return (
+            <div
+              key={l.id}
+              className="flex min-h-11 items-center gap-2 text-sm"
+              data-atlas-layer-row={l.id}
+            >
+              <label className="flex min-w-0 flex-1 items-center gap-2">
+                <input
+                  type="checkbox"
+                  className="size-4 accent-primary"
+                  data-atlas-layer={l.id}
+                  checked={workingDoc.layers[canvasId]}
+                  disabled={!canEdit}
+                  onChange={(e) => setLayer(canvasId, e.target.checked)}
+                  aria-label={`${l.label} sichtbar`}
+                />
+                <span className="min-w-0 flex-1 truncate">{l.label}</span>
+              </label>
+              <label className="flex items-center gap-1 text-[10px] text-muted-foreground">
+                <input
+                  type="checkbox"
+                  className="size-4 accent-primary"
+                  data-atlas-layer-lock={l.id}
+                  checked={layerLocked(canvasId)}
+                  disabled={!canEdit}
+                  onChange={(e) => setLayerLocked(canvasId, e.target.checked)}
+                  aria-label={`${l.label} sperren`}
+                />
+                Sperre
+              </label>
+            </div>
+          );
+        })}
+      </div>
+      <Button
+        type="button"
+        variant="outline"
+        className="min-h-11 w-full"
+        onClick={() => goToRect(mapWorldRect)}
+      >
+        {isDemo || mapScale === 'world' ? 'Zur Weltkarte' : 'Ganze Karte zeigen'}
+      </Button>
     </div>
   );
 
@@ -2803,9 +2802,8 @@ export function UnifiedAtlasEditor({
           </div>
           <div
             ref={stageRef}
-            className={`relative min-h-[min(70vh,40rem)] flex-1 overflow-hidden rounded-lg border border-border bg-[#10212a] ${
-              gesture.mode === 'pan' || gesture.mode === 'navigate' ? '' : 'touch-none'
-            } ${locateSession || pinArmed || marqueeArmed ? 'cursor-crosshair' : ''}`}
+            className={`relative min-h-[min(70vh,40rem)] flex-1 overflow-hidden rounded-lg border border-border bg-[#10212a] ${gesture.mode === 'pan' || gesture.mode === 'navigate' ? '' : 'touch-none'
+              } ${locateSession || pinArmed || marqueeArmed ? 'cursor-crosshair' : ''}`}
             style={{ touchAction: gesture.touchActionCss }}
             data-unified-atlas-viewport
             data-atlas-gesture-mode={gesture.mode}
@@ -2882,24 +2880,23 @@ export function UnifiedAtlasEditor({
             {canvasLeftRail}
             {!isDemo
               ? pinScreen.map((pin) => (
-                  <button
-                    key={pin.id}
-                    type="button"
-                    className={`absolute z-[5] min-h-11 -translate-x-1/2 -translate-y-full rounded-md border px-2.5 text-sm font-semibold shadow ${
-                      pin.selected
-                        ? 'border-primary bg-primary text-primary-foreground'
-                        : 'border-border bg-card/90 text-foreground hover:border-accent'
+                <button
+                  key={pin.id}
+                  type="button"
+                  className={`absolute z-[5] min-h-11 -translate-x-1/2 -translate-y-full rounded-md border px-2.5 text-sm font-semibold shadow ${pin.selected
+                    ? 'border-primary bg-primary text-primary-foreground'
+                    : 'border-border bg-card/90 text-foreground hover:border-accent'
                     }`}
-                    style={{ left: pin.left, top: pin.top }}
-                    data-atlas-map-pin={pin.id}
-                    data-unified-chrome
-                    aria-label={`${pin.label} öffnen`}
-                    aria-pressed={pin.selected}
-                    onClick={() => focusMapPin(pin.id)}
-                  >
-                    {pin.label}
-                  </button>
-                ))
+                  style={{ left: pin.left, top: pin.top }}
+                  data-atlas-map-pin={pin.id}
+                  data-unified-chrome
+                  aria-label={`${pin.label} öffnen`}
+                  aria-pressed={pin.selected}
+                  onClick={() => focusMapPin(pin.id)}
+                >
+                  {pin.label}
+                </button>
+              ))
               : null}
             {(level === 'INNENRAUM' || level === 'GEBÄUDE') && workingDoc.rooms.length === 0 ? (
               <div
@@ -2931,9 +2928,8 @@ export function UnifiedAtlasEditor({
               >
                 <Wrench className="size-4" aria-hidden />
                 <CaretDown
-                  className={`size-3.5 text-muted-foreground transition-transform duration-300 ease-in-out motion-reduce:transition-none ${
-                    toolsExpanded ? 'rotate-180' : 'rotate-0'
-                  }`}
+                  className={`size-3.5 text-muted-foreground transition-transform duration-300 ease-in-out motion-reduce:transition-none ${toolsExpanded ? 'rotate-180' : 'rotate-0'
+                    }`}
                   aria-hidden
                 />
                 <span className="sr-only">
@@ -2942,17 +2938,15 @@ export function UnifiedAtlasEditor({
               </button>
               <div
                 id="atlas-tool-rail-list"
-                className={`grid transition-[grid-template-rows,opacity] duration-300 ease-in-out motion-reduce:transition-none ${
-                  toolsExpanded
-                    ? 'grid-rows-[1fr] opacity-100'
-                    : 'pointer-events-none grid-rows-[0fr] opacity-0'
-                }`}
+                className={`grid transition-[grid-template-rows,opacity] duration-300 ease-in-out motion-reduce:transition-none ${toolsExpanded
+                  ? 'grid-rows-[1fr] opacity-100'
+                  : 'pointer-events-none grid-rows-[0fr] opacity-0'
+                  }`}
               >
                 <div className="min-h-0 overflow-hidden">
                   <div
-                    className={`flex flex-col gap-1 border-t border-border pt-1 transition-transform duration-300 ease-in-out motion-reduce:transition-none ${
-                      toolsExpanded ? 'translate-y-0' : '-translate-y-1'
-                    }`}
+                    className={`flex flex-col gap-1 border-t border-border pt-1 transition-transform duration-300 ease-in-out motion-reduce:transition-none ${toolsExpanded ? 'translate-y-0' : '-translate-y-1'
+                      }`}
                   >
                     {tools.map((t) => {
                       const Icon = t.Icon;
@@ -2962,9 +2956,8 @@ export function UnifiedAtlasEditor({
                           type="button"
                           tabIndex={toolsExpanded ? 0 : -1}
                           disabled={!canEdit && t.id !== 'hand'}
-                          className={`flex min-h-11 min-w-11 shrink-0 flex-col items-center justify-center gap-0.5 rounded-md px-1 text-[10px] font-semibold ${
-                            tool === t.id ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'
-                          }`}
+                          className={`flex min-h-11 min-w-11 shrink-0 flex-col items-center justify-center gap-0.5 rounded-md px-1 text-[10px] font-semibold ${tool === t.id ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'
+                            }`}
                           aria-label={t.label}
                           aria-pressed={tool === t.id}
                           title={t.label}
@@ -3056,13 +3049,13 @@ export function UnifiedAtlasEditor({
                 ? 'Fläche zeichnen'
                 : tool === 'height'
                   ? 'Höhenpinsel'
-                : tool === 'brush' || tool === 'road'
-                  ? 'Welt gestalten'
-                  : tool === 'room' || tool === 'wall' || tool === 'door'
-                    ? 'Raum / Wand / Tür'
-                    : selectedId
-                      ? 'Auswahl'
-                      : 'Weltkarte'}
+                  : tool === 'brush' || tool === 'road'
+                    ? 'Welt gestalten'
+                    : tool === 'room' || tool === 'wall' || tool === 'door'
+                      ? 'Raum / Wand / Tür'
+                      : selectedId
+                        ? 'Auswahl'
+                        : 'Weltkarte'}
           </h2>
           <p className="text-sm text-muted-foreground">
             {locateSession
@@ -3071,11 +3064,11 @@ export function UnifiedAtlasEditor({
                 ? 'Klick setzt Küstenpunkte. Doppelklick oder Enter schließt die Fläche. Escape bricht ab.'
                 : tool === 'height'
                   ? 'Ziehen hebt Gelände. Shift = absenken, Alt = glätten, Ctrl/Cmd = einebnen. Radierer löscht das Höhenfeld.'
-                : tool === 'door'
-                  ? 'Klick auf eine Wand setzt eine Türöffnung. Kein WorldNode wird erzeugt.'
-                  : tool === 'room' || tool === 'wall'
-                    ? 'Raum ziehen oder Wand-Endpunkte setzen (snappen). Geometrie ≠ WorldNode.'
-                    : 'Mausrad = zoomen. Land/Wasser mit Pinsel oder Fläche; Orte per Pin oder Rahmen anlegen.'}
+                  : tool === 'door'
+                    ? 'Klick auf eine Wand setzt eine Türöffnung. Kein WorldNode wird erzeugt.'
+                    : tool === 'room' || tool === 'wall'
+                      ? 'Raum ziehen oder Wand-Endpunkte setzen (snappen). Geometrie ≠ WorldNode.'
+                      : 'Mausrad = zoomen. Land/Wasser mit Pinsel oder Fläche; Orte per Pin oder Rahmen anlegen.'}
           </p>
           {locateSession ? (
             <div
@@ -3189,9 +3182,9 @@ export function UnifiedAtlasEditor({
               </Button>
             ) : null}
             {selectedId &&
-            canEdit &&
-            canEditFeatureKind(workingDoc, 'room') &&
-            workingDoc.rooms.some((r) => r.id === selectedId && r.id !== 'w.ocean') ? (
+              canEdit &&
+              canEditFeatureKind(workingDoc, 'room') &&
+              workingDoc.rooms.some((r) => r.id === selectedId && r.id !== 'w.ocean') ? (
               <Button
                 type="button"
                 variant="outline"
@@ -3212,9 +3205,9 @@ export function UnifiedAtlasEditor({
               </Button>
             ) : null}
             {selectedId &&
-            canEdit &&
-            canEditFeatureKind(workingDoc, 'object') &&
-            workingDoc.objects.some((o) => o.id === selectedId) ? (
+              canEdit &&
+              canEditFeatureKind(workingDoc, 'object') &&
+              workingDoc.objects.some((o) => o.id === selectedId) ? (
               <Button
                 type="button"
                 variant="outline"
@@ -3272,9 +3265,8 @@ export function UnifiedAtlasEditor({
                 key={id}
                 type="button"
                 disabled={!canEdit}
-                className={`flex min-h-11 flex-col items-center rounded-md border px-1 text-[10px] ${
-                  material === id ? 'border-primary bg-primary/15' : 'border-border'
-                }`}
+                className={`flex min-h-11 flex-col items-center rounded-md border px-1 text-[10px] ${material === id ? 'border-primary bg-primary/15' : 'border-border'
+                  }`}
                 onClick={() => {
                   setMaterial(id);
                   if (tool !== 'area' && tool !== 'room' && tool !== 'road') setTool('brush');
@@ -3307,9 +3299,8 @@ export function UnifiedAtlasEditor({
                 key={s.id}
                 type="button"
                 disabled={!canEdit}
-                className={`flex min-h-[3.5rem] flex-col items-center justify-center rounded-md border text-[10px] ${
-                  stamp === s.id ? 'border-primary bg-primary/15' : 'border-border'
-                }`}
+                className={`flex min-h-[3.5rem] flex-col items-center justify-center rounded-md border text-[10px] ${stamp === s.id ? 'border-primary bg-primary/15' : 'border-border'
+                  }`}
                 onClick={() => {
                   setStamp(s.id);
                   setTool('stamp');

@@ -56,19 +56,19 @@ export function resolveContinuousZoomTransition(input: {
 }): AtlasZoomTransitionIntent {
   const { centerX, centerY, span, wheelDeltaY, hasParentMap, pins, mapScale } = input;
 
-  // Zooming out past max overview span returns to parent map (V17-style seamless back-out).
-  const exitThreshold = mapScale === 'interior' ? 760 : 860;
+  // Zooming out past max overview span returns smoothly to parent map (Google-Maps continuous zoom).
+  const exitThreshold = mapScale === 'interior' ? 760 : 880;
   if (wheelDeltaY > 0 && hasParentMap && span >= exitThreshold) {
     return { kind: 'exit-parent' };
   }
 
-  // Zooming deeply in over a located child pin drills into that child map.
-  const enterThreshold = mapScale === 'world' ? 145 : mapScale === 'settlement' ? 95 : 55;
+  // Zooming deeply in over a located child pin drills seamlessly into that child map.
+  const enterThreshold = mapScale === 'world' ? 145 : mapScale === 'settlement' ? 88 : 50;
   if (wheelDeltaY < 0 && span <= enterThreshold && pins.length > 0) {
     let best: { pin: AtlasMapPin; dist: number } | null = null;
     for (const pin of pins) {
       const dist = Math.hypot(pin.x - centerX, pin.y - centerY);
-      const hitRadius = Math.max(span * 0.55, 65);
+      const hitRadius = Math.max(span * 0.85, 85);
       if (dist <= hitRadius && (!best || dist < best.dist)) {
         best = { pin, dist };
       }
