@@ -30,7 +30,12 @@ assert.ok(mod.isDornhainGoldenMapSeed('dornhain.map.continent.ostmark'));
 
 for (const spec of mod.DORNHAIN_GOLDEN_MAPS) {
   const canvas = spec.buildCanvas();
-  assert.ok(canvas.rooms.length >= 2, `${spec.seedKey} rooms`);
+  const featureCount = canvas.rooms.length + canvas.strokes.length + canvas.objects.length;
+  assert.ok(featureCount >= 2, `${spec.seedKey} features (rooms+strokes+objects)`);
+  if (spec.seedKey.includes('.continent.') || spec.seedKey.includes('.country.')) {
+    const landmassRooms = canvas.rooms.filter((r) => r.id !== 'g.ocean' && r.id !== 'w.ocean');
+    assert.equal(landmassRooms.length, 0, `${spec.seedKey} must not duplicate landmass rooms on shared world terrain`);
+  }
   assert.equal(canvas.demoSeed, false);
   const meta = mod.buildDornhainGoldenChildGeneratorMeta(spec, 'parent-map-id');
   assert.equal(meta.seed, spec.seedKey);

@@ -15,6 +15,7 @@ import { openDornhainAtlas3d, waitAtlas3dReady } from './helpers/atlas-host';
 const HOST = process.env.SAGATREE_BROWSER_E2E_HOST === '1';
 const ROOT = process.cwd();
 const EVIDENCE_DIR = join(ROOT, '.qa/evidence/scm');
+const LOD_EVIDENCE_DIR = join(ROOT, '.qa/evidence/continuous-lod');
 
 const jiti = createJiti(import.meta.url, { esmResolve: true });
 
@@ -54,8 +55,41 @@ type ScmBridge = {
     readonly clearRootCount: number;
     readonly layersOpen: boolean;
     readonly multiMap: {
+      readonly activeMapIds: readonly string[];
       readonly groupCount: number;
       readonly activeEditorMapId: string | null;
+      readonly ownPerMapTerrainCount: number;
+      readonly groupOpacities: Readonly<
+        Record<
+          string,
+          {
+            readonly detailWeight: number;
+            readonly opacity: number;
+            readonly depth: number;
+            readonly lodState: string;
+            readonly exiting: boolean;
+          }
+        >
+      >;
+    };
+    readonly terrain: {
+      readonly enabled: boolean;
+      readonly chunkCount: number;
+      readonly maxActiveLod: number;
+      readonly coarseBaseCount: number;
+      readonly totalTriangles: number;
+      readonly chunks: ReadonlyArray<{
+        readonly chunkId: string;
+        readonly lodLevel: number;
+        readonly logicalCells: number;
+        readonly isCoarseBase: boolean;
+        readonly boundsWorld: {
+          readonly minX: number;
+          readonly minZ: number;
+          readonly maxX: number;
+          readonly maxZ: number;
+        };
+      }>;
     };
     readonly zoomLayer: {
       readonly activeMapId: string | null;
@@ -344,6 +378,185 @@ test.describe('SCM — Spatial Containment Model (Host Browser E2E)', () => {
     );
   });
 
+  test('Phase 1–3: shared chunked world terrain, continuous-LOD opacity ramp, keep-coarse & camera-driven Ebenen focus', async ({
+    page,
+  }) => {
+    test.setTimeout(150_000);
+    mkdirSync(LOD_EVIDENCE_DIR, { recursive: true });
+    const pts = computeZoomPoints();
+
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await openDornhainAtlas3d(page);
+    await waitSpatialReady(page);
+
+    // Keep Ebenen drawer open throughout continuous zoom
+    const layersBtn = page.locator('[data-atlas-panel-fold="layers"]').first();
+    if ((await layersBtn.getAttribute('aria-expanded')) !== 'true') {
+      await layersBtn.click();
+    }
+    const layersAside = page.locator('aside[aria-label="Welthierarchie und Ebenen"]').first();
+    await expect(layersAside).toBeVisible();
+
+    const trace: Array<{
+      step: string;
+      span: number;
+      clearRootCount: number;
+      ownPerMapTerrainCount: number;
+      terrainChunkCount: number;
+      terrainMaxLod: number;
+      terrainCoarseBaseCount: number;
+      activeLabelDe: string;
+      activeDepth: number;
+      breadcrumbLen: number;
+      domZoomActiveText: string | null;
+      groupOpacities: Record<
+        string,
+        { detailWeight: number; opacity: number; depth: number; lodState: string; exiting: boolean }
+      >;
+    }> = [];
+
+    const captureStep = async (
+      step: string,
+      focus: { x: number; y: number },
+      span: number,
+      rafCount = 2,
+      screenshotName?: string,
+    ) => {
+      await page.evaluate(
+        (v) => {
+          const b = (window as unknown as { __sagatreeAtlas?: ScmBridge }).__sagatreeAtlas;
+          b?.setView({ mode: 'diorama-oblique', x: v.x, z: v.z, span: v.span, yawRad: 0.42 }, false);
+        },
+        { x: focus.x, z: focus.y, span },
+      );
+      await waitRaf(page, rafCount);
+
+      const snap = await page.evaluate(() => {
+        const b = (window as unknown as { __sagatreeAtlas?: ScmBridge }).__sagatreeAtlas;
+        const st = b?.getState();
+        const activeBtn = document.querySelector('[data-atlas-zoom-active="true"]');
+        return {
+          clearRootCount: st?.clearRootCount ?? -1,
+          ownPerMapTerrainCount: st?.multiMap.ownPerMapTerrainCount ?? -1,
+          terrainEnabled: st?.terrain.enabled ?? false,
+          terrainChunkCount: st?.terrain.chunkCount ?? 0,
+          terrainMaxLod: st?.terrain.maxActiveLod ?? -1,
+          terrainCoarseBaseCount: st?.terrain.coarseBaseCount ?? 0,
+          chunks: st?.terrain.chunks ?? [],
+          activeMapCount: st?.multiMap.groupCount ?? 0,
+          activeLabelDe: st?.zoomLayer.activeLabelDe ?? '',
+          activeDepth: st?.zoomLayer.activeDepth ?? 0,
+          breadcrumbLen: st?.zoomLayer.activeBreadcrumbPlaceIds.length ?? 0,
+          domZoomActiveText: activeBtn?.textContent?.replace(/\s+/g, ' ').trim() ?? null,
+          groupOpacities: (st?.multiMap.groupOpacities ?? {}) as Record<
+            string,
+            { detailWeight: number; opacity: number; depth: number; lodState: string; exiting: boolean }
+          >,
+        };
+      });
+
+      expect(snap.clearRootCount, `${step}: clearRootCount === 0`).toBe(0);
+      expect(snap.terrainEnabled, `${step}: shared chunked world terrain enabled`).toBe(true);
+      expect(snap.ownPerMapTerrainCount, `${step}: ZERO separate per-map landmass terrain meshes`).toBe(0);
+      expect(snap.terrainChunkCount, `${step}: active terrain chunks >= 1`).toBeGreaterThanOrEqual(1);
+      expect(snap.terrainCoarseBaseCount, `${step}: keep-coarse base chunks >= 1`).toBeGreaterThanOrEqual(1);
+      for (const ch of snap.chunks) {
+        expect(ch.chunkId).toMatch(/^L\d+:\d+:\d+$/);
+        expect(ch.logicalCells).toBe(64);
+      }
+
+      if (screenshotName) {
+        await page.screenshot({ path: join(LOD_EVIDENCE_DIR, screenshotName) });
+      }
+
+      trace.push({
+        step,
+        span,
+        clearRootCount: snap.clearRootCount,
+        ownPerMapTerrainCount: snap.ownPerMapTerrainCount,
+        terrainChunkCount: snap.terrainChunkCount,
+        terrainMaxLod: snap.terrainMaxLod,
+        terrainCoarseBaseCount: snap.terrainCoarseBaseCount,
+        activeLabelDe: snap.activeLabelDe,
+        activeDepth: snap.activeDepth,
+        breadcrumbLen: snap.breadcrumbLen,
+        domZoomActiveText: snap.domZoomActiveText,
+        groupOpacities: snap.groupOpacities,
+      });
+      return snap;
+    };
+
+    // 1) World overview (span 530): BOTH continents + ocean on ONE continuous world heightfield
+    const sWorld = await captureStep('world-530', pts.welt, 530, 8, 'lod-01-world-span530.png');
+    expect(sWorld.activeDepth).toBe(1);
+
+    // 2) Continuous zoom ramp over Dornhain (530 → 300 → 200 → 140 → 120 → 70 → 25 → 12 → 6 → 2.5)
+    //    Sample quickly (rafCount=2) to observe genuine damped crossfade opacity (0 < op < 1)!
+    await captureStep('westmark-300', pts.westmark, 300, 4);
+    await captureStep('westmark-120', pts.westmark, 120, 4, 'lod-02-westmark-span120.png');
+
+    await captureStep('dorn-220', pts.dornhain, 220, 2);
+    await captureStep('dorn-140', pts.dornhain, 140, 2);
+    await captureStep('dorn-80', pts.dornhain, 80, 2);
+    const sNord25 = await captureStep('nordreich-25', pts.dornhain, 25, 8, 'lod-03-nordreich-span25.png');
+    expect(sNord25.activeLabelDe, 'Phase 3: span=25 over Nordreich highlights Nordreich').toBe('Nordreich');
+    expect(sNord25.domZoomActiveText).toContain('Nordreich');
+    expect(sNord25.activeDepth).toBe(3);
+
+    // Step across Dornhain refinement boundary (span 12 → 8 → 5 → 2.5) with 1 RAF frame to verify smooth opacity!
+    await captureStep('dorn-12', pts.dornhain, 12, 1);
+    await captureStep('dorn-8', pts.dornhain, 8, 1);
+    await captureStep('dorn-5', pts.dornhain, 5, 1);
+    const sDorn = await captureStep('dornhain-2.5', pts.dornhain, 2.5, 12, 'lod-04-dornhain-span2.5.png');
+    expect(sDorn.activeLabelDe, 'Phase 3: span=2.5 over Dornhain highlights Dornhain').toBe('Dornhain');
+    expect(sDorn.domZoomActiveText).toContain('Dornhain');
+    expect(sDorn.activeDepth).toBe(4);
+    expect(sDorn.breadcrumbLen).toBeGreaterThanOrEqual(3);
+    expect(sDorn.terrainMaxLod, 'Phase 1: same ground sampled finer at Dornhain than at planet span=530').toBeGreaterThan(
+      sWorld.terrainMaxLod,
+    );
+
+    // Zoom back OUT to Nordreich (span 25) → Ebenen highlight returns cleanly to Nordreich!
+    const sBackNord = await captureStep('zoom-out-nordreich-25', pts.dornhain, 25, 8, 'lod-05-zoom-out-nordreich.png');
+    expect(sBackNord.activeLabelDe, 'Phase 3: zooming back out restores Nordreich highlight').toBe('Nordreich');
+    expect(sBackNord.domZoomActiveText).toContain('Nordreich');
+    expect(sBackNord.activeDepth).toBe(3);
+
+    // Phase 2.1 assertion: verify at least one child map exhibited intermediate opacity (0.02 < op < 0.96)
+    // proving smooth continuous crossfade instead of a 0→100% single-frame switch!
+    const intermediateSamples: Array<{ step: string; mapId: string; opacity: number; detailWeight: number }> = [];
+    for (const row of trace) {
+      for (const [mapId, info] of Object.entries(row.groupOpacities)) {
+        if (info.depth > 1 && info.opacity > 0.02 && info.opacity < 0.96) {
+          intermediateSamples.push({
+            step: row.step,
+            mapId,
+            opacity: info.opacity,
+            detailWeight: info.detailWeight,
+          });
+        }
+      }
+    }
+    expect(
+      intermediateSamples.length,
+      `Phase 2.1: expected smooth intermediate opacities (0 < op < 1) across zoom trace, got ${JSON.stringify(intermediateSamples)}`,
+    ).toBeGreaterThan(0);
+
+    writeFileSync(
+      join(LOD_EVIDENCE_DIR, 'zoom-trace.json'),
+      `${JSON.stringify(
+        {
+          capturedAt: new Date().toISOString(),
+          intermediateOpacityCount: intermediateSamples.length,
+          intermediateSamples: intermediateSamples.slice(0, 12),
+          trace,
+        },
+        null,
+        2,
+      )}\n`,
+    );
+  });
+
   test('M-1: real canvas mouse-drag within bounds stays direct; dragging past border triggers live indicator + SCM grow dialog', async ({
     page,
   }) => {
@@ -366,7 +579,7 @@ test.describe('SCM — Spatial Containment Model (Host Browser E2E)', () => {
       const b = (window as unknown as { __sagatreeAtlas?: ScmBridge }).__sagatreeAtlas;
       b?.setView({ mode: 'ortho-topdown', x: p.x + 0.5, z: p.y, span: 3.4, yawRad: 0 }, false);
     }, pts.dornhain);
-    await waitRaf(page, 8);
+    await waitRaf(page, 14);
 
     // Activate Bewegen (Move) tool via UI button
     const toolsBtn = page.locator('[data-atlas-panel-fold="tools"]').first();
@@ -392,7 +605,7 @@ test.describe('SCM — Spatial Containment Model (Host Browser E2E)', () => {
       for (const bld of buildings) {
         const cx = (bld.boundsWorld.minX + bld.boundsWorld.maxX) / 2;
         const cy = (bld.boundsWorld.minY + bld.boundsWorld.maxY) / 2;
-        const scr = b.projectWorldToScreen(cx, cy, 0);
+        const scr = b.projectWorldToScreen(cx, cy);
         if (!scr.visible) continue;
         // Try center + slight offset in case roof/mesh is slightly elevated
         let hitId: string | null = null;
@@ -415,8 +628,8 @@ test.describe('SCM — Spatial Containment Model (Host Browser E2E)', () => {
         }
         if (!hitId) continue;
 
-        const insideTarget = b.projectWorldToScreen(cx + 0.08, cy, 0);
-        const outsideTarget = b.projectWorldToScreen(settlement.boundsWorld.maxX + 0.55, cy, 0);
+        const insideTarget = b.projectWorldToScreen(cx + 0.08, cy);
+        const outsideTarget = b.projectWorldToScreen(settlement.boundsWorld.maxX + 0.55, cy);
         if (!insideTarget.visible || !outsideTarget.visible) continue;
 
         return {

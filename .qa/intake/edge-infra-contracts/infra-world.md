@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-world.json](source-contracts/infra-world.json) (SHA-256 `bf45b8f34b30e343d136c33b76e6fb8964e9be5a78da942f8f161323caae3825`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-world.json](source-contracts/infra-world.json) (SHA-256 `5151c396eddead5f5640cf985404e8ce1394d1a80d57fd3fbbb6fc3c686f5ad1`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -1156,7 +1156,7 @@ export function dampAtlasThreeView(
 }
 ```
 
-### src/infrastructure/world/atlas-three/atlas-three-multimap.ts:39
+### src/infrastructure/world/atlas-three/atlas-three-multimap.ts:44
 
 ```ts
 export type AtlasThreeWorldMapSource = {
@@ -1169,22 +1169,42 @@ export type AtlasThreeWorldMapSource = {
 };
 ```
 
-### src/infrastructure/world/atlas-three/atlas-three-multimap.ts:48
+### src/infrastructure/world/atlas-three/atlas-three-multimap.ts:58
 
 ```ts
 export type AtlasThreeMapGroupNode = {
   readonly mapId: string;
+  readonly depth: number;
   readonly pivot: THREE.Group;
   readonly content: THREE.Group;
   readonly pickables: THREE.Object3D[];
   readonly scenePlan: AtlasThreeScenePlan;
   readonly buildSignature: string;
   readonly geometries: THREE.BufferGeometry[];
+  readonly materials: ClonedGroupMaterial[];
   readonly cutoutSignature: string;
+  readonly hasOwnTerrain: boolean;
+  lodState: string;
+  detailWeight: number;
+  targetOpacity: number;
+  currentOpacity: number;
+  exiting: boolean;
 };
 ```
 
-### src/infrastructure/world/atlas-three/atlas-three-multimap.ts:59
+### src/infrastructure/world/atlas-three/atlas-three-multimap.ts:77
+
+```ts
+export type AtlasThreeGroupOpacitySnapshot = {
+  readonly detailWeight: number;
+  readonly opacity: number;
+  readonly depth: number;
+  readonly lodState: string;
+  readonly exiting: boolean;
+};
+```
+
+### src/infrastructure/world/atlas-three/atlas-three-multimap.ts:85
 
 ```ts
 export type AtlasThreeMultiMapStats = {
@@ -1194,10 +1214,13 @@ export type AtlasThreeMultiMapStats = {
   readonly liveGeometryCount: number;
   readonly clearRootCount: number;
   readonly incrementalSyncCount: number;
+  readonly ownPerMapTerrainCount: number;
+  readonly terrain: AtlasThreeWorldTerrainStats;
+  readonly groupOpacities: Readonly<Record<string, AtlasThreeGroupOpacitySnapshot>>;
 };
 ```
 
-### src/infrastructure/world/atlas-three/atlas-three-multimap.ts:98
+### src/infrastructure/world/atlas-three/atlas-three-multimap.ts:131
 
 ```ts
 export function applyLocalCutoutFilter(
@@ -1232,18 +1255,18 @@ export function applyLocalCutoutFilter(
 }
 ```
 
-### src/infrastructure/world/atlas-three/atlas-three-multimap.ts:189
+### src/infrastructure/world/atlas-three/atlas-three-multimap.ts:174
 
 ```ts
 export function multiMapDepthLiftY(depth: number): number {
-  const table = [0, 0.45, 0.65, 0.72, 0.725, 0.726];
+  const table = [0, 0.14, 0.24, 0.32, 0.36, 0.39];
   const idx = Math.max(0, depth - 1);
   if (idx < table.length) return table[idx]!;
-  return 0.726 + (idx - (table.length - 1)) * 0.0005;
+  return 0.39 + (idx - (table.length - 1)) * 0.02;
 }
 ```
 
-### src/infrastructure/world/atlas-three/atlas-three-multimap.ts:200
+### src/infrastructure/world/atlas-three/atlas-three-multimap.ts:185
 
 ```ts
 export function applyWorldTransformToGroup(
@@ -1251,6 +1274,7 @@ export function applyWorldTransformToGroup(
   content: THREE.Group,
   entry: AtlasWorldSceneGroupPlan,
   bounds: WorldAtlasBounds = DEFAULT_ATLAS_BOUNDS,
+  baseElevationY = 0,
 ): void {
   const midX = (bounds.minX + bounds.maxX) / 2;
   const midY = (bounds.minY + bounds.maxY) / 2;
@@ -1258,7 +1282,7 @@ export function applyWorldTransformToGroup(
   const verticalScale = Math.sqrt(Math.max(1e-8, scaleX * scaleY));
   const depthLiftY = multiMapDepthLiftY(entry.depth);
 
-  pivot.position.set(centerX, depthLiftY, centerY);
+  pivot.position.set(centerX, baseElevationY + depthLiftY, centerY);
   pivot.rotation.set(0, -rotationRad, 0);
   pivot.scale.set(scaleX, verticalScale, scaleY);
   content.position.set(-midX, 0, -midY);
@@ -1266,27 +1290,93 @@ export function applyWorldTransformToGroup(
 }
 ```
 
-### src/infrastructure/world/atlas-three/atlas-three-multimap.ts:219
+### src/infrastructure/world/atlas-three/atlas-three-multimap.ts:227
 
 ```ts
 export class AtlasThreeMultiMapGraph {
   readonly rootGroup = new THREE.Group();
+  readonly worldTerrain: AtlasThreeWorldTerrain;
   private readonly groups = new Map<string, AtlasThreeMapGroupNode>();
   private activeEditorMapId: string | null = null;
   private clearRootCount = 0;
   private incrementalSyncCount = 0;
+  private lastTerrainSourceKey = '';
 
   constructor(
     private readonly getMaterial: (key: AtlasThreeSurfaceKey) => THREE.Material,
     private readonly waterMaterial: THREE.Material,
   ) {
     this.rootGroup.name = 'atlas3:multimap-root';
+    this.worldTerrain = new AtlasThreeWorldTerrain(() => this.getMaterial('terrain'));
+    this.rootGroup.add(this.worldTerrain.rootGroup);
   }
 
   /**
-   * Incrementally sync the Three.js scene graph to match `scenePlan`.
-   * Never calls `clearRoot()` — only mounts entering maps, updates transforms,
-   * rebuilds individual groups whose revision/cutouts changed, and disposes exiting maps.
+   * Synchronize the shared chunked world terrain source from the root map's heightfield
+   * plus any localized fine heightfield overlays (e.g. Dornhain hills) projected into World Space.
+   */
+  private ensureSharedWorldTerrainSource(
+    scenePlan: AtlasWorldScenePlan,
+    sources: ReadonlyMap<string, AtlasThreeWorldMapSource>,
+  ): void {
+    const rootId = scenePlan.rootMapId;
+    const rootSource = rootId ? sources.get(rootId) : undefined;
+    const rootHf = rootSource?.doc.heightfield ?? null;
+    if (!rootHf || !rootSource) {
+      if (this.lastTerrainSourceKey !== '') {
+        this.lastTerrainSourceKey = '';
+        this.worldTerrain.setSource(null);
+      }
+      return;
+    }
+
+    const overlays: AtlasWorldHeightfieldOverlay[] = [];
+    const overlayParts: string[] = [];
+    for (const entry of scenePlan.entries) {
+      if (entry.depth === 1) continue;
+      const src = sources.get(entry.mapId);
+      if (!src || src.look !== 'outdoor' || !src.doc.heightfield) continue;
+      const hf = src.doc.heightfield;
+      const verticalScale = Math.sqrt(
+        Math.max(1e-8, entry.worldTransform.scaleX * entry.worldTransform.scaleY),
+      );
+      overlays.push({
+        id: entry.mapId,
+        worldBounds: {
+          minX: entry.worldAabb.minX,
+          minZ: entry.worldAabb.minY,
+          maxX: entry.worldAabb.maxX,
+          maxZ: entry.worldAabb.maxY,
+        },
+        heightfield: hf,
+        elevationScale: Math.max(0.012, Math.min(0.06, verticalScale * 4)),
+        featherRatio: 0.24,
+      });
+      overlayParts.push(`${entry.mapId}:${src.revisionKey ?? 'v0'}`);
+    }
+
+    const key = `${rootId}:${rootSource.revisionKey ?? 'v0'}:${hfVersionKey(rootHf)}|${overlayParts.sort().join(',')}`;
+    if (key === this.lastTerrainSourceKey) return;
+    this.lastTerrainSourceKey = key;
+
+    this.worldTerrain.setSource(
+      createAtlasWorldHeightfieldSource({
+        rootHeightfield: rootHf,
+        revisionKey: key,
+        overlays,
+      }),
+    );
+  }
+
+  /**
+   * Incrementally sync the shared chunked world terrain AND Three.js overlay groups
+   * to match `scenePlan`.
+   *
+   * - Never calls `clearRoot()`.
+   * - Consumes `entry.detailWeight` continuously via per-group cloned materials without
+   *   rebuilding geometry when only opacity/transform changes.
+   * - When `dtSec` is provided (live render loop), smoothly damps opacity (~180 ms)
+   *   and fades exiting groups out to 0 before disposing them.
    */
   sync(input: {
     readonly scenePlan: AtlasWorldScenePlan;
@@ -1294,43 +1384,122 @@ export class AtlasThreeMultiMapGraph {
     readonly presetId: AtlasGraphicsPresetId;
     readonly hideRoofs: boolean;
     readonly viewSpan: number;
+    readonly camera?: AtlasWorldCameraState;
+    readonly viewportPx?: { readonly width: number; readonly height: number };
+    readonly dtSec?: number;
   }): void {
     this.incrementalSyncCount += 1;
     this.activeEditorMapId = input.scenePlan.activeEditorMapId;
 
-    const wantedIds = new Set(input.scenePlan.entries.map((e) => e.mapId));
+    // 0) Sync the ONE shared chunked world terrain (Phase 1.3)
+    this.ensureSharedWorldTerrainSource(input.scenePlan, input.sources);
+    const hasSharedTerrain = Boolean(this.worldTerrain.getSource());
+    if (hasSharedTerrain && input.camera && input.viewportPx) {
+      this.worldTerrain.sync({
+        camera: input.camera,
+        viewportPx: input.viewportPx,
+      });
+    }
 
-    // 1) Dispose groups that left the active scene plan
+    const wantedIds = new Set(input.scenePlan.entries.map((e) => e.mapId));
+    const useSmoothDamp = typeof input.dtSec === 'number' && Number.isFinite(input.dtSec);
+    const dampAlpha = useSmoothDamp
+      ? 1 - Math.exp(-OPACITY_DAMP_RATE * Math.max(0.001, Math.min(0.1, input.dtSec!)))
+      : 1;
+
+    // 1) Fade out or dispose groups that left the active scene plan
     for (const [mapId, node] of [...this.groups.entries()]) {
-      if (!wantedIds.has(mapId)) {
+      if (wantedIds.has(mapId)) continue;
+      if (useSmoothDamp && node.depth > 1 && node.currentOpacity > OPACITY_EXIT_EPSILON) {
+        node.exiting = true;
+        node.targetOpacity = 0;
+        node.detailWeight = 0;
+        node.currentOpacity += (0 - node.currentOpacity) * dampAlpha;
+        this.applyOpacityToNode(node);
+        if (node.currentOpacity <= OPACITY_EXIT_EPSILON) {
+          this.disposeGroupNode(node);
+          this.groups.delete(mapId);
+        }
+      } else {
         this.disposeGroupNode(node);
         this.groups.delete(mapId);
       }
     }
 
-    // 2) Mount new groups or update existing groups incrementally
+    // 2) Mount new groups or incrementally update transform & continuous opacity
     for (const entry of input.scenePlan.entries) {
       const source = input.sources.get(entry.mapId);
       if (!source) continue;
 
       const cSig = cutoutSignature(entry.cutoutRectsLocal);
       const rev = source.revisionKey ?? 'v0';
-      const sig = `${rev}|${source.mapScale}|${source.look}|${input.presetId}|${input.hideRoofs ? 1 : 0}|${cSig}`;
+      const terrainSig = hasSharedTerrain ? this.lastTerrainSourceKey : 'local';
+      const sig = `${rev}|${source.mapScale}|${source.look}|${input.presetId}|${input.hideRoofs ? 1 : 0}|${cSig}|${terrainSig}`;
+      const targetOpacity = entry.depth === 1 ? 1 : Math.max(0, Math.min(1, entry.detailWeight));
+
+      const baseElevationY =
+        hasSharedTerrain && source.look === 'indoor'
+          ? this.worldTerrain.sampleElevation(
+              entry.worldTransform.centerX,
+              entry.worldTransform.centerY,
+            ) + 0.15
+          : 0;
 
       const existing = this.groups.get(entry.mapId);
       if (existing && existing.buildSignature === sig) {
-        // Zero rebuild: only update world transform & visibility
-        applyWorldTransformToGroup(existing.pivot, existing.content, entry, source.bounds);
-        existing.pivot.visible = true;
+        // Zero rebuild: update world transform AND smoothly ramp continuous opacity!
+        existing.exiting = false;
+        existing.lodState = entry.lodState;
+        existing.detailWeight = entry.detailWeight;
+        existing.targetOpacity = targetOpacity;
+        existing.currentOpacity =
+          entry.depth === 1
+            ? 1
+            : useSmoothDamp
+              ? existing.currentOpacity + (targetOpacity - existing.currentOpacity) * dampAlpha
+              : targetOpacity;
+        applyWorldTransformToGroup(
+          existing.pivot,
+          existing.content,
+          entry,
+          source.bounds,
+          baseElevationY,
+        );
+        this.applyOpacityToNode(existing);
         continue;
       }
 
+      const prevOpacity = existing?.currentOpacity;
       if (existing) {
         this.disposeGroupNode(existing);
         this.groups.delete(entry.mapId);
       }
 
       const filteredDoc = applyLocalCutoutFilter(source.doc, entry.cutoutRectsLocal);
+      const bounds = source.bounds ?? DEFAULT_ATLAS_BOUNDS;
+      const midX = (bounds.minX + bounds.maxX) / 2;
+      const midY = (bounds.minY + bounds.maxY) / 2;
+      const { centerX, centerY, scaleX, scaleY, rotationRad } = entry.worldTransform;
+      const cosR = Math.cos(rotationRad);
+      const sinR = Math.sin(rotationRad);
+      const verticalScale = Math.sqrt(Math.max(1e-8, scaleX * scaleY));
+      const depthLiftY = multiMapDepthLiftY(entry.depth);
+
+      const sharedWorldTerrain: SharedWorldTerrainBinding | undefined =
+        hasSharedTerrain && source.look === 'outdoor'
+          ? {
+              sampleElevationWorld: (wx, wz) => this.worldTerrain.sampleElevation(wx, wz),
+              mapToWorld: (lx, lz) => {
+                const dx = (lx - midX) * scaleX;
+                const dz = (lz - midY) * scaleY;
+                return [centerX + dx * cosR - dz * sinR, centerY + dx * sinR + dz * cosR] as const;
+              },
+              verticalScale,
+              depthLiftY,
+              waterLevel: this.worldTerrain.getSource()?.waterLevel ?? 0,
+            }
+          : undefined;
+
       const plan = buildAtlasThreeScenePlan(filteredDoc, {
         mapScale: source.mapScale,
         look: source.look,
@@ -1339,6 +1508,7 @@ export class AtlasThreeMultiMapGraph {
         seed: entry.mapId,
         hideRoofs: input.hideRoofs,
         warmWindows: true,
+        sharedWorldTerrain,
       });
 
       const pivot = new THREE.Group();
@@ -1352,12 +1522,20 @@ export class AtlasThreeMultiMapGraph {
 
       const pickables: THREE.Object3D[] = [];
       const geometries: THREE.BufferGeometry[] = [];
+      const materials: ClonedGroupMaterial[] = [];
+
+      const cloneSurfaceMat = (surfaceKey: AtlasThreeSurfaceKey): THREE.Material => {
+        const cloned = this.getMaterial(surfaceKey).clone();
+        materials.push({ material: cloned, surfaceKey });
+        return cloned;
+      };
 
       for (const [surfaceKey, builder] of plan.builders) {
         if (builder.triangleCount === 0) continue;
         const geo = builder.build();
         geometries.push(geo);
-        const mesh = new THREE.Mesh(geo, this.getMaterial(surfaceKey));
+        const mat = cloneSurfaceMat(surfaceKey);
+        const mesh = new THREE.Mesh(geo, mat);
         const flat = surfaceKey.startsWith('sheet') || surfaceKey.startsWith('floor');
         mesh.castShadow = !flat;
         mesh.receiveShadow = true;
@@ -1371,7 +1549,9 @@ export class AtlasThreeMultiMapGraph {
       if (plan.water.triangleCount > 0) {
         const geo = plan.water.build();
         geometries.push(geo);
-        const mesh = new THREE.Mesh(geo, this.waterMaterial);
+        const waterClone = this.waterMaterial.clone();
+        materials.push({ material: waterClone, surfaceKey: 'water' });
+        const mesh = new THREE.Mesh(geo, waterClone);
         mesh.userData.triIds = plan.water.triIds;
         mesh.userData.mapId = entry.mapId;
         mesh.name = `atlas3:${entry.mapId}:water`;
@@ -1380,10 +1560,13 @@ export class AtlasThreeMultiMapGraph {
         pickables.push(mesh);
       }
 
+      // Per-map terrain only if no shared world terrain source exists (legacy fallback)
+      let hasOwnTerrain = false;
       if (plan.terrain) {
-        applyTerrainCutoutFilter(plan.terrain, entry.cutoutRectsLocal);
+        hasOwnTerrain = true;
         geometries.push(plan.terrain);
-        const mesh = new THREE.Mesh(plan.terrain, this.getMaterial('terrain'));
+        const mat = cloneSurfaceMat('terrain');
+        const mesh = new THREE.Mesh(plan.terrain, mat);
         mesh.castShadow = true;
         mesh.receiveShadow = true;
         mesh.userData.mapId = entry.mapId;
@@ -1391,20 +1574,89 @@ export class AtlasThreeMultiMapGraph {
         content.add(mesh);
       }
 
-      applyWorldTransformToGroup(pivot, content, entry, source.bounds);
+      applyWorldTransformToGroup(pivot, content, entry, source.bounds, baseElevationY);
       this.rootGroup.add(pivot);
 
-      this.groups.set(entry.mapId, {
+      // Start freshly entering child maps from 0 (damped fade-in) instead of jumping 0→100%
+      const initialOpacity =
+        entry.depth === 1
+          ? 1
+          : prevOpacity !== undefined
+            ? prevOpacity
+            : useSmoothDamp
+              ? targetOpacity * dampAlpha
+              : targetOpacity;
+
+      const node: AtlasThreeMapGroupNode = {
         mapId: entry.mapId,
+        depth: entry.depth,
         pivot,
         content,
         pickables,
         scenePlan: plan,
         buildSignature: sig,
         geometries,
+        materials,
         cutoutSignature: cSig,
-      });
+        hasOwnTerrain,
+        lodState: entry.lodState,
+        detailWeight: entry.detailWeight,
+        targetOpacity,
+        currentOpacity: initialOpacity,
+        exiting: false,
+      };
+      this.applyOpacityToNode(node);
+      this.groups.set(entry.mapId, node);
     }
+  }
+
+  /** Propagate lighting/style roughness & normalScale updates to cloned per-group materials. */
+  applyStyleMode(styleMode: 'pbr' | 'illustrated' | 'cel'): void {
+    for (const node of this.groups.values()) {
+      for (const entry of node.materials) {
+        if (entry.surfaceKey === 'water') continue;
+        if (!(entry.material instanceof THREE.MeshStandardMaterial)) continue;
+        const spec = ATLAS_THREE_SURFACES[entry.surfaceKey];
+        if (!spec) continue;
+        if (styleMode === 'cel') {
+          entry.material.roughness = Math.min(1, spec.roughness + 0.08);
+          entry.material.normalScale.set(spec.normalScale * 0.35, spec.normalScale * 0.35);
+        } else if (styleMode === 'illustrated') {
+          entry.material.roughness = Math.min(1, spec.roughness + 0.03);
+          entry.material.normalScale.set(spec.normalScale * 0.72, spec.normalScale * 0.72);
+        } else {
+          entry.material.roughness = spec.roughness;
+          entry.material.normalScale.set(spec.normalScale, spec.normalScale);
+        }
+      }
+    }
+  }
+
+  /** Propagate animated water shader uniforms to cloned per-group river/water materials. */
+  syncWaterUniforms(sourceWater: THREE.ShaderMaterial): void {
+    for (const node of this.groups.values()) {
+      for (const entry of node.materials) {
+        if (entry.surfaceKey !== 'water' || !(entry.material instanceof THREE.ShaderMaterial)) continue;
+        const dst = entry.material.uniforms;
+        const src = sourceWater.uniforms;
+        if (dst.uTime && src.uTime) dst.uTime.value = src.uTime.value;
+        if (dst.uDeep && src.uDeep) dst.uDeep.value.copy(src.uDeep.value);
+        if (dst.uShallow && src.uShallow) dst.uShallow.value.copy(src.uShallow.value);
+        if (dst.uSky && src.uSky) dst.uSky.value.copy(src.uSky.value);
+        if (dst.uSunDir && src.uSunDir) dst.uSunDir.value.copy(src.uSunDir.value);
+        if (dst.uFogColor && src.uFogColor) dst.uFogColor.value.copy(src.uFogColor.value);
+        if (dst.uFocus && src.uFocus) dst.uFocus.value.copy(src.uFocus.value);
+        if (dst.uSpan && src.uSpan) dst.uSpan.value = src.uSpan.value;
+      }
+    }
+  }
+
+  private applyOpacityToNode(node: AtlasThreeMapGroupNode): void {
+    const op = Math.max(0, Math.min(1, node.currentOpacity));
+    for (const m of node.materials) {
+      applyMaterialOpacity(m, op);
+    }
+    node.pivot.visible = op > 0.005;
   }
 
   getGroup(mapId: string): AtlasThreeMapGroupNode | undefined {
@@ -1414,15 +1666,22 @@ export class AtlasThreeMultiMapGraph {
   getAllPickables(): readonly THREE.Object3D[] {
     const out: THREE.Object3D[] = [];
     for (const g of this.groups.values()) {
+      if (!g.pivot.visible || g.exiting) continue;
       for (const p of g.pickables) out.push(p);
     }
     return out;
   }
 
-  getActiveEditorElevationY(): number {
-    if (!this.activeEditorMapId) return 0;
-    const g = this.groups.get(this.activeEditorMapId);
-    return g ? g.pivot.position.y : 0;
+  getActiveEditorElevationY(focusX?: number, focusZ?: number): number {
+    const activeGroup = this.activeEditorMapId ? this.groups.get(this.activeEditorMapId) : undefined;
+    if (activeGroup && activeGroup.pivot.position.y > 0.5) {
+      return activeGroup.pivot.position.y;
+    }
+    const terrainSource = this.worldTerrain.getSource();
+    if (terrainSource && focusX !== undefined && focusZ !== undefined) {
+      return Math.max(terrainSource.waterLevel, this.worldTerrain.sampleElevation(focusX, focusZ));
+    }
+    return activeGroup ? activeGroup.pivot.position.y : 0;
   }
 
   getRenderedIds(): string[] {
@@ -1434,9 +1693,20 @@ export class AtlasThreeMultiMapGraph {
   }
 
   getStats(): AtlasThreeMultiMapStats {
-    let liveGeometryCount = 0;
+    const terrain = this.worldTerrain.getStats();
+    let liveGeometryCount = terrain.liveGeometryCount;
+    let ownPerMapTerrainCount = 0;
+    const groupOpacities: Record<string, AtlasThreeGroupOpacitySnapshot> = {};
     for (const g of this.groups.values()) {
       liveGeometryCount += g.geometries.length;
+      if (g.hasOwnTerrain) ownPerMapTerrainCount += 1;
+      groupOpacities[g.mapId] = {
+        detailWeight: Math.round(g.detailWeight * 1000) / 1000,
+        opacity: Math.round(g.currentOpacity * 1000) / 1000,
+        depth: g.depth,
+        lodState: g.lodState,
+        exiting: g.exiting,
+      };
     }
     return {
       activeMapIds: [...this.groups.keys()],
@@ -1445,16 +1715,21 @@ export class AtlasThreeMultiMapGraph {
       liveGeometryCount,
       clearRootCount: this.clearRootCount,
       incrementalSyncCount: this.incrementalSyncCount,
+      ownPerMapTerrainCount,
+      terrain,
+      groupOpacities,
     };
   }
 
-  /** Teardown all groups and release every GPU BufferGeometry cleanly (budget = 0). */
+  /** Teardown all groups + shared terrain chunks and release 100% of GPU geometries & cloned materials. */
   dispose(): void {
+    this.worldTerrain.dispose();
     for (const node of this.groups.values()) {
       this.disposeGroupNode(node);
     }
     this.groups.clear();
     this.activeEditorMapId = null;
+    this.lastTerrainSourceKey = '';
   }
 
   private disposeGroupNode(node: AtlasThreeMapGroupNode): void {
@@ -1462,7 +1737,11 @@ export class AtlasThreeMultiMapGraph {
     for (const geo of node.geometries) {
       geo.dispose();
     }
+    for (const entry of node.materials) {
+      entry.material.dispose();
+    }
     node.geometries.length = 0;
+    node.materials.length = 0;
     node.pickables.length = 0;
   }
 }
@@ -1507,7 +1786,7 @@ export type AtlasThreeRuntimeConfig = {
 };
 ```
 
-### src/infrastructure/world/atlas-three/atlas-three-runtime.ts:533
+### src/infrastructure/world/atlas-three/atlas-three-runtime.ts:535
 
 ```ts
 export class AtlasThreeRuntime {
@@ -1661,6 +1940,7 @@ export class AtlasThreeRuntime {
         uFogColor: { value: new THREE.Color('#9ec2c6') },
         uFocus: { value: new THREE.Vector2(500, 500) },
         uSpan: { value: 430 },
+        uOpacity: { value: 1.0 },
       },
     });
     const oceanGeo = new THREE.PlaneGeometry(28000, 28000, 1, 1);
@@ -1882,6 +2162,7 @@ export class AtlasThreeRuntime {
       }
       mat.needsUpdate = true;
     }
+    this.multiMap.applyStyleMode(this.styleMode);
   }
 
   /**
@@ -1896,15 +2177,16 @@ export class AtlasThreeRuntime {
     this.worldMaps = input.maps;
     this.worldSources = new Map(input.sources.map((s) => [s.mapId, s] as const));
     this.worldScenePlan = null;
+    this.lastReportedEditorMapId = undefined;
   }
 
   getWorldCameraState(): AtlasWorldCameraState {
     return createAtlasWorldCameraState({
-      focusWorld: { x: this.targetView.x, y: this.targetView.z, z: 0 },
-      span: this.targetView.span,
-      yawRad: this.targetView.yawRad,
-      pitchRad: this.targetView.pitchRad,
-      projection: this.targetView.mode,
+      focusWorld: { x: this.view.x, y: this.view.z, z: 0 },
+      span: this.view.span,
+      yawRad: this.view.yawRad,
+      pitchRad: this.view.pitchRad,
+      projection: this.view.mode,
     });
   }
 
@@ -2178,7 +2460,7 @@ export class AtlasThreeRuntime {
   ): { readonly px: number; readonly py: number; readonly visible: boolean } {
     const w = Math.max(1, this.config.canvas.clientWidth || 1);
     const h = Math.max(1, this.config.canvas.clientHeight || 1);
-    const pyWorld = y ?? (this.worldMaps.length > 0 ? this.multiMap.getActiveEditorElevationY() : 0);
+    const pyWorld = y ?? (this.worldMaps.length > 0 ? this.multiMap.getActiveEditorElevationY(x, z) : 0);
     const v = new THREE.Vector3(x, pyWorld, z).project(this.camera);
     const px = ((v.x + 1) * 0.5) * w;
     const py = ((1 - v.y) * 0.5) * h;
@@ -2302,10 +2584,10 @@ export class AtlasThreeRuntime {
     this.pickables.length = 0;
   }
 
-  private ensureScene(): void {
+  private ensureScene(dtSec?: number): void {
     if (this.worldMaps.length > 0) {
-      // SWS-04 Multi-Map Scene Graph: incremental sync driven by AtlasWorldScenePlan
-      // with ZERO clearRoot() calls during zoom/navigation (Checklist D1–D5).
+      // SWS-04 + Phase 1/2 Multi-Map Scene Graph: shared chunked world terrain +
+      // smooth `detailWeight` crossfade with ZERO clearRoot() calls during zoom/navigation.
       this.root.visible = false;
       this.multiMap.rootGroup.visible = true;
       const w = Math.max(1, this.config.canvas.clientWidth || 1280);
@@ -2328,6 +2610,9 @@ export class AtlasThreeRuntime {
         presetId: this.presetId,
         hideRoofs: this.hideRoofs,
         viewSpan: this.view.span,
+        camera: camState,
+        viewportPx: { width: w, height: h },
+        dtSec,
       });
       this.applyStyleToMaterials();
       this.updateSelectionGizmo();
@@ -2510,7 +2795,8 @@ export class AtlasThreeRuntime {
 
   private syncCameraAndLighting(w: number, h: number, elapsedSec: number): void {
     const aspect = w / Math.max(1, h);
-    const activeY = this.worldMaps.length > 0 ? this.multiMap.getActiveEditorElevationY() : 0;
+    const activeY =
+      this.worldMaps.length > 0 ? this.multiMap.getActiveEditorElevationY(this.view.x, this.view.z) : 0;
     this.groundPlane.constant = -activeY;
     const rig = buildAtlasThreeCameraRig({ ...this.view, y: activeY }, aspect);
     if (rig.perspective) {
@@ -2616,6 +2902,9 @@ export class AtlasThreeRuntime {
     this.waterMat.uniforms.uFogColor!.value.set(spec.skyHorizon);
     this.waterMat.uniforms.uFocus!.value.set(this.view.x, this.view.z);
     this.waterMat.uniforms.uSpan!.value = this.view.span;
+    if (this.worldMaps.length > 0) {
+      this.multiMap.syncWaterUniforms(this.waterMat);
+    }
 
     // Gentle rising chimney smoke animation
     for (const puff of this.smokePuffs) {
@@ -2721,7 +3010,7 @@ export class AtlasThreeRuntime {
         }
       }
 
-      this.ensureScene();
+      this.ensureScene(dtSec);
       this.syncCameraAndLighting(w, h, (now - this.startTime) * 0.001);
       this.renderer.render(this.scene, this.camera);
       this.emitProjectedPins(w, h);
@@ -2980,7 +3269,59 @@ export type AtlasThreeScenePlan = {
 };
 ```
 
+### src/infrastructure/world/atlas-three/atlas-three-scene.ts:234
+
+```ts
+export function terrainColorAt(height: number, waterLevel: number, slope: number): THREE.Color {
+  const c = new THREE.Color();
+  if (height < waterLevel - 0.6) {
+    const depthT = Math.min(1, (waterLevel - 0.6 - height) / 7);
+    c.set('#2b6972').lerp(new THREE.Color('#1a4452'), depthT);
+    return c;
+  }
+  if (height < waterLevel + 1.8) {
+    const t = Math.max(0, Math.min(1, (height - (waterLevel - 0.6)) / 2.4));
+    c.set('#5a928a').lerp(new THREE.Color('#decfa4'), t);
+    return c;
+  }
+  if (height < 13) {
+    const t = Math.max(0, Math.min(1, (height - (waterLevel + 1.8)) / 11.2));
+    c.set('#7ea85f').lerp(new THREE.Color('#4a7b4c'), t);
+    if (slope > 0.28) {
+      c.lerp(new THREE.Color('#8d9387'), Math.min(0.82, (slope - 0.28) * 2.1));
+    }
+    return c;
+  }
+  if (height < 25) {
+    const t = Math.max(0, Math.min(1, (height - 13) / 12));
+    c.set('#6d7c63').lerp(new THREE.Color('#959d94'), t);
+    if (slope > 0.35) {
+      c.lerp(new THREE.Color('#7f8580'), Math.min(0.75, (slope - 0.35) * 1.8));
+    }
+    return c;
+  }
+  const snowT = Math.max(0, Math.min(1, (height - 25) / 14));
+  c.set('#9ba49d').lerp(new THREE.Color('#f3f7fa'), snowT);
+  return c;
+}
+```
+
 ### src/infrastructure/world/atlas-three/atlas-three-scene.ts:929
+
+```ts
+export type SharedWorldTerrainBinding = {
+  /** Sample the single authoritative world elevation at `(worldX, worldZ)`. */
+  readonly sampleElevationWorld: (worldX: number, worldZ: number) => number;
+  /** Map this map's local `(x, z)` into World Space `(worldX, worldZ)`. */
+  readonly mapToWorld: (localX: number, localZ: number) => readonly [number, number];
+  /** Group pivot's vertical scale factor and Y lift so local Y lands flush on the world terrain. */
+  readonly verticalScale: number;
+  readonly depthLiftY: number;
+  readonly waterLevel: number;
+};
+```
+
+### src/infrastructure/world/atlas-three/atlas-three-scene.ts:940
 
 ```ts
 export type BuildAtlasThreeSceneOptions = {
@@ -2991,10 +3332,16 @@ export type BuildAtlasThreeSceneOptions = {
   readonly seed: string;
   readonly hideRoofs?: boolean;
   readonly warmWindows?: boolean;
+  /**
+   * Phase 1.3: When present (Multi-Map outdoor maps), this map renders ONLY overlays
+   * (borders, roads, rivers, plazas, buildings, props) sampled onto the single shared
+   * chunked world terrain — NEVER generating a second separate landmass terrain mesh.
+   */
+  readonly sharedWorldTerrain?: SharedWorldTerrainBinding;
 };
 ```
 
-### src/infrastructure/world/atlas-three/atlas-three-scene.ts:939
+### src/infrastructure/world/atlas-three/atlas-three-scene.ts:956
 
 ```ts
 export function buildAtlasThreeScenePlan(
@@ -3020,19 +3367,33 @@ export function buildAtlasThreeScenePlan(
   const doorInstances: { matrices: THREE.Matrix4[]; ids: string[] } = { matrices: [], ids: [] };
   const up = new THREE.Vector3(0, 1, 0);
 
-  // Determine active terrain heightfield: canonical heightfield OR suggestive 3D fantasy world relief!
+  // Phase 1.3: When shared world terrain is active on outdoor Multi-Map maps, sample
+  // directly from the ONE chunked world heightfield and NEVER build a per-map terrain mesh!
+  const sharedTerrain = opts.look === 'outdoor' ? opts.sharedWorldTerrain ?? null : null;
   const syntheticRelief =
-    opts.look === 'outdoor' && !doc.heightfield && doc.layers.terrain !== false
+    !sharedTerrain && opts.look === 'outdoor' && !doc.heightfield && doc.layers.terrain !== false
       ? synthesizeWorldReliefHeightfield(doc, opts.seed)
       : null;
-  const activeTerrainHf = doc.heightfield ?? syntheticRelief;
-  const waterLevel = activeTerrainHf ? activeTerrainHf.waterLevel : -0.52;
+  const activeTerrainHf = sharedTerrain ? null : (doc.heightfield ?? syntheticRelief);
+  const waterLevel = sharedTerrain
+    ? sharedTerrain.waterLevel
+    : activeTerrainHf
+      ? activeTerrainHf.waterLevel
+      : -0.52;
   const sampleGroundY = (x: number, z: number, fallback: number): number => {
+    if (sharedTerrain) {
+      const [wx, wz] = sharedTerrain.mapToWorld(x, z);
+      const worldY = sharedTerrain.sampleElevationWorld(wx, wz);
+      if (!Number.isFinite(worldY)) return fallback;
+      const safeScale = Math.max(1e-4, sharedTerrain.verticalScale);
+      return (worldY - sharedTerrain.depthLiftY) / safeScale;
+    }
     if (!activeTerrainHf) return fallback;
     const sampled = sampleHeightfield(activeTerrainHf, x, z);
     if (sampled === null || !Number.isFinite(sampled)) return fallback;
     return syntheticRelief ? Math.max(0.2, sampled) : sampled > fallback ? sampled : fallback;
   };
+  const terrainDrivenElevation = Boolean(sharedTerrain || syntheticRelief);
 
   // NOTE: Infinite ocean / infinite meadow / infinite dark cavern horizon surround is rendered
   // by AtlasThreeRuntime (camera-following 28k×28k plane + sky dome + FogExp2) so zero
@@ -3051,16 +3412,16 @@ export function buildAtlasThreeScenePlan(
     if (rm.id === 'g.ocean' || rm.id === 'w.ocean') {
       return;
     }
-    // When suggestive 3D fantasy terrain relief is active, the continuous terrain mesh
-    // renders the land & water biomes cleanly without flat z-fighting slabs (keep paved squares!).
-    if (syntheticRelief && matName !== 'pflaster') {
+    // When shared chunked world terrain (or standalone suggestive relief) renders the ground,
+    // skip landmass/biome polygons so zero stacked island slabs ever appear (keep paved plazas!).
+    if (terrainDrivenElevation && matName !== 'pflaster') {
       return;
     }
     const cx = rm.points.reduce((a, p) => a + p[0], 0) / Math.max(1, rm.points.length);
     const cz = rm.points.reduce((a, p) => a + p[1], 0) / Math.max(1, rm.points.length);
     const y =
-      syntheticRelief && matName === 'pflaster'
-        ? sampleGroundY(cx, cz, 4.5) + 0.38
+      terrainDrivenElevation && matName === 'pflaster'
+        ? sampleGroundY(cx, cz, 4.5) + (sharedTerrain ? 0.04 / Math.max(1e-4, sharedTerrain.verticalScale) : 0.38)
         : -0.45 + i * dyR;
     const surface: AtlasThreeSurfaceKey | 'water' = atlasThreeFloorSurface(matName, opts.mapScale);
     const b = surface === 'water' ? water : get(surface);
@@ -3303,7 +3664,11 @@ export function buildAtlasThreeScenePlan(
         pt.width,
         -0.14 + i * dyS,
         pt.id,
-        syntheticRelief ? (rx, rz) => sampleGroundY(rx, rz, 4.5) + lift : undefined,
+        terrainDrivenElevation
+          ? (rx, rz) =>
+              sampleGroundY(rx, rz, 4.5) +
+              (sharedTerrain ? (0.05 + i * 0.008) / Math.max(1e-4, sharedTerrain.verticalScale) : lift)
+          : undefined,
       );
     });
   }
@@ -3383,7 +3748,9 @@ export function buildAtlasThreeScenePlan(
     for (const q of plan.primitives) {
       if (q.kind !== 'prop' && q.kind !== 'building_footprint') continue;
       ids.add(q.id);
-      const groundElevation = sampleGroundY(q.x, q.y, -0.35);
+      const groundElevation =
+        sampleGroundY(q.x, q.y, -0.35) +
+        (sharedTerrain ? 0.02 / Math.max(1e-4, sharedTerrain.verticalScale) : 0);
       emitCanonicalProp(get, q, objAngles.get(q.id) ?? 0, torches, aoDiscs, smokePoints, mistPoints, {
         fullDetail,
         hideRoofs: Boolean(opts.hideRoofs),
@@ -3394,7 +3761,7 @@ export function buildAtlasThreeScenePlan(
   }
 
   const terrain =
-    doc.layers.terrain !== false && activeTerrainHf
+    !sharedTerrain && doc.layers.terrain !== false && activeTerrainHf
       ? buildBlendedTerrain(activeTerrainHf, opts.span)
       : null;
 
@@ -3404,7 +3771,7 @@ export function buildAtlasThreeScenePlan(
     seed: opts.seed,
     mapScale: opts.mapScale,
     presetId: opts.presetId,
-    elevationSampler: activeTerrainHf
+    elevationSampler: sharedTerrain || activeTerrainHf
       ? (x, y) => sampleGroundY(x, y, 0)
       : undefined,
   });
@@ -3453,9 +3820,9 @@ export function buildAtlasThreeScenePlan(
     const pts = r.points && r.points.length >= 3
       ? r.points
       : [
-          [r.x, r.y],
-          [r.x + r.w, r.y + r.h],
-        ];
+        [r.x, r.y],
+        [r.x + r.w, r.y + r.h],
+      ];
     for (const [px, pz] of pts) {
       if (px < minCX) minCX = px;
       if (px > maxCX) maxCX = px;
@@ -3472,20 +3839,20 @@ export function buildAtlasThreeScenePlan(
   const hasBounds = Number.isFinite(minCX) && Number.isFinite(maxCX) && maxCX > minCX;
   const contentBounds: AtlasThreeContentBounds = hasBounds
     ? {
-        centerX: (minCX + maxCX) * 0.5,
-        centerZ: (minCZ + maxCZ) * 0.5,
-        fitSpan:
-          opts.mapScale === 'world'
-            ? Math.max(360, Math.min(500, Math.max(maxCX - minCX, maxCZ - minCZ) * 0.54))
-            : opts.mapScale === 'settlement'
-              ? Math.max(175, Math.min(280, Math.max(maxCX - minCX, maxCZ - minCZ) * 0.58))
-              : Math.max(210, Math.min(340, Math.max(maxCX - minCX, maxCZ - minCZ) * 0.74)),
-      }
+      centerX: (minCX + maxCX) * 0.5,
+      centerZ: (minCZ + maxCZ) * 0.5,
+      fitSpan:
+        opts.mapScale === 'world'
+          ? Math.max(360, Math.min(500, Math.max(maxCX - minCX, maxCZ - minCZ) * 0.54))
+          : opts.mapScale === 'settlement'
+            ? Math.max(175, Math.min(280, Math.max(maxCX - minCX, maxCZ - minCZ) * 0.58))
+            : Math.max(210, Math.min(340, Math.max(maxCX - minCX, maxCZ - minCZ) * 0.74)),
+    }
     : {
-        centerX: 500,
-        centerZ: 500,
-        fitSpan: opts.mapScale === 'world' ? 430 : 210,
-      };
+      centerX: 500,
+      centerZ: 500,
+      fitSpan: opts.mapScale === 'world' ? 430 : 210,
+    };
 
   return {
     builders,
@@ -3503,6 +3870,242 @@ export function buildAtlasThreeScenePlan(
     look: opts.look,
     mapScale: opts.mapScale,
   };
+}
+```
+
+### src/infrastructure/world/atlas-three/atlas-three-world-terrain.ts:35
+
+```ts
+export type AtlasThreeWorldTerrainStats = {
+  readonly enabled: boolean;
+  readonly revisionKey: string | null;
+  readonly chunkCount: number;
+  readonly maxActiveLod: number;
+  readonly coarseBaseCount: number;
+  readonly totalTriangles: number;
+  readonly liveGeometryCount: number;
+  readonly incrementalSyncCount: number;
+  readonly chunks: readonly AtlasTerrainChunkDescriptor[];
+};
+```
+
+### src/infrastructure/world/atlas-three/atlas-three-world-terrain.ts:54
+
+```ts
+export function buildTerrainChunkGeometry(
+  source: AtlasWorldHeightfieldSource,
+  descriptor: AtlasTerrainChunkDescriptor,
+): { readonly geometry: THREE.BufferGeometry; readonly triangleCount: number } {
+  const { resolution: res, heights } = sampleWorldChunkHeightGrid(source, descriptor);
+  const stride = res + 1;
+  const { minX, minZ, maxX, maxZ } = descriptor.boundsWorld;
+  const stepX = (maxX - minX) / res;
+  const stepZ = (maxZ - minZ) / res;
+  // Subtle monotonic lift by LOD level so finer chunks always win depth over L0 coarse base
+  // without burying fine settlement architecture (~0.18 wu tall at Dornhain scale).
+  const lodLift = descriptor.lodLevel * TERRAIN_LOD_LIFT_STEP;
+
+  const positions: number[] = [];
+  const uvs: number[] = [];
+  const colors: number[] = [];
+
+  const hAt = (c: number, r: number): number =>
+    heights[Math.max(0, Math.min(res, r)) * stride + Math.max(0, Math.min(res, c))] ?? 0;
+
+  for (let r = 0; r <= res; r += 1) {
+    const wz = minZ + r * stepZ;
+    for (let c = 0; c <= res; c += 1) {
+      const wx = minX + c * stepX;
+      const elev = hAt(c, r);
+      const hL = hAt(c - 1, r);
+      const hR = hAt(c + 1, r);
+      const hU = hAt(c, r - 1);
+      const hD = hAt(c, r + 1);
+      const slope = Math.hypot(hR - hL, hD - hU) / Math.max(0.25, (stepX + stepZ));
+      const col = terrainColorAt(elev, source.waterLevel, slope);
+      positions.push(wx, elev + lodLift, wz);
+      uvs.push(wx / 72, wz / 72);
+      colors.push(col.r, col.g, col.b);
+    }
+  }
+
+  const index: number[] = [];
+  for (let r = 0; r < res; r += 1) {
+    for (let c = 0; c < res; c += 1) {
+      const i00 = r * stride + c;
+      const i10 = r * stride + c + 1;
+      const i01 = (r + 1) * stride + c;
+      const i11 = (r + 1) * stride + c + 1;
+      index.push(i00, i11, i10, i00, i01, i11);
+    }
+  }
+
+  // Append downward skirts along all 4 chunk borders (zero LOD T-junction cracks)
+  const appendSkirtEdge = (edgeIndices: readonly number[]) => {
+    const baseStart = positions.length / 3;
+    for (let k = 0; k < edgeIndices.length; k += 1) {
+      const srcIdx = edgeIndices[k]!;
+      const p3 = srcIdx * 3;
+      const p2 = srcIdx * 2;
+      positions.push(positions[p3]!, positions[p3 + 1]! - SKIRT_DROP, positions[p3 + 2]!);
+      uvs.push(uvs[p2]!, uvs[p2 + 1]!);
+      colors.push(colors[p3]!, colors[p3 + 1]!, colors[p3 + 2]!);
+    }
+    for (let k = 0; k + 1 < edgeIndices.length; k += 1) {
+      const top0 = edgeIndices[k]!;
+      const top1 = edgeIndices[k + 1]!;
+      const bot0 = baseStart + k;
+      const bot1 = baseStart + k + 1;
+      index.push(top0, bot1, top1, top0, bot0, bot1);
+    }
+  };
+
+  if (descriptor.lodLevel > 0) {
+    const north: number[] = [];
+    const south: number[] = [];
+    const west: number[] = [];
+    const east: number[] = [];
+    for (let i = 0; i <= res; i += 1) {
+      north.push(i);
+      south.push(res * stride + (res - i));
+      west.push((res - i) * stride);
+      east.push(i * stride + res);
+    }
+    appendSkirtEdge(north);
+    appendSkirtEdge(south);
+    appendSkirtEdge(west);
+    appendSkirtEdge(east);
+  }
+
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+  geometry.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
+  geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+  geometry.setIndex(index);
+  geometry.computeVertexNormals();
+  geometry.computeBoundingSphere();
+  return { geometry, triangleCount: index.length / 3 };
+}
+```
+
+### src/infrastructure/world/atlas-three/atlas-three-world-terrain.ts:149
+
+```ts
+export class AtlasThreeWorldTerrain {
+  readonly rootGroup = new THREE.Group();
+  private readonly chunks = new Map<string, TerrainChunkNode>();
+  private source: AtlasWorldHeightfieldSource | null = null;
+  private lastPlan: AtlasWorldTerrainChunkPlan | null = null;
+  private incrementalSyncCount = 0;
+
+  constructor(private readonly getTerrainMaterial: () => THREE.Material) {
+    this.rootGroup.name = 'atlas3:shared-world-terrain';
+  }
+
+  setSource(source: AtlasWorldHeightfieldSource | null): void {
+    if (this.source?.revisionKey === source?.revisionKey && Boolean(this.source) === Boolean(source)) {
+      return;
+    }
+    this.source = source;
+    if (!source) {
+      this.dispose();
+    }
+  }
+
+  getSource(): AtlasWorldHeightfieldSource | null {
+    return this.source;
+  }
+
+  sampleElevation(worldX: number, worldZ: number): number {
+    if (!this.source) return 0;
+    return sampleWorldHeight(this.source, worldX, worldZ) + ATLAS_TERRAIN_CHUNK_MAX_LOD * TERRAIN_LOD_LIFT_STEP;
+  }
+
+  sync(input: {
+    readonly camera: AtlasWorldCameraState;
+    readonly viewportPx: { readonly width: number; readonly height: number };
+    readonly config?: Partial<AtlasWorldTerrainChunkPlanConfig>;
+  }): AtlasWorldTerrainChunkPlan | null {
+    if (!this.source) return null;
+    this.incrementalSyncCount += 1;
+    const plan = planWorldTerrainChunks({
+      source: this.source,
+      camera: input.camera,
+      viewportPx: input.viewportPx,
+      config: input.config,
+    });
+    this.lastPlan = plan;
+
+    const wantedIds = new Set(plan.chunks.map((c) => c.chunkId));
+    for (const [id, node] of [...this.chunks.entries()]) {
+      if (!wantedIds.has(id) || node.revisionKey !== this.source.revisionKey) {
+        this.disposeChunkNode(node);
+        this.chunks.delete(id);
+      }
+    }
+
+    const material = this.getTerrainMaterial();
+    for (const desc of plan.chunks) {
+      const existing = this.chunks.get(desc.chunkId);
+      if (existing && existing.descriptor.resolution === desc.resolution) {
+        continue;
+      }
+      if (existing) {
+        this.disposeChunkNode(existing);
+        this.chunks.delete(desc.chunkId);
+      }
+      const { geometry, triangleCount } = buildTerrainChunkGeometry(this.source, desc);
+      const mesh = new THREE.Mesh(geometry, material);
+      mesh.castShadow = desc.lodLevel >= 1;
+      mesh.receiveShadow = true;
+      mesh.name = `atlas3:terrain-chunk:${desc.chunkId}`;
+      mesh.userData.chunkId = desc.chunkId;
+      mesh.userData.lodLevel = desc.lodLevel;
+      mesh.renderOrder = desc.isCoarseBase && desc.lodLevel === 0 ? 0 : 1;
+      this.rootGroup.add(mesh);
+      this.chunks.set(desc.chunkId, {
+        chunkId: desc.chunkId,
+        revisionKey: this.source.revisionKey,
+        descriptor: desc,
+        mesh,
+        geometry,
+        triangleCount,
+      });
+    }
+
+    return plan;
+  }
+
+  getStats(): AtlasThreeWorldTerrainStats {
+    let totalTriangles = 0;
+    for (const node of this.chunks.values()) {
+      totalTriangles += node.triangleCount;
+    }
+    return {
+      enabled: Boolean(this.source),
+      revisionKey: this.source?.revisionKey ?? null,
+      chunkCount: this.chunks.size,
+      maxActiveLod: this.lastPlan?.maxActiveLod ?? 0,
+      coarseBaseCount: this.lastPlan?.coarseBaseCount ?? 0,
+      totalTriangles,
+      liveGeometryCount: this.chunks.size,
+      incrementalSyncCount: this.incrementalSyncCount,
+      chunks: this.lastPlan?.chunks ?? [],
+    };
+  }
+
+  dispose(): void {
+    for (const node of this.chunks.values()) {
+      this.disposeChunkNode(node);
+    }
+    this.chunks.clear();
+    this.lastPlan = null;
+  }
+
+  private disposeChunkNode(node: TerrainChunkNode): void {
+    this.rootGroup.remove(node.mesh);
+    node.geometry.dispose();
+  }
 }
 ```
 
@@ -4405,13 +5008,13 @@ All backend operations are included in the public declarations above.
 | `src/domains/world/atlas/atlas-biome-brush.ts` | `4ccfcc1605b213b904137ab1e62661a249dc5804c4246152a03741e4825ea7e9` |
 | `src/domains/world/atlas/atlas-canonical-features.ts` | `a7e2b9471c960d3839e39f93fe1f6b332f5822620ef589ba4e1a0805dda6c3bd` |
 | `src/domains/world/atlas/atlas-continuous-zoom.ts` | `e91303c0fee7b8365286f5c50a8dc6d2cbaa9213ab2e5e829999829942991ca0` |
-| `src/domains/world/atlas/atlas-default-world.ts` | `12198078d705e5b479cc5d4ae804fe0ef91b5fc5b7f5a6ad9ee21bef6c3da241` |
+| `src/domains/world/atlas/atlas-default-world.ts` | `27f6110a18963e8d5ba9865b0d285df8e7873132dc89dbecdf4ce7dcda915b3e` |
 | `src/domains/world/atlas/atlas-diorama-look.ts` | `a0c2f5ea6af2faabed685d4eff4035dad43b1e82f3d6b2a67e017ddcddf99ea6` |
 | `src/domains/world/atlas/atlas-dungeon-look.ts` | `b28dfd123ebb46472258442834d636b2962ed78a7261d458bc57a5ad1d3f352c` |
 | `src/domains/world/atlas/atlas-edit-history.ts` | `13a91efde301ec766d3b0f183affcd794abba9f4c4872c00549e9f631947e294` |
 | `src/domains/world/atlas/atlas-geometry-ownership.ts` | `fc0edfa99d2215bdc33255fbb842855f98a4a85030388ce5baba066789055a14` |
-| `src/domains/world/atlas/atlas-golden-visual.ts` | `a849fe4e99ed41d8741ad49c236502970405440507884d2e0873e699bfc97ff1` |
-| `src/domains/world/atlas/atlas-heightfield.ts` | `1fafa49c651ac14ba5ae1e9a226b38ffeea636935b7e486daa1cdd41090b71fb` |
+| `src/domains/world/atlas/atlas-golden-visual.ts` | `2e1e5798e9bd75c899927183803d27969c30d06b0e5a902fa078632b337d4724` |
+| `src/domains/world/atlas/atlas-heightfield.ts` | `c1536888d96c1d73adcaf2d8ccc7fd49f54fa5c285a9ed9a209e18e5b3409406` |
 | `src/domains/world/atlas/atlas-hierarchy-lod.ts` | `d8f476a6aab1a6f8c63ee4d465401869e5b4191154b89b238f60fdba6c8b9bff` |
 | `src/domains/world/atlas/atlas-hierarchy-nav.ts` | `d9df6c10f147e7f325dfc735306fe481e4aa1fc601e215a1f79df0f53b190be7` |
 | `src/domains/world/atlas/atlas-label-hierarchy.ts` | `6f8f987d86aa3e9e7ab9aeb0d35d5fe2d1ae215cc55a553bcb8af55ec7ea7fc6` |
@@ -4430,14 +5033,15 @@ All backend operations are included in the public declarations above.
 | `src/domains/world/atlas/atlas-spatial-edit-prefs.ts` | `14e9039e97bf3c7fffa86d1585fa2d5e85ebc943e489ff9d3c83c91746aff218` |
 | `src/domains/world/atlas/atlas-spatial-propagation.ts` | `a602b5887f0a87af236ed44b4ac2960562270e4c6717427209bf4b12bf946c85` |
 | `src/domains/world/atlas/atlas-spatial-world-bridge.ts` | `94317a43351cec410b49bafb0c3f8b15441bb374b649688b7d5facd0d182931f` |
-| `src/domains/world/atlas/atlas-terrain-mesh.ts` | `50dc7ef6c013f87f82f2030317c69a8ad619c7b4db1b65db0a7571a18186dd5d` |
+| `src/domains/world/atlas/atlas-terrain-mesh.ts` | `76aa0ae181cc9817561db31f6b5ccea8cac0a22b73fa46e6292b022b53978ba7` |
 | `src/domains/world/atlas/atlas-tool-registry.ts` | `be0492bd7d71f1dafa260c6a1a75165f8c587bd1f55d3178f96fbd67ac5988af` |
 | `src/domains/world/atlas/atlas-webgl-write-retire.ts` | `baf40e97aaa9c74c873f3919e72b4d9049e8c7781566ed58ce52ccf2f168ce69` |
 | `src/domains/world/atlas/atlas-workstation-adaptive.ts` | `2a87a8f4cf36e532f9bbb0faa0085013f4169fedc26622a1bbef800b46f59846` |
 | `src/domains/world/atlas/atlas-world-camera.ts` | `b0ac5e7eac73a8cdaa0e21e6758f6d6cfa1e448d935a9d763213a6ce9bc9a127` |
 | `src/domains/world/atlas/atlas-world-operation-history.ts` | `c4e86bcd0cd6d52aac70fcda5cce145534e665eafc9a74d66205f349b0b36c03` |
-| `src/domains/world/atlas/atlas-world-scene-plan.ts` | `8cdf68ea77ee571fc0fdcbeb9921686ef6767d2fe06156e648cc0ee983a02abb` |
+| `src/domains/world/atlas/atlas-world-scene-plan.ts` | `fc1665b01c99126362d8873b2745e5c42fc345efde4164a96c48c2c70033372d` |
 | `src/domains/world/atlas/atlas-world-space.ts` | `9023fa99f88df8873ac68934fe0c7389dcafa991f02b27769099e60bbedd91af` |
+| `src/domains/world/atlas/atlas-world-terrain-chunks.ts` | `42307761b5c6ab4228336f127d6bc02829120a4e4841abb4f3a499ce2a76c0b5` |
 | `src/domains/world/atlas/atlas-zoom-layer-state.ts` | `5ca6e612df637008f3b683e128b9c88ca59a0608956a79ce5d3ea3304ef5a6f1` |
 | `src/domains/world/atlas/canvas-polygon.ts` | `a1bf513b449cf21b8e7d449d291c1f7965303072916f0192a214328a90920cea` |
 | `src/domains/world/atlas/dornhain-golden-hierarchy.ts` | `80a9d41a65cef12235c4936b21f1ec7540ec28de054c22d4e5e7afd0a3a254f9` |
@@ -4446,7 +5050,7 @@ All backend operations are included in the public declarations above.
 | `src/domains/world/atlas/dungeon-forge-workflow.ts` | `c9fdba0da576bc5f5516bb6c637d6efc993c9fab630fa2e42b725836f4ef0317` |
 | `src/domains/world/atlas/dungeon-generator.ts` | `6bbed5a42d16ec727e2745b0e1f47dc9d3f1dcc219ee0ccb06f15340307908e1` |
 | `src/domains/world/atlas/dungeon-grid.ts` | `56d9698047b1405a3ba4525146a189e8c8d299d0270fd6d678a0dafa5a0a8854` |
-| `src/domains/world/atlas/index.ts` | `0d4aa5e4eb7213d54b53769a8fba9af06298abe47100d26ed8bb9c8661cffaab` |
+| `src/domains/world/atlas/index.ts` | `5806c8a0e43aa6399767df497f166c8193e5331196bd9c7c531f6af45d13f93e` |
 | `src/domains/world/atlas/map-edit-ops.ts` | `3440965957e4212748d109f74ce202fa7a320840d5c9f1347b0457347c797b95` |
 | `src/domains/world/atlas/map-frame.ts` | `7a5bc6fb6ddcb38efd09fa3adf71889709fa230313a8d241d09cb9f5fa98e7a5` |
 | `src/domains/world/atlas/party-map-projection.ts` | `eeb742f12fa5e35e03a2a2c57f2c92f8ddb9d996562c88d6de96169d61b82fc9` |
@@ -4497,11 +5101,12 @@ All backend operations are included in the public declarations above.
 | `src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-runtime.ts` | `f250027a4c5a9674e377313738dac7f70a8a253464c46033f6a400a229b53c82` |
 | `src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-scene.ts` | `f63e63b2be555ef8348d15141ed44a01e70670667e3d0946221db2720cc32d8c` |
 | `src/infrastructure/world/atlas-three/atlas-three-camera.ts` | `ba02fba1d1dbd675912a5a2472a002cbe99c8673d74838d7aa61995645c62a0c` |
-| `src/infrastructure/world/atlas-three/atlas-three-multimap.ts` | `7551fbe8aefd9967da0bb489daf999ba9b8c457d57b7251360e9aa2ee5ec5398` |
-| `src/infrastructure/world/atlas-three/atlas-three-runtime.ts` | `167934648d9322f4bb76f9f7cc294c58d768e02b072cf472cf8506a4b09fe5f5` |
-| `src/infrastructure/world/atlas-three/atlas-three-scene.ts` | `9cf34c83b4e1f7ceed92d1a275717766d7c71fbd8d8294fd5c38dd5cc0a5e5e2` |
+| `src/infrastructure/world/atlas-three/atlas-three-multimap.ts` | `606e6c7a073a18d3f5ec49cb8fe896c05768fcb3227fc073cc7294fac90a9040` |
+| `src/infrastructure/world/atlas-three/atlas-three-runtime.ts` | `3f2358bbe77244280f9419ce94ccd44d8bc892b3d91420f06247f0cbb7d1b5a4` |
+| `src/infrastructure/world/atlas-three/atlas-three-scene.ts` | `2bca073122af593c3db4b6877233a6b94e92e0337ddc11a244de948dcb2b1eaa` |
+| `src/infrastructure/world/atlas-three/atlas-three-world-terrain.ts` | `3687dbe393870da04c9063acec595d8a0387149b6d97e8f1e4bfc380d7773240` |
 | `src/infrastructure/world/atlas-three/atlas-unified-input.ts` | `8843d39261ec1696a480b8be7c1540c6d752c060e0595788495ffb08d2c39007` |
-| `src/infrastructure/world/atlas-three/index.ts` | `ca92ca031ede8814930d8c6e7b78a36eb5c53ccac1ca050dd6808269168781eb` |
+| `src/infrastructure/world/atlas-three/index.ts` | `de6d00dcd47960994b2010a442e50e75c0f068797e22e7317aa25f71e90f5f88` |
 | `src/infrastructure/world/atlas-three/pbr-textures.ts` | `e5eb4eb6a63888eb95f95368e9e19400c8331b2d880f3b566708aeed2fc060b8` |
 | `src/infrastructure/world/host-world-adapter.ts` | `8fbaad8d6d4ec9cc42070444441fae94fb20af020cdada2125a705877ea4e1f1` |
 | `src/infrastructure/world/host-world-ports.contract.ts` | `9d11c1085646775f6c6eb5bdc29baa7ed40af0245354589bd767d4f80da1d582` |

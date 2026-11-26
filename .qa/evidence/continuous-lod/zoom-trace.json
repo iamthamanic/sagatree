@@ -1,0 +1,666 @@
+{
+  "capturedAt": "2026-11-26T11:12:23.285Z",
+  "intermediateOpacityCount": 27,
+  "intermediateSamples": [
+    {
+      "step": "world-530",
+      "mapId": "dh-map-continent-ostmark__9ea9cb29078b",
+      "opacity": 0.914,
+      "detailWeight": 1
+    },
+    {
+      "step": "world-530",
+      "mapId": "dh-map-continent-westmark__0045889997a9",
+      "opacity": 0.914,
+      "detailWeight": 1
+    },
+    {
+      "step": "westmark-120",
+      "mapId": "dh-map-continent-ostmark__9ea9cb29078b",
+      "opacity": 0.49,
+      "detailWeight": 0
+    },
+    {
+      "step": "westmark-120",
+      "mapId": "dh-map-country-suedmark__b9a2fa8bffba",
+      "opacity": 0.504,
+      "detailWeight": 1
+    },
+    {
+      "step": "westmark-120",
+      "mapId": "dh-map-country-westmark__87818ae53580",
+      "opacity": 0.504,
+      "detailWeight": 1
+    },
+    {
+      "step": "dorn-220",
+      "mapId": "dh-map-continent-ostmark__9ea9cb29078b",
+      "opacity": 0.439,
+      "detailWeight": 1
+    },
+    {
+      "step": "dorn-220",
+      "mapId": "dh-map-country-suedmark__b9a2fa8bffba",
+      "opacity": 0.68,
+      "detailWeight": 0.411
+    },
+    {
+      "step": "dorn-220",
+      "mapId": "dh-map-country-westmark__87818ae53580",
+      "opacity": 0.68,
+      "detailWeight": 0.411
+    },
+    {
+      "step": "dorn-220",
+      "mapId": "dh-map-country-sonnenkueste__17bb71d468f3",
+      "opacity": 0.121,
+      "detailWeight": 0.411
+    },
+    {
+      "step": "dorn-140",
+      "mapId": "dh-map-continent-ostmark__9ea9cb29078b",
+      "opacity": 0.605,
+      "detailWeight": 1
+    },
+    {
+      "step": "dorn-140",
+      "mapId": "dh-map-country-suedmark__b9a2fa8bffba",
+      "opacity": 0.775,
+      "detailWeight": 1
+    },
+    {
+      "step": "dorn-140",
+      "mapId": "dh-map-country-westmark__87818ae53580",
+      "opacity": 0.775,
+      "detailWeight": 1
+    }
+  ],
+  "trace": [
+    {
+      "step": "world-530",
+      "span": 530,
+      "clearRootCount": 0,
+      "ownPerMapTerrainCount": 0,
+      "terrainChunkCount": 17,
+      "terrainMaxLod": 2,
+      "terrainCoarseBaseCount": 1,
+      "activeLabelDe": "Karte · Dornhain",
+      "activeDepth": 1,
+      "breadcrumbLen": 0,
+      "domZoomActiveText": "Karte · DornhainWeltkarte",
+      "groupOpacities": {
+        "dh-atlas-root__90cf64fca319": {
+          "detailWeight": 1,
+          "opacity": 1,
+          "depth": 1,
+          "lodState": "coarse",
+          "exiting": false
+        },
+        "dh-map-continent-ostmark__9ea9cb29078b": {
+          "detailWeight": 1,
+          "opacity": 0.914,
+          "depth": 2,
+          "lodState": "active",
+          "exiting": false
+        },
+        "dh-map-continent-westmark__0045889997a9": {
+          "detailWeight": 1,
+          "opacity": 0.914,
+          "depth": 2,
+          "lodState": "active",
+          "exiting": false
+        }
+      }
+    },
+    {
+      "step": "westmark-300",
+      "span": 300,
+      "clearRootCount": 0,
+      "ownPerMapTerrainCount": 0,
+      "terrainChunkCount": 20,
+      "terrainMaxLod": 3,
+      "terrainCoarseBaseCount": 1,
+      "activeLabelDe": "Kontinent Westmark",
+      "activeDepth": 2,
+      "breadcrumbLen": 1,
+      "domZoomActiveText": "Kontinent WestmarkKontinent",
+      "groupOpacities": {
+        "dh-atlas-root__90cf64fca319": {
+          "detailWeight": 1,
+          "opacity": 1,
+          "depth": 1,
+          "lodState": "coarse",
+          "exiting": false
+        },
+        "dh-map-continent-ostmark__9ea9cb29078b": {
+          "detailWeight": 1,
+          "opacity": 0.987,
+          "depth": 2,
+          "lodState": "active",
+          "exiting": false
+        },
+        "dh-map-continent-westmark__0045889997a9": {
+          "detailWeight": 1,
+          "opacity": 0.987,
+          "depth": 2,
+          "lodState": "active",
+          "exiting": false
+        }
+      }
+    },
+    {
+      "step": "westmark-120",
+      "span": 120,
+      "clearRootCount": 0,
+      "ownPerMapTerrainCount": 0,
+      "terrainChunkCount": 22,
+      "terrainMaxLod": 4,
+      "terrainCoarseBaseCount": 1,
+      "activeLabelDe": "Kontinent Westmark",
+      "activeDepth": 2,
+      "breadcrumbLen": 1,
+      "domZoomActiveText": "Kontinent WestmarkKontinent",
+      "groupOpacities": {
+        "dh-map-continent-ostmark__9ea9cb29078b": {
+          "detailWeight": 0,
+          "opacity": 0.49,
+          "depth": 2,
+          "lodState": "active",
+          "exiting": true
+        },
+        "dh-atlas-root__90cf64fca319": {
+          "detailWeight": 1,
+          "opacity": 1,
+          "depth": 1,
+          "lodState": "coarse",
+          "exiting": false
+        },
+        "dh-map-continent-westmark__0045889997a9": {
+          "detailWeight": 1,
+          "opacity": 0.993,
+          "depth": 2,
+          "lodState": "coarse",
+          "exiting": false
+        },
+        "dh-map-country-suedmark__b9a2fa8bffba": {
+          "detailWeight": 1,
+          "opacity": 0.504,
+          "depth": 3,
+          "lodState": "active",
+          "exiting": false
+        },
+        "dh-map-country-westmark__87818ae53580": {
+          "detailWeight": 1,
+          "opacity": 0.504,
+          "depth": 3,
+          "lodState": "active",
+          "exiting": false
+        }
+      }
+    },
+    {
+      "step": "dorn-220",
+      "span": 220,
+      "clearRootCount": 0,
+      "ownPerMapTerrainCount": 0,
+      "terrainChunkCount": 22,
+      "terrainMaxLod": 3,
+      "terrainCoarseBaseCount": 1,
+      "activeLabelDe": "Nordreich",
+      "activeDepth": 3,
+      "breadcrumbLen": 2,
+      "domZoomActiveText": "NordreichLand",
+      "groupOpacities": {
+        "dh-map-continent-ostmark__9ea9cb29078b": {
+          "detailWeight": 1,
+          "opacity": 0.439,
+          "depth": 2,
+          "lodState": "active",
+          "exiting": false
+        },
+        "dh-map-country-suedmark__b9a2fa8bffba": {
+          "detailWeight": 0.411,
+          "opacity": 0.68,
+          "depth": 3,
+          "lodState": "active",
+          "exiting": false
+        },
+        "dh-map-country-westmark__87818ae53580": {
+          "detailWeight": 0.411,
+          "opacity": 0.68,
+          "depth": 3,
+          "lodState": "active",
+          "exiting": false
+        },
+        "dh-atlas-root__90cf64fca319": {
+          "detailWeight": 1,
+          "opacity": 1,
+          "depth": 1,
+          "lodState": "coarse",
+          "exiting": false
+        },
+        "dh-map-continent-westmark__0045889997a9": {
+          "detailWeight": 1,
+          "opacity": 0.997,
+          "depth": 2,
+          "lodState": "active",
+          "exiting": false
+        },
+        "dh-map-country-sonnenkueste__17bb71d468f3": {
+          "detailWeight": 0.411,
+          "opacity": 0.121,
+          "depth": 3,
+          "lodState": "active",
+          "exiting": false
+        }
+      }
+    },
+    {
+      "step": "dorn-140",
+      "span": 140,
+      "clearRootCount": 0,
+      "ownPerMapTerrainCount": 0,
+      "terrainChunkCount": 20,
+      "terrainMaxLod": 4,
+      "terrainCoarseBaseCount": 1,
+      "activeLabelDe": "Nordreich",
+      "activeDepth": 3,
+      "breadcrumbLen": 2,
+      "domZoomActiveText": "NordreichLand",
+      "groupOpacities": {
+        "dh-map-continent-ostmark__9ea9cb29078b": {
+          "detailWeight": 1,
+          "opacity": 0.605,
+          "depth": 2,
+          "lodState": "active",
+          "exiting": false
+        },
+        "dh-map-country-suedmark__b9a2fa8bffba": {
+          "detailWeight": 1,
+          "opacity": 0.775,
+          "depth": 3,
+          "lodState": "active",
+          "exiting": false
+        },
+        "dh-map-country-westmark__87818ae53580": {
+          "detailWeight": 1,
+          "opacity": 0.775,
+          "depth": 3,
+          "lodState": "active",
+          "exiting": false
+        },
+        "dh-atlas-root__90cf64fca319": {
+          "detailWeight": 1,
+          "opacity": 1,
+          "depth": 1,
+          "lodState": "coarse",
+          "exiting": false
+        },
+        "dh-map-country-sonnenkueste__17bb71d468f3": {
+          "detailWeight": 0,
+          "opacity": 0.085,
+          "depth": 3,
+          "lodState": "active",
+          "exiting": true
+        },
+        "dh-map-continent-westmark__0045889997a9": {
+          "detailWeight": 1,
+          "opacity": 0.998,
+          "depth": 2,
+          "lodState": "coarse",
+          "exiting": false
+        }
+      }
+    },
+    {
+      "step": "dorn-80",
+      "span": 80,
+      "clearRootCount": 0,
+      "ownPerMapTerrainCount": 0,
+      "terrainChunkCount": 21,
+      "terrainMaxLod": 5,
+      "terrainCoarseBaseCount": 3,
+      "activeLabelDe": "Nordreich",
+      "activeDepth": 3,
+      "breadcrumbLen": 2,
+      "domZoomActiveText": "NordreichLand",
+      "groupOpacities": {
+        "dh-map-continent-ostmark__9ea9cb29078b": {
+          "detailWeight": 0,
+          "opacity": 0.427,
+          "depth": 2,
+          "lodState": "active",
+          "exiting": true
+        },
+        "dh-map-country-suedmark__b9a2fa8bffba": {
+          "detailWeight": 1,
+          "opacity": 0.841,
+          "depth": 3,
+          "lodState": "active",
+          "exiting": false
+        },
+        "dh-map-country-westmark__87818ae53580": {
+          "detailWeight": 1,
+          "opacity": 0.841,
+          "depth": 3,
+          "lodState": "active",
+          "exiting": false
+        },
+        "dh-map-country-sonnenkueste__17bb71d468f3": {
+          "detailWeight": 0,
+          "opacity": 0.06,
+          "depth": 3,
+          "lodState": "active",
+          "exiting": true
+        },
+        "dh-map-continent-westmark__0045889997a9": {
+          "detailWeight": 1,
+          "opacity": 0.998,
+          "depth": 2,
+          "lodState": "coarse",
+          "exiting": false
+        },
+        "dh-atlas-root__90cf64fca319": {
+          "detailWeight": 1,
+          "opacity": 1,
+          "depth": 1,
+          "lodState": "coarse",
+          "exiting": false
+        }
+      }
+    },
+    {
+      "step": "nordreich-25",
+      "span": 25,
+      "clearRootCount": 0,
+      "ownPerMapTerrainCount": 0,
+      "terrainChunkCount": 22,
+      "terrainMaxLod": 6,
+      "terrainCoarseBaseCount": 4,
+      "activeLabelDe": "Nordreich",
+      "activeDepth": 3,
+      "breadcrumbLen": 2,
+      "domZoomActiveText": "NordreichLand",
+      "groupOpacities": {
+        "dh-map-continent-ostmark__9ea9cb29078b": {
+          "detailWeight": 0,
+          "opacity": 0.105,
+          "depth": 2,
+          "lodState": "active",
+          "exiting": true
+        },
+        "dh-map-country-suedmark__b9a2fa8bffba": {
+          "detailWeight": 0,
+          "opacity": 0.208,
+          "depth": 3,
+          "lodState": "active",
+          "exiting": true
+        },
+        "dh-map-country-westmark__87818ae53580": {
+          "detailWeight": 1,
+          "opacity": 0.961,
+          "depth": 3,
+          "lodState": "active",
+          "exiting": false
+        },
+        "dh-atlas-root__90cf64fca319": {
+          "detailWeight": 1,
+          "opacity": 1,
+          "depth": 1,
+          "lodState": "coarse",
+          "exiting": false
+        },
+        "dh-map-continent-westmark__0045889997a9": {
+          "detailWeight": 1,
+          "opacity": 1,
+          "depth": 2,
+          "lodState": "coarse",
+          "exiting": false
+        }
+      }
+    },
+    {
+      "step": "dorn-12",
+      "span": 12,
+      "clearRootCount": 0,
+      "ownPerMapTerrainCount": 0,
+      "terrainChunkCount": 19,
+      "terrainMaxLod": 6,
+      "terrainCoarseBaseCount": 4,
+      "activeLabelDe": "Nordreich",
+      "activeDepth": 3,
+      "breadcrumbLen": 2,
+      "domZoomActiveText": "NordreichLand",
+      "groupOpacities": {
+        "dh-map-continent-ostmark__9ea9cb29078b": {
+          "detailWeight": 0,
+          "opacity": 0.026,
+          "depth": 2,
+          "lodState": "active",
+          "exiting": true
+        },
+        "dh-map-country-suedmark__b9a2fa8bffba": {
+          "detailWeight": 0,
+          "opacity": 0.051,
+          "depth": 3,
+          "lodState": "active",
+          "exiting": true
+        },
+        "dh-map-country-westmark__87818ae53580": {
+          "detailWeight": 1,
+          "opacity": 0.99,
+          "depth": 3,
+          "lodState": "active",
+          "exiting": false
+        },
+        "dh-atlas-root__90cf64fca319": {
+          "detailWeight": 1,
+          "opacity": 1,
+          "depth": 1,
+          "lodState": "coarse",
+          "exiting": false
+        },
+        "dh-map-continent-westmark__0045889997a9": {
+          "detailWeight": 1,
+          "opacity": 1,
+          "depth": 2,
+          "lodState": "coarse",
+          "exiting": false
+        }
+      }
+    },
+    {
+      "step": "dorn-8",
+      "span": 8,
+      "clearRootCount": 0,
+      "ownPerMapTerrainCount": 0,
+      "terrainChunkCount": 10,
+      "terrainMaxLod": 6,
+      "terrainCoarseBaseCount": 4,
+      "activeLabelDe": "Dornhain",
+      "activeDepth": 4,
+      "breadcrumbLen": 3,
+      "domZoomActiveText": "DornhainOrt",
+      "groupOpacities": {
+        "dh-map-continent-ostmark__9ea9cb29078b": {
+          "detailWeight": 0,
+          "opacity": 0.015,
+          "depth": 2,
+          "lodState": "active",
+          "exiting": true
+        },
+        "dh-map-country-suedmark__b9a2fa8bffba": {
+          "detailWeight": 0,
+          "opacity": 0.03,
+          "depth": 3,
+          "lodState": "active",
+          "exiting": true
+        },
+        "dh-atlas-root__90cf64fca319": {
+          "detailWeight": 1,
+          "opacity": 1,
+          "depth": 1,
+          "lodState": "coarse",
+          "exiting": false
+        },
+        "dh-map-continent-westmark__0045889997a9": {
+          "detailWeight": 1,
+          "opacity": 1,
+          "depth": 2,
+          "lodState": "coarse",
+          "exiting": false
+        },
+        "dh-map-country-westmark__87818ae53580": {
+          "detailWeight": 1,
+          "opacity": 0.993,
+          "depth": 3,
+          "lodState": "active",
+          "exiting": false
+        },
+        "dh-map-place-dornhain__b5e7d25995e3": {
+          "detailWeight": 0.528,
+          "opacity": 0.216,
+          "depth": 4,
+          "lodState": "active",
+          "exiting": false
+        }
+      }
+    },
+    {
+      "step": "dorn-5",
+      "span": 5,
+      "clearRootCount": 0,
+      "ownPerMapTerrainCount": 0,
+      "terrainChunkCount": 10,
+      "terrainMaxLod": 6,
+      "terrainCoarseBaseCount": 4,
+      "activeLabelDe": "Dornhain",
+      "activeDepth": 4,
+      "breadcrumbLen": 3,
+      "domZoomActiveText": "DornhainOrt",
+      "groupOpacities": {
+        "dh-map-country-suedmark__b9a2fa8bffba": {
+          "detailWeight": 0,
+          "opacity": 0.025,
+          "depth": 3,
+          "lodState": "active",
+          "exiting": true
+        },
+        "dh-atlas-root__90cf64fca319": {
+          "detailWeight": 1,
+          "opacity": 1,
+          "depth": 1,
+          "lodState": "coarse",
+          "exiting": false
+        },
+        "dh-map-continent-westmark__0045889997a9": {
+          "detailWeight": 1,
+          "opacity": 1,
+          "depth": 2,
+          "lodState": "coarse",
+          "exiting": false
+        },
+        "dh-map-place-dornhain__b5e7d25995e3": {
+          "detailWeight": 1,
+          "opacity": 0.342,
+          "depth": 4,
+          "lodState": "active",
+          "exiting": false
+        },
+        "dh-map-country-westmark__87818ae53580": {
+          "detailWeight": 1,
+          "opacity": 0.993,
+          "depth": 3,
+          "lodState": "coarse",
+          "exiting": false
+        }
+      }
+    },
+    {
+      "step": "dornhain-2.5",
+      "span": 2.5,
+      "clearRootCount": 0,
+      "ownPerMapTerrainCount": 0,
+      "terrainChunkCount": 6,
+      "terrainMaxLod": 6,
+      "terrainCoarseBaseCount": 4,
+      "activeLabelDe": "Dornhain",
+      "activeDepth": 4,
+      "breadcrumbLen": 3,
+      "domZoomActiveText": "DornhainOrt",
+      "groupOpacities": {
+        "dh-atlas-root__90cf64fca319": {
+          "detailWeight": 1,
+          "opacity": 1,
+          "depth": 1,
+          "lodState": "coarse",
+          "exiting": false
+        },
+        "dh-map-continent-westmark__0045889997a9": {
+          "detailWeight": 1,
+          "opacity": 1,
+          "depth": 2,
+          "lodState": "coarse",
+          "exiting": false
+        },
+        "dh-map-place-dornhain__b5e7d25995e3": {
+          "detailWeight": 1,
+          "opacity": 0.919,
+          "depth": 4,
+          "lodState": "active",
+          "exiting": false
+        },
+        "dh-map-country-westmark__87818ae53580": {
+          "detailWeight": 1,
+          "opacity": 0.999,
+          "depth": 3,
+          "lodState": "coarse",
+          "exiting": false
+        }
+      }
+    },
+    {
+      "step": "zoom-out-nordreich-25",
+      "span": 25,
+      "clearRootCount": 0,
+      "ownPerMapTerrainCount": 0,
+      "terrainChunkCount": 22,
+      "terrainMaxLod": 6,
+      "terrainCoarseBaseCount": 4,
+      "activeLabelDe": "Nordreich",
+      "activeDepth": 3,
+      "breadcrumbLen": 2,
+      "domZoomActiveText": "NordreichLand",
+      "groupOpacities": {
+        "dh-map-place-dornhain__b5e7d25995e3": {
+          "detailWeight": 0,
+          "opacity": 0.238,
+          "depth": 4,
+          "lodState": "active",
+          "exiting": true
+        },
+        "dh-atlas-root__90cf64fca319": {
+          "detailWeight": 1,
+          "opacity": 1,
+          "depth": 1,
+          "lodState": "coarse",
+          "exiting": false
+        },
+        "dh-map-continent-westmark__0045889997a9": {
+          "detailWeight": 1,
+          "opacity": 1,
+          "depth": 2,
+          "lodState": "coarse",
+          "exiting": false
+        },
+        "dh-map-country-westmark__87818ae53580": {
+          "detailWeight": 1,
+          "opacity": 1,
+          "depth": 3,
+          "lodState": "active",
+          "exiting": false
+        }
+      }
+    }
+  ]
+}

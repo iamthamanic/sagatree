@@ -4536,6 +4536,7 @@ function checkSwsSharedWorldSpace() {
     'scripts/scm-invariants.self-test.mjs',
     'scripts/scm-propagation.self-test.mjs',
     'scripts/scm-cascade-prefs.self-test.mjs',
+    'scripts/atlas-world-terrain-chunks.self-test.mjs',
   ]) {
     execFileSync(process.execPath, [script], { cwd: root, stdio: 'inherit' });
   }
