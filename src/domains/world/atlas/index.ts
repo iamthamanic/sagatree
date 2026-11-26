@@ -739,6 +739,54 @@ export {
 } from './atlas-continuous-zoom';
 
 export {
+  ATLAS_WORLD_CAMERA_MAX_SPAN,
+  ATLAS_WORLD_CAMERA_MIN_SPAN,
+  clampWorldCameraPitch,
+  createAtlasWorldCameraState,
+  defaultWorldCameraPitch,
+  focusWorldCameraOnMapLocal,
+  panWorldCamera,
+  projectWorldCameraTo2dViewport,
+  switchWorldCameraProjection,
+  worldCameraFocusInMapLocal,
+  zoomWorldCameraToward,
+  type AtlasWorldCameraProjection,
+  type AtlasWorldCameraState,
+} from './atlas-world-camera';
+
+export {
+  DEFAULT_ATLAS_WORLD_SCENE_PLAN_CONFIG,
+  buildAtlasWorldScenePlan,
+  computeMapWorldTransform,
+  type AtlasLocalCutoutRect,
+  type AtlasSceneMapLodState,
+  type AtlasWorldAabb,
+  type AtlasWorldSceneExclusion,
+  type AtlasWorldSceneExclusionReason,
+  type AtlasWorldSceneGroupPlan,
+  type AtlasWorldSceneMapInput,
+  type AtlasWorldScenePlan,
+  type AtlasWorldScenePlanConfig,
+  type AtlasWorldTransform2D,
+} from './atlas-world-scene-plan';
+
+export {
+  ATLAS_DEFAULT_WORLD_ROOT_METERS_PER_UNIT,
+  ATLAS_DEFAULT_WORLD_ROOT_SEED,
+  DEFAULT_DORNHAIN_HILLS,
+  DEFAULT_KRYPTA_FORGE_PARAMS,
+  buildCalibratedDefaultWorld,
+  buildDefaultDornhainCanvas,
+  buildDefaultDornhainHeightfield,
+  buildDefaultTaproomCanvas,
+  buildDefaultTavernCanvas,
+  verifyDefaultWorldIntegrity,
+  type CalibratedDefaultWorldBundle,
+  type DefaultWorldMapSpec,
+  type DefaultWorldPlaceSpec,
+} from './atlas-default-world';
+
+export {
   ATLAS_GEOMETRY_STRUCTURE_DIRECTION,
   GEOMETRY_OWNERSHIP_CONFLICT_DE,
   GEOMETRY_OWNERSHIP_DIRECTION_MISMATCH_DE,

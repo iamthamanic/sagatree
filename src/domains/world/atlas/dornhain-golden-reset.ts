@@ -6,11 +6,11 @@
  */
 
 import type { WorldPlaceKind } from '../places/world-place.types';
+import { buildCalibratedDefaultWorld } from './atlas-default-world';
 import { DORNHAIN_GOLDEN_MAPS, DORNHAIN_WORLD_MAP_SEED } from './dornhain-golden-hierarchy';
 import {
   DORNHAIN_UNIFIED_LEGACY_SEEDS,
   DORNHAIN_UNIFIED_SEED,
-  DORNHAIN_WORLD_ANCHOR,
 } from './dornhain-unified-starter';
 
 /** Reset dialog modes (grill 5B / 6C / 5c). */
@@ -27,72 +27,9 @@ export type DornhainGoldenPlaceSpec = {
   readonly anchor: { readonly x: number; readonly y: number } | null;
 };
 
-/** Places restored on `atlas_places` / `everything`. Marked via seed_key. */
-export const DORNHAIN_GOLDEN_PLACES: readonly DornhainGoldenPlaceSpec[] = [
-  {
-    seedKey: 'continent.westmark',
-    name: 'Kontinent Westmark',
-    kind: 'continent',
-    description: 'Westlicher Kontinent Donalu (Golden-Platzhaltername).',
-    sortOrder: 0,
-    parentSeedKey: null,
-    anchor: { x: 260, y: 420 },
-  },
-  {
-    seedKey: 'country.westmark',
-    name: 'Nordreich',
-    kind: 'country',
-    description: 'Land Nordreich auf dem Kontinent Westmark (Golden-Name, Owner-Freeze 2026-11-15 / ATL2-H03 #1236).',
-    sortOrder: 5,
-    parentSeedKey: 'continent.westmark',
-    anchor: { x: 430, y: 400 },
-  },
-  {
-    seedKey: 'place.dornhain',
-    name: 'Dornhain',
-    kind: 'settlement',
-    description: 'Stadt in Donalu — Starterschauplatz.',
-    sortOrder: 10,
-    parentSeedKey: 'country.westmark',
-    anchor: DORNHAIN_WORLD_ANCHOR,
-  },
-  {
-    seedKey: 'dornhain.marktplatz',
-    name: 'Marktplatz',
-    kind: 'settlement',
-    description: 'Dornhain Marktplatz — Startpunkt der Whisper-Road.',
-    sortOrder: 15,
-    parentSeedKey: 'place.dornhain',
-    anchor: { x: 378, y: 488 },
-  },
-  {
-    seedKey: 'dornhain.whisper-road',
-    name: 'Whisper Road',
-    kind: 'region',
-    description: 'Die Whisper Road führt hinaus aus Dornhain.',
-    sortOrder: 20,
-    parentSeedKey: 'place.dornhain',
-    anchor: { x: 420, y: 480 },
-  },
-  {
-    seedKey: 'loc.tavern',
-    name: 'Taverne Zum Flüstern',
-    kind: 'building',
-    description: 'Treffpunkt der Helden.',
-    sortOrder: 30,
-    parentSeedKey: 'place.dornhain',
-    anchor: { x: 328, y: 528 },
-  },
-  {
-    seedKey: 'loc.crypt',
-    name: 'Krypta unter dem Hügel',
-    kind: 'building',
-    description: 'GM-Geheimnis — Reliktort unter Dornhain.',
-    sortOrder: 40,
-    parentSeedKey: 'place.dornhain',
-    anchor: { x: 406, y: 462 },
-  },
-];
+/** Places restored on `atlas_places` / `everything`. Driven by the calibrated Bottom-Up default world. */
+export const DORNHAIN_GOLDEN_PLACES: readonly DornhainGoldenPlaceSpec[] =
+  buildCalibratedDefaultWorld().places;
 
 export function isDornhainGoldenSeedKey(seedKey: string | null | undefined): boolean {
   if (!seedKey) return false;

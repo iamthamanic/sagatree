@@ -47,8 +47,8 @@ mustInclude('src/domains/world/atlas/webgl-runtime-bridge.ts', [
   'raw.points',
   'points: r.points',
 ]);
-mustInclude('src/domains/world/atlas/dornhain-unified-starter.ts', [
-  'landPoly',
+mustInclude('src/domains/world/atlas/atlas-default-world.ts', [
+  'mustPoly',
   'w.west-core',
 ]);
 mustInclude('src/app/world/atlas/unified/UnifiedAtlasEditor.tsx', [
@@ -70,8 +70,8 @@ mustInclude(
     'productPolyTriangulate',
   ],
 );
-mustInclude('server/src/bootstrap/ensure-dornhain-default.ts', [
-  'points:',
+mustInclude('server/src/bootstrap/dornhain-default-world-mirror.ts', [
+  '"points"',
   'w.west-core',
 ]);
 

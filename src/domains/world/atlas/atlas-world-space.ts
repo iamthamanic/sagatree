@@ -50,7 +50,7 @@ export type AtlasWorldResult<T> =
   | { readonly ok: true; readonly value: T; readonly depth: number }
   | AtlasWorldErrorResult;
 
-function isWorldErr<T>(res: AtlasWorldResult<T>): res is AtlasWorldErrorResult {
+export function isAtlasWorldError<T>(res: AtlasWorldResult<T>): res is AtlasWorldErrorResult {
   return res.ok === false;
 }
 
@@ -122,7 +122,7 @@ export function localToWorld(
 ): AtlasWorldResult<AtlasPoint2> {
   if (!finitePoint(point)) return { ok: false, error: 'invalid', atMapId: mapId };
   const chainRes = resolveWorldChain(nodes, mapId);
-  if (isWorldErr(chainRes)) return chainRes;
+  if (isAtlasWorldError(chainRes)) return chainRes;
 
   let p: AtlasPoint2 = point;
   for (const node of chainRes.value) {
@@ -145,7 +145,7 @@ export function worldToLocal(
 ): AtlasWorldResult<AtlasPoint2> {
   if (!finitePoint(point)) return { ok: false, error: 'invalid', atMapId: mapId };
   const chainRes = resolveWorldChain(nodes, mapId);
-  if (isWorldErr(chainRes)) return chainRes;
+  if (isAtlasWorldError(chainRes)) return chainRes;
 
   let p: AtlasPoint2 = point;
   // Wurzel → map (umgekehrte Reihenfolge), Wurzel selbst hat keinen Anchor.
@@ -171,7 +171,7 @@ export function describeWorldChain(
   mapId: string,
 ): AtlasWorldResult<AtlasWorldTransformChain> {
   const chainRes = resolveWorldChain(nodes, mapId);
-  if (isWorldErr(chainRes)) return chainRes;
+  if (isAtlasWorldError(chainRes)) return chainRes;
   return {
     ok: true,
     depth: chainRes.depth,
