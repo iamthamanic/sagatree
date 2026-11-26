@@ -739,6 +739,29 @@ export {
 } from './atlas-continuous-zoom';
 
 export {
+  ATLAS_GEOMETRY_STRUCTURE_DIRECTION,
+  GEOMETRY_OWNERSHIP_CONFLICT_DE,
+  GEOMETRY_OWNERSHIP_DIRECTION_MISMATCH_DE,
+  GEOMETRY_OWNERSHIP_UNLOCATED_DE,
+  computeGeometryDerivedFingerprint,
+  deriveCalibratedChildMetersPerUnit,
+  deriveCoarseObjectFromChild,
+  deriveCoarseRoomFromChild,
+  deriveCoarseStrokeFromChild,
+  findGeometryOwnershipConflicts,
+  geometryOwnershipFingerprint,
+  inferStructureFromMaterial,
+  projectChildPointsToParent,
+  simplifyPolylineRdp,
+  type AtlasDerivedGeometryRef,
+  type AtlasGeometryConflict,
+  type AtlasGeometryConflictKind,
+  type AtlasGeometryDirection,
+  type AtlasGeometryOwner,
+  type AtlasGeometryStructureKind,
+} from './atlas-geometry-ownership';
+
+export {
   classifyAtlasPinTier,
   classifyAtlasPortalKind,
   computeAtlasPinZoomPresentation,

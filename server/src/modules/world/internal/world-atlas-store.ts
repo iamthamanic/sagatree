@@ -406,6 +406,12 @@ export class WorldAtlasStore {
         ? input.generatorMeta
         : {};
 
+    // SWS-01 write-side shear guard: rotated anchors must have uniform extents (ADR-SWS-01 §3.3).
+    const anchorCheck = this.#validateGeneratorMetaAnchor(meta);
+    if (!anchorCheck.ok) {
+      return { ok: false, error: '23514' };
+    }
+
     let parentMapId =
       typeof input.parentMapId === 'string' && input.parentMapId.trim().length > 0
         ? input.parentMapId.trim()
@@ -483,6 +489,15 @@ export class WorldAtlasStore {
         this.#db.exec('ROLLBACK');
         return { ok: false, error: '23514' };
       } else if (parentMapId && this.#mapWouldCycle(mapId, parentMapId)) {
+        this.#db.exec('ROLLBACK');
+        return { ok: false, error: '23514' };
+      }
+      // SWS-01 write-side cycle guard on parentAnchor.parentMapId as well.
+      if (
+        anchorCheck.anchorParentMapId &&
+        (anchorCheck.anchorParentMapId === mapId ||
+          this.#mapWouldCycle(mapId, anchorCheck.anchorParentMapId))
+      ) {
         this.#db.exec('ROLLBACK');
         return { ok: false, error: '23514' };
       }
@@ -614,6 +629,41 @@ export class WorldAtlasStore {
       }
       return { ok: false, error: 'P0001' };
     }
+  }
+
+  /**
+   * SWS-01 write-side shear + anchor validation (ADR-SWS-01 §3.3).
+   * Mirrors domain `anchorHasShear` without importing FE code (architecture boundary).
+   */
+  #validateGeneratorMetaAnchor(
+    meta: Record<string, unknown>,
+  ): { readonly ok: true; readonly anchorParentMapId: string | null } | { readonly ok: false } {
+    const frame =
+      meta.mapFrame && typeof meta.mapFrame === 'object' && !Array.isArray(meta.mapFrame)
+        ? (meta.mapFrame as Record<string, unknown>)
+        : null;
+    const rawAnchor = frame?.parentAnchor ?? meta.parentAnchor;
+    if (rawAnchor == null) return { ok: true, anchorParentMapId: null };
+    if (typeof rawAnchor !== 'object' || Array.isArray(rawAnchor)) return { ok: false };
+    const a = rawAnchor as Record<string, unknown>;
+    const extentX = Number(a.extentX);
+    const extentY = Number(a.extentY);
+    const rotationRad = a.rotationRad == null ? 0 : Number(a.rotationRad);
+    if (!Number.isFinite(extentX) || !Number.isFinite(extentY) || !Number.isFinite(rotationRad)) {
+      return { ok: false };
+    }
+    if (extentX <= 0 || extentY <= 0) return { ok: false };
+    const EPS = 1e-9;
+    if (Math.abs(rotationRad) > EPS) {
+      const rel =
+        Math.abs(extentX - extentY) / Math.max(Math.abs(extentX), Math.abs(extentY), Number.EPSILON);
+      if (rel > EPS) return { ok: false };
+    }
+    const anchorParentMapId =
+      typeof a.parentMapId === 'string' && a.parentMapId.trim().length > 0
+        ? a.parentMapId.trim()
+        : null;
+    return { ok: true, anchorParentMapId };
   }
 
   /** True if setting mapId.parent = candidateParent would create a cycle. */
