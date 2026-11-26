@@ -245,8 +245,10 @@ export function buildAtlasWorldScenePlan(input: {
     readonly transform: AtlasWorldTransform2D;
     readonly aabb: AtlasWorldAabb;
     readonly containsFocus: boolean;
+    readonly meetsSse: boolean;
   };
 
+  const allValidById = new Map<string, Candidate>();
   const candidates: Candidate[] = [];
   const excluded: AtlasWorldSceneExclusion[] = [];
   let rootMapId: string | null = null;
@@ -273,37 +275,99 @@ export function buildAtlasWorldScenePlan(input: {
     };
     if (okWt.depth === 1 && !rootMapId) rootMapId = m.id;
 
-    if (okWt.depth > 1 && !aabbIntersects(okWt.aabb, viewAabb)) {
-      excluded.push({ mapId: m.id, reason: 'culled' });
-      continue;
-    }
-
     // Screen-Space Error (projected pixel span of map frame)
     const ssePx = (okWt.transform.worldSpan / Math.max(1e-6, input.camera.span * 2)) * vpH;
     const wasActive = prevActiveIds.has(m.id);
     const threshold = wasActive ? safeCoarsen : safeRefine;
+    const containsFocus = pointInAabb(input.camera.focusWorld.x, input.camera.focusWorld.y, okWt.aabb);
+    const inView = okWt.depth === 1 || aabbIntersects(okWt.aabb, viewAabb);
+    const meetsSse = okWt.depth === 1 || ssePx >= threshold;
 
-    if (okWt.depth > 1 && ssePx < threshold) {
-      excluded.push({ mapId: m.id, reason: 'below-sse' });
-      continue;
-    }
-
-    candidates.push({
+    const cand: Candidate = {
       map: m,
       depth: okWt.depth,
       parentMapId: m.parentAnchor?.parentMapId ?? null,
       ssePx,
       transform: okWt.transform,
       aabb: okWt.aabb,
-      containsFocus: pointInAabb(input.camera.focusWorld.x, input.camera.focusWorld.y, okWt.aabb),
-    });
+      containsFocus,
+      meetsSse,
+    };
+    allValidById.set(m.id, cand);
+
+    if (!inView) {
+      excluded.push({ mapId: m.id, reason: 'culled' });
+      continue;
+    }
+
+    if (!meetsSse) {
+      // Deferred check: may still be retained below as a keep-coarse carrier of an active descendant!
+      continue;
+    }
+
+    candidates.push(cand);
   }
 
-  // Enforce multi-map budget (always keep root + prioritize focus-containing & deepest visible maps)
+  // Phase 2.2 (keep-coarse): ensure every ancestor carrier of an active candidate is retained
+  // (never discard a continent/country carrier beneath an active child due to `below-sse`!).
+  const candidateIds = new Set(candidates.map((c) => c.map.id));
+  const carrierOfActiveIds = new Set<string>();
+  for (const c of [...candidates]) {
+    let pid = c.parentMapId;
+    const visited = new Set<string>([c.map.id]);
+    while (pid && !visited.has(pid)) {
+      visited.add(pid);
+      carrierOfActiveIds.add(pid);
+      const anc = allValidById.get(pid);
+      if (!anc) break;
+      if (!candidateIds.has(anc.map.id)) {
+        candidates.push(anc);
+        candidateIds.add(anc.map.id);
+      }
+      pid = anc.parentMapId;
+    }
+  }
+
+  // Record honest `below-sse` exclusions for in-view maps that were neither refined nor carriers
+  for (const cand of allValidById.values()) {
+    if (candidateIds.has(cand.map.id)) continue;
+    if (cand.depth > 1 && aabbIntersects(cand.aabb, viewAabb)) {
+      excluded.push({ mapId: cand.map.id, reason: 'below-sse' });
+    }
+  }
+
+  // Compute the focus ancestor chain (World → … → deepest focus-containing candidate)
+  // so carrier maps along the camera focus path ALWAYS survive `maxActiveMaps` budget!
+  const focusChainIds = new Set<string>();
+  const deepestFocus = [...candidates]
+    .filter((c) => c.containsFocus)
+    .sort((a, b) => (b.depth !== a.depth ? b.depth - a.depth : a.transform.worldSpan - b.transform.worldSpan))[0];
+  if (deepestFocus) {
+    let cur: Candidate | undefined = deepestFocus;
+    const visited = new Set<string>();
+    while (cur && !visited.has(cur.map.id)) {
+      visited.add(cur.map.id);
+      focusChainIds.add(cur.map.id);
+      cur = cur.parentMapId ? allValidById.get(cur.parentMapId) : undefined;
+    }
+  }
+
+  // Enforce multi-map budget:
+  //  1. World Root (depth 1) always kept
+  //  2. Entire focus carrier chain (World → … → active focused map) always prioritized
+  //  3. Keep-coarse carriers of visible descendants prioritized ahead of non-focus leaf details
+  //  4. Remaining visible maps by depth DESC, ssePx DESC
   const sortedForBudget = [...candidates].sort((a, b) => {
     if (a.depth === 1 && b.depth !== 1) return -1;
     if (b.depth === 1 && a.depth !== 1) return 1;
-    if (a.containsFocus !== b.containsFocus) return a.containsFocus ? -1 : 1;
+    const aFocus = focusChainIds.has(a.map.id);
+    const bFocus = focusChainIds.has(b.map.id);
+    if (aFocus !== bFocus) return aFocus ? -1 : 1;
+    if (aFocus && bFocus && a.depth !== b.depth) return b.depth - a.depth;
+    const aCarrier = carrierOfActiveIds.has(a.map.id);
+    const bCarrier = carrierOfActiveIds.has(b.map.id);
+    if (aCarrier !== bCarrier) return aCarrier ? -1 : 1;
+    if (aCarrier && bCarrier && a.depth !== b.depth) return a.depth - b.depth;
     if (b.depth !== a.depth) return b.depth - a.depth;
     if (b.ssePx !== a.ssePx) return b.ssePx - a.ssePx;
     return a.map.id.localeCompare(b.map.id);

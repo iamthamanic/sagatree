@@ -218,6 +218,7 @@ uniform vec3 uSunDir;
 uniform vec3 uFogColor;
 uniform vec2 uFocus;
 uniform float uSpan;
+uniform float uOpacity;
 varying vec3 vWorld;
 
 float wave(vec2 p) {
@@ -250,7 +251,7 @@ void main() {
   float horizDist = length(vWorld.xz - uFocus);
   float fogF = smoothstep(uSpan * 2.4, uSpan * 7.2, horizDist);
   col = mix(col, uFogColor, clamp(fogF * 0.86, 0.0, 1.0));
-  gl_FragColor = vec4(col, 1.0);
+  gl_FragColor = vec4(col, clamp(uOpacity, 0.0, 1.0));
   #include <tonemapping_fragment>
   #include <colorspace_fragment>
 }`;
@@ -322,6 +323,7 @@ uniform float uStep;
 uniform vec3 uColor;
 uniform vec2 uFocus;
 uniform float uSpan;
+uniform float uOpacity;
 varying vec3 vWorld;
 void main() {
   vec2 coord = vWorld.xz / uStep;
@@ -681,6 +683,7 @@ export class AtlasThreeRuntime {
         uFogColor: { value: new THREE.Color('#9ec2c6') },
         uFocus: { value: new THREE.Vector2(500, 500) },
         uSpan: { value: 430 },
+        uOpacity: { value: 1.0 },
       },
     });
     const oceanGeo = new THREE.PlaneGeometry(28000, 28000, 1, 1);
@@ -902,6 +905,7 @@ export class AtlasThreeRuntime {
       }
       mat.needsUpdate = true;
     }
+    this.multiMap.applyStyleMode(this.styleMode);
   }
 
   /**
@@ -916,15 +920,16 @@ export class AtlasThreeRuntime {
     this.worldMaps = input.maps;
     this.worldSources = new Map(input.sources.map((s) => [s.mapId, s] as const));
     this.worldScenePlan = null;
+    this.lastReportedEditorMapId = undefined;
   }
 
   getWorldCameraState(): AtlasWorldCameraState {
     return createAtlasWorldCameraState({
-      focusWorld: { x: this.targetView.x, y: this.targetView.z, z: 0 },
-      span: this.targetView.span,
-      yawRad: this.targetView.yawRad,
-      pitchRad: this.targetView.pitchRad,
-      projection: this.targetView.mode,
+      focusWorld: { x: this.view.x, y: this.view.z, z: 0 },
+      span: this.view.span,
+      yawRad: this.view.yawRad,
+      pitchRad: this.view.pitchRad,
+      projection: this.view.mode,
     });
   }
 
@@ -1198,7 +1203,7 @@ export class AtlasThreeRuntime {
   ): { readonly px: number; readonly py: number; readonly visible: boolean } {
     const w = Math.max(1, this.config.canvas.clientWidth || 1);
     const h = Math.max(1, this.config.canvas.clientHeight || 1);
-    const pyWorld = y ?? (this.worldMaps.length > 0 ? this.multiMap.getActiveEditorElevationY() : 0);
+    const pyWorld = y ?? (this.worldMaps.length > 0 ? this.multiMap.getActiveEditorElevationY(x, z) : 0);
     const v = new THREE.Vector3(x, pyWorld, z).project(this.camera);
     const px = ((v.x + 1) * 0.5) * w;
     const py = ((1 - v.y) * 0.5) * h;
@@ -1322,10 +1327,10 @@ export class AtlasThreeRuntime {
     this.pickables.length = 0;
   }
 
-  private ensureScene(): void {
+  private ensureScene(dtSec?: number): void {
     if (this.worldMaps.length > 0) {
-      // SWS-04 Multi-Map Scene Graph: incremental sync driven by AtlasWorldScenePlan
-      // with ZERO clearRoot() calls during zoom/navigation (Checklist D1–D5).
+      // SWS-04 + Phase 1/2 Multi-Map Scene Graph: shared chunked world terrain +
+      // smooth `detailWeight` crossfade with ZERO clearRoot() calls during zoom/navigation.
       this.root.visible = false;
       this.multiMap.rootGroup.visible = true;
       const w = Math.max(1, this.config.canvas.clientWidth || 1280);
@@ -1348,6 +1353,9 @@ export class AtlasThreeRuntime {
         presetId: this.presetId,
         hideRoofs: this.hideRoofs,
         viewSpan: this.view.span,
+        camera: camState,
+        viewportPx: { width: w, height: h },
+        dtSec,
       });
       this.applyStyleToMaterials();
       this.updateSelectionGizmo();
@@ -1530,7 +1538,8 @@ export class AtlasThreeRuntime {
 
   private syncCameraAndLighting(w: number, h: number, elapsedSec: number): void {
     const aspect = w / Math.max(1, h);
-    const activeY = this.worldMaps.length > 0 ? this.multiMap.getActiveEditorElevationY() : 0;
+    const activeY =
+      this.worldMaps.length > 0 ? this.multiMap.getActiveEditorElevationY(this.view.x, this.view.z) : 0;
     this.groundPlane.constant = -activeY;
     const rig = buildAtlasThreeCameraRig({ ...this.view, y: activeY }, aspect);
     if (rig.perspective) {
@@ -1636,6 +1645,9 @@ export class AtlasThreeRuntime {
     this.waterMat.uniforms.uFogColor!.value.set(spec.skyHorizon);
     this.waterMat.uniforms.uFocus!.value.set(this.view.x, this.view.z);
     this.waterMat.uniforms.uSpan!.value = this.view.span;
+    if (this.worldMaps.length > 0) {
+      this.multiMap.syncWaterUniforms(this.waterMat);
+    }
 
     // Gentle rising chimney smoke animation
     for (const puff of this.smokePuffs) {
@@ -1741,7 +1753,7 @@ export class AtlasThreeRuntime {
         }
       }
 
-      this.ensureScene();
+      this.ensureScene(dtSec);
       this.syncCameraAndLighting(w, h, (now - this.startTime) * 0.001);
       this.renderer.render(this.scene, this.camera);
       this.emitProjectedPins(w, h);
