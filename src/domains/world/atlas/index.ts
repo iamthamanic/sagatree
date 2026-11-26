@@ -818,4 +818,37 @@ export {
   type AtlasPortalTransitionKind,
 } from './atlas-label-hierarchy';
 
+export {
+  SPATIAL_EPSILON,
+  boundsContains,
+  boundsFromPoints,
+  boundsIntersects,
+  boundsUnion,
+  checkContainment,
+  computeBoundsOverflow,
+  expandBoundsToFit,
+  isFiniteSpatialBounds,
+  listDescendantEntities,
+  listDirectContainedChildren,
+  pointInBounds,
+  rectPointsFromBounds,
+  remapPolygonToBounds,
+  resolveCarrierChain,
+  resolveRelation,
+  validateSpatialInvariants,
+  type SpatialBounds2D,
+  type SpatialContainmentCheckResult,
+  type SpatialEntityNode,
+  type SpatialEntityStatus,
+  type SpatialInvariantId,
+  type SpatialInvariantValidationResult,
+  type SpatialInvariantViolation,
+  type SpatialInvariantViolationCode,
+  type SpatialPoint2D,
+  type SpatialRelationKind,
+  type SpatialStructureRole,
+  type SpatialWorldModel,
+} from './atlas-spatial-containment';
+
+
 
