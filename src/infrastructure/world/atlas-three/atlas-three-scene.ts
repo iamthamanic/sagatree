@@ -231,7 +231,7 @@ export type AtlasThreeScenePlan = {
 };
 
 /** Smooth elevation + slope-based vertex colors for lush fantasy terrain. */
-function terrainColorAt(height: number, waterLevel: number, slope: number): THREE.Color {
+export function terrainColorAt(height: number, waterLevel: number, slope: number): THREE.Color {
   const c = new THREE.Color();
   if (height < waterLevel - 0.6) {
     const depthT = Math.min(1, (waterLevel - 0.6 - height) / 7);
@@ -926,6 +926,17 @@ function emitCanonicalProp(
   }
 }
 
+export type SharedWorldTerrainBinding = {
+  /** Sample the single authoritative world elevation at `(worldX, worldZ)`. */
+  readonly sampleElevationWorld: (worldX: number, worldZ: number) => number;
+  /** Map this map's local `(x, z)` into World Space `(worldX, worldZ)`. */
+  readonly mapToWorld: (localX: number, localZ: number) => readonly [number, number];
+  /** Group pivot's vertical scale factor and Y lift so local Y lands flush on the world terrain. */
+  readonly verticalScale: number;
+  readonly depthLiftY: number;
+  readonly waterLevel: number;
+};
+
 export type BuildAtlasThreeSceneOptions = {
   readonly mapScale: AtlasMapScale;
   readonly look: AtlasThreeLook;
@@ -934,6 +945,12 @@ export type BuildAtlasThreeSceneOptions = {
   readonly seed: string;
   readonly hideRoofs?: boolean;
   readonly warmWindows?: boolean;
+  /**
+   * Phase 1.3: When present (Multi-Map outdoor maps), this map renders ONLY overlays
+   * (borders, roads, rivers, plazas, buildings, props) sampled onto the single shared
+   * chunked world terrain — NEVER generating a second separate landmass terrain mesh.
+   */
+  readonly sharedWorldTerrain?: SharedWorldTerrainBinding;
 };
 
 export function buildAtlasThreeScenePlan(
@@ -959,19 +976,33 @@ export function buildAtlasThreeScenePlan(
   const doorInstances: { matrices: THREE.Matrix4[]; ids: string[] } = { matrices: [], ids: [] };
   const up = new THREE.Vector3(0, 1, 0);
 
-  // Determine active terrain heightfield: canonical heightfield OR suggestive 3D fantasy world relief!
+  // Phase 1.3: When shared world terrain is active on outdoor Multi-Map maps, sample
+  // directly from the ONE chunked world heightfield and NEVER build a per-map terrain mesh!
+  const sharedTerrain = opts.look === 'outdoor' ? opts.sharedWorldTerrain ?? null : null;
   const syntheticRelief =
-    opts.look === 'outdoor' && !doc.heightfield && doc.layers.terrain !== false
+    !sharedTerrain && opts.look === 'outdoor' && !doc.heightfield && doc.layers.terrain !== false
       ? synthesizeWorldReliefHeightfield(doc, opts.seed)
       : null;
-  const activeTerrainHf = doc.heightfield ?? syntheticRelief;
-  const waterLevel = activeTerrainHf ? activeTerrainHf.waterLevel : -0.52;
+  const activeTerrainHf = sharedTerrain ? null : (doc.heightfield ?? syntheticRelief);
+  const waterLevel = sharedTerrain
+    ? sharedTerrain.waterLevel
+    : activeTerrainHf
+      ? activeTerrainHf.waterLevel
+      : -0.52;
   const sampleGroundY = (x: number, z: number, fallback: number): number => {
+    if (sharedTerrain) {
+      const [wx, wz] = sharedTerrain.mapToWorld(x, z);
+      const worldY = sharedTerrain.sampleElevationWorld(wx, wz);
+      if (!Number.isFinite(worldY)) return fallback;
+      const safeScale = Math.max(1e-4, sharedTerrain.verticalScale);
+      return (worldY - sharedTerrain.depthLiftY) / safeScale;
+    }
     if (!activeTerrainHf) return fallback;
     const sampled = sampleHeightfield(activeTerrainHf, x, z);
     if (sampled === null || !Number.isFinite(sampled)) return fallback;
     return syntheticRelief ? Math.max(0.2, sampled) : sampled > fallback ? sampled : fallback;
   };
+  const terrainDrivenElevation = Boolean(sharedTerrain || syntheticRelief);
 
   // NOTE: Infinite ocean / infinite meadow / infinite dark cavern horizon surround is rendered
   // by AtlasThreeRuntime (camera-following 28k×28k plane + sky dome + FogExp2) so zero
@@ -990,16 +1021,16 @@ export function buildAtlasThreeScenePlan(
     if (rm.id === 'g.ocean' || rm.id === 'w.ocean') {
       return;
     }
-    // When suggestive 3D fantasy terrain relief is active, the continuous terrain mesh
-    // renders the land & water biomes cleanly without flat z-fighting slabs (keep paved squares!).
-    if (syntheticRelief && matName !== 'pflaster') {
+    // When shared chunked world terrain (or standalone suggestive relief) renders the ground,
+    // skip landmass/biome polygons so zero stacked island slabs ever appear (keep paved plazas!).
+    if (terrainDrivenElevation && matName !== 'pflaster') {
       return;
     }
     const cx = rm.points.reduce((a, p) => a + p[0], 0) / Math.max(1, rm.points.length);
     const cz = rm.points.reduce((a, p) => a + p[1], 0) / Math.max(1, rm.points.length);
     const y =
-      syntheticRelief && matName === 'pflaster'
-        ? sampleGroundY(cx, cz, 4.5) + 0.38
+      terrainDrivenElevation && matName === 'pflaster'
+        ? sampleGroundY(cx, cz, 4.5) + (sharedTerrain ? 0.04 / Math.max(1e-4, sharedTerrain.verticalScale) : 0.38)
         : -0.45 + i * dyR;
     const surface: AtlasThreeSurfaceKey | 'water' = atlasThreeFloorSurface(matName, opts.mapScale);
     const b = surface === 'water' ? water : get(surface);
@@ -1242,7 +1273,11 @@ export function buildAtlasThreeScenePlan(
         pt.width,
         -0.14 + i * dyS,
         pt.id,
-        syntheticRelief ? (rx, rz) => sampleGroundY(rx, rz, 4.5) + lift : undefined,
+        terrainDrivenElevation
+          ? (rx, rz) =>
+              sampleGroundY(rx, rz, 4.5) +
+              (sharedTerrain ? (0.05 + i * 0.008) / Math.max(1e-4, sharedTerrain.verticalScale) : lift)
+          : undefined,
       );
     });
   }
@@ -1322,7 +1357,9 @@ export function buildAtlasThreeScenePlan(
     for (const q of plan.primitives) {
       if (q.kind !== 'prop' && q.kind !== 'building_footprint') continue;
       ids.add(q.id);
-      const groundElevation = sampleGroundY(q.x, q.y, -0.35);
+      const groundElevation =
+        sampleGroundY(q.x, q.y, -0.35) +
+        (sharedTerrain ? 0.02 / Math.max(1e-4, sharedTerrain.verticalScale) : 0);
       emitCanonicalProp(get, q, objAngles.get(q.id) ?? 0, torches, aoDiscs, smokePoints, mistPoints, {
         fullDetail,
         hideRoofs: Boolean(opts.hideRoofs),
@@ -1333,7 +1370,7 @@ export function buildAtlasThreeScenePlan(
   }
 
   const terrain =
-    doc.layers.terrain !== false && activeTerrainHf
+    !sharedTerrain && doc.layers.terrain !== false && activeTerrainHf
       ? buildBlendedTerrain(activeTerrainHf, opts.span)
       : null;
 
@@ -1343,7 +1380,7 @@ export function buildAtlasThreeScenePlan(
     seed: opts.seed,
     mapScale: opts.mapScale,
     presetId: opts.presetId,
-    elevationSampler: activeTerrainHf
+    elevationSampler: sharedTerrain || activeTerrainHf
       ? (x, y) => sampleGroundY(x, y, 0)
       : undefined,
   });
@@ -1392,9 +1429,9 @@ export function buildAtlasThreeScenePlan(
     const pts = r.points && r.points.length >= 3
       ? r.points
       : [
-          [r.x, r.y],
-          [r.x + r.w, r.y + r.h],
-        ];
+        [r.x, r.y],
+        [r.x + r.w, r.y + r.h],
+      ];
     for (const [px, pz] of pts) {
       if (px < minCX) minCX = px;
       if (px > maxCX) maxCX = px;
@@ -1411,20 +1448,20 @@ export function buildAtlasThreeScenePlan(
   const hasBounds = Number.isFinite(minCX) && Number.isFinite(maxCX) && maxCX > minCX;
   const contentBounds: AtlasThreeContentBounds = hasBounds
     ? {
-        centerX: (minCX + maxCX) * 0.5,
-        centerZ: (minCZ + maxCZ) * 0.5,
-        fitSpan:
-          opts.mapScale === 'world'
-            ? Math.max(360, Math.min(500, Math.max(maxCX - minCX, maxCZ - minCZ) * 0.54))
-            : opts.mapScale === 'settlement'
-              ? Math.max(175, Math.min(280, Math.max(maxCX - minCX, maxCZ - minCZ) * 0.58))
-              : Math.max(210, Math.min(340, Math.max(maxCX - minCX, maxCZ - minCZ) * 0.74)),
-      }
+      centerX: (minCX + maxCX) * 0.5,
+      centerZ: (minCZ + maxCZ) * 0.5,
+      fitSpan:
+        opts.mapScale === 'world'
+          ? Math.max(360, Math.min(500, Math.max(maxCX - minCX, maxCZ - minCZ) * 0.54))
+          : opts.mapScale === 'settlement'
+            ? Math.max(175, Math.min(280, Math.max(maxCX - minCX, maxCZ - minCZ) * 0.58))
+            : Math.max(210, Math.min(340, Math.max(maxCX - minCX, maxCZ - minCZ) * 0.74)),
+    }
     : {
-        centerX: 500,
-        centerZ: 500,
-        fitSpan: opts.mapScale === 'world' ? 430 : 210,
-      };
+      centerX: 500,
+      centerZ: 500,
+      fitSpan: opts.mapScale === 'world' ? 430 : 210,
+    };
 
   return {
     builders,

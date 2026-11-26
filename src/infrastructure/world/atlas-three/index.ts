@@ -32,10 +32,17 @@ export {
   AtlasThreeMultiMapGraph,
   applyLocalCutoutFilter,
   applyWorldTransformToGroup,
+  type AtlasThreeGroupOpacitySnapshot,
   type AtlasThreeMapGroupNode,
   type AtlasThreeMultiMapStats,
   type AtlasThreeWorldMapSource,
 } from './atlas-three-multimap';
+
+export {
+  AtlasThreeWorldTerrain,
+  buildTerrainChunkGeometry,
+  type AtlasThreeWorldTerrainStats,
+} from './atlas-three-world-terrain';
 
 export {
   bindAtlasUnifiedInput,

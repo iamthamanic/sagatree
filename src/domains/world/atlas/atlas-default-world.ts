@@ -660,17 +660,9 @@ const PLACE_BLUEPRINTS: readonly PlaceBlueprint[] = [
 
 function buildStandardPlaceCanvas(bp: PlaceBlueprint): UnifiedCanvasDoc {
   const slug = bp.placeSeedKey.replace(/^place\./, '');
+  // Phase 1.2: Places are overlays ON the single shared chunked world terrain —
+  // no per-place landmass island polygon (`p.*.ground` removed; keep paved plaza + roads/rivers + objects).
   const rooms: UnifiedCanvasRoom[] = [
-    mustPoly(`p.${slug}.ground`, bp.groundMaterial, [
-      [140, 200],
-      [480, 140],
-      [840, 220],
-      [880, 560],
-      [780, 820],
-      [420, 860],
-      [160, 740],
-      [120, 440],
-    ]),
     rectRoom(`p.${slug}.plaza`, 'pflaster', 410, 430, 180, 140),
   ];
   const strokes: UnifiedCanvasStroke[] = [
@@ -822,6 +814,215 @@ const CONTINENT_BLUEPRINTS: readonly ContinentBlueprint[] = [
   },
 ];
 
+function worldHash2D(ix: number, iz: number, seed: number): number {
+  let n = Math.imul(ix, 374761393) + Math.imul(iz, 668265263) + Math.imul(seed, 1442695041);
+  n = (n ^ (n >>> 13)) >>> 0;
+  n = Math.imul(n, 1274126177) >>> 0;
+  return ((n ^ (n >>> 16)) >>> 0) / 4294967295;
+}
+
+function worldValueNoise(x: number, z: number, seed: number): number {
+  const ix = Math.floor(x);
+  const iz = Math.floor(z);
+  const fx = x - ix;
+  const fz = z - iz;
+  const u = fx * fx * (3 - 2 * fx);
+  const v = fz * fz * (3 - 2 * fz);
+  const a = worldHash2D(ix, iz, seed);
+  const b = worldHash2D(ix + 1, iz, seed);
+  const c = worldHash2D(ix, iz + 1, seed);
+  const d = worldHash2D(ix + 1, iz + 1, seed);
+  return a + (b - a) * u + (c - a) * v + (a - b - c + d) * u * v;
+}
+
+function worldFbm(x: number, z: number, seed: number): number {
+  let acc = 0;
+  let amp = 0.52;
+  let freq = 1;
+  for (let i = 0; i < 4; i += 1) {
+    acc += worldValueNoise(x * freq, z * freq, seed + i * 37) * amp;
+    freq *= 2.05;
+    amp *= 0.48;
+  }
+  return acc;
+}
+
+function pointInWorldPoly(x: number, y: number, poly: readonly (readonly [number, number])[]): boolean {
+  let inside = false;
+  for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+    const xi = poly[i]![0];
+    const yi = poly[i]![1];
+    const xj = poly[j]![0];
+    const yj = poly[j]![1];
+    const intersect = yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi + 1e-12) + xi;
+    if (intersect) inside = !inside;
+  }
+  return inside;
+}
+
+function distPtToSeg2D(
+  px: number,
+  pz: number,
+  ax: number,
+  az: number,
+  bx: number,
+  bz: number,
+): number {
+  const dx = bx - ax;
+  const dz = bz - az;
+  const len2 = dx * dx + dz * dz;
+  if (len2 <= 1e-8) return Math.hypot(px - ax, pz - az);
+  const t = Math.max(0, Math.min(1, ((px - ax) * dx + (pz - az) * dz) / len2));
+  return Math.hypot(px - (ax + dx * t), pz - (az + dz * t));
+}
+
+/**
+ * Build the ONE authoritative shared World Heightfield for the default world (Phase 1.1/1.2).
+ * Continents (`Westmark` & `Ostmark`) rise smoothly above `waterLevel = 0`; ocean floor sits
+ * cleanly below `waterLevel = 0` in the exact same raster — ONE physical coastline, zero
+ * separate per-country/per-place floating islands.
+ */
+function buildSharedWorldHeightfieldFromRegions(input: {
+  readonly continentPolys: readonly (readonly (readonly [number, number])[])[];
+  readonly countryRegions: readonly {
+    readonly material: UnifiedCanvasMaterial;
+    readonly poly: readonly (readonly [number, number])[];
+  }[];
+  readonly rivers: readonly UnifiedCanvasStroke[];
+  readonly settlementCenters: readonly (readonly [number, number])[];
+}): AtlasHeightfield {
+  const cols = 81;
+  const rows = 81;
+  const cellSize = 1000 / (cols - 1);
+  const raw = new Float32Array(cols * rows);
+  const seed = 4219;
+
+  for (let r = 0; r < rows; r += 1) {
+    const z = r * cellSize;
+    for (let c = 0; c < cols; c += 1) {
+      const x = c * cellSize;
+      // Organic coastal warp so straight continent hulls read as natural bays & peninsulas
+      const wx = x + (worldFbm(x * 0.0085, z * 0.0085, seed + 17) - 0.5) * 32;
+      const wz = z + (worldFbm(x * 0.0085 + 19, z * 0.0085 + 11, seed + 53) - 0.5) * 32;
+      const onContinent = input.continentPolys.some((poly) => pointInWorldPoly(wx, wz, poly));
+      const idx = r * cols + c;
+      if (!onContinent) {
+        const shelf = worldFbm(x * 0.006, z * 0.006, seed + 7);
+        raw[idx] = -6.5 - shelf * 5.5;
+        continue;
+      }
+
+      let regionMat: UnifiedCanvasMaterial = 'gras';
+      for (const reg of input.countryRegions) {
+        if (pointInWorldPoly(wx, wz, reg.poly)) {
+          regionMat = reg.material;
+        }
+      }
+      const n = worldFbm(x * 0.011, z * 0.011, seed);
+      const ridge = 1 - Math.abs(worldFbm(x * 0.017 + 7, z * 0.017 - 5, seed + 99) * 2 - 1);
+      if (regionMat === 'stein') {
+        // Eisengrat alpine highlands
+        raw[idx] = 17 + n * 14 + ridge * ridge * 20;
+      } else if (regionMat === 'sand') {
+        // Sonnenküste warm coastal lowlands
+        raw[idx] = 2.6 + n * 4.2;
+      } else if (regionMat === 'erde') {
+        // Südmark rolling hills & moors
+        raw[idx] = 7.5 + n * 9.5 + ridge * 4.5;
+      } else {
+        // Nordreich fertile meadows & wooded hills
+        raw[idx] = 5.4 + n * 8.6 + ridge * 3.4;
+      }
+    }
+  }
+
+  // Smooth coastal shelves & biome transitions (2 weighted box-filter passes)
+  const smooth = new Float32Array(raw);
+  const tmp = new Float32Array(raw.length);
+  for (let pass = 0; pass < 2; pass += 1) {
+    for (let r = 0; r < rows; r += 1) {
+      for (let c = 0; c < cols; c += 1) {
+        let acc = 0;
+        let wSum = 0;
+        for (let dr = -1; dr <= 1; dr += 1) {
+          const rr = Math.max(0, Math.min(rows - 1, r + dr));
+          for (let dc = -1; dc <= 1; dc += 1) {
+            const cc = Math.max(0, Math.min(cols - 1, c + dc));
+            const w = dr === 0 && dc === 0 ? 4 : dr === 0 || dc === 0 ? 2 : 1;
+            acc += smooth[rr * cols + cc]! * w;
+            wSum += w;
+          }
+        }
+        tmp[r * cols + c] = acc / wSum;
+      }
+    }
+    smooth.set(tmp);
+  }
+
+  // Carve river valleys slightly, keep settlements gently dry above water, taper outer world rim
+  const heights: number[] = new Array(cols * rows);
+  for (let r = 0; r < rows; r += 1) {
+    const z = r * cellSize;
+    for (let c = 0; c < cols; c += 1) {
+      const x = c * cellSize;
+      let h = smooth[r * cols + c]!;
+
+      for (const rv of input.rivers) {
+        let bestD = Infinity;
+        for (let i = 0; i + 1 < rv.points.length; i += 1) {
+          const a = rv.points[i]!;
+          const b = rv.points[i + 1]!;
+          bestD = Math.min(bestD, distPtToSeg2D(x, z, a[0], a[1], b[0], b[1]));
+        }
+        const riverW = Math.max(7, rv.width * 1.15);
+        if (bestD < riverW * 1.8 && h > 0.5) {
+          const t = Math.max(0, 1 - bestD / (riverW * 1.8));
+          h = h * (1 - t * t * 0.55) + 0.6 * (t * t * 0.55);
+        }
+      }
+
+      for (const [sx, sz] of input.settlementCenters) {
+        const d = Math.hypot(x - sx, z - sz);
+        if (d < 22) {
+          const t = 1 - d / 22;
+          const plateau = Math.max(4.8, Math.min(11, h));
+          h = h * (1 - t * 0.6) + plateau * (t * 0.6);
+        }
+      }
+
+      const edgeDist = Math.min(x, 1000 - x, z, 1000 - z);
+      if (edgeDist < 45) {
+        const et = Math.max(0, edgeDist / 45);
+        const smoothEdge = et * et * (3 - 2 * et);
+        h = -12 * (1 - smoothEdge) + h * smoothEdge;
+      }
+
+      heights[r * cols + c] = Math.round(h * 10) / 10;
+    }
+  }
+
+  return {
+    format: ATLAS_HEIGHTFIELD_FORMAT,
+    version: ATLAS_HEIGHTFIELD_VERSION,
+    assetRef: { kind: 'inline', version: ATLAS_HEIGHTFIELD_VERSION },
+    originX: 0,
+    originZ: 0,
+    cellSize,
+    cols,
+    rows,
+    heights,
+    waterLevel: 0,
+  };
+}
+
+export function buildDefaultWorldHeightfield(): AtlasHeightfield {
+  const bundle = buildCalibratedDefaultWorld();
+  if (!bundle.rootDoc.heightfield) {
+    throw new Error('Default world root heightfield missing');
+  }
+  return bundle.rootDoc.heightfield;
+}
+
 export type CalibratedDefaultWorldBundle = {
   readonly rootSeedKey: typeof ATLAS_DEFAULT_WORLD_ROOT_SEED;
   readonly rootMetersPerUnit: number;
@@ -920,14 +1121,19 @@ export function buildCalibratedDefaultWorld(): CalibratedDefaultWorldBundle {
     });
   }
 
-  // 3) 4 Countries — DERIVED bottom-up from their child Places
+  // 3) 4 Countries — OVERLAYS on the ONE shared world terrain (political borders, rivers, roads, pins)
+  //    NO separate `.realm` landmass island rooms!
   const countryDocs = new Map<string, UnifiedCanvasDoc>();
+  const countryBorderPolys = new Map<string, readonly (readonly [number, number])[]>();
   for (const cbp of COUNTRY_BLUEPRINTS) {
     const childPlaces = PLACE_BLUEPRINTS.filter((p) => p.countrySeedKey === cbp.seedKey);
-    const derivedRooms: UnifiedCanvasRoom[] = [
-      mustPoly(`c.${cbp.placeSeedKey}.realm`, cbp.terrainMaterial, cbp.polygon),
+    const closedBorderRing: (readonly [number, number])[] =
+      cbp.polygon.length >= 3 ? [...cbp.polygon, cbp.polygon[0]!] : [...cbp.polygon];
+    countryBorderPolys.set(cbp.seedKey, cbp.polygon);
+    const derivedRooms: UnifiedCanvasRoom[] = [];
+    const derivedStrokes: UnifiedCanvasStroke[] = [
+      stroke(`c.${cbp.placeSeedKey}.border`, 'stein', 5, closedBorderRing),
     ];
-    const derivedStrokes: UnifiedCanvasStroke[] = [];
     const derivedObjects: UnifiedCanvasObject[] = [];
 
     owners.push({
@@ -942,22 +1148,7 @@ export function buildCalibratedDefaultWorld(): CalibratedDefaultWorldBundle {
 
     for (const pbp of childPlaces) {
       const pdoc = placeDocs.get(pbp.seedKey)!;
-      // Derive settlement core footprint
-      const plaza = pdoc.rooms.find((r) => r.id !== 'g.ocean');
-      if (plaza) {
-        const dr = deriveCoarseRoomFromChild(pbp.anchor, plaza, `der.${pbp.placeSeedKey}.footprint`);
-        if (dr) {
-          derivedRooms.push(dr);
-          derivedRefs.push({
-            derivedFeatureId: dr.id,
-            sourceMapId: pbp.seedKey,
-            sourceFeatureId: plaza.id,
-            structure: 'terrain',
-            fingerprint: computeGeometryDerivedFingerprint(pbp.seedKey, dr),
-          });
-        }
-      }
-      // Derive child rivers & roads directly via anchor transform
+      // Derive child rivers & roads directly via anchor transform (overlays on shared ground)
       for (const st of pdoc.strokes) {
         const ds = deriveCoarseStrokeFromChild(pbp.anchor, st, `der.${pbp.placeSeedKey}.${st.id}`, {
           minWidth: 4,
@@ -1015,34 +1206,36 @@ export function buildCalibratedDefaultWorld(): CalibratedDefaultWorldBundle {
     countryDocs.set(cbp.seedKey, baseOutdoorDoc(derivedRooms, derivedStrokes, derivedObjects));
   }
 
-  // 4) 2 Continents — DERIVED bottom-up from their 2 child Countries
+  // 4) 2 Continents — OVERLAYS on the ONE shared world terrain (NO separate `g.land.*` landmass islands!)
   const continentDocs = new Map<string, UnifiedCanvasDoc>();
+  const continentHullBySeed = new Map<string, UnifiedCanvasRoom>();
   for (const cont of CONTINENT_BLUEPRINTS) {
     const childCountries = COUNTRY_BLUEPRINTS.filter((c) => c.continentSeedKey === cont.seedKey);
     const derivedRooms: UnifiedCanvasRoom[] = [];
     const derivedStrokes: UnifiedCanvasStroke[] = [];
     const derivedObjects: UnifiedCanvasObject[] = [];
 
-    // Compute continent coastline hull enclosing its child countries (bottom-up landmass)
+    // Compute continent coastline hull enclosing its child countries (used to sculpt the ONE world heightfield)
     const hullPts: [number, number][] = [];
     for (const cbp of childCountries) {
       const cdoc = countryDocs.get(cbp.seedKey)!;
-      const realmRoom = cdoc.rooms.find((r) => r.id.endsWith('.realm'));
-      if (realmRoom) {
-        const dr = deriveCoarseRoomFromChild(cbp.anchor, realmRoom, `der.${cbp.placeSeedKey}.land`, {
-          simplifyEpsilon: 1.5,
-        });
-        if (dr) {
-          derivedRooms.push(dr);
-          if (dr.points) {
-            for (const pt of dr.points) hullPts.push([pt[0], pt[1]]);
-          }
+      const borderStroke = cdoc.strokes.find((s) => s.id.endsWith('.border'));
+      if (borderStroke) {
+        const dsBorder = deriveCoarseStrokeFromChild(
+          cbp.anchor,
+          borderStroke,
+          `der.${cbp.placeSeedKey}.border`,
+          { minWidth: 4, maxWidth: 7 },
+        );
+        if (dsBorder) {
+          derivedStrokes.push(dsBorder);
+          for (const pt of dsBorder.points) hullPts.push([pt[0], pt[1]]);
           derivedRefs.push({
-            derivedFeatureId: dr.id,
+            derivedFeatureId: dsBorder.id,
             sourceMapId: cbp.seedKey,
-            sourceFeatureId: realmRoom.id,
+            sourceFeatureId: borderStroke.id,
             structure: 'political',
-            fingerprint: computeGeometryDerivedFingerprint(cbp.seedKey, dr),
+            fingerprint: computeGeometryDerivedFingerprint(cbp.seedKey, dsBorder),
           });
         }
       }
@@ -1076,14 +1269,14 @@ export function buildCalibratedDefaultWorld(): CalibratedDefaultWorldBundle {
       }
     }
 
-    // Derive landmass polygon wrapping child country bounds cleanly
+    // Derive continent landmass envelope (feeds ONLY the World Root heightfield + world metadata hull)
     const minX = Math.max(90, Math.min(...hullPts.map((p) => p[0])) - 90);
     const maxX = Math.min(910, Math.max(...hullPts.map((p) => p[0])) + 90);
     const minY = Math.max(90, Math.min(...hullPts.map((p) => p[1])) - 80);
     const maxY = Math.min(910, Math.max(...hullPts.map((p) => p[1])) + 80);
     const midX = Math.round((minX + maxX) / 2);
     const midY = Math.round((minY + maxY) / 2);
-    const continentBase = mustPoly(`g.land.${cont.placeSeedKey.replace(/^continent\./, '')}`, 'gras', [
+    const continentHull = mustPoly(`hull.${cont.placeSeedKey.replace(/^continent\./, '')}`, 'gras', [
       [Math.round(minX + 35), Math.round(minY + 20)],
       [midX, Math.round(minY)],
       [Math.round(maxX - 30), Math.round(minY + 35)],
@@ -1093,17 +1286,19 @@ export function buildCalibratedDefaultWorld(): CalibratedDefaultWorldBundle {
       [Math.round(minX + 30), Math.round(maxY - 35)],
       [Math.round(minX), midY],
     ]);
+    continentHullBySeed.set(cont.seedKey, continentHull);
 
     owners.push({
       structure: 'landmass',
       structureId: `landmass.${cont.placeSeedKey}`,
       direction: 'bottom-up',
-      authoritativeMapId: cont.seedKey,
+      authoritativeMapId: ATLAS_DEFAULT_WORLD_ROOT_SEED,
     });
 
+    // Continent doc holds ONLY overlays (political borders, rivers, roads, markers) — NO landmass island room!
     continentDocs.set(
       cont.seedKey,
-      baseOutdoorDoc([continentBase, ...derivedRooms], derivedStrokes, derivedObjects),
+      baseOutdoorDoc(derivedRooms, derivedStrokes, derivedObjects),
     );
   }
 
@@ -1168,20 +1363,28 @@ export function buildCalibratedDefaultWorld(): CalibratedDefaultWorldBundle {
     },
   };
 
-  // 6) World Root (`Welt` / Donalu) — DERIVED strictly bottom-up from the 2 Continents
+  // 6) World Root (`Welt` / Donalu) — Owns the ONE Shared World Heightfield + derived overlays
   const worldRooms: UnifiedCanvasRoom[] = [rectRoom('w.ocean', 'wasser', 0, 0, 1000, 1000)];
   const worldStrokes: UnifiedCanvasStroke[] = [];
   const worldObjects: UnifiedCanvasObject[] = [];
+  const worldContinentPolys: (readonly (readonly [number, number])[])[] = [];
+  const worldCountryRegions: {
+    readonly material: UnifiedCanvasMaterial;
+    readonly poly: readonly (readonly [number, number])[];
+  }[] = [];
 
   for (const cont of CONTINENT_BLUEPRINTS) {
     const cdoc = continentDocs.get(cont.seedKey)!;
-    const baseLand = cdoc.rooms.find((r) => r.id.startsWith('g.land.'));
+    const baseLand = continentHullBySeed.get(cont.seedKey);
     if (baseLand) {
       const derivedContinent = deriveCoarseRoomFromChild(cont.anchor, baseLand, cont.worldRoomId, {
         simplifyEpsilon: 1.0,
       });
       if (derivedContinent) {
         worldRooms.push(derivedContinent);
+        if (derivedContinent.points && derivedContinent.points.length >= 3) {
+          worldContinentPolys.push(derivedContinent.points);
+        }
         derivedRefs.push({
           derivedFeatureId: derivedContinent.id,
           sourceMapId: cont.seedKey,
@@ -1191,13 +1394,21 @@ export function buildCalibratedDefaultWorld(): CalibratedDefaultWorldBundle {
         });
       }
     }
-    // Derive country region polygons on world map
-    for (const r of cdoc.rooms) {
-      if (!r.id.startsWith('der.country.')) continue;
-      const dr = deriveCoarseRoomFromChild(cont.anchor, r, `w.${r.id}`, { simplifyEpsilon: 1.5 });
-      if (dr) worldRooms.push(dr);
+    // Project country polygons to World Space for biome elevation sculpting in the ONE world heightfield
+    const childCountries = COUNTRY_BLUEPRINTS.filter((c) => c.continentSeedKey === cont.seedKey);
+    for (const cbp of childCountries) {
+      const poly = countryBorderPolys.get(cbp.seedKey);
+      if (!poly) continue;
+      const worldPts: (readonly [number, number])[] = [];
+      for (const [lx, ly] of poly) {
+        const wpt = localToWorld(worldNodes, cbp.seedKey, { x: lx, y: ly });
+        if (!isAtlasWorldError(wpt)) worldPts.push([wpt.value.x, wpt.value.y]);
+      }
+      if (worldPts.length >= 3) {
+        worldCountryRegions.push({ material: cbp.terrainMaterial, poly: worldPts });
+      }
     }
-    // Derive primary river spine on world map (first river per continent keeps w.river-w / w.river-e)
+    // Derive primary river spine & highways/borders on world map (first river per continent keeps w.river-w / w.river-e)
     let riverIdx = 0;
     for (const st of cdoc.strokes) {
       const isRiver = st.material === 'wasser';
@@ -1221,9 +1432,11 @@ export function buildCalibratedDefaultWorld(): CalibratedDefaultWorldBundle {
   }
 
   // Derive exact world-space pins for all 10 places + Dornhain tavern/crypt (including secret flag!)
+  const settlementCentersWorld: (readonly [number, number])[] = [];
   for (const pbp of PLACE_BLUEPRINTS) {
     const worldPos = localToWorld(worldNodes, pbp.seedKey, { x: 500, y: 500 });
     if (worldPos.ok) {
+      settlementCentersWorld.push([worldPos.value.x, worldPos.value.y]);
       const slug = pbp.placeSeedKey.replace(/^place\./, '');
       worldObjects.push(
         stamp(
@@ -1258,11 +1471,19 @@ export function buildCalibratedDefaultWorld(): CalibratedDefaultWorldBundle {
     worldRooms.push(rectRoom('s.crypt', 'stein', cx - 2, cy - 2, 4, 4, true));
   }
 
+  const worldHeightfield = buildSharedWorldHeightfieldFromRegions({
+    continentPolys: worldContinentPolys,
+    countryRegions: worldCountryRegions,
+    rivers: worldStrokes.filter((s) => s.material === 'wasser'),
+    settlementCenters: settlementCentersWorld,
+  });
+
   const rootDoc: UnifiedCanvasDoc = {
     ...emptyUnifiedCanvasDoc(false),
     rooms: worldRooms,
     strokes: worldStrokes,
     objects: worldObjects,
+    heightfield: worldHeightfield,
   };
 
   // 7) Ordered parent→child map specs (22 child maps + 1 world root = 23 total)

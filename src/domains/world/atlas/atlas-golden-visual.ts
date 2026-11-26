@@ -611,15 +611,15 @@ export type AtlasGoldenVisualBaseline = {
 export const ATLAS_GOLDEN_VISUAL_BASELINES: readonly AtlasGoldenVisualBaseline[] = [
   {
     fixtureId: 'world',
-    /* SWS-02 / C6: calibrated Bottom-Up default world (derived from Westmark & Ostmark). */
-    contentFingerprint: 'ebf2611a',
+    /* Phase 1.2 Shared Chunked World Terrain: single authoritative world heightfield; continent/country overlays without duplicate landmass slabs. */
+    contentFingerprint: '5f66eb15',
     cameraFingerprint: '5a8a75ad',
     lightFingerprint: 'abb4f920',
-    geometryFingerprint: 'e1d3b8b3',
-    lookFingerprint: '2af8080d',
+    geometryFingerprint: 'fb85a142',
+    lookFingerprint: '13b51e44',
     selectionOutline: '#06B6D4',
     selectionContrastRatio: 6.025371305386859,
-    materialKeys: ['erde', 'gras', 'pflaster', 'sand', 'stein', 'wasser'],
+    materialKeys: ['gras', 'pflaster', 'stein', 'wasser'],
     lookAlbedos: [
       '#2a3a48',
       '#493f3a',
@@ -637,15 +637,15 @@ export const ATLAS_GOLDEN_VISUAL_BASELINES: readonly AtlasGoldenVisualBaseline[]
   },
   {
     fixtureId: 'country',
-    /* SWS-02 / C6: Nordreich derived bottom-up from Dornhain, Felswacht & Silberfurt. */
-    contentFingerprint: '62240772',
+    /* Phase 1.2 Shared Chunked World Terrain: Nordreich as political border/road/settlement overlay on shared ground (no duplicate realm landmass slab). */
+    contentFingerprint: '1afca1ef',
     cameraFingerprint: '172fbc93',
     lightFingerprint: 'abb4f920',
-    geometryFingerprint: '2d73d14c',
-    lookFingerprint: 'cf665d42',
+    geometryFingerprint: '424d35c3',
+    lookFingerprint: 'f2d7c271',
     selectionOutline: '#06B6D4',
     selectionContrastRatio: 6.025371305386859,
-    materialKeys: ['gras', 'pflaster', 'stein', 'wasser'],
+    materialKeys: ['pflaster', 'stein', 'wasser'],
     lookAlbedos: [
       '#2a3a48',
       '#493f3a',
