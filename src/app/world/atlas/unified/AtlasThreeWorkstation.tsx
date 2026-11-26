@@ -94,6 +94,7 @@ import {
   autoAtlasThreePitchForSpan,
   bindAtlasUnifiedInput,
   defaultAtlasThreePitch,
+  formatAtlasTruthfulScaleHud,
   type AtlasThreeCameraMode,
   type AtlasThreeCameraView,
   type AtlasThreeLightingMode,
@@ -537,11 +538,15 @@ export function AtlasThreeWorkstation({
     () => new Map((externalNav?.nodes ?? []).map((n) => [n.id, n] as const)),
     [externalNav],
   );
-  // SCM-05 / SCM-07: camera-/LOD-driven layer indicator derived purely from AtlasWorldScenePlan
+  // SCM-05 / SCM-07: camera-/LOD-driven layer indicator derived purely from AtlasWorldScenePlan.
+  // In explicit single-document edit mode (`isChildDocumentEditMode`), lock strictly to the
+  // edited map document's true owner (`activeDocMapId`) so child landmarks sharing the same map
+  // (e.g. Whisper Road / Marktplatz) can NEVER hijack the `Ebenen` badge.
+  const activeDocMapId = useMemo(() => mapKey.split(':')[0] || null, [mapKey]);
   const zoomLayerState: AtlasZoomLayerState = useMemo(
     () =>
       deriveZoomLayerHierarchyState({
-        activeEditorMapId: zoomActiveMapId,
+        activeEditorMapId: isChildDocumentEditMode ? activeDocMapId : zoomActiveMapId,
         worldRootMapId: externalNav?.worldPrimaryMapId ?? null,
         worldLabelDe: externalNav?.worldLabel ?? 'Welt',
         nodes: (externalNav?.nodes ?? []).map((n) => ({
@@ -553,7 +558,7 @@ export function AtlasThreeWorkstation({
         })),
         fallbackPlaceId: activePlaceId,
       }),
-    [activePlaceId, externalNav, zoomActiveMapId],
+    [activeDocMapId, activePlaceId, externalNav, isChildDocumentEditMode, zoomActiveMapId],
   );
   const zoomLayerStateRef = useRef<AtlasZoomLayerState>(zoomLayerState);
   zoomLayerStateRef.current = zoomLayerState;
@@ -561,8 +566,13 @@ export function AtlasThreeWorkstation({
     () => new Set(zoomLayerState.activeBreadcrumbPlaceIds),
     [zoomLayerState.activeBreadcrumbPlaceIds],
   );
-  const baseSpan = defaultSpanForScale(mapScale);
-  const zoomPct = Math.max(10, Math.min(2500, Math.round((baseSpan / Math.max(12, hudSpan)) * 100)));
+  const scaleHud = useMemo(
+    () =>
+      formatAtlasTruthfulScaleHud(hudSpan, {
+        isWorldSceneGraph: Boolean(worldSceneGraph && worldSceneGraph.maps.length > 0),
+      }),
+    [hudSpan, worldSceneGraph],
+  );
   const hasParentMap = Boolean(activePlaceId && activePlaceId !== externalNav?.worldId);
 
   useEffect(
@@ -677,7 +687,12 @@ export function AtlasThreeWorkstation({
       };
       setFocusIntent(nextIntent);
 
-      // Smooth in-world camera flight preserving current yaw orientation!
+      // Brisk direct zoom if target is already visible on screen; short interruptible flight if distant.
+      const projected = rt.projectWorldPointToScreen(
+        resolved.centerWorld.x,
+        resolved.centerWorld.y,
+      );
+      const durationMs = projected.visible ? 280 : 420;
       rt.setView(
         {
           x: resolved.centerWorld.x,
@@ -685,6 +700,7 @@ export function AtlasThreeWorkstation({
           span: resolved.recommendedCameraSpan,
         },
         true,
+        { durationMs },
       );
 
       const pollArrival = () => {
@@ -849,6 +865,22 @@ export function AtlasThreeWorkstation({
             z: number,
             y?: number,
           ) => { readonly px: number; readonly py: number; readonly visible: boolean };
+          pickWorldPointAtScreen: (
+            px: number,
+            py: number,
+          ) => {
+            readonly x: number;
+            readonly y: number;
+            readonly z: number;
+            readonly hitKind: 'surface' | 'terrain' | 'plane';
+          } | null;
+          getStats: () => {
+            readonly calls: number;
+            readonly triangles: number;
+            readonly rooms: number;
+            readonly clearRootCount: number;
+            readonly activeMapCount: number;
+          };
           pickAt: (px: number, py: number) => string | null;
           getRendererInfo: () => {
             readonly webglRenderer: string;
@@ -992,6 +1024,15 @@ export function AtlasThreeWorkstation({
         },
         projectWorldToScreen: (x, z, y) =>
           rt?.projectWorldPointToScreen(x, z, y) ?? { px: 0, py: 0, visible: false },
+        pickWorldPointAtScreen: (px, py) => rt?.pickWorldPointAtScreen(px, py) ?? null,
+        getStats: () =>
+          rt?.getStats() ?? {
+            calls: 0,
+            triangles: 0,
+            rooms: 0,
+            clearRootCount: 0,
+            activeMapCount: 0,
+          },
         pickAt: (px, py) => rt?.pickCanonicalId(px, py) ?? null,
         getRendererInfo: () =>
           rt?.getRendererInfo() ?? {
@@ -1288,15 +1329,18 @@ export function AtlasThreeWorkstation({
 
   const zoomByFactor = useCallback((factor: number) => {
     const rt = runtimeRef.current;
+    const canvas = canvasRef.current;
     if (!rt) return;
-    const cur = rt.getTargetView();
-    const minSpan = worldSceneGraphActiveRef.current ? 0.05 : 18;
-    const nextSpan = clamp(cur.span * factor, minSpan, 2200);
-    if (worldSceneGraphActiveRef.current && factor > 1) {
-      rt.setFocusTargetMapId(null);
-      setFocusIntent(null);
+    if (worldSceneGraphActiveRef.current) {
+      focusSeqRef.current += 1;
+      if (factor > 1) {
+        rt.setFocusTargetMapId(null);
+        setFocusIntent(null);
+      }
     }
-    rt.setView({ span: nextSpan }, true);
+    const cx = (canvas?.clientWidth || 1280) * 0.5;
+    const cy = (canvas?.clientHeight || 800) * 0.5;
+    rt.zoomByFactorAtScreen(factor, cx, cy);
   }, []);
 
   const handleUnifiedZoomAtScreen = useCallback(
@@ -1369,9 +1413,11 @@ export function AtlasThreeWorkstation({
     return bindAtlasUnifiedInput(canvas, {
       onZoomAtScreen: handleUnifiedZoomAtScreen,
       onPanByScreen: (dx, dy) => {
+        focusSeqRef.current += 1;
         runtimeRef.current?.panByScreenDelta(dx, dy);
       },
       onOrbitByDelta: (deltaYawRad, deltaPitchRad) => {
+        focusSeqRef.current += 1;
         const rt = runtimeRef.current;
         if (!rt) return;
         const next = rt.orbitByDelta(deltaYawRad, deltaPitchRad);
@@ -2274,7 +2320,7 @@ export function AtlasThreeWorkstation({
           type="button"
           data-atlas-panel-fold="layers"
           aria-expanded={layersOpen}
-          className={`pointer-events-auto flex min-h-11 items-center gap-2 rounded-lg border px-3.5 text-sm font-semibold shadow-lg backdrop-blur-md transition-colors ${layersOpen
+          className={`group pointer-events-auto flex min-h-11 items-center gap-2 rounded-lg border px-3.5 text-sm font-semibold shadow-lg backdrop-blur-md transition-colors ${layersOpen
             ? 'border-primary bg-primary text-primary-foreground'
             : 'border-border/90 bg-card/90 text-foreground hover:border-accent hover:bg-accent hover:text-accent-foreground'
             }`}
@@ -2286,9 +2332,9 @@ export function AtlasThreeWorkstation({
             data-atlas-zoom-level-badge
             data-atlas-zoom-active-map={zoomLayerState.activeMapId ?? ''}
             data-atlas-zoom-depth={zoomLayerState.activeDepth}
-            className={`max-w-[9rem] truncate rounded px-1.5 py-0.5 text-[11px] font-semibold ${layersOpen
+            className={`max-w-[9rem] truncate rounded px-1.5 py-0.5 text-[11px] font-semibold transition-colors ${layersOpen
               ? 'bg-primary-foreground/20 text-primary-foreground'
-              : 'bg-primary/15 text-primary'
+              : 'bg-primary/15 text-primary group-hover:bg-accent-foreground/15 group-hover:text-accent-foreground'
               }`}
           >
             {zoomLayerState.activeLabelDe}
@@ -2442,9 +2488,9 @@ export function AtlasThreeWorkstation({
         ) : null}
       </div>
 
-      {/* TOP-CENTER Minimal Floating Glass Pill (single-row on desktop; drops cleanly below corner toggles on narrow phone!) */}
+      {/* TOP-CENTER Minimal Floating Glass Pill (single-row on desktop; yields cleanly when drawer is open on Phone/Tablet!) */}
       <div
-        className="pointer-events-none absolute left-1/2 top-16 z-[6] flex max-w-[calc(100%-1.5rem)] -translate-x-1/2 items-center justify-center sm:top-3 sm:max-w-[calc(100%-15rem)]"
+        className={`pointer-events-none absolute left-1/2 top-16 z-[6] ${layersOpen ? 'hidden lg:flex' : 'flex'} max-w-[calc(100%-1.5rem)] -translate-x-1/2 items-center justify-center sm:top-3 sm:max-w-[calc(100%-15rem)]`}
         data-atlas-workstation-topbar
       >
         <div className="pointer-events-auto flex max-w-full flex-wrap items-center justify-center gap-1 rounded-xl border border-border/90 bg-card/90 p-1 shadow-lg backdrop-blur-md lg:flex-nowrap">
@@ -2982,9 +3028,9 @@ export function AtlasThreeWorkstation({
         ) : null}
       </div>
 
-      {/* BOTTOM-CENTER Floating Scale & Navigation Taskbar (Original SagaTree .scale-widget!) */}
+      {/* BOTTOM-CENTER Floating Scale & Navigation Taskbar (clears Phone shell bottom nav via bottom-16 sm:bottom-3!) */}
       <div
-        className="pointer-events-auto absolute bottom-3 left-1/2 z-[6] flex -translate-x-1/2 items-center gap-1 whitespace-nowrap rounded-xl border border-border/90 bg-card/92 px-2 py-1 shadow-xl backdrop-blur-md"
+        className="pointer-events-auto absolute bottom-16 left-1/2 z-[6] flex -translate-x-1/2 items-center gap-1 whitespace-nowrap rounded-xl border border-border/90 bg-card/92 px-2 py-1 shadow-xl backdrop-blur-md sm:bottom-3"
         data-atlas-bottom-taskbar
         role="region"
         aria-label="Kartenmaßstab und Navigation"
@@ -2992,7 +3038,7 @@ export function AtlasThreeWorkstation({
         <button
           type="button"
           className="hidden min-h-9 items-center whitespace-nowrap border-r border-border/80 pr-2.5 font-mono text-[11px] tabular-nums text-muted-foreground transition-colors hover:text-foreground sm:inline-flex"
-          title={`Kamera zentrieren · ${formatAtlasSpanLabelDe(hudSpan, mapScale)}`}
+          title={scaleHud.detailTitleDe}
           onClick={() => runtimeRef.current?.resetCamera()}
         >
           {hudCoords}
@@ -3009,11 +3055,13 @@ export function AtlasThreeWorkstation({
 
         <button
           type="button"
-          className="min-h-11 min-w-[3.4rem] rounded-md px-1.5 font-mono text-xs font-bold text-foreground transition-colors hover:bg-muted/60"
-          title={formatAtlasSpanLabelDe(hudSpan, mapScale)}
+          data-atlas-scale-readout
+          data-atlas-zoom-level={scaleHud.zoomLevel}
+          className="min-h-11 min-w-[4.2rem] rounded-md px-1.5 font-mono text-xs font-bold tabular-nums text-foreground transition-colors hover:bg-muted/60"
+          title={scaleHud.detailTitleDe}
           onClick={() => runtimeRef.current?.resetCamera()}
         >
-          {zoomPct}%
+          {scaleHud.shortLabel}
         </button>
 
         <button

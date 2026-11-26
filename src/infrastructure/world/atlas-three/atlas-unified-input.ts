@@ -49,6 +49,13 @@ export type UnifiedWheelAction =
     };
 
 const LINE_HEIGHT_PX = 16;
+/** Per-event clamped zoom impulse so browser `deltaMode` / trackpad bursts never jump wildly. */
+const MAX_ZOOM_DELTA_PER_EVENT = 220;
+
+function clampZoomDelta(raw: number): number {
+  if (!Number.isFinite(raw)) return 0;
+  return Math.max(-MAX_ZOOM_DELTA_PER_EVENT, Math.min(MAX_ZOOM_DELTA_PER_EVENT, raw));
+}
 
 /**
  * Normalize DOM wheel deltas across `deltaMode` 0 (pixels), 1 (lines), 2 (pages) (Checklist E5).
@@ -76,10 +83,10 @@ export function classifyUnifiedWheelGesture(ev: NormalizedWheelInput): UnifiedWh
 
   // 1) Chromium / Firefox Trackpad Pinch (or Ctrl+Wheel) → Zoom toward cursor (E3)
   if (ev.ctrlKey) {
-    // Trackpad pinch wheel deltas are typically small (~±2..25 px); scale smoothly.
+    // Trackpad pinch wheel deltas are typically small (~±2..25 px); scale smoothly & clamp.
     return {
       kind: 'pinch-zoom',
-      zoomDelta: dy * 4.5,
+      zoomDelta: clampZoomDelta(dy * 4.5),
       clientX: ev.clientX,
       clientY: ev.clientY,
     };
@@ -98,7 +105,7 @@ export function classifyUnifiedWheelGesture(ev: NormalizedWheelInput): UnifiedWh
   if (ev.metaKey) {
     return {
       kind: 'wheel-zoom',
-      zoomDelta: dy,
+      zoomDelta: clampZoomDelta(dy),
       clientX: ev.clientX,
       clientY: ev.clientY,
     };
@@ -122,7 +129,7 @@ export function classifyUnifiedWheelGesture(ev: NormalizedWheelInput): UnifiedWh
   // 5) Standard physical mouse wheel → Zoom toward cursor
   return {
     kind: 'wheel-zoom',
-    zoomDelta: dy,
+    zoomDelta: clampZoomDelta(dy),
     clientX: ev.clientX,
     clientY: ev.clientY,
   };

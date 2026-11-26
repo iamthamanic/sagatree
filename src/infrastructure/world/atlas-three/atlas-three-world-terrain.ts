@@ -171,6 +171,15 @@ export class AtlasThreeWorldTerrain {
     return this.source;
   }
 
+  /** Mounted terrain chunk meshes for accurate 3D raycast picking under cursor (Phase A). */
+  getChunkMeshes(): readonly THREE.Object3D[] {
+    const out: THREE.Object3D[] = [];
+    for (const node of this.chunks.values()) {
+      out.push(node.mesh);
+    }
+    return out;
+  }
+
   sampleElevation(worldX: number, worldZ: number): number {
     if (!this.source) return 0;
     return sampleWorldHeight(this.source, worldX, worldZ) + ATLAS_TERRAIN_CHUNK_MAX_LOD * TERRAIN_LOD_LIFT_STEP;

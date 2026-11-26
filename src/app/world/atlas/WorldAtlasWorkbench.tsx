@@ -957,17 +957,14 @@ export function WorldAtlasWorkbench({
     [editor.activeMapId, worldPlaces, worldLinks],
   );
 
-  // Keep WebGL nav highlight in sync with the active primary map.
+  // Keep WebGL nav highlight in sync with the active primary map's true shallowest owner
+  // (never drift to a child landmark like Whisper Road / Marktplatz sharing the same map!).
   useEffect(() => {
     const mapId = editor.activeMapId;
     if (!mapId) return;
-    const match = worldPlaces.find(
-      (p) =>
-        p.status !== 'archived' &&
-        worldLinks.some((l) => l.placeId === p.id && l.mapId === mapId && l.usage === 'primary'),
-    );
-    if (match) {
-      setActivePlaceId(match.id);
+    const owner = atlasMapOwnerPlace(mapId, worldPlaces, worldLinks);
+    if (owner) {
+      setActivePlaceId(owner.id);
       return;
     }
     if (mapId === worldPrimaryMapId) {

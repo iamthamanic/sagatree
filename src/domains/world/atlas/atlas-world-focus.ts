@@ -72,10 +72,12 @@ export function recommendedWorldCameraSpan(input: {
   }
   // Settlement / village-scale (2..30 world units): show full town clearly on shared ground
   if (safeSpan >= 2) {
-    return Math.round(clamp(safeSpan * 0.36, 1.2, 14) * 1000) / 1000;
+    return Math.round(clamp(safeSpan * 0.38, 1.4, 14) * 1000) / 1000;
   }
-  // Building / interior / room-scale (< 2 world units): frame building interior crisply
-  return Math.round(clamp(safeSpan * 0.62, 0.08, 1.4) * 10000) / 10000;
+  // Building / interior / room-scale (< 2 world units): frame building/room at realistic readable scale
+  // without making a single building look like another vast landscape
+  const minRoomSpan = depth >= 6 ? 0.09 : 0.16;
+  return Math.round(clamp(safeSpan * 0.72, minRoomSpan, 1.4) * 10000) / 10000;
 }
 
 /**

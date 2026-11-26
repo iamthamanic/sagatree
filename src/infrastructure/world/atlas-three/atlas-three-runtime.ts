@@ -39,8 +39,10 @@ import {
   dampAtlasThreeView,
   defaultAtlasThreePitch,
   interpolateAtlasThreeView,
+  solveAnchoredCameraFocus,
   type AtlasThreeCameraMode,
   type AtlasThreeCameraView,
+  type AtlasThreeWorldPoint3,
 } from './atlas-three-camera';
 import {
   ATLAS_THREE_SURFACES,
@@ -473,6 +475,14 @@ export class AtlasThreeRuntime {
     pitchRad: autoAtlasThreePitchForSpan('diorama-oblique', 430),
   };
   private targetView: AtlasThreeCameraView = { ...this.view };
+  /** Active cursor-pinned 3D world anchor maintained across every intermediate damped frame (Phase A). */
+  private zoomAnchor: {
+    readonly anchorWorld: AtlasThreeWorldPoint3;
+    readonly targetNdcX: number;
+    readonly targetNdcY: number;
+    readonly screenPx: number;
+    readonly screenPy: number;
+  } | null = null;
   private flight: {
     readonly from: AtlasThreeCameraView;
     readonly to: AtlasThreeCameraView;
@@ -835,6 +845,7 @@ export class AtlasThreeRuntime {
   /** Two-finger trackpad scroll / drag pan in screen pixels (respects camera yaw). */
   panByScreenDelta(deltaPxX: number, deltaPxY: number): AtlasThreeCameraView {
     this.flight = null;
+    this.zoomAnchor = null;
     const h = Math.max(1, this.config.canvas.clientHeight || 800);
     const worldPerPx = (this.targetView.span * 2) / h;
     const dx = deltaPxX * worldPerPx;
@@ -852,6 +863,7 @@ export class AtlasThreeRuntime {
   /** Incremental yaw/pitch orbit delta (Shift+Wheel / Trackpad orbit). */
   orbitByDelta(deltaYawRad: number, deltaPitchRad: number): AtlasThreeCameraView {
     this.flight = null;
+    this.zoomAnchor = null;
     const nextMode: AtlasThreeCameraMode =
       this.targetView.mode === 'ortho-topdown' ? 'diorama-oblique' : this.targetView.mode;
     this.manualPitchOverride = true;
@@ -883,10 +895,15 @@ export class AtlasThreeRuntime {
   setView(
     next: Partial<AtlasThreeCameraView>,
     animate = false,
-    opts?: { readonly manualPitch?: boolean; readonly preserveMinSpan?: boolean },
+    opts?: {
+      readonly manualPitch?: boolean;
+      readonly preserveMinSpan?: boolean;
+      readonly durationMs?: number;
+    },
   ): void {
+    this.zoomAnchor = null;
     const targetMode: AtlasThreeCameraMode = next.mode ?? this.targetView.mode;
-    const minSpan = this.worldMaps.length > 0 || opts?.preserveMinSpan ? 0.02 : 16;
+    const minSpan = this.worldMaps.length > 0 || opts?.preserveMinSpan ? 0.08 : 16;
     const nextSpan = Math.max(minSpan, Math.min(2400, next.span ?? this.targetView.span));
     if (opts?.manualPitch) {
       this.manualPitchOverride = true;
@@ -912,9 +929,10 @@ export class AtlasThreeRuntime {
         typeof window !== 'undefined' &&
         window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
       this.targetView = target;
+      const durationMs = Math.max(120, Math.min(600, opts?.durationMs ?? 420));
       this.flight = reduced
         ? null
-        : { from: { ...this.view }, to: target, startMs: performance.now(), durationMs: 520 };
+        : { from: { ...this.view }, to: target, startMs: performance.now(), durationMs };
       if (!this.flight) {
         this.view = target;
         this.onCameraChange?.(this.view);
@@ -928,23 +946,86 @@ export class AtlasThreeRuntime {
   }
 
   /**
-   * Butter-smooth Google-Maps inertia wheel zoom toward the exact world point under (px, py),
-   * with automatic Diorama pitch adaptation.
+   * True 3D surface/terrain raycast under canvas pixel `(px, py)` (Phase A):
+   * hits rendered terrain chunks and buildings/plazas first, with a clean heightfield-corrected
+   * ground-plane fallback over open ocean or empty space.
    */
-  zoomAtScreen(deltaY: number, px: number, py: number): AtlasThreeCameraView {
-    this.flight = null;
-    const before = this.screenToGround(px, py);
-    const factor = Math.exp(deltaY * 0.00125);
-    const minSpan = this.worldMaps.length > 0 ? 0.02 : 16;
-    const nextSpan = Math.max(minSpan, Math.min(2400, this.targetView.span * factor));
-    const ratio = nextSpan / Math.max(0.02, this.targetView.span);
+  pickWorldPointAtScreen(
+    px: number,
+    py: number,
+  ): {
+    readonly x: number;
+    readonly y: number;
+    readonly z: number;
+    readonly hitKind: 'surface' | 'terrain' | 'plane';
+  } | null {
+    const w = Math.max(1, this.config.canvas.clientWidth || 1);
+    const h = Math.max(1, this.config.canvas.clientHeight || 1);
+    const ndc = new THREE.Vector2((px / w) * 2 - 1, -(py / h) * 2 + 1);
+    this.raycaster.setFromCamera(ndc, this.camera);
 
-    let nextX = this.targetView.x;
-    let nextZ = this.targetView.z;
-    if (before) {
-      nextX = before.x + (this.targetView.x - before.x) * ratio;
-      nextZ = before.z + (this.targetView.z - before.z) * ratio;
+    if (this.worldMaps.length > 0) {
+      // Check rendered buildings/overlays AND shared terrain chunks
+      const targets: THREE.Object3D[] = [
+        ...this.multiMap.getAllPickables(),
+        ...this.multiMap.worldTerrain.getChunkMeshes(),
+      ];
+      if (targets.length > 0) {
+        const hits = this.raycaster.intersectObjects(targets, false);
+        for (const hit of hits) {
+          // Ignore ocean backing planes when solid terrain/building is hit
+          const name = hit.object.name || '';
+          if (name.includes('ocean') || name.includes('water')) continue;
+          const hitKind = name.startsWith('atlas3:terrain-chunk:') ? 'terrain' : 'surface';
+          return { x: hit.point.x, y: hit.point.y, z: hit.point.z, hitKind };
+        }
+      }
+    } else if (this.pickables.length > 0) {
+      const hits = this.raycaster.intersectObjects(this.pickables, false);
+      for (const hit of hits) {
+        if (hit.object.name === 'atlas3:water') continue;
+        return { x: hit.point.x, y: hit.point.y, z: hit.point.z, hitKind: 'surface' };
+      }
     }
+
+    const out = new THREE.Vector3();
+    if (!this.raycaster.ray.intersectPlane(this.groundPlane, out)) return null;
+    const sampledY =
+      this.worldMaps.length > 0 ? this.multiMap.getActiveEditorElevationY(out.x, out.z) : out.y;
+    return { x: out.x, y: sampledY, z: out.z, hitKind: 'plane' };
+  }
+
+  /**
+   * Exact projection-anchored zoom by a multiplicative span factor around canvas pixel `(px, py)`.
+   * Shared by mouse wheel, trackpad pinch, AND +/- zoom buttons so every zoom path preserves
+   * the exact 3D world point under `(px, py)` across every intermediate damped frame.
+   */
+  zoomByFactorAtScreen(factor: number, px: number, py: number): AtlasThreeCameraView {
+    this.flight = null;
+    const w = Math.max(1, this.config.canvas.clientWidth || 1280);
+    const h = Math.max(1, this.config.canvas.clientHeight || 800);
+    const aspect = w / h;
+    const ndcX = (px / w) * 2 - 1;
+    const ndcY = -(py / h) * 2 + 1;
+
+    // Keep the exact original 3D world anchor across consecutive ticks at the same screen spot (<= 4 px)
+    // so zero raycast quantization drift accumulates during a multi-step wheel gesture!
+    let anchorWorld: AtlasThreeWorldPoint3 | null = null;
+    if (
+      this.zoomAnchor &&
+      Math.hypot(px - this.zoomAnchor.screenPx, py - this.zoomAnchor.screenPy) <= 4
+    ) {
+      anchorWorld = this.zoomAnchor.anchorWorld;
+    } else {
+      const picked = this.pickWorldPointAtScreen(px, py);
+      if (picked) {
+        anchorWorld = { x: picked.x, y: picked.y, z: picked.z };
+      }
+    }
+
+    const minSpan = this.worldMaps.length > 0 ? 0.08 : 16;
+    const safeFactor = Math.max(0.45, Math.min(2.2, Number.isFinite(factor) ? factor : 1));
+    const nextSpan = Math.max(minSpan, Math.min(2400, this.targetView.span * safeFactor));
 
     const nextPitch =
       this.targetView.mode === 'ortho-topdown'
@@ -953,14 +1034,69 @@ export class AtlasThreeRuntime {
           ? this.targetView.pitchRad
           : autoAtlasThreePitchForSpan(this.targetView.mode, nextSpan);
 
+    const sampleFocusElevation =
+      this.worldMaps.length > 0
+        ? (wx: number, wz: number) => this.multiMap.getActiveEditorElevationY(wx, wz)
+        : undefined;
+
+    let nextX = this.targetView.x;
+    let nextZ = this.targetView.z;
+    let nextY = this.targetView.y ?? 0;
+
+    if (anchorWorld) {
+      const candidate: AtlasThreeCameraView = {
+        ...this.targetView,
+        span: nextSpan,
+        pitchRad: nextPitch,
+      };
+      const solved = solveAnchoredCameraFocus({
+        view: candidate,
+        anchorWorld,
+        targetNdcX: ndcX,
+        targetNdcY: ndcY,
+        aspect,
+        sampleFocusElevation,
+      });
+      nextX = solved.x;
+      nextZ = solved.z;
+      nextY = solved.y;
+      this.zoomAnchor = {
+        anchorWorld,
+        targetNdcX: ndcX,
+        targetNdcY: ndcY,
+        screenPx: px,
+        screenPy: py,
+      };
+    }
+
     this.targetView = {
       ...this.targetView,
       x: nextX,
       z: nextZ,
+      y: nextY,
       span: nextSpan,
       pitchRad: nextPitch,
     };
+
+    const reduced =
+      typeof window !== 'undefined' &&
+      window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    if (reduced) {
+      this.view = { ...this.targetView };
+      this.zoomAnchor = null;
+      this.onCameraChange?.(this.view);
+    }
+
     return { ...this.targetView };
+  }
+
+  /**
+   * Cursor-anchored logarithmic wheel/pinch zoom toward the exact 3D point under `(px, py)`.
+   */
+  zoomAtScreen(deltaY: number, px: number, py: number): AtlasThreeCameraView {
+    const clampedDelta = Math.max(-240, Math.min(240, Number.isFinite(deltaY) ? deltaY : 0));
+    const factor = Math.exp(clampedDelta * 0.00125);
+    return this.zoomByFactorAtScreen(factor, px, py);
   }
 
   /** Smoothly ease yaw (e.g. clicking the compass dial snaps smoothly back to 0° North). */
@@ -1424,8 +1560,10 @@ export class AtlasThreeRuntime {
 
   private syncCameraAndLighting(w: number, h: number, elapsedSec: number): void {
     const aspect = w / Math.max(1, h);
-    const activeY =
+    const sampledY =
       this.worldMaps.length > 0 ? this.multiMap.getActiveEditorElevationY(this.view.x, this.view.z) : 0;
+    const activeY =
+      this.zoomAnchor && Number.isFinite(this.view.y) ? this.view.y! : sampledY;
     this.groundPlane.constant = -activeY;
     const rig = buildAtlasThreeCameraRig({ ...this.view, y: activeY }, aspect);
     if (rig.perspective) {
@@ -1620,7 +1758,20 @@ export class AtlasThreeRuntime {
           this.onCameraChange?.(this.view);
         }
       } else {
-        const damped = dampAtlasThreeView(this.view, this.targetView, dtSec, 11.5);
+        const aspect = w / Math.max(1, h);
+        const anchorCtx = this.zoomAnchor
+          ? {
+              anchorWorld: this.zoomAnchor.anchorWorld,
+              targetNdcX: this.zoomAnchor.targetNdcX,
+              targetNdcY: this.zoomAnchor.targetNdcY,
+              aspect,
+              sampleFocusElevation:
+                this.worldMaps.length > 0
+                  ? (wx: number, wz: number) => this.multiMap.getActiveEditorElevationY(wx, wz)
+                  : undefined,
+            }
+          : null;
+        const damped = dampAtlasThreeView(this.view, this.targetView, dtSec, 12.5, anchorCtx);
         if (!damped.settled) {
           this.view = damped.next;
           if (now - this.lastCameraNotifyMs > 48) {
@@ -1628,14 +1779,18 @@ export class AtlasThreeRuntime {
             this.onCameraChange?.(this.view);
           }
         } else if (
-          this.view.x !== this.targetView.x ||
-          this.view.z !== this.targetView.z ||
-          this.view.span !== this.targetView.span ||
-          this.view.yawRad !== this.targetView.yawRad ||
-          this.view.pitchRad !== this.targetView.pitchRad
+          this.view.x !== damped.next.x ||
+          this.view.z !== damped.next.z ||
+          this.view.span !== damped.next.span ||
+          this.view.yawRad !== damped.next.yawRad ||
+          this.view.pitchRad !== damped.next.pitchRad
         ) {
-          this.view = { ...this.targetView };
+          this.view = damped.next;
+          this.targetView = { ...damped.next };
+          this.zoomAnchor = null;
           this.onCameraChange?.(this.view);
+        } else {
+          this.zoomAnchor = null;
         }
       }
 

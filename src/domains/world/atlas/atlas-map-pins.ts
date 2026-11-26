@@ -93,7 +93,26 @@ export function atlasMapOwnerPlace(
   const ownerIds = new Set(
     links.filter((l) => l.mapId === mapId && l.usage === 'primary').map((l) => l.placeId),
   );
-  return places.find((p) => p.status !== 'archived' && ownerIds.has(p.id)) ?? null;
+  const candidates = places.filter((p) => p.status !== 'archived' && ownerIds.has(p.id));
+  if (candidates.length === 0) return null;
+  if (candidates.length === 1) return candidates[0]!;
+  // Prefer the shallowest owner whose parent does NOT share the same primary map
+  // (so e.g. `Dornhain` always wins over child landmarks like `Whisper Road` / `Marktplatz`).
+  const byId = new Map(places.map((p) => [p.id, p]));
+  const depthOf = (p: WorldPlaceVm): number => {
+    let d = 0;
+    let cur: WorldPlaceVm | undefined = p;
+    const seen = new Set<string>();
+    while (cur?.parentPlaceId && !seen.has(cur.id)) {
+      seen.add(cur.id);
+      d += 1;
+      cur = byId.get(cur.parentPlaceId);
+    }
+    return d;
+  };
+  const topOwners = candidates.filter((p) => !p.parentPlaceId || !ownerIds.has(p.parentPlaceId));
+  const pool = topOwners.length > 0 ? topOwners : candidates;
+  return [...pool].sort((a, b) => depthOf(a) - depthOf(b))[0] ?? null;
 }
 
 /**

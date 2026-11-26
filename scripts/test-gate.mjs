@@ -4533,6 +4533,7 @@ function checkSwsSharedWorldSpace() {
     'scripts/atlas-default-world.self-test.mjs',
     'scripts/atlas-world-scene-plan.self-test.mjs',
     'scripts/atlas-world-focus.self-test.mjs',
+    'scripts/atlas-camera-anchor.self-test.mjs',
     'scripts/sws-renderer-input-history.self-test.mjs',
     'scripts/scm-invariants.self-test.mjs',
     'scripts/scm-propagation.self-test.mjs',

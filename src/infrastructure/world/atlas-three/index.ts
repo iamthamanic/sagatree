@@ -9,10 +9,15 @@ export {
   clampAtlasThreePitch,
   dampAtlasThreeView,
   defaultAtlasThreePitch,
+  formatAtlasTruthfulScaleHud,
   interpolateAtlasThreeView,
+  projectWorldPointWithRig,
+  solveAnchoredCameraFocus,
+  unprojectNdcToPlaneWithRig,
   type AtlasThreeCameraMode,
   type AtlasThreeCameraRig,
   type AtlasThreeCameraView,
+  type AtlasThreeWorldPoint3,
 } from './atlas-three-camera';
 
 export {
