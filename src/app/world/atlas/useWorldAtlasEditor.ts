@@ -988,6 +988,34 @@ export function useWorldAtlasEditor({
     ],
   );
 
+  /**
+   * SCM-04: Single-app-writer persistence helper (ATL2-H01) for multi-map SCM
+   * commits — persists an updated `generatorMeta` snapshot for any map in the
+   * current world via `worldAtlasService.upsertMap` (preserving SWS-01 guards).
+   */
+  const persistMapMeta = useCallback(
+    async (
+      vm: WorldAtlasMapVm,
+      nextMeta: Readonly<Record<string, unknown>>,
+    ): Promise<WorldAtlasMapVm> => {
+      return worldAtlasService.upsertMap({
+        worldProfileId: vm.worldProfileId,
+        mapId: vm.id,
+        parentMapId: vm.parentMapId,
+        kind: vm.kind,
+        title: vm.title,
+        sortOrder: vm.sortOrder,
+        bounds: vm.bounds,
+        layers: vm.layers,
+        basemapStoragePath: vm.basemapStoragePath,
+        azgaarMapStoragePath: vm.azgaarMapStoragePath,
+        generatorMeta: nextMeta,
+        expectedRevision: vm.revision,
+      });
+    },
+    [],
+  );
+
   /** ATL2-C04: contract-driven autosave decision (never save while conflicted). */
   const autosaveDecision = useCallback(() => {
     return decideAtlasAutosave({
@@ -1031,5 +1059,6 @@ export function useWorldAtlasEditor({
     mapCache,
     finishLodTransition,
     prefetchChildMap,
+    persistMapMeta,
   };
 }

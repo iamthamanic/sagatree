@@ -74,7 +74,7 @@ export function executeSpatialWorldOperation(
   plan: WorldOperationPlan,
 ): ExecuteSpatialWorldResult {
   const applied = applyWorldOperation(world, plan);
-  if (!applied.ok) {
+  if ('reasonDe' in applied) {
     return {
       ok: false,
       world,

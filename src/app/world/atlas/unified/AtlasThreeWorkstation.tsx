@@ -389,7 +389,7 @@ export function AtlasThreeWorkstation({
       };
     }
     const planRes = adapter.planIntent(intent);
-    if (!planRes.ok) {
+    if ('reasonDe' in planRes) {
       setSpatialErrorDe(planRes.reasonDe);
       return { ok: false, prompted: false, reasonDe: planRes.reasonDe };
     }
@@ -399,7 +399,7 @@ export function AtlasThreeWorkstation({
       return { ok: true, prompted: true, plan: planRes.plan };
     }
     void adapter.commitPlan(planRes.plan).then((res) => {
-      if (!res.ok) setSpatialErrorDe(res.reasonDe);
+      if ('reasonDe' in res) setSpatialErrorDe(res.reasonDe);
     });
     return { ok: true, prompted: false, plan: planRes.plan };
   }, []);
@@ -1525,7 +1525,7 @@ export function AtlasThreeWorkstation({
           const adapter = spatialContainmentRef.current;
           if (!adapter) return;
           void adapter.commitPlan(plan).then((res) => {
-            if (!res.ok) setSpatialErrorDe(res.reasonDe);
+            if ('reasonDe' in res) setSpatialErrorDe(res.reasonDe);
             else setSpatialErrorDe(null);
           });
         }}

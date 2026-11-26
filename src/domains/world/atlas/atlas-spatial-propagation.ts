@@ -1005,7 +1005,7 @@ function planResizeOrMove(
 
   // Walk carrier chain upward (INV-3)
   const chainRes = resolveCarrierChain(world, target.id);
-  if (!chainRes.ok) {
+  if ('code' in chainRes) {
     return {
       ok: false,
       code: chainRes.code === 'carrier-cycle' ? 'cycle-rejected' : 'missing-carrier',

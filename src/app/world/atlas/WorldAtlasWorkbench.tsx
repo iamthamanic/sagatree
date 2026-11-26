@@ -629,20 +629,7 @@ export function WorldAtlasWorkbench({
         }
         if (editingAllowed && isHostLibraryEnabled()) {
           try {
-            const saved = await worldAtlasService.upsertMap({
-              worldProfileId,
-              mapId: vm.id,
-              parentMapId: vm.parentMapId,
-              kind: vm.kind,
-              title: vm.title,
-              sortOrder: vm.sortOrder,
-              bounds: vm.bounds,
-              layers: vm.layers,
-              basemapStoragePath: vm.basemapStoragePath,
-              azgaarMapStoragePath: vm.azgaarMapStoragePath,
-              generatorMeta: nextMeta,
-              expectedRevision: vm.revision,
-            });
+            const saved = await editor.persistMapMeta(vm, nextMeta);
             if (m.mapId !== editor.map.id) {
               updatedChildMap.set(m.mapId, saved);
             }
@@ -672,6 +659,8 @@ export function WorldAtlasWorkbench({
         const curHistory = spatialHistoryRef.current;
         const exec = executeSpatialWorldOperation(curWorld, curHistory, plan);
         if (!exec.ok) return exec;
+        spatialWorldRef.current = exec.world;
+        spatialHistoryRef.current = exec.history;
         setSpatialWorld(exec.world);
         setSpatialHistory(exec.history);
         await persistProjectedMapUpdates(exec.world, plan);
@@ -681,6 +670,8 @@ export function WorldAtlasWorkbench({
         const curWorld = spatialWorldRef.current ?? spatialWorld;
         const undone = undoSpatialWorldOperation(curWorld, spatialHistoryRef.current);
         if (!undone) return false;
+        spatialWorldRef.current = undone.world;
+        spatialHistoryRef.current = undone.history;
         setSpatialWorld(undone.world);
         setSpatialHistory(undone.history);
         return true;
@@ -689,6 +680,8 @@ export function WorldAtlasWorkbench({
         const curWorld = spatialWorldRef.current ?? spatialWorld;
         const redone = redoSpatialWorldOperation(curWorld, spatialHistoryRef.current);
         if (!redone) return false;
+        spatialWorldRef.current = redone.world;
+        spatialHistoryRef.current = redone.history;
         setSpatialWorld(redone.world);
         setSpatialHistory(redone.history);
         return true;

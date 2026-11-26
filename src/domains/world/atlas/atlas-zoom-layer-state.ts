@@ -44,7 +44,19 @@ export function deriveZoomLayerHierarchyState(input: {
   const byPrimaryMapId = new Map<string, AtlasZoomLayerNavNode>();
   for (const n of nodes) {
     byId.set(n.id, n);
-    if (n.primaryMapId) {
+  }
+  // Prefer the shallowest/owner node for each primaryMapId (so e.g. `Dornhain` is never
+  // overwritten by a child landmark like `Whisper Road` that shares Dornhain's map).
+  for (const n of nodes) {
+    if (!n.primaryMapId) continue;
+    const parent = n.parentId ? byId.get(n.parentId) : null;
+    const parentSharesMap = Boolean(parent && parent.primaryMapId === n.primaryMapId);
+    if (!byPrimaryMapId.has(n.primaryMapId) && !parentSharesMap) {
+      byPrimaryMapId.set(n.primaryMapId, n);
+    }
+  }
+  for (const n of nodes) {
+    if (n.primaryMapId && !byPrimaryMapId.has(n.primaryMapId)) {
       byPrimaryMapId.set(n.primaryMapId, n);
     }
   }

@@ -582,7 +582,7 @@ export function validateSpatialInvariants(
 
     // Cycle / missing carrier guard (INV-1 / INV-2)
     const chainRes = resolveCarrierChain(world, entity.id);
-    if (!chainRes.ok) {
+    if ('code' in chainRes) {
       violations.push({
         invariant: 'INV-2',
         code: chainRes.code,

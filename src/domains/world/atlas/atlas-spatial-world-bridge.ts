@@ -399,10 +399,20 @@ export function projectSpatialOperationToMapUpdates(input: {
   }
 
   const out: ProjectedMapMutation[] = [];
-  for (const [mapId, nextDoc] of docCopies) {
+  const allMapIds = new Set<string>([...docCopies.keys(), ...anchorUpdates.keys()]);
+  for (const mapId of allMapIds) {
+    const nextDoc = docCopies.get(mapId) ?? docsByMapId[mapId];
+    if (!nextDoc && !anchorUpdates.has(mapId)) continue;
     out.push({
       mapId,
-      nextDoc,
+      nextDoc: nextDoc ?? {
+        format: 'sagatree-unified-atlas-v1',
+        layers: { terrain: true, roads: true, region: true, city: true, interior: true, drawings: true, objects: true, grid: false },
+        strokes: [],
+        objects: [],
+        rooms: [],
+        walls: [],
+      },
       ...(anchorUpdates.has(mapId) ? { nextParentAnchor: anchorUpdates.get(mapId) } : {}),
     });
   }
