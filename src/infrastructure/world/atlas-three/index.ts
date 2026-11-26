@@ -29,6 +29,26 @@ export {
 } from './atlas-three-scene';
 
 export {
+  AtlasThreeMultiMapGraph,
+  applyLocalCutoutFilter,
+  applyWorldTransformToGroup,
+  type AtlasThreeMapGroupNode,
+  type AtlasThreeMultiMapStats,
+  type AtlasThreeWorldMapSource,
+} from './atlas-three-multimap';
+
+export {
+  bindAtlasUnifiedInput,
+  classifyUnifiedWheelGesture,
+  normalizeWheelDelta,
+  safariGestureScaleToZoomDelta,
+  type AtlasUnifiedInputCallbacks,
+  type NormalizedWheelInput,
+  type SafariGestureEventLike,
+  type UnifiedWheelAction,
+} from './atlas-unified-input';
+
+export {
   AtlasThreeRuntime,
   type AtlasThreeLightingMode,
   type AtlasThreeProjectedPin,

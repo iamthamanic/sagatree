@@ -14,13 +14,23 @@
  *    WebGL context-loss recovery, and screen-projected HTML Place Pins.
  */
 import * as THREE from 'three';
-import type {
-  AtlasGraphicsPresetId,
-  AtlasMapPin,
-  AtlasMapScale,
-  AtlasScatterKind,
-  UnifiedCanvasDoc,
+import {
+  buildAtlasWorldScenePlan,
+  createAtlasWorldCameraState,
+  type AtlasGraphicsPresetId,
+  type AtlasMapPin,
+  type AtlasMapScale,
+  type AtlasScatterKind,
+  type AtlasWorldCameraState,
+  type AtlasWorldSceneMapInput,
+  type AtlasWorldScenePlan,
+  type UnifiedCanvasDoc,
 } from '../../../domains/world/atlas';
+import {
+  AtlasThreeMultiMapGraph,
+  type AtlasThreeMultiMapStats,
+  type AtlasThreeWorldMapSource,
+} from './atlas-three-multimap';
 import {
   autoAtlasThreePitchForSpan,
   buildAtlasThreeCameraRig,
@@ -522,6 +532,11 @@ export class AtlasThreeRuntime {
   readonly renderer: THREE.WebGLRenderer;
   readonly scene = new THREE.Scene();
   private readonly root = new THREE.Group();
+  private readonly multiMap: AtlasThreeMultiMapGraph;
+  private worldMaps: readonly AtlasWorldSceneMapInput[] = [];
+  private worldSources = new Map<string, AtlasThreeWorldMapSource>();
+  private worldScenePlan: AtlasWorldScenePlan | null = null;
+  private clearRootCount = 0;
   private readonly gizmoGroup = new THREE.Group();
   private readonly selectionRing: THREE.Mesh;
   private readonly gizmoAxisX: THREE.Mesh;
@@ -805,6 +820,11 @@ export class AtlasThreeRuntime {
       this.sceneKey = '';
       this.onContextLostChange?.(false);
     };
+    this.multiMap = new AtlasThreeMultiMapGraph(
+      (key) => this.getMaterial(key),
+      this.waterMat,
+    );
+    this.scene.add(this.multiMap.rootGroup);
     config.canvas.addEventListener('webglcontextlost', this.onContextLostListener);
     config.canvas.addEventListener('webglcontextrestored', this.onContextRestoredListener);
 
@@ -879,6 +899,84 @@ export class AtlasThreeRuntime {
       }
       mat.needsUpdate = true;
     }
+  }
+
+  /**
+   * Register the spatial world map hierarchy for incremental Multi-Map rendering
+   * (SWS-04, Checklist D1–D5). When non-empty, `ensureScene()` mounts/updates
+   * map groups at their `ParentSpatialAnchor` transforms without calling `clearRoot()`.
+   */
+  setWorldSceneGraph(input: {
+    readonly maps: readonly AtlasWorldSceneMapInput[];
+    readonly sources: readonly AtlasThreeWorldMapSource[];
+  }): void {
+    this.worldMaps = input.maps;
+    this.worldSources = new Map(input.sources.map((s) => [s.mapId, s] as const));
+    this.worldScenePlan = null;
+  }
+
+  getWorldCameraState(): AtlasWorldCameraState {
+    return createAtlasWorldCameraState({
+      focusWorld: { x: this.targetView.x, y: this.targetView.z, z: 0 },
+      span: this.targetView.span,
+      yawRad: this.targetView.yawRad,
+      pitchRad: this.targetView.pitchRad,
+      projection: this.targetView.mode,
+    });
+  }
+
+  setWorldCameraState(state: AtlasWorldCameraState, animate = false): void {
+    this.setView(
+      {
+        mode: state.projection,
+        x: state.focusWorld.x,
+        z: state.focusWorld.y,
+        span: state.span,
+        yawRad: state.yawRad,
+        pitchRad: state.pitchRad,
+      },
+      animate,
+    );
+  }
+
+  /** Two-finger trackpad scroll / drag pan in screen pixels (respects camera yaw). */
+  panByScreenDelta(deltaPxX: number, deltaPxY: number): AtlasThreeCameraView {
+    this.flight = null;
+    const h = Math.max(1, this.config.canvas.clientHeight || 800);
+    const worldPerPx = (this.targetView.span * 2) / h;
+    const dx = deltaPxX * worldPerPx;
+    const dy = deltaPxY * worldPerPx;
+    const cos = Math.cos(this.targetView.yawRad);
+    const sin = Math.sin(this.targetView.yawRad);
+    this.targetView = {
+      ...this.targetView,
+      x: this.targetView.x + (dx * cos + dy * sin),
+      z: this.targetView.z + (-dx * sin + dy * cos),
+    };
+    return { ...this.targetView };
+  }
+
+  /** Incremental yaw/pitch orbit delta (Shift+Wheel / Trackpad orbit). */
+  orbitByDelta(deltaYawRad: number, deltaPitchRad: number): AtlasThreeCameraView {
+    this.flight = null;
+    const nextMode: AtlasThreeCameraMode =
+      this.targetView.mode === 'ortho-topdown' ? 'diorama-oblique' : this.targetView.mode;
+    this.manualPitchOverride = true;
+    this.targetView = {
+      ...this.targetView,
+      mode: nextMode,
+      yawRad: this.targetView.yawRad + deltaYawRad,
+      pitchRad: clampAtlasThreePitch(nextMode, this.targetView.pitchRad + deltaPitchRad),
+    };
+    return { ...this.targetView };
+  }
+
+  getMultiMapStats(): AtlasThreeMultiMapStats {
+    const stats = this.multiMap.getStats();
+    return {
+      ...stats,
+      clearRootCount: this.clearRootCount,
+    };
   }
 
   getView(): AtlasThreeCameraView {
@@ -1008,7 +1106,8 @@ export class AtlasThreeRuntime {
     };
     const mode = this.targetView.mode;
     const targetSpan = bounds.fitSpan;
-    const targetYaw = mode === 'ortho-topdown' ? 0 : 0.42;
+    // SWS-05 (E2): preserve current yaw orientation across mode/map framing.
+    const targetYaw = this.targetView.yawRad;
     const targetPitch = autoAtlasThreePitchForSpan(mode, targetSpan);
     this.manualPitchOverride = false;
 
@@ -1092,7 +1191,9 @@ export class AtlasThreeRuntime {
     const h = this.config.canvas.clientHeight || 1;
     const ndc = new THREE.Vector2((px / w) * 2 - 1, -(py / h) * 2 + 1);
     this.raycaster.setFromCamera(ndc, this.camera);
-    const hits = this.raycaster.intersectObjects(this.pickables, false);
+    const allPickables: THREE.Object3D[] =
+      this.worldMaps.length > 0 ? [...this.multiMap.getAllPickables()] : this.pickables;
+    const hits = this.raycaster.intersectObjects(allPickables, false);
     const objectIds = new Set((this.doc?.objects ?? []).map((o) => o.id));
     let fallback: string | null = null;
     for (const hit of hits) {
@@ -1115,11 +1216,19 @@ export class AtlasThreeRuntime {
     return [...(this.plan?.ids ?? [])].sort();
   }
 
-  getStats(): { readonly calls: number; readonly triangles: number; readonly rooms: number } {
+  getStats(): {
+    readonly calls: number;
+    readonly triangles: number;
+    readonly rooms: number;
+    readonly clearRootCount: number;
+    readonly activeMapCount: number;
+  } {
     return {
       calls: this.renderer.info.render.calls,
       triangles: this.renderer.info.render.triangles,
       rooms: this.doc?.rooms.length ?? 0,
+      clearRootCount: this.clearRootCount,
+      activeMapCount: this.worldMaps.length > 0 ? this.multiMap.getStats().groupCount : 1,
     };
   }
 
@@ -1150,6 +1259,7 @@ export class AtlasThreeRuntime {
   }
 
   private clearRoot(): void {
+    this.clearRootCount += 1;
     for (const child of [...this.root.children]) {
       this.root.remove(child);
       if (child instanceof THREE.Mesh) child.geometry.dispose();
@@ -1161,12 +1271,41 @@ export class AtlasThreeRuntime {
   }
 
   private ensureScene(): void {
+    if (this.worldMaps.length > 0) {
+      // SWS-04 Multi-Map Scene Graph: incremental sync driven by AtlasWorldScenePlan
+      // with ZERO clearRoot() calls during zoom/navigation (Checklist D1–D5).
+      this.root.visible = false;
+      this.multiMap.rootGroup.visible = true;
+      const w = Math.max(1, this.config.canvas.clientWidth || 1280);
+      const h = Math.max(1, this.config.canvas.clientHeight || 800);
+      const camState = this.getWorldCameraState();
+      const nextPlan = buildAtlasWorldScenePlan({
+        maps: this.worldMaps,
+        camera: camState,
+        viewportPx: { width: w, height: h },
+        previousPlan: this.worldScenePlan,
+      });
+      this.worldScenePlan = nextPlan;
+      this.multiMap.sync({
+        scenePlan: nextPlan,
+        sources: this.worldSources,
+        presetId: this.presetId,
+        hideRoofs: this.hideRoofs,
+        viewSpan: this.view.span,
+      });
+      this.applyStyleToMaterials();
+      this.updateSelectionGizmo();
+      return;
+    }
+
+    this.root.visible = true;
+    this.multiMap.rootGroup.visible = false;
     if (!this.doc) return;
-    // Automatic smooth roof cutaway when zoomed deep into a settlement building!
+    // Automatic smooth roof cutaway when zoomed deep into a settlement building.
     const autoCutaway = this.mapScale === 'settlement' && this.view.span < 58;
     const effectiveHideRoofs = this.hideRoofs || autoCutaway;
-    const lodBucket = this.view.span >= 420 ? 'far' : this.view.span >= 180 ? 'mid' : 'near';
-    const key = `${this.docRevision}|${lodBucket}|${this.presetId}|${effectiveHideRoofs ? 'cut' : 'full'}`;
+    // SWS-04 (D2): do NOT key on zoom lodBucket — zooming never triggers clearRoot()!
+    const key = `${this.docRevision}|${this.presetId}|${effectiveHideRoofs ? 'cut' : 'full'}`;
     if (key === this.sceneKey && this.plan) return;
 
     this.clearRoot();
@@ -1557,6 +1696,7 @@ export class AtlasThreeRuntime {
     window.cancelAnimationFrame(this.rafId);
     this.config.canvas.removeEventListener('webglcontextlost', this.onContextLostListener);
     this.config.canvas.removeEventListener('webglcontextrestored', this.onContextRestoredListener);
+    this.multiMap.dispose();
     this.clearRoot();
     for (const mat of this.materials.values()) mat.dispose();
     this.materials.clear();

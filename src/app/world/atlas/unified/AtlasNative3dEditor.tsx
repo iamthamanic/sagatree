@@ -17,6 +17,7 @@ import {
   type AtlasGraphicsPresetId,
   type AtlasMapPin,
   type AtlasMapScale,
+  type AtlasWorldCameraState,
   type UnifiedCanvasDoc,
   type WebglRuntimeState,
 } from '../../../../domains/world/atlas';
@@ -130,6 +131,11 @@ export type AtlasNative3dEditorProps = {
   readonly onUndo?: () => void;
   readonly onRedo?: () => void;
   readonly onCommitDoc?: (next: UnifiedCanvasDoc, recordHistory: boolean) => void;
+  readonly onBeginEditBatch?: () => void;
+  readonly onCommitEditBatch?: () => void;
+  readonly onCancelEditBatch?: () => void;
+  readonly sharedWorldCamera?: AtlasWorldCameraState | null;
+  readonly onSharedWorldCameraChange?: (next: AtlasWorldCameraState) => void;
   readonly onHierarchyBack?: () => void;
   readonly forcedTopDown?: boolean;
   readonly topBarExtra?: ReactNode;
@@ -402,6 +408,11 @@ export function AtlasNative3dEditor(props: AtlasNative3dEditorProps) {
     onUndo,
     onRedo,
     onCommitDoc,
+    onBeginEditBatch,
+    onCommitEditBatch,
+    onCancelEditBatch,
+    sharedWorldCamera = null,
+    onSharedWorldCameraChange,
     onHierarchyBack,
     forcedTopDown = false,
     topBarExtra = null,
@@ -438,6 +449,11 @@ export function AtlasNative3dEditor(props: AtlasNative3dEditorProps) {
           onUndo={() => onUndo?.()}
           onRedo={() => onRedo?.()}
           onCommitDoc={(next, recordHistory) => onCommitDoc?.(next, recordHistory)}
+          onBeginEditBatch={onBeginEditBatch}
+          onCommitEditBatch={onCommitEditBatch}
+          onCancelEditBatch={onCancelEditBatch}
+          sharedWorldCamera={sharedWorldCamera}
+          onSharedWorldCameraChange={onSharedWorldCameraChange}
           onNavSelect={onNavSelect}
           onNavAdd={onNavAdd}
           onNavViewChange={onNavViewChange}

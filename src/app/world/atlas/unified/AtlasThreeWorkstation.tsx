@@ -20,7 +20,6 @@ import {
   useState,
   type PointerEvent as ReactPointerEvent,
   type ReactNode,
-  type WheelEvent as ReactWheelEvent,
 } from 'react';
 import {
   ArrowsOutCardinal,
@@ -60,13 +59,16 @@ import {
   applyMapEdit,
   classifyAtlasPortalKind,
   computeAtlasPinZoomPresentation,
+  createAtlasWorldCameraState,
   formatAtlasSpanLabelDe,
   resolveContinuousZoomTransition,
+  switchWorldCameraProjection,
   type AtlasBiomeBrushId,
   type AtlasGraphicsPresetId,
   type AtlasMapPin,
   type AtlasMapScale,
   type AtlasTerrainSculptMode,
+  type AtlasWorldCameraState,
   type UnifiedCanvasDoc,
   type UnifiedCanvasLayerId,
   type UnifiedCanvasStampType,
@@ -75,6 +77,7 @@ import type { AtlasWebglNavNode, AtlasWebglNavTree } from '../../../../domains/w
 import {
   AtlasThreeRuntime,
   autoAtlasThreePitchForSpan,
+  bindAtlasUnifiedInput,
   defaultAtlasThreePitch,
   type AtlasThreeCameraMode,
   type AtlasThreeCameraView,
@@ -169,6 +172,13 @@ export type AtlasThreeWorkstationProps = {
   readonly onUndo: () => void;
   readonly onRedo: () => void;
   readonly onCommitDoc: (next: UnifiedCanvasDoc, recordHistory: boolean) => void;
+  /** SWS-08: batched 3D edit history hooks (atlas-edit-history parity with 2D). */
+  readonly onBeginEditBatch?: () => void;
+  readonly onCommitEditBatch?: () => void;
+  readonly onCancelEditBatch?: () => void;
+  /** SWS-05: shared World Camera state synced across 2D + 3D projections (E1/E2). */
+  readonly sharedWorldCamera?: AtlasWorldCameraState | null;
+  readonly onSharedWorldCameraChange?: (next: AtlasWorldCameraState) => void;
   readonly onNavSelect?: (payload: AtlasNativeNavSelectPayload) => void;
   readonly onNavAdd?: (payload: { readonly uiKind: string; readonly parentId: string }) => void;
   readonly onNavViewChange?: (view: {
@@ -251,6 +261,11 @@ export function AtlasThreeWorkstation({
   onUndo,
   onRedo,
   onCommitDoc,
+  onBeginEditBatch,
+  onCommitEditBatch,
+  onCancelEditBatch,
+  sharedWorldCamera = null,
+  onSharedWorldCameraChange,
   onNavSelect,
   onNavAdd,
   onNavViewChange,
@@ -267,6 +282,14 @@ export function AtlasThreeWorkstation({
   docRef.current = doc;
   const onCommitDocRef = useRef(onCommitDoc);
   onCommitDocRef.current = onCommitDoc;
+  const onBeginEditBatchRef = useRef(onBeginEditBatch);
+  onBeginEditBatchRef.current = onBeginEditBatch;
+  const onCommitEditBatchRef = useRef(onCommitEditBatch);
+  onCommitEditBatchRef.current = onCommitEditBatch;
+  const onCancelEditBatchRef = useRef(onCancelEditBatch);
+  onCancelEditBatchRef.current = onCancelEditBatch;
+  const onSharedWorldCameraChangeRef = useRef(onSharedWorldCameraChange);
+  onSharedWorldCameraChangeRef.current = onSharedWorldCameraChange;
   const onNavViewChangeRef = useRef(onNavViewChange);
   onNavViewChangeRef.current = onNavViewChange;
   const onWebglMountErrorRef = useRef(onWebglMountError);
@@ -360,8 +383,6 @@ export function AtlasThreeWorkstation({
       });
 
       const isPortal = portalKind === 'tavern-doors' || portalKind === 'crypt-gate';
-      const snapshotUrl =
-        !isPortal && portalKind !== 'outdoor-exit' ? (rt?.captureFrameDataUrl() ?? null) : null;
 
       if (rt && direction === 'in' && meta?.targetX !== undefined && meta?.targetZ !== undefined) {
         rt.flyTo(meta.targetX, meta.targetZ, Math.max(42, rt.getView().span * 0.48));
@@ -370,17 +391,24 @@ export function AtlasThreeWorkstation({
         rt.flyTo(cur.x, cur.z, Math.min(1800, cur.span * 1.45));
       }
 
+      // SWS-04 (D3): NEVER show AtlasPortalTransitionOverlay fade/screenshot mask for
+      // ordinary spatial transitions (Welt ↔ Kontinent ↔ Land ↔ Ort) — only real portals!
+      if (!isPortal) {
+        action();
+        return;
+      }
+
       transitionSeqRef.current += 1;
       const seqId = transitionSeqRef.current;
       setPortalTransition({
         id: seqId,
         kind: portalKind,
         label: meta?.label ?? null,
-        snapshotUrl,
+        snapshotUrl: null,
       });
 
-      const swapDelayMs = isPortal ? 180 : 40;
-      const clearDelayMs = isPortal ? 900 : 540;
+      const swapDelayMs = 180;
+      const clearDelayMs = 900;
       if (transitionTimerRef.current !== null) window.clearTimeout(transitionTimerRef.current);
       transitionTimerRef.current = window.setTimeout(() => {
         action();
@@ -411,6 +439,15 @@ export function AtlasThreeWorkstation({
             span: v.span,
             mode: v.mode,
           });
+          onSharedWorldCameraChangeRef.current?.(
+            createAtlasWorldCameraState({
+              focusWorld: { x: v.x, y: v.z, z: 0 },
+              span: v.span,
+              yawRad: v.yawRad,
+              pitchRad: v.pitchRad,
+              projection: v.mode,
+            }),
+          );
         },
         onProjectedPins: (pins) => setProjectedPins(pins),
         onContextLostChange: (lost) => setContextLost(lost),
@@ -477,34 +514,20 @@ export function AtlasThreeWorkstation({
     runtimeRef.current?.applyQualityProfile(graphicsPresetId);
   }, [graphicsPresetId]);
 
-  // Unified Draufsicht toggle: smoothly tilt straight overhead (90° North) inside the EXACT same UI!
+  // Unified Draufsicht toggle (SWS-05 E2): preserve focus, yawRad, and span across 2D ↔ 3D switch!
   useEffect(() => {
     if (prevTopDownRef.current === forcedTopDown) return;
     prevTopDownRef.current = forcedTopDown;
     const rt = runtimeRef.current;
     if (!rt) return;
-    const cur = rt.getTargetView();
-    if (forcedTopDown) {
-      setCameraMode('ortho-topdown');
-      rt.setView(
-        {
-          mode: 'ortho-topdown',
-          yawRad: 0,
-          pitchRad: Math.PI / 2,
-        },
-        true,
-      );
-    } else {
-      setCameraMode('diorama-oblique');
-      rt.setView(
-        {
-          mode: 'diorama-oblique',
-          yawRad: cur.yawRad === 0 ? 0.42 : cur.yawRad,
-          pitchRad: autoAtlasThreePitchForSpan('diorama-oblique', cur.span),
-        },
-        true,
-      );
-    }
+    const nextMode: AtlasThreeCameraMode = forcedTopDown ? 'ortho-topdown' : 'diorama-oblique';
+    const nextCam = switchWorldCameraProjection(rt.getWorldCameraState(), nextMode, {
+      pitchRad: forcedTopDown
+        ? Math.PI / 2
+        : autoAtlasThreePitchForSpan('diorama-oblique', rt.getTargetView().span),
+    });
+    setCameraMode(nextMode);
+    rt.setWorldCameraState(nextCam, true);
   }, [forcedTopDown]);
 
   // Push live canonical document + pins + visual modes into Three.js runtime.
@@ -550,7 +573,7 @@ export function AtlasThreeWorkstation({
 
     if (forcedTopDown) {
       setCameraMode('ortho-topdown');
-      rt.setView({ mode: 'ortho-topdown', yawRad: 0, pitchRad: Math.PI / 2 }, false);
+      rt.setView({ mode: 'ortho-topdown', pitchRad: Math.PI / 2 }, false);
       rt.frameContentBounds({ animateFrom: arrivalDir ?? 'in' });
       return;
     }
@@ -567,7 +590,7 @@ export function AtlasThreeWorkstation({
           x: navRestoreView.centerX,
           z: navRestoreView.centerY,
           span: clampedSpan,
-          yawRad: 0.42,
+          yawRad: sharedWorldCamera?.yawRad ?? rt.getTargetView().yawRad,
           pitchRad: autoAtlasThreePitchForSpan(targetMode, clampedSpan),
         },
         false,
@@ -619,19 +642,16 @@ export function AtlasThreeWorkstation({
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [canEdit, onRedo, onUndo, selectedId]);
 
+  // SWS-05 (E2): mode switch preserves focusWorld, yawRad, and span — NEVER resets yaw to 0!
   const switchCameraMode = useCallback((mode: AtlasThreeCameraMode) => {
     setCameraMode(mode);
     const rt = runtimeRef.current;
     if (!rt) return;
     const cur = rt.getTargetView();
-    rt.setView(
-      {
-        mode,
-        yawRad: mode === 'ortho-topdown' ? 0 : cur.yawRad === 0 ? 0.42 : cur.yawRad,
-        pitchRad: autoAtlasThreePitchForSpan(mode, cur.span),
-      },
-      true,
-    );
+    const nextCam = switchWorldCameraProjection(rt.getWorldCameraState(), mode, {
+      pitchRad: autoAtlasThreePitchForSpan(mode, cur.span),
+    });
+    rt.setWorldCameraState(nextCam, true);
   }, []);
 
   const zoomByFactor = useCallback((factor: number) => {
@@ -642,23 +662,17 @@ export function AtlasThreeWorkstation({
     rt.setView({ span: nextSpan }, true);
   }, []);
 
-  // Google-Maps butter-smooth inertia wheel zoom + automatic seamless cross-scale transitions!
-  const handleWheel = useCallback(
-    (ev: ReactWheelEvent<HTMLCanvasElement>) => {
-      ev.preventDefault();
+  const handleUnifiedZoomAtScreen = useCallback(
+    (zoomDelta: number, px: number, py: number) => {
       const rt = runtimeRef.current;
-      const canvas = canvasRef.current;
-      if (!rt || !canvas) return;
-      const rect = canvas.getBoundingClientRect();
-      const px = ev.clientX - rect.left;
-      const py = ev.clientY - rect.top;
-      const target = rt.zoomAtScreen(ev.deltaY, px, py);
+      if (!rt) return;
+      const target = rt.zoomAtScreen(zoomDelta, px, py);
 
       const transition = resolveContinuousZoomTransition({
         centerX: target.x,
         centerY: target.z,
         span: target.span,
-        wheelDeltaY: ev.deltaY,
+        wheelDeltaY: zoomDelta,
         hasParentMap,
         pins: mapPins,
         mapScale,
@@ -694,6 +708,26 @@ export function AtlasThreeWorkstation({
     },
     [hasParentMap, mapIdByPlaceId, mapPins, mapScale, navNodeById, onHierarchyBack, onNavSelect, triggerSmoothLevelTransition],
   );
+
+  // SWS-06 (E3–E5): Non-passive wheel + Safari gesturestart/change/end listener for
+  // MacBook Trackpad Pinch (ctrlKey+wheel / Safari gesture), Two-Finger Pan, Shift+Wheel Orbit,
+  // and deltaMode normalization without browser-zoom conflicts.
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    return bindAtlasUnifiedInput(canvas, {
+      onZoomAtScreen: handleUnifiedZoomAtScreen,
+      onPanByScreen: (dx, dy) => {
+        runtimeRef.current?.panByScreenDelta(dx, dy);
+      },
+      onOrbitByDelta: (deltaYawRad, deltaPitchRad) => {
+        const rt = runtimeRef.current;
+        if (!rt) return;
+        const next = rt.orbitByDelta(deltaYawRad, deltaPitchRad);
+        if (next.mode !== cameraMode) setCameraMode(next.mode);
+      },
+    });
+  }, [cameraMode, handleUnifiedZoomAtScreen]);
 
   const handlePointerDown = useCallback(
     (ev: ReactPointerEvent<HTMLCanvasElement>) => {
@@ -751,6 +785,8 @@ export function AtlasThreeWorkstation({
       }
 
       if (activeTool === 'height' && canEdit) {
+        // SWS-08 (F1/F2): batch entire height sculpt stroke as ONE undoable entry
+        onBeginEditBatchRef.current?.();
         const op: AtlasTerrainSculptMode = ev.shiftKey ? 'lower' : sculptMode;
         const next = applyAtlasTerrainSculptDab(docRef.current, {
           x: ground.x,
@@ -759,13 +795,15 @@ export function AtlasThreeWorkstation({
           strength: sculptStrength,
           op,
         });
-        onCommitDocRef.current(next, true);
+        onCommitDocRef.current(next, !onBeginEditBatchRef.current);
         dragRef.current = { kind: 'height' };
         canvas.setPointerCapture(ev.pointerId);
         return;
       }
 
       if (activeTool === 'biome' && canEdit) {
+        // SWS-08 (F1/F2): batch entire biome stroke as ONE undoable entry
+        onBeginEditBatchRef.current?.();
         const spec = ATLAS_BIOME_BRUSHES.find((b) => b.id === biomeId) ?? ATLAS_BIOME_BRUSHES[0]!;
         const strokeId = uid();
         const next = applyMapEdit(docRef.current, {
@@ -780,7 +818,7 @@ export function AtlasThreeWorkstation({
             ],
           },
         });
-        onCommitDocRef.current(next, true);
+        onCommitDocRef.current(next, !onBeginEditBatchRef.current);
         dragRef.current = { kind: 'biome', strokeId };
         canvas.setPointerCapture(ev.pointerId);
         return;
@@ -803,6 +841,7 @@ export function AtlasThreeWorkstation({
         setSelectedId(picked);
         if (obj && canEdit) {
           if (activeTool === 'rotate') {
+            onBeginEditBatchRef.current?.();
             dragRef.current = {
               kind: 'rotate-object',
               id: obj.id,
@@ -813,6 +852,7 @@ export function AtlasThreeWorkstation({
             return;
           }
           if (activeTool === 'scale') {
+            onBeginEditBatchRef.current?.();
             dragRef.current = {
               kind: 'scale-object',
               id: obj.id,
@@ -823,6 +863,7 @@ export function AtlasThreeWorkstation({
             return;
           }
           if (activeTool === 'move' || activeTool === 'select') {
+            onBeginEditBatchRef.current?.();
             dragRef.current = {
               kind: 'move-object',
               id: obj.id,
@@ -987,8 +1028,38 @@ export function AtlasThreeWorkstation({
   const handlePointerUp = useCallback((ev: ReactPointerEvent<HTMLCanvasElement>) => {
     const drag = dragRef.current;
     if (!drag) return;
-    if (drag.kind === 'move-object' || drag.kind === 'rotate-object' || drag.kind === 'scale-object') {
-      onCommitDocRef.current(docRef.current, true);
+    const isEditDrag =
+      drag.kind === 'move-object' ||
+      drag.kind === 'rotate-object' ||
+      drag.kind === 'scale-object' ||
+      drag.kind === 'height' ||
+      drag.kind === 'biome';
+    if (isEditDrag) {
+      if (onCommitEditBatchRef.current) {
+        onCommitEditBatchRef.current();
+      } else {
+        onCommitDocRef.current(docRef.current, true);
+      }
+    }
+    dragRef.current = null;
+    try {
+      canvasRef.current?.releasePointerCapture(ev.pointerId);
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
+  const handlePointerCancel = useCallback((ev: ReactPointerEvent<HTMLCanvasElement>) => {
+    const drag = dragRef.current;
+    if (!drag) return;
+    if (
+      drag.kind === 'move-object' ||
+      drag.kind === 'rotate-object' ||
+      drag.kind === 'scale-object' ||
+      drag.kind === 'height' ||
+      drag.kind === 'biome'
+    ) {
+      onCancelEditBatchRef.current?.();
     }
     dragRef.current = null;
     try {
@@ -1114,11 +1185,10 @@ export function AtlasThreeWorkstation({
             }`}
           aria-label="Interaktive Three.js 3D-Weltkarte"
           onContextMenu={(e) => e.preventDefault()}
-          onWheel={handleWheel}
           onPointerDown={handlePointerDown}
           onPointerMove={handlePointerMove}
           onPointerUp={handlePointerUp}
-          onPointerCancel={handlePointerUp}
+          onPointerCancel={handlePointerCancel}
         />
       </div>
 
@@ -1448,11 +1518,10 @@ export function AtlasThreeWorkstation({
                     type="button"
                     data-atlas-camera-mode={m.id}
                     aria-pressed={cameraMode === m.id}
-                    className={`min-h-8 rounded-md px-2.5 text-xs font-semibold transition-colors ${
-                      cameraMode === m.id
-                        ? 'bg-primary text-primary-foreground'
-                        : 'text-muted-foreground hover:text-accent'
-                    }`}
+                    className={`min-h-8 rounded-md px-2.5 text-xs font-semibold transition-colors ${cameraMode === m.id
+                      ? 'bg-primary text-primary-foreground'
+                      : 'text-muted-foreground hover:text-accent'
+                      }`}
                     onClick={() => switchCameraMode(m.id)}
                   >
                     {m.label}

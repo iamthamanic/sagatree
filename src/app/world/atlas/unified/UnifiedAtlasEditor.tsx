@@ -59,6 +59,8 @@ import {
   atlasInteractionModeLabelDe,
   resolveAtlasGestureDisambiguation,
   beginAtlasEditBatch,
+  createAtlasWorldCameraState,
+  type AtlasWorldCameraState,
   cancelAtlasEditBatch,
   canAtlasRedo,
   canAtlasUndo,
@@ -609,6 +611,10 @@ export function UnifiedAtlasEditor({
     readonly { id: string; label: string; left: number; top: number; selected: boolean }[]
   >([]);
   const [viewport, setViewport] = useState({ width: 800, height: 500 });
+  // SWS-05 (E1): shared World Camera state synced across 2D and 3D views.
+  const [sharedWorldCamera, setSharedWorldCamera] = useState<AtlasWorldCameraState>(() =>
+    createAtlasWorldCameraState(),
+  );
   const [editHistory, setEditHistory] = useState<AtlasEditHistory>(() => emptyAtlasEditHistory());
   const editHistoryRef = useRef(editHistory);
   editHistoryRef.current = editHistory;
@@ -2423,11 +2429,10 @@ export function UnifiedAtlasEditor({
             <button
               type="button"
               aria-pressed={!splitView && !topDownSurface}
-              className={`min-h-8 rounded-md px-2.5 text-xs font-semibold transition-colors ${
-                !splitView && !topDownSurface
-                  ? 'bg-primary text-primary-foreground'
-                  : 'text-muted-foreground hover:text-accent'
-              }`}
+              className={`min-h-8 rounded-md px-2.5 text-xs font-semibold transition-colors ${!splitView && !topDownSurface
+                ? 'bg-primary text-primary-foreground'
+                : 'text-muted-foreground hover:text-accent'
+                }`}
               onClick={() => {
                 setSplitView(false);
                 setTopDownSurface(false);
@@ -2455,11 +2460,10 @@ export function UnifiedAtlasEditor({
               data-atlas-surface-toggle
               aria-pressed={topDownSurface}
               aria-label="Zur Draufsicht wechseln"
-              className={`min-h-8 rounded-md px-2.5 text-xs font-semibold transition-colors ${
-                topDownSurface
-                  ? 'bg-primary text-primary-foreground'
-                  : 'text-muted-foreground hover:text-accent'
-              }`}
+              className={`min-h-8 rounded-md px-2.5 text-xs font-semibold transition-colors ${topDownSurface
+                ? 'bg-primary text-primary-foreground'
+                : 'text-muted-foreground hover:text-accent'
+                }`}
               onClick={() => {
                 if (isLiteFallback) {
                   setSurfaceMode('2d');
@@ -2557,6 +2561,11 @@ export function UnifiedAtlasEditor({
               onUndo={undo}
               onRedo={redo}
               onCommitDoc={commit}
+              onBeginEditBatch={startEditBatch}
+              onCommitEditBatch={endEditBatch}
+              onCancelEditBatch={abortEditBatch}
+              sharedWorldCamera={sharedWorldCamera}
+              onSharedWorldCameraChange={setSharedWorldCamera}
               onHierarchyBack={onHierarchyBack}
               forcedTopDown={topDownSurface}
               topBarExtra={isLiteFallback ? null : surfaceControls}
