@@ -4525,7 +4525,7 @@ checkAibertoAib04AskHost();
 checkAibertoAib05ChatUi();
 checkAibertoAib06ToolsRead();
 function checkSwsSharedWorldSpace() {
-  console.log('SWS (Shared World Space): transforms, write guards, ownership, calibrated bottom-up world, scene plan, multi-map/input/3D undo...');
+  console.log('SWS + SCM (Shared World Space & Spatial Containment Model): transforms, write guards, ownership, calibrated world, scene plan, multi-map/input/3D undo, SCM-01..08...');
   for (const script of [
     'scripts/atlas-world-space.self-test.mjs',
     'scripts/atlas-geometry-ownership.self-test.mjs',
@@ -4533,6 +4533,9 @@ function checkSwsSharedWorldSpace() {
     'scripts/atlas-default-world.self-test.mjs',
     'scripts/atlas-world-scene-plan.self-test.mjs',
     'scripts/sws-renderer-input-history.self-test.mjs',
+    'scripts/scm-invariants.self-test.mjs',
+    'scripts/scm-propagation.self-test.mjs',
+    'scripts/scm-cascade-prefs.self-test.mjs',
   ]) {
     execFileSync(process.execPath, [script], { cwd: root, stdio: 'inherit' });
   }
@@ -4541,6 +4544,14 @@ function checkSwsSharedWorldSpace() {
     execFileSync(
       process.execPath,
       ['scripts/browser-e2e-with-host.mjs', 'e2e/sws-vertical-slice.spec.ts', '--project=chromium'],
+      { cwd: root, stdio: 'inherit' },
+    );
+  }
+  if (process.env.SAGATREE_SCM_E2E === '1') {
+    console.log('SCM (opt-in SAGATREE_SCM_E2E=1): running host browser spatial containment E2E...');
+    execFileSync(
+      process.execPath,
+      ['scripts/browser-e2e-with-host.mjs', 'e2e/scm-spatial-containment.spec.ts', '--project=chromium'],
       { cwd: root, stdio: 'inherit' },
     );
   }

@@ -1,0 +1,24 @@
+{
+  "capturedAt": "2026-11-26T09:31:10.258Z",
+  "growTarget": {
+    "settlementId": "map:dh-map-place-dornhain__12c817637201",
+    "settlementOrigMaxX": 242,
+    "buildingId": "map:dh-map-loc-crypt__b877a33b1ee3",
+    "buildingBounds": {
+      "minX": 239.464,
+      "minY": 408.688,
+      "maxX": 239.784,
+      "maxY": 409.008
+    },
+    "nextMaxX": 242.4
+  },
+  "prefsAfterDismiss": {
+    "confirmGrow": false,
+    "confirmCascade": true
+  },
+  "reloadedPrefs": {
+    "confirmGrow": true,
+    "confirmCascade": false
+  },
+  "cycleRejectedDe": "Selbst-Zyklus abgelehnt: „Nordreich“ kann nicht sein eigener Träger sein."
+}
