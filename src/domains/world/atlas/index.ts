@@ -891,5 +891,15 @@ export {
   type SpatialMapSourceInput,
 } from './atlas-spatial-world-bridge';
 
+export {
+  DEFAULT_SPATIAL_EDIT_PREFERENCES,
+  SPATIAL_EDIT_PREFS_STORAGE_KEY,
+  applyDontAskAgainPreference,
+  parseSpatialEditPreferences,
+  serializeSpatialEditPreferences,
+  shouldPromptSpatialOperation,
+  type SpatialEditPreferences,
+} from './atlas-spatial-edit-prefs';
+
 
 

@@ -17,3 +17,4 @@ export type {
 } from './AtlasDefinePlacePanel';
 export { AtlasNative3dEditor } from './AtlasNative3dEditor';
 export type { AtlasNative3dEditorProps } from './AtlasNative3dEditor';
+export type { AtlasSpatialContainmentAdapter } from './useSpatialEditPreferences';

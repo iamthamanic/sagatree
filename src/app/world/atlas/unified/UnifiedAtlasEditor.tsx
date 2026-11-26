@@ -165,6 +165,7 @@ import { AtlasNative3dEditor } from './AtlasNative3dEditor';
 import type { AtlasThreeWorldMapSource } from '../../../../infrastructure/world/atlas-three';
 import { AtlasSplit2dCanvas } from './AtlasSplit2dCanvas';
 import { useAtlasGraphicsPreset } from './useAtlasGraphicsPreset';
+import type { AtlasSpatialContainmentAdapter } from './useSpatialEditPreferences';
 
 export type UnifiedAtlasCreatePlaceInput = {
   readonly authorKind: AtlasPlaceAuthorKind;
@@ -228,6 +229,7 @@ export type UnifiedAtlasEditorProps = {
     readonly maps: readonly AtlasWorldSceneMapInput[];
     readonly sources: readonly AtlasThreeWorldMapSource[];
   } | null;
+  readonly spatialContainment?: AtlasSpatialContainmentAdapter | null;
   /** ATL2-G03 — Ctrl/Cmd+S from editor keyboard catalog. */
   readonly onRequestSave?: () => void;
   /** ATL2-G03 — WebGL mount failure for workbench surface state. */
@@ -503,6 +505,7 @@ export function UnifiedAtlasEditor({
   onHierarchyBack,
   hierarchyLodBand = null,
   worldSceneGraph = null,
+  spatialContainment = null,
 }: UnifiedAtlasEditorProps) {
   const stageRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -2575,6 +2578,7 @@ export function UnifiedAtlasEditor({
               sharedWorldCamera={sharedWorldCamera}
               onSharedWorldCameraChange={setSharedWorldCamera}
               worldSceneGraph={worldSceneGraph}
+              spatialContainment={spatialContainment}
               onHierarchyBack={onHierarchyBack}
               forcedTopDown={topDownSurface}
               topBarExtra={isLiteFallback ? null : surfaceControls}

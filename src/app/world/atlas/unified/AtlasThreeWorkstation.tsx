@@ -62,7 +62,11 @@ import {
   createAtlasWorldCameraState,
   formatAtlasSpanLabelDe,
   resolveContinuousZoomTransition,
+  shouldPromptSpatialOperation,
   switchWorldCameraProjection,
+  type SpatialEditIntent,
+  type SpatialEditPreferences,
+  type WorldOperationPlan,
   type AtlasBiomeBrushId,
   type AtlasGraphicsPresetId,
   type AtlasMapPin,
@@ -95,6 +99,14 @@ import {
   AtlasPortalTransitionOverlay,
   type AtlasPortalTransitionState,
 } from './AtlasPortalTransitionOverlay';
+import {
+  SpatialEditPreferencesSection,
+  SpatialOperationConfirmDialog,
+} from './SpatialOperationConfirmDialog';
+import {
+  useSpatialEditPreferences,
+  type AtlasSpatialContainmentAdapter,
+} from './useSpatialEditPreferences';
 
 export type AtlasThreeToolId =
   | 'hand'
@@ -200,6 +212,7 @@ export type AtlasThreeWorkstationProps = {
   readonly forcedTopDown?: boolean;
   readonly toolsSlot?: ReactNode;
   readonly topBarExtra?: ReactNode;
+  readonly spatialContainment?: AtlasSpatialContainmentAdapter | null;
 };
 
 type DragSession =
@@ -283,6 +296,7 @@ export function AtlasThreeWorkstation({
   forcedTopDown = false,
   toolsSlot = null,
   topBarExtra = null,
+  spatialContainment = null,
 }: AtlasThreeWorkstationProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const runtimeRef = useRef<AtlasThreeRuntime | null>(null);
@@ -341,6 +355,51 @@ export function AtlasThreeWorkstation({
   canUndoRef.current = canUndo;
   const canRedoRef = useRef(canRedo);
   canRedoRef.current = canRedo;
+
+  // SCM-04: Persistent spatial edit confirmation preferences (`spatialEdit.confirmGrow/Cascade`)
+  const {
+    prefs: spatialPrefs,
+    setConfirmGrow,
+    setConfirmCascade,
+    dismissPromptFor,
+  } = useSpatialEditPreferences();
+  const spatialPrefsRef = useRef<SpatialEditPreferences>(spatialPrefs);
+  spatialPrefsRef.current = spatialPrefs;
+  const spatialContainmentRef = useRef<AtlasSpatialContainmentAdapter | null>(spatialContainment);
+  spatialContainmentRef.current = spatialContainment;
+  const [pendingSpatialPlan, setPendingSpatialPlan] = useState<WorldOperationPlan | null>(null);
+  const pendingSpatialPlanRef = useRef<WorldOperationPlan | null>(pendingSpatialPlan);
+  pendingSpatialPlanRef.current = pendingSpatialPlan;
+  const [spatialErrorDe, setSpatialErrorDe] = useState<string | null>(null);
+  const spatialErrorDeRef = useRef<string | null>(spatialErrorDe);
+  spatialErrorDeRef.current = spatialErrorDe;
+
+  const dispatchSpatialIntent = useCallback((intent: SpatialEditIntent) => {
+    const adapter = spatialContainmentRef.current;
+    if (!adapter) {
+      return {
+        ok: false,
+        prompted: false,
+        reasonDe: 'Kein aktives Spatial-Containment-Weltmodell geladen.',
+      };
+    }
+    const planRes = adapter.planIntent(intent);
+    if (!planRes.ok) {
+      setSpatialErrorDe(planRes.reasonDe);
+      return { ok: false, prompted: false, reasonDe: planRes.reasonDe };
+    }
+    setSpatialErrorDe(null);
+    if (shouldPromptSpatialOperation(planRes.plan, spatialPrefsRef.current)) {
+      setPendingSpatialPlan(planRes.plan);
+      return { ok: true, prompted: true, plan: planRes.plan };
+    }
+    void adapter.commitPlan(planRes.plan).then((res) => {
+      if (!res.ok) setSpatialErrorDe(res.reasonDe);
+    });
+    return { ok: true, prompted: false, plan: planRes.plan };
+  }, []);
+  const dispatchSpatialIntentRef = useRef(dispatchSpatialIntent);
+  dispatchSpatialIntentRef.current = dispatchSpatialIntent;
 
   const look: 'outdoor' | 'indoor' = mapScale === 'interior' ? 'indoor' : 'outdoor';
   const activeTool: AtlasThreeToolId = canEdit ? tool : 'hand';
@@ -513,6 +572,44 @@ export function AtlasThreeWorkstation({
             readonly size: number;
             readonly angle?: number;
           } | null;
+          getSpatialPrefs: () => SpatialEditPreferences;
+          getSpatialState: () => {
+            readonly ready: boolean;
+            readonly entityCount: number;
+            readonly activeCount: number;
+            readonly archivedCount: number;
+            readonly canUndo: boolean;
+            readonly canRedo: boolean;
+            readonly pendingConfirmKind: string | null;
+            readonly pendingSummaryDe: string | null;
+            readonly lastErrorDe: string | null;
+            readonly entities: Readonly<
+              Record<
+                string,
+                {
+                  readonly id: string;
+                  readonly labelDe: string;
+                  readonly role: string;
+                  readonly status: string;
+                  readonly carrierId: string | null;
+                  readonly boundsWorld: {
+                    readonly minX: number;
+                    readonly minY: number;
+                    readonly maxX: number;
+                    readonly maxY: number;
+                  };
+                }
+              >
+            >;
+          };
+          requestSpatialIntent: (intent: SpatialEditIntent) => {
+            readonly ok: boolean;
+            readonly prompted: boolean;
+            readonly reasonDe?: string;
+            readonly plan?: WorldOperationPlan;
+          };
+          undoSpatial: () => Promise<boolean>;
+          redoSpatial: () => Promise<boolean>;
         };
       };
       win.__sagatreeAtlas = {
@@ -601,6 +698,71 @@ export function AtlasThreeWorkstation({
             angle: hit.angle,
           };
         },
+        getSpatialPrefs: () => ({ ...spatialPrefsRef.current }),
+        getSpatialState: () => {
+          const adapter = spatialContainmentRef.current;
+          const pending = pendingSpatialPlanRef.current;
+          if (!adapter) {
+            return {
+              ready: false,
+              entityCount: 0,
+              activeCount: 0,
+              archivedCount: 0,
+              canUndo: false,
+              canRedo: false,
+              pendingConfirmKind: pending?.requiresConfirmation ?? null,
+              pendingSummaryDe: pending?.summaryDe ?? null,
+              lastErrorDe: spatialErrorDeRef.current,
+              entities: {},
+            };
+          }
+          const list = Object.values(adapter.world.entities);
+          const entities: Record<
+            string,
+            {
+              readonly id: string;
+              readonly labelDe: string;
+              readonly role: string;
+              readonly status: string;
+              readonly carrierId: string | null;
+              readonly boundsWorld: {
+                readonly minX: number;
+                readonly minY: number;
+                readonly maxX: number;
+                readonly maxY: number;
+              };
+            }
+          > = {};
+          let activeCount = 0;
+          let archivedCount = 0;
+          for (const e of list) {
+            if (e.status === 'archived') archivedCount += 1;
+            else activeCount += 1;
+            entities[e.id] = {
+              id: e.id,
+              labelDe: e.labelDe,
+              role: e.role,
+              status: e.status,
+              carrierId: e.carrierId,
+              boundsWorld: e.boundsWorld,
+            };
+          }
+          return {
+            ready: true,
+            entityCount: list.length,
+            activeCount,
+            archivedCount,
+            canUndo: adapter.canUndo,
+            canRedo: adapter.canRedo,
+            pendingConfirmKind: pending?.requiresConfirmation ?? null,
+            pendingSummaryDe: pending?.summaryDe ?? null,
+            lastErrorDe: spatialErrorDeRef.current,
+            entities,
+          };
+        },
+        requestSpatialIntent: (intent) => dispatchSpatialIntentRef.current(intent),
+        undoSpatial: async () => (await spatialContainmentRef.current?.undo()) ?? false,
+        redoSpatial: async () => (await spatialContainmentRef.current?.redo()) ?? false,
       };
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Three.js WebGL konnte nicht gestartet werden.';
@@ -1308,6 +1470,43 @@ export function AtlasThreeWorkstation({
 
       {/* Thematic 3D Portal & Atmospheric Flight Overlay (Oak Tavern Doors, Crypt Portcullis, Google-Earth Flight) */}
       <AtlasPortalTransitionOverlay transition={portalTransition} />
+
+      {/* SCM-04: German Confirmation Dialog for Auto-Grow & Soft-Cascade operations */}
+      <SpatialOperationConfirmDialog
+        plan={pendingSpatialPlan}
+        onCancel={() => setPendingSpatialPlan(null)}
+        onConfirm={({ dontAskAgain }) => {
+          const plan = pendingSpatialPlan;
+          setPendingSpatialPlan(null);
+          if (!plan) return;
+          if (dontAskAgain) {
+            dismissPromptFor(plan.requiresConfirmation);
+          }
+          const adapter = spatialContainmentRef.current;
+          if (!adapter) return;
+          void adapter.commitPlan(plan).then((res) => {
+            if (!res.ok) setSpatialErrorDe(res.reasonDe);
+            else setSpatialErrorDe(null);
+          });
+        }}
+      />
+
+      {spatialErrorDe ? (
+        <div
+          role="alert"
+          data-atlas-scm-error
+          className="pointer-events-auto absolute bottom-16 left-1/2 z-[8] flex max-w-md -translate-x-1/2 items-center gap-2 rounded-lg border border-destructive bg-card/95 px-3 py-2 text-xs text-destructive shadow-xl backdrop-blur"
+        >
+          <span>{spatialErrorDe}</span>
+          <button
+            type="button"
+            className="ml-auto rounded px-1.5 py-0.5 text-[11px] font-semibold text-foreground hover:text-accent"
+            onClick={() => setSpatialErrorDe(null)}
+          >
+            Schließen
+          </button>
+        </div>
+      ) : null}
 
       {/* Google-Maps Hierarchical Zoom-Tier Progressive Pin Labels + Smart 2D Collision Declutter */}
       {(() => {
@@ -2034,6 +2233,13 @@ export function AtlasThreeWorkstation({
                   <span>{hideRoofs ? 'Innenräume sichtbar (Dächer aus)' : 'Dächer ausblenden / Innenräume'}</span>
                 </button>
               </div>
+
+              {/* SCM-04: Persistent Werkzeug-Einstellungen for Auto-Grow & Soft-Cascade prompts */}
+              <SpatialEditPreferencesSection
+                prefs={spatialPrefs}
+                onChangeConfirmGrow={setConfirmGrow}
+                onChangeConfirmCascade={setConfirmCascade}
+              />
 
               {/* Feature Search & Catalog */}
               <div className="space-y-2 border-t border-border/80 pt-3">

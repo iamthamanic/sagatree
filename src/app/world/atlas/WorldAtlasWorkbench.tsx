@@ -52,25 +52,44 @@ import {
   atlasMapScaleForKind,
   atlasPersistStatusLabelDe,
   buildAtlasMapPins,
+  buildSpatialWorldFromMapSources,
+  canRedoSpatialWorld,
+  canUndoSpatialWorld,
   createAtlasHierarchyNavState,
   defaultAtlasNavCameraView,
+  emptySpatialWorldHistory,
   enterChildMap,
+  executeSpatialWorldOperation,
   extractMapFrameFromGeneratorMeta,
   isDornhainGoldenRootMap,
   lodBandFromBreadcrumbDepth,
+  mergeMapFrameIntoGeneratorMeta,
+  mergeUnifiedCanvasIntoGeneratorMeta,
   navigateBack,
   navigateToAncestor,
   parseUnifiedCanvasDoc,
   peekRestoredCamera,
+  planPropagation,
+  projectSpatialOperationToMapUpdates,
+  redoSpatialWorldOperation,
   atlasWorkstationSurfaceLabelDe,
   resolveAtlasWorkstationComposition,
   resolveAtlasWorkstationSurfaceState,
+  undoSpatialWorldOperation,
   type AtlasHierarchyMapRef,
   type AtlasHierarchyNavState,
   type AtlasNavCameraView,
   type AtlasWorldSceneMapInput,
+  type AtlasWorldSpaceNode,
   type DornhainGoldenResetMode,
+  type SpatialEditIntent,
+  type SpatialMapSourceInput,
+  type SpatialStructureRole,
+  type SpatialWorldModel,
+  type SpatialWorldTransactionHistory,
+  type UnifiedCanvasDoc,
   type WorldAtlasMapVm,
+  type WorldOperationPlan,
 } from '../../../domains/world/atlas';
 import type { AtlasThreeWorldMapSource } from '../../../infrastructure/world/atlas-three';
 import { useAdaptiveContentBand } from '../../../shared/ui/adaptive';
@@ -78,7 +97,7 @@ import { WorldMapEditorScreen } from '../map';
 import { WorldPlacesPanel } from '../places/WorldPlacesPanel';
 import { AtlasGoldenResetDialog } from './AtlasGoldenResetDialog';
 import { useWorldAtlasEditor } from './useWorldAtlasEditor';
-import { UnifiedAtlasEditor } from './unified';
+import { UnifiedAtlasEditor, type AtlasSpatialContainmentAdapter } from './unified';
 import {
   WebglNavTreeActionHost,
   type WebglNavCreateRequest,
@@ -484,6 +503,198 @@ export function WorldAtlasWorkbench({
     }
     return maps.length > 1 ? { maps, sources } : null;
   }, [childMapVms, editor.canvasDoc, editor.contentEpoch, editor.map, worldLinks, worldPlaces]);
+
+  // SCM-04: Minimal Multi-Map Commit Adapter (rules live strictly in `src/domains/world/atlas/`).
+  const [spatialWorld, setSpatialWorld] = useState<SpatialWorldModel | null>(null);
+  const [spatialHistory, setSpatialHistory] = useState<SpatialWorldTransactionHistory>(() =>
+    emptySpatialWorldHistory(),
+  );
+  const spatialWorldRef = useRef<SpatialWorldModel | null>(spatialWorld);
+  spatialWorldRef.current = spatialWorld;
+  const spatialHistoryRef = useRef<SpatialWorldTransactionHistory>(spatialHistory);
+  spatialHistoryRef.current = spatialHistory;
+  const spatialHydrationKeyRef = useRef<string>('');
+
+  useEffect(() => {
+    if (!editor.map || editor.map.parentMapId !== null || childMapVms.length === 0) {
+      return;
+    }
+    const hydrationKey = `${editor.map.id}:${childMapVms.map((m) => m.id).sort().join(',')}`;
+    if (spatialHydrationKeyRef.current === hydrationKey && spatialWorldRef.current) {
+      return;
+    }
+    const roleForVm = (vm: WorldAtlasMapVm): SpatialStructureRole => {
+      if (vm.parentMapId === null) return 'world';
+      const owner = atlasMapOwnerPlace(vm.id, worldPlaces, worldLinks);
+      const nk = owner ? tryNodeKindFromPlaceKind(owner.kind) : null;
+      if (nk === 'continent') return 'continent';
+      if (nk === 'country') return 'country';
+      if (nk === 'place') return 'settlement';
+      if (nk === 'building') return 'building';
+      if (nk === 'room') return 'room';
+      if (vm.kind === 'scene') return 'room';
+      if (vm.kind === 'settlement') return 'settlement';
+      return 'landmass';
+    };
+    const inputs: SpatialMapSourceInput[] = [
+      {
+        mapId: editor.map.id,
+        title: editor.map.title || title,
+        role: 'world',
+        parentMapId: null,
+        parentAnchor: null,
+        bounds: editor.map.bounds,
+        doc: editor.canvasDoc,
+      },
+    ];
+    for (const vm of childMapVms) {
+      const frame = extractMapFrameFromGeneratorMeta(vm.generatorMeta);
+      const parsed = parseUnifiedCanvasDoc(vm.generatorMeta?.unifiedCanvas);
+      if (!parsed || !frame.parentAnchor) continue;
+      inputs.push({
+        mapId: vm.id,
+        title: vm.title,
+        role: roleForVm(vm),
+        parentMapId: vm.parentMapId,
+        parentAnchor: frame.parentAnchor,
+        bounds: vm.bounds,
+        doc: parsed,
+      });
+    }
+    const built = buildSpatialWorldFromMapSources(inputs);
+    if (built) {
+      spatialHydrationKeyRef.current = hydrationKey;
+      setSpatialWorld(built);
+      setSpatialHistory(emptySpatialWorldHistory());
+    }
+  }, [childMapVms, editor.canvasDoc, editor.map, title, worldLinks, worldPlaces]);
+
+  const persistProjectedMapUpdates = useCallback(
+    async (
+      nextWorld: SpatialWorldModel,
+      plan: WorldOperationPlan,
+    ) => {
+      if (!editor.map) return;
+      const docsByMapId: Record<string, UnifiedCanvasDoc> = {
+        [editor.map.id]: editor.canvasDoc,
+      };
+      const mapNodes: Record<string, AtlasWorldSpaceNode> = {
+        [editor.map.id]: {
+          id: editor.map.id,
+          parentAnchor: null,
+          bounds: editor.map.bounds,
+        },
+      };
+      const vmById = new Map<string, WorldAtlasMapVm>([[editor.map.id, editor.map]]);
+      for (const vm of childMapVms) {
+        vmById.set(vm.id, vm);
+        const frame = extractMapFrameFromGeneratorMeta(vm.generatorMeta);
+        const parsed = parseUnifiedCanvasDoc(vm.generatorMeta?.unifiedCanvas);
+        if (parsed) docsByMapId[vm.id] = parsed;
+        mapNodes[vm.id] = {
+          id: vm.id,
+          parentAnchor: frame.parentAnchor,
+          bounds: vm.bounds,
+        };
+      }
+
+      const mutations = projectSpatialOperationToMapUpdates({
+        world: nextWorld,
+        plan,
+        docsByMapId,
+        mapNodes,
+      });
+
+      const updatedChildMap = new Map<string, WorldAtlasMapVm>();
+      for (const m of mutations) {
+        const vm = vmById.get(m.mapId);
+        if (!vm) continue;
+        if (m.mapId === editor.map.id) {
+          editor.updateCanvasDoc(m.nextDoc);
+        }
+        let nextMeta = mergeUnifiedCanvasIntoGeneratorMeta(vm.generatorMeta, m.nextDoc);
+        if (m.nextParentAnchor !== undefined) {
+          const prevFrame = extractMapFrameFromGeneratorMeta(nextMeta);
+          nextMeta = mergeMapFrameIntoGeneratorMeta(nextMeta, {
+            ...prevFrame,
+            parentAnchor: m.nextParentAnchor,
+          });
+        }
+        const localUpdated: WorldAtlasMapVm = {
+          ...vm,
+          generatorMeta: nextMeta,
+        };
+        if (m.mapId !== editor.map.id) {
+          updatedChildMap.set(m.mapId, localUpdated);
+        }
+        if (editingAllowed && isHostLibraryEnabled()) {
+          try {
+            const saved = await worldAtlasService.upsertMap({
+              worldProfileId,
+              mapId: vm.id,
+              parentMapId: vm.parentMapId,
+              kind: vm.kind,
+              title: vm.title,
+              sortOrder: vm.sortOrder,
+              bounds: vm.bounds,
+              layers: vm.layers,
+              basemapStoragePath: vm.basemapStoragePath,
+              azgaarMapStoragePath: vm.azgaarMapStoragePath,
+              generatorMeta: nextMeta,
+              expectedRevision: vm.revision,
+            });
+            if (m.mapId !== editor.map.id) {
+              updatedChildMap.set(m.mapId, saved);
+            }
+          } catch (err) {
+            console.warn('[atlas] SCM multi-map upsert:', err);
+          }
+        }
+      }
+
+      if (updatedChildMap.size > 0) {
+        setChildMapVms((prev) => prev.map((vm) => updatedChildMap.get(vm.id) ?? vm));
+      }
+    },
+    [childMapVms, editingAllowed, editor, worldProfileId],
+  );
+
+  const spatialContainment: AtlasSpatialContainmentAdapter | null = useMemo(() => {
+    if (!spatialWorld) return null;
+    return {
+      world: spatialWorld,
+      canUndo: canUndoSpatialWorld(spatialHistory),
+      canRedo: canRedoSpatialWorld(spatialHistory),
+      planIntent: (intent: SpatialEditIntent) =>
+        planPropagation(spatialWorldRef.current ?? spatialWorld, intent),
+      commitPlan: async (plan: WorldOperationPlan) => {
+        const curWorld = spatialWorldRef.current ?? spatialWorld;
+        const curHistory = spatialHistoryRef.current;
+        const exec = executeSpatialWorldOperation(curWorld, curHistory, plan);
+        if (!exec.ok) return exec;
+        setSpatialWorld(exec.world);
+        setSpatialHistory(exec.history);
+        await persistProjectedMapUpdates(exec.world, plan);
+        return exec;
+      },
+      undo: async () => {
+        const curWorld = spatialWorldRef.current ?? spatialWorld;
+        const undone = undoSpatialWorldOperation(curWorld, spatialHistoryRef.current);
+        if (!undone) return false;
+        setSpatialWorld(undone.world);
+        setSpatialHistory(undone.history);
+        return true;
+      },
+      redo: async () => {
+        const curWorld = spatialWorldRef.current ?? spatialWorld;
+        const redone = redoSpatialWorldOperation(curWorld, spatialHistoryRef.current);
+        if (!redone) return false;
+        setSpatialWorld(redone.world);
+        setSpatialHistory(redone.history);
+        return true;
+      },
+    };
+  }, [persistProjectedMapUpdates, spatialHistory, spatialWorld]);
   /**
    * Boot: map not ready yet — ocean placeholder, no prototype title/rail chrome.
    * loading starts true when worldProfileId is set (see useWorldAtlasEditor) so the first
@@ -1305,6 +1516,7 @@ export function WorldAtlasWorkbench({
               mapKey={`${editor.map.id}:${editor.contentEpoch}`}
               doc={editor.canvasDoc}
               worldSceneGraph={worldSceneGraph}
+              spatialContainment={spatialContainment}
               canEdit={editingAllowed}
               onDocChange={editor.updateCanvasDoc}
               webglRuntime={editor.webglRuntime}

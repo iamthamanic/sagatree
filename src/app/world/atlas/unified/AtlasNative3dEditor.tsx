@@ -31,6 +31,7 @@ import {
   resolveAtlasNative3dDungeonLook,
 } from './atlas-native-3d-look';
 import { AtlasThreeWorkstation } from './AtlasThreeWorkstation';
+import type { AtlasSpatialContainmentAdapter } from './useSpatialEditPreferences';
 import './prototype3d/atlas-sagatree-skin.css';
 
 export type AtlasNativeNavSelectPayload = {
@@ -145,6 +146,7 @@ export type AtlasNative3dEditorProps = {
   readonly onHierarchyBack?: () => void;
   readonly forcedTopDown?: boolean;
   readonly topBarExtra?: ReactNode;
+  readonly spatialContainment?: AtlasSpatialContainmentAdapter | null;
 };
 /** Rebrand leftover prototype copy to SagaTree product wording. */
 function applySagaTreeCopy(host: HTMLElement): void {
@@ -423,6 +425,7 @@ export function AtlasNative3dEditor(props: AtlasNative3dEditorProps) {
     onHierarchyBack,
     forcedTopDown = false,
     topBarExtra = null,
+    spatialContainment = null,
   } = props;
   const [threeFailed, setThreeFailed] = useState(false);
 
@@ -473,6 +476,7 @@ export function AtlasNative3dEditor(props: AtlasNative3dEditorProps) {
           toolsSlot={toolsSlot}
           forcedTopDown={forcedTopDown}
           topBarExtra={topBarExtra}
+          spatialContainment={spatialContainment}
         />
       </div>
     );
