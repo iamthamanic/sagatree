@@ -60,6 +60,7 @@ import {
   lodBandFromBreadcrumbDepth,
   navigateBack,
   navigateToAncestor,
+  parseUnifiedCanvasDoc,
   peekRestoredCamera,
   atlasWorkstationSurfaceLabelDe,
   resolveAtlasWorkstationComposition,
@@ -67,8 +68,11 @@ import {
   type AtlasHierarchyMapRef,
   type AtlasHierarchyNavState,
   type AtlasNavCameraView,
+  type AtlasWorldSceneMapInput,
   type DornhainGoldenResetMode,
+  type WorldAtlasMapVm,
 } from '../../../domains/world/atlas';
+import type { AtlasThreeWorldMapSource } from '../../../infrastructure/world/atlas-three';
 import { useAdaptiveContentBand } from '../../../shared/ui/adaptive';
 import { WorldMapEditorScreen } from '../map';
 import { WorldPlacesPanel } from '../places/WorldPlacesPanel';
@@ -390,6 +394,97 @@ export function WorldAtlasWorkbench({
     ? extractMapFrameFromGeneratorMeta(editor.map.generatorMeta)
     : null;
   const mapUnlocated = activeMapFrame?.status === 'unlocated' && !activeMapFrame.parentAnchor;
+
+  // SWS-04: Hydrate located child maps for Multi-Map World-Space rendering when on World root.
+  const [childMapVms, setChildMapVms] = useState<readonly WorldAtlasMapVm[]>([]);
+  const childSummaryKey = useMemo(
+    () =>
+      editor.map && editor.map.parentMapId === null
+        ? editor.summaries
+            .filter((s) => s.id !== editor.map!.id)
+            .map((s) => `${s.id}:${s.revision}`)
+            .sort()
+            .join('|')
+        : '',
+    [editor.map, editor.summaries],
+  );
+  useEffect(() => {
+    if (!childSummaryKey || !editor.map || editor.map.parentMapId !== null || !isHostLibraryEnabled()) {
+      setChildMapVms([]);
+      return;
+    }
+    let cancelled = false;
+    const otherIds = editor.summaries
+      .filter((s) => s.id !== editor.map!.id)
+      .map((s) => s.id);
+    void Promise.allSettled(
+      otherIds.map((id) => worldAtlasService.getMap(id, effectivePlayerView, sagaPublicId)),
+    ).then((results) => {
+      if (cancelled) return;
+      const loaded: WorldAtlasMapVm[] = [];
+      for (const r of results) {
+        if (r.status === 'fulfilled') loaded.push(r.value);
+      }
+      setChildMapVms(loaded);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [childSummaryKey, effectivePlayerView, sagaPublicId]);
+
+  const worldSceneGraph = useMemo(() => {
+    if (!editor.map || editor.map.parentMapId !== null || childMapVms.length === 0) {
+      return null;
+    }
+    const resolveMapScale = (mapId: string, kind: WorldAtlasMapVm['kind']) => {
+      const owner = atlasMapOwnerPlace(mapId, worldPlaces, worldLinks);
+      if (owner) return atlasMapScaleForKind(tryNodeKindFromPlaceKind(owner.kind));
+      if (kind === 'interior') return 'interior' as const;
+      if (kind === 'location') return 'place' as const;
+      if (kind === 'region') return 'country' as const;
+      return 'world' as const;
+    };
+    const rootScale = resolveMapScale(editor.map.id, editor.map.kind);
+    const maps: AtlasWorldSceneMapInput[] = [
+      {
+        id: editor.map.id,
+        parentAnchor: null,
+        bounds: editor.map.bounds,
+        status: 'ready',
+      },
+    ];
+    const sources: AtlasThreeWorldMapSource[] = [
+      {
+        mapId: editor.map.id,
+        doc: editor.canvasDoc,
+        mapScale: rootScale,
+        look: rootScale === 'interior' ? 'indoor' : 'outdoor',
+        bounds: editor.map.bounds,
+        revisionKey: `${editor.map.revision}:${editor.contentEpoch}`,
+      },
+    ];
+    for (const vm of childMapVms) {
+      const frame = extractMapFrameFromGeneratorMeta(vm.generatorMeta);
+      const parsedDoc = parseUnifiedCanvasDoc(vm.generatorMeta?.unifiedCanvas);
+      if (!parsedDoc) continue;
+      const scale = resolveMapScale(vm.id, vm.kind);
+      maps.push({
+        id: vm.id,
+        parentAnchor: frame.parentAnchor,
+        bounds: vm.bounds,
+        status: frame.status,
+      });
+      sources.push({
+        mapId: vm.id,
+        doc: parsedDoc,
+        mapScale: scale,
+        look: scale === 'interior' ? 'indoor' : 'outdoor',
+        bounds: vm.bounds,
+        revisionKey: String(vm.revision),
+      });
+    }
+    return maps.length > 1 ? { maps, sources } : null;
+  }, [childMapVms, editor.canvasDoc, editor.contentEpoch, editor.map, worldLinks, worldPlaces]);
   /**
    * Boot: map not ready yet — ocean placeholder, no prototype title/rail chrome.
    * loading starts true when worldProfileId is set (see useWorldAtlasEditor) so the first
@@ -1210,6 +1305,7 @@ export function WorldAtlasWorkbench({
               key={`${editor.map.id}:${editor.contentEpoch}`}
               mapKey={`${editor.map.id}:${editor.contentEpoch}`}
               doc={editor.canvasDoc}
+              worldSceneGraph={worldSceneGraph}
               canEdit={editingAllowed}
               onDocChange={editor.updateCanvasDoc}
               webglRuntime={editor.webglRuntime}

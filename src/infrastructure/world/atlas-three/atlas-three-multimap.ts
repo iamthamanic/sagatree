@@ -122,6 +122,17 @@ function cutoutSignature(cutouts: readonly AtlasLocalCutoutRect[]): string {
 }
 
 /**
+ * Monotonic depth lift per hierarchy level so child map slabs always sit cleanly
+ * above parent landmass slabs with zero coplanar Z-fighting (ADR-SWS-01 §5.2).
+ */
+export function multiMapDepthLiftY(depth: number): number {
+  const table = [0, 0.45, 0.65, 0.72, 0.725, 0.726];
+  const idx = Math.max(0, depth - 1);
+  if (idx < table.length) return table[idx]!;
+  return 0.726 + (idx - (table.length - 1)) * 0.0005;
+}
+
+/**
  * Position a map group's pivot + content offset so local `(x, y)` maps to exact
  * World Space `(centerX + dx*cos - dy*sin, depthY, centerY + dx*sin + dy*cos)`.
  */
@@ -135,8 +146,7 @@ export function applyWorldTransformToGroup(
   const midY = (bounds.minY + bounds.maxY) / 2;
   const { centerX, centerY, scaleX, scaleY, rotationRad } = entry.worldTransform;
   const verticalScale = Math.sqrt(Math.max(1e-8, scaleX * scaleY));
-  // Subtle depth lift per hierarchy level eliminates coplanar Z-fighting with parent sheet.
-  const depthLiftY = (entry.depth - 1) * 0.06;
+  const depthLiftY = multiMapDepthLiftY(entry.depth);
 
   pivot.position.set(centerX, depthLiftY, centerY);
   pivot.rotation.set(0, -rotationRad, 0);
@@ -292,6 +302,20 @@ export class AtlasThreeMultiMapGraph {
       for (const p of g.pickables) out.push(p);
     }
     return out;
+  }
+
+  getActiveEditorElevationY(): number {
+    if (!this.activeEditorMapId) return 0;
+    const g = this.groups.get(this.activeEditorMapId);
+    return g ? g.pivot.position.y : 0;
+  }
+
+  getRenderedIds(): string[] {
+    const out = new Set<string>();
+    for (const g of this.groups.values()) {
+      for (const id of g.scenePlan.ids) out.add(id);
+    }
+    return [...out].sort();
   }
 
   getStats(): AtlasThreeMultiMapStats {

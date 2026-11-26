@@ -61,6 +61,7 @@ import {
   beginAtlasEditBatch,
   createAtlasWorldCameraState,
   type AtlasWorldCameraState,
+  type AtlasWorldSceneMapInput,
   cancelAtlasEditBatch,
   canAtlasRedo,
   canAtlasUndo,
@@ -161,6 +162,7 @@ import {
   type AtlasDefinePlaceRequest,
 } from './AtlasDefinePlacePanel';
 import { AtlasNative3dEditor } from './AtlasNative3dEditor';
+import type { AtlasThreeWorldMapSource } from '../../../../infrastructure/world/atlas-three';
 import { AtlasSplit2dCanvas } from './AtlasSplit2dCanvas';
 import { useAtlasGraphicsPreset } from './useAtlasGraphicsPreset';
 
@@ -221,6 +223,11 @@ export type UnifiedAtlasEditorProps = {
   /** Product surface (3D vs Draufsicht); pass it to keep the choice across map remounts. */
   readonly surfaceMode?: '3d' | '2d';
   readonly onSurfaceModeChange?: (mode: '3d' | '2d') => void;
+  /** Optional Multi-Map Scene Graph payload for World-Space rendering (SWS-04). */
+  readonly worldSceneGraph?: {
+    readonly maps: readonly AtlasWorldSceneMapInput[];
+    readonly sources: readonly AtlasThreeWorldMapSource[];
+  } | null;
   /** ATL2-G03 — Ctrl/Cmd+S from editor keyboard catalog. */
   readonly onRequestSave?: () => void;
   /** ATL2-G03 — WebGL mount failure for workbench surface state. */
@@ -495,6 +502,7 @@ export function UnifiedAtlasEditor({
   onNavViewChange,
   onHierarchyBack,
   hierarchyLodBand = null,
+  worldSceneGraph = null,
 }: UnifiedAtlasEditorProps) {
   const stageRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -2566,6 +2574,7 @@ export function UnifiedAtlasEditor({
               onCancelEditBatch={abortEditBatch}
               sharedWorldCamera={sharedWorldCamera}
               onSharedWorldCameraChange={setSharedWorldCamera}
+              worldSceneGraph={worldSceneGraph}
               onHierarchyBack={onHierarchyBack}
               forcedTopDown={topDownSurface}
               topBarExtra={isLiteFallback ? null : surfaceControls}

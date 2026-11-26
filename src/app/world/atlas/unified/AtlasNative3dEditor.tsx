@@ -18,9 +18,11 @@ import {
   type AtlasMapPin,
   type AtlasMapScale,
   type AtlasWorldCameraState,
+  type AtlasWorldSceneMapInput,
   type UnifiedCanvasDoc,
   type WebglRuntimeState,
 } from '../../../../domains/world/atlas';
+import type { AtlasThreeWorldMapSource } from '../../../../infrastructure/world/atlas-three';
 import type { WorldNodeKind } from '../../../../domains/world/hierarchy';
 import type { AtlasWebglNavTree } from '../../../../domains/world/places';
 import { mountAtlasPrototype3d } from './prototype3d/atlas-prototype-runtime.mjs';
@@ -136,6 +138,10 @@ export type AtlasNative3dEditorProps = {
   readonly onCancelEditBatch?: () => void;
   readonly sharedWorldCamera?: AtlasWorldCameraState | null;
   readonly onSharedWorldCameraChange?: (next: AtlasWorldCameraState) => void;
+  readonly worldSceneGraph?: {
+    readonly maps: readonly AtlasWorldSceneMapInput[];
+    readonly sources: readonly AtlasThreeWorldMapSource[];
+  } | null;
   readonly onHierarchyBack?: () => void;
   readonly forcedTopDown?: boolean;
   readonly topBarExtra?: ReactNode;
@@ -413,6 +419,7 @@ export function AtlasNative3dEditor(props: AtlasNative3dEditorProps) {
     onCancelEditBatch,
     sharedWorldCamera = null,
     onSharedWorldCameraChange,
+    worldSceneGraph = null,
     onHierarchyBack,
     forcedTopDown = false,
     topBarExtra = null,
@@ -454,6 +461,7 @@ export function AtlasNative3dEditor(props: AtlasNative3dEditorProps) {
           onCancelEditBatch={onCancelEditBatch}
           sharedWorldCamera={sharedWorldCamera}
           onSharedWorldCameraChange={onSharedWorldCameraChange}
+          worldSceneGraph={worldSceneGraph}
           onNavSelect={onNavSelect}
           onNavAdd={onNavAdd}
           onNavViewChange={onNavViewChange}

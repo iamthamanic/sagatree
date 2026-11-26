@@ -13,6 +13,8 @@ export type AtlasThreeCameraView = {
   readonly mode: AtlasThreeCameraMode;
   readonly x: number;
   readonly z: number;
+  /** Optional target elevation Y (world units, defaults to 0). */
+  readonly y?: number;
   readonly span: number;
   readonly yawRad: number;
   readonly pitchRad: number;
@@ -78,13 +80,15 @@ export function buildAtlasThreeCameraRig(
   const forward: readonly [number, number] = [Math.sin(view.yawRad), Math.cos(view.yawRad)];
   const perspective = view.mode === 'perspective';
   const distance = view.span * (perspective ? 2.25 : 3.0);
-  const at: readonly [number, number, number] = [view.x, 0, view.z];
+  const targetY = Number.isFinite(view.y) ? view.y! : 0;
+  const eyeLift = Math.min(5, view.span * 0.12);
+  const at: readonly [number, number, number] = [view.x, targetY, view.z];
   const topdown = view.mode === 'ortho-topdown';
   const eye: readonly [number, number, number] = topdown
-    ? [view.x, distance + 5, view.z]
+    ? [view.x, targetY + distance + eyeLift, view.z]
     : [
         view.x + forward[0] * Math.cos(pitch) * distance,
-        Math.sin(pitch) * distance + 5,
+        targetY + Math.sin(pitch) * distance + eyeLift,
         view.z + forward[1] * Math.cos(pitch) * distance,
       ];
   const up: readonly [number, number, number] = topdown
@@ -96,7 +100,7 @@ export function buildAtlasThreeCameraRig(
     at,
     up,
     distance,
-    near: perspective ? Math.max(0.2, distance * 0.015) : 0.1,
+    near: perspective ? Math.max(0.0005, distance * 0.005) : Math.max(0.0005, distance * 0.002),
     far: Math.max(26000, distance * 8 + 4000),
     perspective,
     fovYDeg: 46,
@@ -132,12 +136,15 @@ export function interpolateAtlasThreeView(
 ): AtlasThreeCameraView {
   const k = clamp(t, 0, 1);
   const e = k * k * (3 - 2 * k);
-  const logFrom = Math.log(Math.max(1, from.span));
-  const logTo = Math.log(Math.max(1, to.span));
+  const logFrom = Math.log(Math.max(0.02, from.span));
+  const logTo = Math.log(Math.max(0.02, to.span));
+  const yFrom = Number.isFinite(from.y) ? from.y! : 0;
+  const yTo = Number.isFinite(to.y) ? to.y! : 0;
   return {
     mode: to.mode,
     x: from.x + (to.x - from.x) * e,
     z: from.z + (to.z - from.z) * e,
+    y: yFrom + (yTo - yFrom) * e,
     span: Math.exp(logFrom + (logTo - logFrom) * e),
     yawRad: from.yawRad + (to.yawRad - from.yawRad) * e,
     pitchRad: from.pitchRad + (to.pitchRad - from.pitchRad) * e,
@@ -157,16 +164,21 @@ export function dampAtlasThreeView(
   const alpha = 1 - Math.exp(-Math.max(0.001, Math.min(0.1, dtSeconds)) * speed);
   const nx = current.x + (target.x - current.x) * alpha;
   const nz = current.z + (target.z - current.z) * alpha;
-  const logCur = Math.log(Math.max(1, current.span));
-  const logTgt = Math.log(Math.max(1, target.span));
+  const curY = Number.isFinite(current.y) ? current.y! : 0;
+  const tgtY = Number.isFinite(target.y) ? target.y! : 0;
+  const ny = curY + (tgtY - curY) * alpha;
+  const logCur = Math.log(Math.max(0.02, current.span));
+  const logTgt = Math.log(Math.max(0.02, target.span));
   const nspan = Math.exp(logCur + (logTgt - logCur) * alpha);
   const nyaw = current.yawRad + (target.yawRad - current.yawRad) * alpha;
   const npitch = current.pitchRad + (target.pitchRad - current.pitchRad) * alpha;
 
+  const epsPos = Math.min(0.04, target.span * 0.002);
   const settled =
-    Math.abs(nx - target.x) < 0.04 &&
-    Math.abs(nz - target.z) < 0.04 &&
-    Math.abs(nspan - target.span) < 0.04 &&
+    Math.abs(nx - target.x) < epsPos &&
+    Math.abs(nz - target.z) < epsPos &&
+    Math.abs(ny - tgtY) < 0.001 &&
+    Math.abs(nspan - target.span) < Math.min(0.04, target.span * 0.002) &&
     Math.abs(nyaw - target.yawRad) < 0.0004 &&
     Math.abs(npitch - target.pitchRad) < 0.0004;
 
@@ -177,6 +189,7 @@ export function dampAtlasThreeView(
           mode: target.mode,
           x: nx,
           z: nz,
+          y: ny,
           span: nspan,
           yawRad: nyaw,
           pitchRad: npitch,

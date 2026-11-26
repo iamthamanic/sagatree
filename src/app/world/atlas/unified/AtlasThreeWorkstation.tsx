@@ -69,6 +69,7 @@ import {
   type AtlasMapScale,
   type AtlasTerrainSculptMode,
   type AtlasWorldCameraState,
+  type AtlasWorldSceneMapInput,
   type UnifiedCanvasDoc,
   type UnifiedCanvasLayerId,
   type UnifiedCanvasStampType,
@@ -82,8 +83,10 @@ import {
   type AtlasThreeCameraMode,
   type AtlasThreeCameraView,
   type AtlasThreeLightingMode,
+  type AtlasThreeMultiMapStats,
   type AtlasThreeProjectedPin,
   type AtlasThreeStyleMode,
+  type AtlasThreeWorldMapSource,
 } from '../../../../infrastructure/world/atlas-three';
 import { Button } from '../../../../shared/ui/button';
 import { Input } from '../../../../shared/ui/input';
@@ -179,6 +182,11 @@ export type AtlasThreeWorkstationProps = {
   /** SWS-05: shared World Camera state synced across 2D + 3D projections (E1/E2). */
   readonly sharedWorldCamera?: AtlasWorldCameraState | null;
   readonly onSharedWorldCameraChange?: (next: AtlasWorldCameraState) => void;
+  /** SWS-04: optional Multi-Map Scene Graph payload (located world hierarchy). */
+  readonly worldSceneGraph?: {
+    readonly maps: readonly AtlasWorldSceneMapInput[];
+    readonly sources: readonly AtlasThreeWorldMapSource[];
+  } | null;
   readonly onNavSelect?: (payload: AtlasNativeNavSelectPayload) => void;
   readonly onNavAdd?: (payload: { readonly uiKind: string; readonly parentId: string }) => void;
   readonly onNavViewChange?: (view: {
@@ -266,6 +274,7 @@ export function AtlasThreeWorkstation({
   onCancelEditBatch,
   sharedWorldCamera = null,
   onSharedWorldCameraChange,
+  worldSceneGraph = null,
   onNavSelect,
   onNavAdd,
   onNavViewChange,
@@ -326,6 +335,12 @@ export function AtlasThreeWorkstation({
   const [ready, setReady] = useState(false);
   const [contextLost, setContextLost] = useState(false);
   const [portalTransition, setPortalTransition] = useState<AtlasPortalTransitionState | null>(null);
+  const portalTransitionRef = useRef(portalTransition);
+  portalTransitionRef.current = portalTransition;
+  const canUndoRef = useRef(canUndo);
+  canUndoRef.current = canUndo;
+  const canRedoRef = useRef(canRedo);
+  canRedoRef.current = canRedo;
 
   const look: 'outdoor' | 'indoor' = mapScale === 'interior' ? 'indoor' : 'outdoor';
   const activeTool: AtlasThreeToolId = canEdit ? tool : 'hand';
@@ -462,41 +477,129 @@ export function AtlasThreeWorkstation({
             mode: 'webgl';
             renderer: 'three-js';
             camera: AtlasThreeCameraView;
+            worldCamera: AtlasWorldCameraState;
             rooms: number;
             calls: number;
             triangles: number;
+            clearRootCount: number;
+            activeMapCount: number;
+            multiMap: AtlasThreeMultiMapStats;
+            portalTransitionVisible: boolean;
+            canUndo: boolean;
+            canRedo: boolean;
             ids: string[];
           };
           setCameraMode: (m: AtlasThreeCameraMode) => void;
           setYaw: (rad: number) => void;
+          setView: (next: Partial<AtlasThreeCameraView>, animate?: boolean) => void;
+          projectWorldToScreen: (
+            x: number,
+            z: number,
+            y?: number,
+          ) => { readonly px: number; readonly py: number; readonly visible: boolean };
+          pickAt: (px: number, py: number) => string | null;
+          getRendererInfo: () => {
+            readonly webglRenderer: string;
+            readonly webglVendor: string;
+            readonly isSoftwareWebgl: boolean;
+          };
+          getDocObject: (
+            id: string,
+          ) => {
+            readonly id: string;
+            readonly type: string;
+            readonly x: number;
+            readonly y: number;
+            readonly size: number;
+            readonly angle?: number;
+          } | null;
         };
       };
       win.__sagatreeAtlas = {
         getState: () => {
-          const stats = rt?.getStats() ?? { calls: 0, triangles: 0, rooms: 0 };
+          const stats = rt?.getStats() ?? {
+            calls: 0,
+            triangles: 0,
+            rooms: 0,
+            clearRootCount: 0,
+            activeMapCount: 0,
+          };
+          const multiMap: AtlasThreeMultiMapStats = rt?.getMultiMapStats() ?? {
+            activeMapIds: [],
+            activeEditorMapId: null,
+            groupCount: 0,
+            liveGeometryCount: 0,
+            clearRootCount: 0,
+            incrementalSyncCount: 0,
+          };
+          const view = rt?.getView() ?? {
+            mode: 'diorama-oblique' as const,
+            x: 500,
+            z: 500,
+            span: 430,
+            yawRad: 0.42,
+            pitchRad: 0.94,
+          };
           return {
             mode: 'webgl',
             renderer: 'three-js',
-            camera: rt?.getView() ?? {
-              mode: 'diorama-oblique',
-              x: 500,
-              z: 500,
-              span: 430,
-              yawRad: 0.42,
-              pitchRad: 0.94,
-            },
+            camera: view,
+            worldCamera:
+              rt?.getWorldCameraState() ??
+              createAtlasWorldCameraState({
+                focusWorld: { x: view.x, y: view.z, z: 0 },
+                span: view.span,
+                yawRad: view.yawRad,
+                pitchRad: view.pitchRad,
+                projection: view.mode,
+              }),
             rooms: stats.rooms,
             calls: stats.calls,
             triangles: stats.triangles,
+            clearRootCount: stats.clearRootCount,
+            activeMapCount: stats.activeMapCount,
+            multiMap,
+            portalTransitionVisible: Boolean(portalTransitionRef.current),
+            canUndo: canUndoRef.current,
+            canRedo: canRedoRef.current,
             ids: rt?.getRenderedIds() ?? [],
           };
         },
         setCameraMode: (m) => {
           setCameraMode(m);
-          rt?.setView({ mode: m, pitchRad: defaultAtlasThreePitch(m) }, false);
+          if (!rt) return;
+          const nextCam = switchWorldCameraProjection(rt.getWorldCameraState(), m, {
+            pitchRad: defaultAtlasThreePitch(m),
+          });
+          rt.setWorldCameraState(nextCam, false);
         },
         setYaw: (rad) => {
           rt?.setView({ yawRad: rad }, false);
+        },
+        setView: (next, animate = false) => {
+          if (next.mode) setCameraMode(next.mode);
+          rt?.setView(next, animate);
+        },
+        projectWorldToScreen: (x, z, y) =>
+          rt?.projectWorldPointToScreen(x, z, y) ?? { px: 0, py: 0, visible: false },
+        pickAt: (px, py) => rt?.pickCanonicalId(px, py) ?? null,
+        getRendererInfo: () =>
+          rt?.getRendererInfo() ?? {
+            webglRenderer: 'unknown',
+            webglVendor: 'unknown',
+            isSoftwareWebgl: true,
+          },
+        getDocObject: (id) => {
+          const hit = docRef.current.objects.find((o) => o.id === id);
+          if (!hit) return null;
+          return {
+            id: hit.id,
+            type: hit.type,
+            x: hit.x,
+            y: hit.y,
+            size: hit.size,
+            angle: hit.angle,
+          };
         },
       };
     } catch (err) {
@@ -513,6 +616,17 @@ export function AtlasThreeWorkstation({
   useEffect(() => {
     runtimeRef.current?.applyQualityProfile(graphicsPresetId);
   }, [graphicsPresetId]);
+
+  // SWS-04: sync located world hierarchy into Multi-Map Scene Graph (incremental, zero clearRoot).
+  useEffect(() => {
+    const rt = runtimeRef.current;
+    if (!rt) return;
+    if (worldSceneGraph && worldSceneGraph.maps.length > 0) {
+      rt.setWorldSceneGraph(worldSceneGraph);
+    } else {
+      rt.setWorldSceneGraph({ maps: [], sources: [] });
+    }
+  }, [worldSceneGraph]);
 
   // Unified Draufsicht toggle (SWS-05 E2): preserve focus, yawRad, and span across 2D ↔ 3D switch!
   useEffect(() => {

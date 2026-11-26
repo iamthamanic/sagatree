@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-world.json](source-contracts/infra-world.json) (SHA-256 `87482148cc2219b07ffd5a679cbd160ed7c589133d4b07b80206913cd5a67105`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-world.json](source-contracts/infra-world.json) (SHA-256 `ef6c41623a35deb0e9cfc7b58f9e4405081d2f0271741d1cef8269da41958cfb`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -953,13 +953,15 @@ export type AtlasThreeCameraView = {
   readonly mode: AtlasThreeCameraMode;
   readonly x: number;
   readonly z: number;
+  /** Optional target elevation Y (world units, defaults to 0). */
+  readonly y?: number;
   readonly span: number;
   readonly yawRad: number;
   readonly pitchRad: number;
 };
 ```
 
-### src/infrastructure/world/atlas-three/atlas-three-camera.ts:21
+### src/infrastructure/world/atlas-three/atlas-three-camera.ts:23
 
 ```ts
 export type AtlasThreeCameraRig = {
@@ -976,7 +978,7 @@ export type AtlasThreeCameraRig = {
 };
 ```
 
-### src/infrastructure/world/atlas-three/atlas-three-camera.ts:38
+### src/infrastructure/world/atlas-three/atlas-three-camera.ts:40
 
 ```ts
 export function clampAtlasThreePitch(mode: AtlasThreeCameraMode, pitch: number): number {
@@ -986,7 +988,7 @@ export function clampAtlasThreePitch(mode: AtlasThreeCameraMode, pitch: number):
 }
 ```
 
-### src/infrastructure/world/atlas-three/atlas-three-camera.ts:44
+### src/infrastructure/world/atlas-three/atlas-three-camera.ts:46
 
 ```ts
 export function defaultAtlasThreePitch(mode: AtlasThreeCameraMode): number {
@@ -996,7 +998,7 @@ export function defaultAtlasThreePitch(mode: AtlasThreeCameraMode): number {
 }
 ```
 
-### src/infrastructure/world/atlas-three/atlas-three-camera.ts:56
+### src/infrastructure/world/atlas-three/atlas-three-camera.ts:58
 
 ```ts
 export function autoAtlasThreePitchForSpan(
@@ -1016,7 +1018,7 @@ export function autoAtlasThreePitchForSpan(
 }
 ```
 
-### src/infrastructure/world/atlas-three/atlas-three-camera.ts:72
+### src/infrastructure/world/atlas-three/atlas-three-camera.ts:74
 
 ```ts
 export function buildAtlasThreeCameraRig(
@@ -1028,13 +1030,15 @@ export function buildAtlasThreeCameraRig(
   const forward: readonly [number, number] = [Math.sin(view.yawRad), Math.cos(view.yawRad)];
   const perspective = view.mode === 'perspective';
   const distance = view.span * (perspective ? 2.25 : 3.0);
-  const at: readonly [number, number, number] = [view.x, 0, view.z];
+  const targetY = Number.isFinite(view.y) ? view.y! : 0;
+  const eyeLift = Math.min(5, view.span * 0.12);
+  const at: readonly [number, number, number] = [view.x, targetY, view.z];
   const topdown = view.mode === 'ortho-topdown';
   const eye: readonly [number, number, number] = topdown
-    ? [view.x, distance + 5, view.z]
+    ? [view.x, targetY + distance + eyeLift, view.z]
     : [
         view.x + forward[0] * Math.cos(pitch) * distance,
-        Math.sin(pitch) * distance + 5,
+        targetY + Math.sin(pitch) * distance + eyeLift,
         view.z + forward[1] * Math.cos(pitch) * distance,
       ];
   const up: readonly [number, number, number] = topdown
@@ -1046,7 +1050,7 @@ export function buildAtlasThreeCameraRig(
     at,
     up,
     distance,
-    near: perspective ? Math.max(0.2, distance * 0.015) : 0.1,
+    near: perspective ? Math.max(0.0005, distance * 0.005) : Math.max(0.0005, distance * 0.002),
     far: Math.max(26000, distance * 8 + 4000),
     perspective,
     fovYDeg: 46,
@@ -1056,7 +1060,7 @@ export function buildAtlasThreeCameraRig(
 }
 ```
 
-### src/infrastructure/world/atlas-three/atlas-three-camera.ts:108
+### src/infrastructure/world/atlas-three/atlas-three-camera.ts:112
 
 ```ts
 export function buildAtlasThreeFogBand(
@@ -1079,7 +1083,7 @@ export function buildAtlasThreeFogBand(
 }
 ```
 
-### src/infrastructure/world/atlas-three/atlas-three-camera.ts:128
+### src/infrastructure/world/atlas-three/atlas-three-camera.ts:132
 
 ```ts
 export function interpolateAtlasThreeView(
@@ -1089,12 +1093,15 @@ export function interpolateAtlasThreeView(
 ): AtlasThreeCameraView {
   const k = clamp(t, 0, 1);
   const e = k * k * (3 - 2 * k);
-  const logFrom = Math.log(Math.max(1, from.span));
-  const logTo = Math.log(Math.max(1, to.span));
+  const logFrom = Math.log(Math.max(0.02, from.span));
+  const logTo = Math.log(Math.max(0.02, to.span));
+  const yFrom = Number.isFinite(from.y) ? from.y! : 0;
+  const yTo = Number.isFinite(to.y) ? to.y! : 0;
   return {
     mode: to.mode,
     x: from.x + (to.x - from.x) * e,
     z: from.z + (to.z - from.z) * e,
+    y: yFrom + (yTo - yFrom) * e,
     span: Math.exp(logFrom + (logTo - logFrom) * e),
     yawRad: from.yawRad + (to.yawRad - from.yawRad) * e,
     pitchRad: from.pitchRad + (to.pitchRad - from.pitchRad) * e,
@@ -1102,7 +1109,7 @@ export function interpolateAtlasThreeView(
 }
 ```
 
-### src/infrastructure/world/atlas-three/atlas-three-camera.ts:151
+### src/infrastructure/world/atlas-three/atlas-three-camera.ts:158
 
 ```ts
 export function dampAtlasThreeView(
@@ -1114,16 +1121,21 @@ export function dampAtlasThreeView(
   const alpha = 1 - Math.exp(-Math.max(0.001, Math.min(0.1, dtSeconds)) * speed);
   const nx = current.x + (target.x - current.x) * alpha;
   const nz = current.z + (target.z - current.z) * alpha;
-  const logCur = Math.log(Math.max(1, current.span));
-  const logTgt = Math.log(Math.max(1, target.span));
+  const curY = Number.isFinite(current.y) ? current.y! : 0;
+  const tgtY = Number.isFinite(target.y) ? target.y! : 0;
+  const ny = curY + (tgtY - curY) * alpha;
+  const logCur = Math.log(Math.max(0.02, current.span));
+  const logTgt = Math.log(Math.max(0.02, target.span));
   const nspan = Math.exp(logCur + (logTgt - logCur) * alpha);
   const nyaw = current.yawRad + (target.yawRad - current.yawRad) * alpha;
   const npitch = current.pitchRad + (target.pitchRad - current.pitchRad) * alpha;
 
+  const epsPos = Math.min(0.04, target.span * 0.002);
   const settled =
-    Math.abs(nx - target.x) < 0.04 &&
-    Math.abs(nz - target.z) < 0.04 &&
-    Math.abs(nspan - target.span) < 0.04 &&
+    Math.abs(nx - target.x) < epsPos &&
+    Math.abs(nz - target.z) < epsPos &&
+    Math.abs(ny - tgtY) < 0.001 &&
+    Math.abs(nspan - target.span) < Math.min(0.04, target.span * 0.002) &&
     Math.abs(nyaw - target.yawRad) < 0.0004 &&
     Math.abs(npitch - target.pitchRad) < 0.0004;
 
@@ -1134,6 +1146,7 @@ export function dampAtlasThreeView(
           mode: target.mode,
           x: nx,
           z: nz,
+          y: ny,
           span: nspan,
           yawRad: nyaw,
           pitchRad: npitch,
@@ -1212,6 +1225,17 @@ export function applyLocalCutoutFilter(
 ### src/infrastructure/world/atlas-three/atlas-three-multimap.ts:128
 
 ```ts
+export function multiMapDepthLiftY(depth: number): number {
+  const table = [0, 0.45, 0.65, 0.72, 0.725, 0.726];
+  const idx = Math.max(0, depth - 1);
+  if (idx < table.length) return table[idx]!;
+  return 0.726 + (idx - (table.length - 1)) * 0.0005;
+}
+```
+
+### src/infrastructure/world/atlas-three/atlas-three-multimap.ts:139
+
+```ts
 export function applyWorldTransformToGroup(
   pivot: THREE.Group,
   content: THREE.Group,
@@ -1222,8 +1246,7 @@ export function applyWorldTransformToGroup(
   const midY = (bounds.minY + bounds.maxY) / 2;
   const { centerX, centerY, scaleX, scaleY, rotationRad } = entry.worldTransform;
   const verticalScale = Math.sqrt(Math.max(1e-8, scaleX * scaleY));
-  // Subtle depth lift per hierarchy level eliminates coplanar Z-fighting with parent sheet.
-  const depthLiftY = (entry.depth - 1) * 0.06;
+  const depthLiftY = multiMapDepthLiftY(entry.depth);
 
   pivot.position.set(centerX, depthLiftY, centerY);
   pivot.rotation.set(0, -rotationRad, 0);
@@ -1233,7 +1256,7 @@ export function applyWorldTransformToGroup(
 }
 ```
 
-### src/infrastructure/world/atlas-three/atlas-three-multimap.ts:148
+### src/infrastructure/world/atlas-three/atlas-three-multimap.ts:158
 
 ```ts
 export class AtlasThreeMultiMapGraph {
@@ -1383,6 +1406,20 @@ export class AtlasThreeMultiMapGraph {
       for (const p of g.pickables) out.push(p);
     }
     return out;
+  }
+
+  getActiveEditorElevationY(): number {
+    if (!this.activeEditorMapId) return 0;
+    const g = this.groups.get(this.activeEditorMapId);
+    return g ? g.pivot.position.y : 0;
+  }
+
+  getRenderedIds(): string[] {
+    const out = new Set<string>();
+    for (const g of this.groups.values()) {
+      for (const id of g.scenePlan.ids) out.add(id);
+    }
+    return [...out].sort();
   }
 
   getStats(): AtlasThreeMultiMapStats {
@@ -1925,7 +1962,8 @@ export class AtlasThreeRuntime {
     opts?: { readonly manualPitch?: boolean },
   ): void {
     const targetMode: AtlasThreeCameraMode = next.mode ?? this.targetView.mode;
-    const nextSpan = Math.max(16, Math.min(2400, next.span ?? this.targetView.span));
+    const minSpan = this.worldMaps.length > 0 ? 0.02 : 16;
+    const nextSpan = Math.max(minSpan, Math.min(2400, next.span ?? this.targetView.span));
     if (opts?.manualPitch) {
       this.manualPitchOverride = true;
     } else if (next.mode) {
@@ -1973,8 +2011,9 @@ export class AtlasThreeRuntime {
     this.flight = null;
     const before = this.screenToGround(px, py);
     const factor = Math.exp(deltaY * 0.00125);
-    const nextSpan = Math.max(16, Math.min(2400, this.targetView.span * factor));
-    const ratio = nextSpan / Math.max(1, this.targetView.span);
+    const minSpan = this.worldMaps.length > 0 ? 0.02 : 16;
+    const nextSpan = Math.max(minSpan, Math.min(2400, this.targetView.span * factor));
+    const ratio = nextSpan / Math.max(0.02, this.targetView.span);
 
     let nextX = this.targetView.x;
     let nextZ = this.targetView.z;
@@ -2117,6 +2156,43 @@ export class AtlasThreeRuntime {
     return { x: out.x, z: out.z };
   }
 
+  /** Read-only projection from World Space (x, y, z) to canvas pixels (px, py). */
+  projectWorldPointToScreen(
+    x: number,
+    z: number,
+    y?: number,
+  ): { readonly px: number; readonly py: number; readonly visible: boolean } {
+    const w = Math.max(1, this.config.canvas.clientWidth || 1);
+    const h = Math.max(1, this.config.canvas.clientHeight || 1);
+    const pyWorld = y ?? (this.worldMaps.length > 0 ? this.multiMap.getActiveEditorElevationY() : 0);
+    const v = new THREE.Vector3(x, pyWorld, z).project(this.camera);
+    const px = ((v.x + 1) * 0.5) * w;
+    const py = ((1 - v.y) * 0.5) * h;
+    return {
+      px: Math.round(px * 100) / 100,
+      py: Math.round(py * 100) / 100,
+      visible: v.z >= -1 && v.z <= 1 && px >= 0 && px <= w && py >= 0 && py <= h,
+    };
+  }
+
+  /** Read-only WebGL renderer identification (hardware vs software labelling, A.3). */
+  getRendererInfo(): {
+    readonly webglRenderer: string;
+    readonly webglVendor: string;
+    readonly isSoftwareWebgl: boolean;
+  } {
+    const gl = this.renderer.getContext();
+    const dbg = gl.getExtension('WEBGL_debug_renderer_info');
+    const webglRenderer = String(
+      dbg ? gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL) : gl.getParameter(gl.RENDERER),
+    );
+    const webglVendor = String(
+      dbg ? gl.getParameter(dbg.UNMASKED_VENDOR_WEBGL) : gl.getParameter(gl.VENDOR),
+    );
+    const isSoftwareWebgl = /swiftshader|llvmpipe|softpipe|software|basic render/i.test(webglRenderer);
+    return { webglRenderer, webglVendor, isSoftwareWebgl };
+  }
+
   /** Raycast screen coordinates to canonical feature ID (objects prioritized over terrain/floors). */
   pickCanonicalId(px: number, py: number): string | null {
     const w = this.config.canvas.clientWidth || 1;
@@ -2126,7 +2202,12 @@ export class AtlasThreeRuntime {
     const allPickables: THREE.Object3D[] =
       this.worldMaps.length > 0 ? [...this.multiMap.getAllPickables()] : this.pickables;
     const hits = this.raycaster.intersectObjects(allPickables, false);
-    const objectIds = new Set((this.doc?.objects ?? []).map((o) => o.id));
+    const objectIds = new Set<string>((this.doc?.objects ?? []).map((o) => o.id));
+    if (this.worldMaps.length > 0) {
+      for (const src of this.worldSources.values()) {
+        for (const o of src.doc.objects) objectIds.add(o.id);
+      }
+    }
     let fallback: string | null = null;
     for (const hit of hits) {
       let id: string | null = null;
@@ -2145,6 +2226,9 @@ export class AtlasThreeRuntime {
   }
 
   getRenderedIds(): string[] {
+    if (this.worldMaps.length > 0) {
+      return this.multiMap.getRenderedIds();
+    }
     return [...(this.plan?.ids ?? [])].sort();
   }
 
@@ -2191,7 +2275,9 @@ export class AtlasThreeRuntime {
   }
 
   private clearRoot(): void {
-    this.clearRootCount += 1;
+    if (this.root.children.length > 0) {
+      this.clearRootCount += 1;
+    }
     for (const child of [...this.root.children]) {
       this.root.remove(child);
       if (child instanceof THREE.Mesh) child.geometry.dispose();
@@ -2406,7 +2492,9 @@ export class AtlasThreeRuntime {
 
   private syncCameraAndLighting(w: number, h: number, elapsedSec: number): void {
     const aspect = w / Math.max(1, h);
-    const rig = buildAtlasThreeCameraRig(this.view, aspect);
+    const activeY = this.worldMaps.length > 0 ? this.multiMap.getActiveEditorElevationY() : 0;
+    this.groundPlane.constant = -activeY;
+    const rig = buildAtlasThreeCameraRig({ ...this.view, y: activeY }, aspect);
     if (rig.perspective) {
       const cam =
         this.camera instanceof THREE.PerspectiveCamera
@@ -4384,9 +4472,9 @@ All backend operations are included in the public declarations above.
 | `src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-harness.ts` | `7cb604c899852fcf48364b031180e8c2c4acae92f779e68cc2416e58686e536a` |
 | `src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-runtime.ts` | `f250027a4c5a9674e377313738dac7f70a8a253464c46033f6a400a229b53c82` |
 | `src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-scene.ts` | `f63e63b2be555ef8348d15141ed44a01e70670667e3d0946221db2720cc32d8c` |
-| `src/infrastructure/world/atlas-three/atlas-three-camera.ts` | `3346a74d70149897f69d6cd394a6b2d1728510b4f4874038680e3dee8f942088` |
-| `src/infrastructure/world/atlas-three/atlas-three-multimap.ts` | `3198cad40450e963bd7803115f4f26904f080f18d34cb25eeb84b1882d2d05ca` |
-| `src/infrastructure/world/atlas-three/atlas-three-runtime.ts` | `df3c7aa8529a957e9041c3a8e617679d65ad9b25c741d289a4cacc28c883cee4` |
+| `src/infrastructure/world/atlas-three/atlas-three-camera.ts` | `ba02fba1d1dbd675912a5a2472a002cbe99c8673d74838d7aa61995645c62a0c` |
+| `src/infrastructure/world/atlas-three/atlas-three-multimap.ts` | `e6fa3d4a6fb92bdc9ca19409a2a79ceec5a8d711e362925321446a08e09a5038` |
+| `src/infrastructure/world/atlas-three/atlas-three-runtime.ts` | `f2d04e3f56bb3e66614e86b7e87cc36f53cc7031a910f99e544d6fe07a2fb258` |
 | `src/infrastructure/world/atlas-three/atlas-three-scene.ts` | `9cf34c83b4e1f7ceed92d1a275717766d7c71fbd8d8294fd5c38dd5cc0a5e5e2` |
 | `src/infrastructure/world/atlas-three/atlas-unified-input.ts` | `8843d39261ec1696a480b8be7c1540c6d752c060e0595788495ffb08d2c39007` |
 | `src/infrastructure/world/atlas-three/index.ts` | `ca92ca031ede8814930d8c6e7b78a36eb5c53ccac1ca050dd6808269168781eb` |

@@ -993,7 +993,8 @@ export class AtlasThreeRuntime {
     opts?: { readonly manualPitch?: boolean },
   ): void {
     const targetMode: AtlasThreeCameraMode = next.mode ?? this.targetView.mode;
-    const nextSpan = Math.max(16, Math.min(2400, next.span ?? this.targetView.span));
+    const minSpan = this.worldMaps.length > 0 ? 0.02 : 16;
+    const nextSpan = Math.max(minSpan, Math.min(2400, next.span ?? this.targetView.span));
     if (opts?.manualPitch) {
       this.manualPitchOverride = true;
     } else if (next.mode) {
@@ -1041,8 +1042,9 @@ export class AtlasThreeRuntime {
     this.flight = null;
     const before = this.screenToGround(px, py);
     const factor = Math.exp(deltaY * 0.00125);
-    const nextSpan = Math.max(16, Math.min(2400, this.targetView.span * factor));
-    const ratio = nextSpan / Math.max(1, this.targetView.span);
+    const minSpan = this.worldMaps.length > 0 ? 0.02 : 16;
+    const nextSpan = Math.max(minSpan, Math.min(2400, this.targetView.span * factor));
+    const ratio = nextSpan / Math.max(0.02, this.targetView.span);
 
     let nextX = this.targetView.x;
     let nextZ = this.targetView.z;
@@ -1185,6 +1187,43 @@ export class AtlasThreeRuntime {
     return { x: out.x, z: out.z };
   }
 
+  /** Read-only projection from World Space (x, y, z) to canvas pixels (px, py). */
+  projectWorldPointToScreen(
+    x: number,
+    z: number,
+    y?: number,
+  ): { readonly px: number; readonly py: number; readonly visible: boolean } {
+    const w = Math.max(1, this.config.canvas.clientWidth || 1);
+    const h = Math.max(1, this.config.canvas.clientHeight || 1);
+    const pyWorld = y ?? (this.worldMaps.length > 0 ? this.multiMap.getActiveEditorElevationY() : 0);
+    const v = new THREE.Vector3(x, pyWorld, z).project(this.camera);
+    const px = ((v.x + 1) * 0.5) * w;
+    const py = ((1 - v.y) * 0.5) * h;
+    return {
+      px: Math.round(px * 100) / 100,
+      py: Math.round(py * 100) / 100,
+      visible: v.z >= -1 && v.z <= 1 && px >= 0 && px <= w && py >= 0 && py <= h,
+    };
+  }
+
+  /** Read-only WebGL renderer identification (hardware vs software labelling, A.3). */
+  getRendererInfo(): {
+    readonly webglRenderer: string;
+    readonly webglVendor: string;
+    readonly isSoftwareWebgl: boolean;
+  } {
+    const gl = this.renderer.getContext();
+    const dbg = gl.getExtension('WEBGL_debug_renderer_info');
+    const webglRenderer = String(
+      dbg ? gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL) : gl.getParameter(gl.RENDERER),
+    );
+    const webglVendor = String(
+      dbg ? gl.getParameter(dbg.UNMASKED_VENDOR_WEBGL) : gl.getParameter(gl.VENDOR),
+    );
+    const isSoftwareWebgl = /swiftshader|llvmpipe|softpipe|software|basic render/i.test(webglRenderer);
+    return { webglRenderer, webglVendor, isSoftwareWebgl };
+  }
+
   /** Raycast screen coordinates to canonical feature ID (objects prioritized over terrain/floors). */
   pickCanonicalId(px: number, py: number): string | null {
     const w = this.config.canvas.clientWidth || 1;
@@ -1194,7 +1233,12 @@ export class AtlasThreeRuntime {
     const allPickables: THREE.Object3D[] =
       this.worldMaps.length > 0 ? [...this.multiMap.getAllPickables()] : this.pickables;
     const hits = this.raycaster.intersectObjects(allPickables, false);
-    const objectIds = new Set((this.doc?.objects ?? []).map((o) => o.id));
+    const objectIds = new Set<string>((this.doc?.objects ?? []).map((o) => o.id));
+    if (this.worldMaps.length > 0) {
+      for (const src of this.worldSources.values()) {
+        for (const o of src.doc.objects) objectIds.add(o.id);
+      }
+    }
     let fallback: string | null = null;
     for (const hit of hits) {
       let id: string | null = null;
@@ -1213,6 +1257,9 @@ export class AtlasThreeRuntime {
   }
 
   getRenderedIds(): string[] {
+    if (this.worldMaps.length > 0) {
+      return this.multiMap.getRenderedIds();
+    }
     return [...(this.plan?.ids ?? [])].sort();
   }
 
@@ -1259,7 +1306,9 @@ export class AtlasThreeRuntime {
   }
 
   private clearRoot(): void {
-    this.clearRootCount += 1;
+    if (this.root.children.length > 0) {
+      this.clearRootCount += 1;
+    }
     for (const child of [...this.root.children]) {
       this.root.remove(child);
       if (child instanceof THREE.Mesh) child.geometry.dispose();
@@ -1474,7 +1523,9 @@ export class AtlasThreeRuntime {
 
   private syncCameraAndLighting(w: number, h: number, elapsedSec: number): void {
     const aspect = w / Math.max(1, h);
-    const rig = buildAtlasThreeCameraRig(this.view, aspect);
+    const activeY = this.worldMaps.length > 0 ? this.multiMap.getActiveEditorElevationY() : 0;
+    this.groundPlane.constant = -activeY;
+    const rig = buildAtlasThreeCameraRig({ ...this.view, y: activeY }, aspect);
     if (rig.perspective) {
       const cam =
         this.camera instanceof THREE.PerspectiveCamera
