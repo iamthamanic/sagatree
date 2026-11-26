@@ -302,6 +302,7 @@ export {
   atlasTerrainMaxTriangles,
   atlasTerrainStrideForBudget,
   atlasTerrainTriangleEstimate,
+  buildAtlasTerrainChunkMeshTriangles,
   buildAtlasTerrainMeshPlan,
   type AtlasTerrainCoastEdge,
   type AtlasTerrainLodBand,
@@ -323,6 +324,7 @@ export {
   applyShoreRule,
   clearAtlasHeightfield,
   emptyAtlasHeightfield,
+  heightfieldChunkMeshTriangles,
   heightfieldContentFingerprint,
   heightfieldIndex,
   heightfieldMeshTriangles,
@@ -335,7 +337,26 @@ export {
   type AtlasHeightBrushStroke,
   type AtlasHeightfield,
   type AtlasHeightfieldAssetRef,
+  type AtlasHeightfieldChunkWindow,
 } from './atlas-heightfield';
+
+export {
+  ATLAS_TERRAIN_CHUNK_DEFAULT_RESOLUTION,
+  ATLAS_TERRAIN_CHUNK_LOGICAL_CELLS,
+  ATLAS_TERRAIN_CHUNK_MAX_LOD,
+  ATLAS_WORLD_TERRAIN_CHUNK_FORMAT,
+  DEFAULT_ATLAS_WORLD_TERRAIN_CHUNK_CONFIG,
+  createAtlasWorldHeightfieldSource,
+  planWorldTerrainChunks,
+  sampleWorldChunkHeightGrid,
+  sampleWorldHeight,
+  type AtlasTerrainChunkDescriptor,
+  type AtlasWorldHeightfieldOverlay,
+  type AtlasWorldHeightfieldSource,
+  type AtlasWorldTerrainBounds,
+  type AtlasWorldTerrainChunkPlan,
+  type AtlasWorldTerrainChunkPlanConfig,
+} from './atlas-world-terrain-chunks';
 
 export {
   WEBGL_GEOMETRY_BACKUP_META_KEY,
@@ -781,6 +802,7 @@ export {
   buildDefaultDornhainHeightfield,
   buildDefaultTaproomCanvas,
   buildDefaultTavernCanvas,
+  buildDefaultWorldHeightfield,
   verifyDefaultWorldIntegrity,
   type CalibratedDefaultWorldBundle,
   type DefaultWorldMapSpec,
