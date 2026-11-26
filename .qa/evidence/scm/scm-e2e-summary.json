@@ -1,9 +1,9 @@
 {
-  "capturedAt": "2026-11-26T09:31:10.258Z",
+  "capturedAt": "2026-11-26T10:21:20.071Z",
   "growTarget": {
-    "settlementId": "map:dh-map-place-dornhain__12c817637201",
+    "settlementId": "map:dh-map-place-dornhain__1753b0055698",
     "settlementOrigMaxX": 242,
-    "buildingId": "map:dh-map-loc-crypt__b877a33b1ee3",
+    "buildingId": "map:dh-map-loc-crypt__6e9095ae9da3",
     "buildingBounds": {
       "minX": 239.464,
       "minY": 408.688,
@@ -15,6 +15,17 @@
   "prefsAfterDismiss": {
     "confirmGrow": false,
     "confirmCascade": true
+  },
+  "afterGrowUndoReloadMaxX": 242,
+  "afterRedoReloadMaxX": 242.4,
+  "preCascadeSnapshot": {
+    "countryId": "map:dh-map-country-westmark__4cc1fdda43a8",
+    "dornhainId": "map:dh-map-place-dornhain__1753b0055698",
+    "dornhainBuildings": 5
+  },
+  "postCascadeUndoReload": {
+    "archivedCount": 0,
+    "dornhainBuildings": 5
   },
   "reloadedPrefs": {
     "confirmGrow": true,

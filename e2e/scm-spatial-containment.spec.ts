@@ -1,5 +1,5 @@
 /**
- * SCM-06 — Spatial Containment Model Host Browser-E2E (SCM-01 / SCM-05 / SCM-06 / SCM-07 / SCM-08).
+ * SCM-06 + Findings M-1 / M-2 / L-1 / L-2 — Spatial Containment Model Host Browser-E2E.
  * Location: e2e/scm-spatial-containment.spec.ts
  *
  * Reuses `e2e/helpers/atlas-host.ts` (`openDornhainAtlas3d`, `waitAtlas3dReady`) and the
@@ -77,6 +77,12 @@ type ScmBridge = {
     }>,
     animate?: boolean,
   ) => void;
+  readonly projectWorldToScreen: (
+    x: number,
+    z: number,
+    y?: number,
+  ) => { readonly px: number; readonly py: number; readonly visible: boolean };
+  readonly pickAt: (px: number, py: number) => string | null;
   readonly getSpatialPrefs: () => { readonly confirmGrow: boolean; readonly confirmCascade: boolean };
   readonly getSpatialState: () => {
     readonly ready: boolean;
@@ -175,10 +181,35 @@ async function waitSpatialReady(page: Page): Promise<void> {
     .toBe(1);
 }
 
+async function waitForAtlasPersistResponse(page: Page, action: () => Promise<void>): Promise<void> {
+  const respPromise = page.waitForResponse(
+    (res) =>
+      res.url().includes('/atlas') &&
+      ['POST', 'PUT', 'PATCH'].includes(res.request().method()) &&
+      res.ok(),
+    { timeout: 25_000 },
+  );
+  await action();
+  await respPromise;
+  // Let any chained secondary map upserts settle
+  await page.waitForTimeout(400);
+}
+
+async function reloadAtlasAndWait(page: Page): Promise<void> {
+  await page.reload();
+  await expect(page.locator('[data-world-atlas-workbench]').first()).toBeVisible({ timeout: 45_000 });
+  const mode3d = page.locator('[data-atlas-surface-mode="3d"]').first();
+  const mode2d = page.locator('[data-atlas-surface-mode="2d"]').first();
+  await expect(mode3d.or(mode2d)).toBeVisible({ timeout: 60_000 });
+  if ((await mode3d.count()) === 0) await page.locator('[data-atlas-surface-toggle]').first().click();
+  await waitAtlas3dReady(page);
+  await waitSpatialReady(page);
+}
+
 test.describe('SCM — Spatial Containment Model (Host Browser E2E)', () => {
   test.skip(!HOST, 'requires SAGATREE_BROWSER_E2E_HOST=1 (npm run test:e2e)');
 
-  test('SCM-07: zoom-driven layer indicator tracks Welt→…→Schankraum while tree stays open & clearRoot=0', async ({
+  test('SCM-07 + L-1: zoom-driven layer indicator tracks Welt→…→Schankraum with WCAG AA contrast >= 4.5:1 & clearRoot=0', async ({
     page,
   }) => {
     test.setTimeout(120_000);
@@ -247,25 +278,258 @@ test.describe('SCM — Spatial Containment Model (Host Browser E2E)', () => {
       observed.push({ step: stop.id, ...snap });
     }
 
+    // L-1: Measure real computed WCAG 2.1 contrast ratio on active zoom node (`Schankraum`) + subtitle
+    const contrast = await page.evaluate(() => {
+      const parseRgba = (raw: string): [number, number, number, number] => {
+        const m = raw.match(/rgba?\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)(?:\s*,\s*([\d.]+))?\s*\)/i);
+        if (!m) return [0, 0, 0, 1];
+        return [Number(m[1]), Number(m[2]), Number(m[3]), m[4] !== undefined ? Number(m[4]) : 1];
+      };
+      const blendOver = (
+        fg: [number, number, number, number],
+        bg: [number, number, number, number],
+      ): [number, number, number] => {
+        const a = fg[3];
+        return [
+          fg[0] * a + bg[0] * (1 - a),
+          fg[1] * a + bg[1] * (1 - a),
+          fg[2] * a + bg[2] * (1 - a),
+        ];
+      };
+      const relLum = ([r, g, b]: [number, number, number]): number => {
+        const lin = (c: number) => {
+          const s = c / 255;
+          return s <= 0.03928 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
+        };
+        return 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b);
+      };
+      const ratio = (a: [number, number, number], b: [number, number, number]): number => {
+        const l1 = relLum(a);
+        const l2 = relLum(b);
+        return Math.round(((Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05)) * 100) / 100;
+      };
+
+      const btn = document.querySelector<HTMLElement>('[data-atlas-zoom-active="true"]');
+      if (!btn) return null;
+      const btnCs = getComputedStyle(btn);
+      const bg = parseRgba(btnCs.backgroundColor);
+      const fg = parseRgba(btnCs.color);
+      const subEl = btn.querySelectorAll<HTMLElement>('span > span')[1] ?? btn;
+      const subCs = getComputedStyle(subEl);
+      const subFg = parseRgba(subCs.color);
+      const baseBg: [number, number, number] = [bg[0], bg[1], bg[2]];
+      return {
+        darkMode: document.documentElement.classList.contains('dark'),
+        backgroundColor: btnCs.backgroundColor,
+        labelColor: btnCs.color,
+        subtitleColor: subCs.color,
+        fontWeight: btnCs.fontWeight,
+        labelContrast: ratio(blendOver(fg, bg), baseBg),
+        subtitleContrast: ratio(blendOver(subFg, bg), baseBg),
+      };
+    });
+
+    expect(contrast, 'active zoom node computed style found').toBeTruthy();
+    expect(contrast!.labelContrast, `L-1 active label WCAG AA contrast >= 4.5 (${JSON.stringify(contrast)})`).toBeGreaterThanOrEqual(4.5);
+    expect(contrast!.subtitleContrast, `L-1 active subtitle WCAG AA contrast >= 4.5 (${JSON.stringify(contrast)})`).toBeGreaterThanOrEqual(4.5);
+
     // Badge displays deepest level `Schankraum`
     await expect(page.locator('[data-atlas-zoom-level-badge]').first()).toContainText('Schankraum');
     await page.screenshot({ path: join(EVIDENCE_DIR, 'scm-07-zoom-layer-schankraum.png') });
+    await page.screenshot({ path: join(EVIDENCE_DIR, 'scm-l1-zoom-contrast.png') });
 
     writeFileSync(
       join(EVIDENCE_DIR, 'scm-07-zoom-trace.json'),
-      `${JSON.stringify({ capturedAt: new Date().toISOString(), observed }, null, 2)}\n`,
+      `${JSON.stringify({ capturedAt: new Date().toISOString(), contrast, observed }, null, 2)}\n`,
     );
   });
 
-  test('SCM-01/05/06/08: confirmation dialogs, Nicht mehr nachfragen, persistent prefs, soft-cascade & atomic undo', async ({
+  test('M-1: real canvas mouse-drag within bounds stays direct; dragging past border triggers live indicator + SCM grow dialog', async ({
     page,
   }) => {
     test.setTimeout(150_000);
+    mkdirSync(EVIDENCE_DIR, { recursive: true });
+    const pts = computeZoomPoints();
+
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await openDornhainAtlas3d(page);
+    await waitSpatialReady(page);
+
+    // Ensure confirmGrow is enabled so pointer-drag breach opens the German dialog
+    await page.evaluate(() => {
+      localStorage.removeItem('sagatree.atlas.spatialEditPrefs.v1');
+    });
+    await reloadAtlasAndWait(page);
+
+    // Zoom cleanly over Dornhain in top-down view for deterministic mouse picking & drag
+    await page.evaluate((p) => {
+      const b = (window as unknown as { __sagatreeAtlas?: ScmBridge }).__sagatreeAtlas;
+      b?.setView({ mode: 'ortho-topdown', x: p.x + 0.5, z: p.y, span: 3.4, yawRad: 0 }, false);
+    }, pts.dornhain);
+    await waitRaf(page, 8);
+
+    // Activate Bewegen (Move) tool via UI button
+    const toolsBtn = page.locator('[data-atlas-panel-fold="tools"]').first();
+    if ((await toolsBtn.getAttribute('aria-expanded')) !== 'true') {
+      await toolsBtn.click();
+    }
+    await page.locator('[data-atlas-3d-tool="move"]').first().click();
+
+    // Locate a pickable building inside Dornhain + canvas screen coordinates
+    const dragPlan = await page.evaluate(() => {
+      const b = (window as unknown as { __sagatreeAtlas?: ScmBridge }).__sagatreeAtlas;
+      const st = b?.getSpatialState();
+      const canvas = document.querySelector<HTMLCanvasElement>('[data-atlas-three-workstation] canvas');
+      if (!b || !st || !canvas) return null;
+      const rect = canvas.getBoundingClientRect();
+      const settlement = Object.values(st.entities).find((e) => e.role === 'settlement' && e.labelDe === 'Dornhain');
+      const country = Object.values(st.entities).find((e) => e.role === 'country' && e.labelDe === 'Nordreich');
+      if (!settlement || !country) return null;
+
+      const buildings = Object.values(st.entities).filter(
+        (e) => e.carrierId === settlement.id && e.role === 'building' && e.status === 'active',
+      );
+      for (const bld of buildings) {
+        const cx = (bld.boundsWorld.minX + bld.boundsWorld.maxX) / 2;
+        const cy = (bld.boundsWorld.minY + bld.boundsWorld.maxY) / 2;
+        const scr = b.projectWorldToScreen(cx, cy, 0);
+        if (!scr.visible) continue;
+        // Try center + slight offset in case roof/mesh is slightly elevated
+        let hitId: string | null = null;
+        let hitPx = scr.px;
+        let hitPy = scr.py;
+        for (const [ox, oy] of [
+          [0, 0],
+          [0, -4],
+          [4, 0],
+          [-4, 0],
+          [0, 4],
+        ]) {
+          const id = b.pickAt(scr.px + ox, scr.py + oy);
+          if (id && bld.id.endsWith(`:${id}`)) {
+            hitId = id;
+            hitPx = scr.px + ox;
+            hitPy = scr.py + oy;
+            break;
+          }
+        }
+        if (!hitId) continue;
+
+        const insideTarget = b.projectWorldToScreen(cx + 0.08, cy, 0);
+        const outsideTarget = b.projectWorldToScreen(settlement.boundsWorld.maxX + 0.55, cy, 0);
+        if (!insideTarget.visible || !outsideTarget.visible) continue;
+
+        return {
+          settlementId: settlement.id,
+          countryId: country.id,
+          settlementOrigMaxX: settlement.boundsWorld.maxX,
+          countryOrigMaxX: country.boundsWorld.maxX,
+          buildingId: bld.id,
+          featureId: hitId,
+          startClientX: rect.left + hitPx,
+          startClientY: rect.top + hitPy,
+          insideClientX: rect.left + insideTarget.px,
+          insideClientY: rect.top + insideTarget.py,
+          outsideClientX: rect.left + outsideTarget.px,
+          outsideClientY: rect.top + outsideTarget.py,
+        };
+      }
+      return null;
+    });
+
+    expect(dragPlan, 'M-1: pickable building inside Dornhain found on canvas').toBeTruthy();
+
+    const dialog = page.locator('[data-atlas-scm-confirm-dialog]').first();
+    const breachBadge = page.locator('[data-atlas-scm-drag-breach]').first();
+
+    // M-1a: Real pointer drag WITHIN Dornhain bounds → NO breach badge, NO dialog!
+    await page.mouse.move(dragPlan!.startClientX, dragPlan!.startClientY);
+    await page.mouse.down();
+    await page.mouse.move(dragPlan!.insideClientX, dragPlan!.insideClientY, { steps: 6 });
+    await expect(breachBadge).toBeHidden();
+    await expect(dialog).toBeHidden();
+    await waitForAtlasPersistResponse(page, async () => {
+      await page.mouse.up();
+    });
+    await expect(dialog).toBeHidden();
+
+    // M-1b: Real pointer drag OVER Dornhain's east border → live breach indicator mid-drag, dialog on pointerup!
+    await page.mouse.move(dragPlan!.insideClientX, dragPlan!.insideClientY);
+    await page.mouse.down();
+    await page.mouse.move(dragPlan!.outsideClientX, dragPlan!.outsideClientY, { steps: 12 });
+    await expect(breachBadge, 'M-1: live Gold breach indicator shown mid-drag').toBeVisible();
+    await expect(breachBadge).toContainText('Dornhain');
+    await expect(dialog, 'M-1: confirmation dialog must NOT open mid-drag').toBeHidden();
+    await page.screenshot({ path: join(EVIDENCE_DIR, 'scm-m1-drag-breach-live.png') });
+
+    // Release pointer → confirmation dialog opens cleanly!
+    await page.mouse.up();
+    await expect(dialog, 'M-1: confirmation dialog opens on pointerup').toBeVisible();
+    await expect(dialog).toHaveAttribute('data-atlas-scm-confirm-kind', 'grow');
+    await expect(page.locator('[data-atlas-scm-confirm-summary]').first()).toContainText('Dornhain');
+    await page.screenshot({ path: join(EVIDENCE_DIR, 'scm-m1-drag-grow-dialog.png'), animations: 'disabled' });
+
+    // Confirm → ONLY Dornhain grows (Nordreich untouched!)
+    await waitForAtlasPersistResponse(page, async () => {
+      await page.locator('[data-atlas-scm-confirm]').first().click();
+    });
+    await expect(dialog).toBeHidden();
+
+    const afterDragGrow = await page.evaluate(
+      ({ sid, cid }) => {
+        const b = (window as unknown as { __sagatreeAtlas?: ScmBridge }).__sagatreeAtlas;
+        const st = b?.getSpatialState();
+        return {
+          settlementMaxX: st?.entities[sid]?.boundsWorld.maxX ?? 0,
+          countryMaxX: st?.entities[cid]?.boundsWorld.maxX ?? 0,
+        };
+      },
+      { sid: dragPlan!.settlementId, cid: dragPlan!.countryId },
+    );
+    expect(afterDragGrow.settlementMaxX, 'M-1: Dornhain grew after mouse-drag confirm').toBeGreaterThan(
+      dragPlan!.settlementOrigMaxX + 0.1,
+    );
+    expect(afterDragGrow.countryMaxX, 'M-1: Nordreich untouched (INV-3 stop)').toBeCloseTo(
+      dragPlan!.countryOrigMaxX,
+      3,
+    );
+
+    // 2× Undo (grow + prior in-bounds move) restores Dornhain cleanly in SQLite for subsequent tests
+    await page.evaluate(async () => {
+      const b = (window as unknown as { __sagatreeAtlas?: ScmBridge }).__sagatreeAtlas;
+      await b?.undoSpatial();
+      await b?.undoSpatial();
+    });
+    await page.waitForTimeout(400);
+
+    const afterUndo = await page.evaluate((sid) => {
+      const b = (window as unknown as { __sagatreeAtlas?: ScmBridge }).__sagatreeAtlas;
+      return b?.getSpatialState().entities[sid]?.boundsWorld.maxX ?? 0;
+    }, dragPlan!.settlementId);
+    expect(afterUndo, 'M-1: undo restores original Dornhain border').toBeCloseTo(
+      dragPlan!.settlementOrigMaxX,
+      3,
+    );
+
+    writeFileSync(
+      join(EVIDENCE_DIR, 'scm-m1-mouse-drag.json'),
+      `${JSON.stringify({ capturedAt: new Date().toISOString(), dragPlan, afterDragGrow, afterUndo }, null, 2)}\n`,
+    );
+  });
+
+  test('SCM-01/05/06/08 + L-2 + M-2: freeland dialog subtitle, Nicht mehr nachfragen, SQLite Undo/Redo reload persistence & soft-cascade', async ({
+    page,
+  }) => {
+    test.setTimeout(180_000);
     mkdirSync(EVIDENCE_DIR, { recursive: true });
 
     await page.setViewportSize({ width: 1280, height: 800 });
     await openDornhainAtlas3d(page);
     await waitSpatialReady(page);
+    await page.evaluate(() => {
+      localStorage.removeItem('sagatree.atlas.spatialEditPrefs.v1');
+    });
+    await reloadAtlasAndWait(page);
 
     // 1. Verify default preferences ON (`spatialEdit.confirmGrow = true`, `confirmCascade = true`)
     const initPrefs = await page.evaluate(() => {
@@ -274,16 +538,18 @@ test.describe('SCM — Spatial Containment Model (Host Browser E2E)', () => {
     });
     expect(initPrefs).toEqual({ confirmGrow: true, confirmCascade: true });
 
-    // Open Werkzeuge and verify both switches are rendered with 44px touch target & checked
+    // Open Werkzeuge and verify both switches are rendered & checked
     const toolsBtn = page.locator('[data-atlas-panel-fold="tools"]').first();
-    await toolsBtn.click();
+    if ((await toolsBtn.getAttribute('aria-expanded')) !== 'true') {
+      await toolsBtn.click();
+    }
     const growToggle = page.locator('[data-atlas-pref-confirm-grow]').first();
     const cascadeToggle = page.locator('[data-atlas-pref-confirm-cascade]').first();
     await expect(growToggle).toBeVisible();
     await expect(growToggle).toBeChecked();
     await expect(cascadeToggle).toBeChecked();
 
-    // 2. SCM-01: Auto-Grow over settlement border → German dialog opens → "Nicht mehr nachfragen" + Bestätigen
+    // 2. SCM-01 + L-2: Auto-Grow over settlement border → dialog opens with `Freiland-Strukturen` (NEVER `Soft-Kaskade`!)
     const growTarget = await page.evaluate(() => {
       const b = (window as unknown as { __sagatreeAtlas?: ScmBridge }).__sagatreeAtlas;
       const st = b?.getSpatialState();
@@ -324,22 +590,23 @@ test.describe('SCM — Spatial Containment Model (Host Browser E2E)', () => {
     await expect(dialog).toBeVisible();
     await expect(dialog).toHaveAttribute('data-atlas-scm-confirm-kind', 'grow');
     await expect(page.locator('[data-atlas-scm-confirm-summary]').first()).toContainText('Dornhain');
+
+    // L-2 assertion: Grow + freeland rerouting MUST show `Freiland-Strukturen (umgeleitet/gekappt):` and NEVER `Soft-Kaskade`!
+    const freelandNotice = page.locator('[data-atlas-scm-freeland-notice]').first();
+    await expect(freelandNotice, 'L-2: Freiland-Strukturen notice visible on grow with rerouted roads/rivers').toBeVisible();
+    await expect(freelandNotice).toContainText('Freiland-Strukturen (umgeleitet/gekappt):');
+    await expect(page.locator('[data-atlas-scm-cascade-notice]')).toHaveCount(0);
+    await expect(dialog).not.toContainText('Soft-Kaskade');
+
     await page.screenshot({ path: join(EVIDENCE_DIR, 'scm-01-grow-confirm-dialog.png'), animations: 'disabled' });
+    await page.screenshot({ path: join(EVIDENCE_DIR, 'scm-l2-freeland-subtitle.png'), animations: 'disabled' });
 
-    // Check „Nicht mehr nachfragen“ + Bestätigen
+    // Check „Nicht mehr nachfragen“ + Bestätigen (wait for SQLite persist!)
     await page.locator('[data-atlas-scm-dont-ask]').first().check();
-    await page.locator('[data-atlas-scm-confirm]').first().click();
+    await waitForAtlasPersistResponse(page, async () => {
+      await page.locator('[data-atlas-scm-confirm]').first().click();
+    });
     await expect(dialog).toBeHidden();
-
-    // Wait for commit + verify Dornhain grew & confirmGrow is now false
-    await expect
-      .poll(async () =>
-        page.evaluate((sid) => {
-          const b = (window as unknown as { __sagatreeAtlas?: ScmBridge }).__sagatreeAtlas;
-          return b?.getSpatialState().entities[sid]?.boundsWorld.maxX ?? 0;
-        }, growTarget!.settlementId),
-      )
-      .toBeCloseTo(growTarget!.nextMaxX, 3);
 
     const prefsAfterDismiss = await page.evaluate(() => {
       const b = (window as unknown as { __sagatreeAtlas?: ScmBridge }).__sagatreeAtlas;
@@ -347,69 +614,96 @@ test.describe('SCM — Spatial Containment Model (Host Browser E2E)', () => {
     });
     expect(prefsAfterDismiss).toEqual({ confirmGrow: false, confirmCascade: true });
 
-    // 3. SCM-06: Second grow edit runs WITHOUT dialog (confirmGrow=false), yet remains atomic + undoable!
-    const secondGrowReq = await page.evaluate((t) => {
+    // 3. M-2a: Grow → Undo (persists back to SQLite!) → Full Page Reload → original bounds verified!
+    const undoGrowOk = await page.evaluate(async () => {
       const b = (window as unknown as { __sagatreeAtlas?: ScmBridge }).__sagatreeAtlas;
-      return b?.requestSpatialIntent({
-        kind: 'resize_or_move',
-        entityId: t.buildingId,
-        nextBoundsWorld: {
-          minX: t.buildingBounds.minX,
-          minY: t.buildingBounds.minY,
-          maxX: t.nextMaxX + 0.3,
-          maxY: t.buildingBounds.maxY,
-        },
-      });
-    }, growTarget!);
-    expect(secondGrowReq?.ok).toBe(true);
-    expect(secondGrowReq?.prompted).toBe(false);
+      return (await b?.undoSpatial()) ?? false;
+    });
+    expect(undoGrowOk, 'M-2a: undoSpatial resolves after SQLite persist').toBe(true);
+
+    await reloadAtlasAndWait(page);
+
+    const afterGrowUndoReloadMaxX = await page.evaluate((sid) => {
+      const b = (window as unknown as { __sagatreeAtlas?: ScmBridge }).__sagatreeAtlas;
+      return b?.getSpatialState().entities[sid]?.boundsWorld.maxX ?? 0;
+    }, growTarget!.settlementId);
+    expect(afterGrowUndoReloadMaxX, 'M-2a: Grow → Undo persists back to SQLite across page reload').toBeCloseTo(
+      growTarget!.settlementOrigMaxX,
+      3,
+    );
+
+    // 4. M-2b + SCM-06: Grow (without prompt, confirmGrow=false) → Undo → Redo → Full Page Reload → Redo persisted!
+    await waitForAtlasPersistResponse(page, async () => {
+      const secondGrowReq = await page.evaluate((t) => {
+        const b = (window as unknown as { __sagatreeAtlas?: ScmBridge }).__sagatreeAtlas;
+        return b?.requestSpatialIntent({
+          kind: 'resize_or_move',
+          entityId: t.buildingId,
+          nextBoundsWorld: {
+            minX: t.buildingBounds.minX,
+            minY: t.buildingBounds.minY,
+            maxX: t.nextMaxX,
+            maxY: t.buildingBounds.maxY,
+          },
+        });
+      }, growTarget!);
+      expect(secondGrowReq?.ok).toBe(true);
+      expect(secondGrowReq?.prompted).toBe(false);
+    });
     await expect(dialog).toBeHidden();
 
-    await expect
-      .poll(async () =>
-        page.evaluate((sid) => {
-          const b = (window as unknown as { __sagatreeAtlas?: ScmBridge }).__sagatreeAtlas;
-          return b?.getSpatialState().entities[sid]?.boundsWorld.maxX ?? 0;
-        }, growTarget!.settlementId),
-      )
-      .toBeCloseTo(growTarget!.nextMaxX + 0.3, 3);
-
-    // Undo twice restores original Dornhain bounds atomically
-    await page.evaluate(async () => {
+    // Undo then Redo (both await serialized SQLite persist via enqueuePersist!)
+    const undoRedoOk = await page.evaluate(async () => {
       const b = (window as unknown as { __sagatreeAtlas?: ScmBridge }).__sagatreeAtlas;
-      await b?.undoSpatial();
-      await b?.undoSpatial();
+      const u = (await b?.undoSpatial()) ?? false;
+      const r = (await b?.redoSpatial()) ?? false;
+      return { u, r };
     });
-    await expect
-      .poll(async () =>
-        page.evaluate((sid) => {
-          const b = (window as unknown as { __sagatreeAtlas?: ScmBridge }).__sagatreeAtlas;
-          return b?.getSpatialState().entities[sid]?.boundsWorld.maxX ?? 0;
-        }, growTarget!.settlementId),
-      )
-      .toBeCloseTo(growTarget!.settlementOrigMaxX, 3);
+    expect(undoRedoOk).toEqual({ u: true, r: true });
 
-    // 4. SCM-05: Soft-Cascade removal opens dialog listing contained children, archives recoverably, 1 Undo restores all
-    const cascadeTargetId = await page.evaluate(() => {
+    await reloadAtlasAndWait(page);
+
+    const afterRedoReloadMaxX = await page.evaluate((sid) => {
+      const b = (window as unknown as { __sagatreeAtlas?: ScmBridge }).__sagatreeAtlas;
+      return b?.getSpatialState().entities[sid]?.boundsWorld.maxX ?? 0;
+    }, growTarget!.settlementId);
+    expect(afterRedoReloadMaxX, 'M-2b: Undo → Redo persists back to SQLite across page reload').toBeCloseTo(
+      growTarget!.nextMaxX,
+      3,
+    );
+
+    // 5. SCM-05 + M-2c: Soft-Cascade removal → confirm → Undo (persists back to SQLite!) → Reload → all children restored!
+    const preCascadeSnapshot = await page.evaluate(() => {
       const b = (window as unknown as { __sagatreeAtlas?: ScmBridge }).__sagatreeAtlas;
       const st = b?.getSpatialState();
       if (!st) return null;
       const country = Object.values(st.entities).find((e) => e.role === 'country' && e.labelDe === 'Nordreich');
-      return country?.id ?? null;
+      const dornhain = Object.values(st.entities).find((e) => e.role === 'settlement' && e.labelDe === 'Dornhain');
+      if (!country || !dornhain) return null;
+      const dornhainBuildings = Object.values(st.entities).filter(
+        (e) => e.carrierId === dornhain.id && e.role === 'building' && e.status === 'active',
+      ).length;
+      return { countryId: country.id, dornhainId: dornhain.id, dornhainBuildings };
     });
-    expect(cascadeTargetId).toBeTruthy();
+    expect(preCascadeSnapshot?.countryId).toBeTruthy();
+    expect(preCascadeSnapshot!.dornhainBuildings).toBeGreaterThan(0);
 
     const cascadeReq = await page.evaluate((cid) => {
       const b = (window as unknown as { __sagatreeAtlas?: ScmBridge }).__sagatreeAtlas;
       return b?.requestSpatialIntent({ kind: 'remove', entityId: cid });
-    }, cascadeTargetId!);
+    }, preCascadeSnapshot!.countryId);
     expect(cascadeReq?.ok).toBe(true);
     expect(cascadeReq?.prompted).toBe(true);
     await expect(dialog).toBeVisible();
     await expect(dialog).toHaveAttribute('data-atlas-scm-confirm-kind', 'cascade');
+    await expect(page.locator('[data-atlas-scm-cascade-notice]').first()).toContainText(
+      'Soft-Kaskade (archiviert & rückholbar):',
+    );
     await page.screenshot({ path: join(EVIDENCE_DIR, 'scm-05-cascade-confirm-dialog.png'), animations: 'disabled' });
 
-    await page.locator('[data-atlas-scm-confirm]').first().click();
+    await waitForAtlasPersistResponse(page, async () => {
+      await page.locator('[data-atlas-scm-confirm]').first().click();
+    });
     await expect(dialog).toBeHidden();
 
     await expect
@@ -421,36 +715,52 @@ test.describe('SCM — Spatial Containment Model (Host Browser E2E)', () => {
       )
       .toBeGreaterThan(1);
 
-    // 1 Undo restores all archived descendants back to active!
-    await page.evaluate(async () => {
+    // 1× Undo awaits serialized SQLite persist for all restored docs/anchors!
+    const undoCascadeOk = await page.evaluate(async () => {
       const b = (window as unknown as { __sagatreeAtlas?: ScmBridge }).__sagatreeAtlas;
-      await b?.undoSpatial();
+      return (await b?.undoSpatial()) ?? false;
     });
-    await expect
-      .poll(async () =>
-        page.evaluate(() => {
-          const b = (window as unknown as { __sagatreeAtlas?: ScmBridge }).__sagatreeAtlas;
-          return b?.getSpatialState().archivedCount ?? -1;
-        }),
-      )
-      .toBe(0);
+    expect(undoCascadeOk, 'M-2c: undoSpatial resolves after restoring SQLite maps').toBe(true);
 
-    // 5. SCM-08: Cycle reparent is rejected fail-closed with German alert
+    await reloadAtlasAndWait(page);
+
+    const postCascadeUndoReload = await page.evaluate((did) => {
+      const b = (window as unknown as { __sagatreeAtlas?: ScmBridge }).__sagatreeAtlas;
+      const st = b?.getSpatialState();
+      const dornhainBuildings = Object.values(st?.entities ?? {}).filter(
+        (e) => e.carrierId === did && e.role === 'building' && e.status === 'active',
+      ).length;
+      return {
+        archivedCount: st?.archivedCount ?? -1,
+        dornhainBuildings,
+      };
+    }, preCascadeSnapshot!.dornhainId);
+
+    expect(postCascadeUndoReload.archivedCount, 'M-2c: zero archived entities after Soft-Cascade → Undo → Reload').toBe(0);
+    expect(
+      postCascadeUndoReload.dornhainBuildings,
+      'M-2c: all Dornhain buildings restored in SQLite after Soft-Cascade → Undo → Reload',
+    ).toBe(preCascadeSnapshot!.dornhainBuildings);
+
+    // 6. SCM-08: Cycle reparent is rejected fail-closed with German alert
     const cycleRes = await page.evaluate((cid) => {
       const b = (window as unknown as { __sagatreeAtlas?: ScmBridge }).__sagatreeAtlas;
       return b?.requestSpatialIntent({ kind: 'reparent', entityId: cid, nextCarrierId: cid });
-    }, cascadeTargetId!);
+    }, preCascadeSnapshot!.countryId);
     expect(cycleRes?.ok).toBe(false);
     await expect(page.locator('[data-atlas-scm-error]').first()).toBeVisible();
 
-    // 6. SCM-06: Werkzeug-Einstellungen persist across full page reload (`localStorage`)
-    if (!(await growToggle.isChecked())) await growToggle.check();
-    if (await cascadeToggle.isChecked()) await cascadeToggle.uncheck();
+    // 7. SCM-06: Werkzeug-Einstellungen persist across full page reload (`localStorage`)
+    const toolsBtnAfter = page.locator('[data-atlas-panel-fold="tools"]').first();
+    if ((await toolsBtnAfter.getAttribute('aria-expanded')) !== 'true') {
+      await toolsBtnAfter.click();
+    }
+    const growToggleAfter = page.locator('[data-atlas-pref-confirm-grow]').first();
+    const cascadeToggleAfter = page.locator('[data-atlas-pref-confirm-cascade]').first();
+    if (!(await growToggleAfter.isChecked())) await growToggleAfter.check();
+    if (await cascadeToggleAfter.isChecked()) await cascadeToggleAfter.uncheck();
 
-    await page.reload();
-    await expect(page.locator('[data-world-atlas-workbench]').first()).toBeVisible({ timeout: 45_000 });
-    await waitAtlas3dReady(page);
-    await waitSpatialReady(page);
+    await reloadAtlasAndWait(page);
 
     const reloadedPrefs = await page.evaluate(() => {
       const b = (window as unknown as { __sagatreeAtlas?: ScmBridge }).__sagatreeAtlas;
@@ -465,6 +775,10 @@ test.describe('SCM — Spatial Containment Model (Host Browser E2E)', () => {
           capturedAt: new Date().toISOString(),
           growTarget,
           prefsAfterDismiss,
+          afterGrowUndoReloadMaxX,
+          afterRedoReloadMaxX,
+          preCascadeSnapshot,
+          postCascadeUndoReload,
           reloadedPrefs,
           cycleRejectedDe: cycleRes?.reasonDe ?? null,
         },

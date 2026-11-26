@@ -1,5 +1,14 @@
 {
-  "capturedAt": "2026-11-26T09:31:07.532Z",
+  "capturedAt": "2026-11-26T10:21:08.925Z",
+  "contrast": {
+    "darkMode": true,
+    "backgroundColor": "rgb(6, 182, 212)",
+    "labelColor": "rgb(15, 23, 42)",
+    "subtitleColor": "rgb(15, 23, 42)",
+    "fontWeight": "700",
+    "labelContrast": 7.35,
+    "subtitleContrast": 7.35
+  },
   "observed": [
     {
       "step": "welt",
