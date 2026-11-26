@@ -57,15 +57,20 @@ import {
   ATLAS_TERRAIN_SCULPT_MODES,
   applyAtlasTerrainSculptDab,
   applyMapEdit,
+  checkContainment,
   classifyAtlasPortalKind,
   computeAtlasPinZoomPresentation,
   createAtlasWorldCameraState,
   deriveZoomLayerHierarchyState,
   formatAtlasSpanLabelDe,
+  isAtlasWorldError,
+  localToWorld,
   resolveContinuousZoomTransition,
   shouldPromptSpatialOperation,
   switchWorldCameraProjection,
+  worldToLocal,
   type AtlasZoomLayerState,
+  type SpatialBounds2D,
   type SpatialEditIntent,
   type SpatialEditPreferences,
   type WorldOperationPlan,
@@ -247,6 +252,21 @@ type DragSession =
     readonly startGroundZ: number;
     readonly origX: number;
     readonly origY: number;
+    readonly origSize: number;
+    readonly spatialEntityId?: string | null;
+    readonly spatialMapId?: string | null;
+    readonly origBoundsWorld?: SpatialBounds2D | null;
+    lastBoundsWorld?: SpatialBounds2D | null;
+  }
+  | {
+    readonly kind: 'move-spatial-entity';
+    readonly id: string;
+    readonly spatialEntityId: string;
+    readonly startGroundX: number;
+    readonly startGroundZ: number;
+    readonly origBoundsWorld: SpatialBounds2D;
+    lastBoundsWorld: SpatialBounds2D | null;
+    moved: boolean;
   }
   | {
     readonly kind: 'rotate-object';
@@ -259,6 +279,21 @@ type DragSession =
     readonly id: string;
     readonly startPx: number;
     readonly origSize: number;
+    readonly origX: number;
+    readonly origY: number;
+    readonly spatialEntityId?: string | null;
+    readonly spatialMapId?: string | null;
+    readonly origBoundsWorld?: SpatialBounds2D | null;
+    lastBoundsWorld?: SpatialBounds2D | null;
+  }
+  | {
+    readonly kind: 'scale-spatial-entity';
+    readonly id: string;
+    readonly spatialEntityId: string;
+    readonly startPx: number;
+    readonly origBoundsWorld: SpatialBounds2D;
+    lastBoundsWorld: SpatialBounds2D | null;
+    moved: boolean;
   }
   | {
     readonly kind: 'height';
@@ -378,6 +413,50 @@ export function AtlasThreeWorkstation({
   const [spatialErrorDe, setSpatialErrorDe] = useState<string | null>(null);
   const spatialErrorDeRef = useRef<string | null>(spatialErrorDe);
   spatialErrorDeRef.current = spatialErrorDe;
+  const [dragBoundaryBreach, setDragBoundaryBreach] = useState<{
+    readonly entityLabelDe: string;
+    readonly carrierLabelDe: string;
+  } | null>(null);
+  const worldSceneGraphActiveRef = useRef<boolean>(false);
+  worldSceneGraphActiveRef.current = Boolean(worldSceneGraph && worldSceneGraph.maps.length > 0);
+
+  const findSpatialEntityForFeature = useCallback((featureId: string) => {
+    const adapter = spatialContainmentRef.current;
+    if (!adapter) return null;
+    const entities = Object.values(adapter.world.entities);
+    const activeMap = zoomLayerStateRef.current.activeMapId;
+    return (
+      entities.find((e) => e.status === 'active' && e.featureId === featureId && e.mapId === activeMap) ??
+      entities.find((e) => e.status === 'active' && e.featureId === featureId) ??
+      null
+    );
+  }, []);
+
+  const updateDragBreachIndicator = useCallback(
+    (entityId: string | null | undefined, nextBounds: SpatialBounds2D | null) => {
+      if (!entityId || !nextBounds) {
+        setDragBoundaryBreach(null);
+        return;
+      }
+      const adapter = spatialContainmentRef.current;
+      if (!adapter) {
+        setDragBoundaryBreach(null);
+        return;
+      }
+      const check = checkContainment(adapter.world, entityId, nextBounds);
+      if (check.fits) {
+        setDragBoundaryBreach(null);
+        return;
+      }
+      const ent = adapter.world.entities[entityId];
+      const carrier = check.carrierId ? adapter.world.entities[check.carrierId] : null;
+      setDragBoundaryBreach({
+        entityLabelDe: ent?.labelDe ?? entityId,
+        carrierLabelDe: carrier?.labelDe ?? 'Grenze',
+      });
+    },
+    [],
+  );
 
   const dispatchSpatialIntent = useCallback((intent: SpatialEditIntent) => {
     const adapter = spatialContainmentRef.current;
@@ -1148,6 +1227,7 @@ export function AtlasThreeWorkstation({
 
       if (picked) {
         const obj = docRef.current.objects.find((o) => o.id === picked);
+        const spatialEntity = findSpatialEntityForFeature(picked);
         setSelectedId(picked);
         if (obj && canEdit) {
           if (activeTool === 'rotate') {
@@ -1168,6 +1248,12 @@ export function AtlasThreeWorkstation({
               id: obj.id,
               startPx: px,
               origSize: obj.size,
+              origX: obj.x,
+              origY: obj.y,
+              spatialEntityId: spatialEntity?.id ?? null,
+              spatialMapId: spatialEntity?.mapId ?? null,
+              origBoundsWorld: spatialEntity?.boundsWorld ?? null,
+              lastBoundsWorld: null,
             };
             canvas.setPointerCapture(ev.pointerId);
             return;
@@ -1181,6 +1267,40 @@ export function AtlasThreeWorkstation({
               startGroundZ: ground.z,
               origX: obj.x,
               origY: obj.y,
+              origSize: obj.size,
+              spatialEntityId: spatialEntity?.id ?? null,
+              spatialMapId: spatialEntity?.mapId ?? null,
+              origBoundsWorld: spatialEntity?.boundsWorld ?? null,
+              lastBoundsWorld: null,
+            };
+            canvas.setPointerCapture(ev.pointerId);
+            return;
+          }
+        } else if (spatialEntity && canEdit) {
+          // SCM M-1: Cross-map drag directly in Multi-Map World Space (e.g. dragging a house inside Dornhain)
+          if (activeTool === 'scale') {
+            dragRef.current = {
+              kind: 'scale-spatial-entity',
+              id: picked,
+              spatialEntityId: spatialEntity.id,
+              startPx: px,
+              origBoundsWorld: spatialEntity.boundsWorld,
+              lastBoundsWorld: null,
+              moved: false,
+            };
+            canvas.setPointerCapture(ev.pointerId);
+            return;
+          }
+          if (activeTool === 'move' || activeTool === 'select') {
+            dragRef.current = {
+              kind: 'move-spatial-entity',
+              id: picked,
+              spatialEntityId: spatialEntity.id,
+              startGroundX: ground.x,
+              startGroundZ: ground.z,
+              origBoundsWorld: spatialEntity.boundsWorld,
+              lastBoundsWorld: null,
+              moved: false,
             };
             canvas.setPointerCapture(ev.pointerId);
             return;
@@ -1205,6 +1325,7 @@ export function AtlasThreeWorkstation({
       biomeId,
       biomeWidth,
       canEdit,
+      findSpatialEntityForFeature,
       sculptMode,
       sculptRadius,
       sculptStrength,
@@ -1264,12 +1385,66 @@ export function AtlasThreeWorkstation({
       }
 
       if (drag.kind === 'move-object' && ground) {
-        const nx = Math.round((drag.origX + (ground.x - drag.startGroundX)) * 10) / 10;
-        const ny = Math.round((drag.origY + (ground.z - drag.startGroundZ)) * 10) / 10;
+        const mapNodes = spatialContainmentRef.current?.world.mapNodes;
+        let nx = Math.round((drag.origX + (ground.x - drag.startGroundX)) * 10) / 10;
+        let ny = Math.round((drag.origY + (ground.z - drag.startGroundZ)) * 10) / 10;
+        if (worldSceneGraphActiveRef.current && mapNodes && drag.spatialMapId) {
+          const curLocal = worldToLocal(mapNodes, drag.spatialMapId, { x: ground.x, y: ground.z });
+          const startLocal = worldToLocal(mapNodes, drag.spatialMapId, {
+            x: drag.startGroundX,
+            y: drag.startGroundZ,
+          });
+          if (!isAtlasWorldError(curLocal) && !isAtlasWorldError(startLocal)) {
+            nx = Math.round((drag.origX + (curLocal.value.x - startLocal.value.x)) * 10) / 10;
+            ny = Math.round((drag.origY + (curLocal.value.y - startLocal.value.y)) * 10) / 10;
+          }
+        }
         onCommitDocRef.current(
           applyMapEdit(docRef.current, { op: 'move_object', id: drag.id, x: nx, y: ny }),
           false,
         );
+        if (drag.spatialEntityId && drag.origBoundsWorld) {
+          let nextBounds: SpatialBounds2D | null = null;
+          if (worldSceneGraphActiveRef.current) {
+            const dx = ground.x - drag.startGroundX;
+            const dz = ground.z - drag.startGroundZ;
+            nextBounds = {
+              minX: drag.origBoundsWorld.minX + dx,
+              minY: drag.origBoundsWorld.minY + dz,
+              maxX: drag.origBoundsWorld.maxX + dx,
+              maxY: drag.origBoundsWorld.maxY + dz,
+            };
+          } else if (mapNodes && drag.spatialMapId) {
+            const half = Math.max(4, (drag.origSize || 0.5) * 18);
+            const wMin = localToWorld(mapNodes, drag.spatialMapId, { x: nx - half, y: ny - half });
+            const wMax = localToWorld(mapNodes, drag.spatialMapId, { x: nx + half, y: ny + half });
+            if (!isAtlasWorldError(wMin) && !isAtlasWorldError(wMax)) {
+              nextBounds = {
+                minX: Math.min(wMin.value.x, wMax.value.x),
+                minY: Math.min(wMin.value.y, wMax.value.y),
+                maxX: Math.max(wMin.value.x, wMax.value.x),
+                maxY: Math.max(wMin.value.y, wMax.value.y),
+              };
+            }
+          }
+          drag.lastBoundsWorld = nextBounds;
+          updateDragBreachIndicator(drag.spatialEntityId, nextBounds);
+        }
+        return;
+      }
+
+      if (drag.kind === 'move-spatial-entity' && ground) {
+        const dx = ground.x - drag.startGroundX;
+        const dz = ground.z - drag.startGroundZ;
+        if (Math.hypot(dx, dz) > 1e-4) drag.moved = true;
+        const nextBounds: SpatialBounds2D = {
+          minX: drag.origBoundsWorld.minX + dx,
+          minY: drag.origBoundsWorld.minY + dz,
+          maxX: drag.origBoundsWorld.maxX + dx,
+          maxY: drag.origBoundsWorld.maxY + dz,
+        };
+        drag.lastBoundsWorld = nextBounds;
+        updateDragBreachIndicator(drag.spatialEntityId, nextBounds);
         return;
       }
 
@@ -1296,6 +1471,39 @@ export function AtlasThreeWorkstation({
           }),
           false,
         );
+        if (drag.spatialEntityId && drag.origBoundsWorld) {
+          const factor = nextSize / Math.max(0.05, drag.origSize);
+          const cx = (drag.origBoundsWorld.minX + drag.origBoundsWorld.maxX) / 2;
+          const cy = (drag.origBoundsWorld.minY + drag.origBoundsWorld.maxY) / 2;
+          const halfW = ((drag.origBoundsWorld.maxX - drag.origBoundsWorld.minX) / 2) * factor;
+          const halfH = ((drag.origBoundsWorld.maxY - drag.origBoundsWorld.minY) / 2) * factor;
+          const nextBounds: SpatialBounds2D = {
+            minX: cx - halfW,
+            minY: cy - halfH,
+            maxX: cx + halfW,
+            maxY: cy + halfH,
+          };
+          drag.lastBoundsWorld = nextBounds;
+          updateDragBreachIndicator(drag.spatialEntityId, nextBounds);
+        }
+        return;
+      }
+
+      if (drag.kind === 'scale-spatial-entity') {
+        const factor = clamp(1 + (px - drag.startPx) / 140, 0.25, 5);
+        if (Math.abs(factor - 1) > 1e-3) drag.moved = true;
+        const cx = (drag.origBoundsWorld.minX + drag.origBoundsWorld.maxX) / 2;
+        const cy = (drag.origBoundsWorld.minY + drag.origBoundsWorld.maxY) / 2;
+        const halfW = ((drag.origBoundsWorld.maxX - drag.origBoundsWorld.minX) / 2) * factor;
+        const halfH = ((drag.origBoundsWorld.maxY - drag.origBoundsWorld.minY) / 2) * factor;
+        const nextBounds: SpatialBounds2D = {
+          minX: cx - halfW,
+          minY: cy - halfH,
+          maxX: cx + halfW,
+          maxY: cy + halfH,
+        };
+        drag.lastBoundsWorld = nextBounds;
+        updateDragBreachIndicator(drag.spatialEntityId, nextBounds);
         return;
       }
 
@@ -1332,12 +1540,62 @@ export function AtlasThreeWorkstation({
         onCommitDocRef.current({ ...curDoc, strokes: nextStrokes, demoSeed: false }, false);
       }
     },
-    [cameraMode, sculptMode, sculptRadius, sculptStrength],
+    [cameraMode, sculptMode, sculptRadius, sculptStrength, updateDragBreachIndicator],
   );
 
   const handlePointerUp = useCallback((ev: ReactPointerEvent<HTMLCanvasElement>) => {
     const drag = dragRef.current;
     if (!drag) return;
+    setDragBoundaryBreach(null);
+
+    // SCM M-1: Cross-map drag (move/scale) routed through SCM pipeline at drag-end
+    if (drag.kind === 'move-spatial-entity' || drag.kind === 'scale-spatial-entity') {
+      if (drag.moved && drag.lastBoundsWorld) {
+        dispatchSpatialIntentRef.current({
+          kind: 'resize_or_move',
+          entityId: drag.spatialEntityId,
+          nextBoundsWorld: drag.lastBoundsWorld,
+        });
+      }
+      dragRef.current = null;
+      try {
+        canvasRef.current?.releasePointerCapture(ev.pointerId);
+      } catch {
+        /* ignore */
+      }
+      return;
+    }
+
+    // SCM M-1: Local object move/scale — fast direct commit if within bounds;
+    // route through SCM pipeline (confirm dialog + auto-grow) ONLY if boundary breached!
+    if (
+      (drag.kind === 'move-object' || drag.kind === 'scale-object') &&
+      drag.spatialEntityId &&
+      drag.lastBoundsWorld &&
+      spatialContainmentRef.current
+    ) {
+      const check = checkContainment(
+        spatialContainmentRef.current.world,
+        drag.spatialEntityId,
+        drag.lastBoundsWorld,
+      );
+      if (!check.fits) {
+        onCancelEditBatchRef.current?.();
+        dispatchSpatialIntentRef.current({
+          kind: 'resize_or_move',
+          entityId: drag.spatialEntityId,
+          nextBoundsWorld: drag.lastBoundsWorld,
+        });
+        dragRef.current = null;
+        try {
+          canvasRef.current?.releasePointerCapture(ev.pointerId);
+        } catch {
+          /* ignore */
+        }
+        return;
+      }
+    }
+
     const isEditDrag =
       drag.kind === 'move-object' ||
       drag.kind === 'rotate-object' ||
@@ -1362,6 +1620,7 @@ export function AtlasThreeWorkstation({
   const handlePointerCancel = useCallback((ev: ReactPointerEvent<HTMLCanvasElement>) => {
     const drag = dragRef.current;
     if (!drag) return;
+    setDragBoundaryBreach(null);
     if (
       drag.kind === 'move-object' ||
       drag.kind === 'rotate-object' ||
@@ -1530,6 +1789,16 @@ export function AtlasThreeWorkstation({
           });
         }}
       />
+
+      {dragBoundaryBreach ? (
+        <div
+          role="status"
+          data-atlas-scm-drag-breach
+          className="pointer-events-none absolute top-16 left-1/2 z-[8] -translate-x-1/2 rounded-lg border border-accent bg-card/95 px-3 py-1.5 text-xs font-semibold text-accent shadow-xl backdrop-blur"
+        >
+          Überschreitet Grenze von „{dragBoundaryBreach.carrierLabelDe}“ — beim Loslassen bestätigen
+        </div>
+      ) : null}
 
       {spatialErrorDe ? (
         <div
