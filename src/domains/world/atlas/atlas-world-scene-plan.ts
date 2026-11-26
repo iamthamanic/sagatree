@@ -132,6 +132,13 @@ function pointInAabb(x: number, y: number, b: AtlasWorldAabb): boolean {
   return x >= b.minX && x <= b.maxX && y >= b.minY && y <= b.maxY;
 }
 
+/** Euclidean distance from a point to an axis-aligned bounding box (0 when inside). */
+function distancePointToAabb(x: number, y: number, b: AtlasWorldAabb): number {
+  const dx = x < b.minX ? b.minX - x : x > b.maxX ? x - b.maxX : 0;
+  const dy = y < b.minY ? b.minY - y : y > b.maxY ? y - b.maxY : 0;
+  return Math.hypot(dx, dy);
+}
+
 /**
  * Compute world-space transform and AABB for a single map via SWS-01 `localToWorld`.
  */
@@ -206,6 +213,8 @@ export function buildAtlasWorldScenePlan(input: {
   readonly camera: AtlasWorldCameraState;
   readonly viewportPx: { readonly width: number; readonly height: number };
   readonly previousPlan?: AtlasWorldScenePlan | null;
+  /** Optional explicit in-world focus target (World → … → target gets budget priority). */
+  readonly focusTargetMapId?: string | null;
   readonly config?: Partial<AtlasWorldScenePlanConfig>;
 }): AtlasWorldScenePlan {
   const cfg: AtlasWorldScenePlanConfig = {
@@ -218,6 +227,19 @@ export function buildAtlasWorldScenePlan(input: {
   const nodes = new Map<string, AtlasWorldSceneMapInput>();
   for (const m of input.maps) {
     nodes.set(m.id, m);
+  }
+
+  // Resolve explicit requested focus chain (World → … → focusTargetMapId) so in-world
+  // navigation never gets starved by `below-sse` or `maxActiveMaps` budget during flight/arrival.
+  const requestedFocusChainIds = new Set<string>();
+  const requestedTargetId = input.focusTargetMapId ?? null;
+  if (requestedTargetId && nodes.has(requestedTargetId)) {
+    const chainRes = resolveWorldChain(nodes, requestedTargetId);
+    if (!isAtlasWorldError(chainRes)) {
+      for (const n of chainRes.value) {
+        requestedFocusChainIds.add(n.id);
+      }
+    }
   }
 
   const prevActiveIds = new Set(
@@ -242,10 +264,12 @@ export function buildAtlasWorldScenePlan(input: {
     readonly depth: number;
     readonly parentMapId: string | null;
     readonly ssePx: number;
+    readonly effectiveSsePx: number;
     readonly transform: AtlasWorldTransform2D;
     readonly aabb: AtlasWorldAabb;
     readonly containsFocus: boolean;
     readonly meetsSse: boolean;
+    readonly onRequestedFocusPath: boolean;
   };
 
   const allValidById = new Map<string, Candidate>();
@@ -280,18 +304,41 @@ export function buildAtlasWorldScenePlan(input: {
     const wasActive = prevActiveIds.has(m.id);
     const threshold = wasActive ? safeCoarsen : safeRefine;
     const containsFocus = pointInAabb(input.camera.focusWorld.x, input.camera.focusWorld.y, okWt.aabb);
-    const inView = okWt.depth === 1 || aabbIntersects(okWt.aabb, viewAabb);
-    const meetsSse = okWt.depth === 1 || ssePx >= threshold;
+    const onRequestedFocusPath = requestedFocusChainIds.has(m.id);
+    const inView = okWt.depth === 1 || onRequestedFocusPath || aabbIntersects(okWt.aabb, viewAabb);
+
+    // Foveated / focus-weighted reveal: maps directly under or near the camera focus center
+    // begin revealing smoothly ahead of peripheral maps (without lowering global `sseRefinePx`
+    // across the entire frustum!). Peripheral maps stay at `focusBoost = 1.0`.
+    const distToFocus = distancePointToAabb(
+      input.camera.focusWorld.x,
+      input.camera.focusWorld.y,
+      okWt.aabb,
+    );
+    const centralRadius = Math.max(1e-4, input.camera.span * 0.9);
+    const focusProximity = Math.max(0, 1 - distToFocus / centralRadius);
+    const smoothProximity = focusProximity * focusProximity * (3 - 2 * focusProximity);
+    const focusBoost = 1 + smoothProximity * 0.2;
+    const effectiveSsePx = ssePx * focusBoost;
+
+    // Explicit focus path stays eligible once reasonably approaching or arrived; ordinary maps
+    // use focus-weighted SSE against the unchanged refine/coarsen thresholds.
+    const meetsSse =
+      okWt.depth === 1 ||
+      effectiveSsePx >= threshold ||
+      (onRequestedFocusPath && (ssePx >= 28 || m.id === requestedTargetId));
 
     const cand: Candidate = {
       map: m,
       depth: okWt.depth,
       parentMapId: m.parentAnchor?.parentMapId ?? null,
       ssePx,
+      effectiveSsePx,
       transform: okWt.transform,
       aabb: okWt.aabb,
       containsFocus,
       meetsSse,
+      onRequestedFocusPath,
     };
     allValidById.set(m.id, cand);
 
@@ -336,9 +383,9 @@ export function buildAtlasWorldScenePlan(input: {
     }
   }
 
-  // Compute the focus ancestor chain (World → … → deepest focus-containing candidate)
-  // so carrier maps along the camera focus path ALWAYS survive `maxActiveMaps` budget!
-  const focusChainIds = new Set<string>();
+  // Compute the focus ancestor chain (World → … → deepest focus-containing candidate, plus
+  // explicit `focusTargetMapId` chain) so carrier maps along the focus path ALWAYS survive budget!
+  const focusChainIds = new Set<string>(requestedFocusChainIds);
   const deepestFocus = [...candidates]
     .filter((c) => c.containsFocus)
     .sort((a, b) => (b.depth !== a.depth ? b.depth - a.depth : a.transform.worldSpan - b.transform.worldSpan))[0];
@@ -354,12 +401,16 @@ export function buildAtlasWorldScenePlan(input: {
 
   // Enforce multi-map budget:
   //  1. World Root (depth 1) always kept
-  //  2. Entire focus carrier chain (World → … → active focused map) always prioritized
-  //  3. Keep-coarse carriers of visible descendants prioritized ahead of non-focus leaf details
-  //  4. Remaining visible maps by depth DESC, ssePx DESC
+  //  2. Explicit requested focus path (World → … → focusTargetMapId) always prioritized
+  //  3. Camera focus carrier chain (World → … → active focused map) always prioritized
+  //  4. Keep-coarse carriers of visible descendants prioritized ahead of non-focus leaf details
+  //  5. Remaining visible maps by depth DESC, effectiveSsePx DESC
   const sortedForBudget = [...candidates].sort((a, b) => {
     if (a.depth === 1 && b.depth !== 1) return -1;
     if (b.depth === 1 && a.depth !== 1) return 1;
+    if (a.onRequestedFocusPath !== b.onRequestedFocusPath) {
+      return a.onRequestedFocusPath ? -1 : 1;
+    }
     const aFocus = focusChainIds.has(a.map.id);
     const bFocus = focusChainIds.has(b.map.id);
     if (aFocus !== bFocus) return aFocus ? -1 : 1;
@@ -369,7 +420,7 @@ export function buildAtlasWorldScenePlan(input: {
     if (aCarrier !== bCarrier) return aCarrier ? -1 : 1;
     if (aCarrier && bCarrier && a.depth !== b.depth) return a.depth - b.depth;
     if (b.depth !== a.depth) return b.depth - a.depth;
-    if (b.ssePx !== a.ssePx) return b.ssePx - a.ssePx;
+    if (b.effectiveSsePx !== a.effectiveSsePx) return b.effectiveSsePx - a.effectiveSsePx;
     return a.map.id.localeCompare(b.map.id);
   });
 
@@ -383,7 +434,7 @@ export function buildAtlasWorldScenePlan(input: {
   const cutoutsByParent = new Map<string, AtlasLocalCutoutRect[]>();
   for (const c of kept) {
     if (!c.parentMapId || !c.map.parentAnchor) continue;
-    if (c.ssePx < cfg.sseReplaceParentPx) continue;
+    if (c.effectiveSsePx < cfg.sseReplaceParentPx && !c.onRequestedFocusPath) continue;
     const rect = parentAnchorAabb(c.map.parentAnchor as ParentSpatialAnchor);
     const list = cutoutsByParent.get(c.parentMapId) ?? [];
     list.push({
@@ -403,13 +454,21 @@ export function buildAtlasWorldScenePlan(input: {
 
   const entries: AtlasWorldSceneGroupPlan[] = ordered.map((c) => {
     const cutouts = cutoutsByParent.get(c.map.id) ?? [];
-    const detailWeight =
+    const rawWeight =
       c.depth === 1
         ? 1
         : Math.max(
             0,
-            Math.min(1, (c.ssePx - safeCoarsen) / Math.max(1, cfg.sseReplaceParentPx - safeCoarsen)),
+            Math.min(
+              1,
+              (c.effectiveSsePx - safeCoarsen) / Math.max(1, cfg.sseReplaceParentPx - safeCoarsen),
+            ),
           );
+    // Keep explicitly focused target smoothly visible upon arrival even at wider framing spans
+    const detailWeight =
+      c.onRequestedFocusPath && c.containsFocus
+        ? Math.max(rawWeight, c.map.id === requestedTargetId ? 1 : 0.85)
+        : rawWeight;
     return {
       mapId: c.map.id,
       parentMapId: c.parentMapId,
@@ -423,10 +482,17 @@ export function buildAtlasWorldScenePlan(input: {
     };
   });
 
-  // Editor context (`activeEditorMapId`): deepest kept map containing camera focus, fallback to root
+  // Editor context (`activeEditorMapId`): deepest kept map containing camera focus, fallback to root.
+  // When an explicit `focusTargetMapId` is requested and its map is active + contains focus
+  // (e.g. clicking "Taverne Zum Flüstern" while its nested "Schankraum" is visible inside),
+  // keep `activeEditorMapId` aligned with the requested target until the user zooms deeper or focuses the child.
   const focusMatches = ordered.filter((c) => c.containsFocus);
-  const activeEditorMapId =
-    focusMatches.length > 0
+  const requestedFocusMatch =
+    requestedTargetId &&
+    focusMatches.find((c) => c.map.id === requestedTargetId);
+  const activeEditorMapId = requestedFocusMatch
+    ? requestedFocusMatch.map.id
+    : focusMatches.length > 0
       ? focusMatches[focusMatches.length - 1]!.map.id
       : (entries[0]?.mapId ?? rootMapId);
 

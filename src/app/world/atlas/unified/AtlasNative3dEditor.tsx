@@ -147,6 +147,20 @@ export type AtlasNative3dEditorProps = {
   readonly forcedTopDown?: boolean;
   readonly topBarExtra?: ReactNode;
   readonly spatialContainment?: AtlasSpatialContainmentAdapter | null;
+  readonly isChildDocumentEditMode?: boolean;
+  readonly onRequestEditMap?: (payload: {
+    readonly mapId: string;
+    readonly placeId: string | null;
+    readonly worldCamera: AtlasWorldCameraState | null;
+    readonly focusedMapId: string | null;
+  }) => void;
+  readonly onReturnToWorld?: () => void;
+  readonly restoreWorldFocus?: {
+    readonly camera: AtlasWorldCameraState;
+    readonly focusedMapId: string | null;
+    readonly focusedPlaceId: string | null;
+  } | null;
+  readonly onRestoreWorldFocusConsumed?: () => void;
 };
 /** Rebrand leftover prototype copy to SagaTree product wording. */
 function applySagaTreeCopy(host: HTMLElement): void {
@@ -426,6 +440,11 @@ export function AtlasNative3dEditor(props: AtlasNative3dEditorProps) {
     forcedTopDown = false,
     topBarExtra = null,
     spatialContainment = null,
+    isChildDocumentEditMode = false,
+    onRequestEditMap,
+    onReturnToWorld,
+    restoreWorldFocus = null,
+    onRestoreWorldFocusConsumed,
   } = props;
   const [threeFailed, setThreeFailed] = useState(false);
 
@@ -477,6 +496,11 @@ export function AtlasNative3dEditor(props: AtlasNative3dEditorProps) {
           forcedTopDown={forcedTopDown}
           topBarExtra={topBarExtra}
           spatialContainment={spatialContainment}
+          isChildDocumentEditMode={isChildDocumentEditMode}
+          onRequestEditMap={onRequestEditMap}
+          onReturnToWorld={onReturnToWorld}
+          restoreWorldFocus={restoreWorldFocus}
+          onRestoreWorldFocusConsumed={onRestoreWorldFocusConsumed}
         />
       </div>
     );

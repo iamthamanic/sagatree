@@ -230,6 +230,21 @@ export type UnifiedAtlasEditorProps = {
     readonly sources: readonly AtlasThreeWorldMapSource[];
   } | null;
   readonly spatialContainment?: AtlasSpatialContainmentAdapter | null;
+  /** True when explicitly editing a child map document outside the shared world scene graph. */
+  readonly isChildDocumentEditMode?: boolean;
+  readonly onRequestEditMap?: (payload: {
+    readonly mapId: string;
+    readonly placeId: string | null;
+    readonly worldCamera: AtlasWorldCameraState | null;
+    readonly focusedMapId: string | null;
+  }) => void;
+  readonly onReturnToWorld?: () => void;
+  readonly restoreWorldFocus?: {
+    readonly camera: AtlasWorldCameraState;
+    readonly focusedMapId: string | null;
+    readonly focusedPlaceId: string | null;
+  } | null;
+  readonly onRestoreWorldFocusConsumed?: () => void;
   /** ATL2-G03 — Ctrl/Cmd+S from editor keyboard catalog. */
   readonly onRequestSave?: () => void;
   /** ATL2-G03 — WebGL mount failure for workbench surface state. */
@@ -506,6 +521,11 @@ export function UnifiedAtlasEditor({
   hierarchyLodBand = null,
   worldSceneGraph = null,
   spatialContainment = null,
+  isChildDocumentEditMode = false,
+  onRequestEditMap,
+  onReturnToWorld,
+  restoreWorldFocus = null,
+  onRestoreWorldFocusConsumed,
 }: UnifiedAtlasEditorProps) {
   const stageRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -2430,7 +2450,7 @@ export function UnifiedAtlasEditor({
   if (!isDemo && surfaceMode === '3d') {
     const isLiteFallback = graphicsPresetId === 'lite';
     const surfaceControls = (
-      <div className="flex flex-wrap items-center gap-1.5">
+      <div className="flex flex-wrap items-center gap-1.5 lg:flex-nowrap">
         {canEdit ? (
           <div
             className="flex items-center rounded-lg bg-background/60 p-0.5"
@@ -2579,6 +2599,11 @@ export function UnifiedAtlasEditor({
               onSharedWorldCameraChange={setSharedWorldCamera}
               worldSceneGraph={worldSceneGraph}
               spatialContainment={spatialContainment}
+              isChildDocumentEditMode={isChildDocumentEditMode}
+              onRequestEditMap={onRequestEditMap}
+              onReturnToWorld={onReturnToWorld}
+              restoreWorldFocus={restoreWorldFocus}
+              onRestoreWorldFocusConsumed={onRestoreWorldFocusConsumed}
               onHierarchyBack={onHierarchyBack}
               forcedTopDown={topDownSurface}
               topBarExtra={isLiteFallback ? null : surfaceControls}

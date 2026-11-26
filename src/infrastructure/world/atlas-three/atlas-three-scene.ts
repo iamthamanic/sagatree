@@ -951,6 +951,13 @@ export type BuildAtlasThreeSceneOptions = {
    * chunked world terrain — NEVER generating a second separate landmass terrain mesh.
    */
   readonly sharedWorldTerrain?: SharedWorldTerrainBinding;
+  /** Local-space rects occupied by active child maps (keeps coarse parent scatter clear of settlements). */
+  readonly exclusionRects?: ReadonlyArray<{
+    readonly minX: number;
+    readonly minY: number;
+    readonly maxX: number;
+    readonly maxY: number;
+  }>;
 };
 
 export function buildAtlasThreeScenePlan(
@@ -1022,15 +1029,24 @@ export function buildAtlasThreeScenePlan(
       return;
     }
     // When shared chunked world terrain (or standalone suggestive relief) renders the ground,
-    // skip landmass/biome polygons so zero stacked island slabs ever appear (keep paved plazas!).
-    if (terrainDrivenElevation && matName !== 'pflaster') {
+    // skip landmass/biome polygons so zero stacked island slabs ever appear.
+    // On settlement maps, preserve built architectural ground surfaces (`pflaster`, `holz`, `stein`)
+    // such as paved plazas, timber docks/platforms, and stone courtyards!
+    const isBuiltSettlementSurface =
+      opts.mapScale === 'settlement' &&
+      (matName === 'pflaster' || matName === 'holz' || matName === 'stein');
+    const keepOverlaySurface = matName === 'pflaster' || isBuiltSettlementSurface;
+    if (terrainDrivenElevation && !keepOverlaySurface) {
       return;
     }
     const cx = rm.points.reduce((a, p) => a + p[0], 0) / Math.max(1, rm.points.length);
     const cz = rm.points.reduce((a, p) => a + p[1], 0) / Math.max(1, rm.points.length);
     const y =
-      terrainDrivenElevation && matName === 'pflaster'
-        ? sampleGroundY(cx, cz, 4.5) + (sharedTerrain ? 0.04 / Math.max(1e-4, sharedTerrain.verticalScale) : 0.38)
+      terrainDrivenElevation && keepOverlaySurface
+        ? sampleGroundY(cx, cz, 4.5) +
+          (sharedTerrain
+            ? (0.04 + i * 0.004) / Math.max(1e-4, sharedTerrain.verticalScale)
+            : 0.38 + i * dyR)
         : -0.45 + i * dyR;
     const surface: AtlasThreeSurfaceKey | 'water' = atlasThreeFloorSurface(matName, opts.mapScale);
     const b = surface === 'water' ? water : get(surface);
@@ -1275,8 +1291,8 @@ export function buildAtlasThreeScenePlan(
         pt.id,
         terrainDrivenElevation
           ? (rx, rz) =>
-              sampleGroundY(rx, rz, 4.5) +
-              (sharedTerrain ? (0.05 + i * 0.008) / Math.max(1e-4, sharedTerrain.verticalScale) : lift)
+            sampleGroundY(rx, rz, 4.5) +
+            (sharedTerrain ? (0.18 + i * 0.015) / Math.max(1e-4, sharedTerrain.verticalScale) : lift)
           : undefined,
       );
     });
@@ -1357,9 +1373,7 @@ export function buildAtlasThreeScenePlan(
     for (const q of plan.primitives) {
       if (q.kind !== 'prop' && q.kind !== 'building_footprint') continue;
       ids.add(q.id);
-      const groundElevation =
-        sampleGroundY(q.x, q.y, -0.35) +
-        (sharedTerrain ? 0.02 / Math.max(1e-4, sharedTerrain.verticalScale) : 0);
+      const groundElevation = sampleGroundY(q.x, q.y, -0.35);
       emitCanonicalProp(get, q, objAngles.get(q.id) ?? 0, torches, aoDiscs, smokePoints, mistPoints, {
         fullDetail,
         hideRoofs: Boolean(opts.hideRoofs),
@@ -1383,6 +1397,7 @@ export function buildAtlasThreeScenePlan(
     elevationSampler: sharedTerrain || activeTerrainHf
       ? (x, y) => sampleGroundY(x, y, 0)
       : undefined,
+    exclusionRects: opts.exclusionRects,
   });
   const scatterByKind = new Map<AtlasScatterKind, THREE.Matrix4[]>();
   for (const inst of scatter.instances) {
@@ -1479,4 +1494,137 @@ export function buildAtlasThreeScenePlan(
     look: opts.look,
     mapScale: opts.mapScale,
   };
+}
+
+/** Build shared rich multi-cluster geometry for instanced suggestive scatter kinds. */
+export function buildAtlasScatterGeometry(kind: AtlasScatterKind): {
+  readonly parts: readonly { readonly geo: THREE.BufferGeometry; readonly surface: AtlasThreeSurfaceKey }[];
+} {
+  switch (kind) {
+    case 'pine': {
+      const trunk = new THREE.CylinderGeometry(2.2, 4.6, 17, 6);
+      trunk.translate(0, 8.5, 0);
+      const c1 = new THREE.ConeGeometry(23, 28, 8);
+      c1.scale(1.08, 1, 0.94);
+      c1.translate(0, 22, 0);
+      const c2 = new THREE.ConeGeometry(18.5, 26, 8);
+      c2.rotateY(0.42);
+      c2.translate(0.8, 36, -0.6);
+      const c3 = new THREE.ConeGeometry(13.5, 22, 7);
+      c3.rotateY(0.85);
+      c3.translate(-0.6, 49, 0.5);
+      const c4 = new THREE.ConeGeometry(7.8, 16, 6);
+      c4.translate(0, 59, 0);
+      return {
+        parts: [
+          { geo: trunk, surface: 'wood-dark' },
+          { geo: c1, surface: 'leaf-pine' },
+          { geo: c2, surface: 'leaf-pine' },
+          { geo: c3, surface: 'leaf' },
+          { geo: c4, surface: 'leaf-sun' },
+        ],
+      };
+    }
+    case 'birch': {
+      const trunk = new THREE.CylinderGeometry(2.0, 3.8, 21, 6);
+      trunk.translate(0, 10.5, 0);
+      const c1 = new THREE.DodecahedronGeometry(16.5, 1);
+      c1.scale(1.12, 0.95, 1.04);
+      c1.translate(0, 28, 0);
+      const c2 = new THREE.DodecahedronGeometry(13, 1);
+      c2.translate(8, 34, 4);
+      const c3 = new THREE.DodecahedronGeometry(11, 1);
+      c3.translate(-7, 35, -5);
+      return {
+        parts: [
+          { geo: trunk, surface: 'bark-birch' },
+          { geo: c1, surface: 'leaf-birch' },
+          { geo: c2, surface: 'leaf-sun' },
+          { geo: c3, surface: 'leaf-birch' },
+        ],
+      };
+    }
+    case 'oak': {
+      const trunk = new THREE.CylinderGeometry(3.4, 5.8, 18, 7);
+      trunk.translate(0, 9, 0);
+      const base = new THREE.DodecahedronGeometry(19, 1);
+      base.scale(1.16, 0.88, 1.08);
+      base.translate(0, 27, 0);
+      const sideA = new THREE.DodecahedronGeometry(13.5, 1);
+      sideA.translate(-11, 29, 7);
+      const sideB = new THREE.DodecahedronGeometry(12.5, 1);
+      sideB.translate(10, 28, -8);
+      const top = new THREE.DodecahedronGeometry(14.5, 1);
+      top.translate(4, 37, -2);
+      return {
+        parts: [
+          { geo: trunk, surface: 'wood-dark' },
+          { geo: base, surface: 'leaf' },
+          { geo: sideA, surface: 'leaf' },
+          { geo: sideB, surface: 'leaf' },
+          { geo: top, surface: 'leaf-sun' },
+        ],
+      };
+    }
+    case 'bush': {
+      const g = new THREE.DodecahedronGeometry(11, 1);
+      g.scale(1.28, 0.72, 1.12);
+      g.translate(0, 6, 0);
+      return { parts: [{ geo: g, surface: 'leaf-sun' }] };
+    }
+    case 'flower': {
+      const g = new THREE.DodecahedronGeometry(5.5, 0);
+      g.scale(1.3, 0.48, 1.3);
+      g.translate(0, 2.4, 0);
+      return { parts: [{ geo: g, surface: 'flower' }] };
+    }
+    case 'mountain': {
+      const base = new THREE.ConeGeometry(46, 78, 7);
+      base.scale(1.22, 1, 0.92);
+      base.translate(0, 35, 0);
+      const shoulder = new THREE.ConeGeometry(31, 56, 6);
+      shoulder.rotateY(0.5);
+      shoulder.translate(23, 24, -14);
+      const ridge = new THREE.ConeGeometry(25, 44, 6);
+      ridge.rotateY(-0.4);
+      ridge.translate(-20, 19, 13);
+      const capMain = new THREE.ConeGeometry(16, 30, 7);
+      capMain.scale(1.18, 1, 0.9);
+      capMain.translate(0, 61, 0);
+      const capSub = new THREE.ConeGeometry(10.5, 19, 6);
+      capSub.translate(23, 44, -14);
+      return {
+        parts: [
+          { geo: base, surface: 'rock' },
+          { geo: shoulder, surface: 'rock' },
+          { geo: ridge, surface: 'rock' },
+          { geo: capMain, surface: 'snow' },
+          { geo: capSub, surface: 'snow' },
+        ],
+      };
+    }
+    case 'barrel': {
+      const g = new THREE.CylinderGeometry(7, 8, 15, 8);
+      g.translate(0, 7.5, 0);
+      return { parts: [{ geo: g, surface: 'wood' }] };
+    }
+    case 'crate': {
+      const g = new THREE.BoxGeometry(13, 13, 13);
+      g.translate(0, 6.5, 0);
+      return { parts: [{ geo: g, surface: 'wood-dark' }] };
+    }
+    case 'rubble': {
+      const g = new THREE.DodecahedronGeometry(6.5, 0);
+      g.scale(1.3, 0.48, 1.1);
+      g.translate(0, 2.5, 0);
+      return { parts: [{ geo: g, surface: 'rock' }] };
+    }
+    case 'rock':
+    default: {
+      const g = new THREE.DodecahedronGeometry(13, 0);
+      g.scale(1.25, 0.75, 1.05);
+      g.translate(0, 7, 0);
+      return { parts: [{ geo: g, surface: 'rock' }] };
+    }
+  }
 }

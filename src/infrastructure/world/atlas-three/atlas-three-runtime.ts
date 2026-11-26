@@ -44,6 +44,7 @@ import {
 } from './atlas-three-camera';
 import {
   ATLAS_THREE_SURFACES,
+  buildAtlasScatterGeometry,
   buildAtlasThreeScenePlan,
   type AtlasThreeLook,
   type AtlasThreeScenePlan,
@@ -397,141 +398,6 @@ function createProceduralWarmEnvMap(renderer: THREE.WebGLRenderer): THREE.Textur
   return env;
 }
 
-/** Build shared rich multi-cluster geometry for instanced suggestive scatter kinds. */
-function buildScatterGeometry(kind: AtlasScatterKind): {
-  readonly parts: readonly { readonly geo: THREE.BufferGeometry; readonly surface: AtlasThreeSurfaceKey }[];
-} {
-  switch (kind) {
-    case 'pine': {
-      // Soft multi-tier organic fantasy spruce (4 overlapping tiers + warm sunlit tip)
-      const trunk = new THREE.CylinderGeometry(2.2, 4.6, 17, 6);
-      trunk.translate(0, 8.5, 0);
-      const c1 = new THREE.ConeGeometry(23, 28, 8);
-      c1.scale(1.08, 1, 0.94);
-      c1.translate(0, 22, 0);
-      const c2 = new THREE.ConeGeometry(18.5, 26, 8);
-      c2.rotateY(0.42);
-      c2.translate(0.8, 36, -0.6);
-      const c3 = new THREE.ConeGeometry(13.5, 22, 7);
-      c3.rotateY(0.85);
-      c3.translate(-0.6, 49, 0.5);
-      const c4 = new THREE.ConeGeometry(7.8, 16, 6);
-      c4.translate(0, 59, 0);
-      return {
-        parts: [
-          { geo: trunk, surface: 'wood-dark' },
-          { geo: c1, surface: 'leaf-pine' },
-          { geo: c2, surface: 'leaf-pine' },
-          { geo: c3, surface: 'leaf' },
-          { geo: c4, surface: 'leaf-sun' },
-        ],
-      };
-    }
-    case 'birch': {
-      const trunk = new THREE.CylinderGeometry(2.0, 3.8, 21, 6);
-      trunk.translate(0, 10.5, 0);
-      const c1 = new THREE.DodecahedronGeometry(16.5, 1);
-      c1.scale(1.12, 0.95, 1.04);
-      c1.translate(0, 28, 0);
-      const c2 = new THREE.DodecahedronGeometry(13, 1);
-      c2.translate(8, 34, 4);
-      const c3 = new THREE.DodecahedronGeometry(11, 1);
-      c3.translate(-7, 35, -5);
-      return {
-        parts: [
-          { geo: trunk, surface: 'bark-birch' },
-          { geo: c1, surface: 'leaf-birch' },
-          { geo: c2, surface: 'leaf-sun' },
-          { geo: c3, surface: 'leaf-birch' },
-        ],
-      };
-    }
-    case 'oak': {
-      const trunk = new THREE.CylinderGeometry(3.4, 5.8, 18, 7);
-      trunk.translate(0, 9, 0);
-      const base = new THREE.DodecahedronGeometry(19, 1);
-      base.scale(1.16, 0.88, 1.08);
-      base.translate(0, 27, 0);
-      const sideA = new THREE.DodecahedronGeometry(13.5, 1);
-      sideA.translate(-11, 29, 7);
-      const sideB = new THREE.DodecahedronGeometry(12.5, 1);
-      sideB.translate(10, 28, -8);
-      const top = new THREE.DodecahedronGeometry(14.5, 1);
-      top.translate(4, 37, -2);
-      return {
-        parts: [
-          { geo: trunk, surface: 'wood-dark' },
-          { geo: base, surface: 'leaf' },
-          { geo: sideA, surface: 'leaf' },
-          { geo: sideB, surface: 'leaf' },
-          { geo: top, surface: 'leaf-sun' },
-        ],
-      };
-    }
-    case 'bush': {
-      const g = new THREE.DodecahedronGeometry(11, 1);
-      g.scale(1.28, 0.72, 1.12);
-      g.translate(0, 6, 0);
-      return { parts: [{ geo: g, surface: 'leaf-sun' }] };
-    }
-    case 'flower': {
-      const g = new THREE.DodecahedronGeometry(5.5, 0);
-      g.scale(1.3, 0.48, 1.3);
-      g.translate(0, 2.4, 0);
-      return { parts: [{ geo: g, surface: 'flower' }] };
-    }
-    case 'mountain': {
-      // Dramatic multi-ridge alpine massif with sharp faceted spire + asymmetric snow ridge
-      const base = new THREE.ConeGeometry(46, 78, 7);
-      base.scale(1.22, 1, 0.92);
-      base.translate(0, 35, 0);
-      const shoulder = new THREE.ConeGeometry(31, 56, 6);
-      shoulder.rotateY(0.5);
-      shoulder.translate(23, 24, -14);
-      const ridge = new THREE.ConeGeometry(25, 44, 6);
-      ridge.rotateY(-0.4);
-      ridge.translate(-20, 19, 13);
-      const capMain = new THREE.ConeGeometry(16, 30, 7);
-      capMain.scale(1.18, 1, 0.9);
-      capMain.translate(0, 61, 0);
-      const capSub = new THREE.ConeGeometry(10.5, 19, 6);
-      capSub.translate(23, 44, -14);
-      return {
-        parts: [
-          { geo: base, surface: 'rock' },
-          { geo: shoulder, surface: 'rock' },
-          { geo: ridge, surface: 'rock' },
-          { geo: capMain, surface: 'snow' },
-          { geo: capSub, surface: 'snow' },
-        ],
-      };
-    }
-    case 'barrel': {
-      const g = new THREE.CylinderGeometry(7, 8, 15, 8);
-      g.translate(0, 7.5, 0);
-      return { parts: [{ geo: g, surface: 'wood' }] };
-    }
-    case 'crate': {
-      const g = new THREE.BoxGeometry(13, 13, 13);
-      g.translate(0, 6.5, 0);
-      return { parts: [{ geo: g, surface: 'wood-dark' }] };
-    }
-    case 'rubble': {
-      const g = new THREE.DodecahedronGeometry(6.5, 0);
-      g.scale(1.3, 0.48, 1.1);
-      g.translate(0, 2.5, 0);
-      return { parts: [{ geo: g, surface: 'rock' }] };
-    }
-    case 'rock':
-    default: {
-      const g = new THREE.DodecahedronGeometry(13, 0);
-      g.scale(1.25, 0.75, 1.05);
-      g.translate(0, 7, 0);
-      return { parts: [{ geo: g, surface: 'rock' }] };
-    }
-  }
-}
-
 export class AtlasThreeRuntime {
   readonly renderer: THREE.WebGLRenderer;
   readonly scene = new THREE.Scene();
@@ -540,6 +406,7 @@ export class AtlasThreeRuntime {
   private worldMaps: readonly AtlasWorldSceneMapInput[] = [];
   private worldSources = new Map<string, AtlasThreeWorldMapSource>();
   private worldScenePlan: AtlasWorldScenePlan | null = null;
+  private focusTargetMapId: string | null = null;
   private lastReportedEditorMapId: string | null | undefined = undefined;
   private clearRootCount = 0;
   private readonly gizmoGroup = new THREE.Group();
@@ -829,6 +696,7 @@ export class AtlasThreeRuntime {
     this.multiMap = new AtlasThreeMultiMapGraph(
       (key) => this.getMaterial(key),
       this.waterMat,
+      this.aoMat,
     );
     this.scene.add(this.multiMap.rootGroup);
     config.canvas.addEventListener('webglcontextlost', this.onContextLostListener);
@@ -908,6 +776,18 @@ export class AtlasThreeRuntime {
     this.multiMap.applyStyleMode(this.styleMode);
   }
 
+  setFocusTargetMapId(mapId: string | null): void {
+    this.focusTargetMapId = mapId;
+  }
+
+  isFlightActive(): boolean {
+    return this.flight !== null;
+  }
+
+  getActiveScenePlan(): AtlasWorldScenePlan | null {
+    return this.worldScenePlan;
+  }
+
   /**
    * Register the spatial world map hierarchy for incremental Multi-Map rendering
    * (SWS-04, Checklist D1–D5). When non-empty, `ensureScene()` mounts/updates
@@ -933,7 +813,11 @@ export class AtlasThreeRuntime {
     });
   }
 
-  setWorldCameraState(state: AtlasWorldCameraState, animate = false): void {
+  setWorldCameraState(
+    state: AtlasWorldCameraState,
+    animate = false,
+    opts?: { readonly preserveMinSpan?: boolean },
+  ): void {
     this.setView(
       {
         mode: state.projection,
@@ -944,6 +828,7 @@ export class AtlasThreeRuntime {
         pitchRad: state.pitchRad,
       },
       animate,
+      opts,
     );
   }
 
@@ -998,10 +883,10 @@ export class AtlasThreeRuntime {
   setView(
     next: Partial<AtlasThreeCameraView>,
     animate = false,
-    opts?: { readonly manualPitch?: boolean },
+    opts?: { readonly manualPitch?: boolean; readonly preserveMinSpan?: boolean },
   ): void {
     const targetMode: AtlasThreeCameraMode = next.mode ?? this.targetView.mode;
-    const minSpan = this.worldMaps.length > 0 ? 0.02 : 16;
+    const minSpan = this.worldMaps.length > 0 || opts?.preserveMinSpan ? 0.02 : 16;
     const nextSpan = Math.max(minSpan, Math.min(2400, next.span ?? this.targetView.span));
     if (opts?.manualPitch) {
       this.manualPitchOverride = true;
@@ -1341,6 +1226,7 @@ export class AtlasThreeRuntime {
         camera: camState,
         viewportPx: { width: w, height: h },
         previousPlan: this.worldScenePlan,
+        focusTargetMapId: this.focusTargetMapId,
       });
       this.worldScenePlan = nextPlan;
       if (nextPlan.activeEditorMapId !== this.lastReportedEditorMapId) {
@@ -1432,7 +1318,7 @@ export class AtlasThreeRuntime {
 
     // Instanced suggestive scenery scatter (1 draw call per mesh part!)
     for (const batch of plan.scatterBatches) {
-      const { parts } = buildScatterGeometry(batch.kind);
+      const { parts } = buildAtlasScatterGeometry(batch.kind);
       for (const part of parts) {
         const inst = new THREE.InstancedMesh(
           part.geo,

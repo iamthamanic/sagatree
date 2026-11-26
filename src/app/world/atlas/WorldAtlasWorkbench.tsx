@@ -79,6 +79,7 @@ import {
   type AtlasHierarchyMapRef,
   type AtlasHierarchyNavState,
   type AtlasNavCameraView,
+  type AtlasWorldCameraState,
   type AtlasWorldSceneMapInput,
   type AtlasWorldSpaceNode,
   type DornhainGoldenResetMode,
@@ -191,6 +192,17 @@ export function WorldAtlasWorkbench({
   const pendingAfterFlyRef = useRef<{
     readonly state: AtlasHierarchyNavState;
     readonly noticeDe: string | null;
+  } | null>(null);
+  /** Saved world camera snapshot before explicitly opening a child map for editing (Journey 4). */
+  const savedWorldReturnRef = useRef<{
+    readonly camera: AtlasWorldCameraState;
+    readonly focusedMapId: string | null;
+    readonly focusedPlaceId: string | null;
+  } | null>(null);
+  const [pendingWorldRestore, setPendingWorldRestore] = useState<{
+    readonly camera: AtlasWorldCameraState;
+    readonly focusedMapId: string | null;
+    readonly focusedPlaceId: string | null;
   } | null>(null);
   /** ATL2-C05: recompose chrome from main-pane width (AU-CONTENT-WIDTH). */
   const workbenchRef = useRef<HTMLDivElement | null>(null);
@@ -415,27 +427,33 @@ export function WorldAtlasWorkbench({
     : null;
   const mapUnlocated = activeMapFrame?.status === 'unlocated' && !activeMapFrame.parentAnchor;
 
-  // SWS-04: Hydrate located child maps for Multi-Map World-Space rendering when on World root.
+  // SWS-04: Hydrate located child maps for Multi-Map World-Space rendering and keep them warm
+  // across temporary single-map child edits so "Zurück zur Welt" renders the shared World Scene Graph
+  // on Frame 1 with zero refetch delay and zero ocean flash.
   const [childMapVms, setChildMapVms] = useState<readonly WorldAtlasMapVm[]>([]);
+  const worldRootSummaryId = useMemo(
+    () => editor.summaries.find((s) => s.parentMapId === null)?.id ?? null,
+    [editor.summaries],
+  );
   const childSummaryKey = useMemo(
     () =>
-      editor.map && editor.map.parentMapId === null
+      worldRootSummaryId
         ? editor.summaries
-          .filter((s) => s.id !== editor.map!.id)
+          .filter((s) => s.id !== worldRootSummaryId)
           .map((s) => `${s.id}:${s.revision}`)
           .sort()
           .join('|')
         : '',
-    [editor.map, editor.summaries],
+    [worldRootSummaryId, editor.summaries],
   );
   useEffect(() => {
-    if (!childSummaryKey || !editor.map || editor.map.parentMapId !== null || !isHostLibraryEnabled()) {
+    if (!childSummaryKey || !worldRootSummaryId || !isHostLibraryEnabled()) {
       setChildMapVms([]);
       return;
     }
     let cancelled = false;
     const otherIds = editor.summaries
-      .filter((s) => s.id !== editor.map!.id)
+      .filter((s) => s.id !== worldRootSummaryId)
       .map((s) => s.id);
     void Promise.allSettled(
       otherIds.map((id) => worldAtlasService.getMap(id, effectivePlayerView, sagaPublicId)),
@@ -450,7 +468,7 @@ export function WorldAtlasWorkbench({
     return () => {
       cancelled = true;
     };
-  }, [childSummaryKey, effectivePlayerView, sagaPublicId]);
+  }, [childSummaryKey, effectivePlayerView, sagaPublicId, worldRootSummaryId]);
 
   const worldSceneGraph = useMemo(() => {
     if (!editor.map || editor.map.parentMapId !== null || childMapVms.length === 0) {
@@ -485,14 +503,16 @@ export function WorldAtlasWorkbench({
     for (const vm of childMapVms) {
       const frame = extractMapFrameFromGeneratorMeta(vm.generatorMeta);
       const parsedDoc = parseUnifiedCanvasDoc(vm.generatorMeta?.unifiedCanvas);
-      if (!parsedDoc) continue;
       const scale = resolveMapScale(vm.id, vm.kind);
+      // Always register the map metadata (including unlocated / unsketched maps like `new type city`)
+      // so `resolveWorldFocusTarget` and the Ebenen tree can surface honest `unlocated` state!
       maps.push({
         id: vm.id,
         parentAnchor: frame.parentAnchor,
         bounds: vm.bounds,
         status: frame.status,
       });
+      if (!parsedDoc) continue;
       sources.push({
         mapId: vm.id,
         doc: parsedDoc,
@@ -636,16 +656,16 @@ export function WorldAtlasWorkbench({
 
       const mutations = explicitSnapshots
         ? Object.entries(explicitSnapshots).map(([mapId, snap]) => ({
-            mapId,
-            nextDoc: snap.doc,
-            nextParentAnchor: snap.parentAnchor,
-          }))
+          mapId,
+          nextDoc: snap.doc,
+          nextParentAnchor: snap.parentAnchor,
+        }))
         : projectSpatialOperationToMapUpdates({
-            world: nextWorld,
-            plan,
-            docsByMapId,
-            mapNodes,
-          });
+          world: nextWorld,
+          plan,
+          docsByMapId,
+          mapNodes,
+        });
 
       const updatedChildMap = new Map<string, WorldAtlasMapVm>();
       const prepared: Array<{
@@ -819,6 +839,44 @@ export function WorldAtlasWorkbench({
     const worldSummary = editor.summaries.find((s) => s.kind === 'world');
     return worldSummary?.id ?? editor.summaries[0]?.id ?? null;
   }, [editor.summaries]);
+
+  const handleRequestEditMap = useCallback(
+    (payload: {
+      readonly mapId: string;
+      readonly placeId: string | null;
+      readonly worldCamera: AtlasWorldCameraState | null;
+      readonly focusedMapId: string | null;
+    }) => {
+      if (editor.map?.parentMapId === null && payload.worldCamera) {
+        savedWorldReturnRef.current = {
+          camera: payload.worldCamera,
+          focusedMapId: payload.focusedMapId ?? payload.mapId,
+          focusedPlaceId: payload.placeId,
+        };
+      }
+      if (payload.placeId) {
+        setActivePlaceId(payload.placeId);
+      }
+      const crumb = editor.breadcrumb.some((c) => c.id === payload.mapId);
+      const summary = editor.summaries.find((s) => s.id === payload.mapId);
+      const isDirect = !!editor.activeMapId && summary?.parentMapId === editor.activeMapId;
+      openMapWithHierarchy(payload.mapId, crumb ? 'ancestor' : isDirect ? 'child' : 'raw');
+    },
+    [editor.activeMapId, editor.breadcrumb, editor.map?.parentMapId, editor.summaries, openMapWithHierarchy],
+  );
+
+  const handleReturnToWorldFromEdit = useCallback(() => {
+    if (!worldPrimaryMapId) return;
+    const saved = savedWorldReturnRef.current;
+    savedWorldReturnRef.current = null;
+    if (saved) {
+      setPendingWorldRestore(saved);
+    }
+    setActivePlaceId(saved?.focusedPlaceId ?? null);
+    if (editor.activeMapId !== worldPrimaryMapId) {
+      openMapWithHierarchy(worldPrimaryMapId, 'ancestor');
+    }
+  }, [editor.activeMapId, openMapWithHierarchy, worldPrimaryMapId]);
 
   const webglNavTree = useMemo(
     () =>
@@ -1599,6 +1657,17 @@ export function WorldAtlasWorkbench({
               doc={editor.canvasDoc}
               worldSceneGraph={worldSceneGraph}
               spatialContainment={spatialContainment}
+              isChildDocumentEditMode={Boolean(editor.map && editor.map.parentMapId !== null)}
+              onRequestEditMap={handleRequestEditMap}
+              onReturnToWorld={
+                editor.map && editor.map.parentMapId !== null && worldPrimaryMapId
+                  ? handleReturnToWorldFromEdit
+                  : undefined
+              }
+              restoreWorldFocus={
+                editor.map && editor.map.parentMapId === null ? pendingWorldRestore : null
+              }
+              onRestoreWorldFocusConsumed={() => setPendingWorldRestore(null)}
               canEdit={editingAllowed}
               onDocChange={editor.updateCanvasDoc}
               webglRuntime={editor.webglRuntime}

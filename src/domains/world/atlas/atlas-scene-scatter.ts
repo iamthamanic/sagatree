@@ -147,11 +147,28 @@ export function buildAtlasSceneScatter(input: {
   readonly presetId: AtlasGraphicsPresetId;
   /** Optional suggestive terrain relief sampler (x, y) -> world Y elevation. */
   readonly elevationSampler?: (x: number, y: number) => number;
+  /** Optional local-space rects reserved for detailed child maps (prevents coarse trees covering settlements). */
+  readonly exclusionRects?: ReadonlyArray<{
+    readonly minX: number;
+    readonly minY: number;
+    readonly maxX: number;
+    readonly maxY: number;
+  }>;
 }): AtlasScatterPlan {
-  const { doc, seed, mapScale, presetId, elevationSampler } = input;
+  const { doc, seed, mapScale, presetId, elevationSampler, exclusionRects } = input;
   const maxBudget = maxScatterForPreset(presetId);
   const rng = mulberry32(fnv1a(`atl3-d01|${seed}|${mapScale}`));
   const instances: AtlasScatterInstance[] = [];
+
+  const inExclusionRect = (x: number, y: number, pad = 12): boolean => {
+    if (!exclusionRects || exclusionRects.length === 0) return false;
+    for (const r of exclusionRects) {
+      if (x >= r.minX - pad && x <= r.maxX + pad && y >= r.minY - pad && y <= r.maxY + pad) {
+        return true;
+      }
+    }
+    return false;
+  };
 
   if (mapScale === 'world' ? doc.layers.terrain === false : doc.layers.objects === false) {
     return { format: 'atl3-d01-scatter-plan-v1', seed, presetId, maxBudget, instances };
@@ -307,6 +324,7 @@ export function buildAtlasSceneScatter(input: {
         const x = poly.minX + rng() * (poly.maxX - poly.minX);
         const y = poly.minY + rng() * (poly.maxY - poly.minY);
         if (!pointInPolygon(x, y, poly.pts)) continue;
+        if (inExclusionRect(x, y, 16)) continue;
         if (isNearStroke(x, y, 10) || isNearObject(x, y, 10)) continue;
         const elev = Math.max(0, elevationAt(x, y));
         pushInst('mountain', x, y, elev, 0.5 + rng() * 0.65);
@@ -325,6 +343,7 @@ export function buildAtlasSceneScatter(input: {
       if (!pointInPolygon(x, y, poly.pts)) continue;
       if (waterPolys.some((wp) => pointInPolygon(x, y, wp))) continue;
       if (pavedPolys.some((pp) => pointInPolygon(x, y, pp))) continue;
+      if (inExclusionRect(x, y, 16)) continue;
       if (isNearStroke(x, y, 10) || isNearObject(x, y, 10)) continue;
       const elev = elevationAt(x, y);
       if (elevationSampler && elev < 1.2) continue;
@@ -345,6 +364,7 @@ export function buildAtlasSceneScatter(input: {
       const x = poly.minX + rng() * (poly.maxX - poly.minX);
       const y = poly.minY + rng() * (poly.maxY - poly.minY);
       if (!pointInPolygon(x, y, poly.pts)) continue;
+      if (inExclusionRect(x, y, 12)) continue;
       if (isNearStroke(x, y, 8) || isNearObject(x, y, 8)) continue;
       const elev = Math.max(0, elevationAt(x, y));
       pushInst('rock', x, y, elev, 0.25 + rng() * 0.35);
@@ -371,10 +391,11 @@ export function buildAtlasSceneScatter(input: {
     const y = boundsMinY + rng() * (boundsMaxY - boundsMinY);
     if (waterPolys.some((wp) => pointInPolygon(x, y, wp))) continue;
     if (pavedPolys.some((pp) => pointInPolygon(x, y, pp))) continue;
+    if (inExclusionRect(x, y, 14)) continue;
     if (isNearStroke(x, y, 16) || isNearObject(x, y, 16) || isNearWall(x, y, 14)) continue;
     const elev = elevationAt(x, y);
     const onLandRoom = landPolys.some((lp) => pointInPolygon(x, y, lp.pts));
-    if (hf && elev < waterLevel + 0.8 && !onLandRoom) continue;
+    if (hf && !elevationSampler && elev < waterLevel + 0.8 && !onLandRoom) continue;
     const r = rng();
     const kind: AtlasScatterKind = elev > 10 || r < 0.38 ? 'pine' : r < 0.78 ? 'oak' : 'birch';
     const scale = 0.48 + rng() * 0.42;
@@ -389,10 +410,11 @@ export function buildAtlasSceneScatter(input: {
     const y = boundsMinY + rng() * (boundsMaxY - boundsMinY);
     if (waterPolys.some((wp) => pointInPolygon(x, y, wp))) continue;
     if (pavedPolys.some((pp) => pointInPolygon(x, y, pp))) continue;
+    if (inExclusionRect(x, y, 10)) continue;
     if (isNearStroke(x, y, 8) || isNearObject(x, y, 8) || isNearWall(x, y, 8)) continue;
     const elev = elevationAt(x, y);
     const onLandRoom = landPolys.some((lp) => pointInPolygon(x, y, lp.pts));
-    if (hf && elev < waterLevel + 0.5 && !onLandRoom) continue;
+    if (hf && !elevationSampler && elev < waterLevel + 0.5 && !onLandRoom) continue;
     const kind: AtlasScatterKind = rng() < 0.52 ? 'bush' : rng() < 0.82 ? 'flower' : 'rock';
     const scale = kind === 'flower' ? 0.35 + rng() * 0.3 : 0.32 + rng() * 0.36;
     pushInst(kind, x, y, Math.max(-0.4, elev), scale);
@@ -410,6 +432,7 @@ export function buildAtlasSceneScatter(input: {
       const dist = rad + 6 + rng() * 14;
       const x = b.x + Math.cos(angle) * dist;
       const y = b.y + Math.sin(angle) * dist;
+      if (inExclusionRect(x, y, 4)) continue;
       if (isNearStroke(x, y, 4) || isNearWall(x, y, 4)) continue;
       const elev = Math.max(-0.4, elevationAt(x, y));
       pushInst(rng() < 0.55 ? 'barrel' : 'crate', x, y, elev, 0.24 + rng() * 0.12);

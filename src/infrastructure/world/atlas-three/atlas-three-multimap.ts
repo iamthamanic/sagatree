@@ -30,6 +30,7 @@ import {
 } from '../../../domains/world/atlas';
 import {
   ATLAS_THREE_SURFACES,
+  buildAtlasScatterGeometry,
   buildAtlasThreeScenePlan,
   type AtlasThreeLook,
   type AtlasThreeScenePlan,
@@ -52,7 +53,7 @@ export type AtlasThreeWorldMapSource = {
 
 type ClonedGroupMaterial = {
   readonly material: THREE.Material;
-  readonly surfaceKey: AtlasThreeSurfaceKey | 'water';
+  readonly surfaceKey: AtlasThreeSurfaceKey | 'water' | 'ao';
 };
 
 export type AtlasThreeMapGroupNode = {
@@ -205,6 +206,12 @@ export function applyWorldTransformToGroup(
 function applyMaterialOpacity(entry: ClonedGroupMaterial, opacity: number): void {
   const clamped = Math.max(0, Math.min(1, opacity));
   const mat = entry.material;
+  if (entry.surfaceKey === 'ao') {
+    mat.opacity = clamped * 0.72;
+    mat.transparent = true;
+    mat.depthWrite = false;
+    return;
+  }
   const isTranslucent = clamped < 0.999;
   if (mat instanceof THREE.ShaderMaterial && mat.uniforms?.uOpacity) {
     mat.uniforms.uOpacity.value = clamped;
@@ -236,6 +243,7 @@ export class AtlasThreeMultiMapGraph {
   constructor(
     private readonly getMaterial: (key: AtlasThreeSurfaceKey) => THREE.Material,
     private readonly waterMaterial: THREE.Material,
+    private readonly aoMaterial?: THREE.Material,
   ) {
     this.rootGroup.name = 'atlas3:multimap-root';
     this.worldTerrain = new AtlasThreeWorldTerrain(() => this.getMaterial('terrain'));
@@ -357,6 +365,27 @@ export class AtlasThreeMultiMapGraph {
       }
     }
 
+    // Compute highest active child detailWeight per parent so coarse outdoor parent overlays
+    // (coarse land roads, world landmark icons) smoothly yield to detailed settlements/buildings
+    // while the ONE shared chunked world terrain stays 100% opaque underneath!
+    const maxChildWeightByParent = new Map<string, number>();
+    const hasIndoorChildByParent = new Map<string, boolean>();
+    let hasActiveSettlementOrDeeper = false;
+    for (const e of input.scenePlan.entries) {
+      if (e.depth >= 4 && e.detailWeight > 0.25) {
+        hasActiveSettlementOrDeeper = true;
+      }
+      if (!e.parentMapId) continue;
+      const prev = maxChildWeightByParent.get(e.parentMapId) ?? 0;
+      if (e.detailWeight > prev) {
+        maxChildWeightByParent.set(e.parentMapId, e.detailWeight);
+      }
+      const childSrc = input.sources.get(e.mapId);
+      if (childSrc?.look === 'indoor' && e.detailWeight > 0.25) {
+        hasIndoorChildByParent.set(e.parentMapId, true);
+      }
+    }
+
     // 2) Mount new groups or incrementally update transform & continuous opacity
     for (const entry of input.scenePlan.entries) {
       const source = input.sources.get(entry.mapId);
@@ -365,15 +394,35 @@ export class AtlasThreeMultiMapGraph {
       const cSig = cutoutSignature(entry.cutoutRectsLocal);
       const rev = source.revisionKey ?? 'v0';
       const terrainSig = hasSharedTerrain ? this.lastTerrainSourceKey : 'local';
-      const sig = `${rev}|${source.mapScale}|${source.look}|${input.presetId}|${input.hideRoofs ? 1 : 0}|${cSig}|${terrainSig}`;
-      const targetOpacity = entry.depth === 1 ? 1 : Math.max(0, Math.min(1, entry.detailWeight));
+      // Auto roof-cutaway on a settlement when an interior building/room inside it is active!
+      const effectiveHideRoofs =
+        input.hideRoofs || Boolean(hasIndoorChildByParent.get(entry.mapId));
+      const sig = `${rev}|${source.mapScale}|${source.look}|${input.presetId}|${effectiveHideRoofs ? 1 : 0}|${cSig}|${terrainSig}`;
+
+      const childWeight = maxChildWeightByParent.get(entry.mapId) ?? 0;
+      // Smooth visual handover: when zooming into a settlement (depth >= 4), fade coarse
+      // world/continent/country overlays out gently (avoiding giant pixelated parent roads or
+      // duplicate village icons beside Dornhain), while keeping the shared world terrain at 100%.
+      let targetOpacity: number;
+      if (entry.depth === 1) {
+        targetOpacity = hasSharedTerrain && hasActiveSettlementOrDeeper ? 0.08 : 1;
+      } else if (source.look === 'outdoor' && source.mapScale === 'world' && childWeight > 0.2) {
+        // Continent/country overlay yields smoothly as its child settlement takes over
+        const fade = Math.max(0, 1 - (childWeight - 0.2) / 0.65);
+        targetOpacity = Math.max(0, Math.min(1, entry.detailWeight * fade));
+      } else if (source.look === 'outdoor' && hasIndoorChildByParent.get(entry.mapId)) {
+        // Keep settlement surroundings gently visible as context around an active indoor building
+        targetOpacity = Math.max(0.45, Math.min(1, entry.detailWeight * 0.72));
+      } else {
+        targetOpacity = Math.max(0, Math.min(1, entry.detailWeight));
+      }
 
       const baseElevationY =
         hasSharedTerrain && source.look === 'indoor'
           ? this.worldTerrain.sampleElevation(
               entry.worldTransform.centerX,
               entry.worldTransform.centerY,
-            ) + 0.15
+            ) + 0.08
           : 0;
 
       const existing = this.groups.get(entry.mapId);
@@ -384,11 +433,9 @@ export class AtlasThreeMultiMapGraph {
         existing.detailWeight = entry.detailWeight;
         existing.targetOpacity = targetOpacity;
         existing.currentOpacity =
-          entry.depth === 1
-            ? 1
-            : useSmoothDamp
-              ? existing.currentOpacity + (targetOpacity - existing.currentOpacity) * dampAlpha
-              : targetOpacity;
+          useSmoothDamp
+            ? existing.currentOpacity + (targetOpacity - existing.currentOpacity) * dampAlpha
+            : targetOpacity;
         applyWorldTransformToGroup(
           existing.pivot,
           existing.content,
@@ -437,9 +484,10 @@ export class AtlasThreeMultiMapGraph {
         span: Math.max(24, input.viewSpan / Math.max(1e-4, entry.worldTransform.scaleX)),
         presetId: input.presetId,
         seed: entry.mapId,
-        hideRoofs: input.hideRoofs,
+        hideRoofs: effectiveHideRoofs,
         warmWindows: true,
         sharedWorldTerrain,
+        exclusionRects: entry.cutoutRectsLocal,
       });
 
       const pivot = new THREE.Group();
@@ -455,8 +503,12 @@ export class AtlasThreeMultiMapGraph {
       const geometries: THREE.BufferGeometry[] = [];
       const materials: ClonedGroupMaterial[] = [];
 
+      const clonedMatCache = new Map<AtlasThreeSurfaceKey, THREE.Material>();
       const cloneSurfaceMat = (surfaceKey: AtlasThreeSurfaceKey): THREE.Material => {
+        const cached = clonedMatCache.get(surfaceKey);
+        if (cached) return cached;
         const cloned = this.getMaterial(surfaceKey).clone();
+        clonedMatCache.set(surfaceKey, cloned);
         materials.push({ material: cloned, surfaceKey });
         return cloned;
       };
@@ -491,6 +543,73 @@ export class AtlasThreeMultiMapGraph {
         pickables.push(mesh);
       }
 
+      if (plan.doorInstances.matrices.length > 0) {
+        const doorGeo = new THREE.BoxGeometry(1, 1, 1);
+        geometries.push(doorGeo);
+        const inst = new THREE.InstancedMesh(
+          doorGeo,
+          cloneSurfaceMat('wood-dark'),
+          plan.doorInstances.matrices.length,
+        );
+        plan.doorInstances.matrices.forEach((m, i) => inst.setMatrixAt(i, m));
+        inst.instanceMatrix.needsUpdate = true;
+        inst.computeBoundingSphere();
+        inst.castShadow = true;
+        inst.receiveShadow = true;
+        inst.userData.instanceIds = plan.doorInstances.ids;
+        inst.userData.mapId = entry.mapId;
+        inst.name = `atlas3:${entry.mapId}:doors`;
+        content.add(inst);
+        pickables.push(inst);
+      }
+
+      // Suggestive scatter (settlement perimeter woods/bushes/flowers & interior rubble)
+      // — skip coarse world-level scatter on depth 1–3 outdoor overview maps when shared terrain
+      // is active so zooming in never lingers on giant coarse trees before reaching Dornhain!
+      const emitScatterForGroup =
+        !hasSharedTerrain || source.mapScale === 'settlement' || source.look === 'indoor';
+      if (emitScatterForGroup) {
+        for (const batch of plan.scatterBatches) {
+          const { parts } = buildAtlasScatterGeometry(batch.kind);
+          for (const part of parts) {
+            geometries.push(part.geo);
+            const inst = new THREE.InstancedMesh(
+              part.geo,
+              cloneSurfaceMat(part.surface),
+              batch.matrices.length,
+            );
+            batch.matrices.forEach((m, i) => inst.setMatrixAt(i, m));
+            inst.instanceMatrix.needsUpdate = true;
+            inst.computeBoundingSphere();
+            inst.castShadow = batch.kind !== 'flower' && batch.kind !== 'rubble';
+            inst.receiveShadow = true;
+            inst.userData.mapId = entry.mapId;
+            inst.name = `atlas3:${entry.mapId}:scatter:${batch.kind}`;
+            content.add(inst);
+          }
+        }
+      }
+
+      if (this.aoMaterial && plan.aoDiscs.length > 0 && source.mapScale !== 'world') {
+        const discGeo = new THREE.PlaneGeometry(2, 2);
+        discGeo.rotateX(-Math.PI / 2);
+        geometries.push(discGeo);
+        const aoClone = this.aoMaterial.clone();
+        materials.push({ material: aoClone, surfaceKey: 'ao' });
+        const aoInst = new THREE.InstancedMesh(discGeo, aoClone, plan.aoDiscs.length);
+        const mat4 = new THREE.Matrix4();
+        const quat = new THREE.Quaternion();
+        plan.aoDiscs.forEach((d, i) => {
+          mat4.compose(new THREE.Vector3(d.x, d.y, d.z), quat, new THREE.Vector3(d.radius, 1, d.radius));
+          aoInst.setMatrixAt(i, mat4);
+        });
+        aoInst.instanceMatrix.needsUpdate = true;
+        aoInst.computeBoundingSphere();
+        aoInst.renderOrder = 2;
+        aoInst.name = `atlas3:${entry.mapId}:ao`;
+        content.add(aoInst);
+      }
+
       // Per-map terrain only if no shared world terrain source exists (legacy fallback)
       let hasOwnTerrain = false;
       if (plan.terrain) {
@@ -510,10 +629,10 @@ export class AtlasThreeMultiMapGraph {
 
       // Start freshly entering child maps from 0 (damped fade-in) instead of jumping 0→100%
       const initialOpacity =
-        entry.depth === 1
-          ? 1
-          : prevOpacity !== undefined
-            ? prevOpacity
+        prevOpacity !== undefined
+          ? prevOpacity
+          : entry.depth === 1
+            ? targetOpacity
             : useSmoothDamp
               ? targetOpacity * dampAlpha
               : targetOpacity;
@@ -545,7 +664,7 @@ export class AtlasThreeMultiMapGraph {
   applyStyleMode(styleMode: 'pbr' | 'illustrated' | 'cel'): void {
     for (const node of this.groups.values()) {
       for (const entry of node.materials) {
-        if (entry.surfaceKey === 'water') continue;
+        if (entry.surfaceKey === 'water' || entry.surfaceKey === 'ao') continue;
         if (!(entry.material instanceof THREE.MeshStandardMaterial)) continue;
         const spec = ATLAS_THREE_SURFACES[entry.surfaceKey];
         if (!spec) continue;

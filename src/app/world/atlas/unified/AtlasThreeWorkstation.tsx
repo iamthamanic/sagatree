@@ -43,6 +43,7 @@ import {
   Moon,
   Mountains,
   PaintBrush,
+  PencilSimple,
   Plus,
   Resize,
   Stack,
@@ -66,9 +67,11 @@ import {
   isAtlasWorldError,
   localToWorld,
   resolveContinuousZoomTransition,
+  resolveWorldFocusTarget,
   shouldPromptSpatialOperation,
   switchWorldCameraProjection,
   worldToLocal,
+  type AtlasWorldFocusIntent,
   type AtlasZoomLayerState,
   type SpatialBounds2D,
   type SpatialEditIntent,
@@ -221,6 +224,20 @@ export type AtlasThreeWorkstationProps = {
   readonly toolsSlot?: ReactNode;
   readonly topBarExtra?: ReactNode;
   readonly spatialContainment?: AtlasSpatialContainmentAdapter | null;
+  readonly isChildDocumentEditMode?: boolean;
+  readonly onRequestEditMap?: (payload: {
+    readonly mapId: string;
+    readonly placeId: string | null;
+    readonly worldCamera: AtlasWorldCameraState | null;
+    readonly focusedMapId: string | null;
+  }) => void;
+  readonly onReturnToWorld?: () => void;
+  readonly restoreWorldFocus?: {
+    readonly camera: AtlasWorldCameraState;
+    readonly focusedMapId: string | null;
+    readonly focusedPlaceId: string | null;
+  } | null;
+  readonly onRestoreWorldFocusConsumed?: () => void;
 };
 
 type DragSession =
@@ -335,6 +352,11 @@ export function AtlasThreeWorkstation({
   toolsSlot = null,
   topBarExtra = null,
   spatialContainment = null,
+  isChildDocumentEditMode = false,
+  onRequestEditMap,
+  onReturnToWorld,
+  restoreWorldFocus = null,
+  onRestoreWorldFocusConsumed,
 }: AtlasThreeWorkstationProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const runtimeRef = useRef<AtlasThreeRuntime | null>(null);
@@ -420,6 +442,25 @@ export function AtlasThreeWorkstation({
   } | null>(null);
   const worldSceneGraphActiveRef = useRef<boolean>(false);
   worldSceneGraphActiveRef.current = Boolean(worldSceneGraph && worldSceneGraph.maps.length > 0);
+  const isChildDocumentEditModeRef = useRef<boolean>(isChildDocumentEditMode);
+  isChildDocumentEditModeRef.current = isChildDocumentEditMode;
+  const focusSeqRef = useRef<number>(0);
+  const focusFlightRafRef = useRef<number | null>(null);
+  const [focusIntent, setFocusIntent] = useState<AtlasWorldFocusIntent | null>(null);
+  const focusIntentRef = useRef<AtlasWorldFocusIntent | null>(focusIntent);
+  focusIntentRef.current = focusIntent;
+  const [unlocatedFocusNotice, setUnlocatedFocusNotice] = useState<{
+    readonly mapId: string;
+    readonly placeId: string | null;
+    readonly labelDe: string;
+    readonly reasonDe: string;
+  } | null>(null);
+  const unlocatedFocusNoticeRef = useRef(unlocatedFocusNotice);
+  unlocatedFocusNoticeRef.current = unlocatedFocusNotice;
+  const restoreWorldFocusRef = useRef(restoreWorldFocus);
+  restoreWorldFocusRef.current = restoreWorldFocus;
+  const onRestoreWorldFocusConsumedRef = useRef(onRestoreWorldFocusConsumed);
+  onRestoreWorldFocusConsumedRef.current = onRestoreWorldFocusConsumed;
 
   const findSpatialEntityForFeature = useCallback((featureId: string) => {
     const adapter = spatialContainmentRef.current;
@@ -529,8 +570,138 @@ export function AtlasThreeWorkstation({
       if (transitionTimerRef.current !== null) {
         window.clearTimeout(transitionTimerRef.current);
       }
+      if (focusFlightRafRef.current !== null) {
+        window.cancelAnimationFrame(focusFlightRafRef.current);
+      }
     },
     [],
+  );
+
+  /** Open an explicit single-map document editor while saving the live world camera for clean return. */
+  const openMapForEditing = useCallback(
+    (mapId: string, placeId: string | null) => {
+      const rt = runtimeRef.current;
+      const worldCamera =
+        !isChildDocumentEditModeRef.current && rt ? rt.getWorldCameraState() : null;
+      const focusedMapId =
+        focusIntentRef.current?.targetMapId ?? zoomLayerStateRef.current.activeMapId ?? mapId;
+      setUnlocatedFocusNotice(null);
+      if (onRequestEditMap) {
+        onRequestEditMap({ mapId, placeId, worldCamera, focusedMapId });
+        return;
+      }
+      onNavSelect?.({ placeId, mapId, worldRoot: false });
+    },
+    [onNavSelect, onRequestEditMap],
+  );
+
+  /**
+   * Focus a hierarchy node inside the SAME continuous shared World Scene Graph:
+   * - Computes real World-Space position & framing span strictly from ParentSpatialAnchors.
+   * - Keeps canvas, Three.js runtime, shared world terrain, and focus chain intact (zero remount).
+   * - Rejects unlocated maps honestly with a German notice + explicit "Karte bearbeiten" option.
+   */
+  const focusNodeInWorld = useCallback(
+    (payload: {
+      readonly mapId: string | null;
+      readonly placeId: string | null;
+      readonly labelDe: string;
+      readonly worldRoot: boolean;
+      readonly kind?: string | null;
+      readonly sub?: string | null;
+    }) => {
+      const rt = runtimeRef.current;
+
+      // In explicit single-document edit mode: clicking World Root returns cleanly to World!
+      if (isChildDocumentEditModeRef.current || !worldSceneGraph || worldSceneGraph.maps.length === 0) {
+        if (payload.worldRoot && onReturnToWorld) {
+          onReturnToWorld();
+          return;
+        }
+        if (payload.mapId) {
+          openMapForEditing(payload.mapId, payload.placeId);
+        }
+        return;
+      }
+
+      const targetMapId = payload.worldRoot
+        ? (externalNav?.worldPrimaryMapId ?? worldSceneGraph.maps[0]?.id ?? null)
+        : payload.mapId;
+
+      if (!targetMapId) {
+        setUnlocatedFocusNotice({
+          mapId: '',
+          placeId: payload.placeId,
+          labelDe: payload.labelDe,
+          reasonDe: `Für „${payload.labelDe}“ existiert noch keine verknüpfte Karte.`,
+        });
+        return;
+      }
+
+      const resolved = resolveWorldFocusTarget({
+        maps: worldSceneGraph.maps,
+        targetMapId,
+        labelDe: payload.labelDe,
+      });
+
+      if (resolved.ok === false) {
+        // Honest unlocated handling — NEVER fake a focus jump or invent geography!
+        setUnlocatedFocusNotice({
+          mapId: targetMapId,
+          placeId: payload.placeId,
+          labelDe: payload.labelDe,
+          reasonDe: resolved.reasonDe,
+        });
+        return;
+      }
+
+      setUnlocatedFocusNotice(null);
+      focusSeqRef.current += 1;
+      const seq = focusSeqRef.current;
+      if (focusFlightRafRef.current !== null) {
+        window.cancelAnimationFrame(focusFlightRafRef.current);
+        focusFlightRafRef.current = null;
+      }
+
+      if (!rt) return;
+
+      // Register focus path priority (World → … → target) in scene plan so target & carriers
+      // survive budget and reveal smoothly during and after flight.
+      rt.setFocusTargetMapId(payload.worldRoot ? null : resolved.mapId);
+      const nextIntent: AtlasWorldFocusIntent = {
+        targetMapId: resolved.mapId,
+        targetPlaceId: payload.worldRoot ? null : payload.placeId,
+        labelDe: payload.labelDe,
+        requestedAtMs: Date.now(),
+        phase: 'flying',
+      };
+      setFocusIntent(nextIntent);
+
+      // Smooth in-world camera flight preserving current yaw orientation!
+      rt.setView(
+        {
+          x: resolved.centerWorld.x,
+          z: resolved.centerWorld.y,
+          span: resolved.recommendedCameraSpan,
+        },
+        true,
+      );
+
+      const pollArrival = () => {
+        if (focusSeqRef.current !== seq) return;
+        const currentRt = runtimeRef.current;
+        if (!currentRt || !currentRt.isFlightActive()) {
+          focusFlightRafRef.current = null;
+          setFocusIntent((cur) =>
+            cur && cur.targetMapId === resolved.mapId ? { ...cur, phase: 'arrived' } : cur,
+          );
+          return;
+        }
+        focusFlightRafRef.current = window.requestAnimationFrame(pollArrival);
+      };
+      focusFlightRafRef.current = window.requestAnimationFrame(pollArrival);
+    },
+    [externalNav?.worldPrimaryMapId, onReturnToWorld, openMapForEditing, worldSceneGraph],
   );
 
   const triggerSmoothLevelTransition = useCallback(
@@ -614,6 +785,7 @@ export function AtlasThreeWorkstation({
         presetId: graphicsPresetId,
         onCameraChange: (v) => {
           setHudSpan(v.span);
+          setHudCoords(`X ${v.x.toFixed(1)} · Z ${v.z.toFixed(1)}`);
           const deg = ((Math.round((v.yawRad * 180) / Math.PI) % 360) + 360) % 360;
           setHudYawDeg(deg);
           onNavViewChangeRef.current?.({
@@ -659,6 +831,14 @@ export function AtlasThreeWorkstation({
             canRedo: boolean;
             layersOpen: boolean;
             zoomLayer: AtlasZoomLayerState;
+            focusIntent: AtlasWorldFocusIntent | null;
+            editMode: 'world-focus' | 'document-edit';
+            unlocatedNotice: {
+              readonly mapId: string;
+              readonly placeId: string | null;
+              readonly labelDe: string;
+              readonly reasonDe: string;
+            } | null;
             ids: string[];
           };
           setCameraMode: (m: AtlasThreeCameraMode) => void;
@@ -789,6 +969,9 @@ export function AtlasThreeWorkstation({
             canRedo: canRedoRef.current,
             layersOpen: layersOpenRef.current,
             zoomLayer: zoomLayerStateRef.current,
+            focusIntent: focusIntentRef.current,
+            editMode: isChildDocumentEditModeRef.current ? 'document-edit' : 'world-focus',
+            unlocatedNotice: unlocatedFocusNoticeRef.current,
             ids: rt?.getRenderedIds() ?? [],
           };
         },
@@ -910,15 +1093,37 @@ export function AtlasThreeWorkstation({
   }, [graphicsPresetId]);
 
   // SWS-04: sync located world hierarchy into Multi-Map Scene Graph (incremental, zero clearRoot).
+  // Also applies any pending post-edit world camera restore once the world scene graph is mounted!
   useEffect(() => {
     const rt = runtimeRef.current;
     if (!rt) return;
     if (worldSceneGraph && worldSceneGraph.maps.length > 0) {
       rt.setWorldSceneGraph(worldSceneGraph);
+      const savedRestore = restoreWorldFocusRef.current;
+      if (savedRestore && !isChildDocumentEditModeRef.current) {
+        setCameraMode(savedRestore.camera.projection);
+        rt.setFocusTargetMapId(savedRestore.focusedMapId);
+        rt.setWorldCameraState(savedRestore.camera, false, { preserveMinSpan: true });
+        if (savedRestore.focusedMapId) {
+          const restoredNode = externalNav?.nodes.find(
+            (n) =>
+              (savedRestore.focusedPlaceId && n.id === savedRestore.focusedPlaceId) ||
+              n.primaryMapId === savedRestore.focusedMapId,
+          );
+          setFocusIntent({
+            targetMapId: savedRestore.focusedMapId,
+            targetPlaceId: savedRestore.focusedPlaceId ?? restoredNode?.id ?? null,
+            labelDe: restoredNode?.label ?? externalNav?.worldLabel ?? 'Weltkarte',
+            requestedAtMs: Date.now(),
+            phase: 'arrived',
+          });
+        }
+        onRestoreWorldFocusConsumedRef.current?.();
+      }
     } else {
       rt.setWorldSceneGraph({ maps: [], sources: [] });
     }
-  }, [worldSceneGraph]);
+  }, [worldSceneGraph, restoreWorldFocus]);
 
   // Unified Draufsicht toggle (SWS-05 E2): preserve focus, yawRad, and span across 2D ↔ 3D switch!
   useEffect(() => {
@@ -977,6 +1182,19 @@ export function AtlasThreeWorkstation({
     const arrivalDir = pendingArrivalDirRef.current;
     pendingArrivalDirRef.current = null;
 
+    // Journey 4: when returning from single-map edit mode to the shared World Scene Graph,
+    // restore the exact saved world camera + focus target instead of resetting to world overview!
+    const savedRestore = restoreWorldFocusRef.current;
+    if (savedRestore && !isChildDocumentEditModeRef.current) {
+      setCameraMode(savedRestore.camera.projection);
+      rt.setFocusTargetMapId(savedRestore.focusedMapId);
+      rt.setWorldCameraState(savedRestore.camera, false, { preserveMinSpan: true });
+      if (worldSceneGraphActiveRef.current) {
+        onRestoreWorldFocusConsumedRef.current?.();
+      }
+      return;
+    }
+
     if (forcedTopDown) {
       setCameraMode('ortho-topdown');
       rt.setView({ mode: 'ortho-topdown', pitchRad: Math.PI / 2 }, false);
@@ -984,8 +1202,16 @@ export function AtlasThreeWorkstation({
       return;
     }
 
-    // Always frame interiors & fresh arrivals dead-center onto real contentBounds so nothing clips behind the top pill!
-    if (navRestoreView && navRestoreView.span < 900 && !arrivalDir && mapScale !== 'interior') {
+    // Always frame child single-document edit views cleanly onto their own local contentBounds
+    // (never inherit a tiny world-space span like 3.5 onto a 0..1000 local settlement doc!).
+    if (
+      !isChildDocumentEditModeRef.current &&
+      navRestoreView &&
+      navRestoreView.span >= 40 &&
+      navRestoreView.span < 900 &&
+      !arrivalDir &&
+      mapScale !== 'interior'
+    ) {
       const targetMode: AtlasThreeCameraMode =
         navRestoreView.mode === 'perspective' ? 'perspective' : 'diorama-oblique';
       setCameraMode(targetMode);
@@ -1064,7 +1290,12 @@ export function AtlasThreeWorkstation({
     const rt = runtimeRef.current;
     if (!rt) return;
     const cur = rt.getTargetView();
-    const nextSpan = clamp(cur.span * factor, 18, 2200);
+    const minSpan = worldSceneGraphActiveRef.current ? 0.05 : 18;
+    const nextSpan = clamp(cur.span * factor, minSpan, 2200);
+    if (worldSceneGraphActiveRef.current && factor > 1) {
+      rt.setFocusTargetMapId(null);
+      setFocusIntent(null);
+    }
     rt.setView({ span: nextSpan }, true);
   }, []);
 
@@ -1072,6 +1303,12 @@ export function AtlasThreeWorkstation({
     (zoomDelta: number, px: number, py: number) => {
       const rt = runtimeRef.current;
       if (!rt) return;
+      if (worldSceneGraphActiveRef.current) {
+        // Free user wheel zoom takes full control — clear any prior click-focus lock!
+        focusSeqRef.current += 1;
+        rt.setFocusTargetMapId(null);
+        setFocusIntent(null);
+      }
       const target = rt.zoomAtScreen(zoomDelta, px, py);
 
       // Phase 1–3 Continuous-LOD Multi-Map World Space:
@@ -1393,6 +1630,11 @@ export function AtlasThreeWorkstation({
       }
 
       if (drag.kind === 'pan') {
+        if (worldSceneGraphActiveRef.current && focusIntentRef.current) {
+          focusSeqRef.current += 1;
+          rt.setFocusTargetMapId(null);
+          setFocusIntent(null);
+        }
         const h = Math.max(1, canvas.clientHeight);
         const worldPerPx = (drag.span * 2) / h;
         const dx = (px - drag.startPx) * worldPerPx;
@@ -1703,8 +1945,23 @@ export function AtlasThreeWorkstation({
       if (!matches && !branch) return null;
       const isZoomActive = zoomLayerState.activePlaceId === node.id;
       const isZoomAncestor = !isZoomActive && zoomAncestorPlaceSet.has(node.id);
+      const isFocusRequested = Boolean(
+        focusIntent && focusIntent.phase === 'flying' && focusIntent.targetPlaceId === node.id,
+      );
       const active = isZoomActive || (!zoomActiveMapId && activePlaceId === node.id);
       const addSpec = NEXT_CHILD_KIND[node.kind];
+      const worldMapMeta =
+        worldSceneGraph && node.primaryMapId
+          ? worldSceneGraph.maps.find((m) => m.id === node.primaryMapId)
+          : undefined;
+      const isUnlocatedInWorld = Boolean(
+        worldSceneGraph &&
+          node.primaryMapId &&
+          worldMapMeta &&
+          (worldMapMeta.status === 'unlocated' ||
+            (worldMapMeta.parentAnchor === null &&
+              node.primaryMapId !== externalNav.worldPrimaryMapId)),
+      );
       return (
         <div key={node.id} className="space-y-0.5">
           {matches ? (
@@ -1712,31 +1969,27 @@ export function AtlasThreeWorkstation({
               <button
                 type="button"
                 data-atlas-nav-node={node.id}
+                data-atlas-nav-unlocated={isUnlocatedInWorld ? 'true' : undefined}
                 data-atlas-zoom-active={isZoomActive ? 'true' : undefined}
                 data-atlas-zoom-ancestor={isZoomAncestor ? 'true' : undefined}
                 aria-current={active ? 'location' : undefined}
                 className={`flex min-h-11 min-w-0 flex-1 items-center gap-2 rounded-md border px-2 text-left text-xs ${active
                   ? 'border-[#0E7490] bg-[#0E7490] text-white font-bold shadow-sm transition-none dark:border-primary dark:bg-primary dark:text-primary-foreground'
-                  : isZoomAncestor
-                    ? 'border-primary/45 bg-primary/10 text-foreground font-medium transition-colors hover:border-accent'
-                    : 'border-transparent text-foreground transition-colors hover:border-accent hover:bg-muted/70'
+                  : isFocusRequested
+                    ? 'border-accent bg-accent/15 text-foreground font-semibold transition-colors'
+                    : isZoomAncestor
+                      ? 'border-primary/45 bg-primary/10 text-foreground font-medium transition-colors hover:border-accent'
+                      : 'border-transparent text-foreground transition-colors hover:border-accent hover:bg-muted/70'
                   }`}
                 onClick={() =>
-                  triggerSmoothLevelTransition(
-                    'in',
-                    () => {
-                      onNavSelect?.({
-                        placeId: node.id,
-                        mapId: node.primaryMapId,
-                        worldRoot: false,
-                      });
-                    },
-                    {
-                      label: node.label,
-                      kind: node.kind,
-                      sub: node.sub,
-                    },
-                  )
+                  focusNodeInWorld({
+                    placeId: node.id,
+                    mapId: node.primaryMapId,
+                    labelDe: node.label,
+                    worldRoot: false,
+                    kind: node.kind,
+                    sub: node.sub,
+                  })
                 }
               >
                 <MapPin className="size-3.5 shrink-0" weight={active ? 'fill' : 'regular'} aria-hidden />
@@ -1746,14 +1999,26 @@ export function AtlasThreeWorkstation({
                     className={`block truncate text-[10px] ${active ? 'font-medium text-white dark:text-primary-foreground' : 'text-muted-foreground'
                       }`}
                   >
-                    {node.sub}
+                    {isUnlocatedInWorld ? `${node.sub} · Unverortet` : node.sub}
                   </span>
                 </span>
               </button>
+              {canEdit && node.primaryMapId ? (
+                <button
+                  type="button"
+                  data-atlas-edit-map={node.primaryMapId}
+                  className="flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-md border border-border text-muted-foreground transition-colors hover:border-accent hover:text-accent"
+                  title={`${node.label} bearbeiten`}
+                  aria-label={`${node.label} bearbeiten`}
+                  onClick={() => openMapForEditing(node.primaryMapId!, node.id)}
+                >
+                  <PencilSimple className="size-4" aria-hidden />
+                </button>
+              ) : null}
               {canEdit && onNavAdd && addSpec ? (
                 <button
                   type="button"
-                  className="flex min-h-9 min-w-9 shrink-0 items-center justify-center rounded-md border border-border text-muted-foreground hover:border-accent hover:text-accent"
+                  className="flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-md border border-border text-muted-foreground hover:border-accent hover:text-accent"
                   title={`${addSpec.label} unter ${node.label} anlegen`}
                   aria-label={`${addSpec.label} anlegen`}
                   onClick={() => onNavAdd({ uiKind: addSpec.uiKind, parentId: node.id })}
@@ -1960,25 +2225,21 @@ export function AtlasThreeWorkstation({
                     className={`flex items-center gap-1.5 whitespace-nowrap transition-colors ${tierClasses}`}
                     onClick={() => {
                       const sourcePin = mapPins.find((p) => p.id === pin.id);
+                      if (worldSceneGraph && worldSceneGraph.maps.length > 0 && targetMapId) {
+                        focusNodeInWorld({
+                          placeId: pin.id,
+                          mapId: targetMapId,
+                          labelDe: pin.label,
+                          worldRoot: false,
+                          kind: pin.kind,
+                          sub: navNode?.sub,
+                        });
+                        return;
+                      }
                       if (targetMapId) {
-                        triggerSmoothLevelTransition(
-                          'in',
-                          () => {
-                            onNavSelect?.({ placeId: pin.id, mapId: targetMapId, worldRoot: false });
-                          },
-                          {
-                            label: pin.label,
-                            kind: pin.kind,
-                            sub: navNode?.sub,
-                            targetX: sourcePin?.x,
-                            targetZ: sourcePin?.y,
-                          },
-                        );
-                      } else {
-                        if (sourcePin) {
-                          runtimeRef.current?.flyTo(sourcePin.x, sourcePin.y, Math.max(85, hudSpan * 0.52));
-                        }
-                        onNavSelect?.({ placeId: pin.id, mapId: null, worldRoot: false });
+                        openMapForEditing(targetMapId, pin.id);
+                      } else if (sourcePin) {
+                        runtimeRef.current?.flyTo(sourcePin.x, sourcePin.y, Math.max(85, hudSpan * 0.52));
                       }
                     }}
                   >
@@ -2006,7 +2267,7 @@ export function AtlasThreeWorkstation({
 
       {/* TOP-LEFT Floating Collapsible `Ebenen` Chip & Frosted-Glass Drawer (leaves bottom-left open for Vollansicht/Golden!) */}
       <div
-        className="pointer-events-none absolute left-3 top-3 z-[6] flex max-h-[calc(100%-5.25rem)] flex-col items-start gap-2"
+        className={`pointer-events-none absolute left-3 top-3 ${layersOpen ? 'z-[8] lg:z-[6]' : 'z-[6]'} flex max-h-[calc(100%-6rem)] flex-col items-start gap-2`}
         data-atlas-three-layers
       >
         <button
@@ -2070,6 +2331,40 @@ export function AtlasThreeWorkstation({
               ) : null}
             </div>
             <div className="min-h-0 flex-1 space-y-2 overflow-y-auto p-2">
+              {unlocatedFocusNotice ? (
+                <div
+                  role="status"
+                  data-atlas-unlocated-focus-notice
+                  className="space-y-2 rounded-lg border border-accent/60 bg-accent/10 p-2.5 text-xs text-foreground"
+                >
+                  <p className="leading-snug">{unlocatedFocusNotice.reasonDe}</p>
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    {canEdit && unlocatedFocusNotice.mapId ? (
+                      <button
+                        type="button"
+                        data-atlas-unlocated-open-edit
+                        className="inline-flex min-h-11 items-center gap-1.5 rounded-md bg-primary px-3 text-xs font-semibold text-primary-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+                        onClick={() =>
+                          openMapForEditing(
+                            unlocatedFocusNotice.mapId,
+                            unlocatedFocusNotice.placeId,
+                          )
+                        }
+                      >
+                        <PencilSimple className="size-3.5" aria-hidden />
+                        <span>Karte bearbeiten</span>
+                      </button>
+                    ) : null}
+                    <button
+                      type="button"
+                      className="inline-flex min-h-11 items-center rounded-md border border-border px-2.5 text-xs font-medium text-muted-foreground hover:border-accent hover:text-foreground"
+                      onClick={() => setUnlocatedFocusNotice(null)}
+                    >
+                      Schließen
+                    </button>
+                  </div>
+                </div>
+              ) : null}
               {externalNav ? (
                 <div className="space-y-1">
                   <button
@@ -2086,12 +2381,11 @@ export function AtlasThreeWorkstation({
                       : 'border-primary/45 bg-primary/10 text-foreground font-medium transition-colors hover:border-accent'
                       }`}
                     onClick={() =>
-                      triggerSmoothLevelTransition('out', () => {
-                        onNavSelect?.({
-                          placeId: null,
-                          mapId: externalNav.worldPrimaryMapId,
-                          worldRoot: true,
-                        });
+                      focusNodeInWorld({
+                        placeId: null,
+                        mapId: externalNav.worldPrimaryMapId,
+                        labelDe: externalNav.worldLabel,
+                        worldRoot: true,
                       })
                     }
                   >
@@ -2148,21 +2442,51 @@ export function AtlasThreeWorkstation({
         ) : null}
       </div>
 
-      {/* TOP-CENTER Minimal Floating Glass Pill (Original SagaTree placement — zero full-width bar!) */}
+      {/* TOP-CENTER Minimal Floating Glass Pill (single-row on desktop; drops cleanly below corner toggles on narrow phone!) */}
       <div
-        className="pointer-events-none absolute left-1/2 top-3 z-[6] flex max-w-[calc(100%-17rem)] -translate-x-1/2 flex-wrap items-center justify-center gap-1.5"
+        className="pointer-events-none absolute left-1/2 top-16 z-[6] flex max-w-[calc(100%-1.5rem)] -translate-x-1/2 items-center justify-center sm:top-3 sm:max-w-[calc(100%-15rem)]"
         data-atlas-workstation-topbar
       >
-        <div className="pointer-events-auto flex flex-wrap items-center gap-1.5 rounded-xl border border-border/90 bg-card/90 p-1 shadow-lg backdrop-blur-md">
-          {hasParentMap && onHierarchyBack ? (
+        <div className="pointer-events-auto flex max-w-full flex-wrap items-center justify-center gap-1 rounded-xl border border-border/90 bg-card/90 p-1 shadow-lg backdrop-blur-md lg:flex-nowrap">
+          {isChildDocumentEditMode && onReturnToWorld ? (
             <button
               type="button"
-              className="flex min-h-9 items-center gap-1 rounded-lg border border-border/70 px-2.5 text-xs font-semibold text-foreground hover:border-accent hover:text-accent"
+              data-atlas-return-world
+              className="flex min-h-11 items-center gap-1 whitespace-nowrap rounded-lg border border-primary/70 bg-primary/15 px-2.5 text-xs font-semibold text-foreground transition-colors hover:border-accent hover:bg-accent hover:text-accent-foreground"
+              title="Ohne Speichern zur Weltkarte zurückkehren und vorherige Kamera wiederherstellen"
+              onClick={onReturnToWorld}
+            >
+              <ArrowUUpLeft className="size-3.5 shrink-0" aria-hidden />
+              <span>Zurück zur Welt</span>
+            </button>
+          ) : hasParentMap && onHierarchyBack ? (
+            <button
+              type="button"
+              className="flex min-h-11 items-center gap-1 whitespace-nowrap rounded-lg border border-border/70 px-2 text-xs font-semibold text-foreground hover:border-accent hover:text-accent"
               title="Eine Ebene höher (oder einfach rauszoomen)"
               onClick={() => triggerSmoothLevelTransition('out', () => onHierarchyBack())}
             >
-              <ArrowUUpLeft className="size-3.5" aria-hidden />
+              <ArrowUUpLeft className="size-3.5 shrink-0" aria-hidden />
               <span>Hoch</span>
+            </button>
+          ) : null}
+
+          {!isChildDocumentEditMode &&
+          canEdit &&
+          onRequestEditMap &&
+          !zoomLayerState.isWorldRoot &&
+          zoomLayerState.activeMapId ? (
+            <button
+              type="button"
+              data-atlas-open-edit-focused
+              className="flex min-h-11 items-center gap-1 whitespace-nowrap rounded-lg border border-primary/70 bg-primary/15 px-2.5 text-xs font-semibold text-foreground transition-colors hover:border-accent hover:bg-accent hover:text-accent-foreground"
+              title={`„${zoomLayerState.activeLabelDe}“ als Einzelkarte zum Bearbeiten öffnen`}
+              onClick={() =>
+                openMapForEditing(zoomLayerState.activeMapId!, zoomLayerState.activePlaceId)
+              }
+            >
+              <PencilSimple className="size-3.5 shrink-0" aria-hidden />
+              <span>Bearbeiten</span>
             </button>
           ) : null}
 
@@ -2170,7 +2494,7 @@ export function AtlasThreeWorkstation({
 
           {!forcedTopDown ? (
             <>
-              <div className="h-5 w-px bg-border/80" aria-hidden />
+              <div className="hidden h-5 w-px bg-border/80 sm:block" aria-hidden />
 
               <div
                 className="flex items-center rounded-lg bg-background/60 p-0.5"
@@ -2189,7 +2513,7 @@ export function AtlasThreeWorkstation({
                     type="button"
                     data-atlas-camera-mode={m.id}
                     aria-pressed={cameraMode === m.id}
-                    className={`min-h-8 rounded-md px-2.5 text-xs font-semibold transition-colors ${cameraMode === m.id
+                    className={`min-h-11 whitespace-nowrap rounded-md px-2 text-xs font-semibold transition-colors ${cameraMode === m.id
                       ? 'bg-primary text-primary-foreground'
                       : 'text-muted-foreground hover:text-accent'
                       }`}
@@ -2667,7 +2991,7 @@ export function AtlasThreeWorkstation({
       >
         <button
           type="button"
-          className="min-h-9 whitespace-nowrap border-r border-border/80 pr-2.5 font-mono text-[11px] tabular-nums text-muted-foreground transition-colors hover:text-foreground"
+          className="hidden min-h-9 items-center whitespace-nowrap border-r border-border/80 pr-2.5 font-mono text-[11px] tabular-nums text-muted-foreground transition-colors hover:text-foreground sm:inline-flex"
           title={`Kamera zentrieren · ${formatAtlasSpanLabelDe(hudSpan, mapScale)}`}
           onClick={() => runtimeRef.current?.resetCamera()}
         >
@@ -2676,7 +3000,7 @@ export function AtlasThreeWorkstation({
 
         <button
           type="button"
-          className="flex min-h-9 min-w-8 items-center justify-center rounded-md text-sm font-bold text-foreground transition-colors hover:bg-accent/20 hover:text-accent"
+          className="flex min-h-11 min-w-11 items-center justify-center rounded-md text-sm font-bold text-foreground transition-colors hover:bg-accent/20 hover:text-accent"
           aria-label="Herauszoomen"
           onClick={() => zoomByFactor(1.35)}
         >
@@ -2685,7 +3009,7 @@ export function AtlasThreeWorkstation({
 
         <button
           type="button"
-          className="min-h-9 min-w-[3.4rem] rounded-md px-1.5 font-mono text-xs font-bold text-foreground transition-colors hover:bg-muted/60"
+          className="min-h-11 min-w-[3.4rem] rounded-md px-1.5 font-mono text-xs font-bold text-foreground transition-colors hover:bg-muted/60"
           title={formatAtlasSpanLabelDe(hudSpan, mapScale)}
           onClick={() => runtimeRef.current?.resetCamera()}
         >
@@ -2694,7 +3018,7 @@ export function AtlasThreeWorkstation({
 
         <button
           type="button"
-          className="flex min-h-9 min-w-8 items-center justify-center rounded-md text-sm font-bold text-foreground transition-colors hover:bg-accent/20 hover:text-accent"
+          className="flex min-h-11 min-w-11 items-center justify-center rounded-md text-sm font-bold text-foreground transition-colors hover:bg-accent/20 hover:text-accent"
           aria-label="Hineinzoomen"
           onClick={() => zoomByFactor(0.74)}
         >

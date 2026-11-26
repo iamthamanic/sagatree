@@ -934,5 +934,12 @@ export {
   type AtlasZoomLayerState,
 } from './atlas-zoom-layer-state';
 
+export {
+  recommendedWorldCameraSpan,
+  resolveWorldFocusTarget,
+  type AtlasWorldFocusIntent,
+  type AtlasWorldFocusTarget,
+} from './atlas-world-focus';
+
 
 
