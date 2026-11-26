@@ -297,17 +297,17 @@ export function WorldAtlasWorkbench({
           : undefined;
       const childFrame = navItem
         ? {
-            status: 'ready' as const,
-            parentAnchor: {
-              parentMapId: parentId,
-              centerX: navItem.x,
-              centerY: navItem.y,
-              extentX: Math.max(1e-6, navItem.focusRect.width / 2),
-              extentY: Math.max(1e-6, navItem.focusRect.height / 2),
-              rotationRad: 0,
-              metersPerUnit: null,
-            },
-          }
+          status: 'ready' as const,
+          parentAnchor: {
+            parentMapId: parentId,
+            centerX: navItem.x,
+            centerY: navItem.y,
+            extentX: Math.max(1e-6, navItem.focusRect.width / 2),
+            extentY: Math.max(1e-6, navItem.focusRect.height / 2),
+            rotationRad: 0,
+            metersPerUnit: null,
+          },
+        }
         : null;
       const result = enterChildMap({
         state: base,
@@ -403,11 +403,11 @@ export function WorldAtlasWorkbench({
   const protoExact = showUnified && editor.canvasDoc.demoSeed === false;
   const goldenRootEligible = Boolean(
     editor.map &&
-      isDornhainGoldenRootMap({
-        parentMapId: editor.map.parentMapId,
-        kind: editor.map.kind,
-        generatorMeta: editor.map.generatorMeta,
-      }),
+    isDornhainGoldenRootMap({
+      parentMapId: editor.map.parentMapId,
+      kind: editor.map.kind,
+      generatorMeta: editor.map.generatorMeta,
+    }),
   );
   const showPlayerPreviewToggle = canEdit && sagaReady;
   const activeMapFrame = editor.map
@@ -421,10 +421,10 @@ export function WorldAtlasWorkbench({
     () =>
       editor.map && editor.map.parentMapId === null
         ? editor.summaries
-            .filter((s) => s.id !== editor.map!.id)
-            .map((s) => `${s.id}:${s.revision}`)
-            .sort()
-            .join('|')
+          .filter((s) => s.id !== editor.map!.id)
+          .map((s) => `${s.id}:${s.revision}`)
+          .sort()
+          .join('|')
         : '',
     [editor.map, editor.summaries],
   );
@@ -648,6 +648,11 @@ export function WorldAtlasWorkbench({
           });
 
       const updatedChildMap = new Map<string, WorldAtlasMapVm>();
+      const prepared: Array<{
+        readonly mapId: string;
+        readonly vm: WorldAtlasMapVm;
+        readonly nextMeta: Record<string, unknown>;
+      }> = [];
       for (const m of mutations) {
         const vm = vmById.get(m.mapId);
         if (!vm) continue;
@@ -670,24 +675,38 @@ export function WorldAtlasWorkbench({
         if (m.mapId !== rootMap.id) {
           updatedChildMap.set(m.mapId, localUpdated);
         }
-        if (editingAllowed && isHostLibraryEnabled()) {
+        prepared.push({ mapId: m.mapId, vm, nextMeta });
+      }
+
+      // Sync ref before async HTTP persistence so rapid back-to-back Undo/Redo captures the latest doc/anchor
+      if (updatedChildMap.size > 0) {
+        const optimisticChildren = childMapVmsRef.current.map(
+          (vm) => updatedChildMap.get(vm.id) ?? vm,
+        );
+        childMapVmsRef.current = optimisticChildren;
+        setChildMapVms(optimisticChildren);
+      }
+
+      if (editingAllowed && isHostLibraryEnabled()) {
+        for (const item of prepared) {
           try {
-            const saved = await editor.persistMapMeta(vm, nextMeta);
-            if (m.mapId === rootMap.id) {
+            const saved = await editor.persistMapMeta(item.vm, item.nextMeta);
+            if (item.mapId === rootMap.id) {
               editorMapRef.current = saved;
             } else {
-              updatedChildMap.set(m.mapId, saved);
+              updatedChildMap.set(item.mapId, saved);
             }
           } catch (err) {
             console.warn('[atlas] SCM multi-map upsert:', err);
           }
         }
-      }
-
-      if (updatedChildMap.size > 0) {
-        const nextChildren = childMapVmsRef.current.map((vm) => updatedChildMap.get(vm.id) ?? vm);
-        childMapVmsRef.current = nextChildren;
-        setChildMapVms(nextChildren);
+        if (updatedChildMap.size > 0) {
+          const nextChildren = childMapVmsRef.current.map(
+            (vm) => updatedChildMap.get(vm.id) ?? vm,
+          );
+          childMapVmsRef.current = nextChildren;
+          setChildMapVms(nextChildren);
+        }
       }
     },
     [editingAllowed, editor],
@@ -1007,11 +1026,10 @@ export function WorldAtlasWorkbench({
         <li key={item.id}>
           <button
             type="button"
-            className={`flex min-h-11 w-full items-center rounded-md px-3 text-left text-sm ${
-              item.id === editor.activeMapId
-                ? 'bg-primary text-primary-foreground'
-                : 'hover:bg-muted'
-            }`}
+            className={`flex min-h-11 w-full items-center rounded-md px-3 text-left text-sm ${item.id === editor.activeMapId
+              ? 'bg-primary text-primary-foreground'
+              : 'hover:bg-muted'
+              }`}
             onClick={() => {
               const crumb = editor.breadcrumb.some((c) => c.id === item.id);
               const isDirect =
@@ -1043,10 +1061,10 @@ export function WorldAtlasWorkbench({
     editor.persistStatus !== 'conflict';
   const protoActions =
     showUnified &&
-    protoExact &&
-    !atlasBooting &&
-    !onBack &&
-    (showPlayerPreviewToggle || (editingAllowed && goldenRootEligible) || showProtoSave) ? (
+      protoExact &&
+      !atlasBooting &&
+      !onBack &&
+      (showPlayerPreviewToggle || (editingAllowed && goldenRootEligible) || showProtoSave) ? (
       <>
         {showPlayerPreviewToggle ? (
           <Button
@@ -1206,9 +1224,8 @@ export function WorldAtlasWorkbench({
   return (
     <div
       ref={workbenchRef}
-      className={`@container/main relative flex h-full min-h-0 w-full min-w-0 flex-col pt-[max(0px,env(safe-area-inset-top))] ${
-        layoutExact ? 'gap-0' : 'gap-3'
-      }`}
+      className={`@container/main relative flex h-full min-h-0 w-full min-w-0 flex-col pt-[max(0px,env(safe-area-inset-top))] ${layoutExact ? 'gap-0' : 'gap-3'
+        }`}
       data-world-atlas-workbench
       data-atlas-surface-class="workstation"
       data-atlas-content-band={contentBand}
@@ -1232,9 +1249,8 @@ export function WorldAtlasWorkbench({
       {/* Skip title/rail chrome while booting — avoids <1s menu flash before 3D map. */}
       {(!protoExact && !atlasBooting) || onBack ? (
         <header
-          className={`flex flex-wrap items-center gap-2 px-[max(0px,env(safe-area-inset-left))] pr-[max(0px,env(safe-area-inset-right))] ${
-            protoExact ? 'pb-2' : 'border-b border-border pb-3'
-          }`}
+          className={`flex flex-wrap items-center gap-2 px-[max(0px,env(safe-area-inset-left))] pr-[max(0px,env(safe-area-inset-right))] ${protoExact ? 'pb-2' : 'border-b border-border pb-3'
+            }`}
           data-atlas-prototype-bar
         >
           {onBack ? (
@@ -1340,11 +1356,11 @@ export function WorldAtlasWorkbench({
             </Button>
           ) : null}
           {editingAllowed &&
-          editor.map &&
-          showUnified &&
-          protoExact &&
-          editor.dirtyCanvas &&
-          editor.persistStatus !== 'conflict' ? (
+            editor.map &&
+            showUnified &&
+            protoExact &&
+            editor.dirtyCanvas &&
+            editor.persistStatus !== 'conflict' ? (
             <Button
               type="button"
               className="min-h-11"
@@ -1460,7 +1476,7 @@ export function WorldAtlasWorkbench({
         >
           <p className="text-sm text-destructive">{editor.error}</p>
           {!isHostLibraryEnabled() &&
-          (editor.error === API_AUTH_REQUIRED_DE || editor.error.includes('API-Anmeldung')) ? (
+            (editor.error === API_AUTH_REQUIRED_DE || editor.error.includes('API-Anmeldung')) ? (
             <Button
               type="button"
               variant="outline"
@@ -1547,9 +1563,8 @@ export function WorldAtlasWorkbench({
         ) : null}
 
         <section
-          className={`relative min-w-0 overflow-hidden ${
-            layoutExact ? 'min-h-0 h-full flex-1' : 'min-h-[24rem]'
-          }`}
+          className={`relative min-w-0 overflow-hidden ${layoutExact ? 'min-h-0 h-full flex-1' : 'min-h-[24rem]'
+            }`}
           data-atlas-proto-exact={protoExact ? 'true' : undefined}
         >
           {atlasBooting ? (
@@ -1607,31 +1622,31 @@ export function WorldAtlasWorkbench({
               onLocateCancel={
                 locateSession
                   ? () => {
-                      const ret = locateSession.returnMapId;
-                      setLocateSession(null);
-                      editor.setActiveMapId(ret);
-                    }
+                    const ret = locateSession.returnMapId;
+                    setLocateSession(null);
+                    editor.setActiveMapId(ret);
+                  }
                   : undefined
               }
               onLocateCommit={
                 locateSession
                   ? (rect) => {
-                      const session = locateSession;
-                      void (async () => {
-                        const result = await editor.locateChildOnParent({
-                          childMapId: session.childMapId,
-                          childPlaceId: session.childPlaceId,
-                          minX: rect.minX,
-                          minY: rect.minY,
-                          maxX: rect.maxX,
-                          maxY: rect.maxY,
-                        });
-                        if (!result.ok) return;
-                        setLocateSession(null);
-                        setPlaceNavTick((t) => t + 1);
-                        editor.setActiveMapId(session.returnMapId);
-                      })();
-                    }
+                    const session = locateSession;
+                    void (async () => {
+                      const result = await editor.locateChildOnParent({
+                        childMapId: session.childMapId,
+                        childPlaceId: session.childPlaceId,
+                        minX: rect.minX,
+                        minY: rect.minY,
+                        maxX: rect.maxX,
+                        maxY: rect.maxY,
+                      });
+                      if (!result.ok) return;
+                      setLocateSession(null);
+                      setPlaceNavTick((t) => t + 1);
+                      editor.setActiveMapId(session.returnMapId);
+                    })();
+                  }
                   : undefined
               }
               placeNav={placeNav}
@@ -1664,7 +1679,7 @@ export function WorldAtlasWorkbench({
               }
               navPendingFocus={
                 hierarchyNav?.pendingFocus &&
-                hierarchyNav.pendingFocus.mapId === editor.activeMapId
+                  hierarchyNav.pendingFocus.mapId === editor.activeMapId
                   ? hierarchyNav.pendingFocus
                   : null
               }
@@ -1694,86 +1709,86 @@ export function WorldAtlasWorkbench({
               onWebglNavRename={
                 editingAllowed
                   ? async ({ placeId, label }) => {
-                      try {
-                        setWebglActionError(null);
-                        await worldPlaceService.renameNode({
-                          worldProfileId,
-                          placeId,
-                          name: label,
-                        });
-                        setPlaceNavTick((t) => t + 1);
-                      } catch (err) {
-                        console.error('[atlas] rename from WebGL nav:', err);
-                        setWebglActionError(
-                          err instanceof Error ? err.message : 'Umbenennen fehlgeschlagen.',
-                        );
-                      }
+                    try {
+                      setWebglActionError(null);
+                      await worldPlaceService.renameNode({
+                        worldProfileId,
+                        placeId,
+                        name: label,
+                      });
+                      setPlaceNavTick((t) => t + 1);
+                    } catch (err) {
+                      console.error('[atlas] rename from WebGL nav:', err);
+                      setWebglActionError(
+                        err instanceof Error ? err.message : 'Umbenennen fehlgeschlagen.',
+                      );
                     }
+                  }
                   : undefined
               }
               onWebglNavAdd={
                 editingAllowed
                   ? ({ uiKind, parentId }) => {
-                      const childKind = worldNodeKindFromWebglNavUiKind(uiKind);
-                      if (!childKind) {
-                        setWebglActionError('Dieser Typ kann hier nicht angelegt werden.');
-                        return;
-                      }
-                      const worldRootId =
-                        webglNavTree?.worldId ?? `world:${worldProfileId.trim()}`;
-                      let parentPlaceId: string | null = null;
-                      let parentKind: WorldNodeKind | null = null;
-                      if (parentId && parentId !== worldRootId && parentId !== 'atlas') {
-                        parentPlaceId = parentId;
-                        parentKind =
-                          tryNodeKindFromPlaceKind(
-                            worldPlaces.find((p) => p.id === parentId)?.kind ?? '',
-                          ) ?? null;
-                      }
-                      setWebglActionError(null);
-                      setWebglCreateRequest({ childKind, parentPlaceId, parentKind });
+                    const childKind = worldNodeKindFromWebglNavUiKind(uiKind);
+                    if (!childKind) {
+                      setWebglActionError('Dieser Typ kann hier nicht angelegt werden.');
+                      return;
                     }
+                    const worldRootId =
+                      webglNavTree?.worldId ?? `world:${worldProfileId.trim()}`;
+                    let parentPlaceId: string | null = null;
+                    let parentKind: WorldNodeKind | null = null;
+                    if (parentId && parentId !== worldRootId && parentId !== 'atlas') {
+                      parentPlaceId = parentId;
+                      parentKind =
+                        tryNodeKindFromPlaceKind(
+                          worldPlaces.find((p) => p.id === parentId)?.kind ?? '',
+                        ) ?? null;
+                    }
+                    setWebglActionError(null);
+                    setWebglCreateRequest({ childKind, parentPlaceId, parentKind });
+                  }
                   : undefined
               }
               onWebglNavDuplicate={
                 editingAllowed
                   ? ({ placeId }) => {
-                      setWebglActionError(null);
-                      void worldPlaceService
-                        .duplicateNode({ worldProfileId, placeId, deep: false })
-                        .then((result) => {
-                          setPlaceNavTick((t) => t + 1);
-                          const newPlaceId = String(result.targetPlaceId ?? result.placeId ?? '');
-                          const newMapId =
-                            result.targetMapId == null && result.primaryMapId == null
-                              ? null
-                              : String(result.targetMapId ?? result.primaryMapId);
-                          if (newPlaceId) setActivePlaceId(newPlaceId);
-                          if (newMapId) editor.setActiveMapId(newMapId);
-                        })
-                        .catch((err) => {
-                          console.error('[atlas] duplicate from WebGL nav:', err);
-                          setWebglActionError(
-                            err instanceof Error ? err.message : 'Duplizieren fehlgeschlagen.',
-                          );
-                        });
-                    }
+                    setWebglActionError(null);
+                    void worldPlaceService
+                      .duplicateNode({ worldProfileId, placeId, deep: false })
+                      .then((result) => {
+                        setPlaceNavTick((t) => t + 1);
+                        const newPlaceId = String(result.targetPlaceId ?? result.placeId ?? '');
+                        const newMapId =
+                          result.targetMapId == null && result.primaryMapId == null
+                            ? null
+                            : String(result.targetMapId ?? result.primaryMapId);
+                        if (newPlaceId) setActivePlaceId(newPlaceId);
+                        if (newMapId) editor.setActiveMapId(newMapId);
+                      })
+                      .catch((err) => {
+                        console.error('[atlas] duplicate from WebGL nav:', err);
+                        setWebglActionError(
+                          err instanceof Error ? err.message : 'Duplizieren fehlgeschlagen.',
+                        );
+                      });
+                  }
                   : undefined
               }
               onWebglNavArchive={
                 editingAllowed
                   ? ({ placeId }) => {
-                      setWebglActionError(null);
-                      setWebglArchivePlaceId(placeId);
-                    }
+                    setWebglActionError(null);
+                    setWebglArchivePlaceId(placeId);
+                  }
                   : undefined
               }
               onWebglNavReparent={
                 editingAllowed
                   ? ({ placeId }) => {
-                      setWebglActionError(null);
-                      setWebglReparentPlaceId(placeId);
-                    }
+                    setWebglActionError(null);
+                    setWebglReparentPlaceId(placeId);
+                  }
                   : undefined
               }
               activeNodeKind={activeNodeKind}
@@ -1783,142 +1798,137 @@ export function WorldAtlasWorkbench({
               onSurfaceModeChange={setAtlasSurfaceMode}
               surfaceActions={atlasSurfaceMode === '2d' ? protoActions : null}
               canvasLeftRail={
-                  <div
-                    className="absolute left-3 top-3 z-[2] flex max-h-[min(75%,32rem)] flex-col gap-1 overflow-hidden rounded-lg border border-border bg-card/95 p-1 shadow"
-                    data-unified-chrome
-                    data-atlas-maps-rail
-                    data-atlas-maps-expanded={mapsRailExpanded ? 'true' : 'false'}
-                    role="navigation"
-                    aria-label={placeNav.length > 0 ? 'Weltstruktur' : 'Karten'}
+                <div
+                  className="absolute left-3 top-3 z-[2] flex max-h-[min(75%,32rem)] flex-col gap-1 overflow-hidden rounded-lg border border-border bg-card/95 p-1 shadow"
+                  data-unified-chrome
+                  data-atlas-maps-rail
+                  data-atlas-maps-expanded={mapsRailExpanded ? 'true' : 'false'}
+                  role="navigation"
+                  aria-label={placeNav.length > 0 ? 'Weltstruktur' : 'Karten'}
+                >
+                  <button
+                    type="button"
+                    className="flex min-h-11 min-w-11 shrink-0 flex-col items-center justify-center gap-0.5 rounded-md hover:bg-muted"
+                    aria-expanded={mapsRailExpanded}
+                    aria-controls="atlas-maps-rail-list"
+                    data-atlas-maps-toggle
+                    title={mapsRailExpanded ? 'Weltstruktur einklappen' : 'Weltstruktur ausklappen'}
+                    onClick={() => setMapsRailExpanded((v) => !v)}
                   >
-                    <button
-                      type="button"
-                      className="flex min-h-11 min-w-11 shrink-0 flex-col items-center justify-center gap-0.5 rounded-md hover:bg-muted"
-                      aria-expanded={mapsRailExpanded}
-                      aria-controls="atlas-maps-rail-list"
-                      data-atlas-maps-toggle
-                      title={mapsRailExpanded ? 'Weltstruktur einklappen' : 'Weltstruktur ausklappen'}
-                      onClick={() => setMapsRailExpanded((v) => !v)}
-                    >
-                      <MapIcon className="size-4" aria-hidden />
-                      <CaretDown
-                        className={`size-3.5 text-muted-foreground transition-transform duration-300 ease-in-out motion-reduce:transition-none ${
-                          mapsRailExpanded ? 'rotate-180' : 'rotate-0'
+                    <MapIcon className="size-4" aria-hidden />
+                    <CaretDown
+                      className={`size-3.5 text-muted-foreground transition-transform duration-300 ease-in-out motion-reduce:transition-none ${mapsRailExpanded ? 'rotate-180' : 'rotate-0'
                         }`}
-                        aria-hidden
-                      />
-                      <span className="sr-only">
-                        {mapsRailExpanded ? 'Weltstruktur einklappen' : 'Weltstruktur ausklappen'}
-                      </span>
-                    </button>
-                    <div
-                      id="atlas-maps-rail-list"
-                      className={`grid transition-[grid-template-rows,opacity] duration-300 ease-in-out motion-reduce:transition-none ${
-                        mapsRailExpanded
-                          ? 'grid-rows-[1fr] opacity-100'
-                          : 'pointer-events-none grid-rows-[0fr] opacity-0'
+                      aria-hidden
+                    />
+                    <span className="sr-only">
+                      {mapsRailExpanded ? 'Weltstruktur einklappen' : 'Weltstruktur ausklappen'}
+                    </span>
+                  </button>
+                  <div
+                    id="atlas-maps-rail-list"
+                    className={`grid transition-[grid-template-rows,opacity] duration-300 ease-in-out motion-reduce:transition-none ${mapsRailExpanded
+                      ? 'grid-rows-[1fr] opacity-100'
+                      : 'pointer-events-none grid-rows-[0fr] opacity-0'
                       }`}
-                    >
-                      <div className="min-h-0 overflow-hidden">
-                        <div
-                          className={`flex w-[11rem] flex-col gap-1 border-t border-border pt-1 transition-transform duration-300 ease-in-out motion-reduce:transition-none ${
-                            mapsRailExpanded ? 'translate-y-0' : '-translate-y-1'
+                  >
+                    <div className="min-h-0 overflow-hidden">
+                      <div
+                        className={`flex w-[11rem] flex-col gap-1 border-t border-border pt-1 transition-transform duration-300 ease-in-out motion-reduce:transition-none ${mapsRailExpanded ? 'translate-y-0' : '-translate-y-1'
                           }`}
+                      >
+                        <p className="px-2 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+                          {placeNav.length > 0 ? 'Weltstruktur' : 'Karten'}
+                        </p>
+                        <ul
+                          className="max-h-[min(60%,24rem)] space-y-0.5 overflow-auto"
+                          data-world-atlas-hierarchy
+                          data-atlas-weltstruktur={placeNav.length > 0 ? 'true' : 'false'}
                         >
-                          <p className="px-2 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
-                            {placeNav.length > 0 ? 'Weltstruktur' : 'Karten'}
-                          </p>
-                          <ul
-                            className="max-h-[min(60%,24rem)] space-y-0.5 overflow-auto"
-                            data-world-atlas-hierarchy
-                            data-atlas-weltstruktur={placeNav.length > 0 ? 'true' : 'false'}
-                          >
-                            {placeNav.length > 0
-                              ? placeNav.map((item) => (
-                                  <li key={item.placeId}>
-                                    <button
-                                      type="button"
-                                      tabIndex={mapsRailExpanded ? 0 : -1}
-                                      className={`flex min-h-11 w-full items-center rounded-md px-2 text-left text-xs font-semibold ${
-                                        item.mapId && item.mapId === editor.activeMapId
-                                          ? 'bg-primary text-primary-foreground'
-                                          : 'hover:bg-muted'
-                                      }`}
-                                      data-atlas-place-nav={item.placeId}
-                                      onClick={() => {
-                                        if (item.mapId) {
-                                          const crumb = editor.breadcrumb.some(
-                                            (c) => c.id === item.mapId,
-                                          );
-                                          const summary = editor.summaries.find(
-                                            (s) => s.id === item.mapId,
-                                          );
-                                          const isDirect =
-                                            !!editor.activeMapId &&
-                                            summary?.parentMapId === editor.activeMapId;
-                                          openMapWithHierarchy(
-                                            item.mapId,
-                                            crumb ? 'ancestor' : isDirect ? 'child' : 'raw',
-                                          );
-                                          setMapsRailExpanded(false);
-                                        }
-                                      }}
-                                    >
-                                      <span className="truncate">{item.name}</span>
-                                      {!item.located ? (
-                                        <span className="ml-1 shrink-0 text-[10px] font-normal opacity-80">
-                                          unverortet
-                                        </span>
-                                      ) : null}
-                                    </button>
-                                  </li>
-                                ))
-                              : editor.summaries.map((item) => (
-                                  <li key={item.id}>
-                                    <button
-                                      type="button"
-                                      tabIndex={mapsRailExpanded ? 0 : -1}
-                                      className={`flex min-h-11 w-full items-center rounded-md px-2 text-left text-xs font-semibold ${
-                                        item.id === editor.activeMapId
-                                          ? 'bg-primary text-primary-foreground'
-                                          : 'hover:bg-muted'
-                                      }`}
-                                      onClick={() => {
-                                        const crumb = editor.breadcrumb.some((c) => c.id === item.id);
-                                        const isDirect =
-                                          !!editor.activeMapId &&
-                                          item.parentMapId === editor.activeMapId;
-                                        openMapWithHierarchy(
-                                          item.id,
-                                          crumb ? 'ancestor' : isDirect ? 'child' : 'raw',
-                                        );
-                                        setMapsRailExpanded(false);
-                                      }}
-                                    >
-                                      <span className="truncate">{item.title}</span>
-                                    </button>
-                                  </li>
-                                ))}
-                            {placeNav.length === 0 && editor.summaries.length === 0 ? (
-                              <li className="px-2 py-2 text-xs text-muted-foreground">Keine Karte.</li>
-                            ) : null}
-                          </ul>
-                        </div>
+                          {placeNav.length > 0
+                            ? placeNav.map((item) => (
+                              <li key={item.placeId}>
+                                <button
+                                  type="button"
+                                  tabIndex={mapsRailExpanded ? 0 : -1}
+                                  className={`flex min-h-11 w-full items-center rounded-md px-2 text-left text-xs font-semibold ${item.mapId && item.mapId === editor.activeMapId
+                                    ? 'bg-primary text-primary-foreground'
+                                    : 'hover:bg-muted'
+                                    }`}
+                                  data-atlas-place-nav={item.placeId}
+                                  onClick={() => {
+                                    if (item.mapId) {
+                                      const crumb = editor.breadcrumb.some(
+                                        (c) => c.id === item.mapId,
+                                      );
+                                      const summary = editor.summaries.find(
+                                        (s) => s.id === item.mapId,
+                                      );
+                                      const isDirect =
+                                        !!editor.activeMapId &&
+                                        summary?.parentMapId === editor.activeMapId;
+                                      openMapWithHierarchy(
+                                        item.mapId,
+                                        crumb ? 'ancestor' : isDirect ? 'child' : 'raw',
+                                      );
+                                      setMapsRailExpanded(false);
+                                    }
+                                  }}
+                                >
+                                  <span className="truncate">{item.name}</span>
+                                  {!item.located ? (
+                                    <span className="ml-1 shrink-0 text-[10px] font-normal opacity-80">
+                                      unverortet
+                                    </span>
+                                  ) : null}
+                                </button>
+                              </li>
+                            ))
+                            : editor.summaries.map((item) => (
+                              <li key={item.id}>
+                                <button
+                                  type="button"
+                                  tabIndex={mapsRailExpanded ? 0 : -1}
+                                  className={`flex min-h-11 w-full items-center rounded-md px-2 text-left text-xs font-semibold ${item.id === editor.activeMapId
+                                    ? 'bg-primary text-primary-foreground'
+                                    : 'hover:bg-muted'
+                                    }`}
+                                  onClick={() => {
+                                    const crumb = editor.breadcrumb.some((c) => c.id === item.id);
+                                    const isDirect =
+                                      !!editor.activeMapId &&
+                                      item.parentMapId === editor.activeMapId;
+                                    openMapWithHierarchy(
+                                      item.id,
+                                      crumb ? 'ancestor' : isDirect ? 'child' : 'raw',
+                                    );
+                                    setMapsRailExpanded(false);
+                                  }}
+                                >
+                                  <span className="truncate">{item.title}</span>
+                                </button>
+                              </li>
+                            ))}
+                          {placeNav.length === 0 && editor.summaries.length === 0 ? (
+                            <li className="px-2 py-2 text-xs text-muted-foreground">Keine Karte.</li>
+                          ) : null}
+                        </ul>
                       </div>
                     </div>
                   </div>
+                </div>
               }
               onCreatePlace={
                 editingAllowed
                   ? async (input) => {
-                      await handleCreatePlaceFromAtlas({
-                        name: input.name,
-                        placeKind: input.placeKind,
-                        seedKey: input.seedKey,
-                        x: input.x,
-                        y: input.y,
-                      });
-                    }
+                    await handleCreatePlaceFromAtlas({
+                      name: input.name,
+                      placeKind: input.placeKind,
+                      seedKey: input.seedKey,
+                      x: input.x,
+                      y: input.y,
+                    });
+                  }
                   : undefined
               }
             />
@@ -1930,13 +1940,12 @@ export function WorldAtlasWorkbench({
         </section>
 
         <aside
-          className={`min-h-0 space-y-4 overflow-auto rounded-lg border border-border p-3 ${
-            protoExact
-              ? 'hidden'
-              : showUnified
-                ? 'hidden @[64rem]:block'
-                : 'hidden @[48rem]:block'
-          }`}
+          className={`min-h-0 space-y-4 overflow-auto rounded-lg border border-border p-3 ${protoExact
+            ? 'hidden'
+            : showUnified
+              ? 'hidden @[64rem]:block'
+              : 'hidden @[48rem]:block'
+            }`}
         >
           {!showUnified ? (
             <>

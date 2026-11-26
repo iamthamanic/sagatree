@@ -113,7 +113,7 @@ export function SpatialOperationConfirmDialog({
                 Freiland-Strukturen (umgeleitet/gekappt):
               </p>
               <p className="text-muted-foreground">
-                {`${plan.reroutedFlowingIds.length} Freiland-${plan.reroutedFlowingIds.length === 1 ? 'Struktur (Fluss/Straße) wird' : 'Strukturen (Fluss/Straße) werden'} entlang der neuen Grenze umgeleitet/gekappt (bleibt aktiv).`}
+                {`${plan.reroutedFlowingIds.length} Freiland-${plan.reroutedFlowingIds.length === 1 ? 'Struktur (Fluss/Straße) wird entlang der neuen Grenze umgeleitet/gekappt (bleibt aktiv).' : 'Strukturen (Fluss/Straße) werden entlang der neuen Grenze umgeleitet/gekappt (bleiben aktiv).'}`}
               </p>
             </div>
           ) : null}

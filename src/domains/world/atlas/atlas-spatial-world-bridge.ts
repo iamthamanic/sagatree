@@ -59,6 +59,26 @@ function round3(n: number): number {
   return Math.round(n * 1000) / 1000;
 }
 
+function round6(n: number): number {
+  return Math.round(n * 1_000_000) / 1_000_000;
+}
+
+function mapDepthInNodes(
+  mapNodes: Readonly<Record<string, AtlasWorldSpaceNode>>,
+  mapId: string,
+): number {
+  let depth = 0;
+  let cur = mapNodes[mapId];
+  const seen = new Set<string>();
+  while (cur?.parentAnchor) {
+    if (seen.has(cur.id)) break;
+    seen.add(cur.id);
+    depth += 1;
+    cur = mapNodes[cur.parentAnchor.parentMapId];
+  }
+  return depth;
+}
+
 function projectLocalRectToWorldBounds(
   mapNodes: Readonly<Record<string, AtlasWorldSpaceNode>>,
   mapId: string,
@@ -278,6 +298,9 @@ export function projectSpatialOperationToMapUpdates(input: {
   const { world, plan, docsByMapId, mapNodes } = input;
   const docCopies = new Map<string, UnifiedCanvasDoc>();
   const anchorUpdates = new Map<string, ParentSpatialAnchor>();
+  // Mutable working copy updated top-down so child map frames & objects inside a grown
+  // parent project into the parent's NEW coordinate frame (never the stale pre-grow frame).
+  const effectiveMapNodes: Record<string, AtlasWorldSpaceNode> = { ...mapNodes };
 
   const getDoc = (mapId: string): UnifiedCanvasDoc | null => {
     const cached = docCopies.get(mapId);
@@ -288,44 +311,64 @@ export function projectSpatialOperationToMapUpdates(input: {
     return base;
   };
 
-  for (const ch of plan.changes) {
+  // Pass 1 (Top-Down): Update all `__map_frame__` ParentSpatialAnchors from shallowest
+  // ancestor to deepest child so every descendant projects against its parent's updated anchor.
+  const frameChanges = plan.changes
+    .filter((ch) => world.entities[ch.entityId]?.featureId === '__map_frame__')
+    .sort((a, b) => mapDepthInNodes(mapNodes, a.mapId) - mapDepthInNodes(mapNodes, b.mapId));
+
+  for (const ch of frameChanges) {
     const entity = world.entities[ch.entityId];
     if (!entity) continue;
-
-    // Map frame growth → recompute ParentSpatialAnchor in parent's local coordinates (SWS-01)
-    if (entity.featureId === '__map_frame__') {
-      const node = mapNodes[entity.mapId];
-      if (node?.parentAnchor) {
-        const pMin = worldToLocal(mapNodes, node.parentAnchor.parentMapId, {
-          x: entity.boundsWorld.minX,
-          y: entity.boundsWorld.minY,
-        });
-        const pMax = worldToLocal(mapNodes, node.parentAnchor.parentMapId, {
-          x: entity.boundsWorld.maxX,
-          y: entity.boundsWorld.maxY,
-        });
-        if (!isAtlasWorldError(pMin) && !isAtlasWorldError(pMax)) {
-          const minX = Math.min(pMin.value.x, pMax.value.x);
-          const maxX = Math.max(pMin.value.x, pMax.value.x);
-          const minY = Math.min(pMin.value.y, pMax.value.y);
-          const maxY = Math.max(pMin.value.y, pMax.value.y);
-          const extX = Math.max(1, (maxX - minX) / 2);
-          const extY = Math.max(1, (maxY - minY) / 2);
-          const uniformExt =
-            Math.abs(node.parentAnchor.rotationRad) > 1e-9 ? Math.max(extX, extY) : null;
-          anchorUpdates.set(entity.mapId, {
-            ...node.parentAnchor,
-            centerX: round3((minX + maxX) / 2),
-            centerY: round3((minY + maxY) / 2),
-            extentX: round3(uniformExt ?? extX),
-            extentY: round3(uniformExt ?? extY),
-          });
-        }
+    const node = effectiveMapNodes[entity.mapId];
+    if (node?.parentAnchor) {
+      const parentId = node.parentAnchor.parentMapId;
+      const parentBounds = effectiveMapNodes[parentId]?.bounds ?? DEFAULT_ATLAS_BOUNDS;
+      const pMin = worldToLocal(effectiveMapNodes, parentId, {
+        x: entity.boundsWorld.minX,
+        y: entity.boundsWorld.minY,
+      });
+      const pMax = worldToLocal(effectiveMapNodes, parentId, {
+        x: entity.boundsWorld.maxX,
+        y: entity.boundsWorld.maxY,
+      });
+      if (!isAtlasWorldError(pMin) && !isAtlasWorldError(pMax)) {
+        const minX = Math.max(parentBounds.minX, Math.min(parentBounds.maxX, Math.min(pMin.value.x, pMax.value.x)));
+        const maxX = Math.max(minX, Math.min(parentBounds.maxX, Math.max(pMin.value.x, pMax.value.x)));
+        const minY = Math.max(parentBounds.minY, Math.min(parentBounds.maxY, Math.min(pMin.value.y, pMax.value.y)));
+        const maxY = Math.max(minY, Math.min(parentBounds.maxY, Math.max(pMin.value.y, pMax.value.y)));
+        const cx = round6((minX + maxX) / 2);
+        const cy = round6((minY + maxY) / 2);
+        const maxAllowedX = Math.max(1e-3, Math.floor(Math.min(cx - parentBounds.minX, parentBounds.maxX - cx) * 1_000_000) / 1_000_000);
+        const maxAllowedY = Math.max(1e-3, Math.floor(Math.min(cy - parentBounds.minY, parentBounds.maxY - cy) * 1_000_000) / 1_000_000);
+        const extX = Math.max(1, Math.min(round6((maxX - minX) / 2), maxAllowedX));
+        const extY = Math.max(1, Math.min(round6((maxY - minY) / 2), maxAllowedY));
+        const uniformExt =
+          Math.abs(node.parentAnchor.rotationRad) > 1e-9
+            ? Math.min(Math.max(extX, extY), maxAllowedX, maxAllowedY)
+            : null;
+        const nextAnchor: ParentSpatialAnchor = {
+          ...node.parentAnchor,
+          centerX: cx,
+          centerY: cy,
+          extentX: round6(uniformExt ?? extX),
+          extentY: round6(uniformExt ?? extY),
+        };
+        anchorUpdates.set(entity.mapId, nextAnchor);
+        effectiveMapNodes[entity.mapId] = {
+          ...node,
+          parentAnchor: nextAnchor,
+        };
       }
-      // Ensure the map is included in output mutations even if only its anchor grew
-      getDoc(entity.mapId);
-      continue;
     }
+    // Ensure the map is included in output mutations even if only its anchor grew
+    getDoc(entity.mapId);
+  }
+
+  // Pass 2: Project non-frame features (objects, strokes, rooms) using `effectiveMapNodes`.
+  for (const ch of plan.changes) {
+    const entity = world.entities[ch.entityId];
+    if (!entity || entity.featureId === '__map_frame__') continue;
 
     const curDoc = getDoc(entity.mapId);
     if (!curDoc) continue;
@@ -341,7 +384,7 @@ export function projectSpatialOperationToMapUpdates(input: {
       } else {
         const cx = (entity.boundsWorld.minX + entity.boundsWorld.maxX) / 2;
         const cy = (entity.boundsWorld.minY + entity.boundsWorld.maxY) / 2;
-        const localCenter = worldToLocal(mapNodes, entity.mapId, { x: cx, y: cy });
+        const localCenter = worldToLocal(effectiveMapNodes, entity.mapId, { x: cx, y: cy });
         if (!isAtlasWorldError(localCenter)) {
           const prevObj = curDoc.objects[objIdx]!;
           const nextObjects = [...curDoc.objects];
@@ -356,12 +399,12 @@ export function projectSpatialOperationToMapUpdates(input: {
       continue;
     }
 
-    // Stroke (FLOWING) update
+    // Stroke (freeland) update
     const strokeIdx = curDoc.strokes.findIndex((st) => st.id === entity.featureId);
     if (strokeIdx >= 0 && entity.polylineWorld && entity.polylineWorld.length >= 2) {
       const localPts: [number, number][] = [];
       for (const [wx, wy] of entity.polylineWorld) {
-        const lp = worldToLocal(mapNodes, entity.mapId, { x: wx, y: wy });
+        const lp = worldToLocal(effectiveMapNodes, entity.mapId, { x: wx, y: wy });
         if (!isAtlasWorldError(lp)) localPts.push([round3(lp.value.x), round3(lp.value.y)]);
       }
       if (localPts.length >= 2) {
@@ -384,7 +427,7 @@ export function projectSpatialOperationToMapUpdates(input: {
       } else if (entity.polygonWorld && entity.polygonWorld.length >= 3) {
         const localPts: [number, number][] = [];
         for (const [wx, wy] of entity.polygonWorld) {
-          const lp = worldToLocal(mapNodes, entity.mapId, { x: wx, y: wy });
+          const lp = worldToLocal(effectiveMapNodes, entity.mapId, { x: wx, y: wy });
           if (!isAtlasWorldError(lp)) localPts.push([round3(lp.value.x), round3(lp.value.y)]);
         }
         const prevRoom: UnifiedCanvasRoom = curDoc.rooms[roomIdx]!;

@@ -305,6 +305,37 @@ let passed = 0;
   const dornhainMut = mutations.find((m) => m.mapId === 'dornhain.map.place.dornhain');
   assert.ok(dornhainMut?.nextParentAnchor, 'Dornhain ParentSpatialAnchor updated in parent local space');
   assert.ok(dornhainMut.nextParentAnchor.extentX > 20, 'anchor extentX expanded cleanly');
+
+  // Regression (M-2 reload): growing a CHILD MAP FRAME (e.g. Tavern/Krypta) past Dornhain must
+  // project the child anchor into Dornhain's NEW expanded anchor frame (never exceeding 0..1000)!
+  const tavernFrameId = 'map:dornhain.map.loc.tavern';
+  const tavern = defaultWorld.entities[tavernFrameId];
+  assert.ok(tavern, 'Tavern child map frame exists in default world');
+  const childFramePlan = prop.planPropagation(defaultWorld, {
+    kind: 'resize_or_move',
+    entityId: tavernFrameId,
+    nextBoundsWorld: {
+      minX: tavern.boundsWorld.minX,
+      minY: tavern.boundsWorld.minY,
+      maxX: dornhainBounds.maxX + 0.4,
+      maxY: tavern.boundsWorld.maxY,
+    },
+  });
+  assert.equal(childFramePlan.ok, true);
+  const childApplied = prop.applyWorldOperation(defaultWorld, childFramePlan.plan);
+  assert.equal(childApplied.ok, true);
+  const childMuts = bridge.projectSpatialOperationToMapUpdates({
+    world: childApplied.world,
+    plan: childFramePlan.plan,
+    docsByMapId: {},
+    mapNodes: defaultWorld.mapNodes,
+  });
+  const tavernMut = childMuts.find((m) => m.mapId === 'dornhain.map.loc.tavern');
+  assert.ok(tavernMut?.nextParentAnchor, 'Tavern child anchor updated');
+  assert.ok(
+    tavernMut.nextParentAnchor.centerX + tavernMut.nextParentAnchor.extentX <= 1000,
+    `child map frame must stay <= 1000 inside grown parent (got ${tavernMut.nextParentAnchor.centerX + tavernMut.nextParentAnchor.extentX})`,
+  );
   passed += 1;
 }
 
