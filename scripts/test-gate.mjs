@@ -4536,6 +4536,14 @@ function checkSwsSharedWorldSpace() {
   ]) {
     execFileSync(process.execPath, [script], { cwd: root, stdio: 'inherit' });
   }
+  if (process.env.SAGATREE_SWS_G6_E2E === '1') {
+    console.log('SWS G6 (opt-in SAGATREE_SWS_G6_E2E=1): running host browser vertical-slice E2E...');
+    execFileSync(
+      process.execPath,
+      ['scripts/browser-e2e-with-host.mjs', 'e2e/sws-vertical-slice.spec.ts', '--project=chromium'],
+      { cwd: root, stdio: 'inherit' },
+    );
+  }
 }
 
 checkSwsSharedWorldSpace();

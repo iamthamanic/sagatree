@@ -8,7 +8,7 @@
  * `SAGATREE_HOST_PROXY_TARGET` so product login uses Host cookies (no GoTrue).
  */
 import { spawn } from 'node:child_process';
-import { createServer } from 'node:net';
+import { createConnection, createServer } from 'node:net';
 import { mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
@@ -22,11 +22,29 @@ const LOCAL_ADMIN_EMAIL = 'admin@sagatree.local';
 const LOCAL_ADMIN_PASSWORD = '1234';
 const LOCAL_PLAYER_EMAIL = 'player1@sagatree.local';
 const LOCAL_PLAYER_PASSWORD = '1234';
-const FRONTEND_ORIGIN = 'http://localhost:3004';
 
 let host;
 let workDir;
 let browserProcess;
+
+function isPortFree(port) {
+  return new Promise((resolveFree) => {
+    const socket = createConnection({ port, host: 'localhost' });
+    socket.setTimeout(500);
+    socket.once('connect', () => {
+      socket.destroy();
+      resolveFree(false);
+    });
+    socket.once('error', () => {
+      socket.destroy();
+      resolveFree(true);
+    });
+    socket.once('timeout', () => {
+      socket.destroy();
+      resolveFree(true);
+    });
+  });
+}
 
 function unusedPort() {
   return new Promise((resolvePort, reject) => {
@@ -112,6 +130,14 @@ try {
   const dataDir = join(workDir, 'data');
   const hostPort = await unusedPort();
   const hostUrl = `http://127.0.0.1:${hostPort}`;
+  const requestedFrontendPort = Number(process.env.SAGATREE_E2E_FRONTEND_PORT || 0);
+  const frontendPort =
+    requestedFrontendPort > 0
+      ? requestedFrontendPort
+      : (await isPortFree(3004))
+        ? 3004
+        : await unusedPort();
+  const frontendOrigin = `http://localhost:${frontendPort}`;
   const { createHost } = await import(createHostUrl);
   const { generateAuthSecret } = await import(authIndexUrl);
   const authSecret = generateAuthSecret();
@@ -123,7 +149,7 @@ try {
     SAGATREE_ENABLE_HOST_AUTH: '1',
     SAGATREE_BETTER_AUTH_SECRET: authSecret,
     SAGATREE_AUTH_BASE_URL: hostUrl,
-    SAGATREE_AUTH_TRUSTED_ORIGINS: `${hostUrl},${FRONTEND_ORIGIN},http://127.0.0.1:3004`,
+    SAGATREE_AUTH_TRUSTED_ORIGINS: `${hostUrl},${frontendOrigin},http://127.0.0.1:${frontendPort}`,
     SAGATREE_ALLOW_DEMO_PASSWORDS: '1',
   });
   if ('error' in host) throw new Error(`host create: ${JSON.stringify(host)}`);
@@ -146,6 +172,7 @@ try {
       env: {
         ...process.env,
         CI: process.env.CI || '1',
+        PLAYWRIGHT_BASE_URL: frontendOrigin,
         VITE_SAGATREE_HOST_AUTH_URL: 'same-origin',
         SAGATREE_HOST_PROXY_TARGET: hostUrl,
         // Product path must not prefer GoTrue dual-path leftovers.

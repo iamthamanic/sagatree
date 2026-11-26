@@ -1,6 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
 const devUrl = process.env.PLAYWRIGHT_BASE_URL ?? 'http://localhost:3004';
+const devPort = new URL(devUrl).port || '3004';
 const isCi = !!process.env.CI;
 const useHardwareWebgl = process.env.PLAYWRIGHT_HARDWARE_WEBGL === '1';
 
@@ -82,7 +83,10 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: 'npm run dev',
+    command:
+      devPort === '3004'
+        ? 'npm run dev'
+        : `npx vite --port ${devPort} --strictPort --no-open`,
     url: devUrl,
     reuseExistingServer: !isCi,
     timeout: 180_000,

@@ -1,0 +1,67 @@
+{
+  "capturedAt": "2026-11-26T08:24:35.983Z",
+  "multiMapPick": {
+    "proj": {
+      "px": 496,
+      "py": 322,
+      "visible": true
+    },
+    "hit": "g.tav.table",
+    "hitOffset": [
+      0,
+      0
+    ],
+    "clearRootCount": 0,
+    "activeEditorMapId": "dh-map-room-taproom__7430f22a1f2e",
+    "activeMapIds": [
+      "dh-atlas-root__5dccba2c6f60",
+      "dh-map-continent-westmark__30bc68ef970d",
+      "dh-map-country-westmark__e3eabdfc6f27",
+      "dh-map-place-dornhain__59b982739219",
+      "dh-map-loc-tavern__1d3e26df066c",
+      "dh-map-room-taproom__7430f22a1f2e"
+    ]
+  },
+  "origObj": {
+    "id": "g.tav.table",
+    "type": "tisch",
+    "x": 480,
+    "y": 480,
+    "size": 0.72,
+    "angle": 0
+  },
+  "movedObj": {
+    "id": "g.tav.table",
+    "type": "tisch",
+    "x": 558,
+    "y": 527.7,
+    "size": 0.72,
+    "angle": 0
+  },
+  "afterUndoObj": {
+    "id": "g.tav.table",
+    "type": "tisch",
+    "x": 480,
+    "y": 480,
+    "size": 0.72,
+    "angle": 0
+  },
+  "afterRedoObj": {
+    "id": "g.tav.table",
+    "type": "tisch",
+    "x": 558,
+    "y": 527.7,
+    "size": 0.72,
+    "angle": 0
+  },
+  "reloadedObj": {
+    "id": "g.tav.table",
+    "type": "tisch",
+    "x": 558,
+    "y": 527.7,
+    "size": 0.72,
+    "angle": 0
+  },
+  "movedDistanceLocalUnits": 91.43,
+  "hostUpsertMapPersisted": true
+}
