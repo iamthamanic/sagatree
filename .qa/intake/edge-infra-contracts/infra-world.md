@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-world.json](source-contracts/infra-world.json) (SHA-256 `a3cb8a09c7ff6b635f6050deda10c5fbb792974cb1ed9a40ccdecdae9938eb6a`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-world.json](source-contracts/infra-world.json) (SHA-256 `87482148cc2219b07ffd5a679cbd160ed7c589133d4b07b80206913cd5a67105`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -1143,19 +1143,296 @@ export function dampAtlasThreeView(
 }
 ```
 
-### src/infrastructure/world/atlas-three/atlas-three-runtime.ts:44
+### src/infrastructure/world/atlas-three/atlas-three-multimap.ts:37
+
+```ts
+export type AtlasThreeWorldMapSource = {
+  readonly mapId: string;
+  readonly doc: UnifiedCanvasDoc;
+  readonly mapScale: AtlasMapScale;
+  readonly look: AtlasThreeLook;
+  readonly bounds?: WorldAtlasBounds;
+  readonly revisionKey?: string;
+};
+```
+
+### src/infrastructure/world/atlas-three/atlas-three-multimap.ts:46
+
+```ts
+export type AtlasThreeMapGroupNode = {
+  readonly mapId: string;
+  readonly pivot: THREE.Group;
+  readonly content: THREE.Group;
+  readonly pickables: THREE.Object3D[];
+  readonly scenePlan: AtlasThreeScenePlan;
+  readonly buildSignature: string;
+  readonly geometries: THREE.BufferGeometry[];
+  readonly cutoutSignature: string;
+};
+```
+
+### src/infrastructure/world/atlas-three/atlas-three-multimap.ts:57
+
+```ts
+export type AtlasThreeMultiMapStats = {
+  readonly activeMapIds: readonly string[];
+  readonly activeEditorMapId: string | null;
+  readonly groupCount: number;
+  readonly liveGeometryCount: number;
+  readonly clearRootCount: number;
+  readonly incrementalSyncCount: number;
+};
+```
+
+### src/infrastructure/world/atlas-three/atlas-three-multimap.ts:95
+
+```ts
+export function applyLocalCutoutFilter(
+  doc: UnifiedCanvasDoc,
+  cutouts: readonly AtlasLocalCutoutRect[],
+): UnifiedCanvasDoc {
+  if (cutouts.length === 0) return doc;
+  const rooms = doc.rooms.filter((r) => {
+    if (r.id === 'w.ocean' || r.id === 'g.ocean') return true;
+    return !rectFullyInsideAnyCutout(r.x, r.y, r.w, r.h, cutouts);
+  });
+  const objects = doc.objects.filter((o) => !pointInsideAnyCutout(o.x, o.y, cutouts));
+  const strokes = doc.strokes.filter(
+    (s) => !s.points.every(([px, py]) => pointInsideAnyCutout(px, py, cutouts)),
+  );
+  return {
+    ...doc,
+    rooms,
+    objects,
+    strokes,
+  };
+}
+```
+
+### src/infrastructure/world/atlas-three/atlas-three-multimap.ts:128
+
+```ts
+export function applyWorldTransformToGroup(
+  pivot: THREE.Group,
+  content: THREE.Group,
+  entry: AtlasWorldSceneGroupPlan,
+  bounds: WorldAtlasBounds = DEFAULT_ATLAS_BOUNDS,
+): void {
+  const midX = (bounds.minX + bounds.maxX) / 2;
+  const midY = (bounds.minY + bounds.maxY) / 2;
+  const { centerX, centerY, scaleX, scaleY, rotationRad } = entry.worldTransform;
+  const verticalScale = Math.sqrt(Math.max(1e-8, scaleX * scaleY));
+  // Subtle depth lift per hierarchy level eliminates coplanar Z-fighting with parent sheet.
+  const depthLiftY = (entry.depth - 1) * 0.06;
+
+  pivot.position.set(centerX, depthLiftY, centerY);
+  pivot.rotation.set(0, -rotationRad, 0);
+  pivot.scale.set(scaleX, verticalScale, scaleY);
+  content.position.set(-midX, 0, -midY);
+  pivot.updateMatrixWorld(true);
+}
+```
+
+### src/infrastructure/world/atlas-three/atlas-three-multimap.ts:148
+
+```ts
+export class AtlasThreeMultiMapGraph {
+  readonly rootGroup = new THREE.Group();
+  private readonly groups = new Map<string, AtlasThreeMapGroupNode>();
+  private activeEditorMapId: string | null = null;
+  private clearRootCount = 0;
+  private incrementalSyncCount = 0;
+
+  constructor(
+    private readonly getMaterial: (key: AtlasThreeSurfaceKey) => THREE.Material,
+    private readonly waterMaterial: THREE.Material,
+  ) {
+    this.rootGroup.name = 'atlas3:multimap-root';
+  }
+
+  /**
+   * Incrementally sync the Three.js scene graph to match `scenePlan`.
+   * Never calls `clearRoot()` — only mounts entering maps, updates transforms,
+   * rebuilds individual groups whose revision/cutouts changed, and disposes exiting maps.
+   */
+  sync(input: {
+    readonly scenePlan: AtlasWorldScenePlan;
+    readonly sources: ReadonlyMap<string, AtlasThreeWorldMapSource>;
+    readonly presetId: AtlasGraphicsPresetId;
+    readonly hideRoofs: boolean;
+    readonly viewSpan: number;
+  }): void {
+    this.incrementalSyncCount += 1;
+    this.activeEditorMapId = input.scenePlan.activeEditorMapId;
+
+    const wantedIds = new Set(input.scenePlan.entries.map((e) => e.mapId));
+
+    // 1) Dispose groups that left the active scene plan
+    for (const [mapId, node] of [...this.groups.entries()]) {
+      if (!wantedIds.has(mapId)) {
+        this.disposeGroupNode(node);
+        this.groups.delete(mapId);
+      }
+    }
+
+    // 2) Mount new groups or update existing groups incrementally
+    for (const entry of input.scenePlan.entries) {
+      const source = input.sources.get(entry.mapId);
+      if (!source) continue;
+
+      const cSig = cutoutSignature(entry.cutoutRectsLocal);
+      const rev = source.revisionKey ?? 'v0';
+      const sig = `${rev}|${source.mapScale}|${source.look}|${input.presetId}|${input.hideRoofs ? 1 : 0}|${cSig}`;
+
+      const existing = this.groups.get(entry.mapId);
+      if (existing && existing.buildSignature === sig) {
+        // Zero rebuild: only update world transform & visibility
+        applyWorldTransformToGroup(existing.pivot, existing.content, entry, source.bounds);
+        existing.pivot.visible = true;
+        continue;
+      }
+
+      if (existing) {
+        this.disposeGroupNode(existing);
+        this.groups.delete(entry.mapId);
+      }
+
+      const filteredDoc = applyLocalCutoutFilter(source.doc, entry.cutoutRectsLocal);
+      const plan = buildAtlasThreeScenePlan(filteredDoc, {
+        mapScale: source.mapScale,
+        look: source.look,
+        span: Math.max(24, input.viewSpan / Math.max(1e-4, entry.worldTransform.scaleX)),
+        presetId: input.presetId,
+        seed: entry.mapId,
+        hideRoofs: input.hideRoofs,
+        warmWindows: true,
+      });
+
+      const pivot = new THREE.Group();
+      pivot.name = `atlas3:map-pivot:${entry.mapId}`;
+      pivot.userData.mapId = entry.mapId;
+      pivot.userData.depth = entry.depth;
+
+      const content = new THREE.Group();
+      content.name = `atlas3:map-content:${entry.mapId}`;
+      pivot.add(content);
+
+      const pickables: THREE.Object3D[] = [];
+      const geometries: THREE.BufferGeometry[] = [];
+
+      for (const [surfaceKey, builder] of plan.builders) {
+        if (builder.triangleCount === 0) continue;
+        const geo = builder.build();
+        geometries.push(geo);
+        const mesh = new THREE.Mesh(geo, this.getMaterial(surfaceKey));
+        const flat = surfaceKey.startsWith('sheet') || surfaceKey.startsWith('floor');
+        mesh.castShadow = !flat;
+        mesh.receiveShadow = true;
+        mesh.userData.triIds = builder.triIds;
+        mesh.userData.mapId = entry.mapId;
+        mesh.name = `atlas3:${entry.mapId}:${surfaceKey}`;
+        content.add(mesh);
+        pickables.push(mesh);
+      }
+
+      if (plan.water.triangleCount > 0) {
+        const geo = plan.water.build();
+        geometries.push(geo);
+        const mesh = new THREE.Mesh(geo, this.waterMaterial);
+        mesh.userData.triIds = plan.water.triIds;
+        mesh.userData.mapId = entry.mapId;
+        mesh.name = `atlas3:${entry.mapId}:water`;
+        mesh.renderOrder = 2;
+        content.add(mesh);
+        pickables.push(mesh);
+      }
+
+      if (plan.terrain) {
+        geometries.push(plan.terrain);
+        const mesh = new THREE.Mesh(plan.terrain, this.getMaterial('terrain'));
+        mesh.castShadow = true;
+        mesh.receiveShadow = true;
+        mesh.userData.mapId = entry.mapId;
+        mesh.name = `atlas3:${entry.mapId}:terrain`;
+        content.add(mesh);
+      }
+
+      applyWorldTransformToGroup(pivot, content, entry, source.bounds);
+      this.rootGroup.add(pivot);
+
+      this.groups.set(entry.mapId, {
+        mapId: entry.mapId,
+        pivot,
+        content,
+        pickables,
+        scenePlan: plan,
+        buildSignature: sig,
+        geometries,
+        cutoutSignature: cSig,
+      });
+    }
+  }
+
+  getGroup(mapId: string): AtlasThreeMapGroupNode | undefined {
+    return this.groups.get(mapId);
+  }
+
+  getAllPickables(): readonly THREE.Object3D[] {
+    const out: THREE.Object3D[] = [];
+    for (const g of this.groups.values()) {
+      for (const p of g.pickables) out.push(p);
+    }
+    return out;
+  }
+
+  getStats(): AtlasThreeMultiMapStats {
+    let liveGeometryCount = 0;
+    for (const g of this.groups.values()) {
+      liveGeometryCount += g.geometries.length;
+    }
+    return {
+      activeMapIds: [...this.groups.keys()],
+      activeEditorMapId: this.activeEditorMapId,
+      groupCount: this.groups.size,
+      liveGeometryCount,
+      clearRootCount: this.clearRootCount,
+      incrementalSyncCount: this.incrementalSyncCount,
+    };
+  }
+
+  /** Teardown all groups and release every GPU BufferGeometry cleanly (budget = 0). */
+  dispose(): void {
+    for (const node of this.groups.values()) {
+      this.disposeGroupNode(node);
+    }
+    this.groups.clear();
+    this.activeEditorMapId = null;
+  }
+
+  private disposeGroupNode(node: AtlasThreeMapGroupNode): void {
+    this.rootGroup.remove(node.pivot);
+    for (const geo of node.geometries) {
+      geo.dispose();
+    }
+    node.geometries.length = 0;
+    node.pickables.length = 0;
+  }
+}
+```
+
+### src/infrastructure/world/atlas-three/atlas-three-runtime.ts:54
 
 ```ts
 export type AtlasThreeLightingMode = 'day' | 'evening' | 'night';
 ```
 
-### src/infrastructure/world/atlas-three/atlas-three-runtime.ts:45
+### src/infrastructure/world/atlas-three/atlas-three-runtime.ts:55
 
 ```ts
 export type AtlasThreeStyleMode = 'pbr' | 'illustrated' | 'cel';
 ```
 
-### src/infrastructure/world/atlas-three/atlas-three-runtime.ts:47
+### src/infrastructure/world/atlas-three/atlas-three-runtime.ts:57
 
 ```ts
 export type AtlasThreeProjectedPin = {
@@ -1168,7 +1445,7 @@ export type AtlasThreeProjectedPin = {
 };
 ```
 
-### src/infrastructure/world/atlas-three/atlas-three-runtime.ts:56
+### src/infrastructure/world/atlas-three/atlas-three-runtime.ts:66
 
 ```ts
 export type AtlasThreeRuntimeConfig = {
@@ -1180,13 +1457,18 @@ export type AtlasThreeRuntimeConfig = {
 };
 ```
 
-### src/infrastructure/world/atlas-three/atlas-three-runtime.ts:521
+### src/infrastructure/world/atlas-three/atlas-three-runtime.ts:531
 
 ```ts
 export class AtlasThreeRuntime {
   readonly renderer: THREE.WebGLRenderer;
   readonly scene = new THREE.Scene();
   private readonly root = new THREE.Group();
+  private readonly multiMap: AtlasThreeMultiMapGraph;
+  private worldMaps: readonly AtlasWorldSceneMapInput[] = [];
+  private worldSources = new Map<string, AtlasThreeWorldMapSource>();
+  private worldScenePlan: AtlasWorldScenePlan | null = null;
+  private clearRootCount = 0;
   private readonly gizmoGroup = new THREE.Group();
   private readonly selectionRing: THREE.Mesh;
   private readonly gizmoAxisX: THREE.Mesh;
@@ -1470,6 +1752,11 @@ export class AtlasThreeRuntime {
       this.sceneKey = '';
       this.onContextLostChange?.(false);
     };
+    this.multiMap = new AtlasThreeMultiMapGraph(
+      (key) => this.getMaterial(key),
+      this.waterMat,
+    );
+    this.scene.add(this.multiMap.rootGroup);
     config.canvas.addEventListener('webglcontextlost', this.onContextLostListener);
     config.canvas.addEventListener('webglcontextrestored', this.onContextRestoredListener);
 
@@ -1544,6 +1831,84 @@ export class AtlasThreeRuntime {
       }
       mat.needsUpdate = true;
     }
+  }
+
+  /**
+   * Register the spatial world map hierarchy for incremental Multi-Map rendering
+   * (SWS-04, Checklist D1–D5). When non-empty, `ensureScene()` mounts/updates
+   * map groups at their `ParentSpatialAnchor` transforms without calling `clearRoot()`.
+   */
+  setWorldSceneGraph(input: {
+    readonly maps: readonly AtlasWorldSceneMapInput[];
+    readonly sources: readonly AtlasThreeWorldMapSource[];
+  }): void {
+    this.worldMaps = input.maps;
+    this.worldSources = new Map(input.sources.map((s) => [s.mapId, s] as const));
+    this.worldScenePlan = null;
+  }
+
+  getWorldCameraState(): AtlasWorldCameraState {
+    return createAtlasWorldCameraState({
+      focusWorld: { x: this.targetView.x, y: this.targetView.z, z: 0 },
+      span: this.targetView.span,
+      yawRad: this.targetView.yawRad,
+      pitchRad: this.targetView.pitchRad,
+      projection: this.targetView.mode,
+    });
+  }
+
+  setWorldCameraState(state: AtlasWorldCameraState, animate = false): void {
+    this.setView(
+      {
+        mode: state.projection,
+        x: state.focusWorld.x,
+        z: state.focusWorld.y,
+        span: state.span,
+        yawRad: state.yawRad,
+        pitchRad: state.pitchRad,
+      },
+      animate,
+    );
+  }
+
+  /** Two-finger trackpad scroll / drag pan in screen pixels (respects camera yaw). */
+  panByScreenDelta(deltaPxX: number, deltaPxY: number): AtlasThreeCameraView {
+    this.flight = null;
+    const h = Math.max(1, this.config.canvas.clientHeight || 800);
+    const worldPerPx = (this.targetView.span * 2) / h;
+    const dx = deltaPxX * worldPerPx;
+    const dy = deltaPxY * worldPerPx;
+    const cos = Math.cos(this.targetView.yawRad);
+    const sin = Math.sin(this.targetView.yawRad);
+    this.targetView = {
+      ...this.targetView,
+      x: this.targetView.x + (dx * cos + dy * sin),
+      z: this.targetView.z + (-dx * sin + dy * cos),
+    };
+    return { ...this.targetView };
+  }
+
+  /** Incremental yaw/pitch orbit delta (Shift+Wheel / Trackpad orbit). */
+  orbitByDelta(deltaYawRad: number, deltaPitchRad: number): AtlasThreeCameraView {
+    this.flight = null;
+    const nextMode: AtlasThreeCameraMode =
+      this.targetView.mode === 'ortho-topdown' ? 'diorama-oblique' : this.targetView.mode;
+    this.manualPitchOverride = true;
+    this.targetView = {
+      ...this.targetView,
+      mode: nextMode,
+      yawRad: this.targetView.yawRad + deltaYawRad,
+      pitchRad: clampAtlasThreePitch(nextMode, this.targetView.pitchRad + deltaPitchRad),
+    };
+    return { ...this.targetView };
+  }
+
+  getMultiMapStats(): AtlasThreeMultiMapStats {
+    const stats = this.multiMap.getStats();
+    return {
+      ...stats,
+      clearRootCount: this.clearRootCount,
+    };
   }
 
   getView(): AtlasThreeCameraView {
@@ -1673,7 +2038,8 @@ export class AtlasThreeRuntime {
     };
     const mode = this.targetView.mode;
     const targetSpan = bounds.fitSpan;
-    const targetYaw = mode === 'ortho-topdown' ? 0 : 0.42;
+    // SWS-05 (E2): preserve current yaw orientation across mode/map framing.
+    const targetYaw = this.targetView.yawRad;
     const targetPitch = autoAtlasThreePitchForSpan(mode, targetSpan);
     this.manualPitchOverride = false;
 
@@ -1757,7 +2123,9 @@ export class AtlasThreeRuntime {
     const h = this.config.canvas.clientHeight || 1;
     const ndc = new THREE.Vector2((px / w) * 2 - 1, -(py / h) * 2 + 1);
     this.raycaster.setFromCamera(ndc, this.camera);
-    const hits = this.raycaster.intersectObjects(this.pickables, false);
+    const allPickables: THREE.Object3D[] =
+      this.worldMaps.length > 0 ? [...this.multiMap.getAllPickables()] : this.pickables;
+    const hits = this.raycaster.intersectObjects(allPickables, false);
     const objectIds = new Set((this.doc?.objects ?? []).map((o) => o.id));
     let fallback: string | null = null;
     for (const hit of hits) {
@@ -1780,11 +2148,19 @@ export class AtlasThreeRuntime {
     return [...(this.plan?.ids ?? [])].sort();
   }
 
-  getStats(): { readonly calls: number; readonly triangles: number; readonly rooms: number } {
+  getStats(): {
+    readonly calls: number;
+    readonly triangles: number;
+    readonly rooms: number;
+    readonly clearRootCount: number;
+    readonly activeMapCount: number;
+  } {
     return {
       calls: this.renderer.info.render.calls,
       triangles: this.renderer.info.render.triangles,
       rooms: this.doc?.rooms.length ?? 0,
+      clearRootCount: this.clearRootCount,
+      activeMapCount: this.worldMaps.length > 0 ? this.multiMap.getStats().groupCount : 1,
     };
   }
 
@@ -1815,6 +2191,7 @@ export class AtlasThreeRuntime {
   }
 
   private clearRoot(): void {
+    this.clearRootCount += 1;
     for (const child of [...this.root.children]) {
       this.root.remove(child);
       if (child instanceof THREE.Mesh) child.geometry.dispose();
@@ -1826,12 +2203,41 @@ export class AtlasThreeRuntime {
   }
 
   private ensureScene(): void {
+    if (this.worldMaps.length > 0) {
+      // SWS-04 Multi-Map Scene Graph: incremental sync driven by AtlasWorldScenePlan
+      // with ZERO clearRoot() calls during zoom/navigation (Checklist D1–D5).
+      this.root.visible = false;
+      this.multiMap.rootGroup.visible = true;
+      const w = Math.max(1, this.config.canvas.clientWidth || 1280);
+      const h = Math.max(1, this.config.canvas.clientHeight || 800);
+      const camState = this.getWorldCameraState();
+      const nextPlan = buildAtlasWorldScenePlan({
+        maps: this.worldMaps,
+        camera: camState,
+        viewportPx: { width: w, height: h },
+        previousPlan: this.worldScenePlan,
+      });
+      this.worldScenePlan = nextPlan;
+      this.multiMap.sync({
+        scenePlan: nextPlan,
+        sources: this.worldSources,
+        presetId: this.presetId,
+        hideRoofs: this.hideRoofs,
+        viewSpan: this.view.span,
+      });
+      this.applyStyleToMaterials();
+      this.updateSelectionGizmo();
+      return;
+    }
+
+    this.root.visible = true;
+    this.multiMap.rootGroup.visible = false;
     if (!this.doc) return;
-    // Automatic smooth roof cutaway when zoomed deep into a settlement building!
+    // Automatic smooth roof cutaway when zoomed deep into a settlement building.
     const autoCutaway = this.mapScale === 'settlement' && this.view.span < 58;
     const effectiveHideRoofs = this.hideRoofs || autoCutaway;
-    const lodBucket = this.view.span >= 420 ? 'far' : this.view.span >= 180 ? 'mid' : 'near';
-    const key = `${this.docRevision}|${lodBucket}|${this.presetId}|${effectiveHideRoofs ? 'cut' : 'full'}`;
+    // SWS-04 (D2): do NOT key on zoom lodBucket — zooming never triggers clearRoot()!
+    const key = `${this.docRevision}|${this.presetId}|${effectiveHideRoofs ? 'cut' : 'full'}`;
     if (key === this.sceneKey && this.plan) return;
 
     this.clearRoot();
@@ -2222,6 +2628,7 @@ export class AtlasThreeRuntime {
     window.cancelAnimationFrame(this.rafId);
     this.config.canvas.removeEventListener('webglcontextlost', this.onContextLostListener);
     this.config.canvas.removeEventListener('webglcontextrestored', this.onContextRestoredListener);
+    this.multiMap.dispose();
     this.clearRoot();
     for (const mat of this.materials.values()) mat.dispose();
     this.materials.clear();
@@ -2993,6 +3400,234 @@ export function buildAtlasThreeScenePlan(
 }
 ```
 
+### src/infrastructure/world/atlas-three/atlas-unified-input.ts:15
+
+```ts
+export type NormalizedWheelInput = {
+  readonly deltaX: number;
+  readonly deltaY: number;
+  readonly deltaMode: number;
+  readonly ctrlKey: boolean;
+  readonly shiftKey: boolean;
+  readonly metaKey: boolean;
+  readonly clientX: number;
+  readonly clientY: number;
+  readonly viewportHeight: number;
+};
+```
+
+### src/infrastructure/world/atlas-three/atlas-unified-input.ts:27
+
+```ts
+export type UnifiedWheelAction =
+  | {
+      readonly kind: 'pinch-zoom';
+      readonly zoomDelta: number;
+      readonly clientX: number;
+      readonly clientY: number;
+    }
+  | {
+      readonly kind: 'wheel-zoom';
+      readonly zoomDelta: number;
+      readonly clientX: number;
+      readonly clientY: number;
+    }
+  | {
+      readonly kind: 'pan';
+      readonly deltaX: number;
+      readonly deltaY: number;
+    }
+  | {
+      readonly kind: 'orbit';
+      readonly deltaYawRad: number;
+      readonly deltaPitchRad: number;
+    };
+```
+
+### src/infrastructure/world/atlas-three/atlas-unified-input.ts:56
+
+```ts
+export function normalizeWheelDelta(
+  deltaX: number,
+  deltaY: number,
+  deltaMode: number,
+  viewportHeight: number,
+): { readonly dx: number; readonly dy: number } {
+  const safeH = Math.max(100, Number.isFinite(viewportHeight) ? viewportHeight : 800);
+  const mult = deltaMode === 1 ? LINE_HEIGHT_PX : deltaMode === 2 ? safeH : 1;
+  return {
+    dx: Number.isFinite(deltaX) ? deltaX * mult : 0,
+    dy: Number.isFinite(deltaY) ? deltaY * mult : 0,
+  };
+}
+```
+
+### src/infrastructure/world/atlas-three/atlas-unified-input.ts:74
+
+```ts
+export function classifyUnifiedWheelGesture(ev: NormalizedWheelInput): UnifiedWheelAction {
+  const { dx, dy } = normalizeWheelDelta(ev.deltaX, ev.deltaY, ev.deltaMode, ev.viewportHeight);
+
+  // 1) Chromium / Firefox Trackpad Pinch (or Ctrl+Wheel) → Zoom toward cursor (E3)
+  if (ev.ctrlKey) {
+    // Trackpad pinch wheel deltas are typically small (~±2..25 px); scale smoothly.
+    return {
+      kind: 'pinch-zoom',
+      zoomDelta: dy * 4.5,
+      clientX: ev.clientX,
+      clientY: ev.clientY,
+    };
+  }
+
+  // 2) Shift + Wheel/Trackpad → Orbit camera
+  if (ev.shiftKey) {
+    return {
+      kind: 'orbit',
+      deltaYawRad: -(dx !== 0 ? dx : dy) * 0.0045,
+      deltaPitchRad: (dx !== 0 ? dy : 0) * 0.0035,
+    };
+  }
+
+  // 3) Meta/Cmd + Wheel → Zoom toward cursor
+  if (ev.metaKey) {
+    return {
+      kind: 'wheel-zoom',
+      zoomDelta: dy,
+      clientX: ev.clientX,
+      clientY: ev.clientY,
+    };
+  }
+
+  // 4) Two-Finger Trackpad Scroll → Pan (E4):
+  // macOS trackpad emits pixel-mode (deltaMode===0) events with horizontal deltaX
+  // or smooth sub-notch vertical deltas (< 48px, non-120 multiples).
+  const isMouseNotch =
+    ev.deltaMode !== 0 ||
+    (Math.abs(dx) < 0.01 && Math.abs(dy) >= 48 && Math.abs(dy % 40) < 0.5);
+
+  if (!isMouseNotch && (Math.abs(dx) > 0.01 || Math.abs(dy) < 48)) {
+    return {
+      kind: 'pan',
+      deltaX: dx,
+      deltaY: dy,
+    };
+  }
+
+  // 5) Standard physical mouse wheel → Zoom toward cursor
+  return {
+    kind: 'wheel-zoom',
+    zoomDelta: dy,
+    clientX: ev.clientX,
+    clientY: ev.clientY,
+  };
+}
+```
+
+### src/infrastructure/world/atlas-three/atlas-unified-input.ts:132
+
+```ts
+export type SafariGestureEventLike = Event & {
+  readonly scale?: number;
+  readonly clientX?: number;
+  readonly clientY?: number;
+};
+```
+
+### src/infrastructure/world/atlas-three/atlas-unified-input.ts:142
+
+```ts
+export function safariGestureScaleToZoomDelta(prevScale: number, nextScale: number): number {
+  const safePrev = Math.max(0.05, Number.isFinite(prevScale) ? prevScale : 1);
+  const safeNext = Math.max(0.05, Number.isFinite(nextScale) ? nextScale : safePrev);
+  const ratio = safeNext / safePrev;
+  // Positive delta zooms out, negative delta zooms in (matches wheel deltaY convention).
+  return -Math.log(ratio) * 620;
+}
+```
+
+### src/infrastructure/world/atlas-three/atlas-unified-input.ts:150
+
+```ts
+export type AtlasUnifiedInputCallbacks = {
+  readonly onZoomAtScreen: (zoomDelta: number, px: number, py: number) => void;
+  readonly onPanByScreen: (deltaX: number, deltaY: number) => void;
+  readonly onOrbitByDelta: (deltaYawRad: number, deltaPitchRad: number) => void;
+};
+```
+
+### src/infrastructure/world/atlas-three/atlas-unified-input.ts:160
+
+```ts
+export function bindAtlasUnifiedInput(
+  element: HTMLElement,
+  callbacks: AtlasUnifiedInputCallbacks,
+): () => void {
+  let lastSafariScale = 1;
+
+  const onWheel = (ev: WheelEvent) => {
+    ev.preventDefault();
+    const rect = element.getBoundingClientRect();
+    const px = ev.clientX - rect.left;
+    const py = ev.clientY - rect.top;
+    const action = classifyUnifiedWheelGesture({
+      deltaX: ev.deltaX,
+      deltaY: ev.deltaY,
+      deltaMode: ev.deltaMode,
+      ctrlKey: ev.ctrlKey,
+      shiftKey: ev.shiftKey,
+      metaKey: ev.metaKey,
+      clientX: px,
+      clientY: py,
+      viewportHeight: rect.height || window.innerHeight || 800,
+    });
+
+    if (action.kind === 'pinch-zoom' || action.kind === 'wheel-zoom') {
+      callbacks.onZoomAtScreen(action.zoomDelta, action.clientX, action.clientY);
+    } else if (action.kind === 'pan') {
+      callbacks.onPanByScreen(action.deltaX, action.deltaY);
+    } else if (action.kind === 'orbit') {
+      callbacks.onOrbitByDelta(action.deltaYawRad, action.deltaPitchRad);
+    }
+  };
+
+  const onGestureStart = (raw: Event) => {
+    const ev = raw as SafariGestureEventLike;
+    ev.preventDefault();
+    lastSafariScale = typeof ev.scale === 'number' && Number.isFinite(ev.scale) ? ev.scale : 1;
+  };
+
+  const onGestureChange = (raw: Event) => {
+    const ev = raw as SafariGestureEventLike;
+    ev.preventDefault();
+    const nextScale = typeof ev.scale === 'number' && Number.isFinite(ev.scale) ? ev.scale : lastSafariScale;
+    const zoomDelta = safariGestureScaleToZoomDelta(lastSafariScale, nextScale);
+    lastSafariScale = nextScale;
+    if (Math.abs(zoomDelta) < 0.01) return;
+    const rect = element.getBoundingClientRect();
+    const px = typeof ev.clientX === 'number' ? ev.clientX - rect.left : rect.width / 2;
+    const py = typeof ev.clientY === 'number' ? ev.clientY - rect.top : rect.height / 2;
+    callbacks.onZoomAtScreen(zoomDelta, px, py);
+  };
+
+  const onGestureEnd = (ev: Event) => {
+    ev.preventDefault();
+    lastSafariScale = 1;
+  };
+
+  element.addEventListener('wheel', onWheel, { passive: false });
+  element.addEventListener('gesturestart', onGestureStart, { passive: false } as AddEventListenerOptions);
+  element.addEventListener('gesturechange', onGestureChange, { passive: false } as AddEventListenerOptions);
+  element.addEventListener('gestureend', onGestureEnd, { passive: false } as AddEventListenerOptions);
+
+  return () => {
+    element.removeEventListener('wheel', onWheel);
+    element.removeEventListener('gesturestart', onGestureStart);
+    element.removeEventListener('gesturechange', onGestureChange);
+    element.removeEventListener('gestureend', onGestureEnd);
+  };
+}
+```
+
 ### src/infrastructure/world/atlas-three/pbr-textures.ts:11
 
 ```ts
@@ -3664,10 +4299,12 @@ All backend operations are included in the public declarations above.
 | `src/domains/world/atlas/atlas-biome-brush.ts` | `4ccfcc1605b213b904137ab1e62661a249dc5804c4246152a03741e4825ea7e9` |
 | `src/domains/world/atlas/atlas-canonical-features.ts` | `a7e2b9471c960d3839e39f93fe1f6b332f5822620ef589ba4e1a0805dda6c3bd` |
 | `src/domains/world/atlas/atlas-continuous-zoom.ts` | `e91303c0fee7b8365286f5c50a8dc6d2cbaa9213ab2e5e829999829942991ca0` |
+| `src/domains/world/atlas/atlas-default-world.ts` | `12198078d705e5b479cc5d4ae804fe0ef91b5fc5b7f5a6ad9ee21bef6c3da241` |
 | `src/domains/world/atlas/atlas-diorama-look.ts` | `a0c2f5ea6af2faabed685d4eff4035dad43b1e82f3d6b2a67e017ddcddf99ea6` |
 | `src/domains/world/atlas/atlas-dungeon-look.ts` | `b28dfd123ebb46472258442834d636b2962ed78a7261d458bc57a5ad1d3f352c` |
 | `src/domains/world/atlas/atlas-edit-history.ts` | `13a91efde301ec766d3b0f183affcd794abba9f4c4872c00549e9f631947e294` |
-| `src/domains/world/atlas/atlas-golden-visual.ts` | `91958356d646ac68021110bf3b2faa5c63ad42de142bc00236d3e07bd5c426ec` |
+| `src/domains/world/atlas/atlas-geometry-ownership.ts` | `fc0edfa99d2215bdc33255fbb842855f98a4a85030388ce5baba066789055a14` |
+| `src/domains/world/atlas/atlas-golden-visual.ts` | `a849fe4e99ed41d8741ad49c236502970405440507884d2e0873e699bfc97ff1` |
 | `src/domains/world/atlas/atlas-heightfield.ts` | `1fafa49c651ac14ba5ae1e9a226b38ffeea636935b7e486daa1cdd41090b71fb` |
 | `src/domains/world/atlas/atlas-hierarchy-lod.ts` | `d8f476a6aab1a6f8c63ee4d465401869e5b4191154b89b238f60fdba6c8b9bff` |
 | `src/domains/world/atlas/atlas-hierarchy-nav.ts` | `d9df6c10f147e7f325dfc735306fe481e4aa1fc601e215a1f79df0f53b190be7` |
@@ -3687,14 +4324,17 @@ All backend operations are included in the public declarations above.
 | `src/domains/world/atlas/atlas-tool-registry.ts` | `be0492bd7d71f1dafa260c6a1a75165f8c587bd1f55d3178f96fbd67ac5988af` |
 | `src/domains/world/atlas/atlas-webgl-write-retire.ts` | `baf40e97aaa9c74c873f3919e72b4d9049e8c7781566ed58ce52ccf2f168ce69` |
 | `src/domains/world/atlas/atlas-workstation-adaptive.ts` | `2a87a8f4cf36e532f9bbb0faa0085013f4169fedc26622a1bbef800b46f59846` |
+| `src/domains/world/atlas/atlas-world-camera.ts` | `b0ac5e7eac73a8cdaa0e21e6758f6d6cfa1e448d935a9d763213a6ce9bc9a127` |
+| `src/domains/world/atlas/atlas-world-scene-plan.ts` | `8cdf68ea77ee571fc0fdcbeb9921686ef6767d2fe06156e648cc0ee983a02abb` |
+| `src/domains/world/atlas/atlas-world-space.ts` | `9023fa99f88df8873ac68934fe0c7389dcafa991f02b27769099e60bbedd91af` |
 | `src/domains/world/atlas/canvas-polygon.ts` | `a1bf513b449cf21b8e7d449d291c1f7965303072916f0192a214328a90920cea` |
-| `src/domains/world/atlas/dornhain-golden-hierarchy.ts` | `0eb37f4a217a2bd4f67bcd3bf20d407ec08440f3d20e41e5d0ed738de91faa3e` |
-| `src/domains/world/atlas/dornhain-golden-reset.ts` | `993c1935fda833ddaf0f51c8f1c10b8b25a28e944c2e783ec2d89f2e9e95e9eb` |
-| `src/domains/world/atlas/dornhain-unified-starter.ts` | `5e9afab7ec94b7bef19535be6311b51a2f77c59b5f82b36fcd8b78007cc336f5` |
+| `src/domains/world/atlas/dornhain-golden-hierarchy.ts` | `80a9d41a65cef12235c4936b21f1ec7540ec28de054c22d4e5e7afd0a3a254f9` |
+| `src/domains/world/atlas/dornhain-golden-reset.ts` | `986cf4a9e3bc0b9c62c425bf93e58150132d58e20406d9c8c18b8b2c81ba1a6a` |
+| `src/domains/world/atlas/dornhain-unified-starter.ts` | `59ee930bdf3f8598acadc105427c5a084997b55c36bd668e143c3853d7bb48bf` |
 | `src/domains/world/atlas/dungeon-forge-workflow.ts` | `c9fdba0da576bc5f5516bb6c637d6efc993c9fab630fa2e42b725836f4ef0317` |
 | `src/domains/world/atlas/dungeon-generator.ts` | `6bbed5a42d16ec727e2745b0e1f47dc9d3f1dcc219ee0ccb06f15340307908e1` |
 | `src/domains/world/atlas/dungeon-grid.ts` | `56d9698047b1405a3ba4525146a189e8c8d299d0270fd6d678a0dafa5a0a8854` |
-| `src/domains/world/atlas/index.ts` | `e5422b342627ef01f2f87945a2f08204e30572aa289b46b5e93a117959679606` |
+| `src/domains/world/atlas/index.ts` | `c05d5e080487d31c8f56181eb6190d973839d23e25ad9221a942ae27b3600f5c` |
 | `src/domains/world/atlas/map-edit-ops.ts` | `3440965957e4212748d109f74ce202fa7a320840d5c9f1347b0457347c797b95` |
 | `src/domains/world/atlas/map-frame.ts` | `7a5bc6fb6ddcb38efd09fa3adf71889709fa230313a8d241d09cb9f5fa98e7a5` |
 | `src/domains/world/atlas/party-map-projection.ts` | `eeb742f12fa5e35e03a2a2c57f2c92f8ddb9d996562c88d6de96169d61b82fc9` |
@@ -3745,9 +4385,11 @@ All backend operations are included in the public declarations above.
 | `src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-runtime.ts` | `f250027a4c5a9674e377313738dac7f70a8a253464c46033f6a400a229b53c82` |
 | `src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-scene.ts` | `f63e63b2be555ef8348d15141ed44a01e70670667e3d0946221db2720cc32d8c` |
 | `src/infrastructure/world/atlas-three/atlas-three-camera.ts` | `3346a74d70149897f69d6cd394a6b2d1728510b4f4874038680e3dee8f942088` |
-| `src/infrastructure/world/atlas-three/atlas-three-runtime.ts` | `4fd22fc07f1cc8c8f528222c75f03be6f0794f5657b89aa07d3b58f37ddb0f7b` |
+| `src/infrastructure/world/atlas-three/atlas-three-multimap.ts` | `3198cad40450e963bd7803115f4f26904f080f18d34cb25eeb84b1882d2d05ca` |
+| `src/infrastructure/world/atlas-three/atlas-three-runtime.ts` | `df3c7aa8529a957e9041c3a8e617679d65ad9b25c741d289a4cacc28c883cee4` |
 | `src/infrastructure/world/atlas-three/atlas-three-scene.ts` | `9cf34c83b4e1f7ceed92d1a275717766d7c71fbd8d8294fd5c38dd5cc0a5e5e2` |
-| `src/infrastructure/world/atlas-three/index.ts` | `b51298f6bced92e59e408f83abb139eee77c7859e2b2ba108ba6d6e36d18d6f0` |
+| `src/infrastructure/world/atlas-three/atlas-unified-input.ts` | `8843d39261ec1696a480b8be7c1540c6d752c060e0595788495ffb08d2c39007` |
+| `src/infrastructure/world/atlas-three/index.ts` | `ca92ca031ede8814930d8c6e7b78a36eb5c53ccac1ca050dd6808269168781eb` |
 | `src/infrastructure/world/atlas-three/pbr-textures.ts` | `e5eb4eb6a63888eb95f95368e9e19400c8331b2d880f3b566708aeed2fc060b8` |
 | `src/infrastructure/world/host-world-adapter.ts` | `8fbaad8d6d4ec9cc42070444441fae94fb20af020cdada2125a705877ea4e1f1` |
 | `src/infrastructure/world/host-world-ports.contract.ts` | `9d11c1085646775f6c6eb5bdc29baa7ed40af0245354589bd767d4f80da1d582` |

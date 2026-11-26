@@ -22,9 +22,11 @@ buildSync({
 });
 
 const mod = await import(pathToFileURL(outfile).href);
-assert.equal(mod.DORNHAIN_GOLDEN_MAPS.length, 5);
+assert.equal(mod.DORNHAIN_GOLDEN_MAPS.length, 22);
 assert.ok(mod.isDornhainGoldenMapSeed('dornhain.unified.v4'));
 assert.ok(mod.isDornhainGoldenMapSeed('dornhain.map.loc.tavern'));
+assert.ok(mod.isDornhainGoldenMapSeed('dornhain.map.room.taproom'));
+assert.ok(mod.isDornhainGoldenMapSeed('dornhain.map.continent.ostmark'));
 
 for (const spec of mod.DORNHAIN_GOLDEN_MAPS) {
   const canvas = spec.buildCanvas();
@@ -35,11 +37,14 @@ for (const spec of mod.DORNHAIN_GOLDEN_MAPS) {
   assert.equal(meta.mapStatus, 'ready');
   assert.equal(meta.mapFrame.parentAnchor.parentMapId, 'parent-map-id');
   assert.ok(meta.mapFrame.parentAnchor.extentX > 0);
+  assert.ok(meta.mapFrame.parentAnchor.metersPerUnit > 0, `${spec.seedKey} calibrated`);
 }
 
 const resetSrc = readFileSync(join(root, 'src/domains/world/atlas/dornhain-golden-reset.ts'), 'utf8');
-assert.match(resetSrc, /continent\.westmark/);
+assert.match(resetSrc, /buildCalibratedDefaultWorld/);
 assert.match(resetSrc, /goldenMapSeeds/);
+const defaultWorldSrc = readFileSync(join(root, 'src/domains/world/atlas/atlas-default-world.ts'), 'utf8');
+assert.match(defaultWorldSrc, /continent\.westmark/);
 
 const editorSrc = readFileSync(join(root, 'src/app/world/atlas/useWorldAtlasEditor.ts'), 'utf8');
 assert.match(editorSrc, /DORNHAIN_GOLDEN_MAPS/);

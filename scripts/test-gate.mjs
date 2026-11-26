@@ -4524,6 +4524,21 @@ checkAibertoAib03PhaseAQa();
 checkAibertoAib04AskHost();
 checkAibertoAib05ChatUi();
 checkAibertoAib06ToolsRead();
+function checkSwsSharedWorldSpace() {
+  console.log('SWS (Shared World Space): transforms, write guards, ownership, calibrated bottom-up world, scene plan, multi-map/input/3D undo...');
+  for (const script of [
+    'scripts/atlas-world-space.self-test.mjs',
+    'scripts/atlas-geometry-ownership.self-test.mjs',
+    'scripts/sws-write-guards.self-test.mjs',
+    'scripts/atlas-default-world.self-test.mjs',
+    'scripts/atlas-world-scene-plan.self-test.mjs',
+    'scripts/sws-renderer-input-history.self-test.mjs',
+  ]) {
+    execFileSync(process.execPath, [script], { cwd: root, stdio: 'inherit' });
+  }
+}
+
+checkSwsSharedWorldSpace();
 checkAssetLicenseInventory();
 scanAddedLinesForSecrets();
 reportDependencyAudit();
