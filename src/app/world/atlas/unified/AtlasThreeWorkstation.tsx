@@ -98,6 +98,7 @@ import {
   type AtlasThreeProjectedPin,
   type AtlasThreeStyleMode,
   type AtlasThreeWorldMapSource,
+  type AtlasThreeWorldTerrainStats,
 } from '../../../../infrastructure/world/atlas-three';
 import { Button } from '../../../../shared/ui/button';
 import { Input } from '../../../../shared/ui/input';
@@ -652,6 +653,7 @@ export function AtlasThreeWorkstation({
             clearRootCount: number;
             activeMapCount: number;
             multiMap: AtlasThreeMultiMapStats;
+            terrain: AtlasThreeWorldTerrainStats;
             portalTransitionVisible: boolean;
             canUndo: boolean;
             canRedo: boolean;
@@ -732,6 +734,17 @@ export function AtlasThreeWorkstation({
             clearRootCount: 0,
             activeMapCount: 0,
           };
+          const emptyTerrain: AtlasThreeWorldTerrainStats = {
+            enabled: false,
+            revisionKey: null,
+            chunkCount: 0,
+            maxActiveLod: 0,
+            coarseBaseCount: 0,
+            totalTriangles: 0,
+            liveGeometryCount: 0,
+            incrementalSyncCount: 0,
+            chunks: [],
+          };
           const multiMap: AtlasThreeMultiMapStats = rt?.getMultiMapStats() ?? {
             activeMapIds: [],
             activeEditorMapId: null,
@@ -739,6 +752,9 @@ export function AtlasThreeWorkstation({
             liveGeometryCount: 0,
             clearRootCount: 0,
             incrementalSyncCount: 0,
+            ownPerMapTerrainCount: 0,
+            terrain: emptyTerrain,
+            groupOpacities: {},
           };
           const view = rt?.getView() ?? {
             mode: 'diorama-oblique' as const,
@@ -767,6 +783,7 @@ export function AtlasThreeWorkstation({
             clearRootCount: stats.clearRootCount,
             activeMapCount: stats.activeMapCount,
             multiMap,
+            terrain: multiMap.terrain,
             portalTransitionVisible: Boolean(portalTransitionRef.current),
             canUndo: canUndoRef.current,
             canRedo: canRedoRef.current,
@@ -1056,6 +1073,14 @@ export function AtlasThreeWorkstation({
       const rt = runtimeRef.current;
       if (!rt) return;
       const target = rt.zoomAtScreen(zoomDelta, px, py);
+
+      // Phase 1–3 Continuous-LOD Multi-Map World Space:
+      // NEVER trigger legacy document-swap (`onNavSelect`) when zooming inside the shared
+      // world scene graph — terrain chunks, overlay crossfade, and `zoomLayerState` track
+      // the camera continuously with zero clearRoot().
+      if (worldSceneGraphActiveRef.current) {
+        return;
+      }
 
       const transition = resolveContinuousZoomTransition({
         centerX: target.x,
