@@ -390,6 +390,7 @@ export {
   WORLD_SPACE_ERROR_DE,
   anchorHasShear,
   describeWorldChain,
+  isAtlasWorldError,
   localToWorld,
   resolveWorldChain,
   worldToLocal,
@@ -879,6 +880,7 @@ export {
   serializeSpatialWorld,
   undoSpatialWorldOperation,
   type ExecuteSpatialWorldResult,
+  type SpatialMapPersistSnapshot,
   type SpatialWorldHistorySnapshot,
   type SpatialWorldTransactionHistory,
 } from './atlas-world-operation-history';

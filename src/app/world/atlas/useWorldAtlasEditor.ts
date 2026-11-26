@@ -989,16 +989,17 @@ export function useWorldAtlasEditor({
   );
 
   /**
-   * SCM-04: Single-app-writer persistence helper (ATL2-H01) for multi-map SCM
-   * commits — persists an updated `generatorMeta` snapshot for any map in the
-   * current world via `worldAtlasService.upsertMap` (preserving SWS-01 guards).
+   * SCM-04 / M-2: Single-app-writer persistence helper (ATL2-H01) for multi-map SCM
+   * commits, undos, and redos — persists an updated `generatorMeta` snapshot for any
+   * map in the current world via `worldAtlasService.upsertMap` (preserving SWS-01 guards)
+   * and synchronizes local revision state so follow-up Undo/Redo never hits 409 conflicts.
    */
   const persistMapMeta = useCallback(
     async (
       vm: WorldAtlasMapVm,
       nextMeta: Readonly<Record<string, unknown>>,
     ): Promise<WorldAtlasMapVm> => {
-      return worldAtlasService.upsertMap({
+      const saved = await worldAtlasService.upsertMap({
         worldProfileId: vm.worldProfileId,
         mapId: vm.id,
         parentMapId: vm.parentMapId,
@@ -1012,6 +1013,13 @@ export function useWorldAtlasEditor({
         generatorMeta: nextMeta,
         expectedRevision: vm.revision,
       });
+      if (saved.id === activeMapIdRef.current) {
+        setMap(saved);
+      }
+      setSummaries((prev) =>
+        prev.map((s) => (s.id === saved.id ? { ...s, revision: saved.revision } : s)),
+      );
+      return saved;
     },
     [],
   );
