@@ -850,5 +850,24 @@ export {
   type SpatialWorldModel,
 } from './atlas-spatial-containment';
 
+export {
+  applyWorldOperation,
+  clipPolylineInsideBounds,
+  clipPolylineOutsideRects,
+  clipSegmentInsideBounds,
+  clipSegmentOutsideRect,
+  liangBarskySegmentInterval,
+  planPropagation,
+  type ApplyWorldOperationResult,
+  type SpatialCascadeCounts,
+  type SpatialChangeKind,
+  type SpatialConfirmationKind,
+  type SpatialEditIntent,
+  type SpatialEntityChange,
+  type SpatialPlanFailureCode,
+  type SpatialPropagationPlanResult,
+  type WorldOperationPlan,
+} from './atlas-spatial-propagation';
+
 
 
