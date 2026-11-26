@@ -19,12 +19,14 @@
 import * as THREE from 'three';
 import {
   DEFAULT_ATLAS_BOUNDS,
+  clipPolylineOutsideRects,
   type AtlasGraphicsPresetId,
   type AtlasLocalCutoutRect,
   type AtlasMapScale,
   type AtlasWorldSceneGroupPlan,
   type AtlasWorldScenePlan,
   type UnifiedCanvasDoc,
+  type UnifiedCanvasStroke,
   type WorldAtlasBounds,
 } from '../../../domains/world/atlas';
 import {
@@ -88,9 +90,10 @@ function rectFullyInsideAnyCutout(
 }
 
 /**
- * Replacement-Refinement filter (ADR-SWS-01 §5.2 / D4):
- * removes coarse parent objects/rooms/strokes that are superseded by an active
- * child map inside `cutoutRectsLocal`, preventing duplicate geometry & Z-fighting.
+ * Replacement-Refinement filter (ADR-SWS-01 §5.2 / D4 + SCM Finding M-2):
+ * removes coarse parent objects/rooms superseded by an active child map inside
+ * `cutoutRectsLocal` AND clips FLOWING strokes (rivers/roads) cleanly along cutout
+ * borders via Liang-Barsky so coarse parent ribbons never protrude into finer children.
  */
 export function applyLocalCutoutFilter(
   doc: UnifiedCanvasDoc,
@@ -102,9 +105,19 @@ export function applyLocalCutoutFilter(
     return !rectFullyInsideAnyCutout(r.x, r.y, r.w, r.h, cutouts);
   });
   const objects = doc.objects.filter((o) => !pointInsideAnyCutout(o.x, o.y, cutouts));
-  const strokes = doc.strokes.filter(
-    (s) => !s.points.every(([px, py]) => pointInsideAnyCutout(px, py, cutouts)),
-  );
+  const strokes: UnifiedCanvasStroke[] = [];
+  for (const s of doc.strokes) {
+    const clippedSegments = clipPolylineOutsideRects(s.points, cutouts);
+    for (let i = 0; i < clippedSegments.length; i += 1) {
+      const seg = clippedSegments[i]!;
+      if (seg.length < 2) continue;
+      strokes.push({
+        ...s,
+        id: i === 0 ? s.id : `${s.id}#clip${i}`,
+        points: seg,
+      });
+    }
+  }
   return {
     ...doc,
     rooms,

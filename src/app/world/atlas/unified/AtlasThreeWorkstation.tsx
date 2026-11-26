@@ -60,10 +60,12 @@ import {
   classifyAtlasPortalKind,
   computeAtlasPinZoomPresentation,
   createAtlasWorldCameraState,
+  deriveZoomLayerHierarchyState,
   formatAtlasSpanLabelDe,
   resolveContinuousZoomTransition,
   shouldPromptSpatialOperation,
   switchWorldCameraProjection,
+  type AtlasZoomLayerState,
   type SpatialEditIntent,
   type SpatialEditPreferences,
   type WorldOperationPlan,
@@ -325,6 +327,9 @@ export function AtlasThreeWorkstation({
 
   // Map-First: both Ebenen & Werkzeuge start collapsed as floating frosted-glass chips!
   const [layersOpen, setLayersOpen] = useState(false);
+  const layersOpenRef = useRef(layersOpen);
+  layersOpenRef.current = layersOpen;
+  const [zoomActiveMapId, setZoomActiveMapId] = useState<string | null>(null);
   const [toolsOpen, setToolsOpen] = useState(false);
   const [navSearch, setNavSearch] = useState('');
   const [tool, setTool] = useState<AtlasThreeToolId>('hand');
@@ -410,6 +415,30 @@ export function AtlasThreeWorkstation({
   const navNodeById = useMemo(
     () => new Map((externalNav?.nodes ?? []).map((n) => [n.id, n] as const)),
     [externalNav],
+  );
+  // SCM-05 / SCM-07: camera-/LOD-driven layer indicator derived purely from AtlasWorldScenePlan
+  const zoomLayerState: AtlasZoomLayerState = useMemo(
+    () =>
+      deriveZoomLayerHierarchyState({
+        activeEditorMapId: zoomActiveMapId,
+        worldRootMapId: externalNav?.worldPrimaryMapId ?? null,
+        worldLabelDe: externalNav?.worldLabel ?? 'Welt',
+        nodes: (externalNav?.nodes ?? []).map((n) => ({
+          id: n.id,
+          label: n.label,
+          sub: n.sub,
+          parentId: n.parentId,
+          primaryMapId: n.primaryMapId,
+        })),
+        fallbackPlaceId: activePlaceId,
+      }),
+    [activePlaceId, externalNav, zoomActiveMapId],
+  );
+  const zoomLayerStateRef = useRef<AtlasZoomLayerState>(zoomLayerState);
+  zoomLayerStateRef.current = zoomLayerState;
+  const zoomAncestorPlaceSet = useMemo(
+    () => new Set(zoomLayerState.activeBreadcrumbPlaceIds),
+    [zoomLayerState.activeBreadcrumbPlaceIds],
   );
   const baseSpan = defaultSpanForScale(mapScale);
   const zoomPct = Math.max(10, Math.min(2500, Math.round((baseSpan / Math.max(12, hudSpan)) * 100)));
@@ -525,6 +554,7 @@ export function AtlasThreeWorkstation({
         },
         onProjectedPins: (pins) => setProjectedPins(pins),
         onContextLostChange: (lost) => setContextLost(lost),
+        onActiveEditorMapChange: (mapId) => setZoomActiveMapId(mapId),
       });
       runtimeRef.current = rt;
       setReady(true);
@@ -546,6 +576,8 @@ export function AtlasThreeWorkstation({
             portalTransitionVisible: boolean;
             canUndo: boolean;
             canRedo: boolean;
+            layersOpen: boolean;
+            zoomLayer: AtlasZoomLayerState;
             ids: string[];
           };
           setCameraMode: (m: AtlasThreeCameraMode) => void;
@@ -659,6 +691,8 @@ export function AtlasThreeWorkstation({
             portalTransitionVisible: Boolean(portalTransitionRef.current),
             canUndo: canUndoRef.current,
             canRedo: canRedoRef.current,
+            layersOpen: layersOpenRef.current,
+            zoomLayer: zoomLayerStateRef.current,
             ids: rt?.getRenderedIds() ?? [],
           };
         },
@@ -1383,7 +1417,9 @@ export function AtlasThreeWorkstation({
       const matches = !q || node.label.toLowerCase().includes(q) || node.sub.toLowerCase().includes(q);
       const branch = renderNavBranch(node.id, depth + 1);
       if (!matches && !branch) return null;
-      const active = activePlaceId === node.id;
+      const isZoomActive = zoomLayerState.activePlaceId === node.id;
+      const isZoomAncestor = !isZoomActive && zoomAncestorPlaceSet.has(node.id);
+      const active = isZoomActive || (!zoomActiveMapId && activePlaceId === node.id);
       const addSpec = NEXT_CHILD_KIND[node.kind];
       return (
         <div key={node.id} className="space-y-0.5">
@@ -1392,10 +1428,14 @@ export function AtlasThreeWorkstation({
               <button
                 type="button"
                 data-atlas-nav-node={node.id}
-                aria-current={active ? 'true' : undefined}
+                data-atlas-zoom-active={isZoomActive ? 'true' : undefined}
+                data-atlas-zoom-ancestor={isZoomAncestor ? 'true' : undefined}
+                aria-current={active ? 'location' : undefined}
                 className={`flex min-h-11 min-w-0 flex-1 items-center gap-2 rounded-md border px-2 text-left text-xs transition-colors ${active
                   ? 'border-primary bg-primary text-primary-foreground font-semibold'
-                  : 'border-transparent text-foreground hover:border-accent hover:bg-muted/70'
+                  : isZoomAncestor
+                    ? 'border-primary/45 bg-primary/10 text-foreground font-medium hover:border-accent'
+                    : 'border-transparent text-foreground hover:border-accent hover:bg-muted/70'
                   }`}
                 onClick={() =>
                   triggerSmoothLevelTransition(
@@ -1687,6 +1727,17 @@ export function AtlasThreeWorkstation({
         >
           <Stack className="size-4" aria-hidden />
           <span>Ebenen</span>
+          <span
+            data-atlas-zoom-level-badge
+            data-atlas-zoom-active-map={zoomLayerState.activeMapId ?? ''}
+            data-atlas-zoom-depth={zoomLayerState.activeDepth}
+            className={`max-w-[9rem] truncate rounded px-1.5 py-0.5 text-[11px] font-semibold ${layersOpen
+              ? 'bg-primary-foreground/20 text-primary-foreground'
+              : 'bg-primary/15 text-primary'
+              }`}
+          >
+            {zoomLayerState.activeLabelDe}
+          </span>
           <CaretDown
             className={`size-3.5 transition-transform duration-200 ${layersOpen ? 'rotate-180' : ''}`}
             aria-hidden
@@ -1730,10 +1781,15 @@ export function AtlasThreeWorkstation({
                   <button
                     type="button"
                     data-atlas-nav-root
-                    aria-current={!activePlaceId || activePlaceId === externalNav.worldId ? 'true' : undefined}
-                    className={`flex min-h-11 w-full items-center gap-2 rounded-md border px-2 text-left text-xs transition-colors ${!activePlaceId || activePlaceId === externalNav.worldId
+                    data-atlas-zoom-active={zoomLayerState.isWorldRoot ? 'true' : undefined}
+                    aria-current={
+                      zoomLayerState.isWorldRoot || (!zoomActiveMapId && (!activePlaceId || activePlaceId === externalNav.worldId))
+                        ? 'location'
+                        : undefined
+                    }
+                    className={`flex min-h-11 w-full items-center gap-2 rounded-md border px-2 text-left text-xs transition-colors ${zoomLayerState.isWorldRoot || (!zoomActiveMapId && (!activePlaceId || activePlaceId === externalNav.worldId))
                       ? 'border-primary bg-primary text-primary-foreground font-semibold'
-                      : 'border-transparent text-foreground hover:border-accent hover:bg-muted/70'
+                      : 'border-primary/45 bg-primary/10 text-foreground font-medium hover:border-accent'
                       }`}
                     onClick={() =>
                       triggerSmoothLevelTransition('out', () => {

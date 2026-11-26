@@ -69,6 +69,8 @@ export type AtlasThreeRuntimeConfig = {
   readonly onCameraChange?: (view: AtlasThreeCameraView) => void;
   readonly onProjectedPins?: (pins: readonly AtlasThreeProjectedPin[]) => void;
   readonly onContextLostChange?: (lost: boolean) => void;
+  /** SCM-05 / SCM-07: emits camera-driven `activeEditorMapId` from AtlasWorldScenePlan without doc-swap. */
+  readonly onActiveEditorMapChange?: (mapId: string | null) => void;
 };
 
 type LightingSpec = {
@@ -536,6 +538,7 @@ export class AtlasThreeRuntime {
   private worldMaps: readonly AtlasWorldSceneMapInput[] = [];
   private worldSources = new Map<string, AtlasThreeWorldMapSource>();
   private worldScenePlan: AtlasWorldScenePlan | null = null;
+  private lastReportedEditorMapId: string | null | undefined = undefined;
   private clearRootCount = 0;
   private readonly gizmoGroup = new THREE.Group();
   private readonly selectionRing: THREE.Mesh;
@@ -1335,6 +1338,10 @@ export class AtlasThreeRuntime {
         previousPlan: this.worldScenePlan,
       });
       this.worldScenePlan = nextPlan;
+      if (nextPlan.activeEditorMapId !== this.lastReportedEditorMapId) {
+        this.lastReportedEditorMapId = nextPlan.activeEditorMapId;
+        this.config.onActiveEditorMapChange?.(nextPlan.activeEditorMapId);
+      }
       this.multiMap.sync({
         scenePlan: nextPlan,
         sources: this.worldSources,

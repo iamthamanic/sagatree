@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-world.json](source-contracts/infra-world.json) (SHA-256 `c212451f71ed9a7f0e9c0fc1b7aa84ad241db638c54093ac3b55b040b1dfec26`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-world.json](source-contracts/infra-world.json) (SHA-256 `39db64e8691a081c18447ce64f0fa75f3f47323334b59b8d2f504fdf28242f34`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -1156,7 +1156,7 @@ export function dampAtlasThreeView(
 }
 ```
 
-### src/infrastructure/world/atlas-three/atlas-three-multimap.ts:37
+### src/infrastructure/world/atlas-three/atlas-three-multimap.ts:39
 
 ```ts
 export type AtlasThreeWorldMapSource = {
@@ -1169,7 +1169,7 @@ export type AtlasThreeWorldMapSource = {
 };
 ```
 
-### src/infrastructure/world/atlas-three/atlas-three-multimap.ts:46
+### src/infrastructure/world/atlas-three/atlas-three-multimap.ts:48
 
 ```ts
 export type AtlasThreeMapGroupNode = {
@@ -1184,7 +1184,7 @@ export type AtlasThreeMapGroupNode = {
 };
 ```
 
-### src/infrastructure/world/atlas-three/atlas-three-multimap.ts:57
+### src/infrastructure/world/atlas-three/atlas-three-multimap.ts:59
 
 ```ts
 export type AtlasThreeMultiMapStats = {
@@ -1197,7 +1197,7 @@ export type AtlasThreeMultiMapStats = {
 };
 ```
 
-### src/infrastructure/world/atlas-three/atlas-three-multimap.ts:95
+### src/infrastructure/world/atlas-three/atlas-three-multimap.ts:98
 
 ```ts
 export function applyLocalCutoutFilter(
@@ -1210,9 +1210,19 @@ export function applyLocalCutoutFilter(
     return !rectFullyInsideAnyCutout(r.x, r.y, r.w, r.h, cutouts);
   });
   const objects = doc.objects.filter((o) => !pointInsideAnyCutout(o.x, o.y, cutouts));
-  const strokes = doc.strokes.filter(
-    (s) => !s.points.every(([px, py]) => pointInsideAnyCutout(px, py, cutouts)),
-  );
+  const strokes: UnifiedCanvasStroke[] = [];
+  for (const s of doc.strokes) {
+    const clippedSegments = clipPolylineOutsideRects(s.points, cutouts);
+    for (let i = 0; i < clippedSegments.length; i += 1) {
+      const seg = clippedSegments[i]!;
+      if (seg.length < 2) continue;
+      strokes.push({
+        ...s,
+        id: i === 0 ? s.id : `${s.id}#clip${i}`,
+        points: seg,
+      });
+    }
+  }
   return {
     ...doc,
     rooms,
@@ -1222,7 +1232,7 @@ export function applyLocalCutoutFilter(
 }
 ```
 
-### src/infrastructure/world/atlas-three/atlas-three-multimap.ts:176
+### src/infrastructure/world/atlas-three/atlas-three-multimap.ts:189
 
 ```ts
 export function multiMapDepthLiftY(depth: number): number {
@@ -1233,7 +1243,7 @@ export function multiMapDepthLiftY(depth: number): number {
 }
 ```
 
-### src/infrastructure/world/atlas-three/atlas-three-multimap.ts:187
+### src/infrastructure/world/atlas-three/atlas-three-multimap.ts:200
 
 ```ts
 export function applyWorldTransformToGroup(
@@ -1256,7 +1266,7 @@ export function applyWorldTransformToGroup(
 }
 ```
 
-### src/infrastructure/world/atlas-three/atlas-three-multimap.ts:206
+### src/infrastructure/world/atlas-three/atlas-three-multimap.ts:219
 
 ```ts
 export class AtlasThreeMultiMapGraph {
@@ -1492,10 +1502,12 @@ export type AtlasThreeRuntimeConfig = {
   readonly onCameraChange?: (view: AtlasThreeCameraView) => void;
   readonly onProjectedPins?: (pins: readonly AtlasThreeProjectedPin[]) => void;
   readonly onContextLostChange?: (lost: boolean) => void;
+  /** SCM-05 / SCM-07: emits camera-driven `activeEditorMapId` from AtlasWorldScenePlan without doc-swap. */
+  readonly onActiveEditorMapChange?: (mapId: string | null) => void;
 };
 ```
 
-### src/infrastructure/world/atlas-three/atlas-three-runtime.ts:531
+### src/infrastructure/world/atlas-three/atlas-three-runtime.ts:533
 
 ```ts
 export class AtlasThreeRuntime {
@@ -1506,6 +1518,7 @@ export class AtlasThreeRuntime {
   private worldMaps: readonly AtlasWorldSceneMapInput[] = [];
   private worldSources = new Map<string, AtlasThreeWorldMapSource>();
   private worldScenePlan: AtlasWorldScenePlan | null = null;
+  private lastReportedEditorMapId: string | null | undefined = undefined;
   private clearRootCount = 0;
   private readonly gizmoGroup = new THREE.Group();
   private readonly selectionRing: THREE.Mesh;
@@ -2305,6 +2318,10 @@ export class AtlasThreeRuntime {
         previousPlan: this.worldScenePlan,
       });
       this.worldScenePlan = nextPlan;
+      if (nextPlan.activeEditorMapId !== this.lastReportedEditorMapId) {
+        this.lastReportedEditorMapId = nextPlan.activeEditorMapId;
+        this.config.onActiveEditorMapChange?.(nextPlan.activeEditorMapId);
+      }
       this.multiMap.sync({
         scenePlan: nextPlan,
         sources: this.worldSources,
@@ -4409,13 +4426,19 @@ All backend operations are included in the public declarations above.
 | `src/domains/world/atlas/atlas-revision-contract.ts` | `d01c356239143862f9aa8f3fd44fca79105e3ed390327c34b9be6ce1902c78d6` |
 | `src/domains/world/atlas/atlas-scene-scatter.ts` | `6be6ec6311fab797778151ca5213d334a99e66406b3436fae526149d0c0d6cef` |
 | `src/domains/world/atlas/atlas-selection.ts` | `6c16fb40fe26addea8e33e718a89a019de099c6008c1000dd697d48fa12849a7` |
+| `src/domains/world/atlas/atlas-spatial-containment.ts` | `908c720edfb0ff2239da7f42cf79507921bfd52b95a750222cd306ef2a3d1dfa` |
+| `src/domains/world/atlas/atlas-spatial-edit-prefs.ts` | `14e9039e97bf3c7fffa86d1585fa2d5e85ebc943e489ff9d3c83c91746aff218` |
+| `src/domains/world/atlas/atlas-spatial-propagation.ts` | `8b447f057499d240bd7b65ae6a4ef2e7f8efe200d51c1a35646b9c92e33a75a2` |
+| `src/domains/world/atlas/atlas-spatial-world-bridge.ts` | `312223f35df6a5314ed35dbc21c0b7af240ceca09e76fcbdf1f2828bb92fc130` |
 | `src/domains/world/atlas/atlas-terrain-mesh.ts` | `50dc7ef6c013f87f82f2030317c69a8ad619c7b4db1b65db0a7571a18186dd5d` |
 | `src/domains/world/atlas/atlas-tool-registry.ts` | `be0492bd7d71f1dafa260c6a1a75165f8c587bd1f55d3178f96fbd67ac5988af` |
 | `src/domains/world/atlas/atlas-webgl-write-retire.ts` | `baf40e97aaa9c74c873f3919e72b4d9049e8c7781566ed58ce52ccf2f168ce69` |
 | `src/domains/world/atlas/atlas-workstation-adaptive.ts` | `2a87a8f4cf36e532f9bbb0faa0085013f4169fedc26622a1bbef800b46f59846` |
 | `src/domains/world/atlas/atlas-world-camera.ts` | `b0ac5e7eac73a8cdaa0e21e6758f6d6cfa1e448d935a9d763213a6ce9bc9a127` |
+| `src/domains/world/atlas/atlas-world-operation-history.ts` | `84bd145c601d19d9ab99ff0b71302a9a3d9032c200ffbbeef42585540f7e1969` |
 | `src/domains/world/atlas/atlas-world-scene-plan.ts` | `8cdf68ea77ee571fc0fdcbeb9921686ef6767d2fe06156e648cc0ee983a02abb` |
 | `src/domains/world/atlas/atlas-world-space.ts` | `9023fa99f88df8873ac68934fe0c7389dcafa991f02b27769099e60bbedd91af` |
+| `src/domains/world/atlas/atlas-zoom-layer-state.ts` | `2e9bb128618e590ea161b499a915650e9bf60e193d704ebb84cf6bdc66bd03b6` |
 | `src/domains/world/atlas/canvas-polygon.ts` | `a1bf513b449cf21b8e7d449d291c1f7965303072916f0192a214328a90920cea` |
 | `src/domains/world/atlas/dornhain-golden-hierarchy.ts` | `80a9d41a65cef12235c4936b21f1ec7540ec28de054c22d4e5e7afd0a3a254f9` |
 | `src/domains/world/atlas/dornhain-golden-reset.ts` | `986cf4a9e3bc0b9c62c425bf93e58150132d58e20406d9c8c18b8b2c81ba1a6a` |
@@ -4423,7 +4446,7 @@ All backend operations are included in the public declarations above.
 | `src/domains/world/atlas/dungeon-forge-workflow.ts` | `c9fdba0da576bc5f5516bb6c637d6efc993c9fab630fa2e42b725836f4ef0317` |
 | `src/domains/world/atlas/dungeon-generator.ts` | `6bbed5a42d16ec727e2745b0e1f47dc9d3f1dcc219ee0ccb06f15340307908e1` |
 | `src/domains/world/atlas/dungeon-grid.ts` | `56d9698047b1405a3ba4525146a189e8c8d299d0270fd6d678a0dafa5a0a8854` |
-| `src/domains/world/atlas/index.ts` | `c05d5e080487d31c8f56181eb6190d973839d23e25ad9221a942ae27b3600f5c` |
+| `src/domains/world/atlas/index.ts` | `508e1be1f9a26032cf11ea3250918c7c38164c541bb68f473c1c4d7fb448e399` |
 | `src/domains/world/atlas/map-edit-ops.ts` | `3440965957e4212748d109f74ce202fa7a320840d5c9f1347b0457347c797b95` |
 | `src/domains/world/atlas/map-frame.ts` | `7a5bc6fb6ddcb38efd09fa3adf71889709fa230313a8d241d09cb9f5fa98e7a5` |
 | `src/domains/world/atlas/party-map-projection.ts` | `eeb742f12fa5e35e03a2a2c57f2c92f8ddb9d996562c88d6de96169d61b82fc9` |
@@ -4474,8 +4497,8 @@ All backend operations are included in the public declarations above.
 | `src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-runtime.ts` | `f250027a4c5a9674e377313738dac7f70a8a253464c46033f6a400a229b53c82` |
 | `src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-scene.ts` | `f63e63b2be555ef8348d15141ed44a01e70670667e3d0946221db2720cc32d8c` |
 | `src/infrastructure/world/atlas-three/atlas-three-camera.ts` | `ba02fba1d1dbd675912a5a2472a002cbe99c8673d74838d7aa61995645c62a0c` |
-| `src/infrastructure/world/atlas-three/atlas-three-multimap.ts` | `79d01bf79d6866ce771b40ff6d290cf8a0578b21a0aac696b049cbf3ab05f80f` |
-| `src/infrastructure/world/atlas-three/atlas-three-runtime.ts` | `f2d04e3f56bb3e66614e86b7e87cc36f53cc7031a910f99e544d6fe07a2fb258` |
+| `src/infrastructure/world/atlas-three/atlas-three-multimap.ts` | `7551fbe8aefd9967da0bb489daf999ba9b8c457d57b7251360e9aa2ee5ec5398` |
+| `src/infrastructure/world/atlas-three/atlas-three-runtime.ts` | `167934648d9322f4bb76f9f7cc294c58d768e02b072cf472cf8506a4b09fe5f5` |
 | `src/infrastructure/world/atlas-three/atlas-three-scene.ts` | `9cf34c83b4e1f7ceed92d1a275717766d7c71fbd8d8294fd5c38dd5cc0a5e5e2` |
 | `src/infrastructure/world/atlas-three/atlas-unified-input.ts` | `8843d39261ec1696a480b8be7c1540c6d752c060e0595788495ffb08d2c39007` |
 | `src/infrastructure/world/atlas-three/index.ts` | `ca92ca031ede8814930d8c6e7b78a36eb5c53ccac1ca050dd6808269168781eb` |

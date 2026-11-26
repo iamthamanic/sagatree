@@ -25,11 +25,11 @@
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-      "sha256": "79d01bf79d6866ce771b40ff6d290cf8a0578b21a0aac696b049cbf3ab05f80f"
+      "sha256": "7551fbe8aefd9967da0bb489daf999ba9b8c457d57b7251360e9aa2ee5ec5398"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
-      "sha256": "f2d04e3f56bb3e66614e86b7e87cc36f53cc7031a910f99e544d6fe07a2fb258"
+      "sha256": "167934648d9322f4bb76f9f7cc294c58d768e02b072cf472cf8506a4b09fe5f5"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
@@ -326,6 +326,22 @@
       "sha256": "6c16fb40fe26addea8e33e718a89a019de099c6008c1000dd697d48fa12849a7"
     },
     {
+      "path": "src/domains/world/atlas/atlas-spatial-containment.ts",
+      "sha256": "908c720edfb0ff2239da7f42cf79507921bfd52b95a750222cd306ef2a3d1dfa"
+    },
+    {
+      "path": "src/domains/world/atlas/atlas-spatial-edit-prefs.ts",
+      "sha256": "14e9039e97bf3c7fffa86d1585fa2d5e85ebc943e489ff9d3c83c91746aff218"
+    },
+    {
+      "path": "src/domains/world/atlas/atlas-spatial-propagation.ts",
+      "sha256": "8b447f057499d240bd7b65ae6a4ef2e7f8efe200d51c1a35646b9c92e33a75a2"
+    },
+    {
+      "path": "src/domains/world/atlas/atlas-spatial-world-bridge.ts",
+      "sha256": "312223f35df6a5314ed35dbc21c0b7af240ceca09e76fcbdf1f2828bb92fc130"
+    },
+    {
       "path": "src/domains/world/atlas/atlas-terrain-mesh.ts",
       "sha256": "50dc7ef6c013f87f82f2030317c69a8ad619c7b4db1b65db0a7571a18186dd5d"
     },
@@ -346,12 +362,20 @@
       "sha256": "b0ac5e7eac73a8cdaa0e21e6758f6d6cfa1e448d935a9d763213a6ce9bc9a127"
     },
     {
+      "path": "src/domains/world/atlas/atlas-world-operation-history.ts",
+      "sha256": "84bd145c601d19d9ab99ff0b71302a9a3d9032c200ffbbeef42585540f7e1969"
+    },
+    {
       "path": "src/domains/world/atlas/atlas-world-scene-plan.ts",
       "sha256": "8cdf68ea77ee571fc0fdcbeb9921686ef6767d2fe06156e648cc0ee983a02abb"
     },
     {
       "path": "src/domains/world/atlas/atlas-world-space.ts",
       "sha256": "9023fa99f88df8873ac68934fe0c7389dcafa991f02b27769099e60bbedd91af"
+    },
+    {
+      "path": "src/domains/world/atlas/atlas-zoom-layer-state.ts",
+      "sha256": "2e9bb128618e590ea161b499a915650e9bf60e193d704ebb84cf6bdc66bd03b6"
     },
     {
       "path": "src/domains/world/atlas/canvas-polygon.ts",
@@ -383,7 +407,7 @@
     },
     {
       "path": "src/domains/world/atlas/index.ts",
-      "sha256": "c05d5e080487d31c8f56181eb6190d973839d23e25ad9221a942ae27b3600f5c"
+      "sha256": "508e1be1f9a26032cf11ea3250918c7c38164c541bb68f473c1c4d7fb448e399"
     },
     {
       "path": "src/domains/world/atlas/map-edit-ops.ts",
@@ -2253,6 +2277,198 @@
     },
     {
       "kind": "TypeAliasDeclaration",
+      "name": "SpatialRelationKind",
+      "path": "src/domains/world/atlas/atlas-spatial-containment.ts",
+      "line": 22,
+      "endLine": 22,
+      "text": "export type SpatialRelationKind = 'CONTAINED' | 'CARVED' | 'FLOWING';"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "SpatialStructureRole",
+      "path": "src/domains/world/atlas/atlas-spatial-containment.ts",
+      "line": 25,
+      "endLine": 41,
+      "text": "export type SpatialStructureRole =\n  | 'world'\n  | 'continent'\n  | 'country'\n  | 'landmass'\n  | 'political'\n  | 'settlement'\n  | 'forest'\n  | 'building'\n  | 'room'\n  | 'mountain'\n  | 'dungeon'\n  | 'tunnel'\n  | 'river'\n  | 'road'\n  | 'coast'\n  | 'prop';"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "SpatialPoint2D",
+      "path": "src/domains/world/atlas/atlas-spatial-containment.ts",
+      "line": 43,
+      "endLine": 43,
+      "text": "export type SpatialPoint2D = readonly [number, number];"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "SpatialBounds2D",
+      "path": "src/domains/world/atlas/atlas-spatial-containment.ts",
+      "line": 45,
+      "endLine": 50,
+      "text": "export type SpatialBounds2D = {\n  readonly minX: number;\n  readonly minY: number;\n  readonly maxX: number;\n  readonly maxY: number;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "SpatialEntityStatus",
+      "path": "src/domains/world/atlas/atlas-spatial-containment.ts",
+      "line": 52,
+      "endLine": 52,
+      "text": "export type SpatialEntityStatus = 'active' | 'archived';"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "SpatialEntityNode",
+      "path": "src/domains/world/atlas/atlas-spatial-containment.ts",
+      "line": 55,
+      "endLine": 77,
+      "text": "export type SpatialEntityNode = {\n  readonly id: string;\n  readonly mapId: string;\n  readonly featureId: string;\n  readonly labelDe: string;\n  readonly role: SpatialStructureRole;\n  /** Optional explicit relation override; inferred via `resolveRelation` when omitted. */\n  readonly relation?: SpatialRelationKind;\n  /** Carrier entity in the containment graph; null ONLY for `rootTopographyId`. */\n  readonly carrierId: string | null;\n  readonly boundsWorld: SpatialBounds2D;\n  readonly polygonWorld?: readonly SpatialPoint2D[];\n  /** Polyline for FLOWING entities (river / road / coast). */\n  readonly polylineWorld?: readonly SpatialPoint2D[];\n  /** Routed/clipped segments for FLOWING entities after topography edits. */\n  readonly clippedSegmentsWorld?: readonly (readonly SpatialPoint2D[])[];\n  /** Hollowed interior cavity bounds for CARVED structures inside a solid mass. */\n  readonly cavityBoundsWorld?: SpatialBounds2D;\n  readonly status: SpatialEntityStatus;\n  /** Set during soft-cascade removal so archived children remain recoverable (SCM §5). */\n  readonly archivedByEntityId?: string | null;\n  readonly archivedReasonDe?: string | null;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "SpatialWorldModel",
+      "path": "src/domains/world/atlas/atlas-spatial-containment.ts",
+      "line": 83,
+      "endLine": 88,
+      "text": "export type SpatialWorldModel = {\n  readonly rootTopographyId: string;\n  readonly entities: Readonly<Record<string, SpatialEntityNode>>;\n  /** Optional linked SWS-01 map anchor graph verified jointly for cycle/shear safety. */\n  readonly mapNodes?: Readonly<Record<string, AtlasWorldSpaceNode>>;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "SpatialInvariantId",
+      "path": "src/domains/world/atlas/atlas-spatial-containment.ts",
+      "line": 90,
+      "endLine": 90,
+      "text": "export type SpatialInvariantId = 'INV-1' | 'INV-2' | 'INV-3' | 'INV-4' | 'INV-5' | 'INV-6';"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "SpatialInvariantViolationCode",
+      "path": "src/domains/world/atlas/atlas-spatial-containment.ts",
+      "line": 92,
+      "endLine": 106,
+      "text": "export type SpatialInvariantViolationCode =\n  | 'missing-root-topography'\n  | 'multiple-roots'\n  | 'invalid-root-role'\n  | 'carrier-cycle'\n  | 'missing-carrier'\n  | 'map-anchor-cycle'\n  | 'map-anchor-shear'\n  | 'map-anchor-invalid'\n  | 'containment-overflow'\n  | 'carved-breach'\n  | 'active-child-in-archived-carrier'\n  | 'topography-dependency-inverted'\n  | 'invalid-geometry'\n  | 'empty-flowing-path';"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "SpatialInvariantViolation",
+      "path": "src/domains/world/atlas/atlas-spatial-containment.ts",
+      "line": 108,
+      "endLine": 114,
+      "text": "export type SpatialInvariantViolation = {\n  readonly invariant: SpatialInvariantId;\n  readonly code: SpatialInvariantViolationCode;\n  readonly entityId: string;\n  readonly carrierId?: string | null;\n  readonly reasonDe: string;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "SpatialInvariantValidationResult",
+      "path": "src/domains/world/atlas/atlas-spatial-containment.ts",
+      "line": 116,
+      "endLine": 118,
+      "text": "export type SpatialInvariantValidationResult =\n  | { readonly ok: true; readonly violations: readonly [] }\n  | { readonly ok: false; readonly violations: readonly SpatialInvariantViolation[] };"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "SpatialContainmentCheckResult",
+      "path": "src/domains/world/atlas/atlas-spatial-containment.ts",
+      "line": 120,
+      "endLine": 132,
+      "text": "export type SpatialContainmentCheckResult = {\n  readonly fits: boolean;\n  readonly entityId: string;\n  readonly relation: SpatialRelationKind;\n  readonly carrierId: string | null;\n  readonly violations: readonly SpatialInvariantViolation[];\n  readonly overflow: {\n    readonly left: number;\n    readonly right: number;\n    readonly top: number;\n    readonly bottom: number;\n  };\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "SpatialEditPreferences",
+      "path": "src/domains/world/atlas/atlas-spatial-edit-prefs.ts",
+      "line": 17,
+      "endLine": 20,
+      "text": "export type SpatialEditPreferences = {\n  readonly confirmGrow: boolean;\n  readonly confirmCascade: boolean;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "SpatialEditIntent",
+      "path": "src/domains/world/atlas/atlas-spatial-propagation.ts",
+      "line": 37,
+      "endLine": 60,
+      "text": "export type SpatialEditIntent =\n  | {\n      readonly kind: 'resize_or_move';\n      readonly entityId: string;\n      readonly nextBoundsWorld: SpatialBounds2D;\n      readonly nextPolygonWorld?: readonly SpatialPoint2D[];\n      readonly nextPolylineWorld?: readonly SpatialPoint2D[];\n      /** Optional margin added when a carrier grows to enclose the edited child. */\n      readonly growPadding?: number;\n    }\n  | {\n      readonly kind: 'reparent';\n      readonly entityId: string;\n      readonly nextCarrierId: string;\n      readonly growPadding?: number;\n    }\n  | {\n      readonly kind: 'remove';\n      readonly entityId: string;\n    }\n  | {\n      readonly kind: 'restore';\n      readonly entityId: string;\n    };"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "SpatialChangeKind",
+      "path": "src/domains/world/atlas/atlas-spatial-propagation.ts",
+      "line": 62,
+      "endLine": 71,
+      "text": "export type SpatialChangeKind =\n  | 'update_target'\n  | 'grow_carrier'\n  | 'carve_cavity'\n  | 'reroute_flowing'\n  | 'cap_flowing'\n  | 'archive_target'\n  | 'archive_cascade'\n  | 'restore_entity'\n  | 'reparent_entity';"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "SpatialEntityChange",
+      "path": "src/domains/world/atlas/atlas-spatial-propagation.ts",
+      "line": 73,
+      "endLine": 91,
+      "text": "export type SpatialEntityChange = {\n  readonly entityId: string;\n  readonly mapId: string;\n  readonly featureId: string;\n  readonly labelDe: string;\n  readonly role: SpatialStructureRole;\n  readonly relation: SpatialRelationKind;\n  readonly kind: SpatialChangeKind;\n  readonly prevBoundsWorld: SpatialBounds2D;\n  readonly nextBoundsWorld: SpatialBounds2D;\n  readonly nextPolygonWorld?: readonly SpatialPoint2D[];\n  readonly nextPolylineWorld?: readonly SpatialPoint2D[];\n  readonly nextClippedSegmentsWorld?: readonly (readonly SpatialPoint2D[])[];\n  readonly nextCavityBoundsWorld?: SpatialBounds2D;\n  readonly nextCarrierId?: string | null;\n  readonly nextStatus?: SpatialEntityStatus;\n  readonly archivedByEntityId?: string | null;\n  readonly archivedReasonDe?: string | null;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "SpatialConfirmationKind",
+      "path": "src/domains/world/atlas/atlas-spatial-propagation.ts",
+      "line": 93,
+      "endLine": 93,
+      "text": "export type SpatialConfirmationKind = 'none' | 'grow' | 'cascade';"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "SpatialCascadeCounts",
+      "path": "src/domains/world/atlas/atlas-spatial-propagation.ts",
+      "line": 95,
+      "endLine": 104,
+      "text": "export type SpatialCascadeCounts = {\n  readonly continents: number;\n  readonly countries: number;\n  readonly settlements: number;\n  readonly buildings: number;\n  readonly rooms: number;\n  readonly other: number;\n  readonly total: number;\n  readonly flowingAffected: number;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "WorldOperationPlan",
+      "path": "src/domains/world/atlas/atlas-spatial-propagation.ts",
+      "line": 106,
+      "endLine": 123,
+      "text": "export type WorldOperationPlan = {\n  readonly intent: SpatialEditIntent;\n  readonly targetEntityId: string;\n  readonly targetRelation: SpatialRelationKind;\n  readonly requiresConfirmation: SpatialConfirmationKind;\n  /** Ordered IDs of ancestors grown during upward propagation (direct parent first). */\n  readonly grownCarrierIds: readonly string[];\n  /** Ordered IDs of entities archived by soft-cascade (excluding target). */\n  readonly archivedDescendantIds: readonly string[];\n  /** Ordered IDs of FLOWING entities rerouted or capped. */\n  readonly reroutedFlowingIds: readonly string[];\n  readonly cascadeCounts: SpatialCascadeCounts;\n  readonly changes: readonly SpatialEntityChange[];\n  /** Distinct mapIds touched by this atomic operation. */\n  readonly affectedMapIds: readonly string[];\n  /** Ready-to-render German summary for the confirmation dialog. */\n  readonly summaryDe: string;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "SpatialPlanFailureCode",
+      "path": "src/domains/world/atlas/atlas-spatial-propagation.ts",
+      "line": 125,
+      "endLine": 135,
+      "text": "export type SpatialPlanFailureCode =\n  | 'pre-invariant-failed'\n  | 'entity-not-found'\n  | 'entity-archived'\n  | 'entity-not-archived'\n  | 'cannot-remove-root'\n  | 'invalid-geometry'\n  | 'cycle-rejected'\n  | 'topography-inversion-rejected'\n  | 'flowing-cannot-grow-topography'\n  | 'missing-carrier';"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "SpatialPropagationPlanResult",
+      "path": "src/domains/world/atlas/atlas-spatial-propagation.ts",
+      "line": 137,
+      "endLine": 144,
+      "text": "export type SpatialPropagationPlanResult =\n  | { readonly ok: true; readonly plan: WorldOperationPlan }\n  | {\n      readonly ok: false;\n      readonly code: SpatialPlanFailureCode;\n      readonly violations: readonly SpatialInvariantViolation[];\n      readonly reasonDe: string;\n    };"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "ApplyWorldOperationResult",
+      "path": "src/domains/world/atlas/atlas-spatial-propagation.ts",
+      "line": 146,
+      "endLine": 159,
+      "text": "export type ApplyWorldOperationResult =\n  | {\n      readonly ok: true;\n      readonly world: SpatialWorldModel;\n      readonly appliedChangeCount: number;\n      readonly affectedMapIds: readonly string[];\n    }\n  | {\n      readonly ok: false;\n      readonly world: SpatialWorldModel;\n      readonly code: 'pre-invariant-failed' | 'post-invariant-failed';\n      readonly violations: readonly SpatialInvariantViolation[];\n      readonly reasonDe: string;\n    };"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "SpatialMapSourceInput",
+      "path": "src/domains/world/atlas/atlas-spatial-world-bridge.ts",
+      "line": 42,
+      "endLine": 50,
+      "text": "export type SpatialMapSourceInput = {\n  readonly mapId: string;\n  readonly title: string;\n  readonly role: SpatialStructureRole;\n  readonly parentMapId: string | null;\n  readonly parentAnchor: ParentSpatialAnchor | null;\n  readonly bounds?: WorldAtlasBounds;\n  readonly doc: UnifiedCanvasDoc;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "ProjectedMapMutation",
+      "path": "src/domains/world/atlas/atlas-spatial-world-bridge.ts",
+      "line": 52,
+      "endLine": 56,
+      "text": "export type ProjectedMapMutation = {\n  readonly mapId: string;\n  readonly nextDoc: UnifiedCanvasDoc;\n  readonly nextParentAnchor?: ParentSpatialAnchor | null;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
       "name": "AtlasTerrainLodBand",
       "path": "src/domains/world/atlas/atlas-terrain-mesh.ts",
       "line": 19,
@@ -2405,6 +2621,30 @@
     },
     {
       "kind": "TypeAliasDeclaration",
+      "name": "SpatialWorldHistorySnapshot",
+      "path": "src/domains/world/atlas/atlas-world-operation-history.ts",
+      "line": 20,
+      "endLine": 24,
+      "text": "export type SpatialWorldHistorySnapshot = {\n  readonly worldJson: string;\n  readonly summaryDe: string;\n  readonly affectedMapIds: readonly string[];\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "SpatialWorldTransactionHistory",
+      "path": "src/domains/world/atlas/atlas-world-operation-history.ts",
+      "line": 26,
+      "endLine": 29,
+      "text": "export type SpatialWorldTransactionHistory = {\n  readonly past: readonly SpatialWorldHistorySnapshot[];\n  readonly future: readonly SpatialWorldHistorySnapshot[];\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "ExecuteSpatialWorldResult",
+      "path": "src/domains/world/atlas/atlas-world-operation-history.ts",
+      "line": 50,
+      "endLine": 65,
+      "text": "export type ExecuteSpatialWorldResult =\n  | {\n      readonly ok: true;\n      readonly world: SpatialWorldModel;\n      readonly history: SpatialWorldTransactionHistory;\n      readonly appliedChangeCount: number;\n      readonly affectedMapIds: readonly string[];\n    }\n  | {\n      readonly ok: false;\n      readonly world: SpatialWorldModel;\n      readonly history: SpatialWorldTransactionHistory;\n      readonly code: Extract<ApplyWorldOperationResult, { ok: false }>['code'];\n      readonly violations: Extract<ApplyWorldOperationResult, { ok: false }>['violations'];\n      readonly reasonDe: string;\n    };"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
       "name": "AtlasWorldSceneMapInput",
       "path": "src/domains/world/atlas/atlas-world-scene-plan.ts",
       "line": 29,
@@ -2530,6 +2770,22 @@
       "line": 163,
       "endLine": 167,
       "text": "export type AtlasWorldTransformChain = {\n  readonly mapId: string;\n  readonly depth: number;\n  readonly nodeIds: readonly string[]; // map → … → root\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AtlasZoomLayerNavNode",
+      "path": "src/domains/world/atlas/atlas-zoom-layer-state.ts",
+      "line": 12,
+      "endLine": 18,
+      "text": "export type AtlasZoomLayerNavNode = {\n  readonly id: string;\n  readonly label: string;\n  readonly sub?: string;\n  readonly parentId: string | null;\n  readonly primaryMapId: string | null;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AtlasZoomLayerState",
+      "path": "src/domains/world/atlas/atlas-zoom-layer-state.ts",
+      "line": 20,
+      "endLine": 29,
+      "text": "export type AtlasZoomLayerState = {\n  readonly activeMapId: string | null;\n  readonly activePlaceId: string | null;\n  readonly isWorldRoot: boolean;\n  readonly activeLabelDe: string;\n  /** 1 = Welt, 2 = Kontinent, 3 = Land, 4 = Ort, 5 = Gebäude, 6 = Raum. */\n  readonly activeDepth: number;\n  /** Ordered ancestor place IDs from topmost child down to `activePlaceId`. */\n  readonly activeBreadcrumbPlaceIds: readonly string[];\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
@@ -3881,15 +4137,15 @@
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
       "line": 20,
-      "endLine": 29,
+      "endLine": 31,
       "module": "../../../domains/world/atlas",
       "resolvedPath": "src/domains/world/atlas/index.ts",
-      "expression": "import {\n  DEFAULT_ATLAS_BOUNDS,\n  type AtlasGraphicsPresetId,\n  type AtlasLocalCutoutRect,\n  type AtlasMapScale,\n  type AtlasWorldSceneGroupPlan,\n  type AtlasWorldScenePlan,\n  type UnifiedCanvasDoc,\n  type WorldAtlasBounds,\n} from '../../../domains/world/atlas';"
+      "expression": "import {\n  DEFAULT_ATLAS_BOUNDS,\n  clipPolylineOutsideRects,\n  type AtlasGraphicsPresetId,\n  type AtlasLocalCutoutRect,\n  type AtlasMapScale,\n  type AtlasWorldSceneGroupPlan,\n  type AtlasWorldScenePlan,\n  type UnifiedCanvasDoc,\n  type UnifiedCanvasStroke,\n  type WorldAtlasBounds,\n} from '../../../domains/world/atlas';"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-      "line": 30,
-      "endLine": 35,
+      "line": 32,
+      "endLine": 37,
       "module": "./atlas-three-scene",
       "resolvedPath": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
       "expression": "import {\n  buildAtlasThreeScenePlan,\n  type AtlasThreeLook,\n  type AtlasThreeScenePlan,\n  type AtlasThreeSurfaceKey,\n} from './atlas-three-scene';"
@@ -4307,44 +4563,44 @@
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-      "line": 37,
-      "endLine": 44,
+      "line": 39,
+      "endLine": 46,
       "text": "export type AtlasThreeWorldMapSource = {\n  readonly mapId: string;\n  readonly doc: UnifiedCanvasDoc;\n  readonly mapScale: AtlasMapScale;\n  readonly look: AtlasThreeLook;\n  readonly bounds?: WorldAtlasBounds;\n  readonly revisionKey?: string;\n};"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-      "line": 46,
-      "endLine": 55,
+      "line": 48,
+      "endLine": 57,
       "text": "export type AtlasThreeMapGroupNode = {\n  readonly mapId: string;\n  readonly pivot: THREE.Group;\n  readonly content: THREE.Group;\n  readonly pickables: THREE.Object3D[];\n  readonly scenePlan: AtlasThreeScenePlan;\n  readonly buildSignature: string;\n  readonly geometries: THREE.BufferGeometry[];\n  readonly cutoutSignature: string;\n};"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-      "line": 57,
-      "endLine": 64,
+      "line": 59,
+      "endLine": 66,
       "text": "export type AtlasThreeMultiMapStats = {\n  readonly activeMapIds: readonly string[];\n  readonly activeEditorMapId: string | null;\n  readonly groupCount: number;\n  readonly liveGeometryCount: number;\n  readonly clearRootCount: number;\n  readonly incrementalSyncCount: number;\n};"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-      "line": 95,
-      "endLine": 114,
-      "text": "export function applyLocalCutoutFilter(\n  doc: UnifiedCanvasDoc,\n  cutouts: readonly AtlasLocalCutoutRect[],\n): UnifiedCanvasDoc {\n  if (cutouts.length === 0) return doc;\n  const rooms = doc.rooms.filter((r) => {\n    if (r.id === 'w.ocean' || r.id === 'g.ocean') return true;\n    return !rectFullyInsideAnyCutout(r.x, r.y, r.w, r.h, cutouts);\n  });\n  const objects = doc.objects.filter((o) => !pointInsideAnyCutout(o.x, o.y, cutouts));\n  const strokes = doc.strokes.filter(\n    (s) => !s.points.every(([px, py]) => pointInsideAnyCutout(px, py, cutouts)),\n  );\n  return {\n    ...doc,\n    rooms,\n    objects,\n    strokes,\n  };\n}"
+      "line": 98,
+      "endLine": 127,
+      "text": "export function applyLocalCutoutFilter(\n  doc: UnifiedCanvasDoc,\n  cutouts: readonly AtlasLocalCutoutRect[],\n): UnifiedCanvasDoc {\n  if (cutouts.length === 0) return doc;\n  const rooms = doc.rooms.filter((r) => {\n    if (r.id === 'w.ocean' || r.id === 'g.ocean') return true;\n    return !rectFullyInsideAnyCutout(r.x, r.y, r.w, r.h, cutouts);\n  });\n  const objects = doc.objects.filter((o) => !pointInsideAnyCutout(o.x, o.y, cutouts));\n  const strokes: UnifiedCanvasStroke[] = [];\n  for (const s of doc.strokes) {\n    const clippedSegments = clipPolylineOutsideRects(s.points, cutouts);\n    for (let i = 0; i < clippedSegments.length; i += 1) {\n      const seg = clippedSegments[i]!;\n      if (seg.length < 2) continue;\n      strokes.push({\n        ...s,\n        id: i === 0 ? s.id : `${s.id}#clip${i}`,\n        points: seg,\n      });\n    }\n  }\n  return {\n    ...doc,\n    rooms,\n    objects,\n    strokes,\n  };\n}"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-      "line": 176,
-      "endLine": 181,
+      "line": 189,
+      "endLine": 194,
       "text": "export function multiMapDepthLiftY(depth: number): number {\n  const table = [0, 0.45, 0.65, 0.72, 0.725, 0.726];\n  const idx = Math.max(0, depth - 1);\n  if (idx < table.length) return table[idx]!;\n  return 0.726 + (idx - (table.length - 1)) * 0.0005;\n}"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-      "line": 187,
-      "endLine": 204,
+      "line": 200,
+      "endLine": 217,
       "text": "export function applyWorldTransformToGroup(\n  pivot: THREE.Group,\n  content: THREE.Group,\n  entry: AtlasWorldSceneGroupPlan,\n  bounds: WorldAtlasBounds = DEFAULT_ATLAS_BOUNDS,\n): void {\n  const midX = (bounds.minX + bounds.maxX) / 2;\n  const midY = (bounds.minY + bounds.maxY) / 2;\n  const { centerX, centerY, scaleX, scaleY, rotationRad } = entry.worldTransform;\n  const verticalScale = Math.sqrt(Math.max(1e-8, scaleX * scaleY));\n  const depthLiftY = multiMapDepthLiftY(entry.depth);\n\n  pivot.position.set(centerX, depthLiftY, centerY);\n  pivot.rotation.set(0, -rotationRad, 0);\n  pivot.scale.set(scaleX, verticalScale, scaleY);\n  content.position.set(-midX, 0, -midY);\n  pivot.updateMatrixWorld(true);\n}"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-      "line": 206,
-      "endLine": 402,
+      "line": 219,
+      "endLine": 415,
       "text": "export class AtlasThreeMultiMapGraph {\n  readonly rootGroup = new THREE.Group();\n  private readonly groups = new Map<string, AtlasThreeMapGroupNode>();\n  private activeEditorMapId: string | null = null;\n  private clearRootCount = 0;\n  private incrementalSyncCount = 0;\n\n  constructor(\n    private readonly getMaterial: (key: AtlasThreeSurfaceKey) => THREE.Material,\n    private readonly waterMaterial: THREE.Material,\n  ) {\n    this.rootGroup.name = 'atlas3:multimap-root';\n  }\n\n  /**\n   * Incrementally sync the Three.js scene graph to match `scenePlan`.\n   * Never calls `clearRoot()` — only mounts entering maps, updates transforms,\n   * rebuilds individual groups whose revision/cutouts changed, and disposes exiting maps.\n   */\n  sync(input: {\n    readonly scenePlan: AtlasWorldScenePlan;\n    readonly sources: ReadonlyMap<string, AtlasThreeWorldMapSource>;\n    readonly presetId: AtlasGraphicsPresetId;\n    readonly hideRoofs: boolean;\n    readonly viewSpan: number;\n  }): void {\n    this.incrementalSyncCount += 1;\n    this.activeEditorMapId = input.scenePlan.activeEditorMapId;\n\n    const wantedIds = new Set(input.scenePlan.entries.map((e) => e.mapId));\n\n    // 1) Dispose groups that left the active scene plan\n    for (const [mapId, node] of [...this.groups.entries()]) {\n      if (!wantedIds.has(mapId)) {\n        this.disposeGroupNode(node);\n        this.groups.delete(mapId);\n      }\n    }\n\n    // 2) Mount new groups or update existing groups incrementally\n    for (const entry of input.scenePlan.entries) {\n      const source = input.sources.get(entry.mapId);\n      if (!source) continue;\n\n      const cSig = cutoutSignature(entry.cutoutRectsLocal);\n      const rev = source.revisionKey ?? 'v0';\n      const sig = `${rev}|${source.mapScale}|${source.look}|${input.presetId}|${input.hideRoofs ? 1 : 0}|${cSig}`;\n\n      const existing = this.groups.get(entry.mapId);\n      if (existing && existing.buildSignature === sig) {\n        // Zero rebuild: only update world transform & visibility\n        applyWorldTransformToGroup(existing.pivot, existing.content, entry, source.bounds);\n        existing.pivot.visible = true;\n        continue;\n      }\n\n      if (existing) {\n        this.disposeGroupNode(existing);\n        this.groups.delete(entry.mapId);\n      }\n\n      const filteredDoc = applyLocalCutoutFilter(source.doc, entry.cutoutRectsLocal);\n      const plan = buildAtlasThreeScenePlan(filteredDoc, {\n        mapScale: source.mapScale,\n        look: source.look,\n        span: Math.max(24, input.viewSpan / Math.max(1e-4, entry.worldTransform.scaleX)),\n        presetId: input.presetId,\n        seed: entry.mapId,\n        hideRoofs: input.hideRoofs,\n        warmWindows: true,\n      });\n\n      const pivot = new THREE.Group();\n      pivot.name = `atlas3:map-pivot:${entry.mapId}`;\n      pivot.userData.mapId = entry.mapId;\n      pivot.userData.depth = entry.depth;\n\n      const content = new THREE.Group();\n      content.name = `atlas3:map-content:${entry.mapId}`;\n      pivot.add(content);\n\n      const pickables: THREE.Object3D[] = [];\n      const geometries: THREE.BufferGeometry[] = [];\n\n      for (const [surfaceKey, builder] of plan.builders) {\n        if (builder.triangleCount === 0) continue;\n        const geo = builder.build();\n        geometries.push(geo);\n        const mesh = new THREE.Mesh(geo, this.getMaterial(surfaceKey));\n        const flat = surfaceKey.startsWith('sheet') || surfaceKey.startsWith('floor');\n        mesh.castShadow = !flat;\n        mesh.receiveShadow = true;\n        mesh.userData.triIds = builder.triIds;\n        mesh.userData.mapId = entry.mapId;\n        mesh.name = `atlas3:${entry.mapId}:${surfaceKey}`;\n        content.add(mesh);\n        pickables.push(mesh);\n      }\n\n      if (plan.water.triangleCount > 0) {\n        const geo = plan.water.build();\n        geometries.push(geo);\n        const mesh = new THREE.Mesh(geo, this.waterMaterial);\n        mesh.userData.triIds = plan.water.triIds;\n        mesh.userData.mapId = entry.mapId;\n        mesh.name = `atlas3:${entry.mapId}:water`;\n        mesh.renderOrder = 2;\n        content.add(mesh);\n        pickables.push(mesh);\n      }\n\n      if (plan.terrain) {\n        applyTerrainCutoutFilter(plan.terrain, entry.cutoutRectsLocal);\n        geometries.push(plan.terrain);\n        const mesh = new THREE.Mesh(plan.terrain, this.getMaterial('terrain'));\n        mesh.castShadow = true;\n        mesh.receiveShadow = true;\n        mesh.userData.mapId = entry.mapId;\n        mesh.name = `atlas3:${entry.mapId}:terrain`;\n        content.add(mesh);\n      }\n\n      applyWorldTransformToGroup(pivot, content, entry, source.bounds);\n      this.rootGroup.add(pivot);\n\n      this.groups.set(entry.mapId, {\n        mapId: entry.mapId,\n        pivot,\n        content,\n        pickables,\n        scenePlan: plan,\n        buildSignature: sig,\n        geometries,\n        cutoutSignature: cSig,\n      });\n    }\n  }\n\n  getGroup(mapId: string): AtlasThreeMapGroupNode | undefined {\n    return this.groups.get(mapId);\n  }\n\n  getAllPickables(): readonly THREE.Object3D[] {\n    const out: THREE.Object3D[] = [];\n    for (const g of this.groups.values()) {\n      for (const p of g.pickables) out.push(p);\n    }\n    return out;\n  }\n\n  getActiveEditorElevationY(): number {\n    if (!this.activeEditorMapId) return 0;\n    const g = this.groups.get(this.activeEditorMapId);\n    return g ? g.pivot.position.y : 0;\n  }\n\n  getRenderedIds(): string[] {\n    const out = new Set<string>();\n    for (const g of this.groups.values()) {\n      for (const id of g.scenePlan.ids) out.add(id);\n    }\n    return [...out].sort();\n  }\n\n  getStats(): AtlasThreeMultiMapStats {\n    let liveGeometryCount = 0;\n    for (const g of this.groups.values()) {\n      liveGeometryCount += g.geometries.length;\n    }\n    return {\n      activeMapIds: [...this.groups.keys()],\n      activeEditorMapId: this.activeEditorMapId,\n      groupCount: this.groups.size,\n      liveGeometryCount,\n      clearRootCount: this.clearRootCount,\n      incrementalSyncCount: this.incrementalSyncCount,\n    };\n  }\n\n  /** Teardown all groups and release every GPU BufferGeometry cleanly (budget = 0). */\n  dispose(): void {\n    for (const node of this.groups.values()) {\n      this.disposeGroupNode(node);\n    }\n    this.groups.clear();\n    this.activeEditorMapId = null;\n  }\n\n  private disposeGroupNode(node: AtlasThreeMapGroupNode): void {\n    this.rootGroup.remove(node.pivot);\n    for (const geo of node.geometries) {\n      geo.dispose();\n    }\n    node.geometries.length = 0;\n    node.pickables.length = 0;\n  }\n}"
     },
     {
@@ -4368,14 +4624,14 @@
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
       "line": 66,
-      "endLine": 72,
-      "text": "export type AtlasThreeRuntimeConfig = {\n  readonly canvas: HTMLCanvasElement;\n  readonly presetId: AtlasGraphicsPresetId;\n  readonly onCameraChange?: (view: AtlasThreeCameraView) => void;\n  readonly onProjectedPins?: (pins: readonly AtlasThreeProjectedPin[]) => void;\n  readonly onContextLostChange?: (lost: boolean) => void;\n};"
+      "endLine": 74,
+      "text": "export type AtlasThreeRuntimeConfig = {\n  readonly canvas: HTMLCanvasElement;\n  readonly presetId: AtlasGraphicsPresetId;\n  readonly onCameraChange?: (view: AtlasThreeCameraView) => void;\n  readonly onProjectedPins?: (pins: readonly AtlasThreeProjectedPin[]) => void;\n  readonly onContextLostChange?: (lost: boolean) => void;\n  /** SCM-05 / SCM-07: emits camera-driven `activeEditorMapId` from AtlasWorldScenePlan without doc-swap. */\n  readonly onActiveEditorMapChange?: (mapId: string | null) => void;\n};"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
-      "line": 531,
-      "endLine": 1775,
-      "text": "export class AtlasThreeRuntime {\n  readonly renderer: THREE.WebGLRenderer;\n  readonly scene = new THREE.Scene();\n  private readonly root = new THREE.Group();\n  private readonly multiMap: AtlasThreeMultiMapGraph;\n  private worldMaps: readonly AtlasWorldSceneMapInput[] = [];\n  private worldSources = new Map<string, AtlasThreeWorldMapSource>();\n  private worldScenePlan: AtlasWorldScenePlan | null = null;\n  private clearRootCount = 0;\n  private readonly gizmoGroup = new THREE.Group();\n  private readonly selectionRing: THREE.Mesh;\n  private readonly gizmoAxisX: THREE.Mesh;\n  private readonly gizmoAxisZ: THREE.Mesh;\n  private readonly skyDome: THREE.Mesh;\n  private readonly skyMat: THREE.ShaderMaterial;\n  private readonly infiniteOcean: THREE.Mesh;\n  private readonly infiniteMeadow: THREE.Mesh;\n  private readonly meadowMat: THREE.ShaderMaterial;\n  private readonly gridMesh: THREE.Mesh;\n  private readonly gridMat: THREE.ShaderMaterial;\n  private readonly hemi = new THREE.HemisphereLight();\n  private readonly sun = new THREE.DirectionalLight();\n  private readonly fill = new THREE.DirectionalLight();\n  private camera: THREE.PerspectiveCamera | THREE.OrthographicCamera = new THREE.OrthographicCamera();\n  private readonly pbr: AtlasPbrTextureLibrary;\n  private readonly materials = new Map<AtlasThreeSurfaceKey, THREE.MeshStandardMaterial>();\n  private readonly waterMat: THREE.ShaderMaterial;\n  private readonly haloMat: THREE.SpriteMaterial;\n  private readonly haloTex: THREE.CanvasTexture;\n  private readonly aoMat: THREE.MeshBasicMaterial;\n  private readonly aoTex: THREE.CanvasTexture;\n  private readonly mistMat: THREE.SpriteMaterial;\n  private readonly mistTex: THREE.CanvasTexture;\n  private readonly smokePuffs: Array<{\n    readonly sprite: THREE.Sprite;\n    readonly base: THREE.Vector3;\n    readonly phase: number;\n  }> = [];\n  private readonly torchLights: Array<{\n    readonly light: THREE.PointLight;\n    readonly baseIntensity: number;\n    readonly phase: number;\n  }> = [];\n  private readonly envMap: THREE.Texture;\n  private readonly pickables: THREE.Mesh[] = [];\n  private readonly raycaster = new THREE.Raycaster();\n  private readonly groundPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);\n\n  private presetId: AtlasGraphicsPresetId;\n  private doc: UnifiedCanvasDoc | null = null;\n  private mapScale: AtlasMapScale = 'world';\n  private look: AtlasThreeLook = 'outdoor';\n  private seed = 'dornhain.unified.v4';\n  private hideRoofs = false;\n  private lightingMode: AtlasThreeLightingMode = 'day';\n  private styleMode: AtlasThreeStyleMode = 'pbr';\n  private showGrid = false;\n  private pins: readonly AtlasMapPin[] = [];\n  private selectedId: string | null = null;\n  private gizmoVisible = false;\n  private plan: AtlasThreeScenePlan | null = null;\n  private sceneKey = '';\n  private docRevision = 0;\n  private manualPitchOverride = false;\n  private view: AtlasThreeCameraView = {\n    mode: 'diorama-oblique',\n    x: 500,\n    z: 500,\n    span: 430,\n    yawRad: 0.42,\n    pitchRad: autoAtlasThreePitchForSpan('diorama-oblique', 430),\n  };\n  private targetView: AtlasThreeCameraView = { ...this.view };\n  private flight: {\n    readonly from: AtlasThreeCameraView;\n    readonly to: AtlasThreeCameraView;\n    readonly startMs: number;\n    readonly durationMs: number;\n  } | null = null;\n  private rafId = 0;\n  private startTime = performance.now();\n  private lastFrameMs = performance.now();\n  private lastCameraNotifyMs = 0;\n  private lastPinEmitKey = '';\n  private disposed = false;\n  private contextLost = false;\n  private readonly onCameraChange?: (view: AtlasThreeCameraView) => void;\n  private readonly onProjectedPins?: (pins: readonly AtlasThreeProjectedPin[]) => void;\n  private readonly onContextLostChange?: (lost: boolean) => void;\n  private readonly onContextLostListener: (ev: Event) => void;\n  private readonly onContextRestoredListener: () => void;\n\n  constructor(private readonly config: AtlasThreeRuntimeConfig) {\n    this.presetId = config.presetId;\n    this.onCameraChange = config.onCameraChange;\n    this.onProjectedPins = config.onProjectedPins;\n    this.onContextLostChange = config.onContextLostChange;\n\n    this.renderer = new THREE.WebGLRenderer({\n      canvas: config.canvas,\n      antialias: config.presetId !== 'lite',\n      alpha: false,\n      powerPreference: 'high-performance',\n      preserveDrawingBuffer: true,\n    });\n    this.applyQualityProfile(config.presetId);\n    this.renderer.shadowMap.enabled = true;\n    this.renderer.shadowMap.type = THREE.PCFShadowMap;\n    this.renderer.outputColorSpace = THREE.SRGBColorSpace;\n    this.renderer.toneMapping = THREE.ACESFilmicToneMapping;\n\n    const texSize = config.presetId === 'high' ? 512 : 256;\n    const aniso = Math.min(8, this.renderer.capabilities.getMaxAnisotropy());\n    this.pbr = new AtlasPbrTextureLibrary(texSize, aniso);\n    this.envMap = createProceduralWarmEnvMap(this.renderer);\n    this.scene.environment = this.envMap;\n    this.scene.environmentIntensity = 0.58;\n\n    // 1) Atmospheric Sky Dome (follows camera — seamless horizon!)\n    this.skyMat = new THREE.ShaderMaterial({\n      vertexShader: SKY_VERTEX,\n      fragmentShader: SKY_FRAGMENT,\n      side: THREE.BackSide,\n      depthWrite: false,\n      uniforms: {\n        uZenith: { value: new THREE.Color('#3e748c') },\n        uHorizon: { value: new THREE.Color('#9ec2c6') },\n        uSunGlow: { value: new THREE.Color('#fff1d1') },\n        uSunDir: { value: new THREE.Vector3(-12, 16, 10).normalize() },\n      },\n    });\n    this.skyDome = new THREE.Mesh(new THREE.SphereGeometry(18000, 32, 16), this.skyMat);\n    this.skyDome.frustumCulled = false;\n    this.skyDome.renderOrder = -10;\n\n    // 2) Infinite Ocean Plane (28,000×28,000, locked to camera X/Z every frame — ZERO square borders!)\n    this.waterMat = new THREE.ShaderMaterial({\n      vertexShader: WATER_VERTEX,\n      fragmentShader: WATER_FRAGMENT,\n      side: THREE.DoubleSide,\n      uniforms: {\n        uTime: { value: 0 },\n        uTile: { value: 26 },\n        uDeep: { value: new THREE.Color('#134f6e') },\n        uShallow: { value: new THREE.Color('#2f8ea1') },\n        uSky: { value: new THREE.Color('#a8cfd4') },\n        uSunDir: { value: new THREE.Vector3(-12, 16, 10).normalize() },\n        uFogColor: { value: new THREE.Color('#9ec2c6') },\n        uFocus: { value: new THREE.Vector2(500, 500) },\n        uSpan: { value: 430 },\n      },\n    });\n    const oceanGeo = new THREE.PlaneGeometry(28000, 28000, 1, 1);\n    oceanGeo.rotateX(-Math.PI / 2);\n    this.infiniteOcean = new THREE.Mesh(oceanGeo, this.waterMat);\n    this.infiniteOcean.frustumCulled = false;\n    this.infiniteOcean.renderOrder = 1;\n\n    // 3) Infinite Meadow / Cavern Horizon Plane (for settlement / interior scales — zero edges!)\n    this.meadowMat = new THREE.ShaderMaterial({\n      vertexShader: MEADOW_VERTEX,\n      fragmentShader: MEADOW_FRAGMENT,\n      side: THREE.DoubleSide,\n      uniforms: {\n        uLight: { value: new THREE.Color('#8bb562') },\n        uDark: { value: new THREE.Color('#5d874a') },\n        uFogColor: { value: new THREE.Color('#9ec2c6') },\n        uFocus: { value: new THREE.Vector2(500, 500) },\n        uSpan: { value: 220 },\n        uIndoor: { value: 0 },\n      },\n    });\n    const meadowGeo = new THREE.PlaneGeometry(28000, 28000, 1, 1);\n    meadowGeo.rotateX(-Math.PI / 2);\n    this.infiniteMeadow = new THREE.Mesh(meadowGeo, this.meadowMat);\n    this.infiniteMeadow.frustumCulled = false;\n    this.infiniteMeadow.receiveShadow = true;\n\n    // 4) Interactive 3D Tactical Battle Grid (toggled via bottom taskbar ▦ button!)\n    this.gridMat = new THREE.ShaderMaterial({\n      vertexShader: GRID_VERTEX,\n      fragmentShader: GRID_FRAGMENT,\n      transparent: true,\n      depthWrite: false,\n      polygonOffset: true,\n      polygonOffsetFactor: -2,\n      polygonOffsetUnits: -2,\n      uniforms: {\n        uStep: { value: 40 },\n        uColor: { value: new THREE.Color('#06b6d4') },\n        uFocus: { value: new THREE.Vector2(500, 500) },\n        uSpan: { value: 220 },\n      },\n    });\n    const gridGeo = new THREE.PlaneGeometry(8000, 8000, 1, 1);\n    gridGeo.rotateX(-Math.PI / 2);\n    this.gridMesh = new THREE.Mesh(gridGeo, this.gridMat);\n    this.gridMesh.frustumCulled = false;\n    this.gridMesh.renderOrder = 4;\n    this.gridMesh.visible = false;\n\n    this.sun.castShadow = true;\n    this.scene.add(\n      this.skyDome,\n      this.infiniteOcean,\n      this.infiniteMeadow,\n      this.gridMesh,\n      this.hemi,\n      this.sun,\n      this.sun.target,\n      this.fill,\n      this.fill.target,\n      this.root,\n      this.gizmoGroup,\n    );\n\n    // 5) 3D Selection Ring + Transform Gizmo handles (SagaTree Cyan + Gold)\n    const ringGeo = new THREE.RingGeometry(0.85, 1.0, 48);\n    ringGeo.rotateX(-Math.PI / 2);\n    this.selectionRing = new THREE.Mesh(\n      ringGeo,\n      new THREE.MeshBasicMaterial({\n        color: 0x06b6d4,\n        side: THREE.DoubleSide,\n        depthWrite: false,\n        transparent: true,\n        opacity: 0.94,\n      }),\n    );\n    const axisGeoX = new THREE.BoxGeometry(1.6, 0.08, 0.08);\n    axisGeoX.translate(0.8, 0.14, 0);\n    this.gizmoAxisX = new THREE.Mesh(\n      axisGeoX,\n      new THREE.MeshBasicMaterial({ color: 0xf59e0b, depthTest: false }),\n    );\n    const axisGeoZ = new THREE.BoxGeometry(0.08, 0.08, 1.6);\n    axisGeoZ.translate(0, 0.14, 0.8);\n    this.gizmoAxisZ = new THREE.Mesh(\n      axisGeoZ,\n      new THREE.MeshBasicMaterial({ color: 0x06b6d4, depthTest: false }),\n    );\n    this.gizmoGroup.add(this.selectionRing, this.gizmoAxisX, this.gizmoAxisZ);\n    this.gizmoGroup.visible = false;\n\n    // 6) Atmospheric sprite & contact-shadow textures\n    this.haloTex = createRadialSoftTexture(\n      'rgba(255,240,198,1)',\n      'rgba(255,178,94,0.52)',\n      'rgba(255,140,60,0)',\n    );\n    this.haloMat = new THREE.SpriteMaterial({\n      map: this.haloTex,\n      color: 0xffb86c,\n      blending: THREE.AdditiveBlending,\n      transparent: true,\n      depthWrite: false,\n      fog: true,\n    });\n    this.aoTex = createRadialSoftTexture(\n      'rgba(10,18,14,0.52)',\n      'rgba(10,18,14,0.22)',\n      'rgba(10,18,14,0)',\n    );\n    this.aoMat = new THREE.MeshBasicMaterial({\n      map: this.aoTex,\n      transparent: true,\n      depthWrite: false,\n      polygonOffset: true,\n      polygonOffsetFactor: -1,\n    });\n    this.mistTex = createRadialSoftTexture(\n      'rgba(232,242,244,0.38)',\n      'rgba(220,235,238,0.16)',\n      'rgba(210,228,232,0)',\n    );\n    this.mistMat = new THREE.SpriteMaterial({\n      map: this.mistTex,\n      transparent: true,\n      depthWrite: false,\n      fog: true,\n    });\n\n    this.onContextLostListener = (ev: Event) => {\n      ev.preventDefault();\n      this.contextLost = true;\n      this.onContextLostChange?.(true);\n    };\n    this.onContextRestoredListener = () => {\n      this.contextLost = false;\n      this.sceneKey = '';\n      this.onContextLostChange?.(false);\n    };\n    this.multiMap = new AtlasThreeMultiMapGraph(\n      (key) => this.getMaterial(key),\n      this.waterMat,\n    );\n    this.scene.add(this.multiMap.rootGroup);\n    config.canvas.addEventListener('webglcontextlost', this.onContextLostListener);\n    config.canvas.addEventListener('webglcontextrestored', this.onContextRestoredListener);\n\n    this.startLoop();\n  }\n\n  applyQualityProfile(presetId: AtlasGraphicsPresetId): void {\n    this.presetId = presetId;\n    const maxDpr = presetId === 'high' ? 2 : presetId === 'balanced' ? 1.5 : 1;\n    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, maxDpr));\n    const shadowSize = presetId === 'high' ? 2048 : 1024;\n    this.sun.shadow.mapSize.set(shadowSize, shadowSize);\n    this.sun.shadow.radius = presetId === 'high' ? 3 : 1.5;\n    this.sceneKey = '';\n  }\n\n  setSceneState(input: {\n    readonly doc: UnifiedCanvasDoc;\n    readonly mapScale: AtlasMapScale;\n    readonly look: AtlasThreeLook;\n    readonly seed: string;\n    readonly hideRoofs: boolean;\n    readonly lightingMode: AtlasThreeLightingMode;\n    readonly styleMode?: AtlasThreeStyleMode;\n    readonly showGrid?: boolean;\n    readonly pins: readonly AtlasMapPin[];\n    readonly selectedId: string | null;\n    readonly gizmoVisible: boolean;\n  }): void {\n    const docChanged = this.doc !== input.doc;\n    const scaleChanged = this.mapScale !== input.mapScale;\n    const lookChanged = this.look !== input.look;\n    const seedChanged = this.seed !== input.seed;\n    const roofChanged = this.hideRoofs !== input.hideRoofs;\n    const lightChanged = this.lightingMode !== input.lightingMode;\n    const nextStyle = input.styleMode ?? this.styleMode;\n    const styleChanged = this.styleMode !== nextStyle;\n    this.doc = input.doc;\n    this.mapScale = input.mapScale;\n    this.look = input.look;\n    this.seed = input.seed;\n    this.hideRoofs = input.hideRoofs;\n    this.lightingMode = input.lightingMode;\n    this.styleMode = nextStyle;\n    this.showGrid = Boolean(input.showGrid);\n    this.gridMesh.visible = this.showGrid;\n    this.pins = input.pins;\n    this.selectedId = input.selectedId;\n    this.gizmoVisible = input.gizmoVisible;\n    if (styleChanged) {\n      this.applyStyleToMaterials();\n    }\n    if (docChanged || scaleChanged || lookChanged || seedChanged || roofChanged || lightChanged) {\n      this.docRevision += 1;\n      this.sceneKey = '';\n    }\n    this.updateSelectionGizmo();\n  }\n\n  private applyStyleToMaterials(): void {\n    for (const [key, mat] of this.materials) {\n      const spec = ATLAS_THREE_SURFACES[key];\n      if (this.styleMode === 'cel') {\n        mat.roughness = Math.min(1, spec.roughness + 0.08);\n        mat.normalScale.set(spec.normalScale * 0.35, spec.normalScale * 0.35);\n      } else if (this.styleMode === 'illustrated') {\n        mat.roughness = Math.min(1, spec.roughness + 0.03);\n        mat.normalScale.set(spec.normalScale * 0.72, spec.normalScale * 0.72);\n      } else {\n        mat.roughness = spec.roughness;\n        mat.normalScale.set(spec.normalScale, spec.normalScale);\n      }\n      mat.needsUpdate = true;\n    }\n  }\n\n  /**\n   * Register the spatial world map hierarchy for incremental Multi-Map rendering\n   * (SWS-04, Checklist D1–D5). When non-empty, `ensureScene()` mounts/updates\n   * map groups at their `ParentSpatialAnchor` transforms without calling `clearRoot()`.\n   */\n  setWorldSceneGraph(input: {\n    readonly maps: readonly AtlasWorldSceneMapInput[];\n    readonly sources: readonly AtlasThreeWorldMapSource[];\n  }): void {\n    this.worldMaps = input.maps;\n    this.worldSources = new Map(input.sources.map((s) => [s.mapId, s] as const));\n    this.worldScenePlan = null;\n  }\n\n  getWorldCameraState(): AtlasWorldCameraState {\n    return createAtlasWorldCameraState({\n      focusWorld: { x: this.targetView.x, y: this.targetView.z, z: 0 },\n      span: this.targetView.span,\n      yawRad: this.targetView.yawRad,\n      pitchRad: this.targetView.pitchRad,\n      projection: this.targetView.mode,\n    });\n  }\n\n  setWorldCameraState(state: AtlasWorldCameraState, animate = false): void {\n    this.setView(\n      {\n        mode: state.projection,\n        x: state.focusWorld.x,\n        z: state.focusWorld.y,\n        span: state.span,\n        yawRad: state.yawRad,\n        pitchRad: state.pitchRad,\n      },\n      animate,\n    );\n  }\n\n  /** Two-finger trackpad scroll / drag pan in screen pixels (respects camera yaw). */\n  panByScreenDelta(deltaPxX: number, deltaPxY: number): AtlasThreeCameraView {\n    this.flight = null;\n    const h = Math.max(1, this.config.canvas.clientHeight || 800);\n    const worldPerPx = (this.targetView.span * 2) / h;\n    const dx = deltaPxX * worldPerPx;\n    const dy = deltaPxY * worldPerPx;\n    const cos = Math.cos(this.targetView.yawRad);\n    const sin = Math.sin(this.targetView.yawRad);\n    this.targetView = {\n      ...this.targetView,\n      x: this.targetView.x + (dx * cos + dy * sin),\n      z: this.targetView.z + (-dx * sin + dy * cos),\n    };\n    return { ...this.targetView };\n  }\n\n  /** Incremental yaw/pitch orbit delta (Shift+Wheel / Trackpad orbit). */\n  orbitByDelta(deltaYawRad: number, deltaPitchRad: number): AtlasThreeCameraView {\n    this.flight = null;\n    const nextMode: AtlasThreeCameraMode =\n      this.targetView.mode === 'ortho-topdown' ? 'diorama-oblique' : this.targetView.mode;\n    this.manualPitchOverride = true;\n    this.targetView = {\n      ...this.targetView,\n      mode: nextMode,\n      yawRad: this.targetView.yawRad + deltaYawRad,\n      pitchRad: clampAtlasThreePitch(nextMode, this.targetView.pitchRad + deltaPitchRad),\n    };\n    return { ...this.targetView };\n  }\n\n  getMultiMapStats(): AtlasThreeMultiMapStats {\n    const stats = this.multiMap.getStats();\n    return {\n      ...stats,\n      clearRootCount: this.clearRootCount,\n    };\n  }\n\n  getView(): AtlasThreeCameraView {\n    return { ...this.view };\n  }\n\n  getTargetView(): AtlasThreeCameraView {\n    return { ...this.targetView };\n  }\n\n  setView(\n    next: Partial<AtlasThreeCameraView>,\n    animate = false,\n    opts?: { readonly manualPitch?: boolean },\n  ): void {\n    const targetMode: AtlasThreeCameraMode = next.mode ?? this.targetView.mode;\n    const minSpan = this.worldMaps.length > 0 ? 0.02 : 16;\n    const nextSpan = Math.max(minSpan, Math.min(2400, next.span ?? this.targetView.span));\n    if (opts?.manualPitch) {\n      this.manualPitchOverride = true;\n    } else if (next.mode) {\n      this.manualPitchOverride = false;\n    }\n    const pitch =\n      next.pitchRad !== undefined\n        ? clampAtlasThreePitch(targetMode, next.pitchRad)\n        : next.mode || !this.manualPitchOverride\n          ? autoAtlasThreePitchForSpan(targetMode, nextSpan)\n          : this.targetView.pitchRad;\n    const target: AtlasThreeCameraView = {\n      mode: targetMode,\n      x: next.x ?? this.targetView.x,\n      z: next.z ?? this.targetView.z,\n      span: nextSpan,\n      yawRad: next.yawRad ?? this.targetView.yawRad,\n      pitchRad: pitch,\n    };\n    if (animate) {\n      const reduced =\n        typeof window !== 'undefined' &&\n        window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;\n      this.targetView = target;\n      this.flight = reduced\n        ? null\n        : { from: { ...this.view }, to: target, startMs: performance.now(), durationMs: 520 };\n      if (!this.flight) {\n        this.view = target;\n        this.onCameraChange?.(this.view);\n      }\n    } else {\n      this.flight = null;\n      this.targetView = target;\n      this.view = target;\n      this.onCameraChange?.(this.view);\n    }\n  }\n\n  /**\n   * Butter-smooth Google-Maps inertia wheel zoom toward the exact world point under (px, py),\n   * with automatic Diorama pitch adaptation.\n   */\n  zoomAtScreen(deltaY: number, px: number, py: number): AtlasThreeCameraView {\n    this.flight = null;\n    const before = this.screenToGround(px, py);\n    const factor = Math.exp(deltaY * 0.00125);\n    const minSpan = this.worldMaps.length > 0 ? 0.02 : 16;\n    const nextSpan = Math.max(minSpan, Math.min(2400, this.targetView.span * factor));\n    const ratio = nextSpan / Math.max(0.02, this.targetView.span);\n\n    let nextX = this.targetView.x;\n    let nextZ = this.targetView.z;\n    if (before) {\n      nextX = before.x + (this.targetView.x - before.x) * ratio;\n      nextZ = before.z + (this.targetView.z - before.z) * ratio;\n    }\n\n    const nextPitch =\n      this.targetView.mode === 'ortho-topdown'\n        ? Math.PI / 2\n        : this.manualPitchOverride\n          ? this.targetView.pitchRad\n          : autoAtlasThreePitchForSpan(this.targetView.mode, nextSpan);\n\n    this.targetView = {\n      ...this.targetView,\n      x: nextX,\n      z: nextZ,\n      span: nextSpan,\n      pitchRad: nextPitch,\n    };\n    return { ...this.targetView };\n  }\n\n  /** Smoothly ease yaw (e.g. clicking the compass dial snaps smoothly back to 0° North). */\n  setYawAnimated(yawRad: number): void {\n    this.setView({ yawRad }, true);\n  }\n\n  flyTo(x: number, z: number, span: number): void {\n    this.manualPitchOverride = false;\n    this.setView(\n      {\n        x,\n        z,\n        span,\n        pitchRad: autoAtlasThreePitchForSpan(this.targetView.mode, span),\n      },\n      true,\n    );\n  }\n\n  /** Capture the current WebGL frame as a lightweight JPEG data URL for seamless flight transitions. */\n  captureFrameDataUrl(): string | null {\n    try {\n      this.renderer.render(this.scene, this.camera);\n      return this.config.canvas.toDataURL('image/jpeg', 0.84);\n    } catch {\n      return null;\n    }\n  }\n\n  /** Smooth arrival glide onto the newly loaded map's exact content center. */\n  frameContentBounds(opts?: { readonly animateFrom?: 'in' | 'out' | null }): void {\n    this.ensureScene();\n    const bounds = this.plan?.contentBounds ?? {\n      centerX: this.mapScale === 'settlement' ? 370 : 500,\n      centerZ: this.mapScale === 'settlement' ? 485 : 500,\n      fitSpan: this.mapScale === 'world' ? 430 : this.mapScale === 'settlement' ? 195 : 220,\n    };\n    const mode = this.targetView.mode;\n    const targetSpan = bounds.fitSpan;\n    // SWS-05 (E2): preserve current yaw orientation across mode/map framing.\n    const targetYaw = this.targetView.yawRad;\n    const targetPitch = autoAtlasThreePitchForSpan(mode, targetSpan);\n    this.manualPitchOverride = false;\n\n    if (opts?.animateFrom) {\n      const startSpan =\n        opts.animateFrom === 'in'\n          ? Math.min(1800, targetSpan * 1.48)\n          : Math.max(48, targetSpan * 0.68);\n      this.view = {\n        mode,\n        x: bounds.centerX,\n        z: bounds.centerZ,\n        span: startSpan,\n        yawRad: targetYaw,\n        pitchRad: autoAtlasThreePitchForSpan(mode, startSpan),\n      };\n      this.targetView = { ...this.view };\n      this.setView(\n        {\n          mode,\n          x: bounds.centerX,\n          z: bounds.centerZ,\n          span: targetSpan,\n          yawRad: targetYaw,\n          pitchRad: targetPitch,\n        },\n        true,\n      );\n      return;\n    }\n\n    this.setView(\n      {\n        mode,\n        x: bounds.centerX,\n        z: bounds.centerZ,\n        span: targetSpan,\n        yawRad: targetYaw,\n        pitchRad: targetPitch,\n      },\n      false,\n    );\n  }\n\n  resetCamera(): void {\n    this.ensureScene();\n    const bounds = this.plan?.contentBounds ?? {\n      centerX: this.mapScale === 'settlement' ? 370 : 500,\n      centerZ: this.mapScale === 'settlement' ? 485 : 500,\n      fitSpan: this.mapScale === 'world' ? 430 : this.mapScale === 'settlement' ? 195 : 220,\n    };\n    const mode = this.targetView.mode;\n    this.manualPitchOverride = false;\n    this.setView(\n      {\n        mode,\n        x: bounds.centerX,\n        z: bounds.centerZ,\n        span: bounds.fitSpan,\n        yawRad: mode === 'ortho-topdown' ? 0 : 0.42,\n        pitchRad: autoAtlasThreePitchForSpan(mode, bounds.fitSpan),\n      },\n      true,\n    );\n  }\n\n  /** Raycast screen coordinates (px relative to canvas) to ground plane (x, z). */\n  screenToGround(px: number, py: number): { readonly x: number; readonly z: number } | null {\n    const w = this.config.canvas.clientWidth || 1;\n    const h = this.config.canvas.clientHeight || 1;\n    const ndc = new THREE.Vector2((px / w) * 2 - 1, -(py / h) * 2 + 1);\n    this.raycaster.setFromCamera(ndc, this.camera);\n    const out = new THREE.Vector3();\n    if (!this.raycaster.ray.intersectPlane(this.groundPlane, out)) return null;\n    return { x: out.x, z: out.z };\n  }\n\n  /** Read-only projection from World Space (x, y, z) to canvas pixels (px, py). */\n  projectWorldPointToScreen(\n    x: number,\n    z: number,\n    y?: number,\n  ): { readonly px: number; readonly py: number; readonly visible: boolean } {\n    const w = Math.max(1, this.config.canvas.clientWidth || 1);\n    const h = Math.max(1, this.config.canvas.clientHeight || 1);\n    const pyWorld = y ?? (this.worldMaps.length > 0 ? this.multiMap.getActiveEditorElevationY() : 0);\n    const v = new THREE.Vector3(x, pyWorld, z).project(this.camera);\n    const px = ((v.x + 1) * 0.5) * w;\n    const py = ((1 - v.y) * 0.5) * h;\n    return {\n      px: Math.round(px * 100) / 100,\n      py: Math.round(py * 100) / 100,\n      visible: v.z >= -1 && v.z <= 1 && px >= 0 && px <= w && py >= 0 && py <= h,\n    };\n  }\n\n  /** Read-only WebGL renderer identification (hardware vs software labelling, A.3). */\n  getRendererInfo(): {\n    readonly webglRenderer: string;\n    readonly webglVendor: string;\n    readonly isSoftwareWebgl: boolean;\n  } {\n    const gl = this.renderer.getContext();\n    const dbg = gl.getExtension('WEBGL_debug_renderer_info');\n    const webglRenderer = String(\n      dbg ? gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL) : gl.getParameter(gl.RENDERER),\n    );\n    const webglVendor = String(\n      dbg ? gl.getParameter(dbg.UNMASKED_VENDOR_WEBGL) : gl.getParameter(gl.VENDOR),\n    );\n    const isSoftwareWebgl = /swiftshader|llvmpipe|softpipe|software|basic render/i.test(webglRenderer);\n    return { webglRenderer, webglVendor, isSoftwareWebgl };\n  }\n\n  /** Raycast screen coordinates to canonical feature ID (objects prioritized over terrain/floors). */\n  pickCanonicalId(px: number, py: number): string | null {\n    const w = this.config.canvas.clientWidth || 1;\n    const h = this.config.canvas.clientHeight || 1;\n    const ndc = new THREE.Vector2((px / w) * 2 - 1, -(py / h) * 2 + 1);\n    this.raycaster.setFromCamera(ndc, this.camera);\n    const allPickables: THREE.Object3D[] =\n      this.worldMaps.length > 0 ? [...this.multiMap.getAllPickables()] : this.pickables;\n    const hits = this.raycaster.intersectObjects(allPickables, false);\n    const objectIds = new Set<string>((this.doc?.objects ?? []).map((o) => o.id));\n    if (this.worldMaps.length > 0) {\n      for (const src of this.worldSources.values()) {\n        for (const o of src.doc.objects) objectIds.add(o.id);\n      }\n    }\n    let fallback: string | null = null;\n    for (const hit of hits) {\n      let id: string | null = null;\n      const triIds = hit.object.userData.triIds as string[] | undefined;\n      const instIds = hit.object.userData.instanceIds as string[] | undefined;\n      if (triIds && typeof hit.faceIndex === 'number') {\n        id = triIds[hit.faceIndex] ?? null;\n      } else if (instIds && typeof hit.instanceId === 'number') {\n        id = instIds[hit.instanceId] ?? null;\n      }\n      if (!id || id.startsWith('__') || id === 'g.ocean' || id === 'w.ocean') continue;\n      if (objectIds.has(id)) return id;\n      if (!fallback) fallback = id;\n    }\n    return fallback;\n  }\n\n  getRenderedIds(): string[] {\n    if (this.worldMaps.length > 0) {\n      return this.multiMap.getRenderedIds();\n    }\n    return [...(this.plan?.ids ?? [])].sort();\n  }\n\n  getStats(): {\n    readonly calls: number;\n    readonly triangles: number;\n    readonly rooms: number;\n    readonly clearRootCount: number;\n    readonly activeMapCount: number;\n  } {\n    return {\n      calls: this.renderer.info.render.calls,\n      triangles: this.renderer.info.render.triangles,\n      rooms: this.doc?.rooms.length ?? 0,\n      clearRootCount: this.clearRootCount,\n      activeMapCount: this.worldMaps.length > 0 ? this.multiMap.getStats().groupCount : 1,\n    };\n  }\n\n  private getMaterial(key: AtlasThreeSurfaceKey): THREE.MeshStandardMaterial {\n    const hit = this.materials.get(key);\n    if (hit) return hit;\n    const spec = ATLAS_THREE_SURFACES[key];\n    const mat = new THREE.MeshStandardMaterial({\n      color: spec.color,\n      roughness: spec.roughness,\n      metalness: 'metalness' in spec ? spec.metalness : 0,\n      vertexColors: 'vertexColors' in spec ? spec.vertexColors : false,\n    });\n    if (spec.pbr) {\n      const tex = this.pbr.get(spec.pbr);\n      mat.map = tex.map;\n      mat.normalMap = tex.normal;\n      mat.roughnessMap = tex.rough;\n      mat.normalScale.set(spec.normalScale, spec.normalScale);\n    }\n    if ('emissive' in spec) {\n      mat.emissive = new THREE.Color(spec.emissive);\n      mat.emissiveIntensity = 1.9;\n      mat.toneMapped = false;\n    }\n    this.materials.set(key, mat);\n    return mat;\n  }\n\n  private clearRoot(): void {\n    if (this.root.children.length > 0) {\n      this.clearRootCount += 1;\n    }\n    for (const child of [...this.root.children]) {\n      this.root.remove(child);\n      if (child instanceof THREE.Mesh) child.geometry.dispose();\n      if (child instanceof THREE.PointLight) child.dispose();\n    }\n    this.smokePuffs.length = 0;\n    this.torchLights.length = 0;\n    this.pickables.length = 0;\n  }\n\n  private ensureScene(): void {\n    if (this.worldMaps.length > 0) {\n      // SWS-04 Multi-Map Scene Graph: incremental sync driven by AtlasWorldScenePlan\n      // with ZERO clearRoot() calls during zoom/navigation (Checklist D1–D5).\n      this.root.visible = false;\n      this.multiMap.rootGroup.visible = true;\n      const w = Math.max(1, this.config.canvas.clientWidth || 1280);\n      const h = Math.max(1, this.config.canvas.clientHeight || 800);\n      const camState = this.getWorldCameraState();\n      const nextPlan = buildAtlasWorldScenePlan({\n        maps: this.worldMaps,\n        camera: camState,\n        viewportPx: { width: w, height: h },\n        previousPlan: this.worldScenePlan,\n      });\n      this.worldScenePlan = nextPlan;\n      this.multiMap.sync({\n        scenePlan: nextPlan,\n        sources: this.worldSources,\n        presetId: this.presetId,\n        hideRoofs: this.hideRoofs,\n        viewSpan: this.view.span,\n      });\n      this.applyStyleToMaterials();\n      this.updateSelectionGizmo();\n      return;\n    }\n\n    this.root.visible = true;\n    this.multiMap.rootGroup.visible = false;\n    if (!this.doc) return;\n    // Automatic smooth roof cutaway when zoomed deep into a settlement building.\n    const autoCutaway = this.mapScale === 'settlement' && this.view.span < 58;\n    const effectiveHideRoofs = this.hideRoofs || autoCutaway;\n    // SWS-04 (D2): do NOT key on zoom lodBucket — zooming never triggers clearRoot()!\n    const key = `${this.docRevision}|${this.presetId}|${effectiveHideRoofs ? 'cut' : 'full'}`;\n    if (key === this.sceneKey && this.plan) return;\n\n    this.clearRoot();\n    const warmWindows = true;\n    const plan = buildAtlasThreeScenePlan(this.doc, {\n      mapScale: this.mapScale,\n      look: this.look,\n      span: this.view.span,\n      presetId: this.presetId,\n      seed: this.seed,\n      hideRoofs: effectiveHideRoofs,\n      warmWindows,\n    });\n\n    for (const [surfaceKey, builder] of plan.builders) {\n      if (builder.triangleCount === 0) continue;\n      const mesh = new THREE.Mesh(builder.build(), this.getMaterial(surfaceKey));\n      const flat = surfaceKey.startsWith('sheet') || surfaceKey.startsWith('floor');\n      mesh.castShadow = !flat;\n      mesh.receiveShadow = true;\n      mesh.userData.triIds = builder.triIds;\n      mesh.name = `atlas3:${surfaceKey}`;\n      this.root.add(mesh);\n      this.pickables.push(mesh);\n    }\n\n    if (plan.water.triangleCount > 0) {\n      const mesh = new THREE.Mesh(plan.water.build(), this.waterMat);\n      mesh.userData.triIds = plan.water.triIds;\n      mesh.name = 'atlas3:water';\n      mesh.renderOrder = 2;\n      this.root.add(mesh);\n      this.pickables.push(mesh);\n    }\n\n    if (plan.terrain) {\n      const mesh = new THREE.Mesh(plan.terrain, this.getMaterial('terrain'));\n      mesh.castShadow = true;\n      mesh.receiveShadow = true;\n      mesh.name = 'atlas3:terrain';\n      this.root.add(mesh);\n    }\n\n    if (plan.doorInstances.matrices.length > 0) {\n      const inst = new THREE.InstancedMesh(\n        new THREE.BoxGeometry(1, 1, 1),\n        this.getMaterial('wood-dark'),\n        plan.doorInstances.matrices.length,\n      );\n      plan.doorInstances.matrices.forEach((m, i) => inst.setMatrixAt(i, m));\n      inst.instanceMatrix.needsUpdate = true;\n      inst.computeBoundingSphere();\n      inst.castShadow = true;\n      inst.receiveShadow = true;\n      inst.userData.instanceIds = plan.doorInstances.ids;\n      inst.name = 'atlas3:doors';\n      this.root.add(inst);\n      this.pickables.push(inst);\n    }\n\n    // Instanced suggestive scenery scatter (1 draw call per mesh part!)\n    for (const batch of plan.scatterBatches) {\n      const { parts } = buildScatterGeometry(batch.kind);\n      for (const part of parts) {\n        const inst = new THREE.InstancedMesh(\n          part.geo,\n          this.getMaterial(part.surface),\n          batch.matrices.length,\n        );\n        batch.matrices.forEach((m, i) => inst.setMatrixAt(i, m));\n        inst.instanceMatrix.needsUpdate = true;\n        inst.computeBoundingSphere();\n        inst.castShadow = batch.kind !== 'flower' && batch.kind !== 'rubble';\n        inst.receiveShadow = true;\n        inst.name = `atlas3:scatter:${batch.kind}`;\n        this.root.add(inst);\n      }\n    }\n\n    // Soft Ground Contact Shadow AO Discs (single InstancedMesh draw call!)\n    if (plan.aoDiscs.length > 0) {\n      const discGeo = new THREE.PlaneGeometry(2, 2);\n      discGeo.rotateX(-Math.PI / 2);\n      const aoInst = new THREE.InstancedMesh(discGeo, this.aoMat, plan.aoDiscs.length);\n      const mat4 = new THREE.Matrix4();\n      const quat = new THREE.Quaternion();\n      plan.aoDiscs.forEach((d, i) => {\n        mat4.compose(new THREE.Vector3(d.x, d.y, d.z), quat, new THREE.Vector3(d.radius, 1, d.radius));\n        aoInst.setMatrixAt(i, mat4);\n      });\n      aoInst.instanceMatrix.needsUpdate = true;\n      aoInst.computeBoundingSphere();\n      aoInst.renderOrder = 2;\n      aoInst.name = 'atlas3:ao';\n      this.root.add(aoInst);\n    }\n\n    // Animated Chimney Smoke Puffs (V7/V8 Dornhain cozy life!)\n    for (const base of plan.smokePoints.slice(0, 12)) {\n      for (let k = 0; k < 3; k += 1) {\n        const sprite = new THREE.Sprite(this.mistMat);\n        sprite.position.copy(base);\n        sprite.scale.setScalar(10);\n        sprite.renderOrder = 4;\n        this.root.add(sprite);\n        this.smokePuffs.push({ sprite, base: base.clone(), phase: k / 3 });\n      }\n    }\n\n    // Subtle Alpine Peak Mist Sprites\n    for (const m of plan.mistPoints.slice(0, 14)) {\n      const sprite = new THREE.Sprite(this.mistMat);\n      sprite.position.copy(m.position);\n      sprite.scale.set(m.scale * 1.4, m.scale * 0.65, 1);\n      sprite.renderOrder = 3;\n      this.root.add(sprite);\n    }\n\n    // Warm Torches, Hearth Fires, Tavern Candles & Street Lanterns\n    const torchColor = new THREE.Color(0xffb154);\n    for (let ti = 0; ti < Math.min(20, plan.torches.length); ti += 1) {\n      const t = plan.torches[ti]!;\n      const intensityScale =\n        this.look === 'indoor' || this.lightingMode === 'night'\n          ? 1.18\n          : this.lightingMode === 'evening'\n            ? 0.84\n            : 0.36;\n      const baseIntensity = 1.9 * (t.radius / 4) ** 2 * intensityScale;\n      const light = new THREE.PointLight(torchColor, baseIntensity, t.radius, 2);\n      light.position.copy(t.position);\n      this.root.add(light);\n      this.torchLights.push({ light, baseIntensity, phase: ti * 1.37 });\n      const sprite = new THREE.Sprite(this.haloMat);\n      sprite.position.copy(t.position);\n      sprite.scale.setScalar(t.radius * 0.24);\n      sprite.renderOrder = 3;\n      this.root.add(sprite);\n    }\n\n    this.plan = plan;\n    this.sceneKey = key;\n    this.applyStyleToMaterials();\n    this.updateSelectionGizmo();\n  }\n\n  private updateSelectionGizmo(): void {\n    if (!this.selectedId || !this.doc) {\n      this.gizmoGroup.visible = false;\n      return;\n    }\n    const obj = this.doc.objects.find((o) => o.id === this.selectedId);\n    if (!obj) {\n      this.gizmoGroup.visible = false;\n      return;\n    }\n    const radius = Math.max(16, obj.size * 44);\n    this.gizmoGroup.position.set(obj.x, (obj.z ?? 0) + 1.2, obj.y);\n    this.selectionRing.scale.set(radius, 1, radius);\n    this.gizmoAxisX.scale.set(radius * 0.85, 1, 1);\n    this.gizmoAxisZ.scale.set(1, 1, radius * 0.85);\n    this.gizmoAxisX.visible = this.gizmoVisible;\n    this.gizmoAxisZ.visible = this.gizmoVisible;\n    this.gizmoGroup.visible = true;\n  }\n\n  private syncCameraAndLighting(w: number, h: number, elapsedSec: number): void {\n    const aspect = w / Math.max(1, h);\n    const activeY = this.worldMaps.length > 0 ? this.multiMap.getActiveEditorElevationY() : 0;\n    this.groundPlane.constant = -activeY;\n    const rig = buildAtlasThreeCameraRig({ ...this.view, y: activeY }, aspect);\n    if (rig.perspective) {\n      const cam =\n        this.camera instanceof THREE.PerspectiveCamera\n          ? this.camera\n          : new THREE.PerspectiveCamera();\n      cam.fov = rig.fovYDeg;\n      cam.aspect = aspect;\n      cam.near = rig.near;\n      cam.far = rig.far;\n      this.camera = cam;\n    } else {\n      const cam =\n        this.camera instanceof THREE.OrthographicCamera\n          ? this.camera\n          : new THREE.OrthographicCamera();\n      cam.left = -rig.halfWidth;\n      cam.right = rig.halfWidth;\n      cam.top = rig.halfHeight;\n      cam.bottom = -rig.halfHeight;\n      cam.near = rig.near;\n      cam.far = rig.far;\n      this.camera = cam;\n    }\n    this.camera.position.set(rig.eye[0], rig.eye[1], rig.eye[2]);\n    this.camera.up.set(rig.up[0], rig.up[1], rig.up[2]);\n    this.camera.lookAt(rig.at[0], rig.at[1], rig.at[2]);\n    this.camera.updateProjectionMatrix();\n    this.camera.updateMatrixWorld(true);\n\n    const spec = this.look === 'indoor' ? INDOOR_LIGHTING : OUTDOOR_LIGHTING[this.lightingMode];\n    const at = new THREE.Vector3(rig.at[0], rig.at[1], rig.at[2]);\n    const sunDir = new THREE.Vector3(spec.sunDir[0], spec.sunDir[1], spec.sunDir[2]).normalize();\n    const fillDir = new THREE.Vector3(7, 6, -7).normalize();\n    const band = buildAtlasThreeFogBand(rig, this.look);\n\n    // Seamless Exponential Fog + Sky Dome matched 1:1\n    this.scene.background = new THREE.Color(spec.skyHorizon);\n    this.scene.fog = new THREE.FogExp2(spec.skyHorizon, band.expDensity);\n    this.skyDome.position.set(rig.eye[0], 0, rig.eye[2]);\n    this.skyMat.uniforms.uZenith!.value.set(spec.skyZenith);\n    this.skyMat.uniforms.uHorizon!.value.set(spec.skyHorizon);\n    this.skyMat.uniforms.uSunGlow!.value.set(spec.sunGlow);\n    this.skyMat.uniforms.uSunDir!.value.copy(sunDir);\n\n    // Lock INFINITE surround planes to camera target X/Z — zero borders at ANY zoom!\n    const isWorldOcean = this.look === 'outdoor' && this.mapScale === 'world';\n    this.infiniteOcean.visible = isWorldOcean;\n    this.infiniteMeadow.visible = !isWorldOcean;\n    const wy = this.plan ? this.plan.waterLevel : -0.52;\n    this.infiniteOcean.position.set(this.view.x, wy, this.view.z);\n    this.infiniteMeadow.position.set(this.view.x, -0.54, this.view.z);\n    this.meadowMat.uniforms.uLight!.value.set(spec.meadowLight);\n    this.meadowMat.uniforms.uDark!.value.set(spec.meadowDark);\n    this.meadowMat.uniforms.uFogColor!.value.set(spec.skyHorizon);\n    this.meadowMat.uniforms.uFocus!.value.set(this.view.x, this.view.z);\n    this.meadowMat.uniforms.uSpan!.value = this.view.span;\n    this.meadowMat.uniforms.uIndoor!.value = this.look === 'indoor' ? 1 : 0;\n\n    // Tactical grid follows camera target (sits crisply above cobblestone/wood/meadow)\n    this.gridMesh.position.set(this.view.x, this.mapScale === 'world' ? 2.2 : 0.72, this.view.z);\n    this.gridMat.uniforms.uStep!.value =\n      this.view.span > 500 ? 100 : this.view.span > 160 ? 32 : 16;\n    this.gridMat.uniforms.uFocus!.value.set(this.view.x, this.view.z);\n    this.gridMat.uniforms.uSpan!.value = this.view.span;\n    this.gridMat.uniforms.uColor!.value.set(\n      this.lightingMode === 'evening' ? '#fde68a' : '#22d3ee',\n    );\n\n    // Style-aware lighting & exposure\n    const styleExp =\n      this.styleMode === 'illustrated' ? 1.06 : this.styleMode === 'cel' ? 0.96 : 1.0;\n    this.hemi.color.set(spec.hemiSky);\n    this.hemi.groundColor.set(spec.hemiGround);\n    this.hemi.intensity = spec.hemiIntensity;\n    this.sun.color.set(spec.sunColor);\n    this.sun.intensity = spec.sunIntensity * (this.styleMode === 'cel' ? 1.15 : 1.0);\n    this.sun.position.copy(at).addScaledVector(sunDir, Math.max(400, this.view.span * 2.2));\n    this.sun.target.position.copy(at);\n    const shadowHalf = Math.max(220, this.view.span * 1.45);\n    this.sun.shadow.camera.left = -shadowHalf;\n    this.sun.shadow.camera.right = shadowHalf;\n    this.sun.shadow.camera.top = shadowHalf;\n    this.sun.shadow.camera.bottom = -shadowHalf;\n    this.sun.shadow.camera.near = 20;\n    this.sun.shadow.camera.far = Math.max(2400, this.view.span * 7);\n    this.sun.shadow.bias = -0.0005;\n    this.sun.shadow.normalBias = 0.025;\n    this.sun.shadow.camera.updateProjectionMatrix();\n\n    this.fill.color.set(spec.fillColor);\n    this.fill.intensity = spec.fillIntensity;\n    this.fill.position.copy(at).addScaledVector(fillDir, Math.max(300, this.view.span * 1.8));\n    this.fill.target.position.copy(at);\n\n    this.renderer.toneMappingExposure = spec.exposure * styleExp;\n    this.waterMat.uniforms.uTime!.value = elapsedSec;\n    this.waterMat.uniforms.uDeep!.value.set(spec.waterDeep);\n    this.waterMat.uniforms.uShallow!.value.set(spec.waterShallow);\n    this.waterMat.uniforms.uSky!.value.set(spec.waterSky);\n    this.waterMat.uniforms.uSunDir!.value.copy(sunDir);\n    this.waterMat.uniforms.uFogColor!.value.set(spec.skyHorizon);\n    this.waterMat.uniforms.uFocus!.value.set(this.view.x, this.view.z);\n    this.waterMat.uniforms.uSpan!.value = this.view.span;\n\n    // Gentle rising chimney smoke animation\n    for (const puff of this.smokePuffs) {\n      const cycle = (elapsedSec * 0.22 + puff.phase) % 1;\n      puff.sprite.position.set(\n        puff.base.x + Math.sin(elapsedSec * 0.7 + puff.phase * 6) * 4 + cycle * 12,\n        puff.base.y + cycle * 26,\n        puff.base.z + cycle * 6,\n      );\n      const s = 6 + cycle * 14;\n      puff.sprite.scale.setScalar(s);\n    }\n\n    // Subtle organic firelight flicker on hearth fires, candles & dungeon torches\n    for (const tl of this.torchLights) {\n      const wave =\n        Math.sin(elapsedSec * 6.4 + tl.phase) * 0.055 +\n        Math.sin(elapsedSec * 11.3 + tl.phase * 2.1) * 0.03;\n      tl.light.intensity = tl.baseIntensity * (1 + wave);\n    }\n\n    // Adjust IBL bounce for outdoor daylight vs warm tavern/crypt interior\n    this.scene.environmentIntensity =\n      this.look === 'indoor' ? 0.42 : this.lightingMode === 'night' ? 0.28 : 0.62;\n  }\n\n  private emitProjectedPins(w: number, h: number): void {\n    if (!this.onProjectedPins) return;\n    if (this.pins.length === 0) {\n      if (this.lastPinEmitKey !== '') {\n        this.lastPinEmitKey = '';\n        this.onProjectedPins([]);\n      }\n      return;\n    }\n    const projected: AtlasThreeProjectedPin[] = [];\n    const v = new THREE.Vector3();\n    for (const pin of this.pins) {\n      v.set(pin.x, 14, pin.y).project(this.camera);\n      const visible = v.z >= -1 && v.z <= 1;\n      const left = Math.round(((v.x + 1) * 0.5) * w);\n      const top = Math.round(((1 - v.y) * 0.5) * h);\n      projected.push({\n        id: pin.id,\n        label: pin.label,\n        kind: pin.kind ?? 'place',\n        left,\n        top,\n        visible: visible && left >= -80 && left <= w + 80 && top >= -40 && top <= h + 40,\n      });\n    }\n    const key = projected.map((p) => `${p.id}:${p.left},${p.top},${p.visible ? 1 : 0}`).join('|');\n    if (key !== this.lastPinEmitKey) {\n      this.lastPinEmitKey = key;\n      this.onProjectedPins(projected);\n    }\n  }\n\n  private startLoop(): void {\n    const tick = (now: number) => {\n      if (this.disposed) return;\n      this.rafId = window.requestAnimationFrame(tick);\n      if (this.contextLost || !this.doc) return;\n      const dtSec = Math.min(0.05, Math.max(0.001, (now - this.lastFrameMs) / 1000));\n      this.lastFrameMs = now;\n\n      const w = this.config.canvas.clientWidth;\n      const h = this.config.canvas.clientHeight;\n      if (w < 8 || h < 8) return;\n      if (this.config.canvas.width !== Math.round(w * this.renderer.getPixelRatio())) {\n        this.renderer.setSize(w, h, false);\n      }\n\n      if (this.flight) {\n        const t = (now - this.flight.startMs) / this.flight.durationMs;\n        this.view = interpolateAtlasThreeView(this.flight.from, this.flight.to, t);\n        if (t >= 1) {\n          this.view = this.flight.to;\n          this.targetView = { ...this.view };\n          this.flight = null;\n          this.onCameraChange?.(this.view);\n        } else if (now - this.lastCameraNotifyMs > 48) {\n          this.lastCameraNotifyMs = now;\n          this.onCameraChange?.(this.view);\n        }\n      } else {\n        const damped = dampAtlasThreeView(this.view, this.targetView, dtSec, 11.5);\n        if (!damped.settled) {\n          this.view = damped.next;\n          if (now - this.lastCameraNotifyMs > 48) {\n            this.lastCameraNotifyMs = now;\n            this.onCameraChange?.(this.view);\n          }\n        } else if (\n          this.view.x !== this.targetView.x ||\n          this.view.z !== this.targetView.z ||\n          this.view.span !== this.targetView.span ||\n          this.view.yawRad !== this.targetView.yawRad ||\n          this.view.pitchRad !== this.targetView.pitchRad\n        ) {\n          this.view = { ...this.targetView };\n          this.onCameraChange?.(this.view);\n        }\n      }\n\n      this.ensureScene();\n      this.syncCameraAndLighting(w, h, (now - this.startTime) * 0.001);\n      this.renderer.render(this.scene, this.camera);\n      this.emitProjectedPins(w, h);\n    };\n    this.rafId = window.requestAnimationFrame(tick);\n  }\n\n  dispose(): void {\n    this.disposed = true;\n    window.cancelAnimationFrame(this.rafId);\n    this.config.canvas.removeEventListener('webglcontextlost', this.onContextLostListener);\n    this.config.canvas.removeEventListener('webglcontextrestored', this.onContextRestoredListener);\n    this.multiMap.dispose();\n    this.clearRoot();\n    for (const mat of this.materials.values()) mat.dispose();\n    this.materials.clear();\n    this.pbr.dispose();\n    this.envMap.dispose();\n    this.skyDome.geometry.dispose();\n    this.skyMat.dispose();\n    this.infiniteOcean.geometry.dispose();\n    this.waterMat.dispose();\n    this.infiniteMeadow.geometry.dispose();\n    this.meadowMat.dispose();\n    this.gridMesh.geometry.dispose();\n    this.gridMat.dispose();\n    this.haloTex.dispose();\n    this.haloMat.dispose();\n    this.aoTex.dispose();\n    this.aoMat.dispose();\n    this.mistTex.dispose();\n    this.mistMat.dispose();\n    this.selectionRing.geometry.dispose();\n    this.gizmoAxisX.geometry.dispose();\n    this.gizmoAxisZ.geometry.dispose();\n    this.renderer.dispose();\n  }\n}"
+      "line": 533,
+      "endLine": 1782,
+      "text": "export class AtlasThreeRuntime {\n  readonly renderer: THREE.WebGLRenderer;\n  readonly scene = new THREE.Scene();\n  private readonly root = new THREE.Group();\n  private readonly multiMap: AtlasThreeMultiMapGraph;\n  private worldMaps: readonly AtlasWorldSceneMapInput[] = [];\n  private worldSources = new Map<string, AtlasThreeWorldMapSource>();\n  private worldScenePlan: AtlasWorldScenePlan | null = null;\n  private lastReportedEditorMapId: string | null | undefined = undefined;\n  private clearRootCount = 0;\n  private readonly gizmoGroup = new THREE.Group();\n  private readonly selectionRing: THREE.Mesh;\n  private readonly gizmoAxisX: THREE.Mesh;\n  private readonly gizmoAxisZ: THREE.Mesh;\n  private readonly skyDome: THREE.Mesh;\n  private readonly skyMat: THREE.ShaderMaterial;\n  private readonly infiniteOcean: THREE.Mesh;\n  private readonly infiniteMeadow: THREE.Mesh;\n  private readonly meadowMat: THREE.ShaderMaterial;\n  private readonly gridMesh: THREE.Mesh;\n  private readonly gridMat: THREE.ShaderMaterial;\n  private readonly hemi = new THREE.HemisphereLight();\n  private readonly sun = new THREE.DirectionalLight();\n  private readonly fill = new THREE.DirectionalLight();\n  private camera: THREE.PerspectiveCamera | THREE.OrthographicCamera = new THREE.OrthographicCamera();\n  private readonly pbr: AtlasPbrTextureLibrary;\n  private readonly materials = new Map<AtlasThreeSurfaceKey, THREE.MeshStandardMaterial>();\n  private readonly waterMat: THREE.ShaderMaterial;\n  private readonly haloMat: THREE.SpriteMaterial;\n  private readonly haloTex: THREE.CanvasTexture;\n  private readonly aoMat: THREE.MeshBasicMaterial;\n  private readonly aoTex: THREE.CanvasTexture;\n  private readonly mistMat: THREE.SpriteMaterial;\n  private readonly mistTex: THREE.CanvasTexture;\n  private readonly smokePuffs: Array<{\n    readonly sprite: THREE.Sprite;\n    readonly base: THREE.Vector3;\n    readonly phase: number;\n  }> = [];\n  private readonly torchLights: Array<{\n    readonly light: THREE.PointLight;\n    readonly baseIntensity: number;\n    readonly phase: number;\n  }> = [];\n  private readonly envMap: THREE.Texture;\n  private readonly pickables: THREE.Mesh[] = [];\n  private readonly raycaster = new THREE.Raycaster();\n  private readonly groundPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);\n\n  private presetId: AtlasGraphicsPresetId;\n  private doc: UnifiedCanvasDoc | null = null;\n  private mapScale: AtlasMapScale = 'world';\n  private look: AtlasThreeLook = 'outdoor';\n  private seed = 'dornhain.unified.v4';\n  private hideRoofs = false;\n  private lightingMode: AtlasThreeLightingMode = 'day';\n  private styleMode: AtlasThreeStyleMode = 'pbr';\n  private showGrid = false;\n  private pins: readonly AtlasMapPin[] = [];\n  private selectedId: string | null = null;\n  private gizmoVisible = false;\n  private plan: AtlasThreeScenePlan | null = null;\n  private sceneKey = '';\n  private docRevision = 0;\n  private manualPitchOverride = false;\n  private view: AtlasThreeCameraView = {\n    mode: 'diorama-oblique',\n    x: 500,\n    z: 500,\n    span: 430,\n    yawRad: 0.42,\n    pitchRad: autoAtlasThreePitchForSpan('diorama-oblique', 430),\n  };\n  private targetView: AtlasThreeCameraView = { ...this.view };\n  private flight: {\n    readonly from: AtlasThreeCameraView;\n    readonly to: AtlasThreeCameraView;\n    readonly startMs: number;\n    readonly durationMs: number;\n  } | null = null;\n  private rafId = 0;\n  private startTime = performance.now();\n  private lastFrameMs = performance.now();\n  private lastCameraNotifyMs = 0;\n  private lastPinEmitKey = '';\n  private disposed = false;\n  private contextLost = false;\n  private readonly onCameraChange?: (view: AtlasThreeCameraView) => void;\n  private readonly onProjectedPins?: (pins: readonly AtlasThreeProjectedPin[]) => void;\n  private readonly onContextLostChange?: (lost: boolean) => void;\n  private readonly onContextLostListener: (ev: Event) => void;\n  private readonly onContextRestoredListener: () => void;\n\n  constructor(private readonly config: AtlasThreeRuntimeConfig) {\n    this.presetId = config.presetId;\n    this.onCameraChange = config.onCameraChange;\n    this.onProjectedPins = config.onProjectedPins;\n    this.onContextLostChange = config.onContextLostChange;\n\n    this.renderer = new THREE.WebGLRenderer({\n      canvas: config.canvas,\n      antialias: config.presetId !== 'lite',\n      alpha: false,\n      powerPreference: 'high-performance',\n      preserveDrawingBuffer: true,\n    });\n    this.applyQualityProfile(config.presetId);\n    this.renderer.shadowMap.enabled = true;\n    this.renderer.shadowMap.type = THREE.PCFShadowMap;\n    this.renderer.outputColorSpace = THREE.SRGBColorSpace;\n    this.renderer.toneMapping = THREE.ACESFilmicToneMapping;\n\n    const texSize = config.presetId === 'high' ? 512 : 256;\n    const aniso = Math.min(8, this.renderer.capabilities.getMaxAnisotropy());\n    this.pbr = new AtlasPbrTextureLibrary(texSize, aniso);\n    this.envMap = createProceduralWarmEnvMap(this.renderer);\n    this.scene.environment = this.envMap;\n    this.scene.environmentIntensity = 0.58;\n\n    // 1) Atmospheric Sky Dome (follows camera — seamless horizon!)\n    this.skyMat = new THREE.ShaderMaterial({\n      vertexShader: SKY_VERTEX,\n      fragmentShader: SKY_FRAGMENT,\n      side: THREE.BackSide,\n      depthWrite: false,\n      uniforms: {\n        uZenith: { value: new THREE.Color('#3e748c') },\n        uHorizon: { value: new THREE.Color('#9ec2c6') },\n        uSunGlow: { value: new THREE.Color('#fff1d1') },\n        uSunDir: { value: new THREE.Vector3(-12, 16, 10).normalize() },\n      },\n    });\n    this.skyDome = new THREE.Mesh(new THREE.SphereGeometry(18000, 32, 16), this.skyMat);\n    this.skyDome.frustumCulled = false;\n    this.skyDome.renderOrder = -10;\n\n    // 2) Infinite Ocean Plane (28,000×28,000, locked to camera X/Z every frame — ZERO square borders!)\n    this.waterMat = new THREE.ShaderMaterial({\n      vertexShader: WATER_VERTEX,\n      fragmentShader: WATER_FRAGMENT,\n      side: THREE.DoubleSide,\n      uniforms: {\n        uTime: { value: 0 },\n        uTile: { value: 26 },\n        uDeep: { value: new THREE.Color('#134f6e') },\n        uShallow: { value: new THREE.Color('#2f8ea1') },\n        uSky: { value: new THREE.Color('#a8cfd4') },\n        uSunDir: { value: new THREE.Vector3(-12, 16, 10).normalize() },\n        uFogColor: { value: new THREE.Color('#9ec2c6') },\n        uFocus: { value: new THREE.Vector2(500, 500) },\n        uSpan: { value: 430 },\n      },\n    });\n    const oceanGeo = new THREE.PlaneGeometry(28000, 28000, 1, 1);\n    oceanGeo.rotateX(-Math.PI / 2);\n    this.infiniteOcean = new THREE.Mesh(oceanGeo, this.waterMat);\n    this.infiniteOcean.frustumCulled = false;\n    this.infiniteOcean.renderOrder = 1;\n\n    // 3) Infinite Meadow / Cavern Horizon Plane (for settlement / interior scales — zero edges!)\n    this.meadowMat = new THREE.ShaderMaterial({\n      vertexShader: MEADOW_VERTEX,\n      fragmentShader: MEADOW_FRAGMENT,\n      side: THREE.DoubleSide,\n      uniforms: {\n        uLight: { value: new THREE.Color('#8bb562') },\n        uDark: { value: new THREE.Color('#5d874a') },\n        uFogColor: { value: new THREE.Color('#9ec2c6') },\n        uFocus: { value: new THREE.Vector2(500, 500) },\n        uSpan: { value: 220 },\n        uIndoor: { value: 0 },\n      },\n    });\n    const meadowGeo = new THREE.PlaneGeometry(28000, 28000, 1, 1);\n    meadowGeo.rotateX(-Math.PI / 2);\n    this.infiniteMeadow = new THREE.Mesh(meadowGeo, this.meadowMat);\n    this.infiniteMeadow.frustumCulled = false;\n    this.infiniteMeadow.receiveShadow = true;\n\n    // 4) Interactive 3D Tactical Battle Grid (toggled via bottom taskbar ▦ button!)\n    this.gridMat = new THREE.ShaderMaterial({\n      vertexShader: GRID_VERTEX,\n      fragmentShader: GRID_FRAGMENT,\n      transparent: true,\n      depthWrite: false,\n      polygonOffset: true,\n      polygonOffsetFactor: -2,\n      polygonOffsetUnits: -2,\n      uniforms: {\n        uStep: { value: 40 },\n        uColor: { value: new THREE.Color('#06b6d4') },\n        uFocus: { value: new THREE.Vector2(500, 500) },\n        uSpan: { value: 220 },\n      },\n    });\n    const gridGeo = new THREE.PlaneGeometry(8000, 8000, 1, 1);\n    gridGeo.rotateX(-Math.PI / 2);\n    this.gridMesh = new THREE.Mesh(gridGeo, this.gridMat);\n    this.gridMesh.frustumCulled = false;\n    this.gridMesh.renderOrder = 4;\n    this.gridMesh.visible = false;\n\n    this.sun.castShadow = true;\n    this.scene.add(\n      this.skyDome,\n      this.infiniteOcean,\n      this.infiniteMeadow,\n      this.gridMesh,\n      this.hemi,\n      this.sun,\n      this.sun.target,\n      this.fill,\n      this.fill.target,\n      this.root,\n      this.gizmoGroup,\n    );\n\n    // 5) 3D Selection Ring + Transform Gizmo handles (SagaTree Cyan + Gold)\n    const ringGeo = new THREE.RingGeometry(0.85, 1.0, 48);\n    ringGeo.rotateX(-Math.PI / 2);\n    this.selectionRing = new THREE.Mesh(\n      ringGeo,\n      new THREE.MeshBasicMaterial({\n        color: 0x06b6d4,\n        side: THREE.DoubleSide,\n        depthWrite: false,\n        transparent: true,\n        opacity: 0.94,\n      }),\n    );\n    const axisGeoX = new THREE.BoxGeometry(1.6, 0.08, 0.08);\n    axisGeoX.translate(0.8, 0.14, 0);\n    this.gizmoAxisX = new THREE.Mesh(\n      axisGeoX,\n      new THREE.MeshBasicMaterial({ color: 0xf59e0b, depthTest: false }),\n    );\n    const axisGeoZ = new THREE.BoxGeometry(0.08, 0.08, 1.6);\n    axisGeoZ.translate(0, 0.14, 0.8);\n    this.gizmoAxisZ = new THREE.Mesh(\n      axisGeoZ,\n      new THREE.MeshBasicMaterial({ color: 0x06b6d4, depthTest: false }),\n    );\n    this.gizmoGroup.add(this.selectionRing, this.gizmoAxisX, this.gizmoAxisZ);\n    this.gizmoGroup.visible = false;\n\n    // 6) Atmospheric sprite & contact-shadow textures\n    this.haloTex = createRadialSoftTexture(\n      'rgba(255,240,198,1)',\n      'rgba(255,178,94,0.52)',\n      'rgba(255,140,60,0)',\n    );\n    this.haloMat = new THREE.SpriteMaterial({\n      map: this.haloTex,\n      color: 0xffb86c,\n      blending: THREE.AdditiveBlending,\n      transparent: true,\n      depthWrite: false,\n      fog: true,\n    });\n    this.aoTex = createRadialSoftTexture(\n      'rgba(10,18,14,0.52)',\n      'rgba(10,18,14,0.22)',\n      'rgba(10,18,14,0)',\n    );\n    this.aoMat = new THREE.MeshBasicMaterial({\n      map: this.aoTex,\n      transparent: true,\n      depthWrite: false,\n      polygonOffset: true,\n      polygonOffsetFactor: -1,\n    });\n    this.mistTex = createRadialSoftTexture(\n      'rgba(232,242,244,0.38)',\n      'rgba(220,235,238,0.16)',\n      'rgba(210,228,232,0)',\n    );\n    this.mistMat = new THREE.SpriteMaterial({\n      map: this.mistTex,\n      transparent: true,\n      depthWrite: false,\n      fog: true,\n    });\n\n    this.onContextLostListener = (ev: Event) => {\n      ev.preventDefault();\n      this.contextLost = true;\n      this.onContextLostChange?.(true);\n    };\n    this.onContextRestoredListener = () => {\n      this.contextLost = false;\n      this.sceneKey = '';\n      this.onContextLostChange?.(false);\n    };\n    this.multiMap = new AtlasThreeMultiMapGraph(\n      (key) => this.getMaterial(key),\n      this.waterMat,\n    );\n    this.scene.add(this.multiMap.rootGroup);\n    config.canvas.addEventListener('webglcontextlost', this.onContextLostListener);\n    config.canvas.addEventListener('webglcontextrestored', this.onContextRestoredListener);\n\n    this.startLoop();\n  }\n\n  applyQualityProfile(presetId: AtlasGraphicsPresetId): void {\n    this.presetId = presetId;\n    const maxDpr = presetId === 'high' ? 2 : presetId === 'balanced' ? 1.5 : 1;\n    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, maxDpr));\n    const shadowSize = presetId === 'high' ? 2048 : 1024;\n    this.sun.shadow.mapSize.set(shadowSize, shadowSize);\n    this.sun.shadow.radius = presetId === 'high' ? 3 : 1.5;\n    this.sceneKey = '';\n  }\n\n  setSceneState(input: {\n    readonly doc: UnifiedCanvasDoc;\n    readonly mapScale: AtlasMapScale;\n    readonly look: AtlasThreeLook;\n    readonly seed: string;\n    readonly hideRoofs: boolean;\n    readonly lightingMode: AtlasThreeLightingMode;\n    readonly styleMode?: AtlasThreeStyleMode;\n    readonly showGrid?: boolean;\n    readonly pins: readonly AtlasMapPin[];\n    readonly selectedId: string | null;\n    readonly gizmoVisible: boolean;\n  }): void {\n    const docChanged = this.doc !== input.doc;\n    const scaleChanged = this.mapScale !== input.mapScale;\n    const lookChanged = this.look !== input.look;\n    const seedChanged = this.seed !== input.seed;\n    const roofChanged = this.hideRoofs !== input.hideRoofs;\n    const lightChanged = this.lightingMode !== input.lightingMode;\n    const nextStyle = input.styleMode ?? this.styleMode;\n    const styleChanged = this.styleMode !== nextStyle;\n    this.doc = input.doc;\n    this.mapScale = input.mapScale;\n    this.look = input.look;\n    this.seed = input.seed;\n    this.hideRoofs = input.hideRoofs;\n    this.lightingMode = input.lightingMode;\n    this.styleMode = nextStyle;\n    this.showGrid = Boolean(input.showGrid);\n    this.gridMesh.visible = this.showGrid;\n    this.pins = input.pins;\n    this.selectedId = input.selectedId;\n    this.gizmoVisible = input.gizmoVisible;\n    if (styleChanged) {\n      this.applyStyleToMaterials();\n    }\n    if (docChanged || scaleChanged || lookChanged || seedChanged || roofChanged || lightChanged) {\n      this.docRevision += 1;\n      this.sceneKey = '';\n    }\n    this.updateSelectionGizmo();\n  }\n\n  private applyStyleToMaterials(): void {\n    for (const [key, mat] of this.materials) {\n      const spec = ATLAS_THREE_SURFACES[key];\n      if (this.styleMode === 'cel') {\n        mat.roughness = Math.min(1, spec.roughness + 0.08);\n        mat.normalScale.set(spec.normalScale * 0.35, spec.normalScale * 0.35);\n      } else if (this.styleMode === 'illustrated') {\n        mat.roughness = Math.min(1, spec.roughness + 0.03);\n        mat.normalScale.set(spec.normalScale * 0.72, spec.normalScale * 0.72);\n      } else {\n        mat.roughness = spec.roughness;\n        mat.normalScale.set(spec.normalScale, spec.normalScale);\n      }\n      mat.needsUpdate = true;\n    }\n  }\n\n  /**\n   * Register the spatial world map hierarchy for incremental Multi-Map rendering\n   * (SWS-04, Checklist D1–D5). When non-empty, `ensureScene()` mounts/updates\n   * map groups at their `ParentSpatialAnchor` transforms without calling `clearRoot()`.\n   */\n  setWorldSceneGraph(input: {\n    readonly maps: readonly AtlasWorldSceneMapInput[];\n    readonly sources: readonly AtlasThreeWorldMapSource[];\n  }): void {\n    this.worldMaps = input.maps;\n    this.worldSources = new Map(input.sources.map((s) => [s.mapId, s] as const));\n    this.worldScenePlan = null;\n  }\n\n  getWorldCameraState(): AtlasWorldCameraState {\n    return createAtlasWorldCameraState({\n      focusWorld: { x: this.targetView.x, y: this.targetView.z, z: 0 },\n      span: this.targetView.span,\n      yawRad: this.targetView.yawRad,\n      pitchRad: this.targetView.pitchRad,\n      projection: this.targetView.mode,\n    });\n  }\n\n  setWorldCameraState(state: AtlasWorldCameraState, animate = false): void {\n    this.setView(\n      {\n        mode: state.projection,\n        x: state.focusWorld.x,\n        z: state.focusWorld.y,\n        span: state.span,\n        yawRad: state.yawRad,\n        pitchRad: state.pitchRad,\n      },\n      animate,\n    );\n  }\n\n  /** Two-finger trackpad scroll / drag pan in screen pixels (respects camera yaw). */\n  panByScreenDelta(deltaPxX: number, deltaPxY: number): AtlasThreeCameraView {\n    this.flight = null;\n    const h = Math.max(1, this.config.canvas.clientHeight || 800);\n    const worldPerPx = (this.targetView.span * 2) / h;\n    const dx = deltaPxX * worldPerPx;\n    const dy = deltaPxY * worldPerPx;\n    const cos = Math.cos(this.targetView.yawRad);\n    const sin = Math.sin(this.targetView.yawRad);\n    this.targetView = {\n      ...this.targetView,\n      x: this.targetView.x + (dx * cos + dy * sin),\n      z: this.targetView.z + (-dx * sin + dy * cos),\n    };\n    return { ...this.targetView };\n  }\n\n  /** Incremental yaw/pitch orbit delta (Shift+Wheel / Trackpad orbit). */\n  orbitByDelta(deltaYawRad: number, deltaPitchRad: number): AtlasThreeCameraView {\n    this.flight = null;\n    const nextMode: AtlasThreeCameraMode =\n      this.targetView.mode === 'ortho-topdown' ? 'diorama-oblique' : this.targetView.mode;\n    this.manualPitchOverride = true;\n    this.targetView = {\n      ...this.targetView,\n      mode: nextMode,\n      yawRad: this.targetView.yawRad + deltaYawRad,\n      pitchRad: clampAtlasThreePitch(nextMode, this.targetView.pitchRad + deltaPitchRad),\n    };\n    return { ...this.targetView };\n  }\n\n  getMultiMapStats(): AtlasThreeMultiMapStats {\n    const stats = this.multiMap.getStats();\n    return {\n      ...stats,\n      clearRootCount: this.clearRootCount,\n    };\n  }\n\n  getView(): AtlasThreeCameraView {\n    return { ...this.view };\n  }\n\n  getTargetView(): AtlasThreeCameraView {\n    return { ...this.targetView };\n  }\n\n  setView(\n    next: Partial<AtlasThreeCameraView>,\n    animate = false,\n    opts?: { readonly manualPitch?: boolean },\n  ): void {\n    const targetMode: AtlasThreeCameraMode = next.mode ?? this.targetView.mode;\n    const minSpan = this.worldMaps.length > 0 ? 0.02 : 16;\n    const nextSpan = Math.max(minSpan, Math.min(2400, next.span ?? this.targetView.span));\n    if (opts?.manualPitch) {\n      this.manualPitchOverride = true;\n    } else if (next.mode) {\n      this.manualPitchOverride = false;\n    }\n    const pitch =\n      next.pitchRad !== undefined\n        ? clampAtlasThreePitch(targetMode, next.pitchRad)\n        : next.mode || !this.manualPitchOverride\n          ? autoAtlasThreePitchForSpan(targetMode, nextSpan)\n          : this.targetView.pitchRad;\n    const target: AtlasThreeCameraView = {\n      mode: targetMode,\n      x: next.x ?? this.targetView.x,\n      z: next.z ?? this.targetView.z,\n      span: nextSpan,\n      yawRad: next.yawRad ?? this.targetView.yawRad,\n      pitchRad: pitch,\n    };\n    if (animate) {\n      const reduced =\n        typeof window !== 'undefined' &&\n        window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;\n      this.targetView = target;\n      this.flight = reduced\n        ? null\n        : { from: { ...this.view }, to: target, startMs: performance.now(), durationMs: 520 };\n      if (!this.flight) {\n        this.view = target;\n        this.onCameraChange?.(this.view);\n      }\n    } else {\n      this.flight = null;\n      this.targetView = target;\n      this.view = target;\n      this.onCameraChange?.(this.view);\n    }\n  }\n\n  /**\n   * Butter-smooth Google-Maps inertia wheel zoom toward the exact world point under (px, py),\n   * with automatic Diorama pitch adaptation.\n   */\n  zoomAtScreen(deltaY: number, px: number, py: number): AtlasThreeCameraView {\n    this.flight = null;\n    const before = this.screenToGround(px, py);\n    const factor = Math.exp(deltaY * 0.00125);\n    const minSpan = this.worldMaps.length > 0 ? 0.02 : 16;\n    const nextSpan = Math.max(minSpan, Math.min(2400, this.targetView.span * factor));\n    const ratio = nextSpan / Math.max(0.02, this.targetView.span);\n\n    let nextX = this.targetView.x;\n    let nextZ = this.targetView.z;\n    if (before) {\n      nextX = before.x + (this.targetView.x - before.x) * ratio;\n      nextZ = before.z + (this.targetView.z - before.z) * ratio;\n    }\n\n    const nextPitch =\n      this.targetView.mode === 'ortho-topdown'\n        ? Math.PI / 2\n        : this.manualPitchOverride\n          ? this.targetView.pitchRad\n          : autoAtlasThreePitchForSpan(this.targetView.mode, nextSpan);\n\n    this.targetView = {\n      ...this.targetView,\n      x: nextX,\n      z: nextZ,\n      span: nextSpan,\n      pitchRad: nextPitch,\n    };\n    return { ...this.targetView };\n  }\n\n  /** Smoothly ease yaw (e.g. clicking the compass dial snaps smoothly back to 0° North). */\n  setYawAnimated(yawRad: number): void {\n    this.setView({ yawRad }, true);\n  }\n\n  flyTo(x: number, z: number, span: number): void {\n    this.manualPitchOverride = false;\n    this.setView(\n      {\n        x,\n        z,\n        span,\n        pitchRad: autoAtlasThreePitchForSpan(this.targetView.mode, span),\n      },\n      true,\n    );\n  }\n\n  /** Capture the current WebGL frame as a lightweight JPEG data URL for seamless flight transitions. */\n  captureFrameDataUrl(): string | null {\n    try {\n      this.renderer.render(this.scene, this.camera);\n      return this.config.canvas.toDataURL('image/jpeg', 0.84);\n    } catch {\n      return null;\n    }\n  }\n\n  /** Smooth arrival glide onto the newly loaded map's exact content center. */\n  frameContentBounds(opts?: { readonly animateFrom?: 'in' | 'out' | null }): void {\n    this.ensureScene();\n    const bounds = this.plan?.contentBounds ?? {\n      centerX: this.mapScale === 'settlement' ? 370 : 500,\n      centerZ: this.mapScale === 'settlement' ? 485 : 500,\n      fitSpan: this.mapScale === 'world' ? 430 : this.mapScale === 'settlement' ? 195 : 220,\n    };\n    const mode = this.targetView.mode;\n    const targetSpan = bounds.fitSpan;\n    // SWS-05 (E2): preserve current yaw orientation across mode/map framing.\n    const targetYaw = this.targetView.yawRad;\n    const targetPitch = autoAtlasThreePitchForSpan(mode, targetSpan);\n    this.manualPitchOverride = false;\n\n    if (opts?.animateFrom) {\n      const startSpan =\n        opts.animateFrom === 'in'\n          ? Math.min(1800, targetSpan * 1.48)\n          : Math.max(48, targetSpan * 0.68);\n      this.view = {\n        mode,\n        x: bounds.centerX,\n        z: bounds.centerZ,\n        span: startSpan,\n        yawRad: targetYaw,\n        pitchRad: autoAtlasThreePitchForSpan(mode, startSpan),\n      };\n      this.targetView = { ...this.view };\n      this.setView(\n        {\n          mode,\n          x: bounds.centerX,\n          z: bounds.centerZ,\n          span: targetSpan,\n          yawRad: targetYaw,\n          pitchRad: targetPitch,\n        },\n        true,\n      );\n      return;\n    }\n\n    this.setView(\n      {\n        mode,\n        x: bounds.centerX,\n        z: bounds.centerZ,\n        span: targetSpan,\n        yawRad: targetYaw,\n        pitchRad: targetPitch,\n      },\n      false,\n    );\n  }\n\n  resetCamera(): void {\n    this.ensureScene();\n    const bounds = this.plan?.contentBounds ?? {\n      centerX: this.mapScale === 'settlement' ? 370 : 500,\n      centerZ: this.mapScale === 'settlement' ? 485 : 500,\n      fitSpan: this.mapScale === 'world' ? 430 : this.mapScale === 'settlement' ? 195 : 220,\n    };\n    const mode = this.targetView.mode;\n    this.manualPitchOverride = false;\n    this.setView(\n      {\n        mode,\n        x: bounds.centerX,\n        z: bounds.centerZ,\n        span: bounds.fitSpan,\n        yawRad: mode === 'ortho-topdown' ? 0 : 0.42,\n        pitchRad: autoAtlasThreePitchForSpan(mode, bounds.fitSpan),\n      },\n      true,\n    );\n  }\n\n  /** Raycast screen coordinates (px relative to canvas) to ground plane (x, z). */\n  screenToGround(px: number, py: number): { readonly x: number; readonly z: number } | null {\n    const w = this.config.canvas.clientWidth || 1;\n    const h = this.config.canvas.clientHeight || 1;\n    const ndc = new THREE.Vector2((px / w) * 2 - 1, -(py / h) * 2 + 1);\n    this.raycaster.setFromCamera(ndc, this.camera);\n    const out = new THREE.Vector3();\n    if (!this.raycaster.ray.intersectPlane(this.groundPlane, out)) return null;\n    return { x: out.x, z: out.z };\n  }\n\n  /** Read-only projection from World Space (x, y, z) to canvas pixels (px, py). */\n  projectWorldPointToScreen(\n    x: number,\n    z: number,\n    y?: number,\n  ): { readonly px: number; readonly py: number; readonly visible: boolean } {\n    const w = Math.max(1, this.config.canvas.clientWidth || 1);\n    const h = Math.max(1, this.config.canvas.clientHeight || 1);\n    const pyWorld = y ?? (this.worldMaps.length > 0 ? this.multiMap.getActiveEditorElevationY() : 0);\n    const v = new THREE.Vector3(x, pyWorld, z).project(this.camera);\n    const px = ((v.x + 1) * 0.5) * w;\n    const py = ((1 - v.y) * 0.5) * h;\n    return {\n      px: Math.round(px * 100) / 100,\n      py: Math.round(py * 100) / 100,\n      visible: v.z >= -1 && v.z <= 1 && px >= 0 && px <= w && py >= 0 && py <= h,\n    };\n  }\n\n  /** Read-only WebGL renderer identification (hardware vs software labelling, A.3). */\n  getRendererInfo(): {\n    readonly webglRenderer: string;\n    readonly webglVendor: string;\n    readonly isSoftwareWebgl: boolean;\n  } {\n    const gl = this.renderer.getContext();\n    const dbg = gl.getExtension('WEBGL_debug_renderer_info');\n    const webglRenderer = String(\n      dbg ? gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL) : gl.getParameter(gl.RENDERER),\n    );\n    const webglVendor = String(\n      dbg ? gl.getParameter(dbg.UNMASKED_VENDOR_WEBGL) : gl.getParameter(gl.VENDOR),\n    );\n    const isSoftwareWebgl = /swiftshader|llvmpipe|softpipe|software|basic render/i.test(webglRenderer);\n    return { webglRenderer, webglVendor, isSoftwareWebgl };\n  }\n\n  /** Raycast screen coordinates to canonical feature ID (objects prioritized over terrain/floors). */\n  pickCanonicalId(px: number, py: number): string | null {\n    const w = this.config.canvas.clientWidth || 1;\n    const h = this.config.canvas.clientHeight || 1;\n    const ndc = new THREE.Vector2((px / w) * 2 - 1, -(py / h) * 2 + 1);\n    this.raycaster.setFromCamera(ndc, this.camera);\n    const allPickables: THREE.Object3D[] =\n      this.worldMaps.length > 0 ? [...this.multiMap.getAllPickables()] : this.pickables;\n    const hits = this.raycaster.intersectObjects(allPickables, false);\n    const objectIds = new Set<string>((this.doc?.objects ?? []).map((o) => o.id));\n    if (this.worldMaps.length > 0) {\n      for (const src of this.worldSources.values()) {\n        for (const o of src.doc.objects) objectIds.add(o.id);\n      }\n    }\n    let fallback: string | null = null;\n    for (const hit of hits) {\n      let id: string | null = null;\n      const triIds = hit.object.userData.triIds as string[] | undefined;\n      const instIds = hit.object.userData.instanceIds as string[] | undefined;\n      if (triIds && typeof hit.faceIndex === 'number') {\n        id = triIds[hit.faceIndex] ?? null;\n      } else if (instIds && typeof hit.instanceId === 'number') {\n        id = instIds[hit.instanceId] ?? null;\n      }\n      if (!id || id.startsWith('__') || id === 'g.ocean' || id === 'w.ocean') continue;\n      if (objectIds.has(id)) return id;\n      if (!fallback) fallback = id;\n    }\n    return fallback;\n  }\n\n  getRenderedIds(): string[] {\n    if (this.worldMaps.length > 0) {\n      return this.multiMap.getRenderedIds();\n    }\n    return [...(this.plan?.ids ?? [])].sort();\n  }\n\n  getStats(): {\n    readonly calls: number;\n    readonly triangles: number;\n    readonly rooms: number;\n    readonly clearRootCount: number;\n    readonly activeMapCount: number;\n  } {\n    return {\n      calls: this.renderer.info.render.calls,\n      triangles: this.renderer.info.render.triangles,\n      rooms: this.doc?.rooms.length ?? 0,\n      clearRootCount: this.clearRootCount,\n      activeMapCount: this.worldMaps.length > 0 ? this.multiMap.getStats().groupCount : 1,\n    };\n  }\n\n  private getMaterial(key: AtlasThreeSurfaceKey): THREE.MeshStandardMaterial {\n    const hit = this.materials.get(key);\n    if (hit) return hit;\n    const spec = ATLAS_THREE_SURFACES[key];\n    const mat = new THREE.MeshStandardMaterial({\n      color: spec.color,\n      roughness: spec.roughness,\n      metalness: 'metalness' in spec ? spec.metalness : 0,\n      vertexColors: 'vertexColors' in spec ? spec.vertexColors : false,\n    });\n    if (spec.pbr) {\n      const tex = this.pbr.get(spec.pbr);\n      mat.map = tex.map;\n      mat.normalMap = tex.normal;\n      mat.roughnessMap = tex.rough;\n      mat.normalScale.set(spec.normalScale, spec.normalScale);\n    }\n    if ('emissive' in spec) {\n      mat.emissive = new THREE.Color(spec.emissive);\n      mat.emissiveIntensity = 1.9;\n      mat.toneMapped = false;\n    }\n    this.materials.set(key, mat);\n    return mat;\n  }\n\n  private clearRoot(): void {\n    if (this.root.children.length > 0) {\n      this.clearRootCount += 1;\n    }\n    for (const child of [...this.root.children]) {\n      this.root.remove(child);\n      if (child instanceof THREE.Mesh) child.geometry.dispose();\n      if (child instanceof THREE.PointLight) child.dispose();\n    }\n    this.smokePuffs.length = 0;\n    this.torchLights.length = 0;\n    this.pickables.length = 0;\n  }\n\n  private ensureScene(): void {\n    if (this.worldMaps.length > 0) {\n      // SWS-04 Multi-Map Scene Graph: incremental sync driven by AtlasWorldScenePlan\n      // with ZERO clearRoot() calls during zoom/navigation (Checklist D1–D5).\n      this.root.visible = false;\n      this.multiMap.rootGroup.visible = true;\n      const w = Math.max(1, this.config.canvas.clientWidth || 1280);\n      const h = Math.max(1, this.config.canvas.clientHeight || 800);\n      const camState = this.getWorldCameraState();\n      const nextPlan = buildAtlasWorldScenePlan({\n        maps: this.worldMaps,\n        camera: camState,\n        viewportPx: { width: w, height: h },\n        previousPlan: this.worldScenePlan,\n      });\n      this.worldScenePlan = nextPlan;\n      if (nextPlan.activeEditorMapId !== this.lastReportedEditorMapId) {\n        this.lastReportedEditorMapId = nextPlan.activeEditorMapId;\n        this.config.onActiveEditorMapChange?.(nextPlan.activeEditorMapId);\n      }\n      this.multiMap.sync({\n        scenePlan: nextPlan,\n        sources: this.worldSources,\n        presetId: this.presetId,\n        hideRoofs: this.hideRoofs,\n        viewSpan: this.view.span,\n      });\n      this.applyStyleToMaterials();\n      this.updateSelectionGizmo();\n      return;\n    }\n\n    this.root.visible = true;\n    this.multiMap.rootGroup.visible = false;\n    if (!this.doc) return;\n    // Automatic smooth roof cutaway when zoomed deep into a settlement building.\n    const autoCutaway = this.mapScale === 'settlement' && this.view.span < 58;\n    const effectiveHideRoofs = this.hideRoofs || autoCutaway;\n    // SWS-04 (D2): do NOT key on zoom lodBucket — zooming never triggers clearRoot()!\n    const key = `${this.docRevision}|${this.presetId}|${effectiveHideRoofs ? 'cut' : 'full'}`;\n    if (key === this.sceneKey && this.plan) return;\n\n    this.clearRoot();\n    const warmWindows = true;\n    const plan = buildAtlasThreeScenePlan(this.doc, {\n      mapScale: this.mapScale,\n      look: this.look,\n      span: this.view.span,\n      presetId: this.presetId,\n      seed: this.seed,\n      hideRoofs: effectiveHideRoofs,\n      warmWindows,\n    });\n\n    for (const [surfaceKey, builder] of plan.builders) {\n      if (builder.triangleCount === 0) continue;\n      const mesh = new THREE.Mesh(builder.build(), this.getMaterial(surfaceKey));\n      const flat = surfaceKey.startsWith('sheet') || surfaceKey.startsWith('floor');\n      mesh.castShadow = !flat;\n      mesh.receiveShadow = true;\n      mesh.userData.triIds = builder.triIds;\n      mesh.name = `atlas3:${surfaceKey}`;\n      this.root.add(mesh);\n      this.pickables.push(mesh);\n    }\n\n    if (plan.water.triangleCount > 0) {\n      const mesh = new THREE.Mesh(plan.water.build(), this.waterMat);\n      mesh.userData.triIds = plan.water.triIds;\n      mesh.name = 'atlas3:water';\n      mesh.renderOrder = 2;\n      this.root.add(mesh);\n      this.pickables.push(mesh);\n    }\n\n    if (plan.terrain) {\n      const mesh = new THREE.Mesh(plan.terrain, this.getMaterial('terrain'));\n      mesh.castShadow = true;\n      mesh.receiveShadow = true;\n      mesh.name = 'atlas3:terrain';\n      this.root.add(mesh);\n    }\n\n    if (plan.doorInstances.matrices.length > 0) {\n      const inst = new THREE.InstancedMesh(\n        new THREE.BoxGeometry(1, 1, 1),\n        this.getMaterial('wood-dark'),\n        plan.doorInstances.matrices.length,\n      );\n      plan.doorInstances.matrices.forEach((m, i) => inst.setMatrixAt(i, m));\n      inst.instanceMatrix.needsUpdate = true;\n      inst.computeBoundingSphere();\n      inst.castShadow = true;\n      inst.receiveShadow = true;\n      inst.userData.instanceIds = plan.doorInstances.ids;\n      inst.name = 'atlas3:doors';\n      this.root.add(inst);\n      this.pickables.push(inst);\n    }\n\n    // Instanced suggestive scenery scatter (1 draw call per mesh part!)\n    for (const batch of plan.scatterBatches) {\n      const { parts } = buildScatterGeometry(batch.kind);\n      for (const part of parts) {\n        const inst = new THREE.InstancedMesh(\n          part.geo,\n          this.getMaterial(part.surface),\n          batch.matrices.length,\n        );\n        batch.matrices.forEach((m, i) => inst.setMatrixAt(i, m));\n        inst.instanceMatrix.needsUpdate = true;\n        inst.computeBoundingSphere();\n        inst.castShadow = batch.kind !== 'flower' && batch.kind !== 'rubble';\n        inst.receiveShadow = true;\n        inst.name = `atlas3:scatter:${batch.kind}`;\n        this.root.add(inst);\n      }\n    }\n\n    // Soft Ground Contact Shadow AO Discs (single InstancedMesh draw call!)\n    if (plan.aoDiscs.length > 0) {\n      const discGeo = new THREE.PlaneGeometry(2, 2);\n      discGeo.rotateX(-Math.PI / 2);\n      const aoInst = new THREE.InstancedMesh(discGeo, this.aoMat, plan.aoDiscs.length);\n      const mat4 = new THREE.Matrix4();\n      const quat = new THREE.Quaternion();\n      plan.aoDiscs.forEach((d, i) => {\n        mat4.compose(new THREE.Vector3(d.x, d.y, d.z), quat, new THREE.Vector3(d.radius, 1, d.radius));\n        aoInst.setMatrixAt(i, mat4);\n      });\n      aoInst.instanceMatrix.needsUpdate = true;\n      aoInst.computeBoundingSphere();\n      aoInst.renderOrder = 2;\n      aoInst.name = 'atlas3:ao';\n      this.root.add(aoInst);\n    }\n\n    // Animated Chimney Smoke Puffs (V7/V8 Dornhain cozy life!)\n    for (const base of plan.smokePoints.slice(0, 12)) {\n      for (let k = 0; k < 3; k += 1) {\n        const sprite = new THREE.Sprite(this.mistMat);\n        sprite.position.copy(base);\n        sprite.scale.setScalar(10);\n        sprite.renderOrder = 4;\n        this.root.add(sprite);\n        this.smokePuffs.push({ sprite, base: base.clone(), phase: k / 3 });\n      }\n    }\n\n    // Subtle Alpine Peak Mist Sprites\n    for (const m of plan.mistPoints.slice(0, 14)) {\n      const sprite = new THREE.Sprite(this.mistMat);\n      sprite.position.copy(m.position);\n      sprite.scale.set(m.scale * 1.4, m.scale * 0.65, 1);\n      sprite.renderOrder = 3;\n      this.root.add(sprite);\n    }\n\n    // Warm Torches, Hearth Fires, Tavern Candles & Street Lanterns\n    const torchColor = new THREE.Color(0xffb154);\n    for (let ti = 0; ti < Math.min(20, plan.torches.length); ti += 1) {\n      const t = plan.torches[ti]!;\n      const intensityScale =\n        this.look === 'indoor' || this.lightingMode === 'night'\n          ? 1.18\n          : this.lightingMode === 'evening'\n            ? 0.84\n            : 0.36;\n      const baseIntensity = 1.9 * (t.radius / 4) ** 2 * intensityScale;\n      const light = new THREE.PointLight(torchColor, baseIntensity, t.radius, 2);\n      light.position.copy(t.position);\n      this.root.add(light);\n      this.torchLights.push({ light, baseIntensity, phase: ti * 1.37 });\n      const sprite = new THREE.Sprite(this.haloMat);\n      sprite.position.copy(t.position);\n      sprite.scale.setScalar(t.radius * 0.24);\n      sprite.renderOrder = 3;\n      this.root.add(sprite);\n    }\n\n    this.plan = plan;\n    this.sceneKey = key;\n    this.applyStyleToMaterials();\n    this.updateSelectionGizmo();\n  }\n\n  private updateSelectionGizmo(): void {\n    if (!this.selectedId || !this.doc) {\n      this.gizmoGroup.visible = false;\n      return;\n    }\n    const obj = this.doc.objects.find((o) => o.id === this.selectedId);\n    if (!obj) {\n      this.gizmoGroup.visible = false;\n      return;\n    }\n    const radius = Math.max(16, obj.size * 44);\n    this.gizmoGroup.position.set(obj.x, (obj.z ?? 0) + 1.2, obj.y);\n    this.selectionRing.scale.set(radius, 1, radius);\n    this.gizmoAxisX.scale.set(radius * 0.85, 1, 1);\n    this.gizmoAxisZ.scale.set(1, 1, radius * 0.85);\n    this.gizmoAxisX.visible = this.gizmoVisible;\n    this.gizmoAxisZ.visible = this.gizmoVisible;\n    this.gizmoGroup.visible = true;\n  }\n\n  private syncCameraAndLighting(w: number, h: number, elapsedSec: number): void {\n    const aspect = w / Math.max(1, h);\n    const activeY = this.worldMaps.length > 0 ? this.multiMap.getActiveEditorElevationY() : 0;\n    this.groundPlane.constant = -activeY;\n    const rig = buildAtlasThreeCameraRig({ ...this.view, y: activeY }, aspect);\n    if (rig.perspective) {\n      const cam =\n        this.camera instanceof THREE.PerspectiveCamera\n          ? this.camera\n          : new THREE.PerspectiveCamera();\n      cam.fov = rig.fovYDeg;\n      cam.aspect = aspect;\n      cam.near = rig.near;\n      cam.far = rig.far;\n      this.camera = cam;\n    } else {\n      const cam =\n        this.camera instanceof THREE.OrthographicCamera\n          ? this.camera\n          : new THREE.OrthographicCamera();\n      cam.left = -rig.halfWidth;\n      cam.right = rig.halfWidth;\n      cam.top = rig.halfHeight;\n      cam.bottom = -rig.halfHeight;\n      cam.near = rig.near;\n      cam.far = rig.far;\n      this.camera = cam;\n    }\n    this.camera.position.set(rig.eye[0], rig.eye[1], rig.eye[2]);\n    this.camera.up.set(rig.up[0], rig.up[1], rig.up[2]);\n    this.camera.lookAt(rig.at[0], rig.at[1], rig.at[2]);\n    this.camera.updateProjectionMatrix();\n    this.camera.updateMatrixWorld(true);\n\n    const spec = this.look === 'indoor' ? INDOOR_LIGHTING : OUTDOOR_LIGHTING[this.lightingMode];\n    const at = new THREE.Vector3(rig.at[0], rig.at[1], rig.at[2]);\n    const sunDir = new THREE.Vector3(spec.sunDir[0], spec.sunDir[1], spec.sunDir[2]).normalize();\n    const fillDir = new THREE.Vector3(7, 6, -7).normalize();\n    const band = buildAtlasThreeFogBand(rig, this.look);\n\n    // Seamless Exponential Fog + Sky Dome matched 1:1\n    this.scene.background = new THREE.Color(spec.skyHorizon);\n    this.scene.fog = new THREE.FogExp2(spec.skyHorizon, band.expDensity);\n    this.skyDome.position.set(rig.eye[0], 0, rig.eye[2]);\n    this.skyMat.uniforms.uZenith!.value.set(spec.skyZenith);\n    this.skyMat.uniforms.uHorizon!.value.set(spec.skyHorizon);\n    this.skyMat.uniforms.uSunGlow!.value.set(spec.sunGlow);\n    this.skyMat.uniforms.uSunDir!.value.copy(sunDir);\n\n    // Lock INFINITE surround planes to camera target X/Z — zero borders at ANY zoom!\n    const isWorldOcean = this.look === 'outdoor' && this.mapScale === 'world';\n    this.infiniteOcean.visible = isWorldOcean;\n    this.infiniteMeadow.visible = !isWorldOcean;\n    const wy = this.plan ? this.plan.waterLevel : -0.52;\n    this.infiniteOcean.position.set(this.view.x, wy, this.view.z);\n    this.infiniteMeadow.position.set(this.view.x, -0.54, this.view.z);\n    this.meadowMat.uniforms.uLight!.value.set(spec.meadowLight);\n    this.meadowMat.uniforms.uDark!.value.set(spec.meadowDark);\n    this.meadowMat.uniforms.uFogColor!.value.set(spec.skyHorizon);\n    this.meadowMat.uniforms.uFocus!.value.set(this.view.x, this.view.z);\n    this.meadowMat.uniforms.uSpan!.value = this.view.span;\n    this.meadowMat.uniforms.uIndoor!.value = this.look === 'indoor' ? 1 : 0;\n\n    // Tactical grid follows camera target (sits crisply above cobblestone/wood/meadow)\n    this.gridMesh.position.set(this.view.x, this.mapScale === 'world' ? 2.2 : 0.72, this.view.z);\n    this.gridMat.uniforms.uStep!.value =\n      this.view.span > 500 ? 100 : this.view.span > 160 ? 32 : 16;\n    this.gridMat.uniforms.uFocus!.value.set(this.view.x, this.view.z);\n    this.gridMat.uniforms.uSpan!.value = this.view.span;\n    this.gridMat.uniforms.uColor!.value.set(\n      this.lightingMode === 'evening' ? '#fde68a' : '#22d3ee',\n    );\n\n    // Style-aware lighting & exposure\n    const styleExp =\n      this.styleMode === 'illustrated' ? 1.06 : this.styleMode === 'cel' ? 0.96 : 1.0;\n    this.hemi.color.set(spec.hemiSky);\n    this.hemi.groundColor.set(spec.hemiGround);\n    this.hemi.intensity = spec.hemiIntensity;\n    this.sun.color.set(spec.sunColor);\n    this.sun.intensity = spec.sunIntensity * (this.styleMode === 'cel' ? 1.15 : 1.0);\n    this.sun.position.copy(at).addScaledVector(sunDir, Math.max(400, this.view.span * 2.2));\n    this.sun.target.position.copy(at);\n    const shadowHalf = Math.max(220, this.view.span * 1.45);\n    this.sun.shadow.camera.left = -shadowHalf;\n    this.sun.shadow.camera.right = shadowHalf;\n    this.sun.shadow.camera.top = shadowHalf;\n    this.sun.shadow.camera.bottom = -shadowHalf;\n    this.sun.shadow.camera.near = 20;\n    this.sun.shadow.camera.far = Math.max(2400, this.view.span * 7);\n    this.sun.shadow.bias = -0.0005;\n    this.sun.shadow.normalBias = 0.025;\n    this.sun.shadow.camera.updateProjectionMatrix();\n\n    this.fill.color.set(spec.fillColor);\n    this.fill.intensity = spec.fillIntensity;\n    this.fill.position.copy(at).addScaledVector(fillDir, Math.max(300, this.view.span * 1.8));\n    this.fill.target.position.copy(at);\n\n    this.renderer.toneMappingExposure = spec.exposure * styleExp;\n    this.waterMat.uniforms.uTime!.value = elapsedSec;\n    this.waterMat.uniforms.uDeep!.value.set(spec.waterDeep);\n    this.waterMat.uniforms.uShallow!.value.set(spec.waterShallow);\n    this.waterMat.uniforms.uSky!.value.set(spec.waterSky);\n    this.waterMat.uniforms.uSunDir!.value.copy(sunDir);\n    this.waterMat.uniforms.uFogColor!.value.set(spec.skyHorizon);\n    this.waterMat.uniforms.uFocus!.value.set(this.view.x, this.view.z);\n    this.waterMat.uniforms.uSpan!.value = this.view.span;\n\n    // Gentle rising chimney smoke animation\n    for (const puff of this.smokePuffs) {\n      const cycle = (elapsedSec * 0.22 + puff.phase) % 1;\n      puff.sprite.position.set(\n        puff.base.x + Math.sin(elapsedSec * 0.7 + puff.phase * 6) * 4 + cycle * 12,\n        puff.base.y + cycle * 26,\n        puff.base.z + cycle * 6,\n      );\n      const s = 6 + cycle * 14;\n      puff.sprite.scale.setScalar(s);\n    }\n\n    // Subtle organic firelight flicker on hearth fires, candles & dungeon torches\n    for (const tl of this.torchLights) {\n      const wave =\n        Math.sin(elapsedSec * 6.4 + tl.phase) * 0.055 +\n        Math.sin(elapsedSec * 11.3 + tl.phase * 2.1) * 0.03;\n      tl.light.intensity = tl.baseIntensity * (1 + wave);\n    }\n\n    // Adjust IBL bounce for outdoor daylight vs warm tavern/crypt interior\n    this.scene.environmentIntensity =\n      this.look === 'indoor' ? 0.42 : this.lightingMode === 'night' ? 0.28 : 0.62;\n  }\n\n  private emitProjectedPins(w: number, h: number): void {\n    if (!this.onProjectedPins) return;\n    if (this.pins.length === 0) {\n      if (this.lastPinEmitKey !== '') {\n        this.lastPinEmitKey = '';\n        this.onProjectedPins([]);\n      }\n      return;\n    }\n    const projected: AtlasThreeProjectedPin[] = [];\n    const v = new THREE.Vector3();\n    for (const pin of this.pins) {\n      v.set(pin.x, 14, pin.y).project(this.camera);\n      const visible = v.z >= -1 && v.z <= 1;\n      const left = Math.round(((v.x + 1) * 0.5) * w);\n      const top = Math.round(((1 - v.y) * 0.5) * h);\n      projected.push({\n        id: pin.id,\n        label: pin.label,\n        kind: pin.kind ?? 'place',\n        left,\n        top,\n        visible: visible && left >= -80 && left <= w + 80 && top >= -40 && top <= h + 40,\n      });\n    }\n    const key = projected.map((p) => `${p.id}:${p.left},${p.top},${p.visible ? 1 : 0}`).join('|');\n    if (key !== this.lastPinEmitKey) {\n      this.lastPinEmitKey = key;\n      this.onProjectedPins(projected);\n    }\n  }\n\n  private startLoop(): void {\n    const tick = (now: number) => {\n      if (this.disposed) return;\n      this.rafId = window.requestAnimationFrame(tick);\n      if (this.contextLost || !this.doc) return;\n      const dtSec = Math.min(0.05, Math.max(0.001, (now - this.lastFrameMs) / 1000));\n      this.lastFrameMs = now;\n\n      const w = this.config.canvas.clientWidth;\n      const h = this.config.canvas.clientHeight;\n      if (w < 8 || h < 8) return;\n      if (this.config.canvas.width !== Math.round(w * this.renderer.getPixelRatio())) {\n        this.renderer.setSize(w, h, false);\n      }\n\n      if (this.flight) {\n        const t = (now - this.flight.startMs) / this.flight.durationMs;\n        this.view = interpolateAtlasThreeView(this.flight.from, this.flight.to, t);\n        if (t >= 1) {\n          this.view = this.flight.to;\n          this.targetView = { ...this.view };\n          this.flight = null;\n          this.onCameraChange?.(this.view);\n        } else if (now - this.lastCameraNotifyMs > 48) {\n          this.lastCameraNotifyMs = now;\n          this.onCameraChange?.(this.view);\n        }\n      } else {\n        const damped = dampAtlasThreeView(this.view, this.targetView, dtSec, 11.5);\n        if (!damped.settled) {\n          this.view = damped.next;\n          if (now - this.lastCameraNotifyMs > 48) {\n            this.lastCameraNotifyMs = now;\n            this.onCameraChange?.(this.view);\n          }\n        } else if (\n          this.view.x !== this.targetView.x ||\n          this.view.z !== this.targetView.z ||\n          this.view.span !== this.targetView.span ||\n          this.view.yawRad !== this.targetView.yawRad ||\n          this.view.pitchRad !== this.targetView.pitchRad\n        ) {\n          this.view = { ...this.targetView };\n          this.onCameraChange?.(this.view);\n        }\n      }\n\n      this.ensureScene();\n      this.syncCameraAndLighting(w, h, (now - this.startTime) * 0.001);\n      this.renderer.render(this.scene, this.camera);\n      this.emitProjectedPins(w, h);\n    };\n    this.rafId = window.requestAnimationFrame(tick);\n  }\n\n  dispose(): void {\n    this.disposed = true;\n    window.cancelAnimationFrame(this.rafId);\n    this.config.canvas.removeEventListener('webglcontextlost', this.onContextLostListener);\n    this.config.canvas.removeEventListener('webglcontextrestored', this.onContextRestoredListener);\n    this.multiMap.dispose();\n    this.clearRoot();\n    for (const mat of this.materials.values()) mat.dispose();\n    this.materials.clear();\n    this.pbr.dispose();\n    this.envMap.dispose();\n    this.skyDome.geometry.dispose();\n    this.skyMat.dispose();\n    this.infiniteOcean.geometry.dispose();\n    this.waterMat.dispose();\n    this.infiniteMeadow.geometry.dispose();\n    this.meadowMat.dispose();\n    this.gridMesh.geometry.dispose();\n    this.gridMat.dispose();\n    this.haloTex.dispose();\n    this.haloMat.dispose();\n    this.aoTex.dispose();\n    this.aoMat.dispose();\n    this.mistTex.dispose();\n    this.mistMat.dispose();\n    this.selectionRing.geometry.dispose();\n    this.gizmoAxisX.geometry.dispose();\n    this.gizmoAxisZ.geometry.dispose();\n    this.renderer.dispose();\n  }\n}"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
@@ -5344,407 +5600,393 @@
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-      "line": 66,
-      "endLine": 75,
+      "line": 68,
+      "endLine": 77,
       "name": "pointInsideAnyCutout",
       "text": "function pointInsideAnyCutout(\n  x: number,\n  y: number,\n  cutouts: readonly AtlasLocalCutoutRect[],\n): boolean {\n  for (const c of cutouts) {\n    if (x >= c.minX && x <= c.maxX && y >= c.minY && y <= c.maxY) return true;\n  }\n  return false;\n}"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-      "line": 77,
-      "endLine": 88,
+      "line": 79,
+      "endLine": 90,
       "name": "rectFullyInsideAnyCutout",
       "text": "function rectFullyInsideAnyCutout(\n  x: number,\n  y: number,\n  w: number,\n  h: number,\n  cutouts: readonly AtlasLocalCutoutRect[],\n): boolean {\n  for (const c of cutouts) {\n    if (x >= c.minX && y >= c.minY && x + w <= c.maxX && y + h <= c.maxY) return true;\n  }\n  return false;\n}"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-      "line": 95,
-      "endLine": 114,
+      "line": 98,
+      "endLine": 127,
       "name": "applyLocalCutoutFilter",
-      "text": "export function applyLocalCutoutFilter(\n  doc: UnifiedCanvasDoc,\n  cutouts: readonly AtlasLocalCutoutRect[],\n): UnifiedCanvasDoc {\n  if (cutouts.length === 0) return doc;\n  const rooms = doc.rooms.filter((r) => {\n    if (r.id === 'w.ocean' || r.id === 'g.ocean') return true;\n    return !rectFullyInsideAnyCutout(r.x, r.y, r.w, r.h, cutouts);\n  });\n  const objects = doc.objects.filter((o) => !pointInsideAnyCutout(o.x, o.y, cutouts));\n  const strokes = doc.strokes.filter(\n    (s) => !s.points.every(([px, py]) => pointInsideAnyCutout(px, py, cutouts)),\n  );\n  return {\n    ...doc,\n    rooms,\n    objects,\n    strokes,\n  };\n}"
+      "text": "export function applyLocalCutoutFilter(\n  doc: UnifiedCanvasDoc,\n  cutouts: readonly AtlasLocalCutoutRect[],\n): UnifiedCanvasDoc {\n  if (cutouts.length === 0) return doc;\n  const rooms = doc.rooms.filter((r) => {\n    if (r.id === 'w.ocean' || r.id === 'g.ocean') return true;\n    return !rectFullyInsideAnyCutout(r.x, r.y, r.w, r.h, cutouts);\n  });\n  const objects = doc.objects.filter((o) => !pointInsideAnyCutout(o.x, o.y, cutouts));\n  const strokes: UnifiedCanvasStroke[] = [];\n  for (const s of doc.strokes) {\n    const clippedSegments = clipPolylineOutsideRects(s.points, cutouts);\n    for (let i = 0; i < clippedSegments.length; i += 1) {\n      const seg = clippedSegments[i]!;\n      if (seg.length < 2) continue;\n      strokes.push({\n        ...s,\n        id: i === 0 ? s.id : `${s.id}#clip${i}`,\n        points: seg,\n      });\n    }\n  }\n  return {\n    ...doc,\n    rooms,\n    objects,\n    strokes,\n  };\n}"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-      "line": 100,
-      "endLine": 103,
+      "line": 103,
+      "endLine": 106,
       "name": "callback",
       "text": "(r) => {\n    if (r.id === 'w.ocean' || r.id === 'g.ocean') return true;\n    return !rectFullyInsideAnyCutout(r.x, r.y, r.w, r.h, cutouts);\n  }"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-      "line": 104,
-      "endLine": 104,
+      "line": 107,
+      "endLine": 107,
       "name": "callback",
       "text": "(o) => !pointInsideAnyCutout(o.x, o.y, cutouts)"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-      "line": 106,
-      "endLine": 106,
-      "name": "callback",
-      "text": "(s) => !s.points.every(([px, py]) => pointInsideAnyCutout(px, py, cutouts))"
-    },
-    {
-      "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-      "line": 106,
-      "endLine": 106,
-      "name": "callback",
-      "text": "([px, py]) => pointInsideAnyCutout(px, py, cutouts)"
-    },
-    {
-      "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-      "line": 121,
-      "endLine": 162,
+      "line": 134,
+      "endLine": 175,
       "name": "applyTerrainCutoutFilter",
       "text": "function applyTerrainCutoutFilter(\n  geo: THREE.BufferGeometry,\n  cutouts: readonly AtlasLocalCutoutRect[],\n): void {\n  if (cutouts.length === 0) return;\n  const pos = geo.getAttribute('position');\n  const index = geo.getIndex();\n  if (!pos || !index) return;\n  const kept: number[] = [];\n  const arr = index.array;\n  for (let i = 0; i + 2 < arr.length; i += 3) {\n    const a = arr[i]!;\n    const b = arr[i + 1]!;\n    const c = arr[i + 2]!;\n    const ax = pos.getX(a);\n    const az = pos.getZ(a);\n    const bx = pos.getX(b);\n    const bz = pos.getZ(b);\n    const cx = pos.getX(c);\n    const cz = pos.getZ(c);\n    const triMinX = Math.min(ax, bx, cx);\n    const triMaxX = Math.max(ax, bx, cx);\n    const triMinZ = Math.min(az, bz, cz);\n    const triMaxZ = Math.max(az, bz, cz);\n    let overlapped = false;\n    for (const cut of cutouts) {\n      if (\n        triMaxX >= cut.minX &&\n        triMinX <= cut.maxX &&\n        triMaxZ >= cut.minY &&\n        triMinZ <= cut.maxY\n      ) {\n        overlapped = true;\n        break;\n      }\n    }\n    if (!overlapped) {\n      kept.push(a, b, c);\n    }\n  }\n  geo.setIndex(kept);\n}"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-      "line": 164,
-      "endLine": 170,
+      "line": 177,
+      "endLine": 183,
       "name": "cutoutSignature",
       "text": "function cutoutSignature(cutouts: readonly AtlasLocalCutoutRect[]): string {\n  if (cutouts.length === 0) return '';\n  return cutouts\n    .map((c) => `${c.childMapId}:${c.minX},${c.minY},${c.maxX},${c.maxY}`)\n    .sort()\n    .join('|');\n}"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-      "line": 167,
-      "endLine": 167,
+      "line": 180,
+      "endLine": 180,
       "name": "callback",
       "text": "(c) => `${c.childMapId}:${c.minX},${c.minY},${c.maxX},${c.maxY}`"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-      "line": 176,
-      "endLine": 181,
+      "line": 189,
+      "endLine": 194,
       "name": "multiMapDepthLiftY",
       "text": "export function multiMapDepthLiftY(depth: number): number {\n  const table = [0, 0.45, 0.65, 0.72, 0.725, 0.726];\n  const idx = Math.max(0, depth - 1);\n  if (idx < table.length) return table[idx]!;\n  return 0.726 + (idx - (table.length - 1)) * 0.0005;\n}"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-      "line": 187,
-      "endLine": 204,
+      "line": 200,
+      "endLine": 217,
       "name": "applyWorldTransformToGroup",
       "text": "export function applyWorldTransformToGroup(\n  pivot: THREE.Group,\n  content: THREE.Group,\n  entry: AtlasWorldSceneGroupPlan,\n  bounds: WorldAtlasBounds = DEFAULT_ATLAS_BOUNDS,\n): void {\n  const midX = (bounds.minX + bounds.maxX) / 2;\n  const midY = (bounds.minY + bounds.maxY) / 2;\n  const { centerX, centerY, scaleX, scaleY, rotationRad } = entry.worldTransform;\n  const verticalScale = Math.sqrt(Math.max(1e-8, scaleX * scaleY));\n  const depthLiftY = multiMapDepthLiftY(entry.depth);\n\n  pivot.position.set(centerX, depthLiftY, centerY);\n  pivot.rotation.set(0, -rotationRad, 0);\n  pivot.scale.set(scaleX, verticalScale, scaleY);\n  content.position.set(-midX, 0, -midY);\n  pivot.updateMatrixWorld(true);\n}"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-      "line": 225,
-      "endLine": 342,
+      "line": 238,
+      "endLine": 355,
       "name": "sync",
       "text": "sync(input: {\n    readonly scenePlan: AtlasWorldScenePlan;\n    readonly sources: ReadonlyMap<string, AtlasThreeWorldMapSource>;\n    readonly presetId: AtlasGraphicsPresetId;\n    readonly hideRoofs: boolean;\n    readonly viewSpan: number;\n  }): void {\n    this.incrementalSyncCount += 1;\n    this.activeEditorMapId = input.scenePlan.activeEditorMapId;\n\n    const wantedIds = new Set(input.scenePlan.entries.map((e) => e.mapId));\n\n    // 1) Dispose groups that left the active scene plan\n    for (const [mapId, node] of [...this.groups.entries()]) {\n      if (!wantedIds.has(mapId)) {\n        this.disposeGroupNode(node);\n        this.groups.delete(mapId);\n      }\n    }\n\n    // 2) Mount new groups or update existing groups incrementally\n    for (const entry of input.scenePlan.entries) {\n      const source = input.sources.get(entry.mapId);\n      if (!source) continue;\n\n      const cSig = cutoutSignature(entry.cutoutRectsLocal);\n      const rev = source.revisionKey ?? 'v0';\n      const sig = `${rev}|${source.mapScale}|${source.look}|${input.presetId}|${input.hideRoofs ? 1 : 0}|${cSig}`;\n\n      const existing = this.groups.get(entry.mapId);\n      if (existing && existing.buildSignature === sig) {\n        // Zero rebuild: only update world transform & visibility\n        applyWorldTransformToGroup(existing.pivot, existing.content, entry, source.bounds);\n        existing.pivot.visible = true;\n        continue;\n      }\n\n      if (existing) {\n        this.disposeGroupNode(existing);\n        this.groups.delete(entry.mapId);\n      }\n\n      const filteredDoc = applyLocalCutoutFilter(source.doc, entry.cutoutRectsLocal);\n      const plan = buildAtlasThreeScenePlan(filteredDoc, {\n        mapScale: source.mapScale,\n        look: source.look,\n        span: Math.max(24, input.viewSpan / Math.max(1e-4, entry.worldTransform.scaleX)),\n        presetId: input.presetId,\n        seed: entry.mapId,\n        hideRoofs: input.hideRoofs,\n        warmWindows: true,\n      });\n\n      const pivot = new THREE.Group();\n      pivot.name = `atlas3:map-pivot:${entry.mapId}`;\n      pivot.userData.mapId = entry.mapId;\n      pivot.userData.depth = entry.depth;\n\n      const content = new THREE.Group();\n      content.name = `atlas3:map-content:${entry.mapId}`;\n      pivot.add(content);\n\n      const pickables: THREE.Object3D[] = [];\n      const geometries: THREE.BufferGeometry[] = [];\n\n      for (const [surfaceKey, builder] of plan.builders) {\n        if (builder.triangleCount === 0) continue;\n        const geo = builder.build();\n        geometries.push(geo);\n        const mesh = new THREE.Mesh(geo, this.getMaterial(surfaceKey));\n        const flat = surfaceKey.startsWith('sheet') || surfaceKey.startsWith('floor');\n        mesh.castShadow = !flat;\n        mesh.receiveShadow = true;\n        mesh.userData.triIds = builder.triIds;\n        mesh.userData.mapId = entry.mapId;\n        mesh.name = `atlas3:${entry.mapId}:${surfaceKey}`;\n        content.add(mesh);\n        pickables.push(mesh);\n      }\n\n      if (plan.water.triangleCount > 0) {\n        const geo = plan.water.build();\n        geometries.push(geo);\n        const mesh = new THREE.Mesh(geo, this.waterMaterial);\n        mesh.userData.triIds = plan.water.triIds;\n        mesh.userData.mapId = entry.mapId;\n        mesh.name = `atlas3:${entry.mapId}:water`;\n        mesh.renderOrder = 2;\n        content.add(mesh);\n        pickables.push(mesh);\n      }\n\n      if (plan.terrain) {\n        applyTerrainCutoutFilter(plan.terrain, entry.cutoutRectsLocal);\n        geometries.push(plan.terrain);\n        const mesh = new THREE.Mesh(plan.terrain, this.getMaterial('terrain'));\n        mesh.castShadow = true;\n        mesh.receiveShadow = true;\n        mesh.userData.mapId = entry.mapId;\n        mesh.name = `atlas3:${entry.mapId}:terrain`;\n        content.add(mesh);\n      }\n\n      applyWorldTransformToGroup(pivot, content, entry, source.bounds);\n      this.rootGroup.add(pivot);\n\n      this.groups.set(entry.mapId, {\n        mapId: entry.mapId,\n        pivot,\n        content,\n        pickables,\n        scenePlan: plan,\n        buildSignature: sig,\n        geometries,\n        cutoutSignature: cSig,\n      });\n    }\n  }"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-      "line": 235,
-      "endLine": 235,
+      "line": 248,
+      "endLine": 248,
       "name": "callback",
       "text": "(e) => e.mapId"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-      "line": 344,
-      "endLine": 346,
+      "line": 357,
+      "endLine": 359,
       "name": "getGroup",
       "text": "getGroup(mapId: string): AtlasThreeMapGroupNode | undefined {\n    return this.groups.get(mapId);\n  }"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-      "line": 348,
-      "endLine": 354,
+      "line": 361,
+      "endLine": 367,
       "name": "getAllPickables",
       "text": "getAllPickables(): readonly THREE.Object3D[] {\n    const out: THREE.Object3D[] = [];\n    for (const g of this.groups.values()) {\n      for (const p of g.pickables) out.push(p);\n    }\n    return out;\n  }"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-      "line": 356,
-      "endLine": 360,
+      "line": 369,
+      "endLine": 373,
       "name": "getActiveEditorElevationY",
       "text": "getActiveEditorElevationY(): number {\n    if (!this.activeEditorMapId) return 0;\n    const g = this.groups.get(this.activeEditorMapId);\n    return g ? g.pivot.position.y : 0;\n  }"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-      "line": 362,
-      "endLine": 368,
+      "line": 375,
+      "endLine": 381,
       "name": "getRenderedIds",
       "text": "getRenderedIds(): string[] {\n    const out = new Set<string>();\n    for (const g of this.groups.values()) {\n      for (const id of g.scenePlan.ids) out.add(id);\n    }\n    return [...out].sort();\n  }"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-      "line": 370,
-      "endLine": 383,
+      "line": 383,
+      "endLine": 396,
       "name": "getStats",
       "text": "getStats(): AtlasThreeMultiMapStats {\n    let liveGeometryCount = 0;\n    for (const g of this.groups.values()) {\n      liveGeometryCount += g.geometries.length;\n    }\n    return {\n      activeMapIds: [...this.groups.keys()],\n      activeEditorMapId: this.activeEditorMapId,\n      groupCount: this.groups.size,\n      liveGeometryCount,\n      clearRootCount: this.clearRootCount,\n      incrementalSyncCount: this.incrementalSyncCount,\n    };\n  }"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-      "line": 386,
-      "endLine": 392,
+      "line": 399,
+      "endLine": 405,
       "name": "dispose",
       "text": "dispose(): void {\n    for (const node of this.groups.values()) {\n      this.disposeGroupNode(node);\n    }\n    this.groups.clear();\n    this.activeEditorMapId = null;\n  }"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
-      "line": 345,
-      "endLine": 361,
+      "line": 347,
+      "endLine": 363,
       "name": "createRadialSoftTexture",
       "text": "function createRadialSoftTexture(innerRgba: string, midRgba: string, outerRgba: string): THREE.CanvasTexture {\n  const c = document.createElement('canvas');\n  c.width = 64;\n  c.height = 64;\n  const ctx = c.getContext('2d');\n  if (ctx) {\n    const g = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);\n    g.addColorStop(0, innerRgba);\n    g.addColorStop(0.42, midRgba);\n    g.addColorStop(1, outerRgba);\n    ctx.fillStyle = g;\n    ctx.fillRect(0, 0, 64, 64);\n  }\n  const tex = new THREE.CanvasTexture(c);\n  tex.colorSpace = THREE.SRGBColorSpace;\n  return tex;\n}"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
-      "line": 363,
-      "endLine": 394,
+      "line": 365,
+      "endLine": 396,
       "name": "createProceduralWarmEnvMap",
       "text": "function createProceduralWarmEnvMap(renderer: THREE.WebGLRenderer): THREE.Texture {\n  const c = document.createElement('canvas');\n  c.width = 128;\n  c.height = 64;\n  const ctx = c.getContext('2d');\n  if (ctx) {\n    const grad = ctx.createLinearGradient(0, 0, 0, 64);\n    grad.addColorStop(0.0, '#4a7fa0');\n    grad.addColorStop(0.35, '#9cc4d0');\n    grad.addColorStop(0.5, '#f5dfc0');\n    grad.addColorStop(0.62, '#8b7a5e');\n    grad.addColorStop(1.0, '#2a332b');\n    ctx.fillStyle = grad;\n    ctx.fillRect(0, 0, 128, 64);\n    // Warm sunlit highlight spot for realistic specular gleam on brass, roofs & wood\n    const sunGrad = ctx.createRadialGradient(34, 20, 1, 34, 20, 22);\n    sunGrad.addColorStop(0, 'rgba(255, 246, 220, 0.95)');\n    sunGrad.addColorStop(0.45, 'rgba(255, 214, 150, 0.45)');\n    sunGrad.addColorStop(1, 'rgba(255, 214, 150, 0)');\n    ctx.fillStyle = sunGrad;\n    ctx.fillRect(0, 0, 128, 64);\n  }\n  const src = new THREE.CanvasTexture(c);\n  src.mapping = THREE.EquirectangularReflectionMapping;\n  src.colorSpace = THREE.SRGBColorSpace;\n  src.flipY = false;\n  const pmrem = new THREE.PMREMGenerator(renderer);\n  const env = pmrem.fromEquirectangular(src).texture;\n  src.dispose();\n  pmrem.dispose();\n  return env;\n}"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
-      "line": 397,
-      "endLine": 529,
+      "line": 399,
+      "endLine": 531,
       "name": "buildScatterGeometry",
       "text": "function buildScatterGeometry(kind: AtlasScatterKind): {\n  readonly parts: readonly { readonly geo: THREE.BufferGeometry; readonly surface: AtlasThreeSurfaceKey }[];\n} {\n  switch (kind) {\n    case 'pine': {\n      // Soft multi-tier organic fantasy spruce (4 overlapping tiers + warm sunlit tip)\n      const trunk = new THREE.CylinderGeometry(2.2, 4.6, 17, 6);\n      trunk.translate(0, 8.5, 0);\n      const c1 = new THREE.ConeGeometry(23, 28, 8);\n      c1.scale(1.08, 1, 0.94);\n      c1.translate(0, 22, 0);\n      const c2 = new THREE.ConeGeometry(18.5, 26, 8);\n      c2.rotateY(0.42);\n      c2.translate(0.8, 36, -0.6);\n      const c3 = new THREE.ConeGeometry(13.5, 22, 7);\n      c3.rotateY(0.85);\n      c3.translate(-0.6, 49, 0.5);\n      const c4 = new THREE.ConeGeometry(7.8, 16, 6);\n      c4.translate(0, 59, 0);\n      return {\n        parts: [\n          { geo: trunk, surface: 'wood-dark' },\n          { geo: c1, surface: 'leaf-pine' },\n          { geo: c2, surface: 'leaf-pine' },\n          { geo: c3, surface: 'leaf' },\n          { geo: c4, surface: 'leaf-sun' },\n        ],\n      };\n    }\n    case 'birch': {\n      const trunk = new THREE.CylinderGeometry(2.0, 3.8, 21, 6);\n      trunk.translate(0, 10.5, 0);\n      const c1 = new THREE.DodecahedronGeometry(16.5, 1);\n      c1.scale(1.12, 0.95, 1.04);\n      c1.translate(0, 28, 0);\n      const c2 = new THREE.DodecahedronGeometry(13, 1);\n      c2.translate(8, 34, 4);\n      const c3 = new THREE.DodecahedronGeometry(11, 1);\n      c3.translate(-7, 35, -5);\n      return {\n        parts: [\n          { geo: trunk, surface: 'bark-birch' },\n          { geo: c1, surface: 'leaf-birch' },\n          { geo: c2, surface: 'leaf-sun' },\n          { geo: c3, surface: 'leaf-birch' },\n        ],\n      };\n    }\n    case 'oak': {\n      const trunk = new THREE.CylinderGeometry(3.4, 5.8, 18, 7);\n      trunk.translate(0, 9, 0);\n      const base = new THREE.DodecahedronGeometry(19, 1);\n      base.scale(1.16, 0.88, 1.08);\n      base.translate(0, 27, 0);\n      const sideA = new THREE.DodecahedronGeometry(13.5, 1);\n      sideA.translate(-11, 29, 7);\n      const sideB = new THREE.DodecahedronGeometry(12.5, 1);\n      sideB.translate(10, 28, -8);\n      const top = new THREE.DodecahedronGeometry(14.5, 1);\n      top.translate(4, 37, -2);\n      return {\n        parts: [\n          { geo: trunk, surface: 'wood-dark' },\n          { geo: base, surface: 'leaf' },\n          { geo: sideA, surface: 'leaf' },\n          { geo: sideB, surface: 'leaf' },\n          { geo: top, surface: 'leaf-sun' },\n        ],\n      };\n    }\n    case 'bush': {\n      const g = new THREE.DodecahedronGeometry(11, 1);\n      g.scale(1.28, 0.72, 1.12);\n      g.translate(0, 6, 0);\n      return { parts: [{ geo: g, surface: 'leaf-sun' }] };\n    }\n    case 'flower': {\n      const g = new THREE.DodecahedronGeometry(5.5, 0);\n      g.scale(1.3, 0.48, 1.3);\n      g.translate(0, 2.4, 0);\n      return { parts: [{ geo: g, surface: 'flower' }] };\n    }\n    case 'mountain': {\n      // Dramatic multi-ridge alpine massif with sharp faceted spire + asymmetric snow ridge\n      const base = new THREE.ConeGeometry(46, 78, 7);\n      base.scale(1.22, 1, 0.92);\n      base.translate(0, 35, 0);\n      const shoulder = new THREE.ConeGeometry(31, 56, 6);\n      shoulder.rotateY(0.5);\n      shoulder.translate(23, 24, -14);\n      const ridge = new THREE.ConeGeometry(25, 44, 6);\n      ridge.rotateY(-0.4);\n      ridge.translate(-20, 19, 13);\n      const capMain = new THREE.ConeGeometry(16, 30, 7);\n      capMain.scale(1.18, 1, 0.9);\n      capMain.translate(0, 61, 0);\n      const capSub = new THREE.ConeGeometry(10.5, 19, 6);\n      capSub.translate(23, 44, -14);\n      return {\n        parts: [\n          { geo: base, surface: 'rock' },\n          { geo: shoulder, surface: 'rock' },\n          { geo: ridge, surface: 'rock' },\n          { geo: capMain, surface: 'snow' },\n          { geo: capSub, surface: 'snow' },\n        ],\n      };\n    }\n    case 'barrel': {\n      const g = new THREE.CylinderGeometry(7, 8, 15, 8);\n      g.translate(0, 7.5, 0);\n      return { parts: [{ geo: g, surface: 'wood' }] };\n    }\n    case 'crate': {\n      const g = new THREE.BoxGeometry(13, 13, 13);\n      g.translate(0, 6.5, 0);\n      return { parts: [{ geo: g, surface: 'wood-dark' }] };\n    }\n    case 'rubble': {\n      const g = new THREE.DodecahedronGeometry(6.5, 0);\n      g.scale(1.3, 0.48, 1.1);\n      g.translate(0, 2.5, 0);\n      return { parts: [{ geo: g, surface: 'rock' }] };\n    }\n    case 'rock':\n    default: {\n      const g = new THREE.DodecahedronGeometry(13, 0);\n      g.scale(1.25, 0.75, 1.05);\n      g.translate(0, 7, 0);\n      return { parts: [{ geo: g, surface: 'rock' }] };\n    }\n  }\n}"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
-      "line": 813,
-      "endLine": 817,
+      "line": 816,
+      "endLine": 820,
       "name": "callback",
       "text": "(ev: Event) => {\n      ev.preventDefault();\n      this.contextLost = true;\n      this.onContextLostChange?.(true);\n    }"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
-      "line": 818,
-      "endLine": 822,
+      "line": 821,
+      "endLine": 825,
       "name": "callback",
       "text": "() => {\n      this.contextLost = false;\n      this.sceneKey = '';\n      this.onContextLostChange?.(false);\n    }"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
-      "line": 824,
-      "endLine": 824,
+      "line": 827,
+      "endLine": 827,
       "name": "callback",
       "text": "(key) => this.getMaterial(key)"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
-      "line": 834,
-      "endLine": 842,
+      "line": 837,
+      "endLine": 845,
       "name": "applyQualityProfile",
       "text": "applyQualityProfile(presetId: AtlasGraphicsPresetId): void {\n    this.presetId = presetId;\n    const maxDpr = presetId === 'high' ? 2 : presetId === 'balanced' ? 1.5 : 1;\n    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, maxDpr));\n    const shadowSize = presetId === 'high' ? 2048 : 1024;\n    this.sun.shadow.mapSize.set(shadowSize, shadowSize);\n    this.sun.shadow.radius = presetId === 'high' ? 3 : 1.5;\n    this.sceneKey = '';\n  }"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
-      "line": 844,
-      "endLine": 885,
+      "line": 847,
+      "endLine": 888,
       "name": "setSceneState",
       "text": "setSceneState(input: {\n    readonly doc: UnifiedCanvasDoc;\n    readonly mapScale: AtlasMapScale;\n    readonly look: AtlasThreeLook;\n    readonly seed: string;\n    readonly hideRoofs: boolean;\n    readonly lightingMode: AtlasThreeLightingMode;\n    readonly styleMode?: AtlasThreeStyleMode;\n    readonly showGrid?: boolean;\n    readonly pins: readonly AtlasMapPin[];\n    readonly selectedId: string | null;\n    readonly gizmoVisible: boolean;\n  }): void {\n    const docChanged = this.doc !== input.doc;\n    const scaleChanged = this.mapScale !== input.mapScale;\n    const lookChanged = this.look !== input.look;\n    const seedChanged = this.seed !== input.seed;\n    const roofChanged = this.hideRoofs !== input.hideRoofs;\n    const lightChanged = this.lightingMode !== input.lightingMode;\n    const nextStyle = input.styleMode ?? this.styleMode;\n    const styleChanged = this.styleMode !== nextStyle;\n    this.doc = input.doc;\n    this.mapScale = input.mapScale;\n    this.look = input.look;\n    this.seed = input.seed;\n    this.hideRoofs = input.hideRoofs;\n    this.lightingMode = input.lightingMode;\n    this.styleMode = nextStyle;\n    this.showGrid = Boolean(input.showGrid);\n    this.gridMesh.visible = this.showGrid;\n    this.pins = input.pins;\n    this.selectedId = input.selectedId;\n    this.gizmoVisible = input.gizmoVisible;\n    if (styleChanged) {\n      this.applyStyleToMaterials();\n    }\n    if (docChanged || scaleChanged || lookChanged || seedChanged || roofChanged || lightChanged) {\n      this.docRevision += 1;\n      this.sceneKey = '';\n    }\n    this.updateSelectionGizmo();\n  }"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
-      "line": 909,
-      "endLine": 916,
+      "line": 912,
+      "endLine": 919,
       "name": "setWorldSceneGraph",
       "text": "setWorldSceneGraph(input: {\n    readonly maps: readonly AtlasWorldSceneMapInput[];\n    readonly sources: readonly AtlasThreeWorldMapSource[];\n  }): void {\n    this.worldMaps = input.maps;\n    this.worldSources = new Map(input.sources.map((s) => [s.mapId, s] as const));\n    this.worldScenePlan = null;\n  }"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
-      "line": 914,
-      "endLine": 914,
+      "line": 917,
+      "endLine": 917,
       "name": "callback",
       "text": "(s) => [s.mapId, s] as const"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
-      "line": 918,
-      "endLine": 926,
+      "line": 921,
+      "endLine": 929,
       "name": "getWorldCameraState",
       "text": "getWorldCameraState(): AtlasWorldCameraState {\n    return createAtlasWorldCameraState({\n      focusWorld: { x: this.targetView.x, y: this.targetView.z, z: 0 },\n      span: this.targetView.span,\n      yawRad: this.targetView.yawRad,\n      pitchRad: this.targetView.pitchRad,\n      projection: this.targetView.mode,\n    });\n  }"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
-      "line": 928,
-      "endLine": 940,
+      "line": 931,
+      "endLine": 943,
       "name": "setWorldCameraState",
       "text": "setWorldCameraState(state: AtlasWorldCameraState, animate = false): void {\n    this.setView(\n      {\n        mode: state.projection,\n        x: state.focusWorld.x,\n        z: state.focusWorld.y,\n        span: state.span,\n        yawRad: state.yawRad,\n        pitchRad: state.pitchRad,\n      },\n      animate,\n    );\n  }"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
-      "line": 943,
-      "endLine": 957,
+      "line": 946,
+      "endLine": 960,
       "name": "panByScreenDelta",
       "text": "panByScreenDelta(deltaPxX: number, deltaPxY: number): AtlasThreeCameraView {\n    this.flight = null;\n    const h = Math.max(1, this.config.canvas.clientHeight || 800);\n    const worldPerPx = (this.targetView.span * 2) / h;\n    const dx = deltaPxX * worldPerPx;\n    const dy = deltaPxY * worldPerPx;\n    const cos = Math.cos(this.targetView.yawRad);\n    const sin = Math.sin(this.targetView.yawRad);\n    this.targetView = {\n      ...this.targetView,\n      x: this.targetView.x + (dx * cos + dy * sin),\n      z: this.targetView.z + (-dx * sin + dy * cos),\n    };\n    return { ...this.targetView };\n  }"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
-      "line": 960,
-      "endLine": 972,
+      "line": 963,
+      "endLine": 975,
       "name": "orbitByDelta",
       "text": "orbitByDelta(deltaYawRad: number, deltaPitchRad: number): AtlasThreeCameraView {\n    this.flight = null;\n    const nextMode: AtlasThreeCameraMode =\n      this.targetView.mode === 'ortho-topdown' ? 'diorama-oblique' : this.targetView.mode;\n    this.manualPitchOverride = true;\n    this.targetView = {\n      ...this.targetView,\n      mode: nextMode,\n      yawRad: this.targetView.yawRad + deltaYawRad,\n      pitchRad: clampAtlasThreePitch(nextMode, this.targetView.pitchRad + deltaPitchRad),\n    };\n    return { ...this.targetView };\n  }"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
-      "line": 974,
-      "endLine": 980,
+      "line": 977,
+      "endLine": 983,
       "name": "getMultiMapStats",
       "text": "getMultiMapStats(): AtlasThreeMultiMapStats {\n    const stats = this.multiMap.getStats();\n    return {\n      ...stats,\n      clearRootCount: this.clearRootCount,\n    };\n  }"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
-      "line": 982,
-      "endLine": 984,
+      "line": 985,
+      "endLine": 987,
       "name": "getView",
       "text": "getView(): AtlasThreeCameraView {\n    return { ...this.view };\n  }"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
-      "line": 986,
-      "endLine": 988,
+      "line": 989,
+      "endLine": 991,
       "name": "getTargetView",
       "text": "getTargetView(): AtlasThreeCameraView {\n    return { ...this.targetView };\n  }"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
-      "line": 990,
-      "endLine": 1035,
+      "line": 993,
+      "endLine": 1038,
       "name": "setView",
       "text": "setView(\n    next: Partial<AtlasThreeCameraView>,\n    animate = false,\n    opts?: { readonly manualPitch?: boolean },\n  ): void {\n    const targetMode: AtlasThreeCameraMode = next.mode ?? this.targetView.mode;\n    const minSpan = this.worldMaps.length > 0 ? 0.02 : 16;\n    const nextSpan = Math.max(minSpan, Math.min(2400, next.span ?? this.targetView.span));\n    if (opts?.manualPitch) {\n      this.manualPitchOverride = true;\n    } else if (next.mode) {\n      this.manualPitchOverride = false;\n    }\n    const pitch =\n      next.pitchRad !== undefined\n        ? clampAtlasThreePitch(targetMode, next.pitchRad)\n        : next.mode || !this.manualPitchOverride\n          ? autoAtlasThreePitchForSpan(targetMode, nextSpan)\n          : this.targetView.pitchRad;\n    const target: AtlasThreeCameraView = {\n      mode: targetMode,\n      x: next.x ?? this.targetView.x,\n      z: next.z ?? this.targetView.z,\n      span: nextSpan,\n      yawRad: next.yawRad ?? this.targetView.yawRad,\n      pitchRad: pitch,\n    };\n    if (animate) {\n      const reduced =\n        typeof window !== 'undefined' &&\n        window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;\n      this.targetView = target;\n      this.flight = reduced\n        ? null\n        : { from: { ...this.view }, to: target, startMs: performance.now(), durationMs: 520 };\n      if (!this.flight) {\n        this.view = target;\n        this.onCameraChange?.(this.view);\n      }\n    } else {\n      this.flight = null;\n      this.targetView = target;\n      this.view = target;\n      this.onCameraChange?.(this.view);\n    }\n  }"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
-      "line": 1041,
-      "endLine": 1071,
+      "line": 1044,
+      "endLine": 1074,
       "name": "zoomAtScreen",
       "text": "zoomAtScreen(deltaY: number, px: number, py: number): AtlasThreeCameraView {\n    this.flight = null;\n    const before = this.screenToGround(px, py);\n    const factor = Math.exp(deltaY * 0.00125);\n    const minSpan = this.worldMaps.length > 0 ? 0.02 : 16;\n    const nextSpan = Math.max(minSpan, Math.min(2400, this.targetView.span * factor));\n    const ratio = nextSpan / Math.max(0.02, this.targetView.span);\n\n    let nextX = this.targetView.x;\n    let nextZ = this.targetView.z;\n    if (before) {\n      nextX = before.x + (this.targetView.x - before.x) * ratio;\n      nextZ = before.z + (this.targetView.z - before.z) * ratio;\n    }\n\n    const nextPitch =\n      this.targetView.mode === 'ortho-topdown'\n        ? Math.PI / 2\n        : this.manualPitchOverride\n          ? this.targetView.pitchRad\n          : autoAtlasThreePitchForSpan(this.targetView.mode, nextSpan);\n\n    this.targetView = {\n      ...this.targetView,\n      x: nextX,\n      z: nextZ,\n      span: nextSpan,\n      pitchRad: nextPitch,\n    };\n    return { ...this.targetView };\n  }"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
-      "line": 1074,
-      "endLine": 1076,
+      "line": 1077,
+      "endLine": 1079,
       "name": "setYawAnimated",
       "text": "setYawAnimated(yawRad: number): void {\n    this.setView({ yawRad }, true);\n  }"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
-      "line": 1078,
-      "endLine": 1089,
+      "line": 1081,
+      "endLine": 1092,
       "name": "flyTo",
       "text": "flyTo(x: number, z: number, span: number): void {\n    this.manualPitchOverride = false;\n    this.setView(\n      {\n        x,\n        z,\n        span,\n        pitchRad: autoAtlasThreePitchForSpan(this.targetView.mode, span),\n      },\n      true,\n    );\n  }"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
-      "line": 1092,
-      "endLine": 1099,
+      "line": 1095,
+      "endLine": 1102,
       "name": "captureFrameDataUrl",
       "text": "captureFrameDataUrl(): string | null {\n    try {\n      this.renderer.render(this.scene, this.camera);\n      return this.config.canvas.toDataURL('image/jpeg', 0.84);\n    } catch {\n      return null;\n    }\n  }"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
-      "line": 1102,
-      "endLine": 1155,
+      "line": 1105,
+      "endLine": 1158,
       "name": "frameContentBounds",
       "text": "frameContentBounds(opts?: { readonly animateFrom?: 'in' | 'out' | null }): void {\n    this.ensureScene();\n    const bounds = this.plan?.contentBounds ?? {\n      centerX: this.mapScale === 'settlement' ? 370 : 500,\n      centerZ: this.mapScale === 'settlement' ? 485 : 500,\n      fitSpan: this.mapScale === 'world' ? 430 : this.mapScale === 'settlement' ? 195 : 220,\n    };\n    const mode = this.targetView.mode;\n    const targetSpan = bounds.fitSpan;\n    // SWS-05 (E2): preserve current yaw orientation across mode/map framing.\n    const targetYaw = this.targetView.yawRad;\n    const targetPitch = autoAtlasThreePitchForSpan(mode, targetSpan);\n    this.manualPitchOverride = false;\n\n    if (opts?.animateFrom) {\n      const startSpan =\n        opts.animateFrom === 'in'\n          ? Math.min(1800, targetSpan * 1.48)\n          : Math.max(48, targetSpan * 0.68);\n      this.view = {\n        mode,\n        x: bounds.centerX,\n        z: bounds.centerZ,\n        span: startSpan,\n        yawRad: targetYaw,\n        pitchRad: autoAtlasThreePitchForSpan(mode, startSpan),\n      };\n      this.targetView = { ...this.view };\n      this.setView(\n        {\n          mode,\n          x: bounds.centerX,\n          z: bounds.centerZ,\n          span: targetSpan,\n          yawRad: targetYaw,\n          pitchRad: targetPitch,\n        },\n        true,\n      );\n      return;\n    }\n\n    this.setView(\n      {\n        mode,\n        x: bounds.centerX,\n        z: bounds.centerZ,\n        span: targetSpan,\n        yawRad: targetYaw,\n        pitchRad: targetPitch,\n      },\n      false,\n    );\n  }"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
-      "line": 1157,
-      "endLine": 1177,
+      "line": 1160,
+      "endLine": 1180,
       "name": "resetCamera",
       "text": "resetCamera(): void {\n    this.ensureScene();\n    const bounds = this.plan?.contentBounds ?? {\n      centerX: this.mapScale === 'settlement' ? 370 : 500,\n      centerZ: this.mapScale === 'settlement' ? 485 : 500,\n      fitSpan: this.mapScale === 'world' ? 430 : this.mapScale === 'settlement' ? 195 : 220,\n    };\n    const mode = this.targetView.mode;\n    this.manualPitchOverride = false;\n    this.setView(\n      {\n        mode,\n        x: bounds.centerX,\n        z: bounds.centerZ,\n        span: bounds.fitSpan,\n        yawRad: mode === 'ortho-topdown' ? 0 : 0.42,\n        pitchRad: autoAtlasThreePitchForSpan(mode, bounds.fitSpan),\n      },\n      true,\n    );\n  }"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
-      "line": 1180,
-      "endLine": 1188,
+      "line": 1183,
+      "endLine": 1191,
       "name": "screenToGround",
       "text": "screenToGround(px: number, py: number): { readonly x: number; readonly z: number } | null {\n    const w = this.config.canvas.clientWidth || 1;\n    const h = this.config.canvas.clientHeight || 1;\n    const ndc = new THREE.Vector2((px / w) * 2 - 1, -(py / h) * 2 + 1);\n    this.raycaster.setFromCamera(ndc, this.camera);\n    const out = new THREE.Vector3();\n    if (!this.raycaster.ray.intersectPlane(this.groundPlane, out)) return null;\n    return { x: out.x, z: out.z };\n  }"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
-      "line": 1191,
-      "endLine": 1207,
+      "line": 1194,
+      "endLine": 1210,
       "name": "projectWorldPointToScreen",
       "text": "projectWorldPointToScreen(\n    x: number,\n    z: number,\n    y?: number,\n  ): { readonly px: number; readonly py: number; readonly visible: boolean } {\n    const w = Math.max(1, this.config.canvas.clientWidth || 1);\n    const h = Math.max(1, this.config.canvas.clientHeight || 1);\n    const pyWorld = y ?? (this.worldMaps.length > 0 ? this.multiMap.getActiveEditorElevationY() : 0);\n    const v = new THREE.Vector3(x, pyWorld, z).project(this.camera);\n    const px = ((v.x + 1) * 0.5) * w;\n    const py = ((1 - v.y) * 0.5) * h;\n    return {\n      px: Math.round(px * 100) / 100,\n      py: Math.round(py * 100) / 100,\n      visible: v.z >= -1 && v.z <= 1 && px >= 0 && px <= w && py >= 0 && py <= h,\n    };\n  }"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
-      "line": 1210,
-      "endLine": 1225,
+      "line": 1213,
+      "endLine": 1228,
       "name": "getRendererInfo",
       "text": "getRendererInfo(): {\n    readonly webglRenderer: string;\n    readonly webglVendor: string;\n    readonly isSoftwareWebgl: boolean;\n  } {\n    const gl = this.renderer.getContext();\n    const dbg = gl.getExtension('WEBGL_debug_renderer_info');\n    const webglRenderer = String(\n      dbg ? gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL) : gl.getParameter(gl.RENDERER),\n    );\n    const webglVendor = String(\n      dbg ? gl.getParameter(dbg.UNMASKED_VENDOR_WEBGL) : gl.getParameter(gl.VENDOR),\n    );\n    const isSoftwareWebgl = /swiftshader|llvmpipe|softpipe|software|basic render/i.test(webglRenderer);\n    return { webglRenderer, webglVendor, isSoftwareWebgl };\n  }"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
-      "line": 1228,
-      "endLine": 1257,
+      "line": 1231,
+      "endLine": 1260,
       "name": "pickCanonicalId",
       "text": "pickCanonicalId(px: number, py: number): string | null {\n    const w = this.config.canvas.clientWidth || 1;\n    const h = this.config.canvas.clientHeight || 1;\n    const ndc = new THREE.Vector2((px / w) * 2 - 1, -(py / h) * 2 + 1);\n    this.raycaster.setFromCamera(ndc, this.camera);\n    const allPickables: THREE.Object3D[] =\n      this.worldMaps.length > 0 ? [...this.multiMap.getAllPickables()] : this.pickables;\n    const hits = this.raycaster.intersectObjects(allPickables, false);\n    const objectIds = new Set<string>((this.doc?.objects ?? []).map((o) => o.id));\n    if (this.worldMaps.length > 0) {\n      for (const src of this.worldSources.values()) {\n        for (const o of src.doc.objects) objectIds.add(o.id);\n      }\n    }\n    let fallback: string | null = null;\n    for (const hit of hits) {\n      let id: string | null = null;\n      const triIds = hit.object.userData.triIds as string[] | undefined;\n      const instIds = hit.object.userData.instanceIds as string[] | undefined;\n      if (triIds && typeof hit.faceIndex === 'number') {\n        id = triIds[hit.faceIndex] ?? null;\n      } else if (instIds && typeof hit.instanceId === 'number') {\n        id = instIds[hit.instanceId] ?? null;\n      }\n      if (!id || id.startsWith('__') || id === 'g.ocean' || id === 'w.ocean') continue;\n      if (objectIds.has(id)) return id;\n      if (!fallback) fallback = id;\n    }\n    return fallback;\n  }"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
-      "line": 1236,
-      "endLine": 1236,
+      "line": 1239,
+      "endLine": 1239,
       "name": "callback",
       "text": "(o) => o.id"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
-      "line": 1259,
-      "endLine": 1264,
+      "line": 1262,
+      "endLine": 1267,
       "name": "getRenderedIds",
       "text": "getRenderedIds(): string[] {\n    if (this.worldMaps.length > 0) {\n      return this.multiMap.getRenderedIds();\n    }\n    return [...(this.plan?.ids ?? [])].sort();\n  }"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
-      "line": 1266,
-      "endLine": 1280,
+      "line": 1269,
+      "endLine": 1283,
       "name": "getStats",
       "text": "getStats(): {\n    readonly calls: number;\n    readonly triangles: number;\n    readonly rooms: number;\n    readonly clearRootCount: number;\n    readonly activeMapCount: number;\n  } {\n    return {\n      calls: this.renderer.info.render.calls,\n      triangles: this.renderer.info.render.triangles,\n      rooms: this.doc?.rooms.length ?? 0,\n      clearRootCount: this.clearRootCount,\n      activeMapCount: this.worldMaps.length > 0 ? this.multiMap.getStats().groupCount : 1,\n    };\n  }"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
-      "line": 1407,
-      "endLine": 1407,
+      "line": 1414,
+      "endLine": 1414,
       "name": "callback",
       "text": "(m, i) => inst.setMatrixAt(i, m)"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
-      "line": 1427,
-      "endLine": 1427,
+      "line": 1434,
+      "endLine": 1434,
       "name": "callback",
       "text": "(m, i) => inst.setMatrixAt(i, m)"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
-      "line": 1444,
-      "endLine": 1447,
+      "line": 1451,
+      "endLine": 1454,
       "name": "callback",
       "text": "(d, i) => {\n        mat4.compose(new THREE.Vector3(d.x, d.y, d.z), quat, new THREE.Vector3(d.radius, 1, d.radius));\n        aoInst.setMatrixAt(i, mat4);\n      }"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
-      "line": 1509,
-      "endLine": 1509,
+      "line": 1516,
+      "endLine": 1516,
       "name": "callback",
       "text": "(o) => o.id === this.selectedId"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
-      "line": 1683,
-      "endLine": 1683,
+      "line": 1690,
+      "endLine": 1690,
       "name": "callback",
       "text": "(p) => `${p.id}:${p.left},${p.top},${p.visible ? 1 : 0}`"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
-      "line": 1691,
-      "endLine": 1741,
+      "line": 1698,
+      "endLine": 1748,
       "name": "tick",
       "text": "(now: number) => {\n      if (this.disposed) return;\n      this.rafId = window.requestAnimationFrame(tick);\n      if (this.contextLost || !this.doc) return;\n      const dtSec = Math.min(0.05, Math.max(0.001, (now - this.lastFrameMs) / 1000));\n      this.lastFrameMs = now;\n\n      const w = this.config.canvas.clientWidth;\n      const h = this.config.canvas.clientHeight;\n      if (w < 8 || h < 8) return;\n      if (this.config.canvas.width !== Math.round(w * this.renderer.getPixelRatio())) {\n        this.renderer.setSize(w, h, false);\n      }\n\n      if (this.flight) {\n        const t = (now - this.flight.startMs) / this.flight.durationMs;\n        this.view = interpolateAtlasThreeView(this.flight.from, this.flight.to, t);\n        if (t >= 1) {\n          this.view = this.flight.to;\n          this.targetView = { ...this.view };\n          this.flight = null;\n          this.onCameraChange?.(this.view);\n        } else if (now - this.lastCameraNotifyMs > 48) {\n          this.lastCameraNotifyMs = now;\n          this.onCameraChange?.(this.view);\n        }\n      } else {\n        const damped = dampAtlasThreeView(this.view, this.targetView, dtSec, 11.5);\n        if (!damped.settled) {\n          this.view = damped.next;\n          if (now - this.lastCameraNotifyMs > 48) {\n            this.lastCameraNotifyMs = now;\n            this.onCameraChange?.(this.view);\n          }\n        } else if (\n          this.view.x !== this.targetView.x ||\n          this.view.z !== this.targetView.z ||\n          this.view.span !== this.targetView.span ||\n          this.view.yawRad !== this.targetView.yawRad ||\n          this.view.pitchRad !== this.targetView.pitchRad\n        ) {\n          this.view = { ...this.targetView };\n          this.onCameraChange?.(this.view);\n        }\n      }\n\n      this.ensureScene();\n      this.syncCameraAndLighting(w, h, (now - this.startTime) * 0.001);\n      this.renderer.render(this.scene, this.camera);\n      this.emitProjectedPins(w, h);\n    }"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
-      "line": 1745,
-      "endLine": 1774,
+      "line": 1752,
+      "endLine": 1781,
       "name": "dispose",
       "text": "dispose(): void {\n    this.disposed = true;\n    window.cancelAnimationFrame(this.rafId);\n    this.config.canvas.removeEventListener('webglcontextlost', this.onContextLostListener);\n    this.config.canvas.removeEventListener('webglcontextrestored', this.onContextRestoredListener);\n    this.multiMap.dispose();\n    this.clearRoot();\n    for (const mat of this.materials.values()) mat.dispose();\n    this.materials.clear();\n    this.pbr.dispose();\n    this.envMap.dispose();\n    this.skyDome.geometry.dispose();\n    this.skyMat.dispose();\n    this.infiniteOcean.geometry.dispose();\n    this.waterMat.dispose();\n    this.infiniteMeadow.geometry.dispose();\n    this.meadowMat.dispose();\n    this.gridMesh.geometry.dispose();\n    this.gridMat.dispose();\n    this.haloTex.dispose();\n    this.haloMat.dispose();\n    this.aoTex.dispose();\n    this.aoMat.dispose();\n    this.mistTex.dispose();\n    this.mistMat.dispose();\n    this.selectionRing.geometry.dispose();\n    this.gizmoAxisX.geometry.dispose();\n    this.gizmoAxisZ.geometry.dispose();\n    this.renderer.dispose();\n  }"
     },

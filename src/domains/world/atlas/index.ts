@@ -901,5 +901,11 @@ export {
   type SpatialEditPreferences,
 } from './atlas-spatial-edit-prefs';
 
+export {
+  deriveZoomLayerHierarchyState,
+  type AtlasZoomLayerNavNode,
+  type AtlasZoomLayerState,
+} from './atlas-zoom-layer-state';
+
 
 
