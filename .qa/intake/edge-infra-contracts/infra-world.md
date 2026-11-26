@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-world.json](source-contracts/infra-world.json) (SHA-256 `ef6c41623a35deb0e9cfc7b58f9e4405081d2f0271741d1cef8269da41958cfb`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-world.json](source-contracts/infra-world.json) (SHA-256 `c212451f71ed9a7f0e9c0fc1b7aa84ad241db638c54093ac3b55b040b1dfec26`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -1222,7 +1222,7 @@ export function applyLocalCutoutFilter(
 }
 ```
 
-### src/infrastructure/world/atlas-three/atlas-three-multimap.ts:128
+### src/infrastructure/world/atlas-three/atlas-three-multimap.ts:176
 
 ```ts
 export function multiMapDepthLiftY(depth: number): number {
@@ -1233,7 +1233,7 @@ export function multiMapDepthLiftY(depth: number): number {
 }
 ```
 
-### src/infrastructure/world/atlas-three/atlas-three-multimap.ts:139
+### src/infrastructure/world/atlas-three/atlas-three-multimap.ts:187
 
 ```ts
 export function applyWorldTransformToGroup(
@@ -1256,7 +1256,7 @@ export function applyWorldTransformToGroup(
 }
 ```
 
-### src/infrastructure/world/atlas-three/atlas-three-multimap.ts:158
+### src/infrastructure/world/atlas-three/atlas-three-multimap.ts:206
 
 ```ts
 export class AtlasThreeMultiMapGraph {
@@ -1371,6 +1371,7 @@ export class AtlasThreeMultiMapGraph {
       }
 
       if (plan.terrain) {
+        applyTerrainCutoutFilter(plan.terrain, entry.cutoutRectsLocal);
         geometries.push(plan.terrain);
         const mesh = new THREE.Mesh(plan.terrain, this.getMaterial('terrain'));
         mesh.castShadow = true;
@@ -4433,7 +4434,7 @@ All backend operations are included in the public declarations above.
 | `src/domains/world/contracts/world.types.ts` | `ad676f8bf83b6d55627a568c28d5221bd8f4f616e33eae31fab502223c74f6fb` |
 | `src/domains/world/hierarchy/create-plan.ts` | `6fefab23a8f62fb9a6ebe716c3f44704fa7ab5466b8d5fe0de904920f5aee38e` |
 | `src/domains/world/hierarchy/index.ts` | `05ef0b33d0950512a3ac12eb64497fb3e3321f43d81b4fcf76e909a2ef52efe2` |
-| `src/domains/world/hierarchy/legacy-kind-map.ts` | `8b9d99f4d56c970e274250c11849b746dbd8597eeade1c5401d327fa65335316` |
+| `src/domains/world/hierarchy/legacy-kind-map.ts` | `6a9ff5b58a400f8ba0e06b584823bc530ed430fe2380dce6639950d2e80f8391` |
 | `src/domains/world/hierarchy/migration-plan.ts` | `2226b97b89db2c2ca56631f3bae26d94bbd4dc9e8973a3f1cff0a2cd26c599a8` |
 | `src/domains/world/hierarchy/mutations.ts` | `15e52f9f6460d4e5ec19d71f3ec42057b1a81e8468bc0d9490f58d7f6f5a6dcc` |
 | `src/domains/world/hierarchy/primary-map-links.ts` | `7d01ecbbb2cb467379eed308f37aa0eac0bd223768077b86ee210414a32a2ece` |
@@ -4473,7 +4474,7 @@ All backend operations are included in the public declarations above.
 | `src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-runtime.ts` | `f250027a4c5a9674e377313738dac7f70a8a253464c46033f6a400a229b53c82` |
 | `src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-scene.ts` | `f63e63b2be555ef8348d15141ed44a01e70670667e3d0946221db2720cc32d8c` |
 | `src/infrastructure/world/atlas-three/atlas-three-camera.ts` | `ba02fba1d1dbd675912a5a2472a002cbe99c8673d74838d7aa61995645c62a0c` |
-| `src/infrastructure/world/atlas-three/atlas-three-multimap.ts` | `e6fa3d4a6fb92bdc9ca19409a2a79ceec5a8d711e362925321446a08e09a5038` |
+| `src/infrastructure/world/atlas-three/atlas-three-multimap.ts` | `79d01bf79d6866ce771b40ff6d290cf8a0578b21a0aac696b049cbf3ab05f80f` |
 | `src/infrastructure/world/atlas-three/atlas-three-runtime.ts` | `f2d04e3f56bb3e66614e86b7e87cc36f53cc7031a910f99e544d6fe07a2fb258` |
 | `src/infrastructure/world/atlas-three/atlas-three-scene.ts` | `9cf34c83b4e1f7ceed92d1a275717766d7c71fbd8d8294fd5c38dd5cc0a5e5e2` |
 | `src/infrastructure/world/atlas-three/atlas-unified-input.ts` | `8843d39261ec1696a480b8be7c1540c6d752c060e0595788495ffb08d2c39007` |

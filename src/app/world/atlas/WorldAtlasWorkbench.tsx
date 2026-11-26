@@ -439,9 +439,8 @@ export function WorldAtlasWorkbench({
     const resolveMapScale = (mapId: string, kind: WorldAtlasMapVm['kind']) => {
       const owner = atlasMapOwnerPlace(mapId, worldPlaces, worldLinks);
       if (owner) return atlasMapScaleForKind(tryNodeKindFromPlaceKind(owner.kind));
-      if (kind === 'interior') return 'interior' as const;
-      if (kind === 'location') return 'place' as const;
-      if (kind === 'region') return 'country' as const;
+      if (kind === 'scene') return 'interior' as const;
+      if (kind === 'settlement') return 'settlement' as const;
       return 'world' as const;
     };
     const rootScale = resolveMapScale(editor.map.id, editor.map.kind);

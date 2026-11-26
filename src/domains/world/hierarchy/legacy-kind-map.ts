@@ -97,6 +97,27 @@ const PLACE_ROWS: readonly KindMappingRow[] = [
     nodeKind: 'place',
     notes: 'Natural/wilderness-like place; subtype when known',
   },
+  {
+    source: 'place',
+    legacy: 'country',
+    status: 'canonical',
+    nodeKind: 'country',
+    notes: 'Direct match (canonical WorldNodeKind)',
+  },
+  {
+    source: 'place',
+    legacy: 'place',
+    status: 'canonical',
+    nodeKind: 'place',
+    notes: 'Direct match (canonical WorldNodeKind)',
+  },
+  {
+    source: 'place',
+    legacy: 'room',
+    status: 'canonical',
+    nodeKind: 'room',
+    notes: 'Direct match (canonical WorldNodeKind)',
+  },
 ] as const;
 
 const MAP_ROWS: readonly KindMappingRow[] = [

@@ -37849,7 +37849,7 @@
           },
           {
             "path": "src/domains/world/hierarchy/legacy-kind-map.ts",
-            "sha256": "8b9d99f4d56c970e274250c11849b746dbd8597eeade1c5401d327fa65335316"
+            "sha256": "6a9ff5b58a400f8ba0e06b584823bc530ed430fe2380dce6639950d2e80f8391"
           },
           {
             "path": "src/domains/world/hierarchy/migration-plan.ts",
@@ -38009,7 +38009,7 @@
           },
           {
             "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-            "sha256": "e6fa3d4a6fb92bdc9ca19409a2a79ceec5a8d711e362925321446a08e09a5038"
+            "sha256": "79d01bf79d6866ce771b40ff6d290cf8a0578b21a0aac696b049cbf3ab05f80f"
           },
           {
             "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
@@ -38069,7 +38069,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-world.json",
-      "sourceContractSha256": "ef6c41623a35deb0e9cfc7b58f9e4405081d2f0271741d1cef8269da41958cfb",
+      "sourceContractSha256": "c212451f71ed9a7f0e9c0fc1b7aa84ad241db638c54093ac3b55b040b1dfec26",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],
@@ -38474,62 +38474,68 @@
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-          "line": 116,
-          "endLine": 122,
+          "line": 121,
+          "endLine": 162,
+          "name": "applyTerrainCutoutFilter"
+        },
+        {
+          "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
+          "line": 164,
+          "endLine": 170,
           "name": "cutoutSignature"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-          "line": 128,
-          "endLine": 133,
+          "line": 176,
+          "endLine": 181,
           "name": "multiMapDepthLiftY"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-          "line": 139,
-          "endLine": 156,
+          "line": 187,
+          "endLine": 204,
           "name": "applyWorldTransformToGroup"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-          "line": 177,
-          "endLine": 293,
+          "line": 225,
+          "endLine": 342,
           "name": "sync"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-          "line": 295,
-          "endLine": 297,
+          "line": 344,
+          "endLine": 346,
           "name": "getGroup"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-          "line": 299,
-          "endLine": 305,
+          "line": 348,
+          "endLine": 354,
           "name": "getAllPickables"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-          "line": 307,
-          "endLine": 311,
+          "line": 356,
+          "endLine": 360,
           "name": "getActiveEditorElevationY"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-          "line": 313,
-          "endLine": 319,
+          "line": 362,
+          "endLine": 368,
           "name": "getRenderedIds"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-          "line": 321,
-          "endLine": 334,
+          "line": 370,
+          "endLine": 383,
           "name": "getStats"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-          "line": 337,
-          "endLine": 343,
+          "line": 386,
+          "endLine": 392,
           "name": "dispose"
         },
         {

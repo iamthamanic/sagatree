@@ -113,6 +113,54 @@ export function applyLocalCutoutFilter(
   };
 }
 
+/**
+ * Replacement-Refinement for terrain meshes (ADR-SWS-01 §5.2):
+ * removes parent terrain triangles overlapping any active child cutout rect so
+ * parent relief hills never bury or poke through finer child map geometry.
+ */
+function applyTerrainCutoutFilter(
+  geo: THREE.BufferGeometry,
+  cutouts: readonly AtlasLocalCutoutRect[],
+): void {
+  if (cutouts.length === 0) return;
+  const pos = geo.getAttribute('position');
+  const index = geo.getIndex();
+  if (!pos || !index) return;
+  const kept: number[] = [];
+  const arr = index.array;
+  for (let i = 0; i + 2 < arr.length; i += 3) {
+    const a = arr[i]!;
+    const b = arr[i + 1]!;
+    const c = arr[i + 2]!;
+    const ax = pos.getX(a);
+    const az = pos.getZ(a);
+    const bx = pos.getX(b);
+    const bz = pos.getZ(b);
+    const cx = pos.getX(c);
+    const cz = pos.getZ(c);
+    const triMinX = Math.min(ax, bx, cx);
+    const triMaxX = Math.max(ax, bx, cx);
+    const triMinZ = Math.min(az, bz, cz);
+    const triMaxZ = Math.max(az, bz, cz);
+    let overlapped = false;
+    for (const cut of cutouts) {
+      if (
+        triMaxX >= cut.minX &&
+        triMinX <= cut.maxX &&
+        triMaxZ >= cut.minY &&
+        triMinZ <= cut.maxY
+      ) {
+        overlapped = true;
+        break;
+      }
+    }
+    if (!overlapped) {
+      kept.push(a, b, c);
+    }
+  }
+  geo.setIndex(kept);
+}
+
 function cutoutSignature(cutouts: readonly AtlasLocalCutoutRect[]): string {
   if (cutouts.length === 0) return '';
   return cutouts
@@ -267,6 +315,7 @@ export class AtlasThreeMultiMapGraph {
       }
 
       if (plan.terrain) {
+        applyTerrainCutoutFilter(plan.terrain, entry.cutoutRectsLocal);
         geometries.push(plan.terrain);
         const mesh = new THREE.Mesh(plan.terrain, this.getMaterial('terrain'));
         mesh.castShadow = true;

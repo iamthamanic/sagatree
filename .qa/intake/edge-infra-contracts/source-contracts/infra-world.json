@@ -25,7 +25,7 @@
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-      "sha256": "e6fa3d4a6fb92bdc9ca19409a2a79ceec5a8d711e362925321446a08e09a5038"
+      "sha256": "79d01bf79d6866ce771b40ff6d290cf8a0578b21a0aac696b049cbf3ab05f80f"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
@@ -427,7 +427,7 @@
     },
     {
       "path": "src/domains/world/hierarchy/legacy-kind-map.ts",
-      "sha256": "8b9d99f4d56c970e274250c11849b746dbd8597eeade1c5401d327fa65335316"
+      "sha256": "6a9ff5b58a400f8ba0e06b584823bc530ed430fe2380dce6639950d2e80f8391"
     },
     {
       "path": "src/domains/world/hierarchy/migration-plan.ts",
@@ -4331,21 +4331,21 @@
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-      "line": 128,
-      "endLine": 133,
+      "line": 176,
+      "endLine": 181,
       "text": "export function multiMapDepthLiftY(depth: number): number {\n  const table = [0, 0.45, 0.65, 0.72, 0.725, 0.726];\n  const idx = Math.max(0, depth - 1);\n  if (idx < table.length) return table[idx]!;\n  return 0.726 + (idx - (table.length - 1)) * 0.0005;\n}"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-      "line": 139,
-      "endLine": 156,
+      "line": 187,
+      "endLine": 204,
       "text": "export function applyWorldTransformToGroup(\n  pivot: THREE.Group,\n  content: THREE.Group,\n  entry: AtlasWorldSceneGroupPlan,\n  bounds: WorldAtlasBounds = DEFAULT_ATLAS_BOUNDS,\n): void {\n  const midX = (bounds.minX + bounds.maxX) / 2;\n  const midY = (bounds.minY + bounds.maxY) / 2;\n  const { centerX, centerY, scaleX, scaleY, rotationRad } = entry.worldTransform;\n  const verticalScale = Math.sqrt(Math.max(1e-8, scaleX * scaleY));\n  const depthLiftY = multiMapDepthLiftY(entry.depth);\n\n  pivot.position.set(centerX, depthLiftY, centerY);\n  pivot.rotation.set(0, -rotationRad, 0);\n  pivot.scale.set(scaleX, verticalScale, scaleY);\n  content.position.set(-midX, 0, -midY);\n  pivot.updateMatrixWorld(true);\n}"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-      "line": 158,
-      "endLine": 353,
-      "text": "export class AtlasThreeMultiMapGraph {\n  readonly rootGroup = new THREE.Group();\n  private readonly groups = new Map<string, AtlasThreeMapGroupNode>();\n  private activeEditorMapId: string | null = null;\n  private clearRootCount = 0;\n  private incrementalSyncCount = 0;\n\n  constructor(\n    private readonly getMaterial: (key: AtlasThreeSurfaceKey) => THREE.Material,\n    private readonly waterMaterial: THREE.Material,\n  ) {\n    this.rootGroup.name = 'atlas3:multimap-root';\n  }\n\n  /**\n   * Incrementally sync the Three.js scene graph to match `scenePlan`.\n   * Never calls `clearRoot()` — only mounts entering maps, updates transforms,\n   * rebuilds individual groups whose revision/cutouts changed, and disposes exiting maps.\n   */\n  sync(input: {\n    readonly scenePlan: AtlasWorldScenePlan;\n    readonly sources: ReadonlyMap<string, AtlasThreeWorldMapSource>;\n    readonly presetId: AtlasGraphicsPresetId;\n    readonly hideRoofs: boolean;\n    readonly viewSpan: number;\n  }): void {\n    this.incrementalSyncCount += 1;\n    this.activeEditorMapId = input.scenePlan.activeEditorMapId;\n\n    const wantedIds = new Set(input.scenePlan.entries.map((e) => e.mapId));\n\n    // 1) Dispose groups that left the active scene plan\n    for (const [mapId, node] of [...this.groups.entries()]) {\n      if (!wantedIds.has(mapId)) {\n        this.disposeGroupNode(node);\n        this.groups.delete(mapId);\n      }\n    }\n\n    // 2) Mount new groups or update existing groups incrementally\n    for (const entry of input.scenePlan.entries) {\n      const source = input.sources.get(entry.mapId);\n      if (!source) continue;\n\n      const cSig = cutoutSignature(entry.cutoutRectsLocal);\n      const rev = source.revisionKey ?? 'v0';\n      const sig = `${rev}|${source.mapScale}|${source.look}|${input.presetId}|${input.hideRoofs ? 1 : 0}|${cSig}`;\n\n      const existing = this.groups.get(entry.mapId);\n      if (existing && existing.buildSignature === sig) {\n        // Zero rebuild: only update world transform & visibility\n        applyWorldTransformToGroup(existing.pivot, existing.content, entry, source.bounds);\n        existing.pivot.visible = true;\n        continue;\n      }\n\n      if (existing) {\n        this.disposeGroupNode(existing);\n        this.groups.delete(entry.mapId);\n      }\n\n      const filteredDoc = applyLocalCutoutFilter(source.doc, entry.cutoutRectsLocal);\n      const plan = buildAtlasThreeScenePlan(filteredDoc, {\n        mapScale: source.mapScale,\n        look: source.look,\n        span: Math.max(24, input.viewSpan / Math.max(1e-4, entry.worldTransform.scaleX)),\n        presetId: input.presetId,\n        seed: entry.mapId,\n        hideRoofs: input.hideRoofs,\n        warmWindows: true,\n      });\n\n      const pivot = new THREE.Group();\n      pivot.name = `atlas3:map-pivot:${entry.mapId}`;\n      pivot.userData.mapId = entry.mapId;\n      pivot.userData.depth = entry.depth;\n\n      const content = new THREE.Group();\n      content.name = `atlas3:map-content:${entry.mapId}`;\n      pivot.add(content);\n\n      const pickables: THREE.Object3D[] = [];\n      const geometries: THREE.BufferGeometry[] = [];\n\n      for (const [surfaceKey, builder] of plan.builders) {\n        if (builder.triangleCount === 0) continue;\n        const geo = builder.build();\n        geometries.push(geo);\n        const mesh = new THREE.Mesh(geo, this.getMaterial(surfaceKey));\n        const flat = surfaceKey.startsWith('sheet') || surfaceKey.startsWith('floor');\n        mesh.castShadow = !flat;\n        mesh.receiveShadow = true;\n        mesh.userData.triIds = builder.triIds;\n        mesh.userData.mapId = entry.mapId;\n        mesh.name = `atlas3:${entry.mapId}:${surfaceKey}`;\n        content.add(mesh);\n        pickables.push(mesh);\n      }\n\n      if (plan.water.triangleCount > 0) {\n        const geo = plan.water.build();\n        geometries.push(geo);\n        const mesh = new THREE.Mesh(geo, this.waterMaterial);\n        mesh.userData.triIds = plan.water.triIds;\n        mesh.userData.mapId = entry.mapId;\n        mesh.name = `atlas3:${entry.mapId}:water`;\n        mesh.renderOrder = 2;\n        content.add(mesh);\n        pickables.push(mesh);\n      }\n\n      if (plan.terrain) {\n        geometries.push(plan.terrain);\n        const mesh = new THREE.Mesh(plan.terrain, this.getMaterial('terrain'));\n        mesh.castShadow = true;\n        mesh.receiveShadow = true;\n        mesh.userData.mapId = entry.mapId;\n        mesh.name = `atlas3:${entry.mapId}:terrain`;\n        content.add(mesh);\n      }\n\n      applyWorldTransformToGroup(pivot, content, entry, source.bounds);\n      this.rootGroup.add(pivot);\n\n      this.groups.set(entry.mapId, {\n        mapId: entry.mapId,\n        pivot,\n        content,\n        pickables,\n        scenePlan: plan,\n        buildSignature: sig,\n        geometries,\n        cutoutSignature: cSig,\n      });\n    }\n  }\n\n  getGroup(mapId: string): AtlasThreeMapGroupNode | undefined {\n    return this.groups.get(mapId);\n  }\n\n  getAllPickables(): readonly THREE.Object3D[] {\n    const out: THREE.Object3D[] = [];\n    for (const g of this.groups.values()) {\n      for (const p of g.pickables) out.push(p);\n    }\n    return out;\n  }\n\n  getActiveEditorElevationY(): number {\n    if (!this.activeEditorMapId) return 0;\n    const g = this.groups.get(this.activeEditorMapId);\n    return g ? g.pivot.position.y : 0;\n  }\n\n  getRenderedIds(): string[] {\n    const out = new Set<string>();\n    for (const g of this.groups.values()) {\n      for (const id of g.scenePlan.ids) out.add(id);\n    }\n    return [...out].sort();\n  }\n\n  getStats(): AtlasThreeMultiMapStats {\n    let liveGeometryCount = 0;\n    for (const g of this.groups.values()) {\n      liveGeometryCount += g.geometries.length;\n    }\n    return {\n      activeMapIds: [...this.groups.keys()],\n      activeEditorMapId: this.activeEditorMapId,\n      groupCount: this.groups.size,\n      liveGeometryCount,\n      clearRootCount: this.clearRootCount,\n      incrementalSyncCount: this.incrementalSyncCount,\n    };\n  }\n\n  /** Teardown all groups and release every GPU BufferGeometry cleanly (budget = 0). */\n  dispose(): void {\n    for (const node of this.groups.values()) {\n      this.disposeGroupNode(node);\n    }\n    this.groups.clear();\n    this.activeEditorMapId = null;\n  }\n\n  private disposeGroupNode(node: AtlasThreeMapGroupNode): void {\n    this.rootGroup.remove(node.pivot);\n    for (const geo of node.geometries) {\n      geo.dispose();\n    }\n    node.geometries.length = 0;\n    node.pickables.length = 0;\n  }\n}"
+      "line": 206,
+      "endLine": 402,
+      "text": "export class AtlasThreeMultiMapGraph {\n  readonly rootGroup = new THREE.Group();\n  private readonly groups = new Map<string, AtlasThreeMapGroupNode>();\n  private activeEditorMapId: string | null = null;\n  private clearRootCount = 0;\n  private incrementalSyncCount = 0;\n\n  constructor(\n    private readonly getMaterial: (key: AtlasThreeSurfaceKey) => THREE.Material,\n    private readonly waterMaterial: THREE.Material,\n  ) {\n    this.rootGroup.name = 'atlas3:multimap-root';\n  }\n\n  /**\n   * Incrementally sync the Three.js scene graph to match `scenePlan`.\n   * Never calls `clearRoot()` — only mounts entering maps, updates transforms,\n   * rebuilds individual groups whose revision/cutouts changed, and disposes exiting maps.\n   */\n  sync(input: {\n    readonly scenePlan: AtlasWorldScenePlan;\n    readonly sources: ReadonlyMap<string, AtlasThreeWorldMapSource>;\n    readonly presetId: AtlasGraphicsPresetId;\n    readonly hideRoofs: boolean;\n    readonly viewSpan: number;\n  }): void {\n    this.incrementalSyncCount += 1;\n    this.activeEditorMapId = input.scenePlan.activeEditorMapId;\n\n    const wantedIds = new Set(input.scenePlan.entries.map((e) => e.mapId));\n\n    // 1) Dispose groups that left the active scene plan\n    for (const [mapId, node] of [...this.groups.entries()]) {\n      if (!wantedIds.has(mapId)) {\n        this.disposeGroupNode(node);\n        this.groups.delete(mapId);\n      }\n    }\n\n    // 2) Mount new groups or update existing groups incrementally\n    for (const entry of input.scenePlan.entries) {\n      const source = input.sources.get(entry.mapId);\n      if (!source) continue;\n\n      const cSig = cutoutSignature(entry.cutoutRectsLocal);\n      const rev = source.revisionKey ?? 'v0';\n      const sig = `${rev}|${source.mapScale}|${source.look}|${input.presetId}|${input.hideRoofs ? 1 : 0}|${cSig}`;\n\n      const existing = this.groups.get(entry.mapId);\n      if (existing && existing.buildSignature === sig) {\n        // Zero rebuild: only update world transform & visibility\n        applyWorldTransformToGroup(existing.pivot, existing.content, entry, source.bounds);\n        existing.pivot.visible = true;\n        continue;\n      }\n\n      if (existing) {\n        this.disposeGroupNode(existing);\n        this.groups.delete(entry.mapId);\n      }\n\n      const filteredDoc = applyLocalCutoutFilter(source.doc, entry.cutoutRectsLocal);\n      const plan = buildAtlasThreeScenePlan(filteredDoc, {\n        mapScale: source.mapScale,\n        look: source.look,\n        span: Math.max(24, input.viewSpan / Math.max(1e-4, entry.worldTransform.scaleX)),\n        presetId: input.presetId,\n        seed: entry.mapId,\n        hideRoofs: input.hideRoofs,\n        warmWindows: true,\n      });\n\n      const pivot = new THREE.Group();\n      pivot.name = `atlas3:map-pivot:${entry.mapId}`;\n      pivot.userData.mapId = entry.mapId;\n      pivot.userData.depth = entry.depth;\n\n      const content = new THREE.Group();\n      content.name = `atlas3:map-content:${entry.mapId}`;\n      pivot.add(content);\n\n      const pickables: THREE.Object3D[] = [];\n      const geometries: THREE.BufferGeometry[] = [];\n\n      for (const [surfaceKey, builder] of plan.builders) {\n        if (builder.triangleCount === 0) continue;\n        const geo = builder.build();\n        geometries.push(geo);\n        const mesh = new THREE.Mesh(geo, this.getMaterial(surfaceKey));\n        const flat = surfaceKey.startsWith('sheet') || surfaceKey.startsWith('floor');\n        mesh.castShadow = !flat;\n        mesh.receiveShadow = true;\n        mesh.userData.triIds = builder.triIds;\n        mesh.userData.mapId = entry.mapId;\n        mesh.name = `atlas3:${entry.mapId}:${surfaceKey}`;\n        content.add(mesh);\n        pickables.push(mesh);\n      }\n\n      if (plan.water.triangleCount > 0) {\n        const geo = plan.water.build();\n        geometries.push(geo);\n        const mesh = new THREE.Mesh(geo, this.waterMaterial);\n        mesh.userData.triIds = plan.water.triIds;\n        mesh.userData.mapId = entry.mapId;\n        mesh.name = `atlas3:${entry.mapId}:water`;\n        mesh.renderOrder = 2;\n        content.add(mesh);\n        pickables.push(mesh);\n      }\n\n      if (plan.terrain) {\n        applyTerrainCutoutFilter(plan.terrain, entry.cutoutRectsLocal);\n        geometries.push(plan.terrain);\n        const mesh = new THREE.Mesh(plan.terrain, this.getMaterial('terrain'));\n        mesh.castShadow = true;\n        mesh.receiveShadow = true;\n        mesh.userData.mapId = entry.mapId;\n        mesh.name = `atlas3:${entry.mapId}:terrain`;\n        content.add(mesh);\n      }\n\n      applyWorldTransformToGroup(pivot, content, entry, source.bounds);\n      this.rootGroup.add(pivot);\n\n      this.groups.set(entry.mapId, {\n        mapId: entry.mapId,\n        pivot,\n        content,\n        pickables,\n        scenePlan: plan,\n        buildSignature: sig,\n        geometries,\n        cutoutSignature: cSig,\n      });\n    }\n  }\n\n  getGroup(mapId: string): AtlasThreeMapGroupNode | undefined {\n    return this.groups.get(mapId);\n  }\n\n  getAllPickables(): readonly THREE.Object3D[] {\n    const out: THREE.Object3D[] = [];\n    for (const g of this.groups.values()) {\n      for (const p of g.pickables) out.push(p);\n    }\n    return out;\n  }\n\n  getActiveEditorElevationY(): number {\n    if (!this.activeEditorMapId) return 0;\n    const g = this.groups.get(this.activeEditorMapId);\n    return g ? g.pivot.position.y : 0;\n  }\n\n  getRenderedIds(): string[] {\n    const out = new Set<string>();\n    for (const g of this.groups.values()) {\n      for (const id of g.scenePlan.ids) out.add(id);\n    }\n    return [...out].sort();\n  }\n\n  getStats(): AtlasThreeMultiMapStats {\n    let liveGeometryCount = 0;\n    for (const g of this.groups.values()) {\n      liveGeometryCount += g.geometries.length;\n    }\n    return {\n      activeMapIds: [...this.groups.keys()],\n      activeEditorMapId: this.activeEditorMapId,\n      groupCount: this.groups.size,\n      liveGeometryCount,\n      clearRootCount: this.clearRootCount,\n      incrementalSyncCount: this.incrementalSyncCount,\n    };\n  }\n\n  /** Teardown all groups and release every GPU BufferGeometry cleanly (budget = 0). */\n  dispose(): void {\n    for (const node of this.groups.values()) {\n      this.disposeGroupNode(node);\n    }\n    this.groups.clear();\n    this.activeEditorMapId = null;\n  }\n\n  private disposeGroupNode(node: AtlasThreeMapGroupNode): void {\n    this.rootGroup.remove(node.pivot);\n    for (const geo of node.geometries) {\n      geo.dispose();\n    }\n    node.geometries.length = 0;\n    node.pickables.length = 0;\n  }\n}"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
@@ -5393,85 +5393,92 @@
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-      "line": 116,
-      "endLine": 122,
+      "line": 121,
+      "endLine": 162,
+      "name": "applyTerrainCutoutFilter",
+      "text": "function applyTerrainCutoutFilter(\n  geo: THREE.BufferGeometry,\n  cutouts: readonly AtlasLocalCutoutRect[],\n): void {\n  if (cutouts.length === 0) return;\n  const pos = geo.getAttribute('position');\n  const index = geo.getIndex();\n  if (!pos || !index) return;\n  const kept: number[] = [];\n  const arr = index.array;\n  for (let i = 0; i + 2 < arr.length; i += 3) {\n    const a = arr[i]!;\n    const b = arr[i + 1]!;\n    const c = arr[i + 2]!;\n    const ax = pos.getX(a);\n    const az = pos.getZ(a);\n    const bx = pos.getX(b);\n    const bz = pos.getZ(b);\n    const cx = pos.getX(c);\n    const cz = pos.getZ(c);\n    const triMinX = Math.min(ax, bx, cx);\n    const triMaxX = Math.max(ax, bx, cx);\n    const triMinZ = Math.min(az, bz, cz);\n    const triMaxZ = Math.max(az, bz, cz);\n    let overlapped = false;\n    for (const cut of cutouts) {\n      if (\n        triMaxX >= cut.minX &&\n        triMinX <= cut.maxX &&\n        triMaxZ >= cut.minY &&\n        triMinZ <= cut.maxY\n      ) {\n        overlapped = true;\n        break;\n      }\n    }\n    if (!overlapped) {\n      kept.push(a, b, c);\n    }\n  }\n  geo.setIndex(kept);\n}"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
+      "line": 164,
+      "endLine": 170,
       "name": "cutoutSignature",
       "text": "function cutoutSignature(cutouts: readonly AtlasLocalCutoutRect[]): string {\n  if (cutouts.length === 0) return '';\n  return cutouts\n    .map((c) => `${c.childMapId}:${c.minX},${c.minY},${c.maxX},${c.maxY}`)\n    .sort()\n    .join('|');\n}"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-      "line": 119,
-      "endLine": 119,
+      "line": 167,
+      "endLine": 167,
       "name": "callback",
       "text": "(c) => `${c.childMapId}:${c.minX},${c.minY},${c.maxX},${c.maxY}`"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-      "line": 128,
-      "endLine": 133,
+      "line": 176,
+      "endLine": 181,
       "name": "multiMapDepthLiftY",
       "text": "export function multiMapDepthLiftY(depth: number): number {\n  const table = [0, 0.45, 0.65, 0.72, 0.725, 0.726];\n  const idx = Math.max(0, depth - 1);\n  if (idx < table.length) return table[idx]!;\n  return 0.726 + (idx - (table.length - 1)) * 0.0005;\n}"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-      "line": 139,
-      "endLine": 156,
+      "line": 187,
+      "endLine": 204,
       "name": "applyWorldTransformToGroup",
       "text": "export function applyWorldTransformToGroup(\n  pivot: THREE.Group,\n  content: THREE.Group,\n  entry: AtlasWorldSceneGroupPlan,\n  bounds: WorldAtlasBounds = DEFAULT_ATLAS_BOUNDS,\n): void {\n  const midX = (bounds.minX + bounds.maxX) / 2;\n  const midY = (bounds.minY + bounds.maxY) / 2;\n  const { centerX, centerY, scaleX, scaleY, rotationRad } = entry.worldTransform;\n  const verticalScale = Math.sqrt(Math.max(1e-8, scaleX * scaleY));\n  const depthLiftY = multiMapDepthLiftY(entry.depth);\n\n  pivot.position.set(centerX, depthLiftY, centerY);\n  pivot.rotation.set(0, -rotationRad, 0);\n  pivot.scale.set(scaleX, verticalScale, scaleY);\n  content.position.set(-midX, 0, -midY);\n  pivot.updateMatrixWorld(true);\n}"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-      "line": 177,
-      "endLine": 293,
+      "line": 225,
+      "endLine": 342,
       "name": "sync",
-      "text": "sync(input: {\n    readonly scenePlan: AtlasWorldScenePlan;\n    readonly sources: ReadonlyMap<string, AtlasThreeWorldMapSource>;\n    readonly presetId: AtlasGraphicsPresetId;\n    readonly hideRoofs: boolean;\n    readonly viewSpan: number;\n  }): void {\n    this.incrementalSyncCount += 1;\n    this.activeEditorMapId = input.scenePlan.activeEditorMapId;\n\n    const wantedIds = new Set(input.scenePlan.entries.map((e) => e.mapId));\n\n    // 1) Dispose groups that left the active scene plan\n    for (const [mapId, node] of [...this.groups.entries()]) {\n      if (!wantedIds.has(mapId)) {\n        this.disposeGroupNode(node);\n        this.groups.delete(mapId);\n      }\n    }\n\n    // 2) Mount new groups or update existing groups incrementally\n    for (const entry of input.scenePlan.entries) {\n      const source = input.sources.get(entry.mapId);\n      if (!source) continue;\n\n      const cSig = cutoutSignature(entry.cutoutRectsLocal);\n      const rev = source.revisionKey ?? 'v0';\n      const sig = `${rev}|${source.mapScale}|${source.look}|${input.presetId}|${input.hideRoofs ? 1 : 0}|${cSig}`;\n\n      const existing = this.groups.get(entry.mapId);\n      if (existing && existing.buildSignature === sig) {\n        // Zero rebuild: only update world transform & visibility\n        applyWorldTransformToGroup(existing.pivot, existing.content, entry, source.bounds);\n        existing.pivot.visible = true;\n        continue;\n      }\n\n      if (existing) {\n        this.disposeGroupNode(existing);\n        this.groups.delete(entry.mapId);\n      }\n\n      const filteredDoc = applyLocalCutoutFilter(source.doc, entry.cutoutRectsLocal);\n      const plan = buildAtlasThreeScenePlan(filteredDoc, {\n        mapScale: source.mapScale,\n        look: source.look,\n        span: Math.max(24, input.viewSpan / Math.max(1e-4, entry.worldTransform.scaleX)),\n        presetId: input.presetId,\n        seed: entry.mapId,\n        hideRoofs: input.hideRoofs,\n        warmWindows: true,\n      });\n\n      const pivot = new THREE.Group();\n      pivot.name = `atlas3:map-pivot:${entry.mapId}`;\n      pivot.userData.mapId = entry.mapId;\n      pivot.userData.depth = entry.depth;\n\n      const content = new THREE.Group();\n      content.name = `atlas3:map-content:${entry.mapId}`;\n      pivot.add(content);\n\n      const pickables: THREE.Object3D[] = [];\n      const geometries: THREE.BufferGeometry[] = [];\n\n      for (const [surfaceKey, builder] of plan.builders) {\n        if (builder.triangleCount === 0) continue;\n        const geo = builder.build();\n        geometries.push(geo);\n        const mesh = new THREE.Mesh(geo, this.getMaterial(surfaceKey));\n        const flat = surfaceKey.startsWith('sheet') || surfaceKey.startsWith('floor');\n        mesh.castShadow = !flat;\n        mesh.receiveShadow = true;\n        mesh.userData.triIds = builder.triIds;\n        mesh.userData.mapId = entry.mapId;\n        mesh.name = `atlas3:${entry.mapId}:${surfaceKey}`;\n        content.add(mesh);\n        pickables.push(mesh);\n      }\n\n      if (plan.water.triangleCount > 0) {\n        const geo = plan.water.build();\n        geometries.push(geo);\n        const mesh = new THREE.Mesh(geo, this.waterMaterial);\n        mesh.userData.triIds = plan.water.triIds;\n        mesh.userData.mapId = entry.mapId;\n        mesh.name = `atlas3:${entry.mapId}:water`;\n        mesh.renderOrder = 2;\n        content.add(mesh);\n        pickables.push(mesh);\n      }\n\n      if (plan.terrain) {\n        geometries.push(plan.terrain);\n        const mesh = new THREE.Mesh(plan.terrain, this.getMaterial('terrain'));\n        mesh.castShadow = true;\n        mesh.receiveShadow = true;\n        mesh.userData.mapId = entry.mapId;\n        mesh.name = `atlas3:${entry.mapId}:terrain`;\n        content.add(mesh);\n      }\n\n      applyWorldTransformToGroup(pivot, content, entry, source.bounds);\n      this.rootGroup.add(pivot);\n\n      this.groups.set(entry.mapId, {\n        mapId: entry.mapId,\n        pivot,\n        content,\n        pickables,\n        scenePlan: plan,\n        buildSignature: sig,\n        geometries,\n        cutoutSignature: cSig,\n      });\n    }\n  }"
+      "text": "sync(input: {\n    readonly scenePlan: AtlasWorldScenePlan;\n    readonly sources: ReadonlyMap<string, AtlasThreeWorldMapSource>;\n    readonly presetId: AtlasGraphicsPresetId;\n    readonly hideRoofs: boolean;\n    readonly viewSpan: number;\n  }): void {\n    this.incrementalSyncCount += 1;\n    this.activeEditorMapId = input.scenePlan.activeEditorMapId;\n\n    const wantedIds = new Set(input.scenePlan.entries.map((e) => e.mapId));\n\n    // 1) Dispose groups that left the active scene plan\n    for (const [mapId, node] of [...this.groups.entries()]) {\n      if (!wantedIds.has(mapId)) {\n        this.disposeGroupNode(node);\n        this.groups.delete(mapId);\n      }\n    }\n\n    // 2) Mount new groups or update existing groups incrementally\n    for (const entry of input.scenePlan.entries) {\n      const source = input.sources.get(entry.mapId);\n      if (!source) continue;\n\n      const cSig = cutoutSignature(entry.cutoutRectsLocal);\n      const rev = source.revisionKey ?? 'v0';\n      const sig = `${rev}|${source.mapScale}|${source.look}|${input.presetId}|${input.hideRoofs ? 1 : 0}|${cSig}`;\n\n      const existing = this.groups.get(entry.mapId);\n      if (existing && existing.buildSignature === sig) {\n        // Zero rebuild: only update world transform & visibility\n        applyWorldTransformToGroup(existing.pivot, existing.content, entry, source.bounds);\n        existing.pivot.visible = true;\n        continue;\n      }\n\n      if (existing) {\n        this.disposeGroupNode(existing);\n        this.groups.delete(entry.mapId);\n      }\n\n      const filteredDoc = applyLocalCutoutFilter(source.doc, entry.cutoutRectsLocal);\n      const plan = buildAtlasThreeScenePlan(filteredDoc, {\n        mapScale: source.mapScale,\n        look: source.look,\n        span: Math.max(24, input.viewSpan / Math.max(1e-4, entry.worldTransform.scaleX)),\n        presetId: input.presetId,\n        seed: entry.mapId,\n        hideRoofs: input.hideRoofs,\n        warmWindows: true,\n      });\n\n      const pivot = new THREE.Group();\n      pivot.name = `atlas3:map-pivot:${entry.mapId}`;\n      pivot.userData.mapId = entry.mapId;\n      pivot.userData.depth = entry.depth;\n\n      const content = new THREE.Group();\n      content.name = `atlas3:map-content:${entry.mapId}`;\n      pivot.add(content);\n\n      const pickables: THREE.Object3D[] = [];\n      const geometries: THREE.BufferGeometry[] = [];\n\n      for (const [surfaceKey, builder] of plan.builders) {\n        if (builder.triangleCount === 0) continue;\n        const geo = builder.build();\n        geometries.push(geo);\n        const mesh = new THREE.Mesh(geo, this.getMaterial(surfaceKey));\n        const flat = surfaceKey.startsWith('sheet') || surfaceKey.startsWith('floor');\n        mesh.castShadow = !flat;\n        mesh.receiveShadow = true;\n        mesh.userData.triIds = builder.triIds;\n        mesh.userData.mapId = entry.mapId;\n        mesh.name = `atlas3:${entry.mapId}:${surfaceKey}`;\n        content.add(mesh);\n        pickables.push(mesh);\n      }\n\n      if (plan.water.triangleCount > 0) {\n        const geo = plan.water.build();\n        geometries.push(geo);\n        const mesh = new THREE.Mesh(geo, this.waterMaterial);\n        mesh.userData.triIds = plan.water.triIds;\n        mesh.userData.mapId = entry.mapId;\n        mesh.name = `atlas3:${entry.mapId}:water`;\n        mesh.renderOrder = 2;\n        content.add(mesh);\n        pickables.push(mesh);\n      }\n\n      if (plan.terrain) {\n        applyTerrainCutoutFilter(plan.terrain, entry.cutoutRectsLocal);\n        geometries.push(plan.terrain);\n        const mesh = new THREE.Mesh(plan.terrain, this.getMaterial('terrain'));\n        mesh.castShadow = true;\n        mesh.receiveShadow = true;\n        mesh.userData.mapId = entry.mapId;\n        mesh.name = `atlas3:${entry.mapId}:terrain`;\n        content.add(mesh);\n      }\n\n      applyWorldTransformToGroup(pivot, content, entry, source.bounds);\n      this.rootGroup.add(pivot);\n\n      this.groups.set(entry.mapId, {\n        mapId: entry.mapId,\n        pivot,\n        content,\n        pickables,\n        scenePlan: plan,\n        buildSignature: sig,\n        geometries,\n        cutoutSignature: cSig,\n      });\n    }\n  }"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-      "line": 187,
-      "endLine": 187,
+      "line": 235,
+      "endLine": 235,
       "name": "callback",
       "text": "(e) => e.mapId"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-      "line": 295,
-      "endLine": 297,
+      "line": 344,
+      "endLine": 346,
       "name": "getGroup",
       "text": "getGroup(mapId: string): AtlasThreeMapGroupNode | undefined {\n    return this.groups.get(mapId);\n  }"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-      "line": 299,
-      "endLine": 305,
+      "line": 348,
+      "endLine": 354,
       "name": "getAllPickables",
       "text": "getAllPickables(): readonly THREE.Object3D[] {\n    const out: THREE.Object3D[] = [];\n    for (const g of this.groups.values()) {\n      for (const p of g.pickables) out.push(p);\n    }\n    return out;\n  }"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-      "line": 307,
-      "endLine": 311,
+      "line": 356,
+      "endLine": 360,
       "name": "getActiveEditorElevationY",
       "text": "getActiveEditorElevationY(): number {\n    if (!this.activeEditorMapId) return 0;\n    const g = this.groups.get(this.activeEditorMapId);\n    return g ? g.pivot.position.y : 0;\n  }"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-      "line": 313,
-      "endLine": 319,
+      "line": 362,
+      "endLine": 368,
       "name": "getRenderedIds",
       "text": "getRenderedIds(): string[] {\n    const out = new Set<string>();\n    for (const g of this.groups.values()) {\n      for (const id of g.scenePlan.ids) out.add(id);\n    }\n    return [...out].sort();\n  }"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-      "line": 321,
-      "endLine": 334,
+      "line": 370,
+      "endLine": 383,
       "name": "getStats",
       "text": "getStats(): AtlasThreeMultiMapStats {\n    let liveGeometryCount = 0;\n    for (const g of this.groups.values()) {\n      liveGeometryCount += g.geometries.length;\n    }\n    return {\n      activeMapIds: [...this.groups.keys()],\n      activeEditorMapId: this.activeEditorMapId,\n      groupCount: this.groups.size,\n      liveGeometryCount,\n      clearRootCount: this.clearRootCount,\n      incrementalSyncCount: this.incrementalSyncCount,\n    };\n  }"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-      "line": 337,
-      "endLine": 343,
+      "line": 386,
+      "endLine": 392,
       "name": "dispose",
       "text": "dispose(): void {\n    for (const node of this.groups.values()) {\n      this.disposeGroupNode(node);\n    }\n    this.groups.clear();\n    this.activeEditorMapId = null;\n  }"
     },
