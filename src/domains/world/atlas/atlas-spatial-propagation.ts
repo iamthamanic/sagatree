@@ -19,6 +19,7 @@ import {
   boundsUnion,
   expandBoundsToFit,
   isFiniteSpatialBounds,
+  listDescendantEntities,
   remapPolygonToBounds,
   resolveCarrierChain,
   resolveRelation,
@@ -499,12 +500,370 @@ export function planPropagation(
   if (intent.kind === 'reparent') {
     return planReparent(world, target, intent);
   }
-  // `remove` and `restore` are handled in SCM-03 cascade planner extension (wired below).
+  if (intent.kind === 'remove') {
+    return planRemoveCascade(world, target, intent);
+  }
+  return planRestore(world, target, intent);
+}
+
+function summarizeCascadeCountsDe(counts: SpatialCascadeCounts): string {
+  const parts: string[] = [];
+  if (counts.continents > 0) {
+    parts.push(`${counts.continents} ${counts.continents === 1 ? 'Kontinent' : 'Kontinente'}`);
+  }
+  if (counts.countries > 0) {
+    parts.push(`${counts.countries} ${counts.countries === 1 ? 'Land' : 'Länder'}`);
+  }
+  if (counts.settlements > 0) {
+    parts.push(`${counts.settlements} ${counts.settlements === 1 ? 'Stadt' : 'Städte'}`);
+  }
+  if (counts.buildings > 0) {
+    parts.push(`${counts.buildings} ${counts.buildings === 1 ? 'Haus' : 'Häuser'}`);
+  }
+  if (counts.rooms > 0) {
+    parts.push(`${counts.rooms} ${counts.rooms === 1 ? 'Raum' : 'Räume'}`);
+  }
+  if (counts.other > 0) {
+    parts.push(`${counts.other} ${counts.other === 1 ? 'weiteres Element' : 'weitere Elemente'}`);
+  }
+  if (parts.length === 0) return '';
+  if (parts.length === 1) return parts[0]!;
+  return `${parts.slice(0, -1).join(', ')} und ${parts[parts.length - 1]!}`;
+}
+
+function countCascadeDescendants(
+  descendants: readonly SpatialEntityNode[],
+  flowingAffected: number,
+): SpatialCascadeCounts {
+  let continents = 0;
+  let countries = 0;
+  let settlements = 0;
+  let buildings = 0;
+  let rooms = 0;
+  let other = 0;
+  for (const d of descendants) {
+    if (d.role === 'continent') continents += 1;
+    else if (d.role === 'country' || d.role === 'political') countries += 1;
+    else if (d.role === 'settlement') settlements += 1;
+    else if (d.role === 'building') buildings += 1;
+    else if (d.role === 'room') rooms += 1;
+    else other += 1;
+  }
   return {
-    ok: false,
-    code: 'invalid-geometry',
-    violations: [],
-    reasonDe: `Intent „${intent.kind}“ ist in diesem Planer noch nicht registriert.`,
+    continents,
+    countries,
+    settlements,
+    buildings,
+    rooms,
+    other,
+    total: descendants.length,
+    flowingAffected,
+  };
+}
+
+/**
+ * Downward Soft-Cascade Removal (SCM §5 / INV-4 / SCM-05):
+ *  - Archives target + all CONTAINED/CARVED descendants (`archivedByEntityId = target.id`, recoverable!)
+ *  - Never deletes FLOWING entities (rivers/roads/coasts): caps/reroutes them outside removed bounds
+ *    and reparents orphaned FLOWING entities to the nearest surviving active ancestor.
+ */
+function planRemoveCascade(
+  world: SpatialWorldModel,
+  target: SpatialEntityNode,
+  intent: Extract<SpatialEditIntent, { kind: 'remove' }>,
+): SpatialPropagationPlanResult {
+  if (target.id === world.rootTopographyId || target.carrierId === null) {
+    return {
+      ok: false,
+      code: 'cannot-remove-root',
+      violations: [
+        {
+          invariant: 'INV-1',
+          code: 'missing-root-topography',
+          entityId: target.id,
+          reasonDe: `Die Welt-Topografie-Wurzel „${target.labelDe}“ kann nicht entfernt werden.`,
+        },
+      ],
+      reasonDe: `Die Welt-Topografie-Wurzel „${target.labelDe}“ kann nicht entfernt werden (INV-1/INV-5).`,
+    };
+  }
+
+  if (target.status === 'archived') {
+    return {
+      ok: false,
+      code: 'entity-archived',
+      violations: [],
+      reasonDe: `„${target.labelDe}“ ist bereits archiviert.`,
+    };
+  }
+
+  const targetRelation = resolveRelation(world, target.id);
+  const allDescendants = listDescendantEntities(world, target.id, { includeArchived: false });
+  const toArchive: SpatialEntityNode[] = [];
+  const descendantFlowing: SpatialEntityNode[] = [];
+
+  for (const d of allDescendants) {
+    if (resolveRelation(world, d.id) === 'FLOWING') {
+      descendantFlowing.push(d);
+    } else {
+      toArchive.push(d);
+    }
+  }
+
+  const archiveIds = new Set<string>([target.id, ...toArchive.map((d) => d.id)]);
+  const removedRects: SpatialBounds2D[] = [target.boundsWorld];
+
+  // Nearest surviving active ancestor for reparenting FLOWING entities that depended on removed carrier
+  const chainRes = resolveCarrierChain(world, target.id);
+  const survivingAncestor =
+    chainRes.ok
+      ? chainRes.chain.slice(1).find((n) => !archiveIds.has(n.id) && n.status === 'active') ??
+        world.entities[world.rootTopographyId]
+      : world.entities[world.rootTopographyId];
+
+  const changes: SpatialEntityChange[] = [
+    {
+      entityId: target.id,
+      mapId: target.mapId,
+      featureId: target.featureId,
+      labelDe: target.labelDe,
+      role: target.role,
+      relation: targetRelation,
+      kind: 'archive_target',
+      prevBoundsWorld: target.boundsWorld,
+      nextBoundsWorld: target.boundsWorld,
+      nextStatus: 'archived',
+      archivedByEntityId: target.id,
+      archivedReasonDe: `Entfernt durch Nutzeraktion auf „${target.labelDe}“ (rückholbar).`,
+    },
+  ];
+
+  const archivedDescendantIds: string[] = [];
+  for (const child of toArchive) {
+    archivedDescendantIds.push(child.id);
+    changes.push({
+      entityId: child.id,
+      mapId: child.mapId,
+      featureId: child.featureId,
+      labelDe: child.labelDe,
+      role: child.role,
+      relation: resolveRelation(world, child.id),
+      kind: 'archive_cascade',
+      prevBoundsWorld: child.boundsWorld,
+      nextBoundsWorld: child.boundsWorld,
+      nextStatus: 'archived',
+      archivedByEntityId: target.id,
+      archivedReasonDe: `Verwaist/archiviert durch Entfernen von „${target.labelDe}“ (rückholbar).`,
+    });
+  }
+
+  // Reconcile BOTH descendant FLOWING entities AND external active FLOWING entities crossing target
+  const reroutedFlowingIds: string[] = [];
+  const handledFlowing = new Set<string>();
+  const candidateFlowing: SpatialEntityNode[] = [...descendantFlowing];
+  for (const e of Object.values(world.entities)) {
+    if (e.status !== 'active' || archiveIds.has(e.id)) continue;
+    if (resolveRelation(world, e.id) !== 'FLOWING') continue;
+    if (boundsIntersects(e.boundsWorld, target.boundsWorld)) {
+      candidateFlowing.push(e);
+    }
+  }
+
+  for (const flow of candidateFlowing) {
+    if (handledFlowing.has(flow.id)) continue;
+    handledFlowing.add(flow.id);
+    const sourceLine = flow.polylineWorld ?? flow.clippedSegmentsWorld?.[0];
+    if (!sourceLine || sourceLine.length < 2) continue;
+
+    const remainingSegments = clipPolylineOutsideRects(sourceLine, removedRects);
+    const fallbackCarrierBounds = survivingAncestor?.boundsWorld ?? target.boundsWorld;
+    // Never delete FLOWING: if clipped outside removed bounds leaves surviving segments, keep them;
+    // otherwise cap along the nearest surviving perimeter edge so the waterway/road terminates cleanly.
+    let finalSegments: readonly (readonly SpatialPoint2D[])[];
+    if (remainingSegments.length > 0) {
+      finalSegments = remainingSegments;
+    } else {
+      const startPt = sourceLine[0]!;
+      const edgePt: SpatialPoint2D = [
+        round6(Math.max(fallbackCarrierBounds.minX, Math.min(fallbackCarrierBounds.maxX, target.boundsWorld.minX))),
+        round6(Math.max(fallbackCarrierBounds.minY, Math.min(fallbackCarrierBounds.maxY, startPt[1]))),
+      ];
+      const capPt: SpatialPoint2D = [
+        edgePt[0],
+        round6(Math.min(fallbackCarrierBounds.maxY, edgePt[1] + 1)),
+      ];
+      finalSegments = [[edgePt, capPt]];
+    }
+    const primaryLine = finalSegments[0]!;
+    const nextBounds = boundsFromPoints(finalSegments.flat()) ?? flow.boundsWorld;
+    const needsReparent = Boolean(flow.carrierId && archiveIds.has(flow.carrierId) && survivingAncestor);
+
+    reroutedFlowingIds.push(flow.id);
+    changes.push({
+      entityId: flow.id,
+      mapId: flow.mapId,
+      featureId: flow.featureId,
+      labelDe: flow.labelDe,
+      role: flow.role,
+      relation: 'FLOWING',
+      kind: 'cap_flowing',
+      prevBoundsWorld: flow.boundsWorld,
+      nextBoundsWorld: nextBounds,
+      nextPolylineWorld: primaryLine,
+      nextClippedSegmentsWorld: finalSegments,
+      ...(needsReparent && survivingAncestor ? { nextCarrierId: survivingAncestor.id } : {}),
+    });
+  }
+
+  const cascadeCounts = countCascadeDescendants(toArchive, reroutedFlowingIds.length);
+  const itemsText = summarizeCascadeCountsDe(cascadeCounts);
+  let summaryDe: string;
+  if (itemsText && reroutedFlowingIds.length > 0) {
+    summaryDe = `„${target.labelDe}“ enthält ${itemsText}. Diese werden verwaist/archiviert (rückholbar); ${reroutedFlowingIds.length} ${reroutedFlowingIds.length === 1 ? 'Verlauf wird' : 'Verläufe werden'} gekappt/umgeleitet. Bestätigen?`;
+  } else if (itemsText) {
+    summaryDe = `„${target.labelDe}“ enthält ${itemsText}. Diese werden mitentfernt (archiviert, rückholbar). Bestätigen?`;
+  } else if (reroutedFlowingIds.length > 0) {
+    summaryDe = `Entfernen von „${target.labelDe}“ kappt/leitet ${reroutedFlowingIds.length} kreuzende ${reroutedFlowingIds.length === 1 ? 'Struktur' : 'Strukturen'} um. Bestätigen?`;
+  } else {
+    summaryDe = `„${target.labelDe}“ wird archiviert (rückholbar).`;
+  }
+
+  return {
+    ok: true,
+    plan: {
+      intent,
+      targetEntityId: target.id,
+      targetRelation,
+      requiresConfirmation:
+        archivedDescendantIds.length > 0 || reroutedFlowingIds.length > 0 ? 'cascade' : 'none',
+      grownCarrierIds: [],
+      archivedDescendantIds,
+      reroutedFlowingIds,
+      cascadeCounts,
+      changes,
+      affectedMapIds: collectAffectedMapIds(changes),
+      summaryDe,
+    },
+  };
+}
+
+/**
+ * Restore a soft-cascaded entity AND all children archived under `archivedByEntityId === target.id`.
+ * Fail-closed if `target`'s own carrier is currently archived (INV-4).
+ */
+function planRestore(
+  world: SpatialWorldModel,
+  target: SpatialEntityNode,
+  intent: Extract<SpatialEditIntent, { kind: 'restore' }>,
+): SpatialPropagationPlanResult {
+  if (target.status !== 'archived') {
+    return {
+      ok: false,
+      code: 'entity-not-archived',
+      violations: [],
+      reasonDe: `„${target.labelDe}“ ist bereits aktiv.`,
+    };
+  }
+
+  const carrier = target.carrierId ? world.entities[target.carrierId] : null;
+  if (carrier && carrier.status === 'archived') {
+    return {
+      ok: false,
+      code: 'entity-archived',
+      violations: [
+        {
+          invariant: 'INV-4',
+          code: 'active-child-in-archived-carrier',
+          entityId: target.id,
+          carrierId: carrier.id,
+          reasonDe: `Träger „${carrier.labelDe}“ ist noch archiviert — bitte zuerst „${carrier.labelDe}“ wiederherstellen.`,
+        },
+      ],
+      reasonDe: `Träger „${carrier.labelDe}“ ist archiviert und muss zuerst wiederhergestellt werden.`,
+    };
+  }
+
+  const changes: SpatialEntityChange[] = [
+    {
+      entityId: target.id,
+      mapId: target.mapId,
+      featureId: target.featureId,
+      labelDe: target.labelDe,
+      role: target.role,
+      relation: resolveRelation(world, target.id),
+      kind: 'restore_entity',
+      prevBoundsWorld: target.boundsWorld,
+      nextBoundsWorld: target.boundsWorld,
+      nextStatus: 'active',
+      archivedByEntityId: null,
+      archivedReasonDe: null,
+    },
+  ];
+
+  for (const e of Object.values(world.entities)) {
+    if (e.id === target.id) continue;
+    if (e.status === 'archived' && e.archivedByEntityId === target.id) {
+      changes.push({
+        entityId: e.id,
+        mapId: e.mapId,
+        featureId: e.featureId,
+        labelDe: e.labelDe,
+        role: e.role,
+        relation: resolveRelation(world, e.id),
+        kind: 'restore_entity',
+        prevBoundsWorld: e.boundsWorld,
+        nextBoundsWorld: e.boundsWorld,
+        nextStatus: 'active',
+        archivedByEntityId: null,
+        archivedReasonDe: null,
+      });
+    }
+  }
+
+  // If restored entity exceeds current carrier bounds, expand ancestors cleanly (INV-2/3)
+  const grownCarrierIds: string[] = [];
+  if (carrier && resolveRelation(world, target.id) !== 'FLOWING') {
+    const chainRes = resolveCarrierChain(world, target.id);
+    if (chainRes.ok) {
+      let required = target.boundsWorld;
+      for (const anc of chainRes.chain.slice(1)) {
+        if (boundsContains(anc.boundsWorld, required)) break;
+        const expanded = expandBoundsToFit(anc.boundsWorld, required, 0);
+        changes.push({
+          entityId: anc.id,
+          mapId: anc.mapId,
+          featureId: anc.featureId,
+          labelDe: anc.labelDe,
+          role: anc.role,
+          relation: resolveRelation(world, anc.id),
+          kind: 'grow_carrier',
+          prevBoundsWorld: anc.boundsWorld,
+          nextBoundsWorld: expanded,
+          ...(anc.polygonWorld
+            ? { nextPolygonWorld: remapPolygonToBounds(anc.polygonWorld, anc.boundsWorld, expanded) }
+            : {}),
+        });
+        grownCarrierIds.push(anc.id);
+        required = expanded;
+      }
+    }
+  }
+
+  return {
+    ok: true,
+    plan: {
+      intent,
+      targetEntityId: target.id,
+      targetRelation: resolveRelation(world, target.id),
+      requiresConfirmation: 'none',
+      grownCarrierIds,
+      archivedDescendantIds: [],
+      reroutedFlowingIds: [],
+      cascadeCounts: EMPTY_CASCADE_COUNTS,
+      changes,
+      affectedMapIds: collectAffectedMapIds(changes),
+      summaryDe: `„${target.labelDe}“ (${changes.length} ${changes.length === 1 ? 'Struktur' : 'Strukturen'}) wird wiederhergestellt.`,
+    },
   };
 }
 

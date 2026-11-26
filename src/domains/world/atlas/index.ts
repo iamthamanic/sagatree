@@ -869,5 +869,27 @@ export {
   type WorldOperationPlan,
 } from './atlas-spatial-propagation';
 
+export {
+  canRedoSpatialWorld,
+  canUndoSpatialWorld,
+  emptySpatialWorldHistory,
+  executeSpatialWorldOperation,
+  parseSpatialWorld,
+  redoSpatialWorldOperation,
+  serializeSpatialWorld,
+  undoSpatialWorldOperation,
+  type ExecuteSpatialWorldResult,
+  type SpatialWorldHistorySnapshot,
+  type SpatialWorldTransactionHistory,
+} from './atlas-world-operation-history';
+
+export {
+  buildSpatialWorldFromDefaultWorld,
+  buildSpatialWorldFromMapSources,
+  projectSpatialOperationToMapUpdates,
+  type ProjectedMapMutation,
+  type SpatialMapSourceInput,
+} from './atlas-spatial-world-bridge';
+
 
 
