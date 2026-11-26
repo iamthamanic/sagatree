@@ -1690,11 +1690,11 @@ export function AtlasThreeWorkstation({
                 data-atlas-zoom-active={isZoomActive ? 'true' : undefined}
                 data-atlas-zoom-ancestor={isZoomAncestor ? 'true' : undefined}
                 aria-current={active ? 'location' : undefined}
-                className={`flex min-h-11 min-w-0 flex-1 items-center gap-2 rounded-md border px-2 text-left text-xs transition-colors ${active
-                  ? 'border-primary bg-primary text-primary-foreground font-semibold'
+                className={`flex min-h-11 min-w-0 flex-1 items-center gap-2 rounded-md border px-2 text-left text-xs ${active
+                  ? 'border-[#0E7490] bg-[#0E7490] text-white font-bold shadow-sm transition-none dark:border-primary dark:bg-primary dark:text-primary-foreground'
                   : isZoomAncestor
-                    ? 'border-primary/45 bg-primary/10 text-foreground font-medium hover:border-accent'
-                    : 'border-transparent text-foreground hover:border-accent hover:bg-muted/70'
+                    ? 'border-primary/45 bg-primary/10 text-foreground font-medium transition-colors hover:border-accent'
+                    : 'border-transparent text-foreground transition-colors hover:border-accent hover:bg-muted/70'
                   }`}
                 onClick={() =>
                   triggerSmoothLevelTransition(
@@ -1714,11 +1714,11 @@ export function AtlasThreeWorkstation({
                   )
                 }
               >
-                <MapPin className="size-3.5 shrink-0" aria-hidden />
+                <MapPin className="size-3.5 shrink-0" weight={active ? 'fill' : 'regular'} aria-hidden />
                 <span className="min-w-0 flex-1 truncate">
                   <span className="block truncate">{node.label}</span>
                   <span
-                    className={`block truncate text-[10px] ${active ? 'text-primary-foreground/80' : 'text-muted-foreground'
+                    className={`block truncate text-[10px] ${active ? 'font-medium text-white dark:text-primary-foreground' : 'text-muted-foreground'
                       }`}
                   >
                     {node.sub}
@@ -2056,9 +2056,9 @@ export function AtlasThreeWorkstation({
                         ? 'location'
                         : undefined
                     }
-                    className={`flex min-h-11 w-full items-center gap-2 rounded-md border px-2 text-left text-xs transition-colors ${zoomLayerState.isWorldRoot || (!zoomActiveMapId && (!activePlaceId || activePlaceId === externalNav.worldId))
-                      ? 'border-primary bg-primary text-primary-foreground font-semibold'
-                      : 'border-primary/45 bg-primary/10 text-foreground font-medium hover:border-accent'
+                    className={`flex min-h-11 w-full items-center gap-2 rounded-md border px-2 text-left text-xs ${zoomLayerState.isWorldRoot || (!zoomActiveMapId && (!activePlaceId || activePlaceId === externalNav.worldId))
+                      ? 'border-[#0E7490] bg-[#0E7490] text-white font-bold shadow-sm transition-none dark:border-primary dark:bg-primary dark:text-primary-foreground'
+                      : 'border-primary/45 bg-primary/10 text-foreground font-medium transition-colors hover:border-accent'
                       }`}
                     onClick={() =>
                       triggerSmoothLevelTransition('out', () => {
@@ -2070,12 +2070,20 @@ export function AtlasThreeWorkstation({
                       })
                     }
                   >
-                    <GlobeHemisphereWest className="size-4 shrink-0" aria-hidden />
+                    <GlobeHemisphereWest
+                      className="size-4 shrink-0"
+                      weight={
+                        zoomLayerState.isWorldRoot || (!zoomActiveMapId && (!activePlaceId || activePlaceId === externalNav.worldId))
+                          ? 'fill'
+                          : 'regular'
+                      }
+                      aria-hidden
+                    />
                     <span className="min-w-0 flex-1 truncate">
                       <span className="block truncate">{externalNav.worldLabel}</span>
                       <span
-                        className={`block truncate text-[10px] ${!activePlaceId || activePlaceId === externalNav.worldId
-                          ? 'text-primary-foreground/80'
+                        className={`block truncate text-[10px] ${zoomLayerState.isWorldRoot || (!zoomActiveMapId && (!activePlaceId || activePlaceId === externalNav.worldId))
+                          ? 'font-medium text-white dark:text-primary-foreground'
                           : 'text-muted-foreground'
                           }`}
                       >

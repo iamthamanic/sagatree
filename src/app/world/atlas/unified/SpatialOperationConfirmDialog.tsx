@@ -90,18 +90,30 @@ export function SpatialOperationConfirmDialog({
             </div>
           ) : null}
 
-          {plan.archivedDescendantIds.length > 0 || plan.reroutedFlowingIds.length > 0 ? (
-            <div className="rounded-lg border border-border/80 bg-background/60 p-2.5 text-xs">
+          {plan.archivedDescendantIds.length > 0 ? (
+            <div
+              className="rounded-lg border border-border/80 bg-background/60 p-2.5 text-xs"
+              data-atlas-scm-cascade-notice
+            >
               <p className="mb-1 font-semibold text-foreground">
                 Soft-Kaskade (archiviert &amp; rückholbar):
               </p>
               <p className="text-muted-foreground">
-                {plan.archivedDescendantIds.length > 0
-                  ? `${plan.archivedDescendantIds.length} enthaltene ${plan.archivedDescendantIds.length === 1 ? 'Struktur wird' : 'Strukturen werden'} archiviert.`
-                  : null}
-                {plan.reroutedFlowingIds.length > 0
-                  ? ` ${plan.reroutedFlowingIds.length} fließende ${plan.reroutedFlowingIds.length === 1 ? 'Struktur (Fluss/Straße) wird' : 'Strukturen (Fluss/Straße) werden'} umgeleitet/gekappt.`
-                  : null}
+                {`${plan.archivedDescendantIds.length} enthaltene ${plan.archivedDescendantIds.length === 1 ? 'Struktur wird' : 'Strukturen werden'} archiviert.`}
+              </p>
+            </div>
+          ) : null}
+
+          {plan.reroutedFlowingIds.length > 0 ? (
+            <div
+              className="rounded-lg border border-border/80 bg-background/60 p-2.5 text-xs"
+              data-atlas-scm-freeland-notice
+            >
+              <p className="mb-1 font-semibold text-foreground">
+                Freiland-Strukturen (umgeleitet/gekappt):
+              </p>
+              <p className="text-muted-foreground">
+                {`${plan.reroutedFlowingIds.length} Freiland-${plan.reroutedFlowingIds.length === 1 ? 'Struktur (Fluss/Straße) wird' : 'Strukturen (Fluss/Straße) werden'} entlang der neuen Grenze umgeleitet/gekappt (bleibt aktiv).`}
               </p>
             </div>
           ) : null}

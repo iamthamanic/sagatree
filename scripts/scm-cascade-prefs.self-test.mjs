@@ -117,7 +117,14 @@ let passed = 0;
   assert.ok(planRes.plan.summaryDe.includes('1 Land, 1 Stadt und 4 Häuser'), `summary: ${planRes.plan.summaryDe}`);
   assert.deepEqual(planRes.plan.reroutedFlowingIds, ['river']);
 
-  const exec = hist.executeSpatialWorldOperation(w0, h0, planRes.plan);
+  const beforeMapSnapshots = {
+    'm.landmass': { doc: { format: 'sagatree-unified-atlas-v1', layers: {}, rooms: [], walls: [], objects: [{ id: 'rm.land', type: 'haus', x: 300, y: 300, size: 1, angle: 0 }], strokes: [] }, parentAnchor: null },
+  };
+  const afterMapSnapshots = {
+    'm.landmass': { doc: { format: 'sagatree-unified-atlas-v1', layers: {}, rooms: [], walls: [], objects: [], strokes: [] }, parentAnchor: null },
+  };
+
+  const exec = hist.executeSpatialWorldOperation(w0, h0, planRes.plan, beforeMapSnapshots);
   assert.equal(exec.ok, true);
   for (const id of ['landmass', 'country', 'city', 'h1', 'h2', 'h3', 'h4']) {
     assert.equal(exec.world.entities[id].status, 'archived', `${id} soft-archived (not hard-deleted)`);
@@ -135,8 +142,8 @@ let passed = 0;
     assert.equal(restored.world.entities[id].status, 'active', `${id} recovered via restore`);
   }
 
-  // Also 100% atomic via 1× Undo!
-  const undone = hist.undoSpatialWorldOperation(exec.world, exec.history);
+  // Also 100% atomic via 1× Undo (including M-2 mapSnapshots & plan for SQLite persistence)!
+  const undone = hist.undoSpatialWorldOperation(exec.world, exec.history, afterMapSnapshots);
   assert.ok(undone);
   assert.equal(undone.world.entities.landmass.status, 'active');
   assert.equal(undone.world.entities.h4.status, 'active');
@@ -144,6 +151,14 @@ let passed = 0;
     [120, 300],
     [560, 300],
   ]);
+  assert.equal(undone.plan.targetEntityId, 'landmass', 'M-2: undo carries plan');
+  assert.equal(undone.mapSnapshots?.['m.landmass']?.doc.objects.length, 1, 'M-2: undo returns pre-op mapSnapshot');
+
+  // And 1× Redo restores post-op state & mapSnapshots!
+  const redone = hist.redoSpatialWorldOperation(undone.world, undone.history, beforeMapSnapshots);
+  assert.ok(redone);
+  assert.equal(redone.world.entities.landmass.status, 'archived');
+  assert.equal(redone.mapSnapshots?.['m.landmass']?.doc.objects.length, 0, 'M-2: redo returns post-op mapSnapshot');
   passed += 1;
 }
 

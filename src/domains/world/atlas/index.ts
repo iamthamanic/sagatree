@@ -821,6 +821,8 @@ export {
 
 export {
   SPATIAL_EPSILON,
+  SPATIAL_RELATION_FLOWING,
+  SPATIAL_RELATION_FREELAND,
   boundsContains,
   boundsFromPoints,
   boundsIntersects,
@@ -829,6 +831,7 @@ export {
   computeBoundsOverflow,
   expandBoundsToFit,
   isFiniteSpatialBounds,
+  isFreelandRelation,
   listDescendantEntities,
   listDirectContainedChildren,
   pointInBounds,

@@ -90,12 +90,14 @@ function makeBaseWorld() {
 
 let passed = 0;
 
-// 1. Relation defaults (CONTAINED | CARVED | FLOWING)
+// 1. Relation defaults (CONTAINED | CARVED | freeland, plus deprecated FLOWING alias)
 {
   const w = makeBaseWorld();
   assert.equal(scm.resolveRelation(w, 'country'), 'CONTAINED');
   assert.equal(scm.resolveRelation(w, 'caveRoom'), 'CARVED', 'room inside mountain resolves to CARVED');
-  assert.equal(scm.resolveRelation(w, 'river'), 'FLOWING', 'river resolves to FLOWING');
+  assert.equal(scm.resolveRelation(w, 'river'), 'freeland', 'river resolves to canonical freeland');
+  assert.equal(scm.isFreelandRelation('freeland'), true);
+  assert.equal(scm.isFreelandRelation('FLOWING'), true, 'deprecated FLOWING alias stays compatible');
   const val = scm.validateSpatialInvariants(w);
   assert.equal(val.ok, true, `base world must be valid: ${JSON.stringify(val.violations)}`);
   passed += 1;

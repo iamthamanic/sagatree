@@ -1,13 +1,13 @@
 /**
- * atlas-spatial-propagation — SCM-02: Upward Growth, CARVED Cavities, FLOWING Routing & Atomic Apply.
+ * atlas-spatial-propagation — SCM-02: Upward Growth, CARVED Cavities, freeland Routing & Atomic Apply.
  * Location: src/domains/world/atlas/atlas-spatial-propagation.ts
  *
  * Pure domain — NO React, NO Three.js, NO Host SDK (BR-005).
  *
- * Implements `.qa/design/sws-containment-model.md` §2, §3, §4, §7:
+ * Implements `.qa/design/sws-containment-model.md` §2, §3, §4, §7 & `.qa/design/world-model-terminology.md`:
  *  - Upward growth propagation stopping at the first accommodating ancestor (INV-3, SCM-01/02)
  *  - CARVED cavity hollowing inside solid mass; outer contour grows ONLY on breach (SCM-03)
- *  - FLOWING polyline rerouting / Liang-Barsky clipping against topography changes (SCM-04, INV-5)
+ *  - freeland polyline rerouting / Liang-Barsky clipping against topography changes (SCM-04, INV-5)
  *  - Fail-closed reparent/cycle/topography-inversion guards (SCM-08)
  *  - Atomic `applyWorldOperation` with Pre-/Post-Invariant check & rollback (INV-6)
  */
@@ -19,6 +19,7 @@ import {
   boundsUnion,
   expandBoundsToFit,
   isFiniteSpatialBounds,
+  isFreelandRelation,
   listDescendantEntities,
   remapPolygonToBounds,
   resolveCarrierChain,
@@ -603,7 +604,7 @@ function planRemoveCascade(
   const descendantFlowing: SpatialEntityNode[] = [];
 
   for (const d of allDescendants) {
-    if (resolveRelation(world, d.id) === 'FLOWING') {
+    if (isFreelandRelation(resolveRelation(world, d.id))) {
       descendantFlowing.push(d);
     } else {
       toArchive.push(d);
@@ -657,13 +658,13 @@ function planRemoveCascade(
     });
   }
 
-  // Reconcile BOTH descendant FLOWING entities AND external active FLOWING entities crossing target
+  // Reconcile BOTH descendant freeland entities AND external active freeland entities crossing target
   const reroutedFlowingIds: string[] = [];
   const handledFlowing = new Set<string>();
   const candidateFlowing: SpatialEntityNode[] = [...descendantFlowing];
   for (const e of Object.values(world.entities)) {
     if (e.status !== 'active' || archiveIds.has(e.id)) continue;
-    if (resolveRelation(world, e.id) !== 'FLOWING') continue;
+    if (!isFreelandRelation(resolveRelation(world, e.id))) continue;
     if (boundsIntersects(e.boundsWorld, target.boundsWorld)) {
       candidateFlowing.push(e);
     }
@@ -677,7 +678,7 @@ function planRemoveCascade(
 
     const remainingSegments = clipPolylineOutsideRects(sourceLine, removedRects);
     const fallbackCarrierBounds = survivingAncestor?.boundsWorld ?? target.boundsWorld;
-    // Never delete FLOWING: if clipped outside removed bounds leaves surviving segments, keep them;
+    // Never delete freeland structures: if clipped outside removed bounds leaves surviving segments, keep them;
     // otherwise cap along the nearest surviving perimeter edge so the waterway/road terminates cleanly.
     let finalSegments: readonly (readonly SpatialPoint2D[])[];
     if (remainingSegments.length > 0) {
@@ -705,7 +706,7 @@ function planRemoveCascade(
       featureId: flow.featureId,
       labelDe: flow.labelDe,
       role: flow.role,
-      relation: 'FLOWING',
+      relation: 'freeland',
       kind: 'cap_flowing',
       prevBoundsWorld: flow.boundsWorld,
       nextBoundsWorld: nextBounds,
@@ -822,7 +823,7 @@ function planRestore(
 
   // If restored entity exceeds current carrier bounds, expand ancestors cleanly (INV-2/3)
   const grownCarrierIds: string[] = [];
-  if (carrier && resolveRelation(world, target.id) !== 'FLOWING') {
+  if (carrier && !isFreelandRelation(resolveRelation(world, target.id))) {
     const chainRes = resolveCarrierChain(world, target.id);
     if (chainRes.ok) {
       let required = target.boundsWorld;
@@ -915,8 +916,8 @@ function planResizeOrMove(
     { readonly prev: SpatialBounds2D; readonly next: SpatialBounds2D }
   >();
 
-  // Case A: FLOWING (river/road/coast) — depends on topography, NEVER grows topography (INV-5)
-  if (relation === 'FLOWING') {
+  // Case A: freeland (river/road/coast) — depends on topography, NEVER grows topography (INV-5)
+  if (isFreelandRelation(relation)) {
     const carrier = target.carrierId ? world.entities[target.carrierId] : null;
     const rawLine = intent.nextPolylineWorld ?? target.polylineWorld;
     if (!rawLine || rawLine.length < 2) {
@@ -929,10 +930,10 @@ function planResizeOrMove(
             code: 'empty-flowing-path',
             entityId: target.id,
             carrierId: target.carrierId,
-            reasonDe: `FLOWING-Struktur „${target.labelDe}“ benötigt mindestens 2 Punkte.`,
+            reasonDe: `Freiland-Struktur „${target.labelDe}“ (freeland) benötigt mindestens 2 Punkte.`,
           },
         ],
-        reasonDe: `FLOWING-Struktur „${target.labelDe}“ hat keinen gültigen Pfad.`,
+        reasonDe: `Freiland-Struktur „${target.labelDe}“ (freeland) hat keinen gültigen Pfad.`,
       };
     }
     const effectiveBounds = boundsFromPoints(rawLine) ?? intent.nextBoundsWorld;
@@ -949,7 +950,7 @@ function planResizeOrMove(
       featureId: target.featureId,
       labelDe: target.labelDe,
       role: target.role,
-      relation: 'FLOWING',
+      relation: 'freeland',
       kind: clipped.length > 0 && clipped[0] !== rawLine ? 'cap_flowing' : 'update_target',
       prevBoundsWorld: target.boundsWorld,
       nextBoundsWorld: finalBounds,
@@ -963,7 +964,7 @@ function planResizeOrMove(
       plan: {
         intent,
         targetEntityId: target.id,
-        targetRelation: 'FLOWING',
+        targetRelation: 'freeland',
         requiresConfirmation: 'none',
         grownCarrierIds: [],
         archivedDescendantIds: [],
@@ -1108,12 +1109,12 @@ function planResizeOrMove(
     requiredBounds = nextCarrierBounds;
   }
 
-  // SCM-04: Reconcile any active FLOWING entities crossing changed topography/landmasses
+  // SCM-04: Reconcile any active freeland entities crossing changed topography/landmasses
   if (changedTopographyBounds.size > 0) {
     for (const entity of Object.values(world.entities)) {
       if (entity.status !== 'active') continue;
-      if (resolveRelation(world, entity.id) !== 'FLOWING') continue;
-      // Find first changed carrier/landmass matching this flowing entity
+      if (!isFreelandRelation(resolveRelation(world, entity.id))) continue;
+      // Find first changed carrier/landmass matching this freeland entity
       let delta = entity.carrierId ? changedTopographyBounds.get(entity.carrierId) : undefined;
       if (!delta) {
         for (const [, entry] of changedTopographyBounds) {
@@ -1132,7 +1133,7 @@ function planResizeOrMove(
         featureId: entity.featureId,
         labelDe: entity.labelDe,
         role: entity.role,
-        relation: 'FLOWING',
+        relation: 'freeland',
         kind: rerouted.kind,
         prevBoundsWorld: entity.boundsWorld,
         nextBoundsWorld: rerouted.nextBounds,
@@ -1280,7 +1281,7 @@ function planReparent(
   const grownCarrierIds: string[] = [];
   const grownLabelsDe: string[] = [];
 
-  if (relation !== 'FLOWING') {
+  if (!isFreelandRelation(relation)) {
     let required = target.boundsWorld;
     for (const anc of carrierChain.chain) {
       if (boundsContains(anc.boundsWorld, required)) break;

@@ -4,8 +4,8 @@
  *
  * Pure domain — NO React, NO Three.js, NO Host SDK, NO window/localStorage (BR-005).
  *
- * Formalizes `.qa/design/sws-containment-model.md`:
- *  - Three spatial relation types: CONTAINED | CARVED | FLOWING
+ * Formalizes `.qa/design/sws-containment-model.md` and `.qa/design/world-model-terminology.md`:
+ *  - Three spatial relation types: CONTAINED | CARVED | freeland (deprecated alias: FLOWING)
  *  - Six domain-enforced invariants: INV-1..INV-6
  *  - Fail-closed validation (cycles, shear, missing topography root, uncontained children,
  *    inverted topography dependencies, non-finite geometry)
@@ -18,8 +18,28 @@ import {
   type AtlasWorldSpaceNode,
 } from './atlas-world-space';
 
-/** The three spatial relation types governing growth & removal behavior (SCM §2). */
-export type SpatialRelationKind = 'CONTAINED' | 'CARVED' | 'FLOWING';
+/** Canonical routing/exterior relation identifier (`.qa/design/world-model-terminology.md`). */
+export const SPATIAL_RELATION_FREELAND = 'freeland' as const;
+
+/**
+ * @deprecated Use {@link SPATIAL_RELATION_FREELAND} (`'freeland'`).
+ */
+export const SPATIAL_RELATION_FLOWING = 'FLOWING' as const;
+
+/**
+ * The three spatial relation types governing growth & removal behavior (SCM §2).
+ * `'FLOWING'` is a deprecated alias for `'freeland'` retained for backwards compatibility.
+ */
+export type SpatialRelationKind =
+  | 'CONTAINED'
+  | 'CARVED'
+  | 'freeland'
+  | /** @deprecated Use `'freeland'` */ 'FLOWING';
+
+/** True for canonical `'freeland'` as well as its deprecated `'FLOWING'` alias. */
+export function isFreelandRelation(relation: SpatialRelationKind): boolean {
+  return relation === 'freeland' || relation === 'FLOWING';
+}
 
 /** Semantic structure role in the unified world containment graph. */
 export type SpatialStructureRole =
@@ -64,9 +84,9 @@ export type SpatialEntityNode = {
   readonly carrierId: string | null;
   readonly boundsWorld: SpatialBounds2D;
   readonly polygonWorld?: readonly SpatialPoint2D[];
-  /** Polyline for FLOWING entities (river / road / coast). */
+  /** Polyline for freeland entities (river / road / coast). */
   readonly polylineWorld?: readonly SpatialPoint2D[];
-  /** Routed/clipped segments for FLOWING entities after topography edits. */
+  /** Routed/clipped segments for freeland entities after topography edits. */
   readonly clippedSegmentsWorld?: readonly (readonly SpatialPoint2D[])[];
   /** Hollowed interior cavity bounds for CARVED structures inside a solid mass. */
   readonly cavityBoundsWorld?: SpatialBounds2D;
@@ -152,7 +172,7 @@ const SOLID_MASS_ROLES: ReadonlySet<SpatialStructureRole> = new Set([
   'tunnel',
 ]);
 
-const FLOWING_ROLES: ReadonlySet<SpatialStructureRole> = new Set([
+const FREELAND_ROLES: ReadonlySet<SpatialStructureRole> = new Set([
   'river',
   'road',
   'coast',
@@ -299,8 +319,9 @@ export function pointInBounds(
 // ─── Relation Resolution (SCM §2) ────────────────────────────────────────────
 
 /**
- * Resolve the authoritative spatial relation type of an entity (`CONTAINED` | `CARVED` | `FLOWING`).
- * Explicit entity `relation` wins; otherwise deterministic role + carrier default applies.
+ * Resolve the authoritative spatial relation type of an entity (`CONTAINED` | `CARVED` | `freeland`).
+ * Explicit entity `relation` wins (including deprecated `'FLOWING'` alias); otherwise deterministic
+ * role + carrier default applies.
  */
 export function resolveRelation(
   world: SpatialWorldModel,
@@ -309,7 +330,7 @@ export function resolveRelation(
   const entity = world.entities[entityId];
   if (!entity) return 'CONTAINED';
   if (entity.relation) return entity.relation;
-  if (FLOWING_ROLES.has(entity.role)) return 'FLOWING';
+  if (FREELAND_ROLES.has(entity.role)) return 'freeland';
   if (entity.role === 'dungeon' || entity.role === 'tunnel') return 'CARVED';
   if (entity.role === 'room' || entity.role === 'building') {
     const carrier = entity.carrierId ? world.entities[entity.carrierId] : null;
@@ -446,7 +467,7 @@ export function checkContainment(
     };
   }
 
-  if (relation === 'FLOWING') {
+  if (isFreelandRelation(relation)) {
     const intersects = boundsIntersects(carrier.boundsWorld, nextBoundsWorld);
     return {
       fits: intersects,
@@ -461,7 +482,7 @@ export function checkContainment(
               code: 'containment-overflow',
               entityId,
               carrierId: carrier.id,
-              reasonDe: `"${entity.labelDe}" (FLOWING) schneidet die Topografie von "${carrier.labelDe}" nicht mehr.`,
+              reasonDe: `Freiland-Struktur „${entity.labelDe}“ (freeland) schneidet die Topografie von „${carrier.labelDe}“ nicht mehr.`,
             },
           ],
       overflow: computeBoundsOverflow(carrier.boundsWorld, nextBoundsWorld),
@@ -599,7 +620,7 @@ export function validateSpatialInvariants(
     const carrier = world.entities[entity.carrierId]!;
     const relation = resolveRelation(world, entity.id);
 
-    // INV-5: Topography must never depend on FLOWING or building/room/prop carriers
+    // INV-5: Topography must never depend on freeland or building/room/prop carriers
     if (
       TOPOGRAPHY_ROLES.has(entity.role) &&
       NON_TOPOGRAPHY_CARRIER_FORBIDDEN_FOR_TOPOGRAPHY.has(carrier.role)
@@ -617,8 +638,8 @@ export function validateSpatialInvariants(
       continue;
     }
 
-    // INV-4: Active non-FLOWING child cannot reside in an archived carrier
-    if (carrier.status === 'archived' && relation !== 'FLOWING') {
+    // INV-4: Active non-freeland child cannot reside in an archived carrier
+    if (carrier.status === 'archived' && !isFreelandRelation(relation)) {
       violations.push({
         invariant: 'INV-4',
         code: 'active-child-in-archived-carrier',
@@ -629,7 +650,7 @@ export function validateSpatialInvariants(
       continue;
     }
 
-    if (relation === 'FLOWING') {
+    if (isFreelandRelation(relation)) {
       const hasMainLine = Boolean(entity.polylineWorld && entity.polylineWorld.length >= 2);
       const hasSegments = Boolean(
         entity.clippedSegmentsWorld &&
@@ -641,7 +662,7 @@ export function validateSpatialInvariants(
           code: 'empty-flowing-path',
           entityId: entity.id,
           carrierId: carrier.id,
-          reasonDe: `FLOWING-Struktur "${entity.labelDe}" hat keinen gültigen Pfad.`,
+          reasonDe: `Freiland-Struktur „${entity.labelDe}“ (freeland) hat keinen gültigen Pfad.`,
         });
       }
       continue;

@@ -37749,7 +37749,7 @@
           },
           {
             "path": "src/domains/world/atlas/atlas-spatial-containment.ts",
-            "sha256": "fefef7ac170b19cb648f5ed3dd035c52076f6d4e79686744245b6386804d9fdf"
+            "sha256": "b4d0dd0186856c2df5adb7cbaa58743ec9e786deb9726b281fbaa7966594e8f7"
           },
           {
             "path": "src/domains/world/atlas/atlas-spatial-edit-prefs.ts",
@@ -37757,11 +37757,11 @@
           },
           {
             "path": "src/domains/world/atlas/atlas-spatial-propagation.ts",
-            "sha256": "e9f8c1115d2490a2f56965f81ddabca657b8ab912ada9e5121c7a339a42eaf9b"
+            "sha256": "a602b5887f0a87af236ed44b4ac2960562270e4c6717427209bf4b12bf946c85"
           },
           {
             "path": "src/domains/world/atlas/atlas-spatial-world-bridge.ts",
-            "sha256": "e53cdbc3ec228a53318a784deebc1db292472c5a7a9a62c7c1eba2616105aa94"
+            "sha256": "033facd6df7174272f52ba7866744474ea51d02ad3164cbd42f491b5f0e5cce2"
           },
           {
             "path": "src/domains/world/atlas/atlas-terrain-mesh.ts",
@@ -37785,7 +37785,7 @@
           },
           {
             "path": "src/domains/world/atlas/atlas-world-operation-history.ts",
-            "sha256": "d6d13afd4dc9db8f122a280999b05cb4d33497cf99c5d0274bc6f5c4cd45f566"
+            "sha256": "c4e86bcd0cd6d52aac70fcda5cce145534e665eafc9a74d66205f349b0b36c03"
           },
           {
             "path": "src/domains/world/atlas/atlas-world-scene-plan.ts",
@@ -37829,7 +37829,7 @@
           },
           {
             "path": "src/domains/world/atlas/index.ts",
-            "sha256": "508e1be1f9a26032cf11ea3250918c7c38164c541bb68f473c1c4d7fb448e399"
+            "sha256": "0d4aa5e4eb7213d54b53769a8fba9af06298abe47100d26ed8bb9c8661cffaab"
           },
           {
             "path": "src/domains/world/atlas/map-edit-ops.ts",
@@ -38093,7 +38093,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-world.json",
-      "sourceContractSha256": "0d6437121f4798862dd785cffa32e010fa161600d89b4fd229b9402e050a2ee2",
+      "sourceContractSha256": "d428c007339aeedd9c252a3a3a4853fb91dbda7e562c38a34659d0d29e839950",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],

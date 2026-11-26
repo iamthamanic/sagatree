@@ -195,7 +195,7 @@ export function buildSpatialWorldFromMapSources(
         featureId: stroke.id,
         labelDe: stroke.material === 'wasser' ? `Fluss (${stroke.id})` : `Straße (${stroke.id})`,
         role: roleForStroke(stroke),
-        relation: 'FLOWING',
+        relation: 'freeland',
         carrierId,
         boundsWorld: wb,
         polylineWorld: worldPts,

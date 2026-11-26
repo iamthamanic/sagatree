@@ -327,7 +327,7 @@
     },
     {
       "path": "src/domains/world/atlas/atlas-spatial-containment.ts",
-      "sha256": "fefef7ac170b19cb648f5ed3dd035c52076f6d4e79686744245b6386804d9fdf"
+      "sha256": "b4d0dd0186856c2df5adb7cbaa58743ec9e786deb9726b281fbaa7966594e8f7"
     },
     {
       "path": "src/domains/world/atlas/atlas-spatial-edit-prefs.ts",
@@ -335,11 +335,11 @@
     },
     {
       "path": "src/domains/world/atlas/atlas-spatial-propagation.ts",
-      "sha256": "e9f8c1115d2490a2f56965f81ddabca657b8ab912ada9e5121c7a339a42eaf9b"
+      "sha256": "a602b5887f0a87af236ed44b4ac2960562270e4c6717427209bf4b12bf946c85"
     },
     {
       "path": "src/domains/world/atlas/atlas-spatial-world-bridge.ts",
-      "sha256": "e53cdbc3ec228a53318a784deebc1db292472c5a7a9a62c7c1eba2616105aa94"
+      "sha256": "033facd6df7174272f52ba7866744474ea51d02ad3164cbd42f491b5f0e5cce2"
     },
     {
       "path": "src/domains/world/atlas/atlas-terrain-mesh.ts",
@@ -363,7 +363,7 @@
     },
     {
       "path": "src/domains/world/atlas/atlas-world-operation-history.ts",
-      "sha256": "d6d13afd4dc9db8f122a280999b05cb4d33497cf99c5d0274bc6f5c4cd45f566"
+      "sha256": "c4e86bcd0cd6d52aac70fcda5cce145534e665eafc9a74d66205f349b0b36c03"
     },
     {
       "path": "src/domains/world/atlas/atlas-world-scene-plan.ts",
@@ -407,7 +407,7 @@
     },
     {
       "path": "src/domains/world/atlas/index.ts",
-      "sha256": "508e1be1f9a26032cf11ea3250918c7c38164c541bb68f473c1c4d7fb448e399"
+      "sha256": "0d4aa5e4eb7213d54b53769a8fba9af06298abe47100d26ed8bb9c8661cffaab"
     },
     {
       "path": "src/domains/world/atlas/map-edit-ops.ts",
@@ -2279,96 +2279,96 @@
       "kind": "TypeAliasDeclaration",
       "name": "SpatialRelationKind",
       "path": "src/domains/world/atlas/atlas-spatial-containment.ts",
-      "line": 22,
-      "endLine": 22,
-      "text": "export type SpatialRelationKind = 'CONTAINED' | 'CARVED' | 'FLOWING';"
+      "line": 33,
+      "endLine": 37,
+      "text": "export type SpatialRelationKind =\n  | 'CONTAINED'\n  | 'CARVED'\n  | 'freeland'\n  | /** @deprecated Use `'freeland'` */ 'FLOWING';"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "SpatialStructureRole",
       "path": "src/domains/world/atlas/atlas-spatial-containment.ts",
-      "line": 25,
-      "endLine": 41,
+      "line": 45,
+      "endLine": 61,
       "text": "export type SpatialStructureRole =\n  | 'world'\n  | 'continent'\n  | 'country'\n  | 'landmass'\n  | 'political'\n  | 'settlement'\n  | 'forest'\n  | 'building'\n  | 'room'\n  | 'mountain'\n  | 'dungeon'\n  | 'tunnel'\n  | 'river'\n  | 'road'\n  | 'coast'\n  | 'prop';"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "SpatialPoint2D",
       "path": "src/domains/world/atlas/atlas-spatial-containment.ts",
-      "line": 43,
-      "endLine": 43,
+      "line": 63,
+      "endLine": 63,
       "text": "export type SpatialPoint2D = readonly [number, number];"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "SpatialBounds2D",
       "path": "src/domains/world/atlas/atlas-spatial-containment.ts",
-      "line": 45,
-      "endLine": 50,
+      "line": 65,
+      "endLine": 70,
       "text": "export type SpatialBounds2D = {\n  readonly minX: number;\n  readonly minY: number;\n  readonly maxX: number;\n  readonly maxY: number;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "SpatialEntityStatus",
       "path": "src/domains/world/atlas/atlas-spatial-containment.ts",
-      "line": 52,
-      "endLine": 52,
+      "line": 72,
+      "endLine": 72,
       "text": "export type SpatialEntityStatus = 'active' | 'archived';"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "SpatialEntityNode",
       "path": "src/domains/world/atlas/atlas-spatial-containment.ts",
-      "line": 55,
-      "endLine": 77,
-      "text": "export type SpatialEntityNode = {\n  readonly id: string;\n  readonly mapId: string;\n  readonly featureId: string;\n  readonly labelDe: string;\n  readonly role: SpatialStructureRole;\n  /** Optional explicit relation override; inferred via `resolveRelation` when omitted. */\n  readonly relation?: SpatialRelationKind;\n  /** Carrier entity in the containment graph; null ONLY for `rootTopographyId`. */\n  readonly carrierId: string | null;\n  readonly boundsWorld: SpatialBounds2D;\n  readonly polygonWorld?: readonly SpatialPoint2D[];\n  /** Polyline for FLOWING entities (river / road / coast). */\n  readonly polylineWorld?: readonly SpatialPoint2D[];\n  /** Routed/clipped segments for FLOWING entities after topography edits. */\n  readonly clippedSegmentsWorld?: readonly (readonly SpatialPoint2D[])[];\n  /** Hollowed interior cavity bounds for CARVED structures inside a solid mass. */\n  readonly cavityBoundsWorld?: SpatialBounds2D;\n  readonly status: SpatialEntityStatus;\n  /** Set during soft-cascade removal so archived children remain recoverable (SCM §5). */\n  readonly archivedByEntityId?: string | null;\n  readonly archivedReasonDe?: string | null;\n};"
+      "line": 75,
+      "endLine": 97,
+      "text": "export type SpatialEntityNode = {\n  readonly id: string;\n  readonly mapId: string;\n  readonly featureId: string;\n  readonly labelDe: string;\n  readonly role: SpatialStructureRole;\n  /** Optional explicit relation override; inferred via `resolveRelation` when omitted. */\n  readonly relation?: SpatialRelationKind;\n  /** Carrier entity in the containment graph; null ONLY for `rootTopographyId`. */\n  readonly carrierId: string | null;\n  readonly boundsWorld: SpatialBounds2D;\n  readonly polygonWorld?: readonly SpatialPoint2D[];\n  /** Polyline for freeland entities (river / road / coast). */\n  readonly polylineWorld?: readonly SpatialPoint2D[];\n  /** Routed/clipped segments for freeland entities after topography edits. */\n  readonly clippedSegmentsWorld?: readonly (readonly SpatialPoint2D[])[];\n  /** Hollowed interior cavity bounds for CARVED structures inside a solid mass. */\n  readonly cavityBoundsWorld?: SpatialBounds2D;\n  readonly status: SpatialEntityStatus;\n  /** Set during soft-cascade removal so archived children remain recoverable (SCM §5). */\n  readonly archivedByEntityId?: string | null;\n  readonly archivedReasonDe?: string | null;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "SpatialWorldModel",
       "path": "src/domains/world/atlas/atlas-spatial-containment.ts",
-      "line": 83,
-      "endLine": 88,
+      "line": 103,
+      "endLine": 108,
       "text": "export type SpatialWorldModel = {\n  readonly rootTopographyId: string;\n  readonly entities: Readonly<Record<string, SpatialEntityNode>>;\n  /** Optional linked SWS-01 map anchor graph verified jointly for cycle/shear safety. */\n  readonly mapNodes?: Readonly<Record<string, AtlasWorldSpaceNode>>;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "SpatialInvariantId",
       "path": "src/domains/world/atlas/atlas-spatial-containment.ts",
-      "line": 90,
-      "endLine": 90,
+      "line": 110,
+      "endLine": 110,
       "text": "export type SpatialInvariantId = 'INV-1' | 'INV-2' | 'INV-3' | 'INV-4' | 'INV-5' | 'INV-6';"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "SpatialInvariantViolationCode",
       "path": "src/domains/world/atlas/atlas-spatial-containment.ts",
-      "line": 92,
-      "endLine": 106,
+      "line": 112,
+      "endLine": 126,
       "text": "export type SpatialInvariantViolationCode =\n  | 'missing-root-topography'\n  | 'multiple-roots'\n  | 'invalid-root-role'\n  | 'carrier-cycle'\n  | 'missing-carrier'\n  | 'map-anchor-cycle'\n  | 'map-anchor-shear'\n  | 'map-anchor-invalid'\n  | 'containment-overflow'\n  | 'carved-breach'\n  | 'active-child-in-archived-carrier'\n  | 'topography-dependency-inverted'\n  | 'invalid-geometry'\n  | 'empty-flowing-path';"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "SpatialInvariantViolation",
       "path": "src/domains/world/atlas/atlas-spatial-containment.ts",
-      "line": 108,
-      "endLine": 114,
+      "line": 128,
+      "endLine": 134,
       "text": "export type SpatialInvariantViolation = {\n  readonly invariant: SpatialInvariantId;\n  readonly code: SpatialInvariantViolationCode;\n  readonly entityId: string;\n  readonly carrierId?: string | null;\n  readonly reasonDe: string;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "SpatialInvariantValidationResult",
       "path": "src/domains/world/atlas/atlas-spatial-containment.ts",
-      "line": 116,
-      "endLine": 118,
+      "line": 136,
+      "endLine": 138,
       "text": "export type SpatialInvariantValidationResult =\n  | { readonly ok: true; readonly violations: readonly [] }\n  | { readonly ok: false; readonly violations: readonly SpatialInvariantViolation[] };"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "SpatialContainmentCheckResult",
       "path": "src/domains/world/atlas/atlas-spatial-containment.ts",
-      "line": 120,
-      "endLine": 132,
+      "line": 140,
+      "endLine": 152,
       "text": "export type SpatialContainmentCheckResult = {\n  readonly fits: boolean;\n  readonly entityId: string;\n  readonly relation: SpatialRelationKind;\n  readonly carrierId: string | null;\n  readonly violations: readonly SpatialInvariantViolation[];\n  readonly overflow: {\n    readonly left: number;\n    readonly right: number;\n    readonly top: number;\n    readonly bottom: number;\n  };\n};"
     },
     {
@@ -2383,72 +2383,72 @@
       "kind": "TypeAliasDeclaration",
       "name": "SpatialEditIntent",
       "path": "src/domains/world/atlas/atlas-spatial-propagation.ts",
-      "line": 37,
-      "endLine": 60,
+      "line": 38,
+      "endLine": 61,
       "text": "export type SpatialEditIntent =\n  | {\n      readonly kind: 'resize_or_move';\n      readonly entityId: string;\n      readonly nextBoundsWorld: SpatialBounds2D;\n      readonly nextPolygonWorld?: readonly SpatialPoint2D[];\n      readonly nextPolylineWorld?: readonly SpatialPoint2D[];\n      /** Optional margin added when a carrier grows to enclose the edited child. */\n      readonly growPadding?: number;\n    }\n  | {\n      readonly kind: 'reparent';\n      readonly entityId: string;\n      readonly nextCarrierId: string;\n      readonly growPadding?: number;\n    }\n  | {\n      readonly kind: 'remove';\n      readonly entityId: string;\n    }\n  | {\n      readonly kind: 'restore';\n      readonly entityId: string;\n    };"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "SpatialChangeKind",
       "path": "src/domains/world/atlas/atlas-spatial-propagation.ts",
-      "line": 62,
-      "endLine": 71,
+      "line": 63,
+      "endLine": 72,
       "text": "export type SpatialChangeKind =\n  | 'update_target'\n  | 'grow_carrier'\n  | 'carve_cavity'\n  | 'reroute_flowing'\n  | 'cap_flowing'\n  | 'archive_target'\n  | 'archive_cascade'\n  | 'restore_entity'\n  | 'reparent_entity';"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "SpatialEntityChange",
       "path": "src/domains/world/atlas/atlas-spatial-propagation.ts",
-      "line": 73,
-      "endLine": 91,
+      "line": 74,
+      "endLine": 92,
       "text": "export type SpatialEntityChange = {\n  readonly entityId: string;\n  readonly mapId: string;\n  readonly featureId: string;\n  readonly labelDe: string;\n  readonly role: SpatialStructureRole;\n  readonly relation: SpatialRelationKind;\n  readonly kind: SpatialChangeKind;\n  readonly prevBoundsWorld: SpatialBounds2D;\n  readonly nextBoundsWorld: SpatialBounds2D;\n  readonly nextPolygonWorld?: readonly SpatialPoint2D[];\n  readonly nextPolylineWorld?: readonly SpatialPoint2D[];\n  readonly nextClippedSegmentsWorld?: readonly (readonly SpatialPoint2D[])[];\n  readonly nextCavityBoundsWorld?: SpatialBounds2D;\n  readonly nextCarrierId?: string | null;\n  readonly nextStatus?: SpatialEntityStatus;\n  readonly archivedByEntityId?: string | null;\n  readonly archivedReasonDe?: string | null;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "SpatialConfirmationKind",
       "path": "src/domains/world/atlas/atlas-spatial-propagation.ts",
-      "line": 93,
-      "endLine": 93,
+      "line": 94,
+      "endLine": 94,
       "text": "export type SpatialConfirmationKind = 'none' | 'grow' | 'cascade';"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "SpatialCascadeCounts",
       "path": "src/domains/world/atlas/atlas-spatial-propagation.ts",
-      "line": 95,
-      "endLine": 104,
+      "line": 96,
+      "endLine": 105,
       "text": "export type SpatialCascadeCounts = {\n  readonly continents: number;\n  readonly countries: number;\n  readonly settlements: number;\n  readonly buildings: number;\n  readonly rooms: number;\n  readonly other: number;\n  readonly total: number;\n  readonly flowingAffected: number;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "WorldOperationPlan",
       "path": "src/domains/world/atlas/atlas-spatial-propagation.ts",
-      "line": 106,
-      "endLine": 123,
+      "line": 107,
+      "endLine": 124,
       "text": "export type WorldOperationPlan = {\n  readonly intent: SpatialEditIntent;\n  readonly targetEntityId: string;\n  readonly targetRelation: SpatialRelationKind;\n  readonly requiresConfirmation: SpatialConfirmationKind;\n  /** Ordered IDs of ancestors grown during upward propagation (direct parent first). */\n  readonly grownCarrierIds: readonly string[];\n  /** Ordered IDs of entities archived by soft-cascade (excluding target). */\n  readonly archivedDescendantIds: readonly string[];\n  /** Ordered IDs of FLOWING entities rerouted or capped. */\n  readonly reroutedFlowingIds: readonly string[];\n  readonly cascadeCounts: SpatialCascadeCounts;\n  readonly changes: readonly SpatialEntityChange[];\n  /** Distinct mapIds touched by this atomic operation. */\n  readonly affectedMapIds: readonly string[];\n  /** Ready-to-render German summary for the confirmation dialog. */\n  readonly summaryDe: string;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "SpatialPlanFailureCode",
       "path": "src/domains/world/atlas/atlas-spatial-propagation.ts",
-      "line": 125,
-      "endLine": 135,
+      "line": 126,
+      "endLine": 136,
       "text": "export type SpatialPlanFailureCode =\n  | 'pre-invariant-failed'\n  | 'entity-not-found'\n  | 'entity-archived'\n  | 'entity-not-archived'\n  | 'cannot-remove-root'\n  | 'invalid-geometry'\n  | 'cycle-rejected'\n  | 'topography-inversion-rejected'\n  | 'flowing-cannot-grow-topography'\n  | 'missing-carrier';"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "SpatialPropagationPlanResult",
       "path": "src/domains/world/atlas/atlas-spatial-propagation.ts",
-      "line": 137,
-      "endLine": 144,
+      "line": 138,
+      "endLine": 145,
       "text": "export type SpatialPropagationPlanResult =\n  | { readonly ok: true; readonly plan: WorldOperationPlan }\n  | {\n      readonly ok: false;\n      readonly code: SpatialPlanFailureCode;\n      readonly violations: readonly SpatialInvariantViolation[];\n      readonly reasonDe: string;\n    };"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "ApplyWorldOperationResult",
       "path": "src/domains/world/atlas/atlas-spatial-propagation.ts",
-      "line": 146,
-      "endLine": 159,
+      "line": 147,
+      "endLine": 160,
       "text": "export type ApplyWorldOperationResult =\n  | {\n      readonly ok: true;\n      readonly world: SpatialWorldModel;\n      readonly appliedChangeCount: number;\n      readonly affectedMapIds: readonly string[];\n    }\n  | {\n      readonly ok: false;\n      readonly world: SpatialWorldModel;\n      readonly code: 'pre-invariant-failed' | 'post-invariant-failed';\n      readonly violations: readonly SpatialInvariantViolation[];\n      readonly reasonDe: string;\n    };"
     },
     {
@@ -2621,26 +2621,34 @@
     },
     {
       "kind": "TypeAliasDeclaration",
+      "name": "SpatialMapPersistSnapshot",
+      "path": "src/domains/world/atlas/atlas-world-operation-history.ts",
+      "line": 25,
+      "endLine": 28,
+      "text": "export type SpatialMapPersistSnapshot = {\n  readonly doc: UnifiedCanvasDoc;\n  readonly parentAnchor: ParentSpatialAnchor | null;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
       "name": "SpatialWorldHistorySnapshot",
       "path": "src/domains/world/atlas/atlas-world-operation-history.ts",
-      "line": 20,
-      "endLine": 24,
-      "text": "export type SpatialWorldHistorySnapshot = {\n  readonly worldJson: string;\n  readonly summaryDe: string;\n  readonly affectedMapIds: readonly string[];\n};"
+      "line": 30,
+      "endLine": 36,
+      "text": "export type SpatialWorldHistorySnapshot = {\n  readonly worldJson: string;\n  readonly summaryDe: string;\n  readonly affectedMapIds: readonly string[];\n  readonly plan: WorldOperationPlan;\n  readonly mapSnapshots?: Readonly<Record<string, SpatialMapPersistSnapshot>>;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "SpatialWorldTransactionHistory",
       "path": "src/domains/world/atlas/atlas-world-operation-history.ts",
-      "line": 26,
-      "endLine": 29,
+      "line": 38,
+      "endLine": 41,
       "text": "export type SpatialWorldTransactionHistory = {\n  readonly past: readonly SpatialWorldHistorySnapshot[];\n  readonly future: readonly SpatialWorldHistorySnapshot[];\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "ExecuteSpatialWorldResult",
       "path": "src/domains/world/atlas/atlas-world-operation-history.ts",
-      "line": 50,
-      "endLine": 65,
+      "line": 62,
+      "endLine": 77,
       "text": "export type ExecuteSpatialWorldResult =\n  | {\n      readonly ok: true;\n      readonly world: SpatialWorldModel;\n      readonly history: SpatialWorldTransactionHistory;\n      readonly appliedChangeCount: number;\n      readonly affectedMapIds: readonly string[];\n    }\n  | {\n      readonly ok: false;\n      readonly world: SpatialWorldModel;\n      readonly history: SpatialWorldTransactionHistory;\n      readonly code: Extract<ApplyWorldOperationResult, { ok: false }>['code'];\n      readonly violations: Extract<ApplyWorldOperationResult, { ok: false }>['violations'];\n      readonly reasonDe: string;\n    };"
     },
     {
