@@ -497,9 +497,101 @@ try {
   assert.equal(anchorOnlyCycle.ok, false, 'pure parentAnchor cycle (D -> E -> D) rejected');
   assert.equal(anchorOnlyCycle.error, '23514');
 
+  // 11) Incomplete parentAnchor (missing centerX/centerY or parentMapId) rejected (`23514`)
+  const missingCenter = store.upsertMap([owner], {
+    worldProfileId: worldId,
+    mapId: null,
+    parentMapId: resA.value.id,
+    kind: 'region',
+    title: 'Missing Center Anchor',
+    layers: emptyLayers,
+    bounds: { minX: 0, minY: 0, maxX: 1000, maxY: 1000 },
+    generatorMeta: {
+      engine: 'unified_canvas',
+      mapFrame: {
+        status: 'ready',
+        parentAnchor: {
+          parentMapId: resA.value.id,
+          extentX: 50,
+          extentY: 50,
+          rotationRad: 0,
+        },
+      },
+    },
+    expectedRevision: null,
+    sortOrder: 9,
+    basemapStoragePath: null,
+    azgaarMapStoragePath: null,
+  });
+  assert.equal(missingCenter.ok, false, 'incomplete parentAnchor without centerX/centerY rejected');
+  assert.equal(missingCenter.error, '23514');
+
+  const missingAnchorParent = store.upsertMap([owner], {
+    worldProfileId: worldId,
+    mapId: null,
+    parentMapId: resA.value.id,
+    kind: 'region',
+    title: 'Missing Anchor Parent',
+    layers: emptyLayers,
+    bounds: { minX: 0, minY: 0, maxX: 1000, maxY: 1000 },
+    generatorMeta: {
+      engine: 'unified_canvas',
+      mapFrame: {
+        status: 'ready',
+        parentAnchor: {
+          centerX: 500,
+          centerY: 500,
+          extentX: 50,
+          extentY: 50,
+          rotationRad: 0,
+        },
+      },
+    },
+    expectedRevision: null,
+    sortOrder: 10,
+    basemapStoragePath: null,
+    azgaarMapStoragePath: null,
+  });
+  assert.equal(missingAnchorParent.ok, false, 'incomplete parentAnchor without parentMapId rejected');
+  assert.equal(missingAnchorParent.error, '23514');
+
+  // 12) Canonical mapFrame.parentAnchor: null honored over legacy top-level parentAnchor
+  const canonicalNullOverLegacy = store.upsertMap([owner], {
+    worldProfileId: worldId,
+    mapId: null,
+    parentMapId: resA.value.id,
+    kind: 'region',
+    title: 'Canonical Null Unlocated',
+    layers: emptyLayers,
+    bounds: { minX: 0, minY: 0, maxX: 1000, maxY: 1000 },
+    generatorMeta: {
+      engine: 'unified_canvas',
+      parentAnchor: {
+        parentMapId: 'dangling-legacy-id',
+        centerX: 100,
+        centerY: 100,
+        extentX: 10,
+        extentY: 10,
+      },
+      mapFrame: {
+        status: 'unlocated',
+        parentAnchor: null,
+      },
+    },
+    expectedRevision: null,
+    sortOrder: 11,
+    basemapStoragePath: null,
+    azgaarMapStoragePath: null,
+  });
+  assert.equal(
+    canonicalNullOverLegacy.ok,
+    true,
+    'canonical mapFrame.parentAnchor: null takes precedence over legacy top-level parentAnchor',
+  );
+
   db.close();
 } finally {
   rmSync(work, { recursive: true, force: true });
 }
 
-console.log('✓ sws-write-guards.self-test: 11/11 (cycles + anchor-only cycle + shear + uniform rot + dangling/cross-world anchor parent reject)');
+console.log('✓ sws-write-guards.self-test: 13/13 (cycles + anchor-only cycle + shear + uniform rot + dangling/cross-world + incomplete + canonical-null anchor)');

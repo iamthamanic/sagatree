@@ -4,11 +4,28 @@
  * Location: server/src/modules/world/internal/world-atlas-store.ts
  */
 import { randomUUID } from 'node:crypto';
+import { z } from 'zod';
 import {
   filterPartyLayers,
   redactPartyGeneratorMeta,
 } from './party-map-projection.ts';
 import type { HostDatabase } from '../../../persistence/open-database.ts';
+
+const ParentAnchorSchema = z.object({
+  parentMapId: z.string().trim().min(1),
+  centerX: z.number().finite(),
+  centerY: z.number().finite(),
+  extentX: z.number().finite().positive(),
+  extentY: z.number().finite().positive(),
+  rotationRad: z.number().finite().optional().default(0),
+});
+
+const GeneratorMetaRecordSchema = z.record(z.string(), z.unknown());
+
+const CycleParentLinkRowSchema = z.object({
+  parentMapId: z.string().trim().min(1).nullable(),
+  anchorParentMapId: z.string().trim().min(1).nullable(),
+});
 
 export type PartyRevealedAtlasMapIds = (
   worldProfileId: string,
@@ -645,36 +662,47 @@ export class WorldAtlasStore {
   #validateGeneratorMetaAnchor(
     meta: Record<string, unknown>,
   ): { readonly ok: true; readonly anchorParentMapId: string | null } | { readonly ok: false } {
-    const frame =
-      meta.mapFrame && typeof meta.mapFrame === 'object' && !Array.isArray(meta.mapFrame)
-        ? (meta.mapFrame as Record<string, unknown>)
-        : null;
-    const rawAnchor = frame?.parentAnchor ?? meta.parentAnchor;
+    const parsedFrame = GeneratorMetaRecordSchema.safeParse(meta.mapFrame);
+    const frame = parsedFrame.success ? parsedFrame.data : null;
+    const rawAnchor =
+      frame && Object.prototype.hasOwnProperty.call(frame, 'parentAnchor')
+        ? frame.parentAnchor
+        : meta.parentAnchor;
     if (rawAnchor == null) return { ok: true, anchorParentMapId: null };
-    if (typeof rawAnchor !== 'object' || Array.isArray(rawAnchor)) return { ok: false };
-    const a = rawAnchor as Record<string, unknown>;
-    const extentX = Number(a.extentX);
-    const extentY = Number(a.extentY);
-    const rotationRad = a.rotationRad == null ? 0 : Number(a.rotationRad);
-    if (!Number.isFinite(extentX) || !Number.isFinite(extentY) || !Number.isFinite(rotationRad)) {
-      return { ok: false };
-    }
-    if (extentX <= 0 || extentY <= 0) return { ok: false };
+    const parsedAnchor = ParentAnchorSchema.safeParse(rawAnchor);
+    if (!parsedAnchor.success) return { ok: false };
+    const { extentX, extentY, rotationRad, parentMapId } = parsedAnchor.data;
     const EPS = 1e-9;
     if (Math.abs(rotationRad) > EPS) {
       const rel =
         Math.abs(extentX - extentY) / Math.max(Math.abs(extentX), Math.abs(extentY), Number.EPSILON);
       if (rel > EPS) return { ok: false };
     }
-    const anchorParentMapId =
-      typeof a.parentMapId === 'string' && a.parentMapId.trim().length > 0
-        ? a.parentMapId.trim()
-        : null;
-    return { ok: true, anchorParentMapId };
+    return { ok: true, anchorParentMapId: parentMapId };
   }
 
   /** True if setting mapId's parent/anchor = candidateParent would create a cycle via parent_map_id or parentAnchor links. */
   #mapWouldCycle(mapId: string, candidateParent: string): boolean {
+    const stmt = this.#db.prepare(
+      `SELECT
+         parent_map_id AS parentMapId,
+         CASE
+           WHEN json_valid(generator_meta)
+                AND json_type(generator_meta, '$.mapFrame') = 'object'
+                AND json_type(generator_meta, '$.mapFrame.parentAnchor') IS NOT NULL
+             THEN CASE
+               WHEN json_type(generator_meta, '$.mapFrame.parentAnchor') = 'object'
+                 THEN json_extract(generator_meta, '$.mapFrame.parentAnchor.parentMapId')
+               ELSE NULL
+             END
+           WHEN json_valid(generator_meta)
+                AND json_type(generator_meta, '$.parentAnchor') = 'object'
+             THEN json_extract(generator_meta, '$.parentAnchor.parentMapId')
+           ELSE NULL
+         END AS anchorParentMapId
+       FROM world_atlas_maps
+       WHERE id = ?`,
+    );
     const queue: string[] = [candidateParent];
     const seen = new Set<string>();
     while (queue.length > 0) {
@@ -682,23 +710,15 @@ export class WorldAtlasStore {
       if (cursor === mapId) return true;
       if (seen.has(cursor)) continue;
       seen.add(cursor);
-      const row = this.#loadRow(cursor);
-      if (!row) continue;
-      if (row.parent_map_id) {
-        queue.push(row.parent_map_id);
+      const rawRow = stmt.get(cursor);
+      if (!rawRow) continue;
+      const parsed = CycleParentLinkRowSchema.safeParse(rawRow);
+      if (!parsed.success) continue;
+      if (parsed.data.parentMapId) {
+        queue.push(parsed.data.parentMapId);
       }
-      if (row.generator_meta) {
-        try {
-          const parsed = JSON.parse(row.generator_meta) as unknown;
-          if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
-            const check = this.#validateGeneratorMetaAnchor(parsed as Record<string, unknown>);
-            if (check.ok && check.anchorParentMapId) {
-              queue.push(check.anchorParentMapId);
-            }
-          }
-        } catch {
-          /* ignore malformed historical metadata */
-        }
+      if (parsed.data.anchorParentMapId) {
+        queue.push(parsed.data.anchorParentMapId);
       }
     }
     return false;
