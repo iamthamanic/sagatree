@@ -1,9 +1,9 @@
 # Composition Gate — atlas-world-zoom-journey
 
 - Feature slug: `atlas-world-zoom-journey`
-- HEAD_SHA: 55c71f5783153af48e30ae6cc7c96c7658190831
+- HEAD_SHA: 384671abf7724c30f0233d69ccf13bbfa1005b5d
 - BASE_SHA: 1490c7854b7d6ee45fdb3cccdaefe73f7d27574c
-- WORKTREE: `feat/atlas-spatial-containment` — Scale-aware macro-deco separation, unified World-Space pins, live focus-chain protection, Ebenen-Drawer auto-scroll, calibrated Scale HUD, `zoomAnchor` settling, plus PR #1331 Codex & Kody review fixes (shared `writeQueueRef` serializing autosave + SCM persistence with `syncCanvasDocSilently`, preserved oriented `polygonWorld` corners for rotated child anchors, `deleteMap` spatial anchor protection, serialized optimistic transactions + stale-plan guard, scaled object `size` + root `bounds` persistence, independent cycle-row parsing + legacy `ParentAnchorSchema`)
+- WORKTREE: `feat/atlas-spatial-containment` — Scale-aware macro-deco separation, unified World-Space pins, live focus-chain protection, Ebenen-Drawer auto-scroll, calibrated Scale HUD, `zoomAnchor` settling, plus PR #1331 Codex & Kody review fixes (shared `writeQueueRef` serializing autosave + SCM persistence with `syncCanvasDocSilently`, preserved oriented `polygonWorld` corners for rotated child anchors, `deleteMap` spatial anchor protection, numeric `centerX`/`centerY` validation when present, edge-clamped object `size` preservation, 4-corner local object containment projection, replacement cutout wall/door clipping, oriented rotated terrain overlay sampling)
 - Date: 2026-11-27
 - Verdict: CLEAR
 - Acceptance tier: hardware-WebGL browser E2E (`atlas-world-zoom-journey.spec.ts` 1/1, `scm-spatial-containment.spec.ts` 4/4), `sws-write-guards.self-test` (19/19), `scm-invariants.self-test` (11/11), `scm-propagation.self-test` (5/5), `atlas-camera-anchor.self-test` (10/10), `npm run lint`, `npm run typecheck`, and full `npm run test-gate` verified (see `.qa/runs/atlas-scale-labels-pass.md`)
