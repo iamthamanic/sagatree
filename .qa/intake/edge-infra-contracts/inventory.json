@@ -37710,7 +37710,7 @@
           },
           {
             "path": "src/domains/world/atlas/atlas-map-pins.ts",
-            "sha256": "1421ca01edd55307c341adc3ac74f4c5a7cef87f60fadbbe0faaa141898b4791"
+            "sha256": "b74c3663811af34c3814f94b09d33c7ab9d6bb01a374aee0e0f9aa92f0e9aa76"
           },
           {
             "path": "src/domains/world/atlas/atlas-perf-budgets.ts",
@@ -37742,7 +37742,7 @@
           },
           {
             "path": "src/domains/world/atlas/atlas-scene-scatter.ts",
-            "sha256": "0dcc6a1e685c273f4f16a9cd3d0443abf4010e8a561f8c9f26e3723d41132be3"
+            "sha256": "0e4d47d172f1cd5267691e82a97989df2bc9d4972315da008450a5d52a76d096"
           },
           {
             "path": "src/domains/world/atlas/atlas-selection.ts",
@@ -37786,7 +37786,7 @@
           },
           {
             "path": "src/domains/world/atlas/atlas-world-focus.ts",
-            "sha256": "eefe75d78f9ca65376d0c1507b977ec76a47b9c0a4b366a28340403708ff1203"
+            "sha256": "e8da0d711424bb7a4fa87c1533111d2d4ce1bf06799334e8d5a72128cf610bfd"
           },
           {
             "path": "src/domains/world/atlas/atlas-world-operation-history.ts",
@@ -38038,31 +38038,31 @@
           },
           {
             "path": "src/infrastructure/world/atlas-three/atlas-three-camera.ts",
-            "sha256": "ba02fba1d1dbd675912a5a2472a002cbe99c8673d74838d7aa61995645c62a0c"
+            "sha256": "1d1462536e7c19d834df5e2acddf48dabbd94fdf43ebfeeb86752556ec4c6cf4"
           },
           {
             "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-            "sha256": "161ed2b35c4c81e5685804b847bc2ebd7797cb21051aed960589d1d981632c9e"
+            "sha256": "24327937d71aa12a5d8d9996d2527144028a9eb015c51eac82ccdfc5ef524b97"
           },
           {
             "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
-            "sha256": "ed606ecdf68cc0c61e9aa595a5146fdc15a1a63ffcc1dc819b5cec5d4ea11f1d"
+            "sha256": "80269de9b7773559b477997a8256de98987e9d34141e5f7db1db25472ac26b00"
           },
           {
             "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
-            "sha256": "23fb78f5ebba9b04bbefd81dda6410a1eb426564432eb98f2c18a6a117053c55"
+            "sha256": "629e35c19227acdea4d6c261a9bfe16aadbccc7fb6b627a82e1f9fc90ffd3c18"
           },
           {
             "path": "src/infrastructure/world/atlas-three/atlas-three-world-terrain.ts",
-            "sha256": "3687dbe393870da04c9063acec595d8a0387149b6d97e8f1e4bfc380d7773240"
+            "sha256": "05daaa14fddd5080ef6ca7abf7fd6b9db24de7cede3cf98cc2ec6bc421b78ff9"
           },
           {
             "path": "src/infrastructure/world/atlas-three/atlas-unified-input.ts",
-            "sha256": "8843d39261ec1696a480b8be7c1540c6d752c060e0595788495ffb08d2c39007"
+            "sha256": "ab0b8b75470742020a6bf335045118e981e831fb9a6d0358dec7148e89b63bb9"
           },
           {
             "path": "src/infrastructure/world/atlas-three/index.ts",
-            "sha256": "de6d00dcd47960994b2010a442e50e75c0f068797e22e7317aa25f71e90f5f88"
+            "sha256": "9b648994cba9271d482569c33edb47183e22df2ba7a289e6a30297ba21e322b8"
           },
           {
             "path": "src/infrastructure/world/atlas-three/pbr-textures.ts",
@@ -38106,7 +38106,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-world.json",
-      "sourceContractSha256": "d4a32e2fec2ea8fab39e8fac71b461fc50489263a1c10a16ab9825b1a6a20b9c",
+      "sourceContractSha256": "9ef400521445871571850a5f9e00272c59ee12bf36878be70887c2b5d150a5ee",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],
@@ -38445,50 +38445,116 @@
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-camera.ts",
-          "line": 36,
-          "endLine": 38,
+          "line": 43,
+          "endLine": 45,
           "name": "clamp"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-camera.ts",
-          "line": 40,
-          "endLine": 44,
+          "line": 47,
+          "endLine": 50,
+          "name": "smoothstep"
+        },
+        {
+          "path": "src/infrastructure/world/atlas-three/atlas-three-camera.ts",
+          "line": 52,
+          "endLine": 56,
           "name": "clampAtlasThreePitch"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-camera.ts",
-          "line": 46,
-          "endLine": 50,
+          "line": 58,
+          "endLine": 62,
           "name": "defaultAtlasThreePitch"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-camera.ts",
-          "line": 58,
-          "endLine": 72,
+          "line": 74,
+          "endLine": 97,
           "name": "autoAtlasThreePitchForSpan"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-camera.ts",
-          "line": 74,
-          "endLine": 110,
+          "line": 107,
+          "endLine": 158,
+          "name": "formatAtlasTruthfulScaleHud"
+        },
+        {
+          "path": "src/infrastructure/world/atlas-three/atlas-three-camera.ts",
+          "line": 160,
+          "endLine": 200,
           "name": "buildAtlasThreeCameraRig"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-camera.ts",
-          "line": 112,
-          "endLine": 129,
+          "line": 204,
+          "endLine": 206,
+          "name": "sub3"
+        },
+        {
+          "path": "src/infrastructure/world/atlas-three/atlas-three-camera.ts",
+          "line": 208,
+          "endLine": 210,
+          "name": "dot3"
+        },
+        {
+          "path": "src/infrastructure/world/atlas-three/atlas-three-camera.ts",
+          "line": 212,
+          "endLine": 218,
+          "name": "cross3"
+        },
+        {
+          "path": "src/infrastructure/world/atlas-three/atlas-three-camera.ts",
+          "line": 220,
+          "endLine": 223,
+          "name": "normalize3"
+        },
+        {
+          "path": "src/infrastructure/world/atlas-three/atlas-three-camera.ts",
+          "line": 225,
+          "endLine": 234,
+          "name": "buildCameraBasis"
+        },
+        {
+          "path": "src/infrastructure/world/atlas-three/atlas-three-camera.ts",
+          "line": 240,
+          "endLine": 274,
+          "name": "projectWorldPointWithRig"
+        },
+        {
+          "path": "src/infrastructure/world/atlas-three/atlas-three-camera.ts",
+          "line": 280,
+          "endLine": 316,
+          "name": "unprojectNdcToPlaneWithRig"
+        },
+        {
+          "path": "src/infrastructure/world/atlas-three/atlas-three-camera.ts",
+          "line": 327,
+          "endLine": 369,
+          "name": "solveAnchoredCameraFocus"
+        },
+        {
+          "path": "src/infrastructure/world/atlas-three/atlas-three-camera.ts",
+          "line": 341,
+          "endLine": 348,
+          "name": "resolveFy"
+        },
+        {
+          "path": "src/infrastructure/world/atlas-three/atlas-three-camera.ts",
+          "line": 371,
+          "endLine": 388,
           "name": "buildAtlasThreeFogBand"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-camera.ts",
-          "line": 132,
-          "endLine": 152,
+          "line": 391,
+          "endLine": 411,
           "name": "interpolateAtlasThreeView"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-camera.ts",
-          "line": 158,
-          "endLine": 199,
+          "line": 419,
+          "endLine": 503,
           "name": "dampAtlasThreeView"
         },
         {
@@ -38554,229 +38620,241 @@
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
           "line": 686,
-          "endLine": 702,
+          "endLine": 707,
           "name": "syncWaterUniforms"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-          "line": 712,
-          "endLine": 714,
+          "line": 717,
+          "endLine": 719,
           "name": "getGroup"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-          "line": 716,
-          "endLine": 723,
+          "line": 721,
+          "endLine": 728,
           "name": "getAllPickables"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-          "line": 725,
-          "endLine": 735,
+          "line": 730,
+          "endLine": 740,
           "name": "getActiveEditorElevationY"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-          "line": 737,
-          "endLine": 743,
+          "line": 742,
+          "endLine": 748,
           "name": "getRenderedIds"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-          "line": 745,
-          "endLine": 772,
+          "line": 750,
+          "endLine": 777,
           "name": "getStats"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-          "line": 775,
-          "endLine": 783,
+          "line": 780,
+          "endLine": 788,
           "name": "dispose"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-          "line": 799,
-          "endLine": 801,
+          "line": 804,
+          "endLine": 806,
           "name": "hfVersionKey"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
-          "line": 350,
-          "endLine": 366,
+          "line": 378,
+          "endLine": 394,
           "name": "createRadialSoftTexture"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
-          "line": 368,
-          "endLine": 399,
+          "line": 396,
+          "endLine": 427,
           "name": "createProceduralWarmEnvMap"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
-          "line": 708,
-          "endLine": 716,
+          "line": 749,
+          "endLine": 757,
           "name": "applyQualityProfile"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
-          "line": 718,
-          "endLine": 759,
+          "line": 759,
+          "endLine": 800,
           "name": "setSceneState"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
-          "line": 779,
-          "endLine": 781,
+          "line": 820,
+          "endLine": 822,
           "name": "setFocusTargetMapId"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
-          "line": 783,
-          "endLine": 785,
+          "line": 824,
+          "endLine": 826,
           "name": "isFlightActive"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
-          "line": 787,
-          "endLine": 789,
+          "line": 828,
+          "endLine": 830,
           "name": "getActiveScenePlan"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
-          "line": 796,
-          "endLine": 804,
+          "line": 837,
+          "endLine": 845,
           "name": "setWorldSceneGraph"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
-          "line": 806,
-          "endLine": 814,
+          "line": 847,
+          "endLine": 855,
           "name": "getWorldCameraState"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
-          "line": 816,
-          "endLine": 833,
+          "line": 857,
+          "endLine": 874,
           "name": "setWorldCameraState"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
-          "line": 836,
-          "endLine": 850,
+          "line": 877,
+          "endLine": 892,
           "name": "panByScreenDelta"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
-          "line": 853,
-          "endLine": 865,
+          "line": 895,
+          "endLine": 908,
           "name": "orbitByDelta"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
-          "line": 867,
-          "endLine": 873,
+          "line": 910,
+          "endLine": 916,
           "name": "getMultiMapStats"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
-          "line": 875,
-          "endLine": 877,
+          "line": 918,
+          "endLine": 920,
           "name": "getView"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
-          "line": 879,
-          "endLine": 881,
+          "line": 922,
+          "endLine": 924,
           "name": "getTargetView"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
-          "line": 883,
-          "endLine": 928,
+          "line": 926,
+          "endLine": 977,
           "name": "setView"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
-          "line": 934,
-          "endLine": 964,
+          "line": 984,
+          "endLine": 1027,
+          "name": "pickWorldPointAtScreen"
+        },
+        {
+          "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
+          "line": 1034,
+          "endLine": 1122,
+          "name": "zoomByFactorAtScreen"
+        },
+        {
+          "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
+          "line": 1127,
+          "endLine": 1131,
           "name": "zoomAtScreen"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
-          "line": 967,
-          "endLine": 969,
+          "line": 1134,
+          "endLine": 1136,
           "name": "setYawAnimated"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
-          "line": 971,
-          "endLine": 982,
+          "line": 1138,
+          "endLine": 1149,
           "name": "flyTo"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
-          "line": 985,
-          "endLine": 992,
+          "line": 1152,
+          "endLine": 1159,
           "name": "captureFrameDataUrl"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
-          "line": 995,
-          "endLine": 1048,
+          "line": 1162,
+          "endLine": 1215,
           "name": "frameContentBounds"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
-          "line": 1050,
-          "endLine": 1070,
+          "line": 1217,
+          "endLine": 1237,
           "name": "resetCamera"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
-          "line": 1073,
-          "endLine": 1081,
+          "line": 1240,
+          "endLine": 1248,
           "name": "screenToGround"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
-          "line": 1084,
-          "endLine": 1100,
+          "line": 1251,
+          "endLine": 1267,
           "name": "projectWorldPointToScreen"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
-          "line": 1103,
-          "endLine": 1118,
+          "line": 1270,
+          "endLine": 1285,
           "name": "getRendererInfo"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
-          "line": 1121,
-          "endLine": 1150,
+          "line": 1288,
+          "endLine": 1317,
           "name": "pickCanonicalId"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
-          "line": 1152,
-          "endLine": 1157,
+          "line": 1319,
+          "endLine": 1324,
           "name": "getRenderedIds"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
-          "line": 1159,
-          "endLine": 1173,
+          "line": 1326,
+          "endLine": 1340,
           "name": "getStats"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
-          "line": 1596,
-          "endLine": 1646,
+          "line": 1775,
+          "endLine": 1842,
           "name": "tick"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
-          "line": 1650,
-          "endLine": 1679,
+          "line": 1846,
+          "endLine": 1875,
           "name": "dispose"
         },
         {
@@ -38818,241 +38896,265 @@
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
           "line": 234,
-          "endLine": 265,
+          "endLine": 276,
           "name": "terrainColorAt"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
-          "line": 267,
-          "endLine": 271,
+          "line": 278,
+          "endLine": 282,
           "name": "hash2D"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
-          "line": 273,
-          "endLine": 285,
+          "line": 284,
+          "endLine": 296,
           "name": "valueNoise2D"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
-          "line": 287,
-          "endLine": 297,
+          "line": 298,
+          "endLine": 308,
           "name": "fbm2D"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
-          "line": 299,
-          "endLine": 313,
+          "line": 310,
+          "endLine": 324,
           "name": "distPointToSeg"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
-          "line": 321,
-          "endLine": 492,
+          "line": 332,
+          "endLine": 503,
           "name": "synthesizeWorldReliefHeightfield"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
-          "line": 337,
-          "endLine": 345,
+          "line": 348,
+          "endLine": 356,
           "name": "toPoly"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
-          "line": 494,
-          "endLine": 502,
+          "line": 505,
+          "endLine": 513,
           "name": "terrainStride"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
-          "line": 498,
-          "endLine": 499,
+          "line": 509,
+          "endLine": 510,
           "name": "estimate"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
-          "line": 504,
-          "endLine": 558,
+          "line": 515,
+          "endLine": 569,
           "name": "buildBlendedTerrain"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
-          "line": 514,
-          "endLine": 514,
+          "line": 525,
+          "endLine": 525,
           "name": "h"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
-          "line": 560,
-          "endLine": 606,
+          "line": 571,
+          "endLine": 617,
           "name": "buildRibbon"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
-          "line": 570,
-          "endLine": 570,
+          "line": 581,
+          "endLine": 581,
           "name": "yAt"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
-          "line": 608,
-          "endLine": 634,
+          "line": 619,
+          "endLine": 645,
           "name": "wallBox"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
-          "line": 637,
-          "endLine": 646,
+          "line": 648,
+          "endLine": 657,
           "name": "createGableRoofGeometry"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
-          "line": 650,
-          "endLine": 927,
+          "line": 661,
+          "endLine": 938,
           "name": "emitCanonicalProp"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
-          "line": 677,
-          "endLine": 689,
+          "line": 688,
+          "endLine": 700,
           "name": "localBox"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
-          "line": 690,
-          "endLine": 704,
+          "line": 701,
+          "endLine": 715,
           "name": "localGeo"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
-          "line": 963,
-          "endLine": 1497,
+          "line": 974,
+          "endLine": 1514,
           "name": "buildAtlasThreeScenePlan"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
-          "line": 969,
-          "endLine": 976,
+          "line": 980,
+          "endLine": 987,
           "name": "get"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
-          "line": 999,
-          "endLine": 1011,
+          "line": 1010,
+          "endLine": 1022,
           "name": "sampleGroundY"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
-          "line": 1319,
-          "endLine": 1322,
+          "line": 1330,
+          "endLine": 1333,
           "name": "pt"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
-          "line": 1500,
-          "endLine": 1630,
+          "line": 1517,
+          "endLine": 1647,
           "name": "buildAtlasScatterGeometry"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-world-terrain.ts",
           "line": 54,
-          "endLine": 147,
+          "endLine": 160,
           "name": "buildTerrainChunkGeometry"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-world-terrain.ts",
-          "line": 71,
-          "endLine": 72,
+          "line": 72,
+          "endLine": 77,
           "name": "hAt"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-world-terrain.ts",
-          "line": 103,
-          "endLine": 120,
+          "line": 115,
+          "endLine": 133,
           "name": "appendSkirtEdge"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-world-terrain.ts",
-          "line": 160,
-          "endLine": 168,
+          "line": 172,
+          "endLine": 263,
+          "name": "enhanceWorldTerrainMaterial"
+        },
+        {
+          "path": "src/infrastructure/world/atlas-three/atlas-three-world-terrain.ts",
+          "line": 279,
+          "endLine": 289,
           "name": "setSource"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-world-terrain.ts",
-          "line": 170,
-          "endLine": 172,
+          "line": 291,
+          "endLine": 293,
           "name": "getSource"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-world-terrain.ts",
-          "line": 174,
-          "endLine": 177,
+          "line": 296,
+          "endLine": 308,
+          "name": "getHeightFieldTexture"
+        },
+        {
+          "path": "src/infrastructure/world/atlas-three/atlas-three-world-terrain.ts",
+          "line": 354,
+          "endLine": 360,
+          "name": "getChunkMeshes"
+        },
+        {
+          "path": "src/infrastructure/world/atlas-three/atlas-three-world-terrain.ts",
+          "line": 362,
+          "endLine": 365,
           "name": "sampleElevation"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-world-terrain.ts",
-          "line": 179,
-          "endLine": 232,
+          "line": 367,
+          "endLine": 420,
           "name": "sync"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-world-terrain.ts",
-          "line": 234,
-          "endLine": 250,
+          "line": 422,
+          "endLine": 438,
           "name": "getStats"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-world-terrain.ts",
-          "line": 252,
-          "endLine": 258,
+          "line": 440,
+          "endLine": 455,
           "name": "dispose"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-unified-input.ts",
-          "line": 56,
-          "endLine": 68,
+          "line": 55,
+          "endLine": 58,
+          "name": "clampZoomDelta"
+        },
+        {
+          "path": "src/infrastructure/world/atlas-three/atlas-unified-input.ts",
+          "line": 63,
+          "endLine": 75,
           "name": "normalizeWheelDelta"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-unified-input.ts",
-          "line": 74,
-          "endLine": 129,
+          "line": 81,
+          "endLine": 136,
           "name": "classifyUnifiedWheelGesture"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-unified-input.ts",
-          "line": 142,
-          "endLine": 148,
+          "line": 149,
+          "endLine": 155,
           "name": "safariGestureScaleToZoomDelta"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-unified-input.ts",
-          "line": 160,
-          "endLine": 227,
+          "line": 167,
+          "endLine": 234,
           "name": "bindAtlasUnifiedInput"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-unified-input.ts",
-          "line": 166,
-          "endLine": 190,
+          "line": 173,
+          "endLine": 197,
           "name": "onWheel"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-unified-input.ts",
-          "line": 192,
-          "endLine": 196,
+          "line": 199,
+          "endLine": 203,
           "name": "onGestureStart"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-unified-input.ts",
-          "line": 198,
-          "endLine": 209,
+          "line": 205,
+          "endLine": 216,
           "name": "onGestureChange"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-unified-input.ts",
-          "line": 211,
-          "endLine": 214,
+          "line": 218,
+          "endLine": 221,
           "name": "onGestureEnd"
         },
         {

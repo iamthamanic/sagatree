@@ -654,7 +654,7 @@ export function AtlasThreeWorkstation({
         labelDe: payload.labelDe,
       });
 
-      if (!resolved.ok) {
+      if ('reasonDe' in resolved) {
         // Honest unlocated handling — NEVER fake a focus jump or invent geography!
         setUnlocatedFocusNotice({
           mapId: targetMapId,

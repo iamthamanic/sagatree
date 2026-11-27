@@ -70,10 +70,31 @@ type AtlasBridgeState = {
 
 type AtlasBridge = {
   readonly getState: () => AtlasBridgeState;
+  readonly setView: (
+    next: Partial<{
+      readonly mode: string;
+      readonly x: number;
+      readonly z: number;
+      readonly span: number;
+      readonly yawRad: number;
+      readonly pitchRad: number;
+    }>,
+    animate?: boolean,
+  ) => void;
   readonly projectWorldToScreen: (
     worldX: number,
     worldZ: number,
+    worldY?: number,
   ) => { readonly px: number; readonly py: number; readonly visible: boolean } | null;
+  readonly pickWorldPointAtScreen: (
+    px: number,
+    py: number,
+  ) => {
+    readonly x: number;
+    readonly y: number;
+    readonly z: number;
+    readonly hitKind: 'surface' | 'terrain' | 'plane';
+  } | null;
   readonly getWorldBoundsForMap?: (mapId: string) => {
     readonly minX: number;
     readonly minY: number;
@@ -228,6 +249,136 @@ test.describe('Shared World Space — Continuous Zoom & Focus Journey', () => {
     expect(opacities.some((op) => op > 0.05 && op < 0.95)).toBe(true);
     expect(opacities[opacities.length - 1] ?? 0).toBeGreaterThan(0.9);
 
+    // ─── Phase A: Exact Cursor-Anchored Zoom Stability (Intermediate RAF + Settled < 2 px) ───
+    const assertAnchoredZoom = async (opts: {
+      readonly setup?: {
+        readonly mode: string;
+        readonly x: number;
+        readonly z: number;
+        readonly span: number;
+        readonly yawRad: number;
+        readonly pitchRad?: number;
+      };
+      readonly targetWorld: { readonly x: number; readonly z: number };
+      readonly wheelDeltaY: number;
+      readonly steps: number;
+    }) => {
+      if (opts.setup) {
+        await page.evaluate((cam) => {
+          (window as unknown as { __sagatreeAtlas?: AtlasBridge }).__sagatreeAtlas?.setView(cam, false);
+        }, opts.setup);
+        await waitRaf(page, 10);
+      }
+      const box = await page.locator('[data-atlas-three-workstation] canvas').first().boundingBox();
+      expect(box).toBeTruthy();
+      const rough = await page.evaluate(
+        ({ wx, wz }) =>
+          (window as unknown as { __sagatreeAtlas?: AtlasBridge }).__sagatreeAtlas?.projectWorldToScreen(
+            wx,
+            wz,
+          ) ?? null,
+        { wx: opts.targetWorld.x, wz: opts.targetWorld.z },
+      );
+      expect(rough?.visible).toBe(true);
+      const mx = Math.round(box!.x + rough!.px);
+      const my = Math.round(box!.y + rough!.py);
+      const cpx = mx - box!.x;
+      const cpy = my - box!.y;
+      const picked = await page.evaluate(
+        ({ px, py }) =>
+          (window as unknown as { __sagatreeAtlas?: AtlasBridge }).__sagatreeAtlas?.pickWorldPointAtScreen(
+            px,
+            py,
+          ) ?? null,
+        { px: cpx, py: cpy },
+      );
+      expect(picked).toBeTruthy();
+      const startProj = await page.evaluate(
+        ({ x, y, z }) =>
+          (window as unknown as { __sagatreeAtlas?: AtlasBridge }).__sagatreeAtlas?.projectWorldToScreen(
+            x,
+            z,
+            y,
+          ) ?? null,
+        picked!,
+      );
+      expect(startProj?.visible).toBe(true);
+
+      await page.mouse.move(mx, my);
+      let maxDriftPx = 0;
+      for (let s = 0; s < opts.steps; s += 1) {
+        await page.mouse.wheel(0, opts.wheelDeltaY);
+        for (let f = 0; f < 2; f += 1) {
+          await waitRaf(page, 2);
+          const curProj = await page.evaluate(
+            ({ x, y, z }) =>
+              (window as unknown as { __sagatreeAtlas?: AtlasBridge }).__sagatreeAtlas?.projectWorldToScreen(
+                x,
+                z,
+                y,
+              ) ?? null,
+            picked!,
+          );
+          expect(curProj?.visible).toBe(true);
+          const d = Math.hypot(curProj!.px - startProj!.px, curProj!.py - startProj!.py);
+          if (d > maxDriftPx) maxDriftPx = d;
+        }
+      }
+      await waitRaf(page, 24);
+      const settledProj = await page.evaluate(
+        ({ x, y, z }) =>
+          (window as unknown as { __sagatreeAtlas?: AtlasBridge }).__sagatreeAtlas?.projectWorldToScreen(
+            x,
+            z,
+            y,
+          ) ?? null,
+        picked!,
+      );
+      const settledDriftPx = Math.hypot(
+        settledProj!.px - startProj!.px,
+        settledProj!.py - startProj!.py,
+      );
+      expect(Math.max(maxDriftPx, settledDriftPx)).toBeLessThan(2.0);
+    };
+
+    // Off-center Diorama IN + OUT
+    await assertAnchoredZoom({
+      setup: { mode: 'diorama-oblique', x: 500, z: 500, span: 480, yawRad: 0.42 },
+      targetWorld: dornWorldPos,
+      wheelDeltaY: -180,
+      steps: 8,
+    });
+    await assertAnchoredZoom({
+      targetWorld: dornWorldPos,
+      wheelDeltaY: 180,
+      steps: 6,
+    });
+    // Rotated Yaw + Perspective over hilly terrain
+    await assertAnchoredZoom({
+      setup: { mode: 'perspective', x: 420, z: 450, span: 260, yawRad: -0.85, pitchRad: 0.85 },
+      targetWorld: { x: 310, z: 340 },
+      wheelDeltaY: -160,
+      steps: 6,
+    });
+    // Ortho-topdown (Draufsicht) off-center zoom keeps exact PI/2 pitch
+    await assertAnchoredZoom({
+      setup: { mode: 'ortho-topdown', x: 340, z: 440, span: 300, yawRad: 0.35, pitchRad: Math.PI / 2 },
+      targetWorld: dornWorldPos,
+      wheelDeltaY: -180,
+      steps: 5,
+    });
+    const orthoAfter = await getBridgeState(page);
+    expect(Math.abs(orthoAfter.camera.pitchRad - Math.PI / 2)).toBeLessThan(0.01);
+
+    // Restore Diorama world overview before Journey 3
+    await page.evaluate(() => {
+      (window as unknown as { __sagatreeAtlas?: AtlasBridge }).__sagatreeAtlas?.setView(
+        { mode: 'diorama-oblique', x: 500, z: 500, span: 530, yawRad: 0.42 },
+        false,
+      );
+    });
+    await waitRaf(page, 10);
+
     // ─── Journey 3: Focus Building (Taverne Zum Flüstern) → Room (Schankraum) ───
     await ensureLayersOpen(page);
     await navButtons.filter({ hasText: 'Taverne Zum Flüstern' }).first().click();
@@ -251,6 +402,10 @@ test.describe('Shared World Space — Continuous Zoom & Focus Journey', () => {
     expect(j3Room.camera.span).toBeLessThan(j3Tavern.camera.span);
     expect(j3Room.zoomLayer.activeLabelDe).toContain('Schankraum');
     expect(j3Room.clearRootCount).toBe(0);
+    // Phase B: truthful scale HUD never saturates at fake 2500%
+    const roomScaleText = await page.locator('[data-atlas-scale-readout]').first().textContent();
+    expect(roomScaleText).toBeTruthy();
+    expect(roomScaleText).not.toContain('2500%');
 
     // ─── Journey 4: Focus vs Edit Separation ("Bearbeiten" → "Zurück zur Welt") ───
     await navButtons.filter({ hasText: 'Dornhain' }).first().click();
@@ -270,6 +425,9 @@ test.describe('Shared World Space — Continuous Zoom & Focus Journey', () => {
     await waitRaf(page, 12);
     const inEdit = await getBridgeState(page);
     expect(inEdit.camera.span).toBeGreaterThan(60);
+    // Medium finding guard: Ebenen badge stays locked to Dornhain in edit mode
+    const editBadge = await page.locator('[data-atlas-zoom-level-badge]').first().textContent();
+    expect(editBadge?.trim()).toBe('Dornhain');
 
     const returnBtn = page.locator('[data-atlas-return-world]').first();
     await expect(returnBtn).toBeVisible();
@@ -313,6 +471,18 @@ test.describe('Shared World Space — Continuous Zoom & Focus Journey', () => {
     ]) {
       await page.setViewportSize(vp);
       await waitRaf(page, 6);
+      // Close layers drawer to test unobstructed cursor-anchored zoom on Phone & Tablet
+      const drawer = page.locator('aside[aria-label="Welthierarchie und Ebenen"]');
+      if (await drawer.isVisible().catch(() => false)) {
+        await page.locator('[data-atlas-panel-fold="layers"]').click();
+        await waitRaf(page, 4);
+      }
+      await assertAnchoredZoom({
+        setup: { mode: 'diorama-oblique', x: 320, z: 420, span: 240, yawRad: 0.42 },
+        targetWorld: dornWorldPos,
+        wheelDeltaY: -160,
+        steps: 4,
+      });
       const metrics = await page.evaluate(() => {
         const vw = window.innerWidth;
         const docOverflow = document.documentElement.scrollWidth > vw + 2;

@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-world.json](source-contracts/infra-world.json) (SHA-256 `d4a32e2fec2ea8fab39e8fac71b461fc50489263a1c10a16ab9825b1a6a20b9c`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-world.json](source-contracts/infra-world.json) (SHA-256 `9ef400521445871571850a5f9e00272c59ee12bf36878be70887c2b5d150a5ee`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -940,13 +940,13 @@ export function buildR01bScenePlan(doc: UnifiedCanvasDoc, opts: R01bSceneOptions
 }
 ```
 
-### src/infrastructure/world/atlas-three/atlas-three-camera.ts:10
+### src/infrastructure/world/atlas-three/atlas-three-camera.ts:11
 
 ```ts
 export type AtlasThreeCameraMode = 'ortho-topdown' | 'diorama-oblique' | 'perspective';
 ```
 
-### src/infrastructure/world/atlas-three/atlas-three-camera.ts:12
+### src/infrastructure/world/atlas-three/atlas-three-camera.ts:13
 
 ```ts
 export type AtlasThreeCameraView = {
@@ -961,7 +961,17 @@ export type AtlasThreeCameraView = {
 };
 ```
 
-### src/infrastructure/world/atlas-three/atlas-three-camera.ts:23
+### src/infrastructure/world/atlas-three/atlas-three-camera.ts:24
+
+```ts
+export type AtlasThreeWorldPoint3 = {
+  readonly x: number;
+  readonly y: number;
+  readonly z: number;
+};
+```
+
+### src/infrastructure/world/atlas-three/atlas-three-camera.ts:30
 
 ```ts
 export type AtlasThreeCameraRig = {
@@ -978,27 +988,27 @@ export type AtlasThreeCameraRig = {
 };
 ```
 
-### src/infrastructure/world/atlas-three/atlas-three-camera.ts:40
+### src/infrastructure/world/atlas-three/atlas-three-camera.ts:52
 
 ```ts
 export function clampAtlasThreePitch(mode: AtlasThreeCameraMode, pitch: number): number {
   if (mode === 'ortho-topdown') return Math.PI / 2;
-  if (mode === 'diorama-oblique') return clamp(pitch, 0.52, 1.32);
-  return clamp(pitch, 0.3, 1.42);
-}
-```
-
-### src/infrastructure/world/atlas-three/atlas-three-camera.ts:46
-
-```ts
-export function defaultAtlasThreePitch(mode: AtlasThreeCameraMode): number {
-  if (mode === 'ortho-topdown') return Math.PI / 2;
-  if (mode === 'diorama-oblique') return 0.94;
-  return 0.78;
+  if (mode === 'diorama-oblique') return clamp(pitch, 0.52, 1.38);
+  return clamp(pitch, 0.34, 1.42);
 }
 ```
 
 ### src/infrastructure/world/atlas-three/atlas-three-camera.ts:58
+
+```ts
+export function defaultAtlasThreePitch(mode: AtlasThreeCameraMode): number {
+  if (mode === 'ortho-topdown') return Math.PI / 2;
+  if (mode === 'diorama-oblique') return 0.96;
+  return 0.82;
+}
+```
+
+### src/infrastructure/world/atlas-three/atlas-three-camera.ts:74
 
 ```ts
 export function autoAtlasThreePitchForSpan(
@@ -1006,19 +1016,85 @@ export function autoAtlasThreePitchForSpan(
   span: number,
 ): number {
   if (mode === 'ortho-topdown') return Math.PI / 2;
-  const logSpan = Math.log(clamp(span, 24, 2400));
-  const lo = Math.log(65);
-  const hi = Math.log(950);
-  const t = clamp((logSpan - lo) / (hi - lo), 0, 1);
-  const smooth = t * t * (3 - 2 * t);
+  const safeSpan = clamp(span, 0.08, 2400);
+  const logSpan = Math.log(safeSpan);
+
+  // Broad macro curve: settlement (~4 wu) -> world (~800 wu)
+  const macroT = smoothstep(Math.log(3.2), Math.log(780), logSpan);
+  // Interior readability lift: building/room (~1.6 wu -> 0.14 wu) gently raises camera angle
+  const interiorT = 1 - smoothstep(Math.log(0.16), Math.log(2.2), logSpan);
+
   if (mode === 'perspective') {
-    return clampAtlasThreePitch(mode, 0.52 + smooth * 0.56);
+    const base = 0.68 + macroT * 0.38; // ~39° at village -> ~61° at planet
+    const interiorLift = interiorT * 0.24; // rises smoothly to ~53° inside rooms
+    return clampAtlasThreePitch(mode, base + interiorLift);
   }
-  return clampAtlasThreePitch(mode, 0.68 + smooth * 0.48);
+
+  // diorama-oblique
+  const base = 0.78 + macroT * 0.40; // ~44.7° at village -> ~67.6° at planet
+  const interiorLift = interiorT * 0.24; // rises smoothly to ~58.5° inside cutaway rooms
+  return clampAtlasThreePitch(mode, base + interiorLift);
 }
 ```
 
-### src/infrastructure/world/atlas-three/atlas-three-camera.ts:74
+### src/infrastructure/world/atlas-three/atlas-three-camera.ts:107
+
+```ts
+export function formatAtlasTruthfulScaleHud(
+  span: number,
+  options?: { readonly isWorldSceneGraph?: boolean },
+): {
+  readonly shortLabel: string;
+  readonly zoomLevel: number;
+  readonly detailTitleDe: string;
+} {
+  const safeSpan = clamp(Number.isFinite(span) ? span : 430, 0.05, 2400);
+  const isWorld = options?.isWorldSceneGraph ?? true;
+  // Logarithmic map zoom index Z1 (span ~1024) .. Z15 (span ~0.06)
+  const zoomLevel = Math.round(clamp(1 + Math.log2(1024 / safeSpan), 1, 15) * 10) / 10;
+  const visibleWidthWu = safeSpan * 2;
+
+  if (!isWorld) {
+    // Local single-map document (1000 local units)
+    const pct = Math.max(10, Math.min(1200, Math.round((220 / Math.max(16, safeSpan)) * 100)));
+    return {
+      shortLabel: `${pct}%`,
+      zoomLevel,
+      detailTitleDe: `Einzelkarte · Sichtbereich ${Math.round(visibleWidthWu)} Karteneinheiten (Klick zentriert)`,
+    };
+  }
+
+  // World-space calibrated physical scale (~1 world unit ≈ 1250 m in Dornhain hierarchy)
+  const visibleMeters = visibleWidthWu * 1250;
+  let shortLabel: string;
+  let scaleText: string;
+  if (visibleMeters >= 100_000) {
+    const km = Math.round(visibleMeters / 10_000) * 10;
+    shortLabel = `~${km} km`;
+    scaleText = `ca. ${km} km Sichthöhe`;
+  } else if (visibleMeters >= 10_000) {
+    const km = Math.round(visibleMeters / 1000);
+    shortLabel = `~${km} km`;
+    scaleText = `ca. ${km} km Sichthöhe`;
+  } else if (visibleMeters >= 1_000) {
+    const km = Math.round(visibleMeters / 100) / 10;
+    shortLabel = `~${km.toFixed(1).replace('.', ',')} km`;
+    scaleText = `ca. ${km.toFixed(1).replace('.', ',')} km Sichthöhe`;
+  } else {
+    const m = Math.max(10, Math.round(visibleMeters / 10) * 10);
+    shortLabel = `~${m} m`;
+    scaleText = `ca. ${m} m Sichthöhe`;
+  }
+
+  return {
+    shortLabel,
+    zoomLevel,
+    detailTitleDe: `Weltmaßstab Z${zoomLevel.toFixed(1)} · ${scaleText} (Span ${safeSpan < 10 ? safeSpan.toFixed(2) : Math.round(safeSpan)} WE · Klick zentriert)`,
+  };
+}
+```
+
+### src/infrastructure/world/atlas-three/atlas-three-camera.ts:160
 
 ```ts
 export function buildAtlasThreeCameraRig(
@@ -1029,16 +1105,20 @@ export function buildAtlasThreeCameraRig(
   const pitch = clampAtlasThreePitch(view.mode, view.pitchRad);
   const forward: readonly [number, number] = [Math.sin(view.yawRad), Math.cos(view.yawRad)];
   const perspective = view.mode === 'perspective';
-  const distance = view.span * (perspective ? 2.25 : 3.0);
+  // Perspective distance calibrated so vertical visible ground height at target matches `2 * span`
+  // (fovY = 46° => tan(23°) = 0.4244748 => dist = span / tan(23°) ≈ 2.3558 * span)
+  const fovYDeg = 46;
+  const tanHalfFov = Math.tan((fovYDeg * Math.PI) / 360);
+  const distance = perspective ? view.span / tanHalfFov : view.span * 3.0;
   const targetY = Number.isFinite(view.y) ? view.y! : 0;
-  const eyeLift = Math.min(5, view.span * 0.12);
   const at: readonly [number, number, number] = [view.x, targetY, view.z];
   const topdown = view.mode === 'ortho-topdown';
+  // Pure geometric eye placement (zero non-linear eyeLift kink!) so pitch & projection stay 100% consistent
   const eye: readonly [number, number, number] = topdown
-    ? [view.x, targetY + distance + eyeLift, view.z]
+    ? [view.x, targetY + distance, view.z]
     : [
         view.x + forward[0] * Math.cos(pitch) * distance,
-        targetY + Math.sin(pitch) * distance + eyeLift,
+        targetY + Math.sin(pitch) * distance,
         view.z + forward[1] * Math.cos(pitch) * distance,
       ];
   const up: readonly [number, number, number] = topdown
@@ -1050,40 +1130,170 @@ export function buildAtlasThreeCameraRig(
     at,
     up,
     distance,
-    near: perspective ? Math.max(0.0005, distance * 0.005) : Math.max(0.0005, distance * 0.002),
+    near: perspective ? Math.max(0.002, distance * 0.008) : Math.max(0.002, distance * 0.004),
     far: Math.max(26000, distance * 8 + 4000),
     perspective,
-    fovYDeg: 46,
+    fovYDeg,
     halfHeight: view.span,
     halfWidth: view.span * safeAspect,
   };
 }
 ```
 
-### src/infrastructure/world/atlas-three/atlas-three-camera.ts:112
+### src/infrastructure/world/atlas-three/atlas-three-camera.ts:240
+
+```ts
+export function projectWorldPointWithRig(
+  rig: AtlasThreeCameraRig,
+  point: AtlasThreeWorldPoint3,
+): { readonly ndcX: number; readonly ndcY: number; readonly depth: number; readonly visible: boolean } {
+  const { right, camUp, forward } = buildCameraBasis(rig);
+  const rel: Vec3 = [point.x - rig.eye[0], point.y - rig.eye[1], point.z - rig.eye[2]];
+  const cx = dot3(rel, right);
+  const cy = dot3(rel, camUp);
+  const cz = dot3(rel, forward); // positive in front of camera
+
+  if (rig.perspective) {
+    if (cz <= 1e-6) {
+      return { ndcX: 0, ndcY: 0, depth: cz, visible: false };
+    }
+    const tanHalfFov = Math.tan((rig.fovYDeg * Math.PI) / 360);
+    const aspect = rig.halfWidth / Math.max(1e-6, rig.halfHeight);
+    const ndcX = cx / (cz * tanHalfFov * aspect);
+    const ndcY = cy / (cz * tanHalfFov);
+    return {
+      ndcX,
+      ndcY,
+      depth: cz,
+      visible: cz >= rig.near && cz <= rig.far && Math.abs(ndcX) <= 1 && Math.abs(ndcY) <= 1,
+    };
+  }
+
+  const ndcX = cx / Math.max(1e-6, rig.halfWidth);
+  const ndcY = cy / Math.max(1e-6, rig.halfHeight);
+  return {
+    ndcX,
+    ndcY,
+    depth: cz,
+    visible: cz >= rig.near && cz <= rig.far && Math.abs(ndcX) <= 1 && Math.abs(ndcY) <= 1,
+  };
+}
+```
+
+### src/infrastructure/world/atlas-three/atlas-three-camera.ts:280
+
+```ts
+export function unprojectNdcToPlaneWithRig(
+  rig: AtlasThreeCameraRig,
+  ndcX: number,
+  ndcY: number,
+  planeY: number,
+): { readonly x: number; readonly z: number } | null {
+  const { right, camUp, forward } = buildCameraBasis(rig);
+  if (rig.perspective) {
+    const tanHalfFov = Math.tan((rig.fovYDeg * Math.PI) / 360);
+    const aspect = rig.halfWidth / Math.max(1e-6, rig.halfHeight);
+    const dx = ndcX * tanHalfFov * aspect;
+    const dy = ndcY * tanHalfFov;
+    const dir: Vec3 = [
+      forward[0] + right[0] * dx + camUp[0] * dy,
+      forward[1] + right[1] * dx + camUp[1] * dy,
+      forward[2] + right[2] * dx + camUp[2] * dy,
+    ];
+    if (Math.abs(dir[1]) < 1e-7) return null;
+    const t = (planeY - rig.eye[1]) / dir[1];
+    if (t <= 0) return null;
+    return {
+      x: rig.eye[0] + dir[0] * t,
+      z: rig.eye[2] + dir[2] * t,
+    };
+  }
+
+  // Orthographic ray originates on the near/eye plane offset by (ndcX * halfWidth, ndcY * halfHeight)
+  const ox = rig.eye[0] + right[0] * (ndcX * rig.halfWidth) + camUp[0] * (ndcY * rig.halfHeight);
+  const oy = rig.eye[1] + right[1] * (ndcX * rig.halfWidth) + camUp[1] * (ndcY * rig.halfHeight);
+  const oz = rig.eye[2] + right[2] * (ndcX * rig.halfWidth) + camUp[2] * (ndcY * rig.halfHeight);
+  if (Math.abs(forward[1]) < 1e-7) return null;
+  const t = (planeY - oy) / forward[1];
+  return {
+    x: ox + forward[0] * t,
+    z: oz + forward[2] * t,
+  };
+}
+```
+
+### src/infrastructure/world/atlas-three/atlas-three-camera.ts:327
+
+```ts
+export function solveAnchoredCameraFocus(input: {
+  readonly view: AtlasThreeCameraView;
+  readonly anchorWorld: AtlasThreeWorldPoint3;
+  readonly targetNdcX: number;
+  readonly targetNdcY: number;
+  readonly aspect: number;
+  readonly sampleFocusElevation?: (x: number, z: number) => number;
+}): { readonly x: number; readonly z: number; readonly y: number } {
+  const { view, anchorWorld, targetNdcX, targetNdcY, aspect, sampleFocusElevation } = input;
+  const pitch = clampAtlasThreePitch(view.mode, view.pitchRad);
+  const probeRig = buildAtlasThreeCameraRig(view, aspect);
+  // Guarantee the camera eye stays safely above an elevated 3D anchor (e.g. mountain peak / roof)
+  // at tight zoom spans so perspective rays never invert behind the camera.
+  const minFyForAnchor = anchorWorld.y - Math.sin(pitch) * probeRig.distance * 0.5;
+  const resolveFy = (x: number, z: number): number => {
+    const raw = sampleFocusElevation
+      ? sampleFocusElevation(x, z)
+      : Number.isFinite(view.y)
+        ? view.y!
+        : 0;
+    return Math.max(raw, minFyForAnchor);
+  };
+
+  let fx = view.x;
+  let fz = view.z;
+  let fy = resolveFy(fx, fz);
+
+  for (let iter = 0; iter < 6; iter += 1) {
+    const rig = buildAtlasThreeCameraRig({ ...view, x: fx, z: fz, y: fy }, aspect);
+    const hit = unprojectNdcToPlaneWithRig(rig, targetNdcX, targetNdcY, anchorWorld.y);
+    if (!hit) break;
+    const dx = anchorWorld.x - hit.x;
+    const dz = anchorWorld.z - hit.z;
+    fx += dx;
+    fz += dz;
+    const nextFy = resolveFy(fx, fz);
+    const dy = Math.abs(nextFy - fy);
+    fy = nextFy;
+    if (Math.hypot(dx, dz) < 1e-5 && dy < 1e-5) break;
+  }
+
+  return { x: fx, z: fz, y: fy };
+}
+```
+
+### src/infrastructure/world/atlas-three/atlas-three-camera.ts:371
 
 ```ts
 export function buildAtlasThreeFogBand(
   rig: AtlasThreeCameraRig,
   look: 'outdoor' | 'indoor',
 ): { readonly near: number; readonly far: number; readonly expDensity: number } {
-  const d = Math.max(120, rig.distance);
+  const d = Math.max(80, rig.distance);
   if (look === 'indoor') {
     return {
       near: d * 1.15,
       far: d * 4.2,
-      expDensity: 0.22 / d,
+      expDensity: 0.2 / d,
     };
   }
   return {
-    near: d * 1.5,
-    far: d * 6.5,
-    expDensity: 0.085 / d,
+    near: d * 1.65,
+    far: d * 7.0,
+    expDensity: 0.072 / d,
   };
 }
 ```
 
-### src/infrastructure/world/atlas-three/atlas-three-camera.ts:132
+### src/infrastructure/world/atlas-three/atlas-three-camera.ts:391
 
 ```ts
 export function interpolateAtlasThreeView(
@@ -1093,8 +1303,8 @@ export function interpolateAtlasThreeView(
 ): AtlasThreeCameraView {
   const k = clamp(t, 0, 1);
   const e = k * k * (3 - 2 * k);
-  const logFrom = Math.log(Math.max(0.02, from.span));
-  const logTo = Math.log(Math.max(0.02, to.span));
+  const logFrom = Math.log(Math.max(0.05, from.span));
+  const logTo = Math.log(Math.max(0.05, to.span));
   const yFrom = Number.isFinite(from.y) ? from.y! : 0;
   const yTo = Number.isFinite(to.y) ? to.y! : 0;
   return {
@@ -1109,7 +1319,7 @@ export function interpolateAtlasThreeView(
 }
 ```
 
-### src/infrastructure/world/atlas-three/atlas-three-camera.ts:158
+### src/infrastructure/world/atlas-three/atlas-three-camera.ts:419
 
 ```ts
 export function dampAtlasThreeView(
@@ -1117,27 +1327,70 @@ export function dampAtlasThreeView(
   target: AtlasThreeCameraView,
   dtSeconds: number,
   speed = 12,
+  anchor?: {
+    readonly anchorWorld: AtlasThreeWorldPoint3;
+    readonly targetNdcX: number;
+    readonly targetNdcY: number;
+    readonly aspect: number;
+    readonly sampleFocusElevation?: (x: number, z: number) => number;
+  } | null,
 ): { readonly next: AtlasThreeCameraView; readonly settled: boolean } {
   const alpha = 1 - Math.exp(-Math.max(0.001, Math.min(0.1, dtSeconds)) * speed);
+  const logCur = Math.log(Math.max(0.05, current.span));
+  const logTgt = Math.log(Math.max(0.05, target.span));
+  const nspan = Math.exp(logCur + (logTgt - logCur) * alpha);
+  const nyaw = current.yawRad + (target.yawRad - current.yawRad) * alpha;
+  const npitch = current.pitchRad + (target.pitchRad - current.pitchRad) * alpha;
+
+  const epsSpan = Math.min(0.04, target.span * 0.0015);
+  const angleSettled =
+    Math.abs(nyaw - target.yawRad) < 0.0004 &&
+    Math.abs(npitch - target.pitchRad) < 0.0004 &&
+    Math.abs(nspan - target.span) < epsSpan;
+
+  if (anchor) {
+    const baseView: AtlasThreeCameraView = angleSettled
+      ? { ...target }
+      : {
+          mode: target.mode,
+          x: current.x + (target.x - current.x) * alpha,
+          z: current.z + (target.z - current.z) * alpha,
+          y: current.y,
+          span: nspan,
+          yawRad: nyaw,
+          pitchRad: npitch,
+        };
+    const solved = solveAnchoredCameraFocus({
+      view: baseView,
+      anchorWorld: anchor.anchorWorld,
+      targetNdcX: anchor.targetNdcX,
+      targetNdcY: anchor.targetNdcY,
+      aspect: anchor.aspect,
+      sampleFocusElevation: anchor.sampleFocusElevation,
+    });
+    return {
+      next: {
+        ...baseView,
+        x: solved.x,
+        z: solved.z,
+        y: solved.y,
+      },
+      settled: angleSettled,
+    };
+  }
+
   const nx = current.x + (target.x - current.x) * alpha;
   const nz = current.z + (target.z - current.z) * alpha;
   const curY = Number.isFinite(current.y) ? current.y! : 0;
   const tgtY = Number.isFinite(target.y) ? target.y! : 0;
   const ny = curY + (tgtY - curY) * alpha;
-  const logCur = Math.log(Math.max(0.02, current.span));
-  const logTgt = Math.log(Math.max(0.02, target.span));
-  const nspan = Math.exp(logCur + (logTgt - logCur) * alpha);
-  const nyaw = current.yawRad + (target.yawRad - current.yawRad) * alpha;
-  const npitch = current.pitchRad + (target.pitchRad - current.pitchRad) * alpha;
 
   const epsPos = Math.min(0.04, target.span * 0.002);
   const settled =
+    angleSettled &&
     Math.abs(nx - target.x) < epsPos &&
     Math.abs(nz - target.z) < epsPos &&
-    Math.abs(ny - tgtY) < 0.001 &&
-    Math.abs(nspan - target.span) < Math.min(0.04, target.span * 0.002) &&
-    Math.abs(nyaw - target.yawRad) < 0.0004 &&
-    Math.abs(npitch - target.pitchRad) < 0.0004;
+    Math.abs(ny - tgtY) < 0.001;
 
   return {
     next: settled
@@ -1259,10 +1512,10 @@ export function applyLocalCutoutFilter(
 
 ```ts
 export function multiMapDepthLiftY(depth: number): number {
-  const table = [0, 0.14, 0.24, 0.32, 0.36, 0.39];
+  const table = [0, 0.08, 0.14, 0.18, 0.184, 0.187];
   const idx = Math.max(0, depth - 1);
   if (idx < table.length) return table[idx]!;
-  return 0.39 + (idx - (table.length - 1)) * 0.02;
+  return 0.187 + (idx - (table.length - 1)) * 0.003;
 }
 ```
 
@@ -1484,7 +1737,7 @@ export class AtlasThreeMultiMapGraph {
           ? this.worldTerrain.sampleElevation(
               entry.worldTransform.centerX,
               entry.worldTransform.centerY,
-            ) + 0.08
+            ) + 0.003
           : 0;
 
       const existing = this.groups.get(entry.mapId);
@@ -1759,6 +2012,11 @@ export class AtlasThreeMultiMapGraph {
         if (dst.uFogColor && src.uFogColor) dst.uFogColor.value.copy(src.uFogColor.value);
         if (dst.uFocus && src.uFocus) dst.uFocus.value.copy(src.uFocus.value);
         if (dst.uSpan && src.uSpan) dst.uSpan.value = src.uSpan.value;
+        if (dst.uWorldHeightTex && src.uWorldHeightTex) dst.uWorldHeightTex.value = src.uWorldHeightTex.value;
+        if (dst.uHasWorldHeight && src.uHasWorldHeight) dst.uHasWorldHeight.value = src.uHasWorldHeight.value;
+        if (dst.uHeightMin && src.uHeightMin) dst.uHeightMin.value = src.uHeightMin.value;
+        if (dst.uHeightMax && src.uHeightMax) dst.uHeightMax.value = src.uHeightMax.value;
+        if (dst.uWaterLevel && src.uWaterLevel) dst.uWaterLevel.value = src.uWaterLevel.value;
       }
     }
   }
@@ -1859,19 +2117,19 @@ export class AtlasThreeMultiMapGraph {
 }
 ```
 
-### src/infrastructure/world/atlas-three/atlas-three-runtime.ts:55
+### src/infrastructure/world/atlas-three/atlas-three-runtime.ts:57
 
 ```ts
 export type AtlasThreeLightingMode = 'day' | 'evening' | 'night';
 ```
 
-### src/infrastructure/world/atlas-three/atlas-three-runtime.ts:56
+### src/infrastructure/world/atlas-three/atlas-three-runtime.ts:58
 
 ```ts
 export type AtlasThreeStyleMode = 'pbr' | 'illustrated' | 'cel';
 ```
 
-### src/infrastructure/world/atlas-three/atlas-three-runtime.ts:58
+### src/infrastructure/world/atlas-three/atlas-three-runtime.ts:60
 
 ```ts
 export type AtlasThreeProjectedPin = {
@@ -1884,7 +2142,7 @@ export type AtlasThreeProjectedPin = {
 };
 ```
 
-### src/infrastructure/world/atlas-three/atlas-three-runtime.ts:67
+### src/infrastructure/world/atlas-three/atlas-three-runtime.ts:69
 
 ```ts
 export type AtlasThreeRuntimeConfig = {
@@ -1898,7 +2156,7 @@ export type AtlasThreeRuntimeConfig = {
 };
 ```
 
-### src/infrastructure/world/atlas-three/atlas-three-runtime.ts:401
+### src/infrastructure/world/atlas-three/atlas-three-runtime.ts:429
 
 ```ts
 export class AtlasThreeRuntime {
@@ -1976,6 +2234,14 @@ export class AtlasThreeRuntime {
     pitchRad: autoAtlasThreePitchForSpan('diorama-oblique', 430),
   };
   private targetView: AtlasThreeCameraView = { ...this.view };
+  /** Active cursor-pinned 3D world anchor maintained across every intermediate damped frame (Phase A). */
+  private zoomAnchor: {
+    readonly anchorWorld: AtlasThreeWorldPoint3;
+    readonly targetNdcX: number;
+    readonly targetNdcY: number;
+    readonly screenPx: number;
+    readonly screenPy: number;
+  } | null = null;
   private flight: {
     readonly from: AtlasThreeCameraView;
     readonly to: AtlasThreeCameraView;
@@ -2054,6 +2320,11 @@ export class AtlasThreeRuntime {
         uFocus: { value: new THREE.Vector2(500, 500) },
         uSpan: { value: 430 },
         uOpacity: { value: 1.0 },
+        uWorldHeightTex: { value: null },
+        uHasWorldHeight: { value: 0.0 },
+        uHeightMin: { value: -12.0 },
+        uHeightMax: { value: 36.0 },
+        uWaterLevel: { value: 0.0 },
       },
     });
     const oceanGeo = new THREE.PlaneGeometry(28000, 28000, 1, 1);
@@ -2338,6 +2609,7 @@ export class AtlasThreeRuntime {
   /** Two-finger trackpad scroll / drag pan in screen pixels (respects camera yaw). */
   panByScreenDelta(deltaPxX: number, deltaPxY: number): AtlasThreeCameraView {
     this.flight = null;
+    this.zoomAnchor = null;
     const h = Math.max(1, this.config.canvas.clientHeight || 800);
     const worldPerPx = (this.targetView.span * 2) / h;
     const dx = deltaPxX * worldPerPx;
@@ -2355,6 +2627,7 @@ export class AtlasThreeRuntime {
   /** Incremental yaw/pitch orbit delta (Shift+Wheel / Trackpad orbit). */
   orbitByDelta(deltaYawRad: number, deltaPitchRad: number): AtlasThreeCameraView {
     this.flight = null;
+    this.zoomAnchor = null;
     const nextMode: AtlasThreeCameraMode =
       this.targetView.mode === 'ortho-topdown' ? 'diorama-oblique' : this.targetView.mode;
     this.manualPitchOverride = true;
@@ -2386,10 +2659,15 @@ export class AtlasThreeRuntime {
   setView(
     next: Partial<AtlasThreeCameraView>,
     animate = false,
-    opts?: { readonly manualPitch?: boolean; readonly preserveMinSpan?: boolean },
+    opts?: {
+      readonly manualPitch?: boolean;
+      readonly preserveMinSpan?: boolean;
+      readonly durationMs?: number;
+    },
   ): void {
+    this.zoomAnchor = null;
     const targetMode: AtlasThreeCameraMode = next.mode ?? this.targetView.mode;
-    const minSpan = this.worldMaps.length > 0 || opts?.preserveMinSpan ? 0.02 : 16;
+    const minSpan = this.worldMaps.length > 0 || opts?.preserveMinSpan ? 0.08 : 16;
     const nextSpan = Math.max(minSpan, Math.min(2400, next.span ?? this.targetView.span));
     if (opts?.manualPitch) {
       this.manualPitchOverride = true;
@@ -2415,9 +2693,10 @@ export class AtlasThreeRuntime {
         typeof window !== 'undefined' &&
         window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
       this.targetView = target;
+      const durationMs = Math.max(120, Math.min(600, opts?.durationMs ?? 420));
       this.flight = reduced
         ? null
-        : { from: { ...this.view }, to: target, startMs: performance.now(), durationMs: 520 };
+        : { from: { ...this.view }, to: target, startMs: performance.now(), durationMs };
       if (!this.flight) {
         this.view = target;
         this.onCameraChange?.(this.view);
@@ -2431,23 +2710,86 @@ export class AtlasThreeRuntime {
   }
 
   /**
-   * Butter-smooth Google-Maps inertia wheel zoom toward the exact world point under (px, py),
-   * with automatic Diorama pitch adaptation.
+   * True 3D surface/terrain raycast under canvas pixel `(px, py)` (Phase A):
+   * hits rendered terrain chunks and buildings/plazas first, with a clean heightfield-corrected
+   * ground-plane fallback over open ocean or empty space.
    */
-  zoomAtScreen(deltaY: number, px: number, py: number): AtlasThreeCameraView {
-    this.flight = null;
-    const before = this.screenToGround(px, py);
-    const factor = Math.exp(deltaY * 0.00125);
-    const minSpan = this.worldMaps.length > 0 ? 0.02 : 16;
-    const nextSpan = Math.max(minSpan, Math.min(2400, this.targetView.span * factor));
-    const ratio = nextSpan / Math.max(0.02, this.targetView.span);
+  pickWorldPointAtScreen(
+    px: number,
+    py: number,
+  ): {
+    readonly x: number;
+    readonly y: number;
+    readonly z: number;
+    readonly hitKind: 'surface' | 'terrain' | 'plane';
+  } | null {
+    const w = Math.max(1, this.config.canvas.clientWidth || 1);
+    const h = Math.max(1, this.config.canvas.clientHeight || 1);
+    const ndc = new THREE.Vector2((px / w) * 2 - 1, -(py / h) * 2 + 1);
+    this.raycaster.setFromCamera(ndc, this.camera);
 
-    let nextX = this.targetView.x;
-    let nextZ = this.targetView.z;
-    if (before) {
-      nextX = before.x + (this.targetView.x - before.x) * ratio;
-      nextZ = before.z + (this.targetView.z - before.z) * ratio;
+    if (this.worldMaps.length > 0) {
+      // Check rendered buildings/overlays AND shared terrain chunks
+      const targets: THREE.Object3D[] = [
+        ...this.multiMap.getAllPickables(),
+        ...this.multiMap.worldTerrain.getChunkMeshes(),
+      ];
+      if (targets.length > 0) {
+        const hits = this.raycaster.intersectObjects(targets, false);
+        for (const hit of hits) {
+          // Ignore ocean backing planes when solid terrain/building is hit
+          const name = hit.object.name || '';
+          if (name.includes('ocean') || name.includes('water')) continue;
+          const hitKind = name.startsWith('atlas3:terrain-chunk:') ? 'terrain' : 'surface';
+          return { x: hit.point.x, y: hit.point.y, z: hit.point.z, hitKind };
+        }
+      }
+    } else if (this.pickables.length > 0) {
+      const hits = this.raycaster.intersectObjects(this.pickables, false);
+      for (const hit of hits) {
+        if (hit.object.name === 'atlas3:water') continue;
+        return { x: hit.point.x, y: hit.point.y, z: hit.point.z, hitKind: 'surface' };
+      }
     }
+
+    const out = new THREE.Vector3();
+    if (!this.raycaster.ray.intersectPlane(this.groundPlane, out)) return null;
+    const sampledY =
+      this.worldMaps.length > 0 ? this.multiMap.getActiveEditorElevationY(out.x, out.z) : out.y;
+    return { x: out.x, y: sampledY, z: out.z, hitKind: 'plane' };
+  }
+
+  /**
+   * Exact projection-anchored zoom by a multiplicative span factor around canvas pixel `(px, py)`.
+   * Shared by mouse wheel, trackpad pinch, AND +/- zoom buttons so every zoom path preserves
+   * the exact 3D world point under `(px, py)` across every intermediate damped frame.
+   */
+  zoomByFactorAtScreen(factor: number, px: number, py: number): AtlasThreeCameraView {
+    this.flight = null;
+    const w = Math.max(1, this.config.canvas.clientWidth || 1280);
+    const h = Math.max(1, this.config.canvas.clientHeight || 800);
+    const aspect = w / h;
+    const ndcX = (px / w) * 2 - 1;
+    const ndcY = -(py / h) * 2 + 1;
+
+    // Keep the exact original 3D world anchor across consecutive ticks at the same screen spot (<= 4 px)
+    // so zero raycast quantization drift accumulates during a multi-step wheel gesture!
+    let anchorWorld: AtlasThreeWorldPoint3 | null = null;
+    if (
+      this.zoomAnchor &&
+      Math.hypot(px - this.zoomAnchor.screenPx, py - this.zoomAnchor.screenPy) <= 4
+    ) {
+      anchorWorld = this.zoomAnchor.anchorWorld;
+    } else {
+      const picked = this.pickWorldPointAtScreen(px, py);
+      if (picked) {
+        anchorWorld = { x: picked.x, y: picked.y, z: picked.z };
+      }
+    }
+
+    const minSpan = this.worldMaps.length > 0 ? 0.08 : 16;
+    const safeFactor = Math.max(0.45, Math.min(2.2, Number.isFinite(factor) ? factor : 1));
+    const nextSpan = Math.max(minSpan, Math.min(2400, this.targetView.span * safeFactor));
 
     const nextPitch =
       this.targetView.mode === 'ortho-topdown'
@@ -2456,14 +2798,69 @@ export class AtlasThreeRuntime {
           ? this.targetView.pitchRad
           : autoAtlasThreePitchForSpan(this.targetView.mode, nextSpan);
 
+    const sampleFocusElevation =
+      this.worldMaps.length > 0
+        ? (wx: number, wz: number) => this.multiMap.getActiveEditorElevationY(wx, wz)
+        : undefined;
+
+    let nextX = this.targetView.x;
+    let nextZ = this.targetView.z;
+    let nextY = this.targetView.y ?? 0;
+
+    if (anchorWorld) {
+      const candidate: AtlasThreeCameraView = {
+        ...this.targetView,
+        span: nextSpan,
+        pitchRad: nextPitch,
+      };
+      const solved = solveAnchoredCameraFocus({
+        view: candidate,
+        anchorWorld,
+        targetNdcX: ndcX,
+        targetNdcY: ndcY,
+        aspect,
+        sampleFocusElevation,
+      });
+      nextX = solved.x;
+      nextZ = solved.z;
+      nextY = solved.y;
+      this.zoomAnchor = {
+        anchorWorld,
+        targetNdcX: ndcX,
+        targetNdcY: ndcY,
+        screenPx: px,
+        screenPy: py,
+      };
+    }
+
     this.targetView = {
       ...this.targetView,
       x: nextX,
       z: nextZ,
+      y: nextY,
       span: nextSpan,
       pitchRad: nextPitch,
     };
+
+    const reduced =
+      typeof window !== 'undefined' &&
+      window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    if (reduced) {
+      this.view = { ...this.targetView };
+      this.zoomAnchor = null;
+      this.onCameraChange?.(this.view);
+    }
+
     return { ...this.targetView };
+  }
+
+  /**
+   * Cursor-anchored logarithmic wheel/pinch zoom toward the exact 3D point under `(px, py)`.
+   */
+  zoomAtScreen(deltaY: number, px: number, py: number): AtlasThreeCameraView {
+    const clampedDelta = Math.max(-240, Math.min(240, Number.isFinite(deltaY) ? deltaY : 0));
+    const factor = Math.exp(clampedDelta * 0.00125);
+    return this.zoomByFactorAtScreen(factor, px, py);
   }
 
   /** Smoothly ease yaw (e.g. clicking the compass dial snaps smoothly back to 0° North). */
@@ -2927,8 +3324,10 @@ export class AtlasThreeRuntime {
 
   private syncCameraAndLighting(w: number, h: number, elapsedSec: number): void {
     const aspect = w / Math.max(1, h);
-    const activeY =
+    const sampledY =
       this.worldMaps.length > 0 ? this.multiMap.getActiveEditorElevationY(this.view.x, this.view.z) : 0;
+    const activeY =
+      this.zoomAnchor && Number.isFinite(this.view.y) ? this.view.y! : sampledY;
     this.groundPlane.constant = -activeY;
     const rig = buildAtlasThreeCameraRig({ ...this.view, y: activeY }, aspect);
     if (rig.perspective) {
@@ -3007,22 +3406,24 @@ export class AtlasThreeRuntime {
     this.hemi.intensity = spec.hemiIntensity;
     this.sun.color.set(spec.sunColor);
     this.sun.intensity = spec.sunIntensity * (this.styleMode === 'cel' ? 1.15 : 1.0);
-    this.sun.position.copy(at).addScaledVector(sunDir, Math.max(400, this.view.span * 2.2));
+    // Dynamic scale-tight PCF shadow frustum: crisp 2048px shadows at Planet, Village AND Tavern scales!
+    const shadowHalf = Math.max(1.4, Math.min(680, this.view.span * 1.55));
+    const sunDist = Math.max(12, shadowHalf * 2.1);
+    this.sun.position.copy(at).addScaledVector(sunDir, sunDist);
     this.sun.target.position.copy(at);
-    const shadowHalf = Math.max(220, this.view.span * 1.45);
     this.sun.shadow.camera.left = -shadowHalf;
     this.sun.shadow.camera.right = shadowHalf;
     this.sun.shadow.camera.top = shadowHalf;
     this.sun.shadow.camera.bottom = -shadowHalf;
-    this.sun.shadow.camera.near = 20;
-    this.sun.shadow.camera.far = Math.max(2400, this.view.span * 7);
-    this.sun.shadow.bias = -0.0005;
-    this.sun.shadow.normalBias = 0.025;
+    this.sun.shadow.camera.near = Math.max(0.5, sunDist * 0.08);
+    this.sun.shadow.camera.far = Math.max(40, sunDist * 3.0);
+    this.sun.shadow.bias = -0.0004;
+    this.sun.shadow.normalBias = Math.min(0.028, Math.max(0.002, shadowHalf * 0.0007));
     this.sun.shadow.camera.updateProjectionMatrix();
 
     this.fill.color.set(spec.fillColor);
     this.fill.intensity = spec.fillIntensity;
-    this.fill.position.copy(at).addScaledVector(fillDir, Math.max(300, this.view.span * 1.8));
+    this.fill.position.copy(at).addScaledVector(fillDir, Math.max(20, this.view.span * 1.8));
     this.fill.target.position.copy(at);
 
     this.renderer.toneMappingExposure = spec.exposure * styleExp;
@@ -3035,7 +3436,15 @@ export class AtlasThreeRuntime {
     this.waterMat.uniforms.uFocus!.value.set(this.view.x, this.view.z);
     this.waterMat.uniforms.uSpan!.value = this.view.span;
     if (this.worldMaps.length > 0) {
+      const hfTex = this.multiMap.worldTerrain.getHeightFieldTexture();
+      this.waterMat.uniforms.uWorldHeightTex!.value = hfTex.texture;
+      this.waterMat.uniforms.uHasWorldHeight!.value = hfTex.texture ? 1.0 : 0.0;
+      this.waterMat.uniforms.uHeightMin!.value = hfTex.minH;
+      this.waterMat.uniforms.uHeightMax!.value = hfTex.maxH;
+      this.waterMat.uniforms.uWaterLevel!.value = hfTex.waterLevel;
       this.multiMap.syncWaterUniforms(this.waterMat);
+    } else {
+      this.waterMat.uniforms.uHasWorldHeight!.value = 0.0;
     }
 
     // Gentle rising chimney smoke animation
@@ -3123,7 +3532,20 @@ export class AtlasThreeRuntime {
           this.onCameraChange?.(this.view);
         }
       } else {
-        const damped = dampAtlasThreeView(this.view, this.targetView, dtSec, 11.5);
+        const aspect = w / Math.max(1, h);
+        const anchorCtx = this.zoomAnchor
+          ? {
+              anchorWorld: this.zoomAnchor.anchorWorld,
+              targetNdcX: this.zoomAnchor.targetNdcX,
+              targetNdcY: this.zoomAnchor.targetNdcY,
+              aspect,
+              sampleFocusElevation:
+                this.worldMaps.length > 0
+                  ? (wx: number, wz: number) => this.multiMap.getActiveEditorElevationY(wx, wz)
+                  : undefined,
+            }
+          : null;
+        const damped = dampAtlasThreeView(this.view, this.targetView, dtSec, 12.5, anchorCtx);
         if (!damped.settled) {
           this.view = damped.next;
           if (now - this.lastCameraNotifyMs > 48) {
@@ -3131,14 +3553,18 @@ export class AtlasThreeRuntime {
             this.onCameraChange?.(this.view);
           }
         } else if (
-          this.view.x !== this.targetView.x ||
-          this.view.z !== this.targetView.z ||
-          this.view.span !== this.targetView.span ||
-          this.view.yawRad !== this.targetView.yawRad ||
-          this.view.pitchRad !== this.targetView.pitchRad
+          this.view.x !== damped.next.x ||
+          this.view.z !== damped.next.z ||
+          this.view.span !== damped.next.span ||
+          this.view.yawRad !== damped.next.yawRad ||
+          this.view.pitchRad !== damped.next.pitchRad
         ) {
-          this.view = { ...this.targetView };
+          this.view = damped.next;
+          this.targetView = { ...damped.next };
+          this.zoomAnchor = null;
           this.onCameraChange?.(this.view);
+        } else {
+          this.zoomAnchor = null;
         }
       }
 
@@ -3218,8 +3644,8 @@ export const ATLAS_THREE_SURFACES = {
   },
   'sheet-outdoor': { pbr: 'grass', color: '#bdd0a8', roughness: 0.96, normalScale: 0.52, tile: 74 },
   'sheet-indoor': { pbr: 'rock', color: '#465056', roughness: 0.95, normalScale: 0.7, tile: 54 },
-  'floor-cobble': { pbr: 'cobble', color: '#e4dac2', roughness: 0.84, normalScale: 0.68, tile: 48 },
-  'floor-stone': { pbr: 'cobble', color: '#b4b0a5', roughness: 0.86, normalScale: 0.72, tile: 36 },
+  'floor-cobble': { pbr: 'cobble', color: '#e2d7be', roughness: 0.86, normalScale: 0.72, tile: 20 },
+  'floor-stone': { pbr: 'cobble', color: '#b0aca0', roughness: 0.88, normalScale: 0.74, tile: 18 },
   'floor-wood': { pbr: 'wood', color: '#deb486', roughness: 0.72, normalScale: 0.58, tile: 34 },
   'floor-dirt': { pbr: 'dirt', color: '#c8b28d', roughness: 0.96, normalScale: 0.58, tile: 42 },
   'floor-sand': { pbr: 'sand', color: '#e4d5af', roughness: 0.9, normalScale: 0.54, tile: 46 },
@@ -3406,39 +3832,50 @@ export type AtlasThreeScenePlan = {
 ```ts
 export function terrainColorAt(height: number, waterLevel: number, slope: number): THREE.Color {
   const c = new THREE.Color();
-  if (height < waterLevel - 0.6) {
-    const depthT = Math.min(1, (waterLevel - 0.6 - height) / 7);
-    c.set('#2b6972').lerp(new THREE.Color('#1a4452'), depthT);
+  if (height < waterLevel - 0.55) {
+    const depthT = Math.min(1, (waterLevel - 0.55 - height) / 7.5);
+    c.set('#28646e').lerp(new THREE.Color('#143b49'), depthT);
     return c;
   }
-  if (height < waterLevel + 1.8) {
-    const t = Math.max(0, Math.min(1, (height - (waterLevel - 0.6)) / 2.4));
-    c.set('#5a928a').lerp(new THREE.Color('#decfa4'), t);
-    return c;
-  }
-  if (height < 13) {
-    const t = Math.max(0, Math.min(1, (height - (waterLevel + 1.8)) / 11.2));
-    c.set('#7ea85f').lerp(new THREE.Color('#4a7b4c'), t);
-    if (slope > 0.28) {
-      c.lerp(new THREE.Color('#8d9387'), Math.min(0.82, (slope - 0.28) * 2.1));
+  if (height < waterLevel + 1.55) {
+    // Organic damp-pebble to warm sunlit beach sand transition along physical coastline
+    const t = Math.max(0, Math.min(1, (height - (waterLevel - 0.55)) / 2.1));
+    c.set('#5e8f84').lerp(new THREE.Color('#d8c79a'), t);
+    if (slope > 0.24) {
+      c.lerp(new THREE.Color('#7f8376'), Math.min(0.75, (slope - 0.24) * 2.4));
     }
     return c;
   }
-  if (height < 25) {
-    const t = Math.max(0, Math.min(1, (height - 13) / 12));
-    c.set('#6d7c63').lerp(new THREE.Color('#959d94'), t);
-    if (slope > 0.35) {
-      c.lerp(new THREE.Color('#7f8580'), Math.min(0.75, (slope - 0.35) * 1.8));
+  if (height < 11.5) {
+    // Lowland meadow -> lush forest floor with warm earth & exposed hillside rock on steep slopes
+    const t = Math.max(0, Math.min(1, (height - (waterLevel + 1.55)) / 10));
+    c.set('#84a660').lerp(new THREE.Color('#4a7648'), t);
+    if (slope > 0.16 && slope <= 0.34) {
+      c.lerp(new THREE.Color('#7b7054'), Math.min(0.45, (slope - 0.16) * 2.2));
+    }
+    if (slope > 0.24) {
+      c.lerp(new THREE.Color('#848a80'), Math.min(0.86, (slope - 0.24) * 2.3));
     }
     return c;
   }
-  const snowT = Math.max(0, Math.min(1, (height - 25) / 14));
-  c.set('#9ba49d').lerp(new THREE.Color('#f3f7fa'), snowT);
+  if (height < 23) {
+    const t = Math.max(0, Math.min(1, (height - 11.5) / 11.5));
+    c.set('#64765a').lerp(new THREE.Color('#8e958d'), t);
+    if (slope > 0.26) {
+      c.lerp(new THREE.Color('#6f7673'), Math.min(0.82, (slope - 0.26) * 2.1));
+    }
+    return c;
+  }
+  const snowT = Math.max(0, Math.min(1, (height - 23) / 13));
+  c.set('#969f99').lerp(new THREE.Color('#eff5f8'), snowT);
+  if (slope > 0.42) {
+    c.lerp(new THREE.Color('#767e7e'), Math.min(0.55, (slope - 0.42) * 1.6));
+  }
   return c;
 }
 ```
 
-### src/infrastructure/world/atlas-three/atlas-three-scene.ts:929
+### src/infrastructure/world/atlas-three/atlas-three-scene.ts:940
 
 ```ts
 export type SharedWorldTerrainBinding = {
@@ -3453,7 +3890,7 @@ export type SharedWorldTerrainBinding = {
 };
 ```
 
-### src/infrastructure/world/atlas-three/atlas-three-scene.ts:940
+### src/infrastructure/world/atlas-three/atlas-three-scene.ts:951
 
 ```ts
 export type BuildAtlasThreeSceneOptions = {
@@ -3480,7 +3917,7 @@ export type BuildAtlasThreeSceneOptions = {
 };
 ```
 
-### src/infrastructure/world/atlas-three/atlas-three-scene.ts:963
+### src/infrastructure/world/atlas-three/atlas-three-scene.ts:974
 
 ```ts
 export function buildAtlasThreeScenePlan(
@@ -3567,9 +4004,9 @@ export function buildAtlasThreeScenePlan(
     const y =
       terrainDrivenElevation && keepOverlaySurface
         ? sampleGroundY(cx, cz, 4.5) +
-          (sharedTerrain
-            ? (0.04 + i * 0.004) / Math.max(1e-4, sharedTerrain.verticalScale)
-            : 0.38 + i * dyR)
+        (sharedTerrain
+          ? (0.04 + i * 0.004) / Math.max(1e-4, sharedTerrain.verticalScale)
+          : 0.38 + i * dyR)
         : -0.45 + i * dyR;
     const surface: AtlasThreeSurfaceKey | 'water' = atlasThreeFloorSurface(matName, opts.mapScale);
     const b = surface === 'water' ? water : get(surface);
@@ -3895,6 +4332,12 @@ export function buildAtlasThreeScenePlan(
   if (showCanonicalObjects) {
     for (const q of plan.primitives) {
       if (q.kind !== 'prop' && q.kind !== 'building_footprint') continue;
+      if (sharedTerrain && opts.mapScale === 'world') {
+        const [wx, wz] = sharedTerrain.mapToWorld(q.x, q.y);
+        const worldElev = sharedTerrain.sampleElevationWorld(wx, wz);
+        // Prevent legacy world-overview landmarks from floating in open deep ocean
+        if (worldElev < sharedTerrain.waterLevel - 0.6) continue;
+      }
       ids.add(q.id);
       const groundElevation = sampleGroundY(q.x, q.y, -0.35);
       emitCanonicalProp(get, q, objAngles.get(q.id) ?? 0, torches, aoDiscs, smokePoints, mistPoints, {
@@ -4020,7 +4463,7 @@ export function buildAtlasThreeScenePlan(
 }
 ```
 
-### src/infrastructure/world/atlas-three/atlas-three-scene.ts:1500
+### src/infrastructure/world/atlas-three/atlas-three-scene.ts:1517
 
 ```ts
 export function buildAtlasScatterGeometry(kind: AtlasScatterKind): {
@@ -4189,11 +4632,16 @@ export function buildTerrainChunkGeometry(
   const lodLift = descriptor.lodLevel * TERRAIN_LOD_LIFT_STEP;
 
   const positions: number[] = [];
+  const normals: number[] = [];
   const uvs: number[] = [];
   const colors: number[] = [];
 
-  const hAt = (c: number, r: number): number =>
-    heights[Math.max(0, Math.min(res, r)) * stride + Math.max(0, Math.min(res, c))] ?? 0;
+  const hAt = (c: number, r: number): number => {
+    if (c >= 0 && c <= res && r >= 0 && r <= res) {
+      return heights[r * stride + c] ?? 0;
+    }
+    return sampleWorldHeight(source, minX + c * stepX, minZ + r * stepZ);
+  };
 
   for (let r = 0; r <= res; r += 1) {
     const wz = minZ + r * stepZ;
@@ -4204,9 +4652,15 @@ export function buildTerrainChunkGeometry(
       const hR = hAt(c + 1, r);
       const hU = hAt(c, r - 1);
       const hD = hAt(c, r + 1);
-      const slope = Math.hypot(hR - hL, hD - hU) / Math.max(0.25, (stepX + stepZ));
+      // Continuous cross-chunk analytical normal (eliminates chunk border seams & skirt normal bleed!)
+      const nx = hL - hR;
+      const ny = Math.max(0.25, stepX + stepZ);
+      const nz = hU - hD;
+      const nLen = Math.hypot(nx, ny, nz) || 1;
+      const slope = Math.hypot(nx, nz) / ny;
       const col = terrainColorAt(elev, source.waterLevel, slope);
       positions.push(wx, elev + lodLift, wz);
+      normals.push(nx / nLen, ny / nLen, nz / nLen);
       uvs.push(wx / 72, wz / 72);
       colors.push(col.r, col.g, col.b);
     }
@@ -4223,7 +4677,8 @@ export function buildTerrainChunkGeometry(
     }
   }
 
-  // Append downward skirts along all 4 chunk borders (zero LOD T-junction cracks)
+  // Append downward skirts along all 4 chunk borders using copied surface normals
+  // so skirts hide T-junction cracks without bleeding vertical normals into chunk edges!
   const appendSkirtEdge = (edgeIndices: readonly number[]) => {
     const baseStart = positions.length / 3;
     for (let k = 0; k < edgeIndices.length; k += 1) {
@@ -4231,8 +4686,9 @@ export function buildTerrainChunkGeometry(
       const p3 = srcIdx * 3;
       const p2 = srcIdx * 2;
       positions.push(positions[p3]!, positions[p3 + 1]! - SKIRT_DROP, positions[p3 + 2]!);
+      normals.push(normals[p3]!, normals[p3 + 1]!, normals[p3 + 2]!);
       uvs.push(uvs[p2]!, uvs[p2 + 1]!);
-      colors.push(colors[p3]!, colors[p3 + 1]!, colors[p3 + 2]!);
+      colors.push(colors[p3]! * 0.94, colors[p3 + 1]! * 0.94, colors[p3 + 2]! * 0.94);
     }
     for (let k = 0; k + 1 < edgeIndices.length; k += 1) {
       const top0 = edgeIndices[k]!;
@@ -4262,16 +4718,113 @@ export function buildTerrainChunkGeometry(
 
   const geometry = new THREE.BufferGeometry();
   geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+  geometry.setAttribute('normal', new THREE.Float32BufferAttribute(normals, 3));
   geometry.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
   geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
   geometry.setIndex(index);
-  geometry.computeVertexNormals();
   geometry.computeBoundingSphere();
   return { geometry, triangleCount: index.length / 3 };
 }
 ```
 
-### src/infrastructure/world/atlas-three/atlas-three-world-terrain.ts:149
+### src/infrastructure/world/atlas-three/atlas-three-world-terrain.ts:172
+
+```ts
+export function enhanceWorldTerrainMaterial(base: THREE.MeshStandardMaterial): THREE.MeshStandardMaterial {
+  const mat = base.clone();
+  mat.vertexColors = true;
+  mat.roughness = 0.92;
+  mat.metalness = 0.0;
+  mat.onBeforeCompile = (shader) => {
+    shader.vertexShader = shader.vertexShader
+      .replace(
+        '#include <common>',
+        `#include <common>
+varying vec3 vAtlasWorldPos;
+varying vec3 vAtlasWorldNormal;`,
+      )
+      .replace(
+        '#include <worldpos_vertex>',
+        `#include <worldpos_vertex>
+vec4 atlasWp = modelMatrix * vec4(transformed, 1.0);
+vAtlasWorldPos = atlasWp.xyz;
+vAtlasWorldNormal = normalize(mat3(modelMatrix) * objectNormal);`,
+      );
+
+    shader.fragmentShader = shader.fragmentShader
+      .replace(
+        '#include <common>',
+        `#include <common>
+varying vec3 vAtlasWorldPos;
+varying vec3 vAtlasWorldNormal;
+float atlasHash2(vec2 p) {
+  return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123);
+}
+float atlasVNoise(vec2 p) {
+  vec2 i = floor(p);
+  vec2 f = fract(p);
+  vec2 u = f * f * (3.0 - 2.0 * f);
+  return mix(
+    mix(atlasHash2(i), atlasHash2(i + vec2(1.0, 0.0)), u.x),
+    mix(atlasHash2(i + vec2(0.0, 1.0)), atlasHash2(i + vec2(1.0, 1.0)), u.x),
+    u.y
+  );
+}`,
+      )
+      .replace(
+        '#include <color_fragment>',
+        `#include <color_fragment>
+{
+  vec2 wp = vAtlasWorldPos.xz;
+  float wy = vAtlasWorldPos.y;
+  float slopeAmt = 1.0 - clamp(vAtlasWorldNormal.y, 0.0, 1.0);
+
+  // Tri-scale world-space procedural variation: macro biome (90 wu), mid meadow (11 wu), micro blade/pebble (0.8 wu)
+  float macro = atlasVNoise(wp * 0.011 + vec2(3.7, -2.1)) * 0.62 + atlasVNoise(wp * 0.029) * 0.38;
+  float mid = atlasVNoise(wp * 0.095 + vec2(-5.2, 8.4)) * 0.6 + atlasVNoise(wp * 0.24) * 0.4;
+  float micro = atlasVNoise(wp * 1.15) * 0.55 + atlasVNoise(wp * 2.85 + vec2(1.9, 4.3)) * 0.45;
+
+  // Warm sunlit meadow vs rich forest soil variation (breaks flat green plastic look at ALL spans)
+  vec3 warmEarth = vec3(0.56, 0.49, 0.34);
+  vec3 sunGrass = vec3(0.60, 0.72, 0.38);
+  vec3 cliffRock = vec3(0.47, 0.49, 0.46);
+  vec3 wetSand = vec3(0.58, 0.55, 0.41);
+
+  float earthPatch = smoothstep(0.54, 0.84, macro) * smoothstep(1.2, 4.0, wy) * (1.0 - smoothstep(10.0, 18.0, wy));
+  diffuseColor.rgb = mix(diffuseColor.rgb, warmEarth, earthPatch * 0.28);
+  diffuseColor.rgb = mix(diffuseColor.rgb, sunGrass, smoothstep(0.42, 0.78, mid) * 0.16 * (1.0 - slopeAmt));
+
+  // Steep slope rock strata blending (only on real cliffs/ridges, never gentle rolling meadows)
+  float rockMask = smoothstep(0.18, 0.44, slopeAmt);
+  float strata = 0.88 + 0.20 * sin(wy * 2.6 + macro * 6.0);
+  diffuseColor.rgb = mix(diffuseColor.rgb, cliffRock * strata, rockMask * 0.65);
+
+  // Coastal damp-sand & shoreline darkening near water level
+  float coastBand = 1.0 - smoothstep(0.0, 1.8, abs(wy - 0.15));
+  diffuseColor.rgb = mix(diffuseColor.rgb, wetSand, coastBand * 0.32);
+
+  // Multi-scale crisp luminance grain (stays readable from planet zoom down to tavern close-up!)
+  float grain = (macro - 0.5) * 0.14 + (mid - 0.5) * 0.14 + (micro - 0.5) * 0.16;
+  diffuseColor.rgb *= clamp(1.0 + grain, 0.74, 1.24);
+}`,
+      )
+      .replace(
+        '#include <roughnessmap_fragment>',
+        `#include <roughnessmap_fragment>
+{
+  float wyR = vAtlasWorldPos.y;
+  float wetShore = 1.0 - smoothstep(-0.2, 0.85, wyR);
+  roughnessFactor = mix(roughnessFactor, 0.42, wetShore * 0.55);
+}`,
+      );
+  };
+  mat.customProgramCacheKey = () => 'atlas-world-terrain-triscale-v1';
+  mat.needsUpdate = true;
+  return mat;
+}
+```
+
+### src/infrastructure/world/atlas-three/atlas-three-world-terrain.ts:265
 
 ```ts
 export class AtlasThreeWorldTerrain {
@@ -4280,6 +4833,9 @@ export class AtlasThreeWorldTerrain {
   private source: AtlasWorldHeightfieldSource | null = null;
   private lastPlan: AtlasWorldTerrainChunkPlan | null = null;
   private incrementalSyncCount = 0;
+  private enhancedMaterial: THREE.MeshStandardMaterial | null = null;
+  private heightTex: THREE.DataTexture | null = null;
+  private heightTexRevision = '';
 
   constructor(private readonly getTerrainMaterial: () => THREE.Material) {
     this.rootGroup.name = 'atlas3:shared-world-terrain';
@@ -4292,11 +4848,80 @@ export class AtlasThreeWorldTerrain {
     this.source = source;
     if (!source) {
       this.dispose();
+    } else {
+      this.rebuildHeightTexture(source);
     }
   }
 
   getSource(): AtlasWorldHeightfieldSource | null {
     return this.source;
+  }
+
+  /** Lightweight 128×128 normalized heightfield bathymetry texture for organic shoreline water shading. */
+  getHeightFieldTexture(): {
+    readonly texture: THREE.DataTexture | null;
+    readonly minH: number;
+    readonly maxH: number;
+    readonly waterLevel: number;
+  } {
+    return {
+      texture: this.heightTex,
+      minH: HEIGHT_TEX_MIN,
+      maxH: HEIGHT_TEX_MAX,
+      waterLevel: this.source?.waterLevel ?? 0,
+    };
+  }
+
+  private rebuildHeightTexture(source: AtlasWorldHeightfieldSource): void {
+    if (this.heightTex && this.heightTexRevision === source.revisionKey) return;
+    if (this.heightTex) {
+      this.heightTex.dispose();
+      this.heightTex = null;
+    }
+    const data = new Uint8Array(HEIGHT_TEX_RES * HEIGHT_TEX_RES * 4);
+    const invRange = 1 / (HEIGHT_TEX_MAX - HEIGHT_TEX_MIN);
+    for (let r = 0; r < HEIGHT_TEX_RES; r += 1) {
+      const wz = ((r + 0.5) / HEIGHT_TEX_RES) * 1000;
+      for (let c = 0; c < HEIGHT_TEX_RES; c += 1) {
+        const wx = ((c + 0.5) / HEIGHT_TEX_RES) * 1000;
+        const h = sampleWorldHeight(source, wx, wz);
+        const norm = Math.max(0, Math.min(1, (h - HEIGHT_TEX_MIN) * invRange));
+        const byte = Math.round(norm * 255);
+        const off = (r * HEIGHT_TEX_RES + c) * 4;
+        data[off] = byte;
+        data[off + 1] = byte;
+        data[off + 2] = byte;
+        data[off + 3] = 255;
+      }
+    }
+    const tex = new THREE.DataTexture(data, HEIGHT_TEX_RES, HEIGHT_TEX_RES, THREE.RGBAFormat);
+    tex.magFilter = THREE.LinearFilter;
+    tex.minFilter = THREE.LinearFilter;
+    tex.wrapS = THREE.ClampToEdgeWrapping;
+    tex.wrapT = THREE.ClampToEdgeWrapping;
+    tex.flipY = false;
+    tex.needsUpdate = true;
+    this.heightTex = tex;
+    this.heightTexRevision = source.revisionKey;
+  }
+
+  private resolveChunkMaterial(): THREE.Material {
+    if (this.enhancedMaterial) return this.enhancedMaterial;
+    const base = this.getTerrainMaterial();
+    if (base instanceof THREE.MeshStandardMaterial) {
+      this.enhancedMaterial = enhanceWorldTerrainMaterial(base);
+      return this.enhancedMaterial;
+    }
+    return base;
+  }
+
+  /** Mounted terrain chunk meshes for accurate 3D raycast picking under cursor (Phase A). */
+  getChunkMeshes(): readonly THREE.Object3D[] {
+    const out: THREE.Object3D[] = [];
+    for (const node of this.chunks.values()) {
+      out.push(node.mesh);
+    }
+    return out;
   }
 
   sampleElevation(worldX: number, worldZ: number): number {
@@ -4327,7 +4952,7 @@ export class AtlasThreeWorldTerrain {
       }
     }
 
-    const material = this.getTerrainMaterial();
+    const material = this.resolveChunkMaterial();
     for (const desc of plan.chunks) {
       const existing = this.chunks.get(desc.chunkId);
       if (existing && existing.descriptor.resolution === desc.resolution) {
@@ -4382,6 +5007,15 @@ export class AtlasThreeWorldTerrain {
       this.disposeChunkNode(node);
     }
     this.chunks.clear();
+    if (this.heightTex) {
+      this.heightTex.dispose();
+      this.heightTex = null;
+      this.heightTexRevision = '';
+    }
+    if (this.enhancedMaterial) {
+      this.enhancedMaterial.dispose();
+      this.enhancedMaterial = null;
+    }
     this.lastPlan = null;
   }
 
@@ -4436,7 +5070,7 @@ export type UnifiedWheelAction =
     };
 ```
 
-### src/infrastructure/world/atlas-three/atlas-unified-input.ts:56
+### src/infrastructure/world/atlas-three/atlas-unified-input.ts:63
 
 ```ts
 export function normalizeWheelDelta(
@@ -4454,7 +5088,7 @@ export function normalizeWheelDelta(
 }
 ```
 
-### src/infrastructure/world/atlas-three/atlas-unified-input.ts:74
+### src/infrastructure/world/atlas-three/atlas-unified-input.ts:81
 
 ```ts
 export function classifyUnifiedWheelGesture(ev: NormalizedWheelInput): UnifiedWheelAction {
@@ -4462,10 +5096,10 @@ export function classifyUnifiedWheelGesture(ev: NormalizedWheelInput): UnifiedWh
 
   // 1) Chromium / Firefox Trackpad Pinch (or Ctrl+Wheel) → Zoom toward cursor (E3)
   if (ev.ctrlKey) {
-    // Trackpad pinch wheel deltas are typically small (~±2..25 px); scale smoothly.
+    // Trackpad pinch wheel deltas are typically small (~±2..25 px); scale smoothly & clamp.
     return {
       kind: 'pinch-zoom',
-      zoomDelta: dy * 4.5,
+      zoomDelta: clampZoomDelta(dy * 4.5),
       clientX: ev.clientX,
       clientY: ev.clientY,
     };
@@ -4484,7 +5118,7 @@ export function classifyUnifiedWheelGesture(ev: NormalizedWheelInput): UnifiedWh
   if (ev.metaKey) {
     return {
       kind: 'wheel-zoom',
-      zoomDelta: dy,
+      zoomDelta: clampZoomDelta(dy),
       clientX: ev.clientX,
       clientY: ev.clientY,
     };
@@ -4508,14 +5142,14 @@ export function classifyUnifiedWheelGesture(ev: NormalizedWheelInput): UnifiedWh
   // 5) Standard physical mouse wheel → Zoom toward cursor
   return {
     kind: 'wheel-zoom',
-    zoomDelta: dy,
+    zoomDelta: clampZoomDelta(dy),
     clientX: ev.clientX,
     clientY: ev.clientY,
   };
 }
 ```
 
-### src/infrastructure/world/atlas-three/atlas-unified-input.ts:132
+### src/infrastructure/world/atlas-three/atlas-unified-input.ts:139
 
 ```ts
 export type SafariGestureEventLike = Event & {
@@ -4525,7 +5159,7 @@ export type SafariGestureEventLike = Event & {
 };
 ```
 
-### src/infrastructure/world/atlas-three/atlas-unified-input.ts:142
+### src/infrastructure/world/atlas-three/atlas-unified-input.ts:149
 
 ```ts
 export function safariGestureScaleToZoomDelta(prevScale: number, nextScale: number): number {
@@ -4537,7 +5171,7 @@ export function safariGestureScaleToZoomDelta(prevScale: number, nextScale: numb
 }
 ```
 
-### src/infrastructure/world/atlas-three/atlas-unified-input.ts:150
+### src/infrastructure/world/atlas-three/atlas-unified-input.ts:157
 
 ```ts
 export type AtlasUnifiedInputCallbacks = {
@@ -4547,7 +5181,7 @@ export type AtlasUnifiedInputCallbacks = {
 };
 ```
 
-### src/infrastructure/world/atlas-three/atlas-unified-input.ts:160
+### src/infrastructure/world/atlas-three/atlas-unified-input.ts:167
 
 ```ts
 export function bindAtlasUnifiedInput(
@@ -5302,7 +5936,7 @@ All backend operations are included in the public declarations above.
 | `src/domains/world/atlas/atlas-hierarchy-nav.ts` | `d9df6c10f147e7f325dfc735306fe481e4aa1fc601e215a1f79df0f53b190be7` |
 | `src/domains/world/atlas/atlas-label-hierarchy.ts` | `6f8f987d86aa3e9e7ab9aeb0d35d5fe2d1ae215cc55a553bcb8af55ec7ea7fc6` |
 | `src/domains/world/atlas/atlas-map-doc-adapter.ts` | `d85a2ed7b2e6cd9650c4d87664fb09e7b4621779f2a820ed65c421e353caf04a` |
-| `src/domains/world/atlas/atlas-map-pins.ts` | `1421ca01edd55307c341adc3ac74f4c5a7cef87f60fadbbe0faaa141898b4791` |
+| `src/domains/world/atlas/atlas-map-pins.ts` | `b74c3663811af34c3814f94b09d33c7ab9d6bb01a374aee0e0f9aa92f0e9aa76` |
 | `src/domains/world/atlas/atlas-perf-budgets.ts` | `3a74334bd3b91af40731ea970d9a79cd189ca672b830e40025adfc71dbe4cf33` |
 | `src/domains/world/atlas/atlas-persist-state.ts` | `84ab0edbd0b525c95b5db85afeb683d335351884ba6c612e94f327719a6b60ca` |
 | `src/domains/world/atlas/atlas-product-camera.ts` | `6d65226fe7e6594079b61df81ec39a226d5b79788327ef95609dc70f9980d179` |
@@ -5310,7 +5944,7 @@ All backend operations are included in the public declarations above.
 | `src/domains/world/atlas/atlas-prototype-lod.ts` | `2fb7c706ad2210f7a3f389f22564f60e3f22aa615ec49af49695e388ae582256` |
 | `src/domains/world/atlas/atlas-renderer-target.ts` | `f51d6dc7122851ef8b88e1c567984f50f743a1630cf5f36212205fe70c8662ff` |
 | `src/domains/world/atlas/atlas-revision-contract.ts` | `d01c356239143862f9aa8f3fd44fca79105e3ed390327c34b9be6ce1902c78d6` |
-| `src/domains/world/atlas/atlas-scene-scatter.ts` | `0dcc6a1e685c273f4f16a9cd3d0443abf4010e8a561f8c9f26e3723d41132be3` |
+| `src/domains/world/atlas/atlas-scene-scatter.ts` | `0e4d47d172f1cd5267691e82a97989df2bc9d4972315da008450a5d52a76d096` |
 | `src/domains/world/atlas/atlas-selection.ts` | `6c16fb40fe26addea8e33e718a89a019de099c6008c1000dd697d48fa12849a7` |
 | `src/domains/world/atlas/atlas-spatial-containment.ts` | `b4d0dd0186856c2df5adb7cbaa58743ec9e786deb9726b281fbaa7966594e8f7` |
 | `src/domains/world/atlas/atlas-spatial-edit-prefs.ts` | `14e9039e97bf3c7fffa86d1585fa2d5e85ebc943e489ff9d3c83c91746aff218` |
@@ -5321,7 +5955,7 @@ All backend operations are included in the public declarations above.
 | `src/domains/world/atlas/atlas-webgl-write-retire.ts` | `baf40e97aaa9c74c873f3919e72b4d9049e8c7781566ed58ce52ccf2f168ce69` |
 | `src/domains/world/atlas/atlas-workstation-adaptive.ts` | `2a87a8f4cf36e532f9bbb0faa0085013f4169fedc26622a1bbef800b46f59846` |
 | `src/domains/world/atlas/atlas-world-camera.ts` | `b0ac5e7eac73a8cdaa0e21e6758f6d6cfa1e448d935a9d763213a6ce9bc9a127` |
-| `src/domains/world/atlas/atlas-world-focus.ts` | `eefe75d78f9ca65376d0c1507b977ec76a47b9c0a4b366a28340403708ff1203` |
+| `src/domains/world/atlas/atlas-world-focus.ts` | `e8da0d711424bb7a4fa87c1533111d2d4ce1bf06799334e8d5a72128cf610bfd` |
 | `src/domains/world/atlas/atlas-world-operation-history.ts` | `c4e86bcd0cd6d52aac70fcda5cce145534e665eafc9a74d66205f349b0b36c03` |
 | `src/domains/world/atlas/atlas-world-scene-plan.ts` | `dafcce50bdd1698b805b99a8a7e8b63bf495fa76879fc5e8830275f564630494` |
 | `src/domains/world/atlas/atlas-world-space.ts` | `9023fa99f88df8873ac68934fe0c7389dcafa991f02b27769099e60bbedd91af` |
@@ -5384,13 +6018,13 @@ All backend operations are included in the public declarations above.
 | `src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-harness.ts` | `7cb604c899852fcf48364b031180e8c2c4acae92f779e68cc2416e58686e536a` |
 | `src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-runtime.ts` | `f250027a4c5a9674e377313738dac7f70a8a253464c46033f6a400a229b53c82` |
 | `src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-scene.ts` | `f63e63b2be555ef8348d15141ed44a01e70670667e3d0946221db2720cc32d8c` |
-| `src/infrastructure/world/atlas-three/atlas-three-camera.ts` | `ba02fba1d1dbd675912a5a2472a002cbe99c8673d74838d7aa61995645c62a0c` |
-| `src/infrastructure/world/atlas-three/atlas-three-multimap.ts` | `161ed2b35c4c81e5685804b847bc2ebd7797cb21051aed960589d1d981632c9e` |
-| `src/infrastructure/world/atlas-three/atlas-three-runtime.ts` | `ed606ecdf68cc0c61e9aa595a5146fdc15a1a63ffcc1dc819b5cec5d4ea11f1d` |
-| `src/infrastructure/world/atlas-three/atlas-three-scene.ts` | `23fb78f5ebba9b04bbefd81dda6410a1eb426564432eb98f2c18a6a117053c55` |
-| `src/infrastructure/world/atlas-three/atlas-three-world-terrain.ts` | `3687dbe393870da04c9063acec595d8a0387149b6d97e8f1e4bfc380d7773240` |
-| `src/infrastructure/world/atlas-three/atlas-unified-input.ts` | `8843d39261ec1696a480b8be7c1540c6d752c060e0595788495ffb08d2c39007` |
-| `src/infrastructure/world/atlas-three/index.ts` | `de6d00dcd47960994b2010a442e50e75c0f068797e22e7317aa25f71e90f5f88` |
+| `src/infrastructure/world/atlas-three/atlas-three-camera.ts` | `1d1462536e7c19d834df5e2acddf48dabbd94fdf43ebfeeb86752556ec4c6cf4` |
+| `src/infrastructure/world/atlas-three/atlas-three-multimap.ts` | `24327937d71aa12a5d8d9996d2527144028a9eb015c51eac82ccdfc5ef524b97` |
+| `src/infrastructure/world/atlas-three/atlas-three-runtime.ts` | `80269de9b7773559b477997a8256de98987e9d34141e5f7db1db25472ac26b00` |
+| `src/infrastructure/world/atlas-three/atlas-three-scene.ts` | `629e35c19227acdea4d6c261a9bfe16aadbccc7fb6b627a82e1f9fc90ffd3c18` |
+| `src/infrastructure/world/atlas-three/atlas-three-world-terrain.ts` | `05daaa14fddd5080ef6ca7abf7fd6b9db24de7cede3cf98cc2ec6bc421b78ff9` |
+| `src/infrastructure/world/atlas-three/atlas-unified-input.ts` | `ab0b8b75470742020a6bf335045118e981e831fb9a6d0358dec7148e89b63bb9` |
+| `src/infrastructure/world/atlas-three/index.ts` | `9b648994cba9271d482569c33edb47183e22df2ba7a289e6a30297ba21e322b8` |
 | `src/infrastructure/world/atlas-three/pbr-textures.ts` | `e5eb4eb6a63888eb95f95368e9e19400c8331b2d880f3b566708aeed2fc060b8` |
 | `src/infrastructure/world/host-world-adapter.ts` | `8fbaad8d6d4ec9cc42070444441fae94fb20af020cdada2125a705877ea4e1f1` |
 | `src/infrastructure/world/host-world-ports.contract.ts` | `9d11c1085646775f6c6eb5bdc29baa7ed40af0245354589bd767d4f80da1d582` |
