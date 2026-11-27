@@ -454,6 +454,11 @@ export function WorldAtlasWorkbench({
   const childMapLoadContextRef = useRef<readonly [boolean, string | null | undefined, string | null] | null>(null);
   const childMapVmsRef = useRef<readonly WorldAtlasMapVm[]>(childMapVms);
   childMapVmsRef.current = childMapVms;
+  const [childLoadRetryTick, setChildLoadRetryTick] = useState(0);
+  const childLoadRetryCountRef = useRef(0);
+  useEffect(() => {
+    childLoadRetryCountRef.current = 0;
+  }, [childSummaryKey, effectivePlayerView, sagaPublicId, worldRootSummaryId]);
   useEffect(() => {
     if (!childSummaryKey || !worldRootSummaryId || !isHostLibraryEnabled()) {
       childMapLoadContextRef.current = null;
@@ -461,6 +466,7 @@ export function WorldAtlasWorkbench({
       return;
     }
     let cancelled = false;
+    let retryTimer: number | null = null;
     const context = [effectivePlayerView, sagaPublicId, worldRootSummaryId] as const;
     const prevCtx = childMapLoadContextRef.current;
     const contextChanged =
@@ -497,10 +503,13 @@ export function WorldAtlasWorkbench({
     ).then((results) => {
       if (cancelled) return;
       const loadedById = new Map<string, WorldAtlasMapVm>();
+      let hadRejection = false;
       results.forEach((result, index) => {
         const id = idsToLoad[index];
         if (id && result.status === 'fulfilled' && wantedIds.has(id)) {
           loadedById.set(id, result.value);
+        } else if (result.status === 'rejected') {
+          hadRejection = true;
         }
       });
       setChildMapVms((prev) => {
@@ -522,11 +531,19 @@ export function WorldAtlasWorkbench({
         }
         return next;
       });
+      if (hadRejection && childLoadRetryCountRef.current < 3) {
+        childLoadRetryCountRef.current += 1;
+        const delayMs = 1500 * Math.pow(2, childLoadRetryCountRef.current - 1);
+        retryTimer = window.setTimeout(() => {
+          if (!cancelled) setChildLoadRetryTick((t) => t + 1);
+        }, delayMs);
+      }
     });
     return () => {
       cancelled = true;
+      if (retryTimer !== null) window.clearTimeout(retryTimer);
     };
-  }, [childSummaryKey, effectivePlayerView, sagaPublicId, worldRootSummaryId]);
+  }, [childSummaryKey, childLoadRetryTick, effectivePlayerView, sagaPublicId, worldRootSummaryId]);
 
   const childWorldSceneEntries = useMemo(() => {
     const resolveMapScale = (mapId: string, kind: WorldAtlasMapVm['kind']) => {
@@ -565,6 +582,18 @@ export function WorldAtlasWorkbench({
 
   const editorCanvasDocLatestRef = useRef<UnifiedCanvasDoc>(editor.canvasDoc);
   editorCanvasDocLatestRef.current = editor.canvasDoc;
+  // Debounced root-doc revision: propagates live root edits into worldSceneGraph & SCM
+  // without rebuilding all child scenes or wiping SCM history on every 60fps pointermove.
+  const [rootDocSyncVersion, setRootDocSyncVersion] = useState(0);
+  const lastSyncedRootDocRef = useRef<UnifiedCanvasDoc>(editor.canvasDoc);
+  useEffect(() => {
+    if (editor.canvasDoc === lastSyncedRootDocRef.current) return;
+    const handle = window.setTimeout(() => {
+      lastSyncedRootDocRef.current = editor.canvasDoc;
+      setRootDocSyncVersion((v) => v + 1);
+    }, 120);
+    return () => window.clearTimeout(handle);
+  }, [editor.canvasDoc]);
 
   const worldSceneGraph = useMemo(() => {
     if (!editor.map || editor.map.parentMapId !== null || childWorldSceneEntries.maps.length === 0) {
@@ -594,12 +623,12 @@ export function WorldAtlasWorkbench({
         mapScale: rootScale,
         look: rootScale === 'interior' ? 'indoor' : 'outdoor',
         bounds: editor.map.bounds,
-        revisionKey: `${editor.map.revision}:${editor.contentEpoch}`,
+        revisionKey: `${editor.map.revision}:${editor.contentEpoch}:${rootDocSyncVersion}`,
       },
       ...childWorldSceneEntries.sources,
     ];
     return maps.length > 1 ? { maps, sources } : null;
-  }, [childWorldSceneEntries, editor.contentEpoch, editor.map, worldLinks, worldPlaces]);
+  }, [childWorldSceneEntries, editor.contentEpoch, editor.map, rootDocSyncVersion, worldLinks, worldPlaces]);
 
   // SCM-04: Minimal Multi-Map Commit Adapter (rules live strictly in `src/domains/world/atlas/`).
   const [spatialWorld, setSpatialWorld] = useState<SpatialWorldModel | null>(null);
@@ -643,12 +672,13 @@ export function WorldAtlasWorkbench({
           prevVm.updatedAt === curVm.updatedAt
         );
       });
+    const currentRootDoc = editorCanvasDocLatestRef.current;
     if (
       prevHydrated !== null &&
       spatialWorldRef.current !== null &&
       prevHydrated.rootId === editor.map.id &&
       prevHydrated.rootRevision === editor.map.revision &&
-      prevHydrated.rootDoc === editor.canvasDoc &&
+      prevHydrated.rootDoc === currentRootDoc &&
       childrenMatch
     ) {
       return;
@@ -674,7 +704,7 @@ export function WorldAtlasWorkbench({
         parentMapId: null,
         parentAnchor: null,
         bounds: editor.map.bounds,
-        doc: editor.canvasDoc,
+        doc: currentRootDoc,
         spatialArchive: extractSpatialArchiveFromGeneratorMeta(editor.map.generatorMeta),
       },
     ];
@@ -698,13 +728,13 @@ export function WorldAtlasWorkbench({
       spatialHydrationStateRef.current = {
         rootId: editor.map.id,
         rootRevision: editor.map.revision,
-        rootDoc: editor.canvasDoc,
+        rootDoc: editorCanvasDocLatestRef.current,
         children: childMapVms,
       };
       setSpatialWorld(built);
       setSpatialHistory(emptySpatialWorldHistory());
     }
-  }, [childMapVms, editor.canvasDoc, editor.map, title, worldLinks, worldPlaces]);
+  }, [childMapVms, editor.map, rootDocSyncVersion, title, worldLinks, worldPlaces]);
 
   const captureMapSnapshots = useCallback(
     (mapIds: readonly string[]): Readonly<Record<string, SpatialMapPersistSnapshot>> => {

@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-world.json](source-contracts/infra-world.json) (SHA-256 `4164df144ba90eb18a7081b0f40b4aa101b1b271ca66295de5e027aab3beb989`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-world.json](source-contracts/infra-world.json) (SHA-256 `117c6afc98915beecf82e0322045f4bc2b636df9351d3d3e53c00e385a29f60c`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -1709,6 +1709,7 @@ export class AtlasThreeMultiMapGraph {
       const verticalScale = Math.sqrt(
         Math.max(1e-8, entry.worldTransform.scaleX * entry.worldTransform.scaleY),
       );
+      const elevationScale = Math.max(0.012, Math.min(0.06, verticalScale * 4));
       overlays.push({
         id: entry.mapId,
         worldBounds: {
@@ -1718,10 +1719,11 @@ export class AtlasThreeMultiMapGraph {
           maxZ: entry.worldAabb.maxY,
         },
         heightfield: hf,
-        elevationScale: Math.max(0.012, Math.min(0.06, verticalScale * 4)),
+        elevationScale,
         featherRatio: 0.24,
       });
-      overlayParts.push(`${entry.mapId}:${hfVersionKey(hf)}`);
+      const placementKey = `${Math.round(entry.worldAabb.minX * 100)},${Math.round(entry.worldAabb.minY * 100)},${Math.round(entry.worldAabb.maxX * 100)},${Math.round(entry.worldAabb.maxY * 100)},${Math.round(elevationScale * 10000)}`;
+      overlayParts.push(`${entry.mapId}:${hfVersionKey(hf)}@${placementKey}`);
     }
 
     const key = `${rootId}:${hfVersionKey(rootHf)}|${overlayParts.sort().join(',')}`;
@@ -1832,10 +1834,11 @@ export class AtlasThreeMultiMapGraph {
 
       const cSig = cutoutSignature(entry.cutoutRectsLocal);
       const rev = source.revisionKey ?? 'v0';
+      const terrainSig = hasSharedTerrain ? this.lastTerrainSourceKey : 'local';
       // Auto roof-cutaway on a settlement when an interior building/room inside it is active!
       const effectiveHideRoofs =
         input.hideRoofs || Boolean(hasIndoorChildByParent.get(entry.mapId));
-      const sig = `${rev}|${source.mapScale}|${source.look}|${input.presetId}|${effectiveHideRoofs ? 1 : 0}|${cSig}`;
+      const sig = `${rev}|${source.mapScale}|${source.look}|${input.presetId}|${effectiveHideRoofs ? 1 : 0}|${cSig}|${terrainSig}`;
 
       const childWeight = maxChildWeightByParent.get(entry.mapId) ?? 0;
       // Scale-aware 2-channel handover:
@@ -6237,8 +6240,8 @@ All backend operations are included in the public declarations above.
 | `src/domains/world/atlas/atlas-selection.ts` | `6c16fb40fe26addea8e33e718a89a019de099c6008c1000dd697d48fa12849a7` |
 | `src/domains/world/atlas/atlas-spatial-containment.ts` | `b4d0dd0186856c2df5adb7cbaa58743ec9e786deb9726b281fbaa7966594e8f7` |
 | `src/domains/world/atlas/atlas-spatial-edit-prefs.ts` | `7248152b93c7b0c2748b1682bb12fd174ac64b88fda12f0d0cca588c4a21ee1c` |
-| `src/domains/world/atlas/atlas-spatial-propagation.ts` | `25f1293897bc3927a8f7e125f233f3a074d019d747920e4f5286c4b999720c2c` |
-| `src/domains/world/atlas/atlas-spatial-world-bridge.ts` | `e2cbedb66ff1f0f2dedec4495f01916d270935b2f5012747a650da0167026ce5` |
+| `src/domains/world/atlas/atlas-spatial-propagation.ts` | `61720d09fcf09248c30f2d6ab17181e0968f0aacaf88b1823da30b660bd45abb` |
+| `src/domains/world/atlas/atlas-spatial-world-bridge.ts` | `7ddcc90929d18b7cac51e5362f3c472cdf7a82a21dcc27d32c0408b00744b05a` |
 | `src/domains/world/atlas/atlas-terrain-mesh.ts` | `76aa0ae181cc9817561db31f6b5ccea8cac0a22b73fa46e6292b022b53978ba7` |
 | `src/domains/world/atlas/atlas-tool-registry.ts` | `be0492bd7d71f1dafa260c6a1a75165f8c587bd1f55d3178f96fbd67ac5988af` |
 | `src/domains/world/atlas/atlas-webgl-write-retire.ts` | `baf40e97aaa9c74c873f3919e72b4d9049e8c7781566ed58ce52ccf2f168ce69` |
@@ -6308,7 +6311,7 @@ All backend operations are included in the public declarations above.
 | `src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-runtime.ts` | `f250027a4c5a9674e377313738dac7f70a8a253464c46033f6a400a229b53c82` |
 | `src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-scene.ts` | `f63e63b2be555ef8348d15141ed44a01e70670667e3d0946221db2720cc32d8c` |
 | `src/infrastructure/world/atlas-three/atlas-three-camera.ts` | `5de04e8dffb048daa6ad01466ae68c30ce7cbc1084d694fb0de510db56713faa` |
-| `src/infrastructure/world/atlas-three/atlas-three-multimap.ts` | `e758e4bf96b87ef87de3d672799be094f34ac0bf4dac98575d4773bf511027f4` |
+| `src/infrastructure/world/atlas-three/atlas-three-multimap.ts` | `c4e307c46fd61316b6b3a14632088d284a8b85826ffd734a6d8ad3e33295958a` |
 | `src/infrastructure/world/atlas-three/atlas-three-runtime.ts` | `97bdbe7bbf8d035d22e414f641172b799597b157aff6513df2c7562c0f6ccc03` |
 | `src/infrastructure/world/atlas-three/atlas-three-scene.ts` | `a5b39d21d3e6e01befdbd0f7d5f2dd73e58ddce692e23958c4dbeb7fba13e439` |
 | `src/infrastructure/world/atlas-three/atlas-three-world-terrain.ts` | `05daaa14fddd5080ef6ca7abf7fd6b9db24de7cede3cf98cc2ec6bc421b78ff9` |

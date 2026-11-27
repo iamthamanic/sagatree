@@ -31,6 +31,8 @@ import {
 } from './atlas-world-space';
 import type { ParentSpatialAnchor } from './map-frame';
 import {
+  UNIFIED_CANVAS_FORMAT,
+  parseUnifiedCanvasDoc,
   roomFromPolygon,
   type UnifiedCanvasDoc,
   type UnifiedCanvasObject,
@@ -52,6 +54,36 @@ export type SpatialArchivedEntityRecord = {
 
 export type SpatialArchiveMeta = readonly SpatialArchivedEntityRecord[];
 
+function isPlainObject(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function validateArchivedCanvasObject(raw: unknown): UnifiedCanvasObject | null {
+  if (!isPlainObject(raw)) return null;
+  const parsed = parseUnifiedCanvasDoc({
+    format: UNIFIED_CANVAS_FORMAT,
+    layers: {},
+    strokes: [],
+    objects: [raw],
+    rooms: [],
+    walls: [],
+  });
+  return parsed?.objects[0] ?? null;
+}
+
+function validateArchivedCanvasRoom(raw: unknown): UnifiedCanvasRoom | null {
+  if (!isPlainObject(raw)) return null;
+  const parsed = parseUnifiedCanvasDoc({
+    format: UNIFIED_CANVAS_FORMAT,
+    layers: {},
+    strokes: [],
+    objects: [],
+    rooms: [raw],
+    walls: [],
+  });
+  return parsed?.rooms[0] ?? null;
+}
+
 export function extractSpatialArchiveFromGeneratorMeta(
   meta: Readonly<Record<string, unknown>> | null | undefined,
 ): SpatialArchiveMeta {
@@ -60,28 +92,30 @@ export function extractSpatialArchiveFromGeneratorMeta(
   if (!Array.isArray(raw)) return [];
   const out: SpatialArchivedEntityRecord[] = [];
   for (const item of raw) {
-    if (!item || typeof item !== 'object' || Array.isArray(item)) continue;
-    const rec = item as Record<string, unknown>;
+    if (!isPlainObject(item)) continue;
+    const entityId = item.entityId;
+    const featureId = item.featureId;
+    const archivedByEntityId = item.archivedByEntityId;
+    const kind = item.kind;
     if (
-      typeof rec.entityId !== 'string' ||
-      typeof rec.featureId !== 'string' ||
-      typeof rec.archivedByEntityId !== 'string' ||
-      (rec.kind !== 'map_frame' && rec.kind !== 'object' && rec.kind !== 'room')
+      typeof entityId !== 'string' ||
+      typeof featureId !== 'string' ||
+      typeof archivedByEntityId !== 'string' ||
+      (kind !== 'map_frame' && kind !== 'object' && kind !== 'room')
     ) {
       continue;
     }
-    out.push({
-      entityId: rec.entityId,
-      featureId: rec.featureId,
-      kind: rec.kind,
-      archivedByEntityId: rec.archivedByEntityId,
-      ...(rec.kind === 'object' && rec.object && typeof rec.object === 'object'
-        ? { object: rec.object as UnifiedCanvasObject }
-        : {}),
-      ...(rec.kind === 'room' && rec.room && typeof rec.room === 'object'
-        ? { room: rec.room as UnifiedCanvasRoom }
-        : {}),
-    });
+    if (kind === 'object') {
+      const validatedObj = validateArchivedCanvasObject(item.object);
+      if (!validatedObj) continue;
+      out.push({ entityId, featureId, kind, archivedByEntityId, object: validatedObj });
+    } else if (kind === 'room') {
+      const validatedRoom = validateArchivedCanvasRoom(item.room);
+      if (!validatedRoom) continue;
+      out.push({ entityId, featureId, kind, archivedByEntityId, room: validatedRoom });
+    } else {
+      out.push({ entityId, featureId, kind, archivedByEntityId });
+    }
   }
   return out;
 }

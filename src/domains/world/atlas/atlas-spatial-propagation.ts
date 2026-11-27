@@ -365,8 +365,13 @@ function reconcileFlowingAgainstGrownOrChangedBounds(
   readonly nextSegments: readonly (readonly SpatialPoint2D[])[];
   readonly nextBounds: SpatialBounds2D;
 } | null {
-  const sourceLine = flow.polylineWorld ?? flow.clippedSegmentsWorld?.[0];
-  if (!sourceLine || sourceLine.length < 2) return null;
+  const sourceSegments: readonly (readonly SpatialPoint2D[])[] =
+    flow.clippedSegmentsWorld && flow.clippedSegmentsWorld.length > 0
+      ? flow.clippedSegmentsWorld.filter((seg) => seg.length >= 2)
+      : flow.polylineWorld && flow.polylineWorld.length >= 2
+        ? [flow.polylineWorld]
+        : [];
+  if (sourceSegments.length === 0) return null;
 
   const shrunk =
     nextCarrierBounds.minX > prevCarrierBounds.minX + SPATIAL_EPSILON ||
@@ -375,7 +380,12 @@ function reconcileFlowingAgainstGrownOrChangedBounds(
     nextCarrierBounds.maxY < prevCarrierBounds.maxY - SPATIAL_EPSILON;
 
   if (shrunk) {
-    const clipped = clipPolylineInsideBounds(sourceLine, nextCarrierBounds);
+    const clipped: (readonly SpatialPoint2D[])[] = [];
+    for (const seg of sourceSegments) {
+      for (const piece of clipPolylineInsideBounds(seg, nextCarrierBounds)) {
+        clipped.push(piece);
+      }
+    }
     if (clipped.length > 0) {
       const main = clipped[0]!;
       const b = boundsFromPoints(clipped.flat()) ?? flow.boundsWorld;
@@ -387,7 +397,7 @@ function reconcileFlowingAgainstGrownOrChangedBounds(
       };
     }
     // Fallback: clamp path along the surviving coastline edge so FLOWING is capped, never deleted
-    const clamped = sourceLine.map((pt) => clampPointToBounds(pt, nextCarrierBounds));
+    const clamped = sourceSegments[0]!.map((pt) => clampPointToBounds(pt, nextCarrierBounds));
     const b = boundsFromPoints(clamped) ?? nextCarrierBounds;
     return {
       kind: 'cap_flowing',
@@ -399,34 +409,36 @@ function reconcileFlowingAgainstGrownOrChangedBounds(
 
   // Carrier grew: extend any endpoint sitting on an expanded edge to follow the new coastline
   let changed = false;
-  const nextPts: SpatialPoint2D[] = sourceLine.map((pt, idx) => {
-    const isEndpoint = idx === 0 || idx === sourceLine.length - 1;
-    if (!isEndpoint || !pointNearBoundary(pt, prevCarrierBounds)) return pt;
-    let nx = pt[0];
-    let ny = pt[1];
-    if (Math.abs(pt[0] - prevCarrierBounds.minX) <= 2 && nextCarrierBounds.minX < prevCarrierBounds.minX) {
-      nx = nextCarrierBounds.minX;
-      changed = true;
-    } else if (Math.abs(pt[0] - prevCarrierBounds.maxX) <= 2 && nextCarrierBounds.maxX > prevCarrierBounds.maxX) {
-      nx = nextCarrierBounds.maxX;
-      changed = true;
-    }
-    if (Math.abs(pt[1] - prevCarrierBounds.minY) <= 2 && nextCarrierBounds.minY < prevCarrierBounds.minY) {
-      ny = nextCarrierBounds.minY;
-      changed = true;
-    } else if (Math.abs(pt[1] - prevCarrierBounds.maxY) <= 2 && nextCarrierBounds.maxY > prevCarrierBounds.maxY) {
-      ny = nextCarrierBounds.maxY;
-      changed = true;
-    }
-    return [round6(nx), round6(ny)] as const;
-  });
+  const nextSegments: (readonly SpatialPoint2D[])[] = sourceSegments.map((seg) =>
+    seg.map((pt, idx) => {
+      const isEndpoint = idx === 0 || idx === seg.length - 1;
+      if (!isEndpoint || !pointNearBoundary(pt, prevCarrierBounds)) return pt;
+      let nx = pt[0];
+      let ny = pt[1];
+      if (Math.abs(pt[0] - prevCarrierBounds.minX) <= 2 && nextCarrierBounds.minX < prevCarrierBounds.minX) {
+        nx = nextCarrierBounds.minX;
+        changed = true;
+      } else if (Math.abs(pt[0] - prevCarrierBounds.maxX) <= 2 && nextCarrierBounds.maxX > prevCarrierBounds.maxX) {
+        nx = nextCarrierBounds.maxX;
+        changed = true;
+      }
+      if (Math.abs(pt[1] - prevCarrierBounds.minY) <= 2 && nextCarrierBounds.minY < prevCarrierBounds.minY) {
+        ny = nextCarrierBounds.minY;
+        changed = true;
+      } else if (Math.abs(pt[1] - prevCarrierBounds.maxY) <= 2 && nextCarrierBounds.maxY > prevCarrierBounds.maxY) {
+        ny = nextCarrierBounds.maxY;
+        changed = true;
+      }
+      return [round6(nx), round6(ny)] as const;
+    }),
+  );
 
   if (!changed) return null;
-  const b = boundsFromPoints(nextPts) ?? flow.boundsWorld;
+  const b = boundsFromPoints(nextSegments.flat()) ?? flow.boundsWorld;
   return {
     kind: 'reroute_flowing',
-    nextPolyline: nextPts,
-    nextSegments: [nextPts],
+    nextPolyline: nextSegments[0]!,
+    nextSegments,
     nextBounds: b,
   };
 }
@@ -673,10 +685,20 @@ function planRemoveCascade(
   for (const flow of candidateFlowing) {
     if (handledFlowing.has(flow.id)) continue;
     handledFlowing.add(flow.id);
-    const sourceLine = flow.polylineWorld ?? flow.clippedSegmentsWorld?.[0];
-    if (!sourceLine || sourceLine.length < 2) continue;
+    const sourceSegments: readonly (readonly SpatialPoint2D[])[] =
+      flow.clippedSegmentsWorld && flow.clippedSegmentsWorld.length > 0
+        ? flow.clippedSegmentsWorld.filter((seg) => seg.length >= 2)
+        : flow.polylineWorld && flow.polylineWorld.length >= 2
+          ? [flow.polylineWorld]
+          : [];
+    if (sourceSegments.length === 0) continue;
 
-    const remainingSegments = clipPolylineOutsideRects(sourceLine, removedRects);
+    const remainingSegments: (readonly SpatialPoint2D[])[] = [];
+    for (const seg of sourceSegments) {
+      for (const piece of clipPolylineOutsideRects(seg, removedRects)) {
+        remainingSegments.push(piece);
+      }
+    }
     const fallbackCarrierBounds = survivingAncestor?.boundsWorld ?? target.boundsWorld;
     // Never delete freeland structures: if clipped outside removed bounds leaves surviving segments, keep them;
     // otherwise cap along the nearest surviving perimeter edge so the waterway/road terminates cleanly.
@@ -684,7 +706,7 @@ function planRemoveCascade(
     if (remainingSegments.length > 0) {
       finalSegments = remainingSegments;
     } else {
-      const startPt = sourceLine[0]!;
+      const startPt = sourceSegments[0]![0]!;
       const edgePt: SpatialPoint2D = [
         round6(Math.max(fallbackCarrierBounds.minX, Math.min(fallbackCarrierBounds.maxX, target.boundsWorld.minX))),
         round6(Math.max(fallbackCarrierBounds.minY, Math.min(fallbackCarrierBounds.maxY, startPt[1]))),

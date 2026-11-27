@@ -421,9 +421,85 @@ try {
   assert.equal(crossWorldAnchorUpdate.ok, false, 'cross-world parentAnchor.parentMapId on update rejected');
   assert.equal(crossWorldAnchorUpdate.error, '22023');
 
+  // 10) Pure anchor-link cycle (parentAnchor differs from parent_map_id) rejected (`23514`)
+  const siblingD = store.upsertMap([owner], {
+    worldProfileId: worldId,
+    mapId: null,
+    parentMapId: resA.value.id,
+    kind: 'region',
+    title: 'Sibling D',
+    layers: emptyLayers,
+    bounds: { minX: 0, minY: 0, maxX: 1000, maxY: 1000 },
+    generatorMeta: { engine: 'unified_canvas', mapStatus: 'ready' },
+    expectedRevision: null,
+    sortOrder: 7,
+    basemapStoragePath: null,
+    azgaarMapStoragePath: null,
+  });
+  assert.equal(siblingD.ok, true, 'create Sibling D');
+  const siblingE = store.upsertMap([owner], {
+    worldProfileId: worldId,
+    mapId: null,
+    parentMapId: resA.value.id,
+    kind: 'region',
+    title: 'Sibling E',
+    layers: emptyLayers,
+    bounds: { minX: 0, minY: 0, maxX: 1000, maxY: 1000 },
+    generatorMeta: {
+      engine: 'unified_canvas',
+      mapFrame: {
+        status: 'ready',
+        parentAnchor: {
+          parentMapId: siblingD.value.id,
+          centerX: 500,
+          centerY: 500,
+          extentX: 50,
+          extentY: 50,
+          rotationRad: 0,
+          metersPerUnit: 100,
+        },
+      },
+    },
+    expectedRevision: null,
+    sortOrder: 8,
+    basemapStoragePath: null,
+    azgaarMapStoragePath: null,
+  });
+  assert.equal(siblingE.ok, true, 'create Sibling E anchored to Sibling D');
+  const anchorOnlyCycle = store.upsertMap([owner], {
+    worldProfileId: worldId,
+    mapId: siblingD.value.id,
+    parentMapId: resA.value.id,
+    kind: 'region',
+    title: 'Sibling D',
+    layers: emptyLayers,
+    bounds: { minX: 0, minY: 0, maxX: 1000, maxY: 1000 },
+    generatorMeta: {
+      engine: 'unified_canvas',
+      mapFrame: {
+        status: 'ready',
+        parentAnchor: {
+          parentMapId: siblingE.value.id,
+          centerX: 500,
+          centerY: 500,
+          extentX: 50,
+          extentY: 50,
+          rotationRad: 0,
+          metersPerUnit: 100,
+        },
+      },
+    },
+    expectedRevision: siblingD.value.revision,
+    sortOrder: 7,
+    basemapStoragePath: null,
+    azgaarMapStoragePath: null,
+  });
+  assert.equal(anchorOnlyCycle.ok, false, 'pure parentAnchor cycle (D -> E -> D) rejected');
+  assert.equal(anchorOnlyCycle.error, '23514');
+
   db.close();
 } finally {
   rmSync(work, { recursive: true, force: true });
 }
 
-console.log('✓ sws-write-guards.self-test: 10/10 (cycles + shear + uniform rot + dangling/cross-world anchor parent reject)');
+console.log('✓ sws-write-guards.self-test: 11/11 (cycles + anchor-only cycle + shear + uniform rot + dangling/cross-world anchor parent reject)');

@@ -673,17 +673,33 @@ export class WorldAtlasStore {
     return { ok: true, anchorParentMapId };
   }
 
-  /** True if setting mapId.parent = candidateParent would create a cycle. */
+  /** True if setting mapId's parent/anchor = candidateParent would create a cycle via parent_map_id or parentAnchor links. */
   #mapWouldCycle(mapId: string, candidateParent: string): boolean {
-    let cursor: string | null = candidateParent;
+    const queue: string[] = [candidateParent];
     const seen = new Set<string>();
-    while (cursor) {
+    while (queue.length > 0) {
+      const cursor = queue.shift()!;
       if (cursor === mapId) return true;
-      if (seen.has(cursor)) return true;
+      if (seen.has(cursor)) continue;
       seen.add(cursor);
       const row = this.#loadRow(cursor);
-      if (!row) return false;
-      cursor = row.parent_map_id;
+      if (!row) continue;
+      if (row.parent_map_id) {
+        queue.push(row.parent_map_id);
+      }
+      if (row.generator_meta) {
+        try {
+          const parsed = JSON.parse(row.generator_meta) as unknown;
+          if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+            const check = this.#validateGeneratorMetaAnchor(parsed as Record<string, unknown>);
+            if (check.ok && check.anchorParentMapId) {
+              queue.push(check.anchorParentMapId);
+            }
+          }
+        } catch {
+          /* ignore malformed historical metadata */
+        }
+      }
     }
     return false;
   }

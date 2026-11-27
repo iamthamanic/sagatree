@@ -468,6 +468,43 @@ let passed = 0;
   assert.ok(reloaded);
   assert.equal(reloaded.entities[objEntityId]?.status, 'archived', 'archived object rehydrated after reload');
   assert.equal(reloaded.entities[strokeEntityId]?.clippedSegmentsWorld?.length, 2, 'clipped segments rehydrated after reload');
+
+  // Kody #4719888495: Second cut after reload clips ALL segments instead of dropping seg[1]
+  const reloadedWithCarrier = {
+    ...reloaded,
+    entities: {
+      ...reloaded.entities,
+      'cut2': {
+        id: 'cut2',
+        mapId: 'm.root',
+        featureId: 'f.cut2',
+        labelDe: 'Siedlung 2',
+        role: 'settlement',
+        carrierId: 'map:m.root',
+        boundsWorld: { minX: 740, minY: 450, maxX: 800, maxY: 550 },
+        status: 'active',
+      },
+    },
+  };
+  const cut2Plan = prop.planPropagation(reloadedWithCarrier, { kind: 'remove', entityId: 'cut2' });
+  assert.equal(cut2Plan.ok, true);
+  const flowChange = cut2Plan.plan.changes.find((c) => c.entityId === strokeEntityId);
+  assert.ok(flowChange, 'second cut updates reloaded freeland stroke');
+  assert.equal(
+    flowChange.nextClippedSegmentsWorld?.length,
+    3,
+    'second cut on seg[1] preserves seg[0] and splits seg[1] into 2 pieces (3 total)',
+  );
+
+  // Kody #4719889174: Invalid spatialArchive entries are rejected fail-safe without unsafe casts
+  const sanitized = bridge.extractSpatialArchiveFromGeneratorMeta({
+    spatialArchive: [
+      { entityId: 'ok', featureId: 'f', kind: 'map_frame', archivedByEntityId: 'm' },
+      { entityId: 'bad-obj', featureId: 'o', kind: 'object', archivedByEntityId: 'm', object: { nope: true } },
+      { entityId: 'bad-room', featureId: 'r', kind: 'room', archivedByEntityId: 'm', room: { id: 123 } },
+    ],
+  });
+  assert.equal(sanitized.length, 1, 'malformed archived object/room entries rejected');
   passed += 1;
 }
 

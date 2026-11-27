@@ -350,6 +350,7 @@ export class AtlasThreeMultiMapGraph {
       const verticalScale = Math.sqrt(
         Math.max(1e-8, entry.worldTransform.scaleX * entry.worldTransform.scaleY),
       );
+      const elevationScale = Math.max(0.012, Math.min(0.06, verticalScale * 4));
       overlays.push({
         id: entry.mapId,
         worldBounds: {
@@ -359,10 +360,11 @@ export class AtlasThreeMultiMapGraph {
           maxZ: entry.worldAabb.maxY,
         },
         heightfield: hf,
-        elevationScale: Math.max(0.012, Math.min(0.06, verticalScale * 4)),
+        elevationScale,
         featherRatio: 0.24,
       });
-      overlayParts.push(`${entry.mapId}:${hfVersionKey(hf)}`);
+      const placementKey = `${Math.round(entry.worldAabb.minX * 100)},${Math.round(entry.worldAabb.minY * 100)},${Math.round(entry.worldAabb.maxX * 100)},${Math.round(entry.worldAabb.maxY * 100)},${Math.round(elevationScale * 10000)}`;
+      overlayParts.push(`${entry.mapId}:${hfVersionKey(hf)}@${placementKey}`);
     }
 
     const key = `${rootId}:${hfVersionKey(rootHf)}|${overlayParts.sort().join(',')}`;
@@ -473,10 +475,11 @@ export class AtlasThreeMultiMapGraph {
 
       const cSig = cutoutSignature(entry.cutoutRectsLocal);
       const rev = source.revisionKey ?? 'v0';
+      const terrainSig = hasSharedTerrain ? this.lastTerrainSourceKey : 'local';
       // Auto roof-cutaway on a settlement when an interior building/room inside it is active!
       const effectiveHideRoofs =
         input.hideRoofs || Boolean(hasIndoorChildByParent.get(entry.mapId));
-      const sig = `${rev}|${source.mapScale}|${source.look}|${input.presetId}|${effectiveHideRoofs ? 1 : 0}|${cSig}`;
+      const sig = `${rev}|${source.mapScale}|${source.look}|${input.presetId}|${effectiveHideRoofs ? 1 : 0}|${cSig}|${terrainSig}`;
 
       const childWeight = maxChildWeightByParent.get(entry.mapId) ?? 0;
       // Scale-aware 2-channel handover:
