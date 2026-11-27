@@ -193,20 +193,43 @@ function deriveProjectedObjectSize(
   nextNodes: Readonly<Record<string, AtlasWorldSpaceNode>>,
   mapId: string,
 ): number {
+  const baseSize = prevObj.size > 0 ? prevObj.size : 0.5;
+  const prevWorldW = prevBoundsWorld.maxX - prevBoundsWorld.minX;
+  const prevWorldH = prevBoundsWorld.maxY - prevBoundsWorld.minY;
+  const nextWorldW = nextBoundsWorld.maxX - nextBoundsWorld.minX;
+  const nextWorldH = nextBoundsWorld.maxY - nextBoundsWorld.minY;
+
+  // Measure the pure world→local scale factor change (independent of whether `prevBoundsWorld`
+  // was clamped at a map border during hydration) using a unit world box.
+  const unitWorld: SpatialBounds2D = { minX: 0, minY: 0, maxX: 1, maxY: 1 };
+  const prevUnitLocal = measureLocalHalfExtent(prevNodes, mapId, unitWorld);
+  const nextUnitLocal = measureLocalHalfExtent(nextNodes, mapId, unitWorld);
+  const frameScaleFactor =
+    prevUnitLocal !== null && prevUnitLocal > 1e-9 && nextUnitLocal !== null && nextUnitLocal > 1e-9
+      ? nextUnitLocal / prevUnitLocal
+      : 1;
+
+  if (prevWorldW > 1e-6 && prevWorldH > 1e-6 && nextWorldW > 1e-6 && nextWorldH > 1e-6) {
+    // Pure translations keep nextWorldW/H === prevWorldW/H even when prevBoundsWorld was clamped
+    // to a carrier edge, so ratio stays 1 and `prevObj.size` is preserved losslessly.
+    const worldScaleRatio = (nextWorldW / prevWorldW + nextWorldH / prevWorldH) / 2;
+    const totalRatio = worldScaleRatio * frameScaleFactor;
+    if (Math.abs(totalRatio - 1) <= 1e-4) {
+      return prevObj.size;
+    }
+    return round2(Math.max(0.15, Math.min(6, baseSize * totalRatio)));
+  }
+
   const nextLocalHalf = measureLocalHalfExtent(nextNodes, mapId, nextBoundsWorld);
   if (nextLocalHalf === null || !Number.isFinite(nextLocalHalf) || nextLocalHalf <= 0) {
     return prevObj.size;
   }
-  const prevLocalHalf = measureLocalHalfExtent(prevNodes, mapId, prevBoundsWorld);
-  if (prevLocalHalf !== null && prevLocalHalf > 1e-6) {
-    const ratio = nextLocalHalf / prevLocalHalf;
-    if (Math.abs(ratio - 1) <= 1e-4) {
-      return prevObj.size;
-    }
-    const baseSize = prevObj.size > 0 ? prevObj.size : 0.5;
-    return round2(Math.max(0.15, Math.min(6, baseSize * ratio)));
+  const unclampedPrevHalf = Math.max(4, baseSize * 18);
+  const ratio = nextLocalHalf / unclampedPrevHalf;
+  if (Math.abs(ratio - 1) <= 1e-4) {
+    return prevObj.size;
   }
-  return round2(Math.max(0.15, Math.min(6, nextLocalHalf / 18)));
+  return round2(Math.max(0.15, Math.min(6, baseSize * ratio)));
 }
 
 function mapDepthInNodes(

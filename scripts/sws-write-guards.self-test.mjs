@@ -559,6 +559,36 @@ try {
   assert.equal(invalidExtentAnchor.ok, false, 'non-positive extentX rejected');
   assert.equal(invalidExtentAnchor.error, '23514');
 
+  const nonNumericCenterAnchor = store.upsertMap([owner], {
+    worldProfileId: worldId,
+    mapId: null,
+    parentMapId: resA.value.id,
+    kind: 'region',
+    title: 'Non-Numeric Center Anchor',
+    layers: emptyLayers,
+    bounds: { minX: 0, minY: 0, maxX: 1000, maxY: 1000 },
+    generatorMeta: {
+      engine: 'unified_canvas',
+      mapFrame: {
+        status: 'ready',
+        parentAnchor: {
+          parentMapId: resA.value.id,
+          centerX: 'not-a-number',
+          centerY: 500,
+          extentX: 50,
+          extentY: 50,
+          rotationRad: 0,
+        },
+      },
+    },
+    expectedRevision: null,
+    sortOrder: 10,
+    basemapStoragePath: null,
+    azgaarMapStoragePath: null,
+  });
+  assert.equal(nonNumericCenterAnchor.ok, false, 'non-numeric centerX rejected');
+  assert.equal(nonNumericCenterAnchor.error, '23514');
+
   // 12) UPDATE-path legacy top-level parentAnchor cycle detected (`23514`)
   const legacyNodeX = store.upsertMap([owner], {
     worldProfileId: worldId,

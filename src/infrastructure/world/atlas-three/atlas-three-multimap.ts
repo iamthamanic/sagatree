@@ -223,11 +223,71 @@ export function applyLocalCutoutFilter(
       });
     }
   }
+  // Also clip parent walls outside replacement cutouts and retain/remap only doors on surviving segments.
+  const walls: typeof doc.walls[number][] = [];
+  const clippedWallsByOrigId = new Map<string, Array<typeof doc.walls[number]>>();
+  for (const wall of doc.walls) {
+    const clippedWallSegs = clipPolylineOutsideRects(
+      [
+        [wall.x1, wall.y1],
+        [wall.x2, wall.y2],
+      ],
+      cutouts,
+    );
+    const created: Array<typeof doc.walls[number]> = [];
+    for (let i = 0; i < clippedWallSegs.length; i += 1) {
+      const seg = clippedWallSegs[i]!;
+      if (seg.length < 2) continue;
+      const p0 = seg[0]!;
+      const p1 = seg[seg.length - 1]!;
+      if (Math.hypot(p1[0] - p0[0], p1[1] - p0[1]) < 1e-4) continue;
+      const nextWall = {
+        ...wall,
+        id: i === 0 ? wall.id : `${wall.id}#clip${i}`,
+        x1: p0[0],
+        y1: p0[1],
+        x2: p1[0],
+        y2: p1[1],
+      };
+      walls.push(nextWall);
+      created.push(nextWall);
+    }
+    if (created.length > 0) {
+      clippedWallsByOrigId.set(wall.id, created);
+    }
+  }
+  const origWallsById = new Map(doc.walls.map((w) => [w.id, w] as const));
+  const doors = doc.doors
+    ? doc.doors.flatMap((door) => {
+        const origWall = origWallsById.get(door.wallId);
+        const candidates = clippedWallsByOrigId.get(door.wallId);
+        if (!origWall || !candidates || candidates.length === 0) return [];
+        const dx = origWall.x1 + (origWall.x2 - origWall.x1) * door.t;
+        const dy = origWall.y1 + (origWall.y2 - origWall.y1) * door.t;
+        if (pointInsideAnyCutout(dx, dy, cutouts)) return [];
+        for (const segWall of candidates) {
+          const sx = segWall.x2 - segWall.x1;
+          const sy = segWall.y2 - segWall.y1;
+          const lenSq = sx * sx + sy * sy;
+          if (lenSq < 1e-8) continue;
+          const tSeg = ((dx - segWall.x1) * sx + (dy - segWall.y1) * sy) / lenSq;
+          if (tSeg < -1e-4 || tSeg > 1 + 1e-4) continue;
+          const px = segWall.x1 + sx * tSeg;
+          const py = segWall.y1 + sy * tSeg;
+          if (Math.hypot(dx - px, dy - py) <= 0.5) {
+            return [{ ...door, wallId: segWall.id, t: Math.max(0, Math.min(1, tSeg)) }];
+          }
+        }
+        return [];
+      })
+    : doc.doors;
   return {
     ...doc,
     rooms,
     objects,
     strokes,
+    walls,
+    ...(doors !== undefined ? { doors } : {}),
   };
 }
 
@@ -351,6 +411,8 @@ export class AtlasThreeMultiMapGraph {
         Math.max(1e-8, entry.worldTransform.scaleX * entry.worldTransform.scaleY),
       );
       const elevationScale = Math.max(0.012, Math.min(0.06, verticalScale * 4));
+      const srcBounds = src.bounds ?? DEFAULT_ATLAS_BOUNDS;
+      const wt = entry.worldTransform;
       overlays.push({
         id: entry.mapId,
         worldBounds: {
@@ -362,8 +424,21 @@ export class AtlasThreeMultiMapGraph {
         heightfield: hf,
         elevationScale,
         featherRatio: 0.24,
+        worldTransform: {
+          centerX: wt.centerX,
+          centerZ: wt.centerY,
+          scaleX: wt.scaleX,
+          scaleZ: wt.scaleY,
+          rotationRad: wt.rotationRad,
+          localBounds: {
+            minX: srcBounds.minX,
+            minZ: srcBounds.minY,
+            maxX: srcBounds.maxX,
+            maxZ: srcBounds.maxY,
+          },
+        },
       });
-      const placementKey = `${Math.round(entry.worldAabb.minX * 100)},${Math.round(entry.worldAabb.minY * 100)},${Math.round(entry.worldAabb.maxX * 100)},${Math.round(entry.worldAabb.maxY * 100)},${Math.round(elevationScale * 10000)}`;
+      const placementKey = `${Math.round(wt.centerX * 100)},${Math.round(wt.centerY * 100)},${Math.round(wt.scaleX * 10000)},${Math.round(wt.scaleY * 10000)},${Math.round(wt.rotationRad * 10000)},${Math.round(elevationScale * 10000)}`;
       overlayParts.push(`${entry.mapId}:${hfVersionKey(hf)}@${placementKey}`);
     }
 

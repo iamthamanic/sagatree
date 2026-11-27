@@ -382,6 +382,48 @@ let passed = 0;
   const persistedScaledObj = scaleMuts[0]?.nextDoc?.objects.find((o) => o.id === 'obj.scale');
   assert.equal(persistedScaledObj?.size, 2.5, 'scaled object persists new size = 2.5');
 
+  // Regression (Kody Medium): moving an edge-clamped object preserves its original `size` losslessly
+  const edgeDoc = {
+    format: 'sagatree-unified-atlas-v1',
+    layers: { terrain: true, roads: true, region: true, city: true, interior: true, drawings: true, objects: true, grid: false },
+    strokes: [],
+    objects: [{ id: 'obj.edge', type: 'haus', x: 995, y: 500, size: 1.5 }],
+    rooms: [],
+    walls: [],
+  };
+  const edgeWorld = bridge.buildSpatialWorldFromMapSources([
+    {
+      mapId: 'm.root',
+      title: 'Root',
+      role: 'world',
+      parentMapId: null,
+      parentAnchor: null,
+      doc: edgeDoc,
+    },
+  ]);
+  const edgeEnt = edgeWorld.entities['obj:m.root:obj.edge'];
+  const edgeMovePlan = prop.planPropagation(edgeWorld, {
+    kind: 'resize_or_move',
+    entityId: edgeEnt.id,
+    nextBoundsWorld: {
+      minX: edgeEnt.boundsWorld.minX - 100,
+      minY: edgeEnt.boundsWorld.minY,
+      maxX: edgeEnt.boundsWorld.maxX - 100,
+      maxY: edgeEnt.boundsWorld.maxY,
+    },
+  });
+  assert.equal(edgeMovePlan.ok, true);
+  const edgeMoveApplied = prop.applyWorldOperation(edgeWorld, edgeMovePlan.plan);
+  assert.equal(edgeMoveApplied.ok, true);
+  const edgeMoveMuts = bridge.projectSpatialOperationToMapUpdates({
+    world: edgeMoveApplied.world,
+    plan: edgeMovePlan.plan,
+    docsByMapId: { 'm.root': edgeDoc },
+    mapNodes: edgeWorld.mapNodes,
+  });
+  const persistedEdgeObj = edgeMoveMuts[0]?.nextDoc?.objects.find((o) => o.id === 'obj.edge');
+  assert.equal(persistedEdgeObj?.size, 1.5, 'moving an edge-clamped object preserves size = 1.5');
+
   // Regression (Codex P2): rotated parent map projects all 4 corners without collapsing extent at 45°
   const emptyDoc = {
     format: 'sagatree-unified-atlas-v1',

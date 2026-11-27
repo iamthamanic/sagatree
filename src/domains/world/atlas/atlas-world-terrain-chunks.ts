@@ -49,6 +49,18 @@ export type AtlasWorldHeightfieldOverlay = {
   readonly elevationScale: number;
   /** Feather margin ratio (0..0.45) at outer edges for zero-seam blending. */
   readonly featherRatio?: number;
+  /**
+   * Optional oriented world transform (matching `applyWorldTransformToGroup`) so rotated
+   * outdoor child heightfields rotate in lockstep with their rendered Three.js scene group.
+   */
+  readonly worldTransform?: {
+    readonly centerX: number;
+    readonly centerZ: number;
+    readonly scaleX: number;
+    readonly scaleZ: number;
+    readonly rotationRad: number;
+    readonly localBounds?: AtlasWorldTerrainBounds;
+  };
 };
 
 /** Single authoritative heightfield source for the entire world. */
@@ -214,10 +226,28 @@ export function sampleWorldHeight(
   for (const ov of source.overlays) {
     const b = ov.worldBounds;
     if (worldX < b.minX || worldX > b.maxX || worldZ < b.minZ || worldZ > b.maxZ) continue;
-    const w = Math.max(1e-6, b.maxX - b.minX);
-    const d = Math.max(1e-6, b.maxZ - b.minZ);
-    const u = (worldX - b.minX) / w;
-    const v = (worldZ - b.minZ) / d;
+    let u: number;
+    let v: number;
+    if (ov.worldTransform) {
+      const wt = ov.worldTransform;
+      const lb = wt.localBounds ?? { minX: 0, minZ: 0, maxX: 1000, maxZ: 1000 };
+      const localW = Math.max(1e-6, lb.maxX - lb.minX);
+      const localD = Math.max(1e-6, lb.maxZ - lb.minZ);
+      const rx = worldX - wt.centerX;
+      const rz = worldZ - wt.centerZ;
+      const cos = Math.cos(wt.rotationRad);
+      const sin = Math.sin(wt.rotationRad);
+      const unrotX = rx * cos + rz * sin;
+      const unrotZ = -rx * sin + rz * cos;
+      u = 0.5 + unrotX / Math.max(1e-6, wt.scaleX * localW);
+      v = 0.5 + unrotZ / Math.max(1e-6, wt.scaleZ * localD);
+      if (u < 0 || u > 1 || v < 0 || v > 1) continue;
+    } else {
+      const w = Math.max(1e-6, b.maxX - b.minX);
+      const d = Math.max(1e-6, b.maxZ - b.minZ);
+      u = (worldX - b.minX) / w;
+      v = (worldZ - b.minZ) / d;
+    }
     const hf = ov.heightfield;
     const localX = hf.originX + u * ((hf.cols - 1) * hf.cellSize);
     const localZ = hf.originZ + v * ((hf.rows - 1) * hf.cellSize);

@@ -1794,15 +1794,31 @@ export function AtlasThreeWorkstation({
             };
           } else if (mapNodes && drag.spatialMapId) {
             const half = Math.max(4, (drag.origSize || 0.5) * 18);
-            const wMin = localToWorld(mapNodes, drag.spatialMapId, { x: nx - half, y: ny - half });
-            const wMax = localToWorld(mapNodes, drag.spatialMapId, { x: nx + half, y: ny + half });
-            if (!isAtlasWorldError(wMin) && !isAtlasWorldError(wMax)) {
-              nextBounds = {
-                minX: Math.min(wMin.value.x, wMax.value.x),
-                minY: Math.min(wMin.value.y, wMax.value.y),
-                maxX: Math.max(wMin.value.x, wMax.value.x),
-                maxY: Math.max(wMin.value.y, wMax.value.y),
-              };
+            // Project all four local corners so rotated child anchor chains never collapse an axis.
+            const localCorners = [
+              { x: nx - half, y: ny - half },
+              { x: nx + half, y: ny - half },
+              { x: nx + half, y: ny + half },
+              { x: nx - half, y: ny + half },
+            ] as const;
+            let minX = Number.POSITIVE_INFINITY;
+            let minY = Number.POSITIVE_INFINITY;
+            let maxX = Number.NEGATIVE_INFINITY;
+            let maxY = Number.NEGATIVE_INFINITY;
+            let allProjected = true;
+            for (const c of localCorners) {
+              const projected = localToWorld(mapNodes, drag.spatialMapId, c);
+              if (isAtlasWorldError(projected)) {
+                allProjected = false;
+                break;
+              }
+              if (projected.value.x < minX) minX = projected.value.x;
+              if (projected.value.x > maxX) maxX = projected.value.x;
+              if (projected.value.y < minY) minY = projected.value.y;
+              if (projected.value.y > maxY) maxY = projected.value.y;
+            }
+            if (allProjected) {
+              nextBounds = { minX, minY, maxX, maxY };
             }
           }
           drag.lastBoundsWorld = nextBounds;
