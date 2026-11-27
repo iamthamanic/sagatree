@@ -24,6 +24,10 @@ export const DEFAULT_SPATIAL_EDIT_PREFERENCES: SpatialEditPreferences = {
   confirmCascade: true,
 };
 
+function isPlainRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
 /** Parse raw JSON string or object fail-safe; missing/invalid fields fall back to default `true`. */
 export function parseSpatialEditPreferences(raw: unknown): SpatialEditPreferences {
   let obj: unknown = raw;
@@ -36,18 +40,17 @@ export function parseSpatialEditPreferences(raw: unknown): SpatialEditPreference
       return DEFAULT_SPATIAL_EDIT_PREFERENCES;
     }
   }
-  if (!obj || typeof obj !== 'object') {
+  if (!isPlainRecord(obj)) {
     return DEFAULT_SPATIAL_EDIT_PREFERENCES;
   }
-  const rec = obj as Record<string, unknown>;
   return {
     confirmGrow:
-      typeof rec.confirmGrow === 'boolean'
-        ? rec.confirmGrow
+      typeof obj.confirmGrow === 'boolean'
+        ? obj.confirmGrow
         : DEFAULT_SPATIAL_EDIT_PREFERENCES.confirmGrow,
     confirmCascade:
-      typeof rec.confirmCascade === 'boolean'
-        ? rec.confirmCascade
+      typeof obj.confirmCascade === 'boolean'
+        ? obj.confirmCascade
         : DEFAULT_SPATIAL_EDIT_PREFERENCES.confirmCascade,
   };
 }

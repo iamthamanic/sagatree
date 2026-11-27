@@ -521,6 +521,9 @@ export class AtlasThreeRuntime {
   private startTime = performance.now();
   private lastFrameMs = performance.now();
   private lastCameraNotifyMs = 0;
+  private lastIdleRenderMs = 0;
+  private renderDirty = true;
+  private worldMapsTopologySig = '';
   private lastPinEmitKey = '';
   private disposed = false;
   private contextLost = false;
@@ -734,6 +737,7 @@ export class AtlasThreeRuntime {
     this.onContextRestoredListener = () => {
       this.contextLost = false;
       this.sceneKey = '';
+      this.renderDirty = true;
       this.onContextLostChange?.(false);
     };
     this.multiMap = new AtlasThreeMultiMapGraph(
@@ -756,6 +760,7 @@ export class AtlasThreeRuntime {
     this.sun.shadow.mapSize.set(shadowSize, shadowSize);
     this.sun.shadow.radius = presetId === 'high' ? 3 : 1.5;
     this.sceneKey = '';
+    this.renderDirty = true;
   }
 
   setSceneState(input: {
@@ -794,6 +799,7 @@ export class AtlasThreeRuntime {
     if (styleChanged) {
       this.applyStyleToMaterials();
     }
+    this.renderDirty = true;
     if (docChanged || scaleChanged || lookChanged || seedChanged || roofChanged || lightChanged) {
       this.docRevision += 1;
       this.sceneKey = '';
@@ -821,6 +827,7 @@ export class AtlasThreeRuntime {
 
   setFocusTargetMapId(mapId: string | null): void {
     this.focusTargetMapId = mapId;
+    this.renderDirty = true;
   }
 
   isFlightActive(): boolean {
@@ -840,10 +847,23 @@ export class AtlasThreeRuntime {
     readonly maps: readonly AtlasWorldSceneMapInput[];
     readonly sources: readonly AtlasThreeWorldMapSource[];
   }): void {
+    const nextTopologySig = input.maps
+      .map((m) => {
+        const a = m.parentAnchor;
+        const aKey = a
+          ? `${a.parentMapId}:${a.centerX},${a.centerY},${a.extentX},${a.extentY},${a.rotationRad}`
+          : 'root';
+        return `${m.id}:${m.status ?? ''}:${aKey}`;
+      })
+      .join('|');
     this.worldMaps = input.maps;
     this.worldSources = new Map(input.sources.map((s) => [s.mapId, s] as const));
-    this.worldScenePlan = null;
-    this.lastReportedEditorMapId = undefined;
+    this.renderDirty = true;
+    if (nextTopologySig !== this.worldMapsTopologySig) {
+      this.worldMapsTopologySig = nextTopologySig;
+      this.worldScenePlan = null;
+      this.lastReportedEditorMapId = undefined;
+    }
   }
 
   getWorldCameraState(): AtlasWorldCameraState {
@@ -891,6 +911,7 @@ export class AtlasThreeRuntime {
       x: this.targetView.x + (dx * cos + dy * sin),
       z: this.targetView.z + (-dx * sin + dy * cos),
     };
+    this.renderDirty = true;
     return { ...this.targetView };
   }
 
@@ -907,6 +928,7 @@ export class AtlasThreeRuntime {
       yawRad: this.targetView.yawRad + deltaYawRad,
       pitchRad: clampAtlasThreePitch(nextMode, this.targetView.pitchRad + deltaPitchRad),
     };
+    this.renderDirty = true;
     return { ...this.targetView };
   }
 
@@ -977,6 +999,7 @@ export class AtlasThreeRuntime {
       this.view = target;
       this.onCameraChange?.(this.view);
     }
+    this.renderDirty = true;
   }
 
   /**
@@ -1120,6 +1143,7 @@ export class AtlasThreeRuntime {
       this.zoomAnchor = null;
       this.onCameraChange?.(this.view);
     }
+    this.renderDirty = true;
 
     return { ...this.targetView };
   }
@@ -1800,21 +1824,27 @@ export class AtlasThreeRuntime {
   }
 
   private startLoop(): void {
+    const IDLE_RENDER_INTERVAL_MS = 250;
     const tick = (now: number) => {
       if (this.disposed) return;
       this.rafId = window.requestAnimationFrame(tick);
       if (this.contextLost || !this.doc) return;
+      if (typeof document !== 'undefined' && document.hidden) return;
       const dtSec = Math.min(0.05, Math.max(0.001, (now - this.lastFrameMs) / 1000));
       this.lastFrameMs = now;
 
       const w = this.config.canvas.clientWidth;
       const h = this.config.canvas.clientHeight;
       if (w < 8 || h < 8) return;
+      let resized = false;
       if (this.config.canvas.width !== Math.round(w * this.renderer.getPixelRatio())) {
         this.renderer.setSize(w, h, false);
+        resized = true;
       }
 
+      let cameraActive = false;
       if (this.flight) {
+        cameraActive = true;
         const t = (now - this.flight.startMs) / this.flight.durationMs;
         this.view = interpolateAtlasThreeView(this.flight.from, this.flight.to, t);
         if (t >= 1) {
@@ -1842,6 +1872,7 @@ export class AtlasThreeRuntime {
           : null;
         const damped = dampAtlasThreeView(this.view, this.targetView, dtSec, 12.5, anchorCtx);
         if (!damped.settled) {
+          cameraActive = true;
           this.view = damped.next;
           if (now - this.lastCameraNotifyMs > 48) {
             this.lastCameraNotifyMs = now;
@@ -1861,10 +1892,22 @@ export class AtlasThreeRuntime {
           this.targetView = { ...damped.next };
           this.zoomAnchor = null;
           if (changed) {
+            cameraActive = true;
             this.onCameraChange?.(this.view);
           }
         }
       }
+
+      const needsFullRate =
+        cameraActive ||
+        resized ||
+        this.renderDirty ||
+        this.multiMap.hasPendingOpacityTransition();
+      if (!needsFullRate && now - this.lastIdleRenderMs < IDLE_RENDER_INTERVAL_MS) {
+        return;
+      }
+      this.renderDirty = false;
+      this.lastIdleRenderMs = now;
 
       this.ensureScene(dtSec);
       this.syncCameraAndLighting(w, h, (now - this.startTime) * 0.001);

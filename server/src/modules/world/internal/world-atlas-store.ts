@@ -411,6 +411,13 @@ export class WorldAtlasStore {
     if (!anchorCheck.ok) {
       return { ok: false, error: '23514' };
     }
+    // Owner-scoped invariant: parentAnchor.parentMapId must resolve to a map inside the same worldId.
+    if (anchorCheck.anchorParentMapId) {
+      const anchorParent = this.#loadRow(anchorCheck.anchorParentMapId);
+      if (!anchorParent || anchorParent.world_profile_id !== worldId) {
+        return { ok: false, error: '22023' };
+      }
+    }
 
     let parentMapId =
       typeof input.parentMapId === 'string' && input.parentMapId.trim().length > 0

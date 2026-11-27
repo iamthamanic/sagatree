@@ -63,9 +63,11 @@ import {
   executeSpatialWorldOperation,
   extractMapCalibrationMetersPerUnit,
   extractMapFrameFromGeneratorMeta,
+  extractSpatialArchiveFromGeneratorMeta,
   isDornhainGoldenRootMap,
   lodBandFromBreadcrumbDepth,
   mergeMapFrameIntoGeneratorMeta,
+  mergeSpatialArchiveIntoGeneratorMeta,
   mergeUnifiedCanvasIntoGeneratorMeta,
   navigateBack,
   navigateToAncestor,
@@ -85,6 +87,7 @@ import {
   type AtlasWorldSceneMapInput,
   type AtlasWorldSpaceNode,
   type DornhainGoldenResetMode,
+  type SpatialArchiveMeta,
   type SpatialEditIntent,
   type SpatialMapPersistSnapshot,
   type SpatialMapSourceInput,
@@ -448,34 +451,84 @@ export function WorldAtlasWorkbench({
         : '',
     [worldRootSummaryId, editor.summaries],
   );
+  const childMapLoadContextRef = useRef<readonly [boolean, string | null | undefined, string | null] | null>(null);
+  const childMapVmsRef = useRef<readonly WorldAtlasMapVm[]>(childMapVms);
+  childMapVmsRef.current = childMapVms;
   useEffect(() => {
     if (!childSummaryKey || !worldRootSummaryId || !isHostLibraryEnabled()) {
+      childMapLoadContextRef.current = null;
       setChildMapVms([]);
       return;
     }
     let cancelled = false;
-    const otherIds = editor.summaries
-      .filter((s) => s.id !== worldRootSummaryId)
-      .map((s) => s.id);
+    const context = [effectivePlayerView, sagaPublicId, worldRootSummaryId] as const;
+    const prevCtx = childMapLoadContextRef.current;
+    const contextChanged =
+      !prevCtx ||
+      prevCtx[0] !== context[0] ||
+      prevCtx[1] !== context[1] ||
+      prevCtx[2] !== context[2];
+    childMapLoadContextRef.current = context;
+
+    const otherSummaries = editor.summaries.filter((s) => s.id !== worldRootSummaryId);
+    const wantedIds = new Set(otherSummaries.map((s) => s.id));
+    const existingById = new Map(
+      childMapVmsRef.current.map((vm) => [vm.id, vm] as const),
+    );
+    const idsToLoad = contextChanged
+      ? otherSummaries.map((s) => s.id)
+      : otherSummaries
+          .filter((s) => {
+            const existing = existingById.get(s.id);
+            return !existing || String(existing.revision) !== String(s.revision);
+          })
+          .map((s) => s.id);
+
+    if (idsToLoad.length === 0) {
+      setChildMapVms((prev) => {
+        const next = prev.filter((vm) => wantedIds.has(vm.id));
+        return next.length === prev.length ? prev : next;
+      });
+      return;
+    }
+
     void Promise.allSettled(
-      otherIds.map((id) => worldAtlasService.getMap(id, effectivePlayerView, sagaPublicId)),
+      idsToLoad.map((id) => worldAtlasService.getMap(id, effectivePlayerView, sagaPublicId)),
     ).then((results) => {
       if (cancelled) return;
-      const loaded: WorldAtlasMapVm[] = [];
-      for (const r of results) {
-        if (r.status === 'fulfilled') loaded.push(r.value);
-      }
-      setChildMapVms(loaded);
+      const loadedById = new Map<string, WorldAtlasMapVm>();
+      results.forEach((result, index) => {
+        const id = idsToLoad[index];
+        if (id && result.status === 'fulfilled' && wantedIds.has(id)) {
+          loadedById.set(id, result.value);
+        }
+      });
+      setChildMapVms((prev) => {
+        const nextById = new Map<string, WorldAtlasMapVm>();
+        if (!contextChanged) {
+          for (const vm of prev) {
+            if (wantedIds.has(vm.id) && !loadedById.has(vm.id)) {
+              nextById.set(vm.id, vm);
+            }
+          }
+        }
+        for (const [id, vm] of loadedById) {
+          nextById.set(id, vm);
+        }
+        const next: WorldAtlasMapVm[] = [];
+        for (const summary of otherSummaries) {
+          const vm = nextById.get(summary.id);
+          if (vm) next.push(vm);
+        }
+        return next;
+      });
     });
     return () => {
       cancelled = true;
     };
   }, [childSummaryKey, effectivePlayerView, sagaPublicId, worldRootSummaryId]);
 
-  const worldSceneGraph = useMemo(() => {
-    if (!editor.map || editor.map.parentMapId !== null || childMapVms.length === 0) {
-      return null;
-    }
+  const childWorldSceneEntries = useMemo(() => {
     const resolveMapScale = (mapId: string, kind: WorldAtlasMapVm['kind']) => {
       const owner = atlasMapOwnerPlace(mapId, worldPlaces, worldLinks);
       if (owner) return atlasMapScaleForKind(tryNodeKindFromPlaceKind(owner.kind));
@@ -483,25 +536,8 @@ export function WorldAtlasWorkbench({
       if (kind === 'settlement') return 'settlement' as const;
       return 'world' as const;
     };
-    const rootScale = resolveMapScale(editor.map.id, editor.map.kind);
-    const maps: AtlasWorldSceneMapInput[] = [
-      {
-        id: editor.map.id,
-        parentAnchor: null,
-        bounds: editor.map.bounds,
-        status: 'ready',
-      },
-    ];
-    const sources: AtlasThreeWorldMapSource[] = [
-      {
-        mapId: editor.map.id,
-        doc: editor.canvasDoc,
-        mapScale: rootScale,
-        look: rootScale === 'interior' ? 'indoor' : 'outdoor',
-        bounds: editor.map.bounds,
-        revisionKey: `${editor.map.revision}:${editor.contentEpoch}`,
-      },
-    ];
+    const maps: AtlasWorldSceneMapInput[] = [];
+    const sources: AtlasThreeWorldMapSource[] = [];
     for (const vm of childMapVms) {
       const frame = extractMapFrameFromGeneratorMeta(vm.generatorMeta);
       const parsedDoc = parseUnifiedCanvasDoc(vm.generatorMeta?.unifiedCanvas);
@@ -524,8 +560,46 @@ export function WorldAtlasWorkbench({
         revisionKey: String(vm.revision),
       });
     }
+    return { maps, sources };
+  }, [childMapVms, worldLinks, worldPlaces]);
+
+  const editorCanvasDocLatestRef = useRef<UnifiedCanvasDoc>(editor.canvasDoc);
+  editorCanvasDocLatestRef.current = editor.canvasDoc;
+
+  const worldSceneGraph = useMemo(() => {
+    if (!editor.map || editor.map.parentMapId !== null || childWorldSceneEntries.maps.length === 0) {
+      return null;
+    }
+    const owner = atlasMapOwnerPlace(editor.map.id, worldPlaces, worldLinks);
+    const rootScale = owner
+      ? atlasMapScaleForKind(tryNodeKindFromPlaceKind(owner.kind))
+      : editor.map.kind === 'scene'
+        ? ('interior' as const)
+        : editor.map.kind === 'settlement'
+          ? ('settlement' as const)
+          : ('world' as const);
+    const maps: AtlasWorldSceneMapInput[] = [
+      {
+        id: editor.map.id,
+        parentAnchor: null,
+        bounds: editor.map.bounds,
+        status: 'ready',
+      },
+      ...childWorldSceneEntries.maps,
+    ];
+    const sources: AtlasThreeWorldMapSource[] = [
+      {
+        mapId: editor.map.id,
+        doc: editorCanvasDocLatestRef.current,
+        mapScale: rootScale,
+        look: rootScale === 'interior' ? 'indoor' : 'outdoor',
+        bounds: editor.map.bounds,
+        revisionKey: `${editor.map.revision}:${editor.contentEpoch}`,
+      },
+      ...childWorldSceneEntries.sources,
+    ];
     return maps.length > 1 ? { maps, sources } : null;
-  }, [childMapVms, editor.canvasDoc, editor.contentEpoch, editor.map, worldLinks, worldPlaces]);
+  }, [childWorldSceneEntries, editor.contentEpoch, editor.map, worldLinks, worldPlaces]);
 
   // SCM-04: Minimal Multi-Map Commit Adapter (rules live strictly in `src/domains/world/atlas/`).
   const [spatialWorld, setSpatialWorld] = useState<SpatialWorldModel | null>(null);
@@ -536,21 +610,47 @@ export function WorldAtlasWorkbench({
   spatialWorldRef.current = spatialWorld;
   const spatialHistoryRef = useRef<SpatialWorldTransactionHistory>(spatialHistory);
   spatialHistoryRef.current = spatialHistory;
-  const spatialHydrationKeyRef = useRef<string>('');
-  const childMapVmsRef = useRef<readonly WorldAtlasMapVm[]>(childMapVms);
-  childMapVmsRef.current = childMapVms;
+  const spatialHydrationStateRef = useRef<{
+    rootId: string;
+    rootRevision: number;
+    rootDoc: UnifiedCanvasDoc;
+    children: readonly WorldAtlasMapVm[];
+  } | null>(null);
+  const spatialPersistInFlightRef = useRef(false);
   const editorMapRef = useRef<WorldAtlasMapVm | null>(editor.map);
   editorMapRef.current = editor.map;
   const editorCanvasDocRef = useRef<UnifiedCanvasDoc>(editor.canvasDoc);
   editorCanvasDocRef.current = editor.canvasDoc;
-  const persistChainRef = useRef<Promise<void>>(Promise.resolve());
+  const persistChainRef = useRef<Promise<unknown>>(Promise.resolve());
 
   useEffect(() => {
     if (!editor.map || editor.map.parentMapId !== null || childMapVms.length === 0) {
       return;
     }
-    const hydrationKey = `${editor.map.id}:${childMapVms.map((m) => m.id).sort().join(',')}`;
-    if (spatialHydrationKeyRef.current === hydrationKey && spatialWorldRef.current) {
+    if (spatialPersistInFlightRef.current && spatialWorldRef.current !== null) {
+      return;
+    }
+    const prevHydrated = spatialHydrationStateRef.current;
+    const childrenMatch =
+      prevHydrated !== null &&
+      prevHydrated.children.length === childMapVms.length &&
+      prevHydrated.children.every((prevVm, idx) => {
+        const curVm = childMapVms[idx];
+        return (
+          curVm !== undefined &&
+          prevVm.id === curVm.id &&
+          prevVm.revision === curVm.revision &&
+          prevVm.updatedAt === curVm.updatedAt
+        );
+      });
+    if (
+      prevHydrated !== null &&
+      spatialWorldRef.current !== null &&
+      prevHydrated.rootId === editor.map.id &&
+      prevHydrated.rootRevision === editor.map.revision &&
+      prevHydrated.rootDoc === editor.canvasDoc &&
+      childrenMatch
+    ) {
       return;
     }
     const roleForVm = (vm: WorldAtlasMapVm): SpatialStructureRole => {
@@ -575,6 +675,7 @@ export function WorldAtlasWorkbench({
         parentAnchor: null,
         bounds: editor.map.bounds,
         doc: editor.canvasDoc,
+        spatialArchive: extractSpatialArchiveFromGeneratorMeta(editor.map.generatorMeta),
       },
     ];
     for (const vm of childMapVms) {
@@ -589,11 +690,17 @@ export function WorldAtlasWorkbench({
         parentAnchor: frame.parentAnchor,
         bounds: vm.bounds,
         doc: parsed,
+        spatialArchive: extractSpatialArchiveFromGeneratorMeta(vm.generatorMeta),
       });
     }
     const built = buildSpatialWorldFromMapSources(inputs);
     if (built) {
-      spatialHydrationKeyRef.current = hydrationKey;
+      spatialHydrationStateRef.current = {
+        rootId: editor.map.id,
+        rootRevision: editor.map.revision,
+        rootDoc: editor.canvasDoc,
+        children: childMapVms,
+      };
       setSpatialWorld(built);
       setSpatialHistory(emptySpatialWorldHistory());
     }
@@ -617,6 +724,7 @@ export function WorldAtlasWorkbench({
         out[id] = {
           doc,
           parentAnchor: frame.parentAnchor,
+          spatialArchive: extractSpatialArchiveFromGeneratorMeta(vm.generatorMeta),
         };
       }
       return out;
@@ -629,12 +737,18 @@ export function WorldAtlasWorkbench({
       nextWorld: SpatialWorldModel,
       plan: WorldOperationPlan,
       explicitSnapshots?: Readonly<Record<string, SpatialMapPersistSnapshot>>,
-    ) => {
+    ): Promise<{ readonly ok: true } | { readonly ok: false; readonly reasonDe: string }> => {
       const rootMap = editorMapRef.current;
-      if (!rootMap) return;
-      const currentChildren = childMapVmsRef.current;
+      if (!rootMap) return { ok: true };
+      const prevRootVm = rootMap;
+      const prevRootDoc = editorCanvasDocRef.current;
+      const prevChildren = childMapVmsRef.current;
+
       const docsByMapId: Record<string, UnifiedCanvasDoc> = {
-        [rootMap.id]: editorCanvasDocRef.current,
+        [rootMap.id]: prevRootDoc,
+      };
+      const spatialArchiveByMapId: Record<string, SpatialArchiveMeta> = {
+        [rootMap.id]: extractSpatialArchiveFromGeneratorMeta(rootMap.generatorMeta),
       };
       const mapNodes: Record<string, AtlasWorldSpaceNode> = {
         [rootMap.id]: {
@@ -644,11 +758,12 @@ export function WorldAtlasWorkbench({
         },
       };
       const vmById = new Map<string, WorldAtlasMapVm>([[rootMap.id, rootMap]]);
-      for (const vm of currentChildren) {
+      for (const vm of prevChildren) {
         vmById.set(vm.id, vm);
         const frame = extractMapFrameFromGeneratorMeta(vm.generatorMeta);
         const parsed = parseUnifiedCanvasDoc(vm.generatorMeta?.unifiedCanvas);
         if (parsed) docsByMapId[vm.id] = parsed;
+        spatialArchiveByMapId[vm.id] = extractSpatialArchiveFromGeneratorMeta(vm.generatorMeta);
         mapNodes[vm.id] = {
           id: vm.id,
           parentAnchor: frame.parentAnchor,
@@ -661,12 +776,14 @@ export function WorldAtlasWorkbench({
           mapId,
           nextDoc: snap.doc,
           nextParentAnchor: snap.parentAnchor,
+          nextSpatialArchive: snap.spatialArchive,
         }))
         : projectSpatialOperationToMapUpdates({
           world: nextWorld,
           plan,
           docsByMapId,
           mapNodes,
+          spatialArchiveByMapId,
         });
 
       const updatedChildMap = new Map<string, WorldAtlasMapVm>();
@@ -675,10 +792,12 @@ export function WorldAtlasWorkbench({
         readonly vm: WorldAtlasMapVm;
         readonly nextMeta: Record<string, unknown>;
       }> = [];
+      let nextRootDoc = prevRootDoc;
       for (const m of mutations) {
         const vm = vmById.get(m.mapId);
         if (!vm) continue;
         if (m.mapId === rootMap.id) {
+          nextRootDoc = m.nextDoc;
           editorCanvasDocRef.current = m.nextDoc;
           editor.updateCanvasDoc(m.nextDoc);
         }
@@ -689,6 +808,9 @@ export function WorldAtlasWorkbench({
             ...prevFrame,
             parentAnchor: m.nextParentAnchor,
           });
+        }
+        if (m.nextSpatialArchive !== undefined) {
+          nextMeta = mergeSpatialArchiveIntoGeneratorMeta(nextMeta, m.nextSpatialArchive);
         }
         const localUpdated: WorldAtlasMapVm = {
           ...vm,
@@ -701,40 +823,117 @@ export function WorldAtlasWorkbench({
       }
 
       // Sync ref before async HTTP persistence so rapid back-to-back Undo/Redo captures the latest doc/anchor
+      let activeChildren = prevChildren;
       if (updatedChildMap.size > 0) {
-        const optimisticChildren = childMapVmsRef.current.map(
-          (vm) => updatedChildMap.get(vm.id) ?? vm,
-        );
-        childMapVmsRef.current = optimisticChildren;
-        setChildMapVms(optimisticChildren);
+        activeChildren = prevChildren.map((vm) => updatedChildMap.get(vm.id) ?? vm);
+        childMapVmsRef.current = activeChildren;
+        setChildMapVms(activeChildren);
       }
+      // Keep spatialHistory intact across our own optimistic root/child update.
+      spatialHydrationStateRef.current = {
+        rootId: prevRootVm.id,
+        rootRevision: prevRootVm.revision,
+        rootDoc: nextRootDoc,
+        children: activeChildren,
+      };
 
       if (editingAllowed && isHostLibraryEnabled()) {
-        for (const item of prepared) {
-          try {
+        spatialPersistInFlightRef.current = true;
+        const committed: Array<{
+          readonly mapId: string;
+          readonly prevVm: WorldAtlasMapVm;
+          readonly savedVm: WorldAtlasMapVm;
+        }> = [];
+        let latestRootVm = prevRootVm;
+        const savedChildMap = new Map<string, WorldAtlasMapVm>(updatedChildMap);
+        try {
+          for (const item of prepared) {
             const saved = await editor.persistMapMeta(item.vm, item.nextMeta);
+            committed.push({ mapId: item.mapId, prevVm: item.vm, savedVm: saved });
             if (item.mapId === rootMap.id) {
+              latestRootVm = saved;
               editorMapRef.current = saved;
             } else {
-              updatedChildMap.set(item.mapId, saved);
+              savedChildMap.set(item.mapId, saved);
+              childMapVmsRef.current = prevChildren.map((vm) => savedChildMap.get(vm.id) ?? vm);
             }
-          } catch (err) {
-            console.warn('[atlas] SCM multi-map upsert:', err);
+            spatialHydrationStateRef.current = {
+              rootId: latestRootVm.id,
+              rootRevision: latestRootVm.revision,
+              rootDoc: nextRootDoc,
+              children: childMapVmsRef.current,
+            };
           }
-        }
-        if (updatedChildMap.size > 0) {
-          const nextChildren = childMapVmsRef.current.map(
-            (vm) => updatedChildMap.get(vm.id) ?? vm,
-          );
-          childMapVmsRef.current = nextChildren;
-          setChildMapVms(nextChildren);
+          let finalChildren = activeChildren;
+          if (savedChildMap.size > 0) {
+            finalChildren = prevChildren.map((vm) => savedChildMap.get(vm.id) ?? vm);
+            childMapVmsRef.current = finalChildren;
+            setChildMapVms(finalChildren);
+          }
+          spatialHydrationStateRef.current = {
+            rootId: latestRootVm.id,
+            rootRevision: latestRootVm.revision,
+            rootDoc: nextRootDoc,
+            children: finalChildren,
+          };
+          return { ok: true };
+        } catch (err) {
+          console.warn('[atlas] SCM multi-map upsert failed — rolling back transaction:', err);
+          // Compensating rollback for already-committed maps in reverse order
+          const restoredById = new Map<string, WorldAtlasMapVm>();
+          let rollbackFailed = false;
+          for (let i = committed.length - 1; i >= 0; i -= 1) {
+            const entry = committed[i]!;
+            try {
+              const restored = await editor.persistMapMeta(entry.savedVm, entry.prevVm.generatorMeta);
+              restoredById.set(entry.mapId, restored);
+              if (entry.mapId === rootMap.id) {
+                editorMapRef.current = restored;
+              }
+            } catch (rbErr) {
+              rollbackFailed = true;
+              console.warn('[atlas] SCM compensating rollback failed for map', entry.mapId, rbErr);
+              restoredById.set(entry.mapId, entry.savedVm);
+            }
+          }
+          // Restore local root & child state to pre-operation snapshots (with updated server revisions)
+          const restoredRoot = restoredById.get(rootMap.id) ?? prevRootVm;
+          editorMapRef.current = restoredRoot;
+          if (nextRootDoc !== prevRootDoc) {
+            editorCanvasDocRef.current = prevRootDoc;
+            editor.updateCanvasDoc(prevRootDoc);
+          }
+          const restoredChildren = prevChildren.map((vm) => restoredById.get(vm.id) ?? vm);
+          childMapVmsRef.current = restoredChildren;
+          setChildMapVms(restoredChildren);
+          if (rollbackFailed) {
+            spatialHydrationStateRef.current = null;
+            void editor.reloadActiveMap();
+          } else {
+            spatialHydrationStateRef.current = {
+              rootId: restoredRoot.id,
+              rootRevision: restoredRoot.revision,
+              rootDoc: prevRootDoc,
+              children: restoredChildren,
+            };
+          }
+          const detail = err instanceof Error && err.message ? ` (${err.message})` : '';
+          return {
+            ok: false,
+            reasonDe: rollbackFailed
+              ? `Mehrkarten-Speicherung fehlgeschlagen und Rücksetzung unvollständig${detail}. Karte wird neu geladen.`
+              : `Mehrkarten-Speicherung fehlgeschlagen — alle Änderungen wurden zurückgesetzt${detail}.`,
+          };
+        } finally {
+          spatialPersistInFlightRef.current = false;
         }
       }
+      return { ok: true };
     },
     [editingAllowed, editor],
   );
 
-  const enqueuePersist = useCallback((task: () => Promise<void>): Promise<void> => {
+  const enqueuePersist = useCallback(<T,>(task: () => Promise<T>): Promise<T> => {
     const next = persistChainRef.current.then(task, task);
     persistChainRef.current = next;
     return next;
@@ -758,7 +957,23 @@ export function WorldAtlasWorkbench({
         spatialHistoryRef.current = exec.history;
         setSpatialWorld(exec.world);
         setSpatialHistory(exec.history);
-        await enqueuePersist(() => persistProjectedMapUpdates(exec.world, plan));
+        const persistRes = await enqueuePersist(() =>
+          persistProjectedMapUpdates(exec.world, plan),
+        );
+        if ('reasonDe' in persistRes) {
+          spatialWorldRef.current = curWorld;
+          spatialHistoryRef.current = curHistory;
+          setSpatialWorld(curWorld);
+          setSpatialHistory(curHistory);
+          return {
+            ok: false,
+            world: curWorld,
+            history: curHistory,
+            code: 'persist_failed',
+            violations: [],
+            reasonDe: persistRes.reasonDe,
+          };
+        }
         return exec;
       },
       undo: async () => {
@@ -773,9 +988,16 @@ export function WorldAtlasWorkbench({
         spatialHistoryRef.current = undone.history;
         setSpatialWorld(undone.world);
         setSpatialHistory(undone.history);
-        await enqueuePersist(() =>
+        const persistRes = await enqueuePersist(() =>
           persistProjectedMapUpdates(undone.world, undone.plan, undone.mapSnapshots),
         );
+        if (!persistRes.ok) {
+          spatialWorldRef.current = curWorld;
+          spatialHistoryRef.current = curHist;
+          setSpatialWorld(curWorld);
+          setSpatialHistory(curHist);
+          return false;
+        }
         return true;
       },
       redo: async () => {
@@ -790,9 +1012,16 @@ export function WorldAtlasWorkbench({
         spatialHistoryRef.current = redone.history;
         setSpatialWorld(redone.world);
         setSpatialHistory(redone.history);
-        await enqueuePersist(() =>
+        const persistRes = await enqueuePersist(() =>
           persistProjectedMapUpdates(redone.world, redone.plan, redone.mapSnapshots),
         );
+        if (!persistRes.ok) {
+          spatialWorldRef.current = curWorld;
+          spatialHistoryRef.current = curHist;
+          setSpatialWorld(curWorld);
+          setSpatialHistory(curHist);
+          return false;
+        }
         return true;
       },
     };

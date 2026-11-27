@@ -266,9 +266,164 @@ try {
   });
   assert.equal(uniformRotWrite.ok, true, 'rotated uniform anchor accepted');
 
+  // 7) Dangling parentAnchor.parentMapId on create rejected (`22023`)
+  const danglingAnchorCreate = store.upsertMap([owner], {
+    worldProfileId: worldId,
+    mapId: null,
+    parentMapId: resA.value.id,
+    kind: 'region',
+    title: 'Dangling Anchor Create',
+    layers: emptyLayers,
+    bounds: { minX: 0, minY: 0, maxX: 1000, maxY: 1000 },
+    generatorMeta: {
+      engine: 'unified_canvas',
+      mapFrame: {
+        status: 'ready',
+        parentAnchor: {
+          parentMapId: 'non-existent-map-id',
+          centerX: 500,
+          centerY: 500,
+          extentX: 50,
+          extentY: 50,
+          rotationRad: 0,
+          metersPerUnit: 100,
+        },
+      },
+    },
+    expectedRevision: null,
+    sortOrder: 5,
+    basemapStoragePath: null,
+    azgaarMapStoragePath: null,
+  });
+  assert.equal(danglingAnchorCreate.ok, false, 'dangling parentAnchor.parentMapId on create rejected');
+  assert.equal(danglingAnchorCreate.error, '22023');
+
+  // 8) Dangling parentAnchor.parentMapId on update rejected (`22023`)
+  const danglingAnchorUpdate = store.upsertMap([owner], {
+    worldProfileId: worldId,
+    mapId: resB.value.id,
+    parentMapId: resA.value.id,
+    kind: 'region',
+    title: 'Map B',
+    layers: emptyLayers,
+    bounds: { minX: 0, minY: 0, maxX: 1000, maxY: 1000 },
+    generatorMeta: {
+      engine: 'unified_canvas',
+      mapFrame: {
+        status: 'ready',
+        parentAnchor: {
+          parentMapId: 'non-existent-map-id',
+          centerX: 500,
+          centerY: 500,
+          extentX: 50,
+          extentY: 50,
+          rotationRad: 0,
+          metersPerUnit: 100,
+        },
+      },
+    },
+    expectedRevision: resB.value.revision,
+    sortOrder: 1,
+    basemapStoragePath: null,
+    azgaarMapStoragePath: null,
+  });
+  assert.equal(danglingAnchorUpdate.ok, false, 'dangling parentAnchor.parentMapId on update rejected');
+  assert.equal(danglingAnchorUpdate.error, '22023');
+
+  // 9) Cross-owner / cross-world parentAnchor.parentMapId on create & update rejected (`22023`)
+  const foreignOwner = `foreign-sws-${randomUUID().slice(0, 8)}`;
+  const foreignWorldId = randomUUID();
+  db.prepare(
+    `INSERT INTO worlds (id, owner_user_id, title, created_at, public_id)
+     VALUES (?, ?, ?, ?, ?)`,
+  ).run(
+    foreignWorldId,
+    foreignOwner,
+    'Foreign SWS World',
+    now,
+    `WD-${randomUUID().slice(0, 5).toUpperCase()}`,
+  );
+  const foreignRoot = store.upsertMap([foreignOwner], {
+    worldProfileId: foreignWorldId,
+    mapId: null,
+    parentMapId: null,
+    kind: 'world',
+    title: 'Foreign Root',
+    layers: emptyLayers,
+    bounds: { minX: 0, minY: 0, maxX: 1000, maxY: 1000 },
+    generatorMeta: { engine: 'unified_canvas', mapStatus: 'ready' },
+    expectedRevision: null,
+    sortOrder: 0,
+    basemapStoragePath: null,
+    azgaarMapStoragePath: null,
+  });
+  assert.equal(foreignRoot.ok, true, 'create foreign root');
+
+  const crossWorldAnchorCreate = store.upsertMap([owner], {
+    worldProfileId: worldId,
+    mapId: null,
+    parentMapId: resA.value.id,
+    kind: 'region',
+    title: 'Cross-World Anchor Create',
+    layers: emptyLayers,
+    bounds: { minX: 0, minY: 0, maxX: 1000, maxY: 1000 },
+    generatorMeta: {
+      engine: 'unified_canvas',
+      mapFrame: {
+        status: 'ready',
+        parentAnchor: {
+          parentMapId: foreignRoot.value.id,
+          centerX: 500,
+          centerY: 500,
+          extentX: 50,
+          extentY: 50,
+          rotationRad: 0,
+          metersPerUnit: 100,
+        },
+      },
+    },
+    expectedRevision: null,
+    sortOrder: 6,
+    basemapStoragePath: null,
+    azgaarMapStoragePath: null,
+  });
+  assert.equal(crossWorldAnchorCreate.ok, false, 'cross-world parentAnchor.parentMapId on create rejected');
+  assert.equal(crossWorldAnchorCreate.error, '22023');
+
+  const crossWorldAnchorUpdate = store.upsertMap([owner], {
+    worldProfileId: worldId,
+    mapId: resB.value.id,
+    parentMapId: resA.value.id,
+    kind: 'region',
+    title: 'Map B',
+    layers: emptyLayers,
+    bounds: { minX: 0, minY: 0, maxX: 1000, maxY: 1000 },
+    generatorMeta: {
+      engine: 'unified_canvas',
+      mapFrame: {
+        status: 'ready',
+        parentAnchor: {
+          parentMapId: foreignRoot.value.id,
+          centerX: 500,
+          centerY: 500,
+          extentX: 50,
+          extentY: 50,
+          rotationRad: 0,
+          metersPerUnit: 100,
+        },
+      },
+    },
+    expectedRevision: resB.value.revision,
+    sortOrder: 1,
+    basemapStoragePath: null,
+    azgaarMapStoragePath: null,
+  });
+  assert.equal(crossWorldAnchorUpdate.ok, false, 'cross-world parentAnchor.parentMapId on update rejected');
+  assert.equal(crossWorldAnchorUpdate.error, '22023');
+
   db.close();
 } finally {
   rmSync(work, { recursive: true, force: true });
 }
 
-console.log('✓ sws-write-guards.self-test: 6/6 (self/2-node/3-node/anchor cycle + shear reject + uniform rot accept)');
+console.log('✓ sws-write-guards.self-test: 10/10 (cycles + shear + uniform rot + dangling/cross-world anchor parent reject)');

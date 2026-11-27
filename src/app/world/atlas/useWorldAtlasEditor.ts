@@ -1013,6 +1013,13 @@ export function useWorldAtlasEditor({
         generatorMeta: nextMeta,
         expectedRevision: vm.revision,
       });
+      delete prefetchedVmRef.current[saved.id];
+      setMapCache((prev) => invalidateAtlasMapCache(prev, saved.id));
+      setLodSession((prev) => {
+        const next = bumpAtlasMapCacheEpoch(prev);
+        lodSessionRef.current = next;
+        return next;
+      });
       if (saved.id === activeMapIdRef.current) {
         setMap(saved);
       }

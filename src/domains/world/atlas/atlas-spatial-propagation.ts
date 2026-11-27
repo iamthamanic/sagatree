@@ -856,7 +856,7 @@ function planRestore(
       intent,
       targetEntityId: target.id,
       targetRelation: resolveRelation(world, target.id),
-      requiresConfirmation: 'none',
+      requiresConfirmation: grownCarrierIds.length > 0 ? 'grow' : 'none',
       grownCarrierIds,
       archivedDescendantIds: [],
       reroutedFlowingIds: [],

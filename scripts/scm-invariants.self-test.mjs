@@ -347,4 +347,128 @@ let passed = 0;
   passed += 1;
 }
 
-console.log(`✓ scm-invariants.self-test: ${passed}/9 (INV-1..6, SCM-08 fail-closed, Default World, M-2 Liang-Barsky clipping)`);
+// 10. Kody #4719499790: planRestore requires grow confirmation when restoring expands a shrunk carrier
+{
+  const w = makeBaseWorld();
+  const rem = prop.planPropagation(w, { kind: 'remove', entityId: 'mountain' });
+  assert.equal(rem.ok, true);
+  const removed = prop.applyWorldOperation(w, rem.plan);
+  assert.equal(removed.ok, true);
+  // Shrink country so restoring mountain (200..260) requires growing country
+  const shrunk = {
+    ...removed.world,
+    entities: {
+      ...removed.world.entities,
+      country: {
+        ...removed.world.entities.country,
+        boundsWorld: { minX: 210, minY: 210, maxX: 230, maxY: 230 },
+      },
+    },
+  };
+  const rest = prop.planPropagation(shrunk, { kind: 'restore', entityId: 'mountain' });
+  assert.equal(rest.ok, true);
+  assert.ok(rest.plan.grownCarrierIds.includes('country'), 'restore must grow shrunk carrier');
+  assert.equal(rest.plan.requiresConfirmation, 'grow', 'restore expanding carrier requires grow confirmation');
+  passed += 1;
+}
+
+// 11. Kody #4719500232 & #4719500726: Soft-archive persists spatialArchive & freeland persists all clipped segments
+{
+  const rootDoc = {
+    format: 'sagatree-unified-atlas-v1',
+    layers: { terrain: true, roads: true, region: true, city: true, interior: true, drawings: true, objects: true, grid: false },
+    rooms: [],
+    walls: [],
+    objects: [{ id: 'o.hut', type: 'haus', x: 300, y: 300, size: 1 }],
+    strokes: [
+      {
+        id: 'st.river',
+        material: 'wasser',
+        width: 12,
+        points: [
+          [100, 500],
+          [900, 500],
+        ],
+      },
+    ],
+  };
+  const worldModel = bridge.buildSpatialWorldFromMapSources([
+    {
+      mapId: 'm.root',
+      title: 'Root',
+      role: 'world',
+      parentMapId: null,
+      parentAnchor: null,
+      doc: rootDoc,
+    },
+  ]);
+  assert.ok(worldModel);
+  const objEntityId = 'obj:m.root:o.hut';
+  const strokeEntityId = 'stroke:m.root:st.river';
+  // Simulate archiving object + splitting freeland stroke into 2 clipped segments
+  const nextModel = {
+    ...worldModel,
+    entities: {
+      ...worldModel.entities,
+      [objEntityId]: {
+        ...worldModel.entities[objEntityId],
+        status: 'archived',
+        archivedByEntityId: 'map:m.root',
+      },
+      [strokeEntityId]: {
+        ...worldModel.entities[strokeEntityId],
+        clippedSegmentsWorld: [
+          [[100, 500], [350, 500]],
+          [[650, 500], [900, 500]],
+        ],
+      },
+    },
+  };
+  const mutations = bridge.projectSpatialOperationToMapUpdates({
+    world: nextModel,
+    plan: {
+      intent: { kind: 'remove', entityId: objEntityId },
+      targetEntityId: objEntityId,
+      targetRelation: 'CONTAINED',
+      requiresConfirmation: 'none',
+      grownCarrierIds: [],
+      archivedDescendantIds: [objEntityId],
+      reroutedFlowingIds: [strokeEntityId],
+      cascadeCounts: { continents: 0, countries: 0, settlements: 0, buildings: 1, rooms: 0, other: 0, total: 1, flowingAffected: 1 },
+      changes: [
+        { entityId: objEntityId, mapId: 'm.root', featureId: 'o.hut', labelDe: 'haus', role: 'building', relation: 'CONTAINED', kind: 'archive_descendant' },
+        { entityId: strokeEntityId, mapId: 'm.root', featureId: 'st.river', labelDe: 'Fluss', role: 'river', relation: 'freeland', kind: 'reroute_flowing' },
+      ],
+      affectedMapIds: ['m.root'],
+      summaryDe: 'test',
+    },
+    docsByMapId: { 'm.root': rootDoc },
+    mapNodes: worldModel.mapNodes,
+  });
+  assert.equal(mutations.length, 1);
+  assert.equal(mutations[0].nextDoc.objects.length, 0, 'archived object hidden from active doc.objects');
+  assert.equal(mutations[0].nextSpatialArchive?.length, 1, 'archived object persisted in spatialArchive');
+  assert.equal(mutations[0].nextSpatialArchive?.[0].featureId, 'o.hut');
+  assert.equal(mutations[0].nextDoc.strokes.length, 2, 'both clipped freeland segments persisted');
+  assert.equal(mutations[0].nextDoc.strokes[0].id, 'st.river');
+  assert.equal(mutations[0].nextDoc.strokes[1].id, 'st.river#clip1');
+
+  // Rehydrate after reload — archived object & both clipped stroke segments survive!
+  const reloaded = bridge.buildSpatialWorldFromMapSources([
+    {
+      mapId: 'm.root',
+      title: 'Root',
+      role: 'world',
+      parentMapId: null,
+      parentAnchor: null,
+      doc: mutations[0].nextDoc,
+      spatialArchive: mutations[0].nextSpatialArchive,
+    },
+  ]);
+  assert.ok(reloaded);
+  assert.equal(reloaded.entities[objEntityId]?.status, 'archived', 'archived object rehydrated after reload');
+  assert.equal(reloaded.entities[strokeEntityId]?.clippedSegmentsWorld?.length, 2, 'clipped segments rehydrated after reload');
+  passed += 1;
+}
+
+console.log(`✓ scm-invariants.self-test: ${passed}/11 (INV-1..6, SCM-08, Default World, M-2 clipping, restore grow-confirm, archive+freeland persistence)`);

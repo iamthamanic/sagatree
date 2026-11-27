@@ -18,6 +18,7 @@ import {
   type ApplyWorldOperationResult,
   type WorldOperationPlan,
 } from './atlas-spatial-propagation';
+import type { SpatialArchiveMeta } from './atlas-spatial-world-bridge';
 import type { ParentSpatialAnchor } from './map-frame';
 import type { UnifiedCanvasDoc } from './unified-canvas-doc';
 
@@ -25,6 +26,7 @@ import type { UnifiedCanvasDoc } from './unified-canvas-doc';
 export type SpatialMapPersistSnapshot = {
   readonly doc: UnifiedCanvasDoc;
   readonly parentAnchor: ParentSpatialAnchor | null;
+  readonly spatialArchive?: SpatialArchiveMeta;
 };
 
 export type SpatialWorldHistorySnapshot = {
@@ -71,7 +73,7 @@ export type ExecuteSpatialWorldResult =
       readonly ok: false;
       readonly world: SpatialWorldModel;
       readonly history: SpatialWorldTransactionHistory;
-      readonly code: Extract<ApplyWorldOperationResult, { ok: false }>['code'];
+      readonly code: Extract<ApplyWorldOperationResult, { ok: false }>['code'] | 'persist_failed';
       readonly violations: Extract<ApplyWorldOperationResult, { ok: false }>['violations'];
       readonly reasonDe: string;
     };

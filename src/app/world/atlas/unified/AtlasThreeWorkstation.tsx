@@ -2420,6 +2420,7 @@ export function AtlasThreeWorkstation({
         <button
           type="button"
           data-atlas-panel-fold="layers"
+          aria-label="Ebenen"
           aria-expanded={layersOpen}
           className={`group pointer-events-auto flex min-h-11 items-center gap-2 rounded-lg border px-3.5 text-sm font-semibold shadow-lg backdrop-blur-md transition-colors ${layersOpen
             ? 'border-primary bg-primary text-primary-foreground'
@@ -2517,7 +2518,7 @@ export function AtlasThreeWorkstation({
                 </div>
               ) : null}
               {externalNav ? (
-                <div className="space-y-1">
+                <div className="space-y-1" data-atlas-nav-source="db">
                   <button
                     type="button"
                     data-atlas-nav-root
@@ -2739,7 +2740,13 @@ export function AtlasThreeWorkstation({
 
             <div className="min-h-0 flex-1 space-y-4 overflow-y-auto p-3">
               {/* 3D Tool Grid */}
-              <div className="grid grid-cols-3 gap-1.5" role="toolbar" aria-label="3D-Werkzeuge">
+              <div
+                id="tools"
+                data-atlas-tool-source="registry"
+                className="grid grid-cols-3 gap-1.5"
+                role="toolbar"
+                aria-label="3D-Werkzeuge"
+              >
                 {(
                   [
                     { id: 'hand', label: 'Ansicht (Q)', Icon: Hand, editOnly: false },

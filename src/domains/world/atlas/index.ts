@@ -914,10 +914,15 @@ export {
 } from './atlas-world-operation-history';
 
 export {
+  SPATIAL_ARCHIVE_META_KEY,
   buildSpatialWorldFromDefaultWorld,
   buildSpatialWorldFromMapSources,
+  extractSpatialArchiveFromGeneratorMeta,
+  mergeSpatialArchiveIntoGeneratorMeta,
   projectSpatialOperationToMapUpdates,
   type ProjectedMapMutation,
+  type SpatialArchiveMeta,
+  type SpatialArchivedEntityRecord,
   type SpatialMapSourceInput,
 } from './atlas-spatial-world-bridge';
 

@@ -39,6 +39,66 @@ import {
 } from './unified-canvas-doc';
 import { DEFAULT_ATLAS_BOUNDS, type WorldAtlasBounds } from './world-atlas.types';
 
+export const SPATIAL_ARCHIVE_META_KEY = 'spatialArchive' as const;
+
+export type SpatialArchivedEntityRecord = {
+  readonly entityId: string;
+  readonly featureId: string;
+  readonly kind: 'map_frame' | 'object' | 'room';
+  readonly archivedByEntityId: string;
+  readonly object?: UnifiedCanvasObject;
+  readonly room?: UnifiedCanvasRoom;
+};
+
+export type SpatialArchiveMeta = readonly SpatialArchivedEntityRecord[];
+
+export function extractSpatialArchiveFromGeneratorMeta(
+  meta: Readonly<Record<string, unknown>> | null | undefined,
+): SpatialArchiveMeta {
+  if (!meta) return [];
+  const raw = meta[SPATIAL_ARCHIVE_META_KEY];
+  if (!Array.isArray(raw)) return [];
+  const out: SpatialArchivedEntityRecord[] = [];
+  for (const item of raw) {
+    if (!item || typeof item !== 'object' || Array.isArray(item)) continue;
+    const rec = item as Record<string, unknown>;
+    if (
+      typeof rec.entityId !== 'string' ||
+      typeof rec.featureId !== 'string' ||
+      typeof rec.archivedByEntityId !== 'string' ||
+      (rec.kind !== 'map_frame' && rec.kind !== 'object' && rec.kind !== 'room')
+    ) {
+      continue;
+    }
+    out.push({
+      entityId: rec.entityId,
+      featureId: rec.featureId,
+      kind: rec.kind,
+      archivedByEntityId: rec.archivedByEntityId,
+      ...(rec.kind === 'object' && rec.object && typeof rec.object === 'object'
+        ? { object: rec.object as UnifiedCanvasObject }
+        : {}),
+      ...(rec.kind === 'room' && rec.room && typeof rec.room === 'object'
+        ? { room: rec.room as UnifiedCanvasRoom }
+        : {}),
+    });
+  }
+  return out;
+}
+
+export function mergeSpatialArchiveIntoGeneratorMeta(
+  meta: Readonly<Record<string, unknown>> | null | undefined,
+  archive: SpatialArchiveMeta,
+): Record<string, unknown> {
+  const next: Record<string, unknown> = { ...(meta ?? {}) };
+  if (archive.length === 0) {
+    delete next[SPATIAL_ARCHIVE_META_KEY];
+  } else {
+    next[SPATIAL_ARCHIVE_META_KEY] = archive;
+  }
+  return next;
+}
+
 export type SpatialMapSourceInput = {
   readonly mapId: string;
   readonly title: string;
@@ -47,12 +107,14 @@ export type SpatialMapSourceInput = {
   readonly parentAnchor: ParentSpatialAnchor | null;
   readonly bounds?: WorldAtlasBounds;
   readonly doc: UnifiedCanvasDoc;
+  readonly spatialArchive?: SpatialArchiveMeta;
 };
 
 export type ProjectedMapMutation = {
   readonly mapId: string;
   readonly nextDoc: UnifiedCanvasDoc;
   readonly nextParentAnchor?: ParentSpatialAnchor | null;
+  readonly nextSpatialArchive?: SpatialArchiveMeta;
 };
 
 function round3(n: number): number {
@@ -136,12 +198,13 @@ export function buildSpatialWorldFromMapSources(
   const entities: Record<string, SpatialEntityNode> = {};
   const mapEntityId = (mapId: string) => `map:${mapId}`;
 
-  // 1. Register each map frame as a spatial container entity
+  // 1. Register each map frame as a spatial container entity (preserving persisted soft-archive state)
   for (const s of sources) {
     const b = s.bounds ?? DEFAULT_ATLAS_BOUNDS;
     const worldBounds = projectLocalRectToWorldBounds(mapNodes, s.mapId, b.minX, b.minY, b.maxX, b.maxY);
     if (!worldBounds) continue;
     const id = mapEntityId(s.mapId);
+    const frameArchive = s.spatialArchive?.find((rec) => rec.kind === 'map_frame');
     entities[id] = {
       id,
       mapId: s.mapId,
@@ -151,9 +214,53 @@ export function buildSpatialWorldFromMapSources(
       carrierId: s.parentMapId ? mapEntityId(s.parentMapId) : null,
       boundsWorld: worldBounds,
       polygonWorld: rectPointsFromBounds(worldBounds),
-      status: 'active',
+      status: frameArchive ? 'archived' : 'active',
+      ...(frameArchive ? { archivedByEntityId: frameArchive.archivedByEntityId } : {}),
     };
   }
+
+  const registerObjectEntity = (
+    s: SpatialMapSourceInput,
+    carrierId: string,
+    carrier: SpatialEntityNode,
+    obj: UnifiedCanvasObject,
+    archivedByEntityId?: string,
+  ): void => {
+    if (obj.id.startsWith('der.')) return;
+    const half = Math.max(4, (obj.size || 0.5) * 18);
+    const rawWorld = projectLocalRectToWorldBounds(
+      mapNodes,
+      s.mapId,
+      obj.x - half,
+      obj.y - half,
+      obj.x + half,
+      obj.y + half,
+    );
+    if (!rawWorld) return;
+    const clamped: SpatialBounds2D = {
+      minX: Math.max(carrier.boundsWorld.minX, Math.min(carrier.boundsWorld.maxX, rawWorld.minX)),
+      minY: Math.max(carrier.boundsWorld.minY, Math.min(carrier.boundsWorld.maxY, rawWorld.minY)),
+      maxX: Math.max(carrier.boundsWorld.minX, Math.min(carrier.boundsWorld.maxX, rawWorld.maxX)),
+      maxY: Math.max(carrier.boundsWorld.minY, Math.min(carrier.boundsWorld.maxY, rawWorld.maxY)),
+    };
+    const entityId = `obj:${s.mapId}:${obj.id}`;
+    entities[entityId] = {
+      id: entityId,
+      mapId: s.mapId,
+      featureId: obj.id,
+      labelDe: `${obj.type} (${obj.id})`,
+      role: roleForStampType(obj.type),
+      carrierId,
+      boundsWorld: {
+        minX: Math.min(clamped.minX, clamped.maxX),
+        minY: Math.min(clamped.minY, clamped.maxY),
+        maxX: Math.max(clamped.minX, clamped.maxX),
+        maxY: Math.max(clamped.minY, clamped.maxY),
+      },
+      status: archivedByEntityId ? 'archived' : 'active',
+      ...(archivedByEntityId ? { archivedByEntityId } : {}),
+    };
+  };
 
   // 2. Register canonical objects & strokes per map (skipping `der.*` derived mirrors)
   for (const s of sources) {
@@ -161,43 +268,53 @@ export function buildSpatialWorldFromMapSources(
     const carrier = entities[carrierId];
     if (!carrier) continue;
 
+    const activeObjectIds = new Set<string>();
     for (const obj of s.doc.objects) {
       if (obj.id.startsWith('der.')) continue;
-      const half = Math.max(4, (obj.size || 0.5) * 18);
-      const rawWorld = projectLocalRectToWorldBounds(
-        mapNodes,
-        s.mapId,
-        obj.x - half,
-        obj.y - half,
-        obj.x + half,
-        obj.y + half,
-      );
-      if (!rawWorld) continue;
-      // Clamp footprint into carrier bounds for initial seed sanity
-      const clamped: SpatialBounds2D = {
-        minX: Math.max(carrier.boundsWorld.minX, Math.min(carrier.boundsWorld.maxX, rawWorld.minX)),
-        minY: Math.max(carrier.boundsWorld.minY, Math.min(carrier.boundsWorld.maxY, rawWorld.minY)),
-        maxX: Math.max(carrier.boundsWorld.minX, Math.min(carrier.boundsWorld.maxX, rawWorld.maxX)),
-        maxY: Math.max(carrier.boundsWorld.minY, Math.min(carrier.boundsWorld.maxY, rawWorld.maxY)),
-      };
-      const entityId = `obj:${s.mapId}:${obj.id}`;
-      entities[entityId] = {
-        id: entityId,
-        mapId: s.mapId,
-        featureId: obj.id,
-        labelDe: `${obj.type} (${obj.id})`,
-        role: roleForStampType(obj.type),
-        carrierId,
-        boundsWorld: {
-          minX: Math.min(clamped.minX, clamped.maxX),
-          minY: Math.min(clamped.minY, clamped.maxY),
-          maxX: Math.max(clamped.minX, clamped.maxX),
-          maxY: Math.max(clamped.minY, clamped.maxY),
-        },
-        status: 'active',
-      };
+      activeObjectIds.add(obj.id);
+      registerObjectEntity(s, carrierId, carrier, obj);
     }
 
+    // Rehydrate persisted soft-archived objects and rooms so restore survives reload.
+    for (const rec of s.spatialArchive ?? []) {
+      if (rec.kind === 'object' && rec.object && !activeObjectIds.has(rec.featureId)) {
+        registerObjectEntity(s, carrierId, carrier, rec.object, rec.archivedByEntityId);
+      } else if (rec.kind === 'room' && rec.room) {
+        const alreadyActive = s.doc.rooms.some((r) => r.id === rec.featureId);
+        if (!alreadyActive) {
+          const room = rec.room;
+          const rawWorld = projectLocalRectToWorldBounds(
+            mapNodes,
+            s.mapId,
+            room.x,
+            room.y,
+            room.x + room.w,
+            room.y + room.h,
+          );
+          if (rawWorld) {
+            const entityId = `room:${s.mapId}:${room.id}`;
+            entities[entityId] = {
+              id: entityId,
+              mapId: s.mapId,
+              featureId: room.id,
+              labelDe: `Raum (${room.id})`,
+              role: 'room',
+              carrierId,
+              boundsWorld: rawWorld,
+              polygonWorld: rectPointsFromBounds(rawWorld),
+              status: 'archived',
+              archivedByEntityId: rec.archivedByEntityId,
+            };
+          }
+        }
+      }
+    }
+
+    // Group clipped freeland stroke segments (`<baseId>#clip<i>`) under their base entity id.
+    const strokeGroups = new Map<
+      string,
+      { primary: UnifiedCanvasStroke; segments: SpatialPoint2D[][] }
+    >();
     for (const stroke of s.doc.strokes) {
       if (stroke.id.startsWith('der.') || stroke.points.length < 2) continue;
       const worldPts: SpatialPoint2D[] = [];
@@ -206,20 +323,33 @@ export function buildSpatialWorldFromMapSources(
         if (!isAtlasWorldError(w)) worldPts.push([w.value.x, w.value.y]);
       }
       if (worldPts.length < 2) continue;
-      const wb = boundsFromPoints(worldPts);
+      const clipIdx = stroke.id.indexOf('#clip');
+      const baseId = clipIdx > 0 ? stroke.id.slice(0, clipIdx) : stroke.id;
+      const group = strokeGroups.get(baseId);
+      if (group) {
+        group.segments.push(worldPts);
+      } else {
+        strokeGroups.set(baseId, { primary: stroke, segments: [worldPts] });
+      }
+    }
+    for (const [baseId, group] of strokeGroups) {
+      const allPts: SpatialPoint2D[] = [];
+      for (const seg of group.segments) allPts.push(...seg);
+      const wb = boundsFromPoints(allPts);
       if (!wb) continue;
-      const entityId = `stroke:${s.mapId}:${stroke.id}`;
+      const entityId = `stroke:${s.mapId}:${baseId}`;
       entities[entityId] = {
         id: entityId,
         mapId: s.mapId,
-        featureId: stroke.id,
-        labelDe: stroke.material === 'wasser' ? `Fluss (${stroke.id})` : `Straße (${stroke.id})`,
-        role: roleForStroke(stroke),
+        featureId: baseId,
+        labelDe:
+          group.primary.material === 'wasser' ? `Fluss (${baseId})` : `Straße (${baseId})`,
+        role: roleForStroke(group.primary),
         relation: 'freeland',
         carrierId,
         boundsWorld: wb,
-        polylineWorld: worldPts,
-        clippedSegmentsWorld: [worldPts],
+        polylineWorld: group.segments[0]!,
+        clippedSegmentsWorld: group.segments,
         status: 'active',
       };
     }
@@ -294,10 +424,12 @@ export function projectSpatialOperationToMapUpdates(input: {
   readonly plan: WorldOperationPlan;
   readonly docsByMapId: Readonly<Record<string, UnifiedCanvasDoc>>;
   readonly mapNodes: Readonly<Record<string, AtlasWorldSpaceNode>>;
+  readonly spatialArchiveByMapId?: Readonly<Record<string, SpatialArchiveMeta>>;
 }): readonly ProjectedMapMutation[] {
-  const { world, plan, docsByMapId, mapNodes } = input;
+  const { world, plan, docsByMapId, mapNodes, spatialArchiveByMapId } = input;
   const docCopies = new Map<string, UnifiedCanvasDoc>();
   const anchorUpdates = new Map<string, ParentSpatialAnchor>();
+  const archiveCopies = new Map<string, SpatialArchivedEntityRecord[]>();
   // Mutable working copy updated top-down so child map frames & objects inside a grown
   // parent project into the parent's NEW coordinate frame (never the stale pre-grow frame).
   const effectiveMapNodes: Record<string, AtlasWorldSpaceNode> = { ...mapNodes };
@@ -308,6 +440,14 @@ export function projectSpatialOperationToMapUpdates(input: {
     const base = docsByMapId[mapId];
     if (!base) return null;
     docCopies.set(mapId, base);
+    return base;
+  };
+
+  const getArchive = (mapId: string): SpatialArchivedEntityRecord[] => {
+    const cached = archiveCopies.get(mapId);
+    if (cached) return cached;
+    const base = [...(spatialArchiveByMapId?.[mapId] ?? [])];
+    archiveCopies.set(mapId, base);
     return base;
   };
 
@@ -361,7 +501,26 @@ export function projectSpatialOperationToMapUpdates(input: {
         };
       }
     }
-    // Ensure the map is included in output mutations even if only its anchor grew
+    // Persist soft-archive marker for map frames so archive/restore survives reload.
+    if (entity.status === 'archived') {
+      const arch = getArchive(entity.mapId).filter((r) => r.kind !== 'map_frame');
+      arch.push({
+        entityId: entity.id,
+        featureId: '__map_frame__',
+        kind: 'map_frame',
+        archivedByEntityId: entity.archivedByEntityId ?? plan.targetEntityId,
+      });
+      archiveCopies.set(entity.mapId, arch);
+    } else if (
+      spatialArchiveByMapId?.[entity.mapId]?.some((r) => r.kind === 'map_frame') ||
+      archiveCopies.get(entity.mapId)?.some((r) => r.kind === 'map_frame')
+    ) {
+      archiveCopies.set(
+        entity.mapId,
+        getArchive(entity.mapId).filter((r) => r.kind !== 'map_frame'),
+      );
+    }
+    // Ensure the map is included in output mutations even if only its anchor or archive status changed
     getDoc(entity.mapId);
   }
 
@@ -373,79 +532,179 @@ export function projectSpatialOperationToMapUpdates(input: {
     const curDoc = getDoc(entity.mapId);
     if (!curDoc) continue;
 
-    // Object update / soft-archive
+    // Object update / soft-archive / restore
     const objIdx = curDoc.objects.findIndex((o) => o.id === entity.featureId);
-    if (objIdx >= 0) {
+    const archivedObjRec = getArchive(entity.mapId).find(
+      (r) => r.kind === 'object' && r.featureId === entity.featureId,
+    );
+    if (objIdx >= 0 || archivedObjRec?.object) {
       if (entity.status === 'archived') {
-        docCopies.set(entity.mapId, {
-          ...curDoc,
-          objects: curDoc.objects.filter((o) => o.id !== entity.featureId),
-        });
+        if (objIdx >= 0) {
+          const prevObj = curDoc.objects[objIdx]!;
+          const arch = getArchive(entity.mapId).filter(
+            (r) => !(r.kind === 'object' && r.featureId === entity.featureId),
+          );
+          arch.push({
+            entityId: entity.id,
+            featureId: entity.featureId,
+            kind: 'object',
+            archivedByEntityId: entity.archivedByEntityId ?? plan.targetEntityId,
+            object: prevObj,
+          });
+          archiveCopies.set(entity.mapId, arch);
+          docCopies.set(entity.mapId, {
+            ...curDoc,
+            objects: curDoc.objects.filter((o) => o.id !== entity.featureId),
+          });
+        }
       } else {
         const cx = (entity.boundsWorld.minX + entity.boundsWorld.maxX) / 2;
         const cy = (entity.boundsWorld.minY + entity.boundsWorld.maxY) / 2;
         const localCenter = worldToLocal(effectiveMapNodes, entity.mapId, { x: cx, y: cy });
-        if (!isAtlasWorldError(localCenter)) {
-          const prevObj = curDoc.objects[objIdx]!;
-          const nextObjects = [...curDoc.objects];
-          nextObjects[objIdx] = {
-            ...prevObj,
-            x: round3(localCenter.value.x),
-            y: round3(localCenter.value.y),
-          };
-          docCopies.set(entity.mapId, { ...curDoc, objects: nextObjects });
+        if (objIdx >= 0) {
+          if (!isAtlasWorldError(localCenter)) {
+            const prevObj = curDoc.objects[objIdx]!;
+            const nextObjects = [...curDoc.objects];
+            nextObjects[objIdx] = {
+              ...prevObj,
+              x: round3(localCenter.value.x),
+              y: round3(localCenter.value.y),
+            };
+            docCopies.set(entity.mapId, { ...curDoc, objects: nextObjects });
+          }
+        } else if (archivedObjRec?.object) {
+          const restoredObj: UnifiedCanvasObject = !isAtlasWorldError(localCenter)
+            ? {
+                ...archivedObjRec.object,
+                x: round3(localCenter.value.x),
+                y: round3(localCenter.value.y),
+              }
+            : archivedObjRec.object;
+          docCopies.set(entity.mapId, {
+            ...curDoc,
+            objects: [...curDoc.objects, restoredObj],
+          });
+        }
+        if (archivedObjRec) {
+          archiveCopies.set(
+            entity.mapId,
+            getArchive(entity.mapId).filter(
+              (r) => !(r.kind === 'object' && r.featureId === entity.featureId),
+            ),
+          );
         }
       }
       continue;
     }
 
-    // Stroke (freeland) update
+    // Stroke (freeland) update — persist every clipped segment (ID suffix `#clip<i>`)
     const strokeIdx = curDoc.strokes.findIndex((st) => st.id === entity.featureId);
-    if (strokeIdx >= 0 && entity.polylineWorld && entity.polylineWorld.length >= 2) {
-      const localPts: [number, number][] = [];
-      for (const [wx, wy] of entity.polylineWorld) {
-        const lp = worldToLocal(effectiveMapNodes, entity.mapId, { x: wx, y: wy });
-        if (!isAtlasWorldError(lp)) localPts.push([round3(lp.value.x), round3(lp.value.y)]);
+    const polylineWorld = entity.polylineWorld;
+    if (strokeIdx >= 0 && polylineWorld && polylineWorld.length >= 2) {
+      const segments =
+        entity.clippedSegmentsWorld && entity.clippedSegmentsWorld.length > 0
+          ? entity.clippedSegmentsWorld
+          : [polylineWorld];
+      const localSegments: [number, number][][] = [];
+      for (const segment of segments) {
+        const localPts: [number, number][] = [];
+        for (const [wx, wy] of segment) {
+          const lp = worldToLocal(effectiveMapNodes, entity.mapId, { x: wx, y: wy });
+          if (!isAtlasWorldError(lp)) localPts.push([round3(lp.value.x), round3(lp.value.y)]);
+        }
+        if (localPts.length >= 2) localSegments.push(localPts);
       }
-      if (localPts.length >= 2) {
+      if (localSegments.length > 0) {
         const prevStroke = curDoc.strokes[strokeIdx]!;
-        const nextStrokes = [...curDoc.strokes];
-        nextStrokes[strokeIdx] = { ...prevStroke, points: localPts };
+        const clipPrefix = `${entity.featureId}#clip`;
+        const insertAt = curDoc.strokes
+          .slice(0, strokeIdx)
+          .filter((st) => st.id !== entity.featureId && !st.id.startsWith(clipPrefix)).length;
+        const nextStrokes = curDoc.strokes.filter(
+          (st) => st.id !== entity.featureId && !st.id.startsWith(clipPrefix),
+        );
+        nextStrokes.splice(
+          insertAt,
+          0,
+          ...localSegments.map((points, i) => ({
+            ...prevStroke,
+            id: i === 0 ? entity.featureId : `${entity.featureId}#clip${i}`,
+            points,
+          })),
+        );
         docCopies.set(entity.mapId, { ...curDoc, strokes: nextStrokes });
       }
       continue;
     }
 
-    // Room polygon update / soft-archive
+    // Room polygon update / soft-archive / restore
     const roomIdx = curDoc.rooms.findIndex((r) => r.id === entity.featureId);
-    if (roomIdx >= 0) {
+    const archivedRoomRec = getArchive(entity.mapId).find(
+      (r) => r.kind === 'room' && r.featureId === entity.featureId,
+    );
+    if (roomIdx >= 0 || archivedRoomRec?.room) {
       if (entity.status === 'archived') {
-        docCopies.set(entity.mapId, {
-          ...curDoc,
-          rooms: curDoc.rooms.filter((r) => r.id !== entity.featureId),
-        });
-      } else if (entity.polygonWorld && entity.polygonWorld.length >= 3) {
-        const localPts: [number, number][] = [];
-        for (const [wx, wy] of entity.polygonWorld) {
-          const lp = worldToLocal(effectiveMapNodes, entity.mapId, { x: wx, y: wy });
-          if (!isAtlasWorldError(lp)) localPts.push([round3(lp.value.x), round3(lp.value.y)]);
+        if (roomIdx >= 0) {
+          const prevRoom = curDoc.rooms[roomIdx]!;
+          const arch = getArchive(entity.mapId).filter(
+            (r) => !(r.kind === 'room' && r.featureId === entity.featureId),
+          );
+          arch.push({
+            entityId: entity.id,
+            featureId: entity.featureId,
+            kind: 'room',
+            archivedByEntityId: entity.archivedByEntityId ?? plan.targetEntityId,
+            room: prevRoom,
+          });
+          archiveCopies.set(entity.mapId, arch);
+          docCopies.set(entity.mapId, {
+            ...curDoc,
+            rooms: curDoc.rooms.filter((r) => r.id !== entity.featureId),
+          });
         }
-        const prevRoom: UnifiedCanvasRoom = curDoc.rooms[roomIdx]!;
-        const rebuilt = roomFromPolygon(prevRoom.id, prevRoom.material, localPts);
-        if (rebuilt) {
+      } else {
+        const baseRoom: UnifiedCanvasRoom =
+          roomIdx >= 0 ? curDoc.rooms[roomIdx]! : archivedRoomRec!.room!;
+        let nextRoom: UnifiedCanvasRoom = baseRoom;
+        if (entity.polygonWorld && entity.polygonWorld.length >= 3) {
+          const localPts: [number, number][] = [];
+          for (const [wx, wy] of entity.polygonWorld) {
+            const lp = worldToLocal(effectiveMapNodes, entity.mapId, { x: wx, y: wy });
+            if (!isAtlasWorldError(lp)) localPts.push([round3(lp.value.x), round3(lp.value.y)]);
+          }
+          const rebuilt = roomFromPolygon(baseRoom.id, baseRoom.material, localPts);
+          if (rebuilt) {
+            nextRoom = baseRoom.secret ? { ...rebuilt, secret: true } : rebuilt;
+          }
+        }
+        if (roomIdx >= 0) {
           const nextRooms = [...curDoc.rooms];
-          nextRooms[roomIdx] = prevRoom.secret ? { ...rebuilt, secret: true } : rebuilt;
+          nextRooms[roomIdx] = nextRoom;
           docCopies.set(entity.mapId, { ...curDoc, rooms: nextRooms });
+        } else {
+          docCopies.set(entity.mapId, { ...curDoc, rooms: [...curDoc.rooms, nextRoom] });
+        }
+        if (archivedRoomRec) {
+          archiveCopies.set(
+            entity.mapId,
+            getArchive(entity.mapId).filter(
+              (r) => !(r.kind === 'room' && r.featureId === entity.featureId),
+            ),
+          );
         }
       }
     }
   }
 
   const out: ProjectedMapMutation[] = [];
-  const allMapIds = new Set<string>([...docCopies.keys(), ...anchorUpdates.keys()]);
+  const allMapIds = new Set<string>([
+    ...docCopies.keys(),
+    ...anchorUpdates.keys(),
+    ...archiveCopies.keys(),
+  ]);
   for (const mapId of allMapIds) {
     const nextDoc = docCopies.get(mapId) ?? docsByMapId[mapId];
-    if (!nextDoc && !anchorUpdates.has(mapId)) continue;
+    if (!nextDoc && !anchorUpdates.has(mapId) && !archiveCopies.has(mapId)) continue;
     out.push({
       mapId,
       nextDoc: nextDoc ?? {
@@ -457,6 +716,7 @@ export function projectSpatialOperationToMapUpdates(input: {
         walls: [],
       },
       ...(anchorUpdates.has(mapId) ? { nextParentAnchor: anchorUpdates.get(mapId) } : {}),
+      ...(archiveCopies.has(mapId) ? { nextSpatialArchive: archiveCopies.get(mapId) } : {}),
     });
   }
   return out;

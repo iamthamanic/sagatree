@@ -362,10 +362,10 @@ export class AtlasThreeMultiMapGraph {
         elevationScale: Math.max(0.012, Math.min(0.06, verticalScale * 4)),
         featherRatio: 0.24,
       });
-      overlayParts.push(`${entry.mapId}:${src.revisionKey ?? 'v0'}`);
+      overlayParts.push(`${entry.mapId}:${hfVersionKey(hf)}`);
     }
 
-    const key = `${rootId}:${rootSource.revisionKey ?? 'v0'}:${hfVersionKey(rootHf)}|${overlayParts.sort().join(',')}`;
+    const key = `${rootId}:${hfVersionKey(rootHf)}|${overlayParts.sort().join(',')}`;
     if (key === this.lastTerrainSourceKey) return;
     this.lastTerrainSourceKey = key;
 
@@ -473,11 +473,10 @@ export class AtlasThreeMultiMapGraph {
 
       const cSig = cutoutSignature(entry.cutoutRectsLocal);
       const rev = source.revisionKey ?? 'v0';
-      const terrainSig = hasSharedTerrain ? this.lastTerrainSourceKey : 'local';
       // Auto roof-cutaway on a settlement when an interior building/room inside it is active!
       const effectiveHideRoofs =
         input.hideRoofs || Boolean(hasIndoorChildByParent.get(entry.mapId));
-      const sig = `${rev}|${source.mapScale}|${source.look}|${input.presetId}|${effectiveHideRoofs ? 1 : 0}|${cSig}|${terrainSig}`;
+      const sig = `${rev}|${source.mapScale}|${source.look}|${input.presetId}|${effectiveHideRoofs ? 1 : 0}|${cSig}`;
 
       const childWeight = maxChildWeightByParent.get(entry.mapId) ?? 0;
       // Scale-aware 2-channel handover:
@@ -539,7 +538,7 @@ export class AtlasThreeMultiMapGraph {
         existing.currentWaterOpacity =
           useSmoothDamp
             ? existing.currentWaterOpacity +
-              (targetWaterOpacity - existing.currentWaterOpacity) * dampAlpha
+            (targetWaterOpacity - existing.currentWaterOpacity) * dampAlpha
             : targetWaterOpacity;
         if (Math.abs(existing.currentOpacity - targetOpacity) < 0.004) {
           existing.currentOpacity = targetOpacity;
@@ -918,6 +917,20 @@ export class AtlasThreeMultiMapGraph {
       terrain,
       groupOpacities,
     };
+  }
+
+  /** True while any group is still smoothly fading opacity in or out (keeps 60fps during transitions). */
+  hasPendingOpacityTransition(): boolean {
+    for (const node of this.groups.values()) {
+      if (
+        node.exiting ||
+        Math.abs(node.currentOpacity - node.targetOpacity) > OPACITY_EXIT_EPSILON ||
+        Math.abs(node.currentWaterOpacity - node.targetWaterOpacity) > OPACITY_EXIT_EPSILON
+      ) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /** Teardown all groups + shared terrain chunks and release 100% of GPU geometries & cloned materials. */
