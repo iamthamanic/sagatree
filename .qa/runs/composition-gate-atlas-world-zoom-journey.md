@@ -1,12 +1,12 @@
 # Composition Gate — atlas-world-zoom-journey
 
 - Feature slug: `atlas-world-zoom-journey`
-- HEAD_SHA: f7a4ab082bb899861b7618f49b8edb7af930823a
+- HEAD_SHA: 8a8170ac7694ba81d5e63790002b48a30de2b314
 - BASE_SHA: 1490c7854b7d6ee45fdb3cccdaefe73f7d27574c
-- WORKTREE: `feat/atlas-spatial-containment` — Scale-aware macro-deco separation, unified World-Space pins, live focus-chain protection, Ebenen-Drawer auto-scroll, calibrated Scale HUD, `zoomAnchor` settling, plus PR #1331 Codex & Kody review fixes (Zod `ParentAnchorSchema` + canonical `mapFrame.parentAnchor: null` precedence + SQLite `json_extract` cycle traversal, world-scoped `parentAnchor.parentMapId` guard, compensating multi-map rollback, debounced live root-doc sync into `worldSceneGraph` + SCM rehydration, bounded retry on failed child loads, zero-cast `spatialArchive` validation + multi-segment freeland re-clipping, placement-aware heightfield terrain key + `terrainSig`, idle-frame WebGL throttle, product-journey markers)
+- WORKTREE: `feat/atlas-spatial-containment` — Scale-aware macro-deco separation, unified World-Space pins, live focus-chain protection, Ebenen-Drawer auto-scroll, calibrated Scale HUD, `zoomAnchor` settling, plus PR #1331 Codex & Kody review fixes (serialized optimistic spatial transactions + stale-plan guard, scaled object `size` projection, 4-corner rotated parent map projection, root map frame `bounds` persistence + Undo/Redo/rollback, independent SQLite cycle-row parsing, backward-compatible legacy `ParentAnchorSchema`, UPDATE-path legacy cycle + canonical-null precedence coverage)
 - Date: 2026-11-27
 - Verdict: CLEAR
-- Acceptance tier: hardware-WebGL browser E2E (`atlas-world-zoom-journey.spec.ts` 1/1, `scm-spatial-containment.spec.ts` 4/4), `sws-write-guards.self-test` (13/13), `scm-invariants.self-test` (11/11), `atlas-camera-anchor.self-test` (10/10), `npm run lint`, `npm run typecheck`, and full `npm run test-gate` verified (see `.qa/runs/atlas-scale-labels-pass.md`)
+- Acceptance tier: hardware-WebGL browser E2E (`atlas-world-zoom-journey.spec.ts` 1/1, `scm-spatial-containment.spec.ts` 4/4), `sws-write-guards.self-test` (16/16), `scm-invariants.self-test` (11/11), `scm-propagation.self-test` (5/5), `atlas-camera-anchor.self-test` (10/10), `npm run lint`, `npm run typecheck`, and full `npm run test-gate` verified (see `.qa/runs/atlas-scale-labels-pass.md`)
 - Deferred integration: None for this pass (`5c7cab392..95d795058` introduced zero new backend, persistence, API, or migration hops); tablet/phone native hardware R05 (#1270), Q01 (#1300), and ATL4 biome-painting persistence (#1308/#1310) remain separate follow-up epics
 
 ## Event
