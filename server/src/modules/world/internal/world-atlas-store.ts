@@ -632,9 +632,32 @@ export class WorldAtlasStore {
       }
       const child = this.#db
         .prepare(
-          `SELECT 1 AS ok FROM world_atlas_maps WHERE parent_map_id = ? LIMIT 1`,
+          `SELECT 1 AS ok
+           FROM world_atlas_maps
+           WHERE world_profile_id = ?
+             AND id != ?
+             AND (
+               parent_map_id = ?
+               OR (
+                 CASE
+                   WHEN json_valid(generator_meta)
+                        AND json_type(generator_meta, '$.mapFrame') = 'object'
+                        AND json_type(generator_meta, '$.mapFrame.parentAnchor') IS NOT NULL
+                     THEN CASE
+                       WHEN json_type(generator_meta, '$.mapFrame.parentAnchor') = 'object'
+                         THEN json_extract(generator_meta, '$.mapFrame.parentAnchor.parentMapId')
+                       ELSE NULL
+                     END
+                   WHEN json_valid(generator_meta)
+                        AND json_type(generator_meta, '$.parentAnchor') = 'object'
+                     THEN json_extract(generator_meta, '$.parentAnchor.parentMapId')
+                   ELSE NULL
+                 END
+               ) = ?
+             )
+           LIMIT 1`,
         )
-        .get(mapId) as { ok: number } | undefined;
+        .get(worldId, mapId, mapId, mapId) as { ok: number } | undefined;
       if (child) {
         this.#db.exec('ROLLBACK');
         return { ok: false, error: '23514' };

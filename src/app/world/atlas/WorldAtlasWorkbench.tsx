@@ -650,7 +650,6 @@ export function WorldAtlasWorkbench({
   editorMapRef.current = editor.map;
   const editorCanvasDocRef = useRef<UnifiedCanvasDoc>(editor.canvasDoc);
   editorCanvasDocRef.current = editor.canvasDoc;
-  const persistChainRef = useRef<Promise<unknown>>(Promise.resolve());
 
   useEffect(() => {
     if (!editor.map || editor.map.parentMapId !== null || childMapVms.length === 0) {
@@ -738,7 +737,7 @@ export function WorldAtlasWorkbench({
 
   const captureMapSnapshots = useCallback(
     (mapIds: readonly string[]): Readonly<Record<string, SpatialMapPersistSnapshot>> => {
-      const rootMap = editorMapRef.current;
+      const rootMap = editor.getLatestMap() ?? editorMapRef.current;
       const out: Record<string, SpatialMapPersistSnapshot> = {};
       const byId = new Map<string, WorldAtlasMapVm>();
       if (rootMap) byId.set(rootMap.id, rootMap);
@@ -760,7 +759,7 @@ export function WorldAtlasWorkbench({
       }
       return out;
     },
-    [],
+    [editor],
   );
 
   const persistProjectedMapUpdates = useCallback(
@@ -769,8 +768,9 @@ export function WorldAtlasWorkbench({
       plan: WorldOperationPlan,
       explicitSnapshots?: Readonly<Record<string, SpatialMapPersistSnapshot>>,
     ): Promise<{ readonly ok: true } | { readonly ok: false; readonly reasonDe: string }> => {
-      const rootMap = editorMapRef.current;
+      const rootMap = editor.getLatestMap() ?? editorMapRef.current;
       if (!rootMap) return { ok: true };
+      editorMapRef.current = rootMap;
       const prevRootVm = rootMap;
       const prevRootDoc = editorCanvasDocRef.current;
       const prevChildren = childMapVmsRef.current;
@@ -832,7 +832,7 @@ export function WorldAtlasWorkbench({
         if (m.mapId === rootMap.id) {
           nextRootDoc = m.nextDoc;
           editorCanvasDocRef.current = m.nextDoc;
-          editor.updateCanvasDoc(m.nextDoc);
+          editor.syncCanvasDocSilently(m.nextDoc);
         }
         let nextMeta = mergeUnifiedCanvasIntoGeneratorMeta(vm.generatorMeta, m.nextDoc);
         if (m.nextParentAnchor !== undefined) {
@@ -942,7 +942,7 @@ export function WorldAtlasWorkbench({
           editorMapRef.current = restoredRoot;
           if (nextRootDoc !== prevRootDoc) {
             editorCanvasDocRef.current = prevRootDoc;
-            editor.updateCanvasDoc(prevRootDoc);
+            editor.syncCanvasDocSilently(prevRootDoc);
           }
           const restoredChildren = prevChildren.map((vm) => restoredById.get(vm.id) ?? vm);
           childMapVmsRef.current = restoredChildren;
@@ -974,11 +974,10 @@ export function WorldAtlasWorkbench({
     [editingAllowed, editor],
   );
 
-  const enqueuePersist = useCallback(<T,>(task: () => Promise<T>): Promise<T> => {
-    const next = persistChainRef.current.then(task, task);
-    persistChainRef.current = next;
-    return next;
-  }, []);
+  const enqueuePersist = useCallback(
+    <T,>(task: () => Promise<T>): Promise<T> => editor.runSerializedPersist(task),
+    [editor],
+  );
 
   const spatialContainment: AtlasSpatialContainmentAdapter | null = useMemo(() => {
     if (!spatialWorld) return null;
@@ -1280,7 +1279,7 @@ export function WorldAtlasWorkbench({
     const runSave = () => {
       const decision = editor.autosaveDecision();
       if (decision.action !== 'save') return;
-      void editor.saveCanvas().catch(() => {
+      void editor.autosaveCanvas().catch(() => {
         /* error surfaced on editor.error / persistStatus */
       });
     };
@@ -1301,7 +1300,7 @@ export function WorldAtlasWorkbench({
     editor.persistStatus,
     editor.webglRuntime,
     editor.canvasDoc,
-    editor.saveCanvas,
+    editor.autosaveCanvas,
     editor.autosaveDecision,
     editor.autosaveDebounceMs,
   ]);

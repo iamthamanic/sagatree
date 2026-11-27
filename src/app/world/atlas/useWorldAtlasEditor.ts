@@ -112,6 +112,12 @@ export function useWorldAtlasEditor({
     createAtlasMapLoadSession(null),
   );
   const [mapCache, setMapCache] = useState<AtlasMapCacheStore>({});
+  const mapRef = useRef(map);
+  mapRef.current = map;
+  const dirtyLayersRef = useRef(dirtyLayers);
+  dirtyLayersRef.current = dirtyLayers;
+  const dirtyCanvasRef = useRef(dirtyCanvas);
+  dirtyCanvasRef.current = dirtyCanvas;
   const canvasDocRef = useRef(canvasDoc);
   canvasDocRef.current = canvasDoc;
   const webglRuntimeRef = useRef(webglRuntime);
@@ -127,6 +133,8 @@ export function useWorldAtlasEditor({
   const activeMapIdRef = useRef(activeMapId);
   activeMapIdRef.current = activeMapId;
   const saveInFlightRef = useRef(false);
+  /** Shared write queue serializing regular canvas autosave/save with multi-map SCM persistence. */
+  const writeQueueRef = useRef<Promise<unknown>>(Promise.resolve());
   const persistStatusRef = useRef<AtlasPersistStatus>('clean');
   persistStatusRef.current = persistStatus;
   const pendingOpsRef = useRef(0);
@@ -417,12 +425,45 @@ export function useWorldAtlasEditor({
 
   const updateCanvasDoc = useCallback(
     (next: UnifiedCanvasDoc) => {
+      canvasDocRef.current = next;
       setCanvasDoc(next);
+      dirtyCanvasRef.current = true;
       setDirtyCanvas(true);
       noteLocalEdit();
     },
     [noteLocalEdit],
   );
+
+  /**
+   * Sync the in-memory root canvas document for SCM-owned multi-map persistence without
+   * marking `dirtyCanvas` or triggering the independent regular autosave timer.
+   */
+  const syncCanvasDocSilently = useCallback((next: UnifiedCanvasDoc) => {
+    canvasDocRef.current = next;
+    setCanvasDoc(next);
+  }, []);
+
+  const getLatestMap = useCallback(() => mapRef.current, []);
+
+  /**
+   * Serialize any persistence task (regular `saveCanvas` or multi-map SCM transaction)
+   * onto a single FIFO queue and reflect `saving` state so autosave never overlaps SCM writes.
+   */
+  const runSerializedPersist = useCallback(<T,>(task: () => Promise<T>): Promise<T> => {
+    const run = async (): Promise<T> => {
+      saveInFlightRef.current = true;
+      setSaving(true);
+      try {
+        return await task();
+      } finally {
+        saveInFlightRef.current = false;
+        setSaving(false);
+      }
+    };
+    const next = writeQueueRef.current.then(run, run);
+    writeQueueRef.current = next;
+    return next;
+  }, []);
 
   const updateDungeonMeta = useCallback(
     (next: DungeonGeneratorMeta | null) => {
@@ -465,89 +506,95 @@ export function useWorldAtlasEditor({
     }
   }, [activeMapId, playerView, sagaPublicId, bumpPersist, bumpContentEpoch]);
 
+  const persistActiveCanvas = useCallback(
+    async (onlyIfDirty: boolean) => {
+      const currentMap = mapRef.current;
+      if (!currentMap || !canEdit) return;
+      if (onlyIfDirty && !dirtyCanvasRef.current && dirtyLayersRef.current === null) {
+        return;
+      }
+      setError(null);
+      bumpPersist({ type: 'save_start' });
+      const sentDoc = canvasDocRef.current;
+      const sentRuntime = webglRuntimeRef.current;
+      const dungeonMeta = dungeonMetaRef.current;
+      const sentLayers = dirtyLayersRef.current;
+      try {
+        // ATL2-B04: persist geometry only via unifiedCanvas; strip webglRuntimeV3 geometry shadow.
+        let generatorMeta = mergeCanonicalAtlasGeometryForPersist(
+          currentMap.generatorMeta,
+          sentDoc,
+          sentRuntime,
+        );
+        if (dungeonMeta) {
+          generatorMeta = mergeDungeonMetaIntoGeneratorMeta(generatorMeta, dungeonMeta);
+        }
+        const next = await worldAtlasService.upsertMap({
+          worldProfileId: currentMap.worldProfileId,
+          mapId: currentMap.id,
+          parentMapId: currentMap.parentMapId,
+          kind: currentMap.kind === 'legacy_tiles' ? 'world' : currentMap.kind,
+          title: currentMap.title,
+          sortOrder: currentMap.sortOrder,
+          bounds: currentMap.bounds,
+          layers: sentLayers ?? currentMap.layers,
+          basemapStoragePath: currentMap.basemapStoragePath,
+          azgaarMapStoragePath: currentMap.azgaarMapStoragePath,
+          generatorMeta,
+          expectedRevision: currentMap.revision,
+        });
+        mapRef.current = next;
+        setMap(next);
+        // Edits made while the request was in flight stay dirty for the next autosave.
+        const editedDuringSave =
+          canvasDocRef.current !== sentDoc ||
+          webglRuntimeRef.current !== sentRuntime ||
+          dungeonMetaRef.current !== dungeonMeta;
+        if (!editedDuringSave) {
+          const parsed = extractUnifiedCanvasFromGeneratorMeta(next.generatorMeta);
+          const resolvedDoc = parsed ?? sentDoc;
+          canvasDocRef.current = resolvedDoc;
+          setCanvasDoc(resolvedDoc);
+          setWebglRuntime(extractWebglRuntimeFromGeneratorMeta(next.generatorMeta));
+          setDungeonMeta(extractDungeonMetaFromGeneratorMeta(next.generatorMeta));
+          dirtyCanvasRef.current = false;
+          setDirtyCanvas(false);
+        }
+        if (!editedDuringSave) {
+          pendingOpsRef.current = 0;
+        }
+        bumpPersist({ type: 'save_ok' });
+        // ATL2-E04: saved content invalidates soft LOD cache for this map.
+        setMapCache((prev) => invalidateAtlasMapCache(prev, currentMap.id));
+        setLodSession((prev) => {
+          const nextSession = bumpAtlasMapCacheEpoch(prev);
+          lodSessionRef.current = nextSession;
+          return nextSession;
+        });
+        if (editedDuringSave) {
+          noteLocalEdit();
+        }
+        await reloadList();
+      } catch (err) {
+        const message = err instanceof Error ? err.message : 'Speichern fehlgeschlagen.';
+        const conflict = isAtlasRevisionConflictMessage(message);
+        setError(message);
+        bumpPersist({ type: 'save_fail', conflict });
+        throw err;
+      }
+    },
+    [canEdit, reloadList, bumpPersist, noteLocalEdit],
+  );
+
   const saveCanvas = useCallback(async () => {
     if (!map || !canEdit) return;
-    if (saveInFlightRef.current) return;
-    saveInFlightRef.current = true;
-    setSaving(true);
-    setError(null);
-    bumpPersist({ type: 'save_start' });
-    const sentDoc = canvasDoc;
-    const sentRuntime = webglRuntime;
-    const sentDungeon = dungeonMeta;
-    try {
-      // ATL2-B04: persist geometry only via unifiedCanvas; strip webglRuntimeV3 geometry shadow.
-      let generatorMeta = mergeCanonicalAtlasGeometryForPersist(
-        map.generatorMeta,
-        canvasDoc,
-        webglRuntime,
-      );
-      if (dungeonMeta) {
-        generatorMeta = mergeDungeonMetaIntoGeneratorMeta(generatorMeta, dungeonMeta);
-      }
-      const next = await worldAtlasService.upsertMap({
-        worldProfileId: map.worldProfileId,
-        mapId: map.id,
-        parentMapId: map.parentMapId,
-        kind: map.kind === 'legacy_tiles' ? 'world' : map.kind,
-        title: map.title,
-        sortOrder: map.sortOrder,
-        bounds: map.bounds,
-        layers: dirtyLayers ?? map.layers,
-        basemapStoragePath: map.basemapStoragePath,
-        azgaarMapStoragePath: map.azgaarMapStoragePath,
-        generatorMeta,
-        expectedRevision: map.revision,
-      });
-      setMap(next);
-      // Edits made while the request was in flight stay dirty for the next autosave.
-      const editedDuringSave =
-        canvasDocRef.current !== sentDoc ||
-        webglRuntimeRef.current !== sentRuntime ||
-        dungeonMetaRef.current !== sentDungeon;
-      if (!editedDuringSave) {
-        const parsed = extractUnifiedCanvasFromGeneratorMeta(next.generatorMeta);
-        setCanvasDoc(parsed ?? canvasDoc);
-        setWebglRuntime(extractWebglRuntimeFromGeneratorMeta(next.generatorMeta));
-        setDungeonMeta(extractDungeonMetaFromGeneratorMeta(next.generatorMeta));
-        setDirtyCanvas(false);
-      }
-      if (!editedDuringSave) {
-        pendingOpsRef.current = 0;
-      }
-      bumpPersist({ type: 'save_ok' });
-      // ATL2-E04: saved content invalidates soft LOD cache for this map.
-      setMapCache((prev) => invalidateAtlasMapCache(prev, map.id));
-      setLodSession((prev) => {
-        const next = bumpAtlasMapCacheEpoch(prev);
-        lodSessionRef.current = next;
-        return next;
-      });
-      if (editedDuringSave) {
-        noteLocalEdit();
-      }
-      await reloadList();
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Speichern fehlgeschlagen.';
-      const conflict = isAtlasRevisionConflictMessage(message);
-      setError(message);
-      bumpPersist({ type: 'save_fail', conflict });
-      throw err;
-    } finally {
-      saveInFlightRef.current = false;
-      setSaving(false);
-    }
-  }, [
-    map,
-    canEdit,
-    canvasDoc,
-    dirtyLayers,
-    dungeonMeta,
-    webglRuntime,
-    reloadList,
-    bumpPersist,
-    noteLocalEdit,
-  ]);
+    await runSerializedPersist(() => persistActiveCanvas(false));
+  }, [map, canEdit, runSerializedPersist, persistActiveCanvas]);
+
+  const autosaveCanvas = useCallback(async () => {
+    if (!mapRef.current || !canEdit) return;
+    await runSerializedPersist(() => persistActiveCanvas(true));
+  }, [canEdit, runSerializedPersist, persistActiveCanvas]);
 
   const saveLayers = useCallback(
     async (layers: WorldAtlasFeatureCollection) => {
@@ -1022,14 +1069,19 @@ export function useWorldAtlasEditor({
         return next;
       });
       if (saved.id === activeMapIdRef.current) {
+        mapRef.current = saved;
         setMap(saved);
+        dirtyCanvasRef.current = false;
+        setDirtyCanvas(false);
+        pendingOpsRef.current = 0;
+        bumpPersist({ type: 'save_ok' });
       }
       setSummaries((prev) =>
         prev.map((s) => (s.id === saved.id ? { ...s, revision: saved.revision } : s)),
       );
       return saved;
     },
-    [],
+    [bumpPersist],
   );
 
   /** ATL2-C04: contract-driven autosave decision (never save while conflicted). */
@@ -1054,12 +1106,16 @@ export function useWorldAtlasEditor({
     setDirtyLayers,
     canvasDoc,
     updateCanvasDoc,
+    syncCanvasDocSilently,
+    getLatestMap,
+    runSerializedPersist,
     webglRuntime,
     updateWebglRuntime,
     dirtyCanvas,
     dungeonMeta,
     updateDungeonMeta,
     saveCanvas,
+    autosaveCanvas,
     saveLayers,
     createChildMap,
     locateChildOnParent,

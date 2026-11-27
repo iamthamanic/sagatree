@@ -731,9 +731,104 @@ try {
   );
   assert.equal(malformedAncestorCycle.error, '23514');
 
+  // 15) deleteMap refuses deleting a map referenced ONLY via canonical mapFrame.parentAnchor.parentMapId (`23514`)
+  const deleteAnchorRefCanonical = store.deleteMap([owner], worldId, siblingD.value.id);
+  assert.equal(
+    deleteAnchorRefCanonical.ok,
+    false,
+    'deleteMap refuses removing map referenced by siblingE canonical mapFrame.parentAnchor',
+  );
+  assert.equal(deleteAnchorRefCanonical.error, '23514');
+
+  // 16) deleteMap refuses deleting a map referenced ONLY via legacy top-level parentAnchor.parentMapId (`23514`)
+  const legacyAnchorTarget = store.upsertMap([owner], {
+    worldProfileId: worldId,
+    mapId: null,
+    parentMapId: resA.value.id,
+    kind: 'region',
+    title: 'Legacy Anchor Delete Target',
+    layers: emptyLayers,
+    bounds: { minX: 0, minY: 0, maxX: 1000, maxY: 1000 },
+    generatorMeta: { engine: 'unified_canvas' },
+    expectedRevision: null,
+    sortOrder: 14,
+    basemapStoragePath: null,
+    azgaarMapStoragePath: null,
+  });
+  assert.equal(legacyAnchorTarget.ok, true, 'create Legacy Anchor Delete Target');
+  const legacyAnchorReferencer = store.upsertMap([owner], {
+    worldProfileId: worldId,
+    mapId: null,
+    parentMapId: resA.value.id,
+    kind: 'region',
+    title: 'Legacy Anchor Referencer',
+    layers: emptyLayers,
+    bounds: { minX: 0, minY: 0, maxX: 1000, maxY: 1000 },
+    generatorMeta: {
+      engine: 'unified_canvas',
+      parentAnchor: {
+        parentMapId: legacyAnchorTarget.value.id,
+        centerX: 500,
+        centerY: 500,
+        extentX: 50,
+        extentY: 50,
+        rotationRad: 0,
+      },
+    },
+    expectedRevision: null,
+    sortOrder: 15,
+    basemapStoragePath: null,
+    azgaarMapStoragePath: null,
+  });
+  assert.equal(legacyAnchorReferencer.ok, true, 'create Legacy Anchor Referencer');
+  const deleteAnchorRefLegacy = store.deleteMap([owner], worldId, legacyAnchorTarget.value.id);
+  assert.equal(
+    deleteAnchorRefLegacy.ok,
+    false,
+    'deleteMap refuses removing map referenced by legacy top-level parentAnchor',
+  );
+  assert.equal(deleteAnchorRefLegacy.error, '23514');
+
+  // 17) Once canonical mapFrame.parentAnchor: null overrides the legacy link, deleting target succeeds
+  const clearLegacyRef = store.upsertMap([owner], {
+    worldProfileId: worldId,
+    mapId: legacyAnchorReferencer.value.id,
+    parentMapId: resA.value.id,
+    kind: 'region',
+    title: 'Legacy Anchor Referencer (Unlocated)',
+    layers: emptyLayers,
+    bounds: { minX: 0, minY: 0, maxX: 1000, maxY: 1000 },
+    generatorMeta: {
+      engine: 'unified_canvas',
+      parentAnchor: {
+        parentMapId: legacyAnchorTarget.value.id,
+        centerX: 500,
+        centerY: 500,
+        extentX: 50,
+        extentY: 50,
+        rotationRad: 0,
+      },
+      mapFrame: {
+        status: 'unlocated',
+        parentAnchor: null,
+      },
+    },
+    expectedRevision: legacyAnchorReferencer.value.revision,
+    sortOrder: 15,
+    basemapStoragePath: null,
+    azgaarMapStoragePath: null,
+  });
+  assert.equal(clearLegacyRef.ok, true, 'override legacy parentAnchor with canonical null');
+  const deleteAfterClear = store.deleteMap([owner], worldId, legacyAnchorTarget.value.id);
+  assert.equal(
+    deleteAfterClear.ok,
+    true,
+    'deleteMap succeeds once canonical mapFrame.parentAnchor: null clears legacy reference',
+  );
+
   db.close();
 } finally {
   rmSync(work, { recursive: true, force: true });
 }
 
-console.log('✓ sws-write-guards.self-test: 16/16 (cycles + anchor-only + legacy UPDATE cycle + canonical-null UPDATE + malformed-anchor resilience + shear + legacy null-rot + dangling/cross-world)');
+console.log('✓ sws-write-guards.self-test: 19/19 (cycles + anchor-only + legacy UPDATE cycle + canonical-null UPDATE + malformed-anchor resilience + deleteMap anchor-ref protection + shear + legacy null-rot + dangling/cross-world)');

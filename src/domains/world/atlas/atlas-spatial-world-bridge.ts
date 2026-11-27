@@ -225,14 +225,14 @@ function mapDepthInNodes(
   return depth;
 }
 
-function projectLocalRectToWorldBounds(
+function projectLocalRectCornersToWorld(
   mapNodes: Readonly<Record<string, AtlasWorldSpaceNode>>,
   mapId: string,
   minX: number,
   minY: number,
   maxX: number,
   maxY: number,
-): SpatialBounds2D | null {
+): readonly SpatialPoint2D[] | null {
   const pts: SpatialPoint2D[] = [];
   for (const [lx, ly] of [
     [minX, minY],
@@ -244,7 +244,19 @@ function projectLocalRectToWorldBounds(
     if (isAtlasWorldError(w)) return null;
     pts.push([w.value.x, w.value.y]);
   }
-  return boundsFromPoints(pts);
+  return pts;
+}
+
+function projectLocalRectToWorldBounds(
+  mapNodes: Readonly<Record<string, AtlasWorldSpaceNode>>,
+  mapId: string,
+  minX: number,
+  minY: number,
+  maxX: number,
+  maxY: number,
+): SpatialBounds2D | null {
+  const pts = projectLocalRectCornersToWorld(mapNodes, mapId, minX, minY, maxX, maxY);
+  return pts ? boundsFromPoints(pts) : null;
 }
 
 function roleForStampType(type: UnifiedCanvasObject['type']): SpatialStructureRole {
@@ -282,10 +294,12 @@ export function buildSpatialWorldFromMapSources(
   const entities: Record<string, SpatialEntityNode> = {};
   const mapEntityId = (mapId: string) => `map:${mapId}`;
 
-  // 1. Register each map frame as a spatial container entity (preserving persisted soft-archive state)
+  // 1. Register each map frame as a spatial container entity (preserving oriented corners & soft-archive state)
   for (const s of sources) {
     const b = s.bounds ?? DEFAULT_ATLAS_BOUNDS;
-    const worldBounds = projectLocalRectToWorldBounds(mapNodes, s.mapId, b.minX, b.minY, b.maxX, b.maxY);
+    const orientedCorners = projectLocalRectCornersToWorld(mapNodes, s.mapId, b.minX, b.minY, b.maxX, b.maxY);
+    if (!orientedCorners) continue;
+    const worldBounds = boundsFromPoints(orientedCorners);
     if (!worldBounds) continue;
     const id = mapEntityId(s.mapId);
     const frameArchive = s.spatialArchive?.find((rec) => rec.kind === 'map_frame');
@@ -297,7 +311,7 @@ export function buildSpatialWorldFromMapSources(
       role: s.role,
       carrierId: s.parentMapId ? mapEntityId(s.parentMapId) : null,
       boundsWorld: worldBounds,
-      polygonWorld: rectPointsFromBounds(worldBounds),
+      polygonWorld: orientedCorners,
       status: frameArchive ? 'archived' : 'active',
       ...(frameArchive ? { archivedByEntityId: frameArchive.archivedByEntityId } : {}),
     };
@@ -549,24 +563,28 @@ export function projectSpatialOperationToMapUpdates(input: {
     if (node?.parentAnchor) {
       const parentId = node.parentAnchor.parentMapId;
       const parentBounds = effectiveMapNodes[parentId]?.bounds ?? DEFAULT_ATLAS_BOUNDS;
-      // Inverse-project all four world AABB corners so rotated parent transforms never collapse an axis.
-      const worldCorners = [
-        { x: entity.boundsWorld.minX, y: entity.boundsWorld.minY },
-        { x: entity.boundsWorld.maxX, y: entity.boundsWorld.minY },
-        { x: entity.boundsWorld.maxX, y: entity.boundsWorld.maxY },
-        { x: entity.boundsWorld.minX, y: entity.boundsWorld.maxY },
-      ] as const;
+      // Prefer the preserved oriented footprint (`entity.polygonWorld`) over the world AABB so
+      // moving/scaling a child nested under a rotated parent never suffers √2 / 2× re-bounding inflation.
+      const worldPoints: ReadonlyArray<{ readonly x: number; readonly y: number }> =
+        entity.polygonWorld && entity.polygonWorld.length >= 3
+          ? entity.polygonWorld.map(([x, y]) => ({ x, y }))
+          : [
+              { x: entity.boundsWorld.minX, y: entity.boundsWorld.minY },
+              { x: entity.boundsWorld.maxX, y: entity.boundsWorld.minY },
+              { x: entity.boundsWorld.maxX, y: entity.boundsWorld.maxY },
+              { x: entity.boundsWorld.minX, y: entity.boundsWorld.maxY },
+            ];
       const localCorners: Array<{ readonly x: number; readonly y: number }> = [];
       let projectionOk = true;
-      for (const corner of worldCorners) {
-        const projected = worldToLocal(effectiveMapNodes, parentId, corner);
+      for (const pt of worldPoints) {
+        const projected = worldToLocal(effectiveMapNodes, parentId, pt);
         if (isAtlasWorldError(projected)) {
           projectionOk = false;
           break;
         }
         localCorners.push(projected.value);
       }
-      if (projectionOk && localCorners.length === 4) {
+      if (projectionOk && localCorners.length >= 3) {
         let rawMinX = Number.POSITIVE_INFINITY;
         let rawMaxX = Number.NEGATIVE_INFINITY;
         let rawMinY = Number.POSITIVE_INFINITY;

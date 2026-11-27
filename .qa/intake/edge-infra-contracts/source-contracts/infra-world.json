@@ -343,7 +343,7 @@
     },
     {
       "path": "src/domains/world/atlas/atlas-spatial-world-bridge.ts",
-      "sha256": "fdde808af62f5d1fc1e4ae2d91e582abaea224dcdd6d40617cf5bb498d40c8cb"
+      "sha256": "dd81019823706f34e92363f80ce7268572167c3818d6c931133d856c95632da0"
     },
     {
       "path": "src/domains/world/atlas/atlas-terrain-mesh.ts",

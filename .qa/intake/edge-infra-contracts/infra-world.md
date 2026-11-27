@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-world.json](source-contracts/infra-world.json) (SHA-256 `99af39db5c8bb987d307832ca165fa59b200b9223a095c15644d4d9a27d54696`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-world.json](source-contracts/infra-world.json) (SHA-256 `736a784c7da73f030f1f7e06e9bc5a0eb804fafafcf3c76827687d5bee98520e`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -6241,7 +6241,7 @@ All backend operations are included in the public declarations above.
 | `src/domains/world/atlas/atlas-spatial-containment.ts` | `b4d0dd0186856c2df5adb7cbaa58743ec9e786deb9726b281fbaa7966594e8f7` |
 | `src/domains/world/atlas/atlas-spatial-edit-prefs.ts` | `7248152b93c7b0c2748b1682bb12fd174ac64b88fda12f0d0cca588c4a21ee1c` |
 | `src/domains/world/atlas/atlas-spatial-propagation.ts` | `61720d09fcf09248c30f2d6ab17181e0968f0aacaf88b1823da30b660bd45abb` |
-| `src/domains/world/atlas/atlas-spatial-world-bridge.ts` | `fdde808af62f5d1fc1e4ae2d91e582abaea224dcdd6d40617cf5bb498d40c8cb` |
+| `src/domains/world/atlas/atlas-spatial-world-bridge.ts` | `dd81019823706f34e92363f80ce7268572167c3818d6c931133d856c95632da0` |
 | `src/domains/world/atlas/atlas-terrain-mesh.ts` | `76aa0ae181cc9817561db31f6b5ccea8cac0a22b73fa46e6292b022b53978ba7` |
 | `src/domains/world/atlas/atlas-tool-registry.ts` | `be0492bd7d71f1dafa260c6a1a75165f8c587bd1f55d3178f96fbd67ac5988af` |
 | `src/domains/world/atlas/atlas-webgl-write-retire.ts` | `baf40e97aaa9c74c873f3919e72b4d9049e8c7781566ed58ce52ccf2f168ce69` |

@@ -433,7 +433,36 @@ let passed = 0;
       doc: emptyDoc,
     },
   ]);
+  // Regression (Codex P1): pure translation under 45° rotated parent preserves exact 60×60 local extents (no 2× AABB inflation)
   const rotChildEnt = rotWorld.entities['map:m.rotChild'];
+  const rotMovePlan = prop.planPropagation(rotWorld, {
+    kind: 'resize_or_move',
+    entityId: 'map:m.rotChild',
+    nextBoundsWorld: {
+      minX: rotChildEnt.boundsWorld.minX + 10,
+      minY: rotChildEnt.boundsWorld.minY + 5,
+      maxX: rotChildEnt.boundsWorld.maxX + 10,
+      maxY: rotChildEnt.boundsWorld.maxY + 5,
+    },
+  });
+  assert.equal(rotMovePlan.ok, true);
+  const rotMoveApplied = prop.applyWorldOperation(rotWorld, rotMovePlan.plan);
+  assert.equal(rotMoveApplied.ok, true);
+  const rotMoveMuts = bridge.projectSpatialOperationToMapUpdates({
+    world: rotMoveApplied.world,
+    plan: rotMovePlan.plan,
+    docsByMapId: { 'm.root': emptyDoc, 'm.rotParent': emptyDoc, 'm.rotChild': emptyDoc },
+    mapNodes: rotWorld.mapNodes,
+  });
+  const rotChildMoveMut = rotMoveMuts.find((m) => m.mapId === 'm.rotChild');
+  assert.ok(
+    rotChildMoveMut?.nextParentAnchor &&
+      Math.abs(rotChildMoveMut.nextParentAnchor.extentX - 60) < 1e-4 &&
+      Math.abs(rotChildMoveMut.nextParentAnchor.extentY - 60) < 1e-4,
+    `45° rotated parent pure move preserves exact 60x60 extents (got ${rotChildMoveMut?.nextParentAnchor?.extentX}x${rotChildMoveMut?.nextParentAnchor?.extentY})`,
+  );
+
+  // Uniform grow under 45° rotated parent grows proportionally (not doubled)
   const rotPlan = prop.planPropagation(rotWorld, {
     kind: 'resize_or_move',
     entityId: 'map:m.rotChild',
@@ -456,9 +485,11 @@ let passed = 0;
   const rotChildMut = rotMuts.find((m) => m.mapId === 'm.rotChild');
   assert.ok(
     rotChildMut?.nextParentAnchor &&
-      rotChildMut.nextParentAnchor.extentX > 50 &&
-      rotChildMut.nextParentAnchor.extentY > 50,
-    `45° rotated parent projection preserves both extents (got ${rotChildMut?.nextParentAnchor?.extentX}x${rotChildMut?.nextParentAnchor?.extentY})`,
+      rotChildMut.nextParentAnchor.extentX > 65 &&
+      rotChildMut.nextParentAnchor.extentX < 90 &&
+      rotChildMut.nextParentAnchor.extentY > 65 &&
+      rotChildMut.nextParentAnchor.extentY < 90,
+    `45° rotated parent grow scales proportionally without 2x inflation (got ${rotChildMut?.nextParentAnchor?.extentX}x${rotChildMut?.nextParentAnchor?.extentY})`,
   );
 
   // Regression (Codex P2): root map frame growth emits nextBounds for persistence
